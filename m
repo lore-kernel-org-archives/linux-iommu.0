@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2772EB663;
-	Tue,  8 Apr 2025 12:40:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BC23B663;
+	Tue,  8 Apr 2025 12:40:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744116038; cv=none; b=Vyy3FmdccmN21mGImUwyTTnMcSyJ/tfuTHx2bw53dEMCpV5zSk3isupzHD+df376i0/JqUW2pSRX3ozGBhbh2QzoPccmPer8c/9gxF9dh2VKwrB4+3Y4KM0jgrZ0IjjIpbw9+C+hd2nAEb5ENm96PJ4kAbK8Wjd2USBV/8RrCGw=
+	t=1744116042; cv=none; b=ppwZVOin+M9PwYL77/KD1ti01mbtdOSDrZVTYPn/J0Mc9gKcynA/Msi9PxrAzW8hepZrfQ4C0w3HfDKj/Mr/wGdefKnqciuaHs618SMCTt4X1pmTdZ+voeYPvdzdLtGb6Nmpl0vlgbvje/vx6gdVG0FSETDNwaeGn9+xQRB/OHc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744116038; c=relaxed/simple;
-	bh=J9sS9BYFKqNpm63hs9bprrqPIhjvC0tgMde5KXh1DFw=;
+	s=arc-20240116; t=1744116042; c=relaxed/simple;
+	bh=AFsQveeqJu+5jnHeMu4ceq/aSVjGBPhAzXus6G8eXkc=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=XzCgbVr2astxh5Wvw2lItox4X1JS2oEe4Wjk7/zYqFUTd/xRmSAg+HcYf5gm0hbhMAghmByQ/qKfnVEy/im+9wXUYRAcuX41okuwB0hULnzRdcjEvb3RSx+3TyPXIK0v+mfvm0KgcDN8nXO70p1DFw1GY8zrnjVrltoGV/Di18g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PaZQ7Nyb; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=XJpbQ4qlXGa53X+brQXoVVQ3PAqw7KDdjOut+uss2tujcEik6QEGvHOWrv3NgNadKf5aFTgksybpeRiUrrsKjG/0AyCovEG+/ZSG64sIoaOSHewTLPxIVRhR0OvwNju09LS1+rpSXZ1Y+mzFLt9e60JbXujzdPO1/pMQwwH5oH8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D3Pnco3M; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PaZQ7Nyb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F1C6C4CEE5;
-	Tue,  8 Apr 2025 12:40:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D3Pnco3M"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74C61C4CEE5;
+	Tue,  8 Apr 2025 12:40:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744116037;
-	bh=J9sS9BYFKqNpm63hs9bprrqPIhjvC0tgMde5KXh1DFw=;
+	s=k20201202; t=1744116042;
+	bh=AFsQveeqJu+5jnHeMu4ceq/aSVjGBPhAzXus6G8eXkc=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=PaZQ7NybpSTc3u6LMf0GyakpZbAH6uWAYkR3PEAVRoLikJQ6JTcBZW35reZTyFFN+
-	 E8yJ7Z0KrjFy8CHATkOlPTvGUUM9on6Hvx2h+dji3NJt9Rcjcl3R+Y70htmt7tMZh0
-	 XcFhP72Ypa8tCNKazIX2duu5kWA0jm9YQRRH8OxGXQqd/pflPU16KJvECLJelWdf5X
-	 pqEGNs0lVB3AqBsHsw1VsijG5T87Cg0qc7VWRIMFeoNo/by4q8qWaU8+3rAttmgocv
-	 3pu1K08NEYGtJ+batEIRnp/NOgV2n0EdN7XPp5VmoGTbNEHeaoe1atqsNd8j/MFpjK
-	 DG2C/uCeDlUqw==
+	b=D3Pnco3MterODOTkJUlIjXcA6IVXFpmhck3NuEf2IC6MEG3gLyrEXJqY91c12Vgza
+	 kJSITMmIUMMMPUaPey8f+RIuBFc34ZfgHjrkcyMx2TA2WCXOjGa6rKeGoW/zm+EcgV
+	 WfruGQ3G5Hkz0fvoMUe2V/uLRbot4kgphDICwctj581OsxOlqcaJ0yowY7hoNFMHv2
+	 AC5a80BT59CwdiCUsU7XtXRNyahmVWZ+dqL/gFFMxeU6hGGyMUAcGV6oWFoSdu90Jr
+	 bjfcx9XpRiu8fH2uyhAtAxkTouxiYeb7t8rSRbRD91luX1bK8mN9DW31j68yvV8+Ri
+	 kn6i03D4ZHLjw==
 From: Andreas Hindborg <a.hindborg@kernel.org>
 To: "Abdiel Janulgue" <abdiel.janulgue@gmail.com>
 Cc: <ojeda@kernel.org>,  "Danilo Krummrich" <dakr@kernel.org>,  "Daniel
@@ -38,16 +38,16 @@ Cc: <ojeda@kernel.org>,  "Danilo Krummrich" <dakr@kernel.org>,  "Daniel
  Gross" <tmgross@umich.edu>,  <rust-for-linux@vger.kernel.org>,  "Marek
  Szyprowski" <m.szyprowski@samsung.com>,  <iommu@lists.linux.dev>,
   <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] rust: dma: be consistent in using the `coherent`
- nomenclature
-In-Reply-To: <20250326201230.3193329-2-abdiel.janulgue@gmail.com> (Abdiel
-	Janulgue's message of "Wed, 26 Mar 2025 22:11:42 +0200")
+Subject: Re: [PATCH 2/3] rust: dma: convert the read/write macros to return
+ Result
+In-Reply-To: <20250326201230.3193329-3-abdiel.janulgue@gmail.com> (Abdiel
+	Janulgue's message of "Wed, 26 Mar 2025 22:11:43 +0200")
 References: <20250326201230.3193329-1-abdiel.janulgue@gmail.com>
-	<iA3Kum15KL4RrDONXH8tPrKBbFuskGFUDLRzBFHceQi9DhEFzoDSryS7C3eLAJCtGkRCswvoORtja0H68Pyadg==@protonmail.internalid>
-	<20250326201230.3193329-2-abdiel.janulgue@gmail.com>
+	<FAHXf-DZiKKDg4co6oECBpNbo9t3eTpIaDJP0KvrI8bVc91uazjibC9BZgXQPMtqdsaWOlz5Qpp9Um-z2sFOPw==@protonmail.internalid>
+	<20250326201230.3193329-3-abdiel.janulgue@gmail.com>
 User-Agent: mu4e 1.12.7; emacs 29.4
-Date: Tue, 08 Apr 2025 14:27:42 +0200
-Message-ID: <87wmbuhm81.fsf@kernel.org>
+Date: Tue, 08 Apr 2025 14:29:30 +0200
+Message-ID: <87r022hm51.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,28 +58,14 @@ Content-Type: text/plain
 
 "Abdiel Janulgue" <abdiel.janulgue@gmail.com> writes:
 
-> In the kernel, `consistent` and `coherent` are used interchangeably for
-> the region described in this api. Stick with `coherent` nomenclature
-> to show that dma_alloc_coherent() is being used.
+> As suggested by Andreas Hindborg, we could do better here by
+> having the macros return `Result`, so that we don't have to wrap
+> these calls in a closure for validation which is confusing.
 >
 > Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-> ---
->  rust/kernel/dma.rs | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
->
-> diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
-> index 8cdc76043ee7..d3f448868457 100644
-> --- a/rust/kernel/dma.rs
-> +++ b/rust/kernel/dma.rs
-> @@ -89,15 +89,15 @@ pub mod attrs {
->      /// Forces contiguous allocation of the buffer in physical memory.
->      pub const DMA_ATTR_FORCE_CONTIGUOUS: Attrs = Attrs(bindings::DMA_ATTR_FORCE_CONTIGUOUS);
->
-> -    /// This is a hint to the DMA-mapping subsystem that it's probably not worth the time to try
-> +    /// Hints DMA-mapping subsystem that it's probably not worth the time to try
 
-This and the next two edits has nothing to do with coherent/consistent
-nomenclature. Please update the commit message to reflect that.
+
+Reviewed-by: Andreas Hindborg <a.hindborg@kernel.org>
 
 
 Best regards,
