@@ -1,328 +1,473 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2085.outbound.protection.outlook.com [40.107.100.85])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6786E23C8DE;
-	Tue,  8 Apr 2025 17:24:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.100.85
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744133065; cv=fail; b=DT4TntqirfeUPvF4hD5bWhaMyLlw2mwe85Qam24b6nQH1WpnCm7syyohCSNuMzJvlrXwDyNxphG/8iUhtm75RXRnk+wAGxZxLYDprYMd/wcL36AHQwoIdnB30nO6EYW3SF90lP3OGqqiLvfWm9KkzLplN0fgKe7FMVSQXiTRz54=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744133065; c=relaxed/simple;
-	bh=bq2I9pizBR8/YsbWJcC+6hoeMLVm6n8oNKgJ1XmiC1c=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=SSyqYuvqT72icctlT0RuMfkcSbkdHefPFNIMrUdKApyyp+Z1pRUV5hl65twtrJWZ5yLZMfLLM3Ikj7LlZ6pnB/FIyje63XE8iw1icRpvfXYCDzjfillYaMjrPkKPMSTJjZERnv6NKq2I0wj+KCRBkP9ADJUCgM1cqzsFSXR0ctc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=HLLQec8o; arc=fail smtp.client-ip=40.107.100.85
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B0E222E3FD
+	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 17:31:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744133468; cv=none; b=VcWwJ/S0HF7fJKXf4Uv8Uq8g39CCOWFl385cY96nnrsLbKWzQMU+djQllo/AMCQsl9/CxiVj+4Qm6SbL9QODsyYi/lkgSOofUy7ZISzW0TK1Kn+cr0t2OhQfTyVCUV4AJUxExh8FfVYM+tkoEat/CAS43b+KMBSYG6iY5+YkIl8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744133468; c=relaxed/simple;
+	bh=D7b7VJE/qK3nUJN8leFt4GMH3HjPtviAUkTKo43KNv4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rgkyBEKQFgPlH0JDmqKSZGhXtiYGoIyckh8M++GQX9DahqNVNSF9QQml+1d15kn2ovAzUj56DfrQEEvS5VYc1F2I9n572Wsvl1JmmmYjtErOrM+38w9SBz0+a0oAFUeYLSc9X3PIbKPVeVcfXe7U6Eqm1mrGQqJJ1nAXX3pa6YI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BZIhbu5V; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="HLLQec8o"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rKU2LDE5B2Ap1uhh5Xk4FjFV/qrC16xEc7vMiM/I/7eOL6pKKfBaEnYKvpLj1qa/0gUpKPO+ZLIIVggB0sGcsXA9utAO1nrL/SoJAkYUKDTTDQspRLcUGgNWFHw8PWePDH0xDJVj8Vq8gBBeaFroThc9CZz0LB/vg4hjT+PwtRcr5u2eqBqUWF1uEQqgAmjLmIpWwcvui/pXS/rJeDC5u5VIPlYU5Qa3ZjjownPYcItsQqv2B9IShN7mIQCEWniqVVadLzfC1tyZww53gUmqlEuMy634689dfQ49tiHf0zJG6XEyzaVtPV2d8ImcF/ulq67k8FBHfYC/2HG1yBXJug==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Pz8aFQru04TskK5JjiC/vlot38W7HjzfjFFPF27YHmU=;
- b=KCP56F+c/uSGk5lieXPThMr186PoMYroSct6y7od5isNBWRDIjJl1kJ+DObbQX8J9BBAF99du1rfzSLj/OLg8ESaOFcoozzuxWX0fa/LHd+bSYPxPFM9wWzS9j6L8A5q5uOmn3NUkzigjehLhINEvHyO/ugQ0vrbHydL0xY+B6jKXCaOcu75fF5D5C58zJ1PFr97ipDwKOaguVVDHKzwBKM+cYNz05HZw9cLWO8UDMOAYb5MOrZ7YrD0t8oWz+/TldldvyLg8pKsuZEUSqbbyVZEvdvPrKzdkiJLA9TkdoPvKMLjFKJcfHLp0o/YLqrItUEz6/Aj1MZ3RZ65JfTZ6g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Pz8aFQru04TskK5JjiC/vlot38W7HjzfjFFPF27YHmU=;
- b=HLLQec8onLgCs3m1ycYEm3idKn85W78z5VGJZ83cWDSbgylHHDvi4OfEefatNpjkM1bWbAlKjRCRMLRoPPCv7L9Ya9PTxVtgEkru5SEod1eV2dK9zkoMwvNQlAQEOY3wEkK3Wv9UqyPtChp/DY/pq3yg/yb+V0PMTp5EoNVj4bAgx/+uCa1O5zkHgWUklujeDzLTvtw2Jd+kfcsLPzrZ/BjLUN54ZHztOjkMtPXGEh3JDaozdCLTVrM2LgN3O6bN5YreDPdtcYwJf5Zh1mfdVfKhl0oQYtTrs9T6x7gZLZje9IfvZG37n8xQ5kO533lWtOpfQ8tDvwzjglGu6u/5oA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by CY3PR12MB9579.namprd12.prod.outlook.com (2603:10b6:930:10a::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.34; Tue, 8 Apr
- 2025 17:24:13 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8606.028; Tue, 8 Apr 2025
- 17:24:13 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alexandre Ghiti <alex@ghiti.fr>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	asahi@lists.linux.dev,
-	David Woodhouse <dwmw2@infradead.org>,
-	Heiko Stuebner <heiko@sntech.de>,
-	iommu@lists.linux.dev,
-	Janne Grunau <j@jannau.net>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-riscv@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org,
-	linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Neal Gompa <neal@gompa.dev>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Sven Peter <sven@svenpeter.dev>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Tomasz Jeznach <tjeznach@rivosinc.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Chen-Yu Tsai <wens@csie.org>,
-	Will Deacon <will@kernel.org>
-Cc: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
-	Bagas Sanjaya <bagasdotme@gmail.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Joerg Roedel <jroedel@suse.de>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	patches@lists.linux.dev,
-	David Rientjes <rientjes@google.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Matthew Wilcox <willy@infradead.org>
-Subject: [PATCH v4 08/23] iommu/pages: Formalize the freelist API
-Date: Tue,  8 Apr 2025 13:53:56 -0300
-Message-ID: <8-v4-c8663abbb606+3f7-iommu_pages_jgg@nvidia.com>
-In-Reply-To: <0-v4-c8663abbb606+3f7-iommu_pages_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BLAPR03CA0013.namprd03.prod.outlook.com
- (2603:10b6:208:32b::18) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BZIhbu5V"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1744133464;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=dzPxLIZBoNlt2Y90PQFKInDcbJuvQW9tSEfr6MFFaVo=;
+	b=BZIhbu5VIzUpgYmKIzSFQHcLW5DJkfaLx1/XSKZNhCEc+Lcm0EVvPVJNHMdmck7NS2sZwS
+	ViplGA6eFuBCBq2PVJ+qonUdnmseBAiQIy4lKDV/VsS1KtYofh8yByS44OJNQjQakHluxD
+	MQYa3Ei7FltkYZKDw3Wd+bRZkWOsQgo=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-31-39t9kJvvP_a4v-3WeFoDqQ-1; Tue, 08 Apr 2025 13:31:02 -0400
+X-MC-Unique: 39t9kJvvP_a4v-3WeFoDqQ-1
+X-Mimecast-MFC-AGG-ID: 39t9kJvvP_a4v-3WeFoDqQ_1744133462
+Received: by mail-ej1-f71.google.com with SMTP id a640c23a62f3a-ac6b047c0dcso550422766b.0
+        for <iommu@lists.linux.dev>; Tue, 08 Apr 2025 10:31:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744133461; x=1744738261;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=dzPxLIZBoNlt2Y90PQFKInDcbJuvQW9tSEfr6MFFaVo=;
+        b=HqW1ZgSdXysZpd9tMmRQLnzZtEr/POS6wDKmwbH1vcBDbM1UTTPQSMDaMqEz14LroT
+         ALwfNcc0OwW3IqQA5qHc/pco19bx5SGnGbk1XL+Utdc9lQE9eit7BPq7hh+vvs1asRG1
+         tkMX9e7MUvSVa/o8rHLlAXYRkqIF+abln7RMViO0S8Bj9rEGT3M4oGTKUOZUjxGaZx69
+         AvR3bK1LWS8W0rnlJzPcJjRxBa+GMBo+ImYx7c0huUAU2z+NeE7DHaekXWGi7VSMqNKw
+         OKQ7P9Y9b72aHh1aDVOYMiRYYm1cKQVptIFCar18gV8ezSSwto6pH3HUYhAGhwLt3nfe
+         Z4Og==
+X-Forwarded-Encrypted: i=1; AJvYcCW1lodaMhKDhJs6mGiwbGPEzC+b8iGGAOhvdA6SoS15M6mr+m6/1M4yxwt6jFCIG/iBbFUyGQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyiC4NVUY/24lHsw8a7g4df6ci+f8bMj15jzdh/YgZBYFznIc1S
+	5Gp46GqyB72H4HYnOag1Z2LQxAfOQTYGtvGglLzIGmTGUBoo3TybP6lNcXoho8/ajTU+YuANvP9
+	67Hqz9mi3nOs97PWo8uh9UoPoGN3K3wtBz1lHPjHF0puIXK2edkJawxEo/Xyp
+X-Gm-Gg: ASbGncutR59G9LZos+uzF8Y8YRgvxqZAqj6yhn+c+3fa5LB8VFcGfbiKR2u0NEWcMFO
+	dk1hG+5W9f54sHO1P+5aODT76OHwkIfuj38Hsr21pqc3BO9uSE5W+WwOTkW0tBf0QOdgcGqZv0D
+	cZFXdR0z85dWrHXrnRC1nteCrpVJxrA9snX0+Y/YSBhsYS9EGu6bDB7vftyJw/rhf2GEcFRq11Q
+	YCjLJHltIR3i3T8ndGEkXkfVNnsYEDvRT3YI9CBk0fhhgXwH8vvlTTJOIpTaI/6b9t38ZD2ElQE
+	K20LrEkfnh8kfTDP0yFj
+X-Received: by 2002:a17:906:c155:b0:ac3:48e4:f8bc with SMTP id a640c23a62f3a-aca9b6ef9e0mr6562066b.48.1744133461167;
+        Tue, 08 Apr 2025 10:31:01 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEuuborAwGa6Z0LeZj2bXLnL5CvSBi0lObSi6zOlGHSw3B2yhYf8VKtjtBWf8HUqWLTb74Vsg==
+X-Received: by 2002:a17:906:c155:b0:ac3:48e4:f8bc with SMTP id a640c23a62f3a-aca9b6ef9e0mr6558266b.48.1744133460649;
+        Tue, 08 Apr 2025 10:31:00 -0700 (PDT)
+Received: from [192.168.10.48] ([151.49.197.100])
+        by smtp.googlemail.com with ESMTPSA id a640c23a62f3a-ac7c013f29csm943856466b.113.2025.04.08.10.30.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 08 Apr 2025 10:31:00 -0700 (PDT)
+Message-ID: <cf4d9b81-c1ab-40a6-8c8c-36ad36b9be63@redhat.com>
+Date: Tue, 8 Apr 2025 19:30:58 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CY3PR12MB9579:EE_
-X-MS-Office365-Filtering-Correlation-Id: 68f44b27-ed7d-4259-a5cc-08dd76c22e4f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|366016|1800799024|921020;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?7wbEFybl9bhIDYGUkTs5Vv7rGqekx6W6hfZkxMB/v/zZZkVVamvxREE0fJb3?=
- =?us-ascii?Q?L40lZMQ3QoyKzTpoXZl0ILTvQxP0x4epmVe51zjgJavNUOwOR+9uKvbdnn+M?=
- =?us-ascii?Q?sA+MPL73RlXJEXiYH3V1D4SNzC/cgIodSZSE+vZrDVDW09PoR+85K2hddGPE?=
- =?us-ascii?Q?iHDKprhFeTU4F8b3rjK6nC0ghxk6wxwQwjA7grLNXN67ObIOHZhAawX5DoSv?=
- =?us-ascii?Q?2Ijx7iWuMMXxnFkOdQizZIufpJ6xXHjMe7ZXXq6afQD0e5oydGM3Wsi7S8kl?=
- =?us-ascii?Q?aFF0zjdv1y9CE3KaqcdzbtyhXC9g3MxO1UN094RBrmjmuQtQXQ5LnQH8YVfG?=
- =?us-ascii?Q?xrgMY3j4UNRk3mDKks9nHYBeZz8MhTh9Oq5HkCn1n1NRC6vloH84r3xt83cb?=
- =?us-ascii?Q?RJ0349HqrUpTuw/yRr48UoppAOID0r0CNEGtxcaIHIa2rsxbeNY2gOnq53pY?=
- =?us-ascii?Q?m+STVhrOjhHaY8AmV7FBlJfobzetEjjuSxCcO9UyKQtKI4i75eVJ01YwAArN?=
- =?us-ascii?Q?ucAOa7PYGLbarU0Dw/T1ik6vu8/dmDbSA2XqcdoNVO89nxlNn/NA40k3oKr3?=
- =?us-ascii?Q?aXetxzjIdTNCrB34dlhJCKlfzxOeFlXyctaSKqJ4RbvDy7bP5ZUtJtMgj2Dw?=
- =?us-ascii?Q?LExjm2larnllOl4QkMFWxaEX78EjHm3gjjA6hwgurfZiPxKH2vT7/57pVkba?=
- =?us-ascii?Q?iNOthTRK6Qknzo+JItRw5WNd1pOA/n4JCKfnu/mHi9FueXrRy5PoaSSLk/xk?=
- =?us-ascii?Q?xhKmzBrc4U5BivjQpbyqCDd+Ckr9WRwMUOsCs5Vr+e/WXvgvzlBhddRLOOJ7?=
- =?us-ascii?Q?rVxw6O4Dqkdbm+H9wlkmb0CYu4vu5X2CvxWiTOlUiozmT8P9o857gU3o3RGA?=
- =?us-ascii?Q?tfGkJpjKkzpx+TL1igEfgX1Z5VwpGy2bo5eO9DK4TFUUxR6D4IWqAJ/PBGme?=
- =?us-ascii?Q?UpRGHhoFelVl3hcHb4/nqBMVMa5hqnpXygjHjRcortAbcwODbpjEeJODXumo?=
- =?us-ascii?Q?XgKltOTDMONXFDK0y15rbGx2BaJvtHZgr8bibqCoSsK0bNLDv8l4QDw3pfmS?=
- =?us-ascii?Q?5cPVC+uDgdYKoA6iZH4hY2B/mbAZ+YnQQ+nKbDNKykbW9u0ufQhFQcab7ZIS?=
- =?us-ascii?Q?wm887SFM7pDKxg7rztkx5OezMP6SVoXJFXjn1oqFenQs6syhqXIP0GzxFNYb?=
- =?us-ascii?Q?P0YVtAoH1AGoAFRKRDrIW2/18LCmNBaBTw6wcvKK29aEF8tSYxwPJr07oOjl?=
- =?us-ascii?Q?93iXj/L6A0n24g6KDOKrLMNGXmf3EqIX4GDtkR2nK8v2+h2y5ml4185ZNCmG?=
- =?us-ascii?Q?xm5UgqxgFhqWvBfastNRshmtlHHqVcTt9gs6FT5MgUAZXrEl5SSbgw0iOvvz?=
- =?us-ascii?Q?Y88zKB1HhTshejIbqS/RHdjPH83n0q9VQQsyLPlcDhEGw18Z/vrjDWRKh8IK?=
- =?us-ascii?Q?MeVW9hllZvaI7Hy0zO/OQDgJQr/7yWFhg17BaISSldrxg4ELLc4J7Q=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(921020);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?8R9/qGmXyxdHMStQcWkj3uPBuZbnV9FB+lSbkpAe0nmYMFTD0JaDmEtEtVMn?=
- =?us-ascii?Q?EGyVgUPdBm80bqsN9nGBxbbTT9S36QQJCa5NWTwtDH1GMAcwkq3vMwROltfk?=
- =?us-ascii?Q?8BKfGeeLbpSuT3BYZmM2PuNi8n+ty5bD183W/E/wcRpIAo9ybBMTwri3yi1o?=
- =?us-ascii?Q?U1f1r53Y2p3fAVsP0n7AbR108LdgguIu9t2raNS3Yx7s16Fu4sQFVIw3pRIJ?=
- =?us-ascii?Q?gs2vwsLMkMBSG7/T9SJ5nr7JuZe8IZIYjGu+GkJQltmMwBvKLxlNXnnx3IOV?=
- =?us-ascii?Q?tKQEMUQeFZjMSwYjtf7vIOxjAt0cxpKr9cZDZi6Wdgq9/fP79ktgaJMbAoC6?=
- =?us-ascii?Q?EFspfbd9dTUz5egEJb2D09HXQvMBA0SRY2xtDKrgwRUJgihOGh/K+m4Xu7g8?=
- =?us-ascii?Q?hWjZtFl1a0gqlxyWVClw1WNK83K4ZrfP1PkHyO9PM5mRx+GO4GVrqOjmLcS+?=
- =?us-ascii?Q?v4TPWd4XsrYnZTUjQSzWSZLkb7K+ReSCDK0wgKKCeZo7kre5+y729tm0fr9d?=
- =?us-ascii?Q?j0cgmA2hp1IMQlh7gpwSysnjEgbHBxhbdCKhzKUlLJ62LpDZWF/zVJS0nzV1?=
- =?us-ascii?Q?xBcVygJovaIkHWO/iHgmknrIhlr83DqSTJQSO7+NetOqYLbOa6Ssh70URzSQ?=
- =?us-ascii?Q?fR/O/VT/KLm4gywmJOkHdh9fSUx4JrRX/CBiLxCNDB+Vf2MvgR2rmJOX7U1p?=
- =?us-ascii?Q?rPiZgd4GRw8A99LJ1VZhXXdxtovTZr4jQNTnHAuYzzhkunvuVDAbwifrV/l1?=
- =?us-ascii?Q?OK5QcugWatQidLRHbX0Z7hWYNvOeDhy6FtPYxDxS+GM3F7V+cuzL2xyDVj3y?=
- =?us-ascii?Q?JvXsegBlKkc48T3wNZgsj5HkEITBoSdom3poSuxQHftVDtqI5nNI0RYD/Xdj?=
- =?us-ascii?Q?2vDvdZ+WRqCjdyRkIfAcaoiI0BmG4i4h3LOzxEwxLPMP/XDQeKjTT/6bRhEN?=
- =?us-ascii?Q?iXz+nHmaUpuAYmWSXEQmf6nCnLFw2iUMv0s2K4eWrOz8hpI6dHphdepPX2Me?=
- =?us-ascii?Q?Oc3W06b9lX8Cv4HzR1F+Q/FE/BBQCuyIGWUYxGWLiQj6mYtyUZsLPqRKXnw7?=
- =?us-ascii?Q?PrEfb2+ArxPY1Hl8Z/mHwJZVjhj0hHZLpVDOIkn7aomyAmdS1yXcUysh1ju1?=
- =?us-ascii?Q?fnBZcA+BKwPXOC6uyAsYvmjW20xjOqGeFHqtT2sSdxuhGOSlGiw6reDfDdEP?=
- =?us-ascii?Q?IjwdE2gLN1S8hi1S9gYizu+M4dvB4PzJREfRRrx7lI2/7CquXVsm1ScBf5+O?=
- =?us-ascii?Q?51jFd/JaBFwtadq9vUbBomnlwXj597JiGFF2lrs4aXqnYXuwbrF4AWBR3wD6?=
- =?us-ascii?Q?l/DxS7gqlPLajrnkFvcd+F1zXQmsNdpVixaey61jV8rS9pyDjmVb0nUNH2dl?=
- =?us-ascii?Q?Gx2186aGgrRtMh1f0MlWNuY0mifzVrkG+tMOMDnL/m3JgnEASonXwMZLJ9al?=
- =?us-ascii?Q?/QzG3WdhRKmBsKqUn184EgChVXRgmoueaXVqyqwXHEIlrI4SpjHEO6H9R9WX?=
- =?us-ascii?Q?s7eZzJ9H3U1QYr+NhsmtNpxTJxbbecQjaY/wtsJBSQe+Uh4mHA0DuIm3/zbB?=
- =?us-ascii?Q?ncz9VpnO5RFiSYbxqVA9BeczuK6AIX6Eg14E011O?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 68f44b27-ed7d-4259-a5cc-08dd76c22e4f
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2025 17:24:13.1551
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZubnMpwHGtG2LcBWdG0+FEwLpxstmunvZaGbWvB2ZbU4Ch6zArlm8MppMNiK73lD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY3PR12MB9579
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 33/67] KVM: x86: Dedup AVIC vs. PI code for identifying
+ target vCPU
+To: Sean Christopherson <seanjc@google.com>, Joerg Roedel <joro@8bytes.org>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
+Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Maxim Levitsky <mlevitsk@redhat.com>,
+ Joao Martins <joao.m.martins@oracle.com>, David Matlack <dmatlack@google.com>
+References: <20250404193923.1413163-1-seanjc@google.com>
+ <20250404193923.1413163-34-seanjc@google.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Autocrypt: addr=pbonzini@redhat.com; keydata=
+ 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
+In-Reply-To: <20250404193923.1413163-34-seanjc@google.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: ImvozS4fwf5ot9AUo7r_apG9MvrX4GnWB74cwRhqZ_g_1744133462
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-We want to get rid of struct page references outside the internal
-allocator implementation. The free list has the driver open code something
-like:
+On 4/4/25 21:38, Sean Christopherson wrote:
+> Hoist the logic for identifying the target vCPU for a posted interrupt
+> into common x86.  The code is functionally identical between Intel and
+> AMD.
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>   arch/x86/include/asm/kvm_host.h |  3 +-
+>   arch/x86/kvm/svm/avic.c         | 83 ++++++++-------------------------
+>   arch/x86/kvm/svm/svm.h          |  3 +-
+>   arch/x86/kvm/vmx/posted_intr.c  | 56 ++++++----------------
+>   arch/x86/kvm/vmx/posted_intr.h  |  3 +-
+>   arch/x86/kvm/x86.c              | 46 +++++++++++++++---
 
-   list_add_tail(&virt_to_page(ptr)->lru, freelist);
+Please use irq.c, since (for once) there is a file other than x86.c that 
+can be used.
 
-Move the above into a small inline and make the freelist into a wrapper
-type 'struct iommu_pages_list' so that the compiler can help check all the
-conversion.
+Bonus points for merging irq_comm.c into irq.c (IIRC irq_comm.c was 
+"common" between ia64 and x86 :)).
 
-This struct has also proven helpful in some future ideas to convert to a
-singly linked list to get an extra pointer in the struct page, and to
-signal that the pages should be freed with RCU.
+Paolo
 
-Use a temporary _Generic so we don't need to rename the free function as
-the patches progress.
-
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Tested-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/iommu-pages.c | 23 ++++++++++++-------
- drivers/iommu/iommu-pages.h | 45 ++++++++++++++++++++++++++++++++++---
- include/linux/iommu.h       | 12 ++++++++++
- 3 files changed, 69 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/iommu/iommu-pages.c b/drivers/iommu/iommu-pages.c
-index 31ff83ffaf0106..af8694b46417fa 100644
---- a/drivers/iommu/iommu-pages.c
-+++ b/drivers/iommu/iommu-pages.c
-@@ -67,18 +67,25 @@ void iommu_free_pages(void *virt)
- EXPORT_SYMBOL_GPL(iommu_free_pages);
- 
- /**
-- * iommu_put_pages_list - free a list of pages.
-- * @head: the head of the lru list to be freed.
-+ * iommu_put_pages_list_new - free a list of pages.
-+ * @list: The list of pages to be freed
-  *
-  * Frees a list of pages allocated by iommu_alloc_pages_node().
-  */
--void iommu_put_pages_list(struct list_head *head)
-+void iommu_put_pages_list_new(struct iommu_pages_list *list)
- {
--	while (!list_empty(head)) {
--		struct page *p = list_entry(head->prev, struct page, lru);
-+	struct page *p, *tmp;
- 
--		list_del(&p->lru);
-+	list_for_each_entry_safe(p, tmp, &list->pages, lru)
- 		__iommu_free_page(p);
--	}
- }
--EXPORT_SYMBOL_GPL(iommu_put_pages_list);
-+EXPORT_SYMBOL_GPL(iommu_put_pages_list_new);
-+
-+void iommu_put_pages_list_old(struct list_head *head)
-+{
-+	struct page *p, *tmp;
-+
-+	list_for_each_entry_safe(p, tmp, head, lru)
-+		__iommu_free_page(p);
-+}
-+EXPORT_SYMBOL_GPL(iommu_put_pages_list_old);
-diff --git a/drivers/iommu/iommu-pages.h b/drivers/iommu/iommu-pages.h
-index e3c35aa14ad716..0acc26af7202df 100644
---- a/drivers/iommu/iommu-pages.h
-+++ b/drivers/iommu/iommu-pages.h
-@@ -7,12 +7,51 @@
- #ifndef __IOMMU_PAGES_H
- #define __IOMMU_PAGES_H
- 
--#include <linux/types.h>
--#include <linux/topology.h>
-+#include <linux/iommu.h>
- 
- void *iommu_alloc_pages_node(int nid, gfp_t gfp, unsigned int order);
- void iommu_free_pages(void *virt);
--void iommu_put_pages_list(struct list_head *head);
-+void iommu_put_pages_list_new(struct iommu_pages_list *list);
-+void iommu_put_pages_list_old(struct list_head *head);
-+
-+#define iommu_put_pages_list(head)                                   \
-+	_Generic(head,                                               \
-+		struct iommu_pages_list *: iommu_put_pages_list_new, \
-+		struct list_head *: iommu_put_pages_list_old)(head)
-+
-+/**
-+ * iommu_pages_list_add - add the page to a iommu_pages_list
-+ * @list: List to add the page to
-+ * @virt: Address returned from iommu_alloc_pages_node()
-+ */
-+static inline void iommu_pages_list_add(struct iommu_pages_list *list,
-+					void *virt)
-+{
-+	list_add_tail(&virt_to_page(virt)->lru, &list->pages);
-+}
-+
-+/**
-+ * iommu_pages_list_splice - Put all the pages in list from into list to
-+ * @from: Source list of pages
-+ * @to: Destination list of pages
-+ *
-+ * from must be re-initialized after calling this function if it is to be
-+ * used again.
-+ */
-+static inline void iommu_pages_list_splice(struct iommu_pages_list *from,
-+					   struct iommu_pages_list *to)
-+{
-+	list_splice(&from->pages, &to->pages);
-+}
-+
-+/**
-+ * iommu_pages_list_empty - True if the list is empty
-+ * @list: List to check
-+ */
-+static inline bool iommu_pages_list_empty(struct iommu_pages_list *list)
-+{
-+	return list_empty(&list->pages);
-+}
- 
- /**
-  * iommu_alloc_pages - allocate a zeroed page of a given order
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index ccce8a751e2a55..6dd3a221c5bc66 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -341,6 +341,18 @@ typedef unsigned int ioasid_t;
- /* Read but do not clear any dirty bits */
- #define IOMMU_DIRTY_NO_CLEAR (1 << 0)
- 
-+/*
-+ * Pages allocated through iommu_alloc_pages_node() can be placed on this list
-+ * using iommu_pages_list_add(). Note: ONLY pages from iommu_alloc_pages_node()
-+ * can be used this way!
-+ */
-+struct iommu_pages_list {
-+	struct list_head pages;
-+};
-+
-+#define IOMMU_PAGES_LIST_INIT(name) \
-+	((struct iommu_pages_list){ .pages = LIST_HEAD_INIT(name.pages) })
-+
- #ifdef CONFIG_IOMMU_API
- 
- /**
--- 
-2.43.0
+>   6 files changed, 81 insertions(+), 113 deletions(-)
+> 
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index 85f45fc5156d..cb98d8d3c6c2 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -1838,7 +1838,8 @@ struct kvm_x86_ops {
+>   
+>   	int (*pi_update_irte)(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   			      unsigned int host_irq, uint32_t guest_irq,
+> -			      struct kvm_kernel_irq_routing_entry *new);
+> +			      struct kvm_kernel_irq_routing_entry *new,
+> +			      struct kvm_vcpu *vcpu, u32 vector);
+>   	void (*pi_start_assignment)(struct kvm *kvm);
+>   	void (*apicv_pre_state_restore)(struct kvm_vcpu *vcpu);
+>   	void (*apicv_post_state_restore)(struct kvm_vcpu *vcpu);
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index ea6eae72b941..666f518340a7 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -812,52 +812,13 @@ static int svm_ir_list_add(struct vcpu_svm *svm,
+>   	return 0;
+>   }
+>   
+> -/*
+> - * Note:
+> - * The HW cannot support posting multicast/broadcast
+> - * interrupts to a vCPU. So, we still use legacy interrupt
+> - * remapping for these kind of interrupts.
+> - *
+> - * For lowest-priority interrupts, we only support
+> - * those with single CPU as the destination, e.g. user
+> - * configures the interrupts via /proc/irq or uses
+> - * irqbalance to make the interrupts single-CPU.
+> - */
+> -static int
+> -get_pi_vcpu_info(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
+> -		 struct vcpu_data *vcpu_info, struct kvm_vcpu **vcpu)
+> -{
+> -	struct kvm_lapic_irq irq;
+> -	*vcpu = NULL;
+> -
+> -	kvm_set_msi_irq(kvm, e, &irq);
+> -
+> -	if (!kvm_intr_is_single_vcpu(kvm, &irq, vcpu) ||
+> -	    !kvm_irq_is_postable(&irq)) {
+> -		pr_debug("SVM: %s: use legacy intr remap mode for irq %u\n",
+> -			 __func__, irq.vector);
+> -		return -1;
+> -	}
+> -
+> -	pr_debug("SVM: %s: use GA mode for irq %u\n", __func__,
+> -		 irq.vector);
+> -	vcpu_info->vector = irq.vector;
+> -
+> -	return 0;
+> -}
+> -
+>   int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   			unsigned int host_irq, uint32_t guest_irq,
+> -			struct kvm_kernel_irq_routing_entry *new)
+> +			struct kvm_kernel_irq_routing_entry *new,
+> +			struct kvm_vcpu *vcpu, u32 vector)
+>   {
+> -	bool enable_remapped_mode = true;
+> -	struct vcpu_data vcpu_info;
+> -	struct kvm_vcpu *vcpu = NULL;
+>   	int ret = 0;
+>   
+> -	if (!kvm_arch_has_assigned_device(kvm) || !kvm_arch_has_irq_bypass())
+> -		return 0;
+> -
+>   	/*
+>   	 * If the IRQ was affined to a different vCPU, remove the IRTE metadata
+>   	 * from the *previous* vCPU's list.
+> @@ -865,7 +826,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   	svm_ir_list_del(irqfd);
+>   
+>   	pr_debug("SVM: %s: host_irq=%#x, guest_irq=%#x, set=%#x\n",
+> -		 __func__, host_irq, guest_irq, !!new);
+> +		 __func__, host_irq, guest_irq, !!vcpu);
+>   
+>   	/**
+>   	 * Here, we setup with legacy mode in the following cases:
+> @@ -874,23 +835,23 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   	 * 3. APIC virtualization is disabled for the vcpu.
+>   	 * 4. IRQ has incompatible delivery mode (SMI, INIT, etc)
+>   	 */
+> -	if (new && new && new->type == KVM_IRQ_ROUTING_MSI &&
+> -	    !get_pi_vcpu_info(kvm, new, &vcpu_info, &vcpu) &&
+> -	    kvm_vcpu_apicv_active(vcpu)) {
+> -		struct amd_iommu_pi_data pi;
+> -
+> -		enable_remapped_mode = false;
+> -
+> -		vcpu_info.pi_desc_addr = avic_get_backing_page_address(to_svm(vcpu));
+> -
+> +	if (vcpu && kvm_vcpu_apicv_active(vcpu)) {
+>   		/*
+>   		 * Try to enable guest_mode in IRTE.  Note, the address
+>   		 * of the vCPU's AVIC backing page is passed to the
+>   		 * IOMMU via vcpu_info->pi_desc_addr.
+>   		 */
+> -		pi.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id, vcpu->vcpu_id);
+> -		pi.is_guest_mode = true;
+> -		pi.vcpu_data = &vcpu_info;
+> +		struct vcpu_data vcpu_info = {
+> +			.pi_desc_addr = avic_get_backing_page_address(to_svm(vcpu)),
+> +			.vector = vector,
+> +		};
+> +
+> +		struct amd_iommu_pi_data pi = {
+> +			.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id, vcpu->vcpu_id),
+> +			.is_guest_mode = true,
+> +			.vcpu_data = &vcpu_info,
+> +		};
+> +
+>   		ret = irq_set_vcpu_affinity(host_irq, &pi);
+>   
+>   		/**
+> @@ -902,12 +863,11 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   		 */
+>   		if (!ret)
+>   			ret = svm_ir_list_add(to_svm(vcpu), irqfd, &pi);
+> -	}
+>   
+> -	if (!ret && vcpu) {
+> -		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id,
+> -					 guest_irq, vcpu_info.vector,
+> -					 vcpu_info.pi_desc_addr, !!new);
+> +		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id, guest_irq,
+> +					 vector, vcpu_info.pi_desc_addr, true);
+> +	} else {
+> +		ret = irq_set_vcpu_affinity(host_irq, NULL);
+>   	}
+>   
+>   	if (ret < 0) {
+> @@ -915,10 +875,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   		goto out;
+>   	}
+>   
+> -	if (enable_remapped_mode)
+> -		ret = irq_set_vcpu_affinity(host_irq, NULL);
+> -	else
+> -		ret = 0;
+> +	ret = 0;
+>   out:
+>   	return ret;
+>   }
+> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+> index 6ad0aa86f78d..5ce240085ee0 100644
+> --- a/arch/x86/kvm/svm/svm.h
+> +++ b/arch/x86/kvm/svm/svm.h
+> @@ -741,7 +741,8 @@ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu);
+>   void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu);
+>   int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   			unsigned int host_irq, uint32_t guest_irq,
+> -			struct kvm_kernel_irq_routing_entry *new);
+> +			struct kvm_kernel_irq_routing_entry *new,
+> +			struct kvm_vcpu *vcpu, u32 vector);
+>   void avic_vcpu_blocking(struct kvm_vcpu *vcpu);
+>   void avic_vcpu_unblocking(struct kvm_vcpu *vcpu);
+>   void avic_ring_doorbell(struct kvm_vcpu *vcpu);
+> diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
+> index 786912cee3f8..fd5f6a125614 100644
+> --- a/arch/x86/kvm/vmx/posted_intr.c
+> +++ b/arch/x86/kvm/vmx/posted_intr.c
+> @@ -266,46 +266,20 @@ void vmx_pi_start_assignment(struct kvm *kvm)
+>   
+>   int vmx_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   		       unsigned int host_irq, uint32_t guest_irq,
+> -		       struct kvm_kernel_irq_routing_entry *new)
+> +		       struct kvm_kernel_irq_routing_entry *new,
+> +		       struct kvm_vcpu *vcpu, u32 vector)
+>   {
+> -	struct kvm_lapic_irq irq;
+> -	struct kvm_vcpu *vcpu;
+> -	struct vcpu_data vcpu_info;
+> -
+> -	if (!vmx_can_use_vtd_pi(kvm))
+> -		return 0;
+> -
+> -	/*
+> -	 * VT-d PI cannot support posting multicast/broadcast
+> -	 * interrupts to a vCPU, we still use interrupt remapping
+> -	 * for these kind of interrupts.
+> -	 *
+> -	 * For lowest-priority interrupts, we only support
+> -	 * those with single CPU as the destination, e.g. user
+> -	 * configures the interrupts via /proc/irq or uses
+> -	 * irqbalance to make the interrupts single-CPU.
+> -	 *
+> -	 * We will support full lowest-priority interrupt later.
+> -	 *
+> -	 * In addition, we can only inject generic interrupts using
+> -	 * the PI mechanism, refuse to route others through it.
+> -	 */
+> -	if (!new || new->type != KVM_IRQ_ROUTING_MSI)
+> -		goto do_remapping;
+> -
+> -	kvm_set_msi_irq(kvm, new, &irq);
+> -
+> -	if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu) ||
+> -	    !kvm_irq_is_postable(&irq))
+> -		goto do_remapping;
+> -
+> -	vcpu_info.pi_desc_addr = __pa(vcpu_to_pi_desc(vcpu));
+> -	vcpu_info.vector = irq.vector;
+> -
+> -	trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id, guest_irq,
+> -				 vcpu_info.vector, vcpu_info.pi_desc_addr, true);
+> -
+> -	return irq_set_vcpu_affinity(host_irq, &vcpu_info);
+> -do_remapping:
+> -	return irq_set_vcpu_affinity(host_irq, NULL);
+> +	if (vcpu) {
+> +		struct vcpu_data vcpu_info = {
+> +			.pi_desc_addr = __pa(vcpu_to_pi_desc(vcpu)),
+> +			.vector = vector,
+> +		};
+> +
+> +		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id, guest_irq,
+> +					 vcpu_info.vector, vcpu_info.pi_desc_addr, true);
+> +
+> +		return irq_set_vcpu_affinity(host_irq, &vcpu_info);
+> +	} else {
+> +		return irq_set_vcpu_affinity(host_irq, NULL);
+> +	}
+>   }
+> diff --git a/arch/x86/kvm/vmx/posted_intr.h b/arch/x86/kvm/vmx/posted_intr.h
+> index a586d6aaf862..ee3e19e976ac 100644
+> --- a/arch/x86/kvm/vmx/posted_intr.h
+> +++ b/arch/x86/kvm/vmx/posted_intr.h
+> @@ -15,7 +15,8 @@ void __init pi_init_cpu(int cpu);
+>   bool pi_has_pending_interrupt(struct kvm_vcpu *vcpu);
+>   int vmx_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   		       unsigned int host_irq, uint32_t guest_irq,
+> -		       struct kvm_kernel_irq_routing_entry *new);
+> +		       struct kvm_kernel_irq_routing_entry *new,
+> +		       struct kvm_vcpu *vcpu, u32 vector);
+>   void vmx_pi_start_assignment(struct kvm *kvm);
+>   
+>   static inline int pi_find_highest_vector(struct pi_desc *pi_desc)
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index b8b259847d05..0ab818bba743 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -13567,6 +13567,43 @@ bool kvm_arch_has_irq_bypass(void)
+>   }
+>   EXPORT_SYMBOL_GPL(kvm_arch_has_irq_bypass);
+>   
+> +static int kvm_pi_update_irte(struct kvm_kernel_irqfd *irqfd,
+> +			      struct kvm_kernel_irq_routing_entry *old,
+> +			      struct kvm_kernel_irq_routing_entry *new)
+> +{
+> +	struct kvm *kvm = irqfd->kvm;
+> +	struct kvm_vcpu *vcpu = NULL;
+> +	struct kvm_lapic_irq irq;
+> +
+> +	if (!irqchip_in_kernel(kvm) ||
+> +	    !kvm_arch_has_irq_bypass() ||
+> +	    !kvm_arch_has_assigned_device(kvm))
+> +		return 0;
+> +
+> +	if (new && new->type == KVM_IRQ_ROUTING_MSI) {
+> +		kvm_set_msi_irq(kvm, new, &irq);
+> +
+> +		/*
+> +		 * Force remapped mode if hardware doesn't support posting the
+> +		 * virtual interrupt to a vCPU.  Only IRQs are postable (NMIs,
+> +		 * SMIs, etc. are not), and neither AMD nor Intel IOMMUs support
+> +		 * posting multicast/broadcast IRQs.  If the interrupt can't be
+> +		 * posted, the device MSI needs to be routed to the host so that
+> +		 * the guest's desired interrupt can be synthesized by KVM.
+> +		 *
+> +		 * This means that KVM can only post lowest-priority interrupts
+> +		 * if they have a single CPU as the destination, e.g. only if
+> +		 * the guest has affined the interrupt to a single vCPU.
+> +		 */
+> +		if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu) ||
+> +		    !kvm_irq_is_postable(&irq))
+> +			vcpu = NULL;
+> +	}
+> +
+> +	return kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, irqfd->producer->irq,
+> +					    irqfd->gsi, new, vcpu, irq.vector);
+> +}
+> +
+>   int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
+>   				      struct irq_bypass_producer *prod)
+>   {
+> @@ -13581,8 +13618,7 @@ int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
+>   	irqfd->producer = prod;
+>   
+>   	if (irqfd->irq_entry.type == KVM_IRQ_ROUTING_MSI) {
+> -		ret = kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, prod->irq,
+> -						   irqfd->gsi, &irqfd->irq_entry);
+> +		ret = kvm_pi_update_irte(irqfd, NULL, &irqfd->irq_entry);
+>   		if (ret)
+>   			kvm_arch_end_assignment(irqfd->kvm);
+>   	}
+> @@ -13610,8 +13646,7 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+>   	spin_lock_irq(&kvm->irqfds.lock);
+>   
+>   	if (irqfd->irq_entry.type == KVM_IRQ_ROUTING_MSI) {
+> -		ret = kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, prod->irq,
+> -						   irqfd->gsi, NULL);
+> +		ret = kvm_pi_update_irte(irqfd, &irqfd->irq_entry, NULL);
+>   		if (ret)
+>   			pr_info("irq bypass consumer (token %p) unregistration fails: %d\n",
+>   				irqfd->consumer.token, ret);
+> @@ -13628,8 +13663,7 @@ int kvm_arch_update_irqfd_routing(struct kvm_kernel_irqfd *irqfd,
+>   				  struct kvm_kernel_irq_routing_entry *old,
+>   				  struct kvm_kernel_irq_routing_entry *new)
+>   {
+> -	return kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, irqfd->producer->irq,
+> -					    irqfd->gsi, new);
+> +	return kvm_pi_update_irte(irqfd, old, new);
+>   }
+>   
+>   bool kvm_arch_irqfd_route_changed(struct kvm_kernel_irq_routing_entry *old,
 
