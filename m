@@ -1,207 +1,466 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2072.outbound.protection.outlook.com [40.107.223.72])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E13B8211A0E
-	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 05:41:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.72
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744090917; cv=fail; b=emdHFwh0MLnF2CHfI9h/6kY0jlvlYTsCfX2zi6+ZQxDxXjgDasoOSIP7VrrLcccJHy8Ldw3upy/ZrtwEsjkWSAFe8ivyRi7f7UXEfgtNVnpk6VGORsFz/f3dwKtftuO4OhlsBNuVduhFn1C7CFp4oOjn0lbsJfXCrksUh7IzU7E=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744090917; c=relaxed/simple;
-	bh=dxkePDDxdBpVwGV/wVgyphJIUhzQwHwGmZCV9rlD6XU=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=bLXq+hqg0k62+LhMQ1xjo0KJ3niKoESBNiVBF0a9N2G0cv9ToBN/b3l7sMRFVWW2vN2VCaJ+aXmnX0axCNowxPuUGkqbxxpmDw0MoUqoUZQwzX+z48Qj3peI09AkLphSF9rak7tFtKQ/9j7nG3xMALmkG9uQqjgj19XZ2dq8ebM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=AFrCZpos; arc=fail smtp.client-ip=40.107.223.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8612914AD29
+	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 06:17:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744093022; cv=none; b=Xlj+VrNvw/QK+JhnMu+aaaqTidh90JU9CGg4oc6FbLljMgbX08u78kdhQvgwxRhCr0u4/0Qc1HWKRUqYlfS9G9RcDJcrQHa23AhkkIZDV8EyS2TG4WjoEE+BBJUmfrESUv2G1f5F2Mt+kis+R7iR6eQwovWP8YKkLqXBLPVS3ps=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744093022; c=relaxed/simple;
+	bh=WvB+DjbgCeElNlj05BGwgV8GNZOVQdVUljaUHv5AKys=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=utWuaVWOG2E9URaI2ufe4PE090kR8eQl1pY0k5zQ72eErVw1hByZGeGrtUcd76+rWpLUWK7HABEJsnWURZYu+fW8PMwMZysEfeGLrT46Meyr6PAhzWJFBGKr6BPJa6xKQEJ02hI/WFnyTOhkpe3zc7UMK1WqWvoiOBAjmovmrXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=SD7OEbWz; arc=none smtp.client-ip=209.85.167.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="AFrCZpos"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Fu+BSlddtgtcs27IR/Yaooue92Ne7DK+RFEg2XCUSZzCibTpKWVFSOPQ2D5n0sENJmk0nXFWMzFNBsMULs2NSr3zuHS2NIyoiCwNUeE/LkLIRkj+QsG5WHwdE6W3/0fHhIu/xzRNULj9wcAZ31GlH+jVJLqBA96IunEs5eYpvJrNyfymzQjR180DiaHKtIOAxHAf1Vis1JEjuEz7CJvyZ+d6EL2E3WzGujxkt+gS+GVHv+vqHw0E4vwvkHKiBc0hazzSL54caQBtc3MlOS0m0lURY1uvMDmwkinqJxGDua5UzMgye/PzYnTXZWFalebLaHlRLznQjIxXhx5ME8gMww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tbwt/2ep+cs4aYVgtHwrQPaxjj+ulcnmZQZQqi5Zw9U=;
- b=rZQlP4OUXZPxB7nmJcGM7n3gB+wCFBoB4bNyEb7SBvczmaVorxuCmaIp7jw80Rz1Qfp96rMPJ7KE3FvVhsM5RYbIrDoyd/Mi47myql9+yKpKidX7uEZk1+PP6P0THkx9Al5WcKb4s0iY4oGiq/DoSGkvI22MBydbs3oORye9eSmN9ftD4Dv7/66V65jZRlWZrkSDJRPvqKTorsxry2DwfjXuC7Z4LeyrYJQzmHqMjILDVFtuDVKpoimgD8LJXmOr7j/VjiSyG0BqX0GWsX7ayem6j94vODBMQBMW+xJ7HEJlIhpQBpFNkmKRS0M5+rG/5dp0Jdoid3zNkzTKbBVRGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tbwt/2ep+cs4aYVgtHwrQPaxjj+ulcnmZQZQqi5Zw9U=;
- b=AFrCZposm4OxSR/2qINKcnMBfi4PJ2VnqyOj0vDgJ5P7dMN86s76aDeTG3Dq8pt6YZiRitseJnyniM+PzPStTKTDvAgrBsslrHXqK289rGMMJVOQsbJRfILKr6Kn3Hl2rwkTtSlp9xujQgm05YrEBe1xrqJ5ghAeNEZrJwO3lx0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from BN9PR12MB5163.namprd12.prod.outlook.com (2603:10b6:408:11c::7)
- by SJ0PR12MB6829.namprd12.prod.outlook.com (2603:10b6:a03:47b::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.32; Tue, 8 Apr
- 2025 05:41:52 +0000
-Received: from BN9PR12MB5163.namprd12.prod.outlook.com
- ([fe80::61ca:6d43:a98d:3b7f]) by BN9PR12MB5163.namprd12.prod.outlook.com
- ([fe80::61ca:6d43:a98d:3b7f%3]) with mapi id 15.20.8606.033; Tue, 8 Apr 2025
- 05:41:52 +0000
-Message-ID: <d1e56da5-8049-4db7-97b8-05a9e7e7bbda@amd.com>
-Date: Tue, 8 Apr 2025 11:11:46 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 2/8] iommu/amd: Add debugfs support to dump IOMMU MMIO
- registers
-To: Vasant Hegde <vasant.hegde@amd.com>, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Cc: suravee.suthikulpanit@amd.com
-References: <20250317115830.3416-1-dheerajkumar.srivastava@amd.com>
- <20250317115830.3416-3-dheerajkumar.srivastava@amd.com>
- <f1b0721c-b518-4bf6-9de9-f09369b85d0c@amd.com>
-Content-Language: en-US
-From: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-In-Reply-To: <f1b0721c-b518-4bf6-9de9-f09369b85d0c@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0123.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:6::8) To BN9PR12MB5163.namprd12.prod.outlook.com
- (2603:10b6:408:11c::7)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="SD7OEbWz"
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-54993c68ba0so5802382e87.2
+        for <iommu@lists.linux.dev>; Mon, 07 Apr 2025 23:17:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1744093018; x=1744697818; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Lw+cGuu24MCFma9hbTCJ3waWTAm326WwXLS0tbmD93k=;
+        b=SD7OEbWzZLqrOQLcnl70+3b9TMPR7+n6XkG9U9oRm8GGqpHLRYrFFpiYchdPzt0H6o
+         3+lngfyA6wo6YrDcN9a0CjQON1H14VcUr9UF28DSyygsSafMhq3LtGBZSwQ+LUw5NIh8
+         aYwRTbhRlzKi0KXm6CwpoOZim9p0pwpTmkrIc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744093018; x=1744697818;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Lw+cGuu24MCFma9hbTCJ3waWTAm326WwXLS0tbmD93k=;
+        b=a2Aarg14XQrF5DqGtnMa9Bz3vauUqGJXqqz2Jn/ZXG8CqNwTI+l80rHfkEFpdufXW7
+         vNpesJ1EIVSpdV1bEpGcBoiyDI5BPRw9bqngJPyFF4Bseka/hm29cpj5DLMQ8Nv+nub9
+         3ReKZ8nFUodsjaV8Y96ixVc8DKE32BcjgMf7ZZBI4k87PrUjPOcc+7ntSU6lijOxMg0B
+         SGLPhJplJIFge/0+X5KwcQcSkbuBn2AfW2yEXtrLKwVDC1CmQ6+QCBk9Tzd5Uk/aPPc3
+         YOoaZkwtzFIZJKUVmlPHlLhX3OSq0Hv4Uk8IBhtOMN8P83TU9pFkwkSd0QaMHradr6O2
+         38vg==
+X-Forwarded-Encrypted: i=1; AJvYcCVPknDdMw7vH9CvFaa3nLm5/FyHNJD5Brk5XOOjAlHuNAhBKyQA6/F5n318ol4/7KaxtN0zbA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzKN2Ot3vOALDxnNwF2JKx4F2qdLBoJyj9r9wF2NdU/+xzKXi0U
+	IpmtTwXH58b2BE4tnX4Kda7FNy47qWKj7OyxNWHP3IlnVDVkoWraLBVJPnUmcKNRChQPTNh1kWx
+	qYMgcD7faqe7hSkYa/gMoJuf18juMd4hAA/Yx
+X-Gm-Gg: ASbGncuR1/g4egrQu9ZkNaEvI1jah+Lc+xHVTtV9XoCSUaqPtXZSBSyShUr5qLf993B
+	vYFXeu3CSNRMlAEhRdap7U7q9JhMZ5CNup+3OBbs7T73EgmrBHgbHx/cV8zrJuWMMi76LhsMiQa
+	5ZIgVbHXgYbctAwY8tcTAWVrbKolbh3c3i0b+VYUYjTAYNPN+bA/TVP1qBJfEGFxK8
+X-Google-Smtp-Source: AGHT+IFb+TeowgfoI9jyPGgjiTC84g5fC1KcHX3rW/8XVKEIp2euKeYNGDybwWA09DVF9ijzM+qUVsOK9TjVFAYBLkI=
+X-Received: by 2002:a05:6512:12c3:b0:545:f4b:ed58 with SMTP id
+ 2adb3069b0e04-54c22786586mr4008465e87.18.1744093018538; Mon, 07 Apr 2025
+ 23:16:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5163:EE_|SJ0PR12MB6829:EE_
-X-MS-Office365-Filtering-Correlation-Id: 96c4e9dc-9688-42f1-4bdc-08dd7660109b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?ZE5UbXcrRWxuczhtZWVzalF0NHVOSjdWUEZGSmxEVUhtQW1PRzEyeXRpbDVl?=
- =?utf-8?B?VTBDRFAwQkJJWFpLVG1Fb3ZpcEtLU2xNeEpSODB5NDR0Si9FNk52eWdLc25K?=
- =?utf-8?B?eVZjempuaXo1cHpTWXJwK3I1VkhyQ0sycWI2dkFNbzRLWm0rekFKZ0FEUm9k?=
- =?utf-8?B?bXZoeThaV2w3Y2lwOXJRcTVrK2ZUSjdOSEoybFdKcHFiM1pMLzRkVEZhNUYy?=
- =?utf-8?B?QVFUT082emt1bUZrS1pFT3FrSi9IcWRXMGgxN1pRbklENGg1bjMxVmFocnho?=
- =?utf-8?B?UW9oeU91N0xEKzBBYmNGUjR3Sms2MExSMDMwZ2NZNlVPand5M3FTc2k5eHBq?=
- =?utf-8?B?WEZUaU9ZRjRyNnBJWTdzWG1IMlc1Yi8zdGkzNW44ZzF4RmZ5dHREajU0RE1Y?=
- =?utf-8?B?SVZ4ekpWY0xFT2lPWW8wZW1vMk9mYUNlQ2c4Zm96VThrbExSQjd4ZVhMTk04?=
- =?utf-8?B?N25iRTlvZDB2RFROY21rVGp4bWlVSjZpUTBSQlJ6bVBtTUFMSTIvUE5WUXJR?=
- =?utf-8?B?MkZsY09tOG5oUlZ6bENpVHdjdldDRnk4QXdoUnBwcURoaEJyZWUrZHp4RXZ2?=
- =?utf-8?B?elc3TDc0OWZGTVl3d29HOGk3QlNZQVF2cVZyUHRSTUxsRnJVUmtoQkQwbUZ1?=
- =?utf-8?B?dERlRGlraG56VVE2RGZ4VkRObmhrd3VJdk5TMUFTUlUwODNmS1ZESncvNG01?=
- =?utf-8?B?RHc5V1ZHdm5CYSt4ME9KL2hpdnR3bVVCbmFHbjZ2Vk1pQ2ZqTVVDOXlDQjR0?=
- =?utf-8?B?KzB5djJwWUdBRWkyaEJGRHF5NDBCMm85aHZZNzN2bVRHNWJSWjNnRUhhak4w?=
- =?utf-8?B?Njk1ODZ5NEF3ZTJYdmU0SXZuNXNVSlloVnRFWVduNHJ6dUd2SlVET0wrZ2xS?=
- =?utf-8?B?NnpGek42V3IyTVV6ZDRnRDRUbTBTNW5ManV5cWgyWSs1VHRKcWFsZDB4Q1JO?=
- =?utf-8?B?dlZwc1JFR2wyU2FTSHR5V2o5UUUxR0Y5ZGd3clp6UnZIMmtnUTU2dEVCM0Zt?=
- =?utf-8?B?UE1BNWZvTWZxbjlBaUVBQW9zenlUY0RQRU5teUZUYWJPWmRnYzRpa1QwTGJT?=
- =?utf-8?B?KzBwYXZSeFZpMUtGOGF6U1ZmMTJWbHFtSHJldGc4bTZFOVl5Tk54V284V3V4?=
- =?utf-8?B?ZWV1Q3pqeXVva3JabmVDNDJzMWxmM3FNRFFlUzhYTGR6M21UVDRiWkU1OWpw?=
- =?utf-8?B?M1c4L2w4dm1PM2RKeVNZbzhKb0tLemVLMzRDV3B3dmtMaHRreFNHTnR2ODhn?=
- =?utf-8?B?M1hpOFhESXFTQzl0R1djUVBhY2FVdEhOVXB5em5raDNINklwYkdDUDhPdkhq?=
- =?utf-8?B?T1ZJNU5YdDhDOW1CY1c4enVvRThiNHl2RWJzZEVhNGhWM0MrKzNQditaeWRB?=
- =?utf-8?B?M3NnZ0crdXFaUFhHaCtXWEd4ekVhYi9ka2dPSCtGNUVjeWF2Q2lyZXIzU2g5?=
- =?utf-8?B?ekNzRnczSWlVZVlQQlhEUGNWZlNtdnZNUGhCSVVaZWtaUVBTVG9UL2lrRE5B?=
- =?utf-8?B?aDk0NDNMUnB5Wk5FQ0pRNVVMN2F2c0VJMXFtUjk5ck1LeTM4RU4reHN5N0M3?=
- =?utf-8?B?NVFLVHBBMG52RmxIdS80S01GQy8zcm4zcFVHVndUVWxpN3ZOWGxGTnpqVVFa?=
- =?utf-8?B?cTJRY284Q01mMVRRNzhsTmswRlB1ZGU3NHRpUmlTeFdyekNWMElSSmFvd2Yw?=
- =?utf-8?B?eE5ObnRZVkpIMmNSU0krMkZOZTJ0UlJjaG41WFNMRG1Sa25sOVllTHdRbzJN?=
- =?utf-8?B?eDNtcmFtTEdoaVJmamhFOEplbVdGUWhLV2pZaXpiUWtick9scWNsSEtBamk2?=
- =?utf-8?B?OGV0UDlKNzR4Z2V4WnMwTERnVm9pVUxBMng5bUZKVlJMcDJuOHpiOVdCcXNF?=
- =?utf-8?Q?u3n+JESqrCyv/?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR12MB5163.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UmdjcU81T2crMUFRdzNCWkt6R2E0M2cxNTV6M29DS3pHcEh5eW5wS3ZJak1K?=
- =?utf-8?B?YXhKWGpid2tZZnNsdUV5QzRENTgzL2ZFeFA5N0J3WmVrUUxwWFdpVlpVY2pn?=
- =?utf-8?B?ODNiQkNkK0JaTFdoSlJlU0VxUFZwaXRDZXRLR1RTbXpBQTZoUVBlT0sxNzlZ?=
- =?utf-8?B?UUVIV0FNcHpIdHcrazJZdHVZeVdWUVRVV2hKdjNBRkdPdEJjWnFZOUUySlRn?=
- =?utf-8?B?YncvcUIzUVd1WHExSTYrNEZTTUxZRHpyZHFzd29nVHY3OEt1ZWJWZWs0RXBF?=
- =?utf-8?B?ckZZc1FFMWIxVTNqQVV0T3FOSC9nUFlQdkZmR2l5cmJDVU52T0lZK0RiMDJT?=
- =?utf-8?B?dTdReXFudC9JU2FWRTYraTJ1MkRmR2MzZVhaVzdPSXFQYWdSREtUTHIzV0hM?=
- =?utf-8?B?MytXNTd5ZkZFakxFaExmWHg5SktwRTRhcXNONzBzaU5vQjZ5ZjNHTm5FOFZQ?=
- =?utf-8?B?dVQyRDY4WnVPUDRLYXBmK3RkUWJReWVqNmdSdzh1bGtkdWJhQW5NaUpJcUJR?=
- =?utf-8?B?QU5QVGtFMk1VL29wTWtJb2J5WVQ5dUJaTGwrWlV6ZHhBZnBCVjFTTk1ja2xm?=
- =?utf-8?B?azBReURQa2kvNWozbmo5b28yQTJ2OGhnTFVNVStFcXJuekNoNnNsSkZHWXNz?=
- =?utf-8?B?aFRpYmZkTkZvcnhBeDU4Z2V4MDN2UWxkUGx6dGZ0N2haOTFvdHdiTmxTNzdT?=
- =?utf-8?B?d2w2UlhsblgvR1E2VndLbDcxeHhEYWIyQjlLNUZidGNEN2hXa0kxRzRJT3ls?=
- =?utf-8?B?WUQwNFNvNFFSNXZXNUQ0ck1ldHF3NjFWVytWN2p0WVJDRTJkbDlzYXo1S2Q3?=
- =?utf-8?B?cUxKMlA1aWtKc1BkK0QyRGU2SkFWUFpFYjBiRzA5cVJuTjlqVDJ4MHVPOFhx?=
- =?utf-8?B?VVVaSk5nNlp6OUZzcXF6dlRoWmZORmpjNXhWS1p1ZEFIM0hQL2Mya2Uza2V4?=
- =?utf-8?B?OXlwMjlsejJGNkZudFJZN0JWTWJDU0R3UWFjNnRJUDQxcHIrNm9ZS2xhMzJ6?=
- =?utf-8?B?MzJ3MUorOE1hT3lIVHJiN29tdDd2bG12RTJCVzRnS0FkUGE0MzZjYkcybHQ4?=
- =?utf-8?B?bzRWR1E4TjIwK0toOFJ0TGkvbzZxL3ZMMkFHRlljWEpkNGd1Y0sxTThFdVZj?=
- =?utf-8?B?TlN5cS8zZVR4WTZMQm9oTUptbUtKSlQ5UWZMTnN3eHlleDdYSmFTazV1eFhx?=
- =?utf-8?B?eGd2cFdqNVduVDFEUzhJU0RuUnowZTAvMFA2eWVPYUU0MGFJMFdTRmtWekRX?=
- =?utf-8?B?WTFma3M1WFVINlpnUjdrTWR5cmZRNkxVTVBPMjFGRGpub3IrYndkSGl1UXRp?=
- =?utf-8?B?bGtGdTRRWnV2Zk9pYmtOYVZEc2taM1pRdE1vcnB6akxiNFk5N3ZxMFk1Tnh5?=
- =?utf-8?B?SDVILzliYjJtM1JaODFhaXBnSzMzR3R5WXpjWHFGT05JS1BBYWUyYXByY1d4?=
- =?utf-8?B?NERjQlppb1BvbDEwNklYUlE1dUxpYlBZR0FqRVVOYmgzM3ZWV0dLMGRJTk9G?=
- =?utf-8?B?L1NjUTNaNStBTlJBcGQzVklDSlJaMTZzUnp0V3RQcW00NU5iSlBwZGR0VGVU?=
- =?utf-8?B?TWRISGtlWWp5V1BmcVBCVlB3RzlueE96SEk5U2tvQUlaSVl4S1puT3Q5UnJO?=
- =?utf-8?B?SDNSNXFmQk4vUVhzdUFIOGI2N3lrd25tM3VQWkt6K0tEK0F5SzBYQTdFTUlS?=
- =?utf-8?B?MEZJTjFwWkc4amM1MVBuMkh4cHc3RkRjT2o4UlRvaVcwazFPSU1lYko1bXU1?=
- =?utf-8?B?SkNCVDQwd2IvcitUYlpFWEtxWXNJQkQ4SG5RUFBhL2tzcjY0Yy9yWEZzTmtZ?=
- =?utf-8?B?a09obmhnZDYybmxPa3BISjJITFY1MEtMbmVlOUx0T3JTMkhTMjlVeWl3ZXpy?=
- =?utf-8?B?eDhoamFNL2gxRkVMb0ErOVpnQlRpNDBlSnBzejdBTkVnWW95N0hoMVVYclh3?=
- =?utf-8?B?K3V5UXlJNHRWd082QkRQbG4yK3VZTWIrMzJKdHR5bDBzaFpoVVFGU09PN3BO?=
- =?utf-8?B?ZkJWK016Z2F5ZWZrcys0c2lnQml3Q2ZkVm1sZG51WWpmTDhlY2V4L0ZVYWgr?=
- =?utf-8?B?OWd4R3RaQVRjczdSUmd6M2tVdFhiLzJTeUovaEtyUmtKd2o5TkFpWDlSWmxj?=
- =?utf-8?Q?s/1Vs8R0oIW6ryryOEOuwsrqM?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 96c4e9dc-9688-42f1-4bdc-08dd7660109b
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR12MB5163.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2025 05:41:52.7244
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AogL19+MXItNReHc86mFaeSIpCfu6IhkqT9xN1xUXYIW2HnwvdgPKTmD7AoJpNs0qHUthLd0Gqm96ZREH7SvWQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6829
+References: <20250403-fix-mtk-iommu-error-v2-1-fe8b18f8b0a8@collabora.com>
+ <CAGXv+5HJpTYmQ2h-GD7GjyeYT7bL9EBCvu0mz5LgpzJZtzfW0w@mail.gmail.com>
+ <2792b9df-fc82-4252-af64-cf888a36f561@arm.com> <CAGXv+5E=NhFcS0fG_kbLTnF6xfTkBOHQwsNxszHDcgWfn3zFiA@mail.gmail.com>
+In-Reply-To: <CAGXv+5E=NhFcS0fG_kbLTnF6xfTkBOHQwsNxszHDcgWfn3zFiA@mail.gmail.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
+Date: Tue, 8 Apr 2025 14:16:45 +0800
+X-Gm-Features: ATxdqUFzThHrbbZ4rjRkEmEZgPttTHwgVmz8SvDgRpu43MI3Grht_HvHvymI90U
+Message-ID: <CAGXv+5FybqwFThh2VZh+U-RUs_LFB_AzFQyi7rvpc8jvgybh1A@mail.gmail.com>
+Subject: Re: [PATCH v2] iommu/mediatek: Fix NULL pointer deference in mtk_iommu_device_group
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>, 
+	Yong Wu <yong.wu@mediatek.com>, Will Deacon <will@kernel.org>, 
+	Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
+	"Rob Herring (Arm)" <robh@kernel.org>, kernel@collabora.com, Joerg Roedel <jroedel@suse.de>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev, linux-mediatek@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Vasant,
+On Tue, Apr 8, 2025 at 12:46=E2=80=AFPM Chen-Yu Tsai <wenst@chromium.org> w=
+rote:
+>
+> On Mon, Apr 7, 2025 at 8:38=E2=80=AFPM Robin Murphy <robin.murphy@arm.com=
+> wrote:
+> >
+> > On 2025-04-07 6:17 am, Chen-Yu Tsai wrote:
+> > > Hi,
+> > >
+> > > On Thu, Apr 3, 2025 at 6:24=E2=80=AFPM Louis-Alexis Eyraud
+> > > <louisalexis.eyraud@collabora.com> wrote:
+> > >>
+> > >> Currently, mtk_iommu calls during probe iommu_device_register before
+> > >> the hw_list from driver data is initialized. Since iommu probing iss=
+ue
+> > >> fix, it leads to NULL pointer dereference in mtk_iommu_device_group =
+when
+> > >> hw_list is accessed with list_first_entry (not null safe).
+> > >>
+> > >> So, change the call order to ensure iommu_device_register is called
+> > >> after the driver data are initialized.
+> > >>
+> > >> Fixes: 9e3a2a643653 ("iommu/mediatek: Adapt sharing and non-sharing =
+pgtable case")
+> > >> Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper pro=
+be path")
+> > >> Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+> > >> Tested-by: Chen-Yu Tsai <wenst@chromium.org> # MT8183 Juniper, MT818=
+6 Tentacruel
+> > >> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@c=
+ollabora.com>
+> > >> Tested-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@col=
+labora.com>
+> > >> Signed-off-by: Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com=
+>
+> > >> ---
+> > >> This patch fixes a NULL pointer dereference that occurs during the
+> > >> mtk_iommu driver probe and observed at least on several Mediatek Gen=
+io boards:
+> > >> ```
+> > >> Unable to handle kernel NULL pointer dereference at virtual address =
+0000000000000000
+> > >
+> > > This is a reminder to please land this and send to Linus ASAP.
+> > >
+> > > This fixes the v6.15-rc1 kernel on all the MediaTek Chromebook platfo=
+rms,
+> > > except for MT8188, which seems to have another issue in iommu_get_dma=
+_domain()
+> > > used from the DRM driver:
+> > >
+> > >      Disabling lock debugging due to kernel taint
+> > >      Unable to handle kernel NULL pointer dereference at virtual
+> > > address 0000000000000158
+> >
+> >  From the offset and the stacktrace code dump, this would appear to be
+> > the dereference of dev->iommu_group->default_domain, when
+> > dev->iommu_group is NULL (and CONFIG_DEBUG_LOCK_ALLOC makes the mutex
+> > really big). Which is a bit weird, as to get into iommu-dma at all in
+> > that state would suggest that whatever device this is has been removed
+> > and had its group torn down again after iommu_setup_dma_ops() has run..=
+.
+> > but either way that implies the DRM driver is passing an arbitrary
+> > device to the DMA API without making sure it's actualy valid.
+> >
+> > Trying to trace the provenance of dma_dev from mtk_gem_create() back
+> > through the rest of the driver is quite the rabbit-hole, but it seems
+> > like in at least one case it can lead back to an
+> > of_find_device_by_node() in ovl_adaptor_comp_init(), which definitely
+> > looks sufficiently sketchy.
+>
+> It kind of makes sense since the "display controller" is composed of
+> many individual hardware blocks. The struct device tied to the DRM
+> driver is more or less just a place holder. Only the first block,
+> either the OVL (overlay compositing engine) or RDMA (scanout engine)
+> accesses memory, so I think it makes sense to use that as the dma_dev.
+>
+> With some more logs, I did find something else fishy. Here the IOMMU
+> for the second display pipeline fails to probe:
+>
+>     mtk-iommu 1c028000.iommu: error -EINVAL: Failed to register IOMMU
+>     mtk-iommu 1c028000.iommu: probe with driver mtk-iommu failed with err=
+or -22
 
-On 3/19/2025 10:20 PM, Vasant Hegde wrote:
-> Dheeraj,
-> 
-> 
-> On 3/17/2025 5:28 PM, Dheeraj Kumar Srivastava wrote:
->> Analyzing IOMMU MMIO registers gives a view of what IOMMU is
->> configured with on the system and is helpful to debug issues
->> with IOMMU.
->>
->> eg.
->> -> To get mmio registers value at offset 0x18 for iommu<x> (say, iommu00)
->>     # echo "0x18" > /sys/kernel/debug/iommu/amd/iommu00/mmio
->>     # cat /sys/kernel/debug/iommu/amd/iommu00/mmio
->>
->> Signed-off-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
->> ---
->>   drivers/iommu/amd/debugfs.c | 47 +++++++++++++++++++++++++++++++++++++
->>   1 file changed, 47 insertions(+)
->>
->> diff --git a/drivers/iommu/amd/debugfs.c b/drivers/iommu/amd/debugfs.c
->> index ff9520e002be..c61d52420c5f 100644
->> --- a/drivers/iommu/amd/debugfs.c
->> +++ b/drivers/iommu/amd/debugfs.c
->> @@ -15,6 +15,50 @@
->>   static struct dentry *amd_iommu_debugfs;
->>   
->>   #define	MAX_NAME_LEN	20
->> +#define	OFS_IN_SZ	8
->> +
->> +static int mmio_offset = -1;
-> 
-> 
-> Somehow I missed to catch this earlier. Here you have global variable but mmio
-> is defined per IOMMU. Shouldn't we track it per IOMMU ?
+This looks like it's caused by an incorrect IOMMU description for this
+device. It's referencing the wrong IOMMU device for the port it is tied
+to.
 
-Yes correct we need to maintain per iommu global variables for mmio and 
-capability registers offset. I have sent v5 addressing this. Please find 
-some time to review it.
+I'll send a patch for this.
 
-Thanks
-Dheeraj
-
-> 
-> -Vasant
-> 
-
+> Then later on, deferred probe times out, and the display pipeline is
+> brought up regardless:
+>
+>     mediatek-disp-ovl 1c000000.ovl: deferred probe timeout, ignoring depe=
+ndency
+>     mediatek-disp-ovl 1c000000.ovl: Adding to IOMMU failed: -110
+>     mediatek-disp-rdma 1c002000.rdma: deferred probe timeout, ignoring
+> dependency
+>     mediatek-disp-rdma 1c002000.rdma: Adding to IOMMU failed: -110
+>     (repeats for all the individual components of the display pipeline)
+>     mediatek-drm mediatek-drm.16.auto: bound 1c000000.ovl (ops
+> mtk_disp_ovl_component_ops)
+>     mediatek-drm mediatek-drm.16.auto: bound 1c002000.rdma (ops
+> mtk_disp_rdma_component_ops)
+>     (repeats for all the individual components of the display pipeline)
+>     mediatek-drm mediatek-drm.16.auto: DMA device is 1c000000.ovl
+>     [drm] Initialized mediatek 1.0.0 for mediatek-drm.16.auto on minor 1
+>
+> And all without a functional IOMMU.
+>
+> So I think this brings up two more questions:
+>
+> 1. Why is the IOMMU failing to probe?
+> 2. Why is the core code still going the IOMMU DMA alloc path if there
+>    is no usable IOMMU?
+>
+> I'll look into the first question first. Insights welcome for the second
+> one.
+>
+>
+> Thanks
+> ChenYu
+>
+>
+> > Thanks,
+> > Robin.
+> >
+> > >      Mem abort info:
+> > >        ESR =3D 0x0000000096000005
+> > >        EC =3D 0x25: DABT (current EL), IL =3D 32 bits
+> > >        SET =3D 0, FnV =3D 0
+> > >        EA =3D 0, S1PTW =3D 0
+> > >        FSC =3D 0x05: level 1 translation fault
+> > >      Data abort info:
+> > >        ISV =3D 0, ISS =3D 0x00000005, ISS2 =3D 0x00000000
+> > >        CM =3D 0, WnR =3D 0, TnD =3D 0, TagAccess =3D 0
+> > >        GCS =3D 0, Overlay =3D 0, DirtyBit =3D 0, Xs =3D 0
+> > >      user pgtable: 4k pages, 39-bit VAs, pgdp=3D00000001185ab000
+> > >      [0000000000000158] pgd=3D0000000000000000, p4d=3D000000000000000=
+0,
+> > > pud=3D0000000000000000
+> > >      Internal error: Oops: 0000000096000005 [#1]  SMP
+> > >      Modules linked in: mtk_vcodec_dec_hw mtk_vcodec_dec mtk_vcodec_e=
+nc
+> > > v4l2_vp9 v4l2_h264 mtk_vcodec_dbgfs mtk_jpeg mtk_vcodec_common
+> > > cros_ec_sensors mtk_jpeg_enc_hw cros_ec_sensors_core mtk_jpeg_dec_hw
+> > > mtk_vpu v4l2_mem2mem videobuf2_v4l2 snd_sof_mt8186
+> > > videobuf2_dma_contig snd_sof_xtensa_dsp sha1_ce videobuf2_memops
+> > > mtk_adsp_common mtk_scp videobuf2_common snd_sof_of mtk_rpmsg snd_sof
+> > > rpmsg_core cros_ec_sensorhub hid_google_hammer hid_vivaldi_common
+> > > snd_sof_utils mtk_scp_ipi fuse
+> > >      CPU: 6 UID: 0 PID: 12 Comm: kworker/u32:0 Tainted: G    B
+> > >       6.15.0-rc1-00001-gfed05d98b726 #628 PREEMPT
+> > > 06e695da6360d22824958738f9ba1c9b2416be19
+> > >      Tainted: [B]=3DBAD_PAGE
+> > >      Hardware name: Google Ciri sku2 board (DT)
+> > >      Workqueue: events_unbound deferred_probe_work_func
+> > >      pstate: 40400009 (nZcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=3D--=
+)
+> > >      pc : iommu_get_dma_domain+0x30/0x58
+> > >      lr : iommu_get_dma_domain+0x30/0x58
+> > >      sp : ffffffc080186ee0
+> > >      x29: ffffffc080186ee0 x28: ffffff80c4c59028 x27: 000000000000000=
+0
+> > >      x26: 0000000000000014 x25: 0068000000000f0b x24: ffffff80c4c5ca2=
+8
+> > >      x23: 00000000008ca000 x22: 1ffffff810030df8 x21: ffffff80c20ea01=
+0
+> > >      x20: ffffff80c20ea010 x19: 0000000000000000 x18: 000000000000000=
+0
+> > >      x17: 3d3d3d3d3d3d3d3d x16: 3d3d3d3d3d3d3d3d x15: 072007200720072=
+0
+> > >      x14: 0720072007200720 x13: ffffff80c0a1bb80 x12: ffffffbae2ca45e=
+9
+> > >      x11: 1ffffffae2ca45e8 x10: ffffffbae2ca45e8 x9 : dfffffc00000000=
+0
+> > >      x8 : 000000451d35ba18 x7 : ffffffd716522f47 x6 : 000000000000000=
+1
+> > >      x5 : ffffffd716522f40 x4 : ffffffbae2ca45e9 x3 : ffffffd713717e6=
+c
+> > >      x2 : 0000000000000001 x1 : ffffff80c0941dc0 x0 : 000000000000000=
+1
+> > >      Call trace:
+> > >       iommu_get_dma_domain+0x30/0x58 (P)
+> > >       __iommu_dma_alloc_noncontiguous+0x34/0x498
+> > >       iommu_dma_alloc+0x2f0/0x3e0
+> > >       dma_alloc_attrs+0x1b4/0x3b8
+> > >       mtk_gem_create+0x124/0x170
+> > >       mtk_gem_dumb_create+0x84/0x180
+> > >       drm_mode_create_dumb+0xf8/0x128
+> > >       drm_client_framebuffer_create+0x11c/0x240
+> > >       drm_fbdev_dma_driver_fbdev_probe+0x154/0x5a0
+> > >       __drm_fb_helper_initial_config_and_unlock+0x4f0/0x928
+> > >       drm_fb_helper_initial_config+0x50/0x68
+> > >       drm_fbdev_client_hotplug+0xc0/0x120
+> > >       drm_client_register+0xa0/0x100
+> > >       drm_fbdev_client_setup+0xc8/0x260
+> > >       drm_client_setup+0x60/0xd0
+> > >       mtk_drm_bind+0x4f0/0xaf0
+> > >       try_to_bring_up_aggregate_device+0x258/0x2f0
+> > >       __component_add+0x104/0x240
+> > >       component_add+0x1c/0x38
+> > >       mtk_disp_rdma_probe+0x180/0x260
+> > >       platform_probe+0x98/0x128
+> > >       really_probe+0x118/0x3c0
+> > >       __driver_probe_device+0xc0/0x198
+> > >       driver_probe_device+0x64/0x1f8
+> > >       __device_attach_driver+0xf0/0x1b0
+> > >       bus_for_each_drv+0xf4/0x178
+> > >       __device_attach+0x120/0x240
+> > >       device_initial_probe+0x1c/0x30
+> > >       bus_probe_device+0xdc/0xe8
+> > >       deferred_probe_work_func+0xec/0x140
+> > >       process_one_work+0x428/0xa80
+> > >       worker_thread+0x2c0/0x538
+> > >       kthread+0x258/0x380
+> > >       ret_from_fork+0x10/0x20
+> > >      Code: 97e8f12c f9422673 91056260 97e8f129 (f940ae60)
+> > >      ---[ end trace 0000000000000000 ]---
+> > >      Kernel panic - not syncing: Oops: Fatal exception
+> > >      SMP: stopping secondary CPUs
+> > >      Kernel Offset: 0x1693600000 from 0xffffffc080000000
+> > >      PHYS_OFFSET: 0x40000000
+> > >      CPU features: 0x0e00,000002e0,01202650,8200720b
+> > >      Memory Limit: none
+> > >      Rebooting in 30 seconds..
+> > >
+> > >
+> > >
+> > > Thanks
+> > > ChenYu
+> > >
+> > >> Mem abort info:
+> > >>    ESR =3D 0x0000000096000004
+> > >>    EC =3D 0x25: DABT (current EL), IL =3D 32 bits
+> > >>    SET =3D 0, FnV =3D 0
+> > >>    EA =3D 0, S1PTW =3D 0
+> > >>    FSC =3D 0x04: level 0 translation fault
+> > >> Data abort info:
+> > >>    ISV =3D 0, ISS =3D 0x00000004, ISS2 =3D 0x00000000
+> > >>    CM =3D 0, WnR =3D 0, TnD =3D 0, TagAccess =3D 0
+> > >>    GCS =3D 0, Overlay =3D 0, DirtyBit =3D 0, Xs =3D 0
+> > >> user pgtable: 4k pages, 48-bit VAs, pgdp=3D0000000101380000
+> > >> [0000000000000000] pgd=3D0000000000000000, p4d=3D0000000000000000
+> > >> Internal error: Oops: 0000000096000004 [#1]  SMP
+> > >> Modules linked in: btusb btrtl mt6315_regulator btintel mtk_vcodec_d=
+ec
+> > >>    btmtk v4l2_vp9 btbcm mtk_vcodec_enc v4l2_h264 mtk_vcodec_dbgfs
+> > >>    bluetooth mtk_jpeg ecdh_generic mtk_vcodec_common mtk_jpeg_enc_hw
+> > >>    mtk_jpeg_dec_hw ecc v4l2_mem2mem rfkill videobuf2_dma_contig
+> > >>    videobuf2_memops videobuf2_v4l2 videodev videobuf2_common mc
+> > >>    mt6360_charger mcp251xfd it5205 goodix_ts can_dev panfrost
+> > >>    drm_shmem_helper gpu_sched lvts_thermal mtk_svs mtk_adsp_mailbox
+> > >>    snd_soc_dmic mtk_scp mtk_rpmsg mtk_scp_ipi mtk_cmdq_mailbox
+> > >>    mediatek_cpufreq_hw spmi_mtk_pmif fuse dm_mod ip_tables x_tables
+> > >>    ipv6 mediatek_drm tcpci_mt6360 drm_display_helper drm_client_lib
+> > >>    tcpci drm_dma_helper drm_kms_helper tcpm drm mtk_mutex mtk_mmsys
+> > >>    typec rtc_mt6397 mtk_cmdq_helper phy_mtk_pcie pcie_mediatek_gen3
+> > >>    dwmac_mediatek stmmac_platform stmmac pwm_mtk_disp pcs_xpcs pwm_b=
+l
+> > >>    backlight
+> > >> CPU: 5 UID: 0 PID: 12 Comm: kworker/u32:0 Not tainted 6.14.0-next-20=
+250326 #4 PREEMPT
+> > >> Hardware name: MediaTek Genio 1200 EVK-P1V2-EMMC (DT)
+> > >> Workqueue: events_unbound deferred_probe_work_func
+> > >> pstate: 80400009 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=3D--)
+> > >> pc : mtk_iommu_device_group+0x2c/0xe0
+> > >> lr : __iommu_probe_device+0x130/0x490
+> > >> sp : ffff8000827b3970
+> > >> x29: ffff8000827b3970 x28: ffff0000c0028000 x27: ffff80008164f2b8
+> > >> x26: ffff0000cbc47130 x25: ffff80008096a9f0 x24: ffff80008164f5a8
+> > >> x23: ffff800082684b60 x22: ffff8000827b3a80 x21: ffff0000cbc47130
+> > >> x20: ffffffffffffffed x19: ffff0000c117c010 x18: 0000000000000000
+> > >> x17: 6f702d616d642d64 x16: 6574636972747365 x15: 0000000000000002
+> > >> x14: 0000000000000000 x13: 0000000000128d55 x12: 6f632d616d642e30
+> > >> x11: 0000000000000100 x10: 0000000000000001 x9 : 0000000000000220
+> > >> x8 : 0101010101010101 x7 : ffff0000c117c010 x6 : 306c766f2c727461
+> > >> x5 : 0000000000000000 x4 : ffff0000c10a2de8 x3 : ffff0000c10a2e70
+> > >> x2 : ffff0000c01a4600 x1 : 0000000000000000 x0 : ffff0000c65470c0
+> > >> Call trace:
+> > >>   mtk_iommu_device_group+0x2c/0xe0 (P)
+> > >>   __iommu_probe_device+0x130/0x490
+> > >>   probe_iommu_group+0x3c/0x70
+> > >>   bus_for_each_dev+0x7c/0xe0
+> > >>   iommu_device_register+0xd8/0x22c
+> > >>   mtk_iommu_probe+0x270/0x53c
+> > >>   platform_probe+0x68/0xd8
+> > >>   really_probe+0xbc/0x2c0
+> > >>   __driver_probe_device+0x78/0x120
+> > >>   driver_probe_device+0x3c/0x154
+> > >>   __device_attach_driver+0xb8/0x140
+> > >>   bus_for_each_drv+0x88/0xe8
+> > >>   __device_attach+0xa0/0x190
+> > >>   device_initial_probe+0x14/0x20
+> > >>   bus_probe_device+0xb4/0xc0
+> > >>   deferred_probe_work_func+0x90/0xc8
+> > >>   process_one_work+0x148/0x284
+> > >>   worker_thread+0x2cc/0x3cc
+> > >>   kthread+0x12c/0x204
+> > >>   ret_from_fork+0x10/0x20
+> > >> Code: b4000500 f9401c01 92800254 f9409821 (f9400035)
+> > >> ---[ end trace 0000000000000000 ]---
+> > >> ```
+> > >>
+> > >> I've tested this patch on Mediatek Genio 510-EVK and 1200-EVK boards
+> > >> with a kernel based on linux-next (tag: next-20250327).
+> > >> ---
+> > >> Changes in v2:
+> > >> - Fix goto label usage in device registration error case
+> > >> - Add review and test trailers
+> > >> - Link to v1: https://lore.kernel.org/r/20250327-fix-mtk-iommu-error=
+-v1-1-df969158e752@collabora.com
+> > >> ---
+> > >>   drivers/iommu/mtk_iommu.c | 26 +++++++++++++-------------
+> > >>   1 file changed, 13 insertions(+), 13 deletions(-)
+> > >>
+> > >> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > >> index 034b0e670384a24df10130cbbff95ce8e0bc092d..df98d0c65f5469c6803c=
+d9d151c85ad855558cf5 100644
+> > >> --- a/drivers/iommu/mtk_iommu.c
+> > >> +++ b/drivers/iommu/mtk_iommu.c
+> > >> @@ -1372,15 +1372,6 @@ static int mtk_iommu_probe(struct platform_de=
+vice *pdev)
+> > >>          platform_set_drvdata(pdev, data);
+> > >>          mutex_init(&data->mutex);
+> > >>
+> > >> -       ret =3D iommu_device_sysfs_add(&data->iommu, dev, NULL,
+> > >> -                                    "mtk-iommu.%pa", &ioaddr);
+> > >> -       if (ret)
+> > >> -               goto out_link_remove;
+> > >> -
+> > >> -       ret =3D iommu_device_register(&data->iommu, &mtk_iommu_ops, =
+dev);
+> > >> -       if (ret)
+> > >> -               goto out_sysfs_remove;
+> > >> -
+> > >>          if (MTK_IOMMU_HAS_FLAG(data->plat_data, SHARE_PGTABLE)) {
+> > >>                  list_add_tail(&data->list, data->plat_data->hw_list=
+);
+> > >>                  data->hw_list =3D data->plat_data->hw_list;
+> > >> @@ -1390,19 +1381,28 @@ static int mtk_iommu_probe(struct platform_d=
+evice *pdev)
+> > >>                  data->hw_list =3D &data->hw_list_head;
+> > >>          }
+> > >>
+> > >> +       ret =3D iommu_device_sysfs_add(&data->iommu, dev, NULL,
+> > >> +                                    "mtk-iommu.%pa", &ioaddr);
+> > >> +       if (ret)
+> > >> +               goto out_list_del;
+> > >> +
+> > >> +       ret =3D iommu_device_register(&data->iommu, &mtk_iommu_ops, =
+dev);
+> > >> +       if (ret)
+> > >> +               goto out_sysfs_remove;
+> > >> +
+> > >>          if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) =
+{
+> > >>                  ret =3D component_master_add_with_match(dev, &mtk_i=
+ommu_com_ops, match);
+> > >>                  if (ret)
+> > >> -                       goto out_list_del;
+> > >> +                       goto out_device_unregister;
+> > >>          }
+> > >>          return ret;
+> > >>
+> > >> -out_list_del:
+> > >> -       list_del(&data->list);
+> > >> +out_device_unregister:
+> > >>          iommu_device_unregister(&data->iommu);
+> > >>   out_sysfs_remove:
+> > >>          iommu_device_sysfs_remove(&data->iommu);
+> > >> -out_link_remove:
+> > >> +out_list_del:
+> > >> +       list_del(&data->list);
+> > >>          if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM))
+> > >>                  device_link_remove(data->smicomm_dev, dev);
+> > >>   out_runtime_disable:
+> > >>
+> > >> ---
+> > >> base-commit: bc960e3e32c8b940c10b14557271355f66ae4db1
+> > >> change-id: 20250327-fix-mtk-iommu-error-af6ec347d057
+> > >>
+> > >> Best regards,
+> > >> --
+> > >> Louis-Alexis Eyraud <louisalexis.eyraud@collabora.com>
+> > >>
+> >
