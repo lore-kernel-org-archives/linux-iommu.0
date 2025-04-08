@@ -1,241 +1,319 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2042.outbound.protection.outlook.com [40.107.237.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54A50A47
-	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 01:03:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744074227; cv=none; b=eK7TZIxi061WWCCVRRtFr2tSpH44FYnJ2cmDLQ3sNOb4vVluK6k+rZu+MfDeN0GDYdandxcezmUPkwJYVsuUCwMvzYFnofSOpcyqxI7a+qe3IoGzqsTjZhICJdywbAddcb81W2bXYRDxoiYmlWTiJ/Y9zumzzuB5e123CY1t4+M=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744074227; c=relaxed/simple;
-	bh=N3NyAZWcqvz7fu/dk5KWmiijuV2cjTsspWnmvoi+M4g=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=aGyVYZJDdi1GYvuD3UCmF+1Z4KIOc4vxX1Dt0Yf/I11eHSk95xZB2HEQesv6gPVvG/+uldU6bxgeO3akHKNDBJGDFJzSkHjVTyiYs1u0vYNDQqW/OXtHZKW53feJFPjWizkzmHEAEzW5SC/u1Mq+EPyQbaXG2K5uaD/ztkWlURs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=DMfRwPVy; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 008188462
+	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 03:08:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744081738; cv=fail; b=eD0aud8AJFrO9sM9MQNzU3HRh3jtzX6KXWMjFVfJvlHfX4FEXj/rDUiBKHHjOeKfzieKhy1VMMal1pGKHNy5Zvh4bHXq36PJDO6xUdET8wLZkoDm306hCeid8vvfWX252QEYe+rONEPNN0q1sjCvLAxRomi+tD4t3rZMMCsiXLs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744081738; c=relaxed/simple;
+	bh=9epIaHHQK8o6xLQqKwNqVSnzZZoZ860wB9KRjeQFiyE=;
+	h=Content-Type:Date:Message-Id:To:Cc:Subject:From:References:
+	 In-Reply-To:MIME-Version; b=TJ90i0FJ2TLKIwNiumzqe/rBRyJwLSctsJU7mWvYh8uQILeEuv1yYJhYPu9Yyz/IurPAw42aY2JDJxhaCP9Vr5oAwA4yJV3f8aJAhXdmTecZHH9zXHn9gKo3IZ/6hBSeFzptpxNMexEuJwL7DgJFUAIv4A3ztJKB4qiNj1p7XJ8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=MonFW/qQ; arc=fail smtp.client-ip=40.107.237.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="DMfRwPVy"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-43ef83a6bfaso15355e9.1
-        for <iommu@lists.linux.dev>; Mon, 07 Apr 2025 18:03:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1744074223; x=1744679023; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=N3NyAZWcqvz7fu/dk5KWmiijuV2cjTsspWnmvoi+M4g=;
-        b=DMfRwPVywaF6HY8o+iM6/fbyEcM6mCqaskRe5i3bOd10XIIgLbuGRXdX9tpWLMwsQw
-         JqikFS1KIr1rFefMM6K2a5B1tJzkKjB1OeutH8sVtcVZt1UAUmBDVc8qGODU1gzI7/FV
-         tTyg1RpDRXdV1WEl5erRjOaI/aJdQ3XeTvlRHGbYpQBpjR1Q4rPWAfq01NR84rlKq2py
-         xfvnzEfHYnCTtcddrFUOEgnvYh3o0FZLjFJoeavnlCNtJxBIKsfXV4rwHZ4z/1W8T9+r
-         e9a9QRJ4ok7vwSciWihjnq7SNw7uoxQDchAiqE7063p/VnhFwvUeu1SZGZiglX/aLOLW
-         qmVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744074223; x=1744679023;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=N3NyAZWcqvz7fu/dk5KWmiijuV2cjTsspWnmvoi+M4g=;
-        b=ZbGMmkern5hgYg8QQngnKrKfksz9G/WPZXBUP7GF4IW93+AlkkwBRcrXqOiWbTgwWv
-         BmjQYjEBcqwRaijaWQguwPiLwDjbyJfe0AS/VXScez7I6sOhiSI2Hw5GCtRbZ0IL99Kd
-         is8T+jlbDH7ZtLo2JXAq4DIGLSek6qZGk5q/XiJ0aVNjhtDOmYdN/j7c/8nV6p8HcRfv
-         zYgrex5vXKoVUg1hL9nONoCH/fAHvJ5D6vgBs6k5RWNNp+0IDlOzaX7smQfPP+Rhsjkd
-         bwR9WYbvSF8y4JN2umTbr2IvJqy6fGV+rEL0zIE6Y2Ezeptutxil2Vqgdqh7ZqYutuTp
-         oynw==
-X-Forwarded-Encrypted: i=1; AJvYcCVutlLDx6f5Ej6ZqVgFl1/xtOlD1vcQ2nP17MpVr2vEPbxKH5kDQgfM49Hhfk9eW8SzqSRz/A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyjCCGLaILq4zGkCod5XpleGisKmzbsVg/Khg1EBtk5CV6wp9HM
-	QE7+3con3BBMI0hduxcw89/93VWAbsa/W9Xk5Rs8WDlaHjPTgmjl7KrVQylQPJOB+O16bljS1Tj
-	k+IqmjJDavXfC7y26hrQ/lW2QsK4kDiUQHu/x
-X-Gm-Gg: ASbGncs27EwWzqDH6MxxW0FFqBcqDBqpMOTjrLdF1zqGxjZ4vsFzDYfKinZUZGNGOWB
-	kbAPobrNLdKnWGIFzmwhSCsMA+Y99yH+VClGpYFlzrjX93h89qdaZxviDbiPocaYvU59lBwQILx
-	4aaW5s4G5gbtIrC5m6xWZLAXGK
-X-Google-Smtp-Source: AGHT+IF8E+QG4m0isufZWPae8BywR8gPWm5THfralNVOJXPV/1TEOznb4Z/yFAFdMwZHDPMGruIUYT3jCRKLIcIGr/w=
-X-Received: by 2002:a05:600c:512a:b0:439:961d:fc7d with SMTP id
- 5b1f17b1804b1-43f108d2f14mr622335e9.6.1744074223271; Mon, 07 Apr 2025
- 18:03:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="MonFW/qQ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=HvjcNenitswRaTjfCaWHQ8kfrDQy6hImPMo53XINtTY+FrCxzH/lHeqE42jLHjcyqsMkEApQjJiz15fbc8H/R1ZdeaZ7+H7cizidokVttYv5wjzDfBY0cxw5IGLuiB2UDTwznxie6m/Ak9sOgR8yzisjuIOpHuRcMgTuSvj7WxkWhQHXGVInOqW/CUNbWh2N/4Px+lqIPzE0bJNXVbxqLvBvovrz6i0ycNfwR7mlS3DeADlzzoeyBluTAOntlPARRMXW1DJ3O+7ZLFy6wONQJVSscngmMUDlAcOeYZYyaFmT2MQnFDCMl3ZjGQHdD4w85oZFH5CFbqPCMmDkBsrxMQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+ZKKTRRF54mKXbKEV/KV8MFAD/i8fH+HycaO6HC1MSg=;
+ b=SyhAJQJ8fiuxyoh3jmnurhRimn3Xr8P2coR1qP6kUkhfes5PXypvDT0MhlFYvVOIGbhCRxjCW7aVYeTytWW3uuFqxO9q5sbctUHH1TI5URnMEiyi0dXTZSirJ0f5yUyrTyVnAkjMSEhoe0PJGmmVeKIWBwhghq+uMDMzXyes2PjYLJDn3KPyDqc/pYJCr8YLt+HnFu3Pv4gu/pEIoPjDBWA7fVgs24c7xsylWodFVI1MPCFEuxIywOCYq0FiMJGgPA67TmwPAGsrGB75bczX+R5BeXxRclVFz10OCBIi1Vhn66qoMtPo1ncC0eIDfH+Yzct2mJHO9gj2qqBVhdgx2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+ZKKTRRF54mKXbKEV/KV8MFAD/i8fH+HycaO6HC1MSg=;
+ b=MonFW/qQIgOaFpoasjakN+nM0TsklE1e7Bfq4/urXY/mYQmHc8+ddOT3ehnRxbnjyxGZcQZrSkI8pJ+9knPUTzASg5xE2mj3LVjpLrKK2c2H4fVrjhRAR6yAagvAu5nJCVkncONOHC2/Bpvnl8gRmpl8WhXZnaNbHdqHWWDyczOQMBy7vIdw77yZlqiXh7jG46WJUSMLcimvSwZoMYon1xou8S4oWgxAA29l1bif5u+/n79b5ZD/uBTUU4jnie5mxReQwgsy9qkPZ+iUBemRumEcJKgwBiADztf7g/9M5eqyxKFIYilGInUpJQ6P3ZxSLgkTCxNxhaR0u9ltw4WPtw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB3997.namprd12.prod.outlook.com (2603:10b6:208:161::11)
+ by CYXPR12MB9443.namprd12.prod.outlook.com (2603:10b6:930:db::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8583.42; Tue, 8 Apr
+ 2025 03:08:53 +0000
+Received: from MN2PR12MB3997.namprd12.prod.outlook.com
+ ([fe80::d161:329:fdd3:e316]) by MN2PR12MB3997.namprd12.prod.outlook.com
+ ([fe80::d161:329:fdd3:e316%6]) with mapi id 15.20.8606.029; Tue, 8 Apr 2025
+ 03:08:53 +0000
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 08 Apr 2025 12:08:49 +0900
+Message-Id: <D90XDHJWABTC.1VM2A3KYOT0UL@nvidia.com>
+To: "Abdiel Janulgue" <abdiel.janulgue@gmail.com>, <a.hindborg@kernel.org>,
+ <ojeda@kernel.org>
+Cc: "Danilo Krummrich" <dakr@kernel.org>, "Daniel Almeida"
+ <daniel.almeida@collabora.com>, "Robin Murphy" <robin.murphy@arm.com>,
+ "Alex Gaynor" <alex.gaynor@gmail.com>, "Boqun Feng" <boqun.feng@gmail.com>,
+ "Gary Guo" <gary@garyguo.net>, =?utf-8?q?Bj=C3=B6rn_Roy_Baron?=
+ <bjorn3_gh@protonmail.com>, "Benno Lossin" <benno.lossin@proton.me>, "Alice
+ Ryhl" <aliceryhl@google.com>, "Trevor Gross" <tmgross@umich.edu>, "open
+ list:DMA MAPPING HELPERS DEVICE DRIVER API [RUST]"
+ <rust-for-linux@vger.kernel.org>, "Marek Szyprowski"
+ <m.szyprowski@samsung.com>, "open list:DMA MAPPING HELPERS"
+ <iommu@lists.linux.dev>, "open list" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 3/3] rust: dma: add as_slice/write functions for
+ CoherentAllocation
+From: "Alexandre Courbot" <acourbot@nvidia.com>
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: aerc 0.20.1-0-g2ecb8770224a
+References: <20250326201230.3193329-1-abdiel.janulgue@gmail.com>
+ <20250326201230.3193329-4-abdiel.janulgue@gmail.com>
+In-Reply-To: <20250326201230.3193329-4-abdiel.janulgue@gmail.com>
+X-ClientProxiedBy: OS7PR01CA0191.jpnprd01.prod.outlook.com
+ (2603:1096:604:250::10) To MN2PR12MB3997.namprd12.prod.outlook.com
+ (2603:10b6:208:161::11)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250310-dmem-cgroups-v1-0-2984c1bc9312@kernel.org>
- <f5fdc666-dd72-4a4f-9270-b539a3179382@amd.com> <20250310-eccentric-wonderful-puffin-ddbb26@houat>
- <CAPM=9tzkLXOz=-3eujUbbjMHunR+_5JZ4oQaqNmbrWWF9WZJ0w@mail.gmail.com>
- <e08f10da-b0cd-444b-8e0b-11009b05b161@amd.com> <CAPM=9twgFt43OKqUY0TNopTmibnR_d891xmV=wFM91n604NUCw@mail.gmail.com>
- <5ed87c80-6fe3-4f8c-bb98-ca07f1db8c34@amd.com> <20250403-quick-salamander-of-charisma-cab289@houat>
- <202c3a58-97a3-489c-b3f2-b1fd2735bd19@amd.com> <CABdmKX2LhrcyDM0r1tytt2vKLuCLGsxZaGHgN+u1hUmEMXuGtw@mail.gmail.com>
- <86a12909-4d40-46ec-95cc-539c346914e4@amd.com>
-In-Reply-To: <86a12909-4d40-46ec-95cc-539c346914e4@amd.com>
-From: "T.J. Mercier" <tjmercier@google.com>
-Date: Mon, 7 Apr 2025 18:03:31 -0700
-X-Gm-Features: ATxdqUG1XcwuvWGPoKuoToYV-NskQlGn2cxAGlcz7gx_QBU2p615RFpmzdS5pyY
-Message-ID: <CABdmKX1B9OS0GK51nx0NjYs3E_1UVwCDvmiZOA3UhFjDeZcuxg@mail.gmail.com>
-Subject: Re: [PATCH RFC 00/12] dma: Enable dmem cgroup tracking
-To: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Cc: Maxime Ripard <mripard@kernel.org>, Dave Airlie <airlied@gmail.com>, 
-	Andrew Morton <akpm@linux-foundation.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	John Stultz <jstultz@google.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, Simona Vetter <simona@ffwll.ch>, Tomasz Figa <tfiga@chromium.org>, 
-	Mauro Carvalho Chehab <mchehab@kernel.org>, Ben Woodard <woodard@redhat.com>, 
-	Hans Verkuil <hverkuil@xs4all.nl>, 
-	Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>, linux-mm@kvack.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	linaro-mm-sig@lists.linaro.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3997:EE_|CYXPR12MB9443:EE_
+X-MS-Office365-Filtering-Correlation-Id: 795f83b3-2eee-4c8f-bc83-08dd764ab13f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|10070799003|7416014|366016|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?YnBTZkdSa3g0dndrTmpZSkxqVkU3M3VTalVIZ2dHODZNUjBOLzhjUjdpdU1V?=
+ =?utf-8?B?ZThCSXlSZE40TEx3cEp5SVI0TUczcjdHNXpnZ2YzVDBKUVdqUlhrSUxGaFVK?=
+ =?utf-8?B?L3FRTlZmMG9DU0wxWW1wNTUvYVpkSjFsMUhmZURuTFNlcFVnMlVzbThYYkdE?=
+ =?utf-8?B?eGFuOUg3UGZQT0VibnVvb09aM2NVRjRtNytDcUkrVTUyNzhSQWgxbzFzRUVW?=
+ =?utf-8?B?dW5pcTliL1NCODE1MXFDdVQ1aTQ2d1NJTkNkdlJKeHc0QU1VK1lBVVh5em5O?=
+ =?utf-8?B?Q1oyd2FRd1dSNDNReFZzbUhIVDVoUFRXV1Zka3JaZEMzZHRQVGlhU1pzQ29l?=
+ =?utf-8?B?emZZRUFOT1h2clJlYlJIclY0QjNqZzhQZWZEekxRMDZJcDJGK1orblN3dFl5?=
+ =?utf-8?B?aURkek1hN1pQSWVDaGZmc1BQVHVRaWl3MWVhMmNyL1FJZEtwdWs2TFYycmlS?=
+ =?utf-8?B?UmtqSnF1c3YyNk9kWXlza09VUUEyVkdVeFN0Z1NjcDZBREViUmdsZzVOK2Rj?=
+ =?utf-8?B?ZFhva0I0M1g0MHNHcnJLM01TRlRBNDg1NjhnSVJTaXZOT2Zaa21aeUZYc3lk?=
+ =?utf-8?B?ZmNSa2ZMVHJvdUpNYmZwcXBWbDlJbWI4dUM0cmp2ZTRyNTc0NlRsVTlwblBo?=
+ =?utf-8?B?TlJ1cUxDNFd6dzYzZEtjUWVuMXhNWWpOcm45NnM5bjFJQUpGdnRoYmR0NnBN?=
+ =?utf-8?B?dzZGcnJRc1g4VjQ0ekdGVjgycmlZYjh0dXEvcUMrb3ZrYWNuU2d0cXdZQmlT?=
+ =?utf-8?B?RjliQVZjNlRUMGxnNzc1dndteENKeHl2cHhpbHBzMXk1RnhJSEErYkpncnk0?=
+ =?utf-8?B?RDdVbGNsQXNLMDhkemdHdWRkNEU3K2x1VkR6aFlHUE5NUEprRHh6WVhRWlQr?=
+ =?utf-8?B?UlM0UlhnZS96UWRsSWhkMEgyRWp1WlY3dFMybWNrQXVUR1BWdlJnYkFqTjlI?=
+ =?utf-8?B?eDQ4KytOMVBoUXF4eFlES1c0OVY0ODI4ZkFMRm1PNGRoVk1jMVIzOHpXcWxN?=
+ =?utf-8?B?L2FkRGR2UHdXcDAvYWdMemN5bUZsaFdpRkF5a1BuVmJKNXYzdExlNDNReFFx?=
+ =?utf-8?B?eHY1RS9Gb0l3QUVrRHVGT0RDRDhBQVIzOEVMSWtwT1A4VkM2ZzZLYUpRMHF5?=
+ =?utf-8?B?aStzNnY2Sk15RENYa2hVc1psZ0FLN3pUeVM4U3VmcmRFN2hYSUc1b1p0Wm9Y?=
+ =?utf-8?B?RmxCZjlvUjVpbjdwaEJYb2x5ZFR4aEM4VmxHc092V0lWUkorNG5JOXVPNXBv?=
+ =?utf-8?B?V3ArQnI0MHpnSENKTERBU2JNNDg5bDNpRHdkSG1md1NKN25uWlVycEc5R2dW?=
+ =?utf-8?B?Ni9DS0svdk1Xa3pNejdkZlBLNFdScFZ1UFh6THZkSGVuSXg2YlNubnZjSVo0?=
+ =?utf-8?B?d1VxdmRlUFN1TzZPMDF2QmR5cWZmaG1ZQzQrVWZYUlFTa09EU0xKNWRwSTli?=
+ =?utf-8?B?WmdlSEt4aEVGUjd1WVhGZDMrK2RQbHVxQkZVZURvdjhFeU53U1BVQlZKMmpP?=
+ =?utf-8?B?enFKSmNRbWpJajVKN0FNSWNNaVBwSHNUa1Q5bWNyd2taeWNJWmYrZE9MVmFp?=
+ =?utf-8?B?RGlIUTVXUGhra1lHQUFCTUxOWUVRb1FRcTRoQ0tvdFIzbklvQVRNdDd2blpx?=
+ =?utf-8?B?N1hZL2ZXOXNlaTNhWFVHRlhKRGQzK3J2TG9RNUgrU2czVFZ3TmtRODhwY1lS?=
+ =?utf-8?B?ems0U0Z3WHFhcERKcy81MjV0MHVYMHd3UE10YmhObHltdmErdTNyaHBvRnNH?=
+ =?utf-8?B?SE5LSUxaMmR2dmpOMnRmbEl5eGVlUkRGYXFlYWFhZ1NwTTdhcmdndUtPSHdP?=
+ =?utf-8?B?ZU9RSnZlbzhnOWdYalhjUjF6bzlSVVdZOE5ZT2sraGhEaHovcTRJTGk3NGRG?=
+ =?utf-8?Q?1jbUzLnwJ/H7C?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3997.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(10070799003)(7416014)(366016)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?YjJGSmR0bUljc3lDUWt0TWZqRnZyNG55UUliaWJieUlUNWIrU2R6TjRla1hD?=
+ =?utf-8?B?MGcyZTg3dFVkUXQrSEFHdWJiNmdJa1N0QmJwTmhuUXNFQTRKbVpoa20yN2Fv?=
+ =?utf-8?B?dTQyNHY0cUJMVXVQenp1WkJYZ1VUWHp0VmxkTDBIR3ZlK244dnZ6MXFJMXYx?=
+ =?utf-8?B?OGVEKzlySGYzNStRK09BamF3NFFibU5TMWxpM0RsaEdWdXhBUHhwbEpEU3NV?=
+ =?utf-8?B?d3dXaktPbXBqTTlRM3JpSW9yOStINUw2ellpUWpHUWZMNk50cUtOK05ablJO?=
+ =?utf-8?B?MHJ6dWphV2xpa2xwSDRjTlFEYWFQTlNIM2xHdmY1TGxQdzVkdGZRQkdSakU3?=
+ =?utf-8?B?aGVYRlBhUUNaalVLL2RjVFFybG1xUk9mYUJCNFFxVGFrejNMSHVDUXNxaTRF?=
+ =?utf-8?B?WUVHcHZVRkg5UlhWMEZBZHMycWJKOUI5N0VRaXVCcVdlSHgxWlM4eXRiUzNE?=
+ =?utf-8?B?NHFkNmF5Nm5HZ25ub3dMaWZlVjZWUU0xWXVrc3NvS1UzREJQOExqWTF2SGhk?=
+ =?utf-8?B?KzZ4aG1SRWdnWnI0aGI1cHdQOTY1cmVMaU9SaDB0MXNIRWFSVyt3ek1PUjhv?=
+ =?utf-8?B?VkJtMXR0a21TTGFrWk01aXN6alpINUhodzFXV0ZiZExQWFY0cGpOVW9kZ2Ux?=
+ =?utf-8?B?QXBQb2hvTStyTVhtbWJXWHhkajJDTHZRcXArRWYvZ1JzNG1SYzk3ZXVoNGFv?=
+ =?utf-8?B?dWpJekZuWGJSRjhsd0RNMzgvRjlxWDI2OUxvS1FCNGp3SDc0R2NDZithMGFn?=
+ =?utf-8?B?TzM2djl3OGtkbEtDZU9ISXhmVUx0VTBWbDRXc1dDZDB2ZWs4d0tPQ1NrRTJQ?=
+ =?utf-8?B?WHdHNHdmQmp2TXhIL1FEVnRXVHpWdWFoSGtWVm15RS9ucXV5Y0tSeEtoSTE5?=
+ =?utf-8?B?VEdOZUhKQ2w4WDhSbmNyOHhsTis2V3laaWt4Q2tJZFFIblVsb1RFc3Q2Nm5r?=
+ =?utf-8?B?T2VpVVpKTkFkSHZOQWh6TXV5UEE5d1VaL3l0WkJzdGpkd0duaDRqRzBlYkJx?=
+ =?utf-8?B?a3hBUktvVU9OR3Jvd05ubEdKTGxsNjR5QVlEdEppaG5xYlRQdWtyUHJnalhk?=
+ =?utf-8?B?SytkTWRGcExVMjdab2JRYjlXd3NodUxkTHRVVUZsalNVMjU4Yy9pdjVPR1hF?=
+ =?utf-8?B?cHB4Y3FhRk4rVGNMeHQzSFB3Y0pxMXNKSTRpSjZWVVR0ZHkrSk5kUHZxRDdL?=
+ =?utf-8?B?SjdVbi9QQ0tSNWVJSUNSSE8xRy9DN0NyRW5OQ0tvK1c3WmFIVGZ1L0VSaWlZ?=
+ =?utf-8?B?Ni9QengzWGtOeU9TQk96WEYwaG4wbEZCRnN0bVFBYm9sdjdUNVU4OUdOL1cv?=
+ =?utf-8?B?ZGpLSnpzTHVuOHV1UzVvOTNNUUxmNFhFSlE0ZG9ORk5PbTJPckxKNVJkcWVX?=
+ =?utf-8?B?REJjVDZRUjhkV0hUWmQrdXgxeGJiNW1DUURqajVGQUpVSE9PWnBmWlU1cnJJ?=
+ =?utf-8?B?c04zZ1Y5OGMweml1Ym8zQjRFQ09kZ2F1aVFwT2lneE5IR2lodXo4bWZEcUFx?=
+ =?utf-8?B?cW8yM3dPRkczczJoWmM0YmlHUUl4SVlNZXJ3eTduWFVjUDlqeDc2YmlUNGFV?=
+ =?utf-8?B?U0FIY2ExeUc5S0xjQnhZVnFUYlB1ZW9lLzRxZXFBT1h5SHdqVkNDUUxLSWNm?=
+ =?utf-8?B?S2ExbVBmd00wbmJVOSszZU5aSkNGYlJqbnJhVEFHNnd6dWh5eDl5QkZkNm4r?=
+ =?utf-8?B?MC9hUjBRNVpEMTN5WFA5UnJXL2F4UHV1cC8yMUhKeWFHajliVmtpSERyQ01G?=
+ =?utf-8?B?cE5BTUFGcHIxWDROaWNlczNHR0l5Z1R6Z3F6ZEVncTU4NndEZ1djQ3NodDg3?=
+ =?utf-8?B?SHFCek8xaisxSE4zN1Q0RWNPQ0U0d25HYlJ0Z0EvcFY4QUp5OG1zKzhkM2ZE?=
+ =?utf-8?B?U0xUMVREQWlDWm9Xa3lxSHZBVUU0bExhSkl6bmYwRGphZzgzaUFxbzFQUGcw?=
+ =?utf-8?B?NnNFN1N4RHhhd1AzYTEzeDlxU0RkMHZnK2p6N2xCZW95S0JXTThtbGY4aHc2?=
+ =?utf-8?B?Q1VHYzBYbE9DbUNwOHptb1pZNnlnd0FHamFOK2RRcGRYZjRBV0FXUzZUZzlo?=
+ =?utf-8?B?U1kvemFxRmpqb2pPeVpEOGRuTmw0TGltNWNyYWVLcnhucDJIZE50SGpJaFNp?=
+ =?utf-8?B?dThxaEVXcHJkaTF0a2lsbXlBa0o0emVETERQZG5GcG9WekFlcjlYc2kyZXhM?=
+ =?utf-8?Q?cnymGL/Ra9+R2YETrH6HE5b7cSF+8I5y02y5GDI3QdaA?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 795f83b3-2eee-4c8f-bc83-08dd764ab13f
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3997.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2025 03:08:53.2953
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fxIOGyOAJplypZb/HPmGPjAjG9mjXQBd0o55BtdUuwZuT6lxt7Ef4vJq0e7GGDSIlpAAfco4g7Alxd2BOtomDg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYXPR12MB9443
 
-On Mon, Apr 7, 2025 at 4:46=E2=80=AFAM Christian K=C3=B6nig <christian.koen=
-ig@amd.com> wrote:
->
-> Am 05.04.25 um 03:57 schrieb T.J. Mercier:
-> > On Fri, Apr 4, 2025 at 1:47=E2=80=AFAM Christian K=C3=B6nig <christian.=
-koenig@amd.com> wrote:
-> >> Hi Maxime,
-> >>
-> >> Am 03.04.25 um 17:47 schrieb Maxime Ripard:
-> >>> On Thu, Apr 03, 2025 at 09:39:52AM +0200, Christian K=C3=B6nig wrote:
-> >>>>> For the UMA GPU case where there is no device memory or eviction
-> >>>>> problem, perhaps a configurable option to just say account memory i=
-n
-> >>>>> memcg for all allocations done by this process, and state yes you c=
-an
-> >>>>> work around it with allocation servers or whatever but the behaviou=
-r
-> >>>>> for well behaved things is at least somewhat defined.
-> >>>> We can have that as a workaround, but I think we should approach tha=
-t
-> >>>> differently.
-> >>>>
-> >>>> With upcoming CXL even coherent device memory is exposed to the core
-> >>>> OS as NUMA memory with just a high latency.
-> >>>>
-> >>>> So both in the CXL and UMA case it actually doesn't make sense to
-> >>>> allocate the memory through the driver interfaces any more. With
-> >>>> AMDGPU for example we are just replicating mbind()/madvise() within
-> >>>> the driver.
-> >>>>
-> >>>> Instead what the DRM subsystem should aim for is to allocate memory
-> >>>> using the normal core OS functionality and then import it into the
-> >>>> driver.
-> >>>>
-> >>>> AMD, NVidia and Intel have HMM working for quite a while now but it
-> >>>> has some limitations, especially on the performance side.
-> >>>>
-> >>>> So for AMDGPU we are currently evaluating udmabuf as alternative. Th=
-at
-> >>>> seems to be working fine with different NUMA nodes, is perfectly mem=
-cg
-> >>>> accounted and gives you a DMA-buf which can be imported everywhere.
-> >>>>
-> >>>> The only show stopper might be the allocation performance, but even =
-if
-> >>>> that's the case I think the ongoing folio work will properly resolve
-> >>>> that.
-> >>> I mean, no, the showstopper to that is that using udmabuf has the
-> >>> assumption that you have an IOMMU for every device doing DMA, which i=
-s
-> >>> absolutely not true on !x86 platforms.
-> >>>
-> >>> It might be true for all GPUs, but it certainly isn't for display
-> >>> controllers, and it's not either for codecs, ISPs, and cameras.
-> >>>
-> >>> And then there's the other assumption that all memory is under the
-> >>> memory allocator control, which isn't the case on most recent platfor=
-ms
-> >>> either.
-> >>>
-> >>> We *need* to take CMA into account there, all the carved-out, device
-> >>> specific memory regions, and the memory regions that aren't even unde=
-r
-> >>> Linux supervision like protected memory that is typically handled by =
-the
-> >>> firmware and all you get is a dma-buf.
-> >>>
-> >>> Saying that it's how you want to workaround it on AMD is absolutely
-> >>> fine, but DRM as a whole should certainly not aim for that, because i=
-t
-> >>> can't.
-> >> A bunch of good points you bring up here but it sounds like you misund=
-erstood me a bit.
-> >>
-> >> I'm certainly *not* saying that we should push for udmabuf for everyth=
-ing, that is clearly use case specific.
-> >>
-> >> For use cases like CMA or protected carve-out the question what to do =
-doesn't even arise in the first place.
-> >>
-> >> When you have CMA which dynamically steals memory from the core OS the=
-n of course it should be accounted to memcg.
-> >>
-> >> When you have carve-out which the core OS memory management doesn't ev=
-en know about then it should certainly be handled by dmem.
-> >>
-> >> The problematic use cases are the one where a buffer can sometimes be =
-backed by system memory and sometime by something special. For this we don'=
-t have a good approach what to do since every approach seems to have a draw=
- back for some use case.
-> > This reminds me of memory.memsw in cgroup v1, where both resident and
-> > swapped memory show up under the same memcg counter. In this dmem
-> > scenario it's similar but across two different cgroup controllers
-> > instead of two different types of system memory under the same
-> > controller.
->
-> Yeah, nailed it. Exactly that was one of the potential solutions I had in=
- mind as well.
->
-> It's just that I abandoned that idea when I realized that it actually wou=
-ldn't help.
->
-> For example imagine you have 8GiB system and 8GiB local memory. So you se=
-t your cgroup limit to 12GiB. But when an application tries to use full 12G=
-iB as system instead of a combination of the two you still run into the OOM=
- killer.
+Hi Abdiel,
 
-Yup to solve this with kernel enforcement, we would need a counter
-that includes both types. Then what if that system memory can be
-swapped and exceeds a swap-only counter. Yet another counter? (dmem,
-dmem+system, dmem+system+swap) :\
-
-> > memsw doesn't exist in v2, and users are asking for it back. [1] I
-> > tend to agree that a combined counter is useful as I don't see a great
-> > way to apply meaningful limits to individual counters (or individual
-> > controller limits in the dmem+memcg case) when multiple cgroups are
-> > involved and eviction can cause memory to be transferred from one
-> > place to another. Sorry I'm not really offering a solution to this,
-> > but I feel like only transferring the charge between cgroups is a
-> > partial solution since the enforcement by the kernel is independent
-> > for each controller. So yeah as Dave and Sima said for accounting I
-> > guess it works, and maybe that's good enough if you have userspace
-> > enforcement that's smart enough to look in all the different places.
-> > But then there are the folks asking for kernel enforcement. Maybe just
-> > accounting as best we can is a good place to start?
+On Thu Mar 27, 2025 at 5:11 AM JST, Abdiel Janulgue wrote:
+> Add unsafe accessors for the region for reading or writing large
+> blocks of data.
 >
-> So we would account to memcg, but don't apply it's limits?
-
-I was thinking just do the accounting independently for each resource
-and not rely on the kernel for enforcement of combinations of
-resources across controllers. (The status quo.) That shouldn't affect
-how memcg enforces limits.
-
-If we could compose a "synthetic" counter file in cgroupfs at runtime
-that combines multiple arbitrary existing counters I think that'd help
-address the enforcement side. It'd also conveniently solve the memsw
-problem in v2 since you could combine memory.current and
-memory.swap.current into something like memsw.current and set a
-memsw.max, and only users who care about that combination would pay
-the overhead for it.
-
-> Mhm, that's a kind of interesting idea. It at least partially solves the =
-problem.
+> Reviewed-by: Andreas Hindborg <a.hindborg@kernel.org>
+> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+> ---
+>  rust/kernel/dma.rs | 87 ++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 87 insertions(+)
 >
-> Regards,
-> Christian.
->
-> >
-> > [1] https://lore.kernel.org/all/20250319064148.774406-5-jingxiangzeng.c=
-as@gmail.com/
->
+> diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
+> index 24a6f10370c4..24025ec602ff 100644
+> --- a/rust/kernel/dma.rs
+> +++ b/rust/kernel/dma.rs
+> @@ -218,6 +218,93 @@ pub fn dma_handle(&self) -> bindings::dma_addr_t {
+>          self.dma_handle
+>      }
+> =20
+> +    /// Returns the data from the region starting from `offset` as a sli=
+ce.
+> +    /// `offset` and `count` are in units of `T`, not the number of byte=
+s.
+> +    ///
+> +    /// Due to the safety requirements of slice, the caller should consi=
+der that the region could
+> +    /// be modified by the device at anytime. For ringbuffer type of r/w=
+ access or use-cases where
+> +    /// the pointer to the live data is needed, `start_ptr()` or `start_=
+ptr_mut()` could be
+> +    /// used instead.
+> +    ///
+> +    /// # Safety
+> +    ///
+> +    /// * Callers must ensure that no hardware operations that involve t=
+he buffer are currently
+> +    ///   taking place while the returned slice is live.
+> +    /// * Callers must ensure that this call does not race with a write =
+to the same region while
+> +    ///   while the returned slice is live.
+> +    pub unsafe fn as_slice(&self, offset: usize, count: usize) -> Result=
+<&[T]> {
+> +        let end =3D offset.checked_add(count).ok_or(EOVERFLOW)?;
+> +        if end >=3D self.count {
+
+IIUC this should be `if end > self.count`.
+
+> +            return Err(EINVAL);
+> +        }
+> +        // SAFETY:
+> +        // - The pointer is valid due to type invariant on `CoherentAllo=
+cation`,
+> +        // we've just checked that the range and index is within bounds.=
+ The immutability of the
+> +        // of data is also guaranteed by the safety requirements of the =
+function.
+> +        // - `offset` can't overflow since it is smaller than `self.coun=
+t` and we've checked
+> +        // that `self.count` won't overflow early in the constructor.
+> +        Ok(unsafe { core::slice::from_raw_parts(self.cpu_addr.add(offset=
+), count) })
+> +    }
+> +
+> +    /// Performs the same functionality as [`CoherentAllocation::as_slic=
+e`], except that a mutable
+> +    /// slice is returned.
+> +    ///
+> +    /// # Safety
+> +    ///
+> +    /// * Callers must ensure that no hardware operations that involve t=
+he buffer are currently
+> +    ///   taking place while the returned slice is live.
+> +    /// * Callers must ensure that this call does not race with a read o=
+r write to the same region
+> +    ///   while the returned slice is live.
+> +    pub unsafe fn as_slice_mut(&self, offset: usize, count: usize) -> Re=
+sult<&mut [T]> {
+> +        let end =3D offset.checked_add(count).ok_or(EOVERFLOW)?;
+> +        if end >=3D self.count {
+
+Ditto.
+
+> +            return Err(EINVAL);
+> +        }
+> +        // SAFETY:
+> +        // - The pointer is valid due to type invariant on `CoherentAllo=
+cation`,
+> +        // we've just checked that the range and index is within bounds.=
+ The immutability of the
+> +        // of data is also guaranteed by the safety requirements of the =
+function.
+> +        // - `offset` can't overflow since it is smaller than `self.coun=
+t` and we've checked
+> +        // that `self.count` won't overflow early in the constructor.
+> +        Ok(unsafe { core::slice::from_raw_parts_mut(self.cpu_addr.add(of=
+fset), count) })
+> +    }
+> +
+> +    /// Writes data to the region starting from `offset`. `offset` is in=
+ units of `T`, not the
+> +    /// number of bytes.
+> +    ///
+> +    /// # Safety
+> +    ///
+> +    /// * Callers must ensure that no hardware operations that involve t=
+he buffer overlaps with
+> +    ///   this write.
+> +    /// * Callers must ensure that this call does not race with a read o=
+r write to the same region
+> +    ///   that overlaps with this write.
+> +    ///
+> +    /// # Examples
+> +    ///
+> +    /// ```
+> +    /// # fn test(alloc: &mut kernel::dma::CoherentAllocation<u8>) -> Re=
+sult {
+> +    /// let somedata: [u8; 4] =3D [0xf; 4];
+> +    /// let buf: &[u8] =3D &somedata;
+> +    /// // SAFETY: No hw operation on the device and no other r/w access=
+ to the region at this point.
+> +    /// unsafe { alloc.write(buf, 0)?; }
+> +    /// # Ok::<(), Error>(()) }
+> +    /// ```
+> +    pub unsafe fn write(&self, src: &[T], offset: usize) -> Result {
+> +        let end =3D offset.checked_add(src.len()).ok_or(EOVERFLOW)?;
+> +        if end >=3D self.count {
+
+Ditto.
+
+> +            return Err(EINVAL);
+> +        }
+> +        // SAFETY:
+> +        // - The pointer is valid due to type invariant on `CoherentAllo=
+cation`
+> +        // and we've just checked that the range and index is within bou=
+nds.
+> +        // - `offset` can't overflow since it is smaller than `self.coun=
+t` and we've checked
+> +        // that `self.count` won't overflow early in the constructor.
+> +        unsafe {
+> +            core::ptr::copy_nonoverlapping(src.as_ptr(), self.cpu_addr.a=
+dd(offset), src.len())
+> +        };
+
+How about leveraging as_slice_mut() so this unsafe block can be removed?
+
+Cheers,
+Alex.
+
