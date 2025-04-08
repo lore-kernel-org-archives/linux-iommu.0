@@ -1,89 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CA76191F79;
-	Tue,  8 Apr 2025 22:00:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F340C255247
+	for <iommu@lists.linux.dev>; Tue,  8 Apr 2025 22:25:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744149603; cv=none; b=RRZuAYeu7xiLhw/P74gxAfNdlAp2Bo9vx2OlpiV80zK5ZykkmMlPkWbropGh4Vj+z15EOmp8Hekgnwrgz0kBObSCTucYaqGm5llE1mynvy8R5HCEtSrQr145uq6RcFx/56AsXUrHeR0LR9ZF2skNWCucFOa7vRgVsweYgrU1lyw=
+	t=1744151114; cv=none; b=Ip2yqBZBSM4IDo3/8GhEXVUe+3wzTs2WdfFJFXI5rHY+1CNyF99tkJVOXT3HYDkc0ejeyN+S7JxXXCsr3yeZIZtgvZiQxfUGyW1zjA7HQ0sphHw9QWnYOBnWpATzOXtj4u6QBx4LkpOtMG467anJAmcV35HfFbzpDDQsL1+lIYw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744149603; c=relaxed/simple;
-	bh=AjMKNMsrAuLwoFrp7noFAOmIvL9BDDzrxVNpfknHieU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qAfX4vKvIy/WT4JqypVI16xnS9mDURDTgZ08h+LJSYHLZeOK7Yez9k/cJTCLW5D6b0uUbcf8OFJX2Nc0F8L9d+DPYw1nmKt5q+nGJpu85VO/prAP/TsT5pSxBFCuZ0DLQFIu9l5mJim5ibnLYTIRnHowKx5/FqWIqrXYzG7BI5Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pivb9WHT; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744151114; c=relaxed/simple;
+	bh=ccAlpK2GJ8AJvkq+fowLZF3c1eIeInVWDTpL7xW7Uc8=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=pnWk8pNxLZPe3PnYqAIMEibMj2LMhHUZ1NDs/o4b7+hJwUlnBL9IEREEKroUmMF/deovr9AjhLlC6/1L0FPaBTIaHk5WKqkc6Yo2QbwxOSVzTQ728pRq5y6sLqyKfJuVm0khndvjVVBZVtU26euFRoHrhhNo2/0WamB+VT1vgXE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pBgjLumj; arc=none smtp.client-ip=209.85.210.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pivb9WHT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57AB6C4CEE5;
-	Tue,  8 Apr 2025 21:59:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744149602;
-	bh=AjMKNMsrAuLwoFrp7noFAOmIvL9BDDzrxVNpfknHieU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Pivb9WHTBk3nM3kLzdBe4Cgw3V8ZmhTAp68CWQSh4eFgVZr3Y5f6m1NzQTE+iLE22
-	 8b3A9QxiWPKLjQRtFnBRqgDi8uMFmaRxUR07dM+ddGQiGgE8i1uwxdVOxE6SjLk3HT
-	 WprOXVNhaxds+y4eyWOJrfe9eMlSY08bd/fglj27xh8Bnb/a/rg/fhXxPUYIbxnJj+
-	 9tU2uNzYFQKZdvJIUVHHQtlH9KUCW3xmcJ2x2CDepzolmRN+CkRE6grim3gvruFzxx
-	 Hpl23JC0h+2S55LrQ/AlAk0xQqXzma8PRfYDky7V0Lw4JVGEABRKqA/TVa/kvD0GBo
-	 XtMIWG1FtfVJw==
-Date: Tue, 8 Apr 2025 23:59:56 +0200
-From: Danilo Krummrich <dakr@kernel.org>
-To: Benno Lossin <benno.lossin@proton.me>
-Cc: Andreas Hindborg <a.hindborg@kernel.org>,
-	Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>, ojeda@kernel.org,
-	Daniel Almeida <daniel.almeida@collabora.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	"open list:DMA MAPPING HELPERS DEVICE DRIVER API [RUST]" <rust-for-linux@vger.kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/3] rust: dma: convert the read/write macros to return
- Result
-Message-ID: <Z_WcXFJQtFTbHI6b@cassiopeiae>
-References: <20250326201230.3193329-1-abdiel.janulgue@gmail.com>
- <20250326201230.3193329-3-abdiel.janulgue@gmail.com>
- <nujfDI6IKBsjlQtGWaMrhjZSQYYeQYckCyOUs9jIzgZGsP1WTalJE0sSg6tp_WMACWo9mzuDfpdzsIlmkKnL8w==@protonmail.internalid>
- <D8REH728BFP1.2BGE9DTRP2IPU@proton.me>
- <87ldsahlxr.fsf@kernel.org>
- <NBhs6N93VPsKCxDOdnggZCiQWIxBfcYJU49nl2DmkqlTDaZet_q7V-_LjkS_uZPtkb8u2yW_oRh0TVjV3cLdkQ==@protonmail.internalid>
- <CANiq72mahS0jiOHv-7RE8QWQunYo0bJqeGo-FAVoUL7v42RsoQ@mail.gmail.com>
- <87a58qh1w8.fsf@kernel.org>
- <D91LB39LUIG6.1P7MMHZ6YHSMA@proton.me>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pBgjLumj"
+Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-73691c75863so7648233b3a.0
+        for <iommu@lists.linux.dev>; Tue, 08 Apr 2025 15:25:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1744151112; x=1744755912; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=sIgnrXOk29PXtGhJ0MJfZMA68k7F5ofitj+uGIUhqWQ=;
+        b=pBgjLumjeUThdSbFAbPa7cuBJYsiBBuXju+YDc4d6t2/Xqw2bfAJqBBRCgEfXjMtU3
+         gfC9g7vDYZEWLUT5+tBOvn/92fnWOCjKZdxuOiNDLrrO86YQMDwyIaMVqXhqOrzhF+sz
+         s9WoAXG+lXlhFcxWsI98pL8W8plioTfR54S33weQbHrJZeXQYtey5EfFFNpKmz4tMXb9
+         5NG2n3+qRc/NrFld55bDO3o8bUJyP0ZaOkQwf+nwpvlLOJVKOtmV/tUkIyTO1dVFLLUo
+         0nRaTKwsJYpGdMzvVIbGQyl15XoS2rg+0brW7OnJ6ng1NcVmVNS/PkX6e1zl/tqtVkJI
+         oKhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744151112; x=1744755912;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sIgnrXOk29PXtGhJ0MJfZMA68k7F5ofitj+uGIUhqWQ=;
+        b=fUk47kOjssSCn05mMDwBDUCJ7osrSgIXVpt8ZnUK+AcxUTMbxjvWfuk/4B+0nlPag7
+         R9uAYQYgvshw1zbFq8HVjZUlnrWT9hv+ZB64hP9xzKDdGJ4wkxCSJ6oZ77sVa1r3ahq2
+         E5ExrR7Jlhuo7KdNp9OCwLByswAgRo1L4ihYMzhEJapn1UCJ4EoJ3GJW1mSat1iHAn5h
+         scTBpfuRmrn59LBb1MebDlRvKZSnfh3n8qBnfsF3W71Xcs0juKMI1Fxe6adopgZTwYxy
+         VtMIzYPD+7RVTixzxjcAh98T0TT267J04GKoIAyuPnyyTRtAqI1JWrNa8DA8FHkIlc0i
+         FGuw==
+X-Forwarded-Encrypted: i=1; AJvYcCWVAdHsc6+20ewovVpPchAm+a2toic0qNmDVb1/Ozh2S+QJIYqTtXjZKLmD0UnLGyeKQ0Grmw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxXzjAkLhSL/oI35k83V2EU/J6vfSNtmvb+RTz1BovSx3IsHJzb
+	Zw1i0mOun9LMKPWrKwrgZUDlYOwWtoCIUe+VYFve2P0ew6lFgvgeLyxf8z2D1hi6Byq3mWc7XtI
+	cpg==
+X-Google-Smtp-Source: AGHT+IHTqPfvPHA35LrKeVma6IN8V+jh3iCyiyfrKN6jlTE/sMMd957ClboQYBC0BvqEPRp7vq7SpPie8ks=
+X-Received: from pfbef12.prod.google.com ([2002:a05:6a00:2c8c:b0:730:796b:a54a])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:2285:b0:736:baa0:2acd
+ with SMTP id d2e1a72fcca58-73bae55297bmr811030b3a.20.1744151112304; Tue, 08
+ Apr 2025 15:25:12 -0700 (PDT)
+Date: Tue, 8 Apr 2025 15:25:10 -0700
+In-Reply-To: <8b061b2d-7137-498e-93b2-0cb714824d7b@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <D91LB39LUIG6.1P7MMHZ6YHSMA@proton.me>
+Mime-Version: 1.0
+References: <20250404193923.1413163-1-seanjc@google.com> <20250404193923.1413163-27-seanjc@google.com>
+ <8b061b2d-7137-498e-93b2-0cb714824d7b@redhat.com>
+Message-ID: <Z_WiRqRjNzmrh_YP@google.com>
+Subject: Re: [PATCH 26/67] iommu/amd: KVM: SVM: Delete now-unused
+ cached/previous GA tag fields
+From: Sean Christopherson <seanjc@google.com>
+To: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, kvm@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>, 
+	Joao Martins <joao.m.martins@oracle.com>, David Matlack <dmatlack@google.com>
+Content-Type: text/plain; charset="us-ascii"
 
-On Tue, Apr 08, 2025 at 09:54:13PM +0000, Benno Lossin wrote:
-> On Tue Apr 8, 2025 at 9:46 PM CEST, Andreas Hindborg wrote:
-> > "Miguel Ojeda" <miguel.ojeda.sandonis@gmail.com> writes:
-> >> On Tue, Apr 8, 2025 at 2:40 PM Andreas Hindborg <a.hindborg@kernel.org> wrote:
-> >>>
-> >>> But the `assert_eq!` would panic anyway if comparison fails, right?
-> >>
-> >> Previously the `?` generated by the macro would return out of the
-> >> closure written by the sample, and thus it wouldn't reach the
-> >> `assert_eq!`.
-> >
-> > Right, I see. So the question is whether we want to have the assert
-> > panic here or not, of we get an Err. I vote yes.
+On Tue, Apr 08, 2025, Paolo Bonzini wrote:
+> On 4/4/25 21:38, Sean Christopherson wrote:
+> > Delete the amd_ir_data.prev_ga_tag field now that all usage is
+> > superfluous.
 > 
-> The assert wouldn't be the source of the panic though, it would be the
-> `.unwrap()`, but I think it's better to report the error. Although I
-> think it would be nicer if the example could use better error handling,
-> but this code is in a `drop` function, so no way to bubble up a
-> result...
+> This can be moved much earlier (maybe even after patch 10 from a cursory
+> look), can't it? 
 
-We could be more explicit and assert is_ok() instead and subsequently do the
-assert_eq.
+Ya, I independently arrived at the same conclusion[*], specifically after
+
+   KVM: SVM: Delete IRTE link from previous vCPU before setting new IRTE
+
+[*] I was counting patches based on my local tree, which has three extra patches
+    from the posted IRQs module param, and so initially thought the last dependency
+    went away in patch 13.
