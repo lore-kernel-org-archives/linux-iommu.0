@@ -1,83 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C847725E476;
-	Wed,  9 Apr 2025 15:16:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2372E265CB0
+	for <iommu@lists.linux.dev>; Wed,  9 Apr 2025 15:27:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744211767; cv=none; b=pnck+Lb427/MIsOheCJKjl/EgOXEJ5fGBC+X8ARQZ7VghF6Pn2DmcOGJN8Rk8RYvXxp9I7bdIimIZfCX/fLO4kwb6zwK2lG92wIVbQ99Uv/aZ58mRo2cbxW/TbkI4HNK/kjG5RGCKwgLY4mh04YBSsiOXAgiFMvMi9UiZyLe2cQ=
+	t=1744212445; cv=none; b=NvDyPNo/8fnmvT3zfYye2iarSV530za+YXyHBe1gcjH3GU+33jw7DfIvfpr3A6kHaUeXlxx7vmXL2f171wJLHZJEMaugKcvEyfmCpGDAhz4/tC7+//GfYDGsfpse1y2EWRZRnWuESSLJfPK7jnVBYyCx82MhpBSE8oPF9BGG/b0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744211767; c=relaxed/simple;
-	bh=DKKmY2V8mvcFiDPGL8AqRokOoZks78KJFsmlJwP4lzg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=V4sdgLScvDQV/AdX4lEE3aK9banfuT9R08Pz8P4oSuAo7u/ybSoFRTQNxzxpQ+HQKY6+Le0RSvYXLpiWGnehuCZ3uxN3K9kz1IVQ6cffsSQpZrLkEy9Q62OtLj/heMTYUP6GL3GeD0J3hTuAd1rM5zOdPptXSjEeaXYsx39ZOF8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=prwWxa2j; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744212445; c=relaxed/simple;
+	bh=X3NxPrh/Dg6zmeDRgnBwY1KySOioOX8BKWZl/rmzgB4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=CFMLnP+b4A9yvlRv5bbePu/bYATYdOjM5l5ano+QTK8W36yNAg19LQg2VUyCJ5FdV6L9A9H2SHbd+GtAKObF0+VyRhDVp/7aaQvejHQqtlIi+NKTn8dumGeSGncc5aWCflMT8nk2NfsvGnxTHnLOPNpTy9jv463lSdUfpkGmI/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=HiVZXeJW; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="prwWxa2j"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D09C6C4CEE2;
-	Wed,  9 Apr 2025 15:16:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744211766;
-	bh=DKKmY2V8mvcFiDPGL8AqRokOoZks78KJFsmlJwP4lzg=;
-	h=From:To:Cc:Subject:Date:From;
-	b=prwWxa2jeOysxWDkTt9VgGDKrkB1xLCe7tUzVro3a+2ivcoJyEDhBTgRYCedqGMsY
-	 /CnEI4jUGLnsV2TUkK1rNK4WNfYFQL2Mrb2hjpNCPEZZhF0m63BxJ4bw0iQHA9ecu0
-	 dHqsT1XpHVXFKNcLllHD+vC0a49v0hEnXLZdOVx0I7Cv4JTuhABuLEtTP7ae8lo7Fx
-	 5pyziH8b5DwUFkkwc4mydVA5KBBFHZoLIdz6VTjVzH18YcXdQA+ymIMi4VuRNegXdJ
-	 yAAjcNfasD7pqptxmXs6q7Cw5I3Rgkn7MRdgP4JPm9xKa1VNxyS1ZL3MeDpo+ym9dW
-	 0jd0DHZdZbkXw==
-From: Arnd Bergmann <arnd@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Arnd Bergmann <arnd@arndb.de>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Michal Nazarewicz <mina86@mina86.com>,
-	Kyungmin Park <kyungmin.park@samsung.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] [v4] dma/contiguous: avoid warning about unused size_bytes
-Date: Wed,  9 Apr 2025 17:15:42 +0200
-Message-Id: <20250409151557.3890443-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="HiVZXeJW"
+Received: from [10.137.184.60] (unknown [131.107.160.188])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 0A0262114D8A;
+	Wed,  9 Apr 2025 08:27:23 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0A0262114D8A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1744212443;
+	bh=UjQX7nAQGu8VWkUrRyRpYAcZbBxisvkDjd3TARXNRv0=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=HiVZXeJWF7w0t2l/4IF8J5ryv6/ZPUKUQ5aYykBziIutp4bcub2znNWPE/Y1Dh/Ge
+	 wPcrUU54yJBi/OX2udWa8QfGVA5UwpUJ3rEDsQtkbu2LYD/m1xFmP6y1gt8crnOdXG
+	 kECFhb2Vi1RaczcV6Pkxw/I1DktSimbBtg4Gwcdg=
+Message-ID: <b56eef68-367d-4b7b-98c4-f5d1291d7993@linux.microsoft.com>
+Date: Wed, 9 Apr 2025 08:27:22 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH hyperv-next 5/6] arch, drivers: Add device struct bitfield
+ to not bounce-buffer
+To: Christoph Hellwig <hch@lst.de>
+Cc: aleksander.lobakin@intel.com, andriy.shevchenko@linux.intel.com,
+ arnd@arndb.de, bp@alien8.de, catalin.marinas@arm.com, corbet@lwn.net,
+ dakr@kernel.org, dan.j.williams@intel.com, dave.hansen@linux.intel.com,
+ decui@microsoft.com, gregkh@linuxfoundation.org, haiyangz@microsoft.com,
+ hpa@zytor.com, James.Bottomley@HansenPartnership.com,
+ Jonathan.Cameron@huawei.com, kys@microsoft.com, leon@kernel.org,
+ lukas@wunner.de, luto@kernel.org, m.szyprowski@samsung.com,
+ martin.petersen@oracle.com, mingo@redhat.com, peterz@infradead.org,
+ quic_zijuhu@quicinc.com, robin.murphy@arm.com, tglx@linutronix.de,
+ wei.liu@kernel.org, will@kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-doc@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org, x86@kernel.org,
+ apais@microsoft.com, benhill@microsoft.com, bperkins@microsoft.com,
+ sunilmut@microsoft.com
+References: <20250409000835.285105-1-romank@linux.microsoft.com>
+ <20250409000835.285105-6-romank@linux.microsoft.com>
+ <20250409105229.GA5721@lst.de>
+Content-Language: en-US
+From: Roman Kisel <romank@linux.microsoft.com>
+In-Reply-To: <20250409105229.GA5721@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Arnd Bergmann <arnd@arndb.de>
 
-When building with W=1, this variable is unused for configs with
-CONFIG_CMA_SIZE_SEL_PERCENTAGE=y:
 
-kernel/dma/contiguous.c:67:26: error: 'size_bytes' defined but not used [-Werror=unused-const-variable=]
+On 4/9/2025 3:52 AM, Christoph Hellwig wrote:
+> On Tue, Apr 08, 2025 at 05:08:34PM -0700, Roman Kisel wrote:
+>> Bounce-buffering makes the system spend more time copying
+>> I/O data. When the I/O transaction take place between
+>> a confidential and a non-confidential endpoints, there is
+>> no other way around.
+>>
+>> Introduce a device bitfield to indicate that the device
+>> doesn't need to perform bounce buffering. The capable
+>> device may employ it to save on copying data around.
+> 
+> I have no idea what this is supposed to mean, you need to explain it
+> much better.
 
-Change this to a macro to avoid the warning.
+Thanks for reviewing! I'll fix the description.
 
-Fixes: c64be2bb1c6e ("drivers: add Contiguous Memory Allocator")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-v4: fix type mistake from v3
-v3: use a macro instead of constant
-v2: fix spelling mistake.
----
- kernel/dma/contiguous.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> 
 
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 055da410ac71..8df0dfaaca18 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -64,8 +64,7 @@ struct cma *dma_contiguous_default_area;
-  * Users, who want to set the size of global CMA area for their system
-  * should use cma= kernel parameter.
-  */
--static const phys_addr_t size_bytes __initconst =
--	(phys_addr_t)CMA_SIZE_MBYTES * SZ_1M;
-+#define size_bytes ((phys_addr_t)CMA_SIZE_MBYTES * SZ_1M)
- static phys_addr_t  size_cmdline __initdata = -1;
- static phys_addr_t base_cmdline __initdata;
- static phys_addr_t limit_cmdline __initdata;
 -- 
-2.39.5
+Thank you,
+Roman
 
