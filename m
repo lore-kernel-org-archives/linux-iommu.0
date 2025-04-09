@@ -1,339 +1,168 @@
-Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com [209.85.221.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7539826A0C1
-	for <iommu@lists.linux.dev>; Wed,  9 Apr 2025 15:56:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.171
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D51141D432D
+	for <iommu@lists.linux.dev>; Wed,  9 Apr 2025 16:03:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744214194; cv=none; b=AAEBZhyWHUg+eJeJhSfdCkX8gGbKv3Uqy3QyGGMYq4wP799T+eg3TjjbuGrG0InKD9jXd5/Qq6gW9/rSwq6p4QMMXiFrtESxK/KR1t7vMT3FATSXbJXvBTomn2xfQ5tQjfz4BSAfxOvckQmOj2rgmEonnY8xDpqpip0+Xem3OkE=
+	t=1744214598; cv=none; b=pWw4lR/pt1k7E6VjbBrpKB2qGNM3IVkOHb4JuZiOy1/7c3Wk0S9irvinKpl6Q/TdjBkILLqcQBCm9OB18ru3BXRrA5rQgSc1tEORN0BI+d6uo9so6lNA6ZMgavnLzFm+k2/Tr+RxSFhGBwqIpxg8FmKePZYXjMWeaNxYFpsrKkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744214194; c=relaxed/simple;
-	bh=hob3GHAx1ipfX0P23W8hQp6pUWXUFZ926AVVxlqLlk0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OoguQ7pdbMs0S7nZt/S6rqDZpOSnIkV5k7XIp/f2/R9SLXWXV3EngyNmCrVohPspuX34l1cXeQEROXBXx6T2u74WxWxewW2aBQo+52JypbpQk4ZaOUXkHXT/hg5eLZPpHISGIkrCn9rPN2/ACxOgpumCivySc+UCMZSClrxynq0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=hTuWFyUV; arc=none smtp.client-ip=209.85.221.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hTuWFyUV"
-Received: by mail-vk1-f171.google.com with SMTP id 71dfb90a1353d-5240764f7c1so2844097e0c.2
-        for <iommu@lists.linux.dev>; Wed, 09 Apr 2025 08:56:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1744214190; x=1744818990; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=8AOUBaKz4k65EfvFtHnS9r16WBFkIa0uC8s/4pmp31M=;
-        b=hTuWFyUVy4WhXo7oja5Qu7XJJNgWoRBRSFxshHEl7rBRx85fYw1YtCpTv4OPUH/cCp
-         hD9gpepH30kZmP+px5YfX1gCpXQ/wGrhnF3/K8uVm4puE2SYMSBbcB6ZTf6ORliJs64C
-         MIwq8WBh/p8URwifjmM+++O7aA7MR0SIgcxL+3AiE/Ee11Z5Yh8nQmwwbL4gWirBG6w3
-         Ke6q1A+o4Tre+GMtvNQmkVDkRbjgONrnmHLESEAxiodxFCDsSkoRHJNhWujId6eRqs0n
-         JpCxue+wl1wBkfDxme4xMewd/hP5ZbOcJ985Q8+GXQaFrS3oi2BT5N7dz63ypVgplBRF
-         Cmdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744214190; x=1744818990;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=8AOUBaKz4k65EfvFtHnS9r16WBFkIa0uC8s/4pmp31M=;
-        b=Pcm1bFYfUw+c13wOvxUpCdsvq7Piiq45OwxBwwC/AXtE1tEax54CwKvt8lzGu1CoC7
-         2mPPxhpvuo6+F65PVhQPZrZDWE4d43h2IrS/U69xxlGNXGMuXlAa1I4szrgdgteZTQu5
-         3tygGh6yl90Jh6yH592gyvGjkJven7mSJ2W3X4VI8nx7xGq+qjWvGgM56cGKqOsVgMKr
-         8FD53Aq3lvp3bwy50V+pm/eYZkJidCTQze+cV9nP3UHwRwESPXHvXQceHtmWtZHZf0Ln
-         cqo/pP2IhVqajtA1spJw21qrp1Y9aagwpwCEiPcUhedTewZKoFvJkPXwgHNGKbZiS4Ht
-         SvaQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWs8joksSSe1zRK2Ohd9v+yAU8wESu/++Ii5eTKbKy6O+qC7l/q+Vaza7Z/WUYzxMFcRsFYMw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzrpDpvBWj/3fxfcehRB1Nw9h5cL/ifhR+qVxtQX/ScCSrBiAl3
-	1mM8Mv27RdHKXrAulg1gJP8bqd25gnQPNisX0k76AVZgDLLGZNCRFtZtujDBsJA4yCBhjISiHG1
-	XX+HLVnWxTRZ0CQtAR8fSSGpLINdWFbXt7jB9Pg==
-X-Gm-Gg: ASbGnctK+BScV1stoQV9UlHo1k2OTlu0B4VvKn17FIxNUC/LmkFy/FNHdHrNutfEe4q
-	fRIxiw6n2ti6AEHDH+rBjxG6APfQvoYULm41sNNtBTvabj44jQyeodrlghwH8mZ0PSIsMV1rsrh
-	f1xkUvYA5YJLM6ERyYT4Kuv9KLUTtbnUN5tJcBqCqwp0AL9pzVxvFkqWOSmvX90nGgmw==
-X-Google-Smtp-Source: AGHT+IHAYOkRnjj4GyTCCh1iY/ZOItnunEtUpgqT8hpMTBxn0on/ShchAm+CXwhiK3vw5FX6fk0YxzKhFmWiXa4EPd0=
-X-Received: by 2002:a05:6122:3291:b0:520:3e1c:500f with SMTP id
- 71dfb90a1353d-527a923823fmr2577969e0c.8.1744214190187; Wed, 09 Apr 2025
- 08:56:30 -0700 (PDT)
+	s=arc-20240116; t=1744214598; c=relaxed/simple;
+	bh=sxYP4nb4nfqQSxWXYMoiaKdALpRkbmawtaHGeWOAi7g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qh3DJ2lyDf91h3KRkAsa1Mn6lXE40cN1D18J904dGfBRiyk1GTJa++RD7A+4sQQSdo383Q89gsS3yHvf/OBrxUyvuEvY4fpC+8/FKh6J3d4g6L0hDePvoARZu3kFQtPx7L/Nyv6AyG+LKh+CaHh794FtBgtxg86ayX33+B+0f3g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 52CC115A1;
+	Wed,  9 Apr 2025 09:03:15 -0700 (PDT)
+Received: from [10.57.72.20] (unknown [10.57.72.20])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2A4F93F59E;
+	Wed,  9 Apr 2025 09:03:07 -0700 (PDT)
+Message-ID: <0eb87302-fae8-4708-aaf8-d16e836e727f@arm.com>
+Date: Wed, 9 Apr 2025 17:03:05 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CA+G9fYt0F_vR-zOV4P8m4HTv6AecT-eEnrL+t5wgAaKPodi0mQ@mail.gmail.com>
- <6e0ef5cc-b692-4d39-bec4-a75c1af3f0aa@arm.com>
-In-Reply-To: <6e0ef5cc-b692-4d39-bec4-a75c1af3f0aa@arm.com>
-From: Naresh Kamboju <naresh.kamboju@linaro.org>
-Date: Wed, 9 Apr 2025 21:26:18 +0530
-X-Gm-Features: ATxdqUGUsxvoW2AC8LyCA3f5WgQxLUMC2Q7RV8pjSCJR4XLdNVjwMGpmUyBY9Fo
-Message-ID: <CA+G9fYs_nUN2x8fFJ0cfudHWbCOLSJK=OhEK0Efd1ifcjq_LRg@mail.gmail.com>
-Subject: Re: arm64: juno-r2: SSD detect failed on mainline and next
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Linux ARM <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux.dev, 
-	open list <linux-kernel@vger.kernel.org>, lkft-triage@lists.linaro.org, 
-	Linux Regressions <regressions@lists.linux.dev>, Lorenzo Pieralisi <lpieralisi@kernel.org>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Rob Herring <robh@kernel.org>, 
-	Dan Carpenter <dan.carpenter@linaro.org>, Arnd Bergmann <arnd@arndb.de>, 
-	Anders Roxell <anders.roxell@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH hyperv-next 5/6] arch, drivers: Add device struct bitfield
+ to not bounce-buffer
+To: Roman Kisel <romank@linux.microsoft.com>, aleksander.lobakin@intel.com,
+ andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+ catalin.marinas@arm.com, corbet@lwn.net, dakr@kernel.org,
+ dan.j.williams@intel.com, dave.hansen@linux.intel.com, decui@microsoft.com,
+ gregkh@linuxfoundation.org, haiyangz@microsoft.com, hch@lst.de,
+ hpa@zytor.com, James.Bottomley@HansenPartnership.com,
+ Jonathan.Cameron@huawei.com, kys@microsoft.com, leon@kernel.org,
+ lukas@wunner.de, luto@kernel.org, m.szyprowski@samsung.com,
+ martin.petersen@oracle.com, mingo@redhat.com, peterz@infradead.org,
+ quic_zijuhu@quicinc.com, tglx@linutronix.de, wei.liu@kernel.org,
+ will@kernel.org, iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+ linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-scsi@vger.kernel.org, x86@kernel.org
+Cc: apais@microsoft.com, benhill@microsoft.com, bperkins@microsoft.com,
+ sunilmut@microsoft.com, Suzuki K Poulose <suzuki.poulose@arm.com>
+References: <20250409000835.285105-1-romank@linux.microsoft.com>
+ <20250409000835.285105-6-romank@linux.microsoft.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250409000835.285105-6-romank@linux.microsoft.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, 2 Apr 2025 at 21:04, Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 31/03/2025 5:03 am, Naresh Kamboju wrote:
-> > Regressions on arm64 Juno-r2 devices detect SSD tests failed on the
-> > Linux next and Linux mainline.
-> >
-> > First seen on the v6.14-7245-g5c2a430e8599
-> >   Good: v6.14
-> >   Bad: v6.14-7422-gacb4f33713b9
->
-> Sorry, I can't seem to reproduce this on my end, both today's mainline
-> and acb4f33713b9 with my config, and even acb4f33713b9 with the linked
-> LKFT config, all work OK on my Juno r2 (using a SATA SSD and PCIe
-> networking). The only thing which stands out in your log is that PCI
-> seems to give up probing and assigning resources beyond the switch
-> downstream ports (so SATA and ethernet are never discovered), whereas on
-> mine it does[2]. However that all happens before the first IOMMU
-> instance probes (which conveniently is the PCIe one), so it's hard to
-> imagine how that could have an effect anyway...
->
-> The only obvious difference is that I'm using EDK2 rather than U-Boot,
-> so that's done all the PCIe configuration once already, but it doesn't
-> seem like that's significant - looking back at a random older log[1],
-> the on-board endpoints were still being picked up right after
-> reconfiguring the switch, well before the IOMMU comes into the picture.
->
+On 2025-04-09 1:08 am, Roman Kisel wrote:
+> Bounce-buffering makes the system spend more time copying
+> I/O data. When the I/O transaction take place between
+> a confidential and a non-confidential endpoints, there is
+> no other way around.
+> 
+> Introduce a device bitfield to indicate that the device
+> doesn't need to perform bounce buffering. The capable
+> device may employ it to save on copying data around.
 
-Since it is a still issue on mainline and next,
+It's not so much about bounce buffering, it's more fundamentally about 
+whether the device is trusted and able to access private memory at all 
+or not. And performance is hardly the biggest concern either - if you do 
+trust a device to operate on confidential data in private memory, then 
+surely it is crucial to actively *prevent* that data ever getting into 
+shared SWIOTLB pages where anyone else could also get at it. At worst 
+that means CoCo VMs might need an *additional* non-shared SWIOTLB to 
+support trusted devices with addressing limitations (and/or 
+"swiotlb=force" debugging, potentially).
 
-Bisected and reverted patch ^ causing kernel warnings at boot time
-but finding the SSD drive,
+Also whatever we do for this really wants to tie in with the nascent 
+TDISP stuff as well, since we definitely don't want to end up with more 
+than one notion of whether a device is in a trusted/locked/private/etc. 
+vs. unlocked/shared/etc. state with respect to DMA (or indeed anything 
+else if we can avoid it).
 
-  [bcb81ac6ae3c2ef95b44e7b54c3c9522364a245c]
-  iommu: Get DT/ACPI parsing into the proper probe path
+Thanks,
+Robin.
 
-pcieport 0000:00:00.0: late IOMMU probe at driver bind, something fishy here!
-WARNING: at drivers/iommu/iommu.c:559 __iommu_probe_device
+> Signed-off-by: Roman Kisel <romank@linux.microsoft.com>
+> ---
+>   arch/x86/mm/mem_encrypt.c  | 3 +++
+>   include/linux/device.h     | 8 ++++++++
+>   include/linux/dma-direct.h | 3 +++
+>   include/linux/swiotlb.h    | 3 +++
+>   4 files changed, 17 insertions(+)
+> 
+> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+> index 95bae74fdab2..6349a02a1da3 100644
+> --- a/arch/x86/mm/mem_encrypt.c
+> +++ b/arch/x86/mm/mem_encrypt.c
+> @@ -19,6 +19,9 @@
+>   /* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENCRYPTED */
+>   bool force_dma_unencrypted(struct device *dev)
+>   {
+> +	if (dev->use_priv_pages_for_io)
+> +		return false;
+> +
+>   	/*
+>   	 * For SEV, all DMA must be to unencrypted addresses.
+>   	 */
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 80a5b3268986..4aa4a6fd9580 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -725,6 +725,8 @@ struct device_physical_location {
+>    * @dma_skip_sync: DMA sync operations can be skipped for coherent buffers.
+>    * @dma_iommu: Device is using default IOMMU implementation for DMA and
+>    *		doesn't rely on dma_ops structure.
+> + * @use_priv_pages_for_io: Device is using private pages for I/O, no need to
+> + *		bounce-buffer.
+>    *
+>    * At the lowest level, every device in a Linux system is represented by an
+>    * instance of struct device. The device structure contains the information
+> @@ -843,6 +845,7 @@ struct device {
+>   #ifdef CONFIG_IOMMU_DMA
+>   	bool			dma_iommu:1;
+>   #endif
+> +	bool			use_priv_pages_for_io:1;
+>   };
+>   
+>   /**
+> @@ -1079,6 +1082,11 @@ static inline bool dev_removable_is_valid(struct device *dev)
+>   	return dev->removable != DEVICE_REMOVABLE_NOT_SUPPORTED;
+>   }
+>   
+> +static inline bool dev_priv_pages_for_io(struct device *dev)
+> +{
+> +	return dev->use_priv_pages_for_io;
+> +}
+> +
+>   /*
+>    * High level routines for use by the bus drivers
+>    */
+> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+> index d7e30d4f7503..b096369f847e 100644
+> --- a/include/linux/dma-direct.h
+> +++ b/include/linux/dma-direct.h
+> @@ -94,6 +94,9 @@ static inline dma_addr_t phys_to_dma_unencrypted(struct device *dev,
+>    */
+>   static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+>   {
+> +	if (dev_priv_pages_for_io(dev))
+> +		return phys_to_dma_unencrypted(dev, paddr);
+> +
+>   	return __sme_set(phys_to_dma_unencrypted(dev, paddr));
+>   }
+>   
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 3dae0f592063..35ee10641b42 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -173,6 +173,9 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
+>   {
+>   	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+>   
+> +	if (dev_priv_pages_for_io(dev))
+> +		return false;
+> +
+>   	return mem && mem->force_bounce;
+>   }
+>   
 
-I see boot warnings [1]
-I am happy to test debug patches if you have any.
-
-[1] https://lkft.validation.linaro.org/scheduler/job/8212667#L1291
-
-- Naresh
-
-> Thanks,
-> Robin.
->
->
-> [1] https://lkft.validation.linaro.org/scheduler/job/8143082#L1283
-> [2]:
->
-> [    1.741362] pci-host-generic 40000000.pcie: host bridge
-> /pcie@40000000 ranges:
-> [    1.748682] pci-host-generic 40000000.pcie:       IO
-> 0x005f800000..0x005fffffff -> 0x0000000000
-> [    1.757465] pci-host-generic 40000000.pcie:      MEM
-> 0x0050000000..0x0057ffffff -> 0x0050000000
-> [    1.766224] pci-host-generic 40000000.pcie:      MEM
-> 0x4000000000..0x40ffffffff -> 0x4000000000
-> [    1.775019] pci-host-generic 40000000.pcie:   IB MEM
-> 0x0080000000..0x00ffffffff -> 0x0080000000
-> [    1.783781] pci-host-generic 40000000.pcie:   IB MEM
-> 0x0800000000..0x09ffffffff -> 0x0800000000
-> [    1.792615] pci-host-generic 40000000.pcie: ECAM at [mem
-> 0x40000000-0x4fffffff] for [bus 00-ff]
-> [    1.801559] pci-host-generic 40000000.pcie: PCI host bridge to bus
-> 0000:00
-> [    1.808485] pci_bus 0000:00: root bus resource [bus 00-ff]
-> [    1.814022] pci_bus 0000:00: root bus resource [io  0x0000-0x7fffff]
-> [    1.820408] pci_bus 0000:00: root bus resource [mem
-> 0x50000000-0x57ffffff]
-> [    1.827314] pci_bus 0000:00: root bus resource [mem
-> 0x4000000000-0x40ffffffff pref]
-> [    1.835050] pci 0000:00:00.0: [1556:1100] type 01 class 0x060400 PCIe
-> Root Port
-> [    1.842444] pci 0000:00:00.0: BAR 0 [mem 0x4000000000-0x4000003fff
-> 64bit pref]
-> [    1.849717] pci 0000:00:00.0: PCI bridge to [bus 01-08]
-> [    1.854990] pci 0000:00:00.0:   bridge window [io  0x0000-0x1fff]
-> [    1.861125] pci 0000:00:00.0:   bridge window [mem 0x50000000-0x501fffff]
-> [    1.868099] pci 0000:00:00.0: supports D1 D2
-> [    1.872393] pci 0000:00:00.0: PME# supported from D0 D1 D2 D3hot D3cold
-> [    1.881014] pci 0000:01:00.0: [111d:8090] type 01 class 0x060400 PCIe
-> Switch Upstream Port
-> [    1.889407] pci 0000:01:00.0: PCI bridge to [bus 02-08]
-> [    1.894675] pci 0000:01:00.0:   bridge window [io  0x0000-0x1fff]
-> [    1.900812] pci 0000:01:00.0:   bridge window [mem 0x50000000-0x501fffff]
-> [    1.907690] pci 0000:01:00.0: enabling Extended Tags
-> [    1.912876] pci 0000:01:00.0: PME# supported from D0 D3hot D3cold
-> [    1.924459] pci 0000:02:01.0: [111d:8090] type 01 class 0x060400 PCIe
-> Switch Downstream Port
-> [    1.933037] pci 0000:02:01.0: PCI bridge to [bus 03]
-> [    1.938045] pci 0000:02:01.0:   bridge window [io  0x1000-0x1fff]
-> [    1.944179] pci 0000:02:01.0:   bridge window [mem 0x50100000-0x501fffff]
-> [    1.951060] pci 0000:02:01.0: enabling Extended Tags
-> [    1.956298] pci 0000:02:01.0: PME# supported from D0 D3hot D3cold
-> [    1.963053] pci 0000:02:02.0: [111d:8090] type 01 class 0x060400 PCIe
-> Switch Downstream Port
-> [    1.971621] pci 0000:02:02.0: PCI bridge to [bus 04]
-> [    1.976698] pci 0000:02:02.0: enabling Extended Tags
-> [    1.981924] pci 0000:02:02.0: PME# supported from D0 D3hot D3cold
-> [    1.988682] pci 0000:02:03.0: [111d:8090] type 01 class 0x060400 PCIe
-> Switch Downstream Port
-> [    1.997272] pci 0000:02:03.0: PCI bridge to [bus 05]
-> [    2.002352] pci 0000:02:03.0: enabling Extended Tags
-> [    2.007578] pci 0000:02:03.0: PME# supported from D0 D3hot D3cold
-> [    2.014713] pci 0000:02:0c.0: [111d:8090] type 01 class 0x060400 PCIe
-> Switch Downstream Port
-> [    2.023303] pci 0000:02:0c.0: PCI bridge to [bus 06]
-> [    2.028396] pci 0000:02:0c.0: enabling Extended Tags
-> [    2.033643] pci 0000:02:0c.0: PME# supported from D0 D3hot D3cold
-> [    2.040569] pci 0000:02:10.0: [111d:8090] type 01 class 0x060400 PCIe
-> Switch Downstream Port
-> [    2.049131] pci 0000:02:10.0: PCI bridge to [bus 07]
-> [    2.054220] pci 0000:02:10.0: enabling Extended Tags
-> [    2.059439] pci 0000:02:10.0: PME# supported from D0 D3hot D3cold
-> [    2.066798] pci 0000:02:1f.0: [111d:8090] type 01 class 0x060400 PCIe
-> Switch Downstream Port
-> [    2.075368] pci 0000:02:1f.0: PCI bridge to [bus 08]
-> [    2.080377] pci 0000:02:1f.0:   bridge window [io  0x0000-0x0fff]
-> [    2.086507] pci 0000:02:1f.0:   bridge window [mem 0x50000000-0x500fffff]
-> [    2.093397] pci 0000:02:1f.0: enabling Extended Tags
-> [    2.098625] pci 0000:02:1f.0: PME# supported from D0 D3hot D3cold
-> [    2.105519] pci 0000:03:00.0: [1095:3132] type 00 class 0x018000 PCIe
-> Legacy Endpoint
-> [    2.113532] pci 0000:03:00.0: BAR 0 [mem 0x50104000-0x5010407f 64bit]
-> [    2.120020] pci 0000:03:00.0: BAR 2 [mem 0x50100000-0x50103fff 64bit]
-> [    2.126520] pci 0000:03:00.0: BAR 4 [io  0x1000-0x107f]
-> [    2.131794] pci 0000:03:00.0: ROM [mem 0xfff80000-0xffffffff pref]
-> [    2.138189] pci 0000:03:00.0: supports D1 D2
-> [    2.142965] pci 0000:03:00.0: disabling ASPM on pre-1.1 PCIe device.
-> You can enable it with 'pcie_aspm=force'
-> [    2.154011] pci 0000:08:00.0: [11ab:4380] type 00 class 0x020000 PCIe
-> Legacy Endpoint
-> [    2.162015] pci 0000:08:00.0: BAR 0 [mem 0x50000000-0x50003fff 64bit]
-> [    2.168492] pci 0000:08:00.0: BAR 2 [io  0x0000-0x00ff]
-> [    2.173941] pci 0000:08:00.0: supports D1 D2
-> [    2.178260] pci 0000:08:00.0: PME# supported from D0 D1 D2 D3hot D3cold
-> [    2.185740] pci 0000:00:00.0: bridge window [mem
-> 0x50000000-0x501fffff]: assigned
-> [    2.193266] pci 0000:00:00.0: BAR 0 [mem 0x4000000000-0x4000003fff
-> 64bit pref]: assigned
-> [    2.201411] pci 0000:00:00.0: bridge window [io  0x1000-0x2fff]: assigned
-> [    2.208235] pci 0000:01:00.0: bridge window [mem
-> 0x50000000-0x501fffff]: assigned
-> [    2.215754] pci 0000:01:00.0: bridge window [io  0x1000-0x2fff]: assigned
-> [    2.222580] pci 0000:02:01.0: bridge window [mem
-> 0x50000000-0x500fffff]: assigned
-> [    2.230120] pci 0000:02:1f.0: bridge window [mem
-> 0x50100000-0x501fffff]: assigned
-> [    2.237648] pci 0000:02:01.0: bridge window [io  0x1000-0x1fff]: assigned
-> [    2.244470] pci 0000:02:1f.0: bridge window [io  0x2000-0x2fff]: assigned
-> [    2.251313] pci 0000:03:00.0: ROM [mem 0x50000000-0x5007ffff pref]:
-> assigned
-> [    2.258399] pci 0000:03:00.0: BAR 2 [mem 0x50080000-0x50083fff
-> 64bit]: assigned
-> [    2.265769] pci 0000:03:00.0: BAR 0 [mem 0x50084000-0x5008407f
-> 64bit]: assigned
-> [    2.273141] pci 0000:03:00.0: BAR 4 [io  0x1000-0x107f]: assigned
-> [    2.279286] pci 0000:02:01.0: PCI bridge to [bus 03]
-> [    2.284289] pci 0000:02:01.0:   bridge window [io  0x1000-0x1fff]
-> [    2.290425] pci 0000:02:01.0:   bridge window [mem 0x50000000-0x500fffff]
-> [    2.297275] pci 0000:02:02.0: PCI bridge to [bus 04]
-> [    2.302302] pci 0000:02:03.0: PCI bridge to [bus 05]
-> [    2.307327] pci 0000:02:0c.0: PCI bridge to [bus 06]
-> [    2.312353] pci 0000:02:10.0: PCI bridge to [bus 07]
-> [    2.317382] pci 0000:08:00.0: BAR 0 [mem 0x50100000-0x50103fff
-> 64bit]: assigned
-> [    2.324751] pci 0000:08:00.0: BAR 2 [io  0x2000-0x20ff]: assigned
-> [    2.330881] pci 0000:02:1f.0: PCI bridge to [bus 08]
-> [    2.335895] pci 0000:02:1f.0:   bridge window [io  0x2000-0x2fff]
-> [    2.342030] pci 0000:02:1f.0:   bridge window [mem 0x50100000-0x501fffff]
-> [    2.348874] pci 0000:01:00.0: PCI bridge to [bus 02-08]
-> [    2.354129] pci 0000:01:00.0:   bridge window [io  0x1000-0x2fff]
-> [    2.360270] pci 0000:01:00.0:   bridge window [mem 0x50000000-0x501fffff]
-> [    2.367113] pci 0000:00:00.0: PCI bridge to [bus 01-08]
-> [    2.372366] pci 0000:00:00.0:   bridge window [io  0x1000-0x2fff]
-> [    2.378494] pci 0000:00:00.0:   bridge window [mem 0x50000000-0x501fffff]
-> [    2.385325] pci_bus 0000:00: resource 4 [io  0x0000-0x7fffff]
-> [    2.391101] pci_bus 0000:00: resource 5 [mem 0x50000000-0x57ffffff]
-> [    2.397398] pci_bus 0000:00: resource 6 [mem
-> 0x4000000000-0x40ffffffff pref]
-> [    2.404478] pci_bus 0000:01: resource 0 [io  0x1000-0x2fff]
-> [    2.410078] pci_bus 0000:01: resource 1 [mem 0x50000000-0x501fffff]
-> [    2.416374] pci_bus 0000:02: resource 0 [io  0x1000-0x2fff]
-> [    2.421980] pci_bus 0000:02: resource 1 [mem 0x50000000-0x501fffff]
-> [    2.428277] pci_bus 0000:03: resource 0 [io  0x1000-0x1fff]
-> [    2.433877] pci_bus 0000:03: resource 1 [mem 0x50000000-0x500fffff]
-> [    2.440195] pci_bus 0000:08: resource 0 [io  0x2000-0x2fff]
-> [    2.445799] pci_bus 0000:08: resource 1 [mem 0x50100000-0x501fffff]
-> [    2.519972] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-> [    2.532646] msm_serial: driver initialized
-> [    2.537422] SuperH (H)SCI(F) driver initialized
-> [    2.542220] STM32 USART driver initialized
-> [    2.551250] arm-smmu 2b500000.iommu: probing hardware configuration...
-> [    2.557832] arm-smmu 2b500000.iommu: SMMUv1 with:
-> [    2.562564] arm-smmu 2b500000.iommu:         stage 2 translation
-> [    2.568006] arm-smmu 2b500000.iommu:         coherent table walk
-> [    2.573449] arm-smmu 2b500000.iommu:         stream matching with 32
-> register groups
-> [    2.580643] arm-smmu 2b500000.iommu:         4 context banks (4 stage-2 only)
-> [    2.587205] arm-smmu 2b500000.iommu:         Supported page sizes: 0x60211000
-> [    2.593778] arm-smmu 2b500000.iommu:         Stage-2: 40-bit IPA -> 40-bit PA
-> [    2.600471] arm-smmu 2b500000.iommu:         preserved 0 boot mappings
-> [    2.607710] pci 0000:00:00.0: Adding to iommu group 0
-> [    2.613204] pci 0000:01:00.0: Adding to iommu group 0
-> [    2.618588] pci 0000:02:01.0: Adding to iommu group 0
-> [    2.623975] pci 0000:02:02.0: Adding to iommu group 0
-> [    2.629373] pci 0000:02:03.0: Adding to iommu group 0
-> [    2.634742] pci 0000:02:0c.0: Adding to iommu group 0
-> [    2.640127] pci 0000:02:10.0: Adding to iommu group 0
-> [    2.645531] pci 0000:02:1f.0: Adding to iommu group 0
-> [    2.650952] pci 0000:03:00.0: Adding to iommu group 0
-> [    2.656349] pci 0000:08:00.0: Adding to iommu group 0
->
->
-> >
-> > * Juno-r2,
-> >   - detect-ssd
-> >   - mkfs.ext4-ssd
-> >
-> > Regression Analysis:
-> >   - New regression? yes
-> >   - Reproducibility? Yes
-> >
-> > Test regression: arm64 Juno-r2 SSD detect failed
-> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-> >
-> > Anders bisected this to,
-> > # first bad commit:
-> >    [bcb81ac6ae3c2ef95b44e7b54c3c9522364a245c]
-> >    iommu: Get DT/ACPI parsing into the proper probe path
-> >
-> > ## Test log
-> >    mkfs.ext4 /dev/disk/by-id/ata-SanDisk_SSD_PLUS_240GB_223004A01292
-> >    mke2fs 1.47.2 (1-Jan-2025)
-> >    The file /dev/disk/by-id/ata-SanDisk_SSD_PLUS_240GB_223004A01292
-> > does not exist and no size was specified.
-> >
-> > ## Source
-> > * Kernel version: 6.14.0
-> > * Git tree: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> > * Git sha: acb4f33713b9f6cadb6143f211714c343465411c
-> > * Git describe: v6.14-7422-gacb4f33713b9
-> > * Project details:
-> > https://qa-reports.linaro.org/lkft/linux-mainline-master/build/v6.14-7422-gacb4f33713b9/
-> >
-> > ## Test
-> > * Test log: https://lkft.validation.linaro.org/scheduler/job/8188382#L1538
-> > * Test history:
-> > https://qa-reports.linaro.org/lkft/linux-mainline-master/build/v6.14/testrun/27742015/suite/ltp-cve/test/cve-2017-2671/history/
-> > * Test details:
-> > https://lkft.validation.linaro.org/scheduler/job/8188382/definition
-> > * Test link: https://storage.tuxsuite.com/public/linaro/lkft/builds/2uwduIsT14Pz3XEoUQQIS6ndlQK/
-> > * Kernel config:
-> > https://storage.tuxsuite.com/public/linaro/lkft/builds/2uwduIsT14Pz3XEoUQQIS6ndlQK/config
-> >
-> >
-> > --
-> > Linaro LKFT
-> > https://lkft.linaro.org
