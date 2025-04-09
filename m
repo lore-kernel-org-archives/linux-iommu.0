@@ -1,178 +1,182 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EDBB1BE4E
-	for <iommu@lists.linux.dev>; Wed,  9 Apr 2025 00:08:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744157329; cv=none; b=u34UBEkVnXTxR92IjjIq3u4V5j95vjNZ5x9JcoV3zuTKxUfi9+vwgZd5YuAxSgYiKNc5/H2yU4gLAArKKMhkaGH4SzUkufHdZndPXMDmFvTW5RYVWHy7/Fcv+XOYXPYva8xoEAs2OJBL4RbFE6GyKKe+yLxYmFHAxCMyKtSuSAQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744157329; c=relaxed/simple;
-	bh=NlUylieq7zqtbJbgU5nAIJBTItP8sEwHTU+L22tHH2w=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Ud5m04cDmCImJpIMCCFfESI/iaSF7l7vjgOErPaxT9/y/+RDAOg4gv8D2aIYImTFycUHfFHjefRmR88VfmuSPp6cLK4bsukaHLhDDbv/fRSTWVNLgDPJ+VxQCpuEkkvSGxD/gOY7mGGSbvtep655iprDJmEwfyhSmKuzf76iTkc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=McGLXv4A; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2069.outbound.protection.outlook.com [40.107.223.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32C7525D1E2
+	for <iommu@lists.linux.dev>; Wed,  9 Apr 2025 08:30:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.69
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744187436; cv=fail; b=cyogADlhVzbwW6G3zvattdgT5/eI8D9UWMm291BJv19T8qgOsnQpbBp0glPcp501KmjHHhxNrE7dj2Ff89ot5zmGq0N75uANCdEOj0RiilmOqgF3ogbo36gljd0J9puKcrfvVjw2ds+YT8NOego30FBxnC6K9PeU4rUJnyYHaLw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744187436; c=relaxed/simple;
+	bh=v+PH/cvizEgNFAyK2g7ObTqsFLe9IFF7sb0ARGyP9Nc=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=K/gF0Oj33o9hg36i6tQ718wt54UA08rUJV2rVeAIPWCiQDaNLTKzsaA7AAaxS6H6Khv75+Ml1oGDP9M7Au/NeF5fj52Kd04IuYiuIsMHrw9b8F7LNfa+jPLuzjK4EDVebEb2rp3S5QZrEOSkxRQOxqpu50w9cWuHDnN6Mo/gV3o=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=dsKznonU; arc=fail smtp.client-ip=40.107.223.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="McGLXv4A"
-Received: from romank-3650.corp.microsoft.com (unknown [131.107.160.188])
-	by linux.microsoft.com (Postfix) with ESMTPSA id A01E62113E9C;
-	Tue,  8 Apr 2025 17:08:39 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A01E62113E9C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1744157319;
-	bh=ScAyHBVfs5HWRQcwNPAG1fCXHMLzKFfYfnZtLva146o=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=McGLXv4AovBaCa6ogzUN2QbkWjq82U9bygyOzdxyboM+WLaIEHEN+Ia0S8Ca4osN3
-	 081VZK6aLeK1NFOE/z9NdXVB2oiEouMbfcZ/idTfeY4xhVRysMWSvM6MC9aUJi+dvn
-	 xTq8hwe3HwPc6kMOXjjJKIwUkcfda/7qxlVcUWd4=
-From: Roman Kisel <romank@linux.microsoft.com>
-To: aleksander.lobakin@intel.com,
-	andriy.shevchenko@linux.intel.com,
-	arnd@arndb.de,
-	bp@alien8.de,
-	catalin.marinas@arm.com,
-	corbet@lwn.net,
-	dakr@kernel.org,
-	dan.j.williams@intel.com,
-	dave.hansen@linux.intel.com,
-	decui@microsoft.com,
-	gregkh@linuxfoundation.org,
-	haiyangz@microsoft.com,
-	hch@lst.de,
-	hpa@zytor.com,
-	James.Bottomley@HansenPartnership.com,
-	Jonathan.Cameron@huawei.com,
-	kys@microsoft.com,
-	leon@kernel.org,
-	lukas@wunner.de,
-	luto@kernel.org,
-	m.szyprowski@samsung.com,
-	martin.petersen@oracle.com,
-	mingo@redhat.com,
-	peterz@infradead.org,
-	quic_zijuhu@quicinc.com,
-	robin.murphy@arm.com,
-	tglx@linutronix.de,
-	wei.liu@kernel.org,
-	will@kernel.org,
-	iommu@lists.linux.dev,
-	linux-arch@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-doc@vger.kernel.org,
-	linux-hyperv@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-scsi@vger.kernel.org,
-	x86@kernel.org
-Cc: apais@microsoft.com,
-	benhill@microsoft.com,
-	bperkins@microsoft.com,
-	sunilmut@microsoft.com
-Subject: [PATCH hyperv-next 5/6] arch, drivers: Add device struct bitfield to not bounce-buffer
-Date: Tue,  8 Apr 2025 17:08:34 -0700
-Message-ID: <20250409000835.285105-6-romank@linux.microsoft.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250409000835.285105-1-romank@linux.microsoft.com>
-References: <20250409000835.285105-1-romank@linux.microsoft.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="dsKznonU"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=VDSlud1BByqk3ht0j1Yal8/EePRMZraadkKXEWg8s6/sDTxHhxvJ0BHhxuGd34h0zOFhjCBeV0MAkpw03gsJqznDBh1q5Nc47FKHCmJDdGvWLdaLBNvh260i6ugQCQN6x6nlzXwlbk4MjdOrudhLPvbKSSqeqBJH8E4xfKYFYr+mUQTuJPSLmZ5imn+tYh07C9LS+u1v1JKb59AEko488Iz6Y5YO3tVntpKMC7xxKZ2NZJKVgJCi2OLG5c+9PslBfcPoCl/ThOAiU2MzIkiGRx4Krv4eC3uHkopSBj7sSs05KmfjiTxhBpUiL29mVEdUvH/Y4AofIXc8oSsRnNB9XQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WXj8DNmHRMDWH13SqX8pobhox1lmTbho4vZxoYr43DE=;
+ b=xByHbljLQ7zOm9TWpNUwYm2FOAk2Y0g/DrQdqLqK5mW9KQliXLXxRLv3DBVmgW0A+z9V6R5bXd6BQDB3VSwm2OPiAPN0kfnUfN33bwgEaIh4nRgLCWFBECerVhQ1zSFS8tm+3NEt2TKeHGa7yE+Mv9LoSEGFcQA+L6EOvbZ2+vn41A+xVVnSqD0AisDle/lgJlIZ9IyDWZq+RP/GOzv6edqwGNRp/QN6QDlGzYy6eLCUVG24KuRG0waLIHcMfkAay796YkjBwHN7all1wEs/0xAcAgHPPmBGY45ZpsWZRQDVurmGzVW/hA/MYSYnt82F6K8zHD5mxD1n//AwJZUppw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WXj8DNmHRMDWH13SqX8pobhox1lmTbho4vZxoYr43DE=;
+ b=dsKznonUlRBFAEQKqQfIj6PFt5UPMklarsgheMGWIfYPI+bc7bNLPmp3amxgwCvJc3NUqSI6CnWED7ewfCAsiL9oVTMhEZP+uQyk+Y7d0zVpgJdARhuDCOjaKink3b5RUKFqw3dAFLsetQiibrnd/xzKaDlOaLnvqu0LNgFn/xE=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ PH7PR12MB5620.namprd12.prod.outlook.com (2603:10b6:510:137::5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8606.31; Wed, 9 Apr 2025 08:30:32 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5%5]) with mapi id 15.20.8606.033; Wed, 9 Apr 2025
+ 08:30:32 +0000
+Message-ID: <805ef636-99c2-4d77-9e2d-e4b6ec257e20@amd.com>
+Date: Wed, 9 Apr 2025 14:00:24 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/67] KVM: iommu: Overhaul device posted IRQs support
+To: Joerg Roedel <joro@8bytes.org>, Sean Christopherson <seanjc@google.com>,
+ suravee.suthikulpanit@amd.com
+Cc: Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse
+ <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Maxim Levitsky <mlevitsk@redhat.com>,
+ Joao Martins <joao.m.martins@oracle.com>, David Matlack <dmatlack@google.com>
+References: <20250404193923.1413163-1-seanjc@google.com>
+ <Z_UaJzhtmIv4rAox@8bytes.org>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <Z_UaJzhtmIv4rAox@8bytes.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN2PR01CA0148.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:6::33) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|PH7PR12MB5620:EE_
+X-MS-Office365-Filtering-Correlation-Id: 873b753a-15fc-4c61-dac5-08dd7740ca9e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|7416014|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?Rk9NZWM3Rjl0L2lkaE1kaVpwcGdrZUgyNVdkZlZiK21hV2pWNkYrNXlKK0N5?=
+ =?utf-8?B?SW9FYitBekJMOEVGSmdPL3FqUWZBL0Jkc0ErY3o1Q09zT1gyWHBsT2ZmTFYx?=
+ =?utf-8?B?YklrVTRscC9qUmZPU2xKMngzVklyVFB0Q2lmWDdoaHl6R0plT2QxeVFpdnF3?=
+ =?utf-8?B?SkFHQXY1T0I0Y1RnMUpqKzRSdm8wM3FQNHNGWWJWU21IWS85OUgvaUNsbzI4?=
+ =?utf-8?B?c1N3SER5cTF1ajlDUk5hR01tZHd5bGt4RXR2L05KL1lnWWl0Q01CVjlYdnNG?=
+ =?utf-8?B?TDVsUEl5azlLaS9BLzVmNHAyd0RmRzQ3MGw2a01CZXdzOXJQMjhpNW9Xbk9U?=
+ =?utf-8?B?KzBtS1dRaHBZU0IyeDhPck9PZ0NwQ09wakR6MWo0eTBYY2ZOSXFaNHIwbDE4?=
+ =?utf-8?B?eWxDU0VRVzdWbEw1TEJ4L0ZrNm5RMDVtQy8ranJJOU8zbXVYRTh5Qk0wZm1W?=
+ =?utf-8?B?OEFsaG1aMnkvNzJ0eFo3clpZbGp4cDFCWnVHdmdhTnJQNlh4T29xaTJDdmJX?=
+ =?utf-8?B?bkh6dkxpN01ZYnYwQjZtMytMNEN1UXphbC9ncWU2Y0Y4Tk5nZEV6WnJpYnhn?=
+ =?utf-8?B?T0lMVkJaWTFrVmpuVW5IVEdvWTBTa1lPdHZCN240bzkzWWRMQ1p2bFFmUXFS?=
+ =?utf-8?B?UU5qS1lhalAvRWIwdTBaWi9Bb0YxZVlvMTBkL252cnpuaXJ0bnI0SjN4cnY2?=
+ =?utf-8?B?STcrRVBnT1Z5RW1OOVZ4dFFtcU91YzdZSDZSSXIxcDBLQ3BKL00wVVNpeUVT?=
+ =?utf-8?B?Ly9aTnpxYWpvRkNxSFFLeXo5SVBYeXpZVFlSQkFibmpGNjkxZVorckFVL25X?=
+ =?utf-8?B?aUVZb3FQN0Z0RExNQXVZM09KelltemRYZGptUlFVQkpOR0R2OXB6M1doNU9P?=
+ =?utf-8?B?QlN4YWswcUVFTlhIL1BhRzBMOUc4anpMdzEzdXFmMmlmcmhIMCtyUzVUR1Nr?=
+ =?utf-8?B?VmY1VzRPYzVFUnRVa2Y1cXlpL2xNYTdpWmFiZEVJRjJxanNaSm1BU2RMaEFn?=
+ =?utf-8?B?ZjNGTWNCcVlFVHVOYmRNZ29YWWJmRWZ3U1B3djBuMGw4cjZFMkVxN1hRcS9G?=
+ =?utf-8?B?OW1Hand5RkkyT3VlQk9SMGFwQzFpRkpjSVRsMGJTM3FhZnFraG41NkptTitX?=
+ =?utf-8?B?ekMyV0xZZmY2THQ4RHhCZkZaUjQyc1lBZ2RIalVIWHVOa2Q3Q2dZQS9YdGcx?=
+ =?utf-8?B?MHJVZW9FdGFDeFRlNFRQVHRZd3NWVnVmQWxlWU9waSsyM3ZSWW1pL2w5aEZF?=
+ =?utf-8?B?MGNmcktqdHhEQTh4ZVBMY0kzYno0eFZxMTE0dDJzZ1daQnBqWmc1MVVkK0d3?=
+ =?utf-8?B?QUxVaGVQcWM0M1JCR0xvWG80czc1bGQwUzJpeUZJbFZMNnZZejJGQzBDYmZa?=
+ =?utf-8?B?cEIwci9ablg1dFhUOVN0Y3k4NmlvVm9xK1JtR0w1UjQzSk9pYVhNSkxzYUdG?=
+ =?utf-8?B?SGhwckhHL1A4cFZveUhtQU9VT0pneFFkSm5CTENxeUo3d215aFBhVVR1azYw?=
+ =?utf-8?B?cGkwSEppeW84eEJlNDRBQkdIeTByOCtiRlZHaXYrRE56M05tWFVvcTR5VlUv?=
+ =?utf-8?B?TEJycDJZREU3ZmFoTURNczdZOWVOb0pZdUJpZEszOVNoZDRwZ1YxT29TMEs0?=
+ =?utf-8?B?V1E4MmtSdUVJM0hERFcySW1YTHdtQjFHSVZ1QnhYU0hLUmFaUFRRbnpWSlF5?=
+ =?utf-8?B?NC9Cd214QzJXUWpCdGtWRlk3b0dyZyt3Zkl4a0R2ZHVhSjJ1YUM1U2NwVjJP?=
+ =?utf-8?B?c2taNlpsNUlQaFB4YkxvUTNHdm4zZlRTMkFQajdQN2padGtLeGl4OUxYZ1Z5?=
+ =?utf-8?B?K1ZYbTd1L0l4L09ITGlEVW5FQmNTeVZIWXJDa0dOVjBKYWRweDNpemZndjFT?=
+ =?utf-8?B?eVUvT1Q5eDlOM0RMYlZpYVlCcmZYdnA1SVoyNm1jay92SUg4bmJKcTdYR2c4?=
+ =?utf-8?Q?yN/TYoePghA=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?Q0VpbVNZUmYzbzFsNXJacGVHbXllaE83dEFmbGw3VWwwamVHdjFqVVNXeTFa?=
+ =?utf-8?B?YXRRdjJtWWZ1b2c4YzBvYm90NS9pK0FQNk43YjZHUFRUSnVSQkVSVFJvSkJF?=
+ =?utf-8?B?NjIvUUFEYXJuYVh2MWhwZUNFUjNKYmJoeHlSN1dtSnNVaVZLcGhBSXVTYjBp?=
+ =?utf-8?B?cTBWUGhrWFNlZzMxZ1RLRVIwZHpRVDF1NnFRYlplL3dSb0Z3TTI2dDlXemVl?=
+ =?utf-8?B?SmlQS0FBa3EyT1h3NCtydHhBZ29GM3A0eDBTNm9jZGlDWktYczRkSXJtME8x?=
+ =?utf-8?B?NnNtVGx0aXFBWlptZFMxQnprcUtPOEQxTUlxTlpkcUJvTkdBc0E1d09Uc2tJ?=
+ =?utf-8?B?RVNxaUptVmVRKzJMcSsrR1JxZDFXcmhOQzk5cmpyUWtVSFlNZCsxbUh1RTlL?=
+ =?utf-8?B?ZUF5cXR2a25PNHVMTjE2Q0g5N1hXZ05wSCtSV1BBZ09FSVhRRlVlTnpMamVC?=
+ =?utf-8?B?SG9lRGRwYVBaUGZqRmdwS0tuK1hQcFdzaGdkSkZyWGI1N3d3V0krWS9BQUVn?=
+ =?utf-8?B?RUdHRlV3c1Myb1ZQTEZTcm00NEhMZ05RdENxMUR0WVhyTTJnZ1lFZmM1NHlD?=
+ =?utf-8?B?QzZhdmsrRnJ6cjE3bTAwRzhqZlhQeThlR1FVc1F6aTFydStBQWxuaFkyamFX?=
+ =?utf-8?B?Q0xUdjdVQ25kS092TmNzQ3hSRW5UVmNiS3RBMnE0MFgrZ2hScENlU0plN0Iw?=
+ =?utf-8?B?NlpWNFZUeGFIMDlBblZNSE1kRUdqdDZUN3lhczllcldGVjIydEJuay9vVHlm?=
+ =?utf-8?B?N0g4bTNOSTJwcFBlUVYwRHU3aXVBWFpvL1Q3WXFoc0pYQmRSZ2Fvbk4wM3cz?=
+ =?utf-8?B?d3FEQSt3M2pkTThFSmxWZHhCTlRTcXlma0wyOS9vdHFIY1MxSXdqSXZTakI4?=
+ =?utf-8?B?RUNJaHM4MGROeVpOQ0ZYMlpjWHA2S0R0TFUxeFVtdGJGaUZjVXBRNVo5dWFn?=
+ =?utf-8?B?MEFoTTdwTUJqS0YrSWNYZ2JVenFYQ2dGTkJaalA1elMyc3cyTFFEcnFET3B1?=
+ =?utf-8?B?TEF4cjZjZ2JIZGJhVC9VSUpxU0FuclJwQ0RnV2NPMzdxaGdRNnpyNk4yY1pX?=
+ =?utf-8?B?K3pyOEZWcUdaZElXUlFheXIydmJTVTFNaVdmMkZaakRUWGNRazBkOWZsalk5?=
+ =?utf-8?B?VWJtVFNnVUxub0NPRm5tczAvdXdMUUNOM0YrVjFoUmI1VVNxa2ZIUitCV0dQ?=
+ =?utf-8?B?QXd4QmdZTDB2cC9MK1VXaktSeWNqSlR0YWsrWVVjREpmUnB2eGVDYTA1NERz?=
+ =?utf-8?B?Um1SYmUybThpUnZidU5FV1l0K3ZHRXArVVUyN0w4TDBNeXhCd3ZlR0VFTkJv?=
+ =?utf-8?B?N0sxUWNISEtzRDlJam5HU29PazJRRkdnM1ZBQ090OVQrMG9sRHNSSVlKOERI?=
+ =?utf-8?B?UzFMa3FlRFpyV0JPWm9UZ0JzMVpBM1Z0RVNOUmkzaEl6OTlwTHFmdHNYYjQ0?=
+ =?utf-8?B?VHA2UHJSK3hCRnZQZEVMeGRKcmhUdW9CdnQ0SU9vTTE4bnF5dlNCaHlqc2py?=
+ =?utf-8?B?a0Rxc2tZUVoyaTg3MHp4QTIvOG8yUXJCd0FoQnY1SjlpaXRDamVCVnVuTWtK?=
+ =?utf-8?B?TnVtd3g0czY2czBNRS81SXIyOFlBSGxYTzhSYnI5Z3ZXamgxRkJta2h5M2xv?=
+ =?utf-8?B?NWc3Q1N5Z1MxdXlvSEV2VzhpbnY0c0I0cStHNjNnNkE0RHJvc1Y4ell6M2tk?=
+ =?utf-8?B?aUhxYkJKbFhVYWpFSnNFamNkay9GdGMrN3ZLY3NOODhjeDMrMWRQSzd6bkY0?=
+ =?utf-8?B?R0FFbkdTSTR5bmIyWVVzVTBua1Z1ZG5PbXYyTVlCbDh4UUtSOUE0Y1RwMnlF?=
+ =?utf-8?B?NEppQlZSZm5JSUlocElYc2FnckM5OW9EQUUzeVJMeFRRWGpsU2xwMFU5aVRm?=
+ =?utf-8?B?YUVpdmQ5SjdsMGdodkRzQmhtbmZ2QzFra0R1V2llK1hyMXdXK1pvSkx6bDM1?=
+ =?utf-8?B?dFNYYWZ6N3huVkpuaHMrd3VxYXpnNGhpc2VRcFpqY0IwNENXWEJlZkUvREt6?=
+ =?utf-8?B?RW9YWFgxU3RCRnBmUVNlbEpVV3d5dUpIVU9vMldYdU1sSDN4aWFaK0pWY0xN?=
+ =?utf-8?B?UUVDMTFITWtRVUlBMlAwNVNxbVVQcHplTUE2NlpHL2JMdVp6dU9VdFMxRWNa?=
+ =?utf-8?Q?GZQjuCJwy7GR3YFPs1ywhe+4Y?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 873b753a-15fc-4c61-dac5-08dd7740ca9e
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2025 08:30:32.1250
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zmJ23o3bYCce0D/db5IK7XrU9KzqszM3DxCJiYY3Y0MF6oogrbz6NBGuytD8d2Ak70wUX7J5mGuilqet8tQEAg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5620
 
-Bounce-buffering makes the system spend more time copying
-I/O data. When the I/O transaction take place between
-a confidential and a non-confidential endpoints, there is
-no other way around.
+Joerg,
 
-Introduce a device bitfield to indicate that the device
-doesn't need to perform bounce buffering. The capable
-device may employ it to save on copying data around.
 
-Signed-off-by: Roman Kisel <romank@linux.microsoft.com>
----
- arch/x86/mm/mem_encrypt.c  | 3 +++
- include/linux/device.h     | 8 ++++++++
- include/linux/dma-direct.h | 3 +++
- include/linux/swiotlb.h    | 3 +++
- 4 files changed, 17 insertions(+)
+On 4/8/2025 6:14 PM, Joerg Roedel wrote:
+> Hey Sean,
+> 
+> On Fri, Apr 04, 2025 at 12:38:15PM -0700, Sean Christopherson wrote:
+>> TL;DR: Overhaul device posted interrupts in KVM and IOMMU, and AVIC in
+>>        general.  This needs more testing on AMD with device posted IRQs.
+> 
+> Thanks for posting this, it fixes quite some issues in the posted IRQ
+> implemention. I skimmed through the AMD IOMMU changes and besides some
+> small things didn't spot anything worrisome.
+> 
+> Adding Suravee and Vasant from AMD to this thread for deeper review
+> (also of the KVM parts) and testing.
 
-diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
-index 95bae74fdab2..6349a02a1da3 100644
---- a/arch/x86/mm/mem_encrypt.c
-+++ b/arch/x86/mm/mem_encrypt.c
-@@ -19,6 +19,9 @@
- /* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENCRYPTED */
- bool force_dma_unencrypted(struct device *dev)
- {
-+	if (dev->use_priv_pages_for_io)
-+		return false;
-+
- 	/*
- 	 * For SEV, all DMA must be to unencrypted addresses.
- 	 */
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 80a5b3268986..4aa4a6fd9580 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -725,6 +725,8 @@ struct device_physical_location {
-  * @dma_skip_sync: DMA sync operations can be skipped for coherent buffers.
-  * @dma_iommu: Device is using default IOMMU implementation for DMA and
-  *		doesn't rely on dma_ops structure.
-+ * @use_priv_pages_for_io: Device is using private pages for I/O, no need to
-+ *		bounce-buffer.
-  *
-  * At the lowest level, every device in a Linux system is represented by an
-  * instance of struct device. The device structure contains the information
-@@ -843,6 +845,7 @@ struct device {
- #ifdef CONFIG_IOMMU_DMA
- 	bool			dma_iommu:1;
- #endif
-+	bool			use_priv_pages_for_io:1;
- };
- 
- /**
-@@ -1079,6 +1082,11 @@ static inline bool dev_removable_is_valid(struct device *dev)
- 	return dev->removable != DEVICE_REMOVABLE_NOT_SUPPORTED;
- }
- 
-+static inline bool dev_priv_pages_for_io(struct device *dev)
-+{
-+	return dev->use_priv_pages_for_io;
-+}
-+
- /*
-  * High level routines for use by the bus drivers
-  */
-diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index d7e30d4f7503..b096369f847e 100644
---- a/include/linux/dma-direct.h
-+++ b/include/linux/dma-direct.h
-@@ -94,6 +94,9 @@ static inline dma_addr_t phys_to_dma_unencrypted(struct device *dev,
-  */
- static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
- {
-+	if (dev_priv_pages_for_io(dev))
-+		return phys_to_dma_unencrypted(dev, paddr);
-+
- 	return __sme_set(phys_to_dma_unencrypted(dev, paddr));
- }
- 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 3dae0f592063..35ee10641b42 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -173,6 +173,9 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
- {
- 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 
-+	if (dev_priv_pages_for_io(dev))
-+		return false;
-+
- 	return mem && mem->force_bounce;
- }
- 
--- 
-2.43.0
+Sure. We will try to review it soon and will run some tests.
+
+-Vasant
 
