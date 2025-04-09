@@ -1,91 +1,85 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AC1FB267AFD
-	for <iommu@lists.linux.dev>; Wed,  9 Apr 2025 15:36:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 563512690CF
+	for <iommu@lists.linux.dev>; Wed,  9 Apr 2025 15:44:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744213005; cv=none; b=hW/lVCmt+GT+ArbeyJy4Gqot4U10/s6/SB637zN3P3l+btZfw7lHW+s1jrk6fLZJzloQXvC+kJP5gKhc8ezBlADsLzfbMJoNa88fT6zcGGXnW28KkLR79DIsrDgkWtMMqMF98aEE34vk99aTd8zfmbQH5IVTnlvrliAjXXv9x1M=
+	t=1744213478; cv=none; b=HaOsZQirq7FmsIWIlroAc4l/FY6nSG1RA31Ame5D5w5Q7RsRKIfVJF+lCq22/RX2gdBIPQfxlpEdJPujeTdAYn714r5EPoFsxBx9fcTLepOx+fUmf3DaYf26dtaTDNgRRya864KlgDZu82VCE2d5wuVBHRUhsfQO1g1VSYqdXTE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744213005; c=relaxed/simple;
-	bh=mra/8qKW0Evjk3Ofx4vXnWBF0Y2y8/XWWI9ZGtde6nU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QfovADdcnGos1Xy+6R2J0HutFI9XHE7CntwdKO8l5/B4b0hw7ISi7lvZF/74P8HEnsDQnVkqKc/xDkJUPgRhIx58FgSFd7X6VeM0NTf1m2vSUZXpOpDaiSHMtpOL6ufirkxFXrDg/xjzVwFfxmD2M0TiPwipEwk7z3aPNc0rITw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Mp2nvG16; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1744213478; c=relaxed/simple;
+	bh=qYREGvtJjd5TJ9Nfnq3n+/uQZIwjHAzTbMhhJZ8bxtk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ZyvWhl+3eIy9NopL6PXzk8sA4Pd7dRQMclyyky9mPv4H3dru9Oj7YrN2GUJ5jRyP2pmrMYFzygs6H/dnn9MTh14k6Xb+4a1eG17shm0f4+DA6ZZHv6uFlq38OLb57p+Ld0qcdHR8lOYgFTSuMSl01/pd/KxSDrwH1Q6lB1UQ6RA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=pZTLeuZ1; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Mp2nvG16"
-Received: from [10.137.184.60] (unknown [131.107.160.188])
-	by linux.microsoft.com (Postfix) with ESMTPSA id DC5202114D83;
-	Wed,  9 Apr 2025 08:36:43 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DC5202114D83
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1744213004;
-	bh=STjRVpgg0Yp0bRazVRJxjrVKHPO2bSZ4lShot4vAUzA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Mp2nvG161guzkA5jkhuWIpYyBT04WkL0edtyczcFZXoq8eK8Ezwe8HEmiBEcfvDCy
-	 deajHxHYyWZU7h7pWiFKRJXXcUnyRylUnG5vNOAzszEOLLM9KKKiWnfuRP81BheV+I
-	 WY2pVGQeqqiyxm/f+Q6cp3ADRSs3IuXWn24zdJDY=
-Message-ID: <d8876120-5478-4d2f-acad-b0a59261bbc5@linux.microsoft.com>
-Date: Wed, 9 Apr 2025 08:36:43 -0700
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="pZTLeuZ1"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 95F4C22544D;
+	Wed,  9 Apr 2025 17:44:31 +0200 (CEST)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1744213471; bh=tUXY0pcf31Nt1pAHcBHzpdWKoN0ie9ydJgZq/X/mo6Q=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=pZTLeuZ1Zc9LZncPbifJhBPUc2B4DnP+y86jbDboDGfPhXnBJfi7izJ0WsgirQIiE
+	 gjqqYDGD+sKcS+RMGBXP1UaueHZ3DcllN+nc464LJjyes9p5ebaKgodRnWQ5amWMPh
+	 NRggdCvzAMKxosBukp5+BQyOnzkFqqppOR8RNkEkZxgUKiKtona16jDJ3+Oc7GxlgV
+	 MJqjejVouh+ndDhxNZlLhlFUxgsqYV8pmKcg/ttugEyzelE3mqViSmr34YUlTC92hq
+	 HmRK7nekHeKlSpR1ePVBfryeRE1dXSlKKuqFv5ACPq1dP0+W+dAjJnOHghjb7H3q9Q
+	 aGVqdAOSEHH5w==
+Date: Wed, 9 Apr 2025 17:44:30 +0200
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: iommu@lists.linux.dev
+Cc: Petr Tesarik <ptesarik@suse.com>, David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Tom Murphy
+ <murphyt7@tcd.ie>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/vt-d: Remove an unnecessary call set_dma_ops()
+Message-ID: <20250409174430.00ff4a09@meshulam.tesarici.cz>
+In-Reply-To: <20250403165605.278541-1-ptesarik@suse.com>
+References: <20250403165605.278541-1-ptesarik@suse.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.49; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH hyperv-next 6/6] drivers: SCSI: Do not bounce-bufffer for
- the confidential VMBus
-To: Christoph Hellwig <hch@lst.de>
-Cc: aleksander.lobakin@intel.com, andriy.shevchenko@linux.intel.com,
- arnd@arndb.de, bp@alien8.de, catalin.marinas@arm.com, corbet@lwn.net,
- dakr@kernel.org, dan.j.williams@intel.com, dave.hansen@linux.intel.com,
- decui@microsoft.com, gregkh@linuxfoundation.org, haiyangz@microsoft.com,
- hpa@zytor.com, James.Bottomley@HansenPartnership.com,
- Jonathan.Cameron@huawei.com, kys@microsoft.com, leon@kernel.org,
- lukas@wunner.de, luto@kernel.org, m.szyprowski@samsung.com,
- martin.petersen@oracle.com, mingo@redhat.com, peterz@infradead.org,
- quic_zijuhu@quicinc.com, robin.murphy@arm.com, tglx@linutronix.de,
- wei.liu@kernel.org, will@kernel.org, iommu@lists.linux.dev,
- linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-doc@vger.kernel.org, linux-hyperv@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org, x86@kernel.org,
- apais@microsoft.com, benhill@microsoft.com, bperkins@microsoft.com,
- sunilmut@microsoft.com
-References: <20250409000835.285105-1-romank@linux.microsoft.com>
- <20250409000835.285105-7-romank@linux.microsoft.com>
- <20250409105332.GB5721@lst.de>
-Content-Language: en-US
-From: Roman Kisel <romank@linux.microsoft.com>
-In-Reply-To: <20250409105332.GB5721@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
+On Thu,  3 Apr 2025 18:56:05 +0200
+Petr Tesarik <ptesarik@suse.com> wrote:
 
-
-On 4/9/2025 3:53 AM, Christoph Hellwig wrote:
-> On Tue, Apr 08, 2025 at 05:08:35PM -0700, Roman Kisel wrote:
->> The device bit that indicates that the device is capable of I/O
->> with private pages lets avoid excessive copying in the Hyper-V
->> SCSI driver.
->>
->> Set that bit equal to the confidential external memory one to
->> not bounce buffer
+> Do not touch per-device DMA ops when the driver has been converted to use
+> the dma-iommu API.
 > 
-> Drivers have absolutely no business telling this.  The need for bounce
-> buffering or not is a platform/IOMMU decision and not one specific to
-> a certain device or driver.
+> Fixes: c588072bba6b ("iommu/vt-d: Convert intel iommu driver to the iommu ops")
+> Signed-off-by: Petr Tesarik <ptesarik@suse.com>
 
-Seemed to work although I cannot claim nothing is going to be broken
-ever. It did appear from the code that one could have this per-device
-bit.
+Does anyone agree? Or see any issues?
 
-As I understand, you're saying this is architecturally broken. Do you
-think a broader set of changes would improve the implementation?
+Petr T
 
+> ---
+>  drivers/iommu/intel/iommu.c | 1 -
+>  1 file changed, 1 deletion(-)
 > 
-
--- 
-Thank you,
-Roman
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index bf1f0c814348..b7e500451d4f 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -3789,7 +3789,6 @@ static void intel_iommu_release_device(struct device *dev)
+>  	intel_pasid_free_table(dev);
+>  	intel_iommu_debugfs_remove_dev(info);
+>  	kfree(info);
+> -	set_dma_ops(dev, NULL);
+>  }
+>  
+>  static void intel_iommu_get_resv_regions(struct device *device,
 
