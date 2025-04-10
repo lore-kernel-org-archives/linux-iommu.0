@@ -1,76 +1,50 @@
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 756B3212FAC
-	for <iommu@lists.linux.dev>; Thu, 10 Apr 2025 23:00:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD9671E231F;
+	Thu, 10 Apr 2025 23:28:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744326013; cv=none; b=rc1ewM0kAbAOuGvNoOg9GhGUTXklAuUFHAPVo17NDlX1Nc3AJXeViG7XLIuy6KjKAaNNdwNVIbsxO6REGHL2qBz71YXfgk384p5p+XkYNd+Bbrx4pemOAd+P4O7/kMf/bAkJSzxWj530FNyeu9lINffb7wrbCjdxiAVK9XxV/7o=
+	t=1744327739; cv=none; b=cnut0sVoyjEKAVJ1QT2LvsdBCEQlGTougXa6WfBn2CJwGtZkk9J/MSQAc2qa7u35Z0Pvkz/ThL+aE3+/iGxGdKM6TtkOhoT7fL18EbrDIkk+e/Vw5ZlY1hchykM8NvPxesjYqJCPd7e8hDsSGT6M0St0HPtmjjCfGwXl8W83sOQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744326013; c=relaxed/simple;
-	bh=KJDeLRPNP4KR15v2b6aVw2383AZQQQwiuSEL1SwZOgk=;
+	s=arc-20240116; t=1744327739; c=relaxed/simple;
+	bh=QR5wAxwNs/0pUlpoV2G8ubqvhwn+jxCykH9UePuSiOA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GdwqXdyYZxDi7MdJ5ZYiaQitwNS5Ng+7Er5ojjh59gLdj60JbsgmKsw2M5KpsSDA1DPTNeZDtWEDoK4VIrAgLDLkvQidNUWveFsYSFHTcpU1cAoCdQC8/6KSR4SxfO2DxTXLJt00YE7AkN5oYZgooGHB8k+Bh7TtYyqHNw4fGLo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=WnbtB+Wd; arc=none smtp.client-ip=209.85.222.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=M1MNEkAUq1nHFF9qJ3XTOfJKrIU/JfldqQlFHuTZAfw6yOl0W8duhrb9TlnQ4wHAvXFIMzK81g2NPU7r3i4kcr+bZBdp+AYMfHqMiMEITJl91YL8oakt0K9REsWteKiZO6bn6SGdKoyhTn94AasbqG31TYBWRBrgSxkSPILp9xk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Amt3Xp1Q; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="WnbtB+Wd"
-Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-7c5a88b34a6so135460085a.3
-        for <iommu@lists.linux.dev>; Thu, 10 Apr 2025 16:00:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1744326010; x=1744930810; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JpO2S4wctyk68CVyOkNnoYhQpTc8ULQAveyt4WbuIOg=;
-        b=WnbtB+Wdyi9jHaaB9LPX2jwsCMHs+4q+9XCQ+OpRLZYucnGP6WDgROT3kKxuTzEeWi
-         KXUjSIVmGWoNz/PBKaGOL6+yr8gV2MnQ8K8MMHO/v/NHaaHUXbKNS8Y8SSOBLEdcQtDT
-         YCgPdnC/uusQps3rwyYhFbInqATGLjFwX5QrY4GNywF2MdoRZfvXUo4X1MurD00BtnFq
-         +WTHt6a1HFRWiAyTu5sVP4TZBxfCne0yQ7onMSEfo6pUEDs/DMPUpu7u9edozq227Xhz
-         xta22W+0WuDTvZCaljdx99q3Gi/On6bkqRbe7Dg+8OQMHNT/UHfGuVglClkIIVtzx5jg
-         aBSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744326010; x=1744930810;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JpO2S4wctyk68CVyOkNnoYhQpTc8ULQAveyt4WbuIOg=;
-        b=EMsqROlHIcHaFcSusAB9Nbxms0n2USP8HgSr5ouN/6b3lMJMHXY7/mHcBjQ19Gcwkw
-         suYLBT42KGehq3iLhW5v7IityrBm5gjLzOUTczw/y/XHcfK91t0bE20ghqh9HlO51v3Z
-         zsVS/vt+AlQszkZe996QY3gk0klwCGHADjYAIhP05QzzDGn/xRAX/qm/NZlSoyO7BvHC
-         84pK1xdg7qsAKMWumei7NpSsHbvpZNqB2HRTlho038LPnf5UxNs2NfevU3bw/eE5iO6V
-         Ps3bs8e56JaOfHcvdFL0h1qRnt9bLFCjQKK881PkCpoXZBRws5LwQDJClVhVoPbACb0f
-         7k7A==
-X-Gm-Message-State: AOJu0YxIJOrkpvgzawPxZJZWtToVicJ/2FuPDttmWdOHqaaxU+0fO7bi
-	9IKHMHpzm1QB1mu81t9IMoS72bOsCRRS5MQ1trPtepchaj9KayuxZYvEwsETApo=
-X-Gm-Gg: ASbGncuy11ci/s6UU1X5fbvjB9kkbvmrGoIXF29Dhh9FaQEJsDSEGEJnXsRJ8D2mLrp
-	SRkEQY7OZRaOqo9xfTQ4jdrPPC1M0xb12OwQSADYBMoVDDPbiZvKS9plslUc+upuqwuzd0aER7v
-	opDMW86FdSzi1bvxIyHa8NkSxzIB0aOPl+b+G7fkrDcEn8u0a+Chn84Ay7XpBvWU23wWTtO9lO5
-	hd6pMLqkVxo6Ol6jNhN3heqJop8JXWryqndZ+2+ixBZfVksESicRQBokmywHMk/Z3xnFe/gQKIt
-	kuoiFRnS/Udkhblj5JjnyBAftJfHacR2baWoRbjz6yQoYe6Q1ixR1rYxucGh61OW7i8vLp4ov8X
-	IQ1Qm5HcFulKgoCak29U=
-X-Google-Smtp-Source: AGHT+IHr0/WY2Rqb4JC2JVZGgAH4AixNta9jAPZvPdjOUO1pv6CI6b5DlSO9IE1VF0/bDnrgXDRKew==
-X-Received: by 2002:a05:620a:4306:b0:7c5:5cc4:ca5c with SMTP id af79cd13be357-7c7af12e6ebmr102606285a.14.1744326010083;
-        Thu, 10 Apr 2025 16:00:10 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c7a89437a4sm164415585a.23.2025.04.10.16.00.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Apr 2025 16:00:09 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1u30sS-00000000GRz-4851;
-	Thu, 10 Apr 2025 20:00:08 -0300
-Date: Thu, 10 Apr 2025 20:00:08 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Shyam Saini <shyamsaini@linux.microsoft.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
-	will@kernel.org, jacob.pan@linux.microsoft.com,
-	eric.auger@redhat.com, code@tyhicks.com,
-	eahariha@linux.microsoft.com, vijayb@linux.microsoft.com
-Subject: Re: [PATCH v2 0/3] arm-smmu: select suitable IOVA
-Message-ID: <20250410230008.GA6905@ziepe.ca>
-References: <20250410225030.2528385-1-shyamsaini@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Amt3Xp1Q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D28EC4CEDD;
+	Thu, 10 Apr 2025 23:28:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1744327739;
+	bh=QR5wAxwNs/0pUlpoV2G8ubqvhwn+jxCykH9UePuSiOA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Amt3Xp1QAg4PYzlL02RcZ39wf9i++eqNZTs04vFd1c2whx+m/Rpe4qDFQ9xYLWQ5E
+	 W9xmi9SOfdseb+sCHVMXCtT+HeaKPMkS8mS/63UlCwzY4qVvf+TjsbI8d76kIrh3MV
+	 qUzjoHLCLtmxesyzQLAR3lKJRTsKeOTBIdkf0t5wFSsCtGBn8s//O9+wfWhHgswkPQ
+	 frFPJz3lK7h7cQi9jv1qkOh/KmIigH+oawXZKZmliAn+ZSQ38O4Pqe7ca2Rv7DusTY
+	 t5hkGXQzbbv0EDuXn9GRfIuY2ww3ppAI40Ql3Y1W0/6UMUQr/Guw4RTLp/wZ/sN+bI
+	 uaADJ3sBAngLQ==
+Date: Fri, 11 Apr 2025 01:28:52 +0200
+From: Danilo Krummrich <dakr@kernel.org>
+To: Benno Lossin <benno.lossin@proton.me>
+Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>, a.hindborg@kernel.org,
+	rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	open list <linux-kernel@vger.kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v2 2/3] rust: dma: convert the read/write macros to
+ return Result
+Message-ID: <Z_hUNCwXrZKI4D4o@cassiopeiae>
+References: <D93BX5NEOSC8.3NOVI9GMDJEXD@proton.me>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,35 +53,73 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250410225030.2528385-1-shyamsaini@linux.microsoft.com>
+In-Reply-To: <D93BX5NEOSC8.3NOVI9GMDJEXD@proton.me>
 
-On Thu, Apr 10, 2025 at 03:50:27PM -0700, Shyam Saini wrote:
+On Thu, Apr 10, 2025 at 10:58:10PM +0000, Benno Lossin wrote:
+> On Thu Apr 10, 2025 at 5:34 PM CEST, Danilo Krummrich wrote:
+> > On Thu, Apr 10, 2025 at 03:11:01PM +0000, Benno Lossin wrote:
+> >> On Thu Apr 10, 2025 at 1:54 PM CEST, Danilo Krummrich wrote:
+> >> > On Thu, Apr 10, 2025 at 11:58:17AM +0300, Abdiel Janulgue wrote:
+> >> >> @@ -78,13 +74,14 @@ impl Drop for DmaSampleDriver {
+> >> >>      fn drop(&mut self) {
+> >> >>          dev_info!(self.pdev.as_ref(), "Unload DMA test driver.\n");
+> >> >>  
+> >> >> -        let _ = || -> Result {
+> >> >> -            for (i, value) in TEST_VALUES.into_iter().enumerate() {
+> >> >> -                assert_eq!(kernel::dma_read!(self.ca[i].h), value.0);
+> >> >> -                assert_eq!(kernel::dma_read!(self.ca[i].b), value.1);
+> >> >> -            }
+> >> >> -            Ok(())
+> >> >> -        }();
+> >> >> +        for (i, value) in TEST_VALUES.into_iter().enumerate() {
+> >> >> +            let val0 = kernel::dma_read!(self.ca[i].h);
+> >> >> +            let val1 = kernel::dma_read!(self.ca[i].b);
+> >> >> +            assert!(val0.is_ok());
+> >> >> +            assert!(val1.is_ok());
+> >> >> +            assert_eq!(val0.unwrap(), value.0);
+> >> >> +            assert_eq!(val1.unwrap(), value.1);
+> >> >
+> >> > Maybe use if-let to avoid the unwrap?
+> >> >
+> >> > 	if let Ok(val0) = val0 {
+> >> > 	   assert_eq!(val0, value.0);
+> >> > 	}
+> >> >
+> >> > I know it's a bit pointless, since we know it must be ok, but the educational
+> >> > message of the example should be to check and not to unwrap, so maybe that's
+> >> > better.
+> >> 
+> >> The if-let will silently ignore any errors, so I don't think that it's
+> >> fit for example code either.
+> >
+> > Yes, but we still have the assert!() before, so the full sequence would be:
+> >
+> > 	assert!(val0.is_ok());
+> >
+> > 	if let Ok(val0) = val0 {
+> > 	   assert_eq!(val0, value.0);
+> > 	}
 > 
-> Hi,
+> Ah right, missed that.
 > 
-> Currently, the MSI_IOVA_BASE address is hard-coded to 0x80000000,
-> assuming that all platforms have this address available for MSI IOVA
-> reservation. However, this is not always the case, as some platforms
-> reserve this address for other purposes. Consequently, these platforms
-> cannot reserve the MSI_IOVA_BASE address for MSI.
+> > The intention would be to avoid patterns that shouldn't be used in "real" code;
+> > assert!() should be obvious not to use for real code.
 > 
-> There was an [1] attempt to fix this problem by passing the MSI IOVA
-> base as a kernel command line parameter.
+> Yeah, I'm not sure if this is that valuable. I think having "real code"
+> is better, but I don't have any idea what to do in this case.
 > 
-> This patch series aims to address the issue by introducing a new DTS
-> property, "arm,smmu-faulty-msi-iova" which can be used to hold faulty
-> MSI IOVA address. This property can be passed to ARM SMMU drivers
-> via device tree so that the drivers can select appropriate MSI IOVA base
-> address which doesn't intersect with the faulty MSI IOVA address.
+> Why does this sample do the validation in the `drop` method in the first
+> place?
 
-I thought we already talked about this and you were not going to be
-doing a DT proposal for a software knob?
+I assume there is no specific reason, maybe Abdiel wanted to have a bit more
+lifecycle for the allocation than just probe().
 
-And then you didn't even link to the recent discussion :(
+I guess we could just move it to probe(). Alternatively we can also keep it in a
+closure or function and only assert! once for the returned Result.
 
-https://lore.kernel.org/linux-iommu/20250403232619.GA681099@ziepe.ca/
+> I guess the same code on the C side would do this in `remove` or
+> whatever the equivalent thing is there, but would there be the option to
+> report an error? Or is `remove` an infallible operation? In that case
+> `assert!` probably is still the best option.
 
-It is easily solved in the smmuv3 driver without out any DT. Please
-do that.
-
-Jason
+remove() is and has to be infallible, yes.
