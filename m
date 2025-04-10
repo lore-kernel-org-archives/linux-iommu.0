@@ -1,89 +1,85 @@
-Received: from mail-4316.protonmail.ch (mail-4316.protonmail.ch [185.70.43.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38B6A1624D0
-	for <iommu@lists.linux.dev>; Thu, 10 Apr 2025 15:11:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.70.43.16
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DCBF71D5AC0
+	for <iommu@lists.linux.dev>; Thu, 10 Apr 2025 15:16:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744297875; cv=none; b=fX+Ca+txL+mc0I6gVO/NjeVGgiZRAXPUMJbItgvCrfJ5tc1oG94PGkeNGvXIyGBvYyY+uMOYyo6RQX+T2TsmlUNI5Z7oQm7Lk9hWUI0sNe4WLKZK5SiSyG5giZg4e9PfwU4Ln6KqH1OBW7TN+G1heE271VCrE69hwmSQKsC8Gss=
+	t=1744298163; cv=none; b=b/9O2qFhQlunX27UxmWAGstWOTmhtc13LHhV2yyDhDfpMz7BOA9YLnr+we8ZqY9hO2SyqIK7wXg3Y/fC0eeGxJ30dKBr3xoq8R/kwqEuObpBNRU1AOIXZ+Z5fjdCqv95dccKOeZ46GJHiT/hoGI3tmrXhXwhQSgT9fJMerAJhpk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744297875; c=relaxed/simple;
-	bh=rViml0MO0HXvkmWfFcE+jHaQpoerFBjycLu5vc7XwYs=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZrltXsJ0jkzOatPhmIgcIJqtBQcauRS0O1iXN5WgdtSq7isnRwi5qZG37eGYt7ZBxXwOhF4vyhi1zxHG55P69/WyOv9aNvCPapg7nsrsCGHX25vTF1P1Vtt+gPPitG/40KTCYVYizDMr8sK183YLnfUYIflBInHIKorr9wkDrr0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me; spf=pass smtp.mailfrom=proton.me; dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b=TAdClRal; arc=none smtp.client-ip=185.70.43.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=proton.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=proton.me
+	s=arc-20240116; t=1744298163; c=relaxed/simple;
+	bh=FJiKHY0yXYvYpnwTi6b4QY4wSVLzbkccdNokb8K2uZM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=snCZJ9I/aHDcMjrS7VsTzv98j0ny5jfJj0i26N9kmJzfQOTX3vs0RBK7vAN/rqsVeWlH7254WoREOhcNPovxqsiYdmAq5s/mXQGwIgx552W8zHrd7rEGV+cRMUC5MKLOpFG6y9+Yqux9+cF+z1byt3BBSpCZ7yW/Scyh8KaYSo8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=pPUwqlOB; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=proton.me header.i=@proton.me header.b="TAdClRal"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=proton.me;
-	s=protonmail; t=1744297866; x=1744557066;
-	bh=8ZROoD5JcNESwIbha+YQjpRq4TIlO/1MtVld/+GK+DY=;
-	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
-	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
-	 Message-ID:BIMI-Selector:List-Unsubscribe:List-Unsubscribe-Post;
-	b=TAdClRalV5KSb2YEn4SpuTWPWvUMvV6hoPDAdYO2YTz0zNJBHQaZbugC2YiMxthXD
-	 /rr7iToQka6Pakzg7S6RL+LfEs2Iu38EJdF4tskUcB3QStu0+dPZ03+u49z5XHEYAz
-	 5QgdaMRFvJRL2ROqa4frDEe0Eo6+t1m2/Cu6R7SqqXGOxI1nyM1mEHPc8iKGlPRoll
-	 8LJNTOSyeRI+tWC6GAQu18Amf+UtjrJK2ZhJbSRexB1eWma6UsNdf2ODtoPfRLKnmR
-	 haHGIEEvajcI3S5FpLqAE0fJ9MEdxH6H89oZzqHFoKBmuLD5lamQISOkIIl8r8sxK5
-	 K6xQfNm/oO8tg==
-Date: Thu, 10 Apr 2025 15:11:01 +0000
-To: Danilo Krummrich <dakr@kernel.org>, Abdiel Janulgue <abdiel.janulgue@gmail.com>
-From: Benno Lossin <benno.lossin@proton.me>
-Cc: a.hindborg@kernel.org, rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>, open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com, "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v2 2/3] rust: dma: convert the read/write macros to return Result
-Message-ID: <D931ZGPNHUA8.U3L2C72CVH46@proton.me>
-In-Reply-To: <Z_exjZ9xEntlL9FC@pollux>
-References: <20250410085916.546511-1-abdiel.janulgue@gmail.com> <20250410085916.546511-3-abdiel.janulgue@gmail.com> <Z_exjZ9xEntlL9FC@pollux>
-Feedback-ID: 71780778:user:proton
-X-Pm-Message-ID: ec7346d749b35949f7f5a50559c44a645fedb015
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="pPUwqlOB"
+Received: from [10.137.184.60] (unknown [131.107.159.188])
+	by linux.microsoft.com (Postfix) with ESMTPSA id EA497203B86C;
+	Thu, 10 Apr 2025 08:16:00 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com EA497203B86C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1744298161;
+	bh=b/USx7FyrAAP0KVFJIR3S9nGQoNXd7rpnvG6sRwEcjk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=pPUwqlOBrIErhRnMenQuuETY6McFAU1X0L10gqqB+/k7VCThivMB270N9MVPVqKZv
+	 OKxIXSvIKMZxOqZulERNSc4wZJRTLL80Ml0pDUeMCwWwOhmkq4niN8+MWNU6gCLoNP
+	 iRC71M6wjwxVnS1zZO8WpZAJaxORmPm0mctceOLU=
+Message-ID: <e169cb52-8f2d-4ac5-b667-87c3357c11a7@linux.microsoft.com>
+Date: Thu, 10 Apr 2025 08:16:00 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH hyperv-next 5/6] arch, drivers: Add device struct bitfield
+ to not bounce-buffer
+To: Christoph Hellwig <hch@lst.de>
+Cc: Robin Murphy <robin.murphy@arm.com>, aleksander.lobakin@intel.com,
+ andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+ catalin.marinas@arm.com, corbet@lwn.net, dakr@kernel.org,
+ dan.j.williams@intel.com, dave.hansen@linux.intel.com, decui@microsoft.com,
+ gregkh@linuxfoundation.org, haiyangz@microsoft.com, hpa@zytor.com,
+ James.Bottomley@HansenPartnership.com, Jonathan.Cameron@huawei.com,
+ kys@microsoft.com, leon@kernel.org, lukas@wunner.de, luto@kernel.org,
+ m.szyprowski@samsung.com, martin.petersen@oracle.com, mingo@redhat.com,
+ peterz@infradead.org, quic_zijuhu@quicinc.com, tglx@linutronix.de,
+ wei.liu@kernel.org, will@kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-doc@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org, x86@kernel.org,
+ apais@microsoft.com, benhill@microsoft.com, bperkins@microsoft.com,
+ sunilmut@microsoft.com, Suzuki K Poulose <suzuki.poulose@arm.com>
+References: <20250409000835.285105-1-romank@linux.microsoft.com>
+ <20250409000835.285105-6-romank@linux.microsoft.com>
+ <0eb87302-fae8-4708-aaf8-d16e836e727f@arm.com>
+ <0ab2849a-5c03-4a8c-891e-3cb89b20b0e4@linux.microsoft.com>
+ <20250410072150.GA32563@lst.de>
+Content-Language: en-US
+From: Roman Kisel <romank@linux.microsoft.com>
+In-Reply-To: <20250410072150.GA32563@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu Apr 10, 2025 at 1:54 PM CEST, Danilo Krummrich wrote:
-> On Thu, Apr 10, 2025 at 11:58:17AM +0300, Abdiel Janulgue wrote:
->> @@ -78,13 +74,14 @@ impl Drop for DmaSampleDriver {
->>      fn drop(&mut self) {
->>          dev_info!(self.pdev.as_ref(), "Unload DMA test driver.\n");
->> =20
->> -        let _ =3D || -> Result {
->> -            for (i, value) in TEST_VALUES.into_iter().enumerate() {
->> -                assert_eq!(kernel::dma_read!(self.ca[i].h), value.0);
->> -                assert_eq!(kernel::dma_read!(self.ca[i].b), value.1);
->> -            }
->> -            Ok(())
->> -        }();
->> +        for (i, value) in TEST_VALUES.into_iter().enumerate() {
->> +            let val0 =3D kernel::dma_read!(self.ca[i].h);
->> +            let val1 =3D kernel::dma_read!(self.ca[i].b);
->> +            assert!(val0.is_ok());
->> +            assert!(val1.is_ok());
->> +            assert_eq!(val0.unwrap(), value.0);
->> +            assert_eq!(val1.unwrap(), value.1);
->
-> Maybe use if-let to avoid the unwrap?
->
-> =09if let Ok(val0) =3D val0 {
-> =09   assert_eq!(val0, value.0);
-> =09}
->
-> I know it's a bit pointless, since we know it must be ok, but the educati=
-onal
-> message of the example should be to check and not to unwrap, so maybe tha=
-t's
-> better.
 
-The if-let will silently ignore any errors, so I don't think that it's
-fit for example code either.
 
----
-Cheers,
-Benno
+On 4/10/2025 12:21 AM, Christoph Hellwig wrote:
+> On Wed, Apr 09, 2025 at 09:44:03AM -0700, Roman Kisel wrote:
+>> Do you feel this is shoehorned in `struct device`? I couldn't find an
+>> appropriate private (== opaque pointer) part in the structure to store
+>> that bit (`struct device_private` wouldn't fit the bill) and looked like
+>> adding it to the struct itself would do no harm. However, my read of the
+>> room is that folks see that as dubious :)
+> 
+> We'll need per-device information.  But it is much higher level than a
+> need bounce buffer flag.
+> 
+
+I see, thanks for the explanation!
+
+-- 
+Thank you,
+Roman
 
