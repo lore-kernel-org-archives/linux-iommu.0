@@ -1,85 +1,105 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DCBF71D5AC0
-	for <iommu@lists.linux.dev>; Thu, 10 Apr 2025 15:16:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADA2D1DF258;
+	Thu, 10 Apr 2025 15:34:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744298163; cv=none; b=b/9O2qFhQlunX27UxmWAGstWOTmhtc13LHhV2yyDhDfpMz7BOA9YLnr+we8ZqY9hO2SyqIK7wXg3Y/fC0eeGxJ30dKBr3xoq8R/kwqEuObpBNRU1AOIXZ+Z5fjdCqv95dccKOeZ46GJHiT/hoGI3tmrXhXwhQSgT9fJMerAJhpk=
+	t=1744299273; cv=none; b=XyMxTJcK0nmhPAZUxJGXCV7CxNu8LKMPLYBz//TyH5MK4d1e2fXcRs9i/H/GHxyswQs2si/FYiiVUer1nefuSUwgTIv5kaSLYfCMOK5M9PH+Y6L6pbsahGOo2y5Di9qe2rf8BZaY8iFMophbw1mZm9X8QX3kOKcYfEPbhpl+oWs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744298163; c=relaxed/simple;
-	bh=FJiKHY0yXYvYpnwTi6b4QY4wSVLzbkccdNokb8K2uZM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=snCZJ9I/aHDcMjrS7VsTzv98j0ny5jfJj0i26N9kmJzfQOTX3vs0RBK7vAN/rqsVeWlH7254WoREOhcNPovxqsiYdmAq5s/mXQGwIgx552W8zHrd7rEGV+cRMUC5MKLOpFG6y9+Yqux9+cF+z1byt3BBSpCZ7yW/Scyh8KaYSo8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=pPUwqlOB; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1744299273; c=relaxed/simple;
+	bh=chG2qc958SltEXeebkRxLTHhMr+J82fDLTxWI4yu2vw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NGGCep9MDxxoKQPzu8i5Wxi+Y60ZFSakxH74tJj0MjMqqxOI9NM6vccoab8dep7SoElcYIyP3xvSjErVjiGuWC+ygfIzAWEuc8lM6OCxG1gf1Ufh8z2+PmaCLhZDvgd4sqm7VkiCI4qaWSbUvfAva3OP0kBNR5a+vpFjLJi4POk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fKyVv1AY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="pPUwqlOB"
-Received: from [10.137.184.60] (unknown [131.107.159.188])
-	by linux.microsoft.com (Postfix) with ESMTPSA id EA497203B86C;
-	Thu, 10 Apr 2025 08:16:00 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com EA497203B86C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1744298161;
-	bh=b/USx7FyrAAP0KVFJIR3S9nGQoNXd7rpnvG6sRwEcjk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=pPUwqlOBrIErhRnMenQuuETY6McFAU1X0L10gqqB+/k7VCThivMB270N9MVPVqKZv
-	 OKxIXSvIKMZxOqZulERNSc4wZJRTLL80Ml0pDUeMCwWwOhmkq4niN8+MWNU6gCLoNP
-	 iRC71M6wjwxVnS1zZO8WpZAJaxORmPm0mctceOLU=
-Message-ID: <e169cb52-8f2d-4ac5-b667-87c3357c11a7@linux.microsoft.com>
-Date: Thu, 10 Apr 2025 08:16:00 -0700
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fKyVv1AY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7CE6C4CEE9;
+	Thu, 10 Apr 2025 15:34:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1744299273;
+	bh=chG2qc958SltEXeebkRxLTHhMr+J82fDLTxWI4yu2vw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=fKyVv1AYUUD6IrJUMK6SxH0iKTg30q9UF3U5QDL5M0vFma/U9K912kTpER8l7JXqm
+	 umfkEY3/Noe1h6LwsTwLiTGcP3mTGuzibFrnAiE9iwGUAJKZqAcf8xERer5qvQaTFE
+	 QBzRIiDb5ppPvt7oRWK65jYJKr4Eik7XWbQCDv0nZiTtjPGBDQGCb/x/hmsnNzd4hG
+	 oUVmVo+anHwdPQxoGNed1BayL/KH3TuR9Z/UgjU4huB8qzkn2sjUI4csp8dfaVujeM
+	 8T2gkHLqRNPAeRWVoqQgVlQ7Mo0MO6sZ5tG3vXw3ysPtyJZpLOq5/xvm4/hqaQyZ+U
+	 3NUq24MruRNnw==
+Date: Thu, 10 Apr 2025 17:34:27 +0200
+From: Danilo Krummrich <dakr@kernel.org>
+To: Benno Lossin <benno.lossin@proton.me>
+Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>, a.hindborg@kernel.org,
+	rust-for-linux@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	open list <linux-kernel@vger.kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+Subject: Re: [PATCH v2 2/3] rust: dma: convert the read/write macros to
+ return Result
+Message-ID: <Z_flA_DP5_1mG6h_@pollux>
+References: <20250410085916.546511-1-abdiel.janulgue@gmail.com>
+ <20250410085916.546511-3-abdiel.janulgue@gmail.com>
+ <Z_exjZ9xEntlL9FC@pollux>
+ <D931ZGPNHUA8.U3L2C72CVH46@proton.me>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH hyperv-next 5/6] arch, drivers: Add device struct bitfield
- to not bounce-buffer
-To: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, aleksander.lobakin@intel.com,
- andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
- catalin.marinas@arm.com, corbet@lwn.net, dakr@kernel.org,
- dan.j.williams@intel.com, dave.hansen@linux.intel.com, decui@microsoft.com,
- gregkh@linuxfoundation.org, haiyangz@microsoft.com, hpa@zytor.com,
- James.Bottomley@HansenPartnership.com, Jonathan.Cameron@huawei.com,
- kys@microsoft.com, leon@kernel.org, lukas@wunner.de, luto@kernel.org,
- m.szyprowski@samsung.com, martin.petersen@oracle.com, mingo@redhat.com,
- peterz@infradead.org, quic_zijuhu@quicinc.com, tglx@linutronix.de,
- wei.liu@kernel.org, will@kernel.org, iommu@lists.linux.dev,
- linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-doc@vger.kernel.org, linux-hyperv@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org, x86@kernel.org,
- apais@microsoft.com, benhill@microsoft.com, bperkins@microsoft.com,
- sunilmut@microsoft.com, Suzuki K Poulose <suzuki.poulose@arm.com>
-References: <20250409000835.285105-1-romank@linux.microsoft.com>
- <20250409000835.285105-6-romank@linux.microsoft.com>
- <0eb87302-fae8-4708-aaf8-d16e836e727f@arm.com>
- <0ab2849a-5c03-4a8c-891e-3cb89b20b0e4@linux.microsoft.com>
- <20250410072150.GA32563@lst.de>
-Content-Language: en-US
-From: Roman Kisel <romank@linux.microsoft.com>
-In-Reply-To: <20250410072150.GA32563@lst.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <D931ZGPNHUA8.U3L2C72CVH46@proton.me>
 
-
-
-On 4/10/2025 12:21 AM, Christoph Hellwig wrote:
-> On Wed, Apr 09, 2025 at 09:44:03AM -0700, Roman Kisel wrote:
->> Do you feel this is shoehorned in `struct device`? I couldn't find an
->> appropriate private (== opaque pointer) part in the structure to store
->> that bit (`struct device_private` wouldn't fit the bill) and looked like
->> adding it to the struct itself would do no harm. However, my read of the
->> room is that folks see that as dubious :)
+On Thu, Apr 10, 2025 at 03:11:01PM +0000, Benno Lossin wrote:
+> On Thu Apr 10, 2025 at 1:54 PM CEST, Danilo Krummrich wrote:
+> > On Thu, Apr 10, 2025 at 11:58:17AM +0300, Abdiel Janulgue wrote:
+> >> @@ -78,13 +74,14 @@ impl Drop for DmaSampleDriver {
+> >>      fn drop(&mut self) {
+> >>          dev_info!(self.pdev.as_ref(), "Unload DMA test driver.\n");
+> >>  
+> >> -        let _ = || -> Result {
+> >> -            for (i, value) in TEST_VALUES.into_iter().enumerate() {
+> >> -                assert_eq!(kernel::dma_read!(self.ca[i].h), value.0);
+> >> -                assert_eq!(kernel::dma_read!(self.ca[i].b), value.1);
+> >> -            }
+> >> -            Ok(())
+> >> -        }();
+> >> +        for (i, value) in TEST_VALUES.into_iter().enumerate() {
+> >> +            let val0 = kernel::dma_read!(self.ca[i].h);
+> >> +            let val1 = kernel::dma_read!(self.ca[i].b);
+> >> +            assert!(val0.is_ok());
+> >> +            assert!(val1.is_ok());
+> >> +            assert_eq!(val0.unwrap(), value.0);
+> >> +            assert_eq!(val1.unwrap(), value.1);
+> >
+> > Maybe use if-let to avoid the unwrap?
+> >
+> > 	if let Ok(val0) = val0 {
+> > 	   assert_eq!(val0, value.0);
+> > 	}
+> >
+> > I know it's a bit pointless, since we know it must be ok, but the educational
+> > message of the example should be to check and not to unwrap, so maybe that's
+> > better.
 > 
-> We'll need per-device information.  But it is much higher level than a
-> need bounce buffer flag.
-> 
+> The if-let will silently ignore any errors, so I don't think that it's
+> fit for example code either.
 
-I see, thanks for the explanation!
+Yes, but we still have the assert!() before, so the full sequence would be:
 
--- 
-Thank you,
-Roman
+	assert!(val0.is_ok());
 
+	if let Ok(val0) = val0 {
+	   assert_eq!(val0, value.0);
+	}
+
+The intention would be to avoid patterns that shouldn't be used in "real" code;
+assert!() should be obvious not to use for real code.
