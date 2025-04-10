@@ -1,79 +1,78 @@
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A697D2144D5
-	for <iommu@lists.linux.dev>; Thu, 10 Apr 2025 23:44:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC97021423E
+	for <iommu@lists.linux.dev>; Thu, 10 Apr 2025 23:50:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744328701; cv=none; b=d1lqh9OkQe6KnhLiEoN2MYbfDXTTtdZnAVrI7V/ZsRK7VEtv4U++FvdCnwk1GuaMbWnEW1L/8GxcrGd4jwDVkPZn3UaXA+yQQJ6Vpo/hspJ0kDpPzylfAd8ZWcxqlUgfL0G6LWdYC24Cv11EvGSjfjpt3b7LoRWte1bVcANV50I=
+	t=1744329012; cv=none; b=g6kuRyU1UKUe0Kfqf5+rlYfzqSxLq2GxoGk0Nh2GquGDJNW0wGq581f1OBHyqErSClZ4dqFKb1SyjZ0FBub8bTTmq/94PEgUxzdheOf201BI9D6z5jzGCn52unRPJJ+0ZKkt+Iwuh7ERAD3MZ9dtibkdTu5ag1TprDCynMbMxqM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744328701; c=relaxed/simple;
-	bh=mghY2rYVvlPDE9Jsz5ZnOqrYyA6SfVM8M7wxlDc8iBQ=;
+	s=arc-20240116; t=1744329012; c=relaxed/simple;
+	bh=/TaCDQD9gujPzgIz+tQm/iK3rlI3gN/6gBVv4SmlB8g=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rJ3cinDXRVq/bGHMYiFpTZJyhjIi/84twWELoyVJL1svQMOuyDCny8EJj3KvIoY2FaeXACLIbZJkwiI3RBD+x6Y141keHRltCYsjBDOaZ22iQcSJ6vFlleQDmt5nWhYXIBSXAkCc8hBnQ+9qhTx/8lfv3gIQ2JGy98rFsKzB/+4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=AZvJsv4b; arc=none smtp.client-ip=209.85.222.181
+	 Content-Type:Content-Disposition:In-Reply-To; b=Iz1F+b8plaK5D5Hj2bHEkaDDXrotdebnPABIe7TY0/fG/VKEAFEfR+S5X5zkZL1LlZq155LBD1A2uM1nbTGv+9jtU2cVju6lIKfmCA1eAmTyRufdxhstZk6Y/2y2S5xZ/X9oEAcneVu+JCEtz9DLr2Ps8RmnFAXeh5P4Vqa8lS8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=BjCx1BmX; arc=none smtp.client-ip=209.85.222.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="AZvJsv4b"
-Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-7c55500cf80so118523185a.1
-        for <iommu@lists.linux.dev>; Thu, 10 Apr 2025 16:44:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="BjCx1BmX"
+Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-7c5e2fe5f17so136189885a.3
+        for <iommu@lists.linux.dev>; Thu, 10 Apr 2025 16:50:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1744328698; x=1744933498; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1744329010; x=1744933810; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uBiekUdIFmCYXVIVV+7WWzU3nvigAruofoH1gZDVt3E=;
-        b=AZvJsv4b5de+PJ/7FLn3dX7MrKFDYjtzDqg04KXlGL+uOwj3f7JRG4+2iIXDSCIaKa
-         sycbW4BTZEEWF61wVYKq07KlAa6loCE410+MYgTGFaD2G7KtwUYtp3EWKd7unNG69+8G
-         KFsqOMD73HB34RLFopM/TO6coJHBJWSneUIo1BLSz7Gy0vGeXZEWh04Xq0xITNfOo6Ac
-         wQyaLwSh59iOWRhISDQkq++nnJawVGUEm0YBc3wgG5FtW7wuvDmI8MpGUxtaynX1/BWF
-         4jU+u0t4y0mLU1wMnJluAWKEYBsppbR+zgurR4rkYsjH3gtG99HNG7H1FwPmplQ+FmKV
-         JFkA==
+        bh=/TaCDQD9gujPzgIz+tQm/iK3rlI3gN/6gBVv4SmlB8g=;
+        b=BjCx1BmX/H9Yj17oBp1ZjygxtcP8Z+STBwqK6/wkCz4BCP79tQbmmTmlUxnppIvuuM
+         8IzpHgupLtppeDJvitju95gQ0VyiZrpOAGrZITqidXpdCpAD8k+jJFml1uidUuzN8iEV
+         wlHY99ETTel273ry9TcjMo/AbPjVh3iSoeAHgypsZHoY+JXXwxLRxeoN9/j5k6Uj2gVx
+         o7Bq8iqjEjfJqPzyuH7r1hVDYImaaE/WN5IFZ8lu8/i+BKAluU57jTi+UcYN0wGknUds
+         ildrxLaIoB9AJvniFCN9k7fXLWj4nDOIA1fvZ/ZDc/U4jMKA0dwLCZzMIpMLpYCleEFd
+         dmMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744328698; x=1744933498;
+        d=1e100.net; s=20230601; t=1744329010; x=1744933810;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=uBiekUdIFmCYXVIVV+7WWzU3nvigAruofoH1gZDVt3E=;
-        b=mEgRrZcX+WcTmjpHX6lFbrOLOJQrqsN6Gazkuriy28CGBSB9tE55bLfr8092IX98FZ
-         w1h8fJRhtsb5LdpRppCxGusH7vF5k5cfTnXyyqdjPHtmpWdiLji6FCC6bDIJlWRI+W+5
-         Oayca8pvdSKtPjg3oQLB3MQ9XwtAc8Nd0tYyr0IWHHz89InX0DJFCGAOgZfXV92d73E/
-         qIshv8L3N9QNpWOKhCTqAoprhj+IwyV3cQ5JdeE56DHbm2c/fiokR2QGJ9ft4pYtN1f9
-         LBuKLBSJOQ+4Agz4f47kf2epzTN+kxwB5lQhXShZufhFj28dAlxKiKPcALMCPR696D3h
-         VQ0Q==
-X-Forwarded-Encrypted: i=1; AJvYcCW6VEq9ph1amCRAMhuU2GaOjsr/YuJWLICIeoeoswqqptyS8VQ2n0St2IVeHOJ3qHjw3oMqIQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxdIhkriC7nSIzFn4C20LopGxrKSJJULWDTzpeTZTLo+ZxWPuqm
-	wePKfyoxSGB8n69uzFrt41U2x6NFNn51ZzOnrk31E4piiq7pZepIp3hOC0/bAKs=
-X-Gm-Gg: ASbGnctTZd12y+EMFZ7Eh+nY6TLpLRTUucHg9zWO8TjhSVgqrS33fF0QRxhT59+x7VU
-	GSnVYFwtZ6PEyxxfQ9YrX27ijsKfL90kCIhofjTVSEbeTcD5JwIINx7v38IyjrY5WbSNSCYEQ+8
-	lis2B+/J9F02LS+tuRQdaleJmd8PnmTKupfG0Dzh/ssTnnaXij7ZjR7zloIY+A60NhIXO8J2Fsm
-	HijPCs9cGNPpDosN1I3IM9CPuR/fN42GVQaCsEnDjuR94xd3N2FMxzWUj9MIYiRNcfCbFSsFPK3
-	w2UFD2C/GqTdQajwwDzyNZ7eYqGCJLpOuNrOly22FeigwbanLbJI/k0GDNwRCOOcS550skAifp6
-	R0gHgjEbr3xgKp570Pcg=
-X-Google-Smtp-Source: AGHT+IH4fTle0lZ5BXeT1W/Tk1EOzJKOHLxPsiVRzXbPb/Lh5qnqWIfCqkylbYRbJ/h5OGn56sXdfg==
-X-Received: by 2002:a05:620a:4141:b0:7c5:b0b4:2cea with SMTP id af79cd13be357-7c7af1137f6mr129267485a.38.1744328698540;
-        Thu, 10 Apr 2025 16:44:58 -0700 (PDT)
+        bh=/TaCDQD9gujPzgIz+tQm/iK3rlI3gN/6gBVv4SmlB8g=;
+        b=weHXK4iLRwhgggcgZ1Psu8GYITnEz7oXwmLPeNYzvoaRCW4NyB+JoCHc26S2k5JAhD
+         MS9r0X/Y/zdYpL0YLcHgG6T6X/eMoEU0nuxVUlns1xKe+zwW9EwCskv8/j0E7g8+O8X0
+         6tbDDY9Lbba1OgbDZwXD1C3LCn4/kfqHUSE6fbQs8Q1P8LUQ4OLlD+tjCptD2J7dqLxq
+         CxVa1kDgMZDgk7m/qS755iHD0LcVk6Xu0uiWM4h5Ro5UHx/EE+2zyG6P8GEdg+X3vkam
+         5iQJ7zziWKCSW13DVrerR9z1VceLerCYzG8d1sDLepvJNX/LY+6IN8ghwxOMrt/5CoqX
+         U7zw==
+X-Forwarded-Encrypted: i=1; AJvYcCUjh86aTBR3kIkWrb8aFYzHjwmtcEU4F7OALfFLh0Zvd9G6AGcn2Bjj09//JuloWI1MExslJA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyAj60r6Zzace4Xi97SkfNLK6WE+iLXRqlg/fjzMnC9z25ebXVZ
+	jHyHDpd1BqkRdhOrB+ONYtktusgiodGefG44BDN0KBgtdBvS56xCHYeuAR09cCc=
+X-Gm-Gg: ASbGncshjjOPrBiWN1YpHgx59TFeQmhkElfwsP8Tu9fAQmxYEaRJcsnFMFFIu0MniG5
+	O/N9xDT0PcM2Q8PD/wTfq1cQZFvyHyh74DBlZ5lYzaxe7wUsRniRaoz67pwA/64K3xnxZYutSlK
+	uZgiYMZBxSrgOJb+VVxw+tVK6bi7SN9fROZjNbOY+3qaMJkeWOyr8821DaTFNqTw7auB50qSTC6
+	gO1hxcc3g7cc2x6vEZnNS3U2FGAChY1UvGEuNs8yLSSmursKqKB4dq0BzMeBiEm+/x7YSlqZHKF
+	ozhI30P/228cPi2Ze1Trqo6ZrxRHfWSFCKcecKLwovEiYQMWe16wDRJ9d3PEH9iQvtWyPVky1yW
+	fRVXvTMNhkOvTM48z7Kc=
+X-Google-Smtp-Source: AGHT+IGBLI6Qr1HBGp7OT4pcrwS60eByYVaVonZGYRx+m25dpRuIj9JKldOpH5t3hWR9bGfwXIeN2g==
+X-Received: by 2002:a05:620a:c4a:b0:7c5:18bb:f8b8 with SMTP id af79cd13be357-7c7af0bd257mr150080685a.1.1744329009833;
+        Thu, 10 Apr 2025 16:50:09 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c7a8969f1asm169263385a.59.2025.04.10.16.44.57
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c7a89f9639sm169568385a.78.2025.04.10.16.50.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Apr 2025 16:44:57 -0700 (PDT)
+        Thu, 10 Apr 2025 16:50:09 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1u31Zp-00000000N4j-0j3F;
-	Thu, 10 Apr 2025 20:44:57 -0300
-Date: Thu, 10 Apr 2025 20:44:57 -0300
+	id 1u31eq-00000000N6G-3QH5;
+	Thu, 10 Apr 2025 20:50:08 -0300
+Date: Thu, 10 Apr 2025 20:50:08 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Dan Williams <dan.j.williams@intel.com>,
-	Roman Kisel <romank@linux.microsoft.com>,
+To: Dan Williams <dan.j.williams@intel.com>
+Cc: Roman Kisel <romank@linux.microsoft.com>,
 	Robin Murphy <robin.murphy@arm.com>, aleksander.lobakin@intel.com,
 	andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
 	catalin.marinas@arm.com, corbet@lwn.net, dakr@kernel.org,
 	dave.hansen@linux.intel.com, decui@microsoft.com,
-	gregkh@linuxfoundation.org, haiyangz@microsoft.com, hpa@zytor.com,
-	James.Bottomley@hansenpartnership.com, Jonathan.Cameron@huawei.com,
-	kys@microsoft.com, leon@kernel.org, lukas@wunner.de,
-	luto@kernel.org, m.szyprowski@samsung.com,
+	gregkh@linuxfoundation.org, haiyangz@microsoft.com, hch@lst.de,
+	hpa@zytor.com, James.Bottomley@hansenpartnership.com,
+	Jonathan.Cameron@huawei.com, kys@microsoft.com, leon@kernel.org,
+	lukas@wunner.de, luto@kernel.org, m.szyprowski@samsung.com,
 	martin.petersen@oracle.com, mingo@redhat.com, peterz@infradead.org,
 	quic_zijuhu@quicinc.com, tglx@linutronix.de, wei.liu@kernel.org,
 	will@kernel.org, iommu@lists.linux.dev, linux-arch@vger.kernel.org,
@@ -85,13 +84,12 @@ Cc: Dan Williams <dan.j.williams@intel.com>,
 	linux-coco@lists.linux.dev
 Subject: Re: [PATCH hyperv-next 5/6] arch, drivers: Add device struct
  bitfield to not bounce-buffer
-Message-ID: <20250410234457.GB63245@ziepe.ca>
+Message-ID: <20250410235008.GC63245@ziepe.ca>
 References: <20250409000835.285105-1-romank@linux.microsoft.com>
  <20250409000835.285105-6-romank@linux.microsoft.com>
  <0eb87302-fae8-4708-aaf8-d16e836e727f@arm.com>
  <0ab2849a-5c03-4a8c-891e-3cb89b20b0e4@linux.microsoft.com>
  <67f703099f124_71fe2949e@dwillia2-xfh.jf.intel.com.notmuch>
- <20250410072354.GB32563@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -100,36 +98,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250410072354.GB32563@lst.de>
+In-Reply-To: <67f703099f124_71fe2949e@dwillia2-xfh.jf.intel.com.notmuch>
 
-On Thu, Apr 10, 2025 at 09:23:54AM +0200, Christoph Hellwig wrote:
-> On Wed, Apr 09, 2025 at 04:30:17PM -0700, Dan Williams wrote:
-> > > Thanks, I should've highlighted that facet most certainly!
-> > 
-> > One would hope that no one is building a modern device with trusted I/O
-> > capability, *and* with a swiotlb addressing dependency. However, I agree
-> > that a non-shared swiotlb would be needed in such a scenario.
-> 
-> Hope is never a good idea when dealing with hardware :(  PCIe already
-> requires no addressing limitations, and programming interface specs
-> like NVMe double down on that.  But at least one big hyperscaler still
-> managed to build such a device.
-> 
-> Also even if the periphal device is not addressing limited, the root
-> port or interconnect might still be, we've seen quite a lot of that.
+On Wed, Apr 09, 2025 at 04:30:17PM -0700, Dan Williams wrote:
 
-Still it would be very obnoxious for someone to build a CC VM platform
-where CC DMA devices can't access all the guest physical memory in the
-CC address map :\
+> Like Christoph said, a driver really has no business opting itself into
+> different DMA addressing domains. For TDISP we are also being careful to
+> make sure that flipping a device from shared to private is a suitably
+> violent event. This is because the Linux DMA layer does not have a
+> concept of allowing a device to have mappings from two different
+> addressing domains simultaneously.
 
-Keeping in mind that that the CC address map is being created by using
-the CPU MMU and the CPU IOMMU so it is entirely virtual and can be
-configured to match most problems the devices might have.
+And this is a very important point, several of the architectures have
+two completely independent iommu tables, and maybe even completely
+different IOMMU instances for trusted and non-trusted DMA traffic.
 
-Too much memory would be the main issue..
+I expect configurations where trusted traffic is translated through
+the vIOMMU while non-trusted traffic is locked to an identity
+translation.
 
-IMHO I wouldn't implement secure SWIOTLB until someone does such a
-foolish thing, and I'd make them do the work as some kind of pennance
-:P
+There are more issue here than just swiotlb :\
+
+> A "private_capable" flag might also make sense, but that is really a
+> property of a bus that need not be carried necessarily in 'struct
+> device'.
+
+However it works, it should be done before the driver is probed and
+remain stable for the duration of the driver attachment. From the
+iommu side the correct iommu domain, on the correct IOMMU instance to
+handle the expected traffic should be setup as the DMA API's iommu
+domain.
 
 Jason
