@@ -1,109 +1,91 @@
-Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9F472857F5
-	for <iommu@lists.linux.dev>; Thu, 10 Apr 2025 17:29:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A96511FC10E
+	for <iommu@lists.linux.dev>; Thu, 10 Apr 2025 19:10:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744306191; cv=none; b=BoG9/CLwG39J+4URABXG9EllgjbCrBnPoeLGkycg6kbwPZRZ81VFFnVpKPaqKykbuWz6bl+2xQ1xKh8SKWUg3xeLkW5OoEn/TOskvdVOgKZzjTrv6dI5LQl556ZEdtthUr82NT31CCcQi0l3cRFwbfj/5B5zSeDuh+NHhS3K+Nk=
+	t=1744312233; cv=none; b=cE4BR3cNUrN98s78m6dAO32sQGF+nH4ZCXwR6yAk1kdjXVzcz1vbZttss7FlFLgB54egFDzU9nJkt6tFTh2jd1nhjw3GunbBD/j0miY7VGIfs8+agaPdogQPPe/w5KP6nV9XVlHrRrqZNYLBhUVxKPWmEpk0pt5VpDetvn5MFF4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744306191; c=relaxed/simple;
-	bh=8RGWQcgCimLPvpiAlk+5F2R9ep2gNgiJpKOuy3wGtDc=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=pX2MAPFzqZVDlVVhw3cJ6i8Th3rOl/Iwuy8/Hklh7C80NMPwqSeN2I2WOGnZJeMuLnmiwjJ8jsBHVRjcgCFnHY7QHIoP0r1PQXLvFylLotm83SxLfV1JvyLiSz83+DHjTSL4txEUBJJwoRvCbDpi0wgWzecYBPEILm6SB+7uKcE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=H0jmrKx1; arc=none smtp.client-ip=209.85.210.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1744312233; c=relaxed/simple;
+	bh=MwU13Bp26U6V3maPsnG2tuN0xljevYyWsfzq1qfrCS4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=oXXbWmfkonJGg7LmRgfG0lEyhLx7gWsEnRitxy8D/BXE+Mmtra0+nwWxOv41dRmBy6GnGA0xFBwzhKEeLDq82g3VaOrvVLPyl2rTQlrZHQ9d2I8aJwP5KzwbcGv7JfttZ4+GQ1cjShpp83fC7HhuJVsIo1eePvWDnRgvLA740CM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=P7hSa02M; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="H0jmrKx1"
-Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-73720b253fcso843463b3a.2
-        for <iommu@lists.linux.dev>; Thu, 10 Apr 2025 10:29:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1744306189; x=1744910989; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=THh7USP0TMmHVXYAIYVxQL6srWNoxeq+S60T+Iuc4Go=;
-        b=H0jmrKx1Y7Wwb2jKkNKiTtmE5HOHTq17sSQ25/eU2D/OEikREBVWwJsdBrBO5UBY5q
-         JVtq7xwGguJIrbinNnexvkSaRfSQ/9FwCYoNIaI0HP5hYW6S81kTbT3b1FPnOgdMicy9
-         6sOhQfgzf75gpQ0hWU/9DEPWPJQrTds02GVmmTx4aZvqkgZVOJQyNq0QOb0+Xx0MCt/x
-         ExgcQn2UX1lvVRze9V/QtQmt0FAc9MrnDg8tp2F+Q3vZ/6hKhjBtho8w0wOl15qlyqia
-         aUUm1DN1sKDPIjO0PidwhuQDALjLrXrY1Id1bDRQ9ZPj/YL5BWMIh1Zb6YU9KG3zTmAe
-         BydQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744306189; x=1744910989;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=THh7USP0TMmHVXYAIYVxQL6srWNoxeq+S60T+Iuc4Go=;
-        b=Zc+EASJa75Zo1DqdnFFLNn750FmyxtHE2o/rtIWG+M7iA6jBkgQSTgVjlcReW1YWpd
-         rDrV34b1X3ZZFGTlCt0Sn/NYATp23WhZNOtRoQoy9o+oVx7pKN8fQeUtsex3OGpPvDdF
-         MXv8eFHUHmzj8d+qAjh5+0vGOGoYI2qa7ZN/rSUwmD35f1JXh8bKMKUAMViiXQyHD/Di
-         H30eS1wcOcafJ+lkWWl9/TPbSzn+44MkXBta/y2BRPVmv5HDp6tuLkh25Pyx0Q8V+o1X
-         wyo5BRqk0GaQfTjIg6txgC+utrXvBvRNUSlCzcUZjW+2oLxbBYpxh1O0NkSFquxxQYhO
-         SzRw==
-X-Forwarded-Encrypted: i=1; AJvYcCUyGgiubyIOnUWUjtC1+mnLvb7P5nRKpeOPcisYMzaLNZ0pF5T+q+mB/sKXT4hvP/7QKPiQHA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyQZKsWNvT8hnlQ6+9/tvWqvBz8VWeuzhaFGgcELfds9KfsWNkd
-	zWy3Sk94AYEzmyM0zzDWBaeeLmaPJWLpmK+6Z9xfrODdH0m0UrWW4EAf0rGLP7YWFSjN2Oga3Nl
-	z9g==
-X-Google-Smtp-Source: AGHT+IEzEm4pFNJ9RE2IrAYwwiomzZvMX+btxSqy0ddwSL3trJyRQq2fiWUm5uHQQn8B4/4qgmhNau+bVpY=
-X-Received: from pfbcw22.prod.google.com ([2002:a05:6a00:4516:b0:736:79d0:fd28])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:891:b0:736:34ca:dee2
- with SMTP id d2e1a72fcca58-73bc0a15157mr4684403b3a.4.1744306189171; Thu, 10
- Apr 2025 10:29:49 -0700 (PDT)
-Date: Thu, 10 Apr 2025 10:29:47 -0700
-In-Reply-To: <bba773d0-1ef9-4c9f-8728-9cf0888033ad@oracle.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="P7hSa02M"
+Received: from [10.137.184.60] (unknown [131.107.159.188])
+	by linux.microsoft.com (Postfix) with ESMTPSA id B95962114DA8;
+	Thu, 10 Apr 2025 12:10:30 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B95962114DA8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1744312231;
+	bh=GIf52GlovbvkGrmF0yuwN/3vnWv6uH/x4VM7bLG+QCY=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=P7hSa02M3iPJfwyVRh9ul8Qqg3w3S9nzYdXt1Jguz+zzE2jU7vdU4NAeqNKF9CJpV
+	 SLgW6C2o4uN4t7kSkTROtIOX2QqjDT3/uXC+0yxmK45wBRqoJVxJonTcXFFAeY59o2
+	 mMrZ3NYMSyQOYMfz6rugX2MXe3gTtYW6AzauSq5U=
+Message-ID: <fb7de79c-100c-4423-a6f5-6f7b9acfccbc@linux.microsoft.com>
+Date: Thu, 10 Apr 2025 12:10:30 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250404193923.1413163-1-seanjc@google.com> <20250404193923.1413163-65-seanjc@google.com>
- <9b7ceea3-8c47-4383-ad9c-1a9bbdc9044a@oracle.com> <Z_fnrP4e77mKjdX9@google.com>
- <bba773d0-1ef9-4c9f-8728-9cf0888033ad@oracle.com>
-Message-ID: <Z_gAC9DLG-q9poGV@google.com>
-Subject: Re: [PATCH 64/67] iommu/amd: KVM: SVM: Allow KVM to control need for
- GA log interrupts
-From: Sean Christopherson <seanjc@google.com>
-To: Joao Martins <joao.m.martins@oracle.com>
-Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Maxim Levitsky <mlevitsk@redhat.com>, David Matlack <dmatlack@google.com>, 
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
-	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Paolo Bonzini <pbonzini@redhat.com>
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH hyperv-next 1/6] Documentation: hyperv: Confidential VMBus
+To: ALOK TIWARI <alok.a.tiwari@oracle.com>, aleksander.lobakin@intel.com,
+ andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+ catalin.marinas@arm.com, corbet@lwn.net, dakr@kernel.org,
+ dan.j.williams@intel.com, dave.hansen@linux.intel.com, decui@microsoft.com,
+ gregkh@linuxfoundation.org, haiyangz@microsoft.com, hch@lst.de,
+ hpa@zytor.com, James.Bottomley@HansenPartnership.com,
+ Jonathan.Cameron@huawei.com, kys@microsoft.com, leon@kernel.org,
+ lukas@wunner.de, luto@kernel.org, m.szyprowski@samsung.com,
+ martin.petersen@oracle.com, mingo@redhat.com, peterz@infradead.org,
+ quic_zijuhu@quicinc.com, robin.murphy@arm.com, tglx@linutronix.de,
+ wei.liu@kernel.org, will@kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-doc@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org, x86@kernel.org
+Cc: apais@microsoft.com, benhill@microsoft.com, bperkins@microsoft.com,
+ sunilmut@microsoft.com
+References: <20250409000835.285105-1-romank@linux.microsoft.com>
+ <20250409000835.285105-2-romank@linux.microsoft.com>
+ <724f9f7d-137b-4cf5-aff5-bbb9727c23c1@oracle.com>
+Content-Language: en-US
+From: Roman Kisel <romank@linux.microsoft.com>
+In-Reply-To: <724f9f7d-137b-4cf5-aff5-bbb9727c23c1@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Thu, Apr 10, 2025, Joao Martins wrote:
-> On 10/04/2025 16:45, Sean Christopherson wrote:
-> > On Wed, Apr 09, 2025, Joao Martins wrote:
-> >> On 04/04/2025 20:39, Sean Christopherson wrote:
-> >> I would suggest holding off on this and the next one, while progressing with
-> >> the rest of the series.
-> > 
-> > Agreed, though I think there's a "pure win" alternative that can be safely
-> > implemented (but it definitely should be done separately).
-> > 
-> > If HLT-exiting is disabled for the VM, and the VM doesn't have access to the
-> > various paravirtual features that can put it into a synthetic HLT state (PV async
-> > #PF and/or Xen support), then I'm pretty sure GALogIntr can be disabled entirely,
-> > i.e. disabled during the initial irq_set_vcpu_affinity() and never enabled.  KVM
-> > doesn't emulate HLT via its full emulator for AMD (just non-unrestricted Intel
-> > guests), so I'm pretty sure there would be no need for KVM to ever wake a vCPU in
-> > response to a device interrupt.
-> > 
+
+
+On 4/10/2025 9:54 AM, ALOK TIWARI wrote:
 > 
-> Done via IRQ affinity changes already a significant portion of the IRTE and it's
-> already on a slowpath that performs an invalidation, so via
-> irq_set_vcpu_affinity is definitely safe.
 > 
-> But even with HLT exits disabled; there's still preemption though?
 
-Even with involuntary preemption (which would be nonsensical to pair with HLT
-passthrough), KVM doesn't rely on the GALogIntr to schedule in the vCPU task.
+[...]
 
-The _only_ use of the notification is to wake the task and make it runnable.  If
-the vCPU task is already runnable, when and where the task is run is fully
-controlled by the scheduler (and/or userspace).
+> 
+> typo trsuted  -> trusted
+> 
+>> +To support confidential communication with the paravisor, a VmBus client
+>> +will first attempt to use regular, non-isolated mechanisms for 
+>> communication.
+>> +To do this, it must:
+> 
 
-> But I guess that's a bit more rare if it's conditional to HLT exiting being
-> enabled or not, and whether there's only a single task running.
+Thanks for your help with this patch, and the other ones!! I'll make
+sure to use the spellchecker on the patches before sending another
+version out.
+
+> 
+> Thanks,
+> Alok
+
+-- 
+Thank you,
+Roman
+
