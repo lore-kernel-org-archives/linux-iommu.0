@@ -1,121 +1,129 @@
-Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D4F61F583D
-	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 14:32:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 41C7F1F5858
+	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 15:13:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744381970; cv=none; b=tF+8BKG+qCGjHKLbTXT+ZD4LJLXz5G8TyE7aMIqqJMQVlwv7OvA49wnfLgCS5s7XHpszqIoKJ3q+Q3/+NqGw1nolI2Vi01UqC6hUALhXIC9szsog+NqUOn+e+V5J+ahAOZh7nFxPCIHXAGt3cT8q0y3z61acVnHQNp4ctvfVjeA=
+	t=1744384385; cv=none; b=lZYf4/IpK0pk/w89tgOcyq4GI0dHs1a2BbiKIzIrKtHeA56OonGuiJq912UhWKWa72+D4NKqs7ieN8HbVTmy6I++VIXdHv13+brLKkrd0vmTJzPen1giRsgCk7SFtELwDd+ytzaRoImhjgi/h3ZASrEhcfa7gjZdg8LjKOByJps=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744381970; c=relaxed/simple;
-	bh=0uBVlVl6zt2smmydXiApRvxiKMlTSisj2Yu/ktHw5O8=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=pdzuCcqWQTogv7PBCoizhDEgpU0i0XiETYSYebIicwYIujOJ4/NMNjJNZUZnwMIxxGrL/MgSKs2l1dHmD1yIPVOanISKPQ/L+mKv9jPRuoRs174qwPUvoL2MgMdjbQrTJFx9hsdJLqCM783AGDRAadRkh+d7DYPnJYGGA2m/OO0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=F+pRbz7T; arc=none smtp.client-ip=209.85.210.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="F+pRbz7T"
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-736cd27d51fso1821316b3a.2
-        for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 07:32:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1744381968; x=1744986768; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WdYWtwGlFqkOjqypokEB9CfaYMOynOKxQo9pc/iInzs=;
-        b=F+pRbz7TEUMQ1iz/rW1nCiWHRfI2vJ0fRARQtKd5aqgOxKkQvY+F0uR7MmZUv/OY/l
-         dDO1HkUAeO+svVtXvzbRA/Aq3tLJnjuL0MVNE3hWTkxlYzRK8LWVut+jlnqBN2g23pjY
-         isDh9T7KSXSI7MpBKeZHWTSoZAYn+aZPqcM1mkh5qarQ1HtiAOvZ5byWJ9CvVBb/K6gt
-         4sOBauTaWR5+hEM0iqcwyLQyBBffA/VMhv2B6rm8n37nPiFe5wSELQZCQpXks8E6u/Gh
-         6sDLjI7IDb9HHorjb1XQUPMKgb5viqJnRrmxsy+aTFyo/T75h9r4ryJtGCvKNW+PTIrM
-         X+PA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744381968; x=1744986768;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WdYWtwGlFqkOjqypokEB9CfaYMOynOKxQo9pc/iInzs=;
-        b=FcOV9rkLf3m4efeSI8nvOu7VwR1JgEvQGa6G1k1Jrn3uSCjXGmALiV8ByJVvqyflje
-         1Gc1OBMvdzHs7y0Rm+y66kUZeu6M8xHNZyniyBTywinhO1txRT4kSmFuxL+jHQ/mVPP7
-         GinuZVsOoENNIQ9IjsU8Ua6n6LIT0mvJOlGzStYdWpfIDClEh1Oo8q7RUi/7CSL3y81D
-         cnEmIwKCjplTmHCz/+RsKFe3oQJKGrl6+oT/LbUm4ZBji7nduo9ZeYXpki0l18rvGFS8
-         7yWrAgQetSSNm6ofjosx5Eb2EBLKsmvQq3iVQsOqKbRZEz3pbsvi73t9PAQWfjQAUA9N
-         yr4w==
-X-Forwarded-Encrypted: i=1; AJvYcCViZm3JrYXsZFUUDGSseHOQW+BegKLEvVVt8jJIiRznaBMuGN2s6p4gzI+1ggiCKC1Y9GxvVA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywn7+l8BxFVzWdpnyJaRr91fCqVYJ2UQu1yHniaTIPMLh/B6R/w
-	qlhDiJfYiOeQf2bJbYPAgrHlbDS4YIKIRQwybcruKegu8r+Ht1pmuX46GojIvj3p63wfjzeEG1L
-	TpQ==
-X-Google-Smtp-Source: AGHT+IFyxCzl6htX/DS8ClLuQoR7pJ/TqB4Bmf2NEvfb9DmOqq4wCNxnwjdldtCmTRsZzd2uBHMx+RmD5A4=
-X-Received: from pggs1.prod.google.com ([2002:a63:dc01:0:b0:af2:50f0:bc79])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a21:32a2:b0:1f5:7007:9eb7
- with SMTP id adf61e73a8af0-20179983274mr4861364637.37.1744381968654; Fri, 11
- Apr 2025 07:32:48 -0700 (PDT)
-Date: Fri, 11 Apr 2025 07:32:47 -0700
-In-Reply-To: <d6ccf531-2ed0-4e38-97a5-2b747497fadb@amd.com>
+	s=arc-20240116; t=1744384385; c=relaxed/simple;
+	bh=Y+nRLc/99aU+E7mPIczUl1sCufEzfonY4yi1sESyfPA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bSlil2e7kU9NI8HO5XB+CAR8edXnxwo8MnKaWBsVwIg1daJVFB0XiIdocTbzVasu51EcAipRLoEF3otovohoqx2AlWMG6Dk0YzDJEPlC971DxGy6I9TivoQgWLLZyIgE+M/m7ECVdxfFsvszSaxlVUDfQjDpmuJmrh/8OqAvDzA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 402171007;
+	Fri, 11 Apr 2025 08:13:03 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 813323F59E;
+	Fri, 11 Apr 2025 08:13:02 -0700 (PDT)
+Message-ID: <5c8d16f9-246e-45d0-aaac-45b7712cefb5@arm.com>
+Date: Fri, 11 Apr 2025 16:13:01 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250404193923.1413163-1-seanjc@google.com> <20250404193923.1413163-10-seanjc@google.com>
- <d6ccf531-2ed0-4e38-97a5-2b747497fadb@amd.com>
-Message-ID: <Z_knw1j6KeaEHVxr@google.com>
-Subject: Re: [PATCH 09/67] KVM: SVM: Track per-vCPU IRTEs using
- kvm_kernel_irqfd structure
-From: Sean Christopherson <seanjc@google.com>
-To: Sairaj Arun Kodilkar <sarunkod@amd.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
-	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
-	David Matlack <dmatlack@google.com>
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Allow stream table to have nodes with
+ the same ID
+To: Nicolin Chen <nicolinc@nvidia.com>, will@kernel.org
+Cc: joro@8bytes.org, jgg@nvidia.com, jsnitsel@redhat.com, praan@google.com,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20250411044706.356395-1-nicolinc@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250411044706.356395-1-nicolinc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Apr 11, 2025, Arun Kodilkar, Sairaj wrote:
-> On 4/5/2025 1:08 AM, Sean Christopherson wrote:
-> > diff --git a/include/linux/kvm_irqfd.h b/include/linux/kvm_irqfd.h
-> > index 8ad43692e3bb..6510a48e62aa 100644
-> > --- a/include/linux/kvm_irqfd.h
-> > +++ b/include/linux/kvm_irqfd.h
-> > @@ -59,6 +59,9 @@ struct kvm_kernel_irqfd {
-> >   	struct work_struct shutdown;
-> >   	struct irq_bypass_consumer consumer;
-> >   	struct irq_bypass_producer *producer;
-> > +
-> > +	struct list_head vcpu_list;
-> > +	void *irq_bypass_data;
-> >   };
-> >   #endif /* __LINUX_KVM_IRQFD_H */
+On 11/04/2025 5:47 am, Nicolin Chen wrote:
+> From: Jason Gunthorpe <jgg@nvidia.com>
 > 
-> Hi Sean,
-> You missed to update the functions avic_set_pi_irte_mode and
-> avic_update_iommu_vcpu_affinity, which iterate over the ir_list.
+> ASPEED VGA card has two built-in devices:
+>   0008:06:00.0 PCI bridge: ASPEED Technology, Inc. AST1150 PCI-to-PCI Bridge (rev 06)
+>   0008:07:00.0 VGA compatible controller: ASPEED Technology, Inc. ASPEED Graphics Family (rev 52)
+> 
+> Its toplogy looks like this:
+>   +-[0008:00]---00.0-[01-09]--+-00.0-[02-09]--+-00.0-[03]----00.0  Sandisk Corp Device 5017
+>                               |               +-01.0-[04]--
+>                               |               +-02.0-[05]----00.0  NVIDIA Corporation Device
+>                               |               +-03.0-[06-07]----00.0-[07]----00.0  ASPEED Technology, Inc. ASPEED Graphics Family
+>                               |               +-04.0-[08]----00.0  Renesas Technology Corp. uPD720201 USB 3.0 Host Controller
+>                               |               \-05.0-[09]----00.0  Realtek Semiconductor Co., Ltd. RTL8111/8168/8411 PCI Express Gigabit Ethernet Controller
+>                               \-00.1  PMC-Sierra Inc. Device 4028
+> 
+> Being a legacy PCI device that does not have RID on the wire, the system
+> does not preserve a RID for that PCI bridge (0008:06), so the IORT code
+> has to dma alias for iort_pci_iommu_init() via pci_for_each_dma_alias(),
+> resulting in both of them getting the same Stream ID.
 
-Well bugger, I did indeed.  And now I'm questioning my (hacky) testing, as I don't
-see how avic_update_iommu_vcpu_affinity() survived.
+Hmm, actually, this doesn't even make a whole heap of sense, and it's
+not what's happening here at all.
 
-Oh, wow.  This is disgustingly hilarious.  By dumb luck, the offset of the data
-pointer relative to the list_head structure is the same in amd_svm_iommu_ir and
-kvm_kernel_irqfd.  And the usage in avic_set_pi_irte_mode() and
-avic_update_iommu_vcpu_affinity() only ever touches the data, not "svm".
+The bridge *does* claim its own RID, and per the aliasing rules the
+devices behind it claim both their own RID and the alias to function
+00.0 on the bridge's secondary bus, like so in action:
 
-So even though the structure is completely wrong, the math works out and
-avic_set_pi_irte_mode() and avic_update_iommu_vcpu_affinity() unknowingly pass in
-irq_bypass_data, and all is well.
+[    1.040905] pci 0000:04:00.0: arm_smmu_insert_master: SID 0x400
+[    1.046988] pci 0000:04:00.0: Adding to iommu group 0
+[    1.046995] pci 0000:05:04.0: arm_smmu_insert_master: SID 0x520
+[    1.053750] pci 0000:05:04.0: arm_smmu_insert_master: SID 0x500
+[    1.053759] pci 0000:05:04.0: Adding to iommu group 0
+[    1.053765] pci 0000:05:05.0: arm_smmu_insert_master: SID 0x528
+[    1.053767] pci 0000:05:05.0: arm_smmu_insert_master: SID 0x500
+[    1.053768] pci 0000:05:05.0: Aliasing StreamID 0x500 unsupported, 
+expect DMA to be broken
 
-struct amd_svm_iommu_ir {
-	struct list_head node;	/* Used by SVM for per-vcpu ir_list */
-	void *data;		/* Storing pointer to struct amd_ir_data */
-	struct vcpu_svm *svm;
-};
+Which is a snippet from this topology:
+
+-+-[0001:00]---00.0-[01]----00.0  Samsung Electronics Co Ltd NVMe SSD 
+Controller SM981/PM981/PM983
+  \-[0000:00]---00.0-[01-09]--+-00.0-[02-09]--+-08.0-[03]----00.0  VIA 
+Technologies, Inc. VL805/806 xHCI USB 3.0 Controller
+                              | 
++-10.0-[04-05]----00.0-[05]--+-04.0  Intel Corporation 82557/8/9/0/1 
+Ethernet Pro 100
+                              |               | 
+   \-05.0  Broadcom Inc. and subsidiaries BCM4306 802.11b/g Wireless LAN 
+Controller
+                              |               +-11.0-[06]--
+                              |               +-12.0-[07]----00.0 
+Marvell Technology Group Ltd. Device 9170
+
+(yes, I have a physical PCIe-to-PCI bridge board with random ancient
+cards plugged into it specifically for griefing the SMMU drivers :D)
+
+> On a kernel prior to v6.15-rc1, there has been an overlooked warning:
+>    pci 0008:07:00.0: vgaarb: setting as boot VGA device
+>    pci 0008:07:00.0: vgaarb: bridge control possible
+>    pci 0008:07:00.0: vgaarb: VGA device added: decodes=io+mem,owns=none,locks=none
+>    pcieport 0008:06:00.0: Adding to iommu group 14
+>    ast 0008:07:00.0: stream 67328 already in tree   <===== WARNING
+
+However in the ASpeed VGA case, we get a single device aliasing with
+*itself*, because the physical RID is already function 00.0 - this is
+more obvious on our CI's Ampere Altra system where the SID mappings have
+no additional upper bits:
+
+[   22.953940] pci 0004:01:00.0: PCI bridge to [bus 02]
+...
+[   23.037980] pci 0004:02:00.0: [1a03:2000] type 00 class 0x030000 
+conventional PCI endpoint
+...
+[   27.383602] pci 0004:01:00.0: Adding to iommu group 28
+[   27.394562] pci 0004:02:00.0: stream 512 already in tree
+
+512 == 0x200 == 02:00.0
 
 
-struct kvm_kernel_irqfd {
-	...
+Now that's supposed to have been supported since forever ago with
+563b5cbe334e ("iommu/arm-smmu-v3: Cope with duplicated Stream IDs"),
+however from a quick look I'm guessing cdf315f907d4 ("iommu/arm-smmu-v3:
+Maintain a SID->device structure") might have broken it...
 
-	struct kvm_vcpu *irq_bypass_vcpu;
-	struct list_head vcpu_list;
-	void *irq_bypass_data;
-};
-
-Great catch!  And thanks for the reviews!
+Thanks,
+Robin.
