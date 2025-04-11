@@ -1,119 +1,125 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D08A62367D1
-	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 14:26:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6D12C1F3BA5
+	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 14:31:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744381616; cv=none; b=AMasN+IF461iYWJHRdNtfW6JuWDy6OXstwWPcRCNDFd47URLiZmc6rp3GaS7iHZe56tVQr4XjZVszeXgDMvgsPrbhrAd/QP7uuh95A0N5JW7ggiASt04RFt/wdRp0kcPYqNE0Ys+ngUe0wcgXSU32URsQSIPiXpvu9KM0Jif9jI=
+	t=1744381883; cv=none; b=ZpXFaNv4D1yu7tTawGT7riTqTyYWTk97EttPURBWkpTCimr8rQZuRftH0xglsCcbCkrQCj5DGGbmxb512lfqHI47U/VYOe6bILaZFMTCj5uImWNzKWBlOhhT8N4J3Cra1sGxZ+4M+gJpIC9kPXX/vmk0ltSVTCtis71tHBl/l7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744381616; c=relaxed/simple;
-	bh=STQlMC7BdBDPu8U/eRLrGB8IIj1H4SK9wzoWpaZBbUE=;
-	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=ACArS4Op5g7ZbVGLhwzPL8aDCLk+2ErbLa2B9X4LOVgxPmIgodovPXe9yYIZpF3MVd7HeSTrEWv0Us5Up3VNDbkOheVIZToH9Z2exxFneWjIjb71oYelO5xuz+4/phQ4TunHYKViiz1G64RL9OkAkAed03QO1+YcNI4QxRky4RI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OewrP0GA; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1744381883; c=relaxed/simple;
+	bh=cR0MT7SIQsZS0BIRcyRHwHriDkdMJJMU+eMrzLmaREU=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=SJY3BsXtJTmNMwqAfaj9ZMuHAcnKOlsb4m6AAWDzSf2O6bm5ArUKbgR3qR15hCr0eL4yZuJ7p9GUq2SBwROU2vuJMs1TWVJNO34XxGV9ok4MfLMrfkHswY0dCM4P8/QCiYQxDf9zgZxdAkzwD1rhOYvJ1O0onxaBzn/J+v9HhGs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=Eqfq7KUF; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OewrP0GA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1744381615; x=1775917615;
-  h=message-id:date:mime-version:to:cc:from:subject:
-   content-transfer-encoding;
-  bh=STQlMC7BdBDPu8U/eRLrGB8IIj1H4SK9wzoWpaZBbUE=;
-  b=OewrP0GAw8X7mJnvuuJ4r6sBsjRA94qsTcb3ZuHlhP1hjrijivEcveUz
-   L5aPLb1q1u0BfkfmymO3XTwWDqkNXMIyNADb/ppGxkpTtRhAk08mCRU0P
-   laGaDaaUUAUmcEuRwdFH9AzLCashEytrXo5Ka/LJKAc0adj25eNIi2xE0
-   UsmQnA6Hbi1eVhJSdEyAw78MjCo39czOnVPHV2wCMUimV9kR8ZoXYBHQf
-   BQ0n5Fl9+/jObSyEaWImDByko9F+fPtmdQ4q5eMIe9kLZsatTfGUH8bfl
-   jXde2YpLBBby6E5GRkmjJ+ia/kCEYqqefWwip9Zve9FLNxwc0+fYhuWsg
-   Q==;
-X-CSE-ConnectionGUID: 0I7dHXXFTs62c2Vbfi73eQ==
-X-CSE-MsgGUID: wDCzdGgtTOGOAmBLF26zAg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11401"; a="56117287"
-X-IronPort-AV: E=Sophos;i="6.15,205,1739865600"; 
-   d="scan'208";a="56117287"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2025 07:26:55 -0700
-X-CSE-ConnectionGUID: DhkBh23yTnWI9mGh5CXQ5w==
-X-CSE-MsgGUID: y5vuTJExS9eZg2rn7pNAfg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,205,1739865600"; 
-   d="scan'208";a="130048013"
-Received: from mylly.fi.intel.com (HELO [10.237.72.154]) ([10.237.72.154])
-  by fmviesa009.fm.intel.com with ESMTP; 11 Apr 2025 07:26:53 -0700
-Message-ID: <01b9c72f-460d-4f77-b696-54c6825babc9@linux.intel.com>
-Date: Fri, 11 Apr 2025 17:26:51 +0300
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="Eqfq7KUF"
+Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 123A347F1E;
+	Fri, 11 Apr 2025 16:31:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1744381880;
+	bh=cR0MT7SIQsZS0BIRcyRHwHriDkdMJJMU+eMrzLmaREU=;
+	h=Date:From:To:Cc:Subject:From;
+	b=Eqfq7KUF1hdvzAztdS6DA1TZugK0wED97mI9mkRTLOmxyBmaOIPZ1TgunhBlufqvm
+	 pu9YSTdeA3LQMhkNVCIAjP9XETen2jA0Im2KV53GsDVS8tpj9bnxdcDWrjani9Y0qW
+	 KrlO0xD2AhoRoohidRsoRUKY8GAv62DOXeGDTf2qHEt0YWlZxoWO/8Jdi22kuvQ1+v
+	 rRWsVUdTks5lLoMfijHuJaIShaejjFoEgXjReWdxO+/NfMA10EjP696kSK2MiyogXw
+	 GPU4OpFx1ELrszlsWiQxSQQuucmL2J2T4zR4pXLOrH6+IyNnptuYJwdWA95JHYxPkk
+	 Xj03A0G/j61pA==
+Date: Fri, 11 Apr 2025 16:31:18 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Fixes for Linux v6.15-rc1
+Message-ID: <Z_kntkZxksOfGwpt@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Content-Language: en-US
-To: iommu@lists.linux.dev
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
- Zhangfei Gao <zhangfei.gao@linaro.org>
-From: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Subject: Regression with "iommu/vt-d: Move scalable mode ATS enablement to
- probe path"
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Hi
+Hi Linus,
 
-v6.15-rc1 stopped booting on a Lunar Lake and Panther Lake based test 
-machines when "intel_iommu=on" is set on the kernel command line.
+The following changes since commit 0af2f6be1b4281385b618cb86ad946eded089ac8:
 
-I narrowed regression down to the commit 5518f239aff1 ("iommu/vt-d: Move 
-scalable mode ATS enablement to probe path"). Trace below at that commit.
+  Linux 6.15-rc1 (2025-04-06 13:11:33 -0700)
 
-Previous commit 607ba1bb0961 ("iommu/vt-d: Check if SVA is supported 
-when attaching the SVA domain") boots fine and also v6.15-rc1 when 
-setting "intel_iommu=off".
+are available in the Git repository at:
 
-[    6.005272] pci 0000:00:1f.0: Adding to iommu group 17
-[    6.010476] pci 0000:00:1f.3: Adding to iommu group 17
-[    6.015684] pci 0000:00:1f.4: Adding to iommu group 17
-[    6.020888] pci 0000:00:1f.5: Adding to iommu group 17
-[    6.026091] pci 0000:00:1f.6: Adding to iommu group 17
-[    6.031318] pci 0000:7f:00.0: Adding to iommu group 18
-[    6.040492] Kernel panic - not syncing: DMAR hardware is malfunctioning
-[    6.040492] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 
-6.14.0-rc3+ #175
-[    6.040492] Call Trace:
-[    6.040492]  <TASK>
-[    6.040492]  dump_stack_lvl+0x6f/0xb0
-[    6.040492]  dump_stack+0x10/0x16
-[    6.040492]  panic+0x10a/0x2b7
-[    6.040492]  iommu_enable_translation.cold+0xc/0xc
-[    6.040492]  intel_iommu_init+0xe39/0xec0
-[    6.040492]  ? trace_hardirqs_on+0x1e/0xd0
-[    6.040492]  ? __pfx_pci_iommu_init+0x10/0x10
-[    6.040492]  pci_iommu_init+0xd/0x40
-[    6.040492]  do_one_initcall+0x5b/0x390
-[    6.040492]  kernel_init_freeable+0x26d/0x2b0
-[    6.040492]  ? __pfx_kernel_init+0x10/0x10
-[    6.040492]  kernel_init+0x15/0x120
-[    6.040492]  ret_from_fork+0x35/0x60
-[    6.040492]  ? __pfx_kernel_init+0x10/0x10
-[    6.040492]  ret_from_fork_asm+0x1a/0x30
-[    6.040492] RIP: 1f0f:0x0
-[    6.040492] Code: Unable to access opcode bytes at 0xffffffffffffffd6.
-[    6.040492] RSP: 0000:0000000000000000 EFLAGS: 841f0f2e66 ORIG_RAX: 
-1f0f2e6600000000
-[    6.040492] RAX: 0000000000000000 RBX: 1f0f2e6600000000 RCX: 
-2e66000000000084
-[    6.040492] RDX: 0000000000841f0f RSI: 000000841f0f2e66 RDI: 
-00841f0f2e660000
-[    6.040492] RBP: 00841f0f2e660000 R08: 00841f0f2e660000 R09: 
-000000841f0f2e66
-[    6.040492] R10: 0000000000841f0f R11: 2e66000000000084 R12: 
-000000841f0f2e66
-[    6.040492] R13: 0000000000841f0f R14: 2e66000000000084 R15: 
-1f0f2e6600000000
-[    6.040492]  </TASK>
-[    6.040492] ---[ end Kernel panic - not syncing: DMAR hardware is 
-malfunctioning ]---
+  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v6.15-rc1
 
+for you to fetch changes up to 767e22001dfce64cc03b7def1562338591ab6031:
+
+  iommu/tegra241-cmdqv: Fix warnings due to dmam_free_coherent() (2025-04-11 12:44:27 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v6.15-rc1
+
+Including:
+
+	- Fix two crashes, one in core code and a NULL-ptr dereference in the
+	  Mediatek IOMMU driver.
+
+	- Dma_ops cleanup fix for core code.
+
+	- Two fixes for Intel VT-d driver:
+	  - Fix posted MSI issue when users change cpu affinity.
+	  - Remove invalid set_dma_ops() call in the iommu driver.
+
+	- Warning fix for Tegra IOMMU driver.
+
+	- Suspend/Resume fix for Exynos IOMMU driver.
+
+	- Probe failure fix for Renesas IOMMU driver
+
+	- Cosmetic fix
+
+----------------------------------------------------------------
+Fedor Pchelkin (1):
+      iommu: Fix crash in report_iommu_fault()
+
+Louis-Alexis Eyraud (1):
+      iommu/mediatek: Fix NULL pointer deference in mtk_iommu_device_group
+
+Marek Szyprowski (1):
+      iommu/exynos: Fix suspend/resume with IDENTITY domain
+
+Nicolin Chen (1):
+      iommu/tegra241-cmdqv: Fix warnings due to dmam_free_coherent()
+
+Pei Xiao (1):
+      iommu: remove unneeded semicolon
+
+Petr Tesarik (1):
+      iommu/vt-d: Remove an unnecessary call set_dma_ops()
+
+Robin Murphy (2):
+      iommu: Clear iommu-dma ops on cleanup
+      iommu/ipmmu-vmsa: Register in a sensible order
+
+Sean Christopherson (1):
+      iommu/vt-d: Wire up irq_ack() to irq_move_irq() for posted MSIs
+
+ drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c | 32 ++++----------------------
+ drivers/iommu/dma-iommu.c                      |  4 ++--
+ drivers/iommu/exynos-iommu.c                   |  4 ++--
+ drivers/iommu/intel/iommu.c                    |  1 -
+ drivers/iommu/intel/irq_remapping.c            | 29 ++++++++++++-----------
+ drivers/iommu/iommu.c                          |  6 ++++-
+ drivers/iommu/ipmmu-vmsa.c                     | 27 ++++++++--------------
+ drivers/iommu/mtk_iommu.c                      | 26 ++++++++++-----------
+ 8 files changed, 52 insertions(+), 77 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
