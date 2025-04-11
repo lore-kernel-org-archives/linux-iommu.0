@@ -1,279 +1,164 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2041.outbound.protection.outlook.com [40.107.220.41])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A41571EFF9F
-	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 07:48:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744357694; cv=fail; b=Owk/GfRv6d8BMex5VRQBCP0PE7Ow2OfG7JiHglDPyF8LByRwgwf1pZvwoUvjff1FWzMvnyZ1/TLFqA+E/iQa3VbdKMxKswcEu1YY+T0B/QUpEbe97sUzy/B2wtDpVoYaaZ6kspwLSdfIQOEdAy+FfwJvAtVC29oyAwUh1BWGk6s=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744357694; c=relaxed/simple;
-	bh=dxxwTqZ0pmoA55d3YDPX0Z8GV1YM16E4aAa074wyacs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=dau3EsTgjFkdQQZlUtYIaA/+Aqxbe5gvXU9osWQysRc7F5QQneNxtCUFc8g8COhblXcsNffmZLwHfzN2/mGxfnRAXu/waGlK69wrFLt7NPByXcjawcLZIlVppyAvBMffiRIkGNCwY/h2uhmVlwWmLcNuHwpEfYkrn92HD3wz2eY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=NDwuxaWp; arc=fail smtp.client-ip=40.107.220.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D6C728F952;
+	Fri, 11 Apr 2025 08:02:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744358533; cv=none; b=qCc+3ml0updI1fav7wm1x04isYyPnfK5lLsli9PBA2ui4DUq0Pyfw/D+G/m1mAAHnxNw66MsqNaka0qtRIJqFAHCSuNOZS17fSHISe4EPAg49QUbE2LWj0jVBpfIAtSIGHUFGqL7aXg/of4TFyikG9mHnMi8Cw0G9rNkIQKC28U=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744358533; c=relaxed/simple;
+	bh=VPv4id2m4TY8Fmb1lSfEPtllue99RBkAXzud15Ip3W0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iZSKCrcGBvxUzk2KHRjlo4RdShymcSC6V7+Mk6DSzeQJQOzMJKd32zlN9edYV/hPnZh3CLRRaMwtyz2tEVJ1c91dwLy0172Zja/TTi10Kw0RLkajvZb6NML/QUg86i5iakkvwPvea8A6e2Tnn4Q5fbDQo4phmAPQxVftxPtBNRY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XDCsGvAQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="NDwuxaWp"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=uAHAFvqaUN9e44EMhkDr6QqHTq92bo7I0yFytDd+C1gr3jwplrB0tDt4s8f4NgzorTZpRQRKfE8d9LVjJ4X71BTVny0GyJnobqC+uY6GTF8caNT1cID9UClikPgMZoot/XaMbG5XTZt1uVCdRL6s+Vd5fJQqbTJ5AZqF+z+kE27VbkBPku/gLAqKmQjlmP6oC4Qo3xhQmSwMxNqJh674/QnvAq6swV+Q4b+YMmiGvdGMM7Hc4zEvfaZUAohNzLmF5B1F6+9S6iIEhXwJmccWKCoYufpuMH0oI1Paprvruw68GnSThR9tcI7NQTFMk4BWIcwAN6krVndPwf4tZkX6bA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9oqrF0dTSsULB44KUI7GFe0malehQY0HMNPfTYLPDNI=;
- b=lOSHyKryZkSvz7J2/rxJ7zJiEYAYLSloSZsTPgSTy4VDEXOh208gKO0AgH/yM0GfYok0EexNTf/XZENSR96Ystpdllw2wpYtEA4keLbIr8shtCV+djTQEiKCr1Lcr0toQ4rQnW+cKnUArHAeL2/Jfn2ikuTu6GPMAUrhohir4a95j3o8PF+Hd+WAZzDTibTeX54ggStyQkljySHHDlfqr7geX9Y8w+hRnlMiVXBM6rJYAQbiWWQ5BznhEHPY924T+uRDo62LJ/D2ZVuxMqYxkPMz0jThGJvlKICjUsfn6rrGMxA5vk51KoGLJn9hgV6nMTUxkTlHF8nGmqPocx3z0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9oqrF0dTSsULB44KUI7GFe0malehQY0HMNPfTYLPDNI=;
- b=NDwuxaWp7uOx+F1opW4jMvjscRHNLSreY/c2LxUHKyxk3p4Or71qOgpf7VQ5gL1JsQawjnPaak+lhZ53167JBSDLw5JqO9jBeAFX9g+AVvpW10UJrWFrsPtzJbagyGtjzWePhm2wVSFEu8U+pkr5T9Zblh52WI0Yq96LJ13q7fM=
-Received: from BY3PR05CA0049.namprd05.prod.outlook.com (2603:10b6:a03:39b::24)
- by DS7PR12MB5981.namprd12.prod.outlook.com (2603:10b6:8:7c::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8632.23; Fri, 11 Apr
- 2025 07:48:07 +0000
-Received: from SJ5PEPF000001CF.namprd05.prod.outlook.com
- (2603:10b6:a03:39b:cafe::fb) by BY3PR05CA0049.outlook.office365.com
- (2603:10b6:a03:39b::24) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8632.19 via Frontend Transport; Fri,
- 11 Apr 2025 07:48:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- SJ5PEPF000001CF.mail.protection.outlook.com (10.167.242.43) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8632.13 via Frontend Transport; Fri, 11 Apr 2025 07:48:07 +0000
-Received: from [10.136.43.133] (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 11 Apr
- 2025 02:48:03 -0500
-Message-ID: <d6ccf531-2ed0-4e38-97a5-2b747497fadb@amd.com>
-Date: Fri, 11 Apr 2025 13:17:53 +0530
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XDCsGvAQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A32CC4CEE7;
+	Fri, 11 Apr 2025 08:02:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1744358533;
+	bh=VPv4id2m4TY8Fmb1lSfEPtllue99RBkAXzud15Ip3W0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XDCsGvAQ8EQmSpGiAiVKosUQ9uBt3exxAWyP481bbStxDVQwS4eJ79B8S4NGkCmCT
+	 nJ5CsOaHvC/o1FzuDVp1mcnO9Sh9tR70w7Zh6DI9flpFudcf2lWZ6QQNTJQbYhf0Pa
+	 FF30ur8SeO40b8O7f+YboIUQ1J1JKUgjcj5vLaUMbfS+HjTXgAN1vxefw1PBlltTvU
+	 /FpU8Ohu4m7d5U1Llu9alh0gIOjzReL/k1v01DtP5+IhDrT8dYnPWdSNoBAsGJEZoH
+	 PrjkEkNXQin43eFG5My76D+QovQly6n/PzrK0bFhYhnzhKvEcCtcRIXEa0yylqi+mH
+	 i+8MUxrk0BvyQ==
+Received: from johan by xi.lan with local (Exim 4.97.1)
+	(envelope-from <johan@kernel.org>)
+	id 1u39L6-000000004FW-2zsh;
+	Fri, 11 Apr 2025 10:02:16 +0200
+Date: Fri, 11 Apr 2025 10:02:16 +0200
+From: Johan Hovold <johan@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, Russell King <linux@armlinux.org.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Stuart Yoder <stuyoder@gmail.com>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Saravana Kannan <saravanak@google.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, devicetree@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	Charan Teja Kalla <quic_charante@quicinc.com>
+Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
+ path
+Message-ID: <Z_jMiC1uj_MJpKVj@hovoldconsulting.com>
+References: <cover.1740753261.git.robin.murphy@arm.com>
+ <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 09/67] KVM: SVM: Track per-vCPU IRTEs using
- kvm_kernel_irqfd structure
-To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini
-	<pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse
-	<dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
-CC: <kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, Maxim Levitsky <mlevitsk@redhat.com>, Joao
- Martins <joao.m.martins@oracle.com>, David Matlack <dmatlack@google.com>
-References: <20250404193923.1413163-1-seanjc@google.com>
- <20250404193923.1413163-10-seanjc@google.com>
-Content-Language: en-US
-From: "Arun Kodilkar, Sairaj" <sarunkod@amd.com>
-In-Reply-To: <20250404193923.1413163-10-seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ5PEPF000001CF:EE_|DS7PR12MB5981:EE_
-X-MS-Office365-Filtering-Correlation-Id: f535272b-858a-4683-327b-08dd78cd32c0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|82310400026|376014|7416014|1800799024|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?UTM4RVlLamtoaUZpVFArRWR4WGxCS2lSUlgvZ0tvTERWL0JUa3kzMWlGblpK?=
- =?utf-8?B?VzcxWGRIMWlSNkdZMy9aaHR5UWduSTRSM3pEdm1oMFQweGFsTGlkcUovZzI3?=
- =?utf-8?B?dGVHZGZLM3VIZnZVRUl5NkRiN1pvN3FMV2JlQWJCREluSktSeFRnMk9RNzlV?=
- =?utf-8?B?cVk5SVk1a0xsWERlV0JIOXM5TzFvV1FFSVhhcVByUHpzQk90YmQyeG01ck92?=
- =?utf-8?B?MDVWbkMrcVl4YlErUGFpRm03SDN4V2tJTUdycytzRUZ5SGgxeTA5SmJyVmdw?=
- =?utf-8?B?Mk1ydlBuVk5qdWVMMHNuV29TMFRzT0R2MkFldm9SM2xPOXdDSE5GMVBITTUr?=
- =?utf-8?B?eWx4Ky9DZUZoVHdxc0ZMRDVzMllpWU1mWDEzd2hBRTBNY2UydFMyUEZud1c4?=
- =?utf-8?B?WFNTc20vTFY5MVRDMVFhUzQ4dEtRZC9GNHhiMDgyN3Fjdk5YT1FSK1I5OVRu?=
- =?utf-8?B?RndSZndOaVg1bG4ydUlrMEIyRDBnVzdjb0FwK3lpc3dLZE9Va1hmL0JFV1lx?=
- =?utf-8?B?ZzE4aSszYXc5RXZ1eUVyaDBsd3VnaWErUDhWRkl0bTh3SDRkOFBLUVc0U2ly?=
- =?utf-8?B?cDZybTJZNDEyempVWHNYamc4TkE5UGhNQnhENWtHNDU3Ukp0cGFjRW9YR1R2?=
- =?utf-8?B?MlN3YW5JMC9IQjFQbTV0c1U3aW5EeFBBNXJ6aXFWRGVSeURwUThyUjJDQ0Zn?=
- =?utf-8?B?a1cwdUhVa0FGZncyT09jQVRiRVFwV2lWVXdRb0Q1enBxejhnZ0p1T0ZUTmNB?=
- =?utf-8?B?QlJQanU2aEY3SHZ0Z0JYdjE5UmJzWFg4cGNhTVh1aUxiUVh1WEoydkd5Nk9Y?=
- =?utf-8?B?VE1sczMwQ0hKdURGaG9UUGZlbkRXUkMrcGJCS1hxdGdMTjh3eDRMeElTY3N2?=
- =?utf-8?B?WDJOcHJhUHcwbHlPTE5QZVFrSGhkZitFWUFGYlNQZE9odmMxczBxMVRmOWsv?=
- =?utf-8?B?dC8rc2R4TE1XMCtSYXpnVzlyZVVvSVlMZVZ5R2RJWFM4RGZDR3c5c3pTcVhQ?=
- =?utf-8?B?NThOUU04RTVsRjZkV3hablFNZDRZc1lmT29QTGFiU0REaUtBb1pRS2s5TWkr?=
- =?utf-8?B?YzNrQUVTSGM4L0ppbUdGR05wQjB6bGhQNUdodVArUEJDVm5leFg0akx6M05o?=
- =?utf-8?B?NFRmUk02SmZoZUZybWJBNU1OeXQxU2Vndy9oeUxVV0pxWmlTd1djMFN4czNm?=
- =?utf-8?B?K00wSCtjOW9LNjQrU3B1SDBHL2p6TDRyTEJxcThqYUhScHRZWnBzaHJRYnJw?=
- =?utf-8?B?Q2w0dUwrSWFNS2ZKZ2R5RXBENTlwMU52TC96cU9OT2RjaDl1Tkx6ZWUxeFhB?=
- =?utf-8?B?WnlKQlFnODV6S0NMQ0pjcGpNMDZZaGFCT2hxcWlnYi94REdZWXowUUpjdzlk?=
- =?utf-8?B?c3g4NVRCMDliZU1hbjBhb21ha1pJZklxTFFTdmQ4aGRqMGxUSXZYcUVjTVMr?=
- =?utf-8?B?eTJsWmNnem1pUmZaQ2cvU2Q0MHhDVVBRQmlueVgvdG90cFdOcGlESWZGL1VS?=
- =?utf-8?B?L1Y1dXJMejhOMVpGM0RWNGtuejg1b2o1eUlBVkovVm9nSmJZbWtKdFlGNW9O?=
- =?utf-8?B?UG55dWFIeUJNMGVxUXlHcVZtTVM4aklma1htcTVZaFhMeUN4VHBHODBDNVd4?=
- =?utf-8?B?WDhQc0Jzd2E3aXkxM0UyV1lYU013V3h2RDhicWtZWlRtRFlDaFlJRlp3cmFo?=
- =?utf-8?B?cC80Ui9kdGxQNU9penI0NmwzOTJma0crU2l0TmZzNW5YMmxPS0xVa3UyTHVV?=
- =?utf-8?B?cVIxZFBpSXBmQWpUcFJoUkJtTzZqc1REV0o3cXE1a2s1ZTBuTmk4dnJTUC94?=
- =?utf-8?B?NjVqYm5wYWFDMi9vL0RIVEJCSlZMTnFvSmVUMWdFUkVyS3pPNXdhUGsyUkkw?=
- =?utf-8?B?V3JrQjI5VHdmakFOQ2RFR2FIeFRSeURGbkthT20rNnFOcHFIYzZlVWwybjA5?=
- =?utf-8?B?K29oLzNwblVxaGk5angvQnRmVkhTRVkvdVF3b2QyYWM2OEgrbTBXTzdXSFpP?=
- =?utf-8?B?akJ6TnRSZzB5eXJPVHQ1TWR2ZEk4bkEvMUlVNGJtSDJoSkNNU0xSWk9yTFVQ?=
- =?utf-8?Q?AEXANV?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700013)(82310400026)(376014)(7416014)(1800799024)(7053199007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2025 07:48:07.0157
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f535272b-858a-4683-327b-08dd78cd32c0
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ5PEPF000001CF.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5981
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
 
-On 4/5/2025 1:08 AM, Sean Christopherson wrote:
-> Track the IRTEs that are posting to an SVM vCPU via the associated irqfd
-> structure and GSI routing instead of dynamically allocating a separate
-> data structure.  In addition to eliminating an atomic allocation, this
-> will allow hoisting much of the IRTE update logic to common x86.
-> 
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->   arch/x86/kvm/svm/avic.c   | 49 ++++++++++++++++-----------------------
->   include/linux/kvm_irqfd.h |  3 +++
->   2 files changed, 23 insertions(+), 29 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index 04dfd898ea8d..967618ba743a 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -774,27 +774,30 @@ static int avic_set_pi_irte_mode(struct kvm_vcpu *vcpu, bool activate)
->   	return ret;
->   }
->   
-> -static void svm_ir_list_del(struct vcpu_svm *svm, struct amd_iommu_pi_data *pi)
-> +static void svm_ir_list_del(struct vcpu_svm *svm,
-> +			    struct kvm_kernel_irqfd *irqfd,
-> +			    struct amd_iommu_pi_data *pi)
->   {
->   	unsigned long flags;
-> -	struct amd_svm_iommu_ir *cur;
-> +	struct kvm_kernel_irqfd *cur;
->   
->   	spin_lock_irqsave(&svm->ir_list_lock, flags);
-> -	list_for_each_entry(cur, &svm->ir_list, node) {
-> -		if (cur->data != pi->ir_data)
-> +	list_for_each_entry(cur, &svm->ir_list, vcpu_list) {
-> +		if (cur->irq_bypass_data != pi->ir_data)
->   			continue;
-> -		list_del(&cur->node);
-> -		kfree(cur);
-> +		if (WARN_ON_ONCE(cur != irqfd))
-> +			continue;
-> +		list_del(&irqfd->vcpu_list);
->   		break;
->   	}
->   	spin_unlock_irqrestore(&svm->ir_list_lock, flags);
->   }
->   
-> -static int svm_ir_list_add(struct vcpu_svm *svm, struct amd_iommu_pi_data *pi)
-> +static int svm_ir_list_add(struct vcpu_svm *svm,
-> +			   struct kvm_kernel_irqfd *irqfd,
-> +			   struct amd_iommu_pi_data *pi)
->   {
-> -	int ret = 0;
->   	unsigned long flags;
-> -	struct amd_svm_iommu_ir *ir;
->   	u64 entry;
->   
->   	if (WARN_ON_ONCE(!pi->ir_data))
-> @@ -811,25 +814,14 @@ static int svm_ir_list_add(struct vcpu_svm *svm, struct amd_iommu_pi_data *pi)
->   		struct kvm_vcpu *prev_vcpu = kvm_get_vcpu_by_id(kvm, vcpu_id);
->   		struct vcpu_svm *prev_svm;
->   
-> -		if (!prev_vcpu) {
-> -			ret = -EINVAL;
-> -			goto out;
-> -		}
-> +		if (!prev_vcpu)
-> +			return -EINVAL;
->   
->   		prev_svm = to_svm(prev_vcpu);
-> -		svm_ir_list_del(prev_svm, pi);
-> +		svm_ir_list_del(prev_svm, irqfd, pi);
->   	}
->   
-> -	/**
-> -	 * Allocating new amd_iommu_pi_data, which will get
-> -	 * add to the per-vcpu ir_list.
-> -	 */
-> -	ir = kzalloc(sizeof(struct amd_svm_iommu_ir), GFP_ATOMIC | __GFP_ACCOUNT);
-> -	if (!ir) {
-> -		ret = -ENOMEM;
-> -		goto out;
-> -	}
-> -	ir->data = pi->ir_data;
-> +	irqfd->irq_bypass_data = pi->ir_data;
->   
->   	spin_lock_irqsave(&svm->ir_list_lock, flags);
->   
-> @@ -844,10 +836,9 @@ static int svm_ir_list_add(struct vcpu_svm *svm, struct amd_iommu_pi_data *pi)
->   		amd_iommu_update_ga(entry & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK,
->   				    true, pi->ir_data);
->   
-> -	list_add(&ir->node, &svm->ir_list);
-> +	list_add(&irqfd->vcpu_list, &svm->ir_list);
->   	spin_unlock_irqrestore(&svm->ir_list_lock, flags);
-> -out:
-> -	return ret;
-> +	return 0;
->   }
->   
->   /*
-> @@ -951,7 +942,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->   			 * scheduling information in IOMMU irte.
->   			 */
->   			if (!ret && pi.is_guest_mode)
-> -				svm_ir_list_add(svm, &pi);
-> +				svm_ir_list_add(svm, irqfd, &pi);
->   		}
->   
->   		if (!ret && svm) {
-> @@ -991,7 +982,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
->   
->   			vcpu = kvm_get_vcpu_by_id(kvm, id);
->   			if (vcpu)
-> -				svm_ir_list_del(to_svm(vcpu), &pi);
-> +				svm_ir_list_del(to_svm(vcpu), irqfd, &pi);
->   		}
->   	} else {
->   		ret = 0;
-> diff --git a/include/linux/kvm_irqfd.h b/include/linux/kvm_irqfd.h
-> index 8ad43692e3bb..6510a48e62aa 100644
-> --- a/include/linux/kvm_irqfd.h
-> +++ b/include/linux/kvm_irqfd.h
-> @@ -59,6 +59,9 @@ struct kvm_kernel_irqfd {
->   	struct work_struct shutdown;
->   	struct irq_bypass_consumer consumer;
->   	struct irq_bypass_producer *producer;
-> +
-> +	struct list_head vcpu_list;
-> +	void *irq_bypass_data;
->   };
->   
->   #endif /* __LINUX_KVM_IRQFD_H */
+Hi Robin,
 
-Hi Sean,
-You missed to update the functions avic_set_pi_irte_mode and
-avic_update_iommu_vcpu_affinity, which iterate over the ir_list.
+On Fri, Feb 28, 2025 at 03:46:33PM +0000, Robin Murphy wrote:
+> In hindsight, there were some crucial subtleties overlooked when moving
+> {of,acpi}_dma_configure() to driver probe time to allow waiting for
+> IOMMU drivers with -EPROBE_DEFER, and these have become an
+> ever-increasing source of problems. The IOMMU API has some fundamental
+> assumptions that iommu_probe_device() is called for every device added
+> to the system, in the order in which they are added. Calling it in a
+> random order or not at all dependent on driver binding leads to
+> malformed groups, a potential lack of isolation for devices with no
+> driver, and all manner of unexpected concurrency and race conditions.
+> We've attempted to mitigate the latter with point-fix bodges like
+> iommu_probe_device_lock, but it's a losing battle and the time has come
+> to bite the bullet and address the true source of the problem instead.
 
-Regards
-Sairaj Kodilkar
+> @@ -426,6 +438,12 @@ static int iommu_init_device(struct device *dev)
+>  		ret = -ENODEV;
+>  		goto err_free;
+>  	}
+> +	/*
+> +	 * And if we do now see any replay calls, they would indicate someone
+> +	 * misusing the dma_configure path outside bus code.
+> +	 */
+> +	if (dev->driver)
+> +		dev_WARN(dev, "late IOMMU probe at driver bind, something fishy here!\n");
+>  
+>  	if (!try_module_get(ops->owner)) {
+>  		ret = -EINVAL;
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index e10a68b5ffde..6b989a62def2 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -155,7 +155,12 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
+>  		dev_iommu_free(dev);
+>  	mutex_unlock(&iommu_probe_device_lock);
+>  
+> -	if (!err && dev->bus)
+> +	/*
+> +	 * If we're not on the iommu_probe_device() path (as indicated by the
+> +	 * initial dev->iommu) then try to simulate it. This should no longer
+> +	 * happen unless of_dma_configure() is being misused outside bus code.
+> +	 */
+
+This assumption does not hold as there is nothing preventing iommu
+driver probe from racing with a client driver probe.
+
+> +	if (!err && dev->bus && !dev_iommu_present)
+>  		err = iommu_probe_device(dev);
+>  
+>  	if (err && err != -EPROBE_DEFER)
+
+I hit the (now moved) dev_WARN() on the ThinkPad T14s where the GPU SMMU
+is probed late due to a clock dependency and can end up probing in
+parallel with the GPU driver.
+
+[    3.805282] arm-smmu 3da0000.iommu: probing hardware configuration...
+[    3.806007] arm-smmu 3da0000.iommu: SMMUv2 with:
+[    3.806843] arm-smmu 3da0000.iommu:  stage 1 translation
+[    3.807562] arm-smmu 3da0000.iommu:  coherent table walk
+[    3.808253] arm-smmu 3da0000.iommu:  stream matching with 24 register groups
+[    3.808957] arm-smmu 3da0000.iommu:  22 context banks (0 stage-2 only)
+[    3.809651] arm-smmu 3da0000.iommu:  Supported page sizes: 0x61311000
+[    3.810339] arm-smmu 3da0000.iommu:  Stage-1: 48-bit VA -> 40-bit IPA
+[    3.811130] arm-smmu 3da0000.iommu:  preserved 0 boot mappings
+
+[    3.829042] platform 3d6a000.gmu: Adding to iommu group 8
+
+[    3.992050] ------------[ cut here ]------------
+[    3.993045] adreno 3d00000.gpu: late IOMMU probe at driver bind, something fishy here!
+[    3.994058] WARNING: CPU: 9 PID: 343 at drivers/iommu/iommu.c:579 __iommu_probe_device+0x2b0/0x4ac
+
+[    4.003272] CPU: 9 UID: 0 PID: 343 Comm: kworker/u50:2 Not tainted 6.15.0-rc1 #109 PREEMPT 
+[    4.003276] Hardware name: LENOVO 21N2ZC5PUS/21N2ZC5PUS, BIOS N42ET83W (2.13 ) 10/04/2024
+
+[    4.025943] Call trace:
+[    4.025945]  __iommu_probe_device+0x2b0/0x4ac (P)
+[    4.030453]  iommu_probe_device+0x38/0x7c
+[    4.030455]  of_iommu_configure+0x188/0x26c
+[    4.030457]  of_dma_configure_id+0xcc/0x300
+[    4.030460]  platform_dma_configure+0x74/0xac
+[    4.030462]  really_probe+0x74/0x38c
+[    4.030464]  __driver_probe_device+0x7c/0x160
+[    4.030465]  driver_probe_device+0x40/0x110
+[    4.030467]  __device_attach_driver+0xbc/0x158
+[    4.030468]  bus_for_each_drv+0x84/0xe0
+[    4.030470]  __device_attach+0xa8/0x1d4
+[    4.030472]  device_initial_probe+0x14/0x20
+[    4.030473]  bus_probe_device+0xb0/0xb4
+[    4.030476]  deferred_probe_work_func+0xa0/0xf4
+
+[    4.030501] ---[ end trace 0000000000000000 ]---
+[    4.031269] adreno 3d00000.gpu: Adding to iommu group 9
+
+Johan
