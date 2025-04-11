@@ -1,128 +1,119 @@
-Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7ED71DB95E
-	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 14:16:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D08A62367D1
+	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 14:26:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744381010; cv=none; b=ntBdm0DLz7xLfsVXWlsjVg+Uxm4deDmQmoWkFNTR1K2sqg4JBiBIiMDBAS+Sv7cI5Qj5Qrpw1rSE8Xe4GhafLU9DkAChGgRg5iAf1rBSRpu3JrOWUurjwTIqG6+yh6NuQIPGli6twEVhwJwhk3UgAUkn5F+oen3noSjkMyZ9G1g=
+	t=1744381616; cv=none; b=AMasN+IF461iYWJHRdNtfW6JuWDy6OXstwWPcRCNDFd47URLiZmc6rp3GaS7iHZe56tVQr4XjZVszeXgDMvgsPrbhrAd/QP7uuh95A0N5JW7ggiASt04RFt/wdRp0kcPYqNE0Ys+ngUe0wcgXSU32URsQSIPiXpvu9KM0Jif9jI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744381010; c=relaxed/simple;
-	bh=vn+VKp3Ay36aECIQWn3gk7Kfab8dWu7P+S0abFwbfXI=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=lYd+kwMohPqIpEBSxAI/uTRKrLeQSMhnXLVDorRgShkcFXBPSpAMYbJw6swvxyvJ7H/5EMhu98BlCTmtrxVlXHa8U5reTeQQPsg5XpXV6RXJYzCkDhqwm0RX6/DQJmQr5kPGMmab6tvevAPOHupY3E5gFFTJrCFy0Y8wnRUaXyw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BsWQ0ptX; arc=none smtp.client-ip=209.85.216.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1744381616; c=relaxed/simple;
+	bh=STQlMC7BdBDPu8U/eRLrGB8IIj1H4SK9wzoWpaZBbUE=;
+	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=ACArS4Op5g7ZbVGLhwzPL8aDCLk+2ErbLa2B9X4LOVgxPmIgodovPXe9yYIZpF3MVd7HeSTrEWv0Us5Up3VNDbkOheVIZToH9Z2exxFneWjIjb71oYelO5xuz+4/phQ4TunHYKViiz1G64RL9OkAkAed03QO1+YcNI4QxRky4RI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OewrP0GA; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BsWQ0ptX"
-Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-3082946f829so535488a91.0
-        for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 07:16:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1744381008; x=1744985808; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7WLm9nSzf8mbzQ6eRy3dVX2xRtWadZfn8/wglqYhatY=;
-        b=BsWQ0ptXtoLWTwI1C3gMzVtslnrqWdK7p0b23iEDkjiMtyBt5It3oC0MVSMitl8/4O
-         18lifwuD0uvhNBlEQRTz5ai7O/7T88Saf8j6GVBQ/obxoSZ6A2Nl7QRQrwoorDy3O0Qw
-         sHLLTnLVFzG3ZG518wlHQUuc5OpEZaGTcf4Gr9RTC+mlAmMy2h9oU9oZ7YylFM8YKqKH
-         z2ywbBx08JZqd9y/zvklmXKqi9vb0dfLv4GAx2wsysW7y/7u7IQaSeaQ7iEjYYuTdVMI
-         etrMLvoR7IzaejJ9Eazmb+jovPC+G6ng0b2O1i0+yz669T+FnxqWINQ9epdzKW0NcOvF
-         rqhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744381008; x=1744985808;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=7WLm9nSzf8mbzQ6eRy3dVX2xRtWadZfn8/wglqYhatY=;
-        b=uldK6Ikv2lnguaNb4+Mdl17xITt2QOiFU+qdvDOPDWL4f3+Ae1f9r7wn8Yj324q1Nb
-         +aHTfcoVHap/7N6ASZyn4JG8jTSPoSJIxBX6C3fMcgkl3xGJ8SeoEnbh4mw/uCg9GIQi
-         pZA012ZY97cRO4mxxsm8xTsRA6hbXXJtmdyHrDx5dTWEE7k8hSMtjSLJNlQXbyjl8HH6
-         nsO/QJQXwAJq8nBzjPMCBRmTV6lei2cKcTyBGAuz+FZBg73YczedloRvAncI3T1ErzXC
-         AmowyErk0tUND5uFlYhrUl8zh/j41ayaBWNG0D8fqTOsV9l63/YCQU75TBwpZANY/Vg+
-         Jyjg==
-X-Forwarded-Encrypted: i=1; AJvYcCUeO5nQsctrIhESFq5AIQIa0XtKhTFaeufOERUwR4qQUyb+wlw6B7v97zK/oUtO1DzPnUvDIg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzl9qNt4t2muwXPf0n7wyzQ3ySa9b6foRmnCos/rq3vcVD1tq83
-	T74f5Wlsb1yRLy9DBKbOLtR7Qg2HfsSQ+LpFlaWRcuBBD0kQHmTRI35OFUJA92NBo+5l57z0SZA
-	DVQ==
-X-Google-Smtp-Source: AGHT+IFATnSMfrlSoDr0AZ6VmD2LhVdWjxVhiNFsnVuSJSTgsZ8GDkGzqSkWXdTOGULav9ok7fnrCtR9H0A=
-X-Received: from pjtq5.prod.google.com ([2002:a17:90a:c105:b0:305:2d68:2be6])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:2703:b0:2fe:b735:87da
- with SMTP id 98e67ed59e1d1-3082354ee9amr6053899a91.0.1744381008123; Fri, 11
- Apr 2025 07:16:48 -0700 (PDT)
-Date: Fri, 11 Apr 2025 07:16:46 -0700
-In-Reply-To: <ad53c9fe-a874-4554-bce5-a5bcfefe627a@amd.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OewrP0GA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1744381615; x=1775917615;
+  h=message-id:date:mime-version:to:cc:from:subject:
+   content-transfer-encoding;
+  bh=STQlMC7BdBDPu8U/eRLrGB8IIj1H4SK9wzoWpaZBbUE=;
+  b=OewrP0GAw8X7mJnvuuJ4r6sBsjRA94qsTcb3ZuHlhP1hjrijivEcveUz
+   L5aPLb1q1u0BfkfmymO3XTwWDqkNXMIyNADb/ppGxkpTtRhAk08mCRU0P
+   laGaDaaUUAUmcEuRwdFH9AzLCashEytrXo5Ka/LJKAc0adj25eNIi2xE0
+   UsmQnA6Hbi1eVhJSdEyAw78MjCo39czOnVPHV2wCMUimV9kR8ZoXYBHQf
+   BQ0n5Fl9+/jObSyEaWImDByko9F+fPtmdQ4q5eMIe9kLZsatTfGUH8bfl
+   jXde2YpLBBby6E5GRkmjJ+ia/kCEYqqefWwip9Zve9FLNxwc0+fYhuWsg
+   Q==;
+X-CSE-ConnectionGUID: 0I7dHXXFTs62c2Vbfi73eQ==
+X-CSE-MsgGUID: wDCzdGgtTOGOAmBLF26zAg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11401"; a="56117287"
+X-IronPort-AV: E=Sophos;i="6.15,205,1739865600"; 
+   d="scan'208";a="56117287"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2025 07:26:55 -0700
+X-CSE-ConnectionGUID: DhkBh23yTnWI9mGh5CXQ5w==
+X-CSE-MsgGUID: y5vuTJExS9eZg2rn7pNAfg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,205,1739865600"; 
+   d="scan'208";a="130048013"
+Received: from mylly.fi.intel.com (HELO [10.237.72.154]) ([10.237.72.154])
+  by fmviesa009.fm.intel.com with ESMTP; 11 Apr 2025 07:26:53 -0700
+Message-ID: <01b9c72f-460d-4f77-b696-54c6825babc9@linux.intel.com>
+Date: Fri, 11 Apr 2025 17:26:51 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250404193923.1413163-1-seanjc@google.com> <20250404193923.1413163-3-seanjc@google.com>
- <ad53c9fe-a874-4554-bce5-a5bcfefe627a@amd.com>
-Message-ID: <Z_kkTlpqEEWRAk3g@google.com>
-Subject: Re: [PATCH 02/67] KVM: x86: Reset IRTE to host control if *new* route
- isn't postable
-From: Sean Christopherson <seanjc@google.com>
-To: Sairaj Kodilkar <sarunkod@amd.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
-	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
-	David Matlack <dmatlack@google.com>, Vasant Hegde <vasant.hegde@amd.com>, 
-	Naveen N Rao <naveen.rao@amd.com>
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+To: iommu@lists.linux.dev
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Zhangfei Gao <zhangfei.gao@linaro.org>
+From: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Subject: Regression with "iommu/vt-d: Move scalable mode ATS enablement to
+ probe path"
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Apr 11, 2025, Sairaj Kodilkar wrote:
-> On 4/5/2025 1:08 AM, Sean Christopherson wrote:
-> > @@ -991,7 +967,36 @@ int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
-> >   		}
-> >   	}
-> > -	ret = 0;
-> > +	if (enable_remapped_mode) {
-> > +		/* Use legacy mode in IRTE */
-> > +		struct amd_iommu_pi_data pi;
-> > +
-> > +		/**
-> > +		 * Here, pi is used to:
-> > +		 * - Tell IOMMU to use legacy mode for this interrupt.
-> > +		 * - Retrieve ga_tag of prior interrupt remapping data.
-> > +		 */
-> > +		pi.prev_ga_tag = 0;
-> > +		pi.is_guest_mode = false;
-> > +		ret = irq_set_vcpu_affinity(host_irq, &pi);
-> > +
-> > +		/**
-> > +		 * Check if the posted interrupt was previously
-> > +		 * setup with the guest_mode by checking if the ga_tag
-> > +		 * was cached. If so, we need to clean up the per-vcpu
-> > +		 * ir_list.
-> > +		 */
-> > +		if (!ret && pi.prev_ga_tag) {
-> > +			int id = AVIC_GATAG_TO_VCPUID(pi.prev_ga_tag);
-> > +			struct kvm_vcpu *vcpu;
-> > +
-> > +			vcpu = kvm_get_vcpu_by_id(kvm, id);
-> > +			if (vcpu)
-> > +				svm_ir_list_del(to_svm(vcpu), &pi);
-> > +		}
-> > +	} else {
-> > +		ret = 0;
-> > +	}
-> 
-> Hi Sean,
-> I think you can remove this else and "ret = 0". Because Code will come to
-> this point when irq_set_vcpu_affinity() is successful, ensuring that ret is
-> 0.
+Hi
 
-Ah, nice, because of this:
+v6.15-rc1 stopped booting on a Lunar Lake and Panther Lake based test 
+machines when "intel_iommu=on" is set on the kernel command line.
 
-		if (ret < 0) {
-			pr_err("%s: failed to update PI IRTE\n", __func__);
-			goto out;
-		}
+I narrowed regression down to the commit 5518f239aff1 ("iommu/vt-d: Move 
+scalable mode ATS enablement to probe path"). Trace below at that commit.
 
-However, looking at this again, I'm very tempted to simply leave the "ret = 0;"
-that's already there so as to minimize the change.  It'll get cleaned up later on
-no matter what, so safety for LTS kernels is the driving factor as of this patch.
+Previous commit 607ba1bb0961 ("iommu/vt-d: Check if SVA is supported 
+when attaching the SVA domain") boots fine and also v6.15-rc1 when 
+setting "intel_iommu=off".
 
-Paolo, any preference?
+[    6.005272] pci 0000:00:1f.0: Adding to iommu group 17
+[    6.010476] pci 0000:00:1f.3: Adding to iommu group 17
+[    6.015684] pci 0000:00:1f.4: Adding to iommu group 17
+[    6.020888] pci 0000:00:1f.5: Adding to iommu group 17
+[    6.026091] pci 0000:00:1f.6: Adding to iommu group 17
+[    6.031318] pci 0000:7f:00.0: Adding to iommu group 18
+[    6.040492] Kernel panic - not syncing: DMAR hardware is malfunctioning
+[    6.040492] CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 
+6.14.0-rc3+ #175
+[    6.040492] Call Trace:
+[    6.040492]  <TASK>
+[    6.040492]  dump_stack_lvl+0x6f/0xb0
+[    6.040492]  dump_stack+0x10/0x16
+[    6.040492]  panic+0x10a/0x2b7
+[    6.040492]  iommu_enable_translation.cold+0xc/0xc
+[    6.040492]  intel_iommu_init+0xe39/0xec0
+[    6.040492]  ? trace_hardirqs_on+0x1e/0xd0
+[    6.040492]  ? __pfx_pci_iommu_init+0x10/0x10
+[    6.040492]  pci_iommu_init+0xd/0x40
+[    6.040492]  do_one_initcall+0x5b/0x390
+[    6.040492]  kernel_init_freeable+0x26d/0x2b0
+[    6.040492]  ? __pfx_kernel_init+0x10/0x10
+[    6.040492]  kernel_init+0x15/0x120
+[    6.040492]  ret_from_fork+0x35/0x60
+[    6.040492]  ? __pfx_kernel_init+0x10/0x10
+[    6.040492]  ret_from_fork_asm+0x1a/0x30
+[    6.040492] RIP: 1f0f:0x0
+[    6.040492] Code: Unable to access opcode bytes at 0xffffffffffffffd6.
+[    6.040492] RSP: 0000:0000000000000000 EFLAGS: 841f0f2e66 ORIG_RAX: 
+1f0f2e6600000000
+[    6.040492] RAX: 0000000000000000 RBX: 1f0f2e6600000000 RCX: 
+2e66000000000084
+[    6.040492] RDX: 0000000000841f0f RSI: 000000841f0f2e66 RDI: 
+00841f0f2e660000
+[    6.040492] RBP: 00841f0f2e660000 R08: 00841f0f2e660000 R09: 
+000000841f0f2e66
+[    6.040492] R10: 0000000000841f0f R11: 2e66000000000084 R12: 
+000000841f0f2e66
+[    6.040492] R13: 0000000000841f0f R14: 2e66000000000084 R15: 
+1f0f2e6600000000
+[    6.040492]  </TASK>
+[    6.040492] ---[ end Kernel panic - not syncing: DMAR hardware is 
+malfunctioning ]---
+
