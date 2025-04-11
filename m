@@ -1,68 +1,152 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7FA221B905;
-	Fri, 11 Apr 2025 17:27:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD71E23099C;
+	Fri, 11 Apr 2025 17:28:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744392432; cv=none; b=X0/I/6VysX4lVHqcH+bUs5dPElxx+I4Px7kN87o2z3dpKSDTeQmvjksSBaOoMa2Qa6iEpym9qtd8Niw5VmWc3AV9fhmaQ/3/JOhsS9W6jAa2S3xOqKpHcuwSbmarovSbz4xfk1c6SpeIdYOXEuRPqkYmTnpOgI+DnqY8y+Nz/t4=
+	t=1744392491; cv=none; b=AIF4bkkKCrGYFKoCGTMwV2PghqvAIkPT9kayG32YybpfBOcL2oJKzf5Y8tL1YsHhG6yRrdzSRkmTT1vFVSBBSbQvWsB5PAoEBXfKJ/dafxhj+oZKdyV6mjlOtA618aqLes6ShoXy9t05+73AH5Ns8v0IhnUzZ2P9arkMfvDrFpE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744392432; c=relaxed/simple;
-	bh=lThX8yUtObxnNNdpSefIo+oWxDYTahO3dx8BUWqqSSA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qeS6iUhqSX17KTF6aFEvVFDa8VBAWIta71x3ZK+Vt9L6/BoVtGHPze2LK8jfkDcjy4mJZ0/K4l9xFWrpFS7Qf65pj0B9JMiG1Ua6msc/RrbUQNJtb4/StjDr8PKpWNKVw1h+StRYVueqF8fdruN4hai7zTAwpB78ItoyTyuKPgA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ladMjA1o; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744392491; c=relaxed/simple;
+	bh=WC3u1ImMrIwQcuUwS71L4kjKo8LAJfFX0pYiJWHDjs0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=RdFLUADw+VGUoXdbMWmQhR6/5xrnHQAdZcybtSABeIAco/ACqQKgMxbWJSF83IqcveNNt7obhV9tHNfos3QC1dkvNXLJZNsL56tNfxIS6tS855A/P4Km2rR47MobONFZWus5860xnw8fFWQG4qlWBYiFhTbJg/zMGoB5ot7wFRw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MymUixhS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ladMjA1o"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FF85C4CEE2;
-	Fri, 11 Apr 2025 17:27:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MymUixhS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AB82C4CEE2;
+	Fri, 11 Apr 2025 17:28:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744392431;
-	bh=lThX8yUtObxnNNdpSefIo+oWxDYTahO3dx8BUWqqSSA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ladMjA1o8YRPWYkPOAPLpt8mxNrrxG70sZReilZORO7FmT9YqyKf7h27MgnCWGWWx
-	 N0Y8qRktCjFX7YyMabYj7xd5MdrwTxUBPaxXcN4svKJVG+3me1cnUZXQ87EWOfjTu1
-	 y7DI4GjOhouEO4wZ6ubGUOdiFrcWLRIQZgP/b7tHJw/8uyDfO4srt+Z2rooySBVr9V
-	 kKd8kK3vw706rVXMgfJm9LHWN9CZ/mLplbLuGn419d4aGiMnt8CCWkdF2jahFetaqW
-	 Pf7+igYe8Dx4w7u5gcellyE7Fh9cR6wpp66fzCqjUy0u1tXBqtZIpXbs2afGNT96FC
-	 5Wm5R1i/4O2Lg==
-Date: Fri, 11 Apr 2025 12:27:09 -0500
-From: Rob Herring <robh@kernel.org>
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: yong.wu@mediatek.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, krzk+dt@kernel.org, conor+dt@kernel.org,
-	matthias.bgg@gmail.com, iommu@lists.linux.dev,
-	linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	kernel@collabora.com
-Subject: Re: [PATCH v1 1/2] dt-bindings: iommu: mediatek: Add binding for
- MT6893 MM IOMMU
-Message-ID: <20250411172709.GA3571947-robh@kernel.org>
-References: <20250410144008.475888-1-angelogioacchino.delregno@collabora.com>
- <20250410144008.475888-2-angelogioacchino.delregno@collabora.com>
+	s=k20201202; t=1744392491;
+	bh=WC3u1ImMrIwQcuUwS71L4kjKo8LAJfFX0pYiJWHDjs0=;
+	h=From:To:Cc:Subject:Date:From;
+	b=MymUixhS6j31bXwFvi6mFMde2JMsbqVN+cM5XbJ2n0Fw/uSA4PPjbKbuOl03Ljm65
+	 c1+UhbEjQan/xoAt0c9NIRR65zLecEmEUJF3NyMD8/ejDRa/Iz2ZsBE1iTpENqhIEh
+	 00Q1T95PWm9ASE3S+nTEm0EsKYpVUZ+dzRrCeswWM17+kYaykbNZ6y4Jk9j4RyONDx
+	 PRqI4GNN8WIB62+cER8is5rrKbYsvr+yCpfBLHLU935pl+Q+ogeLrdmontI6Z8IjM4
+	 WUh4/SyHAdwJKiNNgXyLGRr9hKTCDLc/M0r4VONW5ZFiceGjNAin/RD/b2MBZ2AJPq
+	 wRe0JosummXAg==
+From: Will Deacon <will@kernel.org>
+To: stable@vger.kernel.org
+Cc: gregkh@linuxfoundation.org,
+	Piotr Jaroszynski <pjaroszynski@nvidia.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alistair Popple <apopple@nvidia.com>,
+	Raghavendra Rao Ananta <rananta@google.com>,
+	SeongJae Park <sj@kernel.org>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	John Hubbard <jhubbard@nvidia.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org
+Subject: [BACKPORT PATCH 6.6.y] Fix mmu notifiers for range-based invalidates
+Date: Fri, 11 Apr 2025 18:28:04 +0100
+Message-Id: <20250411172804.6014-1-will@kernel.org>
+X-Mailer: git-send-email 2.20.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250410144008.475888-2-angelogioacchino.delregno@collabora.com>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Apr 10, 2025 at 04:40:07PM +0200, AngeloGioacchino Del Regno wrote:
-> Add binding for the MediaTek Dimensity 1200 (MT6893) SoC's
-> MultiMedia (MM) IOMMU.
+From: Piotr Jaroszynski <pjaroszynski@nvidia.com>
 
-You can drop 'binding for ' in the subject. No need to say 'binding' 
-twice.
+[ Upstream commit f7edb07ad7c66eab3dce57384f33b9799d579133 ]
 
-> 
-> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-> ---
->  .../bindings/iommu/mediatek,iommu.yaml        |   4 +
->  .../memory/mediatek,mt6893-memory-port.h      | 288 ++++++++++++++++++
->  2 files changed, 292 insertions(+)
->  create mode 100644 include/dt-bindings/memory/mediatek,mt6893-memory-port.h
+Update the __flush_tlb_range_op macro not to modify its parameters as
+these are unexepcted semantics. In practice, this fixes the call to
+mmu_notifier_arch_invalidate_secondary_tlbs() in
+__flush_tlb_range_nosync() to use the correct range instead of an empty
+range with start=end. The empty range was (un)lucky as it results in
+taking the invalidate-all path that doesn't cause correctness issues,
+but can certainly result in suboptimal perf.
 
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
+This has been broken since commit 6bbd42e2df8f ("mmu_notifiers: call
+invalidate_range() when invalidating TLBs") when the call to the
+notifiers was added to __flush_tlb_range(). It predates the addition of
+the __flush_tlb_range_op() macro from commit 360839027a6e ("arm64: tlb:
+Refactor the core flush algorithm of __flush_tlb_range") that made the
+bug hard to spot.
+
+Fixes: 6bbd42e2df8f ("mmu_notifiers: call invalidate_range() when invalidating TLBs")
+
+Signed-off-by: Piotr Jaroszynski <pjaroszynski@nvidia.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Alistair Popple <apopple@nvidia.com>
+Cc: Raghavendra Rao Ananta <rananta@google.com>
+Cc: SeongJae Park <sj@kernel.org>
+Cc: Jason Gunthorpe <jgg@nvidia.com>
+Cc: John Hubbard <jhubbard@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux.dev
+Cc: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org
+Cc: stable@vger.kernel.org # Backport for 6.6.y only
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Alistair Popple <apopple@nvidia.com>
+Link: https://lore.kernel.org/r/20250304085127.2238030-1-pjaroszynski@nvidia.com
+[will: Resolve conflicts due to lack of LPA2 support]
+Signed-off-by: Will Deacon <will@kernel.org>
+---
+ arch/arm64/include/asm/tlbflush.h | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/arch/arm64/include/asm/tlbflush.h b/arch/arm64/include/asm/tlbflush.h
+index b73baaf8ae47..d37db2f7a54c 100644
+--- a/arch/arm64/include/asm/tlbflush.h
++++ b/arch/arm64/include/asm/tlbflush.h
+@@ -369,31 +369,33 @@ static inline void arch_tlbbatch_flush(struct arch_tlbflush_unmap_batch *batch)
+ #define __flush_tlb_range_op(op, start, pages, stride,			\
+ 				asid, tlb_level, tlbi_user)		\
+ do {									\
++	typeof(start) __flush_start = start;				\
++	typeof(pages) __flush_pages = pages;				\
+ 	int num = 0;							\
+ 	int scale = 3;							\
+ 	unsigned long addr;						\
+ 									\
+-	while (pages > 0) {						\
++	while (__flush_pages > 0) {					\
+ 		if (!system_supports_tlb_range() ||			\
+-		    pages == 1) {					\
+-			addr = __TLBI_VADDR(start, asid);		\
++		    __flush_pages == 1) {				\
++			addr = __TLBI_VADDR(__flush_start, asid);	\
+ 			__tlbi_level(op, addr, tlb_level);		\
+ 			if (tlbi_user)					\
+ 				__tlbi_user_level(op, addr, tlb_level);	\
+-			start += stride;				\
+-			pages -= stride >> PAGE_SHIFT;			\
++			__flush_start += stride;			\
++			__flush_pages -= stride >> PAGE_SHIFT;		\
+ 			continue;					\
+ 		}							\
+ 									\
+-		num = __TLBI_RANGE_NUM(pages, scale);			\
++		num = __TLBI_RANGE_NUM(__flush_pages, scale);		\
+ 		if (num >= 0) {						\
+-			addr = __TLBI_VADDR_RANGE(start, asid, scale,	\
+-						  num, tlb_level);	\
++			addr = __TLBI_VADDR_RANGE(__flush_start, asid,	\
++						scale, num, tlb_level);	\
+ 			__tlbi(r##op, addr);				\
+ 			if (tlbi_user)					\
+ 				__tlbi_user(r##op, addr);		\
+-			start += __TLBI_RANGE_PAGES(num, scale) << PAGE_SHIFT; \
+-			pages -= __TLBI_RANGE_PAGES(num, scale);	\
++			__flush_start += __TLBI_RANGE_PAGES(num, scale) << PAGE_SHIFT; \
++			__flush_pages -= __TLBI_RANGE_PAGES(num, scale);\
+ 		}							\
+ 		scale--;						\
+ 	}								\
+-- 
+2.49.0.604.gff1f9ca942-goog
+
