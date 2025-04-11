@@ -1,25 +1,62 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A632020F08E
-	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 16:34:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744389249; cv=none; b=REBE6AaPyszA02VHfzYpwGbCHfdQynqI8y3F/OTvg/rvNbdAmHdahuU9xmbf5mHZV0iKuUb5Ys4pMNglLe/uk0POBkxawWqwnhCKIic0KFIRVMfLtdbDS7jU2b58cJyHrZ9yzn67HG+29IUElhw/VR/pW7I9kVD9xnI1bbq13IM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744389249; c=relaxed/simple;
-	bh=GK6q/dVVr56KWhz4xjVfQwVF4jkBpchAnFtJB9s53JE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=A3PqJPTRZ2eArSV8AhKLm5qrOlYBaEYNifNVt6ipbdbQAa9ZpVlzrUwYCU/rzz0EllAlMijcrPeOBvEMuht7EFfZn4NZBJ3E5Jxa5Snubmej6YHQqtEKoJjxdbEPwnqXjj3IbnB575u2l2/wuZcmVZLYNwnC512tcHzdbC4HZ3A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9E45C106F;
-	Fri, 11 Apr 2025 09:34:06 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5745F3F694;
-	Fri, 11 Apr 2025 09:34:06 -0700 (PDT)
-Message-ID: <24e278c3-98a3-4799-9d54-22bdbc7a15be@arm.com>
-Date: Fri, 11 Apr 2025 17:34:05 +0100
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2046.outbound.protection.outlook.com [40.107.243.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEB6D221577
+	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 17:02:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744390954; cv=fail; b=FFpvVBBMdUxlqra5AIv2eLJOtwKaG08Chk0HjvazD19+P/C5sxKDtmKdduJ4Ela4hcitRSHNry01n63D95Tjwbl+gLsWGn9Oz9YAFI4i5HMsOwFklt6jxxUd1Zhwwtp++yLPf3nLdSMKfo7fROhy9wgVrLyHbMUdD5H52RcQxyw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744390954; c=relaxed/simple;
+	bh=+Yz40TQa5XWzUhplvCyh7ZyMr2dMSkBfIGLT36eopCY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=bpk+vkJqjW9wa2RKJDNorbhnrULW3Dqwyb3x72Bi9OvPwRTQW/JEImiDMt29qSS4Uw3QsIiHUzPeS7XZWLF77JxVYinBn0tn9IkQdLGOe5sHqG7kMQE2Vr38Az1tCJmU03JMNQOuiHi6idQLh9DKtgexJezW3dJqVAeDT9J5FQY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=twlpzZrD; arc=fail smtp.client-ip=40.107.243.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="twlpzZrD"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=hnLVTIdOWpx9ME7vqfCT2MpyTvuY8xUgi+A0XJeIY/ggFZRbPMFfJt/LplbintcTPTfQyCewaAoARvTxEzNTGkB5Kf9f0EUBM/bJretVT3UXb+hXI7IDN49akI+Zr1BBSYabMPRFNNdsAxGV/Ri77ZHkgWoP7y5EH4BhZ/Z52un+IQyubblzlZBmPqAkdAsqC3Q83lk1EULEOiTPTvNPpx+Je3d659I/wcabqySKu9xh6UNngpTMtsA8s7yrhSWg6psoSws90RSP3f9UbWTwiEWJl1MTdmZuvbpRJs/fQJm5iM/T9hpghbp0U7dozySlxPJl43MF5N11x/uT+M1FYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sD43QcVxcPbkFfORw48Zt1b/vMEkkan96vL2cdzhU44=;
+ b=g+1AWS8mYW+Yelt0TUy6PXGr2wTwprEZhM+tIYUqq6ef/Xr2JhdNazsVe1p7vhqRJU2UNx7CRFcpvnfUbVgMDRYBzYJgC8HYsXSpRy4pQxTRRnWBSnN4HwDZTsl42g2Rjl9RS0UbxE016VkYMBXhGNDSdfkhTLIL5fFZJFzJLXMuLU1bN+34PFg8kLIasrJBhzXPtjEiuX6fi0akg5FtneJu6Rq6EYsM34klscTI90D0uCZjWSL4K6PU/Wu/CD3f9R3EUh26VZgIOlvjl6RCjSIIEJZGlhpiBwYtMsyUtnrKSVC1+946kMhk3hkVpVNm8LpZg/LKrE4RZ6AYpoa10A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=sD43QcVxcPbkFfORw48Zt1b/vMEkkan96vL2cdzhU44=;
+ b=twlpzZrD2sTaAdb5YSPMQ6P4IbNByVpvy08Zsm3t234FxBPMZy5FxOBfbWyGr6Di5m/bIDtKnO0HgbzTHd4NtcuzHjnUxH9A9SlSEZsLQTqVxcsg4yBjjIL7pKl/FP4ULUqYvVsSJa/Rp/JziB5dDm+SykajGN1Z41Y9i3Z+Ds8=
+Received: from CH2PR08CA0023.namprd08.prod.outlook.com (2603:10b6:610:5a::33)
+ by SJ2PR12MB7943.namprd12.prod.outlook.com (2603:10b6:a03:4c8::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.40; Fri, 11 Apr
+ 2025 17:02:23 +0000
+Received: from CH3PEPF0000000C.namprd04.prod.outlook.com
+ (2603:10b6:610:5a:cafe::9a) by CH2PR08CA0023.outlook.office365.com
+ (2603:10b6:610:5a::33) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8632.26 via Frontend Transport; Fri,
+ 11 Apr 2025 17:02:23 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CH3PEPF0000000C.mail.protection.outlook.com (10.167.244.39) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8655.12 via Frontend Transport; Fri, 11 Apr 2025 17:02:22 +0000
+Received: from [172.31.190.189] (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 11 Apr
+ 2025 12:02:18 -0500
+Message-ID: <304df156-0374-4e43-b261-754b438e937b@amd.com>
+Date: Fri, 11 Apr 2025 22:32:15 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,121 +64,133 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu: Clear IOMMU DMA ops when detaching a device from
- its IOMMU group
-To: Chen-Yu Tsai <wenst@chromium.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20250410101001.429694-1-wenst@chromium.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250410101001.429694-1-wenst@chromium.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH 05/67] iommu/amd: Return an error if vCPU affinity is set
+ for non-vCPU IRTE
+To: Sean Christopherson <seanjc@google.com>
+CC: Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>,
+	"David Woodhouse" <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+	<kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, Maxim Levitsky <mlevitsk@redhat.com>, "Joao
+ Martins" <joao.m.martins@oracle.com>, David Matlack <dmatlack@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, Naveen N Rao <naveen.rao@amd.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+References: <20250404193923.1413163-1-seanjc@google.com>
+ <20250404193923.1413163-6-seanjc@google.com>
+ <686dced1-17e6-4ba4-99c3-a7b8672b0e0d@amd.com> <Z_khsNAbh4kIhKVC@google.com>
+Content-Language: en-US
+From: Sairaj Kodilkar <sarunkod@amd.com>
+In-Reply-To: <Z_khsNAbh4kIhKVC@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PEPF0000000C:EE_|SJ2PR12MB7943:EE_
+X-MS-Office365-Filtering-Correlation-Id: f9aad40c-2a00-4357-4682-08dd791aa0e6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|36860700013|376014|7416014|1800799024|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?T28xZjQ0Ykx5UUxReUlpU3lhSUFZZERlWTc0U3ZlbUtyaGxZYllRazlmTEpT?=
+ =?utf-8?B?WC9ydnI4cDNkZnQ3anNzRlZOcnRSWjcyKzdaQnFpNU45YVh0UnVNeFhXb2du?=
+ =?utf-8?B?N0Uyeldnd21lb05qaGxIUG1QdXVLZGgwUVJjQmFQeVFMdmVsVmoxQytNTGJQ?=
+ =?utf-8?B?OEdGbVRzQ1FhUVhiWGtzY3VIQlU3UHNUUTlkTWMrYXMvamlrYjNBNVdQTmZa?=
+ =?utf-8?B?dUxiWkw4OEZiMzE1STVZaVNUNjJLVm1IMzI5OGZ1YXlxbmNnRlllTnBaWW1T?=
+ =?utf-8?B?RHdTVCtKa1BMaklXek9iUHJvbXZFbjUxYTlSNW5FYU1ldmlMUnJtMVFNTjFu?=
+ =?utf-8?B?alZBcCsvdFdoWDZUOHFhMStlc09Mb0pMalF6d3FjN3p3dWNKOU5JRm1WcWpv?=
+ =?utf-8?B?R0tFdDVWTWszelZzVE9FRlVoSzBvejBVMVFSa1lqc0lGYTJPT2tpYjN6a2JX?=
+ =?utf-8?B?NmdwbHhESUUwa3hpeHVidjBGbkNsaDdURmFvWXBqWmNlRXpIb3puTHF4aTgz?=
+ =?utf-8?B?c1ZNYkdONm5mWkVVTngyT2pTVGJjbDF3TWRlRmZwUWdyN1hnOWtCblIwbzND?=
+ =?utf-8?B?dkFtVVNjNWtjVVg2ZFRIYjNaZ2tFQ0crcFJoZ2svcG01dGRNaDFNeTBBZXpY?=
+ =?utf-8?B?K1BmMlE0eEUzUHRjMFZTV1hYOXprcE0wd25QLzU4bVQrNWU2Yk5EY3ZnanpO?=
+ =?utf-8?B?Q2JLclZHYk12MmtuT2JwbStEbXZHakloTFEyWDdTTXZubWgrUkh5bkxEdDU3?=
+ =?utf-8?B?QjlRM0ZVWThRSzBOQStOU2FsQ2dIazZ5Ny9HZ3IxM2F2K2ZubTJSUmRiakxN?=
+ =?utf-8?B?VG9FNmV6WnpYU0JPb0pneC9nMVptblF1YmZMaXZVZmVZSlF1RVFPRld1bFJL?=
+ =?utf-8?B?bThEdEdwTlhWWlpGS2pNTTk4emFkUHNQeEU1UFJONjRCQXdxbHdMTVZIeTlk?=
+ =?utf-8?B?aENsdTArVDlJTFd0MHBQV1ZyR0hLWUphU2I1akxyRG9TOTZIdTNoQ2Y1a1Jp?=
+ =?utf-8?B?VW5UN29wbEhqTDk5bWd6WkRwQkZsak4vcDArUW9IcnFQaWExbG1UY1RwSFU4?=
+ =?utf-8?B?RkluVTB6RDc1OWVzeFRPemlFeEZOdTdlaWlxOWVIRk9ENnMwajRHLzBwQ3I5?=
+ =?utf-8?B?NkJvM2xtTm9zS1lsWXowUEFPaXZYeGVRUmVPSkkzc0NnK1REWHBHdjkzN1Jm?=
+ =?utf-8?B?OWhSRlIrNG00V0EyK3VNbWtGVGFzRHFuZEFROFlMY1J2VFdIR1NMM0xkRGF4?=
+ =?utf-8?B?Nm80dGt1RHBCckV2aStzMHdxZ0FNcmR5T3o1dGNicUZ3c2cyMDdtR1IrS0ls?=
+ =?utf-8?B?cFZDdTMwSk5EbWJ4YjN4NWlxSjBadTBjb2J2NU8rV29aSXRpUSt2S3BCQk5o?=
+ =?utf-8?B?TnFZWldnZVZ5OXNzNjVWZEtpYTBtNUc1L21DR25zWTlGY0ZSa05EbENNZVh0?=
+ =?utf-8?B?UXNUL3NMZFg2MzZsc05IN3VHdWdyRVBoZmoyM0FPcStoL2xueFQ1anYyODU1?=
+ =?utf-8?B?WDhDVXFWUTVKamZlenZ2VXBsVjdPODc1Sm1VL21qU0sxaG5LM2hsUkZ3L1hV?=
+ =?utf-8?B?bEpMWEp6Q0h5UWYzNWgwdXgvSTV4N2NHS2lsbGZYUmtnd0F1WUVnZWRBNXVl?=
+ =?utf-8?B?OWNnTVlLZ21Qam53QUViK1VHcEpobWdwTWp0VG5YaVllQytab0NSQS95MzVn?=
+ =?utf-8?B?blJ0K1gzM0EySUxtMUJnK3k3bXBrTWZWWHp2czhQRng3aSsxaW9Ucys1RERG?=
+ =?utf-8?B?TFl2dXRReHpmSmx2VTFvODlPaXlHNmV1MnlsN0tmSzZkUDZuS0FrTW9GM00w?=
+ =?utf-8?B?RlczV0UvYS8zNk1FSENiY2Jaa2o2Mk9HTWo5SjNSaTUxbWdVNDh3WDdyVEtS?=
+ =?utf-8?B?UExLME1CMlNYRUk2ZU9UM0NsdFMzTWE5dDlmbENyZm0xSWJ1UFB2WVMzS1FO?=
+ =?utf-8?B?MUZVRXhGcnlDMGZUaFBZa01GelphY2hTNFltUmw0WG1CdTFiVVZGV0RrajFL?=
+ =?utf-8?B?bTkzb25nVkZTVEZrWk9WNE9SUmJ2eGlzcmpwOUJ6WmdnVkFvQWYzU1dMM1BC?=
+ =?utf-8?Q?GZg1Qm?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(376014)(7416014)(1800799024)(7053199007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2025 17:02:22.9847
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f9aad40c-2a00-4357-4682-08dd791aa0e6
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH3PEPF0000000C.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7943
 
-On 10/04/2025 11:09 am, Chen-Yu Tsai wrote:
-> In recent changes to the IOMMU subsystem seen in v6.15-rc1, the process
-> and order of how IOMMU linked devices are brought up has changed. Now
-> when the IOMMU is probed, the IOMMU subsystem core will attempt to link
-> or attach devices described in the device tree as using the IOMMU to
-> the IOMMU's associated group or domain. If any part of this fails, the
-> whole process is (mostly) undone. The IOMMU failure is then treated as
-> a deferred probe; after sufficient time, the deferred probe times out
-> and the attached devices are brought out without the IOMMU.
+
+
+On 4/11/2025 7:35 PM, Sean Christopherson wrote:
+> On Fri, Apr 11, 2025, Sairaj Kodilkar wrote:
+>> On 4/5/2025 1:08 AM, Sean Christopherson wrote:
+>>> Return -EINVAL instead of success if amd_ir_set_vcpu_affinity() is
+>>> invoked without use_vapic; lying to KVM about whether or not the IRTE was
+>>> configured to post IRQs is all kinds of bad.
+>>>
+>>> Fixes: d98de49a53e4 ("iommu/amd: Enable vAPIC interrupt remapping mode by default")
+>>> Signed-off-by: Sean Christopherson <seanjc@google.com>
+>>> ---
+>>>    drivers/iommu/amd/iommu.c | 2 +-
+>>>    1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+>>> index cd5116d8c3b2..b3a01b7757ee 100644
+>>> --- a/drivers/iommu/amd/iommu.c
+>>> +++ b/drivers/iommu/amd/iommu.c
+>>> @@ -3850,7 +3850,7 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
+>>>    	 * we should not modify the IRTE
+>>>    	 */
+>>>    	if (!dev_data || !dev_data->use_vapic)
+>>> -		return 0;
+>>> +		return -EINVAL;
+>>
+>> Hi Sean,
+>> you can update following functions as well to return error when
+>> IOMMU is using legacy interrupt mode.
+>> 1. amd_iommu_update_ga
+>> 2. amd_iommu_activate_guest_mode
+>> 3. amd_iommu_deactivate_guest_mode
 > 
-> In the process of undoing changes, one part was missed. When a device
-> is initialized for use with the IOMMU, iommu_setup_dma_ops() is also
-> called, which signals that DMA operations should go through the IOMMU.
-> This part was not reverted when the IOMMU changes were undone. When
-> the device later probes without the IOMMU, DMA operations would attempt
-> to use IOMMU operations with no IOMMU domain present, causing a crash.
+> Heh, I'm well aware, and this series gets there eventually (the end product WARNs
+> and returns an error in all three functions).  I fixed amd_ir_set_vcpu_affinity()
+> early in the series because it's the initial API that KVM will use to configure
+> an IRTE for posting to a vCPU.  I.e. to reach the other helpers, KVM would need
+> to ignore the error returned by amd_ir_set_vcpu_affinity().
 > 
-> The above was observed on an MT8188 Chromebook. The MT8188 device tree
-> had incorrectly described the IOMMU endpoint for part of its display
-> pipeline; the IOMMU driver would successfully attach a couple hardware
-> blocks, fail at the incorrectly described one, and roll back all
-> changes. Later when the deferred probe times out, the display pipleine
-> probes without the IOMMU, but when a framebuffer is allocated, it goes
-> through the IOMMU DMA ops, causing a NULL pointer dereference crash.
-> 
-> Add a helper that is the opposite of iommu_setup_dma_ops(), and call it
-> when the IOMMU-enabled device is being detached from its IOMMU.
 
-Apologies for the crossover - seems you sent this just as I got to 
-finishing up the response and patch I'd left open on my office machine 
-the other day... and now I find that I forgot to actually send *this* 
-mail when I wrote it yesterday either, sigh :(
+Ohh sorry about that. Since I was reviewing patches sequentially, I did
+come across those changes.
 
-As per my version I don't think this is really a fix as there was never 
-a consistent well-defined behaviour to begin with. From an arm64 
-perspective I think it would have last changed with b67483b3c44e 
-("iommu/dma: Centralise iommu_setup_dma_ops()"), but that's not the case 
-for other architectures/drivers which either already had this condition 
-beforehand or still didn't afterwards.
+Regards
+Sairaj Kodilkar
 
-Thanks,
-Robin.
+>> Currently these functions return 0 to the kvm layer when they fail to
+>> set the IRTE.
+>>
+>> Regards
+>> Sairaj Kodilkar
 
-> Closes: https://lore.kernel.org/all/CAGXv+5HJpTYmQ2h-GD7GjyeYT7bL9EBCvu0mz5LgpzJZtzfW0w@mail.gmail.com/
-> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
-> ---
-> This patch should be applied for v6.15. It's not immediately clear to
-> me which commit is the actual cause, so I did not add a Fixes tag.
-> ---
->   drivers/iommu/dma-iommu.c | 5 +++++
->   drivers/iommu/dma-iommu.h | 5 +++++
->   drivers/iommu/iommu.c     | 2 ++
->   3 files changed, 12 insertions(+)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index cb7e29dcac15..62a51d84ffe1 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -1739,6 +1739,11 @@ void iommu_setup_dma_ops(struct device *dev)
->   	dev->dma_iommu = false;
->   }
->   
-> +void iommu_clear_dma_ops(struct device *dev)
-> +{
-> +	dev->dma_iommu = false;
-> +}
-> +
->   static bool has_msi_cookie(const struct iommu_domain *domain)
->   {
->   	return domain && (domain->cookie_type == IOMMU_COOKIE_DMA_IOVA ||
-> diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
-> index eca201c1f963..dfd31cb9e685 100644
-> --- a/drivers/iommu/dma-iommu.h
-> +++ b/drivers/iommu/dma-iommu.h
-> @@ -10,6 +10,7 @@
->   #ifdef CONFIG_IOMMU_DMA
->   
->   void iommu_setup_dma_ops(struct device *dev);
-> +void iommu_clear_dma_ops(struct device *dev);
->   
->   int iommu_get_dma_cookie(struct iommu_domain *domain);
->   void iommu_put_dma_cookie(struct iommu_domain *domain);
-> @@ -30,6 +31,10 @@ static inline void iommu_setup_dma_ops(struct device *dev)
->   {
->   }
->   
-> +static inline void iommu_clear_dma_ops(struct device *dev)
-> +{
-> +}
-> +
->   static inline int iommu_dma_init_fq(struct iommu_domain *domain)
->   {
->   	return -EINVAL;
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index c8033ca66377..498f8f48394c 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -677,6 +677,8 @@ static void __iommu_group_remove_device(struct device *dev)
->   	struct iommu_group *group = dev->iommu_group;
->   	struct group_device *device;
->   
-> +	iommu_clear_dma_ops(dev);
-> +
->   	mutex_lock(&group->mutex);
->   	for_each_group_device(group, device) {
->   		if (device->dev != dev)
