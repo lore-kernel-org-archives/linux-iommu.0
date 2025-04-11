@@ -1,70 +1,68 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEB5728541E
-	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 21:32:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E17FC29C345
+	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 21:40:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744407173; cv=none; b=Cp6lIn5+PiFKyG19lsR9asUroU1Gf0gZrt1jTusDbzHjv03awQC/A+0A30edf2hNjtyGZtK+A74ua7R/RoMkaJa7toI+Jk0CyzyoUhZYdLCcSOxZ0esdfKuOIIqFItNe2FrB2q5o/kXqL5OYfGzzgKvD5sWB7p4K4UppwfKLBEE=
+	t=1744407659; cv=none; b=mcirto8wP2UnOTB5BdqS5rZO1qPXMHzn2fJJqufLHRz30dSSX3vbgpkhTsqTy6CIUi0WAzpxeFkufrk880nyw4YwCvl0YBV0c8gouXZtg68r7OwOdRoXcUr4ceEtisGpqcdmXNA8831G/0+f+2oWZxFJdRI0X/0RdXk+S0Ne49o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744407173; c=relaxed/simple;
-	bh=/3tH8CvukO+vlevVOFlntDYEjBrYdIAzSgCsbqTQLxI=;
+	s=arc-20240116; t=1744407659; c=relaxed/simple;
+	bh=1BkJGKhwVjhfDp/1cIUTZf7wwpOn8aY9NXN7o8UXgD8=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=oVjlPfbX/GNc+CiyQ6sXXkSRpyDqTuFxFoDO8KuaV27tILKn/7mRZN+eTzNBH8BU+2y3x8hMNE6/bO5qRyd0KK/p0TlLdDGsPMJzS07h0llEOTZwnafWuhFwI+Bmit06o54nZxNwj6uWQdPuwuFvcx3exh/3jQYIikjt2hIwMlU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=t3EhT5gM; arc=none smtp.client-ip=209.85.214.202
+	 To:Cc:Content-Type; b=R9kqzkkcVJOT6ifyGBSfvTgG2243w9q0onH39w1HXUSNquG6Hqq6oZpOA2KG71eQtdJSs0MxntLTVUrV0XwuciOBbQD68GsRZt+cWuCMmOdGWxGXFy1xjTM36WNGzCZgwsHMGshdrpRer6IEGq48D/KSudPzBhioQ/9NojbIdVQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XRN1UkLh; arc=none smtp.client-ip=209.85.210.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="t3EhT5gM"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2241e7e3addso22103645ad.1
-        for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 14:32:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XRN1UkLh"
+Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-736b431ee0dso1869631b3a.0
+        for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 14:40:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1744407171; x=1745011971; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1744407657; x=1745012457; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=K1L8eJTBYOe3IqPq2LCTPLnMwB1yCh94JwNwUb/2VUY=;
-        b=t3EhT5gMuj8flHGv9HDh82Vo0h5Hu30KM7iboscIo7NeyT84igyOv568tdGzuEfBuE
-         bd1vzsVX9cFLAttWHH9GlUKG/mltg3u12EEmatxmb00iVzk174bLgyzlly4G5bSn69m+
-         YPLji6lRwOaCGvRpk/OM0fQrIhzWPTrIsAHBccf1rmcGs0Z+dsloKPpKxY7RsHjZ+AME
-         Ieh9IpZK6NwxtWelVIJCa0iM1Hvx3ncE0+xDjdOZzFEOJQrahaWoAgNPZ8jnpfAcZbCe
-         FpR5qwI6El5ivUbZB2rPb4WH3jbSBdkNv9doVnMSWDXMNNv4UDaBvbyE8Knjtb5alSyh
-         0Bbg==
+        bh=t9FKI0EnGL+ITiUEghed0r99tXKZdQe5KG58x8/Jte0=;
+        b=XRN1UkLhoDUrF+xfW6Rfcq/PHhqPH+nWjhumnaTPG/IbcNWD6Sg7taAtswhR0+YKEA
+         1ldwyUz8bO/uSHF9/l6/PuQol2k9LpmFb2yIf9EnJFTZZ3bO6Zm7q5tKUI0/hBWzv724
+         T/29u2axvh/P42wh8/g9lBcqAFc10Xczc3BXht2+RgG4vrTpgKmc9LvQkOS4YCyuPjIN
+         ju+l8dOUeCP03pIv6I/x1ckBZUv/dXesSIS8JLyAE+EsAKQzJbFFm3Ya7m4zFABk5gcZ
+         M5nCPJ0dFSbt1M0briyS3BJDb5KhxbpAO3q+xaHgu0idSlp3juORijyyI42sOXEGz05n
+         NdIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744407171; x=1745011971;
+        d=1e100.net; s=20230601; t=1744407657; x=1745012457;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=K1L8eJTBYOe3IqPq2LCTPLnMwB1yCh94JwNwUb/2VUY=;
-        b=nUQ/XhXVLGglzuQLow4PeVUH1DUOCLFhvsPjkc8kzwkwxWdZSOUwAmfqhO88asuxH/
-         fPAKt/NjpWN3pcZx8/9FgMgjOXCSdOli+4MqP512gZ1k+mY+tMsiPp1rCsjEzKtmGdF2
-         nW+J7U/7Wjda8KqlDlqp2sr9P8EEXYeB8hfFhFuo26Mgm3NE7xyX4e5dwW55Wxcdkj97
-         sVhUa133tlqzXqDh1iIOyluF0Ff6aaTRTKCCSTOsoRThwPXCkrVrgpm/I1hCA4GPQF+u
-         NOALnPXcLr3HHXCBW6gyhizaR3nKW7CrmbP8tVFA0rAMie0/n558rzSlLxprsBHtTZva
-         bcBg==
-X-Forwarded-Encrypted: i=1; AJvYcCXjt7OSJF753wtu1QE+S6DSdfpiDTQBGR+OlHg38FCOWos1D9ysnzSiSQkRQTvPuSWTmxIL2A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwneVeg1s4UEx+JirYNd2H8+gMpbUwKdq/crMDBOVaeBFcvucu5
-	2l28Arm/1m096+T0NjpDRU00zur4wPkLpMAu2fgeXxmjHzi6rCRTdoagwZA843APv5kvQijUSV4
-	XnA==
-X-Google-Smtp-Source: AGHT+IGWRveftZO1wji7CvlkOdr/kE0uz4l6esz3nDwfvBuY+d4Ew0jp3EjBMobySbyO9+duVZkiSgztRF8=
-X-Received: from pfvf19.prod.google.com ([2002:a05:6a00:1ad3:b0:732:51fc:618f])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:cccd:b0:224:910:23f6
- with SMTP id d9443c01a7336-22bea4fcc8dmr67226125ad.45.1744407171250; Fri, 11
- Apr 2025 14:32:51 -0700 (PDT)
-Date: Fri, 11 Apr 2025 14:32:49 -0700
-In-Reply-To: <b06b187a-54e2-460e-8fc5-b440184b6f7a@oracle.com>
+        bh=t9FKI0EnGL+ITiUEghed0r99tXKZdQe5KG58x8/Jte0=;
+        b=b5BiGneLuMHlnp6kS65+BcLqDhQazC4GsTRfSkkjbfkQBcqngop5vk+6SCN3GHU5ku
+         LvxUTiOUQscA5UODu+4csx+X55lBG84XVioKmLU6TYqfP2OdWB4GWU0JFgMTkmT2OdS6
+         y8JlIHeRawgtW1JOu0mao2Ed96yuBrNfXqNN7PJieulSpoZi0q2dQZzZqFtG28KztVpi
+         q52YzKJqEBwm7LOue9Db4oN+w/ADTKX0ELxvm4DgEmOYbapLZV7zf4u4o2h/9t+pin8J
+         dBrBHggusez4XfjoWNotn67DU+rAffiayxZ89i0c/LZSYclnEAoSgPGjuevaqwdHxbKr
+         U42A==
+X-Forwarded-Encrypted: i=1; AJvYcCWzdsvymWNdbcMDYM3fEUCUVVjaWTEfoCxEtJ+7KqdVntMJUSzVeJ3ktnOxGfD6mn0Pn37ZOg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YziJS1KBceywJMDyQ0N80BXma8yN73vaRA5GjoRHtwFAANujxxo
+	utW11gW1Or5fi4ZjZ5NY1XmF7Ijvw/7FApli8pYYF4i19S1rKEBf2X75QrROeXkNEO5DbL+BDsu
+	Iiw==
+X-Google-Smtp-Source: AGHT+IHlHwSyxV0LTUHRGhNseRoHCYNIY6ncZEyXAVZHr/jzCGvSjE4K7i+J2dif5I4fTGdH0/RJAkcUZUM=
+X-Received: from pfbeh4.prod.google.com ([2002:a05:6a00:8084:b0:730:7a22:c567])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:4644:b0:736:9e40:13b1
+ with SMTP id d2e1a72fcca58-73bd12b1315mr5481503b3a.23.1744407657218; Fri, 11
+ Apr 2025 14:40:57 -0700 (PDT)
+Date: Fri, 11 Apr 2025 14:40:56 -0700
+In-Reply-To: <20250410204149.2576104-10-ross.philipson@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
-References: <20250410204149.2576104-1-ross.philipson@oracle.com>
- <20250410204149.2576104-2-ross.philipson@oracle.com> <f816c36c-cb7e-4143-b58c-f96a40699f7a@oracle.com>
- <b06b187a-54e2-460e-8fc5-b440184b6f7a@oracle.com>
-Message-ID: <Z_mKgfZznBZgS-Pb@google.com>
-Subject: Re: [PATCH v13 01/19] Documentation/x86: Secure Launch kernel documentation
+References: <20250410204149.2576104-1-ross.philipson@oracle.com> <20250410204149.2576104-10-ross.philipson@oracle.com>
+Message-ID: <Z_mMaAykU0IVKsjU@google.com>
+Subject: Re: [PATCH v13 09/19] x86: Secure Launch kernel early boot stub
 From: Sean Christopherson <seanjc@google.com>
-To: ross.philipson@oracle.com
-Cc: ALOK TIWARI <alok.a.tiwari@oracle.com>, linux-kernel@vger.kernel.org, x86@kernel.org, 
+To: Ross Philipson <ross.philipson@oracle.com>
+Cc: linux-kernel@vger.kernel.org, x86@kernel.org, 
 	linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org, 
 	linux-crypto@vger.kernel.org, kexec@lists.infradead.org, 
 	linux-efi@vger.kernel.org, iommu@lists.linux.dev, 
@@ -78,30 +76,55 @@ Cc: ALOK TIWARI <alok.a.tiwari@oracle.com>, linux-kernel@vger.kernel.org, x86@ke
 	trenchboot-devel@googlegroups.com
 Content-Type: text/plain; charset="us-ascii"
 
-On Fri, Apr 11, 2025, ross.philipson@oracle.com wrote:
-> On 4/10/25 10:50 PM, ALOK TIWARI wrote:
-> > 
-> > 
-> > On 11-04-2025 02:11, Ross Philipson wrote:
-> > > +
-> > > + - Entry from the dynamic launch jumps to the SL stub.
-> > > + - SL stub fixes up the world on the BSP.
-> > > + - For TXT, SL stub wakes the APs, fixes up their worlds.
-> > > + - For TXT, APs are left halted using MONITOR/MWAIT intructions.
-> > 
-> > typo intructions -> instruction
-> 
-> Thanks for the review. They are two separate instructions so is this really
-> incorrect?
+On Thu, Apr 10, 2025, Ross Philipson wrote:
+> +	/*
+> +	 * Get a pointer to the monitor location on this APs stack to test below
+> +	 * after mwait returns. Currently %esp points to just past the pushed APIC
+> +	 * ID value.
+> +	 */
+> +	movl	%esp, %eax
+> +	subl	$(TXT_BOOT_STACK_SIZE - 4), %eax
+> +	movl	$0, (%eax)
+> +
+> +	/* Clear ecx/edx so no invalid extensions or hints are passed to monitor */
+> +	xorl	%ecx, %ecx
+> +	xorl	%edx, %edx
+> +
+> +	/*
+> +	 * Arm the monitor and wait for it to be poked by he SMP bringup code. The mwait
 
-From the peanut gallery, I'd just drop the "instruction(s)" qualifier, i.e.
+s/he/the
 
-	- For TXT, APs are left halted using MONITOR/MWAIT.
+> +	 * instruction can return for a number of reasons. Test to see if it returned
+> +	 * because the monitor was written to.
+> +	 */
+> +	monitor
+> +
+> +1:
+> +	mfence
+> +	mwait
+> +	movl	(%eax), %edx
 
-Pedantically, it's the combination of MONTIOR+MWAIT that puts the CPU into a
-sleep state, not the individual instructions.
+Why load the value into EDX?  At a glance, the value is never consumed.
 
-And while I'm picking nits, the documentation is also a bit misleading as the CPU
-isn't halted per se.  I'd go with something like:
+> +	testl	%edx, %edx
+> +	jz	1b
 
-	- For TXT, APs are left in an optimized (MONITOR/MWAIT) wait state.
+This usage of MONITOR/MWAIT is flawed.  The monitor needs to be re-armed in each
+loop, otherwise mwait will be a glorified nop.
+
+More importantly, the exit condition needs to be checked before monitor, even on
+the first iteration.  In the (probably extremely unlikely) scenario that the write
+to wake the CPU arrives before MONITOR is executed, this CPU may get stuck waiting
+indefinitely.
+
+E.g. something like:
+
+
+1:
+	monitor
+	cmpl	(%eax), 0
+	jnz	2f
+	mwait
+	jmp	1b
+2:
