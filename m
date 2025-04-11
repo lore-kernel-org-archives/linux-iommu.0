@@ -1,166 +1,189 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2061.outbound.protection.outlook.com [40.107.94.61])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B77C735961
-	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 15:50:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744386621; cv=none; b=GvwJGqESAW/EJ1PvXtjuIN2/NpfADavKIluRSZDlMY2rk/TDRHAfA6wMnG0MQVYTsQjOpFP0kHGQnv0jkdra97Qvf2TEhfCli5XuXk6HCN5CyPs9zfnPeSL4PlMmfDVrvAJuzfalhh7J0F0FclB22tSn8TT+59VuIdFZEWB0sE8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744386621; c=relaxed/simple;
-	bh=X8m6dB5n6QY+Ao9IFNE7gEmsT12to5H0HieO8OXC6Io=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nK9+ZcJntISmoNk3Ak6yGwnT4kUESMVCtd4t9soCb+oqiNjZiYW23XYkcPEanWvJFRSIScX+tZklIlermTcVvSyBg9iT+D+dIsvxYbZb/nob8GsuoF2g5VqlXC+rxjGzPKW+o9nd3tPG+FRQWHStbFjFvHv6Cxx/q6sg+DBJnqA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=hPOwnH/V; arc=none smtp.client-ip=209.85.214.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62384211A15
+	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 15:58:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744387090; cv=fail; b=DrSXCoo65f9n6Rz1tTJcLozgPLwlEnBCfRPWom5Unj3sDfbk/C5jC5QPVQu16LFYR9YU/olZxswRK4YGG0qek7dnN7KlR8/qFRUyWWNqQ3wtjnSbfD3norEKc9KrKTkSnenIqDrRFunoxkFuGlq7HNaVd8/2lBR3pqq8R8Oroh0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744387090; c=relaxed/simple;
+	bh=s/btlxmTvXKrnXE4CfOJD5btCF7sUFRUkivpG/RaLes=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=AnUbJOptlKYCl9MelHYYQLFjMzZy5ZgPSJyWdIsgs9/XxpFdeWxkFNWsBAgAg8H5+OAlmskKPw7orcR10zZU4g9l0DPahRgLaH9kcfhbp9Y/J0wruLN7d2NaA8R9vx3Q54m0LwWJuOZWT0ZinHpgvRsPzXJV6mvf75TZKLOd8O4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=rOMQ+nA0; arc=fail smtp.client-ip=40.107.94.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="hPOwnH/V"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2263428c8baso211195ad.1
-        for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 08:50:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1744386619; x=1744991419; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9gr388eDAaOABnPZrXjkZ45mWUbD3uMhzRpmwOTnLOU=;
-        b=hPOwnH/VuWN25pEiqpWfpxgl5HunNvYVUK0TIaDba+AowZSYGB26QKjxfHfNjMB3Mv
-         FJt7C+JXy8sM0gQ8oUH4Zf9Oy8LDZdIk4OFwsBoetU0SxLBt3Y3yJJQn+VWLI/Vk7B4+
-         DrNPXa4sjrlEN2GVMCuX/8ysA562kXR7ilXBfzaVfalArzrWBeooGqhYdIKMNiFHupbA
-         GX1yL9sNS1qggGGTJMyWx56vFLQ4id1EeUxFL2RC/B27iuRE4OYLJLzbFgviIDs0wg8L
-         3WJ05DBe0RQAxvCtDuEqSYcQhvg06Dgyul1sEGPgCC/CPqDF80RgoqQv6MIpTErwDU8b
-         6JaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744386619; x=1744991419;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9gr388eDAaOABnPZrXjkZ45mWUbD3uMhzRpmwOTnLOU=;
-        b=M2SBERA9DImNdH+5/8bv1TURvJZslkIQSm7ajAZVkse1WEMgzqVDhG8lEttl0lewag
-         JPJCTtFmCM+0jbL9zcNoGNmKLJgLhzwj8Z+NirqGuNl36dGeBcN7fWxHhdTZfwwl89FK
-         ufuzz6ub35IHZ2jEXqlPWSFk2rcVAv7MK1R83PLpfN3jxiBJxSKs1dDcTlh8lLXHeAJz
-         IJPumvati+7OKHAD3V9tY90qKlBd01roFtsyqi3e2ZuSfmA/U9bTTuU1+5AceR3tNcOR
-         5f6tIuxhGZ4QaPF+OIJLidq/Jm2WDNyVUOox3hQTFMcaL3MUdfM82JF10wvLHEMhVF90
-         rEIw==
-X-Forwarded-Encrypted: i=1; AJvYcCWGfjyKC3wZ52E14piP33vRBuudV7kuHjQ/duecsEIK+ghUcmpAXwp4PU48NuSjY/g9pGP1qw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxdfDqXli1NxZFhSvgAKJFUWZBVGFbARKhMIHb37TyTTFyld3xI
-	TDJ9MAG580/Jrt5WhgSlwofxENuoPQSx6BcZIckiuE9PGB373fsF+qnHfZa26A==
-X-Gm-Gg: ASbGncueCsPGhUA2hheJIsjbvWDxK4oKJGWE5apVN70Jpv77bE7PDMeGKOo4UWogjxJ
-	FcHidsnktGI60YR1mChpfr1q0bperxvZPB58rPqtFI66LbfxHF2e/MbRoHSf7OLkVOKT6V6aWnR
-	YkgOFQzDbnCyBfL4teZMcHgr0D0zG5psXvvdiIrLdR/Uk+aKwhuXtV4mpRnZZVG2vAxTXexJCrH
-	fupWE+V4b65MJOR6ylc4zyaYn4eawb99zhRLvtDRuNbZ28T7TX3Wuqmcnd1RleJUXfEb41VKTWu
-	Vf8zsGCSoIHPynPDzgn+QccVFXsiHa0HJxUXT22kRLl1Ej1eHx5OYbmi3u0s56Mj/Y2T7b4gNN1
-	0quGRyAV21w==
-X-Google-Smtp-Source: AGHT+IGAUGcHPS948c/RABJFlkfq9Ah9C95gnh02WA26avQXzL8VcB6UHm60FHX1cSKOUEo1ud5oSQ==
-X-Received: by 2002:a17:902:d306:b0:223:37ec:63be with SMTP id d9443c01a7336-22be9971cf3mr2846815ad.4.1744386618527;
-        Fri, 11 Apr 2025 08:50:18 -0700 (PDT)
-Received: from google.com (188.152.87.34.bc.googleusercontent.com. [34.87.152.188])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73bd230dd00sm1681155b3a.126.2025.04.11.08.50.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Apr 2025 08:50:17 -0700 (PDT)
-Date: Fri, 11 Apr 2025 15:50:10 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="rOMQ+nA0"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=BNBFNyHKVvh9U06g3LrI5E4XabOV0b4ZycwLuNjB3NuTQPdR4PACdJwETuDAqi2o4MhNHeu4uffGJ/H/7pMMcgD89iQ/zoQgSQrHd1hrg7XWH9xHx2ZAZlQauwH6vDN7NuJMb09VIh20CH3Wx+R72RG+glQMyc7tatS8wbT4i4o9dXa9DdDhzM0Xxcgi7EM1cmU3Kh5VT92hYI0ZHtqdxSizGNUnCT4/EV88OFpV04YJO4kNfv6GALiJ4FA4vri9bG+dxyM+h2hADR4cIOGWqTGZ+2oqKC1ttKXNP2whF37IykBhHe6cKLcy8WzRbGDc7oLiT9crp4ALLvAOzIPToA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BfE+yRCAhHjU4vmJ5my98/I0X/s7bBdzPoRwXo0930I=;
+ b=TM5aEdgybcotE/46OZJQjmBPrnEdOlxKrN4yc5Eq1VcBIFSF2iYTp0Td0tLeWYhjMIT66f+unPaFuH1WJZia68el35p9NEZDFdh1UVgZLdsJPyp94OM+VeH+z2tIcJ1tEhh25em9QFlg3p1UDXCPmnHw2b63zIN6zRTWyenZPV7I73SPEXvltNiGViC9Amyx82AimjMAru5Ae6sn9kkIlaWlec6dtkm+LpGHegox+Es49pOmavleLsZNuhYeck5XNDaNqF/ZpJ7zw2sndNJCTyQ0YjZ+z/1M0QFdVYcF9WK/dvvlNBi2IxDBZ0O0AWbTBDWDF7aSlgd+BnVjdvBBog==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BfE+yRCAhHjU4vmJ5my98/I0X/s7bBdzPoRwXo0930I=;
+ b=rOMQ+nA0vcMCu63UpclKTz2bikO18pstrDS6F+YX1gW9jg0BjyXqIqmoBUMEBWi3RxFdTf5GvAlXGbQUbyg6/KQRTLVets6qyTLz7ELgDCEKqdLFR4kOR4doEkyDUjhbOhm3n2BHdP8VGJqzGCZANHjsgzHcvMfUky7stXR0IpKunky2lVyR+zY1KHOY6Jdil6oCIdJCP2gpjccuwNYhoXv6+TdcjYPEsyQ+YaoDUrrdyQqIsifAAa1Usc2MXcYPYtIL0BAPCmgEiKCk+qZgZtRcHAC6iJQJuVyl1DaaOdrU/M+ZHc/XK+ol47avn5/3KiltX8PYTTYhKo5hQEfZYA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by PH0PR12MB8175.namprd12.prod.outlook.com (2603:10b6:510:291::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.31; Fri, 11 Apr
+ 2025 15:58:04 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.8606.028; Fri, 11 Apr 2025
+ 15:58:03 +0000
+Date: Fri, 11 Apr 2025 12:58:01 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Pranjal Shrivastava <praan@google.com>
 Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
 	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
 	nicolinc@nvidia.com
 Subject: Re: [PATCH] iommu/arm-smmu-v3: Fail aliasing StreamIDs more
  gracefully
-Message-ID: <Z_k6MqMcVO068Mq8@google.com>
+Message-ID: <20250411155801.GA252886@nvidia.com>
 References: <39d54e49c8476efc4653e352150d44b185d6d50f.1744380554.git.robin.murphy@arm.com>
  <20250411152122.GF8423@nvidia.com>
+ <Z_k6MqMcVO068Mq8@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z_k6MqMcVO068Mq8@google.com>
+X-ClientProxiedBy: BN0PR04CA0052.namprd04.prod.outlook.com
+ (2603:10b6:408:e8::27) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250411152122.GF8423@nvidia.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|PH0PR12MB8175:EE_
+X-MS-Office365-Filtering-Correlation-Id: 80ceda2a-fb34-4745-214c-08dd7911a3b9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?qvChacWSS+Z+SwAKEotOnj7GTxoZRlt4bC+Ky4O8KqB06llnUSsupIz1EI9F?=
+ =?us-ascii?Q?7nnv0fI+fpsjx3Mwts7yzYU5aFeTfE92rmHmOzidv+EVU8k5s3e8yTd+dCcY?=
+ =?us-ascii?Q?XxO6vv4eO0iDcfLKQ6dsrZwPv7lB1p4iXf+Myb/QTJQiYBwqVIs6oBAw1r6/?=
+ =?us-ascii?Q?2c3Qi17xWj0iEzuSmldmSFv7GNP/75MOMpjec+s4RK5Q+EtY7lxxrI1OzEZd?=
+ =?us-ascii?Q?cEQeTe4v12ilBNAupkf1yQvNly4WuekPYegFBkhJE/IXRuwEOSQoV8+9AN1O?=
+ =?us-ascii?Q?RkvqPhfpKaVQHuexWAFtS0GCBJAuJ9dZY6yIGHqbuP04HvPG49mPBdcyrACX?=
+ =?us-ascii?Q?r7M9XhSODBhkydvWZM5v5a2oxY1htkJ0cu6Y3leLM3/kT3YfifIFoCUDzRVQ?=
+ =?us-ascii?Q?JDsTgFSOlE/MGAmimq24moqyudFDyv6BwxX4MEad5jH2FTe6PkYkG0/sihwl?=
+ =?us-ascii?Q?k0xlQcSEg+NStbhgS94yxFLxg0rqbL2ElKGtYdNQfyn422+6rYEJ828EZdyg?=
+ =?us-ascii?Q?8lvclkbSZAbuYIKDLVUL18CMjA9ooSdmpqUiguSvmfzvqOKt55NF4/s6usZp?=
+ =?us-ascii?Q?R9luTdi2ADa/L6g5NwTa/6OdTsmDKoIhMf2sN7hzWkW+vk5swW/88FWH5XO5?=
+ =?us-ascii?Q?UY08iw7jnUzQh3BZ/qGCSu2XNDl4+9ZQG5enjjbjsleQjtlF3CnYXQRtmc05?=
+ =?us-ascii?Q?bJY0GaaYbZt5I0kQA+7QJQ9cCNEXphcZlxNmYq44WYZNo6Of4cuczgPHQmCq?=
+ =?us-ascii?Q?r7IYzDgAaEn+xjhGIl+iBoIuAdByZGZYrHZfkhnf9Fvi+ZVmWrdp9O7WTkmS?=
+ =?us-ascii?Q?F+55t1Gmmxv+MLRlDt3gYMWoWhgAqaXCkzN6/hPENfR+9yzFb4oCAZvfZ6x4?=
+ =?us-ascii?Q?Lejg5D41vP56QbLOkNFziHNgrfzf1aDwSJUd7qU/3ZeJH//mu69q/iCVLk34?=
+ =?us-ascii?Q?TxXOZdaEZHRhK1biBY4IYuuttcBLwRrmrIwwO108UfUbZKzcFSUCLA4sdKtM?=
+ =?us-ascii?Q?R23YchXp3q6210chgeSN8lf65MAC9B6wS/M9EqK9hluFb6/LsdDUOzM/lMvc?=
+ =?us-ascii?Q?P8OkIl/na6nis318Fx38TZKihRrSWy04FhOfAoY33U4sup8px6rqXL2dYxaE?=
+ =?us-ascii?Q?KA1Eu+NaJ0SxZmBX6/nuavQGj7u3JytDuEEBIQ21zBCZkloOOOC94RAgQ4ji?=
+ =?us-ascii?Q?G1yQTm3FQDN9Z5IpbgYtTevQ3/VKPN5qxw+vbHejlMw2A1rAD+TbyaKOGQoP?=
+ =?us-ascii?Q?BO2y+VVP8F9sVAoxLvNnr+3+U87kkB6Ru3MIdwTgK0JHqh6FtVZiK5XqeN2q?=
+ =?us-ascii?Q?8oY5SJxQCDj0A1jwBUWSmSNNg7CBXD5RqFLw/ebKt93ZfoDKtZUwSy5xweaz?=
+ =?us-ascii?Q?l5fGCeyNEK9hSJl1hQc02hbQvUzJewEYMCmic6oEqG4ZUTYOiXpf3odURL/t?=
+ =?us-ascii?Q?Xr4TOf1HlpY=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?MOopT25X0vMpdXaV8nJ/V2xNAGcaVNweraosoOLrBv61mGkdPd2kXSkcm332?=
+ =?us-ascii?Q?Zs//ZJpK5khsVMGcYJ/osIx6+0tY4+E1Efa/gYNx+saZhZ3fPGO8n6UYBNFm?=
+ =?us-ascii?Q?Txax/QvZwg+rCl4sdTc7lR7p2yg5ly2jqrzK9+3cFLTXOIyCEg5Y6RO2hENm?=
+ =?us-ascii?Q?UhfLz2ixg7gcKqBBDgU+7LyG6GHnaHGiBUi3plnZ9fJCKqplJot5g0c1ozWl?=
+ =?us-ascii?Q?/cqUrqPWmwO16xNSydbd9ep59XXPaEMcPEmWh7VqkJ1CYzZ1my6UdYSZ0pHw?=
+ =?us-ascii?Q?X/1fL2Sl2t8LsGHij/0G26hgT9Fyl8wLd2UUgC0l0wR1eyhMS5nAGhXtwD4l?=
+ =?us-ascii?Q?26ZMutf+MJGiFHDIwLUeQt10qKlWtZkVw38KCqvLZiSqjWrCeIUhVcZBdP+C?=
+ =?us-ascii?Q?H+obQ/+q/Fxmfps/rsnNBA3Ofec934hZ2AfRu2/9AYPZu8nM5uirpvdN8SS8?=
+ =?us-ascii?Q?RWoncD1kaNcV8Grb/PHxNGtl2Bg/V8Hp+5Ewj65u9OfpeHRem7AI+mZX3NOc?=
+ =?us-ascii?Q?gnOk6GFdhbiXact9xR3JmaF2flB7fCwDLghqUUdQtHrzdryhpu2iUs2TKKQO?=
+ =?us-ascii?Q?pc0Zaf+RkhwkfE78pj+V/QVOV/IEF1/xjfOCIENx37gZuxgZ0zr9PRYG22Uj?=
+ =?us-ascii?Q?YRNM49tiVyVcnt1yrt4/xcZJAU3+Qwa0gXOWF64D0G+N6a5DXTZuu4VAsAcZ?=
+ =?us-ascii?Q?z9Ggdg3T+O0Wak2OnSPVihXyHb4e8O/7SbDSKBjR03q1Iubg5/8Hvdjcph0L?=
+ =?us-ascii?Q?PLPLNhHwhvRAIpHbBzMZxWL9ZN7tnrKRJaV7N5HEXn6nof1TPdz3uostQ5n/?=
+ =?us-ascii?Q?X9zXOjhwvkp82OzblDTEPddYydFftHhEyU7vjWiP5jHTWcVthvH39eVSFhJr?=
+ =?us-ascii?Q?XwpqJLJShw2u4ZELWzQr+uLnqz0dqx45ZYUf54iHUQoBwHBBOVvusZ4n1CXP?=
+ =?us-ascii?Q?ZUu9UzrPa0l1SWV1IjhxPg3gkUF9kDnZzHa55d270wMX2h7hw/0flqvVuaXe?=
+ =?us-ascii?Q?fvNxRDYUtOtgGQpU149ZzI/bMlOkIqfm0wb37VaOt2rw1REqZPvmrpc8tMlb?=
+ =?us-ascii?Q?HdxXjsldz2F3OaAlkHQwNls25vJUE8/CNdLtFArlK4KO2HZGX1G3BsRE1Dxc?=
+ =?us-ascii?Q?eUC7iin4whH8bHR88YTgxV3pm3RrDZVITyHDYXN9yVOeSzVAHZfzJXZUukvp?=
+ =?us-ascii?Q?eew+vyNEjSgQStFW9kAhw9m6OJZMa6t8/QnGOzL5/pGe5RKThPQ3r3Us31dv?=
+ =?us-ascii?Q?N1QD1bj9Rc5wQmfFAfV1ugTjQEPx/9v8uXs6XgltaVgoxv/auNdQmfqgUvH2?=
+ =?us-ascii?Q?Wu4rvVGG38asd2RPbSBiT/FiwscsBh6sK6rAuTqumy/wnNIaQaddnFPN9vSi?=
+ =?us-ascii?Q?4KhaTvKRS+pkzocMKvB5c4FHsbMnmEogL2BLVVvAfGP2mZ/TXh3vNUlLjSs+?=
+ =?us-ascii?Q?T0PsAsaKbwokeV3kg4xo1a73YsQUn722GzX/ipks6j6o6zEB2dDEj9Xl0YlX?=
+ =?us-ascii?Q?2Tjk3kek9iERS9bnTXn7OHe2us/V8VveizoQDd+NlL4dygAupG4u0Yrk1ugZ?=
+ =?us-ascii?Q?+8cCiYpqVlPDbzElVXShfzT7wkyC1swzYMzJBAp2?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 80ceda2a-fb34-4745-214c-08dd7911a3b9
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Apr 2025 15:58:02.7226
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KE+B2W82PNgYkgFWoskFg6T8TGNLKP0YYoVVj41Lz2s+qw+fxEQoowjheuNn1CSC
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8175
 
-On Fri, Apr 11, 2025 at 12:21:22PM -0300, Jason Gunthorpe wrote:
-> On Fri, Apr 11, 2025 at 03:09:14PM +0100, Robin Murphy wrote:
-> > We've never supported StreamID aliasing between devices, and as such
-> > they will never have had functioning DMA, but this is not fatal to the
-> > SMMU itself. Although aliasing between hard-wired platform device
-> > StreamIDs would tend to raise questions about the whole system, in
-> > practice it's far more likely to occur relatively innocently due to
-> > legacy PCI bridges, where the underlying StreamID mappings are still
-> > perfectly reasonable.
-> > 
-> > As such, return a more benign -ENODEV when failing probe for such an
-> > unsupported device (and log a more obvious error message), so that it
-> > doesn't break the entire SMMU probe now that bus_iommu_probe() runs in
-> > the right order and can propagate that error back. The end result is
-> > still that the device doesn't get an IOMMU group and probably won't
-> > work, same as before.
-> > 
-> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > ---
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > index b4c21aaed126..c06459f7077b 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > @@ -3400,9 +3400,9 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
-> >  		/* Insert into SID tree */
-> >  		if (rb_find_add(&new_stream->node, &smmu->streams,
-> >  				arm_smmu_streams_cmp_node)) {
-> > -			dev_warn(master->dev, "stream %u already in tree\n",
-> > +			dev_warn(master->dev, "Aliasing StreamID 0x%x unsupported, expect DMA to be broken\n",
-> >  				 sid);
-> > -			ret = -EINVAL;
-> > +			ret = -ENODEV;
-> >  			break;
-> 
-> I don't think we should dillute the meaning of ENODEV here. It is
-> supposed to mean that the driver does not recognize the device and
-> this IOMMU instance doesn't translate for it.
-> 
-> That is different from the iommu instance owning the device but being
-> unable to probe it for some reason. The failure recovery in the core
-> code should be different.
-> 
-> IMHO it makes more sense to change this and related:
-> 
-> static int bus_iommu_probe(const struct bus_type *bus)
-> {
-> 	struct iommu_group *group, *next;
-> 	LIST_HEAD(group_list);
-> 	int ret;
-> 
-> 	ret = bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group);
-> 	if (ret)
-> 		return ret;
-> 
-> So that recognized, but failed, devices are contained to only effect
-> that device and do not fail the entire iommu or bus registration,
-> which is more like how things used to work when the probe path would
-> ignore the per-driver failure codes.
-> 
-> I can't think of a reason why we'd want any per-device failure to also
-> abort the whole iommu registration??
+On Fri, Apr 11, 2025 at 03:50:10PM +0000, Pranjal Shrivastava wrote:
 
-I don't think this change would abort the iommu registration?
-The probe_iommu_group would simply ignore the -ENODEV. Or are you
-talking about a case where we don't return -ENODEV?
-
->
-> It would be nice if the dev->iommu would record that the struct device
-> is inoperable and then we can fail
-> iommu_device_use_default_domain()/etc in a contained way.
-
-Ohh okay.. you mean the dev->iommu_group == NULL may give an illusion to
-<bus>_dma_configure that DMA is allowed? Even in that case the iommu 
-would block the DMA right? And upon inspection of dmesg it would be
-clear that something went wrong with the probe?
-
-
+> > I can't think of a reason why we'd want any per-device failure to also
+> > abort the whole iommu registration??
 > 
-> Jason
-> 
+> I don't think this change would abort the iommu registration?
 
-Thanks,
-Praan
+Right, this patch causes iommu registration to succeed because the
+only the ENODEV is ignored.
+
+> The probe_iommu_group would simply ignore the -ENODEV. Or are you
+> talking about a case where we don't return -ENODEV?
+
+Yes, I mean the current situation the probe returns -EINVAL because
+the SMMUv3 driver knows it controls the translation but cannot startup
+the device due to the SID conflict.
+
+> > It would be nice if the dev->iommu would record that the struct device
+> > is inoperable and then we can fail
+> > iommu_device_use_default_domain()/etc in a contained way.
+> 
+> Ohh okay.. you mean the dev->iommu_group == NULL may give an illusion to
+> <bus>_dma_configure that DMA is allowed? 
+
+Right, IMHO it is the different between ENODEV and Exxx. ENODEV
+(ideally) means the iommu instance doesn't translate that device so it
+has no information to add. EINVAL means the iommu instance does
+translate and then we can be pretty sure DMA won't work since the
+default STE is abort.
+
+Thus, IMHO, the core code should ignore ENODEV and assume if no iommu
+claims the device that it is identity. This is what we do today.
+
+However EINVAL should disable future device drivers probing on the
+broken struct device because most likely the DMA API won't work at
+all.
+
+> Even in that case the iommu would block the DMA right? And upon
+> inspection of dmesg it would be clear that something went wrong with
+> the probe?
+
+Yes and yes. A better chance of the system booting if the iommu is
+left registered and running with only some devices broken/disabled,
+which is what was going on in v6.14
+
+Jason
