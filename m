@@ -1,124 +1,128 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CFFB1F2B90
-	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 14:10:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7ED71DB95E
+	for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 14:16:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744380629; cv=none; b=Zpc6t/YC2p/42thts5LpKZr21xMrEAQ6PlMQyswAdV4ski1OIswVBSJHBoa2B79I/x2et/iLAUODDXl8HZ5NlmT5a5uZDeGHZCXQ2d09lVAs3sDSFNcMC1nBUd2GxF3D0+D8e+VlVnw1PUb3wE/ZoRK6bdwWF+WyAhXZ76YOr20=
+	t=1744381010; cv=none; b=ntBdm0DLz7xLfsVXWlsjVg+Uxm4deDmQmoWkFNTR1K2sqg4JBiBIiMDBAS+Sv7cI5Qj5Qrpw1rSE8Xe4GhafLU9DkAChGgRg5iAf1rBSRpu3JrOWUurjwTIqG6+yh6NuQIPGli6twEVhwJwhk3UgAUkn5F+oen3noSjkMyZ9G1g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744380629; c=relaxed/simple;
-	bh=IN/+c393zV8GLe2RZvcJ5D/UQHgVQBfnFKT0jSH76NQ=;
+	s=arc-20240116; t=1744381010; c=relaxed/simple;
+	bh=vn+VKp3Ay36aECIQWn3gk7Kfab8dWu7P+S0abFwbfXI=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=B0clnky0gm0B1c6pvvB8bI7Sr8k0y5/R5x+Wx1luyMcAgx0EGquCvkWTx5jcFK9+w1P4PO9NCYLH5viulNrD0+GmhPtMC5j/ErcROV1jUPl6QleePbQEulaCayVgCqjCqQAMXC6CEnI1atyACzdSHOnI7vkTQ/Id+yGqSqdh27Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cjqZnJcF; arc=none smtp.client-ip=209.85.214.202
+	 To:Cc:Content-Type; b=lYd+kwMohPqIpEBSxAI/uTRKrLeQSMhnXLVDorRgShkcFXBPSpAMYbJw6swvxyvJ7H/5EMhu98BlCTmtrxVlXHa8U5reTeQQPsg5XpXV6RXJYzCkDhqwm0RX6/DQJmQr5kPGMmab6tvevAPOHupY3E5gFFTJrCFy0Y8wnRUaXyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BsWQ0ptX; arc=none smtp.client-ip=209.85.216.73
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cjqZnJcF"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-2254e500a73so15837155ad.0
-        for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 07:10:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BsWQ0ptX"
+Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-3082946f829so535488a91.0
+        for <iommu@lists.linux.dev>; Fri, 11 Apr 2025 07:16:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1744380628; x=1744985428; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1744381008; x=1744985808; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qHKInpn+xU6ux5UPqfyiTHJx6fsp5WeMoLWQfB1NP+8=;
-        b=cjqZnJcFQgFn8JA8ywk4XZa7ELis4/Y8aISvFdVZdFecBRmCU95ur9UstXbqgXJjej
-         +mjfgQLNIdsiMvuqLeIXNg2cjVf+sCTPe1nFRzm/Q57pjsWRm1mbfvDgw4+qMWrIAA+R
-         QWB48BFcxrJKaWnXgKcU30YsLEP51gURK4uOLSXOsx6LgH8EKYxPqONIBf3VxYaVe4LV
-         72GbKGz6iOQTDY3D23FUogW3Nw3KRjME3TNeFadTascoeWoI6hmFxJvR1LjhUoNPY1xA
-         zyvsEv5pHIuoBheJNz+nSvWv4N7az+vurPtD7Z3fa/dfp9sg7VuiaQWAJ1dONzxRwSp0
-         IgPQ==
+        bh=7WLm9nSzf8mbzQ6eRy3dVX2xRtWadZfn8/wglqYhatY=;
+        b=BsWQ0ptXtoLWTwI1C3gMzVtslnrqWdK7p0b23iEDkjiMtyBt5It3oC0MVSMitl8/4O
+         18lifwuD0uvhNBlEQRTz5ai7O/7T88Saf8j6GVBQ/obxoSZ6A2Nl7QRQrwoorDy3O0Qw
+         sHLLTnLVFzG3ZG518wlHQUuc5OpEZaGTcf4Gr9RTC+mlAmMy2h9oU9oZ7YylFM8YKqKH
+         z2ywbBx08JZqd9y/zvklmXKqi9vb0dfLv4GAx2wsysW7y/7u7IQaSeaQ7iEjYYuTdVMI
+         etrMLvoR7IzaejJ9Eazmb+jovPC+G6ng0b2O1i0+yz669T+FnxqWINQ9epdzKW0NcOvF
+         rqhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744380628; x=1744985428;
+        d=1e100.net; s=20230601; t=1744381008; x=1744985808;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qHKInpn+xU6ux5UPqfyiTHJx6fsp5WeMoLWQfB1NP+8=;
-        b=JMG/2sU0rMvXW/lJwiJEADEMip0siAht5d6X0v4XiHw5h6E9Kzv7xZt4Qz59Uhp7pz
-         sjccV0aaDptwq4wTbKzSn4ZnI9YVMujnXFXBvznl0ToVH4UFJoblWhfxEIyNi5kTt4JV
-         Pav0SFBerA8/z2RVbParGNIhHSO9r0vfUT8pOH/37902Qz4DmIx4Ulx4NYbVsRbAjIOm
-         HTCgS3kTR9RVr2nVyNsB/5GaYLj56+ETfBYuyBpQbtYyCX+JjjUJaF902T7lhURBy9k6
-         f5SH1DarxAK3pVSJm1N1ZFLiTIQD+PkNlPdMWPMaAcK9eWtMM9ZiofSfQsRp8Ug+REwa
-         WHJg==
-X-Forwarded-Encrypted: i=1; AJvYcCUUx/Sy7T36p2fVOGC+G+hqqWjScA9OhYTwHg9D2+41RQrl/EE3ZToqOeOLqhpSIbOOo7gZjw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyHpPsdNgqydoCA46RrX8M8JbMHZJ0J3TbZcB9giLaqcvsVGQxt
-	YDwCotHH2WVymAKdnilquHDTKctBSVeQqnW1u8rd2sEszKADPHoWJ2f6cWahStxOdhyu3fFC+wQ
-	y5g==
-X-Google-Smtp-Source: AGHT+IGc8VAEmdu1RE7oH9FrOwfX7qVcVEStmOGwcbBo53IVWdDDkx8s11OnWyHGn0RRA5FtWaNzoX9rHXg=
-X-Received: from plda17.prod.google.com ([2002:a17:902:ee91:b0:221:8568:bfe3])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:cec9:b0:227:e980:9190
- with SMTP id d9443c01a7336-22bea4fcad1mr47422905ad.44.1744380627769; Fri, 11
- Apr 2025 07:10:27 -0700 (PDT)
-Date: Fri, 11 Apr 2025 07:10:26 -0700
-In-Reply-To: <0895007e-95d9-410e-8b24-d17172b0b908@amd.com>
+        bh=7WLm9nSzf8mbzQ6eRy3dVX2xRtWadZfn8/wglqYhatY=;
+        b=uldK6Ikv2lnguaNb4+Mdl17xITt2QOiFU+qdvDOPDWL4f3+Ae1f9r7wn8Yj324q1Nb
+         +aHTfcoVHap/7N6ASZyn4JG8jTSPoSJIxBX6C3fMcgkl3xGJ8SeoEnbh4mw/uCg9GIQi
+         pZA012ZY97cRO4mxxsm8xTsRA6hbXXJtmdyHrDx5dTWEE7k8hSMtjSLJNlQXbyjl8HH6
+         nsO/QJQXwAJq8nBzjPMCBRmTV6lei2cKcTyBGAuz+FZBg73YczedloRvAncI3T1ErzXC
+         AmowyErk0tUND5uFlYhrUl8zh/j41ayaBWNG0D8fqTOsV9l63/YCQU75TBwpZANY/Vg+
+         Jyjg==
+X-Forwarded-Encrypted: i=1; AJvYcCUeO5nQsctrIhESFq5AIQIa0XtKhTFaeufOERUwR4qQUyb+wlw6B7v97zK/oUtO1DzPnUvDIg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzl9qNt4t2muwXPf0n7wyzQ3ySa9b6foRmnCos/rq3vcVD1tq83
+	T74f5Wlsb1yRLy9DBKbOLtR7Qg2HfsSQ+LpFlaWRcuBBD0kQHmTRI35OFUJA92NBo+5l57z0SZA
+	DVQ==
+X-Google-Smtp-Source: AGHT+IFATnSMfrlSoDr0AZ6VmD2LhVdWjxVhiNFsnVuSJSTgsZ8GDkGzqSkWXdTOGULav9ok7fnrCtR9H0A=
+X-Received: from pjtq5.prod.google.com ([2002:a17:90a:c105:b0:305:2d68:2be6])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:2703:b0:2fe:b735:87da
+ with SMTP id 98e67ed59e1d1-3082354ee9amr6053899a91.0.1744381008123; Fri, 11
+ Apr 2025 07:16:48 -0700 (PDT)
+Date: Fri, 11 Apr 2025 07:16:46 -0700
+In-Reply-To: <ad53c9fe-a874-4554-bce5-a5bcfefe627a@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
-References: <20250404193923.1413163-1-seanjc@google.com> <20250404193923.1413163-7-seanjc@google.com>
- <0895007e-95d9-410e-8b24-d17172b0b908@amd.com>
-Message-ID: <Z_ki0uZ9Rp3Fkrh1@google.com>
-Subject: Re: [PATCH 06/67] iommu/amd: WARN if KVM attempts to set vCPU
- affinity without posted intrrupts
+References: <20250404193923.1413163-1-seanjc@google.com> <20250404193923.1413163-3-seanjc@google.com>
+ <ad53c9fe-a874-4554-bce5-a5bcfefe627a@amd.com>
+Message-ID: <Z_kkTlpqEEWRAk3g@google.com>
+Subject: Re: [PATCH 02/67] KVM: x86: Reset IRTE to host control if *new* route
+ isn't postable
 From: Sean Christopherson <seanjc@google.com>
 To: Sairaj Kodilkar <sarunkod@amd.com>
 Cc: Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
 	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, kvm@vger.kernel.org, 
 	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
 	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
-	David Matlack <dmatlack@google.com>, Naveen N Rao <naveen.rao@amd.com>, 
-	Vasant Hegde <vasant.hegde@amd.com>
+	David Matlack <dmatlack@google.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Naveen N Rao <naveen.rao@amd.com>
 Content-Type: text/plain; charset="us-ascii"
 
 On Fri, Apr 11, 2025, Sairaj Kodilkar wrote:
 > On 4/5/2025 1:08 AM, Sean Christopherson wrote:
-> > WARN if KVM attempts to set vCPU affinity when posted interrupts aren't
-> > enabled, as KVM shouldn't try to enable posting when they're unsupported,
-> > and the IOMMU driver darn well should only advertise posting support when
-> > AMD_IOMMU_GUEST_IR_VAPIC() is true.
-> > 
-> > Note, KVM consumes is_guest_mode only on success.
-> > 
-> > Signed-off-by: Sean Christopherson <seanjc@google.com>
-> > ---
-> >   drivers/iommu/amd/iommu.c | 13 +++----------
-> >   1 file changed, 3 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> > index b3a01b7757ee..4f69a37cf143 100644
-> > --- a/drivers/iommu/amd/iommu.c
-> > +++ b/drivers/iommu/amd/iommu.c
-> > @@ -3852,19 +3852,12 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
-> >   	if (!dev_data || !dev_data->use_vapic)
-> >   		return -EINVAL;
-> > +	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
-> > +		return -EINVAL;
+> > @@ -991,7 +967,36 @@ int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+> >   		}
+> >   	}
+> > -	ret = 0;
+> > +	if (enable_remapped_mode) {
+> > +		/* Use legacy mode in IRTE */
+> > +		struct amd_iommu_pi_data pi;
 > > +
+> > +		/**
+> > +		 * Here, pi is used to:
+> > +		 * - Tell IOMMU to use legacy mode for this interrupt.
+> > +		 * - Retrieve ga_tag of prior interrupt remapping data.
+> > +		 */
+> > +		pi.prev_ga_tag = 0;
+> > +		pi.is_guest_mode = false;
+> > +		ret = irq_set_vcpu_affinity(host_irq, &pi);
+> > +
+> > +		/**
+> > +		 * Check if the posted interrupt was previously
+> > +		 * setup with the guest_mode by checking if the ga_tag
+> > +		 * was cached. If so, we need to clean up the per-vcpu
+> > +		 * ir_list.
+> > +		 */
+> > +		if (!ret && pi.prev_ga_tag) {
+> > +			int id = AVIC_GATAG_TO_VCPUID(pi.prev_ga_tag);
+> > +			struct kvm_vcpu *vcpu;
+> > +
+> > +			vcpu = kvm_get_vcpu_by_id(kvm, id);
+> > +			if (vcpu)
+> > +				svm_ir_list_del(to_svm(vcpu), &pi);
+> > +		}
+> > +	} else {
+> > +		ret = 0;
+> > +	}
 > 
 > Hi Sean,
-> 'dev_data->use_vapic' is always zero when AMD IOMMU uses legacy
-> interrupts i.e. when AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) is 0.
-> Hence you can remove this additional check.
+> I think you can remove this else and "ret = 0". Because Code will come to
+> this point when irq_set_vcpu_affinity() is successful, ensuring that ret is
+> 0.
 
-Hmm, or move it above?  KVM should never call amd_ir_set_vcpu_affinity() if
-IRQ posting is unsupported, and that would make this consistent with the end
-behavior of amd_iommu_update_ga() and amd_iommu_{de,}activate_guest_mode().
+Ah, nice, because of this:
 
-	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
-		return -EINVAL;
+		if (ret < 0) {
+			pr_err("%s: failed to update PI IRTE\n", __func__);
+			goto out;
+		}
 
-	if (ir_data->iommu == NULL)
-		return -EINVAL;
+However, looking at this again, I'm very tempted to simply leave the "ret = 0;"
+that's already there so as to minimize the change.  It'll get cleaned up later on
+no matter what, so safety for LTS kernels is the driving factor as of this patch.
 
-	dev_data = search_dev_data(ir_data->iommu, irte_info->devid);
-
-	/* Note:
-	 * This device has never been set up for guest mode.
-	 * we should not modify the IRTE
-	 */
-	if (!dev_data || !dev_data->use_vapic)
-		return -EINVAL;
-
-I'd like to keep the WARN so that someone will notice if KVM screws up.
+Paolo, any preference?
