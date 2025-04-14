@@ -1,72 +1,72 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18F871E51FB
-	for <iommu@lists.linux.dev>; Mon, 14 Apr 2025 20:45:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B7AF1E520D
+	for <iommu@lists.linux.dev>; Mon, 14 Apr 2025 20:55:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744663509; cv=none; b=KpFHi5BXokAYZorg3A2soGvpY8ob3X9MIAhJy7yu0uUVjETsog0rdAozPgQemANn438KWGtv+HpI3p8EyqlpIzi9AmbmA8F1IfCu/sLE5kX9k0Kcn8neIRNJlHFHy+AHQPFUzVL+1PC6eJV1s+/27NcUcaJ35NQz5sqbyvx/d+8=
+	t=1744664132; cv=none; b=K9RTFDYJFKF0oKjI9YrVqlotFmsu+9kfhM1kYvJK+WdTlMnAsTEoGaxdqeCsByTfsd4/7qCWUUXQMAYCtAu+gHvrSlVMnR7VGeHVleQgvzI/sujb2kraaUJ/2moAHIIZNZaKhveqlinjACVW/qNFy0bpMRMWksZscCWNGZhFgQA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744663509; c=relaxed/simple;
-	bh=zWsdiw+TnJkpRWJoGIEhDbM9jVc3PLjahi1iBg9BPKo=;
+	s=arc-20240116; t=1744664132; c=relaxed/simple;
+	bh=zjE3vRT+ssrRw7bL71CD3Oe95BvjsQfUHA6+heIvoZ0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iM+UjD9NrqnGxK9YEz468daLsfeeNvMX2kBUNvNJQ92gjODn/B/lBRlqXQrFeAIOy6V3ShbbxspvNLQnHdYqpMAD1EDSrITaUtjyfUY8yvVZ4pQ7ncafYT6sKfY/OZ/067wkWxNQjcO9tCYmfcoLdlXgadUlsAhWQLFROjytEsQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=KBxCIJWE; arc=none smtp.client-ip=205.220.168.131
+	 In-Reply-To:Content-Type; b=KKtsqSLEwIWxFOo8brNLI7vnJYXuchPz2+iO4AGI/DL3oYL4TPfi4mTrvPAmf7LDiwsA/7wojNgqa3Il5G68CfCp/Vtc1743++RLCISQfNRA32k3fQZE96pWwVTBR/lblNZJodnKktBDOSr78D7f+PSDOa8+ipI4dDjaCxhEQ74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=W16IqfEg; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="KBxCIJWE"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53EKeZWf009493
-	for <iommu@lists.linux.dev>; Mon, 14 Apr 2025 20:45:07 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="W16IqfEg"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53EKdmJN025861
+	for <iommu@lists.linux.dev>; Mon, 14 Apr 2025 20:55:30 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:content-type:date:from:in-reply-to
 	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	8GpvC2xMf26mIWpkQqHlnNwAhWALEdfs8GLwqb4OfI8=; b=KBxCIJWEzDpTzj4J
-	XjyWl8fUJsYhEsbotApe19vWNG1m0Yvs7M1ROZt8nJk3KhDcHY42mF/oxvQ1UPZ9
-	YqAZf1nQ3GWl0r26lWtz8/zsBZqO7tSbFiRyV5KHmpdZOXJGzNkGfypP4TA2Hehy
-	dND01cfjyEO5NGuwOieSKvNsS1KpqPE/ZuBpZiRTXKquifUmwGsMUheDJ8wyc8g0
-	4g9BEWhO4vSGavr7e/V24EUFWGPKyJSGiclYyx1iUY4aIfC0MNUnRjEHm70jFM8L
-	EjpHugjS/PPy3aPlKeHuaEW+RLdkCOVYAOvZ+y5KTAMCOwgQ5HFjYQwNJjIKwn2m
-	qzQqFw==
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45ygd6ds4c-1
+	WxqIMMM+bD6pWCvSoOoUNZlHXMPZPcPy2ox/bPjumf4=; b=W16IqfEgr9ANz/Su
+	PT/7IXowclo9n8BNUIy5eNsu+iLRfEttOXQ0DOXxZk6EsByU9K4U/xc0AugxXZjZ
+	JhRWfIJXdvb8TGk2jtKw6xIkKujSxO1FMREqOei72PGhFq9pKIO2CcjF0lsk3DuD
+	CTw5qyK251zw7ETYI5SN4wWnjIs5q/5lozfs97LQHD7X5QglnaYg4j8tnA4GpZxQ
+	VACbYNT4b+zY018HIgXlnZvPvseQ2KI/FAhKl1v9tKQUfMXwIS3ZdV2pqFNhAwRd
+	qxLPwdCXrj2VB36MJjf2BVUSaKzIovig4Owq2NyhSuBxwNs1ozneWSqfl5wYnq7t
+	W9pWfw==
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45ygxjwnss-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 14 Apr 2025 20:45:07 +0000 (GMT)
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-7c547ab8273so53787785a.3
-        for <iommu@lists.linux.dev>; Mon, 14 Apr 2025 13:45:06 -0700 (PDT)
+	for <iommu@lists.linux.dev>; Mon, 14 Apr 2025 20:55:30 +0000 (GMT)
+Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-7c54734292aso134186685a.2
+        for <iommu@lists.linux.dev>; Mon, 14 Apr 2025 13:55:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744663506; x=1745268306;
+        d=1e100.net; s=20230601; t=1744664129; x=1745268929;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8GpvC2xMf26mIWpkQqHlnNwAhWALEdfs8GLwqb4OfI8=;
-        b=t3YaKh0nECp/tllhV/yq6w21875UUYG2ypskkxQoxEpYCsEDZI5lyJKTsjUcpLU4L9
-         /LXCMcX5xP5Tn0+AROl+QOaOETtL4ej3F7Dl07BfOxgYmDLnNQ65W+jGZQRrRHO9L5Jm
-         HlScZqyfoZrR76v6fH4s4zrTu+fOceIWSCHY0L9JCTI6dcvTUUELb/gFgFbrIFmObVBS
-         4ZBCl000uV3ZL632vZl5Cgx/r6bxPYVd/eV+lDP165/49wFiYEKB14kQTgbJKX68bZxj
-         +wghMPVhcyo47b6PWs6sxJxt4Aw6MvC8ff7sUZOa1lYgmpR0jZqzSFYtBWt/iTlAsOSs
-         lIXg==
-X-Forwarded-Encrypted: i=1; AJvYcCX9Y9y7KIYG8ZrEJG6NArGTZP2xQVJftNwj31uYKV7v3MnDLgB3IgOFng9N3iwMJPAAAOLBwQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzATCcK8Wdh1DIncS3N2hybdAOJ9jfrPyCumLK3nUc+PSB1EJNM
-	z04jrEFfd4FltmA7/a34BWbjvG4lUchJRKZO1AYtnVSs27fRg94BHjzV6Fg4wxj5OqowEdYiV/2
-	fjcawUZC+l+yUq0Q8ac7TTicZzdroZLSKjpMBn5uAMbagCqotDzH39Q==
-X-Gm-Gg: ASbGncvDGQ39gXvlxZuDLQ9mh172xCcFnfRH7EQ2+V9dkg8osv93bsLVKs2j1cyFtwP
-	KIk+6SQv7H3EGMxwqEted+oKijgiApzJt3P0aNwgkgU9uXBQRfl2zd3Rc0q1/aWOWdNZ8nvgC7L
-	CAWbb0cqqSzrfYuxab4E0oAyyV2HARJJffIiLElN02GEprqWVylnN/r+LVM7HGUmgpxIJlzAaHN
-	iBb+DpWNQ0dnjMf+E/vb7ad6E2/qk09ulHaM9rG5hubRajwccujlVu+fdQg57prZiQwFg0DyWUd
-	SV/UwYMJ0ICLGgbUrnhttDpfKtaG+MzpMPcO322pgxcPBG8RRPP4E22Jmo9GlocnGw==
-X-Received: by 2002:a05:620a:c4e:b0:7c0:bb63:5375 with SMTP id af79cd13be357-7c7af0d639amr601362485a.4.1744663505698;
-        Mon, 14 Apr 2025 13:45:05 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHLBb2WpVtzoAT+y2FmV5MGo40yUFAbGagDmJALFL0LsA+GecCl49y7VoJexczSZFb7o/nmpw==
-X-Received: by 2002:a05:620a:c4e:b0:7c0:bb63:5375 with SMTP id af79cd13be357-7c7af0d639amr601360185a.4.1744663505264;
-        Mon, 14 Apr 2025 13:45:05 -0700 (PDT)
+        bh=WxqIMMM+bD6pWCvSoOoUNZlHXMPZPcPy2ox/bPjumf4=;
+        b=EV/lWpX064u2sqS/XTLLlVbrA1WAT6ZP5uXoeUPHP0HMW2fwXTjopuhbp3cVVWswo7
+         CEiD8+SRVNyZFKIlfWI1nUw2QvoAp7WaZE/TgEblvKwKovUNjUCnB6cX70p7zbspf8VR
+         wQbHy0p2D36HePxOAgC2+szPn/RZEC4SaC7VDMfRKtYSw+YYW45xnnwaD8aBHLkFdgN2
+         oyR6gDFO6juOWb8FcG2tw/Fp2CQXN/W6i4z5q9zmNBrcCPOuEJkodTvBzqQBk3P+Eu2b
+         os0VhdAdIizgY1tMgokn0B3XnDvl0HiH2tDnuBpUHWJh7jLOHRIWSoEnljZFe01AS+a9
+         KR1A==
+X-Forwarded-Encrypted: i=1; AJvYcCUCttAE49CJ+22+PISEJIORGZOlpVlzZ6stqb4g3V8syFdmADAv/opZZYDgnXM9xNBxbu4Xxw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyRFcCKewRKSnOIwztGQXMjRS7nVPaVDZVhbVDhtCUfgGYnXGXT
+	xZJkptyvXl0oMYWyHuv6SC8XDLzdAN2oghprGXrLEeqZNUIMhaF6tFwmFAGVxnU7Wds2YyADNzt
+	PV+gzK2Gxwjuw4s6eleq15V0gauxGQzQzhacHwdSTNe2toCItu+l07A==
+X-Gm-Gg: ASbGnct2g7beJLCKrMxf9Tau8/DwGYdNnrURlYYJs3DbW0oON62xTG3ozyrl/UWA+i/
+	Ry1cau0X5V60KJHl+cbvkRRFj6e+muQAnzPUyRmY3Jd9U92VIVUnGbG1fFfJN+mRsPblXsJhMB/
+	b70r66MSlqr8znmCayrJEWnv7udG9LWSH4EcsmyuWN+d3UIgrjG3MK/UDbLzEHwAG9bfOHjcJzn
+	1ZK8DCxFCyjjhel5eQFdmi1Pc8Vd2m7fEXZIHp/FJMaDf87bI8OLsXHXCyiZDrvz7pvAgEgpxTm
+	zIN//+pDjHhOhS/n+ssRB9AfgE2fRlqaJ+Y8EXqLniRKUh6dFXodZaXIml8AomKayA==
+X-Received: by 2002:a05:620a:4627:b0:7c0:bb63:536c with SMTP id af79cd13be357-7c7af10641cmr597551885a.4.1744664128871;
+        Mon, 14 Apr 2025 13:55:28 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGoWIvNWBnu8DBGFjtGdagGBK2fyiZED6ibSgijR4nYQRmR9ck5XDihEjcIo4pATTzpB4UWZQ==
+X-Received: by 2002:a05:620a:4627:b0:7c0:bb63:536c with SMTP id af79cd13be357-7c7af10641cmr597548885a.4.1744664128405;
+        Mon, 14 Apr 2025 13:55:28 -0700 (PDT)
 Received: from [192.168.65.90] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-acaa1ce7fdcsm982525066b.176.2025.04.14.13.45.02
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5f36f5056easm5692216a12.63.2025.04.14.13.55.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Apr 2025 13:45:04 -0700 (PDT)
-Message-ID: <c1672544-eb0f-474d-a975-2a4f6b29d549@oss.qualcomm.com>
-Date: Mon, 14 Apr 2025 22:45:01 +0200
+        Mon, 14 Apr 2025 13:55:27 -0700 (PDT)
+Message-ID: <f85195a1-f55e-41ea-967d-b758014cba06@oss.qualcomm.com>
+Date: Mon, 14 Apr 2025 22:55:24 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,7 +74,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 6/6] arm64: dts: qcom: Add Xiaomi Redmi 3S
+Subject: Re: [PATCH v4 4/6] arm64: dts: qcom: Add initial support for MSM8937
 To: =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>,
         Bjorn Andersson <andersson@kernel.org>,
         Michael Turquette <mturquette@baylibre.com>,
@@ -103,60 +103,178 @@ Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-gpio@vger.kernel.org, iommu@lists.linux.dev,
         dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
         phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        linux@mainlining.org
+        linux@mainlining.org, Dang Huynh <danct12@riseup.net>
 References: <20250315-msm8937-v4-0-1f132e870a49@mainlining.org>
- <20250315-msm8937-v4-6-1f132e870a49@mainlining.org>
+ <20250315-msm8937-v4-4-1f132e870a49@mainlining.org>
 Content-Language: en-US
 From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20250315-msm8937-v4-6-1f132e870a49@mainlining.org>
+In-Reply-To: <20250315-msm8937-v4-4-1f132e870a49@mainlining.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: xOeQGnIVT66fW7xFFRb5AE9Wap5kWKUN
-X-Proofpoint-GUID: xOeQGnIVT66fW7xFFRb5AE9Wap5kWKUN
-X-Authority-Analysis: v=2.4 cv=ANaQCy7k c=1 sm=1 tr=0 ts=67fd73d3 cx=c_pps a=qKBjSQ1v91RyAK45QCPf5w==:117 a=FpWmc02/iXfjRdCD7H54yg==:17 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=VwQbUJbxAAAA:8 a=KKAkSRfTAAAA:8 a=OuZLqq7tAAAA:8 a=JKK38O5rW3uoAxCGYa0A:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=NFOGd7dJGGMPyQGDc5-O:22 a=cvBusfyB2V15izCimMoJ:22 a=AKGiAy9iJ-JzxKVHQNES:22
+X-Authority-Analysis: v=2.4 cv=WecMa1hX c=1 sm=1 tr=0 ts=67fd7642 cx=c_pps a=HLyN3IcIa5EE8TELMZ618Q==:117 a=FpWmc02/iXfjRdCD7H54yg==:17 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=bBqXziUQAAAA:8 a=OuZLqq7tAAAA:8 a=zdbjSHh-4Hdwht_aKTEA:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=bTQJ7kPSJx9SKPbeHEYW:22 a=BjKv_IHbNJvPKzgot4uq:22 a=AKGiAy9iJ-JzxKVHQNES:22
+X-Proofpoint-GUID: pg3TQ9nIi1KAH0pSCHj-dBBBCR8BUPVv
+X-Proofpoint-ORIG-GUID: pg3TQ9nIi1KAH0pSCHj-dBBBCR8BUPVv
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-04-14_07,2025-04-10_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
- mlxlogscore=885 suspectscore=0 clxscore=1015 lowpriorityscore=0
- phishscore=0 impostorscore=0 spamscore=0 priorityscore=1501 malwarescore=0
- bulkscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
- definitions=main-2504140151
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
+ adultscore=0 clxscore=1015 lowpriorityscore=0 phishscore=0 mlxscore=0
+ impostorscore=0 mlxlogscore=999 spamscore=0 malwarescore=0
+ priorityscore=1501 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
+ definitions=main-2504140152
 
 On 3/15/25 3:57 PM, Barnabás Czémán wrote:
-> Add initial support for Xiaomi Redmi 3S (land).
+> From: Dang Huynh <danct12@riseup.net>
 > 
+> Add initial support for MSM8937 SoC.
+> 
+> Signed-off-by: Dang Huynh <danct12@riseup.net>
+> Co-developed-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
 > Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
 > ---
 
 [...]
 
-> +	headphones_switch: audio-switch {
-> +		compatible = "simple-audio-amplifier";
-> +		enable-gpios = <&tlmm 129 GPIO_ACTIVE_HIGH>;
-> +		sound-name-prefix = "Headphones Switch";
-> +		pinctrl-0 = <&headphones_switch_default>;
-> +		pinctrl-names = "default";
-> +	};
+> +			power-domains = <&cpu_pd0>;
+> +			power-domain-names = "psci";
 
-We've had a similar change lately
-
-https://lore.kernel.org/linux-arm-msm/20250327100633.11530-1-srinivas.kandagatla@linaro.org/
-
-I think this could be some sort of a drivers/mux/...
+So CPU4-7 get "nicer" idle, but 0-3 don't?
 
 [...]
 
-> +&pm8937_resin {
-> +	linux,code = <KEY_VOLUMEDOWN>;
-> +	status = "okay";
-> +};
+> +		cpu-map {
+> +			/* The MSM8937 has 2 cluster A53 setup. */
 
-Please also unify the style such that there's a newline before status
+This comment seems superfluous
 
-Looks good otherwise
+[...]
+
+> +	timer {
+
+'p' < 't', please sort top-level nodes alphabetically
+
+[...]
+
+> +				wcss-wlan2-pins {
+> +					pins = "gpio76";
+> +					function = "wcss_wlan2";
+> +					drive-strength = <6>;
+
+please unify this order (drive-strength before bias)
+
+> +					bias-pull-up;
+> +
+> +				};
+
+Extra newline
+
+[...]
+
+> +		gpu: gpu@1c00000 {
+> +			compatible = "qcom,adreno-505.0", "qcom,adreno";
+> +			reg = <0x1c00000 0x40000>;
+> +			reg-names = "kgsl_3d0_reg_memory";
+> +			interrupts = <GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
+> +			interrupt-names = "kgsl_3d0_irq";
+> +			#cooling-cells = <2>;
+> +			clocks = <&gcc GCC_OXILI_GFX3D_CLK>,
+> +				<&gcc GCC_OXILI_AHB_CLK>,
+> +				<&gcc GCC_BIMC_GFX_CLK>,
+> +				<&gcc GCC_BIMC_GPU_CLK>,
+> +				<&gcc GCC_OXILI_TIMER_CLK>,
+> +				<&gcc GCC_OXILI_AON_CLK>;
+
+Please align the <s
+
+> +			clock-names = "core",
+> +				      "iface",
+> +				      "mem_iface",
+> +				      "alt_mem_iface",
+> +				      "rbbmtimer",
+> +				      "alwayson";
+> +			operating-points-v2 = <&gpu_opp_table>;
+> +			power-domains = <&gcc OXILI_GX_GDSC>;
+> +
+> +			iommus = <&adreno_smmu 0>;
+> +
+> +			status = "disabled";
+> +
+> +			gpu_opp_table: opp-table {
+> +				compatible = "operating-points-v2";
+> +
+> +				opp-19200000 {
+> +					opp-hz = /bits/ 64 <19200000>;
+> +					opp-supported-hw = <0xFF>;
+
+0xff is overly broad, please document the existing known speed bins
+
+[...]
+
+> +		adreno_smmu: iommu@1c40000 {
+> +			compatible = "qcom,msm8996-smmu-v2",
+> +				     "qcom,adreno-smmu",
+> +				     "qcom,smmu-v2";
+> +			reg = <0x1c40000 0x10000>;
+
+Does it work as-is, without iommu changes?
+
+[...]
+
+> +	thermal_zones: thermal-zones {
+> +		aoss-thermal {
+> +			polling-delay-passive = <250>;
+
+There are no passive trip points> +
+> +			thermal-sensors = <&tsens 0>;
+> +
+> +			trips {
+> +				aoss_alert0: trip-point0 {
+> +					temperature = <85000>;
+> +					hysteresis = <2000>;
+> +					type = "hot";
+> +				};
+
+Please convert these to 'critical' instead
+
+[...]
+
+> +		cpuss1-thermal {
+> +			polling-delay-passive = <250>;
+
+You can drop polling-delay-passive under CPU tzones, as threshold
+crossing is interrupt-driven
+
+> +
+> +			thermal-sensors = <&tsens 4>;
+> +
+> +			cooling-maps {
+> +				map0 {
+> +					trip = <&cpuss1_alert0>;
+> +					cooling-device = <&cpu4 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+> +							 <&cpu5 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+> +							 <&cpu6 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
+> +							 <&cpu7 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
+> +				};
+> +			};
+> +
+> +			trips {
+> +				cpuss1_alert0: trip-point0 {
+> +					temperature = <75000>;
+> +					hysteresis = <2000>;
+> +					type = "passive";
+> +				};
+> +
+> +				cpuss1_alert1: trip-point1 {
+> +					temperature = <85000>;
+> +					hysteresis = <2000>;
+> +					type = "hot";
+> +				};
+
+On newer platforms we rely on LMH to shut down the device if it
+were to reach the junction temperature, but let's leave them here
+as probably no one remembers for sure how reliable that is on these
+older platforms and you're most likely not willing to test that
 
 Konrad
-
