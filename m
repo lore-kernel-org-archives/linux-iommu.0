@@ -1,173 +1,172 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 84C32192D8A
-	for <iommu@lists.linux.dev>; Mon, 14 Apr 2025 15:38:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744645097; cv=none; b=ns729J9WkKbd0iCWxk9bXNDaJC9tXWS9cAJk6NCufjnbtgQVYuTQTmRu9hF8ZrEjhQ2VUYnzlEsCiCn5W3WoNeSnwEm4npL+OizdBX1MUzwjExezgbDLq3Qy8LNpikQMRlSN66F+sSuSHfrjIoLk3uV+QHmFrIkrVzgjhN54/Xg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744645097; c=relaxed/simple;
-	bh=0aZVGbEl/02D251casMOEEUyC3c3T0vU3dfpYMvmlIM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iSejgwbM8T/MqxktPx9Wrb50g20vvVZ550xbQCwFplQanMUTgG1tLiphG5pUsL7ujlxlHupCwFoakIM+FdQXj7Oasukkib/dZMVrAeJieOqejzmvpCJegq3Cp3Lc01uGJkBlNEx7Hgm+94uqvnPaGmuBVarGB7pfb6f2c7p/E0E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 137701007;
-	Mon, 14 Apr 2025 08:38:13 -0700 (PDT)
-Received: from [192.168.1.102] (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE7993F66E;
-	Mon, 14 Apr 2025 08:38:10 -0700 (PDT)
-Message-ID: <50a06ba8-0a99-40d2-8601-778ebf451f6a@arm.com>
-Date: Mon, 14 Apr 2025 16:37:59 +0100
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2047.outbound.protection.outlook.com [40.107.244.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FB9F28B4F6
+	for <iommu@lists.linux.dev>; Mon, 14 Apr 2025 17:57:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744653477; cv=fail; b=Eol+fAwAEToo9thaJJ3cuLN528vVLaxmZg5++Qpsm6zqrqjjlqNsH2ey9IYzRHkWzL5RqjZzX+l72W1UezixurBDecqnA9ejpjsWk4/qKYwLVjDkK/sZlQl09ud5BG57YOSAjl+xU5QrCNx8bXnQDHEe+JVtRmluiRwbBQqy4JY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744653477; c=relaxed/simple;
+	bh=j9mN4QOjUVLatpLLwF4RbGE/VwK4nPxYFAStMn2Bflo=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=V161s6EduuMTENuvE1HzVdq9uJ3EsGTDetJP9oSUSOIIwbgskWAIUt25EHPcdp6z3Eq2aUx+/E1N3xj48ltr1A156lp36TiJHm/IFgIoE4d6vbTp8YoKRcH/XIDBiu7zeloiZg+vqzwS1WcjjHUzc3ARgoyvsX3Ngz/dAEZ2fgQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=FYSYmdJj; arc=fail smtp.client-ip=40.107.244.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FYSYmdJj"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Hi+SFlvOgwQwh/KNHBDEKTs9M+ZsBXohIFPweTBkcR91XcEZ0fpQiN3H+5Cj3B4TOGHLL8PWjCqYa8ZVv7yGcH9qaRBqBTMrySy2Iz5k5TqB5N9wRaBOli4U+v8bdoXyaoHn5SDSGZX9B49OUjJcoZDYnuQ7PmUel1c1ZhYIi0/WSRD8F8Z1Y7nKWA548RNi03jzyAoA4riPOa57DAI1epTrrOUJB3pMEJIed57Xg0wULzyDLF1L+ztQNzCvxRtRpEERjbCPXLIcAb+2ek7MHBmxOHKHtyYD8DOJ7Xo9sdN7U7CuMrFXjqagq1oUuX6tZZJ8Ny4wFaxeyIkI/PsBFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qVXSVmtSATfMXu6q1mYP0qYLAqfbGQ5ZBK5wbxv4XOQ=;
+ b=jvLfyTvP9arwHyIl1FuMlPLCWVfGWlp2SAWzi9e833aAs+bj14QEcJI82WhN/BiK5nc2ip6mGzm25RT4wqxR/eUgx1UTVvM5EURDqXQBZMNEv9j+azG+GeZeTGzPYnqGdve7rXZdqIG+wN1Y84sN4E8+ainL7tuxBBIRwcfegRCReLSPE5DMXvcHzIV/afQ3RozFaBECZfNwoqWW8A8GhkvGQ+mWD+bBLw0mDSr3wJgjzURWKKA0OojAQiFRvXvjkySIOiR6NAkHHvZXhWHOde+w24k0iUAToLlSvtCyd+t8rgdRmaHzCey8W67h43nuarvme+HXFNh4wSOCOCPN9w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qVXSVmtSATfMXu6q1mYP0qYLAqfbGQ5ZBK5wbxv4XOQ=;
+ b=FYSYmdJj/g1F0/pROB+uDf6zzjtPV9CbFr14mJoOtukjfSaXPuV2igjeuQ+gowJpVWKWgnd3wAKhSuKrlEEojoOWJ/tUM0BtvYtYMWqBefEcl2rVeNNLaALVhGu2FrJc4PFgbzcb4b/9T2aQSKsPL5cRSQRVuOOKLZMaYCi32ICfo/cEu338mwzoX8H/EAkYEpFUsZPj7mmOQW13T/xr1EaPWqxq9hUi/shl1zSDY+meSU9uy7siEG4EjSpXrf/m4BqQxyR9NcYKLS+iGRM8+bghK5azHNrYqVog/K3TiZ31VUH+YFxGgykItIJZyYR+9GafGTaXIS0dEkU+29zcWw==
+Received: from SJ0P220CA0011.NAMP220.PROD.OUTLOOK.COM (2603:10b6:a03:41b::31)
+ by MW4PR12MB6876.namprd12.prod.outlook.com (2603:10b6:303:208::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.33; Mon, 14 Apr
+ 2025 17:57:49 +0000
+Received: from CO1PEPF000044EE.namprd05.prod.outlook.com
+ (2603:10b6:a03:41b:cafe::77) by SJ0P220CA0011.outlook.office365.com
+ (2603:10b6:a03:41b::31) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8632.35 via Frontend Transport; Mon,
+ 14 Apr 2025 17:57:49 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1PEPF000044EE.mail.protection.outlook.com (10.167.241.68) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8655.12 via Frontend Transport; Mon, 14 Apr 2025 17:57:49 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 14 Apr
+ 2025 10:57:34 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Mon, 14 Apr
+ 2025 10:57:33 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Mon, 14 Apr 2025 10:57:33 -0700
+Date: Mon, 14 Apr 2025 10:57:32 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Pranjal Shrivastava <praan@google.com>
+CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh
+	<smostafa@google.com>, Daniel Mentz <danielmentz@google.com>,
+	<iommu@lists.linux.dev>
+Subject: Re: [RFC PATCH 3/5] iommu/arm-smmu-v3: Implement pm_runtime & system
+ sleep ops
+Message-ID: <Z/1MjDaAM4Em53gE@Asurada-Nvidia>
+References: <20250319004254.2547950-1-praan@google.com>
+ <20250319004254.2547950-4-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
- path
-To: Johan Hovold <johan@kernel.org>
-Cc: Lorenzo Pieralisi <lpieralisi@kernel.org>,
- Hanjun Guo <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Danilo Krummrich <dakr@kernel.org>, Stuart Yoder <stuyoder@gmail.com>,
- Laurentiu Tudor <laurentiu.tudor@nxp.com>, Nipun Gupta
- <nipun.gupta@amd.com>, Nikhil Agarwal <nikhil.agarwal@amd.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>,
- Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-pci@vger.kernel.org, Charan Teja Kalla <quic_charante@quicinc.com>
-References: <cover.1740753261.git.robin.murphy@arm.com>
- <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
- <Z_jMiC1uj_MJpKVj@hovoldconsulting.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <Z_jMiC1uj_MJpKVj@hovoldconsulting.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250319004254.2547950-4-praan@google.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PEPF000044EE:EE_|MW4PR12MB6876:EE_
+X-MS-Office365-Filtering-Correlation-Id: a6f89cc7-e5f1-48b0-03e5-08dd7b7ddec8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|376014|36860700013|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?vqSZr+mrP9wQp8bBVOwzEhNdvwZIL2AqgB8etG7B5uIJb02srbjaddeOt/2Y?=
+ =?us-ascii?Q?AhLfGSA0RsNPf2aP0yGjhdEP9RT+ebGnmgCNjyhZu45Wj+LtSnMyE2JTzepX?=
+ =?us-ascii?Q?a1Q2JjAi8FEU5Mu0PAOR0mYZ28U7pjPgFTgQndMORehUptwN1XF4hpLqKkAc?=
+ =?us-ascii?Q?+Y/mNMrDDeoQN0gq513Uco0xHlA4seLyzsvt163irNVWJ19WhG/r+Mj/BKfN?=
+ =?us-ascii?Q?zVJmpF3XP8sZg4mtSDa0kdVpiMWREbHagHdiylzZyOoQY0Rjilsz8YKSKclQ?=
+ =?us-ascii?Q?nMpf9Ro7PFcZAMekaEi/ZnOrgaEMYOtTa2c1Rb/7m+y5yxbnbA64kHEokkgH?=
+ =?us-ascii?Q?NDkTTXBIcALG85ltIcjGyHehlrIeL8Rkc0i2uT2Z+P2jGbh7F0Q4RWBVt585?=
+ =?us-ascii?Q?dyz/yMhw8LssbFI7VENCZLuiGiR8avLnxTgzsL2DWsjiTJUNK97vEFwcwNnk?=
+ =?us-ascii?Q?Z63ShFv0/dBkemPcKQw31vFN9mWu7YgHGT9pF544oAa7CFBY+fdRljv5gmNO?=
+ =?us-ascii?Q?KUxYmqjcCLdLM2g2TJ/WS/VB/IXsAZZ9tsx6f4Xr+S2BrzIFbWG4ZZWGKzAT?=
+ =?us-ascii?Q?wXj0uYYgb8c6tl/4vkaGrzKuWhnKByZlwIimaA/v8dK4y2Kf0L+ZSbxO1yLq?=
+ =?us-ascii?Q?C8Ylu6ImZqurbjZvP1BT0YHZtKJPxPq0bXHrqIsJ3MEN65Ef4PR/8D1WkhQd?=
+ =?us-ascii?Q?qsJBdwqA9HwQGIhdlu+J5EOf/e6FydvEZ4itryYtb+JWCQHQ1hI5CVlJWWji?=
+ =?us-ascii?Q?sNq9idPLw71mIajlvVfRvSgBmGRb/0PS/sOxMGOvCFrAh7Aut2x9jIlxouba?=
+ =?us-ascii?Q?xmGdK8MJUGwFyV5dWpb33n8EqXK1hOHovN3Ruf9aJRd8esZ/UIJjmzDxovxc?=
+ =?us-ascii?Q?z98ADOVJU602UHd7JuZ3hBxDtTMRtjOGNghNAwVvXtGOmRFf1Hkazuy9loar?=
+ =?us-ascii?Q?gXh8ym6N0igyvqJ9ld0djoOlguwdgCMMec1EveBQ1yrSEQbXm+rftPgjZV1h?=
+ =?us-ascii?Q?WHB7pxNhCy9LoGhJRM5lBLXm4MQ+hsByAPR6biCf8bxEHvk1J1iN7Ru4SsUz?=
+ =?us-ascii?Q?qh/Dp8cnVB1oOPjkY3RaPXZ0QOza+DOzJ9gsXnpvSCiWbMTCDiIgBX/BLBMX?=
+ =?us-ascii?Q?GbqvuCXHMBft4elZwQEs+E5rfFBgNJ2xP9PcAK7jxZbaBK2Gok3BuE7SFBH6?=
+ =?us-ascii?Q?OyFGyz5k3pZbp1wQmV5fQK1HTsFQAL11PPvXFs8fn9YSd+EAEBkboL/1P3FS?=
+ =?us-ascii?Q?LSjR1ltvgqhx74W1EpRbpPmzG6vn3sc7XhOagn1T91bZsNC7z1qGSocGjGc5?=
+ =?us-ascii?Q?B0jdq+x3UzyyEzcaW/z1sfY2+MYxWofwdKqW8InqngFRoDIuGXm34L37JzoB?=
+ =?us-ascii?Q?4rH1Xf5GC4yBXpTv6//8+t79EMb6PjLpifm/tK1xpQdMpQUOARW3+XiGVdQb?=
+ =?us-ascii?Q?t8swBnpGtEV0LMCFq2lztzsBJCcO7CfQisAGSc/kg0QwEZaxsuLIAGUe1b3m?=
+ =?us-ascii?Q?K+uF77MHO04660dTxynZsBVb6hn/dPGvqH4W?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Apr 2025 17:57:49.3850
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6f89cc7-e5f1-48b0-03e5-08dd7b7ddec8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1PEPF000044EE.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB6876
 
-On 2025-04-11 9:02 am, Johan Hovold wrote:
-> Hi Robin,
-> 
-> On Fri, Feb 28, 2025 at 03:46:33PM +0000, Robin Murphy wrote:
->> In hindsight, there were some crucial subtleties overlooked when moving
->> {of,acpi}_dma_configure() to driver probe time to allow waiting for
->> IOMMU drivers with -EPROBE_DEFER, and these have become an
->> ever-increasing source of problems. The IOMMU API has some fundamental
->> assumptions that iommu_probe_device() is called for every device added
->> to the system, in the order in which they are added. Calling it in a
->> random order or not at all dependent on driver binding leads to
->> malformed groups, a potential lack of isolation for devices with no
->> driver, and all manner of unexpected concurrency and race conditions.
->> We've attempted to mitigate the latter with point-fix bodges like
->> iommu_probe_device_lock, but it's a losing battle and the time has come
->> to bite the bullet and address the true source of the problem instead.
-> 
->> @@ -426,6 +438,12 @@ static int iommu_init_device(struct device *dev)
->>   		ret = -ENODEV;
->>   		goto err_free;
->>   	}
->> +	/*
->> +	 * And if we do now see any replay calls, they would indicate someone
->> +	 * misusing the dma_configure path outside bus code.
->> +	 */
->> +	if (dev->driver)
->> +		dev_WARN(dev, "late IOMMU probe at driver bind, something fishy here!\n");
->>   
->>   	if (!try_module_get(ops->owner)) {
->>   		ret = -EINVAL;
->> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
->> index e10a68b5ffde..6b989a62def2 100644
->> --- a/drivers/iommu/of_iommu.c
->> +++ b/drivers/iommu/of_iommu.c
->> @@ -155,7 +155,12 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
->>   		dev_iommu_free(dev);
->>   	mutex_unlock(&iommu_probe_device_lock);
->>   
->> -	if (!err && dev->bus)
->> +	/*
->> +	 * If we're not on the iommu_probe_device() path (as indicated by the
->> +	 * initial dev->iommu) then try to simulate it. This should no longer
->> +	 * happen unless of_dma_configure() is being misused outside bus code.
->> +	 */
-> 
-> This assumption does not hold as there is nothing preventing iommu
-> driver probe from racing with a client driver probe.
+On Wed, Mar 19, 2025 at 12:42:52AM +0000, Pranjal Shrivastava wrote:
+> +static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
+> +{
+> +	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+> +
+> +	/* We might get the vcmdq */
+> +	struct arm_smmu_cmdq_ent cmd = {
+> +		.opcode	= smmu->features & ARM_SMMU_FEAT_E2H ?
+> +			CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA,
+> +	};
+> +
+> +	struct arm_smmu_cmdq *cmdq = arm_smmu_get_cmdq(smmu, &cmd);
+> +	struct arm_smmu_ll_queue *llq = &cmdq->q.llq;
+> +
+> +	/*
+> +	 * Since suspend is invoked when all clients have been
+> +	 * we don't expect more commands to be added to the cmdq.
+> +	 * Thus, wait for all existing commands to complete.
+> +	 */
+> +	arm_smmu_cmdq_shared_lock(cmdq);
+> +	arm_smmu_cmdq_poll_until_empty(smmu, cmdq, llq);
+> +	arm_smmu_cmdq_shared_unlock(cmdq);
 
-Not sure I follow - *this* assumption is that if we arrived here with 
-dev->iommu already allocated then __iommu_probe_device() is already in 
-progress for this device, either in the current callchain or on another 
-thread, and so we can (and should) skip calling into it again. There's 
-no ambiguity about that.
+Hmm, I just realized this: with an SMMU having multiple CMDQs
+(currently with vCMDQs and potentially with ECMDQs), should we
+make sure all cmdqs (not only the cmdq picked in this function
+by the arm_smmu_get_cmdq call above) to be empty?
 
->> +	if (!err && dev->bus && !dev_iommu_present)
->>   		err = iommu_probe_device(dev);
->>   
->>   	if (err && err != -EPROBE_DEFER)
-> 
-> I hit the (now moved) dev_WARN() on the ThinkPad T14s where the GPU SMMU
-> is probed late due to a clock dependency and can end up probing in
-> parallel with the GPU driver.
+On a system with vCMDQs, there are currently one standard SMMU
+CMDQ and two vCMDQs, i.e. totally 3 cmdqs that could be picked
+in this context. Perhaps SMMU might need a list of cmdqs that
+any new allocated cmdq must be added to, so we can iterate all
+the cmdqs in the list?
 
-And what *should* happen is that the GPU driver probe waits for the 
-IOMMU driver probe to finish. Do you have fw_devlink enabled?
-
-> [    3.805282] arm-smmu 3da0000.iommu: probing hardware configuration...
-> [    3.806007] arm-smmu 3da0000.iommu: SMMUv2 with:
-> [    3.806843] arm-smmu 3da0000.iommu:  stage 1 translation
-> [    3.807562] arm-smmu 3da0000.iommu:  coherent table walk
-> [    3.808253] arm-smmu 3da0000.iommu:  stream matching with 24 register groups
-> [    3.808957] arm-smmu 3da0000.iommu:  22 context banks (0 stage-2 only)
-> [    3.809651] arm-smmu 3da0000.iommu:  Supported page sizes: 0x61311000
-> [    3.810339] arm-smmu 3da0000.iommu:  Stage-1: 48-bit VA -> 40-bit IPA
-> [    3.811130] arm-smmu 3da0000.iommu:  preserved 0 boot mappings
-> 
-> [    3.829042] platform 3d6a000.gmu: Adding to iommu group 8
-> 
-> [    3.992050] ------------[ cut here ]------------
-> [    3.993045] adreno 3d00000.gpu: late IOMMU probe at driver bind, something fishy here!
-> [    3.994058] WARNING: CPU: 9 PID: 343 at drivers/iommu/iommu.c:579 __iommu_probe_device+0x2b0/0x4ac
-> 
-> [    4.003272] CPU: 9 UID: 0 PID: 343 Comm: kworker/u50:2 Not tainted 6.15.0-rc1 #109 PREEMPT
-> [    4.003276] Hardware name: LENOVO 21N2ZC5PUS/21N2ZC5PUS, BIOS N42ET83W (2.13 ) 10/04/2024
-> 
-> [    4.025943] Call trace:
-> [    4.025945]  __iommu_probe_device+0x2b0/0x4ac (P)
-> [    4.030453]  iommu_probe_device+0x38/0x7c
-> [    4.030455]  of_iommu_configure+0x188/0x26c
-> [    4.030457]  of_dma_configure_id+0xcc/0x300
-> [    4.030460]  platform_dma_configure+0x74/0xac
-> [    4.030462]  really_probe+0x74/0x38c
-
-Indeed this is exactly what is *not* supposed to be happening - does 
-this patch help at all?
-
-https://lore.kernel.org/linux-iommu/09d901ad11b3a410fbb6e27f7d04ad4609c3fe4a.1741706365.git.robin.murphy@arm.com/
-
-If not then I guess I do need to do something to explicitly distinguish 
-the "iommu_device_register() is still running" state after all...
-
-Thanks,
-Robin.
-
-> [    4.030464]  __driver_probe_device+0x7c/0x160
-> [    4.030465]  driver_probe_device+0x40/0x110
-> [    4.030467]  __device_attach_driver+0xbc/0x158
-> [    4.030468]  bus_for_each_drv+0x84/0xe0
-> [    4.030470]  __device_attach+0xa8/0x1d4
-> [    4.030472]  device_initial_probe+0x14/0x20
-> [    4.030473]  bus_probe_device+0xb0/0xb4
-> [    4.030476]  deferred_probe_work_func+0xa0/0xf4
-> 
-> [    4.030501] ---[ end trace 0000000000000000 ]---
-> [    4.031269] adreno 3d00000.gpu: Adding to iommu group 9
-> 
-> Johan
-
+Thanks
+Nicolin
