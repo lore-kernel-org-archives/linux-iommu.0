@@ -1,61 +1,74 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF90C254AFB;
-	Tue, 15 Apr 2025 20:30:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52B9625525E
+	for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 20:37:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744749039; cv=none; b=WaRD78r86wzArqzFn2YI/IsCgckAgCSREOMhmDCxwbD2M3BzRJzeOM+kqk+VLzpVKRKTvGuCC1xCdQt09YbnaPQXRFEf3RwgeCdW8sslS6t63T4dK6x8rjpyNLsvWTzVC/huSXq+I65n8oz7CzjL0Ycms/yn6yFfxzzdPcJLea0=
+	t=1744749477; cv=none; b=uE09RPrYb6W5mgu8eJTVdMQvI3/BczMYg9vrWgpwetE1qqxO2NC5+4T68+UUXIwKhOLD2vigJo7giwaXRLdCWMS5UUKmWyU+iocxHeEn6ZTUl42kMBOOMZhEjjVA+4MR8gHc63DVLzPJv9zoS0iAwfYSoS72SQ95CRWz3sNnbLk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744749039; c=relaxed/simple;
-	bh=eAzrZMpfYl8YyWeHTfn8zWcb6mjKHP1QmYgGKXBsFZg=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=JpoLZGB8eGIBolgtpmPZM7ibZaeWJ6nUJfUDsontLnGoEaPUEh55yjIUtlcBW9G+Cu8dJlzLzvnzhxEBZEp6ewHt/aSJZIUADmF+sex9NhXe7mS4gxLWoI7QZn3DTzcdo0OQ9XbUpQ6yBR/fnqSsmbl9Pa7mhOr120tSv1gASZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WvYdAmJ6; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744749477; c=relaxed/simple;
+	bh=+gyPu3MGd0ybdcoSzKdW9PnsBPZkGaczcl6rAg91zYM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hJ9p6BTOdNrvY6tpbyPH6iZyUtcSC1rc92HKecNIXmIsYCcI3pFxSoC9SA8Bt2z57lpfxkHQKIrI8zKsTn9WC0/T6xlNq3D0i7mXQcdl4SRa6Burq6djC/2OAHUnJRjw4VegPILEawv3lQWWnzDaPRPC1hEW5mFbBj4c7af3qwk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ouGQ825Q; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WvYdAmJ6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8EF5C4CEE7;
-	Tue, 15 Apr 2025 20:30:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744749039;
-	bh=eAzrZMpfYl8YyWeHTfn8zWcb6mjKHP1QmYgGKXBsFZg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=WvYdAmJ6l1x9+nEqcqMT/XrbQP+6RhRj0oPKQ0O10yBH/8NSmmPR99027+BU1fLRk
-	 rj9mqHR2q4E6YVWTxAyOYzKwSfnFzZZiYRCf47aFSVZk18m29vPVqTXgOL0xlpFBzp
-	 hJLpzU48/NWZ7RXODFBANu87u41woLI/D1JXJZJpJT61CnU9arbwbrwlgPreGNehX6
-	 Z6N/vfG87EkkI449WdC0T1bWJQA6AYOifGFGr+wq0b1cieINYrULAti9H199i63Ekf
-	 WG5r/XlVpy8UXNHbRThgiPFYkYiUEHh/WTxDTB8c8IYnRKbfAh0LeFpQTXzYqTqvs3
-	 ms9RHjazUxR/g==
-Date: Tue, 15 Apr 2025 15:30:37 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: x86@kernel.org, kvm@vger.kernel.org, linux-crypto@vger.kernel.org,
-	linux-pci@vger.kernel.org, linux-arch@vger.kernel.org,
-	Sean Christopherson <seanjc@google.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Tom Lendacky <thomas.lendacky@amd.com>,
-	Ashish Kalra <ashish.kalra@amd.com>, Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ouGQ825Q"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2263428c8baso16845ad.1
+        for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 13:37:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1744749474; x=1745354274; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hoUaFHrTv8RTZNHDlFpZ560XHRPaosOSmDVF9mrwM5k=;
+        b=ouGQ825QdkLc2y7RgcpHUA2Agbl4vXJrKvIOM+W65j2HPc0rWDEz80tJOYeQkdBj3X
+         EgxZd0M1PlZjULQOaNAbv8cusWPfzFLePg55jDrQz6YhiK5sAp6HKFr2lkInqbbmBJ+T
+         YQbYNJ9lxYNikrkX+n0FwNerd2tYGVS22hSNWcpM/N/7LEShEiE1sKUwTjZE1MIg1Urq
+         y+Fh2UEwuWkHiMeiwaho2gTB7n1R33+f0yn+IsqHNs0xgtA6b3m0W7S7RcvrrQiGpo8b
+         zsXPlaTsQbVZrrqkYbO12e6lFDjGHvWmIXW0M0gnyvsxVA+kBUpwOZUz736ulQXEszND
+         x+nQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744749474; x=1745354274;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hoUaFHrTv8RTZNHDlFpZ560XHRPaosOSmDVF9mrwM5k=;
+        b=JK1Ls4o4ArPn8LSQ/wlgAqqC1lMo3vg3bQdsO5ut1HX2XPrPFlszxtOJdvck4GK6O0
+         FJb8YXUfaPWiGL9M0sywPYLp1tOK4NgsJBAsKZJxZeuFJWLIHL7Px7dbVfcAkGLtApAD
+         CaOc8pJQLg3LXGrmn4bDGMIaHb7HiqXaOQlp9gipqa82Hv8hBFeifUQlacDPyAk6xtCr
+         Ut2eQeTFXGBktyMtNouMgKrBRAsIt+fx7Zfx3DjAvorIwUnGme2x1ebiDUkjSMvWul+T
+         tOvJ0x03PjyYq3D24SHiLfiTv8b+lEUJ/OfKE/7UW2xUriI1gzuhtg+SowIbUWC4cjL6
+         7fpw==
+X-Forwarded-Encrypted: i=1; AJvYcCWNLVj4wMQs/ecv3mbRx3yZ/fL5QBiamTP1tiLcsFOSrCzPzMhxP1m2Alee7mQFoN29dVxvJA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxPZiTrAtrakQySlg3usjPbRctqio7Cux38xqzXtpmmUW5b2XTQ
+	9nT8N/SeUNEq4FvqeHAIaDrC/WYkwqiCWZrjv9QVqjT0lNAwlc40hWsxa5hytQ==
+X-Gm-Gg: ASbGnctwbrMRwzuXdLTxZORUwv4aca/+97QbJEt0/CKf7VgARKyFStIWyqgJsoYpOyH
+	M2yYfMAcWuySWACqBiPYiMIj7tCUzvW8hubukSirsCFWpe/5ucfofBXnEjwXzcPQDDh7j4qw8Vw
+	Rh9WdwLfB54eON/ejtreJywPk6lfObEFZummZ4MV3MfpTm+fnH5tCwpBEL3ZIFf2lIoy8ysOuwO
+	4oyyPcC+gKwHWLgrAxstgh71e1v/lByq1uco07nZcWst7jn1ds6rtzkI/SuaNLD4UqCG1DrBqLc
+	ZaBzsNKyvKCT7imWF/Di67c/l0YtZjijuWQ0sdccW7kHRoKVtUg4f9vXBUthgvUFJr7/zQHh
+X-Google-Smtp-Source: AGHT+IHudawRCQwe9w190Ozhu19z8kpu2BhxRiXkF5sxn4qiLxER0bWiZkQkw3lZSz+G5aSU5yPhhA==
+X-Received: by 2002:a17:903:3bac:b0:21f:4986:c7d5 with SMTP id d9443c01a7336-22c3171e95bmr537405ad.8.1744749474215;
+        Tue, 15 Apr 2025 13:37:54 -0700 (PDT)
+Received: from google.com (2.210.143.34.bc.googleusercontent.com. [34.143.210.2])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22ac7b65496sm122383065ad.42.2025.04.15.13.37.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Apr 2025 13:37:53 -0700 (PDT)
+Date: Tue, 15 Apr 2025 20:37:45 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Christoph Hellwig <hch@lst.de>, Nikunj A Dadhania <nikunj@amd.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Steve Sistare <steven.sistare@oracle.com>,
-	Lukas Wunner <lukas@wunner.de>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Dionna Glaze <dionnaglaze@google.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-coco@lists.linux.dev,
-	Zhi Wang <zhiw@nvidia.com>, AXu Yilun <yilun.xu@linux.intel.com>,
-	"Aneesh Kumar K . V" <aneesh.kumar@kernel.org>
-Subject: Re: [RFC PATCH v2 22/22] pci: Define pci_iomap_range_encrypted
-Message-ID: <20250415203037.GA33341@bhelgaas>
+	Mostafa Saleh <smostafa@google.com>,
+	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 3/5] iommu/arm-smmu-v3: Implement pm_runtime & system
+ sleep ops
+Message-ID: <Z_7DmadjRe3GaaN7@google.com>
+References: <20250319004254.2547950-1-praan@google.com>
+ <20250319004254.2547950-4-praan@google.com>
+ <Z/1MjDaAM4Em53gE@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,47 +77,59 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250218111017.491719-23-aik@amd.com>
+In-Reply-To: <Z/1MjDaAM4Em53gE@Asurada-Nvidia>
 
-On Tue, Feb 18, 2025 at 10:10:09PM +1100, Alexey Kardashevskiy wrote:
-> So far PCI BARs could not be mapped as encrypted so there was no
-> need in API supporting encrypted mappings. TDISP is adding such
-> support so add pci_iomap_range_encrypted() to allow PCI drivers
-> do the encrypted mapping when needed.
-
-Match subject capitalization, rewrap.
-
-> +void __iomem *pci_iomap_range_encrypted(struct pci_dev *dev,
-> +					int bar,
-> +					unsigned long offset,
-> +					unsigned long maxlen)
-> +{
-> +	resource_size_t start = pci_resource_start(dev, bar);
-> +	resource_size_t len = pci_resource_len(dev, bar);
-> +	unsigned long flags = pci_resource_flags(dev, bar);
-> +
-> +	if (len <= offset || !start)
-> +		return NULL;
-> +	len -= offset;
-> +	start += offset;
-> +	if (maxlen && len > maxlen)
-> +		len = maxlen;
-> +	if (flags & IORESOURCE_IO)
-> +		return NULL;
-> +	if ((flags & IORESOURCE_MEM) && (flags & IORESOURCE_VALIDATED))
-> +		return ioremap_encrypted(start, len);
-> +	/* What? */
-
-"What?" indeed.  This could be removed or made to say something
-intelligible.
-
-> +	return NULL;
-> +}
-> +EXPORT_SYMBOL(pci_iomap_range_encrypted);
-> +
->  /**
->   * pci_iomap_wc_range - create a virtual WC mapping cookie for a PCI BAR
->   * @dev: PCI device that owns the BAR
-> -- 
-> 2.47.1
+On Mon, Apr 14, 2025 at 10:57:32AM -0700, Nicolin Chen wrote:
+> On Wed, Mar 19, 2025 at 12:42:52AM +0000, Pranjal Shrivastava wrote:
+> > +static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
+> > +{
+> > +	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+> > +
+> > +	/* We might get the vcmdq */
+> > +	struct arm_smmu_cmdq_ent cmd = {
+> > +		.opcode	= smmu->features & ARM_SMMU_FEAT_E2H ?
+> > +			CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA,
+> > +	};
+> > +
+> > +	struct arm_smmu_cmdq *cmdq = arm_smmu_get_cmdq(smmu, &cmd);
+> > +	struct arm_smmu_ll_queue *llq = &cmdq->q.llq;
+> > +
+> > +	/*
+> > +	 * Since suspend is invoked when all clients have been
+> > +	 * we don't expect more commands to be added to the cmdq.
+> > +	 * Thus, wait for all existing commands to complete.
+> > +	 */
+> > +	arm_smmu_cmdq_shared_lock(cmdq);
+> > +	arm_smmu_cmdq_poll_until_empty(smmu, cmdq, llq);
+> > +	arm_smmu_cmdq_shared_unlock(cmdq);
 > 
+> Hmm, I just realized this: with an SMMU having multiple CMDQs
+> (currently with vCMDQs and potentially with ECMDQs), should we
+> make sure all cmdqs (not only the cmdq picked in this function
+> by the arm_smmu_get_cmdq call above) to be empty?
+> 
+> On a system with vCMDQs, there are currently one standard SMMU
+> CMDQ and two vCMDQs, i.e. totally 3 cmdqs that could be picked
+> in this context. Perhaps SMMU might need a list of cmdqs that
+> any new allocated cmdq must be added to, so we can iterate all
+> the cmdqs in the list?
+> 
+
+Well.. I was thinking to only drain the cmdq if we have ats/pri enabled
+because the only case where we'd wanna drain the cmdq is when:
+
+1. There's a pending ATC invalidation
+2. There's a pending CMD_RESUME / PRI_RESP
+
+Since for any other invalidations, we'll clear the TLBs & config caches
+on resume. Does the same hold true for the commands supported by
+tegra-vcmdq?
+
+Is there a spec I could read about tegra vCMDQ and the commands
+supported by it?
+
+> Thanks
+> Nicolin
+
+Thanks,
+Praan
