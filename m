@@ -1,62 +1,72 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2059.outbound.protection.outlook.com [40.107.101.59])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E244928F513
-	for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 11:16:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.59
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744715784; cv=fail; b=DawPtnxffeeHyz27gEL9PBVLYbhL4G2wcAKMl1gIWjJF2/AwMDNE3XAoxeXJQdNFEsdh4fHomqzSLEu6R8nkvDb4qsGppD+vUbkFYSaGjD2q89GkfmcqbLfW335pHfdPXl5RI+6oRjW1Ia86qVbSLsvQxfx7AgV33Q9RBO/bGsg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744715784; c=relaxed/simple;
-	bh=xp6E5fVCJxCoPohXFGHLO9KZ8C/uXWD2gZbFz9mbEAc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=CUsGh+/NobabkVimwrHpBAPf0XsSUQvjGc3bAheURu9g9aGE1bcKVyQy0vYGTwinvIsdL2GUVed1lgPJQnrLofZ+qm4j9MFt5WCYvfQiidbUKWSh9tGldhlK3L+RDr/WenZmrwgawHob7uoDJpfjyyI/HHW5a8oBBQ9rK2dRphY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=HQjFZGlP; arc=fail smtp.client-ip=40.107.101.59
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EC4028E5EE
+	for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 11:36:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744716972; cv=none; b=KdtxXR40mcEKk6nG5dqPM+uywcRsVkkiecH72UWB69KyVYCcSV7A/hASbkNia88S1gyYqaAqtRT0zKVujZdoWuJkEa+hNhxVzyyXjc20yzZiu4u0oLfNUozEb2JX+yMwz3QGZosafKsGvEa6RohSyFs1tdwFxXMcjYSujmLUifA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744716972; c=relaxed/simple;
+	bh=ecxh0DIByMnHf6ygrYZHPedHniG1Gc17UjqLlCDNNks=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=C5ksRkh6yfWJCqtSvC6NBENQXsKzWiE0tH8zFQy4/uTBbM0ExkaxGu5xenB3uuxuwKBjDpz+KrJ5Ar9OnNI5y/Lkk8Cw0B7wZHsdBldnpT8fkpzCxmY4IMbR50InnbMAW59LpRzGGt6U4FMmS+rwx/fkfVD8Gqc2CUBjp4yndtY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=huCG0Owu; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="HQjFZGlP"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=K/nny1b0Z/evy6NYizWqROfwL+8baOiId6IsB7KlXavcqipHrL6DHc3FYBN9sZCrUNwqlsynJFn/QPlKqTpXDK+QoSP5gdESKT/lzfDThMBce49f9nZ3OJ9qWU8IKqgJKLI3HTiq8+TB+IwAHr04bKdwQFAYwPeXsaGLhZQKwylGlidbSyKYygmw2G9gYPp5/mpccn6ZPdU9TIIa4LMVftT+/IIMj1tkauzUxMF7wK9zU+H0xX+3iLL511Vh9rrdmd59V75gv/YB8gMQ4E1JLR7+4RfRrq0P90pQhnINftvnSVHeJRW4vVn9YwhLGtZ/kose7sI+9zYNgHl4xkPmng==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9Hvdk1oi4vMLjZBVRkyoOabA8RwwUoKetFaG7r0H6fg=;
- b=p4xime4zl6DepppqEMu11ylm3xflBNXKstnCJoofMf94fQqzfteTfozRlRKDdMBeg0Cv+b6T5KlcqrZZ3nf/ddgVdcibAfvhbR09tUyR7cX14Glq/HmErCTdQmAtBNYi93fatKMhXjMi9+tDodO3gX03pz/GW0s+STwzm76A5klx86ZYt5mxiiwPeJ/5ClEw9wCjQeUAJmzHQ3KarOPk450ULHgIR1d1TpqIOR4Ha54uyids2o9hN6H4EDMPudZ98w8Q+loPuFMCl/5dhdbUMTHnAMcr5vd/3X89q3hAdmEPz0RpqRB7In9G6lKxBvWmBXcTAHyrrClQ9ItqlIM3fw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9Hvdk1oi4vMLjZBVRkyoOabA8RwwUoKetFaG7r0H6fg=;
- b=HQjFZGlPPaoxbsk7+cwYG3WaQ6fVBakz0th0NIW6gBgmmpPFF24pYesHea9ZuLhjW9z7sCyIUCervCIg11938JwgnOrJmAy/fNUcn6ovYE0D4s/8rz7lkv/K6FxliOEe+L8jJjObi/PhmwI1+N568EdUsJU1OwkBz21rAFBEPwU=
-Received: from SJ0PR13CA0110.namprd13.prod.outlook.com (2603:10b6:a03:2c5::25)
- by SN7PR12MB7786.namprd12.prod.outlook.com (2603:10b6:806:349::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8632.29; Tue, 15 Apr
- 2025 11:16:17 +0000
-Received: from CY4PEPF0000E9CD.namprd03.prod.outlook.com
- (2603:10b6:a03:2c5:cafe::c4) by SJ0PR13CA0110.outlook.office365.com
- (2603:10b6:a03:2c5::25) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8655.13 via Frontend Transport; Tue,
- 15 Apr 2025 11:16:17 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CY4PEPF0000E9CD.mail.protection.outlook.com (10.167.241.132) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8655.12 via Frontend Transport; Tue, 15 Apr 2025 11:16:17 +0000
-Received: from [10.85.32.54] (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 15 Apr
- 2025 06:16:13 -0500
-Message-ID: <a1f32fa7-2946-4efa-be74-cfb5c7d5dd22@amd.com>
-Date: Tue, 15 Apr 2025 16:46:11 +0530
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="huCG0Owu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1744716969;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=lXumDY4xCMKyDj7D8VQa+feWOdO7T/uIrMyU2wfkHqQ=;
+	b=huCG0Owuxu1rsuWNK336525M3QZbkfkE4QFWYrJ+2auqXZF0xcHP3UXrtDrHUcrKiGnB5T
+	U8hBeOMMaS0frz9vK2Ev010xMJroJBatVGi69TWfJcKzuMkeLpnJkSKJH9SnOwQP4d1wfN
+	xNEHmK1lNavhd2+mL0B2c9aVxAr/al0=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-645-qXKsQeKbPYaJlfrxkMfTSw-1; Tue, 15 Apr 2025 07:36:06 -0400
+X-MC-Unique: qXKsQeKbPYaJlfrxkMfTSw-1
+X-Mimecast-MFC-AGG-ID: qXKsQeKbPYaJlfrxkMfTSw_1744716966
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-43cf446681cso35193875e9.1
+        for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 04:36:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744716965; x=1745321765;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=lXumDY4xCMKyDj7D8VQa+feWOdO7T/uIrMyU2wfkHqQ=;
+        b=ojqf8UzWINqJh2/E9ZrM8gmlV8RcKmeeavjAS12JI0KTIM+PvA+O21xi4bvUWbFnXp
+         f8CU+VY/GGPqL6ys8HIVG7CBkvFw38WzN8WT/4kMnXYfF+Kz1/0v/TyJfnVeOnZwVCNG
+         UysayLVPL/TY5WQRPSu4FVMi0521CVtEqbcg01v0E4OV+jnppuY6TXynrflgDuzPxDpJ
+         jo1XPK2eNUXXkPW1wGTW/2TAVBlufydnyKPtcH97L1QX1XTXfzrfWh9Dy+J+8zEtJz1y
+         h7ABdEUuCuJBixW87WL7GH0nbijqDmH4YjG/H8IpPYCFR58N2JKSH16FVlXb1GLcDEnk
+         oVSw==
+X-Forwarded-Encrypted: i=1; AJvYcCUWwfndEQDMM14LRLQ3XxbbE1Mmu8W0+MYbeaytL+LFc9oLypy1pRJkWqwpeXuKayCAzADZaA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzCA8DnB+dxJQsxLQ13h2ZNV/uzzZVnWQWOi6divxhMg8lLRDIZ
+	AY9e9IO10iqXTl5PiSCpHlFRsqUs9qfvSUNC0U4PFl3Qa6C6GUK56wka0IkJ4kDMXBY+DUCDFuC
+	eVX4o4Ih91BCHZiPm1GLJgKKHRXmvjypzYC2v/U+5c1ZvkDJLk3kt
+X-Gm-Gg: ASbGnctuMFckpxFyL+sYWrN6qcGaiRP+DajW80iMsiIX5eDW41lCMP81M1xmmk6w9TQ
+	uwL6trrDCs/6ehC81max2Y8E/pAI/NgpCWZeFBH7b7DlZUmbKpy1/GbSecJ4sq5X5o/KfVC0we5
+	TMEx46rhP43es2UmVaFyPM9DQp1LLx38HiyUqf54onkErMrSC/AUtQQ8CGwkDJzfmWwRbi3hHai
+	2wz391Fj0kDQ25u1Q5ck8x9gWYsaZOM6HetbOEXmvgLap3viRB53u6s3rcfHCupO8haDQhlhhZP
+	wcVNqaHdjodhbd9R
+X-Received: by 2002:a05:600c:1e18:b0:43d:160:cd97 with SMTP id 5b1f17b1804b1-43f3a9aad9dmr116295635e9.25.1744716965527;
+        Tue, 15 Apr 2025 04:36:05 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IENkTE6bgF5Rb9zhuxM/+FO7GOrmCPiOvR+9BRMeJxMAeIAq7zucZTzAlJuAYb8wTmelGeqiw==
+X-Received: by 2002:a05:600c:1e18:b0:43d:160:cd97 with SMTP id 5b1f17b1804b1-43f3a9aad9dmr116295435e9.25.1744716965159;
+        Tue, 15 Apr 2025 04:36:05 -0700 (PDT)
+Received: from [192.168.10.48] ([176.206.109.83])
+        by smtp.googlemail.com with ESMTPSA id 5b1f17b1804b1-43f2338dc13sm213154095e9.3.2025.04.15.04.36.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 15 Apr 2025 04:36:04 -0700 (PDT)
+Message-ID: <e6606b04-6154-4823-80a3-dc47392dcc59@redhat.com>
+Date: Tue, 15 Apr 2025 13:36:02 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,204 +74,145 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 17/67] KVM: SVM: Drop redundant check in AVIC code on ID
- during vCPU creation
-To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini
-	<pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse
-	<dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
-CC: <kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, Maxim Levitsky <mlevitsk@redhat.com>, Joao
- Martins <joao.m.martins@oracle.com>, David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH 02/67] KVM: x86: Reset IRTE to host control if *new* route
+ isn't postable
+To: Sean Christopherson <seanjc@google.com>,
+ Sairaj Kodilkar <sarunkod@amd.com>
+Cc: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, kvm@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Maxim Levitsky <mlevitsk@redhat.com>,
+ Joao Martins <joao.m.martins@oracle.com>, David Matlack
+ <dmatlack@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Naveen N Rao <naveen.rao@amd.com>
 References: <20250404193923.1413163-1-seanjc@google.com>
- <20250404193923.1413163-18-seanjc@google.com>
+ <20250404193923.1413163-3-seanjc@google.com>
+ <ad53c9fe-a874-4554-bce5-a5bcfefe627a@amd.com> <Z_kkTlpqEEWRAk3g@google.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Autocrypt: addr=pbonzini@redhat.com; keydata=
+ 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
+In-Reply-To: <Z_kkTlpqEEWRAk3g@google.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: IQ5jcYs098B-Hf3DAXIKRpVTHuG-R-U8zmfbL5I6GMs_1744716966
+X-Mimecast-Originator: redhat.com
 Content-Language: en-US
-From: Sairaj Kodilkar <sarunkod@amd.com>
-In-Reply-To: <20250404193923.1413163-18-seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9CD:EE_|SN7PR12MB7786:EE_
-X-MS-Office365-Filtering-Correlation-Id: f19d4dd3-39fb-4a0b-44ec-08dd7c0ef14b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|1800799024|7416014|36860700013|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?YUdTWFVjMFh2WURxMS9mUHJBM2k3NGJCRDZDT3VpaFdxK294T0htS2J3N1pk?=
- =?utf-8?B?MUlnYVFkYUhnY1Z6NzM0UzVnLzYzY0JQVXBUbnpFRlp6UXZRdUJsSTNOT1kw?=
- =?utf-8?B?WXRweEsySVhzSmVoaGw5eExvV3l4WUcwd1UyMDF4OU1TZkhUVS9hYlpLbVZ2?=
- =?utf-8?B?aVN3TzVxVXkxNUtlYWF0Uit3MEpUVllPR0RnQVpEYjBFV2pGMzUvRjAwaWs0?=
- =?utf-8?B?eVVDNldSN1BhYTJqczE2djhJVllwUkkxbWFEY2dWbk5NTjJyam1HUlFBOGpa?=
- =?utf-8?B?V3ZFaVluSyttdVErUTBVc2EyQlh6NXhnNldXb3RaamE2aHAzSW4xNkVnTTd1?=
- =?utf-8?B?NTNxVThJWGFWbGVZRDc1QmxiTFFDRGVDaHVFT0NXQ1hKTEFFT2hvNUdGQTA2?=
- =?utf-8?B?VDRPZVFjbnJyMFk0NG1BR2RVTVh0RlZMVTcrbkNDbSt4ZFdEWjkyeHRXc0Ja?=
- =?utf-8?B?cy8xMHFvZGFLYkdSa3h0bitIZm1RcFZuaVRPamxSbU9wSVF0ZEcvTjM2MlJU?=
- =?utf-8?B?NCtVUDgrMlZEaE5DMVJPQkV2V3hIZGJWU3htSkpMSWliaFgxWUFVZ2NjbytO?=
- =?utf-8?B?UGZqV2YwRDFDdVdYWDVHVnU0SEtYWmtUejNDb01iWXFBd21rN3pNL244blVn?=
- =?utf-8?B?WHc1NmNLU3lneEJYcTdMV3lkUVRnZnc5ZHQ1dmhSLy91Y2ZUSzJiV2VONmRu?=
- =?utf-8?B?dUhQeFVFb0xYc0luTzBUUjNZbHB0eVhTS3laRnFHMzM5MitDbmRodFFvcitV?=
- =?utf-8?B?WW9VdGxSSlJkcmJ2T1kzOXZsd1hjOVp4U0swMy9DOVZlTkxUcGMrWW9ETzJF?=
- =?utf-8?B?NTg2MHQ2U1FMVVpmOTJXOVljbGx0blhCeVZCeVdMdUlseFZ5b3h3NHMxcnVW?=
- =?utf-8?B?VFJjVlFRRXYzVnpITDBvQnhxczE5dUdzdG1nS0hLRDYxdWlpaFdNenNzZDVF?=
- =?utf-8?B?NlhrQStBdlMvdHdOS3NUekJzS254WVd2VTArcjdxQVh5RUxwQ3p3ZHFoc2lJ?=
- =?utf-8?B?TTNTOHRBdEJvSzhYbHZwdEFva09xbnkvSEFtMkd2Rmk1QXh4N1FLWmdJZFJ3?=
- =?utf-8?B?STM2VVhGK1cvRHR2bjFpeExtMlB5S3hsc0dRODBteWdUVVZPRGxvanBxN1p6?=
- =?utf-8?B?cmdhVWRlU1l3bk1HTGNFZVEwYjNBeG04SUhyaWlCako5L3UvTXludzdXaEF2?=
- =?utf-8?B?dkVJNUF2RDBscU5kdy83RnRGZ3RvdVZHTFY5ODJLbDRHNDhIcXFjekJDWjBp?=
- =?utf-8?B?TWVWRjJjZWQxTmJYbk12RmMxNzRRbVk1VzhJNzRrUHJxT2VONGpJTWdxWG5o?=
- =?utf-8?B?bTNTT2RHTTJJeXc2RzJmTzhMWEdJcFVhSzJMcEwzbXNPQ2QzdE5pSGxXVzlu?=
- =?utf-8?B?VTFTcCtVdnY4cTBDbGxPUWRuWk43OVRCU3VhSEJIcHZuY3RRTlZRVFo1OFl6?=
- =?utf-8?B?Tm15a1AwSUZLbks2Zm56U2tlaWw1cXpRZGVtKy84Y1IrdTBQbUZLaFpzMGJO?=
- =?utf-8?B?a3p0SFc0VGJDcGVXdThuY2toc1VpY1h6bHR6ZVlTQnN0YTlnLzg1SmdZamJZ?=
- =?utf-8?B?VHJZcUZXSFZCODVscklIM3pIQnQzZEpjMHRtc2t0UWI4K2xTc2Q3eHhWWjRs?=
- =?utf-8?B?Mm5nNW94ellqMklWK3F0aCtvZys4N2ZuVk1LYVFmSUVZTUlPdlRVV0Z2VC9y?=
- =?utf-8?B?ZlJQTUlvcUY2Rmx1RWRGOWduV0xpd2lqSVQ1U01ZemEwYkdXV3lpRXE5WU52?=
- =?utf-8?B?TTZNNXNqdGNxSS8wNDk1QWtzcjV1TVl1eXovWllkZzRFUldJaGFSemhvNlUx?=
- =?utf-8?B?QmErd0s0cnlsR1pQV3pvdFVMNi94UzJoMTYzN1Q4TkVzYm8zOVY1MTY2Tis5?=
- =?utf-8?B?bFUxQjlhWHdidG45QmpnOTJST2NCY1hYMW9sand1ZTVPZDVuUTJlT004UHoy?=
- =?utf-8?B?NHNHRXBnYktZcy9EcVN3V21VZXhSMHc2dm9UQU1OeGhraFZTL2tZRXJORjhF?=
- =?utf-8?B?WmU3YkR0NmhDSG00ZXhkTXE5a3lUaU16bElmbUVibE5nQTRQZ1lWaVF5dnh3?=
- =?utf-8?Q?csw/i2?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(376014)(1800799024)(7416014)(36860700013)(7053199007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2025 11:16:17.4700
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f19d4dd3-39fb-4a0b-44ec-08dd7c0ef14b
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9CD.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB7786
 
-On 4/5/2025 1:08 AM, Sean Christopherson wrote:
-> Drop avic_get_physical_id_entry()'s compatibility check on the incoming
-> ID, as its sole caller, avic_init_backing_page(), performs the exact same
-> check.  Drop avic_get_physical_id_entry() entirely as the only remaining
-> functionality is getting the address of the Physical ID table, and
-> accessing the array without an immediate bounds check is kludgy.
+On 4/11/25 16:16, Sean Christopherson wrote:
+> On Fri, Apr 11, 2025, Sairaj Kodilkar wrote:
+>> On 4/5/2025 1:08 AM, Sean Christopherson wrote:
+>>> @@ -991,7 +967,36 @@ int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+>>>    		}
+>>>    	}
+>>> -	ret = 0;
+>>> +	if (enable_remapped_mode) {
+>>> +		/* Use legacy mode in IRTE */
+>>> +		struct amd_iommu_pi_data pi;
+>>> +
+>>> +		/**
+>>> +		 * Here, pi is used to:
+>>> +		 * - Tell IOMMU to use legacy mode for this interrupt.
+>>> +		 * - Retrieve ga_tag of prior interrupt remapping data.
+>>> +		 */
+>>> +		pi.prev_ga_tag = 0;
+>>> +		pi.is_guest_mode = false;
+>>> +		ret = irq_set_vcpu_affinity(host_irq, &pi);
+>>> +
+>>> +		/**
+>>> +		 * Check if the posted interrupt was previously
+>>> +		 * setup with the guest_mode by checking if the ga_tag
+>>> +		 * was cached. If so, we need to clean up the per-vcpu
+>>> +		 * ir_list.
+>>> +		 */
+>>> +		if (!ret && pi.prev_ga_tag) {
+>>> +			int id = AVIC_GATAG_TO_VCPUID(pi.prev_ga_tag);
+>>> +			struct kvm_vcpu *vcpu;
+>>> +
+>>> +			vcpu = kvm_get_vcpu_by_id(kvm, id);
+>>> +			if (vcpu)
+>>> +				svm_ir_list_del(to_svm(vcpu), &pi);
+>>> +		}
+>>> +	} else {
+>>> +		ret = 0;
+>>> +	}
+>>
+>> Hi Sean,
+>> I think you can remove this else and "ret = 0". Because Code will come to
+>> this point when irq_set_vcpu_affinity() is successful, ensuring that ret is
+>> 0.
 > 
-> Opportunistically add a compile-time assertion to ensure the vcpu_id can't
-> result in a bounds overflow, e.g. if KVM (really) messed up a maximum
-> physical ID #define, as well as run-time assertions so that a NULL pointer
-> dereference is morphed into a safer WARN().
+> Ah, nice, because of this:
 > 
-> No functional change intended.
+> 		if (ret < 0) {
+> 			pr_err("%s: failed to update PI IRTE\n", __func__);
+> 			goto out;
+> 		}
 > 
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->   arch/x86/kvm/svm/avic.c | 47 +++++++++++++++++------------------------
->   1 file changed, 19 insertions(+), 28 deletions(-)
+> However, looking at this again, I'm very tempted to simply leave the "ret = 0;"
+> that's already there so as to minimize the change.  It'll get cleaned up later on
+> no matter what, so safety for LTS kernels is the driving factor as of this patch.
 > 
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index ba8dfc8a12f4..344541e418c3 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -265,35 +265,19 @@ void avic_init_vmcb(struct vcpu_svm *svm, struct vmcb *vmcb)
->   		avic_deactivate_vmcb(svm);
->   }
->   
-> -static u64 *avic_get_physical_id_entry(struct kvm_vcpu *vcpu,
-> -				       unsigned int index)
-> -{
-> -	u64 *avic_physical_id_table;
-> -	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
-> -
-> -	if ((!x2avic_enabled && index > AVIC_MAX_PHYSICAL_ID) ||
-> -	    (index > X2AVIC_MAX_PHYSICAL_ID))
-> -		return NULL;
-> -
-> -	avic_physical_id_table = page_address(kvm_svm->avic_physical_id_table_page);
-> -
-> -	return &avic_physical_id_table[index];
-> -}
-> -
->   static int avic_init_backing_page(struct kvm_vcpu *vcpu)
->   {
-> -	u64 *entry, new_entry;
-> -	int id = vcpu->vcpu_id;
-> +	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
->   	struct vcpu_svm *svm = to_svm(vcpu);
-> +	u32 id = vcpu->vcpu_id;
-> +	u64 *table, new_entry;
->   
->   	/*
->   	 * Inhibit AVIC if the vCPU ID is bigger than what is supported by AVIC
-> -	 * hardware.  Do so immediately, i.e. don't defer the update via a
-> -	 * request, as avic_vcpu_load() expects to be called if and only if the
-> -	 * vCPU has fully initialized AVIC.  Immediately clear apicv_active,
-> -	 * as avic_vcpu_load() assumes avic_physical_id_cache is valid, i.e.
-> -	 * waiting until KVM_REQ_APICV_UPDATE is processed on the first KVM_RUN
-> -	 * will result in an NULL pointer deference when loading the vCPU.
-> +	 * hardware.  Immediately clear apicv_active, i.e. don't wait until the
-> +	 * KVM_REQ_APICV_UPDATE request is processed on the first KVM_RUN, as
-> +	 * avic_vcpu_load() expects to be called if and only if the vCPU has
-> +	 * fully initialized AVIC.
->   	 */
+> Paolo, any preference?
 
-Hi Sean,
-I think above change in the comment belongs to patch 16.
+If you mean squashing this in:
 
-Regards
-Sairaj
->   	if ((!x2avic_enabled && id > AVIC_MAX_PHYSICAL_ID) ||
->   	    (id > X2AVIC_MAX_PHYSICAL_ID)) {
-> @@ -302,6 +286,9 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
->   		return 0;
->   	}
->   
-> +	BUILD_BUG_ON((AVIC_MAX_PHYSICAL_ID + 1) * sizeof(*table) > PAGE_SIZE ||
-> +		     (X2AVIC_MAX_PHYSICAL_ID + 1) * sizeof(*table) > PAGE_SIZE);
-> +
->   	if (WARN_ON_ONCE(!vcpu->arch.apic->regs))
->   		return -EINVAL;
->   
-> @@ -320,9 +307,7 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
->   	}
->   
->   	/* Setting AVIC backing page address in the phy APIC ID table */
-> -	entry = avic_get_physical_id_entry(vcpu, id);
-> -	if (!entry)
-> -		return -EINVAL;
-> +	table = page_address(kvm_svm->avic_physical_id_table_page);
->   
->   	/* Note, fls64() returns the bit position, +1. */
->   	BUILD_BUG_ON(__PHYSICAL_MASK_SHIFT >
-> @@ -330,9 +315,9 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
->   
->   	new_entry = avic_get_backing_page_address(svm) |
->   		    AVIC_PHYSICAL_ID_ENTRY_VALID_MASK;
-> -	WRITE_ONCE(*entry, new_entry);
-> +	WRITE_ONCE(table[id], new_entry);
->   
-> -	svm->avic_physical_id_cache = entry;
-> +	svm->avic_physical_id_cache = &table[id];
->   
->   	return 0;
->   }
-> @@ -1018,6 +1003,9 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
->   	if (WARN_ON(h_physical_id & ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK))
->   		return;
->   
-> +	if (WARN_ON_ONCE(!svm->avic_physical_id_cache))
-> +		return;
-> +
->   	/*
->   	 * No need to update anything if the vCPU is blocking, i.e. if the vCPU
->   	 * is being scheduled in after being preempted.  The CPU entries in the
-> @@ -1058,6 +1046,9 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
->   
->   	lockdep_assert_preemption_disabled();
->   
-> +	if (WARN_ON_ONCE(!svm->avic_physical_id_cache))
-> +		return;
-> +
->   	/*
->   	 * Note, reading the Physical ID entry outside of ir_list_lock is safe
->   	 * as only the pCPU that has loaded (or is loading) the vCPU is allowed
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index ef08356fdb1c..8e09f6ae98fd 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -967,6 +967,7 @@ int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+                 }
+         }
+  
++       ret = 0;
+         if (enable_remapped_mode) {
+                 /* Use legacy mode in IRTE */
+                 struct amd_iommu_pi_data pi;
+@@ -994,8 +995,6 @@ int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+                         if (vcpu)
+                                 svm_ir_list_del(to_svm(vcpu), &pi);
+                 }
+-       } else {
+-               ret = 0;
+         }
+  out:
+         srcu_read_unlock(&kvm->irq_srcu, idx);
+
+to undo the moving of "ret = 0", that's a good idea yes.
+
+Paolo
 
