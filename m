@@ -1,73 +1,62 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2042.outbound.protection.outlook.com [40.107.93.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D07022063D2
-	for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 09:49:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744710587; cv=none; b=BKZjXSBEoREsFEgsy/qY7+HXLFsqS4vmCsU7OmjdfBxhE2X2IlL5ufAl8tFs3q2PfYJFt4X8V1bKqIr2EIBNhs+dC2hBe5RnCgOaOh1OvBJVKCoCEDiAq5KWezSKZrooTfH3NeCXUgqpzxbeOGadAvgU7fZJMQJ6jEYtMduzSJA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744710587; c=relaxed/simple;
-	bh=52LpJpjDjE4yBWBRZ4EBwCQtvWp1jBAGSwaH4q8wP3E=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=O/cmwnqlnDrSMessiE1OWIC6b7Pj0Ue7y0fdMON8KRpeTPWX6ASbYCz7pgLDfhPjN3hWARP/SWzSnxNApaFLaGWLNDwzBAwgpwCdBWBfUrergBVR8Ld9VMatCows0awKxVNFLIlJvd4Qty5CTx/jQjwtI4IkNSH8pbeb/TC5JmA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=HR2rNzqq; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D159A1DC9AF
+	for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 11:06:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744715201; cv=fail; b=M4e/k5wxqEM43q7UphVzyf7uKVUc4WNZHk7kTkD938P4rVJXoC39CXR6JZZyJEMbkCJHU7UsZK0sBRJVDEwiHDjgcYmLVGFI0VGh2cAJlsdPb024FQLRna9nST4WxsMxcfh9Bc9xUqgpmtUyfQuJyA2TOi5hDxrNQ9V/+AGfbUs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744715201; c=relaxed/simple;
+	bh=Y9seB1OymfzDwqJVZ8IG7fKGj9B1dvvCQo0cALg8VyY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=CkfvV/Q6ySzMmQ1Jb8cFgJaYzSKLiVo4GSP/6EnOfrvK3wkPU5CbOtqh/6e2A+wQN9LpTRkoQ8J/KIqsGrTsWc6N1QTNii733EaOrcIsxfupW/dP+MjBrHJFgtCtjK6vlFRI3tYOba0jBfL46xNN+yBn8Q4BFHUM1Z4wGnKaoQs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=YE//WqTU; arc=fail smtp.client-ip=40.107.93.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="HR2rNzqq"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53F8tHaq005247
-	for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 09:49:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	KOIM5yPpo9MViTBKkLNoXdzuS8SDS+QNfkUos1BVNLM=; b=HR2rNzqqCQRNtosu
-	jEyA4Dwg+NNBmGGuCP+gFkw6Sr3hJ7PnCrYM15v3TrbbxWlWj2G+WYbGAcbRFd42
-	kapFPavs0vYmmIcTTg69pEtU9PzAapxIIsqm6A2GTa5Qt8IQCqN69eMogWNqoRby
-	Rqa8IGGo0sz52m3mMvnBsonowiawCWbZynuGm68L/Ku0+HaiLdcwvMXdVlyXNJxq
-	P/Jnh2niB/eBa1v4GseskiAOZsVQDwVDnssPhA3Se7nCxGTOHVYJS+1EYoMTNKWl
-	M1h7HIMsbL+w54teqwkwUXKGRIWwUkNxzCCcGhNojgUsAPKqumjKdjNrvLo+E1du
-	44q52g==
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45yhbpqccc-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 09:49:45 +0000 (GMT)
-Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-7c5e2872e57so982937885a.0
-        for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 02:49:44 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744710583; x=1745315383;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KOIM5yPpo9MViTBKkLNoXdzuS8SDS+QNfkUos1BVNLM=;
-        b=gLI5gBc3PnVmijUquVGkcoIH30XCUYAArOYp9cT/JDoRank2bTumncWKNNZMaP5PeW
-         g+bIhNI4vS+IzhfoWiEMbZsEjhhuFpv+OFw3+F3MPFA9K7zsy3aWusfolLhUX5kjB9L5
-         t3hd116J9dZlRufhSs6JpzDtdfxm0u6wUiFwv/ins8Amlwk4WIqExYuApVkMNr5SgT0j
-         KJOn+sxlCubWOkZTmLyqL4D0b161H/L8j+LyWZ4YmqjMBW4XZ34lsPg/AKBCwaDTljJB
-         ZHiktkLnr4rDAZpGu51yJiN3TWOPWcp8mwUU8YOX9irqAih9i/E1XXybC0cBVei6inix
-         HvhQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVduCc+2RDc6s656z2IuL8NOjg/92AlZ/0uWDhLLDAG014mQ/nFsz2SokfxM/+6IZWrdDO1aQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzXp/UBq09vuQLL52Fim28EsJX7LyKJmGubvS2DENdASC/IE19+
-	jbiMCaZ1TgzTPfhqF+KrMCV9c3fofcP7qptARnn/PqSxw+KENQKPjGvmKW3g10bqERDjJS/V0an
-	0vyqxNPRdkbRpFx2Hr9OkMAMqjPYAD/NhYD8k4KcHLinXRzXMI4k1OQ==
-X-Gm-Gg: ASbGncu79s2tAusCRKiNnuw2T5i5e69B2uuy4NiInFO0gpQSMXAcRmL70OVfetQq+bH
-	2ABL/9Zqffm5JeBhBjon76bstVyfzN+l0yTJpb77A7UeLeIqjq1T0Sc6ABsns/SycK7uV8xIMRI
-	VRzpTKY86ehWVtxbAKvkk/EFIlKbswIPZMJxsQlZ4ECia/IDqrtWjhN+jTbpCVg94mJhAukrbA5
-	LaKeZqf41l/5LUQ8qnMe45l35IEGYJPUfV3pk2pJrZUa40X44U8RMaRL6um8fAFPj4bHwg3gxg8
-	cADDvwzYqiggaZ1ukcsDx8CQC17ApsO48zgx+iOvx8y9i1kPQWQfgyBZ7vt9MMoSRIIbjb989ju
-	h6jXheJw6HKxb2q1ATPnqmkhuFyiRLeXoOuKL56sDO+xj43uVLFU5+1c8sSYk
-X-Received: by 2002:a05:620a:424c:b0:7c5:5909:18d8 with SMTP id af79cd13be357-7c7af0d3d1emr1773053385a.14.1744710583701;
-        Tue, 15 Apr 2025 02:49:43 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFoHRiOt8l67E2P0R7QBa24QR77cwJMkGHiQzo6vMvNgAnJNTeO3hOBWB7ssd17odFt1mGM6Q==
-X-Received: by 2002:a05:620a:424c:b0:7c5:5909:18d8 with SMTP id af79cd13be357-7c7af0d3d1emr1773051985a.14.1744710583367;
-        Tue, 15 Apr 2025 02:49:43 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:aa:77bc:64e0:30e4:f6ff:5bd? (2001-14bb-aa-77bc-64e0-30e4-f6ff-5bd.rev.dnainternet.fi. [2001:14bb:aa:77bc:64e0:30e4:f6ff:5bd])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-30f46623c2bsm20611601fa.111.2025.04.15.02.49.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Apr 2025 02:49:42 -0700 (PDT)
-Message-ID: <10e8c3dc-fbeb-42e1-b810-d80e768ecf6b@oss.qualcomm.com>
-Date: Tue, 15 Apr 2025 12:49:40 +0300
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="YE//WqTU"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=syCzjxfGivgF19OXiHuiBGOY7MXx2LaNFZWH7BeDeIO0s8qv5YLEDVXoUsBy+87XcSWhfHaerOl2fEpwKvEfFPNNy17sWhxFdjlbBbu1X9d1ThfIkURhKnnjDJxQawYGzGBN1cXKc3FurmoHKyhoV0SAxbkabxyt7KlWfvYX9gVt1HHMrt5Jo9VHP1z3LYelGdysOQsc7ITeguHv+0NHR8nNd3rLdes6jYQVxsBm/6BKF2riMzWFW1fcMkx4bccDmcXwO9RuTQVadPPY9UVNrKfHcXqIhNAv8un7X7SVESsIapnSephlwBJwlQs2FIIOuZFxUu6RxUysLAa2SqoIWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=1w5T8vXx9NM9HNwUfIMSniPLpzcI3d1PYM/NcXsELuc=;
+ b=LrpYFBsJVtZ0Fanb3HDPzSWNfhPSWw0Y4XtAhMJTdF7pbNZZXGjkd+Dcx5Z5pglj1neJQITCF57BnlwTEKYODas0AYY0ctkdcpSo6UVue/hP0zUKCbrhd3D2eyyNu7+aBfmJALiydaiHCg+GAHQvD0oA9PG+2raMryECp1It581FxYkzxEmG/GvywEXRXNrLWaG8WhORqEmmcdihY6Jh8Otq7cT4e7a/oICuBxeZvEWuZXDlueesJmmNfoigRQlM+7uAYoEB/tn6nQ8NdAUDngiTpM3W3QhhqAfaR79LDB6j1D5sB6i2S6rExq4Dgd8en8b7Ec77QHj44t3dXKmg7Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=1w5T8vXx9NM9HNwUfIMSniPLpzcI3d1PYM/NcXsELuc=;
+ b=YE//WqTULEYAMKEJ1nmkpZfaeiYwm5h6jHfmxar/EFYNZkOdwZD9PWjD5OjCPJQzSoHXG1GQFZLWejGtl6VRBd3HrEzvesDyeimkF3ku4E7/MyS1zM3f/oaU+A1VbxVPnvzGS8mTvOLttQZnCVWsQsdH1L4WSZz54adGeo6OZpo=
+Received: from BL6PEPF00013E0D.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:22e:400:0:1001:0:11) by IA1PR12MB8358.namprd12.prod.outlook.com
+ (2603:10b6:208:3fa::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8632.35; Tue, 15 Apr
+ 2025 11:06:35 +0000
+Received: from BL6PEPF0001AB4D.namprd04.prod.outlook.com
+ (2a01:111:f403:f903::4) by BL6PEPF00013E0D.outlook.office365.com
+ (2603:1036:903:4::4) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8632.26 via Frontend Transport; Tue,
+ 15 Apr 2025 11:06:35 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ BL6PEPF0001AB4D.mail.protection.outlook.com (10.167.242.71) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8655.12 via Frontend Transport; Tue, 15 Apr 2025 11:06:35 +0000
+Received: from [10.85.32.54] (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Tue, 15 Apr
+ 2025 06:06:31 -0500
+Message-ID: <d345b636-792f-4762-8c6c-2a7252294068@amd.com>
+Date: Tue, 15 Apr 2025 16:36:29 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,83 +64,121 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 10/10] arm64: dts: qcom: sar2130p: add display nodes
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Rob Clark <robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <lumag@kernel.org>, Sean Paul <sean@poorly.run>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Krishna Manikandan <quic_mkrishn@quicinc.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Konrad Dybcio <konradybcio@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org
-References: <20250415-sar2130p-display-v3-0-62314b1c9023@oss.qualcomm.com>
- <20250415-sar2130p-display-v3-10-62314b1c9023@oss.qualcomm.com>
- <96e38ebb-5847-485a-8bf6-50e7b10ce572@oss.qualcomm.com>
+Subject: Re: [PATCH 11/67] KVM: SVM: Delete IRTE link from previous vCPU
+ irrespective of new routing
+To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini
+	<pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse
+	<dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
+CC: <kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, Maxim Levitsky <mlevitsk@redhat.com>, Joao
+ Martins <joao.m.martins@oracle.com>, David Matlack <dmatlack@google.com>
+References: <20250404193923.1413163-1-seanjc@google.com>
+ <20250404193923.1413163-12-seanjc@google.com>
 Content-Language: en-US
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-In-Reply-To: <96e38ebb-5847-485a-8bf6-50e7b10ce572@oss.qualcomm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Sairaj Kodilkar <sarunkod@amd.com>
+In-Reply-To: <20250404193923.1413163-12-seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: Jki3LVj9zp8p7rh7CzEt1VNXDdg8qvz8
-X-Proofpoint-GUID: Jki3LVj9zp8p7rh7CzEt1VNXDdg8qvz8
-X-Authority-Analysis: v=2.4 cv=I+plRMgg c=1 sm=1 tr=0 ts=67fe2bb9 cx=c_pps a=qKBjSQ1v91RyAK45QCPf5w==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=VwQbUJbxAAAA:8 a=KKAkSRfTAAAA:8 a=EUspDBNiAAAA:8 a=01dcSNK4EstfxtfeDswA:9 a=QEXdDO2ut3YA:10
- a=NFOGd7dJGGMPyQGDc5-O:22 a=cvBusfyB2V15izCimMoJ:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-15_04,2025-04-10_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- phishscore=0 adultscore=0 priorityscore=1501 mlxscore=0 lowpriorityscore=0
- bulkscore=0 mlxlogscore=999 clxscore=1015 impostorscore=0 malwarescore=0
- classifier=spam authscore=0 authtc=n/a authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2502280000
- definitions=main-2504150068
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB4D:EE_|IA1PR12MB8358:EE_
+X-MS-Office365-Filtering-Correlation-Id: 84e99587-d2d7-49bb-3e60-08dd7c0d9624
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|7416014|36860700013|82310400026|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?bndaYVBzbXpZWDJjcnd1T0g1UU1kRXJYbFEzK0NRb2lvRE54dmxkQi9KRlY3?=
+ =?utf-8?B?eTNwWUJnTHRzTWdsWEwvMmRpclY5cHY4aFd3bEpLV09BTUZiYzVQaHRnV1l4?=
+ =?utf-8?B?Y2Q1aFpjdHRTUENMalZ5SERJVUJPeFFaSEZKemk2cXRpWlJ5N3d5SXpyZ21z?=
+ =?utf-8?B?Tmp1UkVaZCtpQi85TC9Fa3lSbThwY0NPUUZRVStWdENKNHVhRG9qczhlQmNm?=
+ =?utf-8?B?bzZJV2FRblRXajBSVVl6ZHZBeE1kY1EwMzIzeWErNUpMVDNvcWRGK0haUGY3?=
+ =?utf-8?B?WVowMzUydGpoaXBvRlN0eUMzN00rcWNtbk0zMHZyTi9FWHJHSkgyU2NHVS9m?=
+ =?utf-8?B?b09mcmN5L29jTXRnK0MycUl3WlI1b3Y5K2IxTkdHRysyenZSV3RqdHhGZmJ5?=
+ =?utf-8?B?VkV5ZlJCVGNZVEpnU2RiKzVTRkxaWjN1NmxOZXo3b3kvenlkTVJLVmNtbjlE?=
+ =?utf-8?B?RW05TEdneEg0QlFuWFlaTm5rZUhFVExxaHhIYjBERUVGdjJhMWc2a3BnMDRO?=
+ =?utf-8?B?dThxTE9UK0JabHQxNzM0QjM0by9adnNKUEJZdWh6dmdpNE1WWUk4ZDdGQnRh?=
+ =?utf-8?B?Ni9TSWpIWTZjZ1JtYjZzcDhxQU41eFh2c1loNW43MFFqUmNPNTM2QXVZc1po?=
+ =?utf-8?B?RGFNZkthRmVqaGg2NzFReUkwT1Fub0poVzh5K01OSVY5Wjhyem5oR25CdVBp?=
+ =?utf-8?B?clhIRVN0bFoxOWR1VVZtbW1zSDh6dzJldDdiOHZHYTc0WHl5alA3a1ZFdUU0?=
+ =?utf-8?B?RHptelZEQVdNOUhvckFOTmhsdm1wTWVqdUk0S0ZIQ2lUdjVpS0lzSCt3c0FW?=
+ =?utf-8?B?VG5kelFrNWdGUk96Ny94OS85WWY3c0ZwUzd6RjR0R1dZZkpOVlBRQTd1TWpB?=
+ =?utf-8?B?R2ErcU0wRmpMaFVQaEN5VVZjWkVaS1BWWVZPZEFjUFVac21qMjk4dXlVbjdR?=
+ =?utf-8?B?RzJ1R1lucldCSjdnbFF6ZGNxVWhiRVlEbGpRNWRVOVJjU2ExdXFOb0dIMUcr?=
+ =?utf-8?B?UFNhazgrSmt1alRzYzFqcitIUWJZakN5RXlzbWROR1BYQk0wcXlDUy83OEtG?=
+ =?utf-8?B?dCtiMlJaVkdmMW9PQ0pTUDQ2Sno0Q2t2ZFFRa0dNQktjLzV0R0x5QWViYk9P?=
+ =?utf-8?B?cGthakVnK0pMMis2Q09tRDVCc25rSWVNSXNienpMVUxnWWFhUlBnbjlZYW9w?=
+ =?utf-8?B?ZlZwRW91UGtKQ0p6Y2Q1eXR4OTJ5N1FGOXZyRkJaKzdMVHdQYkczeXJEZXIx?=
+ =?utf-8?B?Q2EybGYzaFBGOHhHZnJjM1RiQzRjVHdZUVNkVVBTMzNkN2hjQmVZVjk0L2k5?=
+ =?utf-8?B?VEF2SXJac05Td25JU29HYkpheU9zUFU1T0doZVg2VmxyOEhlczFidk9YbVlz?=
+ =?utf-8?B?cjZvYTFod2l5dnBPVDFkT0xtWkNLYTNMTUZ1MGY1VkpQMHZMUzlSM05sMWpq?=
+ =?utf-8?B?YmRlWDkvME8vaXpySUFtMFZGbmpHeEZZcmxXckNZZXUxM1BGR1VHSERnYXB4?=
+ =?utf-8?B?Ri9Vb3EvWVhqMDRIM3V4T05wK3VXN3ZVYTZYcUY1ZXJScFlVRFZubllybFVG?=
+ =?utf-8?B?T1JUeFRhNHZoenlwbUdHSWw2V3lkbDJnWVdJejMwMVZtZkYxSkV5elF4TmxE?=
+ =?utf-8?B?d0lkdmpQVXdtbEhlUXYxQ0pYWEEyMjZxelBRemhtbEd2KzdTWFdwYlNYVDBn?=
+ =?utf-8?B?R09WOThMcjNwdlZqM25RaEJUaUVMWUFCaVFZakEwNVRiMkpvWW0yRzRkUThY?=
+ =?utf-8?B?a1F0N3EvTHhnVk9FZ0ZQV25paEdpVVNDREc4Y2lLL0d4OFNrSEc1RldpemlK?=
+ =?utf-8?B?dUlETzBTRWR5cmIzN2IvV0VUcGk4U20ycndoQitVYk9Id1EwZFkwYnFmY3NL?=
+ =?utf-8?B?RGxray80TTdFL0ZHeERrQU1pdERDbU9rVkNGSWMyeThEZGYvajIyM0NvZEdT?=
+ =?utf-8?B?QitoVUdEQnBrYWtTdlk4UGYzdUxnNTl4YmdUNkhpM3lqY2dycERlVDBMNVJk?=
+ =?utf-8?B?QTRqMWJtWWUyUXZFaFljODNvZW94K2RZUXV6S1dBdHQ2b3l4b0tWWDhGblZI?=
+ =?utf-8?Q?tLSCDj?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(36860700013)(82310400026)(7053199007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2025 11:06:35.1542
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 84e99587-d2d7-49bb-3e60-08dd7c0d9624
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF0001AB4D.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8358
 
-On 15/04/2025 12:44, Konrad Dybcio wrote:
-> On 4/15/25 11:39 AM, Dmitry Baryshkov wrote:
->> From: Dmitry Baryshkov <lumag@kernel.org>
->>
->> Add display controller, two DSI hosts, two DSI PHYs and a single DP
->> controller. Link DP to the QMP Combo PHY.
->>
->> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
->> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
->> ---
+On 4/5/2025 1:08 AM, Sean Christopherson wrote:
+> Delete the IRTE link from the previous vCPU irrespective of the new
+> routing state.  This is a glorified nop (only the ordering changes), as
+> both the "posting" and "remapped" mode paths pre-delete the link.
 > 
-> [...]
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>   arch/x86/kvm/svm/avic.c | 8 ++++++--
+>   1 file changed, 6 insertions(+), 2 deletions(-)
 > 
->> +			interconnects = <&mmss_noc MASTER_MDP QCOM_ICC_TAG_ACTIVE_ONLY
->> +					 &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ACTIVE_ONLY>,
->> +					<&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ACTIVE_ONLY
->> +					 &config_noc SLAVE_DISPLAY_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
->> +			interconnect-names = "mdp0-mem", "cpu-cfg";
-> 
-> The first path should be always on, so that if CPUSS collapses,
-> the display may stay on
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index 02b6f0007436..e9ded2488a0b 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -870,6 +870,12 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   	if (!kvm_arch_has_assigned_device(kvm) || !kvm_arch_has_irq_bypass())
+>   		return 0;
+>   
+> +	/*
+> +	 * If the IRQ was affined to a different vCPU, remove the IRTE metadata
+> +	 * from the *previous* vCPU's list.
+> +	 */
+> +	svm_ir_list_del(irqfd);
+> +
+>   	pr_debug("SVM: %s: host_irq=%#x, guest_irq=%#x, set=%#x\n",
+>   		 __func__, host_irq, guest_irq, set);
+>   
+> @@ -892,8 +898,6 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   
+>   		WARN_ON_ONCE(new && memcmp(e, new, sizeof(*new)));
+>   
+> -		svm_ir_list_del(irqfd);
+> -
+>   		/**
+>   		 * Here, we setup with legacy mode in the following cases:
+>   		 * 1. When cannot target interrupt to a specific vcpu.
 
-Ack, I'll fix that and send the next iteration tonight.
+Hi sean,
+Why not combine patch 10 and patch 11 ? Is there a reason to separate
+the changes ?
 
-> 
-> other than that
-> 
-> Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-> 
-> Konrad
-
-
--- 
-With best wishes
-Dmitry
+Regards
+Sairaj Kodilkar
