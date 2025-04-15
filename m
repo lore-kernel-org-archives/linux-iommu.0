@@ -1,202 +1,191 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 017A327B50E
-	for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 08:13:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5EF0288C9B
+	for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 09:39:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744704784; cv=none; b=urNdB1QRoaAeqnK6iHN+rzQ6N4X9+y+2XGP/e+FLBq+DmsVLUxcjk4wQcJJdxZuKHRV2bhvhyRbSRmo73SuWUXZcdu+W1LmWGTIIYtUqn1Cg4WFF3e1K9xQNzOjgPN+d4+5+VwE58Qx/+qvIhHLKmPOuLL8X5ijQo7iu+IBNFuQ=
+	t=1744709981; cv=none; b=oXHejRdXzWkGvArysOElzX633dVgNBKcc1lgjYCDEL6+9TGZbTcIqI8tO6gxx9XT+mca3ed7zV3OGFF7dUxbZ+OmsWeTxtbQ00zGC0IvVbXcMWIKCg9Spa9MXoT1cUTo4la1IoqvdZvwLEbIr+lnHrAXpisckDd4fCqK7Lf8fY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744704784; c=relaxed/simple;
-	bh=iar+0k1goXrt2gDKA32KAA8nbIZUL966Tk/tGujp4zU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=QaxQu/uOEgGHSinL7N87VUgEGEVmqbN1roUeFKiydhaGfJUlObC51SqIaYSrRLK0nDycK7YDngoIrIMuE4FcASLcvi0CGP8rokuCyt8XlkMVaEa3alCLaoJwJ+mWtxIc1wDFPfN7v6fvelEiFKLcySj1OoMWfXfG8H7w3prHjBE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=VQ2u7HGG; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1744709981; c=relaxed/simple;
+	bh=8+FdRKBRcQNHe/n056K1ZGMprSxiSZfCl3rDyLla6E8=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=fIPwJKQYhYFxPBuOAO/O3RBqsCPOPU+urBCMEWFXqjG9OZqBjAhu+hqydIJ76iezCM2tm1StB2k3WR+ZfVIVURNEX+P6BRSMpl9fXTKnhrwWTvjKzWpWKRu+ZkIrp8xwJdQdJLQem9+UrP1RDZAzbroH2xligNp+WeY59P/oHRY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=SmW0bNr4; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="VQ2u7HGG"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250415081300euoutp021672900759308a3041fd2a290c44a892~2b8Dwvqg60688506885euoutp02a
-	for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 08:13:00 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250415081300euoutp021672900759308a3041fd2a290c44a892~2b8Dwvqg60688506885euoutp02a
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1744704780;
-	bh=XuQLzxBEX4bfeiKE7Ksi3BVYEcCH5WtIRocEfpLB7Yw=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=VQ2u7HGGnNG/nnvif+ki0wPLVeg+oWJzzMv8/F7D+TrpzLzFw80REwCH/js1JuECR
-	 6SVLyFv0LgRBHZeEfPB6c5vQrFJ1QKwOOLFM8MUbpvRZpWyT0NYl8OIBltDSggjSp0
-	 jMwQKYzwBCgnew2vzjfmDfRSIibYTMAUvRoZEDHE=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20250415081259eucas1p2e1f2ba577e0e6286c259d2dec96debb1~2b8DRLI_D2500625006eucas1p2y;
-	Tue, 15 Apr 2025 08:12:59 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges1new.samsung.com (EUCPMTA) with SMTP id 5D.B9.20821.B051EF76; Tue, 15
-	Apr 2025 09:12:59 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20250415081259eucas1p28bccb19d833359ed6eedeea9969f33cd~2b8C4HQ7o0334203342eucas1p2r;
-	Tue, 15 Apr 2025 08:12:59 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-	20250415081259eusmtrp280d9be7e251135e363c2d2931031eae7~2b8C3Nko-2581025810eusmtrp2c;
-	Tue, 15 Apr 2025 08:12:59 +0000 (GMT)
-X-AuditID: cbfec7f2-b09c370000005155-4e-67fe150b4817
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id B7.D8.19920.A051EF76; Tue, 15
-	Apr 2025 09:12:59 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20250415081256eusmtip114d33610863b4348035f03c44492ffae~2b8A1YQYB1557015570eusmtip1g;
-	Tue, 15 Apr 2025 08:12:56 +0000 (GMT)
-Message-ID: <3927f2b4-a9ec-4717-86f6-6d5ac4e89804@samsung.com>
-Date: Tue, 15 Apr 2025 10:12:56 +0200
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="SmW0bNr4"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53F8tGEw012560
+	for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 09:39:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=qcppdkim1; bh=V8/InWf/oEp6mC1XkXIEKa
+	Vat3glgwm35TmdtOEWZG8=; b=SmW0bNr4aipfz2iUbnS7akLkYvwi4n+q1kzQAb
+	Z4ggY3zeY1GRWHOrwGJC8yFh6czu3l44zUUQemIy6uXNASeFAF7FVVQ7R+2fYlcT
+	uO8GwSWvIZK7+LwGAQFQTYKho3vYoZ7NHR+Ie1dJmgoxW4eUPgdpGNNHiYn2jz+X
+	ZXYr6VVYdt3NnrAkM1lI6K1TsW8O5eY0U1Rft223nDcub1knNIpstQ3Y/8i6KYNK
+	dbcTpGUfFTKEH/zZc494PeLaCvuvoc+7OKO1BkGPg7v/zvoysCHFuAchmBbsI38/
+	z7wFdygB+q+S7ZQVl38xYUxecpm7OcCCrPwnqMtqvzqRD+BQ==
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45ydhq7rw4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 09:39:38 +0000 (GMT)
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-7c5bb68b386so1522358685a.3
+        for <iommu@lists.linux.dev>; Tue, 15 Apr 2025 02:39:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744709978; x=1745314778;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=V8/InWf/oEp6mC1XkXIEKaVat3glgwm35TmdtOEWZG8=;
+        b=iJyADu2CPUHMzHj/LQqpE1IUWPvbGPRcyvzdgC7vy2e6pMAVrKYnpCuqsfgatP/IT1
+         CfmS2INF7u9okFRSPCjwoqliuLE0VnNnTnOgSFgN43d+XqqeScNJsimvY3bQftMw8CMu
+         pnThDRn+Wsg8EOXLQMBvIQpUK9tTHKms2d1JWn0s9y9h7snVD+lg8UGRyTYqqncASMA6
+         5MVxeYXhh2CfaFabueaFEAwmzaN5ORe+3FlOVEFwjWaKv5/wWs/h9nMOsDmie6rS4oh8
+         7rv+HloyBI0sHCr2eaWNnSajVknsYCRy6G+Hm0CP+gJgj/ydCkEizZJ33WShNP6wA3S2
+         UA2w==
+X-Forwarded-Encrypted: i=1; AJvYcCWOHN62ol7P4aoCyy7qhmWRwPcfIZ9m+DmLOlxtVAXWrDxzPbko6JmNzA0wslmQEiTltGEJog==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyp/GVXAD03X/bx7tDNU9W/9gJYVat3gnT2zUux4haZCrdwgUjL
+	uaJji5fPJ8lM6a57De2caE3XoD+mBoitQ+ZzIDfTj45v+AhbWeu/dD4XNuG2PKL0mx05tfajQdy
+	bqJaY9QLdXqZxwJZk64//S0oohIkCvzxNrL7shs4BijFVfGWUDbpFhQ==
+X-Gm-Gg: ASbGncvZpP5PlNE+xX47WK6buhVL6ICibjRA7wUi9Q7YnUbLfccwvL8WRz6hlfpQSYj
+	h6R0RALMgAKavx8e//66lgd74OmKmilsAh1RXUillKMrfMeZkXraBYIWvKo7YodPLrMb6sTgc/W
+	KOLR8u40WQk3asfPvYhTm0gkEuInolBBNHbZKcUDNb9Uq1WKsWpSLbeuyZwsjHqHK840GTa9H1q
+	YKu17eWrA0Y1avmRq3bUakcQGq0s4PcXtum9XjE2U37iwiLrvD8ivxvR8VjfgSwKsVALdAaQv3V
+	GsnkyzKURD91yBbCBk0CZ6hg1fwkbvAw62MCCnPRYgFI+KSRoW2RfETupT4jUuHzd+GHK2DUlUP
+	9bu8KcBGffX/g+ABkVhZbYbf8
+X-Received: by 2002:a05:620a:2941:b0:7c5:57b2:2cb7 with SMTP id af79cd13be357-7c7af13effdmr2310019185a.56.1744709977768;
+        Tue, 15 Apr 2025 02:39:37 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IG4rACzgVsYI3BzPQGoMw4ZxLMn+GpdVuPdRl/4ZF9EcAu0Pa9lLDPfkwsny6yqR1/CgDYg7g==
+X-Received: by 2002:a05:620a:2941:b0:7c5:57b2:2cb7 with SMTP id af79cd13be357-7c7af13effdmr2310016085a.56.1744709977374;
+        Tue, 15 Apr 2025 02:39:37 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-30f464cbc60sm20141901fa.24.2025.04.15.02.39.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Apr 2025 02:39:36 -0700 (PDT)
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Subject: [PATCH v3 00/10] drm/msm: add support for SAR2130P
+Date: Tue, 15 Apr 2025 12:39:28 +0300
+Message-Id: <20250415-sar2130p-display-v3-0-62314b1c9023@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [v2] dma/mapping.c: dev_dbg support for dma_addressing_limited
-To: Balbir Singh <balbirs@nvidia.com>, iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-	=?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, Ingo Molnar
-	<mingo@kernel.org>, Kees Cook <kees@kernel.org>, Bjorn Helgaas
-	<bhelgaas@google.com>, Linus Torvalds <torvalds@linux-foundation.org>, Peter
-	Zijlstra <peterz@infradead.org>, Andy Lutomirski <luto@kernel.org>, Alex
-	Deucher <alexander.deucher@amd.com>, Bert Karwatzki <spasswolf@web.de>,
-	Christoph Hellwig <hch@infradead.org>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20250414113752.3298276-1-balbirs@nvidia.com>
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrGKsWRmVeSWpSXmKPExsWy7djP87rcov/SDebclLeYdmc3q8WSuceZ
-	LZY0ZVi8vQ/knZ6wiMni1xcLi3Vvz7NaXN41h83i/K61rBar/51itDjee4DJ4uCHJ6wWryfe
-	ZrV41PeW3YHPo/XSXzaPNfPWMHos2FTqsXmFlsemVZ1sHidm/GbxeLF5JqNHb/M7No/Pm+Q8
-	bj/bxhLAFcVlk5Kak1mWWqRvl8CV8eDHJPaCJomKGw/msTUwPhHuYuTkkBAwkbi29R1LFyMX
-	h5DACkaJ5WeusIMkhAS+MEq8+cQDkfjMKPH/zlR2mI7td9axQiSWM0rsf/kTqv0jo8Tppb9Z
-	Qap4BewkDv/cBWazCKhK/Jy+lR0iLihxcuYTFhBbVEBe4v6tGWBxYQFvifXNq8HqRQRsJNo/
-	r2QGGcoscI9Z4u/FdrAEs4C4xK0n85lAbDYBQ4mut11sIDangJXEvAVH2CBq5CWat84Ga5YQ
-	WM8pcf/qGRaIu10kTrx5zgRhC0u8Or4F6h8Zif87QYaCNLQzSiz4fR/KmcAo0fD8FiNElbXE
-	nXO/gFZwAK3QlFi/Sx/ElBBwlOg7nQhh8knceCsIcQOfxKRt05khwrwSHW1CEDPUJGYdXwe3
-	9eCFS8wTGJVmIQXLLCRfzkLyzSyEtQsYWVYxiqeWFuempxYb5qWW6xUn5haX5qXrJefnbmIE
-	Jr3T/45/2sE499VHvUOMTByMhxglOJiVRHi5nH+lC/GmJFZWpRblxxeV5qQWH2KU5mBREudd
-	tL81XUggPbEkNTs1tSC1CCbLxMEp1cBU0cZkZbK9j+FE/cstN3IzyhZHr/x85ZJHtDfHE9Mn
-	Sx8uN90THiTTEnR46qHdYfM/uRzbLzr1T7HW/OcM9tetuzXfNHbHc95/Pvn6z9tPf+0L7tWs
-	v6t1K11xksRa+R5mzhPBMn4PbkYw+i5/s+QIy5y755Yleyn2uN1b6jj/ZLbxw4RXK57n3wz2
-	25l6tXhf6u7t+mtO/mGL9nxxfm9XsYpmQfOtSycvX3nZm1FcYZYV+zsi9YGs9e29r148Zp0f
-	OWPRDyfBAEvNjOzDTn8fZF7sPORq9tlq4boj8/gd18eXP8nS/Hn7zLJvChqm7jm/HqqE2hbu
-	LXa/ni6qqn7NzunmZftDU2KTP3sHX6jRUWIpzkg01GIuKk4EAAMJO/rpAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrJIsWRmVeSWpSXmKPExsVy+t/xu7rcov/SDWasZraYdmc3q8WSuceZ
-	LZY0ZVi8vQ/knZ6wiMni1xcLi3Vvz7NaXN41h83i/K61rBar/51itDjee4DJ4uCHJ6wWryfe
-	ZrV41PeW3YHPo/XSXzaPNfPWMHos2FTqsXmFlsemVZ1sHidm/GbxeLF5JqNHb/M7No/Pm+Q8
-	bj/bxhLAFaVnU5RfWpKqkJFfXGKrFG1oYaRnaGmhZ2RiqWdobB5rZWSqpG9nk5Kak1mWWqRv
-	l6CX8eDHJPaCJomKGw/msTUwPhHuYuTkkBAwkdh+Zx1rFyMXh5DAUkaJ5tdvGCESMhInpzWw
-	QtjCEn+udbFBFL1nlNjb8gsswStgJ3H45y4wm0VAVeLn9K3sEHFBiZMzn7CA2KIC8hL3b80A
-	iwsLeEusb14NVi8iYCPR/nklM8hQZoEHzBJnHx9hAkkICfQySqzdXgBiMwuIS9x6Mh8sziZg
-	KNH1FuQKTg5OASuJeQuOsEHUmEl0be1ihLDlJZq3zmaewCg0C8kds5CMmoWkZRaSlgWMLKsY
-	RVJLi3PTc4sN9YoTc4tL89L1kvNzNzEC43zbsZ+bdzDOe/VR7xAjEwfjIUYJDmYlEV4u51/p
-	QrwpiZVVqUX58UWlOanFhxhNgYExkVlKNDkfmGjySuINzQxMDU3MLA1MLc2MlcR53S6fTxMS
-	SE8sSc1OTS1ILYLpY+LglGpgkvS/+7F00QyfVq6wxUGH1m1K/dQqr7HAdP8q9d4Dm1Y5hvWG
-	ZDS4aJX9/qOWvKA0sFnVonvlvH9RT9hq5WsOO/PWBZqVrs9d/8TIrHOBU9LuvifFywPerDpy
-	vPzyxvvySXvMwsrPfzdmfGy/fY9syoKfDuKlVYd+tSpbHbgt+CbCrtt4P/tPh1WphYwfJNef
-	FPi72vtj5qW5a91lYy1LpKduzWLQ6ncuTLrOuudtqFC9kPHrLT8fJfTZHa6d9ZjRU/bI+QVm
-	Bw6nvuJpu/Pn9qIn8WKnZNY+rUlOTz/28FzgvH9iF76tXNb98/rlAtWpCWwzm1qtFxkpufRt
-	5/ItnzptBlMny+Rr668HXxTdrsRSnJFoqMVcVJwIAEnG7x58AwAA
-X-CMS-MailID: 20250415081259eucas1p28bccb19d833359ed6eedeea9969f33cd
-X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250414113810eucas1p2d3b2f60d567a27a2c22930229b4bccfc
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20250414113810eucas1p2d3b2f60d567a27a2c22930229b4bccfc
-References: <CGME20250414113810eucas1p2d3b2f60d567a27a2c22930229b4bccfc@eucas1p2.samsung.com>
-	<20250414113752.3298276-1-balbirs@nvidia.com>
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAFAp/mcC/3WOQY7CMAxFr1J5TYqTtKOKFfcYsUhbByy1TYlDB
+ UK9+4SyYcFsLD3r+/k/QSgyCRyKJ0RaWDhMGeyugO7ipjMp7jODQVOjxUaJi0ZbnFXPMg/uoVr
+ 8Qe07T61FyGdzJM/3Tfl7enOk6y2b03sJrRNSXRhHTodionvaj04SRXjFLywpxMdWaNFb/v/fi
+ 1aodF91Fn1lG2OOA08uhjLE82ZbzIdBV18MJhus9q6q0bimxmMQKa83N7wKlnnAaV3XP7wHV6w
+ oAQAA
+X-Change-ID: 20250308-sar2130p-display-b0601fcfeb30
+To: Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <lumag@kernel.org>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Krishna Manikandan <quic_mkrishn@quicinc.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Konrad Dybcio <konradybcio@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Dmitry Baryshkov <lumag@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2735;
+ i=dmitry.baryshkov@oss.qualcomm.com; h=from:subject:message-id;
+ bh=8+FdRKBRcQNHe/n056K1ZGMprSxiSZfCl3rDyLla6E8=;
+ b=owEBbQGS/pANAwAKAYs8ij4CKSjVAcsmYgBn/ilVQblGdMJpbMs8bFSCq/qV9blClDIrPNXU6
+ 68xeWaH1FuJATMEAAEKAB0WIQRMcISVXLJjVvC4lX+LPIo+Aiko1QUCZ/4pVQAKCRCLPIo+Aiko
+ 1YZ2B/9ihoSC4zR3Eh0ZFAbhucp8PMMkr8PUnF6yxorCyMNhIOUeGw59NXQ2agjKOhmZKNGyVeq
+ 2PIodoZBADp4xLaOIJvTAl8kTIpiTzAGCM4NENMGP71c45NOsrqdS2LwYdLWb/D3ousXN2mvLTG
+ No5siL7covudh6eimBrUt1Z3meFpoIzAW8u626EL43LRw5PYxttaZDPvdfEtpm1Mhs68j3IdpWO
+ FwogpnPBKKUKAnj1pLbzXxNZN7vV+p7BKHSCDPWjZfuVByr+oxX9D68q/ePAJK2xNaSKDiQa6HH
+ LguDGt1yqk7R2lhJDP+UtaMyk2i6z0OAO/GNQ3NVXiZxgZav
+X-Developer-Key: i=dmitry.baryshkov@oss.qualcomm.com; a=openpgp;
+ fpr=8F88381DD5C873E4AE487DA5199BF1243632046A
+X-Proofpoint-ORIG-GUID: 2cbUW0kWCMhN5mpiE6idrEJ2a8WEVGo6
+X-Authority-Analysis: v=2.4 cv=C7DpyRP+ c=1 sm=1 tr=0 ts=67fe295a cx=c_pps a=50t2pK5VMbmlHzFWWp8p/g==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=KKAkSRfTAAAA:8 a=qnNoV65vq9fCYBTq3NIA:9 a=QEXdDO2ut3YA:10
+ a=IoWCM6iH3mJn3m4BftBB:22 a=cvBusfyB2V15izCimMoJ:22
+X-Proofpoint-GUID: 2cbUW0kWCMhN5mpiE6idrEJ2a8WEVGo6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-15_04,2025-04-10_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=957
+ priorityscore=1501 suspectscore=0 clxscore=1015 spamscore=0 bulkscore=0
+ impostorscore=0 phishscore=0 lowpriorityscore=0 malwarescore=0 mlxscore=0
+ classifier=spam authscore=0 authtc=n/a authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2502280000
+ definitions=main-2504150067
 
-On 14.04.2025 13:37, Balbir Singh wrote:
-> In the debug and resolution of an issue involving forced use of bounce
-> buffers, 7170130e4c72 ("x86/mm/init: Handle the special case of device
-> private pages in add_pages(), to not increase max_pfn and trigger
-> dma_addressing_limited() bounce buffers"). It would have been easier
-> to debug the issue if dma_addressing_limited() had debug information
-> about the device not being able to address all of memory and thus forcing
-> all accesses through a bounce buffer. Please see[2]
->
-> Implement dev_dbg to debug the potential use of bounce buffers
-> when we hit the condition. When swiotlb is used,
-> dma_addressing_limited() is used to determine the size of maximum dma
-> buffer size in dma_direct_max_mapping_size(). The debug prints could be
-> triggered in that check as well (when enabled).
->
-> Link: https://lore.kernel.org/lkml/20250401000752.249348-1-balbirs@nvidia.com/ [1]
-> Link: https://lore.kernel.org/lkml/20250310112206.4168-1-spasswolf@web.de/ [2]
->
-> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: "Christian König" <christian.koenig@amd.com>
-> Cc: Ingo Molnar <mingo@kernel.org>
-> Cc: Kees Cook <kees@kernel.org>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Linus Torvalds <torvalds@linux-foundation.org>
-> Cc: Peter Zijlstra <peterz@infradead.org>
-> Cc: Andy Lutomirski <luto@kernel.org>
-> Cc: Alex Deucher <alexander.deucher@amd.com>
-> Cc: Bert Karwatzki <spasswolf@web.de>
-> Cc: Christoph Hellwig <hch@infradead.org>
->
-> Signed-off-by: Balbir Singh <balbirs@nvidia.com>
+Add support for the Mobile Display SubSystem (MDSS) device present on
+the Qualcomm SAR2130P platform. The MDSS device is similar to SM8550, it
+features two MIPI DSI controllers, two MIPI DSI PHYs and one DisplayPort
+controller.
 
+Note, due to the technical limitations DP controller wasn't completely
+evaluated.
 
-Thanks, applied to dma-mapping-fixes branch.
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+---
+Changes in v3:
+- Use defines for DSI PHY clock indices (Konrad)
+- Increas VBIF region size of 0x3000 (Konrad)
+- Link to v2: https://lore.kernel.org/r/20250314-sar2130p-display-v2-0-31fa4502a850@oss.qualcomm.com
 
+Changes in v2:
+- In MDSS schema switched from list items to contains: (Krzyztof)
+- In MDSS schema dropped extra empty lines (Krzysztof)
+- Fixed .ubwc_bank_spread in msm_mdss. (LKP)
+- Link to v1: https://lore.kernel.org/r/20250308-sar2130p-display-v1-0-1d4c30f43822@linaro.org
 
-> ---
-> Changelog v2:
-> - Change the debug message to be factual
-> - Convert WARN_ONCE to dev_dbg
->
-> Testing:
-> - Limited testing on a VM, could not trigger the debug message on the machine
->
->
->
->   kernel/dma/mapping.c | 11 ++++++++++-
->   1 file changed, 10 insertions(+), 1 deletion(-)
->
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index cda127027e48..67da08fa6723 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -918,7 +918,7 @@ EXPORT_SYMBOL(dma_set_coherent_mask);
->    * the system, else %false.  Lack of addressing bits is the prime reason for
->    * bounce buffering, but might not be the only one.
->    */
-> -bool dma_addressing_limited(struct device *dev)
-> +static bool __dma_addressing_limited(struct device *dev)
->   {
->   	const struct dma_map_ops *ops = get_dma_ops(dev);
->   
-> @@ -930,6 +930,15 @@ bool dma_addressing_limited(struct device *dev)
->   		return false;
->   	return !dma_direct_all_ram_mapped(dev);
->   }
-> +
-> +bool dma_addressing_limited(struct device *dev)
-> +{
-> +	if (!__dma_addressing_limited(dev))
-> +		return false;
-> +
-> +	dev_dbg(dev, "device is DMA addressing limited\n");
-> +	return true;
-> +}
->   EXPORT_SYMBOL_GPL(dma_addressing_limited);
->   
->   size_t dma_max_mapping_size(struct device *dev)
+---
+Dmitry Baryshkov (10):
+      dt-bindings: display/msm: dp-controller: describe SAR2130P
+      dt-bindings: display/msm: dsi-controller-main: describe SAR2130P
+      dt-bindings: display/msm: dsi-phy-7nm: describe SAR2130P
+      dt-bindings: display/msm: qcom,sc7280-dpu: describe SAR2130P
+      dt-bindings: display/msm: Add Qualcomm SAR2130P
+      drm/msm/mdss: add SAR2130P device configuration
+      drm/msm/dsi/phy: add configuration for SAR2130P
+      drm/msm/dpu: add catalog entry for SAR2130P
+      iommu/arm-smmu-qcom: Add SAR2130P MDSS compatible
+      arm64: dts: qcom: sar2130p: add display nodes
 
-Best regards
+ .../bindings/display/msm/dp-controller.yaml        |   1 +
+ .../bindings/display/msm/dsi-controller-main.yaml  |   2 +
+ .../bindings/display/msm/dsi-phy-7nm.yaml          |   1 +
+ .../bindings/display/msm/qcom,sar2130p-mdss.yaml   | 439 +++++++++++++++++++++
+ .../bindings/display/msm/qcom,sc7280-dpu.yaml      |   1 +
+ arch/arm64/boot/dts/qcom/sar2130p.dtsi             | 395 ++++++++++++++++++
+ .../drm/msm/disp/dpu1/catalog/dpu_9_1_sar2130p.h   | 434 ++++++++++++++++++++
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   2 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   1 +
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   1 +
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy.c              |   2 +
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy.h              |   1 +
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c          |  23 ++
+ drivers/gpu/drm/msm/msm_mdss.c                     |  11 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   1 +
+ 15 files changed, 1314 insertions(+), 1 deletion(-)
+---
+base-commit: 2bdde620f7f2bff2ff1cb7dc166859eaa0c78a7c
+change-id: 20250308-sar2130p-display-b0601fcfeb30
+
+Best regards,
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
 
