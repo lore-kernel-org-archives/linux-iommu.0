@@ -1,232 +1,138 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B5411F8937
-	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 20:41:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3CA391C4A20;
+	Wed, 16 Apr 2025 21:34:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744836068; cv=none; b=Mjvlh94KkGwik11Zwp/rWO+qugCN8su85PbuYctLGAOb2MkIfVXE+o1qDWvwNUoVUNsUwRiPpxkiFCk8x8/6l0dftiV+u7iGF9qPNjIWtBydeSVjSXyh3FkqcL3gnMxai2oUnS0ryT2BvsFHWp1Mj2TXaz2exYevdnR08Z9wF/c=
+	t=1744839250; cv=none; b=UmZVcdDpmWnfcZo+SxUqBlRoc0nvdoIeO8Mdlxu9m0FWF783qVi4ArK1/lNzHukAkVUkaGAM88E/VaPflz7jkUNqXlw3obPxGpqKZPOX0SaSLTJNzIr/+vPAD9bcGgNVky47C8hpNjySMlJIXuGvlF/bua2KuUHDtS1uuWEJ4KI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744836068; c=relaxed/simple;
-	bh=v7UN+6CjXz2XLGpkAAt+coSnP+B3OwoBHVUpCmbXSZ4=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=eTFeIBIZ+NyoAHp6z3Y4zPcSYBv+IhkTi0DiyDg3+eHkNgkvNvpSwpBX4Jx6De/p9i3g+B/WXAha0FLXx4EjhK39cNw4XJeT9AKueJgz4LPfOEGy6LlsjtBbNyVDFN7XZOLpgBRVWouYd2SMf8CVSOB9fJdm/3VycC7sOWXPzMQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=oXDcUd/S; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	s=arc-20240116; t=1744839250; c=relaxed/simple;
+	bh=LMx67qyjqOkSRXudgM4ifmov6dER+mwMsdPVhFLIUDA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JTnNmOF7PSP8um+To9yiWnsdK7zu2yp6S0c/noiykb0pJ06aKJb91b8qKs/CD3df3ENz7dXSqO3c1w26td+1x13PUjEnjmFh8EZeelBwBvjlvSOpBNof232OZbPGy7p5G9ALZXEshlzjs6gm7TrpWEso9/lbol8h6rQIFGztuLo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=AL8wUoxp; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="oXDcUd/S"
-Received: from localhost (web.docker-mailserver_default [172.18.0.2])
-	by mail.mainlining.org (Postfix) with ESMTPSA id 69865BBAD2;
-	Wed, 16 Apr 2025 20:33:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1744835607;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=KWNDczDpsZAXQp+kAkO6XxPalFUodMDdefQ7Hqvnp3I=;
-	b=oXDcUd/SrbjUZCVHpXK24ZQmD8eBsHZdttsQMwVDTwpErRn4lZfOJdH1A8oiVepKQPSDqZ
-	zlhtcHxJxDDvgtuNwu0JYAy5U1GvSo79Ey+649CcXxXpIIsyraAVU9Vr3PUPmWGlvRSKO1
-	xvLKpW0+s6nahxy3YDOwEU50jHtD38VCy88Y7xJgheSSEovev889x1DVU+LlGAJM5GUo38
-	P9tScdTlm2HuSd3uMqrUThPEGS4wG9Ma44SnYo2szJaYY3suuCYH78B0NE5BhULGNe21tZ
-	x6h9u4B4Ynv1/7XO73MGACy6WDFSjOXDm641nbh1O2DtAhNmPuNkGfh2aPRg7g==
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="AL8wUoxp"
+Received: from DESKTOP-0403QTC. (unknown [20.236.11.42])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 0F1F72052509;
+	Wed, 16 Apr 2025 14:34:04 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0F1F72052509
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1744839245;
+	bh=9HNqumPtmvmJAGW9wiQMrJO9t2eP9GkkKEQe9OhQp38=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
+	b=AL8wUoxp7F3VeHAsffQ3unWgZt3wlUbcSBmIwRkJrm9Du3X25ksLOq3F6A0TpFVTw
+	 1gGLyIw5+ZGeZ5Wf1Ie/K9phuvvU2nQM2nE2AzjFQUNCHD2lJque2p3Lw64pHFV6i5
+	 1MqgT74N8l7A1eQeBrKhACC88ucVYEpZbzBB9C5U=
+Date: Wed, 16 Apr 2025 14:34:03 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Shyam Saini <shyamsaini@linux.microsoft.com>, iommu@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+ virtualization@lists.linux.dev, will@kernel.org, eric.auger@redhat.com,
+ code@tyhicks.com, eahariha@linux.microsoft.com, vijayb@linux.microsoft.com,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH v2 0/3] arm-smmu: select suitable IOVA
+Message-ID: <20250416143403.790f45d4@DESKTOP-0403QTC.>
+In-Reply-To: <20250416181759.GF493866@ziepe.ca>
+References: <20250410225030.2528385-1-shyamsaini@linux.microsoft.com>
+	<20250410230008.GA6905@ziepe.ca>
+	<67fff12d.650a0220.208c7c.d69dSMTPIN_ADDED_BROKEN@mx.google.com>
+	<20250416181759.GF493866@ziepe.ca>
+Reply-To: jacob.pan@linux.microsoft.com
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Wed, 16 Apr 2025 22:33:27 +0200
-From: barnabas.czeman@mainlining.org
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Cc: Bjorn Andersson <andersson@kernel.org>, Michael Turquette
- <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>,
- =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, Linus Walleij
- <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, Srinivas Kandagatla
- <srinivas.kandagatla@linaro.org>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio
- <konradybcio@kernel.org>, Rob Clark <robdclark@gmail.com>, Sean Paul
- <sean@poorly.run>, Abhinav Kumar <quic_abhinavk@quicinc.com>, Marijn Suijten
- <marijn.suijten@somainline.org>, David Airlie <airlied@gmail.com>, Simona
- Vetter <simona@ffwll.ch>, Maarten Lankhorst
- <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
- Thomas Zimmermann <tzimmermann@suse.de>, Dmitry Baryshkov
- <lumag@kernel.org>, linux-arm-msm@vger.kernel.org,
- linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
- iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, phone-devel@vger.kernel.org,
- ~postmarketos/upstreaming@lists.sr.ht, linux@mainlining.org, Dang Huynh
- <danct12@riseup.net>
-Subject: Re: [PATCH v4 4/6] arm64: dts: qcom: Add initial support for MSM8937
-In-Reply-To: <f85195a1-f55e-41ea-967d-b758014cba06@oss.qualcomm.com>
-References: <20250315-msm8937-v4-0-1f132e870a49@mainlining.org>
- <20250315-msm8937-v4-4-1f132e870a49@mainlining.org>
- <f85195a1-f55e-41ea-967d-b758014cba06@oss.qualcomm.com>
-Message-ID: <ddf29d5743e25f311cd86711f39f7ad0@mainlining.org>
-X-Sender: barnabas.czeman@mainlining.org
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 2025-04-14 22:55, Konrad Dybcio wrote:
-> On 3/15/25 3:57 PM, Barnabás Czémán wrote:
->> From: Dang Huynh <danct12@riseup.net>
->> 
->> Add initial support for MSM8937 SoC.
->> 
->> Signed-off-by: Dang Huynh <danct12@riseup.net>
->> Co-developed-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
->> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
->> ---
+Hi Jason,
+
+On Wed, 16 Apr 2025 15:17:59 -0300
+Jason Gunthorpe <jgg@ziepe.ca> wrote:
+
+> On Wed, Apr 16, 2025 at 11:04:27AM -0700, Jacob Pan wrote:
 > 
-> [...]
+> > Per last discussion "SMMU driver have a list of potential addresses
+> > and select the first one that does not intersect with the
+> > non-working IOVA ranges.". If we don't know what the "non-working
+> > IOVA" is, how do we know it does not intersect the "potential
+> > addresses"?  
 > 
->> +			power-domains = <&cpu_pd0>;
->> +			power-domain-names = "psci";
+> I had understood from previous discussions that this platform is
+> properly creating IOMMU_RESV_RESERVED regions for the IOVA that
+> doesn't work. Otherwise everything is broken..
 > 
-> So CPU4-7 get "nicer" idle, but 0-3 don't?
-I am not sure, i will check.
+Agree, but I thought the previous attempt was to make
+iommu_ops.get_resv_regions() report properly instead of at the platform
+level (DT or IORT). Maybe Shayam can show the current reserved regions
+in sysfs.
+
+> Presumably that happens through iommu_dma_get_resv_regions() calling
+> of_iommu_get_resv_regions() on a DT platform. There is a schema
+> describing how to do this, so platform firmware should be able to do
+> it..
 > 
-> [...]
+> So the fix seems trivial enough to me:
 > 
->> +		cpu-map {
->> +			/* The MSM8937 has 2 cluster A53 setup. */
+Make sense below, probably good to have this regardless of the
+current issue. IMHO, FW reserved region should take precedence.
+
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c index
+> b4c21aaed1266a..ebba18579151bc 100644 ---
+> a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c +++
+> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c @@ -3562,17 +3562,29 @@
+> static int arm_smmu_of_xlate(struct device *dev, static void
+> arm_smmu_get_resv_regions(struct device *dev, struct list_head *head)
+>  {
+> -	struct iommu_resv_region *region;
+> -	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> -
+> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE,
+> MSI_IOVA_LENGTH,
+> -					 prot, IOMMU_RESV_SW_MSI,
+> GFP_KERNEL);
+> -	if (!region)
+> -		return;
+> -
+> -	list_add_tail(&region->list, head);
+> +	static const u64 msi_bases[] = { MSI_IOVA_BASE, 0x12340000 };
+>  
+>  	iommu_dma_get_resv_regions(dev, head);
+> +
+> +	/*
+> +	 * Use the first msi_base that does not intersect with a
+> platform
+> +	 * reserved region. The SW MSI base selection is entirely
+> arbitary.
+> +	 */
+> +	for (i = 0; i != ARRAY_SIZE(msi_bases); i++) {
+> +		struct iommu_resv_region *region;
+> +
+> +		if (resv_intersects(msi_bases[i], MSI_IOVA_LENGTH))
+> +			continue;
+> +
+> +		region = iommu_alloc_resv_region(msi_bases[i],
+> MSI_IOVA_LENGTH,
+> +						 IOMMU_WRITE |
+> IOMMU_NOEXEC |
+> +							 IOMMU_MMIO,
+> +						 IOMMU_RESV_SW_MSI,
+> GFP_KERNEL);
+> +		if (!region)
+> +			return;
+> +		list_add_tail(&region->list, head);
+> +		return;
+> +	}
+>  }
+>  
+>  static int arm_smmu_dev_enable_feature(struct device *dev,
 > 
-> This comment seems superfluous
-> 
-> [...]
-> 
->> +	timer {
-> 
-> 'p' < 't', please sort top-level nodes alphabetically
-> 
-> [...]
-> 
->> +				wcss-wlan2-pins {
->> +					pins = "gpio76";
->> +					function = "wcss_wlan2";
->> +					drive-strength = <6>;
-> 
-> please unify this order (drive-strength before bias)
-> 
->> +					bias-pull-up;
->> +
->> +				};
-> 
-> Extra newline
-> 
-> [...]
-> 
->> +		gpu: gpu@1c00000 {
->> +			compatible = "qcom,adreno-505.0", "qcom,adreno";
->> +			reg = <0x1c00000 0x40000>;
->> +			reg-names = "kgsl_3d0_reg_memory";
->> +			interrupts = <GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>;
->> +			interrupt-names = "kgsl_3d0_irq";
->> +			#cooling-cells = <2>;
->> +			clocks = <&gcc GCC_OXILI_GFX3D_CLK>,
->> +				<&gcc GCC_OXILI_AHB_CLK>,
->> +				<&gcc GCC_BIMC_GFX_CLK>,
->> +				<&gcc GCC_BIMC_GPU_CLK>,
->> +				<&gcc GCC_OXILI_TIMER_CLK>,
->> +				<&gcc GCC_OXILI_AON_CLK>;
-> 
-> Please align the <s
-> 
->> +			clock-names = "core",
->> +				      "iface",
->> +				      "mem_iface",
->> +				      "alt_mem_iface",
->> +				      "rbbmtimer",
->> +				      "alwayson";
->> +			operating-points-v2 = <&gpu_opp_table>;
->> +			power-domains = <&gcc OXILI_GX_GDSC>;
->> +
->> +			iommus = <&adreno_smmu 0>;
->> +
->> +			status = "disabled";
->> +
->> +			gpu_opp_table: opp-table {
->> +				compatible = "operating-points-v2";
->> +
->> +				opp-19200000 {
->> +					opp-hz = /bits/ 64 <19200000>;
->> +					opp-supported-hw = <0xFF>;
-> 
-> 0xff is overly broad, please document the existing known speed bins
-> 
-> [...]
-> 
->> +		adreno_smmu: iommu@1c40000 {
->> +			compatible = "qcom,msm8996-smmu-v2",
->> +				     "qcom,adreno-smmu",
->> +				     "qcom,smmu-v2";
->> +			reg = <0x1c40000 0x10000>;
-> 
-> Does it work as-is, without iommu changes?
-Yes
-> 
-> [...]
-> 
->> +	thermal_zones: thermal-zones {
->> +		aoss-thermal {
->> +			polling-delay-passive = <250>;
-> 
-> There are no passive trip points> +
-Should i remove polling-delay-passive?
->> +			thermal-sensors = <&tsens 0>;
->> +
->> +			trips {
->> +				aoss_alert0: trip-point0 {
->> +					temperature = <85000>;
->> +					hysteresis = <2000>;
->> +					type = "hot";
->> +				};
-> 
-> Please convert these to 'critical' instead
-> 
-> [...]
-> 
->> +		cpuss1-thermal {
->> +			polling-delay-passive = <250>;
-> 
-> You can drop polling-delay-passive under CPU tzones, as threshold
-> crossing is interrupt-driven
-Should I remove polling-delay-passive then?
-> 
->> +
->> +			thermal-sensors = <&tsens 4>;
->> +
->> +			cooling-maps {
->> +				map0 {
->> +					trip = <&cpuss1_alert0>;
->> +					cooling-device = <&cpu4 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
->> +							 <&cpu5 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
->> +							 <&cpu6 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>,
->> +							 <&cpu7 THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
->> +				};
->> +			};
->> +
->> +			trips {
->> +				cpuss1_alert0: trip-point0 {
->> +					temperature = <75000>;
->> +					hysteresis = <2000>;
->> +					type = "passive";
->> +				};
->> +
->> +				cpuss1_alert1: trip-point1 {
->> +					temperature = <85000>;
->> +					hysteresis = <2000>;
->> +					type = "hot";
->> +				};
-> 
-> On newer platforms we rely on LMH to shut down the device if it
-> were to reach the junction temperature, but let's leave them here
-> as probably no one remembers for sure how reliable that is on these
-> older platforms and you're most likely not willing to test that
-> 
-> Konrad
+> Jason
+
