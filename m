@@ -1,148 +1,176 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90B051F8937
-	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 18:18:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FB40232792
+	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 20:40:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744827485; cv=none; b=NDwX+t2UDQ8x885y5deN2fFGJIzwO2Hkx7J8VF/Hpbk9IMtyVLvoVeruCZIE1QEVSvgT8q01ZIWsn41IMsIfk/Yfyp88anq0zknpiajv2HAV2ev6IoOa0WP/gsd0KMa1pWVpCaaPsOAjN/m7hQZP4tUI6EZnQOj41jBic1SJcBs=
+	t=1744836003; cv=none; b=hCs0Y1CGh2/4wCBerKDdeFqIeviUVh+4VwPN7TdGUYhy8Zl+9oImv6xg1a3E/K2ChyeVk9ir/MQwx5tvqdovCL6hfizQdbockPwEErSNx8bM/zwpKD2//QuzADwxRm8TdSCrU5oGk87JwC857sLc9J4rBNlLdUkt8cQLsyRvKK0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744827485; c=relaxed/simple;
-	bh=3DKkQU9Mom2lVRMeCwp0ivdrDyuKM3G5b3qIYQX+qDU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=U6SDnADKzUpUbpKT6qvmmZNV4zf8kEm3w8Em8ZFIWSof4DaJPGrVT+ckIYVKlP4IvidAxSDh7Bx9UO0QeQ90KK9HmWlJk70Q/P2kPhISMhx6MArN7jdzpB5YirhC+XOfdWRpdlORRe5KM8axv6joIiIJNmOp2b018iecqJOM5JU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=FKew2855; arc=none smtp.client-ip=209.85.222.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1744836003; c=relaxed/simple;
+	bh=kDu+tIWiiv3RG9q2EWbYK6uCMzCFUTTLqRKVLC0mQKo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hH+Wi9kprOn9T/7FVcVt4Qy6KldNoeZ59Q9+4CoECLYxwUxoI/uO3WHldKHXs/DKbLhBV7VX/wMys2a24FHcU2jkggMzDKgWgGgxqQqvO+9UIVxQv0e4wzVRKse9yvzwiadNOC4JNxG6X1MOFir/6WlukEOSliQSmQztcGca7kk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=DpwLEau3; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="FKew2855"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-7c5e2fe5f17so682499985a.3
-        for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 11:18:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1744827481; x=1745432281; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nhIqXs3b02Zr9EkAcj7RO68Dtso22D3FSSNBcsVaNJc=;
-        b=FKew2855kGiptUw/gIx6igJ0x3HjIdjdc/lSs8/St+CzAO0TbS4xGbcsiRTsVCWWhe
-         CxDUtgPBKKoOBiUFeywViJTz/n2FYbU68xwJ4Li5e8OdlDgJMtxE8fzqfEzkeLJnaNW8
-         PsGN3ESs3rNYq8Wnklo6Av0x9okhCvW3ofJz/kOqy3kF6TJr0D8JzHNYVpzIlQ5sTXt+
-         N8qCQavBh/mOxrrn88BsSNJD0NcKyC4J8KtkAxtVKGDMHfQscA1LFC0YEiXRESg/D7+K
-         JcRtmRbw1KfJCoZr6JcToG822RiW7UdDogoAW6BoMqRgl9a3KhTBaPJR6BgrGsPmCmfE
-         9+Gg==
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="DpwLEau3"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53G9mELi005968
+	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 20:40:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	kDu+tIWiiv3RG9q2EWbYK6uCMzCFUTTLqRKVLC0mQKo=; b=DpwLEau3Y+2DkDDL
+	ps32G63sJlVwJ+6ZIG1FsHA4/Lf9gvmuju9s2ftVVke9aTTJgbxdMGcEqNlRdyrm
+	JuCidCMnz+IxQbVu0b8ol00Bcg+vXY4HBmC5rpBoUtSJmd9eRETmMJsfPug5UTRl
+	DDo5pzRE4mVhbHhfuJLtL5SWfzgi/T0Zy9GLlVSBS9EgFZm1iaceMOTwlY37RjGc
+	RtsBJNsOLdFaF9xhCGMP7a2hv+OtYDB67xR8aSejmYLhnom4kyKRbTsk/OIDy9yx
+	1vuYV8eyNzjmAEW/d+CeDkWn+8DlUF3z+jEZsliRiy69HgGzz2F1ndr6wfqXv5Uk
+	ZDudgw==
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com [209.85.222.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45ydhqcyjw-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 20:40:00 +0000 (GMT)
+Received: by mail-qk1-f198.google.com with SMTP id af79cd13be357-7c547ab8273so270685a.3
+        for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 13:40:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744827481; x=1745432281;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nhIqXs3b02Zr9EkAcj7RO68Dtso22D3FSSNBcsVaNJc=;
-        b=csJv9YogndCv3ZsMDUXIhlEotzTEhDXiyzzoed5mS0fUKOrgD6xr3a4X0IE4Iw+/nA
-         J+nHn9WqHq8KT05SHUaQ3yjbdZc8hN5hgiPK9f71ficxpWb4Q/F7NnR6l4odp/QMIGNL
-         rqEaZwfwdX5Ik6tzR6OrsoFTnBBZYBeJG/7vjvQfqoz9uNVeLHGTbV70JqZ6S5ZCU4zS
-         ty/YBdaRCAeL4QGAu+rl/FR37mjjOH4kbFxWQHWlJ7ol3J4QoVnteSO8qqbwrqA02lSq
-         oeiKgEJUKS8rn6CJc4quRiwSrB8G6pYi7HxhAeuMiVfItkTKI3E7uF9QVL+enlMxwaLZ
-         WCDg==
-X-Forwarded-Encrypted: i=1; AJvYcCVGQaoun/0dq3bsmZCwXJ6mgSp1d2eFS4qCp0R8HHX/0F/xan90HagbIIgOnI2dvcskRKsLSQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxf0wxiW16I7FQd/ZZ+Cs/rCifBztraq2utTijEsluRMlvqOD6s
-	iSsejVznpW5lpSCVOLjut+wxw1rgKJeQjkWcKB1T9bR+UqX3bU8u0+jYlsmfblw=
-X-Gm-Gg: ASbGncteHl72D5EaCkYGEpTwLEbflbcShx6LfF9JEfOykHKW96v2VqsQZFE9EHRIyu3
-	uascAZhDPhHBm27ELQWmr5M8M/EZwAS1KkKwx0RgMG9F7OErdQ5yG25IxiGiDkxOvR/+xqOsarF
-	UMG8tE+PMTtnQIoI4cMqaX8NnAWg2TFKR59O7YF8YWy1ahKPYP/RHA0LNCOq2BamyKhPtxYoJ4K
-	mUM1OO+QxrxjtWnCgoL8iPLUfJ/IwxK5AqDGjHqiUKKqJGKwKJK4DC2h6pFFPP5IIqkfOcNqAkW
-	hj03eqAcG2ybYVOVXjMPzrndMzgG/fSWMCfOTA0XAOtqzypuvnHoypnT5fGimaqO3m1Zwb1JCJD
-	bKCUo1yD/3600rls3jsQ=
-X-Google-Smtp-Source: AGHT+IHO7Bqf4Fmw+LiZOuVSnpTOMSKYZPCbuJqFFE5vxmLzphTTuPO4Jd1IQCZQaz4uW5OwoW3Ysw==
-X-Received: by 2002:a05:620a:171e:b0:7c5:af73:4f72 with SMTP id af79cd13be357-7c919064377mr376498885a.42.1744827481008;
-        Wed, 16 Apr 2025 11:18:01 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c7a8a0de1esm1088777885a.103.2025.04.16.11.17.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Apr 2025 11:17:59 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1u57Kh-00000004wJB-0tjv;
-	Wed, 16 Apr 2025 15:17:59 -0300
-Date: Wed, 16 Apr 2025 15:17:59 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: Shyam Saini <shyamsaini@linux.microsoft.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-	virtualization@lists.linux.dev, will@kernel.org,
-	eric.auger@redhat.com, code@tyhicks.com,
-	eahariha@linux.microsoft.com, vijayb@linux.microsoft.com
-Subject: Re: [PATCH v2 0/3] arm-smmu: select suitable IOVA
-Message-ID: <20250416181759.GF493866@ziepe.ca>
-References: <20250410225030.2528385-1-shyamsaini@linux.microsoft.com>
- <20250410230008.GA6905@ziepe.ca>
- <67fff12d.650a0220.208c7c.d69dSMTPIN_ADDED_BROKEN@mx.google.com>
+        d=1e100.net; s=20230601; t=1744835999; x=1745440799;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=kDu+tIWiiv3RG9q2EWbYK6uCMzCFUTTLqRKVLC0mQKo=;
+        b=H/sG9tDZ88Z4PG0XVkngWNYS732e9PLkYw5wZaxZp2slL4CRu44S26FjXYxrkFJ6wA
+         j0mqpP1YCYBmI/4HOdxjHyWvOaILQ2ba4R9z8majTcsuc0zZfu7ReNnc8zbDq9S2Z+Ex
+         y0Rr5eCp8Kqe1ONPGPVUpiZ/D25tH9eD+F3rcZU7XePHx4hVZLzZ6B+nMy+2v3XkymD/
+         TV64pXB6Pfj9IR58t+ALJqufIYuLOOMzEmNEPTxEjDbmhdAR379pXM21GwWf/ul4UsSs
+         Lysq88zrTYwprii5R8Eskje3rwJ16LKnfj4v8+uiz1MlkMTc82/GUBD4WxBDZ+X/o0oU
+         oefw==
+X-Forwarded-Encrypted: i=1; AJvYcCU6a3SLO6aDQDTaiJCuO6zDGS0dVNqdZhKeqiVFSl7RXl8sdq92waX8mV5hJsRFls7e5rEXyg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxXRsSB/RXLRUTVcpKHl/q+VACPdWnjvLpUQ1WYErB854UYdg1t
+	X6642FNzLh+asNtZhHNtqFSpvn7bn/WPiLP+ewA0srtE18/1v8FXJAuSct8KrjUxZOBLUSmc0Qc
+	Z14iSlsWHOb3nIqURaoe+Ve4bKGdoNe2z+WoIAh97SAW0AXdMKGGKSA==
+X-Gm-Gg: ASbGncsh+LjFfR+wcf6fGFk0sOQuxztZktY5Xl0w1Ylg5NDwmHgd5QxTCG4P9WQWcec
+	Z0zcecBeqQQlom8AiPjOeADJykTBAPdmOYRi6PU/N1roJYimMoSdVWJlYQODMUiNYZ9XVzb5FM3
+	xxA7UcSG0ywRGL3qcphC+TqOeaGCXJsm1RzqqIgB2XBV9bt6U0DK/hQB4essAY/ZxL0kmU4OGBU
+	XyDyPfhvLOHxpmaMsehUfwmPMN5UzQAvbKpLr2zow73BXX0O//TXbOfd+tv9HWu/C0i4FtzUQE4
+	/DuZTp1+3QCRkhJEyYh3Y8FVd27VUP2IqVeY42HhBk0+rTPX7r4CtDIhkpLJ3/Kwzec=
+X-Received: by 2002:a05:620a:288d:b0:7c3:dd6d:54e4 with SMTP id af79cd13be357-7c91d0602ebmr62126585a.10.1744835999373;
+        Wed, 16 Apr 2025 13:39:59 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGzgDHx0UMfpo23gp5XKth2J0840BeS/rB+zsXeevtnGVzubmJ5n0ka+mRD1Wk7yKLA+/G4gQ==
+X-Received: by 2002:a05:620a:288d:b0:7c3:dd6d:54e4 with SMTP id af79cd13be357-7c91d0602ebmr62122985a.10.1744835998836;
+        Wed, 16 Apr 2025 13:39:58 -0700 (PDT)
+Received: from [192.168.65.126] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-acb3cd618ebsm186163466b.16.2025.04.16.13.39.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 16 Apr 2025 13:39:58 -0700 (PDT)
+Message-ID: <b9fd463b-5a34-4c3b-a6e8-7432e1a0f2c6@oss.qualcomm.com>
+Date: Wed, 16 Apr 2025 22:39:54 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <67fff12d.650a0220.208c7c.d69dSMTPIN_ADDED_BROKEN@mx.google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 4/6] arm64: dts: qcom: Add initial support for MSM8937
+To: barnabas.czeman@mainlining.org,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd
+ <sboyd@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>,
+        Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Dmitry Baryshkov <lumag@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, phone-devel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, linux@mainlining.org,
+        Dang Huynh <danct12@riseup.net>
+References: <20250315-msm8937-v4-0-1f132e870a49@mainlining.org>
+ <20250315-msm8937-v4-4-1f132e870a49@mainlining.org>
+ <f85195a1-f55e-41ea-967d-b758014cba06@oss.qualcomm.com>
+ <ddf29d5743e25f311cd86711f39f7ad0@mainlining.org>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <ddf29d5743e25f311cd86711f39f7ad0@mainlining.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: BnMCliZkwRRaXqXpAYkrv_vcEzeuEeEO
+X-Authority-Analysis: v=2.4 cv=C7DpyRP+ c=1 sm=1 tr=0 ts=680015a0 cx=c_pps a=qKBjSQ1v91RyAK45QCPf5w==:117 a=FpWmc02/iXfjRdCD7H54yg==:17 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=OuZLqq7tAAAA:8 a=bBqXziUQAAAA:8 a=KIKYxIlc2-mGyxiTgOQA:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=NFOGd7dJGGMPyQGDc5-O:22 a=AKGiAy9iJ-JzxKVHQNES:22 a=BjKv_IHbNJvPKzgot4uq:22
+X-Proofpoint-GUID: BnMCliZkwRRaXqXpAYkrv_vcEzeuEeEO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-16_08,2025-04-15_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=895
+ priorityscore=1501 suspectscore=0 clxscore=1015 spamscore=0 bulkscore=0
+ impostorscore=0 phishscore=0 lowpriorityscore=0 malwarescore=0 mlxscore=0
+ classifier=spam authscore=0 authtc=n/a authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2502280000
+ definitions=main-2504160168
 
-On Wed, Apr 16, 2025 at 11:04:27AM -0700, Jacob Pan wrote:
+On 4/16/25 10:33 PM, barnabas.czeman@mainlining.org wrote:
+> On 2025-04-14 22:55, Konrad Dybcio wrote:
+>> On 3/15/25 3:57 PM, Barnabás Czémán wrote:
+>>> From: Dang Huynh <danct12@riseup.net>
+>>>
+>>> Add initial support for MSM8937 SoC.
+>>>
+>>> Signed-off-by: Dang Huynh <danct12@riseup.net>
+>>> Co-developed-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+>>> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+>>> ---
 
-> Per last discussion "SMMU driver have a list of potential addresses and
-> select the first one that does not intersect with the non-working IOVA
-> ranges.". If we don't know what the "non-working IOVA" is, how do we
-> know it does not intersect the "potential addresses"?
+[...]
 
-I had understood from previous discussions that this platform is
-properly creating IOMMU_RESV_RESERVED regions for the IOVA that
-doesn't work. Otherwise everything is broken..
+>>> +    thermal_zones: thermal-zones {
+>>> +        aoss-thermal {
+>>> +            polling-delay-passive = <250>;
+>>
+>> There are no passive trip points> +
+> Should i remove polling-delay-passive?
 
-Presumably that happens through iommu_dma_get_resv_regions() calling
-of_iommu_get_resv_regions() on a DT platform. There is a schema
-describing how to do this, so platform firmware should be able to do it..
+yes, please do
 
-So the fix seems trivial enough to me:
+>>> +            thermal-sensors = <&tsens 0>;
+>>> +
+>>> +            trips {
+>>> +                aoss_alert0: trip-point0 {
+>>> +                    temperature = <85000>;
+>>> +                    hysteresis = <2000>;
+>>> +                    type = "hot";
+>>> +                };
+>>
+>> Please convert these to 'critical' instead
+>>
+>> [...]
+>>
+>>> +        cpuss1-thermal {
+>>> +            polling-delay-passive = <250>;
+>>
+>> You can drop polling-delay-passive under CPU tzones, as threshold
+>> crossing is interrupt-driven
+> Should I remove polling-delay-passive then?
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index b4c21aaed1266a..ebba18579151bc 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3562,17 +3562,29 @@ static int arm_smmu_of_xlate(struct device *dev,
- static void arm_smmu_get_resv_regions(struct device *dev,
- 				      struct list_head *head)
- {
--	struct iommu_resv_region *region;
--	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
--
--	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
--					 prot, IOMMU_RESV_SW_MSI, GFP_KERNEL);
--	if (!region)
--		return;
--
--	list_add_tail(&region->list, head);
-+	static const u64 msi_bases[] = { MSI_IOVA_BASE, 0x12340000 };
- 
- 	iommu_dma_get_resv_regions(dev, head);
-+
-+	/*
-+	 * Use the first msi_base that does not intersect with a platform
-+	 * reserved region. The SW MSI base selection is entirely arbitary.
-+	 */
-+	for (i = 0; i != ARRAY_SIZE(msi_bases); i++) {
-+		struct iommu_resv_region *region;
-+
-+		if (resv_intersects(msi_bases[i], MSI_IOVA_LENGTH))
-+			continue;
-+
-+		region = iommu_alloc_resv_region(msi_bases[i], MSI_IOVA_LENGTH,
-+						 IOMMU_WRITE | IOMMU_NOEXEC |
-+							 IOMMU_MMIO,
-+						 IOMMU_RESV_SW_MSI, GFP_KERNEL);
-+		if (!region)
-+			return;
-+		list_add_tail(&region->list, head);
-+		return;
-+	}
- }
- 
- static int arm_smmu_dev_enable_feature(struct device *dev,
+yeah
 
-Jason
+Konrad
