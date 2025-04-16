@@ -1,77 +1,83 @@
-Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 143EB247294
-	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 10:25:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9957248176
+	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 12:02:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744799103; cv=none; b=iw/LqTuo2cEIPI4TB3aUYsI+cekyxyh9Msqv0R0esJ5hihFgG8EikQxr61jRjBMxHAPgtEz7RS7ouuY15cqrKRQWkTwV1LybziQErtH+L/4zAOjmUTNeeOJX1gQBkrkSaO7kC18PgUf4eRsyVF3LAxpN9+ws0vALeGUUXMZIycI=
+	t=1744804976; cv=none; b=eZHP6XQ6Qt30kJ8/6mYW4HMotcpHqQq3qvV2ltVDabFEIF/zeDLI/lU5rRfFrm38MdfzdwLtbEvMx7fCyqxw74K11OCch4DBZU//wExaZNvrBwPPS1KkyN/zBpZkhAKYwc1PVXz62TaAjW4ddUM9K3kx2YK6huZ4FMm9KHlrcaA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744799103; c=relaxed/simple;
-	bh=J87+9qooBPbJnMdctmuBgxzHJJMtdq6vrxmX2JYX0M4=;
+	s=arc-20240116; t=1744804976; c=relaxed/simple;
+	bh=euHf0BewsytW2FMBgqirgPdz8pkhRvtyI8P3kHLLGck=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=a+kWxilN1eOgiF7MzOVIkvDyB06fKOGb7Ums4fyN00My40TD49W9oz8U1mlWmWzB5JfN8IWf3SbMBItqfKq43iQaciUSiLZ6gePd3AKTDbUHjUQjWGweEujMJhj/VVXXz6VavmzGPkBVtj211H7q7J/G+BOgedGW3gOVNeMAKR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Tg2BDM3X; arc=none smtp.client-ip=209.85.214.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=TJNQ7MSDzY/KGgw6ieKhva/sdUkDGYZbpFx4AnA1zi+jx6dtxfTXT0mQlUxjPeguXet6WH1Y1AMTii0VGA0e4zyugCLktNkumZ/BrFDXa78fciVDx9ITBmX+67kQiUIpZv7IK/yoZkPdXMs20DjiQ65oqT+USi7kn4Qhx86x6+4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=F9DOu0Iz; arc=none smtp.client-ip=209.85.222.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Tg2BDM3X"
-Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2242ac37caeso128335ad.1
-        for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 03:25:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="F9DOu0Iz"
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-7c5e39d1e0eso645798985a.1
+        for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 05:02:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1744799101; x=1745403901; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1744804972; x=1745409772; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=O+ySUBqpDCStVJ0jbWaBzxgrHSQdW0U948zt5rBiQC4=;
-        b=Tg2BDM3XCsHVO10g7Fho78XzUXnEdunGkGBj/JhgynuKtKWX5K2NhzomZB9wflM5os
-         XKPA8JSFliy0zfs/LtsDRRmVj51MrNZT8RIy38oWgP9X3tep2doEQmwaFXKpWBBgxNYF
-         WZ2TG/2TI8ztMUH5xbWew2TYASIXb8PRpBBjkXKBMSqRJvowWZI6+BjVuSBcArJag9dz
-         qJxJd6PkkTv5QUxxzL7U+6D0sz1OOd8p+9nUcZ0vS7g5lD7SHxScwboDJCGHesWEXY1y
-         pbJpLgmH541tQZ97u0vi6Y8060p3cX0/GfMzB3v0u0z4qxKSxFrS5RZK5TsptkApA3jV
-         1veg==
+        bh=euHf0BewsytW2FMBgqirgPdz8pkhRvtyI8P3kHLLGck=;
+        b=F9DOu0Izi3PnUGtPtpO6JcUSLZcjax7HSd/LfbCkY0ooXNdmdF9zbj6GlOgY+1Z2Q4
+         gwwQ3vCBi1zS59t9qCXO3Vv67D5/1fi+oK0QmLTgi7PrnA9KXBzqtQdgPH++mjp8rUcq
+         2O4s2lIVQPcL9t2uKC65xfByRZ3MMTyExeJCZq7h5d8M0TTEszZXdAgh1vajDWHbd3zD
+         qbEPPblE5BL3hp8BadFODpplor0fMbSE8MP1rugjzEKKVBEc9ZLATQQkqc9lqa+HjfnW
+         gDfPBr0Zf5+6nNnIvV0HVIAjLbfe3X2m6l3FiRYRLd8AI/VVbClszQ3XnjyG22+4oH+L
+         kNoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744799101; x=1745403901;
+        d=1e100.net; s=20230601; t=1744804972; x=1745409772;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=O+ySUBqpDCStVJ0jbWaBzxgrHSQdW0U948zt5rBiQC4=;
-        b=fpQ6M36nIZd814YuJSbeRCawD44rt7ZcqZaRBlvTKmPx1GNNCzFLird/K5ISqVeDl4
-         RbuLuRRBHIS7iC1UJ6rfLZZqXLJgNUrhOSJ9P7FjZirW+pVAOa4x3jby/uRSxlvQsErj
-         e3p8KNctf8xKkF5UeFOGVG43iHvW0RsBtiedoZ3qxDQrbAmQk2rCsZtgXumFSifNEiKl
-         o66uhW/nBKT5ZfuFzhjb2+9lJjPm3ULXZ2GPJEJSdkubVVIAx4UU+/Asva7VDUZPUuln
-         idXX3raWO2BatU8eo2d7V1ldqXDCGchhzlebIf+ulNR1CZIq08WefzPHjoB+BMWKfNOR
-         4UOw==
-X-Forwarded-Encrypted: i=1; AJvYcCVYxdrFJiiNACgRptW4eUafhq++h6No9+5J93VC9aEtisbSNkkamM/P3zPwlBm+cyRAvPdsXA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwLixvHnQbcqoBGEgJF91oOPMJ5cLnUsUC/4F5c3r/IUVceL9ji
-	RQLhA+D3+1IB7LoH7vMERvxN7qQQsIGCzMuFMwzPNFE5fxPSC7c0WLK+/oXznw==
-X-Gm-Gg: ASbGncuNl9iVqxc0/UfLtCvvnlTcZS0uY2GjcNP/UIFQRI5B1xrA+8VxJQKw/pdJ6cO
-	Vx0D3HzMwfxOcP/fx6bfJXyP5qgj92MheT0sKpzqPQu7iWs081DcD2bNHR09CtaruNfGoNKA0S7
-	GiWC2dR+diRliX5iF5zgN/jcr4B8WorI6JwSyUXePPzuNXoNMcbkRRlAQfy2GUi0yg/gSC/eyhC
-	IScRF86EwZA8QepEPPtUoQGDdZn4E4gzAfkMFdTJel1J5+AkM/MYLEkvpCjPGLN7BdRwV/IDvXn
-	vtJsRCHg3NElXdeYFtS6a7+j5+/mK4EMw7etntw8HClqeyCHLxYrgTslYccl3d4fgXhL+K9S
-X-Google-Smtp-Source: AGHT+IEMGqdg7xAaFs0kezfOI2UIIHUMPeGEH7fNgj34+MnckZTdetwR2157erfMNen+R9kUElYeMw==
-X-Received: by 2002:a17:902:f745:b0:215:7ced:9d66 with SMTP id d9443c01a7336-22c354b5f6cmr1181905ad.10.1744799101146;
-        Wed, 16 Apr 2025 03:25:01 -0700 (PDT)
-Received: from google.com (2.210.143.34.bc.googleusercontent.com. [34.143.210.2])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-308611d6171sm1216834a91.2.2025.04.16.03.24.58
+        bh=euHf0BewsytW2FMBgqirgPdz8pkhRvtyI8P3kHLLGck=;
+        b=mHb1pDXBIaCwz2lbtviPFR4LhTYdIYi/Y6KdWBwNOjTfQBxtqwjENjRQmgRrDvzgkE
+         XSIbnQszD17BnYuwwVMRH0KU/JZatk+kPi01fHFO0JanWy2RMYY1A4B2U+2Aa1BK7b29
+         UaiGWwHBGA5nhzE5meywh7wKqZGkOB+wmNQttLemxIdkn3ggLwbzS+kK3JzcDuNgWbPa
+         xbGh8VVLgkPGz0++0P0ve9C22nRXl9GDtaNrYX6arrl+WuA6nSSwfP0O4uIgxQ2J1fcI
+         KTgRiJk7Afe+AL+bH3mk7gcSarxDv9ziA/s7rLqko/TJShCUzapV9e84xo/2vZVGP9O8
+         Tzrw==
+X-Forwarded-Encrypted: i=1; AJvYcCUrWDzw/lNKJ43/buodBtnLVjAr0fcMnp1ZxePxHn3/deNgjzKHHJx9mnhm9scCiCBrM3tUPQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzF+xVVTm1+R77QEDwBApFJGwI3bZegg77kXA0egw3X70ZZnA3J
+	yo4QnIOWJCYLM9jMLqB+oRJv1ytPySIos3tlAgojoLjOx+qGE4Unj8ToOcoiPT4=
+X-Gm-Gg: ASbGncvbMYH4mcrVxKgFHRemMUMvOlLXXZmr69bvZhRXcr76docfB29GMrPagkguMiU
+	+K3qGXY+HDCmVk224mTzNU+/89ydXyC1tRJ83sUGqHIabK9yrSA+sG9B80aVcGP6Nv6+EZxXP0b
+	iZBpiJ67JY7+5R93hjeoAShmI6KWrHGM7oMjlymsOgy3xku9r3T1UlQfHO/cd0+FeefqiYiVOXn
+	ZeKHejg3bUkTB+qGKqBzsFmWvl9nF+3duoOkZ8StnnGI8w1ORg9XGleBomF1lfRzTnkWPcDIAEZ
+	UPgKs524Yd1jOIUNK4M9dsAYUhQDwhTvsCnCRfX57Kbcw5STjyyBgoPiLBeoqvHYT0Zh9Gx7iqF
+	Rnplp3c/UpNbJQv6Ja9g=
+X-Google-Smtp-Source: AGHT+IH56lyQte2brkAaaqDxwcDhg4Ea+sAPcLLJ5SSNKQj6WK34xtAkzSsbn351BszEPfh0Z9pLsQ==
+X-Received: by 2002:a05:620a:29c6:b0:7c5:e40b:caaf with SMTP id af79cd13be357-7c919002b2amr215239985a.31.1744804972471;
+        Wed, 16 Apr 2025 05:02:52 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c7a8a0edc8sm1052651985a.110.2025.04.16.05.02.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Apr 2025 03:25:00 -0700 (PDT)
-Date: Wed, 16 Apr 2025 10:24:52 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Wed, 16 Apr 2025 05:02:51 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1u51Tf-00000004JDK-0sd4;
+	Wed, 16 Apr 2025 09:02:51 -0300
+Date: Wed, 16 Apr 2025 09:02:51 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
 	Mostafa Saleh <smostafa@google.com>,
 	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
 Subject: Re: [RFC PATCH 3/5] iommu/arm-smmu-v3: Implement pm_runtime & system
  sleep ops
-Message-ID: <Z_-FdLizyrz2_ovi@google.com>
+Message-ID: <20250416120251.GC493866@ziepe.ca>
 References: <20250319004254.2547950-1-praan@google.com>
  <20250319004254.2547950-4-praan@google.com>
  <Z/1MjDaAM4Em53gE@Asurada-Nvidia>
  <Z/19e4eyj1k/pqsh@Asurada-Nvidia>
  <Z_7Fx-Q8baoyzJe2@google.com>
  <Z/7dqjiVdjnoZ+2w@Asurada-Nvidia>
+ <Z_-FdLizyrz2_ovi@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,69 +86,22 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Z/7dqjiVdjnoZ+2w@Asurada-Nvidia>
+In-Reply-To: <Z_-FdLizyrz2_ovi@google.com>
 
-On Tue, Apr 15, 2025 at 03:28:58PM -0700, Nicolin Chen wrote:
-> On Tue, Apr 15, 2025 at 08:47:03PM +0000, Pranjal Shrivastava wrote:
-> > On Mon, Apr 14, 2025 at 02:26:19PM -0700, Nicolin Chen wrote:
-> > > > On a system with vCMDQs, there are currently one standard SMMU
-> > > > CMDQ and two vCMDQs, i.e. totally 3 cmdqs that could be picked
-> > > > in this context. Perhaps SMMU might need a list of cmdqs that
-> > > > any new allocated cmdq must be added to, so we can iterate all
-> > > > the cmdqs in the list?
-> > > 
-> > > Another tricky thing: if a vcmdq is assigned to a guest VM, it
-> > > won't be added to the "list" above. Should we wait for them or
-> > > simply rely on VMM sending a suspend signal to all its VMs?
-> > > 
-> > 
-> > Hmm... I haven't looked at the vCMDQ series (of the vIOMMU) yet but I'm
-> > assuming that's what we're talking about here?
-> > 
-> > I'm not sure if sending a signal to the VMM would help if we have some
-> > stalled transactions? I guess we'll need to somehow figure out if
-> > there's some PCI device assigned that's using that vIOMMU/vCMDQ ? 
-> 
-> If all VMs go into suspend prior to the host machine and all
-> guest-owned vcmdqs are ensured to be empty, we would be fine.
-> 
-> But this is difficult to tell, since a VMM might not signal
-> a suspend to all guests VMs. And even if it does, not all the
-> guest kernels might have implemented a suspend routine in the
-> guest vcmdq driver draining all guest-owned vcmdqs.
-> 
+On Wed, Apr 16, 2025 at 10:24:52AM +0000, Pranjal Shrivastava wrote:
 
-I skimmed through the vCMDQ series and I have some context now. (Btw,
-nicely written cover letter :) )
+> Also, this would mean that we'll have to take care if the Guest Kernel
+> ends up touching the mmio region while the SMMU is suspended?
 
-The issue is that we may have dedicated CMDQs (like the Tegra vCMDQ)
-assigned to the guest and we may not know what's their status..and the
-whole point of this is to avoid VM_exits for cache invalidations..
+I think this is approaching it backwards.
 
-Since we're mmap-ing an mmio region for passing it through to the guest,
-I asssume the host has access to the prod/cons registers for the vCMDQ?
-If yes, then we could have a notifier tell the host driver that a vCMDQ
-has been assigned to a VM and the host driver could simply poll on those
-indices till it's drained?
+If power management is supported then the power should be on unless
+the VM has activated its own virtual power management. VM virtual
+power mangement would flush the cmdq from the VM side then signal the
+host that it is OK to power down the SMMU, which the host may or may
+not do
 
-Also, this would mean that we'll have to take care if the Guest Kernel
-ends up touching the mmio region while the SMMU is suspended?
+It doesn't make alot of sense to power down the SMMU while a VM is
+running...
 
-Let me go through the entire series and the tegra-vcmdq driver once.. if
-at all the Guest kernel ends up calling the host-kernel vCMDQ driver, in
-that case I think we should be able to handle this well... otherwise
-we'd need to disable power management for cases where vCMDQs are
-assigned..
-
-I'll just go through the vCMDQ series as well..
-
-> > Maybe we can smartly flush only the PCIe ATC inv and pri resp commands?
-> 
-> Yes, I suspect the host driver will have to do something like
-> that for the reason that I mentioned.
-> 
-> Thanks
-> Nicolin
-
-Thanks
-Praan
+Jason
