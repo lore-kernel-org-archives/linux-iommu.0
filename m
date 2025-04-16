@@ -1,209 +1,148 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2059.outbound.protection.outlook.com [40.107.243.59])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B0CF20299D
-	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 09:47:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.59
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744796845; cv=fail; b=jyJfgkQVNYNt6XuKkmggeXaeTYgSASGPGJqrZsFPwbZ0goGk4etgkHGReWkQdIcD6lejVgJ7rG/oCIlfEdxjb35BeNQSiFiQ4lCBsck8YfI86TKNMF/R0PPW9RlD50Cuwf1YiZSRkh2od971ntr5NuAG4U/SipRX5oNLWEDohXk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744796845; c=relaxed/simple;
-	bh=m9E9TB0DICFh91Bw4b4zEeEU/S30ZlQv6gRoP1lR2qY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=jGrSLPiJTARoaSrh4LAMYt6XnHVzY+Ra5QzbB1QDZgsReAMMeM8048wtMGVOBJTVt3Xr3mR8Lr6n28+HdfpVApYrtsj60unNxTN3kF8fDlmeYoRRFXDGlMghm3EE5eU+DPbPB9wGx1zT0l6JzqRbwveXV5MJDPEHtszekqfg5Ns=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=5PsE39rd; arc=fail smtp.client-ip=40.107.243.59
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 143EB247294
+	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 10:25:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744799103; cv=none; b=iw/LqTuo2cEIPI4TB3aUYsI+cekyxyh9Msqv0R0esJ5hihFgG8EikQxr61jRjBMxHAPgtEz7RS7ouuY15cqrKRQWkTwV1LybziQErtH+L/4zAOjmUTNeeOJX1gQBkrkSaO7kC18PgUf4eRsyVF3LAxpN9+ws0vALeGUUXMZIycI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744799103; c=relaxed/simple;
+	bh=J87+9qooBPbJnMdctmuBgxzHJJMtdq6vrxmX2JYX0M4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=a+kWxilN1eOgiF7MzOVIkvDyB06fKOGb7Ums4fyN00My40TD49W9oz8U1mlWmWzB5JfN8IWf3SbMBItqfKq43iQaciUSiLZ6gePd3AKTDbUHjUQjWGweEujMJhj/VVXXz6VavmzGPkBVtj211H7q7J/G+BOgedGW3gOVNeMAKR8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Tg2BDM3X; arc=none smtp.client-ip=209.85.214.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="5PsE39rd"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Gxad5yjuMfOrjYNa55/ULCaUtXEpNhAJcShd2Sw++vKaZedMgJd1W2yv6xNvwC5hHPY89Fs8rrFgg8nWy2H+an6cICLsDx39EdzmG2IIkROeGzqCrGKuTcHHDVjuh53t9n9HwCeolV+N51+EaMh21r6lhL8TYY7OgIgWnJwxc/RqXy/IX5aMK3oszY+oXoi6eLkalOVtDX4VflsrvHEoOs+Sb9jSCBpUzFr6xiBpgffGRy+DSbr3UKqFICxDq8jtoSFebc+EPB7nD7UaHTQLCkeF6fSdNe+6uQS0rg6EsC/CcS9ckkJy594MNSj0aUYLR+UBoN8yldtTbE7cyzNCrg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2JvhZ4co6DZfYZBg7ZBqxyYHoFCkMqnoWr5f57hY10g=;
- b=MA3aCReU6PhwyY5GOs6o970CTDIqU1k/ZTllVn2nPrX8c3SNjqaKowyK15JdqdBgF6bBh6Nhc8j1v/l4LybM3Y3kbwFPBlL6LnkA+VTT8n66emWiLOosbX6s8i6o8+8XbmwnhKKX0c+iTSeNBlZIm6p4D9NsP1iMIVrUz7YntV6HUJ4BTHox3rUJxxxzZmIi+SjAUzRxzStrNzsb8EnT5V6CeMCWbmq6S9geg1T9K9nu6F0OF6UCR2IbC9QWNzeGqzZGtJi8PpGso40NGV1M7crAINT3GN7nEHNryw+7utwmrljsqcuAWBNSldoN9NtYYiuEhQbFpY41jiYbk7NjNg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2JvhZ4co6DZfYZBg7ZBqxyYHoFCkMqnoWr5f57hY10g=;
- b=5PsE39rdgUlKGXolriTE9G7ddFmRs2MPe0J913hpINBhTOkyzDg1Vi+zs8goWx9lKheSrIO7CGSK0OsZ6+pFyAgBBwv6ngkKHUaRPHzvQDP0gM2TjXiHoE0KDK/YsB66fQjMYXhHAicKIobtjb0O6Hz2nw9Fv4ynKcMZJ5Ol/L0=
-Received: from SJ0PR03CA0149.namprd03.prod.outlook.com (2603:10b6:a03:33c::34)
- by DS0PR12MB8200.namprd12.prod.outlook.com (2603:10b6:8:f5::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8655.22; Wed, 16 Apr
- 2025 09:47:18 +0000
-Received: from CO1PEPF000044F2.namprd05.prod.outlook.com
- (2603:10b6:a03:33c:cafe::67) by SJ0PR03CA0149.outlook.office365.com
- (2603:10b6:a03:33c::34) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8655.15 via Frontend Transport; Wed,
- 16 Apr 2025 09:47:18 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1PEPF000044F2.mail.protection.outlook.com (10.167.241.72) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8655.12 via Frontend Transport; Wed, 16 Apr 2025 09:47:18 +0000
-Received: from [10.85.32.54] (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 16 Apr
- 2025 04:47:14 -0500
-Message-ID: <de563c32-b124-433e-9d16-2544c41e2be6@amd.com>
-Date: Wed, 16 Apr 2025 15:17:11 +0530
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Tg2BDM3X"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2242ac37caeso128335ad.1
+        for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 03:25:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1744799101; x=1745403901; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=O+ySUBqpDCStVJ0jbWaBzxgrHSQdW0U948zt5rBiQC4=;
+        b=Tg2BDM3XCsHVO10g7Fho78XzUXnEdunGkGBj/JhgynuKtKWX5K2NhzomZB9wflM5os
+         XKPA8JSFliy0zfs/LtsDRRmVj51MrNZT8RIy38oWgP9X3tep2doEQmwaFXKpWBBgxNYF
+         WZ2TG/2TI8ztMUH5xbWew2TYASIXb8PRpBBjkXKBMSqRJvowWZI6+BjVuSBcArJag9dz
+         qJxJd6PkkTv5QUxxzL7U+6D0sz1OOd8p+9nUcZ0vS7g5lD7SHxScwboDJCGHesWEXY1y
+         pbJpLgmH541tQZ97u0vi6Y8060p3cX0/GfMzB3v0u0z4qxKSxFrS5RZK5TsptkApA3jV
+         1veg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1744799101; x=1745403901;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=O+ySUBqpDCStVJ0jbWaBzxgrHSQdW0U948zt5rBiQC4=;
+        b=fpQ6M36nIZd814YuJSbeRCawD44rt7ZcqZaRBlvTKmPx1GNNCzFLird/K5ISqVeDl4
+         RbuLuRRBHIS7iC1UJ6rfLZZqXLJgNUrhOSJ9P7FjZirW+pVAOa4x3jby/uRSxlvQsErj
+         e3p8KNctf8xKkF5UeFOGVG43iHvW0RsBtiedoZ3qxDQrbAmQk2rCsZtgXumFSifNEiKl
+         o66uhW/nBKT5ZfuFzhjb2+9lJjPm3ULXZ2GPJEJSdkubVVIAx4UU+/Asva7VDUZPUuln
+         idXX3raWO2BatU8eo2d7V1ldqXDCGchhzlebIf+ulNR1CZIq08WefzPHjoB+BMWKfNOR
+         4UOw==
+X-Forwarded-Encrypted: i=1; AJvYcCVYxdrFJiiNACgRptW4eUafhq++h6No9+5J93VC9aEtisbSNkkamM/P3zPwlBm+cyRAvPdsXA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwLixvHnQbcqoBGEgJF91oOPMJ5cLnUsUC/4F5c3r/IUVceL9ji
+	RQLhA+D3+1IB7LoH7vMERvxN7qQQsIGCzMuFMwzPNFE5fxPSC7c0WLK+/oXznw==
+X-Gm-Gg: ASbGncuNl9iVqxc0/UfLtCvvnlTcZS0uY2GjcNP/UIFQRI5B1xrA+8VxJQKw/pdJ6cO
+	Vx0D3HzMwfxOcP/fx6bfJXyP5qgj92MheT0sKpzqPQu7iWs081DcD2bNHR09CtaruNfGoNKA0S7
+	GiWC2dR+diRliX5iF5zgN/jcr4B8WorI6JwSyUXePPzuNXoNMcbkRRlAQfy2GUi0yg/gSC/eyhC
+	IScRF86EwZA8QepEPPtUoQGDdZn4E4gzAfkMFdTJel1J5+AkM/MYLEkvpCjPGLN7BdRwV/IDvXn
+	vtJsRCHg3NElXdeYFtS6a7+j5+/mK4EMw7etntw8HClqeyCHLxYrgTslYccl3d4fgXhL+K9S
+X-Google-Smtp-Source: AGHT+IEMGqdg7xAaFs0kezfOI2UIIHUMPeGEH7fNgj34+MnckZTdetwR2157erfMNen+R9kUElYeMw==
+X-Received: by 2002:a17:902:f745:b0:215:7ced:9d66 with SMTP id d9443c01a7336-22c354b5f6cmr1181905ad.10.1744799101146;
+        Wed, 16 Apr 2025 03:25:01 -0700 (PDT)
+Received: from google.com (2.210.143.34.bc.googleusercontent.com. [34.143.210.2])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-308611d6171sm1216834a91.2.2025.04.16.03.24.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Apr 2025 03:25:00 -0700 (PDT)
+Date: Wed, 16 Apr 2025 10:24:52 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Mostafa Saleh <smostafa@google.com>,
+	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 3/5] iommu/arm-smmu-v3: Implement pm_runtime & system
+ sleep ops
+Message-ID: <Z_-FdLizyrz2_ovi@google.com>
+References: <20250319004254.2547950-1-praan@google.com>
+ <20250319004254.2547950-4-praan@google.com>
+ <Z/1MjDaAM4Em53gE@Asurada-Nvidia>
+ <Z/19e4eyj1k/pqsh@Asurada-Nvidia>
+ <Z_7Fx-Q8baoyzJe2@google.com>
+ <Z/7dqjiVdjnoZ+2w@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 06/67] iommu/amd: WARN if KVM attempts to set vCPU
- affinity without posted intrrupts
-To: Sean Christopherson <seanjc@google.com>, Vasant Hegde
-	<vasant.hegde@amd.com>
-CC: Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>,
-	"David Woodhouse" <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
-	<kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, Maxim Levitsky <mlevitsk@redhat.com>, "Joao
- Martins" <joao.m.martins@oracle.com>, David Matlack <dmatlack@google.com>,
-	Naveen N Rao <naveen.rao@amd.com>
-References: <20250404193923.1413163-1-seanjc@google.com>
- <20250404193923.1413163-7-seanjc@google.com>
- <0895007e-95d9-410e-8b24-d17172b0b908@amd.com> <Z_ki0uZ9Rp3Fkrh1@google.com>
- <fcc15956-aad0-49ea-b947-eac1c88d0542@amd.com> <Z_7X3hoRdbHsTnc8@google.com>
-Content-Language: en-US
-From: Sairaj Kodilkar <sarunkod@amd.com>
-In-Reply-To: <Z_7X3hoRdbHsTnc8@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000044F2:EE_|DS0PR12MB8200:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1feaf856-fdb7-4f65-1400-08dd7ccbad41
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|1800799024|82310400026|36860700013|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?QmtoWGhhRUVvZ3B3Tnhqb0RzTU9VRVhzNlFnWjVVai9GR1lUSWQ1NkJtT3Bp?=
- =?utf-8?B?SlZiRS9TeUZpSkkrRjVUaVByUXFuQSsxNHc2UFpLckZ1Ri9mb1VpN2c0Tkp3?=
- =?utf-8?B?ODQrTXdBYlA0K1A0eU5uM1FyNzB2S3JNSStVaGp5Vzc5d0VJVnRpZXdPQlBr?=
- =?utf-8?B?Y1kwWWF2S29CUCt3ckx1K2E0R2VxYlFWWHJUR2w5bU5hVzRZSUZuQ1BpWWdB?=
- =?utf-8?B?S3FqSjlwQ0o3bHd6MFhYME5tTk5tUzRObkxMWUJuY2RZUHRNaGIzS1RwOXBT?=
- =?utf-8?B?Z1RHNmhNa1RIa013ZFludlA2U0NwaDI5dTZTb09FM1d6MWJVM1lON0hCdTM1?=
- =?utf-8?B?cnlqZ2tOL1V4ZFJSSklCR29XVUZveTRqMWFtM2EwT0ducCtpV0FmV0lBU256?=
- =?utf-8?B?Vk9LbUgyVFJXMnVlYzR0bGRGUmkzWVhrYkl6YjBTU3I3cVhYU2ZvTUVzTmoz?=
- =?utf-8?B?aVltU1h2Yms2L2N4TDNtN21zU2JRQkFzdjdOdmtkRlVPM09OYmdRdlBpWlpQ?=
- =?utf-8?B?R2o4aTZvSHdFcTFmZ3ZFakZxdjBHTlA3cUFhd0N4RkM4SzNnM292WEJLSFpt?=
- =?utf-8?B?SjU1REMxYzV0S3NTdEluNyttbEdDRjBQMVp6Qmk3elc0alJHempCZVdlQzBq?=
- =?utf-8?B?cE1XUDZPSW90Umh0aTVQeDNRMXpiN1JnUmhKRWMxN0R5eVVPaW10WG05ZllK?=
- =?utf-8?B?cEpiMkVxd3E2WFZtUTFLSkVUZHBLRHZYYmU3cEVKbnBXVy9GUUlucVRkSlYv?=
- =?utf-8?B?WVRiZTN4MG94THpuUFdvQm1EbEJ3ekVTTk1xeENoQ3kwWEcwUjlPSy9uMHRU?=
- =?utf-8?B?MmtoM0Z0M3lOcnQ2Q2tKcHZKMFgzM2dyaGNhOUJpZ3NsSW45V3hzTjhZaW54?=
- =?utf-8?B?a0taVjlhdjVBUkRkRFpvc2lKaVM3Ny83TTJzejVmUlVLQVpjUGxJT2UwQjY5?=
- =?utf-8?B?YjNGL0JTMjNqcnEwbllOM3dpa0tHN2lMZFNZSUlsKysyNXNqcVI4bUpLUDVX?=
- =?utf-8?B?aWdjajlYeXE1R0RueFNQaFR6NmRESUdRdjQ2Tm82L3l2V2h2VnY3eUQ5cFVu?=
- =?utf-8?B?d0p2ci9ENlJubEVGWFN1cEYvZjVCSElrU2YrYTZJd25GUG9DQllGcDh4cnUr?=
- =?utf-8?B?VUhvSko1aDFQR0xzV3pBK0EzYzJrRzhaU25zT1lNSmlTYlVjMVB4VVJIWnl3?=
- =?utf-8?B?Ui95QmRpRVpRR1hLaGI4UC9XZGJINDlkaHlCcHdPNVd2ZDJEbERCRW1uclNI?=
- =?utf-8?B?ZjZoNXd2YWxvd0pWK3p6cWVZT2I1dktZN0tJbHNpcHU3R0pZVUVZUzVxMStk?=
- =?utf-8?B?K0Nlb0hwNjlwR1FUMk5hZjFwcEErSFdpUDl3KzVkbUpSK25VSUgzU09zaTgv?=
- =?utf-8?B?QmI3cWZ5OUxQRlJhNE1IWm5Bb0R4aEwreVRJWDFnOFpkU1RNT3EzS2NxOGJZ?=
- =?utf-8?B?eTVIY0o2dy9EbG45TmxhUzJLOEZldUwvWHNHT3BQZ3dXZzZpY2s1SElZa1Q0?=
- =?utf-8?B?N2ZwekFVbWw1eEh3TnNnYk1vSDQ0NXRKdklvQ0p5SmVaY0NUSlcwb2VPb3ZF?=
- =?utf-8?B?SHhiL2swRmVQRldjNzlweStmM2ZTWnlxQ2NEWHdwb1BHeEc2Um9INXVxbmwy?=
- =?utf-8?B?T2VlY1JnOTFhaEtwbUlhWE5oSlZ5MWVQZDRTOW1jU25XTFlXK2IydFdyM1Jt?=
- =?utf-8?B?RXQxRTVaWHp2Qzdtb3NhQTMrY1VuQU85S2tzUUlKdm9laFp3WDVDRmhIVzhw?=
- =?utf-8?B?dTQyR3dGcGhlK0NBZGg3NkVHcWZLZ0l6TzU1Y2g5VUxJYVU5a2ZqVXB4RkVR?=
- =?utf-8?B?Sk52Wk5PUWs1WTkycERwTy90YjU0MUJlMEJWR0lYNGVwdzZMakV5MWkwczZB?=
- =?utf-8?B?Mlc3OE5sM05mWnNVSi9hMGpRbVlBV1FlZVN3cjhJSStRZTN3aXNwZUFVZzdM?=
- =?utf-8?B?QmdCa0Y3UFZXd0dHTHl2b1hOR2NSVjN1RmZPRWNmQ3c2czFIaHcvZWxZL0Q1?=
- =?utf-8?B?TS9DbXBsRVlLQ3hseHdKMDZyMjdEOENWTU4xelpYc3FvekhQU1ZpdzNlamx1?=
- =?utf-8?Q?s+CljI?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(82310400026)(36860700013)(7053199007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Apr 2025 09:47:18.2000
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1feaf856-fdb7-4f65-1400-08dd7ccbad41
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000044F2.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8200
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Z/7dqjiVdjnoZ+2w@Asurada-Nvidia>
 
-On 4/16/2025 3:34 AM, Sean Christopherson wrote:
-> On Tue, Apr 15, 2025, Vasant Hegde wrote:
->> On 4/11/2025 7:40 PM, Sean Christopherson wrote:
->>> On Fri, Apr 11, 2025, Sairaj Kodilkar wrote:
->>>> On 4/5/2025 1:08 AM, Sean Christopherson wrote:
->>>>> WARN if KVM attempts to set vCPU affinity when posted interrupts aren't
->>>>> enabled, as KVM shouldn't try to enable posting when they're unsupported,
->>>>> and the IOMMU driver darn well should only advertise posting support when
->>>>> AMD_IOMMU_GUEST_IR_VAPIC() is true.
->>>>>
->>>>> Note, KVM consumes is_guest_mode only on success.
->>>>>
->>>>> Signed-off-by: Sean Christopherson <seanjc@google.com>
->>>>> ---
->>>>>    drivers/iommu/amd/iommu.c | 13 +++----------
->>>>>    1 file changed, 3 insertions(+), 10 deletions(-)
->>>>>
->>>>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
->>>>> index b3a01b7757ee..4f69a37cf143 100644
->>>>> --- a/drivers/iommu/amd/iommu.c
->>>>> +++ b/drivers/iommu/amd/iommu.c
->>>>> @@ -3852,19 +3852,12 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
->>>>>    	if (!dev_data || !dev_data->use_vapic)
->>>>>    		return -EINVAL;
->>>>> +	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
->>>>> +		return -EINVAL;
->>>>> +
->>>>
->>>> Hi Sean,
->>>> 'dev_data->use_vapic' is always zero when AMD IOMMU uses legacy
->>>> interrupts i.e. when AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) is 0.
->>>> Hence you can remove this additional check.
->>>
->>> Hmm, or move it above?  KVM should never call amd_ir_set_vcpu_affinity() if
->>> IRQ posting is unsupported, and that would make this consistent with the end
->>> behavior of amd_iommu_update_ga() and amd_iommu_{de,}activate_guest_mode().
->>>
->>> 	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
->>
->> Note that this is global IOMMU level check while dev_data->use_vapic is per
->> device. We set per device thing while attaching device to domain based on IOMMU
->> domain type and IOMMU vapic support.
->>
->> How about add WARN_ON based on dev_data->use_vapic .. so that we can catch if
->> something went wrong in IOMMU side as well?
+On Tue, Apr 15, 2025 at 03:28:58PM -0700, Nicolin Chen wrote:
+> On Tue, Apr 15, 2025 at 08:47:03PM +0000, Pranjal Shrivastava wrote:
+> > On Mon, Apr 14, 2025 at 02:26:19PM -0700, Nicolin Chen wrote:
+> > > > On a system with vCMDQs, there are currently one standard SMMU
+> > > > CMDQ and two vCMDQs, i.e. totally 3 cmdqs that could be picked
+> > > > in this context. Perhaps SMMU might need a list of cmdqs that
+> > > > any new allocated cmdq must be added to, so we can iterate all
+> > > > the cmdqs in the list?
+> > > 
+> > > Another tricky thing: if a vcmdq is assigned to a guest VM, it
+> > > won't be added to the "list" above. Should we wait for them or
+> > > simply rely on VMM sending a suspend signal to all its VMs?
+> > > 
+> > 
+> > Hmm... I haven't looked at the vCMDQ series (of the vIOMMU) yet but I'm
+> > assuming that's what we're talking about here?
+> > 
+> > I'm not sure if sending a signal to the VMM would help if we have some
+> > stalled transactions? I guess we'll need to somehow figure out if
+> > there's some PCI device assigned that's using that vIOMMU/vCMDQ ? 
 > 
-> It's not clear to me that a WARN_ON(dev_data->use_vapic) would be free of false
-> positives.  AFAICT, the producers (e.g. VFIO) don't check whether or not a device
-> supports posting interrupts, and KVM definitely doesn't check.  And KVM is also
-> tolerant of irq_set_vcpu_affinity() failures, specifically for this type of
-> situation, so unfortunately I don't know that the IOMMU side of the world can
-> safely WARN.
+> If all VMs go into suspend prior to the host machine and all
+> guest-owned vcmdqs are ensured to be empty, we would be fine.
+> 
+> But this is difficult to tell, since a VMM might not signal
+> a suspend to all guests VMs. And even if it does, not all the
+> guest kernels might have implemented a suspend routine in the
+> guest vcmdq driver draining all guest-owned vcmdqs.
+> 
 
-Hi sean,
-I think it is safe to have this WARN_ON(!dev_data->use_vapic) without
-any false positives. IOMMU driver sets the dev_data->use_vapic only when
-the device is in UNMANAGE_DOMAIN and it is 0 if the device is in any
-other domain (DMA, DMA_FQ, IDENTITY).
+I skimmed through the vCMDQ series and I have some context now. (Btw,
+nicely written cover letter :) )
 
-We have a bigger problem from the VFIO side if we hit this WARN_ON()
-as device is not in a UNMANGED_DOMAIN.
+The issue is that we may have dedicated CMDQs (like the Tegra vCMDQ)
+assigned to the guest and we may not know what's their status..and the
+whole point of this is to avoid VM_exits for cache invalidations..
 
-Regards
-Sairaj Kodilkar
+Since we're mmap-ing an mmio region for passing it through to the guest,
+I asssume the host has access to the prod/cons registers for the vCMDQ?
+If yes, then we could have a notifier tell the host driver that a vCMDQ
+has been assigned to a VM and the host driver could simply poll on those
+indices till it's drained?
+
+Also, this would mean that we'll have to take care if the Guest Kernel
+ends up touching the mmio region while the SMMU is suspended?
+
+Let me go through the entire series and the tegra-vcmdq driver once.. if
+at all the Guest kernel ends up calling the host-kernel vCMDQ driver, in
+that case I think we should be able to handle this well... otherwise
+we'd need to disable power management for cases where vCMDQs are
+assigned..
+
+I'll just go through the vCMDQ series as well..
+
+> > Maybe we can smartly flush only the PCIe ATC inv and pri resp commands?
+> 
+> Yes, I suspect the host driver will have to do something like
+> that for the reason that I mentioned.
+> 
+> Thanks
+> Nicolin
+
+Thanks
+Praan
