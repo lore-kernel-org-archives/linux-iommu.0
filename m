@@ -1,312 +1,209 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2059.outbound.protection.outlook.com [40.107.243.59])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46E9723371A
-	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 09:35:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744796130; cv=none; b=GPFKv0HCh6zHh4uegIiHSz+gFIfp0PFMeOTQwZ6HRIMztqcDlVwo/Jmv4NaWJug7GYlGowwufi6lVKJ1HdN/7xieML85WFBMf4AD5Ivf9nYFROugXJ064Vn3AmAKYMXJew+e03nSI4viZG26oEnP3CgfPUH8Abx7HsBk3rRMkO4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744796130; c=relaxed/simple;
-	bh=05QxXqivbSdfbDCL7/ruM7xLHEtOAuyN8K6UqkeiaoA=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=kvvnk7VV56KyQMq5/TtygzdPqtsywQzxN3bNd8kEwsCK1yCdGcRHOpCgwNGe6v+vhUJPa3udvdEevdJcFgBvjO6bkJ0ol79hdd10pcQBVTI2X4iD/xexixAF4H6EBoEnbaOcYsI29qoL5F02vOHYHkunP54lrsaigLyvIJZUTfY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=TYIoKdl9; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B0CF20299D
+	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 09:47:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.59
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744796845; cv=fail; b=jyJfgkQVNYNt6XuKkmggeXaeTYgSASGPGJqrZsFPwbZ0goGk4etgkHGReWkQdIcD6lejVgJ7rG/oCIlfEdxjb35BeNQSiFiQ4lCBsck8YfI86TKNMF/R0PPW9RlD50Cuwf1YiZSRkh2od971ntr5NuAG4U/SipRX5oNLWEDohXk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744796845; c=relaxed/simple;
+	bh=m9E9TB0DICFh91Bw4b4zEeEU/S30ZlQv6gRoP1lR2qY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=jGrSLPiJTARoaSrh4LAMYt6XnHVzY+Ra5QzbB1QDZgsReAMMeM8048wtMGVOBJTVt3Xr3mR8Lr6n28+HdfpVApYrtsj60unNxTN3kF8fDlmeYoRRFXDGlMghm3EE5eU+DPbPB9wGx1zT0l6JzqRbwveXV5MJDPEHtszekqfg5Ns=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=5PsE39rd; arc=fail smtp.client-ip=40.107.243.59
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="TYIoKdl9"
-Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53FL3eha018902;
-	Wed, 16 Apr 2025 09:35:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=w3hM8Z
-	RRQsVyGIYjdZkA0T3THggoIVmw6QfZD7+58NA=; b=TYIoKdl9iIMnUJwFwsyKb0
-	tgMKkPUrmUOTfBziq1N0hPrhYMOE3HdJuDBBDLjMgt0E4GAnIXFbUYegTci3vwFA
-	NfdgCoz77U2uOkoyjfnhoJkThUh7fwSQAooF7leRl6r3n5vagn/sTCyKSdMiuU0d
-	IA69VtzXBsegzCRhyILc3RfsmJou8kdYDT+9AdIzPcXasLboSCnSlS2tqXTfITDZ
-	3sjV+skyKP3jywyyW6+CNWbla9ke2UliVv6VUD/xBxCZyD4g7Q/4ZSAZmXObJmRH
-	HhEhZOrBEVa0bn5MzrFDD/NBQeE9/F6tUw6p3hkfma3vxmMMfbKtjkMsUreSKD/w
-	==
-Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 461y1gatra-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 16 Apr 2025 09:35:21 +0000 (GMT)
-Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 53G9JEhj024907;
-	Wed, 16 Apr 2025 09:35:20 GMT
-Received: from smtprelay07.dal12v.mail.ibm.com ([172.16.1.9])
-	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 4602gtfx72-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 16 Apr 2025 09:35:20 +0000
-Received: from smtpav04.wdc07v.mail.ibm.com (smtpav04.wdc07v.mail.ibm.com [10.39.53.231])
-	by smtprelay07.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 53G9ZJaG30147138
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 16 Apr 2025 09:35:19 GMT
-Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 5213E58045;
-	Wed, 16 Apr 2025 09:35:19 +0000 (GMT)
-Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A5F6058050;
-	Wed, 16 Apr 2025 09:35:16 +0000 (GMT)
-Received: from [9.179.17.252] (unknown [9.179.17.252])
-	by smtpav04.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 16 Apr 2025 09:35:16 +0000 (GMT)
-Message-ID: <925b1369de0d347ddee2115d1de63843623ac485.camel@linux.ibm.com>
-Subject: Re: [PATCH v5 5/5] iommu/s390: allow larger region tables
-From: Niklas Schnelle <schnelle@linux.ibm.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>, joro@8bytes.org, will@kernel.org,
-        robin.murphy@arm.com, gerald.schaefer@linux.ibm.com
-Cc: hca@linux.ibm.com, gor@linux.ibm.com, agordeev@linux.ibm.com,
-        svens@linux.ibm.com, borntraeger@linux.ibm.com, clg@redhat.com,
-        iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org
-Date: Wed, 16 Apr 2025 11:35:15 +0200
-In-Reply-To: <20250411202433.181683-6-mjrosato@linux.ibm.com>
-References: <20250411202433.181683-1-mjrosato@linux.ibm.com>
-	 <20250411202433.181683-6-mjrosato@linux.ibm.com>
-Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
- keydata=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
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.54.3 (3.54.3-1.fc41) 
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="5PsE39rd"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Gxad5yjuMfOrjYNa55/ULCaUtXEpNhAJcShd2Sw++vKaZedMgJd1W2yv6xNvwC5hHPY89Fs8rrFgg8nWy2H+an6cICLsDx39EdzmG2IIkROeGzqCrGKuTcHHDVjuh53t9n9HwCeolV+N51+EaMh21r6lhL8TYY7OgIgWnJwxc/RqXy/IX5aMK3oszY+oXoi6eLkalOVtDX4VflsrvHEoOs+Sb9jSCBpUzFr6xiBpgffGRy+DSbr3UKqFICxDq8jtoSFebc+EPB7nD7UaHTQLCkeF6fSdNe+6uQS0rg6EsC/CcS9ckkJy594MNSj0aUYLR+UBoN8yldtTbE7cyzNCrg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2JvhZ4co6DZfYZBg7ZBqxyYHoFCkMqnoWr5f57hY10g=;
+ b=MA3aCReU6PhwyY5GOs6o970CTDIqU1k/ZTllVn2nPrX8c3SNjqaKowyK15JdqdBgF6bBh6Nhc8j1v/l4LybM3Y3kbwFPBlL6LnkA+VTT8n66emWiLOosbX6s8i6o8+8XbmwnhKKX0c+iTSeNBlZIm6p4D9NsP1iMIVrUz7YntV6HUJ4BTHox3rUJxxxzZmIi+SjAUzRxzStrNzsb8EnT5V6CeMCWbmq6S9geg1T9K9nu6F0OF6UCR2IbC9QWNzeGqzZGtJi8PpGso40NGV1M7crAINT3GN7nEHNryw+7utwmrljsqcuAWBNSldoN9NtYYiuEhQbFpY41jiYbk7NjNg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2JvhZ4co6DZfYZBg7ZBqxyYHoFCkMqnoWr5f57hY10g=;
+ b=5PsE39rdgUlKGXolriTE9G7ddFmRs2MPe0J913hpINBhTOkyzDg1Vi+zs8goWx9lKheSrIO7CGSK0OsZ6+pFyAgBBwv6ngkKHUaRPHzvQDP0gM2TjXiHoE0KDK/YsB66fQjMYXhHAicKIobtjb0O6Hz2nw9Fv4ynKcMZJ5Ol/L0=
+Received: from SJ0PR03CA0149.namprd03.prod.outlook.com (2603:10b6:a03:33c::34)
+ by DS0PR12MB8200.namprd12.prod.outlook.com (2603:10b6:8:f5::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8655.22; Wed, 16 Apr
+ 2025 09:47:18 +0000
+Received: from CO1PEPF000044F2.namprd05.prod.outlook.com
+ (2603:10b6:a03:33c:cafe::67) by SJ0PR03CA0149.outlook.office365.com
+ (2603:10b6:a03:33c::34) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8655.15 via Frontend Transport; Wed,
+ 16 Apr 2025 09:47:18 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1PEPF000044F2.mail.protection.outlook.com (10.167.241.72) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8655.12 via Frontend Transport; Wed, 16 Apr 2025 09:47:18 +0000
+Received: from [10.85.32.54] (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 16 Apr
+ 2025 04:47:14 -0500
+Message-ID: <de563c32-b124-433e-9d16-2544c41e2be6@amd.com>
+Date: Wed, 16 Apr 2025 15:17:11 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: T7Kz7xVW64sq_e_qjCa8E4eR-1nL1WIt
-X-Proofpoint-GUID: T7Kz7xVW64sq_e_qjCa8E4eR-1nL1WIt
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-16_04,2025-04-15_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
- lowpriorityscore=0 bulkscore=0 malwarescore=0 impostorscore=0
- suspectscore=0 phishscore=0 mlxlogscore=948 priorityscore=1501 spamscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2502280000 definitions=main-2504160078
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 06/67] iommu/amd: WARN if KVM attempts to set vCPU
+ affinity without posted intrrupts
+To: Sean Christopherson <seanjc@google.com>, Vasant Hegde
+	<vasant.hegde@amd.com>
+CC: Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>,
+	"David Woodhouse" <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+	<kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, Maxim Levitsky <mlevitsk@redhat.com>, "Joao
+ Martins" <joao.m.martins@oracle.com>, David Matlack <dmatlack@google.com>,
+	Naveen N Rao <naveen.rao@amd.com>
+References: <20250404193923.1413163-1-seanjc@google.com>
+ <20250404193923.1413163-7-seanjc@google.com>
+ <0895007e-95d9-410e-8b24-d17172b0b908@amd.com> <Z_ki0uZ9Rp3Fkrh1@google.com>
+ <fcc15956-aad0-49ea-b947-eac1c88d0542@amd.com> <Z_7X3hoRdbHsTnc8@google.com>
+Content-Language: en-US
+From: Sairaj Kodilkar <sarunkod@amd.com>
+In-Reply-To: <Z_7X3hoRdbHsTnc8@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PEPF000044F2:EE_|DS0PR12MB8200:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1feaf856-fdb7-4f65-1400-08dd7ccbad41
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|1800799024|82310400026|36860700013|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?QmtoWGhhRUVvZ3B3Tnhqb0RzTU9VRVhzNlFnWjVVai9GR1lUSWQ1NkJtT3Bp?=
+ =?utf-8?B?SlZiRS9TeUZpSkkrRjVUaVByUXFuQSsxNHc2UFpLckZ1Ri9mb1VpN2c0Tkp3?=
+ =?utf-8?B?ODQrTXdBYlA0K1A0eU5uM1FyNzB2S3JNSStVaGp5Vzc5d0VJVnRpZXdPQlBr?=
+ =?utf-8?B?Y1kwWWF2S29CUCt3ckx1K2E0R2VxYlFWWHJUR2w5bU5hVzRZSUZuQ1BpWWdB?=
+ =?utf-8?B?S3FqSjlwQ0o3bHd6MFhYME5tTk5tUzRObkxMWUJuY2RZUHRNaGIzS1RwOXBT?=
+ =?utf-8?B?Z1RHNmhNa1RIa013ZFludlA2U0NwaDI5dTZTb09FM1d6MWJVM1lON0hCdTM1?=
+ =?utf-8?B?cnlqZ2tOL1V4ZFJSSklCR29XVUZveTRqMWFtM2EwT0ducCtpV0FmV0lBU256?=
+ =?utf-8?B?Vk9LbUgyVFJXMnVlYzR0bGRGUmkzWVhrYkl6YjBTU3I3cVhYU2ZvTUVzTmoz?=
+ =?utf-8?B?aVltU1h2Yms2L2N4TDNtN21zU2JRQkFzdjdOdmtkRlVPM09OYmdRdlBpWlpQ?=
+ =?utf-8?B?R2o4aTZvSHdFcTFmZ3ZFakZxdjBHTlA3cUFhd0N4RkM4SzNnM292WEJLSFpt?=
+ =?utf-8?B?SjU1REMxYzV0S3NTdEluNyttbEdDRjBQMVp6Qmk3elc0alJHempCZVdlQzBq?=
+ =?utf-8?B?cE1XUDZPSW90Umh0aTVQeDNRMXpiN1JnUmhKRWMxN0R5eVVPaW10WG05ZllK?=
+ =?utf-8?B?cEpiMkVxd3E2WFZtUTFLSkVUZHBLRHZYYmU3cEVKbnBXVy9GUUlucVRkSlYv?=
+ =?utf-8?B?WVRiZTN4MG94THpuUFdvQm1EbEJ3ekVTTk1xeENoQ3kwWEcwUjlPSy9uMHRU?=
+ =?utf-8?B?MmtoM0Z0M3lOcnQ2Q2tKcHZKMFgzM2dyaGNhOUJpZ3NsSW45V3hzTjhZaW54?=
+ =?utf-8?B?a0taVjlhdjVBUkRkRFpvc2lKaVM3Ny83TTJzejVmUlVLQVpjUGxJT2UwQjY5?=
+ =?utf-8?B?YjNGL0JTMjNqcnEwbllOM3dpa0tHN2lMZFNZSUlsKysyNXNqcVI4bUpLUDVX?=
+ =?utf-8?B?aWdjajlYeXE1R0RueFNQaFR6NmRESUdRdjQ2Tm82L3l2V2h2VnY3eUQ5cFVu?=
+ =?utf-8?B?d0p2ci9ENlJubEVGWFN1cEYvZjVCSElrU2YrYTZJd25GUG9DQllGcDh4cnUr?=
+ =?utf-8?B?VUhvSko1aDFQR0xzV3pBK0EzYzJrRzhaU25zT1lNSmlTYlVjMVB4VVJIWnl3?=
+ =?utf-8?B?Ui95QmRpRVpRR1hLaGI4UC9XZGJINDlkaHlCcHdPNVd2ZDJEbERCRW1uclNI?=
+ =?utf-8?B?ZjZoNXd2YWxvd0pWK3p6cWVZT2I1dktZN0tJbHNpcHU3R0pZVUVZUzVxMStk?=
+ =?utf-8?B?K0Nlb0hwNjlwR1FUMk5hZjFwcEErSFdpUDl3KzVkbUpSK25VSUgzU09zaTgv?=
+ =?utf-8?B?QmI3cWZ5OUxQRlJhNE1IWm5Bb0R4aEwreVRJWDFnOFpkU1RNT3EzS2NxOGJZ?=
+ =?utf-8?B?eTVIY0o2dy9EbG45TmxhUzJLOEZldUwvWHNHT3BQZ3dXZzZpY2s1SElZa1Q0?=
+ =?utf-8?B?N2ZwekFVbWw1eEh3TnNnYk1vSDQ0NXRKdklvQ0p5SmVaY0NUSlcwb2VPb3ZF?=
+ =?utf-8?B?SHhiL2swRmVQRldjNzlweStmM2ZTWnlxQ2NEWHdwb1BHeEc2Um9INXVxbmwy?=
+ =?utf-8?B?T2VlY1JnOTFhaEtwbUlhWE5oSlZ5MWVQZDRTOW1jU25XTFlXK2IydFdyM1Jt?=
+ =?utf-8?B?RXQxRTVaWHp2Qzdtb3NhQTMrY1VuQU85S2tzUUlKdm9laFp3WDVDRmhIVzhw?=
+ =?utf-8?B?dTQyR3dGcGhlK0NBZGg3NkVHcWZLZ0l6TzU1Y2g5VUxJYVU5a2ZqVXB4RkVR?=
+ =?utf-8?B?Sk52Wk5PUWs1WTkycERwTy90YjU0MUJlMEJWR0lYNGVwdzZMakV5MWkwczZB?=
+ =?utf-8?B?Mlc3OE5sM05mWnNVSi9hMGpRbVlBV1FlZVN3cjhJSStRZTN3aXNwZUFVZzdM?=
+ =?utf-8?B?QmdCa0Y3UFZXd0dHTHl2b1hOR2NSVjN1RmZPRWNmQ3c2czFIaHcvZWxZL0Q1?=
+ =?utf-8?B?TS9DbXBsRVlLQ3hseHdKMDZyMjdEOENWTU4xelpYc3FvekhQU1ZpdzNlamx1?=
+ =?utf-8?Q?s+CljI?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(82310400026)(36860700013)(7053199007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Apr 2025 09:47:18.2000
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1feaf856-fdb7-4f65-1400-08dd7ccbad41
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1PEPF000044F2.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8200
 
-On Fri, 2025-04-11 at 16:24 -0400, Matthew Rosato wrote:
-> Extend the aperture calculation to consider sizes beyond the maximum
-> size of a region third table.  Attempt to always use the smallest
-> table size possible to avoid unnecessary extra steps during translation.
-> Update reserved region calculations to use the appropriate table size.
->=20
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> ---
->  arch/s390/include/asm/pci_dma.h |  1 +
->  drivers/iommu/s390-iommu.c      | 70 ++++++++++++++++++++++++---------
->  2 files changed, 53 insertions(+), 18 deletions(-)
->=20
-> diff --git a/arch/s390/include/asm/pci_dma.h b/arch/s390/include/asm/pci_=
-dma.h
-> index 8d8962e4fd58..d12e17201661 100644
-> --- a/arch/s390/include/asm/pci_dma.h
-> +++ b/arch/s390/include/asm/pci_dma.h
-> @@ -25,6 +25,7 @@ enum zpci_ioat_dtype {
->  #define ZPCI_KEY			(PAGE_DEFAULT_KEY << 5)
-> =20
->  #define ZPCI_TABLE_SIZE_RT	(1UL << 42)
-> +#define ZPCI_TABLE_SIZE_RS	(1UL << 53)
-> =20
->  #define ZPCI_IOTA_STO_FLAG	(ZPCI_IOTA_IOT_ENABLED | ZPCI_KEY | ZPCI_IOTA=
-_DT_ST)
->  #define ZPCI_IOTA_RTTO_FLAG	(ZPCI_IOTA_IOT_ENABLED | ZPCI_KEY | ZPCI_IOT=
-A_DT_RT)
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index 46f45b136993..433b59f43530 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -511,9 +511,25 @@ static bool s390_iommu_capable(struct device *dev, e=
-num iommu_cap cap)
->  	}
->  }
-> =20
-> +static inline u64 max_tbl_size(struct s390_domain *domain)
-> +{
-> +	switch (domain->origin_type) {
-> +	case ZPCI_TABLE_TYPE_RTX:
-> +		return ZPCI_TABLE_SIZE_RT - 1;
-> +	case ZPCI_TABLE_TYPE_RSX:
-> +		return ZPCI_TABLE_SIZE_RS - 1;
-> +	case ZPCI_TABLE_TYPE_RFX:
-> +		return U64_MAX;
-> +	default:
-> +		return 0;
-> +	}
-> +}
-> +
->  static struct iommu_domain *s390_domain_alloc_paging(struct device *dev)
->  {
-> +	struct zpci_dev *zdev =3D to_zpci_dev(dev);
->  	struct s390_domain *s390_domain;
-> +	u64 aperture_size;
-> =20
->  	s390_domain =3D kzalloc(sizeof(*s390_domain), GFP_KERNEL);
->  	if (!s390_domain)
-> @@ -524,10 +540,26 @@ static struct iommu_domain *s390_domain_alloc_pagin=
-g(struct device *dev)
->  		kfree(s390_domain);
->  		return NULL;
->  	}
-> +
-> +	aperture_size =3D min(s390_iommu_aperture,
-> +			    zdev->end_dma - zdev->start_dma + 1);
-> +	if (aperture_size <=3D (ZPCI_TABLE_SIZE_RT - zdev->start_dma)) {
-> +		s390_domain->origin_type =3D ZPCI_TABLE_TYPE_RTX;
-> +	} else if (aperture_size <=3D (ZPCI_TABLE_SIZE_RS - zdev->start_dma) &&
-> +		  (zdev->dtsm & ZPCI_IOTA_DT_RS)) {
-> +		s390_domain->origin_type =3D ZPCI_TABLE_TYPE_RSX;
-> +	} else if (zdev->dtsm & ZPCI_IOTA_DT_RF) {
-> +		s390_domain->origin_type =3D ZPCI_TABLE_TYPE_RFX;
-> +	} else {
-> +		/* Assume RTX available */
-> +		s390_domain->origin_type =3D ZPCI_TABLE_TYPE_RTX;
-> +		aperture_size =3D ZPCI_TABLE_SIZE_RT - zdev->start_dma;
-> +	}
-> +	zdev->end_dma =3D zdev->start_dma + aperture_size - 1;
-> +
->  	s390_domain->domain.geometry.force_aperture =3D true;
->  	s390_domain->domain.geometry.aperture_start =3D 0;
-> -	s390_domain->domain.geometry.aperture_end =3D ZPCI_TABLE_SIZE_RT - 1;
-> -	s390_domain->origin_type =3D ZPCI_TABLE_TYPE_RTX;
-> +	s390_domain->domain.geometry.aperture_end =3D max_tbl_size(s390_domain)=
-;
-> =20
->  	spin_lock_init(&s390_domain->list_lock);
->  	INIT_LIST_HEAD_RCU(&s390_domain->devices);
-> @@ -680,6 +712,8 @@ static void s390_iommu_get_resv_regions(struct device=
- *dev,
->  {
->  	struct zpci_dev *zdev =3D to_zpci_dev(dev);
->  	struct iommu_resv_region *region;
-> +	u64 max_size, end_resv;
-> +	unsigned long flags;
-> =20
->  	if (zdev->start_dma) {
->  		region =3D iommu_alloc_resv_region(0, zdev->start_dma, 0,
-> @@ -689,10 +723,21 @@ static void s390_iommu_get_resv_regions(struct devi=
-ce *dev,
->  		list_add_tail(&region->list, list);
->  	}
-> =20
-> -	if (zdev->end_dma < ZPCI_TABLE_SIZE_RT - 1) {
-> -		region =3D iommu_alloc_resv_region(zdev->end_dma + 1,
-> -						 ZPCI_TABLE_SIZE_RT - zdev->end_dma - 1,
-> -						 0, IOMMU_RESV_RESERVED, GFP_KERNEL);
-> +	spin_lock_irqsave(&zdev->dom_lock, flags);
-> +	if (zdev->s390_domain->type =3D=3D IOMMU_DOMAIN_BLOCKED ||
-> +	    zdev->s390_domain->type =3D=3D IOMMU_DOMAIN_IDENTITY) {
-> +		spin_unlock_irqrestore(&zdev->dom_lock, flags);
-> +		return;
-> +	}
-> +
-> +	max_size =3D max_tbl_size(to_s390_domain(zdev->s390_domain));
-> +	spin_unlock_irqrestore(&zdev->dom_lock, flags);
-> +
-> +	if (zdev->end_dma < max_size) {
-> +		end_resv =3D max_size - zdev->end_dma;
-> +		region =3D iommu_alloc_resv_region(zdev->end_dma + 1, end_resv,
-> +						 0, IOMMU_RESV_RESERVED,
-> +						 GFP_KERNEL);
->  		if (!region)
->  			return;
->  		list_add_tail(&region->list, list);
-> @@ -708,13 +753,9 @@ static struct iommu_device *s390_iommu_probe_device(=
-struct device *dev)
-> =20
->  	zdev =3D to_zpci_dev(dev);
-> =20
-> -	if (zdev->start_dma > zdev->end_dma ||
-> -	    zdev->start_dma > ZPCI_TABLE_SIZE_RT - 1)
-> +	if (zdev->start_dma > zdev->end_dma)
->  		return ERR_PTR(-EINVAL);
-> =20
-> -	if (zdev->end_dma > ZPCI_TABLE_SIZE_RT - 1)
-> -		zdev->end_dma =3D ZPCI_TABLE_SIZE_RT - 1;
-> -
->  	if (zdev->tlb_refresh)
->  		dev->iommu->shadow_on_flush =3D 1;
-> =20
-> @@ -999,7 +1040,6 @@ struct zpci_iommu_ctrs *zpci_get_iommu_ctrs(struct z=
-pci_dev *zdev)
-> =20
->  int zpci_init_iommu(struct zpci_dev *zdev)
->  {
-> -	u64 aperture_size;
->  	int rc =3D 0;
-> =20
->  	rc =3D iommu_device_sysfs_add(&zdev->iommu_dev, NULL, NULL,
-> @@ -1017,12 +1057,6 @@ int zpci_init_iommu(struct zpci_dev *zdev)
->  	if (rc)
->  		goto out_sysfs;
-> =20
-> -	zdev->start_dma =3D PAGE_ALIGN(zdev->start_dma);
-> -	aperture_size =3D min3(s390_iommu_aperture,
-> -			     ZPCI_TABLE_SIZE_RT - zdev->start_dma,
-> -			     zdev->end_dma - zdev->start_dma + 1);
-> -	zdev->end_dma =3D zdev->start_dma + aperture_size - 1;
-> -
->  	return 0;
-> =20
->  out_sysfs:
+On 4/16/2025 3:34 AM, Sean Christopherson wrote:
+> On Tue, Apr 15, 2025, Vasant Hegde wrote:
+>> On 4/11/2025 7:40 PM, Sean Christopherson wrote:
+>>> On Fri, Apr 11, 2025, Sairaj Kodilkar wrote:
+>>>> On 4/5/2025 1:08 AM, Sean Christopherson wrote:
+>>>>> WARN if KVM attempts to set vCPU affinity when posted interrupts aren't
+>>>>> enabled, as KVM shouldn't try to enable posting when they're unsupported,
+>>>>> and the IOMMU driver darn well should only advertise posting support when
+>>>>> AMD_IOMMU_GUEST_IR_VAPIC() is true.
+>>>>>
+>>>>> Note, KVM consumes is_guest_mode only on success.
+>>>>>
+>>>>> Signed-off-by: Sean Christopherson <seanjc@google.com>
+>>>>> ---
+>>>>>    drivers/iommu/amd/iommu.c | 13 +++----------
+>>>>>    1 file changed, 3 insertions(+), 10 deletions(-)
+>>>>>
+>>>>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+>>>>> index b3a01b7757ee..4f69a37cf143 100644
+>>>>> --- a/drivers/iommu/amd/iommu.c
+>>>>> +++ b/drivers/iommu/amd/iommu.c
+>>>>> @@ -3852,19 +3852,12 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
+>>>>>    	if (!dev_data || !dev_data->use_vapic)
+>>>>>    		return -EINVAL;
+>>>>> +	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
+>>>>> +		return -EINVAL;
+>>>>> +
+>>>>
+>>>> Hi Sean,
+>>>> 'dev_data->use_vapic' is always zero when AMD IOMMU uses legacy
+>>>> interrupts i.e. when AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) is 0.
+>>>> Hence you can remove this additional check.
+>>>
+>>> Hmm, or move it above?  KVM should never call amd_ir_set_vcpu_affinity() if
+>>> IRQ posting is unsupported, and that would make this consistent with the end
+>>> behavior of amd_iommu_update_ga() and amd_iommu_{de,}activate_guest_mode().
+>>>
+>>> 	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
+>>
+>> Note that this is global IOMMU level check while dev_data->use_vapic is per
+>> device. We set per device thing while attaching device to domain based on IOMMU
+>> domain type and IOMMU vapic support.
+>>
+>> How about add WARN_ON based on dev_data->use_vapic .. so that we can catch if
+>> something went wrong in IOMMU side as well?
+> 
+> It's not clear to me that a WARN_ON(dev_data->use_vapic) would be free of false
+> positives.  AFAICT, the producers (e.g. VFIO) don't check whether or not a device
+> supports posting interrupts, and KVM definitely doesn't check.  And KVM is also
+> tolerant of irq_set_vcpu_affinity() failures, specifically for this type of
+> situation, so unfortunately I don't know that the IOMMU side of the world can
+> safely WARN.
 
-Looks good, thanks for the great work!
+Hi sean,
+I think it is safe to have this WARN_ON(!dev_data->use_vapic) without
+any false positives. IOMMU driver sets the dev_data->use_vapic only when
+the device is in UNMANAGE_DOMAIN and it is 0 if the device is in any
+other domain (DMA, DMA_FQ, IDENTITY).
 
-Reviewed-by: Niklas Schnelle <schnelle@linux.ibm.com>
+We have a bigger problem from the VFIO side if we hit this WARN_ON()
+as device is not in a UNMANGED_DOMAIN.
+
+Regards
+Sairaj Kodilkar
