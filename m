@@ -1,164 +1,123 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 613A01E0DD8
-	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 08:29:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E07822F14C
+	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 08:37:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744792154; cv=none; b=AY6XNGpEyHiMTvqIoxrMcQSEdTgEXVM12JVevhHmWcTXDDpCCLsg86kShIS39oKHdaydyFjakL5/lB01kg8S/Bc8MSsO+TOdr4ovrTqqFvtLd3s+CD7kC7b74GlEZuALn8yhOznm3urIePH+Q3tpAu0d8fqMzLKZIXJ6ydaTwd0=
+	t=1744792650; cv=none; b=UY19+n0MDbjV1My+O5IDNc/mMaV+4pLOVNQdGdSL+Hf3KowNXIhLiKw4wS+UAvgUGkFEPzQGJhn44BAnG778b1DR9svdAA0AeMY4oLrLfD6iv5z5nGvicwYMSAZrn02Q5762dPjMVTiF1jljEPXetWXt2hhUWeeXFgnL8BhqHGc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744792154; c=relaxed/simple;
-	bh=sZhbCbvZvlg227EqHg2kRR7nB8SDWjo9NwPIXXOPb74=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=L+D/oRC6HC6zqRg54/Sj5jLOHU2gpK7qvU/foeVwK/raEYbxwIwcCHjsI8fezF8OpvYTMA7S5n65amwDoD/fi4uncCcKtuWyuJPswQYp4ou7uqMNFVBoGxiIu9YRBGQGlthszhTYZ5dTMuaEaGUyIlJoc2WRy3fBisxtV2hLHw8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=YBUDOwzC; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1744792650; c=relaxed/simple;
+	bh=bOHU1ag3ybpYk2bJ2ey4Lc1aaW7UA9FGxTVXVxrHWBg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=oBaic4oujz9dRnzX/Ksd6oH0gdz8qsJmOOekxDgvQwP1YnzgtidaYSfSQOrBL65xOd1upHFxJLtxtN3Y8fVszI/ZDBQ8IzC075cA+UWZm5ihNjpgK2nSFg6M/zLGEFEaRhyuGmRKpHdcyel+L7pCE5HJjLqQ6o6jq1Fl/8ix1z8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Wd5mgpIU; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="YBUDOwzC"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2240aad70f2so202435ad.0
-        for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 01:29:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1744792152; x=1745396952; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3v7rvA31hx7lLEZtM5zIPj6OA/kyCZxVfYGStg6bxr8=;
-        b=YBUDOwzCznjgPlwLDhkwBHwnLBaUvrh1VKKBqZ/eCBFEoSN7tvXAm2vdponz8gGdlD
-         CwE9fFllyPCa0K32CtGYYpkSMamWAzMO6hUj40RNZABWo0TmgRSixNOMhuljwNkUn6Q6
-         qWgQqTE8zHX/suq2UZz8+jP9RXA4cHqm0Cd2uVFSsI0BaxBUwq+6Oq1j0a1bF236rcTP
-         LIazOxoOGIq/hTMItBxJf9+cvbvouKI+IBtOJRka0QX0SMOnzOUNJjPnt5zCFx9RABV7
-         xv73LYHhQ/XPhZJWVvsymjrPVVl6nOqMCStSPvVQRYe7x19KwLbmH5ZaC0YjYFzEiwaG
-         k05w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744792152; x=1745396952;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3v7rvA31hx7lLEZtM5zIPj6OA/kyCZxVfYGStg6bxr8=;
-        b=l21UQrxTehdXp5GT0YKDJSXJ83m/uQstbyBVUGSMQIsrM2EDfVt1sHxpo/x7YY6xhI
-         mJQeWXAmzzpagDGDRPE6Y56MFu5HemqxrglU9DYGskVAVZvVwlvJ5k0TChfEj6sKjhdR
-         bDvx+71Y1hH7003ixivcsDtpQfWRjyPRsBR8A8uYwcIBX5zORO4R0+leGGwcOskz25rX
-         FgODgfIBz2xMcO4iWSCU8K5jrg/Zi0/FnUyxPQP4Be8RhNBNnX1yBMw2GwRDr2oD2WSL
-         zuZOPT5M0AlCKLk2Rek3/bzGJLeetxK3TIF/gSsj0tf2ORkRe2M2aGzOLwk+fhvMsEmK
-         DRxw==
-X-Forwarded-Encrypted: i=1; AJvYcCUkEMctknqsOn8JEs1pm/TCkL/GYst/5RET8kjLgl+hbdie3HhInGLRj2nIXtsQy4ficv4J1w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw0LZLwKEiAhwyU99uN4NW3bszzx9SYBjYEGO+Lo6uyy9yNqxRi
-	NOw4DZRo1joImIxjUNO0v5bHo38gTWCy94oP0ijJ0FQYmiqx//3kA8R4nRrS9fCVHdD4y4Te+94
-	Y6w==
-X-Gm-Gg: ASbGncv5nUcxoMXQKBhfFSEwkEQ8VyzTEPhtcjxtlT8fRctkpktCs3rXCcnGDbBqOu5
-	xb86EAbyQcrk5rzQHL66uZI2+vatt+V+dGmiaaNdvwAWUhHLogvY9JUjOW6YeleSrvrgT5QVzog
-	WPZm3hMnu0s6p8izYxMh4mnxAtN7EHOR5hiKgHrFiqxya/khgEaj6Bvz5yHv0LT7Nc0GqODoeOU
-	F6ww2rIMfqcddu8/Lu2LexWnT1NtowCcsy8d3k+FSAXdNc50Fary4I+rK+71M0USoNU9i5Jlit+
-	EO7xyrQMZr4UQXkkoBliFhEzWuKnBJyGiyADN1k1bmwNF1vcc11hvf/qHIVVJ+Lifv8yIH1e
-X-Google-Smtp-Source: AGHT+IGe2U45ZDNU/UiuKNibMsl+oCtDPzSsIhRtZlslataOMMSYJkIaXepKWOc5AJY9YsKJ8uMTMg==
-X-Received: by 2002:a17:903:1ab0:b0:220:ce33:6385 with SMTP id d9443c01a7336-22c354b600fmr919595ad.9.1744792152321;
-        Wed, 16 Apr 2025 01:29:12 -0700 (PDT)
-Received: from google.com (2.210.143.34.bc.googleusercontent.com. [34.143.210.2])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-308612242fdsm971292a91.31.2025.04.16.01.29.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Apr 2025 01:29:11 -0700 (PDT)
-Date: Wed, 16 Apr 2025 08:29:04 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Mostafa Saleh <smostafa@google.com>,
-	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 3/5] iommu/arm-smmu-v3: Implement pm_runtime & system
- sleep ops
-Message-ID: <Z_9qUP5etMEq47Qf@google.com>
-References: <20250319004254.2547950-1-praan@google.com>
- <20250319004254.2547950-4-praan@google.com>
- <Z/1MjDaAM4Em53gE@Asurada-Nvidia>
- <Z_7DmadjRe3GaaN7@google.com>
- <Z/7aAF1maOPr2Z1J@Asurada-Nvidia>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Wd5mgpIU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1744792649; x=1776328649;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=bOHU1ag3ybpYk2bJ2ey4Lc1aaW7UA9FGxTVXVxrHWBg=;
+  b=Wd5mgpIUJ3NQ9i5FP/b3I0X3oaaSczsVLzTQWBIFE+1QMtS8xS29aFXt
+   ZnBJsvesA1MXcvgfINLVTeUrbz9djLVHnYXThSv1FxkTlDRHJ8UgzIvOJ
+   N8vxt/UK3pnZLKOJTE1m1x0qp3UwhJ6pjW0xfj4zMD/txZvmrTz3m65Jl
+   ItIleQbU0YzRJCjpnXxYvGXsJrY5yNTtvcz4KLJSTNcEPETlpI57El1a0
+   4JNFdmf2oDdmI72waSxcoTgEE714I5gUnxX1IZN/NZvLwlMbPEIu7fJg2
+   jiq7zWGmsi9cE/32WD9bYLJIgZOkwrfW7p1kLzixoR15W6vorA70DzUpI
+   A==;
+X-CSE-ConnectionGUID: srAXNp2NTuyoHfutoBO2Lg==
+X-CSE-MsgGUID: PWTjSa73SxKT5ju+WIKUgg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11404"; a="50128127"
+X-IronPort-AV: E=Sophos;i="6.15,215,1739865600"; 
+   d="scan'208";a="50128127"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2025 01:37:25 -0700
+X-CSE-ConnectionGUID: vuMyEEALRPCPg8nPad+VIw==
+X-CSE-MsgGUID: l1DKvDFPQfef8WFgVEW8gA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,215,1739865600"; 
+   d="scan'208";a="161419955"
+Received: from mylly.fi.intel.com (HELO [10.237.72.50]) ([10.237.72.50])
+  by fmviesa001.fm.intel.com with ESMTP; 16 Apr 2025 01:37:22 -0700
+Message-ID: <ce37a94b-c15a-4c03-b8ed-76bbfa369d88@linux.intel.com>
+Date: Wed, 16 Apr 2025 11:37:21 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Z/7aAF1maOPr2Z1J@Asurada-Nvidia>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] iommu/vt-d: Revert ATS timing change to fix boot
+ failure
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20250416073608.1799578-1-baolu.lu@linux.intel.com>
+Content-Language: en-US
+From: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+In-Reply-To: <20250416073608.1799578-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Apr 15, 2025 at 03:13:20PM -0700, Nicolin Chen wrote:
-> On Tue, Apr 15, 2025 at 08:37:45PM +0000, Pranjal Shrivastava wrote:
-> > On Mon, Apr 14, 2025 at 10:57:32AM -0700, Nicolin Chen wrote:
-> > > On Wed, Mar 19, 2025 at 12:42:52AM +0000, Pranjal Shrivastava wrote:
-> > > > +static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
-> > > > +{
-> > > > +	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-> > > > +
-> > > > +	/* We might get the vcmdq */
-> > > > +	struct arm_smmu_cmdq_ent cmd = {
-> > > > +		.opcode	= smmu->features & ARM_SMMU_FEAT_E2H ?
-> > > > +			CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA,
-> > > > +	};
-> > > > +
-> > > > +	struct arm_smmu_cmdq *cmdq = arm_smmu_get_cmdq(smmu, &cmd);
-> > > > +	struct arm_smmu_ll_queue *llq = &cmdq->q.llq;
-> > > > +
-> > > > +	/*
-> > > > +	 * Since suspend is invoked when all clients have been
-> > > > +	 * we don't expect more commands to be added to the cmdq.
-> > > > +	 * Thus, wait for all existing commands to complete.
-> > > > +	 */
-> > > > +	arm_smmu_cmdq_shared_lock(cmdq);
-> > > > +	arm_smmu_cmdq_poll_until_empty(smmu, cmdq, llq);
-> > > > +	arm_smmu_cmdq_shared_unlock(cmdq);
-> > > 
-> > > Hmm, I just realized this: with an SMMU having multiple CMDQs
-> > > (currently with vCMDQs and potentially with ECMDQs), should we
-> > > make sure all cmdqs (not only the cmdq picked in this function
-> > > by the arm_smmu_get_cmdq call above) to be empty?
-> > > 
-> > > On a system with vCMDQs, there are currently one standard SMMU
-> > > CMDQ and two vCMDQs, i.e. totally 3 cmdqs that could be picked
-> > > in this context. Perhaps SMMU might need a list of cmdqs that
-> > > any new allocated cmdq must be added to, so we can iterate all
-> > > the cmdqs in the list?
-> > > 
-> > 
-> > Well.. I was thinking to only drain the cmdq if we have ats/pri enabled
-> > because the only case where we'd wanna drain the cmdq is when:
-> > 
-> > 1. There's a pending ATC invalidation
-> > 2. There's a pending CMD_RESUME / PRI_RESP
-> > 
-> > Since for any other invalidations, we'll clear the TLBs & config caches
-> > on resume. Does the same hold true for the commands supported by
-> > tegra-vcmdq?
-> > 
-> > Is there a spec I could read about tegra vCMDQ and the commands
-> > supported by it?
+On 4/16/25 10:36 AM, Lu Baolu wrote:
+> Commit <5518f239aff1> ("iommu/vt-d: Move scalable mode ATS enablement to
+> probe path") changed the PCI ATS enablement logic to run earlier,
+> specifically before the default domain attachment.
 > 
-> I don't have a link on hand. But the concept is very simple.
+> On some client platforms, this change resulted in boot failures, causing
+> the kernel to panic with the following message and call trace:
 > 
-> Think of vCMDQs as additional CPU cores to CPU0. They will be
-> able to execute the same ATC command as the main SMMU CMDQ.
+>   Kernel panic - not syncing: DMAR hardware is malfunctioning
+>   CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc3+ #175
+>   Call Trace:
+>    <TASK>
+>    dump_stack_lvl+0x6f/0xb0
+>    dump_stack+0x10/0x16
+>    panic+0x10a/0x2b7
+>    iommu_enable_translation.cold+0xc/0xc
+>    intel_iommu_init+0xe39/0xec0
+>    ? trace_hardirqs_on+0x1e/0xd0
+>    ? __pfx_pci_iommu_init+0x10/0x10
+>    pci_iommu_init+0xd/0x40
+>    do_one_initcall+0x5b/0x390
+>    kernel_init_freeable+0x26d/0x2b0
+>    ? __pfx_kernel_init+0x10/0x10
+>    kernel_init+0x15/0x120
+>    ret_from_fork+0x35/0x60
+>    ? __pfx_kernel_init+0x10/0x10
+>    ret_from_fork_asm+0x1a/0x30
+>   RIP: 1f0f:0x0
+>   Code: Unable to access opcode bytes at 0xffffffffffffffd6.
+>   RSP: 0000:0000000000000000 EFLAGS: 841f0f2e66 ORIG_RAX:
+>        1f0f2e6600000000
+>   RAX: 0000000000000000 RBX: 1f0f2e6600000000 RCX:
+>        2e66000000000084
+>   RDX: 0000000000841f0f RSI: 000000841f0f2e66 RDI:
+>        00841f0f2e660000
+>   RBP: 00841f0f2e660000 R08: 00841f0f2e660000 R09:
+>        000000841f0f2e66
+>   R10: 0000000000841f0f R11: 2e66000000000084 R12:
+>        000000841f0f2e66
+>   R13: 0000000000841f0f R14: 2e66000000000084 R15:
+>        1f0f2e6600000000
+>    </TASK>
+>   ---[ end Kernel panic - not syncing: DMAR hardware is malfunctioning ]---
 > 
-> But by doing arm_smmu_get_cmdq(), it would only get one of the
-> CMDQs, which can be a vcmdq (out of several) or the SMMU CMDQ.
-> And that specific CMDQ might not have a command pending, while
-> one of the other vcmdqs or the SMMU CMDQ is executing commands.
+> Fix this by reverting the timing change for ATS enablement introduced by
+> the offending commit and restoring the previous behavior.
 > 
-
-Ack. So, the commands are still the same it's just a diff queue.
-
-> So, the point here is to iterate all the host-managed CMDQs to
-> wait for all of their completions of ATC/RESUME/PRI or etc.
+> Fixes: 5518f239aff1 ("iommu/vt-d: Move scalable mode ATS enablement to probe path")
+> Reported-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+> Closes: https://lore.kernel.org/linux-iommu/01b9c72f-460d-4f77-b696-54c6825babc9@linux.intel.com/
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>   drivers/iommu/intel/iommu.c | 31 +++++++++++++++++++------------
+>   1 file changed, 19 insertions(+), 12 deletions(-)
 > 
-> We can do a list of cmdqs, and add each to the list in the
-> arm_smmu_init_one_queue(). Alternatively, we could add a new
-> impl op to defer to the vcmdq driver for a proper waiting,
-> if we do need to handle guest-owned cmdqs as well.
-> 
-
-Ack. I'd prefer adding a new impl op for the vcmdq driver to handle it
-
-> Thanks
-> Nicolin
-
-Thanks,
-Praan
+Tested-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
