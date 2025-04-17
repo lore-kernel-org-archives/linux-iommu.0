@@ -1,44 +1,47 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4EF7015A868
-	for <iommu@lists.linux.dev>; Thu, 17 Apr 2025 14:34:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1A2D2512F9
+	for <iommu@lists.linux.dev>; Thu, 17 Apr 2025 14:37:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744900482; cv=none; b=hxc9pV1+aaHJRKZY2qXrevlYtMrDn2P/r5/babn7EEwWDuP7Qe3Hytrv1z6cKECKtoqVg9g6Ts9Tr3v/VJiEkcqe077MTQHuMVUStUBzXP/KPIuvatR3c5izEE/ExhsvKl/iPX0sh3QJYntb3JZCs3qTtyx0+CoZcUVlIRROZ/g=
+	t=1744900669; cv=none; b=Atn+xEAQsejJ08Q2OHRjvsMXmcK0uB3sBMRl//HUSUtiVEEK0bIa9QZuQ2DBfotOG74eRebE0sw6449y5DQXt6d2eHJarMUuFDRdyJzo3p0BL3f15d8fXdr5841bPFnAmG/b9+iYE1HCkXsDxD1P1dYq2T3hhFuAgn43PbVAH3Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744900482; c=relaxed/simple;
-	bh=OIjh00Q5M3izE+JeNh+4wVsx4UdS0lS3tDduRZ4tyUA=;
+	s=arc-20240116; t=1744900669; c=relaxed/simple;
+	bh=TUnWqrGCNuu0kp3HQLe+J7RkhciGbYiemq03Z4bFMzA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ksrRW2I/oUbRoRCvxnq4JWP6SWXHu+0l9r4VAYElak9azL81rVfhRgU+ljbWxjmRm/MNEKeS/BRBDLE9L0pGJevMonZdCzgR3KdX32CTfMLEbYp34E2A3IshjIH8WgX8Yz8pdk5dBZ/KZSbX4iMWzHevyO5XFDuX9ykDyU+zjbw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=Fn/7eJRt; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=cpiK1nzhnivu5QLKa9Izz9bcThm5GnT0rMw5vTdSK5+P/ZHn/nYDb7rtjW5Shd3ozZeRG51yUi9v3jxTYx79gIEq0F3qiYjrpjFYp2Cl0xv5mTJ7KJD7Nmu1c+Cb6sog2W+O6TlTf0wj0L/wOQz9chkKfjllVmAgQjyZ/+1kLfw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=BG7gUTR0; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="Fn/7eJRt"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="BG7gUTR0"
 Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 1BDC248667;
-	Thu, 17 Apr 2025 16:34:39 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id E58A648667;
+	Thu, 17 Apr 2025 16:37:46 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1744900479;
-	bh=OIjh00Q5M3izE+JeNh+4wVsx4UdS0lS3tDduRZ4tyUA=;
+	s=default; t=1744900667;
+	bh=TUnWqrGCNuu0kp3HQLe+J7RkhciGbYiemq03Z4bFMzA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Fn/7eJRtsDZpOsqKkvQ0jGZgM4n/w8ehBx/2XEF65xYsooLXW4chP8HTzrwO5HTpv
-	 cbyX+8cHOuA87BQ//0Ezc73p6FjItjqBK529cnhzDkYrWl1OFPQmtnqdSlQzCDrrFm
-	 jASwu4AYAdnVIgK6YOrML5P+38tC2ukA4Lf4pzvqTL0G8frxU7rbakGD1XUTFO7TOj
-	 OwuLVSVm4oAsUxWY3hns4Fp8wXRe47GkUnaMnutTYC9gYxdVIjVUjJIi3G8cFwj+LE
-	 9s1HD/TRn3TegIH+d8nrLYvr0rWctKCGkgKbTLPW5a02V5In00GkOlr6Bs2hXes0X5
-	 kIQgp/BwW9NmQ==
-Date: Thu, 17 Apr 2025 16:34:37 +0200
+	b=BG7gUTR09SCxCajindITMjvEuNZ4CXxJdHqSfSMCjxaN/FQm0HgQKq1r+H7qcg9Se
+	 kzYfWcW7QkjpgTF0Cq1lYxy0V1BxzDQosNFwQ19E3SD/eTOHH0a+sOOnvlHpdyU+nM
+	 bfu1bBgsBiTmQPOjsb/rpRiwz7ywlCo2SaSCa4X2j7Qoh4+Djy/ek8VR+ruUThlM8B
+	 WFOypkOAuRdtwi+BVM3KTjIviNwcFvpDFXh7iLUFan7p/y0+kjpm3M4y4YC3qdklaV
+	 BW6wp5kAnSRM7gcEJ+48J3GUWS2SmMZ8q2o35dTTALhJD1k92IWbUX5cFk+fXxNN1F
+	 hdgAREQj1RGZA==
+Date: Thu, 17 Apr 2025 16:37:45 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: will@kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH] iommu: Split out and tidy up Arm Kconfig
-Message-ID: <aAERfYNxHvezN5XC@8bytes.org>
-References: <a614ec86ba78c09cd16e348f633f6bb38793391f.1742480488.git.robin.murphy@arm.com>
+To: Pavel Paklov <Pavel.Paklov@cyberprotect.ru>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Wan Zongshun <Vincent.Wan@amd.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, lvc-project@linuxtesting.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH] iommu/amd: Fix potential buffer overflow in
+ parse_ivrs_acpihid
+Message-ID: <aAESOQ5xlTZewgo5@8bytes.org>
+References: <20250325092259.392844-1-Pavel.Paklov@cyberprotect.ru>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,12 +50,14 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a614ec86ba78c09cd16e348f633f6bb38793391f.1742480488.git.robin.murphy@arm.com>
+In-Reply-To: <20250325092259.392844-1-Pavel.Paklov@cyberprotect.ru>
 
-On Thu, Mar 20, 2025 at 02:21:28PM +0000, Robin Murphy wrote:
->  drivers/iommu/Kconfig     | 157 +-------------------------------------
->  drivers/iommu/arm/Kconfig | 144 ++++++++++++++++++++++++++++++++++
->  2 files changed, 145 insertions(+), 156 deletions(-)
->  create mode 100644 drivers/iommu/arm/Kconfig
+On Tue, Mar 25, 2025 at 09:22:44AM +0000, Pavel Paklov wrote:
+> Fixes: ca3bf5d47cec ("iommu/amd: Introduces ivrs_acpihid kernel parameter")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Pavel Paklov <Pavel.Paklov@cyberprotect.ru>
+> ---
+>  drivers/iommu/amd/init.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 
-Applied, thanks.
+Applied for -rc, thanks.
