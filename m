@@ -1,79 +1,73 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BF6D253B73
-	for <iommu@lists.linux.dev>; Thu, 17 Apr 2025 14:28:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 704312505AC
+	for <iommu@lists.linux.dev>; Thu, 17 Apr 2025 14:31:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744900080; cv=none; b=kocfHHB6ApB9Dhd0cVJpkPSLifkPuxs+CYqR45GY0Udub47/3DGcDiZq7msBQQmUmJxVIT6gmu9JDz8luY7u8Ss5srmTSH/6PWBGhUTOczAx3eLnmPvc0GkVNwNDc1Au9/B7Kn1g/ha4qh4+VU5k4wFv+U8rHzQIPeOhoxKFJ3Q=
+	t=1744900285; cv=none; b=aWkziu/VT6LznmGONZZRoLg41a6mexREbKg14iP/DVYgsIlZwLT6jHvLPDuE5ho6GbZrYIdf4rJyAa+cag///Ukj1muG5rZ2ZnrnNnBoupeid2Y9qcMx+Ek4wCbOkuIfONuO2Glzrzr/K4rqSUrr0xeOFnclcyNiALWqS/Hgecs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744900080; c=relaxed/simple;
-	bh=f0/i1f77DYXfCc5XbQGnPcXxQM8UrjBHZ/+ff6enkUY=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Xv4QuEwjSV5B7S+bvZ0Pp6dtB/54ISW1iCuCPMF+MHlo5/YFknGdFjRvKcNV/QduBC0k32XPD92/r+i5xLvgsovjaG/GVrOc41MKIJH/LjXx6IrweBuyI7FAr9LFFXZS2clMbdzDLdH23hZph93YFkpFMyiYyfcTwcXzGrSV4K0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RkZn6SEY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744900285; c=relaxed/simple;
+	bh=nQB5PNCIQk9merMoLxRO0GWZ8ryzk5fmi6lfCG9dxUg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oOLAeCCcRr2JH5wXoxupM85GCFGbAfG1uetH1oJfGWvm9OYp0DaQcMt7KQXPGTRXUrXVZSE/7QiKrOMXIsZcFp4SD+yZzWCNN363/UuHvmMQ+XAd/NOB3Uo6zi2peHeUYh6PSBp5QShJ6aB8mjjcFb3tr11tGEEadHAEBWjAOp4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=b0jdPbi8; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RkZn6SEY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BAB6C4CEEB;
-	Thu, 17 Apr 2025 14:27:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744900079;
-	bh=f0/i1f77DYXfCc5XbQGnPcXxQM8UrjBHZ/+ff6enkUY=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=RkZn6SEYUjtOEKtRudAJMrMNJx7y3YN9Lec0IrVZPOXLZZotAL1U8JkFxg5/hgHao
-	 Wy+jY+CwxGRcpJDs93u5NAqWA/9FP6aRJK2ezX82w6Neqwov7YYEutao4D8BObs+Lu
-	 3rakzxbCtCxO6V2R7dA0lBtCM1FkzqUMwj++gY8gQiDm6OZYE21CRYapry4Jj+VMLU
-	 YRr1DXWWlUISuKWHn/W9CKEqqn8xBwwK5xUjYWt4SEFOz3NGzJK/isNb8CGh0S3Bqx
-	 xDAO8Q5IjGToW8OgYAlO2NrVEJKgSiGNitTE5WEHc6b/yZqFQhXr3hVRIkjjdqFrRo
-	 4TNKEZOiKaZAg==
-From: Will Deacon <will@kernel.org>
-To: joro@8bytes.org,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	nicolinc@nvidia.com,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Fail aliasing StreamIDs more gracefully
-Date: Thu, 17 Apr 2025 15:27:30 +0100
-Message-Id: <174488998090.911565.16333351329264813205.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <39d54e49c8476efc4653e352150d44b185d6d50f.1744380554.git.robin.murphy@arm.com>
-References: <39d54e49c8476efc4653e352150d44b185d6d50f.1744380554.git.robin.murphy@arm.com>
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="b0jdPbi8"
+Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 68F92485A8;
+	Thu, 17 Apr 2025 16:31:21 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1744900281;
+	bh=nQB5PNCIQk9merMoLxRO0GWZ8ryzk5fmi6lfCG9dxUg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=b0jdPbi8t6a38UxohrJnVZuQTk5GR5qX7YVExFhXYPcninjUs/wwZFDwnmq+c2phM
+	 gH1tnmZjqTosilZJ/IjSi1Fz8PZxoTip0kluYoxBfYNc5SN5MYfirN1O7Nn2mbIVyR
+	 +ETrvTxa1kxksAaYkkhkN0TT1iz5NQDDLG660QtH3hP2rIqNRWt6gUR1BGyF1KKIiM
+	 fAck4XEIa21Ii6QTB/nnbleQNZMGOdf6Yc6jkR8p4KMezszvusxHZHjmD3x8W09oK6
+	 7bW0g+vgROrKFqupw2bc3/71W6tGzUz2ImluINmi661SdKMYHh2MG3ccpdcaeEC3GN
+	 Ze5+mqEH0Jt6g==
+Date: Thu, 17 Apr 2025 16:31:20 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH] iommu: Avoid introducing more races
+Message-ID: <aAEQuNrweMJSrI8O@8bytes.org>
+References: <09d901ad11b3a410fbb6e27f7d04ad4609c3fe4a.1741706365.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <09d901ad11b3a410fbb6e27f7d04ad4609c3fe4a.1741706365.git.robin.murphy@arm.com>
 
-On Fri, 11 Apr 2025 15:09:14 +0100, Robin Murphy wrote:
-> We've never supported StreamID aliasing between devices, and as such
-> they will never have had functioning DMA, but this is not fatal to the
-> SMMU itself. Although aliasing between hard-wired platform device
-> StreamIDs would tend to raise questions about the whole system, in
-> practice it's far more likely to occur relatively innocently due to
-> legacy PCI bridges, where the underlying StreamID mappings are still
-> perfectly reasonable.
+On Tue, Mar 11, 2025 at 03:19:25PM +0000, Robin Murphy wrote:
+> Although the lock-juggling is only a temporary workaround, we don't want
+> it to make things avoidably worse. Jason was right to be nervous, since
+> bus_iommu_probe() doesn't care *which* IOMMU instance it's probing for,
+> so it probably is possible for one walk to finish a probe which a
+> different walk started, thus we do want to check for that.
 > 
-> [...]
+> Also there's no need to drop the lock just to have of_iommu_configure()
+> do nothing when a fwspec already exists; check that directly and avoid
+> opening a window at all in that (still somewhat likely) case.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+> I was rather expecting to send a v3 of "iommu: Get DT/ACPI parsing into
+> the proper probe path", so I'm grateful that v2 was picked up, thanks!
+> This is the difference as a fix/squash commit instead.
+> ---
+>  drivers/iommu/iommu.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
 
-I tweaked this ever so slightly (mainly just the diagnostic message) so
-that it sits on top of Nicolin's change.
+Applied, thanks.
 
-Applied to iommu (arm/smmu/fixes), thanks!
-
-[1/1] iommu/arm-smmu-v3: Fail aliasing StreamIDs more gracefully
-      https://git.kernel.org/iommu/c/2d00c34d665b
-
-Cheers,
--- 
-Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
