@@ -1,47 +1,46 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3996224EF79
-	for <iommu@lists.linux.dev>; Thu, 17 Apr 2025 14:41:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7B1192517A7
+	for <iommu@lists.linux.dev>; Thu, 17 Apr 2025 14:43:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744900902; cv=none; b=lvpjRgzlZfoFw7FFg4UFMoBwhAwQD0v/4tDoBCb//m1MzJ1HOnvJ2w3h9M4C88R38fiCFJiAElfJHGp7v31l5bnvLURcqjC+e5eCKDS6oFIjv6yD+1S8mDlCRPyXXoARHtew+iavaLvQJ3EmCUKA/TRSub0okr2i8W9AzBrZX8c=
+	t=1744901022; cv=none; b=jpR3i/Nvsfkec26fGVRrLV0S43qMGbXUvkAIk38lszYpNebdTdTSzbk5aAGk9ECAXqCN78Jx5IeqIsdyiKbCheJ3sX/DbpMmR5p3GPybp6rwjPyjXBJBCrnT6LsCOlpIT3SR9XHRH+70O1jAPRWzbOZZgUFsd96TuGoaptMtd9Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744900902; c=relaxed/simple;
-	bh=nkD3Ai6sPz5TId+HbEZ4D9DCKviA/qssHMxlH8W2gus=;
+	s=arc-20240116; t=1744901022; c=relaxed/simple;
+	bh=dxTlmjDTebXWEac5ztfrfWgKTc2cMxPySJMYSK+qkVw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LmT3+IhjWwsli/pUtlHCkh1Q81yPU1OWcwxXx3Nhxy2o2UU5D97tX7UC90WqwoXHJ3ibFAnMm+6B1UluOBgOtKBdnNXvYtGyqi4DV3AONi9M5i+B3FffAId+AKrzbtnTJ/G8vVEJb5CpJSpzjBMr5i3a7h8XO3JoSlFS0KKUUeo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=mJ1C4mME; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=rY/SPstEigR0hEagggb00Hu954cxZZ8g/Yey/zgZ9GvzBQOWROyxPSk/E53gvH6168D21S0dhcUMOqBUs0PCg1pbclOWMZwX4QGJyKZXSY6x0DWuc/X9Ao8FEGH7fwu4bgmGGMA0MtN9EiKxFMV7hC6hW1SbgWE8BYOBcp3ExRk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=TP2EBB6H; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="mJ1C4mME"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="TP2EBB6H"
 Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 27BAA48658;
-	Thu, 17 Apr 2025 16:41:40 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 5260648658;
+	Thu, 17 Apr 2025 16:43:39 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1744900900;
-	bh=nkD3Ai6sPz5TId+HbEZ4D9DCKviA/qssHMxlH8W2gus=;
+	s=default; t=1744901019;
+	bh=dxTlmjDTebXWEac5ztfrfWgKTc2cMxPySJMYSK+qkVw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=mJ1C4mMExs/+iMj/0PL47U2PCET7Lrv1LMiNjzWbVOBN49hZ4phcYRRCLj7idVIW1
-	 +z6O3QEoGeg5dpfa9orG1FqGULOe7JmiR53JRPKnDnyrfTJS50JRrK1DQwB/lHNGe9
-	 BcaZ1qX7mObOJh83jIgXLF/UjUzd57nF2ARQ2Yp1eTNNR4lnBfWHiPGp4p+JT2GOuw
-	 JzSrnu28992HH0TH72xQQbF6TO6yWWdvEuvLM33oZ99GT+0k803ZHbrNz5FGXGoytF
-	 mkHXsjH1CnifDZpMUT1oVZkST9EmTLnWYXWQsz8m07tHjAjIrEoY7IeCTNHhlGAJpH
-	 IGgIIHdC8iK6w==
-Date: Thu, 17 Apr 2025 16:41:39 +0200
+	b=TP2EBB6H5l59SwArwldVyKHLQRYTXvJyj65/7XMGJdEcHw+aiytXyCb/NSisFHyPE
+	 hntT0OoHHCtJbGPXnn5bypd5Ja8XxLPXkpnfX+ScO0HNMOKnBlJ6Wm9skXUskQjRAf
+	 4yxrao0PvUXBu583G5R1B7+3x3uRL30TaF/JyPeM7+TyBYyDrezHf++8SElyUw5alL
+	 cqLHWFj4aA8vPvW0PNol8vhVgRcKMxgfTj0dJ/BLKQppPhSWSpYZvhTyiKPA1JE/GC
+	 YBagk98Fj4jW6sj4nBHZ9snL8SLjGBbPdudiiW45LdJnHHG/6Zqvqq2MRnJ9vbpiXH
+	 3tYhI3dGgbFtg==
+Date: Thu, 17 Apr 2025 16:43:38 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: yong.wu@mediatek.com, will@kernel.org, robin.murphy@arm.com,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	matthias.bgg@gmail.com, iommu@lists.linux.dev,
-	linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	kernel@collabora.com
-Subject: Re: [PATCH v1 0/2] MediaTek Dimensity 1200 - Add IOMMU support
-Message-ID: <aAETI0hrOiQZDKh2@8bytes.org>
-References: <20250410144008.475888-1-angelogioacchino.delregno@collabora.com>
+To: Matthew Rosato <mjrosato@linux.ibm.com>
+Cc: will@kernel.org, robin.murphy@arm.com, gerald.schaefer@linux.ibm.com,
+	schnelle@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+	agordeev@linux.ibm.com, svens@linux.ibm.com,
+	borntraeger@linux.ibm.com, clg@redhat.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org
+Subject: Re: [PATCH v5 0/5] iommu/s390: support additional table regions
+Message-ID: <aAETmiPYrK8_Toqm@8bytes.org>
+References: <20250411202433.181683-1-mjrosato@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,21 +49,18 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250410144008.475888-1-angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20250411202433.181683-1-mjrosato@linux.ibm.com>
 
-On Thu, Apr 10, 2025 at 04:40:06PM +0200, AngeloGioacchino Del Regno wrote:
-> In preparation for adding basic support for the OnePlus Nord 2 5G
-> DN2103 smartphone, this series adds support for the IOMMU found in
-> the MediaTek Dimensity 1200 (MT6893) SoC.
+On Fri, Apr 11, 2025 at 04:24:28PM -0400, Matthew Rosato wrote:
+> Matthew Rosato (5):
+>   iommu/s390: set appropriate IOTA region type
+>   iommu/s390: support cleanup of additional table regions
+>   iommu/s390: support iova_to_phys for additional table regions
+>   iommu/s390: support map/unmap for additional table regions
+>   iommu/s390: allow larger region tables
 > 
-> AngeloGioacchino Del Regno (2):
->   dt-bindings: iommu: mediatek: Add binding for MT6893 MM IOMMU
->   iommu/mediatek: Add support for Dimensity 1200 MT6893 MM IOMMU
-> 
->  .../bindings/iommu/mediatek,iommu.yaml        |   4 +
->  drivers/iommu/mtk_iommu.c                     |  37 ++-
->  .../memory/mediatek,mt6893-memory-port.h      | 288 ++++++++++++++++++
->  3 files changed, 318 insertions(+), 11 deletions(-)
->  create mode 100644 include/dt-bindings/memory/mediatek,mt6893-memory-port.h
+>  arch/s390/include/asm/pci_dma.h |   3 +
+>  drivers/iommu/s390-iommu.c      | 345 ++++++++++++++++++++++++++++----
+>  2 files changed, 314 insertions(+), 34 deletions(-)
 
 Applied, thanks.
