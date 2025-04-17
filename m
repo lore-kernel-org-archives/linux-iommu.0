@@ -1,570 +1,231 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C375B24BBF2
-	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 23:16:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744845421; cv=none; b=k6Ac3VDezmwMHSIpm6LHNJYuoLLo+CaemFbEMsitTTKKHdz5JOgfPXDjHLn22Eh4lzZ7AFufDElbIHkfM5BYnf4H3r/EzHu9eE0KAJgbFJC01IV9SH70k7VL4gD5SaH8WAhphioJz7XYJuvXUCqaBHSwkkg/QwglwQl5z9iCCO4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744845421; c=relaxed/simple;
-	bh=jU7ltYxkqPgM5+N0mXZcCYaoXjtzEUe6Pf3IDTnKQMQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=QhyiyNmAI7d0MI9Itnqe4BmiNtcJ6Rrpi5PJFTgL/rMWZx18Jupnd0W+TKSsywsPpAW52NIr86hfBtWWFAEGzCv3wv+9203hduIqHSxIR00jC4v4w5UFsDKEffch7d0lhYseo68gfTaAjJ5AH/JBgDSwHeNOysV8EZhUhLAsO4k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=QhX2YQ02; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F28C19DF60
+	for <iommu@lists.linux.dev>; Thu, 17 Apr 2025 02:23:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1744856604; cv=fail; b=mWG3EtW1nqlYT8ct+KXFrnl0vpq79ZrHUCab95kwRDd4IZpQeYTDG/Utg1Iq4ZhqGmcyCHTj2KXRirSeb51dyo6FiF1QEwOU7uoGu6Yk2Svhk7WkjSp9i/T46ewD6+7VgdccS7Z9cyoKwVQU0ekbLsJBGGpUInMpUpE7+TZHwu8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1744856604; c=relaxed/simple;
+	bh=lN1ggT3f/d8BEPAnC9cwISU3cjhxaWfBbc0mxygqcYk=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=gJQpryaBrrW3sNG5vedBfxwQYSyW8qf5QmfoKYhJXtgyZfIUXhmRgAlF/ho7e/g3d9EBLE7eKYXWyEVEkJR+XnflEX7L0ElZdXKS8H9kIZIZv7JdhZ2eYOmho7uNZ1OAoYs2/fOmTtHgM4FbahrzrJY5M+fEX9l/kZ0hmvcOlFg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aWikeDPG; arc=fail smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="QhX2YQ02"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53GLXCuJ020879
-	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 23:16:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	KrzKY5uhmgWj9q+gxXEnQJYGYW5ydDcGsUNVOknvlWk=; b=QhX2YQ02gIlWz6Na
-	vdx8vJk9MFNtlumBtpHH9VRL/FRXk9i8xckoHQScY/7oANGTVxnBb3cU41eymfLs
-	a9bWBP+IFWJKM+6onNox7GgLNn9MAaPxap7q2HnZAfPrIlmTi4Qct85UBcUWmMpj
-	EZlc8XNM+3cKJgPZBd1CZd7Rac4l9SePpBOYqf5I82K8qR347yQtZSvSb83jlmd/
-	/3wZ7VBVSHq5LfOKFfnuK8vbD4W1M8SdX6M4eCHC8ISwU2FOPd0cDEYPhLPDT4Sd
-	z7g9bdzOW/KPQDtQowqqBt1+Sh4SVKwj5FqnhNiLs7BzLPpKs1xnYmx9y7SvpZ4k
-	MaVl+w==
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com [209.85.219.72])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45yf69w17e-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 23:16:58 +0000 (GMT)
-Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-6e91d8a7165so4819566d6.0
-        for <iommu@lists.linux.dev>; Wed, 16 Apr 2025 16:16:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744845414; x=1745450214;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=KrzKY5uhmgWj9q+gxXEnQJYGYW5ydDcGsUNVOknvlWk=;
-        b=Nl6V5wfxXH0XoDqLvGCf7JBnXqf/0UvPtz1P+E5lKEDUa/+kOg4CiQprFuXKZctvTa
-         P5S1zN/uh37q2FUZcyzjtnSuu/UKIjFRVff9XkW8+8InK+KB8KMZzyjnCgsOgWYg809V
-         sRXS8KtfYAA/OBiYeoNr8TPLIzh/qZ8B2qlEb/i02Zqexo1L0RCqbKZVjKMh5Ru6g6JD
-         h++363h3WfanuWJpOq1aH8qOCuvWmoMw1BdpThU8NAgS1a1/qaog7Ey+7GvyPfpJSsvr
-         7UDr4TlhJVHOBnHHZkznvpS+g1CFOsyGUkWhStw6xhqkb1fA72yI5+8dr9h9tmrTnVAD
-         q+2w==
-X-Forwarded-Encrypted: i=1; AJvYcCX18hShvwNBxU88UmgtV9s5wqpIMW5BGnTZ2UlD+D3OCrUNuFS9q2L0pAwWvAjKXm2ABZI1QA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw4KIFd6F/IyW6KtfYR281GF3OmVJksR/NFiif8coC/Wk3A2004
-	Rb/pj1gmsVHmCQ0V8f91Jm9Ctnnzr00QZoMzKJxeFbCsmddc9k7KVYzQxAQIquj/eFFl5Go4kVb
-	IaBcPPhAgvMuKwBS6xSkbx1jhbONFAdQyxwq6sJk0CqS4fr7q7BTrbA==
-X-Gm-Gg: ASbGncv4CGvhU/HHgRVXnCkJnEZYwsm6i9cxS9e9blyu5ih4W+nCXimWDH2xhoeXT/0
-	S+9gpekwMoxqeVLkuKL6IHokQ9NZiQw27+ma27uP8DiU1Yt+eZVbsDUMZ3+Mn43gcf8oJKXBsZ6
-	I3rErDQgWqGCtnsdmaTZhT/bBtxvVjpzOIjVgcsJBZqp2nf44Wxuwqe5dPtK2O89jaBnDwGtTsd
-	gZPat5eDRcPkcQxD9FkTqkgA9d6nsVe4C1yLCUjVDvb+l37PKl/jyoC3poX/T8fzYK+6EwFMm5d
-	KjnXX6azmP/0q4KUajKyp/Ps38BZshxXqD72U5NKnSx81hyNhQrEbRIBzE4ZAegYzBi4Yvs0grl
-	oOICP81dZWyszOWY1TZ8UK+CF
-X-Received: by 2002:ad4:5741:0:b0:6e8:98c0:e53d with SMTP id 6a1803df08f44-6f2b30837bbmr61566366d6.45.1744845414029;
-        Wed, 16 Apr 2025 16:16:54 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFYaXel8DmxupHmlwEjoqXrBmi9e4uxWx2hNOwKWLzT+K0SRlhPrAmgnHz5TTPj5n/4VNH9Vw==
-X-Received: by 2002:ad4:5741:0:b0:6e8:98c0:e53d with SMTP id 6a1803df08f44-6f2b30837bbmr61565976d6.45.1744845413650;
-        Wed, 16 Apr 2025 16:16:53 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-30f4649d79esm26062181fa.15.2025.04.16.16.16.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Apr 2025 16:16:52 -0700 (PDT)
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Date: Thu, 17 Apr 2025 02:16:40 +0300
-Subject: [PATCH v4 10/10] arm64: dts: qcom: sar2130p: add display nodes
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aWikeDPG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1744856603; x=1776392603;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=lN1ggT3f/d8BEPAnC9cwISU3cjhxaWfBbc0mxygqcYk=;
+  b=aWikeDPGKVcere2D2AB7HvAwFRJWTsradc6MJ4CMxnzPP4qegJgREGzr
+   PJ8gvTWL9OC5v8spZ52qNkEwHtiz8Bifx26L6yA9MYL99Zw44+qfYwY/A
+   qzssP4k3M6DrhYBPVQAxlywsEqksSHKu6NzGws43mo88eB5DRJ/6WtQe4
+   boFBbPxrC6iZMd/2UFpTzorkgs3KtCrLJzzoSvK1BJUW+S/nWmlR/1dtg
+   ksDxOSjFS2VHJFD09MzJ7jBaysaX0iU/bb8C1yXjHiiKY5LpRIQc7R/Go
+   v1FuneKsMJ5ZCq+rvQzujW1FOvd2Uoe6VncIqRGsd+rh7LcSDRLVuf5ob
+   g==;
+X-CSE-ConnectionGUID: 8AzR3olDSGyMWLu3z2kaBw==
+X-CSE-MsgGUID: Gqh2H+z4RN2asgVpO7CJGA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11405"; a="56609913"
+X-IronPort-AV: E=Sophos;i="6.15,217,1739865600"; 
+   d="scan'208";a="56609913"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2025 19:23:23 -0700
+X-CSE-ConnectionGUID: t96d0scHTy29BydKLJDwgw==
+X-CSE-MsgGUID: hW/Z8R1HSLSDnQmCKliH6Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,217,1739865600"; 
+   d="scan'208";a="134756649"
+Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
+  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2025 19:23:22 -0700
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Wed, 16 Apr 2025 19:23:21 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14 via Frontend Transport; Wed, 16 Apr 2025 19:23:21 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.41) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Wed, 16 Apr 2025 19:23:20 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Ds5CTMUW57f+HmkknqLn302Ky52omURzKSL8yQrdC2c9qW2mHKrMN+WtDKWS+/yTAjFd/8CGVRed4Cp6lXW1RX42LoUotWzTTy8xTwLq3WGv4KNNXR2jgxKQucJHRwH6fubggmN9zk92nr6u8WtIYp7W7RuA0M29u/bNGkLJgzOBomMuTpmQ48OkWxHGP9WUIEffluy0b1pq+M5so0Iyq1HRvjdhphsjLZfeGEawXL6pClBSBWCQ/DZJ7BxkRqgluV02MqaOjRSIlDqMoTY1+1N58/HXVobdd5aMftuKEuLlFU+LCLzmh30bxPbs51jd0sCYHvHCSKl1Zw/M3pd38g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9pU3VgdRckoU47P3GYlwhO2cSkl6M9A/ewimK3t5Aqw=;
+ b=RwZeCzrTgcDwrc36dKNMGXNbH7UNG9WSym5S/Llf6Mp57EXNY/iQ6zlcLkRqXPmSqS8t1RU2cyenb4aHrwkichIQmo9hzgRt/Zy0UlLVVicoMKiQGYUhI16GYWdqccnzD9xXc557nRoF+hRcUlQcSv3a7nZNdcc4plyNWp8Kp8XjVURWAiNLpn7JnUDVXEQosDT2Wo9wCNkhXm8dDsWCXckN+2pPTQrKchfWSIpADB7B/8/p+56/zt9BeNyMHPZb6+cmmwW4P6gZzoXelg6cQZmwt+dUYpmkCeqQNaHd2/vy42+wv52DL+nlSKpgw6GtyjnB57zLMAlALIpY5L8dpQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by SN7PR11MB6559.namprd11.prod.outlook.com (2603:10b6:806:26d::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8632.32; Thu, 17 Apr
+ 2025 02:23:00 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%6]) with mapi id 15.20.8632.035; Thu, 17 Apr 2025
+ 02:23:00 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Jarkko Nikula
+	<jarkko.nikula@linux.intel.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 1/1] iommu/vt-d: Revert ATS timing change to fix boot
+ failure
+Thread-Topic: [PATCH 1/1] iommu/vt-d: Revert ATS timing change to fix boot
+ failure
+Thread-Index: AQHbrqIqNscoM1vBpEO04jBH0/T8ZLOnIV8w
+Date: Thu, 17 Apr 2025 02:23:00 +0000
+Message-ID: <BN9PR11MB5276F6889D36DD7238E3BBB28CBC2@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20250416073608.1799578-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20250416073608.1799578-1-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SN7PR11MB6559:EE_
+x-ms-office365-filtering-correlation-id: 4c2ea915-6cd3-47e4-2c4d-08dd7d56c631
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|376014|366016|38070700018;
+x-microsoft-antispam-message-info: =?us-ascii?Q?1dEDdAQpkxi2031+d9M3z8sg/NSQXq1aQ/vDOyvcEk00+Q4ge53HMMrCSc2j?=
+ =?us-ascii?Q?3zbjnViwaV2Bo7iW+EnswGvl19AmRVaQk6BFhW4L148MxVRCf+EWr3LX2fM6?=
+ =?us-ascii?Q?uDIKTSKtX+GUcxPP9Aue2BVLydrUCDCcYOcmrtmdGHQyTvHIcVWAxyJW7K3e?=
+ =?us-ascii?Q?Xo5T9o4OAW+IKm3jPcJ7W//qDn439yXtevWbtR0J0LOPPTKTmp+jYEf6vsd8?=
+ =?us-ascii?Q?TaFyPVsY2uxay6V2lCBHsUx2SBCInrntrQN5uHs+7TAb9+94/lNIksF91kY/?=
+ =?us-ascii?Q?oNSj+Bjt6upRdyiMqb2jrHt7IB5sw3x79eVdXY6Fdgoe4lwRTrJ6uUSYOSP1?=
+ =?us-ascii?Q?53WutFLv4drucAh+HkzSTlPAR+5o987mFQCBcOe5hrMNx+DKu6sJyujEvEtp?=
+ =?us-ascii?Q?4SmmOx19ttqaOoNkCyqDaJ9+zWp2yAPdWyJCi1F2gnUNb3aMUSAumqnR80KO?=
+ =?us-ascii?Q?Liymp3T7idwyStOFVd34fSEwbvTfcnNvMq3YyIOUB7PjRaWv9Ed+92SWL91O?=
+ =?us-ascii?Q?jzxE1BzRUZ/7i8SHGV9Vdid2uoNpvMvccjH264Pw5ExINAXempyheRLiGG8G?=
+ =?us-ascii?Q?teuiAl5JDGmotQaCFKnu4+KT1oqMBPS1E/YGG3cLb+xP9B5Zoh8JjUuw+PDp?=
+ =?us-ascii?Q?jpSYuoXZCA9LS141TkzFqzn1j0S6LrneVYXWf7v3iybuvwjyLLMTwJ57Z/tD?=
+ =?us-ascii?Q?iS/Ial/prD1jYOzofLHSnspx4O/wO4dG3H98KosiqrNt76XqaVzirVRTCg8x?=
+ =?us-ascii?Q?u/Da1bU7nLLtlLZqDbqbWt91VRgN3+8Vak4bL2esy+gsujA8vFe3DBzgOTte?=
+ =?us-ascii?Q?gJChm6rMb2QAGFS93FacVAov1ZbUuRZjJcBSviY41b7roRfPifGuVtYrpEDD?=
+ =?us-ascii?Q?oaLYJ3j3GCxVCoAPFGj0aciGgu9I8QbLtwb3w/59ssZuhHH5iytm4E5iBhqG?=
+ =?us-ascii?Q?PnUaXjgY10HL/85KYjweV4/m81JxnPE8X3/RJMNi8/n8EyXnoewdJUK+LUCE?=
+ =?us-ascii?Q?1+VpG0ScyBC1pktKfMNdXmO9I2Fz/MDDNfbjbqmC2gngYhRN3H0G3YB/Kxw/?=
+ =?us-ascii?Q?0/4/Gj8xnqOYGlcDmklhp7+iaYlXzH5uGGk+gI8eCPYd81lt4tARAocaEeJz?=
+ =?us-ascii?Q?Q0rN2teXyvLIJC2ZFN8zTemfI7c7Kea36/9ZtAfZVjydZsUDF2gyjCDffffT?=
+ =?us-ascii?Q?TTrjx0GTDqJYv3kf1sw7s+mE5DbHk++VCGxb8PbQthYI8JlwbqF5QjrCsecT?=
+ =?us-ascii?Q?FYA9+SB9a8+grLZz7V5/QbLVvbgLue5RLeGK0rxHQQVXmPgcSdCvrxjc+RDu?=
+ =?us-ascii?Q?UTmF+E/9dW/R7HG9Q+pEUIOmRpmfUvAiLYesy4MSQyM+zfas6uelIOokqgFu?=
+ =?us-ascii?Q?UuULvDssJ7gdPNhjvJ6UY3Xrf1vEr3p/gQKcuOb3ouCiuzUepOWRJ7DeE1wN?=
+ =?us-ascii?Q?siIG2ys8AlJKi1XMmFdcYp2WzOn6rXANjcMVDPnhjoavmQ4cr3AjBg=3D=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?eDTaBr7jfoNmCnakDqcqsNsfAc6FJcm9fiGIWTzfF2Ph6cQ2FWJFLcX1bLrP?=
+ =?us-ascii?Q?VJ8TVt04Mc0ce1xlS0+l2VnkmXXVvQyEaJUa0rLyWzQSsnQH/t5f+YnV6cGo?=
+ =?us-ascii?Q?gddhKRK8oaNhUEdBMiO6icw+W1LOIgE4tp4w/wbdp28Bg66IIFO9NZQOPog/?=
+ =?us-ascii?Q?KHWzhVkRtlO/eMo56hk6hj4gjDRhY/NLvfieOEf8OK6hQTEmDBHoZqTo4L8q?=
+ =?us-ascii?Q?RBjw7wpClBaK+p+IZzFVgIyF356VqO88ovqtjTeQHLyuZEZAqe+VjUACo1C/?=
+ =?us-ascii?Q?zq/u0ZXEJmuBcrAUzwNcSpyc9z+qjnPIqXs14QRGzaZQ5JDvKe44iD9a/6XX?=
+ =?us-ascii?Q?RU/ZSAxlmaWOsKY2D4jsHYKDFkTolmtpXZccV13D1bJ0gTDVigNAa7W4wOco?=
+ =?us-ascii?Q?FVhCZhQYDtfVYjKHhPTwaXuNBCvgdO19KdLJce2Ic8fh2WvMSc5ehQgrhwJX?=
+ =?us-ascii?Q?QU70U8c6te3TR8+NemII4PieVAQsfNxs1EK6izpfmpcZVPCZoQxY3GxXEY3V?=
+ =?us-ascii?Q?p0JcCnExk1ZMKw9poHhXO5wMFJej7GAdD0quzatv15x/0dYHUo+T2rD2UQQA?=
+ =?us-ascii?Q?SeXh6t0Z5P3Lih2ihTtwqM4gwJfPQjoiIs+JiqGgwuE5ZEcnKIOUJnPsIbH7?=
+ =?us-ascii?Q?PoRaGulZgD0HCUJHwrdybbkxdSBY0u1+O1UxBEFiFgc39rRQ+8hWkspi36xt?=
+ =?us-ascii?Q?ERvDURqGSKNQadaAWw9HDY7ROCakSn+MzRe6YTGszxYOJBYsFKhcCk5DacMn?=
+ =?us-ascii?Q?0HqgspsRQvYM4OAdYxM96BGskUSSEllZCWAfvbKv+VFaJZVZS6WvleB4maiR?=
+ =?us-ascii?Q?EdQHL23dtPLPo8LohWEIxHdizsRJiYSkNH5CkyapsLRSGsGB3Cmn6A08uDhE?=
+ =?us-ascii?Q?BHxNq91SCCjWnLQ7GEe6O3H/C2yu3nhVLIzgYhUWICJYXdWyb13ErbjwfLx4?=
+ =?us-ascii?Q?IuOQoMc3LbS/qQlTZKEM4JSKex0q+1bVuXA9IMySVRnQHHM0EJ1f1XAakX8d?=
+ =?us-ascii?Q?2vrf27/xReL4uC1W0+evWu0Yko4ujuo0n9Z8d0kkamcpLZjycmYXf7Wfbu2N?=
+ =?us-ascii?Q?1KusWkJWkG2lWXxWsh5mDXQwoF3rwlnhsEm/+JFiIKyp6F1Vo54QS/Yrq7EB?=
+ =?us-ascii?Q?Tovp3/Ztt9CH+wwLeJvwH/C4o7BUUU/jgPpHkrmKAlIuHKMxTUzsniLMcyAh?=
+ =?us-ascii?Q?TKcnH8TU/BYJD3J82DuyTkxalo2xE2joW9Kv6jlVqrhUQt0MG30B6PdYT7zq?=
+ =?us-ascii?Q?E02ZmOZ2y+zRmOwyVOp9Ib3+roi5br8hmFmHeCBFYTldhidRiLjAJbWz+KUg?=
+ =?us-ascii?Q?jQ53flhZoiLmoZpHbeaxuvBQwiI6WWF6IUjuwaG8OoURMC7A/wY4g8eGXj/M?=
+ =?us-ascii?Q?wG8xo7man1GveGSDaEWQ+9NhDn3WS3yAtMIgXZK/Udy07babQ623U1Gk+KE1?=
+ =?us-ascii?Q?VENn5DZh9RPY0oT1XM3lcsJeFgEGDPAu7CjckzKW7iX5NMuchkA4ehPBUIEX?=
+ =?us-ascii?Q?IVXEau68Z3FbhnZeWwx+x7uKbCyZDk6jsiHLGLjiJW7ZCt78vN5ryjAqKAaE?=
+ =?us-ascii?Q?GkuCbe3zUdn3FGfJDEFyXC9c4j81JrvVZl7gibDD?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250417-sar2130p-display-v4-10-b91dd8a21b1a@oss.qualcomm.com>
-References: <20250417-sar2130p-display-v4-0-b91dd8a21b1a@oss.qualcomm.com>
-In-Reply-To: <20250417-sar2130p-display-v4-0-b91dd8a21b1a@oss.qualcomm.com>
-To: Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Dmitry Baryshkov <lumag@kernel.org>, Sean Paul <sean@poorly.run>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        Krishna Manikandan <quic_mkrishn@quicinc.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Neil Armstrong <neil.armstrong@linaro.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Konrad Dybcio <konradybcio@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Dmitry Baryshkov <lumag@kernel.org>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=11555;
- i=dmitry.baryshkov@oss.qualcomm.com; h=from:subject:message-id;
- bh=sFRN57agjH0j7OcYrkWP/Ch9l5OmUHSzbhBJ88iL2Ng=;
- b=owEBbQGS/pANAwAKAYs8ij4CKSjVAcsmYgBoADpSPNau1Mg53NFw9U5o1MTwJQUeSNG8UCPcx
- c+ZSbyuFN+JATMEAAEKAB0WIQRMcISVXLJjVvC4lX+LPIo+Aiko1QUCaAA6UgAKCRCLPIo+Aiko
- 1Z6yCACfXJLtHISscdUrXYGCmCwH3ZXxEF3SilHHaziiWfrpq4wXv9yC4ghSVeJYwP1o4lXxSwS
- xyhDOXbiFIQDX+O8EuHFUfyehurUDADAxN/Kiv0vnc7RNy1KghMdN3zQn7eOihP0+D2P04actzv
- GaajQOHeMINuJ/bokNd6GGuztp/EjP7vR1+z1e/1O+s0KHVo4/vjAE58g27wwwLXGv7J3e3Gw+w
- UNUk+l+4Gb5pvHGNWoCt1O89O/PNtMn5sbABoKylw0huBmuBKKMofbuOorXZYRp8R8Ge1tYoO32
- Mbxusvk2zmL/kxsqBFTkPKdcdYmt2myKqIUxu3kGrh7XjMov
-X-Developer-Key: i=dmitry.baryshkov@oss.qualcomm.com; a=openpgp;
- fpr=8F88381DD5C873E4AE487DA5199BF1243632046A
-X-Proofpoint-GUID: HUe-_dsXPztgAe2cddkosppD7K39AyWV
-X-Authority-Analysis: v=2.4 cv=JNc7s9Kb c=1 sm=1 tr=0 ts=68003a6a cx=c_pps a=7E5Bxpl4vBhpaufnMqZlrw==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=VwQbUJbxAAAA:8 a=KKAkSRfTAAAA:8 a=EUspDBNiAAAA:8 a=qobt-ayf5lTqXTu-rvoA:9
- a=AIif5W2CIEg7SbQQ:21 a=QEXdDO2ut3YA:10 a=pJ04lnu7RYOZP9TFuWaZ:22 a=cvBusfyB2V15izCimMoJ:22
-X-Proofpoint-ORIG-GUID: HUe-_dsXPztgAe2cddkosppD7K39AyWV
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-16_09,2025-04-15_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- suspectscore=0 mlxlogscore=999 lowpriorityscore=0 bulkscore=0
- impostorscore=0 clxscore=1015 phishscore=0 adultscore=0 priorityscore=1501
- spamscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.19.0-2502280000
- definitions=main-2504160186
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4c2ea915-6cd3-47e4-2c4d-08dd7d56c631
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Apr 2025 02:23:00.1663
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7raoOBitdSebQkJwpQeLwdRWyoP8akdxawVNHTlZGayYwarVCMEih80x2am/KyaaYcjJSsn7kHQvVUiCvbIREQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6559
+X-OriginatorOrg: intel.com
 
-From: Dmitry Baryshkov <lumag@kernel.org>
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Wednesday, April 16, 2025 3:36 PM
+>=20
+> Commit <5518f239aff1> ("iommu/vt-d: Move scalable mode ATS enablement
+> to
+> probe path") changed the PCI ATS enablement logic to run earlier,
+> specifically before the default domain attachment.
+>=20
+> On some client platforms, this change resulted in boot failures, causing
+> the kernel to panic with the following message and call trace:
+>=20
+>  Kernel panic - not syncing: DMAR hardware is malfunctioning
+>  CPU: 0 UID: 0 PID: 1 Comm: swapper/0 Not tainted 6.14.0-rc3+ #175
+>  Call Trace:
+>   <TASK>
+>   dump_stack_lvl+0x6f/0xb0
+>   dump_stack+0x10/0x16
+>   panic+0x10a/0x2b7
+>   iommu_enable_translation.cold+0xc/0xc
+>   intel_iommu_init+0xe39/0xec0
+>   ? trace_hardirqs_on+0x1e/0xd0
+>   ? __pfx_pci_iommu_init+0x10/0x10
+>   pci_iommu_init+0xd/0x40
+>   do_one_initcall+0x5b/0x390
+>   kernel_init_freeable+0x26d/0x2b0
+>   ? __pfx_kernel_init+0x10/0x10
+>   kernel_init+0x15/0x120
+>   ret_from_fork+0x35/0x60
+>   ? __pfx_kernel_init+0x10/0x10
+>   ret_from_fork_asm+0x1a/0x30
+>  RIP: 1f0f:0x0
+>  Code: Unable to access opcode bytes at 0xffffffffffffffd6.
+>  RSP: 0000:0000000000000000 EFLAGS: 841f0f2e66 ORIG_RAX:
+>       1f0f2e6600000000
+>  RAX: 0000000000000000 RBX: 1f0f2e6600000000 RCX:
+>       2e66000000000084
+>  RDX: 0000000000841f0f RSI: 000000841f0f2e66 RDI:
+>       00841f0f2e660000
+>  RBP: 00841f0f2e660000 R08: 00841f0f2e660000 R09:
+>       000000841f0f2e66
+>  R10: 0000000000841f0f R11: 2e66000000000084 R12:
+>       000000841f0f2e66
+>  R13: 0000000000841f0f R14: 2e66000000000084 R15:
+>       1f0f2e6600000000
+>   </TASK>
+>  ---[ end Kernel panic - not syncing: DMAR hardware is malfunctioning ]--=
+-
+>=20
+> Fix this by reverting the timing change for ATS enablement introduced by
+> the offending commit and restoring the previous behavior.
+>=20
 
-Add display controller, two DSI hosts, two DSI PHYs and a single DP
-controller. Link DP to the QMP Combo PHY.
-
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
----
- arch/arm64/boot/dts/qcom/sar2130p.dtsi | 395 +++++++++++++++++++++++++++++++++
- 1 file changed, 395 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sar2130p.dtsi b/arch/arm64/boot/dts/qcom/sar2130p.dtsi
-index b45e9e2ae0357bd0c7d719eaf4fc1faa1cf913f2..b97da07bbfb4127afda7826394787a9dda4c4886 100644
---- a/arch/arm64/boot/dts/qcom/sar2130p.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sar2130p.dtsi
-@@ -3,9 +3,11 @@
-  * Copyright (c) 2024, Linaro Limited
-  */
- 
-+#include <dt-bindings/clock/qcom,dsi-phy-28nm.h>
- #include <dt-bindings/clock/qcom,rpmh.h>
- #include <dt-bindings/clock/qcom,sar2130p-gcc.h>
- #include <dt-bindings/clock/qcom,sar2130p-gpucc.h>
-+#include <dt-bindings/clock/qcom,sm8550-dispcc.h>
- #include <dt-bindings/clock/qcom,sm8550-tcsr.h>
- #include <dt-bindings/dma/qcom-gpi.h>
- #include <dt-bindings/interconnect/qcom,icc.h>
-@@ -1915,6 +1917,7 @@ port@2 {
- 					reg = <2>;
- 
- 					usb_dp_qmpphy_dp_in: endpoint {
-+						remote-endpoint = <&mdss_dp0_out>;
- 					};
- 				};
- 			};
-@@ -2012,6 +2015,398 @@ usb_1_dwc3_ss: endpoint {
- 			};
- 		};
- 
-+		mdss: display-subsystem@ae00000 {
-+			compatible = "qcom,sar2130p-mdss";
-+			reg = <0x0 0x0ae00000 0x0 0x1000>;
-+			reg-names = "mdss";
-+
-+			interrupts = <GIC_SPI 83 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-controller;
-+			#interrupt-cells = <1>;
-+
-+			clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
-+				 <&gcc GCC_DISP_AHB_CLK>,
-+				 <&gcc GCC_DISP_HF_AXI_CLK>,
-+				 <&dispcc DISP_CC_MDSS_MDP_CLK>;
-+
-+			resets = <&dispcc DISP_CC_MDSS_CORE_BCR>;
-+
-+			power-domains = <&dispcc MDSS_GDSC>;
-+
-+			interconnects = <&mmss_noc MASTER_MDP QCOM_ICC_TAG_ALWAYS
-+					 &mc_virt SLAVE_EBI1 QCOM_ICC_TAG_ALWAYS>,
-+					<&gem_noc MASTER_APPSS_PROC QCOM_ICC_TAG_ACTIVE_ONLY
-+					 &config_noc SLAVE_DISPLAY_CFG QCOM_ICC_TAG_ACTIVE_ONLY>;
-+			interconnect-names = "mdp0-mem", "cpu-cfg";
-+
-+			iommus = <&apps_smmu 0x2000 0x402>;
-+
-+			#address-cells = <2>;
-+			#size-cells = <2>;
-+			ranges;
-+
-+			status = "disabled";
-+
-+			mdss_mdp: display-controller@ae01000 {
-+				compatible = "qcom,sar2130p-dpu";
-+				reg = <0x0 0x0ae01000 0x0 0x8f000>,
-+				      <0x0 0x0aeb0000 0x0 0x3000>;
-+				reg-names = "mdp",
-+					    "vbif";
-+
-+				interrupt-parent = <&mdss>;
-+				interrupts = <0>;
-+
-+				clocks = <&gcc GCC_DISP_AHB_CLK>,
-+					 <&gcc GCC_DISP_HF_AXI_CLK>,
-+					 <&dispcc DISP_CC_MDSS_AHB_CLK>,
-+					 <&dispcc DISP_CC_MDSS_MDP_LUT_CLK>,
-+					 <&dispcc DISP_CC_MDSS_MDP_CLK>,
-+					 <&dispcc DISP_CC_MDSS_VSYNC_CLK>;
-+				clock-names = "bus",
-+					      "nrt_bus",
-+					      "iface",
-+					      "lut",
-+					      "core",
-+					      "vsync";
-+
-+				power-domains = <&rpmhpd RPMHPD_MMCX>;
-+
-+				assigned-clocks = <&dispcc DISP_CC_MDSS_VSYNC_CLK>;
-+				assigned-clock-rates = <19200000>;
-+
-+				operating-points-v2 = <&mdp_opp_table>;
-+
-+				ports {
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+
-+					port@0 {
-+						reg = <0>;
-+
-+						dpu_intf1_out: endpoint {
-+							remote-endpoint = <&mdss_dsi0_in>;
-+						};
-+					};
-+
-+					port@1 {
-+						reg = <1>;
-+
-+						dpu_intf2_out: endpoint {
-+							remote-endpoint = <&mdss_dsi1_in>;
-+						};
-+					};
-+
-+					port@2 {
-+						reg = <2>;
-+
-+						dpu_intf0_out: endpoint {
-+							remote-endpoint = <&mdss_dp0_in>;
-+						};
-+					};
-+				};
-+
-+				mdp_opp_table: opp-table {
-+					compatible = "operating-points-v2";
-+
-+					opp-200000000 {
-+						opp-hz = /bits/ 64 <200000000>;
-+						required-opps = <&rpmhpd_opp_low_svs>;
-+					};
-+
-+					opp-325000000 {
-+						opp-hz = /bits/ 64 <325000000>;
-+						required-opps = <&rpmhpd_opp_svs>;
-+					};
-+
-+					opp-514000000 {
-+						opp-hz = /bits/ 64 <514000000>;
-+						required-opps = <&rpmhpd_opp_turbo>;
-+					};
-+				};
-+			};
-+
-+			mdss_dp0: displayport-controller@ae90000 {
-+				compatible = "qcom,sar2130p-dp",
-+					     "qcom,sm8350-dp";
-+				reg = <0x0 0xae90000 0x0 0x200>,
-+				      <0x0 0xae90200 0x0 0x200>,
-+				      <0x0 0xae90400 0x0 0xc00>,
-+				      <0x0 0xae91000 0x0 0x400>,
-+				      <0x0 0xae91400 0x0 0x400>;
-+				interrupt-parent = <&mdss>;
-+				interrupts = <12>;
-+				clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
-+					 <&dispcc DISP_CC_MDSS_DPTX0_AUX_CLK>,
-+					 <&dispcc DISP_CC_MDSS_DPTX0_LINK_CLK>,
-+					 <&dispcc DISP_CC_MDSS_DPTX0_LINK_INTF_CLK>,
-+					 <&dispcc DISP_CC_MDSS_DPTX0_PIXEL0_CLK>;
-+				clock-names = "core_iface",
-+					      "core_aux",
-+					      "ctrl_link",
-+					      "ctrl_link_iface",
-+					      "stream_pixel";
-+
-+				assigned-clocks = <&dispcc DISP_CC_MDSS_DPTX0_LINK_CLK_SRC>,
-+						  <&dispcc DISP_CC_MDSS_DPTX0_PIXEL0_CLK_SRC>;
-+				assigned-clock-parents = <&usb_dp_qmpphy QMP_USB43DP_DP_LINK_CLK>,
-+							 <&usb_dp_qmpphy QMP_USB43DP_DP_VCO_DIV_CLK>;
-+
-+				phys = <&usb_dp_qmpphy QMP_USB43DP_DP_PHY>;
-+				phy-names = "dp";
-+
-+				#sound-dai-cells = <0>;
-+
-+				operating-points-v2 = <&dp_opp_table>;
-+				power-domains = <&rpmhpd RPMHPD_MMCX>;
-+
-+				status = "disabled";
-+
-+				ports {
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+
-+					port@0 {
-+						reg = <0>;
-+
-+						mdss_dp0_in: endpoint {
-+							remote-endpoint = <&dpu_intf0_out>;
-+						};
-+					};
-+
-+					port@1 {
-+						reg = <1>;
-+
-+						mdss_dp0_out: endpoint {
-+							remote-endpoint = <&usb_dp_qmpphy_dp_in>;
-+						};
-+					};
-+				};
-+
-+				dp_opp_table: opp-table {
-+					compatible = "operating-points-v2";
-+
-+					opp-162000000 {
-+						opp-hz = /bits/ 64 <162000000>;
-+						required-opps = <&rpmhpd_opp_low_svs_d1>;
-+					};
-+
-+					opp-270000000 {
-+						opp-hz = /bits/ 64 <270000000>;
-+						required-opps = <&rpmhpd_opp_low_svs>;
-+					};
-+
-+					opp-540000000 {
-+						opp-hz = /bits/ 64 <540000000>;
-+						required-opps = <&rpmhpd_opp_svs_l1>;
-+					};
-+
-+					opp-810000000 {
-+						opp-hz = /bits/ 64 <810000000>;
-+						required-opps = <&rpmhpd_opp_nom>;
-+					};
-+				};
-+			};
-+
-+			mdss_dsi0: dsi@ae94000 {
-+				compatible = "qcom,sar2130p-dsi-ctrl",
-+					     "qcom,mdss-dsi-ctrl";
-+				reg = <0x0 0x0ae94000 0x0 0x400>;
-+				reg-names = "dsi_ctrl";
-+
-+				interrupt-parent = <&mdss>;
-+				interrupts = <4>;
-+
-+				clocks = <&dispcc DISP_CC_MDSS_BYTE0_CLK>,
-+					 <&dispcc DISP_CC_MDSS_BYTE0_INTF_CLK>,
-+					 <&dispcc DISP_CC_MDSS_PCLK0_CLK>,
-+					 <&dispcc DISP_CC_MDSS_ESC0_CLK>,
-+					 <&dispcc DISP_CC_MDSS_AHB_CLK>,
-+					 <&gcc GCC_DISP_HF_AXI_CLK>;
-+				clock-names = "byte",
-+					      "byte_intf",
-+					      "pixel",
-+					      "core",
-+					      "iface",
-+					      "bus";
-+
-+				power-domains = <&rpmhpd RPMHPD_MMCX>;
-+
-+				assigned-clocks = <&dispcc DISP_CC_MDSS_BYTE0_CLK_SRC>,
-+						  <&dispcc DISP_CC_MDSS_PCLK0_CLK_SRC>;
-+				assigned-clock-parents = <&mdss_dsi0_phy DSI_BYTE_PLL_CLK>,
-+							 <&mdss_dsi0_phy DSI_PIXEL_PLL_CLK>;
-+
-+				operating-points-v2 = <&mdss_dsi_opp_table>;
-+
-+				phys = <&mdss_dsi0_phy>;
-+				phy-names = "dsi";
-+
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				status = "disabled";
-+
-+				ports {
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+
-+					port@0 {
-+						reg = <0>;
-+						mdss_dsi0_in: endpoint {
-+							remote-endpoint = <&dpu_intf1_out>;
-+						};
-+					};
-+
-+					port@1 {
-+						reg = <1>;
-+						mdss_dsi0_out: endpoint {
-+						};
-+					};
-+				};
-+
-+				mdss_dsi_opp_table: opp-table {
-+					compatible = "operating-points-v2";
-+
-+					opp-187500000 {
-+						opp-hz = /bits/ 64 <187500000>;
-+						required-opps = <&rpmhpd_opp_low_svs>;
-+					};
-+
-+					opp-300000000 {
-+						opp-hz = /bits/ 64 <300000000>;
-+						required-opps = <&rpmhpd_opp_svs>;
-+					};
-+
-+					opp-358000000 {
-+						opp-hz = /bits/ 64 <358000000>;
-+						required-opps = <&rpmhpd_opp_nom>;
-+					};
-+				};
-+			};
-+
-+			mdss_dsi0_phy: phy@ae95000 {
-+				compatible = "qcom,sar2130p-dsi-phy-5nm";
-+				reg = <0x0 0x0ae95000 0x0 0x200>,
-+				      <0x0 0x0ae95200 0x0 0x280>,
-+				      <0x0 0x0ae95500 0x0 0x400>;
-+				reg-names = "dsi_phy",
-+					    "dsi_phy_lane",
-+					    "dsi_pll";
-+
-+				clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
-+					 <&rpmhcc RPMH_CXO_CLK>;
-+				clock-names = "iface", "ref";
-+
-+				#clock-cells = <1>;
-+				#phy-cells = <0>;
-+
-+				status = "disabled";
-+			};
-+
-+			mdss_dsi1: dsi@ae96000 {
-+				compatible = "qcom,sar2130p-dsi-ctrl",
-+					     "qcom,mdss-dsi-ctrl";
-+				reg = <0x0 0x0ae96000 0x0 0x400>;
-+				reg-names = "dsi_ctrl";
-+
-+				interrupt-parent = <&mdss>;
-+				interrupts = <5>;
-+
-+				clocks = <&dispcc DISP_CC_MDSS_BYTE1_CLK>,
-+					 <&dispcc DISP_CC_MDSS_BYTE1_INTF_CLK>,
-+					 <&dispcc DISP_CC_MDSS_PCLK1_CLK>,
-+					 <&dispcc DISP_CC_MDSS_ESC1_CLK>,
-+					 <&dispcc DISP_CC_MDSS_AHB_CLK>,
-+					 <&gcc GCC_DISP_HF_AXI_CLK>;
-+				clock-names = "byte",
-+					      "byte_intf",
-+					      "pixel",
-+					      "core",
-+					      "iface",
-+					      "bus";
-+
-+				power-domains = <&rpmhpd RPMHPD_MMCX>;
-+
-+				assigned-clocks = <&dispcc DISP_CC_MDSS_BYTE1_CLK_SRC>,
-+						  <&dispcc DISP_CC_MDSS_PCLK1_CLK_SRC>;
-+				assigned-clock-parents = <&mdss_dsi1_phy 0>,
-+							 <&mdss_dsi1_phy 1>;
-+
-+				operating-points-v2 = <&mdss_dsi_opp_table>;
-+
-+				phys = <&mdss_dsi1_phy>;
-+				phy-names = "dsi";
-+
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				status = "disabled";
-+
-+				ports {
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+
-+					port@0 {
-+						reg = <0>;
-+						mdss_dsi1_in: endpoint {
-+							remote-endpoint = <&dpu_intf2_out>;
-+						};
-+					};
-+
-+					port@1 {
-+						reg = <1>;
-+						mdss_dsi1_out: endpoint {
-+						};
-+					};
-+				};
-+			};
-+
-+			mdss_dsi1_phy: phy@ae97000 {
-+				compatible = "qcom,sar2130p-dsi-phy-5nm";
-+				reg = <0x0 0x0ae97000 0x0 0x200>,
-+				      <0x0 0x0ae97200 0x0 0x280>,
-+				      <0x0 0x0ae97500 0x0 0x400>;
-+				reg-names = "dsi_phy",
-+					    "dsi_phy_lane",
-+					    "dsi_pll";
-+
-+				clocks = <&dispcc DISP_CC_MDSS_AHB_CLK>,
-+					 <&rpmhcc RPMH_CXO_CLK>;
-+				clock-names = "iface", "ref";
-+
-+				#clock-cells = <1>;
-+				#phy-cells = <0>;
-+
-+				status = "disabled";
-+			};
-+		};
-+
-+		dispcc: clock-controller@af00000 {
-+			compatible = "qcom,sar2130p-dispcc";
-+			reg = <0x0 0x0af00000 0x0 0x20000>;
-+			clocks = <&rpmhcc RPMH_CXO_CLK>,
-+				 <&rpmhcc RPMH_CXO_CLK_A>,
-+				 <&gcc GCC_DISP_AHB_CLK>,
-+				 <&sleep_clk>,
-+				 <&mdss_dsi0_phy DSI_BYTE_PLL_CLK>,
-+				 <&mdss_dsi0_phy DSI_PIXEL_PLL_CLK>,
-+				 <&mdss_dsi1_phy DSI_BYTE_PLL_CLK>,
-+				 <&mdss_dsi1_phy DSI_PIXEL_PLL_CLK>,
-+				 <&usb_dp_qmpphy QMP_USB43DP_DP_LINK_CLK>,
-+				 <&usb_dp_qmpphy QMP_USB43DP_DP_VCO_DIV_CLK>,
-+				 <0>, /* dp1 */
-+				 <0>,
-+				 <0>, /* dp2 */
-+				 <0>,
-+				 <0>, /* dp3 */
-+				 <0>;
-+			power-domains = <&rpmhpd RPMHPD_MMCX>;
-+			#clock-cells = <1>;
-+			#reset-cells = <1>;
-+			#power-domain-cells = <1>;
-+		};
-+
- 		pdc: interrupt-controller@b220000 {
- 			compatible = "qcom,sar2130p-pdc", "qcom,pdc";
- 			reg = <0x0 0x0b220000 0x0 0x30000>, <0x0 0x174000f0 0x0 0x64>;
-
--- 
-2.39.5
-
+it's unclear how this timing is related to the dumped stack. Is there
+more detail how they are related?
