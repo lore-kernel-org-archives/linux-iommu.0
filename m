@@ -1,75 +1,62 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 163202C256D;
-	Fri, 18 Apr 2025 06:49:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E195A320F
+	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 07:30:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744958972; cv=none; b=lnPXREzcGW4u8hlHO+hyiILmINRN8q1CjqV0BORc9pA/GpC25W3oyGeEfxyq6PE/zmxl6LYM4RH60QtfKK40mVr2ehg227Zk+prdM5IRPtrl+fPo/JVmuJCgRhwbsKJgjJGLA+nTDtcW7GdesT/zKl2+djqaoPyKctRDPIS2vCc=
+	t=1744961454; cv=none; b=BrvDWgHwe+KWOcre8cHnNHKyMwKbBMvUHjgIHG+rjiS7McAq10Rmg65b7ECkV6SeGY5Uwu880mfDYpliv1bJcWdcADoMo+4mLQw805Oz/xJApnpdUhmpj217LmAP33CDXEDXUJpCEDBKbBH82cUG0x2jO2KAjFz/oftVzBVKUzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744958972; c=relaxed/simple;
-	bh=dzm3I2stn/rnoMY31OBCo5UJufKUUvzj9CfHJN76ddI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=PM2Pu10zvuHNmEU9ZOlKkr2RNO+2BWyDh3zGx2GbCnEUCS1Sjgp2S5LGZk6eTuvahPpH91b3Klnphh9uW/j6vKskGfmffvyFKztKBLHSOfKM4i0gfnNN6HRPJKcoa0/Du705JcAvWGuPtwFKWT7PqHBkwvjuyZ9pN+xeJcnGWNg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hryUJfy8; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744961454; c=relaxed/simple;
+	bh=sDuL54bxRzWLzgXxGkEyqYadhdvtvR5+FkceDXRk6+c=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=XhMe2jEwbDCap/6w9E1hB3vjWQjQUNt7sZA8X07ksNB8Rg022058k/PIfzk8x4jX1zNcxljZEaYxP8ZgHBr0aG/X/9rYkkqVwqMe65BwEojlqU1ge+CiJ/7fHn/uVDKgSLrrlOMv0G1hYTikeQCiMb9wJf+F82/5PJ41lfkprDY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=huaqian.li@siemens.com header.b=eLkDR0Mk; arc=none smtp.client-ip=185.136.65.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hryUJfy8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E028BC4CEE2;
-	Fri, 18 Apr 2025 06:49:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744958971;
-	bh=dzm3I2stn/rnoMY31OBCo5UJufKUUvzj9CfHJN76ddI=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=hryUJfy8PA4RFjXgzkxnJwg2vE4zWyLHXnqwDiqEb0GBnbF2npwJkiAV3mMUcJbUu
-	 i0m1ct/DkymX5kO8+evnd0O/oTuSVkJpNlgts/2n7itaNfdrXdl4RSAugBdvtLS/gb
-	 ohUp/b4uOGss3mwN4TPTllyhfIQY6ZiGwffvcGxYxi+rKYsRDYp2olXHELMczizQ/E
-	 +3tJhg+YbmBAoB4aMNl+41kTY/W8IPuEkg6XU9Stn+9mSLT65WWX5Xy4KjvDFijJd5
-	 l0vOAWyvMk0fVhVvD3rXfMgXOJPNr2/4RdBe62llV3Ug5jqLlLSXBX/ebWDfhUZt9x
-	 4VIk5TQ7pBrrw==
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jens Axboe <axboe@kernel.dk>,
-	Christoph Hellwig <hch@lst.de>,
-	Keith Busch <kbusch@kernel.org>
-Cc: Jake Edge <jake@lwn.net>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Zhu Yanjun <zyjzyj2000@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=huaqian.li@siemens.com header.b="eLkDR0Mk"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20250418073045c1b4f49fdd31a9bdfa
+        for <iommu@lists.linux.dev>;
+        Fri, 18 Apr 2025 09:30:46 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=huaqian.li@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=7Bm7s0x8m0xotm+8whhHLpDbeWch2/Mvszm5ppknXlk=;
+ b=eLkDR0MkESiN1rZ99/QJB8Fet6JhgMZHVTes3IMqMLf4cLxYAiG838DZ3h91WyUIKuf/Do
+ UhLvTgh8UvbzL01eIqh2j5ejB01+jjdetmhyVzhZkvZX8aMPqWNUBTMZpSGYhLIv8VIS4Ygi
+ b0Itn9GAegOodXYlaBm+PbghGP5NccKktmtVbD7g70UAMFYj2T/Qspd35VxU0lpFTfi6kaBe
+ qjeLmQ3Af17LpkK8CSz9YJbSocAzHHDEaBMJlKvIXk5e59n2tP3GgbFOFaOkaan7vr3/6Zt+
+ 0/nMqHLnneFqJHHS5HNHiW0/7JhDpxRg5zbuV/RY70KgCVpOOPY1kJZg==;
+From: huaqian.li@siemens.com
+To: helgaas@kernel.org,
+	m.szyprowski@samsung.com,
+	robin.murphy@arm.com
+Cc: baocheng.su@siemens.com,
+	bhelgaas@google.com,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	diogo.ivo@siemens.com,
+	huaqian.li@siemens.com,
+	jan.kiszka@siemens.com,
+	kristo@kernel.org,
+	krzk+dt@kernel.org,
+	kw@linux.com,
+	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org,
-	linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org,
 	linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org,
-	linux-mm@kvack.org,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Kanchan Joshi <joshi.k@samsung.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH v8 21/24] nvme-pci: remove struct nvme_descriptor
-Date: Fri, 18 Apr 2025 09:47:51 +0300
-Message-ID: <d7773053d9329a29e823a636c1aa2a3c0030aef3.1744825142.git.leon@kernel.org>
-X-Mailer: git-send-email 2.49.0
-In-Reply-To: <cover.1744825142.git.leon@kernel.org>
-References: <cover.1744825142.git.leon@kernel.org>
+	lpieralisi@kernel.org,
+	nm@ti.com,
+	robh@kernel.org,
+	s-vadapalli@ti.com,
+	ssantosh@kernel.org,
+	vigneshr@ti.com,
+	iommu@lists.linux.dev
+Subject: [PATCH v7 0/8] soc: ti: Add and use PVU on K3-AM65 for DMA isolation
+Date: Fri, 18 Apr 2025 15:30:18 +0800
+Message-Id: <20250418073026.2418728-1-huaqian.li@siemens.com>
+In-Reply-To: <20241030205703.GA1219329@bhelgaas>
+References: <20241030205703.GA1219329@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -77,191 +64,111 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-959203:519-21489:flowmailer
 
-From: Christoph Hellwig <hch@lst.de>
+From: Li Hua Qian <huaqian.li@siemens.com>
 
-There is no real point in having a union of two pointer types here, just
-use a void pointer as we mix and match types between the arms of the
-union between the allocation and freeing side already.
+Changes in v7:
+ - add schema expressing dependency as suggested on pci-host bindings
+ - resolve review comments on pci-keystone driver
+ - add a new patch to make IO_TLB_SEGSIZE configurable
+ - improve patches based on checkpath.pl
 
-Also rename the nr_allocations field to nr_descriptors to better describe
-what it does.
+Changes in v6:
+ - make restricted DMA memory-region available to all pci-keystone
+   devices, moving property to unconditional section (patch 2)
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Chaitanya Kulkarni <kch@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/nvme/host/pci.c | 57 +++++++++++++++++------------------------
- 1 file changed, 24 insertions(+), 33 deletions(-)
+Changes in v5:
+ - resolve review comments on pci-host bindings
+ - reduce DMA memory regions to 1 - swiotlb does not support more
+ - move activation into overlay (controlled via firmware)
+ - use ks_init_vmap helper instead of loop in
+   rework ks_init_restricted_dma
+ - add more comments to pci-keystone
+ - use 2 chained TLBs of PVU to support maximum of swiotlb (320 MB)
 
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index b178d52eac1b..638e759b29ad 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -43,7 +43,7 @@
- #define NVME_MAX_KB_SZ	8192
- #define NVME_MAX_SEGS	128
- #define NVME_MAX_META_SEGS 15
--#define NVME_MAX_NR_ALLOCATIONS	5
-+#define NVME_MAX_NR_DESCRIPTORS	5
- 
- static int use_threaded_interrupts;
- module_param(use_threaded_interrupts, int, 0444);
-@@ -219,30 +219,22 @@ struct nvme_queue {
- 	struct completion delete_done;
- };
- 
--union nvme_descriptor {
--	struct nvme_sgl_desc	*sg_list;
--	__le64			*prp_list;
--};
--
- /*
-  * The nvme_iod describes the data in an I/O.
-- *
-- * The sg pointer contains the list of PRP/SGL chunk allocations in addition
-- * to the actual struct scatterlist.
-  */
- struct nvme_iod {
- 	struct nvme_request req;
- 	struct nvme_command cmd;
- 	bool aborted;
--	s8 nr_allocations;	/* PRP list pool allocations. 0 means small
--				   pool in use */
-+	/* # of PRP/SGL descriptors: (0 for small pool) */
-+	s8 nr_descriptors;
- 	unsigned int dma_len;	/* length of single DMA segment mapping */
- 	dma_addr_t first_dma;
- 	dma_addr_t meta_dma;
- 	struct sg_table sgt;
- 	struct sg_table meta_sgt;
--	union nvme_descriptor meta_list;
--	union nvme_descriptor list[NVME_MAX_NR_ALLOCATIONS];
-+	void *meta_list;
-+	void *descriptors[NVME_MAX_NR_DESCRIPTORS];
- };
- 
- static inline unsigned int nvme_dbbuf_size(struct nvme_dev *dev)
-@@ -544,8 +536,8 @@ static void nvme_free_prps(struct nvme_dev *dev, struct request *req)
- 	dma_addr_t dma_addr = iod->first_dma;
- 	int i;
- 
--	for (i = 0; i < iod->nr_allocations; i++) {
--		__le64 *prp_list = iod->list[i].prp_list;
-+	for (i = 0; i < iod->nr_descriptors; i++) {
-+		__le64 *prp_list = iod->descriptors[i];
- 		dma_addr_t next_dma_addr = le64_to_cpu(prp_list[last_prp]);
- 
- 		dma_pool_free(dev->prp_page_pool, prp_list, dma_addr);
-@@ -567,11 +559,11 @@ static void nvme_unmap_data(struct nvme_dev *dev, struct request *req)
- 
- 	dma_unmap_sgtable(dev->dev, &iod->sgt, rq_dma_dir(req), 0);
- 
--	if (iod->nr_allocations == 0)
--		dma_pool_free(dev->prp_small_pool, iod->list[0].sg_list,
-+	if (iod->nr_descriptors == 0)
-+		dma_pool_free(dev->prp_small_pool, iod->descriptors[0],
- 			      iod->first_dma);
--	else if (iod->nr_allocations == 1)
--		dma_pool_free(dev->prp_page_pool, iod->list[0].sg_list,
-+	else if (iod->nr_descriptors == 1)
-+		dma_pool_free(dev->prp_page_pool, iod->descriptors[0],
- 			      iod->first_dma);
- 	else
- 		nvme_free_prps(dev, req);
-@@ -629,18 +621,18 @@ static blk_status_t nvme_pci_setup_prps(struct nvme_dev *dev,
- 	nprps = DIV_ROUND_UP(length, NVME_CTRL_PAGE_SIZE);
- 	if (nprps <= (256 / 8)) {
- 		pool = dev->prp_small_pool;
--		iod->nr_allocations = 0;
-+		iod->nr_descriptors = 0;
- 	} else {
- 		pool = dev->prp_page_pool;
--		iod->nr_allocations = 1;
-+		iod->nr_descriptors = 1;
- 	}
- 
- 	prp_list = dma_pool_alloc(pool, GFP_ATOMIC, &prp_dma);
- 	if (!prp_list) {
--		iod->nr_allocations = -1;
-+		iod->nr_descriptors = -1;
- 		return BLK_STS_RESOURCE;
- 	}
--	iod->list[0].prp_list = prp_list;
-+	iod->descriptors[0] = prp_list;
- 	iod->first_dma = prp_dma;
- 	i = 0;
- 	for (;;) {
-@@ -649,7 +641,7 @@ static blk_status_t nvme_pci_setup_prps(struct nvme_dev *dev,
- 			prp_list = dma_pool_alloc(pool, GFP_ATOMIC, &prp_dma);
- 			if (!prp_list)
- 				goto free_prps;
--			iod->list[iod->nr_allocations++].prp_list = prp_list;
-+			iod->descriptors[iod->nr_descriptors++] = prp_list;
- 			prp_list[0] = old_prp_list[i - 1];
- 			old_prp_list[i - 1] = cpu_to_le64(prp_dma);
- 			i = 1;
-@@ -719,19 +711,19 @@ static blk_status_t nvme_pci_setup_sgls(struct nvme_dev *dev,
- 
- 	if (entries <= (256 / sizeof(struct nvme_sgl_desc))) {
- 		pool = dev->prp_small_pool;
--		iod->nr_allocations = 0;
-+		iod->nr_descriptors = 0;
- 	} else {
- 		pool = dev->prp_page_pool;
--		iod->nr_allocations = 1;
-+		iod->nr_descriptors = 1;
- 	}
- 
- 	sg_list = dma_pool_alloc(pool, GFP_ATOMIC, &sgl_dma);
- 	if (!sg_list) {
--		iod->nr_allocations = -1;
-+		iod->nr_descriptors = -1;
- 		return BLK_STS_RESOURCE;
- 	}
- 
--	iod->list[0].sg_list = sg_list;
-+	iod->descriptors[0] = sg_list;
- 	iod->first_dma = sgl_dma;
- 
- 	nvme_pci_sgl_set_seg(&cmd->dptr.sgl, sgl_dma, entries);
-@@ -870,7 +862,7 @@ static blk_status_t nvme_pci_setup_meta_sgls(struct nvme_dev *dev,
- 		goto out_unmap_sg;
- 
- 	entries = iod->meta_sgt.nents;
--	iod->meta_list.sg_list = sg_list;
-+	iod->meta_list = sg_list;
- 	iod->meta_dma = sgl_dma;
- 
- 	cmnd->flags = NVME_CMD_SGL_METASEG;
-@@ -923,7 +915,7 @@ static blk_status_t nvme_prep_rq(struct nvme_dev *dev, struct request *req)
- 	blk_status_t ret;
- 
- 	iod->aborted = false;
--	iod->nr_allocations = -1;
-+	iod->nr_descriptors = -1;
- 	iod->sgt.nents = 0;
- 	iod->meta_sgt.nents = 0;
- 
-@@ -1048,8 +1040,7 @@ static __always_inline void nvme_unmap_metadata(struct nvme_dev *dev,
- 		return;
- 	}
- 
--	dma_pool_free(dev->prp_small_pool, iod->meta_list.sg_list,
--		      iod->meta_dma);
-+	dma_pool_free(dev->prp_small_pool, iod->meta_list, iod->meta_dma);
- 	dma_unmap_sgtable(dev->dev, &iod->meta_sgt, rq_dma_dir(req), 0);
- 	mempool_free(iod->meta_sgt.sgl, dev->iod_meta_mempool);
- }
-@@ -3801,7 +3792,7 @@ static int __init nvme_init(void)
- 	BUILD_BUG_ON(IRQ_AFFINITY_MAX_SETS < 2);
- 	BUILD_BUG_ON(NVME_MAX_SEGS > SGES_PER_PAGE);
- 	BUILD_BUG_ON(sizeof(struct scatterlist) * NVME_MAX_SEGS > PAGE_SIZE);
--	BUILD_BUG_ON(nvme_pci_npages_prp() > NVME_MAX_NR_ALLOCATIONS);
-+	BUILD_BUG_ON(nvme_pci_npages_prp() > NVME_MAX_NR_DESCRIPTORS);
- 
- 	return pci_register_driver(&nvme_driver);
- }
+Changes in v4:
+ - reorder patch queue, moving all DTS changes to the back
+ - limit activation to IOT2050 Advanced variants
+ - move DMA pool to allow firmware-based expansion it up to 512M
+
+Changes in v3:
+ - fix ti,am654-pvu.yaml according to review comments
+ - address review comments on ti,am65-pci-host.yaml
+ - differentiate between different compatibles in ti,am65-pci-host.yaml
+ - move pvu nodes to k3-am65-main.dtsi
+ - reorder patch series, pulling bindings and generic DT bits to the front
+
+Changes in v2:
+ - fix dt_bindings_check issues (patch 1)
+ - address first review comments (patch 2)
+ - extend ti,am65-pci-host bindings for PVU (new patch 3)
+
+Only few of the K3 SoCs have an IOMMU and, thus, can isolate the system
+against DMA-based attacks of external PCI devices. The AM65 is without
+an IOMMU, but it comes with something close to it: the Peripheral
+Virtualization Unit (PVU).
+
+The PVU was originally designed to establish static compartments via a
+hypervisor, isolate those DMA-wise against each other and the host and
+even allow remapping of guest-physical addresses. But it only provides
+a static translation region, not page-granular mappings. Thus, it cannot
+be handled transparently like an IOMMU.
+
+Now, to use the PVU for the purpose of isolated PCI devices from the
+Linux host, this series takes a different approach. It defines a
+restricted-dma-pool for the PCI host, using swiotlb to map all DMA
+buffers from a static memory carve-out. And to enforce that the devices
+actually follow this, a special PVU soc driver is introduced. The driver
+permits access to the GIC ITS and otherwise waits for other drivers that
+detect devices with constrained DMA to register pools with the PVU.
+
+For the AM65, the first (and possibly only) driver where this is
+introduced is the pci-keystone host controller. Finally, this series
+provides a DT overlay for the IOT2050 Advanced devices (all have
+MiniPCIe or M.2 extension slots) to make use of this protection scheme.
+Application of this overlay will be handled by firmware.
+
+Due to the cross-cutting nature of these changes, multiple subsystems
+are affected. However, I wanted to present the whole thing in one series
+to allow everyone to review with the complete picture in hands. If
+preferred, I can also split the series up, of course.
+
+Jan
+
+
+Jan Kiszka (7):
+  dt-bindings: soc: ti: Add AM65 peripheral virtualization unit
+  dt-bindings: PCI: ti,am65: Extend for use with PVU
+  soc: ti: Add IOMMU-like PVU driver
+  PCI: keystone: Add support for PVU-based DMA isolation on AM654
+  arm64: dts: ti: k3-am65-main: Add PVU nodes
+  arm64: dts: ti: k3-am65-main: Add VMAP registers to PCI root complexes
+  arm64: dts: ti: iot2050: Add overlay for DMA isolation for devices
+    behind PCI RC
+
+Li Hua Qian (1):
+  swiotlb: Make IO_TLB_SEGSIZE configurable
+
+ .../bindings/pci/ti,am65-pci-host.yaml        |  34 +-
+ .../bindings/soc/ti/ti,am654-pvu.yaml         |  51 ++
+ arch/arm64/boot/dts/ti/Makefile               |   5 +
+ arch/arm64/boot/dts/ti/k3-am65-main.dtsi      |  38 +-
+ ...am6548-iot2050-advanced-dma-isolation.dtso |  33 ++
+ drivers/pci/controller/dwc/pci-keystone.c     | 106 ++++
+ drivers/soc/ti/Kconfig                        |   4 +
+ drivers/soc/ti/Makefile                       |   1 +
+ drivers/soc/ti/ti-pvu.c                       | 500 ++++++++++++++++++
+ include/linux/swiotlb.h                       |   2 +-
+ include/linux/ti-pvu.h                        |  28 +
+ kernel/dma/Kconfig                            |   7 +
+ 12 files changed, 801 insertions(+), 8 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/soc/ti/ti,am654-pvu.yaml
+ create mode 100644 arch/arm64/boot/dts/ti/k3-am6548-iot2050-advanced-dma-isolation.dtso
+ create mode 100644 drivers/soc/ti/ti-pvu.c
+ create mode 100644 include/linux/ti-pvu.h
+
 -- 
-2.49.0
+2.34.1
 
