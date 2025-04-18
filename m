@@ -1,73 +1,75 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAE951A2658
-	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 07:50:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 229C126A0F5
+	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 07:50:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744962608; cv=none; b=qlsVX7RzuDPhSArTkjlhsqJophibBlbqTinnVbkgO1DYkAKfTh7Tl1KGn0Eqj986aiI8Wjl3PeVZFwLqbpSaOhTBJsGFkTUy8wDriDHVtoU1HzOV3fEvndu7xwQrokI2JLt2DdwEQkE0Z+XtCPj/CKiMFBXvHbkbC3v3J+Kt7E0=
+	t=1744962609; cv=none; b=bscjG5y+xR8oaOPw9SgzUfOEWFZtM02RYgjb50uhd9Y0Sso9dlR0fxtsNSE4wPmqh5uU0s1xM3lMznVchwjy+P0Ij9I9JCigBwdBcDBeXLvwFQj1RFN4oC5aVJzJlR3jqqhcCEKdRZD/JoNCm6Ow2CDSVBkKY1FCHPKagikcJmA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744962608; c=relaxed/simple;
-	bh=MIHhIyG/v+Z0nNaNDXcqReDw20TVwQPwETRu3TF+wvU=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=JcQaas69p56li1wNP6TmvW/JUkFrYa+nNE+PegPxb9FBjoq8zStjdr6C7FKfbJsTWwJSGJkPTLifzrtw2+SOiNEBWC01IZ4PQsC426hk2aVWCbLMMW0hgQRNFyiaR+VKJ+zmHoU3fyvemuJKVFwmDqvF4zs7fINSgnUHHfM1B3E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=AYawam3o; arc=none smtp.client-ip=205.220.168.131
+	s=arc-20240116; t=1744962609; c=relaxed/simple;
+	bh=BXoa02LSLqszw1KFDNTyhiysJ9vnQES6ubpi95G3uTk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=Jz6dLCzCFLuMdfGKw7wj2AI4xESOtlRD6MpBDdWA5adq/unyu2SDIz0lel1QLf/oMoG0GqJodbYyrvWUXeedDGIn3cwSVyHkkIdgeLq8cblE46USVRdI1hCTfsgt8lV9DJpIJp3L6glttlIbgPyvDbHyXxVvH/R/ZpTufEarmx4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=WDDR8yN6; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="AYawam3o"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53I27rOa023402
-	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 07:50:06 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="WDDR8yN6"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53I23xvs001231
+	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 07:50:07 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=qcppdkim1; bh=bKVzhfCeIrFWWOfmPDcMy7
-	Vsl4v26t9bEenITA2YqYM=; b=AYawam3oN+1YH1X8F4El3ltBTVaaOdrWGSOzmU
-	folQrHY/7h48MfzCLtZKPXFu2tFnAfeDHui5IDC64ULxat/SC57jY7YquDFBvEm8
-	nJaOKqt+x0f14Fnu+IwCUdVHs9lzR453oMcmjDE0jDbuRsFSDiu3HV+NFOMAvVs2
-	rR0NAFjEYtXjDZxDP0jcuwyehwkG0UXbi4o57ROm9lKtnR69vQYG8CpTf+HaxtBJ
-	DgEt7y1C4hHQ643EdGi8Re2btQ3acALtmd+Ffacfm64N6o35fhOlWmRDTwUhL1se
-	LD617dJhl+oiCELvANWSll/cBoawnl71qGX/XmnbEZ66tc5Q==
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	e+7zJBm63Lgp886dxKyB6dmrzG0t1u6zSCJPTB4/5Dw=; b=WDDR8yN6Peu0rUGT
+	C8gHwyauFw5GAqefI4hipAekd8SAMgvqgi2OLAgNEuHU4zfuvBJ1PVPGIfLyQ5Vk
+	y05elYKL03WXvM3+z4dCkHUc/TffYeUs1TuvtS9Rq96qxkw1CFeFna0vs8e2a5Xd
+	cks4zzUN+gfP8/rS+QAq5aKkb2r4T25drw89ojBqNzk887pX/kIYDfn7lQawvTc7
+	AKDsKaVV0g+y5lFqPt539dKXzhDcJ9G77sVD8V/ESPD0U1Rre/lnqn1pkAbavoy5
+	ugOm2C/tv6pzhvtSBTEzxaD7PFMTgacZ+pMApTAmVmJfJl6RDk3Duf+eBZGxXeSs
+	Av99xA==
 Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com [209.85.219.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45yhbq148a-1
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 45ydvjhmd0-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 07:50:05 +0000 (GMT)
-Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-6f2af3128b0so26706136d6.0
-        for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 00:50:05 -0700 (PDT)
+	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 07:50:07 +0000 (GMT)
+Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-6f2b3e4c176so33920306d6.2
+        for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 00:50:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744962604; x=1745567404;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=bKVzhfCeIrFWWOfmPDcMy7Vsl4v26t9bEenITA2YqYM=;
-        b=gavDLCSYA+PlXsznVFjsDbSDqh8fl00UNp8L2j0EgAw8+gVwAlkKBQy393m3MjIgNz
-         92D4w206xzKgXN2wNndhwQja3SUSjKjVvJfZoCjgoq9b9Vx051fXlkBuJTVmflUsoJVH
-         PTRrLFzjdbWGwaljzaPVZuKQODEsjCE+1lV2ZgYu2dNJvEosHiPvc1m81OIwHSRN6hp6
-         SazcFup5LnKiwza8sXDEgbXm9PYGRjFnS6Y1Y78foXflb6Y2wtBJyHoiqjg51DHZTGMi
-         JbFaLQk4DM3tQT3YaSAblftPOXKpAU+9LtHlISR80IM/zzkEdsyjJAJ5dvg+U0XYptf5
-         qncQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVVYwk5apD/Gu0nWaaRM9Bqc2Na1MGzpaFyxx2I7MbHPpH3IUcGb5tD5wSdYsFFR490GEP4Og==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzDCVwm3e6NuDoCRVnZqYtv75hHl/RWw5mML72ibHywPFEi/s9O
-	ZLE/BhGSJU3j8Wl3+0fPQ4EvYo9fkVKFjaDoXUssidfroYy0x8Dm0OIhWLT0XPFuFSQKWDMu5+m
-	zgA/m7lrs2KyduM7g8+9j6TaOQV+ipFzfNg3kCTSJ64wHeSMiB3igzg==
-X-Gm-Gg: ASbGncvE6JVEN3+gXi8SsgoOBesPUxc4CwHUqvax5ncQCPBA8jOvNFt7WoseuC+oUiO
-	JLUSYAvka90LhAa+1HGQshPA0jYk5BO/0VWuTNQNUude6NyJVL6OiKPYohOLAoQ0yz/X3+t6PmT
-	CcgGrpZCnt5XPl7TzSm4JzoMTA3OaYLiLN6vbtIDrsYnPLuQuyvCfogkrF938P+qZU9aFXC+Nax
-	gbMFms2/6NtZFueE2IW46nqrkjkV7K48v3iGclKXYBejDJ+4jkUivUw54MC27OYENUrlKaX7FSO
-	+hevEL7ZiaENShXHn7FfiC3zYQe8/KTA3wnRz0jp+DM79jlk/ZTS9Fzlcwu0Bf6hNtNVzM3BxJM
-	12WXV/zUwwQnloP0McVcbosge
-X-Received: by 2002:a05:6214:2427:b0:6e1:f40c:b558 with SMTP id 6a1803df08f44-6f2c46b74cdmr28503516d6.44.1744962604233;
-        Fri, 18 Apr 2025 00:50:04 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFBVH5N8S/Y81BfgiRXj+GFCnmldDAJl6DPbZffY+ecp7thLqccxR8nyV9Uby48JD2+X56nDQ==
-X-Received: by 2002:a05:6214:2427:b0:6e1:f40c:b558 with SMTP id 6a1803df08f44-6f2c46b74cdmr28503076d6.44.1744962603719;
-        Fri, 18 Apr 2025 00:50:03 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1744962606; x=1745567406;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=e+7zJBm63Lgp886dxKyB6dmrzG0t1u6zSCJPTB4/5Dw=;
+        b=FDjZR2yuQZtqSgdQOA2QQgv4W73+V803Dxb6lpscnfXtAnForcdG4xJgaYJt8mR39v
+         gWD6uibQgvewnvaMG+hOp11aEf5fHLEPTDumsJwZPouM4r3zvRkeOaWPa3Qldmvq6uXP
+         NBndoYe/DaYSI28GTxxhaYSi8hegzD2JRvpN73EcCGk15juyDQCh76Au7nDmpL23pmaM
+         2LPWNt5U9GGoxhTKFrO8o4AQOtmftJLd78UhCD+QPNaOw9zZIkUi2uLnjh1Aqi9lavs5
+         7+6U/hgOj8NWHEVulT2zTcEOAHBgip1WNW1LXii3TMfvolbdKorzteGssCcl7xkKCx84
+         aj6w==
+X-Forwarded-Encrypted: i=1; AJvYcCVjCDhJ63fNfGjD5DdtQz0Ubr4myeIUyVAcfZFmCq4jcbaqisJyzTd4OVbcBTvyc1PbOr4lVA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwX/EwxTMQeKP42iwNxueoXH6KpgPF3k+nA5scW1+qkVIIQkWfg
+	sfoeG2wAOVMh0jTSCv7sFUMe7FYOAU0JVAINjmrAn5UUQO4HmHEk1lCtEI05U7yJl6sBXiRzGzB
+	llEAXeapKgVyszoDuNGV9HWGS4EUswQ+jrr4eN/joxZMHtrvDJeIF1w==
+X-Gm-Gg: ASbGncsIP2AndLgyS19WKlFDy1201k506HkzcwSOqKW9HhyYygfkRMcJryGQhBITlfu
+	RcwffHFGcmzr4d2i0kbFc+xzellmbM8uQF/4ZH00wFDHq938V7fTBbTjbASkrSnY0+/2QGO6EJN
+	TK4LjuzQXaEBO22dEzQY7yyT20+OA5e/9qKnO6YQISKX2MjUQ1AIQZ3iJyij3WHUyZZOwCcBLTu
+	0BojSeVAaqsMz7sjXVM4p/bDkaN8QTlJZkQCeWaSs6WsV/1T4Wnz6SRlYklYFYzHHKhqCfYMyod
+	GSS98Bdv6zs3VTviWWHUeJKyFQwIT0kXQBRttSxVf8wcZkiGrOdLzokHQMQR+7LTD0tt7OYPR0j
+	eLI/aL6Op9lm2pYWt/f6ddUx8
+X-Received: by 2002:a05:6214:2349:b0:6e8:9866:7398 with SMTP id 6a1803df08f44-6f2c456c668mr26534586d6.22.1744962605921;
+        Fri, 18 Apr 2025 00:50:05 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEmdqbp1uisYZt9+CQb8AviILd0JfMaSMgZGRgsUVuNr4Q8za1X0NlrSkYGGp8cQsS875MEng==
+X-Received: by 2002:a05:6214:2349:b0:6e8:9866:7398 with SMTP id 6a1803df08f44-6f2c456c668mr26534236d6.22.1744962605598;
+        Fri, 18 Apr 2025 00:50:05 -0700 (PDT)
 Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-31090863bd0sm1649061fa.113.2025.04.18.00.50.02
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-31090863bd0sm1649061fa.113.2025.04.18.00.50.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 18 Apr 2025 00:50:02 -0700 (PDT)
+        Fri, 18 Apr 2025 00:50:04 -0700 (PDT)
 From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Subject: [PATCH v5 00/10] drm/msm: add support for SAR2130P
-Date: Fri, 18 Apr 2025 10:49:55 +0300
-Message-Id: <20250418-sar2130p-display-v5-0-442c905cb3a4@oss.qualcomm.com>
+Date: Fri, 18 Apr 2025 10:49:56 +0300
+Subject: [PATCH v5 01/10] dt-bindings: display/msm: dp-controller: describe
+ SAR2130P
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,12 +78,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIACMEAmgC/3XOwW6DMAwG4FdBOS/MdkJHe+p7VDs4ENpIQGhCU
- auKd18Kh/VAL5Z+y/7sp4g2OBvFIXuKYCcXne9TKL4yUV24P1vp6pQFARWgoJSRA6GCQdYuDi0
- /pIEdYFM11igQaW0ItnH3hTz9rjnY6y3J49oUhqOVle86Nx6y3t7H747jaIN4jV9cHH14LA9Nu
- Mx/vj2hBIm1rhQ0WpVEx9b1HHzuw3nRJnoTUG8IlASFDesCiMsCjj7G/Hrj9vVgnsrqqH9HY7H
- hqOTsKN0wWO2B1AdHvzs/G45OjtljXZdMaJA3nHme/wD6twnSuAEAAA==
-X-Change-ID: 20250308-sar2130p-display-b0601fcfeb30
+Message-Id: <20250418-sar2130p-display-v5-1-442c905cb3a4@oss.qualcomm.com>
+References: <20250418-sar2130p-display-v5-0-442c905cb3a4@oss.qualcomm.com>
+In-Reply-To: <20250418-sar2130p-display-v5-0-442c905cb3a4@oss.qualcomm.com>
 To: Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
         Dmitry Baryshkov <lumag@kernel.org>, Sean Paul <sean@poorly.run>,
         Marijn Suijten <marijn.suijten@somainline.org>,
@@ -103,98 +102,57 @@ Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
         linux-arm-kernel@lists.infradead.org,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3099;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=950;
  i=dmitry.baryshkov@oss.qualcomm.com; h=from:subject:message-id;
- bh=MIHhIyG/v+Z0nNaNDXcqReDw20TVwQPwETRu3TF+wvU=;
- b=owEBbQGS/pANAwAKAYs8ij4CKSjVAcsmYgBoAgQoJmt4xfopyOXHZoDXlTNQWSVgWICe3fZHK
- vWFEMKwdKWJATMEAAEKAB0WIQRMcISVXLJjVvC4lX+LPIo+Aiko1QUCaAIEKAAKCRCLPIo+Aiko
- 1XYMB/9nx5oq7yDsiPquOUtTl0sqVG5EajGGE5lc/M+WU0hOOPvTzPIlGM0Y2OU/9QpzsSPgm9J
- UyF/HOcy7dnV3qq8J3oJnV1dv8/Ro0tmDfblu31dQ4ZyEdcIqptcJ4enQ42bVtvEY/uYVDFG1GG
- SeqCp7zeyB7pTO5RHBelaKsvxtjEyiwlyNyL8hlXaLxiH2kDLiTxstQZWpnimTBzWXvH4bb6nJZ
- 3VvadiCYXSgijXE8eOliuLNQ0iq9ndAgGJcxpkYnwZAtBHR9Z8bqpAmjy9w1vkVh0KUKyAqsW9K
- jJSeZ5QrCUly5fdTyLqA7xFsN3STS8SRQwtqmjrZQ++JPxKc
+ bh=t96ussCqWyIQAdmFD81iVPY1jwLXVD8SP3JFMa/Qjfw=;
+ b=owEBbQGS/pANAwAKAYs8ij4CKSjVAcsmYgBoAgQonsp75XK20kcf2pu5n0LjwPVYXkdyYuxQf
+ a85/76z7hiJATMEAAEKAB0WIQRMcISVXLJjVvC4lX+LPIo+Aiko1QUCaAIEKAAKCRCLPIo+Aiko
+ 1cq8B/kB+M00kXMMuhUmVSsKacPCdyAy3OMaCOCs8MJ5vQI6oROm0o7QZosSTt9M/TAPovpvLKQ
+ YCocSsQ5JV4E8l8sAALjIOjHHNMpl3RvlOyPigbaKaN52tPNdrweOuFmzhDWnav3Vaxe04xIpYR
+ HU8j/0sOj3j4ALvvsUXLXATE746j6PyP/7Z653sBsEr0UpmSkU/b2hHDIS1wclGa3coJqUqGh2G
+ Kvk6NEnYnLOkex9SduAZJfoWdzCN5dyYrHvRLaJdiLzc4CoQFj3e9+oltrhHEOyT6LapegH4tb6
+ 3sGJLOoj5qOi3zj1xM1+geoLFaCWpdOq2Fp6Eb1OVPqkL712
 X-Developer-Key: i=dmitry.baryshkov@oss.qualcomm.com; a=openpgp;
  fpr=8F88381DD5C873E4AE487DA5199BF1243632046A
-X-Proofpoint-ORIG-GUID: VSiJFz1hkVL_66h7eMRNtZjoQHsLeVTN
-X-Proofpoint-GUID: VSiJFz1hkVL_66h7eMRNtZjoQHsLeVTN
-X-Authority-Analysis: v=2.4 cv=I+plRMgg c=1 sm=1 tr=0 ts=6802042d cx=c_pps a=UgVkIMxJMSkC9lv97toC5g==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=KKAkSRfTAAAA:8 a=gDteT81u2rHlWx3pG9QA:9 a=QEXdDO2ut3YA:10
- a=1HOtulTD9v-eNWfpl4qZ:22 a=cvBusfyB2V15izCimMoJ:22
+X-Authority-Analysis: v=2.4 cv=ZIrXmW7b c=1 sm=1 tr=0 ts=6802042f cx=c_pps a=UgVkIMxJMSkC9lv97toC5g==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=KKAkSRfTAAAA:8 a=qy0Ph95xh7xgto4wCWoA:9 a=QEXdDO2ut3YA:10 a=1HOtulTD9v-eNWfpl4qZ:22
+ a=cvBusfyB2V15izCimMoJ:22
+X-Proofpoint-GUID: btS5vV-Q6XpPszXzahtc_ZcgY6GKrV6l
+X-Proofpoint-ORIG-GUID: btS5vV-Q6XpPszXzahtc_ZcgY6GKrV6l
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
  definitions=2025-04-18_02,2025-04-17_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
- phishscore=0 adultscore=0 priorityscore=1501 mlxscore=0 lowpriorityscore=0
- bulkscore=0 mlxlogscore=999 clxscore=1015 impostorscore=0 malwarescore=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 suspectscore=0
+ clxscore=1015 priorityscore=1501 bulkscore=0 phishscore=0 mlxlogscore=975
+ spamscore=0 impostorscore=0 malwarescore=0 mlxscore=0 lowpriorityscore=0
  classifier=spam authscore=0 authtc=n/a authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.19.0-2502280000
  definitions=main-2504180056
 
-Add support for the Mobile Display SubSystem (MDSS) device present on
-the Qualcomm SAR2130P platform. The MDSS device is similar to SM8550, it
-features two MIPI DSI controllers, two MIPI DSI PHYs and one DisplayPort
-controller.
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-Note, due to the technical limitations DP controller wasn't completely
-evaluated.
+Describe DisplayPort controller present on Qualcomm SAR2130P platform.
 
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
-Changes in v5:
-- Resending without the @linaro.org -> @kernel.org change
-- Link to v4: https://lore.kernel.org/r/20250417-sar2130p-display-v4-0-b91dd8a21b1a@oss.qualcomm.com
+ Documentation/devicetree/bindings/display/msm/dp-controller.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changes in v4:
-- Changed MDP->EBI interconnect to QCOM_ICC_TAG_ALWAYS (Konrad)
-- Link to v3: https://lore.kernel.org/r/20250415-sar2130p-display-v3-0-62314b1c9023@oss.qualcomm.com
+diff --git a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+index e00b88332f2fed2fc33f6d72c5cc3d827cd7594e..246bbb509bea18bed32e3a442d0926a24498c960 100644
+--- a/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
++++ b/Documentation/devicetree/bindings/display/msm/dp-controller.yaml
+@@ -31,6 +31,7 @@ properties:
+           - qcom,sm8650-dp
+       - items:
+           - enum:
++              - qcom,sar2130p-dp
+               - qcom,sm6350-dp
+               - qcom,sm8150-dp
+               - qcom,sm8250-dp
 
-Changes in v3:
-- Use defines for DSI PHY clock indices (Konrad)
-- Increas VBIF region size of 0x3000 (Konrad)
-- Link to v2: https://lore.kernel.org/r/20250314-sar2130p-display-v2-0-31fa4502a850@oss.qualcomm.com
-
-Changes in v2:
-- In MDSS schema switched from list items to contains: (Krzyztof)
-- In MDSS schema dropped extra empty lines (Krzysztof)
-- Fixed .ubwc_bank_spread in msm_mdss. (LKP)
-- Link to v1: https://lore.kernel.org/r/20250308-sar2130p-display-v1-0-1d4c30f43822@linaro.org
-
----
-Dmitry Baryshkov (10):
-      dt-bindings: display/msm: dp-controller: describe SAR2130P
-      dt-bindings: display/msm: dsi-controller-main: describe SAR2130P
-      dt-bindings: display/msm: dsi-phy-7nm: describe SAR2130P
-      dt-bindings: display/msm: qcom,sc7280-dpu: describe SAR2130P
-      dt-bindings: display/msm: Add Qualcomm SAR2130P
-      drm/msm/mdss: add SAR2130P device configuration
-      drm/msm/dsi/phy: add configuration for SAR2130P
-      drm/msm/dpu: add catalog entry for SAR2130P
-      iommu/arm-smmu-qcom: Add SAR2130P MDSS compatible
-      arm64: dts: qcom: sar2130p: add display nodes
-
- .../bindings/display/msm/dp-controller.yaml        |   1 +
- .../bindings/display/msm/dsi-controller-main.yaml  |   2 +
- .../bindings/display/msm/dsi-phy-7nm.yaml          |   1 +
- .../bindings/display/msm/qcom,sar2130p-mdss.yaml   | 439 +++++++++++++++++++++
- .../bindings/display/msm/qcom,sc7280-dpu.yaml      |   1 +
- arch/arm64/boot/dts/qcom/sar2130p.dtsi             | 395 ++++++++++++++++++
- .../drm/msm/disp/dpu1/catalog/dpu_9_1_sar2130p.h   | 434 ++++++++++++++++++++
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   2 +-
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   1 +
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   1 +
- drivers/gpu/drm/msm/dsi/phy/dsi_phy.c              |   2 +
- drivers/gpu/drm/msm/dsi/phy/dsi_phy.h              |   1 +
- drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c          |  23 ++
- drivers/gpu/drm/msm/msm_mdss.c                     |  11 +
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   1 +
- 15 files changed, 1314 insertions(+), 1 deletion(-)
----
-base-commit: 5b37f7bfff3b1582c34be8fb23968b226db71ebd
-change-id: 20250308-sar2130p-display-b0601fcfeb30
-
-Best regards,
 -- 
-Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+2.39.5
 
