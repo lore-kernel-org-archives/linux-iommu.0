@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10F8F26FD8D
-	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 08:01:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8747726B2D2
+	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 08:01:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744963288; cv=none; b=JQ3BGkIVca6UJPeUfluJuxnh7eSQ5tsWmeFqNl78zfw35PX+Wg3yxO1Ru7FnLu2FoWJQIqt4W9c2oOdOyf4zFPjuouC/jsgaphOPb5Z12u/OZxzYF31lmt3S//MhAl2gyQDBh22n7/Pd2eCw4pC6bqrbIUEZ4Qkb9SvZfrDXU0M=
+	t=1744963291; cv=none; b=q/zmFvpgNWAXaKnqxuQ2k9CeQITAJL4BZLdlUlAyzm/S3Z2YSTEJPnlbnAEaFtkh5uk4/wySf7pqIdg9aQ/69dT5EzlRXjOhPxsuDs3YN73Er7+96oyNG6v/vIewILxf8mw00URjOqk9bOlda7BzzXkyj4h/nBG9qYIVEWYT9Lc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744963288; c=relaxed/simple;
-	bh=2ivYTc1Aw/K7/4eZ2gxR9fOzWvHJ5qgw1szy/sntLAU=;
+	s=arc-20240116; t=1744963291; c=relaxed/simple;
+	bh=xHvdqCW9VAdclXNKbC1MlwSO7w2MFGw/1Ft2J9d8fQM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=pgXL6UDsT7sF/3i1JfNQ0F4ptqYH4/3nomuR2bwCG/B8YXOaW3CunwGpvmXdz4pQU8mvHr6IMYBPagfWspqxMrOMz/LOubMM3iMDizCRgRW3IINTYbV7CS+j235bfOp93C/7jiks9CelGEG2DAQgocgzVj2gKLsb19NwLgRy/7A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HL/pzvpU; arc=none smtp.client-ip=192.198.163.15
+	 MIME-Version; b=iHb5s1NP+a9/h1/i2af1vHyVLwUm1MGAcV7Q4cf0rAPg39wX6Pc3Hyixb6IPM1NPMI5BrvRQtH+d9xHtr3fv0RanP3IRkNipOLvba6ZTydSTfk2ftD/+ODsQtAe1ybB8HeTBepxgP/zxef4ONuGNjJb8xUG4DScPGilh49tB2jY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kAy/tkpf; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HL/pzvpU"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kAy/tkpf"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1744963286; x=1776499286;
+  t=1744963289; x=1776499289;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2ivYTc1Aw/K7/4eZ2gxR9fOzWvHJ5qgw1szy/sntLAU=;
-  b=HL/pzvpUX370dwi+s+rSawCydz8RoUreg89K95GYImbnW4993nGYlqqH
-   LNIyWUMz04GoGq7Lgwu1RaCTPYjggmeLz57Hyht7Uewtf9cM+0htm6OS2
-   aZz61JTIv2/z8zlKysMBDUTjK9zad3TgXogOwV/CbfnFzLF2/3gLi82eJ
-   a+Gxc47T67H+/V3gZL32wRtf8qq4rEhNtn5vXK/7B7Ji3CYjMm48jzCCt
-   fVoHmi7+Yu630KUs0QXS5iYEAi3eWDgEQT9ySTH48M/+IXSP1EunuVNAu
-   cpn84NMxXN+F0+CKWZ4/59UAfYx1Fa0pMgycsRXTEWmn8ZZVuAF1v61ne
-   Q==;
-X-CSE-ConnectionGUID: SehmfXHPQgGNrWReie7pAA==
-X-CSE-MsgGUID: WQg+Tre8QLOr1XfSl+OPgw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11406"; a="46708540"
+  bh=xHvdqCW9VAdclXNKbC1MlwSO7w2MFGw/1Ft2J9d8fQM=;
+  b=kAy/tkpfVXfR60FyJ89snIKeu9YYQPG418vlWSrlo0Yf+NABZl6N9EmB
+   LIA1rosHucjtyOaz3YcpgERoy/iuEfZfgYEhsM/qq1e3iZ8Zxg0hSBLA6
+   mNUx23APqkH9JIVTyUhI8+0Sz662GsA5FzDo1ZSFIrlFtQJC0NmGCgqGS
+   B0orsHvRkF5nwTDXtTolV5iW9xfDx6d1mt3/t6Xx7BtI7Bjhk9nTYQ3ks
+   aa2EOLuCoqmS1PwNKCgwPq45lxhOWZCq0ypean42JKFqnRaPlrp97jJt7
+   f+3sH+yGvRl00MkIH2z4irftBGDvygyCEE+nOkVUQzKfYgWDShISPLo23
+   A==;
+X-CSE-ConnectionGUID: 6SFCZm4vTMSz+fKshPTjZQ==
+X-CSE-MsgGUID: TcV41muJT0SVAZvu4SR3RA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11406"; a="46708555"
 X-IronPort-AV: E=Sophos;i="6.15,221,1739865600"; 
-   d="scan'208";a="46708540"
+   d="scan'208";a="46708555"
 Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2025 01:01:26 -0700
-X-CSE-ConnectionGUID: Q8sUrZy6Q0KxwUpx6k1Y+g==
-X-CSE-MsgGUID: rikO5Jo4Req/26nNS6CRVQ==
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2025 01:01:29 -0700
+X-CSE-ConnectionGUID: W5K9zok5TFOqHy2BBJ4TUw==
+X-CSE-MsgGUID: bnsmEDeQSu+2qGeTkk4tyw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.15,221,1739865600"; 
-   d="scan'208";a="131358674"
+   d="scan'208";a="131358694"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa008.fm.intel.com with ESMTP; 18 Apr 2025 01:01:22 -0700
+  by fmviesa008.fm.intel.com with ESMTP; 18 Apr 2025 01:01:26 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -58,9 +58,9 @@ Cc: Dave Jiang <dave.jiang@intel.com>,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>,
 	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v5 7/8] iommufd: Remove unnecessary IOMMU_DEV_FEAT_IOPF
-Date: Fri, 18 Apr 2025 16:01:29 +0800
-Message-ID: <20250418080130.1844424-8-baolu.lu@linux.intel.com>
+Subject: [PATCH v5 8/8] iommu: Remove iommu_dev_enable/disable_feature()
+Date: Fri, 18 Apr 2025 16:01:30 +0800
+Message-ID: <20250418080130.1844424-9-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250418080130.1844424-1-baolu.lu@linux.intel.com>
 References: <20250418080130.1844424-1-baolu.lu@linux.intel.com>
@@ -72,251 +72,270 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The iopf enablement has been moved to the iommu drivers. It is unnecessary
-for iommufd to handle iopf enablement. Remove the iopf enablement logic to
-avoid duplication.
+No external drivers use these interfaces anymore. Furthermore, no existing
+iommu drivers implement anything in the callbacks. Remove them to avoid
+dead code.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
 ---
- drivers/iommu/iommufd/device.c          | 59 ++++++++++++-------------
- drivers/iommu/iommufd/eventq.c          | 48 +-------------------
- drivers/iommu/iommufd/iommufd_private.h |  6 ---
- 3 files changed, 30 insertions(+), 83 deletions(-)
+ drivers/iommu/amd/iommu.c                   | 32 -------------------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 34 ---------------------
+ drivers/iommu/intel/iommu.c                 | 25 ---------------
+ drivers/iommu/iommu.c                       | 32 -------------------
+ include/linux/iommu.h                       | 28 -----------------
+ 5 files changed, 151 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 2111bad72c72..86244403b532 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -221,7 +221,6 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
- 	refcount_inc(&idev->obj.users);
- 	/* igroup refcount moves into iommufd_device */
- 	idev->igroup = igroup;
--	mutex_init(&idev->iopf_lock);
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 17aab6d04a13..a9d539fce982 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2984,36 +2984,6 @@ static const struct iommu_dirty_ops amd_dirty_ops = {
+ 	.read_and_clear_dirty = amd_iommu_read_and_clear_dirty,
+ };
  
- 	/*
- 	 * If the caller fails after this success it must call
-@@ -425,6 +424,25 @@ static int iommufd_hwpt_pasid_compat(struct iommufd_hw_pagetable *hwpt,
- 	return 0;
- }
- 
-+static bool iommufd_hwpt_compatible_device(struct iommufd_hw_pagetable *hwpt,
-+					   struct iommufd_device *idev)
-+{
-+	struct pci_dev *pdev;
-+
-+	if (!hwpt->fault || !dev_is_pci(idev->dev))
-+		return true;
-+
-+	/*
-+	 * Once we turn on PCI/PRI support for VF, the response failure code
-+	 * should not be forwarded to the hardware due to PRI being a shared
-+	 * resource between PF and VFs. There is no coordination for this
-+	 * shared capability. This waits for a vPRI reset to recover.
-+	 */
-+	pdev = to_pci_dev(idev->dev);
-+
-+	return (!pdev->is_virtfn || !pci_pri_supported(pdev));
-+}
-+
- static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
- 				      struct iommufd_device *idev,
- 				      ioasid_t pasid)
-@@ -432,6 +450,9 @@ static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
- 	struct iommufd_attach_handle *handle;
- 	int rc;
- 
-+	if (!iommufd_hwpt_compatible_device(hwpt, idev))
-+		return -EINVAL;
-+
- 	rc = iommufd_hwpt_pasid_compat(hwpt, idev, pasid);
- 	if (rc)
- 		return rc;
-@@ -440,12 +461,6 @@ static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
- 	if (!handle)
- 		return -ENOMEM;
- 
--	if (hwpt->fault) {
--		rc = iommufd_fault_iopf_enable(idev);
--		if (rc)
--			goto out_free_handle;
--	}
--
- 	handle->idev = idev;
- 	if (pasid == IOMMU_NO_PASID)
- 		rc = iommu_attach_group_handle(hwpt->domain, idev->igroup->group,
-@@ -454,13 +469,10 @@ static int iommufd_hwpt_attach_device(struct iommufd_hw_pagetable *hwpt,
- 		rc = iommu_attach_device_pasid(hwpt->domain, idev->dev, pasid,
- 					       &handle->handle);
- 	if (rc)
--		goto out_disable_iopf;
-+		goto out_free_handle;
- 
- 	return 0;
- 
--out_disable_iopf:
--	if (hwpt->fault)
--		iommufd_fault_iopf_disable(idev);
- out_free_handle:
- 	kfree(handle);
- 	return rc;
-@@ -492,10 +504,7 @@ static void iommufd_hwpt_detach_device(struct iommufd_hw_pagetable *hwpt,
- 	else
- 		iommu_detach_device_pasid(hwpt->domain, idev->dev, pasid);
- 
--	if (hwpt->fault) {
--		iommufd_auto_response_faults(hwpt, handle);
--		iommufd_fault_iopf_disable(idev);
--	}
-+	iommufd_auto_response_faults(hwpt, handle);
- 	kfree(handle);
- }
- 
-@@ -507,6 +516,9 @@ static int iommufd_hwpt_replace_device(struct iommufd_device *idev,
- 	struct iommufd_attach_handle *handle, *old_handle;
- 	int rc;
- 
-+	if (!iommufd_hwpt_compatible_device(hwpt, idev))
-+		return -EINVAL;
-+
- 	rc = iommufd_hwpt_pasid_compat(hwpt, idev, pasid);
- 	if (rc)
- 		return rc;
-@@ -517,12 +529,6 @@ static int iommufd_hwpt_replace_device(struct iommufd_device *idev,
- 	if (!handle)
- 		return -ENOMEM;
- 
--	if (hwpt->fault && !old->fault) {
--		rc = iommufd_fault_iopf_enable(idev);
--		if (rc)
--			goto out_free_handle;
--	}
--
- 	handle->idev = idev;
- 	if (pasid == IOMMU_NO_PASID)
- 		rc = iommu_replace_group_handle(idev->igroup->group,
-@@ -531,20 +537,13 @@ static int iommufd_hwpt_replace_device(struct iommufd_device *idev,
- 		rc = iommu_replace_device_pasid(hwpt->domain, idev->dev,
- 						pasid, &handle->handle);
- 	if (rc)
--		goto out_disable_iopf;
-+		goto out_free_handle;
- 
--	if (old->fault) {
--		iommufd_auto_response_faults(hwpt, old_handle);
--		if (!hwpt->fault)
--			iommufd_fault_iopf_disable(idev);
--	}
-+	iommufd_auto_response_faults(hwpt, old_handle);
- 	kfree(old_handle);
- 
- 	return 0;
- 
--out_disable_iopf:
--	if (hwpt->fault && !old->fault)
--		iommufd_fault_iopf_disable(idev);
- out_free_handle:
- 	kfree(handle);
- 	return rc;
-diff --git a/drivers/iommu/iommufd/eventq.c b/drivers/iommu/iommufd/eventq.c
-index f39cf0797347..e373b9eec7f5 100644
---- a/drivers/iommu/iommufd/eventq.c
-+++ b/drivers/iommu/iommufd/eventq.c
-@@ -9,8 +9,6 @@
- #include <linux/iommufd.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
--#include <linux/pci.h>
--#include <linux/pci-ats.h>
- #include <linux/poll.h>
- #include <uapi/linux/iommufd.h>
- 
-@@ -18,50 +16,6 @@
- #include "iommufd_private.h"
- 
- /* IOMMUFD_OBJ_FAULT Functions */
--
--int iommufd_fault_iopf_enable(struct iommufd_device *idev)
+-static int amd_iommu_dev_enable_feature(struct device *dev,
+-					enum iommu_dev_features feat)
 -{
--	struct device *dev = idev->dev;
--	int ret;
+-	int ret = 0;
 -
--	/*
--	 * Once we turn on PCI/PRI support for VF, the response failure code
--	 * should not be forwarded to the hardware due to PRI being a shared
--	 * resource between PF and VFs. There is no coordination for this
--	 * shared capability. This waits for a vPRI reset to recover.
--	 */
--	if (dev_is_pci(dev)) {
--		struct pci_dev *pdev = to_pci_dev(dev);
--
--		if (pdev->is_virtfn && pci_pri_supported(pdev))
--			return -EINVAL;
+-	switch (feat) {
+-	case IOMMU_DEV_FEAT_IOPF:
+-		break;
+-	default:
+-		ret = -EINVAL;
+-		break;
 -	}
--
--	mutex_lock(&idev->iopf_lock);
--	/* Device iopf has already been on. */
--	if (++idev->iopf_enabled > 1) {
--		mutex_unlock(&idev->iopf_lock);
--		return 0;
--	}
--
--	ret = iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_IOPF);
--	if (ret)
--		--idev->iopf_enabled;
--	mutex_unlock(&idev->iopf_lock);
--
 -	return ret;
 -}
 -
--void iommufd_fault_iopf_disable(struct iommufd_device *idev)
+-static int amd_iommu_dev_disable_feature(struct device *dev,
+-					 enum iommu_dev_features feat)
 -{
--	mutex_lock(&idev->iopf_lock);
--	if (!WARN_ON(idev->iopf_enabled == 0)) {
--		if (--idev->iopf_enabled == 0)
--			iommu_dev_disable_feature(idev->dev, IOMMU_DEV_FEAT_IOPF);
+-	int ret = 0;
+-
+-	switch (feat) {
+-	case IOMMU_DEV_FEAT_IOPF:
+-		break;
+-	default:
+-		ret = -EINVAL;
+-		break;
 -	}
--	mutex_unlock(&idev->iopf_lock);
+-	return ret;
 -}
 -
- void iommufd_auto_response_faults(struct iommufd_hw_pagetable *hwpt,
- 				  struct iommufd_attach_handle *handle)
+ const struct iommu_ops amd_iommu_ops = {
+ 	.capable = amd_iommu_capable,
+ 	.blocked_domain = &blocked_domain,
+@@ -3027,8 +2997,6 @@ const struct iommu_ops amd_iommu_ops = {
+ 	.get_resv_regions = amd_iommu_get_resv_regions,
+ 	.is_attach_deferred = amd_iommu_is_attach_deferred,
+ 	.def_domain_type = amd_iommu_def_domain_type,
+-	.dev_enable_feat = amd_iommu_dev_enable_feature,
+-	.dev_disable_feat = amd_iommu_dev_disable_feature,
+ 	.page_response = amd_iommu_page_response,
+ 	.default_domain_ops = &(const struct iommu_domain_ops) {
+ 		.attach_dev	= amd_iommu_attach_device,
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 73f9885d20f1..e91d20e5785e 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3654,38 +3654,6 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 	iommu_dma_get_resv_regions(dev, head);
+ }
+ 
+-static int arm_smmu_dev_enable_feature(struct device *dev,
+-				       enum iommu_dev_features feat)
+-{
+-	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+-
+-	if (!master)
+-		return -ENODEV;
+-
+-	switch (feat) {
+-	case IOMMU_DEV_FEAT_IOPF:
+-		return 0;
+-	default:
+-		return -EINVAL;
+-	}
+-}
+-
+-static int arm_smmu_dev_disable_feature(struct device *dev,
+-					enum iommu_dev_features feat)
+-{
+-	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+-
+-	if (!master)
+-		return -EINVAL;
+-
+-	switch (feat) {
+-	case IOMMU_DEV_FEAT_IOPF:
+-		return 0;
+-	default:
+-		return -EINVAL;
+-	}
+-}
+-
+ /*
+  * HiSilicon PCIe tune and trace device can be used to trace TLP headers on the
+  * PCIe link and save the data to memory by DMA. The hardware is restricted to
+@@ -3718,8 +3686,6 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.device_group		= arm_smmu_device_group,
+ 	.of_xlate		= arm_smmu_of_xlate,
+ 	.get_resv_regions	= arm_smmu_get_resv_regions,
+-	.dev_enable_feat	= arm_smmu_dev_enable_feature,
+-	.dev_disable_feat	= arm_smmu_dev_disable_feature,
+ 	.page_response		= arm_smmu_page_response,
+ 	.def_domain_type	= arm_smmu_def_domain_type,
+ 	.viommu_alloc		= arm_vsmmu_alloc,
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 9af558390d42..93bc6574d148 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -3963,29 +3963,6 @@ void intel_iommu_disable_iopf(struct device *dev)
+ 	iopf_queue_remove_device(iommu->iopf_queue, dev);
+ }
+ 
+-static int
+-intel_iommu_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
+-{
+-	switch (feat) {
+-	case IOMMU_DEV_FEAT_IOPF:
+-		return 0;
+-	default:
+-		return -ENODEV;
+-	}
+-}
+-
+-static int
+-intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
+-{
+-	switch (feat) {
+-	case IOMMU_DEV_FEAT_IOPF:
+-		return 0;
+-
+-	default:
+-		return -ENODEV;
+-	}
+-}
+-
+ static bool intel_iommu_is_attach_deferred(struct device *dev)
  {
-@@ -70,7 +24,7 @@ void iommufd_auto_response_faults(struct iommufd_hw_pagetable *hwpt,
- 	struct list_head free_list;
- 	unsigned long index;
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+@@ -4428,8 +4405,6 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.release_device		= intel_iommu_release_device,
+ 	.get_resv_regions	= intel_iommu_get_resv_regions,
+ 	.device_group		= intel_iommu_device_group,
+-	.dev_enable_feat	= intel_iommu_dev_enable_feat,
+-	.dev_disable_feat	= intel_iommu_dev_disable_feat,
+ 	.is_attach_deferred	= intel_iommu_is_attach_deferred,
+ 	.def_domain_type	= device_def_domain_type,
+ 	.pgsize_bitmap		= SZ_4K,
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 264383b507bc..df283bddf6cd 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2910,38 +2910,6 @@ int iommu_fwspec_add_ids(struct device *dev, const u32 *ids, int num_ids)
+ }
+ EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
  
--	if (!fault)
-+	if (!fault || !handle)
- 		return;
- 	INIT_LIST_HEAD(&free_list);
- 
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 80e8c76d25f2..9ccc83341f32 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -425,9 +425,6 @@ struct iommufd_device {
- 	/* always the physical device */
- 	struct device *dev;
- 	bool enforce_cache_coherency;
--	/* protect iopf_enabled counter */
--	struct mutex iopf_lock;
--	unsigned int iopf_enabled;
+-/*
+- * Per device IOMMU features.
+- */
+-int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat)
+-{
+-	if (dev_has_iommu(dev)) {
+-		const struct iommu_ops *ops = dev_iommu_ops(dev);
+-
+-		if (ops->dev_enable_feat)
+-			return ops->dev_enable_feat(dev, feat);
+-	}
+-
+-	return -ENODEV;
+-}
+-EXPORT_SYMBOL_GPL(iommu_dev_enable_feature);
+-
+-/*
+- * The device drivers should do the necessary cleanups before calling this.
+- */
+-int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+-{
+-	if (dev_has_iommu(dev)) {
+-		const struct iommu_ops *ops = dev_iommu_ops(dev);
+-
+-		if (ops->dev_disable_feat)
+-			return ops->dev_disable_feat(dev, feat);
+-	}
+-
+-	return -EBUSY;
+-}
+-EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
+-
+ /**
+  * iommu_setup_default_domain - Set the default_domain for the group
+  * @group: Group to change
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index bfdd2e71e124..5c05c0851f9f 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -316,16 +316,6 @@ struct iommu_iort_rmr_data {
+ 	u32 num_sids;
  };
  
- static inline struct iommufd_device *
-@@ -506,9 +503,6 @@ iommufd_get_fault(struct iommufd_ucmd *ucmd, u32 id)
- int iommufd_fault_alloc(struct iommufd_ucmd *ucmd);
- void iommufd_fault_destroy(struct iommufd_object *obj);
- int iommufd_fault_iopf_handler(struct iopf_group *group);
+-/**
+- * enum iommu_dev_features - Per device IOMMU features
+- * @IOMMU_DEV_FEAT_IOPF: I/O Page Faults such as PRI or Stall.
+- *
+- * Device drivers enable a feature using iommu_dev_enable_feature().
+- */
+-enum iommu_dev_features {
+-	IOMMU_DEV_FEAT_IOPF,
+-};
 -
--int iommufd_fault_iopf_enable(struct iommufd_device *idev);
--void iommufd_fault_iopf_disable(struct iommufd_device *idev);
- void iommufd_auto_response_faults(struct iommufd_hw_pagetable *hwpt,
- 				  struct iommufd_attach_handle *handle);
+ #define IOMMU_NO_PASID	(0U) /* Reserved for DMA w/o PASID */
+ #define IOMMU_FIRST_GLOBAL_PASID	(1U) /*starting range for allocation */
+ #define IOMMU_PASID_INVALID	(-1U)
+@@ -657,9 +647,6 @@ struct iommu_ops {
+ 	bool (*is_attach_deferred)(struct device *dev);
  
+ 	/* Per device IOMMU features */
+-	int (*dev_enable_feat)(struct device *dev, enum iommu_dev_features f);
+-	int (*dev_disable_feat)(struct device *dev, enum iommu_dev_features f);
+-
+ 	void (*page_response)(struct device *dev, struct iopf_fault *evt,
+ 			      struct iommu_page_response *msg);
+ 
+@@ -1128,9 +1115,6 @@ void dev_iommu_priv_set(struct device *dev, void *priv);
+ extern struct mutex iommu_probe_device_lock;
+ int iommu_probe_device(struct device *dev);
+ 
+-int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
+-int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features f);
+-
+ int iommu_device_use_default_domain(struct device *dev);
+ void iommu_device_unuse_default_domain(struct device *dev);
+ 
+@@ -1415,18 +1399,6 @@ static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
+ 	return -ENODEV;
+ }
+ 
+-static inline int
+-iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat)
+-{
+-	return -ENODEV;
+-}
+-
+-static inline int
+-iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+-{
+-	return -ENODEV;
+-}
+-
+ static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
+ {
+ 	return NULL;
 -- 
 2.43.0
 
