@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CACD26AA89
-	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 08:01:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2248B26AA89
+	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 08:01:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744963268; cv=none; b=bih2h2s7EWsFiV4aGMaIlhN5NUgXQtLFYcN+KvRzpGfXbOtR5BDyQoaw8EYuS9GPgtrpG1FZJsQa/xLRNAvcz59DBsCWiLz8dXw0jBGNkzJFmsjpiH3WljRJbmG0ysknJ6juA/BGa81XNZuhhtJoM/6K/r2Fqy6wUlW79ASC8Hc=
+	t=1744963270; cv=none; b=NqPWtDUzB/hnDnOXqt/uxCWpKMUENsgSQ0o5QuBph1ONYBT6UDYO0/G+PhwwrzIzAwBanneFHCJMFc4S3hkpZudLOzBswv9SBrYyC1PyP87TQQQKWXn3FN6Z60rZ3rMzy08sfM3F1AnkkgXsnno9GTTmc3IvUmzCOwR7GlnsOZ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744963268; c=relaxed/simple;
-	bh=NXyGilvlCSGNm4oXjjk/GmSnNnA0XjgRmH0GWjlpku4=;
+	s=arc-20240116; t=1744963270; c=relaxed/simple;
+	bh=BOm3DIf88NOf46tYqguBLQX+n5JC5pFLUDkJxKKkypQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jZ96+Y6OBrl6P7DhV2xe1ZwUk9euOzsOBvNmahjpfy2SizqHI282FNlJaBBqegfjcvK2tHvg/EUgJ4dm+KA8qQYdT+VVIPHe6RBL1GuBxG9iusOC4lj15n7qvqnT6+4x5W+xQzUfTysRw535qFF6Q7D4ovVwFR7WrUb157boVf4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GYUCu2Ju; arc=none smtp.client-ip=192.198.163.15
+	 MIME-Version; b=jvCftL90WMJdeiCxKE9AXjReSvcCIUdmH+N9LfTYgTxo6Zxf6vxPU4ujMW0njdBXiLWN6f1xH2vxS54GhKI+F3HEgmQvzmwgWTf48O2IMMccWYd3pZw6/gIJ18NNOGfBjQDnmyHTBO7Cg7vS9n0jpUPzTru0tPmWTWOfTDLqHZ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ARCRAcGg; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GYUCu2Ju"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ARCRAcGg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1744963265; x=1776499265;
+  t=1744963269; x=1776499269;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=NXyGilvlCSGNm4oXjjk/GmSnNnA0XjgRmH0GWjlpku4=;
-  b=GYUCu2Ju9+mGSikU/EuQEvA7sih5vP9qc0zwDZyOPna8gqzf5H3xZNv5
-   QuljT/bJXZug33Rfu3/OkqmIt/4j2Esbf2+PXmgNL9LJWgf7p3Y1ZmSOW
-   QkwklXFyF9tzgMsZWuOnRzRgNlS/+SB6C40LVkq9qiwn7uMPp0L8UlSh2
-   38YzpaMVH/Ccav8GjhOyg/VYWa6HdM5KA2HrG0+VfU+wcFwXW+WVzNjLs
-   JAqXXvTHhObgbsG6znkb575MZfjFs+J2Ir5QvAbsxjS+Tevk+pg6PRRNM
-   eZQ/UtXCMwOB6NoueBFX5Rv2RO9jzTvbHJeVMkeQt5mg1Wr1muRfZuclL
+  bh=BOm3DIf88NOf46tYqguBLQX+n5JC5pFLUDkJxKKkypQ=;
+  b=ARCRAcGgzbQzIrRqRxKB2HpPVnLElhcYSjUkARoumN0ADyfAJXiCyhIL
+   bSdALQGUQnoeaMzoQ7t3hSi2RuorYVpuqJFDwCfUMjnpvPlxiCnUEA/pa
+   F0zrnPFIyHXL8wg9DmTU0/dr1e21ApSD2cN2SZKPWFpBsNSwT8swttrBA
+   AoDL0ZYa8ETukk/HjrLUCum8RIXQ63EjiGuPqFQuwFNjjvAe5PvN1W4BW
+   QPy2nI78OQONdSq1VWD0S5uhs8NXXaSHa4XB/YSVvEflMk+rX3zx4g7pq
+   h5/49XF0kupaygycNaPuOynDHDV8VhYFEF0NPJMS/+d1G4T++w1/59Xjp
    g==;
-X-CSE-ConnectionGUID: fzO1L3v6RTuptrISHoiO1g==
-X-CSE-MsgGUID: FaLdCJWxS268p+fY+Rg/Eg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11406"; a="46708438"
+X-CSE-ConnectionGUID: vx/ZyLMESiuWi0r3XTawfA==
+X-CSE-MsgGUID: B8T/9nRHTwO6kLTyV1JWfw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11406"; a="46708453"
 X-IronPort-AV: E=Sophos;i="6.15,221,1739865600"; 
-   d="scan'208";a="46708438"
+   d="scan'208";a="46708453"
 Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2025 01:01:05 -0700
-X-CSE-ConnectionGUID: 36nM6vjxR2uL/Tz+0W5RQw==
-X-CSE-MsgGUID: kEUPXbI/SQW9WSyARnGWJg==
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2025 01:01:09 -0700
+X-CSE-ConnectionGUID: xMDROQwPQMeEK4mWg1r4zQ==
+X-CSE-MsgGUID: MJ5YZzceRy+P4a2ih5Nrmw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.15,221,1739865600"; 
-   d="scan'208";a="131358560"
+   d="scan'208";a="131358570"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa008.fm.intel.com with ESMTP; 18 Apr 2025 01:01:02 -0700
+  by fmviesa008.fm.intel.com with ESMTP; 18 Apr 2025 01:01:05 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -57,10 +57,11 @@ Cc: Dave Jiang <dave.jiang@intel.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Jason Gunthorpe <jgg@nvidia.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v5 1/8] iommu/arm-smmu-v3: Put iopf enablement in the domain attach path
-Date: Fri, 18 Apr 2025 16:01:23 +0800
-Message-ID: <20250418080130.1844424-2-baolu.lu@linux.intel.com>
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Yi Liu <yi.l.liu@intel.com>
+Subject: [PATCH v5 2/8] iommu: Remove IOMMU_DEV_FEAT_SVA
+Date: Fri, 18 Apr 2025 16:01:24 +0800
+Message-ID: <20250418080130.1844424-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250418080130.1844424-1-baolu.lu@linux.intel.com>
 References: <20250418080130.1844424-1-baolu.lu@linux.intel.com>
@@ -74,426 +75,227 @@ Content-Transfer-Encoding: 8bit
 
 From: Jason Gunthorpe <jgg@nvidia.com>
 
-SMMUv3 co-mingles FEAT_IOPF and FEAT_SVA behaviors so that fault reporting
-doesn't work unless both are enabled. This is not correct and causes
-problems for iommufd which does not enable FEAT_SVA for it's fault capable
-domains.
-
-These APIs are both obsolete, update SMMUv3 to use the new method like AMD
-implements.
-
-A driver should enable iopf support when a domain with an iopf_handler is
-attached, and disable iopf support when the domain is removed.
-
-Move the fault support logic to sva domain allocation and to domain
-attach, refusing to create or attach fault capable domains if the HW
-doesn't support it.
-
-Move all the logic for controlling the iopf queue under
-arm_smmu_attach_prepare(). Keep track of the number of domains on the
-master (over all the SSIDs) that require iopf. When the first domain
-requiring iopf is attached create the iopf queue, when the last domain is
-detached destroy it.
-
-Turn FEAT_IOPF and FEAT_SVA into no ops.
-
-Remove the sva_lock, this is all protected by the group mutex.
+None of the drivers implement anything here anymore, remove the dead code.
 
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Yi Liu <yi.l.liu@intel.com>
 Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Acked-by: Will Deacon <will@kernel.org>
 ---
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  86 +--------------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 104 +++++++++++++-----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  39 ++-----
- 3 files changed, 90 insertions(+), 139 deletions(-)
+ drivers/accel/amdxdna/aie2_pci.c            | 13 ++-----------
+ drivers/dma/idxd/init.c                     |  8 +-------
+ drivers/iommu/amd/iommu.c                   |  2 --
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  2 --
+ drivers/iommu/intel/iommu.c                 |  6 ------
+ drivers/iommu/iommu-sva.c                   |  3 ---
+ drivers/misc/uacce/uacce.c                  |  9 ---------
+ include/linux/iommu.h                       |  9 +--------
+ 8 files changed, 4 insertions(+), 48 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 980cc6b33c43..0601dece0a0d 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -13,8 +13,6 @@
- #include "arm-smmu-v3.h"
- #include "../../io-pgtable-arm.h"
+diff --git a/drivers/accel/amdxdna/aie2_pci.c b/drivers/accel/amdxdna/aie2_pci.c
+index 5a058e565b01..c6cf7068d23c 100644
+--- a/drivers/accel/amdxdna/aie2_pci.c
++++ b/drivers/accel/amdxdna/aie2_pci.c
+@@ -512,12 +512,6 @@ static int aie2_init(struct amdxdna_dev *xdna)
+ 		goto release_fw;
+ 	}
  
--static DEFINE_MUTEX(sva_lock);
+-	ret = iommu_dev_enable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
+-	if (ret) {
+-		XDNA_ERR(xdna, "Enable PASID failed, ret %d", ret);
+-		goto free_irq;
+-	}
 -
- static void __maybe_unused
- arm_smmu_update_s1_domain_cd_entry(struct arm_smmu_domain *smmu_domain)
- {
-@@ -257,84 +255,6 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
- 	return true;
+ 	psp_conf.fw_size = fw->size;
+ 	psp_conf.fw_buf = fw->data;
+ 	for (i = 0; i < PSP_MAX_REGS; i++)
+@@ -526,14 +520,14 @@ static int aie2_init(struct amdxdna_dev *xdna)
+ 	if (!ndev->psp_hdl) {
+ 		XDNA_ERR(xdna, "failed to create psp");
+ 		ret = -ENOMEM;
+-		goto disable_sva;
++		goto free_irq;
+ 	}
+ 	xdna->dev_handle = ndev;
+ 
+ 	ret = aie2_hw_start(xdna);
+ 	if (ret) {
+ 		XDNA_ERR(xdna, "start npu failed, ret %d", ret);
+-		goto disable_sva;
++		goto free_irq;
+ 	}
+ 
+ 	ret = aie2_mgmt_fw_query(ndev);
+@@ -584,8 +578,6 @@ static int aie2_init(struct amdxdna_dev *xdna)
+ 	aie2_error_async_events_free(ndev);
+ stop_hw:
+ 	aie2_hw_stop(xdna);
+-disable_sva:
+-	iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
+ free_irq:
+ 	pci_free_irq_vectors(pdev);
+ release_fw:
+@@ -601,7 +593,6 @@ static void aie2_fini(struct amdxdna_dev *xdna)
+ 
+ 	aie2_hw_stop(xdna);
+ 	aie2_error_async_events_free(ndev);
+-	iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
+ 	pci_free_irq_vectors(pdev);
  }
  
--bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master)
--{
--	/* We're not keeping track of SIDs in fault events */
--	if (master->num_streams != 1)
--		return false;
+diff --git a/drivers/dma/idxd/init.c b/drivers/dma/idxd/init.c
+index fca1d2924999..2d3d580b9987 100644
+--- a/drivers/dma/idxd/init.c
++++ b/drivers/dma/idxd/init.c
+@@ -633,17 +633,11 @@ static int idxd_enable_sva(struct pci_dev *pdev)
+ 	ret = iommu_dev_enable_feature(&pdev->dev, IOMMU_DEV_FEAT_IOPF);
+ 	if (ret)
+ 		return ret;
 -
--	return master->stall_enabled;
--}
--
--bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
--{
--	if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
--		return false;
--
--	/* SSID support is mandatory for the moment */
--	return master->ssid_bits;
--}
--
--bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master)
--{
--	bool enabled;
--
--	mutex_lock(&sva_lock);
--	enabled = master->sva_enabled;
--	mutex_unlock(&sva_lock);
--	return enabled;
--}
--
--static int arm_smmu_master_sva_enable_iopf(struct arm_smmu_master *master)
--{
--	struct device *dev = master->dev;
--
--	/*
--	 * Drivers for devices supporting PRI or stall should enable IOPF first.
--	 * Others have device-specific fault handlers and don't need IOPF.
--	 */
--	if (!arm_smmu_master_iopf_supported(master))
--		return 0;
--
--	if (!master->iopf_enabled)
--		return -EINVAL;
--
--	return iopf_queue_add_device(master->smmu->evtq.iopf, dev);
--}
--
--static void arm_smmu_master_sva_disable_iopf(struct arm_smmu_master *master)
--{
--	struct device *dev = master->dev;
--
--	if (!master->iopf_enabled)
--		return;
--
--	iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
--}
--
--int arm_smmu_master_enable_sva(struct arm_smmu_master *master)
--{
--	int ret;
--
--	mutex_lock(&sva_lock);
--	ret = arm_smmu_master_sva_enable_iopf(master);
--	if (!ret)
--		master->sva_enabled = true;
--	mutex_unlock(&sva_lock);
+-	ret = iommu_dev_enable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
+-	if (ret)
+-		iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_IOPF);
 -
 -	return ret;
--}
--
--int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
--{
--	mutex_lock(&sva_lock);
--	arm_smmu_master_sva_disable_iopf(master);
--	master->sva_enabled = false;
--	mutex_unlock(&sva_lock);
--
--	return 0;
--}
--
- void arm_smmu_sva_notifier_synchronize(void)
++	return 0;
+ }
+ 
+ static void idxd_disable_sva(struct pci_dev *pdev)
  {
- 	/*
-@@ -353,6 +273,9 @@ static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
- 	struct arm_smmu_cd target;
- 	int ret;
+-	iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_SVA);
+ 	iommu_dev_disable_feature(&pdev->dev, IOMMU_DEV_FEAT_IOPF);
+ }
  
-+	if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
-+		return -EOPNOTSUPP;
-+
- 	/* Prevent arm_smmu_mm_release from being called while we are attaching */
- 	if (!mmget_not_zero(domain->mm))
- 		return -EINVAL;
-@@ -406,6 +329,9 @@ struct iommu_domain *arm_smmu_sva_domain_alloc(struct device *dev,
- 	u32 asid;
- 	int ret;
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index dea0fed7abb0..17aab6d04a13 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2991,7 +2991,6 @@ static int amd_iommu_dev_enable_feature(struct device *dev,
  
-+	if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
-+		return ERR_PTR(-EOPNOTSUPP);
-+
- 	smmu_domain = arm_smmu_domain_alloc();
- 	if (IS_ERR(smmu_domain))
- 		return ERR_CAST(smmu_domain);
+ 	switch (feat) {
+ 	case IOMMU_DEV_FEAT_IOPF:
+-	case IOMMU_DEV_FEAT_SVA:
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+@@ -3007,7 +3006,6 @@ static int amd_iommu_dev_disable_feature(struct device *dev,
+ 
+ 	switch (feat) {
+ 	case IOMMU_DEV_FEAT_IOPF:
+-	case IOMMU_DEV_FEAT_SVA:
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 48d910399a1b..6cb875f98905 100644
+index 6cb875f98905..73f9885d20f1 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2720,6 +2720,7 @@ static void arm_smmu_disable_pasid(struct arm_smmu_master *master)
- 
- static struct arm_smmu_master_domain *
- arm_smmu_find_master_domain(struct arm_smmu_domain *smmu_domain,
-+			    struct iommu_domain *domain,
- 			    struct arm_smmu_master *master,
- 			    ioasid_t ssid, bool nested_ats_flush)
- {
-@@ -2730,6 +2731,7 @@ arm_smmu_find_master_domain(struct arm_smmu_domain *smmu_domain,
- 	list_for_each_entry(master_domain, &smmu_domain->devices,
- 			    devices_elm) {
- 		if (master_domain->master == master &&
-+		    master_domain->domain == domain &&
- 		    master_domain->ssid == ssid &&
- 		    master_domain->nested_ats_flush == nested_ats_flush)
- 			return master_domain;
-@@ -2756,6 +2758,58 @@ to_smmu_domain_devices(struct iommu_domain *domain)
- 	return NULL;
- }
- 
-+static int arm_smmu_enable_iopf(struct arm_smmu_master *master,
-+				struct arm_smmu_master_domain *master_domain)
-+{
-+	int ret;
-+
-+	iommu_group_mutex_assert(master->dev);
-+
-+	if (!IS_ENABLED(CONFIG_ARM_SMMU_V3_SVA))
-+		return -EOPNOTSUPP;
-+
-+	/*
-+	 * Drivers for devices supporting PRI or stall require iopf others have
-+	 * device-specific fault handlers and don't need IOPF, so this is not a
-+	 * failure.
-+	 */
-+	if (!master->stall_enabled)
-+		return 0;
-+
-+	/* We're not keeping track of SIDs in fault events */
-+	if (master->num_streams != 1)
-+		return -EOPNOTSUPP;
-+
-+	if (master->iopf_refcount) {
-+		master->iopf_refcount++;
-+		master_domain->using_iopf = true;
-+		return 0;
-+	}
-+
-+	ret = iopf_queue_add_device(master->smmu->evtq.iopf, master->dev);
-+	if (ret)
-+		return ret;
-+	master->iopf_refcount = 1;
-+	master_domain->using_iopf = true;
-+	return 0;
-+}
-+
-+static void arm_smmu_disable_iopf(struct arm_smmu_master *master,
-+				  struct arm_smmu_master_domain *master_domain)
-+{
-+	iommu_group_mutex_assert(master->dev);
-+
-+	if (!IS_ENABLED(CONFIG_ARM_SMMU_V3_SVA))
-+		return;
-+
-+	if (!master_domain || !master_domain->using_iopf)
-+		return;
-+
-+	master->iopf_refcount--;
-+	if (master->iopf_refcount == 0)
-+		iopf_queue_remove_device(master->smmu->evtq.iopf, master->dev);
-+}
-+
- static void arm_smmu_remove_master_domain(struct arm_smmu_master *master,
- 					  struct iommu_domain *domain,
- 					  ioasid_t ssid)
-@@ -2772,15 +2826,17 @@ static void arm_smmu_remove_master_domain(struct arm_smmu_master *master,
- 		nested_ats_flush = to_smmu_nested_domain(domain)->enable_ats;
- 
- 	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
--	master_domain = arm_smmu_find_master_domain(smmu_domain, master, ssid,
--						    nested_ats_flush);
-+	master_domain = arm_smmu_find_master_domain(smmu_domain, domain, master,
-+						    ssid, nested_ats_flush);
- 	if (master_domain) {
- 		list_del(&master_domain->devices_elm);
--		kfree(master_domain);
- 		if (master->ats_enabled)
- 			atomic_dec(&smmu_domain->nr_ats_masters);
- 	}
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-+
-+	arm_smmu_disable_iopf(master, master_domain);
-+	kfree(master_domain);
- }
- 
- /*
-@@ -2853,12 +2909,19 @@ int arm_smmu_attach_prepare(struct arm_smmu_attach_state *state,
- 			kfree(state->vmaster);
- 			return -ENOMEM;
- 		}
-+		master_domain->domain = new_domain;
- 		master_domain->master = master;
- 		master_domain->ssid = state->ssid;
- 		if (new_domain->type == IOMMU_DOMAIN_NESTED)
- 			master_domain->nested_ats_flush =
- 				to_smmu_nested_domain(new_domain)->enable_ats;
- 
-+		if (new_domain->iopf_handler) {
-+			ret = arm_smmu_enable_iopf(master, master_domain);
-+			if (ret)
-+				goto err_free_master_domain;
-+		}
-+
- 		/*
- 		 * During prepare we want the current smmu_domain and new
- 		 * smmu_domain to be in the devices list before we change any
-@@ -2878,9 +2941,9 @@ int arm_smmu_attach_prepare(struct arm_smmu_attach_state *state,
- 		    !arm_smmu_master_canwbs(master)) {
- 			spin_unlock_irqrestore(&smmu_domain->devices_lock,
- 					       flags);
--			kfree(master_domain);
- 			kfree(state->vmaster);
--			return -EINVAL;
-+			ret = -EINVAL;
-+			goto err_iopf;
- 		}
- 
- 		if (state->ats_enabled)
-@@ -2899,6 +2962,12 @@ int arm_smmu_attach_prepare(struct arm_smmu_attach_state *state,
- 		wmb();
- 	}
- 	return 0;
-+
-+err_iopf:
-+	arm_smmu_disable_iopf(master, master_domain);
-+err_free_master_domain:
-+	kfree(master_domain);
-+	return ret;
- }
- 
- /*
-@@ -3510,8 +3579,7 @@ static void arm_smmu_release_device(struct device *dev)
- {
- 	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
- 
--	if (WARN_ON(arm_smmu_master_sva_enabled(master)))
--		iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
-+	WARN_ON(master->iopf_refcount);
- 
- 	/* Put the STE back to what arm_smmu_init_strtab() sets */
- 	if (dev->iommu->require_direct)
-@@ -3596,18 +3664,8 @@ static int arm_smmu_dev_enable_feature(struct device *dev,
+@@ -3664,7 +3664,6 @@ static int arm_smmu_dev_enable_feature(struct device *dev,
  
  	switch (feat) {
  	case IOMMU_DEV_FEAT_IOPF:
--		if (!arm_smmu_master_iopf_supported(master))
--			return -EINVAL;
--		if (master->iopf_enabled)
--			return -EBUSY;
--		master->iopf_enabled = true;
--		return 0;
- 	case IOMMU_DEV_FEAT_SVA:
--		if (!arm_smmu_master_sva_supported(master))
--			return -EINVAL;
--		if (arm_smmu_master_sva_enabled(master))
--			return -EBUSY;
--		return arm_smmu_master_enable_sva(master);
-+		return 0;
+-	case IOMMU_DEV_FEAT_SVA:
+ 		return 0;
  	default:
  		return -EINVAL;
- 	}
-@@ -3623,16 +3681,8 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
+@@ -3681,7 +3680,6 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
  
  	switch (feat) {
  	case IOMMU_DEV_FEAT_IOPF:
--		if (!master->iopf_enabled)
--			return -EINVAL;
--		if (master->sva_enabled)
--			return -EBUSY;
--		master->iopf_enabled = false;
--		return 0;
- 	case IOMMU_DEV_FEAT_SVA:
--		if (!arm_smmu_master_sva_enabled(master))
--			return -EINVAL;
--		return arm_smmu_master_disable_sva(master);
-+		return 0;
+-	case IOMMU_DEV_FEAT_SVA:
+ 		return 0;
  	default:
  		return -EINVAL;
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 857c431d8ec5..4c3be92804e2 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -3956,9 +3956,6 @@ intel_iommu_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
+ 	case IOMMU_DEV_FEAT_IOPF:
+ 		return intel_iommu_enable_iopf(dev);
+ 
+-	case IOMMU_DEV_FEAT_SVA:
+-		return 0;
+-
+ 	default:
+ 		return -ENODEV;
  	}
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index dd1ad56ce863..ea41d790463e 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -837,9 +837,8 @@ struct arm_smmu_master {
- 	bool				ats_enabled : 1;
- 	bool				ste_ats_enabled : 1;
- 	bool				stall_enabled;
--	bool				sva_enabled;
--	bool				iopf_enabled;
- 	unsigned int			ssid_bits;
-+	unsigned int			iopf_refcount;
- };
+@@ -3972,9 +3969,6 @@ intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
+ 		intel_iommu_disable_iopf(dev);
+ 		return 0;
  
- /* SMMU private data for an IOMMU domain */
-@@ -915,8 +914,14 @@ void arm_smmu_make_sva_cd(struct arm_smmu_cd *target,
- struct arm_smmu_master_domain {
- 	struct list_head devices_elm;
- 	struct arm_smmu_master *master;
-+	/*
-+	 * For nested domains the master_domain is threaded onto the S2 parent,
-+	 * this points to the IOMMU_DOMAIN_NESTED to disambiguate the masters.
-+	 */
-+	struct iommu_domain *domain;
- 	ioasid_t ssid;
- 	bool nested_ats_flush : 1;
-+	bool using_iopf : 1;
- };
- 
- static inline struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-@@ -995,11 +1000,6 @@ int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
- 
- #ifdef CONFIG_ARM_SMMU_V3_SVA
- bool arm_smmu_sva_supported(struct arm_smmu_device *smmu);
--bool arm_smmu_master_sva_supported(struct arm_smmu_master *master);
--bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master);
--int arm_smmu_master_enable_sva(struct arm_smmu_master *master);
--int arm_smmu_master_disable_sva(struct arm_smmu_master *master);
--bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master);
- void arm_smmu_sva_notifier_synchronize(void);
- struct iommu_domain *arm_smmu_sva_domain_alloc(struct device *dev,
- 					       struct mm_struct *mm);
-@@ -1009,31 +1009,6 @@ static inline bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
- 	return false;
+-	case IOMMU_DEV_FEAT_SVA:
+-		return 0;
+-
+ 	default:
+ 		return -ENODEV;
+ 	}
+diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+index ab18bc494eef..944daa0dabd6 100644
+--- a/drivers/iommu/iommu-sva.c
++++ b/drivers/iommu/iommu-sva.c
+@@ -63,9 +63,6 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
+  * reference is taken. Caller must call iommu_sva_unbind_device()
+  * to release each reference.
+  *
+- * iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_SVA) must be called first, to
+- * initialize the required SVA features.
+- *
+  * On error, returns an ERR_PTR value.
+  */
+ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
+index bdc2e6fda782..2a1db2abeeca 100644
+--- a/drivers/misc/uacce/uacce.c
++++ b/drivers/misc/uacce/uacce.c
+@@ -479,14 +479,6 @@ static unsigned int uacce_enable_sva(struct device *parent, unsigned int flags)
+ 		dev_err(parent, "failed to enable IOPF feature! ret = %pe\n", ERR_PTR(ret));
+ 		return flags;
+ 	}
+-
+-	ret = iommu_dev_enable_feature(parent, IOMMU_DEV_FEAT_SVA);
+-	if (ret) {
+-		dev_err(parent, "failed to enable SVA feature! ret = %pe\n", ERR_PTR(ret));
+-		iommu_dev_disable_feature(parent, IOMMU_DEV_FEAT_IOPF);
+-		return flags;
+-	}
+-
+ 	return flags | UACCE_DEV_SVA;
  }
  
--static inline bool arm_smmu_master_sva_supported(struct arm_smmu_master *master)
--{
--	return false;
--}
--
--static inline bool arm_smmu_master_sva_enabled(struct arm_smmu_master *master)
--{
--	return false;
--}
--
--static inline int arm_smmu_master_enable_sva(struct arm_smmu_master *master)
--{
--	return -ENODEV;
--}
--
--static inline int arm_smmu_master_disable_sva(struct arm_smmu_master *master)
--{
--	return -ENODEV;
--}
--
--static inline bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master)
--{
--	return false;
--}
--
- static inline void arm_smmu_sva_notifier_synchronize(void) {}
+@@ -495,7 +487,6 @@ static void uacce_disable_sva(struct uacce_device *uacce)
+ 	if (!(uacce->flags & UACCE_DEV_SVA))
+ 		return;
  
- #define arm_smmu_sva_domain_alloc NULL
+-	iommu_dev_disable_feature(uacce->parent, IOMMU_DEV_FEAT_SVA);
+ 	iommu_dev_disable_feature(uacce->parent, IOMMU_DEV_FEAT_IOPF);
+ }
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 7e8c2af89799..bfdd2e71e124 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -318,18 +318,11 @@ struct iommu_iort_rmr_data {
+ 
+ /**
+  * enum iommu_dev_features - Per device IOMMU features
+- * @IOMMU_DEV_FEAT_SVA: Shared Virtual Addresses
+- * @IOMMU_DEV_FEAT_IOPF: I/O Page Faults such as PRI or Stall. Generally
+- *			 enabling %IOMMU_DEV_FEAT_SVA requires
+- *			 %IOMMU_DEV_FEAT_IOPF, but some devices manage I/O Page
+- *			 Faults themselves instead of relying on the IOMMU. When
+- *			 supported, this feature must be enabled before and
+- *			 disabled after %IOMMU_DEV_FEAT_SVA.
++ * @IOMMU_DEV_FEAT_IOPF: I/O Page Faults such as PRI or Stall.
+  *
+  * Device drivers enable a feature using iommu_dev_enable_feature().
+  */
+ enum iommu_dev_features {
+-	IOMMU_DEV_FEAT_SVA,
+ 	IOMMU_DEV_FEAT_IOPF,
+ };
+ 
 -- 
 2.43.0
 
