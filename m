@@ -1,153 +1,113 @@
-Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from lelvem-ot01.ext.ti.com (lelvem-ot01.ext.ti.com [198.47.23.234])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AA3022D4C5
-	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 18:48:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E390C22259B
+	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 19:04:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.234
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745002138; cv=none; b=A017iLxO0/YhLxgqWa/Gc9HDHgt56o/3zVZ08X/HDnGoWZj4kEDSVk/ilIueZPbA60zDnhg9kwZODGNDxHV9HJub31rWEPFM3vLxlxr1J0PDve8lvCv8lxMSFjFJpisAaX4F0Yj7bh38nCfC2co3136Ye/9HzVwMEamRPLMqFq0=
+	t=1745003088; cv=none; b=W+Ybo2pZO/lMKYwqSZJyW7ukL1ROiWMxxqVC/HYyTUPHbdrfHA1ygOowRCU/0ESDIpgtsKZkrd0AdKt/gIlr8v337wma80S5qBGFvfuPaGXVYGFImJ8pl/yNBuXAEGsfRtVhIfKEX7I9pNmhRqaDisOdNd9XD4hRZffZwVDd7DI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745002138; c=relaxed/simple;
-	bh=3hFHVCH/LSWkX/1hI67EpjUwLrt7a4GRNIrV0jEJhpU=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=j3mNUxacNDZpntZmLdyPCslU5DIO0qVuDQhBXICBM6CIOBZXtI7aYmXn4yUwQakiQmCK8kMxeWwdTtsIF1aFvDpxLodbuBTOpaE6S+W8X0gXy15l6EqbjSp+rwQPV3n7w7hH4O7XSPRexZHHT0nTJpqcjvpvIfPcvQR3cCA6PcI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tGGPDb68; arc=none smtp.client-ip=209.85.216.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1745003088; c=relaxed/simple;
+	bh=NynOvSj7sxcedY3VZBsXlo21ZHktklRq+uP/VAoPVGI=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=m31ghphUldSN3RFk/bmbv5S5ZtqlhQzamp+jFTFnTo8ERkwn87/vfYjoBKNb92IfUoYqRKf8RC5QRWrMG2X9urc2cPA5neTVD+/PiKDBfCPoLhsPFBnfWKujiAAQVpCZvqazz8T13YNi+JInOuL8MNdXxVJT7SxFO3+YtvSOx1E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=vWLwv5/P; arc=none smtp.client-ip=198.47.23.234
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tGGPDb68"
-Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-2ff6167e9ccso2387663a91.1
-        for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 11:48:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1745002136; x=1745606936; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+x9Lxq3Yb7pPGy5apTwGt4q+FQztFDiQizHj9SEUEtM=;
-        b=tGGPDb68NgBMQy3aQgqe0BY7e2/FmzjFz4HPh+p6siLOtMv7AnUpDpE3kZFSbpTTv7
-         2MH11PqGh60ZwQKCBymDPiyrgrW9nrbQIAe+AtxwARduwM/OgI0ARi9jCgnh3/X39HsF
-         rG5ltntS51pLuJPnmqiOB8bDmWT2lGTMUZGVWa3HEaaPSUUTBjwZ2ngxRlkXDwddLjmx
-         NNGGgVhgt/eayOXuYMe5uIUTKHNcEpwtVBAZwxlcolIEk5P4WGsxT/aKny7bxZXzxjZR
-         KRJW93R7zOomHJ3bVy20xWzPUDU6+20SGYbvsZ2AWApvu1Y81t6jH2lCiGOUcLAuzMYp
-         J0DQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745002136; x=1745606936;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=+x9Lxq3Yb7pPGy5apTwGt4q+FQztFDiQizHj9SEUEtM=;
-        b=mvoRh0pYFp5vXBKB9s/SydaGW93sbtC2TnjyW/SCwifDF69Kw1CAMt3unWgMXfJilt
-         8Jcxbm1sloAK4mslxuLE4ije0hDOqj3zU0na0EK9Hd8Bm6xXT2oRYPrgu8SscIZz2IGq
-         LyHhmtVbJvYicSLokf6a2XpL3WZdC2Ba58Ar/tUPbczfsRy/2/NvvOyh9pQ7MgdieCXM
-         pjMTTwB3z3Keut4+mNXr4FwzwpFsR0OT+GYDNVOmx01EvGXAiLmwNTi+hlHK+gimZMSr
-         eMz7V8HEMOPjf9KRLJsMdw04wqYPN4npu+eJRSAAifv4u6W8aegNLBj1wcVS8sEP8LKx
-         KKkw==
-X-Forwarded-Encrypted: i=1; AJvYcCUct88JmTLrWwFqI0IARQhYrxfNIL0IDAakcMLzbZf4F/Q8dUUYqooJvRh6ly1TeR1x1z7hfA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyCh4UiemfWWKCcSfZBYAhnp2TGI1MyjwF0ZTFO1fAzEnW3BSEC
-	S+RSxvtVoK+d/dCOYdADvGn4CmmJL+BQynWqdNQe3EbmZmZ7HKNsf3jn+PEFECB5k+J9q+4TAIW
-	UhA==
-X-Google-Smtp-Source: AGHT+IGSyr2LRk6VhnTriDa7+tSPfCLWBhwIYOevbNOyXjtktTdUxdthxm1hNnO/WkoYJSHcy3iTUadsjtQ=
-X-Received: from pjuu12.prod.google.com ([2002:a17:90b:586c:b0:2fc:1356:bcc3])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:498f:b0:2ee:d193:f3d5
- with SMTP id 98e67ed59e1d1-3087bb39613mr6019007a91.7.1745002136616; Fri, 18
- Apr 2025 11:48:56 -0700 (PDT)
-Date: Fri, 18 Apr 2025 11:48:54 -0700
-In-Reply-To: <b29b8c22-2fd4-4b5e-b755-9198874157c7@amd.com>
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="vWLwv5/P"
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+	by lelvem-ot01.ext.ti.com (8.15.2/8.15.2) with ESMTPS id 53IJ4UWC354523
+	(version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 18 Apr 2025 14:04:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1745003070;
+	bh=FB+Mopw+KqIVgqvvOn7oaKklU78nD3/cxIwgMbOunWQ=;
+	h=Date:From:To:CC:Subject:References:In-Reply-To;
+	b=vWLwv5/PaGhUDQv7GsHSU4MvHYboclMD12ndQi7ynfvL3LgspKFHGgekxZn2BdC33
+	 U7YBXgM/HFX+Kxk3I0k90Cu7Wyo8ywn9RmObP2RFYjIgIYMP5sG452I9Snli9BrQSV
+	 o8GGHTRr+lNqzYjPfaE/S6uKVI79P4ZerHWx0rWE=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+	by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 53IJ4ULQ118070
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 18 Apr 2025 14:04:30 -0500
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23; Fri, 18
+ Apr 2025 14:04:30 -0500
+Received: from lelvsmtp5.itg.ti.com (10.180.75.250) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.23 via
+ Frontend Transport; Fri, 18 Apr 2025 14:04:30 -0500
+Received: from localhost (uda0133052.dhcp.ti.com [128.247.81.232])
+	by lelvsmtp5.itg.ti.com (8.15.2/8.15.2) with ESMTP id 53IJ4Tth126391;
+	Fri, 18 Apr 2025 14:04:29 -0500
+Date: Fri, 18 Apr 2025 14:04:30 -0500
+From: Nishanth Menon <nm@ti.com>
+To: Bjorn Helgaas <helgaas@kernel.org>
+CC: <huaqian.li@siemens.com>, <m.szyprowski@samsung.com>,
+        <robin.murphy@arm.com>, <baocheng.su@siemens.com>,
+        <bhelgaas@google.com>, <conor+dt@kernel.org>,
+        <devicetree@vger.kernel.org>, <diogo.ivo@siemens.com>,
+        <jan.kiszka@siemens.com>, <kristo@kernel.org>, <krzk+dt@kernel.org>,
+        <kw@linux.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+        <lpieralisi@kernel.org>, <robh@kernel.org>, <s-vadapalli@ti.com>,
+        <ssantosh@kernel.org>, <vigneshr@ti.com>, <iommu@lists.linux.dev>
+Subject: Re: [PATCH v7 0/8] soc: ti: Add and use PVU on K3-AM65 for DMA
+ isolation
+Message-ID: <20250418190430.onhuowuu4bwtlm5f@sequel>
+References: <20250418134324.ewsfnze2btnx2r2w@country>
+ <20250418163401.GA159541@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250404193923.1413163-1-seanjc@google.com> <20250404193923.1413163-65-seanjc@google.com>
- <9b7ceea3-8c47-4383-ad9c-1a9bbdc9044a@oracle.com> <b29b8c22-2fd4-4b5e-b755-9198874157c7@amd.com>
-Message-ID: <aAKelotoUX3qCINt@google.com>
-Subject: Re: [PATCH 64/67] iommu/amd: KVM: SVM: Allow KVM to control need for
- GA log interrupts
-From: Sean Christopherson <seanjc@google.com>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: Joao Martins <joao.m.martins@oracle.com>, kvm@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>, 
-	David Matlack <dmatlack@google.com>, Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, 
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Joerg Roedel <joro@8bytes.org>, 
-	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Paolo Bonzini <pbonzini@redhat.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250418163401.GA159541@bhelgaas>
+X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
 
-On Fri, Apr 18, 2025, Vasant Hegde wrote:
-> On 4/9/2025 5:26 PM, Joao Martins wrote:
-> > On 04/04/2025 20:39, Sean Christopherson wrote:
-> >> Add plumbing to the AMD IOMMU driver to allow KVM to control whether or
-> >> not an IRTE is configured to generate GA log interrupts.  KVM only needs a
-> >> notification if the target vCPU is blocking, so the vCPU can be awakened.
-> >> If a vCPU is preempted or exits to userspace, KVM clears is_run, but will
-> >> set the vCPU back to running when userspace does KVM_RUN and/or the vCPU
-> >> task is scheduled back in, i.e. KVM doesn't need a notification.
-> >>
-> >> Unconditionally pass "true" in all KVM paths to isolate the IOMMU changes
-> >> from the KVM changes insofar as possible.
-> >>
-> >> Opportunistically swap the ordering of parameters for amd_iommu_update_ga()
-> >> so that the match amd_iommu_activate_guest_mode().
+On 11:34-20250418, Bjorn Helgaas wrote:
+> On Fri, Apr 18, 2025 at 08:43:24AM -0500, Nishanth Menon wrote:
+> > On 15:30-20250418, huaqian.li@siemens.com wrote:
+> > > 
+> > > Jan Kiszka (7):
+> > >   dt-bindings: soc: ti: Add AM65 peripheral virtualization unit
+> > >   dt-bindings: PCI: ti,am65: Extend for use with PVU
+> > >   soc: ti: Add IOMMU-like PVU driver
+> > >   PCI: keystone: Add support for PVU-based DMA isolation on AM654
+> > >   arm64: dts: ti: k3-am65-main: Add PVU nodes
+> > >   arm64: dts: ti: k3-am65-main: Add VMAP registers to PCI root complexes
+> > >   arm64: dts: ti: iot2050: Add overlay for DMA isolation for devices
+> > >     behind PCI RC
+> > > 
+> > > Li Hua Qian (1):
+> > >   swiotlb: Make IO_TLB_SEGSIZE configurable
 > > 
-> > Unfortunately I think this patch and the next one might be riding on the
-> > assumption that amd_iommu_update_ga() is always cheap :( -- see below.
-> > 
-> > I didn't spot anything else flawed in the series though, just this one. I would
-> > suggest holding off on this and the next one, while progressing with the rest of
-> > the series.
-> > 
-> >> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> >> index 2e016b98fa1b..27b03e718980 100644
-> >> --- a/drivers/iommu/amd/iommu.c
-> >> +++ b/drivers/iommu/amd/iommu.c
-> >> -static void __amd_iommu_update_ga(struct irte_ga *entry, int cpu)
-> >> +static void __amd_iommu_update_ga(struct irte_ga *entry, int cpu,
-> >> +				  bool ga_log_intr)
-> >>  {
-> >>  	if (cpu >= 0) {
-> >>  		entry->lo.fields_vapic.destination =
-> >> @@ -3783,12 +3784,14 @@ static void __amd_iommu_update_ga(struct irte_ga *entry, int cpu)
-> >>  		entry->hi.fields.destination =
-> >>  					APICID_TO_IRTE_DEST_HI(cpu);
-> >>  		entry->lo.fields_vapic.is_run = true;
-> >> +		entry->lo.fields_vapic.ga_log_intr = false;
-> >>  	} else {
-> >>  		entry->lo.fields_vapic.is_run = false;
-> >> +		entry->lo.fields_vapic.ga_log_intr = ga_log_intr;
-> >>  	}
-> >>  }
-> >>
-> > 
-> > isRun, Destination and GATag are not cached. Quoting the update from a few years
-> > back (page 93 of IOMMU spec dated Feb 2025):
-> > 
-> > | When virtual interrupts are enabled by setting MMIO Offset 0018h[GAEn] and
-> > | IRTE[GuestMode=1], IRTE[IsRun], IRTE[Destination], and if present IRTE[GATag],
-> > | are not cached by the IOMMU. Modifications to these fields do not require an
-> > | invalidation of the Interrupt Remapping Table.
-> > 
-> > This is the reason we were able to get rid of the IOMMU invalidation in
-> > amd_iommu_update_ga() ... which sped up vmexit/vmenter flow with iommu avic.
-> > Besides the lock contention that was observed at the time, we were seeing stalls
-> > in this path with enough vCPUs IIRC; CCing Alejandro to keep me honest.
-> > 
-> > Now this change above is incorrect as is and to make it correct: you will need
-> > xor with the previous content of the IRTE::ga_log_intr and then if it changes
-> > then you re-add back an invalidation command via
-> > iommu_flush_irt_and_complete()). The latter is what I am worried will
-> > reintroduce these above problem :(
-> > 
-> > The invalidation command (which has a completion barrier to serialize
-> > invalidation execution) takes some time in h/w, and will make all your vcpus
-> > content on the irq table lock (as is). Even assuming you somehow move the
-> > invalidation outside the lock, you will content on the iommu lock (for the>
-> command queue) or best case assuming no locks (which I am not sure it is
-> > possible) you will need to wait for the command to complete until you can
-> > progress forward with entering/exiting.
-> > 
-> > Unless the GALogIntr bit is somehow also not cached too which wouldn't need the
-> > invalidation command (which would be good news!). Adding Suravee/Vasant here.
+> > I see at least 3 or 4 maintainers needing to co-ordinate, gets
+> > complicated as I am not sure which maintainer needs to pick up what
+> > patches in what dependency order. This looks like a mixed bag. Can
+> > we split this patch into independent series for each maintainer with
+> > clear indication of dependencies that is spread around a couple of
+> > kernel windows (maybe dts comes in last?)
 > 
-> I have checked with HW architects. Its not cached. So we don't need invalidation
-> after updating GALogIntr field in IRTE.
+> The keystone patch ("[4/8] PCI: keystone: Add support for PVU-based
+> DMA isolation on AM654") depends on interfaces added by "[3/8] soc:
+> ti: Add IOMMU-like PVU driver", so I can't really take 4/8 by itself.
+> 
+> But I've acked 4/8, so it can be merged along with the rest of the
+> series.  I assumed the easiest would be via the drivers/soc/ti/
+> maintainer, i.e., you, Nisanth :)
+> 
+> Let me know if I can do anything.
 
-Woot!  Better to be lucky than good :-)
+Thanks Bjorn, the swiotlb probably is one of the first to go in, I
+guess.. I will let Li Hua/Jan suggest how they'd like to queue this.
+
+-- 
+Regards,
+Nishanth Menon
+Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
