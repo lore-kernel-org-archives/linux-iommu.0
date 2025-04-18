@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F72F267F5C
-	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 03:11:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EC2E262A6
+	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 03:12:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744945889; cv=none; b=XqGApQ55YzeITWf9F13pdUE6gxOFmjmkWjh0k45n10ez202u8TKuZsU4NUOOvTBNHUScUAqtG8hAz1ow6UuBhbDf9e7O93/5kktag93QzL6YysguRSDXSTcIADF7omaJOBXp4nE8pcoD5SIhwK/dAMQxqeMzbww7UAsU1yZnKZY=
+	t=1744945934; cv=none; b=OnmAloRQt7l3matLD2xmlUeFN3bKvYWmKAM+480Cz7yty0f8MC9h6Ph2hSAE7HWDN05gnORCoJWjowcOqIpkfqrkojFL9BEjX2VzKAPS34ohKEbs/vvEVOQ8dbhKr9eUZBnynb8Lx/FGu+V7XsTdJVlpyJKbgQ6118jPz1bks6E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744945889; c=relaxed/simple;
-	bh=2Gi98+Gx3q2+a5abm9nQzow/IATwvJxJ6qoPMe2C2Ao=;
+	s=arc-20240116; t=1744945934; c=relaxed/simple;
+	bh=neMxJz42emzk2yZKrlYvMBCmYarFeQz7z09Ck6l4g/U=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SxbzukI6wiYHH2cMK751w8kieYkSZrMGnhveEpYR+PZr9Bdngu0cZxu2GlbJ6LHhJWG8LHO94V9ZvIv6SqOsKIUbERbGkc8YXov7leEkJNiI50+qrftTqHh30/9tBHaE7qt8iYSS5D1uZ2LdxgLiUZfR2aP+Aa3Qf8paCtl5hoA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HwVifRXE; arc=none smtp.client-ip=198.175.65.14
+	 In-Reply-To:Content-Type; b=n0npeoPL8lUN4o0cOVYCnsUp+nMXMzTegaSk/IZLhTPResANfJZErHlAD1GngXP6R8E1mPWynnRRBWVCkSYSP1HC0hXVtkga7EdOeG+sIFGV5AaAKp7LrZG+JJHylc/srwCXUwjUzj2PMx5cLH3J4j3Qm6xXO+YUPcSfS6PjvE0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bHCOjLMu; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HwVifRXE"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bHCOjLMu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1744945888; x=1776481888;
+  t=1744945933; x=1776481933;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=2Gi98+Gx3q2+a5abm9nQzow/IATwvJxJ6qoPMe2C2Ao=;
-  b=HwVifRXEl4ZStzKR/jk7gKFU/VbQnDO1oOZm0+OwPRsfhhGvG2EhRYae
-   ZXuA92JGzJNnE69d3VTYFk1hDpLLiWk0K1e6/Fl9UMh0HAdZ0551jg5zo
-   PcDj9kO9RrO3PDXZHcNhx60B6CWshGDjV8LEG8cx/4WmRJBQKZVgZVqik
-   GHm0h7wVXPm39m4MHepVde3rvYjwmhcFRqUMvLXdbjrQZymVNtB6a6xU9
-   H9fzHfuvHeOSRtmHcBKGWGrywNzJpxtvsaS7/6mls9wnesbrLoWhSZwKH
-   e2PBgFxxlRy4NbejgzSB3LEtOeNFnP4oBysJl2m/R9EvYD9L6LKet2RjD
-   A==;
-X-CSE-ConnectionGUID: YtelbZthTsyvUT4rN0j1iw==
-X-CSE-MsgGUID: BcvOKlZSTk+Iob1/6TAIZg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11406"; a="50374187"
-X-IronPort-AV: E=Sophos;i="6.15,220,1739865600"; 
-   d="scan'208";a="50374187"
+  bh=neMxJz42emzk2yZKrlYvMBCmYarFeQz7z09Ck6l4g/U=;
+  b=bHCOjLMuberguXvXsu+ZGNxyX/F2xTkAp3Luimliau6SNa102QBo5Yx3
+   fer7ghJUXNF/HHLcgcmD0mIWSMshCJ8z/vpeUv1vTFaJe0G5pVeVhZ1wN
+   RoDtNYY8QTgv1eP1hZJh5AwOwTcH0ATSnHJnouIKpHxvfsm4sbFHsKAlu
+   azMSRZrDSdX0QBhpH0cX90yz2C6lLRQO7oMDJh6nOb0pK925G2TFKNaUu
+   6VgYtlAF6yHMPmLqPP//QFLl/7iVZQpEuhTQpcAFkampM0KrQyD2ywUaF
+   u12zniZLsR1lDfgq9hDVS+pl30iwLgES3+5gyTViZT0NEObuXNV/Lx6Kt
+   Q==;
+X-CSE-ConnectionGUID: 5PfvJUXtTROS79QsEORqqA==
+X-CSE-MsgGUID: ZNFl47N3QiSZX22ybVC8wA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11406"; a="50374232"
+X-IronPort-AV: E=Sophos;i="6.15,221,1739865600"; 
+   d="scan'208";a="50374232"
 Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2025 20:11:27 -0700
-X-CSE-ConnectionGUID: q3K0h6HTReu4AhjaznOcbg==
-X-CSE-MsgGUID: 9ThdzKhWSYi5yCKJ4vhfVw==
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2025 20:12:12 -0700
+X-CSE-ConnectionGUID: 3gGLRstDSyOzB+0ttk0ZDA==
+X-CSE-MsgGUID: M+gy06vpRx2/iY7TzDbq/Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.15,221,1739865600"; 
-   d="scan'208";a="131312815"
+   d="scan'208";a="131312924"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2025 20:11:23 -0700
-Message-ID: <9fce601e-b557-4454-8698-6c63303999a1@linux.intel.com>
-Date: Fri, 18 Apr 2025 11:07:16 +0800
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2025 20:12:10 -0700
+Message-ID: <8bf10298-1a69-4c93-8851-f816d90f47fc@linux.intel.com>
+Date: Fri, 18 Apr 2025 11:08:05 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,26 +52,23 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH RESEND] iommu: intel: apply quirk_iommu_igfx for
- 8086:0044 (QM57/QS57)
+Subject: Re: [PATCH] iommu: intel: apply quirk_iommu_igfx for 8086:0044
+ (QM57/QS57)
 To: Mingcong Bai <jeffbai@aosc.io>
-Cc: intel-gfx@lists.freedesktop.org, kexybiscuit@aosc.io,
- Wenhao Sun <weiguangtwk@outlook.com>, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+Cc: Kexy Biscuit <kexybiscuit@aosc.io>, intel-gfx@lists.freedesktop.org,
+ stable@vger.kernel.org, Wenhao Sun <weiguangtwk@outlook.com>,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
  linux-kernel@vger.kernel.org
-References: <20250120093540.512825-1-jeffbai@aosc.io>
+References: <20250415133330.12528-1-jeffbai@aosc.io>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250120093540.512825-1-jeffbai@aosc.io>
+In-Reply-To: <20250415133330.12528-1-jeffbai@aosc.io>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 1/20/25 17:35, Mingcong Bai wrote:
-> (I'm not very confident about the approach of this patch but I failed to
-> find a better way to address the issue I have on hand, so please consider
-> this patch as an RFC...)
-> 
+On 4/15/25 21:33, Mingcong Bai wrote:
 > On the Lenovo ThinkPad X201, when Intel VT-d is enabled in the BIOS, the
 > kernel boots with errors related to DMAR, the graphical interface appeared
 > quite choppy, and the system resets erratically within a minute after it
@@ -128,6 +125,9 @@ On 1/20/25 17:35, Mingcong Bai wrote:
 > similar issue found on different Westmere/Ironlake, Haswell, and Broadwell
 > hardware setups.
 > 
+> Cc:stable@vger.kernel.org
+> Fixes: 6fbcfb3e467a ("intel-iommu: Workaround IOTLB hang on Ironlake GPU")
+> Fixes: ba00196ca41c ("iommu/vt-d: Decouple igfx_off from graphic identity mapping")
 > Link:https://bugzilla.kernel.org/show_bug.cgi?id=197029
 > Link:https://groups.google.com/g/qubes-users/c/4NP4goUds2c?pli=1
 > Link:https://bugs.archlinux.org/task/65362
