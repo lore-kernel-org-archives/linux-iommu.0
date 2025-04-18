@@ -1,59 +1,62 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA60B263C71
-	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 03:16:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77F221CF8B
+	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 05:48:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744946173; cv=none; b=RisQcxOAMwL+LV6G0zFiZyWQ2NOjtIBl6+UMi1NlcWwx2jliEUDcP464k/rZbttjIe8K5Yg+BCb7RgSNpU2dmjUgoIflQnx0z2/Loj61pyV3tlvnmvo4dpwNpXVfo7W1vxOGedf0j+1vR4ImMOCK0jpBNQ13YlWyRaZaBppfVF4=
+	t=1744955282; cv=none; b=eMbjwOSVJkQfa2gtIOsCJOmnxU0LEHCGhyfyz0oS71xrxZpCdpGu0m1nWzMOm4/hB3vtJWOdDqj9J8MT++xcXP9vzTYaw0BkfUDF5Zr0NMeUd9jbKe8kvspGd20cv0WnJTcnO515BVbZ4bz+gABw40tLY9nDwpXAL1SHCT+PgjU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744946173; c=relaxed/simple;
-	bh=CKh9qggo+rmj99kU0diFTRU9xqoaNX6PAPME7n+az0c=;
+	s=arc-20240116; t=1744955282; c=relaxed/simple;
+	bh=UUNUoDKBf/D301jUApQbZZwZHHD049/Yyk06+cmIRO0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=PuklpZmXj6Jd7Z/k/36HdRSHrJUSqPco3nIPzm6+B4HjFDhaC5b4lDNyHnwQ8NFYa8B9h8k6/meiHsuyLMoWyrIlppxvPnAwhP4WEVQ1IvfgABu9/6BzEFPHTyzmf85rzsPpfcgXGnXc/lm3Jlq9+Uwmfls/zOJSCa9r9KErd1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bIJbJdA0; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 MIME-Version; b=QctLkqP42knZ4xG0BjCMUbCZjin0p99a6Ts0L50W4Xi7BqWkBUsSlrLbrlFNvIv3jj2sr4/zsvowpszoqazJyTXzE7Ynrg8emtPcKDVuJccFDa7+ttiKOJGsQQ7l4j/nNU/xRjnz6CqWW8fmYvpunWoxgOE8STxeB4nCew6lw7s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=DlWxLJiD; arc=none smtp.client-ip=205.220.165.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bIJbJdA0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1744946172; x=1776482172;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CKh9qggo+rmj99kU0diFTRU9xqoaNX6PAPME7n+az0c=;
-  b=bIJbJdA0ITuS237PgRQz2wc5aSAzrZHFmD5TfjR4OtVZDJ9MkFhG7NhV
-   8rlYu+0hoNoZIO9TuMEbSSK7mXCn9HJrs+8G71tSfSR2F3kouAbj+hofc
-   4e1GQAwGW9XGYCu8nk5oPs5HIkoLaKOGMRXE3tfTDgowV/nWHhSkCgiml
-   HEp2cliN/x7vPYEWz+tLgopJJCc+0SzVw1seN7R8AmBUvirXsljLUqwFY
-   L2z7wkwPku9vY/0S0BIIeY+1HSIJ63JbLTWv2qKJelp+RzFI0PuDhgfsV
-   wyZGWDcdkkOu8i21RBenR4wfZlSj5h6KsE9mtLqkVn3YAhHBLVCD0PsUC
-   w==;
-X-CSE-ConnectionGUID: EJ+J/5dTQRGvmkOgtJLihg==
-X-CSE-MsgGUID: +wVZfMs/Q5io4vom+CcmJg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11406"; a="34188986"
-X-IronPort-AV: E=Sophos;i="6.15,221,1739865600"; 
-   d="scan'208";a="34188986"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2025 20:16:11 -0700
-X-CSE-ConnectionGUID: PS/j4FJBQY64yaLlFAVSLQ==
-X-CSE-MsgGUID: 5DMKj7WpTVuSh09HOH+6hQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,221,1739865600"; 
-   d="scan'208";a="130994581"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa006.jf.intel.com with ESMTP; 17 Apr 2025 20:16:09 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Mingcong Bai <jeffbai@aosc.io>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] iommu/vt-d: Apply quirk_iommu_igfx for 8086:0044 (QM57/QS57)
-Date: Fri, 18 Apr 2025 11:16:42 +0800
-Message-ID: <20250418031642.1810175-2-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250418031642.1810175-1-baolu.lu@linux.intel.com>
-References: <20250418031642.1810175-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="DlWxLJiD"
+Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53I5MxXv023787;
+	Fri, 18 Apr 2025 05:47:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	:content-transfer-encoding:date:from:in-reply-to:message-id
+	:mime-version:references:subject:to; s=corp-2023-11-20; bh=irwzx
+	ZD0HzBVqkU/MQIM1wQYaguZ/AC//3ZStlzY14I=; b=DlWxLJiDWFf3wCP4oD7uA
+	bqGhungtLYoEJCli8eorjDwlca9IOowbQlesx0w3lWV4cUaqSPpZchckrjTNyUfh
+	83/GkdJYHOFO+dpzJcP2fBtIXhJS/vjUMD7JvyEVfxRR/LPikdVJuDTxoJw60tcG
+	CQ+USPLBof/t2fQ3b+BA6i38bPDdkBuZzxyfwsIq+BzHs6c1AZeU+Nxtgwk5lXhk
+	WVuBxMrlKg1bco7VE3gfWpELHIBElEJ+oI/+eMiTskHR9luX4iwaak5k4dvTdOWv
+	oiAp2uvkqyUXuBUOxRBw+BYXFSt0+yUgVjfBupC9TAVKQ/S6O0/ka9owWu16gSMZ
+	g==
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4619447jrc-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 18 Apr 2025 05:47:54 +0000 (GMT)
+Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 53I4UEYB024679;
+	Fri, 18 Apr 2025 05:47:54 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 460d54fy9r-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 18 Apr 2025 05:47:54 +0000
+Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 53I5lq6h036462;
+	Fri, 18 Apr 2025 05:47:53 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
+	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 460d54fy32-2;
+	Fri, 18 Apr 2025 05:47:53 +0000
+From: Harshvardhan Jha <harshvardhan.j.jha@oracle.com>
+To: jgross@suse.com, sstabellini@kernel.org, boris.ostrovsky@oracle.com
+Cc: harshvardhan.j.jha@oracle.com, xen-devel@lists.xenproject.org,
+        iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
+        stable@vger.kernel.org
+Subject: [PATCH 5.15.y v2 1/1] xen/swiotlb: relax alignment requirements
+Date: Thu, 17 Apr 2025 22:47:26 -0700
+Message-ID: <20250418054726.2442674-2-harshvardhan.j.jha@oracle.com>
+X-Mailer: git-send-email 2.47.1
+In-Reply-To: <20250418054726.2442674-1-harshvardhan.j.jha@oracle.com>
+References: <20250418054726.2442674-1-harshvardhan.j.jha@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,102 +64,83 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
+ definitions=2025-04-18_02,2025-04-17_01,2024-11-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
+ mlxlogscore=999 bulkscore=0 suspectscore=0 mlxscore=0 malwarescore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2502280000 definitions=main-2504180041
+X-Proofpoint-GUID: 3CLmdghGT8wzTSR39WI-I_oL_wZxa8jx
+X-Proofpoint-ORIG-GUID: 3CLmdghGT8wzTSR39WI-I_oL_wZxa8jx
 
-From: Mingcong Bai <jeffbai@aosc.io>
+[ Upstream commit 85fcb57c983f423180ba6ec5d0034242da05cc54 ]
 
-On the Lenovo ThinkPad X201, when Intel VT-d is enabled in the BIOS, the
-kernel boots with errors related to DMAR, the graphical interface appeared
-quite choppy, and the system resets erratically within a minute after it
-booted:
+When mapping a buffer for DMA via .map_page or .map_sg DMA operations,
+there is no need to check the machine frames to be aligned according
+to the mapped areas size. All what is needed in these cases is that the
+buffer is contiguous at machine level.
 
-DMAR: DRHD: handling fault status reg 3
-DMAR: [DMA Write NO_PASID] Request device [00:02.0] fault addr 0xb97ff000
-[fault reason 0x05] PTE Write access is not set
+So carve out the alignment check from range_straddles_page_boundary()
+and move it to a helper called by xen_swiotlb_alloc_coherent() and
+xen_swiotlb_free_coherent() directly.
 
-Upon comparing boot logs with VT-d on/off, I found that the Intel Calpella
-quirk (`quirk_calpella_no_shadow_gtt()') correctly applied the igfx IOMMU
-disable/quirk correctly:
-
-pci 0000:00:00.0: DMAR: BIOS has allocated no shadow GTT; disabling IOMMU
-for graphics
-
-Whereas with VT-d on, it went into the "else" branch, which then
-triggered the DMAR handling fault above:
-
-... else if (!disable_igfx_iommu) {
-	/* we have to ensure the gfx device is idle before we flush */
-	pci_info(dev, "Disabling batched IOTLB flush on Ironlake\n");
-	iommu_set_dma_strict();
-}
-
-Now, this is not exactly scientific, but moving 0x0044 to quirk_iommu_igfx
-seems to have fixed the aforementioned issue. Running a few `git blame'
-runs on the function, I have found that the quirk was originally
-introduced as a fix specific to ThinkPad X201:
-
-commit 9eecabcb9a92 ("intel-iommu: Abort IOMMU setup for igfx if BIOS gave
-no shadow GTT space")
-
-Which was later revised twice to the "else" branch we saw above:
-
-- 2011: commit 6fbcfb3e467a ("intel-iommu: Workaround IOTLB hang on
-  Ironlake GPU")
-- 2024: commit ba00196ca41c ("iommu/vt-d: Decouple igfx_off from graphic
-  identity mapping")
-
-I'm uncertain whether further testings on this particular laptops were
-done in 2011 and (honestly I'm not sure) 2024, but I would be happy to do
-some distro-specific testing if that's what would be required to verify
-this patch.
-
-P.S., I also see IDs 0x0040, 0x0062, and 0x006a listed under the same
-`quirk_calpella_no_shadow_gtt()' quirk, but I'm not sure how similar these
-chipsets are (if they share the same issue with VT-d or even, indeed, if
-this issue is specific to a bug in the Lenovo BIOS). With regards to
-0x0062, it seems to be a Centrino wireless card, but not a chipset?
-
-I have also listed a couple (distro and kernel) bug reports below as
-references (some of them are from 7-8 years ago!), as they seem to be
-similar issue found on different Westmere/Ironlake, Haswell, and Broadwell
-hardware setups.
-
-Cc: stable@vger.kernel.org
-Fixes: 6fbcfb3e467a ("intel-iommu: Workaround IOTLB hang on Ironlake GPU")
-Fixes: ba00196ca41c ("iommu/vt-d: Decouple igfx_off from graphic identity mapping")
-Link: https://groups.google.com/g/qubes-users/c/4NP4goUds2c?pli=1
-Link: https://bugs.archlinux.org/task/65362
-Link: https://bbs.archlinux.org/viewtopic.php?id=230323
-Reported-by: Wenhao Sun <weiguangtwk@outlook.com>
-Closes: https://bugzilla.kernel.org/show_bug.cgi?id=197029
-Signed-off-by: Mingcong Bai <jeffbai@aosc.io>
-Link: https://lore.kernel.org/r/20250415133330.12528-1-jeffbai@aosc.io
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Fixes: 9f40ec84a797 ("xen/swiotlb: add alignment check for dma buffers")
+Signed-off-by: Harshvardhan Jha <harshvardhan.j.jha@oracle.com>
 ---
- drivers/iommu/intel/iommu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/xen/swiotlb-xen.c | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index b29da2d96d0b..64935e14b9ec 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4432,6 +4432,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e30, quirk_iommu_igfx);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e40, quirk_iommu_igfx);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e90, quirk_iommu_igfx);
- 
-+/* QM57/QS57 integrated gfx malfunctions with dmar */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0044, quirk_iommu_igfx);
-+
- /* Broadwell igfx malfunctions with dmar */
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1606, quirk_iommu_igfx);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x160B, quirk_iommu_igfx);
-@@ -4509,7 +4512,6 @@ static void quirk_calpella_no_shadow_gtt(struct pci_dev *dev)
- 	}
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 0392841a822fa..65da97be06285 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -75,19 +75,21 @@ static inline phys_addr_t xen_dma_to_phys(struct device *dev,
+ 	return xen_bus_to_phys(dev, dma_to_phys(dev, dma_addr));
  }
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0040, quirk_calpella_no_shadow_gtt);
--DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0044, quirk_calpella_no_shadow_gtt);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x0062, quirk_calpella_no_shadow_gtt);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x006a, quirk_calpella_no_shadow_gtt);
+ 
++static inline bool range_requires_alignment(phys_addr_t p, size_t size)
++{
++	phys_addr_t algn = 1ULL << (get_order(size) + PAGE_SHIFT);
++	phys_addr_t bus_addr = pfn_to_bfn(XEN_PFN_DOWN(p)) << XEN_PAGE_SHIFT;
++
++	return IS_ALIGNED(p, algn) && !IS_ALIGNED(bus_addr, algn);
++}
++
+ static inline int range_straddles_page_boundary(phys_addr_t p, size_t size)
+ {
+ 	unsigned long next_bfn, xen_pfn = XEN_PFN_DOWN(p);
+ 	unsigned int i, nr_pages = XEN_PFN_UP(xen_offset_in_page(p) + size);
+-	phys_addr_t algn = 1ULL << (get_order(size) + PAGE_SHIFT);
+ 
+ 	next_bfn = pfn_to_bfn(xen_pfn);
+ 
+-	/* If buffer is physically aligned, ensure DMA alignment. */
+-	if (IS_ALIGNED(p, algn) &&
+-	    !IS_ALIGNED((phys_addr_t)next_bfn << XEN_PAGE_SHIFT, algn))
+-		return 1;
+-
+ 	for (i = 1; i < nr_pages; i++)
+ 		if (pfn_to_bfn(++xen_pfn) != ++next_bfn)
+ 			return 1;
+@@ -306,7 +308,8 @@ xen_swiotlb_alloc_coherent(struct device *hwdev, size_t size,
+ 	phys = dma_to_phys(hwdev, *dma_handle);
+ 	dev_addr = xen_phys_to_dma(hwdev, phys);
+ 	if (((dev_addr + size - 1 <= dma_mask)) &&
+-	    !range_straddles_page_boundary(phys, size))
++	    !range_straddles_page_boundary(phys, size) &&
++	    !range_requires_alignment(phys, size))
+ 		*dma_handle = dev_addr;
+ 	else {
+ 		if (xen_create_contiguous_region(phys, order,
+@@ -347,6 +350,7 @@ xen_swiotlb_free_coherent(struct device *hwdev, size_t size, void *vaddr,
+ 
+ 	if (!WARN_ON((dev_addr + size - 1 > dma_mask) ||
+ 		     range_straddles_page_boundary(phys, size)) &&
++	    !range_requires_alignment(phys, size) &&
+ 	    TestClearPageXenRemapped(page))
+ 		xen_destroy_contiguous_region(phys, order);
  
 -- 
-2.43.0
+2.47.1
 
