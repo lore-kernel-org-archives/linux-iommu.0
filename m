@@ -1,89 +1,130 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A08901CF8B
-	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 05:48:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6662F1E7C38
+	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 06:19:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744955286; cv=none; b=N5BBG7jlC/4z6H+gji5N6kQPnqYY5zASVQrnPSk+8/W3c+ROqzrdeauP62AqFXE+PXo7hksQGweCq+PDRQIpXGKBQwcYfVimaqm2znvCO+t9fP4Vf6EL23A5CJapgq2xGXrfGbaXcz52OP2v6zutvCLtOiAS6Hap4WgzX0Ya4eY=
+	t=1744957160; cv=none; b=NCjl9dVXf+MgsGE95bZAMpaSHdLnT5pvyDitRzn/e+WDmW47F3S3w1b/llQDkFjiw63Ps5gKDDbDnZHtEaVTmcn90ShTSfSYwRBb91m+uwBx/aVe0A2RpPt/Gh5oRkMjfKAb+xpPoVd7ZcmKFKseUybdXXbARbnoS28WZHJMEHw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744955286; c=relaxed/simple;
-	bh=TipMqh+jY419M0FE6C4EHb3IMR85PPT/ksOHSlta85g=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=G0jSjGVcCfp9d0RHL/eGJsmeiQ4fT1161N7IXcb7B/gsCU+JZKUnIcRm5ZQVpSgsT+MDrXLtS8j3JwdPlN6gdj1Eyqy03+3V9DNncKBvFduvNlWXY1WaiJOSYvLIFluVc7Xn+jaxZXqjYAzvtLg0wYZvpAFN7HTDE293Syq/OfE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=n1aMFpG8; arc=none smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	s=arc-20240116; t=1744957160; c=relaxed/simple;
+	bh=WcVXQNppAfOyvpsjjFd5FhPEFnm/FQJNMa2Z2XpGJ4M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=oxYmGllVio4WUp9NMDxhEYnTdICbtika9sb0qNO+YQz+HOR8dAZjt+PmLmvSs+PgGPJqbhWpJpcVkVr33gMb2of0uV38ZMZ5jfX+GnT4khFy0e5k9Y7UYVnYAYODgDceWl6S0ZZ1/8Vf2pKW5nCMDT1HPF4B+IQAUEfYJMXDw48=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=EW1d9dJ/; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="n1aMFpG8"
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53I5NcHN002787;
-	Fri, 18 Apr 2025 05:47:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=corp-2023-11-20; bh=+adpAbdYLs38FhIOhHdHbujyLz8AT
-	wIWgf4obfGpmRM=; b=n1aMFpG8AJgT3AqY4fjpd+mJS3+7LE1CUienPM8CqMRHD
-	glz/lSe6UtfzAo2UJ1EHYbkH215/48wka5AEORG9WJTx5+69TPrfUuwfmZUvzbV2
-	egwPzgt0Q3HdYEB5LLvZtc/jSzpJx2eQGF8YVV1N0md/ILFDg/GLH6zfl/Hwy9ad
-	4rwIG4vG9n59d1M+GIMdHVZ7OKc4PmtFtQOYl81q6IF/ntMq2MOCOLzCHHY2sKQH
-	9uBRqkru2a2TFRy3ky9qcABzQSro+iNnGwMTTArD4Jp9NmyUekEk6bmAT7PVdb36
-	rYfkYJS3kMVLmSjGjHT7wTy0Vt7fZi2vJ/Xz6Ne0A==
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 46187xyrhv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 18 Apr 2025 05:47:54 +0000 (GMT)
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 53I5XBLs024756;
-	Fri, 18 Apr 2025 05:47:53 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 460d54fy9j-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 18 Apr 2025 05:47:53 +0000
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 53I5lq6f036462;
-	Fri, 18 Apr 2025 05:47:52 GMT
-Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 460d54fy32-1;
-	Fri, 18 Apr 2025 05:47:52 +0000
-From: Harshvardhan Jha <harshvardhan.j.jha@oracle.com>
-To: jgross@suse.com, sstabellini@kernel.org, boris.ostrovsky@oracle.com
-Cc: harshvardhan.j.jha@oracle.com, xen-devel@lists.xenproject.org,
-        iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
-        stable@vger.kernel.org
-Subject: [PATCH 5.15.y v2 0/1] Manual Backport of 099606a7b2d5 to 5.15
-Date: Thu, 17 Apr 2025 22:47:25 -0700
-Message-ID: <20250418054726.2442674-1-harshvardhan.j.jha@oracle.com>
-X-Mailer: git-send-email 2.47.1
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="EW1d9dJ/"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250418061916euoutp011de8d576ef451182fb338ebffd17eab8~3VUnwZenf2747227472euoutp01J
+	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 06:19:16 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250418061916euoutp011de8d576ef451182fb338ebffd17eab8~3VUnwZenf2747227472euoutp01J
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1744957156;
+	bh=S2JQV1AgO14R7WYcM0wLJaSuv7E1N9Zgr1tZNZPzywA=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=EW1d9dJ/o0awh/qaVhCVolpSf05CQt3nV30Z5/VTJtitbsCE/zN+V1Py2GJ4FtaGT
+	 jskgT18y3Wn5BSPkGCNJAH/dcZdbWtPHhz4HVl+ZCPTJR278EIk+AqiO57vig1i/3X
+	 SK/2rqhj+1TOrvgD5Xzy+HPzg2hwUaacz98QXDnY=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20250418061916eucas1p17df1db26f6fc0b019fd374af9ff5a3b1~3VUndX11c1817818178eucas1p1l;
+	Fri, 18 Apr 2025 06:19:16 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges1new.samsung.com (EUCPMTA) with SMTP id 51.9D.20821.4EEE1086; Fri, 18
+	Apr 2025 07:19:16 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20250418061915eucas1p275a0d6e23c262981277109d6d0db95d6~3VUnGOa8s0841508415eucas1p2Z;
+	Fri, 18 Apr 2025 06:19:15 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20250418061915eusmtrp14968a24dcc40da86089721a35449a276~3VUnFqBUV3118131181eusmtrp1e;
+	Fri, 18 Apr 2025 06:19:15 +0000 (GMT)
+X-AuditID: cbfec7f2-b09c370000005155-f8-6801eee41dfe
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id F3.C1.19654.3EEE1086; Fri, 18
+	Apr 2025 07:19:15 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20250418061915eusmtip2e899d892d07912e35aebee8f28071eec~3VUmmCK0n2270222702eusmtip20;
+	Fri, 18 Apr 2025 06:19:15 +0000 (GMT)
+Message-ID: <304860b1-cd01-4d27-92eb-0bf6e30398fb@samsung.com>
+Date: Fri, 18 Apr 2025 08:19:14 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-18_02,2025-04-17_01,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
- mlxlogscore=999 bulkscore=0 suspectscore=0 mlxscore=0 malwarescore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2502280000 definitions=main-2504180041
-X-Proofpoint-GUID: Mg-v3doRh43UKoQ1jKtAblkZyhHc9mAO
-X-Proofpoint-ORIG-GUID: Mg-v3doRh43UKoQ1jKtAblkZyhHc9mAO
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] dma-mapping: avoid potential unused data compilation
+ warning
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Christoph Hellwig
+	<hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, netdev@vger.kernel.org,
+	Jakub Kicinski <kuba@kernel.org>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <Z_4pZm_tQ6qmmj35@smile.fi.intel.com>
+Content-Transfer-Encoding: 7bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA01Se2xLYRzNd+/t3V2jc3Xob5tnGUF0xug1zCNERQQRxDwbvbqyddJumJA1
+	xKvzbM2jG5sitlra2ZhtItJlVFM6amqW2ZIZw1J0s5htxtbrsf/OOb/zfed3vnwULjTzwimV
+	OoXVqOWJYpJPlDz6UTW56TNKmFJ8fyBz4sB5jMm/+RBjOr8xzLOSkzzmRXk2yTzKHcrYvzbx
+	5gXJCi4XIFmR5Rgpu+xcKftQfBHJ7r3WkbK2ohEryHj+bAWbqNrFaqLitvATGrqOop0HeXv0
+	heeQDp0l9CiYAjoGDvzy8PSITwnpPATe+seII98Q5LZ8JjnShuCNrgP9PfKl3YBzgxsIjl/3
+	YRzxI2h2dwb1uQR0HOT528k+TNCRcCfrBsHpg8B5sSmAh9AjoaH2QsAfSq+CDGdZQB9MS8Fq
+	MAeicbocQY+3PDDAaRHUNuVgfZiko0Hv0wcCgumpYH7/Aec8I+GuLzuwHtB1FFhe3SK5vRdC
+	Zrc1iMOh8Mlx+w8eBi7jcYI7cKS3dVcDxpHTCHTNtX9az4I6d2fvTVRvxASwlUdx8nzIyv6O
+	9clAh0CNbxC3RAgYSs7jnCyAo4eFnHscmBzWf7H2Zx78NBKb+r2LqV9NU786pv+5uYiwIBGb
+	qk1SstpoNbtbopUnaVPVSsnW5KQi1PuNXD2O1lJ06ZNfUoEwClUgoHDxYIFb2qMUChTytL2s
+	JnmzJjWR1VagCIoQiwTmB4eUQlopT2F3sOxOVvN3ilHB4TpMv9h9b5G845B6f/IQiRVfd+3t
+	rzGW0KuilO5dY8uuF4Yw4kJjRiX/xXdfZKbdjtfPGhj5xYlU80MzjOvF69NjLMyaGT8zUhXd
+	PYpWSvR0S75Laq6Km3vNK2rRuJ9Pjx8/2/Rm25MIwlY9Nv/C6lFJYY7ilzlxDZcOx2ywpX11
+	GbqDTtV4lxdsLIkarS99MunkuxHSxvBRlcJlr/wenc5lD/uoG1CWJy311PCVRr5E7MBr91YN
+	7eywVXsah+1/neZtvEPFLjHGqwoX4BGb0vc5ISw23dBeN23hnIq1/pwzzZU8Y2P1zQWyd/XD
+	w7O2b6xZ+iNTlZ210qaY2WIjr1jFhDZBHj0R12jlvwFGFXTBtQMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrCIsWRmVeSWpSXmKPExsVy+t/xe7qP3zFmGHRON7PobZrOZLFy9VEm
+	i19fLCwubOtjtbi8aw6bxbEFYhYHPzxhdWD3WDNvDaPHplWdbB7zTgZ6vNg8k9Fj980GNo/P
+	m+QC2KL0bIryS0tSFTLyi0tslaINLYz0DC0t9IxMLPUMjc1jrYxMlfTtbFJSczLLUov07RL0
+	Mu7/7mAsaGat6NowjbGBcQpLFyMnh4SAicT7r5OYuxi5OIQEljJKzOi4xASRkJE4Oa2BFcIW
+	lvhzrYsNoug9o8Tv27vBErwCdhIrPn5lA7FZBFQlts5ezgIRF5Q4OfMJmC0qIC9x/9YMdhBb
+	WCBYovvkTrC4iIC5xLpJi8CGMgvsYpTYsegXI8QGIOde61JmkCpmAXGJW0/mg53EJmAo0fW2
+	C2wbp4CRxKJnL6BqzCS6tnYxQtjyEtvfzmGewCg0C8khs5CMmoWkZRaSlgWMLKsYRVJLi3PT
+	c4uN9IoTc4tL89L1kvNzNzECo2/bsZ9bdjCufPVR7xAjEwfjIUYJDmYlEd5z5v/ShXhTEiur
+	Uovy44tKc1KLDzGaAkNjIrOUaHI+MP7zSuINzQxMDU3MLA1MLc2MlcR52a6cTxMSSE8sSc1O
+	TS1ILYLpY+LglGpg4s4sOf1S+PbliOmXvGdNVhGZ5dX4feWh2+wrHuQ8uhmRGTfP7ivrtbBI
+	JWHhFHcj5tRXSh8ql1/3Ebg340vOiZrfq9Kfe5fL6bt8KDSTy/g4yUHp8rvVP5Nup31IsuJ0
+	3jfhcVxsfYvhse1d5ZeOzvhTKOChEnVxF5+FvriEZ33hSevjlotnaBpEMztor98j3NbrVZ9d
+	ftJao7rHRtxIJ51Xq2JW9LLVc33//ShzqDjFf2vJ/OdTKpSnWikdTeAMkL2w+qL5/ao1UksZ
+	XBq5b751j+Nu2Rvu9Eb8xuR5Z+Umvpvz+pllPeNZwRTFI19uFLm633gX/ri7QpXt/9mr5jG2
+	R/+2Gz8PeTshgalBiaU4I9FQi7moOBEAGYc69kcDAAA=
+X-CMS-MailID: 20250418061915eucas1p275a0d6e23c262981277109d6d0db95d6
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20250415075716eucas1p1a5343f5dec617f82f5adca300eb47485
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20250415075716eucas1p1a5343f5dec617f82f5adca300eb47485
+References: <CGME20250415075716eucas1p1a5343f5dec617f82f5adca300eb47485@eucas1p1.samsung.com>
+	<20250415075659.428549-1-m.szyprowski@samsung.com>
+	<Z_4pZm_tQ6qmmj35@smile.fi.intel.com>
 
-The patch 099606a7b2d5 didn't cleanly apply to 5.15 due to the
-significant difference in codebases.
+On 15.04.2025 11:39, Andy Shevchenko wrote:
+> On Tue, Apr 15, 2025 at 09:56:59AM +0200, Marek Szyprowski wrote:
+>> When CONFIG_NEED_DMA_MAP_STATE is not defined, dma-mapping clients might
+>> report unused data compilation warnings for dma_unmap_*() calls
+>> arguments. Redefine macros for those calls to let compiler to notice that
+>> it is okay when the provided arguments are not used.
+> Tested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+>
+> (GCC on default i386_defconfig with `make W=1` on v6.15-rc2)
 
-I've tried to manually bring it back to 5.15 via some minor conflict
-resolution but also invoking the newly introduced API using inverted
-logic as the conditional statements present in 5.15 are the opposite of
-those in 6.1 xen/swiotlib.
+Applied to dma-mapping-fixes branch.
 
-Harshvardhan Jha (1):
-  xen/swiotlb: relax alignment requirements
-
- drivers/xen/swiotlb-xen.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
-
+Best regards
 -- 
-2.47.1
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
