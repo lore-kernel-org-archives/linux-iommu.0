@@ -1,103 +1,89 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1884B268C55;
-	Fri, 18 Apr 2025 08:24:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF5AAFBF6;
+	Fri, 18 Apr 2025 11:16:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744964678; cv=none; b=oJAulFQb3ibNg1lC26mea1Pbt2mBmN+LBDb8DFasBzGJbPICrZ0RdDFjyh3o6rx2yb85Yerbsf7Ye+iBQmxWhyGb7mXykatamUG58+z+Vk4r80SV8ua1i33wclb/9itZpp8bMrsrk7n7mr5BIAuy1iM9ewiGuCmExCXjkDZ2uRc=
+	t=1744975003; cv=none; b=rmKS1kt8eK8wFfK4A7NUeeCIvGvM1gQ7T9v2JzMB7fgRGrrXYkR/r1M6AoT2JA22U0OUSNDpmQrdAGHNjlD1pcWxrkExCQOAg20bw4IFTJE0/4Xq1W34wkvKE8WXP6LeJLtZDhpWtifrBlvPIaEp7gGdLsuuUy2bHYgLM/kKB24=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744964678; c=relaxed/simple;
-	bh=/9OfrWnCUxMfe0bzWWpOCEaGqaGAQjbwJjWfCuAqTJo=;
-	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=JOGb3BJogmtqYrBHoh67YdEvVEdMcTE7K94IuFjQe93wRVHl0ZsuGIiKPT7jFaZWBjsc8Vc+GjjKjtX8gTU4uwyzvj3H/ddI62p20HHPz8ID9X0OdVg0tksrJzP6v6aUxCU/8k89/lo6P7smGxTCpaPU+eYkpF02aSKuxasz6BM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Jeu8QH+M; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1744975003; c=relaxed/simple;
+	bh=dvINVulNQm/q8ensffkaywCQHGoNQIxMaLroxrA224U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=b/5vpN6LpKLsC7yWUFgdUXOSTE5lsE+Ul0a2+NQHxGOnwuqv4iOeC9pUbSoD8qM9LwNITTl25bsrrlzWc+aRKRVvUOur0T8JUEXaPJJ/4uMn+aHMdj68BW3L113543BpnYya668P4ccOMq0It+Y325Iz3tQ+nNnDT/H6sS4DFfE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WQ/C0ZYE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jeu8QH+M"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7E8CC4CEE2;
-	Fri, 18 Apr 2025 08:24:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WQ/C0ZYE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 900E0C4CEE2;
+	Fri, 18 Apr 2025 11:16:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1744964677;
-	bh=/9OfrWnCUxMfe0bzWWpOCEaGqaGAQjbwJjWfCuAqTJo=;
-	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
-	b=Jeu8QH+M1Br42zGYHGcZhAAXWDmCsjRzAlZ5hrEVlRdeHLRNgShMGYULuWj2jXTUu
-	 Gz7qZ/eC1LrK3mZRFcZPWAT+IQyGAZenZFtPYjcTwJ1eHyVOd433z8hLR083M13UnG
-	 Yz/+BNG057GgyY5KPqpOgSbRjjTVgnHLeq1Ud0qZ2tGps68D/qD0WQ7yukthbeyyXl
-	 Paw/QUmFQnR9Kbj1T+Hv5MbVp9AdYXzzTInkm93qqgjZdJGkWNWWB3uLc4zoT3AMWE
-	 N6c8o0QTJOlGOc0MMWELCLcwB8D4a+uh/yHZFCLHNgGQafGvhfq5bL0WPin3TZ3DYa
-	 lL5fCH47k7yLw==
-Date: Fri, 18 Apr 2025 03:24:34 -0500
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	s=k20201202; t=1744975003;
+	bh=dvINVulNQm/q8ensffkaywCQHGoNQIxMaLroxrA224U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=WQ/C0ZYEmhZxfgAy6oSrCwtec97rYq+IQy72i0QXVT4Nic+OEanmNLKKsvIIV8Ekj
+	 1x7gsGqeeh1osAlFFL0KDLYmWqa0wjQIuod7vLi1OTJlGC5z4qe7QRZ5wj4SS2nqE7
+	 +SH+NS44ZZFAhuBE2ycaahgJLhmerUsAv+G4MIEsX1IMHt8ijPEtQJjO7xQyt6BtQo
+	 tyiaXeqr34eQH5l7zL728IAWC+FUE2oBIwfQLJxm+CM1SCDOXGLW0mSvG5V+8GFATT
+	 SZvt1I0LYqXvIMwiZgIyzpqRSI5Z5otseG0yxNbcvWknZp/i/ZkFcDocEdXEtgjD/p
+	 CTvTVJqZ7YpdQ==
+Date: Fri, 18 Apr 2025 14:16:39 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+	Keith Busch <kbusch@kernel.org>
+Cc: Jake Edge <jake@lwn.net>, Jonathan Corbet <corbet@lwn.net>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Zhu Yanjun <zyjzyj2000@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Chuck Lever <chuck.lever@oracle.com>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Kanchan Joshi <joshi.k@samsung.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>
+Subject: Re: [PATCH v8 00/24] Provide a new two step DMA mapping API
+Message-ID: <20250418111639.GB199604@unreal>
+References: <cover.1744825142.git.leon@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: nm@ti.com, baocheng.su@siemens.com, linux-pci@vger.kernel.org, 
- diogo.ivo@siemens.com, krzk+dt@kernel.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, kw@linux.com, 
- robin.murphy@arm.com, jan.kiszka@siemens.com, kristo@kernel.org, 
- s-vadapalli@ti.com, linux-arm-kernel@lists.infradead.org, 
- lpieralisi@kernel.org, vigneshr@ti.com, iommu@lists.linux.dev, 
- linux-kernel@vger.kernel.org, bhelgaas@google.com, helgaas@kernel.org, 
- m.szyprowski@samsung.com, devicetree@vger.kernel.org, conor+dt@kernel.org, 
- ssantosh@kernel.org
-To: huaqian.li@siemens.com
-In-Reply-To: <20250418073026.2418728-3-huaqian.li@siemens.com>
-References: <20241030205703.GA1219329@bhelgaas>
- <20250418073026.2418728-1-huaqian.li@siemens.com>
- <20250418073026.2418728-3-huaqian.li@siemens.com>
-Message-Id: <174496467399.2597920.14844354232532512833.robh@kernel.org>
-Subject: Re: [PATCH v7 2/8] dt-bindings: PCI: ti,am65: Extend for use with
- PVU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1744825142.git.leon@kernel.org>
 
-
-On Fri, 18 Apr 2025 15:30:20 +0800, huaqian.li@siemens.com wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
+On Fri, Apr 18, 2025 at 09:47:30AM +0300, Leon Romanovsky wrote:
+> Following recent on site LSF/MM 2025 [1] discussion, the overall
+> response was extremely positive with many people expressed their
+> desire to see this series merged, so they can base their work on it.
 > 
-> The PVU on the AM65 SoC is capable of restricting DMA from PCIe devices
-> to specific regions of host memory. Add the optional property
-> "memory-regions" to point to such regions of memory when PVU is used.
-> 
-> Since the PVU deals with system physical addresses, utilizing the PVU
-> with PCIe devices also requires setting up the VMAP registers to map the
-> Requester ID of the PCIe device to the CBA Virtual ID, which in turn is
-> mapped to the system physical address. Hence, describe the VMAP
-> registers which are optional unless the PVU shall be used for PCIe.
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Signed-off-by: Li Hua Qian <huaqian.li@siemens.com>
-> ---
->  .../bindings/pci/ti,am65-pci-host.yaml        | 34 +++++++++++++++++--
->  1 file changed, 31 insertions(+), 3 deletions(-)
-> 
+> It includes, but not limited:
+>  * Luis's "nvme-pci: breaking the 512 KiB max IO boundary":
+>    https://lore.kernel.org/all/20250320111328.2841690-1-mcgrof@kernel.org/
+>  * Chuck's NFS conversion to use one structure (bio_vec) for all types
+>    of RPC transports:
+>    https://lore.kernel.org/all/913df4b4-fc4a-409d-9007-088a3e2c8291@oracle.com
+>  * Matthew's vision for the world without struct page:
+>    https://lore.kernel.org/all/20250320111328.2841690-1-mcgrof@kernel.org/
 
-My bot found errors running 'make dt_binding_check' on your patch:
+The link here should be https://lore.kernel.org/all/Z-WRQOYEvOWlI34w@casper.infradead.org/
 
-yamllint warnings/errors:
+>  * Confidential computing roadmap from Dan:
+>    https://lore.kernel.org/all/6801a8e3968da_71fe29411@dwillia2-xfh.jf.intel.com.notmuch
 
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/pci/ti,am65-pci-host.example.dtb: pcie@5500000 (ti,am654-pcie-rc): 'memory-region' is a required property
-	from schema $id: http://devicetree.org/schemas/pci/ti,am65-pci-host.yaml#
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20250418073026.2418728-3-huaqian.li@siemens.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
-
+Thanks
