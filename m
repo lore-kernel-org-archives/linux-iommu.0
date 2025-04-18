@@ -1,341 +1,226 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8747726B2D2
-	for <iommu@lists.linux.dev>; Fri, 18 Apr 2025 08:01:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA72613C82E;
+	Fri, 18 Apr 2025 08:02:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744963291; cv=none; b=q/zmFvpgNWAXaKnqxuQ2k9CeQITAJL4BZLdlUlAyzm/S3Z2YSTEJPnlbnAEaFtkh5uk4/wySf7pqIdg9aQ/69dT5EzlRXjOhPxsuDs3YN73Er7+96oyNG6v/vIewILxf8mw00URjOqk9bOlda7BzzXkyj4h/nBG9qYIVEWYT9Lc=
+	t=1744963365; cv=none; b=ECp6Dtj44++RHgsIXygdwSA4EnLlF5rRVZgRjXK7I3wEBcLiVpU4c5FR0Py0BCGu9iRbk5jIWvaexsMFGQ+EaZY5GKTiH6dcRAB0gm6hX6Hqqzk6RcPWsscJAClAWjF49T1Cri4Ei6pFfATSrsTJtfptMdbz0nwG/HnIByrkHEQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744963291; c=relaxed/simple;
-	bh=xHvdqCW9VAdclXNKbC1MlwSO7w2MFGw/1Ft2J9d8fQM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=iHb5s1NP+a9/h1/i2af1vHyVLwUm1MGAcV7Q4cf0rAPg39wX6Pc3Hyixb6IPM1NPMI5BrvRQtH+d9xHtr3fv0RanP3IRkNipOLvba6ZTydSTfk2ftD/+ODsQtAe1ybB8HeTBepxgP/zxef4ONuGNjJb8xUG4DScPGilh49tB2jY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kAy/tkpf; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1744963365; c=relaxed/simple;
+	bh=dp/a0KQW6s1HUowZp3pVpovc87ZhWIisQB2UIJrvz9E=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=TA+KUw5EU7AUsUXTBtDpuw6FbVq9E2Dm7m35csiJXjJTfOpSKckjdDWOddg1mGuTiBeyGHxO9jB6LsMU/AaaVakTyyuejgBxQaSZ4orf9OHgdew2Xp8NjHmrHIHs4NWSQHdif3pZQmD1mQVfsi6XDb+aQC4lcboNRXIlIe4Rxvk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AfNjpKOb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kAy/tkpf"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1744963289; x=1776499289;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xHvdqCW9VAdclXNKbC1MlwSO7w2MFGw/1Ft2J9d8fQM=;
-  b=kAy/tkpfVXfR60FyJ89snIKeu9YYQPG418vlWSrlo0Yf+NABZl6N9EmB
-   LIA1rosHucjtyOaz3YcpgERoy/iuEfZfgYEhsM/qq1e3iZ8Zxg0hSBLA6
-   mNUx23APqkH9JIVTyUhI8+0Sz662GsA5FzDo1ZSFIrlFtQJC0NmGCgqGS
-   B0orsHvRkF5nwTDXtTolV5iW9xfDx6d1mt3/t6Xx7BtI7Bjhk9nTYQ3ks
-   aa2EOLuCoqmS1PwNKCgwPq45lxhOWZCq0ypean42JKFqnRaPlrp97jJt7
-   f+3sH+yGvRl00MkIH2z4irftBGDvygyCEE+nOkVUQzKfYgWDShISPLo23
-   A==;
-X-CSE-ConnectionGUID: 6SFCZm4vTMSz+fKshPTjZQ==
-X-CSE-MsgGUID: TcV41muJT0SVAZvu4SR3RA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11406"; a="46708555"
-X-IronPort-AV: E=Sophos;i="6.15,221,1739865600"; 
-   d="scan'208";a="46708555"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2025 01:01:29 -0700
-X-CSE-ConnectionGUID: W5K9zok5TFOqHy2BBJ4TUw==
-X-CSE-MsgGUID: bnsmEDeQSu+2qGeTkk4tyw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,221,1739865600"; 
-   d="scan'208";a="131358694"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa008.fm.intel.com with ESMTP; 18 Apr 2025 01:01:26 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: Dave Jiang <dave.jiang@intel.com>,
-	Vinod Koul <vkoul@kernel.org>,
-	Fenghua Yu <fenghuay@nvidia.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>,
-	Zhou Wang <wangzhou1@hisilicon.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v5 8/8] iommu: Remove iommu_dev_enable/disable_feature()
-Date: Fri, 18 Apr 2025 16:01:30 +0800
-Message-ID: <20250418080130.1844424-9-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250418080130.1844424-1-baolu.lu@linux.intel.com>
-References: <20250418080130.1844424-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AfNjpKOb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B3F4C4CEE2;
+	Fri, 18 Apr 2025 08:02:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1744963364;
+	bh=dp/a0KQW6s1HUowZp3pVpovc87ZhWIisQB2UIJrvz9E=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=AfNjpKOb21ywlYC/OrmRmyZovar5QMJh+pzsXdQLXpgfvDc8s2FeKsSSmY9uXRTYw
+	 7wueHQYcigWmtPF+uctGlYB6aqVtEHv+CpGDOHl1li5M44Rc5SMCIoY6/r9MejZdQH
+	 YfSW7LPrPI/uKn3wu+W+GH0hzdb2JPLJEoABq2IVJ2AT4uHQc0IkJaUk/JTNFeZucb
+	 KZbcgbbNjw/HEo4kl9nYCTZuLh5jAH55WgCZcGrxraZ5NX/CyK0uoSq8QRicV6VWFF
+	 2omjCGL8y8CFmi6A3Nbm1MMks5Iz1Jz1pZsFO4W6VoN007BeBsG1aNaiETWWvXDioq
+	 cwUe4iTyuUaEg==
+Message-ID: <1284adf3-7e93-4530-9921-408c5eaeb337@kernel.org>
+Date: Fri, 18 Apr 2025 17:02:38 +0900
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 24/24] nvme-pci: optimize single-segment handling
+To: Leon Romanovsky <leon@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Jens Axboe <axboe@kernel.dk>,
+ Christoph Hellwig <hch@lst.de>, Keith Busch <kbusch@kernel.org>
+Cc: Kanchan Joshi <joshi.k@samsung.com>, Jake Edge <jake@lwn.net>,
+ Jonathan Corbet <corbet@lwn.net>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Zhu Yanjun <zyjzyj2000@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Sagi Grimberg <sagi@grimberg.me>, Bjorn Helgaas <bhelgaas@google.com>,
+ Logan Gunthorpe <logang@deltatee.com>, Yishai Hadas <yishaih@nvidia.com>,
+ Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+ Kevin Tian <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+ Andrew Morton <akpm@linux-foundation.org>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
+ linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
+ linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+ kvm@vger.kernel.org, linux-mm@kvack.org,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Chuck Lever <chuck.lever@oracle.com>, Luis Chamberlain <mcgrof@kernel.org>,
+ Matthew Wilcox <willy@infradead.org>, Dan Williams
+ <dan.j.williams@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Nitesh Shetty <nj.shetty@samsung.com>, Leon Romanovsky <leonro@nvidia.com>
+References: <cover.1744825142.git.leon@kernel.org>
+ <670389227a033bd5b7c5aa55191aac9943244028.1744825142.git.leon@kernel.org>
+Content-Language: en-US
+From: Damien Le Moal <dlemoal@kernel.org>
+Organization: Western Digital Research
+In-Reply-To: <670389227a033bd5b7c5aa55191aac9943244028.1744825142.git.leon@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-No external drivers use these interfaces anymore. Furthermore, no existing
-iommu drivers implement anything in the callbacks. Remove them to avoid
-dead code.
+On 4/18/25 15:47, Leon Romanovsky wrote:
+> From: Kanchan Joshi <joshi.k@samsung.com>
+> 
+> blk_rq_dma_map API is costly for single-segment requests.
+> Avoid using it and map the bio_vec directly.
+> 
+> Signed-off-by: Kanchan Joshi <joshi.k@samsung.com>
+> Signed-off-by: Nitesh Shetty <nj.shetty@samsung.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  drivers/nvme/host/pci.c | 65 +++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 60 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+> index 8d99a8f871ea..cf020de82962 100644
+> --- a/drivers/nvme/host/pci.c
+> +++ b/drivers/nvme/host/pci.c
+> @@ -216,6 +216,11 @@ struct nvme_queue {
+>  	struct completion delete_done;
+>  };
+>  
+> +enum {
+> +	IOD_LARGE_DESCRIPTORS = 1, /* uses the full page sized descriptor pool */
+> +	IOD_SINGLE_SEGMENT = 2, /* single segment dma mapping */
+> +};
+> +
+>  /*
+>   * The nvme_iod describes the data in an I/O.
+>   */
+> @@ -224,7 +229,7 @@ struct nvme_iod {
+>  	struct nvme_command cmd;
+>  	bool aborted;
+>  	u8 nr_descriptors;	/* # of PRP/SGL descriptors */
+> -	bool large_descriptors;	/* uses the full page sized descriptor pool */
+> +	unsigned int flags;
+>  	unsigned int total_len; /* length of the entire transfer */
+>  	unsigned int total_meta_len; /* length of the entire metadata transfer */
+>  	dma_addr_t meta_dma;
+> @@ -529,7 +534,7 @@ static inline bool nvme_pci_use_sgls(struct nvme_dev *dev, struct request *req,
+>  static inline struct dma_pool *nvme_dma_pool(struct nvme_dev *dev,
+>  		struct nvme_iod *iod)
+>  {
+> -	if (iod->large_descriptors)
+> +	if (iod->flags & IOD_LARGE_DESCRIPTORS)
+>  		return dev->prp_page_pool;
+>  	return dev->prp_small_pool;
+>  }
+> @@ -630,6 +635,15 @@ static void nvme_free_sgls(struct nvme_dev *dev, struct request *req)
+>  static void nvme_unmap_data(struct nvme_dev *dev, struct request *req)
+>  {
+>  	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
+> +	unsigned int nr_segments = blk_rq_nr_phys_segments(req);
+> +	dma_addr_t dma_addr;
+> +
+> +	if (nr_segments == 1 && (iod->flags & IOD_SINGLE_SEGMENT)) {
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
----
- drivers/iommu/amd/iommu.c                   | 32 -------------------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 34 ---------------------
- drivers/iommu/intel/iommu.c                 | 25 ---------------
- drivers/iommu/iommu.c                       | 32 -------------------
- include/linux/iommu.h                       | 28 -----------------
- 5 files changed, 151 deletions(-)
+nvme_pci_setup_prps() calls nvme_try_setup_prp_simple() which sets
+IOD_SINGLE_SEGMENT if and only if the req has a single phys segment. So why do
+you need to count the segments again here ? Looking at the flag only should be
+enough, no ?
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 17aab6d04a13..a9d539fce982 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2984,36 +2984,6 @@ static const struct iommu_dirty_ops amd_dirty_ops = {
- 	.read_and_clear_dirty = amd_iommu_read_and_clear_dirty,
- };
- 
--static int amd_iommu_dev_enable_feature(struct device *dev,
--					enum iommu_dev_features feat)
--{
--	int ret = 0;
--
--	switch (feat) {
--	case IOMMU_DEV_FEAT_IOPF:
--		break;
--	default:
--		ret = -EINVAL;
--		break;
--	}
--	return ret;
--}
--
--static int amd_iommu_dev_disable_feature(struct device *dev,
--					 enum iommu_dev_features feat)
--{
--	int ret = 0;
--
--	switch (feat) {
--	case IOMMU_DEV_FEAT_IOPF:
--		break;
--	default:
--		ret = -EINVAL;
--		break;
--	}
--	return ret;
--}
--
- const struct iommu_ops amd_iommu_ops = {
- 	.capable = amd_iommu_capable,
- 	.blocked_domain = &blocked_domain,
-@@ -3027,8 +2997,6 @@ const struct iommu_ops amd_iommu_ops = {
- 	.get_resv_regions = amd_iommu_get_resv_regions,
- 	.is_attach_deferred = amd_iommu_is_attach_deferred,
- 	.def_domain_type = amd_iommu_def_domain_type,
--	.dev_enable_feat = amd_iommu_dev_enable_feature,
--	.dev_disable_feat = amd_iommu_dev_disable_feature,
- 	.page_response = amd_iommu_page_response,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev	= amd_iommu_attach_device,
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 73f9885d20f1..e91d20e5785e 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3654,38 +3654,6 @@ static void arm_smmu_get_resv_regions(struct device *dev,
- 	iommu_dma_get_resv_regions(dev, head);
- }
- 
--static int arm_smmu_dev_enable_feature(struct device *dev,
--				       enum iommu_dev_features feat)
--{
--	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
--
--	if (!master)
--		return -ENODEV;
--
--	switch (feat) {
--	case IOMMU_DEV_FEAT_IOPF:
--		return 0;
--	default:
--		return -EINVAL;
--	}
--}
--
--static int arm_smmu_dev_disable_feature(struct device *dev,
--					enum iommu_dev_features feat)
--{
--	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
--
--	if (!master)
--		return -EINVAL;
--
--	switch (feat) {
--	case IOMMU_DEV_FEAT_IOPF:
--		return 0;
--	default:
--		return -EINVAL;
--	}
--}
--
- /*
-  * HiSilicon PCIe tune and trace device can be used to trace TLP headers on the
-  * PCIe link and save the data to memory by DMA. The hardware is restricted to
-@@ -3718,8 +3686,6 @@ static struct iommu_ops arm_smmu_ops = {
- 	.device_group		= arm_smmu_device_group,
- 	.of_xlate		= arm_smmu_of_xlate,
- 	.get_resv_regions	= arm_smmu_get_resv_regions,
--	.dev_enable_feat	= arm_smmu_dev_enable_feature,
--	.dev_disable_feat	= arm_smmu_dev_disable_feature,
- 	.page_response		= arm_smmu_page_response,
- 	.def_domain_type	= arm_smmu_def_domain_type,
- 	.viommu_alloc		= arm_vsmmu_alloc,
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 9af558390d42..93bc6574d148 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3963,29 +3963,6 @@ void intel_iommu_disable_iopf(struct device *dev)
- 	iopf_queue_remove_device(iommu->iopf_queue, dev);
- }
- 
--static int
--intel_iommu_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
--{
--	switch (feat) {
--	case IOMMU_DEV_FEAT_IOPF:
--		return 0;
--	default:
--		return -ENODEV;
--	}
--}
--
--static int
--intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
--{
--	switch (feat) {
--	case IOMMU_DEV_FEAT_IOPF:
--		return 0;
--
--	default:
--		return -ENODEV;
--	}
--}
--
- static bool intel_iommu_is_attach_deferred(struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
-@@ -4428,8 +4405,6 @@ const struct iommu_ops intel_iommu_ops = {
- 	.release_device		= intel_iommu_release_device,
- 	.get_resv_regions	= intel_iommu_get_resv_regions,
- 	.device_group		= intel_iommu_device_group,
--	.dev_enable_feat	= intel_iommu_dev_enable_feat,
--	.dev_disable_feat	= intel_iommu_dev_disable_feat,
- 	.is_attach_deferred	= intel_iommu_is_attach_deferred,
- 	.def_domain_type	= device_def_domain_type,
- 	.pgsize_bitmap		= SZ_4K,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 264383b507bc..df283bddf6cd 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2910,38 +2910,6 @@ int iommu_fwspec_add_ids(struct device *dev, const u32 *ids, int num_ids)
- }
- EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
- 
--/*
-- * Per device IOMMU features.
-- */
--int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat)
--{
--	if (dev_has_iommu(dev)) {
--		const struct iommu_ops *ops = dev_iommu_ops(dev);
--
--		if (ops->dev_enable_feat)
--			return ops->dev_enable_feat(dev, feat);
--	}
--
--	return -ENODEV;
--}
--EXPORT_SYMBOL_GPL(iommu_dev_enable_feature);
--
--/*
-- * The device drivers should do the necessary cleanups before calling this.
-- */
--int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
--{
--	if (dev_has_iommu(dev)) {
--		const struct iommu_ops *ops = dev_iommu_ops(dev);
--
--		if (ops->dev_disable_feat)
--			return ops->dev_disable_feat(dev, feat);
--	}
--
--	return -EBUSY;
--}
--EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
--
- /**
-  * iommu_setup_default_domain - Set the default_domain for the group
-  * @group: Group to change
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index bfdd2e71e124..5c05c0851f9f 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -316,16 +316,6 @@ struct iommu_iort_rmr_data {
- 	u32 num_sids;
- };
- 
--/**
-- * enum iommu_dev_features - Per device IOMMU features
-- * @IOMMU_DEV_FEAT_IOPF: I/O Page Faults such as PRI or Stall.
-- *
-- * Device drivers enable a feature using iommu_dev_enable_feature().
-- */
--enum iommu_dev_features {
--	IOMMU_DEV_FEAT_IOPF,
--};
--
- #define IOMMU_NO_PASID	(0U) /* Reserved for DMA w/o PASID */
- #define IOMMU_FIRST_GLOBAL_PASID	(1U) /*starting range for allocation */
- #define IOMMU_PASID_INVALID	(-1U)
-@@ -657,9 +647,6 @@ struct iommu_ops {
- 	bool (*is_attach_deferred)(struct device *dev);
- 
- 	/* Per device IOMMU features */
--	int (*dev_enable_feat)(struct device *dev, enum iommu_dev_features f);
--	int (*dev_disable_feat)(struct device *dev, enum iommu_dev_features f);
--
- 	void (*page_response)(struct device *dev, struct iopf_fault *evt,
- 			      struct iommu_page_response *msg);
- 
-@@ -1128,9 +1115,6 @@ void dev_iommu_priv_set(struct device *dev, void *priv);
- extern struct mutex iommu_probe_device_lock;
- int iommu_probe_device(struct device *dev);
- 
--int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
--int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features f);
--
- int iommu_device_use_default_domain(struct device *dev);
- void iommu_device_unuse_default_domain(struct device *dev);
- 
-@@ -1415,18 +1399,6 @@ static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
- 	return -ENODEV;
- }
- 
--static inline int
--iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features feat)
--{
--	return -ENODEV;
--}
--
--static inline int
--iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
--{
--	return -ENODEV;
--}
--
- static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
- {
- 	return NULL;
+> +		dma_addr = le64_to_cpu(iod->cmd.common.dptr.prp1);
+> +		dma_unmap_page(dev->dev, dma_addr, iod->total_len,
+> +				rq_dma_dir(req));
+> +		return;
+> +	}
+>  
+>  	if (!blk_rq_dma_unmap(req, dev->dev, &iod->dma_state, iod->total_len)) {
+>  		if (iod->cmd.common.flags & NVME_CMD_SGL_METABUF)
+> @@ -642,6 +656,41 @@ static void nvme_unmap_data(struct nvme_dev *dev, struct request *req)
+>  		nvme_free_descriptors(dev, req);
+>  }
+>  
+> +static bool nvme_try_setup_prp_simple(struct nvme_dev *dev, struct request *req,
+> +				      struct nvme_rw_command *cmnd,
+> +				      struct blk_dma_iter *iter)
+> +{
+> +	struct nvme_iod *iod = blk_mq_rq_to_pdu(req);
+> +	struct bio_vec bv = req_bvec(req);
+> +	unsigned int first_prp_len;
+> +
+> +	if (is_pci_p2pdma_page(bv.bv_page))
+> +		return false;
+> +	if ((bv.bv_offset & (NVME_CTRL_PAGE_SIZE - 1)) + bv.bv_len >
+> +	    NVME_CTRL_PAGE_SIZE * 2)
+> +		return false;
+> +
+> +	iter->addr = dma_map_bvec(dev->dev, &bv, rq_dma_dir(req), 0);
+> +	if (dma_mapping_error(dev->dev, iter->addr)) {
+> +		iter->status = BLK_STS_RESOURCE;
+> +		goto out;
+> +	}
+> +	iod->total_len = bv.bv_len;
+> +	cmnd->dptr.prp1 = cpu_to_le64(iter->addr);
+> +
+> +	first_prp_len = NVME_CTRL_PAGE_SIZE -
+> +			(bv.bv_offset & (NVME_CTRL_PAGE_SIZE - 1));
+> +	if (bv.bv_len > first_prp_len)
+> +		cmnd->dptr.prp2 = cpu_to_le64(iter->addr + first_prp_len);
+> +	else
+> +		cmnd->dptr.prp2 = 0;
+> +
+> +	iter->status = BLK_STS_OK;
+> +	iod->flags |= IOD_SINGLE_SEGMENT;
+> +out:
+> +	return true;
+> +}
+> +
+>  static blk_status_t nvme_pci_setup_prps(struct nvme_dev *dev,
+>  					struct request *req)
+>  {
+> @@ -652,6 +701,12 @@ static blk_status_t nvme_pci_setup_prps(struct nvme_dev *dev,
+>  	dma_addr_t prp1_dma, prp2_dma = 0;
+>  	unsigned int prp_len, i;
+>  	__le64 *prp_list;
+> +	unsigned int nr_segments = blk_rq_nr_phys_segments(req);
+> +
+> +	if (nr_segments == 1) {
+> +		if (nvme_try_setup_prp_simple(dev, req, cmnd, &iter))
+> +			return iter.status;
+> +	}
+>  
+>  	if (!blk_rq_dma_map_iter_start(req, dev->dev, &iod->dma_state, &iter))
+>  		return iter.status;
+> @@ -693,7 +748,7 @@ static blk_status_t nvme_pci_setup_prps(struct nvme_dev *dev,
+>  
+>  	if (DIV_ROUND_UP(length, NVME_CTRL_PAGE_SIZE) >
+>  	    NVME_SMALL_DESCRIPTOR_SIZE / sizeof(__le64))
+> -		iod->large_descriptors = true;
+> +		iod->flags |= IOD_LARGE_DESCRIPTORS;
+>  
+>  	prp_list = dma_pool_alloc(nvme_dma_pool(dev, iod), GFP_ATOMIC,
+>  			&prp2_dma);
+> @@ -808,7 +863,7 @@ static blk_status_t nvme_pci_setup_sgls(struct nvme_dev *dev,
+>  	}
+>  
+>  	if (entries > NVME_SMALL_DESCRIPTOR_SIZE / sizeof(*sg_list))
+> -		iod->large_descriptors = true;
+> +		iod->flags |= IOD_LARGE_DESCRIPTORS;
+>  
+>  	sg_list = dma_pool_alloc(nvme_dma_pool(dev, iod), GFP_ATOMIC, &sgl_dma);
+>  	if (!sg_list)
+> @@ -932,7 +987,7 @@ static blk_status_t nvme_prep_rq(struct nvme_dev *dev, struct request *req)
+>  
+>  	iod->aborted = false;
+>  	iod->nr_descriptors = 0;
+> -	iod->large_descriptors = false;
+> +	iod->flags = 0;
+>  	iod->total_len = 0;
+>  	iod->total_meta_len = 0;
+>  
+
+
 -- 
-2.43.0
-
+Damien Le Moal
+Western Digital Research
