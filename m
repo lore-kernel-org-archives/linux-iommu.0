@@ -1,156 +1,239 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7153B20D4F4
-	for <iommu@lists.linux.dev>; Mon, 21 Apr 2025 21:00:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E3E62165F3
+	for <iommu@lists.linux.dev>; Mon, 21 Apr 2025 21:19:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745269261; cv=none; b=pwx3XvuEiwiPcVzzXr8+zb+LIsYGdTh4LvNr6EutjR5DoO7GdybY3/j1UMHlofRoktpJpz/GiSBk/y1YN8dMwMOG2xXx5kZcIM1AW/ZzRBRz/eBTEr0/HBeqyVybn8Wb7IKnMQSgTDTKle6fGzaMb9RobRUhoICPjQkcE65D2Uw=
+	t=1745270383; cv=none; b=IPpRiOyWMynathL5FBOBeHxBzFXHoH0xXPWlyimIsiNnA4kzqLHeca2hYvIXqhbXsFm9/MCekaJj7rCjQuMMNOLiNJvQ4pLSKHZub2kHBLRrG3+SmU/1jUONZdUyq4WPPjkqfgyBR5jWoRC+bu8mR3+2up8bKSbtEorQBj7j0PE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745269261; c=relaxed/simple;
-	bh=t0reQejpEy+awsYTb53wJTJbKqsU4iiO5Emdqd80b5Q=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=C2gm3+VSqeqbuakKQXTL2niPzzUo8pJ5Yk1+jWT+eB5u/FwbvUM0F00c1Tvtd23MTl3ALHfSY320zaTug+XoRPHqUHG+uGfm7B0+IH4LApKiDdGOEZw2QO8nsGal0OGfrkGiKAiY8a7bNGQSPEc+eaVmL/4ulO2szUaRWffCbaM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=citrix.com; spf=pass smtp.mailfrom=cloud.com; dkim=pass (1024-bit key) header.d=citrix.com header.i=@citrix.com header.b=HfOqhocQ; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=citrix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cloud.com
+	s=arc-20240116; t=1745270383; c=relaxed/simple;
+	bh=y9paRPe3EBkrJsPVpxL3MgtnKFa8kkeGioBWGvUF2m8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=I6w+Kk59wDe39Zq1tROvp2wcIYtdNVZZUY8xrhPg0acIqcGGADRUVmmpHo1zCJI7Hb+A+K/kdlQfEC832q6+GXI8XYr6afv50LScfG7X7WdVJHcacc9MpYR1WySbrcseJVNvRY7u4yxymaClwYKohBRIxNycFvq9QgBElhp2Y60=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=D1Jt+LcA; arc=none smtp.client-ip=209.85.210.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=citrix.com header.i=@citrix.com header.b="HfOqhocQ"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-43cf3192f3bso44565995e9.1
-        for <iommu@lists.linux.dev>; Mon, 21 Apr 2025 14:00:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="D1Jt+LcA"
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-73972a54919so3957445b3a.3
+        for <iommu@lists.linux.dev>; Mon, 21 Apr 2025 14:19:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=citrix.com; s=google; t=1745269258; x=1745874058; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=t0reQejpEy+awsYTb53wJTJbKqsU4iiO5Emdqd80b5Q=;
-        b=HfOqhocQ2Y1gvIZvapiXRzz6yQCxDY+O3HjPoB5s7sQO2sUwrtk1xsfd0/Kie48oGq
-         XyIJUiZq023jWA71OEuk2IF1IvuHwKgZW/ZqMDu9bnTpPpE0BMLE5pGJxFvm++ZO8YdE
-         sNVHcpQXzUZBDShp6T8r2PrxURYKzHfPCusw4=
+        d=google.com; s=20230601; t=1745270381; x=1745875181; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=eOxnJAhc6wvN/76rnzdND4XiH0RAh5L8BLwUG18oaZY=;
+        b=D1Jt+LcAZC0Xx7yD3AutAnj9waxG0PayVbVEdiDNP4X4JGN2Krz6QocLO7gdCi/z99
+         P/aMnTtz7LcpY+bXEoRUhAwQtOLFGS88zW2omZqXq6GHdkczqddfkhB5AVD0mHe1srKo
+         h2dOgSznJ4ENXmQUVjWd8pxKxDk/tHBBUKN6XEtBt6cYJRGS2Dx+g9ZmEa+hR/CprJdS
+         OWn87r3kMR67LkQrUbraMewWUCW6DdnJXdGQp9JU4aeP3aQHqnkI/dBpcaIlG28kcOU7
+         S0h7c1/oocz2iC869KQwk9OTE2bUqHLajJA4JKtHvEI5wTUmvjPu2R9GWGSxgcoQR1DT
+         wdTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745269258; x=1745874058;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20230601; t=1745270381; x=1745875181;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=t0reQejpEy+awsYTb53wJTJbKqsU4iiO5Emdqd80b5Q=;
-        b=HRavytbHui88iaU6CiR1BXPc2vrXk1uwx0zYOmtPDsyjcFF2rhooiD85SjIqmWZdaH
-         LgJIpBsXQxVHdikWajp2+THimMGs/YvNptS0hZ3/DTg30B9DFe87chf6nWGVa2/Kl3LP
-         Gf4z55FE/Bm7i7ZAkBAxj/xp0OeYXQWZxW1r3sRafIZktT73VLAMVDAPVICs63hRM2am
-         hC2Ser8lBHwKtWDFwNBXN6WS4RXgqqobtWn37eH9hUhUOx9cxpBURepoacoSEO1u1WkQ
-         6TdvWPi+7N1xUhjCY4tUwr7VrPWZgwVuPv/dsuxYbezi4pSOGfvoiVadHBZuMjkambVY
-         a4pg==
-X-Forwarded-Encrypted: i=1; AJvYcCUaGmye3Y+zmo2aoZh2xWqRcbaQy5gC76B8QUOXmeJSU5RFR3IeELejPD5K75uMLJ191abJvg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxHvdMJ7rBKz6yaZpTsZ7HcWl8zixvei4l4/msoP4sR9ijRU12G
-	AKhZRVYeQKw5WoFELB4XxWiAmJcYU0eikJfzLNEjoNLjxKg2NXpTWwlAioR0ZlE=
-X-Gm-Gg: ASbGnctOjP6sWFCOVpcJIhvRqECPJ422F6PVI18D5UriF+DnId+7UAFhInTe+xzpb4n
-	MRPSlNqZRMlWpCC0fF774NaEBeKEzxz9wSk9RGQBKmxuz96OjVriAg+zBVCRejnSQLoZdMyqN7I
-	yTTJSRDVn18pzaXXUlpaGtTP0cp+4kFZ6xpp6F/a4PlpQGwe5hCiTX07EoO31oDQL1x062KZzEk
-	7IMGyNBpvIqljSjojjkPm73ARW246Wr16SzEm3PtSY5x2J/XBdJXAc8OZcLwPk1z8LgmgD6xTGr
-	EmUeg6XznXOTa+ZPG0kmJAMVSqH5TLPAdXaTM8WKpfMI6Fi4HC8gpg==
-X-Google-Smtp-Source: AGHT+IEqZcEurBsEwpQNvMEBz98hVptC58D9hX1qopJkxrFk/Vkqpzpoey4oDYw4HKljgsecLmBIZw==
-X-Received: by 2002:a05:600c:1c12:b0:43e:ee80:c233 with SMTP id 5b1f17b1804b1-4406ac20146mr103140445e9.32.1745269257767;
-        Mon, 21 Apr 2025 14:00:57 -0700 (PDT)
-Received: from [192.168.86.29] ([83.104.178.215])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4406d5acc5dsm150288735e9.9.2025.04.21.14.00.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Apr 2025 14:00:56 -0700 (PDT)
-Message-ID: <693a7733-0e03-4236-bdd1-13441b1ca3a5@citrix.com>
-Date: Mon, 21 Apr 2025 22:00:54 +0100
+        bh=eOxnJAhc6wvN/76rnzdND4XiH0RAh5L8BLwUG18oaZY=;
+        b=l5gQjKc9xz7KEVjVvdEbrRdyXB4fZ5/ZRziryobafxcI85R4MqOdVQfW5intTJKAlY
+         OwgEheyT0R5InF9mQTEgWVjoHyCWuSD6e14RYi/q8iPUuVa7DgSFBM1h67aQYn6PTubb
+         P4UgC7I5LxTqbLN7xRbtNYBlPF6puZD60oXNn2XYJ7+OgZzelRxA8ci3VldILfvNMn+R
+         8WKa+zVYDuIjMrR5HxPEQo7TXrCQ+FQoZV+MJVHLMbndH4zkPnnVK7pMypfweSxAtuWV
+         58b/0LgWcNLCEfygrEhaaIZ6XvyZkLkOszVGEb09yc+P4eRJRDq6R8MNiEs38ddKIgn2
+         l2RQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVqDcjWLSkz2dDkJj4YwvYPi26tBfBFtmxvg9qD0w7II+iQLOHATovi5P9fustr9QRhE0opwA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx8Jt6DaeF3RC6YLUHaqSOHB3vpFaYjRmpIuUzYLtZ0cPvVbnRQ
+	flMsEyTddejuYt86dH+WP6tPXnqeuswzf6PKNPZAB0aqyvB6F1o+Xbng7nE9HA==
+X-Gm-Gg: ASbGncsMv+MC6lmFTm8iZYWLzXd5HOst2LG3vkjB8GlnHpyCvEZMlVvJQ8V3PLazskb
+	T1M2ls8JMg3np/f9KvsMC/MayEMVXdgV4gxX8FutqLLUgNupIndvGGeR4FCp9DTbWecj14c6Ajb
+	IwV6t1HHUDWXaQXPNsTsmF6SGVfW84PQmZ1aoxQ5l3rdvHeE+K1cTK5rO5A7w0/kfCEsgABUwsD
+	dLN1Sksv7dJPXRmxz0CMf3PPkOa+dCEYDV7XTPbxoRKcd0aHUeCl9bE4T1ZKCLsug4mubJJbhDV
+	4qQOfz3Hm/Uxydgl0Z+WwciiECMLXbJkiRDua9o3Zf6adi75Z6GNnK/BnQGcBRjdALAPNRCsRsU
+	my2lkfg==
+X-Google-Smtp-Source: AGHT+IFQHuZZplaf8sY7Y2IO0G/qjhqIBZAX4ciEU72ZJiY0NIk0kGrIvFbpMAl14ucHM0THPLNUAw==
+X-Received: by 2002:aa7:88d2:0:b0:736:339b:8296 with SMTP id d2e1a72fcca58-73dc1566852mr17070386b3a.18.1745270380314;
+        Mon, 21 Apr 2025 14:19:40 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73dbfacdb9bsm7051875b3a.155.2025.04.21.14.19.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 21 Apr 2025 14:19:39 -0700 (PDT)
+Date: Mon, 21 Apr 2025 14:19:35 -0700
+From: William McVicker <willmcvicker@google.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, Russell King <linux@armlinux.org.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Stuart Yoder <stuyoder@gmail.com>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Saravana Kannan <saravanak@google.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, devicetree@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	Charan Teja Kalla <quic_charante@quicinc.com>
+Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
+ path
+Message-ID: <aAa2Zx86yUfayPSG@google.com>
+References: <cover.1740753261.git.robin.murphy@arm.com>
+ <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v14 00/19] x86: Trenchboot secure dynamic launch Linux
- kernel support
-To: Dave Hansen <dave.hansen@intel.com>,
- Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
- x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
- linux-efi@vger.kernel.org, iommu@lists.linux.dev
-Cc: dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
- bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com, ardb@kernel.org,
- mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
- peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
- nivedita@alum.mit.edu, herbert@gondor.apana.org.au, davem@davemloft.net,
- corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
- baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
- trenchboot-devel@googlegroups.com
-References: <20250421162712.77452-1-ross.philipson@oracle.com>
- <d96f9c5e-64ed-4c28-a8ad-e22daea19742@intel.com>
-Content-Language: en-GB
-From: Andrew Cooper <andrew.cooper3@citrix.com>
-Autocrypt: addr=andrew.cooper3@citrix.com; keydata=
- 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
- 6+ahAA==
-In-Reply-To: <d96f9c5e-64ed-4c28-a8ad-e22daea19742@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
 
-On 21/04/2025 9:52 pm, Dave Hansen wrote:
-> On 4/21/25 09:26, Ross Philipson wrote:
->> The larger focus of the TrenchBoot project (https://github.com/TrenchBoot) is to
->> enhance the boot security and integrity in a unified manner.
-> Hey Folks,
->
-> It isn't immediately apparent what these 5,000 lines of code do which is
-> new, why they are important to users and who will use them. I've
-> wondered this from v1 and I was hoping it would have gotten better by
-> v14, but alas...
->
-> Purely from the amount of interest and review tags and the whole "v14"
-> thing, it doesn't look like this is very important to anyone. Not to be
-> to flippant about it, but if nobody else cares, why should I (or the
-> other x86 maintainers)?
+Hi Robin,
 
-The very-tl;dr is:
+On 02/28/2025, Robin Murphy wrote:
+> In hindsight, there were some crucial subtleties overlooked when moving
+> {of,acpi}_dma_configure() to driver probe time to allow waiting for
+> IOMMU drivers with -EPROBE_DEFER, and these have become an
+> ever-increasing source of problems. The IOMMU API has some fundamental
+> assumptions that iommu_probe_device() is called for every device added
+> to the system, in the order in which they are added. Calling it in a
+> random order or not at all dependent on driver binding leads to
+> malformed groups, a potential lack of isolation for devices with no
+> driver, and all manner of unexpected concurrency and race conditions.
+> We've attempted to mitigate the latter with point-fix bodges like
+> iommu_probe_device_lock, but it's a losing battle and the time has come
+> to bite the bullet and address the true source of the problem instead.
+> 
+> The crux of the matter is that the firmware parsing actually serves two
+> distinct purposes; one is identifying the IOMMU instance associated with
+> a device so we can check its availability, the second is actually
+> telling that instance about the relevant firmware-provided data for the
+> device. However the latter also depends on the former, and at the time
+> there was no good place to defer and retry that separately from the
+> availability check we also wanted for client driver probe.
+> 
+> Nowadays, though, we have a proper notion of multiple IOMMU instances in
+> the core API itself, and each one gets a chance to probe its own devices
+> upon registration, so we can finally make that work as intended for
+> DT/IORT/VIOT platforms too. All we need is for iommu_probe_device() to
+> be able to run the iommu_fwspec machinery currently buried deep in the
+> wrong end of {of,acpi}_dma_configure(). Luckily it turns out to be
+> surprisingly straightforward to bootstrap this transformation by pretty
+> much just calling the same path twice. At client driver probe time,
+> dev->driver is obviously set; conversely at device_add(), or a
+> subsequent bus_iommu_probe(), any device waiting for an IOMMU really
+> should *not* have a driver already, so we can use that as a condition to
+> disambiguate the two cases, and avoid recursing back into the IOMMU core
+> at the wrong times.
+> 
+> Obviously this isn't the nicest thing, but for now it gives us a
+> functional baseline to then unpick the layers in between without many
+> more awkward cross-subsystem patches. There are some minor side-effects
+> like dma_range_map potentially being created earlier, and some debug
+> prints being repeated, but these aren't significantly detrimental. Let's
+> make things work first, then deal with making them nice.
+> 
+> With the basic flow finally in the right order again, the next step is
+> probably turning the bus->dma_configure paths inside-out, since all we
+> really need from bus code is its notion of which device and input ID(s)
+> to parse the common firmware properties with...
+> 
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com> # pci-driver.c
+> Acked-by: Rob Herring (Arm) <robh@kernel.org> # of/device.c
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+> 
+> v2:
+>  - Comment bus driver changes for clarity
+>  - Use dev->iommu as the now-robust replay condition
+>  - Drop the device_iommu_mapped() checks in the firmware paths as they
+>    weren't doing much - we can't replace probe_device_lock just yet...
+>  
+>  drivers/acpi/arm64/dma.c        |  5 +++++
+>  drivers/acpi/scan.c             |  7 -------
+>  drivers/amba/bus.c              |  3 ++-
+>  drivers/base/platform.c         |  3 ++-
+>  drivers/bus/fsl-mc/fsl-mc-bus.c |  3 ++-
+>  drivers/cdx/cdx.c               |  3 ++-
+>  drivers/iommu/iommu.c           | 24 +++++++++++++++++++++---
+>  drivers/iommu/of_iommu.c        |  7 ++++++-
+>  drivers/of/device.c             |  7 ++++++-
+>  drivers/pci/pci-driver.c        |  3 ++-
+>  10 files changed, 48 insertions(+), 17 deletions(-)
+> 
 
-This is an implementation of Intel TXT which isn't a piece of
-abandonware with unaddressed CVEs (i.e. isn't tboot).
+[...]
 
-AMD and ARM support of equivalent technologies will be coming next.
+> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+> index 6f2a33722c52..1813cfd0c4bd 100644
+> --- a/drivers/base/platform.c
+> +++ b/drivers/base/platform.c
+> @@ -1451,7 +1451,8 @@ static int platform_dma_configure(struct device *dev)
+>  		attr = acpi_get_dma_attr(to_acpi_device_node(fwnode));
+>  		ret = acpi_dma_configure(dev, attr);
+>  	}
+> -	if (ret || drv->driver_managed_dma)
+> +	/* @drv may not be valid when we're called from the IOMMU layer */
+> +	if (ret || !dev->driver || drv->driver_managed_dma)
+>  		return ret;
+>  
+>  	ret = iommu_device_use_default_domain(dev);
 
-~Andrew
+I wanted to report a regression here that was exposed by the new probing
+behavior. On Pixel 6, we load our kernel modules in parallel which means
+probing is done in parallel. This results in a race condition between the IOMMU
+thread and the device probing thread. What I'm seeing is at the top of the
+function `platform_dma_configure()` when we assign
+`drv = to_platform_driver(dev->driver);`, `dev->driver` is NULL which results
+in `drv = 0xf...ffd8`. In parallel, if the driver gets bound to the device
+before we reach the above if-statement, then `dev->driver != NULL` and we will
+de-reference `drv` --  resulting in a kernel panic.
+
+To address this race condition and KP, we need to defer assigning `drv` until
+after we check if the driver is bound. Here is what works for me:
+
+----->8-----
+
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index 1813cfd0c4bd..6d124447545c 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -1440,8 +1440,8 @@ static void platform_shutdown(struct device *_dev)
+ 
+ static int platform_dma_configure(struct device *dev)
+ {
+-       struct platform_driver *drv = to_platform_driver(dev->driver);
+        struct fwnode_handle *fwnode = dev_fwnode(dev);
++       struct platform_driver *drv;
+        enum dev_dma_attr attr;
+        int ret = 0;
+ 
+@@ -1451,8 +1451,12 @@ static int platform_dma_configure(struct device *dev)
+                attr = acpi_get_dma_attr(to_acpi_device_node(fwnode));
+                ret = acpi_dma_configure(dev, attr);
+        }
+-       /* @drv may not be valid when we're called from the IOMMU layer */
+-       if (ret || !dev->driver || drv->driver_managed_dma)
++       /* @dev->driver may not be valid when we're called from the IOMMU layer */
++       if (ret || !dev->driver)
++               return ret;
++
++       drv = to_platform_driver(dev->driver);
++       if (drv->driver_managed_dma)
+                return ret;
+ 
+        ret = iommu_device_use_default_domain(dev);
+--
+
+Please let me know what you think.
+
+Thanks,
+Will
+
+[...]
