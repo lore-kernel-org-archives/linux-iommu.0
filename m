@@ -1,238 +1,170 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBAF81EFF8E
-	for <iommu@lists.linux.dev>; Mon, 21 Apr 2025 19:19:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745263160; cv=fail; b=tA0tIq3HnTDpPfUsxJHDTQB0pCSAAO/whbMC6CWukks56k43G6T4lTkE2zR4ef9x4W3jRP5efX3i1Bqx1Gn3i2P+UyQfR9Qk9vc6djCmT8YPRbIrYZPAVhMllGgrODoeJG7EU3VlciTFP9GDlqObjnhptTpbphkJZIFQujGggVI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745263160; c=relaxed/simple;
-	bh=ste+xLEQ/0NEX0QlnPKdFkeOFemKUkweEUZ/zVy/dBc=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=sQ9ghuJRaxvQu1F1+84hl37w+zRU0tvYO+G/XcQPxlFNAmfky4jjsUvncG5nXAJnsNM3hvgNNKohBcl44Hqp4/C2q6O6bpBb8a1fp9u2lk7dI5Qx3snRPMHOPCeQEezDvyajRj50v6QKbp/wlTyhq2Z071R6ywv2x5nLxA1o+58=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=McuPXqL4; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=fsYxFu3p; arc=fail smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 623B91372
+	for <iommu@lists.linux.dev>; Mon, 21 Apr 2025 20:18:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745266712; cv=none; b=Gh201Si42WHU2mevx0yS1h4G4sxREL+Yv0pHRbsixvJTauALd/JA/1xbzReaYG7HCcx7JkoSVkDWsj1gIb2PYqPqZMUmjBFrr+tEE1iRj4xelTxTFSCuhq8tHatOdT+KyFa9FcvEh2ZSB+ID8N3ybYrdzVL86iG4Ex4FUMpV6fE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745266712; c=relaxed/simple;
+	bh=ZT6G0gLMpYOma7+nsyuQ5jRof3ch8u1E9cEnMHxyUSI=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ATE6/8sCFU9GM+iayD0ecoLtRj1fj12zB7q9yyrujWrYs+PTiDVbfJcYsoim0OhjjWyHhNTCGerR5IXhhIKh9dRMKM/3DdLKRuFAi205tctMt7dgqsPfHiuhJa/u8JXdyR2SP8QzgWxHT9hQ6I9C3DaszHvMA7X2H7GWlOIhYeA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=dnSS8qmZ; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="McuPXqL4";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="fsYxFu3p"
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53LFIeqE015029;
-	Mon, 21 Apr 2025 19:18:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	corp-2023-11-20; bh=Ut8NI/KiCFHbzwiBKG6Buzt0cyXD+lj4CiISxjJwv/8=; b=
-	McuPXqL4bQ1ajULv1yO3k+/I4DATtKqw7avIIXaceyeafxxwCrvPAnxPuAdEUI+9
-	hPWnYNERmNil5Q8hOtb1eS+zP3gPitTtEn+uBijSxK7hAJsbkMFBlZ9LqTK+eoNl
-	L4byWqEI0SMNhbRjfVURZXQ7btzLF5XinZ2oZtrHnHYnRHqusjdmggnIveFnvRtZ
-	ab6CCvFq42PC+tTuRDVJCDJWRCjNE1UcL6Ly42d0DUUcByjmOM37HxXAbY8HelAR
-	qx3wwPSERJwCG2nfw+sAepCOGB5TDKbm9+YYONA6CznrAsdpSu1i2z7laAEkE7sI
-	P7E6Vtwzq6eKQd0p4lnxUw==
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4643vc352y-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 21 Apr 2025 19:18:36 +0000 (GMT)
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 53LIIcsK010943;
-	Mon, 21 Apr 2025 19:18:35 GMT
-Received: from ch4pr04cu002.outbound.protection.outlook.com (mail-northcentralusazlp17013058.outbound.protection.outlook.com [40.93.20.58])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 464298wy4f-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 21 Apr 2025 19:18:35 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=CaFoqqWawOvdaG+uJ2M8DCgMo0QYtruudVO6cyDYtbu2epiTiSd+DsFWcBPBZ8V1hBOyqhoVTr8n1uO3KJRULoPhLOf/AtEAnOREMWvy+l2m8CvZDgd9tC89v0CTZYJiswIH++r5tQgq4KW0+DJfiq+QycSwo8GgkZnzRyBnVeRBCPmmGeVzEKyYFBi6tHbK/ro/BzaZjLy/2OLfePvTyWaCrV1Xds3zrSZJ51igbjBtdCa/Lh8/SwG3cGECM6HvxW+NLlbid9LjvlWgM3IjcpGNnsXwB8PuV2Kuhoo/CqPwe4V7JLB9PmgbRUs9o8+ydZgSbF6/k/ijbtMPJBKgog==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ut8NI/KiCFHbzwiBKG6Buzt0cyXD+lj4CiISxjJwv/8=;
- b=L0rI7haeIeUQj3yGZ51AvBQ+WIlNX3cNS5bDdbQVUNUxcnFaJFxwUdj0DgXhalhxepN5yTK2CqUx1+CoIE/J1Ny5iHe0bYA8XBMwBTzdwiNc/LHc2u9wBLxrSKWLQ6w1GnqGelT8s+XJed3Cwmol3qJHUuv9PyppmbS30TZxpYlZHng9a4g5/pEyiOB9vDNy6JAv0IizF0F9qUkmvfKW+EPvauak/Eqo28XCxBWXduvdT3F7mZuf6m7kn9NGlwNARvUBa2UrPnVE0qC+nbJZNt6tEXOAlZKJeaOBrglXHf3ZVYkHvFd48yv+C86c3cQjU4RaCCsGYK3eadjIn/pDew==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ut8NI/KiCFHbzwiBKG6Buzt0cyXD+lj4CiISxjJwv/8=;
- b=fsYxFu3pNHTnz05j1eQO27KTbixmujhyL3t+pSEp+p1XRlFESOe+3N4sU18famr9c5XNfzdmnBNSyICPyPrphHDaSYZ2eeHOWGblWnQkBYgsoYdSIQ7OgL0ntdYzI0nAf+5W1k8ziDZlR9zAqgKwVIJaCpVRcw++2RPCxhvGfvY=
-Received: from DS7PR10MB5328.namprd10.prod.outlook.com (2603:10b6:5:3a6::12)
- by PH0PR10MB5562.namprd10.prod.outlook.com (2603:10b6:510:f1::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.32; Mon, 21 Apr
- 2025 19:18:32 +0000
-Received: from DS7PR10MB5328.namprd10.prod.outlook.com
- ([fe80::ea13:c6c1:9956:b29c]) by DS7PR10MB5328.namprd10.prod.outlook.com
- ([fe80::ea13:c6c1:9956:b29c%2]) with mapi id 15.20.8655.033; Mon, 21 Apr 2025
- 19:18:32 +0000
-Message-ID: <66cd5c81-9797-4610-93d2-de111b36ce87@oracle.com>
-Date: Tue, 22 Apr 2025 00:48:17 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v14 03/19] x86: Secure Launch Resource Table header file
-To: Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
-        x86@kernel.org, linux-integrity@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-crypto@vger.kernel.org,
-        kexec@lists.infradead.org, linux-efi@vger.kernel.org,
-        iommu@lists.linux.dev
-Cc: dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
-        bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com,
-        ardb@kernel.org, mjg59@srcf.ucam.org,
-        James.Bottomley@hansenpartnership.com, peterhuewe@gmx.de,
-        jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
-        nivedita@alum.mit.edu, herbert@gondor.apana.org.au,
-        davem@davemloft.net, corbet@lwn.net, ebiederm@xmission.com,
-        dwmw2@infradead.org, baolu.lu@linux.intel.com,
-        kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
-        trenchboot-devel@googlegroups.com
-References: <20250421162712.77452-1-ross.philipson@oracle.com>
- <20250421162712.77452-4-ross.philipson@oracle.com>
-Content-Language: en-US
-From: ALOK TIWARI <alok.a.tiwari@oracle.com>
-In-Reply-To: <20250421162712.77452-4-ross.philipson@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AS4P195CA0002.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:20b:5e2::6) To DS7PR10MB5328.namprd10.prod.outlook.com
- (2603:10b6:5:3a6::12)
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="dnSS8qmZ"
+Received: from [192.168.183.162] (254C2769.nat.pool.telekom.hu [37.76.39.105])
+	by mail.mainlining.org (Postfix) with ESMTPSA id 713D2BBAD2;
+	Mon, 21 Apr 2025 20:18:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
+	s=psm; t=1745266707;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=2s7t/jnFQ5IYzmw1pTsYPIv5DPpMMHbUNmN9wG24wrs=;
+	b=dnSS8qmZxj1Re0S4hWlbITnkCGLfs4DGs7AX2QhV+fL8r5N9RM8PzmDIi4ok2hTn6XNLt5
+	wgJ0c7kR4L/L7tab4CYhc8n05vIOZt7ls1RxYNasIkjweLStsOR7pvINtCwFUCpMn7K/0Z
+	iH7FdA3ncN70pkduATzp8oVx8XQ0ApaOI/wijoTZY7EgavyJzHYQM4dpt4bnBFAs7f6o24
+	rVtpW4+scaUBcUofgM5kdbAmQESVbfYzbB9MCcNHOQrAjTAbWw41kX66jPOVsxVz15EUYq
+	OeztBBVPNafZg/wprr4CwMNurYTkv8MzTK4497MkpuOJ57KNidQIRWvZ6wa1iA==
+From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+Subject: [PATCH v5 0/5] Initial support of MSM8937 and Xiaomi Redmi 3S
+Date: Mon, 21 Apr 2025 22:18:22 +0200
+Message-Id: <20250421-msm8937-v5-0-bf9879ef14d9@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR10MB5328:EE_|PH0PR10MB5562:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8efedf4d-0f81-4e2d-924d-08dd81094e20
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?Z0lSWU9RMXdFTkhwMm1JMFFzZHQ1U2xuNkQ5WjJEQ25LN3ZKMDFraEI0MnpO?=
- =?utf-8?B?TGRRaVlha0hRamhpeHFVNWVicWkySldnTUp1cnQxWGx5L3dSSHhPMFRTTTly?=
- =?utf-8?B?NlZLMW9GbWRzaWkvWkx3VnBxR2E5K0JWcU5pa3YwamJ2dHUrS3VYdFJ0NzR6?=
- =?utf-8?B?VEJMSk1uVTlNR1ZWQUwvL2ZGVmlMVG0yOW90d3h2R1o5dE5GVDZTNlcyTVJu?=
- =?utf-8?B?YVJaMDBIR3Y4Y0ZxQnZ4MFlVaU54NENpRDNieWpjM3dIMjZiejdGTmp1Z3Bj?=
- =?utf-8?B?SlBiVzJoMDl4Tkc4SVFHUWk5Wk8xVlAzQVc1Rm1zNUQ3dUlkcFVIREdVOWxU?=
- =?utf-8?B?SGIrQ0ZicEc4eUFkNUlwUWg2SjdINXZEWnFGbW41MzZQZUlYcGVNbC9meFlk?=
- =?utf-8?B?K01EaXZsNkxGTDVNaXdQVXE5REdCOVMrNWR6K2QxWkI3SVl3N0txYnhnTngx?=
- =?utf-8?B?N2JWM0lvYnF1UXNFcUwrVE5XZGc5Y0NlVDZNMS9mNDhvQnBxNS9mQ1A0Skpt?=
- =?utf-8?B?RzNlVUVUMng4VHhGV0RLK0ZkWjhnVFEzSTMvMlFLNFRlTWJQbHZjQVFCN2k2?=
- =?utf-8?B?dzN3TEdpL3hNRXZwb0ZuZjhVTTJYQXhLaXltTnNJNy9GRHBHU3VOQzNibk1h?=
- =?utf-8?B?QUxRMmFxTjROM1A2T2NiNWxNUEhnQ0RRbHhHWlZtTFZFTVpDQlNndy9zcG5y?=
- =?utf-8?B?WVdGTHdmdEZJS05TRU5BeFZlbDlRT0xaSGM5c1pGQnlZYjN2ZExVVVQ1dDI1?=
- =?utf-8?B?SnRZWHkxWmhDZ3FOek1QaEhjMGlBZkM1Skl3T1RDdVFWaFpEYXJGYlh2ZWRi?=
- =?utf-8?B?QlJJNFZvWCsxNkVTZVZ3UEJFVHVBUEUrTDVldWFjbUtQVmEwUlljR09LUjZU?=
- =?utf-8?B?RktFVzd2bWF4TWlYSHN6cUxjZTMrYkJLVTJYU3laUGhoVUVITWF2dEh2bnRF?=
- =?utf-8?B?dDExZW42SEFpZTJ2aHkyZXFhZFkzZW5seGU2NGtKY0V0Mnp6WGdYUWQwZWor?=
- =?utf-8?B?NC85VVFUamMzdTVlOHYwYXc1TnRURGZJU2tPU1pJMlZaQzB1NmZJYTRpalhE?=
- =?utf-8?B?M2FlY0JSaVg0bTUzNlIyS0hzMGR3REhpRVNEc245OUlXNU1rUGo2NnhrS0gx?=
- =?utf-8?B?RWNnelAxRDc4R3pmeFl0RlliM05FUWlURVpEY3pYVVFYV3dpbnREN3gzYkVl?=
- =?utf-8?B?ZVlWREZQWnJkS252SXBDZk9ENklQemU1K3dnUDNwSzAzaG8rN3lBbmJDV05Q?=
- =?utf-8?B?Vkhra25hc1NHNVBkT0R4aExBK2RwK0FOc0dUbnVHSXNlK1Q3Um43Sk1GOWZn?=
- =?utf-8?B?V200RERZU0Y5Q0tlaktVQmYyWW13Y1hvQ0RPRGdxOXNTSnE3UmdsSktUSTR4?=
- =?utf-8?B?QldLVG9mTytzeVVldlRHYjJ2TU5UQnFJQW1WSEJEdDNORlk4VkJQbjJCWi9P?=
- =?utf-8?B?WnErSE1CNG8reGRCMzhVLzJ1blkrUElSN1VOS0dFZUtlY3QwemFhUDBrQnFt?=
- =?utf-8?B?YUZQRU9UNlhpckM5TXloekJ6d2krYTRWQWFEcEFlNUlNK1JoNm5TTGtiaXFF?=
- =?utf-8?B?b1J6Zk94SEJlWjhJSktjbmlTMW1MSnliUjhlZFJTVVM4ODlYQ3VQVEtnckhX?=
- =?utf-8?B?LzByUUNIWUdITlk1c3hvSnN5dUluQU1OSUx0WkpwY1A0alErM25XZVl0djcy?=
- =?utf-8?B?bVJkSWN0alVzdmF0Mm1mR1JpeTBZUkFHRDVuMkhmSGhCR2lqd21nRm05SHpo?=
- =?utf-8?B?cHlRRnhtNHYyWmhjTEFqdVlDbWpKaWcwMk5UeWdGZDgwdDlDUU80bytlVS9y?=
- =?utf-8?B?UG00RXF5NEEyUHNkVEJ3b0IyWFlmbkpoV2hvVytvbmpnckxENDUzWHRHYWdV?=
- =?utf-8?B?Ly9Gd0JnNUpBZWI1d2Z4YlIzQW81NnV1ak5aTmIwMFVCcy85d3J3RStFb0tW?=
- =?utf-8?Q?kb/jEGRjG8Q=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB5328.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?R1JRQzQrZnJEb1B3dnFNU3I2endRNEo3VWNlK3dtdWt3S05acUhScG1BZ05P?=
- =?utf-8?B?c295N0h5bTlTbkZOYVNTcUdFU0ZxQXdTYU04QmVRVFJhaFUxQm5RWXpPU0U5?=
- =?utf-8?B?U1JQT3V3eFNiREYxUUpKbnp0eHVFbFJnY2FSNUtBV1o1SzZkbDRKNlkzM3hL?=
- =?utf-8?B?ZENVU01DUENsQmpoUUQzbC9JNXNIQlZpLzA0K3dBZ3RRdmQ2TVd5TUIwUElX?=
- =?utf-8?B?elJLK0JIV3NxakZ2RndTckhVSXpZZ0tmcmdiWkQ2RnZ4bzFGdzRpakxaVTVp?=
- =?utf-8?B?eWVJY0VQblFxeDJoNDE1RlNzRC85UTJsVWdDSUlWWGR5RGwwRTNNTlU0cmx0?=
- =?utf-8?B?TVdyaE40elVvaWhHTkdpdmt2N0psRXAyejBTQ0VzTzBubjluaU9QQVVJa3R6?=
- =?utf-8?B?aVFFblJ5ZDBvVkxBbkRha0o0eDA0TnAvS2FhaUN3VENnSEY1QVdRaE5VVXY4?=
- =?utf-8?B?SXAvV21mNDhyS1RQL05xdytuT0ZoS3F4UmdMOHpvUkFoeXA1VEMyUUYwMkFG?=
- =?utf-8?B?OExKaUhMQWZYdCt0U0xGcitkQy9mWGdHNVpJd2lrQmgwRTl5Q0cyRCtBMy9Q?=
- =?utf-8?B?aWphZjQ3b0Y2L3gwbnBqM2RhMzBLNTg1RkNUcWY1NjV0TWU3K0c5U2NzU0R5?=
- =?utf-8?B?R3VodzZZT1F5ck1xSWM4dzlkaFQ0UjB0V1h1UTBPV2llYTMwYzNEVDhDNVA2?=
- =?utf-8?B?Ymczdzg0V2U5ZDl3c013MVJCNnhmWVZvUUI4Uk1idkNrT1ZvcFJKNjVFNGZO?=
- =?utf-8?B?NllJdFEreUpNTDYxRmZINUh5RldXTmk0eHJNRWYzeEpFM1dOZHAyRDFXcEIx?=
- =?utf-8?B?S1NkTFB4MXdFMkhGdWlaU0pvZnU4OUVaUzNQSjYxcDhhd2xIclJLV0pMcnRI?=
- =?utf-8?B?dVRkaWxoK3JPNkVjdGZZQ0lOTXA3ckZwejRwRlFrTjF1Ynd2ZkkzOGptMThm?=
- =?utf-8?B?cHBHSUpjMTRZNEJLV0JQTW51SWFWaTJ5SlBaWEdQalQ4S3d6NVNYTFdJelVN?=
- =?utf-8?B?SFRWcXJKWGdCYlc0bEd2ZzdzQ2FOVmlZbFF3cU1QY2RTOVQyOXc2UVpudUYw?=
- =?utf-8?B?MnpqcTdqMTM3TllpTEtRa0RLbnNoMXo2ZzNncWs5WmxPR0JMS2JNekZlRUFm?=
- =?utf-8?B?YWpSK1BFQTZ2WHM0TGxvSmNhTi9pU2k0NmN1VFNTL2xxcUt2T3FnQnVSc3N1?=
- =?utf-8?B?VnF2VGpodk9KQUU0R3ViU1padHNHQ1JRZnlDakZXUzZrN2VnR0t1SXdITmpF?=
- =?utf-8?B?K0xhRGxTeWRHUU9nZVJkWWhwMGQyMDF6dmlGLzVrRDc2bVNGMmV3V3A2ZUVZ?=
- =?utf-8?B?SFRTcmd6NTZ1MVV4R0pCTHNqV3p1Tm5mRExYQ2NvWG40aUdUQTQ1VjBobUpL?=
- =?utf-8?B?ODdSb0RxVitRYmNKMHYwMEx4Q3BRbW5TQ09xUk9wdGE0cUhFTnNvMTV1d05h?=
- =?utf-8?B?SkF5ZVlQTGgza25HUUI0RzlPblVaa1Q0TGthYkdkZmFwM2dHSHdVL1IvQTNL?=
- =?utf-8?B?eDNXaFAzaDB1WnpwNXZlbXZ6NlErM2J0ODJNR3YzdjZLZHptVVhyaVJWalFG?=
- =?utf-8?B?M242emVVYTM3QWFaWnREWnlvbFdzenY5TENsZy9kS2ViTDY0N0IydTAwMmFE?=
- =?utf-8?B?WU9yeXBGS2FscUdCdU9oSTJ4MW9WSXd5MEswN0RXaS9DOTI4dUo3K29BcFNW?=
- =?utf-8?B?MlNHZWZMQ1cxdW1EbEt5MHI2RGYvNVBEMjU0VW5QMWJ6NElUb0MxNGlNYlVL?=
- =?utf-8?B?dEIwZklJN2xkY3JNT0Nja3daV3N5SUZYYkZBTnBRZUhyU0FsOHdNZ1MzSXBU?=
- =?utf-8?B?S1VkbGhPL0hMeFlQTm53cFpLbjIzaXR1RGdZNWY1V0g1TXExSXRSRUE0MVFv?=
- =?utf-8?B?TUtoNTgzcVJMNXBrdmlNU3lWbHE3WWw0Rnd0TlNyd1lmUE0vd081aExKaWNH?=
- =?utf-8?B?VHVobFd3UEpKeFdtaDlVZTlQSXo0QjgzVXQ1d3BVS2d6dmxoU3BORVdHMjJS?=
- =?utf-8?B?NGdSeWt3cGwrY3JTM2RKeGNxRjMzcGxJcm1PSVgrbkgzcmU3Q2xCNDNkZ0w1?=
- =?utf-8?B?KzIvVEpTNGJCTjMzOHRhRVdJT1JGVjZpQmFNeFJzVWl4djRaTllwUUI2akRa?=
- =?utf-8?B?bUNLaFlac0lxWHkzT3hrS2NZeXJ4YlRoTjNoUE5pT3RjekxTWDJrOEpFZUhP?=
- =?utf-8?B?MkE9PQ==?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	ub8jgZ75FNTnPUQFhGzrZjJ5aTHQqEMmHDpi3O3UyXmbSUpxEIpBSdin+eNJWHCbmC9n6YJ669PAjnhzFEqe2UE75YE8t6ut9zvhlYllhFh3FUevoa6r3594eu0s0QK0cJPyumRxxXRyT3d11oojbngHqoP9A9VWqGYmSupYOcTIAv0Vpg+4aOvLUWdS5Sn/Nac8aM18gKb0YSgkhws3YyFp82P9HHIvknlqwX/bSCVx13gP6JpL6vAhDwf6ZgPcQGKJBzAnOdXmzZVhpPQwbR8iag4S8xNQdhR1TlDKhp9+2Zp43tiKHfmFbKDIgPKY6k7ipWlYTrg8xfpUxqi8wioVQqUpx2gl97Q9aldYTgOgqCjY9Zd9pthL0xQ6+l3GmPyWmeGp46H5Z+Tl4ESyvitFZ7aPhMzZGANr6OV3gvsPRlsQGS+QSg/97YuPjPcWuRhUCW4DwPAOmT0fN6XERvjkVUd68gN6hT3qqSUIrQxqjfUr8+rjZqFCCKM0B+Q0W38mxczl2UCgKM09ffzGMZRQNKw/24g03XullaUxZN8j5QO4B8RsWiI9qtHblzn8cWx6bssA/cqdSDbn2tlx5KgTNb68naPZxSJY3/lqhPI=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8efedf4d-0f81-4e2d-924d-08dd81094e20
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR10MB5328.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2025 19:18:32.4178
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MsWqdfbnPoLde1kIX4Ajgu1LS+REmSpIvzideHAnTW5RxRQejvyHmfOSyopcWw93dOVUpAJXc4nJwD6TlKhavcT4w2uVXqs00W/RL693U68=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR10MB5562
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-21_09,2025-04-21_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 adultscore=0 phishscore=0
- mlxscore=0 malwarescore=0 suspectscore=0 spamscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2502280000
- definitions=main-2504210151
-X-Proofpoint-GUID: JHYvLasJeOYg1NjXLtuAYY2V0Eag7Jkx
-X-Proofpoint-ORIG-GUID: JHYvLasJeOYg1NjXLtuAYY2V0Eag7Jkx
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAA6oBmgC/23MQQrCMBCF4atI1kaSmdYkrryHuKjJtA7YVBIpi
+ vTuRkEr6PIN8/13kSkxZbFZ3EWikTMPsYx6uRD+2MSOJIeyBSioFWgl+9xbh0YCWGpV8EjeifJ
+ 9TtTy9VXa7cs+cr4M6fYKj/p5fTf0pzFqqaQJYCisTWuU3fYNxxNHjt1qSJ14hkb4woAzhoIPz
+ plyXCMF/IvxG1czxoJDE4zXFrz3h7+4mjHqesZVwbrVCGSNair3g6dpegA++3eDWgEAAA==
+X-Change-ID: 20250210-msm8937-228ef0dc3ec9
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>, 
+ =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
+ Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, 
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, 
+ Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>, 
+ Abhinav Kumar <quic_abhinavk@quicinc.com>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Dmitry Baryshkov <lumag@kernel.org>, 
+ Adam Skladowski <a_skl39@protonmail.com>, 
+ Sireesh Kodali <sireeshkodali@protonmail.com>, 
+ Srinivas Kandagatla <srini@kernel.org>, Dmitry Baryshkov <lumag@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, iommu@lists.linux.dev, 
+ dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
+ phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
+ linux@mainlining.org, 
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
+ Daniil Titov <daniilt971@gmail.com>, Dang Huynh <danct12@riseup.net>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1745266705; l=3161;
+ i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
+ bh=ZT6G0gLMpYOma7+nsyuQ5jRof3ch8u1E9cEnMHxyUSI=;
+ b=Cnn8yNYhNWMRsGvjGORVd5qBpXDDR8h1RdPBXLl83ba2+UHgYGMpHT9LtJZC2dYHP+sta6Q+M
+ hM9x7vRwArSDi3o5k5tQoq/8zohzLhBMqOcU7X7NdNr51bngfF9OzeV
+X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
+ pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
+This patch series add initial support for MSM8937 SoC
+and Xiaomi Redmi 3S (land).
 
+The series is extending the MSM8917 gcc and pinctrl drivers
+because they are sibling SoCs.
+MSM8937 have 4 more A53 cores and have one more dsi port then
+MSM8917.
+It implements little-big architecture and uses Adreno 505.
 
-On 21-04-2025 21:56, Ross Philipson wrote:
-> The Secure Launch Specification is an architectural agnostic, software neutral
-> API/ABI maintainted by the TrenchBoot project. It's function is to allow any
+Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+---
+Changes in v5:
+- msm8937:
+  - Remove wrongly defined idle-states.
+  - Fix thermal zones.
+  - Use the header with DSI phy clock IDs.
+  - Fix the nodes order.
+  - Fix the pinctrls style.
+  - Follow gcc header changes.
+- msm8937-xiaomi-land:
+  - Remove headphone switch and speaker amplifier bindings.
+  - Unify status property style.
+- gcc bindings:
+  - Expand MSM8953 gcc schema with MSM8937.
+  - Add MSM8937 prefix for MSM8937 specific clocks.
+- gcc:
+  - Follow the bindings changes.
+- Drop alwayson clock documentation it will be handled in another
+  patchset.
+- Link to v4: https://lore.kernel.org/r/20250315-msm8937-v4-0-1f132e870a49@mainlining.org
 
-typo maintainted
+Changes in v4:
+- Add missing rpmcc include for qcom,gcc-msm8937 dtbinding exmaple.
+- msm8937: add missing space after s9-p1@230
+- msm8937-xiaomi-land: replace LED_FUNCTION_INDICATOR to LED_FUNCTION_STATUS
+- Remove applied patches
+- Link to v3: https://lore.kernel.org/r/20250224-msm8937-v3-0-dad7c182cccb@mainlining.org
 
-> compliant boot loader to communicate the pre-launch configuration to any
-> compliant post-launch kernel. This API/ABI is referred to as the Secure Launch
-> Resource Table by the specification.
-> 
-> Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-> ---
+Changes in v3:
+- Fix qcom,gcc-msm8937 dtbinding example 
+- Link to v2: https://lore.kernel.org/r/20250223-msm8937-v2-0-b99722363ed3@mainlining.org
 
-> +/*
-> + * Return the next entry with the given tag in the SLRT starting at the
-> + * currenty entry. If entry is NULL, the search begins at the beginning of
+Changes in v2:
+- drop applied patches
+- drop gcc schema commits infavor of a new schema for gcc-msm8937
+- document always on clock for adreno 505/506/510
+- msm8937:
+  - set cache size
+  - rename cpu labels
+  - fix style issues addressed by review
+- msm8937-xiaom-land:
+  - remove unused serial0 alias
+  - remove regulator-always-on from pm8937_l6
+  - add blue indicator led for aw2013
+- Link to v1: https://lore.kernel.org/r/20250211-msm8937-v1-0-7d27ed67f708@mainlining.org
 
-typo currenty
+---
+Barnabás Czémán (3):
+      dt-bindings: clock: qcom: Add MSM8937 Global Clock Controller
+      dt-bindings: arm: qcom: Add Xiaomi Redmi 3S
+      arm64: dts: qcom: Add Xiaomi Redmi 3S
 
-> + * table.
-> + */
-> +static inline void *
-> +slr_next_entry_by_tag(struct slr_table *table,
-> +		      struct slr_entry_hdr *entry,
-> +		      u16 tag)
+Dang Huynh (1):
+      arm64: dts: qcom: Add initial support for MSM8937
 
+Daniil Titov (1):
+      clk: qcom: gcc: Add support for Global Clock controller found on MSM8937
 
-Thanks
-Alok
+ Documentation/devicetree/bindings/arm/qcom.yaml    |    7 +
+ .../bindings/clock/qcom,gcc-msm8953.yaml           |   11 +-
+ arch/arm64/boot/dts/qcom/Makefile                  |    1 +
+ arch/arm64/boot/dts/qcom/msm8937-xiaomi-land.dts   |  381 ++++
+ arch/arm64/boot/dts/qcom/msm8937.dtsi              | 2069 ++++++++++++++++++++
+ drivers/clk/qcom/Kconfig                           |    6 +-
+ drivers/clk/qcom/gcc-msm8917.c                     |  617 +++++-
+ include/dt-bindings/clock/qcom,gcc-msm8917.h       |   19 +
+ 8 files changed, 3101 insertions(+), 10 deletions(-)
+---
+base-commit: 5b37f7bfff3b1582c34be8fb23968b226db71ebd
+change-id: 20250210-msm8937-228ef0dc3ec9
+
+Best regards,
+-- 
+Barnabás Czémán <barnabas.czeman@mainlining.org>
+
