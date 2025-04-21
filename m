@@ -1,240 +1,197 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2062.outbound.protection.outlook.com [40.107.95.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1578D1E5B78
-	for <iommu@lists.linux.dev>; Mon, 21 Apr 2025 16:36:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745253419; cv=none; b=MTy7/jiNjC6THrFOcxhOOiWuVpD8jm6iXQ2enG88UWgalZ9oyslcpjFNNBOx93dW99dtBbIYdDnu3Tzv7dXyFRQp6RZLTu/eFsFKvjvR3l26AApi3NLgwABwlxitu6CRvNXyF1jNG0RWvEG3RYwkBXdUiLJlxwAM7yxHpSk5Zlw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745253419; c=relaxed/simple;
-	bh=OVtUR75UdG+ta6xSnWSh/M7h5jKSHGTKRRKuzl7Prv8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ivtRABlo0EZ3UKODB/hWNP0F6rb0jngOxWHyUc756Vv3O1zhczti8Whi8fACw14y/0M+u4LQlfl5o7DLeHhGVaPI2HmO1OiL4b2h9zgmaeGsUbmutsoo2K6+wX++2E2dxI14iY5LggkF9u7Lbj0rtlwStWTS8w7k+EQSDhTOEmM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=EchcpW3V; arc=none smtp.client-ip=205.220.165.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EC4F12D758;
+	Mon, 21 Apr 2025 17:24:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.62
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745256251; cv=fail; b=DlMNIPkuE3mod4vrmpyQAHz46mGfjNfZ13gh0rsk8r4S5xKDcP+1kNcyjt4po2P4lG8vqVLQd1/pTxfyBiLPEVPWL5Tm518if2oJscuyJgx0vHQj3JTTC9e8flF9G4yIqqEzO8LFlrkHxujPbIyvqy8D6FtzsVJ5QCFF3NTV9d0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745256251; c=relaxed/simple;
+	bh=gwdpVzro4f9uhRpO5LqhcqQUYq/vwTy4xR9nx3U5CHw=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DPWmKa9w+bQ66RbFMCbnhMEM6uVDDmBTbso8L5WyLt0nThdOhit7DlFIqWoXYGQSykUNwUnb0eTSgP2eDlZXw6jaRBG/X4ytFMRTiZbwjJcXBL9tjS7BrAkp/mmV9PJtH/FPFEzARdKy4l8RLqdog+zfJT+HixqtRzl/DvrONbM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=lR/YQvsy; arc=fail smtp.client-ip=40.107.95.62
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="EchcpW3V"
-Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53LCAn6Z002167;
-	Mon, 21 Apr 2025 16:36:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=corp-2023-11-20; bh=dYf3j
-	c9+aZuxTXSzRykvVpdyrAgLZb6GlSjWb/TZTek=; b=EchcpW3Vsbzrtbi8bA72O
-	l0grk57TVl2koHg1hixlA2oX6WXqoWlzgkvBcO7EKYP2zDyEnxYo5Qohym3r+TbQ
-	Bqth/GEW3whHkibcjQePOkvoX6w352Nvg2a7bgNFOt4HWNExaWIGyGs+oxVpQxqi
-	Suao60gR29RpgkFqO+/64d0/TX2v3V1dMv3vEMaDz5Irr7/2hafNhM4wg5ud9rZq
-	fGMtt6fajUsjNXDn/IzSrXRC9DiJ/Qib+j4euh1J1Sb5wkcWKUfLk3PdTeQj4+x0
-	qU01RdGmktDhInAxdrSoUXSlaB9+VQY+hb1N9oNb/wv8tmc9YIVRzCLhLGrqkfxO
-	g==
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4642raavwp-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 21 Apr 2025 16:36:37 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 53LGNUmp021147;
-	Mon, 21 Apr 2025 16:36:35 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 46429er452-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-	Mon, 21 Apr 2025 16:36:35 +0000
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 53LGaYaS023132;
-	Mon, 21 Apr 2025 16:36:34 GMT
-Received: from bur-virt-x6-2-100.us.oracle.com (bur-virt-x6-2-100.us.oracle.com [10.153.92.40])
-	by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 46429er43p-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-	Mon, 21 Apr 2025 16:36:34 +0000
-From: Ross Philipson <ross.philipson@oracle.com>
-To: linux-kernel@vger.kernel.org, x86@kernel.org,
-        linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
-        linux-efi@vger.kernel.org, iommu@lists.linux.dev
-Cc: ross.philipson@oracle.com, dpsmith@apertussolutions.com,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
-        dave.hansen@linux.intel.com, ardb@kernel.org, mjg59@srcf.ucam.org,
-        James.Bottomley@hansenpartnership.com, peterhuewe@gmx.de,
-        jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
-        nivedita@alum.mit.edu, herbert@gondor.apana.org.au,
-        davem@davemloft.net, corbet@lwn.net, ebiederm@xmission.com,
-        dwmw2@infradead.org, baolu.lu@linux.intel.com,
-        kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com,
-        trenchboot-devel@googlegroups.com
-Subject: [PATCH v14 19/19] x86/efi: EFI stub DRTM launch support for Secure Launch
-Date: Mon, 21 Apr 2025 09:27:12 -0700
-Message-Id: <20250421162712.77452-20-ross.philipson@oracle.com>
-X-Mailer: git-send-email 2.39.3
-In-Reply-To: <20250421162712.77452-1-ross.philipson@oracle.com>
-References: <20250421162712.77452-1-ross.philipson@oracle.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="lR/YQvsy"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=bllOGq9mtAH+O4WXAOu8FijF2fXg0MF4if52CnTwy+C9qvgD0mb0rCh+DDf3Cptci9MX7baBdCXy7Vx/zho20ofaZK34xhJci60HRkM+8qwiQmZGgqnkMMlXoZis4XWp7v5G0MWqL9R2D8ZdkPGEIgXBR5E7SlATP7WMEvro38gcPs9UnWIKw4hDz6FH/zXVLTqqh/3NgejJv/ciRUWi2ll2z3HV9A7HVwy3RC1pFvyeMvAIvHlbhcMmw4kis7IlryOhtXpPS5sJBjFKzOwCu8y+JpnmHIhbU3HIgXaoDhB5z1nL803nq6qvPeXg2L3Wn2Gn4ohVkzh+F7igTWRn1w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Op9MqUSJ2NT7wXR656liCNBkij73C90uIHfmxS/FYmY=;
+ b=np3n0RWuhmSJiuU0fgCEaBs7eljYdlK/H1765d6IoDZdHk+IeakdFc4pkr8JOFr52ygngN3DFQTgBkQWULsR84Fht/ABnpcoiEHR+anROcOOI1+R+NIHIxAhWnrV8qF0voJWPJMMu8twmw+VmAE4ZWXztlZdNo2X2Bqdk+cuV27S1dPmR6aqs13gDeLI26wdh4N+Q9uDC2OI2wDjomou1KUmcvBpsNhe9R1L9iaVqKDVNzvmME4+RdRmQkVZtH6ZSjRSNwaKfhUBwTZZhBxXclM3ejCB51sdKLxQhGSWZNhIncuL+HlCWVISxEEecyiu5k8D1UePrP3E/05ymyr70g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Op9MqUSJ2NT7wXR656liCNBkij73C90uIHfmxS/FYmY=;
+ b=lR/YQvsy+P2prhNyTwkBRFomUtxi07WyGaUeKiC7irL+HFGXye9hpd4QQNPmjJn0bnLmsw7Ji5nv5fSXw8AnnmLxvHXLiYx13fTYLvMOHTsipmH8A08WO4HoDZTMWeLYAfp07kiP2QclUmqhVtxWMIQwDAjtL6/+hBzVXMWh5XdAQVavTcUwELsxVtKGEdq/FD857hYySb5QiCjrQOTIngtSo1X0YQDq0uMiH2yy3zNbMghFcG4/mWUNDYD9SpaW3Hl5DqPToakXRm+Bnp3SzbbjS95IAtAPDkYgKZuRAODWo9TKneZasAbagzTP44FPP7GfxxBAnuR4HccscPbkag==
+Received: from SJ0PR03CA0175.namprd03.prod.outlook.com (2603:10b6:a03:338::30)
+ by DS0PR12MB8444.namprd12.prod.outlook.com (2603:10b6:8:128::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8632.36; Mon, 21 Apr
+ 2025 17:24:06 +0000
+Received: from SJ1PEPF00001CE6.namprd03.prod.outlook.com
+ (2603:10b6:a03:338:cafe::bd) by SJ0PR03CA0175.outlook.office365.com
+ (2603:10b6:a03:338::30) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8655.33 via Frontend Transport; Mon,
+ 21 Apr 2025 17:24:05 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ SJ1PEPF00001CE6.mail.protection.outlook.com (10.167.242.22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8655.12 via Frontend Transport; Mon, 21 Apr 2025 17:24:05 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 21 Apr
+ 2025 10:23:55 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Mon, 21 Apr
+ 2025 10:23:55 -0700
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Mon, 21 Apr 2025 10:23:53 -0700
+Date: Mon, 21 Apr 2025 10:23:51 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: "jgg@nvidia.com" <jgg@nvidia.com>, "corbet@lwn.net" <corbet@lwn.net>,
+	"will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"thierry.reding@gmail.com" <thierry.reding@gmail.com>, "vdumpa@nvidia.com"
+	<vdumpa@nvidia.com>, "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
+	"shuah@kernel.org" <shuah@kernel.org>, "praan@google.com" <praan@google.com>,
+	"nathan@kernel.org" <nathan@kernel.org>, "peterz@infradead.org"
+	<peterz@infradead.org>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"jsnitsel@redhat.com" <jsnitsel@redhat.com>, "mshavit@google.com"
+	<mshavit@google.com>, "zhangzekun11@huawei.com" <zhangzekun11@huawei.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-doc@vger.kernel.org"
+	<linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org"
+	<linux-tegra@vger.kernel.org>, "linux-kselftest@vger.kernel.org"
+	<linux-kselftest@vger.kernel.org>, "patches@lists.linux.dev"
+	<patches@lists.linux.dev>
+Subject: Re: [PATCH v1 10/16] iommufd: Add mmap interface
+Message-ID: <aAZ/Jx1ST+llBL2Q@Asurada-Nvidia>
+References: <cover.1744353300.git.nicolinc@nvidia.com>
+ <c332a8701959c098f747dd8e8fa083ceda2bf2c3.1744353300.git.nicolinc@nvidia.com>
+ <BN9PR11MB527664BDB7933FA0B7981EE68CB82@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1095,Hydra:6.0.680,FMLib:17.12.68.34
- definitions=2025-04-21_08,2025-04-21_02,2024-11-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 suspectscore=0
- malwarescore=0 bulkscore=0 mlxlogscore=999 adultscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2502280000
- definitions=main-2504210129
-X-Proofpoint-ORIG-GUID: yOAYGSbdZ-sm1qCyDVD7lQDGS8tFzLDG
-X-Proofpoint-GUID: yOAYGSbdZ-sm1qCyDVD7lQDGS8tFzLDG
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB527664BDB7933FA0B7981EE68CB82@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE6:EE_|DS0PR12MB8444:EE_
+X-MS-Office365-Filtering-Correlation-Id: 245e07b8-f2ea-43fd-67ba-08dd80f95154
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|36860700013|7416014|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?0IZcIclehyMHc9v2WZ4XoqZ91fSbgZySp5iB/S8gXNJIXrpw/pi2kCDVCi1f?=
+ =?us-ascii?Q?+E2E5Kv/nufMVjh5DIVNn7yhESnmxSFKdrAJPatgNTZV8WX3Z9M6El2csrRy?=
+ =?us-ascii?Q?X9Gdep0ZCOEk3OWgNCSfRtQLQrxVdcpaPotbG+0bqy3QQAVDRtkxAYrBZ0R8?=
+ =?us-ascii?Q?FhT/THWnY+8B5q+LoJxBRrOtJaRobW3AmmgNwA5PVGZjRhrb00KHcO/ULB4v?=
+ =?us-ascii?Q?57SiZVDbi/7vneAXOFlUIxde8LWM5cdsMXiBrsw1hJmMQ9jKfVNEFO90dDyv?=
+ =?us-ascii?Q?TIUJC/elOrZBZ7OBmn+WwdnNuYmsPZwo75Rxk0ep4KwYgDg+RkMpBJLbgtSa?=
+ =?us-ascii?Q?DgOwz1kzZIpZyfwF0+jWIkbkHRh7rx7OGa3ghU/KsAODQ9r9S9zWDGwe051/?=
+ =?us-ascii?Q?emH4fPJsOaXxojcicP4ODhyz00OKXunr+1ggsbNpAbQtYROLsZ1BSSbMzmU/?=
+ =?us-ascii?Q?q4WbIQygJfbyomD/Cm/jpKFaLGU6ifHnCvivTmWznlVtWUlkOzWELJv/jiUU?=
+ =?us-ascii?Q?LxAPfYUTX0b9NC48UqoAdtJGl1totRECJVBjE9FKtiLJLYP1v2slfdS7ppAq?=
+ =?us-ascii?Q?wBmebJN+w7Urh/6JQuagru7rjBS0JOkmKZkxQ8UsVynRHPm21iXfNfCmvP/F?=
+ =?us-ascii?Q?qhH6SOk24p9IG3t7xW5L8qN9Dlh9OVgw5EjMTrFHkGMeWdDSNUDGAWpLlncl?=
+ =?us-ascii?Q?ujzYgUuuTgw7cNEfOpFvR6/6wMcDqorGg2OzuYzoZ+qKtyTGweqfKmdBhvAS?=
+ =?us-ascii?Q?yHqmPhsL3++OPE9xhALsd7Zn997qeBIyhoZYRvj081Ueionu2NzyM2mdCFLp?=
+ =?us-ascii?Q?26DG9sDWiorCELvbkE34z3Wj2J2XJrlkNHvm4K/ACki1vLmEFKXzlsO3qjIX?=
+ =?us-ascii?Q?e9DCb8Y6SC9CA1tAVlt/xGs9stKaxKEArhYobyUrYsWfZlVaAHP/8RqsKDQw?=
+ =?us-ascii?Q?ik0Unl3azXv9B7voJEtPVl5SSGWsDZWLcyl7Rghhnds7mHKl6QTXUTddSwSc?=
+ =?us-ascii?Q?RJ+ZDubHqjPzyNCgL99vv8zWH/M36osvUPn7eoVIhQoLeuG0/ICAuCX6cyHj?=
+ =?us-ascii?Q?aqwiQDZmqvQJNvo/iLWJsedtFDICQoHuHL1oGMvjZ1EigUN2PfsmPw4Sxcqq?=
+ =?us-ascii?Q?x6AUQmXlGfGu4d/Ww1pYYbThAvEc1TdXv96GAtPxqvrIlp+RAOxinVVtoIWw?=
+ =?us-ascii?Q?6jIm0F6FBQD2MCQv0x1xvgXhjeFuBGfUx8e6Jhhw6SK8z1eJXZkNCb0417Ap?=
+ =?us-ascii?Q?YsgcJoI3C+1GU+mmgpwBibgCT4rlZb9HbNaqqgFVwnP9i8+ZBl+QTOfbAAVD?=
+ =?us-ascii?Q?T1w/xNw+31gAbUFKpfTEIT8QtluVjWbsRmk/TuRz8VAZcTXcfu8Emgh9baKd?=
+ =?us-ascii?Q?EXjk8whHvMEm35zxHRL0bdQJuS8GtAvr/0KeWGn8/OqkHBYGrK9sgs14DR/l?=
+ =?us-ascii?Q?2VM+GWvxbbBR/+J+U1x0NNLFXrld+kUYNBpsklRbWY9wwK46FYeR+E8IFUpT?=
+ =?us-ascii?Q?W5KGyakZa5nSXSk3Izd9ibThqSmNr0epW8zl?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(36860700013)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2025 17:24:05.6020
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 245e07b8-f2ea-43fd-67ba-08dd80f95154
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF00001CE6.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8444
 
-This support allows the DRTM launch to be initiated after an EFI stub
-launch of the Linux kernel is done. This is accomplished by providing
-a handler to jump to when a Secure Launch is in progress. This has to be
-called after the EFI stub does Exit Boot Services.
+On Mon, Apr 21, 2025 at 08:16:54AM +0000, Tian, Kevin wrote:
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Friday, April 11, 2025 2:38 PM
+> > 
+> > For vIOMMU passing through HW resources to user space (VMs), add an
+> > mmap
+> > infrastructure to map a region of hardware MMIO pages. The addr and size
+> > should be given previously via a prior IOMMU_VIOMMU_ALLOC ioctl in some
+> > output fields of the structure.
+> 
+> According to the code the addr must be the immap_id given by previous
+> alloc but size can be any as long as it doesn't exceed the physical length.
 
-Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
----
- drivers/firmware/efi/libstub/efistub.h  |  8 +++
- drivers/firmware/efi/libstub/x86-stub.c | 94 +++++++++++++++++++++++++
- 2 files changed, 102 insertions(+)
+Yea, though I start to wonder if we should simply close the window
+by forcing the full range..
 
-diff --git a/drivers/firmware/efi/libstub/efistub.h b/drivers/firmware/efi/libstub/efistub.h
-index f5ba032863a9..6e4cbf02500b 100644
---- a/drivers/firmware/efi/libstub/efistub.h
-+++ b/drivers/firmware/efi/libstub/efistub.h
-@@ -135,6 +135,14 @@ void efi_set_u64_split(u64 data, u32 *lo, u32 *hi)
- 	*hi = upper_32_bits(data);
- }
- 
-+static inline
-+void efi_set_u64_form(u32 lo, u32 hi, u64 *data)
-+{
-+	u64 upper = hi;
-+
-+	*data = lo | upper << 32;
-+}
-+
- /*
-  * Allocation types for calls to boottime->allocate_pages.
-  */
-diff --git a/drivers/firmware/efi/libstub/x86-stub.c b/drivers/firmware/efi/libstub/x86-stub.c
-index cafc90d4caaf..bfa36466a79c 100644
---- a/drivers/firmware/efi/libstub/x86-stub.c
-+++ b/drivers/firmware/efi/libstub/x86-stub.c
-@@ -9,6 +9,8 @@
- #include <linux/efi.h>
- #include <linux/pci.h>
- #include <linux/stddef.h>
-+#include <linux/slr_table.h>
-+#include <linux/slaunch.h>
- 
- #include <asm/efi.h>
- #include <asm/e820/types.h>
-@@ -791,6 +793,93 @@ static efi_status_t efi_decompress_kernel(unsigned long *kernel_entry,
- 	return efi_adjust_memory_range_protection(addr, kernel_text_size);
- }
- 
-+#if (IS_ENABLED(CONFIG_SECURE_LAUNCH))
-+static bool efi_secure_launch_update_boot_params(struct slr_table *slrt,
-+						 struct boot_params *boot_params)
-+{
-+	struct slr_entry_intel_info *txt_info;
-+	struct slr_entry_policy *policy;
-+	bool updated = false;
-+	int i;
-+
-+	txt_info = slr_next_entry_by_tag(slrt, NULL, SLR_ENTRY_INTEL_INFO);
-+	if (!txt_info)
-+		return false;
-+
-+	txt_info->boot_params_addr = (u64)boot_params;
-+
-+	policy = slr_next_entry_by_tag(slrt, NULL, SLR_ENTRY_ENTRY_POLICY);
-+	if (!policy)
-+		return false;
-+
-+	for (i = 0; i < policy->nr_entries; i++) {
-+		if (policy->policy_entries[i].entity_type == SLR_ET_BOOT_PARAMS) {
-+			policy->policy_entries[i].entity = (u64)boot_params;
-+			updated = true;
-+			break;
-+		}
-+	}
-+
-+	/*
-+	 * If this is a PE entry into EFI stub the mocked up boot params will
-+	 * be missing some of the setup header data needed for the second stage
-+	 * of the Secure Launch boot.
-+	 */
-+	if (image) {
-+		struct setup_header *hdr = (struct setup_header *)((u8 *)image->image_base +
-+					    offsetof(struct boot_params, hdr));
-+		u64 cmdline_ptr;
-+
-+		boot_params->hdr.setup_sects = hdr->setup_sects;
-+		boot_params->hdr.syssize = hdr->syssize;
-+		boot_params->hdr.version = hdr->version;
-+		boot_params->hdr.loadflags = hdr->loadflags;
-+		boot_params->hdr.kernel_alignment = hdr->kernel_alignment;
-+		boot_params->hdr.min_alignment = hdr->min_alignment;
-+		boot_params->hdr.xloadflags = hdr->xloadflags;
-+		boot_params->hdr.init_size = hdr->init_size;
-+		boot_params->hdr.kernel_info_offset = hdr->kernel_info_offset;
-+		efi_set_u64_form(boot_params->hdr.cmd_line_ptr, boot_params->ext_cmd_line_ptr,
-+				 &cmdline_ptr);
-+		boot_params->hdr.cmdline_size = strlen((const char *)cmdline_ptr);
-+	}
-+
-+	return updated;
-+}
-+
-+static void efi_secure_launch(struct boot_params *boot_params)
-+{
-+	struct slr_entry_dl_info *dlinfo;
-+	efi_guid_t guid = SLR_TABLE_GUID;
-+	dl_handler_func handler_callback;
-+	struct slr_table *slrt;
-+
-+	/*
-+	 * The presence of this table indicated a Secure Launch
-+	 * is being requested.
-+	 */
-+	slrt = (struct slr_table *)get_efi_config_table(guid);
-+	if (!slrt || slrt->magic != SLR_TABLE_MAGIC)
-+		return;
-+
-+	/*
-+	 * Since the EFI stub library creates its own boot_params on entry, the
-+	 * SLRT and TXT heap have to be updated with this version.
-+	 */
-+	if (!efi_secure_launch_update_boot_params(slrt, boot_params))
-+		return;
-+
-+	/* Jump through DL stub to initiate Secure Launch */
-+	dlinfo = slr_next_entry_by_tag(slrt, NULL, SLR_ENTRY_DL_INFO);
-+
-+	handler_callback = (dl_handler_func)dlinfo->dl_handler;
-+
-+	handler_callback(&dlinfo->bl_context);
-+
-+	unreachable();
-+}
-+#endif
-+
- static void __noreturn enter_kernel(unsigned long kernel_addr,
- 				    struct boot_params *boot_params)
- {
-@@ -925,6 +1014,11 @@ void __noreturn efi_stub_entry(efi_handle_t handle,
- 		goto fail;
- 	}
- 
-+#if (IS_ENABLED(CONFIG_SECURE_LAUNCH))
-+	/* If a Secure Launch is in progress, this never returns */
-+	efi_secure_launch(boot_params);
-+#endif
-+
- 	/*
- 	 * Call the SEV init code while still running with the firmware's
- 	 * GDT/IDT, so #VC exceptions will be handled by EFI.
--- 
-2.39.3
+I changed the kdoc of the iommufd_fops_mmap():
 
++/*
++ * Kernel driver must first do iommufd_ctx_alloc_mmap() to register an mmappable
++ * MMIO region to the iommufd core to receive an "immap_id". Then, driver should
++ * report to user space this immap_id and the size of the registered MMIO region
++ * for @vm_pgoff and @size of an mmap() call, via an IOMMU_VIOMMU_ALLOC ioctl in
++ * the output fields of its driver-type data structure.
++ *
++ * Note the @size is allowed to be smaller than the registered size as a partial
++ * mmap starting from the registered base address.
++ */
+
+> > +/* Entry for iommufd_ctx::mt_mmap */
+> > +struct iommufd_mmap {
+> > +	unsigned long pfn_start;
+> > +	unsigned long pfn_end;
+> > +	bool is_io;
+> > +};
+> 
+> what is the point of 'is_io' here? Do you intend to allow userspace to
+> mmap anonymous memory via iommufd?
+> 
+> anyway for now the only user in this series always sets it to true.
+> 
+> I'd suggest to remove it until there is a real need.
+
+Done.
+
+Thanks
+Nicolin
