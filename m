@@ -1,118 +1,139 @@
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B47E1DDA1E
-	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 19:15:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0303B666
+	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 19:17:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745349358; cv=none; b=m+Cp4Er5JeLK+1dV+HhFF8v9f8PjaTP4D258dEF0ynVN2JIEdoSDYiAtZ3swKLtOdUFI/nvdwqFingsVGmyUPYnbnaJDT+vskiuApWj0a58waCmhWr5y4CUYGH+DzCVV8npXbWFZJF0Xec/Umr/ThmHM+5pD4Hsm7sCkXyVGxSI=
+	t=1745349422; cv=none; b=MH+5XG52MFMD+ekkx8OJdMOSl2V9n67aePSzogK3rDBiN0VR1jFUFpQmTWbVdlBp99pbge/7QRubQub6Ua2pjWHcMsot/+pjxFQME4lrTkcoStC+RwInixg1oZoIcZZJk0u1KDCGdaC8Sjx1lPYTk2fsz14/6hJXMr2ESg0603E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745349358; c=relaxed/simple;
-	bh=jB3to8XLVxQJ5LgCGbXnmbBfUdZvBo80bwAjGWX1FM4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=V4O5xXM4C2BaBU6swK6AuIOtpcYzYGmlvYnDGiN93vi7Qop8bN7Sn1aAP1ON3YSSw3/g1FWIR+wfD7KFzDelOvtiMrXzmOtbzTE08TiwtO+JAvS9HiWUN8NBI1WNzIVIicIisSmqo/DiKn+Ha/AX+5M+0g/wZ0TH2/V6AdX1aHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Y88LmWzR; arc=none smtp.client-ip=209.85.219.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1745349422; c=relaxed/simple;
+	bh=E4Ni34Na2o3km/eA4l2K2UpCxdY9M8GzQSSs3As9otk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ETl9wrj6Akss9sw8M/uda9dosVyktYjAUI9puijNuOslg8JVIFc5EytVrv2Tg1zftzdXyd65jVfownt9xmPLQS9gxYdQOZBEP+cd5CeW7GztTWa3GA54gq4YES2AhJ/p+joCEza05oyU+d9vT61NdJguASX/2GDBq91EI9+pRIY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZN2LXvj2; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Y88LmWzR"
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-6e8f7019422so55141506d6.1
-        for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 12:15:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1745349355; x=1745954155; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7d1mGroBPaOn9o0uqCQCDJCnumJpud9iMfGSCI94QIs=;
-        b=Y88LmWzRTeN1jCJb1SZPo9AnVG8+zATZr8j0GhAnxlBKbmR8lHLqxpBOmjHqEV+6r2
-         oKPnsofC5eZvlam/1JdoO4Yt8GYd+8eoEpBbAyu5KC/fOl1lGVjPAf7W7ruco6xxN2Y9
-         7gN1lUjgOzQIIzBM6NOYAfqOgTFk/B+7uO+afCtof61VCwjVYx4iJHXFBE2FHnGZAenw
-         TlvfmThEEb/PrEPj81qdohxk8XbeLDO7AEBL8y9nogBLmaj35VQcirIGI/k55d5tYDpX
-         BiKOyLWPT/jSH4ZZDsyCHOI0Ys63///idKSN6Z3OZX8mSAJXGVpvp/aXh+cagAHqHQOi
-         QGXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745349355; x=1745954155;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7d1mGroBPaOn9o0uqCQCDJCnumJpud9iMfGSCI94QIs=;
-        b=jTA/qfXIg6pKTFLG6gXmq6g34cm4u+/j/oAo4Arsc363Yk/J8ZYYrCWZxF++LQduUo
-         G1rOX5X6rbduZ3ewkub/G2ks/6gJOV1hx5qKMWWYYHCqP4CvtU6MSjTvXvGlwMGO4jny
-         4UjQ8Xnv71GLIC8AU3ZS11lozpLeH8D7V8COaOaqaFbeNEkjevUeS6GKF6O5gGBoxqd9
-         grnbDHPYMRKL22fCVIPlGrLRlmnaO/8RkQYR+SbUDrWHYhUTdIAA+hRKS+Qv0pkz4Ptr
-         qxRRUSrUZYW1MPwwFyFV6NOiPxTuGrPoc56ONBTy55ypOVLo5oF5Clgu7jqimNVC1oR6
-         9XTQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW5iLW7JXahA0JB+VUdwLFER/fuXOrXqq0sVPzrrP4XpJfnvu1n/88kCHPVukwTbKJcSyKJaA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy5sgBY8lp99zgXswGfYMIdp8nVUMDPj7znyE03APbPSY14KGqi
-	5ejWvYMtVtz1H3usTm2S5e2tnYzPGflPgsLpYj3ITdfYozOURFIc3xptADnPfzo=
-X-Gm-Gg: ASbGncvma0kGk2Me5MdlS7kh+f6dmZrC4VWHqvcbdED10FsK53JXkQ0IhqxMFryoXFV
-	cwpi6m4Quxm5Mw8c3aJEIWhC/EXVFviTX2OdtPnL/IEVR56T8D1u2O74G8MxeGNhGJOKQLIgZeI
-	sE7yDw1HEK291mZdjaDK4yz3oej9yMmwXWxRY0cuXSPGdVbJUNbAPZVJ8e+3vRK+FRbFzjkYU9n
-	CDA2kvpt+AZLSPJi7ZwFbn5JORqzL/JAo9qxypBmwXtfg1rLIh3gLS8dgqvN009Dog/AIT2TjeL
-	iZxlpVGyK6uFTew6Cca/sOQ/zZKP/lTatuGH9xnl/EDjJqrUKFcbEGtK2RyM1wTUwyq7lkpglLT
-	Nw1hWe5s7DsCU2R5dotM=
-X-Google-Smtp-Source: AGHT+IG42qweyJjGbw7NVAt4l3iMAAjkcjftIU8iawlPjM1u7hmAqwA2QfyxHlkDQd215RnDOqjHbQ==
-X-Received: by 2002:ad4:5f07:0:b0:6e8:f464:c9a9 with SMTP id 6a1803df08f44-6f2c44ee6femr255140626d6.2.1745349355218;
-        Tue, 22 Apr 2025 12:15:55 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c925b775c1sm588323385a.97.2025.04.22.12.15.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Apr 2025 12:15:54 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1u7J62-00000006vnm-1E8m;
-	Tue, 22 Apr 2025 16:15:54 -0300
-Date: Tue, 22 Apr 2025 16:15:54 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, shangsong2@lenovo.com,
-	Dave Jiang <dave.jiang@intel.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Assign owner to the static identity
- domain
-Message-ID: <20250422191554.GC1213339@ziepe.ca>
-References: <20250422075422.2084548-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZN2LXvj2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745349421; x=1776885421;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=E4Ni34Na2o3km/eA4l2K2UpCxdY9M8GzQSSs3As9otk=;
+  b=ZN2LXvj2BVvcD1ZfcQKcRt1si49S6AMlsz1OjSKqqIBLrVOnUaU3t3fE
+   HYUq11nboov0OjXy/3ItW5IreArxku1sswOs8TtgwHdY/M8qUbEpZf7Y5
+   zPmyV+8wDob4en49Gl+4soNmafHWAXgWmxRexrF1y2xdrxizgrwtFoFTW
+   LzvR+ANriIxxUGuU4irfFe6UJ8uTJIgR+AZ7y6bzImCREVmyKZH2wXd2X
+   nAfwmMP5A9ecI9MwHdj9Zw57/TWGATNWICtnJjfjBXhmcXtW+BqSfRRcc
+   22TMeUB+VBoNQ1dg8IAH+Iahu7nt0fK9aQo+6+8rbgQ2NPdWu4azOZfe7
+   A==;
+X-CSE-ConnectionGUID: FXZ9Ig6MRQycjOtfQ4kArQ==
+X-CSE-MsgGUID: X/uAoa0dQDuI5ilmaVd53w==
+X-IronPort-AV: E=McAfee;i="6700,10204,11411"; a="72309532"
+X-IronPort-AV: E=Sophos;i="6.15,231,1739865600"; 
+   d="scan'208";a="72309532"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 12:17:00 -0700
+X-CSE-ConnectionGUID: 2mpGFwQwRL2vbeH56GXr8A==
+X-CSE-MsgGUID: SjR69FADT5KkWuFWFRyhUw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,231,1739865600"; 
+   d="scan'208";a="136887755"
+Received: from bkammerd-mobl.amr.corp.intel.com (HELO [10.124.221.25]) ([10.124.221.25])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 12:16:58 -0700
+Message-ID: <f736128a-04d6-4f81-8aba-67b857e99e7d@intel.com>
+Date: Tue, 22 Apr 2025 12:16:57 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250422075422.2084548-1-baolu.lu@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v14 00/19] x86: Trenchboot secure dynamic launch Linux
+ kernel support
+To: Andrew Cooper <andrew.cooper3@citrix.com>,
+ Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
+ x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+ linux-efi@vger.kernel.org, iommu@lists.linux.dev
+Cc: dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
+ bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com, ardb@kernel.org,
+ mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
+ peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
+ nivedita@alum.mit.edu, herbert@gondor.apana.org.au, davem@davemloft.net,
+ corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
+ baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
+ trenchboot-devel@googlegroups.com
+References: <20250421162712.77452-1-ross.philipson@oracle.com>
+ <d96f9c5e-64ed-4c28-a8ad-e22daea19742@intel.com>
+ <c05731ae-bcf1-4747-b64c-0f4b79f3587f@citrix.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Content-Language: en-US
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <c05731ae-bcf1-4747-b64c-0f4b79f3587f@citrix.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Tue, Apr 22, 2025 at 03:54:22PM +0800, Lu Baolu wrote:
+On 4/22/25 11:17, Andrew Cooper wrote:
+> On 21/04/2025 9:52 pm, Dave Hansen wrote:
+>> Purely from the amount of interest and review tags and the whole "v14"
+>> thing, it doesn't look like this is very important to anyone. Not to be
+>> to flippant about it, but if nobody else cares, why should I (or the
+>> other x86 maintainers)?
+> There are several downstreams already using this as a part of their
+> overall system security, one example being
+> https://www.qubes-os.org/doc/anti-evil-maid/
 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index cb0b993bebb4..63c9c97ccf69 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -4385,6 +4385,7 @@ static struct iommu_domain identity_domain = {
->  		.attach_dev	= identity_domain_attach_dev,
->  		.set_dev_pasid	= identity_domain_set_dev_pasid,
->  	},
-> +	.owner = &intel_iommu_ops,
->  };
+OK, but what problems are they solving by using this as opposed to
+existing trusted boot?
 
-Is this a systemic mistake in all the static domains in all the
-drivers?
+While I don't doubt that folks _can_ install and use Xen on their
+laptop, it's unclear to me how pervasive this is. Is this just folks
+tinkering around or is this something that has large deployments where
+folks really *CARE* about it?
 
-Maybe a bigger check is a more complete fix:
-
-static bool iommu_domain_compatible(struct device *dev,
-				    struct iommu_domain *domain)
-{
-	const struct iommu_ops *ops = dev_iommu_ops(dev);
-
-	if (domain->owner == ops)
-		return true;
-
-	/* For static domains owner isn't set */
-	if (ops->blocked_domain == domain || ops->identity_domain == domain)
-		return true;
-	return false;
-}
-
-Jason
