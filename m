@@ -1,191 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D22B0226CE4;
-	Tue, 22 Apr 2025 13:38:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45A1915A856
+	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 14:46:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745329132; cv=none; b=WHmk5VS5kQdMv8uERiIvc5QgmGJZH9SNAsMyY4uAMUisyF8DStdu8wqGLUBF77gSMQzCjKx4pgSLYE2ce2mK6AVDFb3YkI4+S3tWAxYFuWVyXRolVuy52+5WBUrVrkSjjrTrkOlUDioWqWNwLQLa3auOebNX0BqLYfDuVX6PA9E=
+	t=1745333192; cv=none; b=U+oxxk88UBv2q/Kf/sCtJmfBv6V4PYJGAhKj5Ru2OMTkj21VgjMGz15XnlpEg1QmuZLIeH76b267XoUaYPJ4T8G/kWgs9SeVFEmqUBYQ6h6+pWc7N3Crz6F4DaKA3b0Qf2YVKBacAW2kdpugD5KR6/8Htg6fETn5/hIPMPflqT0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745329132; c=relaxed/simple;
-	bh=CkhGofHYVtZe5hwWpqyifYoxIzURV+H5yr2M2EHIPvQ=;
-	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=WRW0KEVgzvrlvoOgpND4nvuOvOOlG/xRzDQEF3zpwLeEtxWpZU/99cWj9oOBfiP8JZ8KiFCixYH5UAz8JUujbrDVMo2stRHTqQH/YUWZZsa+G6NDvsDpK7SwIfmLrA2qWL6iO2BHulFvBQJkWFW5S6HlZN3P+WUSY42TCN6rX4Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H2du47yr; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745333192; c=relaxed/simple;
+	bh=4ZOxOHGaYZ7XnNdBiJCPQxJUvP74KyPgI+gTEuJB1zQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=KnfTl5wCRLwG5yjEkUzy0I/jrkHIEDp1HOr8dIpus1c4WWviy7Z9bn9cV4sNZXxrqkPrONyfXSwuJ2fIboVXi02EdSSC3LGPaSe9qUh4W48bapK3/XDg3nqmkqHWViPDk2aUkMKYyQtRiWPdXljaDLNFgbwc1LQymvXZJumbmss=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K82VEGXY; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H2du47yr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15A7EC4CEE9;
-	Tue, 22 Apr 2025 13:38:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745329131;
-	bh=CkhGofHYVtZe5hwWpqyifYoxIzURV+H5yr2M2EHIPvQ=;
-	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
-	b=H2du47yr54JJf2eJXq1fEyDIO61CAboibIcuOQ7VcI+rIdG2W1wJgmQrhvBmEaGKs
-	 hmIhFHGC4C07bWoPtdDTwxQ1BxF5j+3vwVBOmai2Eh/bRpeD3Ms/d8/YvJiniutJR6
-	 G3sB9QpbxaidBuAO8Or2Oe5SpWZ9/DyionsQfwL7+GY1pt138NaGRoh6m3qtAgDZwO
-	 Tx0odcrYGghj1dofU4kYtKvA1qENMWaLrhXqbC2I7HbHEAqcGvoH0U5Z6I+14j07n5
-	 EeZGKZdtB+OYr4H6DDgvVn8hK6MfMAwYZpfJD6lC+OVlTPB5rIgrQ/0TXUKVUpGas3
-	 GWGodsm8oA0rQ==
-Date: Tue, 22 Apr 2025 08:38:49 -0500
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K82VEGXY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745333190; x=1776869190;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=4ZOxOHGaYZ7XnNdBiJCPQxJUvP74KyPgI+gTEuJB1zQ=;
+  b=K82VEGXYLxU3g8Q/vA9sqXdLhqOoivm7AnMnA3UPC6C1ARSEtNp3jMlB
+   VBJ40u4O1DBP9Q0Dn97kV1XbHWxgeTAbHGfTgkElUQRuNmHSWY/In4feh
+   5X3zLl9SSlbU84DW6+GyFslp0rzKSI21EmOIRht/TkyWZjZRwh7Z0b4c7
+   d+dj9rxz5yuXH0vuEuwm/fMC1s9hqLdVnyWCxSVm8a6mWsk4+cqJ7UOxO
+   8B1gcG/5nPlyPRwUE1LlpppIXBe24piNlmOvpHx8rETCJ6FupeIg3XU/s
+   5WvBMsnEtmZg2m1KIhESUwbvHVRUcUwnWFpUvZ/3JW0LGbeJZNmi3SPIZ
+   g==;
+X-CSE-ConnectionGUID: wbLt7fXTQgenq9TiQOT3bA==
+X-CSE-MsgGUID: ZPtEeA7eSLOrs+x/Kp7yoA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11411"; a="57086525"
+X-IronPort-AV: E=Sophos;i="6.15,231,1739865600"; 
+   d="scan'208";a="57086525"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 07:46:30 -0700
+X-CSE-ConnectionGUID: ZZQ3jrKsQ5akuS+ddnGxrA==
+X-CSE-MsgGUID: PtZkqb46R2eCWWoIkHHL0Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,231,1739865600"; 
+   d="scan'208";a="163085646"
+Received: from kcaccard-desk.amr.corp.intel.com (HELO [10.125.111.159]) ([10.125.111.159])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 07:46:28 -0700
+Message-ID: <9dda1860-2919-434b-9d85-71b79296f1f2@intel.com>
+Date: Tue, 22 Apr 2025 07:46:27 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
- Daniil Titov <daniilt971@gmail.com>, 
- Linus Walleij <linus.walleij@linaro.org>, 
- Maxime Ripard <mripard@kernel.org>, 
- Michael Turquette <mturquette@baylibre.com>, iommu@lists.linux.dev, 
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org, 
- Dmitry Baryshkov <lumag@kernel.org>, dri-devel@lists.freedesktop.org, 
- Will Deacon <will@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
- Rob Clark <robdclark@gmail.com>, 
- Sireesh Kodali <sireeshkodali@protonmail.com>, linux-clk@vger.kernel.org, 
- Thomas Zimmermann <tzimmermann@suse.de>, Joerg Roedel <joro@8bytes.org>, 
- Abhinav Kumar <quic_abhinavk@quicinc.com>, 
- Konrad Dybcio <konradybcio@kernel.org>, David Airlie <airlied@gmail.com>, 
- Srinivas Kandagatla <srini@kernel.org>, Lee Jones <lee@kernel.org>, 
- linux@mainlining.org, phone-devel@vger.kernel.org, 
- Robin Murphy <robin.murphy@arm.com>, Stephan Gerhold <stephan@gerhold.net>, 
- linux-arm-msm@vger.kernel.org, 
- =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
- ~postmarketos/upstreaming@lists.sr.ht, 
- Adam Skladowski <a_skl39@protonmail.com>, Sean Paul <sean@poorly.run>, 
- freedreno@lists.freedesktop.org, Simona Vetter <simona@ffwll.ch>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
- Dang Huynh <danct12@riseup.net>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
- devicetree@vger.kernel.org
-To: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-In-Reply-To: <20250421-msm8937-v5-0-bf9879ef14d9@mainlining.org>
-References: <20250421-msm8937-v5-0-bf9879ef14d9@mainlining.org>
-Message-Id: <174532908923.1111892.11576927834327283251.robh@kernel.org>
-Subject: Re: [PATCH v5 0/5] Initial support of MSM8937 and Xiaomi Redmi 3S
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] iommu/vt-d: Assign owner to the static identity
+ domain
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, shangsong2@lenovo.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+References: <20250422075422.2084548-1-baolu.lu@linux.intel.com>
+Content-Language: en-US
+From: Dave Jiang <dave.jiang@intel.com>
+In-Reply-To: <20250422075422.2084548-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
 
-On Mon, 21 Apr 2025 22:18:22 +0200, Barnabás Czémán wrote:
-> This patch series add initial support for MSM8937 SoC
-> and Xiaomi Redmi 3S (land).
+
+On 4/22/25 12:54 AM, Lu Baolu wrote:
+> The idxd driver attaches the default domain to a PASID of the device to
+> perform kernel DMA using that PASID. The domain is attached to the
+> device's PASID through iommu_attach_device_pasid(), which checks if the
+> domain->owner matches the iommu_ops retrieved from the device. If they
+> do not match, it returns a failure.
 > 
-> The series is extending the MSM8917 gcc and pinctrl drivers
-> because they are sibling SoCs.
-> MSM8937 have 4 more A53 cores and have one more dsi port then
-> MSM8917.
-> It implements little-big architecture and uses Adreno 505.
+>         if (ops != domain->owner || pasid == IOMMU_NO_PASID)
+>                 return -EINVAL;
 > 
-> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+> The static identity domain implemented by the intel iommu driver doesn't
+> specify the domain owner. Therefore, kernel DMA with PASID doesn't work
+> for the idxd driver if the device translation mode is set to passthrough.
+> 
+> Fix this by specifying the domain owner for the static identity domain.
+> 
+> Fixes: 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
+> Closes: https://bugzilla.kernel.org/show_bug.cgi?id=220031
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+
+Reviewed-by: Dave Jiang <dave.jiang@intel.com>
+
 > ---
-> Changes in v5:
-> - msm8937:
->   - Remove wrongly defined idle-states.
->   - Fix thermal zones.
->   - Use the header with DSI phy clock IDs.
->   - Fix the nodes order.
->   - Fix the pinctrls style.
->   - Follow gcc header changes.
-> - msm8937-xiaomi-land:
->   - Remove headphone switch and speaker amplifier bindings.
->   - Unify status property style.
-> - gcc bindings:
->   - Expand MSM8953 gcc schema with MSM8937.
->   - Add MSM8937 prefix for MSM8937 specific clocks.
-> - gcc:
->   - Follow the bindings changes.
-> - Drop alwayson clock documentation it will be handled in another
->   patchset.
-> - Link to v4: https://lore.kernel.org/r/20250315-msm8937-v4-0-1f132e870a49@mainlining.org
+>  drivers/iommu/intel/iommu.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> Changes in v4:
-> - Add missing rpmcc include for qcom,gcc-msm8937 dtbinding exmaple.
-> - msm8937: add missing space after s9-p1@230
-> - msm8937-xiaomi-land: replace LED_FUNCTION_INDICATOR to LED_FUNCTION_STATUS
-> - Remove applied patches
-> - Link to v3: https://lore.kernel.org/r/20250224-msm8937-v3-0-dad7c182cccb@mainlining.org
-> 
-> Changes in v3:
-> - Fix qcom,gcc-msm8937 dtbinding example
-> - Link to v2: https://lore.kernel.org/r/20250223-msm8937-v2-0-b99722363ed3@mainlining.org
-> 
-> Changes in v2:
-> - drop applied patches
-> - drop gcc schema commits infavor of a new schema for gcc-msm8937
-> - document always on clock for adreno 505/506/510
-> - msm8937:
->   - set cache size
->   - rename cpu labels
->   - fix style issues addressed by review
-> - msm8937-xiaom-land:
->   - remove unused serial0 alias
->   - remove regulator-always-on from pm8937_l6
->   - add blue indicator led for aw2013
-> - Link to v1: https://lore.kernel.org/r/20250211-msm8937-v1-0-7d27ed67f708@mainlining.org
-> 
-> ---
-> Barnabás Czémán (3):
->       dt-bindings: clock: qcom: Add MSM8937 Global Clock Controller
->       dt-bindings: arm: qcom: Add Xiaomi Redmi 3S
->       arm64: dts: qcom: Add Xiaomi Redmi 3S
-> 
-> Dang Huynh (1):
->       arm64: dts: qcom: Add initial support for MSM8937
-> 
-> Daniil Titov (1):
->       clk: qcom: gcc: Add support for Global Clock controller found on MSM8937
-> 
->  Documentation/devicetree/bindings/arm/qcom.yaml    |    7 +
->  .../bindings/clock/qcom,gcc-msm8953.yaml           |   11 +-
->  arch/arm64/boot/dts/qcom/Makefile                  |    1 +
->  arch/arm64/boot/dts/qcom/msm8937-xiaomi-land.dts   |  381 ++++
->  arch/arm64/boot/dts/qcom/msm8937.dtsi              | 2069 ++++++++++++++++++++
->  drivers/clk/qcom/Kconfig                           |    6 +-
->  drivers/clk/qcom/gcc-msm8917.c                     |  617 +++++-
->  include/dt-bindings/clock/qcom,gcc-msm8917.h       |   19 +
->  8 files changed, 3101 insertions(+), 10 deletions(-)
-> ---
-> base-commit: 5b37f7bfff3b1582c34be8fb23968b226db71ebd
-> change-id: 20250210-msm8937-228ef0dc3ec9
-> 
-> Best regards,
-> --
-> Barnabás Czémán <barnabas.czeman@mainlining.org>
-> 
-> 
-> 
-
-
-My bot found new DTB warnings on the .dts files added or changed in this
-series.
-
-Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
-are fixed by another series. Ultimately, it is up to the platform
-maintainer whether these warnings are acceptable or not. No need to reply
-unless the platform maintainer has comments.
-
-If you already ran DT checks and didn't see these error(s), then
-make sure dt-schema is up to date:
-
-  pip3 install dtschema --upgrade
-
-
-This patch series was applied (using b4) to base:
- Base: using specified base-commit 5b37f7bfff3b1582c34be8fb23968b226db71ebd
-
-If this is not the correct base, please add 'base-commit' tag
-(or use b4 which does this automatically)
-
-New warnings running 'make CHECK_DTBS=y for arch/arm64/boot/dts/qcom/' for 20250421-msm8937-v5-0-bf9879ef14d9@mainlining.org:
-
-arch/arm64/boot/dts/qcom/msm8937-xiaomi-land.dtb: gpu@1c00000 (qcom,adreno-505.0): clock-names:5: 'alwayson' is not one of ['core', 'iface', 'mem', 'mem_iface', 'alt_mem_iface', 'gfx3d', 'rbbmtimer', 'rbcpr']
-	from schema $id: http://devicetree.org/schemas/display/msm/gpu.yaml#
-
-
-
-
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index cb0b993bebb4..63c9c97ccf69 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4385,6 +4385,7 @@ static struct iommu_domain identity_domain = {
+>  		.attach_dev	= identity_domain_attach_dev,
+>  		.set_dev_pasid	= identity_domain_set_dev_pasid,
+>  	},
+> +	.owner = &intel_iommu_ops,
+>  };
+>  
+>  const struct iommu_ops intel_iommu_ops = {
 
