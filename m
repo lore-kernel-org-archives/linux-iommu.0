@@ -1,140 +1,114 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C54F51D61A3
-	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 23:21:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 439541F0E26
+	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 23:26:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745364105; cv=none; b=ipMJVUDyuhXyhlJLALXiQ7R6jP44ns+J3p35+q69Esp1CriCobI6QJEtI8DopgidjnAQoV4w7nXDfXYIJtfkOC18iA/ZB6oN7k4DLgxX2Myw0pPoaSqmplM92ksl8aEr3WAA1gP9wkEzScntaJ29FJr+Y/Sx+rIGpVKsfCzTvF4=
+	t=1745364417; cv=none; b=U8T7/WyfItKDi5yr+POR7u9HUSweiRROy1M5VQR8opiTrf0xzIep7trwli0UTABB1Ce8hMoYYz0STWMeg94vVWrQEh1cTAtoq2h7Dp2tDkEZP8369G5HjwU5lwphbrVU5CCTrfTWwe18L0K3ehfrrvZsx4OuC5PVc9Cmvezl9ME=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745364105; c=relaxed/simple;
-	bh=I3FRn9V4QunPjjOssRfPaYzgF9xMtfcBnivCd43Spdc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fxRXu/w++eocR8Pg39/YBddBI2bS9rXMWTnbwVhFcsnxmE4XeSh4I1SSVYOexKm1klfsiJc3/nxz7S3OVpEUX4IkshfIoEK/uZR5QQekm6nqjmptaWayj3RGuK2uaJ6i/rq+2aq0UXDfEKKYQ3WrDKpdAyaI6sYDx07mdyBNoH8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AlQ+QcqC; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1745364417; c=relaxed/simple;
+	bh=yV3172UPyrcXv7aQzcJRnQD7GsQG4ZbS0O7C0Ikh3Xk=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=W0eXeb+jZ7g9F6kwRLrE0uDj2VKZF5uHbsEc1vUfDs0BzL209cwCrLFqaKmD5BCy6be1Ev9cqbAiXcDLPJ0B04Xz+Mxu0gYqHTralWyssu4dgfR5tCwW6S+Xvk95mp0WtzGF8dHUCby3ZRX2BglN7E/vLNR4tWfuJZExfCGLea4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--willmcvicker.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=biZqMM3e; arc=none smtp.client-ip=209.85.210.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--willmcvicker.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AlQ+QcqC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745364104; x=1776900104;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=I3FRn9V4QunPjjOssRfPaYzgF9xMtfcBnivCd43Spdc=;
-  b=AlQ+QcqCv88QdqrzQ+U1xDJ7djCxcAyDujj6qeQ8npEv8K9JM3xp7a1h
-   mKV9AQRcrtug6CGO+If9pINISodY3XIIZo1n5KgFbAxXDxA9wNMpo8b9o
-   S1TH3sOifSsguP0nxwKw70vgocfKbqLCVKgEKI8Z9rFRzxzdlBGpMQ5Ur
-   BWfoxzntbKF+VC1Li7IdN6JALDIeVG+rezxSNKCFYZAQxHPL/MxlbxXHl
-   FTiHwTIIJnZUAAtvOtQobmYCdAFNSJinp3A09F7PQ7c+AWuE0aP6fWy28
-   ilLPlMuBqpz9gUhKXg6r35UleQC96Qj+8xdo84bSCt7Sv45MNE8AQTPfg
-   g==;
-X-CSE-ConnectionGUID: hscpmPI9S7K8T6wRzagkUw==
-X-CSE-MsgGUID: W0QPKJ7zQVqfY//46FqPqA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11411"; a="58304957"
-X-IronPort-AV: E=Sophos;i="6.15,232,1739865600"; 
-   d="scan'208";a="58304957"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 16:21:43 -0700
-X-CSE-ConnectionGUID: ufnuimT7QoqBYrhz93UrSA==
-X-CSE-MsgGUID: /P3uTzH2TLu3tjp7t8QXOQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,232,1739865600"; 
-   d="scan'208";a="133094837"
-Received: from bkammerd-mobl.amr.corp.intel.com (HELO [10.124.221.25]) ([10.124.221.25])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 16:21:38 -0700
-Message-ID: <87336151-efad-42fb-b48c-0f8a0ec736e8@intel.com>
-Date: Tue, 22 Apr 2025 16:21:36 -0700
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="biZqMM3e"
+Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-73720b253fcso4817146b3a.2
+        for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 16:26:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1745364415; x=1745969215; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=J6IcEzJxiXJWo904KtPQWxlx57qhuamCaTjhCSuG3DE=;
+        b=biZqMM3ex5sK3DkrKY7PwD5sqJuLmwQz+UQ0jcolJeBCAJNjJCn8BS4wxufTd6F6DR
+         LRbWo4MFDw/aCjlVU1ftY5Cn0FRRG5TqC+EwfswMnZ8HIGA5TII8mC/R9mTbRYZnZkJV
+         68vi2/keTZSsXHK2I2zTxSDEdPhZJ9VWODdfZMfhkoMRh1B88AL/ILIZbcrhPL3lvAer
+         DoSUqFE9jFqavzpuGFs/KA6n8IRhLsvVvjQkUGTBmX5pftuSiLNDzjwcScSqKJKOx3jp
+         Q1t2ziOxiFWUnMu+TvMc1Pkl6Za/4PxG1fQK2YevLHlVdCbdnVGQBRCOMMYR5SwPlRDZ
+         +zrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745364415; x=1745969215;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=J6IcEzJxiXJWo904KtPQWxlx57qhuamCaTjhCSuG3DE=;
+        b=liQAOQWhc4LSynxk9tC820NRqoep5cLsxl1KuY5iuN42vU1B6OLxqYPZOwaqKr8PnP
+         u2uNle5AWzfBo7ju/RPS8oifv3tON46E1QySO7hgfDkhNRsin08IiCYlEtO4PUtC1t9W
+         g9RuxR+OPdMxCypUEftnXenwWJKxZFAP9VDj9nha+gTtHrOHBV0CL1SiLi73KYnWY257
+         8JVXjTFXAD18Llau+UxPtcad3fZQcbjOnhYlqI+BNo/hZOnIAfE/+Qy78WH6UhgfhzPr
+         wllCVG2D6WyRiH2miMR5CZagQ5YFI/2TTAybrs3srDaYPvhNMDdh4s1Hh0Ii2noNIGgh
+         bRiA==
+X-Gm-Message-State: AOJu0Yx3nI2krwijQb3avx05Dza/Al1iJl7TXUZL/mP6Pz7EfHzPEBoP
+	BFsFkgRD6A2AckN55mYOr5/U8UtdbFJCxy0u1QDwmR1jdPkXEOxxtRhAof1viIfGzDTaFi933uN
+	GVjMnv7RDWS2moB3HNkM7ujNx6g==
+X-Google-Smtp-Source: AGHT+IFnwY/Qn0g1gsIgPB5XRIFKYBhaqHjmYzWi4x3FEL3PSBxc1+8xW0JU5Z+aHvwvasCUwllL13+nb8oxx5IDyVw=
+X-Received: from pgbfm20.prod.google.com ([2002:a05:6a02:4994:b0:af5:de08:d3a9])
+ (user=willmcvicker job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:6a21:3a49:b0:1f5:8220:7452 with SMTP id adf61e73a8af0-203cbc74dabmr26806906637.24.1745364415552;
+ Tue, 22 Apr 2025 16:26:55 -0700 (PDT)
+Date: Tue, 22 Apr 2025 16:26:49 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v14 00/19] x86: Trenchboot secure dynamic launch Linux
- kernel support
-To: Ard Biesheuvel <ardb@kernel.org>,
- Andrew Cooper <andrew.cooper3@citrix.com>
-Cc: Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
- x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
- linux-efi@vger.kernel.org, iommu@lists.linux.dev,
- dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
- bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com,
- mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
- peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
- nivedita@alum.mit.edu, herbert@gondor.apana.org.au, davem@davemloft.net,
- corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
- baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
- trenchboot-devel@googlegroups.com
-References: <20250421162712.77452-1-ross.philipson@oracle.com>
- <d96f9c5e-64ed-4c28-a8ad-e22daea19742@intel.com>
- <c05731ae-bcf1-4747-b64c-0f4b79f3587f@citrix.com>
- <CAMj1kXHNpxTqm5hOcxdKRnE58WLmhJo0Rk5pvVGyAtkkki6bvg@mail.gmail.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Content-Language: en-US
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <CAMj1kXHNpxTqm5hOcxdKRnE58WLmhJo0Rk5pvVGyAtkkki6bvg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.49.0.805.g082f7c87e0-goog
+Message-ID: <20250422232650.2737369-1-willmcvicker@google.com>
+Subject: [PATCH v1] platform: Fix race condition during DMA configure at IOMMU
+ probe time
+From: Will McVicker <willmcvicker@google.com>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Danilo Krummrich <dakr@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>, "Rob Herring (Arm)" <robh@kernel.org>, 
+	Lorenzo Pieralisi <lpieralisi@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <jroedel@suse.de>, Bjorn Helgaas <bhelgaas@google.com>
+Cc: iommu@lists.linux.dev, Saravana Kannan <saravanak@google.com>, 
+	Will McVicker <willmcvicker@google.com>, kernel-team@android.com, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 4/22/25 14:26, Ard Biesheuvel wrote:
-> So if that is true (I'm not a x86 uarch expert by any measure), then
-> pushing back on this series on the basis that it is ugly and intrusive
-> is not really reasonable. From security pov, I think D-RTM is an
-> important feature and it deserves to be upstream if it is used widely
-> in the field.
+If devices are probed asynchronously, then there is a chance that during
+the IOMMU probe the driver is bound to the device in parallel. If this
+happens after getting the platform_driver pointer while in the function
+`platform_dma_configure()`, then the invalid `drv` pointer
+(drv==0xf...ffd8) will be de-referenced since `dev->driver != NULL`.
 
-BTW, I'm not pushing back on it for being intrusive. It's actually not
-_that_ intrusive. Most of it sits off on the side. It looked like it had
-a parallel boot entry point, for instance, that is separate from but
-shouldn't break the normal entry points.
+To avoid a kernel panic and eliminate the race condition, we should
+guard the usage of `dev->driver` by only reading it once at the
+beginning of the function.
 
-BTW. it sounds like folks are pretty unhappy with Intel here on a bunch
-of levels. It's not my personal hardware design or anything, so please
-don't pull any punches. If Intel screwed up here and that's why we need
-5,000 lines of arguably duplicate functionality, then please say so.
-You're not going to hurt my feelings.
+Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
+Signed-off-by: Will McVicker <willmcvicker@google.com>
+---
+ drivers/base/platform.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+index 1813cfd0c4bd..b948c6e8e939 100644
+--- a/drivers/base/platform.c
++++ b/drivers/base/platform.c
+@@ -1440,7 +1440,8 @@ static void platform_shutdown(struct device *_dev)
+ 
+ static int platform_dma_configure(struct device *dev)
+ {
+-	struct platform_driver *drv = to_platform_driver(dev->driver);
++	struct device_driver *drv = READ_ONCE(dev->driver);
++	struct platform_driver *pdrv = to_platform_driver(drv);
+ 	struct fwnode_handle *fwnode = dev_fwnode(dev);
+ 	enum dev_dma_attr attr;
+ 	int ret = 0;
+@@ -1451,8 +1452,8 @@ static int platform_dma_configure(struct device *dev)
+ 		attr = acpi_get_dma_attr(to_acpi_device_node(fwnode));
+ 		ret = acpi_dma_configure(dev, attr);
+ 	}
+-	/* @drv may not be valid when we're called from the IOMMU layer */
+-	if (ret || !dev->driver || drv->driver_managed_dma)
++	/* @dev->driver may not be valid when we're called from the IOMMU layer */
++	if (ret || !drv || pdrv->driver_managed_dma)
+ 		return ret;
+ 
+ 	ret = iommu_device_use_default_domain(dev);
+-- 
+2.49.0.805.g082f7c87e0-goog
+
