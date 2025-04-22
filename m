@@ -1,147 +1,143 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 593912980AF
-	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 18:17:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC8E31A5BA4
+	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 19:00:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745345868; cv=none; b=Ak96oLsic3Sm2zI8o03rUz0uwgHl5LUdFFg6O9eIAnbtCTkthmI102yG/IxHPXt4ao+aWcB3b+4lJ0b+kb8JUU9dYWMUZon+zu3bchg0DK8bmlxaNf7o6LrMBQ+aJdJGFoqTGoKBd6qMPrdVZ3wioi61zXq/LV7ik87ex8lecK0=
+	t=1745348441; cv=none; b=pAFzWNvq/uj+V+ZYWTYNbiEilTMuEmff3/GculFADLwomELluI4246v46dlwAVCV4QQidBfxKEzYDV0eEMzVcl1Og/+pwD2AU6gRg3Mr9sisUmrGKxMC25g9eMbWFVOTxJnZ0S+PmW8Za37lFJboPh2VfrfCKIXzMR6Yk3S3wdI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745345868; c=relaxed/simple;
-	bh=IdFsdaUTDRdghsX8VxeZ/2CwFZKCgCoBXb6SP0DHe8w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=a+ZBLGm7rHCkk0pbajA0rNsI5v8IxY7Aq0HDaOZk3lB+odoK+JOtVk7sgSf+GDn0SFuQV5o7TCv0P5jzv1ODTpa1ee6WWk5LTZQPoM1AaO3fpQbR6ee4JZl1coyEM2pKlhGA3q4wt4Ej/ISWrQdBVc8f/IzJnR8UhT2E8lnmIOo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=citrix.com; spf=pass smtp.mailfrom=cloud.com; dkim=pass (1024-bit key) header.d=citrix.com header.i=@citrix.com header.b=IsEV5fkG; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=citrix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=cloud.com
+	s=arc-20240116; t=1745348441; c=relaxed/simple;
+	bh=4QLSLmrkPbs1yBBussuVmcH9d86k1ZJ8t0dZp5NXcyc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eWRACCbajuThIFyOwOQsSa+Dpz7wamZ3K9OE/yZgTFkBBm2o5RLqMJYwYZJ4V3vZrkZloTVS30puH9hqvHEPTXjxdJlhACw6yaNbJiu6Bk02BmrxveS0Q3Npc9N87ZCz3Qm/as19DyqCANJhKUvt9WJvmvMQmk+s7fU+oKK1kBE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JZ5c+1ON; arc=none smtp.client-ip=209.85.219.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=citrix.com header.i=@citrix.com header.b="IsEV5fkG"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-43cfba466b2so55823355e9.3
-        for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 11:17:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JZ5c+1ON"
+Received: by mail-qv1-f43.google.com with SMTP id 6a1803df08f44-6e8f6970326so52113276d6.0
+        for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 12:00:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=citrix.com; s=google; t=1745345865; x=1745950665; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=IdFsdaUTDRdghsX8VxeZ/2CwFZKCgCoBXb6SP0DHe8w=;
-        b=IsEV5fkGltDq3wvi8UykLruOwXfLjBEF9iUtASi/dS2QoQsDOjGDOwo7J1e39c+mIy
-         SCJ/icLUgwceKJ3HMExPa2m9+cEp06yTseV4/s6cxUAyRj79rzpX8vhSg3dylmya7rxD
-         3oN1uqRFrCFovbP7OCtExx+NS7NeOGiIca0vA=
+        d=ziepe.ca; s=google; t=1745348438; x=1745953238; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=TMh0izLSzqmAU5ORZxGehcX6J35ZOvbIe3zUy9tlNbQ=;
+        b=JZ5c+1ONpXEvuHvEGQWKwHIf23bXZs50pWLLdxeF05q0yAaal0N6GNBsL8PVaZurGB
+         ljA+o5X3cSPIYRy0aYjSQbziTRMZGEHNU/pQ1O4BHtJM8k1Pz0aSLrPPvauJOG93nQcV
+         0XZw6OJ3VjV2s9xp+05VJMPRNoxf4Ez7yN/No6s0/zkAimyGjPFLSaTS1IIf/cdDHf8Q
+         j0CzP32XfcW+gqLR3I9r+c5AKyC2lkI2Tb7P4Z0ayxaAUCJorFvZcYKrYKKyH8bPJ3qy
+         adFY5umCQIZbQk94PD67t6cm369taYUxgXUI8G6C9GnFjGk/YHJtywC2wEhGK+2JanRC
+         dlWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745345865; x=1745950665;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20230601; t=1745348438; x=1745953238;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=IdFsdaUTDRdghsX8VxeZ/2CwFZKCgCoBXb6SP0DHe8w=;
-        b=syjwpT/lOdQbA72P8GkR/tsB9DfYGx0n59NKSWxPQCm6NENPGnK65QmFL6pnojJoWB
-         L5Hh6gS93ZfxyH7/LTnYMDGmBJ0Kfpc05iaaf8PVJJ1Jgn5C45tNug/q9ZOnC9+escFT
-         We/mbKmvjnxKHNU04hCA3g7f+9Q5LbmeRN1vHBapX+o8+XK9MkPQM5StSO5WCXl1Tszg
-         w71TDeibt36WybChRK3wMJHMvnHj6HA/7sPz9nqadpZF/rKrwPtGu2ggv7s42YTUb8vm
-         pCQBsyHTV4vD7H6yGqZat02cqn6eKVWU5zFf71ne/QW0D02Ww2LRftUoHVq/pYK58SJm
-         jJzg==
-X-Forwarded-Encrypted: i=1; AJvYcCUWxu0CG+feZY0Yq26UWpVSsqED/lb3leUAzDtfHB8kRh464a9jN75fFhycFfAS3BI+CkVZ7g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyyxo0lHt5DPu7F0vMqoEcwOLdPbz9Acxg93HallxsoaVVaujU1
-	TZ9S/2dv8LZPvkUZjAdAmXrogjnNHn1p4I96YLxK58sBnk/X/gUm+R16Vua7XNM=
-X-Gm-Gg: ASbGncvFinl92eNs/i+PwJuPkO8c3SqRrPH8nQvCGaTbzfeghDpPJrZhy19wZcjpuh9
-	JNjkHBczsCZcfwTcLaYirrrWz1fCNhd/BrT8qCJoGQvXvXv8hfewkmNC4ZOUa97LgHEJqM1iDwt
-	w7Y+Q4dUL+GRdxxlzk8y9JNpUDTwz76wakFln+92Onl6J8u6PJecYByDgQeLIvUOrKXwrbqfERX
-	cXcvnWhwSweTf8MfqfnyKMZ6G+7zBHQYZ5t3D4zjE12yd3LpYV2W3a137XNtO9574jPEZxNoPk6
-	yyO5wBpTb4iIDkL/PBYLeD5JfPRbvLV3TR1HeT9SlBBaYLb4ZSyGcA==
-X-Google-Smtp-Source: AGHT+IGCIWX5BVPPocsuZVlCHJEPbcYq+xpC2dCnc+JUo1mNSZJLBXsvA5T5y7KuBkfqLGA1fxMXKA==
-X-Received: by 2002:a05:600c:4708:b0:43d:300f:fa4a with SMTP id 5b1f17b1804b1-4406ab97c6cmr143192845e9.12.1745345864518;
-        Tue, 22 Apr 2025 11:17:44 -0700 (PDT)
-Received: from [192.168.86.29] ([83.104.178.215])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4406d5bbcfesm186100505e9.23.2025.04.22.11.17.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Apr 2025 11:17:44 -0700 (PDT)
-Message-ID: <c05731ae-bcf1-4747-b64c-0f4b79f3587f@citrix.com>
-Date: Tue, 22 Apr 2025 19:17:42 +0100
+        bh=TMh0izLSzqmAU5ORZxGehcX6J35ZOvbIe3zUy9tlNbQ=;
+        b=sdhX0Qu/ps03/5xR4rXZZzDsqGETl0yNH+StAD6y1pT6UPz/S9/n0idm5HOEVaz0yA
+         l5IvCayYzKkGVE8NIhcvrRTti8oWcRcUwh5XpoPF0yjPamRZTnkyA5eKFBBg5qGZCmM6
+         +Fp41x7K/IOAphBdaGnAY6NY9feiDc1aOg8nszpBdkiLDjgOUNKfFoiCXUeiwawJIga6
+         mLsOA3St9YT9oXce3RS7UL4JBpMw0HuXxT+ZkUv9LywSoT3TQdUiA/e3KJxstF6a6EUd
+         neAJuhHWAh5ao5OE8JLyqstEIKCycoHDlsbpQVl/z4Olq4uGiY6rlXcQR1K/ezC5Cqg0
+         AIJA==
+X-Forwarded-Encrypted: i=1; AJvYcCWf1xT/j6WaXjwE1Wgn7qA5jVMf9Te/on97jxTtCVnYybkj3MnyYznkAN66V7oq5jWP13DBjg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwkU7D3K+/eqX5Mxch3/af7LRU/NHIXzKWeVFPftvRCJ+b/D65w
+	at/XqZoI6RAYKQe0QHZLdGAkpnkIFfYUQ/5Xmo0p20/B7D1KLnUME+djGCYDl/Q=
+X-Gm-Gg: ASbGncthpzAJstFk41r0arizTZZ4T4IJmWHNUULPmV8WLwblczbCxJ1wYvnUDmgOLCW
+	OZZS7BHmL0MqljARicwB+HW7drRFiF9YRWXRGm4nBVIWlEgQuLrOUgnlZJmjs255ijZSLa1JjIb
+	8i9v9Ts5BmJADYzcI982OI42DieA6RlGSsLGFw/cGofeHWHPhID8Zd0nVlFxoJ725k7CEOEI0ad
+	LCNnC+SnxRVBarTkKzLwmWmGeBWvLCjUDewWbdczlqUxHBqxtKJwvzhh/jaO1bbwkZUTH7fHMnT
+	gsbHe87hb5r3N5Q3eUqvPt20n16bTfUqvf2MYgquzVya4VHS0Ttz2KbBOwJz/UZfDRteNvdww98
+	idDGIflbVTrBt4MMN8SA=
+X-Google-Smtp-Source: AGHT+IHbq+pHzTQuxxdUufVp0+5UWeEWnmEdvfzQVGDaZiAVyxBLUWwXVLbiir8zvtHTZQ/owxmlMQ==
+X-Received: by 2002:a05:6214:3008:b0:6ea:d361:a4ca with SMTP id 6a1803df08f44-6f2c46557e7mr318335806d6.32.1745348437625;
+        Tue, 22 Apr 2025 12:00:37 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6f2c2c21da6sm60863536d6.98.2025.04.22.12.00.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 22 Apr 2025 12:00:36 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1u7IrE-00000006vVF-1Cvg;
+	Tue, 22 Apr 2025 16:00:36 -0300
+Date: Tue, 22 Apr 2025 16:00:36 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: William McVicker <willmcvicker@google.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, Russell King <linux@armlinux.org.uk>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	Stuart Yoder <stuyoder@gmail.com>,
+	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+	Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Saravana Kannan <saravanak@google.com>,
+	Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, devicetree@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	Charan Teja Kalla <quic_charante@quicinc.com>
+Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
+ path
+Message-ID: <20250422190036.GA1213339@ziepe.ca>
+References: <cover.1740753261.git.robin.murphy@arm.com>
+ <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
+ <aAa2Zx86yUfayPSG@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v14 00/19] x86: Trenchboot secure dynamic launch Linux
- kernel support
-To: Dave Hansen <dave.hansen@intel.com>,
- Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
- x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
- linux-efi@vger.kernel.org, iommu@lists.linux.dev
-Cc: dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
- bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com, ardb@kernel.org,
- mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
- peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
- nivedita@alum.mit.edu, herbert@gondor.apana.org.au, davem@davemloft.net,
- corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
- baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
- trenchboot-devel@googlegroups.com
-References: <20250421162712.77452-1-ross.philipson@oracle.com>
- <d96f9c5e-64ed-4c28-a8ad-e22daea19742@intel.com>
-Content-Language: en-GB
-From: Andrew Cooper <andrew.cooper3@citrix.com>
-Autocrypt: addr=andrew.cooper3@citrix.com; keydata=
- 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
- 6+ahAA==
-In-Reply-To: <d96f9c5e-64ed-4c28-a8ad-e22daea19742@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aAa2Zx86yUfayPSG@google.com>
 
-On 21/04/2025 9:52 pm, Dave Hansen wrote:
-> Purely from the amount of interest and review tags and the whole "v14"
-> thing, it doesn't look like this is very important to anyone. Not to be
-> to flippant about it, but if nobody else cares, why should I (or the
-> other x86 maintainers)?
+On Mon, Apr 21, 2025 at 02:19:35PM -0700, William McVicker wrote:
+> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+> index 1813cfd0c4bd..6d124447545c 100644
+> --- a/drivers/base/platform.c
+> +++ b/drivers/base/platform.c
+> @@ -1440,8 +1440,8 @@ static void platform_shutdown(struct device *_dev)
+>  
+>  static int platform_dma_configure(struct device *dev)
+>  {
+> -       struct platform_driver *drv = to_platform_driver(dev->driver);
+>         struct fwnode_handle *fwnode = dev_fwnode(dev);
+> +       struct platform_driver *drv;
+>         enum dev_dma_attr attr;
+>         int ret = 0;
+>  
+> @@ -1451,8 +1451,12 @@ static int platform_dma_configure(struct device *dev)
+>                 attr = acpi_get_dma_attr(to_acpi_device_node(fwnode));
+>                 ret = acpi_dma_configure(dev, attr);
+>         }
+> -       /* @drv may not be valid when we're called from the IOMMU layer */
+> -       if (ret || !dev->driver || drv->driver_managed_dma)
+> +       /* @dev->driver may not be valid when we're called from the IOMMU layer */
+> +       if (ret || !dev->driver)
+> +               return ret;
+> +
+> +       drv = to_platform_driver(dev->driver);
+> +       if (drv->driver_managed_dma)
+>                 return ret;
+>  
+>         ret = iommu_device_use_default_domain(dev);
 
-There are several downstreams already using this as a part of their
-overall system security, one example being
-https://www.qubes-os.org/doc/anti-evil-maid/
+The diagnosis looks right to me, but pedantically I think it should
+have a READ_ONCE():
 
-It's all giant out-of-tree patch series (in multiple projects; Grub,
-Xen, iPXE too).  Ross and others are trying to be good open source
-citizen and put it upstream where yet-more downstreams can benefit too.
+struct driver *drv = READ_ONCE(dev->driver);
 
-~Andrew
+And then never touch dev->driver again in the function.
+
+Send a proper patch?
+
+Jason
