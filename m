@@ -1,105 +1,160 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C219126C13
-	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 07:53:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89556245005;
+	Tue, 22 Apr 2025 07:56:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745308434; cv=none; b=CWbghNFIZQSWagVt2vWJiH2NEVRdKBWbhY9veR5B7FGTQ3/Q7rQwwUZVdpDp1vY3dPr/IM6MpLehwkPgGhMdUdekmSSCSdtRky98VrcDVgZxKjs3/oIJ3qNcbR7EiAQZimto5MrsUO7cQcdUY9wjYVER3SxNYxukXQK4pOPNLvg=
+	t=1745308580; cv=none; b=VizWeh1mkYu44ghN7BRrpzl9ROjTNfiAWfKhq0hDg6noPy3iBBWfQ1ekegtOY00NU/DxwGJHcFe6mIWMVnfP7ooCdqAv/pTyJ9mY0EBm3cfZFHA/+10HMzdD0pwBghG4otEL6PZTGiTiG1CmtjZytcDUay1qIz6812QE61cL2lM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745308434; c=relaxed/simple;
-	bh=bN11AdKFan4/zi4bzqZxPMPow5eSnJU3qwTnj0tn9Rw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=pXhvDO7aLajowa7x0B1YuilUqLtM4vaRaH/Rl4AQUmWFlyGOuB5cCaxeVlJhs5PzG+5u7ZC4NhmfTYAFbsH/CXBqDd/VYen/ZlmE7ScF6tOqj10mUc1QfeJleRlX/FiTCLZWTwoKelKpqYXt/o0M9cNrCyx2f2Ucrd4qwMJdOok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h0V5t/33; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1745308580; c=relaxed/simple;
+	bh=5IHVZ518v1tW+/IGWWsuU/FGE1j6f0ia94o/kYtjpEQ=;
+	h=Subject:To:Cc:From:Date:Message-ID:MIME-Version:Content-Type; b=Q43ZPW2tFW0uqsES3NW6WJvi0+s/nEkmA5bXuL+8f4n+n2MelHD89vJrdU813mvANBKAYqTTSQ74/zKyNEMuqbq6CFwTpyqpC0gODMpybXtKrYHoTV3iw6cxjvY4gD5wYYOu3hDpqHaCxVyR+Lngctm4nsDmg6fqo6Mi5ePjQlk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=2B2X1Rzp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h0V5t/33"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745308433; x=1776844433;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=bN11AdKFan4/zi4bzqZxPMPow5eSnJU3qwTnj0tn9Rw=;
-  b=h0V5t/339p6ZNfFpap0qOEPuq8e2eXwfEvO7fYRN2DiFub4ypq0H3TaB
-   iiVqsJ38nUrTW2Y1JC6WoMtkKMIPSO3N2cKNe3pXOFEKI2yk0srnWnoY4
-   LqetEFnSODk04gDu33O3p6HXu/VOfJyk2f8RPbCmcDlh+CQ+Y/oo/W+0l
-   ZLUTAFJfFGKd71AtXzOLOYJZmvBJFvri8PXvWrhIqgwqQkR30zLxpCnSG
-   eqMMwfBqZqhxkXs6v5jmyM32LKHOD4/bwyTZzJQ5mF3xUoTTnRFuUxV6+
-   80mUuT1WKg37ErNVNVOW293pANQPIPx3zPwF9rfZ2Xkp0lGJDD3qdmzUd
-   Q==;
-X-CSE-ConnectionGUID: jMUqQl4hTuirCUbxlVSV+Q==
-X-CSE-MsgGUID: o1oMJgtnREeFNLam3gVZNA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11410"; a="46736242"
-X-IronPort-AV: E=Sophos;i="6.15,230,1739865600"; 
-   d="scan'208";a="46736242"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 00:53:52 -0700
-X-CSE-ConnectionGUID: ELbREccUShGmuQop5UDLng==
-X-CSE-MsgGUID: 7a9xTTQJRdGm62RFmFudLQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,230,1739865600"; 
-   d="scan'208";a="131687764"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa009.jf.intel.com with ESMTP; 22 Apr 2025 00:53:49 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	shangsong2@lenovo.com,
-	Dave Jiang <dave.jiang@intel.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	stable@vger.kernel.org
-Subject: [PATCH 1/1] iommu/vt-d: Assign owner to the static identity domain
-Date: Tue, 22 Apr 2025 15:54:22 +0800
-Message-ID: <20250422075422.2084548-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="2B2X1Rzp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15CB5C4CEE9;
+	Tue, 22 Apr 2025 07:56:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1745308580;
+	bh=5IHVZ518v1tW+/IGWWsuU/FGE1j6f0ia94o/kYtjpEQ=;
+	h=Subject:To:Cc:From:Date:From;
+	b=2B2X1RzpmP324+zVeqUaFu/Wi3vwsC1P8OsWEMrCV7nP4pF0Nq/c7y8zDKiZUrtYA
+	 MtaKTH1iHckAfuyt5YlztJdUCYrRxHWmLdOgbC8S4guOd921pFRaTcqgR1ftE2uX4J
+	 Z3tVGnh3Q8ru1zUbGTD35dPFHWWmxeLWeywOCJEU=
+Subject: Patch "Fix mmu notifiers for range-based invalidates" has been added to the 6.6-stable tree
+To: apopple@nvidia.com,catalin.marinas@arm.com,gregkh@linuxfoundation.org,iommu@lists.linux.dev,jgg@nvidia.com,jhubbard@nvidia.com,linux-arm-kernel@lists.infradead.org,linux-mm@kvack.org,nicolinc@nvidia.com,pjaroszynski@nvidia.com,rananta@google.com,robin.murphy@arm.com,sj@kernel.org,will@kernel.org
+Cc: <stable-commits@vger.kernel.org>
+From: <gregkh@linuxfoundation.org>
+Date: Tue, 22 Apr 2025 09:55:44 +0200
+Message-ID: <2025042244-divorcee-haunt-f231@gregkh>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=ANSI_X3.4-1968
 Content-Transfer-Encoding: 8bit
+X-stable: commit
+X-Patchwork-Hint: ignore 
 
-The idxd driver attaches the default domain to a PASID of the device to
-perform kernel DMA using that PASID. The domain is attached to the
-device's PASID through iommu_attach_device_pasid(), which checks if the
-domain->owner matches the iommu_ops retrieved from the device. If they
-do not match, it returns a failure.
 
-        if (ops != domain->owner || pasid == IOMMU_NO_PASID)
-                return -EINVAL;
+This is a note to let you know that I've just added the patch titled
 
-The static identity domain implemented by the intel iommu driver doesn't
-specify the domain owner. Therefore, kernel DMA with PASID doesn't work
-for the idxd driver if the device translation mode is set to passthrough.
+    Fix mmu notifiers for range-based invalidates
 
-Fix this by specifying the domain owner for the static identity domain.
+to the 6.6-stable tree which can be found at:
+    http://www.kernel.org/git/?p=linux/kernel/git/stable/stable-queue.git;a=summary
 
-Fixes: 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
-Closes: https://bugzilla.kernel.org/show_bug.cgi?id=220031
+The filename of the patch is:
+     fix-mmu-notifiers-for-range-based-invalidates.patch
+and it can be found in the queue-6.6 subdirectory.
+
+If you, or anyone else, feels it should not be added to the stable tree,
+please let <stable@vger.kernel.org> know about it.
+
+
+From f7edb07ad7c66eab3dce57384f33b9799d579133 Mon Sep 17 00:00:00 2001
+From: Piotr Jaroszynski <pjaroszynski@nvidia.com>
+Date: Tue, 4 Mar 2025 00:51:27 -0800
+Subject: Fix mmu notifiers for range-based invalidates
+
+From: Piotr Jaroszynski <pjaroszynski@nvidia.com>
+
+commit f7edb07ad7c66eab3dce57384f33b9799d579133 upstream.
+
+Update the __flush_tlb_range_op macro not to modify its parameters as
+these are unexepcted semantics. In practice, this fixes the call to
+mmu_notifier_arch_invalidate_secondary_tlbs() in
+__flush_tlb_range_nosync() to use the correct range instead of an empty
+range with start=end. The empty range was (un)lucky as it results in
+taking the invalidate-all path that doesn't cause correctness issues,
+but can certainly result in suboptimal perf.
+
+This has been broken since commit 6bbd42e2df8f ("mmu_notifiers: call
+invalidate_range() when invalidating TLBs") when the call to the
+notifiers was added to __flush_tlb_range(). It predates the addition of
+the __flush_tlb_range_op() macro from commit 360839027a6e ("arm64: tlb:
+Refactor the core flush algorithm of __flush_tlb_range") that made the
+bug hard to spot.
+
+Fixes: 6bbd42e2df8f ("mmu_notifiers: call invalidate_range() when invalidating TLBs")
+
+Signed-off-by: Piotr Jaroszynski <pjaroszynski@nvidia.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Alistair Popple <apopple@nvidia.com>
+Cc: Raghavendra Rao Ananta <rananta@google.com>
+Cc: SeongJae Park <sj@kernel.org>
+Cc: Jason Gunthorpe <jgg@nvidia.com>
+Cc: John Hubbard <jhubbard@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux.dev
+Cc: linux-mm@kvack.org
+Cc: linux-kernel@vger.kernel.org
 Cc: stable@vger.kernel.org
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Alistair Popple <apopple@nvidia.com>
+Link: https://lore.kernel.org/r/20250304085127.2238030-1-pjaroszynski@nvidia.com
+Signed-off-by: Will Deacon <will@kernel.org>
+[will: Resolve conflicts due to lack of LPA2 support]
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/intel/iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/include/asm/tlbflush.h |   22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index cb0b993bebb4..63c9c97ccf69 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4385,6 +4385,7 @@ static struct iommu_domain identity_domain = {
- 		.attach_dev	= identity_domain_attach_dev,
- 		.set_dev_pasid	= identity_domain_set_dev_pasid,
- 	},
-+	.owner = &intel_iommu_ops,
- };
- 
- const struct iommu_ops intel_iommu_ops = {
--- 
-2.43.0
+--- a/arch/arm64/include/asm/tlbflush.h
++++ b/arch/arm64/include/asm/tlbflush.h
+@@ -369,31 +369,33 @@ static inline void arch_tlbbatch_flush(s
+ #define __flush_tlb_range_op(op, start, pages, stride,			\
+ 				asid, tlb_level, tlbi_user)		\
+ do {									\
++	typeof(start) __flush_start = start;				\
++	typeof(pages) __flush_pages = pages;				\
+ 	int num = 0;							\
+ 	int scale = 3;							\
+ 	unsigned long addr;						\
+ 									\
+-	while (pages > 0) {						\
++	while (__flush_pages > 0) {					\
+ 		if (!system_supports_tlb_range() ||			\
+-		    pages == 1) {					\
+-			addr = __TLBI_VADDR(start, asid);		\
++		    __flush_pages == 1) {				\
++			addr = __TLBI_VADDR(__flush_start, asid);	\
+ 			__tlbi_level(op, addr, tlb_level);		\
+ 			if (tlbi_user)					\
+ 				__tlbi_user_level(op, addr, tlb_level);	\
+-			start += stride;				\
+-			pages -= stride >> PAGE_SHIFT;			\
++			__flush_start += stride;			\
++			__flush_pages -= stride >> PAGE_SHIFT;		\
+ 			continue;					\
+ 		}							\
+ 									\
+-		num = __TLBI_RANGE_NUM(pages, scale);			\
++		num = __TLBI_RANGE_NUM(__flush_pages, scale);		\
+ 		if (num >= 0) {						\
+-			addr = __TLBI_VADDR_RANGE(start, asid, scale,	\
+-						  num, tlb_level);	\
++			addr = __TLBI_VADDR_RANGE(__flush_start, asid,	\
++						scale, num, tlb_level);	\
+ 			__tlbi(r##op, addr);				\
+ 			if (tlbi_user)					\
+ 				__tlbi_user(r##op, addr);		\
+-			start += __TLBI_RANGE_PAGES(num, scale) << PAGE_SHIFT; \
+-			pages -= __TLBI_RANGE_PAGES(num, scale);	\
++			__flush_start += __TLBI_RANGE_PAGES(num, scale) << PAGE_SHIFT; \
++			__flush_pages -= __TLBI_RANGE_PAGES(num, scale);\
+ 		}							\
+ 		scale--;						\
+ 	}								\
 
+
+Patches currently in stable-queue which might be from pjaroszynski@nvidia.com are
+
+queue-6.6/fix-mmu-notifiers-for-range-based-invalidates.patch
