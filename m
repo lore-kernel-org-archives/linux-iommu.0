@@ -1,132 +1,140 @@
-Received: from out-178.mta1.migadu.com (out-178.mta1.migadu.com [95.215.58.178])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23BCB19F13F
-	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 22:21:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C54F51D61A3
+	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 23:21:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745360503; cv=none; b=rDM/wQsEa9BMVuURYkwLKCMNm6eEsCEd0LWc3u5AkVxJvSWqC5x2OEIvGalrtkX3xdPUOGc34x+IdDQ0DZ8Y3tDGdA0mwufzHE5H3+TEtWUIVCcOo0Wx0lwYmcqg61xPNefAIxrUn6PGx8bnBOTILWXbwB+7FlkuFMnT3umtNHo=
+	t=1745364105; cv=none; b=ipMJVUDyuhXyhlJLALXiQ7R6jP44ns+J3p35+q69Esp1CriCobI6QJEtI8DopgidjnAQoV4w7nXDfXYIJtfkOC18iA/ZB6oN7k4DLgxX2Myw0pPoaSqmplM92ksl8aEr3WAA1gP9wkEzScntaJ29FJr+Y/Sx+rIGpVKsfCzTvF4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745360503; c=relaxed/simple;
-	bh=OMajJGOYOM80T8XOi8EmEsK5+/OYko020cjWF3DYVFE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NlgUzEQ9JJl/KGaqMv1XDex/jaJN+dkRkgT6nY/CsOi4TGAKxn9rwzNQCEhRpJlu6k5geu1WERsDlqCRL/+7+DcwhFW+Y9Rth73QzC4potheohf3EWSj56IrO4eSt8UUmvOEk0/vMCRz93hQowDkdbg3d75DYJ3xmkQx+i+MhpA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=OYw7mRRn; arc=none smtp.client-ip=95.215.58.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1745364105; c=relaxed/simple;
+	bh=I3FRn9V4QunPjjOssRfPaYzgF9xMtfcBnivCd43Spdc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fxRXu/w++eocR8Pg39/YBddBI2bS9rXMWTnbwVhFcsnxmE4XeSh4I1SSVYOexKm1klfsiJc3/nxz7S3OVpEUX4IkshfIoEK/uZR5QQekm6nqjmptaWayj3RGuK2uaJ6i/rq+2aq0UXDfEKKYQ3WrDKpdAyaI6sYDx07mdyBNoH8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AlQ+QcqC; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="OYw7mRRn"
-Date: Tue, 22 Apr 2025 18:21:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1745360498;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=1kjDPiTvtrUS828kXClEO+meshTtGoc7Lw5B1i+KsT4=;
-	b=OYw7mRRnyhGu94Y30UFMbMR+XjM8+Q/9gIeWcdXGKDL63oxVaeWij5Tr1MoYhvxQb+2Eam
-	m/gGTcGPetWw67JTRjIHukoRM2dFhtS7WAMns0Brqy8FkKeN9BJRS6ZGG0wryHBzi7EL2a
-	usVjI0h7YYuGiv0FHu3O3VO0OKRKtlc=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Ben Collins <ben.collins@linux.dev>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH] fsl_pamu: Use 40-bits for addressing where appropriate
-Message-ID: <2025042218-beneficial-wildcat-77dd3e@boujee-and-buff>
-Mail-Followup-To: Jason Gunthorpe <jgg@ziepe.ca>, iommu@lists.linux.dev, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-References: <2025042122-prudent-dogfish-eac6bf@boujee-and-buff>
- <20250422190921.GB1213339@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AlQ+QcqC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745364104; x=1776900104;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=I3FRn9V4QunPjjOssRfPaYzgF9xMtfcBnivCd43Spdc=;
+  b=AlQ+QcqCv88QdqrzQ+U1xDJ7djCxcAyDujj6qeQ8npEv8K9JM3xp7a1h
+   mKV9AQRcrtug6CGO+If9pINISodY3XIIZo1n5KgFbAxXDxA9wNMpo8b9o
+   S1TH3sOifSsguP0nxwKw70vgocfKbqLCVKgEKI8Z9rFRzxzdlBGpMQ5Ur
+   BWfoxzntbKF+VC1Li7IdN6JALDIeVG+rezxSNKCFYZAQxHPL/MxlbxXHl
+   FTiHwTIIJnZUAAtvOtQobmYCdAFNSJinp3A09F7PQ7c+AWuE0aP6fWy28
+   ilLPlMuBqpz9gUhKXg6r35UleQC96Qj+8xdo84bSCt7Sv45MNE8AQTPfg
+   g==;
+X-CSE-ConnectionGUID: hscpmPI9S7K8T6wRzagkUw==
+X-CSE-MsgGUID: W0QPKJ7zQVqfY//46FqPqA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11411"; a="58304957"
+X-IronPort-AV: E=Sophos;i="6.15,232,1739865600"; 
+   d="scan'208";a="58304957"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 16:21:43 -0700
+X-CSE-ConnectionGUID: ufnuimT7QoqBYrhz93UrSA==
+X-CSE-MsgGUID: /P3uTzH2TLu3tjp7t8QXOQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,232,1739865600"; 
+   d="scan'208";a="133094837"
+Received: from bkammerd-mobl.amr.corp.intel.com (HELO [10.124.221.25]) ([10.124.221.25])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 16:21:38 -0700
+Message-ID: <87336151-efad-42fb-b48c-0f8a0ec736e8@intel.com>
+Date: Tue, 22 Apr 2025 16:21:36 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="plgvsw3l3hufgtb4"
-Content-Disposition: inline
-In-Reply-To: <20250422190921.GB1213339@ziepe.ca>
-X-Migadu-Flow: FLOW_OUT
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v14 00/19] x86: Trenchboot secure dynamic launch Linux
+ kernel support
+To: Ard Biesheuvel <ardb@kernel.org>,
+ Andrew Cooper <andrew.cooper3@citrix.com>
+Cc: Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
+ x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+ linux-efi@vger.kernel.org, iommu@lists.linux.dev,
+ dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
+ bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com,
+ mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
+ peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
+ nivedita@alum.mit.edu, herbert@gondor.apana.org.au, davem@davemloft.net,
+ corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
+ baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
+ trenchboot-devel@googlegroups.com
+References: <20250421162712.77452-1-ross.philipson@oracle.com>
+ <d96f9c5e-64ed-4c28-a8ad-e22daea19742@intel.com>
+ <c05731ae-bcf1-4747-b64c-0f4b79f3587f@citrix.com>
+ <CAMj1kXHNpxTqm5hOcxdKRnE58WLmhJo0Rk5pvVGyAtkkki6bvg@mail.gmail.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Content-Language: en-US
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <CAMj1kXHNpxTqm5hOcxdKRnE58WLmhJo0Rk5pvVGyAtkkki6bvg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+On 4/22/25 14:26, Ard Biesheuvel wrote:
+> So if that is true (I'm not a x86 uarch expert by any measure), then
+> pushing back on this series on the basis that it is ugly and intrusive
+> is not really reasonable. From security pov, I think D-RTM is an
+> important feature and it deserves to be upstream if it is used widely
+> in the field.
 
---plgvsw3l3hufgtb4
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH] fsl_pamu: Use 40-bits for addressing where appropriate
-MIME-Version: 1.0
+BTW, I'm not pushing back on it for being intrusive. It's actually not
+_that_ intrusive. Most of it sits off on the side. It looked like it had
+a parallel boot entry point, for instance, that is separate from but
+shouldn't break the normal entry points.
 
-On Tue, Apr 22, 2025 at 04:09:21PM -0500, Jason Gunthorpe wrote:
-> On Mon, Apr 21, 2025 at 10:46:19PM -0400, Ben Collins wrote:
-> > diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_d=
-omain.c
-> > index 30be786bff11e..a4bc6482a00f7 100644
-> > --- a/drivers/iommu/fsl_pamu_domain.c
-> > +++ b/drivers/iommu/fsl_pamu_domain.c
-> > @@ -214,9 +214,10 @@ static struct iommu_domain *fsl_pamu_domain_alloc(=
-unsigned type)
-> >  	INIT_LIST_HEAD(&dma_domain->devices);
-> >  	spin_lock_init(&dma_domain->domain_lock);
-> > =20
-> > -	/* default geometry 64 GB i.e. maximum system address */
-> > +	/* Set default geometry based on physical address limit. */
-> >  	dma_domain->iommu_domain. geometry.aperture_start =3D 0;
-> > -	dma_domain->iommu_domain.geometry.aperture_end =3D (1ULL << 36) - 1;
-> > +	dma_domain->iommu_domain.geometry.aperture_end =3D
-> > +		(1ULL << PAMU_MAX_PHYS_BITS) - 1;
-> >  	dma_domain->iommu_domain.geometry.force_aperture =3D true;
->=20
-> What on earth does this even do? There is no map_range() callback in
-> this driver, so nothing should be reading geometry..
-
-I dunno, but your "FIXME this is broken" comments are all over it from a
-year and a half ago:
-
-Author: Jason Gunthorpe <jgg@ziepe.ca>
-Date:   Wed Sep 13 10:43:38 2023 -0300
-
-    iommu/fsl_pamu: Implement a PLATFORM domain
-
-       /*
-        * FIXME: This isn't creating an unmanaged domain since the
-        * default_domain_ops do not have any map/unmap function it doesn't =
-meet
-        * the requirements for __IOMMU_DOMAIN_PAGING. The only purpose seem=
-s to
-        * allow drivers/soc/fsl/qbman/qman_portal.c to do
-        * fsl_pamu_configure_l1_stash()
-        */
-
-The logic hasn't really been touched in 10 years.
-
---=20
- Ben Collins
- https://libjwt.io
- https://github.com/benmcollins
- --
- 3EC9 7598 1672 961A 1139  173A 5D5A 57C7 242B 22CF
-
---plgvsw3l3hufgtb4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEPsl1mBZylhoRORc6XVpXxyQrIs8FAmgIFmwACgkQXVpXxyQr
-Is+CzRAAq4Doy76vP/uvrf7LUhsshA5BRHPEh895UKM7rKUTz85JnB71LPZMOFvY
-tPQ5Eb+LCiFfLS4tz+0TvTxsNQkTIoD8nPslbzW7HYOphrvJsetEmK/MzFtJD03M
-JBRM4gGZzAxDZ1la8k7Jy2AUHhYbHGareuy84OU99Vb45rtMdXJ9maontA+kuPkT
-uqjyAN5R86A1rG5DQWkIHQ500AN3+OR0BnZJPlYY2ehp0c3HpCSNPC7/hntoOCrl
-MlMMF+WxsZ3PVnA9Ym4/fzzhQ+9fDkiqd7+wXqaLTGocfY7L3CAxQz4xphhuxBQd
-SOO9Fk0mKaRt/bTfl39Yq/xYewLLvRT1yVD2dWEhwV7PVqG4oHL3fQBjaoBVxrdY
-4sBjdevOxpwEujcSc10H4cNuFvUuHjpfN6QOnbwo9AOzEppQsxwbReXYpSiWCtgx
-uG8MWTUyLLEJqe1q+eIioE0BuVLigduyuBLZzOKkbA1N1QRb9IOoE8+dUbmDLdHS
-Ty0QMK1xQpdmhit6qUzR3wU4m+PGj7yVR6MR6eERzjt4WL418MdSg+H0YfjLiEFF
-ZzIuJrvKeP9hxfaZ65tyqecjcm7CoO0MD8npjO7D1zuj8CAcAezSrxgrawCXBX5P
-reBSfzP/zFm1Cy6Ps5GtW38eMzK/AOyE2T3K0u9Bm/cGFG3qqR4=
-=cpPe
------END PGP SIGNATURE-----
-
---plgvsw3l3hufgtb4--
+BTW. it sounds like folks are pretty unhappy with Intel here on a bunch
+of levels. It's not my personal hardware design or anything, so please
+don't pull any punches. If Intel screwed up here and that's why we need
+5,000 lines of arguably duplicate functionality, then please say so.
+You're not going to hurt my feelings.
