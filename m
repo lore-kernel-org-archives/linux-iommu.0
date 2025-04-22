@@ -1,99 +1,105 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mx1.emlix.com (mx1.emlix.com [178.63.209.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14721225A39
-	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 06:37:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FC7422A7E9
+	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 06:44:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.63.209.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745303857; cv=none; b=rFXjAIVrvsRNOWybX6VYd++FHh+rrDwaIqzt6uP0y1aPWEnVa6iTd9aw/ePtPNNnqZcJoBGXq9aA68v30kVjE/R4+QnDFFPN1PSaUPW2TER3kQum7XG0KBNpBNATJvpSieoNG5RlIDXXADRtIgmRaALqJWYpwc3TCDHN51OO6A0=
+	t=1745304302; cv=none; b=GNf0o1JMmg3fJ1fafFMLzOD127TSdsaUpOd85l4w+XAIv6Q/MGvU4wv1x77bgVfl0ms8haq8tBtc/Ul0Z2OG1dbZiT/jfDcMJmxOprQS3Wwv4XjBKVljkLYwjH1fw1YvWvlPBGikt3UFECw02h0gUbwmDQCzBA7r/FWL7fkXZyo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745303857; c=relaxed/simple;
-	bh=UcdEpiXFzC8AsBaOTOkXbBE+EOhb8L2+7Sb0WBfailQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=EmAtKb/gQBo1jYNXLLr+Rqlt4A4zW2A/D6QVtJVuyx+0dwu/s8wdblOEm5uBxQPa53c4XHab/YRyZoMPFu+76VbkNIqDelr4+FAc7FksLyiD7AojLRHREDPE23Bvmxng3rFLKKaqUkZWwZrmpS7/IfJLIRySuDe0aAz3bSfpuq8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=huaqian.li@siemens.com header.b=ZgVX89uR; arc=none smtp.client-ip=185.136.65.225
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=huaqian.li@siemens.com header.b="ZgVX89uR"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202504220637324f40b4107cd8a85b69
-        for <iommu@lists.linux.dev>;
-        Tue, 22 Apr 2025 08:37:32 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=huaqian.li@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=nt46wyX3vInf9nEJO3STUSubJKhNa7Mq0IAjgmyGm+I=;
- b=ZgVX89uRFaDVpnmoy6wTuTQjf50vAVEIjLhyw/3KF8CrzYvi8YKNa+jlj7HQ0p7LZT7QGR
- mwrkrTqyaAYHZ0xkw5oJcnaHS8O0s4+KpmjRrkRXCArzVUWAV7MIlVHMiW5/wm6xQFLAQvDx
- Yq46x7FUqamcQGXztfPQsNZsxo8WK14Kc+3DOmo8jN5JRdrtU+S2a4uitIICx2ufyufiB6dT
- ZsN07ne7sKAt9MblrA8UF/QKiVqD80MHpCIhvKqp1CXeHrn1G8pl5J92SQuSDRs8Th9dY2IT
- KbwsGRy272d2BgrcwHyIt7msyTcaKP3boJBDawQvvI9CmKQbPh/Kcd5Q==;
-From: huaqian.li@siemens.com
-To: m.szyprowski@samsung.com,
-	robin.murphy@arm.com
-Cc: baocheng.su@siemens.com,
-	huaqian.li@siemens.com,
-	jan.kiszka@siemens.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] swiotlb: Make IO_TLB_SEGSIZE configurable
-Date: Tue, 22 Apr 2025 14:37:19 +0800
-Message-Id: <20250422063719.121636-2-huaqian.li@siemens.com>
-In-Reply-To: <20250422063719.121636-1-huaqian.li@siemens.com>
-References: <20250422063719.121636-1-huaqian.li@siemens.com>
+	s=arc-20240116; t=1745304302; c=relaxed/simple;
+	bh=tiD+q2iLPecaXdqBIUQA6kHgOTtsV3xRVQmtbqKQgbw=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=pAmMqfjKlYxpjXZtVEZA81uAwgp0a7/97UN9EzU184KZtaBhsrla0Ll8oOLLn7j2zOcOql5lWyCAm/vgtktd3GVdid0CHLKa3t60IFuH6kXr/Avuk7LClvZFOeZW0Mm65+TXl6dmvCvwQwxfj529aICB2SyP+H/zWGKEIK0UUJ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com; spf=pass smtp.mailfrom=emlix.com; arc=none smtp.client-ip=178.63.209.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=emlix.com
+Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
+	(using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by mx1.emlix.com (Postfix) with ESMTPS id 195285F86B;
+	Tue, 22 Apr 2025 08:35:14 +0200 (CEST)
+From: Rolf Eike Beer <eb@emlix.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Bert Karwatzki <spasswolf@web.de>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Jerry Snitselaar <jsnitsel@redhat.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Tomasz Jeznach <tjeznach@rivosinc.com>, Nick Kossifidis <mick@ics.forth.gr>,
+ Sebastien Boeuf <seb@rivosinc.com>, Palmer Dabbelt <palmer@rivosinc.com>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Alexandre Ghiti <alex@ghiti.fr>, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>
+Subject:
+ Re: [PATCHv2 0/6] make vendor specific subdirectory inclusion conditional
+Date: Tue, 22 Apr 2025 08:35:08 +0200
+Message-ID: <2779144.mvXUDI8C0e@devpool92.emlix.com>
+Organization: emlix GmbH
+In-Reply-To: <aAERFUJj_6NuxAv3@8bytes.org>
+References:
+ <12652899.O9o76ZdvQC@devpool47.emlix.com> <aAERFUJj_6NuxAv3@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-959203:519-21489:flowmailer
+Content-Type: multipart/signed; boundary="nextPart12651545.O9o76ZdvQC";
+ micalg="pgp-sha256"; protocol="application/pgp-signature"
 
-From: Li Hua Qian <huaqian.li@siemens.com>
+--nextPart12651545.O9o76ZdvQC
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"; protected-headers="v1"
+From: Rolf Eike Beer <eb@emlix.com>
+To: Joerg Roedel <joro@8bytes.org>
+Date: Tue, 22 Apr 2025 08:35:08 +0200
+Message-ID: <2779144.mvXUDI8C0e@devpool92.emlix.com>
+Organization: emlix GmbH
+In-Reply-To: <aAERFUJj_6NuxAv3@8bytes.org>
+MIME-Version: 1.0
 
-In some applications, the default value of 128 is not sufficient for
-memory allocation and can cause runtime errors. This change makes
-IO_TLB_SEGSIZE configurable, allowing it to be increased if needed.
+On Donnerstag, 17. April 2025 16:32:53 Mitteleurop=C3=A4ische Sommerzeit Jo=
+erg=20
+Roedel wrote:
+> On Thu, Mar 20, 2025 at 10:01:45AM +0100, Rolf Eike Beer wrote:
+> > Changes in v2:
+> > - clean up subdirectory Makefiles to use obj-y now
+> > - add arm/arm-smmu-v3 and iommufd patches
+>=20
+> This conflicts with the core branch, can you please rebase once I pushed
+> the updated tree?
 
-Signed-off-by: Li Hua Qian <huaqian.li@siemens.com>
----
- include/linux/swiotlb.h | 2 +-
- kernel/dma/Kconfig      | 7 +++++++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+Sure.
+=2D-=20
+Rolf Eike Beer
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 3dae0f592063..145c71f8329d 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -23,7 +23,7 @@ struct scatterlist;
-  * must be a power of 2.  What is the appropriate value ?
-  * The complexity of {map,unmap}_single is linearly dependent on this value.
-  */
--#define IO_TLB_SEGSIZE	128
-+#define IO_TLB_SEGSIZE CONFIG_SWIOTLB_SEGSIZE
- 
- /*
-  * log of the size of each IO TLB slab.  The number of slabs is command line
-diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-index 31cfdb6b4bc3..38bfa84b96b6 100644
---- a/kernel/dma/Kconfig
-+++ b/kernel/dma/Kconfig
-@@ -102,6 +102,13 @@ config SWIOTLB_DYNAMIC
- 
- 	  If unsure, say N.
- 
-+config SWIOTLB_SEGSIZE
-+	int "SWIOTLB segment size"
-+	default 128
-+	help
-+	  Set the maximum allowable number of contiguous slabs to map.
-+	  Must be a power of 2.
-+
- config DMA_BOUNCE_UNALIGNED_KMALLOC
- 	bool
- 	depends on SWIOTLB
--- 
-2.34.1
+emlix GmbH
+Headquarters: Berliner Str. 12, 37073 G=C3=B6ttingen, Germany
+Phone +49 (0)551 30664-0, e-mail info@emlix.com
+District Court of G=C3=B6ttingen, Registry Number HR B 3160
+Managing Directors: Heike Jordan, Dr. Uwe Kracke
+VAT ID No. DE 205 198 055
+Office Berlin: Panoramastr. 1, 10178 Berlin, Germany
+Office Bonn: Bachstr. 6, 53115 Bonn, Germany
+http://www.emlix.com
+
+emlix - your embedded Linux partner
+--nextPart12651545.O9o76ZdvQC
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iLMEAAEIAB0WIQQ/Uctzh31xzAxFCLur5FH7Xu2t/AUCaAc4nAAKCRCr5FH7Xu2t
+/Ho+A/98h1tQPHZhbsX2KdIBKcFTRVlxRJvscAWNQs5Bko1+iniOMO2sfq6HClPQ
+7VC+G41TiMT5lg6jPBJqNlM8AXmA/dt85cmYSP0YuW+JRaE5aHfprhlJwjy7/o99
+Yy23Gp0kOkRaa2sm/N32llKyzxpn14YxBKPR3GZm1c5IQhbsng==
+=8mcp
+-----END PGP SIGNATURE-----
+
+--nextPart12651545.O9o76ZdvQC--
+
+
 
