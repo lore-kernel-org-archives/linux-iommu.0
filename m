@@ -1,155 +1,117 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 836C122F760
-	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 21:55:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E26E52BCF55
+	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 22:07:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745358936; cv=none; b=TkWu/grxtpBVhAnmRgyle/TviBRHq61Xux6Jo8Ijj07rIUiiE1GRr7CK4xop7BHiBSMAHVStp2fFU6xO934NjRj1ze2akS9/dYXtPy0TrahUzb5+olupZj31izapglDEmvayD1dbu29JhzzisOV5FdVLHAXcQHnoiskm1zzuVLQ=
+	t=1745359643; cv=none; b=XAB9Vw17iC9mIlspBLZ2nqsWA0+1MT3O4KB3m3EXYYVFkDCO9zOwEaRPrFULwoEACwq/yuywHcLvxPw/vq+5vvxHHG0uQTW9qPUjIJcCA4K1FveYyHxmvvKRyU0kOAgWTIZRHNUkEvIxbxQaRxQg8A1pyNBJwUaFCHe9DBk+kd8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745358936; c=relaxed/simple;
-	bh=IBg6T/8bdZueoIIYbP2yfI78xemmRKXPfW+X6Epwyb0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DYJ7h1IBqUL4zl1ER3mnSxMEZKF6SHR4lAgZ1fJUDaa26KoIvwVtDojxUl5QLTT7ciIBBIoEHKoGUy9DNBEkoZhtYzOR8pM4Ym0etx2eynFK/TI2lpqGG11ujuABzuefqfizSqvo0qpbtKNT6B49jTNnG6hRzZuYupfzbnlieHk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=yjI2W8N7; arc=none smtp.client-ip=209.85.214.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1745359643; c=relaxed/simple;
+	bh=HHAqqniu+70PkZcui0L6q6BNnIsbNpEmqB6CAF2ooZs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ufc+2Pyw4senbsog8fF/XdV/me0C+CyriWirFpP9Zxal+SJOt3CidW+YbJUgjQUyDssthwENe7/mE6jo6j4t7Fyw6QydBwJBvWeiQbTRBZCZniaEtKnGF/BUZnCjgxLvaryd0bQOiKF9qkWG39o5KWN/aCeQ0DF/BVF+KDnzNK4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=aYPUA556; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="yjI2W8N7"
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-22c33677183so67374705ad.2
-        for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 14:55:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1745358934; x=1745963734; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=6asYMkdcVOCJg0CB/GTsjjXoi08Jnm+cXJbFRuu7HS8=;
-        b=yjI2W8N7N9jzHWUwQzvujWXzW8+gLwjwQkKHEw3dDJja7DRq5BsVsaG3NuOeWfWZjQ
-         9llaXFu8GUF6TOn7p52KyFH1DOxcU3jwFdyx3QBEwckzjIOA9bnkIyQb52/XvhyXS6FA
-         J9097K+X/DdTZy3Xdwwg+n6QGAaGcoHhTJaRWfFkPnLEFVHJfaODWBQHmoZOHiZsy8Ak
-         +Ejns3EvFtloj52FbVklAZQ5EJKrSX82elzgFB+gtykJkzlXrxzv/4/BZVSSVg5gJ33A
-         jo1SA3+Xf3MSF496VzF9vUN0lNh6+VKqPhozFwh1LT4FZLhAnhSc3WwatShZ77Bk/JgV
-         0avA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745358934; x=1745963734;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=6asYMkdcVOCJg0CB/GTsjjXoi08Jnm+cXJbFRuu7HS8=;
-        b=AWur8yR6gn+20sNRUqVOaRMaFY5+dVQldHbtH7p48CBH0l4kVPVggkMwwO7Lkm87E5
-         kzyeo/id/gfvJSzD6SWtZN7pHho9R0u6JhZ+lW7/Nnvdf7dHYww0tznpvm6OOBJCTz9O
-         Ce0VU243fSv4ffJ/fbYB4XAaEZtsMPp0MjeRdJLXk6RK1qWwJ53Dtjr7pwzu5eUL1CWb
-         +jvgUcYDvYjTuSaK9uOWekoKy1hhzIhkCudjYy75fPaCrCyDGHVSeBkVxqwRNvBuZyy/
-         RIep4KjrTTgaFjayNh5ySeSzEuAbGFgY7L9S+YeMuC1uOxxez6hM1dNnUGgkoLtsm01j
-         rdow==
-X-Forwarded-Encrypted: i=1; AJvYcCXFAP7BJVt0S1EzDiBvykG6vgEmDDF4iu1Z2Kb6fq8b1teH6fwSRCTTCDYaV58qA0O75M5YIQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzAIAz/v5kbyXohDABgWvW80b4xfk8WFRX2UWlpzuZYd1bodvEC
-	IK+qJu77C8OPl0zhhnbAmjsVQIJFY3V0Eo/bA6e4xICqQmnBIzQ+oL8eHfh1XQ==
-X-Gm-Gg: ASbGncut1cIkqTGVYL8wrv/zzkFOAUJ11terZdYsvFI0oIbza/l5eiU0TUrlBilv1V0
-	oWy8mQMWgc7rIJAt7vmqTKvZ54p172OIO3hFp4BXi7l0kMiI0meUbjAQsr+RqZtDN1fc/c+hJR2
-	bqZbD8MKupbt07kfnqQiITozaNyZupHwXpQFbfM8hCkBo4OEdjriI0yoPrJIsPkr9B7DxWRkhMd
-	WxTGzGWlPsjUp5koQjYKT0padXFU7rNvpE81M7QUEuyT5lzfSZDRBoLsc7OkgKHQBPg/exsx2CW
-	TnSnJ0Da9jURAngcT9uJFcqLHwOCSRgXEOSHHXCu/TIwOxYFwW3xUZ1Gtq8wCcOWhHlY18gJPVg
-	vAzUHmw==
-X-Google-Smtp-Source: AGHT+IGj1WS3gCYuWNM31cHMqZpSCdXyw2eIzHGcK/aumOJ6NuA9dKBVMTjVtVR1uQU6qgyTGOQ+uQ==
-X-Received: by 2002:a17:902:ce82:b0:216:53fa:634f with SMTP id d9443c01a7336-22c536303e4mr222403105ad.48.1745358933312;
-        Tue, 22 Apr 2025 14:55:33 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22c50bf3eb1sm90943865ad.82.2025.04.22.14.55.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Apr 2025 14:55:32 -0700 (PDT)
-Date: Tue, 22 Apr 2025 14:55:28 -0700
-From: William McVicker <willmcvicker@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Hanjun Guo <guohanjun@huawei.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, Russell King <linux@armlinux.org.uk>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Stuart Yoder <stuyoder@gmail.com>,
-	Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-	Nipun Gupta <nipun.gupta@amd.com>,
-	Nikhil Agarwal <nikhil.agarwal@amd.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Saravana Kannan <saravanak@google.com>,
-	Bjorn Helgaas <bhelgaas@google.com>, linux-acpi@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-pci@vger.kernel.org,
-	Charan Teja Kalla <quic_charante@quicinc.com>
-Subject: Re: [PATCH v2 4/4] iommu: Get DT/ACPI parsing into the proper probe
- path
-Message-ID: <aAgQUMbsf0ADRRNc@google.com>
-References: <cover.1740753261.git.robin.murphy@arm.com>
- <e3b191e6fd6ca9a1e84c5e5e40044faf97abb874.1740753261.git.robin.murphy@arm.com>
- <aAa2Zx86yUfayPSG@google.com>
- <20250422190036.GA1213339@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="aYPUA556"
+Received: from [172.20.123.187] (xdsl-87-78-95-159.nc.de [87.78.95.159])
+	by mail.mainlining.org (Postfix) with ESMTPSA id 1EF7FBBAD3;
+	Tue, 22 Apr 2025 22:07:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
+	s=psm; t=1745359633;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=YLEEL3ypzQdRJMrQunu4Ob1ubXvJsyBO7YBIDjBB4wU=;
+	b=aYPUA5566zjczjEjArLW66jjsriNlPgp6SQiT7uVTqwQqgamaiz0k45Auni253BVuHh16S
+	CqN2J4LtKXDGNhiHn3aed4fwkpI/vF+kMaqu4W8lbpkHJ47QdpLuVvtZh1oGE3yhGDRpvI
+	y074nW8X0DpRne03mB1m14dzH0yLP6k+rz/P7sF4XAX6JaZKpFXkvQEWWZaxdfdnuG/uB9
+	gBYioNo9HrCW8TdQY0XNx9EKFK7Zqzkvlu30mbbob+Jr3EeG+gdVSt4GayedAsE76Ln3qb
+	NDsUpLVqYKEobnpwuKMddQcCCUlTjcTQlHXpjGu07eWz2p3SmoB2VlLjKF1s7Q==
+Message-ID: <2ca2b774-fd7f-4612-b38d-f60e32ff6f9a@mainlining.org>
+Date: Wed, 23 Apr 2025 00:07:11 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250422190036.GA1213339@ziepe.ca>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/33] Add support for Qualcomm Snapdragon SM7150 SoC and
+ Google Pixel 4a
+To: Danila Tikhonov <danila@jiaxyga.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Viresh Kumar <viresh.kumar@linaro.org>,
+ Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+ Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck
+ <linux@roeck-us.net>, Rajendra Nayak <quic_rjendra@quicinc.com>,
+ Jassi Brar <jassisinghbrar@gmail.com>, Bjorn Andersson
+ <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>,
+ Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>,
+ Lukasz Luba <lukasz.luba@arm.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Wesley Cheng <quic_wcheng@quicinc.com>, Vinod Koul <vkoul@kernel.org>,
+ Kishon Vijay Abraham I <kishon@kernel.org>,
+ Ulf Hansson <ulf.hansson@linaro.org>,
+ Souradeep Chowdhury <quic_schowdhu@quicinc.com>, Lee Jones <lee@kernel.org>,
+ Andrew Lunn <andrew+netdev@lunn.ch>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Alex Elder <elder@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
+ Avri Altman <avri.altman@wdc.com>, Bart Van Assche <bvanassche@acm.org>,
+ Andy Gross <agross@kernel.org>, Srinivas Kandagatla <srini@kernel.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Georgi Djakov <djakov@kernel.org>,
+ Loic Poulain <loic.poulain@oss.qualcomm.com>, Robert Foss
+ <rfoss@kernel.org>, Andi Shyti <andi.shyti@kernel.org>,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Taniya Das <quic_tdas@quicinc.com>,
+ Sibi Sankar <quic_sibis@quicinc.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Imran Shaik <quic_imrashai@quicinc.com>,
+ Mathieu Poirier <mathieu.poirier@linaro.org>,
+ Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
+ Neil Armstrong <neil.armstrong@linaro.org>,
+ Jessica Zhang <quic_jesszhan@quicinc.com>, David Airlie <airlied@gmail.com>,
+ Simona Vetter <simona@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Kees Cook <kees@kernel.org>, Tony Luck <tony.luck@intel.com>,
+ "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+ David Wronek <david@mainlining.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-watchdog@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-phy@lists.infradead.org, linux-mmc@vger.kernel.org,
+ netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
+ dmaengine@vger.kernel.org, linux-crypto@vger.kernel.org,
+ linux-i2c@vger.kernel.org, linux-clk@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-remoteproc@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-hardening@vger.kernel.org, linux@mainlining.org,
+ ~postmarketos/upstreaming@lists.sr.ht, Connor Mitchell <c.dog29@hotmail.com>
+References: <20250422-sm7150-upstream-v1-0-bf9a9081631d@jiaxyga.com>
+Content-Language: en-US
+From: Jens Reidel <adrian@mainlining.org>
+In-Reply-To: <20250422-sm7150-upstream-v1-0-bf9a9081631d@jiaxyga.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Jason,
+Hi everyone,
 
-On 04/22/2025, Jason Gunthorpe wrote:
-> On Mon, Apr 21, 2025 at 02:19:35PM -0700, William McVicker wrote:
-> > diff --git a/drivers/base/platform.c b/drivers/base/platform.c
-> > index 1813cfd0c4bd..6d124447545c 100644
-> > --- a/drivers/base/platform.c
-> > +++ b/drivers/base/platform.c
-> > @@ -1440,8 +1440,8 @@ static void platform_shutdown(struct device *_dev)
-> >  
-> >  static int platform_dma_configure(struct device *dev)
-> >  {
-> > -       struct platform_driver *drv = to_platform_driver(dev->driver);
-> >         struct fwnode_handle *fwnode = dev_fwnode(dev);
-> > +       struct platform_driver *drv;
-> >         enum dev_dma_attr attr;
-> >         int ret = 0;
-> >  
-> > @@ -1451,8 +1451,12 @@ static int platform_dma_configure(struct device *dev)
-> >                 attr = acpi_get_dma_attr(to_acpi_device_node(fwnode));
-> >                 ret = acpi_dma_configure(dev, attr);
-> >         }
-> > -       /* @drv may not be valid when we're called from the IOMMU layer */
-> > -       if (ret || !dev->driver || drv->driver_managed_dma)
-> > +       /* @dev->driver may not be valid when we're called from the IOMMU layer */
-> > +       if (ret || !dev->driver)
-> > +               return ret;
-> > +
-> > +       drv = to_platform_driver(dev->driver);
-> > +       if (drv->driver_managed_dma)
-> >                 return ret;
-> >  
-> >         ret = iommu_device_use_default_domain(dev);
-> 
-> The diagnosis looks right to me, but pedantically I think it should
-> have a READ_ONCE():
-> 
-> struct driver *drv = READ_ONCE(dev->driver);
-> 
-> And then never touch dev->driver again in the function.
-> 
-> Send a proper patch?
-> 
-> Jason
+apologies for the mess this created. Danila's mail provider ratelimited 
+him halfway through sending the series and the attempt to re-try sending 
+the second half an hour later ended up with a new message ID (I think 
+due to not using --in-reply-to).
+He asked me to let you know that this will be resolved later and the 
+whole series will be re-sent once the problems are resolved.
 
-Thanks for the response! Yes, that would work as well. I'll send a v2 revision
-once I get it tested.
-
-On this note, I was looking through `of_dma_configure_id()` and am also
-wondering if we may hit other race conditions if the device is still being
-probed and the dma properties (like the coherent dma mask) haven't been fully
-populated? Just checking if the driver is bound, doesn't seem like enough to
-start configuring the DMA when async probing can happen.
-
-Thanks,
-Will
+Best regards,
+Jens
