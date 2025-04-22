@@ -1,80 +1,71 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE0C222A814;
-	Tue, 22 Apr 2025 06:36:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F63D22A817
+	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 06:37:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745303802; cv=none; b=cPVoqyKbYRtwQvEvboLbQ1KSS5lllaLoLqymQFzzAE+T9PrAxriogpPhLs9zkQE9Zif62QVylEoo17JpCswSEJy+Ll1UbjeOqN1dTk0gfjSpUu46jqBivOGDXod/pn3AmcGr08mURX02NAerrhzzgo4XbxzfBIXFY5724JFRbzc=
+	t=1745303856; cv=none; b=SWrA0S5xdfL4FwNPdPND57kmvdTOx8ZYrW/z7Ru7j11EZTzqokkCLeMJRNnYs7kbXM6GrJmf4ke6Ch5lmPw8vg2t+I5E/Ej1baVoRpSr/Od1JS94SH09FKN2uZH7U6KVIP6q/06RwQ30auv9FfTvCYv0yT43gM3AdieCmWuAlS8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745303802; c=relaxed/simple;
-	bh=HfetzUxRXy4rCDFO2Jid01crVoBGhZcgFFPhx3Tl4zQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gbe5RIKE/cYY8WM46Nw5VvXyeCQQTKP/M61vKHva5cyuCwUrkK+nb1+709BOsOdDI1eoyQvFFiGVGVoJnp5DQoz8CogUPsWWe5xmd1t1093FeXMbOjkG2LPOWCGuSZ8a7ytm0YErPEck/tmNVoK3Mi5Le8nETRdnMeGGAIVgSmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qAJ9ve3O; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745303856; c=relaxed/simple;
+	bh=1Dze2mWwX5wn3v2Me7rjICk5mPOglxfk0QtVnqVl0Pk=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=SXg3z03iHONHA/9G6n33V6VZzpPAITwuimhybiYNcc3e/KmaJmp/TwKRQl4pdXYg8296XUEPZmZoK2bCyTv4yNCnjk93d5gWkZV57TvvWPZd/ulSop3nTmhzR88g6txw1adRA+YZIjmh12kaQTeHtn8zWV9TtTCiapa1LJzBPBo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=huaqian.li@siemens.com header.b=Jpu1iAHG; arc=none smtp.client-ip=185.136.65.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qAJ9ve3O"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C66D0C4CEEA;
-	Tue, 22 Apr 2025 06:36:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745303801;
-	bh=HfetzUxRXy4rCDFO2Jid01crVoBGhZcgFFPhx3Tl4zQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=qAJ9ve3OT0ZJnEWm3PYqcpUZBluuU64tZMSjgqeGPlLsklDQcSPGF19PJHu4OVyak
-	 +mfowzS/d2IZFkhAaKZSZmz3bFxaaljwCLKAbX4CkMGSTFnCxZYKExIhX8brBVrDIn
-	 EnlOR/RtUrvb5TEsQ3vHZY8rvQVuJb4STE7Le7iVPo+vTGVmuK4GjktT2YA8InWPCx
-	 uofgjFe0OVXsEodcivnhb8/7guwb3Azqlc/8/cOSiqu4hlvpFTrOi2w+4KOno8BYEF
-	 ZAUjL+s5coWHLBK4MTAwZgXnOjZruNtZfPNGBTDgLtup3GvGYhpyREXyrFYAhySxzj
-	 pUOOurdEnqncw==
-Date: Tue, 22 Apr 2025 09:36:38 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jens Axboe <axboe@kernel.dk>, Keith Busch <kbusch@kernel.org>,
-	Jake Edge <jake@lwn.net>, Jonathan Corbet <corbet@lwn.net>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Zhu Yanjun <zyjzyj2000@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Kanchan Joshi <joshi.k@samsung.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>
-Subject: Re: [PATCH v8 20/24] blk-mq: add scatterlist-less DMA mapping helpers
-Message-ID: <20250422063638.GB48485@unreal>
-References: <cover.1744825142.git.leon@kernel.org>
- <87b151a3791d71e58ec6f1b42bcf5fe06304cf80.1744825142.git.leon@kernel.org>
- <20250422042727.GC27723@lst.de>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=huaqian.li@siemens.com header.b="Jpu1iAHG"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20250422063729145f64a3d5f063c9a1
+        for <iommu@lists.linux.dev>;
+        Tue, 22 Apr 2025 08:37:29 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=huaqian.li@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=aFSjlLQwl2oifeZVuQZsGwXc+8QiEfk7kYMn6R7NvFY=;
+ b=Jpu1iAHGnH/rq3mYH6InqwH+zyTKVREpn9/WBp3tyUJ7pinGckW9bDK3Oq/etQbu2OifHQ
+ w4qTa2PMF2daQX4z1IZbVs+2MgqwTTTBqV06S2OM4TdHn7RDdPLO/ZyncCGMMJwnguntucb2
+ 17Hof90jrbaddLeFsS3o7lfTLvF1MxXjFE+Q6Pt0Ii/hTcU8e4zHQAEU9Pf1CMcppyMKfhEo
+ 1z4oaYGTuQ/CRFj6fyAijuHzWtzWMoYuKI/nxfvWvoTif6ELoCQopxRdKBm1ji7NZsMu0vEQ
+ R9TNa0nD1Iwwbp0Pifot331A1E/keI+SXnsNg/uzNpVf0ALChWlHcYOA==;
+From: huaqian.li@siemens.com
+To: m.szyprowski@samsung.com,
+	robin.murphy@arm.com
+Cc: baocheng.su@siemens.com,
+	huaqian.li@siemens.com,
+	jan.kiszka@siemens.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/1] swiotlb: Make IO_TLB_SEGSIZE Configurable
+Date: Tue, 22 Apr 2025 14:37:18 +0800
+Message-Id: <20250422063719.121636-1-huaqian.li@siemens.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250422042727.GC27723@lst.de>
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-959203:519-21489:flowmailer
 
-On Tue, Apr 22, 2025 at 06:27:27AM +0200, Christoph Hellwig wrote:
-> On Fri, Apr 18, 2025 at 09:47:50AM +0300, Leon Romanovsky wrote:
-> > +#define blk_phys_to_page(_paddr) \
-> > + 	(pfn_to_page(__phys_to_pfn(_paddr)))
-> 
-> The code can use phys_to_page now that that is provided kernel-wide
-> instead this temporary helper.
+From: Li Hua Qian <huaqian.li@siemens.com>
 
-Thanks, will change.
+This patchset introduces a change to make the IO_TLB_SEGSIZE parameter
+configurable via a new kernel configuration option (CONFIG_SWIOTLB_SEGSIZE).
+
+In certain applications, the default value of IO_TLB_SEGSIZE (128) may
+not be sufficient for memory allocation, leading to runtime errors. By
+making this parameter configurable, users can adjust the segment size to
+better suit their specific use cases, improving flexibility and system
+stability.
+
+Li Hua Qian (1):
+  swiotlb: Make IO_TLB_SEGSIZE configurable
+
+ include/linux/swiotlb.h | 2 +-
+ kernel/dma/Kconfig      | 7 +++++++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
+
+-- 
+2.34.1
+
