@@ -1,110 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39AFD1AA7BF;
-	Tue, 22 Apr 2025 07:44:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C219126C13
+	for <iommu@lists.linux.dev>; Tue, 22 Apr 2025 07:53:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745307865; cv=none; b=cO17jTsCO7oSyOR3r1LNStvi1N5Jk7hq6pOjo5R30LiL787IV+AmwzaADxGIhXBECqNdb4On6GCDRAQRaxAkWOh/AOCmO3yFzMxjEzzYAEeT7mJEPFr747hNBAzQyKPt4XTJvuNKO814Hf6FshZ93AaxNjwtUAeVV1OVbIGzWDU=
+	t=1745308434; cv=none; b=CWbghNFIZQSWagVt2vWJiH2NEVRdKBWbhY9veR5B7FGTQ3/Q7rQwwUZVdpDp1vY3dPr/IM6MpLehwkPgGhMdUdekmSSCSdtRky98VrcDVgZxKjs3/oIJ3qNcbR7EiAQZimto5MrsUO7cQcdUY9wjYVER3SxNYxukXQK4pOPNLvg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745307865; c=relaxed/simple;
-	bh=IkpCJe6iK3e0zmgzu4HOe7msfQx4RRcdkVXQ/zE59nM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ghuAmtZq9agKJWtBtrJ4QVSApCurcl/OHo3VzjYE3LoRXfQG064ckH44pn10T8cDP8YjSj/cvjZHRe295IHPKvm1pg8zus3fP2TIEdC+WrLT/eoPByVru5ZdFOTa9VLdEtVC5sYMQZ4bVrMISbblcpHSwltQwnANaZKMvGgpeUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UWT8zpQs; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745308434; c=relaxed/simple;
+	bh=bN11AdKFan4/zi4bzqZxPMPow5eSnJU3qwTnj0tn9Rw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=pXhvDO7aLajowa7x0B1YuilUqLtM4vaRaH/Rl4AQUmWFlyGOuB5cCaxeVlJhs5PzG+5u7ZC4NhmfTYAFbsH/CXBqDd/VYen/ZlmE7ScF6tOqj10mUc1QfeJleRlX/FiTCLZWTwoKelKpqYXt/o0M9cNrCyx2f2Ucrd4qwMJdOok=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h0V5t/33; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UWT8zpQs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1566FC4CEE9;
-	Tue, 22 Apr 2025 07:44:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745307865;
-	bh=IkpCJe6iK3e0zmgzu4HOe7msfQx4RRcdkVXQ/zE59nM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=UWT8zpQsdCGRmAI20Z+3AYlApwN36Cmhj6cwB5IbEbE/IARvNVu0tWdo4mIoQ7tla
-	 jNP/ANqauZjnvPJUDWeJ8zADeaD5f36aQ2RWsAs+HUooXKhuTuo6yu/E07zazBROX6
-	 xznqv+BPsU6Ncghg2SNTxJe37syfeyaxQcr9WAF/Foen5407hErRIFOLLYGI7pgvGN
-	 CyJIqFICxTnqDUBmc1sGRXnHfviqEbMmgDyblOZ2xNZJFl02u19GY6Nbpt7EgtHA8c
-	 CrDGpNwLguDhhfqO7ogHBVTsHjC7XaO9VuKIwQLJaY5iHytN6aNXhIGafF6/jV6lt1
-	 HqZxDZY2NWy3Q==
-Date: Tue, 22 Apr 2025 10:44:19 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jens Axboe <axboe@kernel.dk>, Keith Busch <kbusch@kernel.org>,
-	Kanchan Joshi <joshi.k@samsung.com>, Jake Edge <jake@lwn.net>,
-	Jonathan Corbet <corbet@lwn.net>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Zhu Yanjun <zyjzyj2000@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h0V5t/33"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745308433; x=1776844433;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bN11AdKFan4/zi4bzqZxPMPow5eSnJU3qwTnj0tn9Rw=;
+  b=h0V5t/339p6ZNfFpap0qOEPuq8e2eXwfEvO7fYRN2DiFub4ypq0H3TaB
+   iiVqsJ38nUrTW2Y1JC6WoMtkKMIPSO3N2cKNe3pXOFEKI2yk0srnWnoY4
+   LqetEFnSODk04gDu33O3p6HXu/VOfJyk2f8RPbCmcDlh+CQ+Y/oo/W+0l
+   ZLUTAFJfFGKd71AtXzOLOYJZmvBJFvri8PXvWrhIqgwqQkR30zLxpCnSG
+   eqMMwfBqZqhxkXs6v5jmyM32LKHOD4/bwyTZzJQ5mF3xUoTTnRFuUxV6+
+   80mUuT1WKg37ErNVNVOW293pANQPIPx3zPwF9rfZ2Xkp0lGJDD3qdmzUd
+   Q==;
+X-CSE-ConnectionGUID: jMUqQl4hTuirCUbxlVSV+Q==
+X-CSE-MsgGUID: o1oMJgtnREeFNLam3gVZNA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11410"; a="46736242"
+X-IronPort-AV: E=Sophos;i="6.15,230,1739865600"; 
+   d="scan'208";a="46736242"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 00:53:52 -0700
+X-CSE-ConnectionGUID: ELbREccUShGmuQop5UDLng==
+X-CSE-MsgGUID: 7a9xTTQJRdGm62RFmFudLQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,230,1739865600"; 
+   d="scan'208";a="131687764"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by orviesa009.jf.intel.com with ESMTP; 22 Apr 2025 00:53:49 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
 	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Nitesh Shetty <nj.shetty@samsung.com>
-Subject: Re: [PATCH v8 24/24] nvme-pci: optimize single-segment handling
-Message-ID: <20250422074419.GD48485@unreal>
-References: <cover.1744825142.git.leon@kernel.org>
- <670389227a033bd5b7c5aa55191aac9943244028.1744825142.git.leon@kernel.org>
- <20250422043955.GA28077@lst.de>
+	shangsong2@lenovo.com,
+	Dave Jiang <dave.jiang@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/1] iommu/vt-d: Assign owner to the static identity domain
+Date: Tue, 22 Apr 2025 15:54:22 +0800
+Message-ID: <20250422075422.2084548-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250422043955.GA28077@lst.de>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Apr 22, 2025 at 06:39:56AM +0200, Christoph Hellwig wrote:
-> On Fri, Apr 18, 2025 at 09:47:54AM +0300, Leon Romanovsky wrote:
-> > From: Kanchan Joshi <joshi.k@samsung.com>
-> > 
-> > blk_rq_dma_map API is costly for single-segment requests.
-> > Avoid using it and map the bio_vec directly.
-> 
-> This needs to be folded into the earlier patches or split prep patches
-> instead of undoing work done earlier, preferably combined with a bit
-> of code movement so that the new nvme_try_setup_prp_simple stays in
-> the same place as before and the diff shows it reusing code.
-> 
-> E.g. change
-> 
-> "nvme-pci: use a better encoding for small prp pool allocations" to
-> already use the flags instead of my boolean, and maybe include 
-> abort in the flags instead of using a separate bool so that we
-> don't increase hte iod size.
-> 
-> Slot in a new patch after that that dropping the single SGL segment
-> fastpath if we think we don't need that, although if we need the PRP
-> one I suspect that one would still be very helpful as well.
-> 
-> Add a patch if we want the try_ version of, although when keeping
-> the optimization for SGLs as well that are will look a bit different.
-> 
-> I'm happy to give away my patch authorship credits if that helps with
-> the folding.
+The idxd driver attaches the default domain to a PASID of the device to
+perform kernel DMA using that PASID. The domain is attached to the
+device's PASID through iommu_attach_device_pasid(), which checks if the
+domain->owner matches the iommu_ops retrieved from the device. If they
+do not match, it returns a failure.
 
-I used this patch separation for two reasons:
-1. Your conversion patch is absolutely correct and this patch is an
-optimization.
-2. Wanted to make sure that I'll post to the ML the code exactly as it
-was tested.
+        if (ops != domain->owner || pasid == IOMMU_NO_PASID)
+                return -EINVAL;
 
-I'll try to split/fold this patch now.
+The static identity domain implemented by the intel iommu driver doesn't
+specify the domain owner. Therefore, kernel DMA with PASID doesn't work
+for the idxd driver if the device translation mode is set to passthrough.
 
-Thanks
+Fix this by specifying the domain owner for the static identity domain.
+
+Fixes: 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
+Closes: https://bugzilla.kernel.org/show_bug.cgi?id=220031
+Cc: stable@vger.kernel.org
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index cb0b993bebb4..63c9c97ccf69 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4385,6 +4385,7 @@ static struct iommu_domain identity_domain = {
+ 		.attach_dev	= identity_domain_attach_dev,
+ 		.set_dev_pasid	= identity_domain_set_dev_pasid,
+ 	},
++	.owner = &intel_iommu_ops,
+ };
+ 
+ const struct iommu_ops intel_iommu_ops = {
+-- 
+2.43.0
+
