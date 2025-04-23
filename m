@@ -1,76 +1,141 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 025371A08A4
-	for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 15:47:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D9D14F9CB
+	for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 15:50:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745423239; cv=none; b=QIhcAXJzjoGjjFCUXlVtTr/bKpKitZ9tuJxEYHlQZzzlNpLyztIH/QwRad+81qurvTvsrPTdFBJMhDpNI+QbWUhBy1de6nrjNR2uvBRwwlpQJLFNNMazx30C2RcKUHqKz8+IYjNoFKzgKXm3LO885WFtzLlCLeTqhMttdbhYP9g=
+	t=1745423438; cv=none; b=Db/M1JY1wtoKuRIYZ/LBW4BkCilg1rnwlCYZtqTidGLz/t2qjw4P2uM6HOo8o8O4GAx0cgM5e04SqFIkdFeAR6M2t6+Xar9YmaetXOMVMEfdlnwuaw9TZYksCaJ6Pzif5WX6CmX/PaxkIUPTqiClIdwfdUVzK0GvSL+ixcM+dFk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745423239; c=relaxed/simple;
-	bh=d0E+HtNmdn/LhlxxF/h1C5SJbuFpS6D0hMGAOAoU4xM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=W6ibrVmvf2RzVzp4nVU7FHfTv1g1wdi5u2CyTXYA66CNhLzGWojEqNkZtTbjt1GJf8WcG2MP6geXjTsl7nJEktegv8QuD4sEiWT9NucAFoMgGsoAYCzIUZkhvn8FYNh5gBFPGLUxZ9eODOItspiIU04vz9prPo3Pmd2X9VjIoYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 8A79D68C4E; Wed, 23 Apr 2025 17:47:12 +0200 (CEST)
-Date: Wed, 23 Apr 2025 17:47:12 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Keith Busch <kbusch@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jens Axboe <axboe@kernel.dk>, Jake Edge <jake@lwn.net>,
-	Jonathan Corbet <corbet@lwn.net>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Zhu Yanjun <zyjzyj2000@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Kanchan Joshi <joshi.k@samsung.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Nitesh Shetty <nj.shetty@samsung.com>
-Subject: Re: [PATCH v9 23/24] nvme-pci: convert to blk_rq_dma_map
-Message-ID: <20250423154712.GA32009@lst.de>
-References: <cover.1745394536.git.leon@kernel.org> <7c5c5267cba2c03f6650444d4879ba0d13004584.1745394536.git.leon@kernel.org> <20250423092437.GA1895@lst.de> <20250423100314.GH48485@unreal>
+	s=arc-20240116; t=1745423438; c=relaxed/simple;
+	bh=obJ4KNRdop1ri6ey3P8GkkISiNkN9TepbOopmkOaHtM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=boP3f/zjglMtwWriRNbb/XJdHfCna4BjLXPO7pbFJJnMQyktpLkD6XRv8OyGoGOUc18tBuoQp3hM4OFWarHiOsOFUqbAMRgTwsjGUJ4LocBxe0FiRKgA5cCiOCcQmZVHNuEis2jsRoHHM0wzKD4s+1gbUpLl5AYyAMu9C++emuw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7FB331063;
+	Wed, 23 Apr 2025 08:50:29 -0700 (PDT)
+Received: from [10.57.74.63] (unknown [10.57.74.63])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BA5153F66E;
+	Wed, 23 Apr 2025 08:50:31 -0700 (PDT)
+Message-ID: <4129dca9-07fa-4b9d-a7d8-de7561d509e7@arm.com>
+Date: Wed, 23 Apr 2025 16:50:29 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250423100314.GH48485@unreal>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1] platform: Fix race condition during DMA configure at
+ IOMMU probe time
+To: Bjorn Helgaas <helgaas@kernel.org>,
+ Will McVicker <willmcvicker@google.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>, "Rob Herring (Arm)" <robh@kernel.org>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Joerg Roedel <jroedel@suse.de>,
+ Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
+ Saravana Kannan <saravanak@google.com>, kernel-team@android.com,
+ linux-kernel@vger.kernel.org
+References: <20250423150823.GA422889@bhelgaas>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250423150823.GA422889@bhelgaas>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Apr 23, 2025 at 01:03:14PM +0300, Leon Romanovsky wrote:
-> On Wed, Apr 23, 2025 at 11:24:37AM +0200, Christoph Hellwig wrote:
-> > I don't think the meta SGL handling is quite right yet, and the
-> > single segment data handling also regressed.  Totally untested
-> > patch below, I'll try to allocate some testing time later today.
+On 2025-04-23 4:08 pm, Bjorn Helgaas wrote:
+> On Tue, Apr 22, 2025 at 04:26:49PM -0700, Will McVicker wrote:
+>> If devices are probed asynchronously, then there is a chance that during
+>> the IOMMU probe the driver is bound to the device in parallel. If this
+>> happens after getting the platform_driver pointer while in the function
+>> `platform_dma_configure()`, then the invalid `drv` pointer
+>> (drv==0xf...ffd8) will be de-referenced since `dev->driver != NULL`.
 > 
-> Christoph,
+> I need a little more hand-holding to make sense out of this.
 > 
-> Can we please progress with the DMA patches and leave NVMe for later?
-> NVMe is one the users for new DMA API, let's merge API first.
+> After digging out
+> https://lore.kernel.org/all/aAa2Zx86yUfayPSG@google.com/, I see that
+> drv==0xf...ffd8 must be a result of applying to_platform_driver() to a
+> NULL pointer.  This patch still applies to_platform_driver(NULL), but
+> avoids using the result by testing drv for NULL later, which seems
+> prone to error.
+> 
+> I think this would all be clearer if we tested for the NULL pointer
+> explicitly before applying to_platform_driver().  I don't like setting
+> a pointer to an invalid value.  I think it's better if the pointer is
+> either valid or uninitialized because the compiler can help find uses
+> of uninitialized pointers.
 
-We'll need to merge the block/nvme patches through the block tree
-anyway to avoid merges from hell, so yes.
+Yeah, I was also in the middle of looking at this after managing to hit 
+it playing with driver_async_probe at the end of last week. I guess when 
+I originally wrote this pattern I was maybe thinking the compiler would 
+defer the to_x_driver() computation to the point it's eventually 
+dereferenced, but I suppose it can't since dev is passed to an external 
+function in program order in between.
+
+Indeed in my half-written version of this patch I was leaning towards 
+removing the drv variable altogether (just doing 
+to_x_driver(dev->driver)->driver_managed_dma inline), or at least doing 
+the same as Will's previous diff. I figure the one-liner replacing 
+"!dev->driver" with "!&drv->driver" would be too disgustingly 
+non-obvious for anyone else's tastes...
+
+For consistency we should really fix all the buses the same way - sorry 
+for the bother (I can write up the other patches if you'd like). FWIW 
+this part really was the most temporary stopgap, as my planned next step 
+is to propose moving driver_managed_dma and the use_default_domain() 
+call up into the driver core and so removing all this bus-level code 
+anyway, hence trying to minimise the effort spent churning it. Oh well.
+
+>> To avoid a kernel panic and eliminate the race condition, we should
+>> guard the usage of `dev->driver` by only reading it once at the
+>> beginning of the function.
+>>
+>> Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
+>> Signed-off-by: Will McVicker <willmcvicker@google.com>
+>> ---
+>>   drivers/base/platform.c | 7 ++++---
+>>   1 file changed, 4 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
+>> index 1813cfd0c4bd..b948c6e8e939 100644
+>> --- a/drivers/base/platform.c
+>> +++ b/drivers/base/platform.c
+>> @@ -1440,7 +1440,8 @@ static void platform_shutdown(struct device *_dev)
+>>   
+>>   static int platform_dma_configure(struct device *dev)
+>>   {
+>> -	struct platform_driver *drv = to_platform_driver(dev->driver);
+>> +	struct device_driver *drv = READ_ONCE(dev->driver);
+
+Beware this might annoy a different set of people as it's not paired 
+with a WRITE_ONCE(), but for now I guess using it is still arguably 
+better than not. Really we should be under device_lock at this point and 
+so have no race at all, but we can't do that without keeping track of 
+which devices are IOMMUs themselves to avoid deadlock, and that's not 
+something I fancy throwing out as an -rc fix in a hurry...
+
+Thanks,
+Robin.
+
+>> +	struct platform_driver *pdrv = to_platform_driver(drv);
+>>   	struct fwnode_handle *fwnode = dev_fwnode(dev);
+>>   	enum dev_dma_attr attr;
+>>   	int ret = 0;
+>> @@ -1451,8 +1452,8 @@ static int platform_dma_configure(struct device *dev)
+>>   		attr = acpi_get_dma_attr(to_acpi_device_node(fwnode));
+>>   		ret = acpi_dma_configure(dev, attr);
+>>   	}
+>> -	/* @drv may not be valid when we're called from the IOMMU layer */
+>> -	if (ret || !dev->driver || drv->driver_managed_dma)
+>> +	/* @dev->driver may not be valid when we're called from the IOMMU layer */
+>> +	if (ret || !drv || pdrv->driver_managed_dma)
+>>   		return ret;
+>>   
+>>   	ret = iommu_device_use_default_domain(dev);
+>> -- 
+>> 2.49.0.805.g082f7c87e0-goog
+>>
 
