@@ -1,144 +1,88 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22C641F16B
-	for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 02:52:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B19224430
+	for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 03:09:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745376782; cv=none; b=VylIg/sG07+YiBYpKD8q4ioQLwrupwVIfQpvCowEdqIyvG79w8RxWcfQvNXTY1zfYVEqJtWCSHyRolW5abZ5ycwbSQKUH1GChE0Ju+0XANbgTg4U1ifDRDwpC1JDizfocUll3UMZdfVm//jUi68tM3xyJSeD5ZigI4eLE0XAZoI=
+	t=1745377793; cv=none; b=U8pRltoybR1gU4/YrP8s0Q9KUOt3Q6QhfnSeOYdmvsW4e+iOrgM2+GltQpvvTxU8nSzhkfJlktoia8q4GjZlL0Sjjrpa/KHsaJrW8K8qyfqRbQUdZe2IHaWQzmZ8JNzuv5Fjhyvkj5pAYaiUfjfY2VnQvXDQLmpXC4Tgf16pLmo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745376782; c=relaxed/simple;
-	bh=ZGwgRxU7TgHz4loAywBrbTaxHRYU8e2cK+DDh/0YWvg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qOFR0x/NDapMqfHCgQBBdyDz4OH8zbo4KYW75r33RqVPKwStpen6INDOuMjyERv6liYh6HQQozfcGvAFEZJgU9OMw+wCWMWXUiObGynNYJSHSdni+UsRWOL7sPYzRkllsnGYYytrPKXtcdv2VZcL6cdyyq7S+E7eCSMy4aL/DaQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h9t6xX4A; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1745377793; c=relaxed/simple;
+	bh=+bobhXJWy4M7WcoZFS6BHPfG6IDFULlMrkxEId7YGRE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rQKRXk8uIjJDfaDo0ocrA5CscuqMG5EM4A6eMO8LbERH4rvGEqQMTVABED2wDUmqdPhDRo+630tHULxcv4KBivFSgDKVj42a6NmVhyvVaVy2pTh4eLwS4bVx5Cbi9ulAyKAs0+VYd6jyavjJp6ZF0S5pazO3ySrb1FqklgV0Nrc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UoN9jzmC; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h9t6xX4A"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UoN9jzmC"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745376780; x=1776912780;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ZGwgRxU7TgHz4loAywBrbTaxHRYU8e2cK+DDh/0YWvg=;
-  b=h9t6xX4AhxL+THUT6iLpYZWURgI5yx8zpZWcrfggjOSFGS9XmY24keZh
-   oxPTQJuq0/IkW2ih4MRUGvAQyXZOz3yrZ4Gy5lRQLyajL1QYqOnXy/dX7
-   i/58P7TO7IquXqC6jwgHcu/0GZuPZa4miI0C+n4TSpkV410vvJ49o0hTE
-   IQUv/CTldjxMGYhtTLQU/K+EcMoEM/CXx61tZq552Ipipd7hcnKiaOig5
-   S78TEDFtat1IfUWy9WloHhGBYFE9Ixj4emhxFifVNSYc0hCtEmz1gOAmn
-   Z4cAbNmvirAvIBozhiq15tHoVE+oCyzIunKuXidjoCvg91Bmay7gBSOjK
-   Q==;
-X-CSE-ConnectionGUID: 8Dq6Adf3SZ2aP5uhsS7zzQ==
-X-CSE-MsgGUID: EDizxxzZTk6SyLhdbEGnXQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11411"; a="34569050"
+  t=1745377791; x=1776913791;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+bobhXJWy4M7WcoZFS6BHPfG6IDFULlMrkxEId7YGRE=;
+  b=UoN9jzmCqZPWkVaP2yj/TeKmETS7ugM6WSzVu17rSAaA18YQ41xzEvzt
+   onicKiq7r0D7fUF5+2Uc/a/KSipBoA+LXmE8ihdQ3f1T19fcxgjCuyPlY
+   rVBgSCsbtVS9LXJPS1B/rFE2xmeP1hL6DySOgpmqlibROveEkp83dCvw3
+   q+xI90WLiWlN3JGuL0he6umXKGX5eO9BrHP400BuAeTU2lEJd2jLuSPPq
+   qd6Mk1C2bSwKfyMwDVxwOLZ12hKhGJksuT5CP+0uiepyyNbdHdXDSXqJp
+   UUgwqICcB6bwsLE2FWyfqitT54/ztRuqnjtnkt9R+jTIW1uahgFUYf6Zo
+   w==;
+X-CSE-ConnectionGUID: 7HPJKto7To+UG+huooys9w==
+X-CSE-MsgGUID: BGJqF77gQMCPhgV7Fz66bQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11411"; a="57145927"
 X-IronPort-AV: E=Sophos;i="6.15,232,1739865600"; 
-   d="scan'208";a="34569050"
+   d="scan'208";a="57145927"
 Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 19:52:59 -0700
-X-CSE-ConnectionGUID: AyTCTGscTnS+ojz6PZaJzA==
-X-CSE-MsgGUID: wYxfaAbqRTOCeXemxmQDDQ==
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 20:09:51 -0700
+X-CSE-ConnectionGUID: vAPBAFEpTx+WNLLjhagOdA==
+X-CSE-MsgGUID: J8N37Cn3RgKBGhQudSW08w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.15,232,1739865600"; 
-   d="scan'208";a="155394831"
-Received: from inaky-mobl1.amr.corp.intel.com (HELO [10.125.111.199]) ([10.125.111.199])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 19:52:58 -0700
-Message-ID: <80e1ce33-70d6-4e82-b823-e96069278cb8@intel.com>
-Date: Tue, 22 Apr 2025 19:52:57 -0700
+   d="scan'208";a="155398692"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by fmviesa002.fm.intel.com with ESMTP; 22 Apr 2025 20:09:49 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 0/3] iommu/vt-d: Use ida for domain ID management
+Date: Wed, 23 Apr 2025 11:10:17 +0800
+Message-ID: <20250423031020.2189546-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/1] iommu: Allow attaching static domains in
- iommu_attach_device_pasid()
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
- shangsong2@lenovo.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20250423021839.2189204-1-baolu.lu@linux.intel.com>
-Content-Language: en-US
-From: Dave Jiang <dave.jiang@intel.com>
-In-Reply-To: <20250423021839.2189204-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
+This converts the Intel iommu driver's domain ID management from a
+fixed-size bitmap to the dynamic ida allocator. This improves memory
+efficiency by only allocating resources for the domain IDs actually in
+use, rather than the maximum possible number.
 
+The also includes necessary cleanups after the ida conversion, including
+locking adjustment for the ida and code simplification.
 
-On 4/22/25 7:18 PM, Lu Baolu wrote:
-> The idxd driver attaches the default domain to a PASID of the device to
-> perform kernel DMA using that PASID. The domain is attached to the
-> device's PASID through iommu_attach_device_pasid(), which checks if the
-> domain->owner matches the iommu_ops retrieved from the device. If they
-> do not match, it returns a failure.
-> 
->         if (ops != domain->owner || pasid == IOMMU_NO_PASID)
->                 return -EINVAL;
-> 
-> The static identity domain implemented by the intel iommu driver doesn't
-> specify the domain owner. Therefore, kernel DMA with PASID doesn't work
-> for the idxd driver if the device translation mode is set to passthrough.
-> 
-> Generally the owner field of static domains are not set because they are
-> already part of iommu ops. Add a helper domain_iommu_ops_compatible()
-> that checks if a domain is compatible with the device's iommu ops. This
-> helper explicitly allows the static blocked and identity domains associated
-> with the device's iommu_ops to be considered compatible.
-> 
-> Fixes: 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
-> Closes: https://bugzilla.kernel.org/show_bug.cgi?id=220031
-> Cc: stable@vger.kernel.org
-> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-> Link: https://lore.kernel.org/linux-iommu/20250422191554.GC1213339@ziepe.ca/
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Dave Jiang <dave.jiang@intel.com>
+Please review and comment.
 
-> ---
->  drivers/iommu/iommu.c | 16 +++++++++++++++-
->  1 file changed, 15 insertions(+), 1 deletion(-)
-> 
-> Change log:
-> -v2:
->  - Make the solution generic for all static domains as suggested by
->    Jason.
-> -v1: https://lore.kernel.org/linux-iommu/20250422075422.2084548-1-baolu.lu@linux.intel.com/
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 4f91a740c15f..abda40ec377a 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3402,6 +3402,19 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
->  		iommu_remove_dev_pasid(device->dev, pasid, domain);
->  }
->  
-> +static bool domain_iommu_ops_compatible(const struct iommu_ops *ops,
-> +					struct iommu_domain *domain)
-> +{
-> +	if (domain->owner == ops)
-> +		return true;
-> +
-> +	/* For static domains, owner isn't set. */
-> +	if (domain == ops->blocked_domain || domain == ops->identity_domain)
-> +		return true;
-> +
-> +	return false;
-> +}
-> +
->  /*
->   * iommu_attach_device_pasid() - Attach a domain to pasid of device
->   * @domain: the iommu domain.
-> @@ -3435,7 +3448,8 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
->  	    !ops->blocked_domain->ops->set_dev_pasid)
->  		return -EOPNOTSUPP;
->  
-> -	if (ops != domain->owner || pasid == IOMMU_NO_PASID)
-> +	if (!domain_iommu_ops_compatible(ops, domain) ||
-> +	    pasid == IOMMU_NO_PASID)
->  		return -EINVAL;
->  
->  	mutex_lock(&group->mutex);
+Lu Baolu (3):
+  iommu/vt-d: Use ida to manage domain id
+  iommu/vt-d: Replace spin_lock with mutex to protect domain ida
+  iommu/vt-d: Simplify domain_attach_iommu()
+
+ drivers/iommu/intel/dmar.c  |   3 +
+ drivers/iommu/intel/iommu.c | 113 ++++++++----------------------------
+ drivers/iommu/intel/iommu.h |  20 +++++--
+ 3 files changed, 44 insertions(+), 92 deletions(-)
+
+-- 
+2.43.0
 
