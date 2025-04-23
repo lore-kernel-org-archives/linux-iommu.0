@@ -1,111 +1,140 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5F5B79D0
-	for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 01:06:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D3CD4A06
+	for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 02:18:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745370391; cv=none; b=tZM9gpGYlTg6f/UTZCdgvMGQ/eMKfGH4BtTyHyymDWosQ4pntU6BOmqBN4rbk6GHiRCTOTHefPHFOZbOFyPESn/53yix0MlL1w0UWLDnu57yeMNRX2JCgogHbPaGBItl96LRxl7GJgUTwc/0VTDNVPZBjfkeZ8bXcWysZJizOx0=
+	t=1745374690; cv=none; b=Mit5RWlKeMINbmZbPaR0esSRYORsh1n5XMHyD8TIfKHD6i8bgRoOgopBue2D7TKZ+tjHvAGotBctNMWMJrNmLHkEOj17y105VeXg8IBtCz2E6nsyA69x1Rldfm1zCKtzPsFSgbNxAkLgW+W+iHygDFPnZ2+544lkEqDxN6NN3Is=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745370391; c=relaxed/simple;
-	bh=5FL00H151L5Z3QgWwRdWFf/PgsMBwrntLP30xruLvhQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jQUXqdckxcFpRmFnfFa4v/Te9smnawxzYAV3FEOnItNhPZ6YrJA2WoLMA8BpNy3P8DkbALUtigKI7rsADMlKm/rHOvMjvS8jlDXQ9nMczinMOsodx+e1FpcmTbLxZ4+iGqPyBwq5y3tM6MKZyJ59DSOm0Qz+ihQd1h3iHKQ4Oak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kCPD8f5e; arc=none smtp.client-ip=192.198.163.18
+	s=arc-20240116; t=1745374690; c=relaxed/simple;
+	bh=5RuBUtVjpiGQGj/Vk92xds65q/q+9PT+wtZ+LO4f4mg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=h7Oo1/+krTGKFIFOt0LTYNdWG7gcQ730i1xBJghoYIt9gX+pXZsp+V+3pzoLSpjGjCt2GODDfgqytNpPJUqYAPHAQWzsOBdEP0leTMXkgzpUCHeEWpUMRvEuEHP4WMfXvjoo8HM0QqUMttAmmI0rxfM9Kn+MBXowhE24dpKvvkA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Jo0FIfWv; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kCPD8f5e"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Jo0FIfWv"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745370389; x=1776906389;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=5FL00H151L5Z3QgWwRdWFf/PgsMBwrntLP30xruLvhQ=;
-  b=kCPD8f5eQMKCGZkQ5ZFSCfQZo/f/FNinJfvQrfrYSxH2JJmwItg1eHa6
-   I+XDdbJXuDJu4ES0RKIBlfMKiTYkVtFuKnyMajMssmjIjjhg+swXq96OK
-   901UVJXgx1Jb7kXA9I7+JPM45j1hFu3S+tvDybvDsZY32hUYT+f6A3ASN
-   dUG5HzLG+IU4g4kwHs0fvEeBJKGRltcgrtyAur3CHspO4qI8QFzQFj/gx
-   fjA1Df2jt+BO2zn/lByMUxiiy2I2JVKOYKY54EGNYAifBufErNoqqX5Cp
-   LVYLy+gR7IMYidB3pA2nCjwm0CmAqcevJ4QpOJgqG3OF3m5l3EMJKqYn7
+  t=1745374690; x=1776910690;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=5RuBUtVjpiGQGj/Vk92xds65q/q+9PT+wtZ+LO4f4mg=;
+  b=Jo0FIfWvWdzXwxd7siRKfEtmyvQJavNmoiO/374ZPFABsqf3YkveE8zY
+   YeB+M3GqBr97I97RhcHNlawITiu18819EwZIE76rWX8FTIXZH6D8ow3XL
+   sd3TPXsY7P8/9JXv1UrMvx7ne0z8AUYWjP1MvFPS0aX4qWoBHb2Nklst8
+   V6GOfkY9rAHNPJ6H+3/ETTkb9aXNgW7acBJl4JrBYT8xVHaJC5aXK7Woc
+   THQsCx/uNLXetkQsPmKwyY9WTj3ejw1VfYXHnwwMXigwEC9xhM+g7xRc4
+   P4c8Hbp8asKxOE0bNhwqzzPhnV/b/GJG9j3jUwR6N4ln54orOQdrUBPAw
    Q==;
-X-CSE-ConnectionGUID: nJlP/1Q0RJO/9WHKRUGfmw==
-X-CSE-MsgGUID: X2ZbzCzrQn2A96bkOBq8ow==
-X-IronPort-AV: E=McAfee;i="6700,10204,11411"; a="46183886"
+X-CSE-ConnectionGUID: Zpg2HTAIRf+o2z+EsJizCw==
+X-CSE-MsgGUID: NLPXCAvUQAOSwIuRjUtKWw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11411"; a="46833166"
 X-IronPort-AV: E=Sophos;i="6.15,232,1739865600"; 
-   d="scan'208";a="46183886"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 18:06:29 -0700
-X-CSE-ConnectionGUID: MiTI0MmMREeviwNkeKd8Hg==
-X-CSE-MsgGUID: jiVYuWdISJWYw27G/O6x+g==
+   d="scan'208";a="46833166"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 19:18:09 -0700
+X-CSE-ConnectionGUID: J/pRmyruR6qBJ1tQv4ZVbg==
+X-CSE-MsgGUID: QkQdpDTeQFiK3xCwWUe4mw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.15,232,1739865600"; 
-   d="scan'208";a="132699785"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2025 18:06:27 -0700
-Message-ID: <6ff1216d-ef10-4948-a2e7-6c66627a024e@linux.intel.com>
-Date: Wed, 23 Apr 2025 09:02:13 +0800
+   d="scan'208";a="137045327"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by orviesa003.jf.intel.com with ESMTP; 22 Apr 2025 19:18:06 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	shangsong2@lenovo.com,
+	Dave Jiang <dave.jiang@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v2 1/1] iommu: Allow attaching static domains in iommu_attach_device_pasid()
+Date: Wed, 23 Apr 2025 10:18:39 +0800
+Message-ID: <20250423021839.2189204-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] iommu/vt-d: Assign owner to the static identity
- domain
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- shangsong2@lenovo.com, Dave Jiang <dave.jiang@intel.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20250422075422.2084548-1-baolu.lu@linux.intel.com>
- <20250422191554.GC1213339@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250422191554.GC1213339@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 4/23/25 03:15, Jason Gunthorpe wrote:
-> On Tue, Apr 22, 2025 at 03:54:22PM +0800, Lu Baolu wrote:
-> 
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index cb0b993bebb4..63c9c97ccf69 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -4385,6 +4385,7 @@ static struct iommu_domain identity_domain = {
->>   		.attach_dev	= identity_domain_attach_dev,
->>   		.set_dev_pasid	= identity_domain_set_dev_pasid,
->>   	},
->> +	.owner = &intel_iommu_ops,
->>   };
-> 
-> Is this a systemic mistake in all the static domains in all the
-> drivers?
+The idxd driver attaches the default domain to a PASID of the device to
+perform kernel DMA using that PASID. The domain is attached to the
+device's PASID through iommu_attach_device_pasid(), which checks if the
+domain->owner matches the iommu_ops retrieved from the device. If they
+do not match, it returns a failure.
 
-Yes. The owner field is not set for all static domains.
+        if (ops != domain->owner || pasid == IOMMU_NO_PASID)
+                return -EINVAL;
 
-> Maybe a bigger check is a more complete fix:
-> 
-> static bool iommu_domain_compatible(struct device *dev,
-> 				    struct iommu_domain *domain)
-> {
-> 	const struct iommu_ops *ops = dev_iommu_ops(dev);
-> 
-> 	if (domain->owner == ops)
-> 		return true;
-> 
-> 	/* For static domains owner isn't set */
-> 	if (ops->blocked_domain == domain || ops->identity_domain == domain)
-> 		return true;
-> 	return false;
-> }
+The static identity domain implemented by the intel iommu driver doesn't
+specify the domain owner. Therefore, kernel DMA with PASID doesn't work
+for the idxd driver if the device translation mode is set to passthrough.
 
-That's better. I will post a v2 accordingly.
+Generally the owner field of static domains are not set because they are
+already part of iommu ops. Add a helper domain_iommu_ops_compatible()
+that checks if a domain is compatible with the device's iommu ops. This
+helper explicitly allows the static blocked and identity domains associated
+with the device's iommu_ops to be considered compatible.
 
-> Jason
+Fixes: 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
+Closes: https://bugzilla.kernel.org/show_bug.cgi?id=220031
+Cc: stable@vger.kernel.org
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+Link: https://lore.kernel.org/linux-iommu/20250422191554.GC1213339@ziepe.ca/
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/iommu.c | 16 +++++++++++++++-
+ 1 file changed, 15 insertions(+), 1 deletion(-)
 
-Thanks,
-baolu
+Change log:
+-v2:
+ - Make the solution generic for all static domains as suggested by
+   Jason.
+-v1: https://lore.kernel.org/linux-iommu/20250422075422.2084548-1-baolu.lu@linux.intel.com/
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 4f91a740c15f..abda40ec377a 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3402,6 +3402,19 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
+ 		iommu_remove_dev_pasid(device->dev, pasid, domain);
+ }
+ 
++static bool domain_iommu_ops_compatible(const struct iommu_ops *ops,
++					struct iommu_domain *domain)
++{
++	if (domain->owner == ops)
++		return true;
++
++	/* For static domains, owner isn't set. */
++	if (domain == ops->blocked_domain || domain == ops->identity_domain)
++		return true;
++
++	return false;
++}
++
+ /*
+  * iommu_attach_device_pasid() - Attach a domain to pasid of device
+  * @domain: the iommu domain.
+@@ -3435,7 +3448,8 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+ 	    !ops->blocked_domain->ops->set_dev_pasid)
+ 		return -EOPNOTSUPP;
+ 
+-	if (ops != domain->owner || pasid == IOMMU_NO_PASID)
++	if (!domain_iommu_ops_compatible(ops, domain) ||
++	    pasid == IOMMU_NO_PASID)
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&group->mutex);
+-- 
+2.43.0
 
