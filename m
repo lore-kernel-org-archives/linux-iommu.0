@@ -1,67 +1,67 @@
 Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0A3A2857CF
-	for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 17:34:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 901AA2857F6
+	for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 17:36:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745429700; cv=none; b=OvVcq1MicABJjBKqVYMLxI7lXDIYlp47d1Xw1mJ9nalv04YH8nzUNkXnouliXyCuBB1GtF8S/YQaDcmdKb34A8R/RWrelKO5egcpHPeE4UEaK9S1MAQAX36CT8i/JoKjOBb1weg0/Bu11GQMNwPMQzPY85phWRMD4mtcmUkfyXw=
+	t=1745429789; cv=none; b=DrprwQ+hdTfqC1iK/qVxiPJF+HTFukYsee2Iqs+kxLGYtdzGo3XzhGx1iPSiYXE9JJ4v1jXk73bFApbcmrrx9s3Lxjn7TWbruGd0HT3iu0FnNkXdy/5pkFra9jL3mfxTEeY5xTRjM24lA5u86bTrG7qgWUMyMBpgVkqOjoDXnBQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745429700; c=relaxed/simple;
-	bh=zB24IJl1jZzMHzgO4K1Iy0NHxHgoWs9FaxvjZYsQalw=;
+	s=arc-20240116; t=1745429789; c=relaxed/simple;
+	bh=drAiBKTIiyi9mLR+BwbEskkyvzsYVuH4EzXGje0dF0c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=inTzuD33tbYeHep3+u0aE0lLsF6gPGGfjPTp5rbAl8BKBBSMbLhsT/RhW6/FanpdEgGyPNXUScJsFejLeVUe2VYZiHwZcKiM2BkIpHGDKPdUP7U4NkdibbvfO7qwtO0iY35+795VQlVdBvi/KUzaLU0QIsUhYWAusW37EXk9v3Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ms0kqM+b; arc=none smtp.client-ip=209.85.222.174
+	 Content-Type:Content-Disposition:In-Reply-To; b=Khh1iwo2HRKiQjYd6uAMol8V/qUX0ojlgWsr7BgTe83GNhJQg7vXjVY9KjjYKZcML9QMhx76CjQk5tqs01CC8SPKbWxT7ip8cAREExcjml5q0sgXtMuXRFPvK+h7W+C4DQU09CiKbZTdGbRrlPqiE5yTOgxVZyvjAHybwxx45rA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ahPO/+rN; arc=none smtp.client-ip=209.85.222.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ms0kqM+b"
-Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-7be49f6b331so8411085a.1
-        for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 10:34:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ahPO/+rN"
+Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-7c54b651310so14110485a.0
+        for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 10:36:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1745429696; x=1746034496; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1745429786; x=1746034586; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=I+fayQ/PBTnrOfxtrw3IgFnI1QJK9xAjEiHuuXs7Kpg=;
-        b=ms0kqM+bYXWucNlnhj2+zrnrLXdIi1TcKHj7igHyBUuQubt7wwuK1Kq02tqYNqsoWj
-         YIXD+XUCg8k3uttQ+GpJlBrs8HRBv+Mf9fqgEZe5EmhZDSrPvfaGOohKqnGwjIzhYqgd
-         t5xh1ma5SEP38uuDwDgUSi1O7GjiDAMCOqLJJVlOXpYpQoue8GU6JHSGNd6UaJSjVIuN
-         m/3o+tBRUCYH+6N4rYxGrUaDkKu4XGv2AjnMC3w0PfDZh0vpILi5J0AaezZODdFc2DsQ
-         crnEGpmJX/BpPJRWn3hMCfLcwTQIF4lo7OhMP6QoOzNWbaYUepn3YxytD+0IfRHlRXl0
-         dedw==
+        bh=rNJodNA/CGOE8qYPmCoAIvEyeqrCcwNf4apB4pxSGaA=;
+        b=ahPO/+rNImC89kWaKlTRzTYxUI4u1u6vfmpJ+Pg5MnJW0SOOXv3BLPxat055a+cfYl
+         Pb6gLHrnKpKlhUWNb2p0PKpA7VaZmm58xvmWTf7QE7+poX74n3IEfW/m3uuAQJSp0UrN
+         rQ1f7EsgLfNiX7zeqbbYxiuoWTp4QODSi2zai26dL7cPN2hc1fBcLdCY5aqKM8M54QBX
+         i3kwlmHmgAh/VdeuCPtZDwnAwftf3bVTFu3Ezz8mk3jx74wWRTGYTgayYieQRjvUo/R9
+         UtapocTbwJSPVUulBZfkt5WCzNZifZLjcpblxyGdgrOk6vD6VDmY9QO+oSUJmhNoeC6l
+         77NA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745429696; x=1746034496;
+        d=1e100.net; s=20230601; t=1745429786; x=1746034586;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=I+fayQ/PBTnrOfxtrw3IgFnI1QJK9xAjEiHuuXs7Kpg=;
-        b=rfDNcBSuYsmjDLcFbWapRI4YBpnGhoj0cNgUfdLplV2upLs1WeHIU1bZWEbWT1Vyey
-         9G82RogJfrCBq2tUh/UWIurD3RQCkk4gIbjQ91Nw2WWWg/pyZjgdp+Fl5EpiBtDVpvgG
-         8T3SceKmDwJHmHH6YxTilg35bhnQtTh3ELeeaFG6Oclg/JfcpVJ4l//AlWpzmFV4JQvG
-         LrEBNqLP3q0vbLFp5jiWLnBewAVAnPnitHgUwlLUHUIBKNh198164aXcsseH54sa1Xsv
-         eW+DL/YhjvENdQI9fKcPZ87buhNUvXlQRZaK9K6YO/U6fS1lUyYLkFd8+3kxohZX7eGO
-         eCIw==
-X-Forwarded-Encrypted: i=1; AJvYcCVC6MUeYglNwy0GdHX+sVxkx6DpowxNS/rCDTpF2AUKmOjVZUu5/dQOPVT9PLKDvcUBnzeLBA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxbKsSEHrpxhpAhVMpbcvck7AzzXUAQLnAPXfQPsSjzeoPESSxm
-	7uJTn4+MPzeUk8MLmeaUEBOPpzTe+P6pVcWmYCyhPmD9PdhgQwcUo26GBZj3w1g=
-X-Gm-Gg: ASbGncu6j9nla/1GPn5mt460nR5gWzG1vawbauUD//FbWM0rvDpcXxGBvAeOyWzzYJQ
-	D6RbU803EPUNB6TLeQSekNGpMlPNy1sfcxzGzToSv/PPeHGOamvhqzL7thG09mprJt7Inq/PpyX
-	ErwL+bpYGWXX1BDRvnXAJIlAPLLjasKOOiWY2z8weZsjA2FjeB5ZOPd4e0etT1vusBW1ecPV5he
-	J8HsUX3yjf4uxPFa32uZs3SAlHsXcRm/iZ8bxueJiEH9hivNuHW+YVfzaCwxzD+PKvwePTkRgdA
-	hvQhfhoKzNXG9xZBvndIib8yIGR4h4kHlHKS9nDtt2TjRB4vkI1+ucOgwJyClZ+nQ2GtJUV1bbb
-	j7j35Co3Gv1H5RvQOKyQ=
-X-Google-Smtp-Source: AGHT+IHrcKTZfJXCAhkO2WaOum0PT2hRMW3vGaRhpe2sCjwAXzgjbldqD9beTUKDcznlrIIPKNuBAw==
-X-Received: by 2002:a05:620a:2953:b0:7c7:97ff:ca42 with SMTP id af79cd13be357-7c955e7c7d7mr65261285a.41.1745429696505;
-        Wed, 23 Apr 2025 10:34:56 -0700 (PDT)
+        bh=rNJodNA/CGOE8qYPmCoAIvEyeqrCcwNf4apB4pxSGaA=;
+        b=ACpCBRxhEFRaAP8C/KnqLas3yg3LDOoSCGd2C+qPrPIlyxoH0XPMhwzIrHXnSMQE27
+         G8vlglME29/Dp2OqPhpxXHimmU8C2tlwZL/6++hAZvQGUx5Gn92aLG+VRWzz7yUDDBiP
+         9+0VMKxEI7XFf878IKMXH6rxkrXeLvpxczfkcKt5HAET57Q3SMsqggQRMzs6JexknhBU
+         0C4WzxQBe7FpNTyRI3gWLW2IknuXVWCeykggSbeEgMcoYftZG4MjTUs5qjPhk23K/gNI
+         QasrIERAddt1FwpsPQLrBl94JRXylwBKbshApDfhts/J9tbFWhCjP1xi9/k38o1cWv/L
+         bJ2g==
+X-Forwarded-Encrypted: i=1; AJvYcCXINaX2cTSUV7qwzpvRKpR/03CPdF+qn/Qwu8Y6doyiice94sXopzOhtdWkIQNm3UcT4ugRiA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwjW9QQGYoVgG8T1Tx5KHbKaj/tHrRc9fScao5J2sjJgbOE/D6U
+	WVzmgXRpbaFHRPUxgAR/s3mzBXQ5mumoo/1GPCdeXcka86vZd2Xqkxi2WLuyx4Q=
+X-Gm-Gg: ASbGncvVd7iLaeBjrD14io7Q3vXaPWR/kUmFoW4F6Q6bvB+QOpODF/fdIrbuXURfi99
+	v5MOScaVFeLvqZV2akZnOlZEwNtWhvm2e3cX2yC7X/uFl3KvP3Tqh0h+GhXuw3lULnqMmSP1d2P
+	YaK09DlIpwdJH8D6M8czTOAEDTzVqKW4vncE8k+6AxhKrbN+mTmYwQp8c5dbPNC/tbjY5PFPjQD
+	ALHwmCttZLmUpdbUh1fF7liRfU+xAUeYkYG89rB9DpNRu3VEe0rE0gUdNFIUwdzBXl4I+X29of3
+	re75mHHKeDSb/xFJvK3yZLjZSyVoXAlpY8qsmjDFKYWPXMrD3gAHjy4LbUMr+uFwBcy+RH7V5kX
+	4j1O3HrbutirgiU6h5WM=
+X-Google-Smtp-Source: AGHT+IFfYFJ3H6MHGXkZxUwtNrKhvKS2i7aEibqmChB9ejFnkuFqgY0c21HHcZ68bh6mda7wa7inKA==
+X-Received: by 2002:a05:620a:44d3:b0:7c7:a5ce:aaf1 with SMTP id af79cd13be357-7c928018e95mr2986289985a.35.1745429786563;
+        Wed, 23 Apr 2025 10:36:26 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c925a8bf65sm707741185a.25.2025.04.23.10.34.55
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c925a6eb31sm709808085a.3.2025.04.23.10.36.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Apr 2025 10:34:56 -0700 (PDT)
+        Wed, 23 Apr 2025 10:36:26 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1u7dzr-00000007LbA-2PtY;
-	Wed, 23 Apr 2025 14:34:55 -0300
-Date: Wed, 23 Apr 2025 14:34:55 -0300
+	id 1u7e1J-00000007Lca-2cT8;
+	Wed, 23 Apr 2025 14:36:25 -0300
+Date: Wed, 23 Apr 2025 14:36:25 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Leon Romanovsky <leon@kernel.org>
 Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
@@ -90,11 +90,11 @@ Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
 	Dan Williams <dan.j.williams@intel.com>,
 	Kanchan Joshi <joshi.k@samsung.com>,
 	Chaitanya Kulkarni <kch@nvidia.com>
-Subject: Re: [PATCH v9 12/24] RDMA/umem: Store ODP access mask information in
- PFN
-Message-ID: <20250423173455.GN1213339@ziepe.ca>
+Subject: Re: [PATCH v9 13/24] RDMA/core: Convert UMEM ODP DMA mapping to
+ caching IOVA and page linkage
+Message-ID: <20250423173625.GO1213339@ziepe.ca>
 References: <cover.1745394536.git.leon@kernel.org>
- <f81331e55cf95b941e6c57f940a2a204141bf2e1.1745394536.git.leon@kernel.org>
+ <7d6f3d50c4e6eb3ab75fd4c5bbaa8efcb1a15b3c.1745394536.git.leon@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -103,23 +103,24 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f81331e55cf95b941e6c57f940a2a204141bf2e1.1745394536.git.leon@kernel.org>
+In-Reply-To: <7d6f3d50c4e6eb3ab75fd4c5bbaa8efcb1a15b3c.1745394536.git.leon@kernel.org>
 
-On Wed, Apr 23, 2025 at 11:13:03AM +0300, Leon Romanovsky wrote:
+On Wed, Apr 23, 2025 at 11:13:04AM +0300, Leon Romanovsky wrote:
 > From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> As a preparation to remove dma_list, store access mask in PFN pointer
-> and not in dma_addr_t.
+> Reuse newly added DMA API to cache IOVA and only link/unlink pages
+> in fast path for UMEM ODP flow.
 > 
 > Tested-by: Jens Axboe <axboe@kernel.dk>
 > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 > ---
->  drivers/infiniband/core/umem_odp.c   | 103 +++++++++++----------------
->  drivers/infiniband/hw/mlx5/mlx5_ib.h |   1 +
->  drivers/infiniband/hw/mlx5/odp.c     |  37 +++++-----
->  drivers/infiniband/sw/rxe/rxe_odp.c  |  14 ++--
->  include/rdma/ib_umem_odp.h           |  14 +---
->  5 files changed, 70 insertions(+), 99 deletions(-)
+>  drivers/infiniband/core/umem_odp.c   | 104 ++++++---------------------
+>  drivers/infiniband/hw/mlx5/mlx5_ib.h |  11 +--
+>  drivers/infiniband/hw/mlx5/odp.c     |  40 +++++++----
+>  drivers/infiniband/hw/mlx5/umr.c     |  12 +++-
+>  drivers/infiniband/sw/rxe/rxe_odp.c  |   4 +-
+>  include/rdma/ib_umem_odp.h           |  13 +---
+>  6 files changed, 71 insertions(+), 113 deletions(-)
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
