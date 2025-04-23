@@ -1,126 +1,113 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1170E19E966;
-	Wed, 23 Apr 2025 16:48:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEFD71862
+	for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 16:57:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745426913; cv=none; b=qhigZy2uFcD7aF8dxisW8WpsO+vYuBjeIeo1MENxzrtT+nbXmh0ASh4MwBhbgQTjYZJ0cnC+MIMGQ7KxHzjHpNPdj9qWKklfypB+Q9ptW/G8k1WJQ4Lp5covBTSKi49bOtQchsKkgyrGOXyF/vgdyWgkWzMmBtJRHtwetBhLd08=
+	t=1745427435; cv=none; b=cVhrl57eIPPap7XmFv3tILSM1n0xtPdsC8F/iJZSIlDAy23U8vzHPU2jX10UgUPNuzDy2EvOIzlIDxGK8y4/qEg2jsk4/ch90+CCrzoDqOFzdajZbyWshyuilTFDKUgqw/y1SjfYHHedxWkImsvqNaTvjv44SRPPVEaG2kHkrDc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745426913; c=relaxed/simple;
-	bh=DT2vdXkm5UTmWS58pbDzSP2uTIp7fiBR1eJQ+9e9UMI=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=qd5I4Fa4tnyEZspZo/vIe50rWiR/A7B77yv6rQmutqMHP5td2ENqZlr8LcL2NXx8g3ouiXgibbAI8Ht5Ysk0sKfAa7o12ozU6xG3i00MlcPo7L+s+vArWOnoefXCNUdJV5DaVhjqMDG2YtDyr6R3Wl/sikH002RiRTf2R/konHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kpQSXkaI; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745427435; c=relaxed/simple;
+	bh=dhi7YPbJDF5Sv4T9p4l00KsiFYnUvc1VHj5DJ29C/CM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=P2iHUB2rhEGPsFuWNn3WMws/E7Evfi+dEhjYs6Zmhw2otZq1N+FlqNUAOzB5DQ72JSkAjNuDYqbsB+3N0hyM8XSfvtPYhhx9/atJBGorFSMbGlRHPCpHkkhG+Ru2Qm3p6fxdrrtG7rBtRytliJU6cJNyx7l+I0nMdg5sz+6vwpQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=nsMNe8Qq; arc=none smtp.client-ip=209.85.222.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kpQSXkaI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01DA3C4CEE8;
-	Wed, 23 Apr 2025 16:48:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745426912;
-	bh=DT2vdXkm5UTmWS58pbDzSP2uTIp7fiBR1eJQ+9e9UMI=;
-	h=From:To:Cc:Subject:Date:From;
-	b=kpQSXkaICpkzZ85VDQxj7jy1Bsx9d36+2o7RD6suAZam+Qz8iAU3ZXGGMEoI84UjR
-	 S9+zC70OJ0b4r4Prz6c8evH4/Dlu/YJd6rphhF4ecKgW2xw2iFiw/780ZHEKec8DPg
-	 g6rD9pD0TKJAtYfc8Yiwr3I314Vf55tVWwPuhG9WNHhP2oJTmYBfZBcR03qoUh5WZp
-	 sd2vF53MvXxmqLsE7hEOhoKFBgDxc5cRr4sv5vMyBBQyt+Kco4pL/GBlmaIIb/Xk96
-	 37uYkmpUqvJ/FBbbj3rsYnX4of6vmJrPIciBEklfktvC+w/i9aS9faia7MedbplwI3
-	 F6amN7bzOvcgQ==
-From: Arnd Bergmann <arnd@kernel.org>
-To: Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: Arnd Bergmann <arnd@arndb.de>,
-	Mostafa Saleh <smostafa@google.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Rob Clark <robdclark@chromium.org>,
-	Kunkun Jiang <jiangkunkun@huawei.com>,
-	Ashish Mhetre <amhetre@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] [v2] iommu/io-pgtable-arm: dynamically allocate selftest device struct
-Date: Wed, 23 Apr 2025 18:48:16 +0200
-Message-Id: <20250423164826.2931382-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="nsMNe8Qq"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-7c559b3eb0bso2768185a.1
+        for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 09:57:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1745427432; x=1746032232; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=dhi7YPbJDF5Sv4T9p4l00KsiFYnUvc1VHj5DJ29C/CM=;
+        b=nsMNe8QqwTrqK+cyvG6rzL9jVCTLI6/7qtczVtiBtSP+8bk/YZ0Sf1IsGZZ3eghZu6
+         OqSFHy79E+jF27cbEZDwaVnXV5F+vIc4dCd25eJqd8ekG1yhjUXw8w76CqrKGiKD19YX
+         K39VG5XoN+S5KLz9O5k5Q0XnunHR44kOT6PUW/LfgTt9lTpFrMSVn4NhGJyJeoYwcqZC
+         wtsCSRwuOjGL8cRuYt1f31ctvuGSqDZ2Z4F3QQuZg5jCTeYPIVLx2MF/FSAjf4lxgfFn
+         douwcP0IELQLDwDdqOddBRMlKb9i5iFjbNkWn5WaqMxF5q6Js/bsXgIxAqsTpeoW8xQN
+         SwdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745427432; x=1746032232;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dhi7YPbJDF5Sv4T9p4l00KsiFYnUvc1VHj5DJ29C/CM=;
+        b=gaPbReHl8nNqCgvCpgW6AUK0zd2gFFAjJkkuehS51/xPuVJRYlOoP88pSEYqRGbmNG
+         N3vsJ3ZmC4sNSqZh4VJI89ZkpVYhP9NWX0knqZsV+ji/ANkQADazessKS1plxqawfGiT
+         1OXfDhJg3aJP9WWHdZN/FRYnkZOODuG8N0NxAWb4OqfWj93O4rJWbJY8QrQK6TelidAp
+         6X+DIrles0rGuFxM5w/0UQH47sVyn2NFlUm+VJtDtJozpjnq/NDzW2oiPKGDqvoX36WB
+         3nHVAzB8FnjRsRLNFIKBQhpXZu7L+ZmX1mDhaYD+7dB6GuRo545QYBJcWeP4KgTur1WC
+         Txcw==
+X-Forwarded-Encrypted: i=1; AJvYcCVDkJuDjyenBy/w6E2oQFNHUQuorU7xqMfhk2qjYXLMEbiEJ+kRxwMYadW5BgCx6yYfKaWNow==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyIusGbpNpkUtrSOw8ZK3S5s+76jjCLH7LP39nmbok3HIIaYaBG
+	FDFHLUUjHdH0HEUTLeT2QEHbF66ifj0FN9B/c4jC+jHJTqy4PG0/ZxrM9ZYKFyA=
+X-Gm-Gg: ASbGncvX3YTbR5pwFXwDfiDkasH+AEmzPeu8O4Lq7oRhKHHXAkPWvmKWMVxUVZ8QzUk
+	tCRH2dqpPglsbvbctWyvPFRQlA8Bn6I+GRcxmoHXuOwCbptIJ2/4Z7Ws4s7JC/rey49I67BULfI
+	VY732zm6XvTVA88di8bsReA2lCFo3gnzUyapg43CZKZnkwpSrab3aTiFxeT1g8/TWziFLB4myfv
+	nQog21EXAYaicI9B3p0Bk9h4I3DQj73yDJdYjnOcBpG11q0y1QiJC1LsFP/hzPo5yJh1ngsfSve
+	9RcPsWspWLrPA68lKrrWvXfF1clfw1pwhoLnTBESqFqCWGi620IojVRQ87VS2pYAjYGjjNLZJMs
+	qXsUYWwvPcBbWflRrn7M=
+X-Google-Smtp-Source: AGHT+IHShwd058je5yhrBHHtft+FaVd6aPfMpemsnKAJr8/FzC5ID/JRmyyXrev5e81NPUS4BdNFCg==
+X-Received: by 2002:a05:620a:45aa:b0:7c5:61bc:70ee with SMTP id af79cd13be357-7c928049582mr3400940685a.52.1745427432602;
+        Wed, 23 Apr 2025 09:57:12 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7c937cdb14bsm487301185a.96.2025.04.23.09.57.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 23 Apr 2025 09:57:12 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1u7dPL-00000007LFu-2s3n;
+	Wed, 23 Apr 2025 13:57:11 -0300
+Date: Wed, 23 Apr 2025 13:57:11 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Bjorn Helgaas <helgaas@kernel.org>,
+	Will McVicker <willmcvicker@google.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
+	"Rob Herring (Arm)" <robh@kernel.org>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Joerg Roedel <jroedel@suse.de>, Bjorn Helgaas <bhelgaas@google.com>,
+	iommu@lists.linux.dev, Saravana Kannan <saravanak@google.com>,
+	kernel-team@android.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1] platform: Fix race condition during DMA configure at
+ IOMMU probe time
+Message-ID: <20250423165711.GG1213339@ziepe.ca>
+References: <20250423150823.GA422889@bhelgaas>
+ <4129dca9-07fa-4b9d-a7d8-de7561d509e7@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4129dca9-07fa-4b9d-a7d8-de7561d509e7@arm.com>
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Wed, Apr 23, 2025 at 04:50:29PM +0100, Robin Murphy wrote:
 
-In general a 'struct device' is way too large to be put on the kernel
-stack. Apparently something just caused it to grow a slightly larger,
-which pushed the arm_lpae_do_selftests() function over the warning
-limit in some configurations:
+> Indeed in my half-written version of this patch I was leaning towards
+> removing the drv variable altogether (just doing
+> to_x_driver(dev->driver)->driver_managed_dma inline), or at least doing the
+> same as Will's previous diff. I figure the one-liner replacing
+> "!dev->driver" with "!&drv->driver" would be too disgustingly non-obvious
+> for anyone else's tastes...
 
-drivers/iommu/io-pgtable-arm.c:1423:19: error: stack frame size (1032) exceeds limit (1024) in 'arm_lpae_do_selftests' [-Werror,-Wframe-larger-than]
- 1423 | static int __init arm_lpae_do_selftests(void)
-      |                   ^
+The READ_ONCE alerts the reader that something weird is going on here :\
 
-Change the function to use a dynamically allocated faux_device
-instead of the on-stack device structure.
+> For consistency we should really fix all the buses the same way - sorry for
+> the bother (I can write up the other patches if you'd like). FWIW this part
+> really was the most temporary stopgap, as my planned next step is to propose
+> moving driver_managed_dma and the use_default_domain() call up into the
+> driver core and so removing all this bus-level code anyway, hence trying to
+> minimise the effort spent churning it. Oh well.
 
-Fixes: ca25ec247aad ("iommu/io-pgtable-arm: Remove iommu_dev==NULL special case")
-Link: https://lore.kernel.org/all/ab75a444-22a1-47f5-b3c0-253660395b5a@arm.com/
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-v2: use faux device instead of platform_device, as Robin suggested.
-    The faux device is more appropriate here since the is no actual physical
-    device, though on the other hand the v1 patch had the advantage of not
-    actually needing to register the device.
----
- drivers/iommu/io-pgtable-arm.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+It started out this way but Greg really didn't want it, so this was
+the compromise. Perhaps you can convince Greg of the merit.
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 545229cf62d2..bbd42323c029 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -13,6 +13,7 @@
- #include <linux/bitops.h>
- #include <linux/io-pgtable.h>
- #include <linux/kernel.h>
-+#include <linux/device/faux.h>
- #include <linux/sizes.h>
- #include <linux/slab.h>
- #include <linux/types.h>
-@@ -1437,15 +1438,17 @@ static int __init arm_lpae_do_selftests(void)
- 	};
- 
- 	int i, j, k, pass = 0, fail = 0;
--	struct device dev;
-+	struct faux_device *dev;
- 	struct io_pgtable_cfg cfg = {
- 		.tlb = &dummy_tlb_ops,
- 		.coherent_walk = true,
--		.iommu_dev = &dev,
- 	};
- 
--	/* __arm_lpae_alloc_pages() merely needs dev_to_node() to work */
--	set_dev_node(&dev, NUMA_NO_NODE);
-+	dev = faux_device_create("io-pgtable-test", NULL, 0);
-+	if (!dev)
-+		return -ENOMEM;
-+
-+	cfg.iommu_dev = &dev->dev;
- 
- 	for (i = 0; i < ARRAY_SIZE(pgsize); ++i) {
- 		for (j = 0; j < ARRAY_SIZE(address_size); ++j) {
-@@ -1465,6 +1468,8 @@ static int __init arm_lpae_do_selftests(void)
- 	}
- 
- 	pr_info("selftest: completed with %d PASS %d FAIL\n", pass, fail);
-+	faux_device_destroy(dev);
-+
- 	return fail ? -EFAULT : 0;
- }
- subsys_initcall(arm_lpae_do_selftests);
--- 
-2.39.5
-
+Jason
