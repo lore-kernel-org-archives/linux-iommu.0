@@ -1,141 +1,85 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D9D14F9CB
-	for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 15:50:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEEAD27979C
+	for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 15:55:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745423438; cv=none; b=Db/M1JY1wtoKuRIYZ/LBW4BkCilg1rnwlCYZtqTidGLz/t2qjw4P2uM6HOo8o8O4GAx0cgM5e04SqFIkdFeAR6M2t6+Xar9YmaetXOMVMEfdlnwuaw9TZYksCaJ6Pzif5WX6CmX/PaxkIUPTqiClIdwfdUVzK0GvSL+ixcM+dFk=
+	t=1745423760; cv=none; b=UjIGurQj6k6qC74Z77uWj1Vy9CdGNLbfcw/ZXpED5TYNZg73Z8EgTOOQi7rz3rRuz60INkkzDyFDAGQafTcc8mue60n711Dtlmevb8M7helZ9WaF95pNDbRfhZFLLoaGoQ5jDnM6PXvCyNfR4zuLT2mOppBbg7TaFauYgeBtLRg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745423438; c=relaxed/simple;
-	bh=obJ4KNRdop1ri6ey3P8GkkISiNkN9TepbOopmkOaHtM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=boP3f/zjglMtwWriRNbb/XJdHfCna4BjLXPO7pbFJJnMQyktpLkD6XRv8OyGoGOUc18tBuoQp3hM4OFWarHiOsOFUqbAMRgTwsjGUJ4LocBxe0FiRKgA5cCiOCcQmZVHNuEis2jsRoHHM0wzKD4s+1gbUpLl5AYyAMu9C++emuw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7FB331063;
-	Wed, 23 Apr 2025 08:50:29 -0700 (PDT)
-Received: from [10.57.74.63] (unknown [10.57.74.63])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BA5153F66E;
-	Wed, 23 Apr 2025 08:50:31 -0700 (PDT)
-Message-ID: <4129dca9-07fa-4b9d-a7d8-de7561d509e7@arm.com>
-Date: Wed, 23 Apr 2025 16:50:29 +0100
+	s=arc-20240116; t=1745423760; c=relaxed/simple;
+	bh=+2Q0TqTUlO+XxdYqin3kJ59kqtlT8h5Kw4yFiitoAu4=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=KEFY/3Punw4TZnMRaH+GmcrYlixDBpC4J8c9i4pv7mZ9GkVzNJPnFCG+OFDE/+oBxSt8RWiPa4tLx1CtvEjgbWaQPGZyJ0OXD3RBMs22AxhPS/h8q3SL5PyPZvnG3Z6k9ZGHs6TcvnT7uqil0hIWAGAi8dos3LzVZ2kA08gA9NQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=d+KIuWYc; arc=none smtp.client-ip=209.85.215.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="d+KIuWYc"
+Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-af5310c1ac1so3786285a12.2
+        for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 08:55:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1745423758; x=1746028558; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=jmJGVTNM68EN1Na+PFsjzt6zkvxFPDOKXQFGaHd/MNo=;
+        b=d+KIuWYcmNK42KkbSD/5aDkPHOnDAYHSVNVfayeamQX4zVuPGlPJETvks4apJge1lG
+         tgubiOywao6oE1bjbxPYsc3V1XKTiCblMV40X0wOlDX1ETE8gmlV+yEQdcemvUZdzA3R
+         pCauc0vKFLmz77SEtIiCjpaHF21TH5jV96prLJhKznNvjLQnoUbAn6KeISe7NG8nYlqm
+         0F0efR7CdqcPzjetZElPFY8e4Cg4bm4zKG74x6HtmBG92XmRLUowFf0MjMKbF8Pg0Q/X
+         wIo+pYO2IDEM46AKH0c/X3qlgr+ORUCVhH+rjfuxJkF1tNLv7isDb3gP0WI7mOt+BVRy
+         9Csw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745423758; x=1746028558;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=jmJGVTNM68EN1Na+PFsjzt6zkvxFPDOKXQFGaHd/MNo=;
+        b=Cxsei3YpcMWIDGR6ZrdnMth/waES9AIybb4RjQf27qvbyNllFSdB4N4qdN/pmlngOw
+         4u5i6t0BjYcWp6TfkX8nH1u+xANnePaIbUQyCUjF7UWsTMQN8OtHPNWosNiU7OYoz/j6
+         5cSixhbHMOskTVlSuhvCeg4VJBGgJGky0vm3idv9g3IGmLCTYJqpUHPQV9F8t//Ab7Ye
+         1Js51HjUP4FBkjEQ+am+ieKALF8/rNldYe6OVyAAFyOo0+1YMcBCxyxDGzLwrD/8vDqw
+         gs9oJuQ2J99YsWp7neV55vq2BB17zELppbKTTFz3viIc/ncYJe5ns+aXoqeGvBK7v4x7
+         FTqw==
+X-Forwarded-Encrypted: i=1; AJvYcCVCpepXMki/dS80GK1tcdITwBlOdOGFHLyrdEoI5ujECtInamjO9cKjSW0laBr5Xp+GLX9ceA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy56VsYisqdqqDsKBdSE7+JOLuBElSoX7FqloFd1v9hl/7Tq30G
+	bZNgL8/Yj3QK/IWFgASyaK2/GA6OKXMzs+dubRXgzN9ggUDxwmA5ZVtDMz1vs2s4IHr5xJ6lLdH
+	J0w==
+X-Google-Smtp-Source: AGHT+IHnOGraDXWHVwtcHF/KJZows5bTw5g1o0e7YCWv5QZQLWNkV6iHhA0+G3682VIduWV5Xwdn6KbTATw=
+X-Received: from pjyp14.prod.google.com ([2002:a17:90a:e70e:b0:2fa:15aa:4d1e])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:2404:b0:309:eb44:2a58
+ with SMTP id 98e67ed59e1d1-309eb442db3mr417907a91.22.1745423757994; Wed, 23
+ Apr 2025 08:55:57 -0700 (PDT)
+Date: Wed, 23 Apr 2025 08:55:56 -0700
+In-Reply-To: <15e24c455fb9fca05b5af504251019b905b1bd77.camel@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] platform: Fix race condition during DMA configure at
- IOMMU probe time
-To: Bjorn Helgaas <helgaas@kernel.org>,
- Will McVicker <willmcvicker@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich <dakr@kernel.org>,
- Jason Gunthorpe <jgg@ziepe.ca>, "Rob Herring (Arm)" <robh@kernel.org>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>, Joerg Roedel <jroedel@suse.de>,
- Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
- Saravana Kannan <saravanak@google.com>, kernel-team@android.com,
- linux-kernel@vger.kernel.org
-References: <20250423150823.GA422889@bhelgaas>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250423150823.GA422889@bhelgaas>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+References: <20250404193923.1413163-32-seanjc@google.com> <15e24c455fb9fca05b5af504251019b905b1bd77.camel@gmail.com>
+Message-ID: <aAkNjKIleB97r2fe@google.com>
+Subject: Re: [PATCH 31/67] KVM: SVM: Extract SVM specific code out of get_pi_vcpu_info()
+From: Sean Christopherson <seanjc@google.com>
+To: Francesco Lavra <francescolavra.fl@gmail.com>
+Cc: baolu.lu@linux.intel.com, dmatlack@google.com, dwmw2@infradead.org, 
+	iommu@lists.linux.dev, joao.m.martins@oracle.com, joro@8bytes.org, 
+	kvm@vger.kernel.org, linux-kernel@vger.kernel.org, mlevitsk@redhat.com, 
+	pbonzini@redhat.com
+Content-Type: text/plain; charset="us-ascii"
 
-On 2025-04-23 4:08 pm, Bjorn Helgaas wrote:
-> On Tue, Apr 22, 2025 at 04:26:49PM -0700, Will McVicker wrote:
->> If devices are probed asynchronously, then there is a chance that during
->> the IOMMU probe the driver is bound to the device in parallel. If this
->> happens after getting the platform_driver pointer while in the function
->> `platform_dma_configure()`, then the invalid `drv` pointer
->> (drv==0xf...ffd8) will be de-referenced since `dev->driver != NULL`.
+On Wed, Apr 23, 2025, Francesco Lavra wrote:
+> On 2025-04-04 at 19:38, Sean Christopherson wrote:
+> > @@ -876,20 +874,21 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd
+> > *irqfd, struct kvm *kvm,
+> >  	 * 3. APIC virtualization is disabled for the vcpu.
+> >  	 * 4. IRQ has incompatible delivery mode (SMI, INIT, etc)
+> >  	 */
+> > -	if (new && new->type == KVM_IRQ_ROUTING_MSI &&
+> > -	    !get_pi_vcpu_info(kvm, new, &vcpu_info, &svm) &&
+> > -	    kvm_vcpu_apicv_active(&svm->vcpu)) {
+> > +	if (new && new && new->type == KVM_IRQ_ROUTING_MSI &&
 > 
-> I need a little more hand-holding to make sense out of this.
-> 
-> After digging out
-> https://lore.kernel.org/all/aAa2Zx86yUfayPSG@google.com/, I see that
-> drv==0xf...ffd8 must be a result of applying to_platform_driver() to a
-> NULL pointer.  This patch still applies to_platform_driver(NULL), but
-> avoids using the result by testing drv for NULL later, which seems
-> prone to error.
-> 
-> I think this would all be clearer if we tested for the NULL pointer
-> explicitly before applying to_platform_driver().  I don't like setting
-> a pointer to an invalid value.  I think it's better if the pointer is
-> either valid or uninitialized because the compiler can help find uses
-> of uninitialized pointers.
+> The `&& new` part is redundant.
 
-Yeah, I was also in the middle of looking at this after managing to hit 
-it playing with driver_async_probe at the end of last week. I guess when 
-I originally wrote this pattern I was maybe thinking the compiler would 
-defer the to_x_driver() computation to the point it's eventually 
-dereferenced, but I suppose it can't since dev is passed to an external 
-function in program order in between.
-
-Indeed in my half-written version of this patch I was leaning towards 
-removing the drv variable altogether (just doing 
-to_x_driver(dev->driver)->driver_managed_dma inline), or at least doing 
-the same as Will's previous diff. I figure the one-liner replacing 
-"!dev->driver" with "!&drv->driver" would be too disgustingly 
-non-obvious for anyone else's tastes...
-
-For consistency we should really fix all the buses the same way - sorry 
-for the bother (I can write up the other patches if you'd like). FWIW 
-this part really was the most temporary stopgap, as my planned next step 
-is to propose moving driver_managed_dma and the use_default_domain() 
-call up into the driver core and so removing all this bus-level code 
-anyway, hence trying to minimise the effort spent churning it. Oh well.
-
->> To avoid a kernel panic and eliminate the race condition, we should
->> guard the usage of `dev->driver` by only reading it once at the
->> beginning of the function.
->>
->> Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
->> Signed-off-by: Will McVicker <willmcvicker@google.com>
->> ---
->>   drivers/base/platform.c | 7 ++++---
->>   1 file changed, 4 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/base/platform.c b/drivers/base/platform.c
->> index 1813cfd0c4bd..b948c6e8e939 100644
->> --- a/drivers/base/platform.c
->> +++ b/drivers/base/platform.c
->> @@ -1440,7 +1440,8 @@ static void platform_shutdown(struct device *_dev)
->>   
->>   static int platform_dma_configure(struct device *dev)
->>   {
->> -	struct platform_driver *drv = to_platform_driver(dev->driver);
->> +	struct device_driver *drv = READ_ONCE(dev->driver);
-
-Beware this might annoy a different set of people as it's not paired 
-with a WRITE_ONCE(), but for now I guess using it is still arguably 
-better than not. Really we should be under device_lock at this point and 
-so have no race at all, but we can't do that without keeping track of 
-which devices are IOMMUs themselves to avoid deadlock, and that's not 
-something I fancy throwing out as an -rc fix in a hurry...
-
-Thanks,
-Robin.
-
->> +	struct platform_driver *pdrv = to_platform_driver(drv);
->>   	struct fwnode_handle *fwnode = dev_fwnode(dev);
->>   	enum dev_dma_attr attr;
->>   	int ret = 0;
->> @@ -1451,8 +1452,8 @@ static int platform_dma_configure(struct device *dev)
->>   		attr = acpi_get_dma_attr(to_acpi_device_node(fwnode));
->>   		ret = acpi_dma_configure(dev, attr);
->>   	}
->> -	/* @drv may not be valid when we're called from the IOMMU layer */
->> -	if (ret || !dev->driver || drv->driver_managed_dma)
->> +	/* @dev->driver may not be valid when we're called from the IOMMU layer */
->> +	if (ret || !drv || pdrv->driver_managed_dma)
->>   		return ret;
->>   
->>   	ret = iommu_device_use_default_domain(dev);
->> -- 
->> 2.49.0.805.g082f7c87e0-goog
->>
-
+Ha, good job me.  Better safe than sorry?  :-)
