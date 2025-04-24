@@ -1,248 +1,482 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2070.outbound.protection.outlook.com [40.107.243.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 337D41B4241
-	for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 04:34:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92B95F510
+	for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 04:40:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.70
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745469249; cv=fail; b=oVtEUvSuQDosBEJ48L+PUFFeRMEhgeFt7dwJ/JI+G+e6WGgSIbNjtzZEU9pEZbjJi8Qx3NvjF2eWdU0RUaf8bsc1BpyHGVa6gtPvN5m2RCFHandSM1VDUu1eUDuM5u/YA4wJ5wc1EA5PPor1poc8/3wKIBJDFFSYgdOlKwvEdOk=
+	t=1745469609; cv=fail; b=RZN/NMsXukssiDo8jnF5G0JoXDdqeJa4y2EnATOm8BGU+6m7yb7oUpOP84HFRs0wWw/BElbEPPFTWfWnehuRF0SaUbTBwuTN6JwdE9HIPkBu6qbV+vL/y2gWzRj/k7QekMv5NQweISXl03c642+1Sf6pOsgAJZDNwnrt5oVF/Iw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745469249; c=relaxed/simple;
-	bh=YDuV5yhKUScZP/Ud9F5Xk5fLooPsrVI8DiytWGgKlfU=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=SyDxHUxSPnWg9exWL+Vp1ZEGCnWtBaCEtwh4VR2gs0jk/GWIln/6tSlymDhxBDRJpQYEwqd04AhiQjKnqGqii0j1fGe5oj6o9XPdPbVU4veHj3gRymoDeHRx0SV+1efKWpF0i/YFcMT8Kwses9TwJ9RZ7a0ObQhkHYG5WTMMFjk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IckP2gBp; arc=fail smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1745469609; c=relaxed/simple;
+	bh=SmKI3GfNez1nNaLZ5SOWrvgILQxTcAoDvJhanu+GTaY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=Iu84/EiWSh4hTS25PXgrSFFN+8Ab54bXiaLc1mALEGBfrEYvSlRbJXt1GlH9aTwS6UG3ogVef31RVvbeg5WzEUt+id5PKr5q4dWagGZb9uHCK9z/6hAMbVq4BApN1SMPo+21pljUCG5TGb+FJNEaud1BSGQl8hURaRz9PgIVYUo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=u5+DPu8A; arc=fail smtp.client-ip=40.107.243.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IckP2gBp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745469248; x=1777005248;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=YDuV5yhKUScZP/Ud9F5Xk5fLooPsrVI8DiytWGgKlfU=;
-  b=IckP2gBpr9doUH+fcMgso1B84doSepX5rLHA26dvUa5HAXrKOdGanWlD
-   Tkk5S3aMOBOuChbRG8cUNduvd+utPyQuT4bKJokBQCYDQBMBBdv35c3vj
-   GansktviB3PbLoHYIEdRW7JroelY2PwAd375mbM6HsBzsT/UQnCdcnR4h
-   glANQES8G7AyW9KFaNdS0TMGXDsITawiCjS5OFF5rs4p/VUAzXEWBGyki
-   lqASW4I5AWXqZg0I8NxmhfISHKZpUSHw0uQGNA3Lt3prZn25xKLxA7usw
-   MoMRHy48Bjav6D3x+NA8uciUPmEJjMN9SiRizwcK8wMJJnmiiiaXSbgBk
-   A==;
-X-CSE-ConnectionGUID: 4JjME+MQS5C6BuLfD4tmCw==
-X-CSE-MsgGUID: cS7zh41FQTmx2xN3lxFyAQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11412"; a="46957299"
-X-IronPort-AV: E=Sophos;i="6.15,233,1739865600"; 
-   d="scan'208";a="46957299"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2025 21:34:07 -0700
-X-CSE-ConnectionGUID: EdIYOYPTTTCosaX6kPRLiQ==
-X-CSE-MsgGUID: yHJwrdrUSrSyE0qV+SLHKw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,233,1739865600"; 
-   d="scan'208";a="136583766"
-Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
-  by fmviesa003.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2025 21:34:05 -0700
-Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14; Wed, 23 Apr 2025 21:34:04 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14 via Frontend Transport; Wed, 23 Apr 2025 21:34:04 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Wed, 23 Apr 2025 21:34:03 -0700
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="u5+DPu8A"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=T3rRSGTA4TJPluz/yTbuqub7tHE6Aqc9DmOZDUyEhBMvjpGbIANz29mETye4Ezca2okm/K4uhGtmuU31ZeyeGEA1nqcgFp/sXiXVgzm/3X8Q44qKE39cleU/UmKQwXO1vc2jMwhdCrXNDnEYnNlUJAUhLxF0FwbA13d1Lf1M/QNAflvMgrVXQtC7s+xwM7tfDZ0+/wHDxQA0/2PVGIc2adTHw4Y78sCuMxzGaOzLC9Lym+Xwlj8yLelwiAketQwYIv9bGMqHuMSzk12+8scTdkPGwHjbHl8aZURBt0Txp0bMHtQwyD1Waym481B8g2rHKpQJtfFtiiVIawtfVmzGkQ==
+ b=sl0tUyt4aDxjpglFd49NZRHpOa92LiNe6Z7yaMNyqABqu/uMgiKw+DIONPXx6rVmVHDCYVVkn1DJXpoYsz5GV3rgW0R1egBfYetJLOEcTg9HnwVTTefc8777l3f4Ih6XMg42y6p+v8blW2aQyHHOhuxOoJwDR+u7o48CGrXCb3XEmFCL1RrGvr84Yav7BI0mbyuR1eB6AH5YMzMnmpHD4k0Pwjw0wn/dbH6UhBSMODg5OpRco6/wnVQeFxux6NLEoQw/9PhBylz2+zf4Q7su7d1mTRbMYgImjaZi5IfB/pPsNKDJ0uHA0jr3kyCEdOJ1GhNv0kY/p5vr6Ue7CUeRHQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YDuV5yhKUScZP/Ud9F5Xk5fLooPsrVI8DiytWGgKlfU=;
- b=pbtg3YxP//Cqk+VcuW0w8Q4rW1lRJ8cXdktpQz49aBgbr1t6B/vtzDIlSJ0N146nuLcluQrExgi64GFWONrJaBHjt7aHOAYUMLh4SzZW2SC4x8YGOk/eFITaOFGj9Avtl0j2qCBw5ihVJ7j/UvlomG7BS9uSY/YJBChndB+LILct2RgFa2dzM+MCHO9HaU3qn/CCegnu+Ucw+OGTUKtdl+8QG7Bj8u2wNxvjwz9HvtyQkgg8SkAvfIBsI57h0tV9JbMJ6HqSthsF2LBOuCl2ek5ac9PvqmfBgl6l5eNdf7xVi5S2ymReK5VIHQ2KjKa1IIcldcW++N059mEk9GT4KA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by SA3PR11MB8023.namprd11.prod.outlook.com (2603:10b6:806:2ff::11) with
+ bh=6euvhKUaDaRGdDRW7q02t0Ih2rsnvPGUAq6hlzFwKZA=;
+ b=jCzh5YS3S7cdJaWXgMCCpL8cg41iD9Dx6hYhfu9/rfOVyC1Gw38mnUVGvFgyWAcfWVtaeMKhLTustXMsSfp/iVcI2PFlEFvxdO7R1+lYZl9L3R/k8m9y2Y91d+QdXUWMPEeu65HCRnjJTQroeGi3yAeCXN3K/1KxpOset9jKDJswzslGObb0awlBMd8yb8Hurs8n123yv92urBThYhFTjO93P6CiY4q7TD0GeDyadtFYkBclGf8CQGJzyfEQQBrS93SE1qn2d0dsJR0YrB4He3kyDngCVN6UsIx2eFlWJ2qPKsj6OubEiHs6uM5sigw3k1Gow1Puw+jCZHEMMa8GOQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6euvhKUaDaRGdDRW7q02t0Ih2rsnvPGUAq6hlzFwKZA=;
+ b=u5+DPu8A9vb3U2czO0vbvqC6LlLcCk7EkHN9qiqhYf+6u16F8dudnTv9adRRjrWOrq/BubBVNXVey5y1dBa6Hk62ELVXLwyOBGWHwbfZ4svEaCz9reBgaa/HG7WEeE/RKGCf4uBMjIIMixwrsL5h758lyRF6UB86RZHAyfBb5bw=
+Received: from SJ0PR13CA0184.namprd13.prod.outlook.com (2603:10b6:a03:2c3::9)
+ by MW4PR12MB7016.namprd12.prod.outlook.com (2603:10b6:303:218::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8655.35; Thu, 24 Apr
- 2025 04:33:15 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1%6]) with mapi id 15.20.8678.021; Thu, 24 Apr 2025
- 04:33:14 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, "Dave, Tushar" <tdave@nvidia.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "jgg@nvidia.com"
-	<jgg@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-CC: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: RE: [PATCH rc] iommu: Skip PASID validation for devices without PASID
- capability
-Thread-Topic: [PATCH rc] iommu: Skip PASID validation for devices without
- PASID capability
-Thread-Index: AQHbtL2yOAbHjZNF4EyIVgcAEB+bLbOyKAeAgAARPbA=
-Date: Thu, 24 Apr 2025 04:33:14 +0000
-Message-ID: <BN9PR11MB5276C04C1B1ED8F8DB7B5EDF8C852@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20250424020626.945829-1-tdave@nvidia.com>
- <a65d90f2-b6c6-4230-af52-8f676b3605c5@linux.intel.com>
-In-Reply-To: <a65d90f2-b6c6-4230-af52-8f676b3605c5@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SA3PR11MB8023:EE_
-x-ms-office365-filtering-correlation-id: 5a1898bc-3226-455b-2711-08dd82e92103
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014|921020|38070700018;
-x-microsoft-antispam-message-info: =?utf-8?B?SEtOVk5rZjQ3dEtMK0wraW1zVW92ODZxZmVsN2tmWDQxNTBhZ1hobjlvWnA3?=
- =?utf-8?B?YkluS3piNnZpV080NXNYakovVlJ3NnVoVDZqYmdoMmViTGZCZ3hHeVVodHRU?=
- =?utf-8?B?aXhSVWhHb29oYXU4elFHcEFKQURhRWRlQSttOXBabFFyZnBWM2FUWkxTQ1Nq?=
- =?utf-8?B?Z1lHNUIwRmxIa3BPZVZGT3pGd0dEelJTMGhJS0JXYUc1M2xTT0JFajdoSldF?=
- =?utf-8?B?Q2YwMnpKUEJSSlFTOGdIdkQ2cGRDcDBPdVYvQ1pxRWJRVE82a0dPS2YzWVFL?=
- =?utf-8?B?ek8vMEQvNlJMMXRLMlJVYm9uR0RMZnEyNVNrYzI1VmJNRkVaNXJadCs2dzVt?=
- =?utf-8?B?RUZJeWVNMlV1clFwK2d4T2lRTlJlbVhlQkhGM1FSamhJcXcvV3ZoR3pLMGN1?=
- =?utf-8?B?Zkl2R3NwVlVUbmtPNVM2czF0a3hwQVYwb1J6TmlWTFJZVXI2T01JcjlCajho?=
- =?utf-8?B?SlZZazVINnRuRkREVnlvTkhIRzZwcmVtN0pFbCs0ZVErc3FnR0tIYmk5SFQy?=
- =?utf-8?B?NFFjVkkvTldNTFdaTktLaXNuTm1mc3ozM1BpZ1JobzJSSXYwdnNudkZIUkpk?=
- =?utf-8?B?ZlVvcHUzcVVpMFl4dnZvbjVFZ25UZVBGK0MxMFQ4Yk1xbmV3aGlHTzUwR2s2?=
- =?utf-8?B?ZythanBmTW5iak5sTlVHaU1GRGx1UmJXdUdrd0F1ejE4ZnFBekYxU1l6M09R?=
- =?utf-8?B?TDNHV0tGVlNSNVdNNlcrL1dERWJWdHF6QkRrcjlvRmpqVTdRVi9qRGYrNzJa?=
- =?utf-8?B?bitDYitnRDBqRUtPZGt0TTMwUmlUd3NNOUkxRGhSYUR6RjJWRTlnZWg1eTdp?=
- =?utf-8?B?U2s3bXA3M2RUWExxc254WHdzb0YzUmNEQThTSmJsanJrcFlCME5lRWRETTB4?=
- =?utf-8?B?ZDMrWDh1VXkzN3BLeDJDZEErWTk5KzFzV2hVQW5uamlhVWh6K0ZWMEl5QzNE?=
- =?utf-8?B?QnBwQ0xVaERJOEo3d1dDd2xQcGloM3VEQktualZCY1BNMXlqVVdwRHRLYXUy?=
- =?utf-8?B?SnlhZEpOQ2RSRS9pc0xaTXZQdDNpNlIyTFJtUk40Z2FsQjBXSm5jRnd5MXlY?=
- =?utf-8?B?NElwbFJqYU4wUnF4V0wvaWJaVTM4cjRQZUxTTStUdzNGK0hTSUlMbGljSWlC?=
- =?utf-8?B?Yis1bE1MOUJ3NEd5ZWVWTTNxUHB0OVhidElaUGY2U1hsdnB3Kzl3THJDUlNW?=
- =?utf-8?B?Q1ArT04vc3Q1d3pCVGNFM01xWFl6dXpobVZ6NFk2QnNZaWxhYzE5UWRNRWlM?=
- =?utf-8?B?Wm8wZkhna1gzbmN6ejlUZUhPd0RkUHdVSUJpK2FOcDdhbGNpSHNUbnlkWFVS?=
- =?utf-8?B?bTdwVWVZQjBTdlBhc1F0YlphUzVXVk44dGhzcXd0MG5HckVxYW82TXpTd2hu?=
- =?utf-8?B?QXVFY3pYVEd3Vk1lN3Y5amN0RUMvQWlHMEttK2JoYWVWQ0l3Nm1SQ0JBeXho?=
- =?utf-8?B?dlFJOTVaRkU5OHF2QU4rTzQ0Q3gxNnZMblRzTXQybnZFdHpwejNvL1BxQmZr?=
- =?utf-8?B?ak1yb2VkZDhXdVhuMlIzTGhVZTFxMlUyOW5xL3BSUGN5V2MycFFTZWZPaHZY?=
- =?utf-8?B?MUVaeFNCNW1VRTVYKys5VDROQWVhWEgxa0UreUs5Qlh5WVU0Smk3OGZPUWVB?=
- =?utf-8?B?QkRFM0VkY1VkWmgweTJIMlRQVzBHMmFmNmdEckhOb3MxQVVCMVJwU1BxTTFQ?=
- =?utf-8?B?YWZyK0c4TXozTkNFSytBYVNQdFh1b0tMM2diNnNURlN0Ylh6c0ZBWlpCeVNU?=
- =?utf-8?B?RVN0bFJMU2owekplcXN6dUlUMmN1cHA1QmdnMnE0UHNRL014bjB0eDBRQURJ?=
- =?utf-8?B?NW5WaXZyZHRoNTI2OVVRbCttamx1ZTFIRlBmSElBR2w0bUdsWFdNY2hmRVN5?=
- =?utf-8?B?S0xLNHM5N2JSWk9wSkhuN1FleFZ2aEpxM0N6d01sdTNLaTZOQkFHc3czT2Iv?=
- =?utf-8?B?MTkzdXVmcU5WdGlRdDZucnNVSzFjdjhwaVdpWGwybUg3eEZRR3UzU2FxMDAr?=
- =?utf-8?Q?J8NkDuZPOCBrh//hrFkk2m9d/kQAnQ=3D?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(921020)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TTQ2aFovQ1NyMy9pbXkvRDVLcGRrcStmMmE2NUxyRlNHdFBYRG9DemtGdDRY?=
- =?utf-8?B?TFB3c0g2NjN2cmtacnJibGlYaitORHBEUHl2SFZIYzViNE9vVVgyNjFua3lM?=
- =?utf-8?B?S0pDUW8rSEFqSDdhWk53UU5BbzRnRUk2MUFoYjRJQ2NTd3czQm92d3VzMkdD?=
- =?utf-8?B?ZUhwVk02NnliV1JQdDhLcnpzNVQzeTB2Rm5KNzVtdXlYYUMwMlVTM2V3eUtP?=
- =?utf-8?B?SzI1dGprZXpaNjJNL0xabHVqRTlMTlBOWDM4WHdzQk44ZitTUFp5V3B3cEtF?=
- =?utf-8?B?UFVBcm1hNWlYRWw5ZTlyZXFHZmx5Vnd2M1lxRzVhNFB4cUUwNExwajk2OTJI?=
- =?utf-8?B?WkwvcFNjN3FvZk1TaE5NMEJjTHYwUEdQdnJuc1dtVGx3S0plTnJOS1h1M3FQ?=
- =?utf-8?B?MFpUNVVsMi85UWtaWEVkRWlYSDI2d2c4RC9KMEx5dWR0eklnY2JoeXFXdWdx?=
- =?utf-8?B?N1RxTjBRTkFHbU4wWUNvMHY2bVVzOHI4dXR6a1hZek1HNU1TRWVyNFl4TWkr?=
- =?utf-8?B?bnV3TGsxRTkyYmE5bGFGeStialUrbWNZSXNDeThTcFVtRW1xWkg4bzFFSmk3?=
- =?utf-8?B?MW11ODNtVjZBZjZxVURBRFBLd1luVTQzR1dkQi9jaXRpeld6WE9VUTBFUSs2?=
- =?utf-8?B?Tkh2S2d6WVNzRkExeWlsYW8wRmVySER1ZUlZazhFWnczaTFSandxeVhGb21C?=
- =?utf-8?B?ckdzS3lLRWkrWk9pbFNMMlM0RDcrajAxTW8zN2ova09mbkROK3FLUXhON05I?=
- =?utf-8?B?b3BzdU5iLy8zVFduMS9HQjgxV0pXWitUYXZINlVrQWpJbGtWUi8wclhkbEdE?=
- =?utf-8?B?RkJ6MnRhVGVJK001VlpPdXh2VGpmM1pCWlFVbjg1bitlTHZqNHZraEE4OXNz?=
- =?utf-8?B?eEF6WXNRQXRyK1NRN1I4VTluem91Qk1EUnh6OE94VHN2M2Rhb2hhMWsvb1Uw?=
- =?utf-8?B?TFBDL2JlL0NZQTY2YSt3QU1LNnE2cTJvREZLeTAwMGtYSEgxU1BUQjU1YWJL?=
- =?utf-8?B?M2ZwZ2VyMHBFMXhmc3kybGZXTHBmdWRDUm1taVB2WnpqcmRDUEdkU1lhUnJD?=
- =?utf-8?B?WEREZ0tvaC9iaEE5cmNTbWpUUHRLcytXSTF5bHpmdUovUjVpRGFZWWVzbkcy?=
- =?utf-8?B?Zk9DY3lldzBsOTBQd3NIelVONWhMY3hXNUF4WjJjdWVHWTJsWmg1OGJ5aTBm?=
- =?utf-8?B?R21GMUQwdmNMQ3ViNUpLa09XVThjRVJXc3VhenBtTlJzamJYR1I0ZFcwSkJj?=
- =?utf-8?B?VXhpYzdrQWg5cm1WY2ZYUzBLWXdXYXo4T3RyczFVM1N3V21Gc2RiZWt2SHls?=
- =?utf-8?B?YzNxUHZJdExuWi9WSE1GRndvZE5wa0RrUS9Ec0FvRHk1dVp4aSt2dG1EdktR?=
- =?utf-8?B?QWszckgyYko0TngzV1JWM3hJTVh6NlM1RHNZRjlFdzl3cGNTMlEvVmU4b0ZK?=
- =?utf-8?B?ZzJIMy9PM09UWjM1RkhWUFNBcDdpVlBMUVhVSHNoOGRmK25YVlE3b05VOFpr?=
- =?utf-8?B?VGRSY1ZhcWJSTmFmRVlUWHg4ZTBrUHVVYzVnQkJQeUVMOWR1QkpVYzQxYXV4?=
- =?utf-8?B?dkRDc1hNaHFtUE50bWpIcmJUeUFNVURMMUlHSWFBZTFJTFBzYjYxYURTQS9k?=
- =?utf-8?B?a3dpb1FmNU8yNm5xa011aEpncm1lcU9RaWVzZDFMTStvVE5EWnBsS3hRZENp?=
- =?utf-8?B?S0hJaDM0aktndnlqdVg0ckw0WWhQcmZNaUw0eXVVazZoK0dRUFRGZjZhR0Yy?=
- =?utf-8?B?bFEwbkhSSnd2OFpXMGVmc0k4THB6UDloWEpjOEJlZkRsQmxrakJWeWR1ait5?=
- =?utf-8?B?SWZJWGlSd3E4ZUJjNUFtSmI1OHpSNEtUWE5JaGpTODBOb0wrRHpsZXBoOHhV?=
- =?utf-8?B?UHEzSGpHNlJ6NS94dWI3cGZTWVJZekh3ZlBiRFpkYVpIQ0Y5ZTB6NDFWbjk3?=
- =?utf-8?B?aUMwTk9yem1zYzlrNm1UOURubjhBVFU4cCtseTZOL09yaEgvazhNTzJ3aW4r?=
- =?utf-8?B?RUdrU2NGRC94enR1R29jait6bzBFWHRjVGd1MDNwcGtPK2JWK25TRWZvaEF6?=
- =?utf-8?B?Y0lJbVlrakdBM1NHRXdJeHpiUXg4cXNndkt1Y0ZsRW04ZVFMZUhZZ2tBYjR3?=
- =?utf-8?Q?uLywzEAV32qy1UtklnaBJXCnD?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8678.23; Thu, 24 Apr
+ 2025 04:40:00 +0000
+Received: from SJ1PEPF00001CE1.namprd05.prod.outlook.com
+ (2603:10b6:a03:2c3:cafe::aa) by SJ0PR13CA0184.outlook.office365.com
+ (2603:10b6:a03:2c3::9) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8655.15 via Frontend Transport; Thu,
+ 24 Apr 2025 04:40:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ SJ1PEPF00001CE1.mail.protection.outlook.com (10.167.242.9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8655.12 via Frontend Transport; Thu, 24 Apr 2025 04:40:00 +0000
+Received: from [10.85.41.53] (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 23 Apr
+ 2025 23:39:56 -0500
+Message-ID: <1fa0f7f8-be88-4617-a0b2-57d4204c6d6f@amd.com>
+Date: Thu, 24 Apr 2025 10:09:49 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5a1898bc-3226-455b-2711-08dd82e92103
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Apr 2025 04:33:14.8782
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 33/67] KVM: x86: Dedup AVIC vs. PI code for identifying
+ target vCPU
+To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini
+	<pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, David Woodhouse
+	<dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
+CC: <kvm@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, Maxim Levitsky <mlevitsk@redhat.com>, Joao
+ Martins <joao.m.martins@oracle.com>, David Matlack <dmatlack@google.com>
+References: <20250404193923.1413163-1-seanjc@google.com>
+ <20250404193923.1413163-34-seanjc@google.com>
+Content-Language: en-US
+From: Sairaj Kodilkar <sarunkod@amd.com>
+In-Reply-To: <20250404193923.1413163-34-seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE1:EE_|MW4PR12MB7016:EE_
+X-MS-Office365-Filtering-Correlation-Id: dddddae9-5812-4185-52a7-08dd82ea12df
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|82310400026|1800799024|376014|7416014|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?QXhZZDhZc3plTmppOURLeExFejZQdnF5NW1qdS9nR2ZEbEVZZFZPMDFnZUkx?=
+ =?utf-8?B?UEs4a3ZldVNML0xOMFI2cC9XZkF5eWt3ZzVkY0ZROU9FdDArQTc2VXhuQk5n?=
+ =?utf-8?B?NGJBcFdEcHJ0MVNXNHJxNDNxcUhCM29NanpwWW5MaDIxTnppeHV3ZDU1RUhr?=
+ =?utf-8?B?LzA3bUM4UlpTZ2lzMERZU20zSjVnR3IwTE9kVXRWRDB1SE02TkxSSy82cDRj?=
+ =?utf-8?B?SnZ4K25tbHVQYWFiTkVHdDR6ZGhVbFBjUHdHNmxsMDZvZjdacDh0R29HYUxl?=
+ =?utf-8?B?dUhTeWtCSFkzYzJSbnBxRjRIdS8vbDJWakhWWUdzQVg2Q0MzdEVQZklNSGJE?=
+ =?utf-8?B?dzArSjZ2S04zL3RCRUxQcU9LZko2ZnlwY1ExSDhHSVkxb3FaaUtIeGN1a2Yx?=
+ =?utf-8?B?VzcvcGRiRjlaMXBUZkxiWGVJNUdybmVXb09BcjZ6UXB1RmpqekJzUnlIY0xl?=
+ =?utf-8?B?YUY1VllHZ3JxSTlMTVhXWFZFT1NzUWNGeDU2bHYzRGttenBBWGFCK1ZtREtZ?=
+ =?utf-8?B?N0Z6YW1ycEpDaXBnazZzVE9kTjRyaHBybGFkK2FNNTRERHhhZUtTWGFQNVZk?=
+ =?utf-8?B?RGNHTXhzUHhQN2R4UU1Qek13L1llWVBCN0wwZUgwaDM1WXhNRnFJLzhjQ3Vo?=
+ =?utf-8?B?djlKVitMNjBBZ09Ia1Jpc1ZEYzZKcHN3NkVUTGZvUlkxeGhlcGt4SUkzR1ls?=
+ =?utf-8?B?dHBqeUJFZzJacE1sWUNXc1pXWWJSUHVSejY3WjhsSm5vQjJyL241R2c2TWZE?=
+ =?utf-8?B?M29lQXhxNEM1RHNESi91TEFrWUxpVWxGdGRlZXh4Zlc1alJ0eEhlV1g5RUJO?=
+ =?utf-8?B?YXdObXJnNkxDeGxybU9NaTRVMXRjdTRiN2RzS1VsS01nODE1ME9ScVRlaTVM?=
+ =?utf-8?B?dFU0YStvVUFXaVhEZWtjQlBVRjNHdEdnWWtreWpReGlSNUc4NW1BWldzdlNU?=
+ =?utf-8?B?aHdaV1gyQnNoTk54Sndtb1FlTXovdmxhZE9NMHQwbFN5bWI5cXNaUDgza2lp?=
+ =?utf-8?B?ck1MbHhyU3EyV1BhTklhTjY5d0h6ZFFrVURJRjBFcmpTT1JNWkU0bmFYbFdh?=
+ =?utf-8?B?N3BIcUJ5T1R3UHAvQUxZZUI3OFlHN3RFU1hTenNZNmFnNUh6Ky9IZXlTT2Ro?=
+ =?utf-8?B?UmZnN2l3Wm5kYzBLbXlmUjkzRXRsOHducDd3SytvTjA0aDJRTk44QWNGVkdZ?=
+ =?utf-8?B?ZGNsOU1IRDFURmhzbmpQSXFoZmN3Q3dUejgxL1Z6Ym1jSEp4a2h1WFQ4bHFo?=
+ =?utf-8?B?c3VwV3YxQ2gyUklLQzgySXk0MWVvQ3FiSmNRTkZiMFdxVTVTNlNCOVhGcEFn?=
+ =?utf-8?B?azN1Um14K2Q2S09vdm9qOXhHelhjcmk0VEpyS1VnTGdHNy9JS3FoTzh4ajJt?=
+ =?utf-8?B?NkVYREJzWWhCc3JRK2dFVmxYY1RkdkFCYlFTVCtCbkVKbStJMk5QWnFENXdX?=
+ =?utf-8?B?Ui9ZY1c4SFdOZEQ0Qld5RFZVbm1pRlJOOWRmcEpRUTlYaG9YOHg3cWZUNGxQ?=
+ =?utf-8?B?cUxIQ0dMczZXR2ZaT1JGUGZXUzM4U05WNnI1RGg5aEpodFpjSnBTSnRhYWxk?=
+ =?utf-8?B?N25kTUR5anhIL1hkVEF4M0gvTnpRbDA0Z09SSjJDUnQyS2RsTmZNcFBYM1Bi?=
+ =?utf-8?B?RzRuUXVXUG9DeWl2YjR6bWNQSEVzTW16MkRqQjRmWk9OT3hKZ0NtYndSU2hT?=
+ =?utf-8?B?dDJVS1ptdHg3ejFDWGw2VXFXbmJtYnEwUGhBcEY0cEhuUm1neG9UcVZqdTFh?=
+ =?utf-8?B?QVJEUERZbEtINHR1M0dqckVGTTB6cmhwVkFKeC9pUFREOGtMVjF6NjJGVlJz?=
+ =?utf-8?B?Q041OEkzVWk4b2d1aEFzcTIxOUpmTnNMelNXazBiSlFZaXpoVGZ1azlHUDBj?=
+ =?utf-8?B?L2hDVkxRU29zSHVhdTIydVplMXlEN2JDZDI0YmZ4VmthcG1vanI4Mm9Jckxx?=
+ =?utf-8?B?c2t4VVY5OGJGbDZzNWxxVWlSeXdnYTRZYVE0Z3dPUm9mUEJScTJtRUN5cU5W?=
+ =?utf-8?B?eVl6Y05Md1lkcW5yN3Y3RXBIc3BWUGhxQVRkOGZ2ZGcyZXRueE03Tlp6c3VE?=
+ =?utf-8?Q?rIjire?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700013)(82310400026)(1800799024)(376014)(7416014)(7053199007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2025 04:40:00.5343
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ylHN3imyD6R+5RygtecTbAyNUcExIh8HK3GF+hWmLLQHSfSfcAs9DrsMpIoWlhwSs4SZcQ82IL8eejQrX7SmNw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR11MB8023
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dddddae9-5812-4185-52a7-08dd82ea12df
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF00001CE1.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7016
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBUaHVy
-c2RheSwgQXByaWwgMjQsIDIwMjUgMTE6MjcgQU0NCj4gDQo+IE9uIDQvMjQvMjUgMTA6MDYsIFR1
-c2hhciBEYXZlIHdyb3RlOg0KPiA+IEdlbmVyYWxseSBQQVNJRCBzdXBwb3J0IHJlcXVpcmVzIEFD
-UyBzZXR0aW5ncyB0aGF0IHVzdWFsbHkgY3JlYXRlDQo+ID4gc2luZ2xlIGRldmljZSBncm91cHMs
-IGJ1dCB0aGVyZSBhcmUgc29tZSBuaWNoZSBjYXNlcyB3aGVyZSB3ZSBjYW4gZ2V0DQo+ID4gbXVs
-dGktZGV2aWNlIGdyb3VwcyBhbmQgc3RpbGwgaGF2ZSB3b3JraW5nIFBBU0lEIHN1cHBvcnQuIFRo
-ZSBwcmltYXJ5DQo+ID4gaXNzdWUgaXMgdGhhdCBQQ0kgc3dpdGNoZXMgYXJlIG5vdCByZXF1aXJl
-ZCB0byB0cmVhdCBQQVNJRCB0YWdnZWQgVExQcw0KPiA+IHNwZWNpYWxseSBzbyBhcHByb3ByaWF0
-ZSBBQ1Mgc2V0dGluZ3MgYXJlIHJlcXVpcmVkIHRvIHJvdXRlIGFsbCBUTFBzIHRvDQo+ID4gdGhl
-IGhvc3QgYnJpZGdlIGlmIFBBU0lEIGlzIGdvaW5nIHRvIHdvcmsgcHJvcGVybHkuDQo+ID4NCj4g
-PiBwY2lfZW5hYmxlX3Bhc2lkKCkgZG9lcyBjaGVjayB0aGF0IGVhY2ggZGV2aWNlIHRoYXQgd2ls
-bCB1c2UgUEFTSUQgaGFzDQo+ID4gdGhlIHByb3BlciBBQ1Mgc2V0dGluZ3MgdG8gYWNoaWV2ZSB0
-aGlzIHJvdXRpbmcuDQo+ID4NCj4gPiBIb3dldmVyLCBuby1QQVNJRCBkZXZpY2VzIGNhbiBiZSBj
-b21iaW5lZCB3aXRoIFBBU0lEIGNhcGFibGUgZGV2aWNlcw0KPiA+IHdpdGhpbiB0aGUgc2FtZSB0
-b3BvbG9neSB1c2luZyBub24tdW5pZm9ybSBBQ1Mgc2V0dGluZ3MuIEluIHRoaXMgY2FzZQ0KPiA+
-IHRoZSBuby1QQVNJRCBkZXZpY2VzIG1heSBub3QgaGF2ZSBzdHJpY3Qgcm91dGUgdG8gaG9zdCBB
-Q1MgZmxhZ3MgYW5kDQo+ID4gZW5kIHVwIGJlaW5nIGdyb3VwZWQgd2l0aCB0aGUgUEFTSUQgZGV2
-aWNlcy4NCg0KSXMgdGhlcmUgYSBkZXRhaWxlZCBleGFtcGxlPw0KDQo+ID4NCj4gPiBUaGlzIGNv
-bmZpZ3VyYXRpb24gZmFpbHMgdG8gYWxsb3cgdXNlIG9mIHRoZSBQQVNJRCB3aXRoaW4gdGhlIGlv
-bW11DQo+ID4gY29yZSBjb2RlIHdoaWNoIHdyb25nbHkgY2hlY2tzIGlmIHRoZSBuby1QQVNJRCBk
-ZXZpY2Ugc3VwcG9ydHMgUEFTSUQuDQo+ID4NCj4gPiBGaXggdGhpcyBieSBpZ25vcmluZyBuby1Q
-QVNJRCBkZXZpY2VzIGR1cmluZyB0aGUgUEFTSUQgdmFsaWRhdGlvbi4gVGhleQ0KPiA+IHdpbGwg
-bmV2ZXIgaXNzdWUgYSBQQVNJRCBUTFAgYW55aG93IHNvIHRoZXkgY2FuIGJlIGlnbm9yZWQuDQo+
-ID4NCj4gPiBGaXhlczogYzQwNGY1NWMyNmZjICgiaW9tbXU6IFZhbGlkYXRlIHRoZSBQQVNJRCBp
-bg0KPiBpb21tdV9hdHRhY2hfZGV2aWNlX3Bhc2lkKCkiKQ0KPiA+IENjOnN0YWJsZUB2Z2VyLmtl
-cm5lbC5vcmcNCj4gPiBTaWduZWQtb2ZmLWJ5OiBUdXNoYXIgRGF2ZTx0ZGF2ZUBudmlkaWEuY29t
-Pg0KPiA+IC0tLQ0KPiA+ICAgZHJpdmVycy9pb21tdS9pb21tdS5jIHwgOCArKysrKysrLQ0KPiA+
-ICAgMSBmaWxlIGNoYW5nZWQsIDcgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiA+DQo+
-ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaW9t
-bXUuYw0KPiA+IGluZGV4IDRmOTFhNzQwYzE1Zi4uZTAxZGY0YzNlNzA5IDEwMDY0NA0KPiA+IC0t
-LSBhL2RyaXZlcnMvaW9tbXUvaW9tbXUuYw0KPiA+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW9tbXUu
-Yw0KPiA+IEBAIC0zNDQwLDcgKzM0NDAsMTMgQEAgaW50IGlvbW11X2F0dGFjaF9kZXZpY2VfcGFz
-aWQoc3RydWN0DQo+IGlvbW11X2RvbWFpbiAqZG9tYWluLA0KPiA+DQo+ID4gICAJbXV0ZXhfbG9j
-aygmZ3JvdXAtPm11dGV4KTsNCj4gPiAgIAlmb3JfZWFjaF9ncm91cF9kZXZpY2UoZ3JvdXAsIGRl
-dmljZSkgew0KPiA+IC0JCWlmIChwYXNpZCA+PSBkZXZpY2UtPmRldi0+aW9tbXUtPm1heF9wYXNp
-ZHMpIHsNCj4gPiArCQkvKg0KPiA+ICsJCSAqIFNraXAgUEFTSUQgdmFsaWRhdGlvbiBmb3IgZGV2
-aWNlcyB3aXRob3V0IFBBU0lEIHN1cHBvcnQNCj4gPiArCQkgKiAobWF4X3Bhc2lkcyA9IDApLiBU
-aGVzZSBkZXZpY2VzIGNhbm5vdCBpc3N1ZSB0cmFuc2FjdGlvbnMNCj4gPiArCQkgKiB3aXRoIFBB
-U0lELCBzbyB0aGV5IGRvbid0IGFmZmVjdCBncm91cCdzIFBBU0lEIHVzYWdlLg0KPiA+ICsJCSAq
-Lw0KPiA+ICsJCWlmICgoZGV2aWNlLT5kZXYtPmlvbW11LT5tYXhfcGFzaWRzID4gMCkgJiYNCj4g
-PiArCQkgICAgKHBhc2lkID49IGRldmljZS0+ZGV2LT5pb21tdS0+bWF4X3Bhc2lkcykpIHsNCj4g
-DQo+IFdoYXQgdGhlIGlvbW11IGRyaXZlciBzaG91bGQgZG8gd2hlbiBzZXRfZGV2X3Bhc2lkIGlz
-IGNhbGxlZCBmb3IgYSBub24tDQo+IFBBU0lEIGRldmljZT8gVGhlIGlvbW11IGRyaXZlciBoYXMg
-bm8gc2Vuc2Ugb2YgaW9tbXUgZ3JvdXAsIGhlbmNlIGl0IGhhcw0KPiBubyBrbm93bGVkZ2UgYWJv
-dXQgdGhpcyBkZXZpY2Ugc2hhcmluZyBhbiBpb21tdSBncm91cCB3aXRoIGFub3RoZXIgUEFTSUQN
-Cj4gY2FwYWJsZSBkZXZpY2UuDQoNCmNvdWxkIGFkZCBhIHNpbWlsYXIgY2hlY2sgaW4gX19pb21t
-dV9zZXRfZ3JvdXBfcGFzaWQoKSBhbmQNCl9faW9tbXVfcmVtb3ZlX2dyb3VwX3Bhc2lkKCkgdG8g
-c2tpcCB0aG9zZSBkZXZpY2VzLg0K
+On 4/5/2025 1:08 AM, Sean Christopherson wrote:
+> Hoist the logic for identifying the target vCPU for a posted interrupt
+> into common x86.  The code is functionally identical between Intel and
+> AMD.
+> 
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>   arch/x86/include/asm/kvm_host.h |  3 +-
+>   arch/x86/kvm/svm/avic.c         | 83 ++++++++-------------------------
+>   arch/x86/kvm/svm/svm.h          |  3 +-
+>   arch/x86/kvm/vmx/posted_intr.c  | 56 ++++++----------------
+>   arch/x86/kvm/vmx/posted_intr.h  |  3 +-
+>   arch/x86/kvm/x86.c              | 46 +++++++++++++++---
+>   6 files changed, 81 insertions(+), 113 deletions(-)
+> 
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index 85f45fc5156d..cb98d8d3c6c2 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -1838,7 +1838,8 @@ struct kvm_x86_ops {
+>   
+>   	int (*pi_update_irte)(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   			      unsigned int host_irq, uint32_t guest_irq,
+> -			      struct kvm_kernel_irq_routing_entry *new);
+> +			      struct kvm_kernel_irq_routing_entry *new,
+> +			      struct kvm_vcpu *vcpu, u32 vector);
+>   	void (*pi_start_assignment)(struct kvm *kvm);
+>   	void (*apicv_pre_state_restore)(struct kvm_vcpu *vcpu);
+>   	void (*apicv_post_state_restore)(struct kvm_vcpu *vcpu);
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index ea6eae72b941..666f518340a7 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -812,52 +812,13 @@ static int svm_ir_list_add(struct vcpu_svm *svm,
+>   	return 0;
+>   }
+>   
+> -/*
+> - * Note:
+> - * The HW cannot support posting multicast/broadcast
+> - * interrupts to a vCPU. So, we still use legacy interrupt
+> - * remapping for these kind of interrupts.
+> - *
+> - * For lowest-priority interrupts, we only support
+> - * those with single CPU as the destination, e.g. user
+> - * configures the interrupts via /proc/irq or uses
+> - * irqbalance to make the interrupts single-CPU.
+> - */
+> -static int
+> -get_pi_vcpu_info(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
+> -		 struct vcpu_data *vcpu_info, struct kvm_vcpu **vcpu)
+> -{
+> -	struct kvm_lapic_irq irq;
+> -	*vcpu = NULL;
+> -
+> -	kvm_set_msi_irq(kvm, e, &irq);
+> -
+> -	if (!kvm_intr_is_single_vcpu(kvm, &irq, vcpu) ||
+> -	    !kvm_irq_is_postable(&irq)) {
+> -		pr_debug("SVM: %s: use legacy intr remap mode for irq %u\n",
+> -			 __func__, irq.vector);
+> -		return -1;
+> -	}
+> -
+> -	pr_debug("SVM: %s: use GA mode for irq %u\n", __func__,
+> -		 irq.vector);
+> -	vcpu_info->vector = irq.vector;
+> -
+> -	return 0;
+> -}
+> -
+>   int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   			unsigned int host_irq, uint32_t guest_irq,
+> -			struct kvm_kernel_irq_routing_entry *new)
+> +			struct kvm_kernel_irq_routing_entry *new,
+> +			struct kvm_vcpu *vcpu, u32 vector)
+>   {
+> -	bool enable_remapped_mode = true;
+> -	struct vcpu_data vcpu_info;
+> -	struct kvm_vcpu *vcpu = NULL;
+>   	int ret = 0;
+>   
+> -	if (!kvm_arch_has_assigned_device(kvm) || !kvm_arch_has_irq_bypass())
+> -		return 0;
+> -
+>   	/*
+>   	 * If the IRQ was affined to a different vCPU, remove the IRTE metadata
+>   	 * from the *previous* vCPU's list.
+> @@ -865,7 +826,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   	svm_ir_list_del(irqfd);
+>   
+>   	pr_debug("SVM: %s: host_irq=%#x, guest_irq=%#x, set=%#x\n",
+> -		 __func__, host_irq, guest_irq, !!new);
+> +		 __func__, host_irq, guest_irq, !!vcpu);
+>   
+>   	/**
+>   	 * Here, we setup with legacy mode in the following cases:
+> @@ -874,23 +835,23 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   	 * 3. APIC virtualization is disabled for the vcpu.
+>   	 * 4. IRQ has incompatible delivery mode (SMI, INIT, etc)
+>   	 */
+> -	if (new && new && new->type == KVM_IRQ_ROUTING_MSI &&
+> -	    !get_pi_vcpu_info(kvm, new, &vcpu_info, &vcpu) &&
+> -	    kvm_vcpu_apicv_active(vcpu)) {
+> -		struct amd_iommu_pi_data pi;
+> -
+> -		enable_remapped_mode = false;
+> -
+> -		vcpu_info.pi_desc_addr = avic_get_backing_page_address(to_svm(vcpu));
+> -
+> +	if (vcpu && kvm_vcpu_apicv_active(vcpu)) {
+>   		/*
+>   		 * Try to enable guest_mode in IRTE.  Note, the address
+>   		 * of the vCPU's AVIC backing page is passed to the
+>   		 * IOMMU via vcpu_info->pi_desc_addr.
+>   		 */
+> -		pi.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id, vcpu->vcpu_id);
+> -		pi.is_guest_mode = true;
+> -		pi.vcpu_data = &vcpu_info;
+> +		struct vcpu_data vcpu_info = {
+> +			.pi_desc_addr = avic_get_backing_page_address(to_svm(vcpu)),
+> +			.vector = vector,
+> +		};
+> +
+> +		struct amd_iommu_pi_data pi = {
+> +			.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id, vcpu->vcpu_id),
+> +			.is_guest_mode = true,
+> +			.vcpu_data = &vcpu_info,
+> +		};
+> +
+>   		ret = irq_set_vcpu_affinity(host_irq, &pi);
+>   
+>   		/**
+> @@ -902,12 +863,11 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   		 */
+>   		if (!ret)
+>   			ret = svm_ir_list_add(to_svm(vcpu), irqfd, &pi);
+> -	}
+>   
+> -	if (!ret && vcpu) {
+> -		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id,
+> -					 guest_irq, vcpu_info.vector,
+> -					 vcpu_info.pi_desc_addr, !!new);
+> +		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id, guest_irq,
+> +					 vector, vcpu_info.pi_desc_addr, true);
+> +	} else {
+> +		ret = irq_set_vcpu_affinity(host_irq, NULL);
+>   	}
+>   
+>   	if (ret < 0) {
+> @@ -915,10 +875,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   		goto out;
+>   	}
+>   
+> -	if (enable_remapped_mode)
+> -		ret = irq_set_vcpu_affinity(host_irq, NULL);
+> -	else
+> -		ret = 0;
+> +	ret = 0;
+>   out:
+>   	return ret;
+>   }
+> diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+> index 6ad0aa86f78d..5ce240085ee0 100644
+> --- a/arch/x86/kvm/svm/svm.h
+> +++ b/arch/x86/kvm/svm/svm.h
+> @@ -741,7 +741,8 @@ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu);
+>   void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu);
+>   int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   			unsigned int host_irq, uint32_t guest_irq,
+> -			struct kvm_kernel_irq_routing_entry *new);
+> +			struct kvm_kernel_irq_routing_entry *new,
+> +			struct kvm_vcpu *vcpu, u32 vector);
+>   void avic_vcpu_blocking(struct kvm_vcpu *vcpu);
+>   void avic_vcpu_unblocking(struct kvm_vcpu *vcpu);
+>   void avic_ring_doorbell(struct kvm_vcpu *vcpu);
+> diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
+> index 786912cee3f8..fd5f6a125614 100644
+> --- a/arch/x86/kvm/vmx/posted_intr.c
+> +++ b/arch/x86/kvm/vmx/posted_intr.c
+> @@ -266,46 +266,20 @@ void vmx_pi_start_assignment(struct kvm *kvm)
+>   
+>   int vmx_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   		       unsigned int host_irq, uint32_t guest_irq,
+> -		       struct kvm_kernel_irq_routing_entry *new)
+> +		       struct kvm_kernel_irq_routing_entry *new,
+> +		       struct kvm_vcpu *vcpu, u32 vector)
+>   {
+> -	struct kvm_lapic_irq irq;
+> -	struct kvm_vcpu *vcpu;
+> -	struct vcpu_data vcpu_info;
+> -
+> -	if (!vmx_can_use_vtd_pi(kvm))
+> -		return 0;
+> -
+> -	/*
+> -	 * VT-d PI cannot support posting multicast/broadcast
+> -	 * interrupts to a vCPU, we still use interrupt remapping
+> -	 * for these kind of interrupts.
+> -	 *
+> -	 * For lowest-priority interrupts, we only support
+> -	 * those with single CPU as the destination, e.g. user
+> -	 * configures the interrupts via /proc/irq or uses
+> -	 * irqbalance to make the interrupts single-CPU.
+> -	 *
+> -	 * We will support full lowest-priority interrupt later.
+> -	 *
+> -	 * In addition, we can only inject generic interrupts using
+> -	 * the PI mechanism, refuse to route others through it.
+> -	 */
+> -	if (!new || new->type != KVM_IRQ_ROUTING_MSI)
+> -		goto do_remapping;
+> -
+> -	kvm_set_msi_irq(kvm, new, &irq);
+> -
+> -	if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu) ||
+> -	    !kvm_irq_is_postable(&irq))
+> -		goto do_remapping;
+> -
+> -	vcpu_info.pi_desc_addr = __pa(vcpu_to_pi_desc(vcpu));
+> -	vcpu_info.vector = irq.vector;
+> -
+> -	trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id, guest_irq,
+> -				 vcpu_info.vector, vcpu_info.pi_desc_addr, true);
+> -
+> -	return irq_set_vcpu_affinity(host_irq, &vcpu_info);
+> -do_remapping:
+> -	return irq_set_vcpu_affinity(host_irq, NULL);
+> +	if (vcpu) {
+> +		struct vcpu_data vcpu_info = {
+> +			.pi_desc_addr = __pa(vcpu_to_pi_desc(vcpu)),
+> +			.vector = vector,
+> +		};
+> +
+> +		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id, guest_irq,
+> +					 vcpu_info.vector, vcpu_info.pi_desc_addr, true);
+> +
+> +		return irq_set_vcpu_affinity(host_irq, &vcpu_info);
+> +	} else {
+> +		return irq_set_vcpu_affinity(host_irq, NULL);
+> +	}
+>   }
+> diff --git a/arch/x86/kvm/vmx/posted_intr.h b/arch/x86/kvm/vmx/posted_intr.h
+> index a586d6aaf862..ee3e19e976ac 100644
+> --- a/arch/x86/kvm/vmx/posted_intr.h
+> +++ b/arch/x86/kvm/vmx/posted_intr.h
+> @@ -15,7 +15,8 @@ void __init pi_init_cpu(int cpu);
+>   bool pi_has_pending_interrupt(struct kvm_vcpu *vcpu);
+>   int vmx_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+>   		       unsigned int host_irq, uint32_t guest_irq,
+> -		       struct kvm_kernel_irq_routing_entry *new);
+> +		       struct kvm_kernel_irq_routing_entry *new,
+> +		       struct kvm_vcpu *vcpu, u32 vector);
+>   void vmx_pi_start_assignment(struct kvm *kvm);
+>   
+>   static inline int pi_find_highest_vector(struct pi_desc *pi_desc)
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index b8b259847d05..0ab818bba743 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -13567,6 +13567,43 @@ bool kvm_arch_has_irq_bypass(void)
+>   }
+>   EXPORT_SYMBOL_GPL(kvm_arch_has_irq_bypass);
+>   
+> +static int kvm_pi_update_irte(struct kvm_kernel_irqfd *irqfd,
+> +			      struct kvm_kernel_irq_routing_entry *old,
+
+the argument 'old' is redundant in this function.
+
+Regards
+Sairaj Kodilkar
+
+> +			      struct kvm_kernel_irq_routing_entry *new)
+> +{
+> +	struct kvm *kvm = irqfd->kvm;
+> +	struct kvm_vcpu *vcpu = NULL;
+> +	struct kvm_lapic_irq irq;
+> +
+> +	if (!irqchip_in_kernel(kvm) ||
+> +	    !kvm_arch_has_irq_bypass() ||
+> +	    !kvm_arch_has_assigned_device(kvm))
+> +		return 0;
+> +
+> +	if (new && new->type == KVM_IRQ_ROUTING_MSI) {
+> +		kvm_set_msi_irq(kvm, new, &irq);
+> +
+> +		/*
+> +		 * Force remapped mode if hardware doesn't support posting the
+> +		 * virtual interrupt to a vCPU.  Only IRQs are postable (NMIs,
+> +		 * SMIs, etc. are not), and neither AMD nor Intel IOMMUs support
+> +		 * posting multicast/broadcast IRQs.  If the interrupt can't be
+> +		 * posted, the device MSI needs to be routed to the host so that
+> +		 * the guest's desired interrupt can be synthesized by KVM.
+> +		 *
+> +		 * This means that KVM can only post lowest-priority interrupts
+> +		 * if they have a single CPU as the destination, e.g. only if
+> +		 * the guest has affined the interrupt to a single vCPU.
+> +		 */
+> +		if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu) ||
+> +		    !kvm_irq_is_postable(&irq))
+> +			vcpu = NULL;
+> +	}
+> +
+> +	return kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, irqfd->producer->irq,
+> +					    irqfd->gsi, new, vcpu, irq.vector);
+> +}
+> +
+>   int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
+>   				      struct irq_bypass_producer *prod)
+>   {
+> @@ -13581,8 +13618,7 @@ int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
+>   	irqfd->producer = prod;
+>   
+>   	if (irqfd->irq_entry.type == KVM_IRQ_ROUTING_MSI) {
+> -		ret = kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, prod->irq,
+> -						   irqfd->gsi, &irqfd->irq_entry);
+> +		ret = kvm_pi_update_irte(irqfd, NULL, &irqfd->irq_entry);
+>   		if (ret)
+>   			kvm_arch_end_assignment(irqfd->kvm);
+>   	}
+> @@ -13610,8 +13646,7 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+>   	spin_lock_irq(&kvm->irqfds.lock);
+>   
+>   	if (irqfd->irq_entry.type == KVM_IRQ_ROUTING_MSI) {
+> -		ret = kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, prod->irq,
+> -						   irqfd->gsi, NULL);
+> +		ret = kvm_pi_update_irte(irqfd, &irqfd->irq_entry, NULL);
+>   		if (ret)
+>   			pr_info("irq bypass consumer (token %p) unregistration fails: %d\n",
+>   				irqfd->consumer.token, ret);
+> @@ -13628,8 +13663,7 @@ int kvm_arch_update_irqfd_routing(struct kvm_kernel_irqfd *irqfd,
+>   				  struct kvm_kernel_irq_routing_entry *old,
+>   				  struct kvm_kernel_irq_routing_entry *new)
+>   {
+> -	return kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, irqfd->producer->irq,
+> -					    irqfd->gsi, new);
+> +	return kvm_pi_update_irte(irqfd, old, new);
+>   }
+>   
+>   bool kvm_arch_irqfd_route_changed(struct kvm_kernel_irq_routing_entry *old,
+
