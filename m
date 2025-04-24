@@ -1,94 +1,100 @@
-Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50B3B19D890
-	for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 14:13:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BC0F15533F
+	for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 14:47:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745504020; cv=none; b=ddvccfdG0BnKB/f9eQGhoR/lYv/rGThn0XG8y0sk2/kcZjrATepRrPSt6fUAf9renAsF56dD5PJ7vDXDB7bnbahErnC+TJ7UPmHHHFvKPXWcKQGJ6ke8SSqr3tjOpwZ8BF2NKAjIwm1tdAgDKelatQEoK7HDmvhahW0obTibptY=
+	t=1745506079; cv=none; b=q24wna4+V2MKghDIeg+SIjP9sNYV7nUtH1h0/EPfQE+4AGDZC4sBo1NDQlPysrPiN5xh7CeXSoriF+b5MGsqLct4epmhV2nlXuMi32mIBidC/4sepFGFE3hPMR6J+84s68vQ3Lqz2s+env+rjZ54DATJRJhKsP0wNfhR3fS/Q44=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745504020; c=relaxed/simple;
-	bh=IU1W/JCdrrhxdJ5WvmQGAwCklNVOFnQBmbNWHuEVJyY=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=cCFi/WypV1XjyQ8kX12lJFJ7d3vWR5nd8tsm1WgCQLFBzq/I0oiuk+QBaPYsM08196jqZZdIZuqSAkfHeep/gcim/YV8vm/29ohlEaNaZSFYS8OkOBgeTtGYNnyT1b3OjVlgbTZiVMMx+M/T9FsKBfqonpU+qYhTw8ekWndsQGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Kt3QLH+A; arc=none smtp.client-ip=209.85.210.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1745506079; c=relaxed/simple;
+	bh=im1Ve/diWjqGVy67nr8Ve06pqqzoPwZGXi4MhFwiP28=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=AWQrhXfnwEwiK/VCe4jMAhZ17bA7bOQarUh4TxtL3bAgpxa8OALm344fvaM9iKJYdrU+uZ9PBOS233yWXD01w7/RbWfy4g1VM3SPwO5Mwq+Ac0xhTr1cgkZd8gYPaXEQGECoLWzzlI0lKGjqx6Qmw73tkcT6NM5AJisJf6iBEQ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=J/CZMyp0; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Kt3QLH+A"
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-73dcce02a5cso618690b3a.0
-        for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 07:13:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1745504018; x=1746108818; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=t921yTGj75JTSKsSLngkcs2w5nGrP5C6g0Ynh60adb4=;
-        b=Kt3QLH+AO4J/HOp0/pUNAsZAvSKpSTU9bzHFO1k9/wZqETTbILasXKHc9t660L+pnK
-         6PShiL0Nx2ckA8j0BnF1ckVgKbw52ZwBKLq8V6MTvW6MumHCD8kg9TU/G0pVq3mj1Wms
-         HcCB2SLS0bkTB2h+SqTbLFeqF46YFsoJlMAYJYv3UkmVM3j9OiVuyt6ltvfnYWXX3Ntw
-         bZf8z6udJsbw37oxBihiZUJ3N2pzW6bfW8yIrnzcZ31HD6ZxoLaU40gILzKGe8WAIesS
-         J7/sLgJz/01eHU/Pibl72s7MNM7UiYTkdW+hC6QhLHOb//gi5JhjxmqiwR9eWN3jKBtj
-         m5+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745504018; x=1746108818;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=t921yTGj75JTSKsSLngkcs2w5nGrP5C6g0Ynh60adb4=;
-        b=FCiY+ZPQlXw7qtouMGBImauxFryRH/x4pNz26fRQWIntsmeg1UPPU+XO8r/u4vJGdX
-         cwuE5GxI713OgdCpR8s4L2nlAzRybBkGqC6hrCJyXyMaKqP9Y6DQRjsPNHg2N/ulaK9I
-         3LKhd6hpLl12Hd4+dvznT/xgOykUDdrZxCwrLFE7e8RNBaxgh1DjRic1mLhTGYZ2b1Ug
-         gvhRXAMA8bkA41Ta3OGVqIpYghQFiQaNba1rDLnRE+c3yxi+4xB0WF55lgwjU+vFiIn3
-         6KNdJvWACwN4JLhQEPozX+pnS7T6t+p4KZ+bdbGZXpsNssO1tpver7v6UYAARBmqBHMT
-         fQ6w==
-X-Forwarded-Encrypted: i=1; AJvYcCWZOj6H4rWZKAuR7Yxbxr6ScptF8OA0GA0mYLuNKjjSvAx76TFLKClG8DfH3gmYKYTP+BYAVQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxL14ZG9ju48NliPSOCXYz97DzMCitvhVHAbK8nHKc859shJ0pc
-	OUWH6CyzMsHZIZgqePMXLaqbsboKMXncCuJ4qzVMjTuAgKws01FBfdzUYXy6D0pNyY7kAse31aP
-	xYg==
-X-Google-Smtp-Source: AGHT+IH1Gu9GLKfGiYTCOjMoGySHlcEjW+ds+b1IrKT29iIUpO61X0NEHkvZCaXOOFQOQ3oqS5p4trwyczY=
-X-Received: from pfbkm27.prod.google.com ([2002:a05:6a00:3c5b:b0:736:47b8:9b88])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:1309:b0:736:5c8e:bab8
- with SMTP id d2e1a72fcca58-73e245ba24bmr4220090b3a.3.1745504018497; Thu, 24
- Apr 2025 07:13:38 -0700 (PDT)
-Date: Thu, 24 Apr 2025 07:13:36 -0700
-In-Reply-To: <1fa0f7f8-be88-4617-a0b2-57d4204c6d6f@amd.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="J/CZMyp0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745506077; x=1777042077;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=im1Ve/diWjqGVy67nr8Ve06pqqzoPwZGXi4MhFwiP28=;
+  b=J/CZMyp05HfTMOImuAIYCIN3EJo+6EomfVZM9ggUGLj3NbjpkeWxt3pV
+   j06pHwwsXgUT/2wMZC6WvQAIJTh9CJDyXNWUEa3VsK9deFKn9vZpukbpi
+   9SaIjBhKw5PrcoLzC33BGV9DDm6bBBSUMGNQ7fGrBbYkoJNmxIaL0GbMN
+   VLB4f7wd/aF9P+5r3K3Q7WpIWIjPeZVPxfJRJbWcl9rXo9/xG555FTS0H
+   PgICKzEXV2XFtVAkj1WXM4JIb8Ub19t42LM18lSbRUGZX6xnaz/xMUFdk
+   Id+oXA4OQxXUnQfsh26dOq5qAc1bnQ4Q/1RQPgtLQFTvNTrf4Zm+8r21b
+   Q==;
+X-CSE-ConnectionGUID: T6F1fd19RQ+6vm72cQ0yvg==
+X-CSE-MsgGUID: SMsD+/YxRnyLzhl1nEYLnQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11413"; a="47281268"
+X-IronPort-AV: E=Sophos;i="6.15,236,1739865600"; 
+   d="scan'208";a="47281268"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2025 07:47:56 -0700
+X-CSE-ConnectionGUID: lc3grZADQH2yPnaWwjGwpA==
+X-CSE-MsgGUID: 3wJW1MOrRRmfsjZFCrXluQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,236,1739865600"; 
+   d="scan'208";a="132942241"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.243.159]) ([10.124.243.159])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2025 07:47:54 -0700
+Message-ID: <013a07f4-140f-4cfe-9315-f3a77e081c8a@linux.intel.com>
+Date: Thu, 24 Apr 2025 22:47:52 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250404193923.1413163-1-seanjc@google.com> <20250404193923.1413163-34-seanjc@google.com>
- <1fa0f7f8-be88-4617-a0b2-57d4204c6d6f@amd.com>
-Message-ID: <aApHEK4R4tAYi5Q0@google.com>
-Subject: Re: [PATCH 33/67] KVM: x86: Dedup AVIC vs. PI code for identifying
- target vCPU
-From: Sean Christopherson <seanjc@google.com>
-To: Sairaj Kodilkar <sarunkod@amd.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
-	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
-	David Matlack <dmatlack@google.com>
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "Tian, Kevin" <kevin.tian@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 3/3] iommu/vt-d: Simplify domain_attach_iommu()
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20250423031020.2189546-1-baolu.lu@linux.intel.com>
+ <20250423031020.2189546-4-baolu.lu@linux.intel.com>
+ <BN9PR11MB527619613B8615A94A01FF598C852@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <42e8c668-e72d-490a-8a5e-8e94af90fda4@linux.intel.com>
+ <20250424133759.GA1213339@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250424133759.GA1213339@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Apr 24, 2025, Sairaj Kodilkar wrote:
-> On 4/5/2025 1:08 AM, Sean Christopherson wrote:
-> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> > index b8b259847d05..0ab818bba743 100644
-> > --- a/arch/x86/kvm/x86.c
-> > +++ b/arch/x86/kvm/x86.c
-> > @@ -13567,6 +13567,43 @@ bool kvm_arch_has_irq_bypass(void)
-> >   }
-> >   EXPORT_SYMBOL_GPL(kvm_arch_has_irq_bypass);
-> > +static int kvm_pi_update_irte(struct kvm_kernel_irqfd *irqfd,
-> > +			      struct kvm_kernel_irq_routing_entry *old,
+On 4/24/2025 9:37 PM, Jason Gunthorpe wrote:
+> On Thu, Apr 24, 2025 at 05:22:48PM +0800, Baolu Lu wrote:
 > 
-> the argument 'old' is redundant in this function.
+>>>> -err_clear:
+>>>> -	ida_free(&iommu->domain_ida, info->did);
+>>>> -err_unlock:
+>>>> -	kfree(info);
+>>>> -	return ret;
+>>>> +	return xa_err(xa_store(&domain->iommu_array, iommu->seq_id,
+>>>> +			       no_free_ptr(info), GFP_KERNEL));
+>>>>    }
+>>> no_free_ptr() should be used before successful return. Here xa_store()
+>>> could return error but at that point no auto free as no_free_ptr() already
+>>> changes 'info' to NULL. then memory leak.
+>> Hmm, I've considered this. My thought was that xa_store() failure only
+>> occurs due to the system running out of memory, and the Linux kernel
+>> can't recover from it. In that case, the system is already broken;
+>> hence, handling the failure case here doesn't make things better.
+> That's not the kernel pattern, you are supposed to unwind correctly in
+> those failures
+> 
+> I think you should not use cleanup.h for something complicated like
+> this..
 
-Ooh, and @new to kvm_x86_ops.pi_update_irte is also unused.  I'll get rid of them
-both.  I went through multiple iterations of hacking to figure out how to dedup
-the code, and (obviously) missed a few things when tidying up after the fact.
+Okay, so let me drop this patch.
 
-Good eyes, and thanks again for the reviews!
-
-P.S. Please trim your replies.
+Thanks,
+baolu
