@@ -1,106 +1,206 @@
-Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED8CA207A27
-	for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 07:34:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745480069; cv=none; b=il/3xiaW0lTAxL1rVsFBS33MY7MIN/1grtkCBnHHLYJO7g90eT02BnXZjHWzRXl8lW+1uepe/vvUg7puPmNoYF+XR94t4N8y72zls7ZTTTBpq6iP7vpBYKq7hCr98lhguSKnkpVykID3bEd3SXsbVaW9MRufoG+CmOqR+mkd3VQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745480069; c=relaxed/simple;
-	bh=u2Nrcgw7jkwsuXcOLlFIjL5vyZPM1WYAtiGtFnUjhwA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CsI/H4ZyYcHlrjbP2wHGbYCONOl3fSkEeFJBwr/uqZyb0k6UQZcroJ1/v5VBE7cwNwyc1dCyWclPx61bVaxWIZSq5brgzyHf6+GqKxszj6UJnWJgNyvXq1CCBh3mnj5oFwauPLp9aXsoXtgMdWIe8zpniuId6x3uO+HO62sZJ9Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ua1-f54.google.com with SMTP id a1e0cc1a2514c-86d3ac0fec0so756119241.1
-        for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 00:34:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745480066; x=1746084866;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TTjQn1pRO29n/BIx3/Uvj8AT+NnaG1jO3iBKpZy4Wb8=;
-        b=O1URrGexDzUuUfXkZVn8YbKT4xOPNcMYQyKMhTXfipWz7lFR1TcCEAKjhwWEqoSFqE
-         1jIwkfJ2C2hvQrSLvNdUP9vocaTcr0ta6Hgwm6cL4R8HtVxVivb4NQqRWv6S3dGKu3zP
-         93PS/mzuA4ftOFs53QOAYfQOwvpMWsptIdOBb6P90zYilTgdFOQJc1J1HJXh9Q95uajZ
-         i+Jh4q132b61rm7wVFPLLi2pWjZc/aPfeeVNgpViXeyoH40GLHgjdDkr0LHCxE0VFIh7
-         40daAOh3s7x0gQL6xLXCz2cgnULNRuWnctAulIqr8esG45jUey8oN9eKyNHsel03n0SU
-         iOEQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU14QP9Ti2YfsY/PocLwBxUQPjiPGdfJq1hnN1L/Y7yPsB/mZDlZ0RIFKWJEVSF2fQmyNEVyw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzlJP++gJSXul0b+CbMHRJbpIezRgk8jXr0Vtyzbx5lFnTA+/Fd
-	8kOM/Kkd6VZKEC997L5IdGD5B8F612RCB7h9gR11sy4j4WULUbYDIqPWwYH6
-X-Gm-Gg: ASbGnctSSzUfxjHkE29eluxzu68IVVPbl0ELghvV9j0ZiqwsSBUe9Wq1hvqWGrmgxkW
-	azTJUhGALRsoIsVpCZ8dc9TNmVvOSNn7prBgwofp1O8xQdbTLysSeP9rtAdxTtr72Wf5+bZ30Xc
-	uBgMOWILOSv9ItjCxfiFAYxfsAxGmzxkeliWwVou892Jg9nSd9TAwjWsN15/M/jNdGjCtIfGMbX
-	p+zP2N/2m9ouMW4quco+RpOXbtuWfb60h0Sm53DIfccBxl6qZxaTHp7BeOuS3UWgSjeF5DpTGXY
-	zoRQE2KgWIFbCLXzl4LsgPYneq5c65IxrP1Zl4l8QTE4EN8JL/X1/N3OUdHsXH2oY1QQ69h/kpF
-	PYy5n3qpiCn80IRdcJQ==
-X-Google-Smtp-Source: AGHT+IGydV+/0i8l+cswo7p4gmhsmzRHL8/kCg94cqg3C1FOB7mq5eBC5PfHM/+al/tPRgaGAZYP/w==
-X-Received: by 2002:a05:6102:3f90:b0:4c1:71b6:6c with SMTP id ada2fe7eead31-4d38d125323mr1440733137.7.1745480066199;
-        Thu, 24 Apr 2025 00:34:26 -0700 (PDT)
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com. [209.85.221.176])
-        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-877aef2f37dsm188343241.22.2025.04.24.00.34.25
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 24 Apr 2025 00:34:25 -0700 (PDT)
-Received: by mail-vk1-f176.google.com with SMTP id 71dfb90a1353d-524125f6cadso671874e0c.2
-        for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 00:34:25 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWJu3hku4q3SKs4pTFX2a6b+eHmR8gzawPZRj1pTcjbf4aSb4X7DI2qimwsdjf3ayMstnBXQw==@lists.linux.dev
-X-Received: by 2002:a05:6102:292b:b0:4c1:a15c:ab5c with SMTP id
- ada2fe7eead31-4d38ebe8f73mr1154262137.20.1745480065531; Thu, 24 Apr 2025
- 00:34:25 -0700 (PDT)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C4F91F6679
+	for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 07:37:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.20
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745480264; cv=fail; b=pvj5BPzyYb0fsEJcX066No815u2LzCQ29fmTgK92U+MG/G+TBkRuZycYpOAXgI3Jg7x0EDiZAsVyBbrWC5hno2t6ey1o8CmmQGWgW9ymx7CJd1x9AtY62C/HyyDPBHK5w55MpIM0Qj1Wn6IrpHTEh2prAJ//CusLCcrFUl0FKtA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745480264; c=relaxed/simple;
+	bh=wkW+y2mh3IwxvVIFizf9stY+4L1uhjRiSkEQHJ9xJco=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=XhAOzOMltb4tuFasC4QaGSA0oPiGCqPgpG7aeXfv8zIpubN1nuBVZ6bqOqCkIR3k7UDUDbah4Qp137Z6WDToNn1qvQX9cIt4rM+5KnHQkSmUg9X5recSpVky8UWWiCbJCB4eaeI3XCjg8tOcviWzUJERpnc6ly8XhtRWZY7Fncw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QhYtVzbH; arc=fail smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QhYtVzbH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745480262; x=1777016262;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=wkW+y2mh3IwxvVIFizf9stY+4L1uhjRiSkEQHJ9xJco=;
+  b=QhYtVzbHAt4i0Q4nEI0u4AIqO/rO0a1CeM9x7YQjnNSmu2BGU4w47hbs
+   8GkzfRkMNjGCZOVe3Ohhma/h4UuUflMpMcdc7slcso3Hsues6V+EmLejn
+   f1w1CPCyYid2csl7gy5iEL0aE27dqWHpiNosx6eermIkLACqubprUaHGb
+   rcaQd+nb9rueHieOH/CSLGYd0QkDYZt2L3hc8MdUmLc0TXkYI+JPRjIRr
+   UwmgIW0EtETsROXMPPpP2XEHQPq/ElrjyMK3wXzeSFhzUjSrmaINb+OM8
+   4T2koMggaPZ8SGxJ2kVUxUJ8krMxAQxlsoP8VqHeOJT8enYic8ooXqutU
+   g==;
+X-CSE-ConnectionGUID: gZhoryWBSou2LYWXLzL4Gw==
+X-CSE-MsgGUID: dTtnGAdMTZyg41f7C+h65g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11412"; a="46806263"
+X-IronPort-AV: E=Sophos;i="6.15,235,1739865600"; 
+   d="scan'208";a="46806263"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2025 00:37:41 -0700
+X-CSE-ConnectionGUID: dZY+cCMnTXmmYak0I2Angg==
+X-CSE-MsgGUID: nAXaLRRfTwWYwmEQJJPY9Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,235,1739865600"; 
+   d="scan'208";a="155770125"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by fmviesa002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2025 00:37:41 -0700
+Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Thu, 24 Apr 2025 00:37:40 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14 via Frontend Transport; Thu, 24 Apr 2025 00:37:40 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.46) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.44; Thu, 24 Apr 2025 00:37:37 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=T/AmSoD9KnpuFlM7EQeF+NkzFDf0RNwm7hPN8FV360KkzUVVLEOs4VRNPHLh/VMpMw1GqlqXzYG+VgOjcepzzRi//WKuWTv2ELI0SD6WBqEaW2BJHODP/ZaSCGM7CeNn+SOPsFfzOqL1B4irjPzRuX/iAyRws0/G9SfTaAtY7YVa+UerHrNIV3Q2a23gZfI6pocj7u3UI/icEJIPLKID+TZOfulCL1z4tGGC16riV304S7jey8rbq6ZOAjYCFpGyJg5mIM7aE0oOCPcddznLO2Reu+OIqa9C5i9hV5gf5N3cwHwh3UM6o0PfO8CmYxXmgvU0q0+Ff2bbp13hKswUcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5DyJ5a2ryYt9WJQKkT1AihkconaBcZbzkR8uqLOFwug=;
+ b=n+XSgNYHglKo3ykqPsQiNWz7lQZNSxCa56mm7LqX7HOKCoJ8d8Aa6NJdkeJHngnQuSV1htztAVTnWVRAI31VGLJrUIaOL04/7MF3lNArrOY4HQzAq2w+Zu1LFTykfE/XuW/98Z4t7KCoZaMpOADRxRDpuST8f2Mf4YKm0kfrYLMppyrOgfNltLY8WYAqttqe+VoXAGf1vpy42RbgWg8dVVpw1xrXNch9Ese8ldzkrpGzky4EPhokc23Vubvz9LPE3Ly3uiFgYfy6D6jvV368x+O3sgjeyU4mMvozb9Wppf5cvMHPgtildqryuc0LwSZrW0+ZQ5J5NBWLz4QNT5Vn7w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by IA1PR11MB8801.namprd11.prod.outlook.com (2603:10b6:208:599::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8655.38; Thu, 24 Apr
+ 2025 07:37:16 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%6]) with mapi id 15.20.8678.021; Thu, 24 Apr 2025
+ 07:37:16 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
+ Gunthorpe" <jgg@ziepe.ca>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 1/3] iommu/vt-d: Use ida to manage domain id
+Thread-Topic: [PATCH 1/3] iommu/vt-d: Use ida to manage domain id
+Thread-Index: AQHbs/00mkoEpAB1GUqfy7dQi2swobOybihQ
+Date: Thu, 24 Apr 2025 07:37:16 +0000
+Message-ID: <BN9PR11MB527656492CD69CA4EA0EC7338C852@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20250423031020.2189546-1-baolu.lu@linux.intel.com>
+ <20250423031020.2189546-2-baolu.lu@linux.intel.com>
+In-Reply-To: <20250423031020.2189546-2-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|IA1PR11MB8801:EE_
+x-ms-office365-filtering-correlation-id: f9b15c1d-0023-45aa-f524-08dd8302d67e
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|376014|366016|38070700018;
+x-microsoft-antispam-message-info: =?us-ascii?Q?7I5LVfIuq1VrmoAY7WWMCz4Osd3cuC76Ejfay79XlbIoVRLielUWJgbrrHGq?=
+ =?us-ascii?Q?z0fKoY9LNQ60FHmuSKJXsS5wiOFwPB27Vgxs6F5gOfkS96IAFOMsOIi5KzoF?=
+ =?us-ascii?Q?Jgv9pJTHHbsepwZVplxL2pD46jEVPAfKrYidyfx+gyuW5GK4gSoe8P1LZdkL?=
+ =?us-ascii?Q?wDcSkseVb5sK/grqVLc4lkBmiPfHVtfKK+YNPHm+mWOsRgV29s4DV/imia/q?=
+ =?us-ascii?Q?ppYqgAp0ZhusZUepaqz/OO19HAkooh+KtB4TRr02o2NS4ojHvYdFhJ2YvmNG?=
+ =?us-ascii?Q?MDo6SedyOu93cI6P3Gu2CXZkmSsefgElRulu600fk5Yyy4LSNaz/RIW5U69G?=
+ =?us-ascii?Q?EKScndMUrLdgsIy4ZWKY9PGvL2JvjU7aF/2PL1CDs9rlpqrlBd0hoZFbvCSU?=
+ =?us-ascii?Q?D2J94NaaZySp6OsMR3nXqmRStjR/xVHAY8yQmFQlnrLiIRzBl3TxexeUIUT+?=
+ =?us-ascii?Q?4iXq5zI4vqFWadHkzjaC0+cBsxqdzaoZWMZ7uMFrHad7hq61yyxIHcsPJGB/?=
+ =?us-ascii?Q?lFlZGKqUxRQ7xUndGa/hdd5sLRJX7F1Sd1eadVtxLLfSV8tqQHR1tWrhtzHV?=
+ =?us-ascii?Q?VbbfYjxLE9JcLtEWuRVVXfsPLKyxEPI/sbeYhCqpuvLx/8/ztD6fOjfsSpF7?=
+ =?us-ascii?Q?KvaqHEf1GYam1lM9Laxc3FHWZi1TK50T6B/JuOFspexweYyLPSPrz8nRWpS8?=
+ =?us-ascii?Q?OFJwxsE4ojr8q1tlKA1jJBjxDjllYB/NEW24JdD4lomPLZLVKMJSgMkCVYJD?=
+ =?us-ascii?Q?xr3XKzxaER102eWGMzs28jAWJmWKvy6vQGlWepc4SA4c/g1kK01wrSPSFjwH?=
+ =?us-ascii?Q?18nUr9ZaRYXrvNi56qBGgJ8+OnFshq/jrhxb8yK0TwPEjdmx1es2e5Kz620K?=
+ =?us-ascii?Q?XH1/M/OB1RQrQ11JZO6E5zzL4wwgrjWKRB8qmyUp/oFHxF8ujci8gwb+vWmL?=
+ =?us-ascii?Q?Lt2OckKAbqa7695zB9qsUsdMuZPWrFdNyzrvQ39b089oXIXR0mAuY7VarMuF?=
+ =?us-ascii?Q?+wXeovToyv2vCCtD11vlfRelxph5xapoWhwb1a1SMplteaQ+wUbgVBxHNY+e?=
+ =?us-ascii?Q?oJngI8BWGjyPeS4MX+m89Z4TGh68gf0S4k5M3LeV40RWLnSpNXTtDMjQ2GKB?=
+ =?us-ascii?Q?xnbLkXNRbnFidcUkVlOBMWwu0qmCFhy/rX3YRIu1DNI6a7suFB7GdIAgzpd9?=
+ =?us-ascii?Q?8ixLb0uZj95JzuH3m/9md+2JIkpIgalThb8vTh2VDJxAdiwNuhD9Kd4NeyPv?=
+ =?us-ascii?Q?a7tpMpBuPj8o1g4pZvwM7pvkV08cVyXO1QGtaEZZHXKjcugPvBwiLdfLL4F6?=
+ =?us-ascii?Q?nxtWRuBbcgiqRglVKC7jUSjwOIE0AuUQkl02zYksbUCjON6UGFQ6tKiNOOeA?=
+ =?us-ascii?Q?KWgrV68ZBnywbVtaS+iRU74uVBlZhE/NnRfec60mFCh++alZ6GWMsC25SjAn?=
+ =?us-ascii?Q?BkE7CHiamY3s7E9qe+3kfYmUT7B2Tzsg+QnM8hHW6q/knsYe/d/jB/ehP4Ku?=
+ =?us-ascii?Q?HgZtsCBUrg9Bw0E=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?lvfJTNLQ+Ezc3H5wzx5Wwp+qZdBIjrt0aKnF/5VjydMbRbnTyhJhxUOC+0pX?=
+ =?us-ascii?Q?+DMs2GLky27MiI3pzqjBjmGRP/g2Bdnc+Pdfip8iJHqAvCCOoI1qm7G/0mlS?=
+ =?us-ascii?Q?RmPMaRrKRfR95hnNk+VlZWW2yZbdkWgmUTdMOKj14Oc8f0vvNalmwlgbuPBQ?=
+ =?us-ascii?Q?PlrD8Y3GEKvAsTtrwxfa5YOqPUodRxpSzvIeKKLbRQIaorcwqu0DkcFny0NR?=
+ =?us-ascii?Q?fW9P1H4Nxix841uZnU3ZgnEq2DvM79t0aVo5dd7NcxbpvLhnzp5QPEireiyB?=
+ =?us-ascii?Q?D2/5TqgI3Q4p3T8KJ4LTMHo5SeplFiurT6peFFQp/Gdb6bc9ye4cus1k6DCd?=
+ =?us-ascii?Q?Y51CBGhJ8tBOxVkyf+UfhhsjSPYfExgD+wKBJConKOG2P4UBPvj7qUg5eIel?=
+ =?us-ascii?Q?rIdX0ivWUvMIfJDb/2QAObvTYdRDBwAVsvIyjTPJalOqF0MoXqhSZs52LstB?=
+ =?us-ascii?Q?o3hIqwDGb7Dc/EBiFeIcTHVhMN7oSQG/yVVbqS8M1HtBpKFm6uTmBgVIHwYc?=
+ =?us-ascii?Q?ShCRSd8sJbiIn7Gm/mjwcsizPE5RHUShknsub9O03CaKF0GN/Et6BUTWsy1A?=
+ =?us-ascii?Q?16h2RJ+jvB0BN2qDK7WNE7geTv+UdhoBTFFkzhJjFrsfrfU2+R+NTqa5q6Us?=
+ =?us-ascii?Q?xEFgnTe+NJfj+ZGfY6ic3y47qt74h5ecCWuwJ+wk4UD2XSwDdjy6LWOUvtCR?=
+ =?us-ascii?Q?qRGqZDbZ2o6tyMY6QdKlDqU1w+nzx0HCaYlyMVh+Zd5iwk/Jlz4d5ybt1st2?=
+ =?us-ascii?Q?PnD/u6zotEOB7rgJAUSAOmXyrMzjRxsDur3ubPFZG6TZoDWZTOksM9tzBv05?=
+ =?us-ascii?Q?5/dd31pw8dGUmlOBWKBecZxI/geJDOICXoOKi9NIrbDUSpywiRQ9ZdZvAPkl?=
+ =?us-ascii?Q?aqMGCfzrRHIhj9Bq70dGVG7YZ/W+aacz69o2Kg+ZQ5Ku0tr8kGSOGUqsmr05?=
+ =?us-ascii?Q?dOmmURiN1spEigiEczsnUUnBCnjlo93H9slz0XKYSKS+EylB0h+JmmibpYeN?=
+ =?us-ascii?Q?q1Doe+a0FLeUQwHAajk28jYI79E55XDjN5M0Cj5bUD9Z75H8GD9JfNrIaaPz?=
+ =?us-ascii?Q?DvA4qZT4E+W99uXamJjkLXI6bN5nZ7JN9ibUbUH+ZF7gznqBl9X2n28idU20?=
+ =?us-ascii?Q?Pe9DpNd+gH9J2huCeUkkcFqpkgwREaTfcPboPjg0b91SG3VTeXqK2ryn8O0l?=
+ =?us-ascii?Q?zt/V6lpRYRXqIFpUjw6zwLr5R7atEDdOVFqsUoOwfSJcfH9RoEGEykdgEhHT?=
+ =?us-ascii?Q?eI7IGaQ36ZDU6dZx8EXfQqLRn1Rb5VKjyzAnCR8XXiI9PKLLu2PRfxMJ0ofQ?=
+ =?us-ascii?Q?cKYtD3gFEwo4v9DJZYFxm1YlpT+EPISW9dBI151AY1BJKQA7aQZlBa2hpvm+?=
+ =?us-ascii?Q?gKYqzosY9jFz9TG160H52OR5YHMn4IJMCDtE8pNQs/EFbv5sq18PY0+hG5hY?=
+ =?us-ascii?Q?wgXopYeTQ/dJvQu+SB0sC1YIdRzIlLvCV+YY8KZbn+LvG9HF6rQWUhwLKO/t?=
+ =?us-ascii?Q?ejB5kn9yscFgIxJ1HtNFVX+rUxnxRqtaFTMP/P7+D0QRsFDiPQ0HUQ9A2C3J?=
+ =?us-ascii?Q?l1JvGD/gn+Sd4IPvwFRztHqC/DUHFrW9oVWHRedp?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250423164006.2661372-1-arnd@kernel.org>
-In-Reply-To: <20250423164006.2661372-1-arnd@kernel.org>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 24 Apr 2025 09:34:14 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWzLuVjA=8PMm3UPXXPUEwBQjnTmp_W9oi_KHCx=m-QZA@mail.gmail.com>
-X-Gm-Features: ATxdqUGQnUlzm5W2tVtEkcCP0cHDrWqBr1nsmTcSEp-9WZNmnHDiuaEyg8EZoF4
-Message-ID: <CAMuHMdWzLuVjA=8PMm3UPXXPUEwBQjnTmp_W9oi_KHCx=m-QZA@mail.gmail.com>
-Subject: Re: [PATCH] iommu: ipmmu-vmsa: avoid Wformat-security warning
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Magnus Damm <damm+renesas@opensource.se>, Arnd Bergmann <arnd@arndb.de>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f9b15c1d-0023-45aa-f524-08dd8302d67e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Apr 2025 07:37:16.8183
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: D+xuBPkcP+YoWxo9RIL6RgLiEWnG8g9aHDn/uvGKl6flIMBXWY0LIUZewQtLnKoI/asw2vP4bOaZOXyGzqVhtA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR11MB8801
+X-OriginatorOrg: intel.com
 
-On Wed, 23 Apr 2025 at 18:43, Arnd Bergmann <arnd@kernel.org> wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> iommu_device_sysfs_add() requires a constant format string, otherwise
-> a W=1 build produces a warning:
->
-> drivers/iommu/ipmmu-vmsa.c:1093:62: error: format string is not a string literal (potentially insecure) [-Werror,-Wformat-security]
->  1093 |         ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL, dev_name(&pdev->dev));
->       |                                                                     ^~~~~~~~~~~~~~~~~~~~
-> drivers/iommu/ipmmu-vmsa.c:1093:62: note: treat the string as an argument to avoid this
->  1093 |         ret = iommu_device_sysfs_add(&mmu->iommu, &pdev->dev, NULL, dev_name(&pdev->dev));
->       |                                                                     ^
->       |                                                                     "%s",
->
-> This was an old bug but I saw it now because the code was changed as part
-> of commit d9d3cede4167 ("iommu/ipmmu-vmsa: Register in a sensible order").
->
-> Fixes: 7af9a5fdb9e0 ("iommu/ipmmu-vmsa: Use iommu_device_sysfs_add()/remove()")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Wednesday, April 23, 2025 11:10 AM
+>=20
+>  static void free_dmar_iommu(struct intel_iommu *iommu)
+>  {
+> -	if (iommu->domain_ids) {
+> -		bitmap_free(iommu->domain_ids);
+> -		iommu->domain_ids =3D NULL;
+> -	}
+> +	ida_destroy(&iommu->domain_ida);
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+since ida_init() is in alloc_iommu() now, the destroy can be
+moved to free_iommu().
 
-Gr{oetje,eeting}s,
+> @@ -1399,14 +1356,13 @@ int domain_attach_iommu(struct dmar_domain
+> *domain, struct intel_iommu *iommu)
+>  		return 0;
+>  	}
+>=20
+> -	ndomains =3D cap_ndoms(iommu->cap);
+> -	num =3D find_first_zero_bit(iommu->domain_ids, ndomains);
+> -	if (num >=3D ndomains) {
+> +	num =3D ida_alloc_range(&iommu->domain_ida, FLPT_DEFAULT_DID +
+> 1,
+> +			      cap_ndoms(iommu->cap) - 1, GFP_ATOMIC);
 
-                        Geert
+let's define a macro e.g. FIRST_DID for min.
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
