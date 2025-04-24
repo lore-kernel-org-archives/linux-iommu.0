@@ -1,119 +1,137 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C19071F75A9;
-	Thu, 24 Apr 2025 08:46:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D57E71EA7C1
+	for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 09:01:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745484392; cv=none; b=pL9DsDAkCX/fxLcXEJxof8o9OgwUfHfuBYY6ZPZS4okvKofoHWnXxbbTudwOx9yKStz+nl/1B/bnLPyTqiXPECu/YLMiVoet7M61JIeA5a+fxiMzuhItLS366x1L8moLq3kNNXI/9srDg5U8ENc2K2HCwM+D1xBlyxp77Fnc8Mo=
+	t=1745485303; cv=none; b=QIEZr8RfeUicflFukveIG1jl1YgvIHJUXJ/aRuMqGB9mmkuUxfwpUUl2vRi7XwlI0ygA0Nop+BY7/q7XDiRnDb47GbpVQ3IjAxp962rcazRa2PvTRy18aPjU37dft6rhn2hrOuEj/TeqWbkMRq5DpqtR0KcUvTSkDQE5DLbtb0E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745484392; c=relaxed/simple;
-	bh=ki3q6dIyPVLY9OlwYT9gx2mvHOve0ih8UQqOIXQy4sw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jwQxNc/ZuT3VuulgzV2KYPEtABJ4/9dQc8PpG6UTr1vR0kb0kMiATqo2p3awTQc/Lj1BdgDs5Zc6nTeeDU+WbrtfK5NK8Ui8Wc3i9tx6jmv3oiUNM/5ZS1H5bvCWjH+LYA+dq+1zbZJVB2IN/BC6oHREtYldPLccPYer0w+CZ7Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uSR+lBTu; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745485303; c=relaxed/simple;
+	bh=UcIx/LKC2xB16Q6OMpibx6bXvHK+qw5ZQHXhUYcD9dQ=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=NzUGKWxB7aY0nEz2x/mdz67DoW4c+q5TgzUOs88mXk4BwLoy3/26FOL1gOatHU+7/phbQwU7RHVr+3c0mHfcNrLBHG+n5CyOcytc2oK+hsPqXHeVdChB0HkJ5ktgTAPxS3actqYq1w0XmXhlhe+2s7JsBTSBbdwkEhP+jSBN6lw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AY6iGCsQ; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uSR+lBTu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F4A0C4CEED;
-	Thu, 24 Apr 2025 08:46:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745484392;
-	bh=ki3q6dIyPVLY9OlwYT9gx2mvHOve0ih8UQqOIXQy4sw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=uSR+lBTuzs9lAfUp6ETUwd/e83HDQBPN+bi2x6d+WcXRuXqISLxR1KnZmPcANDNPl
-	 XcusVwWrcgl5ZwxaQMTClZZp6wv04VyBadsXr0ChBep2yGTn0yT6aRBkv0qe3YHnsu
-	 Xbfy/GOWPkZiF5ouAX9EAiGXmE23jYsBtArkcpCT8edU46pm2SHyttUmmiowtlF9le
-	 jBdsLZ0dV8tCc+abgC1OkQo4yqWtl296bgiFLL3P131EcMwOFukXU6T1YRIKWY0DCS
-	 vfhRiecYS5EGzJ47VScGPAGcWrDrAIXqhECCrbNzQ/i5dx+Y8dYPFcg8gKvkI2s3k1
-	 MO9hwaOX8jurQ==
-Date: Thu, 24 Apr 2025 11:46:26 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>,
-	Mika =?iso-8859-1?Q?Penttil=E4?= <mpenttil@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jens Axboe <axboe@kernel.dk>, Keith Busch <kbusch@kernel.org>,
-	Jake Edge <jake@lwn.net>, Jonathan Corbet <corbet@lwn.net>,
-	Zhu Yanjun <zyjzyj2000@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Kanchan Joshi <joshi.k@samsung.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>
-Subject: Re: [PATCH v9 10/24] mm/hmm: let users to tag specific PFN with DMA
- mapped bit
-Message-ID: <20250424084626.GQ48485@unreal>
-References: <cover.1745394536.git.leon@kernel.org>
- <0a7c1e06269eee12ff8912fe0da4b7692081fcde.1745394536.git.leon@kernel.org>
- <7185c055-fc9e-4510-a9bf-6245673f2f92@redhat.com>
- <20250423181706.GT1213339@ziepe.ca>
- <36891b0e-d5fa-4cf8-a181-599a20af1da3@redhat.com>
- <20250423233335.GW1213339@ziepe.ca>
- <20250424080744.GP48485@unreal>
- <20250424081101.GA22989@lst.de>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AY6iGCsQ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745485301; x=1777021301;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=UcIx/LKC2xB16Q6OMpibx6bXvHK+qw5ZQHXhUYcD9dQ=;
+  b=AY6iGCsQo4ogzEiDusei01z+oCyiu39b3I0W7BpcppqXsczHcKfv5RLc
+   iK9kOkxhk8F0qL7LCTvuOfNHI9uXzDFtgZrMAXM6e/fJzDBoLMmY65LJ8
+   wgggYXu7JK354CT4brUUOP5DwoS4qDoSDqaoyjZ3LhLMeAlt4tif/NdBX
+   G7doLsdBqBYJKahswNtJuftC80kK95YganttrNPiOxAOgP9Y3THdbjH6j
+   DYKA/3ZG2qGC8gs744K5o1Y4ttzbk7nAlNS5Rt5O9bccEX+Gqhtc270hb
+   PPIP0go1D3zG+8D2IgbbYO5gAxVZ2tai7+qYqV/u5wcMc2/WleT71YfVM
+   Q==;
+X-CSE-ConnectionGUID: 2M3HgTj8SdGTPnylsvreoA==
+X-CSE-MsgGUID: CaMcL2QqSZ2w+u1FofbagA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11412"; a="47121025"
+X-IronPort-AV: E=Sophos;i="6.15,235,1739865600"; 
+   d="scan'208";a="47121025"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2025 02:01:40 -0700
+X-CSE-ConnectionGUID: 4OWnqJccRee92deaA+raAA==
+X-CSE-MsgGUID: xAcgRH3WRkOu2V5fJxpCuw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,235,1739865600"; 
+   d="scan'208";a="132399944"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.243.159]) ([10.124.243.159])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2025 02:01:38 -0700
+Message-ID: <4541dba3-1a4b-45f6-a607-fe2fe9a9f014@linux.intel.com>
+Date: Thu, 24 Apr 2025 17:01:35 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250424081101.GA22989@lst.de>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/3] iommu/vt-d: Use ida to manage domain id
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>
+References: <20250423031020.2189546-1-baolu.lu@linux.intel.com>
+ <20250423031020.2189546-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB527656492CD69CA4EA0EC7338C852@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB527656492CD69CA4EA0EC7338C852@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Apr 24, 2025 at 10:11:01AM +0200, Christoph Hellwig wrote:
-> On Thu, Apr 24, 2025 at 11:07:44AM +0300, Leon Romanovsky wrote:
-> > > I see, so yes order occupies 5 bits [-4,-5,-6,-7,-8] and the
-> > > DMA_MAPPED overlaps, it should be 9 not 7 because of the backwardness.
-> > 
-> > Thanks for the fix.
+On 4/24/2025 3:37 PM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Wednesday, April 23, 2025 11:10 AM
+>>
+>>   static void free_dmar_iommu(struct intel_iommu *iommu)
+>>   {
+>> -	if (iommu->domain_ids) {
+>> -		bitmap_free(iommu->domain_ids);
+>> -		iommu->domain_ids = NULL;
+>> -	}
+>> +	ida_destroy(&iommu->domain_ida);
 > 
-> Maybe we can use the chance to make the scheme less fragile?  i.e.
-> put flags in the high bits and derive the first valid bit from the
-> pfn order?
+> since ida_init() is in alloc_iommu() now, the destroy can be
+> moved to free_iommu().
+
+Sure.
+
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index e25e8d3dedcb..9e17e8e56308 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1198,6 +1198,7 @@ static void free_iommu(struct intel_iommu *iommu)
+         if (iommu->reg)
+                 unmap_iommu(iommu);
+
++       ida_destroy(&iommu->domain_ida);
+         ida_free(&dmar_seq_ids, iommu->seq_id);
+         kfree(iommu);
+  }
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index f784df122d7a..0002511c561f 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1304,8 +1304,6 @@ static void disable_dmar_iommu(struct intel_iommu 
+*iommu)
+
+  static void free_dmar_iommu(struct intel_iommu *iommu)
+  {
+-       ida_destroy(&iommu->domain_ida);
+-
+         if (iommu->copied_tables) {
+                 bitmap_free(iommu->copied_tables);
+                 iommu->copied_tables = NULL;
+
 > 
+>> @@ -1399,14 +1356,13 @@ int domain_attach_iommu(struct dmar_domain
+>> *domain, struct intel_iommu *iommu)
+>>   		return 0;
+>>   	}
+>>
+>> -	ndomains = cap_ndoms(iommu->cap);
+>> -	num = find_first_zero_bit(iommu->domain_ids, ndomains);
+>> -	if (num >= ndomains) {
+>> +	num = ida_alloc_range(&iommu->domain_ida, FLPT_DEFAULT_DID +
+>> 1,
+>> +			      cap_ndoms(iommu->cap) - 1, GFP_ATOMIC);
+> 
+> let's define a macro e.g. FIRST_DID for min.
 
-It can be done too. This is what I got:
+Okay, how about IDA_START_DID?
 
-   38 enum hmm_pfn_flags {
-   39         /* Output fields and flags */
-   40         HMM_PFN_VALID = 1UL << (BITS_PER_LONG - 1),
-   41         HMM_PFN_WRITE = 1UL << (BITS_PER_LONG - 2),
-   42         HMM_PFN_ERROR = 1UL << (BITS_PER_LONG - 3),
-   43         /*
-   44          * Sticky flags, carried from input to output,
-   45          * don't forget to update HMM_PFN_INOUT_FLAGS
-   46          */
-   47         HMM_PFN_DMA_MAPPED = 1UL << (BITS_PER_LONG - 4),
-   48         HMM_PFN_P2PDMA     = 1UL << (BITS_PER_LONG - 5),
-   49         HMM_PFN_P2PDMA_BUS = 1UL << (BITS_PER_LONG - 6),
-   50
-   51         HMM_PFN_ORDER_SHIFT = (BITS_PER_LONG - 11),
-   52
-   53         /* Input flags */
-   54         HMM_PFN_REQ_FAULT = HMM_PFN_VALID,
-   55         HMM_PFN_REQ_WRITE = HMM_PFN_WRITE,
-   56
-   57         HMM_PFN_FLAGS = ~((1UL << HMM_PFN_ORDER_SHIFT) - 1),
-   58 };
+Thanks,
+baolu
 
-So now, we just need to move HMM_PFN_ORDER_SHIFT if we add new flags
-and HMM_PFN_FLAGS will be updated automatically.
+> 
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 
-Thanks
