@@ -1,119 +1,117 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E280D84FAD;
-	Thu, 24 Apr 2025 06:55:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFB9418E1F
+	for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 06:59:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745477718; cv=none; b=Cahe5lCyUTmA8xhd5zNt1JeNf0V32o4SFDOWvdfXw03N6HdaPASevNCkwAl7tnkt+m9d3polvbhE2VGeFpV0Dfj7LJEgetXss6LBabVIbxNz+ju7uxrdV4r0rNTOBE4OOlUGKTqojHm+gyj0lONLhawLBesQPE23Ntm7w+U+zZw=
+	t=1745477944; cv=none; b=lVf6GsehSdEq0hOifRtg0C3HnHrlPXKRJfXwezSe+WzIzfJ3s3RpI5rK7IZDQAUegANNIraD5zgdtgZpkY8QcTYp6gt+438jga0UgLfuEO7i8gqrWMapGwbBvDlFktXtTeY8HUAu1KDAL+wXnyIAmRU9XEqFdP2emyFtj5FFSpI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745477718; c=relaxed/simple;
-	bh=O2NhhAxby4h2wdAG9lotXu0r8Mq+CnbUeKJ51V9RGiM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=B7bKa4MgWy8nnA6slFa2MAFA9CV2ZUhWO4Uh4kZuTcii5MbyTHnx6tbhzWVcJY+DGNMclihNzuATN0sy7NMkBWLiUHD7tJHVgMQUgj9Ac3/GTyCy/egdRHu1XBkx3OHyRW41a8hEW6K9t3iLTBCoWU9DwVNNGnVAHHcAaShh1pY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JBMG74Uf; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1745477944; c=relaxed/simple;
+	bh=P7a4A6x8UFXBNfXVk8wNvjijk3FZSS3WNYjyXXXW3OA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=EnCHmVA16Ylgu4uwaPiMNTdu6DQG2BCSpJd/muYz1HOqxt2RIEyeDPIa8zlqHTEMOPsQ9Y94nNlVwIzdo5L223z2Dq6VuD3+zaGqgoRsrDlfMp32Exw0TcrieLsSwWJcrTf2HMqid1dtMoxGJVNXfAW17xFaWyQZhqgXhgJ7iV4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MeFVrQl/; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JBMG74Uf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63A31C4CEE3;
-	Thu, 24 Apr 2025 06:55:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745477717;
-	bh=O2NhhAxby4h2wdAG9lotXu0r8Mq+CnbUeKJ51V9RGiM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JBMG74Uf2ayBsAyXOsGDu/Pky6ixNS1c4BDJHd4lwbNECLO5LrTPDLt1r0eNUPLy0
-	 ynut6BgnWakwJKSAx+8FK+EGFCkITnvLnelLONPxIjuG0tdC90cdj3pniHXtHm9Fxa
-	 wl45/ZTtb8BKv0iNv76Ij9tfHUWh6rTMYx7CAUO3rppkqiaLH7xleBCQXesauRPbp2
-	 FUUzSE+hvgKs3WwAsv1qWr/zBPK1T2EbndRkbynGnImy0ZnvZycZXxoAzu4XEX+teR
-	 a2VWk0rzolhjEPmNfygA5hJqIMt43/HcuEsUyDD2XFjdC06yV7sioUDVdESF6SAvcW
-	 F+H5S2kqGr5vg==
-Date: Thu, 24 Apr 2025 09:55:11 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-	Keith Busch <kbusch@kernel.org>, Jake Edge <jake@lwn.net>,
-	Jonathan Corbet <corbet@lwn.net>, Zhu Yanjun <zyjzyj2000@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Kanchan Joshi <joshi.k@samsung.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>
-Subject: Re: [PATCH v9 03/24] iommu: generalize the batched sync after map
- interface
-Message-ID: <20250424065511.GL48485@unreal>
-References: <cover.1745394536.git.leon@kernel.org>
- <2ce6a74ddf5e13a7fdb731984aa781a15f17749d.1745394536.git.leon@kernel.org>
- <20250423171537.GJ1213339@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MeFVrQl/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745477941; x=1777013941;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=P7a4A6x8UFXBNfXVk8wNvjijk3FZSS3WNYjyXXXW3OA=;
+  b=MeFVrQl/CBD/6DDvQ2abVXrUzELFSLCqL7AMjxtxzcLTdoJi/9bAU2ck
+   5/V2wkiEUs6TJhsqEa0ZM0pxe77kkMjHNGjGNFRh5Zyoyp5vr7rLW1K4d
+   3gPG0jCT3u2WIdwDu0aLWnFotIwuV/jXDqCSI35stgjjdjlz3QxKZykee
+   KU4cytAE2oRgzK08Jk1f1zTx5u9Pw/LMN4Q9oWL6UQMZYR54BImvsvH+5
+   bCHMyxqB5XTczr8XCcFYgBuRpwrECG0pPeN2HACmzSkDXvf80wAWxJo45
+   xhbnv+05Tz/jqMdqpDT9BPb1bk3RVwum+q8fH+8kZq4P1tpRsux5JWGno
+   Q==;
+X-CSE-ConnectionGUID: EdqTu8JFRka0vUFeELTDOA==
+X-CSE-MsgGUID: RDMH1bRiSHeozhm1ypzT2A==
+X-IronPort-AV: E=McAfee;i="6700,10204,11412"; a="58456018"
+X-IronPort-AV: E=Sophos;i="6.15,235,1739865600"; 
+   d="scan'208";a="58456018"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2025 23:59:01 -0700
+X-CSE-ConnectionGUID: VmXw7/jDQp66g53tf+kJnQ==
+X-CSE-MsgGUID: QXeoSsyqQLupGp8r9+9qlQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,235,1739865600"; 
+   d="scan'208";a="137323854"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2025 23:58:59 -0700
+Message-ID: <c6f5e533-5e60-494c-93fd-5a004a9a13a0@linux.intel.com>
+Date: Thu, 24 Apr 2025 14:54:43 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250423171537.GJ1213339@ziepe.ca>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/1] iommu: Allow attaching static domains in
+ iommu_attach_device_pasid()
+To: Vasant Hegde <vasant.hegde@amd.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ shangsong2@lenovo.com, Dave Jiang <dave.jiang@intel.com>
+Cc: jack.vogel@oracle.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20250424034123.2311362-1-baolu.lu@linux.intel.com>
+ <6cee67bd-1bef-4b8c-96bb-da358bc2d5c3@amd.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <6cee67bd-1bef-4b8c-96bb-da358bc2d5c3@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 23, 2025 at 02:15:37PM -0300, Jason Gunthorpe wrote:
-> On Wed, Apr 23, 2025 at 11:12:54AM +0300, Leon Romanovsky wrote:
-> > From: Christoph Hellwig <hch@lst.de>
-> > 
-> > For the upcoming IOVA-based DMA API we want to use the interface batch the
-> > sync after mapping multiple entries from dma-iommu without having a
-> > scatterlist.
+On 4/24/25 14:49, Vasant Hegde wrote:
+> On 4/24/2025 9:11 AM, Lu Baolu wrote:
+>> The idxd driver attaches the default domain to a PASID of the device to
+>> perform kernel DMA using that PASID. The domain is attached to the
+>> device's PASID through iommu_attach_device_pasid(), which checks if the
+>> domain->owner matches the iommu_ops retrieved from the device. If they
+>> do not match, it returns a failure.
+>>
+>>          if (ops != domain->owner || pasid == IOMMU_NO_PASID)
+>>                  return -EINVAL;
+>>
+>> The static identity domain implemented by the intel iommu driver doesn't
+>> specify the domain owner. Therefore, kernel DMA with PASID doesn't work
+>> for the idxd driver if the device translation mode is set to passthrough.
+>>
+>> Generally the owner field of static domains are not set because they are
+>> already part of iommu ops. Add a helper domain_iommu_ops_compatible()
+>> that checks if a domain is compatible with the device's iommu ops. This
+>> helper explicitly allows the static blocked and identity domains associated
+>> with the device's iommu_ops to be considered compatible.
+>>
+>> Fixes: 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
+>> Closes:https://bugzilla.kernel.org/show_bug.cgi?id=220031
+>> Cc:stable@vger.kernel.org
+>> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
+>> Link:https://lore.kernel.org/linux-iommu/20250422191554.GC1213339@ziepe.ca/
+>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>> Reviewed-by: Dave Jiang<dave.jiang@intel.com>
+>> Reviewed-by: Robin Murphy<robin.murphy@arm.com>
 > 
-> Grammer:
+> Thanks! We have static identity domain in AMD driver as well. Some day we may
+> hit similar issue 🙂
 > 
->  For the upcoming IOVA-based DMA API we want to batch the
->  ops->iotlb_sync_map() call after mapping multiple IOVAs from
->  dma-iommu without having a scatterlist. Improve the API.
+> Patch looks good to me.
 > 
->  Add a wrapper for the map_sync as iommu_sync_map() so that callers don't
->  need to poke into the methods directly.
-> 
->  Formalize __iommu_map() into iommu_map_nosync() which requires the
->  caller to call iommu_sync_map() after all maps are completed.
-> 
->  Refactor the existing sanity checks from all the different layers
->  into iommu_map_nosync().
-> 
-> >  drivers/iommu/iommu.c | 65 +++++++++++++++++++------------------------
-> >  include/linux/iommu.h |  4 +++
-> >  2 files changed, 33 insertions(+), 36 deletions(-)
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> > +	/* Discourage passing strange GFP flags */
-> > +	if (WARN_ON_ONCE(gfp & (__GFP_COMP | __GFP_DMA | __GFP_DMA32 |
-> > +				__GFP_HIGHMEM)))
-> > +		return -EINVAL;
-> 
-> There is some kind of overlap with the new iommu_alloc_pages_node()
-> here that does a similar check, nothing that can be addressed in this
-> series but maybe a TBD for later..
+> Reviewed-by: Vasant Hegde<vasant.hegde@amd.com>
 
-This series is based on pure -rc1 to allow creation of shared branch,
-while you removed iommu_alloc_pages_node() in IOMMU tree. So we must
-merge it first and tidy the code after that.
-
-Thanks
+Thank you!
 
 > 
-> Jason
-> 
+> W/ this change may be I should fix AMD driver like below. (No need to respin
+> patch. I can send topup patch later).
+
+I think that's a cleanup rather than a fix.
+
+Thanks,
+baolu
