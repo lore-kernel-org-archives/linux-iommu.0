@@ -1,129 +1,151 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4E361624C5;
-	Thu, 24 Apr 2025 16:01:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E0D76284681
+	for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 17:41:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745510503; cv=none; b=sOkGLJ35SfzSdUYtXLM8RJfIqhzDWNlta9AVA3plZwuYiQP20fv3ujizaYiqdJui37qYKj79cMkIdNNvU/EyhCTlgvXBcjwMPDqFRmlggmjrx8M8SQlJgUhwosUeEzZdjE2LflSk8xJopoaHCPyZfByRmkA+Val5aohHTmwXlhQ=
+	t=1745516498; cv=none; b=WuP3JHtAMVyceTOIXsGpT9H8ABJxGkhk7W1mjM95ATwmFWxKpDTtLPgrxUFjH3vBN/aQv5wXNSg6V8IMS/V3WQpNQLCuzGRWCZoMDlQsxUM2txDm7uHX7wXRZyV0V+HoTTIAJ7J7V2YaE/RpEZnZV82MejTR8PIN+1PHpP03pyU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745510503; c=relaxed/simple;
-	bh=2EsFN3KQzZNWveqPmKQ2uvMTlzDkWMvMTWZFw/RE+lA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZtRbC4VExiZsdjzvG8UG2eu+yKX0RgLLt/SHGz72DeOR+w7LL0DlkTE+nhQ8biME4RvOyXyzrjZZM/H7qhfOvnwLY+57lOlYe0RZu3Pq8LbB83KNrLSzFh0PeOYd1r9gfX4JpKYs1GKoeNwsz8EHYtXo63qP4xLPhM/QP+L2Ry4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Wm8VevHV; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Wm8VevHV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C5C2C4CEE3;
-	Thu, 24 Apr 2025 16:01:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745510503;
-	bh=2EsFN3KQzZNWveqPmKQ2uvMTlzDkWMvMTWZFw/RE+lA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Wm8VevHVEohfFXx1uchcfmtL+zcZ6xSp9jmMA3lzuk8AwHIyLQmcHNh0McnSrCcx3
-	 lIkmFdP+VzpGEpwEKphWvTET5ebVyPTPFMB80cvGgeYljv5/yF/In310jRDQC6j3Xe
-	 enCjXdYVPMQ3v7aENOXrr8Z1Q/znZ+vOdsJ5KN84mcOFLlEP45lED6O7qLOvupMMaK
-	 lBtmEryEpv3oaYU2xAYKqHcEOWsb8P+1vrzSoARX2cvfIjSdXU2qZFlV+DPcWa735h
-	 beec4plnuKPHYBuMtW0ndvkO/fM+I0YWu6BDRZ5NUppB0Cqwzxtn9QVLIFtHY5tX8k
-	 eFD7fbEi5hXLw==
-Date: Thu, 24 Apr 2025 19:01:38 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Mika =?iso-8859-1?Q?Penttil=E4?= <mpenttil@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jens Axboe <axboe@kernel.dk>, Keith Busch <kbusch@kernel.org>,
-	Jake Edge <jake@lwn.net>, Jonathan Corbet <corbet@lwn.net>,
-	Zhu Yanjun <zyjzyj2000@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Kanchan Joshi <joshi.k@samsung.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>
-Subject: Re: [PATCH v9 10/24] mm/hmm: let users to tag specific PFN with DMA
- mapped bit
-Message-ID: <20250424160138.GT48485@unreal>
-References: <0a7c1e06269eee12ff8912fe0da4b7692081fcde.1745394536.git.leon@kernel.org>
- <7185c055-fc9e-4510-a9bf-6245673f2f92@redhat.com>
- <20250423181706.GT1213339@ziepe.ca>
- <36891b0e-d5fa-4cf8-a181-599a20af1da3@redhat.com>
- <20250423233335.GW1213339@ziepe.ca>
- <20250424080744.GP48485@unreal>
- <20250424081101.GA22989@lst.de>
- <20250424084626.GQ48485@unreal>
- <20250424120703.GY1213339@ziepe.ca>
- <20250424125052.GS48485@unreal>
+	s=arc-20240116; t=1745516498; c=relaxed/simple;
+	bh=fXCjcwkEtcDQ7QCB1IGaY0tTIBvn8gLp0aN7PhKhDnc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=KTc0zR7eZYcnCTdRwZ6aC99JcpD84CifFA5GGF+0iBLxk2inw6pLwW+OmFLRzR35m58B06Zya6EN9oMYflI1UpykpgJ8eqwH4yQpWASNA3zDj++mJKG5gJm1NeOxmkhJ4LpxO0FmWiiILlZWxCuGSY0o8nLHdVTt0Yk248sjS1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 22FE61063;
+	Thu, 24 Apr 2025 10:41:30 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 7C4253F5A1;
+	Thu, 24 Apr 2025 10:41:34 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: joro@8bytes.org,
+	will@kernel.org
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Johan Hovold <johan@kernel.org>
+Subject: [PATCH] iommu: Handle yet another race around registration
+Date: Thu, 24 Apr 2025 18:41:28 +0100
+Message-Id: <88d54c1b48fed8279aa47d30f3d75173685bb26a.1745516488.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250424125052.GS48485@unreal>
+Content-Transfer-Encoding: 8bit
 
-On Thu, Apr 24, 2025 at 03:50:52PM +0300, Leon Romanovsky wrote:
-> On Thu, Apr 24, 2025 at 09:07:03AM -0300, Jason Gunthorpe wrote:
-> > On Thu, Apr 24, 2025 at 11:46:26AM +0300, Leon Romanovsky wrote:
-> > > On Thu, Apr 24, 2025 at 10:11:01AM +0200, Christoph Hellwig wrote:
-> > > > On Thu, Apr 24, 2025 at 11:07:44AM +0300, Leon Romanovsky wrote:
-> > > > > > I see, so yes order occupies 5 bits [-4,-5,-6,-7,-8] and the
-> > > > > > DMA_MAPPED overlaps, it should be 9 not 7 because of the backwardness.
-> > > > > 
-> > > > > Thanks for the fix.
-> > > > 
-> > > > Maybe we can use the chance to make the scheme less fragile?  i.e.
-> > > > put flags in the high bits and derive the first valid bit from the
-> > > > pfn order?
-> > >
-> > > It can be done too. This is what I got:
-> > 
-> > Use genmask:
-> 
-> I can do it too, will change.
+Next up on our list of race windows to close is another one during
+iommu_device_register() - it's now OK again for multiple instances to
+run their bus_iommu_probe() in parallel, but an iommu_probe_device() can
+still also race against a running bus_iommu_probe(). As Johan has
+managed to prove, this has now become a lot more visible on DT platforms
+wth driver_async_probe where a client driver is attempting to probe in
+parallel with its IOMMU driver - although commit b46064a18810 ("iommu:
+Handle race with default domain setup") resolves this from the client
+driver's point of view, this isn't before of_iommu_configure() has had
+the chance to attempt to "replay" a probe that the bus walk hasn't even
+tried yet, and so still cause the out-of-order group allocation
+behaviour that we're trying to clean up (and now warning about).
 
-If you don't mind, I'll stick with my previous proposal.
+The most reliable thing to do here is to explicitly keep track of the
+"iommu_device_register() is still running" state, so we can then
+special-case the ops lookup for the replay path (based on dev->iommu
+again) to let that think it's still waiting for the IOMMU driver to
+appear at all. This still leaves the longstanding theoretical case of
+iommu_bus_notifier() being triggered during bus_iommu_probe(), but it's
+not so simple to defer a notifier, and nobody's ever reported that being
+a visible issue, so let's quietly kick that can down the road for now...
 
-GENMASK() alone is not enough and the best solution will include use
-of FIELD_GET FIELD_PREP mocros. IMHO, that will make code unreadable.
-The simple, clean and reliable bitfield OR operations much better fit
-here.
+Reported-by: Johan Hovold <johan@kernel.org>
+Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/iommu.c | 26 ++++++++++++++++++--------
+ include/linux/iommu.h |  2 ++
+ 2 files changed, 20 insertions(+), 8 deletions(-)
 
-Thanks
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 264383b507bc..2605dab818a0 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -277,6 +277,8 @@ int iommu_device_register(struct iommu_device *iommu,
+ 		err = bus_iommu_probe(iommu_buses[i]);
+ 	if (err)
+ 		iommu_device_unregister(iommu);
++	else
++		WRITE_ONCE(iommu->ready, true);
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(iommu_device_register);
+@@ -2832,31 +2834,39 @@ bool iommu_default_passthrough(void)
+ }
+ EXPORT_SYMBOL_GPL(iommu_default_passthrough);
+ 
+-const struct iommu_ops *iommu_ops_from_fwnode(const struct fwnode_handle *fwnode)
++static const struct iommu_device *iommu_from_fwnode(const struct fwnode_handle *fwnode)
+ {
+-	const struct iommu_ops *ops = NULL;
+-	struct iommu_device *iommu;
++	const struct iommu_device *iommu, *ret = NULL;
+ 
+ 	spin_lock(&iommu_device_lock);
+ 	list_for_each_entry(iommu, &iommu_device_list, list)
+ 		if (iommu->fwnode == fwnode) {
+-			ops = iommu->ops;
++			ret = iommu;
+ 			break;
+ 		}
+ 	spin_unlock(&iommu_device_lock);
+-	return ops;
++	return ret;
++}
++
++const struct iommu_ops *iommu_ops_from_fwnode(const struct fwnode_handle *fwnode)
++{
++	const struct iommu_device *iommu = iommu_from_fwnode(fwnode);
++
++	return iommu ? iommu->ops : NULL;
+ }
+ 
+ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode)
+ {
+-	const struct iommu_ops *ops = iommu_ops_from_fwnode(iommu_fwnode);
++	const struct iommu_device *iommu = iommu_from_fwnode(iommu_fwnode);
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 
+-	if (!ops)
++	if (!iommu)
+ 		return driver_deferred_probe_check_state(dev);
++	if (!dev->iommu && !READ_ONCE(iommu->ready))
++		return -EPROBE_DEFER;
+ 
+ 	if (fwspec)
+-		return ops == iommu_fwspec_ops(fwspec) ? 0 : -EINVAL;
++		return iommu->ops == iommu_fwspec_ops(fwspec) ? 0 : -EINVAL;
+ 
+ 	if (!dev_iommu_get(dev))
+ 		return -ENOMEM;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index ccce8a751e2a..cbb1520005c3 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -750,6 +750,7 @@ struct iommu_domain_ops {
+  * @dev: struct device for sysfs handling
+  * @singleton_group: Used internally for drivers that have only one group
+  * @max_pasids: number of supported PASIDs
++ * @ready: set once iommu_device_register() has completed successfully
+  */
+ struct iommu_device {
+ 	struct list_head list;
+@@ -758,6 +759,7 @@ struct iommu_device {
+ 	struct device *dev;
+ 	struct iommu_group *singleton_group;
+ 	u32 max_pasids;
++	bool ready;
+ };
+ 
+ /**
+-- 
+2.39.2.101.g768bb238c484.dirty
 
-> 
-> > 
-> > enum hmm_pfn_flags {
-> > 	HMM_FLAGS_START = BITS_PER_LONG - PAGE_SHIFT,
-> > 	HMM_PFN_FLAGS = GENMASK(BITS_PER_LONG - 1, HMM_FLAGS_START),
-> > 
-> > 	/* Output fields and flags */
-> > 	HMM_PFN_VALID = 1UL << HMM_FLAGS_START + 0,
-> > 	HMM_PFN_WRITE = 1UL << HMM_FLAGS_START + 1,
-> > 	HMM_PFN_ERROR = 1UL << HMM_FLAGS_START + 2,
-> > 	HMM_PFN_ORDER_MASK = GENMASK(HMM_FLAGS_START + 7, HMM_FLAGS_START + 3),
-> > 
-> > 	/* Input flags */
-> > 	HMM_PFN_REQ_FAULT = HMM_PFN_VALID,
-> > 	HMM_PFN_REQ_WRITE = HMM_PFN_WRITE,
-> > };
-> > 
-> > Jason
-> 
