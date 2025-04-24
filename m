@@ -1,142 +1,92 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDCB2223DC0
-	for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 23:33:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14CB478F2D
+	for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 01:40:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745451219; cv=none; b=JdCwOpKAfmNNWSr1lqf/5uwK8PNmPFNwAeme4CBDyBr/yI6+4R6eBRjYSGhBPFebECLImfjRmMQXGI9aJaDKHjBNFWB768wJAlWu2CP0MHJaIg5kZzt4VwMC/Lzhbi4qJDyNWN5olFXWVtiGJz+eyw5JJOVDX+YnbIvvTrjHDLw=
+	t=1745458839; cv=none; b=anAR4Q+6B5aWIMnXlcN/ZhtJ+faK5MPMMAjkOYwPmiJZwimOyR1VlSQZtVrY2HoCeBQdNCBs/M8lQTkF6EJ7RQEwcyN8SxzUlunBjzVtWUAP5nw8v0oXoIeZdMmdw++KcksvXUruT6zVMnzWBi2hArfnlPRmDotRTddZgbMK2mI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745451219; c=relaxed/simple;
-	bh=El3tntKet6XFP5tu5jRccRiIHcbcsNXplDjGS1RgqqY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PHg28Z0gQdRgUfsZj78uaevs7a+SQ3SrmMRmDUD9VLH3X0zMuTjzu0oXX3l9ErUFJ0edlcH+WAEs8K5mSwUBZicTMNBHre26m4qudb8tF/8BVSIazgmq/muj749+4HXeCepGVK67a+9PzmlY7l1K/YGnF0FnveFFLv2os1Azyu8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=lI//r8XI; arc=none smtp.client-ip=209.85.160.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1745458839; c=relaxed/simple;
+	bh=GxcZbzXAsyopNmam3IbbTcoy0AzAFCempRRT2l3+OW8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ga8FgmgI9ESAEdtDEd7RHOM2YMwvcQqhzHbssvTp3ZJKo50/YwwFmvjXNWTBsN4o/PjBVGt+tLLmlFazIJs2LiH/ffT47g8vTZjHhAEr8j4+fVM7PopHOmNgkELjxAaMlCtPy6pJI4ku9smo9jcshku+fu/2FBPA8QbCaqQblbE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GdJSl9zL; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="lI//r8XI"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-47688ae873fso4464951cf.0
-        for <iommu@lists.linux.dev>; Wed, 23 Apr 2025 16:33:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1745451216; x=1746056016; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=L7oRP2YqJwVB6GeEu4BqvXzZqclhisHpp0fN6LY14JQ=;
-        b=lI//r8XIk5Id32jnqr131a0knxutJbYtRsV3gvW7Qf1Gm4cykmeOlfE8ltR6f/dYPR
-         1vy03Vtrjvcruc1rc3ybNqmvK8Xc0k+Ghl5HJ7xy8RVYVe2t5hTwW9DwEZSMFU6b79zb
-         RgKR/He5DGoVAAxV9Kv5XS90H/Wdv6ykdJGwgm/HXRKnJ/Q+vkcLqW/zu2r31MojNcHF
-         vVF9wft1N/8Lu6VCDfh9q8s+WenEpnqXgMVut/98JeRFVDIMh8Bg+VtunYtNnvzIgesb
-         MSU38b21LU1dzyCAdZScFiUrKjoAd9qK4Ipu/RDfFzvE9M2+F/pmazvnWQ19555rpin2
-         bAbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745451216; x=1746056016;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=L7oRP2YqJwVB6GeEu4BqvXzZqclhisHpp0fN6LY14JQ=;
-        b=FTgSNkORs2WPqv3O/U/Rfmp2Yj1LTHWLfnRl4AVvQzqSQf1GPIoA/2FXGSaLm17V8X
-         fm15SDlQ0er+oqACNiUHyt5EMVUKu5NjiQi/nP77swvhtOebYvsBUe6yvyT5EtH/8d/t
-         6Dziw8QGWhhUbdYZCmA6NfWkAvh6RnuBqsgWmav3Bvo9bCa0u9YFgeHGq90A7NkjfBjG
-         Q+EBDjJu8HoTg3PGiS/tgWA30CVMRBJirNBp46e5Snyb7JeZQO7f+nzcfFGK8qgfY3+R
-         a3m818pkSi4xKUexY2D9YMBCeEMsyp0uiBrnfOyhlF/6iQg/ZV/tGdPkiLDWqloAqdLo
-         DTIg==
-X-Forwarded-Encrypted: i=1; AJvYcCW/8u6eYZZjnh8z0UrWcN0w/dXM3EH6MHijjRx8WMNgmsyH0zhnSxAOlq0Gf2MovWaI4TNfLw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywvoa5lBIrGqrw4URdOxcIlzU4t/rvw9uoBd6nxVIgT8So5UJ7q
-	l8CgyyjBuISiN4E6284R3525/Kx+f+PtijmlCfzeqfHy0a3boL1T+8bvtkj9lh8=
-X-Gm-Gg: ASbGncuAtwzWRVgftEIEgJTPHggv0xU3Ki1sYeQzvAezToLZSN3hjp6R8+RkpMu0pSm
-	fWCWQOppBCZ+bdCbeNAt5+j8+067Nk89dJxeFne2Bc4rvP4C5PKF/i4JOoeAoc2tbK6lboAHiXf
-	2HPox6bFmNdEPnzsfBN1rO4Dudg6S4C4nwrUVV1h8IY7q30Hi5mBVJYGP9u1f0BMFsfZDoUbQAI
-	qdF4WUI39UYx5ao38zbtDm+SrPO08op8NF0MBZinc7Cli1qdfB8QywNn0MtCBNO03w8rX56G7Zj
-	815nPWNuCuouYLOU0CHHMI8wpywTIV3q0G7+d8Ma24q9s0G54RXqHVNFA60lzJK7togHYehUTT0
-	U71ksU6w07I26Z/D312g=
-X-Google-Smtp-Source: AGHT+IHp4LWhqR/rJc6pqFU95w2BqdqjYtJ4SAe1Mvc/v+Ufccgyj7hWc7Mm96oBr3hzP4lBlnfnCQ==
-X-Received: by 2002:a05:622a:388:b0:476:b783:c94d with SMTP id d75a77b69052e-47eb4fbb928mr6490361cf.35.1745451216599;
-        Wed, 23 Apr 2025 16:33:36 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-47ea1ba154asm2538601cf.67.2025.04.23.16.33.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Apr 2025 16:33:35 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1u7jax-00000007PKl-19Zx;
-	Wed, 23 Apr 2025 20:33:35 -0300
-Date: Wed, 23 Apr 2025 20:33:35 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mika =?utf-8?B?UGVudHRpbMOk?= <mpenttil@redhat.com>
-Cc: Leon Romanovsky <leon@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-	Keith Busch <kbusch@kernel.org>,
-	Leon Romanovsky <leonro@nvidia.com>, Jake Edge <jake@lwn.net>,
-	Jonathan Corbet <corbet@lwn.net>, Zhu Yanjun <zyjzyj2000@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Kanchan Joshi <joshi.k@samsung.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>
-Subject: Re: [PATCH v9 10/24] mm/hmm: let users to tag specific PFN with DMA
- mapped bit
-Message-ID: <20250423233335.GW1213339@ziepe.ca>
-References: <cover.1745394536.git.leon@kernel.org>
- <0a7c1e06269eee12ff8912fe0da4b7692081fcde.1745394536.git.leon@kernel.org>
- <7185c055-fc9e-4510-a9bf-6245673f2f92@redhat.com>
- <20250423181706.GT1213339@ziepe.ca>
- <36891b0e-d5fa-4cf8-a181-599a20af1da3@redhat.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GdJSl9zL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745458838; x=1776994838;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=GxcZbzXAsyopNmam3IbbTcoy0AzAFCempRRT2l3+OW8=;
+  b=GdJSl9zLlzecN3enylysJHdd7d+K52ZttbogMYO1hN9q5JCXp6slzzEl
+   c9bjQSP0vLSg0J2bslth1TD02nWJhJl4QGdtM/7/BVyE5EunZ27DVRIpT
+   3Dn4VIPhA0tTQQYQUIAbC8oXuoElh4fuF8hrHrVDvvK/jCawTAArAJvuk
+   zru8mhdNAAtz/1SP20ELvaqPiO3eSWLLZH3K7evTREVAKWAn25tUQRm6h
+   GdAVT9XzudwddSDEaI8GHqCtEgN22K1But/EJCpXnndhZ7UX/m4/fdLKc
+   AxFD0bwB0qkxgEkBFiUhbSGqTE/YbAW/3bGfUGtxz51AY5AHEJCuIZi/Y
+   w==;
+X-CSE-ConnectionGUID: G6wSSsE8TKi9oYeZPuB8gA==
+X-CSE-MsgGUID: w2kpK0g/QWa4Cqg+PU50DA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11412"; a="57718075"
+X-IronPort-AV: E=Sophos;i="6.15,233,1739865600"; 
+   d="scan'208";a="57718075"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2025 18:40:37 -0700
+X-CSE-ConnectionGUID: 6+oKY1WXSyKUROLt/jVNnw==
+X-CSE-MsgGUID: krdCVcNfT4+8MsuMpGylSg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,233,1739865600"; 
+   d="scan'208";a="132999771"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2025 18:40:35 -0700
+Message-ID: <d9756d68-9d40-4fa7-8d11-5a260dc4f4cd@linux.intel.com>
+Date: Thu, 24 Apr 2025 09:36:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <36891b0e-d5fa-4cf8-a181-599a20af1da3@redhat.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/1] iommu: Allow attaching static domains in
+ iommu_attach_device_pasid()
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ shangsong2@lenovo.com, Dave Jiang <dave.jiang@intel.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, stable@vger.kernel.org
+References: <20250423021839.2189204-1-baolu.lu@linux.intel.com>
+ <20250423142102.GL1648741@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250423142102.GL1648741@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Apr 23, 2025 at 09:37:24PM +0300, Mika Penttilä wrote:
+On 4/23/25 22:21, Jason Gunthorpe wrote:
+> On Wed, Apr 23, 2025 at 10:18:39AM +0800, Lu Baolu wrote:
+>> @@ -3435,7 +3448,8 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+>>   	    !ops->blocked_domain->ops->set_dev_pasid)
+>>   		return -EOPNOTSUPP;
+>>   
+>> -	if (ops != domain->owner || pasid == IOMMU_NO_PASID)
+>> +	if (!domain_iommu_ops_compatible(ops, domain) ||
+>> +	    pasid == IOMMU_NO_PASID)
+>>   		return -EINVAL;
+> Convert all the places checking domain->owner to the new function..
 > 
-> On 4/23/25 21:17, Jason Gunthorpe wrote:
-> > On Wed, Apr 23, 2025 at 08:54:05PM +0300, Mika Penttilä wrote:
-> >>> @@ -36,6 +38,13 @@ enum hmm_pfn_flags {
-> >>>  	HMM_PFN_VALID = 1UL << (BITS_PER_LONG - 1),
-> >>>  	HMM_PFN_WRITE = 1UL << (BITS_PER_LONG - 2),
-> >>>  	HMM_PFN_ERROR = 1UL << (BITS_PER_LONG - 3),
-> >>> +
-> >>> +	/*
-> >>> +	 * Sticky flags, carried from input to output,
-> >>> +	 * don't forget to update HMM_PFN_INOUT_FLAGS
-> >>> +	 */
-> >>> +	HMM_PFN_DMA_MAPPED = 1UL << (BITS_PER_LONG - 7),
-> >>> +
-> >> How is this playing together with the mapped order usage?
-> > Order shift starts at bit 8, DMA_MAPPED is at bit 7
+> static int __iommu_attach_group(struct iommu_domain *domain,
+> 				struct iommu_group *group)
 > 
-> hmm bits are the high bits, and order is 5 bits starting from
-> (BITS_PER_LONG - 8)
+> int iommu_replace_device_pasid(struct iommu_domain *domain,
+> 			       struct device *dev, ioasid_t pasid,
+> 			       struct iommu_attach_handle *handle)
 
-I see, so yes order occupies 5 bits [-4,-5,-6,-7,-8] and the
-DMA_MAPPED overlaps, it should be 9 not 7 because of the backwardness.
+Sure. Will make it in a new version.
 
-Probably testing didn't hit this because the usual 2M order of 9 only
-sets bits -4 and -8 .. The way the order works it doesn't clear the
-0 bits, which I wonder if is a little bug..
-
-Jason
+Thanks,
+baolu
