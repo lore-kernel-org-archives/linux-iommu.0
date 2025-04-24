@@ -1,117 +1,134 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFB9418E1F
-	for <iommu@lists.linux.dev>; Thu, 24 Apr 2025 06:59:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D24A4CA52;
+	Thu, 24 Apr 2025 07:15:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745477944; cv=none; b=lVf6GsehSdEq0hOifRtg0C3HnHrlPXKRJfXwezSe+WzIzfJ3s3RpI5rK7IZDQAUegANNIraD5zgdtgZpkY8QcTYp6gt+438jga0UgLfuEO7i8gqrWMapGwbBvDlFktXtTeY8HUAu1KDAL+wXnyIAmRU9XEqFdP2emyFtj5FFSpI=
+	t=1745478952; cv=none; b=FI24Nzb+mhsuzug8076nMp2QNckg//CvQoVQcBZh+4/EvpVxky1v3j+It1Vjc9qokbAIPf5MZ2sjnQ/rL5tUVbchDjNFdoKywslJpRpAp2nt4szoVqh/bE7KcjOOz+xclykMGshC2vpZzHYz/BogMMICj6meOq5rpm2ZZpbdCRw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745477944; c=relaxed/simple;
-	bh=P7a4A6x8UFXBNfXVk8wNvjijk3FZSS3WNYjyXXXW3OA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EnCHmVA16Ylgu4uwaPiMNTdu6DQG2BCSpJd/muYz1HOqxt2RIEyeDPIa8zlqHTEMOPsQ9Y94nNlVwIzdo5L223z2Dq6VuD3+zaGqgoRsrDlfMp32Exw0TcrieLsSwWJcrTf2HMqid1dtMoxGJVNXfAW17xFaWyQZhqgXhgJ7iV4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MeFVrQl/; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1745478952; c=relaxed/simple;
+	bh=pTkF/OxNxP3a5nhNTZxPZtH9LiokbdzIPY4lcClh0Q0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LkL6ZRu6rZ1q2KFRUROFPShUq/68RaF++pKn22XR0HrQZdXhA8ee0sA0NHs0scmQHpCkmqaI63RdnDV8f3h03CdqO4fD+7Vvn2A8Ht1kAB3WbpTQeSvLGmjWk62GEqr2iO+vHu0ojDnZjxr4k8PNpOQAPCzgxBIame0w5jEciTA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aBTgU71u; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MeFVrQl/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745477941; x=1777013941;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=P7a4A6x8UFXBNfXVk8wNvjijk3FZSS3WNYjyXXXW3OA=;
-  b=MeFVrQl/CBD/6DDvQ2abVXrUzELFSLCqL7AMjxtxzcLTdoJi/9bAU2ck
-   5/V2wkiEUs6TJhsqEa0ZM0pxe77kkMjHNGjGNFRh5Zyoyp5vr7rLW1K4d
-   3gPG0jCT3u2WIdwDu0aLWnFotIwuV/jXDqCSI35stgjjdjlz3QxKZykee
-   KU4cytAE2oRgzK08Jk1f1zTx5u9Pw/LMN4Q9oWL6UQMZYR54BImvsvH+5
-   bCHMyxqB5XTczr8XCcFYgBuRpwrECG0pPeN2HACmzSkDXvf80wAWxJo45
-   xhbnv+05Tz/jqMdqpDT9BPb1bk3RVwum+q8fH+8kZq4P1tpRsux5JWGno
-   Q==;
-X-CSE-ConnectionGUID: EdqTu8JFRka0vUFeELTDOA==
-X-CSE-MsgGUID: RDMH1bRiSHeozhm1ypzT2A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11412"; a="58456018"
-X-IronPort-AV: E=Sophos;i="6.15,235,1739865600"; 
-   d="scan'208";a="58456018"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2025 23:59:01 -0700
-X-CSE-ConnectionGUID: VmXw7/jDQp66g53tf+kJnQ==
-X-CSE-MsgGUID: QXeoSsyqQLupGp8r9+9qlQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,235,1739865600"; 
-   d="scan'208";a="137323854"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2025 23:58:59 -0700
-Message-ID: <c6f5e533-5e60-494c-93fd-5a004a9a13a0@linux.intel.com>
-Date: Thu, 24 Apr 2025 14:54:43 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aBTgU71u"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B8E3C4CEE3;
+	Thu, 24 Apr 2025 07:15:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1745478951;
+	bh=pTkF/OxNxP3a5nhNTZxPZtH9LiokbdzIPY4lcClh0Q0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=aBTgU71uDQ76gGQRWfJMAVuYX3A0QbPaLJvEVuFRBRrxPSIlRhqbBqclL9MgN42Mz
+	 mOyKpbfujbO9d4jcdRZl8T1Go5m+UqQxIRaX0tVYAWP8gY0N23/sDzG80Ns8/xrjOx
+	 yRFGVRmXxsj5fmUE6A3mSSt4ikS5jl7uqbR1Q9jdp7zW3uELJvckJZvlrjbWQLAFMI
+	 rlKfp1i/mcS2aG+fPOR4bIoU7h9FpaLggeY2LHT/xOyqKlGS/6YJVHuNgwdRNVVRsH
+	 wu0LFFiidEyDynwIeD0OFcSLI8I/quvZGtTqBj02iqPtvdHAUsLiUcS2TnnGA7c1LM
+	 7VSAaFBMPFnUw==
+Date: Thu, 24 Apr 2025 10:15:45 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+	Keith Busch <kbusch@kernel.org>, Jake Edge <jake@lwn.net>,
+	Jonathan Corbet <corbet@lwn.net>, Zhu Yanjun <zyjzyj2000@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Chuck Lever <chuck.lever@oracle.com>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Kanchan Joshi <joshi.k@samsung.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>
+Subject: Re: [PATCH v9 11/24] mm/hmm: provide generic DMA managing logic
+Message-ID: <20250424071545.GM48485@unreal>
+References: <cover.1745394536.git.leon@kernel.org>
+ <3abc42885831f841dd5dfe78d7c4e56c620670ea.1745394536.git.leon@kernel.org>
+ <20250423172856.GM1213339@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/1] iommu: Allow attaching static domains in
- iommu_attach_device_pasid()
-To: Vasant Hegde <vasant.hegde@amd.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
- shangsong2@lenovo.com, Dave Jiang <dave.jiang@intel.com>
-Cc: jack.vogel@oracle.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20250424034123.2311362-1-baolu.lu@linux.intel.com>
- <6cee67bd-1bef-4b8c-96bb-da358bc2d5c3@amd.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <6cee67bd-1bef-4b8c-96bb-da358bc2d5c3@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250423172856.GM1213339@ziepe.ca>
 
-On 4/24/25 14:49, Vasant Hegde wrote:
-> On 4/24/2025 9:11 AM, Lu Baolu wrote:
->> The idxd driver attaches the default domain to a PASID of the device to
->> perform kernel DMA using that PASID. The domain is attached to the
->> device's PASID through iommu_attach_device_pasid(), which checks if the
->> domain->owner matches the iommu_ops retrieved from the device. If they
->> do not match, it returns a failure.
->>
->>          if (ops != domain->owner || pasid == IOMMU_NO_PASID)
->>                  return -EINVAL;
->>
->> The static identity domain implemented by the intel iommu driver doesn't
->> specify the domain owner. Therefore, kernel DMA with PASID doesn't work
->> for the idxd driver if the device translation mode is set to passthrough.
->>
->> Generally the owner field of static domains are not set because they are
->> already part of iommu ops. Add a helper domain_iommu_ops_compatible()
->> that checks if a domain is compatible with the device's iommu ops. This
->> helper explicitly allows the static blocked and identity domains associated
->> with the device's iommu_ops to be considered compatible.
->>
->> Fixes: 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
->> Closes:https://bugzilla.kernel.org/show_bug.cgi?id=220031
->> Cc:stable@vger.kernel.org
->> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
->> Link:https://lore.kernel.org/linux-iommu/20250422191554.GC1213339@ziepe.ca/
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> Reviewed-by: Dave Jiang<dave.jiang@intel.com>
->> Reviewed-by: Robin Murphy<robin.murphy@arm.com>
+On Wed, Apr 23, 2025 at 02:28:56PM -0300, Jason Gunthorpe wrote:
+> On Wed, Apr 23, 2025 at 11:13:02AM +0300, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > HMM callers use PFN list to populate range while calling
+> > to hmm_range_fault(), the conversion from PFN to DMA address
+> > is done by the callers with help of another DMA list. However,
+> > it is wasteful on any modern platform and by doing the right
+> > logic, that DMA list can be avoided.
+> > 
+> > Provide generic logic to manage these lists and gave an interface
+> > to map/unmap PFNs to DMA addresses, without requiring from the callers
+> > to be an experts in DMA core API.
+> > 
+> > Tested-by: Jens Axboe <axboe@kernel.dk>
 > 
-> Thanks! We have static identity domain in AMD driver as well. Some day we may
-> hit similar issue 🙂
-> 
-> Patch looks good to me.
-> 
-> Reviewed-by: Vasant Hegde<vasant.hegde@amd.com>
+> I don't think Jens tested the RDMA and hmm parts :)
 
-Thank you!
+I know, but he posted his Tested-by tag on cover letter and b4 picked it
+for whole series. I decided to keep it as is.
 
 > 
-> W/ this change may be I should fix AMD driver like below. (No need to respin
-> patch. I can send topup patch later).
+> > +	/*
+> > +	 * The HMM API violates our normal DMA buffer ownership rules and can't
+> > +	 * transfer buffer ownership.  The dma_addressing_limited() check is a
+> > +	 * best approximation to ensure no swiotlb buffering happens.
+> > +	 */
+> 
+> This is a bit unclear, HMM inherently can't do cache flushing or
+> swiotlb bounce buffering because its entire purpose is to DMA directly
+> and coherently to a mm_struct's page tables. There are no sensible
+> points we could put the required flushing that wouldn't break the
+> entire model.
+> 
+> FWIW I view that fact that we now fail back to userspace in these
+> cases instead of quietly malfunction to be a big improvement.
+> 
+> > +bool hmm_dma_unmap_pfn(struct device *dev, struct hmm_dma_map *map, size_t idx)
+> > +{
+> > +	struct dma_iova_state *state = &map->state;
+> > +	dma_addr_t *dma_addrs = map->dma_list;
+> > +	unsigned long *pfns = map->pfn_list;
+> > +	unsigned long attrs = 0;
+> > +
+> > +#define HMM_PFN_VALID_DMA (HMM_PFN_VALID | HMM_PFN_DMA_MAPPED)
+> > +	if ((pfns[idx] & HMM_PFN_VALID_DMA) != HMM_PFN_VALID_DMA)
+> > +		return false;
+> > +#undef HMM_PFN_VALID_DMA
+> 
+> If a v10 comes I'd put this in a const function level variable:
+> 
+>           const unsigned int HMM_PFN_VALID_DMA = HMM_PFN_VALID | HMM_PFN_DMA_MAPPED;
+> 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-I think that's a cleanup rather than a fix.
+I have no idea if v10 is needed. DMA API is stable for a long time and
+only DMA part should go in shared branch. Everything else will need to
+go through relevant subsystems anyway.
 
-Thanks,
-baolu
+Thanks
+
+> 
+> Jason
