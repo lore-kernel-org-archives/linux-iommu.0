@@ -1,63 +1,61 @@
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39CA922AE71
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB18A22E415
 	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 07:37:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745566665; cv=none; b=P+TGV2Dt6sIMRwA0A+sgYEDYtWJy4a3ul1gKYArxMfYW59mGOYfK0EkHxryDuiQRe0/PX+OXfp0+kF3DjfFXzz1jNLhUMObJHXRZ2uHXKoST0+LOuvlkyRI+0PwFz9/Eh/9Wlm+FEfnE5VziFfQMmTl++wp541R24JzhBmv58Ew=
+	t=1745566665; cv=none; b=XMFsBxc1CQPI0X9aPKTfw5jVDV7fdG2u4NfqelYLRBeMcsHtLiQj1cwncew51l/Rd9e2rKmNaCo+NMLwGz1WgBW3AVZtmMqAkirPWCu2uNGQ6MbRBMakmnwWFFCB6n69DV0EV7uAE++yDksyyqH1cSLPO+ebmOT5Y83x1j8xWy0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1745566665; c=relaxed/simple;
-	bh=WqzuZjN2OlAEP5U+WrT20wORev7uTKByfRxp1ekMkR8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=l2aLLm/hFJzdV3fdhn6r8UEppdjOQokxg1KZ2OI4ePfgVmiee1H4gNDNh9ESLbCPGFKP9ZltDvEZIlDtRHTkveB/1GrKA0qK9dVMGluAB7/4oA4YbeKtpIT0iSNh/VRcqr2ySyE5o50i95mpWn/T3ypHVdlxxAzg38DmeWxpcF8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Sas0sFms; arc=none smtp.client-ip=209.85.208.178
+	bh=t+c7p3hXTF+xTlc0Km+48d+pPuhuJBf8m+A71HAjDKw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=fJfHX3lOGrcBL9oODyOVuhfV7mDnrNTc11pI1OArzeMpld6gRQcud+y2c8iyllOL4p2YtCw2GvL6XsTJzztcaGLKjbDSGcqR5RuKb++SEGlbLImT6PREafnZKGCGQLXPIgJAntYERN7cNzefwo3TM8i7fzqSHnxPk9sxhBQoUow=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eYPwfxX0; arc=none smtp.client-ip=209.85.167.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Sas0sFms"
-Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-310447fe59aso22687541fa.0
-        for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 00:37:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eYPwfxX0"
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-54ac9d57173so3279066e87.0
+        for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 00:37:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745566661; x=1746171461; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=q4Cn3iGXk2B43PzN7CtJiYrgGpJ21xhd2OrhojDiLX8=;
-        b=Sas0sFms0bhiQXa8cF8MNkyJIIJnMV24NwSqmLAoDOaC3DoVsLt+SofdVu+Sew0+55
-         tDwg08XSPtOTqtVDJvHGoxokYqr9016+ceoalgfMsqUxIrHMI0mvPuFQ3CR1lbal6/g2
-         BBAxPY4uGV+r0f/UX5T/Gpy4/OsdvKQYQCatDV4jRtlasdJL/90NFoNIbkNnG72N1IWk
-         6uKcI+vbFNadaew7FtIgvcFJMFdQwTLUKU5KmQSFraaNrCoTdQsAW7VFBWFY3Py10H1Y
-         btrdxIspk0Sbwc0vkRFklXYVBUXQgZlu+kKFMbIy+nvxwLrhcTClI0NON5pLmsk2l7j6
-         4eWg==
+        d=gmail.com; s=20230601; t=1745566662; x=1746171462; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mnIim+RQL+Hrsqs0xdul+xxqVCFsVQjL6+9pVyg8PoQ=;
+        b=eYPwfxX06p8TZG3huv6b4ErlokO9cdMusmBrN6d4Dh2veC29XKDvXPoP5g8EWhIiqE
+         OEksL2Mdm0U2HKZOAQxMZukrvFxcAWlcu7pt3/096uYAnK6tPZwFEWDgQZwbGJwL4mry
+         3Wcq1WJyMs2R7hkFc1lyhj11FmQuDYdLNjS6PtICbW4CoLAoUJXa4DOlDgYEDxwJuwAz
+         +l7Cke2M+Xkd8klm3zZqo5fTo99mV3iIvar8h0BCaOlGTTu+8yvg/LZjDDGDwac0fv0p
+         siCX+etWQ0QSO4KR51ha2N3Etcqmc0/Hw9VPiERYEjvSQjup5+LNZZMIaQvuLNDaJusT
+         YEtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745566661; x=1746171461;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=q4Cn3iGXk2B43PzN7CtJiYrgGpJ21xhd2OrhojDiLX8=;
-        b=OxjmhrMlVptWCAzKOP43c1NZVVCfOGzoPS75m7jIiM9DXUrDm4cG0vt8oF0uWGMdLf
-         iSV8YQNSn8kedph7+OiDB2o7cerhOwZfyj/BqYXHKsHIcjodR/rd7MCSwD8A+SZVq/qr
-         PV/wgm3Hi+6Z84raMJH4golH4/Kve9SCrXqaFtzKQ2Pkrtych4RXFZofYKEB0OdNTMwP
-         XtQ8L2KnDv9DTV6lcAZpfZpFQ4jG8QLK5yvqNCifw2TZSSeh1ok1Elty2rzrZ6GiEHJW
-         P694/uXPf4PuewAlSN+va/8mLF/5Py7DUV+ALSpXMdyxGgUA/FmjzNYgUxdq9hji1heX
-         iwLw==
-X-Forwarded-Encrypted: i=1; AJvYcCVUnzOElg52/ney53EDi57EATEAyKIr0yjC+psBDpHKJFn22He9LZ+qJ+7otDYTCH7kMVwxtw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxSKNxb28Ug5st8jJa2iTsTojWYh8avxOXkNoM6OJjYhNW03nTU
-	pC9/NoANUWpyTYFPChZxslc8yy9OqxOEtCjfblHaWKV0bHALtyFS
-X-Gm-Gg: ASbGncvsFMWQTleTrwd+vr7cKbZAZ0Ct7Fb5aTFjNQr+6jMcXfEfX0UiZpbOiQCiyRH
-	ck8EWEKlHcYweR4TKIBSp3p7MRNxdsXVaKvoT2b9Js6y/+S2z5HVg0q2qMwOziQx+G02ZK5t9od
-	T4crA/DWFRrOMneXVKLqqaQKD3WS+MQTydGv9W/HevbTiJJzno48C7BiuIAsad7/76UKTODJktE
-	fWu+k1Fem5WIL8g4VH9DwgBuXsyTvA2cfLOOMvVPPkCsajgGrtntpLV2f/IKLdPVXBQmzQ10mPF
-	E1+W14/F2zP8M7YrB9BMW+HhwyaQA2XZNqvAGR5yPlKN7g42tnaCL4XCGeA4Opc/XFA9HlEfxJj
-	EGb4sl0USS9h+SMDdTMxMPMe1TO9s
-X-Google-Smtp-Source: AGHT+IE2pq4NMC62iFfUfxNncOQ4QYZVoaBSclW1fBNBOsWB4SrRHwoy3yvkk2RaMxEl6RrMrQTP+Q==
-X-Received: by 2002:a05:651c:3129:b0:30c:dbf:51a5 with SMTP id 38308e7fff4ca-319080e469emr3639321fa.35.1745566660941;
-        Fri, 25 Apr 2025 00:37:40 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1745566662; x=1746171462;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mnIim+RQL+Hrsqs0xdul+xxqVCFsVQjL6+9pVyg8PoQ=;
+        b=hPt7Gvxclaf+0Sp96mnrbcLWUhwhyNUsuRx53UoxTKpmCML6sbf6040b/7ICq8tMlW
+         nWTu2+w6mbYZBlFVdQyed1LOwvbm0Zmd4ZB5+X8xB/8UxiPDig2+xyAQiLuUdq1vjGhC
+         dAFKxci1xDhzI4k6/+phjaVC347F7eOcByvZr8blDgcaMM1OoLQIWpdJ4Z+bIqdyz6nb
+         p1vh3tKFLZO/XsMEe1l5VwMH67GK7OoZ9HWqiDTdFl4ch5EYRRSUNx8RpTY5dRH7GEnm
+         HFtiDaVfWGlq/UldKRxQHR2XdnKhvHANjHx1Tiz/4uQnw49CkTOKDunlVifxekbi+ZYJ
+         c2+w==
+X-Forwarded-Encrypted: i=1; AJvYcCUuU4cX3V2ycfGMIIWxsMJF2waiW2eD4f5NdS6lKrO173Ul4vg2iuDv6i2rMDdskXtUqL8gIw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz7GxA1792Qdey/DGigALWuTplRmpWsYJOdU8m3M8ZRJ03tK36k
+	YUkuveurnsLDmblzmbGjCGQCKEuAOUg8dLQIGmjvcYXLUz8SXts2
+X-Gm-Gg: ASbGncvJioEbjuJBX+nTAIkY883VumT+dZD5qQAiedjNT6BxwGaYuyMqTDfphYILeo9
+	8qJ6gPsKOeMi477xFruK/DoSbks3SI2kQtczxrrEP9Ayaxn5oJHgsWt3dMKvgrVWPuirrZ7044H
+	JH7TKxZAX5cULABwEf7yAd5kpLXUjIzRmq05hfxmES0uk4QBhE9RB/ZVY0Rr/dmyK8GJGTOmj19
+	t1tQh84MwnaP8IRSgrvaY20Pb25NuBvSVc3gUxF1n6iI//C5abkLFANF8ovvhpN+mOBMaMT3Udb
+	7cUvVzC7hDT4VgBKwXJLkfEVAYhoGMOOpp50EbQqmkTLAbmhEExwRRqmYW5oAgSL9546LiI7yho
+	h2EiYbnmrhKwxunrU+Q==
+X-Google-Smtp-Source: AGHT+IEZcJwlsd0sqDyVM7rduSdPLrkIpl5/mpahAAlSrYeCBg72J5O925aQVXmVaHNs9sZE2AniFg==
+X-Received: by 2002:a05:6512:33cf:b0:545:2474:2c9b with SMTP id 2adb3069b0e04-54e8ced7fe0mr299265e87.22.1745566659971;
+        Fri, 25 Apr 2025 00:37:39 -0700 (PDT)
 Received: from abj-NUC9VXQNX.. (dsl-hkibng22-54f8dc-251.dhcp.inet.fi. [84.248.220.251])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-54e7cc9e9a5sm504391e87.132.2025.04.25.00.37.40
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-54e7cc9e9a5sm504391e87.132.2025.04.25.00.37.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 25 Apr 2025 00:37:40 -0700 (PDT)
+        Fri, 25 Apr 2025 00:37:39 -0700 (PDT)
 From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 To: dakr@kernel.org,
 	rust-for-linux@vger.kernel.org
@@ -77,12 +75,10 @@ Cc: Miguel Ojeda <ojeda@kernel.org>,
 	airlied@redhat.com,
 	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
 	Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Subject: [PATCH v3 1/3] rust: dma: clarify wording and be consistent in `coherent` nomenclature
-Date: Fri, 25 Apr 2025 10:35:40 +0300
-Message-ID: <20250425073726.1027068-2-abdiel.janulgue@gmail.com>
+Subject: [PATCH v3 0/3] Additional improvements for dma coherent allocator
+Date: Fri, 25 Apr 2025 10:35:39 +0300
+Message-ID: <20250425073726.1027068-1-abdiel.janulgue@gmail.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250425073726.1027068-1-abdiel.janulgue@gmail.com>
-References: <20250425073726.1027068-1-abdiel.janulgue@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -91,67 +87,28 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In the kernel, `consistent` and `coherent` are used interchangeably for the
-region described in this api. Stick with `coherent` nomenclature
-to show that dma_alloc_coherent() is being used, in addition to improving
-the clarity in the DMA mapping attributes documentation.
+Changes since v2:
+- Rebase update, add fix from Alexandre Courbot, commit clarifications,
+  minor sample driver improvements in error handling.
+Link to v1: https://lore.kernel.org/lkml/20250410085916.546511-1-abdiel.janulgue@gmail.com/
 
-Reviewed-by: Benno Lossin <benno.lossin@proton.me>
-Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
----
- rust/kernel/dma.rs | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Changes since v1:
+- Pull in reviewed-by tags and include links.
+- Improve error handling in rust dma sample driver.
+- Clarifications in documentation.
 
-diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
-index 8cdc76043ee7..d3f448868457 100644
---- a/rust/kernel/dma.rs
-+++ b/rust/kernel/dma.rs
-@@ -89,15 +89,15 @@ pub mod attrs {
-     /// Forces contiguous allocation of the buffer in physical memory.
-     pub const DMA_ATTR_FORCE_CONTIGUOUS: Attrs = Attrs(bindings::DMA_ATTR_FORCE_CONTIGUOUS);
- 
--    /// This is a hint to the DMA-mapping subsystem that it's probably not worth the time to try
-+    /// Hints DMA-mapping subsystem that it's probably not worth the time to try
-     /// to allocate memory to in a way that gives better TLB efficiency.
-     pub const DMA_ATTR_ALLOC_SINGLE_PAGES: Attrs = Attrs(bindings::DMA_ATTR_ALLOC_SINGLE_PAGES);
- 
--    /// This tells the DMA-mapping subsystem to suppress allocation failure reports (similarly to
-+    /// Tells the DMA-mapping subsystem to suppress allocation failure reports (similarly to
-     /// __GFP_NOWARN).
-     pub const DMA_ATTR_NO_WARN: Attrs = Attrs(bindings::DMA_ATTR_NO_WARN);
- 
--    /// Used to indicate that the buffer is fully accessible at an elevated privilege level (and
-+    /// Indicates that the buffer is fully accessible at an elevated privilege level (and
-     /// ideally inaccessible or at least read-only at lesser-privileged levels).
-     pub const DMA_ATTR_PRIVILEGED: Attrs = Attrs(bindings::DMA_ATTR_PRIVILEGED);
- }
-@@ -105,7 +105,7 @@ pub mod attrs {
- /// An abstraction of the `dma_alloc_coherent` API.
- ///
- /// This is an abstraction around the `dma_alloc_coherent` API which is used to allocate and map
--/// large consistent DMA regions.
-+/// large coherent DMA regions.
- ///
- /// A [`CoherentAllocation`] instance contains a pointer to the allocated region (in the
- /// processor's virtual address space) and the device address which can be given to the device
-@@ -115,7 +115,7 @@ pub mod attrs {
- /// # Invariants
- ///
- /// For the lifetime of an instance of [`CoherentAllocation`], the `cpu_addr` is a valid pointer
--/// to an allocated region of consistent memory and `dma_handle` is the DMA address base of
-+/// to an allocated region of coherent memory and `dma_handle` is the DMA address base of
- /// the region.
- // TODO
- //
-@@ -138,7 +138,7 @@ pub struct CoherentAllocation<T: AsBytes + FromBytes> {
- }
- 
- impl<T: AsBytes + FromBytes> CoherentAllocation<T> {
--    /// Allocates a region of `size_of::<T> * count` of consistent memory.
-+    /// Allocates a region of `size_of::<T> * count` of coherent memory.
-     ///
-     /// # Examples
-     ///
+Abdiel Janulgue (3):
+  rust: dma: clarify wording and be consistent in `coherent`
+    nomenclature
+  rust: dma: convert the read/write macros to return Result
+  rust: dma: add as_slice/write functions for CoherentAllocation
+
+ rust/kernel/dma.rs       | 151 +++++++++++++++++++++++++++++++--------
+ samples/rust/rust_dma.rs |  28 ++++----
+ 2 files changed, 137 insertions(+), 42 deletions(-)
+
+
+base-commit: 9d7a0577c9db35c4cc52db90bc415ea248446472
 -- 
 2.43.0
 
