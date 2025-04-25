@@ -1,238 +1,259 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2044.outbound.protection.outlook.com [40.107.93.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E99FC17996
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 01:01:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745542865; cv=none; b=t2qlBXGgN5+8Mx9crbV3SD4oIhxuTQWKw9Rqw1LfKyPufC17t71sxR/wZNIAQl0eh9i9djbRIhYb/JDjdVep+qsKvWgB2d6+f14vRfn3XV76U//PclIT5X4FlKWV9f3vju+C1OOzlDoa6YCxfWjUYBrNn8JhadG4E+HFYth9GRU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745542865; c=relaxed/simple;
-	bh=3NBBCGeKr2m5IBaqIkjQPLgZ1gmvbV+miikL5I2UHb0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CY/ZWeBoM3z1hGSWXwNNEapx8Rpt1I0Kb1sgdOTZArrL+PX9SEw/rElXrpIW6M9hxaqpCjBOnCC820HQSFRH3z7vptiJ7Z6hdbBacegjPSN/AnnOMTcHkfgr7bhwAfC1LubQn7Pi9sb5/OtS8haUga0i+lscUIwKutjP8vU7mKU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=daBcB89E; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9663C79FD
+	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 04:59:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745557161; cv=fail; b=XuyfEzbF3UfEGxS5Qp5D6ftUiUGsWwD83lXr+SL04wawHvxY0VI7ZcGAdz5XL33rE3NhnMvJgDmTgH4vctUEX6CsoJ0EY9VIEU7Jqx+MUompP+kdXz8Ujf8O8Xp84GA9Q0Qmm2QQSYLyQFkdXIqFX5Ru1P08ulXzf+1Os/Lif7k=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745557161; c=relaxed/simple;
+	bh=VVtma1ttS+gBRpMB/X+gbCc7EXecky1SeqEO2M1xdL0=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=uAlgGy6oNb+0mf4CBWsafapyjcBOoCVnppk22ZOke9/S3tXdBDqKKKYGiEqqUj7DkneLi7qj9+2YlVI1WVNPq7QrMKuOcoOAntGCoBTCXkOxSXziY6KUjRqir0he6n+ZjIz95mOu5d2Gpki3R5aioDV7qowM3hmzQjuEeFREBMY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Gy6BGYkm; arc=fail smtp.client-ip=40.107.93.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="daBcB89E"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745542863; x=1777078863;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=3NBBCGeKr2m5IBaqIkjQPLgZ1gmvbV+miikL5I2UHb0=;
-  b=daBcB89Evau0SLmPlPDp0xqFaOCXDwhq0DB+Vn/dA5QYL/HWrIZ9BdS+
-   Y2Kx8G0vXwdiT2Mz98bBXhfTq+9HsCzX/c9em2T3sBmVkELrqoUwJ9xxx
-   Fn135fDkb3cywYZC7vW5wEu7nE13LAWtuODtEM73q6ITx5uQM1nYG2ZuJ
-   ax7sYr3QdpwgNbONq/0FANUaKucKGnxeJvhoJFePUWd1rTG/KsOZezO1q
-   7YM+7jZaWhrD8Z6LtECnLlI3kVlVz3VHM/PBzu8V4KIsyoOQcIBApu20l
-   ZTL7xvI8rk8z6QAESnfBNr3xOOfPgb/laFgafUrP0wNs/3TqBMhxNVesQ
-   w==;
-X-CSE-ConnectionGUID: nZAB/71nQ4y4me8mNEvEmw==
-X-CSE-MsgGUID: dPWFr3FWTlazUrMGNZBHDg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11413"; a="58187341"
-X-IronPort-AV: E=Sophos;i="6.15,237,1739865600"; 
-   d="scan'208";a="58187341"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2025 18:01:02 -0700
-X-CSE-ConnectionGUID: zYinjX53Rq2xK987hBUNDA==
-X-CSE-MsgGUID: s5TphgHrQyuN1UkyCzHYoQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,237,1739865600"; 
-   d="scan'208";a="163827607"
-Received: from puneetse-mobl.amr.corp.intel.com (HELO [10.125.108.124]) ([10.125.108.124])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2025 18:01:00 -0700
-Message-ID: <bf3e0b9b-1cf5-4ee5-8487-46851a84230d@intel.com>
-Date: Thu, 24 Apr 2025 18:00:58 -0700
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Gy6BGYkm"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=LJUz0ADhMJfiLL94MWQLCoEHyCQLavglHBVfxfihClJ/dBkLm/4kxvr+h7Y3ZLjx1NcDXbVDWAHZSyiPG6Ulm1PKdR4ZY1d1Y3mcoTjGZXeSvVbtOuRJQugfMh/IpFEY1TKDGzdxejyPogx8si1umptcy2aQji4YXBU8YEilF+Gh+94kBSIm+vTmAH/rxzx/Od6S8MO3nYKhfsGoYbIK+HE0NQIQaEortNyIbawfAx2GUqvTXBquat+e2yOHT3VljcV4wNytqe96DE9EMSGde7Cynx8gNQVvBRgwFz//e8oMRposoUQj7KDIiVMvSB8SGJfXd1/LnvoVrZ/OWA8wFg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=k11UB1Fhxu8ZEcn4ri7sbkUEuZnd2PgI92QyAZCYWHg=;
+ b=cUsTIyl5syvo0LA2HX3eX0HSu3WLWRnkR65YQjugnBA9uX2sz0JA7wKFPGwOTBJkPE8UQEelTtoKEJeeiVKn5iK1Xa+Dt2nxOOFLudIrJGnNtYCU4jrlc+tiiVwM51jrgI1USrifYd21iu4Ue8Z7sd/BrJMZhqVspvUifNa9XEHHd5Qlp00dRImbboZE4WHgYHanpDyiEclcUBLA4N9VOxLsnLuVYD/Abf0I3gMeqnzSRhG1QhPsZgZhR5f0jqK+9ah8PbllF2D1gBkps4Zq9niGSyD7c2NV+9isLmB0pVqbtdSoXbtjE5Veh58DH0IBkMG9ohTLQkZsevSu1JvYlQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=k11UB1Fhxu8ZEcn4ri7sbkUEuZnd2PgI92QyAZCYWHg=;
+ b=Gy6BGYkml4/DZhsMZXoYhrYoxuIpoS45ORw8dQNfM+j4zJm5n4SMQUMwhXhvRrh8RUYypxtGtsG6Px+OjsMCqbtt6SyHdru9FBaNnz0m34cCPhefYa+k6d8rTw+mdcaJiwiXZ2z/9joqIol1lIKvDODYZ9O6Q0BFJFb/IcMlM5I=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
+ CH0PR12MB8531.namprd12.prod.outlook.com (2603:10b6:610:181::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8678.26; Fri, 25 Apr 2025 04:59:16 +0000
+Received: from DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::a544:caf8:b505:5db6]) by DM8PR12MB5445.namprd12.prod.outlook.com
+ ([fe80::a544:caf8:b505:5db6%4]) with mapi id 15.20.8678.027; Fri, 25 Apr 2025
+ 04:59:16 +0000
+Message-ID: <65839537-3fc9-47cc-a22e-3672ae570f25@amd.com>
+Date: Fri, 25 Apr 2025 11:59:10 +0700
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/amd: Allow matching ACPI HID devices without
+ matching UIDs
+To: Mario Limonciello <superm1@kernel.org>, mario.limonciello@amd.com,
+ joro@8bytes.org, will@kernel.org
+Cc: Vasant.Hegde@amd.com, iommu@lists.linux.dev
+References: <20250424045327.1898582-1-superm1@kernel.org>
+Content-Language: en-US
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+In-Reply-To: <20250424045327.1898582-1-superm1@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: KL1PR02CA0003.apcprd02.prod.outlook.com
+ (2603:1096:820:c::8) To DM8PR12MB5445.namprd12.prod.outlook.com
+ (2603:10b6:8:24::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/1] iommu: Allow attaching static domains in
- iommu_attach_device_pasid()
-To: Jack Vogel <jack.vogel@oracle.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
- "shangsong2@lenovo.com" <shangsong2@lenovo.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>
-References: <20250424034123.2311362-1-baolu.lu@linux.intel.com>
- <4764ACC2-6D38-4CAE-8A6B-451AB3DAF3E0@oracle.com>
- <a6e386bf-c9d4-4b3c-ad6e-dd1689330782@intel.com>
- <0A18D37F-7457-49CC-9D67-369A3A8C9E7E@oracle.com>
- <9b67710b-07bf-4c18-824a-27bc5df4fdfa@intel.com>
- <C85B4AA4-793D-45CA-915A-4C7F4FB4CA64@oracle.com>
-Content-Language: en-US
-From: Dave Jiang <dave.jiang@intel.com>
-In-Reply-To: <C85B4AA4-793D-45CA-915A-4C7F4FB4CA64@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5445:EE_|CH0PR12MB8531:EE_
+X-MS-Office365-Filtering-Correlation-Id: bab10a13-0516-4fcd-57e7-08dd83b5edf0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?aExxTDFBNlM3MHFqQm82QTc0cVNaWUIwdHNjM0M5WGdUUTU3dTRNQ2RTUm5m?=
+ =?utf-8?B?Sk5BSFR4bXEyaGNkdVJkaVJhRE1MOVZkVlRta2VtTzZEbGxxWDZNclJXb01M?=
+ =?utf-8?B?NE8vNU1hbEdhTjh1ZEtlSXJjdGhDc1lEMWFDWDJyUFh5OXJ1a3RmbFh0OGRV?=
+ =?utf-8?B?aTRNTTRQN0dPYURJYzNMRXZUSzdxMENUR3dta3hJYmpQdHo4TDNidkFXQkdF?=
+ =?utf-8?B?TUlEbFNTcEQ4aWdUcENSUmVBQzJlTGZkbEh1OEhNdWRUOFdPS1Jqc0EvUUZU?=
+ =?utf-8?B?TEc2UzUyWHlSaFB3TnFTdENoeHdUUHV3djc3QTN2TGRPQ0NmdkV0aCtpUzZE?=
+ =?utf-8?B?UWV4cmdZejVYN1pHTkhXbmhaTGhPMkRDVElxK2FZMzBqcVBwdUpHL2svaEh0?=
+ =?utf-8?B?OUF4eFB0UGVoQnI3c3dBaStrUU5GemJPTW43N29YZWgxaDB6OUpqcUZERkpF?=
+ =?utf-8?B?Uk5zZTU0aVFBN05xUjZQMUMwVThOWmJTcmZQSU1DdVVFUnN5VlNwYjg5YVJM?=
+ =?utf-8?B?UkFsTk5teGwxUkoxNEM4SCsrSnhSTmkyR0VoOVZDc0lkYXoya0k0dTB0dzVR?=
+ =?utf-8?B?alFsT0xpMVJobW9FS0xpNjBCdWdvMmtWMjN2OUpydmFnNDg4d1NEeDFJQXFw?=
+ =?utf-8?B?M0lyb2VUd29QZjlGei91TEU3YW9HVTh4eDU3ZmYvMGFabFBjclJkN0VwRDl1?=
+ =?utf-8?B?VTVzOWs1dEQyTzJyZmhodUVIY0hnOFJsRGJ1TFQySzJ0cTVUTDEzODgzUXVZ?=
+ =?utf-8?B?TVZvWmlWTXFTdlpOb3pRUXRTWEZRZXpER0lqaDVYU3p0NHlNR0NWZXE4Z2sw?=
+ =?utf-8?B?YlU1YjdhYWd2MWJvcXl5WTlwR3VtR1ZndThiVTFwYS9EV05kM3R0QVFKb01o?=
+ =?utf-8?B?TTVtajRpV01OZ3VTS1hWNzhMZVZkTHlQSkRJdW1aNm5XWW54ZFFyZXYwSlVN?=
+ =?utf-8?B?ZDdxQmRGdkxzNjRVa1dHQXlWVmpkeGlCTm5ra0pYS0xKWVBvc1NmMURqaW1y?=
+ =?utf-8?B?QlpPUUcvM3RaRGhyWnF1OFZYZFNEbnJiR3ZHWnU0aysxeVRZTlZKZXFBRGdq?=
+ =?utf-8?B?d3dmaHFhcy9Hdml2U0NjS2EybHVDclJjK2RnSFNCYkFDR0dtc2J3Szc0ZHht?=
+ =?utf-8?B?c3hIMHV0MzBEME1tb0ZTRXpieDRBWGIzMHpGemNJY2Z1OVU2T3NIZWE0VXNp?=
+ =?utf-8?B?REowb0RLb0xvWWc5RzYwNW1wZVp2blJHWlZMNG00QnRtZWIydGM3YTNMVXpV?=
+ =?utf-8?B?S3BDQWFqMTlYaUpYb3c1NEhXTG1xaml4MVBMSHhmSk5hYk5hUHpBcXJaYzRS?=
+ =?utf-8?B?N1RCT1dQZUkzeUlyaldOTjZRRGU0ODlYaUp0MmdBSXdYOTgrR1lRQnc0Qk1W?=
+ =?utf-8?B?UGtuUFZKcFdRM2ZOM0tVMFNnM0hXV1owSE9zU0dsZDUzYVJOcGtlSUtDVUFE?=
+ =?utf-8?B?QnREK0NuVm9EaXExQXNTU3NuUHRUOTVrV1grTmVxRCtTT3E5bWh5bFJFalRF?=
+ =?utf-8?B?aFNUWXp1MGt4NldvRGpCL2ZPV3FPbWUraUF4SG1PYnduYnlROVc4V3Q3bDhG?=
+ =?utf-8?B?S1dJNzN2eW4veVNKaXhidGowc1RneWV4Rk5FSytMUWxIZ0JJUUJFWEFzU0VP?=
+ =?utf-8?B?dGIwZGJISEl1YUFyL3psSlZha2JCUXhlMzNJTjcxSGxPazBpTFU3OHNVdDdF?=
+ =?utf-8?B?TEpWci9sb0tIVkhnMGRicnFQOTMwdkhTMEw3TzhoZldYNDFMS1A0N3ZjYWdm?=
+ =?utf-8?B?aWk1TWFlTjYwUUxzdmViMzl3Mm5HaFQyNDJmQWZvOVJ6YVoweEJJcjdmK2Q5?=
+ =?utf-8?B?RWM4S1cvRXlsVW41NnNxcCsrbE5NOHJZK09GTDVnUlhERWx6RGpzUnNnaGRs?=
+ =?utf-8?B?bk85cmhlcFRzbFVkZHZyVXFvUW5KV0d3MkJBMXIyQ0l4UDhUOUVGanNSL0V2?=
+ =?utf-8?Q?GdHmA7Upj0A=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR12MB5445.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?VG1kTWZ5ZDQ4Yi9NK1RhM3N2OU5wV1N1Mmk2QlFZWEVNdmpGeDduMm5QVFdh?=
+ =?utf-8?B?djNEUDROdmNZd3M5SG5PZ0Z1YzIrUXM0WGVTcmx2OUFXaHBaVG90dGY5WUNI?=
+ =?utf-8?B?L3hRZmNNaDFrMVVjdWUrdlZzank5T1kybC9ZVHRzQlFDRnQ5aGFOOGlkeTh4?=
+ =?utf-8?B?cksyaCtwV1YyMndZNzNuV3N6bVRyS3BONGIraHRySGpLVVpvdENtcjBRcjBI?=
+ =?utf-8?B?MUV6cEY3QkQ3WnpWOG56MEhUcDJReWJOY1h4NmtJQkh6QnB4d285UTJzZlNO?=
+ =?utf-8?B?UFdYcDBCTkFsNzhNVnlGM0duQS95OWp6QW5ITVV5b1hHMXNBbFh0Nk90QllZ?=
+ =?utf-8?B?Ulk1SGRzbmU0MytuSFpxNE9nUjJtVUNCczRQZ0gwQ1prR0IrV0dNeTBlYzgx?=
+ =?utf-8?B?a0hrY3VvbEJibDM5RWZiSEI0SDIvbWJDNDUzWHo0SzdtdytwQmNHeVhJNzVy?=
+ =?utf-8?B?dHY3dC9hVXQwd2xQNkF2VXZLTndyYy9BR1hnZk5sOXhwdUMxczV5bnBMQVpN?=
+ =?utf-8?B?QVNwa25VWG1kNU5XemdkQU54dzdNMWp1L2htbHNNZ1g2OVdCN1FSNS9FdG1E?=
+ =?utf-8?B?VFRDMVRHVnJrRVNlV3JvanA1UUZ5bnE1aGlRQXNrVTM4TU1NdUhaYmdDejVY?=
+ =?utf-8?B?YStiMkJONWs2elFsSEhIeVRPSUJ3OXNZeDhjcXBmUDZ5Y3JhbXZUazdEMWMz?=
+ =?utf-8?B?WE1xSlQ2WE5DczVDbUNkM2hNSytQWjB0bVJJaFFKUS9WQTQrMnhxK25HRWJu?=
+ =?utf-8?B?Y0syc1VjZEJlZWt3bzkyQkJzYzJHQncvaWlnV0xxRmR0QkdERmkxL0FHcFBX?=
+ =?utf-8?B?VllkM29majRqMXozRTh5NDN4S0R2NDI4aXFzTXhZNUNkWHhhMGRUTG1mZnky?=
+ =?utf-8?B?Qjc3d015SWlwWXFIbWFxYXNmZmJSUmxhSjdsamtWazdaZkVRQ0tKUTI1bFNl?=
+ =?utf-8?B?VkZRUC9DTzB6RHhMVTdmYUp1bG4vS1BOcnBmbGh1Z1EwcFpVcXhRVnB2RUhv?=
+ =?utf-8?B?d1hYaVcrZEFoN2pCOHJtbGtVeHg3N1RZUXdQQ2k1QVhjMTlCNFlCTkVDUU12?=
+ =?utf-8?B?SWxQYXVoY3lhQ0ozUVpNK29Ma2o1MTMwRklaOGVxN2krcUJQRG5HdW1xWk00?=
+ =?utf-8?B?YU5xKytaNis5SmlEallpMG05VUU1dDlyVXVHVGhGZ0dNRFNKK0VnSHVBRU05?=
+ =?utf-8?B?RGJrZmEvT1F2cmlseWVTQlhDMHQ3SlVodlVoZlZiUkxpeHFqQXVjS2VkcS83?=
+ =?utf-8?B?OUtKZXVRcmJJMmdtL044NW5HQ0VtcTRWUjErVDlKb1gxS2lWa1NFbGxWQndx?=
+ =?utf-8?B?TFpucjZqcHJmcE1QTnRLbHN3SVhvUUNqUjczRnZEMmovRzJ3OEVTS1R5dnFi?=
+ =?utf-8?B?TitISVU1emlQdUhUZnVrZktuQ2ROa0xOVUFveUhUdzcwZ3RrOTh1cDdzTVdN?=
+ =?utf-8?B?MDBOT2RnbkxKL3pTTnJWczVyUlFaTUtKRVFpdFNDcGw3WTJ6SHQ5VUJhdXlM?=
+ =?utf-8?B?dExCb2tLWFFpakdsU2VjVGVVMGVzSnZKVG9wU1lnTmtwZmZOVDl0Wm85NEJL?=
+ =?utf-8?B?cTZCaUJVbXZRK1lBaDUvRVdJckhXK2FDU2YrVHcrSW1CekI3UGxTNVNBeHVk?=
+ =?utf-8?B?d3ZnY2lUWDljeGh2MjRJMDVzVFJ2RDJJNTdxZGt3V1N2UTM5M2ZoNGF3ZTFt?=
+ =?utf-8?B?RDBBbUo1eVg5WWdOVlV3eVRyWkp1cU9pYlRwdTlycTB6UHR2NGZjWWgwRjcy?=
+ =?utf-8?B?dnVNYktUUHdwRXI3d0RraGM5NGtFSXN5cDBqWUVqejJJc0Fic3hRVUJNcGFR?=
+ =?utf-8?B?MUxJcG1zTUlVZ29KTjNhU2lEOUozWWx1RlVNdGNud3JJaUJlK1F6dUpIU2N5?=
+ =?utf-8?B?RXQ3TS96dlJCeVI1YW43d2FjK3l6L3hzYjJuYmdPWC9hWVNNR1NHVEdMc2I2?=
+ =?utf-8?B?dDFoOVI0OXI3RSs5NGZDSlBaSHlhS3Z6SmlHdno3WkV2SURhdlFwQTBuMGFl?=
+ =?utf-8?B?VjY3YmlrMGxDSlFBcTY5U1NXVXFCY1lTRTlJcURwMm1SaWNzMm0wZGFnUzZX?=
+ =?utf-8?B?d25BQ0tmd3k5SzViQ055allrcm5CZzMrd1ZDWE80akYzbFFkMlQ2cUViVEF1?=
+ =?utf-8?Q?McupGnpcqOJWSB0jEqNHyrKKS?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bab10a13-0516-4fcd-57e7-08dd83b5edf0
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2025 04:59:16.4845
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ppj10J7cpJ0DZl0iRxfuWHVTXZIaPCyLQJXC/CxNk2VhRkDf+Hs3me74HLUuETGh8IETU+nHzWSCYcb7tz2V/g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB8531
 
+Mario,
 
+This is actually a bug in the BIOS, and should be fixed in by the BIOS. 
+I would prefer FW BUG in the dmesg to report the issue.
 
-On 4/24/25 5:55 PM, Jack Vogel wrote:
-> 
-> 
->> On Apr 24, 2025, at 16:15, Dave Jiang <dave.jiang@intel.com> wrote:
->>
->>
->>
->> On 4/24/25 3:59 PM, Jack Vogel wrote:
->>>
->>>
->>>> On Apr 24, 2025, at 15:40, Dave Jiang <dave.jiang@intel.com> wrote:
->>>>
->>>>
->>>>
->>>> On 4/24/25 3:34 PM, Jack Vogel wrote:
->>>>> I am having test issues with this patch, test system is running OL9, basically RHEL 9.5, the kernel boots ok, and the dmesg is clean… but the tests in accel-config dont pass. Specifically the crypto tests, this is due to vfio_pci_core not loading.  Right now I’m not sure if any of this is my mistake, but at least it’s something I need to keep looking at.
->>>>>
->>>>> Also, since I saw that issue on the latest I did a backport to our UEK8 kernel which is 6.12.23, and on that kernel it still exhibited  these messages on boot:
->>>>>
->>>>> *idxd*0000:6a:01.0: enabling device (0144 -> 0146)
->>>>>
->>>>> [   21.112733] *idxd*0000:6a:01.0: failed to attach device pasid 1, domain type 4
->>>>>
->>>>> [   21.120770] *idxd*0000:6a:01.0: No in-kernel DMA with PASID. -95
->>>>>
->>>>>
->>>>> Again, maybe an issue in my backporting… however I’d like to be sure.
->>>>
->>>> Can you verify against latest upstream kernel plus the patch and see if you still see the error?
->>>>
->>>> DJ
->>>
->>> Yes, the kernel was build from the tip this morning. Like I said, it got no messages booting up, all looked fine. But when running the actual test suite in the accel-config tarball specifically the iaa crypt tests, they failed and the dmesg was from vfio_pci_core failed to load with an unknown symbol.
->>
->> I'm not sure what the test consists of (haven't worked on this device for almost 2 years). But usually the device is either bound to the idxd driver or the vfio_pci driver. Not both. And if the idxd driver didn't emit any errors while loading, then the test failure may be something else...
->>
->> Another way to verify is to set CONFIG_IOMMU_DEFAULT_DMA_LAZY vs PASSTHROUGH. If the tests still fail then it's something else. 
->>
->> DJ
-> 
-> There isn’t a lot of ways to test this driver, yes DPDK will use it, but apart from that? So, the tests that are part of your (Intel) accel-config package are the only convenient way that I’ve found to do so. It is also convenient, there is a “make check” target in the top Makefile that will invoke both set of DMA tests, and some crypto (IAA) tests. I have been planning to give this to our QA group as a verification suite. Do you have an alternative to this?
+As a workarond, Linux can override this using the command line option.
 
-This should be the right test package. Let me talk to our QA people and see if there are any issues. We can resolve this off list. If there's any issues that end up pointing to the original bug, we can raise that then. 
+Suravee
 
-DJ
-
+On 4/24/2025 11:53 AM, Mario Limonciello wrote:
+> From: Mario Limonciello <mario.limonciello@amd.com>
 > 
-> Jack
+> A BIOS upgrade has changed the IVRS DTE UID for a device that no
+> longer matches the UID in the SSDT.  Checking with BIOS team, this is
+> intended behavior, however it breaks the existing logic check in
+> get_acpihid_device_id().
 > 
->>
->>>
->>> This sounds like the module was wrong, but i would think it was installed with the v6.15 kernel….. 
->>>
->>> Jack
->>>
->>>>
->>>>>
->>>>> Cheers,
->>>>>
->>>>> Jack
->>>>>
->>>>>
->>>>>> On Apr 23, 2025, at 20:41, Lu Baolu <baolu.lu@linux.intel.com> wrote:
->>>>>>
->>>>>> The idxd driver attaches the default domain to a PASID of the device to
->>>>>> perform kernel DMA using that PASID. The domain is attached to the
->>>>>> device's PASID through iommu_attach_device_pasid(), which checks if the
->>>>>> domain->owner matches the iommu_ops retrieved from the device. If they
->>>>>> do not match, it returns a failure.
->>>>>>
->>>>>>        if (ops != domain->owner || pasid == IOMMU_NO_PASID)
->>>>>>                return -EINVAL;
->>>>>>
->>>>>> The static identity domain implemented by the intel iommu driver doesn't
->>>>>> specify the domain owner. Therefore, kernel DMA with PASID doesn't work
->>>>>> for the idxd driver if the device translation mode is set to passthrough.
->>>>>>
->>>>>> Generally the owner field of static domains are not set because they are
->>>>>> already part of iommu ops. Add a helper domain_iommu_ops_compatible()
->>>>>> that checks if a domain is compatible with the device's iommu ops. This
->>>>>> helper explicitly allows the static blocked and identity domains associated
->>>>>> with the device's iommu_ops to be considered compatible.
->>>>>>
->>>>>> Fixes: 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
->>>>>> Closes: https://bugzilla.kernel.org/show_bug.cgi?id=220031
->>>>>> Cc: stable@vger.kernel.org
->>>>>> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
->>>>>> Link: https://lore.kernel.org/linux-iommu/20250422191554.GC1213339@ziepe.ca/
->>>>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>>>>> Reviewed-by: Dave Jiang <dave.jiang@intel.com>
->>>>>> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
->>>>>> ---
->>>>>> drivers/iommu/iommu.c | 21 ++++++++++++++++++---
->>>>>> 1 file changed, 18 insertions(+), 3 deletions(-)
->>>>>>
->>>>>> Change log:
->>>>>> v3:
->>>>>> - Convert all places checking domain->owner to the new helper.
->>>>>> v2: https://lore.kernel.org/linux-iommu/20250423021839.2189204-1-baolu.lu@linux.intel.com/
->>>>>> - Make the solution generic for all static domains as suggested by
->>>>>>   Jason.
->>>>>> v1: https://lore.kernel.org/linux-iommu/20250422075422.2084548-1-baolu.lu@linux.intel.com/
->>>>>>
->>>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>>>> index 4f91a740c15f..b26fc3ed9f01 100644
->>>>>> --- a/drivers/iommu/iommu.c
->>>>>> +++ b/drivers/iommu/iommu.c
->>>>>> @@ -2204,6 +2204,19 @@ static void *iommu_make_pasid_array_entry(struct iommu_domain *domain,
->>>>>> return xa_tag_pointer(domain, IOMMU_PASID_ARRAY_DOMAIN);
->>>>>> }
->>>>>>
->>>>>> +static bool domain_iommu_ops_compatible(const struct iommu_ops *ops,
->>>>>> +struct iommu_domain *domain)
->>>>>> +{
->>>>>> +if (domain->owner == ops)
->>>>>> +return true;
->>>>>> +
->>>>>> +/* For static domains, owner isn't set. */
->>>>>> +if (domain == ops->blocked_domain || domain == ops->identity_domain)
->>>>>> +return true;
->>>>>> +
->>>>>> +return false;
->>>>>> +}
->>>>>> +
->>>>>> static int __iommu_attach_group(struct iommu_domain *domain,
->>>>>> struct iommu_group *group)
->>>>>> {
->>>>>> @@ -2214,7 +2227,8 @@ static int __iommu_attach_group(struct iommu_domain *domain,
->>>>>> return -EBUSY;
->>>>>>
->>>>>> dev = iommu_group_first_dev(group);
->>>>>> -if (!dev_has_iommu(dev) || dev_iommu_ops(dev) != domain->owner)
->>>>>> +if (!dev_has_iommu(dev) ||
->>>>>> +   !domain_iommu_ops_compatible(dev_iommu_ops(dev), domain))
->>>>>> return -EINVAL;
->>>>>>
->>>>>> return __iommu_group_set_domain(group, domain);
->>>>>> @@ -3435,7 +3449,8 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
->>>>>>    !ops->blocked_domain->ops->set_dev_pasid)
->>>>>> return -EOPNOTSUPP;
->>>>>>
->>>>>> -if (ops != domain->owner || pasid == IOMMU_NO_PASID)
->>>>>> +if (!domain_iommu_ops_compatible(ops, domain) ||
->>>>>> +   pasid == IOMMU_NO_PASID)
->>>>>> return -EINVAL;
->>>>>>
->>>>>> mutex_lock(&group->mutex);
->>>>>> @@ -3511,7 +3526,7 @@ int iommu_replace_device_pasid(struct iommu_domain *domain,
->>>>>> if (!domain->ops->set_dev_pasid)
->>>>>> return -EOPNOTSUPP;
->>>>>>
->>>>>> -if (dev_iommu_ops(dev) != domain->owner ||
->>>>>> +if (!domain_iommu_ops_compatible(dev_iommu_ops(dev), domain) ||
->>>>>>    pasid == IOMMU_NO_PASID || !handle)
->>>>>> return -EINVAL;
->>>>>>
->>>>>> -- 
->>>>>> 2.43.0
+> In this case there is only one ACPI device on the system with that _HID
+> but the _UID mismatch.
 > 
+> IVRS:
+> ```
+> [1E4h 0484 001h]               Subtable Type : F0 [Device Entry: ACPI HID Named Device]
+> [1E5h 0485 002h]                   Device ID : 0060
+> [1E7h 0487 001h] Data Setting (decoded below) : 40
+>                                      INITPass : 0
+>                                      EIntPass : 0
+>                                       NMIPass : 0
+>                                      Reserved : 0
+>                                   System MGMT : 0
+>                                    LINT0 Pass : 1
+>                                    LINT1 Pass : 0
+> [1E8h 0488 008h]                    ACPI HID : "MSFT0201"
+> [1F0h 0496 008h]                    ACPI CID : 0000000000000000
+> [1F8h 0504 001h]                  UID Format : 02
+> [1F9h 0505 001h]                  UID Length : 09
+> [1FAh 0506 009h]                         UID : "\_SB.MHSP"
+> ```
+> 
+> SSDT:
+> ```
+> Device (MHSP)
+> {
+>      Name (_ADR, Zero)  // _ADR: Address
+>      Name (_HID, "MSFT0201")  // _HID: Hardware ID
+>      Name (_UID, One)  // _UID: Unique ID
+> ```
+> 
+> To handle this case; while enumerating ACPI devices in get_acpihid_device_id()
+> count the number of matching ACPI devices with a matching _HID. If there is
+> exactly one _HID match then accept it even if the UID doesn't match.
+> 
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+>   drivers/iommu/amd/iommu.c | 24 +++++++++++++++++++-----
+>   1 file changed, 19 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index b19e8c0f48fa2..f9fad07edeeb7 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -109,7 +109,8 @@ static inline int get_acpihid_device_id(struct device *dev,
+>   					struct acpihid_map_entry **entry)
+>   {
+>   	struct acpi_device *adev = ACPI_COMPANION(dev);
+> -	struct acpihid_map_entry *p;
+> +	struct acpihid_map_entry *p, *p1;
+> +	int hid_count = 0;
+>   
+>   	if (!adev)
+>   		return -ENODEV;
+> @@ -117,12 +118,25 @@ static inline int get_acpihid_device_id(struct device *dev,
+>   	list_for_each_entry(p, &acpihid_map, list) {
+>   		if (acpi_dev_hid_uid_match(adev, p->hid,
+>   					   p->uid[0] ? p->uid : NULL)) {
+> -			if (entry)
+> -				*entry = p;
+> -			return p->devid;
+> +			p1 = p;
+> +			hid_count = 1;
+> +			break;
+> +		}
+> +
+> +		/* If there is no UID match, but exactly one HID match, return that match */
+> +		if (acpi_dev_hid_match(adev, p->hid)) {
+> +			p1 = p;
+> +			hid_count++;
+>   		}
+>   	}
+> -	return -EINVAL;
+> +
+> +	if (hid_count != 1)
+> +		return -EINVAL;
+> +
+> +	if (entry)
+> +		*entry = p1;
+> +
+> +	return p1->devid;
+>   }
+>   
+>   static inline int get_device_sbdf_id(struct device *dev)
 
