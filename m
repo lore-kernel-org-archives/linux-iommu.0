@@ -1,111 +1,107 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99BDD253939
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 15:13:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BCA5B28469B;
+	Fri, 25 Apr 2025 15:18:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745594035; cv=none; b=QC7bwwLl9wH4OJFjNXHuMhFr7XulQbuEP3f4GSXcR4I69pwKCEnu0qkTPKQT9vhiYNCFO5Qq0FmhnLzTulf6bdHmZXspwUoALKmOlgAf9silU+68cK+pIUKDhBX+FWyBh4pTa3kDNRCxBwwhG/srqLMJTVkeE7Ymhzam1r+uZVw=
+	t=1745594299; cv=none; b=Nqh7QggKN4QwY0QcwkjIISGSILGt+WjnbX7NMgO7yNjDzKzZvTHLtI5lV6TYWrpIJO2xBFeTeG4Vep1Syyuh6YIY64ut0J55gmBtoe3o8p0mYz9rXRg5otpJLEah01wi7QUKerE1fTpUnJMyjFy4Ou20452gbPhUSpq5rTP/MWU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745594035; c=relaxed/simple;
-	bh=2Fr79h5WpW0sk+9jfuwv/EfIloErPvJaRV1TKBMbIms=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=utsOTm86+lxhmQ0E5dryYvTPeBQ343VJdA2z2ZRGlIgqzxyMCXQ7SAvUkzWJm3PSE3tn0j5dfpfz47BFlsrW89AGYIH5W+YJAwdUGFlsoPyl5nzrbm/fjF5RZlA88FR6sETabFqxuUJLg/Dq5189p4xQYecFzt+6MHgnWkV/ffs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=MiecbeKS; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="MiecbeKS"
-Received: from localhost (web.docker-mailserver_default [172.18.0.2])
-	by mail.mainlining.org (Postfix) with ESMTPSA id 4E4B2BBAC4;
-	Fri, 25 Apr 2025 15:13:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
-	s=psm; t=1745594025;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ECsaLysjp6B31lix5ePZqbR776k53fktpSr8Jb8kvHE=;
-	b=MiecbeKSC9qPTxgyzouBu54qd4VjFtmkfHV/2qTsOefPU2eAaK5cBCTcImhw+T75qlqO2+
-	xsNGxQQjX0OdP68jb2HZKFeV8do4HMOWxaZhIfySqXsdEKz5Op//pZWwxEqwnctK8A8rVg
-	P2WjEybiUv3PnKk+10v9R9AGnDIaowzlxTfxSncUT2oXgzv8YLcXGPbJ5rn9brvr+KfYzt
-	y9ZSgyOeTe1KRw4YfSE60ZQrWAbmyN8y261B96MCfrdyWbqrTrbHB4hEewS6ZzpxeAxnO5
-	sW1MJRWbpDrguja+qwxdVjlEkU+50iOBR8LfCx5VBQuphi1fOseWw4tM2FcHfg==
+	s=arc-20240116; t=1745594299; c=relaxed/simple;
+	bh=FvN9HXG5+5Rpjeqr/q4angzS0+2K431c0FIv3jfhMhs=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=T6wrJMJCFTMq/XteeXjGsGlZqKbcBNIyWhtbXcShTZ0dGgVO2B/OZcEk8lr6X2SdJEM+9WKP/D9QSpdDKwMuKhVcCEz4hrVusAtlXo12bBV6bOuYiKMw3fw31c79LNsULdoz79rcde+qs2/+FA+u55nLnmOo6DGkfJLoZaJ9QuE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9E685106F;
+	Fri, 25 Apr 2025 08:18:11 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 48ED13F59E;
+	Fri, 25 Apr 2025 08:18:15 -0700 (PDT)
+Message-ID: <e6db6396-cb1e-4e24-8fd0-3cce388a3913@arm.com>
+Date: Fri, 25 Apr 2025 16:18:13 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Fri, 25 Apr 2025 17:13:45 +0200
-From: barnabas.czeman@mainlining.org
-To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Cc: Bjorn Andersson <andersson@kernel.org>, Michael Turquette
- <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>,
- =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, Linus Walleij
- <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, Joerg Roedel
- <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, Rob Clark
- <robdclark@gmail.com>, Sean Paul <sean@poorly.run>, Abhinav Kumar
- <quic_abhinavk@quicinc.com>, Marijn Suijten <marijn.suijten@somainline.org>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Maarten
- Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
- <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, Dmitry
- Baryshkov <lumag@kernel.org>, Adam Skladowski <a_skl39@protonmail.com>,
- Sireesh Kodali <sireeshkodali@protonmail.com>, Srinivas Kandagatla
- <srini@kernel.org>, linux-arm-msm@vger.kernel.org,
- linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
- iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, phone-devel@vger.kernel.org,
- ~postmarketos/upstreaming@lists.sr.ht, linux@mainlining.org, Dang Huynh
- <danct12@riseup.net>
-Subject: Re: [PATCH v5 3/5] arm64: dts: qcom: Add initial support for MSM8937
-In-Reply-To: <70635d75-03f9-49ea-8098-57cb144fda94@oss.qualcomm.com>
-References: <20250421-msm8937-v5-0-bf9879ef14d9@mainlining.org>
- <20250421-msm8937-v5-3-bf9879ef14d9@mainlining.org>
- <2e3d94a4-d9e1-429e-9f65-d004c80180e5@oss.qualcomm.com>
- <790a0b7537e0b82b70bc4b32612ecee6@mainlining.org>
- <70635d75-03f9-49ea-8098-57cb144fda94@oss.qualcomm.com>
-Message-ID: <5ccb39f9393b44761127717096a38a46@mainlining.org>
-X-Sender: barnabas.czeman@mainlining.org
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+User-Agent: Mozilla Thunderbird
+Subject: Re: arm64: juno-r2: SSD detect failed on mainline and next
+From: Robin Murphy <robin.murphy@arm.com>
+To: Naresh Kamboju <naresh.kamboju@linaro.org>
+Cc: Linux ARM <linux-arm-kernel@lists.infradead.org>, iommu@lists.linux.dev,
+ open list <linux-kernel@vger.kernel.org>, lkft-triage@lists.linaro.org,
+ Linux Regressions <regressions@lists.linux.dev>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Rob Herring <robh@kernel.org>,
+ Dan Carpenter <dan.carpenter@linaro.org>, Arnd Bergmann <arnd@arndb.de>,
+ Anders Roxell <anders.roxell@linaro.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
+References: <CA+G9fYt0F_vR-zOV4P8m4HTv6AecT-eEnrL+t5wgAaKPodi0mQ@mail.gmail.com>
+ <6e0ef5cc-b692-4d39-bec4-a75c1af3f0aa@arm.com>
+ <CA+G9fYs_nUN2x8fFJ0cfudHWbCOLSJK=OhEK0Efd1ifcjq_LRg@mail.gmail.com>
+ <5a277d1d-c7b1-430c-a463-1e307a2823f6@arm.com>
+ <03e6283e-2ef7-498c-9460-8411114711e2@arm.com>
+Content-Language: en-GB
+In-Reply-To: <03e6283e-2ef7-498c-9460-8411114711e2@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 2025-04-25 11:57, Konrad Dybcio wrote:
-> On 4/23/25 4:46 PM, barnabas.czeman@mainlining.org wrote:
->> On 2025-04-23 16:03, Konrad Dybcio wrote:
->>> On 4/21/25 10:18 PM, Barnabás Czémán wrote:
->>>> From: Dang Huynh <danct12@riseup.net>
->>>> 
->>>> Add initial support for MSM8937 SoC.
->>>> 
->>>> Signed-off-by: Dang Huynh <danct12@riseup.net>
->>>> Co-developed-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
->>>> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
->>>> ---
+On 11/04/2025 8:11 pm, Robin Murphy wrote:
+[...]
+> OK, I found it, but I'm still not sure what exactly to make of it - it's 
+> the pci_request_acs() in of_iommu_configure(), now being called early 
+> enough to actually have an effect. Booting with EDK2 already using PCI 
+> prior to Linux, here's what I get for `sudo lspci -vv | grep ACSctl` 
+> with 6.15-rc1:
 > 
-> [...]
+>          ACSCtl:    SrcValid+ TransBlk- ReqRedir+ CmpltRedir+ 
+> UpstreamFwd+ EgressCtrl- DirectTrans-
+>          ACSCtl:    SrcValid+ TransBlk- ReqRedir+ CmpltRedir+ 
+> UpstreamFwd+ EgressCtrl- DirectTrans-
+>          ACSCtl:    SrcValid+ TransBlk- ReqRedir+ CmpltRedir+ 
+> UpstreamFwd+ EgressCtrl- DirectTrans-
+>          ACSCtl:    SrcValid+ TransBlk- ReqRedir+ CmpltRedir+ 
+> UpstreamFwd+ EgressCtrl- DirectTrans-
+>          ACSCtl:    SrcValid+ TransBlk- ReqRedir+ CmpltRedir+ 
+> UpstreamFwd+ EgressCtrl- DirectTrans-
+>          ACSCtl:    SrcValid+ TransBlk- ReqRedir+ CmpltRedir+ 
+> UpstreamFwd+ EgressCtrl- DirectTrans-
 > 
->>>> +            gpu_opp_table: opp-table {
->>>> +                compatible = "operating-points-v2";
->>>> +
->>>> +                opp-19200000 {
->>>> +                    opp-hz = /bits/ 64 <19200000>;
->>>> +                    opp-supported-hw = <0xff>;
->>> 
->>> The comment from the previous revision still stands
->> If i remove opp-supported-hw i will got -22 EINVAL messages and the 
->> opp will be not fine.
+> whereas with the 6.14 behaviour they are all '-'. I don't have a working 
+> root filesystem with the U-Boot setup, but if I boot it with 
+> "pci=config_acs=000000@pci:0:0" then the kernel does assign the bridge 
+> windows and discover the ethernet/SATA endpoints again. I can spend some 
+> time getting NFS working next week, but if you're able to get lspci 
+> output off a machine in the "broken" state easily that would be handy to 
+> compare.
 > 
-> Right, I have a series pending to improve this situation a bit..
-> 
-> In the meantime, you should be able to define the nvmem cell and
-> fill in meaningful values for this platform
-As I wrote in the previous revision there is no nvmem for GPU on msm8937 
-only on msm8940.
-> 
-> Konrad
+> So at this point it would seem to be something about how Linux 
+> configures ACS when doing it from scratch. What I don't really know is 
+> where to go from there. I do know Juno's possibly a bit odd in that the 
+> switch supports ACS, but both the root port and endpoints either side of 
+> it don't. Could this be tickling some subtle bug in the PCI layer, and 
+> what is EDK2 doing that makes it not happen?
+
+Just following up on where I ran out of ideas. I poked at things a 
+little more, and from a process of elimination, the culprit appears to 
+be is that we enable ACS source validation on the downstream port while 
+its secondary bus is still 0, *then* we get to the "bridge configuration 
+invalid" bit and reconfigure the bus numbers, but after that, config 
+space accesses to the secondary bus still apparently fail to work as 
+expected.
+
+What's now beyond me is whether this is just an ACS quirk of this 
+particular switch, and/or whether there's something we could or should 
+be doing in the PCI layer.
+
+All I can suggest a this point is that you could at least sidestep the 
+problem on the LKFT boards by updating them to a less-ancient version of 
+U-Boot which supports PCIe for Juno (looks like that landed in 2020.10), 
+which should then configure the switch at boot such that the bus 
+numbering doesn't need to change when Linux probes it - that appears to 
+be the only "magic" thing that EDK2 is doing.
+
+Thanks,
+Robin.
