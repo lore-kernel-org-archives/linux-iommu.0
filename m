@@ -1,190 +1,184 @@
-Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com [209.85.221.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 820EA1E2847
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 10:13:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.176
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3E37C247DF9
+	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 10:42:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745575983; cv=none; b=CM1KDNiq481RHAGjgEewMNQ7KXUYvXJTrCTOf2y+ZDtkC82+53rjCwvczog9RPpaBb5SIOiYV++sJIVhtP3/wyZDeISoRn2sC+ScRwUBv5n9oa9hdQaPCgt5rBWHHz0cdu+eOrroCB+7dGA8IDrcyJT9wCSkukcYgjOkWuJIyv8=
+	t=1745577755; cv=none; b=FOCtDjEenQtjauoDDINP2AQ3AHXWO003SebPx1G4JtZhW/ldV/LR+sz4GWWl0F9JIrfjQQgqyLer87sVEx0qqrKCRHtp0Ej+cqURSmHn9XD+FiS7W1uB4JSygjGtrBbWJImNyaS44N2UWcGafdP7U6+kwsWLcI0Jnk5R06pkCzM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745575983; c=relaxed/simple;
-	bh=Oho9zISwXumIwyreGzhuOMH64zT4cJky5KKcy9RQz80=;
-	h=Content-Type:From:Mime-Version:Subject:Message-Id:Date:Cc:To; b=ohE+OVj6kqQMULrnm3e2d/aGbkd3t1kOtfYlVoKGUZhQKcCVh6olcCz+lozfAu0L9OdmIN0q7JNAFGbrkvF9DfSpkK0i/WH5yrbUmf6cukI7RTirY751bB60gNbhCpGwiSb2OFipBwnx5+cIqxAqBuWT82B4pDm/wDhj6wDLEj8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G2LVvsFf; arc=none smtp.client-ip=209.85.221.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G2LVvsFf"
-Received: by mail-vk1-f176.google.com with SMTP id 71dfb90a1353d-527a2b89a11so976706e0c.2
-        for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 03:13:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745575980; x=1746180780; darn=lists.linux.dev;
-        h=to:cc:date:message-id:subject:mime-version:from
-         :content-transfer-encoding:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=NxUaPsRL3DayWO3frv2ULqEXQAoXMSOznD4LncXDA04=;
-        b=G2LVvsFfqNrOgxRcLbVg+kA9iJJjwJuQPFJhNCe/1zWF7uMdNj0VuXzbjjQu5MS/wd
-         560bIuAsxSNqYoQno0dxL+8JiQgmkutMUxyy+p/LNhSfZuiyTmdgZr+onqI9R6YCNs3X
-         SfTlAEa10GnuOl8++LpQ1j/Yd1kPqbTybpTy3yBpFUS6eTOwWhmA/Ou9VCk4a4A7Kv4D
-         IzC6AvG+wn1H45eDFGfv40/IedXXqqJsKBR3YXjL8AJYOMvKZPRdRXWm5u7hEdVGKYGj
-         2l0ap/CX+ves9vZXyG1ZwddvlhfkiPTHKAOBaHzvJs+SutkkMrwJl6O48bHnMleaidHc
-         jZFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745575980; x=1746180780;
-        h=to:cc:date:message-id:subject:mime-version:from
-         :content-transfer-encoding:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=NxUaPsRL3DayWO3frv2ULqEXQAoXMSOznD4LncXDA04=;
-        b=ZIaBhen2tQOr1GPSlYYlRt5+L3QHGqPZGEDyDYwYkTZZ4HOE8a+kdCbXuTzClm5rN4
-         JvJMj0qDOcw6sz0eLmmC/Efvz1bo512+r6WSgGhv5tVxwlNQUZcgaebsxELdOBvBVJ+M
-         5S37E6XxIPU397PAlo9e5OpSPyLGou4nnm7uAr+dOtDC9se2USmJhXs1M7iwjXxo9TDd
-         /F8RsO2dcQmGSdxAX3ScdK5DakKlsKdO1aGyMlAr3Vebtd5M4fPM2G8mbqaSKM8WG1p8
-         Fqt15eAV9LXjI07POye+DWuvhxMBdoDX1pNNoWe9FxO9JH74pyIFu9aoIXXmx/KQV3jc
-         65pA==
-X-Forwarded-Encrypted: i=1; AJvYcCUm/hGa/9Z7t+F6keSAM405AfUY29bPqE6GvRWkhvsfj7RPo5vz4REsODCLopgPxj9UkKja5Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxS8fHuU2loQDFhk8xooQ6759B1LyqzuYmDZApXvhH0F5ESZZ8I
-	24gJi4SgrMneJ16ONXm0MkT/E9mxzxK4nlGYtrvlGWX699ZVsTll
-X-Gm-Gg: ASbGncu4klb5pdZFh2t3urdJBqq+RWuRYYqVsMnSD3la2/JkG1tEggeC1XAcWv7UhQv
-	WsB64O747rJwOLnXrRgU0PL7EVTdTjrmgX+5I9vglJf1HzIpAsX/rEClAyZG5QfNPKm2NysY1v4
-	hN15q+aJrxGJQsVLDKrdfloNqgNxZXp5XrnISYBF7rh+qnS7/ydhTWXwfRz8najEgRK4bkdbJFF
-	0Vf5L8taNHEjG/mc1Ub2JxC06uv1XkDxsMSQp4LBtE7x3nPmlL/tuETHlYnwu7WQ5R0eJt42zkQ
-	ynaGGTV+ZgomJMsCFG3X8T7z/S2foXEvj3rBTn8HTx6ohsCTmbQiCPIru+ewAPFs3QZ5cxBEsBg
-	knHax0CCdUpQN9VTf
-X-Google-Smtp-Source: AGHT+IGiA/Yn603iCEcUZTepPAJSDOP4M4TDfO1zGDg1GjK6jBe0wK+uDj0rtvLjSeP4gVl0jlYXxQ==
-X-Received: by 2002:a05:6122:da5:b0:50d:a31c:678c with SMTP id 71dfb90a1353d-52a89d3e399mr831693e0c.2.1745575980041;
-        Fri, 25 Apr 2025 03:13:00 -0700 (PDT)
-Received: from smtpclient.apple (216-131-82-239.nyc.as62651.net. [216.131.82.239])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-52a79f21b86sm605458e0c.9.2025.04.25.03.12.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Apr 2025 03:12:59 -0700 (PDT)
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-From: Rich Persaud <persaur@gmail.com>
+	s=arc-20240116; t=1745577755; c=relaxed/simple;
+	bh=EFJpJwh3Ql539hFsTdluqiVeUgPiTCX5hfXM5sxUzfE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=E4mPaFfAkcFRpRGXCXedoGvBgr5TGwgZsIcukTeemabZGY5L5dTi6nDh/aikLMJ5pmbqn09JdRs9HWUSRtcdO4RR5C8PovvSaca5oDsrms9C0Z/3vjEoKMIADKFBwXrjsBb+V+5GROdy8EdvSUfzHU4w+8X3s7x6C2FBPEaGj18=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3B603106F;
+	Fri, 25 Apr 2025 03:42:26 -0700 (PDT)
+Received: from [10.57.73.197] (unknown [10.57.73.197])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE90F3F66E;
+	Fri, 25 Apr 2025 03:42:29 -0700 (PDT)
+Message-ID: <0ec4d1f3-feaf-4c48-9e0d-ac3f872bcccc@arm.com>
+Date: Fri, 25 Apr 2025 11:42:24 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v14 00/19] x86: Trenchboot secure dynamic launch Linux kernel support
-Message-Id: <18F9BD47-282D-4225-AB6B-FDA4AD52D7AE@gmail.com>
-Date: Fri, 25 Apr 2025 06:12:46 -0400
-Cc: Ross Philipson <ross.philipson@oracle.com>,
- linux-kernel@vger.kernel.org, x86@kernel.org,
- linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
- linux-efi@vger.kernel.org, iommu@lists.linux.dev,
- dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
- bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com, ardb@kernel.org,
- mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
- peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
- nivedita@alum.mit.edu, herbert@gondor.apana.org.au, davem@davemloft.net,
- corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
- baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
- andrew.cooper3@citrix.com, trenchboot-devel@googlegroups.com,
- Sergii Dmytruk <sergii.dmytruk@3mdeb.com>, openxt@googlegroups.com
-To: Dave Hansen <dave.hansen@intel.com>
-X-Mailer: iPad Mail (22E252)
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/1] swiotlb: Make IO_TLB_SEGSIZE Configurable
+To: "Li, Hua Qian" <HuaQian.Li@siemens.com>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "Su, Bao Cheng" <baocheng.su@siemens.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <CGME20250422063734eucas1p2561ad6f847f6824c9c79a842fa458e41@eucas1p2.samsung.com>
+ <20250422063719.121636-1-huaqian.li@siemens.com>
+ <fc2e30eb-2ec7-4795-a2a4-077b7fde7fd5@samsung.com>
+ <dc6f299b18f7870c7bffecca25cee9e436a32c7b.camel@siemens.com>
+ <841c417b-c61a-4c3a-a9ed-236634d78331@arm.com>
+ <824c8fa6acda7c840f856430b5d898c7fcd4702e.camel@siemens.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <824c8fa6acda7c840f856430b5d898c7fcd4702e.camel@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-=EF=BB=BFOn Apr 24, 2025, at 2:45=E2=80=AFPM, Dave Hansen <dave.hansen@intel=
-.com> wrote:
-> =EF=BB=BFOn 4/21/25 09:26, Ross Philipson wrote:
->> This patchset provides detailed documentation of DRTM, the approach used f=
-or
->> adding the capbility, and relevant API/ABI documentation. In addition to t=
-he
->> documentation the patch set introduces Intel TXT support as the first pla=
-tform
->> for Linux Secure Launch.
->=20
-> So, I know some of the story here thanks to Andy Cooper. But the
-> elephant in the room is:
->=20
->> INTEL(R) TRUSTED EXECUTION TECHNOLOGY (TXT)
->> M:      Ning Sun <ning.sun@intel.com>
->> L:      tboot-devel@lists.sourceforge.net
->> S:      Supported
->> W:      http://tboot.sourceforge.net
->> T:      hg http://tboot.hg.sourceforge.net:8000/hgroot/tboot/tboot
->> F:      Documentation/arch/x86/intel_txt.rst
->> F:      arch/x86/kernel/tboot.c
->> F:      include/linux/tboot.h
->=20
-> Linux already supports TXT. Why do we need TrenchBoot?
+On 2025-04-25 6:32 am, Li, Hua Qian wrote:
+> On Thu, 2025-04-24 at 13:58 +0100, Robin Murphy wrote:
+>> On 24/04/2025 6:12 am, Li, Hua Qian wrote:
+>>> On Tue, 2025-04-22 at 15:36 +0200, Marek Szyprowski wrote:
+>>>> On 22.04.2025 08:37, huaqian.li@siemens.com wrote:
+>>>>> From: Li Hua Qian <huaqian.li@siemens.com>
+>>>>>
+>>>>> This patchset introduces a change to make the IO_TLB_SEGSIZE
+>>>>> parameter
+>>>>> configurable via a new kernel configuration option
+>>>>> (CONFIG_SWIOTLB_SEGSIZE).
+>>>>>
+>>>>> In certain applications, the default value of IO_TLB_SEGSIZE
+>>>>> (128)
+>>>>> may
+>>>>> not be sufficient for memory allocation, leading to runtime
+>>>>> errors.
+>>>>> By
+>>>>> making this parameter configurable, users can adjust the
+>>>>> segment
+>>>>> size to
+>>>>> better suit their specific use cases, improving flexibility and
+>>>>> system
+>>>>> stability.
+>>>>
+>>>> Could You elaborate a bit more what are those certain
+>>>> applications
+>>>> that
+>>>> require increasing IO_TLB_SEGSIZE? I'm not against it, but such
+>>>> change
+>>>> should be well justified and described, while the above cover-
+>>>> letter
+>>>> doesn't provide anything more than is written in the patch
+>>>> description.
+>>> Thank you for your feedback, Marek.
+>>>
+>>> To provide more context, one specific application that requires
+>>> increasing IO_TLB_SEGSIZE is the Hailo 8 PCIe AI card. This card
+>>> uses
+>>> dma_alloc_coherent to allocate descriptor lists, as seen in the
+>>> Hailo
+>>> driver implementation here:
+>>> https://github.com/hailo-ai/hailort-drivers/blob/7161f9ee5918029bd4497f590003c2f87ec32507/linux/vdma/memory.c#L322
+>>> The maximum size (nslots) for these allocations can reach 160,
+>>> which
+>>> exceeds the current default value of IO_TLB_SEGSIZE (128).
+>>>
+>>> Since IO_TLB_SEGSIZE is defined as a constant in the kernel:
+>>>
+>>> `#define IO_TLB_SEGSIZE 128`
+>>>
+>>>
+>>> this limitation causes swiotlb_search_pool_area,
+>>> https://github.com/torvalds/linux/blame/v6.15-rc2/kernel/dma/swiotlb.c#L1085
+>>> ,
+>>> (or swiotlb_do_find_slots in older kernels) to fail when attempting
+>>> to
+>>> allocate contiguous physical memory (CMA). This results in runtime
+>>> errors and prevents the Hailo 8 card from functioning correctly in
+>>> certain configurations.
+>>
+>> Hmm, dma_alloc_coherent() should really not be trying to allocate
+>> from
+>> SWIOTLB in the first place - how is that happening?
+>>
+>> If you're using restricted DMA for a device which wants significant
+>> coherent allocations, then it wants to have it's own shared-dma-pool
+>> for
+>> those *as well* as the restricted-dma-pool for bouncing streaming
+>> DMA.
+>>
+>> Thanks,
+>> Robin.
+> 
+> Hi Robin,
+> 
+> Regarding the specific Hailo Card case, the issue arises due
+> to the capabilities of certain SoCs or CPUs. For example, many
+> K3 SoCs lack an IOMMU, which is typically used to isolate the
+> system against DMA-based attacks of external PCI devices.
+> 
+> Taking the TI AM65 as an example, it doesn't have an IOMMU, but
+> instead includes a Peripheral Virtualization Unit (PVU). The
+> PVU provides functionality similar to an IOMMU and is used to
+> isolate PCI devices from the Linux host, and the SWIOTLB is
+> used to manp all DMA buffers from a static memory carve-out.
 
-One reason is to generalize DRTM support to other platforms.
+And as I said, if you want to support general coherent allocations then 
+you should use part of that carveout for a regular coherent DMA pool. 
+The restricted pool is only intended for streaming DMA - swiotlb_alloc() 
+is only meant as a convenience fallback for the kind of devices which 
+mostly do streaming DMA but make one or two small coherent allocations 
+from a suitable context. It does not work for *all* valid usage of 
+dma_alloc_attrs(), and if you want to do this for arbitrary PCI devices 
+then you almost certainly *do* need to be able to support drivers which 
+make allocations in atomic context.
 
-RFC: Trenchboot Secure Launch DRTM for AMD SKINIT=20
-https://lore.kernel.org/lkml/cover.1734008878.git.sergii.dmytruk@3mdeb.com/
+Thanks,
+Robin.
 
-OpenXT.org measured launch usage of tboot originated in 2012, when I was the=
- program manager for XenClient joint development [1][2] by Intel and Citrix.=
- TrenchBoot was proposed in 2018 at Platform Security Summit and evolved [3]=
- based on LKML and conference feedback. The tboot community was introduced [=
-4] to TrenchBoot in 2022.
-
-
-> I think I know the answer, but it also needs to be a part of the
-> documentation, changelogs and cover letter.
->=20
-> Also, honestly, what do you think we should do with the Linux tboot
-> code? Is everyone going to be moving over to Trenchboot
-
-OpenXT will migrate development of measured launch from tboot to TrenchBoot S=
-ecure Launch, after upstream Linux and Xen have support for both Intel and A=
-MD DRTM. Previously-deployed Intel devices using tboot, derived from OpenXT,=
- will need support until users upgrade their hardware. Qubes is integrating [=
-5] TrenchBoot into AEM (Anti Evil Maid). Since Oracle has spent several year=
-s working on this TrenchBoot series, they might use it, hopefully they can c=
-omment.=20
-
-
-> so that Linux support for TXT/tboot can just go away?
-
-[opinion]
-Which one will prevail? That may have less to do with tboot-trenchboot diffe=
-rences and more to do with AMD-Intel product marketing and OEM segmentation o=
-f DRTM features, some certified by Microsoft as "Secured Core" clients with S=
-MM attestation (Intel PPAM and AMD SMM Supervisor).
-
-Intel requires client vPro devices for TXT, but has slowly expanded the list=
- of eligible SKUs via "vPro Essentials" segmentation. AMD SKINIT is present o=
-n most processors, but DRTM currently requires a dTPM instead of the "mobile=
-" fTPM implementation in AMD PSP firmware, with dTPMs mostly present in AMD O=
-EM "PRO" or Embedded SKUs.
-
-If AMD included the full TPM 2.0 reference code in their PSP fTPM,  or if MS=
- Pluton implemented a full TPM 2.0 that was compatible with DRTM, then the n=
-umber of AMD DRTM-capable devices would be much higher than the number of In=
-tel vPro or AMD PRO devices, expanding the market for DRTM-capable software l=
-ike Linux (trenchboot) Secure Launch and Windows SystemGuard. That would inc=
-rease client adoption of trenchboot, as the only option for Linux DRTM on AM=
-D.
-
-On servers, both AMD and Intel hardware support DRTM with dTPM and other roo=
-ts of trust, but there are other launch considerations, including BMCs, SPDM=
- device attestation & vendor hypervisors.
-[/opinion]
-
-In a perfect world, Intel-signed ACM (used in TXT DRTM) binary blobs would b=
-e accompanied by public read-only source code, with reproducible builds that=
- generate those ACM blobs. In that perfect world, Intel ACM and tboot develo=
-pers would review the TrenchBoot Linux series, recommend improvements and gu=
-ide customers on migration from tboot to upstream-supported Linux DRTM. Neit=
-her has yet happened. Both would be welcome.
-
-Rich
-
-
-[1] https://www.intel.com/content/dam/www/public/us/en/documents/success-sto=
-ries/3rd-gen-core-vpro-citrix-vendor-spotlight.pdf
-
-[2] http://media12.connectedsocialmedia.com/intel/11/9510/Air_Force_Research=
-_Laboratory_Security_Collaboration_Government.pdf
-
-[3] https://trenchboot.org/events/
-
-[4] https://sourceforge.net/p/tboot/mailman/message/37631560/
-
-[5] https://blog.3mdeb.com/2023/2023-01-31-trenchboot-aem-for-qubesos/
+> You can find more details and background information here:
+> https://lore.kernel.org/all/20250422061406.112539-1-huaqian.li@siemens.com/
+> 
+>>
+>>> By making IO_TLB_SEGSIZE configurable via a kernel configuration
+>>> option
+>>> (CONFIG_SWIOTLB_SEGSIZE), users can adjust the segment size to
+>>> accommodate such use cases. This change improves flexibility and
+>>> ensures that systems can be tailored to meet the requirements of
+>>> specific hardware, such as the Hailo 8 PCIe AI card, without
+>>> requiring
+>>> kernel source modifications.
+>>>
+>>> I hope this example clarifies the need for this change. Please let
+>>> me
+>>> know if further details or additional examples are required.
+>>>
+>>> Best Regards,
+>>> Li Hua Qian
+>>>>
+>>>>
+>>>>> Li Hua Qian (1):
+>>>>>      swiotlb: Make IO_TLB_SEGSIZE configurable
+>>>>>
+>>>>>     include/linux/swiotlb.h | 2 +-
+>>>>>     kernel/dma/Kconfig      | 7 +++++++
+>>>>>     2 files changed, 8 insertions(+), 1 deletion(-)
+>>>>>
+>>>> Best regards
+>>>
+> 
+> --
+> Hua Qian Li
+> Siemens AG
+> http://www.siemens.com/
 
