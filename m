@@ -1,257 +1,177 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2074.outbound.protection.outlook.com [40.107.94.74])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2014424BC1A
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 13:42:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.74
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745588568; cv=fail; b=L9of0MKQSyahV5Blgf0xiYc7Kzz7i0FD+/f+IEVQMF5KxDGNz8SxJKYMhJRaCZrcLI1R7JFrt3/vkV8FarnnA+deM78rv787/7CXZ0h/W9Ey70FgYtLceApvFe58e4faQHPJ8XLtMLsJv/4xPQKXnwlrZykwJLiMe13NCVumjLQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745588568; c=relaxed/simple;
-	bh=D2lbipY7SQYln1K2mR/0yiWGtt3XixfnnygwAcsA9rI=;
-	h=Content-Type:Date:Message-Id:Cc:Subject:From:To:References:
-	 In-Reply-To:MIME-Version; b=PUY+euN2zS3T6oIkFVXf0jspQuavaQOV8R9U7w3EGiZrREtsZHtphiop9RrQEBaRHnbGS2K6pXd7hhLWFYhZvqgi74xIm40OWF60sZxkf2AYauW+4tM1+1NEvo+XLIxedf95tD8TJebEH6yz0kgXrxWPyrQuPpwBwt8f5OqC1iM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ixIyuEax; arc=fail smtp.client-ip=40.107.94.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E710B2522B6
+	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 14:12:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745590377; cv=none; b=AeCyd27QFyDJ/QfxOlqeuOQAHLpzWn8UD1TbLbegGCnJuK1UQXnNv5jtjeCwaiOeu/Np++yHXJkzIdJ8bGmpiDHmbJMYHK21Jmnb8b0iOmn2DQPFveQofPYHB1PoaXWjsx2iP6P7U/QAqieyWmy7AVzsBoBIr5s3BnowosoGs9M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745590377; c=relaxed/simple;
+	bh=kQZa9H88IRjq2r7TjcONEZD3Enz3AN+e7iK0VXsD/q8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nqmNnA3YRo7/JncLYko5/Is5jfSxHLMgKlHpfO8NJNJjE93b6KYp4oHAJjLjI5SxAA8OdPn88xF47ebDVlexBAnQn0BQ2esftieQ4Hhw1qGapB74TRvlvO5HU7LLcK8BFKEwU4IwU3Xz/+Bk51Ge/DBRSgAmuYfyrkS+wpjC6J4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MYCmwDSK; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ixIyuEax"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=UulVeGNq7nSubGi7Kx9REUegOJGpDlBGE0yBIUoYkkeXCACc2H0b6UyyJBdATKmAkyHllc5MEecsHZe9HyD4/RmWm8jlzqAk8Q8mayWhhiIAYaQR6m9EpIirLma2Ky7izNHE8/v3mTjPa5hQTjuSQxkWGBtC3SQy19sbaNh1RQXks7kw6znUUB3SVBWzAF9SiQrfdM3t6jwl255qbc6KzRFs39gCAxbEOuqM4rekZ1Fd1+CV2FffTUBN+gVCx8rR7fJDBaOUAGz1i2/+FUVFXmnhx4exVnDMvXQyZwcIEaWkvrd7Z3kAjA0N+wyeEeUrJDkjhz91M7P56XBVPk719A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=J3oz69+hglxSJeYlzyXeEsg9BIqvaPX8+MQuaU3RcZQ=;
- b=l/ytJoDldZ/VS1qUA3sFtrDii4whnTI08JnkbDEHwOg/Pyoqx+kfE0K7+2W8K+D9FvhEUbbu60h6OswJ2fQ9YmAipRzzJuWt1SevPTKBVWStO6m3w5xE6tDGudo2dlMaTvKQ7dR23mPxV6bfhyiukl5V2EhjHXzpOdFFafMvIff9yoz4Bo3GCN2ZwKYGpiloIFMssICtv5t0YdtiZI4A7rGtinHdHJpqDMyI/UWNIEQKtEeodPX5yuKWFcbHUJkxRa/K4u93tuxcjxjfiFPnohp6j+NVpYdmgVMwi1PTk6MVzyRksoAI4DFhNQrObtKnrucSM8arIMUP7NQRv+8wOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J3oz69+hglxSJeYlzyXeEsg9BIqvaPX8+MQuaU3RcZQ=;
- b=ixIyuEaxZ5jeMXw/Y54Q6jHimi5MmRcXzOgyq02x6mQE1S9giI9Io7FzANet7C9WGvhjVV4yyLNX4M+wuCZKvBYsF/PRzpcTUolBxoLSs5ed2LAI7XpZRwWIsU7Oio3Aw5GhqsAx9iiS100NF6LytW7s5K5t9OvVPlCun6qnhhVKAMNPvaGGHTjNwoqalU/QtTSexv88auG+lH3iAjZaQKFPVI8g3tnc/f0rC5BYuJ3eMz+R4VDs3SZGkv8jfJ2wqyG6xuY3FYA6ImGkCYLAlGHuVNF207AnO9G2y5H9+wZtodQaXCxwVp0DX71Gm22gU4XAJUH1ucUq3rZWJOQmdQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH2PR12MB3990.namprd12.prod.outlook.com (2603:10b6:610:28::18)
- by MW4PR12MB7240.namprd12.prod.outlook.com (2603:10b6:303:226::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8678.27; Fri, 25 Apr
- 2025 13:42:42 +0000
-Received: from CH2PR12MB3990.namprd12.prod.outlook.com
- ([fe80::6e37:569f:82ee:3f99]) by CH2PR12MB3990.namprd12.prod.outlook.com
- ([fe80::6e37:569f:82ee:3f99%4]) with mapi id 15.20.8678.025; Fri, 25 Apr 2025
- 13:42:42 +0000
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Fri, 25 Apr 2025 22:42:38 +0900
-Message-Id: <D9FRI153JFV3.2GQMZK8FCEV3C@nvidia.com>
-Cc: "Miguel Ojeda" <ojeda@kernel.org>, "Alex Gaynor"
- <alex.gaynor@gmail.com>, "Boqun Feng" <boqun.feng@gmail.com>, "Gary Guo"
- <gary@garyguo.net>, =?utf-8?q?Bj=C3=B6rn_Roy_Baron?=
- <bjorn3_gh@protonmail.com>, "Benno Lossin" <benno.lossin@proton.me>,
- "Andreas Hindborg" <a.hindborg@kernel.org>, "Alice Ryhl"
- <aliceryhl@google.com>, "Trevor Gross" <tmgross@umich.edu>, "Valentin Obst"
- <kernel@valentinobst.de>, "open list" <linux-kernel@vger.kernel.org>,
- "Marek Szyprowski" <m.szyprowski@samsung.com>, "Robin Murphy"
- <robin.murphy@arm.com>, <airlied@redhat.com>, "open list:DMA MAPPING
- HELPERS" <iommu@lists.linux.dev>
-Subject: Re: [PATCH v3 3/3] rust: dma: add as_slice/write functions for
- CoherentAllocation
-From: "Alexandre Courbot" <acourbot@nvidia.com>
-To: "Abdiel Janulgue" <abdiel.janulgue@gmail.com>, <dakr@kernel.org>,
- <rust-for-linux@vger.kernel.org>
-X-Mailer: aerc 0.20.1-0-g2ecb8770224a
-References: <20250425073726.1027068-1-abdiel.janulgue@gmail.com>
- <20250425073726.1027068-4-abdiel.janulgue@gmail.com>
-In-Reply-To: <20250425073726.1027068-4-abdiel.janulgue@gmail.com>
-X-ClientProxiedBy: TYCPR01CA0069.jpnprd01.prod.outlook.com
- (2603:1096:405:2::33) To CH2PR12MB3990.namprd12.prod.outlook.com
- (2603:10b6:610:28::18)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MYCmwDSK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745590376; x=1777126376;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=kQZa9H88IRjq2r7TjcONEZD3Enz3AN+e7iK0VXsD/q8=;
+  b=MYCmwDSKkjNOrW00fDwUU+MlJg/UxLG9MaIBDP2JJkS+NuWMXKoB7btJ
+   dNHioxnEcngSZuGAEhr0PXd5gTIf+9KlJRMFLU2bO0CkyEdsFnDh0dH0R
+   PGhdcA6lUUcCIPtaEtgzgIPCPNveYE/SAbEo3/v0UrL9FSy+bJaERcRCe
+   GMs2QSGKTsjRchDaKcxbdtIs3OMXdUTeZGs2wGbgnCfo4siFrTq3d4qJL
+   z9A3qVpD451QIVBl54OdUuWXQlyYy/z+KdYDd9B4I2EIZi0oCPmJPt+Xa
+   45PtvWTL3Sp6hltL4etUOcSXTFyPK1DT8uirOVpADgeUGILxUFl5AX6pr
+   g==;
+X-CSE-ConnectionGUID: FeIOdiGvSUGOL3H7zgrMlg==
+X-CSE-MsgGUID: FsUMXNCmTi2subiRw7oDKA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11414"; a="72628017"
+X-IronPort-AV: E=Sophos;i="6.15,238,1739865600"; 
+   d="scan'208";a="72628017"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2025 07:12:55 -0700
+X-CSE-ConnectionGUID: gze8PSdqR4uxfgHgShwE1A==
+X-CSE-MsgGUID: b9P0pObJRQ+SXKkVkYvCRg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,238,1739865600"; 
+   d="scan'208";a="133421364"
+Received: from uaeoff-desk2.amr.corp.intel.com (HELO [10.124.222.49]) ([10.124.222.49])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2025 07:12:53 -0700
+Message-ID: <9b18e8e3-f3e2-48d4-839a-56e1d8f62657@intel.com>
+Date: Fri, 25 Apr 2025 07:12:51 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PR12MB3990:EE_|MW4PR12MB7240:EE_
-X-MS-Office365-Filtering-Correlation-Id: 33136813-9168-44c4-e28d-08dd83ff0cf3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|7416014|376014|1800799024|366016|10070799003|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?MzEyNTJNOUhHK3h0Qk9jZll0RVcyYlQ3Q3FOS1U2Y1FENEp2M0dxRDZCcFM5?=
- =?utf-8?B?bHJjWFkzZ2xyVWFuOFRvdjVwbzFsaDVxNjVUVytGTkJkRVVyVGM3UWpwdG03?=
- =?utf-8?B?NnppaTdXWHlQS01vS2JkTzF0c1F5cmtEZ1FsVTVTNU1SUHBZU0RDSUZjdVdI?=
- =?utf-8?B?QTNzK0UzY1Z1anViUzU1MVVJbkVoTHBzdldQblYrVGR6aS92d3N2NU5zNlZM?=
- =?utf-8?B?QzRXMjlOZGc3enRuYTJpaVoyUHdReFlmRVp3S1Uyb1daZTdNWCtJeGFmRHNp?=
- =?utf-8?B?eG5WbU10ZGlmUy9tcTJ5ME5OWWRlaUZ5V0hQbWt3a0NieEQ0QmpVUTNHOCtt?=
- =?utf-8?B?c2JMQmJvd1A4YXZENFpxcHAwZXZMb2xoT2ZQclZncndRdFpwUldvTU52LzIz?=
- =?utf-8?B?RWRSaTB0Nk03ZEJKRHFOVm5BTnVhWnREcSszOERHNlFQQnVLVThnWWZWWksr?=
- =?utf-8?B?Z2ZKbzRYRHdlVHpPQmdHNGRUR1NQY0wwVHJDZFo2aCtuczVZcERXUEZxU3ha?=
- =?utf-8?B?bldoeENOZ0ZCMW9ZcDdyaEVIT0x4UkhISE12SDk3Uk9WbXFIZXZEODZJS1ND?=
- =?utf-8?B?bmJ1MkdmOTBQYUMwRTBCQmRHWUdmN0JYMkp5ZGgvSHBlQnBkUERRZE9IcXRY?=
- =?utf-8?B?NmNKQlZaM2FaazZKWWUrK09QaFpHbG9zNVF2M2RyaUVCTjJ4cVVld2Fna3lz?=
- =?utf-8?B?ZFNKTjUrY0JJUjJlcHpSMXZ0THArNXMxUmx6QS9HSFNUYlhxcnNVdXF0NFQy?=
- =?utf-8?B?aEdDY2RsdTErUHpITW9lNUJ5TjZuSWVUeUtqNVNxbENQK3p5WUtXTEtKbmZH?=
- =?utf-8?B?OVpSUDREdjk3THNuSytBc2hXSHFXSmk5RS9jdFZvelBkdVhYQUNpc1p0Ykh6?=
- =?utf-8?B?SnhWd1dLWWlhOVdsVjFDK0IyVXJTRjRDa1E1K0hST0h1aW11VFZ3KytmY0FH?=
- =?utf-8?B?elI4a2RzTDgvL2xOTDNSUXlwd2IxTlhQTkFTNUFFU2QyaFNXUDU3N0JnY1Nh?=
- =?utf-8?B?V0tETXVwWUpzY2RxRTl1WFBpaWxTekQzYlY4dEh3QWkyVW9tOElTZzV1UXpn?=
- =?utf-8?B?Um96b0I2T0NJK2F6TVNEZG12SGJ3UUhXVDZrbjViYlFINSttZFhjU29JaWtG?=
- =?utf-8?B?TXNkelhEME50bjByMTJFeG5pR040Z0FUWnIvbW5ZTitBM1BSUzEyWUxhOE1U?=
- =?utf-8?B?SEJwdXFzdlptU05xVStEL1pLZmVVQUoxdlYvWW8zV2tPR1VGU21wK3FYZWN0?=
- =?utf-8?B?SWt0RnZzZlFES05LSlpmUEVHZTRKSTlXS3pGcnFHUXo4b1hJNjdyYUo3WE1J?=
- =?utf-8?B?SGQxNUduWHVGZnNpd1VQQndvVExpS0ZKN2I1VmFXbzNjSUcvNjM0VkpzcFph?=
- =?utf-8?B?V1VhNHFIbWJzelUwWkowZHdoWjJ2a01BMEFoQ01UU21JcFBjWnJqQWJTSlFY?=
- =?utf-8?B?Yy9udmRIQ2JMS2ZjdzRRbjdoUkxSSURhNUMySlhWRnUyNXRzT2lPdS8vd1Bi?=
- =?utf-8?B?Y0d4NUpQQjdaTjJOYzVSVEk3dUNJN3Iya2RoZ2xHajZMWU45OElKYzJGVHBi?=
- =?utf-8?B?ZDZweTBKd3AxQzN1WHZnVTl2N0xDazhzTjRXeng3bXVGa3MyVEZCU2I3MmRn?=
- =?utf-8?B?U2h3cjZ1c2lBT0V5MjBSRzFSSTVBcWw3cTRYcmp4bkttQzZnZmxIQ2lBRnkv?=
- =?utf-8?B?RFRrS3dQMkMxZmlCbjZxdE5wWnNGNjRQczJYQnl3TGNSUWdMNmt6eXExc0Zk?=
- =?utf-8?B?U3Y5a2cwL2ZYOXNxd0JaUDdzVFRabHJ6Q3c5N2JRZ1RwdmNjUGxOUFoycGdv?=
- =?utf-8?B?eEVmdlBFSjhybDdWeENGUG1PemR5dUhiUnNESzkwcmVOSlZiNnRwMG5nSlVL?=
- =?utf-8?B?QzBvN0hzQndUaGM0cmF1ZEJoU1hOV1lQUWJXZjAvVWNxaXo4TCt0L0VKWFls?=
- =?utf-8?Q?mJHPLmos+QE=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR12MB3990.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016)(10070799003)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?akJWcnpZaE1ZaHVLaWl6bHJpY2srRi8rc0lDYlpzQ25nSWtrSHArd3I4ODlM?=
- =?utf-8?B?QWxMSHp2WmI3eTZ5ck5rNHl2dTRwbGpFc293dlRtR1JpNEo1d0NtM2hRMzg1?=
- =?utf-8?B?bU1QNGtuUGRhM1AvNVBRMGxOTDVZRzRscUh2QVMwL0lndlNQTEFvbFZ3M3Er?=
- =?utf-8?B?cHViUmxGUnFWUEtmSmt6T3JqUldMMk9FbWtuVEU0OWc0SG9MZy85YThIaUk0?=
- =?utf-8?B?U2EycmRzWFhESEVJQUs4cmkwYWVGU20vR0ZmRWtsWWExeitUc0pEYnpmZG15?=
- =?utf-8?B?bXFVUE9kNjBxeVh0NlZaVGRXNnFveUFZZ2xVUHZNSjErNHIxVURXczRTaDBT?=
- =?utf-8?B?Y3pmcTFwSkJPeE9wMTdDRURObFZNTWMzeWx6SlA2NjZ3NDFoTkVJd0hQNTVi?=
- =?utf-8?B?N2phd3FLQjJLNTdrVWREZGdlTWh3TnNLOTZDQkVSSG5EclR5elVJd2tsSEdH?=
- =?utf-8?B?eTZLR3dXUFpsY2toL2dOVmpOVzViTkR6cm5YdFdlQkEyOW9Xcy9kbUNzUmpP?=
- =?utf-8?B?NUZFbE5URHVqUGdxMTBMR3ZxVjBONlJ6MGMxb1RWbStQcU9lMWt5b2VBNGdx?=
- =?utf-8?B?QU1vNGdlMnRUNjEwNjdBREhrRkYrK3YxbDZsVms4OHpuRDNxbkVLeW5WbkVt?=
- =?utf-8?B?dFRHakJwL1kxVWdJbTZROXRxYkJKajFscys0STRyaUJaOEN6M1NMbkRFTDM5?=
- =?utf-8?B?dUNRQXk2a0RVcU0wUkMwM29TeWVSb3BaSWYxb0dxVGVNNjZuNk53OUt4Y2Y4?=
- =?utf-8?B?dUxMMGRPcEZSSnZKL3ZIMzRMUWdwMTZ1aUxFY1JydDZTYnRpbGdTSWc3NmRY?=
- =?utf-8?B?SGJhYWtjMTlyR25YUVpSWlhrY0UxUE1KNkRrVlBVRFRQUFB6Y1RGbVdWSnA4?=
- =?utf-8?B?Y2VvaVJCaGFSYytCMWtNa2NrcTQ3SGM3MWxnN21QVkEvYVJwdCtpR052M2l5?=
- =?utf-8?B?ZnVPd2xUZk02MU1TaUtGVWtYTTdLYktYZnBDdU9IeVhrSDRwQ3pwSjN6NitN?=
- =?utf-8?B?QXlyUGhUNW1HeUM0eW8rQkhJM3RKVmw3ZmJhTnhaV01GZFNpSjlTZEZDVDlJ?=
- =?utf-8?B?RGlEL1YyZVNXclRtWVNaZ0M1VFJYQkVaQzdQT3RxQXRielBwOVJqaFBmYXZZ?=
- =?utf-8?B?MWJZeGJOQlRodW1CV3UzSFY5RTFKRFAvaGw0cUdUVUwwNXo2akdJSDQ3a01y?=
- =?utf-8?B?cG1PZDlhUFdIMzAzd1k1TkJURzFiaEJCL25VS0ljWkJReUYwNWpiSWNjWUl1?=
- =?utf-8?B?SjBZdCtyMHZXbjJVTGtTckpPZ0daUTA0VGlkZUc4N1VucVJTb3VOSWxsZmRZ?=
- =?utf-8?B?VXlFVG9UU2ZrbG1KRXNLYzR4R2puOExMaGlrcE5uc0xjWHVRUUJEdFQya3Nq?=
- =?utf-8?B?bGw1ZkVOM1M3bXdMUFhHclR5bitWOC9pSUJIaG5qRXJVVnpMeWFaWVZYWFpz?=
- =?utf-8?B?VFE3Z0NYZHMzSHplN0tudy9sNEY5d1lWTFJBaFpSNEY4bTZXZzZXQWw0US95?=
- =?utf-8?B?dHVaZ1pGc0ZKSlZBbHpLRnI3WkcyYmtsUUR1R2JUaVVIbXIyVGNkb2krd2hq?=
- =?utf-8?B?a29MQkFNQXNaeloyUWR2RHNBRFd0akdCQk5NUHFyWXNqZmVVcHRybWhPTzFF?=
- =?utf-8?B?MGYyT01JcHF0OHVCOWpGRUxGNWlsbG90ZFVQM1RGQUF1R1F3RXh5UGZlbjZX?=
- =?utf-8?B?Y1lIaGkyT3A1eE5WR21lRG1xT0k2N2Ird0RLOGtGdC9XZTNCajNNbzJqZ0hQ?=
- =?utf-8?B?dVYyYUhwbTBPNDBaN0kya3ZLMEdHdWNVdkNPL3FWVHF0cEl1MEptaXBxY2Ns?=
- =?utf-8?B?TGNYejBrKzVPZFoyWmV5cTFYb2pORGFvUkF3Ym1QMUhFb0pRdEJjcGkzaXh4?=
- =?utf-8?B?L2pScmE5Y0E4NVdVK0hIOC9wRFNQeEdSWk80SSt4SFk5dEM0T3k3M2dHNXo1?=
- =?utf-8?B?bHBQdGxkand0Mm1RQW8yZXRYTXFRZ3lveE5SZVFtNFJReStFRkN6T2hTSi9h?=
- =?utf-8?B?VXN5VTc5Um8xWFdZVXlPRjBjNEQzejJiZlBtV29jbUpIcmo4QmdOcmlBdlIv?=
- =?utf-8?B?cVNucFRRVDU4cUlqU3JiTVl4STYvVWE5RmhNZ1VyaTB0RjMvS1F2WXBaMElh?=
- =?utf-8?B?dVlmUGhUeGJsd3NUKzRmTy9QYWhCVXJmaHE3S0ZqaW5tYVlmVWQ4c0k4cXl1?=
- =?utf-8?Q?KlJS+sHo9ZeXud0g9OcjPyIQ+dw9Zz4KAGLsr7KN1xMJ?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 33136813-9168-44c4-e28d-08dd83ff0cf3
-X-MS-Exchange-CrossTenant-AuthSource: CH2PR12MB3990.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2025 13:42:42.0983
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: b0c7U+JCswrcScopLxu6sCXQmB2n391o+nYRyjFraYgjxhIvCUcREWp4ep6UmT/6nFXyxK3CaDeroYHhfVWDLA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7240
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v14 00/19] x86: Trenchboot secure dynamic launch Linux
+ kernel support
+To: Rich Persaud <persaur@gmail.com>
+Cc: Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
+ x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
+ linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
+ linux-efi@vger.kernel.org, iommu@lists.linux.dev,
+ dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
+ bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com, ardb@kernel.org,
+ mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
+ peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
+ nivedita@alum.mit.edu, herbert@gondor.apana.org.au, davem@davemloft.net,
+ corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
+ baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
+ andrew.cooper3@citrix.com, trenchboot-devel@googlegroups.com,
+ Sergii Dmytruk <sergii.dmytruk@3mdeb.com>, openxt@googlegroups.com,
+ "Mowka, Mateusz" <mateusz.mowka@intel.com>, Ning Sun <ning.sun@intel.com>,
+ tboot-devel@lists.sourceforge.net
+References: <18F9BD47-282D-4225-AB6B-FDA4AD52D7AE@gmail.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Content-Language: en-US
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <18F9BD47-282D-4225-AB6B-FDA4AD52D7AE@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi Abdiel,
+On 4/25/25 03:12, Rich Persaud wrote:
+> ﻿On Apr 24, 2025, at 2:45 PM, Dave Hansen <dave.hansen@intel.com> 
+> wrote:
+>> ﻿On 4/21/25 09:26, Ross Philipson wrote:
+>>> This patchset provides detailed documentation of DRTM, the 
+>>> approach used for adding the capbility, and relevant API/ABI 
+>>> documentation. In addition to the documentation the patch set 
+>>> introduces Intel TXT support as the first platform for Linux 
+>>> Secure Launch.
+>> 
+>> So, I know some of the story here thanks to Andy Cooper. But the 
+>> elephant in the room is:
+>> 
+>>> INTEL(R) TRUSTED EXECUTION TECHNOLOGY (TXT) M:      Ning Sun 
+>>> <ning.sun@intel.com> L:      tboot-devel@lists.sourceforge.net 
+>>> S:      Supported W:      http://tboot.sourceforge.net T: hg 
+>>> http://tboot.hg.sourceforge.net:8000/hgroot/tboot/tboot F: 
+>>> Documentation/arch/x86/intel_txt.rst F:      arch/x86/ kernel/ 
+>>> tboot.c F:      include/linux/tboot.h
+>> 
+>> Linux already supports TXT. Why do we need TrenchBoot?
+> 
+> One reason is to generalize DRTM support to other platforms.
 
-On Fri Apr 25, 2025 at 4:35 PM JST, Abdiel Janulgue wrote:
-> Add unsafe accessors for the region for reading or writing large
-> blocks of data.
->
-> Reviewed-by: Andreas Hindborg <a.hindborg@kernel.org>
-> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-> ---
->  rust/kernel/dma.rs | 85 ++++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 85 insertions(+)
->
-> diff --git a/rust/kernel/dma.rs b/rust/kernel/dma.rs
-> index a61da5eeb017..e01bb7e7c440 100644
-> --- a/rust/kernel/dma.rs
-> +++ b/rust/kernel/dma.rs
-> @@ -218,6 +218,91 @@ pub fn dma_handle(&self) -> bindings::dma_addr_t {
->          self.dma_handle
->      }
-> =20
-> +    /// Returns the data from the region starting from `offset` as a sli=
-ce.
-> +    /// `offset` and `count` are in units of `T`, not the number of byte=
-s.
-> +    ///
-> +    /// For ringbuffer type of r/w access or use-cases where the pointer=
- to the live data is needed,
-> +    /// [`CoherentAllocation::start_ptr`] or [`CoherentAllocation::start=
-_ptr_mut`] could be used instead.
-> +    ///
-> +    /// # Safety
-> +    ///
-> +    /// * Callers must ensure that the device does not read/write to/fro=
-m memory while the returned
-> +    ///   slice is live.
-> +    /// * Callers must ensure that this call does not race with a write =
-to the same region while
-> +    ///   while the returned slice is live.
+OK, but why do this in Linux as opposed to tboot? Right now, much of the
+TXT magic is done outside of the kernel. Why do it *IN* the kernel?
 
-"while" is repeated twice in the second bullet point.
+>> Also, honestly, what do you think we should do with the Linux 
+>> tboot code? Is everyone going to be moving over to Trenchboot>
+> OpenXT will migrate development of measured launch from tboot to 
+> TrenchBoot Secure Launch, after upstream Linux and Xen have support 
+> for both Intel and AMD DRTM. Previously-deployed Intel devices using
+> tboot, derived from OpenXT, will need support until users upgrade
+> their hardware.
 
-> +    pub unsafe fn as_slice(&self, offset: usize, count: usize) -> Result=
-<&[T]> {
-> +        let end =3D offset.checked_add(count).ok_or(EOVERFLOW)?;
-> +        if end > self.count {
-> +            return Err(EINVAL);
-> +        }
+Say we axed tboot support from 6.16, but merged Trenchboot. A user on
+old hardware upgrades their kernel. What happens to them?
 
-Since `end` is not subsequently used, how about reworking this to avoid
-declaring it as a variable that is visible for the whole method:
+>> so that Linux support for TXT/tboot can just go away?
+You didn't _really_ answer the question.
 
-    offset.checked_add(count)
-      .ok_or(EOVERFLOW)
-      .and_then(|end| if end > self.count { Err(EINVAL) } else { Ok(()) })?=
-;
+Summarizing, I think you're saying that TXT/tboot Linux support can just
+go away, but it will be help if its maintainers help its users transition.
 
-Or maybe better, move this into a private helper method:
+Does anybody disagree with that?
 
-    fn validate_range(&self, offset: usize, count: usize) -> Result<()>
+> In that perfect world, Intel ACM and tboot developers would review
+> the TrenchBoot Linux series
 
-that you can call from all three methods requiring it instead of
-duplicating the same code snippet (in that case, you can declare `end`
-if you prefer this style as it will be useful for the entirety of the
-method).
+So, I was looking on the cc list and I didn't see them on there.
+Shouldn't they be cc'd if you want them to review the series? A little
+poking at lore makes me think that they were *NEVER* cc'd.
 
-> +        // SAFETY:
-> +        // - The pointer is valid due to type invariant on `CoherentAllo=
-cation`,
-> +        //   we've just checked that the range and index is within bound=
-s. The immutability of the
-> +        //   of data is also guaranteed by the safety requirements of th=
-e function.
-
-"of the of data" sounds like a typo.
-
-> +        // - `offset` can't overflow since it is smaller than `self.coun=
-t` and we've checked
-> +        //   that `self.count` won't overflow early in the constructor.
-
-IIUC you rather need to state that `offset + count` (not just `offset`)
-is smaller than `self.count`?
-
-Same comments apply to `as_slice_mut` and `write`.
-
-Cheers,
-Alex.
+Is that right, or is my lore-foo weak?
 
