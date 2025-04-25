@@ -1,266 +1,238 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2078.outbound.protection.outlook.com [40.107.236.78])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFB184A1A
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 00:49:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.78
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745542169; cv=fail; b=pd6Cl4FefjahwbacelbDMzP4VI3iSXETGvlDmdfH/yFur6aFo9UAY6/OqPqT2AA9dI+b9kc0XC+ARW5y6ZO1pbLkdb0+U7yjFLrUJkS70MqtNXkln9qmc97fqXpcf7cB6eKuQZWnJ26r5dEahtitKcUF24GS9FZVM6Ig6hb2RaE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745542169; c=relaxed/simple;
-	bh=l1Qn97rHAcn7M2Jh3/n4GPAf3ih4EG7hKPvxT52MpfM=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=Bq3V1sgg/qAxSLs3YUTvsz5xZKK68Tt2l20NmGir5OL2UTPM3qRdtdn6VjKDI6WyQP03cmRgtv3OxxMBJc3T4Po121T7sFw2Y6mBR+QivwWlTCqtnuVtgFVfX0gr7eFtbjv36/j6g7Xj6oJKa6qfLxaBluFykBIZqZYVYLcdgLM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=N4LQeiG3; arc=fail smtp.client-ip=40.107.236.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E99FC17996
+	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 01:01:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745542865; cv=none; b=t2qlBXGgN5+8Mx9crbV3SD4oIhxuTQWKw9Rqw1LfKyPufC17t71sxR/wZNIAQl0eh9i9djbRIhYb/JDjdVep+qsKvWgB2d6+f14vRfn3XV76U//PclIT5X4FlKWV9f3vju+C1OOzlDoa6YCxfWjUYBrNn8JhadG4E+HFYth9GRU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745542865; c=relaxed/simple;
+	bh=3NBBCGeKr2m5IBaqIkjQPLgZ1gmvbV+miikL5I2UHb0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=CY/ZWeBoM3z1hGSWXwNNEapx8Rpt1I0Kb1sgdOTZArrL+PX9SEw/rElXrpIW6M9hxaqpCjBOnCC820HQSFRH3z7vptiJ7Z6hdbBacegjPSN/AnnOMTcHkfgr7bhwAfC1LubQn7Pi9sb5/OtS8haUga0i+lscUIwKutjP8vU7mKU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=daBcB89E; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="N4LQeiG3"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=W0luDsu5xEFLqKp9vey7tprRPBIeLB6hBmMQJI/ewxWRenRo4cjodXekK6PA4lUcewLKoCjFudCoopm1grjYECiSpHwUytPPA5eBrhFguOdREV808P5IKQUdgxNp7qGD74Gk46BP1OiM+UG0fblI/jENI2zvW6wAB4/b7MKtRr3l9TPOSeryU+lR7G1XM2lD9ff1lj27wgew17lLPHg5gk7RaGtvAqSVFDl7dwnn/gry9nJ/HKkS+dW+jpxputD454Z1tPcIKy2t8A3pm72Kd/Q9XU03YfYxukPDJTUtQ5qeMMlcq2Mpukes5kn7SCcmj6tPNw9yVXoZ4N/TaCyN2A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4SbWAYPTiE+MqDOHMr8g26Wj1wIKml5No4sEYAXhMcI=;
- b=XBZcFQ++AIg0Ow8CM0aH7qcF7hT9FtUgj/bMklk8rWv185YwhaO3J9PPysUp/OWxpy1AuAaJEsvL8k4N+f+37hQjAlpZ1AHnyI2n5R1C5oUzz7jR41SrsH4z2J3jrnp8w3lwhqAE7MuaAfwlnI0iCmB4lkfZ4FzO0mhH3WakzDwyun6w8tC/R/sTOGPGlfRLWjgG1BxIZRF2MvbLq6CkbKtgc9klXTGpMqc2rPi+fl0vWNNaCl4Ktim8i0Hi0L2DYGaSkTUsIbsDFb0jCnTrukwfgGNK3RvM27e6ZK7VZfxLxJj2aFmCpCT+BF3I99jSadEEwcsUdT/h9qPUm69K8w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4SbWAYPTiE+MqDOHMr8g26Wj1wIKml5No4sEYAXhMcI=;
- b=N4LQeiG3Ftw0mR1+CC+S9YG752qfihu02OCl5DvTeU77TXO93OoHMNw2Uv1wdsEiQ6Rgmz3y5paoCXDpNeu25MBnr/sm+0cq2kJ7bgsspmCKDlRjSXZERjYJTfmV73F6cNqcO8/MrHr7k1h2sRLc3WOebbriJAS6OD4OQ1zmWmL8rcFaIneg1InhEC/0zFzaYnJpejmhvjOvAp+2ERyMZz8uqsc6JlZ597SKZ5W/2DE2aq+PUAgR5lr0Yzce/IDwVXsSXNfEJvsejba5EiMEuQm2+m7ZyQLTbfC7meSi0s8/k/4YVZ+KMUruNelvOEDhjt+DOTGKhrZyHA6J/VhzgA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from PH7PR12MB6657.namprd12.prod.outlook.com (2603:10b6:510:1fe::7)
- by IA1PR12MB6329.namprd12.prod.outlook.com (2603:10b6:208:3e5::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8655.35; Fri, 25 Apr
- 2025 00:49:23 +0000
-Received: from PH7PR12MB6657.namprd12.prod.outlook.com
- ([fe80::e1a7:eda7:8475:7e0a]) by PH7PR12MB6657.namprd12.prod.outlook.com
- ([fe80::e1a7:eda7:8475:7e0a%3]) with mapi id 15.20.8655.033; Fri, 25 Apr 2025
- 00:49:23 +0000
-Message-ID: <77be6671-e4e8-4b17-bf72-74bde325671a@nvidia.com>
-Date: Thu, 24 Apr 2025 17:49:20 -0700
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH rc] iommu: Skip PASID validation for devices without PASID
- capability
-To: Jason Gunthorpe <jgg@nvidia.com>, Vasant Hegde <vasant.hegde@amd.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, kevin.tian@intel.com, yi.l.liu@intel.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-pci@vger.kernel.org, stable@vger.kernel.org
-References: <20250424020626.945829-1-tdave@nvidia.com>
- <a65d90f2-b6c6-4230-af52-8f676b3605c5@linux.intel.com>
- <8ef5da0e-f857-43a0-8cdf-b69f52b4b93a@amd.com>
- <20250424123156.GO1648741@nvidia.com>
-Content-Language: en-US
-From: Tushar Dave <tdave@nvidia.com>
-In-Reply-To: <20250424123156.GO1648741@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SJ0PR03CA0231.namprd03.prod.outlook.com
- (2603:10b6:a03:39f::26) To PH7PR12MB6657.namprd12.prod.outlook.com
- (2603:10b6:510:1fe::7)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="daBcB89E"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1745542863; x=1777078863;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=3NBBCGeKr2m5IBaqIkjQPLgZ1gmvbV+miikL5I2UHb0=;
+  b=daBcB89Evau0SLmPlPDp0xqFaOCXDwhq0DB+Vn/dA5QYL/HWrIZ9BdS+
+   Y2Kx8G0vXwdiT2Mz98bBXhfTq+9HsCzX/c9em2T3sBmVkELrqoUwJ9xxx
+   Fn135fDkb3cywYZC7vW5wEu7nE13LAWtuODtEM73q6ITx5uQM1nYG2ZuJ
+   ax7sYr3QdpwgNbONq/0FANUaKucKGnxeJvhoJFePUWd1rTG/KsOZezO1q
+   7YM+7jZaWhrD8Z6LtECnLlI3kVlVz3VHM/PBzu8V4KIsyoOQcIBApu20l
+   ZTL7xvI8rk8z6QAESnfBNr3xOOfPgb/laFgafUrP0wNs/3TqBMhxNVesQ
+   w==;
+X-CSE-ConnectionGUID: nZAB/71nQ4y4me8mNEvEmw==
+X-CSE-MsgGUID: dPWFr3FWTlazUrMGNZBHDg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11413"; a="58187341"
+X-IronPort-AV: E=Sophos;i="6.15,237,1739865600"; 
+   d="scan'208";a="58187341"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2025 18:01:02 -0700
+X-CSE-ConnectionGUID: zYinjX53Rq2xK987hBUNDA==
+X-CSE-MsgGUID: s5TphgHrQyuN1UkyCzHYoQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,237,1739865600"; 
+   d="scan'208";a="163827607"
+Received: from puneetse-mobl.amr.corp.intel.com (HELO [10.125.108.124]) ([10.125.108.124])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2025 18:01:00 -0700
+Message-ID: <bf3e0b9b-1cf5-4ee5-8487-46851a84230d@intel.com>
+Date: Thu, 24 Apr 2025 18:00:58 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB6657:EE_|IA1PR12MB6329:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4a09be55-c88b-46d7-cc30-08dd83930551
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|366016|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?S24xelg1UkFSVGxISkJGa2FGZGRUdkt6c0R5L2lUVW9FR1ZGQytRYmRYTEhr?=
- =?utf-8?B?bjdHRkNhZWlxYktMbHk2Yk51N3JCdmlrVEJNaStKT1RvcjJQdm9HeDYxQUNC?=
- =?utf-8?B?SG5yamhjUXRUQmRuNXZnamdYbVhrYUE2NWlPNldLTGo1MXNTQXY3NmNQNUxq?=
- =?utf-8?B?SkFmaXBYYWNCTUJYZVdOd0kyUWtWR3VLMzhlSGJqU3k1MldWdnFZakdwdFdz?=
- =?utf-8?B?K1QzWC82Qm5ubzl0dzRrN2pqRkE2ZFJXOURPMjNYSERNcktxNW9qR0tSMVk3?=
- =?utf-8?B?RS8rUys4a3BwcFpiellZb3k1REtBSFVlZG1GQmxURjQ0VGlkZEF2bVNaMWJv?=
- =?utf-8?B?SGovWDlJZkVWdzArTi9Sa0NoOG1KNVhzRE8rUldaWE50YzZWRWs1VjhNSXpQ?=
- =?utf-8?B?aWplNFlyK2VHYzZSL0FUS2R5cDYydzVqNkVISDhvcUduMS9ERmZQZ2UxakNl?=
- =?utf-8?B?Uk5RaXZTekR2dG1PbzBmV0hZOUo2QzVQeE9kazFMdTZYOWZUbjNaMUhIb3FT?=
- =?utf-8?B?cFZ6MWpVODNCSldTTVJmRkt1Zm9od1dyUms4Wjh6S2R1SlhsUDN6K1dDV3U3?=
- =?utf-8?B?aHp4SFFWSEcyR2E3NFRxV3JuQzFyaDlXVTVBQ2EzTlZvK29yaFBZRk5naWFP?=
- =?utf-8?B?WUY3Vk55d1hmNDEzWkJtUGZWbFdWZEhZc1hEdDBJRVR3TEpDRFRlVEJhRlRC?=
- =?utf-8?B?L3FrYjFVTzZqc2JJR1hLaC9aU1lXbkRlTDZ2UkYwbTV0ay92aXpPK3UwTnM2?=
- =?utf-8?B?UXdzbXNwTlFKTkh4QWZQS0ROY09xME1aOGs5WmhsVkhob3U1TU1aYmdZQUV0?=
- =?utf-8?B?eWEvNFZaeWt5NGVBak51TGlqTmtZQjF1VG1jYmtaYm1mdHVxeTIxTzk1TFl5?=
- =?utf-8?B?UUtRQ0tOQ0lrd2ZDUU1LR0JaeHpHSk9QV2xGdUhJZ3p2c2xKRzBFQnlWcHFG?=
- =?utf-8?B?WFN4V1U2a3NnNTRSWSs4MGJMRS82MmcvRXZmR01lSWUydGtQbVI5RUVNYjEy?=
- =?utf-8?B?VFpjSEpOMS9QZDlWUjNwNyszSHd2RFYwa2dLd0R2dWZ4U1JmU1NRUUJIM1po?=
- =?utf-8?B?MXFsTHkzKzd4blZ2d0IrK1dxNy9oTE8wM2NpWkFTUUtjR2dtcFk5WWRnb0pa?=
- =?utf-8?B?dk1qTDhzeHBrWlp6ejliUEUyZ1ltNjNjWTY1bWcvWFFuZmptUGtPWHpCM3B4?=
- =?utf-8?B?Wk1LWlh4VTJCUm14UXpBMmEyMU4xSXFBYUt5amFoR0dER3dMRmNzOWVSbUJS?=
- =?utf-8?B?blc0QzNNenNEc3hNeTkrSEIvWU1ZaFdGTW5iZ04zZzhyR0tkaFNKNHIwOTFB?=
- =?utf-8?B?VUM3ODcxS05zU3FhcTBtOWh1QithelRsL2YyZjhUSDhrWGRrdVpmd0xOL3Y4?=
- =?utf-8?B?aDlRSklvUFo0bG5OQlhhVWtoYW84TFR0SElSKzBWenN6ZUsrbUZTL1lvNm13?=
- =?utf-8?B?Y014bVBYeVI1KzFnVEdpaEdUKzFYYmhEYjQxamhpWTRsTmJHYjBsOGhHcW9V?=
- =?utf-8?B?bUNJYlJnVW1IaVdYTFc1UTRINm1XZFlCVFVpYkFpOXN1QjdBU0FIcndVWEM1?=
- =?utf-8?B?SnJQemxkQndUek1oVTdBUHdkSUdtYWpFSTNGMTUrSzBoclducy9VQWN0ZnI5?=
- =?utf-8?B?NFJaRjdzMTNDYzZYNVdzK3RnR0xTd1U1UzM0UW02L09hdlZaOGdnNUtVejJL?=
- =?utf-8?B?ZjNnMWsyMEF4TEZsVlhIU29OSlp2eDNoeWhNZEUxYXJxNHh2dU10WDd1NWt2?=
- =?utf-8?B?SWpaUlI1Tk5FTkIrU0o4RDZUWVk3dDdVRFBHOFRpdXpqekd1V3RqVjVTWEVC?=
- =?utf-8?B?dXJtTmJvT1lKUVBrcEpTSlF3VEtmLytGRVFKU3NrMnJWb0RVcjNrNkdTS2JS?=
- =?utf-8?B?V3Z0NHdMYk1CNmkwaXFveGt1TEJ3VzU2T241TGNiRVVQV3N6WERGaXpFUWZt?=
- =?utf-8?Q?79pOAjioer4=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB6657.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(366016)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?eG9KSWMySUVMRUxtcTFqUmxkbVllRXZqekxYQzRncTNMS0VQVnFRWDNBRmtG?=
- =?utf-8?B?ckxrNjJSdGtlc3RwZURiMkNkV1dlMWpzMDNDa1pzMXdmSGcrbERzTEtMZmRu?=
- =?utf-8?B?b0lCZWhDRVBWSGJVZHFZb3J1Q2FYeHl2MVNpSUZOS25hWWwxTTFVSVFFTDJL?=
- =?utf-8?B?UDM4TGZjNFEvMGRFeGtobzQ4eW43ZVVYcy95MWgrUUZuRFZ1YnNRVjNGcHRx?=
- =?utf-8?B?aVQralB1aEtZUHN2NTIyV3MyNkI0bHBZTUZNbElJWTJFS3BKdzkrbmk5cEly?=
- =?utf-8?B?QU4wck4wTTFqU0RPVklRTWdiSlpZa0FtYXF1NmdWa2NoTUhveXNoZGw3a1hs?=
- =?utf-8?B?NERRVi9QZGJYZURhVFkwdGExQUh5Y3ovTm9RaUdlbk1SYU1BZWNBTmt4ejcy?=
- =?utf-8?B?SG5oRGN1U3pIRjlmUHcyelJRNGMzTzc3TW5BdnlBME1BU0ZReVVSbENIMFU5?=
- =?utf-8?B?WWRlSjh2U3hzRUxXekZMU0xSR2dsMnJydmRSWVcyZmUxVVhnVThSSU9aazRX?=
- =?utf-8?B?blJXMk5ubnNhaGZqbkFvemp0Nnc4RzhLTmZ6ZU91WkJCb0V6d3JRK1RFWWhB?=
- =?utf-8?B?T0RWZ08rSkkvaWxHbVhhTjRndjFhWU0xWGVLbmJCV2tmWDhZNUdjTi9zeHNv?=
- =?utf-8?B?QTZURGdNdThOMDJqamFpRFNkcG1USjhCNFBEeTFFL0dMcDl3K0VtUmdYWEdQ?=
- =?utf-8?B?ZGc4V09uUllQUlpmMlpnQnNsRFlLZ2Rra1ZaZWk5TDJ6WEdsVi9KUXFWMGhK?=
- =?utf-8?B?S3RBbU90Sm90TmFPWUh0ZU0xemJUV05rOUJ2MDNTNllpRjNmdHhSWlJzTkpr?=
- =?utf-8?B?c0hFZ3ZWaDN2YnpqdmpTSmxzNm4yWFpvZTV6STJGNG0reVJzd3gvdzhDUERX?=
- =?utf-8?B?b055bUhZdngvbjJBMzRBbUE2d0J2bktnOTRrNzZZRThjNlNLdi9EVnVDZXc0?=
- =?utf-8?B?NFU4SGdQZlVFd2tFQ2QvVjkvOGxzZFV4U0ppZWErNTBkUTQ2NTE2a0s1OC8w?=
- =?utf-8?B?Rmlkc3M4VUdHbVZDejgwNW5sRGwwOFpDKzZRTE90Q1dOKzFMeWFGRS9uRUxM?=
- =?utf-8?B?T2VHUXhFcXRBSkg0N21iZ3pvTE93VUk0eER4M1d2eUpIeGNRVlFrc21KTUlP?=
- =?utf-8?B?bUF3WStCaG5tSG9VNCsyUjFqaXJNSlpWYTRQTU4vaHJFSUNPZ1pBbk90NklP?=
- =?utf-8?B?NHdGVFFJUmxjbDd2Z3lIekhWREFiclNJaVM0bmJmMVduS2hDZEZreGlNRDJy?=
- =?utf-8?B?WlViOFh5R2FoK0dsbGg2MFJaVk5DbGdzT2ZEZG1kN2VxUy9BVUZLa2NwWDhW?=
- =?utf-8?B?RWQxMEJmVVNQLzRkT3VVZ0pZSkl0c3FFbU1QdCtZV1RDbFdlS0Qzb3FxRWVN?=
- =?utf-8?B?bWNSRW5YcFNXTVFlR1ppbjZNN0dvYWZDY2JITGtybU51azdYQ3ArblU0NzlO?=
- =?utf-8?B?aHJuK3pYb1JKUlFHbWxvUERFY1kyemJhbmEzK25zSDdIL29RSlZTb3RJajJo?=
- =?utf-8?B?VnRGYmNNbnBXQm1LU3pSSDE0c2hjQnN3M21RQmVqT0xjSy9qKzYvenRtOE5Y?=
- =?utf-8?B?RFBNMFhVSE9jbDR6ZUNMREcwaitwNndrbnJwRThJUWtNSkthcFczaGh3RU9y?=
- =?utf-8?B?TTlxRGk4RUtGRnduRXNRazBSTEpBOXVGZnV2U3h0M2xHUXhUVFIzMWFuQ3B1?=
- =?utf-8?B?NktFWjZuRWJyV3dUZzFnNmp5cksyNUs3NmlOc3RXVThtb3lvUFRZUjJjVXp0?=
- =?utf-8?B?WXV4eXFnV1Q5dldtbjJFNWdFQlFaM3gyT3VvR2VRVk5ueGJ3SVVLZXhzWGhG?=
- =?utf-8?B?UWJtSENJUm9nenhMVjBKbjloNzBwR2VnY1VkYjR6bkZkQ3FUcDg1b04xNkZZ?=
- =?utf-8?B?a1IwMHFpdHc4dml4SXlzVlZmSnhBbVBVeHhOcWx1aTlCMTZ3SjJhcnlqaGVh?=
- =?utf-8?B?d2tnbnFvUkRqQnVyRmlCR29wcURvOU1tNnZoMFdiWEc5aDFudlhDcFBHWmFw?=
- =?utf-8?B?NUxJWk8vTVFIcUVibm82cEkyOGd5M1gzYWpFRmtBSDcwdEdnUXlvVnBvNlUv?=
- =?utf-8?B?d1k2WEVCN01oZTFhOHRVdHFFNzVLazZoVWlYYk9yNEN6KzR5b1J0bG5nbjZI?=
- =?utf-8?Q?H7aZSWxgU1hPWtGdCRxC8qI8c?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4a09be55-c88b-46d7-cc30-08dd83930551
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB6657.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Apr 2025 00:49:23.1300
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AuW6pecNP8PtLMCny+7syKPhUajPxXWCo32lC6MBvsiDr26Yyvs6ugHxRulj8qzoEuOnTGWePyJ9SD3deDYwlg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6329
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/1] iommu: Allow attaching static domains in
+ iommu_attach_device_pasid()
+To: Jack Vogel <jack.vogel@oracle.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ "shangsong2@lenovo.com" <shangsong2@lenovo.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>
+References: <20250424034123.2311362-1-baolu.lu@linux.intel.com>
+ <4764ACC2-6D38-4CAE-8A6B-451AB3DAF3E0@oracle.com>
+ <a6e386bf-c9d4-4b3c-ad6e-dd1689330782@intel.com>
+ <0A18D37F-7457-49CC-9D67-369A3A8C9E7E@oracle.com>
+ <9b67710b-07bf-4c18-824a-27bc5df4fdfa@intel.com>
+ <C85B4AA4-793D-45CA-915A-4C7F4FB4CA64@oracle.com>
+Content-Language: en-US
+From: Dave Jiang <dave.jiang@intel.com>
+In-Reply-To: <C85B4AA4-793D-45CA-915A-4C7F4FB4CA64@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 
 
-On 4/24/25 05:31, Jason Gunthorpe wrote:
-> On Thu, Apr 24, 2025 at 12:08:56PM +0530, Vasant Hegde wrote:
+On 4/24/25 5:55 PM, Jack Vogel wrote:
 > 
->>> What the iommu driver should do when set_dev_pasid is called for a non-
->>> PASID device?
 > 
-> That's a good point, maybe the core code should filter that out based
-> on max_pasids? I think we do run into trouble here because the drivers
-> are allocating PASID table space based on max_pasids so the non-pasid
-> device should fail to add the pasid. Tushar, you should have hit this
-> in your testing???
+>> On Apr 24, 2025, at 16:15, Dave Jiang <dave.jiang@intel.com> wrote:
+>>
+>>
+>>
+>> On 4/24/25 3:59 PM, Jack Vogel wrote:
+>>>
+>>>
+>>>> On Apr 24, 2025, at 15:40, Dave Jiang <dave.jiang@intel.com> wrote:
+>>>>
+>>>>
+>>>>
+>>>> On 4/24/25 3:34 PM, Jack Vogel wrote:
+>>>>> I am having test issues with this patch, test system is running OL9, basically RHEL 9.5, the kernel boots ok, and the dmesg is clean… but the tests in accel-config dont pass. Specifically the crypto tests, this is due to vfio_pci_core not loading.  Right now I’m not sure if any of this is my mistake, but at least it’s something I need to keep looking at.
+>>>>>
+>>>>> Also, since I saw that issue on the latest I did a backport to our UEK8 kernel which is 6.12.23, and on that kernel it still exhibited  these messages on boot:
+>>>>>
+>>>>> *idxd*0000:6a:01.0: enabling device (0144 -> 0146)
+>>>>>
+>>>>> [   21.112733] *idxd*0000:6a:01.0: failed to attach device pasid 1, domain type 4
+>>>>>
+>>>>> [   21.120770] *idxd*0000:6a:01.0: No in-kernel DMA with PASID. -95
+>>>>>
+>>>>>
+>>>>> Again, maybe an issue in my backporting… however I’d like to be sure.
+>>>>
+>>>> Can you verify against latest upstream kernel plus the patch and see if you still see the error?
+>>>>
+>>>> DJ
+>>>
+>>> Yes, the kernel was build from the tip this morning. Like I said, it got no messages booting up, all looked fine. But when running the actual test suite in the accel-config tarball specifically the iaa crypt tests, they failed and the dmesg was from vfio_pci_core failed to load with an unknown symbol.
+>>
+>> I'm not sure what the test consists of (haven't worked on this device for almost 2 years). But usually the device is either bound to the idxd driver or the vfio_pci driver. Not both. And if the idxd driver didn't emit any errors while loading, then the test failure may be something else...
+>>
+>> Another way to verify is to set CONFIG_IOMMU_DEFAULT_DMA_LAZY vs PASSTHROUGH. If the tests still fail then it's something else. 
+>>
+>> DJ
+> 
+> There isn’t a lot of ways to test this driver, yes DPDK will use it, but apart from that? So, the tests that are part of your (Intel) accel-config package are the only convenient way that I’ve found to do so. It is also convenient, there is a “make check” target in the top Makefile that will invoke both set of DMA tests, and some crypto (IAA) tests. I have been planning to give this to our QA group as a verification suite. Do you have an alternative to this?
 
-When we have multi-device group with PASID device and non-PASID devices,
-set_dev_pasid doesn't fail in my testing for non-PASID devices.
+This should be the right test package. Let me talk to our QA people and see if there are any issues. We can resolve this off list. If there's any issues that end up pointing to the original bug, we can raise that then. 
 
-Here is the example topology and bit more detail:
-
-0008:00:00.0 root_port
-  └─0008:01:00.0 upstream_port
-     ├─0008:02:00.0 downstream_port
-     │  └─0008:03:00.0 endpoint (NIC DMA-PF)
-     └─0008:02:03.0 downstream_port
-        └─0008:04:00.0 upstream_port
-           └─0008:05:00.0 downstream_port
-              └─0008:06:00.0 endpoint (GPU)
-
-
-In the above topology, we setup ACS flags on DSP 0008:02:03.0 and 0008:02:00.0 
-to achieve desired p2p configuration for GPU and DMA-PF.
-Apparently, this creates multi-device group with GPU being only device with 
-PASID support in that group. In this case, set_dev_pasid() ops invoked for each 
-device within the group with pasid=1 and doesn't fail.
-
-e.g.
-
-  ...
-  ..
-  .
-  pcieport 0008:02:03.0: debug: __iommu_set_group_pasid():  pasid=1 
-dev->iommu->max_pasids=0 iommu_group 30
-  pcieport 0008:02:03.0: debug: __iommu_set_group_pasid():  ret 0
-  pcieport 0008:04:00.0: debug: __iommu_set_group_pasid():  pasid=1 
-dev->iommu->max_pasids=0 iommu_group 30
-  pcieport 0008:04:00.0: debug: __iommu_set_group_pasid():  ret 0
-  pcieport 0008:05:00.0: debug: __iommu_set_group_pasid():  pasid=1 
-dev->iommu->max_pasids=0 iommu_group 30
-  pcieport 0008:05:00.0: debug: __iommu_set_group_pasid():  ret 0
-  nvidia 0008:06:00.0: debug: __iommu_set_group_pasid():  pasid=1 
-dev->iommu->max_pasids=1048576 iommu_group 30
-  nvidia 0008:06:00.0: debug: __iommu_set_group_pasid():  ret 0
-
-
-IMO this outcome is expected. Quoting a text from commit
-https://github.com/torvalds/linux/commit/16603704559c7a68718059c4f75287886c01b20f
-
-
-"If multiple devices share a single group, it's fine as long the fabric
-always routes every TLP marked with a PASID to the host bridge and only
-the host bridge. For example, ACS achieves this universally and has been
-checked when pci_enable_pasid() is called. As we can't reliably tell the
-source apart in a group, all the devices in a group have to be considered
-as the same source, and mapped to the same PASID table."
-
--Tushar
-
+DJ
 
 > 
-> We also have a problem setting up the default domain - it won't
-> compute IOMMU_HWPT_ALLOC_PASID properly across the group. If the
-> no-pasid device probes first then PASID will be broken on the group.
+> Jack
 > 
-> Tushar isn't hitting this because ARM always uses a PASID compatible
-> domain today, but it will not work on AMD.
+>>
+>>>
+>>> This sounds like the module was wrong, but i would think it was installed with the v6.15 kernel….. 
+>>>
+>>> Jack
+>>>
+>>>>
+>>>>>
+>>>>> Cheers,
+>>>>>
+>>>>> Jack
+>>>>>
+>>>>>
+>>>>>> On Apr 23, 2025, at 20:41, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>>>>>
+>>>>>> The idxd driver attaches the default domain to a PASID of the device to
+>>>>>> perform kernel DMA using that PASID. The domain is attached to the
+>>>>>> device's PASID through iommu_attach_device_pasid(), which checks if the
+>>>>>> domain->owner matches the iommu_ops retrieved from the device. If they
+>>>>>> do not match, it returns a failure.
+>>>>>>
+>>>>>>        if (ops != domain->owner || pasid == IOMMU_NO_PASID)
+>>>>>>                return -EINVAL;
+>>>>>>
+>>>>>> The static identity domain implemented by the intel iommu driver doesn't
+>>>>>> specify the domain owner. Therefore, kernel DMA with PASID doesn't work
+>>>>>> for the idxd driver if the device translation mode is set to passthrough.
+>>>>>>
+>>>>>> Generally the owner field of static domains are not set because they are
+>>>>>> already part of iommu ops. Add a helper domain_iommu_ops_compatible()
+>>>>>> that checks if a domain is compatible with the device's iommu ops. This
+>>>>>> helper explicitly allows the static blocked and identity domains associated
+>>>>>> with the device's iommu_ops to be considered compatible.
+>>>>>>
+>>>>>> Fixes: 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
+>>>>>> Closes: https://bugzilla.kernel.org/show_bug.cgi?id=220031
+>>>>>> Cc: stable@vger.kernel.org
+>>>>>> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+>>>>>> Link: https://lore.kernel.org/linux-iommu/20250422191554.GC1213339@ziepe.ca/
+>>>>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>>>>>> Reviewed-by: Dave Jiang <dave.jiang@intel.com>
+>>>>>> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+>>>>>> ---
+>>>>>> drivers/iommu/iommu.c | 21 ++++++++++++++++++---
+>>>>>> 1 file changed, 18 insertions(+), 3 deletions(-)
+>>>>>>
+>>>>>> Change log:
+>>>>>> v3:
+>>>>>> - Convert all places checking domain->owner to the new helper.
+>>>>>> v2: https://lore.kernel.org/linux-iommu/20250423021839.2189204-1-baolu.lu@linux.intel.com/
+>>>>>> - Make the solution generic for all static domains as suggested by
+>>>>>>   Jason.
+>>>>>> v1: https://lore.kernel.org/linux-iommu/20250422075422.2084548-1-baolu.lu@linux.intel.com/
+>>>>>>
+>>>>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>>>>>> index 4f91a740c15f..b26fc3ed9f01 100644
+>>>>>> --- a/drivers/iommu/iommu.c
+>>>>>> +++ b/drivers/iommu/iommu.c
+>>>>>> @@ -2204,6 +2204,19 @@ static void *iommu_make_pasid_array_entry(struct iommu_domain *domain,
+>>>>>> return xa_tag_pointer(domain, IOMMU_PASID_ARRAY_DOMAIN);
+>>>>>> }
+>>>>>>
+>>>>>> +static bool domain_iommu_ops_compatible(const struct iommu_ops *ops,
+>>>>>> +struct iommu_domain *domain)
+>>>>>> +{
+>>>>>> +if (domain->owner == ops)
+>>>>>> +return true;
+>>>>>> +
+>>>>>> +/* For static domains, owner isn't set. */
+>>>>>> +if (domain == ops->blocked_domain || domain == ops->identity_domain)
+>>>>>> +return true;
+>>>>>> +
+>>>>>> +return false;
+>>>>>> +}
+>>>>>> +
+>>>>>> static int __iommu_attach_group(struct iommu_domain *domain,
+>>>>>> struct iommu_group *group)
+>>>>>> {
+>>>>>> @@ -2214,7 +2227,8 @@ static int __iommu_attach_group(struct iommu_domain *domain,
+>>>>>> return -EBUSY;
+>>>>>>
+>>>>>> dev = iommu_group_first_dev(group);
+>>>>>> -if (!dev_has_iommu(dev) || dev_iommu_ops(dev) != domain->owner)
+>>>>>> +if (!dev_has_iommu(dev) ||
+>>>>>> +   !domain_iommu_ops_compatible(dev_iommu_ops(dev), domain))
+>>>>>> return -EINVAL;
+>>>>>>
+>>>>>> return __iommu_group_set_domain(group, domain);
+>>>>>> @@ -3435,7 +3449,8 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+>>>>>>    !ops->blocked_domain->ops->set_dev_pasid)
+>>>>>> return -EOPNOTSUPP;
+>>>>>>
+>>>>>> -if (ops != domain->owner || pasid == IOMMU_NO_PASID)
+>>>>>> +if (!domain_iommu_ops_compatible(ops, domain) ||
+>>>>>> +   pasid == IOMMU_NO_PASID)
+>>>>>> return -EINVAL;
+>>>>>>
+>>>>>> mutex_lock(&group->mutex);
+>>>>>> @@ -3511,7 +3526,7 @@ int iommu_replace_device_pasid(struct iommu_domain *domain,
+>>>>>> if (!domain->ops->set_dev_pasid)
+>>>>>> return -EOPNOTSUPP;
+>>>>>>
+>>>>>> -if (dev_iommu_ops(dev) != domain->owner ||
+>>>>>> +if (!domain_iommu_ops_compatible(dev_iommu_ops(dev), domain) ||
+>>>>>>    pasid == IOMMU_NO_PASID || !handle)
+>>>>>> return -EINVAL;
+>>>>>>
+>>>>>> -- 
+>>>>>> 2.43.0
 > 
-> That's a huge pain to deal with :\
-> 
->> Per device max_pasids check should cover that right?
-> 
-> The driver shouldn't be doing this though, if the driver is told to
-> make a pasid then it should make a pasid.. The driver can fail
-> attaching a pasid to a device that is over the device's max_pasid.
-> 
->> FYI. One example of such device is some of the AMD GPUs which has
->> both VGA and audio in same group. while VGA supports PASID, audio is
->> not. This used to work fine when we had AMD IOMMU PASID specific
->> driver. GPUs stopped using PASIDs in upstream kernel. So I didn't
->> look into this part in details.
-> 
-> Uhhh.. That sounds like a worse problem, the only way you should end
-> up with same group is if the ACS flags are missing on the GPU so Linux
-> assumes the VGA and audio can loopback to each other internally.
-> 
-> That should completely block PASID support on the GPU side due the
-> wrong routing. We can't have a hole in the PASID address space where
-> the audio BAR is.
-> 
-> I suppose the HW doesn't actually behave this way but since it doesn't
-> have the right ACS flags the SW doesn't know? Guessing..
-> 
-> Jason
+
