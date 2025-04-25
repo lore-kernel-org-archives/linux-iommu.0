@@ -1,143 +1,166 @@
-Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [83.223.95.100])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4769D14830A
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 09:29:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.223.95.100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 684B3238C20
+	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 09:58:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745573346; cv=none; b=KytxrBZbCEZ9S60xv+9J8nhXFruPDrXRuzzgnCe7iXO68Azh+H/hCT+2hnbjss+RVRAaO9TyUE/NL5V8YYdRjx5rGcCaKDBwqheyqQLcUyHMs5H0x2Hhc1s7RNcc/rbzjs35Jgp5ulPGiKkqAVGWvxOmosYm1XzZr6JpVF246f4=
+	t=1745575083; cv=none; b=XTa+cPpqwCcvw6T/qYFilxbq7FEHm1qFean5U88KImi4KljuEhsSNDlWsoV3NKGCltyV8Zp2MFiNUTipYDqdvgS4zHotSXK/XK6Is1oO6c0qlo68S6QhMHUCZqyuMf92AqWoTRtqWpfuumhGjuTeKV80Ne0wAI+acmz1A50XSus=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745573346; c=relaxed/simple;
-	bh=qZh7R73OEiTz7nMIBMHtFXhxKzMqGt7qKeWOwin131k=;
-	h=Message-Id:In-Reply-To:References:From:Date:Subject:To:Cc; b=k4+v8PNZ6cnFHwoL0KyIV8AB7v30rt35B7F976fLZdGrCvyZ6OyLiF/qXZA99po8RH0yDDTRDBPI8ezhp/plbyrU0+m0jTuFZ0L8AWb9/1nHPxeZLoodmM8dvoPsyPX8cLewBPXRjWwUwrcj63i3hHyUU0ZNFGSnX1Lmh3mXarc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=pass smtp.mailfrom=wunner.de; arc=none smtp.client-ip=83.223.95.100
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wunner.de
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
-	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
-	by bmailout1.hostsharing.net (Postfix) with ESMTPS id EAF252C4C3F1;
-	Fri, 25 Apr 2025 11:28:36 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-	id 87AE0ECCCB; Fri, 25 Apr 2025 11:29:03 +0200 (CEST)
-Message-Id: <d22a9e5b81d6bd8dd1837607d6156679b3b1199c.1745572340.git.lukas@wunner.de>
-In-Reply-To: <cover.1745572340.git.lukas@wunner.de>
-References: <cover.1745572340.git.lukas@wunner.de>
-From: Lukas Wunner <lukas@wunner.de>
-Date: Fri, 25 Apr 2025 11:24:22 +0200
-Subject: [PATCH 2/2] PCI: Limit visibility of match_driver flag to PCI core
-To: Bjorn Helgaas <helgaas@kernel.org>, Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux.dev, Borislav Petkov <bp@alien8.de>
+	s=arc-20240116; t=1745575083; c=relaxed/simple;
+	bh=Vf/rLd4GFcJ3rfHcTZhJzseE/NW/DuE267IkH38ND9w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fU7kBLAryl40Hfo5z92jU89rq+JsCTdWDkiDtlkJffB4lMTwhbnbzjHF8iHj49K9K7DPXbRuD8jzt3AyzL+v79J8lUeVqhqZXn1xVe8vX+zVokbdMPj+j20xAy29A62A5YmS8tagOZCRwDDkZJ1Sxb2pRYj01QbcTZTGbYZoxHg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=bo60nUk9; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="bo60nUk9"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53P8TBel018977
+	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 09:58:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	Vf/rLd4GFcJ3rfHcTZhJzseE/NW/DuE267IkH38ND9w=; b=bo60nUk9AriZpXIr
+	8ljFtmcUnt1uRxZYBxGkQQlsIai1k8jsLguG+AwgraCpok0IcazIBJZjpNR0oJnG
+	KvgS0pzEuAGog/4KSHfuQpdLZcO10pZC9b/uUF/Al2RV0NjruLsFzxsnbmG7Pxeu
+	3PcJWrNtdoY+T5Oxq+sgEku3XYUqyme3hcVfzq+y469VFQI52PgGyM61PPtWmBkn
+	WbIslN6eW1R5FoyNVOSuB1C5h3wS6fo1bXCfzeIlEE12BfWDz+t4D3cRvFV4mLTg
+	1ijoB2emkUJJsQ+MaXJjDtnawqSHOjCg55JBOV420CiR2xDzhZitC5GczT/tgQcm
+	5ga5zw==
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com [209.85.219.70])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 466jh28mar-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 09:58:01 +0000 (GMT)
+Received: by mail-qv1-f70.google.com with SMTP id 6a1803df08f44-6eeeb7cbd40so3126586d6.3
+        for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 02:58:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745575079; x=1746179879;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Vf/rLd4GFcJ3rfHcTZhJzseE/NW/DuE267IkH38ND9w=;
+        b=Z3Gxx/QhJWJrU6NSN7VXDYJzl0+EoLBv1Dm8BIyZ4nYjYnj1tyv3QvGRBbWP0WXBKQ
+         iL6d5W9kmqAAUq2vzLnfe6TJu7FPXF2m+iPWNvRZ8HcckbctrwyEIYdu0VsWS5+/SeVj
+         7TM2SYcbJ1HcWnJ/DuuasMl7dogDJLGFAECQYgurUMa6bkGEwFXFVkCefo8QiWtA7sK7
+         kWQ8K9C2A15K58Iefi1RBjOtg1e5VDFIH+IBzNnMLLH9zqMzmlS6XpkObVzICbJjbzvG
+         8pszNcP+qQSL1y4QjSBqA7aa97GT18pkZGUiIyKLlN5duUh/Fg+E3TdhhOJUK+fELBg7
+         bcBA==
+X-Forwarded-Encrypted: i=1; AJvYcCWA3bDbyR3+7v5GOG3X0673f68Bzqf9/MDJH5GkusiYpWEsPgggq0Tc6fp5YdfRMpVMwj8Z2Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyzWk9muFuo0ZEJ3ROh7na0D5Wkbqzf8wkS5bTypT05juy2TcR9
+	Q7sorp1vXqLV/rLTcfOSKPmfOoCSo2L1UII7Ir8E3glt1sR3O6lO+Ls0jzzlEqTI+FPg8+LRBkf
+	fhQ58v2l3dMNjYiUV9iyK/CW/55NsF5UGPTcSk+Jpk7XYkZJfWKKjBg==
+X-Gm-Gg: ASbGncsQ7EK3b1R0Gvy+KE8OQeBk7FIi9lirRu3CEjiiAZw0sBz/n2Sjg8VoIi0VOuK
+	7bLPZp46Uf9zpt1I7wCQYvpXsqtCKygeOy84EVhuYZL7QojbcZLIT8483ltr0wb3hzHKCyNJCSC
+	SmXa3AghqiP8yMqZJOw9DgWWNd/maLHyt4JQoyvKGOL90LwyRmeyGbB5DyQp5y5CLrOtcYGb9RX
+	dIGLuWwoH/8QuoUGTRsHd+jRIGyZxu2wk6v3KaeQgBfG2opFDJwkgwOg1W6Tsk41dyrHfmN1gDV
+	HhMKd9+n6RD6q5ILG2+jpYX5XsfEL5l/L55KIsgPGXzpVDqdNgHFa11V3/cvEB1c
+X-Received: by 2002:a05:6214:27ec:b0:6d8:ae2c:5053 with SMTP id 6a1803df08f44-6f4cba5f634mr10002146d6.9.1745575079779;
+        Fri, 25 Apr 2025 02:57:59 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IE1aDrr9tIrGOVh+lPKRQPvx999AwcL22qiAWtArNF4QQ88HDa7YW9+wreCLFQKaTgC7b9wGQ==
+X-Received: by 2002:a05:6214:27ec:b0:6d8:ae2c:5053 with SMTP id 6a1803df08f44-6f4cba5f634mr10001956d6.9.1745575079389;
+        Fri, 25 Apr 2025 02:57:59 -0700 (PDT)
+Received: from [192.168.65.5] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5f7016f5342sm1032645a12.35.2025.04.25.02.57.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 25 Apr 2025 02:57:58 -0700 (PDT)
+Message-ID: <70635d75-03f9-49ea-8098-57cb144fda94@oss.qualcomm.com>
+Date: Fri, 25 Apr 2025 11:57:52 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 3/5] arm64: dts: qcom: Add initial support for MSM8937
+To: barnabas.czeman@mainlining.org,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd
+ <sboyd@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+ <conor+dt@kernel.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>,
+        Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Adam Skladowski
+ <a_skl39@protonmail.com>,
+        Sireesh Kodali <sireeshkodali@protonmail.com>,
+        Srinivas Kandagatla <srini@kernel.org>, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, phone-devel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht, linux@mainlining.org,
+        Dang Huynh <danct12@riseup.net>
+References: <20250421-msm8937-v5-0-bf9879ef14d9@mainlining.org>
+ <20250421-msm8937-v5-3-bf9879ef14d9@mainlining.org>
+ <2e3d94a4-d9e1-429e-9f65-d004c80180e5@oss.qualcomm.com>
+ <790a0b7537e0b82b70bc4b32612ecee6@mainlining.org>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <790a0b7537e0b82b70bc4b32612ecee6@mainlining.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authority-Analysis: v=2.4 cv=EtLSrTcA c=1 sm=1 tr=0 ts=680b5ca9 cx=c_pps a=oc9J++0uMp73DTRD5QyR2A==:117 a=FpWmc02/iXfjRdCD7H54yg==:17 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=OuZLqq7tAAAA:8 a=bBqXziUQAAAA:8 a=x_pH4qmy28IV03WXGqsA:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=iYH6xdkBrDN1Jqds4HTS:22 a=AKGiAy9iJ-JzxKVHQNES:22 a=BjKv_IHbNJvPKzgot4uq:22
+X-Proofpoint-GUID: mFThPLULiCKsMc8AyXRXAqKsanQoEGlT
+X-Proofpoint-ORIG-GUID: mFThPLULiCKsMc8AyXRXAqKsanQoEGlT
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNDI1MDA3MiBTYWx0ZWRfX89GWBDHlGdkv hkNVbvRtVQcMjK4naZLSZRVWNgJDudFlY5xzs4g166rXO5iqXXwNtGKnaFBMeB+vB0ijhbdlLxV 4uDoInBs6e6OIankAyeCfhFwSVAa7GI0IDkQJ63Ca1kPqdxxrdCnKlxMJVRRFAC1m719572Ni3H
+ yhyueYYE0ZvRMfIcMx63VWrRAUopeuuYivFWpyfs5oXksxFTMHaVLRDg1HqZX5gl+GLmV5UJYPo 64m+bbk+YBcmLxCctlEYloEWl2VINMZLoRz4iQuR/k2zCGV/OyO8Ta629upXHTuuVAGnlhJsp7n wFmhRcymXzsKVYA/XTswDMC3TdISUHm1ntfSqgCcvNgxDD9Ah3XSTyoHs00kFTlKSNDuuJ4peOK
+ F5AkwylbvZVKMkZL2ELO7LIHFp28kDpYQX539WosEdTX4bDdeABToQUy8m03Hu76O3y6X5ma
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-04-25_02,2025-04-24_02,2025-02-21_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
+ suspectscore=0 mlxscore=0 clxscore=1015 spamscore=0 mlxlogscore=978
+ lowpriorityscore=0 malwarescore=0 priorityscore=1501 impostorscore=0
+ adultscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
+ definitions=main-2504250072
 
-Since commit 58d9a38f6fac ("PCI: Skip attaching driver in device_add()"),
-PCI enumeration is split into two steps:  In the first step, all devices
-are published in sysfs with device_add().  In the second step, drivers are
-bound to the devices with device_attach().  To delay driver binding until
-the second step, a "bool match_driver" in struct pci_dev is used.
+On 4/23/25 4:46 PM, barnabas.czeman@mainlining.org wrote:
+> On 2025-04-23 16:03, Konrad Dybcio wrote:
+>> On 4/21/25 10:18 PM, Barnabás Czémán wrote:
+>>> From: Dang Huynh <danct12@riseup.net>
+>>>
+>>> Add initial support for MSM8937 SoC.
+>>>
+>>> Signed-off-by: Dang Huynh <danct12@riseup.net>
+>>> Co-developed-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+>>> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+>>> ---
 
-Instead of a bool, use a bit in the "unsigned long priv_flags" to shrink
-struct pci_dev a little and prevent use of the bool outside the PCI core
-(as has happened with commit cbbc00be2ce3 ("iommu/amd: Prevent binding
-other PCI drivers to IOMMU PCI devices")).
+[...]
 
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
----
- drivers/pci/bus.c        |  4 +++-
- drivers/pci/pci-driver.c |  2 +-
- drivers/pci/pci.h        | 11 +++++++++++
- drivers/pci/probe.c      |  1 -
- include/linux/pci.h      |  2 --
- 5 files changed, 15 insertions(+), 5 deletions(-)
+>>> +            gpu_opp_table: opp-table {
+>>> +                compatible = "operating-points-v2";
+>>> +
+>>> +                opp-19200000 {
+>>> +                    opp-hz = /bits/ 64 <19200000>;
+>>> +                    opp-supported-hw = <0xff>;
+>>
+>> The comment from the previous revision still stands
+> If i remove opp-supported-hw i will got -22 EINVAL messages and the opp will be not fine.
 
-diff --git a/drivers/pci/bus.c b/drivers/pci/bus.c
-index b685110..6904886 100644
---- a/drivers/pci/bus.c
-+++ b/drivers/pci/bus.c
-@@ -369,7 +369,9 @@ void pci_bus_add_device(struct pci_dev *dev)
- 				pdev->name);
- 	}
- 
--	dev->match_driver = !dn || of_device_is_available(dn);
-+	if (!dn || of_device_is_available(dn))
-+		pci_dev_allow_binding(dev);
-+
- 	retval = device_attach(&dev->dev);
- 	if (retval < 0 && retval != -EPROBE_DEFER)
- 		pci_warn(dev, "device attach failed (%d)\n", retval);
-diff --git a/drivers/pci/pci-driver.c b/drivers/pci/pci-driver.c
-index c8bd71a..0c5bdb8 100644
---- a/drivers/pci/pci-driver.c
-+++ b/drivers/pci/pci-driver.c
-@@ -1507,7 +1507,7 @@ static int pci_bus_match(struct device *dev, const struct device_driver *drv)
- 	struct pci_driver *pci_drv;
- 	const struct pci_device_id *found_id;
- 
--	if (!pci_dev->match_driver)
-+	if (pci_dev_binding_disallowed(pci_dev))
- 		return 0;
- 
- 	pci_drv = (struct pci_driver *)to_pci_driver(drv);
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index b81e99c..de5d4ef 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -557,6 +557,7 @@ static inline int pci_dev_set_disconnected(struct pci_dev *dev, void *unused)
- #define PCI_DPC_RECOVERED 1
- #define PCI_DPC_RECOVERING 2
- #define PCI_DEV_REMOVED 3
-+#define PCI_DEV_ALLOW_BINDING 7
- 
- static inline void pci_dev_assign_added(struct pci_dev *dev)
- {
-@@ -580,6 +581,16 @@ static inline bool pci_dev_test_and_set_removed(struct pci_dev *dev)
- 	return test_and_set_bit(PCI_DEV_REMOVED, &dev->priv_flags);
- }
- 
-+static inline void pci_dev_allow_binding(struct pci_dev *dev)
-+{
-+	set_bit(PCI_DEV_ALLOW_BINDING, &dev->priv_flags);
-+}
-+
-+static inline bool pci_dev_binding_disallowed(struct pci_dev *dev)
-+{
-+	return !test_bit(PCI_DEV_ALLOW_BINDING, &dev->priv_flags);
-+}
-+
- #ifdef CONFIG_PCIEAER
- #include <linux/aer.h>
- 
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 364fa2a..126ae1e 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -2711,7 +2711,6 @@ void pci_device_add(struct pci_dev *dev, struct pci_bus *bus)
- 	pci_set_msi_domain(dev);
- 
- 	/* Notifier could use PCI capabilities */
--	dev->match_driver = false;
- 	ret = device_add(&dev->dev);
- 	WARN_ON(ret < 0);
- 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 51e2bd6..e29d7d4 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -425,8 +425,6 @@ struct pci_dev {
- 	struct resource resource[DEVICE_COUNT_RESOURCE]; /* I/O and memory regions + expansion ROMs */
- 	struct resource driver_exclusive_resource;	 /* driver exclusive resource ranges */
- 
--	bool		match_driver;		/* Skip attaching driver */
--
- 	unsigned int	transparent:1;		/* Subtractive decode bridge */
- 	unsigned int	io_window:1;		/* Bridge has I/O window */
- 	unsigned int	pref_window:1;		/* Bridge has pref mem window */
--- 
-2.47.2
+Right, I have a series pending to improve this situation a bit..
 
+In the meantime, you should be able to define the nvmem cell and
+fill in meaningful values for this platform
+
+Konrad
