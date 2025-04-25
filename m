@@ -1,78 +1,69 @@
-Received: from mail.ptzai.id (mail.ptzai.id [103.126.10.62])
+Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [83.223.95.100])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AD7517BA3
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 07:43:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.126.10.62
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3240614830A
+	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 09:25:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.223.95.100
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745567009; cv=none; b=CodZd5E1TygCSIjGbdSqDlLnKUjmsbIykn5IvGJ0aTH/p6XhO/i0zogL+r5fEC3yeG58reBgo0P2aRq69rkgabuWqgjSoEFLFZfajKFx+x/fnO8y2KFZJjyvC2K2JA1wo0q+6IElsZXW2Tt9qWuK60ZAALMirRsFhduwRxOKndg=
+	t=1745573133; cv=none; b=XHt4SDtL20FCWQQn73/AJu6J/RqrK3K9Og4l61cipH4Yc8/x6nF9gAhT3UEne13u9llEnt2PVlc67cuXXRivGOH9TgG78B+x3LQ7Q/nGfEkzzRW+55/MTPEktZbX6wIfRxnj5ucSXxXBzjrewduCb7Yj8/B24yjDHQuKrt5pK7c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745567009; c=relaxed/simple;
-	bh=b7CLhaODBxqyzsw/peYeuRlfRfivDGHbQ6K4oQXysKo=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=fiTFIlr/O9JnrClwACeneNXTqy4PwChz5epxIHB0zHWyDqw18Q8XPUIIwJObFD9VjITyFgOdm4qUBEkQFj0CK35l1GLynP7n547a8DhEF25h9K+h+uWyS3Lt4C0570gniKO9gPnv59UvHkx7woH6WSYL1rZ9wohIfay3xBgzu/I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ptzai.id; spf=pass smtp.mailfrom=ptzai.id; dkim=pass (2048-bit key) header.d=ptzai.id header.i=@ptzai.id header.b=nOPgwF1M; arc=none smtp.client-ip=103.126.10.62
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ptzai.id
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ptzai.id
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ptzai.id header.i=@ptzai.id header.b="nOPgwF1M"
-Received: from mail.ptzai.id (localhost.localdomain [127.0.0.1])
-	by mail.ptzai.id (Postfix) with ESMTPS id 7C375106976C1
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 13:56:21 +0700 (WIB)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.ptzai.id (Postfix) with ESMTP id 333E71069788B
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 13:45:15 +0700 (WIB)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.ptzai.id 333E71069788B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ptzai.id;
-	s=E96DBB9A-8BDD-11EC-9732-6913AA4D48C7; t=1745563516;
-	bh=b7CLhaODBxqyzsw/peYeuRlfRfivDGHbQ6K4oQXysKo=;
-	h=From:To:Date:Message-ID:MIME-Version;
-	b=nOPgwF1Mhk/g02xBTUAGLR8GCpeLHwbaOH6oNlshciKpHlGAFSOrcGT1cX/O1cwGW
-	 n7MHq2J5W+EokhcSHMaBqpOhP5eLDNgHyoLX4VHb5cENcxzw0LhWQUu5q7CXJSleeQ
-	 F1VWojjJQcr5PTHm1mfVfLKN5QCW54lZfopeD+vDxbLvMcDm/5lWeeCgMT3vZBT8Aj
-	 2FOSjqQSnOg+x/Ot0Ia2G9QCIJIAcSp3Xydm3WlCjHXjemZAESBv1CxSR37f86j8Ov
-	 FPvtoPeN7sZ+iQf+1HUBz6uqkTU4NBOD0Xe2PAXkXe7XMouCsGkVQGI/6DKVZhZ95K
-	 IvSuTf0inEfXg==
-X-Virus-Scanned: amavisd-new at ptzai.id
-Received: from mail.ptzai.id ([127.0.0.1])
-	by localhost (mail.ptzai.id [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id gM8Wx_BLppbl for <iommu@lists.linux.dev>;
-	Fri, 25 Apr 2025 13:45:15 +0700 (WIB)
-Received: from a79-168-142-120.cpe.netcabo.pt (a79-168-142-120.cpe.netcabo.pt [79.168.142.120])
-	by mail.ptzai.id (Postfix) with ESMTPSA id 9EBD110697865
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 13:45:13 +0700 (WIB)
-Reply-To: adilkareemin@gmail.com
-From: Investors Group UAE <syahrir@ptzai.id>
-To: iommu@lists.linux.dev
-Subject: Business and Project Funding Inquiry
-Date: 25 Apr 2025 09:45:07 +0300
-Message-ID: <20250425094507.B981D2EEE26FB5F1@ptzai.id>
+	s=arc-20240116; t=1745573133; c=relaxed/simple;
+	bh=cDc9UhmmFN+11WuHEXxb1Wwaeiuj09fWDbTMRwVZMEU=;
+	h=Message-Id:From:Date:Subject:To:Cc; b=flgkjkVYBku5ZOAhb5AYFjDZuFi3fK+2F18xfxrwwLZzbLEPbVXnQXqpWflNvSSo46q2qaOhc9JdadKEgELfXTlP2D7TbBe68GdENdG5HYT4HtO577ciCmu4fqfXXp5v8p2xeRoo8OVwNJCdVBOhM9KQjAaAa/TXGOQzuYnL+Ao=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=pass smtp.mailfrom=wunner.de; arc=none smtp.client-ip=83.223.95.100
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wunner.de
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
+	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
+	by bmailout1.hostsharing.net (Postfix) with ESMTPS id 974AD2C4C3F1;
+	Fri, 25 Apr 2025 11:24:55 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+	id 31C6018E80; Fri, 25 Apr 2025 11:25:22 +0200 (CEST)
+Message-Id: <cover.1745572340.git.lukas@wunner.de>
+From: Lukas Wunner <lukas@wunner.de>
+Date: Fri, 25 Apr 2025 11:24:20 +0200
+Subject: [PATCH 0/2] PCI: Clean up match_driver flag usage
+To: Bjorn Helgaas <helgaas@kernel.org>, Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux.dev, Borislav Petkov <bp@alien8.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
 
-Assalamu Alaikum iommu,
+A small puzzle piece to improve maintainability of the PCI core:
 
-I hope you=E2=80=99re doing well. My name is Adil Kareem from Investors Gro=
-up UAE. We work alongside private investors in the UAE to offer tailored fu=
-nding solutions that help businesses like yours grow and thrive.
+The match_driver flag in struct pci_dev is used to postpone driver
+binding until all PCI devices have been enumerated.
 
-If you=E2=80=99re considering financing, I=E2=80=99d love to learn more abo=
-ut your goals. Could you share:
+The AMD IOMMU driver fiddles with the flag to work around breakage
+introduced 10 years ago.  The breaking change has since been reverted,
+so accessing the flag appears to be superfluous and is hereby dropped
+(patch [1/2]).  The patch needs an ack from AMD IOMMU maintainers.
 
-The amount you=E2=80=99re seeking
+This clears the way for moving the flag to struct pci_dev's priv_flags
+and thus prevent any further abuse outside the PCI core (patch [2/2]).
 
-Your preferred repayment timeline
+There are already two patches queued up in this cycle which amend
+priv_flags with new definitions for bits 4, 5 and 6 (on the pci/hotplug
+and pci/bwctrl topic branches), hence the bit number used here is 7.
 
-I=E2=80=99ll then follow up with options best suited to your needs.
+Lukas Wunner (2):
+  Revert "iommu/amd: Prevent binding other PCI drivers to IOMMU PCI
+    devices"
+  PCI: Limit visibility of match_driver flag to PCI core
 
-Looking forward to your response.
+ drivers/iommu/amd/init.c |  3 ---
+ drivers/pci/bus.c        |  4 +++-
+ drivers/pci/pci-driver.c |  2 +-
+ drivers/pci/pci.h        | 11 +++++++++++
+ drivers/pci/probe.c      |  1 -
+ include/linux/pci.h      |  2 --
+ 6 files changed, 15 insertions(+), 8 deletions(-)
 
-Warm regards,
-Adil Kareem
-Investors Group Representative
+-- 
+2.47.2
+
