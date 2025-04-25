@@ -1,177 +1,111 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E710B2522B6
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 14:12:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99BDD253939
+	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 15:13:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745590377; cv=none; b=AeCyd27QFyDJ/QfxOlqeuOQAHLpzWn8UD1TbLbegGCnJuK1UQXnNv5jtjeCwaiOeu/Np++yHXJkzIdJ8bGmpiDHmbJMYHK21Jmnb8b0iOmn2DQPFveQofPYHB1PoaXWjsx2iP6P7U/QAqieyWmy7AVzsBoBIr5s3BnowosoGs9M=
+	t=1745594035; cv=none; b=QC7bwwLl9wH4OJFjNXHuMhFr7XulQbuEP3f4GSXcR4I69pwKCEnu0qkTPKQT9vhiYNCFO5Qq0FmhnLzTulf6bdHmZXspwUoALKmOlgAf9silU+68cK+pIUKDhBX+FWyBh4pTa3kDNRCxBwwhG/srqLMJTVkeE7Ymhzam1r+uZVw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745590377; c=relaxed/simple;
-	bh=kQZa9H88IRjq2r7TjcONEZD3Enz3AN+e7iK0VXsD/q8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nqmNnA3YRo7/JncLYko5/Is5jfSxHLMgKlHpfO8NJNJjE93b6KYp4oHAJjLjI5SxAA8OdPn88xF47ebDVlexBAnQn0BQ2esftieQ4Hhw1qGapB74TRvlvO5HU7LLcK8BFKEwU4IwU3Xz/+Bk51Ge/DBRSgAmuYfyrkS+wpjC6J4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MYCmwDSK; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1745594035; c=relaxed/simple;
+	bh=2Fr79h5WpW0sk+9jfuwv/EfIloErPvJaRV1TKBMbIms=;
+	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
+	 Message-ID:Content-Type; b=utsOTm86+lxhmQ0E5dryYvTPeBQ343VJdA2z2ZRGlIgqzxyMCXQ7SAvUkzWJm3PSE3tn0j5dfpfz47BFlsrW89AGYIH5W+YJAwdUGFlsoPyl5nzrbm/fjF5RZlA88FR6sETabFqxuUJLg/Dq5189p4xQYecFzt+6MHgnWkV/ffs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=MiecbeKS; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MYCmwDSK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745590376; x=1777126376;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=kQZa9H88IRjq2r7TjcONEZD3Enz3AN+e7iK0VXsD/q8=;
-  b=MYCmwDSKkjNOrW00fDwUU+MlJg/UxLG9MaIBDP2JJkS+NuWMXKoB7btJ
-   dNHioxnEcngSZuGAEhr0PXd5gTIf+9KlJRMFLU2bO0CkyEdsFnDh0dH0R
-   PGhdcA6lUUcCIPtaEtgzgIPCPNveYE/SAbEo3/v0UrL9FSy+bJaERcRCe
-   GMs2QSGKTsjRchDaKcxbdtIs3OMXdUTeZGs2wGbgnCfo4siFrTq3d4qJL
-   z9A3qVpD451QIVBl54OdUuWXQlyYy/z+KdYDd9B4I2EIZi0oCPmJPt+Xa
-   45PtvWTL3Sp6hltL4etUOcSXTFyPK1DT8uirOVpADgeUGILxUFl5AX6pr
-   g==;
-X-CSE-ConnectionGUID: FeIOdiGvSUGOL3H7zgrMlg==
-X-CSE-MsgGUID: FsUMXNCmTi2subiRw7oDKA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11414"; a="72628017"
-X-IronPort-AV: E=Sophos;i="6.15,238,1739865600"; 
-   d="scan'208";a="72628017"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2025 07:12:55 -0700
-X-CSE-ConnectionGUID: gze8PSdqR4uxfgHgShwE1A==
-X-CSE-MsgGUID: b9P0pObJRQ+SXKkVkYvCRg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,238,1739865600"; 
-   d="scan'208";a="133421364"
-Received: from uaeoff-desk2.amr.corp.intel.com (HELO [10.124.222.49]) ([10.124.222.49])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Apr 2025 07:12:53 -0700
-Message-ID: <9b18e8e3-f3e2-48d4-839a-56e1d8f62657@intel.com>
-Date: Fri, 25 Apr 2025 07:12:51 -0700
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="MiecbeKS"
+Received: from localhost (web.docker-mailserver_default [172.18.0.2])
+	by mail.mainlining.org (Postfix) with ESMTPSA id 4E4B2BBAC4;
+	Fri, 25 Apr 2025 15:13:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
+	s=psm; t=1745594025;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ECsaLysjp6B31lix5ePZqbR776k53fktpSr8Jb8kvHE=;
+	b=MiecbeKSC9qPTxgyzouBu54qd4VjFtmkfHV/2qTsOefPU2eAaK5cBCTcImhw+T75qlqO2+
+	xsNGxQQjX0OdP68jb2HZKFeV8do4HMOWxaZhIfySqXsdEKz5Op//pZWwxEqwnctK8A8rVg
+	P2WjEybiUv3PnKk+10v9R9AGnDIaowzlxTfxSncUT2oXgzv8YLcXGPbJ5rn9brvr+KfYzt
+	y9ZSgyOeTe1KRw4YfSE60ZQrWAbmyN8y261B96MCfrdyWbqrTrbHB4hEewS6ZzpxeAxnO5
+	sW1MJRWbpDrguja+qwxdVjlEkU+50iOBR8LfCx5VBQuphi1fOseWw4tM2FcHfg==
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v14 00/19] x86: Trenchboot secure dynamic launch Linux
- kernel support
-To: Rich Persaud <persaur@gmail.com>
-Cc: Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
- x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
- linux-efi@vger.kernel.org, iommu@lists.linux.dev,
- dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
- bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com, ardb@kernel.org,
- mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
- peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
- nivedita@alum.mit.edu, herbert@gondor.apana.org.au, davem@davemloft.net,
- corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
- baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
- andrew.cooper3@citrix.com, trenchboot-devel@googlegroups.com,
- Sergii Dmytruk <sergii.dmytruk@3mdeb.com>, openxt@googlegroups.com,
- "Mowka, Mateusz" <mateusz.mowka@intel.com>, Ning Sun <ning.sun@intel.com>,
- tboot-devel@lists.sourceforge.net
-References: <18F9BD47-282D-4225-AB6B-FDA4AD52D7AE@gmail.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Content-Language: en-US
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <18F9BD47-282D-4225-AB6B-FDA4AD52D7AE@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Date: Fri, 25 Apr 2025 17:13:45 +0200
+From: barnabas.czeman@mainlining.org
+To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Cc: Bjorn Andersson <andersson@kernel.org>, Michael Turquette
+ <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>,
+ =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, Linus Walleij
+ <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, Rob Clark
+ <robdclark@gmail.com>, Sean Paul <sean@poorly.run>, Abhinav Kumar
+ <quic_abhinavk@quicinc.com>, Marijn Suijten <marijn.suijten@somainline.org>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Maarten
+ Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
+ <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, Dmitry
+ Baryshkov <lumag@kernel.org>, Adam Skladowski <a_skl39@protonmail.com>,
+ Sireesh Kodali <sireeshkodali@protonmail.com>, Srinivas Kandagatla
+ <srini@kernel.org>, linux-arm-msm@vger.kernel.org,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org, phone-devel@vger.kernel.org,
+ ~postmarketos/upstreaming@lists.sr.ht, linux@mainlining.org, Dang Huynh
+ <danct12@riseup.net>
+Subject: Re: [PATCH v5 3/5] arm64: dts: qcom: Add initial support for MSM8937
+In-Reply-To: <70635d75-03f9-49ea-8098-57cb144fda94@oss.qualcomm.com>
+References: <20250421-msm8937-v5-0-bf9879ef14d9@mainlining.org>
+ <20250421-msm8937-v5-3-bf9879ef14d9@mainlining.org>
+ <2e3d94a4-d9e1-429e-9f65-d004c80180e5@oss.qualcomm.com>
+ <790a0b7537e0b82b70bc4b32612ecee6@mainlining.org>
+ <70635d75-03f9-49ea-8098-57cb144fda94@oss.qualcomm.com>
+Message-ID: <5ccb39f9393b44761127717096a38a46@mainlining.org>
+X-Sender: barnabas.czeman@mainlining.org
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 4/25/25 03:12, Rich Persaud wrote:
-> ﻿On Apr 24, 2025, at 2:45 PM, Dave Hansen <dave.hansen@intel.com> 
-> wrote:
->> ﻿On 4/21/25 09:26, Ross Philipson wrote:
->>> This patchset provides detailed documentation of DRTM, the 
->>> approach used for adding the capbility, and relevant API/ABI 
->>> documentation. In addition to the documentation the patch set 
->>> introduces Intel TXT support as the first platform for Linux 
->>> Secure Launch.
->> 
->> So, I know some of the story here thanks to Andy Cooper. But the 
->> elephant in the room is:
->> 
->>> INTEL(R) TRUSTED EXECUTION TECHNOLOGY (TXT) M:      Ning Sun 
->>> <ning.sun@intel.com> L:      tboot-devel@lists.sourceforge.net 
->>> S:      Supported W:      http://tboot.sourceforge.net T: hg 
->>> http://tboot.hg.sourceforge.net:8000/hgroot/tboot/tboot F: 
->>> Documentation/arch/x86/intel_txt.rst F:      arch/x86/ kernel/ 
->>> tboot.c F:      include/linux/tboot.h
->> 
->> Linux already supports TXT. Why do we need TrenchBoot?
+On 2025-04-25 11:57, Konrad Dybcio wrote:
+> On 4/23/25 4:46 PM, barnabas.czeman@mainlining.org wrote:
+>> On 2025-04-23 16:03, Konrad Dybcio wrote:
+>>> On 4/21/25 10:18 PM, Barnabás Czémán wrote:
+>>>> From: Dang Huynh <danct12@riseup.net>
+>>>> 
+>>>> Add initial support for MSM8937 SoC.
+>>>> 
+>>>> Signed-off-by: Dang Huynh <danct12@riseup.net>
+>>>> Co-developed-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+>>>> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+>>>> ---
 > 
-> One reason is to generalize DRTM support to other platforms.
-
-OK, but why do this in Linux as opposed to tboot? Right now, much of the
-TXT magic is done outside of the kernel. Why do it *IN* the kernel?
-
->> Also, honestly, what do you think we should do with the Linux 
->> tboot code? Is everyone going to be moving over to Trenchboot>
-> OpenXT will migrate development of measured launch from tboot to 
-> TrenchBoot Secure Launch, after upstream Linux and Xen have support 
-> for both Intel and AMD DRTM. Previously-deployed Intel devices using
-> tboot, derived from OpenXT, will need support until users upgrade
-> their hardware.
-
-Say we axed tboot support from 6.16, but merged Trenchboot. A user on
-old hardware upgrades their kernel. What happens to them?
-
->> so that Linux support for TXT/tboot can just go away?
-You didn't _really_ answer the question.
-
-Summarizing, I think you're saying that TXT/tboot Linux support can just
-go away, but it will be help if its maintainers help its users transition.
-
-Does anybody disagree with that?
-
-> In that perfect world, Intel ACM and tboot developers would review
-> the TrenchBoot Linux series
-
-So, I was looking on the cc list and I didn't see them on there.
-Shouldn't they be cc'd if you want them to review the series? A little
-poking at lore makes me think that they were *NEVER* cc'd.
-
-Is that right, or is my lore-foo weak?
-
+> [...]
+> 
+>>>> +            gpu_opp_table: opp-table {
+>>>> +                compatible = "operating-points-v2";
+>>>> +
+>>>> +                opp-19200000 {
+>>>> +                    opp-hz = /bits/ 64 <19200000>;
+>>>> +                    opp-supported-hw = <0xff>;
+>>> 
+>>> The comment from the previous revision still stands
+>> If i remove opp-supported-hw i will got -22 EINVAL messages and the 
+>> opp will be not fine.
+> 
+> Right, I have a series pending to improve this situation a bit..
+> 
+> In the meantime, you should be able to define the nvmem cell and
+> fill in meaningful values for this platform
+As I wrote in the previous revision there is no nvmem for GPU on msm8937 
+only on msm8940.
+> 
+> Konrad
