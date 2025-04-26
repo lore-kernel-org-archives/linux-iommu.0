@@ -1,186 +1,98 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 687B1217723
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 21:02:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F89613B284;
+	Sat, 26 Apr 2025 00:22:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745614939; cv=none; b=XRyXPoGrCKhQ8j4t4Xo/rKMboNYkCUqDeYwlT7QtUXu8tcEwncevpB+nDUZIyAvna+rz6AuerthewvNEMtbj2Mrp97cUy0RtqVvlMNbIbDogPm+8LUcQQOdzU5z+7EOega2GviAd3Qo8EBnUVnrlWhvux8td0srLb6EMmH46seY=
+	t=1745626922; cv=none; b=AB3y6iaPDAcs8fgGNuphYafoTk39BKpQK1UzKrjo4Wjd/RKntNszLOc1ekBUZxXUdzrwl/7vNK3U6eOpAFrK4oiCfJyeytrs7S3eY3b0fyuOdNWS8gat4T4kxLH2qp/ARlflcbOQ6HVGXYWOcB2MEuqe9bfAw+azAfsmwVXldQ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745614939; c=relaxed/simple;
-	bh=FoxC89tHfNSH1oVha4VRoLqPnSjX0y1D+aZDbZJvJ1g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cJYmIwiv2pry+xTq/jVilMrQzmRIx8ePk5OFs06B+etP+eLUJzXMECvbLg66Db41dNAHIaXTrVknCupgH0rVsHjgWa8+qH7b7PCDME27+ziSsEH0YHwawiSiv3lr8WhNab+c9oiYLHI+1SPCWSRd7TBF3wpBith7RfVDqulrUBk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=LMbg4l+U; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1745626922; c=relaxed/simple;
+	bh=h50G9mpEZaBwJcj8NBjbBVE9qsIsc9fyuWGRd2gmBsM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=clCqOeqgKlcM+8L7v01XLLF+7qZfuwoVawcdhz13G/HRJsNZn5uXQsKeXCyorV6usIB762d+7hk4oRvcEzvLh1xYSoC76seolUcJvjSGaKyj++4lvlDfyQnnijLWhHxjyvP4rpsUZJykhlVMKV7zTdhPjEP2Q7iRNloQ3WyxvcA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uSx9KLDJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="LMbg4l+U"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53PGJqkT031934
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 21:02:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	FoxC89tHfNSH1oVha4VRoLqPnSjX0y1D+aZDbZJvJ1g=; b=LMbg4l+UfM1XN+1b
-	fnn3cciq8zI/v6YHyGoQJYanBK8fzNxWOsQFQogpx6hA5gac1kJ5EI9mwh949+YG
-	xkbNzzGbm4IFoCIrYeIbvVN9FUAem5kY88dAr51K6evolZpvB4wSYmNZ7xiwcjmd
-	xQ86Ie2lEOWL3uy6ptC+bNCEgAQIE0E5+rzpfbPsRisyNWh+gdXNrNUv4Yx1pu1c
-	cFGAo1cVmap9F0n/mttdFH9AQsx4V8g2GkWClEsEPZIBebrXqUXO4Fli+te2zZGF
-	DnP7qW6Mhh2P807dKDoxoRFUk3df3QXtByclxuNBjBFT4WV2g5bqG2NPbmuyxTHo
-	Jmr73w==
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com [209.85.160.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 466jgya8w5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 21:02:16 +0000 (GMT)
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-4775bdbcdc3so6491181cf.2
-        for <iommu@lists.linux.dev>; Fri, 25 Apr 2025 14:02:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745614935; x=1746219735;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FoxC89tHfNSH1oVha4VRoLqPnSjX0y1D+aZDbZJvJ1g=;
-        b=N9+gsmkzJwEOAxvIlTOd+5VW9ZWtFNDroQPSbxBsAEzXmC91R2VY1LipXf4H3lpK75
-         I0og9/bpDb8E+/bRfQJ3mLXuSc56P+4vID5CliXDzjYCI1gsLP3YJ247D/C2NCF7Meit
-         woUR69WRcjhb9Rdi2zoHLtxQdYnicDinav1HWxzew/FMDWmUxAQTlMESoq0iNVWtyxVo
-         9k/bSz/9ZQfbgT8VsiaZAuleSkUi6KPnqO7DFSmCuolTrI1ERiACyU59o84BGzakOTNY
-         XfjjL14Np5vb+gLEOOUMrR7sPaus01g5P1XH9ySa2lwd9+dasiCEDitcLp/4321T7qti
-         DF8Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVfRH2TIpSaLQeBJ/J7Bxwk0q6t0MNgI9fLTeqQziJtR1KXL34c0RcyHhnvPjMf5FTcy2tV7g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz1QpHnvFWZYH8l82ezL4b3qLbauFEelQ7L8M7iU3DDqPMyk8aQ
-	kf0+UrF7FxftwKEuWXXo7vCepoAqIw7zXtdwRyQi9vqOvh1wvPGdB0ldbU/MN+SgwWy+bYHUvBN
-	hMaYwMHVwc2m//4lQLy0ohbnpxZvxBR2juVZi9pRHx+LS5eEwIB5hOg==
-X-Gm-Gg: ASbGncub2LqxiR2dr2/QyAeDzTTjGmGwKQPBynuDb+ipHe7CbcKxJ4X/L2YvVbgLTf2
-	GDXCkFFVktyyjTLTu31dWoYsuh4Zlf/2Lb6EDDJ7Lj/mAkHiSbPWpwbVWL08F/ncybnv4c8AKkh
-	S5Af5kdXcVsthi+wQDekhFpZXTEKZpypsz1W8YBSEyHlMnofRR2cBfj19xplhPJ0DopeQ7M21R0
-	IktDZGwB4ZXv5SUmgyp52/z6q9+NqALxyKtzXXruiC4VDuC8aJmBYOscuz+FeIn17XiUKAZGMlS
-	RwSASKBWLntRaNPl9o9ma2asl2yvKYAvn0akqexqlmdq1PLyyi/6NnLjrJsG93+C4z4=
-X-Received: by 2002:a05:622a:1455:b0:472:1ee7:d2d with SMTP id d75a77b69052e-4801c2c16e9mr20346741cf.1.1745614935203;
-        Fri, 25 Apr 2025 14:02:15 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEg0tvFhoQ0KNEBhHGLhEi7O5sgae/+O/jdTQKiFWyNNG4fCuoMl6ZMxe0c4BHyGdyFSXXbhQ==
-X-Received: by 2002:a05:622a:1455:b0:472:1ee7:d2d with SMTP id d75a77b69052e-4801c2c16e9mr20346351cf.1.1745614934774;
-        Fri, 25 Apr 2025 14:02:14 -0700 (PDT)
-Received: from [192.168.65.156] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ace6ed49c2fsm187099666b.124.2025.04.25.14.02.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 25 Apr 2025 14:02:14 -0700 (PDT)
-Message-ID: <656da4e9-b609-43f4-9afd-006698a2c7d6@oss.qualcomm.com>
-Date: Fri, 25 Apr 2025 23:02:10 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uSx9KLDJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6A96C4CEE4;
+	Sat, 26 Apr 2025 00:22:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1745626921;
+	bh=h50G9mpEZaBwJcj8NBjbBVE9qsIsc9fyuWGRd2gmBsM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=uSx9KLDJxnN6lYn0LOZiC4gIIRTMcevzUKTtv7QtHq94vnzWzXAWCWK4YS8t/lvCv
+	 alHXKJFiqiZH5uLDlN+4stNQPEDcFlWuzLtnpyGxFQaHCXmY/sJ3NasmNfPQ10XOsD
+	 wUw2k76EwWqC8e0qBP5fC1orpyG4CQVrSTzu1rraBPS49Yf+gV2ATcRoe77STUECZ4
+	 KJl2G7PvDJa9oNMl3b9jsvgxkMxCD7AlH1dhdpNSZwOELkRM++Hgq3UOE+eTSBx7Az
+	 pefT0sVbAaXyzhhHb4ziaDfP3nFsriO8NgoukTNrsqDiCzAfPrcBbyGzvg66JNeo6z
+	 O2DMUdv81udLg==
+Date: Fri, 25 Apr 2025 17:21:59 -0700
+From: Luis Chamberlain <mcgrof@kernel.org>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+	Keith Busch <kbusch@kernel.org>, Jake Edge <jake@lwn.net>,
+	Jonathan Corbet <corbet@lwn.net>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Zhu Yanjun <zyjzyj2000@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Chuck Lever <chuck.lever@oracle.com>,
+	Matthew Wilcox <willy@infradead.org>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Kanchan Joshi <joshi.k@samsung.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Leon Romanovsky <leonro@nvidia.com>
+Subject: Re: [PATCH v9 01/24] PCI/P2PDMA: Refactor the p2pdma mapping helpers
+Message-ID: <aAwnJwLeOs7rfkHL@bombadil.infradead.org>
+References: <cover.1745394536.git.leon@kernel.org>
+ <3a962f9039f0265de939f4c81924ee8208fc93a6.1745394536.git.leon@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 3/5] arm64: dts: qcom: Add initial support for MSM8937
-To: barnabas.czeman@mainlining.org,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Cc: Bjorn Andersson <andersson@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd
- <sboyd@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>,
-        Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Adam Skladowski
- <a_skl39@protonmail.com>,
-        Sireesh Kodali <sireeshkodali@protonmail.com>,
-        Srinivas Kandagatla <srini@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, phone-devel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, linux@mainlining.org,
-        Dang Huynh <danct12@riseup.net>
-References: <20250421-msm8937-v5-0-bf9879ef14d9@mainlining.org>
- <20250421-msm8937-v5-3-bf9879ef14d9@mainlining.org>
- <2e3d94a4-d9e1-429e-9f65-d004c80180e5@oss.qualcomm.com>
- <790a0b7537e0b82b70bc4b32612ecee6@mainlining.org>
- <70635d75-03f9-49ea-8098-57cb144fda94@oss.qualcomm.com>
- <5ccb39f9393b44761127717096a38a46@mainlining.org>
- <68e2c0ee-d5e2-40fd-9ca0-262ed3270628@oss.qualcomm.com>
- <31559417a92d1e1ff17d0f3add9a1ba0@mainlining.org>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <31559417a92d1e1ff17d0f3add9a1ba0@mainlining.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNDI1MDE1MSBTYWx0ZWRfX0eJxJEmdhwdh m5Ro1J3xEHX0qmlIikVTI27MrfpwUpaZ0QCiaFcD630QtoShcO59wwnbBiMGDziysk3rC712yRM rZFeA/xw4uG+4bjyWUErbI4EoKHn7gdSsWwJlUJTGaGRdC6Kgsvyn5/7d/VR+cxhtMtt3f6dmxq
- h0yzo53/xrkzOR2HoIKxJ1DR+y3qrm5kfckoS+Yb/TUe+rLwTEG6DfhZE3rCkaXTb9lFiMZnlgA euLJQsFFafgNZLkcC8rkjhBURO3YD1kwQEDTe2P3vVqz9yV0/E1arEdjcLCvpmAOmfX5UdYX6ZA 7XKWCFyB6QjgsJt8Yzi36I4tQHYecSvGUVQavhSThQoOBS9SngkVCdvWi7JhIoLN2kKht7+i2Jz
- ROJezSFvVToawnkAUhtmzT6LKbejecB5EkZZy2MQdKUT/uOuwMG2OG3MRXUYoxh63aHbvfjt
-X-Proofpoint-GUID: PevV0K-gtJwm4nnE-e_Mw2CNZ4uS-WOp
-X-Proofpoint-ORIG-GUID: PevV0K-gtJwm4nnE-e_Mw2CNZ4uS-WOp
-X-Authority-Analysis: v=2.4 cv=M5VNKzws c=1 sm=1 tr=0 ts=680bf858 cx=c_pps a=mPf7EqFMSY9/WdsSgAYMbA==:117 a=FpWmc02/iXfjRdCD7H54yg==:17 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=NEAV23lmAAAA:8 a=qC_FGOx9AAAA:8 a=OuZLqq7tAAAA:8 a=bBqXziUQAAAA:8
- a=BjP4FqewG5DG9Cpw7CUA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=dawVfQjAaf238kedN5IG:22 a=fsdK_YakeE02zTmptMdW:22 a=AKGiAy9iJ-JzxKVHQNES:22 a=BjKv_IHbNJvPKzgot4uq:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-04-25_06,2025-04-24_02,2025-02-21_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- lowpriorityscore=0 adultscore=0 spamscore=0 priorityscore=1501 mlxscore=0
- mlxlogscore=999 malwarescore=0 impostorscore=0 clxscore=1015
- suspectscore=0 phishscore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
- definitions=main-2504250151
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3a962f9039f0265de939f4c81924ee8208fc93a6.1745394536.git.leon@kernel.org>
 
-On 4/25/25 10:22 PM, barnabas.czeman@mainlining.org wrote:
-> On 2025-04-25 21:26, Konrad Dybcio wrote:
->> On 4/25/25 5:13 PM, barnabas.czeman@mainlining.org wrote:
->>> On 2025-04-25 11:57, Konrad Dybcio wrote:
->>>> On 4/23/25 4:46 PM, barnabas.czeman@mainlining.org wrote:
->>>>> On 2025-04-23 16:03, Konrad Dybcio wrote:
->>>>>> On 4/21/25 10:18 PM, Barnabás Czémán wrote:
->>>>>>> From: Dang Huynh <danct12@riseup.net>
->>>>>>>
->>>>>>> Add initial support for MSM8937 SoC.
->>>>>>>
->>>>>>> Signed-off-by: Dang Huynh <danct12@riseup.net>
->>>>>>> Co-developed-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
->>>>>>> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
->>>>>>> ---
->>>>
->>>> [...]
->>>>
->>>>>>> +            gpu_opp_table: opp-table {
->>>>>>> +                compatible = "operating-points-v2";
->>>>>>> +
->>>>>>> +                opp-19200000 {
->>>>>>> +                    opp-hz = /bits/ 64 <19200000>;
->>>>>>> +                    opp-supported-hw = <0xff>;
->>>>>>
->>>>>> The comment from the previous revision still stands
->>>>> If i remove opp-supported-hw i will got -22 EINVAL messages and the opp will be not fine.
->>>>
->>>> Right, I have a series pending to improve this situation a bit..
->>>>
->>>> In the meantime, you should be able to define the nvmem cell and
->>>> fill in meaningful values for this platform
->>> As I wrote in the previous revision there is no nvmem for GPU on msm8937 only on msm8940.
->>
->> This seems not to be the case
->>
->> https://github.com/penglezos/android_kernel_xiaomi_msm8953/blob/pie/arch/arm/boot/dts/qcom/msm8937.dtsi#L2046-L2191
->>
-> These are on msm-4.9 was moved to msm8940.dtsi
-> https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.10.6.2.c26-01500-89xx.0/arch/arm64/boot/dts/qcom/msm8937-gpu.dtsi#L162
-> https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.10.6.2.c26-01500-89xx.0/arch/arm64/boot/dts/qcom/msm8940.dtsi#L600
-> 475 MHz and 500 MHz is for msm8940 at least based on 4.9
+On Wed, Apr 23, 2025 at 11:12:52AM +0300, Leon Romanovsky wrote:
+> From: Christoph Hellwig <hch@lst.de>
+> 
+> The current scheme with a single helper to determine the P2P status
+> and map a scatterlist segment force users to always use the map_sg
+> helper to DMA map, which we're trying to get away from because they
+> are very cache inefficient.
+> 
+> Refactor the code so that there is a single helper that checks the P2P
+> state for a page, including the result that it is not a P2P page to
+> simplify the callers, and a second one to perform the address translation
+> for a bus mapped P2P transfer that does not depend on the scatterlist
+> structure.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> Tested-by: Jens Axboe <axboe@kernel.dk>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-I'll try to get a more conclusive answer internally
+Might make it easier for patch review to split off adding
+__pci_p2pdma_update_state() in a seprate patch first. Other than that,
+looks good.
 
-Konrad
+Reviewed-by: Luis Chamberlain <mcgrof@kenrel.org>
+
+  Luis
