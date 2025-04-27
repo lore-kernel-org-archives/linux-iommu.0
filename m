@@ -1,109 +1,131 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B63B81DE3AC;
-	Sun, 27 Apr 2025 07:26:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2F15366;
+	Sun, 27 Apr 2025 07:53:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745738791; cv=none; b=vGNXlN36KeEzaBN7it89Oo16YpNqaniUVouHkyZ/rSVB94MPkasSiIijZTCHeN3Ya6aLE6AUEm5UnrVAl4RJy4CPpQ13nds9k47wo1b6+Rthhdav9eMB+mp0G92RtX4LurW8nErRsY8HlK0ivInqqUoUkC37JBqRnOOBqvYdqCY=
+	t=1745740419; cv=none; b=elYloxKKYcJTFLHSV2dhHFmM81zgBck3trN45/AftiF4lU3uZY0oqBBgRiixf8/v4vkWxgdzjIAJzDTvfIFxgkFpVOcAnoWq9Bok+kvTOsXLVhgKHRk+wx3FuMFIla4QgdiBVSL43tU5XqdRSt9xUmZ3bKFdlpOT7iXpmxP7QSo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745738791; c=relaxed/simple;
-	bh=Jmn+u6fFBrsun9XakIeVgT39XGKP2ToxwISS/MEt76w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=S9PbG7y2RMEklljqe4yKRnVa89vh3RX9ZqhDqMw1kwf529Scu51C20Xd7FgrXVdDl+FGGMVWAPiQjXLGnsGLcyzNweEUIaVXdqYc+j3j0pc1mx2etziRmcER6yRlZeAiRCjW2pJMT1Mi/ZG+MhqDp0n6FiCeZuV6zR1zhi7Hl0w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ow5hOO3d; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1745740419; c=relaxed/simple;
+	bh=iKyTQwydNmAM/0HcUlde1DtC+bZbAuPZo0BeWV99Sn0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sQy/zUSDFekwZcMyPogIZATaX87cJP1y0nFyl7mRGyrL28dhfs7E7ij1vsLZprnlRzmSh+Qhh0Y559CCwNyuAmzpU1qaUyPg+48fzdkzSmaVlNVhguBVk/O9NqxnGF2BD1dxqwup0NF4kHIssTXEQ2lfj/6xma9Bt+5XFpsP0w8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OmokyrrK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ow5hOO3d"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745738789; x=1777274789;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Jmn+u6fFBrsun9XakIeVgT39XGKP2ToxwISS/MEt76w=;
-  b=Ow5hOO3dYdPH0bm9AffH6yeAFD7CCB0RIYwBaD2sFblt8KuyX2XRiK8t
-   M63DFWJ2N1cU7Gi4dOBQyCdq+sBMmrrDtO6U24dE5FVSUY2C43vHTadZq
-   swYAasRJ6lecXN4KTQ+DdBmATuzBRoaLMirCjJK25DE1vU6ABw2IzHGht
-   3DQBnyc04vtGl3oD+Zr9Qgj+EwQPb3HTAx16dowlH3JbZIbAQwiQkV0hx
-   XWWpelvGb+iUpfckbXNdNS3AUV+SnnY3dh6QSCTodkglgTCvaeGIGFtF6
-   MOBrgenJz10QDSIo59+a4G7CiMqKNEVGy9rxtG/jIv4/a3mfkJP9B86S3
-   Q==;
-X-CSE-ConnectionGUID: 2FvxPvGKTWCQSD5345IeaQ==
-X-CSE-MsgGUID: XBixKStyQYG3dZD2UfhMeg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11415"; a="58710629"
-X-IronPort-AV: E=Sophos;i="6.15,243,1739865600"; 
-   d="scan'208";a="58710629"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2025 00:26:28 -0700
-X-CSE-ConnectionGUID: tjr0bvpUSgWfm/XawVYnrA==
-X-CSE-MsgGUID: OXjYL/GnT9ykpQQNpcmQ5A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,243,1739865600"; 
-   d="scan'208";a="164217471"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2025 00:26:22 -0700
-Message-ID: <376566b4-6c13-45ad-b1e5-8cfe2de437bc@linux.intel.com>
-Date: Sun, 27 Apr 2025 15:22:13 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OmokyrrK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9CD1C4CEE3;
+	Sun, 27 Apr 2025 07:53:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1745740418;
+	bh=iKyTQwydNmAM/0HcUlde1DtC+bZbAuPZo0BeWV99Sn0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=OmokyrrKogcvAy75PZnoqbf/SV/3tN6a/jr9gHE56cV2aAUja1b1vR87w7sFYp9SM
+	 2MTW/5zl9jZEDztFGGMRMoytnKxQ/fH3Nx6Llyyms85hrYsAaXPnI47FYKgA+tncyk
+	 mkQJNR/IXAW+albRz+ErujsbIoPBM+w7flk409Lh3ddIk6MNaLOs5tByMzgIIbhf5K
+	 jRQYMV0yr7lWDCaipx7Aq5g43zt2+567TjgKvYuKc8lxRSBlEQo2Qk0Kj38yk4NdCj
+	 I1x37331Ys/wwpuT1EUyEcmT/tN7FXyY29DcKZ5RlQ/ztukgb7skj9uPZ3RY+pbnTx
+	 CTtopc3JapJnQ==
+Date: Sun, 27 Apr 2025 10:53:32 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Luis Chamberlain <mcgrof@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+	Keith Busch <kbusch@kernel.org>, Jake Edge <jake@lwn.net>,
+	Jonathan Corbet <corbet@lwn.net>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Zhu Yanjun <zyjzyj2000@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Chuck Lever <chuck.lever@oracle.com>,
+	Matthew Wilcox <willy@infradead.org>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Kanchan Joshi <joshi.k@samsung.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>
+Subject: Re: [PATCH v9 02/24] dma-mapping: move the PCI P2PDMA mapping
+ helpers to pci-p2pdma.h
+Message-ID: <20250427075332.GC5848@unreal>
+References: <cover.1745394536.git.leon@kernel.org>
+ <493a6ab31fdd73e84e16662578858f194e9f87b9.1745394536.git.leon@kernel.org>
+ <aAwqBvLP3kaZsEdZ@bombadil.infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 08/22] iommufd: Abstract iopt_pin_pages and
- iopt_unpin_pages helpers
-To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, kevin.tian@intel.com,
- corbet@lwn.net, will@kernel.org
-Cc: bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
- thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
- shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
- peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
- praan@google.com, zhangzekun11@huawei.com, iommu@lists.linux.dev,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
- linux-kselftest@vger.kernel.org, patches@lists.linux.dev, mochs@nvidia.com,
- alok.a.tiwari@oracle.com, vasant.hegde@amd.com
-References: <cover.1745646960.git.nicolinc@nvidia.com>
- <d44272c153e7596c3cef716044de3dc6c2a8254a.1745646960.git.nicolinc@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <d44272c153e7596c3cef716044de3dc6c2a8254a.1745646960.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aAwqBvLP3kaZsEdZ@bombadil.infradead.org>
 
-On 4/26/25 13:58, Nicolin Chen wrote:
-> The new vCMDQ object will be added for HW to access the guest memory for a
-> HW-accelerated virtualization feature. It needs to ensure the guest memory
-> pages are pinned when HW accesses them and they are contiguous in physical
-> address space.
+On Fri, Apr 25, 2025 at 05:34:14PM -0700, Luis Chamberlain wrote:
+> On Wed, Apr 23, 2025 at 11:12:53AM +0300, Leon Romanovsky wrote:
+> > From: Christoph Hellwig <hch@lst.de>
+> > +enum pci_p2pdma_map_type {
+> > +	/*
+> > +	 * PCI_P2PDMA_MAP_UNKNOWN: Used internally for indicating the mapping
+> > +	 * type hasn't been calculated yet. Functions that return this enum
+> > +	 * never return this value.
+> > +	 */
 > 
-> This is very like the existing iommufd_access_pin_pages() that outputs the
-> pinned page list for the caller to test its contiguity.
+> This last sentence is confusing. How about:
 > 
-> Move those code from iommufd_access_pin/unpin_pages() and related function
-> for a pair of iopt helpers that can be shared with the vCMDQ allocator. As
-> the vCMDQ allocator will be a user-space triggered ioctl function, WARN_ON
-> would not be a good fit in the new iopt_unpin_pages(), thus change them to
-> use WARN_ON_ONCE instead.
+> * PCI_P2PDMA_MAP_UNKNOWN: Used internally as an initial state before
+> * the mapping type has been calculated. Exported routines for the API
+> * will never return this value.
 
-I'm uncertain, but perhaps pr_warn_ratelimited() would be a better
-alternative to WARN_ON() here? WARN_ON_ONCE() generates warning messages
-with kernel call traces in the kernel messages, which might lead users
-to believe that something serious has happened in the kernel.
+This patch moved code as is, but sure, let's update the comments.
 
 > 
-> Rename check_area_prot() to align with the existing iopt_area helpers, and
-> inline it to the header since iommufd_access_rw() still uses it.
+> > +	PCI_P2PDMA_MAP_UNKNOWN = 0,
+> > +
+> > +	/*
+> > +	 * Not a PCI P2PDMA transfer.
+> > +	 */
+> > +	PCI_P2PDMA_MAP_NONE,
+> > +
+> > +	/*
+> > +	 * PCI_P2PDMA_MAP_NOT_SUPPORTED: Indicates the transaction will
+> > +	 * traverse the host bridge and the host bridge is not in the
+> > +	 * allowlist. DMA Mapping routines should return an error when
+> > +	 * this is returned.
+> > +	 */
+> > +	PCI_P2PDMA_MAP_NOT_SUPPORTED,
+> > +
+> > +	/*
+> > +	 * PCI_P2PDMA_BUS_ADDR: Indicates that two devices can talk to
 > 
-> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
-> ---
->   drivers/iommu/iommufd/io_pagetable.h    |   8 ++
->   drivers/iommu/iommufd/iommufd_private.h |   6 ++
->   drivers/iommu/iommufd/device.c          | 117 ++----------------------
->   drivers/iommu/iommufd/io_pagetable.c    |  95 +++++++++++++++++++
->   4 files changed, 117 insertions(+), 109 deletions(-)
+> You mean   PCI_P2PDMA_MAP_BUS_ADDR
 
-Thanks,
-baolu
+done
+
+> 
+> > + * pci_p2pdma_bus_addr_map - map a PCI_P2PDMA_MAP_BUS_ADDR P2P transfer
+> 
+> Hrm, maybe with a bit more clarity:
+> 
+> Translate a physical address to a bus address for a  PCI_P2PDMA_MAP_BUS_ADDR
+> transfer.
+> 
+> 
+> Other than that.
+> 
+> Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
+
+Thanks
+
+> 
+>   Luis
+> 
