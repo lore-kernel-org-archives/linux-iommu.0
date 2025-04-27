@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A063A19D06A
-	for <iommu@lists.linux.dev>; Sun, 27 Apr 2025 05:14:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D41DD23F429;
+	Sun, 27 Apr 2025 06:28:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745730878; cv=none; b=Dhdn3M70XZEY6IguXdKgAvYwXzGjkmrI9zIqaD2hPCVa7uqLgv07uNQhvx1UvT13ucE7OD9KUEBQ+iCug3jbHZ9HH3hYAajQlccqdx/fmDQYdJbd3YombL9qinPcZsHBdYn4w0nZSd+D/YSR4LNbmSCxbWLAYdjnhNOTV12a8Pw=
+	t=1745735292; cv=none; b=f2hbAZE/Ze8P5QslN0VzkxdeihH+NKZ4tjhtojEJyY0+ylaq4A8Er/hnkNamNKU5uysieAI+nCC5LHKaUQU7f6PGsYd9Z9Zh+SnV0bI7s+YJk2ThsUHKf1Oe5KfL2seIna10bbIRuaitMxjhSluGAzAAiSYumRI1NCuNOcz4Yf8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745730878; c=relaxed/simple;
-	bh=jkBLzN2drb+fa2jLDURCQoV3/FrHTdVbdplP8s7EN14=;
+	s=arc-20240116; t=1745735292; c=relaxed/simple;
+	bh=a2U2SlgQI1bryyjViVU51BvLU6tMztBGgxaJGgkhS3I=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GE6Njw/ybIH+MXa3rs7s/IWkWabMJI+rxgJDDGSrr1PyH5FZqB5Eac3clYbCOWvs7lj3wSUsirghngcw5QHFcOhLWibzmR4cff2S1I6mv3LI46AmRubr5GULQxvj6xOH2TSaWuqLifVWOosBssZj5c39C+dvXPqb8+BeRUTvoAU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=k4I025Hw; arc=none smtp.client-ip=192.198.163.16
+	 In-Reply-To:Content-Type; b=THnFIOKKMUCVIkPbLYAARwenscE16A/Oj1Wdq43zJ4MwtFQOiry7v0q79EGk7iJ8F6ySPKuKCtWQSESfbDN327uhybo0cz+JBxkMj8I1n9TwY27fli2JfxAHHHjUjc9iHtnSUMHtSasGVcgaKYXNLWulHmzhb8FP4JV0cDAFKic=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cyVacN3W; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="k4I025Hw"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cyVacN3W"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745730877; x=1777266877;
+  t=1745735291; x=1777271291;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=jkBLzN2drb+fa2jLDURCQoV3/FrHTdVbdplP8s7EN14=;
-  b=k4I025Hwq9gzeVbOyMeh0LxgGg/6IUBkRKBSYym8lQlsIjeGNTmO3dJy
-   PIAqMtxIJbz9EAi9L77A5cixBEi/E5+rQ8w2n9Yz0d8zODXBVI8X74Yyl
-   C70e+Rmuv6qlj+5wzOEiePZXuhbD2JgoRpmu30XMdo4ldH+u/shTzspmt
-   wAD1OPG9HhSBsBZMep590yJafOLBQMHPhdJAAbxWQLTVbo4Q+x867EI9s
-   /zKPWRhTika5LU0P693N17EP3Lh3Fdvi+qDX1ayxT4CDFwULR6LK8igzz
-   zgZLH8uD40gy7yqB9XmzHndI/IFH2KONwtcEJeNN/J0H0aEvfCapFZlKJ
-   w==;
-X-CSE-ConnectionGUID: DLY/+0IKRR2Rka1q+Bxk8Q==
-X-CSE-MsgGUID: ia/SIyoaSyOqJi1ceCdMvg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11415"; a="34956139"
+  bh=a2U2SlgQI1bryyjViVU51BvLU6tMztBGgxaJGgkhS3I=;
+  b=cyVacN3WuntkTL4jEBmmhEzfMbOrtTyLWL9WMZy7lJEGPKyzCLIiyKxd
+   zg0yQ8OcXJBYW1CUBtGG6gn6HiguqB24oep8MIkhxOeI4rwHe7MAtXcE2
+   7q9l4O48IKWgJI1QckF8lhxZnGjVHyB2CvkpJ14j6tGisoubrQQmKZ9N9
+   hGdjXcjkXirY7K0TjRsdf4hbEm3qSWpkeTTt5EoWZZMh4tArgufR2mk4N
+   wI5tMWOMLgWStu/rfyqGf4ijoXLQkgTOQvFlocyeyHRIRT4G8+zkerwnk
+   9lqYkq1ZCESoXpZsY6+OUFsGLy815YdNCNfg9raBkP7MPLiN4j17zn5Fe
+   Q==;
+X-CSE-ConnectionGUID: 8iO3w1fEQRCvzLBrMiMKzQ==
+X-CSE-MsgGUID: dM6sv+PWTjmGyP3PPNXOaA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11415"; a="58326567"
 X-IronPort-AV: E=Sophos;i="6.15,243,1739865600"; 
-   d="scan'208";a="34956139"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2025 22:14:36 -0700
-X-CSE-ConnectionGUID: 4+peumw0T/SilcU3U+0Ezg==
-X-CSE-MsgGUID: IGh30APlRTq38v9Kp8sAgA==
+   d="scan'208";a="58326567"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2025 23:28:10 -0700
+X-CSE-ConnectionGUID: 9w3DTI3ARqWE4clFyzRfDg==
+X-CSE-MsgGUID: /2mg6I5GSyaCmMoT2ZQ9sQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.15,243,1739865600"; 
-   d="scan'208";a="133758639"
+   d="scan'208";a="138218331"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2025 22:14:33 -0700
-Message-ID: <8373789b-929e-4ad9-ab0b-6ec620719a7e@linux.intel.com>
-Date: Sun, 27 Apr 2025 13:10:24 +0800
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2025 23:28:04 -0700
+Message-ID: <ee9d46f2-5953-4ca4-adac-c3e35c9001a3@linux.intel.com>
+Date: Sun, 27 Apr 2025 14:23:54 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,123 +52,60 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/3] iommu/vt-d: Simplify domain_attach_iommu()
-To: Dan Williams <dan.j.williams@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20250423031020.2189546-1-baolu.lu@linux.intel.com>
- <20250423031020.2189546-4-baolu.lu@linux.intel.com>
- <680bd94098249_1d522945b@dwillia2-xfh.jf.intel.com.notmuch>
+Subject: Re: [PATCH v2 01/22] iommufd/viommu: Add driver-allocated vDEVICE
+ support
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, kevin.tian@intel.com,
+ corbet@lwn.net, will@kernel.org
+Cc: bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
+ thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+ shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
+ peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
+ praan@google.com, zhangzekun11@huawei.com, iommu@lists.linux.dev,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+ linux-kselftest@vger.kernel.org, patches@lists.linux.dev, mochs@nvidia.com,
+ alok.a.tiwari@oracle.com, vasant.hegde@amd.com
+References: <cover.1745646960.git.nicolinc@nvidia.com>
+ <14781558dbc291e515b5e249535e3c08290a6792.1745646960.git.nicolinc@nvidia.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <680bd94098249_1d522945b@dwillia2-xfh.jf.intel.com.notmuch>
+In-Reply-To: <14781558dbc291e515b5e249535e3c08290a6792.1745646960.git.nicolinc@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 4/26/25 02:49, Dan Williams wrote:
-> Lu Baolu wrote:
->> Use the __free(kfree) attribute with kzalloc() to automatically handle
->> the freeing of the allocated struct iommu_domain_info on error or early
->> exit paths, eliminating the need for explicit kfree() calls in error
->> handling branches.
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/intel/iommu.c | 29 ++++++++---------------------
->>   1 file changed, 8 insertions(+), 21 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index 3a9ea0ad2cd3..12382c85495f 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -1337,13 +1337,14 @@ static bool first_level_by_default(struct intel_iommu *iommu)
->>   
->>   int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
->>   {
->> -	struct iommu_domain_info *info, *curr;
->> -	int num, ret = -ENOSPC;
->> +	struct iommu_domain_info *curr;
->> +	int num;
->>   
->>   	if (domain->domain.type == IOMMU_DOMAIN_SVA)
->>   		return 0;
->>   
->> -	info = kzalloc(sizeof(*info), GFP_KERNEL);
->> +	struct iommu_domain_info *info __free(kfree) =
->> +		kzalloc(sizeof(*info), GFP_KERNEL);
->>   	if (!info)
->>   		return -ENOMEM;
->>   
->> @@ -1351,34 +1352,20 @@ int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
-> [..]
->> -err_clear:
->> -	ida_free(&iommu->domain_ida, info->did);
->> -err_unlock:
->> -	kfree(info);
->> -	return ret;
->> +	return xa_err(xa_store(&domain->iommu_array, iommu->seq_id,
->> +			       no_free_ptr(info), GFP_KERNEL));
->>   }
-> 
-> This pattern looks like it wants a "xa_store_or_{reset,kfree}()" helper that
-> handles both canceling a scope based cleanup and taking responsibility for
-> error-exit-freeing @info in one statement.
-> 
-> I.e. this is similar to a:
-> 
-> 	"return devm_add_action_or_reset(..., no_free_ptr(obj), ...)"
-> 
-> ...pattern.
-> 
+On 4/26/25 13:57, Nicolin Chen wrote:
+> @@ -120,6 +128,13 @@ struct iommufd_viommu {
+>    *                    array->entry_num to report the number of handled requests.
+>    *                    The data structure of the array entry must be defined in
+>    *                    include/uapi/linux/iommufd.h
+> + * @vdevice_alloc: Allocate a vDEVICE object and init its driver-level structure
+> + *                 or HW procedure. Note that the core-level structure is filled
+> + *                 by the iommufd core after calling this op. @virt_id carries a
+> + *                 per-vIOMMU virtual ID for the driver to initialize its HW.
 
-Yes. Perhaps adding a xa_store variant would be beneficial in all
-places that require this pattern.
+I'm wondering whether the 'per-vIOMMU virtual ID' is intended to be
+generic for other features that might require a vdevice. I'm also not
+sure where this virtual ID originates when I read it here. Could it
+potentially come from the KVM instance? If so, how about retrieving it
+directly from a struct kvm pointer? My understanding is that vIOMMU in
+IOMMUFD acts as a handle to KVM, so perhaps we should maintain a
+reference to the kvm pointer within the iommufd_viommu structure?
 
-Something like this?
-
-diff --git a/include/linux/xarray.h b/include/linux/xarray.h
-index 78eede109b1a..efbdff7ebda4 100644
---- a/include/linux/xarray.h
-+++ b/include/linux/xarray.h
-@@ -626,6 +626,35 @@ static inline void *xa_store_irq(struct xarray *xa, 
-unsigned long index,
-         return curr;
-  }
-
-+/**
-+ * xa_store_or_kfree() - Store this entry in the XArray.
-+ * @xa: XArray.
-+ * @index: Index into array.
-+ * @entry: New entry.
-+ * @gfp: Memory allocation flags.
-+ *
-+ * This function is like calling xa_store() except it kfrees the new
-+ * entry if an error happened.
-+ *
-+ * Context: Process context. Any context. Takes and releases the xa_lock.
-+ * May sleep if the @gfp flags permit.
-+ * Return: The old entry at this index or xa_err() if an error happened.
-+ */
-+static inline void *xa_store_or_kfree(struct xarray *xa, unsigned long 
-index,
-+               void *entry, gfp_t gfp)
-+{
-+       void *curr;
-+
-+       xa_lock(xa);
-+       curr = __xa_store(xa, index, entry, gfp);
-+       xa_unlock(xa);
-+
-+       if (xa_err(curr))
-+               kfree(entry);
-+
-+       return curr;
-+}
-+
-  /**
-   * xa_erase_bh() - Erase this entry from the XArray.
-   * @xa: XArray.
+> + * @vdevice_destroy: Clean up all driver-specific parts of an iommufd_vdevice.
+> + *                   The memory of the vDEVICE will be free-ed by iommufd core
+> + *                   after calling this op
+>    */
+>   struct iommufd_viommu_ops {
+>   	void (*destroy)(struct iommufd_viommu *viommu);
+> @@ -128,6 +143,10 @@ struct iommufd_viommu_ops {
+>   		const struct iommu_user_data *user_data);
+>   	int (*cache_invalidate)(struct iommufd_viommu *viommu,
+>   				struct iommu_user_data_array *array);
+> +	struct iommufd_vdevice *(*vdevice_alloc)(struct iommufd_viommu *viommu,
+> +						 struct device *dev,
+> +						 u64 virt_id);
+> +	void (*vdevice_destroy)(struct iommufd_vdevice *vdev);
+>   };
 
 Thanks,
 baolu
