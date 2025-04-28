@@ -1,22 +1,23 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A65682AD04
-	for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 14:34:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2925726C3AB
+	for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 14:34:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745850872; cv=none; b=ef6Z+BiQgvcKx3Ekk2jrkVuwSWRnpecS7yklt25VMkzAJXuIX6Jo8xuXS6R+99XN+FDYdFNnTWkVjJieHdLv0AEgh7WhHqij1tjrBJqT56bsTvZzIdur6BZan/LioD4MmQ064my/UPq2fiC+gHgZFkCytiR86D0UMIFNj2pSeU4=
+	t=1745850875; cv=none; b=EWqqOLShYVaOwm3WS8gcxr7pA/w19RhkwGcs/WqFR2/XNTmg+P7ogD9j8rL6ok9OXTUEKItIjEPyksVCjN2IMTFpXmrVooUQfInuEDUXXr6u/93KC6Xxa5fUXav8gUxgrm0oyEJjyGQ68UGTOKVOOpQqrPE0Pftet3r792oWlkE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745850872; c=relaxed/simple;
-	bh=0l9dI7M8qx7oSnZvluNIbOgdc4+hwl5omhl0ehfQ9Y0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=dcH1AKxaMfQfz0sOmidfILUSThRhX3wsgwvPTpFVP6YbE47QqTgyoEA2jvZiAXLK8FPZwikHqVUys7OmPsdVd1XdaGYxLC4HMizpPNGrAklDSi3JvK++I/VKCIn2q9ur36MpSUo7O6jMyAjiIDqT+aepNFXpQHmsgQETqVjBaq8=
+	s=arc-20240116; t=1745850875; c=relaxed/simple;
+	bh=4Dr6f9WuQcTpmidc73uX54HMQfn/Cauri1KF0vYBbdM=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=KFBpP5sJhhA+9vmlZvSasSvKlQOQqx+OYj6RDxLyqIPh4VYS8ze+VrIrGexVAxMvU7n9NBYHt9uGA9VqExdOkRNRVvJ21vT76Ai9EDgNV2BJiCslWKGO1+K2ZcS74mTIMvp382/jGuYyfeBxgpkKxzZyIA6VbzYsx93qcAag17c=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9C2FA1516;
-	Mon, 28 Apr 2025 07:34:16 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D5D9515A1;
+	Mon, 28 Apr 2025 07:34:25 -0700 (PDT)
 Received: from mazurka.cambridge.arm.com (mazurka.cambridge.arm.com [10.2.80.18])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9E3DB3F66E;
-	Mon, 28 Apr 2025 07:34:18 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F0E2F3F66E;
+	Mon, 28 Apr 2025 07:34:27 -0700 (PDT)
 From: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
 To: ryan.roberts@arm.com,
 	suzuki.poulose@arm.com,
@@ -49,10 +50,12 @@ To: ryan.roberts@arm.com,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev
 Cc: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
-Subject: [PATCH v6 0/3] Initial BBML2 support for contpte_convert()
-Date: Mon, 28 Apr 2025 14:33:49 +0000
-Message-ID: <20250428143352.53761-2-miko.lenczewski@arm.com>
+Subject: [PATCH v6 2/3] iommu/arm: Add BBM Level 2 smmu feature
+Date: Mon, 28 Apr 2025 14:33:51 +0000
+Message-ID: <20250428143352.53761-4-miko.lenczewski@arm.com>
 X-Mailer: git-send-email 2.49.0
+In-Reply-To: <20250428143352.53761-2-miko.lenczewski@arm.com>
+References: <20250428143352.53761-2-miko.lenczewski@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,125 +65,73 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Hi All,
+For supporting BBM Level 2 for userspace mappings, we want to ensure
+that the smmu also supports its own version of BBM Level 2. Luckily, the
+smmu spec (IHI 0070G 3.21.1.3) is stricter than the aarch64 spec (DDI
+0487K.a D8.16.2), so already guarantees that no aborts are raised when
+BBM level 2 is claimed.
 
-This patch series adds initial support for eliding Break-Before-Make
-requirements on systems that support BBML2 and additionally guarantee
-to never raise a conflict abort.
+Add the feature and testing for it under arm_smmu_sva_supported().
 
-This support reorders and elides both a TLB invalidation and a DSB in
-contpte_convert(), when BBML2 is supported. This leads to a 12%
-improvement when executing a microbenchmark designed to force the
-pathological path where contpte_convert() gets called. This represents
-an 80% reduction in the cost of calling contpte_convert().
+Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 3 +++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 3 +++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 4 ++++
+ 3 files changed, 10 insertions(+)
 
-We clarify both the correctness and performance benefits of this elision
-with respect to the relevant Arm ARM passages, via substantial comments
-in the contpte_convert() source.
-
-This series is based on v6.15-rc3 (9c32cda43eb7).
-
-Notes
-======
-
-Patch 1 implements an allow-list of cpus that support BBML2, but with
-the additional constraint of never causing TLB conflict aborts. We
-settled on this constraint because we will use the feature for kernel
-mappings in the future, for which we cannot handle conflict aborts
-safely.
-
-Yang Shi has a series at [1] that aims to use BBML2 to enable splitting
-the linear map at runtime. This series partially overlaps with it to add
-the cpu feature. We believe this series is fully compatible with Yang's
-requirements and could go first.
-
-Due to constraints with the current design of the cpufeature framework
-and the fact that our has_bbml2_noabort() check relies on both a MIDR
-allowlist and the exposed MMFR2 register value, if an implementation
-supports our desired BBML2+NOABORT semantics but fails to declare
-support for BBML2 via the id_aa64mmfr2.bbm field, the check will fail.
-
-Not declaring base support for BBML2 when supporting BBML2+NOABORT
-should be considered an erratum [2], and a workaround can be applied in
-__cpuinfo_store_cpu() to patch in support for BBML2 for the sanitised
-register view used by SCOPE_SYSTEM. However, SCOPE_LOCAL_CPU bypasses
-this sanitised view and reads the MSRs directly by design, and so an
-additional workaround can be applied in __read_sysreg_by_encoding()
-for the MMFR2 case.
-
-For situations where support for BBML2+NOABORT is claimed by an
-implementor and subsequently built into the kernel, but problems later
-arise that require user damage control [3], we introduce a kernel
-commandline parameter override for disabling all BBML2 support.
-
-[1]:
-  https://lore.kernel.org/linux-arm-kernel/20250304222018.615808-1-yang@os.amperecomputing.com/
-
-[2]:
-  https://lore.kernel.org/linux-arm-kernel/3bba7adb-392b-4024-984f-b6f0f0f88629@arm.com/
-
-[3]:
-  https://lore.kernel.org/all/0ac0f1f5-e4a0-46ae-8ea0-2eba7e21a7e1@arm.com/
-
-Changelog
-=========
-
-v6:
-  - clarify correctness and performance of elision of __tlb_flush_range()
-  - rebase onto v6.15-rc3
-
-v5:
-  - https://lore.kernel.org/all/20250325093625.55184-1-miko.lenczewski@arm.com/
-  - fixup coding style nits
-  - document motivation for kernel commandline parameter
-
-v4:
-  - https://lore.kernel.org/all/20250319150533.37440-2-miko.lenczewski@arm.com/
-  - rebase onto v6.14-rc5
-  - switch from arm64 sw feature override to hw feature override
-  - reintroduce has_cpuid_feature() check in addition to MIDR check
-
-v3:
-  - https://lore.kernel.org/all/20250313104111.24196-2-miko.lenczewski@arm.com/
-  - rebase onto v6.14-rc4
-  - add arm64.nobbml2 commandline override
-  - squash "delay tlbi" and "elide tlbi" patches
-
-v2:
-  - https://lore.kernel.org/all/20250228182403.6269-2-miko.lenczewski@arm.com/
-  - fix buggy MIDR check to properly account for all boot+late cpus
-  - add smmu bbml2 feature check
-
-v1:
-  - https://lore.kernel.org/all/20250219143837.44277-3-miko.lenczewski@arm.com/
-  - rebase onto v6.14-rc3
-  - remove kvm bugfix patches from series
-  - strip out conflict abort handler code
-  - switch from blocklist to allowlist of bmml2+noabort implementations
-  - remove has_cpuid_feature() in favour of MIDR check
-
-rfc-v1:
-  - https://lore.kernel.org/all/20241211154611.40395-1-miko.lenczewski@arm.com/
-  - https://lore.kernel.org/all/20241211160218.41404-1-miko.lenczewski@arm.com/
-
-Mikołaj Lenczewski (3):
-  arm64: Add BBM Level 2 cpu feature
-  iommu/arm: Add BBM Level 2 smmu feature
-  arm64/mm: Elide tlbi in contpte_convert() under BBML2
-
- .../admin-guide/kernel-parameters.txt         |   3 +
- arch/arm64/Kconfig                            |  19 +++
- arch/arm64/include/asm/cpucaps.h              |   2 +
- arch/arm64/include/asm/cpufeature.h           |   5 +
- arch/arm64/kernel/cpufeature.c                |  71 +++++++++
- arch/arm64/kernel/pi/idreg-override.c         |   2 +
- arch/arm64/mm/contpte.c                       | 139 +++++++++++++++++-
- arch/arm64/tools/cpucaps                      |   1 +
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   3 +
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   3 +
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   4 +
- 11 files changed, 251 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+index 9ba596430e7c..6ba182572788 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -222,6 +222,9 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
+ 		feat_mask |= ARM_SMMU_FEAT_VAX;
+ 	}
+ 
++	if (system_supports_bbml2_noabort())
++		feat_mask |= ARM_SMMU_FEAT_BBML2;
++
+ 	if ((smmu->features & feat_mask) != feat_mask)
+ 		return false;
+ 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index b4c21aaed126..a8b171372f17 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -4430,6 +4430,9 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 	if (FIELD_GET(IDR3_RIL, reg))
+ 		smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
+ 
++	if (FIELD_GET(IDR3_BBML, reg) == IDR3_BBML2)
++		smmu->features |= ARM_SMMU_FEAT_BBML2;
++
+ 	/* IDR5 */
+ 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR5);
+ 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index dd1ad56ce863..e67653d342e1 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -60,6 +60,9 @@ struct arm_smmu_device;
+ #define ARM_SMMU_IDR3			0xc
+ #define IDR3_FWB			(1 << 8)
+ #define IDR3_RIL			(1 << 10)
++#define IDR3_BBML			GENMASK(12, 11)
++#define IDR3_BBML1			(1 << 11)
++#define IDR3_BBML2			(2 << 11)
+ 
+ #define ARM_SMMU_IDR5			0x14
+ #define IDR5_STALL_MAX			GENMASK(31, 16)
+@@ -755,6 +758,7 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_HA		(1 << 21)
+ #define ARM_SMMU_FEAT_HD		(1 << 22)
+ #define ARM_SMMU_FEAT_S2FWB		(1 << 23)
++#define ARM_SMMU_FEAT_BBML2		(1 << 24)
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
 -- 
 2.49.0
 
