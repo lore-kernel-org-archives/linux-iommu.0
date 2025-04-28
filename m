@@ -1,23 +1,23 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8B8B525E839
-	for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 15:36:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 78AEB2528EB
+	for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 15:36:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745854607; cv=none; b=lSb4LE/QSoRsmwF39Cpf1YUyLVFIHFfzEEwDj7SGpQ/aY4nSPmtVcmqjps1XzThFGYm86x62ER0nRLYBRToIhxACBSGgOpg22d69MW6s3JQD+H0rY9ZDckM1OThQuNwR+IAysVVS3i/U6x0/0MBtmnvD2zC7DluCPPd7wlOqYxE=
+	t=1745854620; cv=none; b=G44oK7YAcQg1JfV2tTDGPrS9ETmdZgUxmFYOv84MFJlcYKYNZdQk1/QPDGMbagqof9AkRCNLXvBMY8dEqNtXq50TviVx7qJuTZcvn3B58OzIu7lmmXL7HNqPq93OOF6H/DxXHDEBH5tEdnEPEYe2iJf0x98IDMjGmKRJsrBxEgE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745854607; c=relaxed/simple;
-	bh=4Dr6f9WuQcTpmidc73uX54HMQfn/Cauri1KF0vYBbdM=;
+	s=arc-20240116; t=1745854620; c=relaxed/simple;
+	bh=X4YAC7UgnFX/IJfpLFastAckdvY3Zbt3gQxxkAai4SM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pM1pbL59t3+yZ8z7Hvm9jRexiToqQ7hvdgftlwKlURIf0zjvQ11VrA5v4MAn+Bv++TQ8MBXSosl+VCJudB/AL7wZduQRcy7aCxsmH3Guczq7ywe/SrXK1Tzsu1/ah2kIHQkYrmH9gHt0xzmHJrHybCoxbMAN5+CpbuTWHyd2Mc0=
+	 MIME-Version:Content-Type; b=LNlBcRaDdyihV2z3wdE1n24EfhcoHMULLHy63zk5CDA+wMRERBfvrBKEdXUY29xq5xZSWs4YkwUdfi2JAJt/kcR7ROjE5/iP1bWqqUOR3VX9JPLGLTOhNbxgDjVeapMn4VxwjnB/8IU75/QRHpcHjIX9vA5lCG3niMXm7E2l5ng=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 63E561516;
-	Mon, 28 Apr 2025 08:36:37 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0A99E15A1;
+	Mon, 28 Apr 2025 08:36:51 -0700 (PDT)
 Received: from mazurka.cambridge.arm.com (mazurka.cambridge.arm.com [10.2.80.18])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8C61A3F673;
-	Mon, 28 Apr 2025 08:36:39 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3315B3F673;
+	Mon, 28 Apr 2025 08:36:53 -0700 (PDT)
 From: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
 To: ryan.roberts@arm.com,
 	suzuki.poulose@arm.com,
@@ -50,9 +50,9 @@ To: ryan.roberts@arm.com,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev
 Cc: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
-Subject: [RESEND PATCH v6 2/3] iommu/arm: Add BBM Level 2 smmu feature
-Date: Mon, 28 Apr 2025 15:35:16 +0000
-Message-ID: <20250428153514.55772-6-miko.lenczewski@arm.com>
+Subject: [RESEND PATCH v6 3/3] arm64/mm: Elide tlbi in contpte_convert() under BBML2
+Date: Mon, 28 Apr 2025 15:35:18 +0000
+Message-ID: <20250428153514.55772-8-miko.lenczewski@arm.com>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250428153514.55772-2-miko.lenczewski@arm.com>
 References: <20250428153514.55772-2-miko.lenczewski@arm.com>
@@ -65,73 +65,191 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-For supporting BBM Level 2 for userspace mappings, we want to ensure
-that the smmu also supports its own version of BBM Level 2. Luckily, the
-smmu spec (IHI 0070G 3.21.1.3) is stricter than the aarch64 spec (DDI
-0487K.a D8.16.2), so already guarantees that no aborts are raised when
-BBM level 2 is claimed.
+When converting a region via contpte_convert() to use mTHP, we have two
+different goals. We have to mark each entry as contiguous, and we would
+like to smear the dirty and young (access) bits across all entries in
+the contiguous block. Currently, we do this by first accumulating the
+dirty and young bits in the block, using an atomic
+__ptep_get_and_clear() and the relevant pte_{dirty,young}() calls,
+performing a tlbi, and finally smearing the correct bits across the
+block using __set_ptes().
 
-Add the feature and testing for it under arm_smmu_sva_supported().
+This approach works fine for BBM level 0, but with support for BBM level
+2 we are allowed to reorder the tlbi to after setting the pagetable
+entries. We expect the time cost of a tlbi to be much greater than the
+cost of clearing and resetting the PTEs. As such, this reordering of the
+tlbi outside the window where our PTEs are invalid greatly reduces the
+duration the PTE are visibly invalid for other threads. This reduces the
+likelyhood of a concurrent page walk finding an invalid PTE, reducing
+the likelyhood of a fault in other threads, and improving performance
+(more so when there are more threads).
+
+Because we support via allowlist only bbml2 implementations that never
+raise conflict aborts and instead invalidate the tlb entries
+automatically in hardware, we can avoid the final flush altogether.
+
+However, avoiding the intermediate tlbi+dsb must be carefully considered
+to ensure that we remain both correct and performant. We document our
+reasoning and the expected interactions further in the contpte_convert()
+source. To do so we rely on the aarch64 spec (DDI 0487L.a D8.7.1.1)
+requirements RNGLXZ and RJQQTC to provide guarantees that the elision is
+correct.
 
 Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 3 +++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 3 +++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 4 ++++
- 3 files changed, 10 insertions(+)
+ arch/arm64/mm/contpte.c | 139 +++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 138 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 9ba596430e7c..6ba182572788 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -222,6 +222,9 @@ bool arm_smmu_sva_supported(struct arm_smmu_device *smmu)
- 		feat_mask |= ARM_SMMU_FEAT_VAX;
+diff --git a/arch/arm64/mm/contpte.c b/arch/arm64/mm/contpte.c
+index bcac4f55f9c1..203357061d0a 100644
+--- a/arch/arm64/mm/contpte.c
++++ b/arch/arm64/mm/contpte.c
+@@ -68,7 +68,144 @@ static void contpte_convert(struct mm_struct *mm, unsigned long addr,
+ 			pte = pte_mkyoung(pte);
  	}
  
-+	if (system_supports_bbml2_noabort())
-+		feat_mask |= ARM_SMMU_FEAT_BBML2;
+-	__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
++	/*
++	 * On eliding the __tlb_flush_range() under BBML2+noabort:
++	 *
++	 * NOTE: Instead of using N=16 as the contiguous block length, we use
++	 *       N=4 for clarity.
++	 *
++	 * NOTE: 'n' and 'c' are used to denote the "contiguous bit" being
++	 *       unset and set, respectively.
++	 *
++	 * We worry about two cases where contiguous bit is used:
++	 *  - When folding N smaller non-contiguous ptes as 1 contiguous block.
++	 *  - When unfolding a contiguous block into N smaller non-contiguous ptes.
++	 *
++	 * Currently, the BBML0 folding case looks as follows:
++	 *
++	 *  0) Initial page-table layout:
++	 *
++	 *   +----+----+----+----+
++	 *   |RO,n|RO,n|RO,n|RW,n| <--- last page being set as RO
++	 *   +----+----+----+----+
++	 *
++	 *  1) Aggregate AF + dirty flags using __ptep_get_and_clear():
++	 *
++	 *   +----+----+----+----+
++	 *   |  0 |  0 |  0 |  0 |
++	 *   +----+----+----+----+
++	 *
++	 *  2) __flush_tlb_range():
++	 *
++	 *   |____ tlbi + dsb ____|
++	 *
++	 *  3) __set_ptes() to repaint contiguous block:
++	 *
++	 *   +----+----+----+----+
++	 *   |RO,c|RO,c|RO,c|RO,c|
++	 *   +----+----+----+----+
++	 *
++	 *  4) The kernel will eventually __flush_tlb() for changed page:
++	 *
++	 *                  |____| <--- tlbi + dsb
++	 *
++	 * As expected, the intermediate tlbi+dsb ensures that other PEs
++	 * only ever see an invalid (0) entry, or the new contiguous TLB entry.
++	 * The final tlbi+dsb will always throw away the newly installed
++	 * contiguous TLB entry, which is a micro-optimisation opportunity,
++	 * but does not affect correctness.
++	 *
++	 * In the BBML2 case, the change is avoiding the intermediate tlbi+dsb.
++	 * This means a few things, but notably other PEs will still "see" any
++	 * stale cached TLB entries. This could lead to a "contiguous bit
++	 * misprogramming" issue until the final tlbi+dsb of the changed page,
++	 * which would clear out both the stale (RW,n) entry and the new (RO,c)
++	 * contiguous entry installed in its place.
++	 *
++	 * What this is saying, is the following:
++	 *
++	 *  +----+----+----+----+
++	 *  |RO,n|RO,n|RO,n|RW,n| <--- old page tables, all non-contiguous
++	 *  +----+----+----+----+
++	 *
++	 *  +----+----+----+----+
++	 *  |RO,c|RO,c|RO,c|RO,c| <--- new page tables, all contiguous
++	 *  +----+----+----+----+
++	 *   /\
++	 *   ||
++	 *
++	 *  If both the old single (RW,n) and new contiguous (RO,c) TLB entries
++	 *  are present, and a write is made to this address, do we fault or
++	 *  is the write permitted (via amalgamation)?
++	 *
++	 * The relevant Arm ARM DDI 0487L.a requirements are RNGLXZ and RJQQTC,
++	 * and together state that when BBML1 or BBML2 are implemented, either
++	 * a TLB conflict abort is raised (which we expressly forbid), or will
++	 * "produce an OA, access permissions, and memory attributes that are
++	 * consistent with any of the programmed translation table values".
++	 *
++	 * That is to say, will either raise a TLB conflict, or produce one of
++	 * the cached TLB entries, but never amalgamate.
++	 *
++	 * Thus, as the page tables are only considered "consistent" after
++	 * the final tlbi+dsb (which evicts both the single stale (RW,n) TLB
++	 * entry as well as the new contiguous (RO,c) TLB entry), omitting the
++	 * initial tlbi+dsb is correct.
++	 *
++	 * It is also important to note that at the end of the BBML2 folding
++	 * case, we are still left with potentially all N TLB entries still
++	 * cached (the N-1 non-contiguous ptes, and the single contiguous
++	 * block). However, over time, natural TLB pressure will cause the
++	 * non-contiguous pte TLB entries to be flushed, leaving only the
++	 * contiguous block TLB entry. This means that omitting the tlbi+dsb is
++	 * not only correct, but also keeps our eventual performance benefits.
++	 *
++	 * For the unfolding case, BBML0 looks as follows:
++	 *
++	 *  0) Initial page-table layout:
++	 *
++	 *   +----+----+----+----+
++	 *   |RW,c|RW,c|RW,c|RW,c| <--- last page being set as RO
++	 *   +----+----+----+----+
++	 *
++	 *  1) Aggregate AF + dirty flags using __ptep_get_and_clear():
++	 *
++	 *   +----+----+----+----+
++	 *   |  0 |  0 |  0 |  0 |
++	 *   +----+----+----+----+
++	 *
++	 *  2) __flush_tlb_range():
++	 *
++	 *   |____ tlbi + dsb ____|
++	 *
++	 *  3) __set_ptes() to repaint as non-contiguous:
++	 *
++	 *   +----+----+----+----+
++	 *   |RW,n|RW,n|RW,n|RW,n|
++	 *   +----+----+----+----+
++	 *
++	 *  4) Update changed page permissions:
++	 *
++	 *   +----+----+----+----+
++	 *   |RW,n|RW,n|RW,n|RO,n| <--- last page permissions set
++	 *   +----+----+----+----+
++	 *
++	 *  5) The kernel will eventually __flush_tlb() for changed page:
++	 *
++	 *                  |____| <--- tlbi + dsb
++	 *
++	 * For BBML2, we again remove the intermediate tlbi+dsb. Here, there
++	 * are no issues, as the final tlbi+dsb covering the changed page is
++	 * guaranteed to remove the original large contiguous (RW,c) TLB entry,
++	 * as well as the intermediate (RW,n) TLB entry; the next access will
++	 * install the new (RO,n) TLB entry and the page tables are only
++	 * considered "consistent" after the final tlbi+dsb, so software must
++	 * be prepared for this inconsistency prior to finishing the mm dance
++	 * regardless.
++	 */
 +
- 	if ((smmu->features & feat_mask) != feat_mask)
- 		return false;
++	if (!system_supports_bbml2_noabort())
++		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
  
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index b4c21aaed126..a8b171372f17 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4430,6 +4430,9 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 	if (FIELD_GET(IDR3_RIL, reg))
- 		smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
- 
-+	if (FIELD_GET(IDR3_BBML, reg) == IDR3_BBML2)
-+		smmu->features |= ARM_SMMU_FEAT_BBML2;
-+
- 	/* IDR5 */
- 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR5);
- 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index dd1ad56ce863..e67653d342e1 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -60,6 +60,9 @@ struct arm_smmu_device;
- #define ARM_SMMU_IDR3			0xc
- #define IDR3_FWB			(1 << 8)
- #define IDR3_RIL			(1 << 10)
-+#define IDR3_BBML			GENMASK(12, 11)
-+#define IDR3_BBML1			(1 << 11)
-+#define IDR3_BBML2			(2 << 11)
- 
- #define ARM_SMMU_IDR5			0x14
- #define IDR5_STALL_MAX			GENMASK(31, 16)
-@@ -755,6 +758,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_HA		(1 << 21)
- #define ARM_SMMU_FEAT_HD		(1 << 22)
- #define ARM_SMMU_FEAT_S2FWB		(1 << 23)
-+#define ARM_SMMU_FEAT_BBML2		(1 << 24)
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+ 	__set_ptes(mm, start_addr, start_ptep, pte, CONT_PTES);
+ }
 -- 
 2.49.0
 
