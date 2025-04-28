@@ -1,43 +1,47 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 938B71DE882
-	for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 11:31:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C59D81DE882;
+	Mon, 28 Apr 2025 11:33:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745839915; cv=none; b=qJyZZ8JNmiOImbB2jfsFF2gqF7GwP2wscEydt6fcQxdDDmXFBRzoRvYKO+H5mfb2YWs4zfSfLobouLxSqpINxdo7FdMegKQteosa04A2/C+NgBeiTuSPd3A9MIC+fhg3yA+IgPzBOljoZeiatakLUuMeKgf9aSBuAsbMpkumsjw=
+	t=1745840032; cv=none; b=Agr7MD5FMdwuA38Nqg/qS2RG0v11HuQoJxioqWvEnR005Q7bOGDXdbi5Bs7YJMe4xovx/mZ+RhXmauN29MW96YwTH4ANkYSe5gFBUtosndchsRDDzAVp6uAU24Dxgwa2kYWp7PdIkcgg8MieT/EoxmYNMnD/tXJKySpolNy6aAY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745839915; c=relaxed/simple;
-	bh=uXXYwLargQXr5lQAggHWErF37Aj/MM0G1vi5Q8ijK8k=;
+	s=arc-20240116; t=1745840032; c=relaxed/simple;
+	bh=9T4okPNTs0MHWE/sG64YWjUUENeoApInA4eZA5osV6I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hIwjLmjcmDEzzq3y2bLSCynCbQJyfB+KLSWFz50OFAgQfztC+WtlBvrWOKILLaJQeFXjB8e6a3RF7yBSN2ERSZJAJ4U8W6G2hvF3zycenXslh5ux4dLCNPQ/qjtmGoZ3sPJI1GPCl5ntb5VcS8HRQVt5nS8vkZ4klWZVUn+IjZI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=OW1Yt9T6; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=VSYDu2b8kC/foIYZwpta8bdkRQmsC+OJ/CYXqFttNTHAdG3SA0sU8KxNXaX6Jzowx8QOuocyOmJu2ZGWaayi7RadSqPEy8NMKwkxwGeQnHM7ZHHHFcGms8RHGmgnCtBJ77Lk8MGjCFZSHxfjQN+YEMbY5z9LLf9tiiyaVzQimfo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=maHVEgY9; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="OW1Yt9T6"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="maHVEgY9"
 Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 66734470B7;
-	Mon, 28 Apr 2025 13:31:51 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 912E2470B7;
+	Mon, 28 Apr 2025 13:33:49 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1745839911;
-	bh=uXXYwLargQXr5lQAggHWErF37Aj/MM0G1vi5Q8ijK8k=;
+	s=default; t=1745840029;
+	bh=9T4okPNTs0MHWE/sG64YWjUUENeoApInA4eZA5osV6I=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OW1Yt9T64529Pjpm8ieP+tS4ekmOIVx6Vf1awjBx/qzyBPObejKLUL/BpmzFQL9Fw
-	 Q2lM15TXauiLhRGbay9Hc3ognfPJ3+jI8dXaOLY9oJfN2lpsEMsze14k5ToxBkR+nN
-	 oMen62lo3LX+25ut/QcQr6/NkLAS/ghKSRoQE9Es6Y93NeJ91BLvhDjN/75ybPpV/N
-	 MDH5+2bD4IAEX0noFuO5zfNPE6CoPIoiTXbDUnhixq98wxPNhwOMgjv7imuvHgOH8S
-	 A3UjCJIEUPfB2bE3fZthTDxZDY442vtFwJ1Z6o8v4LoLD4yOum5kfvf6hLPpEJyKI6
-	 h3OedCUM5E2dg==
-Date: Mon, 28 Apr 2025 13:31:50 +0200
+	b=maHVEgY9gKJWlX1XELOUuOrJE8Y1mbgXggYljrA4R/Ip5ngHpuDN/fsBVqgx966BF
+	 0tS3hhIQVvI+9yHVC3ZVcYTW8lwAlNg0yBRFK1iJ9WBZ3RXZ9TXlGOdeNqgbq6UgkH
+	 s9YXZqNCN9TOom6mwvgZtgGYh6mx0M/HWt/iqOqo85lcRSUeXleLv9XOwvXKnrSEAQ
+	 /L2VWQdpPIo2PvgQQhKk7p5UgGSa39OqYAnC7oMfOdyKFVcshilEXO7mogYAc9rDmc
+	 nJg8+p4lAQl9QYsOUsco/vR+wv8Ggo8U4sDdhlnpJhfla3jPxCOXF2K47Whg9Nvj88
+	 yLx/xJOA48scg==
+Date: Mon, 28 Apr 2025 13:33:48 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH] iommu: Handle yet another race around registration
-Message-ID: <aA9nJgiSHuebk4m9@8bytes.org>
-References: <88d54c1b48fed8279aa47d30f3d75173685bb26a.1745516488.git.robin.murphy@arm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	"Isaac J. Manjarres" <isaacm@codeaurora.org>,
+	Joerg Roedel <jroedel@suse.de>, patches@lists.linux.dev,
+	Georgi Djakov <quic_c_gdjako@quicinc.com>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH] iommu: Protect against overflow in iommu_pgsize()
+Message-ID: <aA9nnMt_nKVyS4-f@8bytes.org>
+References: <0-v1-3ad28fc2e3a3+163327-iommu_overflow_pgsize_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,11 +50,10 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <88d54c1b48fed8279aa47d30f3d75173685bb26a.1745516488.git.robin.murphy@arm.com>
+In-Reply-To: <0-v1-3ad28fc2e3a3+163327-iommu_overflow_pgsize_jgg@nvidia.com>
 
-On Thu, Apr 24, 2025 at 06:41:28PM +0100, Robin Murphy wrote:
->  drivers/iommu/iommu.c | 26 ++++++++++++++++++--------
->  include/linux/iommu.h |  2 ++
->  2 files changed, 20 insertions(+), 8 deletions(-)
+On Fri, Apr 25, 2025 at 10:08:37AM -0300, Jason Gunthorpe wrote:
+>  drivers/iommu/iommu.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
 Applied, thanks.
