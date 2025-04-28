@@ -1,189 +1,183 @@
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1463120FAA4
-	for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 20:56:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9D3A21516B
+	for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 21:02:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745873799; cv=none; b=l01eMEYRrylcinvZeheisf0wne1C0bbeYZOdl6yhySBEp4wFmQwn92dOVz6pebGL9KArZx90+4MEfdb5Gw0X5ama+q10Vvblj3yV2F+dsqOwQF/0jUvOs2JSQFCS4DeIyaPiYF3IV6xWEvMFKQxgiFqoOgSFyZS5beOJyn+mA2U=
+	t=1745874133; cv=none; b=Ssy/iqPBwbPB88ByOQmit76gKpYSuBvr1uun4mP5g261J+jEmL3WjzwLsVDGoiZcO/z9Pw9I5tItweM4KDsXoSo4WgpHC+hO+9WMW+BSqftFV90XeL7sVe3Ttt7y/VTSzKOdfzRE0+N6GOsUjVQXvBgGoznhFJb5Xn7f988fgTg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745873799; c=relaxed/simple;
-	bh=WfSpWbv819GCC7nVsEQ+oxTMo5aDH4FF4OdkHTDXtoE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=FzLI5nMtoMkRuEZPx3KeUTW086fOxAEhhoh4S/Uieid9uOQtgDlDxKx8o0pJvOruZWu0y6JWw+6GTrRuJjsoaWkhY7b6s1xwqInCH8nypTDy+SAxmSixZR7B/58D06Np2tm7YW/DkhHaxVbCAk4w2UGhArsi/J7Jp4LirsXXBLM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nZK1gKXC; arc=none smtp.client-ip=209.85.210.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1745874133; c=relaxed/simple;
+	bh=2ZfuLVsCa3uyg/dV83Ti5a2MISfnFj53Uosz+hvO9pQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YHs68O6g6O2JzIDdXFAJp+/cRLhHU3TrqluMbehiREyWIpd9j4hNy7PdWOY3m9vD84wyNbP5U9ygDztRD5QBG0r6TzKAVcls+gNibUGL7wXESi/A9QFBMBJIOdRsdFHQ/wD+/9RR4ozBXnwoaL5VhbNQx3byr1ObKBYNK9PMzp4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kfiA1IDv; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nZK1gKXC"
-Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-7369ce5d323so4377628b3a.1
-        for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 13:56:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kfiA1IDv"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2264c9d0295so60265ad.0
+        for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 14:02:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1745873797; x=1746478597; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8ZWdv895QF2g5ZazrpGEqIZ+CNyMWOJKJzfuDlETcFA=;
-        b=nZK1gKXCIIS06pMXt/FLkQkaKuwUfoJe5NttdecFUrosjVr2SbT9xF1RSiUVwKT5nh
-         ZLMSNCtvioU3h3bkdXsWDaScZGq6TF3FVCb375C8hmCf0I2e5O47Zng/1G8PDesLgS4b
-         mga+paPto3vuR82e/NMPfL9gGKaKAi/KDzdPWsmrxqtGTfuVEdPozG3bQOxWwUXQy/Tl
-         J8OySNlnzOXcCMfgbT1fVRG7bf+o2JId3aSivf0C9uDuX/FkTbBiMgGd3WHFu8nADF4e
-         OJsKW4uZA3b86gQjIUf1l6+Z9CrJdu8dWiDIepwUvLAMgJOvQNgDwshEpMcdyljZO+5r
-         d3aw==
+        d=google.com; s=20230601; t=1745874130; x=1746478930; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=YTPDgyBQFtwamlv7MOGnKiNXfQ7Dnv+t8g+TQ5a6GG8=;
+        b=kfiA1IDvqziTn28JLK+peq6coSMLfaGRyKKcidWDfLQbrkUbYSLS1EGs2yNZwXKytG
+         kMLntNGH2Q1J2BxiOnbQOBrIXgBt+baiE9wVigNfPON+K+zKTScHfmdNCkuIWcXeqaAv
+         3+OLgaeT7ER8dyjObyl6rIX8BV4vDMrsnTOjCYDJFLDbEnE7WDn0KZQdr7Ot6gemc5V0
+         ISR88we9LqCNSZCt8ri/cz5OnkZH/WvkL+q0cE3VE2ekxq389JAFA9PnW4LTslFmVzU3
+         rvmM7oJf7GMxrkNmmGGzQ2CwXCSc+oifp834GHinQ9wP/NGwG1sXJu/aCzHr/hy/hI8g
+         3E0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745873797; x=1746478597;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8ZWdv895QF2g5ZazrpGEqIZ+CNyMWOJKJzfuDlETcFA=;
-        b=vFRHn4zt7Qpi6VAI8/vQNA7TDlzn/Kd0qxb6lPp8rzRl0kBuOCiOro6v8M0c3G4qOr
-         x9jrvmg5ogu6xggFUyNebQR9/Cm308fNwYwR7zTBO9/6oJ0UAoVZfMKnnm2BuRUWfAZ+
-         IoqAtrk3zhGDDJjgWX8ynUSrBkeO52eA2F4UXi+vZOCON8HeLYonhBb12MB1vNJSwfyE
-         laE8p6NWGIl2j3HIOCUDPjCjfqw3iO5l6uVHDpDdGvNczVZiUF7TjoqrAL4RdWLtmVc8
-         L+JjUa265y8hQWomN8g1NprKIBgHH7ADGTmQDxgo8qDFEupZcySaXQNQzhX+Ke+YMsgm
-         k9BQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVNwzRnlHa634exf/+z4RI84+l3bNjNfijuLmIGFtZVLqylzfO2N/DR/bPDwv59o9ZIoOmVig==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyTD+I/jdpcfsYSXALzY3zIRCp3dBOuzhCB9EjJH6UMLi79YVUs
-	9yHTyYBSvb42qNdDsP0kuTQedYPkyULbI4AJUQ2ow9mvh9AXbE62
-X-Gm-Gg: ASbGnctP5ax1bkDlAt+Qd5LraZVo0P0dO42s/sizmekAuOFHLnM1vIAVP24I9yvX9AO
-	J/EUmyxQg21jyU9/zMshx9ot+ecjo3bwjZ5SzJkDPpdjDFirfU6yljcggJsSqRibFRi6FNEZAkF
-	WUUvRwBJ2ZA/Dg/15rXaVyPAtf7B8vnQnM3Ktetz/ZvDafQuAs2wfsBQP0DJ5DN3hWrAycKFynx
-	eNW8rp1P1JGRKqu/Z20Uw9q/gJY/v9Y9IzRRvjPKAkHNAZMAdlUyLw0tQrtbA7Mn1Hamw1fhSxU
-	Wsz1Mpg+51Cldu2FF5XTrftGftvsXJdkWdxlObOjd/tEoFoJv+qV9FxB1moMTpQE3JEm5RqXAjl
-	nNeGJBp7uLR7Jo3Ex0cpyZkpy9w==
-X-Google-Smtp-Source: AGHT+IEiI0PIx8sG0Cs/BBXwMjUjK2HcinX0Gfd8jPjSIhMKMTJcc2LognCvLHlEUKydTsw79aws8Q==
-X-Received: by 2002:a05:6a00:3927:b0:732:2923:b70f with SMTP id d2e1a72fcca58-740271689ffmr1632804b3a.11.1745873797293;
-        Mon, 28 Apr 2025 13:56:37 -0700 (PDT)
-Received: from localhost ([2a00:79e0:3e00:2601:3afc:446b:f0df:eadc])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73e25a9abf2sm8405360b3a.122.2025.04.28.13.56.36
+        d=1e100.net; s=20230601; t=1745874130; x=1746478930;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YTPDgyBQFtwamlv7MOGnKiNXfQ7Dnv+t8g+TQ5a6GG8=;
+        b=T/xUNpB19TVtutRF+hYL6JJ0gbCTQECA7HN1QbuyuEphrSSeq3nIi1WYMuE6WXNuIP
+         wjb4ElB+Eze6d0a8vvh3yJtxYjFZpjBDqMfQaDE8Qrgepd3JKjumArwt2XB6VEVGJJfH
+         8hEg5bsy+7/4yDAHyE/3CS9VKDhvzX2yBqDX1XamVDURMDUw6RgWlF+X5UqdTVR+wHOI
+         l3vtBRMEyGaOMgP7QRLBS2PuxVlqaJx4ysirrrjtOgTeZ6zUiTVcB6CxiEKWnGuDCzEO
+         mtq8QCj0SJ1OfCJOMFb8Ol4+buM1cNdgrMEkth3YyoU9UP7Ks1ZX88SRuP2rVGzJ9oOW
+         ZaCw==
+X-Forwarded-Encrypted: i=1; AJvYcCW6IbyMJ5LS1WIC/mi9FrCrDE6zxha+4rCB2N6QdKTg8/dsKXgE06UVZlCLLGWHTxfIRgbTEA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxVRsn0aU+EVoLwyxnA91oV9tluYPusr8I0302UQKbpIAuKIicy
+	IQ1wI8Km4CwQ0iyQ5j1K146IV19dJU7Em4BzA1rlECXyivytD0qEeFZycN2HAQ==
+X-Gm-Gg: ASbGncsXK4vw7mPvLn6f9VmwPGN5bFj+7+RrDJCfVQ8Lpr1LuP00QL+rlm2GSqDg3L7
+	Ic1q1/4itN+aDjKzA7GoWF4AYcmzwqEU/BdvEnskxlmF5q41h4aHuyTmHKqKvySer2Oreu2C6R+
+	uRTFlpfNJWgwFOL1UHJUhjbFfCpHYNzMvwF/1KB/wFqcKM4ulSDEevIyBSl0bw9x78LzahFpi+B
+	x96v8VBYmyZwJPISu3L/BmQGnZI7ap8qfG+Ob9tHLgvVP+nvJMh8YdpsdjuODyM3nvpsXzSBjoB
+	Vn7qTdy9oVHLYVf3tPvZOqpFULLE1FxmCXmsrPij84nrK9UNHoeuDaMy1pnxOzIU4WBpFm8BS1j
+	KmSZ7bxk=
+X-Google-Smtp-Source: AGHT+IGSuMnWnZQ91ixDrXUdSEwCsKBdyqU3BwTCUj27r44/z7SX9aXDHYQTjWFgiPOhsJhMa9YvFg==
+X-Received: by 2002:a17:903:124d:b0:223:37ec:63be with SMTP id d9443c01a7336-22de6c49626mr781305ad.4.1745874129655;
+        Mon, 28 Apr 2025 14:02:09 -0700 (PDT)
+Received: from google.com (2.210.143.34.bc.googleusercontent.com. [34.143.210.2])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73e25a6a3casm8778803b3a.96.2025.04.28.14.02.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Apr 2025 13:56:36 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: dri-devel@lists.freedesktop.org
-Cc: freedreno@lists.freedesktop.org,
-	linux-arm-msm@vger.kernel.org,
-	Connor Abbott <cwabbott0@gmail.com>,
-	Rob Clark <robdclark@chromium.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM SMMU DRIVERS),
-	iommu@lists.linux.dev (open list:IOMMU SUBSYSTEM),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v3 03/33] iommu/io-pgtable-arm: Add quirk to quiet WARN_ON()
-Date: Mon, 28 Apr 2025 13:54:10 -0700
-Message-ID: <20250428205619.227835-4-robdclark@gmail.com>
-X-Mailer: git-send-email 2.49.0
-In-Reply-To: <20250428205619.227835-1-robdclark@gmail.com>
-References: <20250428205619.227835-1-robdclark@gmail.com>
+        Mon, 28 Apr 2025 14:02:09 -0700 (PDT)
+Date: Mon, 28 Apr 2025 21:01:58 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
+	bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
+	peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
+	zhangzekun11@huawei.com, iommu@lists.linux.dev,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
+	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com
+Subject: Re: [PATCH v2 09/22] iommufd/viommu: Introduce IOMMUFD_OBJ_VCMDQ and
+ its related struct
+Message-ID: <aA_sxstJRbG1znKs@google.com>
+References: <cover.1745646960.git.nicolinc@nvidia.com>
+ <8bab0069503fa21b48298ed2ffe29a06963f71f5.1745646960.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8bab0069503fa21b48298ed2ffe29a06963f71f5.1745646960.git.nicolinc@nvidia.com>
 
-From: Rob Clark <robdclark@chromium.org>
+On Fri, Apr 25, 2025 at 10:58:04PM -0700, Nicolin Chen wrote:
+> Add a new IOMMUFD_OBJ_VCMDQ with an iommufd_vcmdq structure, representing
+> a command queue type of physical HW passed to a user space VM. This vCMDQ
+> object, is a subset of vIOMMU resources of a physical IOMMU's, such as:
+>  - NVIDIA's virtual command queue
+>  - AMD vIOMMU's command buffer
+> 
+> Inroduce a struct iommufd_vcmdq and its allocator iommufd_vcmdq_alloc().
+> Also add a pair of viommu ops for iommufd to forward user space ioctls to
+> IOMMU drivers.
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 
-In situations where mapping/unmapping squence can be controlled by
-userspace, attempting to map over a region that has not yet been
-unmapped is an error.  But not something that should spam dmesg.
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/iommu/io-pgtable-arm.c | 18 ++++++++++++------
- include/linux/io-pgtable.h     |  8 ++++++++
- 2 files changed, 20 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index f27965caf6a1..99523505dac5 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -475,7 +475,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 		cptep = iopte_deref(pte, data);
- 	} else if (pte) {
- 		/* We require an unmap first */
--		WARN_ON(!selftest_running);
-+		WARN_ON(!selftest_running && !(cfg->quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
- 		return -EEXIST;
- 	}
- 
-@@ -649,8 +649,10 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 	unmap_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
- 	ptep += unmap_idx_start;
- 	pte = READ_ONCE(*ptep);
--	if (WARN_ON(!pte))
--		return 0;
-+	if (!pte) {
-+		WARN_ON(!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
-+		return -ENOENT;
-+	}
- 
- 	/* If the size matches this level, we're in the right place */
- 	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
-@@ -660,8 +662,10 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 		/* Find and handle non-leaf entries */
- 		for (i = 0; i < num_entries; i++) {
- 			pte = READ_ONCE(ptep[i]);
--			if (WARN_ON(!pte))
-+			if (!pte) {
-+				WARN_ON(!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
- 				break;
-+			}
- 
- 			if (!iopte_leaf(pte, lvl, iop->fmt)) {
- 				__arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
-@@ -976,7 +980,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
- 			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
- 			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA |
--			    IO_PGTABLE_QUIRK_ARM_HD))
-+			    IO_PGTABLE_QUIRK_ARM_HD |
-+			    IO_PGTABLE_QUIRK_NO_WARN_ON))
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
-@@ -1079,7 +1084,8 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 	struct arm_lpae_io_pgtable *data;
- 	typeof(&cfg->arm_lpae_s2_cfg.vtcr) vtcr = &cfg->arm_lpae_s2_cfg.vtcr;
- 
--	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_S2FWB))
-+	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_S2FWB |
-+			    IO_PGTABLE_QUIRK_NO_WARN_ON))
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index bba2a51c87d2..639b8f4fb87d 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -88,6 +88,13 @@ struct io_pgtable_cfg {
- 	 *
- 	 * IO_PGTABLE_QUIRK_ARM_HD: Enables dirty tracking in stage 1 pagetable.
- 	 * IO_PGTABLE_QUIRK_ARM_S2FWB: Use the FWB format for the MemAttrs bits
-+	 *
-+	 * IO_PGTABLE_QUIRK_NO_WARN_ON: Do not WARN_ON() on conflicting
-+	 *	mappings, but silently return -EEXISTS.  Normally an attempt
-+	 *	to map over an existing mapping would indicate some sort of
-+	 *	kernel bug, which would justify the WARN_ON().  But for GPU
-+	 *	drivers, this could be under control of userspace.  Which
-+	 *	deserves an error return, but not to spam dmesg.
- 	 */
- 	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
- 	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
-@@ -97,6 +104,7 @@ struct io_pgtable_cfg {
- 	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
- 	#define IO_PGTABLE_QUIRK_ARM_HD			BIT(7)
- 	#define IO_PGTABLE_QUIRK_ARM_S2FWB		BIT(8)
-+	#define IO_PGTABLE_QUIRK_NO_WARN_ON		BIT(9)
- 	unsigned long			quirks;
- 	unsigned long			pgsize_bitmap;
- 	unsigned int			ias;
--- 
-2.49.0
-
+> ---
+>  include/linux/iommufd.h | 35 +++++++++++++++++++++++++++++++++++
+>  1 file changed, 35 insertions(+)
+> 
+> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+> index ef0d3c4765cf..e91381aaec5a 100644
+> --- a/include/linux/iommufd.h
+> +++ b/include/linux/iommufd.h
+> @@ -37,6 +37,7 @@ enum iommufd_object_type {
+>  	IOMMUFD_OBJ_VIOMMU,
+>  	IOMMUFD_OBJ_VDEVICE,
+>  	IOMMUFD_OBJ_VEVENTQ,
+> +	IOMMUFD_OBJ_VCMDQ,
+>  #ifdef CONFIG_IOMMUFD_TEST
+>  	IOMMUFD_OBJ_SELFTEST,
+>  #endif
+> @@ -112,6 +113,14 @@ struct iommufd_vdevice {
+>  	u64 id; /* per-vIOMMU virtual ID */
+>  };
+>  
+> +struct iommufd_vcmdq {
+> +	struct iommufd_object obj;
+> +	struct iommufd_ctx *ictx;
+> +	struct iommufd_viommu *viommu;
+> +	dma_addr_t addr;
+> +	size_t length;
+> +};
+> +
+>  /**
+>   * struct iommufd_viommu_ops - vIOMMU specific operations
+>   * @destroy: Clean up all driver-specific parts of an iommufd_viommu. The memory
+> @@ -135,6 +144,13 @@ struct iommufd_vdevice {
+>   * @vdevice_destroy: Clean up all driver-specific parts of an iommufd_vdevice.
+>   *                   The memory of the vDEVICE will be free-ed by iommufd core
+>   *                   after calling this op
+> + * @vcmdq_alloc: Allocate a @type of iommufd_vcmdq as a user space command queue
+> + *               for a @viommu. @index carries the logical vcmdq ID (for a multi-
+> + *               queue case); @addr carries the guest physical base address of
+> + *               the queue memory; @length carries the size of the queue memory
+> + * @vcmdq_destroy: Clean up all driver-specific parts of an iommufd_vcmdq. The
+> + *                 memory of the iommufd_vcmdq will be free-ed by iommufd core
+> + *                 after calling this op
+>   */
+>  struct iommufd_viommu_ops {
+>  	void (*destroy)(struct iommufd_viommu *viommu);
+> @@ -147,6 +163,10 @@ struct iommufd_viommu_ops {
+>  						 struct device *dev,
+>  						 u64 virt_id);
+>  	void (*vdevice_destroy)(struct iommufd_vdevice *vdev);
+> +	struct iommufd_vcmdq *(*vcmdq_alloc)(struct iommufd_viommu *viommu,
+> +					     unsigned int type, u32 index,
+> +					     dma_addr_t addr, size_t length);
+> +	void (*vcmdq_destroy)(struct iommufd_vcmdq *vcmdq);
+>  };
+>  
+>  #if IS_ENABLED(CONFIG_IOMMUFD)
+> @@ -286,6 +306,21 @@ static inline int iommufd_viommu_report_event(struct iommufd_viommu *viommu,
+>  		ret;                                                           \
+>  	})
+>  
+> +#define iommufd_vcmdq_alloc(viommu, drv_struct, member)                        \
+> +	({                                                                     \
+> +		drv_struct *ret;                                               \
+> +									       \
+> +		static_assert(__same_type(struct iommufd_viommu, *viommu));    \
+> +		static_assert(__same_type(struct iommufd_vcmdq,                \
+> +					  ((drv_struct *)NULL)->member));      \
+> +		static_assert(offsetof(drv_struct, member.obj) == 0);          \
+> +		ret = (drv_struct *)_iommufd_object_alloc(                     \
+> +			viommu->ictx, sizeof(drv_struct), IOMMUFD_OBJ_VCMDQ);  \
+> +		if (!IS_ERR(ret))                                              \
+> +			ret->member.viommu = viommu;                           \
+> +		ret;                                                           \
+> +	})
+> +
+>  /* Helper for IOMMU driver to destroy structures created by allocators above */
+>  #define iommufd_struct_destroy(ictx, drv_struct, member)                       \
+>  	({                                                                     \
+> -- 
+> 2.43.0
+> 
