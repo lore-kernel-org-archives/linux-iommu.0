@@ -1,92 +1,186 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A755726D4FB
-	for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 15:33:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AEE3A22DF91
+	for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 15:36:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745854426; cv=none; b=jrtTMXipnlv5rzXSGYBfpwrclUektod3TjcerO8q/VOGEZJVKxbv4QbeG6ngcAKY0hfxRzP3RjXLvWQjV3TOJMm7uUTjKHCH9L/WL3r0BsHw23P37GmG4W+Tr2v3t8kRKHYpS9F/3qVhRo1h9K/HVGYqJobQTaW5ygTz6/VQvW0=
+	t=1745854578; cv=none; b=LAa135IOF8HDGq3OWYVY3EP6Ph90xv8wAX7Sg1I+5iVr69LWu3KGvFt9UhD1cMkwOOFFPqNtYSUfYwPhamwUuTyeTW8ljWSmFakZnRc2NR5pAEDAcDFJNBYcpJjwyvFaA+436stnVjWFvsxdGl2IAer52y3C4lWqo0KSxMjTWoQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745854426; c=relaxed/simple;
-	bh=c4lzFxsgENeTiNfGEUAq65bbodJC1AJjZpxKVJ85yHU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=ED4Q/buprVJh8GV2VhV46Gw5taY4oWEHXt8njYESkFrad8TJyVdPZY8wmZDW67qqdiHqQI/eqpoDsfNc54aXSd1GyephSwsOa3X8n5HoSQ0cEyYd9mTfo2BHvE6gG3iJ8Sc2WhfxLRPIFHix/FFDYSu29Ibw/I7ZSUPrPlkHuaw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=kDj7uUw7; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="kDj7uUw7"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250428153336euoutp02769b966e69a2d70d0836d5eb87cdbcfa~6hVdzwxlJ1547515475euoutp02K
-	for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 15:33:36 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250428153336euoutp02769b966e69a2d70d0836d5eb87cdbcfa~6hVdzwxlJ1547515475euoutp02K
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1745854416;
-	bh=IJToYo52fUnx4/+2swkvXuGPm6uMEkAsbOCmRLB8n9Y=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=kDj7uUw7P7RgTyFd6XO8hLzOPu3iIKBuRdYdc2vzPVQHPE+y2lM1SQP50BoHSZiFZ
-	 ruuI0cO5n8/nnuCk4o4bal6kk9LdCAGWAlihwbleZ1nWYfL/MwP/2atkG+pPvMGqZG
-	 oWI71uWmQDjrgXt7UbjsbDAHtP15iUkmm1NvhIE8=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20250428153335eucas1p2abd49e68cde41dd73cbc5e4897140053~6hVdm-o9X0606406064eucas1p2F;
-	Mon, 28 Apr 2025 15:33:35 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20250428153335eusmtip23c533ade2d8ce61384f50aeae061782d~6hVdK30Wy2124821248eusmtip2B;
-	Mon, 28 Apr 2025 15:33:35 +0000 (GMT)
-Message-ID: <d37ccb03-0d03-46ff-b62f-2fcb78263fe7@samsung.com>
-Date: Mon, 28 Apr 2025 17:33:35 +0200
+	s=arc-20240116; t=1745854578; c=relaxed/simple;
+	bh=0l9dI7M8qx7oSnZvluNIbOgdc4+hwl5omhl0ehfQ9Y0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=AA87I9F74laS4OdJ/0ExZznCwXMVDMICXTOiKaLmFZ4pcDApOvr6NCA7L2o4S0m+z8EQmGGLR57noBfxDcLANUSOC+kiyC7+f6ulNiuPMqqxM4BoWAeh3+unUy4nJmlyebElaOaD4re/imcimbRg9WoUkr86NcDztuE64fiODYM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 739BF1516;
+	Mon, 28 Apr 2025 08:36:08 -0700 (PDT)
+Received: from mazurka.cambridge.arm.com (mazurka.cambridge.arm.com [10.2.80.18])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 98FE33F673;
+	Mon, 28 Apr 2025 08:36:10 -0700 (PDT)
+From: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
+To: ryan.roberts@arm.com,
+	suzuki.poulose@arm.com,
+	yang@os.amperecomputing.com,
+	corbet@lwn.net,
+	catalin.marinas@arm.com,
+	will@kernel.org,
+	jean-philippe@linaro.org,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	akpm@linux-foundation.org,
+	paulmck@kernel.org,
+	mark.rutland@arm.com,
+	joey.gouly@arm.com,
+	maz@kernel.org,
+	james.morse@arm.com,
+	broonie@kernel.org,
+	oliver.upton@linux.dev,
+	baohua@kernel.org,
+	david@redhat.com,
+	ioworker0@gmail.com,
+	jgg@ziepe.ca,
+	nicolinc@nvidia.com,
+	mshavit@google.com,
+	jsnitsel@redhat.com,
+	smostafa@google.com,
+	kevin.tian@intel.com,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Cc: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
+Subject: [RESEND PATCH v6 0/3] Initial BBML2 support for contpte_convert()
+Date: Mon, 28 Apr 2025 15:35:12 +0000
+Message-ID: <20250428153514.55772-2-miko.lenczewski@arm.com>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 4/4] comedi: allocate DMA coherent buffer as individual
- pages
-To: Christoph Hellwig <hch@lst.de>, Ian Abbott <abbotti@mev.co.uk>
-Cc: linux-kernel@vger.kernel.org, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, H Hartley Sweeten
-	<hsweeten@visionengravers.com>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20250428125648.GC27794@lst.de>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20250428153335eucas1p2abd49e68cde41dd73cbc5e4897140053
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250428125655eucas1p105937dfbffe2d5f3e0ed6a46772bb2f0
-X-EPHeader: CA
-X-CMS-RootMailID: 20250428125655eucas1p105937dfbffe2d5f3e0ed6a46772bb2f0
-References: <20250415114008.5977-1-abbotti@mev.co.uk>
-	<20250415114008.5977-5-abbotti@mev.co.uk>
-	<CGME20250428125655eucas1p105937dfbffe2d5f3e0ed6a46772bb2f0@eucas1p1.samsung.com>
-	<20250428125648.GC27794@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 28.04.2025 14:56, Christoph Hellwig wrote:
-> On Tue, Apr 15, 2025 at 12:35:59PM +0100, Ian Abbott wrote:
->> +			vma->vm_start = start;
->> +			vma->vm_end = start + PAGE_SIZE;
->> +			retval = dma_mmap_coherent(bm->dma_hw_dev, vma,
->> +						   buf->virt_addr,
->> +						   buf->dma_addr, PAGE_SIZE);
-> I'm not  fan of the vm_start/vm_end manipulation, but I've seen it in
-> other places.  In a perfect world we'd have a dma_mmap_coherent_offset
-> or similar helper that encapsulates it, and then maybe later replace
-> that hack with passing on the offset.
+Hi All,
 
-Indeed the dma_mmap_*() makes too many assumptions about the vma. The 
-case You mentioned is probably in drivers/infiniband/hw/hfi1/file_ops.c 
-but I also see that the vma->vm_pgoff is being adjusted before most 
-dma_mmap_*() calls, which proves that the current API is somehow 
-limited. It would be great to fix this too while touching the 
-dma_mmap_attrs() API.
+This patch series adds initial support for eliding Break-Before-Make
+requirements on systems that support BBML2 and additionally guarantee
+to never raise a conflict abort.
 
-Best regards
+This support reorders and elides both a TLB invalidation and a DSB in
+contpte_convert(), when BBML2 is supported. This leads to a 12%
+improvement when executing a microbenchmark designed to force the
+pathological path where contpte_convert() gets called. This represents
+an 80% reduction in the cost of calling contpte_convert().
+
+We clarify both the correctness and performance benefits of this elision
+with respect to the relevant Arm ARM passages, via substantial comments
+in the contpte_convert() source.
+
+This series is based on v6.15-rc3 (9c32cda43eb7).
+
+Notes
+======
+
+Patch 1 implements an allow-list of cpus that support BBML2, but with
+the additional constraint of never causing TLB conflict aborts. We
+settled on this constraint because we will use the feature for kernel
+mappings in the future, for which we cannot handle conflict aborts
+safely.
+
+Yang Shi has a series at [1] that aims to use BBML2 to enable splitting
+the linear map at runtime. This series partially overlaps with it to add
+the cpu feature. We believe this series is fully compatible with Yang's
+requirements and could go first.
+
+Due to constraints with the current design of the cpufeature framework
+and the fact that our has_bbml2_noabort() check relies on both a MIDR
+allowlist and the exposed MMFR2 register value, if an implementation
+supports our desired BBML2+NOABORT semantics but fails to declare
+support for BBML2 via the id_aa64mmfr2.bbm field, the check will fail.
+
+Not declaring base support for BBML2 when supporting BBML2+NOABORT
+should be considered an erratum [2], and a workaround can be applied in
+__cpuinfo_store_cpu() to patch in support for BBML2 for the sanitised
+register view used by SCOPE_SYSTEM. However, SCOPE_LOCAL_CPU bypasses
+this sanitised view and reads the MSRs directly by design, and so an
+additional workaround can be applied in __read_sysreg_by_encoding()
+for the MMFR2 case.
+
+For situations where support for BBML2+NOABORT is claimed by an
+implementor and subsequently built into the kernel, but problems later
+arise that require user damage control [3], we introduce a kernel
+commandline parameter override for disabling all BBML2 support.
+
+[1]:
+  https://lore.kernel.org/linux-arm-kernel/20250304222018.615808-1-yang@os.amperecomputing.com/
+
+[2]:
+  https://lore.kernel.org/linux-arm-kernel/3bba7adb-392b-4024-984f-b6f0f0f88629@arm.com/
+
+[3]:
+  https://lore.kernel.org/all/0ac0f1f5-e4a0-46ae-8ea0-2eba7e21a7e1@arm.com/
+
+Changelog
+=========
+
+v6:
+  - clarify correctness and performance of elision of __tlb_flush_range()
+  - rebase onto v6.15-rc3
+
+v5:
+  - https://lore.kernel.org/all/20250325093625.55184-1-miko.lenczewski@arm.com/
+  - fixup coding style nits
+  - document motivation for kernel commandline parameter
+
+v4:
+  - https://lore.kernel.org/all/20250319150533.37440-2-miko.lenczewski@arm.com/
+  - rebase onto v6.14-rc5
+  - switch from arm64 sw feature override to hw feature override
+  - reintroduce has_cpuid_feature() check in addition to MIDR check
+
+v3:
+  - https://lore.kernel.org/all/20250313104111.24196-2-miko.lenczewski@arm.com/
+  - rebase onto v6.14-rc4
+  - add arm64.nobbml2 commandline override
+  - squash "delay tlbi" and "elide tlbi" patches
+
+v2:
+  - https://lore.kernel.org/all/20250228182403.6269-2-miko.lenczewski@arm.com/
+  - fix buggy MIDR check to properly account for all boot+late cpus
+  - add smmu bbml2 feature check
+
+v1:
+  - https://lore.kernel.org/all/20250219143837.44277-3-miko.lenczewski@arm.com/
+  - rebase onto v6.14-rc3
+  - remove kvm bugfix patches from series
+  - strip out conflict abort handler code
+  - switch from blocklist to allowlist of bmml2+noabort implementations
+  - remove has_cpuid_feature() in favour of MIDR check
+
+rfc-v1:
+  - https://lore.kernel.org/all/20241211154611.40395-1-miko.lenczewski@arm.com/
+  - https://lore.kernel.org/all/20241211160218.41404-1-miko.lenczewski@arm.com/
+
+Mikołaj Lenczewski (3):
+  arm64: Add BBM Level 2 cpu feature
+  iommu/arm: Add BBM Level 2 smmu feature
+  arm64/mm: Elide tlbi in contpte_convert() under BBML2
+
+ .../admin-guide/kernel-parameters.txt         |   3 +
+ arch/arm64/Kconfig                            |  19 +++
+ arch/arm64/include/asm/cpucaps.h              |   2 +
+ arch/arm64/include/asm/cpufeature.h           |   5 +
+ arch/arm64/kernel/cpufeature.c                |  71 +++++++++
+ arch/arm64/kernel/pi/idreg-override.c         |   2 +
+ arch/arm64/mm/contpte.c                       | 139 +++++++++++++++++-
+ arch/arm64/tools/cpucaps                      |   1 +
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   3 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   3 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   4 +
+ 11 files changed, 251 insertions(+), 1 deletion(-)
+
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.49.0
 
