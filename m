@@ -1,23 +1,23 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DC30226FD90
-	for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 14:34:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7EB2D27055F
+	for <iommu@lists.linux.dev>; Mon, 28 Apr 2025 14:34:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745850876; cv=none; b=S5KjNjlVuwXq5w4Tu9QWv9g30H70Ucwb9RH1HvqBM4bjhaqJcmGB9PL5l0kFN53IsH8IH2ZGMyeV1oq9SwQKkiia63aWv/5yQQzQyGDT3pnTMYJRIENquAHsyfU40Om4a4Gid8K5FuZZrehOoY6mc7XRlLo41lDK6CZWeMgEVpg=
+	t=1745850879; cv=none; b=pnAnCVN1/352vMY0P30BPgSqgheOgV17Q5nZGcpF07AMb/IC1aXSMsixA2EtICzNjQcxZS4B8foo3AJXTAi3yFce0zJ8YJRFWnREeq951xn5YrwqpS613KId3m6i2B7CBHhruGnzCcDNjTMSrJU2+LkX5bYq3lCE4Qg95rZZI54=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745850876; c=relaxed/simple;
-	bh=ba/1nG2iMi8FRfQ+ntQJ3SDVhwOTuJmdWB5JrunUOIM=;
+	s=arc-20240116; t=1745850879; c=relaxed/simple;
+	bh=X4YAC7UgnFX/IJfpLFastAckdvY3Zbt3gQxxkAai4SM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lakCOx2x4KscmN58LtzLhq5AJzTDyfbIx2pKamTGlBC6qwLztczbpf5efto1f9Ydz5pM3seiyXovs5JRGQnCwrJZFCFHOWzVzyxPKo37WcWqPsIiIG/tvv+lazKWt/ImGKafI0GdSsfwrMxc/qITixWU7LxXLtzW63YwTSqAlYA=
+	 MIME-Version:Content-Type; b=srEIhvJpU0YxilTWn2QIod9+aAFjGyTGgMsbEjlplVbNyFXDJHgCWs9c1Krp1tv+kJS+kyhfUdsEsHy+dQZXn8YPRe10xP5kKiwD8VAMNFhllmBJ09IlMiawYYW7muHKGo4cLeGrB8Fu+9tzS5cXgb9ucV2fFgarf5HGZOAXiUE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3A3BF1595;
-	Mon, 28 Apr 2025 07:34:21 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 847271762;
+	Mon, 28 Apr 2025 07:34:30 -0700 (PDT)
 Received: from mazurka.cambridge.arm.com (mazurka.cambridge.arm.com [10.2.80.18])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E8653F66E;
-	Mon, 28 Apr 2025 07:34:23 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9EC8F3F66E;
+	Mon, 28 Apr 2025 07:34:32 -0700 (PDT)
 From: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
 To: ryan.roberts@arm.com,
 	suzuki.poulose@arm.com,
@@ -50,9 +50,9 @@ To: ryan.roberts@arm.com,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev
 Cc: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
-Subject: [PATCH v6 1/3] arm64: Add BBM Level 2 cpu feature
-Date: Mon, 28 Apr 2025 14:33:50 +0000
-Message-ID: <20250428143352.53761-3-miko.lenczewski@arm.com>
+Subject: [PATCH v6 3/3] arm64/mm: Elide tlbi in contpte_convert() under BBML2
+Date: Mon, 28 Apr 2025 14:33:52 +0000
+Message-ID: <20250428143352.53761-5-miko.lenczewski@arm.com>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250428143352.53761-2-miko.lenczewski@arm.com>
 References: <20250428143352.53761-2-miko.lenczewski@arm.com>
@@ -65,230 +65,191 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The Break-Before-Make cpu feature supports multiple levels (levels 0-2),
-and this commit adds a dedicated BBML2 cpufeature to test against
-support for, as well as a kernel commandline parameter to optionally
-disable BBML2 altogether.
+When converting a region via contpte_convert() to use mTHP, we have two
+different goals. We have to mark each entry as contiguous, and we would
+like to smear the dirty and young (access) bits across all entries in
+the contiguous block. Currently, we do this by first accumulating the
+dirty and young bits in the block, using an atomic
+__ptep_get_and_clear() and the relevant pte_{dirty,young}() calls,
+performing a tlbi, and finally smearing the correct bits across the
+block using __set_ptes().
 
-This is a system feature as we might have a big.LITTLE architecture
-where some cores support BBML2 and some don't, but we want all cores to
-be available and BBM to default to level 0 (as opposed to having cores
-without BBML2 not coming online).
+This approach works fine for BBM level 0, but with support for BBM level
+2 we are allowed to reorder the tlbi to after setting the pagetable
+entries. We expect the time cost of a tlbi to be much greater than the
+cost of clearing and resetting the PTEs. As such, this reordering of the
+tlbi outside the window where our PTEs are invalid greatly reduces the
+duration the PTE are visibly invalid for other threads. This reduces the
+likelyhood of a concurrent page walk finding an invalid PTE, reducing
+the likelyhood of a fault in other threads, and improving performance
+(more so when there are more threads).
 
-To support BBML2 in as wide a range of contexts as we can, we want not
-only the architectural guarantees that BBML2 makes, but additionally
-want BBML2 to not create TLB conflict aborts. Not causing aborts avoids
-us having to prove that no recursive faults can be induced in any path
-that uses BBML2, allowing its use for arbitrary kernel mappings.
-Support detection of such CPUs.
+Because we support via allowlist only bbml2 implementations that never
+raise conflict aborts and instead invalidate the tlb entries
+automatically in hardware, we can avoid the final flush altogether.
+
+However, avoiding the intermediate tlbi+dsb must be carefully considered
+to ensure that we remain both correct and performant. We document our
+reasoning and the expected interactions further in the contpte_convert()
+source. To do so we rely on the aarch64 spec (DDI 0487L.a D8.7.1.1)
+requirements RNGLXZ and RJQQTC to provide guarantees that the elision is
+correct.
 
 Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
-Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
 ---
- .../admin-guide/kernel-parameters.txt         |  3 +
- arch/arm64/Kconfig                            | 19 +++++
- arch/arm64/include/asm/cpucaps.h              |  2 +
- arch/arm64/include/asm/cpufeature.h           |  5 ++
- arch/arm64/kernel/cpufeature.c                | 71 +++++++++++++++++++
- arch/arm64/kernel/pi/idreg-override.c         |  2 +
- arch/arm64/tools/cpucaps                      |  1 +
- 7 files changed, 103 insertions(+)
+ arch/arm64/mm/contpte.c | 139 +++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 138 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index d9fd26b95b34..2749c67a4f07 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -449,6 +449,9 @@
- 	arm64.no32bit_el0 [ARM64] Unconditionally disable the execution of
- 			32 bit applications.
+diff --git a/arch/arm64/mm/contpte.c b/arch/arm64/mm/contpte.c
+index bcac4f55f9c1..203357061d0a 100644
+--- a/arch/arm64/mm/contpte.c
++++ b/arch/arm64/mm/contpte.c
+@@ -68,7 +68,144 @@ static void contpte_convert(struct mm_struct *mm, unsigned long addr,
+ 			pte = pte_mkyoung(pte);
+ 	}
  
-+	arm64.nobbml2	[ARM64] Unconditionally disable Break-Before-Make Level
-+			2 support
-+
- 	arm64.nobti	[ARM64] Unconditionally disable Branch Target
- 			Identification support
- 
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index a182295e6f08..613b4925ca06 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -2070,6 +2070,25 @@ config ARM64_TLB_RANGE
- 	  The feature introduces new assembly instructions, and they were
- 	  support when binutils >= 2.30.
- 
-+config ARM64_BBML2_NOABORT
-+	bool "Enable support for Break-Before-Make Level 2 detection and usage"
-+	default y
-+	help
-+	  FEAT_BBM provides detection of support levels for break-before-make
-+	  sequences. If BBM level 2 is supported, some TLB maintenance requirements
-+	  can be relaxed to improve performance. We additonally require the
-+	  property that the implementation cannot ever raise TLB Conflict Aborts.
-+	  Selecting N causes the kernel to fallback to BBM level 0 behaviour
-+	  even if the system supports BBM level 2.
-+
-+	  To enable detection of BBML2 support, and to make use of it, say Y.
-+
-+	  Detection of and support for BBM level 2 can optionally be overridden
-+	  at runtime via the use of the arm64.nobbml2 kernel commandline
-+	  parameter. If your system claims support for BBML2, but is unstable
-+	  with this option enabled, either say N or make use of the commandline
-+	  parameter override to force BBML0.
-+
- endmenu # "ARMv8.4 architectural features"
- 
- menu "ARMv8.5 architectural features"
-diff --git a/arch/arm64/include/asm/cpucaps.h b/arch/arm64/include/asm/cpucaps.h
-index 9d769291a306..413eec6e2438 100644
---- a/arch/arm64/include/asm/cpucaps.h
-+++ b/arch/arm64/include/asm/cpucaps.h
-@@ -23,6 +23,8 @@ cpucap_is_possible(const unsigned int cap)
- 		return IS_ENABLED(CONFIG_ARM64_PAN);
- 	case ARM64_HAS_EPAN:
- 		return IS_ENABLED(CONFIG_ARM64_EPAN);
-+	case ARM64_HAS_BBML2_NOABORT:
-+		return IS_ENABLED(CONFIG_ARM64_BBML2_NOABORT);
- 	case ARM64_SVE:
- 		return IS_ENABLED(CONFIG_ARM64_SVE);
- 	case ARM64_SME:
-diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
-index c4326f1cb917..8f36ffa16b73 100644
---- a/arch/arm64/include/asm/cpufeature.h
-+++ b/arch/arm64/include/asm/cpufeature.h
-@@ -848,6 +848,11 @@ static inline bool system_supports_pmuv3(void)
- 	return cpus_have_final_cap(ARM64_HAS_PMUV3);
- }
- 
-+static inline bool system_supports_bbml2_noabort(void)
-+{
-+	return alternative_has_cap_unlikely(ARM64_HAS_BBML2_NOABORT);
-+}
-+
- int do_emulate_mrs(struct pt_regs *regs, u32 sys_reg, u32 rt);
- bool try_emulate_mrs(struct pt_regs *regs, u32 isn);
- 
-diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-index 9c4d6d552b25..7a85a1bdc6e9 100644
---- a/arch/arm64/kernel/cpufeature.c
-+++ b/arch/arm64/kernel/cpufeature.c
-@@ -2200,6 +2200,70 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
- 	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
- }
- 
-+static bool cpu_has_bbml2_noabort(unsigned int cpu_midr)
-+{
+-	__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
 +	/*
-+	 * We want to allow usage of bbml2 in as wide a range of kernel contexts
-+	 * as possible. This list is therefore an allow-list of known-good
-+	 * implementations that both support bbml2 and additionally, fulfill the
-+	 * extra constraint of never generating TLB conflict aborts when using
-+	 * the relaxed bbml2 semantics (such aborts make use of bbml2 in certain
-+	 * kernel contexts difficult to prove safe against recursive aborts).
++	 * On eliding the __tlb_flush_range() under BBML2+noabort:
 +	 *
-+	 * Note that implementations can only be considered "known-good" if their
-+	 * implementors attest to the fact that the implementation never raises
-+	 * TLBI conflict aborts for bbml2 mapping granularity changes.
++	 * NOTE: Instead of using N=16 as the contiguous block length, we use
++	 *       N=4 for clarity.
++	 *
++	 * NOTE: 'n' and 'c' are used to denote the "contiguous bit" being
++	 *       unset and set, respectively.
++	 *
++	 * We worry about two cases where contiguous bit is used:
++	 *  - When folding N smaller non-contiguous ptes as 1 contiguous block.
++	 *  - When unfolding a contiguous block into N smaller non-contiguous ptes.
++	 *
++	 * Currently, the BBML0 folding case looks as follows:
++	 *
++	 *  0) Initial page-table layout:
++	 *
++	 *   +----+----+----+----+
++	 *   |RO,n|RO,n|RO,n|RW,n| <--- last page being set as RO
++	 *   +----+----+----+----+
++	 *
++	 *  1) Aggregate AF + dirty flags using __ptep_get_and_clear():
++	 *
++	 *   +----+----+----+----+
++	 *   |  0 |  0 |  0 |  0 |
++	 *   +----+----+----+----+
++	 *
++	 *  2) __flush_tlb_range():
++	 *
++	 *   |____ tlbi + dsb ____|
++	 *
++	 *  3) __set_ptes() to repaint contiguous block:
++	 *
++	 *   +----+----+----+----+
++	 *   |RO,c|RO,c|RO,c|RO,c|
++	 *   +----+----+----+----+
++	 *
++	 *  4) The kernel will eventually __flush_tlb() for changed page:
++	 *
++	 *                  |____| <--- tlbi + dsb
++	 *
++	 * As expected, the intermediate tlbi+dsb ensures that other PEs
++	 * only ever see an invalid (0) entry, or the new contiguous TLB entry.
++	 * The final tlbi+dsb will always throw away the newly installed
++	 * contiguous TLB entry, which is a micro-optimisation opportunity,
++	 * but does not affect correctness.
++	 *
++	 * In the BBML2 case, the change is avoiding the intermediate tlbi+dsb.
++	 * This means a few things, but notably other PEs will still "see" any
++	 * stale cached TLB entries. This could lead to a "contiguous bit
++	 * misprogramming" issue until the final tlbi+dsb of the changed page,
++	 * which would clear out both the stale (RW,n) entry and the new (RO,c)
++	 * contiguous entry installed in its place.
++	 *
++	 * What this is saying, is the following:
++	 *
++	 *  +----+----+----+----+
++	 *  |RO,n|RO,n|RO,n|RW,n| <--- old page tables, all non-contiguous
++	 *  +----+----+----+----+
++	 *
++	 *  +----+----+----+----+
++	 *  |RO,c|RO,c|RO,c|RO,c| <--- new page tables, all contiguous
++	 *  +----+----+----+----+
++	 *   /\
++	 *   ||
++	 *
++	 *  If both the old single (RW,n) and new contiguous (RO,c) TLB entries
++	 *  are present, and a write is made to this address, do we fault or
++	 *  is the write permitted (via amalgamation)?
++	 *
++	 * The relevant Arm ARM DDI 0487L.a requirements are RNGLXZ and RJQQTC,
++	 * and together state that when BBML1 or BBML2 are implemented, either
++	 * a TLB conflict abort is raised (which we expressly forbid), or will
++	 * "produce an OA, access permissions, and memory attributes that are
++	 * consistent with any of the programmed translation table values".
++	 *
++	 * That is to say, will either raise a TLB conflict, or produce one of
++	 * the cached TLB entries, but never amalgamate.
++	 *
++	 * Thus, as the page tables are only considered "consistent" after
++	 * the final tlbi+dsb (which evicts both the single stale (RW,n) TLB
++	 * entry as well as the new contiguous (RO,c) TLB entry), omitting the
++	 * initial tlbi+dsb is correct.
++	 *
++	 * It is also important to note that at the end of the BBML2 folding
++	 * case, we are still left with potentially all N TLB entries still
++	 * cached (the N-1 non-contiguous ptes, and the single contiguous
++	 * block). However, over time, natural TLB pressure will cause the
++	 * non-contiguous pte TLB entries to be flushed, leaving only the
++	 * contiguous block TLB entry. This means that omitting the tlbi+dsb is
++	 * not only correct, but also keeps our eventual performance benefits.
++	 *
++	 * For the unfolding case, BBML0 looks as follows:
++	 *
++	 *  0) Initial page-table layout:
++	 *
++	 *   +----+----+----+----+
++	 *   |RW,c|RW,c|RW,c|RW,c| <--- last page being set as RO
++	 *   +----+----+----+----+
++	 *
++	 *  1) Aggregate AF + dirty flags using __ptep_get_and_clear():
++	 *
++	 *   +----+----+----+----+
++	 *   |  0 |  0 |  0 |  0 |
++	 *   +----+----+----+----+
++	 *
++	 *  2) __flush_tlb_range():
++	 *
++	 *   |____ tlbi + dsb ____|
++	 *
++	 *  3) __set_ptes() to repaint as non-contiguous:
++	 *
++	 *   +----+----+----+----+
++	 *   |RW,n|RW,n|RW,n|RW,n|
++	 *   +----+----+----+----+
++	 *
++	 *  4) Update changed page permissions:
++	 *
++	 *   +----+----+----+----+
++	 *   |RW,n|RW,n|RW,n|RO,n| <--- last page permissions set
++	 *   +----+----+----+----+
++	 *
++	 *  5) The kernel will eventually __flush_tlb() for changed page:
++	 *
++	 *                  |____| <--- tlbi + dsb
++	 *
++	 * For BBML2, we again remove the intermediate tlbi+dsb. Here, there
++	 * are no issues, as the final tlbi+dsb covering the changed page is
++	 * guaranteed to remove the original large contiguous (RW,c) TLB entry,
++	 * as well as the intermediate (RW,n) TLB entry; the next access will
++	 * install the new (RO,n) TLB entry and the page tables are only
++	 * considered "consistent" after the final tlbi+dsb, so software must
++	 * be prepared for this inconsistency prior to finishing the mm dance
++	 * regardless.
 +	 */
-+	static const struct midr_range supports_bbml2_noabort_list[] = {
-+		MIDR_REV_RANGE(MIDR_CORTEX_X4, 0, 3, 0xf),
-+		MIDR_REV_RANGE(MIDR_NEOVERSE_V3, 0, 2, 0xf),
-+		{}
-+	};
 +
-+	return is_midr_in_range_list(cpu_midr, supports_bbml2_noabort_list);
-+}
-+
-+static inline unsigned int cpu_read_midr(int cpu)
-+{
-+	WARN_ON_ONCE(!cpu_online(cpu));
-+
-+	return per_cpu(cpu_data, cpu).reg_midr;
-+}
-+
-+static bool has_bbml2_noabort(const struct arm64_cpu_capabilities *caps, int scope)
-+{
-+	if (!IS_ENABLED(CONFIG_ARM64_BBML2_NOABORT))
-+		return false;
-+
-+	if (scope & SCOPE_SYSTEM) {
-+		int cpu;
-+
-+		/*
-+		 * We are a boot CPU, and must verify that all enumerated boot
-+		 * CPUs have MIDR values within our allowlist. Otherwise, we do
-+		 * not allow the BBML2 feature to avoid potential faults when
-+		 * the insufficient CPUs access memory regions using BBML2
-+		 * semantics.
-+		 */
-+		for_each_online_cpu(cpu) {
-+			if (!cpu_has_bbml2_noabort(cpu_read_midr(cpu)))
-+				return false;
-+		}
-+	} else if (scope & SCOPE_LOCAL_CPU) {
-+		/*
-+		 * We are a hot-plugged CPU, so must only check our MIDR.
-+		 * If we have the correct MIDR, but the kernel booted on an
-+		 * insufficient CPU, we will not use BBML2 (this is safe). If
-+		 * we have an incorrect MIDR, but the kernel booted on a
-+		 * sufficient CPU, we will not bring up this CPU.
-+		 */
-+		if (!cpu_has_bbml2_noabort(read_cpuid_id()))
-+			return false;
-+	}
-+
-+	return has_cpuid_feature(caps, scope);
-+}
-+
- #ifdef CONFIG_ARM64_PAN
- static void cpu_enable_pan(const struct arm64_cpu_capabilities *__unused)
- {
-@@ -2960,6 +3024,13 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
- 		.matches = has_cpuid_feature,
- 		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, EVT, IMP)
- 	},
-+	{
-+		.desc = "BBM Level 2 without conflict abort",
-+		.capability = ARM64_HAS_BBML2_NOABORT,
-+		.type = ARM64_CPUCAP_SYSTEM_FEATURE,
-+		.matches = has_bbml2_noabort,
-+		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, BBM, 2)
-+	},
- 	{
- 		.desc = "52-bit Virtual Addressing for KVM (LPA2)",
- 		.capability = ARM64_HAS_LPA2,
-diff --git a/arch/arm64/kernel/pi/idreg-override.c b/arch/arm64/kernel/pi/idreg-override.c
-index c6b185b885f7..803a0c99f7b4 100644
---- a/arch/arm64/kernel/pi/idreg-override.c
-+++ b/arch/arm64/kernel/pi/idreg-override.c
-@@ -102,6 +102,7 @@ static const struct ftr_set_desc mmfr2 __prel64_initconst = {
- 	.override	= &id_aa64mmfr2_override,
- 	.fields		= {
- 		FIELD("varange", ID_AA64MMFR2_EL1_VARange_SHIFT, mmfr2_varange_filter),
-+		FIELD("bbm", ID_AA64MMFR2_EL1_BBM_SHIFT, NULL),
- 		{}
- 	},
- };
-@@ -246,6 +247,7 @@ static const struct {
- 	{ "rodata=off",			"arm64_sw.rodataoff=1" },
- 	{ "arm64.nolva",		"id_aa64mmfr2.varange=0" },
- 	{ "arm64.no32bit_el0",		"id_aa64pfr0.el0=1" },
-+	{ "arm64.nobbml2",		"id_aa64mmfr2.bbm=0" },
- };
++	if (!system_supports_bbml2_noabort())
++		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
  
- static int __init parse_hexdigit(const char *p, u64 *v)
-diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
-index 772c1b008e43..80ec2d9859a2 100644
---- a/arch/arm64/tools/cpucaps
-+++ b/arch/arm64/tools/cpucaps
-@@ -14,6 +14,7 @@ HAS_ADDRESS_AUTH_ARCH_QARMA5
- HAS_ADDRESS_AUTH_IMP_DEF
- HAS_AMU_EXTN
- HAS_ARMv8_4_TTL
-+HAS_BBML2_NOABORT
- HAS_CACHE_DIC
- HAS_CACHE_IDC
- HAS_CNP
+ 	__set_ptes(mm, start_addr, start_ptep, pte, CONT_PTES);
+ }
 -- 
 2.49.0
 
