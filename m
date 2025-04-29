@@ -1,110 +1,68 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54E2B24EAB3
-	for <iommu@lists.linux.dev>; Tue, 29 Apr 2025 06:54:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E01FC27702E
+	for <iommu@lists.linux.dev>; Tue, 29 Apr 2025 07:19:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745909698; cv=none; b=bs0Fer/Tf4RKEInuu/MLsn+xzVNiagTOH5iVCrNIWPpxDJ+dg1dW1nW6hei7BIERqGxJX7E9oKeoaSeSGEIctBm37XcJOuENFWnumTjPOxn/yaGrI7bBctaintLTBh5YA/wixdDsQflgqM/EbAp2l7RtFTFKDrRQ8S08TKASNiI=
+	t=1745911179; cv=none; b=pTJ2FOWxrsg9t2/WturqnyAYld6Hu6zArQsGYL7nPQSVJY3w3ugUTlQTJvqjmi2ZHunkt9lp7dNP0Wt34yGPss71zzTUjk06GyDtNntE2HFn3s5gB5BwfreYHbdS8gyIJAFlIuzBocjijshClcHCfv42KX/DSa4dRYKACgcyKFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745909698; c=relaxed/simple;
-	bh=PpZtbA9kdwBRA3jbs9L3Dv6eNjFnhgwGX0jsrHH7Kxo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PQ5lG/nB8JrOCQZ4P7QBerYarZXo7ks5mZPGDzIEZnfr7BrsqQ+58g7JuFNYjOeAXPZLs3ej/txerHdYBKopJB7R/kpsd0LvbImL+ltExsFxv0n2I3XEzgxgUgCd7Nke9PyZLWjTch0PromITvIuUTzqZ3vAwFjwna9Z0YVL6rk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QaOJc6KY; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1745911179; c=relaxed/simple;
+	bh=SAHCBDqNy6TGIiso+JyQ7s/5TRfR/sINY5mPMtICcBs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KEEUFcBSaJCGC7l6gbwhtdgrPpElgIAEgJDhuxe4w1LcWAv37ll3yEClA/pCx7r+uSe4ie2XGQk4MPJjR70kmU4k+HW6xDfsatwIQYlRcDnr5W1r/mBYLpVZQaakHjRlS5pgfdtmXkmk+liMFBZ3H2Ls5nQqtpcnooVL0DfGISs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=RAU+z16i; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QaOJc6KY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745909697; x=1777445697;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=PpZtbA9kdwBRA3jbs9L3Dv6eNjFnhgwGX0jsrHH7Kxo=;
-  b=QaOJc6KYctkhbpWwi21l52OsEiLFQQN3+dHolAm76KLY5RfRhr/wNMk7
-   wlDFrm0amyz9cJZ21mBJGrEkTawGajsqA6yD9m3EbxzofbX89xLNgAh0z
-   oQTyMLNUYgMtt0Id5Edz5IsXnNcSk4DnIJ7RmT1zZzsf1GHQ789wA863s
-   rV/dnVMaAs8FVCPcTHiTmn8Q3K3SJ9oI1kqiCBGmiuFrgXs/pMjGXUl4s
-   oI1pcJGj4F93kzXEBFEoQjlQW9BbhzQjY+GMIAlU0PZTrJSP4swKIMcMI
-   X2ry0XIOYIjpwsruAd6n6AOmdXsNzPPnamjRBX70ALEJpkcBOlkS6DP50
-   g==;
-X-CSE-ConnectionGUID: 3bg2XCUJSBmJGN24ZkkXiQ==
-X-CSE-MsgGUID: sFahboUPQ36xelWX7/m3Sg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11417"; a="70023584"
-X-IronPort-AV: E=Sophos;i="6.15,248,1739865600"; 
-   d="scan'208";a="70023584"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2025 23:54:55 -0700
-X-CSE-ConnectionGUID: 9eL1swR/S7aR3gcphn1kQg==
-X-CSE-MsgGUID: 8dVE5jmeSmOYAhK9/+H+3Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,248,1739865600"; 
-   d="scan'208";a="134695028"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2025 23:54:51 -0700
-Message-ID: <446b94d5-3192-448e-9f29-de1e04bbd517@linux.intel.com>
-Date: Tue, 29 Apr 2025 14:50:39 +0800
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="RAU+z16i"
+Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 6FC5A4984C;
+	Tue, 29 Apr 2025 09:19:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1745911176;
+	bh=SAHCBDqNy6TGIiso+JyQ7s/5TRfR/sINY5mPMtICcBs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=RAU+z16iXwywI8TGOQsk32M7p3Gfc92zxC2WRlGKloWG7+MDZiYeVNdH5dR7KYbeR
+	 F2KV99ePFzh/4taISU/Nqnw6mT2lm10/qygFp9Zo5zan5QGddcoA94eEaLmMFIJx3X
+	 ntXi/NIOipXJgaHm/3D7oWEwFnOxa1LxSIo9FRKZ5vHI8PhhxSAYvKTmSZv1r+/WqM
+	 z6+Gi9W1XO7PyCsrvGEGOnGrJ2Ay2AQ09AB9sZ66fJ1cQ8W7q1IRMVQwQaup+hqpA8
+	 Tg29+9drMTSK5VTid1qZoswToM0aRLtcT6kcoZtF4xg80dLFw7oCHv9g7L29bjbfcP
+	 68EWEH8avQQOw==
+Date: Tue, 29 Apr 2025 09:19:35 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Rob Herring <robh@kernel.org>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	yong.wu@mediatek.com, will@kernel.org, robin.murphy@arm.com,
+	krzk+dt@kernel.org, conor+dt@kernel.org, matthias.bgg@gmail.com,
+	iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, kernel@collabora.com
+Subject: Re: [PATCH v1 0/2] MediaTek Dimensity 1200 - Add IOMMU support
+Message-ID: <aBB9h9CDPa6Ww4td@8bytes.org>
+References: <20250410144008.475888-1-angelogioacchino.delregno@collabora.com>
+ <aAETI0hrOiQZDKh2@8bytes.org>
+ <20250428160227.GA1322286-robh@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/riscv: fix use after free of riscv_iommu_domain
-To: BillXiang <xiangwencheng@lanxincomputing.com>, tjeznach@rivosinc.com
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu,
- alex@ghiti.fr, iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
- linux-kernel@vger.kernel.org
-References: <20250429034007.578-1-xiangwencheng@lanxincomputing.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250429034007.578-1-xiangwencheng@lanxincomputing.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250428160227.GA1322286-robh@kernel.org>
 
-On 4/29/25 11:40, BillXiang wrote:
-> The function vfio_group_detach_container begins by calling
-> vfio_iommu_type1_detach_group, which may subsequently calls
+Hi Rob,
 
-I don't follow here. vfio_iommu_type1_detach_group() will eventually
-call riscv_iommu_attach_blocking_domain() and info->domain has been
-cleared there:
+On Mon, Apr 28, 2025 at 11:02:27AM -0500, Rob Herring wrote:
+> It looks like you missed the binding change for this.
 
-static int riscv_iommu_attach_blocking_domain(struct iommu_domain 
-*iommu_domain,
-                                               struct device *dev)
-{
-         struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-         struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
+Both patches from this series are in the tree now. Is something from
+another series needed? In any case, if fixes are needed, please send
+them on-top of this patch-set.
 
-         /* Make device context invalid, translation requests will fault 
-w/ #258 */
-         riscv_iommu_iodir_update(iommu, dev, RISCV_IOMMU_FSC_BARE, 0);
-         riscv_iommu_bond_unlink(info->domain, dev);
-         info->domain = NULL;
+Regards,
 
-         return 0;
-}
-
-Perhaps I overlooked anything?
-
-> riscv_iommu_free_paging_domain to release the riscv_iommu_domain.
-> Then, iommu_group_release_dma_owner is triggered, which results in
-> the execution of riscv_iommu_attach_paging_domain and
-> riscv_iommu_bond_unlink(info->domain). However, the info->domain
-> had been freed beforehand but was not set to NULL, leading to errors.
-> 
-> This commit resolves the issue by setting info->domain to NULL within
-> riscv_iommu_bond_unlink, a function that is called by
-> riscv_iommu_attach_blocking_domain before the domain was freed.
-> 
-> Signed-off-by: BillXiang<xiangwencheng@lanxincomputing.com>
-> ---
->   drivers/iommu/riscv/iommu.c | 14 +++++++++++++-
->   1 file changed, 13 insertions(+), 1 deletion(-)
-
-Thanks,
-baolu
+	Joerg
