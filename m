@@ -1,212 +1,111 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sg-1-14.ptr.blmpb.com (sg-1-14.ptr.blmpb.com [118.26.132.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 236DE19307F
-	for <iommu@lists.linux.dev>; Tue, 29 Apr 2025 03:15:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D1BE25F7AB
+	for <iommu@lists.linux.dev>; Tue, 29 Apr 2025 03:40:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745896518; cv=none; b=cPo2rvbn+Nk+02E77hcl7SVy+ymWpi9hgo4chIFdQ9AMEqfWnF19KqFYfuTKMF0HPjcMY5gFgJxL4IUX5wTpcxlAMRm+PJwQETp4Y67I1qvowha6feRHTWoUJMiJ8h7b4GLiOyFcT+EpCpm2O7fLI6pwmumayRomVPPeL4ay6Jo=
+	t=1745898051; cv=none; b=X4UhQmZnK+daOSDwKGJmbQsXdR01oiaVGH/gx+KhabMxhmWd5xebF4+ea6sWt3Vqf2fTS9/Zv2pF3gi4CTGxnTloeE1SPFVW4Xl7zO09RSJ2B94HUj9Ojm+WZBQ3uKdY9Klfkdy2Do9gf55y57wQFPn4NjyTsA8mwoJC0lNuRu4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745896518; c=relaxed/simple;
-	bh=gF3+aJs3Gf/hJScKyT1fbK46ZtYQ+FrmHh+AQDsrL0w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UfepH+ntuPkbGMNM67AEadvM1W7CazkBsCYXEE76+k8imCen7ceMCJvh7Bigca1dR1naH353WHr+LAdLJG8DYsSa8Ktt0kZrIEkrwjL9E37HqmdGCDVHk0oDjcYqWJIP3mROFQZSLZ3ZCCUgX1rTjm+lVhQ1XjSBR5Vcr8NxL/U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ko1kScYs; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1745898051; c=relaxed/simple;
+	bh=V7t+6pYPcThi12/YFNXMPUI/7aqiA+FydpNTNYF8RIk=;
+	h=To:Cc:Subject:From:Mime-Version:Content-Type:Message-Id:Date; b=KDMkJaEnarBWTqOlcIi8yZfq2MngmGal8e0Otb7wKqndPaZLjl2zLinUra2+Fq5XMDc84+BtP2Q0fBEyIWr6ay+FMp90I/iFL8QPse6lWI46jN/1n8PLA7/VaJ5s4XCPTrlSCOph1NSzf4nxuvNyz5GUrPbMbtOxRQV2VlLJpzw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lanxincomputing.com; spf=pass smtp.mailfrom=lanxincomputing.com; dkim=pass (2048-bit key) header.d=lanxincomputing-com.20200927.dkim.feishu.cn header.i=@lanxincomputing-com.20200927.dkim.feishu.cn header.b=ytvg3pEG; arc=none smtp.client-ip=118.26.132.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lanxincomputing.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lanxincomputing.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ko1kScYs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745896517; x=1777432517;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=gF3+aJs3Gf/hJScKyT1fbK46ZtYQ+FrmHh+AQDsrL0w=;
-  b=Ko1kScYsg+YyREB4A+YRch1TOVHQz8KWGhn4Ui5UZUtAbUzkIixv78bP
-   tXJSAHQmEb8eIu+/GG3ieYLFsMuFQR2COmLPRMX09BiOBXXDL/CjzNdHn
-   jwDDCAEFxi4fXFoPytugtHDg3E4Y3iV9VwW8eLQ+AxCoh/T/uonwZIt/g
-   eecJ7JzHceD+e8vNmIf87SOmNktZ/NYD/kfTEabHadtuCdWdpQnrtA9Ag
-   A8l1UgR31LKxhfK+uloIJg9DDyl0HJb9STYzIiwDANRcMXKu+n6fM0iDF
-   zWD/2zhQdz5jdvbUljCu3sHRwNUSoWVLY92N8JukW/abJXRIXscBYttDU
-   g==;
-X-CSE-ConnectionGUID: DHAA1hAcSKWrWI9yEq2S9w==
-X-CSE-MsgGUID: z2zOEpTyT/y9UnYwZgR7OQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11417"; a="50164759"
-X-IronPort-AV: E=Sophos;i="6.15,248,1739865600"; 
-   d="scan'208";a="50164759"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2025 20:15:16 -0700
-X-CSE-ConnectionGUID: ed4rLAGbTImlyIcMdAHXJw==
-X-CSE-MsgGUID: 8LoauE1fTyG98pnYRixuDg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,248,1739865600"; 
-   d="scan'208";a="133600998"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2025 20:15:07 -0700
-Message-ID: <0086302d-1cb3-43dd-a989-e4b1995a0d22@linux.intel.com>
-Date: Tue, 29 Apr 2025 11:10:54 +0800
+	dkim=pass (2048-bit key) header.d=lanxincomputing-com.20200927.dkim.feishu.cn header.i=@lanxincomputing-com.20200927.dkim.feishu.cn header.b="ytvg3pEG"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=s1; d=lanxincomputing-com.20200927.dkim.feishu.cn; t=1745898035;
+  h=from:subject:mime-version:from:date:message-id:subject:to:cc:
+ reply-to:content-type:mime-version:in-reply-to:message-id;
+ bh=A6YL4g9UyBSUEiuqfxS3Pp0bfMg6wdBLYwsmpoZyRY8=;
+ b=ytvg3pEGOjKSKgcWJRLAKzORKI0VHKJDmPiJiUs9qd/fza74ZndKaTty4N2cE8aOcBRNQS
+ x7ha8KWyAid9XLVJ/fVp7fK1vaUu9yKcVr0BoUda+Cm9sCy0hMTYGNdheOFmh00rnZsOje
+ aR5VeTVaiK2+lTOXBcUXtck52ZTFZV1vpJUshB7m5Ve48lTpvdRfKacf2RQBmmRonG3mFF
+ VavSnxlXMZPAPTpw49d0Szm8C6Q1mI433n4h4AKqmAlucA77/HXe5Wsrk9CaCFEfl4HSLH
+ ndbf7zWNodP/iuhwe2tLasLV/+9hFfgct86rl8laHVo5LJ+zczyDQKoY0rGjVA==
+To: <tjeznach@rivosinc.com>
+Cc: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>, 
+	<paul.walmsley@sifive.com>, <palmer@dabbelt.com>, 
+	<aou@eecs.berkeley.edu>, <alex@ghiti.fr>, <iommu@lists.linux.dev>, 
+	<linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>, 
+	<xiangwencheng@lanxincomputing.com>
+Subject: [PATCH] iommu/riscv: fix use after free of riscv_iommu_domain
+Received: from localhost.localdomain ([222.128.9.250]) by smtp.feishu.cn with ESMTP; Tue, 29 Apr 2025 11:40:32 +0800
+From: "BillXiang" <xiangwencheng@lanxincomputing.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v10 05/24] dma-mapping: Provide an interface to allow
- allocate IOVA
-To: Leon Romanovsky <leon@kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Jens Axboe <axboe@kernel.dk>,
- Christoph Hellwig <hch@lst.de>, Keith Busch <kbusch@kernel.org>
-Cc: Leon Romanovsky <leonro@nvidia.com>, Jake Edge <jake@lwn.net>,
- Jonathan Corbet <corbet@lwn.net>, Jason Gunthorpe <jgg@ziepe.ca>,
- Zhu Yanjun <zyjzyj2000@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Sagi Grimberg <sagi@grimberg.me>, Bjorn Helgaas <bhelgaas@google.com>,
- Logan Gunthorpe <logang@deltatee.com>, Yishai Hadas <yishaih@nvidia.com>,
- Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
- Andrew Morton <akpm@linux-foundation.org>, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-block@vger.kernel.org,
- linux-rdma@vger.kernel.org, iommu@lists.linux.dev,
- linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
- kvm@vger.kernel.org, linux-mm@kvack.org,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Chuck Lever <chuck.lever@oracle.com>, Luis Chamberlain <mcgrof@kernel.org>,
- Matthew Wilcox <willy@infradead.org>, Dan Williams
- <dan.j.williams@intel.com>, Kanchan Joshi <joshi.k@samsung.com>,
- Chaitanya Kulkarni <kch@nvidia.com>
-References: <cover.1745831017.git.leon@kernel.org>
- <30f0601d400711b3859deeb8fef3090f5b2020a4.1745831017.git.leon@kernel.org>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <30f0601d400711b3859deeb8fef3090f5b2020a4.1745831017.git.leon@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Mime-Version: 1.0
+X-Lms-Return-Path: <lba+268104a31+76cafa+lists.linux.dev+xiangwencheng@lanxincomputing.com>
+X-Original-From: BillXiang <xiangwencheng@lanxincomputing.com>
+Content-Type: text/plain; charset=UTF-8
+Message-Id: <20250429034007.578-1-xiangwencheng@lanxincomputing.com>
 Content-Transfer-Encoding: 7bit
+Date: Tue, 29 Apr 2025 11:40:07 +0800
+X-Mailer: git-send-email 2.46.2.windows.1
 
-On 4/28/25 17:22, Leon Romanovsky wrote:
-> From: Leon Romanovsky<leonro@nvidia.com>
-> 
-> The existing .map_page() callback provides both allocating of IOVA
+The function vfio_group_detach_container begins by calling
+vfio_iommu_type1_detach_group, which may subsequently calls
+riscv_iommu_free_paging_domain to release the riscv_iommu_domain.
+Then, iommu_group_release_dma_owner is triggered, which results in
+the execution of riscv_iommu_attach_paging_domain and
+riscv_iommu_bond_unlink(info->domain). However, the info->domain
+had been freed beforehand but was not set to NULL, leading to errors.
 
-.map_pages()
+This commit resolves the issue by setting info->domain to NULL within
+riscv_iommu_bond_unlink, a function that is called by
+riscv_iommu_attach_blocking_domain before the domain was freed.
 
-> and linking DMA pages. That combination works great for most of the
-> callers who use it in control paths, but is less effective in fast
-> paths where there may be multiple calls to map_page().
-> 
-> These advanced callers already manage their data in some sort of
-> database and can perform IOVA allocation in advance, leaving range
-> linkage operation to be in fast path.
-> 
-> Provide an interface to allocate/deallocate IOVA and next patch
-> link/unlink DMA ranges to that specific IOVA.
-> 
-> In the new API a DMA mapping transaction is identified by a
-> struct dma_iova_state, which holds some recomputed information
-> for the transaction which does not change for each page being
-> mapped, so add a check if IOVA can be used for the specific
-> transaction.
-> 
-> The API is exported from dma-iommu as it is the only implementation
-> supported, the namespace is clearly different from iommu_* functions
-> which are not allowed to be used. This code layout allows us to save
-> function call per API call used in datapath as well as a lot of boilerplate
-> code.
-> 
-> Reviewed-by: Christoph Hellwig<hch@lst.de>
-> Tested-by: Jens Axboe<axboe@kernel.dk>
-> Reviewed-by: Luis Chamberlain<mcgrof@kernel.org>
-> Signed-off-by: Leon Romanovsky<leonro@nvidia.com>
-> ---
->   drivers/iommu/dma-iommu.c   | 86 +++++++++++++++++++++++++++++++++++++
->   include/linux/dma-mapping.h | 48 +++++++++++++++++++++
->   2 files changed, 134 insertions(+)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 9ba8d8bc0ce9..d3211a8d755e 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -1723,6 +1723,92 @@ size_t iommu_dma_max_mapping_size(struct device *dev)
->   	return SIZE_MAX;
->   }
->   
-> +/**
-> + * dma_iova_try_alloc - Try to allocate an IOVA space
-> + * @dev: Device to allocate the IOVA space for
-> + * @state: IOVA state
-> + * @phys: physical address
-> + * @size: IOVA size
-> + *
-> + * Check if @dev supports the IOVA-based DMA API, and if yes allocate IOVA space
-> + * for the given base address and size.
-> + *
-> + * Note: @phys is only used to calculate the IOVA alignment. Callers that always
-> + * do PAGE_SIZE aligned transfers can safely pass 0 here.
+Signed-off-by: BillXiang <xiangwencheng@lanxincomputing.com>
+---
+ drivers/iommu/riscv/iommu.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-Have you considered adding a direct alignment parameter to
-dma_iova_try_alloc()? '0' simply means the default PAGE_SIZE alignment.
-
-I'm imagining that some devices might have particular alignment needs
-for better performance, especially for the ATS cache efficiency. This
-would allow those device drivers to express the requirements directly
-during iova allocation.
-
-> + *
-> + * Returns %true if the IOVA-based DMA API can be used and IOVA space has been
-> + * allocated, or %false if the regular DMA API should be used.
-> + */
-> +bool dma_iova_try_alloc(struct device *dev, struct dma_iova_state *state,
-> +		phys_addr_t phys, size_t size)
-> +{
-> +	struct iommu_dma_cookie *cookie;
-> +	struct iommu_domain *domain;
-> +	struct iova_domain *iovad;
-> +	size_t iova_off;
-> +	dma_addr_t addr;
-> +
-> +	memset(state, 0, sizeof(*state));
-> +	if (!use_dma_iommu(dev))
-> +		return false;
-> +
-> +	domain = iommu_get_dma_domain(dev);
-> +	cookie = domain->iova_cookie;
-> +	iovad = &cookie->iovad;
-> +	iova_off = iova_offset(iovad, phys);
-> +
-> +	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
-> +	    iommu_deferred_attach(dev, iommu_get_domain_for_dev(dev)))
-> +		return false;
-> +
-> +	if (WARN_ON_ONCE(!size))
-> +		return false;
-> +
-> +	/*
-> +	 * DMA_IOVA_USE_SWIOTLB is flag which is set by dma-iommu
-> +	 * internals, make sure that caller didn't set it and/or
-> +	 * didn't use this interface to map SIZE_MAX.
-> +	 */
-> +	if (WARN_ON_ONCE((u64)size & DMA_IOVA_USE_SWIOTLB))
-
-I'm a little concerned that device drivers might inadvertently misuse
-the state->__size by forgetting about the high bit being used for
-DMA_IOVA_USE_SWIOTLB. Perhaps adding a separate flag within struct
-dma_iova_state to prevent such issues?
-
-> +		return false;
-> +
-> +	addr = iommu_dma_alloc_iova(domain,
-> +			iova_align(iovad, size + iova_off),
-> +			dma_get_mask(dev), dev);
-> +	if (!addr)
-> +		return false;
-> +
-> +	state->addr = addr + iova_off;
-> +	state->__size = size;
-> +	return true;
-> +}
-> +EXPORT_SYMBOL_GPL(dma_iova_try_alloc);
-
-Thanks,
-baolu
+diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+index bb57092ca901..f9e127978ac7 100644
+--- a/drivers/iommu/riscv/iommu.c
++++ b/drivers/iommu/riscv/iommu.c
+@@ -880,6 +880,7 @@ static void riscv_iommu_bond_unlink(struct riscv_iommu_domain *domain,
+ 	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
+ 	struct riscv_iommu_bond *bond, *found = NULL;
+ 	struct riscv_iommu_command cmd;
++	struct riscv_iommu_info *info;
+ 	int count = 0;
+ 
+ 	if (!domain)
+@@ -894,8 +895,11 @@ static void riscv_iommu_bond_unlink(struct riscv_iommu_domain *domain,
+ 		else if (dev_to_iommu(bond->dev) == iommu)
+ 			count++;
+ 	}
+-	if (found)
++	if (found) {
++		info = dev_iommu_priv_get(dev);
++		info->domain = NULL;
+ 		list_del_rcu(&found->list);
++	}
+ 	spin_unlock(&domain->lock);
+ 	kfree_rcu(found, rcu);
+ 
+@@ -1293,8 +1297,16 @@ static void riscv_iommu_free_paging_domain(struct iommu_domain *iommu_domain)
+ {
+ 	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
+ 	const unsigned long pfn = virt_to_pfn(domain->pgd_root);
++	struct riscv_iommu_bond *bond;
++	struct riscv_iommu_info *info;
+ 
+ 	WARN_ON(!list_empty(&domain->bonds));
++	spin_lock(&domain->lock);
++	list_for_each_entry(bond, &domain->bonds, list) {
++		info = dev_iommu_priv_get(bond->dev);
++		info->domain = NULL;
++	}
++	spin_unlock(&domain->lock);
+ 
+ 	if ((int)domain->pscid > 0)
+ 		ida_free(&riscv_iommu_pscids, domain->pscid);
+-- 
+2.46.2.windows.1
