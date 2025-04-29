@@ -1,53 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D5DA2DAF93;
-	Tue, 29 Apr 2025 23:51:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84F53296FC5;
+	Tue, 29 Apr 2025 23:51:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745970708; cv=none; b=chM7S5+a+tnxizdq2u8c7DIj9nqL80q+IBPH6K35lgyut/70tcrvs4teOkdbYl0AziI4Ax5ESGdV/iyf1emQNaOgZj4O5BBT4x40Y08zaqBKi9gF3u+Cv3LXRHlphRCY28U8/Dho1Wotrun4RJnpg4aGpW/xgkvZsm2c42mXXBU=
+	t=1745970715; cv=none; b=sUdkNrypSIjOMcvFDt0ZijWgvE60V4UFplIKlcrpUJtwb3OwQewd0Y+b92pAM26R6t60AJjaoykSp8TuJDtSPXCWbAYCcbgnyLENJ4qv5yu1gCYNrQU6lNDoqbZI/lFIsoe01OjnLGZoLDuOzUsNnj7x38UAI4ZSMe9U+vk0rmQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745970708; c=relaxed/simple;
-	bh=2hhM63m6Ix9ZtRt71NCJYFUVpCIBG/ABtk15UHjrBVw=;
+	s=arc-20240116; t=1745970715; c=relaxed/simple;
+	bh=UXHGnVxGYFoKCRYp/YPA1ZcNzQmy0SWBIp7O0KSaN3M=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=e8bWmpzCa+dl8F5wE1rtRJZXSVPE9HlcdeBg2DWMDE2GV1vDLStlBayBwO/5+q3u98qP9gv5ygt0AM9/uaXN3siuslVzV2pB5eLbjPK7n+rzbSvToyCLV8R9xA9HNL14SjppVbaRO5P5d/81NwibpqgE5SYpeqEmeOhUUWc3WAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gKy73oKd; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=j+P842+VDJNnRIjfPN57dW7sdC3ikuKNsoxG6HE/mhAzFjttCKLs0/Qvr0KOOQprdQkcB7MhwF8dfJWi8/4gOjNAv3G/ZVWaI0HIOiBcZL7qPq797RvgWsoBALS5sfF9gyWE13NCfRv4Xr8jinLK4uzHOrsvqsMmX3jJkH0oiGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aaqZIuvH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gKy73oKd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3891DC4CEEB;
-	Tue, 29 Apr 2025 23:51:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aaqZIuvH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 282A2C4CEED;
+	Tue, 29 Apr 2025 23:51:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745970708;
-	bh=2hhM63m6Ix9ZtRt71NCJYFUVpCIBG/ABtk15UHjrBVw=;
+	s=k20201202; t=1745970715;
+	bh=UXHGnVxGYFoKCRYp/YPA1ZcNzQmy0SWBIp7O0KSaN3M=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=gKy73oKd+lBdzHnGS+HEfJkVffjAz7HDAqNnMlbC2pkC7bDWuM9CmeqaNo5JP36qY
-	 nPKgQwdRcG32o5fYnTbTNdB1DvnqQRjXIBUKudOj8wYLUh0Gir9KzQTlBGSAAykaRr
-	 K4wDNKBi85tG5Q3a5cSeBk7zz6CLGVl5fU6QNavEGkXRRKDOIWT5eecugiaWjYsdmH
-	 kRR0DAGiJ+Fr2sCOonVxeb3h91gupDVsBM1bA5OxFNw10UvMJhdtTemR/ZHn04A3fQ
-	 5nq7Y307kMSsU9bynMdu0W4vbCBDC6Wt3AOdpkBWGU9qa7rC2e2yONgbmi/5qjJdmP
-	 IpWb/NlxpeUYw==
+	b=aaqZIuvHVDzr7vCB0YbyY8vkA+06Gj8qBK6+kuS8lUU8gdjQW7b4wLils77gZz16E
+	 3K2LW3J91ttMu2WwHy110u9PCcYLgVEKw4E6+rIBGDToD5DbavXSvV6veigEZZ7CVs
+	 dwVJSQfzTIg2pJPkzTk8K/37qrYO+omu98lj2UI1y/xkYk4u3wqxxi4M/RkLeCjOW4
+	 qH2pCe7MoSZlSCd7SC2ftsCKiQm8seniqABXaLTra2H9G6+iqhtzNhRo+H62Te6hTX
+	 rX3T6hbIfB+siL6r+lcPFLpyGClMVqvwWMDowHuwnNvp+6DCeIt2RnAUbgCg31w46k
+	 WoB77URQWSlgA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Balbir Singh <balbirs@nvidia.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-	Ingo Molnar <mingo@kernel.org>,
-	Kees Cook <kees@kernel.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Andy Lutomirski <luto@kernel.org>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	Bert Karwatzki <spasswolf@web.de>,
-	Christoph Hellwig <hch@infradead.org>,
-	Christoph Hellwig <hch@lst.de>,
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Jakub Kicinski <kuba@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.12 12/37] dma/mapping.c: dev_dbg support for dma_addressing_limited
-Date: Tue, 29 Apr 2025 19:50:57 -0400
-Message-Id: <20250429235122.537321-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.12 17/37] dma-mapping: avoid potential unused data compilation warning
+Date: Tue, 29 Apr 2025 19:51:02 -0400
+Message-Id: <20250429235122.537321-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20250429235122.537321-1-sashal@kernel.org>
 References: <20250429235122.537321-1-sashal@kernel.org>
@@ -57,84 +46,53 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 X-stable-base: Linux 6.12.25
 Content-Transfer-Encoding: 8bit
 
-From: Balbir Singh <balbirs@nvidia.com>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
 
-[ Upstream commit 2042c352e21d19eaf5f9e22fb6afce72293ef28c ]
+[ Upstream commit c9b19ea63036fc537a69265acea1b18dabd1cbd3 ]
 
-In the debug and resolution of an issue involving forced use of bounce
-buffers, 7170130e4c72 ("x86/mm/init: Handle the special case of device
-private pages in add_pages(), to not increase max_pfn and trigger
-dma_addressing_limited() bounce buffers"). It would have been easier
-to debug the issue if dma_addressing_limited() had debug information
-about the device not being able to address all of memory and thus forcing
-all accesses through a bounce buffer. Please see[2]
+When CONFIG_NEED_DMA_MAP_STATE is not defined, dma-mapping clients might
+report unused data compilation warnings for dma_unmap_*() calls
+arguments. Redefine macros for those calls to let compiler to notice that
+it is okay when the provided arguments are not used.
 
-Implement dev_dbg to debug the potential use of bounce buffers
-when we hit the condition. When swiotlb is used,
-dma_addressing_limited() is used to determine the size of maximum dma
-buffer size in dma_direct_max_mapping_size(). The debug prints could be
-triggered in that check as well (when enabled).
-
-Link: https://lore.kernel.org/lkml/20250401000752.249348-1-balbirs@nvidia.com/ [1]
-Link: https://lore.kernel.org/lkml/20250310112206.4168-1-spasswolf@web.de/ [2]
-
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: "Christian König" <christian.koenig@amd.com>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Kees Cook <kees@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Andy Lutomirski <luto@kernel.org>
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Cc: Bert Karwatzki <spasswolf@web.de>
-Cc: Christoph Hellwig <hch@infradead.org>
-
-Signed-off-by: Balbir Singh <balbirs@nvidia.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reported-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Link: https://lore.kernel.org/r/20250414113752.3298276-1-balbirs@nvidia.com
+Tested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20250415075659.428549-1-m.szyprowski@samsung.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/mapping.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ include/linux/dma-mapping.h | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 864a1121bf086..f7366083b4d00 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -905,7 +905,7 @@ EXPORT_SYMBOL(dma_set_coherent_mask);
-  * the system, else %false.  Lack of addressing bits is the prime reason for
-  * bounce buffering, but might not be the only one.
-  */
--bool dma_addressing_limited(struct device *dev)
-+static bool __dma_addressing_limited(struct device *dev)
- {
- 	const struct dma_map_ops *ops = get_dma_ops(dev);
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 1524da363734a..22b9099927fad 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -633,10 +633,14 @@ static inline int dma_mmap_wc(struct device *dev,
+ #else
+ #define DEFINE_DMA_UNMAP_ADDR(ADDR_NAME)
+ #define DEFINE_DMA_UNMAP_LEN(LEN_NAME)
+-#define dma_unmap_addr(PTR, ADDR_NAME)           (0)
+-#define dma_unmap_addr_set(PTR, ADDR_NAME, VAL)  do { } while (0)
+-#define dma_unmap_len(PTR, LEN_NAME)             (0)
+-#define dma_unmap_len_set(PTR, LEN_NAME, VAL)    do { } while (0)
++#define dma_unmap_addr(PTR, ADDR_NAME)           \
++	({ typeof(PTR) __p __maybe_unused = PTR; 0; })
++#define dma_unmap_addr_set(PTR, ADDR_NAME, VAL)  \
++	do { typeof(PTR) __p __maybe_unused = PTR; } while (0)
++#define dma_unmap_len(PTR, LEN_NAME)             \
++	({ typeof(PTR) __p __maybe_unused = PTR; 0; })
++#define dma_unmap_len_set(PTR, LEN_NAME, VAL)    \
++	do { typeof(PTR) __p __maybe_unused = PTR; } while (0)
+ #endif
  
-@@ -917,6 +917,15 @@ bool dma_addressing_limited(struct device *dev)
- 		return false;
- 	return !dma_direct_all_ram_mapped(dev);
- }
-+
-+bool dma_addressing_limited(struct device *dev)
-+{
-+	if (!__dma_addressing_limited(dev))
-+		return false;
-+
-+	dev_dbg(dev, "device is DMA addressing limited\n");
-+	return true;
-+}
- EXPORT_SYMBOL_GPL(dma_addressing_limited);
- 
- size_t dma_max_mapping_size(struct device *dev)
+ #endif /* _LINUX_DMA_MAPPING_H */
 -- 
 2.39.5
 
