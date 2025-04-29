@@ -1,241 +1,286 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2043.outbound.protection.outlook.com [40.107.93.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D930276046;
-	Tue, 29 Apr 2025 06:18:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745907534; cv=none; b=MoisXsWJm788O/KUFOo10kvuHfeox3wN4gE4FiirGHOFA7uaqAnfT6SCQwKurb+D1LbIBqGcoaGFdqmOCou+oDBkQ9VQNz+iwXPFYrp7nHDhNOymWARq5aXnw42DrVyQYc8cV1KxsksOtYOcgRBAL9LGB3sej6etg6SJoPlFdAo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745907534; c=relaxed/simple;
-	bh=vExQvIRKgBFgSfzxHEyrFALVuzPRUmMmvaWq9RovN60=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l1oTR+Lk3dcq0scby1EjfHnjtlDQ23cXHbvslB9GuJDHp11E8eh13kQ1vK81UTit35v4zIqRHl5r+3tcEmJsjAgyL52rEkZ82dxHIB42ZVpsQEX5A9q+VpcbNDuGavsoP9AaKsuBY2oFF1oHpQgj5tYhJ2LGgXDVyS683XjNXPs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kTGc5PsS; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78A9F270556;
+	Tue, 29 Apr 2025 06:45:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1745909149; cv=fail; b=scFapC9e9ortvvEd7s+GgpZXyQFwWdlJXGOlakCAZuCQ0OIdmBjceOnbJbL7bXGNRLkyWvik2cB1CQmBqh2H/PMGTVNS3O/wnLabnMlYZ0cCLIa11BlQO7S9CIZTW2pOAahwcmUb3Rz6OwINFWV6Rjred26occiHzKsWZJ8dY5Y=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1745909149; c=relaxed/simple;
+	bh=lIUmsIV/I4e9CujcXdFFRIt/xRVL172jmJlk3SaKNRg=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mbr5vz1wcjoMvuJEC7IG3zQJyT0pRcEn7vJSv1FW2O1kjAGw8RxWP8liM3KaHPuKl6zc6xt3ehffgYH9j6GehvB0VJt7UW5/wWqSDLA92cbXAdaS916Bn9a3RsCdvcUEg/RXElP+uQUxXkCwK/CZ6N8P9yPPE2hlNgTGYa7LI3s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=IWZC0h0y; arc=fail smtp.client-ip=40.107.93.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kTGc5PsS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7F91C4CEE3;
-	Tue, 29 Apr 2025 06:18:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745907533;
-	bh=vExQvIRKgBFgSfzxHEyrFALVuzPRUmMmvaWq9RovN60=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=kTGc5PsSm7YoP9EmrE3/tfdAeh2ilrH28OMMhkA1i7TaGCseb+D12f8U4iRskFrE0
-	 RSM+Ykr/eeWEOV3E2nvuETPKv5WgV2r3K5S0fSLkCufCBscRZZxm5uTAwOKKZQ34F/
-	 w5YLetGv0DGVj4FS79jc9/KMtke5/3tgrMHoSQ+QeJcqJgLI/MgFlbbaDFejjar1j7
-	 p+0iatgN6tx2738QkPeIAJSzLkpoG/pCdY9ka1HCzAgLK31eNn58UEn17swH4oZLFI
-	 lBdvSt34FC1+vbqL/TFGUu3Gtp8x21gTZM2GnLCqybPJvtISk7Z3RIRONLDJ0zW3JA
-	 NWZpkM6/vXKLw==
-Date: Tue, 29 Apr 2025 09:18:49 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
-	Keith Busch <kbusch@kernel.org>, Jake Edge <jake@lwn.net>,
-	Jonathan Corbet <corbet@lwn.net>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Zhu Yanjun <zyjzyj2000@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Chuck Lever <chuck.lever@oracle.com>,
-	Luis Chamberlain <mcgrof@kernel.org>,
-	Matthew Wilcox <willy@infradead.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Kanchan Joshi <joshi.k@samsung.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>
-Subject: Re: [PATCH v10 06/24] iommu/dma: Factor out a iommu_dma_map_swiotlb
- helper
-Message-ID: <20250429061849.GL5848@unreal>
-References: <cover.1745831017.git.leon@kernel.org>
- <f9a6a7874760a2919bea1f255bb3c81c6369ed1c.1745831017.git.leon@kernel.org>
- <8416e94f-171e-4956-b8fe-246ed12a2314@linux.intel.com>
- <20250429055339.GJ5848@unreal>
- <9d1abdbc-4b21-47e2-bcaf-6bc8ca365b01@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="IWZC0h0y"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=fcWKh7W5dJWfdfYEttFozo/92EiLgS3M6/YAZ4wTS9yg1/jYvdcWA7Ab0pO5mk4f2MnshYJXgqwcW+eTdsR+6IntlzWDLlzaz5tAUF0BPxh6VyS0W/delyk5iDKJACxnnrFJmzOadxnVNOxI+lWzJ7di5oVIy/ewnX3of0f+cCERxEsw7mEf3euNw8Gn6ljkQ816A8tUNR1jwljiGQdI/Ynqupf5aXwO8D6tbn7sMK5KIjmlzQhM11kNPHxdqKJmQ37Csx8608qsL7e7y27RExsUvgUqYF1gx7o16gGnKjznpKBLF10pMHU53fHe4bZmNoBGh/gnBrq7iP7uDVCEww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fSyY6XxtIYMJ8wgNhPyKsiWOPe16j2UHnEM4U8XVQVM=;
+ b=N2d2hNDAgpwo76qq0eXYhquswAFVy0ppzSK4GWoKceOSru/EJE7W5nmI2/QN0GEzxY8MqBrSC+JVWGSxqp0LjOaJ/sokAVWxAKx8kYRGTyufleNfFdV1ye7lDoq1+MI+2uYRJxINChMhWuadJGbSVa8zZ5KYDHjIgPA/wZrZIZwe+nrMizXLvu1fNV68tZLzcJHswbBQ96PPNfovE1T8ab1lt+4+gqir//gEpFQ9n8ZUZcl2bEGt3cY+oCvVm8O5WYiT7TxMKy+opyA1ih6aOnO2IiRR0OC1gCpjb9Lz6KVJQazjSLn9Gi3ejUhyLdRdtu+xP3mnJfmr1tLr73Fr0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=amd.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fSyY6XxtIYMJ8wgNhPyKsiWOPe16j2UHnEM4U8XVQVM=;
+ b=IWZC0h0yQoyem03ne6CjngYnUw33nomrw5go6FtpuXQZ0KbyNvLHx4OnZ9quFSts0EwgA7gYH+fPQiaKcrc5JPE0owS2AycmqAHefjQQTVmCwAI77po8zLS0GM/zgWaOh7bOVvX0FhoSYd3Dcngl9YstuMkt0gDXDLpZI5h8zAtZuH+eS7jc5VipH6xRhwSuEsijMUHv0mDk8mOjJVoNwOP1PyOsyLh09JkkzUs19DNn7Ie3TPYEHwCMA4e2b279feOWF2237k0ZJpYfhXWiZjreTHv683hPEZTaqG66NVqTujZWI2qQP0Fok7isGVy/lCPpew3av1cpKkzjIlMiVA==
+Received: from BYAPR05CA0094.namprd05.prod.outlook.com (2603:10b6:a03:e0::35)
+ by IA1PR12MB8312.namprd12.prod.outlook.com (2603:10b6:208:3fc::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8678.27; Tue, 29 Apr
+ 2025 06:45:42 +0000
+Received: from SJ1PEPF00002316.namprd03.prod.outlook.com
+ (2603:10b6:a03:e0:cafe::67) by BYAPR05CA0094.outlook.office365.com
+ (2603:10b6:a03:e0::35) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8655.25 via Frontend Transport; Tue,
+ 29 Apr 2025 06:45:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ SJ1PEPF00002316.mail.protection.outlook.com (10.167.242.170) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8678.33 via Frontend Transport; Tue, 29 Apr 2025 06:45:41 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 28 Apr
+ 2025 23:45:26 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Mon, 28 Apr
+ 2025 23:45:25 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Mon, 28 Apr 2025 23:45:22 -0700
+Date: Mon, 28 Apr 2025 23:45:20 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <corbet@lwn.net>,
+	<will@kernel.org>, <bagasdotme@gmail.com>, <robin.murphy@arm.com>,
+	<joro@8bytes.org>, <thierry.reding@gmail.com>, <vdumpa@nvidia.com>,
+	<jonathanh@nvidia.com>, <shuah@kernel.org>, <jsnitsel@redhat.com>,
+	<nathan@kernel.org>, <peterz@infradead.org>, <yi.l.liu@intel.com>,
+	<mshavit@google.com>, <praan@google.com>, <zhangzekun11@huawei.com>,
+	<iommu@lists.linux.dev>, <linux-doc@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-tegra@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+	<patches@lists.linux.dev>, <mochs@nvidia.com>, <alok.a.tiwari@oracle.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH v2 10/22] iommufd/viommmu: Add IOMMUFD_CMD_VCMDQ_ALLOC
+ ioctl
+Message-ID: <aBB1gLfahnLmn0N1@Asurada-Nvidia>
+References: <cover.1745646960.git.nicolinc@nvidia.com>
+ <094992b874190ffdcf6012104b419c8649b5e4b4.1745646960.git.nicolinc@nvidia.com>
+ <b0d01609-bdda-49a3-af0c-ca828a9c4cea@amd.com>
+ <aA/exylmYJhIhEVL@Asurada-Nvidia>
+ <b8338b47-6fbf-44ac-9b99-3555997c9f36@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <9d1abdbc-4b21-47e2-bcaf-6bc8ca365b01@linux.intel.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <b8338b47-6fbf-44ac-9b99-3555997c9f36@amd.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00002316:EE_|IA1PR12MB8312:EE_
+X-MS-Office365-Filtering-Correlation-Id: e8137918-c50e-44f5-563e-08dd86e9757b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|7416014|36860700013|82310400026|376014|13003099007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?cnVURkgvRGZMNlNnbkNuZms5VEFGOUVsbk41Q3piblU0R2hLK1dsZUhxMmhr?=
+ =?utf-8?B?b1hRUkRtb3RFOFhUdUVMZXNsUy9lL1lUYkMwMWkwQ0hqZDdieDljMVM3dVV5?=
+ =?utf-8?B?djV5bG9qbFduaWwzTDdua0JBeFJpek5MRnM4UEx6Z01DM0VOSDdTWXhmdGFh?=
+ =?utf-8?B?dUFBdU5WRVdXeHJ4cktIY25oT01MWENSbkxLUGNmczZReWpPYVY1SXBXL3Rk?=
+ =?utf-8?B?bTVjTzZTcE1EaDNDWUlIeEhsNWw3RlI2SDZISi9ZeGtHYmgxRWZSUlVQbFNH?=
+ =?utf-8?B?aXVsU1RMSENwdDVZSEsrYytxN2h5bUdlSndoL3VXMTV6aXUxQnhnWHlVa3F2?=
+ =?utf-8?B?azByM3Q4Vld1ZC9VNXhsa1NCRmc5M1Zva1ZuMDNBR2V2TVpaS2kxWk5IS2hK?=
+ =?utf-8?B?SzhyR2txakpHaGtLNFJ1UWFEQXRwNVRoVk1ScjV6czVDY3VYcVJqalVlQWxD?=
+ =?utf-8?B?MWRyeXcrWk5reEI4enNjZVVMUmNNNWdkUVIzOWdwZCtRWkNNVUlDV0RlMjNJ?=
+ =?utf-8?B?eUREQktaTWg1b0Y4QXZjYmdsUHdRK0Uwd0RURG9iSVh2ZXVEVjFGbjJwZGVC?=
+ =?utf-8?B?WFpMNlVzbDllTlJGK2dXWHIrdlNYRHNoS2ZJNHVkRWg0N1UzZHJDdnFXT0kr?=
+ =?utf-8?B?Tmt4R1k4SFhZbnRqcHRybk5DMGdBYWpOWFFoL3YwVTRDeXArY2t1L2pPbUQ2?=
+ =?utf-8?B?eTRqWjNvZ3FWVWNTdElGKzhiSjJhTDBlMzhvWVE4Q1R4R0FJZnE0dXlNOURU?=
+ =?utf-8?B?YTlYNDZPLy9GZGxqcU8rWXRYNmFDQlQvdUhFSlpLM1hkbFYvajZMVkp5Wmhy?=
+ =?utf-8?B?U0orSTJmVVlLNjUxeEV4ZnRDMTRFaExzczdyelBWRWZZNUFWcytxdmFRdFlV?=
+ =?utf-8?B?OHN2djdyM25lc2xqS0lNckxQWjdJTTRUZ09CL3RvRkdzVmhpQTBzSkg0VlVh?=
+ =?utf-8?B?MWlSTmFoQnBhWHBMSk5zNTdRblcwWlNJcVI1cWk3c2R1V3U3cW1ocVVnTC84?=
+ =?utf-8?B?Z3RwUUhpaVBUUGdJdmxUcVZ5cW1ZSjhTRGt0UTdNL0krRWg2K2dHYzRJdExH?=
+ =?utf-8?B?d0hTZTZ6Y0d0TnMrWTJndWYzeTBlOUx6Y3BwN3ZFMitDU3RwQ3pSNXI3ZitS?=
+ =?utf-8?B?UE9XRlQvNHNjVEZpVUxlc0F3ekVwZjVDUjBRVzNxUndHdlJzYU1LZjFCc1lw?=
+ =?utf-8?B?eExLS3pyaEplMnBBRFBqbCtpRWJjaFJNL2JoN1ArWmM0MlBuQVZKaUswUHRX?=
+ =?utf-8?B?T0tWdXJTNWVNQk4xczhCMmlIWnFRTDIrNUZsS3F3TFMyYTltcWs0anpjalVw?=
+ =?utf-8?B?UU1IRWRWOGQ1bXVsek1VZm9naU9iSXRmTy91RXMwemJORWJTUVpsckE0WDA3?=
+ =?utf-8?B?bG5pN29GbXcybjFnbHhyaHNvSVRKbVdYVlFadGFwRjlnb1ludm1PN09QbXNw?=
+ =?utf-8?B?VVY3MDRRWWxUamZROW1Ec2hlQXVpMUlnek9RVnY1cGdxb1RRK0FROU95eEc0?=
+ =?utf-8?B?VVkva1NiK3Y0aFRCdWZaam0yem1xVUVjcHlMVXJnYlhlNlJjZDJqSTYwdWNo?=
+ =?utf-8?B?MVZMSmRQVzcwelliSjdBaTNRRTMvMllYaHRNcXRIVFdFSHlYRS9TQm45YW55?=
+ =?utf-8?B?dUE0UXR2YVd2NnJkQm9sUXpTdDhFSE8wcXpEdXBHcHovSXV3L01xblJiSUM2?=
+ =?utf-8?B?MkpBQmMvZE9ZODJxMUxBOWM5TXhrdW5OL2N6SkNWNHFQemNCcHlWZmE0S1NP?=
+ =?utf-8?B?azNCbmhDWHdjckRDaG9Ec1ZVaDIyMi9GSjhFaUZoVy9Od29DWlRsNjRsaW81?=
+ =?utf-8?B?Z0R6cjVKdldsS2dDc01lZWM5bTVPNjZFRXVxaUZXc3BrT2xQdVllMFova2tE?=
+ =?utf-8?B?V3hEc0xteTVJbklDRkI1bTlhZzZRa3psS3ZtTUlOUG1XMEVtMlBBVU90VjFn?=
+ =?utf-8?B?dVdsUTBmWW5QZVlrbjR0WS94SWVPV0krMWdFOU1KSysydjR5dnk0Vitkc3VD?=
+ =?utf-8?B?MSs2aFlCYjRnRStuTjZLdnZSMW1RQnBDOEtiazBYUVJPY0crV1dCNU9uOWN3?=
+ =?utf-8?B?TVpUaGk4MTRPWGE3RjZWNGkxNitWVU95MmVyUT09?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(36860700013)(82310400026)(376014)(13003099007);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2025 06:45:41.1544
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e8137918-c50e-44f5-563e-08dd86e9757b
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF00002316.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8312
 
-On Tue, Apr 29, 2025 at 01:58:06PM +0800, Baolu Lu wrote:
-> On 4/29/25 13:53, Leon Romanovsky wrote:
-> > On Tue, Apr 29, 2025 at 12:58:18PM +0800, Baolu Lu wrote:
-> > > On 4/28/25 17:22, Leon Romanovsky wrote:
-> > > > From: Christoph Hellwig<hch@lst.de>
-> > > > 
-> > > > Split the iommu logic from iommu_dma_map_page into a separate helper.
-> > > > This not only keeps the code neatly separated, but will also allow for
-> > > > reuse in another caller.
-> > > > 
-> > > > Signed-off-by: Christoph Hellwig<hch@lst.de>
-> > > > Tested-by: Jens Axboe<axboe@kernel.dk>
-> > > > Reviewed-by: Luis Chamberlain<mcgrof@kernel.org>
-> > > > Signed-off-by: Leon Romanovsky<leonro@nvidia.com>
-> > > 
-> > > Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > > 
-> > > with a nit below ...
-> > > 
-> > > > ---
-> > > >    drivers/iommu/dma-iommu.c | 73 ++++++++++++++++++++++-----------------
-> > > >    1 file changed, 41 insertions(+), 32 deletions(-)
-> > > > 
-> > > > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> > > > index d3211a8d755e..d7684024c439 100644
-> > > > --- a/drivers/iommu/dma-iommu.c
-> > > > +++ b/drivers/iommu/dma-iommu.c
-> > > > @@ -1138,6 +1138,43 @@ void iommu_dma_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
-> > > >    			arch_sync_dma_for_device(sg_phys(sg), sg->length, dir);
-> > > >    }
-> > > > +static phys_addr_t iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
-> > > > +		size_t size, enum dma_data_direction dir, unsigned long attrs)
-> > > > +{
-> > > > +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-> > > > +	struct iova_domain *iovad = &domain->iova_cookie->iovad;
-> > > > +
-> > > > +	if (!is_swiotlb_active(dev)) {
-> > > > +		dev_warn_once(dev, "DMA bounce buffers are inactive, unable to map unaligned transaction.\n");
-> > > > +		return (phys_addr_t)DMA_MAPPING_ERROR;
-> > > > +	}
-> > > > +
-> > > > +	trace_swiotlb_bounced(dev, phys, size);
-> > > > +
-> > > > +	phys = swiotlb_tbl_map_single(dev, phys, size, iova_mask(iovad), dir,
-> > > > +			attrs);
-> > > > +
-> > > > +	/*
-> > > > +	 * Untrusted devices should not see padding areas with random leftover
-> > > > +	 * kernel data, so zero the pre- and post-padding.
-> > > > +	 * swiotlb_tbl_map_single() has initialized the bounce buffer proper to
-> > > > +	 * the contents of the original memory buffer.
-> > > > +	 */
-> > > > +	if (phys != (phys_addr_t)DMA_MAPPING_ERROR && dev_is_untrusted(dev)) {
-> > > > +		size_t start, virt = (size_t)phys_to_virt(phys);
-> > > > +
-> > > > +		/* Pre-padding */
-> > > > +		start = iova_align_down(iovad, virt);
-> > > > +		memset((void *)start, 0, virt - start);
-> > > > +
-> > > > +		/* Post-padding */
-> > > > +		start = virt + size;
-> > > > +		memset((void *)start, 0, iova_align(iovad, start) - start);
-> > > > +	}
-> > > > +
-> > > > +	return phys;
-> > > > +}
-> > > > +
-> > > >    dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
-> > > >    	      unsigned long offset, size_t size, enum dma_data_direction dir,
-> > > >    	      unsigned long attrs)
-> > > > @@ -1151,42 +1188,14 @@ dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
-> > > >    	dma_addr_t iova, dma_mask = dma_get_mask(dev);
-> > > >    	/*
-> > > > -	 * If both the physical buffer start address and size are
-> > > > -	 * page aligned, we don't need to use a bounce page.
-> > > > +	 * If both the physical buffer start address and size are page aligned,
-> > > > +	 * we don't need to use a bounce page.
-> > > >    	 */
-> > > >    	if (dev_use_swiotlb(dev, size, dir) &&
-> > > >    	    iova_offset(iovad, phys | size)) {
-> > > > -		if (!is_swiotlb_active(dev)) {
-> > > 
-> > > ... Is it better to move this check into the helper? Simply no-op if a
-> > > bounce page is not needed:
-> > > 
-> > > 	if (!dev_use_swiotlb(dev, size, dir) ||
-> > > 	    !iova_offset(iovad, phys | size))
-> > > 		return phys;
+On Tue, Apr 29, 2025 at 11:04:06AM +0530, Vasant Hegde wrote:
+> On 4/29/2025 1:32 AM, Nicolin Chen wrote:
+> > On Mon, Apr 28, 2025 at 05:42:27PM +0530, Vasant Hegde wrote:
+> >>> +/**
+> >>> + * struct iommu_vcmdq_alloc - ioctl(IOMMU_VCMDQ_ALLOC)
+> >>> + * @size: sizeof(struct iommu_vcmdq_alloc)
+> >>> + * @flags: Must be 0
+> >>> + * @viommu_id: Virtual IOMMU ID to associate the virtual command queue with
+> >>> + * @type: One of enum iommu_vcmdq_type
+> >>> + * @index: The logical index to the virtual command queue per virtual IOMMU, for
+> >>> + *         a multi-queue model
+> >>> + * @out_vcmdq_id: The ID of the new virtual command queue
+> >>> + * @addr: Base address of the queue memory in the guest physical address space
+> >>
+> >> Sorry. I didn't get this part.
+> >>
+> >> So here `addr` is command queue base address like
+> >>  - NVIDIA's virtual command queue
+> >>  - AMD vIOMMU's command buffer
+> >>
+> >> .. and it will allocate vcmdq for each buffer type. Is that the correct
+> >> understanding?
 > > 
-> > Am I missing something? iommu_dma_map_page() has more code after this
-> > check, so it is not correct to return immediately:
+> > Yes. For AMD "vIOMMU", it needs a new type for iommufd vIOMMU:
+> > 	IOMMU_VIOMMU_TYPE_AMD_VIOMMU,
 > > 
-> >    1189 dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
-> >    1190               unsigned long offset, size_t size, enum dma_data_direction dir,
-> >    1191               unsigned long attrs)
-> >    1192 {
-> > 
-> > <...>
-> > 
-> >    1201         /*
-> >    1202          * If both the physical buffer start address and size are page aligned,
-> >    1203          * we don't need to use a bounce page.
-> >    1204          */
-> >    1205         if (dev_use_swiotlb(dev, size, dir) &&
-> >    1206             iova_unaligned(iovad, phys, size)) {
-> >    1207                 phys = iommu_dma_map_swiotlb(dev, phys, size, dir, attrs);
-> >    1208                 if (phys == (phys_addr_t)DMA_MAPPING_ERROR)
-> >    1209                         return DMA_MAPPING_ERROR;
-> >    1210         }
-> >    1211
-> >    1212         if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-> >    1213                 arch_sync_dma_for_device(phys, size, dir);
-> >    1214
-> >    1215         iova = __iommu_dma_map(dev, phys, size, prot, dma_mask);
-> >    1216         if (iova == DMA_MAPPING_ERROR)
-> >    1217                 swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
-> >    1218         return iova;
-> >    1219 }
+> > For AMD "vIOMMU" command buffer, it needs a new type too:
+> > 	IOMMU_VCMDQ_TYPE_AMD_VIOMMU, /* Kdoc it to be Command Buffer */
 > 
-> static phys_addr_t iommu_dma_map_swiotlb(struct device *dev, phys_addr_t
-> phys,
-> 		size_t size, enum dma_data_direction dir, unsigned long attrs)
-> {
-> <...>
-> 	/*
-> 	 * If both the physical buffer start address and size are page aligned,
-> 	 * we don't need to use a bounce page.
-> 	 */
-> 	if (!dev_use_swiotlb(dev, size, dir) ||
-> 	    !iova_offset(iovad, phys | size))
-> 		return phys;
-> <...>
-> }
+> You are suggesting we define one type for AMD and use it for all buffers like
+> command buffer, event log, PPR buffet etc? and use iommu_vcmdq_alloc->index to
+> identity different buffer type?
+
+We have vEVENTQ for event logging and FAULT_QUEUE for PRI, but both
+are not for hardware accelerated use cases.
+
+I didn't check the details of AMD's event log and PPR buffers. But
+they seem to be the same ring buffers and can be consumed by guest
+kernel directly?
+
+Will the hardware replace the physical device ID in the event with
+the virtual device ID when injecting the event to a guest event/PPR
+queue? If so, yea, I think you can define them separately using the
+vCMDQ infrastructures:
+ - IOMMU_VCMDQ_TYPE_AMD_VIOMMU_CMDBUF
+ - IOMMU_VCMDQ_TYPE_AMD_VIOMMU_EVENTLOG
+ - IOMMU_VCMDQ_TYPE_AMD_VIOMMU_PPRLOG
+(@Kevin @Jason Hmm, in this case we might want to revert the naming
+ "vCMDQ" back to "vQEUEUE", once Vasant confirms.)
+
+Each of them will be allocated on top of one vIOMMU object.
+
+As for index, it really depends on how vIOMMU manages those vCMDQ
+objects. In NVIDIA case, each VINTF can support multiple vCMDQs of
+the same type (like smp in CPU term). If AMD is a similar case, yea,
+apply an index to each of them is a good idea. Otherwise, if vIOMMU
+could only have three queues and their types are different, perhaps
+the driver-level vIOMMU structure could just hold three pointers to
+manage them without using the index.
+
+> > Then, use IOMMUFD_CMD_VIOMMU_ALLOC ioctl to allocate an vIOMMU
+> > obj, and use IOMMUFD_CMD_VCMDQ_ALLOC ioctl(s) to allocate vCMDQ
+> > objs.
+> > 
+> >> In case of AMD vIOMMU, buffer base address is programmed in different register
+> >> (ex: MMIO Offset 0008h Command Buffer Base Address Register) and buffer
+> >> enable/disable is done via different register (ex: MMIO Offset 0018h IOMMU
+> >> Control Register). And we need to communicate both to hypervisor. Not sure this
+> >> API can accommodate this as addr seems to be mandatory.
+> > 
+> > NVIDIA's CMDQV has all three of them too. What we do here is to
+> > let VMM trap the buffer base address (in guest physical address
+> > space) and forward it to kernel using this @addr. Then, kernel
+> > will translate this @addr to host physical address space, and
+> > program the physical address and size to the register.
 > 
-> Then,
+> Right. For AMD IOMMU 1st 4K of MMIO space (which contains all buffer base
+> address registers) is not accelerated. So we can trap it and pass GPA, size to
+> iommufd.
+
+Yes.
+
+> .. but programming base register (like Command buffer base addr) is not
+> sufficient. We have to enable the command buffer by setting particular bit in
+> Control register.  So at high level flow is something like below (@Suravee,
+> correct me if I missed something here).
 > 
-> dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
-> 	unsigned long offset, size_t size, enum dma_data_direction dir,
-> 	unsigned long attrs)
-> {
-> <...>
-> 	phys = iommu_dma_map_swiotlb(dev, phys, size, dir, attrs);
-> 	if (phys == (phys_addr_t)DMA_MAPPING_ERROR)
-> 		return DMA_MAPPING_ERROR;
-> <...>
-> }
+> From guest side :
+>   Write command bufer base addr, size (MMIO offset 0x08)
+>   Set MMIO Offset 0x18[bit 12]
+>     Also we need to program few other bits that are not related to these buffers
+>     like `Completion wait interrupt enable`.
+>
+> From VMM side:
+>   We need to trap both register and pass it to iommufd
+> 
+> From Host AMD IOMMU driver:
+>   We have to program VFCntlMMIO Offset {16’b[GuestID], 6’b10_0000}
+> 
+> 
+> We need a way to pass Control register details to iommufd -> AMD driver so that
+> we can program the VF control MMIO register.
+> 
+> Since iommu_vcmdq_alloc structure doesn't have user_data, how do we communicate
+> control register?
 
-Such change will cause to extra function call for everyone who doesn't
-use SWIOTLB (RDMA, HMM e.t.c).
+BIT(12) is the CMD enable bit. VMM can trap that as the trigger to
+forward the base address/length and other info.
 
-In addition, iommu_dma_map_swiotlb() is called through
-dma_iova_link -> 
-	iommu_dma_iova_link_swiotlb -> 
-		iommu_dma_iova_bounce_and_link() -> 
-			iommu_dma_map_swiotlb()
-and dma_iova_link() has this "if (dev_use_swiotlb(dev, size, dir) && iova_unaligned(iovad, phys, size))"
-very early at call stack.
+And you'd likely need to define a driver structure:
 
-So, in dma_iova_link() we will find ourselves with same check twice.
+// Add this to struct iommu_vcmdq_alloc;
++ * @data_len: Length of the type specific data
++ * @data_uptr: User pointer to the type specific data
+..
++	__u32 data_len;
++	__aligned_u64 data_uptr;
+
+// Refer to my patch in the v1 series that handles the user_data:
+// https://lore.kernel.org/linux-iommu/5cd2c7c4d92c79baf0cfc59e2a6b3e1db4e86ab8.1744353300.git.nicolinc@nvidia.com/
+
+// Define a driver structure
+struct iommu_vcmdq_amd_viommu_cmdbuf {
+	__u32 flags;
+	__u32 data;
+};
 
 Thanks
-
-> 
-> Thanks,
-> baolu
-> 
+Nicolin
