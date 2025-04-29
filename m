@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F2BD2D0AC9;
-	Tue, 29 Apr 2025 23:52:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A61242D5CEF;
+	Tue, 29 Apr 2025 23:53:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745970776; cv=none; b=q2lut++TipTLVSAJ6XzdWxhtY3lNaB+zZ6N4YDpE9cFhKUESCXYrut02uTfAHxxGYjcOY+CrXOPqGjXtGbHOIk7AAZ6nDIgAvsZeIawHYRqMnkZWNUeFHNbz81bUZhBJTEllAB1pqa4PWw5XDeIwhbTTY6nLap7Uh7r+oEhABgI=
+	t=1745970804; cv=none; b=JEits3KPn/6RFatuLPeWhQZPRgpcNkhZAtjOI7S0JVmuZawCbK6jbuZAXjg8jlAtF5EnGK1Ii195Aq3L5DB7co0GKZlqU0GE8TldBOZEq5266yk62ovEU6kYkonAdpLGny0ylyAd+G/0ELuF+hdsdEzyxyBbyUXt5k1eEMURT2c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745970776; c=relaxed/simple;
-	bh=SvRORt/Po+26R8xM2JqpnmfipkjLY0SHV6edGO+4tTw=;
+	s=arc-20240116; t=1745970804; c=relaxed/simple;
+	bh=m27ozdqFhdVmNfIPyx8z6gnhZx6NSMNS9E8ba2DZ3Ns=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=EFVWIeT3mJyInPjNbgSirbelWNRiXpU7RMeW1i3mr7wDMuJYjMrzAhVftZAuOpDNJd02DQv5J+HZkEURp4GHdCw4fL+fcVRqET7bmgngDu7iIduogUNH3C600ZVoAHLY58w9gkJ97xj6DsQ5R2Tzh5bNuFm3DJ2L9aGaf+P7JFs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kf3xNXX8; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=RxdF+N3Bm0LFG/vjgZ+bHMJJ62Wd1XLXaITrSJWX/m3Bj5dnWq1KkNpVLL00Xkxq9JJKwGIJvvUeA9lgY+kPl6aG/WE1s/SHuSA2wLMRpV7cBDV8XJE0zDu1LQSakbV/3xRPS1jEnupcbn6rSBk5TA6xRWle6lMgnf4Tsh/Hjwk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WuXadsgD; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kf3xNXX8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C4BFC4CEEB;
-	Tue, 29 Apr 2025 23:52:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WuXadsgD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35D7AC4CEE3;
+	Tue, 29 Apr 2025 23:53:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1745970776;
-	bh=SvRORt/Po+26R8xM2JqpnmfipkjLY0SHV6edGO+4tTw=;
+	s=k20201202; t=1745970804;
+	bh=m27ozdqFhdVmNfIPyx8z6gnhZx6NSMNS9E8ba2DZ3Ns=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=kf3xNXX83i+4sG9YlrkidUj8hjZ5bEye4e7H4hmy/QZFPH1ZKAVAdWD2WsOPBSlwJ
-	 lIeQavqGK18DMSnV65dxXb2UuhttufyTiCUMw5Fm6448fY1V7DoHS9v90CnFMtIG5y
-	 szozx26EYYD94+b6ZTEZqqNeS68k83BF33JrovpvTtOi7Rw3+kWh5chH3GLY9ma10T
-	 +faBI7otyTK3h5gIXiABElLLZUdmwc8XQuseJfaPRRS328iag5m+Q7w2S8Wp7Ha5CA
-	 PpC0yxC5HKbs+6FEkdhpwTrfhCT4s1euBBu7VUe5rlOmq8cMy3aicE7vRt0unLNDu/
-	 dvLOyWUkqbWEg==
+	b=WuXadsgDZrYRB+tfE/f1tpRmL3rpmI7GgcpC1d4/CTv7sRkBbbcJFKpAiZaDRWt1F
+	 WychO5jeoO/x2CHKIFZR2fhthDWYBj6UkJHFlJm5UdkbJkleeT/XLTd/LEAFX8YHo9
+	 /RPyyXGflUd2+trHWp68woVxt0nFRIbNTqqkBrAoVSbNSirHU4f/LhRr65nFD2Ct7K
+	 Gg+iwE9b46RpgABuxT+kyl+8wdP+21frQqECLA50Zzkn0ASkTIIEhFxV/tq1W4y8Pv
+	 a9yG92IpldR1QvPe64hI8jReATIvm3br0pIG8AI4Z2kl8zHIIJvw3dcFSNejul2DL3
+	 h/u3YlL0yAtGg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -34,12 +34,12 @@ Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
 	Jakub Kicinski <kuba@kernel.org>,
 	Sasha Levin <sashal@kernel.org>,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.6 11/21] dma-mapping: avoid potential unused data compilation warning
-Date: Tue, 29 Apr 2025 19:52:23 -0400
-Message-Id: <20250429235233.537828-11-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 03/10] dma-mapping: avoid potential unused data compilation warning
+Date: Tue, 29 Apr 2025 19:53:08 -0400
+Message-Id: <20250429235316.538129-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250429235233.537828-1-sashal@kernel.org>
-References: <20250429235233.537828-1-sashal@kernel.org>
+In-Reply-To: <20250429235316.538129-1-sashal@kernel.org>
+References: <20250429235316.538129-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,7 +48,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.6.88
+X-stable-base: Linux 6.1.135
 Content-Transfer-Encoding: 8bit
 
 From: Marek Szyprowski <m.szyprowski@samsung.com>
@@ -71,10 +71,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 8 insertions(+), 4 deletions(-)
 
 diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index f0ccca16a0aca..608e8296ba206 100644
+index e13050eb97771..af3f39ecc1b87 100644
 --- a/include/linux/dma-mapping.h
 +++ b/include/linux/dma-mapping.h
-@@ -600,10 +600,14 @@ static inline int dma_mmap_wc(struct device *dev,
+@@ -598,10 +598,14 @@ static inline int dma_mmap_wc(struct device *dev,
  #else
  #define DEFINE_DMA_UNMAP_ADDR(ADDR_NAME)
  #define DEFINE_DMA_UNMAP_LEN(LEN_NAME)
