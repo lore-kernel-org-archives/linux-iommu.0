@@ -1,152 +1,236 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 411D92701C4
-	for <iommu@lists.linux.dev>; Tue, 29 Apr 2025 12:38:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB7022C10A6
+	for <iommu@lists.linux.dev>; Tue, 29 Apr 2025 12:40:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745930338; cv=none; b=S6LPr9pSk3HuApA1X/C7uAphw2XAM2YoNhaGoy1ZbkC1OedOnH/xxWXTGLMrVOoXNom/bum5t+nJb8TtN1LcI+qPGuSXOKDZ0f/Tb9b7aDls88Bs7HhYC5mN/GYWO+3JVvpxEwShF0CFdkKFSJYn6cpXfW5YdFKiQXCFBEYiH7Y=
+	t=1745930422; cv=none; b=Y7cMBrTbNqlje9eT9XV1LtW8zsM8kPTQnKcvIMhmg4HKIjiCpiy1N6NGsvAvs03x6lRCZCIlJwIUkZYHPzEYajeG4ebrTRpRX4xNHEVs/VYW5m2Ea+7leoTcqZi+Y3vZpdhI3/8Qg4fLFA/PX9beEDBwpmOMCJn3xJ8zIRuylXs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745930338; c=relaxed/simple;
-	bh=CpR7EqqVdeCUa/1aKeOMIAoY9nTzrtK99SFVjukk8iQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CvhzrMTkuZlzfOKHAhC44L/hH77zDXB7h4au6pIbe+jHM73/ca5KtfSHySQK6cKF8BIZ8lqbhiUVop4C5c8IQBCYozBmt/WW4BKVqzCLLISI4/iauy26wTfEY/M0XgSW6AQLqqawrO6ILxIp9P9GeDPVd+8QN2vk4sFB7ptRjGg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9CFAA1515;
-	Tue, 29 Apr 2025 05:38:47 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A6D213F66E;
-	Tue, 29 Apr 2025 05:38:52 -0700 (PDT)
-Message-ID: <2e074d63-ad0c-47fa-aeb0-cb03c81829fe@arm.com>
-Date: Tue, 29 Apr 2025 13:38:51 +0100
+	s=arc-20240116; t=1745930422; c=relaxed/simple;
+	bh=ip7eQAl3OkyTGCrq0cmjZ9WKSDXUMl/2DdneuAGxbWg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RR16j0a2fEEPN8vsBu8tS7dISMLUsDRYQMbu8LyAIhGUiO51jNZ0Wrj3zO8pYNyfUF9dNbhYwUFGjbBo7rYav00mGClit8yZ+JxXTKFxGA3jbXxM2rcjFWwi/cUrKLccO+ZRoj9yf9aek4LOHe8sTwqig6MN0kVGMZd4dQtgFgs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BEKARxJd; arc=none smtp.client-ip=209.85.214.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BEKARxJd"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2264c9d0295so118075ad.0
+        for <iommu@lists.linux.dev>; Tue, 29 Apr 2025 05:40:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1745930419; x=1746535219; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hhyBzxR8NyUZrkIJH4pc7IFsAn1vSN/LWAh25/3km3g=;
+        b=BEKARxJdogNTB+5wMYMcz7591ryM16+6Ix6hu6PR8pKVkk4D+t93QzjcsFBtRcB0Kb
+         t1Mdg0dmbDD6t0gZmrTMT0uKurORy7/+2PZWEqs+c+UUAtk/8vDOGdt6FAaxObDCaB2C
+         lj1Do2K0ad+x+ZBzAUFgCx+WDb9DFLgAFNY0RIw2dHcUxUp/A2ZwZ/FXjV37zQVqtLn9
+         vz1YT60p2CTejecjVMzRMx+e2JJ2hB9fFUg9D6MGid2RaalzkK0EFad++Raq3MqdBFl3
+         EVEqAEnuCerdz37x2QCPZXU80csxT3m9HhhxY91P7LP4gTgnpCSvvNlJWOKqYCyNkIi0
+         lw2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1745930419; x=1746535219;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hhyBzxR8NyUZrkIJH4pc7IFsAn1vSN/LWAh25/3km3g=;
+        b=uCPg0c9PaJj7YNgJHvx2fYSPUoAjOC4faSDdGXwXXwr9Nh5fjiGn9FgybIOpbwEuX1
+         5dJXfMdOmwY0ANyIFRBhxlN8wa4Cf4CINH/eqDg520zOlQnseP5ny79nlDmmBKO2WdD4
+         XvYZnlmaxzIn02C/wZ0HMu4HYY82fRtRxZu3OyLyCObUT1PZtygFhd3fuBT4gCprzSyB
+         A/CWhLmod0h0Xb8cV5rkgnYzLhaJiWEdQ1d+ia9J8QoQZrd6JPhErIRocob1ARVubYs0
+         jZqjJfE9vQnZ/4BEMOCcjg076v1ROWwIze6sGcI0GbRBC01R0OHiME9kMoZF12vU8Nnx
+         9r/A==
+X-Forwarded-Encrypted: i=1; AJvYcCXhptUJYvsrB0kSFaIYGiqp5nsVItgBZB9QlBV4N4k8jBUsF4qaOJutIefmHVxG2xcHvJDISQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxxaigwGES89DbxWYL1UUHbB7QfIC2RLN4zrqAOTph80Q+24e8O
+	wfwt3JAXbrTSw9iHId+8xIgdfCUqndTjMdZhAR9hR6kizahN/UD73F3GQNs7Sw==
+X-Gm-Gg: ASbGncvrjyrWpaHys2Q17AFJO/phosXuJ9HsFFCKqN/YL0ttQWDydM65oSmu2G7uWMp
+	0P2V0RqcG3cDml9mgGa2UqKa+lvjjWWfwLQgfy5ve8jfy5KMhTCA2fHPClDKizRA6pyJtW7Vx27
+	XZ0xVJNbYD09E64hmfn/upaJsbtFQ0gQklIIu19FDgGImLc4PiZGPMDzrJ9tirjsrgE1EssMbPv
+	/HzQQbEZ+Ugk9KemUj8aAcAfES7H04qdJTB9jVGiAFHn3wrsj9CW4/84wfvKX8DPBxP0NsJ4hge
+	dcESCu1XFHOhnPAybYjS9j6zVIkXgLsjuz87mT4rvDwS5W+cvhUV1VFcHcMwOuWQTBzRbGjO
+X-Google-Smtp-Source: AGHT+IH/V/T2eUYQJIXG2EPtw/1cOV7MQT9tuyQOLSioTulIDCv1mtnsV9bjGKGjf9rlwz1NRxgL8g==
+X-Received: by 2002:a17:902:e786:b0:216:201e:1b63 with SMTP id d9443c01a7336-22de85f23admr2173255ad.11.1745930418710;
+        Tue, 29 Apr 2025 05:40:18 -0700 (PDT)
+Received: from google.com (2.210.143.34.bc.googleusercontent.com. [34.143.210.2])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73e25acd2fcsm10065488b3a.179.2025.04.29.05.40.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Apr 2025 05:40:18 -0700 (PDT)
+Date: Tue, 29 Apr 2025 12:40:07 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
+	bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
+	peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
+	zhangzekun11@huawei.com, iommu@lists.linux.dev,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
+	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com
+Subject: Re: [PATCH v2 11/22] iommufd: Add for-driver helpers
+ iommufd_vcmdq_depend/undepend()
+Message-ID: <aBDIpz7w8wxIn_AF@google.com>
+References: <cover.1745646960.git.nicolinc@nvidia.com>
+ <a25c9454c17663f9e79b37bc2908bf3a99856be6.1745646960.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 03/33] iommu/io-pgtable-arm: Add quirk to quiet
- WARN_ON()
-To: Rob Clark <robdclark@gmail.com>, dri-devel@lists.freedesktop.org
-Cc: freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
- Connor Abbott <cwabbott0@gmail.com>, Rob Clark <robdclark@chromium.org>,
- Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
- Kevin Tian <kevin.tian@intel.com>, Joao Martins <joao.m.martins@oracle.com>,
- "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
- "open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>,
- open list <linux-kernel@vger.kernel.org>
-References: <20250428205619.227835-1-robdclark@gmail.com>
- <20250428205619.227835-4-robdclark@gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250428205619.227835-4-robdclark@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a25c9454c17663f9e79b37bc2908bf3a99856be6.1745646960.git.nicolinc@nvidia.com>
 
-On 28/04/2025 9:54 pm, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
+On Fri, Apr 25, 2025 at 10:58:06PM -0700, Nicolin Chen wrote:
+> NVIDIA Virtual Command Queue is one of the iommufd users exposing vIOMMU
+> features to user space VMs. Its hardware has a strict rule when mapping
+> and unmapping multiple global CMDQVs to/from a VM-owned VINTF, requiring
+> mappings in ascending order and unmappings in descending order.
 > 
-> In situations where mapping/unmapping squence can be controlled by
-> userspace, attempting to map over a region that has not yet been
-> unmapped is an error.  But not something that should spam dmesg.
+> The tegra241-cmdqv driver can apply the rule for a mapping in the LVCMDQ
+> allocation handler, however it can't do the same for an unmapping since
+> the destroy op returns void.
 > 
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> Add iommufd_vcmdq_depend/undepend() for-driver helpers, allowing LVCMDQ
+> allocator to refcount_inc() a sibling LVCMDQ object and LVCMDQ destroyer
+> to refcount_dec().
+> 
+> This is a bit of compromise, because a driver might end up with abusing
+> the API that deadlocks the objects. So restrict the API to a dependency
+> between two driver-allocated objects of the same type, as iommufd would
+> unlikely build any core-level dependency in this case.
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->   drivers/iommu/io-pgtable-arm.c | 18 ++++++++++++------
->   include/linux/io-pgtable.h     |  8 ++++++++
->   2 files changed, 20 insertions(+), 6 deletions(-)
+>  include/linux/iommufd.h        | 47 ++++++++++++++++++++++++++++++++++
+>  drivers/iommu/iommufd/driver.c | 28 ++++++++++++++++++++
+>  2 files changed, 75 insertions(+)
 > 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index f27965caf6a1..99523505dac5 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -475,7 +475,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
->   		cptep = iopte_deref(pte, data);
->   	} else if (pte) {
->   		/* We require an unmap first */
-> -		WARN_ON(!selftest_running);
-> +		WARN_ON(!selftest_running && !(cfg->quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
+> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+> index e91381aaec5a..5dff154e8ce1 100644
+> --- a/include/linux/iommufd.h
+> +++ b/include/linux/iommufd.h
+> @@ -232,6 +232,10 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
+>  					     size_t size,
+>  					     enum iommufd_object_type type);
+>  void iommufd_object_abort(struct iommufd_ctx *ictx, struct iommufd_object *obj);
+> +int iommufd_object_depend(struct iommufd_object *obj_dependent,
+> +			  struct iommufd_object *obj_depended);
+> +void iommufd_object_undepend(struct iommufd_object *obj_dependent,
+> +			     struct iommufd_object *obj_depended);
+>  struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
+>  				       unsigned long vdev_id);
+>  int iommufd_viommu_get_vdev_id(struct iommufd_viommu *viommu,
+> @@ -252,6 +256,17 @@ static inline void iommufd_object_abort(struct iommufd_ctx *ictx,
+>  {
+>  }
+>  
+> +static inline int iommufd_object_depend(struct iommufd_object *obj_dependent,
+> +					struct iommufd_object *obj_depended)
+> +{
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +static inline void iommufd_object_undepend(struct iommufd_object *obj_dependent,
+> +					   struct iommufd_object *obj_depended)
+> +{
+> +}
+> +
+>  static inline struct device *
+>  iommufd_viommu_find_dev(struct iommufd_viommu *viommu, unsigned long vdev_id)
+>  {
+> @@ -329,4 +344,36 @@ static inline int iommufd_viommu_report_event(struct iommufd_viommu *viommu,
+>  		static_assert(offsetof(typeof(*drv_struct), member.obj) == 0); \
+>  		iommufd_object_abort(ictx, &drv_struct->member.obj);           \
+>  	})
+> +
+> +/*
+> + * Helpers for IOMMU driver to build/destroy a dependency between two sibling
+> + * structures created by one of the allocators above
+> + */
+> +#define iommufd_vcmdq_depend(vcmdq_dependent, vcmdq_depended, member)          \
+> +	({                                                                     \
+> +		static_assert(__same_type(struct iommufd_object,               \
+> +					  vcmdq_dependent->member.obj));       \
+> +		static_assert(offsetof(typeof(*vcmdq_dependent),               \
+> +					      member.obj) == 0);               \
+> +		static_assert(__same_type(struct iommufd_object,               \
+> +					  vcmdq_depended->member.obj));        \
+> +		static_assert(offsetof(typeof(*vcmdq_depended),                \
+> +					      member.obj) == 0);               \
+> +		iommufd_object_depend(&vcmdq_dependent->member.obj,            \
+> +				      &vcmdq_depended->member.obj);            \
+> +	})
+> +
+> +#define iommufd_vcmdq_undepend(vcmdq_dependent, vcmdq_depended, member)        \
+> +	({                                                                     \
+> +		static_assert(__same_type(struct iommufd_object,               \
+> +					  vcmdq_dependent->member.obj));       \
+> +		static_assert(offsetof(typeof(*vcmdq_dependent),               \
+> +					      member.obj) == 0);               \
+> +		static_assert(__same_type(struct iommufd_object,               \
+> +					  vcmdq_depended->member.obj));        \
+> +		static_assert(offsetof(typeof(*vcmdq_depended),                \
+> +					      member.obj) == 0);               \
+> +		iommufd_object_undepend(&vcmdq_dependent->member.obj,          \
+> +					&vcmdq_depended->member.obj);          \
+> +	})
+>  #endif
+> diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
+> index 7980a09761c2..fb7f8fe40f95 100644
+> --- a/drivers/iommu/iommufd/driver.c
+> +++ b/drivers/iommu/iommufd/driver.c
+> @@ -50,6 +50,34 @@ void iommufd_object_abort(struct iommufd_ctx *ictx, struct iommufd_object *obj)
+>  }
+>  EXPORT_SYMBOL_NS_GPL(iommufd_object_abort, "IOMMUFD");
+>  
+> +/* A per-structure helper is available in include/linux/iommufd.h */
+> +int iommufd_object_depend(struct iommufd_object *obj_dependent,
+> +			  struct iommufd_object *obj_depended)
+> +{
+> +	/* Reject self dependency that dead locks */
+> +	if (obj_dependent == obj_depended)
+> +		return -EINVAL;
+> +	/* Only support dependency between two objects of the same type */
+> +	if (obj_dependent->type != obj_depended->type)
+> +		return -EINVAL;
+> +
+> +	refcount_inc(&obj_depended->users);
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_NS_GPL(iommufd_object_depend, "IOMMUFD");
+> +
+> +/* A per-structure helper is available in include/linux/iommufd.h */
+> +void iommufd_object_undepend(struct iommufd_object *obj_dependent,
+> +			     struct iommufd_object *obj_depended)
+> +{
+> +	if (WARN_ON_ONCE(obj_dependent == obj_depended ||
+> +			 obj_dependent->type != obj_depended->type))
+> +		return;
+> +
+> +	refcount_dec(&obj_depended->users);
+> +}
+> +EXPORT_SYMBOL_NS_GPL(iommufd_object_undepend, "IOMMUFD");
+> +
+>  /* Caller should xa_lock(&viommu->vdevs) to protect the return value */
+>  struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
+>  				       unsigned long vdev_id)
 
-If we are going to have this as a general mechanism then the selftests 
-should use it as well.
+If I'm getting this right, I think we are setting up dependencies like:
+vcmdq[2] -> vcmdq[1] -> vcmdq[0] based on refcounts of each object,
+which ensures that the unmaps happen in descending order..
+
+If that's right, Is it fair to have iommufd_vcmdq_depend/undepend in the
+core code itself? Since it's a driver-level limitation, I think we
+should just have iommufd_object_depend/undepend in the core code and the
+iommufd_vcmdq_depend/undepend can move into the CMDQV driver?
+
+> -- 
+> 2.43.0
+> 
 
 Thanks,
-Robin.
-
->   		return -EEXIST;
->   	}
->   
-> @@ -649,8 +649,10 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->   	unmap_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
->   	ptep += unmap_idx_start;
->   	pte = READ_ONCE(*ptep);
-> -	if (WARN_ON(!pte))
-> -		return 0;
-> +	if (!pte) {
-> +		WARN_ON(!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
-> +		return -ENOENT;
-> +	}
->   
->   	/* If the size matches this level, we're in the right place */
->   	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
-> @@ -660,8 +662,10 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->   		/* Find and handle non-leaf entries */
->   		for (i = 0; i < num_entries; i++) {
->   			pte = READ_ONCE(ptep[i]);
-> -			if (WARN_ON(!pte))
-> +			if (!pte) {
-> +				WARN_ON(!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
->   				break;
-> +			}
->   
->   			if (!iopte_leaf(pte, lvl, iop->fmt)) {
->   				__arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
-> @@ -976,7 +980,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
->   	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
->   			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
->   			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA |
-> -			    IO_PGTABLE_QUIRK_ARM_HD))
-> +			    IO_PGTABLE_QUIRK_ARM_HD |
-> +			    IO_PGTABLE_QUIRK_NO_WARN_ON))
->   		return NULL;
->   
->   	data = arm_lpae_alloc_pgtable(cfg);
-> @@ -1079,7 +1084,8 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
->   	struct arm_lpae_io_pgtable *data;
->   	typeof(&cfg->arm_lpae_s2_cfg.vtcr) vtcr = &cfg->arm_lpae_s2_cfg.vtcr;
->   
-> -	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_S2FWB))
-> +	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_S2FWB |
-> +			    IO_PGTABLE_QUIRK_NO_WARN_ON))
->   		return NULL;
->   
->   	data = arm_lpae_alloc_pgtable(cfg);
-> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> index bba2a51c87d2..639b8f4fb87d 100644
-> --- a/include/linux/io-pgtable.h
-> +++ b/include/linux/io-pgtable.h
-> @@ -88,6 +88,13 @@ struct io_pgtable_cfg {
->   	 *
->   	 * IO_PGTABLE_QUIRK_ARM_HD: Enables dirty tracking in stage 1 pagetable.
->   	 * IO_PGTABLE_QUIRK_ARM_S2FWB: Use the FWB format for the MemAttrs bits
-> +	 *
-> +	 * IO_PGTABLE_QUIRK_NO_WARN_ON: Do not WARN_ON() on conflicting
-> +	 *	mappings, but silently return -EEXISTS.  Normally an attempt
-> +	 *	to map over an existing mapping would indicate some sort of
-> +	 *	kernel bug, which would justify the WARN_ON().  But for GPU
-> +	 *	drivers, this could be under control of userspace.  Which
-> +	 *	deserves an error return, but not to spam dmesg.
->   	 */
->   	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
->   	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
-> @@ -97,6 +104,7 @@ struct io_pgtable_cfg {
->   	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
->   	#define IO_PGTABLE_QUIRK_ARM_HD			BIT(7)
->   	#define IO_PGTABLE_QUIRK_ARM_S2FWB		BIT(8)
-> +	#define IO_PGTABLE_QUIRK_NO_WARN_ON		BIT(9)
->   	unsigned long			quirks;
->   	unsigned long			pgsize_bitmap;
->   	unsigned int			ias;
+Praan
