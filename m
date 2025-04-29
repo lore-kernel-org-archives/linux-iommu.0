@@ -1,62 +1,62 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+Received: from mail-pl1-f182.google.com (mail-pl1-f182.google.com [209.85.214.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5FA0280A52
-	for <iommu@lists.linux.dev>; Tue, 29 Apr 2025 08:28:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A1BC1DE2D7
+	for <iommu@lists.linux.dev>; Tue, 29 Apr 2025 08:31:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745915295; cv=none; b=uCwk5FJTH0DS0PsWm/zbLEL8I86IDUdA9f53B4KBVve4kgKxfMuKlmA1vW5D+0chyCH75MeKQM+OEHknQchNPT8d1DI1+e5ivMwlXuk/F97cuNTWNWy1svuwwTOMzNIPRicLiKEVAHek0o+Rxckgi2bf84Mnio4m0/dipujudqY=
+	t=1745915482; cv=none; b=Pv2JH1O4VkCmVRo9tzM9jNJEURvGT6wiqPTiBCmi9i/fyTPWJo35Yg7VlYmrhnyG8+eLfdb7xtR7yZ7wZXlqOxxfcqXnlmeB4JWo4VNgVSbkKQ2SAWVhSQxNb6oO0/xHnNgK95GY6rChjhzqOp2e7SHBK+scJXvpz+b2f+CvLv8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745915295; c=relaxed/simple;
-	bh=1FsywMQHT6aCTH/4QijjV+e4uu/3MJPm0YGRHU38ci8=;
+	s=arc-20240116; t=1745915482; c=relaxed/simple;
+	bh=85qKaVraS+9MNdskLBxSjS9ktFkx0yQSDGXvIR/OvQI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=I0GrN0abyCfKL1krBJBMK1L+AeCfNNAN1fuCeEw4F8Lwe3jZFugj7BqOeg7W7uFC17SeqbiEwHeou13mYH0Pe8e+nZ4lOT9JedR3waYa6uod7G2jKSJypcRkFOHAPxEXeg7iie9zZCN6YsiTetLoHhU1u5rlvkzjZ+1gGjJFvQM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HBzsWTSp; arc=none smtp.client-ip=209.85.214.175
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZCm0NdlNzYnTsoKIEk7/M5q5M0Cvex3uXFk9SNviP13Csn09cXcHMbyYkk0HAfI5IYcQGsjtdYL7kLrLGNnTWo2Ik0EwegMbeyilODAaxm0EAEakG29UZAY1RyDM9mD6ifEwC9S4UOZOS6jKXpQ0uY1ZRHo8C3m0TZY2rqLXbi4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=W91+SkOd; arc=none smtp.client-ip=209.85.214.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HBzsWTSp"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2240aad70f2so89265ad.0
-        for <iommu@lists.linux.dev>; Tue, 29 Apr 2025 01:28:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="W91+SkOd"
+Received: by mail-pl1-f182.google.com with SMTP id d9443c01a7336-2240aad70f2so89825ad.0
+        for <iommu@lists.linux.dev>; Tue, 29 Apr 2025 01:31:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1745915293; x=1746520093; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1745915481; x=1746520281; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=D5QKxnLZKN15CjETYE0cz5F8y62z+3Lyd2c2OfhrGOQ=;
-        b=HBzsWTSp5L0i6yuCZa7+pDiXIRMkNwXaOlAT7Aipa7rWlcuyBDbyAf04EitHZo+TCb
-         zeTeFp06mS5BxgquYYeOa2faDYtOU4On5dOMG4G0aM09wrb+5la/bdqTJ7Wiej14h9qI
-         b4ZY2R6Ec02RIgi6aS4mpXO39lTguppjzcGBAAFXf+o1MwIDNrU9PzMe8/m1CQ+FR9bm
-         +xhMIrB3GCP9Mu4muf9rK46TfDiGrk36l8IL3p1jvOs5XeeU7OjmCk75Y3weh91uAy7x
-         U8Mf3tSIxBCBqLXK8lth/smSRxJIOm1ruO6Se9S0VabJczX3Anjohmfuyguh1jzh2jnU
-         0coA==
+        bh=TNi2KjTVYx94VsJLpl+aLzT0MDWDcyauEZBdUwqWejg=;
+        b=W91+SkOdbR2MUsVqLwRksg24B+bUke7IWWq3mm7HFp3zB2UPRskJd6CUmPtq9JNyZz
+         5Z1/l41w7n3sz4LxOmtC3YSLoLvdJjCGbDrXtra3vYuwncmOLJLpnyB+SV34nr2nnwwt
+         IImlUeMFFkX55rS2JhKZoFBQeM2JQX8bEQwoeZ+05nENo2c6q1idpmWVByJvJV8IIhAD
+         lIjZ5OAMiSafy3E9Iu9PyZEEbTIZgr+Q59ODVZ//ajD82e0VLGptZcwuP7EbhpZe6Aky
+         ApnRuaUazzRSJXslym1l7pajlofZ9IXIEYqGOVqXAmS9IS3ZbdE1jQzcx6B5KsOLPfjM
+         eYJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1745915293; x=1746520093;
+        d=1e100.net; s=20230601; t=1745915481; x=1746520281;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=D5QKxnLZKN15CjETYE0cz5F8y62z+3Lyd2c2OfhrGOQ=;
-        b=gDyVwRcl6yEnXYr1Sot4zNXwoMT2jP9KgH/zE5MyWHlR9t6N8rR6n4XxIlIVkCAC4x
-         HCd1TcMbvsu2yD3rlrnl3fhlUm/oV8wNqDAi4QgHEyinwZN2+6/57u8OkpRryzJPmXGi
-         QKbIg6MUa9oHB/wd4PAXHICJVCWd+6NWNShqhpIqy/Enu1HfKPNoRTMeU9SummqeJEpZ
-         gT8966bZau7HOIkj9zojV1wvr2/4OSm14oSM98SHMnsUE6fWnXh6GzazqS5AZ0OR5tZK
-         ZyfSrM1O8VsXQSaD/O+lrvqrveMdwRdyT99T67ZyC0i0BCn63e2tM3rXzpwZaKw9st6C
-         dukQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWX44ofzhWJOlotmsPpd4G43jMvD4ebtGTTfOuPCwjwWPORLb3VkZHapa9LpO7wtnjvKiQ2dw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyWAZDd748vcIxEgBuunvUPhlulhElxYLlofDTOiFG+D5FfDJWX
-	fHjlEKU/3K+1G+H/LeCpUP3gwzSXw9NnDKbQpVubUhejl/vfJV3u4rXh+f3Cbw==
-X-Gm-Gg: ASbGncuGHmd+prpfLlFfq4xch9xtE7diWfzbHYnAUYLmEnNQlA51Rn6VhchFhAmIVCL
-	Cp9nwLFJrBkoU+Df96tojqrIQtAl/ESM8iFJrd1nrxk5HHTMZcVTn4axylHoP1/b7zE7hgKSR2/
-	PX0bZ4ZR2gPQa6hgKHEEB37ePctYYpCpsOYAQFp3gS+PixBGRV4AvBsEfP2jVm+b4BpWhKjO0ZJ
-	jpr74vN6g3TJP7bYNzg3SZZo9yKijRf4gCcNvICe1C/xHI9+f7UZbeQ93467NYXqSy+L+t/94NL
-	8MXmyqzbkkEdrPcgsyZyGVvrnHDT00o5CwLGAlTjJCBVgXB6u/oGDx8+C7XfgnYYjlhgT4Eo
-X-Google-Smtp-Source: AGHT+IEBLTjQEPi6T2MilTT/Y6yv+CY2P+m49PsmJxyrcH4D1FATZ6uG7LkMVqt9dbTXi33w3gHvEg==
-X-Received: by 2002:a17:902:f643:b0:223:f479:3860 with SMTP id d9443c01a7336-22de6de05c5mr2640355ad.18.1745915292715;
-        Tue, 29 Apr 2025 01:28:12 -0700 (PDT)
+        bh=TNi2KjTVYx94VsJLpl+aLzT0MDWDcyauEZBdUwqWejg=;
+        b=a8DM1EaYWA+ugT/3itv8GZ3mI4c16hok6YkOHmtBr18ciZbAvjvddWWgDy+YJgR5XN
+         l+4sgK+p5vNO/PhM1O7MyQbUwvzWDzl46i4Odxg78Y9rRIaR2FePZKnqivpAodO2bUGl
+         qWl2dRBSAPmqnwo+j7r/Wv+tNeRpgc/c6Tx54g2TNIOuNThL65app8gZNE+C2KGPKDHU
+         fMvZ9xdQ1UbVFqmO/q/6PN5YGcYHAIMxyM1FlqnzECPIJ9bha/3xEmfsuCIOahhMVgKA
+         haN50l/mNp4JyvNNtk9TM/2zScOYLhn/222K/lbXm82jvBJBrSQry2FAUJiU3+ArT6Ss
+         4sGQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXU2gYTQPv1LvTHEYEEWILKpvAT2rLmXf7WRFEoFyME7X6k2GORoK9UEhHtaXIs2inNt6DZ6g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwR+9hWxEKCeXyBeOSYAxQtNBf70ObOb0mdPR2sP7xy4SPl7dpB
+	S5nXWD7lF5M9ydxyMu6vrV6YfG33lNYj9xtOhSkNXe552g+mWVhYKwBGzgOLFQ==
+X-Gm-Gg: ASbGncslT+nsiwaeboZKPXq1vam3nnj4egwbriHSb8wjh6YJveBR1+nrQXN2DHQ9YX7
+	l9EAXZk3TNn8esp9OcfvVHFNsCq/eVJXpUy4y/sozZg0+l5cFr2WTn0EdIJgi8RCw6MtQMtCl+e
+	sZL5ZB0/9Iu1Vzo4Zez4UavjN2U2hlzsE6RdD5K4p9uNYp03VfVHwWv0MJ1uiW7iiz5Dg5p+Yrd
+	YJOPvJVJP6a6IkW3xEZZ9e2dX25YW3ZS9wh5btwIwtuPdAKxbwgXRSPdaxgmD60PEHVcM9AedVv
+	9X++oi/TCWGhzPQuDNaElT4jbJJ6YlAHrxDSVNoJUzdCdNBNdgWxXiRwuMzlz9k0NkvCtaMo
+X-Google-Smtp-Source: AGHT+IEuwEN6Vz0nl2aEx/jObUHE3H07L74jGS/5bsNXpJR+QacDK6nh9jI6VmQObGdH+OZv4saKuQ==
+X-Received: by 2002:a17:903:1cd:b0:21f:465d:c588 with SMTP id d9443c01a7336-22de6c52c70mr2586365ad.14.1745915480493;
+        Tue, 29 Apr 2025 01:31:20 -0700 (PDT)
 Received: from google.com (2.210.143.34.bc.googleusercontent.com. [34.143.210.2])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-73e25a995edsm9628409b3a.130.2025.04.29.01.28.07
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-309ef124ce9sm10440195a91.34.2025.04.29.01.31.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Apr 2025 01:28:12 -0700 (PDT)
-Date: Tue, 29 Apr 2025 08:28:01 +0000
+        Tue, 29 Apr 2025 01:31:19 -0700 (PDT)
+Date: Tue, 29 Apr 2025 08:31:08 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
@@ -69,13 +69,12 @@ Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
 	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
 	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
 	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com
-Subject: Re: [PATCH v2 10/22] iommufd/viommmu: Add IOMMUFD_CMD_VCMDQ_ALLOC
- ioctl
-Message-ID: <aBCNkcLp6XZpjYYT@google.com>
+Subject: Re: [PATCH v2 04/22] iommu: Add iommu_copy_struct_to_user helper
+Message-ID: <aBCOTDDC8--age-V@google.com>
 References: <cover.1745646960.git.nicolinc@nvidia.com>
- <094992b874190ffdcf6012104b419c8649b5e4b4.1745646960.git.nicolinc@nvidia.com>
- <aA_0TV0RkVOHk7Qj@google.com>
- <aBAEuP9962XweHPc@Asurada-Nvidia>
+ <ca032e90c0241fe0653023fcb655185dba763f5f.1745646960.git.nicolinc@nvidia.com>
+ <aA-_5FQK0uZPdGVA@google.com>
+ <aA/HN2CV+0UQ4S9j@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -84,120 +83,45 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aBAEuP9962XweHPc@Asurada-Nvidia>
+In-Reply-To: <aA/HN2CV+0UQ4S9j@Asurada-Nvidia>
 
-On Mon, Apr 28, 2025 at 03:44:08PM -0700, Nicolin Chen wrote:
-> On Mon, Apr 28, 2025 at 09:34:05PM +0000, Pranjal Shrivastava wrote:
-> > On Fri, Apr 25, 2025 at 10:58:05PM -0700, Nicolin Chen wrote:
-> > > @@ -501,6 +504,9 @@ static const struct iommufd_object_ops iommufd_object_ops[] = {
-> > >  	[IOMMUFD_OBJ_IOAS] = {
-> > >  		.destroy = iommufd_ioas_destroy,
-> > >  	},
-> > > +	[IOMMUFD_OBJ_VCMDQ] = {
-> > > +		.destroy = iommufd_vcmdq_destroy,
-> > > +	},
-> > >  	[IOMMUFD_OBJ_VDEVICE] = {
-> > >  		.destroy = iommufd_vdevice_destroy,
-> > >  	},
-> > 
-> > When do we expect the VMM to use this ioctl? While it's spawning a new
-> > VM?
-> 
-> When guest OS clears the VCMDQ's base address register, or when
-> guest OS reboots or shuts down.
-> 
-
-Ack. So, basically any write to VCMDQ_BASE is trapped?
-
-> > IIUC, one vintf can have multiple lvcmdqs and looking at the series
-> > it looks like the vcmdq_alloc allocates a single lvcmdq. Is the plan to
-> > dedicate one lvcmdq to per VM? Which means VMs can share a vintf?
-> 
-> VINTF is a vSMMU instance per SMMU. Each VINTF can have multiple
-> LVCMDQs. Each vCMDQ is allocated per IOMMUFD_CMD_VCMDQ_ALLOC. In
-> other word, VM can issue multiple IOMMUFD_CMD_VCMDQ_ALLOC calls
-> for each VTINF/vSMMU.
-> 
-
-Ack. I'm just wondering why would a single VM want more than one vCMDQ
-per vSMMU?
-
-> > Or do we plan to trap access to trap the access everytime the VM
-> > accesses an lvcmdq base register?
-> 
-> Yes. That's the only place the VMM can trap. All other register
-> accesses are going to the HW directly without trappings.
-> 
-
-Got it.
-
-> > > diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
-> > > index a65153458a26..02a111710ffe 100644
-> > > --- a/drivers/iommu/iommufd/viommu.c
-> > > +++ b/drivers/iommu/iommufd/viommu.c
-> > > @@ -170,3 +170,97 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
-> > >  	iommufd_put_object(ucmd->ictx, &viommu->obj);
-> > >  	return rc;
+On Mon, Apr 28, 2025 at 11:21:43AM -0700, Nicolin Chen wrote:
+> On Mon, Apr 28, 2025 at 05:50:28PM +0000, Pranjal Shrivastava wrote:
+> > On Fri, Apr 25, 2025 at 10:57:59PM -0700, Nicolin Chen wrote:
+> > > Similar to the iommu_copy_struct_from_user helper receiving data from the
+> > > user space, add an iommu_copy_struct_to_user helper to report output data
+> > > back to the user space data pointer.
+> > > 
+> > > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> > > ---
+> > >  include/linux/iommu.h | 40 ++++++++++++++++++++++++++++++++++++++++
+> > >  1 file changed, 40 insertions(+)
+> > > 
+> > > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > > index ba7add27e9a0..634ff647888d 100644
+> > > --- a/include/linux/iommu.h
+> > > +++ b/include/linux/iommu.h
+> > > @@ -562,6 +562,46 @@ iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
+> > >  	return 0;
 > > >  }
-> > > +
-> > > +void iommufd_vcmdq_destroy(struct iommufd_object *obj)
-> > > +{
-> > > +	struct iommufd_vcmdq *vcmdq =
-> > > +		container_of(obj, struct iommufd_vcmdq, obj);
-> > > +	struct iommufd_viommu *viommu = vcmdq->viommu;
-> > > +
-> > > +	if (viommu->ops->vcmdq_destroy)
-> > > +		viommu->ops->vcmdq_destroy(vcmdq);
-> > > +	iopt_unpin_pages(&viommu->hwpt->ioas->iopt, vcmdq->addr, vcmdq->length);
-> > > +	refcount_dec(&viommu->obj.users);
-> > > +}
-> > > +
-> > > +int iommufd_vcmdq_alloc_ioctl(struct iommufd_ucmd *ucmd)
-> > > +{
-> > > +	struct iommu_vcmdq_alloc *cmd = ucmd->cmd;
-> > > +	struct iommufd_viommu *viommu;
-> > > +	struct iommufd_vcmdq *vcmdq;
-> > > +	struct page **pages;
-> > > +	int max_npages, i;
-> > > +	dma_addr_t end;
-> > > +	int rc;
-> > > +
-> > > +	if (cmd->flags || cmd->type == IOMMU_VCMDQ_TYPE_DEFAULT)
-> > > +		return -EOPNOTSUPP;
-> > 
-> > The cmd->type check is a little confusing here, I think we could
-> > re-order the series and add this check when we have the CMDQV type.
+> > >  
+> > > +/**
+> > > + * __iommu_copy_struct_to_user - Report iommu driver specific user space data
+> > > + * @dst_data: Pointer to a struct iommu_user_data for user space data location
+> > > + * @src_data: Pointer to an iommu driver specific user data that is defined in
+> > > + *            include/uapi/linux/iommufd.h
+> > > + * @data_type: The data type of the @dst_data. Must match with @src_data.type
+> > 								   ^
+> > Nit: Must match with @dst_data type.
 > 
-> This is the patch that introduces the IOMMU_VCMDQ_TYPE_DEFAULT.
-> So, it's natural we check it here. The thing is that we have to
-> introduce something to fill the enum iommu_vcmdq_type, so that
-> it wouldn't be empty.
-> 
-> An unsupported DEFAULT type is what we have for vIOMMU/vEVENTQ
-> also.
-> 
-> A driver patch should define its own type along with the driver
-> patch. And it's what this series does. I think it's pretty clear?
-> 
+> Oh, that's a copy-n-paste mistake. It should be:
+>   * @data_type: The data type of the @src_data. Must match with @dst_data.type
 
-Alright. Agreed.
+Ack, yes that's what I meant!
 
-> > Alternatively, we could keep this in place and
-> [..]
-> > add the driver-specific
-> > vcmdq_alloc op calls when it's added/available for Tegra CMDQV while
-> > stubbing out the rest of this function accordingly.
 > 
-> Why?
-> 
-> The vcmdq_alloc op is already introduced in the prior patch. It
-> is cleaner to keep all core code in one patch. And then another
-> tegra patch to add driver type and its support.
-> 
-
-Alright.
-
-> Thanks
+> Thanks!
 > Nicolin
 
 Thanks,
