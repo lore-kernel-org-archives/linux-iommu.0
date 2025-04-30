@@ -1,98 +1,88 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87AEE7F7FC;
-	Wed, 30 Apr 2025 02:38:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CD0B2111
+	for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 02:52:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745980722; cv=none; b=FwIq7yQMdnUpB4wWp2WocqFMi9Nv/b2TQPmvrpCQEK2s0wmNAHkaLcrVsMymQdH7i8+jFU8IA2+PkQHzvjWXrK7gaHXgBfjXMf/wyFR771C8k9EwAROHNSYSnirCaADq2ewvJYopVfyqzkhR62ZL0q3C3cQGBMssnTo7Hj2CiRM=
+	t=1745981535; cv=none; b=J/h9CSS6jTQO46OvIpNKGiLjGiEp1ltk5YViTMbF5Kcc1WMySECfQFW+DH5Y2jVEe0kYyMn7SMhx0MUoN1uTe5G8rhVEWBGdBBH8ozwSLq8u/kqOtKlwcaJ8mKaPA/DH0E+a/J649Jj+6GC+MqEju4EJWzDncQoN2pDkRrtUZQA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745980722; c=relaxed/simple;
-	bh=z6s3YPMqRWDP6hk7iOLyjE8AjXiCVoO/HzYvSsyvfgc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WrLDO54jtgnHcnI3I2huvLRq6NmyFGmCd/a+7UDpqnaM3ywhRAEoEFhtfHNN6CwUAclLfGrt9TUZ3PP2FEAzkd+gDGVDGgLC8QHI+5t5KTPLK/ItshQho/HY/IQW+dBamxcmcYCYYOId5yF0PROhLcpOwoa7D8yNRUvhLtGx30c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jyBh+egf; arc=none smtp.client-ip=198.175.65.14
+	s=arc-20240116; t=1745981535; c=relaxed/simple;
+	bh=wRx45Eo25zW0PBYGNVMcwlHsTkB1kkO3CIiiZVB+M4U=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JrLy8LRGjbbvZCEXZVAztAaXDeO50dZxYiZgZD99L6u1Pf7QuxZQolk9rnzBUzT7+Iw+Z8IQUeIQuCztDsSoLlf9IwNef3x3U3E6YFfR05TgkZB196dGreaEQ4MUDVynQSWMaDg4/DkWB/kEhBgpWWTBibg1/IHI9ZLkOwFax64=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dy7+CHIh; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jyBh+egf"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dy7+CHIh"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745980721; x=1777516721;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=z6s3YPMqRWDP6hk7iOLyjE8AjXiCVoO/HzYvSsyvfgc=;
-  b=jyBh+egfB5TtqaKouTV8ZdiPsvsTM9tLTelFFyJzbIyXKWvBNmw6LHFu
-   /XrujNg+DBlAfcpFY/zzaHSz8+VFcKvXr1Nz2o3rQJzwIUMa0TVgkmseG
-   egZx7XybZcfw13PRVCFzqM5QFgIU6KvVP0Ga8Faa17pGd0VxOtIOQ85P4
-   vT3El3l/hk+MyU0u7A8BlF3DkeoOo8yjABbe+xc2PgNU7hVlllRZ42NWA
-   i7VoDwgCGCF5w4IvXm0/tnH1q90UlQMKYl0u5EMbEmUajj5RYUA/BCWDd
-   e96NrAdmtt/frkYGwJvDgNYyNvhichLK28Iy/5XazLujbpKt2HLsvmI+s
-   Q==;
-X-CSE-ConnectionGUID: aFYinhCKTsKxfnwRkwqoFw==
-X-CSE-MsgGUID: AJkX4b/wRt2KW0rEBtbJ9A==
-X-IronPort-AV: E=McAfee;i="6700,10204,11418"; a="51445379"
+  t=1745981534; x=1777517534;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wRx45Eo25zW0PBYGNVMcwlHsTkB1kkO3CIiiZVB+M4U=;
+  b=dy7+CHIhrWN4YUSSuW3VAvPoqvmOzPH40tG3jrGU4E9S+HMBr4vpZFiz
+   bp3kkGeHzQccN90Yq2UEh3NQLUJUhNulnHnuGkAXmHZ2rC30bROmI8NL1
+   DDYYU8MKJF//fxYyzVBG5nzboILIH/h+ChaYBznyZ2aQHW9eZ15m7snoe
+   uoKs1CWcmWWRL+shfX8S7puNCBXv90k+f2+jRlMhV3UL3WDVHYwQj44Gc
+   DhLvzoq1Y4IQw2JiJDMjaL+KKx4wLK6D/3qUOr1jsAIKHr53+VsdQlG74
+   oka8vy/V6S11s/7oGixBse5nRhYlgsVj3DyURHlh4Bw1Lh6l0zzfIqFOg
+   A==;
+X-CSE-ConnectionGUID: MQms/nMrQ4Wj9T+uDuAgCg==
+X-CSE-MsgGUID: CUG4it1kSkeoUw5FAZARpw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11418"; a="47764410"
 X-IronPort-AV: E=Sophos;i="6.15,250,1739865600"; 
-   d="scan'208";a="51445379"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2025 19:38:40 -0700
-X-CSE-ConnectionGUID: x1GszayAR3umhh+jpQ6E4A==
-X-CSE-MsgGUID: PISqLkxoS+KMge4QNm3Eqg==
+   d="scan'208";a="47764410"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2025 19:52:13 -0700
+X-CSE-ConnectionGUID: pPBQKa81RpKUTSUCq3yoSQ==
+X-CSE-MsgGUID: hBbuFPGbQjqdAgHmQo8CJw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.15,250,1739865600"; 
-   d="scan'208";a="134508627"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2025 19:38:26 -0700
-Message-ID: <75c7d479-5310-4e1d-bb0e-71ea363fcc90@linux.intel.com>
-Date: Wed, 30 Apr 2025 10:34:13 +0800
+   d="scan'208";a="133710817"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by orviesa009.jf.intel.com with ESMTP; 29 Apr 2025 19:52:11 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu: Cleanup comments for dev_enable/disable_feat
+Date: Wed, 30 Apr 2025 10:52:49 +0800
+Message-ID: <20250430025249.2371751-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 7/7] iommu: Remove ops->pgsize_bitmap
-To: Jason Gunthorpe <jgg@nvidia.com>, Alexandre Ghiti <alex@ghiti.fr>,
- Alim Akhtar <alim.akhtar@samsung.com>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
- Baolin Wang <baolin.wang@linux.alibaba.com>,
- David Woodhouse <dwmw2@infradead.org>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
- Janne Grunau <j@jannau.net>, Jean-Philippe Brucker
- <jean-philippe@linaro.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Kevin Tian <kevin.tian@intel.com>, Krzysztof Kozlowski <krzk@kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-riscv@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
- linux-tegra@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>, Neal Gompa <neal@gompa.dev>,
- Orson Zhai <orsonzhai@gmail.com>, Palmer Dabbelt <palmer@dabbelt.com>,
- Paul Walmsley <paul.walmsley@sifive.com>, Rob Clark <robdclark@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>,
- Niklas Schnelle <schnelle@linux.ibm.com>, Sven Peter <sven@svenpeter.dev>,
- Thierry Reding <thierry.reding@gmail.com>,
- Tomasz Jeznach <tjeznach@rivosinc.com>, Krishna Reddy <vdumpa@nvidia.com>,
- virtualization@lists.linux.dev, Chen-Yu Tsai <wens@csie.org>,
- Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
- Chunyan Zhang <zhang.lyra@gmail.com>
-Cc: patches@lists.linux.dev
-References: <7-v1-7c5282b0c334+2db-iommu_rm_ops_pgsize_jgg@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <7-v1-7c5282b0c334+2db-iommu_rm_ops_pgsize_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 4/29/25 22:34, Jason Gunthorpe wrote:
-> No driver uses it now, remove the core code.
-> 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+The dev_enable/disable_feat ops have been removed by commit
+<f984fb09e60e> ("iommu: Remove iommu_dev_enable/disable_feature()").
+Cleanup the comments to make the code clean.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ include/linux/iommu.h | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 1785caee5977..36df38c2d3a9 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -590,8 +590,6 @@ iommu_copy_struct_from_full_user_array(void *kdst, size_t kdst_entry_size,
+  * @of_xlate: add OF master IDs to iommu grouping
+  * @is_attach_deferred: Check if domain attach should be deferred from iommu
+  *                      driver init to device driver init (default no)
+- * @dev_enable/disable_feat: per device entries to enable/disable
+- *                               iommu specific features.
+  * @page_response: handle page request response
+  * @def_domain_type: device default domain type, return value:
+  *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
+-- 
+2.43.0
+
