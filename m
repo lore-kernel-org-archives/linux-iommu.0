@@ -1,243 +1,291 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2076.outbound.protection.outlook.com [40.107.95.76])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C7CB2586E2
-	for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 11:57:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.76
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746014242; cv=fail; b=ZREOPgq/Hh+rI0PWiTtJsgg4AG+T8YlDMtArc2wePCBB/1B/6iVCDqF0EeEO2nHDBHF5WRz5/M2HLoAI1EdUfVFtNa7d6pKii0VUdBOu+Igm0N5BQ1q5+nhwv9NA857LvbrI7ZSp27tdFOV8lRStoW48ilbYWb3OJwcbEeRx3zc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746014242; c=relaxed/simple;
-	bh=Q/UTdgZ+zAAKIID/arc2EAQfeXhzpk3rn4xPYNLjIPo=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=NNLDS6qSFv1/mY3SfTVXgI59GB9w3h0c0L0OG2BohFvlSG9gCBC0eg5phu2gbS+aWucaM0g6pHaSXnWnBIAnM2LJLwoSheKuoC4x6h9MqdmTGGFMSYh6U19DhVNM5T6Af6Ra7BwcY4dLIxethfPygz6DTbbbNQDJ1QvqZ6YB2Yg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=YpooWo7M; arc=fail smtp.client-ip=40.107.95.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 138AA25C818;
+	Wed, 30 Apr 2025 13:15:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746018961; cv=none; b=iFlIgStA+GkXykAhYdOhtWZM4PuphualeVhnXIiCb1CfAnD8+UijHQHni12ToTcR9w8eQmt2aDbUapnjKI0JyyN0b7WjJMRXRsfY7Lk32eqbhfFVlu/vn9vJG2GRZp4VflSrkWppL3b30hhKj5jF8uuesbgfnAXcWHA97TN+Qnk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746018961; c=relaxed/simple;
+	bh=nmsWtbOQeVaahxPJX79RmdbIgyWrU+syOxMVYt3Q9hk=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=AobzmwC+MnoHKHiHp7Xev8zQ78kuUf8xfjGSqCBvgfQMJvK3MZtSVu4LpppzN8bNI5ybxH/2xQfgauImP0LhKz/a502v9gKiEB9XPpeUwE+PgFmc0PEphpPyGhC+f4VmzhNBlmJCjaTNIi+0BkWwMKuAnLkD+ksCG00SjhIx5Oo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=DOG7cRsp; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="YpooWo7M"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=S1YVjRTswJ2HjZFNBooKmYSy0CqRqt81aJa7kCdBRfMTftCkFolKlG2TM4jny/4KBT72a7XyMNdcJha5zMFelbVn9KN92LDfHh2wDxaJx8ZgKkFPt0k+LTMcoIUdlAe2Jg0+IrsVd/j8E7xqwlNdv42Bo30Y1yYA+XQZjsATNHP9Zzaas2WzlGRR6YPx376ZnfHHmrEElTWWzHVgIkS6Dr1S7LCwPlqqwUJ9zsWkhLcuUDnG41g88KrAhwVwPPDAFXd7C6wigYz+4MUUiuosAoY2XnGK6VJhk4HmUBWEYOE4M+ge+uUMbhuBNFm1BfTXr3i2QA5JLNBRmMoR3Kc2cA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ctX7wxSv7l+F72SnhNhcS/BVRHwHMXmZxXbTyllTHX0=;
- b=H3ZyW5NoCwqF/eyWFFv5vK6irvxDtD1t7JK3XgbQ6EmE75rhunGKHjl+626YrAT7vpk5C1wiPz+J3M1ZursEC+7EzJr4MXPGBrrVxh7NB7SYJ4quBFH5n60OTN4dmAh6NbGNMYC9u8z1rZH3MOei9LA2w8jerh+QGgBOafyU43LTLNhW2WxJ9lgUQoFqc/cuA+fP4jEoTIVvbjVMVZTSeMUpR1Ra4ppV1RkJVGDJRJFtmw4/ifXyHf5v9JbTHER0rEoY27/rPSholiJXBRpPBp3CDGXqyo4CoJ6vowZFFg4JnKYKPQgjGXP6sBMkaLA+9BdMhrFGMOWuIZ7tMUoDgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ctX7wxSv7l+F72SnhNhcS/BVRHwHMXmZxXbTyllTHX0=;
- b=YpooWo7M5c15w4Ut3Add7RlOFm96vuJga6qahY8UUEG3ak1jLvn8QeVfDekKILlsh/TjDkVoB6b0HFBdkGQ5PI49bnFMf3GGBNCNY3WGsDSCLcZ3ewPx1nnMwNjd9qtiY5fU2iwnZSnlk8CP4dALAkKoIUJO4A+qGr7EXDFHigQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- IA1PR12MB7735.namprd12.prod.outlook.com (2603:10b6:208:421::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8678.33; Wed, 30 Apr 2025 11:57:17 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%5]) with mapi id 15.20.8678.028; Wed, 30 Apr 2025
- 11:57:17 +0000
-Message-ID: <252eb71c-9913-4199-8645-59d8a7513b10@amd.com>
-Date: Wed, 30 Apr 2025 17:27:10 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iommu/amd: Add efr[HATS] max v1 page table level
-To: Ankit Soni <Ankit.Soni@amd.com>, iommu@lists.linux.dev
-Cc: suravee.suthikulpanit@amd.com, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, linux-kernel@vger.kernel.org
-References: <cover.1745389415.git.Ankit.Soni@amd.com>
- <e11bcff900090636a547f03c77baeb35b43234f7.1745389415.git.Ankit.Soni@amd.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <e11bcff900090636a547f03c77baeb35b43234f7.1745389415.git.Ankit.Soni@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0007.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:95::13) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="DOG7cRsp"
+Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 53UA4Dwk006413;
+	Wed, 30 Apr 2025 13:15:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=pp1; bh=q/kum/
+	xyIExGMc5hG28NRFZbeGIOSqBLoOtMSE9kQno=; b=DOG7cRspj7YVva03zbzaew
+	s/h5qhtz+RmrLfuzsQjKqli6vyk+MQaCg7PM5jGZfr348vQjgPOOmfEiXXDzdbbR
+	GAT8WVzE+rcm1+C0oJHsODPKDMSF89umb6nhM/pZH56IQ4tPabd/R+Lf6V7xjQLA
+	cEVsMxAryq2y7hXaK6WHZWwD9evw2sfZqkjxBRDud/shVP28JoS9ZoOKfW46+GGU
+	KhntCIY0Hu88JkqRaWWeTvAI9GRc3I2KDQm5VmmT9rBQlM/Vknbbp49I+UQ905/+
+	2ayvVw/NMpjUM/CGINyT6dJyAbtc/XZ3TbswfR4Ze/Ty/Au38w1QrbMe4U4pQYWQ
+	==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 46bhsjrupg-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 30 Apr 2025 13:15:28 +0000 (GMT)
+Received: from m0360083.ppops.net (m0360083.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.0.8/8.18.0.8) with ESMTP id 53UDElTg022870;
+	Wed, 30 Apr 2025 13:15:27 GMT
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 46bhsjrupb-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 30 Apr 2025 13:15:27 +0000 (GMT)
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 53UC99Q8016145;
+	Wed, 30 Apr 2025 13:15:26 GMT
+Received: from smtprelay02.dal12v.mail.ibm.com ([172.16.1.4])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 469a70g3cm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 30 Apr 2025 13:15:25 +0000
+Received: from smtpav04.wdc07v.mail.ibm.com (smtpav04.wdc07v.mail.ibm.com [10.39.53.231])
+	by smtprelay02.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 53UDFOdT63766940
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 30 Apr 2025 13:15:24 GMT
+Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 50CFB58052;
+	Wed, 30 Apr 2025 13:15:24 +0000 (GMT)
+Received: from smtpav04.wdc07v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id B775158060;
+	Wed, 30 Apr 2025 13:15:15 +0000 (GMT)
+Received: from [9.111.36.251] (unknown [9.111.36.251])
+	by smtpav04.wdc07v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 30 Apr 2025 13:15:15 +0000 (GMT)
+Message-ID: <176e3870fd0284a05a19d424ad1a56e73120573c.camel@linux.ibm.com>
+Subject: Re: [PATCH 4/7] iommu: Remove iommu_ops pgsize_bitmap from simple
+ drivers
+From: Niklas Schnelle <schnelle@linux.ibm.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Alexandre Ghiti <alex@ghiti.fr>,
+        Alim
+ Akhtar <alim.akhtar@samsung.com>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+        Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
+        Baolin Wang
+ <baolin.wang@linux.alibaba.com>,
+        Lu Baolu	 <baolu.lu@linux.intel.com>,
+        David Woodhouse <dwmw2@infradead.org>,
+        Gerald Schaefer
+ <gerald.schaefer@linux.ibm.com>,
+        Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+        Janne Grunau	 <j@jannau.net>,
+        Jean-Philippe Brucker
+ <jean-philippe@linaro.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Joerg Roedel	 <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
+        Krzysztof Kozlowski	 <krzk@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-riscv@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        linux-tegra@vger.kernel.org,
+        Marek Szyprowski	 <m.szyprowski@samsung.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Matthew Rosato
+ <mjrosato@linux.ibm.com>, Neal Gompa <neal@gompa.dev>,
+        Orson Zhai
+ <orsonzhai@gmail.com>, Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley
+ <paul.walmsley@sifive.com>,
+        Rob Clark	 <robdclark@gmail.com>, Robin Murphy
+ <robin.murphy@arm.com>,
+        Samuel Holland	 <samuel@sholland.org>,
+        Sven Peter
+ <sven@svenpeter.dev>,
+        Thierry Reding	 <thierry.reding@gmail.com>,
+        Tomasz
+ Jeznach <tjeznach@rivosinc.com>,
+        Krishna Reddy <vdumpa@nvidia.com>, virtualization@lists.linux.dev,
+        Chen-Yu Tsai <wens@csie.org>, Will Deacon
+ <will@kernel.org>,
+        Yong Wu <yong.wu@mediatek.com>, Chunyan Zhang
+ <zhang.lyra@gmail.com>
+Cc: patches@lists.linux.dev
+Date: Wed, 30 Apr 2025 15:15:14 +0200
+In-Reply-To: <4-v1-7c5282b0c334+2db-iommu_rm_ops_pgsize_jgg@nvidia.com>
+References: <4-v1-7c5282b0c334+2db-iommu_rm_ops_pgsize_jgg@nvidia.com>
+Autocrypt: addr=schnelle@linux.ibm.com; prefer-encrypt=mutual;
+ keydata=mQINBGHm3M8BEAC+MIQkfoPIAKdjjk84OSQ8erd2OICj98+GdhMQpIjHXn/RJdCZLa58k
+ /ay5x0xIHkWzx1JJOm4Lki7WEzRbYDexQEJP0xUia0U+4Yg7PJL4Dg/W4Ho28dRBROoJjgJSLSHwc
+ 3/1pjpNlSaX/qg3ZM8+/EiSGc7uEPklLYu3gRGxcWV/944HdUyLcnjrZwCn2+gg9ncVJjsimS0ro/
+ 2wU2RPE4ju6NMBn5Go26sAj1owdYQQv9t0d71CmZS9Bh+2+cLjC7HvyTHKFxVGOznUL+j1a45VrVS
+ XQ+nhTVjvgvXR84z10bOvLiwxJZ/00pwNi7uCdSYnZFLQ4S/JGMs4lhOiCGJhJ/9FR7JVw/1t1G9a
+ UlqVp23AXwzbcoV2fxyE/CsVpHcyOWGDahGLcH7QeitN6cjltf9ymw2spBzpRnfFn80nVxgSYVG1d
+ w75ksBAuQ/3e+oTQk4GAa2ShoNVsvR9GYn7rnsDN5pVILDhdPO3J2PGIXa5ipQnvwb3EHvPXyzakY
+ tK50fBUPKk3XnkRwRYEbbPEB7YT+ccF/HioCryqDPWUivXF8qf6Jw5T1mhwukUV1i+QyJzJxGPh19
+ /N2/GK7/yS5wrt0Lwxzevc5g+jX8RyjzywOZGHTVu9KIQiG8Pqx33UxZvykjaqTMjo7kaAdGEkrHZ
+ dVHqoPZwhCsgQARAQABtChOaWtsYXMgU2NobmVsbGUgPHNjaG5lbGxlQGxpbnV4LmlibS5jb20+iQ
+ JXBBMBCABBAhsBBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAhkBFiEEnbAAstJ1IDCl9y3cr+Q/Fej
+ CYJAFAmesutgFCQenEYkACgkQr+Q/FejCYJDIzA//W5h3t+anRaztihE8ID1c6ifS7lNUtXr0wEKx
+ Qm6EpDQKqFNP+n3R4A5w4gFqKv2JpYQ6UJAAlaXIRTeT/9XdqxQlHlA20QWI7yrJmoYaF74ZI9s/C
+ 8aAxEzQZ64NjHrmrZ/N9q8JCTlyhk5ZEV1Py12I2UH7moLFgBFZsPlPWAjK2NO/ns5UJREAJ04pR9
+ XQFSBm55gsqkPp028cdoFUD+IajGtW7jMIsx/AZfYMZAd30LfmSIpaPAi9EzgxWz5habO1ZM2++9e
+ W6tSJ7KHO0ZkWkwLKicrqpPvA928eNPxYtjkLB2XipdVltw5ydH9SLq0Oftsc4+wDR8TqhmaUi8qD
+ Fa2I/0NGwIF8hjwSZXtgJQqOTdQA5/6voIPheQIi0NBfUr0MwboUIVZp7Nm3w0QF9SSyTISrYJH6X
+ qLp17NwnGQ9KJSlDYCMCBJ+JGVmlcMqzosnLli6JszAcRmZ1+sd/f/k47Fxy1i6o14z9Aexhq/UgI
+ 5InZ4NUYhf5pWflV41KNupkS281NhBEpChoukw25iZk0AsrukpJ74x69MJQQO+/7PpMXFkt0Pexds
+ XQrtsXYxLDQk8mgjlgsvWl0xlk7k7rddN1+O/alcv0yBOdvlruirtnxDhbjBqYNl8PCbfVwJZnyQ4
+ SAX2S9XiGeNtWfZ5s2qGReyAcd2nBna0KU5pa2xhcyBTY2huZWxsZSA8bmlrbGFzLnNjaG5lbGxlQ
+ GlibS5jb20+iQJUBBMBCAA+AhsBBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAFiEEnbAAstJ1IDCl9y
+ 3cr+Q/FejCYJAFAmesuuEFCQenEYkACgkQr+Q/FejCYJCosA/9GCtbN8lLQkW71n/CHR58BAA5ct1
+ KRYiZNPnNNAiAzjvSb0ezuRVt9H0bk/tnj6pPj0zdyU2bUj9Ok3lgocWhsF2WieWbG4dox5/L1K28
+ qRf3p+vdPfu7fKkA1yLE5GXffYG3OJnqR7OZmxTnoutj81u/tXO95JBuCSJn5oc5xMQvUUFzLQSbh
+ prIWxcnzQa8AHJ+7nAbSiIft/+64EyEhFqncksmzI5jiJ5edABiriV7bcNkK2d8KviUPWKQzVlQ3p
+ LjRJcJJHUAFzsZlrsgsXyZLztAM7HpIA44yo+AVVmcOlmgPMUy+A9n+0GTAf9W3y36JYjTS+ZcfHU
+ KP+y1TRGRzPrFgDKWXtsl1N7sR4tRXrEuNhbsCJJMvcFgHsfni/f4pilabXO1c5Pf8fiXndCz04V8
+ ngKuz0aG4EdLQGwZ2MFnZdyf3QbG3vjvx7XDlrdzH0wUgExhd2fHQ2EegnNS4gNHjq82uLPU0hfcr
+ obuI1D74nV0BPDtr7PKd2ryb3JgjUHKRKwok6IvlF2ZHMMXDxYoEvWlDpM1Y7g81NcKoY0BQ3ClXi
+ a7vCaqAAuyD0zeFVGcWkfvxYKGqpj8qaI/mA8G5iRMTWUUUROy7rKJp/y2ioINrCul4NUJUujfx4k
+ 7wFU11/YNAzRhQG4MwoO5e+VY66XnAd+XPyBIlvy0K05pa2xhcyBTY2huZWxsZSA8bmlrbGFzLnNj
+ aG5lbGxlQGdtYWlsLmNvbT6JAlQEEwEIAD4CGwEFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AWIQSds
+ ACy0nUgMKX3Ldyv5D8V6MJgkAUCZ6y64QUJB6cRiQAKCRCv5D8V6MJgkEr/D/9iaYSYYwlmTJELv+
+ +EjsIxXtneKYpjXEgNnPwpKEXNIpuU/9dcVDcJ10MfvWBPi3sFbIzO9ETIRyZSgrjQxCGSIhlbom4
+ D8jVzTA698tl9id0FJKAi6T0AnBF7CxyqofPUzAEMSj9ynEJI/Qu8pHWkVp97FdJcbsho6HNMthBl
+ +Qgj9l7/Gm1UW3ZPvGYgU75uB/mkaYtEv0vYrSZ+7fC2Sr/O5SM2SrNk+uInnkMBahVzCHcoAI+6O
+ Enbag+hHIeFbqVuUJquziiB/J4Z2yT/3Ps/xrWAvDvDgdAEr7Kn697LLMRWBhGbdsxdHZ4ReAhc8M
+ 8DOcSWX7UwjzUYq7pFFil1KPhIkHctpHj2Wvdnt+u1F9fN4e3C6lckUGfTVd7faZ2uDoCCkJAgpWR
+ 10V1Q1Cgl09VVaoi6LcGFPnLZfmPrGYiDhM4gyDDQJvTmkB+eMEH8u8V1X30nCFP2dVvOpevmV5Uk
+ onTsTwIuiAkoTNW4+lRCFfJskuTOQqz1F8xVae8KaLrUt2524anQ9x0fauJkl3XdsVcNt2wYTAQ/V
+ nKUNgSuQozzfXLf+cOEbV+FBso/1qtXNdmAuHe76ptwjEfBhfg8L+9gMUthoCR94V0y2+GEzR5nlD
+ 5kfu8ivV/gZvij+Xq3KijIxnOF6pd0QzliKadaFNgGw4FoUeZo0rQhTmlrbGFzIFNjaG5lbGxlIDx
+ uaWtzQGtlcm5lbC5vcmc+iQJUBBMBCAA+AhsBBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAFiEEnbAA
+ stJ1IDCl9y3cr+Q/FejCYJAFAmesuuEFCQenEYkACgkQr+Q/FejCYJC6yxAAiQQ5NAbWYKpkxxjP/
+ AajXheMUW8EtK7EMJEKxyemj40laEs0wz9owu8ZDfQl4SPqjjtcRzUW6vE6JvfEiyCLd8gUFXIDMS
+ l2hzuNot3sEMlER9kyVIvemtV9r8Sw1NHvvCjxOMReBmrtg9ooeboFL6rUqbXHW+yb4GK+1z7dy+Q
+ 9DMlkOmwHFDzqvsP7eGJN0xD8MGJmf0L5LkR9LBc+jR78L+2ZpKA6P4jL53rL8zO2mtNQkoUO+4J6
+ 0YTknHtZrqX3SitKEmXE2Is0Efz8JaDRW41M43cE9b+VJnNXYCKFzjiqt/rnqrhLIYuoWCNzSJ49W
+ vt4hxfqh/v2OUcQCIzuzcvHvASmt049ZyGmLvEz/+7vF/Y2080nOuzE2lcxXF1Qr0gAuI+wGoN4gG
+ lSQz9pBrxISX9jQyt3ztXHmH7EHr1B5oPus3l/zkc2Ajf5bQ0SE7XMlo7Pl0Xa1mi6BX6I98CuvPK
+ SA1sQPmo+1dQYCWmdQ+OIovHP9Nx8NP1RB2eELP5MoEW9eBXoiVQTsS6g6OD3rH7xIRxRmuu42Z5e
+ 0EtzF51BjzRPWrKSq/mXIbl5nVW/wD+nJ7U7elW9BoJQVky03G0DhEF6fMJs08DGG3XoKw/CpGtMe
+ 2V1z/FRotP5Fkf5VD3IQGtkxSnO/awtxjlhytigylgrZ4wDpSE=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.54.3 (3.54.3-1.fc41) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|IA1PR12MB7735:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6fff2d41-bce1-49cd-494c-08dd87de2750
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?WHB5clg3MXNUajhrSlZHVWdjSjRBTThoaDl0UENIdGVjSUtKWjV2MmN0TDJ3?=
- =?utf-8?B?ODZmNzZZQW1EbmRLSEdtVWdpSW1uTi96bnVpbk5SRjdIOFJZTjFkTWZaeEFy?=
- =?utf-8?B?Q1hhdUxmRloxVVV3UVhBWUljY0xnbzZXRlk0bWZhWmx2TTZFSkEybjA4aXBl?=
- =?utf-8?B?S2c2NHJ6TDBHbnEyT3pkbUlJN2w5dDA1OWJrSjBQMGtYeW9BNWxsMVozQ0pr?=
- =?utf-8?B?dzl0ek5DbURhWFNHempqZDNLaldDdGRIRmFzOGRETFpwaUtwZ1E5RVhxblN1?=
- =?utf-8?B?clJPZDhhV0hPRysxNm8zdFc2QWFFcThnTitsNWU1Qk8rQkRmWllLTUt0V3VE?=
- =?utf-8?B?d1JJL2Jtc0tJUi9NTG5MdWxocDNjT3VzVm42RSszMUYvQTVjamRBeGxLcXlW?=
- =?utf-8?B?bEZVN1BMWXhhQVJCYmZXanRjeGs3VnYxWHY1cVNrTk9wZ3g5QVQxOXI2Znl4?=
- =?utf-8?B?TXR6Yk96MTZPUVpqRHdtUUdmcUt0NmJHTnBNT3hkV0VDdTlTS1FUeUsrcW9K?=
- =?utf-8?B?Sk1KZlVHbEphc0ZPYnpWVEZjcDByeUdyNE5WNkgySjVJL2Jkd2c3Z2hWTUtl?=
- =?utf-8?B?ck1qcFNIMC8yeForbm9XMGYyL3lFVnVkL1B0YlB6UGY3RUxlTGdnZmZEdHFJ?=
- =?utf-8?B?OHVsYndXakVLemdOdmpUYzR0ZGRrZFBFSWJzZzFKaTAwTEhmbGcvb1FiSzY2?=
- =?utf-8?B?MkozT2tvRHgxOW4rOHd6L0tXeWpDSG8zdlNVTEhHQmFlSk0wMS9qQkhwOG1w?=
- =?utf-8?B?cTF2d1ZIS050eDJMOXg1S28vUWM5RUQzd21iK0lMekFVS2RKcUQvNTI2emNR?=
- =?utf-8?B?aFpkK0FNMlRGQWo4THJ5M2hsczdwTHBKNUpSbHc1MWhabXFHRk9tYTBOeDI5?=
- =?utf-8?B?TTRpZk5jVlcrVTlhTWlabUFYeGdzTWtBb1NnVWtHTS9qZlBMYWdSSUttMTFN?=
- =?utf-8?B?UkE1cnc4ejRVNEUxZEpGbGtMaGo0QjdJYkFJa2R6STdEZ0p5d2sreFVCWGpL?=
- =?utf-8?B?OExjdVVzQVA5RFYyQW5EWldTbURLZXFqbmNhZ1lGaldTKzBaa3NaVzJCSG5s?=
- =?utf-8?B?OFY3OG9UUVZTNU5TamI5MUgxK2hJVU1TcmxJQy8rSEJvWWVXVXZWRndTSmFE?=
- =?utf-8?B?U0J1djYxRFIxSXFPOUtXV2R5ZUp3VVMwbkVlVmUzRU5QRXVUSHViZDVETXE0?=
- =?utf-8?B?WTVpakVBMXVoZ3k2Q0dNQUZHN2JKWGJEaSsrVXRGZFk4Qi9Na1VFZjd2eDBo?=
- =?utf-8?B?VitpZlptT3RmeTVwaGZtT3IzWlpnVGZ6UWtEbEg4Yi9aM2ZpdWllQlQ4U0U4?=
- =?utf-8?B?WElxQlp2TFZseEY3K3lVL05OdDZhL283NzFoRjhadzJveU5NN21qZStKWUJG?=
- =?utf-8?B?OC90NTMwd3hScUdPcEZSUWVzbDk1bTlJZ01aRWNZSmVONzhiTFZDWndjWFkv?=
- =?utf-8?B?SEJyaXNaN2tSM1g2K3pjbkpCcTNMNTB5U3BJbGYrK1hxdklTc2xLa1RaRGQ2?=
- =?utf-8?B?UjRjd0IyZktYbGlMMy9YWUVRZGN6ZGdsdmtlR3lKbFA0a1U5Y2piTEVUWElQ?=
- =?utf-8?B?V3ljdHljeE03djU0TnUrYy9MeHlVWXRQVWlGcUFuaTVCbDlHKzhZeW4wVHp5?=
- =?utf-8?B?LzBrRVJPRkJIRzB3T1d6Mmlya0I0ZmVEYUVSbG1TRWpwRm5FU3BmYWZJSlZi?=
- =?utf-8?B?cE5vcGxNZGhxWmNTR3Q2WHdQL3VtazAyajc5aFVodE1JNi9USE5pemVUYUFr?=
- =?utf-8?B?eUJjN2Znd0dRV3QybXRNYjl6OXVJbFNFeEhWbDlZdWtvQlBHaG56SVUyN3VB?=
- =?utf-8?B?TXRLeEpBVnh1STFRdkZ6bk9PUGVSeE5hSmRjZ2Q2V3Fzb1dPY2RKdkpXRjRx?=
- =?utf-8?B?ME9oUm5DMEZOUDlRbEd2bk03OVRyNkwvdG4zeDZXQ2hJM2U1b2hPSXBCMTY1?=
- =?utf-8?Q?Kw/124yJzuI=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?QVBZd2llVXdTT2g5OHlTLzJlbitOWmRja0N6RWlpc2k5SGowY2wyZ0RYcGgw?=
- =?utf-8?B?aTFkSzB3eXVKeENaS3JYTWowRFdtSDUxMlFvVnBHalY2R1ozM0hZN00zZzNl?=
- =?utf-8?B?eDAzK0R0YVFTMElEWVYvUVRiZEVZRndlZ2laelNadWxBd0FRWGJvOXcrTnJt?=
- =?utf-8?B?NmNFcTBhdVFkQkFwOFNlaHFiOG1zdkJ5ZmdRaVBqWlJvQnRLUWxsam5OM2VS?=
- =?utf-8?B?RVFtazNkaGlvU1VNU3ZoWjZqelhUNGhQYjczNHUvQW9rUlVlMUxDUW00cW0z?=
- =?utf-8?B?ZlZpT01ad00vZlpGSC9leXpXN2x3Y3JzbHFxR3RUZTgvR2NZMk9aYlBOajZO?=
- =?utf-8?B?Wk1uYUtzNmNOSnI0SVp1amlCaTFzNnZIQkVKRmJIQkpUTk5OMXBpQ2k3NUti?=
- =?utf-8?B?QnlzM0c0SUUwdWZVTmhDdkk0WjVFakF3NFMvR3BReUNFcnk0R3Bia0xzZFdT?=
- =?utf-8?B?NllXVTQ4SXZPV01Za3QzRTJCcE5uTFQzTjUrYzVpOThRbUpiYmkyMDhMMjhL?=
- =?utf-8?B?bW1la2x5dWVlLy9mTDdiTXBzbm1LTVFlQzEzeEZlWjZQTUVaT01la1dDR0NY?=
- =?utf-8?B?SStjV1M0ZFVmOXlWUkJLVkRyK1dIeGJ2eVdTZE5id0E4dGo4RGdqeUhnM3po?=
- =?utf-8?B?R1NtSjB0bFFJek5SL3N5UnMzbXJNMXlzQzljZ3ZWOG1hVnRiOWg3N2JSb3Zt?=
- =?utf-8?B?ZCtkcDZ1cTl1TGovajlYcjBpNlhMaUFrNXNIM2ovejVmTUJabWlJdFpPUTVV?=
- =?utf-8?B?eFZKSW1xWGpSeUlVT0J3SHg4c3RUT3h2Q0VyM2h6NlIvSFNWelVJNXFwdE9T?=
- =?utf-8?B?ZGJsNnRTSVk5RExFQjZnSzdLVTI3NkdqU0pVaG94Rmg2SW54M3hHRDBSR3BR?=
- =?utf-8?B?bVJYeGRGU0k1Y3Zwcmh6bHZmYStBVTJOR2IrQTJLZDNoc3VzZCs5NVFTV0o0?=
- =?utf-8?B?UWs0M3RJY1FoQVBTckhxVUthallWTGUrdUFaZEh4b21Va0RVRER4ZjVNN2Vx?=
- =?utf-8?B?Tmh0dmRLQVRhQ0l5R01nUlFZQy8wRFNOUTc3VThpZmY3SXpMeGFUbzNEWitk?=
- =?utf-8?B?dmNYNDl5ZEtkZnFtT201bTJFZTBJTUtpbU84SWo4TXh4QzFsZlNMendtWE9V?=
- =?utf-8?B?ZlloRzliSWNzRVBrMFdEb2lBYnpSTmlkRW9LK01iMUpDQmhDWlcwcEJlS25K?=
- =?utf-8?B?b0hEQUpIbFFibnRHYWNJZ0pMVXJDNGlabHNRWGlSYm5GNEVKenhmdTdYV3Fw?=
- =?utf-8?B?QW5QU2NnQzRpTWYxQkhwZjVlanlBU2RFS0tZQnhYV2lnZEloUVE5T21YYVNB?=
- =?utf-8?B?NmJ2dytWVmlpa3NXNmxUcDY5cmxab0NQOEh3RURDN1NRYzFkcHdaMXczd005?=
- =?utf-8?B?ZnhZNERuUVNCSEFqMjlRVXEwVWxjNjlqMHJ0MC9maFBsK2c5NGQ5ZnBpVmdy?=
- =?utf-8?B?cU81L2FNUDg2WFhNN3JEYmNUMWM4Mlo0VnRXb3E3a1NVYVBMM0ZvMXZxMjVB?=
- =?utf-8?B?ZThqT2pYTGJaTjZPZ1l3dWtaUWgwZEY1azY1akZyTUVqVGVDbFN3SG1HRDVG?=
- =?utf-8?B?eW16bm9yZndYanhaRlBxN2JseTcvcmptMWJBTTh4c3BIaFhhbEhHNzdKSGh6?=
- =?utf-8?B?YndMVXg5VmQxNUQvMnJyeHVFWmlublJQdkpvYndwUm01YkpnLzZvaWQ4d28r?=
- =?utf-8?B?VnY3VVZ3RGZ1cCt5b0U1TEpaQWRzMWN3Q1hKaktxK3VTUnlDSm1wSk9oL0xX?=
- =?utf-8?B?d3lUc2Y4cXptZk45UTh6d2d3UGlZLytvWTFIdXlhNnV0YUxNUXNpUTUzU281?=
- =?utf-8?B?RGNGMUZ4cVBIVm9ZbHEwd0Qxa2ZDTG9GcUlpZWpQSGhWQkg0eTN4bzhCd0RO?=
- =?utf-8?B?a0lKMHhoaHViQzVNSkhwdnljOGg2VlVDVjhaLy95THFsYnBsb2NXTC96eTht?=
- =?utf-8?B?Mi96TkNxdG9sVXFDNTM3cTA5eStqK1JWUWliMElKcHVCQzBUWTVVVWUvR2sy?=
- =?utf-8?B?dzZTNFVDQWZONUdRU2YxM1RKZ1ZCWnhyK1JlVVd0RThqTlcvYXI4YWk0SjVK?=
- =?utf-8?B?NFN6bTFCUW94bUlvVDViRUpYWjJ0NFRyazIyMWJFczlnRytTOSs2N25QZ1hp?=
- =?utf-8?Q?hmGQOItRu3YVUZMH7d+BowvWa?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6fff2d41-bce1-49cd-494c-08dd87de2750
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2025 11:57:17.2551
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cm23DSL8ot3hA/QjdaxOwiYC5WpVimraZ7ewkmPmq46ossLS0F3wvXreKPB6IlTtLo7nJGhblLQB+dFhWHSc9A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7735
+X-TM-AS-GCONF: 00
+X-Authority-Analysis: v=2.4 cv=dcuA3WXe c=1 sm=1 tr=0 ts=68122270 cx=c_pps a=5BHTudwdYE3Te8bg5FgnPg==:117 a=5BHTudwdYE3Te8bg5FgnPg==:17 a=IkcTkHD0fZMA:10 a=XR8D0OoHHMoA:10 a=Ikd4Dj_1AAAA:8 a=VnNF1IyMAAAA:8 a=_knvdkSgN1paDctlJl8A:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: R-J8zs6vbU8Fj3Hg9HUhfjU7mRcYm1f9
+X-Proofpoint-ORIG-GUID: vs1u3Uxwur-7V56wvsM_6u35JXL4UxRN
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNDMwMDA5NCBTYWx0ZWRfX0crM3ye1wDMC kbmvOcxMpt8qp2kb4hwNdhueblTXbdKjNKMEcOSa9phlvxoFwMQXJmwiAp7rlQ7umEpUTk9O8CH UCh1SsJLhJFOGqLkqdLIUMVxHD2tmkVHp21Kmq6apmJj6BpFoInlRLKY9vyZKSLjWOjbIl3rD7l
+ YawL/LEQRbIf0uhOvsspLktyC77qIIQvgQt4rRFWnDeyuOyiGrRyPobDRpyhZCfQTwFfkLm8LtY NZ7rCINGc6RERQcdHZhgAdny2ZdDjlFvLirlNByExuRX1MLsV5nVvf+goh9gNvItulc1gKtQGp+ rq1FAXQIMKZNw/CwAz671p6Mrn4TKgH4erOUiMN+gjKhWQapr6AEiC7/lnishFqsgt9s/516iPH
+ LvI+GvtmUiFHTYwvCG4xuzdAArZsdz5kRIQHBnA3AwCDoxMRS+qc0YKJmRX8qpFUjzE3x0Dg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-04-30_04,2025-04-24_02,2025-02-21_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 suspectscore=0
+ spamscore=0 impostorscore=0 bulkscore=0 adultscore=0 mlxscore=0
+ malwarescore=0 mlxlogscore=999 priorityscore=1501 lowpriorityscore=0
+ clxscore=1011 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
+ definitions=main-2504300094
 
-On 4/23/2025 12:20 PM, Ankit Soni wrote:
-> The EFR[HATS] bits indicate maximum host translation level supported by
-> IOMMU. Adding support to set the maximum host page table level as indicated
-> by EFR[HATS]. If the HATS=11b (reserved), the driver will attempt to use
-> guest page table for DMA API.
-> 
-> Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Signed-off-by: Ankit Soni <Ankit.Soni@amd.com>
-
-
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-
-Minor nit.
-
+On Tue, 2025-04-29 at 11:34 -0300, Jason Gunthorpe wrote:
+> These drivers just have a constant value for their page size, move it
+> into their domain_alloc_paging function before setting up the geometry.
+>=20
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/iommu/amd/amd_iommu.h       |  1 +
->  drivers/iommu/amd/amd_iommu_types.h |  1 +
->  drivers/iommu/amd/init.c            | 16 ++++++++++++++++
->  drivers/iommu/amd/io_pgtable.c      |  4 ++--
->  drivers/iommu/amd/iommu.c           |  2 +-
->  5 files changed, 21 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-> index bb14c4800dd0..0286120ad4a5 100644
-> --- a/drivers/iommu/amd/amd_iommu.h
-> +++ b/drivers/iommu/amd/amd_iommu.h
-> @@ -42,6 +42,7 @@ int amd_iommu_enable_faulting(unsigned int cpu);
->  extern int amd_iommu_guest_ir;
->  extern enum protection_domain_mode amd_iommu_pgtable;
->  extern int amd_iommu_gpt_level;
-> +extern u8 amd_iommu_hpt_level;
->  extern unsigned long amd_iommu_pgsize_bitmap;
->  extern bool amd_iommu_hatdis;
->  
-> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index 284ff4309660..6bf81197c2c8 100644
-> --- a/drivers/iommu/amd/amd_iommu_types.h
-> +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -96,6 +96,7 @@
->  #define FEATURE_GA		BIT_ULL(7)
->  #define FEATURE_HE		BIT_ULL(8)
->  #define FEATURE_PC		BIT_ULL(9)
-> +#define FEATURE_HATS		GENMASK_ULL(11, 10)
->  #define FEATURE_GATS		GENMASK_ULL(13, 12)
->  #define FEATURE_GLX		GENMASK_ULL(15, 14)
->  #define FEATURE_GAM_VAPIC	BIT_ULL(21)
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index f71b236c2af2..c713756fa44e 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -152,6 +152,8 @@ bool amd_iommu_dump;
->  bool amd_iommu_irq_remap __read_mostly;
->  
->  enum protection_domain_mode amd_iommu_pgtable = PD_MODE_NONE;
-> +/* Host page table level */
-> +u8 amd_iommu_hpt_level;
->  /* Guest page table level */
->  int amd_iommu_gpt_level = PAGE_MODE_4_LEVEL;
->  
-> @@ -3052,6 +3054,7 @@ static int __init early_amd_iommu_init(void)
->  	struct acpi_table_header *ivrs_base;
->  	int ret;
->  	acpi_status status;
-> +	u8 efr_hats;
->  
->  	if (!amd_iommu_detected)
->  		return -ENODEV;
-> @@ -3096,6 +3099,19 @@ static int __init early_amd_iommu_init(void)
->  	    FIELD_GET(FEATURE_GATS, amd_iommu_efr) == GUEST_PGTABLE_5_LEVEL)
->  		amd_iommu_gpt_level = PAGE_MODE_5_LEVEL;
->  
-> +	efr_hats = FIELD_GET(FEATURE_HATS, amd_iommu_efr);
-> +	if (efr_hats != 0x3) {
-> +		/*
-> +		 * efr[HATS] bits specify the maximum host translation level
-> +		 * supported, with LEVEL 4 being initial max level.
-> +		 */
-> +		amd_iommu_hpt_level = efr_hats + PAGE_MODE_4_LEVEL;
-> +	} else {
-> +		pr_warn_once("Disable host address translation due to invalid max level (%#x).\n",
+>  drivers/iommu/exynos-iommu.c   | 3 ++-
+>  drivers/iommu/ipmmu-vmsa.c     | 4 ++--
+>  drivers/iommu/mtk_iommu_v1.c   | 3 ++-
+>  drivers/iommu/omap-iommu.c     | 3 ++-
+>  drivers/iommu/rockchip-iommu.c | 3 ++-
+>  drivers/iommu/s390-iommu.c     | 2 +-
+>  drivers/iommu/sprd-iommu.c     | 3 ++-
+>  drivers/iommu/sun50i-iommu.c   | 3 ++-
+>  drivers/iommu/tegra-smmu.c     | 3 ++-
+>  9 files changed, 17 insertions(+), 10 deletions(-)
+>=20
+--- snip ---
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index 3c62337f43c677..21c218976143ef 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1584,6 +1584,8 @@ static struct iommu_domain *omap_iommu_domain_alloc=
+_paging(struct device *dev)
+> =20
+>  	spin_lock_init(&omap_domain->lock);
+> =20
+> +	omap_domain->domain.pgsize_bitmap =3D OMAP_IOMMU_PGSIZES;
+> +
+>  	omap_domain->domain.geometry.aperture_start =3D 0;
+>  	omap_domain->domain.geometry.aperture_end   =3D (1ULL << 32) - 1;
+>  	omap_domain->domain.geometry.force_aperture =3D true;
+> @@ -1735,7 +1737,6 @@ static const struct iommu_ops omap_iommu_ops =3D {
+>  	.release_device	=3D omap_iommu_release_device,
+>  	.device_group	=3D generic_single_device_group,
+>  	.of_xlate	=3D omap_iommu_of_xlate,
+> -	.pgsize_bitmap	=3D OMAP_IOMMU_PGSIZES,
+>  	.default_domain_ops =3D &(const struct iommu_domain_ops) {
+>  		.attach_dev	=3D omap_iommu_attach_dev,
+>  		.map_pages	=3D omap_iommu_map,
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iomm=
+u.c
+> index 22f74ba33a0e38..f4a5ad096343ab 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -1081,6 +1081,8 @@ static struct iommu_domain *rk_iommu_domain_alloc_p=
+aging(struct device *dev)
+>  	spin_lock_init(&rk_domain->dt_lock);
+>  	INIT_LIST_HEAD(&rk_domain->iommus);
+> =20
+> +	rk_domain->domain.pgsize_bitmap =3D RK_IOMMU_PGSIZE_BITMAP;
+> +
+>  	rk_domain->domain.geometry.aperture_start =3D 0;
+>  	rk_domain->domain.geometry.aperture_end   =3D DMA_BIT_MASK(32);
+>  	rk_domain->domain.geometry.force_aperture =3D true;
+> @@ -1171,7 +1173,6 @@ static const struct iommu_ops rk_iommu_ops =3D {
+>  	.probe_device =3D rk_iommu_probe_device,
+>  	.release_device =3D rk_iommu_release_device,
+>  	.device_group =3D generic_single_device_group,
+> -	.pgsize_bitmap =3D RK_IOMMU_PGSIZE_BITMAP,
+>  	.of_xlate =3D rk_iommu_of_xlate,
+>  	.default_domain_ops =3D &(const struct iommu_domain_ops) {
+>  		.attach_dev	=3D rk_iommu_attach_device,
+> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
+> index 433b59f435302b..9c80d61deb2c0b 100644
+> --- a/drivers/iommu/s390-iommu.c
+> +++ b/drivers/iommu/s390-iommu.c
+> @@ -557,6 +557,7 @@ static struct iommu_domain *s390_domain_alloc_paging(=
+struct device *dev)
+>  	}
+>  	zdev->end_dma =3D zdev->start_dma + aperture_size - 1;
+> =20
+> +	s390_domain->domain.pgsize_bitmap =3D SZ_4K;
+>  	s390_domain->domain.geometry.force_aperture =3D true;
+>  	s390_domain->domain.geometry.aperture_start =3D 0;
+>  	s390_domain->domain.geometry.aperture_end =3D max_tbl_size(s390_domain)=
+;
+> @@ -1158,7 +1159,6 @@ static struct iommu_domain blocking_domain =3D {
+>  	.domain_alloc_paging =3D s390_domain_alloc_paging, \
+>  	.probe_device =3D s390_iommu_probe_device, \
+>  	.device_group =3D generic_device_group, \
+> -	.pgsize_bitmap =3D SZ_4K, \
+>  	.get_resv_regions =3D s390_iommu_get_resv_regions, \
+>  	.default_domain_ops =3D &(const struct iommu_domain_ops) { \
+>  		.attach_dev	=3D s390_iommu_attach_device, \
 
-s/invalid max level/invalid translation level/
+I'm guessing there's no particular thought behind not adding an empty
+line for s390-iommu.c like for the others? I slightly prefer not having
+an empty line here but would be fine with it too, so just curious.
 
--Vasant
+Acked-by: Niklas Schnelle <schnelle@linux.ibm.com> # for s390-iommu.c
 
-
+> diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
+--- snip ---
