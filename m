@@ -1,225 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70A941E5B9C
-	for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 18:52:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30F711C8FB5
+	for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 19:53:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746039128; cv=none; b=WOtzDlkJ1HW58ad+gFDLw/FFsi/vKAIQkkckMeBD1vasccVIeXo2cOo99/HXA3czZO35bFFPkN4E6B8ybbGrur/RrQ4Gq/qpUsptldMQNWyn9svhE1bKLoZqzoeNcKIWEd31CrFAko8O0e6NwGEc0PU6+qevPAlnwYgpFjJCQic=
+	t=1746042800; cv=none; b=c1mGuMs25E+v/3m6s66sn5JzAc6IHjdfLSl9vrdrj38iOZ0hA351ZddVUAHTyDTKwX7Eydamh+K232R3UkfwYLwFoyYvIUjXk8Tt/lqL8Ca0aPaspT2aico9ytqEQmOPoDrALaZexlQcElXoviKRXNnFxmkcQbP3+BYVzjlFmgk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746039128; c=relaxed/simple;
-	bh=m/8gh4C7zSRFHSMiGPx6X+dYvNjlflIkT8CNHGNdgfk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fYFebdxKo5WFqu6qmcuARBlYZeCsB9aPdXqimjZF/pjkJaGtbjmjeb80zfdlprBb6Pb93+o//0AhmzMbE6dQyiD6gNpaAEnnrzSvn0z/f0nPetpUcx2+B8Hu2rQBz5P1Wal/XO0klwt0+mXweuaH7BR7GCx/w8xnnPqXNJ0KrRo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YUcwpeAH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1746042800; c=relaxed/simple;
+	bh=BYVYLOb7g/trPsg04aimiZO3eX+8p1FII3bTfBVJKiY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PX+VXCRTH2EoZZ/aqUBSUat8G2gXFD8k8F4ekILEOTfjxcLcRm7YHz75+QNNXQGWUkkslJqM9nlMPr+h6LnIWRB0pohhA66knmFwqNlkgI8DUxN8194q/7wSOQqz/RwwBf+KEZV87qeBr5sx+pDgWCpXwBsKGAWMYPUeAWno3ds=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=t3aaGkOL; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YUcwpeAH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E8E6C4CEEE
-	for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 18:52:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746039128;
-	bh=m/8gh4C7zSRFHSMiGPx6X+dYvNjlflIkT8CNHGNdgfk=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=YUcwpeAHiFYaL7roColVPVgqAwg083lEnwINrDeiyKWR+uemDpd0QHMv3FK3ZX0GS
-	 sK+FojiQlF1jnUcsiHm5YcMHae6e3mymWsANgGrGlCKP/E2IesOb1OO8iYUSo1SL6I
-	 OC8wm2xkw/NkgRrCwSYDMTv0ArKnUtjsf80b630SGDi5+ADkcLVrLR2k4X/Jre6kvu
-	 fG+dlQfHModH9ZO5LUhO1Wvu+709lQ3GcG9duqVsBfSD3IosqHyXfi98lAFIiLWnjL
-	 0vav5EpgHwq65nm8TzcYSI0xN4sTW6KntdL70S28zPhTjN6dVyMA88DOLt8XGpL7r4
-	 ajS0qiuVUNypg==
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5498d2a8b89so276232e87.1
-        for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 11:52:07 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXg8lG5YQfRYcWWhdCU0mNicW68EefFzE6nDfYV5u9tGiznAMYnW8pymjIkYTQByAgJ6xJUyg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxtrtX/FIjQ/2cdYRKs1iMZeSnaflnG5tDU9RYv/NKNwS+I25f3
-	bMsIGXhRvQFCFkxI6znVgZEYpnx8e2GbbqpNt8hgGOanrdRkMKBh/QEBebXsXY5OeYFNG1jA5wE
-	3Pza8Qe61pzZ0njmluLzQQfvP04e7LSkz7p91
-X-Google-Smtp-Source: AGHT+IE0K5POXjSzi6PVmVrzzNUz5C/TwrdOq3L9wFNvUlNtX4GskbINsst/0+rP2duvkTLtKdKGSet0iv4McAObDYU=
-X-Received: by 2002:a05:6512:33cf:b0:545:c7d:1784 with SMTP id
- 2adb3069b0e04-54ea72919cemr26556e87.43.1746039126238; Wed, 30 Apr 2025
- 11:52:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="t3aaGkOL"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-22c33e4fdb8so2557205ad.2
+        for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 12:53:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1746042798; x=1746647598; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=sS3+hirRuenFYIB7Pzrup/YFqLZ6iZUt0EDXHvDSPdw=;
+        b=t3aaGkOLxSYPfcqMFjjDBg8JXSHt1S032U15UHRICuiI3IzAWZCoug67/6IEON4sGd
+         gM2f8zzU/q+XjncUyhah9dJPn9DR3s20q/9T7JDCU2ghPu/IPUAzN0O5MfL0h6u8caym
+         qR7upwZmZFJsRm4rnduhCgs/H+TbtfiAk/l9hhSpoGaSCpheBcf5QJ0/RQrksfRE8L6M
+         aELelX3KUl4MlSb+P1wVCKT5znsGMPwMRN7pAp1oIKJzS96bv7MVP0/1FUymNLCL64Re
+         V+6SuYuKNqLi8O+GZNh4/9KNkbEvEzSQKs63+sFzSZEkwWCBhiYazROK75XdubLqTc/h
+         bVcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746042798; x=1746647598;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sS3+hirRuenFYIB7Pzrup/YFqLZ6iZUt0EDXHvDSPdw=;
+        b=KOY5pNA0jFJC6bT51gHgLgaZeZH9RTJgjiB5R9f7zB8G4xm+Rivg2RlSdeO9uv2paR
+         mBf1Cii2KxBth456Ejq0G6y+C7mQmkEySacLxN/le0ReyMuwU9g3muQ5xHkgC5w9ZPHK
+         XHM8npEdYL4/4/tei+Gy31JV/dgLoOzyOi9eHKR9JdpjAEjawxgim2bNmAt1u8ogWVq5
+         jT5lBO7o8BGuPHpiAuh/cXR4BUZcxD/HOhbDoAzuIo60D2AXs/GHxeQUUh/NwsbS2bfR
+         CUKKA792BgAnIi0b+iGtwdCEVxL25/pYFYYANrV03i57Qlkb7jEjWIdh04hWLwiDMPdq
+         DQZw==
+X-Forwarded-Encrypted: i=1; AJvYcCX2M3C3xJboS97dXcaK7LueQvwSlKB9JHOHLRSnI4+YiX6N1Bwr8S6DELTxR6KSUbAf5Aa1Rg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxwjrPTpWMdYZeq92Bv3aOVu/sObnHWQpKdVlSUy68ATOmkSd/t
+	GY0um19PriT7WOq4DClXVOYAEiIE7XeaYa4ylQwZPvweqmi22RqV/D1MfbprYw==
+X-Gm-Gg: ASbGncsnXxWmYMdmkPUQfaZ6W6xKNWDpVbJV2yv09bqkcUl8MRbcAH8FYKz5GxFwJQ7
+	r1sFq6RiH52si2av67VZAXivVKOdulCKTRWtmuBnJdIzgKr+W737gekwBcl3LnwtRDjFmarKgZg
+	aglFKI9Bo03otIZy17RxC8UbLMoaRLaHoOERwtjVKFBGR3eUwpY/g+Dy0FDp57/CNsnlvApuE9/
+	gqYrmecBTBJ1K40Aob4GU+vAjxkGYFR0JuUujaEwMSJB95oCnSbA3I80/JKn2gqSylEXLwTPWkp
+	rDt9XbbC/qtW6r3OXXLNH6+H1jyLMvf76+ghG0Gu0XjQCSdxriEGbpjxSTgM6VvNyzw6X0FtFDR
+	3IyQcmA==
+X-Google-Smtp-Source: AGHT+IGcs0gQ+kH9gePUq2IzeHDztkv1kvHGzYIx5as0naNDy5hQJ3XvIttYTvlnG7jSfZ8vALUe5Q==
+X-Received: by 2002:a17:903:3d0c:b0:21f:507b:9ad7 with SMTP id d9443c01a7336-22df34ff95fmr71796595ad.25.1746042798140;
+        Wed, 30 Apr 2025 12:53:18 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22db4d76d56sm126604585ad.4.2025.04.30.12.53.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 30 Apr 2025 12:53:17 -0700 (PDT)
+Date: Wed, 30 Apr 2025 12:53:13 -0700
+From: William McVicker <willmcvicker@google.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, Russell King <linux@armlinux.org.uk>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] amba: Fix driver_managed_dma check
+Message-ID: <aBJ_qfy9cP_m5fSw@google.com>
+References: <20250425133929.646493-1-robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250421162712.77452-1-ross.philipson@oracle.com>
- <20250421162712.77452-19-ross.philipson@oracle.com> <CALCETrVayuzp7fstavHkx99eieUCNj3=Zt8D=WOqMnmeT6DKmQ@mail.gmail.com>
- <077163e1-b7e1-4bc9-8294-e557cc7bd78d@apertussolutions.com>
-In-Reply-To: <077163e1-b7e1-4bc9-8294-e557cc7bd78d@apertussolutions.com>
-From: Andy Lutomirski <luto@kernel.org>
-Date: Wed, 30 Apr 2025 11:51:54 -0700
-X-Gmail-Original-Message-ID: <CALCETrVfrP=RL0W1cOY1PXGAsVLgbgSVLCy+ZsDg=-rxMQ=u9w@mail.gmail.com>
-X-Gm-Features: ATxdqUFyoGR-AY1tkFj9SH8YcCxlyGufKMkkioxYlBMgz0llRYwovkkXKsIy3U0
-Message-ID: <CALCETrVfrP=RL0W1cOY1PXGAsVLgbgSVLCy+ZsDg=-rxMQ=u9w@mail.gmail.com>
-Subject: Re: [PATCH v14 18/19] x86: Secure Launch late initcall platform module
-To: "Daniel P. Smith" <dpsmith@apertussolutions.com>
-Cc: Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org, x86@kernel.org, 
-	linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org, 
-	linux-crypto@vger.kernel.org, kexec@lists.infradead.org, 
-	linux-efi@vger.kernel.org, iommu@lists.linux.dev, tglx@linutronix.de, 
-	mingo@redhat.com, bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com, 
-	ardb@kernel.org, mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com, 
-	peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, nivedita@alum.mit.edu, 
-	herbert@gondor.apana.org.au, davem@davemloft.net, corbet@lwn.net, 
-	ebiederm@xmission.com, dwmw2@infradead.org, baolu.lu@linux.intel.com, 
-	kanth.ghatraju@oracle.com, andrew.cooper3@citrix.com, 
-	trenchboot-devel@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250425133929.646493-1-robin.murphy@arm.com>
 
-On Tue, Apr 29, 2025 at 6:41=E2=80=AFPM Daniel P. Smith
-<dpsmith@apertussolutions.com> wrote:
->
-> On 4/28/25 13:38, Andy Lutomirski wrote:
-> >> On Apr 21, 2025, at 9:36=E2=80=AFAM, Ross Philipson <ross.philipson@or=
-acle.com> wrote:
-> >>
-> >> =EF=BB=BFFrom: "Daniel P. Smith" <dpsmith@apertussolutions.com>
-> >>
-> >> The Secure Launch platform module is a late init module. During the
-> >> init call, the TPM event log is read and measurements taken in the
-> >> early boot stub code are located. These measurements are extended
-> >> into the TPM PCRs using the mainline TPM kernel driver.
-> >
-> > I read through some of the TPM and TXT docs, and I haven=E2=80=99t foun=
-d a
-> > clear explanation of exactly what gets hashed into which PCR.  (Mostly
-> > because the docs are full of TXT-specific terms.)
->
->
-> For Intel TXT, the general approach is detailed in section 1.10.2 of the
-> TXT Software Development Guide[1]. I point you at the Detail and
-> Authorities Usage section because the ability to do Legacy Usage has
-> been unavailable for some time.
->
-> In section 1.10.2.1, the dialogue explains how and what the initial
-> measurement is into PCR17. After that is Table 1, which provides a
-> listing of all the measurements the ACM could make before starting the
-> MLE. Just as an FYI, on Gen 9 and later, the STM measurement will be
-> present and will be the hash of the PPAM module.[2]
->
-> Section 1.10.2.2 gives a similar treatment to PCR18.
->
-> [1]
-> https://www.intel.com/content/dam/www/public/us/en/documents/guides/intel=
--txt-software-development-guide.pdf
-> [2]
-> https://www.intel.com/content/dam/www/central-libraries/us/en/documents/d=
-rtm-based-computing-whitepaper.pdf
->
->
-> > But I=E2=80=99m really struggling to understand how the security model =
-ends up
-> > being consistent with this late_initcall thing. We measure some state
-> > into the event log, and then we do a whole bunch of things (everything
-> > from the very beginning of loading the kernel proper to the whenever
-> > in the late_initcall stage this code runs), and then we actually
-> > extend the PCRs.  It seems to me that this may involve a whole lot of
-> > crossing fingers that an attacker can=E2=80=99t find a way to get the k=
-ernel
-> > to execute code that changes the event log in memory prior to
-> > extending PCRs such that attacker-controlled values get written.  Even
-> > if the design is, in principle, sound, the attack surface seems much,
-> > much larger than it deserves to be.
+On 04/25/2025, Robin Murphy wrote:
+> Since it's not currently safe to take device_lock() in the IOMMU probe
+> path, that can race against really_probe() setting dev->driver before
+> attempting to bind. The race itself isn't so bad, since we're only
+> concerned with dereferencing dev->driver itself anyway, but sadly my
+> attempt to implement the check with minimal churn leads to a kind of
+> TOCTOU issue, where dev->driver becomes valid after to_amba_driver(NULL)
+> is already computed, and thus the check fails to work as intended.
+> 
+> Will and I both hit this with the platform bus, but the pattern here is
+> the same, so fix it for correctness too.
 
-I hate to be obnoxious, but your email kind of exemplifies why I, and
-I think many developers, REALLY dislike the TXT and related specs.
-It's full of magic words that mean nothing to anyone not immersed in
-this particular ecosystem.
+Thanks!
 
->
->
-> There is a more fundemental flaw to your scenario, but before covering
-> that, consider what measurements could be tampered with that are made by
-> the setup kernel:
+Reviewed-by: Will McVicker <willmcvicker@google.com>
 
-What is the "setup kernel"?  Do you mean the early code in the kernel?
-
->
->   - Kernel Setup Data
->   - TrenchBoot's SLRT
->   - Boot Params
->   - Command line
->   - EFI Memory Map
->   - EFI configuration items, populated by efi-stub (currently unused)
->   - External Ramdisk
-
-Are you saying that all of these items are measured by the early
-loader (and *not* measured by the ACM or otherwise by anything that is
-trustworthy and runs before the early code)?
-
->
-> Outside of the case of an external ramdisk, the attacker can only
-> pretend valid configuration data was passed to it.
->
-> Correct me if I am wrong, but I don't think that is what is bothering
-> you. You are either concerned with one of two cases here. Either you are
-> concerned that the attacker may be able to hide the loading of a corrupt
-> kernel or that the attacker can corrupt the kernel after loading.
-
-Here is my concern:
-
-Suppose there is a set of measurements that an attacker wants to
-replicate.  Some of these measurements are done prior to transferring
-control to the early code that's in this patchset (call these
-before-Linux measurements) and some are done by the loaded kernel
-(let's call these Linux measurements).
-
-I am concerned that the attacker will load a combination of things
-that have the correct before-Linux measurements but the wrong
-after-Linux measurements.  (Wrong in the sense that, *if those
-measurements actually landed in the PCRs, then the attacker would
-lose*.)  *But* the attacker carefully chooses what they're loading to
-gain control of the system prior to the actual PCR extension.  Then
-the attacker extends the PCR with the hash that they want to
-replicate, and the attacker wins.
-
-For the security model to make any sense at all, then it needs to be
-impossible for the attacker to gain control prior to the early kernel
-code running without changing the before-Linux measurements.  But
-there is a huge gap between when the early Linux code runs and when
-the late initcalls run, and the attacker has that entire window to
-break your security.
-
-> first case, the answer is no; the attacker cannot. The kernel and the
-> initrd if it was packed in the kernel are measured and sent to the TPM
-> by the ACM running in cache-as-ram before execution begins.
->
-> The second case is the flawed scenario, a strawman, if you will. This is
-> a runtime-integrity problem that is outside the scope/protections of
-> load-time-integrity solutions such as SRTM and DRTM. If the correct
-> kernel was loaded and measured, but an attacker already has a position
-> in the system that they can corrupt the kernel before the user-space
-> init process can be run, then they already won.
-
-I'm arguing that it seems like that this patchset has a
-runtime-integrity problem.  It's outside the scope of the TXT spec per
-se.  It's in the scope of *the Linux kernel*, and anyone who wants to
-trust that the Linux DRTM code actually works needs to factor in this
-giant weakness.
-
-And you haven't explained why there is no way for an attacker to
-corrupt the process between the early kernel code and the late
-measurement code.
-
-
-> > Is there some reason for all this complexity instead of extending the
-> > PCRs at the early stage when the measurements are taken?
->
->
-> We did have TPM logic in the setup kernel at one point. Within their
-> rights, the TPM maintainers took the position that the only TPM
-> interface logic should be the existing driver.
-
-Hey TPM maintainers, I think this is nonsense, or maybe someone has
-misinterpreted something that someone else said.  I understand that
-avoiding code duplication is nice.  I understand that, at runtime, all
-TPM access ought to go through the driver.  But, if the driver is
-incapable of working during the very very early kernel load, then
-there should be an alternate interface.  Kind of like how we have
-early_printk instead of saying "well, there should only be one printk,
-so instead of having early_printk, we'll just have a big buffer of
-messages and log them eventually".  Or kind of like how we might call
-EFI boot service functions during early boot.
-
---Andy
+> 
+> Reported-by: Will McVicker <willmcvicker@google.com>
+> Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/amba/bus.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
+> index 71482d639a6d..84bc788663e6 100644
+> --- a/drivers/amba/bus.c
+> +++ b/drivers/amba/bus.c
+> @@ -353,7 +353,7 @@ static void amba_shutdown(struct device *dev)
+>  
+>  static int amba_dma_configure(struct device *dev)
+>  {
+> -	struct amba_driver *drv = to_amba_driver(dev->driver);
+> +	const struct device_driver *drv = READ_ONCE(dev->driver);
+>  	enum dev_dma_attr attr;
+>  	int ret = 0;
+>  
+> @@ -365,7 +365,7 @@ static int amba_dma_configure(struct device *dev)
+>  	}
+>  
+>  	/* @drv may not be valid when we're called from the IOMMU layer */
+> -	if (!ret && dev->driver && !drv->driver_managed_dma) {
+> +	if (!ret && drv && !to_amba_driver(drv)->driver_managed_dma) {
+>  		ret = iommu_device_use_default_domain(dev);
+>  		if (ret)
+>  			arch_teardown_dma_ops(dev);
+> -- 
+> 2.39.2.101.g768bb238c484.dirty
+> 
