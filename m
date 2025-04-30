@@ -1,178 +1,110 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A6D913C3CD
-	for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 02:12:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 573B434545;
+	Wed, 30 Apr 2025 02:37:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745979163; cv=none; b=Jszrtw4Pjx4V3jB2XlPA1uFO0NXWgpNiKGQUWk5lWUOwXEh+zpYRh1L13xtyK74nuln3Uat9VU8KGw3W1sYOChKbHLn+UVTrViyWeBfEmMvEsWxdOJN72EyU72/DNrUWfYj2qun+Fli66g5rlp5kXq21LJe/eU80pQMkXuLis1g=
+	t=1745980633; cv=none; b=hFxFpcX7FvZKWt+M7zeiH0rcc50wTxAGOEWgCpxyvjjvrsaAHbaNXtb770TqbtGNB91v4NMtpiCkOuuGqNsnFqHVANszSg9AwbhNQfXpInOiPNQ4y6HKgO3ZLISlKZzojW05CmD0qLTb72FRJjeMw0ly8NZACbVwk0rQwxw8GvE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745979163; c=relaxed/simple;
-	bh=FM02bmLzHhRN90m6daMRPbkQqrtiylJ5mWsbFxoCrZE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=CAH3892+YBoGI2fp7aN1ThWz/Ip2WfFLulQXtExYQnXIBTRu8yvNichp6zhwSpkoxpYJ5M0XQYfmpJc+KnRfOiIor/YO3x7pk4VPFsllzfp6SycSfi1Tb9GX0b9dQ6bNvALGwQkiM+IlUbhI667i4yRzUehggi8Ni6o9fki0b/k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IMrEn5+c; arc=none smtp.client-ip=198.175.65.15
+	s=arc-20240116; t=1745980633; c=relaxed/simple;
+	bh=UeVWVQMtCSgoY6I17XEsqNEXKT0TWbHaFTIMLOeTnTs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=E56n228goyoSAXxOhpFWC2KLQVS8csCsq4kC74nRfcQ0aQFqCk/Wox3cUg2geCq01QypWbua7rOUS+krIVDVhkFawPqRKWltaBOcpnHMAjlU433HVIfMfAO14PJY36s7l8OCkDeGHar7GDzUvcNtgj+RpigxJ4UjcHJnP7JZ/rE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RsGi18MN; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IMrEn5+c"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RsGi18MN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1745979163; x=1777515163;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FM02bmLzHhRN90m6daMRPbkQqrtiylJ5mWsbFxoCrZE=;
-  b=IMrEn5+c2gqdXcYtD/EkdKIAW395B7Tf4ik9UduZJsrNtr4qNg6XN2w4
-   +WvetQ5RDWV4zH6NfHpwBSdJPJlwnoC/8InaDpjePPdbvObo2SNGAHveE
-   wq8aTXcz/Yel9aBC7KiFHqVtUrKuc6MX/Y82/CEvFDFzfQr5Jvq1YM811
-   DM6y5qrbMtKRT2nlewAViO6CdfpAOEf3VxLa7LpLQEVikFwkYejVoKIJ3
-   aPEPT7KNwAJejppGXp/nVms9ixuk7igPmQGfwiwarniMXlT9Z6Skyn37X
-   X3+2pzrKSY8/t75z4hjbAhoBXFFhELWFe8Ym082LLAlYaNFOj4iwXME4h
-   g==;
-X-CSE-ConnectionGUID: L3HRsUrRQ6KrHDzUjiDWPQ==
-X-CSE-MsgGUID: W2Y6dKyPQTOXl6nYN5IQrw==
-X-IronPort-AV: E=McAfee;i="6700,10204,11418"; a="51288595"
+  t=1745980632; x=1777516632;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=UeVWVQMtCSgoY6I17XEsqNEXKT0TWbHaFTIMLOeTnTs=;
+  b=RsGi18MNF8jGZalT5uwWEr7+XwHGKafTsSeLz/yTc84l1CVW8nb6eQGn
+   bJ5FJSZOGdHd3qCWfIEZHesxJGcPvsgwyCTM9Rs7iv2vYhNSpQNw+1DkH
+   hT+41b02Igg2vBsZ1GTXYHAStTougPRAkcRhKN02U9FiuNf6F2UI182dh
+   fibc0UebK422qSdSPFDtQyoQ8NwXcQvSAkIE4w1KMepXqzyTBWLvjZbkt
+   h3GIjj1rlbYDH+Qmf4kpYsGKajeeI6qA/RTWeJ3+Ki4VyYCJmE/5H/lE1
+   03k5aWTVaHL7VGQnXJOCL3OZkfKZLRlTBoUS+WWnKKDS4hhXjArOAIvvP
+   A==;
+X-CSE-ConnectionGUID: R4sf0fRGTneoXFUXRXqVvQ==
+X-CSE-MsgGUID: xhXryxAsTla99pI9NZIkXw==
+X-IronPort-AV: E=McAfee;i="6700,10204,11418"; a="51445225"
 X-IronPort-AV: E=Sophos;i="6.15,250,1739865600"; 
-   d="scan'208";a="51288595"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2025 19:11:09 -0700
-X-CSE-ConnectionGUID: t+c1xYagRt6BEnpPgqHVmA==
-X-CSE-MsgGUID: tCMvU5U8TQePZATUwOhbeA==
+   d="scan'208";a="51445225"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2025 19:37:10 -0700
+X-CSE-ConnectionGUID: rPKpQb86Qv+hi9Gbn/bOCw==
+X-CSE-MsgGUID: eN7Ab3jZTbWZDraScrUmnA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.15,250,1739865600"; 
-   d="scan'208";a="134303468"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa008.fm.intel.com with ESMTP; 29 Apr 2025 19:11:06 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 2/2] iommu/vt-d: Replace spin_lock with mutex to protect domain ida
-Date: Wed, 30 Apr 2025 10:11:35 +0800
-Message-ID: <20250430021135.2370244-3-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250430021135.2370244-1-baolu.lu@linux.intel.com>
-References: <20250430021135.2370244-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="134508430"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2025 19:37:00 -0700
+Message-ID: <0a5f2f46-f474-49d3-baee-59f2ad0a6f0a@linux.intel.com>
+Date: Wed, 30 Apr 2025 10:32:46 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/7] iommu: Remove ops.pgsize_bitmap from drivers that
+ don't use it
+To: Jason Gunthorpe <jgg@nvidia.com>, Alexandre Ghiti <alex@ghiti.fr>,
+ Alim Akhtar <alim.akhtar@samsung.com>,
+ Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Albert Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
+ Baolin Wang <baolin.wang@linux.alibaba.com>,
+ David Woodhouse <dwmw2@infradead.org>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev,
+ Janne Grunau <j@jannau.net>, Jean-Philippe Brucker
+ <jean-philippe@linaro.org>, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ Kevin Tian <kevin.tian@intel.com>, Krzysztof Kozlowski <krzk@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-riscv@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+ linux-tegra@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>, Neal Gompa <neal@gompa.dev>,
+ Orson Zhai <orsonzhai@gmail.com>, Palmer Dabbelt <palmer@dabbelt.com>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Rob Clark <robdclark@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>,
+ Niklas Schnelle <schnelle@linux.ibm.com>, Sven Peter <sven@svenpeter.dev>,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Tomasz Jeznach <tjeznach@rivosinc.com>, Krishna Reddy <vdumpa@nvidia.com>,
+ virtualization@lists.linux.dev, Chen-Yu Tsai <wens@csie.org>,
+ Will Deacon <will@kernel.org>, Yong Wu <yong.wu@mediatek.com>,
+ Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: patches@lists.linux.dev
+References: <3-v1-7c5282b0c334+2db-iommu_rm_ops_pgsize_jgg@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <3-v1-7c5282b0c334+2db-iommu_rm_ops_pgsize_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The domain ID allocator is currently protected by a spin_lock. However,
-ida_alloc_range can potentially block if it needs to allocate memory to
-grow its internal structures.
+On 4/29/25 22:34, Jason Gunthorpe wrote:
+> These drivers all set the domain->pgsize_bitmap in their
+> domain_alloc_paging() functions, so the ops value is never used. Delete
+> it.
+> 
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> ---
+>   drivers/iommu/apple-dart.c       | 1 -
+>   drivers/iommu/intel/iommu.c      | 1 -
+>   drivers/iommu/iommufd/selftest.c | 1 -
+>   drivers/iommu/riscv/iommu.c      | 1 -
+>   drivers/iommu/virtio-iommu.c     | 6 ++----
+>   5 files changed, 2 insertions(+), 8 deletions(-)
 
-Replace the spin_lock with a mutex which allows sleep on block. Thus,
-the memory allocation flags can be updated from GFP_ATOMIC to GFP_KERNEL
-to allow blocking memory allocations if necessary.
+For intel vt-d driver,
 
-Introduce a new mutex, did_lock, specifically for protecting the domain
-ida. The existing spinlock will remain for protecting other intel_iommu
-fields.
-
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
----
- drivers/iommu/intel/dmar.c  |  1 +
- drivers/iommu/intel/iommu.c | 12 ++++--------
- drivers/iommu/intel/iommu.h |  2 ++
- 3 files changed, 7 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 0e35969c026b..9e17e8e56308 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1101,6 +1101,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 	iommu->node = NUMA_NO_NODE;
- 	spin_lock_init(&iommu->lock);
- 	ida_init(&iommu->domain_ida);
-+	mutex_init(&iommu->did_lock);
- 
- 	ver = readl(iommu->reg + DMAR_VER_REG);
- 	pr_info("%s: reg_base_addr %llx ver %d:%d cap %llx ecap %llx\n",
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 39832d2125be..d117417975d8 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1345,17 +1345,16 @@ int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
- 	if (!info)
- 		return -ENOMEM;
- 
--	spin_lock(&iommu->lock);
-+	guard(mutex)(&iommu->did_lock);
- 	curr = xa_load(&domain->iommu_array, iommu->seq_id);
- 	if (curr) {
- 		curr->refcnt++;
--		spin_unlock(&iommu->lock);
- 		kfree(info);
- 		return 0;
- 	}
- 
- 	num = ida_alloc_range(&iommu->domain_ida, IDA_START_DID,
--			      cap_ndoms(iommu->cap) - 1, GFP_ATOMIC);
-+			      cap_ndoms(iommu->cap) - 1, GFP_KERNEL);
- 	if (num < 0) {
- 		pr_err("%s: No free domain ids\n", iommu->name);
- 		goto err_unlock;
-@@ -1365,19 +1364,17 @@ int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
- 	info->did	= num;
- 	info->iommu	= iommu;
- 	curr = xa_cmpxchg(&domain->iommu_array, iommu->seq_id,
--			  NULL, info, GFP_ATOMIC);
-+			  NULL, info, GFP_KERNEL);
- 	if (curr) {
- 		ret = xa_err(curr) ? : -EBUSY;
- 		goto err_clear;
- 	}
- 
--	spin_unlock(&iommu->lock);
- 	return 0;
- 
- err_clear:
- 	ida_free(&iommu->domain_ida, info->did);
- err_unlock:
--	spin_unlock(&iommu->lock);
- 	kfree(info);
- 	return ret;
- }
-@@ -1389,7 +1386,7 @@ void domain_detach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
- 	if (domain->domain.type == IOMMU_DOMAIN_SVA)
- 		return;
- 
--	spin_lock(&iommu->lock);
-+	guard(mutex)(&iommu->did_lock);
- 	info = xa_load(&domain->iommu_array, iommu->seq_id);
- 	if (--info->refcnt == 0) {
- 		ida_free(&iommu->domain_ida, info->did);
-@@ -1397,7 +1394,6 @@ void domain_detach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
- 		domain->nid = NUMA_NO_NODE;
- 		kfree(info);
- 	}
--	spin_unlock(&iommu->lock);
- }
- 
- static void domain_exit(struct dmar_domain *domain)
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 25faf3aadd24..5f140892fae0 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -722,6 +722,8 @@ struct intel_iommu {
- 	unsigned char	name[16];    /* Device Name */
- 
- #ifdef CONFIG_INTEL_IOMMU
-+	/* mutex to protect domain_ida */
-+	struct mutex	did_lock;
- 	struct ida	domain_ida; /* domain id allocator */
- 	unsigned long	*copied_tables; /* bitmap of copied tables */
- 	spinlock_t	lock; /* protect context, domain ids */
--- 
-2.43.0
-
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
