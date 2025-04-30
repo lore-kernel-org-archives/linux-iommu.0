@@ -1,331 +1,184 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2085.outbound.protection.outlook.com [40.107.237.85])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 231C02253E9;
-	Wed, 30 Apr 2025 22:39:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.85
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746052782; cv=fail; b=rGK3OHk0/T9qdpfGp5tvcAQ0Tbp6foY+tJA/HJ/f12FQ8yg6Hezj3PkRi/m4xKt/Wgwf8cYV/2UQq406QZ6WWSWeXr7/jT07VYkhYIyZJqMnVJ9/TkgVGbVC4a3SEMpRid7QfPkKuYMisoXyXvafDou5LAsUmc9I89ilfUXgMRk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746052782; c=relaxed/simple;
-	bh=xtnOocQNfzyIs7726n2AxBkQmQLpeNzP4bTg2rVBF2U=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SgIaA+a7obrKGlqDVC4ly0Rv+7lgDb+pBwjuP569p3fHCS+2CGFiPaUw6iExbV20mqY2L4TVrQkPWs8puMDUcOA3U34J2W60WIwByGgp0iHYVWVFvpI2ME5ajSQjxZvUWGDPYxydO2cB7OkFe1rqkv1T5+pv3nk9+4p+k/ahqV4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Dyx3/WX9; arc=fail smtp.client-ip=40.107.237.85
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B8FE2248B3
+	for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 23:20:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746055212; cv=none; b=aQY5vhQUQDmyosF0ARrsfYfRigvfUGQxgeF7CI4eQNAnW6etMjMESpvkUQJ0OxsvodvZlH0YEVbFymgU/ZdmXZWU7NMEAI9FtaGlC2+MvDSzU7DKh2EuXb5u66WeJi9rZa8g9M/1D7nLwgFpq+4aP5DSepjOdSOcbDKgTx7VY5A=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746055212; c=relaxed/simple;
+	bh=hNxBmD9EBKRVZnV8TedbtwQMd5tVIldnAb762KJdHcY=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=FEAGKHS33U3L0/CZyikuIKTublAy+1tMgiWjIyMLmp5b00fAwVYNSUz4dybj6R+kM8dGyLTQw1EzKbPoehPFR/Xkypti9vRSrf4t7gsyWqcWiiAkiXCB7tvpQGZyMY1t7GX5JynwtbiJMqgSWlayWP3VcgkWMRrTfabcAloyIXg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iFfCwTbM; arc=none smtp.client-ip=209.85.216.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Dyx3/WX9"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=aNRug9VWBdQ0mlR8V8G1nlAuEDrIOyhngwyFLi64E8PObWA1GQX1t8h3ev2pcUarUkunEsW3pmuIR+1xNqjz0PSOgv235eiAJywKjwosdMqtE3NpmEWHqeiuTyEwTJeo68AqdigP9Hd8O89XGugtNT7jZnvtmzDJRw/+IosJWgqdcdL83hMfPdNCscAXORFEydTDYqiUtN2yGUXdldUGyXuRI90x1CeKdpKYiA/FIZfjk5I0zXXiLzQMpITkaNqtPjYjg/EI5Jv41qwtXEMAR8PJJK9FF9cxtREn9VnpHWe0Jc9d2d8jV3AoW9kQpa5w42CtNoaFLH6N7DUOa6cAHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kg721qSBt0OcdG25gW1xtPszXA5oXbM6A4K01+iJLEo=;
- b=XBSQeML6tOFdsxU/r6aoSRnTe66vkynipa3clR0ZJhRVombkkhPD6JMUtTr0ckJhOD4utNaSd2S+gVyJ+SOAFswvbR9Chug4VsrH8KmyI1VFTNiuJhWcWFJRNhrvRGhmJ1RA5zRWk0pArSlAfnkvrC4EZ8uC+9IIKSCXWgAAPWHzFS9NkbI84z4OLVMcKiTHxmGR0w/VyNdUrM0Y/W/DW2GyDCYc64Mt0wsHnbvy51IITUVQMOa65ZXce7//TYheBCP+do3v4TdHICmzTizs8I+do46dAvVbf4STqs3cjre7l5sTNdeaMq693d31AmCdNhR5qzn8k7R/yXM528q4dA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kg721qSBt0OcdG25gW1xtPszXA5oXbM6A4K01+iJLEo=;
- b=Dyx3/WX9+DgsWCp0EKtpLCL8dmu6B4jtBV9lUB69YQV+j7vIhArUEc+ljw39N/TnIpCHNdaIGuugP84wUhN5VwsUIoAjVBGDy8AcYs/7qKuswlc9+LRx1GSXByktJUmoM/wx1dfVwfMsgzHqds2fZxok7LkprI1m4ahc0znoPRl9pDbZ5PEJsG4Dpi1LEQKcBhLKSlR0VxYaZQTaZekVE4WyOTn+VMpb4IW+7YBCMQATC6P+XoTTD8umZhj9hRzFZe3uAHmiCl7f4FqDA4TR/DJpGq/cjH7gRCow0hQL0/V4cfMuLtySHLnO/MoNMgKXhBvvOrYZ3GimayYgbVJLlQ==
-Received: from BYAPR07CA0070.namprd07.prod.outlook.com (2603:10b6:a03:60::47)
- by PH7PR12MB6666.namprd12.prod.outlook.com (2603:10b6:510:1a8::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8699.19; Wed, 30 Apr
- 2025 22:39:34 +0000
-Received: from SJ1PEPF0000231F.namprd03.prod.outlook.com
- (2603:10b6:a03:60:cafe::59) by BYAPR07CA0070.outlook.office365.com
- (2603:10b6:a03:60::47) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8655.36 via Frontend Transport; Wed,
- 30 Apr 2025 22:39:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SJ1PEPF0000231F.mail.protection.outlook.com (10.167.242.235) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8699.20 via Frontend Transport; Wed, 30 Apr 2025 22:39:33 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 30 Apr
- 2025 15:39:19 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Wed, 30 Apr
- 2025 15:39:19 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Wed, 30 Apr 2025 15:39:16 -0700
-Date: Wed, 30 Apr 2025 15:39:15 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <corbet@lwn.net>,
-	<will@kernel.org>, <bagasdotme@gmail.com>, <robin.murphy@arm.com>,
-	<joro@8bytes.org>, <thierry.reding@gmail.com>, <vdumpa@nvidia.com>,
-	<jonathanh@nvidia.com>, <shuah@kernel.org>, <jsnitsel@redhat.com>,
-	<nathan@kernel.org>, <peterz@infradead.org>, <yi.l.liu@intel.com>,
-	<mshavit@google.com>, <zhangzekun11@huawei.com>, <iommu@lists.linux.dev>,
-	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <patches@lists.linux.dev>,
-	<mochs@nvidia.com>, <alok.a.tiwari@oracle.com>, <vasant.hegde@amd.com>
-Subject: Re: [PATCH v2 21/22] iommu/tegra241-cmdqv: Add user-space use support
-Message-ID: <aBKmk6PNFreeyfLh@Asurada-Nvidia>
-References: <cover.1745646960.git.nicolinc@nvidia.com>
- <b81b2332f793a9ffccc528d821f2ed3ac051f9e0.1745646960.git.nicolinc@nvidia.com>
- <aBKdMaFLPFJYegIS@google.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iFfCwTbM"
+Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-2ff8340d547so345875a91.2
+        for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 16:20:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1746055210; x=1746660010; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=AfjgXcYxCrLXML8qIwR5TnpgzR0FuN4DocvnvlLCV0M=;
+        b=iFfCwTbMt2oDkF/lZr1q7GC00LPBuvwbBOd1fHRfrHDeLzIg/TaWIR1H9YQITZ3VQC
+         JRfhsQUsKbGCkVzajcqn+7N66qdQx1yrFcHxm3Gx9W413r9vVFzoYTO1KnfiKAE3xSOs
+         +uphVmzvdmw5GgYRzVgMCNW8P7qPC9GoDWKjN+rz4qus7Gok4pvTSoCS91M6FXpCeR3p
+         ADGY1wgbYogD6izRtSNHVnY8NduxrEbngvxoFz/wKtsYGL60Hs5ENc2jK0G+WESBsesC
+         GE8iGPCREeZI96nc6AAtAtJhru4FnTE5iZG2DZaSqpqzLHPZauNmz9bdrDyHQPeWr2gt
+         zfcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746055210; x=1746660010;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AfjgXcYxCrLXML8qIwR5TnpgzR0FuN4DocvnvlLCV0M=;
+        b=TP5yWXA/3tz2t2Ss2UR7qWVn/Z7cYgsMOfsk45p2xrqfwDlxszC8OsBO0MSxZMSeQy
+         ukhnpJIVIJa3z0DQfitq2FGMRv/7TIJ7a7z+qwUTh3ljOhswzsiw2Jw3dSj/cYy/2NV2
+         sMnudGZR9bH7o0McmIE/z12h+tQLP3wzcpJP3yYDPkMIyyQAERDs6HFzHxb664V6xPsG
+         nE5sSFDErsKk6wxYC49fcic1fcF0nXvzbaOdPsU8HvSxz5ti9TJFvALAmg4n7GvOvFjL
+         dKE+3IyYdmeb6p5Ow1EV1SDfRFW6wvdvEGU76FkeLFoqliVQFSMoAbU/DT2FVYTE1lMR
+         sjHA==
+X-Gm-Message-State: AOJu0YyoTeE4P94TndFyVI6q8SKPjDxy4rW2yhKTiau4uUSNshDTtuEj
+	Shd/W9j7PtLO09/rkOCYVh4xtMXLUxjGo9POrQkz8o36IEIwEt5+vHDnUY+b18NfJE01LfmLONY
+	qmsUePQzWzz+Nz4KzAKN/Riao1keIVnLiQa1z239mwlfllpOxcDbRKIBZX2m22gBl2XOUoUBiL9
+	WcVOwxGJdy2r8loOqRw61Dc5mIq8kaFnyBD6wl19fcrftdc6DL4ZBE/qnDFw==
+X-Google-Smtp-Source: AGHT+IFtGBHyQZStuEphw4tf6iEVV6/w6Q6UhS8lVXPJoGU4RpJttYr05TBGMeYbb8Z8cNX1/IWBNJSQJ/hLMnZECw==
+X-Received: from pjbqi13.prod.google.com ([2002:a17:90b:274d:b0:2fc:2b96:2d4b])
+ (user=danielmentz job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a17:90b:1846:b0:2ff:58a4:9db3 with SMTP id 98e67ed59e1d1-30a3446ca02mr7229589a91.35.1746055209801;
+ Wed, 30 Apr 2025 16:20:09 -0700 (PDT)
+Date: Wed, 30 Apr 2025 23:19:24 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <aBKdMaFLPFJYegIS@google.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF0000231F:EE_|PH7PR12MB6666:EE_
-X-MS-Office365-Filtering-Correlation-Id: f8929ea3-7066-4528-46fe-08dd8837e0f7
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|36860700013|7416014|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?qmE329Im17JaOPTKJmU/rYr1/weMyLjHD0Mg0EH4/3onzZdf4VQaDYkn869T?=
- =?us-ascii?Q?mQuShQsCucNrgOcUZQE0ATk4GnBCSc8+a9baky2b0dlAUZtkIAh1WQGYFAdh?=
- =?us-ascii?Q?L4MC9QclkknDVpg0UhLdy5DmM5mjUIMbQe64XSOUWKflj7CyHAkpzQKQiyNk?=
- =?us-ascii?Q?ePz/Ezh3Fx7079QyYYfbmqwY0moaq/gnscx1bmNaO0CCss28gj1itHptIbsr?=
- =?us-ascii?Q?7Humx97BKJ1HMuaVLAZYVHRsy2oPtktIVCCJm/OO4xwL1LI9xJTUg7TA20df?=
- =?us-ascii?Q?rLpPNMo3VKeHcuKYcGNbQQMAjFl3xu3CMmj7QKhzhs84R5uPIFaKr4KjLmeG?=
- =?us-ascii?Q?+E9qi4UknvYgi31176Fi2p5Ed1M8X33aexbzOyDkQQ6NhXqWgYmDaU1J00ou?=
- =?us-ascii?Q?0dlEJehXyMo+VQEbqny0hWe6jFrrETapVfoD0iA6tRc5M+dsTohRmBy0zBPD?=
- =?us-ascii?Q?8WgYulZ5KehuzrZV9fYVMitwvp22uWddAZF+dietJTMJuTsWIE0E8L/uKLrS?=
- =?us-ascii?Q?bo/W7zjZBRAilInY+TIz01vwnMLas5DwKgxpRm+RDr3TO5sf77m49F3XVjlf?=
- =?us-ascii?Q?Zj11n/pCOUdpFV/QdKPVAhMeP6JkKO11csXWqqePDGhoYiR02xTLHjJ5nAA4?=
- =?us-ascii?Q?Da0YBVII0ftyB5VMllDvi5DCEhNCEXz4I84jHgrMyp/y+mkBeR3M+cx9Eow/?=
- =?us-ascii?Q?wOyN2BuJGmZQxE61uytMhJ7dN+aGxBfsZDpJz4dPyfWqC3hulqSInYWeRcW5?=
- =?us-ascii?Q?ABL3ITTWUxMxAsq15jlTQUeT2MQOjW1XADx3EPJGLNPy3BE/yJvnS9k+z4du?=
- =?us-ascii?Q?20YAt2h8RSgJVLMHU4GRZjvvOyxsBO/LEhtHysIl+Nh09Od/JZo4svQ5s9G4?=
- =?us-ascii?Q?6dtRVerVjDWL1F3He89Qvzar4JUUJ575I0WGWwXT/Lp8cMYbmW8yZJTGPn7g?=
- =?us-ascii?Q?6sz2kBwNpTBlmgn7W2FyQgKux6esEboCsyNAKv5UMctna9UjOMhBQ1c6nv9R?=
- =?us-ascii?Q?4W8KGQj5bhLtIRaCUIPUW+tluSL5WCURmmtHKbjW8OdkNwrbOQjJ/koqoO3s?=
- =?us-ascii?Q?2wdy05vdE8MSD06hDOCvwbNxf+AToB5NHVhp0VL4wpP19OoWNFutb8Lb572I?=
- =?us-ascii?Q?SceuMKuy/Pp5754cs6+zTpKXQIqXZrTgQT9JR0uynnDW0OJHAC5oETW3Wo3G?=
- =?us-ascii?Q?lXCZbwC6lxlhNJ0/+r7PeyEnz69/LS2h19yVnnJyOwHI6PJ8esixK1J/Vz8e?=
- =?us-ascii?Q?1I32LE0U9m4FdOl9f0SlWiD4FYDB1ZFDMlco+sO1kjATDvUFC7Ag5uPWVIEc?=
- =?us-ascii?Q?akHddh75nkrB4w3cGKtos5dwRWjnu2LeHetxrs7VzmQDMrqgLeWImzj31b9I?=
- =?us-ascii?Q?81IyjVOdN2iHUaMzcNzPK1jjZAnnuVt3MuXYOgAEGWcR0IqbZ7UtjJ/jp9xa?=
- =?us-ascii?Q?yBOOf8TTi/EPqlFyV18wPn6zANjH2f1cVw5qKP+KoTlyR3l1HjNeFRuLPuSz?=
- =?us-ascii?Q?IpjfV71957sr1O6QdEgvxr4acJEjMsCssmcf?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700013)(7416014)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2025 22:39:33.4076
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f8929ea3-7066-4528-46fe-08dd8837e0f7
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF0000231F.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6666
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.49.0.967.g6a0df3ecc3-goog
+Message-ID: <20250430231924.1481493-1-danielmentz@google.com>
+Subject: [PATCH] iommu/io-pgtable-arm: Support contiguous bit in translation tables
+From: Daniel Mentz <danielmentz@google.com>
+To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>, 
+	Pranjal Shrivastava <praan@google.com>, Daniel Mentz <danielmentz@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Apr 30, 2025 at 09:59:13PM +0000, Pranjal Shrivastava wrote:
-> On Fri, Apr 25, 2025 at 10:58:16PM -0700, Nicolin Chen wrote:
-> > The CMDQV HW supports a user-space use for virtualization cases. It allows
-> > the VM to issue guest-level TLBI or ATC_INV commands directly to the queue
-> > and executes them without a VMEXIT, as HW will replace the VMID field in a
-> > TLBI command and the SID field in an ATC_INV command with the preset VMID
-> > and SID.
-> > 
-> > This is built upon the vIOMMU infrastructure by allowing VMM to allocate a
-> > VINTF (as a vIOMMU object) and assign VCMDQs (vCMDQ objects) to the VINTF.
-> > 
-> > So firstly, replace the standard vSMMU model with the VINTF implementation
-> > but reuse the standard cache_invalidate op (for unsupported commands) and
-> > the standard alloc_domain_nested op (for standard nested STE).
-> > 
-> > Each VINTF has two 64KB MMIO pages (128B per logical vCMDQ):
-> >  - Page0 (directly accessed by guest) has all the control and status bits.
-> >  - Page1 (trapped by VMM) has guest-owned queue memory location/size info.
-> > 
-> > VMM should trap the emulated VINTF0's page1 of the guest VM for the guest-
-> > level VCMDQ location/size info and forward that to the kernel to translate
-> > to a physical memory location to program the VCMDQ HW during an allocation
-> > call. Then, it should mmap the assigned VINTF's page0 to the VINTF0 page0
-> > of the guest VM. This allows the guest OS to read and write the guest-own
-> > VINTF's page0 for direct control of the VCMDQ HW.
-> > 
-> > For ATC invalidation commands that hold an SID, it requires all devices to
-> > register their virtual SIDs to the SID_MATCH registers and their physical
-> > SIDs to the pairing SID_REPLACE registers, so that HW can use those as a
-> > lookup table to replace those virtual SIDs with the correct physical SIDs.
-> > Thus, implement the driver-allocated vDEVICE op with a tegra241_vintf_sid
-> > structure to allocate SID_REPLACE and to program the SIDs accordingly.
-> > 
-> > This enables the HW accelerated feature for NVIDIA Grace CPU. Compared to
-> > the standard SMMUv3 operating in the nested translation mode trapping CMDQ
-> > for TLBI and ATC_INV commands, this gives a huge performance improvement:
-> > 70% to 90% reductions of invalidation time were measured by various DMA
-> > unmap tests running in a guest OS.
-> > 
-> 
-> The write-up is super helpful to understand how the HW works from a high
-> level. Thanks for explaining this well! :) 
-> 
-> I'm curious to know the DMA unmap tests that were run for perf?
+The contiguous bit in translation table entries can be used as a hint to
+SMMU that a group of adjacent translation table entries have consistent
+attributes and point to a contiguous and properly aligned output address
+range. This enables SMMU to predict the properties of the remaining
+translation table entries in the same group without accessing them. It
+also allows an SMMU implementation to make more efficient use of its TLB
+by using a single TLB entry to cover all translation table entries in
+the same group.
 
-tools/testing/selftests/dma/dma_map_benchmark.c
+In the case of 4KB granule size, there are 16 translation table entries
+in one group.
 
-> >  /**
-> >   * struct iommu_hw_info_arm_smmuv3 - ARM SMMUv3 hardware information
-> >   *                                   (IOMMU_HW_INFO_TYPE_ARM_SMMUV3)
-> >   *
-> > - * @flags: Must be set to 0
-> > - * @impl: Must be 0
-> > + * @flags: Combination of enum iommu_hw_info_arm_smmuv3_flags
-> > + * @impl: Implementation-defined bits when the following flags are set:
-> > + *        - IOMMU_HW_INFO_ARM_SMMUV3_HAS_TEGRA241_CMDQV
-> > + *          Bits[15:12] - Log2 of the total number of SID replacements
-> > + *          Bits[07:04] - Log2 of the total number of vCMDQs per vIOMMU
-> > + *          Bits[03:00] - Version number for the CMDQ-V HW
-> 
-> Nit: It seems that we deliberately chose not to reveal `NUM_VINTF_LOG2`
-> to the user-space. If so, maybe we shall mark those bitfields as unused
-> or reserved for clarity? Bits[11:08] - Reserved / Unused (even 31:16).
+This change sets the contiguous bit for such groups of entries that are
+completely covered by a single call to map_pages. As it stands, the code
+wouldn't set the contiguous bit if a group of adjacent descriptors is
+completed by separate calls to map_pages.
 
-I think it should have been there, but kernel should just report 0.
-                 Bits[11:08] - Log2 of the total number of virtual interface
+Signed-off-by: Daniel Mentz <danielmentz@google.com>
+---
+ drivers/iommu/io-pgtable-arm.c | 53 +++++++++++++++++++++++++++++++---
+ 1 file changed, 49 insertions(+), 4 deletions(-)
 
-> >   * @idr: Implemented features for ARM SMMU Non-secure programming interface
-> >   * @iidr: Information about the implementation and implementer of ARM SMMU,
-> >   *        and architecture version supported
-> > @@ -952,10 +965,28 @@ struct iommu_fault_alloc {
-> >   * enum iommu_viommu_type - Virtual IOMMU Type
-> >   * @IOMMU_VIOMMU_TYPE_DEFAULT: Reserved for future use
-> >   * @IOMMU_VIOMMU_TYPE_ARM_SMMUV3: ARM SMMUv3 driver specific type
-> > + * @IOMMU_VIOMMU_TYPE_TEGRA241_CMDQV: NVIDIA Tegra241 CMDQV Extension for SMMUv3
-> >   */
-> >  enum iommu_viommu_type {
-> >  	IOMMU_VIOMMU_TYPE_DEFAULT = 0,
-> >  	IOMMU_VIOMMU_TYPE_ARM_SMMUV3 = 1,
-> > +	IOMMU_VIOMMU_TYPE_TEGRA241_CMDQV = 2,
-> > +};
-> 
-> This is a little confusing.. I understand that we need a new viommu type
-> to copy the new struct iommu_viommu_tegra241_cmdqv b/w the user & kernel
-> 
-> But, in a previous patch (Add vsmmu_alloc impl op), we add a check to
-> fallback to the standard type SMMUv3, if the impl_ops->vsmmu_alloc 
-> returns -EOPNOTSUPP:
-> 
-> 	if (master->smmu->impl_ops && master->smmu->impl_ops->vsmmu_alloc)
-> 		vsmmu = master->smmu->impl_ops->vsmmu_alloc(
-> 			master->smmu, s2_parent, ictx, viommu_type, user_data);
-> 	if (PTR_ERR(vsmmu) == -EOPNOTSUPP) {
-> 		if (viommu_type != IOMMU_VIOMMU_TYPE_ARM_SMMUV3)
-> 			return ERR_PTR(-EOPNOTSUPP);
-> 		/* Fallback to standard SMMUv3 type if viommu_type matches */
-> 		vsmmu = iommufd_viommu_alloc(ictx, struct arm_vsmmu, core,
-> 					     &arm_vsmmu_ops);
-> 
-> Now, if we'll ALWAYS try to allocate an impl-specified vsmmu first, even
-> when the viommu_type == IOMMU_VIOMMU_TYPE_ARM_SMMUV3, we are anyways
-> going to return back from the impl_ops->vsmmu_alloc with -EOPNOTSUPP.
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 7632c80edea6..07b40e928bb3 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -76,6 +76,7 @@
+ 
+ #define ARM_LPAE_PTE_NSTABLE		(((arm_lpae_iopte)1) << 63)
+ #define ARM_LPAE_PTE_XN			(((arm_lpae_iopte)3) << 53)
++#define ARM_LPAE_PTE_CONT		(((arm_lpae_iopte)1) << 52)
+ #define ARM_LPAE_PTE_DBM		(((arm_lpae_iopte)1) << 51)
+ #define ARM_LPAE_PTE_AF			(((arm_lpae_iopte)1) << 10)
+ #define ARM_LPAE_PTE_SH_NS		(((arm_lpae_iopte)0) << 8)
+@@ -326,6 +327,27 @@ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
+ 				   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
+ }
+ 
++static int arm_lpae_cont_ptes(int lvl, struct arm_lpae_io_pgtable *data)
++{
++	switch (ARM_LPAE_GRANULE(data)) {
++	case SZ_4K:
++		if (lvl >= 1)
++			return 16;
++		break;
++	case SZ_16K:
++		if (lvl == 2)
++			return 32;
++		else if (lvl == 3)
++			return 128;
++		break;
++	case SZ_64K:
++		if (lvl >= 2)
++			return 32;
++		break;
++	}
++	return 1;
++}
++
+ static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg, int num_entries)
+ {
+ 	for (int i = 0; i < num_entries; i++)
+@@ -340,8 +362,30 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 			       unsigned long iova, size_t size, size_t pgcount,
+ 			       int lvl, arm_lpae_iopte *ptep);
+ 
++static bool arm_lpae_use_contpte(struct arm_lpae_io_pgtable *data,
++				 unsigned long iova, phys_addr_t paddr,
++				 int lvl, int num_entries, int i)
++{
++	size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
++	int cont_ptes = arm_lpae_cont_ptes(lvl, data);
++	int contmask = cont_ptes - 1;
++	int contpte_addr_mask = sz * cont_ptes - 1;
++	int map_idx_start, tbl_idx;
++
++	if ((paddr & contpte_addr_mask) != (iova & contpte_addr_mask))
++		return false;
++
++	map_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
++	tbl_idx = map_idx_start + i;
++	if (((tbl_idx & contmask) <= i) &&
++	    (tbl_idx < ((map_idx_start + num_entries) & ~contmask)))
++		return true;
++
++	return false;
++}
++
+ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+-				phys_addr_t paddr, arm_lpae_iopte prot,
++				unsigned long iova, phys_addr_t paddr, arm_lpae_iopte prot,
+ 				int lvl, int num_entries, arm_lpae_iopte *ptep)
+ {
+ 	arm_lpae_iopte pte = prot;
+@@ -355,8 +399,9 @@ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
+ 
+ 	for (i = 0; i < num_entries; i++)
+-		ptep[i] = pte | paddr_to_iopte(paddr + i * sz, data);
+-
++		ptep[i] = pte | paddr_to_iopte(paddr + i * sz, data) |
++			  (arm_lpae_use_contpte(data, iova, paddr, lvl, num_entries, i) ?
++			  ARM_LPAE_PTE_CONT : 0);
+ 	if (!cfg->coherent_walk)
+ 		__arm_lpae_sync_pte(ptep, num_entries, cfg);
+ }
+@@ -389,7 +434,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 			}
+ 		}
+ 
+-	__arm_lpae_init_pte(data, paddr, prot, lvl, num_entries, ptep);
++	__arm_lpae_init_pte(data, iova, paddr, prot, lvl, num_entries, ptep);
+ 	return 0;
+ }
+ 
+-- 
+2.49.0.967.g6a0df3ecc3-goog
 
-That's not necessarily true. An impl_ops->vsmmu_alloc can support
-IOMMU_VIOMMU_TYPE_ARM_SMMUV3 potentially, e.g. an impl could just
-toggle a few special bits in a register and return a valid vsmmu
-pointer.
-
-It doesn't work like this with VCMDQ as it supports its own type,
-but for the long run I think we should pass in the standard type
-to impl_ops->vsmmu_alloc too.
-
-> Then we'll again check if the retval was -EOPNOTSUPP and re-check the
-> viommu_type requested.. which seems a little counter intuitive.
-
-It's just prioritizing the impl_ops->vsmmu_alloc. Similar to the
-probe, if VCMDQ is missing or encountering some initialization
-problem, give it a chance to fallback to the standard SMMU.
-
-> > +	/*
-> > +	 * @length must be a power of 2, in range of
-> > +	 *   [ 32, 1 ^ (idr[1].CMDQS + CMDQ_ENT_SZ_SHIFT) ]
-> > +	 */
-> 
-> Nit: 2 ^ (idr[1].CMDQS + CMDQ_ENT_SZ_SHIFT) to match the comment in uapi
-
-Alok pointed it out too. Fixed.
-
-> > +	vcmdq = iommufd_vcmdq_alloc(viommu, struct tegra241_vcmdq, core);
-> > +	if (!vcmdq)
-> > +		return ERR_PTR(-ENOMEM);
-> > +
-> > +	/*
-> > +	 * HW requires to unmap LVCMDQs in descending order, so destroy() must
-> > +	 * follow this rule. Set a dependency on its previous LVCMDQ so iommufd
-> > +	 * core will help enforce it.
-> > +	 */
-> > +	if (prev) {
-> > +		ret = iommufd_vcmdq_depend(vcmdq, prev, core);
-> > +		if (ret)
-> > +			goto free_vcmdq;
-> > +	}
-> > +	vcmdq->prev = prev;
-> > +
-> > +	ret = tegra241_vintf_init_lvcmdq(vintf, index, vcmdq);
-> > +	if (ret)
-> > +		goto free_vcmdq;
-> > +
-> > +	dev_dbg(cmdqv->dev, "%sallocated\n",
-> > +		lvcmdq_error_header(vcmdq, header, 64));
-> > +
-> > +	tegra241_vcmdq_map_lvcmdq(vcmdq);
-> > +
-> > +	vcmdq->cmdq.q.q_base = q_base & VCMDQ_ADDR;
-> > +	vcmdq->cmdq.q.q_base |= log2size;
-> > +
-> > +	ret = tegra241_vcmdq_hw_init_user(vcmdq);
-> > +	if (ret)
-> > +		goto free_vcmdq;
-> > +	vintf->lvcmdqs[index] = vcmdq;
-> > +
-> > +	return &vcmdq->core;
-> > +free_vcmdq:
-> > +	iommufd_struct_destroy(viommu->ictx, vcmdq, core);
-> > +	return ERR_PTR(ret);
-> 
-> Are we missing an undepend here?
-
-Right. The iommufd_struct_destroy doesn't invoke obj->ops.abort().
-
-The whole revert flow is wonky, missing all the unmap/deinit steps.
-
-> > +static void tegra241_vintf_destroy_vdevice(struct iommufd_vdevice *vdev)
-> > +{
-> > +	struct tegra241_vintf_sid *vsid =
-> > +		container_of(vdev, struct tegra241_vintf_sid, core);
-> > +	struct tegra241_vintf *vintf = vsid->vintf;
-> > +
-> > +	writel_relaxed(0, REG_VINTF(vintf, SID_REPLACE(vsid->idx)));
-> > +	writel_relaxed(0, REG_VINTF(vintf, SID_MATCH(vsid->idx)));
-> 
-> Just a thought: Should these be writel to avoid races?
-> Although I believe all user-queues would be free-d by this point?
-
-Yea. They should be. I will change them.
-
-Thanks
-Nicolin
