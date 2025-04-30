@@ -1,70 +1,71 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30F711C8FB5
-	for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 19:53:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF1D81DC9B0
+	for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 19:54:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746042800; cv=none; b=c1mGuMs25E+v/3m6s66sn5JzAc6IHjdfLSl9vrdrj38iOZ0hA351ZddVUAHTyDTKwX7Eydamh+K232R3UkfwYLwFoyYvIUjXk8Tt/lqL8Ca0aPaspT2aico9ytqEQmOPoDrALaZexlQcElXoviKRXNnFxmkcQbP3+BYVzjlFmgk=
+	t=1746042853; cv=none; b=GUNFiTehnuIwzyLfFiDLJlc8Ka0ZCZMHxm4krTEHGWZqsgKGAUWO0hMjQ7mrd6E+4WZpIkvWsNxxBLHy3T8bA37WSOdHxi5xU1mt9FQxDQJl7MT8FHZGGZZ+hGs1Sa8TUNGkob8Ij3ifXCDLu3DAtH0SbXWj3Dt0jI327H1O26U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746042800; c=relaxed/simple;
-	bh=BYVYLOb7g/trPsg04aimiZO3eX+8p1FII3bTfBVJKiY=;
+	s=arc-20240116; t=1746042853; c=relaxed/simple;
+	bh=3yap3ZzGTQYZ/vtwqCQHVg5FTg1hill/s2XBdCCadm0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PX+VXCRTH2EoZZ/aqUBSUat8G2gXFD8k8F4ekILEOTfjxcLcRm7YHz75+QNNXQGWUkkslJqM9nlMPr+h6LnIWRB0pohhA66knmFwqNlkgI8DUxN8194q/7wSOQqz/RwwBf+KEZV87qeBr5sx+pDgWCpXwBsKGAWMYPUeAWno3ds=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=t3aaGkOL; arc=none smtp.client-ip=209.85.214.181
+	 Content-Type:Content-Disposition:In-Reply-To; b=GIHiQGs71c4zY4NraM/wYib/fcoeGEtLoJwvbFNifTJWTbhoeGvLLO61SxmDGhbx+RRjjDLU/47NP6d/4d1lwl0w+SkQj8Erx6Kiqqk4bfcv/w0M+ICnkO89D3j63wHqQvXaMYOM8LA4BTxrjgWz3FuYR7SnUd+pglT6RawBRCY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FGI0AVV9; arc=none smtp.client-ip=209.85.214.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="t3aaGkOL"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-22c33e4fdb8so2557205ad.2
-        for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 12:53:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FGI0AVV9"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-223fb0f619dso3027215ad.1
+        for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 12:54:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1746042798; x=1746647598; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1746042851; x=1746647651; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sS3+hirRuenFYIB7Pzrup/YFqLZ6iZUt0EDXHvDSPdw=;
-        b=t3aaGkOLxSYPfcqMFjjDBg8JXSHt1S032U15UHRICuiI3IzAWZCoug67/6IEON4sGd
-         gM2f8zzU/q+XjncUyhah9dJPn9DR3s20q/9T7JDCU2ghPu/IPUAzN0O5MfL0h6u8caym
-         qR7upwZmZFJsRm4rnduhCgs/H+TbtfiAk/l9hhSpoGaSCpheBcf5QJ0/RQrksfRE8L6M
-         aELelX3KUl4MlSb+P1wVCKT5znsGMPwMRN7pAp1oIKJzS96bv7MVP0/1FUymNLCL64Re
-         V+6SuYuKNqLi8O+GZNh4/9KNkbEvEzSQKs63+sFzSZEkwWCBhiYazROK75XdubLqTc/h
-         bVcQ==
+        bh=u8wD0px5HjnR5pxkOK8NrG7Fm/ol5rI8jfr96COPSAI=;
+        b=FGI0AVV9GpXiUzzZGkfOcEL5JkuPKq0e713EIklYrGyl5TcyIBft3ie8/HeVQ11Qy8
+         9zrsvLS+oSo2PVBQBRUGsKg+e/tyL7uuvc4PxhqvHByQHJyHDKpA0cGu+yfqx9B94fST
+         j93E3UEFLde2H0WW3voeUQekqG/KklmTdxqIX0dYqoIuFJTZkyUOxCMxaUgkIBJWEhxJ
+         9xZiBLQr1C1BOAynZlPESaODsY4SHDVZq4QilLSBIwczIYrSdwahpeARP/XE7MK4vw0m
+         535/K/7kx8gGb3Prz1lTfi/Z4XSRYGaXZDOnjDupl8McvjSmN8CqD5zDfElwWwUoswMk
+         H5Yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746042798; x=1746647598;
+        d=1e100.net; s=20230601; t=1746042851; x=1746647651;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sS3+hirRuenFYIB7Pzrup/YFqLZ6iZUt0EDXHvDSPdw=;
-        b=KOY5pNA0jFJC6bT51gHgLgaZeZH9RTJgjiB5R9f7zB8G4xm+Rivg2RlSdeO9uv2paR
-         mBf1Cii2KxBth456Ejq0G6y+C7mQmkEySacLxN/le0ReyMuwU9g3muQ5xHkgC5w9ZPHK
-         XHM8npEdYL4/4/tei+Gy31JV/dgLoOzyOi9eHKR9JdpjAEjawxgim2bNmAt1u8ogWVq5
-         jT5lBO7o8BGuPHpiAuh/cXR4BUZcxD/HOhbDoAzuIo60D2AXs/GHxeQUUh/NwsbS2bfR
-         CUKKA792BgAnIi0b+iGtwdCEVxL25/pYFYYANrV03i57Qlkb7jEjWIdh04hWLwiDMPdq
-         DQZw==
-X-Forwarded-Encrypted: i=1; AJvYcCX2M3C3xJboS97dXcaK7LueQvwSlKB9JHOHLRSnI4+YiX6N1Bwr8S6DELTxR6KSUbAf5Aa1Rg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxwjrPTpWMdYZeq92Bv3aOVu/sObnHWQpKdVlSUy68ATOmkSd/t
-	GY0um19PriT7WOq4DClXVOYAEiIE7XeaYa4ylQwZPvweqmi22RqV/D1MfbprYw==
-X-Gm-Gg: ASbGncsnXxWmYMdmkPUQfaZ6W6xKNWDpVbJV2yv09bqkcUl8MRbcAH8FYKz5GxFwJQ7
-	r1sFq6RiH52si2av67VZAXivVKOdulCKTRWtmuBnJdIzgKr+W737gekwBcl3LnwtRDjFmarKgZg
-	aglFKI9Bo03otIZy17RxC8UbLMoaRLaHoOERwtjVKFBGR3eUwpY/g+Dy0FDp57/CNsnlvApuE9/
-	gqYrmecBTBJ1K40Aob4GU+vAjxkGYFR0JuUujaEwMSJB95oCnSbA3I80/JKn2gqSylEXLwTPWkp
-	rDt9XbbC/qtW6r3OXXLNH6+H1jyLMvf76+ghG0Gu0XjQCSdxriEGbpjxSTgM6VvNyzw6X0FtFDR
-	3IyQcmA==
-X-Google-Smtp-Source: AGHT+IGcs0gQ+kH9gePUq2IzeHDztkv1kvHGzYIx5as0naNDy5hQJ3XvIttYTvlnG7jSfZ8vALUe5Q==
-X-Received: by 2002:a17:903:3d0c:b0:21f:507b:9ad7 with SMTP id d9443c01a7336-22df34ff95fmr71796595ad.25.1746042798140;
-        Wed, 30 Apr 2025 12:53:18 -0700 (PDT)
+        bh=u8wD0px5HjnR5pxkOK8NrG7Fm/ol5rI8jfr96COPSAI=;
+        b=IrbzHa/bdobMx2QiX1Av2jkNjOm4tS/ibSlNfqaOAZe8h8bvhcfDcb35oRBxKZTWm9
+         UqfRlh8M56WiE49X766qiKlDPIuICEn+8V7TBpPKSgANa4iothtHzQwm8BBv8OkR+9rm
+         xzhfgEtQl1Cqg84JnmlMP5vMlmg50lGQrkC9qQ0pFGYS9zSE8sSs6BJSEB5/S3MvARf1
+         nRNY04MNQ3HfC9CDFifFnG9X8Gg7XxP2HBdRxRwKsJPwbvhZ+3GBGaam9/HXxo/3lIAu
+         PBDljNAemkUqHq4o+oL0rfPhLUA/9iwsI/Jdiv//E2GsoapGEqHbmr27O1T47MTwmFHe
+         ercQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVyPS3zSWGG3uaqc+qBhU/WmPxkwxCTv0Oc1ffFIWqitcNW7Zq52X9B20k4NoCGuQBCFt375Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzscsL8gEyMFTmhO0mdWLXFwassFga8+8Vc6Uh3oMKFIHklSUK9
+	QQVus1T37hsiLimJHIl4HjpnokZ70w9xFiup5yBj3mrSurgCbq65U59xuUGJBQ==
+X-Gm-Gg: ASbGncsV9PqGHqOUcXdAKraEfctQJsG/VAACp0alCNsmn/+EGjPK/XRAIDrOVKf3bDX
+	CVQe8qCQwvo+7qRkETDlCsNjF5L3f81mc0BJorGiAhQBHlDdaqs5eje4YPnLDmm2si+khPGWdt0
+	VZJt3yJ7XJpysWPJltJh2ARix7SOtXfM9rAYKA8PVWKxVOGLWf0r4FhVw/tp92YLI3BuKHEBrGe
+	IuiHdnOcm23nFHgQxffZZgS2jCSLRi3wwI495Ff/qKdpsqvWkLoS3JxHsmQxea5sTFhKwXbDxy8
+	tGtTtwcLpHej6DZSvdz9sZ5ecqpkp2LBqCtqThUPjr1bvK2qs5o13doL1biuil0zVOG+hD0Jii2
+	MHWGJPqZVIZaAbbwi
+X-Google-Smtp-Source: AGHT+IGuD6kTALubXNZirfBTu3m5HhSSf+bNLb+HyRwsXYMZcmIJMtVfVYD/Pd6uFMOtp50fXulIWg==
+X-Received: by 2002:a17:903:2287:b0:224:13a4:d62e with SMTP id d9443c01a7336-22df3590c0cmr73354905ad.35.1746042850758;
+        Wed, 30 Apr 2025 12:54:10 -0700 (PDT)
 Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22db4d76d56sm126604585ad.4.2025.04.30.12.53.17
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22db5102d31sm126707425ad.198.2025.04.30.12.54.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Apr 2025 12:53:17 -0700 (PDT)
-Date: Wed, 30 Apr 2025 12:53:13 -0700
+        Wed, 30 Apr 2025 12:54:10 -0700 (PDT)
+Date: Wed, 30 Apr 2025 12:54:06 -0700
 From: William McVicker <willmcvicker@google.com>
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, Russell King <linux@armlinux.org.uk>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] amba: Fix driver_managed_dma check
-Message-ID: <aBJ_qfy9cP_m5fSw@google.com>
-References: <20250425133929.646493-1-robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, Nipun Gupta <nipun.gupta@amd.com>,
+	Nikhil Agarwal <nikhil.agarwal@amd.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] cdx: Fix driver_managed_dma check
+Message-ID: <aBJ_3qI6WRXpJ3SL@google.com>
+References: <20250425133929.646493-2-robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -73,7 +74,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250425133929.646493-1-robin.murphy@arm.com>
+In-Reply-To: <20250425133929.646493-2-robin.murphy@arm.com>
 
 On 04/25/2025, Robin Murphy wrote:
 > Since it's not currently safe to take device_lock() in the IOMMU probe
@@ -81,7 +82,7 @@ On 04/25/2025, Robin Murphy wrote:
 > attempting to bind. The race itself isn't so bad, since we're only
 > concerned with dereferencing dev->driver itself anyway, but sadly my
 > attempt to implement the check with minimal churn leads to a kind of
-> TOCTOU issue, where dev->driver becomes valid after to_amba_driver(NULL)
+> TOCTOU issue, where dev->driver becomes valid after to_cdx_driver(NULL)
 > is already computed, and thus the check fails to work as intended.
 > 
 > Will and I both hit this with the platform bus, but the pattern here is
@@ -96,28 +97,30 @@ Reviewed-by: Will McVicker <willmcvicker@google.com>
 > Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
 > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
->  drivers/amba/bus.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/cdx/cdx.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/amba/bus.c b/drivers/amba/bus.c
-> index 71482d639a6d..84bc788663e6 100644
-> --- a/drivers/amba/bus.c
-> +++ b/drivers/amba/bus.c
-> @@ -353,7 +353,7 @@ static void amba_shutdown(struct device *dev)
+> diff --git a/drivers/cdx/cdx.c b/drivers/cdx/cdx.c
+> index 092306ca2541..8aa92a198b71 100644
+> --- a/drivers/cdx/cdx.c
+> +++ b/drivers/cdx/cdx.c
+> @@ -348,7 +348,7 @@ static void cdx_shutdown(struct device *dev)
 >  
->  static int amba_dma_configure(struct device *dev)
+>  static int cdx_dma_configure(struct device *dev)
 >  {
-> -	struct amba_driver *drv = to_amba_driver(dev->driver);
+> -	struct cdx_driver *cdx_drv = to_cdx_driver(dev->driver);
 > +	const struct device_driver *drv = READ_ONCE(dev->driver);
->  	enum dev_dma_attr attr;
->  	int ret = 0;
->  
-> @@ -365,7 +365,7 @@ static int amba_dma_configure(struct device *dev)
+>  	struct cdx_device *cdx_dev = to_cdx_device(dev);
+>  	struct cdx_controller *cdx = cdx_dev->cdx;
+>  	u32 input_id = cdx_dev->req_id;
+> @@ -360,8 +360,8 @@ static int cdx_dma_configure(struct device *dev)
+>  		return ret;
 >  	}
 >  
->  	/* @drv may not be valid when we're called from the IOMMU layer */
-> -	if (!ret && dev->driver && !drv->driver_managed_dma) {
-> +	if (!ret && drv && !to_amba_driver(drv)->driver_managed_dma) {
+> -	/* @cdx_drv may not be valid when we're called from the IOMMU layer */
+> -	if (!ret && dev->driver && !cdx_drv->driver_managed_dma) {
+> +	/* @drv may not be valid when we're called from the IOMMU layer */
+> +	if (!ret && drv && !to_cdx_driver(drv)->driver_managed_dma) {
 >  		ret = iommu_device_use_default_domain(dev);
 >  		if (ret)
 >  			arch_teardown_dma_ops(dev);
