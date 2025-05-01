@@ -1,184 +1,203 @@
-Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2069.outbound.protection.outlook.com [40.107.92.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B8FE2248B3
-	for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 23:20:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746055212; cv=none; b=aQY5vhQUQDmyosF0ARrsfYfRigvfUGQxgeF7CI4eQNAnW6etMjMESpvkUQJ0OxsvodvZlH0YEVbFymgU/ZdmXZWU7NMEAI9FtaGlC2+MvDSzU7DKh2EuXb5u66WeJi9rZa8g9M/1D7nLwgFpq+4aP5DSepjOdSOcbDKgTx7VY5A=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746055212; c=relaxed/simple;
-	bh=hNxBmD9EBKRVZnV8TedbtwQMd5tVIldnAb762KJdHcY=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=FEAGKHS33U3L0/CZyikuIKTublAy+1tMgiWjIyMLmp5b00fAwVYNSUz4dybj6R+kM8dGyLTQw1EzKbPoehPFR/Xkypti9vRSrf4t7gsyWqcWiiAkiXCB7tvpQGZyMY1t7GX5JynwtbiJMqgSWlayWP3VcgkWMRrTfabcAloyIXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iFfCwTbM; arc=none smtp.client-ip=209.85.216.73
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--danielmentz.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBA3D1E5200;
+	Thu,  1 May 2025 00:54:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.69
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746060897; cv=fail; b=f6THQGkXoUg2GLqed8NsRCgNWSXyRpwKTu5guqlqJ32FhHBc9YVSHH5XIQxr5iu9XBOPNcUPnGUiv9NfvdEZ+8wh1WElFgowsjckdN/1Izm/dfkMvDx3x6eWnYprNGZGQwwTxKby0xs9CCdH2mECcFvLdrZ1XqoeQxlpFswG7Rs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746060897; c=relaxed/simple;
+	bh=AlAQbKU1JUROLn0OsNg1qC3HGVb80iAdkTdVuNui8uI=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nSz6sN5SbdHo3EUc1kVl0XbALYX7exafrg21kCNpyL9ycwyAdzHwX5vsZjZi190avEEKS2hCkWeG08hnm/OuCpkGKE96Hla2TUjT4bTF4wzJKbtI7dKaqixc5STqroDONLo3TFflfcgJ77Pif2WIAebU8ZKCAQRjJoQ309AgUbg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=NZTwtEdI; arc=fail smtp.client-ip=40.107.92.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iFfCwTbM"
-Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-2ff8340d547so345875a91.2
-        for <iommu@lists.linux.dev>; Wed, 30 Apr 2025 16:20:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1746055210; x=1746660010; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=AfjgXcYxCrLXML8qIwR5TnpgzR0FuN4DocvnvlLCV0M=;
-        b=iFfCwTbMt2oDkF/lZr1q7GC00LPBuvwbBOd1fHRfrHDeLzIg/TaWIR1H9YQITZ3VQC
-         JRfhsQUsKbGCkVzajcqn+7N66qdQx1yrFcHxm3Gx9W413r9vVFzoYTO1KnfiKAE3xSOs
-         +uphVmzvdmw5GgYRzVgMCNW8P7qPC9GoDWKjN+rz4qus7Gok4pvTSoCS91M6FXpCeR3p
-         ADGY1wgbYogD6izRtSNHVnY8NduxrEbngvxoFz/wKtsYGL60Hs5ENc2jK0G+WESBsesC
-         GE8iGPCREeZI96nc6AAtAtJhru4FnTE5iZG2DZaSqpqzLHPZauNmz9bdrDyHQPeWr2gt
-         zfcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746055210; x=1746660010;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=AfjgXcYxCrLXML8qIwR5TnpgzR0FuN4DocvnvlLCV0M=;
-        b=TP5yWXA/3tz2t2Ss2UR7qWVn/Z7cYgsMOfsk45p2xrqfwDlxszC8OsBO0MSxZMSeQy
-         ukhnpJIVIJa3z0DQfitq2FGMRv/7TIJ7a7z+qwUTh3ljOhswzsiw2Jw3dSj/cYy/2NV2
-         sMnudGZR9bH7o0McmIE/z12h+tQLP3wzcpJP3yYDPkMIyyQAERDs6HFzHxb664V6xPsG
-         nE5sSFDErsKk6wxYC49fcic1fcF0nXvzbaOdPsU8HvSxz5ti9TJFvALAmg4n7GvOvFjL
-         dKE+3IyYdmeb6p5Ow1EV1SDfRFW6wvdvEGU76FkeLFoqliVQFSMoAbU/DT2FVYTE1lMR
-         sjHA==
-X-Gm-Message-State: AOJu0YyoTeE4P94TndFyVI6q8SKPjDxy4rW2yhKTiau4uUSNshDTtuEj
-	Shd/W9j7PtLO09/rkOCYVh4xtMXLUxjGo9POrQkz8o36IEIwEt5+vHDnUY+b18NfJE01LfmLONY
-	qmsUePQzWzz+Nz4KzAKN/Riao1keIVnLiQa1z239mwlfllpOxcDbRKIBZX2m22gBl2XOUoUBiL9
-	WcVOwxGJdy2r8loOqRw61Dc5mIq8kaFnyBD6wl19fcrftdc6DL4ZBE/qnDFw==
-X-Google-Smtp-Source: AGHT+IFtGBHyQZStuEphw4tf6iEVV6/w6Q6UhS8lVXPJoGU4RpJttYr05TBGMeYbb8Z8cNX1/IWBNJSQJ/hLMnZECw==
-X-Received: from pjbqi13.prod.google.com ([2002:a17:90b:274d:b0:2fc:2b96:2d4b])
- (user=danielmentz job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:90b:1846:b0:2ff:58a4:9db3 with SMTP id 98e67ed59e1d1-30a3446ca02mr7229589a91.35.1746055209801;
- Wed, 30 Apr 2025 16:20:09 -0700 (PDT)
-Date: Wed, 30 Apr 2025 23:19:24 +0000
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="NZTwtEdI"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=K3PH9Mymxaq5XiM5njVsl+iZ7yTmrUsbm+AoUG0TMltXY89klAngIw9Ychj/Qxe/c9Cz8zIRR8ECddcdHU6UuNLAmz7rTWRwKE1AZdTI3T88zBRX86zq0jxbOCZpR1DWaTytlTVVN3Nagngf2hnWuSm7+l9uSyACjh8swB6JeIukg+LMNrgu6rQgIbU0UbBIHXc40//Sv3u1mGZkwswSjprUPd+PCC9L9/yvi/pVwoz/erXcuTyBpKrnRvAbU1L5NVjMK7OnEw8maL5oRBSq7kJcJm+zlqfLEY4E6bwCLn0DLp/btQl1JlT3y/rBDvAYu57XaXn7+E42cr3o9Yh0Ug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hvilShwMKmOhEtxT64Icd0+dLsetgu0O5uyiJDBA1Kg=;
+ b=speXgSh3XJ9UoFwh2yv3WVeiNFujWrVLixHX5a54b3XQKU+VAH1WW8/2neFpv3iMT6QXNd10hjNoH83Sl5RZ5HcwGlWMhB5b6t6xZvOczKMzNcqyw6XmppKQEhFxZDa0Ykdm7l9tKkwqPPffYs+9YXpOBGXQi2wgBfmMYhVKbEoGmusNXHmNaJ8rYVtHB4f30nevEkhv5ntOGAcLxJgUc+BiGwakWg5m4TbeZRx0ZNyh2vsQpZMyqtF56/wrJ3vQn6TLsqBhcZ62d+x3L8EYFPaTuLtGey1R9lNTa/A40w2Xud3gXBDLY32R3y29YjouZOr+SbbxBljRVA4ANJlySA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hvilShwMKmOhEtxT64Icd0+dLsetgu0O5uyiJDBA1Kg=;
+ b=NZTwtEdIgc833u7B+tOx+Tcy0LyN+M5Qzr7fkGtYBTiAkYr9u0hG2ZYEPHLpqklmzbKjgbeUHGusxOc4BWeVRVbvnvjZqP9mWq9hBuSTWEVnXbGluLkTq4JDE3RAgPr5WOS9W36nbBSMXNvd6L9aeR6B4xAchcx9P1s5v+5zA0ZAZBMisKwCXVMnrz4gVMw53VrEqya7ZXHmmJ40jEOiPFmvRYwpcN/ORRDz2Df1vzl2iZEDmzaaNkJsPds5lm4VZleMM/9abOd/a6oq7mnrPNiPeFgr6fCFduA9GWA4VLpytj1GqUW+MLh3dFemPfM8axsnq2bc05jG3LapqYgMTw==
+Received: from SA9P223CA0006.NAMP223.PROD.OUTLOOK.COM (2603:10b6:806:26::11)
+ by PH7PR12MB6667.namprd12.prod.outlook.com (2603:10b6:510:1a9::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8699.19; Thu, 1 May
+ 2025 00:54:48 +0000
+Received: from SA2PEPF00001508.namprd04.prod.outlook.com
+ (2603:10b6:806:26:cafe::16) by SA9P223CA0006.outlook.office365.com
+ (2603:10b6:806:26::11) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8655.33 via Frontend Transport; Thu,
+ 1 May 2025 00:54:48 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ SA2PEPF00001508.mail.protection.outlook.com (10.167.242.40) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8699.20 via Frontend Transport; Thu, 1 May 2025 00:54:48 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 30 Apr
+ 2025 17:54:45 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Wed, 30 Apr 2025 17:54:45 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Wed, 30 Apr 2025 17:54:43 -0700
+Date: Wed, 30 Apr 2025 17:54:41 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Pranjal Shrivastava <praan@google.com>
+CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <corbet@lwn.net>,
+	<will@kernel.org>, <bagasdotme@gmail.com>, <robin.murphy@arm.com>,
+	<joro@8bytes.org>, <thierry.reding@gmail.com>, <vdumpa@nvidia.com>,
+	<jonathanh@nvidia.com>, <shuah@kernel.org>, <jsnitsel@redhat.com>,
+	<nathan@kernel.org>, <peterz@infradead.org>, <yi.l.liu@intel.com>,
+	<mshavit@google.com>, <zhangzekun11@huawei.com>, <iommu@lists.linux.dev>,
+	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
+	<linux-kselftest@vger.kernel.org>, <patches@lists.linux.dev>,
+	<mochs@nvidia.com>, <alok.a.tiwari@oracle.com>, <vasant.hegde@amd.com>
+Subject: Re: [PATCH v2 21/22] iommu/tegra241-cmdqv: Add user-space use support
+Message-ID: <aBLGUby2dIiYCe7S@Asurada-Nvidia>
+References: <cover.1745646960.git.nicolinc@nvidia.com>
+ <b81b2332f793a9ffccc528d821f2ed3ac051f9e0.1745646960.git.nicolinc@nvidia.com>
+ <aBKdMaFLPFJYegIS@google.com>
+ <aBKmk6PNFreeyfLh@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.49.0.967.g6a0df3ecc3-goog
-Message-ID: <20250430231924.1481493-1-danielmentz@google.com>
-Subject: [PATCH] iommu/io-pgtable-arm: Support contiguous bit in translation tables
-From: Daniel Mentz <danielmentz@google.com>
-To: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>, 
-	Pranjal Shrivastava <praan@google.com>, Daniel Mentz <danielmentz@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <aBKmk6PNFreeyfLh@Asurada-Nvidia>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SA2PEPF00001508:EE_|PH7PR12MB6667:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3b930f59-710a-474a-22b0-08dd884ac5e6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|7416014|376014|1800799024|30052699003|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?jn6dCGp051Z8XcnHtzGRmDo376T+yPyqMZZD0PxCtRwXjmL9eR1UbYxcA2F5?=
+ =?us-ascii?Q?iVVWpk/6GZtwWdKJX5DdPzNx7pdiL1fUKL6MJP8aOS+brnB0RGrfEgpa0mod?=
+ =?us-ascii?Q?rpN1nAR7PtzHaNLalUGaHrnpUzThTVGCycrC7ksJvnEh7gVjF4MqQaFyjq1X?=
+ =?us-ascii?Q?WAxfnRAfr3yGUzapXT9UJeytVyMbOTSHBCYWnqLfgozTrW244pHbp9FjisIU?=
+ =?us-ascii?Q?uxbalxf449cvbBlhtT+uDWcYMxeiaQI+e3kAcEqHaff/SJKn5tXT85NSrCGt?=
+ =?us-ascii?Q?u66MrC8py3DlFiTnBcHrW/szkvYQa+41hEVA7WLI9jggY9JkDuNlphin5iBx?=
+ =?us-ascii?Q?kFBSkVuB1og6S5wlF4u12DZ88Q7JJqAJ7BQj1w9Kb23YWhsDikC/3wNnItFg?=
+ =?us-ascii?Q?Q2otdfpmm3I/30mj6/qcDCCJv4VRjlcHiYBbx3y1+U4jKQWEvruJxnG46fVW?=
+ =?us-ascii?Q?wJsimLrnZpQAh6kiSD2A3ahyfIU6DRijEYBeWGebexJxHcO4FL41CJiEhx7K?=
+ =?us-ascii?Q?7QDXe9WGTvc8gYcaiFHvx1QmD2PbFHGBZbKMEF+q9igOB0qaMDSOq/LPk8qr?=
+ =?us-ascii?Q?Mbp8nbEwAxkHyvWBsSBIHrrLS3lyCN5IPAMYocQ8DLCMNM/UP2hoz3dMw02g?=
+ =?us-ascii?Q?Ps7R32Tlj2Fjl1BG8ikhSUyRTqoLSwrXLSjush8LC3WOn2jLTkOorhDE7TD0?=
+ =?us-ascii?Q?Jjl0yQ7+L8tF2rukNN5n+SkYRVg3NGbyUEyNvm9Ut1UAZzIqxHi2XEIwGLq1?=
+ =?us-ascii?Q?wtmzi1rdJIEp2V15nbl4vUML7vcb7Qmqq50x5TOrDDIVqzVzHN0s7ZFb2XjU?=
+ =?us-ascii?Q?5uFXDRcuo7IAboTJLsOvn0TTQSCkXKpvyUeQcT0GWgEx/MpLoyemGCc7CnzG?=
+ =?us-ascii?Q?pOtHTfQgzmlLV9HHm8yK24Yh2m1n70DWnNgFnw0GK5ywg9ykUkFQ8cehvJPR?=
+ =?us-ascii?Q?99+oJuygiA0xeP35OfARsYJPNM5PnaH3yhlSXBh1N2bJGepuPEyLZxVSmQmX?=
+ =?us-ascii?Q?Jl27KUcdwteaqyhunPF4KKJsmcbX8O+0lGvlOvPYpb7jsqAnb3MytBqVDWSB?=
+ =?us-ascii?Q?RbO3SDYtxd4+QLq3QHGaEk3c6wS8AGZtckTW+2n7aS1fwVnMR2o8JiLWSGkn?=
+ =?us-ascii?Q?rnkcEhpeubWaW/jz7Q7jwmUBijk94swtOKD39eVPatMcaRUFR7SfcI/C2blH?=
+ =?us-ascii?Q?nIi79I22RZIUJQrNIV7luPMpxsLsFrDL5pjbi/0luMhgx0my7BWfHvjiNmlD?=
+ =?us-ascii?Q?f1boTtCDRctZBdQKk6+P9rEXzmiLDwzr4WhYcgmB7QK4vMpMLKFNxbQy0Q0Z?=
+ =?us-ascii?Q?6tqPaAEFzEmIjffNYt3EG7PeRgIVuExgMUJD8Y3ngKVHr1QeUgXXfC/lLv12?=
+ =?us-ascii?Q?LxjYrdnba7SVIa4PM/MHWpz6wPCPeKyy/k1kmJDOGA6pEOaMWXWoIWDf0TlG?=
+ =?us-ascii?Q?Ud2ih5YgSDqKUGcmlkMkkMda4/PLaNY7kn1hV1YeWMR5anaA7DszpP1delu+?=
+ =?us-ascii?Q?xIWLlgOV8NCIjvqWcgirlMAp4qz6mEcQC3X3?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(7416014)(376014)(1800799024)(30052699003)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2025 00:54:48.4660
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3b930f59-710a-474a-22b0-08dd884ac5e6
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SA2PEPF00001508.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6667
 
-The contiguous bit in translation table entries can be used as a hint to
-SMMU that a group of adjacent translation table entries have consistent
-attributes and point to a contiguous and properly aligned output address
-range. This enables SMMU to predict the properties of the remaining
-translation table entries in the same group without accessing them. It
-also allows an SMMU implementation to make more efficient use of its TLB
-by using a single TLB entry to cover all translation table entries in
-the same group.
+On Wed, Apr 30, 2025 at 03:39:22PM -0700, Nicolin Chen wrote:
+> On Wed, Apr 30, 2025 at 09:59:13PM +0000, Pranjal Shrivastava wrote:
+> > >  enum iommu_viommu_type {
+> > >  	IOMMU_VIOMMU_TYPE_DEFAULT = 0,
+> > >  	IOMMU_VIOMMU_TYPE_ARM_SMMUV3 = 1,
+> > > +	IOMMU_VIOMMU_TYPE_TEGRA241_CMDQV = 2,
+> > > +};
+> > 
+> > This is a little confusing.. I understand that we need a new viommu type
+> > to copy the new struct iommu_viommu_tegra241_cmdqv b/w the user & kernel
+> > 
+> > But, in a previous patch (Add vsmmu_alloc impl op), we add a check to
+> > fallback to the standard type SMMUv3, if the impl_ops->vsmmu_alloc 
+> > returns -EOPNOTSUPP:
+> > 
+> > 	if (master->smmu->impl_ops && master->smmu->impl_ops->vsmmu_alloc)
+> > 		vsmmu = master->smmu->impl_ops->vsmmu_alloc(
+> > 			master->smmu, s2_parent, ictx, viommu_type, user_data);
+> > 	if (PTR_ERR(vsmmu) == -EOPNOTSUPP) {
+> > 		if (viommu_type != IOMMU_VIOMMU_TYPE_ARM_SMMUV3)
+> > 			return ERR_PTR(-EOPNOTSUPP);
+> > 		/* Fallback to standard SMMUv3 type if viommu_type matches */
+> > 		vsmmu = iommufd_viommu_alloc(ictx, struct arm_vsmmu, core,
+> > 					     &arm_vsmmu_ops);
+> > 
+> > Now, if we'll ALWAYS try to allocate an impl-specified vsmmu first, even
+> > when the viommu_type == IOMMU_VIOMMU_TYPE_ARM_SMMUV3, we are anyways
+> > going to return back from the impl_ops->vsmmu_alloc with -EOPNOTSUPP.
+> 
+> That's not necessarily true. An impl_ops->vsmmu_alloc can support
+> IOMMU_VIOMMU_TYPE_ARM_SMMUV3 potentially, e.g. an impl could just
+> toggle a few special bits in a register and return a valid vsmmu
+> pointer.
+> 
+> It doesn't work like this with VCMDQ as it supports its own type,
+> but for the long run I think we should pass in the standard type
+> to impl_ops->vsmmu_alloc too.
+> 
+> > Then we'll again check if the retval was -EOPNOTSUPP and re-check the
+> > viommu_type requested.. which seems a little counter intuitive.
+> 
+> It's just prioritizing the impl_ops->vsmmu_alloc. Similar to the
+> probe, if VCMDQ is missing or encountering some initialization
+> problem, give it a chance to fallback to the standard SMMU.
 
-In the case of 4KB granule size, there are 16 translation table entries
-in one group.
+I changed to this and it should be clear now:
 
-This change sets the contiguous bit for such groups of entries that are
-completely covered by a single call to map_pages. As it stands, the code
-wouldn't set the contiguous bit if a group of adjacent descriptors is
-completed by separate calls to map_pages.
++       /* Prioritize the impl that may support IOMMU_VIOMMU_TYPE_ARM_SMMUV3 */
++       if (master->smmu->impl_ops && master->smmu->impl_ops->vsmmu_alloc)
++               vsmmu = master->smmu->impl_ops->vsmmu_alloc(
++                       master->smmu, s2_parent, ictx, viommu_type, user_data);
++       if (PTR_ERR(vsmmu) == -EOPNOTSUPP) {
++               /* Otherwise, allocate an IOMMU_VIOMMU_TYPE_ARM_SMMUV3 here */
++               if (viommu_type == IOMMU_VIOMMU_TYPE_ARM_SMMUV3)
++                       vsmmu = iommufd_viommu_alloc(ictx, struct arm_vsmmu,
++                                                    core, &arm_vsmmu_ops);
 
-Signed-off-by: Daniel Mentz <danielmentz@google.com>
----
- drivers/iommu/io-pgtable-arm.c | 53 +++++++++++++++++++++++++++++++---
- 1 file changed, 49 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 7632c80edea6..07b40e928bb3 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -76,6 +76,7 @@
- 
- #define ARM_LPAE_PTE_NSTABLE		(((arm_lpae_iopte)1) << 63)
- #define ARM_LPAE_PTE_XN			(((arm_lpae_iopte)3) << 53)
-+#define ARM_LPAE_PTE_CONT		(((arm_lpae_iopte)1) << 52)
- #define ARM_LPAE_PTE_DBM		(((arm_lpae_iopte)1) << 51)
- #define ARM_LPAE_PTE_AF			(((arm_lpae_iopte)1) << 10)
- #define ARM_LPAE_PTE_SH_NS		(((arm_lpae_iopte)0) << 8)
-@@ -326,6 +327,27 @@ static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
- 				   sizeof(*ptep) * num_entries, DMA_TO_DEVICE);
- }
- 
-+static int arm_lpae_cont_ptes(int lvl, struct arm_lpae_io_pgtable *data)
-+{
-+	switch (ARM_LPAE_GRANULE(data)) {
-+	case SZ_4K:
-+		if (lvl >= 1)
-+			return 16;
-+		break;
-+	case SZ_16K:
-+		if (lvl == 2)
-+			return 32;
-+		else if (lvl == 3)
-+			return 128;
-+		break;
-+	case SZ_64K:
-+		if (lvl >= 2)
-+			return 32;
-+		break;
-+	}
-+	return 1;
-+}
-+
- static void __arm_lpae_clear_pte(arm_lpae_iopte *ptep, struct io_pgtable_cfg *cfg, int num_entries)
- {
- 	for (int i = 0; i < num_entries; i++)
-@@ -340,8 +362,30 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 			       unsigned long iova, size_t size, size_t pgcount,
- 			       int lvl, arm_lpae_iopte *ptep);
- 
-+static bool arm_lpae_use_contpte(struct arm_lpae_io_pgtable *data,
-+				 unsigned long iova, phys_addr_t paddr,
-+				 int lvl, int num_entries, int i)
-+{
-+	size_t sz = ARM_LPAE_BLOCK_SIZE(lvl, data);
-+	int cont_ptes = arm_lpae_cont_ptes(lvl, data);
-+	int contmask = cont_ptes - 1;
-+	int contpte_addr_mask = sz * cont_ptes - 1;
-+	int map_idx_start, tbl_idx;
-+
-+	if ((paddr & contpte_addr_mask) != (iova & contpte_addr_mask))
-+		return false;
-+
-+	map_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
-+	tbl_idx = map_idx_start + i;
-+	if (((tbl_idx & contmask) <= i) &&
-+	    (tbl_idx < ((map_idx_start + num_entries) & ~contmask)))
-+		return true;
-+
-+	return false;
-+}
-+
- static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
--				phys_addr_t paddr, arm_lpae_iopte prot,
-+				unsigned long iova, phys_addr_t paddr, arm_lpae_iopte prot,
- 				int lvl, int num_entries, arm_lpae_iopte *ptep)
- {
- 	arm_lpae_iopte pte = prot;
-@@ -355,8 +399,9 @@ static void __arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 		pte |= ARM_LPAE_PTE_TYPE_BLOCK;
- 
- 	for (i = 0; i < num_entries; i++)
--		ptep[i] = pte | paddr_to_iopte(paddr + i * sz, data);
--
-+		ptep[i] = pte | paddr_to_iopte(paddr + i * sz, data) |
-+			  (arm_lpae_use_contpte(data, iova, paddr, lvl, num_entries, i) ?
-+			  ARM_LPAE_PTE_CONT : 0);
- 	if (!cfg->coherent_walk)
- 		__arm_lpae_sync_pte(ptep, num_entries, cfg);
- }
-@@ -389,7 +434,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 			}
- 		}
- 
--	__arm_lpae_init_pte(data, paddr, prot, lvl, num_entries, ptep);
-+	__arm_lpae_init_pte(data, iova, paddr, prot, lvl, num_entries, ptep);
- 	return 0;
- }
- 
--- 
-2.49.0.967.g6a0df3ecc3-goog
-
+Thanks
+Nicolin
