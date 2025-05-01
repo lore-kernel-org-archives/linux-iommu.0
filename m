@@ -1,164 +1,279 @@
-Received: from flow-a8-smtp.messagingengine.com (flow-a8-smtp.messagingengine.com [103.168.172.143])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2069.outbound.protection.outlook.com [40.107.220.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EBFD224AE8;
-	Thu,  1 May 2025 19:08:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.143
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746126492; cv=none; b=PTG+Aq0BM93D8Kn0vHZVEIIAr5sOgW67drYIWhuOf5LBOMRfgnTqqrFBtTSbesalUtRyFVv7F+2rdBhTYaW79mjAn6yIw3AUYUbcbeGBWO7mTTDoYUOxhrGl6mPYxPgZQAczVVWeLtZBwvC1GT2bBW2l6EKIawDnQtwUxf3sIm8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746126492; c=relaxed/simple;
-	bh=t72V4cMXfgECq2XlBkakvc0ngW0PUat2k9kI4OAGgGQ=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=kC7dmTuOD2kBD3XP+cqE0QVE84XzTZ1P2dKP/6YBWw8IN2gi0SKXbxTHjgL+5nn7+9J/WqHmVQRgU6xAGHglwrtHNVJQxMg/3y7047EZxjGikorOTCnEFVHhP2jtMiT1h85jE9MY83t6r+o4jFop9dgHZdorpa1yYFSxwU49jzo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svenpeter.dev; spf=pass smtp.mailfrom=svenpeter.dev; dkim=pass (2048-bit key) header.d=svenpeter.dev header.i=@svenpeter.dev header.b=gMWu11vI; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=kRRWrsXt; arc=none smtp.client-ip=103.168.172.143
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svenpeter.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=svenpeter.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24E7624DFF3
+	for <iommu@lists.linux.dev>; Thu,  1 May 2025 21:00:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.69
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746133255; cv=fail; b=giks+bEwFl2455Azfy/vZLr3j3mS1TZ5Kx3HoUWOcM8N4Jfx8jw2uXMn4oXCs+QmPZPwjEsvVT2tKk3RpqJL3xMCYNJ3oChaHGFjKe1CyMf+btT9NZpybirwQF1h6oL16YSnQlMjbLGharQrNTZrmcFjFfiGPUhM5LF8SXEuMzc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746133255; c=relaxed/simple;
+	bh=WkcS294b/ii9ogtIIvfXG+zRm4VFxC57Bb2QYwS4VhA=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=c/wsFNnb5ZSWQvZwwNS72OHg+hP9U5TdUgSo17CCsdeRY68G9Cku4BRJrnvVj4mOwJA6f+7JFhs+xQbwrwJjRppvlM//7LBgWQj3pGNUmvZmzEj0ek5gJZ/2tbjHRGNnAh19HN+W9Twp47mwaWnhATxA5Gjdgbzkdy9PCEDHj0k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=FFyuonpn; arc=fail smtp.client-ip=40.107.220.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=svenpeter.dev header.i=@svenpeter.dev header.b="gMWu11vI";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="kRRWrsXt"
-Received: from phl-compute-04.internal (phl-compute-04.phl.internal [10.202.2.44])
-	by mailflow.phl.internal (Postfix) with ESMTP id 2F84F2007A6;
-	Thu,  1 May 2025 15:08:09 -0400 (EDT)
-Received: from phl-imap-07 ([10.202.2.97])
-  by phl-compute-04.internal (MEProxy); Thu, 01 May 2025 15:08:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
-	 h=cc:cc:content-transfer-encoding:content-type:content-type
-	:date:date:from:from:in-reply-to:in-reply-to:message-id
-	:mime-version:references:reply-to:subject:subject:to:to; s=fm1;
-	 t=1746126489; x=1746133689; bh=uy2Z23D4UX2pb4MGng/RS7Rc0DqXehjP
-	gXYL1GZyHEA=; b=gMWu11vIGwyUkebQS6FfJoMbvmG1K5I4PcYPfgos/+3IKTG9
-	gplwSngSdL9b0tzDvioUBprhL4wfVkOmTpNtoAAODeB28Xg6R/kwHB7dvxSuftFL
-	yhPHuhfnyZhbGy1Hk4LH0DS38ZnX4s0nqvPXJdj6j6YsCbSDjUNCmIVLH/A/20KP
-	oo3/VMPCqW0WLap/EGtkYjtqLqADG6I7601JRBgJjC9L0IW/fnmqPmRfywBz38B2
-	l4rECgxFIIXyjmPcKpJ3MKrLDuuogSY9AnqaHJ7N27iyCvQLDrLJO+Uzbvq2a1Ob
-	z/jW7mFvVIaWGr7pr0l6vyW2GdTQ2Hejj4c04Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1746126489; x=
-	1746133689; bh=uy2Z23D4UX2pb4MGng/RS7Rc0DqXehjPgXYL1GZyHEA=; b=k
-	RRWrsXtBP2dGvKqi4W7O8NcUE4T3criJTN4RNqnwM3jvVZB6DFHHOoJRSzF4WwTC
-	zyfSgrVfEAEZo6Ar3KWwXFFgpo9OcSnMRAJNahqn3nlXJrX0g/PcOryetxJVwBdg
-	bMvCV+WGJfrIwElsLCpZTQGf+AFh+vAPQIz7pR9L3B7fo46k+1htBqhXoVi3Nr6i
-	iPfXM7t0uPbUxV6yQuN2xxuUHDxXOhwyx1GBr0m/YPvpPLJFGrE4r55Y1vhjLJkG
-	EYbgK2ov6OqW9yBM/N3vWdDrYa4RmB3gucHV7PaTEJHhJOlijJtkhtTp35Hug9Lp
-	KdTUch2CHWx/XAiNccw8Q==
-X-ME-Sender: <xms:lMYTaGgjwoD9jvvLQF3kWWQqAITXOwX2J_Tz44npf0_rwZTz5vZWuA>
-    <xme:lMYTaHCfTlr4IcDYYP9mfLiZVIcfetmb5w7EMXV6Z0z5aHP8l6w5d06NcLSmpdfDF
-    y_HHxOzjxiGRzZWmjM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvjedtfeekucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
-    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
-    gvnhhtshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertder
-    tddtnecuhfhrohhmpedfufhvvghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvth
-    gvrhdruggvvheqnecuggftrfgrthhtvghrnhepleefteeugeduudeuudeuhfefheegveek
-    ueefffdvffektdffffelveffvddvueffnecuvehluhhsthgvrhfuihiivgeptdenucfrrg
-    hrrghmpehmrghilhhfrhhomhepshhvvghnsehsvhgvnhhpvghtvghrrdguvghvpdhnsggp
-    rhgtphhtthhopeegledpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepjhhorhhose
-    eksgihthgvshdrohhrghdprhgtphhtthhopehrohgsihhnrdhmuhhrphhhhiesrghrmhdr
-    tghomhdprhgtphhtthhopegrnhhgvghlohhgihhorggttghhihhnohdruggvlhhrvghgnh
-    hosegtohhllhgrsghorhgrrdgtohhmpdhrtghpthhtohepfigvnhhssegtshhivgdrohhr
-    ghdprhgtphhtthhopehprghlmhgvrhesuggrsggsvghlthdrtghomhdprhgtphhtthhope
-    grohhusegvvggtshdrsggvrhhkvghlvgihrdgvughupdhrtghpthhtoheprghlvgigsehg
-    hhhithhirdhfrhdprhgtphhtthhopehjvghrnhgvjhdrshhkrhgrsggvtgesghhmrghilh
-    drtghomhdprhgtphhtthhopehmrghtthhhihgrshdrsghgghesghhmrghilhdrtghomh
-X-ME-Proxy: <xmx:lMYTaOHaWClXa7praEdCDETzg-YVo8ghBfqAEKgcYyCNv-z3uiOvlg>
-    <xmx:lMYTaPTDyplPkZ6QrXRyRgI6CFJO6g9IDexaTEMgKEAyXB5CcIWOgQ>
-    <xmx:lMYTaDxrliDpH1IiImjsat2Qz56tDsozwSqIgW3l_ha48UqBCKavYA>
-    <xmx:lMYTaN4smmith_jw1KGBc7w4dLVQ7r3zWaP24jB2SlIhLdcRPVRmOw>
-    <xmx:mcYTaH2ZstH58KGLmGnY3MmWQlgQtyVkrQuLwkep4LE-hnCp6R9N54B6>
-Feedback-ID: i51094778:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 6CE25BA0070; Thu,  1 May 2025 15:08:04 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FFyuonpn"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=BSVnlG2XLDb8ZKm8WLnoNeBiaSj0ybZvkJbEqN5Hcv+AiaWlaxQoeusUUmhh7qByXF/qRlvdjH1ql5UZTXJUlirYqLE6nXT/dhmYbnREQkJzu68wjzVXTeUTJbjmYW5ZwSiDXE5nYkjqcbghD6VU3kawozZnezycvpl6xBy5ynjz3W+4/1cKU/wFgx83QYAzmDJ1a6NUg6FlKKt8KtdL6VxQMRaVZl4Pue5czrP1lbrYooaF2KPdQe9r8ksJOOTbLuEQb364twCXodhZevFnctkiGDBj5bSDgzBUR/YCoe1B/hCzI982UI+NnUDdbPQ6lGzkm/ZfzNL9Z6ZfPZpwgg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mf1hc8ioBso5skW4fRWXvtd1yoWmPw6vdoxPFdArIDY=;
+ b=y4nezt1RiJhpMGtSBYi66cUCzwxn4dWzNfkz9pCId1UPz5rvCgADVwBWDnZJlHblH5tSLxQaADubWja7WoZXPXiFHoG6ttbUSk3sF6eWLkcLn2+PTw7ZLqI1Kto8Aan9AQUw7GuP+ABxurQLYLO7vpkR7vnSVciaRXUJhHMq5o0u3jmKpTIu8ADueiUF+PJTjt+Hv0JZCsjtqjwGjNNQEId2XKaN0nANTrrpx9eKmyXsrYldef7UH2T/fxWb20Gpryx/MD3PjGeTzDZhz9RuIzFHKZA0EKG5Gap+EbV2WvhxuvpGfh83s86K8dAssxJSaQGL+nPGue+yh1MUIy13Ng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mf1hc8ioBso5skW4fRWXvtd1yoWmPw6vdoxPFdArIDY=;
+ b=FFyuonpnn9Dd4akRAYN+OoX+2hYUoufDaMh2PfRff0VuSYxz8mqqKrSHmPy++/W15Morn0oTObDAOtuB+ZOJ+OwxVoAJ08svJRRiFo0d7/mzq+M6jNiHXCf4ZPjQ+8A+3L4WUhIEgqPsucgLn3J9qpuWNtjbqolDGcD8PgyKYlog+QMIxgGLQ42oMFyI9BgG0MtFQSo57NmxpOtPceOdINlyMuYJ7ILg8Ai7hzY5floe+Q6V4HwDqlsObLJ5vueTvUoun26beaLiCwmyHiSiWCuaWuzB/C90GGJ+zMGUXIZpyuJrChC6oPRd+Ik5Sn2AUEOnhjVz1NZMvbqxZLGnAA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BL3PR12MB6643.namprd12.prod.outlook.com (2603:10b6:208:38f::17)
+ by IA0PR12MB7723.namprd12.prod.outlook.com (2603:10b6:208:431::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8699.20; Thu, 1 May
+ 2025 21:00:49 +0000
+Received: from BL3PR12MB6643.namprd12.prod.outlook.com
+ ([fe80::4c5a:f9d8:3aa4:4d2f]) by BL3PR12MB6643.namprd12.prod.outlook.com
+ ([fe80::4c5a:f9d8:3aa4:4d2f%5]) with mapi id 15.20.8699.012; Thu, 1 May 2025
+ 21:00:48 +0000
+Message-ID: <5b74482c-38c3-4720-81b8-67c599184e39@nvidia.com>
+Date: Thu, 1 May 2025 14:00:45 -0700
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 rc] iommu: Skip PASID validation for devices without
+ PASID capability
+To: Vasant Hegde <vasant.hegde@amd.com>, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, kevin.tian@intel.com, jgg@nvidia.com,
+ yi.l.liu@intel.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: linux-pci@vger.kernel.org, stable@vger.kernel.org
+References: <20250430025426.976139-1-tdave@nvidia.com>
+ <85cab331-d19b-4cd7-83cb-02def31c71ac@amd.com>
+Content-Language: en-US
+From: Tushar Dave <tdave@nvidia.com>
+In-Reply-To: <85cab331-d19b-4cd7-83cb-02def31c71ac@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MW4P221CA0020.NAMP221.PROD.OUTLOOK.COM
+ (2603:10b6:303:8b::25) To BL3PR12MB6643.namprd12.prod.outlook.com
+ (2603:10b6:208:38f::17)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ThreadId: T5b013bf7ff4edb46
-Date: Thu, 01 May 2025 21:07:44 +0200
-From: "Sven Peter" <sven@svenpeter.dev>
-To: "Jason Gunthorpe" <jgg@nvidia.com>, "Alexandre Ghiti" <alex@ghiti.fr>,
- "Alim Akhtar" <alim.akhtar@samsung.com>,
- "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
- "AngeloGioacchino Del Regno" <angelogioacchino.delregno@collabora.com>,
- "Albert Ou" <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
- "Baolin Wang" <baolin.wang@linux.alibaba.com>,
- "Lu Baolu" <baolu.lu@linux.intel.com>,
- "David Woodhouse" <dwmw2@infradead.org>,
- "Gerald Schaefer" <gerald.schaefer@linux.ibm.com>,
- "Heiko Stuebner" <heiko@sntech.de>, iommu@lists.linux.dev,
- "Janne Grunau" <j@jannau.net>,
- "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
- "Jernej Skrabec" <jernej.skrabec@gmail.com>,
- "Jonathan Hunter" <jonathanh@nvidia.com>,
- "Joerg Roedel" <joro@8bytes.org>, "Kevin Tian" <kevin.tian@intel.com>,
- "Krzysztof Kozlowski" <krzk@kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-riscv@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
- linux-tegra@vger.kernel.org,
- "Marek Szyprowski" <m.szyprowski@samsung.com>,
- "Matthias Brugger" <matthias.bgg@gmail.com>,
- "Matthew Rosato" <mjrosato@linux.ibm.com>, "Neal Gompa" <neal@gompa.dev>,
- "Orson Zhai" <orsonzhai@gmail.com>,
- "Palmer Dabbelt" <palmer@dabbelt.com>,
- "Paul Walmsley" <paul.walmsley@sifive.com>,
- "Rob Clark" <robdclark@gmail.com>, "Robin Murphy" <robin.murphy@arm.com>,
- "Samuel Holland" <samuel@sholland.org>,
- "Niklas Schnelle" <schnelle@linux.ibm.com>,
- "Thierry Reding" <thierry.reding@gmail.com>,
- "Tomasz Jeznach" <tjeznach@rivosinc.com>,
- "Krishna Reddy" <vdumpa@nvidia.com>, virtualization@lists.linux.dev,
- "Chen-Yu Tsai" <wens@csie.org>, "Will Deacon" <will@kernel.org>,
- "Yong Wu" <yong.wu@mediatek.com>,
- "Chunyan Zhang" <zhang.lyra@gmail.com>
-Cc: patches@lists.linux.dev
-Message-Id: <38706b77-4e58-4dfb-add3-814746f4a3c5@app.fastmail.com>
-In-Reply-To: <3-v1-7c5282b0c334+2db-iommu_rm_ops_pgsize_jgg@nvidia.com>
-References: <3-v1-7c5282b0c334+2db-iommu_rm_ops_pgsize_jgg@nvidia.com>
-Subject: Re: [PATCH 3/7] iommu: Remove ops.pgsize_bitmap from drivers that don't use it
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL3PR12MB6643:EE_|IA0PR12MB7723:EE_
+X-MS-Office365-Filtering-Correlation-Id: 152f886d-912c-47bf-b63d-08dd88f33fdb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?RnJac0pueElYcm96dmZKQXlCeCtUeXZTdXd2ZFVWLzl3WHdPUU13a0JpanUv?=
+ =?utf-8?B?L2RMV0RQSDRrdzRkakNNYmt2d1lhVUJwdEFnM01FWXJOZnZzUWhRS2lsZEZi?=
+ =?utf-8?B?WVUrWHJ3aHhxcWQ2Y3F1UkdISndzZys1Z1ZBMis4eHRUUWtMUEwweVRPMkxI?=
+ =?utf-8?B?UGIvZXFHZE9RVEZWMmFjSzBsTERqMWpHOVJ2TkZrRXNXUk13elhlQnJaVkk5?=
+ =?utf-8?B?Z3g1UmdKczB4Vk45YmhTM3FvT204dDh3cmdYRnA3QjFQTE96R21UVlR1YXFO?=
+ =?utf-8?B?ODBzQzY5ODIxWkI0Um8rcFNhVHBGdWgxZ0U4SytKbzhwMTNuTm9mUHNzVjZG?=
+ =?utf-8?B?N0lyS2hzbXdZNEZiYkMwcVRiQmhIc2grY21tSXM0c0lxMkZpMVdWeC81UXVS?=
+ =?utf-8?B?TFM5ZkdocGxRZjVMbVc4dFBiekM0a2padGh6Z2J6UEVzU3lWUlB6b3hldHdK?=
+ =?utf-8?B?MTNVSWtKU21naWUvNmw2RDJRTE15bTlVSzFFS09Md3dkVmxvV2trU01Qbzh3?=
+ =?utf-8?B?OElXUVI3NmNsUms3ZFQzaXVMRjBwZllMM0U0dFA3UVRoOVlSWHNydG1nSDQ1?=
+ =?utf-8?B?WnRrbGFZanQyYmdIRFZXSGViS1IxYUxTeERrUEVhOUJFVWxKbHgrOXFXWURi?=
+ =?utf-8?B?M3pNV3dEeEdZUldhNmNtRFJ6UThJenh5MlU1enB4V1htTjZPaEppdmtBaTVp?=
+ =?utf-8?B?MXBTdVlTekM0Rlg1WTViNWdybm5XS2pNWDNhWGdqU1VoNTlWNXprNzh5MXR6?=
+ =?utf-8?B?L09TL0xTSFVOd0wraFFENHFqLysvWW9wMHZjV09nbTlKZEh0a3djSzVJMjdT?=
+ =?utf-8?B?OGZHRjlQTEZaTkxucjR2NVFHSkQrclV1UVJmRWY3TW5uSHRiUHRWU0ttdU5m?=
+ =?utf-8?B?RGxOd3RZdXJhdUd1NWV1ZE91TEVtR1dCNWE5N3FCUWZ0NlRjVGlneGkrNUVt?=
+ =?utf-8?B?NmZLZmprbkxURGJhMStaWDIrMzk2TkFlNkVIS0k5eStWWVJOU3M2NVRONzdY?=
+ =?utf-8?B?TVM0ZU1VQ3pZUTJJSFFWMjNxR3B3akVIcVgwVFh5RmsvTnM2STQ5bFdmdSt2?=
+ =?utf-8?B?VmhRR1JsOHVaU2tROGNweXN3UUxDKzVFQ0M0L2dSL2U5RXRGa1hERVBVcjRR?=
+ =?utf-8?B?RnlMM2RDUUFON3VySTQyZ1UvMXdzQ3ZzcklmSXhhalM3SDZicW9kbnExcnhP?=
+ =?utf-8?B?QVFVQVlkbUpOL2ppRU5HM3lZOGIxL0ZYdGwyTGtGTFBxMjZzaWpQWE9WNWk3?=
+ =?utf-8?B?US95UndodXZ3eEN0MkZXM2h5N0puS3N0aDBxNEgwdGllZGxhNWs5M3ZTVVY2?=
+ =?utf-8?B?RStTRk1ua2FtMjNpemIyd1pManFNaERSNE9sem9GTjNsRGw1T0VzOEU4clhI?=
+ =?utf-8?B?T3hoOTBZRytZZzdyWUIrblVtY09sZ1R4STYyaE01ZnN2QWJ4aGRrd3p3OE95?=
+ =?utf-8?B?dWcxVGcvNTh4d1p3aU11bU1SWTRRNmRWMnk2UVZDekw4WG5hWnFrZWMwUTM1?=
+ =?utf-8?B?VWhKYTlxelZHZ3RKUEhNM1JGZCs0ZExIUTZVeCs0U0lrZGtKbFl5SExzU2tj?=
+ =?utf-8?B?UCtBaXM4ZnRyRGhOWmlzVmZQaDI5YXRxTWx4MW9pajZqRW8zRkdYcTI0M2xH?=
+ =?utf-8?B?bklWSnJTaWkrY1dyVXNvREE2Y0JiSnU3L250Q1RzcDdpOFJzQ2R1dG1welVk?=
+ =?utf-8?B?ZWxINzErRy9sUXh5TlRyVGlNWHY0Y0UvazFvZDZoWFI3NnYycGZCMmh4K3hp?=
+ =?utf-8?B?bkVnWEt2bjZvOFJFRzhYdTFzN2NjaEppNEc1R0V1Z1F2akd5WHg0KzIzeHEr?=
+ =?utf-8?B?QzY5Y0kzZCtjVWc1OVNmdEU1VEJSVUxyVVovMFV0Tzk5V1g2U2VZUmh3ald5?=
+ =?utf-8?B?RVhNZnNjMUNQL3puOE11dzJ5K0Z4QWxldFJENVVYTmd1R2EwVllVemNXcnVX?=
+ =?utf-8?Q?YtFhjK7Uvdw=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL3PR12MB6643.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SlNyNDdRVkZad3d0M21iSlZXY2Y2clBsN0RRalkraysyUWZGNFJCQ3dab2t3?=
+ =?utf-8?B?Y0l0eGVlL1ZEOVNZSjBjN3k0eHVvc2xDVkMvM1NLdUxYVDNOeS9jSHhyendI?=
+ =?utf-8?B?WmxoOFFZKzFWbEdWMFd3ZGRpeGhORzIzRmNmdzlUZ3FScUpMRjFyblovVDlN?=
+ =?utf-8?B?c2pZaVdLa0ZWcWl4NmVtLzJqOENVanpHNENVN0dQTHpOZDNIUTJVazUzYU5C?=
+ =?utf-8?B?ZVVlV1NFRHF5b0FhQ05KOGR3eGQycS90NlpPNTNMWStUQURKY25OZFhPTDAx?=
+ =?utf-8?B?MTcyaEhjajU5N0N2YXNLUWNTYkdMbERYV0Z2SXQxdHBzT2pYNFpBclBjRkdZ?=
+ =?utf-8?B?VnlFZU55OWdSMjVBTG9WaWlsWUp1cXkvYktLOU5YNnVqcW5HZEEwd1dWUE1H?=
+ =?utf-8?B?ZzR2LzF1TFU3RTRFclVCaXllRVZBTXdRaVZaQTFzdlE0clNEeENVWTNDMDQy?=
+ =?utf-8?B?UDc4Yklac3NULy81SEtMRXE1azJKTGc1UytwVjdja3NzdVRxTGtCYTZjNXds?=
+ =?utf-8?B?NmZQOVR1dWpBeitpWEpmZXlGMVpNZlpEQ2RLMVA0ZVkrZDZOUU4xOUg4M0tO?=
+ =?utf-8?B?UXlxTHA2cGFiMjhuUHZFeDNERC9oZ2FHUFhaUnZUTGZxY0JFWlFVNk1OS2M2?=
+ =?utf-8?B?Y1B6aXBoRnovQjgrdmJwdDZPRjdMSlJIemI0L0l0OG5HeGlyNFFMUkNwQ2Uz?=
+ =?utf-8?B?TlowZjJPNnJGVnVKZ016ZHA3b2p2ZUI5bTk5Ulk0UXVVNnI0Y1Y4TlpMejJ5?=
+ =?utf-8?B?bWN4eXlvaHhOS1JJTW1CaTFBQ0RZVG9GclFKWVlTMlEyRzh3Rm5qVFJpSE5Z?=
+ =?utf-8?B?QW00QzVYd3BJWlg5cm5ma2tsUEJ4U3IySThPcCtwcTJ2bnpLZXU4K0pmazdI?=
+ =?utf-8?B?UUZvK1JnRUd3SlRNd1U0ak5yeFR0Qno5bWFUb1dpMVJlYWd2WHFILzJSZXNn?=
+ =?utf-8?B?VFVEZ2k1MXZyUnNERTRXK2RONjh0eThEOG0wbW1VUW5MYkZmYTZFbE10b0Jl?=
+ =?utf-8?B?cys1UUtxMWtUOGluVXZETHNLTUQ1QnlFOFRqVm9QY1E1ME1Rb0FreTBoZW9r?=
+ =?utf-8?B?ZnAyVGhCTk1VWHArWjl0Rm9QWExKL1VqQytUaWJPYWJ3cW5LTW1Gb212a1Vw?=
+ =?utf-8?B?RFhqbCsrNk5yN2hHRlVIajIwcnBldFB1OFgvZ1FsUElyQTNMMG5aU3JmVlMx?=
+ =?utf-8?B?dUN0bThYRkptOU1Ga2ZZYXNTa0dWbXh2RmFEaE02WVNtTG9pUGNRc21heVhI?=
+ =?utf-8?B?SmFNQlFubGFJU25sVXMzSS95R2RNMnJBQW5aQ2FKcDBaZ3VHbTE3bzdmVm9Z?=
+ =?utf-8?B?QVN6RU9YdTd6RWlKY1hmSkx4UGlhWjdxVWhnRHFBa1d6Qjd4NXFuZ0VaRGZ5?=
+ =?utf-8?B?NnJ3WXR4aHFHNHFPaXE0K2FPTFhzbm9lWlQzbFNJK3R3OE1GamFobkJkSDBT?=
+ =?utf-8?B?UG5GaFJ3aFhOSUc1UGFadUpwcDI5T3djakkrUTNra1U3aEtrRkxNdkQzb1Jl?=
+ =?utf-8?B?T1NyKzlXSDllL0RkdFNWb2JnS2V5Z1NMUVRmT0NaM2FGYXpjeXBlMnRmclRH?=
+ =?utf-8?B?VHRmUFBLMUQwR0c1L2o5UUNRakVhMC9zeTR5K1YyTjdWdTEzTzZ3eUpCUFFL?=
+ =?utf-8?B?aFhkSWRZZUY3a0Izc1g5a3JWTkM5L2lKcXprVGI1cmhYcjZTNUlWZWdnY3R3?=
+ =?utf-8?B?cHNiVjRndEZjbjJhdGY2TGxzTklEVzhRR2hvamh2T2lRSmlrNHlVUG5HTWxF?=
+ =?utf-8?B?NXNSSDJ2SlBjeUhPbU15ZE5RQlNGOGVDMEIzT0J1cVU2SlRJRDVhSTMwWTRF?=
+ =?utf-8?B?cHo4cGVDcW9LMEhPSDNtWWVXVnFqUUtoa0pXelJDZTJIMmZlWEMzRUt1Z3dR?=
+ =?utf-8?B?aFhtVkpQS0YvZG5XNjFhYjF4MVNnQmlRWFI2UWN2b3ppemRsTndKTEpQakxj?=
+ =?utf-8?B?TzVVenhLdmhVOElFOWRxOUN5WlFkWlA0K05FcmtQSTkrSjg3Rlcwc1BuZFZl?=
+ =?utf-8?B?a2NYVHJPcUtWZHoyNU14V0JyTldiY0ZaRC9qR3NsWlIvVDlESmlKZlFHenNS?=
+ =?utf-8?B?ajNsTmJqcjlCc2xMNVZsbzlGUnNTRG44V2J1cE01cHN0UC9NRzNQT1BBSlNM?=
+ =?utf-8?Q?PrIchm6rMJNVw2qR+Ko1MLysS?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 152f886d-912c-47bf-b63d-08dd88f33fdb
+X-MS-Exchange-CrossTenant-AuthSource: BL3PR12MB6643.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2025 21:00:48.8046
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Rp3yx4pkIt37gU9ex9aYm68UTkX1rN6UHZT/H+th1JkBvJ2wIVV26pVgaIYBOSmSXuij4eMFgMZH0Ulgw4PTOQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7723
 
-On Tue, Apr 29, 2025, at 16:34, Jason Gunthorpe wrote:
-> These drivers all set the domain->pgsize_bitmap in their
-> domain_alloc_paging() functions, so the ops value is never used. Delete
-> it.
->
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/apple-dart.c       | 1 -
->  drivers/iommu/intel/iommu.c      | 1 -
->  drivers/iommu/iommufd/selftest.c | 1 -
->  drivers/iommu/riscv/iommu.c      | 1 -
->  drivers/iommu/virtio-iommu.c     | 6 ++----
->  5 files changed, 2 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-> index 757d24f67ad45a..190f28d7661515 100644
-> --- a/drivers/iommu/apple-dart.c
-> +++ b/drivers/iommu/apple-dart.c
-> @@ -991,7 +991,6 @@ static const struct iommu_ops apple_dart_iommu_ops = {
->  	.of_xlate = apple_dart_of_xlate,
->  	.def_domain_type = apple_dart_def_domain_type,
->  	.get_resv_regions = apple_dart_get_resv_regions,
-> -	.pgsize_bitmap = -1UL, /* Restricted during dart probe */
->  	.owner = THIS_MODULE,
->  	.default_domain_ops = &(const struct iommu_domain_ops) {
->  		.attach_dev	= apple_dart_attach_dev_paging,
-
-Reviewed-by: Sven Peter <sven@svenpeter.dev> # for Apple DART
 
 
+On 5/1/25 03:58, Vasant Hegde wrote:
+> On 4/30/2025 8:24 AM, Tushar Dave wrote:
+>> Generally PASID support requires ACS settings that usually create
+>> single device groups, but there are some niche cases where we can get
+>> multi-device groups and still have working PASID support. The primary
+>> issue is that PCI switches are not required to treat PASID tagged TLPs
+>> specially so appropriate ACS settings are required to route all TLPs to
+>> the host bridge if PASID is going to work properly.
+>>
+>> pci_enable_pasid() does check that each device that will use PASID has
+>> the proper ACS settings to achieve this routing.
+>>
+>> However, no-PASID devices can be combined with PASID capable devices
+>> within the same topology using non-uniform ACS settings. In this case
+>> the no-PASID devices may not have strict route to host ACS flags and
+>> end up being grouped with the PASID devices.
+>>
+>> This configuration fails to allow use of the PASID within the iommu
+>> core code which wrongly checks if the no-PASID device supports PASID.
+>>
+>> Fix this by ignoring no-PASID devices during the PASID validation. They
+>> will never issue a PASID TLP anyhow so they can be ignored.
+>>
+>> Fixes: c404f55c26fc ("iommu: Validate the PASID in iommu_attach_device_pasid()")
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: Tushar Dave <tdave@nvidia.com>
+>> ---
+>>
+>> changes in v2:
+>> - added no-pasid check in __iommu_set_group_pasid and __iommu_remove_group_pasid
+>>
+>>   drivers/iommu/iommu.c | 22 ++++++++++++++++------
+>>   1 file changed, 16 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 60aed01e54f2..8251b07f4022 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -3329,8 +3329,9 @@ static int __iommu_set_group_pasid(struct iommu_domain *domain,
+>>   	int ret;
+> 
+> initialize ret to zero?
 
-Best,
+Thanks Vasant.
 
+How about:
 
-Sven
+         for_each_group_device(group, device) {
+-               ret = domain->ops->set_dev_pasid(domain, device->dev,
+-                                                pasid, NULL);
+-               if (ret)
+-                       goto err_revert;
++               if (device->dev->iommu->max_pasids > 0) {
++                       ret = domain->ops->set_dev_pasid(domain, device->dev,
++                                                        pasid, NULL);
++                       if (ret)
++                               goto err_revert;
++               }
+         }
+
+Let me know.
+
+-Tushar
+
+> 
+> -Vasant
+> 
+>>   
+>>   	for_each_group_device(group, device) {
+>> -		ret = domain->ops->set_dev_pasid(domain, device->dev,
+>> -						 pasid, NULL);
+>> +		if (device->dev->iommu->max_pasids > 0)
+>> +			ret = domain->ops->set_dev_pasid(domain, device->dev,
+>> +							 pasid, NULL);
+>>   		if (ret)
+>>   			goto err_revert;
+>>   	}
+>> @@ -3342,7 +3343,8 @@ static int __iommu_set_group_pasid(struct iommu_domain *domain,
+>>   	for_each_group_device(group, device) {
+>>   		if (device == last_gdev)
+>>   			break;
+>> -		iommu_remove_dev_pasid(device->dev, pasid, domain);
+>> +		if (device->dev->iommu->max_pasids > 0)
+>> +			iommu_remove_dev_pasid(device->dev, pasid, domain);
+>>   	}
+>>   	return ret;
+>>   }
+>> @@ -3353,8 +3355,10 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
+>>   {
+>>   	struct group_device *device;
+>>   
+>> -	for_each_group_device(group, device)
+>> -		iommu_remove_dev_pasid(device->dev, pasid, domain);
+>> +	for_each_group_device(group, device) {
+>> +		if (device->dev->iommu->max_pasids > 0)
+>> +			iommu_remove_dev_pasid(device->dev, pasid, domain);
+>> +	}
+>>   }
+>>   
+>>   /*
+>> @@ -3391,7 +3395,13 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
+>>   
+>>   	mutex_lock(&group->mutex);
+>>   	for_each_group_device(group, device) {
+>> -		if (pasid >= device->dev->iommu->max_pasids) {
+>> +		/*
+>> +		 * Skip PASID validation for devices without PASID support
+>> +		 * (max_pasids = 0). These devices cannot issue transactions
+>> +		 * with PASID, so they don't affect group's PASID usage.
+>> +		 */
+>> +		if ((device->dev->iommu->max_pasids > 0) &&
+>> +		    (pasid >= device->dev->iommu->max_pasids)) {
+>>   			ret = -EINVAL;
+>>   			goto out_unlock;
+>>   		}
+> 
