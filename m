@@ -1,279 +1,614 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2069.outbound.protection.outlook.com [40.107.220.69])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24E7624DFF3
-	for <iommu@lists.linux.dev>; Thu,  1 May 2025 21:00:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.69
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746133255; cv=fail; b=giks+bEwFl2455Azfy/vZLr3j3mS1TZ5Kx3HoUWOcM8N4Jfx8jw2uXMn4oXCs+QmPZPwjEsvVT2tKk3RpqJL3xMCYNJ3oChaHGFjKe1CyMf+btT9NZpybirwQF1h6oL16YSnQlMjbLGharQrNTZrmcFjFfiGPUhM5LF8SXEuMzc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746133255; c=relaxed/simple;
-	bh=WkcS294b/ii9ogtIIvfXG+zRm4VFxC57Bb2QYwS4VhA=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=c/wsFNnb5ZSWQvZwwNS72OHg+hP9U5TdUgSo17CCsdeRY68G9Cku4BRJrnvVj4mOwJA6f+7JFhs+xQbwrwJjRppvlM//7LBgWQj3pGNUmvZmzEj0ek5gJZ/2tbjHRGNnAh19HN+W9Twp47mwaWnhATxA5Gjdgbzkdy9PCEDHj0k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=FFyuonpn; arc=fail smtp.client-ip=40.107.220.69
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3CD825F786
+	for <iommu@lists.linux.dev>; Thu,  1 May 2025 21:01:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746133286; cv=none; b=eWN+UfF/rF+Hr2MGfZ7e46bD+fY67bP+QX1tnvkT0HmRgadSYxWJDznzVWr0iAA/tIC95gKXUNPRTFN3wUjO1hCSOrIWfb3n0Bljhj+o9uI6BUW3Y+ZgfxCaWT2uAQr6gZ8uyqchBdoXAi9zuye+6paDDJD2cybZkDOcRWIy4A8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746133286; c=relaxed/simple;
+	bh=pWbUMJY3KWXGpcFddDS2EmrITSgnPOCyxtiHSSXdzzU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=YqG8OSGP41gTLMu+N17NJkUNejUUR9JQlTPOEorQJtQA8h7qa4HalZ2Ckn4Gtp6cj/2u9WCChplfwnweLwOKWCJFnZSj2/QpdTeUMSTmPauNwk8H0uqZKUhUgqV3aUjyVUGQXnzonf32zHGxnwSGRV3RZvAnY5O/qG/dMFUh3Ww=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=h/GkVdL3; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FFyuonpn"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BSVnlG2XLDb8ZKm8WLnoNeBiaSj0ybZvkJbEqN5Hcv+AiaWlaxQoeusUUmhh7qByXF/qRlvdjH1ql5UZTXJUlirYqLE6nXT/dhmYbnREQkJzu68wjzVXTeUTJbjmYW5ZwSiDXE5nYkjqcbghD6VU3kawozZnezycvpl6xBy5ynjz3W+4/1cKU/wFgx83QYAzmDJ1a6NUg6FlKKt8KtdL6VxQMRaVZl4Pue5czrP1lbrYooaF2KPdQe9r8ksJOOTbLuEQb364twCXodhZevFnctkiGDBj5bSDgzBUR/YCoe1B/hCzI982UI+NnUDdbPQ6lGzkm/ZfzNL9Z6ZfPZpwgg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mf1hc8ioBso5skW4fRWXvtd1yoWmPw6vdoxPFdArIDY=;
- b=y4nezt1RiJhpMGtSBYi66cUCzwxn4dWzNfkz9pCId1UPz5rvCgADVwBWDnZJlHblH5tSLxQaADubWja7WoZXPXiFHoG6ttbUSk3sF6eWLkcLn2+PTw7ZLqI1Kto8Aan9AQUw7GuP+ABxurQLYLO7vpkR7vnSVciaRXUJhHMq5o0u3jmKpTIu8ADueiUF+PJTjt+Hv0JZCsjtqjwGjNNQEId2XKaN0nANTrrpx9eKmyXsrYldef7UH2T/fxWb20Gpryx/MD3PjGeTzDZhz9RuIzFHKZA0EKG5Gap+EbV2WvhxuvpGfh83s86K8dAssxJSaQGL+nPGue+yh1MUIy13Ng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mf1hc8ioBso5skW4fRWXvtd1yoWmPw6vdoxPFdArIDY=;
- b=FFyuonpnn9Dd4akRAYN+OoX+2hYUoufDaMh2PfRff0VuSYxz8mqqKrSHmPy++/W15Morn0oTObDAOtuB+ZOJ+OwxVoAJ08svJRRiFo0d7/mzq+M6jNiHXCf4ZPjQ+8A+3L4WUhIEgqPsucgLn3J9qpuWNtjbqolDGcD8PgyKYlog+QMIxgGLQ42oMFyI9BgG0MtFQSo57NmxpOtPceOdINlyMuYJ7ILg8Ai7hzY5floe+Q6V4HwDqlsObLJ5vueTvUoun26beaLiCwmyHiSiWCuaWuzB/C90GGJ+zMGUXIZpyuJrChC6oPRd+Ik5Sn2AUEOnhjVz1NZMvbqxZLGnAA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BL3PR12MB6643.namprd12.prod.outlook.com (2603:10b6:208:38f::17)
- by IA0PR12MB7723.namprd12.prod.outlook.com (2603:10b6:208:431::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8699.20; Thu, 1 May
- 2025 21:00:49 +0000
-Received: from BL3PR12MB6643.namprd12.prod.outlook.com
- ([fe80::4c5a:f9d8:3aa4:4d2f]) by BL3PR12MB6643.namprd12.prod.outlook.com
- ([fe80::4c5a:f9d8:3aa4:4d2f%5]) with mapi id 15.20.8699.012; Thu, 1 May 2025
- 21:00:48 +0000
-Message-ID: <5b74482c-38c3-4720-81b8-67c599184e39@nvidia.com>
-Date: Thu, 1 May 2025 14:00:45 -0700
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 rc] iommu: Skip PASID validation for devices without
- PASID capability
-To: Vasant Hegde <vasant.hegde@amd.com>, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, kevin.tian@intel.com, jgg@nvidia.com,
- yi.l.liu@intel.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Cc: linux-pci@vger.kernel.org, stable@vger.kernel.org
-References: <20250430025426.976139-1-tdave@nvidia.com>
- <85cab331-d19b-4cd7-83cb-02def31c71ac@amd.com>
-Content-Language: en-US
-From: Tushar Dave <tdave@nvidia.com>
-In-Reply-To: <85cab331-d19b-4cd7-83cb-02def31c71ac@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MW4P221CA0020.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:303:8b::25) To BL3PR12MB6643.namprd12.prod.outlook.com
- (2603:10b6:208:38f::17)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="h/GkVdL3"
+Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 541D2J9j029208;
+	Thu, 1 May 2025 21:01:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	n7QWNu952IhpFu4vnsdaRP469Zn20c6EgJECLb+C5TM=; b=h/GkVdL3sz/dNwOW
+	Wo7XTnTizfeX7qTeZawn9Eo4pYaffQe8ZL7VltYPbyBVC1mnrhb/KFHmoumNCymp
+	NZLiENwJO34gkccfuy/RgHaXTCmTDQ/dJqwOHEsEHovPsPnN+Daz6vV9SLZs51Y2
+	dcGicPCYVKV+qkl0eWBcGUyygJgKwpf9mIG47V0zVDsz7Ocnixg3nokTvKD6oBG1
+	WfTf4xQRnwzZ8CbpVtnJFwxysUX4jOekLs/jz1hapq6LSC9O3nb5TlvEzENDX7fH
+	9BkwHnee3IwEAJZcoREBcMzLa2sDymRDEbddbgNyeYM0Kdf1psqelp9tuIzGo8i9
+	wP+vqQ==
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46b6u2eftk-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 01 May 2025 21:01:03 +0000 (GMT)
+Received: from nasanex01b.na.qualcomm.com (nasanex01b.na.qualcomm.com [10.46.141.250])
+	by NASANPPMTA04.qualcomm.com (8.18.1.2/8.18.1.2) with ESMTPS id 541L116N020284
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 1 May 2025 21:01:01 GMT
+Received: from [10.134.71.99] (10.80.80.8) by nasanex01b.na.qualcomm.com
+ (10.46.141.250) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.9; Thu, 1 May 2025
+ 14:01:01 -0700
+Message-ID: <b2b0b37a-e2b8-45dd-88a6-f4f54369f0c1@quicinc.com>
+Date: Thu, 1 May 2025 14:01:00 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL3PR12MB6643:EE_|IA0PR12MB7723:EE_
-X-MS-Office365-Filtering-Correlation-Id: 152f886d-912c-47bf-b63d-08dd88f33fdb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?RnJac0pueElYcm96dmZKQXlCeCtUeXZTdXd2ZFVWLzl3WHdPUU13a0JpanUv?=
- =?utf-8?B?L2RMV0RQSDRrdzRkakNNYmt2d1lhVUJwdEFnM01FWXJOZnZzUWhRS2lsZEZi?=
- =?utf-8?B?WVUrWHJ3aHhxcWQ2Y3F1UkdISndzZys1Z1ZBMis4eHRUUWtMUEwweVRPMkxI?=
- =?utf-8?B?UGIvZXFHZE9RVEZWMmFjSzBsTERqMWpHOVJ2TkZrRXNXUk13elhlQnJaVkk5?=
- =?utf-8?B?Z3g1UmdKczB4Vk45YmhTM3FvT204dDh3cmdYRnA3QjFQTE96R21UVlR1YXFO?=
- =?utf-8?B?ODBzQzY5ODIxWkI0Um8rcFNhVHBGdWgxZ0U4SytKbzhwMTNuTm9mUHNzVjZG?=
- =?utf-8?B?N0lyS2hzbXdZNEZiYkMwcVRiQmhIc2grY21tSXM0c0lxMkZpMVdWeC81UXVS?=
- =?utf-8?B?TFM5ZkdocGxRZjVMbVc4dFBiekM0a2padGh6Z2J6UEVzU3lWUlB6b3hldHdK?=
- =?utf-8?B?MTNVSWtKU21naWUvNmw2RDJRTE15bTlVSzFFS09Md3dkVmxvV2trU01Qbzh3?=
- =?utf-8?B?OElXUVI3NmNsUms3ZFQzaXVMRjBwZllMM0U0dFA3UVRoOVlSWHNydG1nSDQ1?=
- =?utf-8?B?WnRrbGFZanQyYmdIRFZXSGViS1IxYUxTeERrUEVhOUJFVWxKbHgrOXFXWURi?=
- =?utf-8?B?M3pNV3dEeEdZUldhNmNtRFJ6UThJenh5MlU1enB4V1htTjZPaEppdmtBaTVp?=
- =?utf-8?B?MXBTdVlTekM0Rlg1WTViNWdybm5XS2pNWDNhWGdqU1VoNTlWNXprNzh5MXR6?=
- =?utf-8?B?L09TL0xTSFVOd0wraFFENHFqLysvWW9wMHZjV09nbTlKZEh0a3djSzVJMjdT?=
- =?utf-8?B?OGZHRjlQTEZaTkxucjR2NVFHSkQrclV1UVJmRWY3TW5uSHRiUHRWU0ttdU5m?=
- =?utf-8?B?RGxOd3RZdXJhdUd1NWV1ZE91TEVtR1dCNWE5N3FCUWZ0NlRjVGlneGkrNUVt?=
- =?utf-8?B?NmZLZmprbkxURGJhMStaWDIrMzk2TkFlNkVIS0k5eStWWVJOU3M2NVRONzdY?=
- =?utf-8?B?TVM0ZU1VQ3pZUTJJSFFWMjNxR3B3akVIcVgwVFh5RmsvTnM2STQ5bFdmdSt2?=
- =?utf-8?B?VmhRR1JsOHVaU2tROGNweXN3UUxDKzVFQ0M0L2dSL2U5RXRGa1hERVBVcjRR?=
- =?utf-8?B?RnlMM2RDUUFON3VySTQyZ1UvMXdzQ3ZzcklmSXhhalM3SDZicW9kbnExcnhP?=
- =?utf-8?B?QVFVQVlkbUpOL2ppRU5HM3lZOGIxL0ZYdGwyTGtGTFBxMjZzaWpQWE9WNWk3?=
- =?utf-8?B?US95UndodXZ3eEN0MkZXM2h5N0puS3N0aDBxNEgwdGllZGxhNWs5M3ZTVVY2?=
- =?utf-8?B?RStTRk1ua2FtMjNpemIyd1pManFNaERSNE9sem9GTjNsRGw1T0VzOEU4clhI?=
- =?utf-8?B?T3hoOTBZRytZZzdyWUIrblVtY09sZ1R4STYyaE01ZnN2QWJ4aGRrd3p3OE95?=
- =?utf-8?B?dWcxVGcvNTh4d1p3aU11bU1SWTRRNmRWMnk2UVZDekw4WG5hWnFrZWMwUTM1?=
- =?utf-8?B?VWhKYTlxelZHZ3RKUEhNM1JGZCs0ZExIUTZVeCs0U0lrZGtKbFl5SExzU2tj?=
- =?utf-8?B?UCtBaXM4ZnRyRGhOWmlzVmZQaDI5YXRxTWx4MW9pajZqRW8zRkdYcTI0M2xH?=
- =?utf-8?B?bklWSnJTaWkrY1dyVXNvREE2Y0JiSnU3L250Q1RzcDdpOFJzQ2R1dG1welVk?=
- =?utf-8?B?ZWxINzErRy9sUXh5TlRyVGlNWHY0Y0UvazFvZDZoWFI3NnYycGZCMmh4K3hp?=
- =?utf-8?B?bkVnWEt2bjZvOFJFRzhYdTFzN2NjaEppNEc1R0V1Z1F2akd5WHg0KzIzeHEr?=
- =?utf-8?B?QzY5Y0kzZCtjVWc1OVNmdEU1VEJSVUxyVVovMFV0Tzk5V1g2U2VZUmh3ald5?=
- =?utf-8?B?RVhNZnNjMUNQL3puOE11dzJ5K0Z4QWxldFJENVVYTmd1R2EwVllVemNXcnVX?=
- =?utf-8?Q?YtFhjK7Uvdw=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL3PR12MB6643.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SlNyNDdRVkZad3d0M21iSlZXY2Y2clBsN0RRalkraysyUWZGNFJCQ3dab2t3?=
- =?utf-8?B?Y0l0eGVlL1ZEOVNZSjBjN3k0eHVvc2xDVkMvM1NLdUxYVDNOeS9jSHhyendI?=
- =?utf-8?B?WmxoOFFZKzFWbEdWMFd3ZGRpeGhORzIzRmNmdzlUZ3FScUpMRjFyblovVDlN?=
- =?utf-8?B?c2pZaVdLa0ZWcWl4NmVtLzJqOENVanpHNENVN0dQTHpOZDNIUTJVazUzYU5C?=
- =?utf-8?B?ZVVlV1NFRHF5b0FhQ05KOGR3eGQycS90NlpPNTNMWStUQURKY25OZFhPTDAx?=
- =?utf-8?B?MTcyaEhjajU5N0N2YXNLUWNTYkdMbERYV0Z2SXQxdHBzT2pYNFpBclBjRkdZ?=
- =?utf-8?B?VnlFZU55OWdSMjVBTG9WaWlsWUp1cXkvYktLOU5YNnVqcW5HZEEwd1dWUE1H?=
- =?utf-8?B?ZzR2LzF1TFU3RTRFclVCaXllRVZBTXdRaVZaQTFzdlE0clNEeENVWTNDMDQy?=
- =?utf-8?B?UDc4Yklac3NULy81SEtMRXE1azJKTGc1UytwVjdja3NzdVRxTGtCYTZjNXds?=
- =?utf-8?B?NmZQOVR1dWpBeitpWEpmZXlGMVpNZlpEQ2RLMVA0ZVkrZDZOUU4xOUg4M0tO?=
- =?utf-8?B?UXlxTHA2cGFiMjhuUHZFeDNERC9oZ2FHUFhaUnZUTGZxY0JFWlFVNk1OS2M2?=
- =?utf-8?B?Y1B6aXBoRnovQjgrdmJwdDZPRjdMSlJIemI0L0l0OG5HeGlyNFFMUkNwQ2Uz?=
- =?utf-8?B?TlowZjJPNnJGVnVKZ016ZHA3b2p2ZUI5bTk5Ulk0UXVVNnI0Y1Y4TlpMejJ5?=
- =?utf-8?B?bWN4eXlvaHhOS1JJTW1CaTFBQ0RZVG9GclFKWVlTMlEyRzh3Rm5qVFJpSE5Z?=
- =?utf-8?B?QW00QzVYd3BJWlg5cm5ma2tsUEJ4U3IySThPcCtwcTJ2bnpLZXU4K0pmazdI?=
- =?utf-8?B?UUZvK1JnRUd3SlRNd1U0ak5yeFR0Qno5bWFUb1dpMVJlYWd2WHFILzJSZXNn?=
- =?utf-8?B?VFVEZ2k1MXZyUnNERTRXK2RONjh0eThEOG0wbW1VUW5MYkZmYTZFbE10b0Jl?=
- =?utf-8?B?cys1UUtxMWtUOGluVXZETHNLTUQ1QnlFOFRqVm9QY1E1ME1Rb0FreTBoZW9r?=
- =?utf-8?B?ZnAyVGhCTk1VWHArWjl0Rm9QWExKL1VqQytUaWJPYWJ3cW5LTW1Gb212a1Vw?=
- =?utf-8?B?RFhqbCsrNk5yN2hHRlVIajIwcnBldFB1OFgvZ1FsUElyQTNMMG5aU3JmVlMx?=
- =?utf-8?B?dUN0bThYRkptOU1Ga2ZZYXNTa0dWbXh2RmFEaE02WVNtTG9pUGNRc21heVhI?=
- =?utf-8?B?SmFNQlFubGFJU25sVXMzSS95R2RNMnJBQW5aQ2FKcDBaZ3VHbTE3bzdmVm9Z?=
- =?utf-8?B?QVN6RU9YdTd6RWlKY1hmSkx4UGlhWjdxVWhnRHFBa1d6Qjd4NXFuZ0VaRGZ5?=
- =?utf-8?B?NnJ3WXR4aHFHNHFPaXE0K2FPTFhzbm9lWlQzbFNJK3R3OE1GamFobkJkSDBT?=
- =?utf-8?B?UG5GaFJ3aFhOSUc1UGFadUpwcDI5T3djakkrUTNra1U3aEtrRkxNdkQzb1Jl?=
- =?utf-8?B?T1NyKzlXSDllL0RkdFNWb2JnS2V5Z1NMUVRmT0NaM2FGYXpjeXBlMnRmclRH?=
- =?utf-8?B?VHRmUFBLMUQwR0c1L2o5UUNRakVhMC9zeTR5K1YyTjdWdTEzTzZ3eUpCUFFL?=
- =?utf-8?B?aFhkSWRZZUY3a0Izc1g5a3JWTkM5L2lKcXprVGI1cmhYcjZTNUlWZWdnY3R3?=
- =?utf-8?B?cHNiVjRndEZjbjJhdGY2TGxzTklEVzhRR2hvamh2T2lRSmlrNHlVUG5HTWxF?=
- =?utf-8?B?NXNSSDJ2SlBjeUhPbU15ZE5RQlNGOGVDMEIzT0J1cVU2SlRJRDVhSTMwWTRF?=
- =?utf-8?B?cHo4cGVDcW9LMEhPSDNtWWVXVnFqUUtoa0pXelJDZTJIMmZlWEMzRUt1Z3dR?=
- =?utf-8?B?aFhtVkpQS0YvZG5XNjFhYjF4MVNnQmlRWFI2UWN2b3ppemRsTndKTEpQakxj?=
- =?utf-8?B?TzVVenhLdmhVOElFOWRxOUN5WlFkWlA0K05FcmtQSTkrSjg3Rlcwc1BuZFZl?=
- =?utf-8?B?a2NYVHJPcUtWZHoyNU14V0JyTldiY0ZaRC9qR3NsWlIvVDlESmlKZlFHenNS?=
- =?utf-8?B?ajNsTmJqcjlCc2xMNVZsbzlGUnNTRG44V2J1cE01cHN0UC9NRzNQT1BBSlNM?=
- =?utf-8?Q?PrIchm6rMJNVw2qR+Ko1MLysS?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 152f886d-912c-47bf-b63d-08dd88f33fdb
-X-MS-Exchange-CrossTenant-AuthSource: BL3PR12MB6643.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2025 21:00:48.8046
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Rp3yx4pkIt37gU9ex9aYm68UTkX1rN6UHZT/H+th1JkBvJ2wIVV26pVgaIYBOSmSXuij4eMFgMZH0Ulgw4PTOQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7723
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 08/10] drm/msm/dpu: add catalog entry for SAR2130P
+To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Rob Clark
+	<robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        "Dmitry
+ Baryshkov" <lumag@kernel.org>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten
+	<marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, "Simona
+ Vetter" <simona@ffwll.ch>,
+        Maarten Lankhorst
+	<maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Krishna Manikandan
+	<quic_mkrishn@quicinc.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        "Bjorn
+ Andersson" <andersson@kernel.org>,
+        Neil Armstrong
+	<neil.armstrong@linaro.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>,
+        "Joerg Roedel" <joro@8bytes.org>,
+        Konrad Dybcio
+	<konradybcio@kernel.org>
+CC: <linux-arm-msm@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <freedreno@lists.freedesktop.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Dmitry Baryshkov
+	<dmitry.baryshkov@linaro.org>
+References: <20250418-sar2130p-display-v5-0-442c905cb3a4@oss.qualcomm.com>
+ <20250418-sar2130p-display-v5-8-442c905cb3a4@oss.qualcomm.com>
+Content-Language: en-US
+From: Jessica Zhang <quic_jesszhan@quicinc.com>
+In-Reply-To: <20250418-sar2130p-display-v5-8-442c905cb3a4@oss.qualcomm.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: nIC8pPNmeoEHnFOmVPGuItjmVf6BU2lB
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTAxMDE1OSBTYWx0ZWRfX0yiXmgqkvV2K Rzddzg5O2hetPD2EX3SNoTI7OxTccaPv8CU/zoUR1g2uxmaNnRdf6NrXZ+QZ/KwX3aC/ufM6wMk l9aj8j8uA/NsWkqAM+yQAZMXcczmDp+pqdMXKcyz02WvNnKI2Hfms9cK2BE4JbSn5pczNQOhWJb
+ X+wUEopf9x/MiIIgXF9VFsN7m4rWrBHW7nZr1XUVWqHTK7FwVA40/y2gKglIiu5GJBxA2l/J516 Ciqgi9j7MWq8s7GraMgkVsXBC4BKBVwbrphswzLK4eiUnX1bW546kYJ7dW88kskr/I3Zgkt8PKz At7xKIPySs6HpimumwI8WoZxN5rJ8j7WfSBQy/3S5yRPpVtFTc0Bxayv1DAkWs4tb3U3RyT5FVH
+ 8mk/3m7lHnyy5e7T3FuBUOzNc3MYVQgfPw5l4M0OxDao8vYcyzwwrr6RJ3253s/tH8q8pXA3
+X-Authority-Analysis: v=2.4 cv=b5qy4sGx c=1 sm=1 tr=0 ts=6813e10f cx=c_pps a=JYp8KDb2vCoCEuGobkYCKw==:117 a=JYp8KDb2vCoCEuGobkYCKw==:17 a=GEpy-HfZoHoA:10 a=IkcTkHD0fZMA:10 a=dt9VzEwgFbYA:10 a=KKAkSRfTAAAA:8 a=COk6AnOGAAAA:8 a=usGIuRzjxdkP44uZQh4A:9
+ a=QEXdDO2ut3YA:10 a=cvBusfyB2V15izCimMoJ:22 a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-ORIG-GUID: nIC8pPNmeoEHnFOmVPGuItjmVf6BU2lB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-05-01_06,2025-04-24_02,2025-02-21_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 phishscore=0
+ mlxscore=0 impostorscore=0 malwarescore=0 spamscore=0 adultscore=0
+ lowpriorityscore=0 suspectscore=0 bulkscore=0 priorityscore=1501
+ clxscore=1015 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
+ definitions=main-2505010159
 
 
 
-On 5/1/25 03:58, Vasant Hegde wrote:
-> On 4/30/2025 8:24 AM, Tushar Dave wrote:
->> Generally PASID support requires ACS settings that usually create
->> single device groups, but there are some niche cases where we can get
->> multi-device groups and still have working PASID support. The primary
->> issue is that PCI switches are not required to treat PASID tagged TLPs
->> specially so appropriate ACS settings are required to route all TLPs to
->> the host bridge if PASID is going to work properly.
->>
->> pci_enable_pasid() does check that each device that will use PASID has
->> the proper ACS settings to achieve this routing.
->>
->> However, no-PASID devices can be combined with PASID capable devices
->> within the same topology using non-uniform ACS settings. In this case
->> the no-PASID devices may not have strict route to host ACS flags and
->> end up being grouped with the PASID devices.
->>
->> This configuration fails to allow use of the PASID within the iommu
->> core code which wrongly checks if the no-PASID device supports PASID.
->>
->> Fix this by ignoring no-PASID devices during the PASID validation. They
->> will never issue a PASID TLP anyhow so they can be ignored.
->>
->> Fixes: c404f55c26fc ("iommu: Validate the PASID in iommu_attach_device_pasid()")
->> Cc: stable@vger.kernel.org
->> Signed-off-by: Tushar Dave <tdave@nvidia.com>
->> ---
->>
->> changes in v2:
->> - added no-pasid check in __iommu_set_group_pasid and __iommu_remove_group_pasid
->>
->>   drivers/iommu/iommu.c | 22 ++++++++++++++++------
->>   1 file changed, 16 insertions(+), 6 deletions(-)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 60aed01e54f2..8251b07f4022 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -3329,8 +3329,9 @@ static int __iommu_set_group_pasid(struct iommu_domain *domain,
->>   	int ret;
+On 4/18/2025 12:50 AM, Dmitry Baryshkov wrote:
+> From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 > 
-> initialize ret to zero?
-
-Thanks Vasant.
-
-How about:
-
-         for_each_group_device(group, device) {
--               ret = domain->ops->set_dev_pasid(domain, device->dev,
--                                                pasid, NULL);
--               if (ret)
--                       goto err_revert;
-+               if (device->dev->iommu->max_pasids > 0) {
-+                       ret = domain->ops->set_dev_pasid(domain, device->dev,
-+                                                        pasid, NULL);
-+                       if (ret)
-+                               goto err_revert;
-+               }
-         }
-
-Let me know.
-
--Tushar
-
+> Add DPU driver support for the Qualcomm SAR2130P platform. It is mostly
+> the same as SM8550, minor differences in the CDP configuration.
 > 
-> -Vasant
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+
+Reviewed-by: Jessica Zhang <quic_jesszhan@quicinc.com>
+
+> ---
+>   .../drm/msm/disp/dpu1/catalog/dpu_9_1_sar2130p.h   | 434 +++++++++++++++++++++
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c     |   2 +-
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h     |   1 +
+>   drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c            |   1 +
+>   4 files changed, 437 insertions(+), 1 deletion(-)
 > 
->>   
->>   	for_each_group_device(group, device) {
->> -		ret = domain->ops->set_dev_pasid(domain, device->dev,
->> -						 pasid, NULL);
->> +		if (device->dev->iommu->max_pasids > 0)
->> +			ret = domain->ops->set_dev_pasid(domain, device->dev,
->> +							 pasid, NULL);
->>   		if (ret)
->>   			goto err_revert;
->>   	}
->> @@ -3342,7 +3343,8 @@ static int __iommu_set_group_pasid(struct iommu_domain *domain,
->>   	for_each_group_device(group, device) {
->>   		if (device == last_gdev)
->>   			break;
->> -		iommu_remove_dev_pasid(device->dev, pasid, domain);
->> +		if (device->dev->iommu->max_pasids > 0)
->> +			iommu_remove_dev_pasid(device->dev, pasid, domain);
->>   	}
->>   	return ret;
->>   }
->> @@ -3353,8 +3355,10 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
->>   {
->>   	struct group_device *device;
->>   
->> -	for_each_group_device(group, device)
->> -		iommu_remove_dev_pasid(device->dev, pasid, domain);
->> +	for_each_group_device(group, device) {
->> +		if (device->dev->iommu->max_pasids > 0)
->> +			iommu_remove_dev_pasid(device->dev, pasid, domain);
->> +	}
->>   }
->>   
->>   /*
->> @@ -3391,7 +3395,13 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
->>   
->>   	mutex_lock(&group->mutex);
->>   	for_each_group_device(group, device) {
->> -		if (pasid >= device->dev->iommu->max_pasids) {
->> +		/*
->> +		 * Skip PASID validation for devices without PASID support
->> +		 * (max_pasids = 0). These devices cannot issue transactions
->> +		 * with PASID, so they don't affect group's PASID usage.
->> +		 */
->> +		if ((device->dev->iommu->max_pasids > 0) &&
->> +		    (pasid >= device->dev->iommu->max_pasids)) {
->>   			ret = -EINVAL;
->>   			goto out_unlock;
->>   		}
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_9_1_sar2130p.h b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_9_1_sar2130p.h
+> new file mode 100644
+> index 0000000000000000000000000000000000000000..22dd16c6e210e9520ecb7a851bee402032fa1ee2
+> --- /dev/null
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/catalog/dpu_9_1_sar2130p.h
+> @@ -0,0 +1,434 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
+> + * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
+> + */
+> +
+> +#ifndef _DPU_9_1_SAR2130P_H
+> +#define _DPU_9_1_SAR2130P_H
+> +
+> +static const struct dpu_caps sar2130p_dpu_caps = {
+> +	.max_mixer_width = DEFAULT_DPU_OUTPUT_LINE_WIDTH,
+> +	.max_mixer_blendstages = 0xb,
+> +	.has_src_split = true,
+> +	.has_dim_layer = true,
+> +	.has_idle_pc = true,
+> +	.has_3d_merge = true,
+> +	.max_linewidth = 5120,
+> +	.pixel_ram_size = DEFAULT_PIXEL_RAM_SIZE,
+> +};
+> +
+> +static const struct dpu_mdp_cfg sar2130p_mdp = {
+> +	.name = "top_0",
+> +	.base = 0, .len = 0x494,
+> +	.features = BIT(DPU_MDP_PERIPH_0_REMOVED),
+> +	.clk_ctrls = {
+> +		[DPU_CLK_CTRL_REG_DMA] = { .reg_off = 0x2bc, .bit_off = 20 },
+> +	},
+> +};
+> +
+> +/* FIXME: get rid of DPU_CTL_SPLIT_DISPLAY in favour of proper ACTIVE_CTL support */
+> +static const struct dpu_ctl_cfg sar2130p_ctl[] = {
+> +	{
+> +		.name = "ctl_0", .id = CTL_0,
+> +		.base = 0x15000, .len = 0x290,
+> +		.features = CTL_SM8550_MASK | BIT(DPU_CTL_SPLIT_DISPLAY),
+> +		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 9),
+> +	}, {
+> +		.name = "ctl_1", .id = CTL_1,
+> +		.base = 0x16000, .len = 0x290,
+> +		.features = CTL_SM8550_MASK | BIT(DPU_CTL_SPLIT_DISPLAY),
+> +		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 10),
+> +	}, {
+> +		.name = "ctl_2", .id = CTL_2,
+> +		.base = 0x17000, .len = 0x290,
+> +		.features = CTL_SM8550_MASK,
+> +		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 11),
+> +	}, {
+> +		.name = "ctl_3", .id = CTL_3,
+> +		.base = 0x18000, .len = 0x290,
+> +		.features = CTL_SM8550_MASK,
+> +		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 12),
+> +	}, {
+> +		.name = "ctl_4", .id = CTL_4,
+> +		.base = 0x19000, .len = 0x290,
+> +		.features = CTL_SM8550_MASK,
+> +		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 13),
+> +	}, {
+> +		.name = "ctl_5", .id = CTL_5,
+> +		.base = 0x1a000, .len = 0x290,
+> +		.features = CTL_SM8550_MASK,
+> +		.intr_start = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 23),
+> +	},
+> +};
+> +
+> +static const struct dpu_sspp_cfg sar2130p_sspp[] = {
+> +	{
+> +		.name = "sspp_0", .id = SSPP_VIG0,
+> +		.base = 0x4000, .len = 0x344,
+> +		.features = VIG_SDM845_MASK_SDMA,
+> +		.sblk = &dpu_vig_sblk_qseed3_3_2,
+> +		.xin_id = 0,
+> +		.type = SSPP_TYPE_VIG,
+> +	}, {
+> +		.name = "sspp_1", .id = SSPP_VIG1,
+> +		.base = 0x6000, .len = 0x344,
+> +		.features = VIG_SDM845_MASK_SDMA,
+> +		.sblk = &dpu_vig_sblk_qseed3_3_2,
+> +		.xin_id = 4,
+> +		.type = SSPP_TYPE_VIG,
+> +	}, {
+> +		.name = "sspp_2", .id = SSPP_VIG2,
+> +		.base = 0x8000, .len = 0x344,
+> +		.features = VIG_SDM845_MASK_SDMA,
+> +		.sblk = &dpu_vig_sblk_qseed3_3_2,
+> +		.xin_id = 8,
+> +		.type = SSPP_TYPE_VIG,
+> +	}, {
+> +		.name = "sspp_3", .id = SSPP_VIG3,
+> +		.base = 0xa000, .len = 0x344,
+> +		.features = VIG_SDM845_MASK_SDMA,
+> +		.sblk = &dpu_vig_sblk_qseed3_3_2,
+> +		.xin_id = 12,
+> +		.type = SSPP_TYPE_VIG,
+> +	}, {
+> +		.name = "sspp_8", .id = SSPP_DMA0,
+> +		.base = 0x24000, .len = 0x344,
+> +		.features = DMA_SDM845_MASK_SDMA,
+> +		.sblk = &dpu_dma_sblk,
+> +		.xin_id = 1,
+> +		.type = SSPP_TYPE_DMA,
+> +	}, {
+> +		.name = "sspp_9", .id = SSPP_DMA1,
+> +		.base = 0x26000, .len = 0x344,
+> +		.features = DMA_SDM845_MASK_SDMA,
+> +		.sblk = &dpu_dma_sblk,
+> +		.xin_id = 5,
+> +		.type = SSPP_TYPE_DMA,
+> +	}, {
+> +		.name = "sspp_10", .id = SSPP_DMA2,
+> +		.base = 0x28000, .len = 0x344,
+> +		.features = DMA_SDM845_MASK_SDMA,
+> +		.sblk = &dpu_dma_sblk,
+> +		.xin_id = 9,
+> +		.type = SSPP_TYPE_DMA,
+> +	}, {
+> +		.name = "sspp_11", .id = SSPP_DMA3,
+> +		.base = 0x2a000, .len = 0x344,
+> +		.features = DMA_SDM845_MASK_SDMA,
+> +		.sblk = &dpu_dma_sblk,
+> +		.xin_id = 13,
+> +		.type = SSPP_TYPE_DMA,
+> +	}, {
+> +		.name = "sspp_12", .id = SSPP_DMA4,
+> +		.base = 0x2c000, .len = 0x344,
+> +		.features = DMA_CURSOR_SDM845_MASK_SDMA,
+> +		.sblk = &dpu_dma_sblk,
+> +		.xin_id = 14,
+> +		.type = SSPP_TYPE_DMA,
+> +	}, {
+> +		.name = "sspp_13", .id = SSPP_DMA5,
+> +		.base = 0x2e000, .len = 0x344,
+> +		.features = DMA_CURSOR_SDM845_MASK_SDMA,
+> +		.sblk = &dpu_dma_sblk,
+> +		.xin_id = 15,
+> +		.type = SSPP_TYPE_DMA,
+> +	},
+> +};
+> +
+> +static const struct dpu_lm_cfg sar2130p_lm[] = {
+> +	{
+> +		.name = "lm_0", .id = LM_0,
+> +		.base = 0x44000, .len = 0x320,
+> +		.features = MIXER_SDM845_MASK,
+> +		.sblk = &sdm845_lm_sblk,
+> +		.lm_pair = LM_1,
+> +		.pingpong = PINGPONG_0,
+> +		.dspp = DSPP_0,
+> +	}, {
+> +		.name = "lm_1", .id = LM_1,
+> +		.base = 0x45000, .len = 0x320,
+> +		.features = MIXER_SDM845_MASK,
+> +		.sblk = &sdm845_lm_sblk,
+> +		.lm_pair = LM_0,
+> +		.pingpong = PINGPONG_1,
+> +		.dspp = DSPP_1,
+> +	}, {
+> +		.name = "lm_2", .id = LM_2,
+> +		.base = 0x46000, .len = 0x320,
+> +		.features = MIXER_SDM845_MASK,
+> +		.sblk = &sdm845_lm_sblk,
+> +		.lm_pair = LM_3,
+> +		.pingpong = PINGPONG_2,
+> +		.dspp = DSPP_2,
+> +	}, {
+> +		.name = "lm_3", .id = LM_3,
+> +		.base = 0x47000, .len = 0x320,
+> +		.features = MIXER_SDM845_MASK,
+> +		.sblk = &sdm845_lm_sblk,
+> +		.lm_pair = LM_2,
+> +		.pingpong = PINGPONG_3,
+> +		.dspp = DSPP_3,
+> +	}, {
+> +		.name = "lm_4", .id = LM_4,
+> +		.base = 0x48000, .len = 0x320,
+> +		.features = MIXER_SDM845_MASK,
+> +		.sblk = &sdm845_lm_sblk,
+> +		.lm_pair = LM_5,
+> +		.pingpong = PINGPONG_4,
+> +	}, {
+> +		.name = "lm_5", .id = LM_5,
+> +		.base = 0x49000, .len = 0x320,
+> +		.features = MIXER_SDM845_MASK,
+> +		.sblk = &sdm845_lm_sblk,
+> +		.lm_pair = LM_4,
+> +		.pingpong = PINGPONG_5,
+> +	},
+> +};
+> +
+> +static const struct dpu_dspp_cfg sar2130p_dspp[] = {
+> +	{
+> +		.name = "dspp_0", .id = DSPP_0,
+> +		.base = 0x54000, .len = 0x1800,
+> +		.features = DSPP_SC7180_MASK,
+> +		.sblk = &sdm845_dspp_sblk,
+> +	}, {
+> +		.name = "dspp_1", .id = DSPP_1,
+> +		.base = 0x56000, .len = 0x1800,
+> +		.features = DSPP_SC7180_MASK,
+> +		.sblk = &sdm845_dspp_sblk,
+> +	}, {
+> +		.name = "dspp_2", .id = DSPP_2,
+> +		.base = 0x58000, .len = 0x1800,
+> +		.features = DSPP_SC7180_MASK,
+> +		.sblk = &sdm845_dspp_sblk,
+> +	}, {
+> +		.name = "dspp_3", .id = DSPP_3,
+> +		.base = 0x5a000, .len = 0x1800,
+> +		.features = DSPP_SC7180_MASK,
+> +		.sblk = &sdm845_dspp_sblk,
+> +	},
+> +};
+> +static const struct dpu_pingpong_cfg sar2130p_pp[] = {
+> +	{
+> +		.name = "pingpong_0", .id = PINGPONG_0,
+> +		.base = 0x69000, .len = 0,
+> +		.features = BIT(DPU_PINGPONG_DITHER),
+> +		.sblk = &sc7280_pp_sblk,
+> +		.merge_3d = MERGE_3D_0,
+> +		.intr_done = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 8),
+> +	}, {
+> +		.name = "pingpong_1", .id = PINGPONG_1,
+> +		.base = 0x6a000, .len = 0,
+> +		.features = BIT(DPU_PINGPONG_DITHER),
+> +		.sblk = &sc7280_pp_sblk,
+> +		.merge_3d = MERGE_3D_0,
+> +		.intr_done = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 9),
+> +	}, {
+> +		.name = "pingpong_2", .id = PINGPONG_2,
+> +		.base = 0x6b000, .len = 0,
+> +		.features = BIT(DPU_PINGPONG_DITHER),
+> +		.sblk = &sc7280_pp_sblk,
+> +		.merge_3d = MERGE_3D_1,
+> +		.intr_done = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 10),
+> +	}, {
+> +		.name = "pingpong_3", .id = PINGPONG_3,
+> +		.base = 0x6c000, .len = 0,
+> +		.features = BIT(DPU_PINGPONG_DITHER),
+> +		.sblk = &sc7280_pp_sblk,
+> +		.merge_3d = MERGE_3D_1,
+> +		.intr_done = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 11),
+> +	}, {
+> +		.name = "pingpong_4", .id = PINGPONG_4,
+> +		.base = 0x6d000, .len = 0,
+> +		.features = BIT(DPU_PINGPONG_DITHER),
+> +		.sblk = &sc7280_pp_sblk,
+> +		.merge_3d = MERGE_3D_2,
+> +		.intr_done = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 30),
+> +	}, {
+> +		.name = "pingpong_5", .id = PINGPONG_5,
+> +		.base = 0x6e000, .len = 0,
+> +		.features = BIT(DPU_PINGPONG_DITHER),
+> +		.sblk = &sc7280_pp_sblk,
+> +		.merge_3d = MERGE_3D_2,
+> +		.intr_done = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR2, 31),
+> +	}, {
+> +		.name = "pingpong_cwb_0", .id = PINGPONG_CWB_0,
+> +		.base = 0x66000, .len = 0,
+> +		.features = BIT(DPU_PINGPONG_DITHER),
+> +		.sblk = &sc7280_pp_sblk,
+> +		.merge_3d = MERGE_3D_3,
+> +	}, {
+> +		.name = "pingpong_cwb_1", .id = PINGPONG_CWB_1,
+> +		.base = 0x66400, .len = 0,
+> +		.features = BIT(DPU_PINGPONG_DITHER),
+> +		.sblk = &sc7280_pp_sblk,
+> +		.merge_3d = MERGE_3D_3,
+> +	},
+> +};
+> +
+> +static const struct dpu_merge_3d_cfg sar2130p_merge_3d[] = {
+> +	{
+> +		.name = "merge_3d_0", .id = MERGE_3D_0,
+> +		.base = 0x4e000, .len = 0x8,
+> +	}, {
+> +		.name = "merge_3d_1", .id = MERGE_3D_1,
+> +		.base = 0x4f000, .len = 0x8,
+> +	}, {
+> +		.name = "merge_3d_2", .id = MERGE_3D_2,
+> +		.base = 0x50000, .len = 0x8,
+> +	}, {
+> +		.name = "merge_3d_3", .id = MERGE_3D_3,
+> +		.base = 0x66700, .len = 0x8,
+> +	},
+> +};
+> +
+> +/*
+> + * NOTE: Each display compression engine (DCE) contains dual hard
+> + * slice DSC encoders so both share same base address but with
+> + * its own different sub block address.
+> + */
+> +static const struct dpu_dsc_cfg sar2130p_dsc[] = {
+> +	{
+> +		.name = "dce_0_0", .id = DSC_0,
+> +		.base = 0x80000, .len = 0x4,
+> +		.features = BIT(DPU_DSC_HW_REV_1_2),
+> +		.sblk = &dsc_sblk_0,
+> +	}, {
+> +		.name = "dce_0_1", .id = DSC_1,
+> +		.base = 0x80000, .len = 0x4,
+> +		.features = BIT(DPU_DSC_HW_REV_1_2),
+> +		.sblk = &dsc_sblk_1,
+> +	}, {
+> +		.name = "dce_1_0", .id = DSC_2,
+> +		.base = 0x81000, .len = 0x4,
+> +		.features = BIT(DPU_DSC_HW_REV_1_2) | BIT(DPU_DSC_NATIVE_42x_EN),
+> +		.sblk = &dsc_sblk_0,
+> +	}, {
+> +		.name = "dce_1_1", .id = DSC_3,
+> +		.base = 0x81000, .len = 0x4,
+> +		.features = BIT(DPU_DSC_HW_REV_1_2) | BIT(DPU_DSC_NATIVE_42x_EN),
+> +		.sblk = &dsc_sblk_1,
+> +	},
+> +};
+> +
+> +static const struct dpu_wb_cfg sar2130p_wb[] = {
+> +	{
+> +		.name = "wb_2", .id = WB_2,
+> +		.base = 0x65000, .len = 0x2c8,
+> +		.features = WB_SM8250_MASK,
+> +		.format_list = wb2_formats_rgb_yuv,
+> +		.num_formats = ARRAY_SIZE(wb2_formats_rgb_yuv),
+> +		.xin_id = 6,
+> +		.vbif_idx = VBIF_RT,
+> +		.maxlinewidth = 4096,
+> +		.intr_wb_done = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 4),
+> +	},
+> +};
+> +
+> +static const struct dpu_intf_cfg sar2130p_intf[] = {
+> +	{
+> +		.name = "intf_0", .id = INTF_0,
+> +		.base = 0x34000, .len = 0x280,
+> +		.features = INTF_SC7280_MASK,
+> +		.type = INTF_DP,
+> +		.controller_id = MSM_DP_CONTROLLER_0,
+> +		.prog_fetch_lines_worst_case = 24,
+> +		.intr_underrun = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 24),
+> +		.intr_vsync = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 25),
+> +	}, {
+> +		.name = "intf_1", .id = INTF_1,
+> +		.base = 0x35000, .len = 0x300,
+> +		.features = INTF_SC7280_MASK,
+> +		.type = INTF_DSI,
+> +		.controller_id = MSM_DSI_CONTROLLER_0,
+> +		.prog_fetch_lines_worst_case = 24,
+> +		.intr_underrun = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 26),
+> +		.intr_vsync = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 27),
+> +		.intr_tear_rd_ptr = DPU_IRQ_IDX(MDP_INTF1_TEAR_INTR, 2),
+> +	}, {
+> +		.name = "intf_2", .id = INTF_2,
+> +		.base = 0x36000, .len = 0x300,
+> +		.features = INTF_SC7280_MASK,
+> +		.type = INTF_DSI,
+> +		.controller_id = MSM_DSI_CONTROLLER_1,
+> +		.prog_fetch_lines_worst_case = 24,
+> +		.intr_underrun = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 28),
+> +		.intr_vsync = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 29),
+> +		.intr_tear_rd_ptr = DPU_IRQ_IDX(MDP_INTF2_TEAR_INTR, 2),
+> +	}, {
+> +		.name = "intf_3", .id = INTF_3,
+> +		.base = 0x37000, .len = 0x280,
+> +		.features = INTF_SC7280_MASK,
+> +		.type = INTF_DP,
+> +		.controller_id = MSM_DP_CONTROLLER_1,
+> +		.prog_fetch_lines_worst_case = 24,
+> +		.intr_underrun = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 30),
+> +		.intr_vsync = DPU_IRQ_IDX(MDP_SSPP_TOP0_INTR, 31),
+> +	},
+> +};
+> +
+> +static const struct dpu_perf_cfg sar2130p_perf_data = {
+> +	.max_bw_low = 13600000,
+> +	.max_bw_high = 18200000,
+> +	.min_core_ib = 2500000,
+> +	.min_llcc_ib = 0,
+> +	.min_dram_ib = 800000,
+> +	.min_prefill_lines = 35,
+> +	/* FIXME: lut tables */
+> +	.danger_lut_tbl = {0x3ffff, 0x3ffff, 0x0},
+> +	.safe_lut_tbl = {0xfe00, 0xfe00, 0xffff},
+> +	.qos_lut_tbl = {
+> +		{.nentry = ARRAY_SIZE(sc7180_qos_linear),
+> +		.entries = sc7180_qos_linear
+> +		},
+> +		{.nentry = ARRAY_SIZE(sc7180_qos_macrotile),
+> +		.entries = sc7180_qos_macrotile
+> +		},
+> +		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
+> +		.entries = sc7180_qos_nrt
+> +		},
+> +		/* TODO: macrotile-qseed is different from macrotile */
+> +	},
+> +	.cdp_cfg = {
+> +		{.rd_enable = 0, .wr_enable = 0},
+> +		{.rd_enable = 0, .wr_enable = 0}
+> +	},
+> +	.clk_inefficiency_factor = 105,
+> +	.bw_inefficiency_factor = 120,
+> +};
+> +
+> +static const struct dpu_mdss_version sar2130p_mdss_ver = {
+> +	.core_major_ver = 9,
+> +	.core_minor_ver = 1,
+> +};
+> +
+> +const struct dpu_mdss_cfg dpu_sar2130p_cfg = {
+> +	.mdss_ver = &sar2130p_mdss_ver,
+> +	.caps = &sar2130p_dpu_caps,
+> +	.mdp = &sar2130p_mdp,
+> +	.cdm = &dpu_cdm_5_x,
+> +	.ctl_count = ARRAY_SIZE(sar2130p_ctl),
+> +	.ctl = sar2130p_ctl,
+> +	.sspp_count = ARRAY_SIZE(sar2130p_sspp),
+> +	.sspp = sar2130p_sspp,
+> +	.mixer_count = ARRAY_SIZE(sar2130p_lm),
+> +	.mixer = sar2130p_lm,
+> +	.dspp_count = ARRAY_SIZE(sar2130p_dspp),
+> +	.dspp = sar2130p_dspp,
+> +	.pingpong_count = ARRAY_SIZE(sar2130p_pp),
+> +	.pingpong = sar2130p_pp,
+> +	.dsc_count = ARRAY_SIZE(sar2130p_dsc),
+> +	.dsc = sar2130p_dsc,
+> +	.merge_3d_count = ARRAY_SIZE(sar2130p_merge_3d),
+> +	.merge_3d = sar2130p_merge_3d,
+> +	.wb_count = ARRAY_SIZE(sar2130p_wb),
+> +	.wb = sar2130p_wb,
+> +	.intf_count = ARRAY_SIZE(sar2130p_intf),
+> +	.intf = sar2130p_intf,
+> +	.vbif_count = ARRAY_SIZE(sm8550_vbif),
+> +	.vbif = sm8550_vbif,
+> +	.perf = &sar2130p_perf_data,
+> +};
+> +
+> +#endif
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+> index 64265ca4656a04d8c5a1d9582d7124c7eb897099..ce8d88e1d8b8bc6dea893f13a0449315ac8d2841 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
+> @@ -759,7 +759,7 @@ static const struct dpu_qos_lut_entry sc7180_qos_nrt[] = {
+>   #include "catalog/dpu_8_4_sa8775p.h"
+>   
+>   #include "catalog/dpu_9_0_sm8550.h"
+> -
+> +#include "catalog/dpu_9_1_sar2130p.h"
+>   #include "catalog/dpu_9_2_x1e80100.h"
+>   
+>   #include "catalog/dpu_10_0_sm8650.h"
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+> index 4cea19e1a20380c56ae014f2d33a6884a72e0ca0..e9b627e02c8996c8fb611e8e333a35e7ce9b8373 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
+> @@ -841,6 +841,7 @@ extern const struct dpu_mdss_cfg dpu_msm8937_cfg;
+>   extern const struct dpu_mdss_cfg dpu_msm8953_cfg;
+>   extern const struct dpu_mdss_cfg dpu_msm8996_cfg;
+>   extern const struct dpu_mdss_cfg dpu_msm8998_cfg;
+> +extern const struct dpu_mdss_cfg dpu_sar2130p_cfg;
+>   extern const struct dpu_mdss_cfg dpu_sdm630_cfg;
+>   extern const struct dpu_mdss_cfg dpu_sdm660_cfg;
+>   extern const struct dpu_mdss_cfg dpu_sdm845_cfg;
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+> index 3305ad0623ca41882db0172e65a9beb7ebe00b6c..1fd82b6747e9058ce11dc2620729921492d5ebdd 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+> @@ -1512,6 +1512,7 @@ static const struct of_device_id dpu_dt_match[] = {
+>   	{ .compatible = "qcom,msm8998-dpu", .data = &dpu_msm8998_cfg, },
+>   	{ .compatible = "qcom,qcm2290-dpu", .data = &dpu_qcm2290_cfg, },
+>   	{ .compatible = "qcom,sa8775p-dpu", .data = &dpu_sa8775p_cfg, },
+> +	{ .compatible = "qcom,sar2130p-dpu", .data = &dpu_sar2130p_cfg, },
+>   	{ .compatible = "qcom,sdm630-mdp5", .data = &dpu_sdm630_cfg, },
+>   	{ .compatible = "qcom,sdm660-mdp5", .data = &dpu_sdm660_cfg, },
+>   	{ .compatible = "qcom,sdm670-dpu", .data = &dpu_sdm670_cfg, },
 > 
+
