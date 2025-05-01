@@ -1,63 +1,65 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC2DB33F6
-	for <iommu@lists.linux.dev>; Thu,  1 May 2025 16:37:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 206B333F6
+	for <iommu@lists.linux.dev>; Thu,  1 May 2025 16:37:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746117439; cv=none; b=JTAFWg3tvaPqjXInim5UCjwVElXN3m42uj7FFUvRxi19n1ro7iQvY5h3zG0ioV6m9/gBPb2nW5zCb4M+oRLdBvbtcjv+yiS9EttO6vSdxfWOOcoRJWG3np7jqmprrbnzmD3rd5ZacpCwhy4ObJ61mzWdl1GW8T0pxnvJy0xBHOo=
+	t=1746117441; cv=none; b=tHeXuGhsAaOA0nrxbSb2zstte/PdrvVXfsg7jRxX3c4ryf3Igj/JaOPwR4nssaJrem/DtAqtShsB7Y61ZxXXZrdK1TgPnPf4opVneOYtnmPoktD0fKnY3crsXXqPT9sUbLCS2ZXvW2uOeL4HFqGFk7j1oss1JCPA3qC9lxUal0w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746117439; c=relaxed/simple;
-	bh=5wab0/otZ82OVE/rJrbhgL2wR2IQtZ76AkM3zQixsM4=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ete2ygRE+VRsu0193721VxgYUAWLaab9tzwemRl0Baz5AyCcdNwWqMplwQ/K1skII0eO1ClXMbTCApTMVR43khGtwD3PWv9TQBENjJruumt6c/r5hk6zCyDNuydjNIi4ilq8KarW0mAO2o5KzkN5KE+5dgiECZ2YvvKdLC2EjJM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=F/alEbvX; arc=none smtp.client-ip=209.85.128.46
+	s=arc-20240116; t=1746117441; c=relaxed/simple;
+	bh=5iZ+1LBZMer+pZpH3XZWHbsSvLh2Yz7gnxpvLUEV64s=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=B1gHoVYBUYMcT5TXK9lYtwsDVWf2RjUO/K+ENK0sacT/u5bRKK8ajBuMRnBbH0VzvISlHTeTlcExNDql2YdR5HFG7vpQoUoq1AlxlC2LE9o3exgBXaW7BI99meAE2kkFzb9fPYdRlusLNLM9JGMP+M15McFNAlgt5x78i7oZZPw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=WfKFAJWO; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="F/alEbvX"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-43cf825f46bso1483395e9.3
-        for <iommu@lists.linux.dev>; Thu, 01 May 2025 09:37:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="WfKFAJWO"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-43e9ccaa1ebso1466665e9.1
+        for <iommu@lists.linux.dev>; Thu, 01 May 2025 09:37:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1746117436; x=1746722236; darn=lists.linux.dev;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=LzsO/skmVgtqLRk8Hn8ZI1p1OwGSLJGPUwYOe0XwdxY=;
-        b=F/alEbvXZOMp5LCCExVCiKKyjDXYP2+vkkjM/bGOmtrR0grFW07emXKte1k3VAkRLT
-         um7zkHZlwOUBGe0mkrCBUzJU3B5370/NLMK3NWc78HwCN0091k+eBeysfe+/oR4NXXUK
-         CZFC1FH02Z5QBU3Y0ggqq4v+Xxwb6S8HrKbGTvsdrYlB5WqfZ2Ix6CWmIzFo11dth/O9
-         LGcNfYbs0W/qPMER6ELOkJhDuTVyKr4WYdJbo26qNpw+foKetnPGeLrxUPUjqhuJ9H3I
-         by/9ddXiYkDlybcZopgAlGrrrVLcAcmiREj5sArMxg9nv7l2mHZlpM6JrafPXmj5e5n3
-         FBpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746117436; x=1746722236;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=linaro.org; s=google; t=1746117438; x=1746722238; darn=lists.linux.dev;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=LzsO/skmVgtqLRk8Hn8ZI1p1OwGSLJGPUwYOe0XwdxY=;
-        b=KjTph3JrpaDkuN+XnXoeskl+5uwfESLianwdkCLM5sxekqiqmk8qskivwqaMK7wSmS
-         K1MNngtli7ZJ51KY27oS6NrsyOuqo5odCy8hBY/FfbvwzWPgdHmsTJvK5SyVUfSo5dZ0
-         q15IXnxgpMZRkMmRB1erEDFgppU3QDs6Y9fxzfxGEFjIPe8awg0LEmK54fe8JG+hBAln
-         rlI5lkKm07578hyCYxxLK1jUIdBP4mpbOC+QsqPt5Z8wnPB+0hRGu+qLT2f0SLr7GDqU
-         iTWXr6CP7TbJdBF0gR3LXlL25ZHcVRKiSOCAQ/kjQt/qpp7/EoOWeXlfOVwJTMwbHKJk
-         wJaw==
-X-Gm-Message-State: AOJu0YwBoXQQsU/Qa/d63BUJJAir5wbhFGbjKh2Nx0V2S4Z5KCEvZvsQ
-	Z62krcOTvNCYJVLKbPJSn0kMLg0f9D/eQFz33htx2chSX62cD6Qux5JnyCJZSio=
-X-Gm-Gg: ASbGncv0VZqRcwpeMphNgFEXRCZKoaHaiBs7WgJAbSLf0Uw6U3/fEWylaqUCh0KQXqC
-	opbpADs5N1yC0OXXPbZ+UCRlHKuuk2dFyWBzshe5xkZh48dHXv/GG/IE/E7Bx59847m37vXd5dA
-	Ja71i10Vu0vfmvKqJR+8uYVWBt8aoCY2ihox0YkpUTg/56ZsNXbps7y61LaPGFuBP6DEl5CBRi+
-	fuEAMTg2gzYrjMAU9uJyQRinhv+P7HM2oer9WApwUIpeE6oGfpf/9E0WNXghT+gzvCwiIFPyM/6
-	yFCPX+yFZ7JSYQf18Pi5/IqIYpKNuCQbMCvGyAk9VRMuymBK0r+L1RnmMsw=
-X-Google-Smtp-Source: AGHT+IFzBR3+bg1K+za0m3jmhBGaIEWJTaw2fxYEKMYSpYAY2Ghh2og1xXnvvNCVK4hKBJzyuscRFA==
-X-Received: by 2002:a05:600c:2d0b:b0:441:b397:e324 with SMTP id 5b1f17b1804b1-441b397e367mr14138705e9.9.1746117436018;
-        Thu, 01 May 2025 09:37:16 -0700 (PDT)
+        bh=V8lqK6tfVd59vX3pywJVYOhORRQne8XIPVi9Jx6VDF0=;
+        b=WfKFAJWOHy+6x3mncmfkKx3fcmCFuTi2QfFnxFRLEG53ktNlv4SKXWZVV838QhZn62
+         gzkGAG3rnHFQlDVz/sDElLEb6jzO+gPPl91HUg5p/nd9dQ2XSzU+ZK8MOAH5gmxFf8xd
+         eo44q2RWHcSSDK+cuZ3iJKV8Cfm8WGIqxL966FfPyn7v84cQ9CaXE5ghmOj64pBSaMaV
+         7ImJbAsMQSZAtohZZLqtLY2gzd0+kN0EzWmsSykrl7/mh3hNZ2/gN0wl3sTHAMVx8l3Q
+         PJf6Y+hgOEq0wZldrd8jihtH2GjOvye1oTVpLTG68d4PnWkd4+4J32VSFOuVfZBmNZzr
+         lCLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746117438; x=1746722238;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=V8lqK6tfVd59vX3pywJVYOhORRQne8XIPVi9Jx6VDF0=;
+        b=o4GlBULZpBqtBI2OUKeu3WmacCSktha4zslsfC0YC09REgZ992C0tWAwoW0ovXDymH
+         LvE7s9O2E5bLuR6yKAl18FF4rLyEUsvkraS1WQw0ZDJlFKtgTYqf+EBOL5Poux86EOAJ
+         VSQldd87OsHoX6e2JTkYMOTk4VfO+sz9d40hhKvr4nox/8x6mQhJGDyVxcQ+f0EeLwJJ
+         y3hBdmN+rZFepZ9iYTLeBTbCd50GjMIWMNTpkRXE98tVQE8COWqrRlCaHlFkARBQADH1
+         MlsuH7gxLRvZfdq3vbDca9jZk3OGk7H4PeuaiLvXjJuSxu7Cq7nUh6gHr4snGqAcIZ64
+         Xe3w==
+X-Gm-Message-State: AOJu0YzReRt1UahMaihbpcPO5fyBYVUZVHwlJaeKPk5ul55DSbusTFjj
+	+Mw2YvV0dD5kimh6LPcZeZX8CglIcKUtIigp7bjEWcAooeOrQSVnctZ9k2KKpRo=
+X-Gm-Gg: ASbGncsD9biKH/HpP/MoEamYFRI0Gsg6ytp4jZauv1KxehK2UIEJoATmtg1VnnGBPGT
+	qHcMHzsDbszHQTqGnsIfhDnnvvVtVrtO6pH06ep4GlBNbTTSt5ilx1lGhKx7AKVfYUZyFK+11O0
+	8jR6bGVJpNHdVGOt+j2QPN7DesjXUfvP/Om3yc0f40Z5z2iSQUWgYGXQqRI9MvsX29LTWE55zMx
+	GsHkzn280gdZo0slgfD5MeWf7KSWXIbapeXEm5p6BXCsUKjjlL16fv/LB3Rr+J4R1MumCZf5pqZ
+	WEurbNQKA1qkDfsTtbbxJm4n7Jz1FYhssprkjh+q13AGa+Z1n4VHxc/w7ME=
+X-Google-Smtp-Source: AGHT+IFZwlTD+VXEFQskm5Opg4QT08E4V4yhKr2btjZ2ach7B7s8+ZAR92EKMwCOCBvn4Zdc7T2oaA==
+X-Received: by 2002:a05:600c:c0e:b0:439:88bb:d00b with SMTP id 5b1f17b1804b1-441b76b815amr9384095e9.5.1746117438399;
+        Thu, 01 May 2025 09:37:18 -0700 (PDT)
 Received: from [192.168.1.28] ([178.197.207.88])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-441b8a288f0sm17166175e9.27.2025.05.01.09.37.13
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-441b8a288f0sm17166175e9.27.2025.05.01.09.37.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 May 2025 09:37:14 -0700 (PDT)
+        Thu, 01 May 2025 09:37:16 -0700 (PDT)
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH RESEND v2 0/3] iommu: omap: Simplify few things
-Date: Thu, 01 May 2025 18:36:54 +0200
-Message-Id: <20250501-syscon-phandle-args-iommu-v2-0-5a3cab296972@linaro.org>
+Date: Thu, 01 May 2025 18:36:55 +0200
+Subject: [PATCH RESEND v2 1/3] iommu: omap: Drop redundant check if
+ ti,syscon-mmuconfig exists
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,11 +68,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIACajE2gC/43NMQ+CMBAF4L9iOltDDyjEyUFWBx0NQ4EDLoGWt
- EokhP9u7eak47uX+97KHFpCx467lVmcyZHRPsB+x+pe6Q45NT4ziCCNhBDcLa42mk++bAbkyna
- OkxnHJwdUQkIFEKuE+f/JYkuvYN/ZtbgVlzMr/b0n9zB2CZOzCO0f+ix4xONMZg1imqdKngbSy
- pqDsd1nLRAg4BdRx62qklxWCXwR5bZtb/RUOqoOAQAA
-X-Change-ID: 20250111-syscon-phandle-args-iommu-2ea162b223a4
+Message-Id: <20250501-syscon-phandle-args-iommu-v2-1-5a3cab296972@linaro.org>
+References: <20250501-syscon-phandle-args-iommu-v2-0-5a3cab296972@linaro.org>
+In-Reply-To: <20250501-syscon-phandle-args-iommu-v2-0-5a3cab296972@linaro.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
  Robin Murphy <robin.murphy@arm.com>, Yong Wu <yong.wu@mediatek.com>, 
  Matthias Brugger <matthias.bgg@gmail.com>, 
@@ -79,52 +79,66 @@ Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
  linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
  Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1137;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1567;
  i=krzysztof.kozlowski@linaro.org; h=from:subject:message-id;
- bh=5wab0/otZ82OVE/rJrbhgL2wR2IQtZ76AkM3zQixsM4=;
- b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBoE6M1PHN0IE6o7mwFsELVIe5+r9pleayfwxEbo
- f5oPBaEkyuJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCaBOjNQAKCRDBN2bmhouD
- 1466D/0S9VB0/93O6znO1M37ZFRqm8qIG8w0AMML9qOAyuf6IzOdPuOkx7bkYPFE77CefdNI7lQ
- x+YPqVrO25vpVv1VDZh6DJ0thxYl/9rosz64P7VA5qcvAyAoQ23h/szrrHCcnI5AO+cSUyGUYdf
- lAQZjS1oLelqm/EqU1SX0mbmElBJh9lkWL51xc8IkR7TzG9Io4oRWK3ruCGto9uom2V9HLROx3k
- oUVzzP7rCrRCEJtH4aU2h9p2MdaulNZIzlpYoHwIONVm6IV90H8QfPp6ZnqjftlbUUDUpGiZMRS
- /TB+WOyd26I8CEJMlms/1irTj6R9Bxq2BIjlSyUM+ExuNjjGanakUy1jdgpyAPS1GMplNc9CWxx
- j5mmy3HqNeTwKzwfHx5mVzDAACfbG/U4bN5LFzr4HRcb2wc3CFksZ+SnXBONFFXYf964R3jRTox
- r5mQznXerKtYHGLnEN1HOjkZEynSzQ9QX8GWaOmnTP7uO01n/m1POcWglvL2v9p4Jj2LqqIHsud
- De056uHkSOMdZQBQKQP5Tgs0ykchwjQu3szjmXySLVwfusGtK76V4vhJjJMVtfivckZ7gc7Ft1A
- SFuLe8d+VVCLiraT1fYNoZHdZFV5Ymosp3TeQetnFf/heqHiD2HWqVzm7g6+vroQdvlOTtGjJSU
- r+nGXyDYUCnukAA==
+ bh=5iZ+1LBZMer+pZpH3XZWHbsSvLh2Yz7gnxpvLUEV64s=;
+ b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBoE6M2ILY0VIn3BIClSvY2jKPuO2ZgMzm5a6pN9
+ Hx8f2cAHZCJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCaBOjNgAKCRDBN2bmhouD
+ 15TnD/wKU43Zt+z6TRR7birMMQYuwrxVFM6QbcBghyAdrUuYvBvaFWylo3sxGwRXrxQEi7aVy8b
+ Y2uBscPzKtNC+oIxA7zRvI3ttqWtsBwY/iJrd1LgPB69tBvCvkPE3x6liwxclqrWv83JRpxOfh8
+ wTbtqA0N+N+H7tH58L7E40i7OkW5ek13kb8TCqSZhe+GC17WYbQreJZ+f28Wg5VBLT6y15iF9wo
+ e413uncYze7Q9LGmPeAmWW6+3AhghiKuqg/kAsQ/mkqSuDzLPKkphG0CFxImCKH7Ktniy44KJ2f
+ FaJ/px0bcruKsShHrH81Q6auY/JSWbGP7krcrhljbSqsEJ5JpuGkt3MfkGQjTzJtZovjC2SwbuC
+ WDAoJpWsXwq9v6WXMxdML9yg4et6s5Q5sWJpTHbjjiScPfg+if13v3IxFCKyRnZt08iZdsqqEYf
+ ss0OkD15qM7P+PnYccuMIcbVGQdrX3qQT7Y5Vcmtl1WHAbePL3Xj45nbYke67iyk5urV4j8Xgxs
+ Ckr5V+w2cZUPlReNlqD/oshdO5Ln6i3PQrSsHIUTBndConaw4BZ1J6x2fmyHjvSSXn9tovdtXFX
+ KjPcSg8HMs9XewBrAes4OT41kJMBesAI5ABhORTNE6g0s/mmqZDyqfiQ24RreU0sFZh+COAPGcy
+ eubtyBdyW4diOqA==
 X-Developer-Key: i=krzysztof.kozlowski@linaro.org; a=openpgp;
  fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
 
-Changes in v2:
-- Combine patches #1 and #2, add dev_err_probe() and drop the comment
-  (resolving Robin's comment)
-- New patch: iommu: mtk_iommu_v1: Simplify by dropping local 'mtk_mapping' variable
-- Rb tag
-- Link to resend of v1: https://lore.kernel.org/r/20250212-syscon-phandle-args-iommu-v1-0-c3fab486b426@linaro.org
-- Link to v1: https://lore.kernel.org/r/20250111-syscon-phandle-args-iommu-v1-0-3767dee585a6@linaro.org
+The syscon_regmap_lookup_by_phandle() will fail if property does not
+exist, so doing of_property_read_bool() earlier is redundant.  Drop that
+check and move error message to syscon_regmap_lookup_by_phandle() error
+case while converting it to dev_err_probe().
 
-Few code simplifications without functional impact.  Not tested on
-hardware.
-
-Best regards,
-Krzysztof
-
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
-Krzysztof Kozlowski (3):
-      iommu: omap: Drop redundant check if ti,syscon-mmuconfig exists
-      iommu: omap: Use syscon_regmap_lookup_by_phandle_args
-      iommu: mtk_iommu_v1: Simplify by dropping local 'mtk_mapping' variable
+ drivers/iommu/omap-iommu.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
 
- drivers/iommu/mtk_iommu_v1.c |  4 +---
- drivers/iommu/omap-iommu.c   | 24 +++++-------------------
- 2 files changed, 6 insertions(+), 22 deletions(-)
----
-base-commit: 393d0c54cae31317deaa9043320c5fd9454deabc
-change-id: 20250111-syscon-phandle-args-iommu-2ea162b223a4
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 3c62337f43c67720a15b67e8b610da7886f6f39c..4448c0a512137c79195112eea25d762266c77bc3 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1123,23 +1123,15 @@ static int omap_iommu_dra7_get_dsp_system_cfg(struct platform_device *pdev,
+ 					      struct omap_iommu *obj)
+ {
+ 	struct device_node *np = pdev->dev.of_node;
+-	int ret;
+ 
+ 	if (!of_device_is_compatible(np, "ti,dra7-dsp-iommu"))
+ 		return 0;
+ 
+-	if (!of_property_read_bool(np, "ti,syscon-mmuconfig")) {
+-		dev_err(&pdev->dev, "ti,syscon-mmuconfig property is missing\n");
+-		return -EINVAL;
+-	}
+-
+ 	obj->syscfg =
+ 		syscon_regmap_lookup_by_phandle(np, "ti,syscon-mmuconfig");
+-	if (IS_ERR(obj->syscfg)) {
+-		/* can fail with -EPROBE_DEFER */
+-		ret = PTR_ERR(obj->syscfg);
+-		return ret;
+-	}
++	if (IS_ERR(obj->syscfg))
++		return dev_err_probe(&pdev->dev, PTR_ERR(obj->syscfg),
++				     "ti,syscon-mmuconfig property is missing\n");
+ 
+ 	if (of_property_read_u32_index(np, "ti,syscon-mmuconfig", 1,
+ 				       &obj->id)) {
 
-Best regards,
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+2.45.2
 
