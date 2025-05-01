@@ -1,143 +1,164 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from flow-a8-smtp.messagingengine.com (flow-a8-smtp.messagingengine.com [103.168.172.143])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EC96210185
-	for <iommu@lists.linux.dev>; Thu,  1 May 2025 16:39:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EBFD224AE8;
+	Thu,  1 May 2025 19:08:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.143
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746117556; cv=none; b=bGKG/gNdxOssWmo4FvpWxmXbleUToJKdGE3OKMN80ZntuPGvLSwrIx+H4ZjQYk+ziO5tQvEjB+NI9peJubs8hXUWlOd+RJew6poTgUOsyJ0eUi9WJhmoXNnGZa4Mh9g81yCd72QDuJY2sqzyT4KKw7bH53J936niiqwNK9BnPzk=
+	t=1746126492; cv=none; b=PTG+Aq0BM93D8Kn0vHZVEIIAr5sOgW67drYIWhuOf5LBOMRfgnTqqrFBtTSbesalUtRyFVv7F+2rdBhTYaW79mjAn6yIw3AUYUbcbeGBWO7mTTDoYUOxhrGl6mPYxPgZQAczVVWeLtZBwvC1GT2bBW2l6EKIawDnQtwUxf3sIm8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746117556; c=relaxed/simple;
-	bh=OhXqVvV2jok1I00N0CwDqLUrzDi937D39pRWFVrmM+E=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=klpXyPT/B92fnA8lAjYilaKaxv2O8Y/mmc3xmHl5+NPxqs/YfT0mb/rb4KMxWGFdSPkXu2SodeoJQO5t3dlmuBirBMPR4FZxQOIDjAXAV3uH+s6Jynk4BwYnw607DFfMQS27Q8RG61K1OUMefhaalAP0KIeSyXJfBHX1YzEL1M4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Hg0iTgZh; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1746126492; c=relaxed/simple;
+	bh=t72V4cMXfgECq2XlBkakvc0ngW0PUat2k9kI4OAGgGQ=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=kC7dmTuOD2kBD3XP+cqE0QVE84XzTZ1P2dKP/6YBWw8IN2gi0SKXbxTHjgL+5nn7+9J/WqHmVQRgU6xAGHglwrtHNVJQxMg/3y7047EZxjGikorOTCnEFVHhP2jtMiT1h85jE9MY83t6r+o4jFop9dgHZdorpa1yYFSxwU49jzo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svenpeter.dev; spf=pass smtp.mailfrom=svenpeter.dev; dkim=pass (2048-bit key) header.d=svenpeter.dev header.i=@svenpeter.dev header.b=gMWu11vI; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=kRRWrsXt; arc=none smtp.client-ip=103.168.172.143
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svenpeter.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=svenpeter.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Hg0iTgZh"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-43d16a01deaso1509805e9.2
-        for <iommu@lists.linux.dev>; Thu, 01 May 2025 09:39:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1746117552; x=1746722352; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=blFO9nj94W2sQqi74hSHTooSl7uV3ZKhQoJ+90nLCFw=;
-        b=Hg0iTgZh6TWtNUHX1g6CHvy2RxcXclKXZMnkZKOQEm+IVMuRaOx5Ry+Vo4NoGCey2o
-         B/JZhxg32JDJCzguwiklt2A0ShLdxbKPOKWIHD0XMpggae+j5nN8VBxYRZLTcgYmRfJJ
-         zQU/KtBIX4ASI1X2p2qDUCwWVBe39ZNBbR08dFyYc7UmSRbt03AXOaOa+1fCw+zQX+Qn
-         7cZo3SBpXGjlAFYQjwm8fnqDajEAnjrQz3LqZIWHDUJIHZXAE5auEq42LSv4ZTx3vuf6
-         Av06VaqLJMBQ9CnJT4PI0swutxVPh48YVxPrHVXQyqwh32t5NYAfvgCPJ8d58cz/S/7L
-         6KbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746117552; x=1746722352;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=blFO9nj94W2sQqi74hSHTooSl7uV3ZKhQoJ+90nLCFw=;
-        b=T0EpHRszGY3G9O9gFwaCysxjDQdk3Ky+pGSWtEEzls9Pz/aunxIqlm3QTyhjNJjh4n
-         H0wAwfQerFFwMBlI63K66TpDChgecQqnCcSHsWfzqBnBo29Id25jFsn1N3TuZNkM5lQ5
-         UnwRualsGlwdGZNgws6/vsptDE0rHRumzUVJJmHBj87sYfkTy/1HgMAwSbpCAQiagH40
-         e4AJn6kxahpBBVEdcV9WKnm9qmyLsaBwF/7OW6TYuN6zUXeMUCSP6R2BRqt6tsV+AuTu
-         AH2D1xTQY/ztX1xZpPwlOswxna5Vr1MgaT4wrjF0Ur1i9/GaU6+Pi4VLtFdGtWbV5vNL
-         ijnQ==
-X-Gm-Message-State: AOJu0YwQkCxWHcfgONaeKkc4n6pWkg+BprBIV04uzVzX9iNtiMYPLvga
-	rpbRtfm05g/9NO7tLLNq8y/hPalceeVfuajxK3nLZdPyYYwXOtyCZZWJw+MJvWQ=
-X-Gm-Gg: ASbGncsEBY2fhkG5wYT3bydNS7vHF/uKMPbtTKHZb9a7VjaemOD9EYUrvA9lGqtvuI4
-	rDmbvyMZF08tdPqX/0l3jI9d4K6Jq9ZWNWEnM1ktWtIvpqN9BUAyDMg01ohLdI98JcmJgUBLw+3
-	wOgIpxj5VcxCPo8mQZFwmecxfQUthxia8Lwsj5Vu+xZ6azgC3UGRljqAD8ASTMm4kaWB+VQmWop
-	kBlgakoadkGs96ihJGvg2dBiDpK8tVlcH8odsN40XwjykGFA0HlzMsgU6GbS3r2PIAppI0JI4US
-	cQaLrZAF16ZTwzajiFyfKmiZO1szcQkcY8hY6qeh9NybJho4lVSKq/8XQj+839R6M5vuNg==
-X-Google-Smtp-Source: AGHT+IFHLM3Gn90P1rxzB0WphTkEncIZiEbe/YA5FpOViIqbhpj9J1eXj04iTVLfCmwcAEk/SUFj8Q==
-X-Received: by 2002:a05:600c:46c5:b0:43d:745a:5a49 with SMTP id 5b1f17b1804b1-441b2dea5cbmr25205735e9.4.1746117552581;
-        Thu, 01 May 2025 09:39:12 -0700 (PDT)
-Received: from [192.168.1.28] ([178.197.207.88])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-441b89ed4f5sm17693655e9.18.2025.05.01.09.39.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 May 2025 09:39:11 -0700 (PDT)
-Message-ID: <53e51779-1e05-48d9-971a-efe8f907e12e@linaro.org>
-Date: Thu, 1 May 2025 18:39:10 +0200
+	dkim=pass (2048-bit key) header.d=svenpeter.dev header.i=@svenpeter.dev header.b="gMWu11vI";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="kRRWrsXt"
+Received: from phl-compute-04.internal (phl-compute-04.phl.internal [10.202.2.44])
+	by mailflow.phl.internal (Postfix) with ESMTP id 2F84F2007A6;
+	Thu,  1 May 2025 15:08:09 -0400 (EDT)
+Received: from phl-imap-07 ([10.202.2.97])
+  by phl-compute-04.internal (MEProxy); Thu, 01 May 2025 15:08:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+	 h=cc:cc:content-transfer-encoding:content-type:content-type
+	:date:date:from:from:in-reply-to:in-reply-to:message-id
+	:mime-version:references:reply-to:subject:subject:to:to; s=fm1;
+	 t=1746126489; x=1746133689; bh=uy2Z23D4UX2pb4MGng/RS7Rc0DqXehjP
+	gXYL1GZyHEA=; b=gMWu11vIGwyUkebQS6FfJoMbvmG1K5I4PcYPfgos/+3IKTG9
+	gplwSngSdL9b0tzDvioUBprhL4wfVkOmTpNtoAAODeB28Xg6R/kwHB7dvxSuftFL
+	yhPHuhfnyZhbGy1Hk4LH0DS38ZnX4s0nqvPXJdj6j6YsCbSDjUNCmIVLH/A/20KP
+	oo3/VMPCqW0WLap/EGtkYjtqLqADG6I7601JRBgJjC9L0IW/fnmqPmRfywBz38B2
+	l4rECgxFIIXyjmPcKpJ3MKrLDuuogSY9AnqaHJ7N27iyCvQLDrLJO+Uzbvq2a1Ob
+	z/jW7mFvVIaWGr7pr0l6vyW2GdTQ2Hejj4c04Q==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1746126489; x=
+	1746133689; bh=uy2Z23D4UX2pb4MGng/RS7Rc0DqXehjPgXYL1GZyHEA=; b=k
+	RRWrsXtBP2dGvKqi4W7O8NcUE4T3criJTN4RNqnwM3jvVZB6DFHHOoJRSzF4WwTC
+	zyfSgrVfEAEZo6Ar3KWwXFFgpo9OcSnMRAJNahqn3nlXJrX0g/PcOryetxJVwBdg
+	bMvCV+WGJfrIwElsLCpZTQGf+AFh+vAPQIz7pR9L3B7fo46k+1htBqhXoVi3Nr6i
+	iPfXM7t0uPbUxV6yQuN2xxuUHDxXOhwyx1GBr0m/YPvpPLJFGrE4r55Y1vhjLJkG
+	EYbgK2ov6OqW9yBM/N3vWdDrYa4RmB3gucHV7PaTEJHhJOlijJtkhtTp35Hug9Lp
+	KdTUch2CHWx/XAiNccw8Q==
+X-ME-Sender: <xms:lMYTaGgjwoD9jvvLQF3kWWQqAITXOwX2J_Tz44npf0_rwZTz5vZWuA>
+    <xme:lMYTaHCfTlr4IcDYYP9mfLiZVIcfetmb5w7EMXV6Z0z5aHP8l6w5d06NcLSmpdfDF
+    y_HHxOzjxiGRzZWmjM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvjedtfeekucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdggtfgfnhhsuhgsshgtrhhisggv
+    pdfurfetoffkrfgpnffqhgenuceurghilhhouhhtmecufedttdenucesvcftvggtihhpih
+    gvnhhtshculddquddttddmnecujfgurhepofggfffhvfevkfgjfhfutgfgsehtjeertder
+    tddtnecuhfhrohhmpedfufhvvghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvth
+    gvrhdruggvvheqnecuggftrfgrthhtvghrnhepleefteeugeduudeuudeuhfefheegveek
+    ueefffdvffektdffffelveffvddvueffnecuvehluhhsthgvrhfuihiivgeptdenucfrrg
+    hrrghmpehmrghilhhfrhhomhepshhvvghnsehsvhgvnhhpvghtvghrrdguvghvpdhnsggp
+    rhgtphhtthhopeegledpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepjhhorhhose
+    eksgihthgvshdrohhrghdprhgtphhtthhopehrohgsihhnrdhmuhhrphhhhiesrghrmhdr
+    tghomhdprhgtphhtthhopegrnhhgvghlohhgihhorggttghhihhnohdruggvlhhrvghgnh
+    hosegtohhllhgrsghorhgrrdgtohhmpdhrtghpthhtohepfigvnhhssegtshhivgdrohhr
+    ghdprhgtphhtthhopehprghlmhgvrhesuggrsggsvghlthdrtghomhdprhgtphhtthhope
+    grohhusegvvggtshdrsggvrhhkvghlvgihrdgvughupdhrtghpthhtoheprghlvgigsehg
+    hhhithhirdhfrhdprhgtphhtthhopehjvghrnhgvjhdrshhkrhgrsggvtgesghhmrghilh
+    drtghomhdprhgtphhtthhopehmrghtthhhihgrshdrsghgghesghhmrghilhdrtghomh
+X-ME-Proxy: <xmx:lMYTaOHaWClXa7praEdCDETzg-YVo8ghBfqAEKgcYyCNv-z3uiOvlg>
+    <xmx:lMYTaPTDyplPkZ6QrXRyRgI6CFJO6g9IDexaTEMgKEAyXB5CcIWOgQ>
+    <xmx:lMYTaDxrliDpH1IiImjsat2Qz56tDsozwSqIgW3l_ha48UqBCKavYA>
+    <xmx:lMYTaN4smmith_jw1KGBc7w4dLVQ7r3zWaP24jB2SlIhLdcRPVRmOw>
+    <xmx:mcYTaH2ZstH58KGLmGnY3MmWQlgQtyVkrQuLwkep4LE-hnCp6R9N54B6>
+Feedback-ID: i51094778:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 6CE25BA0070; Thu,  1 May 2025 15:08:04 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RESEND v2 0/3] iommu: omap: Simplify few things
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Yong Wu <yong.wu@mediatek.com>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
-References: <20250501-syscon-phandle-args-iommu-v2-0-5a3cab296972@linaro.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Content-Language: en-US
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20250501-syscon-phandle-args-iommu-v2-0-5a3cab296972@linaro.org>
-Content-Type: text/plain; charset=UTF-8
+X-ThreadId: T5b013bf7ff4edb46
+Date: Thu, 01 May 2025 21:07:44 +0200
+From: "Sven Peter" <sven@svenpeter.dev>
+To: "Jason Gunthorpe" <jgg@nvidia.com>, "Alexandre Ghiti" <alex@ghiti.fr>,
+ "Alim Akhtar" <alim.akhtar@samsung.com>,
+ "Alyssa Rosenzweig" <alyssa@rosenzweig.io>,
+ "AngeloGioacchino Del Regno" <angelogioacchino.delregno@collabora.com>,
+ "Albert Ou" <aou@eecs.berkeley.edu>, asahi@lists.linux.dev,
+ "Baolin Wang" <baolin.wang@linux.alibaba.com>,
+ "Lu Baolu" <baolu.lu@linux.intel.com>,
+ "David Woodhouse" <dwmw2@infradead.org>,
+ "Gerald Schaefer" <gerald.schaefer@linux.ibm.com>,
+ "Heiko Stuebner" <heiko@sntech.de>, iommu@lists.linux.dev,
+ "Janne Grunau" <j@jannau.net>,
+ "Jean-Philippe Brucker" <jean-philippe@linaro.org>,
+ "Jernej Skrabec" <jernej.skrabec@gmail.com>,
+ "Jonathan Hunter" <jonathanh@nvidia.com>,
+ "Joerg Roedel" <joro@8bytes.org>, "Kevin Tian" <kevin.tian@intel.com>,
+ "Krzysztof Kozlowski" <krzk@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-riscv@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+ linux-tegra@vger.kernel.org,
+ "Marek Szyprowski" <m.szyprowski@samsung.com>,
+ "Matthias Brugger" <matthias.bgg@gmail.com>,
+ "Matthew Rosato" <mjrosato@linux.ibm.com>, "Neal Gompa" <neal@gompa.dev>,
+ "Orson Zhai" <orsonzhai@gmail.com>,
+ "Palmer Dabbelt" <palmer@dabbelt.com>,
+ "Paul Walmsley" <paul.walmsley@sifive.com>,
+ "Rob Clark" <robdclark@gmail.com>, "Robin Murphy" <robin.murphy@arm.com>,
+ "Samuel Holland" <samuel@sholland.org>,
+ "Niklas Schnelle" <schnelle@linux.ibm.com>,
+ "Thierry Reding" <thierry.reding@gmail.com>,
+ "Tomasz Jeznach" <tjeznach@rivosinc.com>,
+ "Krishna Reddy" <vdumpa@nvidia.com>, virtualization@lists.linux.dev,
+ "Chen-Yu Tsai" <wens@csie.org>, "Will Deacon" <will@kernel.org>,
+ "Yong Wu" <yong.wu@mediatek.com>,
+ "Chunyan Zhang" <zhang.lyra@gmail.com>
+Cc: patches@lists.linux.dev
+Message-Id: <38706b77-4e58-4dfb-add3-814746f4a3c5@app.fastmail.com>
+In-Reply-To: <3-v1-7c5282b0c334+2db-iommu_rm_ops_pgsize_jgg@nvidia.com>
+References: <3-v1-7c5282b0c334+2db-iommu_rm_ops_pgsize_jgg@nvidia.com>
+Subject: Re: [PATCH 3/7] iommu: Remove ops.pgsize_bitmap from drivers that don't use it
+Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 
-On 01/05/2025 18:36, Krzysztof Kozlowski wrote:
-> Changes in v2:
-> - Combine patches #1 and #2, add dev_err_probe() and drop the comment
->   (resolving Robin's comment)
-> - New patch: iommu: mtk_iommu_v1: Simplify by dropping local 'mtk_mapping' variable
-> - Rb tag
-> - Link to resend of v1: https://lore.kernel.org/r/20250212-syscon-phandle-args-iommu-v1-0-c3fab486b426@linaro.org
-> - Link to v1: https://lore.kernel.org/r/20250111-syscon-phandle-args-iommu-v1-0-3767dee585a6@linaro.org
-> 
-> Few code simplifications without functional impact.  Not tested on
-> hardware.
+On Tue, Apr 29, 2025, at 16:34, Jason Gunthorpe wrote:
+> These drivers all set the domain->pgsize_bitmap in their
+> domain_alloc_paging() functions, so the ops value is never used. Delete
+> it.
+>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/apple-dart.c       | 1 -
+>  drivers/iommu/intel/iommu.c      | 1 -
+>  drivers/iommu/iommufd/selftest.c | 1 -
+>  drivers/iommu/riscv/iommu.c      | 1 -
+>  drivers/iommu/virtio-iommu.c     | 6 ++----
+>  5 files changed, 2 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index 757d24f67ad45a..190f28d7661515 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -991,7 +991,6 @@ static const struct iommu_ops apple_dart_iommu_ops = {
+>  	.of_xlate = apple_dart_of_xlate,
+>  	.def_domain_type = apple_dart_def_domain_type,
+>  	.get_resv_regions = apple_dart_get_resv_regions,
+> -	.pgsize_bitmap = -1UL, /* Restricted during dart probe */
+>  	.owner = THIS_MODULE,
+>  	.default_domain_ops = &(const struct iommu_domain_ops) {
+>  		.attach_dev	= apple_dart_attach_dev_paging,
 
-I forgot to drop the subject prefix from b4 - this is not a resend, just
-v2. Apologies.
+Reviewed-by: Sven Peter <sven@svenpeter.dev> # for Apple DART
 
-Best regards,
-Krzysztof
+
+
+Best,
+
+
+Sven
