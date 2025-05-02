@@ -1,154 +1,127 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 325731E260D;
-	Fri,  2 May 2025 07:31:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B85424678B
+	for <iommu@lists.linux.dev>; Fri,  2 May 2025 10:01:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746171080; cv=none; b=eB5mRRU5XKStozOmcI0hW4/bbeTdtS0Zx5DAKwv4DzdZlULZf+faVNSg/zkhvdpKYBSxhB4z7HYz0njSqoVhtrabGk0T+Sr1hx8TlW+dd1Al/9NmqTo9t1GJhkuGhaGbEyuOk6U0UBd92AyxTyLvS3Wn9FJXxxMbjQU6rWx1iGU=
+	t=1746180075; cv=none; b=iWs1B19uC1zQuZJzVEfCfjZmEpD34RkY3XyJKlOfVkll1tTxzC7VBtfYUjQsxI5XAwYAkvoxRvePNEnKKtxObRqPmI2RLqr4Y4wRq/y1ABKqf/HLzIynpVuew3BpSG7AlhEYLMrvBxMY0T2U/QBTL9BzAVhkFv80/Eax4azlOC8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746171080; c=relaxed/simple;
-	bh=wtoQr0xWC7SiqYlR1iiTaHqZi3kSYO3Wq5NsfIXggRU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nOuM6VMPkNvpBSzAV39jI1DiKGYPETAguNVEZ+dCNtrTClNZgtsKxAdt3CwM09yMItkk9gnfNYlVzXBbZlRB4NrCzBHulXVh+MFpqsaFCinzaIr/TjLVQu+Gtety7bc4CrbO+yK1WNHNcs1fRU57UUxMGGUapEWXjHoCB6tQ3x8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ImJMIqFx; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1746180075; c=relaxed/simple;
+	bh=JBFJnBv1Vm67I2drd1XhP0qbGY0AFjAC5ZYn7HBNfWg=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=hMZq3h2oadXQcZ10KXrRum1lOQB/MqXdW2IlP0o9NYxAFZsDIXsPuRqeE3RQLF+vJyAhpqaq2hVQpXnZu1wpi+LhMHKyIyr0VmU2CynVie46fe48DFBGipameNTcMye+nZjQiz0X3hIU//EjS0flGDuo39BjyuK00o+UdB7f4Yw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ElKzkIdD; arc=none smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ImJMIqFx"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-22435603572so20241515ad.1;
-        Fri, 02 May 2025 00:31:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ElKzkIdD"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-ac2c663a3daso345706966b.2
+        for <iommu@lists.linux.dev>; Fri, 02 May 2025 03:01:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1746171077; x=1746775877; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WhyG+qPql1C6VOEStks/G335oAHhX6Klfc0SAJXR260=;
-        b=ImJMIqFxB6XXyj5SvhtkRy4WdTknlHmhnRNcLNLKaatE97G6SlROr/9ThSoRw8y3me
-         vODALKytw7Xts6pIyzW9sLdUPECkPtVQi214OXbHbKgNjkld7fvuUtgqdIwDvFR1lHlJ
-         fxcVSCXbqB8XmzJtRZ7XgEFbBnxNx7W8UuJkh0vjvIvsmgzpuAJTUeuC/QsQpLnqUIn0
-         0UXRwxCYcqHIX/li4UUurw9OhHn24QePEAfxRA66Gi6sUfOGRB6h6WfRyaQX0nkqV5dV
-         LVAD06JJrfazc/A31lEfB8dtYDMj8Ft1aXPt4NFciQROu1KUIDaE9i4UOLntAcjP1ZWh
-         tqzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746171077; x=1746775877;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=linaro.org; s=google; t=1746180072; x=1746784872; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=WhyG+qPql1C6VOEStks/G335oAHhX6Klfc0SAJXR260=;
-        b=vI01HFVy9ONyhuwCICbA3h83G6W04StrZMc42ynU3KjBaC8nr4PGCxGUm/IR5QN2Vl
-         mukGUVPENNGepajIDeX1Xv5kywzAelwt5HkrCYlYSJ2kSgYa0va346Sb7pEJCoF4bGiD
-         jQoPn9OvhdJ9sfaXLSBIk8JnF9PKR6TrdnFN/uGV0Gditq5ox3+sADmYG2FYlwpEqkr4
-         qH5GDVa4D0r9N9R3rWvmPJfKcMydMl+i5SE2QjRIpGRNo9Uc2hy/wB9AebuNnDOtDgm9
-         iGznVL4dmg6H/r/s5ZTIPGH+s+3ClVbDZzZl8SDWnOeFWjP9xH1Y4j1LBea37Y0yDHCU
-         Tdlg==
-X-Forwarded-Encrypted: i=1; AJvYcCUn2mE3jo+ysPn/Jpz5YyuX910BRPKAa/PGZCqFtfIAQW7BDbLYl4dQ79NQMy11vzgt785q95mZlw==@lists.linux.dev, AJvYcCWa2jR8tvQ5pqbaFUrnNF8TfFE9oGDEI/mhlBkIv8AEpEAO35gJymVAynxgHBkwffTv8oV3SQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyvnj8Quu8pGHBsSpxMl1EsT22+5DkE7Z5mbwEWzon2vRWGplXr
-	ZEUPjBREjBTNcwJr5zuhBIDgX6moO2QzhvPVs08hE16fDD9CLZqK
-X-Gm-Gg: ASbGncto6iT+ejQ4vF1n/AfT5JmBeJXLPtIAJE7NrnRmfkHMJTB9XnYIiUw0TV61bgv
-	auz80ftliIoKoFHQUdmm64zSvZ4zMkxmSnXGKmrAcrl3L6GoiS+RCOh+gGR4uRdPJLkzQOtyJ7C
-	PP7ykMvsqz/p2BjhLiBXjFWbFaALkkdWXP5tchOgiXagWZ5mGvqlnSu943NBax5hsWfh3QHBu8q
-	jd6LUpD+Wpux5u7gwBDwIMEDaIjf6QAXdGWiw11RSvnmsPPeZV6njWVwbAjAMwFVXD7tgjnZPup
-	LlHni58xAw7vKTJDPnhucmLEdqIGJcgRAbESE3nG
-X-Google-Smtp-Source: AGHT+IH52a6BgPoPUu5N1D3Rb40EG6pjnTkV9nhRgxYGSZyv07U3fjSm8A6SXkBygATuXX2l4VA+sQ==
-X-Received: by 2002:a17:903:2f91:b0:224:191d:8a87 with SMTP id d9443c01a7336-22e1034418bmr27532815ad.26.1746171077036;
-        Fri, 02 May 2025 00:31:17 -0700 (PDT)
-Received: from archie.me ([103.124.138.155])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22e1522f7c8sm937775ad.228.2025.05.02.00.31.15
+        bh=K96TP7RufWR0A5oYw5jAf7HfaOkuZ/rMipxLAIxdi/A=;
+        b=ElKzkIdD1G9ErfLMWozMghf6DVVX6aKeEOKZKKH13dv/3gtmWubCfG1z/ww9GJmLap
+         76mDJTDYPQ6oh1XA83VxZ1kpwbKi15Z+aZdZdoM54zIzRZi/3SaddIHomSilGXghexDG
+         D5pLwDwhJha+pEhUNv/Xvsw9byzo8n3q6s0GFU3xP2304xHI38NR4I57l/zfORJGv9XA
+         duBvIJIGw/yGq6x1onhbdFv5C2/gJ6YmFYkDLuLFpESlXEbVzXAPA2pZ5Mgh9rrY7QV6
+         KLByZsguFHt4EJrVOHlLhGueLK67vL56CBonLMVG8hYerf2QwfCwYnJL2pjpv2/F+jiF
+         pZww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746180072; x=1746784872;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=K96TP7RufWR0A5oYw5jAf7HfaOkuZ/rMipxLAIxdi/A=;
+        b=TtYXmiiseW8k4fa2QYRKitKr3p3Juh6T4WGajzZirlO8trQtPc1wl/Ke7MORex7+La
+         Hi9tDhUA5rgAINHOZELjX6N8yjrrrbRSd0LEqPYeaUL52WCOL7cueH5b9PJ5rGLiWQkh
+         EMUGcT4Yp6NK9704+nXEDAKFj3s3s+mlozTc2EhmArqIdvFardqUwdgaSm9OXj8sBV++
+         HRLREKHEU9ag3ea2OE8Hq80uc30+a16cD0wuXHrnEpBLT80MLpCiIgddWyQV9fKEztPv
+         wxa+m7bPUjqRtKn0VK/ZsJoA7icePeye8MKGOOpIHz09eZYuC5U5X8lSRMbuWOAUOs5a
+         AEww==
+X-Forwarded-Encrypted: i=1; AJvYcCUDY37Vl0cezgMt9q41eEVFiSitdk9dnAY+7i6JRw6SUdxWzu9awNTGsIKFCYxMqtz5Pkvlrw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxgpBJt4Qi7W79TweqE20FedY+rUzbAkTGuxPHutkNxjQU7oOYF
+	x3QedNMuyWKKS4fmQHsXInchl212A7pHT3qhx8c0IkWYUA50b6xCTV2OgG2i1HY=
+X-Gm-Gg: ASbGncvdUJggKJxupAzj4QttzjiNFvFv8IBlYBInrErHP0SK/Aj/Top+0QkmO/yuZT0
+	PfqtvPrR4nAIfFaZy6VewAMX/RX1wdSctsEoDuMB7xDvfgmO78aaQ04VnC0JCzRihUaGsd+5nVe
+	hFSkSbPMiRCwPYFrcfw/iFtWxxT2nLa0dMj6FDfUp+xpUGroTospoC/lYTVAJ9sSkzr8QpZesG6
+	HZeRGIeFAIlarT2AIjVpeSqyYpSZvfsDWAs36n5kTFTohBdjIDKyh9z+iXMoHImzzvj7yuWnZYg
+	Hpc/6M+dFmBFKpSfsPpAovVrZg3GY1Uwf4uqaCuHmgwJF6N7mhcnG/U+pd7fd8TZvwOazxI+VNP
+	e1vWHgmrI1eJq224rup12EOti9bJH
+X-Google-Smtp-Source: AGHT+IEw/QFZ4Q15wjtCZMc2Ys2EDGftsTen4aFJcOHmrUkANvg/HjzdHRZE7b55C3GGic4/3YhYzw==
+X-Received: by 2002:a17:907:74a:b0:acf:15d:2387 with SMTP id a640c23a62f3a-ad17ada7132mr232347066b.19.1746180071962;
+        Fri, 02 May 2025 03:01:11 -0700 (PDT)
+Received: from rayden.urgonet (h-98-128-140-123.A175.priv.bahnhof.se. [98.128.140.123])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ad1891473a1sm26030566b.4.2025.05.02.03.01.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 May 2025 00:31:15 -0700 (PDT)
-Received: by archie.me (Postfix, from userid 1000)
-	id B8C52420A6AB; Fri, 02 May 2025 14:31:13 +0700 (WIB)
-Date: Fri, 2 May 2025 14:31:13 +0700
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
-	robin.murphy@arm.com, joro@8bytes.org, thierry.reding@gmail.com,
-	vdumpa@nvidia.com, jonathanh@nvidia.com, shuah@kernel.org,
-	jsnitsel@redhat.com, nathan@kernel.org, peterz@infradead.org,
-	yi.l.liu@intel.com, mshavit@google.com, praan@google.com,
-	zhangzekun11@huawei.com, iommu@lists.linux.dev,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
-	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com
-Subject: Re: [PATCH v3 16/23] Documentation: userspace-api: iommufd: Update
- vQUEUE
-Message-ID: <aBR0wWzQablOklyW@archie.me>
-References: <cover.1746139811.git.nicolinc@nvidia.com>
- <0beddeaaa4a8a7a45ce93ff21c543ae58be64908.1746139811.git.nicolinc@nvidia.com>
- <aBRA75V9l9WlI2Q3@archie.me>
- <aBRYVkOKfFGMb5Y+@Asurada-Nvidia>
+        Fri, 02 May 2025 03:01:11 -0700 (PDT)
+From: Jens Wiklander <jens.wiklander@linaro.org>
+To: linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	dri-devel@lists.freedesktop.org,
+	linaro-mm-sig@lists.linaro.org,
+	op-tee@lists.trustedfirmware.org,
+	linux-arm-kernel@lists.infradead.org
+Cc: Olivier Masse <olivier.masse@nxp.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Yong Wu <yong.wu@mediatek.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Brian Starkey <Brian.Starkey@arm.com>,
+	John Stultz <jstultz@google.com>,
+	"T . J . Mercier" <tjmercier@google.com>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+	Sumit Garg <sumit.garg@kernel.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	azarrabi@qti.qualcomm.com,
+	Simona Vetter <simona.vetter@ffwll.ch>,
+	Daniel Stone <daniel@fooishbar.org>,
+	Rouven Czerwinski <rouven.czerwinski@linaro.org>,
+	Jens Wiklander <jens.wiklander@linaro.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev
+Subject: [PATCH v8 10/14] dma-contiguous: export dma_contiguous_default_area
+Date: Fri,  2 May 2025 11:59:24 +0200
+Message-ID: <20250502100049.1746335-11-jens.wiklander@linaro.org>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250502100049.1746335-1-jens.wiklander@linaro.org>
+References: <20250502100049.1746335-1-jens.wiklander@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="vde97DQHR/3Yogi4"
-Content-Disposition: inline
-In-Reply-To: <aBRYVkOKfFGMb5Y+@Asurada-Nvidia>
+Content-Transfer-Encoding: 8bit
 
+Export the global variable dma_contiguous_default_area so
+dev_get_cma_area() can be called a module.
 
---vde97DQHR/3Yogi4
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev
+Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+---
+ kernel/dma/contiguous.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On Thu, May 01, 2025 at 10:29:58PM -0700, Nicolin Chen wrote:
-> On Fri, May 02, 2025 at 10:50:07AM +0700, Bagas Sanjaya wrote:
-> > On Thu, May 01, 2025 at 04:01:22PM -0700, Nicolin Chen wrote:
-> > > +- IOMMUFD_OBJ_VQUEUE, representing a hardware accelerated virtual qu=
-eue, as a
-> > > +  subset of IOMMU's virtualization features, for the IOMMU HW to dir=
-ectly read
-> > > +  or write the virtual queue memory owned by a guest OS. This HW-acc=
-eleration
-> > > +  allows VM to work with the IOMMU HW directly without a VM Exit, i.=
-e. reducing
-> > > +  overhead from the hypercalls. Along with this vQUEUE object, iommu=
-fd provides
-> > > +  user space an mmap interface for VMM to mmap a physical MMIO regio=
-n from the
-> > > +  host physical address space to the guest physical address space, a=
-llowing the
-> > > +  guest OS to control the allocated vQUEUE HW. Thus, when allocating=
- a vQUEUE,
-> > > +  the VMM must request a pair of VMA info (vm_pgoff/size) for an mma=
-p syscall.
-> > > +  The length argument of an mmap syscall can be smaller than the giv=
-en size for
-> > > +  a partial mmap, but the addr argument of the mmap syscall should n=
-ever offset
-> > > +  from the returned vm_pgoff, which implies that an mmap will always=
- start from
-> >=20
-> > Did you mean never be offset from returned vm_pgoff?
->=20
-> Yes. Will fix this.
->=20
-> > > +  the beginning of the physical MMIO region.
-> > > +
-> >=20
-> > Confused...
->=20
-> Meaning that VMM should just use the given vm_pgoff as is, without
-> adding any offset to the vm_pgoff.
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 8df0dfaaca18..eb361794a9c5 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -53,6 +53,7 @@
+ #endif
+ 
+ struct cma *dma_contiguous_default_area;
++EXPORT_SYMBOL(dma_contiguous_default_area);
+ 
+ /*
+  * Default global CMA area size can be defined in kernel's .config.
+-- 
+2.43.0
 
-Understood, thanks!
-=20
---=20
-An old man doll... just what I always wanted! - Clara
-
---vde97DQHR/3Yogi4
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCaBR0wQAKCRD2uYlJVVFO
-o2GmAQD6yTz+9Kdn/nHALYBCiSbtX+ewWJjZ0spXlFlQyWBmSgEA9HdlnssGmaCv
-oibhf/yiDjC4MkNfQVDV7Jw5qTjhagQ=
-=zmrU
------END PGP SIGNATURE-----
-
---vde97DQHR/3Yogi4--
