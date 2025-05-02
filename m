@@ -1,139 +1,132 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CB584A32;
-	Fri,  2 May 2025 17:20:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F8071EE031
+	for <iommu@lists.linux.dev>; Fri,  2 May 2025 19:04:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746206424; cv=none; b=C2HDUurWT8MatvzaMEnHKcFLkCEIeqB47CkrpH/5TyEFVrpoyPeaVKhIIbocAK+XVNe2PXCD4Z0IW+OuJDjDZvm1Mrwwr2YZ3SbSXmrP4yobJnrOz4km04Kfhp2N1W453t7AUo7JhQlKJN5WWIFjS6LirEL3vMu6qiAZgZJvdg8=
+	t=1746212694; cv=none; b=ETn/vh4T20dnHZ+dm+M7xWR/j65YzQMdLw9TRJLh7uckIJMLDv60h6x4TIOI43yMRYWowtLDDePBGL4Y4bQkesS3LorkDSIIT5duiGPCSQ3ePq7y3Cc3u2uh+vPfDs+ylmH4aEoF2VA5s28JePZrqoQ8auOB1fFDtabaEGGxjk8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746206424; c=relaxed/simple;
-	bh=FzvJMEVywUV1H+jpiVirWxvGVxglVU9u9H1JW19xvuE=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=KaCLaeLZLDHSUKR41VBofy1Ppqpc9LtcRBwMjrDZNvPADIXn1yFDF4rYTQ1munzSMAtQb3QvqjN0sf6/jLSLCGJVOoSIVbGyB3ws9nY67SRfmHPIE2WOk/u9pgA7sUqSUEc84it+A/kl30OoAwh5o76Loc6hdrIET+abM+ueb5w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B3kmrDRx; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1746212694; c=relaxed/simple;
+	bh=p7XIGW72I/91fLazyIlExCv1uQr/qO433Ug1xE3MvsU=;
+	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
+	 Message-ID:Content-Type; b=C8PQEPUk7xvW2zcKJXpvEC9TymtQg1kcizbU0eAi84WE+zorQTO1MEdP22BUSYZ0p9BOSIKITbSTvBqBomX5dW3iBwFVQtERcxK0cx+vNVF5pCtLvv0wFcpTc7AwFPh1VIfq5yPVKBdOOKniJNBPe+hMU9XTktRJeo8DdgL3TsQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=p4qqZM6h; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B3kmrDRx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16A99C4CEE4;
-	Fri,  2 May 2025 17:20:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746206423;
-	bh=FzvJMEVywUV1H+jpiVirWxvGVxglVU9u9H1JW19xvuE=;
-	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-	b=B3kmrDRxZRHtH/oLMWmCnAtpbx4Bc+gIdkj+KwlnvFzdXhFHvd2eY5tA47FG/q+V+
-	 q6kWEkJuMFXpTB4MIkzNqQR2m8mHhOJWJSVQgHYXlfkGcD2qzXLm2SzhUHW1u7q6KC
-	 bBoxGiuslOqmWxCKnbCN1ib37DliZQhM/FFx7RE4gMmTYsEIvQRNjaN/eiR8UlZq+Y
-	 hyDu/Q77OGhDLBscBmyU+IrOW8kRIreKkrVGzcK3x/hr/MyoWL9Sf10+zEqbgXpciD
-	 /GrF0ZpdsjWpw/EDHLVd2GWBgG/fJxVO+THrRGvDFSZehODCgfCQ+NLVqAxc/S43de
-	 9lPQ4ZC2wGtnA==
-Date: Fri, 2 May 2025 10:20:20 -0700 (PDT)
-From: Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
-To: John Ernberg <john.ernberg@actia.se>
-cc: Juergen Gross <jgross@suse.com>, 
-    Stefano Stabellini <sstabellini@kernel.org>, 
-    Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, 
-    Catalin Marinas <catalin.marinas@arm.com>, 
-    Andrew Morton <akpm@linux-foundation.org>, 
-    "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>, 
-    "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-    "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-    "imx@lists.linux.dev" <imx@lists.linux.dev>, 
-    Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH 2/2] xen: swiotlb: Implement map_resource callback
-In-Reply-To: <20250502114043.1968976-3-john.ernberg@actia.se>
-Message-ID: <alpine.DEB.2.22.394.2505021007460.3879245@ubuntu-linux-20-04-desktop>
-References: <20250502114043.1968976-1-john.ernberg@actia.se> <20250502114043.1968976-3-john.ernberg@actia.se>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="p4qqZM6h"
+Received: from localhost (web.docker-mailserver_default [172.18.0.2])
+	by mail.mainlining.org (Postfix) with ESMTPSA id 71034BBAC4;
+	Fri,  2 May 2025 19:04:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mainlining.org;
+	s=psm; t=1746212684;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=qM7bXBHe1bXroHuK8JaLfF5A62uJE4FV4UFgd1YY7Z4=;
+	b=p4qqZM6hk7CsMYNc6A9L8oCFEPGgrrln3MTHLjBn5mo9Gn59CYx++5icdw48Q0QaIFEBOq
+	PmTfTckQgiXuEWVWwLo99fCwoVmRNDeIx0TqYfT9zyvxGX16hiZXip562t8NQkXAHCA0O3
+	03CWY4qHkYXKWd4x10AY+TpFjqHG0VsG9hdaPPXMGSb7scb0Ee4rJ/Ak3K7bEI8T6lF00Q
+	JJvqN9tl6F71Y5bP0EDfK7VFuYiu1b3pewx94S9+gPV4wARKwvMyGT1QQbmZLDijA3D9+s
+	i4GEwXZMRHF/3sdmaQIGlB9Dd9tw5/gKjIFeCYZc3M8gpnhMQObe7f3HJOyzOQ==
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Date: Fri, 02 May 2025 21:04:44 +0200
+From: barnabas.czeman@mainlining.org
+To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Cc: Bjorn Andersson <andersson@kernel.org>, Michael Turquette
+ <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>,
+ =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, Linus Walleij
+ <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, Rob Clark
+ <robdclark@gmail.com>, Sean Paul <sean@poorly.run>, Abhinav Kumar
+ <quic_abhinavk@quicinc.com>, Marijn Suijten <marijn.suijten@somainline.org>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, Maarten
+ Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
+ <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, Dmitry
+ Baryshkov <lumag@kernel.org>, Adam Skladowski <a_skl39@protonmail.com>,
+ Sireesh Kodali <sireeshkodali@protonmail.com>, Srinivas Kandagatla
+ <srini@kernel.org>, linux-arm-msm@vger.kernel.org,
+ linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+ iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org, phone-devel@vger.kernel.org,
+ ~postmarketos/upstreaming@lists.sr.ht, linux@mainlining.org, Dang Huynh
+ <danct12@riseup.net>
+Subject: Re: [PATCH v5 3/5] arm64: dts: qcom: Add initial support for MSM8937
+In-Reply-To: <656da4e9-b609-43f4-9afd-006698a2c7d6@oss.qualcomm.com>
+References: <20250421-msm8937-v5-0-bf9879ef14d9@mainlining.org>
+ <20250421-msm8937-v5-3-bf9879ef14d9@mainlining.org>
+ <2e3d94a4-d9e1-429e-9f65-d004c80180e5@oss.qualcomm.com>
+ <790a0b7537e0b82b70bc4b32612ecee6@mainlining.org>
+ <70635d75-03f9-49ea-8098-57cb144fda94@oss.qualcomm.com>
+ <5ccb39f9393b44761127717096a38a46@mainlining.org>
+ <68e2c0ee-d5e2-40fd-9ca0-262ed3270628@oss.qualcomm.com>
+ <31559417a92d1e1ff17d0f3add9a1ba0@mainlining.org>
+ <656da4e9-b609-43f4-9afd-006698a2c7d6@oss.qualcomm.com>
+Message-ID: <c7d9f42017f10bac303b483127859c18@mainlining.org>
+X-Sender: barnabas.czeman@mainlining.org
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
 
-+Christoph
-
-On Fri, 2 May 2025, John Ernberg wrote:
-> Needed by the eDMA v3 DMA engine found in iommu-less SoCs such as iMX8QXP
-> to be able to perform DMA operations as a Xen Hardware Domain, which needs
-> to be able to do DMA in MMIO space.
+On 2025-04-25 23:02, Konrad Dybcio wrote:
+> On 4/25/25 10:22 PM, barnabas.czeman@mainlining.org wrote:
+>> On 2025-04-25 21:26, Konrad Dybcio wrote:
+>>> On 4/25/25 5:13 PM, barnabas.czeman@mainlining.org wrote:
+>>>> On 2025-04-25 11:57, Konrad Dybcio wrote:
+>>>>> On 4/23/25 4:46 PM, barnabas.czeman@mainlining.org wrote:
+>>>>>> On 2025-04-23 16:03, Konrad Dybcio wrote:
+>>>>>>> On 4/21/25 10:18 PM, Barnabás Czémán wrote:
+>>>>>>>> From: Dang Huynh <danct12@riseup.net>
+>>>>>>>> 
+>>>>>>>> Add initial support for MSM8937 SoC.
+>>>>>>>> 
+>>>>>>>> Signed-off-by: Dang Huynh <danct12@riseup.net>
+>>>>>>>> Co-developed-by: Barnabás Czémán 
+>>>>>>>> <barnabas.czeman@mainlining.org>
+>>>>>>>> Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+>>>>>>>> ---
+>>>>> 
+>>>>> [...]
+>>>>> 
+>>>>>>>> +            gpu_opp_table: opp-table {
+>>>>>>>> +                compatible = "operating-points-v2";
+>>>>>>>> +
+>>>>>>>> +                opp-19200000 {
+>>>>>>>> +                    opp-hz = /bits/ 64 <19200000>;
+>>>>>>>> +                    opp-supported-hw = <0xff>;
+>>>>>>> 
+>>>>>>> The comment from the previous revision still stands
+>>>>>> If i remove opp-supported-hw i will got -22 EINVAL messages and 
+>>>>>> the opp will be not fine.
+>>>>> 
+>>>>> Right, I have a series pending to improve this situation a bit..
+>>>>> 
+>>>>> In the meantime, you should be able to define the nvmem cell and
+>>>>> fill in meaningful values for this platform
+>>>> As I wrote in the previous revision there is no nvmem for GPU on 
+>>>> msm8937 only on msm8940.
+>>> 
+>>> This seems not to be the case
+>>> 
+>>> https://github.com/penglezos/android_kernel_xiaomi_msm8953/blob/pie/arch/arm/boot/dts/qcom/msm8937.dtsi#L2046-L2191
+>>> 
+>> These are on msm-4.9 was moved to msm8940.dtsi
+>> https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.10.6.2.c26-01500-89xx.0/arch/arm64/boot/dts/qcom/msm8937-gpu.dtsi#L162
+>> https://git.codelinaro.org/clo/la/kernel/msm-4.9/-/blob/LA.UM.10.6.2.c26-01500-89xx.0/arch/arm64/boot/dts/qcom/msm8940.dtsi#L600
+>> 475 MHz and 500 MHz is for msm8940 at least based on 4.9
 > 
-> The callback implementation is basically the same as the one for direct
-> mapping of resources, except this also takes into account Xen page
-> mappings.
+> I'll try to get a more conclusive answer internally
+Any information? I am thinking about define nvmem cells based on 3.18
 > 
-> There is nothing to do for unmap, just like with direct, so the unmap
-> callback is not needed.
-> 
-> Signed-off-by: John Ernberg <john.ernberg@actia.se>
-> 
-> ---
-> 
-> I originally exported dma_direct_map_resource() and used that which
-> appeared to work, but it felt like not checking Xen page mappings wasn't
-> fully correct and I went with this. But if dma_direct_map_resource() is
-> the correct approach here then I can submit that isntead.
-> ---
->  drivers/xen/swiotlb-xen.c | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
-> 
-> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-> index ef56a2500ed6..0f02fdd9128d 100644
-> --- a/drivers/xen/swiotlb-xen.c
-> +++ b/drivers/xen/swiotlb-xen.c
-> @@ -285,6 +285,20 @@ static void xen_swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
->  					   attrs, pool);
->  }
->  
-> +static dma_addr_t xen_swiotlb_map_resource(struct device *dev, phys_addr_t phys,
-> +					   size_t size, enum dma_data_direction dir,
-> +					   unsigned long attrs)
-> +{
-> +	dma_addr_t dev_addr = xen_phys_to_dma(dev, phys);
-
-Yes, we need the xen_phys_to_dma call here. This is one of the reasons I
-don't think we can use dma_direct_map_resource() to implement
-map_resource
-
-
-> +	BUG_ON(dir == DMA_NONE);
-> +
-> +	if (!dma_capable(dev, dev_addr, size, false))
-> +		return DMA_MAPPING_ERROR;
-
-But here you also need to check that phys+size doesn't cross a page
-boundary. You need to call range_straddles_page_boundary, like we do at
-the beginning of xen_swiotlb_map_page.
-
-If it is possible to cross a page boundary, then we need to basically to
-do the same thing here as we do in xen_swiotlb_map_page where we check
-for:
-
-	if (dma_capable(dev, dev_addr, size, true) &&
-	    !range_straddles_page_boundary(phys, size) &&
-		!xen_arch_need_swiotlb(dev, phys, dev_addr) &&
-		!is_swiotlb_force_bounce(dev))
-		goto done;
-
-if all is well, we go with the native path, otherwise we bounce on
-swiotlb-xen.
-
-
-
-> +	return dev_addr;
-> +}
-> +
->  static void
->  xen_swiotlb_sync_single_for_cpu(struct device *dev, dma_addr_t dma_addr,
->  		size_t size, enum dma_data_direction dir)
-> @@ -426,4 +440,5 @@ const struct dma_map_ops xen_swiotlb_dma_ops = {
->  	.alloc_pages_op = dma_common_alloc_pages,
->  	.free_pages = dma_common_free_pages,
->  	.max_mapping_size = swiotlb_max_mapping_size,
-> +	.map_resource = xen_swiotlb_map_resource,
->  };
-> -- 
-> 2.49.0
-> 
+> Konrad
