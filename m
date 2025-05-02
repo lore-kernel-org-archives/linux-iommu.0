@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3C7B269880;
-	Fri,  2 May 2025 17:07:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CB584A32;
+	Fri,  2 May 2025 17:20:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746205660; cv=none; b=QoAX1FZfVb0mNlS4QrZ2j8d0OuM2YIyA2jjJ2UUWcw67Ij5udp+yhJbfeDqCbeoAJcViut6YEKrarsteCSB4Eefn09Q6JpLKxgoKozPVKo/AQTNfoCxSXpB85Ej32eEffX2W3i+uYfh6mdMTZhClN0S3R71VuSKZNuUusB/pHFg=
+	t=1746206424; cv=none; b=C2HDUurWT8MatvzaMEnHKcFLkCEIeqB47CkrpH/5TyEFVrpoyPeaVKhIIbocAK+XVNe2PXCD4Z0IW+OuJDjDZvm1Mrwwr2YZ3SbSXmrP4yobJnrOz4km04Kfhp2N1W453t7AUo7JhQlKJN5WWIFjS6LirEL3vMu6qiAZgZJvdg8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746205660; c=relaxed/simple;
-	bh=MXrACGyqOXVDhEpixyz+BKgn/54QO0zKMHCOhJK/g/w=;
+	s=arc-20240116; t=1746206424; c=relaxed/simple;
+	bh=FzvJMEVywUV1H+jpiVirWxvGVxglVU9u9H1JW19xvuE=;
 	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=NV8Ste1oYEU7YQqgJmaD5zhu37w6PwjtlLqs8Czm/mP4Ah3LZ57kZ1tsVSVAEMTnWH5mLzAxFSaHysmKtf2J9MoLuRopU1MAmp9wmO7Y65LzW4vcJsFS8YU+RRL0au1mB/KSXjweVohGvu/ap37EVas5YWhUOR+hXlWH+Xnrs3M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J253chSf; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=KaCLaeLZLDHSUKR41VBofy1Ppqpc9LtcRBwMjrDZNvPADIXn1yFDF4rYTQ1munzSMAtQb3QvqjN0sf6/jLSLCGJVOoSIVbGyB3ws9nY67SRfmHPIE2WOk/u9pgA7sUqSUEc84it+A/kl30OoAwh5o76Loc6hdrIET+abM+ueb5w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B3kmrDRx; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J253chSf"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DCFCC4CEF1;
-	Fri,  2 May 2025 17:07:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B3kmrDRx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16A99C4CEE4;
+	Fri,  2 May 2025 17:20:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746205659;
-	bh=MXrACGyqOXVDhEpixyz+BKgn/54QO0zKMHCOhJK/g/w=;
+	s=k20201202; t=1746206423;
+	bh=FzvJMEVywUV1H+jpiVirWxvGVxglVU9u9H1JW19xvuE=;
 	h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-	b=J253chSfz1Zth/9KTy40/Pi1vYhW0Rzzbthbcj+GVZ18ko3rOCUZLGTyhhxwFgx0r
-	 W2Ho1najoPyOqqBHByYN1KulAmWUNVyKHoQJtusev5e9I3XUKS4eHmSfJY2U7zM+it
-	 4jaVUpVQ1hkUGs3e5Og32KvWDsKFyOC8EQTJkDGzlwc4eaM9PfMnxie1wr6MvSqI4H
-	 yCwpAD1kTF65nqbFtIFxxqmN9L5M1KeNBG3fDW3fnoDEU6F3kbh2lvMHWYv9oyyK2m
-	 AhBD0dLSaOPzHXCf7qmm7SStTCcGe9xMIKrAm+pWoKqGTq9qQAbbEXsojEqabNRHut
-	 z32AYz4whVdzA==
-Date: Fri, 2 May 2025 10:07:36 -0700 (PDT)
+	b=B3kmrDRxZRHtH/oLMWmCnAtpbx4Bc+gIdkj+KwlnvFzdXhFHvd2eY5tA47FG/q+V+
+	 q6kWEkJuMFXpTB4MIkzNqQR2m8mHhOJWJSVQgHYXlfkGcD2qzXLm2SzhUHW1u7q6KC
+	 bBoxGiuslOqmWxCKnbCN1ib37DliZQhM/FFx7RE4gMmTYsEIvQRNjaN/eiR8UlZq+Y
+	 hyDu/Q77OGhDLBscBmyU+IrOW8kRIreKkrVGzcK3x/hr/MyoWL9Sf10+zEqbgXpciD
+	 /GrF0ZpdsjWpw/EDHLVd2GWBgG/fJxVO+THrRGvDFSZehODCgfCQ+NLVqAxc/S43de
+	 9lPQ4ZC2wGtnA==
+Date: Fri, 2 May 2025 10:20:20 -0700 (PDT)
 From: Stefano Stabellini <sstabellini@kernel.org>
 X-X-Sender: sstabellini@ubuntu-linux-20-04-desktop
 To: John Ernberg <john.ernberg@actia.se>
@@ -39,12 +39,11 @@ cc: Juergen Gross <jgross@suse.com>,
     "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
     "imx@lists.linux.dev" <imx@lists.linux.dev>, 
-    "stable@kernel.org" <stable@kernel.org>
-Subject: Re: [PATCH 1/2] xen: swiotlb: Use swiotlb bouncing if kmalloc
- allocation demands it
-In-Reply-To: <20250502114043.1968976-2-john.ernberg@actia.se>
-Message-ID: <alpine.DEB.2.22.394.2505020955140.3879245@ubuntu-linux-20-04-desktop>
-References: <20250502114043.1968976-1-john.ernberg@actia.se> <20250502114043.1968976-2-john.ernberg@actia.se>
+    Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH 2/2] xen: swiotlb: Implement map_resource callback
+In-Reply-To: <20250502114043.1968976-3-john.ernberg@actia.se>
+Message-ID: <alpine.DEB.2.22.394.2505021007460.3879245@ubuntu-linux-20-04-desktop>
+References: <20250502114043.1968976-1-john.ernberg@actia.se> <20250502114043.1968976-3-john.ernberg@actia.se>
 User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -54,47 +53,87 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 
++Christoph
+
 On Fri, 2 May 2025, John Ernberg wrote:
-> Xen swiotlb support was missed when the patch set starting with
-> 4ab5f8ec7d71 ("mm/slab: decouple ARCH_KMALLOC_MINALIGN from
-> ARCH_DMA_MINALIGN") was merged.
+> Needed by the eDMA v3 DMA engine found in iommu-less SoCs such as iMX8QXP
+> to be able to perform DMA operations as a Xen Hardware Domain, which needs
+> to be able to do DMA in MMIO space.
 > 
-> When running Xen on iMX8QXP, a SoC without IOMMU, the effect was that USB
-> transfers ended up corrupted when there was more than one URB inflight at
-> the same time.
+> The callback implementation is basically the same as the one for direct
+> mapping of resources, except this also takes into account Xen page
+> mappings.
 > 
-> Add a call to dma_kmalloc_needs_bounce() to make sure that allocations too
-> small for DMA get bounced via swiotlb.
+> There is nothing to do for unmap, just like with direct, so the unmap
+> callback is not needed.
 > 
-> Closes: https://lore.kernel.org/linux-usb/ab2776f0-b838-4cf6-a12a-c208eb6aad59@actia.se/
-> Fixes: 4ab5f8ec7d71 ("mm/slab: decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN")
-> Cc: stable@kernel.org # v6.5+
 > Signed-off-by: John Ernberg <john.ernberg@actia.se>
-
-Reviewed-by: Stefano Stabellini <sstabellini@kernel.org>
-
-
+> 
 > ---
 > 
-> It's impossible to pick an exact fixes tag since this driver was missed
-> in the flagged patch set. I picked one I felt gave a decent enough picture
-> for someone coming across this later.
+> I originally exported dma_direct_map_resource() and used that which
+> appeared to work, but it felt like not checking Xen page mappings wasn't
+> fully correct and I went with this. But if dma_direct_map_resource() is
+> the correct approach here then I can submit that isntead.
 > ---
->  drivers/xen/swiotlb-xen.c | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/xen/swiotlb-xen.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
 > 
 > diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-> index 1f65795cf5d7..ef56a2500ed6 100644
+> index ef56a2500ed6..0f02fdd9128d 100644
 > --- a/drivers/xen/swiotlb-xen.c
 > +++ b/drivers/xen/swiotlb-xen.c
-> @@ -217,6 +217,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
->  	 * buffering it.
->  	 */
->  	if (dma_capable(dev, dev_addr, size, true) &&
-> +	    !dma_kmalloc_needs_bounce(dev, size, dir) &&
->  	    !range_straddles_page_boundary(phys, size) &&
->  		!xen_arch_need_swiotlb(dev, phys, dev_addr) &&
->  		!is_swiotlb_force_bounce(dev))
+> @@ -285,6 +285,20 @@ static void xen_swiotlb_unmap_page(struct device *hwdev, dma_addr_t dev_addr,
+>  					   attrs, pool);
+>  }
+>  
+> +static dma_addr_t xen_swiotlb_map_resource(struct device *dev, phys_addr_t phys,
+> +					   size_t size, enum dma_data_direction dir,
+> +					   unsigned long attrs)
+> +{
+> +	dma_addr_t dev_addr = xen_phys_to_dma(dev, phys);
+
+Yes, we need the xen_phys_to_dma call here. This is one of the reasons I
+don't think we can use dma_direct_map_resource() to implement
+map_resource
+
+
+> +	BUG_ON(dir == DMA_NONE);
+> +
+> +	if (!dma_capable(dev, dev_addr, size, false))
+> +		return DMA_MAPPING_ERROR;
+
+But here you also need to check that phys+size doesn't cross a page
+boundary. You need to call range_straddles_page_boundary, like we do at
+the beginning of xen_swiotlb_map_page.
+
+If it is possible to cross a page boundary, then we need to basically to
+do the same thing here as we do in xen_swiotlb_map_page where we check
+for:
+
+	if (dma_capable(dev, dev_addr, size, true) &&
+	    !range_straddles_page_boundary(phys, size) &&
+		!xen_arch_need_swiotlb(dev, phys, dev_addr) &&
+		!is_swiotlb_force_bounce(dev))
+		goto done;
+
+if all is well, we go with the native path, otherwise we bounce on
+swiotlb-xen.
+
+
+
+> +	return dev_addr;
+> +}
+> +
+>  static void
+>  xen_swiotlb_sync_single_for_cpu(struct device *dev, dma_addr_t dma_addr,
+>  		size_t size, enum dma_data_direction dir)
+> @@ -426,4 +440,5 @@ const struct dma_map_ops xen_swiotlb_dma_ops = {
+>  	.alloc_pages_op = dma_common_alloc_pages,
+>  	.free_pages = dma_common_free_pages,
+>  	.max_mapping_size = swiotlb_max_mapping_size,
+> +	.map_resource = xen_swiotlb_map_resource,
+>  };
 > -- 
 > 2.49.0
 > 
