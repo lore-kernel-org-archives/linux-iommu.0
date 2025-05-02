@@ -1,87 +1,85 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 59246254869
-	for <iommu@lists.linux.dev>; Fri,  2 May 2025 13:11:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8396C225417
+	for <iommu@lists.linux.dev>; Fri,  2 May 2025 14:11:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746191495; cv=none; b=YSokjXsax2H/zCOWb2NCIhi5mk72g0rOsGOkq2UjLEHFrQHyok1yPilfrn45/eOW7r2VR/u+/aa4yiZJiFtGxjNgfYzOrYVtRnI8pEQZSZ2ccrUJjG4n1kH3X+Su8ADUSlj1UaK7gMkdh2zMI+u2nopJuXhKpYvA43sTjvLZSTE=
+	t=1746195085; cv=none; b=h1DNRnyYBm1bNtK7q9KAQoEu6vHhS7kQSSbNIEXgjqyt3SEkqFn62ggR79RWdmgZsFv7Hp7pfzItP5vaAvfWztSAG7OkENwVscnPxjobuC+O/rSCPeg//f3yvY049gn5lImpHfJMDEitaPNXBwtVnMCvPTRuyEVQjwNmqLOh2DY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746191495; c=relaxed/simple;
-	bh=TWNx/9PXkgLLuyLmpT398Pb4C9LdkncPESDk5m9mSzs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UB1Jpz4JOxdE1nMBN+kzNGlk2NYfX0XI8FISe5PERFIn/HK1WzeJH5zIZRUQ2sjyvqabn62n3m132ISjFGtk4PQAdCq+uw6sy+VgEafjJ5O3jjmCa8ZwW5cHKxrz25c4uG7B+nRmMTyYouWOUiG7YSYLFgs2ZEbFbmiIaZgJAt4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 013131688;
-	Fri,  2 May 2025 06:11:22 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2A5333F66E;
-	Fri,  2 May 2025 06:11:25 -0700 (PDT)
-Message-ID: <43e85d6a-ef99-4d61-910e-1d62814fd9ed@arm.com>
-Date: Fri, 2 May 2025 14:11:02 +0100
+	s=arc-20240116; t=1746195085; c=relaxed/simple;
+	bh=fI8int6GwyFtK95rMNSsItsfvmo8TsGY6WIgwq2pULA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lvtINsnvrGTQ4I7noni82AQdat8Rv8jLoRcKHLgWMltlL5nv93pQdHnzbQFeCyPDATm6U8xTgzP78X0Hkxwjmm9enOXApDaizmDZspE72/qD0Df95uExqxFA7JTzgHSMpWWED1NGfMlV2FTrLSdwvHoKM2HFAOPQeBpukzwDPT4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f9LTaApJ; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f9LTaApJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1746195083; x=1777731083;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fI8int6GwyFtK95rMNSsItsfvmo8TsGY6WIgwq2pULA=;
+  b=f9LTaApJspN1dSK9olRab/s5Yd62d97/jkMxDGNdi8VTdAWsczvBNyaD
+   Sp3g1jtPSXNFLvXjQP3I7F3w17hoEt7hnR4f0YUvqEPnwuRBSvkFscvns
+   oPcd2BFC0oKVC9leVhH4XFbauf5l8KxlihsP8YbogqPnbO3Ozu64RExZy
+   kiESJW9X/ZZdFCTG1T9YxN3zGPG9/sL2aJduXZ4E/dvDWXP8hX72093E7
+   vwnBjqQlkfYvP3XKCRSCj0tbl6hmfto767RQNU1v67elwjPHSzTGcClh6
+   Scg7siH8AXDTr6KjJgB+MrKLEFH0VXeM06+615tOWwUmSQc/ADW4h84mb
+   g==;
+X-CSE-ConnectionGUID: RA3XCp+XSEmN2SIi9/V0+w==
+X-CSE-MsgGUID: vU3YzitWQGOmzNoNbozUrQ==
+X-IronPort-AV: E=McAfee;i="6700,10204,11421"; a="59260334"
+X-IronPort-AV: E=Sophos;i="6.15,256,1739865600"; 
+   d="scan'208";a="59260334"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2025 07:11:23 -0700
+X-CSE-ConnectionGUID: DRwbBmS9TIy4ifmd3DufGA==
+X-CSE-MsgGUID: 4tGEwZXgR9WRZFJAQBgJWQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,256,1739865600"; 
+   d="scan'208";a="135631033"
+Received: from smile.fi.intel.com ([10.237.72.55])
+  by orviesa008.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 May 2025 07:11:21 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1uAr6k-00000002Dhy-1qf7;
+	Fri, 02 May 2025 17:11:18 +0300
+Date: Fri, 2 May 2025 17:11:18 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Robin Murphy <robin.murphy@arm.com>, linux-acpi@vger.kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>
+Subject: Re: [PATCH v1 1/1] ACPI: VIOT: Remove (explicitly) unused header
+Message-ID: <aBTShn_UpN7ySKX7@smile.fi.intel.com>
+References: <20250331072311.3987967-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 10/14] dma-contiguous: export
- dma_contiguous_default_area
-To: Jens Wiklander <jens.wiklander@linaro.org>, linux-kernel@vger.kernel.org,
- linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linaro-mm-sig@lists.linaro.org, op-tee@lists.trustedfirmware.org,
- linux-arm-kernel@lists.infradead.org
-Cc: Olivier Masse <olivier.masse@nxp.com>,
- Thierry Reding <thierry.reding@gmail.com>, Yong Wu <yong.wu@mediatek.com>,
- Sumit Semwal <sumit.semwal@linaro.org>,
- Benjamin Gaignard <benjamin.gaignard@collabora.com>,
- Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>,
- "T . J . Mercier" <tjmercier@google.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Sumit Garg <sumit.garg@kernel.org>, Matthias Brugger
- <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- azarrabi@qti.qualcomm.com, Simona Vetter <simona.vetter@ffwll.ch>,
- Daniel Stone <daniel@fooishbar.org>,
- Rouven Czerwinski <rouven.czerwinski@linaro.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
-References: <20250502100049.1746335-1-jens.wiklander@linaro.org>
- <20250502100049.1746335-11-jens.wiklander@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250502100049.1746335-11-jens.wiklander@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250331072311.3987967-1-andriy.shevchenko@linux.intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On 02/05/2025 10:59 am, Jens Wiklander wrote:
-> Export the global variable dma_contiguous_default_area so
-> dev_get_cma_area() can be called a module.
-
-What dma_map_ops implementation is in a module? Without any other 
-context, I can't help thinking this smells of something sketchy.
-
-Thanks,
-Robin.
-
-> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: iommu@lists.linux.dev
-> Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
-> ---
->   kernel/dma/contiguous.c | 1 +
->   1 file changed, 1 insertion(+)
+On Mon, Mar 31, 2025 at 10:23:11AM +0300, Andy Shevchenko wrote:
+> The fwnode.h is not supposed to be used by the drivers as it
+> has the definitions for the core parts for different device
+> property provider implementations. Drop it.
 > 
-> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> index 8df0dfaaca18..eb361794a9c5 100644
-> --- a/kernel/dma/contiguous.c
-> +++ b/kernel/dma/contiguous.c
-> @@ -53,6 +53,7 @@
->   #endif
->   
->   struct cma *dma_contiguous_default_area;
-> +EXPORT_SYMBOL(dma_contiguous_default_area);
->   
->   /*
->    * Default global CMA area size can be defined in kernel's .config.
+> Note, that fwnode API for drivers is provided in property.h
+> which is included here.
+
+Any comments? Can it be applied?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
