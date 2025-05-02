@@ -1,25 +1,26 @@
 Received: from mail.actia.se (mail.actia.se [212.181.117.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EA98246778;
-	Fri,  2 May 2025 11:56:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5CFF2517A4;
+	Fri,  2 May 2025 11:56:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.181.117.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746186970; cv=none; b=Gmbl5/IGSGSt9XBKumujofPZHu2IoCv95UTvTnSHx5X/H2SzVqYhX16QaMiW3mMkk5iBu1cndc4VXnUFqrWWZ81SZ5zBSvDOZ67QU+rwz+P6t+MJ/nrlFQK87mUTB8VzrYu3cdelr1VQs4HpwKGKJ9IBFohZuR047+AQKwvRTB8=
+	t=1746186972; cv=none; b=SPc28mr4DiqIYj7Yr4Q7EofF4F7LOp1dke3133ifvjl0t0pWj9YWS9JguolaiPiXOZopZ1/EvkJfHr90A5SC0CSrLGKfhikWMVvrPTrkaHdbRVy6JjPJEV6x4NaMKl0f4eQiuipL67inoWLTD6DMR3ZlAkfkmlqDWSRuLfq5AZc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746186970; c=relaxed/simple;
-	bh=C0OUS0W6cxfA76GnIZ86F8ow5n8XNEot5PI7yC4q6Mk=;
-	h=From:To:CC:Subject:Date:Message-ID:Content-Type:MIME-Version; b=L10cSMPOGz+YYQGkdYtaDcEa1oajmurx+J5pze7DaJJxqL+ePSmCuBw3lGvKHJzRXiyd5h/pIBnQ2YLgy8zQJEBBNC2bzgmX1Q0T//oQNbVAEyGctFNvt0w8jytS/dxgy1ray+R/EkXqOYFpeXKGCQFdua/wJ7XozRSUSXrVF7E=
+	s=arc-20240116; t=1746186972; c=relaxed/simple;
+	bh=4qEqoKqvg+Xasg8DNYrixWeFQHuSwAzHyApDRtQCJ+s=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=BefWA2ZMR/1/BSBrHNq85BQvOSXrOqmV2+ZNOHth7OJMmJKxUUwSwEQu6s5o/r4opMFSiiwePmHZgRyh2uQc2SoGWiXwydNSnpWEFCqpn7OMfFSWtVJCLhzjWPoEEbV4o/CdU9r+0QnFtfqBVUU+PQttQqM9oc/SDXOLQerHfO8=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=actia.se; spf=pass smtp.mailfrom=actia.se; arc=none smtp.client-ip=212.181.117.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=actia.se
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=actia.se
 Received: from S036ANL.actianordic.se (10.12.31.117) by S035ANL.actianordic.se
  (10.12.31.116) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Fri, 2 May
- 2025 13:40:55 +0200
+ 2025 13:40:56 +0200
 Received: from S036ANL.actianordic.se ([fe80::e13e:1feb:4ea6:ec69]) by
  S036ANL.actianordic.se ([fe80::e13e:1feb:4ea6:ec69%3]) with mapi id
- 15.01.2507.039; Fri, 2 May 2025 13:40:55 +0200
+ 15.01.2507.039; Fri, 2 May 2025 13:40:56 +0200
 From: John Ernberg <john.ernberg@actia.se>
 To: Juergen Gross <jgross@suse.com>, Stefano Stabellini
 	<sstabellini@kernel.org>
@@ -29,12 +30,16 @@ CC: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>, Catalin Marinas
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
 	"imx@lists.linux.dev" <imx@lists.linux.dev>, John Ernberg
-	<john.ernberg@actia.se>
-Subject: [PATCH 0/2] xen: swiotlb: 2 fixes SoCs w/o IOMMU (e.g. iMX8QXP)
-Thread-Topic: [PATCH 0/2] xen: swiotlb: 2 fixes SoCs w/o IOMMU (e.g. iMX8QXP)
-Thread-Index: AQHbu1cQRZF4GUbfuk+26xI8NrrtUw==
+	<john.ernberg@actia.se>, "stable@kernel.org" <stable@kernel.org>
+Subject: [PATCH 1/2] xen: swiotlb: Use swiotlb bouncing if kmalloc allocation
+ demands it
+Thread-Topic: [PATCH 1/2] xen: swiotlb: Use swiotlb bouncing if kmalloc
+ allocation demands it
+Thread-Index: AQHbu1cQNcuPrbmRHEK42QDjG7hf6w==
 Date: Fri, 2 May 2025 11:40:55 +0000
-Message-ID: <20250502114043.1968976-1-john.ernberg@actia.se>
+Message-ID: <20250502114043.1968976-2-john.ernberg@actia.se>
+References: <20250502114043.1968976-1-john.ernberg@actia.se>
+In-Reply-To: <20250502114043.1968976-1-john.ernberg@actia.se>
 Accept-Language: en-US, sv-SE
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -51,29 +56,45 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 
-There's 2 problems with DMA today when running Xen on the iMX8QXP SoC.
+Xen swiotlb support was missed when the patch set starting with
+4ab5f8ec7d71 ("mm/slab: decouple ARCH_KMALLOC_MINALIGN from
+ARCH_DMA_MINALIGN") was merged.
 
-The first identifies as a USB corruption, but is actually a memory
-corruption risk with any small DMA transfer, and just manifests itself
-in USB transfers.
+When running Xen on iMX8QXP, a SoC without IOMMU, the effect was that USB
+transfers ended up corrupted when there was more than one URB inflight at
+the same time.
 
-This is a regression fix tracing back to Linux 6.5 when the blamed commit
-(patch series) landed.
+Add a call to dma_kmalloc_needs_bounce() to make sure that allocations too
+small for DMA get bounced via swiotlb.
 
-The second one causes any attempt to use DMA via the iMX8QXP eDMA v3 block
-to fail with DMA_MAPPING_ERROR when running under Xen because this DMA
-controller wants to do DMA in MMIO space.
+Closes: https://lore.kernel.org/linux-usb/ab2776f0-b838-4cf6-a12a-c208eb6aa=
+d59@actia.se/
+Fixes: 4ab5f8ec7d71 ("mm/slab: decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA=
+_MINALIGN")
+Cc: stable@kernel.org # v6.5+
+Signed-off-by: John Ernberg <john.ernberg@actia.se>
 
-I'm a little bit more on the fence with the second one, as that never
-worked, but is still fixing an issue. There is no Fixes or Cc stable on
-this one because of this.
+---
 
-John Ernberg (2):
-  xen: swiotlb: Use swiotlb bouncing if kmalloc allocation demands it
-  xen: swiotlb: Implement map_resource callback
+It's impossible to pick an exact fixes tag since this driver was missed
+in the flagged patch set. I picked one I felt gave a decent enough picture
+for someone coming across this later.
+---
+ drivers/xen/swiotlb-xen.c | 1 +
+ 1 file changed, 1 insertion(+)
 
- drivers/xen/swiotlb-xen.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
-
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 1f65795cf5d7..ef56a2500ed6 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -217,6 +217,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *d=
+ev, struct page *page,
+ 	 * buffering it.
+ 	 */
+ 	if (dma_capable(dev, dev_addr, size, true) &&
++	    !dma_kmalloc_needs_bounce(dev, size, dir) &&
+ 	    !range_straddles_page_boundary(phys, size) &&
+ 		!xen_arch_need_swiotlb(dev, phys, dev_addr) &&
+ 		!is_swiotlb_force_bounce(dev))
 --=20
 2.49.0
