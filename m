@@ -1,71 +1,72 @@
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C033219FC
-	for <iommu@lists.linux.dev>; Sun,  4 May 2025 20:28:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44516189916
+	for <iommu@lists.linux.dev>; Sun,  4 May 2025 20:28:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746390508; cv=none; b=e5tfhsMFG+dln+hklnzkd/QFRNHt84+aXma+4zGwJAa7QyOP2YvcVXiFOZnT6LOYv6PCtmPDFF2ik3jq0sOrjosJGOFCiu4CgQh5j/ZcoiLfU2qbKkg9sOXXBoi2JIDEZzLTsa/RnbN4bvewgGQjfvYPW/70azlvRmfFoSSVfpw=
+	t=1746390520; cv=none; b=cWa0c+QRYFKA2YKwQ4MvxzOPQP6jUupX5dbjZygDB2BZIk0141wLanqjwyYzPeSyDME+5YIdQlbVcpaHZqlpRj0mW4Bq1DTlEkfMIxLWTglygm18TmxBiRy7qC5+EgQZ4zdz9iCXKk4bIZQGLTypnV54Ap6to1q00qiEsXy2zyY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746390508; c=relaxed/simple;
-	bh=wAeAr+uNtpVl1oQgRhJT5vrF5gA7kAL1wBSt5zC0dNM=;
+	s=arc-20240116; t=1746390520; c=relaxed/simple;
+	bh=p7RH8jPe5ju48EG0FmAqRqqzhn2zmzM6yRKS1IDNiQY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Jk/ffG80SwfogcnLG5umIKeLacmHrQ58ymhUSmdIyctFDGR/MGUNA7noevcMrEj4uYPAroB8SKfh4VMBfEWtqJusaQ/+LbDWJwvog8jPviyPNsh6wvWhomu7eSMpEPXq0iOuMj2iBuKxx+tFZrwb+qhoS9++WoIsfOBGjTjxvdk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mi9JNyDH; arc=none smtp.client-ip=209.85.208.51
+	 To:Cc:Content-Type; b=pSTkmG+FymgJ6e2c9lU45k/Pf9zO6YMtLzfmhf0Mi7K5c+7bzYys2LozjHKeow0CzMki4PjAPAYHHlVsfYqoEW5/kaZkvQ3tWs4ZtfUUShkwnsI2NwTyadPFnIjXczKHQYXhHMGQq7NPQBmhD+jI6HDFJRjQ21boz5hua/LMnTc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=3E8WfHZc; arc=none smtp.client-ip=209.85.208.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mi9JNyDH"
-Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-5fab85c582fso3578a12.0
-        for <iommu@lists.linux.dev>; Sun, 04 May 2025 13:28:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="3E8WfHZc"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-5f632bada3bso6421a12.1
+        for <iommu@lists.linux.dev>; Sun, 04 May 2025 13:28:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1746390505; x=1746995305; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1746390517; x=1746995317; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ma5VTZtN43eHKx9MXoN2vndgZGyS3IQcfMzkFZsLVr4=;
-        b=mi9JNyDH/a+vkWVIwSwNCKiILj1PhVMfnNSyyD0KG4jnOYZ7OUw0rF8uPPGuBvnpSf
-         +Cdg4Cm+At2jTJL11/6Qfe3wcp9kge0zRUd185nZy/OQT3WIWxl3YCSdj+5Y0PZw5CZH
-         ShzQp8tOTCzHhaI4Tl85SwcFbniH8EEK/6EYBBySJCbJXSyG+OTNm2UPzvhHG/DPOmAU
-         bI7BkEDzbkAyrYPggrLOqBXs3+fAKE7I9nJMfElAQPnk9zcJoxKVzra+qpaaS4zjFmFm
-         +zGIklEttPzfZ30Os14r4wkJ4d4EJIM7jFmSCD3NCfqbT7xC7Vx42OLsCjE9vL3559ZC
-         SoKw==
+        bh=0LNxlsHkuWr26TqkPPMmOz/C4Ovd29j8T7M8QIAWC3g=;
+        b=3E8WfHZcuQjiPxHuMUlEEh/z0pKuTliYSmbOk8lS68faQmmALDotoY73Ll/4LbFzvk
+         g4AYPkx9ZHOnuOMfuJDny/ZSwGOJmNo1snQ3i405vXBTil/rreB6AkpYRLL1IFfNGACj
+         JOMT+4+keLIS/1RRhBs1BI/Po5r9w2Rd+CJvPUKH4CPK/o9tYydMx7aAR5xzD56np/kv
+         nOhuBB6YZHkObGLm1aVjVkpx4vpNx2XT/CfOwMxrjek/s5/GJI6JA1a1huwQphW7HtqR
+         tpfUzn35mTtDhkKdWli3454PEKIXip0OvbSG39U7yj+IoJzzs+PSpZI03ZAktQsifTOw
+         74Kg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746390505; x=1746995305;
+        d=1e100.net; s=20230601; t=1746390517; x=1746995317;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ma5VTZtN43eHKx9MXoN2vndgZGyS3IQcfMzkFZsLVr4=;
-        b=JRa0Ch2MbDacosg6IM26exJ3Uu0rsvYPYcjNuIConKol6Ajxfv7QqKQYkS4fuxgs4N
-         0rA0WjnyGwbJaNkqTL/lq8CJHWA2qVh4U500uzuNRSFLekox/EYWPAc4rSJO76M3+N7i
-         CgSMBlFbrzv4elmRkuoradxiFDhkmE+vMv6Bvoe9BTpx83EOJaDbepwpVGU+OnizfuoJ
-         vDSKXvN6mf2k/x5MH1zGmTEPG0lwB1rdiuo//vL/JskKKKhL9LHUXy4OQC01ECBb3pgK
-         FDSamKHOxIV/PHC/RdLXVDO27sTL0v8Iqm7W1PcNoHHwXpHzpwHH4Q0SKmOpazdxSVMC
-         k6uA==
-X-Forwarded-Encrypted: i=1; AJvYcCUxcdOvxyp6qlIPNnSLqmXXpAUyFd8KiIGGP3rB6+Aqm9cIHNUZHmy2S6StzI7Xg7UXDB6NZQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw9Th+1kGkbmUKzlUu/dL2tvgBJ+q6ui3HUtExZnNvB197f1af3
-	8ZvJmfYO/CkZrGXtkAlfgWH8VivJ8RFXgtlcbIoUwkiXbn3dgpev4+LqTpdyg4ctCLD4uqUgFb4
-	NwiPNmrWNhMK2TWJLYRvxdrEct56XXXwM1aPI/42r7bPH6ZHMklhi
-X-Gm-Gg: ASbGncu6imS4WOubojERZbkATDur65zOzwfL6z+4JQQruXDBMYFhVkn7PC27StuKYO4
-	WsnxbvXe/O1IBVWxz4S5aapewvKPk8SFE5KFTvD+NMT5Eq1TkP0ad5pwv6JUe05sNRk1Cr1axAU
-	5/mTZvfd0BDr1s+ZHVv7w=
-X-Google-Smtp-Source: AGHT+IEfcygATG/JiYqs8kFuuV3uPN962mEKSsdv/ZC7xfZXUWcYClUyr+wjWiEIMt6jrvov8aTIueM8qZuFoVDluI8=
-X-Received: by 2002:a05:6402:1752:b0:5fb:1bec:9149 with SMTP id
- 4fb4d7f45d1cf-5fb1bec920dmr3313a12.2.1746390505052; Sun, 04 May 2025 13:28:25
- -0700 (PDT)
+        bh=0LNxlsHkuWr26TqkPPMmOz/C4Ovd29j8T7M8QIAWC3g=;
+        b=al0OKuNbTLhgfTG08Wxn7unuGxD0kZsSLgP3At3LZHiXki3Yrq42zxqUnsB41VSE9u
+         UB7PZBmN3CFY/GAjpEfx9Bz6Ct5dGUji4btApl3FmYEJYD/rAP7KM8lVvqEBFyvsXhK6
+         kL7zP2ieRAy3BJjfMLOJRCAw9EyBqJHHwXb5MJcsyRXDgRZqdPDSAKL2SpK4l57lkXFC
+         W0oLSAMqtg83dBjbJT+ZBGsTom2DDcCZnZUsSEXJgKml4qWt571oxLGd3kLLaZG6RngN
+         +5KQvmVwm/RRT6rEx+MCJTrDgGoQPdnmEY7u+96WQWt1bwsZjZkdm3aRXJAmChCWhNTE
+         qF3w==
+X-Forwarded-Encrypted: i=1; AJvYcCWwcl7Iq/GTHflkMFDMXzJPEqnqFlJmU00LFXVaX8g5JAjOMMpcRLHx30fqI9JfcY6pKq1dgg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyhvB0UPE3tZu4VBDOgA060uq1xeGPJqVMimiEvd2ixFnEwyZed
+	pxlBI2y0zSEUyMJWX78Yj7h/pbghuKOti6VCiM7VVFUZf4FiLaIeczehxrOZ6qlwHs/cmC9wupy
+	ZOKMoGJRCGqnMPZZ49gmWc8b+j8T3B3yJKe4S
+X-Gm-Gg: ASbGncvs+vyH4ySKiUzw/ChW/divvAQ52170Af5WqdJinGMYiqfH7fKSeGFqhzIgW0K
+	eFJrv7c2hOcar9OoZ7Ex4Do6aRdYebK8QNeWoNVZgNmRqhMp6DHpOYlulTZ0t3D6nWibGD+oM/I
+	yPlPtRrHY7VDA1r4nKf5SHGXp2UlP+vg==
+X-Google-Smtp-Source: AGHT+IGmpdA2wmWxaZxctzBfwZ9neJuZ4UBP1c26mIWnHDPJQtzYOhQii3kXYnE/TFRMkOAW9hDgb6NacJhnJLko8vo=
+X-Received: by 2002:a50:935d:0:b0:5fa:ad69:6e44 with SMTP id
+ 4fb4d7f45d1cf-5faad696f5emr51762a12.0.1746390517408; Sun, 04 May 2025
+ 13:28:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250418233409.3926715-1-praan@google.com> <20250418233409.3926715-3-praan@google.com>
-In-Reply-To: <20250418233409.3926715-3-praan@google.com>
+References: <20250418233409.3926715-1-praan@google.com> <20250418233409.3926715-9-praan@google.com>
+In-Reply-To: <20250418233409.3926715-9-praan@google.com>
 From: Daniel Mentz <danielmentz@google.com>
-Date: Sun, 4 May 2025 13:28:13 -0700
-X-Gm-Features: ATxdqUEGvzouCWzwyN8CVIV0-zVPnE6k0PvbmRv2-GPuoSigh73p5DIGmodqUhQ
-Message-ID: <CAE2F3rDHGjwh+fcW37VnUG6dOyrKkxEseKMmRdZ7vzCroM6PrQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 02/10] iommu/arm-smmu-v3: Add a helper to drain all queues
+Date: Sun, 4 May 2025 13:28:26 -0700
+X-Gm-Features: ATxdqUHl4yS7JePATbvPgENtvXNMBiTf7L7w4ENbvZSSOj5stm7voIW4L20zSw8
+Message-ID: <CAE2F3rA5TbXBj0JDPNnu0L+qfwO6ESaieg4VRnQre4s_bRDA8A@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 08/10] iommu/arm-smmu-v3: Avoid suspend when user
+ owns DMA
 To: Pranjal Shrivastava <praan@google.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
 	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, 
@@ -73,80 +74,23 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Apr 18, 2025 at 4:34=E2=80=AFPM Pranjal Shrivastava <praan@google.c=
+On Fri, Apr 18, 2025 at 4:35=E2=80=AFPM Pranjal Shrivastava <praan@google.c=
 om> wrote:
-> +static int arm_smmu_queue_poll_until_empty(struct arm_smmu_device *smmu,
-> +                                          struct arm_smmu_queue *q)
-> +{
-> +       struct arm_smmu_queue_poll qp;
-> +       struct arm_smmu_ll_queue *llq =3D &q->llq;
-> +       int ret =3D 0;
-> +
-> +       queue_poll_init(smmu, &qp);
-> +       llq->val =3D READ_ONCE(q->llq.val);
-> +       do {
-> +               if (queue_empty(llq))
-> +                       break;
-> +
-> +               ret =3D queue_poll(&qp);
-> +               llq->cons =3D readl(q->cons_reg);
-
- A readl_relaxed() is probably sufficient. Also, in other places, they
-use WRITE_ONCE to write to llq->cons. Compare with
-
-WRITE_ONCE(cmdq->q.llq.cons, readl_relaxed(cmdq->q.cons_reg));
-
-in arm_smmu_cmdq_poll_until_not_full.
-
-> +       } while (!ret);
-> +
-> +       return ret;
-> +}
-> +
-> +static int arm_smmu_drain_queues(struct arm_smmu_device *smmu)
-> +{
-> +       int ret;
-> +
-> +       /* cmdq */
-> +       arm_smmu_cmdq_shared_lock(&smmu->cmdq);
-
-I'm afraid this might not be a correct usage
-arm_smmu_cmdq_shared_lock. I understand that acquiring the shared lock
-means that you want to prevent any other thread from updating
-cmdq->q.llq.cons, which I believe is not what you're looking for here.
-If you want to participate in this locking protocol, I believe you
-need to acquire the exclusive lock.
-
-This being said, I believe you need some other mechanism to ensure
-that no new commands are submitted to the command queue. Otherwise,
-the command queue could become non-empty after you return from
-arm_smmu_queue_poll_until_empty.
-
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -796,7 +796,7 @@ struct arm_smmu_device {
+>         struct rb_root                  streams;
+>         struct mutex                    streams_mutex;
 >
-> +       ret =3D arm_smmu_queue_poll_until_empty(smmu, &smmu->cmdq.q);
-> +       arm_smmu_cmdq_shared_unlock(&smmu->cmdq);
-> +       if (ret)
-> +               return ret;
+> -       /* Insecure Attach handles */
+> +       /* Insecure attach handles */
 
-This is basically a command queue timeout. Consider printing an error
-message similar to "CMD_SYNC timeout at [...]" in
-arm_smmu_cmdq_issue_cmdlist.
+Move this to the original commit that introduced this comment.
 
-> +
-> +       /* evtq */
-> +       ret =3D arm_smmu_queue_poll_until_empty(smmu, &smmu->evtq.q);
 
-I'm not sure if you can use your arm_smmu_queue_poll_until_empty
-function on the event queue. I understand that in the case of the
-event queue where the driver is the consumer, the driver's version of
-llq->cons is always more up-to-date than the SMMU_EVTQ_CONS register.
-In fact, I'm afraid you might move the consumer index backwards with
-"llq->cons =3D readl(q->cons_reg);", because llq->cons is more current
-than SMMU_EVTQ_CONS.
 
-I'm thinking about the following proposal:
- * Drain only the command queue. Use a local copy for llq->cons. Don't
-write to cmdq->q.cons_reg
- * Don't bother draining the other queues
- * Backup consumer and producer indices *after* disabling the queues
-in SMMU_CR0. This would involve writing to cmdq->q.cons_reg
+>         struct list_head                insecure_attachments;
+>         /* Lock for the list */
+>         spinlock_t                      attach_lock;
+> --
+> 2.49.0.805.g082f7c87e0-goog
+>
