@@ -1,151 +1,163 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2049.outbound.protection.outlook.com [40.107.220.49])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD54C1A5B87
-	for <iommu@lists.linux.dev>; Fri,  2 May 2025 19:43:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.49
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746215004; cv=fail; b=IG9sr6WL4JIH23ZNEm9NKmybIPH1PvL6Q1w5uXtLWO1IDlxxzCvfaeeyu6Ulz1VweQechaNvUxVU8SfHHPgJQbQ1nZy5mT3zGhhjO4hTENUvIMOo2PhEy9pLowSuItWUui1kDCZ2BjLGTOAWOydn9A1jdrIP7RigZoiNP78ToZw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746215004; c=relaxed/simple;
-	bh=PKFkmUbclBqwPZk7oZjaXGXF/RnOOwInEZeTIR9798k=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dLiLJNGTphHsjhWCgsDO1RtF0+GCrhQ5c6ac+bcJUcAa0B8u7G66CLzYyYIVdyyLmvefROq7NmFsJmyUzmsgUFwwu3Dk9HHoxTiEI5TKoBRLVoAFEFWaDbVRLsZGVRCRSzGUDqbieLIcUvnu4EFmI6i8eMFo/J05rSfENbdoGZ0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=E/TcKo54; arc=fail smtp.client-ip=40.107.220.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDE791EB1AE
+	for <iommu@lists.linux.dev>; Sun,  4 May 2025 16:13:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746375226; cv=none; b=ASWxDqM4rq2n05VbLpA2u0ne9U9TFaK7fq6Kf2P9vN8XPBxiZ+V7txujJnN72HDEaBYIeo4KfL2zyZlgFKmQCkufi8kdYGqLZyyoyoKqYZeIWyz6qRqnmFkU8fqKhnBXkuFuvy5QOU3qOolLgO7ngzxh2Dmz2ojkDiugOcOay7M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746375226; c=relaxed/simple;
+	bh=O68Yf4MVfSbvrTGnH2tyPtJDd/D9PTw/7oag6m4b3Hk=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=nyiFz/ZMk7mhzLtkK/ot0YP7BJfHKGtW7g+Kkh7OFrHuRScwCKVSBEVK9rPhx/HEO/qpJakusQu1X8/FolPcQSfxfOhoIGj/HFIRDYk70eLe8VF9KqTMAZqgMIAXiq7ifyW0pIuOyL6qxKEMIB1v+l5gOPspFwc4wCMC5u5fEkQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=KmuoZrem; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="E/TcKo54"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=sNSjZRIJiakoOiNBCIl5NhMeVjWphGRolAQZrdeWx2HOQIq57ksnbIizEt4ZDWIAW5sa/xdG/U7vWU9oqC1+CxmUMacZUri7HJVIyTWGEvXq56H1ITK0T7A4xjx2dcL1bnW+iCpVrETcISrlHvuEVbOE54aUXAjJM8NKza3XmB3H7pnegYdYuXkq0kJAtR8lPSYbwI7W4qYvmeUMQupyBomxVLy75PM+i637rOM0sArZywy9MKvGYXPnl3U5MbGnqMqNP/rU6VnzPGjV2Qn1/GxuO8jTVG7uBnOdi1YNnT31jgL68mf3hF/jG9VQLLX68tgg83qbZCQ1tm7sf2tutw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZCGIIThcwi9M83v2FHkPJfzfB7FUF6cbvN6K3VosAMc=;
- b=RVEvbYIUzduf2xk5vGwAlFM5h939zQR7KsYn2Np01kQnWI95JQu8Ku/uOWDGm9Wz+A+Vn+cINxyUGXOYn2mJinppEw5r4i2GE1HBrmz6JtkGxcPAPDJwvHt0B2LiWBBLMUWJaMYFheRH4u5XEUO9yiYxcm4LjIwzchWoOHl1KaNLsjc7tYcW1RcFH38PhbeltBFKeJUdF51pkbryi5ubNLYP2I0jbi0O7h/xNICxMjkWmwBe8iY8Jp3mqjcnElVL8owBVbrNd0M2GRjSihco/7g+SGNFpoLwOMA1qIY1tP/D1yKBfec+oKTbWtFrC0pFQRyZPqfHVp1LdrbOM93Irg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZCGIIThcwi9M83v2FHkPJfzfB7FUF6cbvN6K3VosAMc=;
- b=E/TcKo54kqNejv024zz0xzQ8FiBEWlY8vfMMx8YbtXHknyYwz9L9Jg5HiVFT/G28pExT/jR1gRYNz3FmMFqecGbEaABYqdcdY60peQzqIZunCN0hXQu28wqyQo6+/NSW/dSLaodEJ0MclydiA59Eg0GBlTQ+HOHysNOy24Kj/jFpegypT2ElxJHfTNGkP1QoNa3qmCzrGz5blq+19OalGzilM2hGRVSxN/Xzk5svcjUpJMYOdQR7FtclWyF3Y1RADqGrJHJh3NCsgPbpKhiKdrw1Y5fNygT3RBqUXYCkCaiH8akylz2UONpO5UGGfMblr9aJhgkuQxAqMdA9tvOkfg==
-Received: from BN1PR10CA0001.namprd10.prod.outlook.com (2603:10b6:408:e0::6)
- by MW6PR12MB9000.namprd12.prod.outlook.com (2603:10b6:303:24b::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8678.33; Fri, 2 May
- 2025 19:43:19 +0000
-Received: from BN1PEPF0000468C.namprd05.prod.outlook.com
- (2603:10b6:408:e0:cafe::39) by BN1PR10CA0001.outlook.office365.com
- (2603:10b6:408:e0::6) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8699.24 via Frontend Transport; Fri,
- 2 May 2025 19:43:18 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- BN1PEPF0000468C.mail.protection.outlook.com (10.167.243.137) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8699.20 via Frontend Transport; Fri, 2 May 2025 19:43:18 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 2 May 2025
- 12:43:06 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Fri, 2 May
- 2025 12:43:05 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Fri, 2 May 2025 12:43:05 -0700
-Date: Fri, 2 May 2025 12:43:03 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Pranjal Shrivastava <praan@google.com>
-CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Mostafa Saleh
-	<smostafa@google.com>, Daniel Mentz <danielmentz@google.com>,
-	<iommu@lists.linux.dev>
-Subject: Re: [RFC PATCH v2 04/10] iommu/arm-smmu-v3: Cache and restore MSI
- config
-Message-ID: <aBUgRyT/nno2MNHk@Asurada-Nvidia>
-References: <20250418233409.3926715-1-praan@google.com>
- <20250418233409.3926715-5-praan@google.com>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="KmuoZrem"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 544303lO023631
+	for <iommu@lists.linux.dev>; Sun, 4 May 2025 16:13:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	VqRNS/AP2L0HYV/XzQMxzhswyBS2iB5hSp0sUNl5kjs=; b=KmuoZremEiorgmv6
+	hZ8N2J1KRhkxb3L9zQJbG+Vwnt1Ki+ZvBh8uLNPQ3LzBeVueVVb2dCfIsvhQ/T/m
+	ZXJs4Z5p5W5H/Q3Ikmk4H3EjF5dSmGJ9aI1NU7zXqhBc/uIDsa088TteaElE4RQX
+	dc5iUulHFfafIrOBKhwzXy0gWXSUTDXJAVTcJ7/hmrfWe31Ij7qU6WHk9ARh4DJJ
+	jkGwtA4HS8orNBfiW9BB6Jlf61e9njSAzEl/fppwE6QYxxMiqFlTgtK+BgRj7t7A
+	8RmJOKvzpLGK9aSIzsvkgX6a25X0wk+5fjH8OB7ouNjlbj+CoMsbTpCCQmmkuv/7
+	fS1NCA==
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46dbwfj3g4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Sun, 04 May 2025 16:13:43 +0000 (GMT)
+Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-7c543ab40d3so4821385a.2
+        for <iommu@lists.linux.dev>; Sun, 04 May 2025 09:13:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746375222; x=1746980022;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=VqRNS/AP2L0HYV/XzQMxzhswyBS2iB5hSp0sUNl5kjs=;
+        b=b0h1x4eVxzxV+zm0RJLditvshNBYBVx+o56EfbKzLF1KjluzSasu/jCPXaMzywqid1
+         I21sS6wJ2j4OsvK968CAAwxNRqwBvpyWQUHMrR//fX5pcKm9NDe+rYisi8RDe2EM/2U6
+         4ylugHYk1qZHJb1e8QxoG59IoURPVh9a9dFdEfoaWwHslymJcfB/aPclM64t3rHh1u7r
+         T4E1825q89hb0xNbICk3WjVgBJDegLcbWzDMrIruYP7g6Ke57xrJOEa6XwR+5m6HmD05
+         Rvslv1DODzHyMmBUCQzIgQdQj5JA6PANBAX/Xf8iAr6+4tGYWssJUmooHCYPjnBsK+6z
+         +mFg==
+X-Forwarded-Encrypted: i=1; AJvYcCUNafMuMoe9mABC0ZBJI1jzKFRifeJdKl39u89ybXRgVprzZ0Z21LRLEMJak5IT1V+3YiAaxQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxaXfvJWhyRAw/Bb+jeoiKHcxDZSIntR4r9f4rWB5md3k85k0h8
+	8MEynzepl8W1ZKhDWlHBcqy3tA+uje66U8Z7cLVxwhuwLqY4KIE2phc2fQiNYhtFsgoyzVa9N4m
+	C3iwx3Xb+InQFxkQlhETTFDZprqXZ3NBEXc6Jtyr32vc7OK8mNzRaGA==
+X-Gm-Gg: ASbGncvTSGdi4QHb5V8nhsiK+XLUcRrOQMafigYHF3zNcak5yDNoIyz+vCDjBKUgZyT
+	meuIsKAicWW4TLf8JXiQ3MTHCSWtsC+3m26reAmEo/oISKhj7XEWBbhi9iTDJr3UwBsKdu0jGjU
+	9ElNSCQ4uCWBpZq035WmAypOPALMRqSMWe9BXudQUjLR9+gGbiHlW4cx/cV1EUTpNjiPs6LZedy
+	J/rwh+/WLxVqZdWAQjbOSIMD/p4/nb2DNZ2nAIy/MX9+qARTEQoV2bd9ACnrF9lY1YpEJi/87l9
+	9+fBib3QhwldSIghYQHsncbCaDVMgXjgXmF2frrZxlO+zXwODgjDmH4/D4+L9PSHbSj6BWJuphJ
+	qlAUuN3qjQHmn3BjtUhTxQlYT
+X-Received: by 2002:a05:620a:bc5:b0:7c5:a29e:3477 with SMTP id af79cd13be357-7cadfeda15emr898765685a.53.1746375222436;
+        Sun, 04 May 2025 09:13:42 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IH9jh4HRhFrjaplPP4DWWTXh3MXHXCDhI5cVsnoV7jzD3rgGA1I0X5J69xbTqyP4ckpUfqShg==
+X-Received: by 2002:a05:620a:bc5:b0:7c5:a29e:3477 with SMTP id af79cd13be357-7cadfeda15emr898759485a.53.1746375221999;
+        Sun, 04 May 2025 09:13:41 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-54ea94ee937sm1335231e87.142.2025.05.04.09.13.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 04 May 2025 09:13:41 -0700 (PDT)
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <lumag@kernel.org>, Sean Paul <sean@poorly.run>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Kuogee Hsieh <quic_khsieh@quicinc.com>,
+        Krishna Manikandan <quic_mkrishn@quicinc.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Neil Armstrong <neil.armstrong@linaro.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Konrad Dybcio <konradybcio@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Subject: Re: [PATCH v5 00/10] drm/msm: add support for SAR2130P
+Date: Sun,  4 May 2025 19:13:24 +0300
+Message-Id: <174637445761.1385605.10286310480029078025.b4-ty@oss.qualcomm.com>
+X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20250418-sar2130p-display-v5-0-442c905cb3a4@oss.qualcomm.com>
+References: <20250418-sar2130p-display-v5-0-442c905cb3a4@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20250418233409.3926715-5-praan@google.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN1PEPF0000468C:EE_|MW6PR12MB9000:EE_
-X-MS-Office365-Filtering-Correlation-Id: 262f9ee5-137a-4f51-1ca6-08dd89b196a1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|36860700013|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?lLj37BmHZ9lkwehzChjLdLEDslTL9cy77QE79XUWfsHmGiUGmVQhg2bxyLV7?=
- =?us-ascii?Q?mVh0rswfzdmJOJcngrS1QkhxupIt+s8o8XmWdg5cd1KTm3ikCnCOTPzQEhyh?=
- =?us-ascii?Q?Ujja1f/tAS51GNNAZD6UMfjejD+guMwN1oyGlAP9PO48NcY6LmhUzwX8vp3A?=
- =?us-ascii?Q?3veNatAkbOz1J4S4dRH9CQoPjDpdLNLLYqzZCyFxxp0ZXidYNm/NLvpd5yHv?=
- =?us-ascii?Q?2+L579wJr1BTpK4mOUkkQhBsuMiys6+x2ay3A++7E5TIWPFsQ8Acq55wrWfj?=
- =?us-ascii?Q?/7hr5ecUiJGxXj0Bvv4Q2Q84ClTKITWQSuvB7PWC8d1XYgQxziDeMcKoS1+c?=
- =?us-ascii?Q?PuNJ/kXymVGzohrE4AQiB6xAmqnPGik4XYFc8mAMdTTLTT1o6CpAJoKTBHmV?=
- =?us-ascii?Q?ldWqq5HpO6X6qkVv7bQOLPzaJ6Wdje5EwhQ9/RI36+bJ6br3/LtnumHDMJlF?=
- =?us-ascii?Q?1LSmcmtTuVRTy0JYyd6kc0V1j8pCQdknQcOjhbS1P9PRZUgN7BejDjqEYddD?=
- =?us-ascii?Q?DdvlIzpIV4KJfKTxxJ0xNYj6GYRGqnklXEnvMQVN8YvvyNVeUAvZjIrPgM36?=
- =?us-ascii?Q?zlopB4rZETfwgCWxUAKiec9O8FXzpu1L4HYfM6rPz/gbxqwg7qnwT9G+7DTH?=
- =?us-ascii?Q?5SarQz16NmIQP0dxl9YbE4Fe05qm0ThkbzR64kRxxlASJEDpCF4ZMrhRfofb?=
- =?us-ascii?Q?NDTNdGeID06HJceGTMUCkblaRW4SAilHeNIlVu7vPo2r59OGLKDWhQkj3riq?=
- =?us-ascii?Q?9Ka1Sd+YIP4Nn2FjAUXHdmlPHwb6GdIguNEnQmdGqvegRH3VxOJ1GiD3e3dF?=
- =?us-ascii?Q?FmOIcLeeIGZKGMmekTg3msEI+eNdeRjf06hzsrj0YpvkrXIPGoIdEPMJadLh?=
- =?us-ascii?Q?LDcr2EGeu46U8wQC0ysL+gfu3j6OH4BlDdG9d2AKVBbjgQOKRjCcmn1xiUYn?=
- =?us-ascii?Q?GttbZ6uCXxzjNRgS63JAKw8he/bVRWgpC71tjZwXqrrEPrm21rIzTsKcUxkf?=
- =?us-ascii?Q?N83EkzAVIu3C1bSGcPHBMLYnHidg+tLV6YMw31ueL444lRRaOv+gJiby03+o?=
- =?us-ascii?Q?Xv2KHD878FVJogQDu5CUm9WDfESwojnUcbWXqOZvLV6sTAsKsbILlc66mZ4D?=
- =?us-ascii?Q?ek/0A58tVbYwm6uXN08EXT9HTpqIhHAMvDv8SFgwd0zJQY65kpTbh3SqMZBv?=
- =?us-ascii?Q?sMxWftlq6WN9pYA+ONhPeR8jKMnreYUd4PTYX2Fh7L/MUMKKf3lT4sowNRTZ?=
- =?us-ascii?Q?Sn9aJvnYFtENbfDeKXErvdlzZHpcYTEd6Gk77C/XnojscbnzAtDJakYlznS3?=
- =?us-ascii?Q?dYQoUV5jlBNHdHLv8MtKPulOHAM6YjSPFtFDGR4QRSxtJ+RIvYtH0RkS8J0B?=
- =?us-ascii?Q?APWIwAijeESAhlFpFyh27y7Do9yrkrhrqJCHtovuZj7eXniHvrfO7UDrIQ5D?=
- =?us-ascii?Q?eMP7Mu6CiqKP/zq7nsXr8zBwTUnWL0P3Pjn+AMrUQbv7KZTloNK3JlOwstyg?=
- =?us-ascii?Q?/MGOUlhn6M0jNBaMzPWSkbyZSDPt73jObY+v?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(36860700013)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2025 19:43:18.3777
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 262f9ee5-137a-4f51-1ca6-08dd89b196a1
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1PEPF0000468C.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB9000
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: 0G68oG0C8CTPODmk5ozuY4aLfaLfDoB1
+X-Proofpoint-GUID: 0G68oG0C8CTPODmk5ozuY4aLfaLfDoB1
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTA0MDE1MiBTYWx0ZWRfX59pK7Y0IV0pj
+ iGhCyRVZ6jjn7dx68RZVnpJLMOie75Cz6RjFQvHNV0m3MaggMJVLYdSc+ZU8dzyBtL9KPyHfuBO
+ Xu+bPe5091iR/VfaEB3Sn+Syehj5eFfa8vuWTIwPf9phj+BkkEvqkOLfIanI0vFbHXxYlDQ3zix
+ uJw9AIf9JG1SSk8goYS01SxfC5vBUSUdx/DEFfsMzSc8cyGCPrVjvRbOIKg83TY3CaCw88cPJJc
+ GNkoYVyXTDU5KsEOdqSx4aQl0eZpvitewUOCAe9c4CRc6oSn2Tr63JlpNvIivqmDwJH6UsJCuLt
+ /cNS/cDDaaW8yHro3eM577zKmdgI6kLbW1/57EQzlG9txHM9kkqEqDB1ycx/VTkgGzSu12jE8rp
+ C/rIf1C0akVQZrTuvMlAv7I/MOR7sIW7g1Qt4EdffdFSROWyff8qfUYtHPJxgdGGXs25GGxV
+X-Authority-Analysis: v=2.4 cv=AfqxH2XG c=1 sm=1 tr=0 ts=68179237 cx=c_pps
+ a=hnmNkyzTK/kJ09Xio7VxxA==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=dt9VzEwgFbYA:10 a=e5mUnYsNAAAA:8 a=EUspDBNiAAAA:8 a=iEGPaXCqe01J9_RIJz0A:9
+ a=QEXdDO2ut3YA:10 a=PEH46H7Ffwr30OY-TuGO:22 a=Vxmtnl_E_bksehYqCbjh:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-05-04_06,2025-04-30_01,2025-02-21_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 clxscore=1015 priorityscore=1501 phishscore=0 impostorscore=0
+ mlxscore=0 adultscore=0 lowpriorityscore=0 suspectscore=0 mlxlogscore=914
+ spamscore=0 bulkscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
+ definitions=main-2505040152
 
-On Fri, Apr 18, 2025 at 11:34:03PM +0000, Pranjal Shrivastava wrote:
-> +	desc = irq_get_msi_desc(smmu->evtq.q.irq);
-> +	if (desc) {
-> +		get_cached_msi_msg(smmu->evtq.q.irq, &msg);
-> +		arm_smmu_write_msi_msg(desc, &msg);
-> +	} else {
-> +		dev_err(smmu->dev, "Failed to resume evtq msi");
-> +	}
 
-Do we need to check if (smmu->evtq.q.irq) at the top?
+On Fri, 18 Apr 2025 10:49:55 +0300, Dmitry Baryshkov wrote:
+> Add support for the Mobile Display SubSystem (MDSS) device present on
+> the Qualcomm SAR2130P platform. The MDSS device is similar to SM8550, it
+> features two MIPI DSI controllers, two MIPI DSI PHYs and one DisplayPort
+> controller.
+> 
+> Note, due to the technical limitations DP controller wasn't completely
+> evaluated.
+> 
+> [...]
 
-And same question to the other irqs.
+Applied, thanks!
 
-Thanks
-Nicolin
+[01/10] dt-bindings: display/msm: dp-controller: describe SAR2130P
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/b341da1172fe
+[02/10] dt-bindings: display/msm: dsi-controller-main: describe SAR2130P
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/3c70c9d0a99d
+[03/10] dt-bindings: display/msm: dsi-phy-7nm: describe SAR2130P
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/262650e71854
+[04/10] dt-bindings: display/msm: qcom,sc7280-dpu: describe SAR2130P
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/759fe7181723
+[05/10] dt-bindings: display/msm: Add Qualcomm SAR2130P
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/3096209b7a62
+[06/10] drm/msm/mdss: add SAR2130P device configuration
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/1e7cbfea6624
+[07/10] drm/msm/dsi/phy: add configuration for SAR2130P
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/8e63b2075e01
+[08/10] drm/msm/dpu: add catalog entry for SAR2130P
+        https://gitlab.freedesktop.org/lumag/msm/-/commit/178575173472
+
+Best regards,
+-- 
+Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
