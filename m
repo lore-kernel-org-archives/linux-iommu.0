@@ -1,104 +1,119 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C655207A25
-	for <iommu@lists.linux.dev>; Mon,  5 May 2025 11:56:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 944F024EAAA
+	for <iommu@lists.linux.dev>; Mon,  5 May 2025 12:29:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746446201; cv=none; b=ARl/qwrINjgeqHpAPcBANifFlhHILrt0YJTwKbcM9pc2WLx+LF7UDQnwl/692src7vx2BIUxa4AjWjDr2+dkm4QJ1QUVCBHRqx8W8ADgR+OkQ11Xoc4t5wy6rmRQc3CldBjm3ix2HydX93T4J3+2aaA6rshoFYu9k0BYxZCOcqg=
+	t=1746448147; cv=none; b=iGTZWEwQ6aS17ARpB4j3xYlcpiutdBe3mw5hO4L8nsyoAtM2HdNpKEa+UIpCtp+bvjxXkvRGF0EhKUM2sw2AoCsdsgoiOpnN+iPu31paP83khSFNYUlfkfGPRJr63QNnazMlduzGjaizROPEEqt0J8SLAFEq1ZAFfjaR711IDYY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746446201; c=relaxed/simple;
-	bh=bhylBd3wO/oU3H4pz2cS+C+DeqobvL/gAITFSoI+DlI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Vc2qFLekhMKrlCJIYvbLK/HoeKFquS9NfgSNyE7ux1ckSEGAAvOq0M3Dd7zJ77enxwxX8Q1IykFcR/9g1DXgKVYtl7MwHlVY6fp1zZWtCcGgTo+MBoIPzpgViRbZyHJoR3qdQyNwoaYinXudsrzkUFLEZQbxrwLc660udWRMCz0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OBaK1A2A; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1746448147; c=relaxed/simple;
+	bh=8st2WkhNjYa0sS1ZjGydQ5cI8qeMQD3qVytw+PewtLU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=V7eFdgEgaO3UPveEzFordoz4sC9wciBOSkPPbMG+RULcSF9DhVLltE08bNOaS5ir2Q+maoClJgS7coFT3vjfEB5D2e961CEKQPn4W+eKhmovV/8E88h/J1j8sHeppoi5k4KQPmPB9ZVle+aHwEHDuY5xHODIeuM0+dqF5aA0hlE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=lfKn7SDp; arc=none smtp.client-ip=209.85.219.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OBaK1A2A"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5C57C4CEF2
-	for <iommu@lists.linux.dev>; Mon,  5 May 2025 11:56:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746446200;
-	bh=bhylBd3wO/oU3H4pz2cS+C+DeqobvL/gAITFSoI+DlI=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=OBaK1A2ACY5mLHZc1RwNmwdp3qGVhRPpfBpIBc11MpDdTgvZjzJh9c2HqD1j/xbtF
-	 IE3axwUzyoBNXJJ9wLAZrwk/C5ae9vmLf+t52fKUMymHOy8rLX7A/TqYZDsgIjmxJO
-	 uqRWlNO0+YLXrPDFvUm39DtT/cGgYkARn3xxiCBrZ2IsI7xVrutO9LTBggxr7tyo3O
-	 Ew0kuk3bVIOPSA41viB1pvME5VT2HftocjkLZGxd/CD0ih9duJtfPjYxm7uyH2I3Y+
-	 LWBUIscuFZsWPeiYe6cTPw8irWThpkd0fbUAw29CUnAaOBvzQ70iM6xL28Uvz7HSBp
-	 JM6Z0txoM6w3w==
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-ac345bd8e13so715379766b.0
-        for <iommu@lists.linux.dev>; Mon, 05 May 2025 04:56:40 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCV/FMkRa5iz2Als4gobUPvGhNK0gCCuxbRggq+iPcoWVfmaoRA0mAVHeUVgoTtnQZYAJg7B5Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxWI8757x3Xo7UjE8e218L3tahH6ZmMRxVW9EuStlYvOL7c7NU3
-	1CD4VFCzvtnYyPniVKPl2hRJp2A7yJmXkel7CMIfteVdGY3o6abuI/VE/8MHB40l41jiKDEoFxj
-	GrR16r8tEuGmbItOz0lRyyFuXyQ==
-X-Google-Smtp-Source: AGHT+IFS+UYRYhqu0qLApsmsVcQPU5PxbnUTRMgU4A8cLFv9VbzJgVSFzBJ4TlrMHVGbrQpwwBTff7ATCPn82nTV/yU=
-X-Received: by 2002:a17:907:97c7:b0:aca:d52d:b59b with SMTP id
- a640c23a62f3a-ad19084ec5fmr805337566b.47.1746446199152; Mon, 05 May 2025
- 04:56:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="lfKn7SDp"
+Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-6e8fce04655so47271186d6.3
+        for <iommu@lists.linux.dev>; Mon, 05 May 2025 05:29:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1746448144; x=1747052944; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mfu+tu5hpHDhrhemjgH6VucLj0HupA6g7txg5hR1fns=;
+        b=lfKn7SDprx1uMBi1Fe8nRB+wUYBeaFlUziuM3LrlbNXwPJDck8bE98HJ8QEXmNC0cC
+         0w31QHdJmFR2Pednu3j/qKlRvYVbEJiGFNs/CJ+lAZCpIFfbFV3AemdH766vcyr+bkIr
+         FS1nvC0FNWFS70R8ieEiJdMRF4dJ3DZ26hboO7G6yrKeJwpMrSjoOkQ3TXCXAj6ZR3LH
+         dOpuN0vodhrQtyCroaG+twtRoOGYjQFsu2j0YHVFUMYq7p74oJrxeRMBgfZt2SFQa4/8
+         oK+ZfCqTgpjcMZDyR/ca66SQF64QIcVTeXam5X/aw4SPAAcMIs9joNg9viFQY447qdSv
+         qr2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746448144; x=1747052944;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mfu+tu5hpHDhrhemjgH6VucLj0HupA6g7txg5hR1fns=;
+        b=CndTJAG2gKXv6ZohqstTsLBUble5n7A6wJp6uDtj1dgjkI6TlEq5eI6ED9CJgd9LUH
+         TUmd2sVLPKP+2SXsC1ttlTuaEZqmYCwostNfvh0B01/RlhthfOgHk7krlOnjRtnDuMId
+         UWFYFj8e/+W+LoYhP0HJVPrkBHoTtCoXG0AsJ0HWGLYHHdFdL4pUgjBpCy2t8TKcPIPK
+         YXz9KG4pkZtXCddEBYQQDz3oIDQ6DZ7dfLg8M87kJ+WgPGcFzT0B7liO0P3wYxBK3R4n
+         NPF96Eu+K19W0aJ0DrzPw74uAYaIsJ/mUKKc0JndIkZ0pev6kn1fPdiM2vQtTjwDIDEJ
+         Ww0A==
+X-Forwarded-Encrypted: i=1; AJvYcCW6N32Xr1LzGCv3tAUf9UsuctLb2Fw7mCN3l2GEV9CxP5FwK+agFgtqSSEljs9idKNU0JCE6Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzz3JZhVHUtyzOGPcUf1wWm4Nhw/+D+zjh+IoIMnFaHvjIHHjTw
+	t091e88mF0DwstwV1jsR/vDnzal8KiILudv0jyAOIIc6SlCmFHan5a4QVdkpD9U=
+X-Gm-Gg: ASbGncvFHLrSJVtaY0XO3ozf8o7t5d+nvGYJv0yafW7wpy7/F2TsLNG8KgxUNIMyQra
+	PpvpOZH1QX3sbHXymN6VJbvuMiFj+r0eQf4EVlqQZLSgLJ3h0BuUJSH5oeEorCQkGUvYkkE+OM6
+	sdvcWwolF9uietv7UDNHzq4qrS40OypW5uae7cDa/oQ3I7lFmBRdXsX0+/01atQ5bvbrgADbs0x
+	hvX93M4cMQe6ygt6zrGUsOTXnIsGCsTRL3C8jp/mKWQmIFwJOhfR9kEt53l4oMsJzS7j6cZiRH2
+	bXdnRhfxCAIm+81CDh8wRYaAEJ2FKdn2LfOh9UzyMd+qzIfEejPwrzrh60kD+xHuHIDypDGmBBf
+	nq7ZJaANeuwHRcgxtuT8=
+X-Google-Smtp-Source: AGHT+IHrrCkbPkXSi1eXZMzeybSC5P++W/lKXALdeEOdhNPGMmZG6yFN5oZZyeIbSctGCJtNUEnJAg==
+X-Received: by 2002:a05:6214:b69:b0:6d8:99cf:d2db with SMTP id 6a1803df08f44-6f523852b68mr146814446d6.38.1746448144313;
+        Mon, 05 May 2025 05:29:04 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6f50f3c3887sm54983076d6.38.2025.05.05.05.29.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 May 2025 05:29:03 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1uBuwQ-0000000GxAs-3q1W;
+	Mon, 05 May 2025 09:29:02 -0300
+Date: Mon, 5 May 2025 09:29:02 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+	Keith Busch <kbusch@kernel.org>, Jake Edge <jake@lwn.net>,
+	Jonathan Corbet <corbet@lwn.net>, Zhu Yanjun <zyjzyj2000@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	linux-pci@vger.kernel.org, kvm@vger.kernel.org, linux-mm@kvack.org,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Chuck Lever <chuck.lever@oracle.com>,
+	Luis Chamberlain <mcgrof@kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Kanchan Joshi <joshi.k@samsung.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>
+Subject: Re: [PATCH v11 0/9] Provide a new two step DMA mapping API
+Message-ID: <20250505122902.GF2260621@ziepe.ca>
+References: <cover.1746424934.git.leon@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250306-topic-dt_bindings_fixups-v1-0-0c84aceb0ef9@oss.qualcomm.com>
- <174637445759.1385605.15383087742490646226.b4-ty@oss.qualcomm.com>
-In-Reply-To: <174637445759.1385605.15383087742490646226.b4-ty@oss.qualcomm.com>
-From: Rob Herring <robh@kernel.org>
-Date: Mon, 5 May 2025 06:56:27 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKr8Xd8uxFzE0YJTyD+V6N++VV8SX-GB5Xt0_BKkeoGUQ@mail.gmail.com>
-X-Gm-Features: ATxdqUFnhjeEjXeL57DSByQBGcanFON-MWfWdUb7FuuvpsF2gYXLeAeEkshoH0k
-Message-ID: <CAL_JsqKr8Xd8uxFzE0YJTyD+V6N++VV8SX-GB5Xt0_BKkeoGUQ@mail.gmail.com>
-Subject: Re: [PATCH 00/11] Various dt-bindings fixes
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Rob Clark <robdclark@gmail.com>, 
-	Abhinav Kumar <quic_abhinavk@quicinc.com>, Sean Paul <sean@poorly.run>, 
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, Robert Foss <rfoss@kernel.org>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Wesley Cheng <quic_wcheng@quicinc.com>, 
-	Christian Marangi <ansuelsmth@gmail.com>, Bjorn Andersson <andersson@kernel.org>, 
-	Rohit Agarwal <quic_rohiagar@quicinc.com>, Kyle Deng <quic_chunkaid@quicinc.com>, 
-	Vinod Koul <vkoul@kernel.org>, Dmitry Baryshkov <lumag@kernel.org>, 
-	Konrad Dybcio <konradybcio@kernel.org>, Marijn Suijten <marijn.suijten@somainline.org>, 
-	linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, linux-usb@vger.kernel.org, 
-	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1746424934.git.leon@kernel.org>
 
-On Sun, May 4, 2025 at 11:13=E2=80=AFAM Dmitry Baryshkov
-<dmitry.baryshkov@oss.qualcomm.com> wrote:
->
->
-> On Thu, 06 Mar 2025 19:11:12 +0100, Konrad Dybcio wrote:
-> > A set of not quite related bindings warnings fixes.
-> >
-> >
->
-> Applied, thanks!
->
-> [02/11] dt-bindings: display: msm: sm8350-mdss: Describe the CPU-CFG icc =
-path
->         https://gitlab.freedesktop.org/lumag/msm/-/commit/60b8d3a2365a
+On Mon, May 05, 2025 at 10:01:37AM +0300, Leon Romanovsky wrote:
+> Hi Marek,
+> 
+> These are the DMA/IOMMU patches only, which have not seen functional
+> changes for a while.  They are tested and reviewed and ready to merge.
+> 
+> We will work with relevant subsystems to merge rest of the conversion
+> patches. At least some of them will be done in next cycle to reduce
+> merge conflicts.
 
-And now there's a warning in linux-next:
+Please lets have this on a branch so I can do the rdma parts this
+cycle.
 
-/builds/robherring/linux-dt/Documentation/devicetree/bindings/display/msm/q=
-com,sm8350-mdss.example.dtb:
-display-subsystem@ae00000 (qcom,sm8350-mdss): interconnect-names:
-['mdp0-mem', 'mdp1-mem'] is too short
-        from schema $id:
-http://devicetree.org/schemas/display/msm/qcom,sm8350-mdss.yaml#
-/builds/robherring/linux-dt/Documentation/devicetree/bindings/display/msm/q=
-com,sm8350-mdss.example.dtb:
-display-subsystem@ae00000 (qcom,sm8350-mdss): interconnects:
-[[4294967295, 7, 0, 4294967295, 1, 0], [4294967295, 8, 0, 4294967295,
-1, 0]] is too short
-        from schema $id:
-http://devicetree.org/schemas/display/msm/qcom,sm8350-mdss.yaml#
+Thanks,
+Jason
