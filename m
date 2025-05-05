@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 477762C0332;
-	Mon,  5 May 2025 22:49:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D92F2ECE4A;
+	Mon,  5 May 2025 23:10:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746485348; cv=none; b=HCwLuCeDnGqOLEgfvCR7Bd8zzVfTH9d2hfU3rFnVF3TiurCDjBDK6fCTS+dxk81lJaAZtLnBWx1kxzquwYw3rdMzi6MJ7IKcNLz5/HFKmx5notx97cUuKJYsBsJGkXNtwJd7d8MDJB6abtbpaaEN8LoF2bvgKCmNrs2uGKsrBHo=
+	t=1746486644; cv=none; b=frmajwKSM4yD8qyCbiSoqak4iADt0bzXQCZAPSZBraCXXRexdH+RWfLRF64tOfGNXNQAZYCcnlrt86sFEGNBp6OUajYPHwihIvGBwhx1tD+Nkg5RZCACUmUXMcSvWv/t2zgYvzIz18u4WDAtjJQL6Zi/w/a/tFlwHLM/M3+fGqI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746485348; c=relaxed/simple;
-	bh=79VEN30GCnvOMddOYIMHiDjP9ORCLa8fZg4wW316d2c=;
+	s=arc-20240116; t=1746486644; c=relaxed/simple;
+	bh=E5TRCUeMPDEJ9ZibVkLMy80/xwLwH1u8C4ORNAUXdNM=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Lw0bT47Kc5FDfuqpUja5ltKj7sRPoSoygrH8YbB7FCwjBFTN5r22YFfLGwpJEsvtMyItWr4EnzgT9Pf7pcb6ia8YCZdXQAVQ8Q7geCsERvHRERwEUo5uHKmIM+v2iFMIGoFZ0+Ed3+vw+2YdHsW1sXxmPJGG57cKFrQvhDaMrx4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tPVdlBW2; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=BdU4o1bi+/zOndCpAoYYfJMaLNAi8XNKMsXiBu5ulWCEOhjyQpJA+VJakz9mXWaIAeFnvyw/WSQe+jrCM3TtX12QevIC231MNDuN9fYTEb9amGAHeI8Pehqd5mgTusfgMCIzmEtJTO/PS16hSWg8nQR8fksV1rNjYpum5Xm4jv0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YR7v9XtZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tPVdlBW2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80643C4CEED;
-	Mon,  5 May 2025 22:49:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YR7v9XtZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D0B8C4CEE4;
+	Mon,  5 May 2025 23:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746485348;
-	bh=79VEN30GCnvOMddOYIMHiDjP9ORCLa8fZg4wW316d2c=;
+	s=k20201202; t=1746486644;
+	bh=E5TRCUeMPDEJ9ZibVkLMy80/xwLwH1u8C4ORNAUXdNM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=tPVdlBW2NiEDGbcqBiVsrg6ENUVfKnAvSgePQVPNVYZ3B64XrZ+qnqO4tzdTVqiqJ
-	 9OTTweHbGA/z/XIHhhxakIa0iY6TTiIledbiy7R+JZmh2DBEsug3U5dSELqFEi2b4w
-	 HykLSinfW7vMJXGVL+QYTQoRFHdMBiWg22f+ToS+YePUHtPzqRJmqQwCx0RzviRM5X
-	 80AcT4t1QzsLGY6p+fyLlybEEOhij7EsijdqaJoncleQn/sed4vggxHTyShiyvqAt3
-	 sUq/ezSgAsfFPcs96nq3lA78sV/C8KnIX5KJktKjwTccNfOzDDU12uMfnPJwEwwmU9
-	 TQgv2k+D1basQ==
+	b=YR7v9XtZQyxUuXKmyYQfupXf+KFMpQ5cE9s0skCFwGcOOxe10D9gAVpSHGFe4C9M/
+	 1xvyjU7mOz1XriRCofP5NaAFtiPjBGoBhBjQjyHWOyDI7fYA2qX4f2SZZ+Z2zwczcJ
+	 jgg1jOhyCrhVbKhddhBZwBmsQVZq/b+CIA70zzTqRx+p2p9ciLqIKKfIK38wrzC58M
+	 PLveUkdKNYA/+DYaBN4FH/O1I4ZCbGFXUdnu2BtZNNMdwoPW5sbgVUsfKNHnAl0nWm
+	 e1xf8OUKleqV2xJUCOVDT7O3+9NoIfECvnDDF1B8d6e8bvuSC4pYLDOqOQeG9HnqNh
+	 SLm0VKKWqt8PA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -39,16 +39,17 @@ Cc: Jason Gunthorpe <jgg@nvidia.com>,
 	shivamurthy.shastri@linutronix.de,
 	bhelgaas@google.com,
 	anna-maria@linutronix.de,
-	Jonathan.Cameron@huwei.com,
+	jgross@suse.com,
 	jgg@ziepe.ca,
+	yury.norov@gmail.com,
 	marek.vasut+renesas@mailbox.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.12 279/486] genirq/msi: Store the IOMMU IOVA directly in msi_desc instead of iommu_cookie
-Date: Mon,  5 May 2025 18:35:55 -0400
-Message-Id: <20250505223922.2682012-279-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 132/212] genirq/msi: Store the IOMMU IOVA directly in msi_desc instead of iommu_cookie
+Date: Mon,  5 May 2025 19:05:04 -0400
+Message-Id: <20250505230624.2692522-132-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250505223922.2682012-1-sashal@kernel.org>
-References: <20250505223922.2682012-1-sashal@kernel.org>
+In-Reply-To: <20250505230624.2692522-1-sashal@kernel.org>
+References: <20250505230624.2692522-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -57,7 +58,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.12.26
+X-stable-base: Linux 6.1.136
 Content-Transfer-Encoding: 8bit
 
 From: Jason Gunthorpe <jgg@nvidia.com>
@@ -111,10 +112,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  2 files changed, 25 insertions(+), 36 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 2a9fa0c8cc00f..0f0caf59023c7 100644
+index 3fa66dba0a326..cbf9ec320691a 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -1815,7 +1815,7 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+@@ -1661,7 +1661,7 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
  	static DEFINE_MUTEX(msi_prepare_lock); /* see below */
  
  	if (!domain || !domain->iova_cookie) {
@@ -123,7 +124,7 @@ index 2a9fa0c8cc00f..0f0caf59023c7 100644
  		return 0;
  	}
  
-@@ -1827,11 +1827,12 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+@@ -1673,11 +1673,12 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
  	mutex_lock(&msi_prepare_lock);
  	msi_page = iommu_dma_get_msi_page(dev, msi_addr, domain);
  	mutex_unlock(&msi_prepare_lock);
@@ -139,7 +140,7 @@ index 2a9fa0c8cc00f..0f0caf59023c7 100644
  	return 0;
  }
  
-@@ -1842,18 +1843,15 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+@@ -1688,18 +1689,15 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
   */
  void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
  {
@@ -167,10 +168,10 @@ index 2a9fa0c8cc00f..0f0caf59023c7 100644
  
  static int iommu_dma_init(void)
 diff --git a/include/linux/msi.h b/include/linux/msi.h
-index 59a421fc42bf0..63d0e51f7a801 100644
+index e5dfb9cf3aa11..1bf8d126f7928 100644
 --- a/include/linux/msi.h
 +++ b/include/linux/msi.h
-@@ -165,6 +165,10 @@ struct msi_desc_data {
+@@ -129,6 +129,10 @@ struct pci_msi_desc {
   * @dev:	Pointer to the device which uses this descriptor
   * @msg:	The last set MSI message cached for reuse
   * @affinity:	Optional pointer to a cpu affinity mask for this descriptor
@@ -181,7 +182,7 @@ index 59a421fc42bf0..63d0e51f7a801 100644
   * @sysfs_attr:	Pointer to sysfs device attribute
   *
   * @write_msi_msg:	Callback that may be called when the MSI message
-@@ -183,7 +187,8 @@ struct msi_desc {
+@@ -146,7 +150,8 @@ struct msi_desc {
  	struct msi_msg			msg;
  	struct irq_affinity_desc	*affinity;
  #ifdef CONFIG_IRQ_MSI_IOMMU
@@ -191,7 +192,7 @@ index 59a421fc42bf0..63d0e51f7a801 100644
  #endif
  #ifdef CONFIG_SYSFS
  	struct device_attribute		*sysfs_attrs;
-@@ -284,28 +289,14 @@ struct msi_desc *msi_next_desc(struct device *dev, unsigned int domid,
+@@ -214,28 +219,14 @@ struct msi_desc *msi_next_desc(struct device *dev, enum msi_desc_filter filter);
  
  #define msi_desc_to_dev(desc)		((desc)->dev)
  
@@ -224,8 +225,8 @@ index 59a421fc42bf0..63d0e51f7a801 100644
  #endif
 +}
  
- int msi_domain_insert_msi_desc(struct device *dev, unsigned int domid,
- 			       struct msi_desc *init_desc);
+ #ifdef CONFIG_PCI_MSI
+ struct pci_dev *msi_desc_to_pci_dev(struct msi_desc *desc);
 -- 
 2.39.5
 
