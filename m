@@ -1,44 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BCCC2DA116;
-	Mon,  5 May 2025 22:21:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD43D22DA03;
+	Mon,  5 May 2025 22:22:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746483685; cv=none; b=Qa8/71Aomm5wY3FVTEGwIY6JnqeBk5VWVUrI724gcsfROldMOaU+Ops0veJ6VDHkG0IO0YRFYJCoTCrhPh0u0EfhaKGLKZbizaZqzjQrTpS1jfpx92tdxhLS3w+4ozJ1sEyLxaVnSU3rXQKTcaLseip7if5uK+w2IU62bPH+bsU=
+	t=1746483764; cv=none; b=rELcH9s+Rx60ZoR5EPyQ4+hQa6uC+z+GQcLDBHmCfrnwZlOy0RjTlh8zVc5I/bPZu4NwvLW0Ag0JCd3pe00mXwQoPifPbf4VNDPgBQoXszHTExxUS+UFub1X29+Unnek6onpKyGNRcGSgNCeb/umIjrpl0Bt2WzMr1tz1JVDmU0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746483685; c=relaxed/simple;
-	bh=eo4Fa6CgI/HpElnDm5vdUR99d7waC0pJUIEn/hDqvp0=;
+	s=arc-20240116; t=1746483764; c=relaxed/simple;
+	bh=lpacBupbK5MWbbDZSLeJOKN3ckCD+rx+YnB/bHNdkp4=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=fTgK1Xf7gF8mpzmaGIhnKSqQca+6E/ddibcqWSmesXxlb6/otjiYSXA7/a0REcfLhpTdBxXU+FuLvtzy5F/a7kFpE80Eta43TsUOeJWEzOii3qga9pM0nfa5qZmR/yswU0bovk7WSrJqWTARPMxJ5+4nJbNgWwKRnc1qAuFImcw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XX1xYNlx; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=U8RiUZ2zcYb80miO5z04+BiRaEGjZ5I7WHqcCpm9/fZtToNZu4fxa4LesDroYzqf6FHlYgFax/V6WZ2K6py+gB4YGgzUsmtIvH19JkDpHk36y3qFTry5rUH6A3ogzp+t6YSC0VoAMgXg4UbYSDwvPLYDQTlxzYElcqIC3BuVmVM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j+livgPW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XX1xYNlx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01950C4CEEE;
-	Mon,  5 May 2025 22:21:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j+livgPW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 038FFC4CEED;
+	Mon,  5 May 2025 22:22:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746483685;
-	bh=eo4Fa6CgI/HpElnDm5vdUR99d7waC0pJUIEn/hDqvp0=;
+	s=k20201202; t=1746483764;
+	bh=lpacBupbK5MWbbDZSLeJOKN3ckCD+rx+YnB/bHNdkp4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=XX1xYNlxJ4bgr7sSCBsdVAw96QV1HdvMauep/+aU6rtlNWbH+3S1+G1tsG2X8c1Pk
-	 k8bhm9w7l+pfWZHDN3CFcQiTg4kQd0EzRD7A4xeADJO779L/Cotp52pKmI1FlPjxBu
-	 plu0wcy9FK+rAls21pF0Q1cUir2PFHHopKzLcGHgktM4zwM4mNagcKlGlGkISZcOWx
-	 8eBUqoNmNRIZfEWYyG5yP68Y5MhMkV04DntAOXm9k/2X5+ofigfFvdUrD3yL9P6LXY
-	 u/fyaebKfpmCsnMUhfPpBlcO9YBtJw87HNVoUbS5Kto6J3+A5XDOqlq7c8WDICHrrM
-	 9KkCIrTT2XLeA==
+	b=j+livgPWU616ffpTpPZAUyy2s3BhAj0SyyJwXl0GWyY14zunODjZIFH++SrWTBYuq
+	 Bf1v42kAICyul+enpffd7pKIPekBSfimDWtIpQZvbzasAFvBcXRzAPylvRexM6aCpQ
+	 t0xLMlEBFkrYezFE0bQLflbncOuPrt6gfQd8KwNtDVtI8fdrTodvCM88778BVzE7ms
+	 3ON0huAaHOVEBGM3HYvwoFvh9j/i3/fZI6V9Z1iBG2vRUGEhVKGQyS3wMe7J/PM4B0
+	 Kv+oP3MsWXjZSOl7ewD12EwYvQ7Rnnx1VpY2HRJZ6ukllhRYwcNMMyihWUneRWfdmD
+	 TfehVHrAAfKgw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>,
 	Joerg Roedel <jroedel@suse.de>,
 	Sasha Levin <sashal@kernel.org>,
+	dwmw2@infradead.org,
 	joro@8bytes.org,
 	will@kernel.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.14 179/642] iommu: Keep dev->iommu state consistent
-Date: Mon,  5 May 2025 18:06:35 -0400
-Message-Id: <20250505221419.2672473-179-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.14 206/642] iommu/vt-d: Move scalable mode ATS enablement to probe path
+Date: Mon,  5 May 2025 18:07:02 -0400
+Message-Id: <20250505221419.2672473-206-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20250505221419.2672473-1-sashal@kernel.org>
 References: <20250505221419.2672473-1-sashal@kernel.org>
@@ -53,86 +55,163 @@ X-Patchwork-Hint: Ignore
 X-stable-base: Linux 6.14.5
 Content-Transfer-Encoding: 8bit
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-[ Upstream commit 3832862eb9c4dfa0e80b2522bfaedbc8a43de97d ]
+[ Upstream commit 5518f239aff1baf772c5748da3add7243c5fb5df ]
 
-At the moment, if of_iommu_configure() allocates dev->iommu itself via
-iommu_fwspec_init(), then suffers a DT parsing failure, it cleans up the
-fwspec but leaves the empty dev_iommu hanging around. So far this is
-benign (if a tiny bit wasteful), but we'd like to be able to reason
-about dev->iommu having a consistent and unambiguous lifecycle. Thus
-make sure that the of_iommu cleanup undoes precisely whatever it did.
+Device ATS is currently enabled when a domain is attached to the device
+and disabled when the domain is detached. This creates a limitation:
+when the IOMMU is operating in scalable mode and IOPF is enabled, the
+device's domain cannot be changed.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Link: https://lore.kernel.org/r/d219663a3f23001f23d520a883ac622d70b4e642.1740753261.git.robin.murphy@arm.com
+The previous code enables ATS when a domain is set to a device's RID and
+disables it during RID domain switch. So, if a PASID is set with a
+domain requiring PRI, ATS should remain enabled until the domain is
+removed. During the PASID domain's lifecycle, if the RID's domain
+changes, PRI will be disrupted because it depends on ATS, which is
+disabled when the blocking domain is set for the device's RID.
+
+Remove this limitation by moving ATS enablement to the device probe path.
+
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+Link: https://lore.kernel.org/r/20250228092631.3425464-5-baolu.lu@linux.intel.com
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/iommu-priv.h | 2 ++
- drivers/iommu/iommu.c      | 2 +-
- drivers/iommu/of_iommu.c   | 6 +++++-
- 3 files changed, 8 insertions(+), 2 deletions(-)
+ drivers/iommu/intel/iommu.c | 51 ++++++++++++++++++++-----------------
+ 1 file changed, 27 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index de5b54eaa8bf1..a5913c0b02a0a 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -17,6 +17,8 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
- 	return dev->iommu->iommu_dev->ops;
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 76417bd5e926e..d24dc72d066d9 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1172,32 +1172,28 @@ static bool dev_needs_extra_dtlb_flush(struct pci_dev *pdev)
+ 	return true;
  }
  
-+void dev_iommu_free(struct device *dev);
+-static void iommu_enable_pci_caps(struct device_domain_info *info)
++static void iommu_enable_pci_ats(struct device_domain_info *info)
+ {
+ 	struct pci_dev *pdev;
+ 
+-	if (!dev_is_pci(info->dev))
++	if (!info->ats_supported)
+ 		return;
+ 
+ 	pdev = to_pci_dev(info->dev);
+-	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
+-	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT))
++	if (!pci_ats_page_aligned(pdev))
++		return;
 +
- const struct iommu_ops *iommu_ops_from_fwnode(const struct fwnode_handle *fwnode);
- 
- static inline const struct iommu_ops *iommu_fwspec_ops(struct iommu_fwspec *fwspec)
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 1efe7cddb4fe3..3a2804a98203b 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -352,7 +352,7 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
- 	return param;
++	if (!pci_enable_ats(pdev, VTD_PAGE_SHIFT))
+ 		info->ats_enabled = 1;
  }
  
--static void dev_iommu_free(struct device *dev)
-+void dev_iommu_free(struct device *dev)
+-static void iommu_disable_pci_caps(struct device_domain_info *info)
++static void iommu_disable_pci_ats(struct device_domain_info *info)
  {
- 	struct dev_iommu *param = dev->iommu;
+-	struct pci_dev *pdev;
+-
+-	if (!dev_is_pci(info->dev))
++	if (!info->ats_enabled)
+ 		return;
  
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 97987cd78da93..e10a68b5ffde1 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -116,6 +116,7 @@ static void of_pci_check_device_ats(struct device *dev, struct device_node *np)
- int of_iommu_configure(struct device *dev, struct device_node *master_np,
- 		       const u32 *id)
- {
-+	bool dev_iommu_present;
- 	int err;
+-	pdev = to_pci_dev(info->dev);
+-
+-	if (info->ats_enabled) {
+-		pci_disable_ats(pdev);
+-		info->ats_enabled = 0;
+-	}
++	pci_disable_ats(to_pci_dev(info->dev));
++	info->ats_enabled = 0;
+ }
  
- 	if (!master_np)
-@@ -127,6 +128,7 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
- 		mutex_unlock(&iommu_probe_device_lock);
+ static void intel_flush_iotlb_all(struct iommu_domain *domain)
+@@ -1556,12 +1552,19 @@ domain_context_mapping(struct dmar_domain *domain, struct device *dev)
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu = info->iommu;
+ 	u8 bus = info->bus, devfn = info->devfn;
++	int ret;
+ 
+ 	if (!dev_is_pci(dev))
+ 		return domain_context_mapping_one(domain, iommu, bus, devfn);
+ 
+-	return pci_for_each_dma_alias(to_pci_dev(dev),
+-				      domain_context_mapping_cb, domain);
++	ret = pci_for_each_dma_alias(to_pci_dev(dev),
++				     domain_context_mapping_cb, domain);
++	if (ret)
++		return ret;
++
++	iommu_enable_pci_ats(info);
++
++	return 0;
+ }
+ 
+ /* Return largest possible superpage level for a given mapping */
+@@ -1843,8 +1846,6 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
+ 	if (ret)
+ 		goto out_block_translation;
+ 
+-	iommu_enable_pci_caps(info);
+-
+ 	ret = cache_tag_assign_domain(domain, dev, IOMMU_NO_PASID);
+ 	if (ret)
+ 		goto out_block_translation;
+@@ -3210,6 +3211,7 @@ static void domain_context_clear(struct device_domain_info *info)
+ 
+ 	pci_for_each_dma_alias(to_pci_dev(info->dev),
+ 			       &domain_context_clear_one_cb, info);
++	iommu_disable_pci_ats(info);
+ }
+ 
+ /*
+@@ -3226,7 +3228,6 @@ void device_block_translation(struct device *dev)
+ 	if (info->domain)
+ 		cache_tag_unassign_domain(info->domain, dev, IOMMU_NO_PASID);
+ 
+-	iommu_disable_pci_caps(info);
+ 	if (!dev_is_real_dma_subdevice(dev)) {
+ 		if (sm_supported(iommu))
+ 			intel_pasid_tear_down_entry(iommu, dev,
+@@ -3761,6 +3762,9 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 	    !pci_enable_pasid(pdev, info->pasid_supported & ~1))
+ 		info->pasid_enabled = 1;
+ 
++	if (sm_supported(iommu))
++		iommu_enable_pci_ats(info);
++
+ 	return &iommu->iommu;
+ free_table:
+ 	intel_pasid_free_table(dev);
+@@ -3777,6 +3781,8 @@ static void intel_iommu_release_device(struct device *dev)
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu = info->iommu;
+ 
++	iommu_disable_pci_ats(info);
++
+ 	if (info->pasid_enabled) {
+ 		pci_disable_pasid(to_pci_dev(dev));
+ 		info->pasid_enabled = 0;
+@@ -4415,13 +4421,10 @@ static int identity_domain_attach_dev(struct iommu_domain *domain, struct device
+ 	if (dev_is_real_dma_subdevice(dev))
  		return 0;
- 	}
-+	dev_iommu_present = dev->iommu;
  
- 	/*
- 	 * We don't currently walk up the tree looking for a parent IOMMU.
-@@ -147,8 +149,10 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
- 		err = of_iommu_configure_device(master_np, dev, id);
- 	}
+-	if (sm_supported(iommu)) {
++	if (sm_supported(iommu))
+ 		ret = intel_pasid_setup_pass_through(iommu, dev, IOMMU_NO_PASID);
+-		if (!ret)
+-			iommu_enable_pci_caps(info);
+-	} else {
++	else
+ 		ret = device_setup_pass_through(dev);
+-	}
  
--	if (err)
-+	if (err && dev_iommu_present)
- 		iommu_fwspec_free(dev);
-+	else if (err && dev->iommu)
-+		dev_iommu_free(dev);
- 	mutex_unlock(&iommu_probe_device_lock);
- 
- 	if (!err && dev->bus)
+ 	return ret;
+ }
 -- 
 2.39.5
 
