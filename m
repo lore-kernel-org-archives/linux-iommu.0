@@ -1,47 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F33037DBF8;
-	Mon,  5 May 2025 23:08:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACE6A29AB1D;
+	Mon,  5 May 2025 22:44:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746486532; cv=none; b=FbQXopCocEvLhLVc42svtaIjz1a+28rBJP9gdpPKYNF4eTcsLkbKwFxYfFtXYsJEona58JzXg4nlsdAYSW0bVPHb/wcujv5NaU6wAIyGtohMLlr6JF1qM8JrC74MbZAgIXZXtRraCqkB+7Ndnon7VMYL4+MHXqLNiBS+YE5Z2Qw=
+	t=1746485056; cv=none; b=fwYaN/kH61e/AWptjhucW3jtCJk8TuJDu0O1QG7Qy2YDqn5TGaeINDdiSEjm1qv4vYLvTSeCU0l91ovM+uejdjVQd6rqkjggJikVvT31n2mx4zUkaegJ+zW/MpQCvawuYYTwhp3v3GBRX186N90QYYPQg2VZhl3KJa9ttvufq4o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746486532; c=relaxed/simple;
-	bh=iXYj0sU75zh65tWYGio97xZxFDMz3T0bt+GuGJYQU+A=;
+	s=arc-20240116; t=1746485056; c=relaxed/simple;
+	bh=z7v3zH7Bk4Bynx03fs35roYIswkKgBW6qIOK7m742QA=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=W3xZB2zHU7VTgal4Fevg6S5h2NtX6taS8NGH943EXvD4AuaMFKpsTLP0G0o2L1cuL+zDRA3G5Bbe/gFU5h5iym7KyETdidNQbS37AnYdHsdeZyfkLv870xXWJyiDs03UtICO9+KsXtvo9FjKD0IJdtQdoWxRV0Y5pigViaHLtmw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W2/uRPpo; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=fLD6yVBbcN28wEljyMwW7Wdz8tGmLJSwPaoO6YMr4Hq1VgFD0S3gpZsV6udlsZgQzFmnzMgfkF3fvExSDpA8Gs6d/iBzEpIXw3yyplhuiJwn7zxUcOW5gfbwbVGYGhcIRZqtbM1/ft0ue1H5ETVUzPg5LgGGpudemIxBPAn7sw0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nUDJcgpo; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W2/uRPpo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1524CC4CEE4;
-	Mon,  5 May 2025 23:08:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nUDJcgpo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A65C4CEEE;
+	Mon,  5 May 2025 22:44:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746486531;
-	bh=iXYj0sU75zh65tWYGio97xZxFDMz3T0bt+GuGJYQU+A=;
+	s=k20201202; t=1746485055;
+	bh=z7v3zH7Bk4Bynx03fs35roYIswkKgBW6qIOK7m742QA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=W2/uRPpo0zcWSPBkGvkCen/jkeTMoWGvE2B+TOTyEvc5lGe5N0wJ0p2IiZDsdyG2C
-	 FhR5cDd5U75u0CjOHC9e07l56IMS5fBCd4jY4RYkBoIpnYWfVAkwyl6QCJoSU2A2X5
-	 v5EqwH8dqvaYc6r3JRkn8tX28zPwqlnG0yNSe57fOT3bnYX5GuJLnnYE/wlxoFjEom
-	 93FPgGTEVgVi+p5KImPQqNArqICeuRg8nmZ5PZkENXaRxUNnfWazplQ1pPf+C0iM0i
-	 g2lqryUe3Qxz31kcPXz9g2OburO0A7ceQxBTl8zJFLg+/gYfTjqnds0/numY4djgnd
-	 7gedRiLHn+3DA==
+	b=nUDJcgpo0VApq+07pZx7ep5DLE8nx+yhUQH0ShezcGQRapkBfwmt0Oj+7q3dyYrzn
+	 dh/nqabF91+1PTE1LVK23w9S0/zoSe2BwuJ1byckp8bdnBZ/6t0jzmc6vmn2i8nVWu
+	 9eyt9FGRG6MxQ6tvIgTfzRvcDfq/sze5z5RBQ5VBqAn4TtsolNx3Cr/amsMJP+AkTb
+	 EXJHmQAWdmfy9/VpkrojDrk2X/063jVB4N/X5yy6s8AyZu42bjF+Wg8CIbbEzNH18B
+	 ETfX0cP68/OMUl+CvuIzJhW0KNvzUWMCy63MDhy7jhFRL9N2vx2DRHvgYY98ZfTfsN
+	 pC9EbJBu/8fcg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Vasant Hegde <vasant.hegde@amd.com>,
+Cc: Robin Murphy <robin.murphy@arm.com>,
 	Jason Gunthorpe <jgg@nvidia.com>,
 	Joerg Roedel <jroedel@suse.de>,
 	Sasha Levin <sashal@kernel.org>,
 	joro@8bytes.org,
 	will@kernel.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.1 077/212] iommu/amd/pgtbl_v2: Improve error handling
-Date: Mon,  5 May 2025 19:04:09 -0400
-Message-Id: <20250505230624.2692522-77-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.12 145/486] iommu: Keep dev->iommu state consistent
+Date: Mon,  5 May 2025 18:33:41 -0400
+Message-Id: <20250505223922.2682012-145-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250505230624.2692522-1-sashal@kernel.org>
-References: <20250505230624.2692522-1-sashal@kernel.org>
+In-Reply-To: <20250505223922.2682012-1-sashal@kernel.org>
+References: <20250505223922.2682012-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,37 +50,89 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.1.136
+X-stable-base: Linux 6.12.26
 Content-Transfer-Encoding: 8bit
 
-From: Vasant Hegde <vasant.hegde@amd.com>
+From: Robin Murphy <robin.murphy@arm.com>
 
-[ Upstream commit 36a1cfd497435ba5e37572fe9463bb62a7b1b984 ]
+[ Upstream commit 3832862eb9c4dfa0e80b2522bfaedbc8a43de97d ]
 
-Return -ENOMEM if v2_alloc_pte() fails to allocate memory.
+At the moment, if of_iommu_configure() allocates dev->iommu itself via
+iommu_fwspec_init(), then suffers a DT parsing failure, it cleans up the
+fwspec but leaves the empty dev_iommu hanging around. So far this is
+benign (if a tiny bit wasteful), but we'd like to be able to reason
+about dev->iommu having a consistent and unambiguous lifecycle. Thus
+make sure that the of_iommu cleanup undoes precisely whatever it did.
 
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Link: https://lore.kernel.org/r/20250227162320.5805-4-vasant.hegde@amd.com
+Link: https://lore.kernel.org/r/d219663a3f23001f23d520a883ac622d70b4e642.1740753261.git.robin.murphy@arm.com
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd/io_pgtable_v2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/iommu-priv.h | 2 ++
+ drivers/iommu/iommu.c      | 2 +-
+ drivers/iommu/of_iommu.c   | 6 +++++-
+ 3 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/amd/io_pgtable_v2.c b/drivers/iommu/amd/io_pgtable_v2.c
-index 232d17bd941fd..c86cbbc21e882 100644
---- a/drivers/iommu/amd/io_pgtable_v2.c
-+++ b/drivers/iommu/amd/io_pgtable_v2.c
-@@ -264,7 +264,7 @@ static int iommu_v2_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
- 		map_size = get_alloc_page_size(pgsize);
- 		pte = v2_alloc_pte(pdom->iop.pgd, iova, map_size, &updated);
- 		if (!pte) {
--			ret = -EINVAL;
-+			ret = -ENOMEM;
- 			goto out;
- 		}
+diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
+index de5b54eaa8bf1..a5913c0b02a0a 100644
+--- a/drivers/iommu/iommu-priv.h
++++ b/drivers/iommu/iommu-priv.h
+@@ -17,6 +17,8 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
+ 	return dev->iommu->iommu_dev->ops;
+ }
  
++void dev_iommu_free(struct device *dev);
++
+ const struct iommu_ops *iommu_ops_from_fwnode(const struct fwnode_handle *fwnode);
+ 
+ static inline const struct iommu_ops *iommu_fwspec_ops(struct iommu_fwspec *fwspec)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index cac3dce111689..879009adef407 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -347,7 +347,7 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
+ 	return param;
+ }
+ 
+-static void dev_iommu_free(struct device *dev)
++void dev_iommu_free(struct device *dev)
+ {
+ 	struct dev_iommu *param = dev->iommu;
+ 
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index e7a6a1611d193..e3fcab925a547 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -118,6 +118,7 @@ static void of_pci_check_device_ats(struct device *dev, struct device_node *np)
+ int of_iommu_configure(struct device *dev, struct device_node *master_np,
+ 		       const u32 *id)
+ {
++	bool dev_iommu_present;
+ 	int err;
+ 
+ 	if (!master_np)
+@@ -129,6 +130,7 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
+ 		mutex_unlock(&iommu_probe_device_lock);
+ 		return 0;
+ 	}
++	dev_iommu_present = dev->iommu;
+ 
+ 	/*
+ 	 * We don't currently walk up the tree looking for a parent IOMMU.
+@@ -149,8 +151,10 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
+ 		err = of_iommu_configure_device(master_np, dev, id);
+ 	}
+ 
+-	if (err)
++	if (err && dev_iommu_present)
+ 		iommu_fwspec_free(dev);
++	else if (err && dev->iommu)
++		dev_iommu_free(dev);
+ 	mutex_unlock(&iommu_probe_device_lock);
+ 
+ 	if (!err && dev->bus)
 -- 
 2.39.5
 
