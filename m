@@ -1,401 +1,172 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2054.outbound.protection.outlook.com [40.107.93.54])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA47F25A65A;
-	Mon,  5 May 2025 14:18:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746454737; cv=fail; b=oDet0jNk3x5sfc5TC40fTN3+LrQCcBPM5tEfZWaKbTizByrqkJt2iTqpZXK4dAaBaKTqqfSX83leOlagbd0/mnVmpSVPU4Y98nYSHIozaMmhx/frBFAK1Pmyc09YxTCI3wtJS2NgM361OVWPFOus0qBftwKdSBhuROHRCHiAQjo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746454737; c=relaxed/simple;
-	bh=PjcgniE/EtadHG/qcIuX3Ik65ZPTfJ3mnUL8MahgerA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Ry14Qjtkjsr9aPH0Xwro4Ai428Z2gyZIY9EBYW3Tut1FZhXweHE9+HNmAl5cTLKfc9iUPZ1lkUXQ7UmUljRrqPr/pmw326ep1mUb9f8A74pnJVREq1P2zxhWlhH3YXE+xRlw5kpZLddljqxBb/mBhWI8nRxDZdpkkvwxZpbqPMk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=JXM862ZD; arc=fail smtp.client-ip=40.107.93.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7249F1F2BB5
+	for <iommu@lists.linux.dev>; Mon,  5 May 2025 14:18:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746454738; cv=none; b=MUcv/bL20yz7VxSD4P50isFdiHVL5OMbmpoqiwv0zySDgpshdsEGpzfFbxWg4WmcBKAH7J9DyIPQ0gPtadBFS95JzKoFqbXW9cieo9GoYBXjSInnc44n8fV75xAEnIYDVXoYWniYdccuzB8k04K0WQURyGtAsOCk+hgLTPAWcP8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746454738; c=relaxed/simple;
+	bh=3Vf+AaQhANAKR4iErxV8pfkN6oisAXDi42nAcHc040E=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=RhkSnVydVa/E/jgXNT3yKX0uN3mhEKJ5Y1gTdkYaW1WKSSFjKBWaUpimA0un2G5ZgT+6Aay+qIlTLqsOkpM41V5K3P8HRorgqtPNnqaBC1dNdqg2uZtrDY44bT9BX3brjt5W6C/xKbAUE4nQ2iup3DnPWH8VzwI431mWV/r9IOg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=b4PAbizK; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="JXM862ZD"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=G674jMYoV1DT6Cls5nZY7z9GBacxNS6dzep8zSojki1kFoyp6EQbmlZOaVpz/5okXeLDeoniJJ5LhxRo9oARSPxZq+KbAJApU7vvmKyFpop0z1jysJyabWhW1RR5410CTqOelPgQ7BAU2UmzEz20swFuTWQKefyzaVfWZDM8GqWqx3ggz1MoaduGPOzdVBULy4Y/68b9zf83ai0hXbtuLlCliYjwB2x0vWP31u+nT7jHwBxZh2+Ge2W3+JdD9gFssE+rT24L/fx4ExoTQrDZOVo/ImDUOYDGP+SogzbjcAwb2I2PftHAdlA5KDCtLnnlb2SWkdq7zmGyz2hMw5+iow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/qAkcYoOT9a5lShRft9p0C15s3tJ4UF16tBSoNRvvU0=;
- b=cWaZmsMPqOJ4NVudGkkR4OC+ilEnzuIR3YD6Nr/LA9mZhS0gcJeSOxqABH3FvrCfYWFCJXPud61LDTkJTFVCvP8TTJ7C6t+es5JrcFHuCS9AgUEGhG7YF8VSQ0PKIjQdiC5eHQ4T9EakJZEW5JJCFJEl0swZKE26xyZC60lagp5WrWzT7QXqlDUixTM9rJBKMnFOGd1Zc84+6+Ygh14BICUbRZV5xWEWxTQSzahOstAExpOoAPS+zaSi/6msxzSHg0ZB7EMdikJd7VJ0/iw/a/YCndfrJHWy+/Ti2mXO3041T15u6NRGmdAoI+ztyyMcnM0s0KEq7Nff5G51oVIn9w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/qAkcYoOT9a5lShRft9p0C15s3tJ4UF16tBSoNRvvU0=;
- b=JXM862ZDE5S8/oHlWSsBLF2vl4uw6JoS7BbfPxch37+qRS5dTHTIdDHm5UFo6FnBU4ByWLjp2muVkcpTZQtYDP+qXU82b31VM/7i9OTTYeOhYWDV4dgewFuUPozsyHerAZRGdl4fOhCCkJquGp3R8JmcSFfd7eSp62hg6lK7pH022uZksTwkTABXFiYLoPw6jUYuyCBYKTQ/ZSmZtO30NU5kfPBZS9mpgUdNjRZf/4qMuzN3fQqW4JKFsZyezNzEYFdZNIJOIRcwE+ibhocI1+6gH60iB0hFBKGAxNAyjdTA3QzzP7u67mNnLCzkHVlOUimLKHjoYcxKDwbsIdm7aw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by MN0PR12MB5978.namprd12.prod.outlook.com (2603:10b6:208:37d::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8699.26; Mon, 5 May
- 2025 14:18:52 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%6]) with mapi id 15.20.8699.026; Mon, 5 May 2025
- 14:18:52 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jonathan Corbet <corbet@lwn.net>,
-	iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	Justin Stitt <justinstitt@google.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	linux-doc@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	llvm@lists.linux.dev,
-	Bill Wendling <morbo@google.com>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Shuah Khan <shuah@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>
-Cc: Alexey Kardashevskiy <aik@amd.com>,
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
-	James Gowans <jgowans@amazon.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	patches@lists.linux.dev
-Subject: [PATCH v2 06/15] iommupt: Add unmap_pages op
-Date: Mon,  5 May 2025 11:18:36 -0300
-Message-ID: <6-v2-5c26bde5c22d+58b-iommu_pt_jgg@nvidia.com>
-In-Reply-To: <0-v2-5c26bde5c22d+58b-iommu_pt_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0165.namprd13.prod.outlook.com
- (2603:10b6:208:2bd::20) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="b4PAbizK"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 545AnoK1004816
+	for <iommu@lists.linux.dev>; Mon, 5 May 2025 14:18:55 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	4OMp8lVlfqOS6nQjtVYiy+vsTT7GaERnrIvMt0I4OI8=; b=b4PAbizKQdgKo4Sz
+	hAnB7gq3XzspJ7yxkI0rAfW/7gt8MI6H80NV0PqEJqNV3uxySOCpIdYv4a0kcI2M
+	g1H+XyC3/zZ8nd+XzuT6p7yv5WQH3G5GZtwy8+MHRWRMP7nTsg1OhRLVB8Ao2Q2x
+	LkOtxTrcjQC+ePkmFGRmr3CN7it78qUDiXOhLLNJydEezJTaB/wbSUgoAEn3EOEG
+	rKFYA+c7uVYVYrRyokY177Tx7LL2A80L42El0vWjD1xeGlYr1oHgT2qD08MrheoD
+	BeqGEQ6MFyy3CrqaZ4pB2puT0olee4bxczYriQ4HokKGlV5XmOK/jOHNeDjjVuKv
+	NniVyQ==
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com [209.85.222.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46da3rvbnm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 05 May 2025 14:18:55 +0000 (GMT)
+Received: by mail-qk1-f197.google.com with SMTP id af79cd13be357-7c760637fe5so200681085a.0
+        for <iommu@lists.linux.dev>; Mon, 05 May 2025 07:18:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746454734; x=1747059534;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=4OMp8lVlfqOS6nQjtVYiy+vsTT7GaERnrIvMt0I4OI8=;
+        b=T90+cqtkcrvj7Bo1BMnfZOnI/6mpvlCihkBat9itXCr4TcqYzwcPsoDljF+pEZg5VE
+         jgdsxQJ1oRX6Kb6n8l7qIWIlcB3TbD07SrYgGT/T4lkUMz733Kg4fKmIlge8BjCzFMdz
+         FUC9MPLEf5r5Pj/TaEBOrzussVorcsz2d+56iK0907JRRdSbpQsNLae3NGwXSO1HFChm
+         D2oqeZlAYnCdw+j+a90WvXx/MNo3o9cZ0sURsBoj2aESQbZp39vumhXcR/yUfNRKmoTT
+         KKYXaDL/pfDFtK6UcJFldEVW8GjCobJbJF1msbe7MrTpyHnt/XyN8yz+2aFgQy1qw6Kb
+         v29w==
+X-Forwarded-Encrypted: i=1; AJvYcCXcdYaoKNPcPjDlIamj13kWOpdEKeWmaSTP3tRo09qRiX1CZDM+vA+gPsQqTa8BqnBDTI6Olg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzZ2daDfdGXAB6/g/a/nAUvIObV+fGC+THpd23Lz3orp3yYXKwr
+	5xMafQgadi5JU7iI6BgUhDSqUo4JmDjvT9zydb23d3iJETxHaz/fdM//RYRkXovZ+1KFOqARk3g
+	12vYlsG4aKRU/HvzL5qLp2bp88kCP7XbPTTpNOJqh6b0NCUM6/7m/FA==
+X-Gm-Gg: ASbGncuywE0i0KxWMaJHtGPN4tVjsfXD4F3Zjw5bTfcTkhXtt6LZRUjxyqaPAxN8LU5
+	pfcotbsCbfZiVytT8lNRTLhC+zkgbBYTQ3bXMwzU22vCMke58Ud9xMwVPxWpj1CBrCCp1E8mX9E
+	u+wxux6qYQ8fWdgaeepDjLGD80/XYSk2+z5ebsIZYIRmxF5PLnjlMKUihAvnqgf9WirAHgQ04Gs
+	thrmBky8lU/uLhDvtrjI0l/14QXtpEnyprN/4dMKuJkG0MSwFAuozhqnAKECozrdd7yuIR7NTzZ
+	6knGYEWgzVQIavVgp2yIQ4wA7n+H0Ui5b22Gd+aqSE38ktIpP5/V6zir6TCucWZ12XFq6MwnKP2
+	9uFFs2mFknTkL0CGfc84WBAy0rJjHPEgyuPdLRuKtCC5prHj4y4IzlpV4ajWdd65/gHma
+X-Received: by 2002:a05:620a:1a0e:b0:7c5:e283:7d0a with SMTP id af79cd13be357-7cadfe15ab6mr1528030585a.30.1746454733843;
+        Mon, 05 May 2025 07:18:53 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHxLIuDmlMk0BDjjG/jcKroZx3ooAtnxfCFD86oCFhHuF1R3mpWcw+w7OoB3Ift4T6LrXoRzw==
+X-Received: by 2002:a05:620a:1a0e:b0:7c5:e283:7d0a with SMTP id af79cd13be357-7cadfe15ab6mr1528024685a.30.1746454733441;
+        Mon, 05 May 2025 07:18:53 -0700 (PDT)
+Received: from ?IPV6:2001:14bb:671:42db:147e:6740:cd7c:7688? (2001-14bb-671-42db-147e-6740-cd7c-7688.rev.dnainternet.fi. [2001:14bb:671:42db:147e:6740:cd7c:7688])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-54ea94f2043sm1707308e87.179.2025.05.05.07.18.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 May 2025 07:18:52 -0700 (PDT)
+Message-ID: <4a186d4f-9966-4569-bee2-77e237cf0c54@oss.qualcomm.com>
+Date: Mon, 5 May 2025 17:18:49 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|MN0PR12MB5978:EE_
-X-MS-Office365-Filtering-Correlation-Id: 851010f6-9cd1-4a79-12f0-08dd8bdfc0c8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|376014|7416014|921020;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?TirbNhtNswQqqzGgJ2LpAOh6MNllCZp4qTC3Q7T1MXTJjUbEtHKhUX7BarWJ?=
- =?us-ascii?Q?/mc28JPkYztP4JFglnO0mSZ7E/HCvq9k/GOE9Thmn5uQymslT+KDYQogAqgv?=
- =?us-ascii?Q?OI3M6noyy5ffvScTl3dYhtrPelql9w7Uv61WiK/1cXG6FuaC4hqFLEVAkcAG?=
- =?us-ascii?Q?R7q1peGfOt6lTKHsR8N1Mx2A6Hqaf2zlCAi1PQ1xZhiy65TTkx99Toy2eSHF?=
- =?us-ascii?Q?2+yikNW0uCNJ+R6vs6Itv9SJbQhOJ/nvou1KWMg5f5wupF7GG350pHHlErph?=
- =?us-ascii?Q?Mc/+oJFiGzSaFcOMVveQstQouzh8M8hLMAsvzAPKOHgIQjGIrsiW3OzFkPZ2?=
- =?us-ascii?Q?Zx58J00/HcKfARi7smvAk3/zTtD4cMZvln4jnOQRrLGID9Zz9TOcwibgUKSB?=
- =?us-ascii?Q?7eLdqkc824y5CKHsr0swK3rgf2y2C877vblprUXfLyWk2rDmvH05lqFhrWFV?=
- =?us-ascii?Q?nHV5IDTgeQVePXOD3o7y3idlMlUsKD5+KPaG8MpVI7q/Ah/pnzl2nipyrEWS?=
- =?us-ascii?Q?D2HBJe6q5WWgK5C7SIHYss7y0UPo7jcS41VHUvij5YYZRiISfe7S+9I3RUMm?=
- =?us-ascii?Q?oeeHlYnaX1rNHeQxqcwjtUgijterwM5J0qh6oHZgmqMSfg0pXInAe2T0NwNc?=
- =?us-ascii?Q?Mk1RWygJXBwaPW8ZdQeS4W6yrBu9Fs3I3CQ6Dqdys1npzZPrjhTFQASIczzr?=
- =?us-ascii?Q?2hQzaNIkVahfItIaO04/6Mgd78oXhCU8Bs3z7ktvuZlpSQbUat9Nuj+nk8nR?=
- =?us-ascii?Q?cTLiDpJqbrikX7PAfWMl4V44OLxKt98OqWenagr6DBki0g/yMqDix8D4VvfT?=
- =?us-ascii?Q?YfSf1KctWX/A5i70z3T75W7ICeAqngYmKFdpZZAr8pgfdwdvm/CMqDOzL9Ui?=
- =?us-ascii?Q?QCVK8FPAgvCVjmmulwxnMeUhwk8P4HQbuEhTfmztGclaIhggw4m0uXTxQjms?=
- =?us-ascii?Q?Q07X//oXRqxCEIvjDkF7DxDPIrQqY5Qa1+kao8DZE745XMTEtn9oLwW4cvJD?=
- =?us-ascii?Q?U6z3AlZnQn3EAxAshUzcdWAAUgjZ3uQeP++UoGTidpvKl8kDUKTqlvYUBC0q?=
- =?us-ascii?Q?pCoQzOpNGKCTy8VD2m/d0GrZOnvO6i1oXBucO9KBf+SEU/f2hxLrBrMnLAOE?=
- =?us-ascii?Q?9NNYkC6SIcte7SqYbDtkq+h+82J2/vR7uVlTA36qI7IjbK6SMcXbp2jcKdy7?=
- =?us-ascii?Q?aWSS6d2MsrEkRNDWLDXzI6b7fbOJPwXUY96cRIsbJ8qo90CTTuw4SoURwKBH?=
- =?us-ascii?Q?aXJ34WodxQsWn/n5mBvYOqgi52p7jKaevW5WOErL3Glb/s++W1AytUBIjaz5?=
- =?us-ascii?Q?X0YlByd61VVQw5kl1nBT+LYJwCaBiyY/Eet8hOT0hfp9HH4WZryUo0f+1ZLx?=
- =?us-ascii?Q?wIay/8Wey6R8dXBYiS8Ep2VUMv1EuwOUb/WxMPoan3sHKoYHVaNUxfOnbZZa?=
- =?us-ascii?Q?iRJO0fe0/xS1Dkg2QQBCsTyCE+ydBuqf+jDpNB2fctGSYkW81FIp3g=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014)(921020);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?b61hoBi/6Z6E51Rag7358H+8bQ60Vk5AVcRIi7JIetwsdYNfLyre2FZZjXMb?=
- =?us-ascii?Q?iY9QTXXD+tD1WVtD/ss3itByqOmDV2kCKwwT7cWEhgZDpaEFpe3EOEZE0t6B?=
- =?us-ascii?Q?7luB2ZjqAqXy4U8LVUYyq03OS/f7tJIUj1WnJKMQRTbx6PVtr7tjtb7xu14y?=
- =?us-ascii?Q?qHZ6ibtjO/H+8jnWzb8GsTg+RWFo4UljnlFIY/6GT5I1ykqSDptK8q3V+lvj?=
- =?us-ascii?Q?VE782uYLM3RtfBVapRVgBl7IgpkKkU1ddwPwenrWTP7Fwucj+kchmbNLETsj?=
- =?us-ascii?Q?bQ8rmGtXe+wmeLRctYT3vaHu4x79nAj/eoe8Q2NNGC2Ca0GkC/osDLr6ZJiK?=
- =?us-ascii?Q?URbj0qfqQW6oldb4ySL+0Stg7ch7WVqFfMRovb2Hmyq4kibN97Us5UjEqTvE?=
- =?us-ascii?Q?XOFfzCjYhBUoTJWYIHyj0zRkAa/AVbZq57a2uQuYd0TCskIE0NktPjMKgoRq?=
- =?us-ascii?Q?2Gu4TxlAj0n0oSfXA5yGiwrIUXFfToX7TuSXx2fADMhQ//AiNOpE5go1D4uH?=
- =?us-ascii?Q?627d8nRjrsEWAd/PNKTdQn+QLRTro5GFTilTCWDaVDf7gVwLwNMYCLPBH/XV?=
- =?us-ascii?Q?vs+zwv6886zICGrXD6qZIuyncj5GXKRpnTSCnuVDKjM7fNFL9tCWVCe2nmYP?=
- =?us-ascii?Q?sB2n7mPIeJ0eevcX9Giho4T53EzMqbZ/Eagl3/4aWNnZTomU6FwnN6CEYo8d?=
- =?us-ascii?Q?jRwQPSDAQ6e4lup46m5It9v1yia3txU2smWxZ/RD0iJPD6KUm8iTcwndRHL7?=
- =?us-ascii?Q?/kW48vvuMx1csxnmEb6kBOktpLu4hjbrPFKn3/6HLJ89LmY4tKyrKtKNzAeP?=
- =?us-ascii?Q?Q5qonZtVpeaU5z8bp/jWHuELaikGuEg6y2qr1Vx412z3jHEv7otuM/ug7OoA?=
- =?us-ascii?Q?QwnFPRlQ/porBfcArxGw/cFmr83uFs+KvkbNTHOP3RquiCaClJFaGYTk1yLx?=
- =?us-ascii?Q?eimvcw1zKOsmwXF1icRGhRO9F7uupFaAnkE25AjuENX9H8/OAF/IPfxs9w6K?=
- =?us-ascii?Q?923HYJyLR8EOkjlmJzmb1Pj/wL+6wv4vlxYvnLX7pOUWfm+X+gPGvrnsGWND?=
- =?us-ascii?Q?TCOzY1jhjM6srJ8fR9nn0gO/1FWAp/MWR6tjABiLtI+bAMia7BiUG3C1R08+?=
- =?us-ascii?Q?EATZzjO+7DHP4NmDy1MAwJLrWv+Q0n2F7gzEbkpU4Wx5TMffxlXKwx7WRNqZ?=
- =?us-ascii?Q?PPl/Lb0n0waAng/1fgKRhXsiGu7KTuqmMtT79w3Uual6iQrDgzEpEGfFWi9V?=
- =?us-ascii?Q?MTLaTiRVp96cFwUcu72MQLeeVP4kbfGCiOI61tZfaiIgRm4uyApeNPXyfSNI?=
- =?us-ascii?Q?cc9OAA7y4T1dtxRqZlthRBOoH7dputxtKA5XtFeL51uGXerszvu4KVctJnCi?=
- =?us-ascii?Q?Gq8gPVGpIN1SvM/oi06Fqn04aTLcKmAW8rtfXmeEJqPdTDhb7xh0l3UdvtSF?=
- =?us-ascii?Q?b5CUllhMP5YlG2jnaLkEechr82VzArSPpbK6i/Bq80yG/crFCGn0sVUpyHL9?=
- =?us-ascii?Q?gtkmGisjjoQtitHV+f2cChFFqdxGG+28TYUjxJlrG1mdR/Qg6uGqzfwz2kg6?=
- =?us-ascii?Q?VNup9twuF3FpY2otg49+EVDPpIaBUaZgrX3V9KOI?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 851010f6-9cd1-4a79-12f0-08dd8bdfc0c8
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2025 14:18:48.6999
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NbFzAfoAmTAh4PsXwpiWbsEkP+dfvlt88Vigf3N8BFeEia64WLPcxHPlnp0IyVQq
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5978
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/11] Various dt-bindings fixes
+To: Rob Herring <robh@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Krzysztof Kozlowski
+ <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>, Sean Paul <sean@poorly.run>,
+        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Robert Foss <rfoss@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wesley Cheng <quic_wcheng@quicinc.com>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rohit Agarwal <quic_rohiagar@quicinc.com>,
+        Kyle Deng <quic_chunkaid@quicinc.com>, Vinod Koul <vkoul@kernel.org>,
+        Dmitry Baryshkov <lumag@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        linux-arm-msm@vger.kernel.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        linux-usb@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+References: <20250306-topic-dt_bindings_fixups-v1-0-0c84aceb0ef9@oss.qualcomm.com>
+ <174637445759.1385605.15383087742490646226.b4-ty@oss.qualcomm.com>
+ <CAL_JsqKr8Xd8uxFzE0YJTyD+V6N++VV8SX-GB5Xt0_BKkeoGUQ@mail.gmail.com>
+Content-Language: en-US
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+In-Reply-To: <CAL_JsqKr8Xd8uxFzE0YJTyD+V6N++VV8SX-GB5Xt0_BKkeoGUQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: -hhltTU69XW5xe-Q10MSc7-Ua7XqG0Fi
+X-Authority-Analysis: v=2.4 cv=cpWbk04i c=1 sm=1 tr=0 ts=6818c8cf cx=c_pps
+ a=50t2pK5VMbmlHzFWWp8p/g==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=dt9VzEwgFbYA:10 a=e5mUnYsNAAAA:8 a=gEfo2CItAAAA:8 a=VwQbUJbxAAAA:8
+ a=EUspDBNiAAAA:8 a=Y8Lu5Vov3j2QtJBI0v0A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=IoWCM6iH3mJn3m4BftBB:22 a=Vxmtnl_E_bksehYqCbjh:22 a=sptkURWiP4Gy88Gu7hUp:22
+X-Proofpoint-GUID: -hhltTU69XW5xe-Q10MSc7-Ua7XqG0Fi
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTA1MDEzOCBTYWx0ZWRfX+AmHOqAZTm3l
+ a7r4edGcgDPpdsWfZOb/WGWnT+MA2O1zflT+iam+kKNQVxTGMrQuGwRg5syqpJoCe5M3AODan0x
+ 7n15R7x7TCUFTnhUpj8NPdFRktnDpmIeRjqrdXEW2EJouU+NjFHxjKgEbK41WfKb1vvdoxswU16
+ EMadHA8d8NSLo1D9wCy1sCQ05CXH0mdsP+Zyaduw8gUW3YToEII0apTBhcOAeuf7a9Ura8VwP2k
+ o02dAPyUhcrMozxq7fOJmpxKyHwHbzlA323nxvxkGqHKMx1DJ5MVU56IwCXJ44Af3UCyzBPh8ut
+ EU5si69KuYQLQ1UMv+TJSYYSwZ0FtvP1r8KxFaDfwK9EWUY5frAoJMI2y4dZQGtLMZ5pFET+CAd
+ u9zKe0A9C+7lhrfTfIPi6RV2sT9xlCa3Y/FsIK5dqRKbrnNRLHcuXyFDYoXll3b7YRNrewtl
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-05-05_06,2025-05-05_01,2025-02-21_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ mlxscore=0 spamscore=0 lowpriorityscore=0 phishscore=0 adultscore=0
+ malwarescore=0 suspectscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
+ clxscore=1015 impostorscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2504070000
+ definitions=main-2505050138
 
-unmap_pages removes mappings and any fully contained interior tables from
-the given range. This follows the now-standard iommu_domain API definition
-where it does not split up larger page sizes into smaller. The caller must
-perform unmap only on ranges created by map or it must have somehow
-otherwise determined safe cut points (eg iommufd/vfio use iova_to_phys to
-scan for them)
+On 05/05/2025 14:56, Rob Herring wrote:
+> On Sun, May 4, 2025 at 11:13 AM Dmitry Baryshkov
+> <dmitry.baryshkov@oss.qualcomm.com> wrote:
+>>
+>>
+>> On Thu, 06 Mar 2025 19:11:12 +0100, Konrad Dybcio wrote:
+>>> A set of not quite related bindings warnings fixes.
+>>>
+>>>
+>>
+>> Applied, thanks!
+>>
+>> [02/11] dt-bindings: display: msm: sm8350-mdss: Describe the CPU-CFG icc path
+>>          https://gitlab.freedesktop.org/lumag/msm/-/commit/60b8d3a2365a
+> 
+> And now there's a warning in linux-next:
+> 
+> /builds/robherring/linux-dt/Documentation/devicetree/bindings/display/msm/qcom,sm8350-mdss.example.dtb:
+> display-subsystem@ae00000 (qcom,sm8350-mdss): interconnect-names:
+> ['mdp0-mem', 'mdp1-mem'] is too short
+>          from schema $id:
+> http://devicetree.org/schemas/display/msm/qcom,sm8350-mdss.yaml#
+> /builds/robherring/linux-dt/Documentation/devicetree/bindings/display/msm/qcom,sm8350-mdss.example.dtb:
+> display-subsystem@ae00000 (qcom,sm8350-mdss): interconnects:
+> [[4294967295, 7, 0, 4294967295, 1, 0], [4294967295, 8, 0, 4294967295,
+> 1, 0]] is too short
+>          from schema $id:
+> http://devicetree.org/schemas/display/msm/qcom,sm8350-mdss.yaml#
 
-A future work will provide 'cut' which explicitly does the page size split
-if the HW can support it.
+I've sent a patch fixing the issue, 
+https://lore.kernel.org/linux-arm-msm/20250505-sm8350-fix-example-v1-1-36d5d9ccba66@oss.qualcomm.com/
 
-unmap is implemented with a recursive descent of the tree. If the caller
-provides a VA range that spans an entire table item then the table memory
-can be freed as well.
-
-If an entire table item can be freed then this version will also check the
-leaf-only level of the tree to ensure that all entries are present to
-generate -EINVAL. Many of the existing drivers don't do this extra check.
-
-This version sits under the iommu_domain_ops as unmap_pages() but does not
-require the external page size calculation. The implementation is actually
-unmap_range() and can do arbitrary ranges, internally handling all the
-validation and supporting any arrangment of page sizes. A future series
-can optimize __iommu_unmap() to take advantage of this.
-
-Freed page table memory is batched up in the gather and will be freed in
-the driver's iotlb_sync() callback after the IOTLB flush completes.
-
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/generic_pt/iommu_pt.h | 153 ++++++++++++++++++++++++++++
- include/linux/generic_pt/iommu.h    |  10 +-
- 2 files changed, 161 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_pt/iommu_pt.h
-index f66de4f6de6647..aa15fb79abf24a 100644
---- a/drivers/iommu/generic_pt/iommu_pt.h
-+++ b/drivers/iommu/generic_pt/iommu_pt.h
-@@ -14,6 +14,28 @@
- #include <linux/iommu.h>
- #include "../iommu-pages.h"
- #include <linux/export.h>
-+#include <linux/cleanup.h>
-+#include <linux/dma-mapping.h>
-+
-+static void gather_range(struct iommu_iotlb_gather *iotlb_gather,
-+			 struct pt_iommu *iommu_table, pt_vaddr_t iova,
-+			 pt_vaddr_t len)
-+{
-+	struct pt_common *common = common_from_iommu(iommu_table);
-+
-+	if (pt_feature(common, PT_FEAT_FLUSH_RANGE_NO_GAPS) &&
-+	    iommu_iotlb_gather_is_disjoint(iotlb_gather, iova, len)) {
-+		iommu_iotlb_sync(&iommu_table->domain, iotlb_gather);
-+		/*
-+		 * Note that the sync frees the gather's free list, so we must
-+		 * not have any pages on that list that are covered by iova/len
-+		 */
-+	} else if (!pt_feature(common, PT_FEAT_FLUSH_RANGE)) {
-+		return;
-+	}
-+
-+	iommu_iotlb_gather_add_range(iotlb_gather, iova, len);
-+}
- 
- #define DOMAIN_NS(op) CONCATENATE(CONCATENATE(pt_iommu_, PTPFX), op)
- 
-@@ -167,6 +189,137 @@ static inline struct pt_table_p *table_alloc_top(struct pt_common *common,
- 		log2_to_int(pt_top_memsize_lg2(common, top_of_table)));
- }
- 
-+struct pt_unmap_args {
-+	struct iommu_pages_list free_list;
-+	pt_vaddr_t unmapped;
-+};
-+
-+static __maybe_unused int __unmap_range(struct pt_range *range, void *arg,
-+					unsigned int level,
-+					struct pt_table_p *table)
-+{
-+	struct pt_state pts = pt_init(range, level, table);
-+	struct pt_unmap_args *unmap = arg;
-+	unsigned int num_oas = 0;
-+	unsigned int start_index;
-+	int ret = 0;
-+
-+	_pt_iter_first(&pts);
-+	start_index = pts.index;
-+	pts.type = pt_load_entry_raw(&pts);
-+	/*
-+	 * A starting index is in the middle of a contiguous entry
-+	 *
-+	 * The IOMMU API does not require drivers to support unmapping parts of
-+	 * large pages. Long ago VFIO would try to split maps but the current
-+	 * version never does.
-+	 *
-+	 * Instead when unmap reaches a partial unmap of the start of a large
-+	 * IOPTE it should remove the entire IOPTE and return that size to the
-+	 * caller.
-+	 */
-+	if (pts.type == PT_ENTRY_OA) {
-+		if (log2_mod(range->va, pt_entry_oa_lg2sz(&pts)))
-+			return -EINVAL;
-+		goto start_oa;
-+	}
-+
-+	do {
-+		if (pts.type != PT_ENTRY_OA) {
-+			bool fully_covered;
-+
-+			if (pts.type != PT_ENTRY_TABLE)
-+				return -EINVAL;
-+
-+			if (pts.index != start_index)
-+				pt_index_to_va(&pts);
-+			pts.table_lower = pt_table_ptr(&pts);
-+
-+			fully_covered = pt_item_fully_covered(
-+				&pts, pt_table_item_lg2sz(&pts));
-+
-+			ret = pt_descend(&pts, arg, __unmap_range);
-+			if (ret)
-+				goto out_unmapped;
-+
-+			/*
-+			 * If the unmapping range fully covers the table then we
-+			 * can free it as well. The clear is delayed until we
-+			 * succeed in clearing the lower table levels.
-+			 */
-+			if (fully_covered) {
-+				iommu_pages_list_add(&unmap->free_list,
-+						     pts.table_lower);
-+				pt_clear_entry(&pts, ilog2(1));
-+			}
-+			pts.index++;
-+		} else {
-+			unsigned int num_contig_lg2;
-+start_oa:
-+			/*
-+			 * If the caller requested an last that falls within a
-+			 * single entry then the entire entry is unmapped and
-+			 * the length returned will be larger than requested.
-+			 */
-+			num_contig_lg2 = pt_entry_num_contig_lg2(&pts);
-+			pt_clear_entry(&pts, num_contig_lg2);
-+			num_oas += log2_to_int(num_contig_lg2);
-+			pts.index += log2_to_int(num_contig_lg2);
-+		}
-+		if (pts.index >= pts.end_index)
-+			break;
-+		pts.type = pt_load_entry_raw(&pts);
-+	} while (true);
-+
-+out_unmapped:
-+	unmap->unmapped += log2_mul(num_oas, pt_table_item_lg2sz(&pts));
-+	return ret;
-+}
-+
-+/**
-+ * unmap_pages() - Make a range of IOVA empty/not present
-+ * @iommu_table: Table to manipulate
-+ * @iova: IO virtual address to start
-+ * @pgsize: Length of each page
-+ * @pgcount: Length of the range in pgsize units starting from @iova
-+ * @gather: Gather struct that must be flushed on return
-+ *
-+ * unmap_pages() will remove a translation created by map_pages(). It cannot
-+ * subdivide a mapping created by map_pages(), so it should be called with IOVA
-+ * ranges that match those passed to map_pages(). The IOVA range can aggregate
-+ * contiguous map_pages() calls so long as no individual range is split.
-+ *
-+ * Context: The caller must hold a write range lock that includes
-+ * the whole range.
-+ *
-+ * Returns: Number of bytes of VA unmapped. iova + res will be the point
-+ * unmapping stopped.
-+ */
-+size_t DOMAIN_NS(unmap_pages)(struct iommu_domain *domain, unsigned long iova,
-+			      size_t pgsize, size_t pgcount,
-+			      struct iommu_iotlb_gather *iotlb_gather)
-+{
-+	struct pt_iommu *iommu_table =
-+		container_of(domain, struct pt_iommu, domain);
-+	struct pt_unmap_args unmap = { .free_list = IOMMU_PAGES_LIST_INIT(
-+					       unmap.free_list) };
-+	pt_vaddr_t len = pgsize * pgcount;
-+	struct pt_range range;
-+	int ret;
-+
-+	ret = make_range(common_from_iommu(iommu_table), &range, iova, len);
-+	if (ret)
-+		return 0;
-+
-+	pt_walk_range(&range, __unmap_range, &unmap);
-+
-+	gather_range(iotlb_gather, iommu_table, iova, len);
-+	iommu_pages_list_splice(&unmap.free_list, &iotlb_gather->freelist);
-+
-+	return unmap.unmapped;
-+}
-+EXPORT_SYMBOL_NS_GPL(DOMAIN_NS(unmap_pages), "GENERIC_PT_IOMMU");
-+
- static void NS(get_info)(struct pt_iommu *iommu_table,
- 			 struct pt_iommu_info *info)
- {
-diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
-index 6fe52d6fc8fe87..862d224c59281e 100644
---- a/include/linux/generic_pt/iommu.h
-+++ b/include/linux/generic_pt/iommu.h
-@@ -9,6 +9,7 @@
- #include <linux/iommu.h>
- #include <linux/mm_types.h>
- 
-+struct iommu_iotlb_gather;
- struct pt_iommu_ops;
- 
- /**
-@@ -113,6 +114,10 @@ struct pt_iommu_cfg {
- #define IOMMU_PROTOTYPES(fmt)                                                  \
- 	phys_addr_t pt_iommu_##fmt##_iova_to_phys(struct iommu_domain *domain, \
- 						  dma_addr_t iova);            \
-+	size_t pt_iommu_##fmt##_unmap_pages(                                   \
-+		struct iommu_domain *domain, unsigned long iova,               \
-+		size_t pgsize, size_t pgcount,                                 \
-+		struct iommu_iotlb_gather *iotlb_gather);                      \
- 	int pt_iommu_##fmt##_init(struct pt_iommu_##fmt *table,                \
- 				  const struct pt_iommu_##fmt##_cfg *cfg,      \
- 				  gfp_t gfp);                                  \
-@@ -129,8 +134,9 @@ struct pt_iommu_cfg {
-  * A driver uses IOMMU_PT_DOMAIN_OPS to populate the iommu_domain_ops for the
-  * iommu_pt
-  */
--#define IOMMU_PT_DOMAIN_OPS(fmt) \
--	.iova_to_phys = &pt_iommu_##fmt##_iova_to_phys,
-+#define IOMMU_PT_DOMAIN_OPS(fmt)                        \
-+	.iova_to_phys = &pt_iommu_##fmt##_iova_to_phys, \
-+	.unmap_pages = &pt_iommu_##fmt##_unmap_pages
- 
- /*
-  * The driver should setup its domain struct like
 -- 
-2.43.0
-
+With best wishes
+Dmitry
