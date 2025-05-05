@@ -1,170 +1,235 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2076.outbound.protection.outlook.com [40.107.92.76])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25E6338DEC;
-	Mon,  5 May 2025 15:02:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.76
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746457345; cv=fail; b=m3ZOajPlBO+e1EBTPZ5UHlQWIgeyrMLSRXR/PBF09pCbsaPGvUzvTP/ilEaGn5AGLQx+vtE0GMbQKcWH9EXu3ukeuSZHRFnsHb739oNoeroPW68UlP2nttXdcoLA+cat0BUaMmUlSSHdL9k3fwjJzVwJYlZBSBEBs95DE7k2sgQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746457345; c=relaxed/simple;
-	bh=vIT96vVOFrx+fy8/DOhWzLo0SQhPzMThA38hBQKQUIM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Q+JlOuQinpe7wRJwzPCGzz3qs/sodwzeux7kprAn/9MzHAfqXFIb9ytTjcAB1X2lLgifUMlmlOZtmsm7eOsmExnz0oL4jF3csgkP37rzxs2Byz3KmW2z1kgnLWXzW2Te2fX2RRivD4U7xeTvljnpco/2oj9lBepFRYrGp9rJ69o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=rFjmhXJP; arc=fail smtp.client-ip=40.107.92.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53C1F17B425
+	for <iommu@lists.linux.dev>; Mon,  5 May 2025 15:10:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746457851; cv=none; b=CMgsQVuCejJkvPXqrh5aFyaB7dcEQ1heXFA07zsG0NraABj8M8XwS5zL+iqHOCP4OI/TgfbHLbJqeqwouaAz17rEU+okh1xrSHzxqlqyBXWkY8CcXk6qTlZUsw3prLh/OPhbi54BkV24tDSJ4yV4QrzTmgQMoVmi0zinKFJxriw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746457851; c=relaxed/simple;
+	bh=nLn/Fp+5YieRMoaQcfgLjhQggyC8xwCbSFqbkohCMCc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mMwSdKkIX4BsUvlQRgCKkUgxqUfaCwO/5ctklXODjX9KJ9RITp0mvy8oovsy3tX8QThUDHmZeTWvkreIcHB4/ZUm7kc9BsznRqYEswk1gAL9kM0Vv1uA2o1YKRKdyojiL/OGoPdkRxxZmLe4UPAYVT4RArX7/zmtgy847hqJnzw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=VxBK3PWU; arc=none smtp.client-ip=209.85.214.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="rFjmhXJP"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=L8xyHO3M7GuxFo0eRkSgSmEgxMbWA70R92MEKe/savh6PyzPvMjiM6gaR0K+8BH1tJuEUDmJ2Zs5JlnuFApxEygKq9lbPN/d1z56djHMjXUnAqrVFBSBXr05kjErPg0vlyQGJiWj66Fxde4qsqvNlzM6GDHnBkQARlz4XZ+NbsqmTSV6gryfBc3nTdr9HuSVyHTb8nEQdqluN2mcMJYPZgMp1FeRccPiYb5M2EmI/AgHIwQinsTPU9gBw2HkOxv0tz/Jdb0hcljDM29KT0Vy2Udljo3fBDtT2V/RSyMgWmK9F/mFACASyu2h9S+3kbQFfY6uGr9d7YQ+gZgWpbNTtg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IzWlA3amoFk1it0k8iDxPiJsO+YlG4E8JvhkZgcv3gs=;
- b=HW89qw5ad1S0COGTYznmfOEbW0DRF2HRq4nu/Kh1TuE4L9j79k4cHgXwsFZw9DHjZKs1CoY2WMPethXTMJYOA1LJUD45EnTab7pr6tI0IoSvW4tfprPH6sB8WD0/IF5f/vcEgM8SboBXlTFiUnLDMUnwJTuYd7lOgl8lyggMrBTWmK3TyzG/submYrl060AevsgTUZFWrBlVLfhCT7m+f5PyZKDsFBnh/n6GsnAFduCBJvtishW3MDe3o2UY/cKQdw8+Vfg1Fdl+P0xL7HQy5kZqRnRuVDp/MUruOIiYioct13t95GvmrXv5vwIbx2E19Jw2IK5z/2Zv3/2/wKP4uA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IzWlA3amoFk1it0k8iDxPiJsO+YlG4E8JvhkZgcv3gs=;
- b=rFjmhXJP4MhKNnaTDrW2C8upczmnI/nf8P4yjQhcWRpamhXCW++5QBeAdF9DwXrlv81c3rHDEJ4H1hfq43aA8DGuplFTaLbm4vcWE4JI05av7hkeDIdmKx+oXnB1dqPKlTjeZnRw0lzodbSDVrFRRMV9sgqq2oqWrUfJTe+QyIy3/CGGaGSyMKQVbX/G/jQHsKOnTSR34r6vOExF+3MGc25L+1TO1Wu2/dPRRoeZhXNRvBNz3VRCHgendugp53puk4t+7dsIJP9cvnsQwVtI/YHAKmspGLqrJYV1zog1fWZNgMpgJljALmtMcF/uL5siMeoe7e7u7VkXqTk8WxLUJQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by MW4PR12MB7117.namprd12.prod.outlook.com (2603:10b6:303:221::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8699.19; Mon, 5 May
- 2025 15:02:16 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%6]) with mapi id 15.20.8699.026; Mon, 5 May 2025
- 15:02:16 +0000
-Date: Mon, 5 May 2025 12:02:14 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, kevin.tian@intel.com,
-	corbet@lwn.net, will@kernel.org, bagasdotme@gmail.com,
-	robin.murphy@arm.com, joro@8bytes.org, thierry.reding@gmail.com,
-	vdumpa@nvidia.com, jonathanh@nvidia.com, shuah@kernel.org,
-	jsnitsel@redhat.com, nathan@kernel.org, peterz@infradead.org,
-	yi.l.liu@intel.com, mshavit@google.com, praan@google.com,
-	zhangzekun11@huawei.com, iommu@lists.linux.dev,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
-	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com
-Subject: Re: [PATCH v2 09/22] iommufd/viommu: Introduce IOMMUFD_OBJ_VCMDQ and
- its related struct
-Message-ID: <20250505150214.GI2260709@nvidia.com>
-References: <cover.1745646960.git.nicolinc@nvidia.com>
- <8bab0069503fa21b48298ed2ffe29a06963f71f5.1745646960.git.nicolinc@nvidia.com>
- <28e513ec-4d8b-4967-a241-d6f63d533050@linux.intel.com>
- <aA/EoEFtbnL2+zAw@Asurada-Nvidia>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aA/EoEFtbnL2+zAw@Asurada-Nvidia>
-X-ClientProxiedBy: BN0PR04CA0190.namprd04.prod.outlook.com
- (2603:10b6:408:e9::15) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VxBK3PWU"
+Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-22e1eafa891so188315ad.0
+        for <iommu@lists.linux.dev>; Mon, 05 May 2025 08:10:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1746457849; x=1747062649; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=OmVz0bwTKe8Fhfvg7FzdiqrtSU3RLmYBZvPMmjJf64M=;
+        b=VxBK3PWUrZ3KfK28fZBqDvDV9rNiUWEkYf53+SqDJqS+/kt28JSQ/HYSTuw9Wh1yim
+         xG8liiXNaTcPsEI6XRtz9oWsbwr0J8T+ZOLSa5mLX6sukFus3CEfOyDY9tm+fCwphA3V
+         +KiUI+DoXBkzHiGZHWDQXXrxfOsdisKgxRzEWYC1KyzTnOOqRZb3zS2PF5vtue+ICG1J
+         Ty+8GXnW75dBzbBjQrCLuK0spXwBtG/lOdMgAqS48Y8W6zEoaTlXntMv+o9uRMxxCAo+
+         1OKqED29Q7pZPH2IkFigDaRmQDp2Th/wG9Ykh2v5/5KrrX2Kll8Lme8vArr9hD9mGZyj
+         1jkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746457849; x=1747062649;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=OmVz0bwTKe8Fhfvg7FzdiqrtSU3RLmYBZvPMmjJf64M=;
+        b=Vxeez11wpBikn59mgt8/ZM8bu9YkBjcuMjsicIyJB475eFmxaFnpx+lWVfyWXXnW/2
+         EkM/S/u5pBkhNEwFQIE3la3A9r+yDc6ZQYdneI9A5SRP52m7D1+WrpTpv/fLeylFP5C8
+         3Aio4p6S210nUgEAu9ZWVmmDlzDj6VFh8QkuV9l5RboE9HrjTwGGrFZOD8xtOTILs0P9
+         O9/tGbdqbIgsCqDSZyBSfUuIwb7AfDKxKxRj+p6UmHkiW03LscndsDTzwBoGAJik5ou2
+         NArjtWZbfCwX01RTjNxlPgNUCQknDHAUhDFoCLn0BexvUNAX4S4Sm0lonCGtcjLShOeS
+         DJbg==
+X-Forwarded-Encrypted: i=1; AJvYcCUZ1KSm7VHwTEgtptLXGpYAw36bwx6EEA/+Os1ERp9OeT7BvP/kwm8Gbx037vilCa3vUYyaaQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyWXRTjGIgcja2EqfxnOuDuhIS3EEA1tP/IYX65tY0Fz4g+Trzy
+	n0xtO9FILoj5BYv7oVZ+ex5qiZ2Uw+KXGOLt2pgYbWrUGtSWGnFdeHjSuDVcdg==
+X-Gm-Gg: ASbGnctkAtNVKhC7FrtHMuHnJy1XkNPThrpGzvmNusBMIezs9A6qD7V9NquFDoQNdDB
+	9FYHE64dczbmCcejYlhLZjrlWq1tFso+p/Cdqj9KnMDcx2+pvjBFsuIrOLUaxVhlfk4F77Yga8a
+	ZnJoRRxsJB3jygcvpNDwaj+Dj0CQleXaBMdSOx72TXqmkAHIIhNlDTuD9SY5FE4fJZhNRvQGZTk
+	r18slXiIpvJIU3Fmv7jEQP8mHcaZUQzJGaqC+f/8edulmuQrouZOrVMpZ52HRNHBnimSik/7Zb6
+	mkuFt9jkHeKJEpYyBPpZ5GwzXs8q5hYKW4hsCf5XVbkwrj96oqdYtd9Xlz6n6TBgbo8ZynlD
+X-Google-Smtp-Source: AGHT+IFCWzmHZwOzrWDHu4fm/pnFV8gjAFoeKvXm92WN+XFptz6FA42eMWdTPQVZ411BNPExIhCseA==
+X-Received: by 2002:a17:902:cf02:b0:216:201e:1b63 with SMTP id d9443c01a7336-22e3176bee4mr165015ad.11.1746457849070;
+        Mon, 05 May 2025 08:10:49 -0700 (PDT)
+Received: from google.com (2.210.143.34.bc.googleusercontent.com. [34.143.210.2])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22e151e9df5sm56066925ad.82.2025.05.05.08.10.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 May 2025 08:10:48 -0700 (PDT)
+Date: Mon, 5 May 2025 15:10:40 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Daniel Mentz <danielmentz@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev
+Subject: Re: [RFC PATCH v2 02/10] iommu/arm-smmu-v3: Add a helper to drain
+ all queues
+Message-ID: <aBjU8NnohMiRvvnP@google.com>
+References: <20250418233409.3926715-1-praan@google.com>
+ <20250418233409.3926715-3-praan@google.com>
+ <CAE2F3rDHGjwh+fcW37VnUG6dOyrKkxEseKMmRdZ7vzCroM6PrQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|MW4PR12MB7117:EE_
-X-MS-Office365-Filtering-Correlation-Id: d5a051da-219a-4298-05bf-08dd8be5d2cc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?wL+g9ma3haJxsRa6S6nIap3cec4PtceOEcol/SzYhXeOYJJA5ZFw+oBvE5SR?=
- =?us-ascii?Q?hJwRcXTFqQ6H7fPG1iqOwRnsr29mAc3727A4aFffKT7WsSaZhot6zLS9FBSa?=
- =?us-ascii?Q?FTcI9JwLrpvC8uXCLpqE84rz7IATcuRJS9OszUWjLZD4ln++gpcIbawtTq1P?=
- =?us-ascii?Q?QE6oo0zPke0prQHHmeWAhNLudWouCxlkvAOcojLEzgBszOZ1GFlXcfa4mT6H?=
- =?us-ascii?Q?x1Z/mkDC3KHicrk43S4B+fEHMTNb57TgQRgT4bcJfEinpIy8nKx/LVvA0ICG?=
- =?us-ascii?Q?6RtTAE49D8lKrXoQ0HRUSX8Y2tIV0iggWl+3J02Px8CgzJK1MUImT0ExsRa4?=
- =?us-ascii?Q?FHXwAppPoWKEYZv/A0LZTX+ejWebrOBcXrw9TUH3X/eHJcPrXfjO0hBaxIh/?=
- =?us-ascii?Q?z4lvs5cC2SR+N/f8TwfNv/Xz3KurqeJ5i/H0wc3htSBeiKGyCdhsXT2YSLp9?=
- =?us-ascii?Q?cQa5/2L1QT/NZmEGAkF5cSrpyz5ZQmIhtQeesWtR4umA97eNLY0ZWDxkOFb7?=
- =?us-ascii?Q?6ZoUMpvqEzdeP59JSGDWANt0UOkxS6INpn6FE8CymHOpMSYGJ6S93oo9XBI5?=
- =?us-ascii?Q?eZaG7360wqkWITBVlnyyPBpCJYv9VS9fO5ZprihXfDD9bXnEbagpBqqZsMQd?=
- =?us-ascii?Q?c6SNrLrvNeokCeKSwuI9kqORFr4bcJAtwjL3Hh6S4R7+KBROORurLwM9/bdU?=
- =?us-ascii?Q?nzFDQvb29Z7aHzi3zsdAhfTmw6Z3pmEQdg6pYBD8Bx2rM9+czuOiCNFAvX1u?=
- =?us-ascii?Q?f3hvCmoSW8Ujx+tpgIJJXXx3xns3MBpNrSRsq2arve+REu2ff9lzx3s5YcIj?=
- =?us-ascii?Q?pkzZUXhkM32z7WfsXWft523HF1sSMD4ClPjLQYGcKAq9aJ1RQSgb4raARKml?=
- =?us-ascii?Q?jLwJ+7Zd31U7dCR4P7/VwiQD3An030QSkN3I+X+KkQS301WmHQT4mIEdBTI8?=
- =?us-ascii?Q?G3UBZjYsz2ZM+ssdeNpSfy5nFXT5GAJLwm6azEkyMrgfeke7Hf4rquKtkX7u?=
- =?us-ascii?Q?SD2HYTegwN20kCrYlD7JF7ixclDOh8CkU082JFLC0SB3T5cWo9om+cbZ2hZk?=
- =?us-ascii?Q?A/TRyYiCeP89wx+K/NWokXrQsY0Bz+4iPazWlHgyF27t36mCoLuAQp7KDGCk?=
- =?us-ascii?Q?C2yhdfef+yRHq5qy4p8EXsRbBmI6IMU6vgHOU3ZpgiVma7SebT3aSGg0J0ue?=
- =?us-ascii?Q?qD0+ylj6M91PuDKDv0wwh5/bVlVqzRMb7ZNP3tuPdqMd2fczHhaxPKjOKebY?=
- =?us-ascii?Q?U0NdbHAZDmxVd4M6Ab/WwUQFu3mww4wqEzqkWUEJamaM3i3WWTVylcQWDE7N?=
- =?us-ascii?Q?51C1yOQXWG8OpBTf5MrAsmSrwr6kM244UMK47TPaBrUwdp1pG1XH+hawDOFk?=
- =?us-ascii?Q?siy4W8xQWhvmD2udGXJqhxQD7wzoxAvuVsWB/VtpfjGpOFkxkwqJLz0UfeNH?=
- =?us-ascii?Q?nUe5/XP4oO0=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Fh1IWAeES0phdNM5+mCBMTKipvkG9U7C4lbApe15LJng43Rh9hbYEvV0ys7o?=
- =?us-ascii?Q?AgTtSObMALPygcbTG2xR1sOoZZasuypcR7Lms3BVnDVgMSQoT9uLAq73WMoR?=
- =?us-ascii?Q?7RDiiYvUhEVWi7zQkkaRC9KN7FIv80BNd5GGzeQE0IZETxyBK3boy//nbJBQ?=
- =?us-ascii?Q?wTfgruZ4S8+r2ib2sWmdRL96RkQzHPRFHqLa3EIn5fm14CLCoKABwfCQa96t?=
- =?us-ascii?Q?AvnRLw8X8/9z5hDBrkNix7th3tMQwcMExx1Hs4c57XcNfCTDo8Um31DqVcNH?=
- =?us-ascii?Q?Jngv6QIN2RWGtFv+76E7/+zi8Lc7QjWjZI91srGpJfmSoHEsl96OSCXtCTUj?=
- =?us-ascii?Q?zVDagkVDaFO419SxtSsSUv4e6ytGxtCTlq2IPIkEuDSem++hyiwm62bOcy58?=
- =?us-ascii?Q?ZBzJfcOvem99pR7atYEEPX6VbTVx0cYrFi+WSkiSsTpYrS4Wjmo7juwxknMe?=
- =?us-ascii?Q?h/hSukv8hRL5odJKpJsdyOFWGzOOHHm6mUqelZgoU6ZZDXNtfGkr0JXHuRpZ?=
- =?us-ascii?Q?F1MfbgTMm5Tjua0DO5aPsGKr3eiz/c74MK/Qv8tRnZwMcCnC9uBsepG1eStD?=
- =?us-ascii?Q?EONdvpXFSVGPgSktwN4cIvo21fgvGPRIzCPwZkpGaUCZJrTQKJktVw/SsAgg?=
- =?us-ascii?Q?5GsBAs1C6lgCZngsDw7uIY0+AkoMn84FexsCjIzZzg8LRcVJazGk34AM6sYp?=
- =?us-ascii?Q?z73PgKB2WVRDyyy3n1+qvVEP5hGLqfVdDhnzJBKxF/AVkQq+GyPPQEHkUaj5?=
- =?us-ascii?Q?9nKEe54M8OxT5/TeOYoq+hJaJXAhp1gQ6fVmMh49gtNj7tlsrV8Xe1+h6MCL?=
- =?us-ascii?Q?tEYemqjCaCNIqj3t1M7VAQGQKfovoal+d+ssfADvSGuk8TjFePXqbvw57Hyi?=
- =?us-ascii?Q?G/SivIksmoch7/89aS87G29S0xH9pSLvK7wH8DOx98faZ+b18tzPm5o5O67e?=
- =?us-ascii?Q?KVOf9+UlYtB5PrNJ/Gydz+loByBPmvn6K5/75asbqZjQrKFflK+rruscVOAi?=
- =?us-ascii?Q?aOy+OZ0LZM1Ia8h87X+tqTNB6B9R0DvdzpJlF/Jn18I0EF2YOOGlqJESpQh2?=
- =?us-ascii?Q?Jka7oCafk5NW2DMhNebIAx+xmpIH04B5vux4pABU4xq4y7vOVXkQhLYtEzW7?=
- =?us-ascii?Q?cXd45D/JRFcsr88TMo+3LBO5FMzas7OUOVE9Z73X5sRAlFsiPYxUyL8KEjl6?=
- =?us-ascii?Q?bOVZFZ3BCSeLwifuJDO0LRj0gYXKUtqEdOG4XA0ZZyl3VnVgqUti7sjeIRjM?=
- =?us-ascii?Q?tfEL+QwWFs0dB01YtI22/ymp03Ge6cdxedzOsmOesNyi71h+PfWVi+hDure3?=
- =?us-ascii?Q?ZxRhwTSBgc4iF6HQHyp+6RgQIFjUdiuucIt/VgP5eu8AzhcmLKgDbRN/7B4J?=
- =?us-ascii?Q?lqSQ2/ydUlajRngpG8Q1B9bkG2p5qJ4R9xPPMY3QWPnbEOQYAmPpPGNmsQT2?=
- =?us-ascii?Q?nLODxJopktewkUv5/fpf6AT/fZU0kKFc3cgfCildu9DVqO0BzFdD2PmWdfn7?=
- =?us-ascii?Q?bYV535J5OOuhcT0Af6fviIWsObvkLHb5iNfyHKzqYqCzCsWvjkCwrt+xWxsO?=
- =?us-ascii?Q?UPQmre+w42IDaEQf9FIovuaS7di3uQVskGgT10P8?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5a051da-219a-4298-05bf-08dd8be5d2cc
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2025 15:02:15.9718
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7cNBB73R8omzS8OKkz4DxR0N10sTBBzFBaJa5dgVMRUJUvpZnGV+DQwLdoGUE38R
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7117
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE2F3rDHGjwh+fcW37VnUG6dOyrKkxEseKMmRdZ7vzCroM6PrQ@mail.gmail.com>
 
-On Mon, Apr 28, 2025 at 11:10:40AM -0700, Nicolin Chen wrote:
-> > > +struct iommufd_vcmdq {
-> > > +	struct iommufd_object obj;
-> > > +	struct iommufd_ctx *ictx;
-> > > +	struct iommufd_viommu *viommu;
-> > > +	dma_addr_t addr;
-> > 
-> > It's better to add a comment to state that @addr is a guest physical
-> > address. Or not?
+On Sun, May 04, 2025 at 01:28:13PM -0700, Daniel Mentz wrote:
+> On Fri, Apr 18, 2025 at 4:34 PM Pranjal Shrivastava <praan@google.com> wrote:
+> > +static int arm_smmu_queue_poll_until_empty(struct arm_smmu_device *smmu,
+> > +                                          struct arm_smmu_queue *q)
+> > +{
+> > +       struct arm_smmu_queue_poll qp;
+> > +       struct arm_smmu_ll_queue *llq = &q->llq;
+> > +       int ret = 0;
+> > +
+> > +       queue_poll_init(smmu, &qp);
+> > +       llq->val = READ_ONCE(q->llq.val);
+> > +       do {
+> > +               if (queue_empty(llq))
+> > +                       break;
+> > +
+> > +               ret = queue_poll(&qp);
+> > +               llq->cons = readl(q->cons_reg);
 > 
-> Yea. Let's add one:
+>  A readl_relaxed() is probably sufficient. 
+
+Ack. I referred to __arm_smmu_cmdq_poll_until_consumed() which uses
+readl, but I agree that this can be _relaxed as for the former we had to
+handle a case where multiple threads are polling on their own CMD_SYNCs.
+
+> Also, in other places, they
+> use WRITE_ONCE to write to llq->cons. Compare with
 > 
-> 	dma_addr_t addr; /* in guest physical address space */
+> WRITE_ONCE(cmdq->q.llq.cons, readl_relaxed(cmdq->q.cons_reg));
+> 
+> in arm_smmu_cmdq_poll_until_not_full.
+> 
 
-If it is a guest physical in a nested page table it should technically
-be u64 not dma_addr_t
+Yes, I believe that's to avoid store-tearing and re-ordering when we
+have multiple threads potentially polling on the llq.cons
 
-Jason
+However, I don't think that's going to be the case in the suspend
+callback as we'd atmost have the page_response responding to a stall
+event and issuing a CMD_RESUME (without a sync) which won't poll.
+
+Although, if we're looking to use this function in other context apart
+from suspend, I guess there's not much of a harm in using WRITE_ONCE()..
+
+> > +       } while (!ret);
+> > +
+> > +       return ret;
+> > +}
+> > +
+> > +static int arm_smmu_drain_queues(struct arm_smmu_device *smmu)
+> > +{
+> > +       int ret;
+> > +
+> > +       /* cmdq */
+> > +       arm_smmu_cmdq_shared_lock(&smmu->cmdq);
+> 
+> I'm afraid this might not be a correct usage
+> arm_smmu_cmdq_shared_lock. I understand that acquiring the shared lock
+> means that you want to prevent any other thread from updating
+> cmdq->q.llq.cons, which I believe is not what you're looking for here.
+> If you want to participate in this locking protocol, I believe you
+> need to acquire the exclusive lock.
+> 
+
+Ack. 
+However, I believe there's no such need to acquire any lock here given
+the fact that `arm_smmu_drain_queues` isn't expected to be called from
+anywhere else except the suspend callback... What do you think ?
+
+The only case that I can think of that could possibly contend with this
+is the evtq_thread handling a stalled transaction with a CMD_RESUME
+which could be handled by first draining the evtq.
+
+The callers which plan to use arm_smmu_cmdq_poll_until_empty apart from
+this could use the appropriate locking, I can add a comment about that.
+
+> This being said, I believe you need some other mechanism to ensure
+> that no new commands are submitted to the command queue. Otherwise,
+> the command queue could become non-empty after you return from
+> arm_smmu_queue_poll_until_empty.
+> 
+
+I think the fact that we're calling this from the suspend callback
+itself ensures that there aren't any clients actively issuing commands?
+
+The only exception to this could be the other two queues having events
+which require to be responded with either CMD_RESUME or CMD_PRI_RESP.
+For example: a stall event that requires us to respond with a CMD_RESUME.
+
+We could drain the other queues before the cmdq in that case.
+
+> >
+> > +       ret = arm_smmu_queue_poll_until_empty(smmu, &smmu->cmdq.q);
+> > +       arm_smmu_cmdq_shared_unlock(&smmu->cmdq);
+> > +       if (ret)
+> > +               return ret;
+> 
+> This is basically a command queue timeout. Consider printing an error
+> message similar to "CMD_SYNC timeout at [...]" in
+> arm_smmu_cmdq_issue_cmdlist.
+> 
+
+We're already printing that in the arm_smmu_runtime_suspend:
+	dev_err(smmu->dev, "Draining queues timed-out.. retry later\n");
+
+Are you suggesting to print it specifically for cmdq with the prod/cons?
+
+> > +
+> > +       /* evtq */
+> > +       ret = arm_smmu_queue_poll_until_empty(smmu, &smmu->evtq.q);
+> 
+> I'm not sure if you can use your arm_smmu_queue_poll_until_empty
+> function on the event queue. I understand that in the case of the
+> event queue where the driver is the consumer, the driver's version of
+> llq->cons is always more up-to-date than the SMMU_EVTQ_CONS register.
+> In fact, I'm afraid you might move the consumer index backwards with
+> "llq->cons = readl(q->cons_reg);", because llq->cons is more current
+> than SMMU_EVTQ_CONS.
+> 
+
+That's a good catch! Thanks! This also true for priq, I think we can
+have a dedicated function for draining the cmdq as above and another one
+for draining priq and evtq.
+
+> I'm thinking about the following proposal:
+>  * Drain only the command queue. Use a local copy for llq->cons. Don't
+> write to cmdq->q.cons_reg
+
+We're not writing to cmdq->q.cons_reg anywhere? And we can't rely on the
+llq->cons copy since it's ONLY updated when the last command was issued
+with a "sync" which isn't guaranteed to be the case always.
+
+>  * Don't bother draining the other queues
+
+I don't think that would be appropriate, we can't leave a stalled
+transaction before suspending and should handle all Paging requests via
+PRI. In fact in the v1, Robin mentioned[1] quite the opposite. 
+
+>  * Backup consumer and producer indices *after* disabling the queues
+> in SMMU_CR0. This would involve writing to cmdq->q.cons_reg
+
+So... basically handle the pending stalls and paging requests when we
+resume later? 
+
+Also, why would we write to the cmdq->q.cons_reg if it's going to be
+lost with the power-down? If at all, we'd have to read the prod/cons_reg
+values back into the SW copies. Am I missing something here?
+
+
+Thanks,
+Praan
+
+[1]
+https://lore.kernel.org/all/20250319004254.2547950-4-praan@google.com/T/#m6f479d70d666252a657fb3ff57ff1764267a892d
