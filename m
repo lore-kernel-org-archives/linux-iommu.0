@@ -1,41 +1,42 @@
 Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0306C2580D0
-	for <iommu@lists.linux.dev>; Mon,  5 May 2025 13:23:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE6AE25524F
+	for <iommu@lists.linux.dev>; Mon,  5 May 2025 13:23:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746451435; cv=none; b=G4AfA2LcRQwnIrvXj1BAfbsJs8QeZ8s1ooOGKjXnKCBmc4Domg4z1Gu/TKxrd4SLpIjWU/+x+eXeGYLRm8vUb4DroYic+Kaggo2s/b0Cn8rHwDGVRKEyLU26rJGpBLZmZD2cRXPshCzMrTHsi5GcrRpL3dkRvCkrIXJkookv4Q0=
+	t=1746451436; cv=none; b=QyMie/bLs+hBu/2TbdCdFuBUzqb38IvQF4pDTq9HffkxxD3jqbodabyinLUVZlaTBPr9BPxGk9JRbX+LzzKAQUyo1Qz+w7meWd8tHq2yCSWd3BrQlmha3iuZDMza274ha2ApLAN5uDxerglqQvou9NODyJC9gOCC+MZadFM7ZP4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746451435; c=relaxed/simple;
-	bh=QbkkmaHyuZnAj+y3SRqnQ7lx5DMjnVPYMxS1NGgHdQs=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=IREcCbfQjF3J6mbNpE3acxnAck8Bt1jOf9sg1LHwsOxFGSuK38XxJ12DU5pi7/Hw+T442XZPddGMB/BBWUAg05MbKHP5Yf+KvnrIiqFwSDjB7M9+UZsoPUtcmuaRLK9mms9ruM+Mw4XpahxP5KYqvkH5Bh8bpPqXV9v0J/nqvUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=LKvNofME; arc=none smtp.client-ip=148.251.105.195
+	s=arc-20240116; t=1746451436; c=relaxed/simple;
+	bh=HggPxWEvci0Nw3XAAZKOgbcYb9Y2yMgNjUUita5XUCo=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=i9ZxufFbk/SS6qmW5Ce3lWPosRlOS/84uNGyAoL/5YKvULNdqXk6LkGos3b4LY2JuJbZMmdz1MGw6JxYnW916Z1RAfYIP/aRJ8qF8kqlA2g01lxluoZPtK4X6v7D8CYt0dEXm8rg1B3FCnQ9qnJWCD5k9s/YxJo5HjEQZVXqkf0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=HUfr6toV; arc=none smtp.client-ip=148.251.105.195
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="LKvNofME"
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="HUfr6toV"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1746451432;
-	bh=QbkkmaHyuZnAj+y3SRqnQ7lx5DMjnVPYMxS1NGgHdQs=;
-	h=From:Subject:Date:To:Cc:From;
-	b=LKvNofMEwOWJfNjV8DSgo3WC7lqIRzc+emoZdyzefyZvjBPQs7q8EfbnQ4xsS26tY
-	 rfYPeEMTYjDyV786Bfgmp4DoPpoutZP73w1DaZHxMQUNf8awO7oz4Q4N2ytYm3qLme
-	 7ezsdHGfYjuC+/xD83kH38J4JJhtNCiyqgMeeXWbjnWyoIQVNqbkxwMSS9IUvySuL3
-	 J49viIy3cBJEvpa5HE91d5dFVqronQyeBGDSt9sCfQ92R974VUQOzD7/LTMmFP1fuj
-	 uGjlohK3cM6h5aEX+yiJVEyfzFu8DnGaCb6l9G5bNTbXe0ghvfsiAXK13j/xiDP1bG
-	 WP9aKbXs3HKqA==
+	s=mail; t=1746451433;
+	bh=HggPxWEvci0Nw3XAAZKOgbcYb9Y2yMgNjUUita5XUCo=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
+	b=HUfr6toVPCb2SnWE9VrHyTk2xrXVXTrZlrlQW2m6hLe64AEUaAb7mw51ftkQOpdD4
+	 cLy1Laj9ZY4Ctp/ElIDwr7HZPcGFitvBGFiYZRq7LlYYYDTbFHcJeq4jVLrNpE5zm9
+	 bvsB7p+TMmuq24KAhyO2XuKEIRVVaJo+J+wATKPgwyDH4D6xo8DTIIhS1HOTHNdg6U
+	 r22JS7do5w8XzJ4RuFJ2uvNcUQYlwCI9V1ZX6DKHs0Y6xMFSNaPPOYPKjJHc7P/orQ
+	 IrLkcFOOtyofx2PD5OIeZR6DpGM+UHAvOaDP0jGCDjxhhgyEJvlJIXscF2mtAlK1pc
+	 uzZ+wud4+mF6A==
 Received: from apertis-1.home (2a01cb0892F2D600C8f85CF092d4aF51.ipv6.abo.wanadoo.fr [IPv6:2a01:cb08:92f2:d600:c8f8:5cf0:92d4:af51])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: jmassot)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 0CCDF17E02BE;
-	Mon,  5 May 2025 15:23:51 +0200 (CEST)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 34BF217E07F2;
+	Mon,  5 May 2025 15:23:52 +0200 (CEST)
 From: Julien Massot <julien.massot@collabora.com>
-Subject: [PATCH 0/4] mt8395/mt6359: Fix several dtb-check errors
-Date: Mon, 05 May 2025 15:23:36 +0200
-Message-Id: <20250505-mt8395-dtb-errors-v1-0-9c4714dcdcdb@collabora.com>
+Date: Mon, 05 May 2025 15:23:37 +0200
+Subject: [PATCH 1/4] dt-bindings: mfd: mediatek: mt6397: Add
+ #sound-dai-cells property
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,10 +45,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIANi7GGgC/x2MuwqAMAwAf0UyG2hrxeqviIOPVDPYSioiiP9uk
- ZtuuHsgkTAl6IoHhC5OHEMWXRYwb2NYCXnJDkaZWmVwP13V1ricE5JIlITK2cb7WRtvLeTuEPJ
- 8/89+eN8PmWY0omMAAAA=
-X-Change-ID: 20250505-mt8395-dtb-errors-0847ffc12f44
+Message-Id: <20250505-mt8395-dtb-errors-v1-1-9c4714dcdcdb@collabora.com>
+References: <20250505-mt8395-dtb-errors-v1-0-9c4714dcdcdb@collabora.com>
+In-Reply-To: <20250505-mt8395-dtb-errors-v1-0-9c4714dcdcdb@collabora.com>
 To: kernel@collabora.com, Sen Chu <sen.chu@mediatek.com>, 
  Sean Wang <sean.wang@mediatek.com>, Macpaul Lin <macpaul.lin@mediatek.com>, 
  Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>, 
@@ -66,32 +66,34 @@ Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
  Julien Massot <julien.massot@collabora.com>
 X-Mailer: b4 0.14.2
 
-Hi,
-This patch series addresses several dtb-check errors reported for the mt8395-genio-1200-evk.dtb and mt8395-radxa-nio-12l.dtb device trees.
+The 'mt6359.dtsi' file already uses the '#sound-dai-cells' property.
+Add the corresponding property to the binding to fix the following
+dtb-check error:
 
-The fixes include:
-- Adding the missing #sound-dai-cells property in the mt6397 binding.
-- Allowing up to 5 interrupts in the MediaTek IOMMU binding to support MT8395 properly.
-- Defining the required compatible property in the regulators node of the mt6359.dtsi.
-- Renaming the rtc node to match expected schema naming.
+mediatek/mt8395-radxa-nio-12l.dtb: pmic: '#sound-dai-cells', 'mt6359rtc' do not match any of the regexes: 'pinctrl-[0-9]+'
+from schema $id: http://devicetree.org/schemas/mfd/mediatek,mt6397.yaml#
 
+Fixes: 9bc8353be720 ("arm64: dts: mt6359: Add #sound-dai-cells property")
 Signed-off-by: Julien Massot <julien.massot@collabora.com>
 ---
-Julien Massot (4):
-      dt-bindings: mfd: mediatek: mt6397: Add #sound-dai-cells property
-      dt-bindings: iommu: mediatek: mt8195 Accept up to 5 interrupts
-      arm64: dts: mt6359: Add missing 'compatible' property to regulators node
-      arm64: dts: mt6359: Rename RTC node to match binding expectations
+ Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
 
- Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml | 3 ++-
- Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml  | 3 +++
- arch/arm64/boot/dts/mediatek/mt6359.dtsi                    | 4 +++-
- 3 files changed, 8 insertions(+), 2 deletions(-)
----
-base-commit: 407f60a151df3c44397e5afc0111eb9b026c38d3
-change-id: 20250505-mt8395-dtb-errors-0847ffc12f44
+diff --git a/Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml b/Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml
+index 6a89b479d10fad3c8b61cab5a3af1453baca4d1a..86fc1b5db3b075ea0f6e35f58ecbca7956d230c4 100644
+--- a/Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml
++++ b/Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml
+@@ -53,6 +53,9 @@ properties:
+   "#interrupt-cells":
+     const: 2
+ 
++  '#sound-dai-cells':
++    const: 1
++
+   rtc:
+     type: object
+     $ref: /schemas/rtc/rtc.yaml#
 
-Best regards,
 -- 
-Julien Massot <julien.massot@collabora.com>
+2.49.0
 
