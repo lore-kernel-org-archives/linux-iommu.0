@@ -1,232 +1,176 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2088.outbound.protection.outlook.com [40.107.212.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D92F2ECE4A;
-	Mon,  5 May 2025 23:10:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746486644; cv=none; b=frmajwKSM4yD8qyCbiSoqak4iADt0bzXQCZAPSZBraCXXRexdH+RWfLRF64tOfGNXNQAZYCcnlrt86sFEGNBp6OUajYPHwihIvGBwhx1tD+Nkg5RZCACUmUXMcSvWv/t2zgYvzIz18u4WDAtjJQL6Zi/w/a/tFlwHLM/M3+fGqI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746486644; c=relaxed/simple;
-	bh=E5TRCUeMPDEJ9ZibVkLMy80/xwLwH1u8C4ORNAUXdNM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=BdU4o1bi+/zOndCpAoYYfJMaLNAi8XNKMsXiBu5ulWCEOhjyQpJA+VJakz9mXWaIAeFnvyw/WSQe+jrCM3TtX12QevIC231MNDuN9fYTEb9amGAHeI8Pehqd5mgTusfgMCIzmEtJTO/PS16hSWg8nQR8fksV1rNjYpum5Xm4jv0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YR7v9XtZ; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7A7F35AD83
+	for <iommu@lists.linux.dev>; Tue,  6 May 2025 02:54:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.88
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746500075; cv=fail; b=A8WnGqpBW10T90fgpA8DWgit7zgttPWsnYpKMb7NCWXe6F+n2E4XPeknBGUP3NkLmIe8k0tkCLl1GhaNygWWG/6Ca3V0SDKngCg6Xhyu1FvyDs9pZd6tGSdIKk1VqUwTw/h1BXAJyh8w0l8mAT60P69UbTBX+j/Tp6ttX+79WIQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746500075; c=relaxed/simple;
+	bh=J8MDOvgpvmj7O1bztuRNSxjGf6RRdQAoFsLoNlbCHbk=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dgfjksLpsm3AnPZ8MN8vZWfK5hHHwq/seVFGWPEBTBdZiM08c+HCR+bxc+iwzc2rKbOsSRh+5nKMwrf5GePjNx3MtkC4bPsPLg6huwKrN8iFv0tG1ZE4tuAcUC2lYvQYyOcaW5zJyidGluiECXgkc6MHM9s0d9QywWrJjphaRhY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=qHr3baVd; arc=fail smtp.client-ip=40.107.212.88
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YR7v9XtZ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D0B8C4CEE4;
-	Mon,  5 May 2025 23:10:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746486644;
-	bh=E5TRCUeMPDEJ9ZibVkLMy80/xwLwH1u8C4ORNAUXdNM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=YR7v9XtZQyxUuXKmyYQfupXf+KFMpQ5cE9s0skCFwGcOOxe10D9gAVpSHGFe4C9M/
-	 1xvyjU7mOz1XriRCofP5NaAFtiPjBGoBhBjQjyHWOyDI7fYA2qX4f2SZZ+Z2zwczcJ
-	 jgg1jOhyCrhVbKhddhBZwBmsQVZq/b+CIA70zzTqRx+p2p9ciLqIKKfIK38wrzC58M
-	 PLveUkdKNYA/+DYaBN4FH/O1I4ZCbGFXUdnu2BtZNNMdwoPW5sbgVUsfKNHnAl0nWm
-	 e1xf8OUKleqV2xJUCOVDT7O3+9NoIfECvnDDF1B8d6e8bvuSC4pYLDOqOQeG9HnqNh
-	 SLm0VKKWqt8PA==
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Sasha Levin <sashal@kernel.org>,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	shivamurthy.shastri@linutronix.de,
-	bhelgaas@google.com,
-	anna-maria@linutronix.de,
-	jgross@suse.com,
-	jgg@ziepe.ca,
-	yury.norov@gmail.com,
-	marek.vasut+renesas@mailbox.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.1 132/212] genirq/msi: Store the IOMMU IOVA directly in msi_desc instead of iommu_cookie
-Date: Mon,  5 May 2025 19:05:04 -0400
-Message-Id: <20250505230624.2692522-132-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250505230624.2692522-1-sashal@kernel.org>
-References: <20250505230624.2692522-1-sashal@kernel.org>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="qHr3baVd"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=q6eBExx1eL1zL/02yABWINFupkd8vGrXgWuNXIpvJODat07yMG33YgowKDhCCFC2ZcNiRW5xTjJCiaAIQeQzHCGofl/V1AmMkEJJnrw8FAIP5E5qog+ujONnHfb3O4HeOIkTguYz3CUy3hzI8WTSZgHkzUOlNGWgmF9UYMBibWpEvfpXAenpo1fybnu0XxeLrSDfqj97Te8qLDea1tJ6veO8t/aH2DSF+DcjFlWzcHeIrhI31ekGU2Ts9t8BcnOcKh6iCpTORZIxaJK+OM8H7/r74E3iajsaVk472T5Zfehy1yp6FBmvEMRZ7694cUkZgAgfSVLm1TmE1U5T/mt0eQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Nk4xzjyhRxvuRS9iUa8wmhA2oETlZwzpqF+tgsH7aYk=;
+ b=LTSKPqDpFs0nsK1mQ3Sw6E40nLRuPWUCUDqiyOIqVbFnJfvzmORJ4ZBWPXBm575qDChEfGny5o2tSE+Zch9linUwqka0OkIQPDM8VdJ5Rq10Afg9wyiTp3mXoacB1RWa0gcHrD4Jbt2kQuKoTSAlzhXGstRxZG2IcAzt+pS5bi2IMCLDO8LAFHznKA+T8tgwy0CqOod8l05U6Q08A+pN6sGkQp+2o4hzxyL5EPtMBS2fSArhhBQLFD7zlx9RZvPzeNcQX7RAmxtFbY8uIPI72vorbm8X3Kjqytm3aQu2V3oNGH/bfwqTx1JYqk21CQN63FCQ+WimO0h8Ja4jRkeo+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Nk4xzjyhRxvuRS9iUa8wmhA2oETlZwzpqF+tgsH7aYk=;
+ b=qHr3baVdyD2lSsW+LyewBTM1Mv9tCJqTDfO2GGw09j/k9uLWDBRz9qzjRg4W9qxC8HhdAHMbRqwLSmZuHaNErEI+usm7aE9q1IiyVop+eQLnWRCUfS8NMxLCcZ2hobdRXFIGeaWWzO5ZGMIOsvG76JORhtxVVsUqsd46jn1d2C/YPpyUf4+SsSTmjy6VaP+ZQguvBC/sD5Ayxd0XblI2BoC4bgxkwtriXhp2/XQHXfolNewiJKhjN+yQ/VkgAStVTxVuFOQWOobdg4HjDVWjBZPHn5JMesYUZAaVZ07zD+lWw/smSq/ohFrhGi3f+/kECJshywzwsD/DdURJ3m0wnQ==
+Received: from BN9PR03CA0957.namprd03.prod.outlook.com (2603:10b6:408:108::32)
+ by CYYPR12MB8855.namprd12.prod.outlook.com (2603:10b6:930:bb::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8699.24; Tue, 6 May
+ 2025 02:54:25 +0000
+Received: from BN1PEPF00005FFE.namprd05.prod.outlook.com
+ (2603:10b6:408:108:cafe::e0) by BN9PR03CA0957.outlook.office365.com
+ (2603:10b6:408:108::32) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8699.28 via Frontend Transport; Tue,
+ 6 May 2025 02:54:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BN1PEPF00005FFE.mail.protection.outlook.com (10.167.243.230) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8722.18 via Frontend Transport; Tue, 6 May 2025 02:54:23 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 5 May 2025
+ 19:54:17 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Mon, 5 May 2025 19:54:18 -0700
+Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.126.190.180)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Mon, 5 May 2025 19:53:54 -0700
+Date: Mon, 5 May 2025 19:53:44 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Alexey Kardashevskiy <aik@amd.com>, <kevin.tian@intel.com>,
+	<will@kernel.org>, <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>,
+	<robin.murphy@arm.com>, <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>,
+	<shuah@kernel.org>, <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-kselftest@vger.kernel.org>,
+	<eric.auger@redhat.com>, <jean-philippe@linaro.org>, <mdf@kernel.org>,
+	<mshavit@google.com>, <shameerali.kolothum.thodi@huawei.com>,
+	<smostafa@google.com>, <yi.l.liu@intel.com>
+Subject: Re: [PATCH v2 06/19] iommufd/viommu: Add
+ IOMMU_VIOMMU_SET/UNSET_VDEV_ID ioctl
+Message-ID: <aBl5uLOFCntuIYYz@nvidia.com>
+References: <cover.1724776335.git.nicolinc@nvidia.com>
+ <6348cc7a72ce9f2ac0e9caf9737e70177a01eb74.1724776335.git.nicolinc@nvidia.com>
+ <35701c5e-030a-4f52-b6f6-ed18368fb2cd@amd.com>
+ <20241004114147.GF1365916@nvidia.com>
+ <95ab62fa-bb1c-4e4a-a210-b0bdba0d4ad2@amd.com>
+ <aBHYN39FcH+NG5Ab@Asurada-Nvidia>
+ <20250505170807.GP2260709@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.1.136
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250505170807.GP2260709@nvidia.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN1PEPF00005FFE:EE_|CYYPR12MB8855:EE_
+X-MS-Office365-Filtering-Correlation-Id: 881c4bed-d216-4ba9-03c5-08dd8c494ebd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|82310400026|7416014|36860700013|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?XTKWsnYJZe9EQhNnsgVDuZV76toPNa2/H8mWryRoRQb8iPCZMIG1w2fm8sFz?=
+ =?us-ascii?Q?oIgTJglbmNPJ8D+ZdmJclsPHXz/x9oCxYPDIcmpQnQyNrHwKZkMNWVycBorL?=
+ =?us-ascii?Q?C0s44QK+TnoLKKc40G7ZiCnMeJGyvm6b9w1PuKxcxMd8e6E3X/TG7dLCqNwN?=
+ =?us-ascii?Q?ZtYKgKYw0PCtVSHYZEJNj8lHY6lF0ftKCF8gViBkWSy1rS5w6cK/H7D4OHC4?=
+ =?us-ascii?Q?uv/nTlf+Ko04aBeo+25yqX4pcdov69QfidWSZR8DLsJMyXVNy7Jhdnl0hexq?=
+ =?us-ascii?Q?RIKKEt3dAbt25Tlodu2Rxs5d9upgB5PeHiIUe8A9bnnuxURTAQOJ8yxwbpeT?=
+ =?us-ascii?Q?ooyM7i3I7Xav3tNDDOWViCLfIUyFKlrWyQXXmJ77g+/Y3XzaFHM7hkUnsdg4?=
+ =?us-ascii?Q?oLZv14hQ05YxUEM+slNlck6ltcAFMjlOvygfG5I6AZqPCzIeOm/bF7tN0gM4?=
+ =?us-ascii?Q?nze/bKKD3PUKUbeeNPscZ9etHMKIJoRbkXALqxEfghOMi9M6qk5eOAe2+Z59?=
+ =?us-ascii?Q?MPUBoarTWxIskOr4vUXz4jqwe0ZgRx7tag4W2ezXjDK/cJ7gkWMK6k2vG4Cz?=
+ =?us-ascii?Q?WFZn/VSU0JobaCzOO4wrw9lAFlB5elSHrHl9orKSeKsZrzZcI9T+vrHz0w7X?=
+ =?us-ascii?Q?Iv497FTwBlaaBDgVH60Mk6T/txCxkr1LMmp0ieUV3f2Tx0KNVoGH/pl/u/p2?=
+ =?us-ascii?Q?8a/0fHnkvrfU7dNfdNA8inol+yQySsfBtSYC0F/vZpt4XFbpXgPcTfOTWdw1?=
+ =?us-ascii?Q?Xliu5hVwWpUPJyhnM1wwP2AtzU7l8ecQzHek4Wjt+pNOhGYNBaeWWByFYrlw?=
+ =?us-ascii?Q?SdrIlqB1oTEit3xlTUXmbDWLKoQKfw9KRU42I2QRUXPaoX/f5LjrHZQpdS5w?=
+ =?us-ascii?Q?A6+SKS0OxnYU79YoSRJN+ch/uqdNm8uFdvbR6WAtxX4iHfQHSWFYIPwoPEiq?=
+ =?us-ascii?Q?/xQqPSLuwO7gsnIUBoGWc62baRQQCS6QtqN8Xf7CUzXpr8o5DGkJiXCSV+yb?=
+ =?us-ascii?Q?5SYxzcTJ7FaCPMy0kMHQc0ruRbkExwT4r64EuCGVJ1BO9YNP0spOZHRqLScX?=
+ =?us-ascii?Q?XolQPP/cM71qAwhz7UQah9xGkN6jkI4RcNnpgd3MZIdAXKFa1ddOb9SX4/zi?=
+ =?us-ascii?Q?46LRjdsxE2uCJHuAiJVe+Aa/0a2IUCMYBN055KSYOsWfZKsstFbJhr/bIyY9?=
+ =?us-ascii?Q?+dnLTXb/tWL40jf5TCanY5WyWzA4P6PJXTHaXVcJS7Se4ub0RksRI+7XRsso?=
+ =?us-ascii?Q?ySOdkZms1+fhrPSZenZV5k7AogoGV6u+WAY+CXKwUqs4LVyLA+/d7lLMG9mn?=
+ =?us-ascii?Q?72vNbpDX2XHH8uWkvC59GmkpVLCyyDdJQD3gPHE8K+e8UU5Ok5lHFzs0j+F/?=
+ =?us-ascii?Q?YZAL5XgqUjdaoVW7JEaEFQ2uwacIt/bfgnF574witj2C1q5yPsadHQADH4O/?=
+ =?us-ascii?Q?Auw4b3ZzuX/Ix/oN39sMKU9yGYUSxWRqdid5qwgzpc6pPekQFIcIt9EgRws3?=
+ =?us-ascii?Q?NRevBnbPD1qvH3HNeZsUrBD47deFxgFwYAff?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(82310400026)(7416014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2025 02:54:23.6166
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 881c4bed-d216-4ba9-03c5-08dd8c494ebd
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN1PEPF00005FFE.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR12MB8855
 
-From: Jason Gunthorpe <jgg@nvidia.com>
+On Mon, May 05, 2025 at 02:08:07PM -0300, Jason Gunthorpe wrote:
+> On Wed, Apr 30, 2025 at 12:58:47AM -0700, Nicolin Chen wrote:
+> 
+> > > ... and I just hit a problem with it - this is basically guest BDFn
+> > > and it works as long as I'm hotplugging the TEE-IO VF into an SNP VM
+> > > but does not when I pass through via the QEMU cmdline - bus numbers
+> > > are not assigned yet. So I have to postpone the vdevice allocation
+> > > till run time, did I miss something here? Thanks,
+> > 
+> > I have a similar case with QEMU ARM64's VM: so vDEVICE on ARM is
+> > allocated at runtime as well because the BDF number isn't ready
+> > at the boot time.
+> 
+> Oh that's ugly then.. So you'll need to add some kind of 'modify
+> sid/bdf' operation I think.
 
-[ Upstream commit 1f7df3a691740a7736bbc99dc4ed536120eb4746 ]
+But the initial vDEVICE would be still unusable. Its BDF number is
+literally 0 in my case. It can't be used for SID-based invalidation
+nor the reverse vSID lookup for fault injection..
 
-The IOMMU translation for MSI message addresses has been a 2-step process,
-separated in time:
+> The bus numbers can be reassigned at any time on the fly by the guest
+> by reprogramming the PCI hierarchy.
 
- 1) iommu_dma_prepare_msi(): A cookie pointer containing the IOVA address
-    is stored in the MSI descriptor when an MSI interrupt is allocated.
+Yes. If we take some aggressive use case into account, where its
+BDF number could change multiple times, I think it's natural for
+VMM to simply destroy the previous vDEVICE and allocate a new one
+with a new BDF number, right?
 
- 2) iommu_dma_compose_msi_msg(): this cookie pointer is used to compute a
-    translated message address.
-
-This has an inherent lifetime problem for the pointer stored in the cookie
-that must remain valid between the two steps. However, there is no locking
-at the irq layer that helps protect the lifetime. Today, this works under
-the assumption that the iommu domain is not changed while MSI interrupts
-being programmed. This is true for normal DMA API users within the kernel,
-as the iommu domain is attached before the driver is probed and cannot be
-changed while a driver is attached.
-
-Classic VFIO type1 also prevented changing the iommu domain while VFIO was
-running as it does not support changing the "container" after starting up.
-
-However, iommufd has improved this so that the iommu domain can be changed
-during VFIO operation. This potentially allows userspace to directly race
-VFIO_DEVICE_ATTACH_IOMMUFD_PT (which calls iommu_attach_group()) and
-VFIO_DEVICE_SET_IRQS (which calls into iommu_dma_compose_msi_msg()).
-
-This potentially causes both the cookie pointer and the unlocked call to
-iommu_get_domain_for_dev() on the MSI translation path to become UAFs.
-
-Fix the MSI cookie UAF by removing the cookie pointer. The translated IOVA
-address is already known during iommu_dma_prepare_msi() and cannot change.
-Thus, it can simply be stored as an integer in the MSI descriptor.
-
-The other UAF related to iommu_get_domain_for_dev() will be addressed in
-patch "iommu: Make iommu_dma_prepare_msi() into a generic operation" by
-using the IOMMU group mutex.
-
-Link: https://patch.msgid.link/r/a4f2cd76b9dc1833ee6c1cf325cba57def22231c.1740014950.git.nicolinc@nvidia.com
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/dma-iommu.c | 28 +++++++++++++---------------
- include/linux/msi.h       | 33 ++++++++++++---------------------
- 2 files changed, 25 insertions(+), 36 deletions(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 3fa66dba0a326..cbf9ec320691a 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1661,7 +1661,7 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
- 	static DEFINE_MUTEX(msi_prepare_lock); /* see below */
- 
- 	if (!domain || !domain->iova_cookie) {
--		desc->iommu_cookie = NULL;
-+		msi_desc_set_iommu_msi_iova(desc, 0, 0);
- 		return 0;
- 	}
- 
-@@ -1673,11 +1673,12 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
- 	mutex_lock(&msi_prepare_lock);
- 	msi_page = iommu_dma_get_msi_page(dev, msi_addr, domain);
- 	mutex_unlock(&msi_prepare_lock);
--
--	msi_desc_set_iommu_cookie(desc, msi_page);
--
- 	if (!msi_page)
- 		return -ENOMEM;
-+
-+	msi_desc_set_iommu_msi_iova(
-+		desc, msi_page->iova,
-+		ilog2(cookie_msi_granule(domain->iova_cookie)));
- 	return 0;
- }
- 
-@@ -1688,18 +1689,15 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
-  */
- void iommu_dma_compose_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
- {
--	struct device *dev = msi_desc_to_dev(desc);
--	const struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
--	const struct iommu_dma_msi_page *msi_page;
-+#ifdef CONFIG_IRQ_MSI_IOMMU
-+	if (desc->iommu_msi_shift) {
-+		u64 msi_iova = desc->iommu_msi_iova << desc->iommu_msi_shift;
- 
--	msi_page = msi_desc_get_iommu_cookie(desc);
--
--	if (!domain || !domain->iova_cookie || WARN_ON(!msi_page))
--		return;
--
--	msg->address_hi = upper_32_bits(msi_page->iova);
--	msg->address_lo &= cookie_msi_granule(domain->iova_cookie) - 1;
--	msg->address_lo += lower_32_bits(msi_page->iova);
-+		msg->address_hi = upper_32_bits(msi_iova);
-+		msg->address_lo = lower_32_bits(msi_iova) |
-+				  (msg->address_lo & ((1 << desc->iommu_msi_shift) - 1));
-+	}
-+#endif
- }
- 
- static int iommu_dma_init(void)
-diff --git a/include/linux/msi.h b/include/linux/msi.h
-index e5dfb9cf3aa11..1bf8d126f7928 100644
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -129,6 +129,10 @@ struct pci_msi_desc {
-  * @dev:	Pointer to the device which uses this descriptor
-  * @msg:	The last set MSI message cached for reuse
-  * @affinity:	Optional pointer to a cpu affinity mask for this descriptor
-+ * @iommu_msi_iova: Optional shifted IOVA from the IOMMU to override the msi_addr.
-+ *                  Only used if iommu_msi_shift != 0
-+ * @iommu_msi_shift: Indicates how many bits of the original address should be
-+ *                   preserved when using iommu_msi_iova.
-  * @sysfs_attr:	Pointer to sysfs device attribute
-  *
-  * @write_msi_msg:	Callback that may be called when the MSI message
-@@ -146,7 +150,8 @@ struct msi_desc {
- 	struct msi_msg			msg;
- 	struct irq_affinity_desc	*affinity;
- #ifdef CONFIG_IRQ_MSI_IOMMU
--	const void			*iommu_cookie;
-+	u64				iommu_msi_iova : 58;
-+	u64				iommu_msi_shift : 6;
- #endif
- #ifdef CONFIG_SYSFS
- 	struct device_attribute		*sysfs_attrs;
-@@ -214,28 +219,14 @@ struct msi_desc *msi_next_desc(struct device *dev, enum msi_desc_filter filter);
- 
- #define msi_desc_to_dev(desc)		((desc)->dev)
- 
--#ifdef CONFIG_IRQ_MSI_IOMMU
--static inline const void *msi_desc_get_iommu_cookie(struct msi_desc *desc)
--{
--	return desc->iommu_cookie;
--}
--
--static inline void msi_desc_set_iommu_cookie(struct msi_desc *desc,
--					     const void *iommu_cookie)
--{
--	desc->iommu_cookie = iommu_cookie;
--}
--#else
--static inline const void *msi_desc_get_iommu_cookie(struct msi_desc *desc)
-+static inline void msi_desc_set_iommu_msi_iova(struct msi_desc *desc, u64 msi_iova,
-+					       unsigned int msi_shift)
- {
--	return NULL;
--}
--
--static inline void msi_desc_set_iommu_cookie(struct msi_desc *desc,
--					     const void *iommu_cookie)
--{
--}
-+#ifdef CONFIG_IRQ_MSI_IOMMU
-+	desc->iommu_msi_iova = msi_iova >> msi_shift;
-+	desc->iommu_msi_shift = msi_shift;
- #endif
-+}
- 
- #ifdef CONFIG_PCI_MSI
- struct pci_dev *msi_desc_to_pci_dev(struct msi_desc *desc);
--- 
-2.39.5
-
+Thanks
+Nicolin
