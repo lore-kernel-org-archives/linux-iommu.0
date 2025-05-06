@@ -1,246 +1,81 @@
-Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92CC128136B
-	for <iommu@lists.linux.dev>; Tue,  6 May 2025 14:08:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 783331E3DF4;
+	Tue,  6 May 2025 14:19:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746540499; cv=none; b=hzeV2haWUeq65CsOaJIZ6BhBAbgGZs8ZwhszatsszknkfV5hXbNcU1V2p0ZxF1df9NFM06ROpyAFCI05grrJZFFj1dm5wHtSn5LMivb1suLXZDpmob2mVxTfg2hFDHcRHmVxs+KvlDIu6dDYeIXuF6zR1QtmYmudBCyT4CkGJI8=
+	t=1746541198; cv=none; b=JD/gJ77kzVf8lsc8BVRIxrdL9uMeSn0z6JxidHRNuWj0IJXo3gsxEi8UMHEogn3erxLQCtnGcXgjbluOQz+0bHLEQ9i/PpcPPok4VUFvrZx44Rm6yUncpQFtNMVIFqh8vMgAY+XyjbpCYBzn+gOnVqiWRwyWKDo6Oduo/WS5p3k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746540499; c=relaxed/simple;
-	bh=yJcWm3LDiTa5MEQ82in3Wq+Kjhnzjcsib1HDSIdGxrs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=IRBo/74leZ6gVNMvRIiFeO0zBKJliB4P40YQ6mrJvWNBWgZNcGIE3ifLuinE75TRNTrpUHLn+LiLcIXT48uXLiMbRKvfHZ2QaT/3JlJ8fAH4NnCicYDpEKwgdIR8hb6FHuIWSGGsdRUyKX1Ohw1NX2QLOjy3rUgLdAI3/VdH0uI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J2pBAYW8; arc=none smtp.client-ip=209.85.215.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1746541198; c=relaxed/simple;
+	bh=mTMRUMgR4L/7RvmPvU/2UmZ78JGiv9EeVU2GVr4rwT4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Q8xtaNeq0hUNkEtMRDzdqf/bhQGkwf9rniTGWDxdzdAVS7Cxpe5+PrIbbO/UmsI0U1VDoEzvJ765BclxBllAdkDclQnx5OnNuS23yyOuVmoE8iOuTWWt9R1aT9WRo2FXQQ6H+Kx+CBfcBWWTuJ+Oi2PCj4RtfDoQCQLpeDXhrPA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mjKpFh6x; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J2pBAYW8"
-Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-af51b57ea41so705163a12.2
-        for <iommu@lists.linux.dev>; Tue, 06 May 2025 07:08:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1746540497; x=1747145297; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=eMambQHHu9+TC3RPEGjqmbblfLTvr1IrSGG4pLfvj0w=;
-        b=J2pBAYW8cc/IkJZpKiJkbesyABEEPYBE/2NHEH6mbBGbz0CgHF0yefxJCU6Gezubzo
-         t2jzhCWLj32uA6kMQtvmx09By3aTw9qCKfhLwux0xJL2gRu/Dp2aMC2HUXujgxGqs2HU
-         oENv1V5wXSg7QKdAsEeF6uOeg0MZ5CWHKblLY+yGziLQAdBRiFxvpJiGreeUopiNxMaG
-         Rx9XRdk0DtxQyCk9n8ycrgkTlY5LL3Iv+M1j/+dFGlKCJCMBWrrob13U5jWxjqnjzz1J
-         40/5R4Tb8nt6uKxBFNgnRTigDMGwzFiWn4WtS2VoUnfF11Fk8E/4tfj+75q5UQNZmH4m
-         xheQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746540497; x=1747145297;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=eMambQHHu9+TC3RPEGjqmbblfLTvr1IrSGG4pLfvj0w=;
-        b=qJQLv0voBLlwUhSbDHSb+gZbIbdnNyT91sjJXqK5q3CPV9jg2PCuxXmqOFTuo920td
-         96pxRi+72l4LtIy+IDZtKMipyZ7BQGtZSTCLty90fbTpY3ArZcOdm+Brh9h7odudQaab
-         H1LWsGN/4GhrBLmDGM9Soo+u95ptzBRIuCc7umHomd/NI5foHoxB7T2A5/1pjKOFTGpa
-         a/rtLq3phSwjzFPr+/jUO33eRoaTrj/1eRNNzSDdF2/2/Ak0JvvNJ8P7c4fqMje9sphz
-         F1dvDegMiCN0DpNl/zJ8ziQmwliISwON8m+qFqA0M+0nd+2IGLYxz9PdWfW1YDTJlN/y
-         hi/g==
-X-Forwarded-Encrypted: i=1; AJvYcCW2atrU005yR76lNtZXkjxMTxdWWuBmTKg0rc/sgtlIT+36bcdBCLX++IUf/I4xVUeOgEr93A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywq2kSnoNdlQD25h9pVSdaRjguY18Qa5KEVqoa6YSizmSVBSQOw
-	xsDHy+9YDW4Ipc60/7L4o/rMm34lE6cYz/uPy7u1A21GhPy8DDA5NpQ868r3O/0dS9plD05ee0y
-	NdRmchaJUeNydMEl773AphCXcNKM=
-X-Gm-Gg: ASbGncsPIgj5+ZQhCMkW7je3s1Q2NOohb7VMMfpvfJRCvGOanIZ1mZgNXLPQVcTnnTs
-	cuPSHOA4itC/ZhH8oIs+WFPj5Ujpeq5+kS9G0XHZWUDpOgoOwMit3y8GBSaaUjLHXqFJk6Nyv0O
-	ZaQlRbfVjFUy+hVUQ0nEo5Hw==
-X-Google-Smtp-Source: AGHT+IF23nCrJaH3Mng+oDEHNLDP6N6PfnCkKREry5Wzy8HtvIefEq1olFphNquoaJEf3Hy0gX7xlzc7Wvr6z2YpGbI=
-X-Received: by 2002:a17:903:41c2:b0:224:88c:9253 with SMTP id
- d9443c01a7336-22e102f3293mr93572875ad.6.1746540496500; Tue, 06 May 2025
- 07:08:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mjKpFh6x"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C1F0C4CEE4;
+	Tue,  6 May 2025 14:19:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1746541197;
+	bh=mTMRUMgR4L/7RvmPvU/2UmZ78JGiv9EeVU2GVr4rwT4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=mjKpFh6x+eNnuikWStC2X+QGu1Fl0efOWw++cCFWdpDStaJJsRlBxvrhHbsLt8th+
+	 YkqLKUIUVSIzYYURi0ngt9sUpNErDhsod0lN+41Z1wNjdrT6fI/2PH9i/5S6nLjKn4
+	 KHB0jCRiniVTa6PqaSFdT16ATwKV51S47DKjDRc8v8YLEWT4U+RpaIivsw4NxDlEMB
+	 onLFp4YsRE7SJfcz2zs/JY6b9IEvpUqOgEkiMeykztAJ48sM60fZ9v6Um2lXAcnm1T
+	 Nl74zX5JyeBVL1E0HnrCQVL8L2e3iWHfnNRZ26cMEMM1bAfrveFOSulD96tWCGnfuh
+	 i0bnNYruJw3Hg==
+Date: Tue, 6 May 2025 15:19:49 +0100
+From: Will Deacon <will@kernel.org>
+To: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
+Cc: ryan.roberts@arm.com, suzuki.poulose@arm.com,
+	yang@os.amperecomputing.com, corbet@lwn.net,
+	catalin.marinas@arm.com, jean-philippe@linaro.org,
+	robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org,
+	paulmck@kernel.org, mark.rutland@arm.com, joey.gouly@arm.com,
+	maz@kernel.org, james.morse@arm.com, broonie@kernel.org,
+	oliver.upton@linux.dev, baohua@kernel.org, david@redhat.com,
+	ioworker0@gmail.com, jgg@ziepe.ca, nicolinc@nvidia.com,
+	mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com,
+	kevin.tian@intel.com, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: Re: [RESEND PATCH v6 2/3] iommu/arm: Add BBM Level 2 smmu feature
+Message-ID: <20250506141949.GA1197@willie-the-truck>
+References: <20250428153514.55772-2-miko.lenczewski@arm.com>
+ <20250428153514.55772-6-miko.lenczewski@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250319-msm-gpu-fault-fixes-next-v5-0-97561209dd8c@gmail.com>
- <20250319-msm-gpu-fault-fixes-next-v5-3-97561209dd8c@gmail.com> <20250506122449.GB723@willie-the-truck>
-In-Reply-To: <20250506122449.GB723@willie-the-truck>
-From: Connor Abbott <cwabbott0@gmail.com>
-Date: Tue, 6 May 2025 10:08:05 -0400
-X-Gm-Features: ATxdqUGXywpmRh-T8ACY0CkrWhxLattxcHrjANwJCwaesOG_LtpOol-JucgftpU
-Message-ID: <CACu1E7FA0M_0Un3qPRNtqy4R_NbaMks6FSkpQZBuyqJpuT-p7w@mail.gmail.com>
-Subject: Re: [PATCH v5 3/5] iommu/arm-smmu: Fix spurious interrupts with stall-on-fault
-To: Will Deacon <will@kernel.org>
-Cc: Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>, 
-	Konrad Dybcio <konradybcio@kernel.org>, Abhinav Kumar <quic_abhinavk@quicinc.com>, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	freedreno@lists.freedesktop.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250428153514.55772-6-miko.lenczewski@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Tue, May 6, 2025 at 8:24=E2=80=AFAM Will Deacon <will@kernel.org> wrote:
->
-> On Wed, Mar 19, 2025 at 10:44:02AM -0400, Connor Abbott wrote:
-> > On some SMMUv2 implementations, including MMU-500, SMMU_CBn_FSR.SS
-> > asserts an interrupt. The only way to clear that bit is to resume the
-> > transaction by writing SMMU_CBn_RESUME, but typically resuming the
-> > transaction requires complex operations (copying in pages, etc.) that
-> > can't be done in IRQ context. drm/msm already has a problem, because
-> > its fault handler sometimes schedules a job to dump the GPU state and
-> > doesn't resume translation until this is complete.
-> >
-> > Work around this by disabling context fault interrupts until after the
-> > transaction is resumed. Because other context banks can share an IRQ
-> > line, we may still get an interrupt intended for another context bank,
-> > but in this case only SMMU_CBn_FSR.SS will be asserted and we can skip
-> > it assuming that interrupts are disabled which is accomplished by
-> > removing the bit from ARM_SMMU_CB_FSR_FAULT. SMMU_CBn_FSR.SS won't be
-> > asserted unless an external user enabled stall-on-fault, and they are
-> > expected to resume the translation and re-enable interrupts.
-> >
-> > Signed-off-by: Connor Abbott <cwabbott0@gmail.com>
-> > Reviewed-by Robin Murphy <robin.murphy@arm.com>
-> > Reviewed-by: Rob Clark <robdclark@gmail.com>
-> > ---
-> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 15 ++++++++++-
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.c      | 41 ++++++++++++++++++++++=
-+++++++-
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.h      |  1 -
-> >  3 files changed, 54 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu=
-/arm/arm-smmu/arm-smmu-qcom.c
-> > index 186d6ad4fd1c990398df4dec53f4d58ada9e658c..a428e53add08d451fb2152e=
-3ab80e0fba936e214 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > @@ -90,12 +90,25 @@ static void qcom_adreno_smmu_resume_translation(con=
-st void *cookie, bool termina
-> >       struct arm_smmu_domain *smmu_domain =3D (void *)cookie;
-> >       struct arm_smmu_cfg *cfg =3D &smmu_domain->cfg;
-> >       struct arm_smmu_device *smmu =3D smmu_domain->smmu;
-> > -     u32 reg =3D 0;
-> > +     u32 reg =3D 0, sctlr;
-> > +     unsigned long flags;
-> >
-> >       if (terminate)
-> >               reg |=3D ARM_SMMU_RESUME_TERMINATE;
-> >
-> > +     spin_lock_irqsave(&smmu_domain->cb_lock, flags);
-> > +
-> >       arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, reg);
-> > +
-> > +     /*
-> > +      * Re-enable interrupts after they were disabled by
-> > +      * arm_smmu_context_fault().
-> > +      */
-> > +     sctlr =3D arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_SCTLR);
-> > +     sctlr |=3D ARM_SMMU_SCTLR_CFIE;
-> > +     arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_SCTLR, sctlr);
-> > +
-> > +     spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
-> >  }
-> >
-> >  #define QCOM_ADRENO_SMMU_GPU_SID 0
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/=
-arm-smmu/arm-smmu.c
-> > index c7b5d7c093e71050d29a834c8d33125e96b04d81..9927f3431a2eab913750e60=
-79edc6393d1938c98 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > @@ -470,13 +470,52 @@ static irqreturn_t arm_smmu_context_fault(int irq=
-, void *dev)
-> >       if (!(cfi->fsr & ARM_SMMU_CB_FSR_FAULT))
-> >               return IRQ_NONE;
-> >
-> > +     /*
-> > +      * On some implementations FSR.SS asserts a context fault
-> > +      * interrupt. We do not want this behavior, because resolving the
-> > +      * original context fault typically requires operations that cann=
-ot be
-> > +      * performed in IRQ context but leaving the stall unacknowledged =
-will
-> > +      * immediately lead to another spurious interrupt as FSR.SS is st=
-ill
-> > +      * set. Work around this by disabling interrupts for this context=
- bank.
-> > +      * It's expected that interrupts are re-enabled after resuming th=
-e
-> > +      * translation.
->
-> s/translation/transaction/
->
-> > +      *
-> > +      * We have to do this before report_iommu_fault() so that we don'=
-t
-> > +      * leave interrupts disabled in case the downstream user decides =
-the
-> > +      * fault can be resolved inside its fault handler.
-> > +      *
-> > +      * There is a possible race if there are multiple context banks s=
-haring
-> > +      * the same interrupt and both signal an interrupt in between wri=
-ting
-> > +      * RESUME and SCTLR. We could disable interrupts here before we
-> > +      * re-enable them in the resume handler, leaving interrupts enabl=
-ed.
-> > +      * Lock the write to serialize it with the resume handler.
-> > +      */
->
-> I'm struggling to understand this last part. If the resume handler runs
-> synchronously from report_iommu_fault(), then there's no need for
-> locking because we're in interrupt context. If the resume handler can
-> run asynchronously from report_iommu_fault(), then the locking doesn't
-> help because the code below could clear CFIE right after the resume
-> handler has set it.
+On Mon, Apr 28, 2025 at 03:35:16PM +0000, Mikołaj Lenczewski wrote:
+> For supporting BBM Level 2 for userspace mappings, we want to ensure
+> that the smmu also supports its own version of BBM Level 2. Luckily, the
+> smmu spec (IHI 0070G 3.21.1.3) is stricter than the aarch64 spec (DDI
+> 0487K.a D8.16.2), so already guarantees that no aborts are raised when
+> BBM level 2 is claimed.
+> 
+> Add the feature and testing for it under arm_smmu_sva_supported().
+> 
+> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 3 +++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     | 3 +++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     | 4 ++++
+>  3 files changed, 10 insertions(+)
 
-The problem is indeed when the resume handler runs asynchronously.
-Clearing CFIE right after the resume handler has set it is normal and
-expected. The issue is the opposite, i.e. something like:
+This looks fine to me but please note that it doesn't apply against
+mainline (v6.15-rc5).
 
-- Resume handler writes RESUME and stalls for some reason
-- The interrupt handler runs through and clears CFIE while it's already cle=
-ared
-- Resume handler sets CFIE, assuming that the handler hasn't run yet
-but it actually has
-
-This wouldn't happen with only one context bank, because we wouldn't
-get an interrupt until the resume handler sets CFIE, but with multiple
-context banks and a shared interrupt line we could get a "spurious"
-interrupt due to a fault in an earlier context bank that becomes not
-spurious if the resume handler writes RESUME before the context fault
-handler for this bank reads FSR above.
-
-Connor
-
->
-> I think the broader problem is that we can end up reporting a spurious
-> fault when the irq is shared between context banks. However, your change
-> to ARM_SMMU_CB_FSR_FAULT fixes that afaict:
->
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/=
-arm-smmu/arm-smmu.h
-> > index ff84ce3b8d8567d3402e945e8277ca2a87df9a4e..5fe8e482457f905529a08ae=
-a14ea5656d3e31328 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> > @@ -214,7 +214,6 @@ enum arm_smmu_cbar_type {
-> >                                        ARM_SMMU_CB_FSR_TLBLKF)
-> >
-> >  #define ARM_SMMU_CB_FSR_FAULT                (ARM_SMMU_CB_FSR_MULTI | =
-       \
-> > -                                      ARM_SMMU_CB_FSR_SS |           \
-> >                                        ARM_SMMU_CB_FSR_UUT |          \
-> >                                        ARM_SMMU_CB_FSR_EF |           \
-> >                                        ARM_SMMU_CB_FSR_PF |           \
->
-> because now any subsequent spurious IRQs will return IRQ_NONE. So I
-> don't see why we need the locking at all. What am I missing?
->
-> Also, I think your change probably exposes a benign bug in the qcom
-> debug code as qcom_tbu_halt() has the following:
->
-> if ((fsr & ARM_SMMU_CB_FSR_FAULT) && (fsr & ARM_SMMU_CB_FSR_SS))
->         ...
->
-> Will
+Will
