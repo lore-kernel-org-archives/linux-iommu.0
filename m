@@ -1,81 +1,99 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B8C419D892
-	for <iommu@lists.linux.dev>; Tue,  6 May 2025 08:35:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2BF9F24728D
+	for <iommu@lists.linux.dev>; Tue,  6 May 2025 08:36:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746520531; cv=none; b=oV2R2WekncQDk8GWMvyvT7uv+SWU4R4E5tjBJt8cVOw1KRTNj1Os5HQmC0zq4qWDg1q4KeBSgmUnlniCIyIaEpdbI8DqKcBeYRuDTiGbmtODb2/44/Wfl2VBZv7u0R2qlznF3invzz/cqqTLCmZFAzKmtvHRYWQ7XLOiPsvfri8=
+	t=1746520580; cv=none; b=ZniWFns6wGNaT670jvN2jpCKLwxH1umw6d5mS469n4YrePQWZEDRHwQ03F/13zn9r4NYbiVm7v+vGDs8CqBGPgKaHT82MgDA/JISoFkHfhoZ7wg9Cvhm158NOzJR0ghkiK2lStgEeIddxSpKu3QyYqQKmIOfogI9TylzBAY2kTo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746520531; c=relaxed/simple;
-	bh=BA1uB0bqEJgSDP4rtIOcxMMJ4yxs1wrJep5UBsDDoZk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=apN19fCppN2pTuQ2RL96m07IhNGdajyVgJI+AfGKbRGyvs9I4/hBgdYqPhxNBYtSUABZfy0FYMJC8cgnSMhxau/UkVPKyQ9+lEHvy2PsqjaRb2NDzPlYdzTEq5lTgI32WjpOIW+Hmk3CjwiT2fHvHqZ4ld/k7HMy9edFw94U9uY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=fAcvtaRC; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="fAcvtaRC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1746520527;
-	bh=BA1uB0bqEJgSDP4rtIOcxMMJ4yxs1wrJep5UBsDDoZk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=fAcvtaRCqtpxu1jAL/i2hRAchnLINaS+Q7R2UxugAPYhY4gG1E8uJuu+Y+Ow/qGMz
-	 2yB3KnpFgVNo1HkRDFeYwcknuf6JQ2IQPt1IaW5OzBRnLCLQ9HV3H+1yWHnwLoUels
-	 h56Yhj3uhKjHJXaXHDB19SX9Z4CyDpg6j3Q8iLJJxxmcYdzj3wO6V6YJibv84vm20W
-	 EFH1x+3iGZOHszLIYacT3lmDZwn0I5SNVIrTbwIn5/0Awv1WURIxh2iS+VNtHqa6be
-	 fyR59LYaJDY3lhWX5AC6WmdH8u0cci6w6pKijSRkSb+uWFYxt1YtGm5QCoRvViicah
-	 YLkzWNhp9lZ7g==
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 5EC5F17E09BE;
-	Tue,  6 May 2025 10:35:26 +0200 (CEST)
-Message-ID: <f0f7c044-c8ee-4712-94db-882cdf894653@collabora.com>
-Date: Tue, 6 May 2025 10:35:25 +0200
+	s=arc-20240116; t=1746520580; c=relaxed/simple;
+	bh=7cxYL+OKy7RZGTgDCki9YAxC/O5/TwbW3Uwnyo/G258=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=p8MCyxRNln/9u7LubljEUCYV/gaMCXxpcEpUR2GF07OeFVJ2iwO2bXLYSLHnkBaXLYLu70avBCPrEQh/E/1Ahqa2en4A57CBDsKgu34+ndH6WObQKBtNeWHAbT0bbigtbwxGW1ASmwpdkiWTPqMOfI+jAAeNcweaS/s0zRsaFCo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9A1E4113E;
+	Tue,  6 May 2025 01:36:07 -0700 (PDT)
+Received: from e133081.arm.com (unknown [10.57.75.88])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9E8EC3F673;
+	Tue,  6 May 2025 01:36:10 -0700 (PDT)
+Date: Tue, 6 May 2025 09:36:07 +0100
+From: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
+To: ALOK TIWARI <alok.a.tiwari@oracle.com>
+Cc: ryan.roberts@arm.com, suzuki.poulose@arm.com,
+	yang@os.amperecomputing.com, corbet@lwn.net,
+	catalin.marinas@arm.com, will@kernel.org, jean-philippe@linaro.org,
+	robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org,
+	paulmck@kernel.org, mark.rutland@arm.com, joey.gouly@arm.com,
+	maz@kernel.org, james.morse@arm.com, broonie@kernel.org,
+	oliver.upton@linux.dev, baohua@kernel.org, david@redhat.com,
+	ioworker0@gmail.com, jgg@ziepe.ca, nicolinc@nvidia.com,
+	mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com,
+	kevin.tian@intel.com, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: Re: [RESEND PATCH v6 1/3] arm64: Add BBM Level 2 cpu feature
+Message-ID: <20250506083607.GA45762@e133081.arm.com>
+References: <20250428153514.55772-2-miko.lenczewski@arm.com>
+ <20250428153514.55772-4-miko.lenczewski@arm.com>
+ <d03d2ea6-323b-490e-b53c-d2e6d9c31b6f@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/4] dt-bindings: mfd: mediatek: mt6397: Add
- #sound-dai-cells property
-To: Julien Massot <julien.massot@collabora.com>, kernel@collabora.com,
- Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>,
- Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
- <matthias.bgg@gmail.com>, =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?=
- <nfraprado@collabora.com>, Hui Liu <hui.liu@mediatek.com>,
- Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Tinghan Shen <tinghan.shen@mediatek.com>
-Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org, iommu@lists.linux.dev
-References: <20250505-mt8395-dtb-errors-v1-0-9c4714dcdcdb@collabora.com>
- <20250505-mt8395-dtb-errors-v1-1-9c4714dcdcdb@collabora.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Content-Language: en-US
-In-Reply-To: <20250505-mt8395-dtb-errors-v1-1-9c4714dcdcdb@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <d03d2ea6-323b-490e-b53c-d2e6d9c31b6f@oracle.com>
 
-Il 05/05/25 15:23, Julien Massot ha scritto:
-> The 'mt6359.dtsi' file already uses the '#sound-dai-cells' property.
-> Add the corresponding property to the binding to fix the following
-> dtb-check error:
+Hi Alok,
+
+Apologies for the delay.
+
+On Mon, Apr 28, 2025 at 11:25:07PM +0530, ALOK TIWARI wrote:
 > 
-> mediatek/mt8395-radxa-nio-12l.dtb: pmic: '#sound-dai-cells', 'mt6359rtc' do not match any of the regexes: 'pinctrl-[0-9]+'
-> from schema $id: http://devicetree.org/schemas/mfd/mediatek,mt6397.yaml#
 > 
-> Fixes: 9bc8353be720 ("arm64: dts: mt6359: Add #sound-dai-cells property")
-> Signed-off-by: Julien Massot <julien.massot@collabora.com>
+> On 28-04-2025 21:05, Mikołaj Lenczewski wrote:
+> > +config ARM64_BBML2_NOABORT
+> > +	bool "Enable support for Break-Before-Make Level 2 detection and usage"
+> > +	default y
+> > +	help
+> > +	  FEAT_BBM provides detection of support levels for break-before-make
+> > +	  sequences. If BBM level 2 is supported, some TLB maintenance requirements
+> > +	  can be relaxed to improve performance. We additonally require the
+> 
+> typo additonally  -> additionally
+Yes, had missed this. Will fix.
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> > diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+> > index 9c4d6d552b25..7a85a1bdc6e9 100644
+> > --- a/arch/arm64/kernel/cpufeature.c
+> > +++ b/arch/arm64/kernel/cpufeature.c
+> > @@ -2200,6 +2200,70 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
+> >   	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
+> >   }
+> > +static bool cpu_has_bbml2_noabort(unsigned int cpu_midr)
+> > +{
+> > +	/*
+> > +	 * We want to allow usage of bbml2 in as wide a range of kernel contexts
+> > +	 * as possible. This list is therefore an allow-list of known-good
+> > +	 * implementations that both support bbml2 and additionally, fulfill the
+> > +	 * extra constraint of never generating TLB conflict aborts when using
+> > +	 * the relaxed bbml2 semantics (such aborts make use of bbml2 in certain
+> > +	 * kernel contexts difficult to prove safe against recursive aborts).
+> > +	 *
+> > +	 * Note that implementations can only be considered "known-good" if their
+> > +	 * implementors attest to the fact that the implementation never raises
+> > +	 * TLBI conflict aborts for bbml2 mapping granularity changes.
+> > +	 */
+> 
+> use bbml2 -> BBML2 to maintain consistency
+> 
+OK, will go through and use BBML2 throughout for consistency.
 
-
+-- 
+Kind regards,
+Mikołaj Lenczewski
