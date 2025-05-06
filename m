@@ -1,77 +1,79 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DA3F217727
-	for <iommu@lists.linux.dev>; Tue,  6 May 2025 17:29:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D5DE2820CB
+	for <iommu@lists.linux.dev>; Tue,  6 May 2025 17:29:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746552577; cv=none; b=scSRE5/y3UXqBk3uVA6m09ckUuh+sRmhqyRt1UDvD53l6+9kfeK8kUQ33DE0vaDmht0MUuZ1ife+YKMD7QcQvDSEDkv9MTUopx0USjwkEOkXeeqthmakJj2iRa+eGEobsb35IWQ0emGjY8/NcRL5uterjAl//u7hXZw/D4rvqh8=
+	t=1746552585; cv=none; b=k+xh1YMhD2fvPKm+Rw/nWtnHOd2m+AjsrtiuYRLrq7FV6tIqyLi6p3vGg5qhPIm05X4OPSSlZS2qgnPhpjdJfu2vWlD2ViChheb+mmBOWV9lXEpmigxG/B3PEu3WYgRl4LFeRE2PGd2dycS309NHReo48W3OdGnHKb4nTBKFAhY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746552577; c=relaxed/simple;
-	bh=i4e7G7xw+wz0sgchsoY3CUzITAN56WMwZ67/B/5MgNQ=;
+	s=arc-20240116; t=1746552585; c=relaxed/simple;
+	bh=P5P11usWkDjq0CdPX0+FsxN/e9x+8gnH+2D4IK1ObN0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AiccRkFMIXIsCgGVxJlmKcSQ4fG3Yo0e1b6CEPQex3uJobV7vznQEU1AbYOl6kkk9ar4laIGFf3wkqOo5a+STJkqQY/DvojSD6zqVw4LvFAyYuSoEaRKskP/3ftK+u6oEboUqFycLw3BIajBl/8XiVc3c/L2v0QAbPuu26zGyaY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=l9Y6P4/l; arc=none smtp.client-ip=209.85.222.180
+	 Content-Type:Content-Disposition:In-Reply-To; b=WKcijxKGhgs1H+hl3of3dcX3HDnJHMNPXaS7EGOWA+Ki1IY65F9HveQ0EcVqanVwFiOppJcT5xKlc2MHjcuVVq+BAIi1KhHG5EXdirmR86h2ri1Ns3FDR4LPFw9+wpw0NUASLde9MLKRPDyErchpPy9f0TlkOP+g+xWj+8Jb+qI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Q/7WWk6G; arc=none smtp.client-ip=209.85.222.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="l9Y6P4/l"
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-7c5e1b40f68so691029485a.1
-        for <iommu@lists.linux.dev>; Tue, 06 May 2025 10:29:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Q/7WWk6G"
+Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-7c5a88b34a6so630862285a.3
+        for <iommu@lists.linux.dev>; Tue, 06 May 2025 10:29:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1746552574; x=1747157374; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1746552582; x=1747157382; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Lzw/NpSpLJ013Llh+NLWNGNiT0GNflI59y1+tAq7i9w=;
-        b=l9Y6P4/lKhEiiw6VG5I6mCCOsHaqNn0ofPia/CWp1lQxZE4FmSH3CD7/sa4TQUTE6g
-         Ai2/GIifanL167C6A32O8idcCxqqBmNQzDBLkEvJq+Tge7tl60ETDpN1xi2Dp7dIU3mo
-         /MV5UBNGDj08hvgiCgiL1wqsIc6rq0rMS+Nj7HSh/w0rd/uupP2wTbkBsqkNCBv9IDxt
-         PdgBgipHxJAfeB3qajGaemx62y/4xFrXPbn5UKqmjSWBfpVEvBWQi9ZwKhZtu7IRgWKU
-         l0UX5TGPhBtB+ldzskNwyxiKB+MshooETOYEiBazYTCznhlpdO0dGb0dbUVjFwz2yMQn
-         FCMA==
+        bh=OaMyDCrAoG//6LMBGGysI9lA09I32hvxiR+VhJh6OEo=;
+        b=Q/7WWk6G9yzGhTczRcB6ZQ3mi3YLsZB8so1wu6o8tfJs1UZOvEUySdn2X9O8ES5kUy
+         eCR6ExEBNhrLsRL2cVbDfNBVgVq1lqwe/EZ9egAg7WAz3+mxh01zvL1W7pKTAphis+17
+         Jt3hK2iymwks2WQn9WhsRre59JQI+slIbw6Vnf2pNz0S5kjEy3TGaYwdgIxUwUpdlL+h
+         LatyRR9OXwHl7p+ZCRrpkX49W+No2oXmu6QXe3YO5RCB8qJobAlMrJ576mZBBOHt6wzf
+         xRnia39m+kc8eZRjwEX/E8f7sIwOsoMIYAGcbedh4mmqW+pI9b6IDUx7Tn9BuevOqa25
+         OQCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746552574; x=1747157374;
+        d=1e100.net; s=20230601; t=1746552582; x=1747157382;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Lzw/NpSpLJ013Llh+NLWNGNiT0GNflI59y1+tAq7i9w=;
-        b=PNgNysgIXwmUCosFl9V2L2nH950niBzSgXvdZ6ov45AGkka77Igau+jqvyEesOawzK
-         AnZzM/sJmt74vH9InVc/LiIM2YHzC5LEBAto85GjkWeQNugDnnda0MmztcB1Pi2jVklp
-         c+HlC6V4ffO+1Ax00EvTrDqZVxuk5Rg1HS/9+CD5OpiJxrd8CF8EDb/wJhHyWNvkv77t
-         zBAmzth7BGNCGA6tRtWT1DGeZEJCiumOmX5SXLV+DSRz3RieVHzB+CMQKmqFoZqeIoQy
-         6lYhyGUGneRtyL20UPZLkWu2WdetMVRDt2o85A7wo+L3hNOF8IUIxBqCzK3gULdJMUiF
-         L+Qg==
-X-Forwarded-Encrypted: i=1; AJvYcCVCWbIu65HCEXiY+9GZCMwlB/Mn5fiGGxp8uipgXm8u47S5BPjFaakWONdWnNYN8CFBZBwUTQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwlbOVMDUYl2wLeONzXKzTaEUFk9erJK4ZCIZ2vXqxrgaXqA5W0
-	2FJjr3Wg/f1ppXcZlq0DJvv/AZuvpsdFPbIKA9b6fKPbdHUOQPMtgLso5EYR3NQ=
-X-Gm-Gg: ASbGncvg7p7GVADBSTZbPre5Xvud4p8BYkdDMRRf2CCcJ+xDPl/gs/BRDcOaJNZGMY5
-	dWXq7iVacitFvFZ1LO+Mfp3D1iQYmxRda+6mWlixIXah9BomxLDxrAHcj5JV4f308ke6WqPraWQ
-	sp5pLvXiRMXWbWMdLcTo8rQdjB6xfXRVDedjbESJGO8r3E+fMNEnflWOYIusn7P8AGSXmfP8k8c
-	zHvUfDUGLBEmZwDNEmxzM0ut+hbbSVbWNnE6+/0VT8CIBQJGd6DKVmSKNaXeTh1Q7QatlithSHm
-	KWeNqE7vhsHvCxUR6EyYUC1vDGWb+Iqk4/NgWTPv4o+dUrRxH86WWwD9+cS+lyPFbiYhUXy2GTm
-	r5CULKifC8NKHRPHga8U=
-X-Google-Smtp-Source: AGHT+IHsQ8juIlpShZZzkUdMDq7xB5U8B/5m+eZbdsl8X4APoHP6XCwe0ty4ChmcMRK06w7rXiGzUA==
-X-Received: by 2002:a05:620a:44c9:b0:7c9:2612:32d6 with SMTP id af79cd13be357-7caf74129demr26939485a.48.1746552574201;
-        Tue, 06 May 2025 10:29:34 -0700 (PDT)
+        bh=OaMyDCrAoG//6LMBGGysI9lA09I32hvxiR+VhJh6OEo=;
+        b=jQxk5kHuRN/bHfyc5y7be5oLkXUC1mhrtYYLpxJVu6laQVr/2PFZ8fabviSa31LF1d
+         6LuvxV7DJQxJHBtxPpL0RSqLCaArxVF9/Jfhd7gbJEDoIwxWijzOk/w1a2tv34PC59OS
+         /nx/KDCbYMGspgTPCGAsAu68QJiB+VtachzG+YJ7+x6wHPndsvbIqFHd9vjwf4i55XN3
+         swsZXg91ejtLzMpypIHxUIFegVDXsQsQdoAya8H8VPecDbP8BrWkwtBYcOvAcNlbEXCK
+         XPh5DOAud7g+qsf2R3EaMDfaiPLOfy11CyzmdICJVYN92eNIXPhue51bFS7kKvolDQid
+         4OFw==
+X-Forwarded-Encrypted: i=1; AJvYcCWdSHEIh4llArEdQgMNC/heXkkZ1PdrW8EQBoUqRBAPiYuEjB9bX96aLfwujaaa/6ffHqt58Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwsgLw7dTW9dT5WyUwBcgraGlBIMixhapbLDDz7aw+EuXfd2UoF
+	aHzwb7aTvVIJlz3iIPs9Tuieh+pdAtneE5ybgRxlI7PM1Yinn3ayX9vZaJYAYa0VMIfvmFQr8sq
+	p
+X-Gm-Gg: ASbGncsBQu58ybsxReSv+1kujgtIjzmkco8DsEMprufQ9lCo8VmL1chGxckHipTxQo3
+	Rw2OxXhJ603k1UwgQ+1b2McB1UHmdfIVkjXpwOStUOTWyTnhWIu7sRelp7RUJD8cZP8fG4KbZ/1
+	2MU67E9+tzzbVc6+fP+sflRhbQE561bh4HL7/HBZhnyQGNS5z97sdrITvWuISsWlXHBUoqGnWiX
+	dYJXOXbBJ+6I6YgGco+g0aoKZP3yt9hsIB7peNt6mY6nd66N3n93lBb22iLlBkvbbfIOtuSBJpE
+	4+h2d/Q/Ilp43iLXD42h4WuAL5YaB2odwI6YgpI1GlrojXT6uarxR3KYIFjcCYHWe+Q4by6HisZ
+	wzPW/cEJc1JAxGKUru7o=
+X-Google-Smtp-Source: AGHT+IFMZ5fIINTPeKhkWdgeEHlC4vrkCQlZ8NYfWErLZxx+U/X8plflWy2yROICiyb87lWzQQaofQ==
+X-Received: by 2002:a05:620a:46aa:b0:7ca:e989:23fd with SMTP id af79cd13be357-7caf73a1866mr28024085a.24.1746552582447;
+        Tue, 06 May 2025 10:29:42 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-49222f8b1c0sm121101cf.52.2025.05.06.10.29.33
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7caf75b5334sm3266885a.80.2025.05.06.10.29.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 May 2025 10:29:33 -0700 (PDT)
+        Tue, 06 May 2025 10:29:42 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1uCM6m-00000000LG8-3Doe;
-	Tue, 06 May 2025 14:29:32 -0300
-Date: Tue, 6 May 2025 14:29:32 -0300
+	id 1uCM6v-00000000LGb-2K8I;
+	Tue, 06 May 2025 14:29:41 -0300
+Date: Tue, 6 May 2025 14:29:41 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
 	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] iommu/vt-d: Use ida to manage domain id
-Message-ID: <20250506172932.GA33739@ziepe.ca>
+Subject: Re: [PATCH v2 2/2] iommu/vt-d: Replace spin_lock with mutex to
+ protect domain ida
+Message-ID: <20250506172941.GB33739@ziepe.ca>
 References: <20250430021135.2370244-1-baolu.lu@linux.intel.com>
- <20250430021135.2370244-2-baolu.lu@linux.intel.com>
+ <20250430021135.2370244-3-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,29 +82,28 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250430021135.2370244-2-baolu.lu@linux.intel.com>
+In-Reply-To: <20250430021135.2370244-3-baolu.lu@linux.intel.com>
 
-On Wed, Apr 30, 2025 at 10:11:34AM +0800, Lu Baolu wrote:
-> Switch the intel iommu driver to use the ida mechanism for managing domain
-> IDs, replacing the previous fixed-size bitmap.
+On Wed, Apr 30, 2025 at 10:11:35AM +0800, Lu Baolu wrote:
+> The domain ID allocator is currently protected by a spin_lock. However,
+> ida_alloc_range can potentially block if it needs to allocate memory to
+> grow its internal structures.
 > 
-> The previous approach allocated a bitmap large enough to cover the maximum
-> number of domain IDs supported by the hardware, regardless of the actual
-> number of domains in use. This led to unnecessary memory consumption,
-> especially on systems supporting a large number of iommu units but only
-> utilizing a small number of domain IDs.
+> Replace the spin_lock with a mutex which allows sleep on block. Thus,
+> the memory allocation flags can be updated from GFP_ATOMIC to GFP_KERNEL
+> to allow blocking memory allocations if necessary.
 > 
-> The ida allocator dynamically manages the allocation and freeing of integer
-> IDs, only consuming memory for the IDs that are currently in use. This
-> significantly optimizes memory usage compared to the fixed-size bitmap.
+> Introduce a new mutex, did_lock, specifically for protecting the domain
+> ida. The existing spinlock will remain for protecting other intel_iommu
+> fields.
 > 
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 > ---
->  drivers/iommu/intel/dmar.c  |  3 ++
->  drivers/iommu/intel/iommu.c | 80 ++++++++-----------------------------
->  drivers/iommu/intel/iommu.h | 19 +++++++--
->  3 files changed, 34 insertions(+), 68 deletions(-)
+>  drivers/iommu/intel/dmar.c  |  1 +
+>  drivers/iommu/intel/iommu.c | 12 ++++--------
+>  drivers/iommu/intel/iommu.h |  2 ++
+>  3 files changed, 7 insertions(+), 8 deletions(-)
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
