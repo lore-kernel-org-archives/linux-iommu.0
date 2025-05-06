@@ -1,50 +1,52 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31A7028151F;
-	Tue,  6 May 2025 14:53:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A17932797A5;
+	Tue,  6 May 2025 14:57:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746543211; cv=none; b=D9mIF4pEMflb+8NxL9BghHx9rhF1wVpstYBKCbjCWPpUi++G92zc+NjM/N29NpOCctpMb4dROvd+l+hUWuBLYf51HRBdm7+2ItdNg5Ge/ecANVtQ7DPU5WnzSqWM3pc4fX+vlXfuE43XmLbRXUkJiBRDPrTkzbuf8N8gz0WlZ5U=
+	t=1746543436; cv=none; b=YrNjx8DFknW8e5kTE/SYK9N+T74Qk0T/OZ8lFSllJ6ure2r4gwaoavnub2UuzQtV6WR1ldtOzH/ilPEPclRPBO6kjfRIiH4ZwOwXxF1uf0nNUaMaq4U9hA3sPluAxAERvM6OgQlXFnZChpMpHRcaCSm3s0llkIHFxx1jb94l4TE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746543211; c=relaxed/simple;
-	bh=mlHA7oTENsJhkBEE9KRVlu9szOgOr4t+vxxALv3XDvw=;
+	s=arc-20240116; t=1746543436; c=relaxed/simple;
+	bh=bsqqyAJp0U5RCLC80okyrbHXY7J3utSy8jIiesJ61g0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=p+lmpCsEyd85EwJ20MjHp1UR1teLFDVp7bBH8nfJe/RQ5nZ4VuMnO0krsHcpzFFy8yqQms9LOqVk+A72+imAs3eWK58JhLr5caZmJRwDt1BuL0B1kr52XO+O0dtB2lR/L/9IzOzBqncEsztQx9YEPOyWmgMr5/KQO+nreaKBK0E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fG3F/80P; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=BjF1Syk8ofS1m1F0UYM0Ldpe9OxxhtY1v4Fdtu5Wx4XVj0fFr71y605D3IGwqgMAZYqiLczKUPbZUHk2clq4imRJ9buQdz+uZdSBQi5dj4fVCMgIVtdK+yKgmDbnf8V4KetSZY+vM5+O3ci0k47tESZnLgtv17/UPjlv+6Hxp7w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cE3HsRGC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fG3F/80P"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D1AC4CEE4;
-	Tue,  6 May 2025 14:53:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cE3HsRGC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38291C4CEEB;
+	Tue,  6 May 2025 14:57:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746543210;
-	bh=mlHA7oTENsJhkBEE9KRVlu9szOgOr4t+vxxALv3XDvw=;
+	s=k20201202; t=1746543434;
+	bh=bsqqyAJp0U5RCLC80okyrbHXY7J3utSy8jIiesJ61g0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=fG3F/80PyNXqPQAIHuUmfOxwo+KV7sFiP01r2zWkIdAfSWR9DxkeJEJmrTQHZDJpV
-	 8+kz8AF/iMG1dCY6nio+8ziCbFpytdvNiSrbgeGez7+1KiCOW0fs6uSkMUxzpsFfBS
-	 gqR6FiUsaFOgZaWx+l4Drydtcm+TkwghRjcXhciegpLrcrF11m3Y3AGn0s5LA06YV0
-	 XCeNvl1DQQD9V/oWCsK8GigyGdtLyN5avNJs92JfQuhZUWossF8cQMA6Yfkh43Opim
-	 R3sSmM2Vz4buzMxmeVeQGlYcc+Nxx3i+iXkpTsG+radUofEaj8YTyf5G6W5oqyFJ8I
-	 4ExAyIfVeY3Gg==
-Date: Tue, 6 May 2025 15:53:25 +0100
+	b=cE3HsRGC4nh0bceeQdOwkwZd8W4wyHk3N9w5Dah5upNlqcLgosi6i8fziGSQZMdTQ
+	 raCz2h6oJF7cZGNQ61yJodIzYroWKwl4MV+zW2si+bxLydMW0rtJmmuaGTxskX6Fyn
+	 ZtIkKWTHKJO8ppUfr1tO/W2fSHyjMbPBNvK0lb2u754FHp+X6jxntLSP356MMl7n9w
+	 yeNiePFQblHK4Y0HP1lSQUxf6uPeYTo0iGC2zP8pmokhlduq50nc/0sNKY52WuVh6E
+	 49JnAh1SE3WLjQ9l0Y3Z+mQ1MiHvXvStNByIi+OCYcJ/Ybe/WmSu0aqpRaxWVDRes5
+	 /0t10m58yyzUw==
+Date: Tue, 6 May 2025 15:57:05 +0100
 From: Will Deacon <will@kernel.org>
-To: Connor Abbott <cwabbott0@gmail.com>
-Cc: Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	freedreno@lists.freedesktop.org
-Subject: Re: [PATCH v5 3/5] iommu/arm-smmu: Fix spurious interrupts with
- stall-on-fault
-Message-ID: <20250506145324.GA1246@willie-the-truck>
-References: <20250319-msm-gpu-fault-fixes-next-v5-0-97561209dd8c@gmail.com>
- <20250319-msm-gpu-fault-fixes-next-v5-3-97561209dd8c@gmail.com>
- <20250506122449.GB723@willie-the-truck>
- <CACu1E7FA0M_0Un3qPRNtqy4R_NbaMks6FSkpQZBuyqJpuT-p7w@mail.gmail.com>
+To: Marc Zyngier <maz@kernel.org>
+Cc: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>,
+	ryan.roberts@arm.com, suzuki.poulose@arm.com,
+	yang@os.amperecomputing.com, corbet@lwn.net,
+	catalin.marinas@arm.com, jean-philippe@linaro.org,
+	robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org,
+	paulmck@kernel.org, mark.rutland@arm.com, joey.gouly@arm.com,
+	james.morse@arm.com, broonie@kernel.org, oliver.upton@linux.dev,
+	baohua@kernel.org, david@redhat.com, ioworker0@gmail.com,
+	jgg@ziepe.ca, nicolinc@nvidia.com, mshavit@google.com,
+	jsnitsel@redhat.com, smostafa@google.com, kevin.tian@intel.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+Subject: Re: [RESEND PATCH v6 1/3] arm64: Add BBM Level 2 cpu feature
+Message-ID: <20250506145705.GB1246@willie-the-truck>
+References: <20250428153514.55772-2-miko.lenczewski@arm.com>
+ <20250428153514.55772-4-miko.lenczewski@arm.com>
+ <20250506142508.GB1197@willie-the-truck>
+ <86cyclhjw0.wl-maz@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,73 +56,66 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACu1E7FA0M_0Un3qPRNtqy4R_NbaMks6FSkpQZBuyqJpuT-p7w@mail.gmail.com>
+In-Reply-To: <86cyclhjw0.wl-maz@kernel.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Tue, May 06, 2025 at 10:08:05AM -0400, Connor Abbott wrote:
-> On Tue, May 6, 2025 at 8:24 AM Will Deacon <will@kernel.org> wrote:
-> > On Wed, Mar 19, 2025 at 10:44:02AM -0400, Connor Abbott wrote:
-> > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > > index c7b5d7c093e71050d29a834c8d33125e96b04d81..9927f3431a2eab913750e6079edc6393d1938c98 100644
-> > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > > @@ -470,13 +470,52 @@ static irqreturn_t arm_smmu_context_fault(int irq, void *dev)
-> > >       if (!(cfi->fsr & ARM_SMMU_CB_FSR_FAULT))
-> > >               return IRQ_NONE;
-> > >
-> > > +     /*
-> > > +      * On some implementations FSR.SS asserts a context fault
-> > > +      * interrupt. We do not want this behavior, because resolving the
-> > > +      * original context fault typically requires operations that cannot be
-> > > +      * performed in IRQ context but leaving the stall unacknowledged will
-> > > +      * immediately lead to another spurious interrupt as FSR.SS is still
-> > > +      * set. Work around this by disabling interrupts for this context bank.
-> > > +      * It's expected that interrupts are re-enabled after resuming the
-> > > +      * translation.
-> >
-> > s/translation/transaction/
-> >
-> > > +      *
-> > > +      * We have to do this before report_iommu_fault() so that we don't
-> > > +      * leave interrupts disabled in case the downstream user decides the
-> > > +      * fault can be resolved inside its fault handler.
-> > > +      *
-> > > +      * There is a possible race if there are multiple context banks sharing
-> > > +      * the same interrupt and both signal an interrupt in between writing
-> > > +      * RESUME and SCTLR. We could disable interrupts here before we
-> > > +      * re-enable them in the resume handler, leaving interrupts enabled.
-> > > +      * Lock the write to serialize it with the resume handler.
-> > > +      */
-> >
-> > I'm struggling to understand this last part. If the resume handler runs
-> > synchronously from report_iommu_fault(), then there's no need for
-> > locking because we're in interrupt context. If the resume handler can
-> > run asynchronously from report_iommu_fault(), then the locking doesn't
-> > help because the code below could clear CFIE right after the resume
-> > handler has set it.
+On Tue, May 06, 2025 at 03:51:59PM +0100, Marc Zyngier wrote:
+> On Tue, 06 May 2025 15:25:09 +0100,
+> Will Deacon <will@kernel.org> wrote:
+> > 
+> > On Mon, Apr 28, 2025 at 03:35:14PM +0000, Mikołaj Lenczewski wrote:
+> > > The Break-Before-Make cpu feature supports multiple levels (levels 0-2),
+> > > and this commit adds a dedicated BBML2 cpufeature to test against
+> > > support for, as well as a kernel commandline parameter to optionally
+> > > disable BBML2 altogether.
+> > > 
+> > > This is a system feature as we might have a big.LITTLE architecture
+> > > where some cores support BBML2 and some don't, but we want all cores to
+> > > be available and BBM to default to level 0 (as opposed to having cores
+> > > without BBML2 not coming online).
+> > > 
+> > > To support BBML2 in as wide a range of contexts as we can, we want not
+> > > only the architectural guarantees that BBML2 makes, but additionally
+> > > want BBML2 to not create TLB conflict aborts. Not causing aborts avoids
+> > > us having to prove that no recursive faults can be induced in any path
+> > > that uses BBML2, allowing its use for arbitrary kernel mappings.
+> > > Support detection of such CPUs.
+> > > 
+> > > Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
+> > > Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+> > > Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
+> > > ---
+> > >  .../admin-guide/kernel-parameters.txt         |  3 +
+> > >  arch/arm64/Kconfig                            | 19 +++++
+> > >  arch/arm64/include/asm/cpucaps.h              |  2 +
+> > >  arch/arm64/include/asm/cpufeature.h           |  5 ++
+> > >  arch/arm64/kernel/cpufeature.c                | 71 +++++++++++++++++++
+> > >  arch/arm64/kernel/pi/idreg-override.c         |  2 +
+> > >  arch/arm64/tools/cpucaps                      |  1 +
+> > >  7 files changed, 103 insertions(+)
+> > > 
+> > > diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> > > index d9fd26b95b34..2749c67a4f07 100644
+> > > --- a/Documentation/admin-guide/kernel-parameters.txt
+> > > +++ b/Documentation/admin-guide/kernel-parameters.txt
+> > > @@ -449,6 +449,9 @@
+> > >  	arm64.no32bit_el0 [ARM64] Unconditionally disable the execution of
+> > >  			32 bit applications.
+> > >  
+> > > +	arm64.nobbml2	[ARM64] Unconditionally disable Break-Before-Make Level
+> > > +			2 support
+> > 
+> > Hmm, I'm not sure we really want this. It opens up the door for folks to
+> > pass 'id_aa64mmfr2.bbm=2' without updating the allow-list which feels
+> > like it's going to make crashes harder to reason about.
 > 
-> The problem is indeed when the resume handler runs asynchronously.
-> Clearing CFIE right after the resume handler has set it is normal and
-> expected. The issue is the opposite, i.e. something like:
-> 
-> - Resume handler writes RESUME and stalls for some reason
-> - The interrupt handler runs through and clears CFIE while it's already cleared
-> - Resume handler sets CFIE, assuming that the handler hasn't run yet
-> but it actually has
-> 
-> This wouldn't happen with only one context bank, because we wouldn't
-> get an interrupt until the resume handler sets CFIE, but with multiple
-> context banks and a shared interrupt line we could get a "spurious"
-> interrupt due to a fault in an earlier context bank that becomes not
-> spurious if the resume handler writes RESUME before the context fault
-> handler for this bank reads FSR above.
+> Passing id_aa64mmfr2.bbm=2 shouldn't have any effect if the HW doesn't
+> advertise it already, as you can only downgrade features. Trying to
+> upgrade features should leave a nastygram in the kernel log.
 
-Ah, gotcha. Thanks for the explanation.
-
-If we moved the RESUME+CFIE into the interrupt handler after the call
-to report_iommu_fault(), would it be possible to run the handler as a
-threaded irq (see 'context_fault_needs_threaded_irq') and handle the
-callback synchronously? In that case, I think we could avoid taking the
-lock if we wrote CFIE _before_ RESUME.
+Ah, thanks, I was playing around in QEMU and my CPU already had BBML2
+so I didn't spot that. In any case, I'd prefer to avoid adding the
+option unless we need it -- this thing is driven from an MIDR-based
+list and that should be maintained.
 
 Will
