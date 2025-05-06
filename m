@@ -1,145 +1,109 @@
-Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB760280008
-	for <iommu@lists.linux.dev>; Tue,  6 May 2025 16:26:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DA3F217727
+	for <iommu@lists.linux.dev>; Tue,  6 May 2025 17:29:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746548799; cv=none; b=Ad6w5xzqUgamVKlyZRMm379OhRtTOBAo7IIt/HzLXTUZ/Y7gL5dq3wRJQWx04NJ7/EGCycSQQtTv5yiPFCW5Yxev3Ip5w5unT9TohlFuOQZS2Hd/UrqKyadzmOt/7YZNHd3eM2uhk8GDETOZMeKYmQw5CekGYaSvysFBYewxrdM=
+	t=1746552577; cv=none; b=scSRE5/y3UXqBk3uVA6m09ckUuh+sRmhqyRt1UDvD53l6+9kfeK8kUQ33DE0vaDmht0MUuZ1ife+YKMD7QcQvDSEDkv9MTUopx0USjwkEOkXeeqthmakJj2iRa+eGEobsb35IWQ0emGjY8/NcRL5uterjAl//u7hXZw/D4rvqh8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746548799; c=relaxed/simple;
-	bh=OUAw5A6DAgqvZt7MHmztMx8kURQYzD8rXFUwAwEBkuk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=db5Ssxpj2CveuZS/78grrL6TuyUVZGZzYDpPtQL8pB+ShYN1m151t4ttAUDnrrSjlcC2G5SKbRtD0XqPm8bbyJcc+3LW0I06LqnZtmEMfP7X1Is56bVkNN23pw/nYsaesToRQkWWWBJqzejuxRD1yw1oIDxHt8DUX3GJk5Wiy48=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=exQRuFJw; arc=none smtp.client-ip=209.85.210.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1746552577; c=relaxed/simple;
+	bh=i4e7G7xw+wz0sgchsoY3CUzITAN56WMwZ67/B/5MgNQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AiccRkFMIXIsCgGVxJlmKcSQ4fG3Yo0e1b6CEPQex3uJobV7vznQEU1AbYOl6kkk9ar4laIGFf3wkqOo5a+STJkqQY/DvojSD6zqVw4LvFAyYuSoEaRKskP/3ftK+u6oEboUqFycLw3BIajBl/8XiVc3c/L2v0QAbPuu26zGyaY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=l9Y6P4/l; arc=none smtp.client-ip=209.85.222.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="exQRuFJw"
-Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-736b94d12b6so362881b3a.1
-        for <iommu@lists.linux.dev>; Tue, 06 May 2025 09:26:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="l9Y6P4/l"
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-7c5e1b40f68so691029485a.1
+        for <iommu@lists.linux.dev>; Tue, 06 May 2025 10:29:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1746548797; x=1747153597; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=N2iEPT31lWJmfZ711HkWVQ8QdQyTw1Ihj+viAfDs+a4=;
-        b=exQRuFJwja/J2SZ05sHQ+xkIHyc7qw38tC2+CenPZ11Cc5G1YrY7rWbgi1s20Jt5l3
-         69uBO4zFsTO2eU4kX2AGKetmTlW39wBrBFqDRUFGcFQNu4wEfN0URZjUUnuFyqLYrRos
-         2T1eTfGMOo2iCBWqHFDHRwngY+gk7bd89BMSw/VjxJTFKSFFw4dPPt765vMXptHX7XBz
-         fNWIKEMKngkCSh7w6cnZqYR7062EGY0uzWk/Jkwp9gI2ha/dfMTRIR+uDzDmmwi0+9x/
-         75u+yYq3zA4Zfjw8i0js6gNo987JZNg+ocHwK1AFr15f+Wv4oY9EWWfjBX+Y0zPxPSfm
-         /n9w==
+        d=ziepe.ca; s=google; t=1746552574; x=1747157374; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Lzw/NpSpLJ013Llh+NLWNGNiT0GNflI59y1+tAq7i9w=;
+        b=l9Y6P4/lKhEiiw6VG5I6mCCOsHaqNn0ofPia/CWp1lQxZE4FmSH3CD7/sa4TQUTE6g
+         Ai2/GIifanL167C6A32O8idcCxqqBmNQzDBLkEvJq+Tge7tl60ETDpN1xi2Dp7dIU3mo
+         /MV5UBNGDj08hvgiCgiL1wqsIc6rq0rMS+Nj7HSh/w0rd/uupP2wTbkBsqkNCBv9IDxt
+         PdgBgipHxJAfeB3qajGaemx62y/4xFrXPbn5UKqmjSWBfpVEvBWQi9ZwKhZtu7IRgWKU
+         l0UX5TGPhBtB+ldzskNwyxiKB+MshooETOYEiBazYTCznhlpdO0dGb0dbUVjFwz2yMQn
+         FCMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746548797; x=1747153597;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=N2iEPT31lWJmfZ711HkWVQ8QdQyTw1Ihj+viAfDs+a4=;
-        b=BAbaOT3Y85qDIwMM3SuVJecJTCjN/+DgOR3li5cfG6h5Fm0oTyjJAaYzgTIZ86v2B0
-         csg84qhCGHkD2aDt0ogJEKgYePELCLeEORz96WBWGrO1GFzpS/DGK4k9fEyBh6llsYFK
-         Hh3Vg7tas/EPJ8gOP/tiktK/4l3vz6NduqnX8eJt+W+c5l50VGsoy3CcwL2IOOiBhD0E
-         I3L3/3FYwKnzXzgPSoHeawhsB6mzU5pVuDGNTPAis/8XMF4SebvgNHybymwkFNM0QVlo
-         nUF2un8eDexjmI69M/tSQ4SdiCi+OpOq6ANdHEW+NkdtbwYVr4tHcpRcw4+2PKdNg/L5
-         K7fA==
-X-Forwarded-Encrypted: i=1; AJvYcCX03I/62ovk2C2cCnJxg0zZgHhWgJNcRdRzhdHGa9ISiuXeell1PO3m1VVizhKi90chQP1jHg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxOB61LBs3xEkV4AIEqzR2uIYKFGufCXJLt2t4ZVUZ6Lmdr9snf
-	ZMCU5SwdU45K5XhBb8iywIGl+8lXIkfFfClw/mLhXmMNolZqAt5DUjFlDZurKq+Zw+VbPnBtGZr
-	Fz1hidD/hS9FU1T8asJtJAs2A/00=
-X-Gm-Gg: ASbGncsBTQyyWvt6u4hze2aikVbfOZvJ1/deC7M/6C2J7pde9eykqGAyg5oRhhyuT3v
-	OVgaWRs/4X9PDdLmkYwb0nhNEzFuOuzgrzMDFCGM62JKFb8Kbc34HDx59zToKb+nD70KK9NaWNS
-	YGD/bYppBP4WrfcP0J6AOl6w==
-X-Google-Smtp-Source: AGHT+IFevbIXo6chZ46DVNlJBWVZ9S7rGrPtFFMLAbHqHbciNEKnYEm+KoSXMjS7AzymQV/ccrlzB9i7DV6tVCsE5Kc=
-X-Received: by 2002:a05:6a00:4296:b0:730:87b2:e848 with SMTP id
- d2e1a72fcca58-7409ba60c50mr111599b3a.5.1746548797029; Tue, 06 May 2025
- 09:26:37 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1746552574; x=1747157374;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Lzw/NpSpLJ013Llh+NLWNGNiT0GNflI59y1+tAq7i9w=;
+        b=PNgNysgIXwmUCosFl9V2L2nH950niBzSgXvdZ6ov45AGkka77Igau+jqvyEesOawzK
+         AnZzM/sJmt74vH9InVc/LiIM2YHzC5LEBAto85GjkWeQNugDnnda0MmztcB1Pi2jVklp
+         c+HlC6V4ffO+1Ax00EvTrDqZVxuk5Rg1HS/9+CD5OpiJxrd8CF8EDb/wJhHyWNvkv77t
+         zBAmzth7BGNCGA6tRtWT1DGeZEJCiumOmX5SXLV+DSRz3RieVHzB+CMQKmqFoZqeIoQy
+         6lYhyGUGneRtyL20UPZLkWu2WdetMVRDt2o85A7wo+L3hNOF8IUIxBqCzK3gULdJMUiF
+         L+Qg==
+X-Forwarded-Encrypted: i=1; AJvYcCVCWbIu65HCEXiY+9GZCMwlB/Mn5fiGGxp8uipgXm8u47S5BPjFaakWONdWnNYN8CFBZBwUTQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwlbOVMDUYl2wLeONzXKzTaEUFk9erJK4ZCIZ2vXqxrgaXqA5W0
+	2FJjr3Wg/f1ppXcZlq0DJvv/AZuvpsdFPbIKA9b6fKPbdHUOQPMtgLso5EYR3NQ=
+X-Gm-Gg: ASbGncvg7p7GVADBSTZbPre5Xvud4p8BYkdDMRRf2CCcJ+xDPl/gs/BRDcOaJNZGMY5
+	dWXq7iVacitFvFZ1LO+Mfp3D1iQYmxRda+6mWlixIXah9BomxLDxrAHcj5JV4f308ke6WqPraWQ
+	sp5pLvXiRMXWbWMdLcTo8rQdjB6xfXRVDedjbESJGO8r3E+fMNEnflWOYIusn7P8AGSXmfP8k8c
+	zHvUfDUGLBEmZwDNEmxzM0ut+hbbSVbWNnE6+/0VT8CIBQJGd6DKVmSKNaXeTh1Q7QatlithSHm
+	KWeNqE7vhsHvCxUR6EyYUC1vDGWb+Iqk4/NgWTPv4o+dUrRxH86WWwD9+cS+lyPFbiYhUXy2GTm
+	r5CULKifC8NKHRPHga8U=
+X-Google-Smtp-Source: AGHT+IHsQ8juIlpShZZzkUdMDq7xB5U8B/5m+eZbdsl8X4APoHP6XCwe0ty4ChmcMRK06w7rXiGzUA==
+X-Received: by 2002:a05:620a:44c9:b0:7c9:2612:32d6 with SMTP id af79cd13be357-7caf74129demr26939485a.48.1746552574201;
+        Tue, 06 May 2025 10:29:34 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-49222f8b1c0sm121101cf.52.2025.05.06.10.29.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 May 2025 10:29:33 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1uCM6m-00000000LG8-3Doe;
+	Tue, 06 May 2025 14:29:32 -0300
+Date: Tue, 6 May 2025 14:29:32 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] iommu/vt-d: Use ida to manage domain id
+Message-ID: <20250506172932.GA33739@ziepe.ca>
+References: <20250430021135.2370244-1-baolu.lu@linux.intel.com>
+ <20250430021135.2370244-2-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250319-msm-gpu-fault-fixes-next-v5-0-97561209dd8c@gmail.com>
- <20250319-msm-gpu-fault-fixes-next-v5-1-97561209dd8c@gmail.com> <20250506113246.GA723@willie-the-truck>
-In-Reply-To: <20250506113246.GA723@willie-the-truck>
-From: Connor Abbott <cwabbott0@gmail.com>
-Date: Tue, 6 May 2025 12:26:25 -0400
-X-Gm-Features: ATxdqUGyVeePAC0AKGU6Pbw5gC5TE6nCefsVqalCzAGzu-h58HCMKVxLU73Zb-o
-Message-ID: <CACu1E7HXd9bUWwPCa_XxkQYRwCg6aobr8snFzArE=D99Z+iRJQ@mail.gmail.com>
-Subject: Re: [PATCH v5 1/5] iommu/arm-smmu: Save additional information on
- context fault
-To: Will Deacon <will@kernel.org>
-Cc: Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>, 
-	Konrad Dybcio <konradybcio@kernel.org>, Abhinav Kumar <quic_abhinavk@quicinc.com>, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	freedreno@lists.freedesktop.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250430021135.2370244-2-baolu.lu@linux.intel.com>
 
-On Tue, May 6, 2025 at 7:32=E2=80=AFAM Will Deacon <will@kernel.org> wrote:
->
-> On Wed, Mar 19, 2025 at 10:44:00AM -0400, Connor Abbott wrote:
-> > This will be used by drm/msm for GPU page faults, replacing the manual
-> > register reading it does.
-> >
-> > Signed-off-by: Connor Abbott <cwabbott0@gmail.com>
-> > Reviewed-by: Rob Clark <robdclark@gmail.com>
-> > ---
-> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c |  6 ++--
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.c            | 35 ++++++++++++++--=
---------
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.h            |  7 +++--
-> >  3 files changed, 29 insertions(+), 19 deletions(-)
->
-> [...]
->
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/=
-arm-smmu/arm-smmu.c
-> > index ade4684c14c9b2724a71e2457288dbfaf7562c83..a02078eb968b81a35c1c086=
-ed7007ea2a453ef94 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > @@ -405,13 +405,20 @@ static const struct iommu_flush_ops arm_smmu_s2_t=
-lb_ops_v1 =3D {
-> >  };
-> >
-> >
-> > -void arm_smmu_read_context_fault_info(struct arm_smmu_device *smmu, in=
-t idx,
-> > +void arm_smmu_read_context_fault_info(struct arm_smmu_domain *smmu_dom=
-ain,
-> >                                     struct arm_smmu_context_fault_info =
-*cfi)
-> >  {
-> > +     struct arm_smmu_device *smmu =3D smmu_domain->smmu;
-> > +     int idx =3D smmu_domain->cfg.cbndx;
-> > +
-> >       cfi->iova =3D arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_FAR);
-> > +     cfi->ttbr0 =3D arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_TTBR0);
-> >       cfi->fsr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
-> > -     cfi->fsynr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR0);
-> > +     cfi->fsynr0 =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR0);
-> > +     cfi->fsynr1 =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR1);
-> >       cfi->cbfrsynra =3D arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA=
-(idx));
-> > +     if (smmu_domain->stage =3D=3D ARM_SMMU_DOMAIN_S1)
-> > +             cfi->contextidr =3D arm_smmu_cb_read(smmu, idx, ARM_SMMU_=
-CB_CONTEXTIDR);
->
-> I think this leaves 'cfi->contextidr' uninitialised for stage-2 domains.
-> We should probably either zero it here or just zero-initialise the whole
-> 'cfi' struct in arm_smmu_context_fault() with a:
->
->         struct arm_smmu_context_fault_info cfi =3D {};
->
-> line.
->
-> Will
+On Wed, Apr 30, 2025 at 10:11:34AM +0800, Lu Baolu wrote:
+> Switch the intel iommu driver to use the ida mechanism for managing domain
+> IDs, replacing the previous fixed-size bitmap.
+> 
+> The previous approach allocated a bitmap large enough to cover the maximum
+> number of domain IDs supported by the hardware, regardless of the actual
+> number of domains in use. This led to unnecessary memory consumption,
+> especially on systems supporting a large number of iommu units but only
+> utilizing a small number of domain IDs.
+> 
+> The ida allocator dynamically manages the allocation and freeing of integer
+> IDs, only consuming memory for the IDs that are currently in use. This
+> significantly optimizes memory usage compared to the fixed-size bitmap.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> ---
+>  drivers/iommu/intel/dmar.c  |  3 ++
+>  drivers/iommu/intel/iommu.c | 80 ++++++++-----------------------------
+>  drivers/iommu/intel/iommu.h | 19 +++++++--
+>  3 files changed, 34 insertions(+), 68 deletions(-)
 
-The next patch moves the context fault info into arm_smmu_domain which
-is already zero-initialized.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Connor
+Jason
