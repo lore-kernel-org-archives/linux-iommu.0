@@ -1,116 +1,104 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2839263C9E
-	for <iommu@lists.linux.dev>; Tue,  6 May 2025 10:20:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ECEB27AC55;
+	Tue,  6 May 2025 11:32:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746526853; cv=none; b=RypXp4xXdlHp6swxDbN9VPRjLVcOUWWzIdaAmzaqGk4L4gC8ckMsow7UERiSNcLom2xgB+/6siLxtQeUtMn5RgFgKHmGdxP2peYWk9JNKeXoxu+cGjGDP5rcF0a7d7QrHWDTfPVnon65R1zyrMJTU5mh21trxA0LCGiuiAXMYsQ=
+	t=1746531175; cv=none; b=q0jxga7ucw+DdcoFOgGXuRux6oye9Pf9heQx6TEiA6KMhIY2k0Bew3/IHXoO/ztSKYcCjYpjU4ea5NvnQdA+pshDCUhj0t8mlVhqG5Z/lLFVjfkWuHCYbjm/BJ81UTW8lho1IB2ks6dlz/cQCqDBzlnTyHsfD6ivcDzwpE4GuQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746526853; c=relaxed/simple;
-	bh=cTlctsLV2/rm79eOqeotyVv+FV9QLw5D/EGMnFgswkQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NHN17POLYJsfDoXdIuaLa93+jHb4flPbcnd7WZU51R/0eUjs2lcSsdSSBehuLyU+an+dqa01Kf5GmMlX3IyahlO8D+6lRuA4Dp3Y7F22Qg8qGh1/w0UrgM7nIkG1eUxds7lhzjCLWEsOdqVGVpoaGrM2jxSor0OshcNOJVLJano=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=Oic6ZbqM; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1746531175; c=relaxed/simple;
+	bh=mE1e1B9m9uhzxTNZaDZ3TY+lY86rVvjhSEag8/l7vDc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XT55k11kLacpLBYPHBN9Ico8KELY+3YNlhw/qm1Yv4dx0X3cgbsyoj52hNCN2DrxGqkyPHh+9OjEBA2Zqamu0VF2+6nS/30H/BseQ5tzxkSJLdo7rAdagy7zb+Dbgp3oZ2PO6/DLNgEsXsQH3txLUSgHgXitz+5GTrhlLU/BKu4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q+FElNUN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="Oic6ZbqM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1746526848;
-	bh=cTlctsLV2/rm79eOqeotyVv+FV9QLw5D/EGMnFgswkQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Oic6ZbqMxNknj0hcfe+ZvNlfYvKMruLwQGy/idLjU5+wHNR2dqVkJ+YfCmH1IK6WP
-	 bkuqQJLdrFtkcvwYnNM/MJ+GEBjIlpCFFalEaVWlq/x9f/EQNdTH8gJwtZOeWdCGHk
-	 iAL7PuEQ2kl1x6OLuV3IQVGDmRzUFEZ8K7kJSQU4wI7tOUGhNmpkxFWwV3WRIfCU4i
-	 YQDbrbhm99KAbgZQQLZ2RoZsRevMRvMiMUmC26hB0OsJMyPxrzbgKMcAi6b5B/s1b/
-	 S16uKYZkLIj1dZGqinA4nvSK2rOyrdiBGUiUryzeZtmOxpMPkOJ5obOpVtCVdkrer2
-	 PjxX9fcWQ7OrA==
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 62EEB17E088B;
-	Tue,  6 May 2025 12:20:47 +0200 (CEST)
-Message-ID: <c8bb938d-5a43-47a2-b7de-695f95b077ad@collabora.com>
-Date: Tue, 6 May 2025 12:20:46 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q+FElNUN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F4D4C4CEE4;
+	Tue,  6 May 2025 11:32:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1746531172;
+	bh=mE1e1B9m9uhzxTNZaDZ3TY+lY86rVvjhSEag8/l7vDc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Q+FElNUNhdG5CYgnApQsUFYFp+lb9D4evnzqSTmmE3FJtKAA5aDKSQq9jDoh1b+uq
+	 Qmvb5zCPGb51aJ8iAHF1LRTFA4EdtPTaS7yN3EahbaJHl4AVY3Z3yy2TN5HoAfgZmW
+	 WfWzf+kPc5cHicOck1lE7ZB+j+UfmUzzpkximKT9KQmSyixoPaVzM3FlbXzht8aJQC
+	 LA3yNCAtSJX1w0hDiUB9QQ1iEhCG9qgFME2SviolTzXq+lEEjA9KRip8/v6JMUlftA
+	 anKqkQ+2LIoi1JtBxda8j9cG7AO5KGzAtZP5qML5SV0Es1CK7n/tlFEphi5y07Dewh
+	 yAxG4yeV/iD2A==
+Date: Tue, 6 May 2025 12:32:46 +0100
+From: Will Deacon <will@kernel.org>
+To: Connor Abbott <cwabbott0@gmail.com>
+Cc: Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Abhinav Kumar <quic_abhinavk@quicinc.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	freedreno@lists.freedesktop.org
+Subject: Re: [PATCH v5 1/5] iommu/arm-smmu: Save additional information on
+ context fault
+Message-ID: <20250506113246.GA723@willie-the-truck>
+References: <20250319-msm-gpu-fault-fixes-next-v5-0-97561209dd8c@gmail.com>
+ <20250319-msm-gpu-fault-fixes-next-v5-1-97561209dd8c@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/4] dt-bindings: iommu: mediatek: mt8195 Accept up to 5
- interrupts
-To: Julien Massot <julien.massot@collabora.com>, kernel@collabora.com,
- Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>,
- Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
- <matthias.bgg@gmail.com>, =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?=
- <nfraprado@collabora.com>, Hui Liu <hui.liu@mediatek.com>,
- Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Tinghan Shen <tinghan.shen@mediatek.com>
-Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org, iommu@lists.linux.dev
-References: <20250505-mt8395-dtb-errors-v1-0-9c4714dcdcdb@collabora.com>
- <20250505-mt8395-dtb-errors-v1-2-9c4714dcdcdb@collabora.com>
- <cb715936-3a44-4002-8d64-565f8d31820c@collabora.com>
- <2d3a8e55105526c999b490a2e92dd448c099faab.camel@collabora.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Content-Language: en-US
-In-Reply-To: <2d3a8e55105526c999b490a2e92dd448c099faab.camel@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250319-msm-gpu-fault-fixes-next-v5-1-97561209dd8c@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Il 06/05/25 12:03, Julien Massot ha scritto:
-> Hi Angelo,
+On Wed, Mar 19, 2025 at 10:44:00AM -0400, Connor Abbott wrote:
+> This will be used by drm/msm for GPU page faults, replacing the manual
+> register reading it does.
 > 
-> On Tue, 2025-05-06 at 10:34 +0200, AngeloGioacchino Del Regno wrote:
->> Il 05/05/25 15:23, Julien Massot ha scritto:
->>> Some Mediatek IOMMU can have up to five interrupts so increase
->>> the 'maxItems' to 5.
->>>
->>> Fix the following dtb-check error:
->>>
->>> mediatek/mt8395-radxa-nio-12l.dtb: infra-iommu@10315000: interrupts:
->>> [[0, 795, 4, 0], [0, 796, 4, 0], [0, 797, 4, 0], [0, 798, 4, 0], [0, 799, 4, 0]] is too long
->>>
->>> Fixes: 3b5838d1d82e3 ("arm64: dts: mt8195: Add iommu and smi nodes")
->>> Signed-off-by: Julien Massot <julien.massot@collabora.com>
->>> ---
->>>    Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml | 3 ++-
->>>    1 file changed, 2 insertions(+), 1 deletion(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
->>> b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
->>> index 75750c64157c868725c087500ac81be4e282c829..035941c2db32170e9a69a5363d8c05ef767bb251 100644
->>> --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
->>> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
->>> @@ -97,7 +97,8 @@ properties:
->>>        maxItems: 1
->>>    
->>>      interrupts:
->>> -    maxItems: 1
->>> +    minItems: 1
->>
->> Isn't minItems already implicitly 1? :-)
->>
->> Looks not, from my understanding if 'minItems' is omitted then
-> dt-schema is setting it to 'maxItems'.
-> https://github.com/devicetree-org/dt-schema/blob/v2025.02/dtschema/fixups.py#L129
-> 
-> And you will have an error for a one item interrupts:
-> Documentation/devicetree/bindings/iommu/mediatek,iommu.example.dtb: iommu@10205000: interrupts: [[0,
-> 139, 8]] is too short
-> 
+> Signed-off-by: Connor Abbott <cwabbott0@gmail.com>
+> Reviewed-by: Rob Clark <robdclark@gmail.com>
+> ---
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c |  6 ++--
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c            | 35 ++++++++++++++----------
+>  drivers/iommu/arm/arm-smmu/arm-smmu.h            |  7 +++--
+>  3 files changed, 29 insertions(+), 19 deletions(-)
 
-Whoops, you're right.
+[...]
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index ade4684c14c9b2724a71e2457288dbfaf7562c83..a02078eb968b81a35c1c086ed7007ea2a453ef94 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -405,13 +405,20 @@ static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v1 = {
+>  };
+>  
+>  
+> -void arm_smmu_read_context_fault_info(struct arm_smmu_device *smmu, int idx,
+> +void arm_smmu_read_context_fault_info(struct arm_smmu_domain *smmu_domain,
+>  				      struct arm_smmu_context_fault_info *cfi)
+>  {
+> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> +	int idx = smmu_domain->cfg.cbndx;
+> +
+>  	cfi->iova = arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_FAR);
+> +	cfi->ttbr0 = arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_TTBR0);
+>  	cfi->fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
+> -	cfi->fsynr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR0);
+> +	cfi->fsynr0 = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR0);
+> +	cfi->fsynr1 = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR1);
+>  	cfi->cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(idx));
+> +	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1)
+> +		cfi->contextidr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_CONTEXTIDR);
 
+I think this leaves 'cfi->contextidr' uninitialised for stage-2 domains.
+We should probably either zero it here or just zero-initialise the whole
+'cfi' struct in arm_smmu_context_fault() with a:
 
+	struct arm_smmu_context_fault_info cfi = {};
+
+line.
+
+Will
