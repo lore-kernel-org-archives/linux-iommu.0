@@ -1,134 +1,101 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D214C289815
-	for <iommu@lists.linux.dev>; Wed,  7 May 2025 15:57:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A270C17E4
+	for <iommu@lists.linux.dev>; Wed,  7 May 2025 16:09:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746633443; cv=none; b=npUPmreEVIUhcaIy7Ks+VHO9Xb1e2WT3Zut7aWvEykR/h8fTPG3azJcv7OXlAitBUX5eU5/Ti2X43P0iQNPXQ7nO+6byEAqnVWn/f9pHv09LctuVIRdzk56yM9OA4w399pjWHTgzwmKb5UPxlQXKw3dGoc6nPoDmc4g9cviy7fQ=
+	t=1746634165; cv=none; b=b/S1OfXvr6j8lhRu3yGJ0gieQlycgM8xQdW1yEV8xnfTRx50rQiEV9kMfISIItzzdAmLt3kZMXvkepr48i3Qzx8fil28h/0FTCMJ/cj9/+9XAMXohoaqlnn4nxbuHzdAjlT2ktpu+0ZYE7PnEMk+AXGdKehKEY28s7Je8oGMrUI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746633443; c=relaxed/simple;
-	bh=9eQK4QAEow732KG9bEcHB4AIdULBpH4BjFf16UDvexI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZETkUiiu4Ei3kuAU/fHTyo/DyalUnS0C22EWU01v1wIaj+/OLn6DUb424CSBhF9zGibiAFZ4zRX4EpHumX00ZtthR0i873paCCsHY/Cc9vyQWVcbyWcRNU8VPBbkgnrvEvMs0kIuiVcQWs8kTC/Hfk/uBvhjGCflbAXMP3pUgi8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=K1t1FAYW; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1746634165; c=relaxed/simple;
+	bh=suPZKkjGhRg9EAuSjppkmBzvFftFp11slWdLXQv1Hao=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 References; b=ju+cnQG08UCbFyAAjMK1uHQ2Qjw0u9dwAMJyuTTJIuMI3IgJiS/PpotdUQs2Xbf7tVMSUkFf1BgzNcr6Vd/Sv7bnbS3LDl9TQxKRxdsDC/6oSJeeOwDv9v/57NoFHEX9Px4PylJYLtAkmANCPdBscQHnSVnaU7oB20Wnnp2I9As=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=BoKCKYCM; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="K1t1FAYW"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-4769aef457bso95266151cf.2
-        for <iommu@lists.linux.dev>; Wed, 07 May 2025 08:57:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1746633438; x=1747238238; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=oMpiX2oAeFJGOcPhonwGxFO2XwnOZnyIjVcioz4mPT0=;
-        b=K1t1FAYWUkNWy4dGBRjtkmwDXpUjG0dJ1yllP+CPG2ba16V4qJPt+0N/QrEP6IfGWs
-         7gjBL9KUb6hFV2wWUYPhjWf3Lbem2VQtrozOH+V+U60mjeaRZm2AW/zDfxHpuF/HUWal
-         lWH683oE5EKEG8WN70hYYg4OU9AXIJMBvw9X1z0O/JO7SEJUSGtANmLpx6zN8KZhTKT9
-         z4XJoy2Qas4BFmdYkT94dstEPl/kZbHCf3kNi8j8GY3eN9iMUElCYVaUKcAQ1exM9UJf
-         s+7LIrWSWxqIlmzeK4o0GP0cYeVgdttHPNI7TsvZVdOQQrIyE9bh6sahRj5TWPITvVAn
-         RxPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746633439; x=1747238239;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oMpiX2oAeFJGOcPhonwGxFO2XwnOZnyIjVcioz4mPT0=;
-        b=NZB4BQa7av8gwCx7+XFGLl2xYQwdiTkLTbcoGG1y72xhD2FkR1evKhvbtBzCUc435s
-         O6+DPdu4O620IN9U9Rp5H7FPSSE+0grAkoNM/4e+jaFJi/lQebkj+yHNgv4eLkweWztR
-         7GbCZG6i64XaOQiMsHwd5zCXN/BIHsQBqcQZtzbTrubVst1XiKDvGzq9VOTbsuzNpTWR
-         5OkFuzCbDLpRy9h2rC21N+viEx2iPyinzoMVunNwItmEqoc7HvGfOFgn3nB3njV/b81d
-         Mm8ai0ZrKnkzuHROBKPUPnV2hYN3Amuk6c1jcS8G0JOOKTO82JzX28XNcQRi40i2m0Yg
-         UI6Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVCc07dp5vg/PpvEqXOrgDR6t8kc5VqQqOBPZHnKoR+4YomDFTwVzx3FTE1z19IQUVs95ABlw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwGDc2J0aaw91ZjjVDAQT+0Gnna6BYYKUfimjbosjIW171sS3KE
-	HUvJkcqUngY5WQyVho7UqEx9M1M0zVbeDqsqq82F8f90qPsvMAcOMzJENAgW/lU=
-X-Gm-Gg: ASbGncuj9xqgYBhlVMmh+j2KFBA9CvGbeRtc3cMnQCnoWUATEdU2LqAxfNyO1o/jOwO
-	HZyL/d7yvvC5KC5b1RkBQG9A8srqjy3Z1GvU6RG1wCD71RUq33gYS0Qpae0lmRxzIQGC/pNAdl8
-	06VQJF245x3yyJr+CeT/4zTAmNGM531KQX4WWFYdMMc+5gncmcROVK/gA2e+JfD138qOaVcMbBI
-	ZJYcSjZk14m+vgweCuKHokWSUm1XXGz94zrOOoMIDLBzvG9g0oF0042bhfBjmaVZCJsOPkvduqk
-	RzxGbta5T3wC+E3frTrVL7+p6sO1nv+PbPu18BfCH7zZQmMTYbQDuARJmqvzq+HGVP2nlXrDBnq
-	qI4h9PCdvnqMTdhi93AHH2S6pJk+tqg==
-X-Google-Smtp-Source: AGHT+IGY3INDtooQYmwyNQCIEwpt7xooKZ7sy3RzrPyXtK9PFRJuzWNKcBsIXTsgY0x3k40zEUppng==
-X-Received: by 2002:a05:6214:e49:b0:6f5:106a:271e with SMTP id 6a1803df08f44-6f542b03fd6mr64088116d6.38.1746633438616;
-        Wed, 07 May 2025 08:57:18 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6f5427b31a0sm15299126d6.113.2025.05.07.08.57.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 May 2025 08:57:18 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uCh93-00000001CGI-2d0i;
-	Wed, 07 May 2025 12:57:17 -0300
-Date: Wed, 7 May 2025 12:57:17 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Rob Clark <robdclark@gmail.com>, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org,
-	Rob Clark <robdclark@chromium.org>, Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iommu/io-pgtable-arm: Add quirk to quiet WARN_ON()
-Message-ID: <20250507155717.GD33739@ziepe.ca>
-References: <20250507142953.269300-1-robdclark@gmail.com>
- <20250507144038.GC33739@ziepe.ca>
- <8965ec0a-97d4-423b-97b9-7848454045d0@arm.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="BoKCKYCM"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250507160921euoutp0184da43719e5b2e0fd21ad74aed1577e1~9SoQa4UFB0089500895euoutp01C
+	for <iommu@lists.linux.dev>; Wed,  7 May 2025 16:09:21 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250507160921euoutp0184da43719e5b2e0fd21ad74aed1577e1~9SoQa4UFB0089500895euoutp01C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1746634161;
+	bh=KPYpTlVpZwaG6GOkibqncFdwORzfVt/MImPhX3ya/XQ=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=BoKCKYCMynC47Di5LPknPPpomQBFDwq7Pb4RZrltPwv2EKudSWU0702DyhBBbbvVN
+	 hE6krwlJmTiuplOKd5dKOBrRV0SAvxiQ2j3Gl1kqJd5amc6EdIOoHv0QVXsZfx7LhK
+	 no7mqFtX0ZiSh1VlC86uKS72k16mAvBKZsrr3s6Q=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20250507160921eucas1p1de6aa7aa265a65c6591bb4c3250e9dc4~9SoP5GAJB0253102531eucas1p1t;
+	Wed,  7 May 2025 16:09:21 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20250507160920eusmtip190ce670373e3f71f7f451105df96c3a7~9SoPIwfPf0592705927eusmtip1X;
+	Wed,  7 May 2025 16:09:20 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Tomasz Figa
+	<tfiga@chromium.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Sergey
+	Senozhatsky <senozhatsky@chromium.org>, Hans Verkuil <hverkuil@xs4all.nl>,
+	Gerd Hoffmann <kraxel@redhat.com>, Vivek Kasireddy
+	<vivek.kasireddy@intel.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>, Gurchetan
+	Singh <gurchetansingh@chromium.org>, Laurent Pinchart
+	<laurent.pinchart@ideasonboard.com>, Sakari Ailus
+	<sakari.ailus@linux.intel.com>, Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v3 0/3] media: fix incorrect use of dma_sync_sg_*() calls
+Date: Wed,  7 May 2025 18:09:10 +0200
+Message-Id: <20250507160913.2084079-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8965ec0a-97d4-423b-97b9-7848454045d0@arm.com>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20250507160921eucas1p1de6aa7aa265a65c6591bb4c3250e9dc4
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20250507160921eucas1p1de6aa7aa265a65c6591bb4c3250e9dc4
+X-EPHeader: CA
+X-CMS-RootMailID: 20250507160921eucas1p1de6aa7aa265a65c6591bb4c3250e9dc4
+References: <CGME20250507160921eucas1p1de6aa7aa265a65c6591bb4c3250e9dc4@eucas1p1.samsung.com>
 
-On Wed, May 07, 2025 at 04:09:47PM +0100, Robin Murphy wrote:
-> On 07/05/2025 3:40 pm, Jason Gunthorpe wrote:
-> > On Wed, May 07, 2025 at 07:29:51AM -0700, Rob Clark wrote:
-> > > From: Rob Clark <robdclark@chromium.org>
-> > > 
-> > > In situations where mapping/unmapping sequence can be controlled by
-> > > userspace, attempting to map over a region that has not yet been
-> > > unmapped is an error.  But not something that should spam dmesg.
-> > > 
-> > > Now that there is a quirk, we can also drop the selftest_running
-> > > flag, and use the quirk instead for selftests.
-> > > 
-> > > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > > ---
-> > > Sending v2 stand-alone, since I'm not quite ready to send a new
-> > > iteration of the full VM_BIND series.  And with selftest_running
-> > > removed, I think this patch stands on it's own.  (And maybe there
-> > > is still time to sneak this in for v6.16, removing an iommu dep
-> > > for the VM_BIND series in v6.17?)
-> > 
-> > You should just remove the warn on completely, no other driver does this.
-> 
-> What do you mean "no other driver"?
+Dear All,
 
-The server drivers.
- 
-> From a quick look, these IOMMU drivers have some sort of visible warning
-> related to the state of an existing PTE during map/unmap:
+This patchset fixes the incorrect use of dma_sync_sg_*() calls in
+media and related drivers. They are replaced with much safer
+dma_sync_sgtable_*() variants, which take care of passing the proper
+number of elements for the sync operation.
 
-Many of them are just using this code.
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-> while these IOMMU drivers do not:
-> 
-> amd
-> intel
-> mtk_iommu_v1
-> omap-iommu
-> riscv
-> sprd-iommu
-> tegra-smmu
-> virtio-iommu
 
-Which I think proves we don't need it and shouldn't have it.
+Change log:
+v3: added cc: stable to tags
+v2: fixes typos and added cc: stable
 
-Jason
+
+Patch summary:
+
+Marek Szyprowski (3):
+  media: videobuf2: use sgtable-based scatterlist wrappers
+  udmabuf: use sgtable-based scatterlist wrappers
+  media: omap3isp: use sgtable-based scatterlist wrappers
+
+ drivers/dma-buf/udmabuf.c                         | 5 ++---
+ drivers/media/common/videobuf2/videobuf2-dma-sg.c | 4 ++--
+ drivers/media/platform/ti/omap3isp/ispccdc.c      | 8 ++++----
+ drivers/media/platform/ti/omap3isp/ispstat.c      | 6 ++----
+ 4 files changed, 10 insertions(+), 13 deletions(-)
+
+-- 
+2.34.1
+
