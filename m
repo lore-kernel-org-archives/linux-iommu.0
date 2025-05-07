@@ -1,295 +1,245 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC5C228A3F3
-	for <iommu@lists.linux.dev>; Wed,  7 May 2025 13:53:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.14
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746626015; cv=fail; b=J4u4869kh3iNkVxQyqcBinqBAhIdXhOcdGZO1tnkFCA50V1RWjr4O4gTFcUPMWPobBkjnNyr9qGT2xtvYbuS9sMnoVogmyjgcpgMPPAOOhrD9k1WtM6PSuRSIi8vABp13vMklgJwkP77rlixtMnbI5fs+9+Tb32AwTow9erYTJg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746626015; c=relaxed/simple;
-	bh=xIA5H4ciSEDZSLudmltfFZLDiGytE0vNugkB3pXOmg8=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=gnR248COjc7R4lQWk7Y0Et2W24FPV3nPs43HeVYzfirsdbhi8SRQtZYIUWmoDCh+wNoKYcrWpkPvE2IsKDz1zJllMhgGqyrchvZyaEurUi6n9l0jLg7MdoRkvXWTSwlROCLvD3JXKugnBhlUUlssZpEuD8yR+06HF6ozMp0STxg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AM2RENBs; arc=fail smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1980C288C15
+	for <iommu@lists.linux.dev>; Wed,  7 May 2025 14:30:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746628203; cv=none; b=oWoRjc36wN3j2Rl6jFIkGP1/7hS18IV4d/INDhpGFOfTXnvZ8xEyJiIR0KZMEGR0UnIGwvI++viXuxS/lpaABx1tiyzjXtpG556TAzIO7aTyrQWl+HH9ILx2BNp8XhbjmPxGLjuG9i5QGn9NPJxlKXrvdSNDCesmKaQdrjEGEkg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746628203; c=relaxed/simple;
+	bh=Ysdv17ZrAFhu+Z8p5jVB7S0giJ890w/Ep7kXiVFvwEo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=b30ti+WdDaALSa2YiLXENmAjRrsRzfXqRDPSJaMicluY8uVHXzrbbekHtj2gsbWtHzJfW98VwHaG6E7nE7UUHLBYoNM1EN4ree6h2LaN8kcqoLo8JxXESZsANzKHZRLfUwNRZWmbToVOc1Xr5DiICUb2jxDwJx7JkdCEpAK3eIo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Oehyjz/w; arc=none smtp.client-ip=209.85.210.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AM2RENBs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1746626013; x=1778162013;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=xIA5H4ciSEDZSLudmltfFZLDiGytE0vNugkB3pXOmg8=;
-  b=AM2RENBsKuLMxreB4EKiGzqAK0SLhbzttdFFgQzKPpJTnN5m/z7yA8Ny
-   x0wPIw7G+vaJj6PqV5IlRzpjIhVYbFLw2ia8+UHN4ShYB7vfrUqBQ3/td
-   CT1APoq7FM2JJbtMMmZTf8jahnJHj8N90Fm2sYyhkI6aAbVlYNkeV3qUU
-   cxAydARI88x/aO6wIxGQ5G8i+2L0gAgqnXhxaAIq0EswTAjaLdgbzZ4hY
-   Kr08pGjBLN278WwXjHDZzvhjoz8YHPtTn583M9dI9kfM+bjHSojJLLfcY
-   kpjtrZOfyz4mfFufLFpPhDk/rvw1iHdBjPfBR+hIi7o5ddOKKcVlftLFN
-   g==;
-X-CSE-ConnectionGUID: h7dxMh0kRr+W8fC2b6iwYA==
-X-CSE-MsgGUID: EZPCG2+pSAmSTi7Gom1U5w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11426"; a="52171430"
-X-IronPort-AV: E=Sophos;i="6.15,269,1739865600"; 
-   d="scan'208";a="52171430"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2025 06:53:33 -0700
-X-CSE-ConnectionGUID: 4iT2p3kXTt6Oy/TzUhY6eA==
-X-CSE-MsgGUID: Xs20HPAHSD+6wBX7lZWJNw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,269,1739865600"; 
-   d="scan'208";a="135986177"
-Received: from orsmsx903.amr.corp.intel.com ([10.22.229.25])
-  by fmviesa007.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2025 06:53:32 -0700
-Received: from ORSMSX901.amr.corp.intel.com (10.22.229.23) by
- ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14; Wed, 7 May 2025 06:53:31 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14 via Frontend Transport; Wed, 7 May 2025 06:53:31 -0700
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.49) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.44; Wed, 7 May 2025 06:53:30 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rHh5tK8dCIwG78h6/HS9T1CflHrz9inG6rSUjPxXazHOYE68N4teWbh01R4g7Qsa3HQn4tUW47TahIVcC0dzR69hLRgH50FHzBn7J+SU52L5X0SmL7QJrO3Z2N59vvSXN/32Xb71nlARrK/eFFtxipB6d1sUCqiy7PxHXy/fsRyA2RVRp7/os9QYRub0oIAjHFHSSv6dL/p79dG0jnwPKXhXR4OgwFR9o57+f9JBhz+Cc0rgEFRJ9YSHgFyWWGFGvuQPVTeIcs4TrxuOQ3Ue/BuD5afHvjuX+IEZgSU5Vb2hvKOw9tb94tEjfJ/80FttvOSVAhL8JFdZ1+1REI2ugw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3fwJh9Drg2Zf1aw4mOyXhlDyNFLmiUAL6gNsxZefEpk=;
- b=rmgItdtuCleocizPnyaeh1J/A4fUfFhumDT22x2OJJmfkV6q9FNPPGjl5IdPycEim6Gl+YlKc9iu2iCrFpYjCCf4h4gxvf4SYV5061LFb/IaTXTaeorm61KGcxDo6HvBr71x0r/Bc0XI+Iwq9E+ev52zVpFwz+gQZhgXbVcfVyhLKBNXChHwYsMsZUvQBuH3t+OsL6LcMjFY1TQy+bpHBZZO/OO6spgJ7QcxTkLdGZaw1a+wgQNA+SeW3P0EJg43ExC3zUSZ1s2NWr9hWFjd4eJGmZY1jNHRstqNx03II+VSH3Gt0sIyORvBeMziIcoKphvLZoJ4PuvMW3EF2EhYqg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by DS0PR11MB7927.namprd11.prod.outlook.com (2603:10b6:8:fd::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8699.22; Wed, 7 May
- 2025 13:53:27 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a%5]) with mapi id 15.20.8699.026; Wed, 7 May 2025
- 13:53:27 +0000
-Message-ID: <a8d9e9ca-4944-40ae-acd8-d576447742d3@intel.com>
-Date: Wed, 7 May 2025 21:59:24 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 rc] iommu: Skip PASID validation for devices without
- PASID capability
-Content-Language: en-US
-To: Tushar Dave <tdave@nvidia.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <kevin.tian@intel.com>, <jgg@nvidia.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-CC: <linux-pci@vger.kernel.org>, <stable@vger.kernel.org>
-References: <20250505211524.1001511-1-tdave@nvidia.com>
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <20250505211524.1001511-1-tdave@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG3P274CA0022.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:be::34)
- To DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Oehyjz/w"
+Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-7399a2dc13fso9788579b3a.2
+        for <iommu@lists.linux.dev>; Wed, 07 May 2025 07:30:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1746628200; x=1747233000; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Tx2+qp5fUFaxyyKDyJusWn86x0QDSb7v4Cx5Hi7px0E=;
+        b=Oehyjz/wOlGSsDxTzE9afjhHgPcfCLnIU3N8oTrxUvgkKME/WPVo2ix3NWcWlkxMXS
+         73WHt5sLLJQWIBoK8KGainFo8l9SOAoxmAB3gYbF8p2r7p5KV/3VU+WZI26hJQorqAZ+
+         rCfj5Ws7zRB9XhXR4/stwDbaxErt47ZlnuNVhpeJfXsC2SSRwJYlv+OxKv2qJhrffJ8s
+         jiZzsGthJLTHa74hOKMOj/3hGtJ9BwaGXKHZ8MT3H6pqQeEV5WD8Mva2DRMU08fR4PHt
+         Ui/Z9uA5FYb6XNWSgEbFiz8slYzJnqMQNfJfgpl3PyLzXhSljFv3uTAlejSHrCq9loB5
+         ue6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746628200; x=1747233000;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Tx2+qp5fUFaxyyKDyJusWn86x0QDSb7v4Cx5Hi7px0E=;
+        b=UfjkYLG2rQnJJp1ECuEEDcA/rVYEO3D5gv6C+gLrdfth/NsTEd2zTN6/1VQr6k7D75
+         r8FMYjduMHYDygx+rBmDxIsGqAPhw+XSZLU2Sw0ASMmsZRuGC9tArzl7nJDw/CtgJ6+c
+         DJOTd8bnpXd/uwR+m7+VnLMsvcX3tsLoLxYiPysD8ahuYh9HCVmJLulJKJfhiyBtrp+5
+         iVlloRkV8WKB4F6CZeNfMeOMD/uRY9tXfXuZAfRcClkzQwui/vyupQJ0gkXle6aFvfom
+         Qn5ChHSIr3Zbxsk7TxjSte+hkCO1A0NF4CHPpHA5J+PpMmludJC+5e/1NTJekS2qPrIQ
+         h+UA==
+X-Gm-Message-State: AOJu0Ywq9zoMLWzJI7jX4mACK2uea8c8qEVvb6Oj8xov45qNYIUOa2pP
+	dX+UkLN3x5gdX44adLn9UMNrtLn9KVtI+7QVlrg1tQjEsvMcjeejqaiNfA==
+X-Gm-Gg: ASbGnctt2xC6Ctj3GLePjmCgtqpNuUTk0Ng+93w9NWuSoPuAdv7s3Wpld06uky/Unyq
+	LLYo6/rzCUdNGDPrdeHr/hyJBA3FN/nUunpY0NerFGjxXyWId0qhQdINU/HHP6OFNELKQPoq2Y6
+	Kvvyu4tvt0t5NwRaLlEB0kws7WuT389m97kE7Yc5KwuRViRloE4mAbvZk1jeQD+tIlhjHf/22GA
+	P02USpzusLi3R0ZfIYM6t6zLfb8IrxK4hSjYwY6ti0Trz1UTqb6g8BzZtRFz4pV682gJd571ARL
+	DAbWc7Tef39jDjdyn1dy1VN/M4lwZChR+LM1MbGNdlqcD7+U15a04qaBEttWsvyneqYFt+UWsTR
+	ikhE7QPB4Q9ETzGw=
+X-Google-Smtp-Source: AGHT+IEfTnLrQfaILn2a1qg9FhcKbdkfEWk7UApwdzBZ8svWHw/KZHdECBQt/Ccuap4IqQpbIJLUkg==
+X-Received: by 2002:a05:6a20:3950:b0:20b:a75e:fa32 with SMTP id adf61e73a8af0-2148d42d024mr5379907637.40.1746628199672;
+        Wed, 07 May 2025 07:29:59 -0700 (PDT)
+Received: from localhost ([2a00:79e0:3e00:2601:3afc:446b:f0df:eadc])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b1fd2f96ec2sm5819027a12.13.2025.05.07.07.29.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 May 2025 07:29:58 -0700 (PDT)
+From: Rob Clark <robdclark@gmail.com>
+To: iommu@lists.linux.dev
+Cc: linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org,
+	Rob Clark <robdclark@chromium.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM SMMU DRIVERS),
+	linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] iommu/io-pgtable-arm: Add quirk to quiet WARN_ON()
+Date: Wed,  7 May 2025 07:29:51 -0700
+Message-ID: <20250507142953.269300-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|DS0PR11MB7927:EE_
-X-MS-Office365-Filtering-Correlation-Id: 83e3dff0-4896-48e3-abf5-08dd8d6e8ace
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024|7053199007;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?YTU3V3JwVXVHRkk2QlVML3B2UXVxYk1OR0JvQVZvbzFCd2dVZVlFWFVPbkhL?=
- =?utf-8?B?RG9YVmNxQk4xcVNEb3Z3NmlZbjV6cEJLUWVnNU9FUlFnbG5QbTZWS0xoRTVa?=
- =?utf-8?B?YmV0aDdsZ1VpQTcxb0hmbG05V1k2WXRWbURQTkdlcTVQclhTMTFmR0EzZDlG?=
- =?utf-8?B?R2FHc0NtMGE5cHRpM2VMWUo5eS9kUnVjOUUvRllOczU2OEcydFM1dW9SZGZk?=
- =?utf-8?B?TXFoTlh1am02Vk1NTmJKYzBCeXd3SFZWdzJpRlFrZ1ppQnduaGFyczcwb3pL?=
- =?utf-8?B?ZFZreUtncnFtSmxxSXF4Q3EybHFvRDRVeWJZdTROZkJwRzNkT3c5dlpFY0JQ?=
- =?utf-8?B?ZzJwSVpPbUxBUzQ2by9kRlU2YnJpMlR2Nmd5RUwxQzJPSm1vV3l5c0t5aUt5?=
- =?utf-8?B?eUhLbGNqK2NwUm1uMCtkUi80VW50cTQ2RENMRkQyWXk3U2dEdkdONVgwblE1?=
- =?utf-8?B?N2lLKzd4eVR5OTlWWXlteFVrMUova1puMllRMFFGMncvMndxN2MwSTVPMVVr?=
- =?utf-8?B?aWp0STVaZXI3bjJWRUU0RnMwYTRCRTBtTXAvcmd0VGdIQm96aC9oNDdMVFdZ?=
- =?utf-8?B?SGVSVzFtbHhrSi9kMmVvR0FTdFZnNXNzT2dFR0pGNVEzbDNHbnNqVXRiN3p5?=
- =?utf-8?B?MUs2U05PNkxlNlZDRW9mU1lmVkFGTHhQZkxkRWxqWTlEWDBDcHNRbmNobFUw?=
- =?utf-8?B?RElrU3kweUI5dU1PWTBkODFqNysrL2tQVWEzRkJHZ2pZNVovdFpndG56NVda?=
- =?utf-8?B?N2lkSmdrODVZalpINElUL2hRcDJJbjROa0k5OUxjVzZhd2FYKzFNRGRkWnlR?=
- =?utf-8?B?U0IreDRTaUhxV1hkeFNGeTZiUEhMc01ySlN4UXN0dkdaV2hsQkNNbzJZUloy?=
- =?utf-8?B?Zkh5cjQ4NEpXUjJ6VG4yUEpVU1BzaGFRWGtlZk14V0d1dWVTK0VFSE1MVjdx?=
- =?utf-8?B?ZDQ4cHRrS3l2eWhFRGtpTHdOcktWK1pqNVhSK1hzZFVyTkN6OU1MYnIwQlJ3?=
- =?utf-8?B?N3psOG9UYnlkdUVlWnQ5UFNEblRaU2JUZVZROWpDVFhWYzB6S3loTWoydFVV?=
- =?utf-8?B?akZGMklvbkhaV2daWHE4T29TeU91MGhnSzJrVVBqcHA1Nnp1b0Q5cHVaTzhI?=
- =?utf-8?B?bXBRK3BCVllFRmM0QzJ0cDA3aXRYOFZNQW9xNnFaWlIyaUlld0NYMG9rd3dt?=
- =?utf-8?B?MUhXRnAzYk5vR3B5RHNINzFaUFlFaFMrUEoxSWM3VURPcFZ2eUdaZnhwU2Ja?=
- =?utf-8?B?WGRIMktJTjM2MzdQem9ranF5VktOR0U2QXI2T29hTmR1UUx0N3ora040dml4?=
- =?utf-8?B?WDg5TlBPaEo5aGhtMDR4aVVnN3N4eFdwejVSbElMWElzMHIrdE0yRCtoSUc1?=
- =?utf-8?B?ZnhKUkZVcU04U3ZXcXA0OXlsc1hkNUIrNHFqekVYS2s5bG9YNGFJWHZheER2?=
- =?utf-8?B?YW5lTDk2T0dMVFNNOWZ4dDRtQ2pLREp0L241ak9seEhzLzkxclZSanRYV3NM?=
- =?utf-8?B?em1TQVNWeFJjcW5IbkpqNnMrT2oxUHpzUVptMFFSODNHZit1ZDRQWkp2aXpC?=
- =?utf-8?B?TWV0SUNwWDljdmxTalYzMEVXN2h6V0UvYUFnYkZjVzlRSC9aaXlyMmFoUFl5?=
- =?utf-8?B?OTdaSXVxUDE4dHFtOS84ZkJDUU84cHRvTHRDVmRoUTN3NFpjako3WWk4cVZT?=
- =?utf-8?B?S0hPQ3piKzNYL05LeXF6Sjcvem5oREZhUVBCL0dpdDNNSWVsb0tORDE5RTVX?=
- =?utf-8?B?dlpNZWtDT21HVHBXNjdKcnpWUUZ1YnE1dFZxaTMvSDdoem00V2hTM1E2d3lP?=
- =?utf-8?B?TDB1TDZRQkN3UXh6cGlkYkJBNlpDSDRIZ0RjWXI0QjNlQ1UwamNLcWZkTVVF?=
- =?utf-8?B?aExKNjJYK2RFZkFuRmYwTzNUcHpjQTBJbG5pMldQb09ma01iL3V1ZndzQlB4?=
- =?utf-8?Q?VqwlBkXzgqE=3D?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WDhWc2taQjVlTE9VWVZRYzZwbmVUTmFuc1l1QnIrb0s5TWE1R1JFN04rZVp3?=
- =?utf-8?B?cGdVNVYzaDFJQVhLZnRBTG9iL2IvRE1kVXBMS2VVclhXeFRiOWw5MVFhUnJW?=
- =?utf-8?B?NWcvM0FVQ3pxVE96Y1psdjBvRnlnK2IwdXFUTjlkOGgrNkdsamFDSGlNamZ4?=
- =?utf-8?B?Zy9idXVmbThvaFZ2RFRDdFJ6YUNjSW4wZFZsQ0s0a0RhL1J1ZmxtVnZiRFlV?=
- =?utf-8?B?c1hock9ML2lUY08xRHArMU1pQ2ExYW00VDFaY1VCdHVFbVpKK3Q5RU5XVWpj?=
- =?utf-8?B?cnd2WThJWEhjMkpvcFhZcFZlOWN0TDRQOTFqUTFoK3NRbkJEdksxTkFESjYr?=
- =?utf-8?B?VnRiTFpkR0wyeG5CaUtqT0NJNmJSTjRuNFZncTJIMEFrb21BdGR5eGFNendQ?=
- =?utf-8?B?aCs1RCswSnpBMjlTTXJ6Rm9uR3JLbTR4V2FBdVMyOFJrME1JU0hmNExyNUpQ?=
- =?utf-8?B?bHVLdnBFMEpjUGt2aXVLYzRVN3h3MGZ1VUZnZ2t6OEpUYmlvenYrNVhSQjcv?=
- =?utf-8?B?amVLVlhmK0NveFZIQkhyd0xyeFpBK2RyWEI5dzhZR3BBbFJldU16cmZCM1hJ?=
- =?utf-8?B?K0tnQ0lHV2NxUzBYSnJ0UmZDWFRweVRocTFxZklUYVBDck4vRklvVlBmZmIr?=
- =?utf-8?B?ZHB3WGFUM0NpYlkycVMvbWFhTFd2TkNUbmFISlgxcXJPeCtqNzRMUldIeVda?=
- =?utf-8?B?Q2NMUVlxb3BVS1FFcjczU21obUp1ck9JdEYxR25QNTNaaklUUmhoaklBejNE?=
- =?utf-8?B?OGZlWlRydGljdVFCVTUrV0RGZ1NBOUJGZnVTSzdoVVN6SEVFK3FVelZCOTRu?=
- =?utf-8?B?Umg3QWUzOWlzRHV1LzVlYzkwbXpNVkNJY002S08vbERoUnNNVXJiOEpMc2to?=
- =?utf-8?B?TW9yNFE3aWhCTTRpNXZocEpTaVNzdGk0Q2lzMFNHVHdhUVFEWEdWY21IOHpC?=
- =?utf-8?B?aEZtUldDU1d1WjBXZE1id1NMbnlaVHZRbHlTZ3d2SWVTTy9JaVRtY015amFM?=
- =?utf-8?B?K0J2S2VxSUViRDVtdHhiajkwaTJvYWU2NW1mcGQ5WmhPUWVGWnYvMy9EYzdF?=
- =?utf-8?B?OUVxZUhrUE9IUFJ0SzJhaDhNUVRnZG16eFJUY2xNaU8xN21NVTQ4Y29VVDl5?=
- =?utf-8?B?Nnc0TkVSbnR2bytlc2ZUWHhFWXljbHVyV2FQNHIxbGNCa3MwMU5Mblh0Mi9k?=
- =?utf-8?B?WEFJNGVZOFVsZDRwZktseDN5Ni9sR0IvYklDVnYydE5sMEVEeHdIcFdITHMv?=
- =?utf-8?B?SUFVZDRIQVVEM0I2M0UzaW4wcUJSSFduYzJjUDN3ODI2OXFZRTkvZmIzeTVE?=
- =?utf-8?B?WTgzTFhpU0krdkxPM1lkdjFXNlQ0QlEySE1XUjU1ZXN2TEhQMEpwRk11eTFn?=
- =?utf-8?B?SWFZbjdaRDZkYkhxUVdjOHVrU280TUlzSTBNUkhQbDMwdXdjQlpESDdnZzd2?=
- =?utf-8?B?VWFnMkdjdzVIdWkvRU4wSThBMHpsbFZZbzYrT2h0UkF3cW9OL0dvRUU0ZnNi?=
- =?utf-8?B?T055MDczYXhjU3J1N3h3TnJ5SHRrd21YS0RMSkdmT2Vya2dkcnZlMFZkSEdH?=
- =?utf-8?B?VndXeGxoQk9hNE95KzJFM01sdSt1WXhEQlMrSW81d2hLU2g2YlY2VjVTZjJv?=
- =?utf-8?B?bWtFb0c1WWExRGNpenhOTlZpS3ZlN2ZVbGJCS3hqK2ZqOXdzQXhBdEhSRytJ?=
- =?utf-8?B?T0YrUlEzRksvdTNPQ2tOZ3pFUjIvU2pmNzFwSWRoaWhRcllNUFdOeGR2ZXp4?=
- =?utf-8?B?eFd3L1Z5OGtKM1pBb3RXNmRKemJ4cEtmSFBvWkJVVDkyM0RpVi9tZVdyQnVF?=
- =?utf-8?B?SlpTRlZ1MENUZHBRWDg3QVEvT1NwNEEzT2NYUW9MdHVIRzUxWUk2Uzl4SEh2?=
- =?utf-8?B?ODZJY1BoaVVDcGo5NlV2V1NYbVZQSVdSNEhOcHdmUnNYelVGM0puZ2ppMGkr?=
- =?utf-8?B?NUlYcXVBc2hicXcxMllKcUs4K0p2YVQxZVhZUGQ3NWlTTVk0Nld6RVFBQTM1?=
- =?utf-8?B?Um0vY0FMUUd1WkQrUXlHKzRtVnFzTTVpc0RkSVQ4VzVLbVU0SVE3aG5oRTla?=
- =?utf-8?B?Qy9NYnE0RlRqcHlSRE5tYy9ueGNkWDZWeXdKdzh4ZmwxQTI5SFpQd09MNXVq?=
- =?utf-8?Q?X/oiAROwgLxEgJ5SLsln/sy4f?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 83e3dff0-4896-48e3-abf5-08dd8d6e8ace
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 May 2025 13:53:27.5001
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IhrDayP6fvGf/LYepkhgmeB0685d3Y9ataI5+oVA6OvjTmqYrvdti9PntPNLsOZzCL66q5qwkRWrWXA+XUIanQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7927
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
 
+From: Rob Clark <robdclark@chromium.org>
 
-On 2025/5/6 05:15, Tushar Dave wrote:
-> Generally PASID support requires ACS settings that usually create
-> single device groups, but there are some niche cases where we can get
-> multi-device groups and still have working PASID support. The primary
-> issue is that PCI switches are not required to treat PASID tagged TLPs
-> specially so appropriate ACS settings are required to route all TLPs to
-> the host bridge if PASID is going to work properly.
-> 
-> pci_enable_pasid() does check that each device that will use PASID has
-> the proper ACS settings to achieve this routing.
-> 
-> However, no-PASID devices can be combined with PASID capable devices
-> within the same topology using non-uniform ACS settings. In this case
-> the no-PASID devices may not have strict route to host ACS flags and
-> end up being grouped with the PASID devices.
-> 
-> This configuration fails to allow use of the PASID within the iommu
-> core code which wrongly checks if the no-PASID device supports PASID.
-> 
-> Fix this by ignoring no-PASID devices during the PASID validation. They
-> will never issue a PASID TLP anyhow so they can be ignored.
-> 
-> Fixes: c404f55c26fc ("iommu: Validate the PASID in iommu_attach_device_pasid()")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Tushar Dave <tdave@nvidia.com>
-> ---
-> 
-> changes in v3:
-> - addressed review comment from Vasant.
-> 
->   drivers/iommu/iommu.c | 27 +++++++++++++++++++--------
->   1 file changed, 19 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 60aed01e54f2..636fc68a8ec0 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3329,10 +3329,12 @@ static int __iommu_set_group_pasid(struct iommu_domain *domain,
->   	int ret;
->   
->   	for_each_group_device(group, device) {
-> -		ret = domain->ops->set_dev_pasid(domain, device->dev,
-> -						 pasid, NULL);
-> -		if (ret)
-> -			goto err_revert;
-> +		if (device->dev->iommu->max_pasids > 0) {
-> +			ret = domain->ops->set_dev_pasid(domain, device->dev,
-> +							 pasid, NULL);
-> +			if (ret)
-> +				goto err_revert;
-> +		}
->   	}
->   
->   	return 0;
-> @@ -3342,7 +3344,8 @@ static int __iommu_set_group_pasid(struct iommu_domain *domain,
->   	for_each_group_device(group, device) {
->   		if (device == last_gdev)
->   			break;
-> -		iommu_remove_dev_pasid(device->dev, pasid, domain);
-> +		if (device->dev->iommu->max_pasids > 0)
-> +			iommu_remove_dev_pasid(device->dev, pasid, domain);
+In situations where mapping/unmapping sequence can be controlled by
+userspace, attempting to map over a region that has not yet been
+unmapped is an error.  But not something that should spam dmesg.
 
-Reviewed-by: Yi Liu <yi.l.liu@intel.com>
+Now that there is a quirk, we can also drop the selftest_running
+flag, and use the quirk instead for selftests.
 
-with a nit. would it save some loc by adding the max_pasids check in
-iommu_remove_dev_pasid()?
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+Sending v2 stand-alone, since I'm not quite ready to send a new
+iteration of the full VM_BIND series.  And with selftest_running
+removed, I think this patch stands on it's own.  (And maybe there
+is still time to sneak this in for v6.16, removing an iommu dep
+for the VM_BIND series in v6.17?)
 
+v2: Drop selftest_running and use IO_PGTABLE_QUIRK_NO_WARN_ON for
+    the selftests
 
->   	}
->   	return ret;
->   }
-> @@ -3353,8 +3356,10 @@ static void __iommu_remove_group_pasid(struct iommu_group *group,
->   {
->   	struct group_device *device;
->   
-> -	for_each_group_device(group, device)
-> -		iommu_remove_dev_pasid(device->dev, pasid, domain);
-> +	for_each_group_device(group, device) {
-> +		if (device->dev->iommu->max_pasids > 0)
-> +			iommu_remove_dev_pasid(device->dev, pasid, domain);
-> +	}
->   }
->   
->   /*
-> @@ -3391,7 +3396,13 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
->   
->   	mutex_lock(&group->mutex);
->   	for_each_group_device(group, device) {
-> -		if (pasid >= device->dev->iommu->max_pasids) {
-> +		/*
-> +		 * Skip PASID validation for devices without PASID support
-> +		 * (max_pasids = 0). These devices cannot issue transactions
-> +		 * with PASID, so they don't affect group's PASID usage.
-> +		 */
-> +		if ((device->dev->iommu->max_pasids > 0) &&
-> +		    (pasid >= device->dev->iommu->max_pasids)) {
->   			ret = -EINVAL;
->   			goto out_unlock;
->   		}
+ drivers/iommu/io-pgtable-arm.c | 27 ++++++++++++++-------------
+ include/linux/io-pgtable.h     |  8 ++++++++
+ 2 files changed, 22 insertions(+), 13 deletions(-)
 
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index f27965caf6a1..a535d88f8943 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -253,8 +253,6 @@ static inline bool arm_lpae_concat_mandatory(struct io_pgtable_cfg *cfg,
+ 	       (data->start_level == 1) && (oas == 40);
+ }
+ 
+-static bool selftest_running = false;
+-
+ static dma_addr_t __arm_lpae_dma_addr(void *pages)
+ {
+ 	return (dma_addr_t)virt_to_phys(pages);
+@@ -373,7 +371,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ 	for (i = 0; i < num_entries; i++)
+ 		if (iopte_leaf(ptep[i], lvl, data->iop.fmt)) {
+ 			/* We require an unmap first */
+-			WARN_ON(!selftest_running);
++			WARN_ON(!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
+ 			return -EEXIST;
+ 		} else if (iopte_type(ptep[i]) == ARM_LPAE_PTE_TYPE_TABLE) {
+ 			/*
+@@ -475,7 +473,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+ 		cptep = iopte_deref(pte, data);
+ 	} else if (pte) {
+ 		/* We require an unmap first */
+-		WARN_ON(!selftest_running);
++		WARN_ON(!(cfg->quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
+ 		return -EEXIST;
+ 	}
+ 
+@@ -649,8 +647,10 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 	unmap_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
+ 	ptep += unmap_idx_start;
+ 	pte = READ_ONCE(*ptep);
+-	if (WARN_ON(!pte))
+-		return 0;
++	if (!pte) {
++		WARN_ON(!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
++		return -ENOENT;
++	}
+ 
+ 	/* If the size matches this level, we're in the right place */
+ 	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
+@@ -660,8 +660,10 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 		/* Find and handle non-leaf entries */
+ 		for (i = 0; i < num_entries; i++) {
+ 			pte = READ_ONCE(ptep[i]);
+-			if (WARN_ON(!pte))
++			if (!pte) {
++				WARN_ON(!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
+ 				break;
++			}
+ 
+ 			if (!iopte_leaf(pte, lvl, iop->fmt)) {
+ 				__arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
+@@ -976,7 +978,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+ 			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
+ 			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA |
+-			    IO_PGTABLE_QUIRK_ARM_HD))
++			    IO_PGTABLE_QUIRK_ARM_HD |
++			    IO_PGTABLE_QUIRK_NO_WARN_ON))
+ 		return NULL;
+ 
+ 	data = arm_lpae_alloc_pgtable(cfg);
+@@ -1079,7 +1082,8 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
+ 	struct arm_lpae_io_pgtable *data;
+ 	typeof(&cfg->arm_lpae_s2_cfg.vtcr) vtcr = &cfg->arm_lpae_s2_cfg.vtcr;
+ 
+-	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_S2FWB))
++	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_S2FWB |
++			    IO_PGTABLE_QUIRK_NO_WARN_ON))
+ 		return NULL;
+ 
+ 	data = arm_lpae_alloc_pgtable(cfg);
+@@ -1320,7 +1324,6 @@ static void __init arm_lpae_dump_ops(struct io_pgtable_ops *ops)
+ #define __FAIL(ops, i)	({						\
+ 		WARN(1, "selftest: test failed for fmt idx %d\n", (i));	\
+ 		arm_lpae_dump_ops(ops);					\
+-		selftest_running = false;				\
+ 		-EFAULT;						\
+ })
+ 
+@@ -1336,8 +1339,6 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
+ 	size_t size, mapped;
+ 	struct io_pgtable_ops *ops;
+ 
+-	selftest_running = true;
+-
+ 	for (i = 0; i < ARRAY_SIZE(fmts); ++i) {
+ 		cfg_cookie = cfg;
+ 		ops = alloc_io_pgtable_ops(fmts[i], cfg, cfg);
+@@ -1426,7 +1427,6 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
+ 		free_io_pgtable_ops(ops);
+ 	}
+ 
+-	selftest_running = false;
+ 	return 0;
+ }
+ 
+@@ -1448,6 +1448,7 @@ static int __init arm_lpae_do_selftests(void)
+ 		.tlb = &dummy_tlb_ops,
+ 		.coherent_walk = true,
+ 		.iommu_dev = &dev,
++		.quirks = IO_PGTABLE_QUIRK_NO_WARN_ON,
+ 	};
+ 
+ 	/* __arm_lpae_alloc_pages() merely needs dev_to_node() to work */
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index bba2a51c87d2..639b8f4fb87d 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -88,6 +88,13 @@ struct io_pgtable_cfg {
+ 	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_HD: Enables dirty tracking in stage 1 pagetable.
+ 	 * IO_PGTABLE_QUIRK_ARM_S2FWB: Use the FWB format for the MemAttrs bits
++	 *
++	 * IO_PGTABLE_QUIRK_NO_WARN_ON: Do not WARN_ON() on conflicting
++	 *	mappings, but silently return -EEXISTS.  Normally an attempt
++	 *	to map over an existing mapping would indicate some sort of
++	 *	kernel bug, which would justify the WARN_ON().  But for GPU
++	 *	drivers, this could be under control of userspace.  Which
++	 *	deserves an error return, but not to spam dmesg.
+ 	 */
+ 	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
+ 	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
+@@ -97,6 +104,7 @@ struct io_pgtable_cfg {
+ 	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
+ 	#define IO_PGTABLE_QUIRK_ARM_HD			BIT(7)
+ 	#define IO_PGTABLE_QUIRK_ARM_S2FWB		BIT(8)
++	#define IO_PGTABLE_QUIRK_NO_WARN_ON		BIT(9)
+ 	unsigned long			quirks;
+ 	unsigned long			pgsize_bitmap;
+ 	unsigned int			ias;
 -- 
-Regards,
-Yi Liu
+2.49.0
+
