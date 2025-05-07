@@ -1,73 +1,72 @@
-Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com [209.85.217.43])
+Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com [209.85.221.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 617CB156C6A
-	for <iommu@lists.linux.dev>; Wed,  7 May 2025 02:08:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCCA670824
+	for <iommu@lists.linux.dev>; Wed,  7 May 2025 02:30:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746583700; cv=none; b=LTkibh7m8Fn3fvX4LKLxgSIxUbXTvuF5djTP1EA0Teoid453dGTSHSWDMV4n8tMsFsKresNVNFeHjOVzIzzWN2C5xrOAGhi5EB7U/aWnz8m6R7VOHCskeYw/WxOPfC85FWil4mSBnxj13GK52D25lZFUStEHumME+1w075mSHX4=
+	t=1746585020; cv=none; b=Ufn80mKdzmZ319G2OoO+4WMzktY8y8c2eXQAR4kxmJj3R4seL7iglYt2kTpuANLKHjrqnojZaeorwp5i7L6kZCzLwjfOKjPBK1g/tuKc3nqQx3waatgWY0tQuLn3Jmeqfyor6RM64kOvgkZCLgfkrWYTaNF52TZvGez9b2Bd2oQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746583700; c=relaxed/simple;
-	bh=qSMkAw1f8q81qejiBhHJHWaRJ9DONSFXrsMIQ0Kcuag=;
+	s=arc-20240116; t=1746585020; c=relaxed/simple;
+	bh=SznfOR6U7IN2g/iqV6jv8KKSpwQxBIwzXtZCsVeUWAI=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=noZZxl1guVCBQlSiWpLd9erEwTxniujIPsBvFaMlSCKR+fCkunr4ro8IaFOL67OCcnm93HWy+0iQ+vOVOZf85nQCrzBSGTpWmFRxDmQCXqPnrEWzpUKc2OFaFXuZWIFKI0SWjRxKfxTzwq5ZvGYNIAuAIjTDmSK1ljkpeICZJCY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G+vui1u+; arc=none smtp.client-ip=209.85.217.43
+	 To:Cc:Content-Type; b=f/aRDe/tQlbzbxfp303pOyFlUBjArqjgqIUbtx5lEyju9yV3lETm6vL+m9QbxcH2MU2BOUkfGzLHrtPqHdSzP/gt7Sh5JqSbr44ULzqxn/atLVoL27keXXjVEJJMF8lVY7aC6K8qF8XuZWB46VrHRUrPvtA4JGIyE4nJaIC4x1o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Q+1tR6kq; arc=none smtp.client-ip=209.85.221.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G+vui1u+"
-Received: by mail-vs1-f43.google.com with SMTP id ada2fe7eead31-4c32d6ddd50so1815763137.0
-        for <iommu@lists.linux.dev>; Tue, 06 May 2025 19:08:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q+1tR6kq"
+Received: by mail-vk1-f171.google.com with SMTP id 71dfb90a1353d-523eb86b31aso1889401e0c.0
+        for <iommu@lists.linux.dev>; Tue, 06 May 2025 19:30:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1746583695; x=1747188495; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1746585016; x=1747189816; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=c+qrFXkta/PnXyYE9c+0VrJXrgpjBrI7s8joN+UR3x8=;
-        b=G+vui1u+fNzozTMa3jnHXD97Z3jff43XmpTteiF/u54OzsUpXk3GnFpUkwrTcoiqOG
-         3s+Ykl+Wk5R1ap9Vvr95wSbH1R07E/cdNSoDakUcKtsmv/948ZviyNv+LaWj3n9RQaAa
-         IBtmVcXSu75ld6TAj5oheRSkHWkzM2CgqKRQXhxC2ch0Da2d8BibvoDmMAJt83glfpdq
-         xWemTINRTQrYLjM6fqxZCTSpSh6vSunkuBX+Q3YO36RZ3pA3fJoyl5kTlqhiP6GNrq6Q
-         2003gZee2PvubSPyIpMz+oQaoun+bxom642Tg9UWNYj1z7hPfiEODtEnPYFuAGDneOlf
-         B1nw==
+        bh=4svO715lvCEPXXLLCM+oy1RnywJCznU/v/M9mAtCezc=;
+        b=Q+1tR6kqiea4H9Q/aezN2GaBrIOIgDddFY2gKQEy+nU9gfoZhHkP4jGhjEeBAQC1VW
+         ubJkWwf6GHYs4lL5x8LhRILJXE1MbSTD6dWLS+PRTCQ+kFJ0iIdWaGSZ8tTv1F8oKaaq
+         ElLzaGRVYb+PKn3A34iG2Q84BntqTNClYBa+Y908hNRlNxw8elLKhCXuqrg3VIImN2Us
+         PZOrptj9ohEzHJU9ou6w+zhpQ8iV964Bw37OMy1Z2IWz/1Yozk829KshnJOyz6RU7uUq
+         dBXSZGGDQx8BcJWDgXPJWvzGIVip6rT44cPdLqq4+gMzwOuEE3YYlcMO3A+d7L3bDvkK
+         s5FQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746583695; x=1747188495;
+        d=1e100.net; s=20230601; t=1746585016; x=1747189816;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=c+qrFXkta/PnXyYE9c+0VrJXrgpjBrI7s8joN+UR3x8=;
-        b=tOgXbd4MR9HJ3Xvteu3htf8rf+qVN8L5D1iMs6v2yIha136RxEA/wWn+r2MsOIxPRI
-         UMArDYYgAW/7ck8NxOdR4GnN5U/LEBu8LSpVncHBWVjkjI2kiR9Hf/WM2WRPsaRmvA9a
-         XegWeJlrTr0RuFcZBWUJhqidh8mkxnSnOmKwv7vnXjTRxAp8doWgkEiknQ0/7DSL/VTJ
-         Bx7S0a/kLq22yvO2zK/dwjqWYeYN8zrjakCSgLnqilOWwndUf4s1m6/2JCY87NHsNL/R
-         GKNPWIgpqFFIAKltpZhDF+pArLUeZM8ew1oDBoOeWemprEEe25FH8J+p+9VpdBXt3T8r
-         pOjQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVRwOGi5ZswZPtOZ7V7NtUEWiFcE7YtLrBE16Wph5uOXfwoLTCi014V0DrhPLlEEFlXRR6a3Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwxY0EFGmf9PJn9jXop83IagR4UYpFb3RSczuPr8E9ey8cnapvB
-	0OawtxobWr2Oi6vHpdlRP53NPnZ7SaYFxSIiMeOKfA0oWTKSH4USsiY1t3ILFUEh/H/j5EDS40p
-	KZfNLMQrIZAJ6IrKK9pZkOrVxfr8=
-X-Gm-Gg: ASbGnct+XFaiqTio6MHoljwWSeCHjmxuucAvj6a0Ff6bYYWWkZU0w7JgyobJTj3XaKt
-	MGEv4ivesN2q3QnWQJVxMYgGH2J2jr8vCayUN56peB0tE3ilIzil9wnS4d+YD+3I33cwghZlf8h
-	XKxC3LEh9mHxd9z76yh9ZvjA==
-X-Google-Smtp-Source: AGHT+IFGG/EFE44jHQPco6sg4x6ua9hc7r7AEXYdg1rXn7toxfyhfCDLkSX/VWAeKMgeiBIJEhaIgcho8CEMgZGeh4s=
-X-Received: by 2002:a67:e708:0:b0:4d5:cbbf:456f with SMTP id
- ada2fe7eead31-4dc737d1739mr1634787137.10.1746583695176; Tue, 06 May 2025
- 19:08:15 -0700 (PDT)
+        bh=4svO715lvCEPXXLLCM+oy1RnywJCznU/v/M9mAtCezc=;
+        b=KEKyatjL1ELAqCYBZtP3Tm1qGmc+QsOd7hdi/7LpYGOhG/YS48W6y/Km3tZI+E9Ng3
+         950sFgVDE4vUll9Mlsgxsbu0B3MebdpS0U3C928af6w0NQ40GAJbCE/90nvT/NeT2d5f
+         WJFUXxy2nqHmu2H+l+s3CgET1RzHgFcqXwGRBT0DU1F847QTODNRPbcvPkyLjPSE8nvy
+         zlfryTdYMGhXqTtStVSoGW+tM7wsZmQBGrjCjdRwNLOthaS0U/Hz1qUx/hVW4g7ynOKo
+         YJp/CrJd67qhYBJfWLl6INLuBr+DCKOW1B8VvBOi0JzEfm7ugKdwnBNk2noloOG8kF4D
+         mR2w==
+X-Forwarded-Encrypted: i=1; AJvYcCXnLa38YlMiczI3rZOUnH0wzsF48JAHUKAM7LEu4aoRVib2MAuicJgTk25r3aGe8jzbd3AATA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwbUnaFzOm2w94GBWhKS0KX1i5H7qdIXrbQjE2hUaQPxFp1mNk5
+	mpssi/JljJ7my+SMYDXKdF5QyRo0BF2cGrwomtmOY5hKTPZDPdkdF2SQepPpLD7/DJerYZOLh85
+	+wXxiTO61jWuW9TxxMVFG85VaboA=
+X-Gm-Gg: ASbGncv4OkL5qPFcXQflrfhRRFjNBcSu/N/UHlKiRm2JdcuUmknmOCTLl8XTEQRkSZk
+	ikxUA4JSkzWFZfK44vTGHsdt33oXeW3ivPGf01+xXcNL7PazAV+K34OHzKOAmZ3fl+EVoHVDiwt
+	igDYGm0+q8f4AQpy5lsko6tw==
+X-Google-Smtp-Source: AGHT+IEdQ8qJRTe3nOcdVAGg66QPjgTWfepYf4RI/zrUWt73Ue904nbTHGUgW/makM6++UBpB7AgjR6Rg5Wfo7eSQ3c=
+X-Received: by 2002:a05:6102:3f8f:b0:4db:154b:cb3b with SMTP id
+ ada2fe7eead31-4dc73798314mr1541637137.3.1746585016544; Tue, 06 May 2025
+ 19:30:16 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250506030100.394376-1-xiaqinxin@huawei.com> <20250506030100.394376-2-xiaqinxin@huawei.com>
- <CAGsJ_4zBz0oZGpP3dTzsjmw0oJbWm=vkKRS_kjBso7cvKJGjuQ@mail.gmail.com>
-In-Reply-To: <CAGsJ_4zBz0oZGpP3dTzsjmw0oJbWm=vkKRS_kjBso7cvKJGjuQ@mail.gmail.com>
+References: <20250506030100.394376-1-xiaqinxin@huawei.com> <20250506030100.394376-3-xiaqinxin@huawei.com>
+In-Reply-To: <20250506030100.394376-3-xiaqinxin@huawei.com>
 From: Barry Song <21cnbao@gmail.com>
-Date: Wed, 7 May 2025 14:08:04 +1200
-X-Gm-Features: ATxdqUFB9KwDvzR69E_IJlSczMXQzzrRWd2WU62tnUQyjqIE1rn7qXrRg5eqsAI
-Message-ID: <CAGsJ_4yEmSGGKFxCT_wioEOaLxAzxNiryR42_hW9-vbu8WgBUg@mail.gmail.com>
-Subject: Re: [PATCH v2 1/4] dma-mapping: benchmark: Add padding to ensure uABI
- remained consistent
+Date: Wed, 7 May 2025 14:30:05 +1200
+X-Gm-Features: ATxdqUFNaSx8vLRgaXQvYHswVMU1YW8ewJcP9JYFNqr9iEGTSzlrviy0h9P2_qY
+Message-ID: <CAGsJ_4wgxgXs6pyYUTNFmNmqHSWtPbKSUnMCzf8=rvOdhgJ04Q@mail.gmail.com>
+Subject: Re: [PATCH v2 2/4] dma mapping benchmark: modify the framework to
+ adapt to more map modes
 To: Qinxin Xia <xiaqinxin@huawei.com>
 Cc: yangyicong@huawei.com, hch@lst.de, iommu@lists.linux.dev, 
 	jonathan.cameron@huawei.com, prime.zeng@huawei.com, fanghao11@huawei.com, 
@@ -75,61 +74,255 @@ Cc: yangyicong@huawei.com, hch@lst.de, iommu@lists.linux.dev,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, May 7, 2025 at 1:52=E2=80=AFPM Barry Song <21cnbao@gmail.com> wrote=
-:
+On Tue, May 6, 2025 at 3:01=E2=80=AFPM Qinxin Xia <xiaqinxin@huawei.com> wr=
+ote:
 >
-> On Tue, May 6, 2025 at 3:01=E2=80=AFPM Qinxin Xia <xiaqinxin@huawei.com> =
-wrote:
-> >
-> > Fix a problem about commit (8ddde07a3d285a0f3cec, "dma-mapping:benchmar=
-k:
-> > extract a common header file for map_benchmark definition") accidentall=
-y
-> > removed that padding, which has completely broken the ABIs.
-> >
-> > Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
->
-> Please add Fixes tags and cc stable.
+> In this patch map_benchmark abstract in four interface: prepare, unprepar=
+e,
+> do_map, do_unmap. When there's a new mode to add, need four steps:
+> 1) Add the mode in map_benchmark.h
+> 2) Defines the mode param, like struct dma_xxx_map_param, and this object
+>    will be return in prepare and as input parameter in other ops;
+> 3) Defines the ops functions:prepare, unprepare, do_map, do_unmap.
+> 4) Add the new mode in dma_map_benchmark_ops.
 
-We are *NOT* adding any field.
+There are too many irrelevant details.
 
-Also, the subject and changelog are not appropriate. They should be somethi=
-ng
-like the following:
-
-Previously, we had a padding field in this structure to allow for future
-extension without breaking compatibility with user-space shared data
-structures. In other words, the padding was reserved to maintain a stable
-interface for potential new fields.
-
-However, in one of the commits, tiantao accidentally removed this padding,
-which could lead to incompatibility issues between user space and the
-kernel.
-
-This patch restores the padding to bring back the original structure layout
-and ensure compatibility is preserved.
+We're more interested in the reasoning behind this change than just the cha=
+nge
+itself. There should be some explanation of the purpose.
 
 >
-> > ---
-> >  include/linux/map_benchmark.h | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/include/linux/map_benchmark.h b/include/linux/map_benchmar=
-k.h
-> > index 62674c83bde4..2ac2fe52f248 100644
-> > --- a/include/linux/map_benchmark.h
-> > +++ b/include/linux/map_benchmark.h
-> > @@ -27,5 +27,6 @@ struct map_benchmark {
-> >         __u32 dma_dir; /* DMA data direction */
-> >         __u32 dma_trans_ns; /* time for DMA transmission in ns */
-> >         __u32 granule;  /* how many PAGE_SIZE will do map/unmap once a =
-time */
-> > +       __u8 expansion[76];     /* For future use */
-> >  };
-> >  #endif /* _KERNEL_DMA_BENCHMARK_H */
-> > --
-> > 2.33.0
-> >
+> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
+> ---
+>  include/linux/map_benchmark.h |   8 ++-
+>  kernel/dma/map_benchmark.c    | 120 +++++++++++++++++++++++++++-------
+>  2 files changed, 104 insertions(+), 24 deletions(-)
 >
+> diff --git a/include/linux/map_benchmark.h b/include/linux/map_benchmark.=
+h
+> index 2ac2fe52f248..5294dfd1870f 100644
+> --- a/include/linux/map_benchmark.h
+> +++ b/include/linux/map_benchmark.h
+> @@ -15,6 +15,11 @@
+>  #define DMA_MAP_TO_DEVICE       1
+>  #define DMA_MAP_FROM_DEVICE     2
+>
+> +enum {
+> +       DMA_MAP_SINGLE_MODE,
+> +       DMA_MAP_MODE_MAX
+> +};
+> +
+>  struct map_benchmark {
+>         __u64 avg_map_100ns; /* average map latency in 100ns */
+>         __u64 map_stddev; /* standard deviation of map latency */
+> @@ -27,6 +32,7 @@ struct map_benchmark {
+>         __u32 dma_dir; /* DMA data direction */
+>         __u32 dma_trans_ns; /* time for DMA transmission in ns */
+>         __u32 granule;  /* how many PAGE_SIZE will do map/unmap once a ti=
+me */
+> -       __u8 expansion[76];     /* For future use */
+> +       __u8  map_mode; /* the mode of dma map */
+> +       __u8 expansion[75];     /* For future use */
+>  };
+>  #endif /* _KERNEL_DMA_BENCHMARK_H */
+> diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+> index cc19a3efea89..f04973eba1d8 100644
+> --- a/kernel/dma/map_benchmark.c
+> +++ b/kernel/dma/map_benchmark.c
+> @@ -5,6 +5,7 @@
+>
+>  #define pr_fmt(fmt)    KBUILD_MODNAME ": " fmt
+>
+> +#include <linux/cleanup.h>
+>  #include <linux/debugfs.h>
+>  #include <linux/delay.h>
+>  #include <linux/device.h>
+> @@ -31,17 +32,97 @@ struct map_benchmark_data {
+>         atomic64_t loops;
+>  };
+>
+> +struct map_benchmark_ops {
+> +       void *(*prepare)(struct map_benchmark_data *map);
+> +       void (*unprepare)(void *arg);
+> +       int (*do_map)(void *arg);
+> +       void (*do_unmap)(void *arg);
+> +};
+> +
+> +struct dma_single_map_param {
+> +       struct device *dev;
+> +       dma_addr_t addr;
+> +       void *xbuf;
+> +       u32 npages;
+> +       u32 dma_dir;
+> +};
+> +
+> +static void *dma_single_map_benchmark_prepare(struct map_benchmark_data =
+*map)
+> +{
+> +       struct dma_single_map_param *mparam __free(kfree) =3D kzalloc(siz=
+eof(*mparam),
+> +                                                                   GFP_K=
+ERNEL);
+> +       if (!mparam)
+> +               return NULL;
+> +
+> +       mparam->npages =3D map->bparam.granule;
+> +       mparam->dma_dir =3D map->bparam.dma_dir;
+> +       mparam->dev =3D map->dev;
+> +       mparam->xbuf =3D alloc_pages_exact(mparam->npages * PAGE_SIZE, GF=
+P_KERNEL);
+> +       if (!mparam->xbuf)
+> +               return NULL;
+> +
+> +       /*
+> +        * for a non-coherent device, if we don't stain them in the
+> +        * cache, this will give an underestimate of the real-world
+> +        * overhead of BIDIRECTIONAL or TO_DEVICE mappings;
+> +        * 66 means evertything goes well! 66 is lucky.
+> +        */
+> +       if (mparam->dma_dir !=3D DMA_FROM_DEVICE)
+> +               memset(mparam->xbuf, 0x66, mparam->npages * PAGE_SIZE);
+> +
+> +       return_ptr(mparam);
+> +}
+> +
+> +static void dma_single_map_benchmark_unprepare(void *arg)
+> +{
+> +       struct dma_single_map_param *mparam =3D arg;
+> +
+> +       free_pages_exact(mparam->xbuf, mparam->npages * PAGE_SIZE);
+> +       kfree(mparam);
+> +}
+> +
+> +static int dma_single_map_benchmark_do_map(void *arg)
+> +{
+> +       struct dma_single_map_param *mparam =3D arg;
+> +
+> +       mparam->addr =3D dma_map_single(mparam->dev, mparam->xbuf,
+> +                                     mparam->npages * PAGE_SIZE, mparam-=
+>dma_dir);
+> +       if (unlikely(dma_mapping_error(mparam->dev, mparam->addr))) {
+> +               pr_err("dma_map_single failed on %s\n", dev_name(mparam->=
+dev));
+> +               return -ENOMEM;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +static void dma_single_map_benchmark_do_unmap(void *arg)
+> +{
+> +       struct dma_single_map_param *mparam =3D arg;
+> +
+> +       dma_unmap_single(mparam->dev, mparam->addr,
+> +                        mparam->npages * PAGE_SIZE, mparam->dma_dir);
+> +}
+> +
+> +static struct map_benchmark_ops dma_single_map_benchmark_ops =3D {
+> +       .prepare =3D dma_single_map_benchmark_prepare,
+> +       .unprepare =3D dma_single_map_benchmark_unprepare,
+> +       .do_map =3D dma_single_map_benchmark_do_map,
+> +       .do_unmap =3D dma_single_map_benchmark_do_unmap,
+> +};
+> +
+> +static struct map_benchmark_ops *dma_map_benchmark_ops[DMA_MAP_MODE_MAX]=
+ =3D {
+> +       [DMA_MAP_SINGLE_MODE] =3D &dma_single_map_benchmark_ops,
+> +};
+> +
+>  static int map_benchmark_thread(void *data)
+>  {
+> -       void *buf;
+> -       dma_addr_t dma_addr;
+>         struct map_benchmark_data *map =3D data;
+> -       int npages =3D map->bparam.granule;
+> -       u64 size =3D npages * PAGE_SIZE;
+> +       __u8 map_mode =3D map->bparam.map_mode;
+>         int ret =3D 0;
+>
+> -       buf =3D alloc_pages_exact(size, GFP_KERNEL);
+> -       if (!buf)
+> +       void *arg =3D dma_map_benchmark_ops[map_mode]->prepare(map);
+
+It's a bit awkward. Let's try something like this instead:
+
+struct map_benchmark_ops *mb_ops =3D &dma_map_benchmark_ops[map_mode];
+
+then
+mb_ops->prepare()/map/unmap/unprepare etc.
+
+And can you find a better name than "arg" which is meaningless, mparam?
+
+> +
+> +       if (!arg)
+>                 return -ENOMEM;
+>
+>         while (!kthread_should_stop())  {
+> @@ -49,23 +130,10 @@ static int map_benchmark_thread(void *data)
+>                 ktime_t map_stime, map_etime, unmap_stime, unmap_etime;
+>                 ktime_t map_delta, unmap_delta;
+>
+> -               /*
+> -                * for a non-coherent device, if we don't stain them in t=
+he
+> -                * cache, this will give an underestimate of the real-wor=
+ld
+> -                * overhead of BIDIRECTIONAL or TO_DEVICE mappings;
+> -                * 66 means evertything goes well! 66 is lucky.
+> -                */
+> -               if (map->dir !=3D DMA_FROM_DEVICE)
+> -                       memset(buf, 0x66, size);
+> -
+>                 map_stime =3D ktime_get();
+> -               dma_addr =3D dma_map_single(map->dev, buf, size, map->dir=
+);
+> -               if (unlikely(dma_mapping_error(map->dev, dma_addr))) {
+> -                       pr_err("dma_map_single failed on %s\n",
+> -                               dev_name(map->dev));
+> -                       ret =3D -ENOMEM;
+> +               ret =3D dma_map_benchmark_ops[map_mode]->do_map(arg);
+> +               if (ret)
+>                         goto out;
+> -               }
+>                 map_etime =3D ktime_get();
+>                 map_delta =3D ktime_sub(map_etime, map_stime);
+>
+> @@ -73,7 +141,8 @@ static int map_benchmark_thread(void *data)
+>                 ndelay(map->bparam.dma_trans_ns);
+>
+>                 unmap_stime =3D ktime_get();
+> -               dma_unmap_single(map->dev, dma_addr, size, map->dir);
+> +               dma_map_benchmark_ops[map_mode]->do_unmap(arg);
+> +
+>                 unmap_etime =3D ktime_get();
+>                 unmap_delta =3D ktime_sub(unmap_etime, unmap_stime);
+>
+> @@ -108,7 +177,7 @@ static int map_benchmark_thread(void *data)
+>         }
+>
+>  out:
+> -       free_pages_exact(buf, size);
+> +       dma_map_benchmark_ops[map_mode]->unprepare(arg);
+>         return ret;
+>  }
+>
+> @@ -209,6 +278,11 @@ static long map_benchmark_ioctl(struct file *file, u=
+nsigned int cmd,
+>
+>         switch (cmd) {
+>         case DMA_MAP_BENCHMARK:
+> +               if (map->bparam.map_mode >=3D DMA_MAP_MODE_MAX) {
+> +                       pr_err("invalid map mode\n");
+> +                       return -EINVAL;
+> +               }
+> +
+>                 if (map->bparam.threads =3D=3D 0 ||
+>                     map->bparam.threads > DMA_MAP_MAX_THREADS) {
+>                         pr_err("invalid thread number\n");
+> --
+> 2.33.0
+>
+
 Thanks
 Barry
