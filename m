@@ -1,144 +1,303 @@
-Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
+Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com [209.85.217.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9419E155335;
-	Wed,  7 May 2025 02:37:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED1D419047A
+	for <iommu@lists.linux.dev>; Wed,  7 May 2025 02:39:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746585445; cv=none; b=Mwgux7heQdxgZmRIRihmtF4KIHqcs5UJbwtNrC47yPzMaCrfvYRS0R2FFnAs55ypVcHPKV7xyCCqK2txJTqcYzV4xOIbX/CPEGmpnILdNigBI/pDgZanPd9NekD9+bdpAXVpFPnLgxCnFREbIdEsEEg4VlxrKU5SMr3q50zAS9E=
+	t=1746585564; cv=none; b=HHNU9OUtK6XPAEq7OTCYeh5Z1wVnQJTi7vp6lh0xOG1HWj5TUDvyC/d6bnPp+IQEQFppoEYAxtr9leCIV2G3S3dV7LEKbKOpNyEHp05MdmmMRtuD6FoH1yy3IbbuyUfqs4nK8YkbFCkmY76VxIjYcKjSDiWxbw/VtKOGf98IP0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746585445; c=relaxed/simple;
-	bh=gogz/kwTzl09lyXYhB0+fHtcF7vMgDw89ax0lZlRJFA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=J5yBZWPq+xfGGudPHIkLr1qPMEl1QjIgop13oEITTmQCesZgPg7FTw6b6oeb1fgZRRyy+tPfqTFpcB3DM7imbyRsjk561Ys6tx/RN9PRyWgeT25SxsRj/ltA61nvFeB7tiunqPG1TiSdFt22vjeOSM+JJEkXP1x0Ew1NM2L0S6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bd1LgG3H; arc=none smtp.client-ip=209.85.166.48
+	s=arc-20240116; t=1746585564; c=relaxed/simple;
+	bh=AB6axM5YviGmQu+aK72+sPdzfV0gkW5k1I+CmPGnigo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=nZ93EneFcrAERwNrQwL1JAxvoj/2si70+0UIZI5j7l9iehUE2IovHS4gHjmcv2XZ5NNOcW/xfuivB4MpeRzSTig2NrkUjTfPiL6etxVlCh83ThttaDXcePM+LtGIE5pFYx6erfATfsfdrhH0W8m3AOFq7+90HQ1YOXS2TWuej6w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jm5484QH; arc=none smtp.client-ip=209.85.217.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bd1LgG3H"
-Received: by mail-io1-f48.google.com with SMTP id ca18e2360f4ac-86135d11760so515502239f.2;
-        Tue, 06 May 2025 19:37:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jm5484QH"
+Received: by mail-vs1-f46.google.com with SMTP id ada2fe7eead31-4c4f8799f8aso1778075137.1
+        for <iommu@lists.linux.dev>; Tue, 06 May 2025 19:39:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1746585442; x=1747190242; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=YqUzVFahOTWkOm+5toR1pBXsvwL7tjqr3UlY9YuFPvk=;
-        b=bd1LgG3HKReEalhAhr8hNZEG0HYGh5aSyJ5dcXC08srh1Jl+DjOpVflyVcuMY+QXzG
-         4MThMFzsUyFxYS66MnlnPCeTqhlovcmddz7K4mN/DkkDVXHMMab8nxjxRTKwRxcewg5d
-         jKMKKaqdPqkdXYpmKyGRet0NkZjo5DSuI6p4TfsV8i0RC+8XArdseobqbwJzGOe9w+aB
-         SDraEYOvZh39vBosKlOdmJpuxyZD+XC/R516T6yBOfA1Wq2giFVCbVcjafv+Fzy9FQMZ
-         o58ZzRQ6jH7X+zNGeze6EVpjrSkpdk1uuvvCs2JTJ+LuXVsObvVH0ZZhEr1JMbrL01D2
-         N6ew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746585442; x=1747190242;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1746585562; x=1747190362; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=YqUzVFahOTWkOm+5toR1pBXsvwL7tjqr3UlY9YuFPvk=;
-        b=BMTfj1CpYgct4iXEtUt3lpCTFEur8fUoyxfNJeDuwW0laXu0kAQVRzEo5A0ai2H1xb
-         O2flMB7quvRbeHZ9V54mte7vIZjq33wwRhgsAVxbJeYwaR2AVEPi65gGS1BSAWFAsa4v
-         qRT8C1WKnBe4vrJnTkFuT9c/J6b7HG8iYF82fKaPi6SZp+cuTIEhuOSWvDj3oJhiYwra
-         5lrjiFCX/zM65rYlnKkqMfRjIHsNNayR9NunUwWhZN+74BaMe7Tax4CBr1evhV03VN5X
-         5Pbd2OAB96NdajH5f3rrsl4tRZPl9b9qM+Ltg75Sgrd0QexAhJ/yQ2scd3pVASkdRxH/
-         pf6w==
-X-Forwarded-Encrypted: i=1; AJvYcCUCiskOLT/AFCqVJvlNEt/IVQBYaQVLdq5T4TQpihvJiZ0CMZF3kdfR/Iq0DFR9Wbd1NBanG8xsow==@lists.linux.dev, AJvYcCUNM3ye3/TpSV82KU28MIkGSjsOlNKWRWOdaHhiaIcetisMrQr65CxCAfyBHdLY2ICJy3ED9A==@lists.linux.dev, AJvYcCViYx2cWw5tu6B2ngMaLBRivIlDPq86zElSWujiKxSkm/Cc0sTh2XHqYvBuuNVzGiw8NiEsTg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzP4cdaJTWTh1k0xx9Y+cy1VqmcpQmdNCadJpKdIW7/0PsSgb5x
-	dZkSmzLZoAflUa40ocVFrCUIIrAolI/MCSWpBR2U1B5oGGzkEw1y1zfFNQ==
-X-Gm-Gg: ASbGncsvT/w9acjUdYxbgAYzt6UDRlbTbKpZNmL9j+95R9d0jPifjdHKePDfxtz3v5t
-	MOsJSo/HhFzzOqZ/ClozNvK1z6CptkvSMl1pecHPJKnUf+c2IEVuo54FvhFzhqlYaDP7pXAZ+4t
-	EoFyi4ihQRp9SYhvtszH0sJZ5+XNYPp4slkOppUw4QPI7Kyr9rN4LYGD+cZLrC6CRbMDOTaezb2
-	8ziHxgOssbDUI8MEqaCZND2goLHMusXEqouC34uA+HUOClb4tPSyWMOenIOIfT7eGuXhYwyIa7q
-	0j11IeBGOxRrEXqSxVx//uLFRBDaQq7FJ4XSqbzA
-X-Google-Smtp-Source: AGHT+IGAGS5jySCLGYRIxZ6mcudp65e4oJqBqIYNLeIsf5XVwvZcmPdxBTh5M0+mbZlZhv0ROYBp4g==
-X-Received: by 2002:a05:6a00:4c07:b0:73f:eeb:84bb with SMTP id d2e1a72fcca58-7409cffb1femr2113575b3a.19.1746585432232;
-        Tue, 06 May 2025 19:37:12 -0700 (PDT)
-Received: from archie.me ([103.124.138.155])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-74059020fb9sm9790293b3a.114.2025.05.06.19.37.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 May 2025 19:37:11 -0700 (PDT)
-Received: by archie.me (Postfix, from userid 1000)
-	id 41BF2423E4D9; Wed, 07 May 2025 09:37:07 +0700 (WIB)
-Date: Wed, 7 May 2025 09:37:07 +0700
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
-	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Justin Stitt <justinstitt@google.com>,
-	Kevin Tian <kevin.tian@intel.com>, linux-doc@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, llvm@lists.linux.dev,
-	Bill Wendling <morbo@google.com>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>
-Cc: Alexey Kardashevskiy <aik@amd.com>,
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
-	James Gowans <jgowans@amazon.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev
-Subject: Re: [PATCH v2 02/15] genpt: Add Documentation/ files
-Message-ID: <aBrHU-OGbfqk1DSq@archie.me>
-References: <0-v2-5c26bde5c22d+58b-iommu_pt_jgg@nvidia.com>
- <2-v2-5c26bde5c22d+58b-iommu_pt_jgg@nvidia.com>
+        bh=2wkWd3mpSwgn/ORyZrrLqXyFRvmqvQMNecHp4igLlJs=;
+        b=Jm5484QHggju6c1re0wzKBBTXgmI+1PN47NvAhBzXYlHp9pWCQGT94GUaR4nKeQVnC
+         JOhF3p/EP68OFACcLOmE+oeujXdkW9iH1m3S+SPij3QiSbD2NLK5F//LU+w6/67VbuBh
+         sUKDyGwJ6i9uYW30AO4cJ/Qes9JhUw4s7xFH57U8HjTGfiZFpIsCywv/AZ6UkQU2R/6f
+         xMPbymVG28wjRVCuUDWrfO6+ox/W3+5xvW5CHt+jDgmP0N86hr/IQ8VNSUyN4a9k7o+u
+         5mU7vuypzq7ZGI4hQj1bGnNqlKLTwkSxAS+vSqMfQww2VrC02/CNLjxrrfsvFpNle6DT
+         kk8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746585562; x=1747190362;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=2wkWd3mpSwgn/ORyZrrLqXyFRvmqvQMNecHp4igLlJs=;
+        b=nGg+h1aseJh2c0BUZAaYQacCUzvMZWsC8OUhYF+eWUaoh2bT6IRDE3iqf2doMddxhd
+         Q6AOBmGhhMVRBcqiVWr1uvtPP+ZT5QA/sdq0ZPOmAA4Dq4+UPAMfQNo4q+4Y06WBNwNk
+         nysy1BlOcrCmOfCxwbpBSqlnhXuXYDokTebxbLbbQuZTIT/DeyYgbxJyeT1SkhB4tAUY
+         TOjZQvlq/UkMpbd9lemT1JbwdLTDPy2Pnr2qpOW1AhPzEQfIARqwM6IZL4oZN65LeTjf
+         10ij3MX1eHXaQamfHHZpHLRYJaofoPoxh7C/1UJWVKMvwhR9oKGqH7OlefF61KTm9a1H
+         wzSA==
+X-Forwarded-Encrypted: i=1; AJvYcCWljB/1oH7G2xnSv/jggvhxaLbPn4I+pJskJ4W6fbmYjEYYKQ9E6mwT5XTWI+i98KFtXsVuIA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzDnHqsP5+v2AvcXRNCN59KJgGPNX9KDKeUTHrEjpf72/bDZw+L
+	R0910VUo4EvBKR7qvosFTiwtoGgOGuVuOzBBDd5v/+dMYZs0/Hn4BPv+bkWde9lFQFLYRfKF2my
+	pSYMU+KRY74u9CDmq73ljRvgpTbK/hO25
+X-Gm-Gg: ASbGncuV0lodzW5DL/eAr42ZtnSPUfJFaqcEOzitz4ot59zGuLpA+GC/CF/2bYVUC36
+	TsVevzVnsjHxlFwTsM5Zl0lMVokZsYpC1Ie5N+Yp6o3cVzOG+v0Mon5jCmp/Ckj+ZLBWAml5/H7
+	MSsOybm3yRJWQJRkTxdNQTFg==
+X-Google-Smtp-Source: AGHT+IF/XkOY4GQjpYCXPl+LezdUBEVxkKD2rbgN+/2Nf1zDxVzejnDRAwgAZ3WRWd49g/ubLvrnsObAmcdM0hxH+n0=
+X-Received: by 2002:a05:6102:4a87:b0:4db:e6f:9c99 with SMTP id
+ ada2fe7eead31-4dc73790663mr1599807137.1.1746585561769; Tue, 06 May 2025
+ 19:39:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="zxkMD/BAbmzfsfUI"
-Content-Disposition: inline
-In-Reply-To: <2-v2-5c26bde5c22d+58b-iommu_pt_jgg@nvidia.com>
-
-
---zxkMD/BAbmzfsfUI
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+References: <20250506030100.394376-1-xiaqinxin@huawei.com> <20250506030100.394376-4-xiaqinxin@huawei.com>
+In-Reply-To: <20250506030100.394376-4-xiaqinxin@huawei.com>
+From: Barry Song <21cnbao@gmail.com>
+Date: Wed, 7 May 2025 14:39:10 +1200
+X-Gm-Features: ATxdqUHz28oD3DpDcOYv89LGKjbYslfcFAHjeX8XOE2R7jR6z84CkVGv7ZsG958
+Message-ID: <CAGsJ_4zBHVwc3A67Wff3u0aypuPv6h25B_YdDqG5j9FmBOXn8g@mail.gmail.com>
+Subject: Re: [PATCH v2 3/4] dma-mapping: benchmark: add support for dma_map_sg
+To: Qinxin Xia <xiaqinxin@huawei.com>
+Cc: yangyicong@huawei.com, hch@lst.de, iommu@lists.linux.dev, 
+	jonathan.cameron@huawei.com, prime.zeng@huawei.com, fanghao11@huawei.com, 
+	linux-kernel@vger.kernel.org, linuxarm@huawei.com
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 05, 2025 at 11:18:32AM -0300, Jason Gunthorpe wrote:
-> +Since each compilation unit can only access one underlying format at a t=
-ime,
-> +code that is intended to be generic across multiple formats has to compi=
-le
-> +itself multiple times.
+On Tue, May 6, 2025 at 3:01=E2=80=AFPM Qinxin Xia <xiaqinxin@huawei.com> wr=
+ote:
+>
+> Support for dma scatter-gather mapping and is intended for testing
+> mapping performance. It achieves by introducing the dma_sg_map_param
+> structure and related functions, which enable the implementation of
+> scatter-gather mapping preparation, mapping, and unmapping operations.
+> Additionally, the dma_map_benchmark_ops array is updated to include
+> operations for scatter-gather mapping. This commit aims to provide
+> a wider range of mapping performance test to cater to different scenarios=
+.
+>
+> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
+> ---
+>  include/linux/map_benchmark.h |  43 ++++++++++----
+>  kernel/dma/map_benchmark.c    | 102 ++++++++++++++++++++++++++++++++++
+>  2 files changed, 133 insertions(+), 12 deletions(-)
+>
+> diff --git a/include/linux/map_benchmark.h b/include/linux/map_benchmark.=
+h
+> index 5294dfd1870f..bf8c9ade43fd 100644
+> --- a/include/linux/map_benchmark.h
+> +++ b/include/linux/map_benchmark.h
+> @@ -17,22 +17,41 @@
+>
+>  enum {
+>         DMA_MAP_SINGLE_MODE,
+> +       DMA_MAP_SG_MODE,
+>         DMA_MAP_MODE_MAX
+>  };
+>
+> +/**
+> + * struct map_benchmark - Benchmarking data for DMA mapping operations.
+> + * @avg_map_100ns: Average map latency in 100ns.
+> + * @map_stddev: Standard deviation of map latency.
+> + * @avg_unmap_100ns: Average unmap latency in 100ns.
+> + * @unmap_stddev: Standard deviation of unmap latency.
+> + * @threads: Number of threads performing map/unmap operations in parall=
+el.
+> + * @seconds: Duration of the test in seconds.
+> + * @node: NUMA node on which this benchmark will run.
+> + * @dma_bits: DMA addressing capability.
+> + * @dma_dir: DMA data direction.
+> + * @dma_trans_ns: Time for DMA transmission in ns.
+> + * @granule: Number of PAGE_SIZE units to map/unmap at once.
+> +            In SG mode, this represents the number of scatterlist entrie=
+s.
+> +            In single mode, this represents the total size of the mappin=
+g.
+> + * @map_mode: Mode of DMA mapping.
+> + * @expansion: Reserved for future use.
+> + */
+>  struct map_benchmark {
+> -       __u64 avg_map_100ns; /* average map latency in 100ns */
+> -       __u64 map_stddev; /* standard deviation of map latency */
+> -       __u64 avg_unmap_100ns; /* as above */
+> +       __u64 avg_map_100ns;
+> +       __u64 map_stddev;
+> +       __u64 avg_unmap_100ns;
+>         __u64 unmap_stddev;
+> -       __u32 threads; /* how many threads will do map/unmap in parallel =
+*/
+> -       __u32 seconds; /* how long the test will last */
+> -       __s32 node; /* which numa node this benchmark will run on */
+> -       __u32 dma_bits; /* DMA addressing capability */
+> -       __u32 dma_dir; /* DMA data direction */
+> -       __u32 dma_trans_ns; /* time for DMA transmission in ns */
+> -       __u32 granule;  /* how many PAGE_SIZE will do map/unmap once a ti=
+me */
+> -       __u8  map_mode; /* the mode of dma map */
+> -       __u8 expansion[75];     /* For future use */
+> +       __u32 threads;
+> +       __u32 seconds;
+> +       __s32 node;
+> +       __u32 dma_bits;
+> +       __u32 dma_dir;
+> +       __u32 dma_trans_ns;
+> +       __u32 granule;
+> +       __u8  map_mode;
+> +       __u8 expansion[75];
+>  };
+>  #endif /* _KERNEL_DMA_BENCHMARK_H */
+> diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+> index f04973eba1d8..72cd2c5f839e 100644
+> --- a/kernel/dma/map_benchmark.c
+> +++ b/kernel/dma/map_benchmark.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/module.h>
+>  #include <linux/pci.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/scatterlist.h>
+>  #include <linux/slab.h>
+>  #include <linux/timekeeping.h>
+>
+> @@ -110,8 +111,109 @@ static struct map_benchmark_ops dma_single_map_benc=
+hmark_ops =3D {
+>         .do_unmap =3D dma_single_map_benchmark_do_unmap,
+>  };
+>
+> +struct dma_sg_map_param {
+> +       struct sg_table sgt;
+> +       struct device *dev;
+> +       void **buf;
+> +       u32 npages;
+> +       u32 dma_dir;
+> +};
 > +
-> +In an implementation compilation unit the headers would normally be incl=
-uded as
-> +follows::
-> +
-> +	#include <linux/generic_pt/common.h>
-> +	#include "fmt/defs_amdv1.h"
-> +	#include "pt_defs.h"
-> +	#include "fmt/amdv1.h"
-> +	#include "pt_common.h"
-> +	#include "pt_iter.h"
+> +static void *dma_sg_map_benchmark_prepare(struct map_benchmark_data *map=
+)
+> +{
+> +       struct scatterlist *sg;
+> +       int i =3D 0;
 
-What do you mean by compiling generic code multiple times? Including
-their headers at multiple places like above?
+I'm not sure we need `i =3D 0`; perhaps just `int i` would be sufficient.
 
 > +
-> +Which will build up all the definitions to operate an AMDv1 page table t=
-ype.
+> +       struct dma_sg_map_param *mparam __free(kfree) =3D kzalloc(sizeof(=
+*mparam), GFP_KERNEL);
+> +       if (!mparam)
+> +               return NULL;
+> +
+> +       /*
+> +        * Set the number of scatterlist entries based on the granule.
+> +        * In SG mode, 'granule' represents the number of scatterlist ent=
+ries.
+> +        * Each scatterlist entry corresponds to a single page.
+> +        */
+> +       mparam->npages =3D map->bparam.granule;
+> +       mparam->dma_dir =3D map->bparam.dma_dir;
+> +       mparam->dev =3D map->dev;
+> +       mparam->buf =3D kmalloc_array(mparam->npages, sizeof(*mparam->buf=
+),
+> +                                   GFP_KERNEL);
+> +       if (!mparam->buf)
+> +               goto out;
+> +
+> +       if (sg_alloc_table(&mparam->sgt, mparam->npages, GFP_KERNEL))
+> +               goto free_buf;
+> +
+> +       for_each_sgtable_sg(&mparam->sgt, sg, i) {
+> +               mparam->buf[i] =3D (void *)__get_free_page(GFP_KERNEL);
+> +               if (!mparam->buf[i])
+> +                       goto free_page;
+> +
+> +               if (mparam->dma_dir !=3D DMA_FROM_DEVICE)
+> +                       memset(mparam->buf[i], 0x66, PAGE_SIZE);
+> +
+> +               sg_set_buf(sg, mparam->buf[i], PAGE_SIZE);
+> +       }
+> +
+> +       return_ptr(mparam);
+> +
+> +free_page:
+> +       while (i-- > 0)
+> +               free_page((unsigned long)mparam->buf[i]);
+> +
+> +       sg_free_table(&mparam->sgt);
+> +free_buf:
+> +       kfree(mparam->buf);
+> +out:
+> +       return NULL;
+> +}
+> +
+> +static void dma_sg_map_benchmark_unprepare(void *arg)
 
-"This will build up ..."
+The term "arg" is meaningless for a function argument, as it's already impl=
+ied
+that it is an argument.
 
-Thanks.
+> +{
+> +       struct dma_sg_map_param *mparam =3D arg;
+> +       int i;
+> +
+> +       for (i =3D 0; i < mparam->npages; i++)
+> +               free_page((unsigned long)mparam->buf[i]);
+> +
+> +       sg_free_table(&mparam->sgt);
+> +
+> +       kfree(mparam->buf);
+> +       kfree(mparam);
+> +}
+> +
+> +static int dma_sg_map_benchmark_do_map(void *arg)
+> +{
+> +       struct dma_sg_map_param *mparam =3D arg;
+> +
+> +       int sg_mapped =3D dma_map_sg(mparam->dev, mparam->sgt.sgl,
+> +                                  mparam->npages, mparam->dma_dir);
 
---=20
-An old man doll... just what I always wanted! - Clara
+int ret.
 
---zxkMD/BAbmzfsfUI
-Content-Type: application/pgp-signature; name=signature.asc
+> +       if (!sg_mapped) {
+> +               pr_err("dma_map_sg failed on %s\n", dev_name(mparam->dev)=
+);
+> +               return -ENOMEM;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +static void dma_sg_map_benchmark_do_unmap(void *arg)
+> +{
+> +       struct dma_sg_map_param *mparam =3D arg;
+> +
+> +       dma_unmap_sg(mparam->dev, mparam->sgt.sgl, mparam->npages,
+> +                    mparam->dma_dir);
+> +}
+> +
+> +static struct map_benchmark_ops dma_sg_map_benchmark_ops =3D {
+> +       .prepare =3D dma_sg_map_benchmark_prepare,
+> +       .unprepare =3D dma_sg_map_benchmark_unprepare,
+> +       .do_map =3D dma_sg_map_benchmark_do_map,
+> +       .do_unmap =3D dma_sg_map_benchmark_do_unmap,
+> +};
+> +
+>  static struct map_benchmark_ops *dma_map_benchmark_ops[DMA_MAP_MODE_MAX]=
+ =3D {
+>         [DMA_MAP_SINGLE_MODE] =3D &dma_single_map_benchmark_ops,
+> +       [DMA_MAP_SG_MODE] =3D &dma_sg_map_benchmark_ops,
+>  };
+>
+>  static int map_benchmark_thread(void *data)
+> --
+> 2.33.0
+>
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCaBrHTQAKCRD2uYlJVVFO
-o9AuAQDK9i2u7JfunI+32q0hoOi2Y/Pvvttw15+KmB1nTp154AD+NPBUOqUnmgTp
-ezgVGaJVimmrDW8F1Zgi1EStXo4tPQA=
-=K/NH
------END PGP SIGNATURE-----
-
---zxkMD/BAbmzfsfUI--
+Thanks
+barry
