@@ -1,46 +1,46 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2061.outbound.protection.outlook.com [40.107.92.61])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2047.outbound.protection.outlook.com [40.107.223.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DA262147FD
-	for <iommu@lists.linux.dev>; Wed,  7 May 2025 10:52:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.61
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C61792147F2
+	for <iommu@lists.linux.dev>; Wed,  7 May 2025 10:52:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.47
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746615151; cv=fail; b=dZmIooKLLolicPaEr5mYMSzCPQAfHXdBSxZUVf1bu5KzJShblyObAXKK6s2CiqPfnkUiZZiZ6ltqyYqsf4cp8P2d9O03vfJ9nMZ5K8hKA8nVWhI4WNR53NviINwYHE5ZGb8qlV+/zs+bBnrFc2LzgDGWXMLC7Bd1ULZj9aNXKCM=
+	t=1746615170; cv=fail; b=BuBjJhQqMtlw0lcIx19A27zs5n0YtX0jn0WKmuT1r6Rij8kLqt5OYbpq2RMcK+T7o06T3ASMtWDmYqQdp+U8vS/57dzmz4d6vdGIg7siw1VPx4/pdcXuqdZ7VL8e1Reb8dDMuIAJFLDz/5r2o1L0g9vbvarWiMxcMK/2IErbwxU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746615151; c=relaxed/simple;
-	bh=obTaGv4NL1yfhXeGgwfKmlV6OwXi1EBavDUirU2sB9E=;
+	s=arc-20240116; t=1746615170; c=relaxed/simple;
+	bh=T9HkXAGbrNYr+Rk8JaVxua4FJEzfPRacTCm+rYV09/I=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=h9/iouIwgafcOAYbcHLxXSmooODM9tv81VAppe6PElkKfKBxw8OHwMUCCtBT9feorrwsUBKA8/KK0JJ41H62EL6kiwkMY8r7uOhNxmvhM8am73r87HziguQQmGwcoGomHXWwCTae8ZH2Ez7vxxNnmR3UehFudmUvG+R9gepU8NY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=0xe3Vy9N; arc=fail smtp.client-ip=40.107.92.61
+	 MIME-Version:Content-Type; b=aFRyvSRFCUsP6Ul0QRh7c5p7y0RRQuDNJiMbag+RhK8BZFS5PHfZiKIXfUeNSg6gAEqCFanYG/qfV+N+IWSsqT4q/bmUQkhURiXoKAn+MlfCcJlumwltAwR33S04GaxJ0ub8ekqcRxBMOZKLOb3+Cp+9Gzfso5DWV0K1veCa7TQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=mQesqWqW; arc=fail smtp.client-ip=40.107.223.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="0xe3Vy9N"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="mQesqWqW"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=aM12p0Haht+rdQWC+B4B4+9LsF+k2/fU3V95kZz1EGu81Q4mH9YYu9mm5Juw5DClVeo0Ec1kuCmtAT/0+8sfe3X4OmY4jASiJgPydxjl4ZApjEYduB8I/wfLwCWYPtaLb7Fa1nHTis6BB289aCgKIyZ3WgJrzH9PAFTcP8wGKE9Gs2gfPygjJQx0U9LYMmvKE0CQD53+jM4M+rFNJkoqSAdeCEhp7nXDOuYNs7L459XW7cUlOKhqw3YFI8t0iKzR3z1C7OFHb9o8ixHWT+CO9jq7OoyXa4kenvOWVJvJ06AuROFSB0ndg50eAlx+JV8JsNJThUpDP835nxHi29o/ow==
+ b=tCu3jgatyILcoHBA1ivB7qLAUhy3cL2kCafhCDPognrkO3cmyWncSeBilS6R2T7z1iU8QRr7SPaF8D9WD1XMMsFNWdjsMtQGRCSqiKdVrf+jqXOx0FTU3mw55zXXRhEpHnmJqcMkfjG0woNIEi6Lt7gkWScBjdxu2BsKgfF3vuW8MZQlpExLZKY94KLrazOnaH+HDaBbQ4t+M6JDTXYkUYkS0CghOjOqpfCFWP+sXAELTq/5FSNXgqVlrHfh/jqCemO4SwhtZjXjomp569pmZs0ZqNTTNmakKtYrEGJCJhm9vgpZI0FIbEksty3CDfmlaKIQJwQ3f7Gw9nq2RIwyow==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=9hcDXRTrTyupuG6qLmwZ4aAUmos3RPLIPxlwXbS5XP4=;
- b=x5DgBizoY9mHv92GkBpFrrbdo1wxGJxfQoGhDeYOoat9NPHsW8QEMU7hmbcebosyN4JsDzMOxdOi1CvWQrTmNWXAUM3wbSTsnQBN3rIGtX/3EtjvILoDSatusiA1QzerGR5BueYT5d/K92PLnKlnB8ppt/SIQKta8w+lzXLZeD0C8Vu/CBveV9ZqbsXaxlZHyMeoc74VrGRcdWcXCKxJMRNSPNXstxX3Hqx8iQYwQo/Uq6hXelm5G3h5lHGUgr6YQMwoPw8yWQA9j0EqNuafJ0yt48gH0dz1dzlRWDUQANQIfMF8l0Ph9hs0eAcY5EfxNqxnAmEtDEglWpX4wKDhwQ==
+ bh=nNzbEk5S0wE2PhBbCIeT0BHtgYsBJjx97tPVvXPEmak=;
+ b=WtjH5t+VQhaPO/p8+fDPRpUSqkNFKshaqpHTkjcwsZiUibW/C3Hvxa8cDIQQ8IJc8eIGfZuJhz9Cob8/kv3GMhkXYhcncclUHZTCYnlmhO1/DGd+uZ7v9ICG7VihwnN3c9S9RxoS/kgjZK34GKte8s0NPrbzmZiKeOA8Vouz3QusOh9hZHfy1jGvUpRA0yucZ3KihX2+Xub57yV6TmKX61OlvOr7rVP7sLXgX4FXyFBf7wUDxwEN7nov8MLk0/UlEIOMmeUH7Rex9vIPyI9iydpubHLMRyEmHYeRmupSQwS8tMIH16MHrzGL9wKO1b9niIJbRgxidB593aoBRPBbBQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9hcDXRTrTyupuG6qLmwZ4aAUmos3RPLIPxlwXbS5XP4=;
- b=0xe3Vy9N9u6cCSAhOUkAWJ+UQOTNtvy1F+9hMiph11K79M3S92ehvg3mOsUXxaB/vHd+sA2/svAmSWfj2jCAZosw9Wvd9rwXLNBx/MVZ9kHEZBTFD9oCfcXFekYst05C5T3htSydgGpaX61tMOT1pJVIizWnsHw5oBadegbMY/M=
-Received: from CH0PR13CA0015.namprd13.prod.outlook.com (2603:10b6:610:b1::20)
- by SJ1PR12MB6098.namprd12.prod.outlook.com (2603:10b6:a03:45f::11) with
+ bh=nNzbEk5S0wE2PhBbCIeT0BHtgYsBJjx97tPVvXPEmak=;
+ b=mQesqWqWisFT2pkNcIermn52eoKmgsPE6K6SGtLZygMlKUl3fSztnZ6JqkV+FqvN1To0FaaeQ9dz9exG79TwRMOPWFEMyggpkHE7UMGDakbKVi653qCV+hBOLNrAc9UosrT+GEEgTYaHwftQXaNxpP6QOiQutRMKrXJujk9lBGQ=
+Received: from CH0PR03CA0003.namprd03.prod.outlook.com (2603:10b6:610:b0::8)
+ by MN0PR12MB6150.namprd12.prod.outlook.com (2603:10b6:208:3c6::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8699.26; Wed, 7 May
- 2025 10:52:25 +0000
-Received: from CH3PEPF0000000A.namprd04.prod.outlook.com
- (2603:10b6:610:b1:cafe::a5) by CH0PR13CA0015.outlook.office365.com
- (2603:10b6:610:b1::20) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8722.13 via Frontend Transport; Wed,
- 7 May 2025 10:52:24 +0000
+ 2025 10:52:43 +0000
+Received: from CH3PEPF00000010.namprd04.prod.outlook.com
+ (2603:10b6:610:b0:cafe::32) by CH0PR03CA0003.outlook.office365.com
+ (2603:10b6:610:b0::8) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8722.20 via Frontend Transport; Wed,
+ 7 May 2025 10:52:43 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,21 +48,21 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CH3PEPF0000000A.mail.protection.outlook.com (10.167.244.37) with Microsoft
+ CH3PEPF00000010.mail.protection.outlook.com (10.167.244.41) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8722.18 via Frontend Transport; Wed, 7 May 2025 10:52:24 +0000
+ 15.20.8722.18 via Frontend Transport; Wed, 7 May 2025 10:52:43 +0000
 Received: from BLRANKISONI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 7 May
- 2025 05:52:20 -0500
+ 2025 05:52:38 -0500
 From: Ankit Soni <Ankit.Soni@amd.com>
 To: <iommu@lists.linux.dev>
 CC: <suravee.suthikulpanit@amd.com>, <vasant.hegde@amd.com>,
 	<joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
 	<linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 1/2] iommu/amd: Add HATDis feature support
-Date: Wed, 7 May 2025 10:51:47 +0000
-Message-ID: <a03c8eb9e998445eba8b18a40c53469eeef18a9a.1746613368.git.Ankit.Soni@amd.com>
+Subject: [PATCH v2 2/2] iommu/amd: Add efr[HATS] max v1 page table level
+Date: Wed, 7 May 2025 10:51:48 +0000
+Message-ID: <96b1109a095fa343e5c8a0dc6b8e1dd1f39605c4.1746613368.git.Ankit.Soni@amd.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1746613368.git.Ankit.Soni@amd.com>
 References: <cover.1746613368.git.Ankit.Soni@amd.com>
@@ -78,211 +78,169 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PEPF0000000A:EE_|SJ1PR12MB6098:EE_
-X-MS-Office365-Filtering-Correlation-Id: 112194ad-ab12-4714-67d7-08dd8d554053
+X-MS-TrafficTypeDiagnostic: CH3PEPF00000010:EE_|MN0PR12MB6150:EE_
+X-MS-Office365-Filtering-Correlation-Id: c378ba56-8372-40b1-cb72-08dd8d554b57
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|36860700013|376014|13003099007;
+	BCL:0;ARA:13230040|82310400026|376014|36860700013|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?DaL2CAl+tHqfdjh9aoHyMB4ny95619ms2Immv1DbJmcw2d5u7/HeWC4Mp8R9?=
- =?us-ascii?Q?6T3lakNdd0e3ysah76/8b8RIroiKFDF4cN4WSqhLUgLe69vFrKOP6WBCl1dB?=
- =?us-ascii?Q?Hh8Ih5SagJnLjaXdhCA0zF5g7QA5HfWXTM4BD9m88KR2Z1/nIpZOUqQTuML+?=
- =?us-ascii?Q?q8ejFCkS6nHRziITYOJ7bTTV8Rt5vxi9MHk7G1we67HzeuY0IH/KSTVmLRR8?=
- =?us-ascii?Q?Ld7uIHiNCecH8qhTbUWvNPEOlXwrkUZsGpE+rBmjQih3mB/BQKUeubf4DSsT?=
- =?us-ascii?Q?gZTY/LEwg3ZWQJ5qHBgG446R+R84wKFheYZ7NMtLCn5MNbOaqPTWE5ZoIJHv?=
- =?us-ascii?Q?1+XwLfBVpuBocpsVS2RBbZ6ZVA0b0Xiu9khRrTgVazkO666ikLVTPr1V+7uU?=
- =?us-ascii?Q?/jl4AjBHHOMzv7HnRD0UJydnjAZSdw9jxyhRAlCnb2aaxC0Bv59qXO1osug8?=
- =?us-ascii?Q?FPDU740C6622vmVRfG06rD9ONtxvB+fO5ReorWBF+aonq77nYTy9XcE/h8d7?=
- =?us-ascii?Q?Mze/vW85fyH2ZM5lQWAjow3gmiRyF2HfjDJ0kTuAHcIz7yvY3kqivwHSgnnB?=
- =?us-ascii?Q?YQSYA6vqtp9N+MFA2KPZB1NeJnI7MXFFxmCuyFtrrfBzkn0xCyNJ0npj1btp?=
- =?us-ascii?Q?3wRZniSd8wMYRIrBHxUwC6EgdqoKUfdLe2SC0rUsVfpVkFPY1HWVlpkoE+Co?=
- =?us-ascii?Q?cggPoOXv+ZCFh7Lt2WQHoXMwZFBgD5LDCGMLPnkP164hdcM86TKaj7LLYL1f?=
- =?us-ascii?Q?SHK/SofvE7QrV+BYcJZfxU6B42FWiv15EjA0RwpndZbXPewZ4v3Ja/jUcln6?=
- =?us-ascii?Q?Wi7+Wzajsdp7IrcMrTz6jhvbA7f5Mb6JM6PdVTfwXEb6piCF+NRmg4eVFaLV?=
- =?us-ascii?Q?3BWSetGQykfrX0Bwg6ktTL6fR3k+3QXtbyq3rTsot1LY94P3I4+t2nKa+ads?=
- =?us-ascii?Q?aTCFPDfT2uSo5bJ7uaL3C3cwF94kXXVAZ8rNRT3EX5WvXcnkJdu/LtL+kXKl?=
- =?us-ascii?Q?PDb4Zfk6VqEJ/TV3FjwQfoq71UYsAFTmOB/fL1wksx4nAqpwWLd8+dKGp2UI?=
- =?us-ascii?Q?2SES/UJL1mLRCkcymmgct4s4kFxi9NAnIaKYYWiSWtjDXcaPl2JSjbOhoMGL?=
- =?us-ascii?Q?0U1UhFLlclt4KydMOq4j9J5tYxvCsISkX4jvJliWN2qIwGxSmKPB1vxZkEUI?=
- =?us-ascii?Q?wCJL1dJh7CW+ih3uld2vVfbY+4L20g+X6DCE/InR3rMGKEXFIccvlNR7Noob?=
- =?us-ascii?Q?dHCijZ3bVip6fzpGwQhbiJosWkAGWDCT6OcMK5n4vJWe3++YzmfrSxW/Kv14?=
- =?us-ascii?Q?lik7SIWZxlY9Z+OztZI/YqMMiPvYAee0TCwILgwzYd3Rr4Tmuo8K3Px0Z9IM?=
- =?us-ascii?Q?jfbqRlGrg7VtRMNKzxGBMPf993sNM5GPeSuI7BeZEmp5a9P+Yz4BUrYy6RE7?=
- =?us-ascii?Q?CvdqKfdi/IuGdbLuEBK7/8HeWqNa7gV/+BiObv7D5C84fh/HWnJi69HS3taL?=
- =?us-ascii?Q?kGE0SVaYFhKs7814cePR7D2Vi5kz2tONN5nV7q68TbJ71ILIyWsQujlzOg?=
- =?us-ascii?Q?=3D=3D?=
+	=?us-ascii?Q?ciPsjOhJaCp7a2OMWar9FAY69AO72bwqcij1wKxHNVZLHoxsqzN9tPmKLHSU?=
+ =?us-ascii?Q?7hPhEZT/oyixydlQuFoxs9G0EGVjS39MDeArfiGr4FdOzhLPclggz+lPrwQq?=
+ =?us-ascii?Q?+p0PZNF3f16gE2c7E/34hlpKZ+dYSX8T6JgeJTlc+ixJg6NWuTDIjoSN978b?=
+ =?us-ascii?Q?M/hy+/BiyPKp1to2aFQX4hZdKvTRRr7h/xN/F/42j2Pt+V7BQO9tjdDA+SNr?=
+ =?us-ascii?Q?VmrM2FxLGnnEnAXCZUxyuPhWyaJEFW2eNwroxXjXTXeHEPa7Y7QooC4i2f6k?=
+ =?us-ascii?Q?LfnbgSxK0Hn2gNRSWhnBXZybjuIc+J1EPg5MZGKv53/QFOA/clauqlyGvrnD?=
+ =?us-ascii?Q?ArqskQsWpD8p5kq/9vkuTCcfIvtSA9UOeR8mD9upFVbGzu31dpFl7GXGo89M?=
+ =?us-ascii?Q?R6iMhDomWZc7jh9mJRGY7yZyQeesHp3768oo1F4OFmb5lvWkd0ouc7owlTvz?=
+ =?us-ascii?Q?eDtdBld0UEmFoUSlcTrDRHYSYzkvnMt6nLsBGaA5z6qK2Xo0zmkeiWldKinu?=
+ =?us-ascii?Q?zcBtNqNrlKWumn7CncaNKkItu8KM4VgmVsNp1tNlpsX2gssHwM3lh+tLHMPb?=
+ =?us-ascii?Q?ByJXg7yUZ+nntbyQkX6w48lNJL0mgC95wvhUVh6F0o0DUz9dleZuXaD/NBav?=
+ =?us-ascii?Q?Gpq7+2A5fz9qYIqTfTZooRPqdvcwKGhyiWJ2LBsaCct6KxO9jP607tlnHiTA?=
+ =?us-ascii?Q?bS+l1TTK3bnuSPzyTtwy14UPd9Dse/hP5+44yKDTu9Xh+Kxc/U0EqnbMm3nr?=
+ =?us-ascii?Q?nQEmm/ymAOgx+kuEJ7b8zPO4m8S79JHZK8QssJfPNbswSk1iP899xc+TPSw2?=
+ =?us-ascii?Q?9xlvulm1sLP7esqtdIeofedsqi82q5fuEpgL4nm9d3KDfog2kGrc7etW9xbK?=
+ =?us-ascii?Q?fz37Y0K3TQ0SKb0ry5EZm03d+3euQRbUvpj3Js+iNEy5Ua1drAwxeN5ZBrez?=
+ =?us-ascii?Q?PLS8TKruGM53Trxp3AcheXIYkGa2IWlCXefyM3VvzzSz2M4fVbAn4GNACyOl?=
+ =?us-ascii?Q?FE19EgzZXbQGrwDErR9IlwXHS+jkynh1WhrGu9sCf6uvutRiOWayR0lmBYQo?=
+ =?us-ascii?Q?Pi8Rypzrd4KVKKn9HN1kcAqhfn4V/i4wo+s/1l2zhydSnkQmrO6JvQHmff+W?=
+ =?us-ascii?Q?ZRLomStG9egRd7JUcCxNdpl+cztEGNyAuRIsVgB++kQ0bEQjC7noDJuPX81J?=
+ =?us-ascii?Q?qoCM+zxqo/qvlYOgTrkEBPCbiQlrWy3gu6i0UQkij4LeZM5T4dWjvFHeASgj?=
+ =?us-ascii?Q?KPJYXVFDQ1/v++4+hRcdOok2EVdQos/jgshZGPEfubURqrYM9JZRlVfaApTh?=
+ =?us-ascii?Q?UhPiaE++E/+5PGLFxgYWWmd2przHXbkxKFv36LEN3rtf/4ylck6O9KoACCGQ?=
+ =?us-ascii?Q?8IVOqluaQkcOwVwtknDPB1p2V+fiG+++hBLQK99LRZGwU6JCt0RoYZLCKv/y?=
+ =?us-ascii?Q?8wco4MVEebiCqVcPOyON5jylphgEHsWj+tJI5vG2QUcK9eBOvMXBBPKFohrS?=
+ =?us-ascii?Q?HUK+4B6eMGvSfDHDfEmoALYlN9VK4RWw3Tjk?=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700013)(376014)(13003099007);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(376014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 May 2025 10:52:24.6776
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 May 2025 10:52:43.1581
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 112194ad-ab12-4714-67d7-08dd8d554053
+X-MS-Exchange-CrossTenant-Network-Message-Id: c378ba56-8372-40b1-cb72-08dd8d554b57
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CH3PEPF0000000A.namprd04.prod.outlook.com
+	CH3PEPF00000010.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6098
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6150
 
-Current AMD IOMMU assumes Host Address Translation (HAT) is always
-supported, and Linux kernel enables this capability by default. However,
-in case of emulated and virtualized IOMMU, this might not be the case.
-For example,current QEMU-emulated AMD vIOMMU does not support host
-translation for VFIO pass-through device, but the interrupt remapping
-support is required for x2APIC (i.e. kvm-msi-ext-dest-id is also not
-supported by the guest OS). This would require the guest kernel to boot
-with guest kernel option iommu=pt to by-pass the initialization of
-host (v1) table.
+The EFR[HATS] bits indicate maximum host translation level supported by
+IOMMU. Adding support to set the maximum host page table level as indicated
+by EFR[HATS]. If the HATS=11b (reserved), the driver will attempt to use
+guest page table for DMA API.
 
-The AMD I/O Virtualization Technology (IOMMU) Specification Rev 3.10 [1]
-introduces a new flag 'HATDis' in the IVHD 11h IOMMU attributes to indicate
-that HAT is not supported on a particular IOMMU instance.
-
-Therefore, modifies the AMD IOMMU driver to detect the new HATDis
-attributes, and disable host translation and switch to use guest
-translation if it is available. Otherwise, the driver will disable DMA
-translation.
-
-[1] https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf
-
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
 Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 Signed-off-by: Ankit Soni <Ankit.Soni@amd.com>
 ---
  drivers/iommu/amd/amd_iommu.h       |  1 +
- drivers/iommu/amd/amd_iommu_types.h |  6 +++++-
- drivers/iommu/amd/init.c            | 21 ++++++++++++++++++++-
- drivers/iommu/amd/iommu.c           | 13 +++++++++++++
- 4 files changed, 39 insertions(+), 2 deletions(-)
+ drivers/iommu/amd/amd_iommu_types.h |  1 +
+ drivers/iommu/amd/init.c            | 16 ++++++++++++++++
+ drivers/iommu/amd/io_pgtable.c      |  4 ++--
+ drivers/iommu/amd/iommu.c           |  2 +-
+ 5 files changed, 21 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 220c598b7e14..bb14c4800dd0 100644
+index bb14c4800dd0..0286120ad4a5 100644
 --- a/drivers/iommu/amd/amd_iommu.h
 +++ b/drivers/iommu/amd/amd_iommu.h
-@@ -43,6 +43,7 @@ extern int amd_iommu_guest_ir;
+@@ -42,6 +42,7 @@ int amd_iommu_enable_faulting(unsigned int cpu);
+ extern int amd_iommu_guest_ir;
  extern enum protection_domain_mode amd_iommu_pgtable;
  extern int amd_iommu_gpt_level;
++extern u8 amd_iommu_hpt_level;
  extern unsigned long amd_iommu_pgsize_bitmap;
-+extern bool amd_iommu_hatdis;
+ extern bool amd_iommu_hatdis;
  
- /* Protection domain ops */
- void amd_iommu_init_identity_domain(void);
 diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 5089b58e528a..284ff4309660 100644
+index 284ff4309660..6bf81197c2c8 100644
 --- a/drivers/iommu/amd/amd_iommu_types.h
 +++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -460,6 +460,9 @@
- /* IOMMU Feature Reporting Field (for IVHD type 10h */
- #define IOMMU_FEAT_GASUP_SHIFT	6
- 
-+/* IOMMU HATDIS for IVHD type 11h and 40h */
-+#define IOMMU_IVHD_ATTR_HATDIS_SHIFT	0
-+
- /* IOMMU Extended Feature Register (EFR) */
- #define IOMMU_EFR_XTSUP_SHIFT	2
- #define IOMMU_EFR_GASUP_SHIFT	7
-@@ -558,7 +561,8 @@ struct amd_io_pgtable {
- };
- 
- enum protection_domain_mode {
--	PD_MODE_V1 = 1,
-+	PD_MODE_NONE,
-+	PD_MODE_V1,
- 	PD_MODE_V2,
- };
- 
+@@ -96,6 +96,7 @@
+ #define FEATURE_GA		BIT_ULL(7)
+ #define FEATURE_HE		BIT_ULL(8)
+ #define FEATURE_PC		BIT_ULL(9)
++#define FEATURE_HATS		GENMASK_ULL(11, 10)
+ #define FEATURE_GATS		GENMASK_ULL(13, 12)
+ #define FEATURE_GLX		GENMASK_ULL(15, 14)
+ #define FEATURE_GAM_VAPIC	BIT_ULL(21)
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 14aa0d77df26..cfda9f89fe1d 100644
+index cfda9f89fe1d..311c2ae45d09 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -168,6 +168,9 @@ static int amd_iommu_target_ivhd_type;
- u64 amd_iommu_efr;
- u64 amd_iommu_efr2;
+@@ -152,6 +152,8 @@ bool amd_iommu_dump;
+ bool amd_iommu_irq_remap __read_mostly;
  
-+/* Host (v1) page table is not supported*/
-+bool amd_iommu_hatdis;
-+
- /* SNP is enabled on the system? */
- bool amd_iommu_snp_en;
- EXPORT_SYMBOL(amd_iommu_snp_en);
-@@ -1798,6 +1801,11 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
- 		if (h->efr_reg & BIT(IOMMU_EFR_XTSUP_SHIFT))
- 			amd_iommu_xt_mode = IRQ_REMAP_X2APIC_MODE;
+ enum protection_domain_mode amd_iommu_pgtable = PD_MODE_V1;
++/* Host page table level */
++u8 amd_iommu_hpt_level;
+ /* Guest page table level */
+ int amd_iommu_gpt_level = PAGE_MODE_4_LEVEL;
  
-+		if (h->efr_attr & BIT(IOMMU_IVHD_ATTR_HATDIS_SHIFT)) {
-+			pr_warn_once("Host Address Translation is not supported.\n");
-+			amd_iommu_hatdis = true;
-+		}
-+
- 		early_iommu_features_init(iommu, h);
+@@ -3052,6 +3054,7 @@ static int __init early_amd_iommu_init(void)
+ 	struct acpi_table_header *ivrs_base;
+ 	int ret;
+ 	acpi_status status;
++	u8 efr_hats;
  
- 		break;
-@@ -2582,7 +2590,7 @@ static void init_device_table_dma(struct amd_iommu_pci_seg *pci_seg)
- 	u32 devid;
- 	struct dev_table_entry *dev_table = pci_seg->dev_table;
+ 	if (!amd_iommu_detected)
+ 		return -ENODEV;
+@@ -3096,6 +3099,19 @@ static int __init early_amd_iommu_init(void)
+ 	    FIELD_GET(FEATURE_GATS, amd_iommu_efr) == GUEST_PGTABLE_5_LEVEL)
+ 		amd_iommu_gpt_level = PAGE_MODE_5_LEVEL;
  
--	if (dev_table == NULL)
-+	if (!dev_table || amd_iommu_pgtable == PD_MODE_NONE)
- 		return;
- 
- 	for (devid = 0; devid <= pci_seg->last_bdf; ++devid) {
-@@ -3095,6 +3103,17 @@ static int __init early_amd_iommu_init(void)
- 		}
- 	}
- 
-+	if (amd_iommu_hatdis) {
++	efr_hats = FIELD_GET(FEATURE_HATS, amd_iommu_efr);
++	if (efr_hats != 0x3) {
 +		/*
-+		 * Host (v1) page table is not available. Attempt to use
-+		 * Guest (v2) page table.
++		 * efr[HATS] bits specify the maximum host translation level
++		 * supported, with LEVEL 4 being initial max level.
 +		 */
-+		if (amd_iommu_v2_pgtbl_supported())
-+			amd_iommu_pgtable = PD_MODE_V2;
-+		else
-+			amd_iommu_pgtable = PD_MODE_NONE;
++		amd_iommu_hpt_level = efr_hats + PAGE_MODE_4_LEVEL;
++	} else {
++		pr_warn_once(FW_BUG "Disable host address translation due to invalid translation level (%#x).\n",
++			     efr_hats);
++		amd_iommu_hatdis = true;
 +	}
 +
- 	/* Disable any previously enabled IOMMUs */
- 	if (!is_kdump_kernel() || amd_iommu_disabled)
- 		disable_iommus();
+ 	if (amd_iommu_pgtable == PD_MODE_V2) {
+ 		if (!amd_iommu_v2_pgtbl_supported()) {
+ 			pr_warn("Cannot enable v2 page table for DMA-API. Fallback to v1.\n");
+diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
+index 26cf562dde11..0d8bc06f63d7 100644
+--- a/drivers/iommu/amd/io_pgtable.c
++++ b/drivers/iommu/amd/io_pgtable.c
+@@ -132,7 +132,7 @@ static bool increase_address_space(struct amd_io_pgtable *pgtable,
+ 		goto out;
+ 
+ 	ret = false;
+-	if (WARN_ON_ONCE(pgtable->mode == PAGE_MODE_6_LEVEL))
++	if (WARN_ON_ONCE(pgtable->mode == amd_iommu_hpt_level))
+ 		goto out;
+ 
+ 	*pte = PM_LEVEL_PDE(pgtable->mode, iommu_virt_to_phys(pgtable->root));
+@@ -531,7 +531,7 @@ static void v1_free_pgtable(struct io_pgtable *iop)
+ 
+ 	/* Page-table is not visible to IOMMU anymore, so free it */
+ 	BUG_ON(pgtable->mode < PAGE_MODE_NONE ||
+-	       pgtable->mode > PAGE_MODE_6_LEVEL);
++	       pgtable->mode > amd_iommu_hpt_level);
+ 
+ 	free_sub_pt(pgtable->root, pgtable->mode, &freelist);
+ 	iommu_put_pages_list(&freelist);
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index f34209b08b4c..4e9a57377b8c 100644
+index 4e9a57377b8c..f7e641571127 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -2393,6 +2393,13 @@ static struct iommu_device *amd_iommu_probe_device(struct device *dev)
- 					     pci_max_pasids(to_pci_dev(dev)));
- 	}
- 
-+	if (amd_iommu_pgtable == PD_MODE_NONE) {
-+		pr_warn_once("%s: DMA translation not supported by iommu.\n",
-+			     __func__);
-+		iommu_dev = ERR_PTR(-ENODEV);
-+		goto out_err;
-+	}
-+
- out_err:
- 
- 	iommu_completion_wait(iommu);
-@@ -2480,6 +2487,9 @@ static int pdom_setup_pgtable(struct protection_domain *domain,
- 	case PD_MODE_V2:
- 		fmt = AMD_IOMMU_V2;
- 		break;
-+	case PD_MODE_NONE:
-+		WARN_ON_ONCE(1);
-+		return -EPERM;
- 	}
- 
- 	domain->iop.pgtbl.cfg.amd.nid = dev_to_node(dev);
-@@ -2501,6 +2511,9 @@ static inline u64 dma_max_address(enum protection_domain_mode pgtable)
- 
- static bool amd_iommu_hd_support(struct amd_iommu *iommu)
+@@ -2503,7 +2503,7 @@ static int pdom_setup_pgtable(struct protection_domain *domain,
+ static inline u64 dma_max_address(enum protection_domain_mode pgtable)
  {
-+	if (amd_iommu_hatdis)
-+		return false;
-+
- 	return iommu && (iommu->features & FEATURE_HDSUP);
- }
+ 	if (pgtable == PD_MODE_V1)
+-		return ~0ULL;
++		return PM_LEVEL_SIZE(amd_iommu_hpt_level);
  
+ 	/* V2 with 4/5 level page table */
+ 	return ((1ULL << PM_LEVEL_SHIFT(amd_iommu_gpt_level)) - 1);
 -- 
 2.43.0
 
