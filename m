@@ -1,51 +1,52 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A277928B514
-	for <iommu@lists.linux.dev>; Wed,  7 May 2025 16:09:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13F8728AAE0
+	for <iommu@lists.linux.dev>; Wed,  7 May 2025 16:09:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746634165; cv=none; b=DrdGexmhRYOFtJnPZuRQ5NijcLi+2NdLbsthghML0rtXP9UMk+FqQrdHazSkOf50LVP0Ou626kyeKI1sypRSivItM4o8E+G5XG6ypTpflT2JtJa32bEVddnaNqmQofz+atom65qt/wXPbybpJVYWUo8DyyzxCdiM5AJe4vYE4C0=
+	t=1746634166; cv=none; b=KiTeAxpSjpooMxIJ0Q3B+9yG3ai7SSSPTUW+GMk0Rr5CXWeiwyKuWj64zWdjgZeOEGLEbV1C3bjTK65fSV+rJ8Z6WLsoPAKBT1uiG0P22VtmyqNi7C6PXJe0W7JqSgmcCPwRJI3nhXyo3UhEhMV4YKt6bpg6Bx3jKNg8z4n52cI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746634165; c=relaxed/simple;
-	bh=xzmb2PLhpxgH7J9f0XbQH0kNx0j0SJyiEhhEqv0470s=;
+	s=arc-20240116; t=1746634166; c=relaxed/simple;
+	bh=C1Zh/oHyK0/BfwolEQN5DbNFpAIruxrpIIoT/GoBXv0=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:MIME-Version:
-	 Content-Type:References; b=DlwqiMXTrK0mFHM1jO9k5yrPeded1Y20p/vuXzQRcfKWzrHAZe+nm9IZ64hKGwrMkapIIn9+VGcdpdnWmntUSVIaEbMZaHKJdxdD1+XdPZy0jgZazckzabrUnJPnL99RN4ePsHFcsjUsDblyi/Dohsifgu9rkhwoHCPtZMKiPIU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=KSZeSTQG; arc=none smtp.client-ip=210.118.77.11
+	 Content-Type:References; b=BniD+cOvgHAXBJG4j9UCfmnUmUOHSRTQfDULSh8ndfaBu+2sAVEqjY3U1Pir5O681gPU8RBGLpC0ujuDP+dZ1GOOqlnJHM7mSM5lnAtcobVvjPxPJqWGfGbjXZWhxqz1fslBavQSUB00UsJ/if6WMIYnaPD/GpiUsvzOIO2IFpE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=SOXVt8LF; arc=none smtp.client-ip=210.118.77.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="KSZeSTQG"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250507160922euoutp01df484d2013f1d5a8136263f5ba714ce1~9SoQsdDyC0089500895euoutp01D
-	for <iommu@lists.linux.dev>; Wed,  7 May 2025 16:09:22 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250507160922euoutp01df484d2013f1d5a8136263f5ba714ce1~9SoQsdDyC0089500895euoutp01D
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="SOXVt8LF"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250507160923euoutp020a5e2ac78bad95204a472e498e1aa049~9SoR4fzcD0396403964euoutp02g
+	for <iommu@lists.linux.dev>; Wed,  7 May 2025 16:09:23 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250507160923euoutp020a5e2ac78bad95204a472e498e1aa049~9SoR4fzcD0396403964euoutp02g
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1746634162;
-	bh=M3SqDjMH2OEj84bPabFMQ0Loj/zISCk3BQwUb/ZH58w=;
+	s=mail20170921; t=1746634163;
+	bh=B5ofrGVzRIMScS1uJ8Qx33aDiHf23TB+5NVMssxdhR4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=KSZeSTQGAmdjDLwrqmcZ+uwZJv4a2zEbTRnieHRsVYF2jeaR2shTih9gnx0NLUB+F
-	 b+6tapJbT7hpH1FiG/hhdpNQ9bFu53GJcHD6Ws5i6YSnRmDwlV/+7R9DlO9K58+J+b
-	 2B9FpV/06jJug+JP63TMo0BakbgV2dagkoEE9ZmI=
+	b=SOXVt8LFUL47GUo0HIBkrFfvL9tI7H8zyXyJ+MTkVhxxXQra/1X34O9MEf5yC8Hzc
+	 fIMiTZY+7YJeiJ9JRkEX7SNRDLKTPPQiRqWjkk0Zgf6KikBweKEoHp08+ix8Bm8uSX
+	 2fCx640ipYBp6emzIsGydEykX0wbPCdCQrq5ye9U=
 Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20250507160921eucas1p2aa77e0930944aadaaa7c090c8d3d0e73~9SoQbt7wG1792117921eucas1p2C;
-	Wed,  7 May 2025 16:09:21 +0000 (GMT)
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20250507160923eucas1p1a344e74759410b49143e2be42ef43ded~9SoRm5WVO0255402554eucas1p1m;
+	Wed,  7 May 2025 16:09:23 +0000 (GMT)
 Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
 	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20250507160921eusmtip14167cae9141d9bd450c3182711e4dec3~9SoP_b54S3077630776eusmtip1-;
-	Wed,  7 May 2025 16:09:21 +0000 (GMT)
+	20250507160922eusmtip1108f8ea3c7b457c173c3fe5b53ef5572~9SoRJFrVq0592705927eusmtip1Z;
+	Wed,  7 May 2025 16:09:22 +0000 (GMT)
 From: Marek Szyprowski <m.szyprowski@samsung.com>
 To: linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
 	iommu@lists.linux.dev
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Tomasz Figa
-	<tfiga@chromium.org>, Mauro Carvalho Chehab <mchehab@kernel.org>, Sergey
-	Senozhatsky <senozhatsky@chromium.org>, Hans Verkuil <hverkuil@xs4all.nl>,
-	Robin Murphy <robin.murphy@arm.com>, stable@vger.kernel.org
-Subject: [PATCH v3 1/3] media: videobuf2: use sgtable-based scatterlist
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Laurent Pinchart
+	<laurent.pinchart@ideasonboard.com>, Sakari Ailus
+	<sakari.ailus@linux.intel.com>, Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Hans Verkuil <hverkuil@xs4all.nl>, Robin Murphy <robin.murphy@arm.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v3 3/3] media: omap3isp: use sgtable-based scatterlist
  wrappers
-Date: Wed,  7 May 2025 18:09:11 +0200
-Message-Id: <20250507160913.2084079-2-m.szyprowski@samsung.com>
+Date: Wed,  7 May 2025 18:09:13 +0200
+Message-Id: <20250507160913.2084079-4-m.szyprowski@samsung.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20250507160913.2084079-1-m.szyprowski@samsung.com>
 Precedence: bulk
@@ -55,49 +56,79 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20250507160921eucas1p2aa77e0930944aadaaa7c090c8d3d0e73
+X-CMS-MailID: 20250507160923eucas1p1a344e74759410b49143e2be42ef43ded
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250507160921eucas1p2aa77e0930944aadaaa7c090c8d3d0e73
+X-RootMTR: 20250507160923eucas1p1a344e74759410b49143e2be42ef43ded
 X-EPHeader: CA
-X-CMS-RootMailID: 20250507160921eucas1p2aa77e0930944aadaaa7c090c8d3d0e73
+X-CMS-RootMailID: 20250507160923eucas1p1a344e74759410b49143e2be42ef43ded
 References: <20250507160913.2084079-1-m.szyprowski@samsung.com>
-	<CGME20250507160921eucas1p2aa77e0930944aadaaa7c090c8d3d0e73@eucas1p2.samsung.com>
+	<CGME20250507160923eucas1p1a344e74759410b49143e2be42ef43ded@eucas1p1.samsung.com>
 
 Use common wrappers operating directly on the struct sg_table objects to
 fix incorrect use of scatterlists sync calls. dma_sync_sg_for_*()
 functions have to be called with the number of elements originally passed
-to dma_map_sg_*() function, not the one returned in sgt->nents.
+to dma_map_sg_*() function, not the one returned in sgtable's nents.
 
-Fixes: d4db5eb57cab ("media: videobuf2: add begin/end cpu_access callbacks to dma-sg")
+Fixes: d33186d0be18 ("[media] omap3isp: ccdc: Use the DMA API for LSC")
+Fixes: 0e24e90f2ca7 ("[media] omap3isp: stat: Use the DMA API")
 CC: stable@vger.kernel.org
 Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/media/common/videobuf2/videobuf2-dma-sg.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/platform/ti/omap3isp/ispccdc.c | 8 ++++----
+ drivers/media/platform/ti/omap3isp/ispstat.c | 6 ++----
+ 2 files changed, 6 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/media/common/videobuf2/videobuf2-dma-sg.c b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-index c6ddf2357c58..b3bf2173c14e 100644
---- a/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-+++ b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-@@ -469,7 +469,7 @@ vb2_dma_sg_dmabuf_ops_begin_cpu_access(struct dma_buf *dbuf,
- 	struct vb2_dma_sg_buf *buf = dbuf->priv;
- 	struct sg_table *sgt = buf->dma_sgt;
+diff --git a/drivers/media/platform/ti/omap3isp/ispccdc.c b/drivers/media/platform/ti/omap3isp/ispccdc.c
+index dd375c4e180d..7d0c723dcd11 100644
+--- a/drivers/media/platform/ti/omap3isp/ispccdc.c
++++ b/drivers/media/platform/ti/omap3isp/ispccdc.c
+@@ -446,8 +446,8 @@ static int ccdc_lsc_config(struct isp_ccdc_device *ccdc,
+ 		if (ret < 0)
+ 			goto done;
  
--	dma_sync_sg_for_cpu(buf->dev, sgt->sgl, sgt->nents, buf->dma_dir);
-+	dma_sync_sgtable_for_cpu(buf->dev, sgt, buf->dma_dir);
- 	return 0;
+-		dma_sync_sg_for_cpu(isp->dev, req->table.sgt.sgl,
+-				    req->table.sgt.nents, DMA_TO_DEVICE);
++		dma_sync_sgtable_for_cpu(isp->dev, &req->table.sgt,
++					 DMA_TO_DEVICE);
+ 
+ 		if (copy_from_user(req->table.addr, config->lsc,
+ 				   req->config.size)) {
+@@ -455,8 +455,8 @@ static int ccdc_lsc_config(struct isp_ccdc_device *ccdc,
+ 			goto done;
+ 		}
+ 
+-		dma_sync_sg_for_device(isp->dev, req->table.sgt.sgl,
+-				       req->table.sgt.nents, DMA_TO_DEVICE);
++		dma_sync_sgtable_for_device(isp->dev, &req->table.sgt,
++					    DMA_TO_DEVICE);
+ 	}
+ 
+ 	spin_lock_irqsave(&ccdc->lsc.req_lock, flags);
+diff --git a/drivers/media/platform/ti/omap3isp/ispstat.c b/drivers/media/platform/ti/omap3isp/ispstat.c
+index 359a846205b0..d3da68408ecb 100644
+--- a/drivers/media/platform/ti/omap3isp/ispstat.c
++++ b/drivers/media/platform/ti/omap3isp/ispstat.c
+@@ -161,8 +161,7 @@ static void isp_stat_buf_sync_for_device(struct ispstat *stat,
+ 	if (ISP_STAT_USES_DMAENGINE(stat))
+ 		return;
+ 
+-	dma_sync_sg_for_device(stat->isp->dev, buf->sgt.sgl,
+-			       buf->sgt.nents, DMA_FROM_DEVICE);
++	dma_sync_sgtable_for_device(stat->isp->dev, &buf->sgt, DMA_FROM_DEVICE);
  }
  
-@@ -480,7 +480,7 @@ vb2_dma_sg_dmabuf_ops_end_cpu_access(struct dma_buf *dbuf,
- 	struct vb2_dma_sg_buf *buf = dbuf->priv;
- 	struct sg_table *sgt = buf->dma_sgt;
+ static void isp_stat_buf_sync_for_cpu(struct ispstat *stat,
+@@ -171,8 +170,7 @@ static void isp_stat_buf_sync_for_cpu(struct ispstat *stat,
+ 	if (ISP_STAT_USES_DMAENGINE(stat))
+ 		return;
  
--	dma_sync_sg_for_device(buf->dev, sgt->sgl, sgt->nents, buf->dma_dir);
-+	dma_sync_sgtable_for_device(buf->dev, sgt, buf->dma_dir);
- 	return 0;
+-	dma_sync_sg_for_cpu(stat->isp->dev, buf->sgt.sgl,
+-			    buf->sgt.nents, DMA_FROM_DEVICE);
++	dma_sync_sgtable_for_cpu(stat->isp->dev, &buf->sgt, DMA_FROM_DEVICE);
  }
  
+ static void isp_stat_buf_clear(struct ispstat *stat)
 -- 
 2.34.1
 
