@@ -1,245 +1,107 @@
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1980C288C15
-	for <iommu@lists.linux.dev>; Wed,  7 May 2025 14:30:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5309928937D
+	for <iommu@lists.linux.dev>; Wed,  7 May 2025 14:40:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746628203; cv=none; b=oWoRjc36wN3j2Rl6jFIkGP1/7hS18IV4d/INDhpGFOfTXnvZ8xEyJiIR0KZMEGR0UnIGwvI++viXuxS/lpaABx1tiyzjXtpG556TAzIO7aTyrQWl+HH9ILx2BNp8XhbjmPxGLjuG9i5QGn9NPJxlKXrvdSNDCesmKaQdrjEGEkg=
+	t=1746628843; cv=none; b=Vq5/ljdKWZ+97Baij+8x5wpniN9N0KlJ1vqhBh8MyCXgjoVeZyBku0gY793dgBNcRiyRwR/SoKZr9/DBt6sRC7f9EZrRo05cYkzMF7REzvgY/xXwhE8tp/ShsEJIKh+sJJvEKDUJ+lFJV3EOstN1BSP1o/xIpFn2aMBVQwFxoPk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746628203; c=relaxed/simple;
-	bh=Ysdv17ZrAFhu+Z8p5jVB7S0giJ890w/Ep7kXiVFvwEo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=b30ti+WdDaALSa2YiLXENmAjRrsRzfXqRDPSJaMicluY8uVHXzrbbekHtj2gsbWtHzJfW98VwHaG6E7nE7UUHLBYoNM1EN4ree6h2LaN8kcqoLo8JxXESZsANzKHZRLfUwNRZWmbToVOc1Xr5DiICUb2jxDwJx7JkdCEpAK3eIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Oehyjz/w; arc=none smtp.client-ip=209.85.210.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1746628843; c=relaxed/simple;
+	bh=cUb158x33akkosvBbXGRgoNYLmW5StrRgcPT7blbiXM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=l4Mng3juHJuER+VNw5Hf/bQ/q7dg+0epmME67PXj6OIu10IkcaLcPzaqXHIP2ToLqxtvTw17VIyqbk71DvIQXNp75aTv1CuX2ZK76PglZoyusnyZ26qvQ35hsTD9yhMjLnK6LMJSW2/ZzI36QjKo1nI0PJeChqHz/7TLSsfoZqg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=GKqDhCHs; arc=none smtp.client-ip=209.85.222.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Oehyjz/w"
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-7399a2dc13fso9788579b3a.2
-        for <iommu@lists.linux.dev>; Wed, 07 May 2025 07:30:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="GKqDhCHs"
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7c9376c4dbaso117783385a.0
+        for <iommu@lists.linux.dev>; Wed, 07 May 2025 07:40:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1746628200; x=1747233000; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Tx2+qp5fUFaxyyKDyJusWn86x0QDSb7v4Cx5Hi7px0E=;
-        b=Oehyjz/wOlGSsDxTzE9afjhHgPcfCLnIU3N8oTrxUvgkKME/WPVo2ix3NWcWlkxMXS
-         73WHt5sLLJQWIBoK8KGainFo8l9SOAoxmAB3gYbF8p2r7p5KV/3VU+WZI26hJQorqAZ+
-         rCfj5Ws7zRB9XhXR4/stwDbaxErt47ZlnuNVhpeJfXsC2SSRwJYlv+OxKv2qJhrffJ8s
-         jiZzsGthJLTHa74hOKMOj/3hGtJ9BwaGXKHZ8MT3H6pqQeEV5WD8Mva2DRMU08fR4PHt
-         Ui/Z9uA5FYb6XNWSgEbFiz8slYzJnqMQNfJfgpl3PyLzXhSljFv3uTAlejSHrCq9loB5
-         ue6Q==
+        d=ziepe.ca; s=google; t=1746628840; x=1747233640; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hE5pqIIiTRP3xPbQUA3RBdQkSkJonXNdeQ/5U/JPsWw=;
+        b=GKqDhCHssGcAfsuuc2vL87Hl6NBd7ROelX3xLKRcucf5CJNnohE1bfjtBcZJLEm/2g
+         qdNJnRGriy450JbLCh9o1/mRyhnfvfU0AdGsyi8gueFwT4CAhWGJvjKFJnYiGCtK/5DG
+         N4x0vK+rof6zXSCWAfkeQlx+X6WDi9EU5IPcp9M3Rs2PlP8ZDkxhNslktZvx41aorhgb
+         wm5u7UHj5Wgc0xFv0pC6MPwcaopmzfiISub1yHwTV2gdO5tV2J1c6WLwbxMxKwBADQso
+         CgFB6PIZ9dSXdfJJG83Ppm/Q1dP+JJ1J0yF+T9+DWaptp0C06nMo7b4ucb357sfgxNIC
+         wlpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746628200; x=1747233000;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Tx2+qp5fUFaxyyKDyJusWn86x0QDSb7v4Cx5Hi7px0E=;
-        b=UfjkYLG2rQnJJp1ECuEEDcA/rVYEO3D5gv6C+gLrdfth/NsTEd2zTN6/1VQr6k7D75
-         r8FMYjduMHYDygx+rBmDxIsGqAPhw+XSZLU2Sw0ASMmsZRuGC9tArzl7nJDw/CtgJ6+c
-         DJOTd8bnpXd/uwR+m7+VnLMsvcX3tsLoLxYiPysD8ahuYh9HCVmJLulJKJfhiyBtrp+5
-         iVlloRkV8WKB4F6CZeNfMeOMD/uRY9tXfXuZAfRcClkzQwui/vyupQJ0gkXle6aFvfom
-         Qn5ChHSIr3Zbxsk7TxjSte+hkCO1A0NF4CHPpHA5J+PpMmludJC+5e/1NTJekS2qPrIQ
-         h+UA==
-X-Gm-Message-State: AOJu0Ywq9zoMLWzJI7jX4mACK2uea8c8qEVvb6Oj8xov45qNYIUOa2pP
-	dX+UkLN3x5gdX44adLn9UMNrtLn9KVtI+7QVlrg1tQjEsvMcjeejqaiNfA==
-X-Gm-Gg: ASbGnctt2xC6Ctj3GLePjmCgtqpNuUTk0Ng+93w9NWuSoPuAdv7s3Wpld06uky/Unyq
-	LLYo6/rzCUdNGDPrdeHr/hyJBA3FN/nUunpY0NerFGjxXyWId0qhQdINU/HHP6OFNELKQPoq2Y6
-	Kvvyu4tvt0t5NwRaLlEB0kws7WuT389m97kE7Yc5KwuRViRloE4mAbvZk1jeQD+tIlhjHf/22GA
-	P02USpzusLi3R0ZfIYM6t6zLfb8IrxK4hSjYwY6ti0Trz1UTqb6g8BzZtRFz4pV682gJd571ARL
-	DAbWc7Tef39jDjdyn1dy1VN/M4lwZChR+LM1MbGNdlqcD7+U15a04qaBEttWsvyneqYFt+UWsTR
-	ikhE7QPB4Q9ETzGw=
-X-Google-Smtp-Source: AGHT+IEfTnLrQfaILn2a1qg9FhcKbdkfEWk7UApwdzBZ8svWHw/KZHdECBQt/Ccuap4IqQpbIJLUkg==
-X-Received: by 2002:a05:6a20:3950:b0:20b:a75e:fa32 with SMTP id adf61e73a8af0-2148d42d024mr5379907637.40.1746628199672;
-        Wed, 07 May 2025 07:29:59 -0700 (PDT)
-Received: from localhost ([2a00:79e0:3e00:2601:3afc:446b:f0df:eadc])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b1fd2f96ec2sm5819027a12.13.2025.05.07.07.29.58
+        d=1e100.net; s=20230601; t=1746628840; x=1747233640;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hE5pqIIiTRP3xPbQUA3RBdQkSkJonXNdeQ/5U/JPsWw=;
+        b=THsYpcH9w7hKkDMHsvOWa711EoaYAgQl2Y/8fSlBk/3IwpVjk6u+9fAbCYhNMvmXBj
+         bA7DXWznXG4OG5Cj82qgmBZAIHk5xgMKKMtKliuaGr3p4WsLV6/4s9QygV/VXhdfYg2U
+         t0ZJGVxfKLPXlCRSlf3RKXIHVmBCElRbAyuwTPG9DICLUdpCmYODcrG8YraLn+vZLQRG
+         CnsRftBr9n7tzzAUL3TPTDEgQUq4qRnrUkjmI7K59LKSFSc1fjZMuUikhI5D7xvVxtnN
+         1of7LajD9UhC5caiSvsLTvdVI46VKpPtF2XKymAO0cQ+iyv/9Edn5FUXVMsANXiWWkIA
+         YwiA==
+X-Gm-Message-State: AOJu0YxaftA4shM6++7ZN0pk4z/0zmxAm3AQmqAxT7wl+rS8lJLZT0tR
+	ftWH2nzu2PSlbGIKCuI2KfdLinzoi7BNMZbdekBKLucUiqph1qmSrf81QIpwv/w=
+X-Gm-Gg: ASbGncvuCd7Yu8AbACyyaxRT+Y4WNgI4e4hP2Zbyy0EtVnyRHzcZN1wEQQSu7JPnG+M
+	yVeg0aKtcWVyuHEPoBYNzW9IiQcYgaJbdDJuOKNGcLJQhlvdR71q/TwB7evCWzHXCfHxJg4O18J
+	A/tCrwftF9XPtzrF4jGPGX/a1CTP1yO6a6AYaGEkhk+OoCQu192FpuzHufQphGTFfaIpgfGhRbx
+	MnPKhSAHJrbI0dmE/a0HF7nKHL0/Lx/gTmj5dXzEz+S+ihkc4R5smSBdrc1f/PtMn+Fqn0J9WfY
+	X4hbj83N65osfHIJHPWC/XcG6ObtO8NF6yOK8ROuieAMnM2iVZRREfkNCmWO4lOmolFQsyqBSJ8
+	YvgHxVzH/eNX670ZnkIxsgFv/JpeN1w==
+X-Google-Smtp-Source: AGHT+IFBJ2lDgmMwPn9NZnZ8/xbfRhIS1u/h+c1wZoIdheyW8lXaMbj8dqq9Df2szLQOMYCQifNTEg==
+X-Received: by 2002:a05:620a:370d:b0:7c7:c1f8:34eb with SMTP id af79cd13be357-7caf6d53f0cmr559703785a.23.1746628839912;
+        Wed, 07 May 2025 07:40:39 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-219-86.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.219.86])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7caf752a60fsm159257985a.42.2025.05.07.07.40.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 May 2025 07:29:58 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux.dev
-Cc: linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org,
-	Rob Clark <robdclark@chromium.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
+        Wed, 07 May 2025 07:40:39 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1uCfws-000000011tV-36y7;
+	Wed, 07 May 2025 11:40:38 -0300
+Date: Wed, 7 May 2025 11:40:38 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Rob Clark <robdclark@gmail.com>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org, Rob Clark <robdclark@chromium.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Kevin Tian <kevin.tian@intel.com>,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	Joao Martins <joao.m.martins@oracle.com>,
-	linux-arm-kernel@lists.infradead.org (moderated list:ARM SMMU DRIVERS),
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] iommu/io-pgtable-arm: Add quirk to quiet WARN_ON()
-Date: Wed,  7 May 2025 07:29:51 -0700
-Message-ID: <20250507142953.269300-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.49.0
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+	open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] iommu/io-pgtable-arm: Add quirk to quiet WARN_ON()
+Message-ID: <20250507144038.GC33739@ziepe.ca>
+References: <20250507142953.269300-1-robdclark@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250507142953.269300-1-robdclark@gmail.com>
 
-From: Rob Clark <robdclark@chromium.org>
+On Wed, May 07, 2025 at 07:29:51AM -0700, Rob Clark wrote:
+> From: Rob Clark <robdclark@chromium.org>
+> 
+> In situations where mapping/unmapping sequence can be controlled by
+> userspace, attempting to map over a region that has not yet been
+> unmapped is an error.  But not something that should spam dmesg.
+> 
+> Now that there is a quirk, we can also drop the selftest_running
+> flag, and use the quirk instead for selftests.
+> 
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
+> ---
+> Sending v2 stand-alone, since I'm not quite ready to send a new
+> iteration of the full VM_BIND series.  And with selftest_running
+> removed, I think this patch stands on it's own.  (And maybe there
+> is still time to sneak this in for v6.16, removing an iommu dep
+> for the VM_BIND series in v6.17?)
 
-In situations where mapping/unmapping sequence can be controlled by
-userspace, attempting to map over a region that has not yet been
-unmapped is an error.  But not something that should spam dmesg.
+You should just remove the warn on completely, no other driver does this.
 
-Now that there is a quirk, we can also drop the selftest_running
-flag, and use the quirk instead for selftests.
-
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
-Sending v2 stand-alone, since I'm not quite ready to send a new
-iteration of the full VM_BIND series.  And with selftest_running
-removed, I think this patch stands on it's own.  (And maybe there
-is still time to sneak this in for v6.16, removing an iommu dep
-for the VM_BIND series in v6.17?)
-
-v2: Drop selftest_running and use IO_PGTABLE_QUIRK_NO_WARN_ON for
-    the selftests
-
- drivers/iommu/io-pgtable-arm.c | 27 ++++++++++++++-------------
- include/linux/io-pgtable.h     |  8 ++++++++
- 2 files changed, 22 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index f27965caf6a1..a535d88f8943 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -253,8 +253,6 @@ static inline bool arm_lpae_concat_mandatory(struct io_pgtable_cfg *cfg,
- 	       (data->start_level == 1) && (oas == 40);
- }
- 
--static bool selftest_running = false;
--
- static dma_addr_t __arm_lpae_dma_addr(void *pages)
- {
- 	return (dma_addr_t)virt_to_phys(pages);
-@@ -373,7 +371,7 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- 	for (i = 0; i < num_entries; i++)
- 		if (iopte_leaf(ptep[i], lvl, data->iop.fmt)) {
- 			/* We require an unmap first */
--			WARN_ON(!selftest_running);
-+			WARN_ON(!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
- 			return -EEXIST;
- 		} else if (iopte_type(ptep[i]) == ARM_LPAE_PTE_TYPE_TABLE) {
- 			/*
-@@ -475,7 +473,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 		cptep = iopte_deref(pte, data);
- 	} else if (pte) {
- 		/* We require an unmap first */
--		WARN_ON(!selftest_running);
-+		WARN_ON(!(cfg->quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
- 		return -EEXIST;
- 	}
- 
-@@ -649,8 +647,10 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 	unmap_idx_start = ARM_LPAE_LVL_IDX(iova, lvl, data);
- 	ptep += unmap_idx_start;
- 	pte = READ_ONCE(*ptep);
--	if (WARN_ON(!pte))
--		return 0;
-+	if (!pte) {
-+		WARN_ON(!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
-+		return -ENOENT;
-+	}
- 
- 	/* If the size matches this level, we're in the right place */
- 	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
-@@ -660,8 +660,10 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
- 		/* Find and handle non-leaf entries */
- 		for (i = 0; i < num_entries; i++) {
- 			pte = READ_ONCE(ptep[i]);
--			if (WARN_ON(!pte))
-+			if (!pte) {
-+				WARN_ON(!(data->iop.cfg.quirks & IO_PGTABLE_QUIRK_NO_WARN_ON));
- 				break;
-+			}
- 
- 			if (!iopte_leaf(pte, lvl, iop->fmt)) {
- 				__arm_lpae_clear_pte(&ptep[i], &iop->cfg, 1);
-@@ -976,7 +978,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
- 			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
- 			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA |
--			    IO_PGTABLE_QUIRK_ARM_HD))
-+			    IO_PGTABLE_QUIRK_ARM_HD |
-+			    IO_PGTABLE_QUIRK_NO_WARN_ON))
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
-@@ -1079,7 +1082,8 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
- 	struct arm_lpae_io_pgtable *data;
- 	typeof(&cfg->arm_lpae_s2_cfg.vtcr) vtcr = &cfg->arm_lpae_s2_cfg.vtcr;
- 
--	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_S2FWB))
-+	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_S2FWB |
-+			    IO_PGTABLE_QUIRK_NO_WARN_ON))
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
-@@ -1320,7 +1324,6 @@ static void __init arm_lpae_dump_ops(struct io_pgtable_ops *ops)
- #define __FAIL(ops, i)	({						\
- 		WARN(1, "selftest: test failed for fmt idx %d\n", (i));	\
- 		arm_lpae_dump_ops(ops);					\
--		selftest_running = false;				\
- 		-EFAULT;						\
- })
- 
-@@ -1336,8 +1339,6 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 	size_t size, mapped;
- 	struct io_pgtable_ops *ops;
- 
--	selftest_running = true;
--
- 	for (i = 0; i < ARRAY_SIZE(fmts); ++i) {
- 		cfg_cookie = cfg;
- 		ops = alloc_io_pgtable_ops(fmts[i], cfg, cfg);
-@@ -1426,7 +1427,6 @@ static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
- 		free_io_pgtable_ops(ops);
- 	}
- 
--	selftest_running = false;
- 	return 0;
- }
- 
-@@ -1448,6 +1448,7 @@ static int __init arm_lpae_do_selftests(void)
- 		.tlb = &dummy_tlb_ops,
- 		.coherent_walk = true,
- 		.iommu_dev = &dev,
-+		.quirks = IO_PGTABLE_QUIRK_NO_WARN_ON,
- 	};
- 
- 	/* __arm_lpae_alloc_pages() merely needs dev_to_node() to work */
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index bba2a51c87d2..639b8f4fb87d 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -88,6 +88,13 @@ struct io_pgtable_cfg {
- 	 *
- 	 * IO_PGTABLE_QUIRK_ARM_HD: Enables dirty tracking in stage 1 pagetable.
- 	 * IO_PGTABLE_QUIRK_ARM_S2FWB: Use the FWB format for the MemAttrs bits
-+	 *
-+	 * IO_PGTABLE_QUIRK_NO_WARN_ON: Do not WARN_ON() on conflicting
-+	 *	mappings, but silently return -EEXISTS.  Normally an attempt
-+	 *	to map over an existing mapping would indicate some sort of
-+	 *	kernel bug, which would justify the WARN_ON().  But for GPU
-+	 *	drivers, this could be under control of userspace.  Which
-+	 *	deserves an error return, but not to spam dmesg.
- 	 */
- 	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
- 	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
-@@ -97,6 +104,7 @@ struct io_pgtable_cfg {
- 	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
- 	#define IO_PGTABLE_QUIRK_ARM_HD			BIT(7)
- 	#define IO_PGTABLE_QUIRK_ARM_S2FWB		BIT(8)
-+	#define IO_PGTABLE_QUIRK_NO_WARN_ON		BIT(9)
- 	unsigned long			quirks;
- 	unsigned long			pgsize_bitmap;
- 	unsigned int			ias;
--- 
-2.49.0
-
+Jason
