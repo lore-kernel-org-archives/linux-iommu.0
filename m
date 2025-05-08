@@ -1,382 +1,186 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2043.outbound.protection.outlook.com [40.107.212.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D259285417;
-	Thu,  8 May 2025 17:04:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DEF720E700;
+	Thu,  8 May 2025 17:12:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.43
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746723881; cv=fail; b=LxSbi8pnemobkLKpu4UXI83J1FpnozpCEHaPiZjRQZjNxYq9LfBrlH4ZbMDwGWBf/3Hi/ZJ7ctKybS5CDiUx1+TuvfA5JUIz7GBB8U9JZGsOIHGXbJkibXgfwzfKcFtj7edZTDZF+NxQhBFaTmunJUoD2YtZBuKr54LjSJCmcsA=
+	t=1746724381; cv=fail; b=o/+V9pw3UUMOlKLlyU36rYAFoX6dfiHV8a9STkqkjS5ThTzsF7uBpXOgbLWZaKfmeUBS/QUyOSlU1Wt1+aPn1ZN2DzuIqmzdwFMEduCJI7XcOcRRzbloMH90pYGB7gYRnEfusSxA6XvEMb/HQZHjaNyMNBDiuw5kx6NWuSwGbes=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746723881; c=relaxed/simple;
-	bh=GPPaPGFPLSj1XoUqV0FBfYXriqDwQ/rtm+02t/WLmU8=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=r11rIQJCgleRx8gZORF/IWPPKSXckfqhPrmj89Fk9PY2WhuvVvES9MKeNo6uyuaNSPPUaPVWTYRyU7+PRBRGdq6Xh6KS4lci0vrfmKm6Ik8Nex79JpNgh5zDxXmesCOLqPqKqKIPuF5pyhVvM8GtairxNgwi1Km5OxrYR8DF2pQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=j5UjeNUi; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=KuiQzkFR; arc=fail smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	s=arc-20240116; t=1746724381; c=relaxed/simple;
+	bh=gqtimxm0sRw8EdYNhhzL591Hl2LEIzRf0af6Nrr/ao8=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ovexs9iB2n7TmCV4m/5ZsttzSAQV8gs16cUJyJJmuohheb2/tUclkQO8Ca2gXSzald3i98qXh7wMXAGwZLzMYVDsEnB6r+nz8vizZ51waTnPosCNpeYl5NvU/X+KB+B6EdQZC0U2f4H7FTg4Xp/+GZPD4+5T1Njz4GJiFHLZs1M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=iSzJdNu3; arc=fail smtp.client-ip=40.107.212.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="j5UjeNUi";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="KuiQzkFR"
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 548GWJvs016227;
-	Thu, 8 May 2025 17:04:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	corp-2025-04-25; bh=2EqqMGmxIBeRwTuj87kYfsG68U5uIAITZuQoNbbc2gc=; b=
-	j5UjeNUitfTfynZ5z+tIygJRzJ/zi3t38efkefpCgRuCGzzh3ViMaE39KMjYfBo0
-	RFwpDWRj4Wcbjf5npyPpK5LLlUEof7O+it2f53Ypi4o9RG98XqmwY7VEw/1p9K6z
-	tg0h2BB9WutVHHGFo2X9GGbXmZmUb9K/byTe1F7AmS7aAqmhLCJMVfu4bRRRJXq1
-	ifmUtwisdJrY1bFPdwNm32/FVCd6ds0duWMeYV8ApyNUl+4xKFjGBUu3ee47TgBz
-	H/XxGXS12ZzVPVBZWFimrm0BZmHcRB0Th0v81GOIEnsqidnRX6zcdnsZ1pANLl2p
-	C0emJCYfRVrrvG6qpYunyw==
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 46h07b82wt-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 08 May 2025 17:04:23 +0000 (GMT)
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 548FUkDC036067;
-	Thu, 8 May 2025 17:04:22 GMT
-Received: from ch5pr02cu005.outbound.protection.outlook.com (mail-northcentralusazlp17012053.outbound.protection.outlook.com [40.93.20.53])
-	by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 46d9kby5ct-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 08 May 2025 17:04:22 +0000
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="iSzJdNu3"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=j6KIhWpLYn+Rnibd4o312WM7i3b3fqjCUo0BnDE8d4eFV4XOU3dpSiPfJEWD/aw1/J+hrmwr4BPzDY0265vTLMwzM9pruEpxD3xFhilkL0FaSi0JnZPnOzoGvvytp6R/pv7CbW1uW19xxNZR9ALz3/pprrW0xSzasocuSSzDLCCavu8BJEFoOKpuVsUlnUrWJ575oYNXRhozTA/ksmEkCJCNf1VNnWNdx0UTLOqsCM/gCrBlBaPudFg+VwVp2Y34sOxrM9bVMZvMYYh260vPiK5ZIWFTBtY8MSsgnOT9w/m7ZEywWeSMYbQboC3ZExdraZGn1ABVHvZ/Q8f2sh7RSg==
+ b=LGvoZe1yw/oF1nwuucU85GRiZZ/QPCHfKgTT1pTTv0dWrjZxuWEJAhAqeO8qRfw1dhEVRoCAzFsAUcdxnQ0ZXA2gaCQ9B0FN32HSnBmz5O+0McF3L3Xl0xOqZprpYMrv7FUjvO7tcQNAxdrLlaep525Y+6f8cHr3MntMjMe2Of8zO0AHtdQoPgmctCYxkxhy6B6o4fvGcSp+xokk/pyB57VIB0vJeJcR1jDkKt10eznjxLsqPxq76yTDR9pJ1A/DzEmuMZfsazqHlLiIbnf8AbiOk55EmLRDvLGqk8x6l+2XGziTC4EEmezvEcqT5uodfhKi8MqcU4PytKdKk+QjCw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2EqqMGmxIBeRwTuj87kYfsG68U5uIAITZuQoNbbc2gc=;
- b=lkm3jDMXNwZZPef64gsNZmyvuGa9VaNvqynFXhghIbMyz5cB2M38Qf4TROeYOgkFucCDuCkXgc/doDir/PYMysE1aR1DPS1818DnypACZ3ThrgrPIulOqZwd5SFmxj1CYTEARWSkXJmCwolK2n/ipIiZ4FapUJv0M7SwLFaVDmpfxn1K3MqzPVAaIuXvqFt5m6UxsT/eusNR29gcN64gy6IfN5a5bB+dnz/Q+hsIRG/aYhuuroU9NnGFlhxLp7zz8qLtUD9BpAD1mSW+4lVrBF0SJoDWPXGfUsKTB8gRr3OzUcGn9m62ZkD2iiIvtr4MQu0Fg88f2k+c7eDIAEl7zQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ bh=t2jufH6Mb8YFcG4HRF4WogEi13g/KqlNBYLNd6T3iVE=;
+ b=jHPECjwOpe2lonX9d1PI4wKeIiPQwUBX40/afFip+zsUknYmW/LNFnPuaFZ0h/oHjJL1BV9ik70C+5hw1Ze5AeHBC1b+DZpzUDyCoTROhU7WIBCJxYEFZ3Xbv1oBQaqHy2pX5KWOAdQHFeZO9bt0o0yNU0OQNyLefKsroKjHrk03FGH3lC+1twLT8oBM5YQqR3KZzh/aU2yD0qXS4UeRHXASfwvwpWSgeXuw2mC06NctluTsfX0WoBN+YqB7PQgfpnOeGEmhUdUY0TbLvn2b9XoZYx4lUJdKPBj6aTQUckQh5ZyyK3ySUrstdvodugWrTQHcBJNrzigAcmkQPRvzNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2EqqMGmxIBeRwTuj87kYfsG68U5uIAITZuQoNbbc2gc=;
- b=KuiQzkFRn9cTRGn1x1O3zLBhEE3Faz9oBqbK1GnOqBtd1SYS58lVqYy7a3mRPcdxwond1LWtOgYIAkT/FrUWeVQsSOJmZwUCvo6k1T3nEOBjnbNA3ceexd2ZTFG/H6GFPMW3HSSrDDE/UAxNcmmyBAN4qoT/2YhLX6pHbkpALko=
-Received: from PH3PPFE6F9E2E1D.namprd10.prod.outlook.com
- (2603:10b6:518:1::7d4) by IA0PR10MB7667.namprd10.prod.outlook.com
- (2603:10b6:208:48a::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8722.23; Thu, 8 May
- 2025 17:04:17 +0000
-Received: from PH3PPFE6F9E2E1D.namprd10.prod.outlook.com
- ([fe80::dfc3:b0d8:d4e:5c3]) by PH3PPFE6F9E2E1D.namprd10.prod.outlook.com
- ([fe80::dfc3:b0d8:d4e:5c3%2]) with mapi id 15.20.8699.026; Thu, 8 May 2025
- 17:04:17 +0000
-Message-ID: <6c9dfc01-89db-433e-9b7d-41dfb13038cb@oracle.com>
-Date: Thu, 8 May 2025 18:04:12 +0100
-Subject: Re: [PATCH v2 1/2] iommu/amd: Add HATDis feature support
-To: Ankit Soni <Ankit.Soni@amd.com>, iommu@lists.linux.dev
-Cc: suravee.suthikulpanit@amd.com, vasant.hegde@amd.com, joro@8bytes.org,
-        will@kernel.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org
-References: <cover.1746613368.git.Ankit.Soni@amd.com>
- <a03c8eb9e998445eba8b18a40c53469eeef18a9a.1746613368.git.Ankit.Soni@amd.com>
-Content-Language: en-US
-From: Joao Martins <joao.m.martins@oracle.com>
-In-Reply-To: <a03c8eb9e998445eba8b18a40c53469eeef18a9a.1746613368.git.Ankit.Soni@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO2P265CA0221.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:b::17) To PH3PPFE6F9E2E1D.namprd10.prod.outlook.com
- (2603:10b6:518:1::7d4)
+ bh=t2jufH6Mb8YFcG4HRF4WogEi13g/KqlNBYLNd6T3iVE=;
+ b=iSzJdNu3Zf66iDd0Lkx5KMTKPYmPLDdPAD70eqFri4ehTor6X+oGZ1a0cvvGq80Svp6P/sPM4G/VTSd24fGg8THuQWTWfsJi9w1RO2pNLL82g8DyJ2LBnTvrlydLOY+fbdXXXgALE+OEfz/8aX3OTLThJcHGXO+PXvgJUt2RhynCLj5ZkZW/3imiSmNBOVzPClKOCOzZCQFIBM81xR+rSl7lB/EvTopNRy+Iso+twdilz2G5Bh/NwfSZbQkAhT/7ZTl6QXNeLLFHDk87aRrSDY6AXSWB++uy8DyDOT+jpF4cao6+ClDNTQhVANd8NpepryIn6WesBgPHpMPdFA+g7g==
+Received: from MN2PR14CA0028.namprd14.prod.outlook.com (2603:10b6:208:23e::33)
+ by DS0PR12MB7801.namprd12.prod.outlook.com (2603:10b6:8:140::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8699.22; Thu, 8 May
+ 2025 17:12:51 +0000
+Received: from BL6PEPF0002256E.namprd02.prod.outlook.com
+ (2603:10b6:208:23e:cafe::5a) by MN2PR14CA0028.outlook.office365.com
+ (2603:10b6:208:23e::33) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8699.29 via Frontend Transport; Thu,
+ 8 May 2025 17:12:51 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BL6PEPF0002256E.mail.protection.outlook.com (10.167.249.36) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8722.18 via Frontend Transport; Thu, 8 May 2025 17:12:50 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 8 May 2025
+ 10:12:34 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Thu, 8 May
+ 2025 10:12:34 -0700
+Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Thu, 8 May 2025 10:12:29 -0700
+Date: Thu, 8 May 2025 10:12:26 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Vasant Hegde <vasant.hegde@amd.com>, <kevin.tian@intel.com>,
+	<corbet@lwn.net>, <will@kernel.org>, <bagasdotme@gmail.com>,
+	<robin.murphy@arm.com>, <joro@8bytes.org>, <thierry.reding@gmail.com>,
+	<vdumpa@nvidia.com>, <jonathanh@nvidia.com>, <shuah@kernel.org>,
+	<jsnitsel@redhat.com>, <nathan@kernel.org>, <peterz@infradead.org>,
+	<yi.l.liu@intel.com>, <mshavit@google.com>, <praan@google.com>,
+	<zhangzekun11@huawei.com>, <iommu@lists.linux.dev>,
+	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
+	<linux-kselftest@vger.kernel.org>, <patches@lists.linux.dev>,
+	<mochs@nvidia.com>, <alok.a.tiwari@oracle.com>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH v3 11/23] iommufd/viommu: Add IOMMUFD_CMD_VQUEUE_ALLOC
+ ioctl
+Message-ID: <aBzl+mn+N4bnUsPN@nvidia.com>
+References: <cover.1746139811.git.nicolinc@nvidia.com>
+ <1ef2e242ee1d844f823581a5365823d78c67ec6a.1746139811.git.nicolinc@nvidia.com>
+ <6ffe5249-b429-435e-a780-ee90aeb3f0da@amd.com>
+ <20250506120114.GV2260709@nvidia.com>
+ <eb0d3629-8663-45e9-b929-0c6edff31291@amd.com>
+ <20250507123103.GC90261@nvidia.com>
+ <2356ff85-6651-47d9-90c7-f8cbf43b053b@amd.com>
+ <aBxHgf4llBd7vA5w@nvidia.com>
+ <20250508121456.GB5657@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250508121456.GB5657@nvidia.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH3PPFE6F9E2E1D:EE_|IA0PR10MB7667:EE_
-X-MS-Office365-Filtering-Correlation-Id: cc512027-7205-4df5-db89-08dd8e525dec
+X-MS-TrafficTypeDiagnostic: BL6PEPF0002256E:EE_|DS0PR12MB7801:EE_
+X-MS-Office365-Filtering-Correlation-Id: 979fb648-f84f-4bf1-d318-08dd8e539053
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016|7053199007;
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|36860700013|7416014|376014|82310400026;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?enBvM0dhNk9mc2hwSzdCTWplTmc2Z2EwbklaelRuaGdvQWpkK1BhZDFlNFRQ?=
- =?utf-8?B?N2xxbzdQUzBtRkJHeWlMRitSbDVMSWZ4NHBwT1oyVzdJVDU1bHY5TFd1VmVC?=
- =?utf-8?B?bkNQa3FpWU1Kb0RocmMxNGkwdmNlTkVUSElZZnNsZzlvUFJmWDhFclpYdHlO?=
- =?utf-8?B?OUgweW5Lems3UmJ5ZkRCaXgvN25KaEVDdW05U09CcE5wdEJzaHV0TC9xcWxR?=
- =?utf-8?B?MUhLZHJOdTE4T09NOTlXYm4zTDhMTTNQc1BtUzNPcHdWdVVpT2RTT1NRUklv?=
- =?utf-8?B?bkxMb0JzM2RJYVF5aENWcEkrSFdDdUJPNzltMi93UjRZZGRXZm5HMDhTUEhJ?=
- =?utf-8?B?SnZqRXU3YU9TaFJKVCsxZzBJRHpOVjJkcEx2WFdCcGR5clgyZUpGYXlkRlVm?=
- =?utf-8?B?TUJxV2xlcXZqcVVkUE5Xdmh3MG53QkRJWnRJSDlSc0FkeVFHeWVBZzkzNmQ2?=
- =?utf-8?B?dlUyVC9QVGxFVXdoeUVvcjBwdUlhaUgrc3F1UkpvSlVNSnkxVXBtUEMxOEdy?=
- =?utf-8?B?OWNCZHp3Rm1VZDZXQ09ZRjBWZEw3TDYxdE85N2ZsYWdCOGxkRmtCQ1VQcTBw?=
- =?utf-8?B?S29YbW1PQUY4ek5oMnR2QjgzNnIxT3VtT29wRXBza24wTnpJdkw3NXFOUzBC?=
- =?utf-8?B?ZVhPR3ZwaU9ITnFiSSt4Q1hPRURpZXN3cVVBVGpqamFQTGI5Y3VEUVpNWDlh?=
- =?utf-8?B?Y2xVdS85ZDQxUVFRZFlxQTJDR0Q0REVuT1hVUDlqZlVXZXhBSzc4RGZjam5Y?=
- =?utf-8?B?WW82WWNiR2g1TUlKay9vSnVCNUIwKzZ1cy9hYk5QaWREWHdHbktSRUNCdEt3?=
- =?utf-8?B?MjZVUWxrRWI2aWMyMVMrVThPRGdzT1Z2OFRoWGcyZGFHL29DTXU0T2dnYzZM?=
- =?utf-8?B?MTBNMHJOM1pxUlI5RXIyNXhKTU9SbmtMdFFHZHpPVEs4ajRMZHlhWVB1Vldu?=
- =?utf-8?B?cU9GWHN3Q0V2SGpJbmpIeHBmeHh0N1dxdlQvaXJIV3gxQ21xbXNFejFna2hB?=
- =?utf-8?B?b2RjN3R2Rlk0dEdGeXNPaWdBbGw4ZWdMOHRmOUljUFAxN1hyU0g5ZVpEWThO?=
- =?utf-8?B?clJwdnNvWjJCZ2xtaUlYT09tWlhpaVdCcHZsa2pFemgxN29ZSlNhZmFib2Zr?=
- =?utf-8?B?dTZCT2prQXd3bnUzVWZ6elFjUzRnR3h1SnNZRXRJcUFjVU5rYU9RV3I0QnhP?=
- =?utf-8?B?ZUEzRGt3Q0YwS0pZZHBPa0pLTW1RNkFsWFkrMFIxVVBOTG56bXp5c2tVcVVP?=
- =?utf-8?B?RGl5eGl0aGFNTWNPNlNhZFpMb2hPaHBwRFowSGwvVWdINlo5T0tWWWNzU28z?=
- =?utf-8?B?YXhzL1Q5RGtDcTM0UWxRakJOcjBGZUVFcUo5anB2cVE0MGYxaStXaVVrdExt?=
- =?utf-8?B?ZEhRVS84dSsvYVlXUlpZUGkyUWZXQ2ZkUFdmWGttLzBLMkNxTEFKRGNVTVNN?=
- =?utf-8?B?M1lNSSs0NG1HbFE3a1QrdHMvN00zeTVtdm8rS3pPb3hWQUdBM2QwZHMrV3Rp?=
- =?utf-8?B?UHNHaTZUOWU4K0lmdHVGQUh5OW1nNi9kWFNDTmpqR0JpQnR6TTJYRVlsVnlP?=
- =?utf-8?B?MDZVR2p0REJheitrSWwrNy9MSTFkeEJQM0x0MUNTdFQ5ZVErMlZtMTZXeWxr?=
- =?utf-8?B?MEZvLzd3N3VZS2gxR0FBYm1WYmJ1dEVBMzd3WHZnbG5Rd1ppMU5xMDRVdGR4?=
- =?utf-8?B?UVNaUndObTVyWHpibmRpMFE5SmY0T1YwT1NMRWIxVzZHYi9VNnFBb0czTTVt?=
- =?utf-8?B?cjkxMC9xR0JsWGRqSWd0L3lXaGtDSUlkQ2FOcmZyZEtxREZBN2xIdlIvVlJi?=
- =?utf-8?B?UWlJamwrV3BtTytibjJMdGxnWS8xeU1HWEFtTFVGenMwVFY4WTc0UlVoZlhC?=
- =?utf-8?B?M1RUeTFKcWliTGQ3S3k4YnFDUWlRSXZIOGtKUi9SOUMzSVRqamFSTHY2TUY5?=
- =?utf-8?Q?mB6D5PxGN20=3D?=
+	=?us-ascii?Q?b6sugoYpvVaycDGkI16t3b3KNKW202fdwdoTx5btfS3x7RjZ8Fj2CYIylAbP?=
+ =?us-ascii?Q?w1UVPg+N8Cl5Ye5rVVXBasJevHPdWoEjvUQlp7CpFqlMlkDwY9p8Azy01vhi?=
+ =?us-ascii?Q?Sn5aiZiTEYkv9sZkgiTQVUQ1TsWXBv6tUlJrg/GCsDNJadWkRLO/1oicqPMd?=
+ =?us-ascii?Q?ge4ibzb+EOAww7fDVjOJeUlWwzeEnk3GUljajIXkd6mzfw5QWXipdZ58n0l9?=
+ =?us-ascii?Q?+UVEA0sZyMwgSlA/2MWf80chOH/nARYRy7tS/Jjl5WZsKJqIFSeBXRX25lz3?=
+ =?us-ascii?Q?ko239grQ0LZhoRXoIfRT9dgoN2n0ToTI8yIpNFpcASRCiQemHBS8JwOMUfWf?=
+ =?us-ascii?Q?EyWG06OV+yZ+JdpeGrFelcTkRgWfJutHmdwjrudP0xktQrdIZisXdGX1rqdL?=
+ =?us-ascii?Q?4iNTSZ7L5DVG27SA2cf0yDQ80Jpj+xz8YJ+EKzPBkEL/Ynn7/oYJBXLuE3tk?=
+ =?us-ascii?Q?m/A/VsH8NrAUZZMywxpnBiktZJNcgDpewZTzIv7UF6CagzI0Q8EJwglJeBe2?=
+ =?us-ascii?Q?cma/Tl/+M3upwJRMC7hQ3YuxdYSEpGXgGJj9Ws++l1zgJfWjznDHKRyQF8IR?=
+ =?us-ascii?Q?mLQHef15BZh4SnWqBxpFFVStqosgXFo+YpNkr7LbD/w8KrqW72rAIc3mClF4?=
+ =?us-ascii?Q?bqIByeL401Veioq9HjDvTGHyksY2EOhKglqnI7L9+6U6TFptU9cEnUW/d7q/?=
+ =?us-ascii?Q?g8rtIUEXLuZ/eMMPNydehtYZf3ZFd+j4f0Ww40XZCA8he3s5dLAYOHufivBH?=
+ =?us-ascii?Q?zG6r9/OiliUte+SHSf+cuJgyNyctv1AZcTK742dSZn0mgMQKqkzIZrQ6+02B?=
+ =?us-ascii?Q?NbkzRL8J5ohxx0gWbWPGMwaNMZgmdodyN4ChYvkBImfhq2y+izW/l6Fp9mFJ?=
+ =?us-ascii?Q?Wmmdgqul0eDTZ+ooiR5Srcu3t3VLK6m8YDas5dluxnLXITL1nbItTXCsJ+mY?=
+ =?us-ascii?Q?YQoF9CxJNhBZ40sifr7AXBvGX+FOPrzjUcGD2k/YmuGTmHk9Y0GADhYF/OZt?=
+ =?us-ascii?Q?wJnHOuiUf6r+KgSscQPh16k4I9ZEy9WXut5PJIyGy6WhmgR5RhNFqsW46slS?=
+ =?us-ascii?Q?wu3yCDpEWy9+NxOGBrW8x8qv1Z/LPoMIb6CyA2i6+S0UoeE1mvt+nw7hZQUv?=
+ =?us-ascii?Q?VMcnP4XZAtDMWrHtefnvgc/vTj/R1MHNnJjEPXi5KA8inpu+c07tGVMyzCsa?=
+ =?us-ascii?Q?T3+wGSTsRAwO6T9PZln6OEvnHFpD4nd74EN5r7SfqD3SBAiyed72EIubzkT2?=
+ =?us-ascii?Q?Z78EDbBhoxMWPyjgHh3qQXg/xnE/9dbf8sp5ktIjD5U1w74pljW+m6crCwPC?=
+ =?us-ascii?Q?EWnXFRiS35vNkGMJXI9gAYZ6CLducaMEzwfECr+SbcfpWlgAeMEulR8aLvZM?=
+ =?us-ascii?Q?kL2AdEkVjTqpEEI3Xdpb9Yw9kaP05OsADzuCOh4vx4E3sZb3UU6Jc1pbG8UB?=
+ =?us-ascii?Q?r6i68IkmC+rs5aozW8siAYn0vII50jKsXulxmmCmrYprF0cr7tGOIYhWJSSa?=
+ =?us-ascii?Q?3zL+icK64UQJ/9v3TsqWOP/bl/Fv+qV/9XOG?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH3PPFE6F9E2E1D.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bm43VFJNKy9SczlrZzhXK3ZvaGRtdDdaZTRpUUlCdW90eXRSbjhDekpGS2hm?=
- =?utf-8?B?QmU2d1FhbWdRbUtOUWlDTWNzYW1USzJyRkl6UkdKbERvMnd4UFhsd3N4WGp0?=
- =?utf-8?B?cUt3Z1BkUlh3cXlaaVNRaDFpdFB6am85MkhBOVRwZ2tpd1Q1cmhOSCtjSSt5?=
- =?utf-8?B?MW1yMmM4aEthaWRsbTJHdnJ3VTMwcGQ2Zzh0OVRjelQrZG8zbDBRMnhrUlEy?=
- =?utf-8?B?ZWlCbVk3L0ZEOUJyQXFTTGZlWS9GNG5UemovVVY3WXpQeTk2WitZR2pIWGtR?=
- =?utf-8?B?TVdQQjB4bWY1U1RrSXJkcTBqSmxGemcrazZIKzlCMS8xYWtGN0tQd3lpcE1W?=
- =?utf-8?B?RURQN0JnUWFRb1N2WU5rbmZ6MXZvUHRBWG56bFNCWTA0cGpoVE1BWFZFZUZW?=
- =?utf-8?B?MmdlbEQ2b3Jndm5BYzI0YTYvOHBIK1NkbHJ4ekRrS09GVDlNWmx0aVJOMDN0?=
- =?utf-8?B?TndkN2F6YkJiWVE0QklacEN3TTZtQjlPaHdHYzZ5Z0xIVVZZV29IT0FwbUxE?=
- =?utf-8?B?bTdpblg2ZUdQQm8zdkp4OGFTcVJkNHpjV1VCcGZnRStnZE10MDJJNkFKU2hi?=
- =?utf-8?B?MS81V1B5U0ZLWGx3NnR3eFVUa3d5eXpvMGp1T3ZlS2g0M3RkcW52YkFxQlpO?=
- =?utf-8?B?L0liaUlQMk95ekFaTlpUdjFxKzRockZUZkxiYUhiT2ZnOTluaTZBeWhlME01?=
- =?utf-8?B?cGx4Q01Ea1dEdlVQOTRjenhJLzBWNzdER1NKNmZ3NkxrZVh3SWx6SUJ2dXp0?=
- =?utf-8?B?RHpmUzJPVUg5dlUrcEJoeHpGRGlzWW5XRG1TSHdYSFBTc1pLZXR4Q0NZSXY5?=
- =?utf-8?B?czRWaWVwOFFCOXhvSFQ4ZE0zeDZab3gwMDF5Kyt3NTZXanpKK0QraGJzSUFm?=
- =?utf-8?B?M3F0c0VQSU9DNmtFRXMyMzBlSnRSelFORk9YdWRVVnllbjROWk1oZ1VlRUNl?=
- =?utf-8?B?ZDhIdmtRVzJUSUZXMjZIN1pkTEtDNm1JbThKNU1pa2g0SG1UMUYrZ2l3WVcx?=
- =?utf-8?B?SWp6YzYwU040SlVnSi9iQ1lQVGdBcWo2VWpSR0xmN2g3NEsxTjQraW5IeG1r?=
- =?utf-8?B?bVl4SXNNWFJaL09PcmtQUGc5bENRVGhILzR3ZmE5c3pOWFpvVWtCbmRXQ3JM?=
- =?utf-8?B?bjQxQkYvWTE4ejQ3NndraC9PUndmRGZIWWhpakNMcmRwQ1pUaGVYSXZ4S01Q?=
- =?utf-8?B?bjRCMHRkNHo0QStFMkNoaHZFb05sTnR0ZU5RMjFwUEhWQXhIREFmZVJQcmRX?=
- =?utf-8?B?SGxXN0NBRk9YL0RPcHFpeGRlU2xCcTlHZWx2N2VpeGVRREtHOFF5VTFFbWZl?=
- =?utf-8?B?SkYxbm9CWnVmZEx3aEhLNnBVVTRiL1laWlpCTHJPQ1o5Y1M5UzREbTN5dVFw?=
- =?utf-8?B?Q0Y1MERqWUFleUdrZHVEa08rZElyQXB4eVhMbTE3L3Ftc0VadDhvd1orRDkw?=
- =?utf-8?B?SzNiL2VEcjJiMTVxQWxSTGtPRmR0L3RUZVBUYzl2WnQ0YWxkRVNtTytSb3dL?=
- =?utf-8?B?THg2Wm96WGU2anMxczlhNUg1L3Q1bEtZaVhMQmNUQnZhWk0vMUo1YW02Uy9L?=
- =?utf-8?B?eWl5Yno1TkZBL1JiWk1aVDFxTTdHcHFieUFYT09yREtSR3dSUXFISzVpV3BW?=
- =?utf-8?B?RzJ3U0VQV1hjb3FMekRhWUVpb2hyUWYzR2xrbVVWSnFMalFNTmU4MXBGcUdC?=
- =?utf-8?B?SENJY2tuVmlWSFAzKzd5VW9maHRNcGpkbCtDMHRCU0Jic0hydHI1MjJQamly?=
- =?utf-8?B?SC96T1RYblYzYUx6WTZyTXp6VW12OGIzVXY1bUI5dG94cE9xOVpQK0JHZkxi?=
- =?utf-8?B?dG9qVFJKTTVlM0NOMllTUDR5dU5QekVGczl1YWdVeHZxQm16TGNhNmxLK3NB?=
- =?utf-8?B?YnpOMHFTdVBTRlpScHZ6MlZwM2VwbnZJaFJaa2lTdTVTOGJtWVlib0hsZ3Zr?=
- =?utf-8?B?MERxTFV3b1k2UmFYZWJ0Ky84djVXenZXZGxiY084NnJEVFdzQk1QczN2VTVo?=
- =?utf-8?B?azloaGdWUXBLZVFSTm9CaDVyTlJoYWZNcGFyRm9yV0k5aStkUndjTjVJdFlM?=
- =?utf-8?B?YkZGWFlxUEQwR25BTURhN3dzOXY1dE5abU4wTEZONW1xYTl5MTBZOHpXU096?=
- =?utf-8?B?N1N1M2wyTkJOTVBCUEdweVZncC9TNkF3elhUbURIM3FTTGlpY2RzTGplSlJt?=
- =?utf-8?B?eWc9PQ==?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	Jc/XyJ4oaEQ0+aM9GLcx3FLVPTQuhoYAgDJr4ABYRay25sVClt7H+ARDCW5wxmPlmHqWycRCdEXs1nSRdmb8vi1NoEpGv+XkvwJ4oXB1aUISKc8TJgtM3T1PVU7FCjaghJoemLhO2APIA1a9QiE6IYkLWVeMLTmW4coo9s6mlMDyMjQOB+NpWjs8LPSHHMMU/ZKR3YHfiW41XCgmpuFRxkBJbTnC9DVAYeU1ohgpVOr7SPk9ybP/C743PdxU0gCdwiYlq2Wau3DAl5GXR49ytPtZtDDKGaFkeuhJ6RG2pfrkvL9aJ4XC7Qc68VbWpFSuFfRj5mFS55zy3/4BHrWSpih9A9oo5Mjw3wycIrTIFUVZCcgIk8nC4UXDqx6nP1mrKH7k0UFRviUboMKDyPWLkxXwV8aNhdZKArGJA+jiOHexGcxBHCsYysMScoNuvZm9i17tRJhqJlq6IJQpp3GIFAROBf4mS8TY27IJtdFBM4oirJgOqiDWIhkPzmCZ3wUc8JY73yXSubOTP1RX1dn3EZJAauBmoak1UhOmv4egI2NQhfo5Gk6SybFHJ4tFHlonTg7qI1I1nlcG0vjeWj93JtiLQFR6k6hJbYBYfOude+4=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cc512027-7205-4df5-db89-08dd8e525dec
-X-MS-Exchange-CrossTenant-AuthSource: PH3PPFE6F9E2E1D.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2025 17:04:17.1763
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(7416014)(376014)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2025 17:12:50.9218
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: kJFTAKOOS8DkMegwZmGbZJFTYksPtlprRLGPPqRhpuO7DkFN1X3og8qxF3c/uyMHhp02NUgxy3MH9SQTc4o/Qj8hfA4NtTNUFISN8yAPlAM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR10MB7667
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-05-08_05,2025-05-08_02,2025-02-21_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
- malwarescore=0 spamscore=0 mlxlogscore=999 bulkscore=0 mlxscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2504070000 definitions=main-2505080150
-X-Proofpoint-GUID: n9QnofH7mYI2Zp03YqvTuKDZ2XL4dKdt
-X-Authority-Analysis: v=2.4 cv=MdFsu4/f c=1 sm=1 tr=0 ts=681ce417 b=1 cx=c_pps a=WeWmnZmh0fydH62SvGsd2A==:117 a=WeWmnZmh0fydH62SvGsd2A==:17 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=wKuvFiaSGQ0qltdbU6+NXLB8nM8=:19 a=Ol13hO9ccFRV9qXi2t6ftBPywas=:19
- a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=dt9VzEwgFbYA:10 a=GoEa3M9JfhUA:10 a=zd2uoN0lAAAA:8 a=JyJ91qNRlN8AbF62O9YA:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTA4MDE0OSBTYWx0ZWRfXy8732PonqzVO du/OQXSDWLmCbpZvR0E4keny7+tZGczx09C+KQqk+gDcvczdzTNkMKex+yFFdRvfmhHAk45S73+ K3rMIO7CfEtCeqtd3GZRHW5c0qgvIHrYFraP2qrqfOSQR3sojf/pfgNrgQAltMkkDyq9JRePn0F
- rRZ03lkO/+63eWGoWy+KSjoC3lg2lU1WIt5YtAUrcq9PW4ovjxGmz4rPWs4ENbig1l0Qs+j8t0f cj9nGSTaCWS08yN5FRDU5NK1ht/4h82fcNtu/2qlC89ar1SPap1geGsT1wSureACZfgeJG0aury MufoAUJ+FRhdceIKpH3gPm/BTjuyVnET8BQLS/81Ufv4waZfxztMW1oEXHgpM/LLI+rEdoLAatT
- 8ETNdEyDdG2u9c+MR6MbhzZITw6k4BcK+gfmPDK2cnzV3YsMSD6l6VITmGr1kTKsR6Tj0NMP
-X-Proofpoint-ORIG-GUID: n9QnofH7mYI2Zp03YqvTuKDZ2XL4dKdt
+X-MS-Exchange-CrossTenant-Network-Message-Id: 979fb648-f84f-4bf1-d318-08dd8e539053
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF0002256E.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7801
 
-On 07/05/2025 11:51, Ankit Soni wrote:
-> Current AMD IOMMU assumes Host Address Translation (HAT) is always
-> supported, and Linux kernel enables this capability by default. However,
-> in case of emulated and virtualized IOMMU, this might not be the case.
-> For example,current QEMU-emulated AMD vIOMMU does not support host
-> translation for VFIO pass-through device, but the interrupt remapping
-> support is required for x2APIC (i.e. kvm-msi-ext-dest-id is also not
-> supported by the guest OS). This would require the guest kernel to boot
-> with guest kernel option iommu=pt to by-pass the initialization of
-> host (v1) table.
+On Thu, May 08, 2025 at 09:14:56AM -0300, Jason Gunthorpe wrote:
+> On Wed, May 07, 2025 at 10:56:17PM -0700, Nicolin Chen wrote:
 > 
-> The AMD I/O Virtualization Technology (IOMMU) Specification Rev 3.10 [1]
-> introduces a new flag 'HATDis' in the IVHD 11h IOMMU attributes to indicate
-> that HAT is not supported on a particular IOMMU instance.
+> > What I am not sure is if the HW allows setting the ComWaitIntEn bit
+> > after CmdBufEn=1, which seems to be unlikely but the spec does not
+> > highlight. If so, this would be an modification to the HW QUEUE, in
+> > which case we could either do an relocation of the HW QUEUE (where
+> > we can set the flag in the 2nd allocation) or add an new option via
+> > IOMMUFD_CMD_OPTION (as Kevin suggested), and I think it should be
+> > a per-HW_QUEUE option since it doesn't affect other type of queues
+> > like Event/PRR Log Buffers.
 > 
-> Therefore, modifies the AMD IOMMU driver to detect the new HATDis
-> attributes, and disable host translation and switch to use guest
-> translation if it is available. Otherwise, the driver will disable DMA
-> translation.
-> 
-> [1] https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf
-> 
-> Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Signed-off-by: Ankit Soni <Ankit.Soni@amd.com>
-> ---
->  drivers/iommu/amd/amd_iommu.h       |  1 +
->  drivers/iommu/amd/amd_iommu_types.h |  6 +++++-
->  drivers/iommu/amd/init.c            | 21 ++++++++++++++++++++-
->  drivers/iommu/amd/iommu.c           | 13 +++++++++++++
->  4 files changed, 39 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-> index 220c598b7e14..bb14c4800dd0 100644
-> --- a/drivers/iommu/amd/amd_iommu.h
-> +++ b/drivers/iommu/amd/amd_iommu.h
-> @@ -43,6 +43,7 @@ extern int amd_iommu_guest_ir;
->  extern enum protection_domain_mode amd_iommu_pgtable;
->  extern int amd_iommu_gpt_level;
->  extern unsigned long amd_iommu_pgsize_bitmap;
-> +extern bool amd_iommu_hatdis;
->  
->  /* Protection domain ops */
->  void amd_iommu_init_identity_domain(void);
-> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index 5089b58e528a..284ff4309660 100644
-> --- a/drivers/iommu/amd/amd_iommu_types.h
-> +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -460,6 +460,9 @@
->  /* IOMMU Feature Reporting Field (for IVHD type 10h */
->  #define IOMMU_FEAT_GASUP_SHIFT	6
->  
-> +/* IOMMU HATDIS for IVHD type 11h and 40h */
-> +#define IOMMU_IVHD_ATTR_HATDIS_SHIFT	0
-> +
->  /* IOMMU Extended Feature Register (EFR) */
->  #define IOMMU_EFR_XTSUP_SHIFT	2
->  #define IOMMU_EFR_GASUP_SHIFT	7
-> @@ -558,7 +561,8 @@ struct amd_io_pgtable {
->  };
->  
->  enum protection_domain_mode {
-> -	PD_MODE_V1 = 1,
-> +	PD_MODE_NONE,
-> +	PD_MODE_V1,
->  	PD_MODE_V2,
->  };
->  
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index 14aa0d77df26..cfda9f89fe1d 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -168,6 +168,9 @@ static int amd_iommu_target_ivhd_type;
->  u64 amd_iommu_efr;
->  u64 amd_iommu_efr2;
->  
-> +/* Host (v1) page table is not supported*/
-> +bool amd_iommu_hatdis;
-> +
->  /* SNP is enabled on the system? */
->  bool amd_iommu_snp_en;
->  EXPORT_SYMBOL(amd_iommu_snp_en);
-> @@ -1798,6 +1801,11 @@ static int __init init_iommu_one(struct amd_iommu *iommu, struct ivhd_header *h,
->  		if (h->efr_reg & BIT(IOMMU_EFR_XTSUP_SHIFT))
->  			amd_iommu_xt_mode = IRQ_REMAP_X2APIC_MODE;
->  
-> +		if (h->efr_attr & BIT(IOMMU_IVHD_ATTR_HATDIS_SHIFT)) {
-> +			pr_warn_once("Host Address Translation is not supported.\n");
-> +			amd_iommu_hatdis = true;
-> +		}
-> +
->  		early_iommu_features_init(iommu, h);
->  
->  		break;
-> @@ -2582,7 +2590,7 @@ static void init_device_table_dma(struct amd_iommu_pci_seg *pci_seg)
->  	u32 devid;
->  	struct dev_table_entry *dev_table = pci_seg->dev_table;
->  
-> -	if (dev_table == NULL)
-> +	if (!dev_table || amd_iommu_pgtable == PD_MODE_NONE)
->  		return;
->  
+> The main question is if the control is global to the entire VIOMMU and
+> all its HW QUEUE's or local to a single HW QUEUE.
 
-My suggestion in the past in the past has been to do:
+Oh, that's right.. I recall AMD only has one Command Buffer,
+but can have dual Event Log Buffers and dual PPR Log Buffers.
 
-if (!amd_iommu_hatdis || amd_iommu_pgtable != PD_MODE_NONE) {
-	ret = iommu_device_sysfs_add(...)
-	if (ret)
-		return ret;
-}
+And the EventIntEn or PprIntEn bit seem to be global for the
+dual buffers..
 
-if (!amd_iommu_hatdis || amd_iommu_pgtable != PD_MODE_NONE)
-	iommu_device_register(&iommu->iommu, &amd_iommu_ops, NULL);
+> If it is global then some "modify viommu" operation should be used to
+> change it.
+>
+> If it is local then some "modify hw queu" operation.
+>
+> IOMMUFD_CMD_OPTION could be used with an object_id == VIOMMU as a kind
+> of modify..
 
-Also as a to simplify the attach/probe path i.e. remove the chunks in
-amd_iommu_probe_device/init_device_table_dma.
+Vasant can confirm. But looks like it should be a vIOMMU
+option.
 
-Or is it that the generation of an ILLEGAL_DEVICE_TABLE_ENTRY event means we
-still need to be careful here?
-
->  	for (devid = 0; devid <= pci_seg->last_bdf; ++devid) {
-> @@ -3095,6 +3103,17 @@ static int __init early_amd_iommu_init(void)
->  		}
->  	}
->  
-> +	if (amd_iommu_hatdis) {
-> +		/*
-> +		 * Host (v1) page table is not available. Attempt to use
-> +		 * Guest (v2) page table.
-> +		 */
-> +		if (amd_iommu_v2_pgtbl_supported())
-> +			amd_iommu_pgtable = PD_MODE_V2;
-> +		else
-> +			amd_iommu_pgtable = PD_MODE_NONE;
-> +	}
-> +
->  	/* Disable any previously enabled IOMMUs */
->  	if (!is_kdump_kernel() || amd_iommu_disabled)
->  		disable_iommus();
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index f34209b08b4c..4e9a57377b8c 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -2393,6 +2393,13 @@ static struct iommu_device *amd_iommu_probe_device(struct device *dev)
->  					     pci_max_pasids(to_pci_dev(dev)));
->  	}
->  
-> +	if (amd_iommu_pgtable == PD_MODE_NONE) {
-> +		pr_warn_once("%s: DMA translation not supported by iommu.\n",
-> +			     __func__);
-> +		iommu_dev = ERR_PTR(-ENODEV);
-> +		goto out_err;
-> +	}
-> +
-
-Strange place to put it after all the initialization has been done. Shouldn't it
-be at the top of the function?
-
->  out_err:
->  
->  	iommu_completion_wait(iommu);
-> @@ -2480,6 +2487,9 @@ static int pdom_setup_pgtable(struct protection_domain *domain,
->  	case PD_MODE_V2:
->  		fmt = AMD_IOMMU_V2;
->  		break;
-> +	case PD_MODE_NONE:
-> +		WARN_ON_ONCE(1);
-> +		return -EPERM;
->  	}
->  
->  	domain->iop.pgtbl.cfg.amd.nid = dev_to_node(dev);> @@ -2501,6 +2511,9 @@
-static inline u64 dma_max_address(enum protection_domain_mode pgtable)
->  
->  static bool amd_iommu_hd_support(struct amd_iommu *iommu)
->  {
-> +	if (amd_iommu_hatdis)
-> +		return false;
-> +
->  	return iommu && (iommu->features & FEATURE_HDSUP);
->  }
->  
-
-If there's no IOMMU group, how can we allocate a paging domain with dirty
-support for host/v1 pgtable? I don't think you need this part?
+Thanks
+Nicolin
