@@ -1,141 +1,96 @@
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C46DF26FA42
-	for <iommu@lists.linux.dev>; Thu,  8 May 2025 14:42:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F6626125;
+	Thu,  8 May 2025 15:21:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746715351; cv=none; b=ci1pze8OL/TqBDkcBBtL2nJPBajiwLI3bSkAXdrIuFmgZD20vjyL11UVRRwupA3On+QfP+GdvI2tdUnb0906re+uAQfFZ31jlIC1MYRoIWYhBUq0SXd65nsK3F7unlNtVOBGitryunaJfgOHOctcRzkal4OPqoykzZUEms3h/P4=
+	t=1746717710; cv=none; b=cvwgKOpq+fXV+chCh6ijid3ky+N85GvDvvrt5Os2VjNIZHidF5AcB6S5bkLDuUgAoR++85eGExpLsFmLA/SbhMVu3/+tfGC6n5Rom8skR3CRR1UcJ904poOgxNZbNg70SQP7Bd3WgCW9lwUulc7wSZd0Fb0xEquR64dkPvjzywk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746715351; c=relaxed/simple;
-	bh=HgapASh5XA8oVv/Lz/V7hhXc6nFQHYF1VgUr9bgNK50=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OXYHa4UkpaqyNurm+gxROlt4WlRRwLmojk8QOgYVRTv/FVXSYFqSAQ+YlTAf4Mh5wQ3pYNndhoKbvZMgsUndsxapx4A1ZUddP62Xh2qYR/F8NFolGu6yQbDhu39nJK4dkqc70oskGNigJgpwB2dYAWmHO1aPzXrT6s5bjhlSEEw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=nIySzIDd; arc=none smtp.client-ip=209.85.208.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="nIySzIDd"
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-5fbcd9088a7so2075252a12.0
-        for <iommu@lists.linux.dev>; Thu, 08 May 2025 07:42:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1746715347; x=1747320147; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hrrj7tzRV0HSot50MsrZe31qPKZT2X3/IHla60zHnEo=;
-        b=nIySzIDdvTPhkbZOcf7f4+KKhW8Mintr4qwfwfN0Iq9rHP4IUuruRz0N5TDQNtqcLZ
-         cGFfDpI24Q0SaFJUnQI2hcaLTmaSNG6g7X+asy+QMbawCO8rdOCLqAs9PkaW8GgYlpON
-         uvWlRL4O5W8Lf+sKCeJqAlljXheQmKiT4uHBw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746715347; x=1747320147;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=hrrj7tzRV0HSot50MsrZe31qPKZT2X3/IHla60zHnEo=;
-        b=u6RE71OYX2gxH9cMT7iUNKuzxEcZTIgag3TPGIPCWfqY559+JZaMQLsvXFRcvGz6qd
-         pJ2qbyz1EefDBJx44S2DoybLFhIPWZTmoQzZ7UL5TnuRfF6cH1FiU1DEu7J8+J4jAqwh
-         hf1sWceKYal0voSRxs1fyxdlgQ0Yivsr5Gh/n59kXZ+azJepL2UT413E2p8t59rOr7HG
-         fH1ILPIipT3PSP5jOGlF5Us1GKwo08zJgKd1fvf2ys3h4pHg2zQPEThv1vpGmBtXVynS
-         jzHKyspuhU1b5YUhfWhG38MMj4CLCVdECKegUbaH6IUsSvI6tCCrlFQ1qAzBVPDUy2Yk
-         AKQg==
-X-Forwarded-Encrypted: i=1; AJvYcCXAeYxqI9v2+IncCe9MTvDpCNpuQN4BSNDqReRSoRG6VyVR94HIjMgP5WsI/3ldIEG3seHH7w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwuXlzo/q28YjMio4W2NBEmR4PNrRMSekPkwhgSAg8hh38vFDk2
-	cnbZOxvsW/ikLE7/Ve/07B47w+acnI6Vv2tfsH7AUdgAwoow1Soio9oT8c9jnbNqjh3VIK0nveU
-	=
-X-Gm-Gg: ASbGnctXJ4jfNCMRWv0Hz+xpp8Ec2McKCR/d/UiSK5zaqKYFV3u7IUUfTK/RRqcZu6v
-	uoiSan1nO0fywO6G3IXXquNT+8TNj3UEP8kRKOmfwWuAup2KfZRce1jaCv9W6dEGWz1Nhy+VbaB
-	TIlZan4qezLFK12//OngYyAWBjlrgE/TDVi8TiZqGYZgTYqdTX6AT2U8l8jws9wuc9Zx30dIta+
-	OBXqRyUqfiw9S4GBxaPdaMrOzcugiUziSIPo8NGWfqLkLjOLHfCxh2LHju1Wbj3lkQ7cdGbVKMq
-	Gcdm0GAQH+AyWPmmJf2LGjnOde5qbGvntwPOqSRKwD4AHtyvMuef4LIpJXbVBD3+aLEf2qzGPay
-	u
-X-Google-Smtp-Source: AGHT+IG+s3H6tNCxacThb5EpAjM8Js/yHnp8nXMji6nOMxjnmRYfYiRPdqYn40Kd7zrnwRBIP0ikCA==
-X-Received: by 2002:a05:6402:5243:b0:5f6:22ca:8aae with SMTP id 4fb4d7f45d1cf-5fc34b0feaamr3327739a12.2.1746715347567;
-        Thu, 08 May 2025 07:42:27 -0700 (PDT)
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com. [209.85.208.41])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5fa777c5c3asm11280704a12.21.2025.05.08.07.42.26
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 May 2025 07:42:26 -0700 (PDT)
-Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-5f438523d6fso10005a12.1
-        for <iommu@lists.linux.dev>; Thu, 08 May 2025 07:42:26 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCVeY0zaH+VWlvFyKz04P8BSR5m6Uw4uHRYE3r87VJnZWWGmBoo7wmp8THN2nJuc21b8/hxugQ==@lists.linux.dev
-X-Received: by 2002:a50:8e57:0:b0:5fb:f573:78fe with SMTP id
- 4fb4d7f45d1cf-5fc6d3df3d1mr75346a12.1.1746715346027; Thu, 08 May 2025
- 07:42:26 -0700 (PDT)
+	s=arc-20240116; t=1746717710; c=relaxed/simple;
+	bh=q/TDJBwEVbrcelLCE627ULHjq3znl/iiudThmhNqqoA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Kf8w33i0iQCB92sciVDwCWRz7rQ0XDAV7YQ9uAdjtva/bBZua2Nz+UdpbCy/z54cWyIycAOhQ+Y+OcPrGpb+yXgkscm7zTMmpv7DRh+NGOjV02A0fSzERjron1O6MBUt5FJjHLUp5Tw+ocm+i8g9wuojkSNyNULTR18OAbcU3x0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F907C4CEE7;
+	Thu,  8 May 2025 15:21:47 +0000 (UTC)
+Date: Thu, 8 May 2025 16:21:45 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: John Ernberg <john.ernberg@actia.se>
+Cc: Juergen Gross <jgross@suse.com>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"imx@lists.linux.dev" <imx@lists.linux.dev>,
+	"stable@kernel.org" <stable@kernel.org>
+Subject: Re: [PATCH 1/2] xen: swiotlb: Use swiotlb bouncing if kmalloc
+ allocation demands it
+Message-ID: <aBzMCWmTMzLNuvmJ@arm.com>
+References: <20250502114043.1968976-1-john.ernberg@actia.se>
+ <20250502114043.1968976-2-john.ernberg@actia.se>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CGME20250507160921eucas1p2aa77e0930944aadaaa7c090c8d3d0e73@eucas1p2.samsung.com>
- <20250507160913.2084079-1-m.szyprowski@samsung.com> <20250507160913.2084079-2-m.szyprowski@samsung.com>
-In-Reply-To: <20250507160913.2084079-2-m.szyprowski@samsung.com>
-From: Tomasz Figa <tfiga@chromium.org>
-Date: Thu, 8 May 2025 23:42:09 +0900
-X-Gmail-Original-Message-ID: <CAAFQd5CUOJJ_fpzXrihtqxRiAZfWBNtCxkaDi6GeZk0rc+XKvA@mail.gmail.com>
-X-Gm-Features: ATxdqUGjYbxgU6zpFJMZMGQW-VMwakmlnKiG_rNSxR-mybkfMglw3-_t5QXxPAE
-Message-ID: <CAAFQd5CUOJJ_fpzXrihtqxRiAZfWBNtCxkaDi6GeZk0rc+XKvA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] media: videobuf2: use sgtable-based scatterlist wrappers
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org, 
-	iommu@lists.linux.dev, Mauro Carvalho Chehab <mchehab@kernel.org>, 
-	Sergey Senozhatsky <senozhatsky@chromium.org>, Hans Verkuil <hverkuil@xs4all.nl>, 
-	Robin Murphy <robin.murphy@arm.com>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250502114043.1968976-2-john.ernberg@actia.se>
 
-On Thu, May 8, 2025 at 1:09=E2=80=AFAM Marek Szyprowski
-<m.szyprowski@samsung.com> wrote:
->
-> Use common wrappers operating directly on the struct sg_table objects to
-> fix incorrect use of scatterlists sync calls. dma_sync_sg_for_*()
-> functions have to be called with the number of elements originally passed
-> to dma_map_sg_*() function, not the one returned in sgt->nents.
->
-> Fixes: d4db5eb57cab ("media: videobuf2: add begin/end cpu_access callback=
-s to dma-sg")
-> CC: stable@vger.kernel.org
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+On Fri, May 02, 2025 at 11:40:55AM +0000, John Ernberg wrote:
+> Xen swiotlb support was missed when the patch set starting with
+> 4ab5f8ec7d71 ("mm/slab: decouple ARCH_KMALLOC_MINALIGN from
+> ARCH_DMA_MINALIGN") was merged.
+> 
+> When running Xen on iMX8QXP, a SoC without IOMMU, the effect was that USB
+> transfers ended up corrupted when there was more than one URB inflight at
+> the same time.
+> 
+> Add a call to dma_kmalloc_needs_bounce() to make sure that allocations too
+> small for DMA get bounced via swiotlb.
+> 
+> Closes: https://lore.kernel.org/linux-usb/ab2776f0-b838-4cf6-a12a-c208eb6aad59@actia.se/
+> Fixes: 4ab5f8ec7d71 ("mm/slab: decouple ARCH_KMALLOC_MINALIGN from ARCH_DMA_MINALIGN")
+> Cc: stable@kernel.org # v6.5+
+> Signed-off-by: John Ernberg <john.ernberg@actia.se>
+> 
 > ---
->  drivers/media/common/videobuf2/videobuf2-dma-sg.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-sg.c b/drivers/=
-media/common/videobuf2/videobuf2-dma-sg.c
-> index c6ddf2357c58..b3bf2173c14e 100644
-> --- a/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-> +++ b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
-> @@ -469,7 +469,7 @@ vb2_dma_sg_dmabuf_ops_begin_cpu_access(struct dma_buf=
- *dbuf,
->         struct vb2_dma_sg_buf *buf =3D dbuf->priv;
->         struct sg_table *sgt =3D buf->dma_sgt;
->
-> -       dma_sync_sg_for_cpu(buf->dev, sgt->sgl, sgt->nents, buf->dma_dir)=
-;
-> +       dma_sync_sgtable_for_cpu(buf->dev, sgt, buf->dma_dir);
->         return 0;
->  }
->
-> @@ -480,7 +480,7 @@ vb2_dma_sg_dmabuf_ops_end_cpu_access(struct dma_buf *=
-dbuf,
->         struct vb2_dma_sg_buf *buf =3D dbuf->priv;
->         struct sg_table *sgt =3D buf->dma_sgt;
->
-> -       dma_sync_sg_for_device(buf->dev, sgt->sgl, sgt->nents, buf->dma_d=
-ir);
-> +       dma_sync_sgtable_for_device(buf->dev, sgt, buf->dma_dir);
->         return 0;
->  }
->
-> --
-> 2.34.1
->
+> 
+> It's impossible to pick an exact fixes tag since this driver was missed
+> in the flagged patch set. I picked one I felt gave a decent enough picture
+> for someone coming across this later.
 
-Thanks for the fix!
+All the above patches went in at the same time in 6.5, so it probably
+doesn't matter. In theory, you could add:
 
-Acked-by: Tomasz Figa <tfiga@chromium.org>
+Fixes: 370645f41e6e ("dma-mapping: force bouncing if the kmalloc() size is not cache-line-aligned")
+Cc: <stable@vger.kernel.org> # 6.5.x
 
-Best regards,
-Tomasz
+as that's when dma_kmalloc_needs_bounce() was added (a few commits after
+the "decouple ARCH_KMALLOC_MINALIGN..." one). However, actual problems
+started to appear with commit 9382bc44b5f5 ("arm64: allow kmalloc()
+caches aligned to the smaller cache_line_size()") which makes
+ARCH_KMALLOC_MINALIGN equal 8 on arm64.
+
+> ---
+>  drivers/xen/swiotlb-xen.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> index 1f65795cf5d7..ef56a2500ed6 100644
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -217,6 +217,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+>  	 * buffering it.
+>  	 */
+>  	if (dma_capable(dev, dev_addr, size, true) &&
+> +	    !dma_kmalloc_needs_bounce(dev, size, dir) &&
+>  	    !range_straddles_page_boundary(phys, size) &&
+>  		!xen_arch_need_swiotlb(dev, phys, dev_addr) &&
+>  		!is_swiotlb_force_bounce(dev))
+
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
