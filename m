@@ -1,129 +1,124 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0D991E0E00;
-	Thu,  8 May 2025 06:03:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00F0D1EE03D;
+	Thu,  8 May 2025 06:22:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746684197; cv=none; b=myn42Rq2UJmNperusZr+1W0gZiEO96zhHbDt4ZIWY5jX5XC1EBTkjWj5faqxxJgjjDFEZ+RvheO0UpdbWgSAGsUKdwuApghX1fnauqQL7YrpL1rzsUXR34jy+MexKpeouJsP8+/E1z6z9/qk/S8fANfQtktoa4SH7AdlRkeIqK0=
+	t=1746685332; cv=none; b=hx2zPO2wI6CoiVJfHgEa9dAw9E+KifOxem7GvN+bSAybkSze171wB5D3hgfwt677sueDW93u26zXXGpAehMg9Wnvz16CY+TCHXEf+Y5i8ZPuzz1+eKIX+N+HH206wAYbo6DK2p3AfaNgSWBel+0PA2dYKmMPEiJE+N68BpQocZA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746684197; c=relaxed/simple;
-	bh=+/Vv9pHwjpSPUaXdt/7maaUK3r0Q9x16J2I3itnsR1A=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=VE9aW82aEHvg9XcvkMCS37AzBOwNyoFQSH4I9tNRNO0zmgFgCsiC8aMYqxlAssU4akWHfJfCLoLEPxx0WjusxyQOL4b71v6/zqcumU0maxh8xQydINvXGy4LizE0uR6ZtnoODdzrorZyoSoUYJp1615EyRhA6kiQO9z0SnGH3i4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rCi6BrZB; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1746685332; c=relaxed/simple;
+	bh=UTfT43DfYGsrBz0pan09byc5cJNTiyCIUxAyVV244CE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Z7nSblmb7t0mHwFmz1A4r621XZxS9ReP8grPFBl9plriajr5Wp74cjfwLRxhjTRyaeSWam0421TYYhrCIGpJNZxEKdjgZj3RXVOikXAXJJwpWv0N3fH8MyTrdDHvcSJN5fze5H1qXhmuqOwCXHWC7vhajqzHaEtR8vqOjlyNfpY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MZLjdB0m; arc=none smtp.client-ip=209.85.214.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rCi6BrZB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35FB9C4CEEB;
-	Thu,  8 May 2025 06:03:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1746684197;
-	bh=+/Vv9pHwjpSPUaXdt/7maaUK3r0Q9x16J2I3itnsR1A=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=rCi6BrZB1d8tiVvjah39SfBlbQ29Q92b/6Njh0KkHxw0pi+EDUl/VFH1AoUqyV4yj
-	 UmYHgZ9pN/gdZ6XGnHZUJH8JXWtpzolVu/QCyIK+dBeN20IgmpwDUGP6hxr1HpqyMv
-	 knX3gGLaaOWwXCJDvEEUYpwTt8c295E7lhwQ6D6JEW5+deLkkHsXX0i/T5+w8guN5o
-	 9hCQADIeOfj/ApynIajNt9gbFDH5JfBc9fwUW52JDh2LzcNvcXwJ9RLhSD1M1vGRKr
-	 jrLlngOB5QUF2/Y2RsJsimAr+cVQQhosA8TxqED459s0WLO8SB6Q6JPivG5/gLje9c
-	 oHGXRe3wunVng==
-Message-ID: <baeae909-4d12-4cbd-a063-7ad165304b96@kernel.org>
-Date: Thu, 8 May 2025 08:03:08 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MZLjdB0m"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-22e5df32197so7488355ad.0;
+        Wed, 07 May 2025 23:22:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1746685329; x=1747290129; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=yGRiPozPCKlTceAlJbkKm3qZDESryv+qOsVno6iyAH0=;
+        b=MZLjdB0m7LK1R358F+6VQirrnVXB/ZV5YiKTA5182z5kvweo9JiUf9IgvO1Y5/cgeQ
+         W4W0P+Xpx4U9WJFFE2tr/9SGt0waKrEULow0pW/0wgNxFai5u+/GuJiprlzgTNkk/slv
+         GyJ1TyDFFI0+npPK/yqH0hK515Mls6Ji8VhYoM71yk9YWPYLXieVCcnCmnWpNSlYpf1+
+         QvZcdbQXlJ++GVWaUKz3q48tTwz+I1jtvAf3TM/mzPwceENwQWJSehQhTsP7ym2Yw6Gu
+         71F7Q142quSdw9hX6kMmP/Rky5RMxPePWC3p3VKT98QdNkNNyUa4UVSn87ANbFFa5CYr
+         RJYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1746685329; x=1747290129;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yGRiPozPCKlTceAlJbkKm3qZDESryv+qOsVno6iyAH0=;
+        b=aYdOaOFDgYmqKtsunj0fOxklcZpJZFWpeKxYP2BjUcE3cznxXRh/762VBAVPW4xPPE
+         dwN7s4ST/32bwgmVKNVFV5mKrSiSqUCwvbzrRpuk08FBoBWaBw7evkXmtaBkd9I2pZZA
+         gN93+QHBb4krAuC91211DLXpYGDUO4ve8CmY25xPD0RaPT6SzX6+udAhvco3T4qqrTN8
+         4oNHI8cqrCGzFgo2+PYy/WH1pm8XurhM8SyvorCBsKwmLvcI13Ybtux9aXNxn1jOLECd
+         AflMJdkMp4nWOBxYQEEuVSfSSqV0eTxFV/tPeSX98OKlRXA25QCnOM51NI/t55e/2HPc
+         gdDQ==
+X-Forwarded-Encrypted: i=1; AJvYcCURciK/Qz8y3ol8XSoNbWHvoJEj6RobazrNFTLzeje6ajrdmiAJKyqVT428+lt3uXzaZmxASw==@lists.linux.dev, AJvYcCWUujeBYupE7SAh6ngLo+Z0IhCtSTJBCACEdCvf8MTkd/uZXe5mX+wY5Vfp11/vSnpTxXFajGnJ3su1Wb8=@lists.linux.dev
+X-Gm-Message-State: AOJu0YzXxaSWxyXc/XjhedDymclshMUIZW6BC97GMzQ0kYC6gkfciEPi
+	IpJ82N08M1T9Te6/b+xp7UG8o5xTUtB0a/CKp+PDEgwDUImdnU82
+X-Gm-Gg: ASbGncuQV9P575uObgN7WkJLxNpP/Z8gJnEwXfSLNrXzGXOdvCegUfwCARt4nqhGlDf
+	95ucUSIzRCgG5QO6j5MlguwS6P/Tgvz4mO8W/nYqYrXbMiiH+ACVnPIrwWzrlyYeg0GGY8BsyJ2
+	GBShch+UE/LzQQbk76kDr7uAE8EzBq1AXmKNqakLDDFOqtJoGLMDILL9ev7lfBSzZ31Cll7Z0au
+	QC1tRjcdq4BD1Qf0hD/btJ0atXo1e597NvDnRpJNKSewj6o38xw7MkATq7h6yicXes/pcyd2bRB
+	TlPY3fMcVoDft5C3xgEf+fJKiTV+VcFxJoPYWzdPF/j0M4Ooptdd
+X-Google-Smtp-Source: AGHT+IEzMVc56iAT+a/tMSCcX9N+OfWHSiME3hDRqUVurDIzobwAS9xBHQ7vI2Z7UkKgma9R7jLLrg==
+X-Received: by 2002:a17:902:f789:b0:21f:2a2:3c8b with SMTP id d9443c01a7336-22e5ea643bamr92011055ad.11.1746685329124;
+        Wed, 07 May 2025 23:22:09 -0700 (PDT)
+Received: from google.com ([2620:15c:9d:2:61af:8a13:a547:7dd5])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22e15229399sm104436315ad.187.2025.05.07.23.22.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 May 2025 23:22:08 -0700 (PDT)
+Date: Wed, 7 May 2025 23:22:05 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Aditya Garg <gargaditya08@live.com>, 
+	Berkel =?utf-8?B?SsO2cmc=?= <joerg.berkel@bfh.ch>, linux-input@vger.kernel.org, stable@vger.kernel.org, 
+	regressions@lists.linux.dev, linux-spi@vger.kernel.org, lukas@wunner.de, 
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [REGRESSION] applespi from 6.12 onwards
+Message-ID: <n73jgymwf62kfexrwrhpz45lrj5pc7e4x7m6otbvypctlowjdl@ztaox436vezk>
+References: <4dada48a-c5dd-4c30-9c85-5b03b0aa01f0@bfh.ch>
+ <PN3PR01MB9597D8E327CC7910673849D3B888A@PN3PR01MB9597.INDPRD01.PROD.OUTLOOK.COM>
+ <122a1f90-ddd9-4e74-96d1-57e21e580ae2@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/4] dt-bindings: iommu: mediatek: mt8195 Accept up to 5
- interrupts
-To: Julien Massot <julien.massot@collabora.com>, kernel@collabora.com,
- Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>,
- Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
- <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= <nfraprado@collabora.com>,
- Hui Liu <hui.liu@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Tinghan Shen <tinghan.shen@mediatek.com>
-Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-mediatek@lists.infradead.org, iommu@lists.linux.dev
-References: <20250505-mt8395-dtb-errors-v1-0-9c4714dcdcdb@collabora.com>
- <20250505-mt8395-dtb-errors-v1-2-9c4714dcdcdb@collabora.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20250505-mt8395-dtb-errors-v1-2-9c4714dcdcdb@collabora.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <122a1f90-ddd9-4e74-96d1-57e21e580ae2@linux.intel.com>
 
-On 05/05/2025 15:23, Julien Massot wrote:
+On Thu, May 08, 2025 at 10:15:31AM +0800, Baolu Lu wrote:
+> On 5/8/25 01:07, Aditya Garg wrote:
+> > Keyboard and touchpad stopped working on several Apple Macbooks from the year 2017 using kernel 6.12.xx . Until now I could only find this discussion affirming the bug on Debian and Fedora:https://github.com/Dunedan/mbp-2016-linux/issues/202
+> > 
+> > On siduction I also tried the more recent kernels 6.14.5 and mainline 6.15-rc4 (from Ubuntu) and the issue persisted with my testdevice MacBookPro14,1 -- see the relevant output:
+> > 
+> > kernel: platform pxa2xx-spi.3: Adding to iommu group 20
+> > kernel: input: Apple SPI Keyboard as /devices/pci0000:00/0000:00:1e.3/pxa2xx-spi.3/spi_master/spi2/spi-APP000D:00/
+> > input/input0
+> > kernel: DMAR: DRHD: handling fault status reg 3
+> > kernel: DMAR: [DMA Read NO_PASID] Request device [00:1e.3] fault addr 0xffffa000 [fault reason 0x06] PTE Read access is not set
+> > kernel: DMAR: DRHD: handling fault status reg 3
+> > kernel: DMAR: [DMA Read NO_PASID] Request device [00:1e.3] fault addr 0xffffa000 [fault reason 0x06] PTE Read access is not set
+> > kernel: applespispi-APP000D:00: Error writing to device: 01 0e 00 00
+> > kernel: DMAR: DRHD: handling fault status reg 3
+> > kernel: DMAR: [DMA Read NO_PASID] Request device [00:1e.3] fault addr 0xffffa000 [fault reason 0x06] PTE Read access is not set
+> > kernel: DMAR: DRHD: handling fault status reg 3
+> > kernel: applespispi-APP000D:00: Error writing to device: 01 0e 00 00
 > 
-> Fixes: 3b5838d1d82e3 ("arm64: dts: mt8195: Add iommu and smi nodes")
-> Signed-off-by: Julien Massot <julien.massot@collabora.com>
-> ---
->  Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+> It appears that all DMA faults are related to a fixed address,
+> 0xffffa000. Is this address something special?
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> index 75750c64157c868725c087500ac81be4e282c829..035941c2db32170e9a69a5363d8c05ef767bb251 100644
-> --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> @@ -97,7 +97,8 @@ properties:
->      maxItems: 1
->  
->    interrupts:
-> -    maxItems: 1
-> +    minItems: 1
-> +    maxItems: 5
->  
-Every iommu or just some (as described in commit msg) can have 5
-interrupts? Looks you miss here proper constraints per variant.
+> Also what does below message mean from a SPI driver's perspective?
+> 
+> "applespispi-APP000D:00: Error writing to device: 01 0e 00 00"
+> 
+> I am asking this because the IOMMU fault messages are about DMA Reads
+> (device raised memory read), while above message complains failing to
+> write to device.
 
-Best regards,
-Krzysztof
+When sending a command to the peripheral device applespi expects it to
+acknowledge successful transfer with
+
+	static u8 status_ok[] = { 0xac, 0x27, 0x68, 0xd5 };
+
+but we are getting "01 0e 00 00" instead.
+
+See applespi_check_write_status() in drivers/input/Keyboard/applespi.c
+
+Thanks.
+
+-- 
+Dmitry
