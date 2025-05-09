@@ -1,226 +1,227 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2049.outbound.protection.outlook.com [40.107.220.49])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E32B28FFC9;
-	Fri,  9 May 2025 11:52:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.49
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746791553; cv=fail; b=rE1ojMRzXZUFiJj+t0Q4IR2yesfPzlsx3/ND/Wbz8vOBzg2t3Amy2e5UxIYL+brzGlmaD8+O440d61vRNuF1ikC2LvFuiBNjt9NNyxet8cowPywxSIk5MTsC/zv1bBNxns9xaU+LmZINIW4WGYMF6hP1hY8oFwR5/9FHOxkl02E=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746791553; c=relaxed/simple;
-	bh=AUX9CwqEms0/jGngPUIP0Z6HRajhxb0z9d+sE5agwgc=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=hYhJJ0lb7R0ActkYZE9XQPqguWJDZVOpiJstNzb14RLe1hIKhDL8rIIB5asGjeXH1wtkNf6cEO0HqP1N0JVOXjNzftVmq2+SGTkzpP9JwungaU7M7iHSX54gRR9uMMDWzoDfSeZuPE9dVLPVFbZCdVozO8+B2XZGNAewV0S+tOc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=pCXCQn0l; arc=fail smtp.client-ip=40.107.220.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 899DD2918CF;
+	Fri,  9 May 2025 13:49:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746798556; cv=none; b=qT7P+jReVIUO1vQXd1nzNmEAXfLhBc5mdTEJWa8fTA2EfhG7zx0Pgt8BgDUgMERqUlc1c/6eoukwBLQdcauEsTdAkCcrd2IIdhLgqxxGk4hlOeehhYdlLQ1gB4dxWJrvqqKURxxpxVaVa8cAr8czEuZowka0g45pVv5Q5ODNnCs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746798556; c=relaxed/simple;
+	bh=ddxFekODOqJy1oQlp1NZDYc/Pj9lvlATNoTbz761B5o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VtCWacSf4WlHBRYgY4YJaeZeC19kEz+VzGjDeQovep4jafz/9aJDJT2yudrFwsfZt8OyqFct1Nx+uM/Y+v+UtUZa8HNRh/vss6EU6MTNJFM3W+p+jh59c8wVxUyHY5Q57FOXjixhpLPrVRVvWFKu4YvtnDfCA4aYxYgGPv+Q1Pc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pQ+uoXUp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="pCXCQn0l"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rGRiq0UptcwKAtHGqb9vYfsWPsnLMDOCyAvEHKQrTGaMkK7aC4gTbN7Hjqp1nry4Z/TX6Uy+oKAhRs61FS6oGvQw3KfcliGsRjkInwkRLXDNQILHm2gHMdnTM0x19v94B/gUmnP+MzaANBzGkXowCZVQpmvLhlqtvDeZIV4d0sD+5kanPLZrxj6WAZxlIZusCCkW8kg55bg0jROcxmZWSMCg61L3WlPwfOWQhk5s/NTa/N7USdFqlXsFlquzwFgfIa6pnO4rxO9MILeLfGZKTrVS2+B0KEOmykTgY5OHJzCfLqPrHRrOZeMxgg5VLOSrdAzC4BE2Wm4oHMX60O/wrA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CqFfW66VWx4jY4GXqEE775um6+UKni7fSgS6G1Dc+dE=;
- b=uRu4xoA4lNoYfce3xkyKPibjEuhEwxbVa+h3Pd6q0nO+JuJGU7PRgwW4fRb2bgI7ykJVqHTmOFGSpeUd6T86PqKWhLhZIPjZJ/T2MsghNPcUedHS9u74D121cu3g0Sgop9qf1XdQRJSq00xAxdWnzDbjfxP0CG0p6sEcXCpEw/2K55jr7CHU06Kahu3SpLSdeulUMXuxq1ewCLAADfn+KT9sJGxgE7Tl5JaHs5JJUXKd7fB/t3YPaZl1v0PF+iiOj4mw0D77xoftRnptFdRcDhSglGlP5o71gHs2esCAS8c3sEG4Yx+T2eB/k+5wl3TBjWH9oVjtKYdd2TeAt0Xm3w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CqFfW66VWx4jY4GXqEE775um6+UKni7fSgS6G1Dc+dE=;
- b=pCXCQn0lbmXDLCcHEYmNxg2RG87Rj0yQI7/tBM1XLUHO8ENR0LOtx/rT3V9Cb7qcZWGLZG+fV7eLkM9rbrtC52qPpLkD0bAw8FGYtU3PRSx+k+8OWEMJ68Y64MS0YOPtqGuQfM20nHoEbIVtF4Vnzv1J8uYAvPcJpt+n9GHcJ9A=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- PH7PR12MB5853.namprd12.prod.outlook.com (2603:10b6:510:1d4::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8722.21; Fri, 9 May
- 2025 11:52:29 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%5]) with mapi id 15.20.8722.020; Fri, 9 May 2025
- 11:52:29 +0000
-Message-ID: <0bd5614d-81f7-4b06-9dc0-c757e6a401bf@amd.com>
-Date: Fri, 9 May 2025 17:22:13 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 11/23] iommufd/viommu: Add IOMMUFD_CMD_VQUEUE_ALLOC
- ioctl
-To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
- bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
- thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
- shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
- peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
- praan@google.com, zhangzekun11@huawei.com, iommu@lists.linux.dev,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
- linux-kselftest@vger.kernel.org, patches@lists.linux.dev, mochs@nvidia.com,
- alok.a.tiwari@oracle.com,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-References: <cover.1746139811.git.nicolinc@nvidia.com>
- <1ef2e242ee1d844f823581a5365823d78c67ec6a.1746139811.git.nicolinc@nvidia.com>
- <6ffe5249-b429-435e-a780-ee90aeb3f0da@amd.com>
- <20250506120114.GV2260709@nvidia.com>
- <eb0d3629-8663-45e9-b929-0c6edff31291@amd.com>
- <20250507123103.GC90261@nvidia.com>
- <2356ff85-6651-47d9-90c7-f8cbf43b053b@amd.com> <aBxHgf4llBd7vA5w@nvidia.com>
- <20250508121456.GB5657@nvidia.com> <aBzl+mn+N4bnUsPN@nvidia.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <aBzl+mn+N4bnUsPN@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0111.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:27::26) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pQ+uoXUp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDF75C4CEE4;
+	Fri,  9 May 2025 13:49:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1746798553;
+	bh=ddxFekODOqJy1oQlp1NZDYc/Pj9lvlATNoTbz761B5o=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=pQ+uoXUpmF/3twCcIi3Lai3o3xk3GzjXh4Vtzef2xl+XK5lS7fyBbQ0UFZzYOkYpV
+	 dUtfTp8YyM+m1uCBcNG1HQvDk6Nf7/h0n9vLEZ88nS1jLaw3kZC+MJWQAs8/6JfmCW
+	 GLX/BJFBUp0BoBJxFAMpMHQQxyx062Ra3vAXfp7i5GUtnfWbItEAT9nUXEUdmY+WZG
+	 QaS5XlRufjGUUzac2Gdf4KQVW4gTJmD7URMBqCpPwQgEQkWKKaXQtwRRvrcbUiQUCW
+	 JAx1/diS1biH2qZn4t9dRTFqD8Klqp6AjFPQ8OnLTIf9OgIEOCwF0ak/GgLb9J7aoh
+	 g4HQFuPfD/y3w==
+Date: Fri, 9 May 2025 14:49:05 +0100
+From: Will Deacon <will@kernel.org>
+To: Ryan Roberts <ryan.roberts@arm.com>
+Cc: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>,
+	suzuki.poulose@arm.com, yang@os.amperecomputing.com, corbet@lwn.net,
+	catalin.marinas@arm.com, jean-philippe@linaro.org,
+	robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org,
+	paulmck@kernel.org, mark.rutland@arm.com, joey.gouly@arm.com,
+	maz@kernel.org, james.morse@arm.com, broonie@kernel.org,
+	oliver.upton@linux.dev, baohua@kernel.org, david@redhat.com,
+	ioworker0@gmail.com, jgg@ziepe.ca, nicolinc@nvidia.com,
+	mshavit@google.com, jsnitsel@redhat.com, smostafa@google.com,
+	kevin.tian@intel.com, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: Re: [RESEND PATCH v6 1/3] arm64: Add BBM Level 2 cpu feature
+Message-ID: <20250509134904.GA5707@willie-the-truck>
+References: <20250428153514.55772-2-miko.lenczewski@arm.com>
+ <20250428153514.55772-4-miko.lenczewski@arm.com>
+ <20250506142508.GB1197@willie-the-truck>
+ <78fec33d-fe66-4352-be11-900f456c9af3@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|PH7PR12MB5853:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8a211b1d-fc67-4d22-626d-08dd8eeff935
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?aTJ5b2Z5cVU1V1Z3SGhsQmVMZmZOWVgvN2VBTnQ1alU5WjVwdExqVEtJYnRw?=
- =?utf-8?B?cjluRjJXejRpaUZwL09ldFJkQUFJdmhBT1hZclZXcFczYVN5bXpzRjBzUS9r?=
- =?utf-8?B?d2RDMENuRWl6S2V2Umk5MzJqT042QkhVWnhWUXlpcGduOHYrUUEvSW1vZGpS?=
- =?utf-8?B?YnhXMVRsY0tXZjNiMjE5alZuMEw0WUtOeGx5S0RMcGszbjVOcFEzOVVrSHQx?=
- =?utf-8?B?OVlpNElZZ3RBa1YrUVU3QzVNYVloeTYxV1VFYnBQUit3RWZOZElUcDlHNUFm?=
- =?utf-8?B?OEo1emZRc0JEejlvV1VFK2FCVTI4VHdudm5OdUU2Nm5aWkxQeFE4Ym41eHZi?=
- =?utf-8?B?NUJlRDJqOFhPMnptdzdWb2dTbWJvbTU3SjBzamJqbUcwVzBramdaNUVSVkdM?=
- =?utf-8?B?dytWNWl6Rm9tNXVVVldETXZ6enlpV04yQll3c2xLMGVMK05FTi9VQVlTSEpI?=
- =?utf-8?B?RnZtU21zdWd4NVlJNWVyWDJxZDdhdHJndSsrNFVrQks2bWk3WkFEajFzbEVN?=
- =?utf-8?B?cGZJMmJocWh3SkZ2M3UzR0FVUzZheGxURDV4VHU0S0dQazh6KytPWTBoaCtl?=
- =?utf-8?B?bHgxeW8wOEkrQStLWFA3SWIxR0JvWlpLa3psalBQZ2J6em1hK2JFWWtSTklI?=
- =?utf-8?B?VmE4OFJtUldFV2d0bkZwZndDVkY4K05DKzcxejhOTHFqNXR6Tk8rVklIR1BJ?=
- =?utf-8?B?bXNmaUxxcTlaaTBPUHU4dFI5TDZ2UUplZmRhN3BmTTJ2Wkh6bEZ2VmxoeGRF?=
- =?utf-8?B?V3p6SWFEalVNTGtRUjJaMytTYU5ZWVRxeFFvRStjK0IrTDRwbVhHRDhpK2dX?=
- =?utf-8?B?WnZZS012WDd3emVFZmowOThzSTBWKy9lNnB4bTJnSlJqaE0vQnpMWTN4OXda?=
- =?utf-8?B?eC9jQVRMYnRoNTNPWEl4T2xtY2c4Y0dKSy8rdDdDRDdRM3VaaDJaL1BTR1NQ?=
- =?utf-8?B?alJFOVpYOGNvL0F1aXplSUZKWGxUeVloc2hvRDVPWEpDaURaanNKZzRLbVpC?=
- =?utf-8?B?dSt5ck12S3dxaWRtSk1RYnkxcytOT00xWmlyUnZQRzQ2S2oxOWt3QXVsV0ZP?=
- =?utf-8?B?SGVQdExxZmxKRUcwcW82dFk5KzZieEUzeEVPRmFiM2pnVkpsVFkvYXkyRDFj?=
- =?utf-8?B?bVlPUEtBQjd3RCtHNTVna00yRWdiMmJHeFB2b2g4alY5TmZvZjgrbUE0Vi9m?=
- =?utf-8?B?UEJYRUZGZVROM3NJc2VueHFmU05BRTN3SFNWeWxyUnJ4cVdpRkphVkgwZWl1?=
- =?utf-8?B?a09XSUplT1FKdnRFakp2d0VDanNaRTQyc3lrZTAzVzBUUDZKbmJ5VlMvdTVT?=
- =?utf-8?B?MUVDWjZJWUhITnBsVG5lcCtiR3RZZlUvZjBTUEI2R1E1eW1JNVUvdHJBcXY4?=
- =?utf-8?B?NElvNEJYcmhJS2JGbjZVZlRDWk13TlA3bm05UlpHL2dPRjBVTTROcGNpRytz?=
- =?utf-8?B?STlUeUo0VnBBbHkwbnVrVGw1WS91clBkMmZDTEtDZkgzc3ZxRGU3bzVleWF4?=
- =?utf-8?B?VkhDTUJFcGpaRFEvcTluUVVoZXR3T0xkMkhLaTdmcE9lMi8wdkpaZTAzdGRw?=
- =?utf-8?B?RWJkaXZqOFdBcEhGSmRFYU0ya2E3UUh6NGtrbnl1dEpDUGoyQ0R5VEpTaDFW?=
- =?utf-8?B?aW4vYUVRb0YrOEpVSU1yVWlacVNhYkE1d0Y5aUVsQWNFY1JFcVZUYUpLNXND?=
- =?utf-8?B?VzZnWlF6cnlxSytLNUlFc1RsazBUTk1pc0liRFFDNDFnS1l1K0Y1K0RUQnlP?=
- =?utf-8?B?VE5yVFF5dUt4WUdhb1ExSXBzejJpbFlRSkZQMG1oVlRWc3UvaG1TRGtoUG1z?=
- =?utf-8?B?Um94NFNvcmJ5bEpaNk1ENHMwY1ZpUkpVOVhJcVRIV2FtSm12THNyUHN3Z0ps?=
- =?utf-8?B?TDJ1czAyb2pWVjF4VVEwSnQyeFY5NHlSc1BXcitSdUxNcUQyQVBMeEU5b3Rq?=
- =?utf-8?Q?G869z8YXaDo=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?L3BXRkhWK04vb2hFVHN3TFVXano2OXpURTIwUUZnZTV5cFRuemJnZ2NIQmhj?=
- =?utf-8?B?dHF1NkFVTm40V2VYaWhQNzVqalQ2UXF2N3dOb2lraUZsS28yQnBhcDR1cnVV?=
- =?utf-8?B?dmdTZVJLUnpkbjNuczFYN1BjU1pTQWorQnAzMytubnpjVUFvaTJnYXQyelkr?=
- =?utf-8?B?bllZdFI4MUZDdGt1d1d6aGt3ZUd0MWtFa2JCbzF0bXBKZGpTdjI5Y1dmMitL?=
- =?utf-8?B?ZmVOUkVqdnNqSjYzWkczc3ZWemtQcU5GaGV2dG85Y3BLS3ovcU9QZmIxU3VH?=
- =?utf-8?B?ZVlhZmdCK0lzOERmNXdvVnZQRUQ0RDZwZk9aVnJFaHNMaTFsZERDVHM2SCtE?=
- =?utf-8?B?RVNHaC9VK3JnckxoREJHRC9xWG1SUno3ME1OMXhDNzk5enVsbGJHMVAxc1hm?=
- =?utf-8?B?TW5tNzlUTGNwWTVoZ0diaW5HVDdVN09lNlNCc202R1VUMER6TldKNXFQbEsy?=
- =?utf-8?B?RHBNclNBNmdjUkJSb004NVc5RFpFdytsTi8xdVRVL1BUdnFsR1BSUmNKdXB2?=
- =?utf-8?B?Y09CWDAzVXNkc1NGQUoybWgwUlRuNTdBTlIxc3l6cWtsQ3dCbVN4WUZTSGx0?=
- =?utf-8?B?SytjakdyUkNQUzVpVzF6d2xyZm5OS1RtQzlMQlZEWVlkWGZtVEROWkNPYSt4?=
- =?utf-8?B?NXZSRUU2V21MVThack11NGdsb3NXL2E0WjZxeFhqK3hDa1F6aDN3UjhGWjM2?=
- =?utf-8?B?RStYZmhXaEJiT212Z1ZEdVF2R3JVTXNVWGxRSU1BWnpoanBTeVNqK2hqQ0pM?=
- =?utf-8?B?WENMTlZLY1UrbTFwQVphQThkWnFra1BWcTRIdCtSVThjclBxODl1UC8rSTJl?=
- =?utf-8?B?QWY4bTVwSyt4dXZWS2x3NWRWTGVnMG0vUmQ5R2lRY0V5dTlWbDF2VjFKSWVF?=
- =?utf-8?B?Z3FrcE1Vak5pcVdlRjJVTXh4L09DSG1KdmYrdDYyQzJpVjhONTNTQWhTVi9l?=
- =?utf-8?B?c1BaSlVMK2JlNVNybjdGMVVpQ1hKMHVjZDgrWXdITW1RK1FraDNFRDBnN2hy?=
- =?utf-8?B?a2p4R1BZM0lIWUllSG9jMmJubFRNNm55OHgyOWR3UXFzUWVxNUNzdmhTM0lO?=
- =?utf-8?B?Nk5sdWJwVlBEaUxScVZEZGgvU0xpR3l0MGpNNk9Kb1FIZGxIcTZqVmNYVTBS?=
- =?utf-8?B?RmVVR3Jkb1FMZHZISEF2MXhMQlRBejBvMXNwUGFaVncySWF3aUtsbGE3eHox?=
- =?utf-8?B?VUdRK3Yzc3hIemR5REozekNoMGhONTF2T3pPNW9oaU5kRnN0TVFjOW9rRnNp?=
- =?utf-8?B?OUVGcUZvTi84clBKaUZCWTZZUno5bDZQYzArRHp4b2hEMEFvN2M2Y1FSWFNN?=
- =?utf-8?B?bFJncmVjNC8rUndxTnRuU2c5ZkxydnJjSFR0Wk1SZFE2eDVGbVpIdUxjelBy?=
- =?utf-8?B?ek16ZUg5TUsxUXh2MitJMDAwSGRudkZQWlBnRjVGU0luUWxQUDFyYVEwakQw?=
- =?utf-8?B?Z2phVGZOZDc5bVNwRG4xdzl3L1AvbjhqM05EaG1EblNReHVYd29CNEtJOWJ5?=
- =?utf-8?B?SjJCQzBiL1BJZUNpTCtta0EyOFNFdWRId0NyWnFkdjNFOWNSNXhQcXhKczg4?=
- =?utf-8?B?UzZxelQ3eFUzSFRBRjAzNlg1bGM0dmYwSDFKM3N2K3UyRkZMd200MDNOSzlE?=
- =?utf-8?B?d3ZicHc4NWdHUmhtWEdIQ05SaEZ2dkxTK2psVGZaOEkvbktnSjUzekJTWncw?=
- =?utf-8?B?S1J3V1RmektUZThtRHBqOHJ4K25mbnhpcHZ6UEtXOW5rNWxkLzlheEFCbm5h?=
- =?utf-8?B?YnNjNlprZGhzRnZoT01KR0VxcFlDcWxWRjJIaFh4NDM4TFBQdzVNUlFpVFI0?=
- =?utf-8?B?NUcrL2F5OG82cUkxYm9iTjVJdFZPbWxsdkw1ZlNiYWF2ajJUcnFkREZWU2Iy?=
- =?utf-8?B?M0IvRXV0VVBZRmM5Ykhia1g2Tk9NSXBwOWxyRldUNnRhTk53NDVUU0k4Y1dy?=
- =?utf-8?B?aU4veitlTHdGOFRiZGh5a2taYzVSWFdTemF0b0h0TVQyQmhsZXVQd1NmTmpY?=
- =?utf-8?B?elg1andlU0NWMDBUNGVMNkFPT2R5eWhhYms0UWVXWmFYTVdneXYrTy9Dci9M?=
- =?utf-8?B?bFNSU1BrcEJKejR0ZUZzWlJTWjliZWM3WWRCckNTNkEybmVnd2gxV2MzaXk5?=
- =?utf-8?Q?MpgN47XoTqnpb/0hxC8v0XCew?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a211b1d-fc67-4d22-626d-08dd8eeff935
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2025 11:52:29.0152
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PxTiBY9R9kiCljtkWk7VYhCLLEkitGJwFmc313NHK3jiTpHi8QNeV0FhZvWvsLiMDpowVn+BSK4+4zsXlHc8fg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5853
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <78fec33d-fe66-4352-be11-900f456c9af3@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Hi Nicolin, Jason,
-
-
-On 5/8/2025 10:42 PM, Nicolin Chen wrote:
-> On Thu, May 08, 2025 at 09:14:56AM -0300, Jason Gunthorpe wrote:
->> On Wed, May 07, 2025 at 10:56:17PM -0700, Nicolin Chen wrote:
->>
->>> What I am not sure is if the HW allows setting the ComWaitIntEn bit
->>> after CmdBufEn=1, which seems to be unlikely but the spec does not
->>> highlight. If so, this would be an modification to the HW QUEUE, in
->>> which case we could either do an relocation of the HW QUEUE (where
->>> we can set the flag in the 2nd allocation) or add an new option via
->>> IOMMUFD_CMD_OPTION (as Kevin suggested), and I think it should be
->>> a per-HW_QUEUE option since it doesn't affect other type of queues
->>> like Event/PRR Log Buffers.
->>
->> The main question is if the control is global to the entire VIOMMU and
->> all its HW QUEUE's or local to a single HW QUEUE.
+On Tue, May 06, 2025 at 03:52:59PM +0100, Ryan Roberts wrote:
+> On 06/05/2025 15:25, Will Deacon wrote:
+> > On Mon, Apr 28, 2025 at 03:35:14PM +0000, Mikołaj Lenczewski wrote:
+> >> The Break-Before-Make cpu feature supports multiple levels (levels 0-2),
+> >> and this commit adds a dedicated BBML2 cpufeature to test against
+> >> support for, as well as a kernel commandline parameter to optionally
+> >> disable BBML2 altogether.
+> >>
+> >> This is a system feature as we might have a big.LITTLE architecture
+> >> where some cores support BBML2 and some don't, but we want all cores to
+> >> be available and BBM to default to level 0 (as opposed to having cores
+> >> without BBML2 not coming online).
+> >>
+> >> To support BBML2 in as wide a range of contexts as we can, we want not
+> >> only the architectural guarantees that BBML2 makes, but additionally
+> >> want BBML2 to not create TLB conflict aborts. Not causing aborts avoids
+> >> us having to prove that no recursive faults can be induced in any path
+> >> that uses BBML2, allowing its use for arbitrary kernel mappings.
+> >> Support detection of such CPUs.
+> >>
+> >> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
+> >> Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+> >> Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
+> >> ---
+> >>  .../admin-guide/kernel-parameters.txt         |  3 +
+> >>  arch/arm64/Kconfig                            | 19 +++++
+> >>  arch/arm64/include/asm/cpucaps.h              |  2 +
+> >>  arch/arm64/include/asm/cpufeature.h           |  5 ++
+> >>  arch/arm64/kernel/cpufeature.c                | 71 +++++++++++++++++++
+> >>  arch/arm64/kernel/pi/idreg-override.c         |  2 +
+> >>  arch/arm64/tools/cpucaps                      |  1 +
+> >>  7 files changed, 103 insertions(+)
+> >>
+> >> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> >> index d9fd26b95b34..2749c67a4f07 100644
+> >> --- a/Documentation/admin-guide/kernel-parameters.txt
+> >> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> >> @@ -449,6 +449,9 @@
+> >>  	arm64.no32bit_el0 [ARM64] Unconditionally disable the execution of
+> >>  			32 bit applications.
+> >>  
+> >> +	arm64.nobbml2	[ARM64] Unconditionally disable Break-Before-Make Level
+> >> +			2 support
+> > 
+> > Hmm, I'm not sure we really want this. It opens up the door for folks to
+> > pass 'id_aa64mmfr2.bbm=2' without updating the allow-list which feels
+> > like it's going to make crashes harder to reason about.
+> > 
+> > Is there a compelling reason to add this right now?
 > 
-> Oh, that's right.. I recall AMD only has one Command Buffer,
-> but can have dual Event Log Buffers and dual PPR Log Buffers.
-
-Right.
-
+> I don't think there is a *compelling* reason. This came about from Suzuki's
+> feedback at [1]. He was keen to have a mechanism to disable BBML2 in case issues
+> were found.
 > 
-> And the EventIntEn or PprIntEn bit seem to be global for the
-> dual buffers..
+> But simpler is usually better; I'd be ok with removing.
 
-Yes. But there are other bit to configure dual buffers etc.
-(like DualEventLogEn).
+We can always add it back if we really need it, but adding an allowlist
+*and* a mechanism to override the allowlist at the same time seems overly
+pessimistic to me :)
 
+> >> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+> >> index 9c4d6d552b25..7a85a1bdc6e9 100644
+> >> --- a/arch/arm64/kernel/cpufeature.c
+> >> +++ b/arch/arm64/kernel/cpufeature.c
+> >> @@ -2200,6 +2200,70 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
+> >>  	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
+> >>  }
+> >>  
+> >> +static bool cpu_has_bbml2_noabort(unsigned int cpu_midr)
+> >> +{
+> >> +	/*
+> >> +	 * We want to allow usage of bbml2 in as wide a range of kernel contexts
+> >> +	 * as possible. This list is therefore an allow-list of known-good
+> >> +	 * implementations that both support bbml2 and additionally, fulfill the
+> >> +	 * extra constraint of never generating TLB conflict aborts when using
+> >> +	 * the relaxed bbml2 semantics (such aborts make use of bbml2 in certain
+> >> +	 * kernel contexts difficult to prove safe against recursive aborts).
+> >> +	 *
+> >> +	 * Note that implementations can only be considered "known-good" if their
+> >> +	 * implementors attest to the fact that the implementation never raises
+> >> +	 * TLBI conflict aborts for bbml2 mapping granularity changes.
+> >> +	 */
+> >> +	static const struct midr_range supports_bbml2_noabort_list[] = {
+> >> +		MIDR_REV_RANGE(MIDR_CORTEX_X4, 0, 3, 0xf),
+> >> +		MIDR_REV_RANGE(MIDR_NEOVERSE_V3, 0, 2, 0xf),
+> >> +		{}
+> >> +	};
+> >> +
+> >> +	return is_midr_in_range_list(cpu_midr, supports_bbml2_noabort_list);
+> > 
+> > This doesn't compile against latest mainline as is_midr_in_range_list()
+> > no longer takes the midr.
 > 
->> If it is global then some "modify viommu" operation should be used to
->> change it.
->>
->> If it is local then some "modify hw queu" operation.
->>
->> IOMMUFD_CMD_OPTION could be used with an object_id == VIOMMU as a kind
->> of modify..
+> Will ask Miko to fix.
+
+Cheers. v6.15-rc1 is probably the right base to use as that's what I've
+based for-next/mm on.
+
+> >> +static bool has_bbml2_noabort(const struct arm64_cpu_capabilities *caps, int scope)
+> >> +{
+> >> +	if (!IS_ENABLED(CONFIG_ARM64_BBML2_NOABORT))
+> >> +		return false;
+> >> +
+> >> +	if (scope & SCOPE_SYSTEM) {
+> >> +		int cpu;
+> >> +
+> >> +		/*
+> >> +		 * We are a boot CPU, and must verify that all enumerated boot
+> >> +		 * CPUs have MIDR values within our allowlist. Otherwise, we do
+> >> +		 * not allow the BBML2 feature to avoid potential faults when
+> >> +		 * the insufficient CPUs access memory regions using BBML2
+> >> +		 * semantics.
+> >> +		 */
+> >> +		for_each_online_cpu(cpu) {
+> >> +			if (!cpu_has_bbml2_noabort(cpu_read_midr(cpu)))
+> >> +				return false;
+> >> +		}
+> > 
+> > This penalises large homogeneous systems and it feels unnecessary given
+> > that we have the ability to check this per-CPU. Can you use
+> > ARM64_CPUCAP_BOOT_CPU_FEATURE instead of ARM64_CPUCAP_SYSTEM_FEATURE
+> > to solve this?
 > 
-> Vasant can confirm. But looks like it should be a vIOMMU
-> option.
+> We are trying to solve for the case where the boot CPU has BBML2 but a secondary
+> CPU doesn't. (e.g. hetrogeneous system where boot CPU is big and secondary is
+> little and does not advertise the feature. I can't remember if we proved there
+> are real systems with this config - I have vague recollection that we did but my
+> memory is poor...).
+> 
+> My understanding is that for ARM64_CPUCAP_BOOT_CPU_FEATURE, "If the boot CPU
+> has enabled this feature already, then every late CPU must have it". So that
+> would exclude any secondary CPUs without BBML2 from coming online?
 
-I think CMD_OPTION will work. So something like below?
+Damn, yes, you're right. However, it still feels horribly hacky to iterate
+over the online CPUs in has_bbml2_noabort() -- the cpufeature framework
+has the ability to query features locally and we should be able to use
+that. We're going to want that should the architecture eventually decide
+on something like BBML3 for this.
 
-if (cmd_option_id == IOMMU_OPTION_VIOMMU && cmd->object_id == viommu_id)
-	iommufd_viommu->ops->viommu_options() ?
+What we have with BBML2_NOABORT seems similar to an hwcap in that we only
+support the capability if all CPUs have it (rejecting late CPUs without it
+in that case) but we can live without it if not all of the early CPUs
+have it. Unlikely hwcaps, though, we shouldn't be advertising this to
+userspace and we can't derive the capability solely from the sanitised
+system registers.
 
+I wonder if we could treat it like an erratum in some way instead? That
+is, invert things so that CPUs which _don't_ have BBML2_NOABORT are
+considered to have a "BBM_CONFLICT_ABORT" erratum (which we obviously
+wouldn't shout about). Then we should be able to say:
 
--Vasant
+  - If any of the early CPUs don't have BBML2_NOABORT, then the erratum
+    would be enabled and we wouln't elide BBM.
 
+  - If a late CPU doesn't have BBML2_NOABORT then it can't come online
+    if the erratum isn't already enabled.
 
+Does that work? If not, then perhaps the cpufeature/cpuerrata code needs
+some surgery for this.
+
+> How do you see this working with ARM64_CPUCAP_BOOT_CPU_FEATURE? Or do you just
+> think that all systems will always be homogeneous with respect to FEAT_BBM?
+
+That's probably wishful thinking, sadly :(
+
+Will
