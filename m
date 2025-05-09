@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E06026AABA
-	for <iommu@lists.linux.dev>; Fri,  9 May 2025 06:12:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07CD426B95C
+	for <iommu@lists.linux.dev>; Fri,  9 May 2025 06:12:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746771142; cv=none; b=RSnpTHnmG9jZ4x2ekdW0y2t95LavXXb9sbyesECvasG6HeHP7qB6MvtdEmle/ofZwvj6O53/y/Wcggb7lhUr+24cIzqGh49Gzm/M+3i4Dvc16TAj+KDUAV0FsMWza2/2aFCol8st8DXIU6ynmI9vrHKYhhX5tPCBeY8vMBGVViQ=
+	t=1746771144; cv=none; b=rv7jFf2kD0ZSWNpYjvAeF30boLL7Ejol1CAMfEyegDoWE1pIhhtZRG2kPNJ/h/AvT1F5qobpHOZuCfY742vGULAJ2mvQ7+wzERWdR237OfZOZTE75JnPqMKnNSwVqUf+a21D3Ja0qHk/tQ5uncdQwSDsdgKct0n0eqVRzRyid8Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746771142; c=relaxed/simple;
-	bh=RyiB6bSDdnrAl/ZA2Ghx7G3OxFtQ18NcIegr7K5WEQk=;
+	s=arc-20240116; t=1746771144; c=relaxed/simple;
+	bh=ApPHZMInBbwwMKSHji1AAjrGRiRhajPqlSo4V4Is35o=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=JJtG8Wvi6N9QHVxCAQu50qaiO9ibRwbGWiXysc/CAN5OMMkfslnWx40zWtbaApFdwo2CZITbbTVTJNT4eIL3aYAjhwrhr8pOcoD5aNw7nReG/OZDgdLPscFKWL/57NIrZ1zqYW4pr2ELp/LCxCm3Irltn0HweQkLHMiUKlgbRpc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b6qBQWPr; arc=none smtp.client-ip=192.198.163.10
+	 MIME-Version; b=ioC8xrC1aNynuzGe20FiN9lbM1EbjfwguregOOPps8Bw7utKTj90VcwyFx+zx44gYVo1MjEREQSc9HAvBj+eBF3D6cBa+ZOHh7LXWUBTG8dQLKOjyRpf6oEumjyCl7N6sHcZ0vInT8MI71Ol7JI2LG6HMcWbbjVu3Cnt2357cQ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cA2g1DwM; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b6qBQWPr"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cA2g1DwM"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1746771140; x=1778307140;
+  t=1746771143; x=1778307143;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RyiB6bSDdnrAl/ZA2Ghx7G3OxFtQ18NcIegr7K5WEQk=;
-  b=b6qBQWPrKVkxTj33HUZTC4oFuQ0o1BgKpft5gqOVR7ILHo5+obdgREUG
-   O8jJh2ftsqzPZgGmnmoLgcIYF+wMM2eZvgSyTBs0pB9INqj+yyCu0A6hF
-   afaHE35sH/4bRGE4Qr84m2dAi3nBMqQvXFOZ9bcBnbZIB7ah18M5SxwP2
-   0SUpV7K8sG4uzA454kPDEegZP5v7YgtkxmIonhNfhN5L6DyTPa1Ng4+w1
-   3eWi5OeIDe8nA0u00e0KK95Gg8vrXx2GRkz+hSHG7cFnG1s7cb4osAOVV
-   3oWczmyl/wSm6Aglxp5p1OzpZ02xQaibTSHzzhXFZMu8oaAgObJu+x38Y
-   w==;
-X-CSE-ConnectionGUID: 5Mbz9W4rT7OUwJXXpl+ONw==
-X-CSE-MsgGUID: 2uqvt1YHSMS2b9bAUnz5NQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11427"; a="59927985"
+  bh=ApPHZMInBbwwMKSHji1AAjrGRiRhajPqlSo4V4Is35o=;
+  b=cA2g1DwMYYRDNX4JdIGz8t5BYQudg6vN/MAl962TGTbDSyWfGVYj54RE
+   XAAZpw1srHuBmapyqFWErCPyobMlw+uYqMyFTUCjQzMHhmMOvm+vn02Qk
+   1GSducjOrqx35q5rpYxJiq6/rEsAw3/b743Qq+zJr3MYl68TMbDLUsui1
+   eR4l8baBeVRKehO2gB823sh8o4hXLMyXDRNfMjL9QfDdR2NeM/Cj6abvq
+   1gu1eucrmJWdqrdDnXAt4dZwHjPNY6mfuSTDb21BwIzqYrV+CKBkR92+y
+   yAE5UqlbnAUzW5edUc0aPiYpAK5/OkLQ7r/9kz2URz9XpYLc8p2COekrO
+   g==;
+X-CSE-ConnectionGUID: xVs3pj0OSoKz3SoDNIh5Zw==
+X-CSE-MsgGUID: mBCQDowoTXehGjXNT4NIZg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11427"; a="59927989"
 X-IronPort-AV: E=Sophos;i="6.15,274,1739865600"; 
-   d="scan'208";a="59927985"
+   d="scan'208";a="59927989"
 Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2025 23:12:20 -0700
-X-CSE-ConnectionGUID: 7iiyLb0gTQKzYgZsQns6qQ==
-X-CSE-MsgGUID: YvLAq677T2aT4P0SOnx1/A==
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 May 2025 23:12:22 -0700
+X-CSE-ConnectionGUID: XdDxP9ZtRhKWUPE77zGqfw==
+X-CSE-MsgGUID: qmYXEztYRTK1higeCRjwtg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.15,274,1739865600"; 
-   d="scan'208";a="136447523"
+   d="scan'208";a="136447531"
 Received: from ww-dev.sh.intel.com ([10.239.48.95])
-  by fmviesa006.fm.intel.com with ESMTP; 08 May 2025 23:12:18 -0700
+  by fmviesa006.fm.intel.com with ESMTP; 08 May 2025 23:12:20 -0700
 From: Wei Wang <wei.w.wang@intel.com>
 To: dwmw2@infradead.org,
 	baolu.lu@linux.intel.com,
@@ -52,9 +52,9 @@ To: dwmw2@infradead.org,
 	linux-kernel@vger.kernel.org,
 	iommu@lists.linux.dev
 Cc: Wei Wang <wei.w.wang@intel.com>
-Subject: [PATCH v1 2/3] iommu/vt-d: Change dmar_ats_supported() to return boolean
-Date: Fri,  9 May 2025 22:00:20 +0800
-Message-ID: <20250509140021.4029303-3-wei.w.wang@intel.com>
+Subject: [PATCH v1 3/3] iommu/vt-d: Fix ATS support check for integrated endpoints
+Date: Fri,  9 May 2025 22:00:21 +0800
+Message-ID: <20250509140021.4029303-4-wei.w.wang@intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250509140021.4029303-1-wei.w.wang@intel.com>
 References: <20250509140021.4029303-1-wei.w.wang@intel.com>
@@ -66,61 +66,95 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-According to "Function return values and names" in coding-style.rst, the
-dmar_ats_supported() function should return a boolean instead of an
-integer. Also, rename "ret" to "supported" to be more straightforward.
+The VT-d spec states that "SATC reporting structure identifies devices
+that have address translation cache and that is validated per requirements
+described in the 'Device TLB in System-on-Chip (SoC) Integrated Devices'
+section. It is recommended that system software enable ATC for this
+device". It is possible for an integrated device to have PCI ATC
+capability implemented but not validated per the requirements, and thus
+not appear in the SATC structure as recommended for ATS enablement.
+
+The current implementation checks ATS support for integrated endpoints in
+two places. First, it verifies if the integrated endpoint device is listed
+in SATC. If not, it proceeds to the second check that always returns true
+for integrated devices. This could result in endpoint devices not
+recommended in SATC presenting "supported = true" to the caller.
+
+Add integrated_device_ats_supported() for the integrated device ATS check
+in a single location, which improves readability. The above issue is
+also fixed in the function via returning false in that case.
 
 Signed-off-by: Wei Wang <wei.w.wang@intel.com>
 ---
- drivers/iommu/intel/iommu.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/iommu/intel/iommu.c | 42 +++++++++++++++++++++++++------------
+ 1 file changed, 29 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index d8aa71305509..2778bfe14f36 100644
+index 2778bfe14f36..39abcf4e0f8f 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -2760,10 +2760,11 @@ static struct dmar_satc_unit *dmar_find_matched_satc_unit(struct pci_dev *dev)
+@@ -2760,6 +2760,34 @@ static struct dmar_satc_unit *dmar_find_matched_satc_unit(struct pci_dev *dev)
  	return satcu;
  }
  
--static int dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu)
-+static bool dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu)
++static bool integrated_device_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu)
++{
++	struct dmar_satc_unit *satcu = dmar_find_matched_satc_unit(dev);
++
++	/*
++	 * This device supports ATS as it is in SATC table. When IOMMU is in
++	 * legacy mode, enabling ATS is done automatically by HW for the device
++	 * that requires ATS, hence OS should not enable this device ATS to
++	 * avoid duplicated TLB invalidation.
++	 */
++	if (satcu)
++		return !(satcu->atc_required && !sm_supported(iommu));
++
++	/*
++	 * The integrated device isn't enumerated in the SATC structure. For
++	 * example, it has ATS PCI capability implemented but not validated per
++	 * the requirements described in the VT-d specification, specifically
++	 * in the "Device TLB in System-on-Chip (SoC) Integrated Devices"
++	 * section. Therefore, it does not appear in the SATC structure. Return
++	 * false in this case.
++	 *
++	 * On older machines that do not support SATC (i.e., no SATC structure
++	 * present), ATS is considered to be "always" supported for integrated
++	 * endpoints.
++	 */
++	return !list_empty(&dmar_satc_units);
++}
++
+ static bool dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu)
  {
--	int i, ret = 1;
-+	int i;
- 	struct pci_bus *bus;
-+	bool supported = true;
- 	struct pci_dev *bridge = NULL;
+ 	int i;
+@@ -2769,25 +2797,13 @@ static bool dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu)
  	struct device *tmp;
  	struct acpi_dmar_atsr *atsr;
-@@ -2786,11 +2787,11 @@ static int dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu)
+ 	struct dmar_atsr_unit *atsru;
+-	struct dmar_satc_unit *satcu;
+ 
+ 	dev = pci_physfn(dev);
+-	satcu = dmar_find_matched_satc_unit(dev);
+-	if (satcu)
+-		/*
+-		 * This device supports ATS as it is in SATC table.
+-		 * When IOMMU is in legacy mode, enabling ATS is done
+-		 * automatically by HW for the device that requires
+-		 * ATS, hence OS should not enable this device ATS
+-		 * to avoid duplicated TLB invalidation.
+-		 */
+-		return !(satcu->atc_required && !sm_supported(iommu));
+ 
+ 	for (bus = dev->bus; bus; bus = bus->parent) {
  		bridge = bus->self;
- 		/* If it's an integrated device, allow ATS */
+-		/* If it's an integrated device, allow ATS */
  		if (!bridge)
--			return 1;
-+			return true;
+-			return true;
++			return integrated_device_ats_supported(dev, iommu);
  		/* Connected via non-PCIe: no ATS */
  		if (!pci_is_pcie(bridge) ||
  		    pci_pcie_type(bridge) == PCI_EXP_TYPE_PCI_BRIDGE)
--			return 0;
-+			return false;
- 		/* If we found the root port, look it up in the ATSR */
- 		if (pci_pcie_type(bridge) == PCI_EXP_TYPE_ROOT_PORT)
- 			break;
-@@ -2809,11 +2810,11 @@ static int dmar_ats_supported(struct pci_dev *dev, struct intel_iommu *iommu)
- 		if (atsru->include_all)
- 			goto out;
- 	}
--	ret = 0;
-+	supported = false;
- out:
- 	rcu_read_unlock();
- 
--	return ret;
-+	return supported;
- }
- 
- int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info)
 -- 
 2.43.0
 
