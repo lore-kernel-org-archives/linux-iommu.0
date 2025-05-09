@@ -1,31 +1,31 @@
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A109D26C3A7
-	for <iommu@lists.linux.dev>; Fri,  9 May 2025 06:44:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D535E26A0B7
+	for <iommu@lists.linux.dev>; Fri,  9 May 2025 06:46:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746773088; cv=none; b=bgAwOuUZgAn4c7mdGgMhtI70IM02+PY/G8k69igK0GNSGuqcwopJC7FKNNd0zuS636NZyan1MjrLroWOff3ptYThilxWfHpjRhWLsZ0XwqHytSEnSMOYbxEsq2qC1lIQbAyxgAbS6qZBMZe0EYAQ8f6WL1Xrgt8Bji8qYOWprL4=
+	t=1746773164; cv=none; b=azPHyDzm3XNuZEOtPfGBEucsB9b06k+i4Kdh/9t8zBWgCC2xMsZmrrGODAJ04J7CSiIoNcB2SXVm3AZlX9wrdixNFpGQPbC5u6eiibq+bqwapO5kVnKPoY3eS/WTBhISSibh/Dbw0UPiv0v7WVtGcPuIxiAbDpxte1gXijjP4/k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746773088; c=relaxed/simple;
-	bh=SzK993gqOEfXbohV3srC6BzfOTlxaqgUypFe3/ZnQz8=;
+	s=arc-20240116; t=1746773164; c=relaxed/simple;
+	bh=jRKNlJ4pLnA96VZ2LhySf/5BWbaAQltQg52oYYi6DEM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=VKkrsr6FssyaIT/q85BxdCWkq5/0atVurPha7Z1xDeE2jbME43Eh8lk2sCuFzQf1AuGMaUqbZWyaD41sZYqt0ZVLu7F9taYBEW9fvyPjYsE7BIs0OOjv3yaoC3+f5CJR6YL7f76qTCITf+KUuwm5xf8A6raBs5JBsRSARwGa6L0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
+	 In-Reply-To:Content-Type; b=L5hdXDSlLnjz3JjxiWh1KQjVKrVsOrQwph5zfq8RU3pQ9BvPOgbHfJdnypKCZzEQeJb5XSc2hoo/hZRdMmQ14sfd7y5Cd2FHzpWpcIDlDNvpPY+YuWCl07RbszJP5gOIcIzNKBB46C1QFDmF9MiriKap8Ra9tq5bf1HJX8qeaaE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.214])
-	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Ztzss0CYKz2CddN;
-	Fri,  9 May 2025 14:41:05 +0800 (CST)
+Received: from mail.maildlp.com (unknown [172.19.162.254])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ztzxv66tcznfY6;
+	Fri,  9 May 2025 14:44:35 +0800 (CST)
 Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id 778791A016C;
-	Fri,  9 May 2025 14:44:41 +0800 (CST)
+	by mail.maildlp.com (Postfix) with ESMTPS id C8286180488;
+	Fri,  9 May 2025 14:45:53 +0800 (CST)
 Received: from [10.67.120.170] (10.67.120.170) by
  kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Fri, 9 May 2025 14:44:40 +0800
-Message-ID: <39b5b07e-f1a5-4f90-bb3b-3742bb86f73f@huawei.com>
-Date: Fri, 9 May 2025 14:44:40 +0800
+ 15.2.1544.11; Fri, 9 May 2025 14:45:53 +0800
+Message-ID: <252f3931-57ba-424a-a7b3-73235afd2539@huawei.com>
+Date: Fri, 9 May 2025 14:45:52 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -33,33 +33,32 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/4] dma-mapping: benchmark: modify the framework to
- adapt to more map modes
+Subject: Re: [PATCH v3 3/4] dma-mapping: benchmark: add support for dma_map_sg
 To: Barry Song <21cnbao@gmail.com>, Marek Szyprowski
 	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>
 CC: <yangyicong@huawei.com>, <hch@lst.de>, <iommu@lists.linux.dev>,
 	<jonathan.cameron@huawei.com>, <prime.zeng@huawei.com>,
 	<fanghao11@huawei.com>, <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
 References: <20250509020238.3378396-1-xiaqinxin@huawei.com>
- <20250509020238.3378396-3-xiaqinxin@huawei.com>
- <CAGsJ_4xmC5wP9ut7X6cj72xq1qNGdVCC==8c9FQpd3SbCQ-iNw@mail.gmail.com>
+ <20250509020238.3378396-4-xiaqinxin@huawei.com>
+ <CAGsJ_4xOX6Rnz7nrd3ZRCzjaTzqmvWoWQNq4JzfXRhwRKkPJjw@mail.gmail.com>
 From: Qinxin Xia <xiaqinxin@huawei.com>
-In-Reply-To: <CAGsJ_4xmC5wP9ut7X6cj72xq1qNGdVCC==8c9FQpd3SbCQ-iNw@mail.gmail.com>
+In-Reply-To: <CAGsJ_4xOX6Rnz7nrd3ZRCzjaTzqmvWoWQNq4JzfXRhwRKkPJjw@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
  kwepemj200003.china.huawei.com (7.202.194.15)
 
 
-On 2025/5/9 11:41:31, Barry Song <21cnbao@gmail.com> wrote:
+On 2025/5/9 11:51:22, Barry Song <21cnbao@gmail.com> wrote:
 > On Fri, May 9, 2025 at 2:02 PM Qinxin Xia <xiaqinxin@huawei.com> wrote:
->> In some service scenarios, the performance of dma_map_sg needs to be
->> tested to support different map modes for benchmarks. This patch adjusts
->> the DMA map benchmark framework to make the DMA map benchmark framework
->> more flexible and adaptable to other mapping modes in the future.
->> By abstracting the framework into four interfaces:prepare, unprepare,
->> do_map, and do_unmap.The new map schema can be introduced more easily
->> without major modifications to the existing code structure.
+>> Support for dma scatter-gather mapping and is intended for testing
+>> mapping performance. It achieves by introducing the dma_sg_map_param
+>> structure and related functions, which enable the implementation of
+>> scatter-gather mapping preparation, mapping, and unmapping operations.
+>> Additionally, the dma_map_benchmark_ops array is updated to include
+>> operations for scatter-gather mapping. This commit aims to provide
+>> a wider range of mapping performance test to cater to different scenarios.
 >>
 >> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
 > - stable@vger.kernel.org
@@ -71,219 +70,195 @@ On 2025/5/9 11:41:31, Barry Song <21cnbao@gmail.com> wrote:
 > Reviewed-by: Barry Song <baohua@kernel.org>
 OK
 >> ---
->>   include/linux/map_benchmark.h |   8 ++-
->>   kernel/dma/map_benchmark.c    | 122 +++++++++++++++++++++++++++-------
->>   2 files changed, 106 insertions(+), 24 deletions(-)
+>>   include/linux/map_benchmark.h |  43 ++++++++++----
+>>   kernel/dma/map_benchmark.c    | 103 ++++++++++++++++++++++++++++++++++
+>>   2 files changed, 134 insertions(+), 12 deletions(-)
 >>
 >> diff --git a/include/linux/map_benchmark.h b/include/linux/map_benchmark.h
->> index 2ac2fe52f248..5294dfd1870f 100644
+>> index 5294dfd1870f..bf8c9ade43fd 100644
 >> --- a/include/linux/map_benchmark.h
 >> +++ b/include/linux/map_benchmark.h
->> @@ -15,6 +15,11 @@
->>   #define DMA_MAP_TO_DEVICE       1
->>   #define DMA_MAP_FROM_DEVICE     2
+>> @@ -17,22 +17,41 @@
 >>
->> +enum {
->> +       DMA_MAP_SINGLE_MODE,
->> +       DMA_MAP_MODE_MAX
->> +};
-> Using a more specific namespace—such as DMA_MAP_BENCH_SINGLE_MODE
-> and DMA_MAP_BENCH_MODE_MAX—would help avoid potential naming
-> conflicts.
->
->> +
+>>   enum {
+>>          DMA_MAP_SINGLE_MODE,
+>> +       DMA_MAP_SG_MODE,
+>>          DMA_MAP_MODE_MAX
+> DMA_MAP_BENCH_ ...
+OK, I will fix it in the next version.
+>>   };
+>>
+>> +/**
+>> + * struct map_benchmark - Benchmarking data for DMA mapping operations.
+>> + * @avg_map_100ns: Average map latency in 100ns.
+>> + * @map_stddev: Standard deviation of map latency.
+>> + * @avg_unmap_100ns: Average unmap latency in 100ns.
+>> + * @unmap_stddev: Standard deviation of unmap latency.
+>> + * @threads: Number of threads performing map/unmap operations in parallel.
+>> + * @seconds: Duration of the test in seconds.
+>> + * @node: NUMA node on which this benchmark will run.
+>> + * @dma_bits: DMA addressing capability.
+>> + * @dma_dir: DMA data direction.
+>> + * @dma_trans_ns: Time for DMA transmission in ns.
+>> + * @granule: Number of PAGE_SIZE units to map/unmap at once.
+>> +            In SG mode, this represents the number of scatterlist entries.
+>> +            In single mode, this represents the total size of the mapping.
+>> + * @map_mode: Mode of DMA mapping.
+>> + * @expansion: Reserved for future use.
+>> + */
 >>   struct map_benchmark {
->>          __u64 avg_map_100ns; /* average map latency in 100ns */
->>          __u64 map_stddev; /* standard deviation of map latency */
->> @@ -27,6 +32,7 @@ struct map_benchmark {
->>          __u32 dma_dir; /* DMA data direction */
->>          __u32 dma_trans_ns; /* time for DMA transmission in ns */
->>          __u32 granule;  /* how many PAGE_SIZE will do map/unmap once a time */
->> -       __u8 expansion[76];     /* For future use */
->> +       __u8  map_mode; /* the mode of dma map */
->> +       __u8 expansion[75];     /* For future use */
+>> -       __u64 avg_map_100ns; /* average map latency in 100ns */
+>> -       __u64 map_stddev; /* standard deviation of map latency */
+>> -       __u64 avg_unmap_100ns; /* as above */
+>> +       __u64 avg_map_100ns;
+>> +       __u64 map_stddev;
+>> +       __u64 avg_unmap_100ns;
+>>          __u64 unmap_stddev;
+>> -       __u32 threads; /* how many threads will do map/unmap in parallel */
+>> -       __u32 seconds; /* how long the test will last */
+>> -       __s32 node; /* which numa node this benchmark will run on */
+>> -       __u32 dma_bits; /* DMA addressing capability */
+>> -       __u32 dma_dir; /* DMA data direction */
+>> -       __u32 dma_trans_ns; /* time for DMA transmission in ns */
+>> -       __u32 granule;  /* how many PAGE_SIZE will do map/unmap once a time */
+>> -       __u8  map_mode; /* the mode of dma map */
+>> -       __u8 expansion[75];     /* For future use */
+>> +       __u32 threads;
+>> +       __u32 seconds;
+>> +       __s32 node;
+>> +       __u32 dma_bits;
+>> +       __u32 dma_dir;
+>> +       __u32 dma_trans_ns;
+>> +       __u32 granule;
+>> +       __u8  map_mode;
+>> +       __u8 expansion[75];
 >>   };
 >>   #endif /* _KERNEL_DMA_BENCHMARK_H */
 >> diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
->> index cc19a3efea89..47a06b891db8 100644
+>> index 47a06b891db8..3a996be9fb22 100644
 >> --- a/kernel/dma/map_benchmark.c
 >> +++ b/kernel/dma/map_benchmark.c
->> @@ -5,6 +5,7 @@
+>> @@ -17,6 +17,7 @@
+>>   #include <linux/module.h>
+>>   #include <linux/pci.h>
+>>   #include <linux/platform_device.h>
+>> +#include <linux/scatterlist.h>
+>>   #include <linux/slab.h>
+>>   #include <linux/timekeeping.h>
 >>
->>   #define pr_fmt(fmt)    KBUILD_MODNAME ": " fmt
->>
->> +#include <linux/cleanup.h>
->>   #include <linux/debugfs.h>
->>   #include <linux/delay.h>
->>   #include <linux/device.h>
->> @@ -31,17 +32,99 @@ struct map_benchmark_data {
->>          atomic64_t loops;
+>> @@ -111,8 +112,110 @@ static struct map_benchmark_ops dma_single_map_benchmark_ops = {
+>>          .do_unmap = dma_single_map_benchmark_do_unmap,
 >>   };
 >>
->> +struct map_benchmark_ops {
->> +       void *(*prepare)(struct map_benchmark_data *map);
->> +       void (*unprepare)(void *mparam);
->> +       int (*do_map)(void *mparam);
->> +       void (*do_unmap)(void *mparam);
->> +};
->> +
->> +struct dma_single_map_param {
+>> +struct dma_sg_map_param {
+>> +       struct sg_table sgt;
 >> +       struct device *dev;
->> +       dma_addr_t addr;
->> +       void *xbuf;
+>> +       void **buf;
 >> +       u32 npages;
 >> +       u32 dma_dir;
 >> +};
 >> +
->> +static void *dma_single_map_benchmark_prepare(struct map_benchmark_data *map)
+>> +static void *dma_sg_map_benchmark_prepare(struct map_benchmark_data *map)
 >> +{
->> +       struct dma_single_map_param *params __free(kfree) = kzalloc(sizeof(*params),
->> +                                                                   GFP_KERNEL);
+>> +       struct scatterlist *sg;
+>> +       int i;
+>> +
+>> +       struct dma_sg_map_param *params __free(kfree) = kzalloc(sizeof(*params), GFP_KERNEL);
 >> +       if (!params)
 >> +               return NULL;
 >> +
+>> +       /*
+>> +        * Set the number of scatterlist entries based on the granule.
+>> +        * In SG mode, 'granule' represents the number of scatterlist entries.
+>> +        * Each scatterlist entry corresponds to a single page.
+>> +        */
 >> +       params->npages = map->bparam.granule;
 >> +       params->dma_dir = map->bparam.dma_dir;
 >> +       params->dev = map->dev;
->> +       params->xbuf = alloc_pages_exact(params->npages * PAGE_SIZE, GFP_KERNEL);
->> +       if (!params->xbuf)
->> +               return NULL;
+>> +       params->buf = kmalloc_array(params->npages, sizeof(*params->buf),
+>> +                                   GFP_KERNEL);
+>> +       if (!params->buf)
+>> +               goto out;
 >> +
->> +       /*
->> +        * for a non-coherent device, if we don't stain them in the
->> +        * cache, this will give an underestimate of the real-world
->> +        * overhead of BIDIRECTIONAL or TO_DEVICE mappings;
->> +        * 66 means evertything goes well! 66 is lucky.
->> +        */
->> +       if (params->dma_dir != DMA_FROM_DEVICE)
->> +               memset(params->xbuf, 0x66, params->npages * PAGE_SIZE);
+>> +       if (sg_alloc_table(&params->sgt, params->npages, GFP_KERNEL))
+>> +               goto free_buf;
+>> +
+>> +       for_each_sgtable_sg(&params->sgt, sg, i) {
+>> +               params->buf[i] = (void *)__get_free_page(GFP_KERNEL);
+>> +               if (!params->buf[i])
+>> +                       goto free_page;
+>> +
+>> +               if (params->dma_dir != DMA_FROM_DEVICE)
+>> +                       memset(params->buf[i], 0x66, PAGE_SIZE);
+>> +
+>> +               sg_set_buf(sg, params->buf[i], PAGE_SIZE);
+>> +       }
 >> +
 >> +       return_ptr(params);
+>> +
+>> +free_page:
+>> +       while (i-- > 0)
+>> +               free_page((unsigned long)params->buf[i]);
+>> +
+>> +       sg_free_table(&params->sgt);
+>> +free_buf:
+>> +       kfree(params->buf);
+>> +out:
+>> +       return NULL;
 >> +}
 >> +
->> +static void dma_single_map_benchmark_unprepare(void *mparam)
+>> +static void dma_sg_map_benchmark_unprepare(void *mparam)
 >> +{
->> +       struct dma_single_map_param *params = mparam;
+>> +       struct dma_sg_map_param *params = mparam;
+>> +       int i;
 >> +
->> +       free_pages_exact(params->xbuf, params->npages * PAGE_SIZE);
+>> +       for (i = 0; i < params->npages; i++)
+>> +               free_page((unsigned long)params->buf[i]);
+>> +
+>> +       sg_free_table(&params->sgt);
+>> +
+>> +       kfree(params->buf);
 >> +       kfree(params);
 >> +}
 >> +
->> +static int dma_single_map_benchmark_do_map(void *mparam)
+>> +static int dma_sg_map_benchmark_do_map(void *mparam)
 >> +{
->> +       struct dma_single_map_param *params = mparam;
+>> +       struct dma_sg_map_param *params = mparam;
 >> +       int ret = 0;
 >> +
->> +       params->addr = dma_map_single(params->dev, params->xbuf,
->> +                                     params->npages * PAGE_SIZE, params->dma_dir);
->> +       if (unlikely(dma_mapping_error(params->dev, params->addr))) {
->> +               pr_err("dma_map_single failed on %s\n", dev_name(params->dev));
+>> +       int sg_mapped = dma_map_sg(params->dev, params->sgt.sgl,
+>> +                                  params->npages, params->dma_dir);
+>> +       if (!sg_mapped) {
+>> +               pr_err("dma_map_sg failed on %s\n", dev_name(params->dev));
 >> +               ret = -ENOMEM;
 >> +       }
 >> +
 >> +       return ret;
 >> +}
 >> +
->> +static void dma_single_map_benchmark_do_unmap(void *mparam)
+>> +static void dma_sg_map_benchmark_do_unmap(void *mparam)
 >> +{
->> +       struct dma_single_map_param *params = mparam;
+>> +       struct dma_sg_map_param *params = mparam;
 >> +
->> +       dma_unmap_single(params->dev, params->addr,
->> +                        params->npages * PAGE_SIZE, params->dma_dir);
+>> +       dma_unmap_sg(params->dev, params->sgt.sgl, params->npages,
+>> +                    params->dma_dir);
 >> +}
 >> +
->> +static struct map_benchmark_ops dma_single_map_benchmark_ops = {
->> +       .prepare = dma_single_map_benchmark_prepare,
->> +       .unprepare = dma_single_map_benchmark_unprepare,
->> +       .do_map = dma_single_map_benchmark_do_map,
->> +       .do_unmap = dma_single_map_benchmark_do_unmap,
+>> +static struct map_benchmark_ops dma_sg_map_benchmark_ops = {
+>> +       .prepare = dma_sg_map_benchmark_prepare,
+>> +       .unprepare = dma_sg_map_benchmark_unprepare,
+>> +       .do_map = dma_sg_map_benchmark_do_map,
+>> +       .do_unmap = dma_sg_map_benchmark_do_unmap,
 >> +};
 >> +
->> +static struct map_benchmark_ops *dma_map_benchmark_ops[DMA_MAP_MODE_MAX] = {
->> +       [DMA_MAP_SINGLE_MODE] = &dma_single_map_benchmark_ops,
->> +};
->> +
+>>   static struct map_benchmark_ops *dma_map_benchmark_ops[DMA_MAP_MODE_MAX] = {
+>>          [DMA_MAP_SINGLE_MODE] = &dma_single_map_benchmark_ops,
+>> +       [DMA_MAP_SG_MODE] = &dma_sg_map_benchmark_ops,
+>>   };
+>>
 >>   static int map_benchmark_thread(void *data)
->>   {
->> -       void *buf;
->> -       dma_addr_t dma_addr;
->>          struct map_benchmark_data *map = data;
->> -       int npages = map->bparam.granule;
->> -       u64 size = npages * PAGE_SIZE;
->> +       __u8 map_mode = map->bparam.map_mode;
->>          int ret = 0;
->>
->> -       buf = alloc_pages_exact(size, GFP_KERNEL);
->> -       if (!buf)
->> +       struct map_benchmark_ops *mb_ops = dma_map_benchmark_ops[map_mode];
->> +       void *mparam = mb_ops->prepare(map);
->> +
->> +       if (!mparam)
->>                  return -ENOMEM;
->>
->>          while (!kthread_should_stop())  {
->> @@ -49,23 +132,10 @@ static int map_benchmark_thread(void *data)
->>                  ktime_t map_stime, map_etime, unmap_stime, unmap_etime;
->>                  ktime_t map_delta, unmap_delta;
->>
->> -               /*
->> -                * for a non-coherent device, if we don't stain them in the
->> -                * cache, this will give an underestimate of the real-world
->> -                * overhead of BIDIRECTIONAL or TO_DEVICE mappings;
->> -                * 66 means evertything goes well! 66 is lucky.
->> -                */
->> -               if (map->dir != DMA_FROM_DEVICE)
->> -                       memset(buf, 0x66, size);
->> -
->>                  map_stime = ktime_get();
->> -               dma_addr = dma_map_single(map->dev, buf, size, map->dir);
->> -               if (unlikely(dma_mapping_error(map->dev, dma_addr))) {
->> -                       pr_err("dma_map_single failed on %s\n",
->> -                               dev_name(map->dev));
->> -                       ret = -ENOMEM;
->> +               ret = mb_ops->do_map(mparam);
->> +               if (ret)
->>                          goto out;
->> -               }
->>                  map_etime = ktime_get();
->>                  map_delta = ktime_sub(map_etime, map_stime);
->>
->> @@ -73,7 +143,8 @@ static int map_benchmark_thread(void *data)
->>                  ndelay(map->bparam.dma_trans_ns);
->>
->>                  unmap_stime = ktime_get();
->> -               dma_unmap_single(map->dev, dma_addr, size, map->dir);
->> +               mb_ops->do_unmap(mparam);
->> +
->>                  unmap_etime = ktime_get();
->>                  unmap_delta = ktime_sub(unmap_etime, unmap_stime);
->>
->> @@ -108,7 +179,7 @@ static int map_benchmark_thread(void *data)
->>          }
->>
->>   out:
->> -       free_pages_exact(buf, size);
->> +       mb_ops->unprepare(mparam);
->>          return ret;
->>   }
->>
->> @@ -209,6 +280,11 @@ static long map_benchmark_ioctl(struct file *file, unsigned int cmd,
->>
->>          switch (cmd) {
->>          case DMA_MAP_BENCHMARK:
->> +               if (map->bparam.map_mode >= DMA_MAP_MODE_MAX) {
->> +                       pr_err("invalid map mode\n");
->> +                       return -EINVAL;
->> +               }
->> +
->>                  if (map->bparam.threads == 0 ||
->>                      map->bparam.threads > DMA_MAP_MAX_THREADS) {
->>                          pr_err("invalid thread number\n");
 >> --
 >> 2.33.0
->>
-> Thanks
-> Barry
 
 Thanks
 
