@@ -1,81 +1,87 @@
 Received: from mx1.emlix.com (mx1.emlix.com [178.63.209.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 742E2294A0E
-	for <iommu@lists.linux.dev>; Mon, 12 May 2025 13:17:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2890025B666
+	for <iommu@lists.linux.dev>; Mon, 12 May 2025 13:22:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.63.209.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747055833; cv=none; b=Sky0YzvSCyqnVFNufWvJ246s69DYt6kLMGUm4Sm7l9WGHHqc/ydi46wKcks3W4bnyi+Jn8aTkEftv098JXwrbKAfHD/vT2gwLwyIolQcX0UqkP63Qi3NLYS2prtshpTkcdaICm2iDlrstMHaf/8+8ZhrF3CQMP5j/wHB4urEg0U=
+	t=1747056134; cv=none; b=cVwKTjuEq/453gsWE3Bzm2KuvH2C/CnUCwVNthgq35+BujUQlpDo1/t5iqoXPeTtBQZCpXu/enIvRcdjKRJP617EHM1YObSWONqtgI1UxHvyOTrXOLToL7FBMYZcFM4eBmA+wrtwvSCZBd5u4i6RnitYSpmGVziwOuKik5nOHU4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747055833; c=relaxed/simple;
-	bh=qyGlqeoaX018wK20EkYJAUZufA8oVkUeenZJQTWOTzk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Cmpr/8bXoZqlJ+t2Posm4vY3viTpnPgujOtEmhLt1DXMnyhH8OruwqLD26QelK1vdnavjHez++c5MTMXtUVPvh6Hwfv1ykM2WGH6pFuQJB+2+DstUmwZaahtRo7HFbCkC79Q+AuyfITnOQvF1Gls4K3/gDQwZVRRb/kKdhT0V3A=
+	s=arc-20240116; t=1747056134; c=relaxed/simple;
+	bh=htb/hrDPb1CGRtd9p+vyz/ZKL8zvQllVbEP5Vnuk39Q=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=sfibgJnjzNKqy4TtarGJQ3IbH4HRVXHkx46u4ROJQy2EHjNkJqqh3Co9i/hwyOSfKVWmVSOM81++EPtnDY3MkzPgXRko9NPX910spvjQMEBNYtiZjIW7V4q30FYzCF04lIS4AQrfxrTZSH50NhOq3z1vRlb4pwr3L8R8EaArIGM=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com; spf=pass smtp.mailfrom=emlix.com; arc=none smtp.client-ip=178.63.209.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=emlix.com
 Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
 	(using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mx1.emlix.com (Postfix) with ESMTPS id 10ECB5FE9E;
-	Mon, 12 May 2025 15:16:17 +0200 (CEST)
+	by mx1.emlix.com (Postfix) with ESMTPS id 0C1BA5F739;
+	Mon, 12 May 2025 15:16:15 +0200 (CEST)
 From: Rolf Eike Beer <eb@emlix.com>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
 Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- Bert Karwatzki <spasswolf@web.de>, Lu Baolu <baolu.lu@linux.intel.com>,
- Jerry Snitselaar <jsnitsel@redhat.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Tomasz Jeznach <tjeznach@rivosinc.com>, Nick Kossifidis <mick@ics.forth.gr>,
- Sebastien Boeuf <seb@rivosinc.com>, Palmer Dabbelt <palmer@rivosinc.com>,
- Paul Walmsley <paul.walmsley@sifive.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Alexandre Ghiti <alex@ghiti.fr>, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>
-Subject: [PATCHv3 0/6] make vendor specific subdirectory inclusion conditional
-Date: Mon, 12 May 2025 15:07:27 +0200
-Message-ID: <1926170.CQOukoFCf9@devpool92.emlix.com>
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Subject: [PATCH 6/6] iommu: make inclusion of iommufd directory conditional
+Date: Mon, 12 May 2025 15:15:52 +0200
+Message-ID: <5568089.Sb9uPGUboI@devpool92.emlix.com>
 Organization: emlix GmbH
+In-Reply-To: <1926170.CQOukoFCf9@devpool92.emlix.com>
+References: <1926170.CQOukoFCf9@devpool92.emlix.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart23936481.6Emhk5qWAg";
- micalg="pgp-sha256"; protocol="application/pgp-signature"
-
---nextPart23936481.6Emhk5qWAg
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"; protected-headers="v1"
-From: Rolf Eike Beer <eb@emlix.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Date: Mon, 12 May 2025 15:07:27 +0200
-Message-ID: <1926170.CQOukoFCf9@devpool92.emlix.com>
-Organization: emlix GmbH
-MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 
-I found it strange that the vendor specific subdirectories were uncondition=
-ally=20
-added. Everything in these directories obviously depends on the specific Kc=
-onfig=20
-option. This series cleans this up by making the directory itself depend on=
-=20
-the respective option which looks more natural to me.
+Nothing in there is active if CONFIG_IOMMUFD is not enabled, so the whole
+directory can depend on that switch as well.
 
-I must confess that I am too lazy to find a good solution for the "arm/"=20
-directory, so I left it as is.
-
-Regards,
-
-Eike
-
+=46ixes: 2ff4bed7fee7 ("iommufd: File descriptor, context, kconfig and make=
+files")
+Signed-off-by: Rolf Eike Beer <eb@emlix.com>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 =2D--
-Changes in v3:
-=2D added Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-=2D rebased on top of 2e9b2ee2ba403cbe270a8256b8794ef5ad19b38d
+ drivers/iommu/Makefile         | 3 ++-
+ drivers/iommu/iommufd/Makefile | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-Changes in v2:
-=2D clean up subdirectory Makefiles to use obj-y now
-=2D add arm/arm-smmu-v3 and iommufd patches
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 355294fa9033f..d0a42da2dfa5b 100644
+=2D-- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -1,8 +1,9 @@
+ # SPDX-License-Identifier: GPL-2.0
+=2Dobj-y +=3D arm/ iommufd/
++obj-y +=3D arm/
+ obj-$(CONFIG_AMD_IOMMU) +=3D amd/
+ obj-$(CONFIG_INTEL_IOMMU) +=3D intel/
+ obj-$(CONFIG_RISCV_IOMMU) +=3D riscv/
++obj-$(CONFIG_IOMMUFD) +=3D iommufd/
+ obj-$(CONFIG_IOMMU_API) +=3D iommu.o
+ obj-$(CONFIG_IOMMU_SUPPORT) +=3D iommu-pages.o
+ obj-$(CONFIG_IOMMU_API) +=3D iommu-traces.o
+diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
+index 71d692c9a8f49..21fa1775eae3f 100644
+=2D-- a/drivers/iommu/iommufd/Makefile
++++ b/drivers/iommu/iommufd/Makefile
+@@ -12,7 +12,7 @@ iommufd-y :=3D \
+=20
+ iommufd-$(CONFIG_IOMMUFD_TEST) +=3D selftest.o
+=20
+=2Dobj-$(CONFIG_IOMMUFD) +=3D iommufd.o
++obj-y +=3D iommufd.o
+ obj-$(CONFIG_IOMMUFD_DRIVER) +=3D iova_bitmap.o
+=20
+ iommufd_driver-y :=3D driver.o
+=2D-=20
+2.49.0
+
+
 =2D-=20
 Rolf Eike Beer
 
@@ -90,21 +96,5 @@ Office Bonn: Bachstr. 6, 53115 Bonn, Germany
 http://www.emlix.com
 
 emlix - your embedded Linux partner
---nextPart23936481.6Emhk5qWAg
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iLMEAAEIAB0WIQQ/Uctzh31xzAxFCLur5FH7Xu2t/AUCaCHyjwAKCRCr5FH7Xu2t
-/NGvBACQ++ncU9h70pXINUzTwksmp8QYS7bw5uht6BV/o0aqHCaFisMsBu5xsT/N
-Q6AEn+ablK7oufZX2TqX8jKVZlPoEZYW6SEebCOytttzFqk/EFtoCNvLO66wISBe
-vPSrcpiktcbYyuPMd9/rsvKiEkvYwwrY/Hs4eYWkS+DU6ppKRA==
-=7yC0
------END PGP SIGNATURE-----
-
---nextPart23936481.6Emhk5qWAg--
-
 
 
