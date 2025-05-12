@@ -1,25 +1,33 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 04CE625C832
-	for <iommu@lists.linux.dev>; Mon, 12 May 2025 13:07:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5A36522F
+	for <iommu@lists.linux.dev>; Mon, 12 May 2025 13:13:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747055269; cv=none; b=pK4F/1NtfxBcsR5oAZefbCIaFce0Kqxqxn4laLOyTrR2mRa/WJN1DmEi39YAg6LE9WjxYXJBaI+luxffB3CLGyZyP1hwhXP0lVazyajmegQ3IDVPGbYAiH9iQ/BMLd0i1sSsISrfLk7ViivaL5eR9jJZacPP6rDEvaJJwIYaCS4=
+	t=1747055635; cv=none; b=oOeWk0QJSE10/b47hln0MT/xwjggR+SE6rbjXobTd7fiNDyeHQk4Oq19WYvL+LxArdxNQu94xewN7bLdyrKRxv31Eg6aD3gJX8R44ri37R7jg542Y9zmrpAGP/SVl26r9S6k6wVx44gPv0WTLrgrw1dcBEe05//3aFUqqW7rOgo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747055269; c=relaxed/simple;
-	bh=1dC9tqxjkLDhSyRziAIuOV7EgJfqIP8QHeVCN6LKOMs=;
+	s=arc-20240116; t=1747055635; c=relaxed/simple;
+	bh=DnuykgSS8k4YLa9tPqBa2OQM/3QIufbPgMvo2bQc47g=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kbFVfAKWpCHVzvuGAsM34Z+c6a6pNRfKc4AlymYsasWZVIb8roU4q0cIyxsff4qdoQX/bSlLObDK2+p8wiF9VzC1GD7ZICRzAS5RjVM3oefQ609FlZPh8SldKzesMLYRoSYhwB6Rkb/81Zmfd/iZbm3BuAhDFf7UScSbgF35vTQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2706C150C;
-	Mon, 12 May 2025 06:07:35 -0700 (PDT)
-Received: from [10.57.90.222] (unknown [10.57.90.222])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7962D3F5A1;
-	Mon, 12 May 2025 06:07:41 -0700 (PDT)
-Message-ID: <015746d7-ca46-4978-a441-09fba781fdd4@arm.com>
-Date: Mon, 12 May 2025 14:07:39 +0100
+	 In-Reply-To:Content-Type; b=F0nHy1y7XsggIhnHu9CgDzbMmWawsqictjBQsWVvAhoUemgn+lJYmgCam6H1AyAjsCL2YgbgyqIEtFWaofiouN4AN8hRYKH/NloSRUJlwm5RF8K16uwupnOicNdh0Bg4PRXX5PGFw78t5HDuEJm3A617XCVwCdQHj1inNrYaUM0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=s2CMYGYF; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="s2CMYGYF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6204C4CEE7;
+	Mon, 12 May 2025 13:13:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1747055635;
+	bh=DnuykgSS8k4YLa9tPqBa2OQM/3QIufbPgMvo2bQc47g=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=s2CMYGYFrZXNNJuNpz00Tf5uJ7dPUXe73HbhzHEOrBhBimDWBj/OxYNZhI+aeflig
+	 uKRshUExJvpL4zsGMqA9y7a34whCkzCKy1PoXMjL9TqLJAfV+RAVUScf4lGy63rF6V
+	 yQHux0tHB9zzi0EN6nUACloEACzHd7UbY2kXv7oe8BoCdRtfVZabX/4nwqedncwzqy
+	 dPSqaa6uDSwMe6FwQuUd0fOOhGZ06+XbyDFbwDjMPTQqs7j8NxVzYW67d7VrAoWyy2
+	 F5QL4KxyzujC3pe9GUoPKdKbilzQMiQAGBmHuszkZ7JGayjrTtBdaHfsxdHEot32j1
+	 7Vkvg/HSz1tDg==
+Message-ID: <49c4346c-43d0-460e-9446-66e0c2dfacfc@kernel.org>
+Date: Mon, 12 May 2025 08:13:54 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,102 +35,150 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RESEND PATCH v6 1/3] arm64: Add BBM Level 2 cpu feature
-Content-Language: en-GB
-To: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>
-Cc: =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
- suzuki.poulose@arm.com, yang@os.amperecomputing.com, corbet@lwn.net,
- jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
- akpm@linux-foundation.org, paulmck@kernel.org, mark.rutland@arm.com,
- joey.gouly@arm.com, maz@kernel.org, james.morse@arm.com, broonie@kernel.org,
- oliver.upton@linux.dev, baohua@kernel.org, david@redhat.com,
- ioworker0@gmail.com, jgg@ziepe.ca, nicolinc@nvidia.com, mshavit@google.com,
- jsnitsel@redhat.com, smostafa@google.com, kevin.tian@intel.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-References: <20250428153514.55772-2-miko.lenczewski@arm.com>
- <20250428153514.55772-4-miko.lenczewski@arm.com>
- <20250506142508.GB1197@willie-the-truck>
- <78fec33d-fe66-4352-be11-900f456c9af3@arm.com>
- <20250509134904.GA5707@willie-the-truck> <aB4nqtMJuvvp7Vwm@arm.com>
-From: Ryan Roberts <ryan.roberts@arm.com>
-In-Reply-To: <aB4nqtMJuvvp7Vwm@arm.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH v2] iommu/amd: Allow matching ACPI HID devices without
+ matching UIDs
+To: Vasant Hegde <vasant.hegde@amd.com>, mario.limonciello@amd.com,
+ joro@8bytes.org, will@kernel.org
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Paul Blinzer <Paul.Blinzer@amd.com>, iommu@lists.linux.dev
+References: <20250505144451.326555-1-superm1@kernel.org>
+ <0f59569b-4f92-4d2b-8f7b-05345382eff7@amd.com>
+Content-Language: en-US
+From: Mario Limonciello <superm1@kernel.org>
+In-Reply-To: <0f59569b-4f92-4d2b-8f7b-05345382eff7@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 09/05/2025 17:04, Catalin Marinas wrote:
-> On Fri, May 09, 2025 at 02:49:05PM +0100, Will Deacon wrote:
->> On Tue, May 06, 2025 at 03:52:59PM +0100, Ryan Roberts wrote:
->>> On 06/05/2025 15:25, Will Deacon wrote:
->>>> This penalises large homogeneous systems and it feels unnecessary given
->>>> that we have the ability to check this per-CPU. Can you use
->>>> ARM64_CPUCAP_BOOT_CPU_FEATURE instead of ARM64_CPUCAP_SYSTEM_FEATURE
->>>> to solve this?
->>>
->>> We are trying to solve for the case where the boot CPU has BBML2 but a secondary
->>> CPU doesn't. (e.g. hetrogeneous system where boot CPU is big and secondary is
->>> little and does not advertise the feature. I can't remember if we proved there
->>> are real systems with this config - I have vague recollection that we did but my
->>> memory is poor...).
->>>
->>> My understanding is that for ARM64_CPUCAP_BOOT_CPU_FEATURE, "If the boot CPU
->>> has enabled this feature already, then every late CPU must have it". So that
->>> would exclude any secondary CPUs without BBML2 from coming online?
->>
->> Damn, yes, you're right. However, it still feels horribly hacky to iterate
->> over the online CPUs in has_bbml2_noabort() -- the cpufeature framework
->> has the ability to query features locally and we should be able to use
->> that. We're going to want that should the architecture eventually decide
->> on something like BBML3 for this.
->>
->> What we have with BBML2_NOABORT seems similar to an hwcap in that we only
->> support the capability if all CPUs have it (rejecting late CPUs without it
->> in that case) but we can live without it if not all of the early CPUs
->> have it. Unlikely hwcaps, though, we shouldn't be advertising this to
->> userspace and we can't derive the capability solely from the sanitised
->> system registers.
->>
->> I wonder if we could treat it like an erratum in some way instead? That
->> is, invert things so that CPUs which _don't_ have BBML2_NOABORT are
->> considered to have a "BBM_CONFLICT_ABORT" erratum (which we obviously
->> wouldn't shout about). Then we should be able to say:
->>
->>   - If any of the early CPUs don't have BBML2_NOABORT, then the erratum
->>     would be enabled and we wouln't elide BBM.
->>
->>   - If a late CPU doesn't have BBML2_NOABORT then it can't come online
->>     if the erratum isn't already enabled.
->>
->> Does that work? If not, then perhaps the cpufeature/cpuerrata code needs
->> some surgery for this.
+On 5/12/2025 12:54 AM, Vasant Hegde wrote:
+> Hi Mario,
 > 
-> Ah, I should have read this thread in order. I think we can treat this
-> as BBML2_NOABORT available as default based on ID regs and use the
-> allow/deny-list as an erratum.
+> On 5/5/2025 8:14 PM, Mario Limonciello wrote:
+>> From: Mario Limonciello <mario.limonciello@amd.com>
+>>
+>> A BIOS upgrade has changed the IVRS DTE UID for a device that no
+>> longer matches the UID in the SSDT. In this case there is only
+>> one ACPI device on the system with that _HID but the _UID mismatch.
+>>
+>> IVRS:
+>> ```
+>> [1E4h 0484 001h]               Subtable Type : F0 [Device Entry: ACPI HID Named Device]
+>> [1E5h 0485 002h]                   Device ID : 0060
+>> [1E7h 0487 001h] Data Setting (decoded below) : 40
+>>                                      INITPass : 0
+>>                                      EIntPass : 0
+>>                                       NMIPass : 0
+>>                                      Reserved : 0
+>>                                   System MGMT : 0
+>>                                    LINT0 Pass : 1
+>>                                    LINT1 Pass : 0
+>> [1E8h 0488 008h]                    ACPI HID : "MSFT0201"
+>> [1F0h 0496 008h]                    ACPI CID : 0000000000000000
+>> [1F8h 0504 001h]                  UID Format : 02
+>> [1F9h 0505 001h]                  UID Length : 09
+>> [1FAh 0506 009h]                         UID : "\_SB.MHSP"
+>> ```
+>>
+>> SSDT:
+>> ```
+>> Device (MHSP)
+>> {
+>>      Name (_ADR, Zero)  // _ADR: Address
+>>      Name (_HID, "MSFT0201")  // _HID: Hardware ID
+>>      Name (_UID, One)  // _UID: Unique ID
+>> ```
+>>
+>> To handle this case; while enumerating ACPI devices in get_acpihid_device_id()
+>> count the number of matching ACPI devices with a matching _HID. If there is
+>> exactly one _HID match then accept it even if the UID doesn't match. Other
+>> operating systems allow this, but the current IVRS spec doesn't explicitly
+>> allow or disallow it. Output 'Firmware Bug' for this case to encourage it to
+>> be solved in the BIOS.
+>>
+>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>> ---
+>> v2:
+>>   * Use FW_BUG
+>>   * Update commit message
+>> Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>> Cc: Vasant Hegde <Vasant.Hegde@amd.com>
+>> Cc: Paul Blinzer <Paul.Blinzer@amd.com>
+>> ---
+>>   drivers/iommu/amd/iommu.c | 24 ++++++++++++++++++++----
+>>   1 file changed, 20 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+>> index b19e8c0f48fa2..06f747d2f964c 100644
+>> --- a/drivers/iommu/amd/iommu.c
+>> +++ b/drivers/iommu/amd/iommu.c
+>> @@ -109,7 +109,8 @@ static inline int get_acpihid_device_id(struct device *dev,
+>>   					struct acpihid_map_entry **entry)
+>>   {
+>>   	struct acpi_device *adev = ACPI_COMPANION(dev);
+>> -	struct acpihid_map_entry *p;
+>> +	struct acpihid_map_entry *p, *p1;
+>> +	bool fw_bug;
 > 
+> Initialize these variables?
 
-Just to make sure I've understood all this, I think what you are both saying is
-we can create a single capability called ARM64_HAS_NO_BBML2_NOABORT of type
-ARM64_CPUCAP_LOCAL_CPU_ERRATUM. Each CPU will then check it has BBML2 and is in
-the MIDR allow list; If any of those conditions are not met, the CPU is
-considered to have ARM64_HAS_NO_BBML2_NOABORT.
+Thanks - I'll make sure p1 is initialized to NULL.
+> 
+>>   
+>>   	if (!adev)
+>>   		return -ENODEV;
+>> @@ -117,11 +118,26 @@ static inline int get_acpihid_device_id(struct device *dev,
+>>   	list_for_each_entry(p, &acpihid_map, list) {
+>>   		if (acpi_dev_hid_uid_match(adev, p->hid,
+>>   					   p->uid[0] ? p->uid : NULL)) {
+>> -			if (entry)
+>> -				*entry = p;
+>> -			return p->devid;
+>> +			p1 = p;
+>> +			fw_bug = false;
+>> +			break;
+>> +		}
+>> +
+>> +		/* In ase there is no UID match, but exactly one HID match */
+>> +		if (acpi_dev_hid_match(adev, p->hid)) {
+>> +			p1 = p;
+>> +			fw_bug = true;
+> 
+> I am not sure why you dropped counter from v1. I think we still need HID match
+> counter so that function returns -ENODEV if HID match counter > 1?
+> 
+> -Vasant
 
-Then we have this helper:
+I was hoping to avoid more variables than necessary but be able to show 
+a message.  Initially I'm tempted to add an extra case into the 
+acpi_dev_hid_match() block:
 
-static inline bool system_supports_bbml2_noabort(void)
-{
-	return system_capabilities_finalized() &&
-	       !alternative_has_cap_unlikely(ARM64_HAS_NO_BBML2_NOABORT);
+if (acpi_dev_hid_match()) {
+	if (fw_bug)
+		return -ENODEV;
+	fw_bug = true;
+	p1 = p;
 }
 
-system_capabilities_finalized() is there to ensure an early call to this helper
-returns false (i.e. the safe value before we have evaluated on all CPUs).
-Because ARM64_HAS_NO_BBML2_NOABORT is inverted it would otherwise return true
-prior to finalization.
+However this breaks if there are 3 HID devices because it could preclude 
+a HID/UID match being the 3rd enumerated.  So I think you're right, for 
+this specific case we need a counter as well to know whether to show 
+fw_bug message and allow it.
 
-I don't believe we need any second (SYSTEM or BOOT) feature. This is sufficient
-on its own?
+I'll go back the counter used from v1.
 
-Thanks,
-Ryan
+> 
+>>   		}
+>>   	}
+>> +
+>> +	if (p1) {
+>> +		if (fw_bug)
+>> +			dev_err_once(dev, FW_BUG "No matching UID in ACPI tables, but found matching HID.\n");
+>> +		if (entry)
+>> +			*entry = p1;
+>> +		return p1->devid;
+>> +	}
+>> +
+>>   	return -EINVAL;
+>>   }
+>>   
+> 
 
