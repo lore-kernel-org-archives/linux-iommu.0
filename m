@@ -1,204 +1,121 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2055.outbound.protection.outlook.com [40.107.237.55])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24B7F1EC01D
-	for <iommu@lists.linux.dev>; Mon, 12 May 2025 15:32:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.55
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747063925; cv=fail; b=azvYDm91EKAs+akbJTLaLTu5pQr7XZqDav5iDj2HlpPFUjvC+T40dfmiKK7hICPPac+k/BkWHDCtcICVKOGXwSwsS3IIoX4b5OgLtRiJ3eJRTVYZ+IN/233T6zYNs57fvtaLdfj9zHLfDt/zF8NmYLwl7/W+RADc5luIdgRsQjY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747063925; c=relaxed/simple;
-	bh=IU6dS3EXJbcSNiuE+Hf9y1EvW/8AfMKia14FejedQm0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=OCSVicP7zI10qnVWBX3eDBZQm6iftyBbhDoOrwjuSiYc65C+FX5ndFxk2QQ/2EXwBgQtbWRgh+tzD5gYL+TGEFvnHPA/B+pGCj/eLZc+raC0Bhas5jOw7RWy56OYYusvS+87mhHLI6fz7ctGcRZck4Oj+tH+PZS70wmqwEC5j34=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=gRiMNtJz; arc=fail smtp.client-ip=40.107.237.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="gRiMNtJz"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=v3hWnpJr+a66Zy0HCXb5BmhqHDmr+zLjaR62TY8xVR43hbIHAqSNDUJm/bV925+v92QhuushKuG9+8ToEaLYQPyKRCukyeiZzjY1H9xr7boevB5D4G1TpPwvEoGlUB6p2FqwvI1WrXUPlhz1HxyCWuXVtqSrDICpCD96s0GfFKJFM2TiDO3CIUrVeZWvPQ+0PVMl1pIljwnjVnFdqaQC6ZAxiFFc23q8h/pTiXBxdWZhjNPlMdKZAgqCNWo8w0MpAtDEZMb81EWrFvcdk6DUI8w+97BGf0VeRURABe4Ht8RQkTSV9gLSwuB/jDyn0nfKAyDTFLPRMWDPO40jDun7mA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dZA+CQIkCvizA8dLjx0OEaP33Sl1YDFtnUJy1LyP3Wk=;
- b=wD1cd04iDvDhPohkdoRQjjtGr7imXQyUw/p3Hxa5a0xj8BKs5ZcRQ77qrzl/ICh1BE3nzgTDCeQfgk9SCMRh32/j6+YYha6ChTYSc4h9kNwjZeRd7yQjKQJaVF6XTC72SXnGi//6DIPDWzhwZKjIgO9XswDDTpacDdGULurgSWXRvLvr/KFoaklkl/EC09OH5y3g+BRaq24kacZKgraz1tdSeJFracqTKehdv6hpobJHU6spdXfek/R7l/FcA3CFXNhNQyoipAYql+R408orgmrkRSMlc0P4gFXZEd0TsWAKOAzJTF7MejJiYvvfqNhU5qUEskZy70ZTKqd3LKnUSw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dZA+CQIkCvizA8dLjx0OEaP33Sl1YDFtnUJy1LyP3Wk=;
- b=gRiMNtJzNlEtC9GGMrIupQSVb6906soxM8J4EVKNBeC/wDwKaS5sNcoYOJRRchDDBmoiwuLsXqJqLdWZ9t+Ol+YpJuAJcUe1/CitLkaIzUDB+HyM5x1v4mk5xiepIw2GP7Jx8IJoq9MTt0obnUf9tKqGreHx+tm1Hso6hall2PfPwUBpikuIfygnn7/tTAoicE0YEPXMAO9WfuoVRw/Cz/m6c9jrTPF52Kzfo7XYeY9F+3k8jXQeRTGGKhPsxN+qWhlCquGu+s/BUwOSudtz9iQY/KSzdnLd8dL/0DVyHnBtLmCMEF/MyACk0F255rY2t4xFRS8HzVWrXwP+FOrOFA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by DS0PR12MB7656.namprd12.prod.outlook.com (2603:10b6:8:11f::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8722.24; Mon, 12 May
- 2025 15:31:57 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8722.027; Mon, 12 May 2025
- 15:31:57 +0000
-Date: Mon, 12 May 2025 12:31:56 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alexey Kardashevskiy <aik@amd.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
-	will@kernel.org, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	robin.murphy@arm.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	shuah@kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kselftest@vger.kernel.org, eric.auger@redhat.com,
-	jean-philippe@linaro.org, mdf@kernel.org, mshavit@google.com,
-	shameerali.kolothum.thodi@huawei.com, smostafa@google.com,
-	yi.l.liu@intel.com
-Subject: Re: [PATCH v2 06/19] iommufd/viommu: Add
- IOMMU_VIOMMU_SET/UNSET_VDEV_ID ioctl
-Message-ID: <20250512153156.GA286987@nvidia.com>
-References: <95ab62fa-bb1c-4e4a-a210-b0bdba0d4ad2@amd.com>
- <aBHYN39FcH+NG5Ab@Asurada-Nvidia>
- <20250505170807.GP2260709@nvidia.com>
- <aBl5uLOFCntuIYYz@nvidia.com>
- <20250506125847.GA2260709@nvidia.com>
- <8e0182b9-7a8b-4388-9f22-c39bfbaf3df1@amd.com>
- <20250507122411.GA90261@nvidia.com>
- <76ac7908-45d7-4821-b34c-a5d2ee49c7d7@amd.com>
- <20250509220717.GE5657@nvidia.com>
- <e574e1d0-b003-462d-9a59-ef16e95b7766@amd.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e574e1d0-b003-462d-9a59-ef16e95b7766@amd.com>
-X-ClientProxiedBy: BLAPR03CA0105.namprd03.prod.outlook.com
- (2603:10b6:208:32a::20) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F1B535953;
+	Mon, 12 May 2025 16:33:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1747067595; cv=none; b=Tmmzy6RmCRigsSkK1gIBa0YxnGHVnZxkYI778SclJbg/hW3hrsH6zRJEqi1QFWGKyZypobEDhl0o6z81940nRggqiiiutuLYWVk/pz7XoKSMBzfZHbAbMQF0PYlzj3wgZYu8O8e1FSrlZhJ6Tt531LfqnxxUz3vIjtNYen/Q6PI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1747067595; c=relaxed/simple;
+	bh=4CikMXK/hN7w+lsyH7sGVCGXe7QxbFqK2Gs+AVxST0w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MHTu7ZBNnHOsXWK8Pv2rPCQop3rKjAhx8QeEf9bhZokPcWoT6jNi5sN0iglb6NsO9kuEWOx7zr0ZMIQP7fFrJkVM+APS2NPLhjUbVaupdt2qjEzQw5/OX5AHQnezV/Dv4ZzOLLhrREqJ4MDnCINdO9otUukP7Z0bCh50WQA3G3g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6A9FC4CEE7;
+	Mon, 12 May 2025 16:33:09 +0000 (UTC)
+Date: Mon, 12 May 2025 17:33:06 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Ryan Roberts <ryan.roberts@arm.com>
+Cc: Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Will Deacon <will@kernel.org>,
+	=?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>,
+	yang@os.amperecomputing.com, corbet@lwn.net,
+	jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
+	akpm@linux-foundation.org, paulmck@kernel.org, mark.rutland@arm.com,
+	joey.gouly@arm.com, maz@kernel.org, james.morse@arm.com,
+	broonie@kernel.org, oliver.upton@linux.dev, baohua@kernel.org,
+	david@redhat.com, ioworker0@gmail.com, jgg@ziepe.ca,
+	nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com,
+	smostafa@google.com, kevin.tian@intel.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+Subject: Re: [RESEND PATCH v6 1/3] arm64: Add BBM Level 2 cpu feature
+Message-ID: <aCIiwrA_MOeVhFre@arm.com>
+References: <20250428153514.55772-2-miko.lenczewski@arm.com>
+ <20250428153514.55772-4-miko.lenczewski@arm.com>
+ <20250506142508.GB1197@willie-the-truck>
+ <78fec33d-fe66-4352-be11-900f456c9af3@arm.com>
+ <20250509134904.GA5707@willie-the-truck>
+ <aB4nqtMJuvvp7Vwm@arm.com>
+ <015746d7-ca46-4978-a441-09fba781fdd4@arm.com>
+ <4709ff5a-f89c-426e-ae95-f8356808f4f5@arm.com>
+ <99079d56-428b-4bc4-b20a-dc10032f2a2f@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|DS0PR12MB7656:EE_
-X-MS-Office365-Filtering-Correlation-Id: 757b0029-9bc4-4b62-4307-08dd916a21b6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?k0CbvwuVwxUC7aiKT9z1u/T64XtaIn8LcWn8SBJvcYEX5N/j75Iw1UlFM1WI?=
- =?us-ascii?Q?PAuLwwkgBR1p+L/d7sWAHV3rRFbGSRsumxQq4QBSBem3souF5rQ2iksBY3/Z?=
- =?us-ascii?Q?Oq1JaN/AMrO7cNXHy3a+7NA9vXhBPErv+/zFedfLxO5KsSsvC8dkc87Up/TC?=
- =?us-ascii?Q?WRydTzBRENLji347pP8SSY44CUomaRtzhkmwvwM8TT1R/3isJwzt2+9uXeWx?=
- =?us-ascii?Q?DMdMLfLkDvjGHCUdP09X2yzUhUGKbEdIzWA+coouKwWJR7tYpzE7BYqePbnG?=
- =?us-ascii?Q?fstGRRIcSrVeWiFqPdlkVQBgmEfrrpCW1HZOpFJiIQTfgJwkLPvFtkM+2EKj?=
- =?us-ascii?Q?y39gBF7XklC9pldrXABF1Sh7e9r1Cf2BTv4qEEG3Fc9n6BI6HI2JBDS5AqJS?=
- =?us-ascii?Q?bY1BoG5OGIX09I6A97HYRRmkn6az0oBnxZywy2MmuYM3UYc1yV2TfAHpohXE?=
- =?us-ascii?Q?XaJLUpp5tB+bZqC0+HCGZBcbxfOQxcN36GDvqEoCJidYX2H4YRC/Oo+/PUkZ?=
- =?us-ascii?Q?3kKHmdXajEs8iV8WvlSBJtM1AAURYUOdFfoz8TxP25cRA8oB14BYwze+Z/IE?=
- =?us-ascii?Q?MA8NERO23f/3iNcS+lGB0sTXJb593yo7RCCD0OicsStjTO4YPpP/pEGphrrO?=
- =?us-ascii?Q?LPUbioyh2BvMGWVXP9NVwDdESKpKRvL00le98Yn7f+dl2n04qlrpYdQzsjp7?=
- =?us-ascii?Q?czMcYxLxnUrxBnzZy/3jGhSdkUiZzSb94MHXXFaukisDtr/hT9qQqOBDBZiN?=
- =?us-ascii?Q?Q6NjxS2bwAKRFAe3xobz4mgw60Oe/7PPhMSbiPqcGjGjQHvMdz5N6l2me/EB?=
- =?us-ascii?Q?UNlL0kd1j0QZ/P0+XmfuQ3Jm4U9lAdPAD/gyjEjqvBB8DZsMTKZOjPJH8s0X?=
- =?us-ascii?Q?0QZvUtl5kRiIkDqUNmzPOYzCx5n6jRZpfh70X0QfbNZe5rwe9NmJ2/kSLPUC?=
- =?us-ascii?Q?C2zRZbXDWBQwopn8hR6sl/Z+K/BsmZ6O8OKyO6zlDsvMCgrSHbBy5VD8KoT9?=
- =?us-ascii?Q?Bma9xy34dbbQ5kbHe57RsBRXCiA8Cd6JEavMwuCXY0OIk2vcXr2WPi44QgsD?=
- =?us-ascii?Q?yNVLzARuEvgsRKyQbDMza1H+TjIVW0XzadmMh/dpQdPVeOsI1VuXusileoJl?=
- =?us-ascii?Q?c+j83HDcHeb6cF+PbUXT6gfFk06FPBhRwP/E40iZn1GfPtJe8oFeTwtm0Xg+?=
- =?us-ascii?Q?Qh5BE4Fa31Ogl4gXqwEfzNu68bjIJv73wIPCTDaXEOHWLnnI3O0Btkpcx/rA?=
- =?us-ascii?Q?RNNPAr3BQeUUyngXyLYj/7DcWJymuMTYnSq5iuyv0pFaerXhM5Qs3oMxirs9?=
- =?us-ascii?Q?0CIC51QLlK/jB6n4RBP/wgfEyKB+v1zXi4nqN6rrsvtJTfFtP3NaY4a4Nk4+?=
- =?us-ascii?Q?6R0Lw/UezOmeh8SsvIJAFF/LSAqD0Fj4BGsoXgKXmiDHPxfKFiXnit4df/+R?=
- =?us-ascii?Q?xuCoLV3h/oY=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?HEonM6jN6Q7kSQB9sSein3qSoPEfKLk1ulXAuQZmeWLPoTl7Vr0mpZ7snYk+?=
- =?us-ascii?Q?I19Jduqa7SUgy2ga/QtIkQLmWcYDfI++bQAjyKMdDtdyjov8A4wgLJaRAz7O?=
- =?us-ascii?Q?2swn9H745l8EquJFyMvXc0q2xP8UMgmcs5PIeZLTuaRFQ12/QOmbG5LLe9ZA?=
- =?us-ascii?Q?cJrzZSpDNhW2m4h2K9hq0HaV4hg/G+FqKB347/PcW4cXfKIw5ioGeRSECDEA?=
- =?us-ascii?Q?/kE7BZ5fvezZNMqsu3+BtIRoLdgCbmH4Fz395MP1h9l4b+ihhMnG87QhE17M?=
- =?us-ascii?Q?GyDtsQDiPctHGuzwjCJhL/iNcCdNwdUWdLkXSpUwXR0m+szVPtJpmcAg7ILS?=
- =?us-ascii?Q?80h70UXf+Qvi1yVJVM15TAIfaLLo8DUZBBxGDcl1HeccYagpgc0m8+hbFTbe?=
- =?us-ascii?Q?cGvusvlmAWEhsvZ1rHTLdkCigwcoeb8VDaePlsq1+vVEyAIpEPIuk3h2SPmD?=
- =?us-ascii?Q?EFLTD/9W2SUl26iIIHE1US1w2Py//bfGCEePzPWhvkT7MHiXSD82qKC1kLl1?=
- =?us-ascii?Q?gcW+D9YWgRHlfc1lNji/PRurd/4CeREAMD1rYvjIF0DeWQSnoMS4zDYVMbJE?=
- =?us-ascii?Q?3QdX+0AqRye6oD5J1XkIip3HG94sGtWyL/OAjOBW1MSIturlwzCG5D+D4v3a?=
- =?us-ascii?Q?thVZyzBiLZt2V/Eo6S7MQP8UmWvHlhJFv/q9u0oC+ZOKzYls/I7dYEjNj1YM?=
- =?us-ascii?Q?+IggdApo1hbi5tfH7KJSG2lZQ+Z8P8jBCVJYNdnVVYD3YT9LKWtAsFB3z8fb?=
- =?us-ascii?Q?JTkGkh5cYJULyfnFBwW/vzWjyXYg3c6q5Zklcc2I6RWK4S5qA7Dueeev7nL7?=
- =?us-ascii?Q?nDyatBDymmMfSbUbKRyJXQKfAAcDu+XjzAGF0DUfVCHFivIHxQ9BQukFl8Uk?=
- =?us-ascii?Q?cUJatlv2p+AOH4YT810VFvfY6wLzp+M2Z4hIFkVHY2zvwkgnYw+zOnx2DeZ4?=
- =?us-ascii?Q?PmJvVUTEivk6t4vPfEcsunrV973G2Rt5CSyvn/3lr111pMWhlR6ouUMgcoQz?=
- =?us-ascii?Q?cFWjc2Q4kcSpfM7tCHI7Hm2cHq/F+nH+KsdH4GQ/FB2NzWVOGxcKds3HZOKo?=
- =?us-ascii?Q?YS+kGnreP8FZ814AFrorusOyHmGwEwyTNJur3CD5wjw93BwiU/sXQMhxl+9Y?=
- =?us-ascii?Q?CL4EYRbQUiIPe2Psh9rz/eDbL2QAUJYi+5wIJ0PSqZjgk+mGfJesdAJmUUQ/?=
- =?us-ascii?Q?Fr3prHUq+a8nIU3AOvxsohr0FPj+Wqkiy9bkKfQlUledGATJHK9RMqOSdIDK?=
- =?us-ascii?Q?15BVoiXr0B++MoEuVNRSt7Y2i985U91jtaoBcXZ2STtcWT4Lmo6yTa7lm94E?=
- =?us-ascii?Q?9fGlWq+Ogd1fLv1W0zVPRgimbucPDgQd6aWFqNXKBQGhMYdZqrnzx47I53IB?=
- =?us-ascii?Q?c7ugVtpzvyh+oFETxLReEs21otxS1BTzQ0VtDE5SkJ5/LiDeQDiAIauyzgwq?=
- =?us-ascii?Q?XKM8BvuUv2OvrvCon45A4OfX2Wh0qzbshxAVsHtyVEMT1R5Hu7EGUg12cshy?=
- =?us-ascii?Q?Oo/tCmTH+y4+OX3kWV8tQ7biqbEucmxdMeYZw+h/JsOMqmjHoAiF4J+Taty7?=
- =?us-ascii?Q?Ma0HInRG7bqQsmOhqiM=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 757b0029-9bc4-4b62-4307-08dd916a21b6
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2025 15:31:57.7088
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bRVJXYuXYQBdNP+oYOtFi06zu/azqqMvbPbh/h7670//g0vuA7GKzk7k3skOtfwU
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7656
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <99079d56-428b-4bc4-b20a-dc10032f2a2f@arm.com>
 
-On Sat, May 10, 2025 at 10:51:58PM +1000, Alexey Kardashevskiy wrote:
-> 
-> 
-> On 10/5/25 08:07, Jason Gunthorpe wrote:
-> > On Fri, May 09, 2025 at 12:57:18PM +1000, Alexey Kardashevskiy wrote:
-> > > 
-> > > 
-> > > On 7/5/25 22:24, Jason Gunthorpe wrote:
-> > > > On Wed, May 07, 2025 at 09:18:29PM +1000, Alexey Kardashevskiy wrote:
-> > > > 
-> > > > > > We should not destroy the vdevice for something like that. In a CC
-> > > > > > case that would unplug it from the VM which is not right.
-> > > > > 
-> > > > > vdevice is not directly seen by the guest, is not it? The guest will
-> > > > > see, for example, an "AMD IOMMU" and assume there is device table
-> > > > > for all 64K devices, and so on, it is QEMU which will be
-> > > > > reallocating vdevice in the host's IOMMUFD. Did I miss something
-> > > > > here? Thanks,
-> > > > 
-> > > > I imagined the vdevice would trigger the CC call to create the vPCI
-> > > > function in the guest attached to the secure iommu.
-> > > 
-> > > What is this vPCI going to look like inside the guest? There still
-> > > be AMD IOMMU PCI function and passed through to-be-trusted PCI
-> > > function.
+On Mon, May 12, 2025 at 02:35:01PM +0100, Ryan Roberts wrote:
+> On 12/05/2025 14:24, Suzuki K Poulose wrote:
+> > On 12/05/2025 14:07, Ryan Roberts wrote:
+> >> On 09/05/2025 17:04, Catalin Marinas wrote:
+> >>> On Fri, May 09, 2025 at 02:49:05PM +0100, Will Deacon wrote:
+> >>>> I wonder if we could treat it like an erratum in some way instead? That
+> >>>> is, invert things so that CPUs which _don't_ have BBML2_NOABORT are
+> >>>> considered to have a "BBM_CONFLICT_ABORT" erratum (which we obviously
+> >>>> wouldn't shout about). Then we should be able to say:
+> >>>>
+> >>>>    - If any of the early CPUs don't have BBML2_NOABORT, then the erratum
+> >>>>      would be enabled and we wouln't elide BBM.
+> >>>>
+> >>>>    - If a late CPU doesn't have BBML2_NOABORT then it can't come online
+> >>>>      if the erratum isn't already enabled.
+> >>>>
+> >>>> Does that work? If not, then perhaps the cpufeature/cpuerrata code needs
+> >>>> some surgery for this.
+> >>>
+> >>> Ah, I should have read this thread in order. I think we can treat this
+> >>> as BBML2_NOABORT available as default based on ID regs and use the
+> >>> allow/deny-list as an erratum.
+> >>
+> >> Just to make sure I've understood all this, I think what you are both saying is
+> >> we can create a single capability called ARM64_HAS_NO_BBML2_NOABORT of type
+> >> ARM64_CPUCAP_LOCAL_CPU_ERRATUM. Each CPU will then check it has BBML2 and is in
+> >> the MIDR allow list; If any of those conditions are not met, the CPU is
+> >> considered to have ARM64_HAS_NO_BBML2_NOABORT.
 > > 
-> > However the VMM tells it to look using the arguments to the create
-> > vdevice ioctl?
+> > I guess we need two caps.
 > > 
-> > I don't understand the question?
+> > 1. SYSTEM cap -> ARM64_HAS_BBML2. Based on the ID registers
+> > 2. An erratum -> ARM64_BBML2_ABORTS. Based on BBLM2==1 && !in_midr_list()
 > 
-> "We should not destroy the vdevice" confused me. It is not a device
-> which a VM would see (or is it?),
+> I don't think we *need* two caps; I was suggesting to consider both of these
+> conditions for the single cap. You are suggesting to separate them. But I think
+> both approaches give the same result?
+> 
+> I'm easy either way, but keen to understand why 2 caps are preferred?
 
-I think in some cases it will be.
+I guess it's easier to reason about than a single, negated property but
+the result should be identical. With two properties we can easily
+implement the idreg override like nobbml2 since this works on the
+sanitised ID regs. But we could also implement this differently, no need
+to rely on the ID regs.
 
-> we can create/destroy at any time (well, may be not, but the VM does
-> not have a say in this). And then this vPCI thing - what is it,
-> synonym to "vdevice" or a different thing?
+Stepping back a bit, we know that the MIDR allow-list implies
+BBML2_NOABORT (and at least BBML2 as in the ID regs). In theory, we need
+something like a SYSTEM_FEATURE which is the conjunction of all the
+early CPUs. However, such system-level cap is only checked after all the
+early CPUs booted _and_ only on the sanitised ID regs rather than MIDR.
 
-When I say vPCI I usually mean the VM's view of the secure virtual
-PCI function.
+We need a LOCAL_CPU feature behaviour to be called on each CPU but still
+have the conjunction of early CPUs, more like the system one. It should
+be permitted for late CPUs to have but not optional if already enabled.
 
-I'm still not completely clear how each of the arches split up the
-responsibility to create the vPCI between all the software
-components. I'm pretty sure there are quite a few differences here.
+So how about we introduce a WEAK_BOOT_CPU_FEATURE which gets enabled by
+the boot CPU if it has it _but_ cleared by any secondary early CPU if it
+doesn't (and never enabled by secondary CPUs). When the features are
+finalised, we know if all early CPUs had it. In combination with
+PERMITTED_FOR_LATE_CPU, we'd reject late CPUs that don't have it.
 
-Jason
+I think if we can get the above, it would be the cleaner option than
+trying to bend our minds around double negations like !NO_BBLM2_NOABORT.
+
+-- 
+Catalin
