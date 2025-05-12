@@ -1,104 +1,141 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B2773D6F;
-	Mon, 12 May 2025 10:07:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747044463; cv=none; b=EIID5DfV8PNatCUB+rMg0sb9D9KerywosRGw+AnyFoSCbs3K3YkD6mKchuULXn5imEAKVC5kp9SFg28/1jN5wW+4g51ItQKPq5ScgPXMMaRu5OEpFMjlCJ20c+BQYOFN9iJ7GVs1hC9QUUVBMmoXaFy6M70olO7MTTRXSVIgBDs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747044463; c=relaxed/simple;
-	bh=XALDZKGpGWCIJWhewU5QYMsRfS47+UV8sY1D37V1fag=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=Nybdvx2ZdWNu7OS0ZnQ31Q/9BpbkoRtGx6qGfcRuYn1nMRjK8GzSRzY/ElKPzlHW64Mv2ju+WMaqA/DM3y0kgkEWY9CWyWjTaPiXGxllsQlqTKzOb4QVUIsjv9A3uJbLabhie1iBdiy0WLGAPEg9Xwu/bKT1FSextRn8qZkFG6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BeyENDX1; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 856EE291874
+	for <iommu@lists.linux.dev>; Mon, 12 May 2025 11:20:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1747048847; cv=pass; b=Fx1cp4TSE7zSpkjsdrVExJ9g+WKAUoFtg4XIvSGdwBY9pbgj38kOO67yfrtEayBPp8K9h9YkHZehQuitr3Z7eJGktkiVD7HXxm2HzrUvw1fu5fL8mUA5h6kSqByDXrOZIJIXz883SOkdq5MwA+WyzDcm+mLwXiERvH4o9vADCEU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1747048847; c=relaxed/simple;
+	bh=fmR6fYqFrhWsjxGe1HOlntFlYUX6RV99vix96HuSf/Q=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=uwM2316/PTQdpRInYnJfAyXAyKqoxPLo7/0JMmRffBD0bqglUgao8vxit+nBmNWZDBhfGLYyed1BF1xmVotOVKEQesId9ly8LtCEMlP7gvVzh+YvJF7mP82v2kKqNoxvkS7uVPNcxroha7FsAa/e4PKQyeHlrNq9dK8PFwb2DAg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=R3LxhEyL; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BeyENDX1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D8BFC4CEE7;
-	Mon, 12 May 2025 10:07:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1747044463;
-	bh=XALDZKGpGWCIJWhewU5QYMsRfS47+UV8sY1D37V1fag=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=BeyENDX1we8D7zgGY2YFHTUWMiCzVu93YRbpelQHdSlaheD+E4xFo6XlsqdFYu1rO
-	 OMUWFCIMYeOEhF2Ftyv4XUS1LDLbcA4j0JvDm6EA4JEImJAttTKP06IJLp9A9u8CcM
-	 uxHLrn5uu2FDZi4XcTsRIeS+I3RpwrtIoaOTAJOTLAoAe2x2x7Ef8nX7qtsKut4UPg
-	 qDKP6aXKb5r2IAdBjjX9qriiZB5CWNeYA1nNkpKxYMGnIpwSPLaeliNgTHIZMNYimK
-	 3RmL7XRyHrqgqC6XnDz3TtwoBF9SKm0u/B0OaEK3EK7c3aduRxwL5VSsLJ1/v4a8x6
-	 2MRGp9GSeJgrA==
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>, 
- Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>, 
- Keith Busch <kbusch@kernel.org>, Leon Romanovsky <leon@kernel.org>
-Cc: Jake Edge <jake@lwn.net>, Jonathan Corbet <corbet@lwn.net>, 
- Jason Gunthorpe <jgg@ziepe.ca>, Zhu Yanjun <zyjzyj2000@gmail.com>, 
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
- Will Deacon <will@kernel.org>, Sagi Grimberg <sagi@grimberg.me>, 
- Bjorn Helgaas <bhelgaas@google.com>, Logan Gunthorpe <logang@deltatee.com>, 
- Yishai Hadas <yishaih@nvidia.com>, 
- Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, 
- Kevin Tian <kevin.tian@intel.com>, 
- Alex Williamson <alex.williamson@redhat.com>, 
- =?utf-8?q?J=C3=A9r=C3=B4me_Glisse?= <jglisse@redhat.com>, 
- Andrew Morton <akpm@linux-foundation.org>, linux-doc@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-block@vger.kernel.org, 
- linux-rdma@vger.kernel.org, iommu@lists.linux.dev, 
- linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org, 
- kvm@vger.kernel.org, linux-mm@kvack.org, 
- Niklas Schnelle <schnelle@linux.ibm.com>, 
- Chuck Lever <chuck.lever@oracle.com>, Luis Chamberlain <mcgrof@kernel.org>, 
- Matthew Wilcox <willy@infradead.org>, 
- Dan Williams <dan.j.williams@intel.com>, 
- Kanchan Joshi <joshi.k@samsung.com>, Chaitanya Kulkarni <kch@nvidia.com>
-In-Reply-To: <cover.1745831017.git.leon@kernel.org>
-References: <cover.1745831017.git.leon@kernel.org>
-Subject: Re: (subset) [PATCH v10 00/24] Provide a new two step DMA mapping
- API
-Message-Id: <174704445979.583981.12854692160586160920.b4-ty@kernel.org>
-Date: Mon, 12 May 2025 06:07:39 -0400
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="R3LxhEyL"
+ARC-Seal: i=1; a=rsa-sha256; t=1747048809; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=IGKqITX6Hjk690RY4FGEkhcu0uueDzYWH+OLU72fXnXH6OOjN7ZatAhSq64w3SvZnjFb4K7mPg78q/+VY6Cy/UgVseEW17UQ0plnO+1zKo7Zp0zrrN1mKzoriGnzcfMbpPm/H4TC+NoxwFJyxE9YH09oFkW4mqrLzNnXXeTpexc=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1747048809; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=g90Nw/fmAwO4pS0osmfC5pCtVd1LdCVyskY3AiteFZ8=; 
+	b=GSz+wyQ0B6J5lticVKsosdIHC/sAwq6EkWhn+PJ9fdBFQDAolCQYBoMYPZDkVMiTnz345VHIf8cGZv0VOg+MyURqAPNnoknsrIs2Re6qZ8Duj5MpwIKheuCbvSLYnjr6GeBEJU+JyJTNrIVROm6ENaDTF/cOwDHsNprxCFGeuC4=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
+	dmarc=pass header.from=<daniel.almeida@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1747048809;
+	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
+	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:References:To:To:Reply-To;
+	bh=g90Nw/fmAwO4pS0osmfC5pCtVd1LdCVyskY3AiteFZ8=;
+	b=R3LxhEyLq2DqfFYmblbWb4c+h3W1emUUlpHrUoLXj01DG1IuMN1Guo4mY/Kp6YFw
+	IprYx4QLCd3qwdqfNiVVsonHKMMiRVdYpAcTn53vRBcgZqED4b0hu/QS6OZDRm1wgBO
+	Rl/5YiS0EOBOTaJQFoGiM1VJYjH5nTYtW1kQ2wAk=
+Received: by mx.zohomail.com with SMTPS id 1747048806755289.84670803140045;
+	Mon, 12 May 2025 04:20:06 -0700 (PDT)
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.15-dev-37811
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.500.181.1.5\))
+Subject: Re: [RFC PATCH 0/2] scatterlist rust bindings
+From: Daniel Almeida <daniel.almeida@collabora.com>
+In-Reply-To: <20250512095544.3334680-1-abdiel.janulgue@gmail.com>
+Date: Mon, 12 May 2025 08:19:48 -0300
+Cc: dakr@kernel.org,
+ lyude@redhat.com,
+ Miguel Ojeda <ojeda@kernel.org>,
+ Alex Gaynor <alex.gaynor@gmail.com>,
+ Boqun Feng <boqun.feng@gmail.com>,
+ Gary Guo <gary@garyguo.net>,
+ =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>,
+ Alice Ryhl <aliceryhl@google.com>,
+ Trevor Gross <tmgross@umich.edu>,
+ Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ airlied@redhat.com,
+ rust-for-linux@vger.kernel.org,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+ Petr Tesarik <petr@tesarici.cz>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ Sui Jingfeng <sui.jingfeng@linux.dev>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ Michael Kelley <mhklinux@outlook.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <78DB1F66-9DF5-4679-ADC4-177BED5D4FDE@collabora.com>
+References: <20250512095544.3334680-1-abdiel.janulgue@gmail.com>
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+X-Mailer: Apple Mail (2.3826.500.181.1.5)
+X-ZohoMailClient: External
 
+Hi Abdiel,
 
-On Mon, 28 Apr 2025 12:22:06 +0300, Leon Romanovsky wrote:
-> Following recent on site LSF/MM 2025 [1] discussion, the overall
-> response was extremely positive with many people expressed their
-> desire to see this series merged, so they can base their work on it.
-> 
-> It includes, but not limited:
->  * Luis's "nvme-pci: breaking the 512 KiB max IO boundary":
->    https://lore.kernel.org/all/20250320111328.2841690-1-mcgrof@kernel.org/
->  * Chuck's NFS conversion to use one structure (bio_vec) for all types
->    of RPC transports:
->    https://lore.kernel.org/all/913df4b4-fc4a-409d-9007-088a3e2c8291@oracle.com
->  * Matthew's vision for the world without struct page:
->    https://lore.kernel.org/all/20250320111328.2841690-1-mcgrof@kernel.org/
->  * Confidential computing roadmap from Dan:
->    https://lore.kernel.org/all/6801a8e3968da_71fe29411@dwillia2-xfh.jf.intel.com.notmuch
-> 
-> [...]
+> On 12 May 2025, at 06:53, Abdiel Janulgue <abdiel.janulgue@gmail.com> =
+wrote:
+>=20
+> Hi,
+>=20
+> Here are the scatterlist bindings that has been brewing for a while in =
+my
+> local tree while working with Nova code. The bindings are used mostly =
+to
+> build the radix3 table from the GSP firmware which is loaded via dma.
+> This interface can be used on top of existing kernel scatterlist =
+objects
+> or to allocate a new one from scratch.
+>=20
+> Some questions still need to be resolved, which mostly come from
+> the DeviceSGTable::dma_map() function. Primarily, what if you call
+> bindings::dma_map_sgtable() on an already mapped sg_table? =46rom my
 
-Applied, thanks!
+Perhaps we should introduce a type for buffers which are known to be =
+mapped. Then
+we can simply not offer the option to map for that type.
 
-[10/24] mm/hmm: let users to tag specific PFN with DMA mapped bit
-        https://git.kernel.org/rdma/rdma/c/285e871884ff3d
-[11/24] mm/hmm: provide generic DMA managing logic
-        https://git.kernel.org/rdma/rdma/c/8cad4713056612
-[12/24] RDMA/umem: Store ODP access mask information in PFN
-        https://git.kernel.org/rdma/rdma/c/eedd5b1276e76d
-[13/24] RDMA/core: Convert UMEM ODP DMA mapping to caching IOVA and page linkage
-        https://git.kernel.org/rdma/rdma/c/1efe8c0670d6a6
-[14/24] RDMA/umem: Separate implicit ODP initialization from explicit ODP
-        https://git.kernel.org/rdma/rdma/c/15a9f67e286b37
+> experiments it doesn't seem to do anything and no indication is =
+returned if
+> the call succeeded or not. Should we save the "mapping info" to a list
+> everytime we call DeviceSGTable::dma_map more than once?
 
-Best regards,
--- 
-Leon Romanovsky <leon@kernel.org>
+What mapping info are you referring to?
+
+>=20
+> Hoping this initial submission will generate some discussion. I'd like =
+to
+> acknowledge valuable feedback from Danilo Krummrich and Lyude
+> Paul in shaping this up.
+>=20
+> Abdiel Janulgue (2):
+>  rust: add initial scatterlist bindings
+>  samples: rust: add sample code for scatterlist bindings
+>=20
+> rust/bindings/bindings_helper.h |   1 +
+> rust/helpers/helpers.c          |   1 +
+> rust/helpers/scatterlist.c      |  25 +++
+> rust/kernel/lib.rs              |   1 +
+> rust/kernel/scatterlist.rs      | 275 ++++++++++++++++++++++++++++++++
+> samples/rust/rust_dma.rs        |  14 +-
+> 6 files changed, 316 insertions(+), 1 deletion(-)
+> create mode 100644 rust/helpers/scatterlist.c
+> create mode 100644 rust/kernel/scatterlist.rs
+>=20
+>=20
+> base-commit: dd21715de3dfa6f6457432ce909e5f7eb142a7d2
+> --=20
+> 2.43.0
+>=20
+>=20
+
+=E2=80=94 Daniel=20
 
