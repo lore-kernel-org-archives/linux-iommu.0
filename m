@@ -1,159 +1,119 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2058225178A
-	for <iommu@lists.linux.dev>; Mon, 12 May 2025 17:40:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747071607; cv=none; b=nVY99kdnKOsg/C4glraOCmn20xK2eJrgGhG2G3rxTHoOX5/dge7AsbxNV7bvX2hvCTs9oDMB1dpkiovWA9r51P1QcaYuUa5XUB4cA+nHxgOiFzW6fjUXHBRqgIKInuRBV+VYxsYiBqJqPH75SH2MpJRFX/3uPr/J8IbBvVFHYUM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747071607; c=relaxed/simple;
-	bh=5eTfih0jX1oO0MA3ybx8OgSU1+VEbN/dTMUvtptLCIc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mYgCu5xgC49X9Ra/vimyk20AnCRlnckdyjtM4v7A86ke55X+0Bgoiiwi5L3KVX6Keh619kl98pp4f6sjGgXwWyIe5FcfmbplDpe2Uvx3o2DDQgjsQMCxrhkhsEe21F5+bh42YynzJQmBuGbiy1rFoClQizxnf+lNETOVfetmF34=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Apqxu0z6; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 992601F0E26
+	for <iommu@lists.linux.dev>; Mon, 12 May 2025 20:02:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1747080160; cv=pass; b=eIWhVgfiWz4QiK0Ha8FQ9k4uLaT54l4RySzXz8szOMLQP5iq+/eACNFMPRt2NTpaAw7fngQoc6ZlzgarPxrPMXd39C1rebOxuIPMQHc/sMnwxjDQe+HwmL85PyIEgR7MQHmBQwnt97K7yufY8jdRKVRWX7xGepofLCvkoDVMxVo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1747080160; c=relaxed/simple;
+	bh=puzRHBcMO8rvHuz8H81UYhM6x70hrg+q4UMp/8aK5o8=;
+	h=Content-Type:Mime-Version:Subject:From:In-Reply-To:Date:Cc:
+	 Message-Id:References:To; b=Kwqbl2QC1s4i6cHtdmm7gKH9eTFbMq02NiXVfYrQfa3CTT52ommoj7Q8kgUv7Czic/iqjuoKUoHpM+cv0nc8IO66YnERbzaAX1dPgBlFPKSJ0xARN+2VRs0Vii3scif5WOJiARqGEU2AuB1zTL0OSilf0ldvt8B0GMAamCVZkR0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b=K27k90PB; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Apqxu0z6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B41A5C4CEE7;
-	Mon, 12 May 2025 17:40:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1747071606;
-	bh=5eTfih0jX1oO0MA3ybx8OgSU1+VEbN/dTMUvtptLCIc=;
-	h=From:To:Cc:Subject:Date:From;
-	b=Apqxu0z67O9v+2F4OMzJpGTMK05t0f4msZF31J18oRurzukzKYHWfUvG6Une7XXY7
-	 tqvSwfzRxQfX1CInRvkHIBhjs9k77pVgDAviDBQdBfQP0W3j1y0kG0mS6NDvfaynbQ
-	 HLjbXMh5O/pEA6knUsryaPObzzuGgOOgqds/rW3uUUieie6tj0Qthge/+x7pbu+r0g
-	 o6AkQKqECMiGVe54L6LWFSEHpgTEjkW0LfV+uYqMNQy8bDmsKpnAlj1JjDLGX12IA0
-	 5p7MqWc542wU8G+YQ6GB5UDOE9VhzVhhVzTIOPHvmLemUkQJflrAHjE5ZLzf7xxqXD
-	 uSdx0xQOnX1qA==
-From: Mario Limonciello <superm1@kernel.org>
-To: mario.limonciello@amd.com,
-	joro@8bytes.org,
-	will@kernel.org
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <Vasant.Hegde@amd.com>,
-	Paul Blinzer <Paul.Blinzer@amd.com>,
-	iommu@lists.linux.dev
-Subject: [PATCH v3] iommu/amd: Allow matching ACPI HID devices without matching UIDs
-Date: Mon, 12 May 2025 12:30:32 -0500
-Message-ID: <20250512173129.1274275-1-superm1@kernel.org>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=daniel.almeida@collabora.com header.b="K27k90PB"
+ARC-Seal: i=1; a=rsa-sha256; t=1747080127; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=Jotc9F0RGGpOV6IqypJ1faIXrg/K7Q4lYxpVOeSWJBaYI6PIQ17nU7hqgUFVlHX8c3ofIrDgpzFAwryzizvDjXstuTSCpUSJoM8oR2+J+a9HvzZCpOeajne5gdSK94hfiQKubp2sgYYkWXgWOFsZuHjp8eJEwYm7Cbgdo8fL/eg=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1747080127; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=n45Gcyqae2E8eLGQsbBmy9RbSgznDF/XzToG8E9egpM=; 
+	b=GHZu5K73POYkxCAiatUmzNv9QD2SBYUogTAhqLSdmFMjwOSJJFsq+4Xm4IOcJN1BpkjQ5zuLN7znwx4f8Si0HM8VAK21W9YV3POS2WnI+vpez45hD3Gz1NFTniGvJ9Ta0XMkIJj17AcFjqgMUFpMI7pzQco6WpnKgwiKmR5nhD4=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=daniel.almeida@collabora.com;
+	dmarc=pass header.from=<daniel.almeida@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1747080127;
+	s=zohomail; d=collabora.com; i=daniel.almeida@collabora.com;
+	h=Content-Type:Mime-Version:Subject:Subject:From:From:In-Reply-To:Date:Date:Cc:Cc:Content-Transfer-Encoding:Message-Id:Message-Id:References:To:To:Reply-To;
+	bh=n45Gcyqae2E8eLGQsbBmy9RbSgznDF/XzToG8E9egpM=;
+	b=K27k90PBkwJEqxcXWeecYvPmqyoSgUt89o1u1bvcZixbxbKRbq7xqKPSwnkxL+17
+	0/2VRsre0Fta4Dy7pxlcR2M7vD6VyRIVD1boXIO3ZdPZP+m5F5o5dKxAqBeEWgy5yKY
+	vJfvPTAbpc2F5Clyse8K/IbF6vlZ4GoYYyMUebPg=
+Received: by mx.zohomail.com with SMTPS id 1747080124518928.7435041447463;
+	Mon, 12 May 2025 13:02:04 -0700 (PDT)
+Content-Type: text/plain;
+	charset=utf-8
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3826.500.181.1.5\))
+Subject: Re: [RFC PATCH 1/2] rust: add initial scatterlist bindings
+From: Daniel Almeida <daniel.almeida@collabora.com>
+In-Reply-To: <20250512164247.GF138689@ziepe.ca>
+Date: Mon, 12 May 2025 17:01:45 -0300
+Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+ dakr@kernel.org,
+ lyude@redhat.com,
+ Miguel Ojeda <ojeda@kernel.org>,
+ Alex Gaynor <alex.gaynor@gmail.com>,
+ Boqun Feng <boqun.feng@gmail.com>,
+ Gary Guo <gary@garyguo.net>,
+ =?utf-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>,
+ Alice Ryhl <aliceryhl@google.com>,
+ Trevor Gross <tmgross@umich.edu>,
+ Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ airlied@redhat.com,
+ rust-for-linux@vger.kernel.org,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+ Petr Tesarik <petr@tesarici.cz>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ Sui Jingfeng <sui.jingfeng@linux.dev>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ Michael Kelley <mhklinux@outlook.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <AC0FC018-4440-4027-9943-12FFB481AA6E@collabora.com>
+References: <20250512095544.3334680-1-abdiel.janulgue@gmail.com>
+ <20250512095544.3334680-2-abdiel.janulgue@gmail.com>
+ <20250512164247.GF138689@ziepe.ca>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+X-Mailer: Apple Mail (2.3826.500.181.1.5)
+X-ZohoMailClient: External
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+Hi Jason,
 
-A BIOS upgrade has changed the IVRS DTE UID for a device that no
-longer matches the UID in the SSDT. In this case there is only
-one ACPI device on the system with that _HID but the _UID mismatch.
+>> +
+>> +    /// Map this scatter-gather table describing a buffer for DMA.
+>> +    pub fn dma_map(&mut self, dir: DmaDataDirection) -> Result {
+>> +        // SAFETY: Invariants on `Device` and `SGTable` ensures that =
+the `self.dev` and `self.sg`
+>> +        // pointers are valid.
+>> +        let ret =3D unsafe {
+>> +            bindings::dma_map_sgtable(
+>> +                self.dev.as_raw(),
+>> +                self.sg.as_raw(),
+>=20
+> Can't call this function on an unbound driver, didn't someone add
+> special types for this recently?
 
-IVRS:
-```
-              Subtable Type : F0 [Device Entry: ACPI HID Named Device]
-                  Device ID : 0060
-Data Setting (decoded below) : 40
-                 INITPass : 0
-                 EIntPass : 0
-                 NMIPass : 0
-                 Reserved : 0
-                 System MGMT : 0
-                 LINT0 Pass : 1
-                 LINT1 Pass : 0
-                   ACPI HID : "MSFT0201"
-                   ACPI CID : 0000000000000000
-                 UID Format : 02
-                 UID Length : 09
-                        UID : "\_SB.MHSP"
-```
+JFYI: I think that the =E2=80=9CBound=E2=80=9D state is still WIP and =
+not upstream yet.
 
-SSDT:
-```
-Device (MHSP)
-{
-    Name (_ADR, Zero)  // _ADR: Address
-    Name (_HID, "MSFT0201")  // _HID: Hardware ID
-    Name (_UID, One)  // _UID: Unique ID
-```
+>=20
+>> +impl Drop for DeviceSGTable {
+>> +    fn drop(&mut self) {
+>> +        if self.dir !=3D DmaDataDirection::DmaNone {
+>> +            // SAFETY: Invariants on `Device` and `SGTable` ensures =
+that the `self.dev` and `self.sg`
+>> +            // pointers are valid.
+>=20
+> Wrong safety statement, Device must be on a bound driver to call this
+> function, a valid pointer (eg device refcount) is not enough.
+>=20
+> Jason
 
-To handle this case; while enumerating ACPI devices in
-get_acpihid_device_id() count the number of matching ACPI devices with
-a matching _HID. If there is exactly one _HID match then accept it even
-if the UID doesn't match. Other operating systems allow this, but the
-current IVRS spec leaves some ambiguity whether to allow or disallow it.
-This should be clarified in future revisions of the spec. Output
-'Firmware Bug' for this case to encourage it to be solved in the BIOS.
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
-v3:
- * Count HID matches as well (cover # HID w/o UID > 2)
- * Drop level of indentation with early bail on error
- * Show number of matches in error message
- * Adjust commit message
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: Vasant Hegde <Vasant.Hegde@amd.com>
-Cc: Paul Blinzer <Paul.Blinzer@amd.com>
----
- drivers/iommu/amd/iommu.c | 33 ++++++++++++++++++++++++++++-----
- 1 file changed, 28 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index b19e8c0f48fa2..0c909d0d59bfd 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -109,7 +109,9 @@ static inline int get_acpihid_device_id(struct device *dev,
- 					struct acpihid_map_entry **entry)
- {
- 	struct acpi_device *adev = ACPI_COMPANION(dev);
--	struct acpihid_map_entry *p;
-+	struct acpihid_map_entry *p, *p1 = NULL;
-+	int hid_count = 0;
-+	bool fw_bug;
- 
- 	if (!adev)
- 		return -ENODEV;
-@@ -117,12 +119,33 @@ static inline int get_acpihid_device_id(struct device *dev,
- 	list_for_each_entry(p, &acpihid_map, list) {
- 		if (acpi_dev_hid_uid_match(adev, p->hid,
- 					   p->uid[0] ? p->uid : NULL)) {
--			if (entry)
--				*entry = p;
--			return p->devid;
-+			p1 = p;
-+			fw_bug = false;
-+			hid_count = 1;
-+			break;
-+		}
-+
-+		/*
-+		 * Count HID matches w/o UID, raise FW_BUG but allow exactly one match
-+		 */
-+		if (acpi_dev_hid_match(adev, p->hid)) {
-+			p1 = p;
-+			hid_count++;
-+			fw_bug = true;
- 		}
- 	}
--	return -EINVAL;
-+
-+	if (!p1)
-+		return -EINVAL;
-+	if (fw_bug)
-+		dev_err_once(dev, FW_BUG "No ACPI device matched UID, but %d device%s matched HID.\n",
-+			     hid_count, hid_count > 1 ? "s" : "");
-+	if (hid_count > 1)
-+		return -EINVAL;
-+	if (entry)
-+		*entry = p1;
-+
-+	return p1->devid;
- }
- 
- static inline int get_device_sbdf_id(struct device *dev)
--- 
-2.43.0
+=E2=80=94 Daniel
 
