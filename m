@@ -1,156 +1,101 @@
-Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 433242571CA;
-	Sun, 11 May 2025 13:31:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EADFC74040
+	for <iommu@lists.linux.dev>; Mon, 12 May 2025 02:48:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1746970298; cv=none; b=AzQhSDY/lfpaLxh/f+fxNBiOhxZvczu6i91LZCTiBg3Bwa0XXHaJcUlgTNU9Q/hDgAdjUfWuFxSmg7HbXjBfe5ldVIR0Q/JNN5L3reG7FyUqYXjUzdQgY1Doli1UJUC4YszyEmX0Uiqm87rvBEaGKUvdEhVd3q5uRkO9GYAojwU=
+	t=1747018082; cv=none; b=cs7SaSd5PveTjevJSuk5heanDywwBqHInntU4Jx1gncNEHIYtRtnoIzHJmZG295IgrTj6X1OsD8lxHv9wqZwkFwv1LhGUIYLTj9gSUPlG9/f4Zv3uyjxmoChGke9ROjdtZJchhmLthN9M9WnwPpFDSIf9iinMqQvXzLmrL1sdwc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1746970298; c=relaxed/simple;
-	bh=v7V7RZABxDpzTCd01jnnzt/qeDr0mJMKGJhF94ABrK8=;
-	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HrK1BhuMHHN5+P2+F8nxLTAB0UveFfbEqF3uV3zpFotgDcMPVGN0Vq/0f5lQNtUuyGp8ecdMiYKJnq73SRqkKwMQoQY3f8XaPha+2c4IvCX3tSZmiTn5i4XcjPW38/woiZq5oIHI1Rt5KrI5ZOoizrsvXdGSC3PCJchUQpDJD88=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Xorm9JR9; arc=none smtp.client-ip=209.85.216.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1747018082; c=relaxed/simple;
+	bh=YkcK6mn/altZN5LQp/Tf6R9mkFeK+cXtpkB7o19gGoI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=kbaVeIvos2wt8a2xGqWy/+avktDEmRVjTlC3XllpJRhEtZ49CB81NionuhHYCAuC1Y01TlXGP5ob54HWBN1JT7THGGBtKwd85wsfyuW2I/YS2kl1LbudfctdX8nhVRvMGlvUXducKB+tpc72yCHCDbuCDPwAIilYvxc+Sq5+KBs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Qncy88iB; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xorm9JR9"
-Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-30828fc17adso3400507a91.1;
-        Sun, 11 May 2025 06:31:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1746970296; x=1747575096; darn=lists.linux.dev;
-        h=mime-version:user-agent:references:in-reply-to:subject:cc:to:from
-         :message-id:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1/e+QlwuOBaTQegQySoATY3jFu5uRVYu74q7ghqDm3w=;
-        b=Xorm9JR9Sf+ap4pTBJ5no7Iz2qcE4Au3LidYBkjmu/K7kkbtgUb75ltPWTr/SEFow4
-         kPNh32ioSpPy/KQWK4+zdlDbY/JIX3IfxV34KjlMcVXiYG4OR7AKjpqRgUN39luIu6rL
-         RmzjnY35U1MWHvJcQRv/dmpVGSD38MqbJrvouLW7OSvAdzU49sK+MbllhGXoKrllrBoX
-         w34WqUAUEPy1FGlGWurObUNzPCJWp6KMZyCbaM/rZ4S9bZiwYliZvAn0ROERP6s0eqN4
-         lr+Y7mWigAM6uyuNJ2ZP8AjPBXtXO+IhsQInRUFxTIHqdKLUg6PaT5i1PgC6EkAcP5a2
-         9cJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1746970296; x=1747575096;
-        h=mime-version:user-agent:references:in-reply-to:subject:cc:to:from
-         :message-id:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1/e+QlwuOBaTQegQySoATY3jFu5uRVYu74q7ghqDm3w=;
-        b=u9vhJt5DEDrMumJm5cPVjGJanyzBThTd5GMt6W5E0s3jJxcmCzTWnmmrNxz0M2YEy6
-         T0XjgawUw0QCrhhOs/UunmkNeu2VWt0G7ciHm1i3akUCPpWyqW3trcXtkufR1eKe4+/4
-         kvOV3raav+BYmBkyvgVtK3bMoQjlvWb5IaBr/1B9rbN6pcLqUGupZgRFjMZvxi8mXk/V
-         5r0CSlMzkxVpi8HFRZCq6zxJ5i90fxgxVsrtKr8qYDHiGlLZ88nL6+5p6LahPMtlDRKj
-         mdiuGiprQ5rp/uL7ktimaUQ+/cj0UZVpb3PTYNQKbf72UxrnkAkBXQE18X16ub2rFx9S
-         UUQQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVXE7qn/5hoPOEb98WUsxPi72TMlRk9oe8uCegPTYIV5PjN+5sZ9NHNkVpk7O1pVYTAodaPuhVebRPhwlY=@lists.linux.dev, AJvYcCX+fGT8Ud+zbjo8gB2stoD7/rPsMCItR4BgkSALkhyHjOHdFLTttoTKWTv0v5lhiKVKzmLEJQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz2AYAPlv0tkoqER0eILvkrlu7tCb/X10j+TDvCQkT9jVDuCWAC
-	3LD9QFZakKx8mH+mh+7xw6az/bboxusBc4gt/1k7J9LVg9kpuJQ3
-X-Gm-Gg: ASbGnctNO1AkxO1lggsfh5pXUWOVEgPZncczozkqLjOzhz9jKXdLGhj8pZzuv/oPf7s
-	SdTzUMHzb5mX7Jq2BmFTJrrOQojZxyGmsRMuqu5cPME+hsAWrB0iue/yEROS4zR1ETwVq747c8E
-	znvaLLOpV7EhSjZ9a0Ag3a48N6YAwLYzJA/2VY55xE9rTnI7pUVA+tjvP+ib0xBmOSKRH8rchy4
-	XbP1rQ3bjyvyyK6tV2/pmXFBMXX4j9wVowb8tZPNObpQM2cZe3AFPwO5cToKyu8QYiHYbJ+MFKg
-	SaaCuVbm6dZQlaGsdIogO0Q388gPQ9zqzQxcYBSLox/yFlXKAOSvyzO2rT/bqXExapl2AFfqcrW
-	68fe3UQ==
-X-Google-Smtp-Source: AGHT+IGPLu/UA8RferE1fhhUBg8P8fBAwEHMaR6Zwjv2pyeF/9jF35bRMmgJBhPOKiliyYy+r0TG1A==
-X-Received: by 2002:a17:90b:2ecb:b0:2fe:ac91:4667 with SMTP id 98e67ed59e1d1-30c3d65e82cmr15029864a91.29.1746970296420;
-        Sun, 11 May 2025 06:31:36 -0700 (PDT)
-Received: from localhost (58x12x133x161.ap58.ftth.ucom.ne.jp. [58.12.133.161])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-30c39e61056sm4834312a91.39.2025.05.11.06.31.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 May 2025 06:31:35 -0700 (PDT)
-Date: Sun, 11 May 2025 22:31:29 +0900
-Message-ID: <eke7wmanw9xq.wl-kobarity@gmail.com>
-From: kobarity <kobarity@gmail.com>
-To: Aditya Garg <gargaditya08@live.com>
-Cc: Berkel =?ISO-8859-1?Q?J=F6rg?= <joerg.berkel@bfh.ch>,	Robin Murphy
- <robin.murphy@arm.com>,	Baolu Lu <baolu.lu@linux.intel.com>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>,
-	"regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-	"linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,	"lukas@wunner.de"
- <lukas@wunner.de>,	David Woodhouse <dwmw2@infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,	Joerg Roedel
- <joro@8bytes.org>,	Will Deacon <will@kernel.org>
-Subject: Re: [REGRESSION] applespi from 6.12 onwards
-In-Reply-To: <PN3PR01MB959708DEEA1567DD38447D5AB895A@PN3PR01MB9597.INDPRD01.PROD.OUTLOOK.COM>
-References: <4dada48a-c5dd-4c30-9c85-5b03b0aa01f0@bfh.ch>
-	<PN3PR01MB9597D8E327CC7910673849D3B888A@PN3PR01MB9597.INDPRD01.PROD.OUTLOOK.COM>
-	<122a1f90-ddd9-4e74-96d1-57e21e580ae2@linux.intel.com>
-	<f1b41874-1535-4457-9747-eee3d816091a@arm.com>
-	<PN3PR01MB959764E908600CD45169348CB88BA@PN3PR01MB9597.INDPRD01.PROD.OUTLOOK.COM>
-	<c0bbfcc8-1275-43de-be40-acb8f2653359@bfh.ch>
-	<PN3PR01MB959708DEEA1567DD38447D5AB895A@PN3PR01MB9597.INDPRD01.PROD.OUTLOOK.COM>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?ISO-8859-4?Q?Goj=F2?=) APEL-LB/10.8 EasyPG/1.0.0
- Emacs/31.0.50 (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Qncy88iB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1747018081; x=1778554081;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=YkcK6mn/altZN5LQp/Tf6R9mkFeK+cXtpkB7o19gGoI=;
+  b=Qncy88iB/6mScX+F1NRUgyWo2KcACp3UTjbcrXm3HGP7Mvz35YxXCN5f
+   uI8j4+F+rxP0Q8UlCgr8kjjoUnpiPaZ9Rp8NaCVmr0ijzXuaGkO5TNjSR
+   CSsxDY8aKIrMnop0arMUl6GHZjJ8X4CkG1P9lBoK830jr2XTzvpmTAehY
+   pvN5mq/TJFVyPZuGOPyEU5kBwKxgDW0/xDumYbvPic9NKyQDZoWU9q4aU
+   M8sk19Si0Q4oQSBiMAkB7FnLHOpq+OWbRtS3n1PYNauTc9Xsvl5MacnpV
+   czOX6rpJwqvFS/QtHA67oxv726kcfA9uBXUuty6sQMOp6IADxNwU2RvTq
+   A==;
+X-CSE-ConnectionGUID: OYnuP7QcRTGj9N2Zjn6d4w==
+X-CSE-MsgGUID: CU9HLNIcR/WCvQTTv9bc7A==
+X-IronPort-AV: E=McAfee;i="6700,10204,11430"; a="51454938"
+X-IronPort-AV: E=Sophos;i="6.15,281,1739865600"; 
+   d="scan'208";a="51454938"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2025 19:48:00 -0700
+X-CSE-ConnectionGUID: SHZMynSlSH6XXrLOix3m9Q==
+X-CSE-MsgGUID: bsp7XzVSR1uMwfvLBW8yJw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,281,1739865600"; 
+   d="scan'208";a="137166684"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2025 19:47:59 -0700
+Message-ID: <e8608bf9-45d6-4627-9a1a-88be0ff55cd3@linux.intel.com>
+Date: Mon, 12 May 2025 10:43:24 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: multipart/mixed;
- boundary="Multipart_Sun_May_11_22:31:29_2025-1"
-
---Multipart_Sun_May_11_22:31:29_2025-1
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-
-Hi
-
-I'm also experiencing this problem on my MacBookPro14,3.
-
-Aditya Garg wrote:
->=20
-> Hi J=F6rg
->=20
-> Can you test the kernel here to see if this fixes your issue:
->=20
-> https://github.com/t2linux/T2-Debian-and-Ubuntu-Kernel/actions/runs/14944=
-200356
->=20
-> Alternatively you can try compiling your own kernel with this patch:
->=20
-> https://lore.kernel.org/all/0-v1-c26553717e90+65f-iommu_vtd_ss_wo_jgg@nvi=
-dia.com/
-
-As far as I have tried, this patch did not solve the problem.
-
-By bisecting, I found that this problem was introduced by commit
-2031c469f816 ("iommu/vt-d: Add support for static identity domain").
-In fact, since this commit, it will panic at startup.  This panic was
-fixed by commit 6e02a277f1db ("iommu/vt-d: Fix incorrect
-pci_for_each_dma_alias() for non-PCI devices").  So I applied commit
-6e02a277f1db on commit 2031c469f816 and confirmed that the keyboard
-and touchpad is not working.
-
-I also found that I can workaround this problem by reverting only the
-intel_iommu_attach_device() change in commit 2031c469f816 as in the
-attached patch, but I'm not sure if this is a reasonable fix.
-
-
---Multipart_Sun_May_11_22:31:29_2025-1
-Content-Type: application/octet-stream; type=patch; name="workaround.patch"
-Content-Disposition: attachment; filename="workaround.patch"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 3/3] iommu/vt-d: Fix ATS support check for integrated
+ endpoints
+To: Wei Wang <wei.w.wang@intel.com>, dwmw2@infradead.org,
+ kevin.tian@intel.com, yi.l.liu@intel.com, jroedel@suse.de,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+References: <20250509140021.4029303-1-wei.w.wang@intel.com>
+ <20250509140021.4029303-4-wei.w.wang@intel.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250509140021.4029303-4-wei.w.wang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index cb0b993bebb4..14da33490fa1 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3484,9 +3484,11 @@ int paging_domain_compatible(struct iommu_domain *domain, struct device *dev)
- static int intel_iommu_attach_device(struct iommu_domain *domain,
- 				     struct device *dev)
- {
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	int ret;
- 
--	device_block_translation(dev);
-+	if (info->domain)
-+		device_block_translation(dev);
- 
- 	ret = paging_domain_compatible(domain, dev);
- 	if (ret)
+On 5/9/25 22:00, Wei Wang wrote:
+> The VT-d spec states that "SATC reporting structure identifies devices
+> that have address translation cache and that is validated per requirements
+> described in the 'Device TLB in System-on-Chip (SoC) Integrated Devices'
 
---Multipart_Sun_May_11_22:31:29_2025-1--
+This is a spec recommendation for hardware implementation of the trusted
+ATS. I recommend supporting it alongside HPT support in the mainline
+kernel.
+
+This 1/3 and 2/3 look good to me. Thank you and I will queue them for
+next.
+
+> section. It is recommended that system software enable ATC for this
+> device". It is possible for an integrated device to have PCI ATC
+> capability implemented but not validated per the requirements, and thus
+> not appear in the SATC structure as recommended for ATS enablement.
+> 
+> The current implementation checks ATS support for integrated endpoints in
+> two places. First, it verifies if the integrated endpoint device is listed
+> in SATC. If not, it proceeds to the second check that always returns true
+> for integrated devices. This could result in endpoint devices not
+> recommended in SATC presenting "supported = true" to the caller.
+> 
+> Add integrated_device_ats_supported() for the integrated device ATS check
+> in a single location, which improves readability. The above issue is
+> also fixed in the function via returning false in that case.
+> 
+> Signed-off-by: Wei Wang<wei.w.wang@intel.com>
+> ---
+>   drivers/iommu/intel/iommu.c | 42 +++++++++++++++++++++++++------------
+>   1 file changed, 29 insertions(+), 13 deletions(-)
+
+Thanks,
+baolu
