@@ -1,61 +1,47 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A0B11E834A;
-	Tue, 13 May 2025 05:50:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 002571EB5F0
+	for <iommu@lists.linux.dev>; Tue, 13 May 2025 07:08:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747115440; cv=none; b=YV77+7iPMjes36HXw5DBGhvoqDndJ7jcS+yAOU0MzEylpn4DjVNwSJTZNX8ltJ4MSEc1wqZjmq4UoKAmjBknOZDzAsRCNRJMWdaw/V1gq19gbcR2TfKP5L4j+il88It5vj+qLNd/UYIpFgAm8EM5p8y15oj6xNZNKmSp6I+1638=
+	t=1747120119; cv=none; b=uq8EDhJU6d0eVWcbMknNj/3z0JWRLOK+zibWIMGvS4qPIyP3n7Spub1wERWJ9MekqcfXPwl3I9fmoYDHWXFwZyPlyB/5tNAv6FYOMXGAgb/8q/11wWpiR++VKPYwaIf5utrIfleU/urH5VjTa+Zxn+Yqqa894kNHOsMCpE/PFeY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747115440; c=relaxed/simple;
-	bh=hXb4E/zwsZxWTwB2VSuwpSk9cjzWGfIAsOSWikai4h4=;
+	s=arc-20240116; t=1747120119; c=relaxed/simple;
+	bh=Loe6TzB5ohL/4Ce5AQmXhlxmASWaIASXEpvdB+/Oxc8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O8EzyUZ40X0/34HT+ocO8jQHTfsDTGDzO8WW+VJ3Eu6Mk58v4BtyOPLy15Q8/3siqCFJHcHvEb6g7u8N5exFF/xplMyNLz5PF+d+WgPO8SIhZhGiITHc+aEEaS1e21xUPOxmYoyp61hmeJOpWlTaIdWmyYUQDVEjyuvVn7iVz38=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=yPtWkgdT; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=tcHzE02YxIvk+bjIWEXGY+cTn5SwC+fHkHEsbE1NR9szN1CqA9bgGHAnGDzZGYhXpoq1L/eXaZ+uZEO2zPAzf8mXHr5B3u4c2XbrHqeTi6ggCxku5rYTs1Y39zos1IvAPX/yHUKSTi496VBCrsS5vkKS7JpwdXRuv0iiYvXF7o4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=s0M+IzV8; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="yPtWkgdT"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=hXb4E/zwsZxWTwB2VSuwpSk9cjzWGfIAsOSWikai4h4=; b=yPtWkgdTISimlnKrzc4Sy3RwA/
-	MQSt1Dtr6TTANVZcoRUtT8v91LSZA6VjMtY/LIqRh5dP0ISqAvECU4JXIJpu6ufVJhqatYp/tnqOY
-	CN+POts0I/SiIfkbC+W+IhdilLhQtIgppm5INeoJTmKIJ+gWtXry3o4SjSjMDd50ISepn5wxtRvPD
-	xZIQktHltqa9jQ7ocrE8/KZ/80TydwxUJaefitArgHNBqfPZtQH8xgn2+l6Snxrpl3tiuCIo+YCWk
-	GfwrbSA39T76IDt1Sb6DR+Rpp1paZ/6pDuAnQqEabyskG1bSW7OKXj6Br9nviMDSH041PCm/ZYsvd
-	3/nu6WDg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uEiX7-0000000BQmd-0vXU;
-	Tue, 13 May 2025 05:50:29 +0000
-Date: Mon, 12 May 2025 22:50:29 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>, dakr@kernel.org,
-	lyude@redhat.com, Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
-	rust-for-linux@vger.kernel.org,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	Petr Tesarik <petr@tesarici.cz>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Sui Jingfeng <sui.jingfeng@linux.dev>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Michael Kelley <mhklinux@outlook.com>,
-	Christoph Hellwig <hch@infradead.org>
-Subject: Re: [RFC PATCH 0/2] scatterlist rust bindings
-Message-ID: <aCLdpXp6RzvPuSET@infradead.org>
-References: <20250512095544.3334680-1-abdiel.janulgue@gmail.com>
- <aCKsQSob4TNDZb99@gondor.apana.org.au>
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="s0M+IzV8"
+Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 6EFF04AC65;
+	Tue, 13 May 2025 09:08:30 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1747120110;
+	bh=Loe6TzB5ohL/4Ce5AQmXhlxmASWaIASXEpvdB+/Oxc8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=s0M+IzV8qkVF4MnnP9DQAOKyytLifVa+gDXnxIVtKoGlOlRx8h7g0SFeKmAWVQbPh
+	 ItmCWFhAytiJbc0zLG8trGAiBdCFP/qtZXOwjpQgH5tDwwAJl0xJUcn7Xj9gNAhxPi
+	 lvKVHwrWgqkefpjte5F8SW3hNR2xKRVUtPOOKN5JKieoIQMlMTOmv1XCmvES6Gav2+
+	 fyYwXQr5zLqq4hevNYYIU8WBtTR8VQvqj7SRKfI7UGVCl1SQRHQ1MEzQfeEgMt2l6X
+	 YgycamEtVMYJ35H1YK52RYXmJ1U4kBn87AmQwASCsEJxGvoVIYzfUie73+hJ5h5Cg8
+	 hJRhnFvLgyWkg==
+Date: Tue, 13 May 2025 09:08:29 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Lukas Wunner <lukas@wunner.de>
+Cc: Bjorn Helgaas <helgaas@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+	Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH 1/2] Revert "iommu/amd: Prevent binding other PCI drivers
+ to IOMMU PCI devices"
+Message-ID: <aCLv7cN_s1Z4abEl@8bytes.org>
+References: <cover.1745572340.git.lukas@wunner.de>
+ <9a3ddff5cc49512044f963ba0904347bd404094d.1745572340.git.lukas@wunner.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,11 +50,33 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aCKsQSob4TNDZb99@gondor.apana.org.au>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <9a3ddff5cc49512044f963ba0904347bd404094d.1745572340.git.lukas@wunner.de>
 
-On Tue, May 13, 2025 at 10:19:45AM +0800, Herbert Xu wrote:
-> You should cc Christoph Hellwig on the DMA mapping API.
+On Fri, Apr 25, 2025 at 11:24:21AM +0200, Lukas Wunner wrote:
+> Commit 991de2e59090 ("PCI, x86: Implement pcibios_alloc_irq() and
+> pcibios_free_irq()") changed IRQ handling on PCI driver probing.
+> It inadvertently broke resume from system sleep on AMD platforms:
+> 
+>   https://lore.kernel.org/r/20150926164651.GA3640@pd.tnic/
+> 
+> This was fixed by two independent commits:
+> 
+> * 8affb487d4a4 ("x86/PCI: Don't alloc pcibios-irq when MSI is enabled")
+> * cbbc00be2ce3 ("iommu/amd: Prevent binding other PCI drivers to IOMMU
+>                  PCI devices")
+> 
+> The breaking change and one of these two fixes were subsequently reverted:
+> 
+> * fe25d078874f ("Revert "x86/PCI: Don't alloc pcibios-irq when MSI is
+>                  enabled"")
+> * 6c777e8799a9 ("Revert "PCI, x86: Implement pcibios_alloc_irq() and
+>                  pcibios_free_irq()"")
+> 
+> This rendered the second fix unnecessary, so revert it as well.  It used
+> the match_driver flag in struct pci_dev, which is internal to the PCI core
+> and not supposed to be touched by arbitrary drivers.
+> 
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
 
-I'm not going to use my scare time to let this cancer creep further.
+Acked-by: Joerg Roedel <jroedel@suse.de>
 
