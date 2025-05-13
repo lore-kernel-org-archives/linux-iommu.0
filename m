@@ -1,217 +1,86 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from abb.hmeau.com (abb.hmeau.com [144.6.53.87])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00AAA18A959;
-	Tue, 13 May 2025 01:42:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5235E1A0BE1;
+	Tue, 13 May 2025 02:20:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=144.6.53.87
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747100535; cv=none; b=O6673zspGMVzu7S83OD6bJRxd23Ggy9oxgCoKo8UlnrrdDYMpIL+2uWP/X7jFM9Pl+STWTKkGQGBFMY7lMeiy5SHQhg3clp5G96E1nSzJhpb4zsJjnQ+2MW7DAHDgCoqvrNS4B9cFBcX03N8kdHTAIQjapy2E0kL04WUd4mu07g=
+	t=1747102829; cv=none; b=TnVbsVxus5NecpKR4nfZ8ubt0gJ+L5lUTvD5uyLfTelLK4JIPVaYIDJOZcSZ+Mji/Uw/+IFtcFYp7ecvdetgt2gndcvdE7+J6K/xsZbpbeNBodWe4EkBnlvkrp3xG4gIMIHHCmoqC8sr2rrW9pw2af3X7dmV7iQkias1ew/HILY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747100535; c=relaxed/simple;
-	bh=tqfQS6oxsFjhPs/Z50e9x6aN2DzbxyZhm92wCnbhKDU=;
-	h=Content-Type:Message-ID:Date:MIME-Version:Subject:To:Cc:
-	 References:From:In-Reply-To; b=QT1Ft1pnij9+m5UmzRst0Eel5gJ5VBFUxFFdkSg73jR44TCBUXjWxdZxu4l1Hi5Nh1lqbksxrYT8Heuwb+WuhfolhQkbsqQor4uxvYOVwwbjyoSo2poQ6kyIcpebeMNKc/XtfkkzWJiD43uQa54Yo/27SLsTAxxMNMuNuXyKXxY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Chy+YN34; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1747102829; c=relaxed/simple;
+	bh=JAanfZMOtwsqXeD+6OrWTkCqDhu/Aon0zMRClqTvMsI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ShTxXgMzQ0/2yhCyeoNqanLKM9oSSQviJjph1bNHwNsy6xixuRSwe0ivhswbNg8FpSSHVuTQ+SO6YY1swXCqBOT4UqLrTgrHV30ES07XdffJoxPXU+mxZz3LfhTGdCcbHliSqa5LZ4Kt9OGeOgZF9Zr7QPdBVlG0pUO0PQ0V7mg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au; spf=pass smtp.mailfrom=gondor.apana.org.au; dkim=pass (2048-bit key) header.d=hmeau.com header.i=@hmeau.com header.b=T15SkYH+; arc=none smtp.client-ip=144.6.53.87
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gondor.apana.org.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gondor.apana.org.au
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Chy+YN34"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1747100533; x=1778636533;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to;
-  bh=tqfQS6oxsFjhPs/Z50e9x6aN2DzbxyZhm92wCnbhKDU=;
-  b=Chy+YN34mY22ZozBYtd+UuJLKPU0k1atSJLJxHgE8OJYrSbYWNknitm5
-   k0TfKjYt+u41Mz/zSwY9mLVkeRgULYZnKU1GNIFoHoD6qFXKRY1WvD3Dp
-   rj6NhzSn3eLvElDobR72/6AfD4ZVwIcVlaeBOLroLmPklJ29LTpWXe1wZ
-   wLY+SBpwtqvhpkyOfxgV6NqMLM1MTvPRjIlnnbNnMVhWcHbzfXT+2wPgn
-   wSI/W0voq/szmnEtNneRVoMhwzhS2vRzHcoRKTVh+END9bNNAaUm0BKHT
-   LvAlCtatqTCpJwW1GbM3aQdrvSB/KYPV6mXSZqQwYWCnoBQaYWzH6h+r+
-   g==;
-X-CSE-ConnectionGUID: cL9NEaUpS82OS3hzSfmukA==
-X-CSE-MsgGUID: R+u7JKe4QJ+e6m1DJTQQ8w==
-X-IronPort-AV: E=McAfee;i="6700,10204,11431"; a="66332204"
-X-IronPort-AV: E=Sophos;i="6.15,283,1739865600"; 
-   d="scan'208";a="66332204"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2025 18:42:13 -0700
-X-CSE-ConnectionGUID: gs+bo9UCRS6oUiHvHgEzow==
-X-CSE-MsgGUID: 98vXkWv8RyW7ZTZtktSHOA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,283,1739865600"; 
-   d="scan'208";a="142497925"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2025 18:42:10 -0700
-Content-Type: multipart/mixed; boundary="------------Pmc9TytVRXbvZn0nfSt18r6r"
-Message-ID: <5d760ba9-031f-469b-96e0-a171b7142f88@linux.intel.com>
-Date: Tue, 13 May 2025 09:37:33 +0800
+	dkim=pass (2048-bit key) header.d=hmeau.com header.i=@hmeau.com header.b="T15SkYH+"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hmeau.com;
+	s=formenos; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+	List-Post:List-Owner:List-Archive;
+	bh=VC8c/hCCyLIee4T1jsT8LH8tRvXKqOjAliJfp7OM6yw=; b=T15SkYH+mVJJiFAeghMWWlKYjw
+	iVA2hk1kdKJm5g01GNwX9XxDFOXr7a7PWQn5TKf/FSvjMQfp6VGVWIaXGG1K8mvMNJDi00pwKQmvg
+	szNigqTjbXJtGHKhbeZkdVc503kzl/KqpIo5JGDEbEdSH4o9E5AjSs50PynS97hOA4HRjqwWLD1Tl
+	/y852HBVPrU2texaLPnnfWV5Rkc7BwCSyMZWACE6aDmmlk85xOXrkwJhXN+I/zwi9mNS9A8BU9JiF
+	cWixxRdpSlyKxqnNIgw9IvaaOpIsy4R1TTEVdzItPcWMR550BcJuYTuuhXcyekV10/uK60dOdK7bX
+	43dAyxvA==;
+Received: from loth.rohan.me.apana.org.au ([192.168.167.2])
+	by formenos.hmeau.com with smtp (Exim 4.96 #2 (Debian))
+	id 1uEfFB-005dqV-1j;
+	Tue, 13 May 2025 10:19:46 +0800
+Received: by loth.rohan.me.apana.org.au (sSMTP sendmail emulation); Tue, 13 May 2025 10:19:45 +0800
+Date: Tue, 13 May 2025 10:19:45 +0800
+From: Herbert Xu <herbert@gondor.apana.org.au>
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Cc: dakr@kernel.org, lyude@redhat.com, Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	open list <linux-kernel@vger.kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
+	rust-for-linux@vger.kernel.org,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	Petr Tesarik <petr@tesarici.cz>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Sui Jingfeng <sui.jingfeng@linux.dev>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Michael Kelley <mhklinux@outlook.com>,
+	Christoph Hellwig <hch@infradead.org>
+Subject: Re: [RFC PATCH 0/2] scatterlist rust bindings
+Message-ID: <aCKsQSob4TNDZb99@gondor.apana.org.au>
+References: <20250512095544.3334680-1-abdiel.janulgue@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [REGRESSION] applespi from 6.12 onwards
-To: kobarity <kobarity@gmail.com>
-Cc: Aditya Garg <gargaditya08@live.com>, =?UTF-8?Q?Berkel_J=C3=B6rg?=
- <joerg.berkel@bfh.ch>, Robin Murphy <robin.murphy@arm.com>,
- "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
- "dmitry.torokhov@gmail.com" <dmitry.torokhov@gmail.com>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>,
- "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
- "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
- "lukas@wunner.de" <lukas@wunner.de>, David Woodhouse <dwmw2@infradead.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-References: <4dada48a-c5dd-4c30-9c85-5b03b0aa01f0@bfh.ch>
- <PN3PR01MB9597D8E327CC7910673849D3B888A@PN3PR01MB9597.INDPRD01.PROD.OUTLOOK.COM>
- <122a1f90-ddd9-4e74-96d1-57e21e580ae2@linux.intel.com>
- <f1b41874-1535-4457-9747-eee3d816091a@arm.com>
- <PN3PR01MB959764E908600CD45169348CB88BA@PN3PR01MB9597.INDPRD01.PROD.OUTLOOK.COM>
- <c0bbfcc8-1275-43de-be40-acb8f2653359@bfh.ch>
- <PN3PR01MB959708DEEA1567DD38447D5AB895A@PN3PR01MB9597.INDPRD01.PROD.OUTLOOK.COM>
- <eke7wmanw9xq.wl-kobarity@gmail.com>
- <089b2370-23e4-4a22-bf57-886e46247a1f@linux.intel.com>
- <eke7v7q6vxai.wl-kobarity@gmail.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <eke7v7q6vxai.wl-kobarity@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250512095544.3334680-1-abdiel.janulgue@gmail.com>
 
-This is a multi-part message in MIME format.
---------------Pmc9TytVRXbvZn0nfSt18r6r
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+On Mon, May 12, 2025 at 12:53:26PM +0300, Abdiel Janulgue wrote:
+>
+> Some questions still need to be resolved, which mostly come from
+> the DeviceSGTable::dma_map() function. Primarily, what if you call
+> bindings::dma_map_sgtable() on an already mapped sg_table? From my
+> experiments it doesn't seem to do anything and no indication is returned if
+> the call succeeded or not. Should we save the "mapping info" to a list
+> everytime we call DeviceSGTable::dma_map more than once?
 
-On 5/12/25 20:16, kobarity wrote:
-> Baolu Lu wrote:
->> On 5/11/25 21:31, kobarity wrote:
->>>
->>> Hi
->>>
->>> I'm also experiencing this problem on my MacBookPro14,3.
->>>
->>> Aditya Garg wrote:
->>>>
->>>> Hi Jörg
->>>>
->>>> Can you test the kernel here to see if this fixes your issue:
->>>>
->>>> https://github.com/t2linux/T2-Debian-and-Ubuntu-Kernel/actions/runs/14944200356
->>>>
->>>> Alternatively you can try compiling your own kernel with this patch:
->>>>
->>>> https://lore.kernel.org/all/0-v1-c26553717e90+65f-iommu_vtd_ss_wo_jgg@nvidia.com/
->>>
->>> As far as I have tried, this patch did not solve the problem.
->>>
->>> By bisecting, I found that this problem was introduced by commit
->>> 2031c469f816 ("iommu/vt-d: Add support for static identity domain").
->>> In fact, since this commit, it will panic at startup.  This panic was
->>> fixed by commit 6e02a277f1db ("iommu/vt-d: Fix incorrect
->>> pci_for_each_dma_alias() for non-PCI devices").  So I applied commit
->>> 6e02a277f1db on commit 2031c469f816 and confirmed that the keyboard
->>> and touchpad is not working.
->>
->> Have you tried to apply commit 64f792981e35 ("iommu/vt-d: Remove device
->> comparison in context_setup_pass_through_cb")?
-> 
-> Yes, I tried it on yesterday's master branch, including commit
-> 64f792981e35.
-> 
-> - Keyboard/Touchpad NOT working:
->    - No patches
->    - With patch in https://lore.kernel.org/all/0-v1-c26553717e90+65f-iommu_vtd_ss_wo_jgg@nvidia.com/
-> - Keyboard/Touchpad working:
->    - With my workaround patch
+You should cc Christoph Hellwig on the DMA mapping API.
 
-Okay, thanks! Can you please try below change? I also attached a diff
-file in the attachment for your convenience.
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 49530d5d8c85..9a86ead8377d 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1832,6 +1832,8 @@ static int dmar_domain_attach_device(struct 
-dmar_domain *domain,
-         if (ret)
-                 goto out_block_translation;
-
-+       info->domain_attached = true;
-+
-         return 0;
-
-  out_block_translation:
-@@ -3206,6 +3208,10 @@ void device_block_translation(struct device *dev)
-         struct intel_iommu *iommu = info->iommu;
-         unsigned long flags;
-
-+       /* Device in DMA blocking state. Noting to do. */
-+       if (!info->domain_attached)
-+               return;
-+
-         if (info->domain)
-                 cache_tag_unassign_domain(info->domain, dev, 
-IOMMU_NO_PASID);
-
-@@ -4302,6 +4308,9 @@ static int identity_domain_attach_dev(struct 
-iommu_domain *domain, struct device
-         else
-                 ret = device_setup_pass_through(dev);
-
-+       if (!ret)
-+               info->domain_attached = true;
-+
-         return ret;
-  }
-
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index cbfb8bb4c94a..3ddbcc603de2 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -774,6 +774,7 @@ struct device_domain_info {
-         u8 ats_supported:1;
-         u8 ats_enabled:1;
-         u8 dtlb_extra_inval:1;  /* Quirk for devices need extra flush */
-+       u8 domain_attached:1;   /* Device has domain attached */
-         u8 ats_qdep;
-         unsigned int iopf_refcount;
-         struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
-
-Thanks,
-baolu
---------------Pmc9TytVRXbvZn0nfSt18r6r
-Content-Type: text/x-patch; charset=UTF-8; name="diff.patch"
-Content-Disposition: attachment; filename="diff.patch"
-Content-Transfer-Encoding: base64
-
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYyBiL2RyaXZlcnMvaW9t
-bXUvaW50ZWwvaW9tbXUuYwppbmRleCA0OTUzMGQ1ZDhjODUuLjlhODZlYWQ4Mzc3ZCAxMDA2
-NDQKLS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC9pb21tdS5jCisrKyBiL2RyaXZlcnMvaW9t
-bXUvaW50ZWwvaW9tbXUuYwpAQCAtMTgzMiw2ICsxODMyLDggQEAgc3RhdGljIGludCBkbWFy
-X2RvbWFpbl9hdHRhY2hfZGV2aWNlKHN0cnVjdCBkbWFyX2RvbWFpbiAqZG9tYWluLAogCWlm
-IChyZXQpCiAJCWdvdG8gb3V0X2Jsb2NrX3RyYW5zbGF0aW9uOwogCisJaW5mby0+ZG9tYWlu
-X2F0dGFjaGVkID0gdHJ1ZTsKKwogCXJldHVybiAwOwogCiBvdXRfYmxvY2tfdHJhbnNsYXRp
-b246CkBAIC0zMjA2LDYgKzMyMDgsMTAgQEAgdm9pZCBkZXZpY2VfYmxvY2tfdHJhbnNsYXRp
-b24oc3RydWN0IGRldmljZSAqZGV2KQogCXN0cnVjdCBpbnRlbF9pb21tdSAqaW9tbXUgPSBp
-bmZvLT5pb21tdTsKIAl1bnNpZ25lZCBsb25nIGZsYWdzOwogCisJLyogRGV2aWNlIGluIERN
-QSBibG9ja2luZyBzdGF0ZS4gTm90aW5nIHRvIGRvLiAqLworCWlmICghaW5mby0+ZG9tYWlu
-X2F0dGFjaGVkKQorCQlyZXR1cm47CisKIAlpZiAoaW5mby0+ZG9tYWluKQogCQljYWNoZV90
-YWdfdW5hc3NpZ25fZG9tYWluKGluZm8tPmRvbWFpbiwgZGV2LCBJT01NVV9OT19QQVNJRCk7
-CiAKQEAgLTQzMDIsNiArNDMwOCw5IEBAIHN0YXRpYyBpbnQgaWRlbnRpdHlfZG9tYWluX2F0
-dGFjaF9kZXYoc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLCBzdHJ1Y3QgZGV2aWNlCiAJ
-ZWxzZQogCQlyZXQgPSBkZXZpY2Vfc2V0dXBfcGFzc190aHJvdWdoKGRldik7CiAKKwlpZiAo
-IXJldCkKKwkJaW5mby0+ZG9tYWluX2F0dGFjaGVkID0gdHJ1ZTsKKwogCXJldHVybiByZXQ7
-CiB9CiAKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuaCBiL2RyaXZl
-cnMvaW9tbXUvaW50ZWwvaW9tbXUuaAppbmRleCBjYmZiOGJiNGM5NGEuLjNkZGJjYzYwM2Rl
-MiAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9pbnRlbC9pb21tdS5oCisrKyBiL2RyaXZl
-cnMvaW9tbXUvaW50ZWwvaW9tbXUuaApAQCAtNzc0LDYgKzc3NCw3IEBAIHN0cnVjdCBkZXZp
-Y2VfZG9tYWluX2luZm8gewogCXU4IGF0c19zdXBwb3J0ZWQ6MTsKIAl1OCBhdHNfZW5hYmxl
-ZDoxOwogCXU4IGR0bGJfZXh0cmFfaW52YWw6MTsJLyogUXVpcmsgZm9yIGRldmljZXMgbmVl
-ZCBleHRyYSBmbHVzaCAqLworCXU4IGRvbWFpbl9hdHRhY2hlZDoxOwkvKiBEZXZpY2UgaGFz
-IGRvbWFpbiBhdHRhY2hlZCAqLwogCXU4IGF0c19xZGVwOwogCXVuc2lnbmVkIGludCBpb3Bm
-X3JlZmNvdW50OwogCXN0cnVjdCBkZXZpY2UgKmRldjsgLyogaXQncyBOVUxMIGZvciBQQ0ll
-LXRvLVBDSSBicmlkZ2UgKi8K
-
---------------Pmc9TytVRXbvZn0nfSt18r6r--
+Cheers,
+-- 
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
