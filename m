@@ -1,55 +1,58 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D98A1D6DB4
-	for <iommu@lists.linux.dev>; Tue, 13 May 2025 03:06:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E1DB1DDC21
+	for <iommu@lists.linux.dev>; Tue, 13 May 2025 03:06:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747105618; cv=none; b=o22uYI9B6ds07DtgDjZiXBhgIjolGagBR1+6QqhWhAYy6BL1CO6k7keMDTqyTodI1MQAoG5sUIGq+9ngw6OlIJso4DjOGeG9GhXfPl3jKx8iENSQVoVYyvZsmPDIngY6Nl7zygWBTmSDRVKJ7ApSxS17hcCoHOm3LdKDuKImlqQ=
+	t=1747105620; cv=none; b=JM7lqbl0pg9sY+DbgQAdgy/+XsUiOMPOHr8x5ZUTUrkiHD6mDJxPslwyiqBb2BrFtKFH9u4i+VNwQmUz3J9yt+sckPims4yRlVGgAoxXng2Ez4U0ImzzeCHhfFodrzjH1UA0xAznSp31dz1+ajhdih2IpIEuY14cKSMlWMGw+w8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747105618; c=relaxed/simple;
-	bh=7Sq8YaAZmVI9KNclbZEAVx+oOCp0RssOb8yh6fyMa1g=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=sUjveqDPMIHAhnjQ2N8fRTgArSXdQxAZCGo2BMmDiTOJozZbqud1c+Hg9LmdPeKxHOyZVnTagCET4R9XY7C9TspBIsGS3gCzsAn8mU2EU3aCxMVDnoA4kgak8LmoFEBDQQyJXkpMcskxp9e81OZvGxOYXWcyr0B8Cmn2jB3PII0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j4qKgyKE; arc=none smtp.client-ip=192.198.163.12
+	s=arc-20240116; t=1747105620; c=relaxed/simple;
+	bh=dkEzf3fERGNelIlwIbaM/aGOYl9K+/v/DBApTCPauF8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=QiCkrhG3FZpEgMPwyiCLD+m2l/utSSJHnCjpaWRJpa1aR6E2gA1pxlZcyFOsCHFVvjbRULjI73drbIVmayIs9TIMJ+hafC8cNKEH2CvggiAXoH9YSBI1/XWOg1FLRog9bTqHOLUh84mPAbAjQA+p6o85AlqyhF91cVZOxfVPJX0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WC7yq1Vv; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j4qKgyKE"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WC7yq1Vv"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1747105617; x=1778641617;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7Sq8YaAZmVI9KNclbZEAVx+oOCp0RssOb8yh6fyMa1g=;
-  b=j4qKgyKElxue38uDjsljdOxMM1TlTl1eradEQihL9RFnsKTIifdb/hDL
-   DHTMFGZ6c1gDIlezy9aRPBj0IgK7BVlUN+cDP/S8wcgjh5a7+ovoQBTZ4
-   wBmiKYB58dhq/yFQGNKNyL1ZTubJLWmufToICSFUT86VzIHxxfO9Lc9BX
-   tKucqfHKtuzm7uXY30XmwtXyQLsyXqcInE2cGtGrH66KD2D2Z5GbBESg5
-   ESsNg2amJpAFqyscbPYhbcWH8MOFZeO7jYLWunkUB/YQGy4FjKf5igUkZ
-   fASoL9/LSlFnSh+pELbdiBMOhJX91IFfN+JvyPiiBH7wnv5vFGeMp4+bt
-   w==;
-X-CSE-ConnectionGUID: kAFOHOivRTi4AsMlQpniPQ==
-X-CSE-MsgGUID: 7OditVLcQtWYpDj4RCAukQ==
-X-IronPort-AV: E=McAfee;i="6700,10204,11431"; a="52735272"
+  t=1747105618; x=1778641618;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=dkEzf3fERGNelIlwIbaM/aGOYl9K+/v/DBApTCPauF8=;
+  b=WC7yq1VvclIcJh+qjZ55kGfqHT9kJh7qhdNC3ePiWmChCgLNO4r4sSwJ
+   aFb70lLibzv9YFe1FfJhckcj48os0Ev0m3eG1r2/R4tYz0yp/wva9JqPP
+   wSZpx0OQ382w8fiDcF15x11eX8a5t7Pi1BCoxpA5UxRxcVX0XtRzotdcV
+   Vs6xwy6X8fw8kEVKPrip4cQPeyVT5+/RAWXq4jQx6iH3Qd3O3CZlpjRF2
+   26v4h/7qqDqTLc9NvFwpbRn9IkTSv2mMXS6Scd4PWd6jkV38uKRdfTcjp
+   kvoxg7H1FwP2irPWSeF7MZ4PhjBTR2sE8UhQFktqQq9b2/8yI7EmBAdLf
+   A==;
+X-CSE-ConnectionGUID: 6cCWeX4hRKmT5r04pZeA7w==
+X-CSE-MsgGUID: g5eFsmSHSLeYJbnTg7s/pg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11431"; a="52735275"
 X-IronPort-AV: E=Sophos;i="6.15,284,1739865600"; 
-   d="scan'208";a="52735272"
+   d="scan'208";a="52735275"
 Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2025 20:06:56 -0700
-X-CSE-ConnectionGUID: IseoW6NdTYS/sPrNIPjUwA==
-X-CSE-MsgGUID: AIbmauM9TOOcdbM3GNc0mA==
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2025 20:06:57 -0700
+X-CSE-ConnectionGUID: Pw5tydATR82L6wqop+5lhg==
+X-CSE-MsgGUID: ylizIxMRTCC+mvAibLR/Ug==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.15,284,1739865600"; 
-   d="scan'208";a="138522214"
+   d="scan'208";a="138522216"
 Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa009.fm.intel.com with ESMTP; 12 May 2025 20:06:56 -0700
+  by fmviesa009.fm.intel.com with ESMTP; 12 May 2025 20:06:57 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/5] [PULL REQUEST] Intel IOMMU updates for v6.16
-Date: Tue, 13 May 2025 11:07:34 +0800
-Message-ID: <20250513030739.2718555-1-baolu.lu@linux.intel.com>
+Subject: [PATCH 1/5] iommu/vt-d: Restore WO permissions on second-level paging entries
+Date: Tue, 13 May 2025 11:07:35 +0800
+Message-ID: <20250513030739.2718555-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250513030739.2718555-1-baolu.lu@linux.intel.com>
+References: <20250513030739.2718555-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,37 +61,43 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi Joerg,
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-The following changes have been queued for v6.16-rc1. They are about new
-features and code refactoring, including:
+VT-D HW can do WO permissions on the second-stage but not the first-stage
+page table formats. The commit eea53c581688 ("iommu/vt-d: Remove WO
+permissions on second-level paging entries") wanted to make this uniform
+for VT-D by disabling the support for WO permissions in the second-stage.
 
- - Restore WO permissions on second-level paging entries
- - Use ida to manage domain id
- - Miscellaneous cleanups
+This isn't consistent with how other drivers are working. Instead if the
+underlying HW can support WO, it should. For instance AMD already supports
+WO on its second stage (v1) format and not its first (v2).
 
-These patches are based on v6.15-rc6. Please consider them for the
-iommu/vt-d branch.
+If WO support needs to be discoverable it should be done through an
+iommu_domain capability flag.
 
-Best regards,
-baolu
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Link: https://lore.kernel.org/r/0-v1-c26553717e90+65f-iommu_vtd_ss_wo_jgg@nvidia.com
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Jason Gunthorpe (1):
-  iommu/vt-d: Restore WO permissions on second-level paging entries
-
-Lu Baolu (2):
-  iommu/vt-d: Use ida to manage domain id
-  iommu/vt-d: Replace spin_lock with mutex to protect domain ida
-
-Wei Wang (2):
-  iommu/vt-d: Eliminate pci_physfn() in dmar_find_matched_satc_unit()
-  iommu/vt-d: Change dmar_ats_supported() to return boolean
-
- drivers/iommu/intel/dmar.c  |   4 ++
- drivers/iommu/intel/iommu.c | 113 ++++++++++--------------------------
- drivers/iommu/intel/iommu.h |  21 +++++--
- 3 files changed, 51 insertions(+), 87 deletions(-)
-
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index cb0b993bebb4..67c6ea1d8d44 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1681,9 +1681,8 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 	}
+ 
+ 	attr = prot & (DMA_PTE_READ | DMA_PTE_WRITE | DMA_PTE_SNP);
+-	attr |= DMA_FL_PTE_PRESENT;
+ 	if (domain->use_first_level) {
+-		attr |= DMA_FL_PTE_US | DMA_FL_PTE_ACCESS;
++		attr |= DMA_FL_PTE_PRESENT | DMA_FL_PTE_US | DMA_FL_PTE_ACCESS;
+ 		if (prot & DMA_PTE_WRITE)
+ 			attr |= DMA_FL_PTE_DIRTY;
+ 	}
 -- 
 2.43.0
 
