@@ -1,42 +1,42 @@
 Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56B2E21D3EF
-	for <iommu@lists.linux.dev>; Wed, 14 May 2025 08:20:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A7961B414E
+	for <iommu@lists.linux.dev>; Wed, 14 May 2025 08:20:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747210814; cv=none; b=YK0+JuBHCLul9UMkedTOnscQpD2hLu2UhINEmDStfkgyP1nvBtzsbt3E2qk8gyK6+I0H0BhY/54RcnmglINYR00DtHKTNCpfjw8zySTwfYuXA556RbkC/FQVdT8vXDe4zhMaHgFIBQJFf78toLW/+KQlSdwyGa0m5wHUpqd/hRo=
+	t=1747210814; cv=none; b=N3Tv/9F4+kGPlJux7U0GC4fH/I3le2c75A/egsx2/GU7mSSq0793OWyMbPI8ykvkFONP2zMs+XLq9Pv4ENRN2nXe3YxS8xOyo4i+TE6k5s1uSGrLlSJUtV3HbhRJGiWYqhT+IUgG9nAihkHVSslobTQzc9/ePPudpYgYkYznryY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1747210814; c=relaxed/simple;
-	bh=Zu2ghSu2kt9/8uiiXqMjSaX/ZzpuEjE3fucBPzK/Mh8=;
+	bh=eVS8ASAPWXFPs7zmXnVv2z4AjK5YrBRmxmYDS53TpiE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Xn0Mxw9wMyrnz5P+WjJXhC6TQBVr0/J+evjd53TUZdB6HWMK3RuYrpLA4r67ci0SxVjRQzUMqZm1wq+8bmoFl6AIg5j9anNzgN8DchTSp/JHb0+6uqVjuDaaaOC1T75oMQR0tGvbGd6F5/f11VK41dhF1oWnZHaRqmmO8hjq7k0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=FbIksy41; arc=none smtp.client-ip=148.251.105.195
+	 In-Reply-To:To:Cc; b=gmdZB09zkmP9RrL7mI5vjcA+qvf68nuObmwrYurqVu5I/D1DUduqeCpdyEYxZc/YXwJVpDlonzFoW99ez3mgPSoti2UtIXCvInsSX9qcrAwCP1cGQqm/fsOgf+XPPzgAeNHI5iERwkSunksK19Hgf8/loiYRfv8LI1wGOpvtyyQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=VuKgwCUP; arc=none smtp.client-ip=148.251.105.195
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="FbIksy41"
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="VuKgwCUP"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1747210810;
-	bh=Zu2ghSu2kt9/8uiiXqMjSaX/ZzpuEjE3fucBPzK/Mh8=;
+	s=mail; t=1747210808;
+	bh=eVS8ASAPWXFPs7zmXnVv2z4AjK5YrBRmxmYDS53TpiE=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=FbIksy41gayjGfbnDbwUgJ+VWVum8h3wOBQf5wn6CT0+RkA6RtNGoEIoyARNVoT9f
-	 aY2uJHsQpxCoXJ2cl2Gz9BB7zh/VYW6LaF+ISC36AtiB3isxMeYFew++lgGjf/wYyF
-	 Ea5XT71ZmbC9dMIQFN9X2W5DbOYbfWvb44TXZkmKsKzifZ3O17pAlnNTOfIH9OqDRu
-	 zKa47yzPfoO/8vHu+FDKulWmJKI0ZiLFP65rEMjr1v6RfX6fYy1PEHRDEvrStTpQh7
-	 eDBdWVnEb9VuBr57i6QwzsX9Cl8J98BJUeaqlT0QUSRReiZ0dmQ2WrmFtcmSh+aRUk
-	 /6xZMFokYMTeQ==
+	b=VuKgwCUPuoiMh63fAsWJcXFb+WTCyzT4zkxvrNgRY9oEZFDc9cmfr2oKNbD4dKlbQ
+	 2KWMQka1r81eUxmi4+Fpss7PUUi5XIy8XEFbnwEbeuB3cI+7cFSpwEKWNV4oX/puZC
+	 ERSGUAucgOHC5yL4wIornVzg5z8bpXuFnh+To4fJHnsdXJ0M9Z0wYf7gdJIqkblSM2
+	 mRhdQ1D9oyGxnUcIRH+0e2zIyRYqPgIWwUsYhZlrNqqJ2vDlXIy1ZpKgwuUCa0AcfP
+	 ocVCkuCm50Q6JLHXBXOEpJKS+D08SlNucQJKi7C7PK2XCCpM4sWB9SprBVGBVJS1CV
+	 212ICctrS7Nkg==
 Received: from apertis-1.home (2a01cb0892F2D600c8F85Cf092d4AF51.ipv6.abo.wanadoo.fr [IPv6:2a01:cb08:92f2:d600:c8f8:5cf0:92d4:af51])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: jmassot)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 8B75117E361D;
-	Wed, 14 May 2025 10:20:09 +0200 (CEST)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 2729417E07C9;
+	Wed, 14 May 2025 10:20:07 +0200 (CEST)
 From: Julien Massot <julien.massot@collabora.com>
-Date: Wed, 14 May 2025 10:19:58 +0200
-Subject: [PATCH v2 3/3] arm64: dts: mt6359: Rename RTC node to match
- binding expectations
+Date: Wed, 14 May 2025 10:19:56 +0200
+Subject: [PATCH v2 1/3] dt-bindings: mfd: mediatek: mt6397: Add
+ #sound-dai-cells property
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,7 +45,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250514-mt8395-dtb-errors-v2-3-d67b9077c59a@collabora.com>
+Message-Id: <20250514-mt8395-dtb-errors-v2-1-d67b9077c59a@collabora.com>
 References: <20250514-mt8395-dtb-errors-v2-0-d67b9077c59a@collabora.com>
 In-Reply-To: <20250514-mt8395-dtb-errors-v2-0-d67b9077c59a@collabora.com>
 To: kernel@collabora.com, Sen Chu <sen.chu@mediatek.com>, 
@@ -66,32 +66,43 @@ Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
  Julien Massot <julien.massot@collabora.com>
 X-Mailer: b4 0.14.2
 
-Rename the node 'mt6359rtc' to 'rtc', as required by the binding.
+The 'mt6359.dtsi' file already uses the '#sound-dai-cells' property.
+Add the corresponding property to the binding to fix the following
+dtb-check error:
 
-Fix the following dtb-check error:
+mediatek/mt8395-radxa-nio-12l.dtb: pmic: '#sound-dai-cells', 'mt6359rtc' do not match any of the regexes: 'pinctrl-[0-9]+'
+from schema $id: http://devicetree.org/schemas/mfd/mediatek,mt6397.yaml#
 
-mediatek/mt8395-radxa-nio-12l.dtb: pmic: 'mt6359rtc' do not match
-any of the regexes: 'pinctrl-[0-9]+'
-
-Fixes: 3b7d143be4b7 ("arm64: dts: mt6359: add PMIC MT6359 related nodes")
+Fixes: 9bc8353be720 ("arm64: dts: mt6359: Add #sound-dai-cells property")
 Signed-off-by: Julien Massot <julien.massot@collabora.com>
 ---
- arch/arm64/boot/dts/mediatek/mt6359.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt6359.dtsi b/arch/arm64/boot/dts/mediatek/mt6359.dtsi
-index 0c479404b3fe3adc9789386e34bda4dc580b5abd..467d8a4c2aa7f16ade92a287ecdeed5089302045 100644
---- a/arch/arm64/boot/dts/mediatek/mt6359.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt6359.dtsi
-@@ -300,7 +300,7 @@ mt6359_vsram_others_sshub_ldo: ldo_vsram_others_sshub {
- 			};
- 		};
+diff --git a/Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml b/Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml
+index 6a89b479d10fad3c8b61cab5a3af1453baca4d1a..9580c4ec1ae00f1dd1182357d8b0a5035a1b7f82 100644
+--- a/Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml
++++ b/Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml
+@@ -30,6 +30,9 @@ description: |
+   See the following for pwrap node definitions:
+   Documentation/devicetree/bindings/soc/mediatek/mediatek,pwrap.yaml
  
--		mt6359rtc: mt6359rtc {
-+		mt6359rtc: rtc {
- 			compatible = "mediatek,mt6358-rtc";
- 		};
- 	};
++allOf:
++  - $ref: /schemas/sound/dai-common.yaml#
++
+ properties:
+   compatible:
+     oneOf:
+@@ -53,6 +56,9 @@ properties:
+   "#interrupt-cells":
+     const: 2
+ 
++  '#sound-dai-cells':
++    const: 1
++
+   rtc:
+     type: object
+     $ref: /schemas/rtc/rtc.yaml#
 
 -- 
 2.49.0
