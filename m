@@ -1,42 +1,40 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1871B27702D
-	for <iommu@lists.linux.dev>; Wed, 14 May 2025 13:44:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2813117A2EE
+	for <iommu@lists.linux.dev>; Wed, 14 May 2025 13:45:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747230249; cv=none; b=UyrEMncRHQNQPpdoHZ+ltc4gNfwDpdEnZvz4JuZ1W1D0RXaBNz+F4/Hi9465HJm1Trug51u6xi6vKNmk+oYLw9hWqAlOPch/BvWefHErPMRTXZHULCnztOCSaNB/OARwNPCpHwRmxum1mrtuTxSZwC9zXeUoAc5D6EE08tWSMRc=
+	t=1747230315; cv=none; b=U7hoZ1LLQ3sxvbHuHz3nqTjxv4PqAiualZg1ed3LKMR45Z7Xt6uWX+7wkaabJwvkq5cBvKCgR53ruIYVlHISFEjSYGKU4GTB1nTzag/liy+8xhvp1VzCy/gQbERAdILxZ9oNOI2tNSGVGQ+WWtb24KO9CFNkF1CtjYngeGrhZa8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747230249; c=relaxed/simple;
-	bh=GJ0WPgaz69TA+huSDeCizvifJUTzxLjucLtrozECOAg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=UHCRqvxS4Q7agKKtjrUEEYSaF+LwbHKvdCkGQgeir1u7U2A1tKrqU2KoBGkUhxj2q99XKAHNLxavxm5OOtNTYzts34wNgZ0TI63/8nQuh3ZTrm0btfQ3ZwwEZi9Ia6HxSupv7rCuxS+bOvP4LjPCDppbimN7eIx0Tg+b2vpI6CM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=nwSfB6JZ; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1747230315; c=relaxed/simple;
+	bh=bB5rVOkZWWCkarXDIzHRAxzDsnnjJj5znI8/OdBZc/o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Md/DbRjw7Gfsij6L2S8Bncm3d7inqj81EPusp+N9mK+gb04HqeH8axOxe7PZZU0/ohYUeQ1WOI6PK6SZyBTjgNAGmbbV0AWwo9CQxmynHt9ekiEVxlNIINxkEcxShGgZIogOlhYgVUk5STzwBi8JVoRtlMARDUphBg/3PIQwz5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=XjL04Znn; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="nwSfB6JZ"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250514134405euoutp0296f906b17ac563f4cc40d16f4fb46a65~-aKaT22rd2337523375euoutp02g
-	for <iommu@lists.linux.dev>; Wed, 14 May 2025 13:44:05 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250514134405euoutp0296f906b17ac563f4cc40d16f4fb46a65~-aKaT22rd2337523375euoutp02g
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1747230245;
-	bh=J+BWsOIAHUAdR95Qq/3XrIREWdn2xQyWomnghKsV3Hw=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=nwSfB6JZzEyJOsz+PFmh3/c/+zTavip1a4h335ssd5wORt0cVllye5D96+rzcQWP1
-	 XGBYuomZOTm/0+5sZBjG1p9+sU5GltBYvRXe8a0e21xxlszhhXh/UPZ2clQNyi6mpX
-	 r8CAM2WfwIMezGzH0gZvr519Epw5CiVkTv5ynt4o=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20250514134404eucas1p1f96b6d77101e2564268326e8806d2abd~-aKaEMTiz0729107291eucas1p1n;
-	Wed, 14 May 2025 13:44:04 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20250514134403eusmtip2e8de4e0e3be32be5d7f675ad67919809~-aKZMIJwc0929609296eusmtip2G;
-	Wed, 14 May 2025 13:44:03 +0000 (GMT)
-Message-ID: <c90bf515-9050-4ed7-b733-28b14536b913@samsung.com>
-Date: Wed, 14 May 2025 15:44:03 +0200
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="XjL04Znn"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1747230312;
+	bh=bB5rVOkZWWCkarXDIzHRAxzDsnnjJj5znI8/OdBZc/o=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=XjL04Znn+duXifSpO3JVXeTJTwdoNk98bmvDozvd8NPLVotoRJrqpNGw45HGkv6QA
+	 JiRYgv6BgbHCYKdbHVfpm70o2j1NZ9+z9gQVJkzdd78lu6R+1kW4CEALffdz5tlM9x
+	 Gh/c0qsuDAdc92v42YW9G0lD7kkdqLXmZxvhjOiYuc/C0ejOrQjPr1PWwg18zJEVMt
+	 vHKmfTkFKEZ+pQUQuVAI2ySIj8pZn6ZBWpNonVolNQJEL7Mbg9UQM+xNia1QMGqag2
+	 o7c3ts0sZ9fGpA/42EeVar7XqJ3nheRi8HeGqmQ5MbXvYEYDQOBB5vhYHFl4p5Dk8m
+	 GhlVAyyKeGYfA==
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 123C517E07C9;
+	Wed, 14 May 2025 15:45:11 +0200 (CEST)
+Message-ID: <825f9c5c-79e8-42f4-b489-854e58211fca@collabora.com>
+Date: Wed, 14 May 2025 15:45:10 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,49 +42,39 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [Linaro-mm-sig] [PATCH v3 2/3] udmabuf: use sgtable-based
- scatterlist wrappers
-To: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
-	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev
-Cc: Gerd Hoffmann <kraxel@redhat.com>, Vivek Kasireddy
-	<vivek.kasireddy@intel.com>, Sumit Semwal <sumit.semwal@linaro.org>,
-	Gurchetan Singh <gurchetansingh@chromium.org>, Robin Murphy
-	<robin.murphy@arm.com>, stable@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] dt-bindings: mfd: mediatek: mt6397: Add
+ #sound-dai-cells property
+To: Julien Massot <julien.massot@collabora.com>, kernel@collabora.com,
+ Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>,
+ Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
+ <matthias.bgg@gmail.com>, =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?=
+ <nfraprado@collabora.com>, Hui Liu <hui.liu@mediatek.com>,
+ Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Tinghan Shen <tinghan.shen@mediatek.com>
+Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mediatek@lists.infradead.org, iommu@lists.linux.dev
+References: <20250514-mt8395-dtb-errors-v2-0-d67b9077c59a@collabora.com>
+ <20250514-mt8395-dtb-errors-v2-1-d67b9077c59a@collabora.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <7a6475cb-4ebe-46a3-92a2-f29fbc8e5e41@amd.com>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20250514134404eucas1p1f96b6d77101e2564268326e8806d2abd
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250507160922eucas1p11bd044bb458626dc0004bd2fd83605c0
-X-EPHeader: CA
-X-CMS-RootMailID: 20250507160922eucas1p11bd044bb458626dc0004bd2fd83605c0
-References: <20250507160913.2084079-1-m.szyprowski@samsung.com>
-	<CGME20250507160922eucas1p11bd044bb458626dc0004bd2fd83605c0@eucas1p1.samsung.com>
-	<20250507160913.2084079-3-m.szyprowski@samsung.com>
-	<7a6475cb-4ebe-46a3-92a2-f29fbc8e5e41@amd.com>
+In-Reply-To: <20250514-mt8395-dtb-errors-v2-1-d67b9077c59a@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 08.05.2025 11:57, Christian König wrote:
-> On 5/7/25 18:09, Marek Szyprowski wrote:
->> Use common wrappers operating directly on the struct sg_table objects to
->> fix incorrect use of scatterlists sync calls. dma_sync_sg_for_*()
->> functions have to be called with the number of elements originally passed
->> to dma_map_sg_*() function, not the one returned in sgtable's nents.
->>
->> Fixes: 1ffe09590121 ("udmabuf: fix dma-buf cpu access")
->> CC: stable@vger.kernel.org
->> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
->> Acked-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
-> Reviewed-by: Christian König <christian.koenig@amd.com>
->
-> Should I push this one to drm-misc-fixes for upstreaming?
+Il 14/05/25 10:19, Julien Massot ha scritto:
+> The 'mt6359.dtsi' file already uses the '#sound-dai-cells' property.
+> Add the corresponding property to the binding to fix the following
+> dtb-check error:
+> 
+> mediatek/mt8395-radxa-nio-12l.dtb: pmic: '#sound-dai-cells', 'mt6359rtc' do not match any of the regexes: 'pinctrl-[0-9]+'
+> from schema $id: http://devicetree.org/schemas/mfd/mediatek,mt6397.yaml#
+> 
+> Fixes: 9bc8353be720 ("arm64: dts: mt6359: Add #sound-dai-cells property")
+> Signed-off-by: Julien Massot <julien.massot@collabora.com>
 
-Yes, please. The other 2 patches have been taken by the media maintainers.
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
