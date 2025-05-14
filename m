@@ -1,180 +1,280 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2042.outbound.protection.outlook.com [40.107.223.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-io1-f54.google.com (mail-io1-f54.google.com [209.85.166.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECB8A2AD2F;
-	Wed, 14 May 2025 17:06:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747242405; cv=fail; b=jBDTtqTMaMeF1X/IsnH2zAuncRwQ3HChntlwKgs9N7/AQBoKdvTOIb4rTydh8sh0KFLsn29MYYeTddigYo4Q19lAQ8lHN6kfSrLH8EjJxt2+luPa2ZGzAEF3YI5wo1lXYFP2Yph2/lxuyrh4iWiCXMAA30wVLUgxXwXTVfPL13I=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747242405; c=relaxed/simple;
-	bh=L9MT8dENLO3qYBPaPRm3TcheXbE5wqRlH34x/1cXGU0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Hu6auVOKG1lG9nhlLXZMWAANSAYCJbM44SWnaLyKuO4J9/IQ80DiS3HHjf74gtrHSmkDnd19uhAYoivsuI5PVvbqC7ODlUyA0j+s4aEL0bjaEIEqTsTxO+zHe4WEZqVt+D1v4gmcveHJhwYK4zSVFDhtHJv8q82aDWd3MLSZE/4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=g4yZ8YQa; arc=fail smtp.client-ip=40.107.223.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FF5D280336
+	for <iommu@lists.linux.dev>; Wed, 14 May 2025 17:13:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.54
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1747242818; cv=none; b=tpMxU8Cn/MJQbAkKSg/zk4aUCTu3cv3UU4YqryH8a/XXtaibaRtYyPnUExiTbEsBJ5m6pNLGOfDDJ3uNpGtECYevRansShf2VnLqi/l6sTnCAsfkShDnAdcFMXR2CLKSip/5TeeyDuuIkIq3Ze+FToeb2IJ6pb6MuVNzm2yNV9I=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1747242818; c=relaxed/simple;
+	bh=Ujrh3uSOn5VinB5VvrwG1pHqcGvMo7e5QbA7xYeJtBk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=W34DwUsy0FECeNZ2EMxWGs4blvk5PKI7bGpbx+0Q4BB38p2hYq83rwppowoOVtcZhsUZBepyGPar/U8ybPRlWcm5JizcAjyNgg1QbDnatJw9yNhHfzqY9NFTJn7/Ojw39tO0PVXFrG2Cajqk8mfWYq7EQWAFMoDRGoKMXkb1ZH8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KEjtlRu5; arc=none smtp.client-ip=209.85.166.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="g4yZ8YQa"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=pgdFkVcaLmFHpbxPgHz4jhU6GQhflTjaFkd3p808Q4UiTxqNurbb52B6fUrXJU6wV2IUVAKiWqWTxJwVVg8lNDFW5Mhm+Q11RnW15+vISbQyey/vinJMQqIqRtP3haw8StvDdVsXILBL7IyRsOSWew+NvYCK+phvVeff75ZIrUPZg1RsL8FtN80LhEhPa7Y0hmAlAzvT/5/6OcbDsr1XHDPuGOtT+rWRa30iDUeP7b47GXnsaX0OuzW8gZu8QrmoYo1IIsY3QIjNjbh4y2xeSn660CYuG1ryd6IiStXwRaGpqz3yc1aZrYad/M7K8tnX+RKczJJ3ACj5OQ9prB7Iaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=boDTYex1lGVFUTPNG/sgRHlgfXXJKbL9Vs7B81Qt9yQ=;
- b=SmtkniDa0eARU97X3h/hdMxgvjcnbpkTvvdVLWYtzA82tmT/YHldBswz/490Ex+0ZlQef69Lg0wOoX0d0gmsIACashFzWtX79GPCDwEJEIkTdeSHcPkKeHfZwWxn5IeHSgJJ+B/44ZVcKO7KHU3DcxKADrseEDhvgFvnnEmTDgmLHsBNZRa+xxEHyrJ8dVfov6TNlMUjXMxj1QjeDUyDfJb59ecjrBWO8g/dAvnEFaNZsYCvhB9GR+ebeWdfYJVpwvKeedqh4uDsXoHErwTWWuW1bC52OkYCVA0ib6C8Zdzsgb6s1NQoW1MpysfjwT4+Kr42hqHhw9xLZ5SNxGh5EQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=boDTYex1lGVFUTPNG/sgRHlgfXXJKbL9Vs7B81Qt9yQ=;
- b=g4yZ8YQazJ9c0z95vlTdFsquZj405ERW6YOO4eWvdlpmxnPrKhH6Eh26o77gdd/obmKzjjkE9sKeMQ63jqya1lJofEfQIuLccYceMybqBCkTOzoyXuD7dTVWgQkp21DqbVagbJUKH0jjnzTwkQmMR1OLj5CWEqwREsV9en24mjlf7a/6ktgfGQHzBQ9Dw0GGOVwsUSCEVApw5cH69lM0+tKBrR2buH4ELCgNEGGX2/kb9sW0Sv7tuqCrfpMVWsIqJqSKeS7DUIjQV9Ks0un4hDTMz8/3Dw/kN7u/d8RrxpCNNQquFcjh62y5J+u7cPcvetpZAhVM+XI1cNFc3PXfxw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by DM4PR12MB6088.namprd12.prod.outlook.com (2603:10b6:8:af::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8722.32; Wed, 14 May
- 2025 17:06:39 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8722.027; Wed, 14 May 2025
- 17:06:39 +0000
-Date: Wed, 14 May 2025 14:06:37 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
-	bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
-	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-	shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
-	peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
-	praan@google.com, zhangzekun11@huawei.com, iommu@lists.linux.dev,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
-	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com
-Subject: Re: [PATCH v4 05/23] iommufd/driver: Let iommufd_viommu_alloc helper
- save ictx to viommu->ictx
-Message-ID: <20250514170637.GE382960@nvidia.com>
-References: <cover.1746757630.git.nicolinc@nvidia.com>
- <5288cec9804e7e394be3b7de6b246d8ca9c4792a.1746757630.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5288cec9804e7e394be3b7de6b246d8ca9c4792a.1746757630.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: BN0PR07CA0002.namprd07.prod.outlook.com
- (2603:10b6:408:141::17) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KEjtlRu5"
+Received: by mail-io1-f54.google.com with SMTP id ca18e2360f4ac-85d9a87660fso742573039f.1
+        for <iommu@lists.linux.dev>; Wed, 14 May 2025 10:13:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1747242816; x=1747847616; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YfVONBHVtRTPlHRwr1fa3nrvIurV0bZBwrMg9aBjdsY=;
+        b=KEjtlRu508XdU+AEcycz6lEvTt/0st3BD4PGwJX+S2VMdZNTlfYFyVcuM+zFcbEipF
+         4iu+il4eO2QNI1NTf3xZ8p7YKGpulM88+18W2LLz68giJHpSsRZ4v9YjSAwJ6E1M29LH
+         h1ZLrUHpd6jnoljrRJptrcvvQFsWi+mdd9BAy3DFlH7DNEVQIGzR2nUELq3hxxxXzs5C
+         SMG1/YgoRQ5eyLOE5qPXU3mKPYk5Jp14Ff9PSygYOrp3pJVNnwOeBIF9DCYC+gOk81fm
+         xCQtYNm4rtjIS09xEvOVPz1Q5WEOvIfL1SONSjLMb30vgqC5dshZNJuFCEdfvc1ZCYQY
+         QZog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1747242816; x=1747847616;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=YfVONBHVtRTPlHRwr1fa3nrvIurV0bZBwrMg9aBjdsY=;
+        b=XtrMYrk7OPlMUx2rCRyV5H4HvVuay5HCLtdrzqy3fkrEWUpS+81ItkeDp/a9gBQPpe
+         8jZndwcK85zCWjF5FrE53tlswXlgqKGx3F9UIdvEc1DOhuvKBag4YYbuVuEl4iwlmR/g
+         ZXsUHyz2ihwVt368v2deVxXkAiDYGqebOqiQNZr2g8BaU/N3fXUOh6VUqw5ysrwhZMR8
+         VmzgCqd9D1L4Rnpo4zWh4YpAo0h/f237PcB4471ut2NKiuiKcBypDtA1csN4mD4tSbyy
+         sGvw2+rDn6QnrP+mNp9EdKG0l47dL8eYQfIwFCxfa7SAHWxdYbttlrjiPNCYWAlzxzUX
+         /VUw==
+X-Forwarded-Encrypted: i=1; AJvYcCV/NXhucK7gmNWiASb3CyEXMOxUFwcoKqZuL5XnwRKsRGJDGiXtpF7LXDRjheWhKiCkbyjBzg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyeAxz6U4V+1bJo0VGAnWxrxKe2pRUG2MhViFtXor3132zH1ioR
+	AuT2CWaEu/GfTahjJKI8HdWZh4FKNnPmRq4906yl82v59mAjJZ1ZkvIcYi4dTZ5wRb4Ter5D2dl
+	qtXtI526vmSUn3Fq6oOHph8WHX7A=
+X-Gm-Gg: ASbGncsy6TRlo7DvbQdHz4V+prlGvoMBeLBFLCdi2m9VG4Vuv7UQmOrd23nVXRSYbgK
+	HwaSgUizhn5q5CMZVkLeG+boSrQ2XMR6ntZj/DpBYxQxHXAS84afsr8M/o34LmODBiN60kjnvcy
+	hChaT9YCBwEs7HfFpKUT7kG+Et98JA4x9Y7Ns76ZmiN6qOxDAxwiDokQI92b/BVZ0=
+X-Google-Smtp-Source: AGHT+IGdnAsVW3kt1rSy4GKPI8bMIOEfIFvsaubQbJQ7eRiduk9GI/aaU1w3nrEUXuN5lOaJKQ2zh99tpo1qR+67hEs=
+X-Received: by 2002:a05:6e02:1707:b0:3db:72f7:d7b3 with SMTP id
+ e9e14a558f8ab-3db72f7dc1dmr29424625ab.4.1747242815480; Wed, 14 May 2025
+ 10:13:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|DM4PR12MB6088:EE_
-X-MS-Office365-Filtering-Correlation-Id: d12614a0-92e9-4f02-9da9-08dd9309b125
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?e7nP6Aujz5RyM0yAf6IofbyfE48ng15JZwjAOMgtPXt32GcaDpVkuQUJw8NR?=
- =?us-ascii?Q?1/lkEGeLi9Zps17SSQV0/w+LU+1LlA3VtZs/AALz8+/lLg+KF49p67gDdJZG?=
- =?us-ascii?Q?re34pW/vu5wWRUF28AMf4l4a1Pf1+SJ4o9JdT/UmRmnBx68XdPsUUqf8U68z?=
- =?us-ascii?Q?PmiQsco7aMO4rmcLfsSCNfjtjl0tPb07f6wJrOIcjR4PLn8Jk642vuhU+IPM?=
- =?us-ascii?Q?qNNNrkKwuCUorrjdNS/lwXeDK7eFzCWK7AzK3KD1ODS7E1jPPolYE/zVL5lh?=
- =?us-ascii?Q?l7AymGtusaKMDtwCfuYjxrtTcCm76Lrjcijogvs71mBYkvlXt9TrCkNqECPX?=
- =?us-ascii?Q?rhotg0IVnu5aZA6SEvJHu18/yeZp7BBRE8oEfyeTFfqbs86kedXjg4GNDizP?=
- =?us-ascii?Q?slsbmwFvzcuPih7OBHXDK0vk2vW3QVjhiLP0wyToDVD/V/QtqntwGbZ3T/j9?=
- =?us-ascii?Q?oUxfZyf7yce1qnDTezqiO2oNyDgVCN79fkQMU0DF1OucMiVbfA3AzHYpq7Nt?=
- =?us-ascii?Q?gI66wS5Y6fK3Dx52rX4Vo2bbCtEg4pppJCLghwJ1J1Ms71ObtGXSrdq+Phrr?=
- =?us-ascii?Q?lkYAH0p4558DTm9qCXZWyrCgL5gw1J2xD7tXVliBs8qFebeLQF96/BPCNtvn?=
- =?us-ascii?Q?Z9myijHTA0O19azWbqB9Vl3LdSSunvo/GmHkD5zeftTsK7dcqpgTQnhl3qFt?=
- =?us-ascii?Q?j7hbHG/ME5ANKKFwNo0ns4x8cowyftlMfmXJNs0EtBDMXOODvwNvZ6pWOSm6?=
- =?us-ascii?Q?cOviBmbp/8VIL5Mi+eOHryrisWj0dxp8ZpyR+PlxJy6x7gpQR2y44qRTNHTt?=
- =?us-ascii?Q?L9C/EuBXJ3NI5h4Yj8b0BUgFuoA11XrshNheR2hdc2/n/edk4yAh8fLzgjAF?=
- =?us-ascii?Q?fy0k6uciAffEj686jSnAIvf/uIg/SN/5y+4p+akGXKrWIfu4bSDzOJNXo0w3?=
- =?us-ascii?Q?7mDv/HK3hEPWYBFSwlBoLJDKel/3cF5b3HyyL3k4IJkfelVfXQ06rwxIu09n?=
- =?us-ascii?Q?sX+yOYZd8g+7adA/+vxuTlAISEDxgNwnEqWE6wEKi/SCjWBPPi5QhoyWe1h1?=
- =?us-ascii?Q?xnX1tQfIXMwcie9pWTxKw2T3jmthajxVratDoT54W9Q/y+tOxPWxeXT2GKG1?=
- =?us-ascii?Q?AlMHLAeKhFVjimPfMSc0mUlhblok/BRfnCVGh3HxKd6xBL8E7QWZ1xFFsxBb?=
- =?us-ascii?Q?KTmKUEWJ9opOuullYt93dPJKQ7jpU+8bnwwW8IPb17HI2IIgrTdTcXP0Ad3v?=
- =?us-ascii?Q?oYgKVlTxwPdK4dOyIH7Jx+SnzjiOBfuOSF1C+eDK95WCmdkbiX2xzzwUb4Ll?=
- =?us-ascii?Q?P61KV3hL/uew/3gM4gcdcIOrKRg/gJrRk4zLCKnHo+S/xW7vr5iujQtBBDvD?=
- =?us-ascii?Q?Ppe3WkvBgOH70M/TwfWfj56YiHZ0R5KOHfCrRcVRz6tSKbJAixize0S2cweO?=
- =?us-ascii?Q?ET5aOSXwf5Q=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?YS81NMjnu+/uWDW9OO4IMIGLVOaA6cxflTMoExJH2o7aWZZifpeKkgEKucUk?=
- =?us-ascii?Q?jGN6Ljm1bqI8D/G/31QQ7hRJddwEYN9YzzXi0jxHtFpS0w49u4qXUIO6fKcD?=
- =?us-ascii?Q?C2hxpgtjFSIXmBUQO0h8u6lEYyyuZMxOK6Kc7WmpN6qYXRg5119Xq66hTpzl?=
- =?us-ascii?Q?GTyd8IZHuflMfu4hNfZhRis93D0J1FvG0QGoPBSaPEmb6nEIIJB1g3EoKSqJ?=
- =?us-ascii?Q?DErnHRMkV1dqqBpUFtEXAOPi0epDuMpOKCLsCaKY10H/sITESUiQZYmrZdFX?=
- =?us-ascii?Q?H5mwkQ56CQa1zJUdbo0ZtS7UFB8ZwqtBkOCiwGMl+vJMrltjxDZ17N7WWj+t?=
- =?us-ascii?Q?9O74ksJVTl+PinXjscXEC0DYw8qwHhJ/NEZQNkgGL374b7568s/e9WytwgUs?=
- =?us-ascii?Q?xTUAxhJ2Rd1xy9y9fxj9TK9nLFLAUTJsIqWVIgxHfDxIoTA52O4UauXSoeCE?=
- =?us-ascii?Q?u5/+0KAEC324SA4Y0UueGgpm/F9FcBZamnPvxRJ8ogG1WswgAzIVt4MRvyh3?=
- =?us-ascii?Q?zfROSxxQn73upTeGwd5GsR7z6zdbNgOEKfmdSKnUSv9lwxvu+7wpwJ28z3UD?=
- =?us-ascii?Q?c9A3p9uKcYyZoAm3c/N6KUrTfB6p5d6RUlpb7U9Rt36I/OQ1fywYoQS/K2lS?=
- =?us-ascii?Q?JWRkU6DsjBr9Pk50fDSU6AGOF2Fswg/nk4cGZRsPK/r9bwfmRqOcRuNYTH+x?=
- =?us-ascii?Q?n0lXbQkgkCPVaTz//ijuxIUZn0ckxemm/JsyzvcMr0UWV+kZTZ0s038ebsTl?=
- =?us-ascii?Q?qes4SKLRhLP5Rz3GJLY2IvKHj5Cw345XQOL3dV73ggY8OZmIJks+XN/DYk0B?=
- =?us-ascii?Q?/ldzMV1RZHs/nypxJAr40zloKx2i7k+ZqPm01QH7GwV+kcTrgEPIheLZiMfi?=
- =?us-ascii?Q?gK8igLEKAkLiI+QU3LHrI95/2+K9YQYlG5Om8DwhCRNST8euwjteF8s0Uq5b?=
- =?us-ascii?Q?mqLIfdR4uxXhQI2QBCM88Vcq9VQ35oXX7xU08yOoQbBKqiFjpb6DjmR9A2V1?=
- =?us-ascii?Q?xAjLTto2o2JQw1ab9G2rWpvPfkqIVqLZdbT465NrFEsPSipDYlFz3zGLYcMS?=
- =?us-ascii?Q?r82oQpDurmdYhWZNflB7LiDGT4H10dQv23DNs03XK5v5CNYOgaAUeB1whrVw?=
- =?us-ascii?Q?BbxOwhQrquZWhtMrBr0svP6ViWIoeIXbWKpYHwiW3XqWrE02pK6TcQDhcmoF?=
- =?us-ascii?Q?MzhfWb8C375tr6MatXLiZYYo4EijxInWWPf1ODQusY+JNh6lYd036yK/HadZ?=
- =?us-ascii?Q?mhGzZBUrjamwnPhT7h4NA8sZNi8huwZ1sbr/FJUuvN7SBd/yo50oks8XxlCV?=
- =?us-ascii?Q?K7yO7w5dwBTL4FKYteyhVGXFBLM59AmHA7i8V50REGHewEcNGfZlr0D0buzw?=
- =?us-ascii?Q?xKlOerCkRyzhSASUnFC+mS2m3wtYO3BNOhLizHatPxweFFyukNx+HD0LieG9?=
- =?us-ascii?Q?ibqVezBheeIDF6SXhAmfLOh3UtksVFPBYneRl2yhoFlJhrpG858it9cGaUzm?=
- =?us-ascii?Q?Av1AMIX7ebLn5k20GyKyIVaUM0+uKYv7Dq0LLFvtxbAU+ZV2ExYeLlujwvAh?=
- =?us-ascii?Q?wAWgiHKAZU7RN70ozdM5cwSGCuzGGEC2frhETn3G?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d12614a0-92e9-4f02-9da9-08dd9309b125
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2025 17:06:39.5201
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jTz9RWbXeOt625LIqVe8FC3dbULJlnm8Tk60SeVoEO5mbhLau85lt0Yzr6CdBEFg
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6088
+References: <20250514170118.40555-1-robdclark@gmail.com>
+In-Reply-To: <20250514170118.40555-1-robdclark@gmail.com>
+From: Rob Clark <robdclark@gmail.com>
+Date: Wed, 14 May 2025 10:13:22 -0700
+X-Gm-Features: AX0GCFvpGGezYiytY2MOS6dtC60ihdSd-WE1u91XYjWUz5Y9tDHJIetJpvazfio
+Message-ID: <CAF6AEGvEsB9F4=qnSvQkiAGdn=60ae-uGLbZVf2qFwfGof2Nkw@mail.gmail.com>
+Subject: Re: [PATCH v4 00/40] drm/msm: sparse / "VM_BIND" support
+To: dri-devel@lists.freedesktop.org
+Cc: freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, 
+	Connor Abbott <cwabbott0@gmail.com>, Rob Clark <robdclark@chromium.org>, 
+	Abhinav Kumar <quic_abhinavk@quicinc.com>, =?UTF-8?Q?Andr=C3=A9_Almeida?= <andrealmeid@igalia.com>, 
+	Arnd Bergmann <arnd@arndb.de>, =?UTF-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>, 
+	=?UTF-8?Q?Christian_K=C3=B6nig?= <ckoenig.leichtzumerken@gmail.com>, 
+	Christopher Snowhill <chris@kode54.net>, Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+	Dmitry Baryshkov <lumag@kernel.org>, Eugene Lepshy <fekz115@gmail.com>, 
+	"open list:IOMMU SUBSYSTEM" <iommu@lists.linux.dev>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	Jessica Zhang <quic_jesszhan@quicinc.com>, Joao Martins <joao.m.martins@oracle.com>, 
+	Jonathan Marek <jonathan@marek.ca>, Kevin Tian <kevin.tian@intel.com>, 
+	Konrad Dybcio <konradybcio@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+	"moderated list:DMA BUFFER SHARING FRAMEWORK:Keyword:bdma_(?:buf|fence|resv)b" <linaro-mm-sig@lists.linaro.org>, 
+	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>, 
+	open list <linux-kernel@vger.kernel.org>, 
+	"open list:DMA BUFFER SHARING FRAMEWORK:Keyword:bdma_(?:buf|fence|resv)b" <linux-media@vger.kernel.org>, 
+	Marijn Suijten <marijn.suijten@somainline.org>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Sean Paul <sean@poorly.run>, Will Deacon <will@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, May 08, 2025 at 08:02:26PM -0700, Nicolin Chen wrote:
-> When an IOMMU driver calls iommufd_viommu_alloc(), it must pass in an ictx
-> pointer as the underlying _iommufd_object_alloc() helper function requires
-> that to allocate a new object. However, neither the iommufd_viommu_alloc()
-> nor its underlying _iommufd_object_alloc() saves the ictx in the allocated
-> viommu object, although viommu could hold an ictx pointer.
-> 
-> When the IOMMU driver wants to use another iommufd function passing in the
-> allocated viommu, it could have avoided passing in the ictx pointer again,
-> if viommu->ictx is valid.
-> 
-> Save ictx to viommu->ictx in the iommufd_viommu_alloc(), in order to ease
-> a new vIOMMU-based helper that would then get the ictx from viommu->ictx.
-> 
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  include/linux/iommufd.h | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+hmm, looks like git-send-email died with a TLS error a quarter of the
+way thru this series.. I'll try to resend later
 
-It is OK, but please think carefully if the ictx is actually
-needed. The reason most objects don't have an ictx in them is because
-their contexts are always inside an ioctl so they get the ictx from
-there.
+BR,
+-R
 
-We don't have a lot of viommu allocations so it isn't such a big deal,
-but just generally that is how it was built that the ictx comes from
-the ioctl not the object.
-
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Jason
+On Wed, May 14, 2025 at 10:03=E2=80=AFAM Rob Clark <robdclark@gmail.com> wr=
+ote:
+>
+> From: Rob Clark <robdclark@chromium.org>
+>
+> Conversion to DRM GPU VA Manager[1], and adding support for Vulkan Sparse
+> Memory[2] in the form of:
+>
+> 1. A new VM_BIND submitqueue type for executing VM MSM_SUBMIT_BO_OP_MAP/
+>    MAP_NULL/UNMAP commands
+>
+> 2. A new VM_BIND ioctl to allow submitting batches of one or more
+>    MAP/MAP_NULL/UNMAP commands to a VM_BIND submitqueue
+>
+> I did not implement support for synchronous VM_BIND commands.  Since
+> userspace could just immediately wait for the `SUBMIT` to complete, I don=
+'t
+> think we need this extra complexity in the kernel.  Synchronous/immediate
+> VM_BIND operations could be implemented with a 2nd VM_BIND submitqueue.
+>
+> The corresponding mesa MR: https://gitlab.freedesktop.org/mesa/mesa/-/mer=
+ge_requests/32533
+>
+> Changes in v4:
+> - Various locking/etc fixes
+> - Optimize the pgtable preallocation.  If userspace sorts the VM_BIND ops
+>   then the kernel detects ops that fall into the same 2MB last level PTD
+>   to avoid duplicate page preallocation.
+> - Add way to throttle pushing jobs to the scheduler, to cap the amount of
+>   potentially temporary prealloc'd pgtable pages.
+> - Add vm_log to devcoredump for debugging.  If the vm_log_shift module
+>   param is set, keep a log of the last 1<<vm_log_shift VM updates for
+>   easier debugging of faults/crashes.
+> - Link to v3: https://lore.kernel.org/all/20250428205619.227835-1-robdcla=
+rk@gmail.com/
+>
+> Changes in v3:
+> - Switched to seperate VM_BIND ioctl.  This makes the UABI a bit
+>   cleaner, but OTOH the userspace code was cleaner when the end result
+>   of either type of VkQueue lead to the same ioctl.  So I'm a bit on
+>   the fence.
+> - Switched to doing the gpuvm bookkeeping synchronously, and only
+>   deferring the pgtable updates.  This avoids needing to hold any resv
+>   locks in the fence signaling path, resolving the last shrinker related
+>   lockdep complaints.  OTOH it means userspace can trigger invalid
+>   pgtable updates with multiple VM_BIND queues.  In this case, we ensure
+>   that unmaps happen completely (to prevent userspace from using this to
+>   access free'd pages), mark the context as unusable, and move on with
+>   life.
+> - Link to v2: https://lore.kernel.org/all/20250319145425.51935-1-robdclar=
+k@gmail.com/
+>
+> Changes in v2:
+> - Dropped Bibek Kumar Patro's arm-smmu patches[3], which have since been
+>   merged.
+> - Pre-allocate all the things, and drop HACK patch which disabled shrinke=
+r.
+>   This includes ensuring that vm_bo objects are allocated up front, pre-
+>   allocating VMA objects, and pre-allocating pages used for pgtable updat=
+es.
+>   The latter utilizes io_pgtable_cfg callbacks for pgtable alloc/free, th=
+at
+>   were initially added for panthor.
+> - Add back support for BO dumping for devcoredump.
+> - Link to v1 (RFC): https://lore.kernel.org/dri-devel/20241207161651.4105=
+56-1-robdclark@gmail.com/T/#t
+>
+> [1] https://www.kernel.org/doc/html/next/gpu/drm-mm.html#drm-gpuvm
+> [2] https://docs.vulkan.org/spec/latest/chapters/sparsemem.html
+> [3] https://patchwork.kernel.org/project/linux-arm-kernel/list/?series=3D=
+909700
+>
+> Rob Clark (40):
+>   drm/gpuvm: Don't require obj lock in destructor path
+>   drm/gpuvm: Allow VAs to hold soft reference to BOs
+>   drm/gem: Add ww_acquire_ctx support to drm_gem_lru_scan()
+>   drm/sched: Add enqueue credit limit
+>   iommu/io-pgtable-arm: Add quirk to quiet WARN_ON()
+>   drm/msm: Rename msm_file_private -> msm_context
+>   drm/msm: Improve msm_context comments
+>   drm/msm: Rename msm_gem_address_space -> msm_gem_vm
+>   drm/msm: Remove vram carveout support
+>   drm/msm: Collapse vma allocation and initialization
+>   drm/msm: Collapse vma close and delete
+>   drm/msm: Don't close VMAs on purge
+>   drm/msm: drm_gpuvm conversion
+>   drm/msm: Convert vm locking
+>   drm/msm: Use drm_gpuvm types more
+>   drm/msm: Split out helper to get iommu prot flags
+>   drm/msm: Add mmu support for non-zero offset
+>   drm/msm: Add PRR support
+>   drm/msm: Rename msm_gem_vma_purge() -> _unmap()
+>   drm/msm: Drop queued submits on lastclose()
+>   drm/msm: Lazily create context VM
+>   drm/msm: Add opt-in for VM_BIND
+>   drm/msm: Mark VM as unusable on GPU hangs
+>   drm/msm: Add _NO_SHARE flag
+>   drm/msm: Crashdump prep for sparse mappings
+>   drm/msm: rd dumping prep for sparse mappings
+>   drm/msm: Crashdec support for sparse
+>   drm/msm: rd dumping support for sparse
+>   drm/msm: Extract out syncobj helpers
+>   drm/msm: Use DMA_RESV_USAGE_BOOKKEEP/KERNEL
+>   drm/msm: Add VM_BIND submitqueue
+>   drm/msm: Support IO_PGTABLE_QUIRK_NO_WARN_ON
+>   drm/msm: Support pgtable preallocation
+>   drm/msm: Split out map/unmap ops
+>   drm/msm: Add VM_BIND ioctl
+>   drm/msm: Add VM logging for VM_BIND updates
+>   drm/msm: Add VMA unmap reason
+>   drm/msm: Add mmu prealloc tracepoint
+>   drm/msm: use trylock for debugfs
+>   drm/msm: Bump UAPI version
+>
+>  drivers/gpu/drm/drm_gem.c                     |   14 +-
+>  drivers/gpu/drm/drm_gpuvm.c                   |   15 +-
+>  drivers/gpu/drm/msm/Kconfig                   |    1 +
+>  drivers/gpu/drm/msm/Makefile                  |    1 +
+>  drivers/gpu/drm/msm/adreno/a2xx_gpu.c         |   25 +-
+>  drivers/gpu/drm/msm/adreno/a2xx_gpummu.c      |    5 +-
+>  drivers/gpu/drm/msm/adreno/a3xx_gpu.c         |   17 +-
+>  drivers/gpu/drm/msm/adreno/a4xx_gpu.c         |   17 +-
+>  drivers/gpu/drm/msm/adreno/a5xx_debugfs.c     |    4 +-
+>  drivers/gpu/drm/msm/adreno/a5xx_gpu.c         |   22 +-
+>  drivers/gpu/drm/msm/adreno/a5xx_power.c       |    2 +-
+>  drivers/gpu/drm/msm/adreno/a5xx_preempt.c     |   10 +-
+>  drivers/gpu/drm/msm/adreno/a6xx_gmu.c         |   32 +-
+>  drivers/gpu/drm/msm/adreno/a6xx_gmu.h         |    2 +-
+>  drivers/gpu/drm/msm/adreno/a6xx_gpu.c         |   49 +-
+>  drivers/gpu/drm/msm/adreno/a6xx_gpu_state.c   |    6 +-
+>  drivers/gpu/drm/msm/adreno/a6xx_preempt.c     |   10 +-
+>  drivers/gpu/drm/msm/adreno/adreno_device.c    |    4 -
+>  drivers/gpu/drm/msm/adreno/adreno_gpu.c       |   99 +-
+>  drivers/gpu/drm/msm/adreno/adreno_gpu.h       |   23 +-
+>  .../drm/msm/disp/dpu1/dpu_encoder_phys_wb.c   |   14 +-
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_formats.c   |   18 +-
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h   |    2 +-
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c       |   18 +-
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c     |   14 +-
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_plane.h     |    4 +-
+>  drivers/gpu/drm/msm/disp/mdp4/mdp4_crtc.c     |    6 +-
+>  drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c      |   28 +-
+>  drivers/gpu/drm/msm/disp/mdp4/mdp4_plane.c    |   12 +-
+>  drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c     |    4 +-
+>  drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c      |   19 +-
+>  drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c    |   12 +-
+>  drivers/gpu/drm/msm/dsi/dsi_host.c            |   14 +-
+>  drivers/gpu/drm/msm/msm_drv.c                 |  184 +--
+>  drivers/gpu/drm/msm/msm_drv.h                 |   35 +-
+>  drivers/gpu/drm/msm/msm_fb.c                  |   18 +-
+>  drivers/gpu/drm/msm/msm_fbdev.c               |    2 +-
+>  drivers/gpu/drm/msm/msm_gem.c                 |  494 +++---
+>  drivers/gpu/drm/msm/msm_gem.h                 |  247 ++-
+>  drivers/gpu/drm/msm/msm_gem_prime.c           |   15 +
+>  drivers/gpu/drm/msm/msm_gem_shrinker.c        |  104 +-
+>  drivers/gpu/drm/msm/msm_gem_submit.c          |  295 ++--
+>  drivers/gpu/drm/msm/msm_gem_vma.c             | 1471 ++++++++++++++++-
+>  drivers/gpu/drm/msm/msm_gpu.c                 |  214 ++-
+>  drivers/gpu/drm/msm/msm_gpu.h                 |  144 +-
+>  drivers/gpu/drm/msm/msm_gpu_trace.h           |   14 +
+>  drivers/gpu/drm/msm/msm_iommu.c               |  302 +++-
+>  drivers/gpu/drm/msm/msm_kms.c                 |   18 +-
+>  drivers/gpu/drm/msm/msm_kms.h                 |    2 +-
+>  drivers/gpu/drm/msm/msm_mmu.h                 |   38 +-
+>  drivers/gpu/drm/msm/msm_rd.c                  |   62 +-
+>  drivers/gpu/drm/msm/msm_ringbuffer.c          |   10 +-
+>  drivers/gpu/drm/msm/msm_submitqueue.c         |   96 +-
+>  drivers/gpu/drm/msm/msm_syncobj.c             |  172 ++
+>  drivers/gpu/drm/msm/msm_syncobj.h             |   37 +
+>  drivers/gpu/drm/scheduler/sched_entity.c      |   16 +-
+>  drivers/gpu/drm/scheduler/sched_main.c        |    3 +
+>  drivers/iommu/io-pgtable-arm.c                |   27 +-
+>  include/drm/drm_gem.h                         |   10 +-
+>  include/drm/drm_gpuvm.h                       |   12 +-
+>  include/drm/gpu_scheduler.h                   |   13 +-
+>  include/linux/io-pgtable.h                    |    8 +
+>  include/uapi/drm/msm_drm.h                    |  149 +-
+>  63 files changed, 3484 insertions(+), 1251 deletions(-)
+>  create mode 100644 drivers/gpu/drm/msm/msm_syncobj.c
+>  create mode 100644 drivers/gpu/drm/msm/msm_syncobj.h
+>
+> --
+> 2.49.0
+>
