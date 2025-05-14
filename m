@@ -1,88 +1,62 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AFDD1FE477
-	for <iommu@lists.linux.dev>; Wed, 14 May 2025 05:57:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB1F51F78E0
+	for <iommu@lists.linux.dev>; Wed, 14 May 2025 06:04:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747202278; cv=none; b=b+27q4nJw6hkpwYrcmn0cZCSHLuhWkiApja44iybiXlUciEKto1Zv5cGs4V2CQuGxW701mzJAGLP7WmQVOdz3QSYjzDKzQ5C8cqrmioOGza2KgA+EbiNAX5s5WLsUNZyWiyl8OyPIRe74H5oADE6xVlMY6qaK70pio9YVDyp9Pw=
+	t=1747202690; cv=none; b=mvG77eeRFbDjF46p6teJD0c1VRSlzpqZUgGcsWo6sQh9WvaqESHof629y2o6qSGnWEQNP4Py2F+xm+9Uo1RPxzmVPJZT/4+5UEk7D3gIk8jn79T0hULZ+/fo/MaaapSf1sYhbij+mZ/qCd2/IkZz6fxgJm7yjM57GhRAgZGgk+Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747202278; c=relaxed/simple;
-	bh=Tr1XOcL/8BhgssUXkqbsbVw45YsiIW9Uliv4Chah6tw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Z8frBXBprK6mfJo7hUm/XPdGx2IhAdW8Aq/CT7D6TB3zksb25XHqyHi0B3YKa3j4HHs3uO0Uv2H2PZ2UkOprLE/QlC9IwHOaBo4VF7j+4dlFctgmnNqMpRS5+F5W8au6jDT7ZLe+L1NCMor4MDGj9n8IFdlxmDZ/YfI6FiuZhGI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=KfTNo4+u; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
+	s=arc-20240116; t=1747202690; c=relaxed/simple;
+	bh=RFqhxNYBDUa1YsgvI5+vr8SGe4sVriwjvw8E47QDoiU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=d/Pc1E46qo43bGOS2soGB/D0aDuEtWMA+iRKE1oNzeq3r0MeCY2MDRw7jN6+Bda9lS3XxxWEjyVvMuFV3DiOEeUNBofwK5GU2Q3vJxQV12nNpg2aQkztUi9fL0IUpW1NR6BvB1xK/lAfCpsle3cR2FsVqKabdCnaFHsKFHoUYOI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GCnXoSss; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="KfTNo4+u"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-22e331215dbso3759565ad.1
-        for <iommu@lists.linux.dev>; Tue, 13 May 2025 22:57:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1747202275; x=1747807075; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FbiDocnvP7/vIiwuy9W9uCrvaQAnUMotSiyx0gsvykM=;
-        b=KfTNo4+ukmaXxw8E3O0puQNwakp9eWKOIlMKEhy/keS3StyuLR+o5oBsBT5zNZCtag
-         MPZQdENa274yBrhQbdqLQ2SUVCD4rQWkprDfEx9vHVABducUC3hAuZBz5Q8QjHwPCMwr
-         Ml73qP+yMS3xf/A9NMYSFOsygWrznp4ETxUqrnSnihkCdlCFjfYLjD4seuEpAFggj8ik
-         zlvSfcpOXjD1jqI8B6nQ8dpjmBRK5iho21Mfk3s0lymeqqwAluw1JfFkl+YJIgCXJsAs
-         h/pxQDvTfXN92NmbmGqmeycVslY6TQ+xFgqU7h1JaNpbZnBzQhN5YRh/wpUXiHmT41T7
-         bMcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747202275; x=1747807075;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=FbiDocnvP7/vIiwuy9W9uCrvaQAnUMotSiyx0gsvykM=;
-        b=qA+gLo6Hk0OY028rLJSH7CEx6xjBhk5qm/uS+Zf+Uu8QhfN+Tg6n+8wF8rO+aCbA0r
-         VD8g4Q0ZIdz9lI4OccWZExkMKZ+gMZ1nKiC71sQltYF8We8K+53vuZZFv+u8BvKHxIZU
-         Ww7XW1ORGGckG3e33HDaR0Un+PTciF1OQVp//yUG8T2AEn47oBbtwf+izxKmLcxW5iUt
-         i7DUyOvnLobmkdaM3Qw2hiB1VMzBmLxFUDNc7wSr8oxw2hxp5n6y0C2AOzDuhNiN1DpN
-         g3CdCZkdXcKO3pUopp3nZ/BugEsXH6uEDf+vsjfA1H2YE/stE/x8NEovxGK433xGJiU4
-         FZeA==
-X-Forwarded-Encrypted: i=1; AJvYcCUnXFLcQiSbjGOzccAWjUB2wtdO0PQb97+rZFvjYlsgG6cHxIY+O71hafThRC2FE6tXSN4aCg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywl8XQi3fyGu7tGR5BfnRrZf2Dk9OAY/DSygeHq0Y6B0sjv5Nl2
-	UJowYhFuoL5vNcCqPAZB9SgGVqsGDpO76KF9oDJ+ZAreNFyJN5xCmiMJ+Fu5u7o=
-X-Gm-Gg: ASbGncu+ksIePzxR7ODibmFI036hwCz6jnJJvVDAuVpnFTsYJOCTVTE2ubpjXZtL6Y9
-	ZSutfvs62OTq/Qtc7JukX5qjZa6REO+u4dpug8vF2L0QK54c+dRg78QxH6ib7IMKTlZrLZ3x8BF
-	Ymdq+zUOCq1G1VVjG3K9AkEE5Unh/q9zjRpTXOF8d8N3mpBlTIfCZiZkihfAPZtLe9niIUA8mFz
-	pNN/kyJw0WAJXge5mhdp6NZc5ryWtJFuJC6oF5yfnCQ8J0FByYKtFy/6d0DoPMB6z1pHQEcsZUb
-	jHfDJTkg97oEsqlXlGY2kLSFMwDzAR/1ZLL9GiIgpbNSQb2YFPNKl4pgML3PUA==
-X-Google-Smtp-Source: AGHT+IGgGwlhXhb97hz7G/rQ5hnEoBLy0AHEplWytso8kcAajszMRL1hQAHqjtumZAwOWQTJC9TsUw==
-X-Received: by 2002:a17:903:32d1:b0:223:807f:7f92 with SMTP id d9443c01a7336-2317cb4f087mr83654885ad.20.1747202275325;
-        Tue, 13 May 2025 22:57:55 -0700 (PDT)
-Received: from sunil-pc.Dlink ([106.51.196.253])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-22fc8271c2dsm91721615ad.135.2025.05.13.22.57.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 May 2025 22:57:54 -0700 (PDT)
-From: Sunil V L <sunilvl@ventanamicro.com>
-To: linux-kernel@vger.kernel.org,
-	linux-riscv@lists.infradead.org,
-	linux-acpi@vger.kernel.org,
-	iommu@lists.linux.dev,
-	acpica-devel@lists.linux.dev
-Cc: Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Alexandre Ghiti <alex@ghiti.fr>,
-	"Rafael J . Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>,
-	Tomasz Jeznach <tjeznach@rivosinc.com>,
-	Joerg Roedel <joro@8bytes.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GCnXoSss"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1747202687; x=1778738687;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RFqhxNYBDUa1YsgvI5+vr8SGe4sVriwjvw8E47QDoiU=;
+  b=GCnXoSss78wEhXIN4IC3Y0j+ts6OGr076dhT2LHP3f5K1Ma1VW1nW7gO
+   7wVrTYIHkARIX8zHoqkhQp9/XoDHKDUWwHNpXTa19t0sjwJwbo68e29Ef
+   rdVxrjmvD+8jCYcTlqhuGbz+dPPz6jB47b11siadM5bWt/Bq2k45tJvaW
+   q0ejTREnyMmo3nHSX7U8YZtny9dZejyeZWBGHqjJi7Yqan7WTGWhr/FvC
+   Ay0cmSUDdXjKNDaRwumblSMRicvrWUEY/7OFvKjtZDZbjSYfF3+/sLnLX
+   oTrOaY71J/8ItHAYijz/HL7FBEx/PmwB3wtDcSDHZVCta+W2DfYmvMRm8
+   Q==;
+X-CSE-ConnectionGUID: w+zLZuK3Tzmg+ndpjox8sA==
+X-CSE-MsgGUID: kkceOszLRte9IWgEfZzl+g==
+X-IronPort-AV: E=McAfee;i="6700,10204,11432"; a="49198492"
+X-IronPort-AV: E=Sophos;i="6.15,287,1739865600"; 
+   d="scan'208";a="49198492"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2025 23:04:47 -0700
+X-CSE-ConnectionGUID: d5iGsGU6S5KjZUXaqG5D8g==
+X-CSE-MsgGUID: 6Fzhfq4OQ3GBt+Y3K0dOcw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,287,1739865600"; 
+   d="scan'208";a="161233918"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by fmviesa002.fm.intel.com with ESMTP; 13 May 2025 23:04:44 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Atish Kumar Patra <atishp@rivosinc.com>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Andrew Jones <ajones@ventanamicro.com>,
-	Sunil V L <sunilvl@ventanamicro.com>
-Subject: [PATCH 4/4] iommu/riscv: Add ACPI support
-Date: Wed, 14 May 2025 11:27:23 +0530
-Message-ID: <20250514055723.1328557-5-sunilvl@ventanamicro.com>
+	Kevin Tian <kevin.tian@intel.com>,
+	Aditya Garg <gargaditya08@live.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	kobarity <kobarity@gmail.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu/vt-d: Restore context entry setup order for aliased devices
+Date: Wed, 14 May 2025 14:05:23 +0800
+Message-ID: <20250514060523.2862195-1-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250514055723.1328557-1-sunilvl@ventanamicro.com>
-References: <20250514055723.1328557-1-sunilvl@ventanamicro.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -91,110 +65,119 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-RISC-V IO Mapping Table (RIMT) provides the information about the IOMMU
-to the OS in ACPI. Add support for ACPI in RISC-V IOMMU drivers by using
-RIMT data.
+Commit 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
+changed the context entry setup during domain attachment from a
+set-and-check policy to a clear-and-reset approach. This inadvertently
+introduced a regression affecting PCI aliased devices behind PCIe-to-PCI
+bridges.
 
-The changes at high level are,
+Specifically, keyboard and touchpad stopped working on several Apple
+Macbooks with below messages:
 
-a) Register the IOMMU with RIMT data structures.
-b) Enable probing of platform IOMMU in ACPI way using the ACPIID defined
-   for the RISC-V IOMMU in the BRS spec [1]. Configure the MSI domain if
-   the platform IOMMU uses MSIs.
+ kernel: platform pxa2xx-spi.3: Adding to iommu group 20
+ kernel: input: Apple SPI Keyboard as
+ /devices/pci0000:00/0000:00:1e.3/pxa2xx-spi.3/spi_master/spi2/spi-APP000D:00/input/input0
+ kernel: DMAR: DRHD: handling fault status reg 3
+ kernel: DMAR: [DMA Read NO_PASID] Request device [00:1e.3] fault addr
+ 0xffffa000 [fault reason 0x06] PTE Read access is not set
+ kernel: DMAR: DRHD: handling fault status reg 3
+ kernel: DMAR: [DMA Read NO_PASID] Request device [00:1e.3] fault addr
+ 0xffffa000 [fault reason 0x06] PTE Read access is not set
+ kernel: applespi spi-APP000D:00: Error writing to device: 01 0e 00 00
+ kernel: DMAR: DRHD: handling fault status reg 3
+ kernel: DMAR: [DMA Read NO_PASID] Request device [00:1e.3] fault addr
+ 0xffffa000 [fault reason 0x06] PTE Read access is not set
+ kernel: DMAR: DRHD: handling fault status reg 3
+ kernel: applespi spi-APP000D:00: Error writing to device: 01 0e 00 00
 
-[1] - https://github.com/riscv-non-isa/riscv-brs/blob/main/acpi-id.adoc
+Fix this by restoring the previous context setup order.
 
-Signed-off-by: Sunil V L <sunilvl@ventanamicro.com>
+Fixes: 2031c469f816 ("iommu/vt-d: Add support for static identity domain")
+Closes: https://lore.kernel.org/all/4dada48a-c5dd-4c30-9c85-5b03b0aa01f0@bfh.ch/
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/riscv/iommu-platform.c | 17 ++++++++++++++++-
- drivers/iommu/riscv/iommu.c          | 10 ++++++++++
- 2 files changed, 26 insertions(+), 1 deletion(-)
+ drivers/iommu/intel/iommu.c  | 11 +++++++++++
+ drivers/iommu/intel/iommu.h  |  1 +
+ drivers/iommu/intel/nested.c |  4 ++--
+ 3 files changed, 14 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/riscv/iommu-platform.c b/drivers/iommu/riscv/iommu-platform.c
-index 725e919b97ef..83a28c83f991 100644
---- a/drivers/iommu/riscv/iommu-platform.c
-+++ b/drivers/iommu/riscv/iommu-platform.c
-@@ -10,6 +10,8 @@
-  *	Tomasz Jeznach <tjeznach@rivosinc.com>
-  */
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 49530d5d8c85..7aa3932251b2 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1809,6 +1809,7 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
+ 		return ret;
  
-+#include <linux/acpi.h>
-+#include <linux/irqchip/riscv-imsic.h>
- #include <linux/kernel.h>
- #include <linux/msi.h>
- #include <linux/of_irq.h>
-@@ -46,6 +48,7 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
- 	enum riscv_iommu_igs_settings igs;
- 	struct device *dev = &pdev->dev;
- 	struct riscv_iommu_device *iommu = NULL;
-+	struct irq_domain *msi_domain;
- 	struct resource *res = NULL;
- 	int vec, ret;
+ 	info->domain = domain;
++	info->domain_attached = true;
+ 	spin_lock_irqsave(&domain->lock, flags);
+ 	list_add(&info->link, &domain->devices);
+ 	spin_unlock_irqrestore(&domain->lock, flags);
+@@ -3206,6 +3207,10 @@ void device_block_translation(struct device *dev)
+ 	struct intel_iommu *iommu = info->iommu;
+ 	unsigned long flags;
  
-@@ -76,8 +79,13 @@ static int riscv_iommu_platform_probe(struct platform_device *pdev)
- 	switch (igs) {
- 	case RISCV_IOMMU_CAPABILITIES_IGS_BOTH:
- 	case RISCV_IOMMU_CAPABILITIES_IGS_MSI:
--		if (is_of_node(dev->fwnode))
-+		if (is_of_node(dev_fwnode(dev))) {
- 			of_msi_configure(dev, to_of_node(dev->fwnode));
-+		} else {
-+			msi_domain = irq_find_matching_fwnode(imsic_acpi_get_fwnode(dev),
-+							      DOMAIN_BUS_PLATFORM_MSI);
-+			dev_set_msi_domain(dev, msi_domain);
-+		}
- 
- 		if (!dev_get_msi_domain(dev)) {
- 			dev_warn(dev, "failed to find an MSI domain\n");
-@@ -150,6 +158,12 @@ static const struct of_device_id riscv_iommu_of_match[] = {
- 	{},
- };
- 
-+static const struct acpi_device_id riscv_iommu_acpi_match[] = {
-+	{ "RSCV0004", 0 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(acpi, riscv_iommu_acpi_match);
++	/* Device in DMA blocking state. Noting to do. */
++	if (!info->domain_attached)
++		return;
 +
- static struct platform_driver riscv_iommu_platform_driver = {
- 	.probe = riscv_iommu_platform_probe,
- 	.remove = riscv_iommu_platform_remove,
-@@ -158,6 +172,7 @@ static struct platform_driver riscv_iommu_platform_driver = {
- 		.name = "riscv,iommu",
- 		.of_match_table = riscv_iommu_of_match,
- 		.suppress_bind_attrs = true,
-+		.acpi_match_table = riscv_iommu_acpi_match,
- 	},
- };
+ 	if (info->domain)
+ 		cache_tag_unassign_domain(info->domain, dev, IOMMU_NO_PASID);
  
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 8f049d4a0e2c..e51af4ba54a8 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -12,6 +12,8 @@
- 
- #define pr_fmt(fmt) "riscv-iommu: " fmt
- 
-+#include <linux/acpi.h>
-+#include <linux/acpi_rimt.h>
- #include <linux/compiler.h>
- #include <linux/crash_dump.h>
- #include <linux/init.h>
-@@ -1650,6 +1652,14 @@ int riscv_iommu_init(struct riscv_iommu_device *iommu)
- 		goto err_iodir_off;
+@@ -3217,6 +3222,9 @@ void device_block_translation(struct device *dev)
+ 			domain_context_clear(info);
  	}
  
-+	if (!acpi_disabled) {
-+		rc = rimt_iommu_register(iommu->dev);
-+		if (rc) {
-+			dev_err_probe(iommu->dev, rc, "cannot register iommu with RIMT\n");
-+			goto err_remove_sysfs;
-+		}
-+	}
++	/* Device now in DMA blocking state. */
++	info->domain_attached = false;
 +
- 	rc = iommu_device_register(&iommu->iommu, &riscv_iommu_ops, iommu->dev);
- 	if (rc) {
- 		dev_err_probe(iommu->dev, rc, "cannot register iommu interface\n");
+ 	if (!info->domain)
+ 		return;
+ 
+@@ -4302,6 +4310,9 @@ static int identity_domain_attach_dev(struct iommu_domain *domain, struct device
+ 	else
+ 		ret = device_setup_pass_through(dev);
+ 
++	if (!ret)
++		info->domain_attached = true;
++
+ 	return ret;
+ }
+ 
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index cbfb8bb4c94a..3ddbcc603de2 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -774,6 +774,7 @@ struct device_domain_info {
+ 	u8 ats_supported:1;
+ 	u8 ats_enabled:1;
+ 	u8 dtlb_extra_inval:1;	/* Quirk for devices need extra flush */
++	u8 domain_attached:1;	/* Device has domain attached */
+ 	u8 ats_qdep;
+ 	unsigned int iopf_refcount;
+ 	struct device *dev; /* it's NULL for PCIe-to-PCI bridge */
+diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
+index d2a94025d0a0..fc312f649f9e 100644
+--- a/drivers/iommu/intel/nested.c
++++ b/drivers/iommu/intel/nested.c
+@@ -27,8 +27,7 @@ static int intel_nested_attach_dev(struct iommu_domain *domain,
+ 	unsigned long flags;
+ 	int ret = 0;
+ 
+-	if (info->domain)
+-		device_block_translation(dev);
++	device_block_translation(dev);
+ 
+ 	if (iommu->agaw < dmar_domain->s2_domain->agaw) {
+ 		dev_err_ratelimited(dev, "Adjusted guest address width not compatible\n");
+@@ -66,6 +65,7 @@ static int intel_nested_attach_dev(struct iommu_domain *domain,
+ 		goto disable_iopf;
+ 
+ 	info->domain = dmar_domain;
++	info->domain_attached = true;
+ 	spin_lock_irqsave(&dmar_domain->lock, flags);
+ 	list_add(&info->link, &dmar_domain->devices);
+ 	spin_unlock_irqrestore(&dmar_domain->lock, flags);
 -- 
 2.43.0
 
