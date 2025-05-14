@@ -1,215 +1,280 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2075.outbound.protection.outlook.com [40.107.237.75])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02275156F45;
-	Wed, 14 May 2025 09:24:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.75
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747214656; cv=fail; b=SRCz5WJ5mXcDIkTzDxIKkGSP2lBnqP7DiJ67dXU97Vs/uQXvSDGl606XQGLterigdzn+82whvVZjWry4tA1C7LaukpWgaL+mGchNS2sySw+8c/Wcb6OohQOPXawMJAOIm5xthUSTGLeXCcwSqY30sKZcHOaikix/y5rROT+a9F0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747214656; c=relaxed/simple;
-	bh=r8qCjqGK7UBWIEVW/ygwW947PP3Gz+pckem7sHnuOqg=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=svNI1o2JTXz0YvVrvKV713QzudUynxTIonTPVQwGH3NWUNX1HJSeVt1tzWPY15kMHW61R0KGpcW2tTSfOajULl8BugaW8qeH0eSTJra9UegPXcZZVXmlSnrUqp8xgeoLJwW3Qa5FIH4aQLX+h7oTQ570dQO569zHWcqSnn6i7+I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=u2fez/Mn; arc=fail smtp.client-ip=40.107.237.75
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="u2fez/Mn"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=x3D2+DFidbYCgt7igl/u5NxzKRnlEx0LwuEPYw0WmJC56nPh8A3g3oORC/4rDXiZaWIt6QjszYxgK1smLUqjMdSdtiRubXoOM5/XIFZsDNlofZeKLgc5jzQBLAKsXThmx9+4Lhy4tfOW6Wc2q4ZAc5aiWrU3pD6w4lea3tFbHhZ/phD6YdEdqcGMPAVp9WL16v/FZL9AzfBFAFdxIkb9Dpz9IiZsxaKjwJx7E4yaU736AoHzNzJBrcXOd7vpwwtawNEVRjbtB/CZgM3gGnzVPyJB9Qv1EXDxDzrWEAXxreHOrInC964ZaczuCiaHTny7GLXQl6/ZNY0dQcYy2jk5wQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XzqHf4w0uK1VjCpHR4KSwE2yYkhk+dmnpGCjNx8ggTM=;
- b=RfkGKqUWAybazZ/PaSegUcpHikwV92GfMvceYuCqvK0SWABeos5CAllWgza3nQRoilyAc49pF5SI9PlOsJbobtEKhFlyRPKFgJKZ9c+xgvAkBYe2222Zrmi/57dj+wPQwO2mzMwvpLws83g4Nlg0l9fs1bWKL5TgUu5rCPMqTHiyTqYEdpM+ITC1EQ3U9qxChRZjRBqGh69a+7wXR95jhA4lOMVmbQRDK+thlcJviC1BZ68tUbKhNTO3vL23e2hEcn9l7/KUnmo3Ytza7if1F0JBRy70OE9BAlAod3IQ5KQeM1rNDDn5GAzAT3JYFm+2qFjbCAluI3dqnHTzVpYBEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=nvidia.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XzqHf4w0uK1VjCpHR4KSwE2yYkhk+dmnpGCjNx8ggTM=;
- b=u2fez/MnaUa537aQ27aWwKlPi6llSEnjexZPbS4vDXVuhV4U9TYYkRb9JLGXzkWFQIUzZgLDPw9ahdVFCelVV95t8km+oTxiZAXk+G81CsFfFUNQnmcMDOGgP7K1K0Y808miVhXtQvIBYtdOp7vbuUVqv1jzmDgcEHGOCiLV9Fs=
-Received: from PH7P220CA0149.NAMP220.PROD.OUTLOOK.COM (2603:10b6:510:327::19)
- by SJ0PR12MB6685.namprd12.prod.outlook.com (2603:10b6:a03:478::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8722.29; Wed, 14 May
- 2025 09:24:08 +0000
-Received: from CY4PEPF0000E9D7.namprd05.prod.outlook.com
- (2603:10b6:510:327:cafe::95) by PH7P220CA0149.outlook.office365.com
- (2603:10b6:510:327::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8746.16 via Frontend Transport; Wed,
- 14 May 2025 09:24:08 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CY4PEPF0000E9D7.mail.protection.outlook.com (10.167.241.70) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8722.18 via Frontend Transport; Wed, 14 May 2025 09:24:08 +0000
-Received: from SATLEXMB06.amd.com (10.181.40.147) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 14 May
- 2025 04:24:07 -0500
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB06.amd.com
- (10.181.40.147) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 14 May
- 2025 04:24:07 -0500
-Received: from amd.com (10.180.168.240) by SATLEXMB04.amd.com (10.181.40.145)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39 via Frontend
- Transport; Wed, 14 May 2025 04:24:00 -0500
-Date: Wed, 14 May 2025 09:23:49 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Jonathan Corbet <corbet@lwn.net>, <iommu@lists.linux.dev>, Joerg Roedel
-	<joro@8bytes.org>, Justin Stitt <justinstitt@google.com>, Kevin Tian
-	<kevin.tian@intel.com>, <linux-doc@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <llvm@lists.linux.dev>, Bill Wendling
-	<morbo@google.com>, Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers
-	<nick.desaulniers+lkml@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, "Suravee
- Suthikulpanit" <suravee.suthikulpanit@amd.com>, Will Deacon
-	<will@kernel.org>, Alexey Kardashevskiy <aik@amd.com>, Alejandro Jimenez
-	<alejandro.j.jimenez@oracle.com>, James Gowans <jgowans@amazon.com>, "Michael
- Roth" <michael.roth@amd.com>, Pasha Tatashin <pasha.tatashin@soleen.com>,
-	<patches@lists.linux.dev>
-Subject: Re: [PATCH v2 03/15] iommupt: Add the basic structure of the iommu
- implementation
-Message-ID: <pntkuh63y26rygrkxegbzncvc3shtplucrnzkkz2dimpkfyn75@uekvyuz5kred>
-References: <0-v2-5c26bde5c22d+58b-iommu_pt_jgg@nvidia.com>
- <3-v2-5c26bde5c22d+58b-iommu_pt_jgg@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2051327587A;
+	Wed, 14 May 2025 12:05:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1747224346; cv=none; b=EOc2uJGWmqcFiElV1a/AYXKy1GpF98mmF5F7B0EsHkNUHjrsA45LO7UqEcIDvcZGlnWUIX1VXkntMPAym3m7+rmixuGX0AanZkW4uuUr+r8ua9W+uv9TfFpkRXTQUufcCqkUddcXCHoNBm3LU2YkJYFVxv43oRR21KROauNG0/c=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1747224346; c=relaxed/simple;
+	bh=sKIP/22I1SQvo6tkkmk2GpLfv/4h+uB9iEuhkOzX7dg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=suSdf8Qr58FvobkrJIYGib6aVB1AhHEXe9zd/qhpxfJzoxumPx33SFMQBbke7YJm6sOed9keM07PQcBq17/Y9QAOO5HGH1csTDLgwk7vY1feiXhQ/tX5yh2MUWfTjo/3/lHKc3/YwJ0QNFmjUghSy61V6XCxMZkjVe9rTV+ayGE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9E27C4CEF3;
+	Wed, 14 May 2025 12:05:40 +0000 (UTC)
+Date: Wed, 14 May 2025 13:05:37 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc: Ryan Roberts <ryan.roberts@arm.com>, Will Deacon <will@kernel.org>,
+	=?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>,
+	yang@os.amperecomputing.com, corbet@lwn.net,
+	jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
+	akpm@linux-foundation.org, paulmck@kernel.org, mark.rutland@arm.com,
+	joey.gouly@arm.com, maz@kernel.org, james.morse@arm.com,
+	broonie@kernel.org, oliver.upton@linux.dev, baohua@kernel.org,
+	david@redhat.com, ioworker0@gmail.com, jgg@ziepe.ca,
+	nicolinc@nvidia.com, mshavit@google.com, jsnitsel@redhat.com,
+	smostafa@google.com, kevin.tian@intel.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+Subject: Re: [RESEND PATCH v6 1/3] arm64: Add BBM Level 2 cpu feature
+Message-ID: <aCSHESk1DzShD4vt@arm.com>
+References: <20250428153514.55772-4-miko.lenczewski@arm.com>
+ <20250506142508.GB1197@willie-the-truck>
+ <78fec33d-fe66-4352-be11-900f456c9af3@arm.com>
+ <20250509134904.GA5707@willie-the-truck>
+ <aB4nqtMJuvvp7Vwm@arm.com>
+ <015746d7-ca46-4978-a441-09fba781fdd4@arm.com>
+ <4709ff5a-f89c-426e-ae95-f8356808f4f5@arm.com>
+ <99079d56-428b-4bc4-b20a-dc10032f2a2f@arm.com>
+ <aCIiwrA_MOeVhFre@arm.com>
+ <c5a74dfe-68e2-48f1-9bbb-06db8e62ffea@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3-v2-5c26bde5c22d+58b-iommu_pt_jgg@nvidia.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D7:EE_|SJ0PR12MB6685:EE_
-X-MS-Office365-Filtering-Correlation-Id: 81913992-9910-4663-53f1-08dd92c9144f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|36860700013|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?owSStQRqWZN8xQvaYi7qtIWEptXJ2BDOKowZgLnFz8w5WmlTx47B027GAgWd?=
- =?us-ascii?Q?H2jHyyCurS7T1SNH7QEi7LJ4np2ZzCek1/UMDnoCaepMSwe97v7PjnZk+l3I?=
- =?us-ascii?Q?ArieQh+oGaOsiaSQeZ1Vpfga35mqpCO58mDRwhmRxGEmTS+z1boczly3ztN2?=
- =?us-ascii?Q?LlJNZBdaTbJ0atChtrdGEWGIr4gzRNikxYREMLMq3B6AOjPvMsyjIzOXGU25?=
- =?us-ascii?Q?wsQyZnodKVzUzCQOZRyW1CpsA5Ky1mboyMGXCuhRJikpvXY37KQSgAXtrCTH?=
- =?us-ascii?Q?VSeS1IoBGuP+BUFLf+Urk1flwBdh/qkymiUXKIlj41k8r4/UTu+EY8iZ3XTJ?=
- =?us-ascii?Q?iAr7jsLz9A9h1l32G47cV5LvATmAGewP0sumykwogJ8n7XruNpbptIc5lWiW?=
- =?us-ascii?Q?2uYmqVuy+azUihcFHzdPXKs0ckhxIjn/lzAXbTTUeJ+Z6KO6LWbkr7kf9wh4?=
- =?us-ascii?Q?9o9pmU35AxRm9ffFfkmuUiRd2D5JicLfOE8iISj0XE21hO4cQhfcbJSkk7PM?=
- =?us-ascii?Q?ogKJ7B/WS984sBGiVmiZK89BnEewUoB9WhLPyjoWsNAjyuTytOh+uyWieRyB?=
- =?us-ascii?Q?1FCByieIEs2nJg1awoowSSBGXK+YvKQxfrbwetuydp2qFh+ry1iQeDIzRISJ?=
- =?us-ascii?Q?H1ZCPa8FV194fnexmWHPG21Zfdtekvq0xOFyeaFb9ETngGVmEgvKG7enQO+I?=
- =?us-ascii?Q?KGpLqu1YDcDGC1IUIqP10hYzEGRLuNhLRalEvwrEQtNl6s0Hnal0U4gSrCQD?=
- =?us-ascii?Q?xmK08HScCrZJqyWyLCa2yDKSK4p0KnTw4/zXlwsyt0qCiNg+ChfTOSTRi73M?=
- =?us-ascii?Q?ZicuTXVciqbDsfqnJjskcK8g9jvpqkcyA4B9LfEBBXNFy1HUZTxpaxf7fdda?=
- =?us-ascii?Q?qo3e9oclO+GY80YUl+yeOMySPdQJUmf/HWZwT6qbSZtguAPVUmC0k2VYJCWc?=
- =?us-ascii?Q?YoUHnudIUAidCJPumr1iILZQRexQ+GEvM5sNP08lauYXpvcNrywOew+H/475?=
- =?us-ascii?Q?lkCE9d4QXHVlI0FVUd5QxcklCa8T9MhDI5hJGtfsUCgrtKAB2lgRJ6loZsRU?=
- =?us-ascii?Q?Bu8i/6xCX578lnaiVdh/1OT0ceXTs72+lz/Uko6C9EOKB5aleO/0L1E+Twka?=
- =?us-ascii?Q?5I4OR/f6mlJ2bzNRSFtDLWiaHFFWJ/H0MMwKbWC3Gttz7gkUX58kIsVRIAK6?=
- =?us-ascii?Q?delzTO02INb5PfikwBuqwHT4UnUQm1NcgbjQEAOq3bpumpdl5hqbF6NPRCPv?=
- =?us-ascii?Q?flN3NTehN33TcsCLjW2EXcNdpnLJa05JS9U8wHy7ypvhp4IF3oqX9N/DCBSS?=
- =?us-ascii?Q?/9pRcQAWE4p8aKQ45VwAwvgg3EwsgQEmkVEgUHB34Dil2lcxRKa+t03O1Xql?=
- =?us-ascii?Q?dCR/LaqxHPIZ9sd/HnSAsTyITpx0zDUvPBQybEzb5Rpt5TRMzpQxezWqZ8qJ?=
- =?us-ascii?Q?6hmog6uxQCyAvNXhFOLg6TCc2rDsdVZVH0qW09XIiqjfYA6/S+FshgNhaKBU?=
- =?us-ascii?Q?DDXBWxB/P+E1eOIBvdvxyE34AyI7NW4tpRhX?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(36860700013)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2025 09:24:08.2308
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81913992-9910-4663-53f1-08dd92c9144f
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9D7.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6685
+In-Reply-To: <c5a74dfe-68e2-48f1-9bbb-06db8e62ffea@arm.com>
 
-Hi Jason,
+On Tue, May 13, 2025 at 10:15:49AM +0100, Suzuki K Poulose wrote:
+> On 12/05/2025 17:33, Catalin Marinas wrote:
+> > Stepping back a bit, we know that the MIDR allow-list implies
+> > BBML2_NOABORT (and at least BBML2 as in the ID regs). In theory, we need
+> 
+> Please be aware that BBML2_NOABORT midr list may not always imply BBLM2 in
+> ID registers (e.g., AmpereOne. But the plan is to fixup the per cpu
+> ID register - struct cpuinfo_arm64 - for such cores at early boot,
+> individually, before it is used for sanitisation of the system wide
+> copy).
 
-On Mon, May 05, 2025 at 11:18:33AM -0300, Jason Gunthorpe wrote:
-> +static int pt_iommu_init_domain(struct pt_iommu *iommu_table,
-> +				struct iommu_domain *domain)
-> +{
-> +	struct pt_common *common = common_from_iommu(iommu_table);
-> +	struct pt_iommu_info info;
-> +	struct pt_range range;
-> +
-> +	NS(get_info)(iommu_table, &info);
-> +
-> +	domain->type = __IOMMU_DOMAIN_PAGING;
-> +	domain->pgsize_bitmap = info.pgsize_bitmap;
-> +
-> +	if (pt_feature(common, PT_FEAT_DYNAMIC_TOP))
-> +		range = _pt_top_range(common,
-> +				      _pt_top_set(NULL, PT_MAX_TOP_LEVEL));
-> +	else
-> +		range = pt_top_range(common);
-> +
-> +	/*
-> +	 * A 64 bit high address space table on a 32 bit system cannot work.
-> +	 */
-> +	domain->geometry.aperture_start = (unsigned long)range.va;
-> +	if ((pt_vaddr_t)domain->geometry.aperture_start != range.va ||
-> +	    range.va > ULONG_MAX)
-> +		return -EOVERFLOW;
-> +
-> +	/*
-> +	 * The aperture is limited to what the API can do after considering all
-> +	 * the different types dma_addr_t/unsigned long/pt_vaddr_t that are used
-> +	 * to store a VA. Set the aperture to something that is valid for all
-> +	 * cases. Saturate instead of truncate the end if the types are smaller
-> +	 * than the top range. aperture_end is a last.
-> +	 */
-> +	domain->geometry.aperture_end = (unsigned long)range.last_va;
+Ah, good point. We can then ignore BBML2 ID regs and only rely on MIDR
+(and some future BBML3).
 
-I am experiencing a system hang with a 5-level v2 page table mode, on boot.
-The NVMe boot drive is not initializing.
-Below are the relevant dmesg logs with some prints i had added:
+> > So how about we introduce a WEAK_BOOT_CPU_FEATURE which gets enabled by
+> > the boot CPU if it has it _but_ cleared by any secondary early CPU if it
+> > doesn't (and never enabled by secondary CPUs). When the features are
+> > finalised, we know if all early CPUs had it. In combination with
+> > PERMITTED_FOR_LATE_CPU, we'd reject late CPUs that don't have it.
+> 
+> That could work, but it introduces this "clearing" a capability, which
+> we don't do at the moment.
+> 
+> We had an offline discussion about this some time ago, with Mark
+> Rutland. The best way to deal with this is to change the way we compute
+> capabilities. i.e.,
+> 
+> 
+> 1. Each boot CPU run through all the capabilities and maintain a per-cpu
+>    copy of the state.
+> 2. System wide capabilities can then be constructed from the all early
+>    boot CPU capability state (e.g., ANDing all the state from all CPUs
+>    for SCOPE_SYSTEM or ORing for LOCAL_CPU).
+> 
+> But this requires a drastic change to the infrastructure.
 
-[    6.386439] AMD-Vi v2 domain init
-[    6.390132] AMD-Vi v2 pt init
-[    6.390133] AMD-Vi aperture end last va ffffffffffffff
-...
-[   10.315372] AMD-Vi gen pt MAP PAGES iova ffffffffffffe000 paddr 19351b000
-...
-[   72.171930] nvme nvme0: I/O tag 0 (0000) QID 0 timeout, disable controller
-[   72.179618] nvme nvme1: I/O tag 24 (0018) QID 0 timeout, disable controller
-[   72.197176] nvme nvme0: Identify Controller failed (-4)
-[   72.203063] nvme nvme1: Identify Controller failed (-4)
-[   72.209237] nvme 0000:05:00.0: probe with driver nvme failed with error -5
-[   72.209336] nvme 0000:44:00.0: probe with driver nvme failed with error -5
-...
-Timed out waiting for the udev queue to be empty.
+I think it's a lot simpler to achieve the ANDing - set the (system)
+capability if detected on the boot CPU, only clear it if missing on
+subsequent CPUs. See below on an attempt to introduce this. For lack of
+inspiration, I called it ARM64_CPUCAP_GLOBAL_CPU_FEATURE which has both
+SCOPE_LOCAL and SCOPE_SYSTEM. It's permitted for late CPUs but not
+optional if already enabled. The advantage of having both local&system
+is that the match function will be called for both scopes. I added a
+mask in to cpucap_default_scope() when calling matches() since so far
+no cap had both.
 
-According to the dmesg logs above, the IOVA for the v2 page table appears 
-incorrect and is not aligned with domain->geometry.aperture_end. Which
-requires domain->geometry.force_aperture = true; to be added at the
-appropriate location. Proabably here!
+---------------------8<-----------------------------------------
+diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
+index c4326f1cb917..0b0b26a6f27b 100644
+--- a/arch/arm64/include/asm/cpufeature.h
++++ b/arch/arm64/include/asm/cpufeature.h
+@@ -331,6 +331,15 @@ extern struct arm64_ftr_reg arm64_ftr_reg_ctrel0;
+ #define ARM64_CPUCAP_BOOT_CPU_FEATURE                  \
+ 	(ARM64_CPUCAP_SCOPE_BOOT_CPU | ARM64_CPUCAP_PERMITTED_FOR_LATE_CPU)
+ 
++/*
++ * CPU feature detected at boot time based on all CPUs. It is safe for a late
++ * CPU to have this feature even though the system hasn't enabled it, although
++ * the feature will not be used by Linux in this case. If the system has
++ * enabled this feature already, then every late CPU must have it.
++ */
++#define ARM64_CPUCAP_GLOBAL_CPU_FEATURE			\
++	 (ARM64_CPUCAP_SCOPE_LOCAL_CPU | ARM64_CPUCAP_SYSTEM_FEATURE)
++
+ struct arm64_cpu_capabilities {
+ 	const char *desc;
+ 	u16 capability;
+@@ -391,6 +400,11 @@ static inline int cpucap_default_scope(const struct arm64_cpu_capabilities *cap)
+ 	return cap->type & ARM64_CPUCAP_SCOPE_MASK;
+ }
+ 
++static inline bool cpucap_global_scope(const struct arm64_cpu_capabilities *cap)
++{
++	return (cap->type & SCOPE_LOCAL_CPU) && (cap->type & SCOPE_SYSTEM);
++}
++
+ /*
+  * Generic helper for handling capabilities with multiple (match,enable) pairs
+  * of call backs, sharing the same capability bit.
+diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+index 5ba149c0c2ac..1a5a51090c0e 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -3359,13 +3381,47 @@ static void update_cpu_capabilities(u16 scope_mask)
+ 
+ 	scope_mask &= ARM64_CPUCAP_SCOPE_MASK;
+ 	for (i = 0; i < ARM64_NCAPS; i++) {
++		bool global_cap = false;
++
+ 		caps = cpucap_ptrs[i];
+-		if (!caps || !(caps->type & scope_mask) ||
+-		    cpus_have_cap(caps->capability) ||
+-		    !caps->matches(caps, cpucap_default_scope(caps)))
++		if (!caps || !(caps->type & scope_mask))
+ 			continue;
+ 
+-		if (caps->desc && !caps->cpus)
++		global_cap = cpucap_global_scope(caps);
++
++		/*
++		 * If it's not a global CPU capability, avoid probing if
++		 * already detected.
++		 */
++		if (!global_cap && cpus_have_cap(caps->capability))
++			continue;
++
++		/*
++		 * Pass the actual scope we are probing to the match function.
++		 * This is important for the global CPU capabilities that are
++		 * checked both as a local CPU feature and as a system one.
++		 */
++		if (!caps->matches(caps,
++				   cpucap_default_scope(caps) & scope_mask)) {
++			/* All CPUs must have the global capability */
++			if (global_cap)
++				__clear_bit(caps->capability, system_cpucaps);
++			continue;
++		}
++
++		/*
++		 * A global capability is only set when probing the boot CPU.
++		 * It may be cleared subsequently if not detected on secondary
++		 * ones.
++		 */
++		if (global_cap && !(scope_mask & SCOPE_BOOT_CPU))
++			continue;
++
++		/*
++		 * Global CPU capabilities are logged later when the system
++		 * capabilities are finalised.
++		 */
++		if (!global_cap && caps->desc && !caps->cpus)
+ 			pr_info("detected: %s\n", caps->desc);
+ 
+ 		__set_bit(caps->capability, system_cpucaps);
+@@ -3771,17 +3827,24 @@ static void __init setup_system_capabilities(void)
+ 	enable_cpu_capabilities(SCOPE_ALL & ~SCOPE_BOOT_CPU);
+ 	apply_alternatives_all();
+ 
+-	/*
+-	 * Log any cpucaps with a cpumask as these aren't logged by
+-	 * update_cpu_capabilities().
+-	 */
+ 	for (int i = 0; i < ARM64_NCAPS; i++) {
+ 		const struct arm64_cpu_capabilities *caps = cpucap_ptrs[i];
+ 
+-		if (caps && caps->cpus && caps->desc &&
+-			cpumask_any(caps->cpus) < nr_cpu_ids)
++		if (!caps || !caps->desc)
++			continue;
++
++		/*
++		 * Log any cpucaps with a cpumask as these aren't logged by
++		 * update_cpu_capabilities().
++		 */
++		if (caps->cpus && cpumask_any(caps->cpus) < nr_cpu_ids)
+ 			pr_info("detected: %s on CPU%*pbl\n",
+ 				caps->desc, cpumask_pr_args(caps->cpus));
++
++		/* Log global CPU capabilities */
++		if (cpucap_global_scope(caps) &&
++		    cpus_have_cap(caps->capability))
++			pr_info("detected: %s\n", caps->desc);
+ 	}
+ 
+ 	/*
+---------------------8<-----------------------------------------
 
-- Ankit
+And an dummy test:
 
-> +	if ((pt_vaddr_t)domain->geometry.aperture_end != range.last_va) {
-> +		domain->geometry.aperture_end = ULONG_MAX;
-> +		domain->pgsize_bitmap &= ULONG_MAX;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
+---------------------8<-----------------------------------------
+diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
+index 5ba149c0c2ac..1a5a51090c0e 100644
+--- a/arch/arm64/kernel/cpufeature.c
++++ b/arch/arm64/kernel/cpufeature.c
+@@ -2480,6 +2480,21 @@ test_has_mpam_hcr(const struct arm64_cpu_capabilities *entry, int scope)
+ 	return idr & MPAMIDR_EL1_HAS_HCR;
+ }
+ 
++static void
++cpu_enable_dummy_global(const struct arm64_cpu_capabilities *entry)
++{
++	pr_info("%s: %s: smp_processor_id() = %d", __func__, entry->desc, smp_processor_id());
++}
++
++static bool
++has_dummy_global(const struct arm64_cpu_capabilities *entry, int scope)
++{
++	pr_info("%s: %s: scope = %x smp_processor_id() = %d", __func__, entry->desc, scope, smp_processor_id());
++	if (smp_processor_id() < 4)
++		return true;
++	return false;
++}
++
+ static const struct arm64_cpu_capabilities arm64_features[] = {
+ 	{
+ 		.capability = ARM64_ALWAYS_BOOT,
+@@ -3050,6 +3065,13 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
+ 		.matches = has_pmuv3,
+ 	},
+ #endif
++	{
++		.desc = "Dummy test for global CPU feature",
++		.capability = ARM64_HAS_GLOBAL_CPU_TEST,
++		.type = ARM64_CPUCAP_GLOBAL_CPU_FEATURE,
++		.cpu_enable = cpu_enable_dummy_global,
++		.matches = has_dummy_global,
++	},
+ 	{},
+ };
+ 
+diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
+index 772c1b008e43..dbc5a3eb5b3d 100644
+--- a/arch/arm64/tools/cpucaps
++++ b/arch/arm64/tools/cpucaps
+@@ -37,6 +37,7 @@ HAS_GENERIC_AUTH_IMP_DEF
+ HAS_GIC_CPUIF_SYSREGS
+ HAS_GIC_PRIO_MASKING
+ HAS_GIC_PRIO_RELAXED_SYNC
++HAS_GLOBAL_CPU_TEST
+ HAS_HCR_NV1
+ HAS_HCX
+ HAS_LDAPR
+---------------------8<-----------------------------------------
+
+-- 
+Catalin
