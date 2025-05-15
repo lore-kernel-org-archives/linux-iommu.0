@@ -1,243 +1,228 @@
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2087.outbound.protection.outlook.com [40.107.100.87])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A94121C16A
-	for <iommu@lists.linux.dev>; Thu, 15 May 2025 17:13:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.51
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747329236; cv=none; b=GepHSApDQ5T9hWszcJMiuLZai3Lk6KePdITd6VcxGgilIHkThR+QwRwGaCHTMA0rlVSUvoBRsYDsmh3/xTbQlEXvHsj7XrnrwUHXsRZqmSPYLydYn7FcBsF87gr/g5F9NFrB/1ALBMPaCyRt4VyDioI5B4DAVVkSp7MuBp2Po+c=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747329236; c=relaxed/simple;
-	bh=EX7I37qXZLhdAQB+hDCZ4A6h8bFJ8pxTzuokyaHi29A=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=A2hawsWDoiTiq/+mRT6X9S4+tVoIY7HyrrovJsIQGKp0y9mvpNPvj3WpK6T8owxH8g/g9oFFIEd9dAg++CLgyYjb9zqqORB0bpsi5TvqHLkxfKtgiZra88m8YGy/bFKrb/JYBwK35oXWLxPRzxEByoHmPwa3ViX9Ytj9ADRaIY0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Nz1dJy7E; arc=none smtp.client-ip=209.85.216.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B9FB1B4242;
+	Thu, 15 May 2025 17:14:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.100.87
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1747329251; cv=fail; b=Dq1EBoH5wGYpurkMEUU5oEB5+qz9DvtB3s7ZQW6g2ZKHV7GXuPWX2uYKcAzQObdG6mFA2dV2Z/LJmRpWeBVG1XGYCE1/RBT4LFpIqDQI/Bm9JDCkIakBqfRET3rcbREFPdqDQur0E5TfRrJd0EUy5Ion+8cNmk5t0JxbnrVsG/c=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1747329251; c=relaxed/simple;
+	bh=vF0a8bAIpG9WsWT7z6+V9S5TVykEbFSUmDnmQAAOcEk=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=R+CtuwlqZVpvxxdZ5COyq4O4/xg3Xy6dky2LbisphmJlkEUY9OHChGrrsMRUDeE/JNznAIWbDPgUQFSVg/XxDmOl5D9tbwfj5XSMgD6cson0iz43xeI+KqEgHuAf0h9pI7WRnt4nUVAHr2nM5MRBpBfhuSlAOwD8h5ZHJYsKOT0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ffNDHrXm; arc=fail smtp.client-ip=40.107.100.87
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Nz1dJy7E"
-Received: by mail-pj1-f51.google.com with SMTP id 98e67ed59e1d1-3087a70557bso215718a91.2
-        for <iommu@lists.linux.dev>; Thu, 15 May 2025 10:13:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1747329233; x=1747934033; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dsfBOdqnpEgpdpgAJrzH2XaH6ygppwa1vT1EnnHCi70=;
-        b=Nz1dJy7E8Z23kDL/TRdgms8ibVzI9t2q91fbqOaD7tF5bHlTLeyOlkTXu4aoHenZoe
-         RuWjIwHZe1rd8qUr1bzzvHUicpBHaCjKDSQj9pdUKvjPmcca3v1bi3p0udiUzgohODTe
-         7tzmUBZ/oLcx7aO+grCiCpJfGC6IJePbnhpEJLOFJ0e1Pz+P05M7TO+1IL6KEShsIJOE
-         y6Ob9OOCaU//dPVSZTy4e7pufWjiBfR2akPd45JYgsIa9+jVsfIz81hhuO2iJqa8xNJS
-         j66HqhrWbaxo9W7bpkeK7S1ON1xXInFCTvjKla0T4Dhdj/QQKofJoFC84xXXTIaQPqtI
-         5/Yg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747329233; x=1747934033;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dsfBOdqnpEgpdpgAJrzH2XaH6ygppwa1vT1EnnHCi70=;
-        b=pr4B9eqjuXUKI3RxJzIQ/qB6TlkTxnqqTcycpa9ODHImfHSO7JUiUeuZX/Sv70ltL9
-         LAOFPQpoFp3SELEQ3bZcjWc0FpcoWlCxMbo4b85+H6FSCP4FiJ6SDal5wvMmQu+8ejbE
-         rhus9N9JvNtQaQln2kEBUWjkSzFU1mAzi/tGt9hh/MdW3wQkfE5LG3jtAEE1UmxIV8T2
-         hUDJLObroab9cwDqS0m8A3F6OLbRu693VxzD/1cAQ4zcxdlt22JcAMxZPg7DfMOT03NP
-         Z0WadMeizoXi7esqk9um4/jKb7lSooAC7l5Hl3Zpw0M9egxrhNgGj7XysFF3tuEFlAca
-         UHLw==
-X-Forwarded-Encrypted: i=1; AJvYcCXnHT7ImLmlKIM1q2dwnCWdkMz0H+vnu5nDmMbIv2GHTjAHFhQ91VcCaX+zahRQ7EPYIt5e9A==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw3ztASDEeG1RT+h3aBtarco6W57kSEIQ6Tx7Vj/BQ0JN5IHEaI
-	l+294pLTTO2HSbUw1CohfcoGqHkzexYeyhMQqk6MwK08E22xQOBT8KQAbOdl4YnZGdKa8eJt581
-	+VGDNNNGId3SJoFti0ffkzVfTw+TkHgQ=
-X-Gm-Gg: ASbGncur491QXqPPFPoK74HPNyQsHURJL0UvuBR+93IoJvxRNQPFhnmc6BYiK8tFERi
-	XSiVhwteKDf+24Ya0canrIZsqhYZ2O5wCdZ08yTrc/a7zco2TxzIN0dxhyhH2EmFOr5x3Spyi7x
-	6GF5Dmh1ckIjJ83JXvnkZhngOr6x4aTp1J
-X-Google-Smtp-Source: AGHT+IGCIUW0dsKa/ihtbOAHQVJV2lxTI8vBLZn5qcHLkXGbGsiY14r4IvJ+r7XjrnLMar2wvcpVQz33dDkzERkk2C4=
-X-Received: by 2002:a17:90b:3142:b0:30e:6ac1:372a with SMTP id
- 98e67ed59e1d1-30e7d691099mr71651a91.7.1747329233394; Thu, 15 May 2025
- 10:13:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ffNDHrXm"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vF4f1NEgvWbpxEnQHvyqwv6MRqI7IAX91iz3BELi4TCsKQue+IKhCn0HhSKaUGeNeBWDT4/mpyC+6qDaR0mx+9opDvu1RJAmRO9INLrgdpeJOsXC5WU0UG7Ye57NHSxv3qclL0nu/gRJxx5sx4QsFldH9n5qfMt+hbodtgaB9YktyM/0VDbVxJ7pAjfwvKCyLBrP5Ihlltap0zLGypCkxIlIx7gSOVJFwvNBtiltVk/RNyHgAgpytcjef4o59lsOlh+7TV8FeaOblcC4dEvPhTV/2XCthNacNNY6A1f016igNE8ItMJTyV+WvZCeAAzLdjlcxeoXr92/8UnwirCddA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0htuODCxwQaSqKrOOplOfFgjHpB+jL0anVSEOeXxe94=;
+ b=duRh3JGjN+vJD2kNPXrwng21Bkvg70ddQ9V4iMEx6ul2bFe2NbIj5sFUMiTgChgjxONFvaxgpgwgjlmswUAr8c+0IoRwhivosrCcfxZD+m7UrbPErkCsUS953XtYbltY5mnu8UkECIBkmeuEmP69MQgtlCxFkYVlVJeVvgO2VsNhNJgvKFoK1r+MImBlkyu2wfYjhz0tRHNpaOxNP0z9YRYcUKCJJ1jXMSpMUqp/i7z4zumpWoc1IBi+UNYqWtwaXmtz4AWnI6AY2YT89b/MHLpFk9YoAkHOy2f1rfei2IX2wdNcFGHMpWWNLbtkux3X1H8p4KHzznMZBOTfGpFRYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0htuODCxwQaSqKrOOplOfFgjHpB+jL0anVSEOeXxe94=;
+ b=ffNDHrXm+KepgQXz+R7mHIts3ohJv5rLVhIkkZReGGWXCvLorJFu2OUg5TA4iaLA11BPjGvo0JWMfgsZAaoJx4MWQTDSKL4CrAdq4mP1HE618IV4lS0/i46tXb8y02JV1yTPTRomZ2kmd4ODsfUtp2V5yPoo4RvMVlTNp0T/FXIpSXIIVA4/zOkfSLEvUhUR6stssag4QWjgl9UK/B9tXUV55Zhi4LuzRSdTXB9/YTHZYV+0aUJ4Owa+ZmZuWBA4lrixjTenbOOYeB5DN+FD0o/YNkBuEpJDuSY4lqw5VhfLNpVz64Bj2RldtWt9/apbSAF1teu7zZejs5tvzMfrcA==
+Received: from DS7P220CA0047.NAMP220.PROD.OUTLOOK.COM (2603:10b6:8:224::15) by
+ PH7PR12MB8040.namprd12.prod.outlook.com (2603:10b6:510:26b::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8722.31; Thu, 15 May
+ 2025 17:14:03 +0000
+Received: from DS3PEPF0000C37C.namprd04.prod.outlook.com
+ (2603:10b6:8:224:cafe::70) by DS7P220CA0047.outlook.office365.com
+ (2603:10b6:8:224::15) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8746.20 via Frontend Transport; Thu,
+ 15 May 2025 17:14:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ DS3PEPF0000C37C.mail.protection.outlook.com (10.167.23.6) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8722.18 via Frontend Transport; Thu, 15 May 2025 17:14:02 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 15 May
+ 2025 10:13:50 -0700
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Thu, 15 May
+ 2025 10:13:49 -0700
+Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Thu, 15 May 2025 10:13:48 -0700
+Date: Thu, 15 May 2025 10:13:47 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: "jgg@nvidia.com" <jgg@nvidia.com>, "corbet@lwn.net" <corbet@lwn.net>,
+	"will@kernel.org" <will@kernel.org>, "bagasdotme@gmail.com"
+	<bagasdotme@gmail.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"joro@8bytes.org" <joro@8bytes.org>, "thierry.reding@gmail.com"
+	<thierry.reding@gmail.com>, "vdumpa@nvidia.com" <vdumpa@nvidia.com>,
+	"jonathanh@nvidia.com" <jonathanh@nvidia.com>, "shuah@kernel.org"
+	<shuah@kernel.org>, "jsnitsel@redhat.com" <jsnitsel@redhat.com>,
+	"nathan@kernel.org" <nathan@kernel.org>, "peterz@infradead.org"
+	<peterz@infradead.org>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"mshavit@google.com" <mshavit@google.com>, "praan@google.com"
+	<praan@google.com>, "zhangzekun11@huawei.com" <zhangzekun11@huawei.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-doc@vger.kernel.org"
+	<linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org"
+	<linux-tegra@vger.kernel.org>, "linux-kselftest@vger.kernel.org"
+	<linux-kselftest@vger.kernel.org>, "patches@lists.linux.dev"
+	<patches@lists.linux.dev>, "mochs@nvidia.com" <mochs@nvidia.com>,
+	"alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>, "vasant.hegde@amd.com"
+	<vasant.hegde@amd.com>
+Subject: Re: [PATCH v4 22/23] iommu/tegra241-cmdqv: Add user-space use support
+Message-ID: <aCYgyyHwJsQvLLOo@Asurada-Nvidia>
+References: <cover.1746757630.git.nicolinc@nvidia.com>
+ <a06e91b8bb4a2966dbe7fc3349502d38c3ba38cb.1746757630.git.nicolinc@nvidia.com>
+ <BN9PR11MB5276D8FF50750CF35D0DF1838C90A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250319-msm-gpu-fault-fixes-next-v5-0-97561209dd8c@gmail.com>
- <20250319-msm-gpu-fault-fixes-next-v5-3-97561209dd8c@gmail.com>
- <20250506122449.GB723@willie-the-truck> <CACu1E7FA0M_0Un3qPRNtqy4R_NbaMks6FSkpQZBuyqJpuT-p7w@mail.gmail.com>
- <20250506145324.GA1246@willie-the-truck> <CACu1E7FcQU3NXro8uYxzEJ1pvfYG5WLvY8BscbF9Sj+P3Wh_2A@mail.gmail.com>
- <20250515144653.GC12165@willie-the-truck>
-In-Reply-To: <20250515144653.GC12165@willie-the-truck>
-From: Connor Abbott <cwabbott0@gmail.com>
-Date: Thu, 15 May 2025 13:13:42 -0400
-X-Gm-Features: AX0GCFvD2R3Bj1I8omfFJkgKEUlYMIBkFZDKNasEPm1_T3W9qymeV4VLYjJsORg
-Message-ID: <CACu1E7Ha5=q4mnnr5wZLk4407LJ6TBnjpxtAm4ve9i-ARgQqJA@mail.gmail.com>
-Subject: Re: [PATCH v5 3/5] iommu/arm-smmu: Fix spurious interrupts with stall-on-fault
-To: Will Deacon <will@kernel.org>
-Cc: Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>, 
-	Konrad Dybcio <konradybcio@kernel.org>, Abhinav Kumar <quic_abhinavk@quicinc.com>, 
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
-	Marijn Suijten <marijn.suijten@somainline.org>, iommu@lists.linux.dev, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	freedreno@lists.freedesktop.org, quic_c_gdjako@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276D8FF50750CF35D0DF1838C90A@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS3PEPF0000C37C:EE_|PH7PR12MB8040:EE_
+X-MS-Office365-Filtering-Correlation-Id: 24b472a8-fcca-478f-d2ec-08dd93d3e3f8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|7416014|82310400026|376014|36860700013|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?VimaEpP0BHSC/IdKI1P9h+l4afvdsOWioE+6YIfomU6n54qXP7UxHMWg8bNZ?=
+ =?us-ascii?Q?39d1m5jM0zi4KDqvcDfCNh1M5SK1m27YBu+HruWWyGxR8DCqTeZBypf2pLc/?=
+ =?us-ascii?Q?oBa/XnrhD7b9pIsM5dv70lmvqufqcgkJtZb/EoJ4yPzY+I6kBLXp35GGpfCc?=
+ =?us-ascii?Q?5n17qGxOvXT+5wF1PTcfLxcju8HxAiyCoZA4XJ/GMyCojh5EzplMg9gnnNoa?=
+ =?us-ascii?Q?59CXT7MMPWviOAtwWfVDA//6a+JaRG9JjFaWmqWwlG/QI94kV7roUlHlFXbx?=
+ =?us-ascii?Q?5AVZzNENtr1jy6SvWJMh6Nc02G5TElUJr0G0px14BtlTYrJnJhh4p+jciCMV?=
+ =?us-ascii?Q?ah/BkXq0O9ZWIWFrHDKtWXM4fYSZvyw2J2y+4H0V1D4CMNpuY4K+ciXf2Gfu?=
+ =?us-ascii?Q?sMrSHoUdH6IN6u/Fye7MIPPT8Vs9XmukuH+EQohEmGjLX3560eSdiWLj82t4?=
+ =?us-ascii?Q?VBkSYGTLk73kh2UhohC3O+xVuCRHJQzXohdHiTs4ipI2hSpEwNG49hL5IHv8?=
+ =?us-ascii?Q?qKdBheALSDWLrT7BHWqRae3Z1QqKIY/dlfh7SvoH9+KZgAVt4Uld/6HAd+Lw?=
+ =?us-ascii?Q?1gL+dWjXgvDaq25QNU3GWOrw2GDUTVYoKst/ok5X7OBPB9gsVfd1BYb+ykRg?=
+ =?us-ascii?Q?PqcLMcer8x05l+jQG7lKeD5M1rTJEoRQS30n1LaRtTaZv0h0K0rDzDPyUCwa?=
+ =?us-ascii?Q?QBMjWKlD2ZYxgD97rOsnstbz4z9Pf5fW+eMfuMhUPWLk9HEdne+vim9aunW7?=
+ =?us-ascii?Q?hvqSg7A47gJbAw8d4WmfkqFE6VFpAG9CUk7s0NQoL7Gx/Q4VSyu9+WawWpCa?=
+ =?us-ascii?Q?ibmV87atQTEWwyxM85glDlcK0BNM0DO5dxf/6srlaKQ3UIYcrNN+LS51K5xz?=
+ =?us-ascii?Q?ESyou4TNuYWSaz2ZqfBp4w5ylU5YNYUulycktuXGGXx23DMDcsiSnk+1Sqa8?=
+ =?us-ascii?Q?wPRulQzHEi8wLfxMD/QaoEvEZZrOiypd7dqcXIuE0ogxCGq8xOrHDwFTXmN9?=
+ =?us-ascii?Q?ryKuQgoMUaY8njbEXUwT46mlJBs3ibfbpXAuYWnucPZAJEcJ7bUgz34KtsVa?=
+ =?us-ascii?Q?WlyDhZYTgrML6SeIPpZSubxJoSGaZGwWmtunE3iMIA7ioao4cV1e6ofh2lIo?=
+ =?us-ascii?Q?1DlqU5x5uYfZqmjm2KrPb/qWCVLvAbH65nuxHHVnlVKSbPvRQc13MdBKTDM+?=
+ =?us-ascii?Q?4INXQm4FMwMEjcfz6EG2d0YqAlaqEh7F/KGyhzE6qLL/EndFkUnaqXZxVXWS?=
+ =?us-ascii?Q?jog+fF9gOuWs+Im2gq6xH1veLTbja7fLf/oheX3Bav65+8fRva9D5g4SyJex?=
+ =?us-ascii?Q?EQVNTOqxTqV0OaRuWxGKRbxne4wI+7oUgRwabXbewrEqjFBg0p7iZTFMNyTa?=
+ =?us-ascii?Q?t7x8yoXApI74+kdq6K5WKgHBovzj5AH9AK0s2G22LdOmgORmYXv9rcu5Phmk?=
+ =?us-ascii?Q?wUghI1sjEci3VLuMLxla04sAdVVWSMfYeSr8V8JftOKqwUqKhhWgRi+1/AQz?=
+ =?us-ascii?Q?q0JfueCskFRq8UXImgraxXfcskPm2s0D6x5H?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(7416014)(82310400026)(376014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2025 17:14:02.7166
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24b472a8-fcca-478f-d2ec-08dd93d3e3f8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS3PEPF0000C37C.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8040
 
-On Thu, May 15, 2025 at 10:47=E2=80=AFAM Will Deacon <will@kernel.org> wrot=
-e:
->
-> On Tue, May 06, 2025 at 11:18:44AM -0400, Connor Abbott wrote:
-> > On Tue, May 6, 2025 at 10:53=E2=80=AFAM Will Deacon <will@kernel.org> w=
-rote:
-> > >
-> > > On Tue, May 06, 2025 at 10:08:05AM -0400, Connor Abbott wrote:
-> > > > On Tue, May 6, 2025 at 8:24=E2=80=AFAM Will Deacon <will@kernel.org=
-> wrote:
-> > > > > On Wed, Mar 19, 2025 at 10:44:02AM -0400, Connor Abbott wrote:
-> > > > > > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/io=
-mmu/arm/arm-smmu/arm-smmu.c
-> > > > > > index c7b5d7c093e71050d29a834c8d33125e96b04d81..9927f3431a2eab9=
-13750e6079edc6393d1938c98 100644
-> > > > > > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > > > > > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > > > > > @@ -470,13 +470,52 @@ static irqreturn_t arm_smmu_context_fault=
-(int irq, void *dev)
-> > > > > >       if (!(cfi->fsr & ARM_SMMU_CB_FSR_FAULT))
-> > > > > >               return IRQ_NONE;
-> > > > > >
-> > > > > > +     /*
-> > > > > > +      * On some implementations FSR.SS asserts a context fault
-> > > > > > +      * interrupt. We do not want this behavior, because resol=
-ving the
-> > > > > > +      * original context fault typically requires operations t=
-hat cannot be
-> > > > > > +      * performed in IRQ context but leaving the stall unackno=
-wledged will
-> > > > > > +      * immediately lead to another spurious interrupt as FSR.=
-SS is still
-> > > > > > +      * set. Work around this by disabling interrupts for this=
- context bank.
-> > > > > > +      * It's expected that interrupts are re-enabled after res=
-uming the
-> > > > > > +      * translation.
-> > > > >
-> > > > > s/translation/transaction/
-> > > > >
-> > > > > > +      *
-> > > > > > +      * We have to do this before report_iommu_fault() so that=
- we don't
-> > > > > > +      * leave interrupts disabled in case the downstream user =
-decides the
-> > > > > > +      * fault can be resolved inside its fault handler.
-> > > > > > +      *
-> > > > > > +      * There is a possible race if there are multiple context=
- banks sharing
-> > > > > > +      * the same interrupt and both signal an interrupt in bet=
-ween writing
-> > > > > > +      * RESUME and SCTLR. We could disable interrupts here bef=
-ore we
-> > > > > > +      * re-enable them in the resume handler, leaving interrup=
-ts enabled.
-> > > > > > +      * Lock the write to serialize it with the resume handler=
-.
-> > > > > > +      */
-> > > > >
-> > > > > I'm struggling to understand this last part. If the resume handle=
-r runs
-> > > > > synchronously from report_iommu_fault(), then there's no need for
-> > > > > locking because we're in interrupt context. If the resume handler=
- can
-> > > > > run asynchronously from report_iommu_fault(), then the locking do=
-esn't
-> > > > > help because the code below could clear CFIE right after the resu=
-me
-> > > > > handler has set it.
-> > > >
-> > > > The problem is indeed when the resume handler runs asynchronously.
-> > > > Clearing CFIE right after the resume handler has set it is normal a=
-nd
-> > > > expected. The issue is the opposite, i.e. something like:
-> > > >
-> > > > - Resume handler writes RESUME and stalls for some reason
-> > > > - The interrupt handler runs through and clears CFIE while it's alr=
-eady cleared
-> > > > - Resume handler sets CFIE, assuming that the handler hasn't run ye=
-t
-> > > > but it actually has
-> > > >
-> > > > This wouldn't happen with only one context bank, because we wouldn'=
-t
-> > > > get an interrupt until the resume handler sets CFIE, but with multi=
-ple
-> > > > context banks and a shared interrupt line we could get a "spurious"
-> > > > interrupt due to a fault in an earlier context bank that becomes no=
-t
-> > > > spurious if the resume handler writes RESUME before the context fau=
-lt
-> > > > handler for this bank reads FSR above.
-> > >
-> > > Ah, gotcha. Thanks for the explanation.
-> > >
-> > > If we moved the RESUME+CFIE into the interrupt handler after the call
-> > > to report_iommu_fault(), would it be possible to run the handler as a
-> > > threaded irq (see 'context_fault_needs_threaded_irq') and handle the
-> > > callback synchronously? In that case, I think we could avoid taking t=
-he
-> > > lock if we wrote CFIE _before_ RESUME.
-> > >
-> >
-> > We need the lock anyway due to the parallel manipulation of CFCFG in
-> > the same register introduced in the next patch. Expanding it to also
-> > cover the write to RESUME is not a huge deal. Also, doing it
-> > synchronously would require rewriting the fault handling in drm/msm
-> > and again I'm trying to fix this serious stability problem now as soon
-> > as possible without getting dragged into rewriting the whole thing.
->
-> This has never worked though, right? In which case, we should fix it
-> properly rather than papering over the mess.
+On Thu, May 15, 2025 at 08:27:17AM +0000, Tian, Kevin wrote:
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Friday, May 9, 2025 11:03 AM
+> > 
+> >  /**
+> >   * struct iommu_hw_info_arm_smmuv3 - ARM SMMUv3 hardware
+> > information
+> >   *                                   (IOMMU_HW_INFO_TYPE_ARM_SMMUV3)
+> >   *
+> > - * @flags: Must be set to 0
+> > - * @impl: Must be 0
+> > + * @flags: Combination of enum iommu_hw_info_arm_smmuv3_flags
+> > + * @impl: Implementation-defined bits when the following flags are set:
+> > + *        - IOMMU_HW_INFO_ARM_SMMUV3_HAS_TEGRA241_CMDQV
+> > + *          Bits[15:12] - Log2 of the total number of SID replacements
+> > + *          Bits[11:08] - Log2 of the total number of VINTFs per vIOMMU
+> > + *          Bits[07:04] - Log2 of the total number of VCMDQs per vIOMMU
+> > + *          Bits[03:00] - Version number for the CMDQ-V HW
+> 
+> hmm throughout this series I drew an equation between VINTF
+> and vIOMMU. Not sure how multiple VINTFs can be represented
+> w/o introducing more objects. Do we want to keep such info here?
 
-It has never worked upstream. Which means that everyone is either
-carrying this series downstream, or blowing up sometimes. The number
-of places carrying this series is quickly multiplying, so it's
-becoming more and more painful that this isn't upstream. Not to
-mention the downstreams that still aren't aware of this and hang the
-whole system sometimes.
+You are right that VINTF=vIOMMU. This is a per SMMU instance ioctl.
+So, each VM should only have one VTINF/vIOMMU per SMMU instance.
 
->
-> Georgi (CC'd) added support for threaded interrupts specifically to
-> permit sleeping operations in the fault handler. You should be able to
-> use that and I don't understand why that would require "rewriting the
-> whole thing". You can kick the async work and then wait for it to
-> complete, no?
+For multi-VINTF (multi-vIOMMU) case, there needs to be more SMMUs
+backing passthrough devices being assigned to the VM.
 
-It would certainly require rewriting the iommu side of it, although it
-does get simpler.
+What exactly the concern of keeping this info here?
 
-Properly handling the drm/msm side of it would also require getting
-rid of the fault worker, although I suppose we could just wait on it
-as a hack.
+> > +	 * - suggest to back the queue memory with contiguous physical
+> > pages or
+> > +	 *   a single huge page with alignment of the queue size, limit
+> > vSMMU's
+> > +	 *   IDR1.CMDQS to the huge page size divided by 16 bytes
+> > +	 */
+> > +	IOMMU_HW_QUEUE_TYPE_TEGRA241_CMDQV = 1,
+> 
+> Not sure about the last sentence. 'limit' refers to a certain action
+> which the user should perform?
 
-I've started trying to see how it would look, but the biggest problem
-is that it's going to introduce a lot of complicated cross-tree
-dependencies. To fully follow the recommended sequence, we'd have to
-do something like:
+Yes, set vSMMU's IDR1.CMDQS field up to the huge page size divided by
+16 bytes, e.g. if using one 2MB huge page backing the queue memory,
+VMM should set IDR1.CMDQS no higher than 17:
+	2MB = (1 << 17) * 16B
 
-1. Enable threaded IRQ on Adreno SMMU.
-2. Make drm/msm do its devcoredump business immediately.
-3. Make iommu in charge of writing RESUME and do it after writing FSR.
+Certainly, it can set to lower than 17. So it's an upper "limit".
 
-The problem is that if we only do 1 and 2, things will be way worse
-than before. Instead of some duplicate faults while the devcoredump is
-pending (that sometimes, but not always, results in a full system hang
-if devcoredump is scheduled on the same core) the interrupt will never
-be cleared, due to the MMU-500 behavior of ignoring writes to RESUME
-if FSR isn't cleared, and the entire system will hang every time
-there's a context fault.
+Or any better word in your mind that can be less confusing?
 
-I suppose I could put 3 before 2, and temporarily break devcoredumps?
+> > +
+> > +	ret = tegra241_vintf_init_lvcmdq(vintf, lidx, vcmdq);
+> > +	if (ret)
+> > +		goto undepend_vcmdq;
+> > +
+> > +	dev_dbg(cmdqv->dev, "%sallocated\n",
+> > +		lvcmdq_error_header(vcmdq, header, 64));
+> > +
+> > +	tegra241_vcmdq_map_lvcmdq(vcmdq);
+> > +
+> > +	vcmdq->cmdq.q.q_base = q_base & VCMDQ_ADDR;
+> > +	vcmdq->cmdq.q.q_base |= log2size;
+> > +
+> > +	ret = tegra241_vcmdq_hw_init_user(vcmdq);
+> > +	if (ret)
+> > +		goto unmap_lvcmdq;
+> > +	vintf->lvcmdqs[lidx] = vcmdq;
+> 
+> this is already done in tegra241_vintf_init_lvcmdq().
 
->
-> That would then open the door to handling the RESUME in the core driver
-> in future based on the return value from report_iommu_fault().
->
-> You also need to fix qcom_tbu_halt() as I mentioned before.
->
-> Will
+Oh, will drop that.
+
+Thanks
+Nicolin
