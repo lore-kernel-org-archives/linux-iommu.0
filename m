@@ -1,136 +1,138 @@
-Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26B7E288531
-	for <iommu@lists.linux.dev>; Thu, 15 May 2025 22:05:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A192122B595
+	for <iommu@lists.linux.dev>; Fri, 16 May 2025 01:40:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747346746; cv=none; b=rAXS90dL1kZ5deVozq8Q+Zrnpb4KvwsvtPyaf/MTw66sewe6N8+thf3UO4VNukYxLKJbteU1j5QsiFHRXIsEQDhR//7+HfNEBP6+8bvHStJUCzFtMPSPD1PwiTgioTA+9CMDljYg53GMGhfjYfmpbGArmmwLJfiwB7qBMdJQ2go=
+	t=1747359647; cv=none; b=KaaUVpvLieZGZJ80ga7ZqfbJkEU1FfSrUjr5qfP4kYxik9/WYgQvxEUeEOVTvzNUVxsjE9RVOiZJqjNPc0uWH6Vp/c2rDRDdlSn6d+1AJaFlQDyVP4ua9nIFcI0pg9xrlAZqhEwzjB88s+TgpfXkKz6NIbIgkjrbqFnP40mZ37Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747346746; c=relaxed/simple;
-	bh=R04t5OP7VoRR7an/K/mH1NZqJb80IHwLckbbrUiaTWY=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=VZmmG+0DRc0eATjsUdRCq6cDMljLdJsc+5W0X+uzGoMWMZYJ2vMG3tIjTuKqLgsCxYVo7oMyCQaPDPtklnSEo0fzKaYYegQZXsCazVA+ocvKpq0pBTqEiIPwtikPjeTyH6NI+1hiu+OBXGxVKaIbAEV2sdMvEPssfpPt+WLvDpI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ph2Hhf4G; arc=none smtp.client-ip=209.85.215.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ph2Hhf4G"
-Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-b26e278dd1aso537341a12.1
-        for <iommu@lists.linux.dev>; Thu, 15 May 2025 15:05:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1747346743; x=1747951543; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Oi7sS9/hL2apZcsFxNVWjiM0xG6d7sH4nOsxyAerdW0=;
-        b=ph2Hhf4Ga9UwLLnNkPpLUv+/qpKfHKhLH2pF21FRgHWGzOupozx6FpDLoXw6/X1Hsd
-         oyaVnVbChjC38UzOpDcpoSvuRT4kriQ4l0gm8uzjAToXvirtndjQxBkY59FMeBN2u/e3
-         OMjMmhNZUxHSrDuIpy/Vaq++vf+gKVYIKpA08l+T4TTbU7j53aYplr/imVRv7A78R8J8
-         F/qVSfKJX2FlDlcXvZJs5u/8GPnTsWElWxnxV5JkIURcX5EkUze1vrIoW6duJ4NXiLTJ
-         r2JffEI/YA4brH9DSq7LvDHqS2LUkl94+3aAWRIXDXUQnKYNvMAmKMgqyMtH+NJ9K2e3
-         Q9Bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747346743; x=1747951543;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Oi7sS9/hL2apZcsFxNVWjiM0xG6d7sH4nOsxyAerdW0=;
-        b=v0Eu9jj0trym+EvwBQbpHDv4lBGpUIIMLbn6mloPVQiRVzj79Ya+7DSQt1M326mAqA
-         xm1S5N4Er8Uy2lap/wPQ+s/F7lcRWyjzngT5o+EGRMM7uomxhGLdw9RhyTSTjxOfdgQw
-         26iFuFzoXPjHoCbJimBOzcZ+B7cguztBIPTuFvuN4w9jm1dUFO5Mh9WG5pNv3gvMDC9k
-         PHYN7dyojBT8/ldjxY7zI5tS5ou68+gfPHuEQHT91eFW8OW5hQhnSLzholUGRp00c9dQ
-         myI4ogsHf1COG5ERb/7PH0YCbHykrDEeqOyNsTr85TIPNWRZhjOzfjOVcvRoc2+I24jT
-         qzLg==
-X-Forwarded-Encrypted: i=1; AJvYcCUCLUsSJF/IdN06yCsQtJPgTlNmbTmCGY/jZgtlwepcXCmrFg21ACut5w1G4IKLM8R1BhSwKA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyt5jurPY3AyMKzcn68dLOLLY1GDPb+2AmfZZEM/N6jXkSL24r+
-	+2vUxGWAysf/CXKm7YM6jT9DD20YXLgj/GEPjdr0tt2Go7Pw8is8XzHtCRPGP+gNE/eTZ3JMLVp
-	4dkgpxg==
-X-Google-Smtp-Source: AGHT+IFsAyQHkBD9JIcdxXmgn3lyYCeVd2u7vwK18dv1Rs4/Dq4Q7I3Qiz7gFrycKUxrAq6vHuxsB5iwTcg=
-X-Received: from pjbqc9.prod.google.com ([2002:a17:90b:2889:b0:2f9:e05f:187f])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:1dd1:b0:2ff:784b:ffe
- with SMTP id 98e67ed59e1d1-30e7d522171mr1418806a91.11.1747346743464; Thu, 15
- May 2025 15:05:43 -0700 (PDT)
-Date: Thu, 15 May 2025 15:05:41 -0700
-In-Reply-To: <20250515120804.32131-1-sarunkod@amd.com>
+	s=arc-20240116; t=1747359647; c=relaxed/simple;
+	bh=XngLg+UTC2r+gkvpHZBWpkkEKwZaiIp7X3MAB3zKVGk=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=gWLrb/0u9eec1JQoDRZzfpl0n9REVffKWkexjExPKSP9VAYEL0BdDRvtr854j5LpVDjiCiVW/AcPmSNylm+6px6NIkbJz6F7LiqevagtcE4jXbwccV80c/RhqwhPUDT/0kAv/ndFKJf3d/mfPoB0qmyjsv7gv2bJGHDs/KvnRas=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.162.112])
+	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Zz8nk30dqz2Cdkh;
+	Fri, 16 May 2025 09:36:58 +0800 (CST)
+Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
+	by mail.maildlp.com (Postfix) with ESMTPS id E070D140149;
+	Fri, 16 May 2025 09:40:37 +0800 (CST)
+Received: from localhost.huawei.com (10.90.30.45) by
+ kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Fri, 16 May 2025 09:40:37 +0800
+From: Qinxin Xia <xiaqinxin@huawei.com>
+To: <21cnbao@gmail.com>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
+CC: <yangyicong@huawei.com>, <hch@lst.de>, <iommu@lists.linux.dev>,
+	<jonathan.cameron@huawei.com>, <prime.zeng@huawei.com>,
+	<fanghao11@huawei.com>, <linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
+Subject: [PATCH v4 4/4] selftests/dma: Add dma_map_sg support for dma_map_benchmark
+Date: Fri, 16 May 2025 09:40:34 +0800
+Message-ID: <20250516014034.1577549-5-xiaqinxin@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20250516014034.1577549-1-xiaqinxin@huawei.com>
+References: <20250516014034.1577549-1-xiaqinxin@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250404193923.1413163-1-seanjc@google.com> <20250515120804.32131-1-sarunkod@amd.com>
-Message-ID: <aCZlNYlhSKXRFvnc@google.com>
-Subject: Re: [PATCH 00/67] KVM: iommu: Overhaul device posted IRQs support
-From: Sean Christopherson <seanjc@google.com>
-To: Sairaj Kodilkar <sarunkod@amd.com>
-Cc: baolu.lu@linux.intel.com, dmatlack@google.com, dwmw2@infradead.org, 
-	iommu@lists.linux.dev, joao.m.martins@oracle.com, joro@8bytes.org, 
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org, mlevitsk@redhat.com, 
-	pbonzini@redhat.com, vasant.hegde@amd.com, suravee.suthikulpanit@amd.com, 
-	naveen.rao@amd.com
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemj200003.china.huawei.com (7.202.194.15)
 
-On Thu, May 15, 2025, Sairaj Kodilkar wrote:
-> Hi Sean,
-> 
-> We ran few tests with following setup
+Support for dma_map_sg, add option '-m' to distinguish mode.
 
-A few!!?!?  This is awesome!  Thank you, I greatly appreciate the testing!
+i) Users can set option '-m' to select mode:
+   DMA_MAP_BENCH_SINGLE_MODE=0, DMA_MAP_BENCH_SG_MODE:=1
+   (The mode is also show in the test result).
+ii) Users can set option '-g' to set sg_nents
+    (total count of entries in scatterlist)
+    the maximum number is 1024. Each of sg buf size is PAGE_SIZE.
+    e.g
+    [root@localhost]# ./dma_map_benchmark -m 1 -g 8 -t 8 -s 30 -d 2
+    dma mapping mode: DMA_MAP_BENCH_SG_MODE
+    dma mapping benchmark: threads:8 seconds:30 node:-1
+    dir:FROM_DEVICE granule/sg_nents: 8
+    average map latency(us):1.4 standard deviation:0.3
+    average unmap latency(us):1.3 standard deviation:0.3
+    [root@localhost]# ./dma_map_benchmark -m 0 -g 8 -t 8 -s 30 -d 2
+    dma mapping mode: DMA_MAP_BENCH_SINGLE_MODE
+    dma mapping benchmark: threads:8 seconds:30 node:-1
+    dir:FROM_DEVICE granule/sg_nents: 8
+    average map latency(us):1.0 standard deviation:0.3
+    average unmap latency(us):1.3 standard deviation:0.5
 
-> * Turin system with 2P, 192 cores each (SMT enabled, Total 768)
-> * 4 NVMEs of size 1.7 attached to a single IOMMU
-> * Total RAM 247 GiB
-> * Qemu version : 9.1.93
-> * Guest kernel : 6.14-rc7
-> * FIO random reads with 4K blocksize and libai
-> 
-> With above setup we measured the Guest nvme interrupts, IOPS, GALOG interrupts
-> and GALOG entries for 60 seconds with and without your changes.
-> 
-> Here are the results,
-> 
->                           VCPUS = 32, Jobs per NVME = 8
-> ==============================================================================================
->                              w/o Sean's patches           w/ Sean's patches     Percent change
-> ----------------------------------------------------------------------------------------------
-> Guest Nvme interrupts               123,922,860                 124,559,110              0.51%
-> IOPS (in kilo)                            4,795                       4,796              0.04%
-> GALOG Interrupts                         40,245                         164            -99.59%
-> GALOG entries                            42,040                         169            -99.60%
-> ----------------------------------------------------------------------------------------------
-> 
-> 
->                 VCPUS = 64, Jobs per NVME = 16
-> ==============================================================================================
->                              w/o Sean's patches           w/ Sean's patches     Percent change
-> ----------------------------------------------------------------------------------------------
-> Guest Nvme interrupts               99,483,339                   99,800,056             0.32% 
-> IOPS (in kilo)                           4,791                        4,798             0.15% 
-> GALOG Interrupts                        47,599                       11,634           -75.56% 
-> GALOG entries                           48,899                       11,923           -75.62%
-> ----------------------------------------------------------------------------------------------
-> 
-> 
->                 VCPUS = 192, Jobs per NVME = 48
-> ==============================================================================================
->                              w/o Sean's patches          w/ Sean's patches      Percent change
-> ----------------------------------------------------------------------------------------------
-> Guest Nvme interrupts               76,750,310                  78,066,512               1.71%
-> IOPS (in kilo)                           4,751                       4,749              -0.04%
-> GALOG Interrupts                        56,621                      54,732              -3.34%
-> GALOG entries                           59,579                      56,215              -5.65%
-> ----------------------------------------------------------------------------------------------
->  
-> 
-> The results show that patches have significant impact on the number of posted
-> interrupts at lower vCPU count (32 and 64) while providing similar IOPS and
-> Guest NVME interrupt rate (i.e. patches do not regress).
-> 
-> Along with the performance evaluation, we did sanity tests such with AVIC,
-> x2AVIC and kernel selftest.  All tests look good.
-> 
-> For AVIC related patches:
-> Tested-by: Sairaj Kodilkar <sarunkod@amd.com>
-> 
-> Regards
-> Sairaj Kodilkar
-> 
+Reviewed-by: Barry Song <baohua@kernel.org>
+Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
+---
+ tools/testing/selftests/dma/dma_map_benchmark.c | 16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
+index b12f1f9babf8..c37cbc7e8766 100644
+--- a/tools/testing/selftests/dma/dma_map_benchmark.c
++++ b/tools/testing/selftests/dma/dma_map_benchmark.c
+@@ -27,6 +27,7 @@ int main(int argc, char **argv)
+ 	int fd, opt;
+ 	/* default single thread, run 20 seconds on NUMA_NO_NODE */
+ 	int threads = 1, seconds = 20, node = -1;
++	int map_mode = DMA_MAP_BENCH_SINGLE_MODE;
+ 	/* default dma mask 32bit, bidirectional DMA */
+ 	int bits = 32, xdelay = 0, dir = DMA_MAP_BIDIRECTIONAL;
+ 	/* default granule 1 PAGESIZE */
+@@ -34,7 +35,7 @@ int main(int argc, char **argv)
+ 
+ 	int cmd = DMA_MAP_BENCHMARK;
+ 
+-	while ((opt = getopt(argc, argv, "t:s:n:b:d:x:g:")) != -1) {
++	while ((opt = getopt(argc, argv, "t:s:n:b:d:x:g:m:")) != -1) {
+ 		switch (opt) {
+ 		case 't':
+ 			threads = atoi(optarg);
+@@ -57,11 +58,20 @@ int main(int argc, char **argv)
+ 		case 'g':
+ 			granule = atoi(optarg);
+ 			break;
++		case 'm':
++			map_mode = atoi(optarg);
++			break;
+ 		default:
+ 			return -1;
+ 		}
+ 	}
+ 
++	if (map_mode >= DMA_MAP_BENCH_MODE_MAX) {
++		fprintf(stderr, "invalid map mode, DMA_MAP_BENCH_SINGLE_MODE:%d, DMA_MAP_BENCH_SG_MODE:%d\n",
++			DMA_MAP_BENCH_SINGLE_MODE, DMA_MAP_BENCH_SG_MODE);
++		exit(1);
++	}
++
+ 	if (threads <= 0 || threads > DMA_MAP_MAX_THREADS) {
+ 		fprintf(stderr, "invalid number of threads, must be in 1-%d\n",
+ 			DMA_MAP_MAX_THREADS);
+@@ -111,13 +121,15 @@ int main(int argc, char **argv)
+ 	map.dma_dir = dir;
+ 	map.dma_trans_ns = xdelay;
+ 	map.granule = granule;
++	map.map_mode = map_mode;
+ 
+ 	if (ioctl(fd, cmd, &map)) {
+ 		perror("ioctl");
+ 		exit(1);
+ 	}
+ 
+-	printf("dma mapping benchmark: threads:%d seconds:%d node:%d dir:%s granule: %d\n",
++	printf("dma mapping mode: %d\n", map_mode);
++	printf("dma mapping benchmark: threads:%d seconds:%d node:%d dir:%s granule/sg_nents: %d\n",
+ 			threads, seconds, node, dir[directions], granule);
+ 	printf("average map latency(us):%.1f standard deviation:%.1f\n",
+ 			map.avg_map_100ns/10.0, map.map_stddev/10.0);
+-- 
+2.33.0
+
