@@ -1,44 +1,46 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DAAF821CC4D
-	for <iommu@lists.linux.dev>; Fri, 16 May 2025 06:39:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4FEDB1361
+	for <iommu@lists.linux.dev>; Fri, 16 May 2025 06:45:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747377576; cv=none; b=VBD/iE9x/NK4hqgcdJ6hY1Mok7P7rI82fxr8mE5A2ePU3380KR2goVPmYeq4RRv/Bjt/2s2jWf8TjlbsqA6+UZxvrz0Rij4+gZkCsC/eyuxp/XrUDQKvL8ZPSlLh0OpR4wyUDPuvIFVsHf71HY4J5bw+vTY+0Mi+EpzRpvcl5LY=
+	t=1747377931; cv=none; b=SJIOZAmmcBxx+LZjFtpEryY+t4xNIpZspDGLJnQKzd+8+DXdMUg/saaFoGPOJiu944/Pq8Vf4rZQ/FbqoL33cO9bb/vLUyv7OWNS+3vDu2oluRKmyJG0vV6DVRETKw/YEvX0wrdc2U8VKIUlhWnFgrVY0zmerd6xb5osMFZ0vvY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747377576; c=relaxed/simple;
-	bh=ixzCasUR5DlYgcLxz0hPF8VFKi85Ab49CtACUu9qu6U=;
+	s=arc-20240116; t=1747377931; c=relaxed/simple;
+	bh=4PqGR88p/sS4l3DEwVrJvao/LMbDQhYsWmLuThxyg3s=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=toZS5TsYFYZ669164G4sji7y0JpxMKU770yAGjpOdr6kiRhUb1g3CSq4VJOHosSpn0GuOtMBOnzhGn/c7YzgNlzx4Grrvh/q+BqPRKk2XnmhvuwE6P8MXCxPx0fvvNbXJtZ2c/mc6Xxtk5lQTEGnumubOZMFi5bfuxohsyfv/FI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=S0eikm+E; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=guAdtlcOZwyXb0WOhIGlWZWU4F+RooYRSvv5r+fMZ9v2Jai+/54lU8serjRwN3N7cgqwVgaDiaJXavvjk1jdM/IkhCvHvq5gtikYvN4eWHjGkhmr40TOh+GRpYHHUmGnt2swqb2tkz8p15UctMkKX0HOm6F4BbAPXvBjwNk3aQc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=kQKAcxKs; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="S0eikm+E"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="kQKAcxKs"
 Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 7B6F249E6B;
-	Fri, 16 May 2025 08:39:30 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 016414B65F;
+	Fri, 16 May 2025 08:45:27 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1747377571;
-	bh=ixzCasUR5DlYgcLxz0hPF8VFKi85Ab49CtACUu9qu6U=;
+	s=default; t=1747377928;
+	bh=4PqGR88p/sS4l3DEwVrJvao/LMbDQhYsWmLuThxyg3s=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=S0eikm+EZYq9g5tFFiZ6qfJzDHBvvUft1H/TEEdbipS3WDgXgTPXdax5d0m0CFL3F
-	 aReESGOXG+qNVNFqUq/zojJ/KeflAWkgtxltXO3Nynuk6yEh97bQM3xg3mIB9P4Ai9
-	 ftxbsYhNj1g2fq1B0VMQ58QdAKp5j8TMU5yInaKMXpX+czkAFsBj+Q331d88sO/g8X
-	 MNdDU8DSKmc2t/pPbdo38/p/6Y6Z8VqPCQMS+n/Bhz9Sf9vWVZ/pV9MaWkVBDyXglO
-	 WI4UKG4HCHC2/2ew9cx9CBg0kJimwzK4c7XL31z274wwhMe1159zO8X//OZI0i7dUA
-	 e75U/LVYYV2SA==
-Date: Fri, 16 May 2025 08:39:28 +0200
+	b=kQKAcxKsFPco0m28bnXz2F5leyXo9CnHTkcYL8qBTwXhpEQMM7SXUTpKbCxnts6Rj
+	 Ise9D+crSeRxaKpcLsPFEvmC2uH7Lff5FBe64QQ/YpfBKFG15LTiHkhVGM2jKhCAhj
+	 xaYPRbCen5ROusk5ZNwXyiXL/7YfxRYJR/3lHBs9T/DSKufE+ByKzdTr0aO/Rb5N/l
+	 saX6fZrg/GP0lfbQYEoUfuZcIkQabR67fr+nUqhuB+EJVmrJlzgPueWgXo/Jf1oMKc
+	 W2w1A06khpq9iNfJocAm+Ays7eDv35Nu+qIgUA9pbby+Nmw2+SqyeKSdaHBgukepx9
+	 7691hl/E2sVaw==
+Date: Fri, 16 May 2025 08:45:26 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Colin Ian King <colin.i.king@gmail.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, kernel-janitors@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH][next] iommu/fsl_pamu: remove trailing space after \n
-Message-ID: <aCbdoCdyuVhYz6E6@8bytes.org>
-References: <20250430151853.923614-1-colin.i.king@gmail.com>
+To: Tushar Dave <tdave@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, kevin.tian@intel.com,
+	jgg@nvidia.com, yi.l.liu@intel.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v3 rc] iommu: Skip PASID validation for devices without
+ PASID capability
+Message-ID: <aCbfBqVu1C9Jtk7F@8bytes.org>
+References: <20250505211524.1001511-1-tdave@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,15 +49,18 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250430151853.923614-1-colin.i.king@gmail.com>
+In-Reply-To: <20250505211524.1001511-1-tdave@nvidia.com>
 
-On Wed, Apr 30, 2025 at 04:18:53PM +0100, Colin Ian King wrote:
-> There is an extraenous space after \n in a pr_debug message. Remove it.
+Hi Tushar,
+
+On Mon, May 05, 2025 at 02:15:24PM -0700, Tushar Dave wrote:
+>  drivers/iommu/iommu.c | 27 +++++++++++++++++++--------
+>  1 file changed, 19 insertions(+), 8 deletions(-)
+
+This doesn't apply to v6.15-rc6, can you please rebase and send a new
+version?
+
+Thanks,
+
+	Joerg
 > 
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
->  drivers/iommu/fsl_pamu_domain.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-
-Applied, thanks.
-
