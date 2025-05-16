@@ -1,46 +1,42 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 93D271361
-	for <iommu@lists.linux.dev>; Fri, 16 May 2025 06:48:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 914EC226545
+	for <iommu@lists.linux.dev>; Fri, 16 May 2025 06:49:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747378128; cv=none; b=hwIn9umgyJB6WzV1h6AE+ocE1R2rxKKStVpNWDxxLaQMRFvt4+SIHJ3tJUQL3Na2sXv92+I5AdvnxbnHsFdDw77UcNZ4fgqRcKaL3dq9cZ6/o+kPOD0g6fl6IlQAjCXIvdMobeIc0tHyLfsxzrYuRNcPrc6ZCkuR5grhMMrrDHQ=
+	t=1747378197; cv=none; b=gG+wmdbv1Wsl1UkHxeJNQm5Tc3jyUGfpA5rQ0+YcKPRRwpm6eFPKeAnscJufa0zshP0xuNb+Se9NxwYzY/m8TIXOJIUhEv3SFdWQnI4+JIuOwaChIHpnLQy+J99ctcvDAcr4QiLlhBWZ2pBbRIo1n0gZFk/inB5zQbOw8DWn/0Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747378128; c=relaxed/simple;
-	bh=SO8A0OpVPjVPuSkE8b4uXXALn9apsujGifLuxQX4T3s=;
+	s=arc-20240116; t=1747378197; c=relaxed/simple;
+	bh=lvZN8ysfJIxtlbmf2W6ZNOmXfkWyntAbEQLSjdeK6Sg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aYURmwFkObcp9f7EN27o7YTtNpRNJClylRul7W33gdpcw9+vju/cxUZaWkcryiFXqiz8VcnRPBxTczNFEPArjsrog75jg/ugLv1wKEttz2ri33jsYerZr69wOyJdtmx6YwWSO55EReAUqlUaEc4MEaG5bSr6MjT71ae3459dzWk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=waQVIW2Q; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=J8u8bdOdB3xFzCl4AlNF9+39dJj6tAbdum2eqkGxLh/Ernep526KQoar/7SPup/HVm4s/hj5BxQhODjuzNOr4L+Rr9jnnenS+ikTbH0JsftFBnGmmvlCBKfypDsUh8ygXHA0Ev7CbIBTuLhviSZHt6N2XmAf+TxuOsoN/OoAY8M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=OmzugMIF; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="waQVIW2Q"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="OmzugMIF"
 Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 287F44B65F;
-	Fri, 16 May 2025 08:48:44 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id BF9554B709;
+	Fri, 16 May 2025 08:49:54 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1747378124;
-	bh=SO8A0OpVPjVPuSkE8b4uXXALn9apsujGifLuxQX4T3s=;
+	s=default; t=1747378194;
+	bh=lvZN8ysfJIxtlbmf2W6ZNOmXfkWyntAbEQLSjdeK6Sg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=waQVIW2QdDd+3A0ai60OoOhUI68m8+c+MrF0IFqHJX9Txh2rYX+FuOcxxf5PSXBiI
-	 EkG4Og5kCUQLDEN3gIEWtRLrEJJweLh5K2pw/bwvtVRNB3jlrfM6wznii9itrvtjkP
-	 wI/aJjFbIDnCMedyCKJry3xZ1SYDd5CUCKCz8VtZ3uOPFl9IS8rDsaxEb1/cfiDLJD
-	 l1YOqYtmNIAExinIXzr9nPAe2myod2ZnjdaxRW7H9RRPatn2K49/wn1VcOccoJK3RL
-	 oI1Nak3fVc0COPVbCADpbLUu0BR2n9fj73t5GxoheRTXtjDBWpWWp0K6LxBaFOyLmc
-	 ubAysFbgv84hQ==
-Date: Fri, 16 May 2025 08:48:43 +0200
+	b=OmzugMIFy9I9MsjspOeLFtK7NKdkManP5FRIFLfK5GMviXeOjr+bkCrDLTVRyYe3X
+	 9v3pyG5VriexOAnyHfTcv750WLw/IBJhhFKG1w6ADEtsapKBAm9N7UmvY+5bJIkbUT
+	 Xd17DE86fTfsQRunKbPz2W++xTkZHIMWafoDAr9Q3fHp7mvD0+ubyPwYucaGo/RraK
+	 R59QfPSRMIR3tV6tUMnj2/DIsjrXO19AYRRRAQFsPWDyG5I0+xjR/m1QEdwLU1eR5s
+	 pp82Rmk5Q8EZbKVY9TKTekdPpgIEP2s0gI80gq3KuLsC2cU5/TRbEn2RSpOSY89SYb
+	 +sLH1YYWRA2NQ==
+Date: Fri, 16 May 2025 08:49:53 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Mario Limonciello <superm1@kernel.org>
-Cc: mario.limonciello@amd.com, will@kernel.org,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Vasant Hegde <Vasant.Hegde@amd.com>,
-	Paul Blinzer <Paul.Blinzer@amd.com>, iommu@lists.linux.dev
-Subject: Re: [PATCH v3] iommu/amd: Allow matching ACPI HID devices without
- matching UIDs
-Message-ID: <aCbfy9c5kFa1pPsy@8bytes.org>
-References: <20250512173129.1274275-1-superm1@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/5] [PULL REQUEST] Intel IOMMU updates for v6.16
+Message-ID: <aCbgEdv-dMX7wa6G@8bytes.org>
+References: <20250513030739.2718555-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,10 +45,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250512173129.1274275-1-superm1@kernel.org>
+In-Reply-To: <20250513030739.2718555-1-baolu.lu@linux.intel.com>
 
-On Mon, May 12, 2025 at 12:30:32PM -0500, Mario Limonciello wrote:
->  drivers/iommu/amd/iommu.c | 33 ++++++++++++++++++++++++++++-----
->  1 file changed, 28 insertions(+), 5 deletions(-)
+On Tue, May 13, 2025 at 11:07:34AM +0800, Lu Baolu wrote:
+> Jason Gunthorpe (1):
+>   iommu/vt-d: Restore WO permissions on second-level paging entries
+> 
+> Lu Baolu (2):
+>   iommu/vt-d: Use ida to manage domain id
+>   iommu/vt-d: Replace spin_lock with mutex to protect domain ida
+> 
+> Wei Wang (2):
+>   iommu/vt-d: Eliminate pci_physfn() in dmar_find_matched_satc_unit()
+>   iommu/vt-d: Change dmar_ats_supported() to return boolean
+> 
+>  drivers/iommu/intel/dmar.c  |   4 ++
+>  drivers/iommu/intel/iommu.c | 113 ++++++++++--------------------------
+>  drivers/iommu/intel/iommu.h |  21 +++++--
+>  3 files changed, 51 insertions(+), 87 deletions(-)
 
-Applied, thanks.
+Applied all, thanks Baolu.
