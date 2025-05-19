@@ -1,221 +1,284 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2064.outbound.protection.outlook.com [40.107.212.64])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2379288C8A;
-	Mon, 19 May 2025 17:30:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.64
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747675819; cv=fail; b=khGGA24MWfxNAdIrELRbAB73ukm+l+TnIqteLbgB9LvUXXpwIapeM8XnFaWJpH00hbpph+5MOvxh9u67OHmb8UlcPdNMqA003WRqqmatZxibiu6skrLaK5sKwzhU+3v9e5zU88Q0XvV6IxXZPKUSVi2qLwV2jl8FyVaJUVg86hU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747675819; c=relaxed/simple;
-	bh=pkQ928uzlLl2fS3brP69lBeB9vS+boj+V7MOY6scZKo=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=aGywLjvi9WSJj/TDCBIjwwK2oioBwr515Arr2tuRxpxyvQgcpysQd29w1jJbf08lZCGCrdZWYI1cE8yjM3GV5+z3C0uvX9+XjjuwIpKk2fALi5F0SXETCUFIRwNK6RTkgP0s6vpx2wMW949aCHzKeplDGuggbqgMHk782Bz6ahE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=aYgt9dz7; arc=fail smtp.client-ip=40.107.212.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 972402882C6
+	for <iommu@lists.linux.dev>; Mon, 19 May 2025 17:54:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1747677258; cv=none; b=WqTI04B4irm9F1qqrjxKjgHNbcrtuL1Cd6bGIELgv23DBDAk4LpYXvIO6tMqCEHkE6ZcifxEe6Jl8HT5rW0poSob9RhW9qw6Mdc2JaJ6wu+eg9vEeTDnxqptorcTkKVly1yY/QyPgIH1AO+PVkk13mgkaAOxNcXKMBbT9tUtN3E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1747677258; c=relaxed/simple;
+	bh=JqSbP2mRbsEIshyq4VeYctrtUBNxPieDIlhv0ksGXH8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BANQBb1HaMX8dxy7PI/70Ki0Wh9/2g52uoP3L4cVKZAYg5rGGBI2/4x/3fwksTyFUz7+nrUL99SoGyihoUMZMi5aRcBxZB7yxL6pwuQkUx8l0+gL2PF3jSnnuW3W5W6whC7fA0j78wuv3fekNGaiwAXnbemeR1iIs6ETuYLRs5c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OLjR4Mn+; arc=none smtp.client-ip=209.85.216.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="aYgt9dz7"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=lartnJqxmyMkZpYnexNVRlqpwcGo5OZiNcZlGJtvq84k/SxszgivKF5Vxai2qxT86WCo8se+izUnpACORKCBZZKkm5oUdTHiAFCXnYLN7da/flGcM/N/U0jRc4iLEbg6oCeyDsnpsjHKuBgjvU3OpuA6FfyUeuqMT1Q8Bm0fl2kkZpVBQ0WqcJ1OSM7P7GIKlJVWnZc5itlnnZITdRtKe/X7rYFcxZVgzwoqgv2BFOQFBLd1QiYD5l51Er/ZuXRkpnlp0DwK22zmkbPExLP2vLryjv+Xjm2LNiVdEK0EK5VxCYUduxuoCKgW4sn2p6nFksW5cmGz30wzOs9kDxje5A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/ZBt/EyxRCnDcnDjgRPHdoPRtjbInXMzzI4lnO+exY8=;
- b=G8CoU/r7NBodeZD4O4xjq8gBsPzG6/5fmNTJi+nKH591kYSLoKlzRwJmvhkPKFzbd/Iavnxsvjsx+/5nyEaJnbQUJTagrWkzx4MYLwPzw6aQ7xdSN66EL7BC3aUFrfYjafAkI6pirEXWWSSgP/6ya7u1Z+8OMU7lPYCVDnT9KJYoai73GTSmnWpwMe+zdg8/O1qEky1+tSjZddLxveM3tz3Yka9Z30/afx1gJS/nbwiajk1PyeZfXRk4g7Z9qNmJLQfIYI3wiL7QTC3lLrDwnS+dqhGDMkunqX+tWba682jWXXQbKjag7auc/qfaULrDPS9j9/30gM/8Rs+dqasgHw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/ZBt/EyxRCnDcnDjgRPHdoPRtjbInXMzzI4lnO+exY8=;
- b=aYgt9dz7Ut1w7zTpHsvm6KI5a2Jh6ougUciGw3hhDZdX/c4MMIgB+7rgnw0FwDHVJQkNKn8l3c1WOPUsCNS+7HwnE6shg1DHphCqWo1nW4zhStfoWdDY+cq0jSEssTtypp2uT0b00wdwiSPq5eqTcHJ7jcSzZ5SlhZrnuZwguvE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from IA1PR12MB6043.namprd12.prod.outlook.com (2603:10b6:208:3d5::20)
- by DS7PR12MB5958.namprd12.prod.outlook.com (2603:10b6:8:7d::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8746.30; Mon, 19 May
- 2025 17:30:01 +0000
-Received: from IA1PR12MB6043.namprd12.prod.outlook.com
- ([fe80::73e4:a06a:f737:e9be]) by IA1PR12MB6043.namprd12.prod.outlook.com
- ([fe80::73e4:a06a:f737:e9be%4]) with mapi id 15.20.8746.029; Mon, 19 May 2025
- 17:30:00 +0000
-Message-ID: <0019943c-44c4-4dae-a175-8a5bdc02f017@amd.com>
-Date: Mon, 19 May 2025 22:59:49 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 11/23] iommufd/viommu: Add IOMMUFD_CMD_HW_QUEUE_ALLOC
- ioctl
-To: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>
-Cc: kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
- bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
- thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
- shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
- peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
- praan@google.com, zhangzekun11@huawei.com, iommu@lists.linux.dev,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
- linux-kselftest@vger.kernel.org, patches@lists.linux.dev, mochs@nvidia.com,
- alok.a.tiwari@oracle.com
-References: <cover.1746757630.git.nicolinc@nvidia.com>
- <f52937c027e2fd25d76bc47f4965ba46f82c77c0.1746757630.git.nicolinc@nvidia.com>
- <20250515160620.GJ382960@nvidia.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20250515160620.GJ382960@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: PN3PR01CA0006.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:95::10) To IA1PR12MB6043.namprd12.prod.outlook.com
- (2603:10b6:208:3d5::20)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OLjR4Mn+"
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-306bf444ba2so4630583a91.1
+        for <iommu@lists.linux.dev>; Mon, 19 May 2025 10:54:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1747677256; x=1748282056; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=eZAvWXQeJhHVypWidg5RnFUIsUxQ00MWa7gy2+exJW0=;
+        b=OLjR4Mn+ZF79Vj1JuhjTsU7P9ABhAkLOg+CPZ9hx9v24U+k45n8Mz/UOt5yVsqzF6g
+         Yd42iCZ16dcwUF0mcKN+lG9e/fSsGwDwUhSFoLtOJMWSxz07OsoANvVU3QX5HrZiaQ9i
+         /pPxG+J59CB2jWPMXH6nUR+ldxW+NDlDbepirGnrzSEy8pM8C6N1EQ6UtHaWy2e0R4/X
+         BHhQM9IOWnm/eQ5Ka88o+dM7vqrXqcNDu25HwypfUifgapZ6t31GalVX3kOYJ9YndYns
+         zZwFlrOWCrH3InYLmfOoc9mSJFx07j2bpUz9f2yLv/Ws9yYJd0cDNEYHEZzaUEa3KKgo
+         WWog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1747677256; x=1748282056;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eZAvWXQeJhHVypWidg5RnFUIsUxQ00MWa7gy2+exJW0=;
+        b=cCTG4kUZKFSxQoxYTyLNMONtCvg8ySwcR6Jeo7uKyF9HaFU02eA/goZ/RoItQ4Tvag
+         cQUIV3g0ybdrr0FavLGwjYVvHrEVHQ8twjyMl60dYAdm4PiXRVhor+uH3kkqFdoKpbNs
+         hjpxIMKQqHTFVOZ/NilKoATFfvWKLUsZA71PmwuRvz9tOP6XKK94H23XI9haYbRpuw+/
+         0LWNmZTzLX1B1rla8sLIrKNfibo+ySLILWQJQ1zIyQt0XshVv+Lp44MQmKjlzcbUGkyw
+         EEmPaB+Ap8ioEWNPvqdT0ceoIEPpZ7ECZ4/O3RKECOy64lJ8vfMvYp+oKxkWYTHnZpAU
+         q8GQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWy+yaAY1hLHkDCmnk3AAdvAdtbt1UdNuFpT+QyiekEVd6AJTXc4A1grXEgYJcDe53tHWkGqA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyEaB5yUwevfWnBJ++v7QoB9ovwtlt+mH3V2jI3PFb+VmbVs6I8
+	osA6OGPJlWg+48ska0a18sARxHJjsKqKcIPS7XHDwWhWyhqgCUx1WR7r
+X-Gm-Gg: ASbGnctdinExnERFOfheWNuHh7AA5csC0qEVa9LhF0mr34l0Jeomo/+wWZi06/geyY/
+	7kWyWrKAeN5VRDezbDy+70SBEVLM/F1c6Y/PgznhizEd++w+wvaJPgiw2pKxgMrIPL9GXAA/c9g
+	8Dz6xPwcSzuJWIHuEiGua8ao1mIS7Gn4qc5D8+u1fX/Wbcqxn5fqtd73ZXbiLrBnZNvbPh/MJEI
+	py0OZ1srpAwXMiwAF2qfu/N365252bcL/csTrb1W8VNLfsNOw3knQj7CALw8wd93onSehBZ+Vmo
+	GS+wYW6s9+pbybs1OgL8Ko2em8rBmj+g0TJXQL0oo/HTFMPwKLx8ijlyJQz9kdPJjCVXXeLsu6X
+	w3vSeA7N3BJsK1zVuVmpavrF7O3iaVrnPVtPJ
+X-Google-Smtp-Source: AGHT+IH48ofu6vsBIRA77pQQk/Q03Uz8nSOktq6u6GzIKjiC5r3en5LiOZQS/u+qjGmMjOW/KPfXhA==
+X-Received: by 2002:a17:90b:4a50:b0:30e:7b26:f687 with SMTP id 98e67ed59e1d1-30e7d5cfb22mr21163448a91.29.1747677255528;
+        Mon, 19 May 2025 10:54:15 -0700 (PDT)
+Received: from localhost ([2a00:79e0:3e00:2601:3afc:446b:f0df:eadc])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-30e899cbb20sm5509793a91.1.2025.05.19.10.54.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 May 2025 10:54:14 -0700 (PDT)
+From: Rob Clark <robdclark@gmail.com>
+To: dri-devel@lists.freedesktop.org
+Cc: freedreno@lists.freedesktop.org,
+	linux-arm-msm@vger.kernel.org,
+	Connor Abbott <cwabbott0@gmail.com>,
+	Rob Clark <robdclark@chromium.org>,
+	Abhinav Kumar <quic_abhinavk@quicinc.com>,
+	=?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	=?UTF-8?q?Barnab=C3=A1s=20Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <ckoenig.leichtzumerken@gmail.com>,
+	Christopher Snowhill <chris@kode54.net>,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+	Dmitry Baryshkov <lumag@kernel.org>,
+	Eugene Lepshy <fekz115@gmail.com>,
+	iommu@lists.linux.dev (open list:IOMMU SUBSYSTEM),
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Jessica Zhang <quic_jesszhan@quicinc.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Jonathan Marek <jonathan@marek.ca>,
+	Jun Nie <jun.nie@linaro.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	linaro-mm-sig@lists.linaro.org (moderated list:DMA BUFFER SHARING FRAMEWORK:Keyword:\bdma_(?:buf|fence|resv)\b),
+	linux-arm-kernel@lists.infradead.org (moderated list:ARM SMMU DRIVERS),
+	linux-kernel@vger.kernel.org (open list),
+	linux-media@vger.kernel.org (open list:DMA BUFFER SHARING FRAMEWORK:Keyword:\bdma_(?:buf|fence|resv)\b),
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Rob Herring (Arm)" <robh@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sean Paul <sean@poorly.run>,
+	Will Deacon <will@kernel.org>
+Subject: [PATCH v5 00/40] drm/msm: sparse / "VM_BIND" support
+Date: Mon, 19 May 2025 10:51:23 -0700
+Message-ID: <20250519175348.11924-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: IA1PR12MB6043:EE_|DS7PR12MB5958:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9ea3bd95-e20f-4b45-263c-08dd96fac83b
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?bHNYWGRaL1dBWDVUcnplUTNMZUExdEROcGc5b3o4T01MYTMyS2lqeWJ3V0Zs?=
- =?utf-8?B?KzVPVVN3M0VYd2NxK3lIcEF1VjdsZ3E0N2xIZjFBT0RNN2hqRENmMVJrTE5Y?=
- =?utf-8?B?TkIwZDMrVCtUblU3eVBDWlJHaUFZRWRxQmkwcWRoSHZENEp2ZHhORjlzQTIv?=
- =?utf-8?B?QWM5eE55TjR0Y1B5cXlsZkZBYlVFellEQUlCSndXUEM0VStrMXI4V0xOdEpv?=
- =?utf-8?B?cWtPQ3VyNEdmbXdJZVY5R29NMGp0aTN6emhLbElnSnoxVGFtZCt6dnMxRURS?=
- =?utf-8?B?c3dpVUl6L1IydHh3SFcwVWxnUVZaandxTDlkMTVuQWpkc3ZFeXhtdG9LUFlN?=
- =?utf-8?B?b2FPTE0wamJuNGsvblBtSDQyWEtIdDFkbldsYkNCRjEwY1ZnNzRRV2cwZmJv?=
- =?utf-8?B?NnZoSWlSUnZCVks5M2RJQkZLQTd5Zm5JVXhORHdSRm5DOFRRVHZoelNGTmcv?=
- =?utf-8?B?eXc5WVRFQTN6bk1JYkVTd1hIbytyQ3poZFNnak50WnJkVWtHNmx5dnlmTTRV?=
- =?utf-8?B?VGdDd1NoNGNSN2M4Wjd5dWFpMEtKNnJlOWFubU12WDlndnVZSGpYbW9KdGJM?=
- =?utf-8?B?cFRZZEwxSTM1K1J4Y1Y0eXNMUEZxbHE4dnpJb3FUbThMd0QzaG5QN1lRZ3la?=
- =?utf-8?B?VjU0VlB3anRGOW5GM2UrUmlSTFRrK0VCNmxXVUZRZVdKU24rTzd5T0FDdXVm?=
- =?utf-8?B?K1Y3eGVWNWxmQmFTdnhuaXpkY205VlZnOW9vRjJFWUtsRER1cUNFcFRWUDNo?=
- =?utf-8?B?Q2QvZDZadEgyaWQ2eG5NSXFKMVpsVGpyenp6enlHWmpJa3Z1c2piczhsQUtJ?=
- =?utf-8?B?N0dxekVmYitPellXeWlsdnJyTm9hSXllM3dtT3RpQzZaTnJPOXpQVkNwdUJ1?=
- =?utf-8?B?TUtxTEcwb1dlTklKQ3E1ZU8xZThaNGZqUDBsYi9MM2FGVk50NnVJanp1eWJY?=
- =?utf-8?B?MGVkdjZpQjlwbTJXL0JHK3RHRk1BckNKdnZPMkxnVFFFait2eEhLOTRzUzZC?=
- =?utf-8?B?ZkJkZGRvZldoL1VaOEtHanZacWRsMnk4cGdGT0toYzlUUERYcmxZMXJGb3k4?=
- =?utf-8?B?VTh5Rk5NME00dlRTcUprQkxkT2gyZ0FCRmdFNERiQ0ZTa2lueFgwUFFsVEdK?=
- =?utf-8?B?d094QmFJQlh4djY3alNEdTNqNXJNYjRJbzhoa2t0QVNub0NPQ3NOOU1pK2Qw?=
- =?utf-8?B?MEtBSE5VdGdNV21rWGxkbjczcC9aNlNURzB6Y0xiWEZUR1dCdDhwUG5LNmRx?=
- =?utf-8?B?OTRkUXM3RW05TTdGOXNGdGM0aHlZWG5EZjkvOFdDMVFDZ3VYZGpUd2VVTUIx?=
- =?utf-8?B?bElWdmE1VnNZbDQ5NWhNd2RtYVIyRjBWbDRLSllXZFVnL0h1U0JVRys1eHlU?=
- =?utf-8?B?NDNNek9RclNhWlA0WW1CNWdST1dpU2Yzb0crMWNOUy91Q1hOVUJwQ0gxQ3VY?=
- =?utf-8?B?R01TdUtKVVBPK2tRU0hNUWhFZEpqc1hRb05leExocmRaNGNmQ2gxWE9Oa2hx?=
- =?utf-8?B?elNITldWOUJMTWRKMmQ1MFJQQXdweEloWVpFQS9iL1lGZWR6dWY1S1ZqM1pt?=
- =?utf-8?B?WXpQMi9sVE9uWW9EMHFpdDZOcmYyZ05kdFhiZnBUT0pNZXFTWHJpa05qeVlo?=
- =?utf-8?B?MG5JQjh1WFV5a1REVjljNnV5MU5xUE9QTDdiejNCV1MxT20zYmFnLzJHQXBV?=
- =?utf-8?B?L2JxaHptdWVDR2FTRUJEM25ma3owbzIwS3JZcG1WN1pPZ2xTS051TWt5ZUNY?=
- =?utf-8?B?RTFjbjB2aVFBZ1E1WWdWUGxKdWZKN3hka2xuMU1vKy8rbmwvUlZLMDY2RWF1?=
- =?utf-8?B?N0NKam16RFhBcTcwTVU4WldDN25wZ0xSbHVMTUh1VldLaGlFanlERUZSZW8y?=
- =?utf-8?B?OWdrQlFjNmNhRFhvdXB3aWM4b3RqbGp5YUo3OTdyM1F2dzhEakFSNU9EbVIy?=
- =?utf-8?Q?HFNxKSOpUyY=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6043.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZlVTVVZGSmNuWEp2U29zRkQ4NW1VTlN1NWlhb2RENlpTc0U2TGdWcTB3YThS?=
- =?utf-8?B?aDN1dmZwZWpIRjd6ZVc0Wm10QjVFanBsaGVVVkgzeFFNUlBxT3BicHFGRlFr?=
- =?utf-8?B?VDBIZVNTT0JsNHpNRDhOcnNNQnpHWWRQZ2x6bHVxUWlkNjdZM2hROGExM2lj?=
- =?utf-8?B?OWFObWx5SnNtWXFzN3VGQm9tZ2hLbHZMTVNVVCtPWTczdmhxVmlNNml1OFYw?=
- =?utf-8?B?OE9RVVpBNDh5UUdwL3ovVmliREx0OVlVK0ZtMzF4WTA1RWdlY2p6K25HV0hO?=
- =?utf-8?B?WDBma2ZPTGp6d2Z3VFh2T1BTdEwwb3JpS2NyTjFpREJDZnZybUZWS2lOaUZn?=
- =?utf-8?B?Qm95L3ZLaklaNWFlY0N5UmJxVUpQR1RqUFVtZU1sUkQ1ZzA2dFl2SUNlK2RD?=
- =?utf-8?B?ZDR0Q2xCaHF1TjliWXNZeVRVM2Rkb1pRK3Q2Njk3UDZQbWZoMjByRm9hUEZs?=
- =?utf-8?B?OTliQmdlK3VOeDQ4WjNJczVvd2hCT1pPUVczalc0UFdFK1FZWTZLQURTM3NU?=
- =?utf-8?B?c0hsTk5PaUZrUWExOXM2R1lyY005Yyt6T0lVN3lUY2srdGN0UFg5RU1lM2pG?=
- =?utf-8?B?M256RTF4K2d3VTlJMnlIYjlVaGs0cVBKUDBDQnFreFdyZUdiNkV2S3AwT0Qr?=
- =?utf-8?B?cGN1Z1VVNEdLV21oYlR6eG5HZnVKazhLU002OVNrQmw0Y0Zwd0FOMGZFalhp?=
- =?utf-8?B?SWVYUFdQN1dVZXFJWW94ZnpxUzhzazZCU2EyR2d1dE1ZWitNc3hvckJqY1dJ?=
- =?utf-8?B?ajR0M001c09IdkEwMk5nQmhDTFZsbE0weUVTek9LdWZ3bzdhWlNmT3NNUnFi?=
- =?utf-8?B?dTBJNmFYVS9aV1gwdVpCRDJ2RFZsbm9PNGhiKzdIZjJPdXVLYVZJdlVId1dD?=
- =?utf-8?B?R2EyODFNL1hUK0orVDQ3ZjVBY2MxMG8rbk1hM0VtelhhTzRkOFdoWkloUUpJ?=
- =?utf-8?B?aHlndlAvNnVZcUxSS04xT0RNT3h6VWVLanNLWmpNaHFxazE5WmdTazcrWi9F?=
- =?utf-8?B?Y0cvekdBTkRxY3lpakdJYVZFUVJXZ3d3RGlCMDArWTFKa01nOG9wSDhEZDha?=
- =?utf-8?B?M2JuZjA2L1UrazI4aDE5Z245eHEvSGtSbTQxcEdXWWlaUFg4MFNibGZlMzdU?=
- =?utf-8?B?M2Nlb1hpMlpCelB1RTNDNGtTMktMZHJPR0JyNkRicFVoZXBvVnYxbFdONkR2?=
- =?utf-8?B?SnZ3MXRxYnNqT0xLY3lhQVNaWlZ0TlpQSitXVjZ2VEtVQzZNWGdOdmRaU1M2?=
- =?utf-8?B?Q3NIUmlvK2l0Unp1c1IvYmg4RHM4Y0cySmNyQ09oSzZzMlNBL3d0QzdyQWhR?=
- =?utf-8?B?UUR0TmxNQWNReEVTRWhsMVp4RGNmM3VreWs2eWRJNmVNcnpyWUlHQUpuOVQ3?=
- =?utf-8?B?WGluOUt2cHpXZG1qRmVFY2U4U29JeXdCdFVHTTUvQ0pyVTU5NThTMlpXdzhB?=
- =?utf-8?B?K3N2SklIN3RtY0g5a1JCcHREMlVYNVc1bVdONXpLQVI4K1ZibE1BLytnT052?=
- =?utf-8?B?bWx1aWMxSGhXNms0WkhITlBuWkhjUUJDOG8zYlNVSjZCWE9jS3BoRTJjRTlO?=
- =?utf-8?B?TFVzNjg3K3U1Q0wrVUw5ZWtZWnZhQUhJbGJTN1VsTnNKRXoyQTRmY0p6MFly?=
- =?utf-8?B?N1B1TkttcFhjQW0zTU5xbndueEdkbmkyWUNYSXZmaHJGaXEvd0xVbHNFdG5a?=
- =?utf-8?B?UEJrNVFqbHZNV3I1Q01PQ3dBN2s1cVVDZFZJVEphUjRsQ0hBbnd2RkV0QWZr?=
- =?utf-8?B?dFlJTTlXMDBYRXlhMjMrQVAzR2tlWlJ4ZEdBUTk3b2c3VE9vRkxBRkhsTkF4?=
- =?utf-8?B?NG1TZU5kTnNyUDk0K3RpeFREM3lRVzdkRXdCZlVEdkpUZ1pQSlpUUjF1U253?=
- =?utf-8?B?N0h2Y211Z3dXWUM0emFjSlVEaHFHOFJLTXVwYnpoUVpCdG54RTFmSCtaR3NV?=
- =?utf-8?B?enhrWldLNjB0dytiV3pyQnBhakFwWjlwZFJHanFHSllvNFFKVFZ4UmZ0dEpE?=
- =?utf-8?B?SWIrUEVQOHkzME83OGZwTk5Tbkp6YXhhYjNoMVBpTkxobG5tM2w1S1JVUnl6?=
- =?utf-8?B?MmlzOUluTk9DdjZWOWNrMlNDKzB5T0hpTi9OaU5JdmJBeFZtajlOckgvbVNw?=
- =?utf-8?Q?82bC0Rk53kj/FTbWLA4Sy2uhi?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ea3bd95-e20f-4b45-263c-08dd96fac83b
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6043.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2025 17:30:00.5698
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yXlSg1fIMcA04p5d9JPsy2kr8/ENKw+5PuTvYWzDxYzkHIims7b48o/YmBEaboEptY17MkrjBDs3H8/osA6bqQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5958
+Content-Transfer-Encoding: 8bit
 
-Jason, Nicolin, Kevin,
+From: Rob Clark <robdclark@chromium.org>
 
+Conversion to DRM GPU VA Manager[1], and adding support for Vulkan Sparse
+Memory[2] in the form of:
 
-On 5/15/2025 9:36 PM, Jason Gunthorpe wrote:
-> On Thu, May 08, 2025 at 08:02:32PM -0700, Nicolin Chen wrote:
->> +/**
->> + * struct iommu_hw_queue_alloc - ioctl(IOMMU_HW_QUEUE_ALLOC)
->> + * @size: sizeof(struct iommu_hw_queue_alloc)
->> + * @flags: Must be 0
->> + * @viommu_id: Virtual IOMMU ID to associate the HW queue with
->> + * @type: One of enum iommu_hw_queue_type
->> + * @index: The logical index to the HW queue per virtual IOMMU for a multi-queue
->> + *         model
->> + * @out_hw_queue_id: The ID of the new HW queue
->> + * @base_addr: Base address of the queue memory in guest physical address space
->> + * @length: Length of the queue memory in the guest physical address space
->> + *
->> + * Allocate a HW queue object for a vIOMMU-specific HW-accelerated queue, which
->> + * allows HW to access a guest queue memory described by @base_addr and @length.
->> + * Upon success, the underlying physical pages of the guest queue memory will be
->> + * pinned to prevent VMM from unmapping them in the IOAS until the HW queue gets
->> + * destroyed.
-> 
-> Do we have way to make the pinning optional?
-> 
-> As I understand AMD's system the iommu HW itself translates the
-> base_addr through the S2 page table automatically, so it doesn't need
-> pinned memory and physical addresses but just the IOVA.
+1. A new VM_BIND submitqueue type for executing VM MSM_SUBMIT_BO_OP_MAP/
+   MAP_NULL/UNMAP commands
 
-Correct. HW will translate GPA -> SPA automatically using below information.
+2. A new VM_BIND ioctl to allow submitting batches of one or more
+   MAP/MAP_NULL/UNMAP commands to a VM_BIND submitqueue
 
-AMD IOMMU need special device ID to setup with  GPA -> SPA mapping per VM.
-and its programmed in VF Control BAR (VFCntlMMIO Offset {16’b[GuestID],
-6’b01_0000} Guest Miscellaneous Control Register). IOMMU HW will use this
-address for GPA to SPA translation for buffers like command buffer.
+I did not implement support for synchronous VM_BIND commands.  Since
+userspace could just immediately wait for the `SUBMIT` to complete, I don't
+think we need this extra complexity in the kernel.  Synchronous/immediate
+VM_BIND operations could be implemented with a 2nd VM_BIND submitqueue.
 
-So HW will use Base address (GPA), head/tail pointer to get the offset from
-Base. Then it will use GPA -> SPA translation.
+The corresponding mesa MR: https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/32533
 
+Changes in v5:
+- Improved drm/sched enqueue_credit comments, and better define the
+  return from drm_sched_entity_push_job()
+- Improve DRM_GPUVM_VA_WEAK_REF comments, and additional WARN_ON()s to
+  make it clear that some of the gpuvm functionality is not available
+  in this mode.
+- Link to v4: https://lore.kernel.org/all/20250514175527.42488-1-robdclark@gmail.com/
 
-> 
-> Perhaps for this reason the pinning should be done with a function
-> call from the driver?
+Changes in v4:
+- Various locking/etc fixes
+- Optimize the pgtable preallocation.  If userspace sorts the VM_BIND ops
+  then the kernel detects ops that fall into the same 2MB last level PTD
+  to avoid duplicate page preallocation.
+- Add way to throttle pushing jobs to the scheduler, to cap the amount of
+  potentially temporary prealloc'd pgtable pages.
+- Add vm_log to devcoredump for debugging.  If the vm_log_shift module
+  param is set, keep a log of the last 1<<vm_log_shift VM updates for
+  easier debugging of faults/crashes.
+- Link to v3: https://lore.kernel.org/all/20250428205619.227835-1-robdclark@gmail.com/
 
-We still need to make sure memory allocated for page is present in memory so
-that IOMMU HW can access it.
+Changes in v3:
+- Switched to seperate VM_BIND ioctl.  This makes the UABI a bit
+  cleaner, but OTOH the userspace code was cleaner when the end result
+  of either type of VkQueue lead to the same ioctl.  So I'm a bit on
+  the fence.
+- Switched to doing the gpuvm bookkeeping synchronously, and only
+  deferring the pgtable updates.  This avoids needing to hold any resv
+  locks in the fence signaling path, resolving the last shrinker related
+  lockdep complaints.  OTOH it means userspace can trigger invalid
+  pgtable updates with multiple VM_BIND queues.  In this case, we ensure
+  that unmaps happen completely (to prevent userspace from using this to
+  access free'd pages), mark the context as unusable, and move on with
+  life.
+- Link to v2: https://lore.kernel.org/all/20250319145425.51935-1-robdclark@gmail.com/
 
-Pinning at the time of guest boot is enough here -OR- do we need to increase
-reference in queue_alloc() path ?
+Changes in v2:
+- Dropped Bibek Kumar Patro's arm-smmu patches[3], which have since been
+  merged.
+- Pre-allocate all the things, and drop HACK patch which disabled shrinker.
+  This includes ensuring that vm_bo objects are allocated up front, pre-
+  allocating VMA objects, and pre-allocating pages used for pgtable updates.
+  The latter utilizes io_pgtable_cfg callbacks for pgtable alloc/free, that
+  were initially added for panthor. 
+- Add back support for BO dumping for devcoredump.
+- Link to v1 (RFC): https://lore.kernel.org/dri-devel/20241207161651.410556-1-robdclark@gmail.com/T/#t
 
--Vasant
+[1] https://www.kernel.org/doc/html/next/gpu/drm-mm.html#drm-gpuvm
+[2] https://docs.vulkan.org/spec/latest/chapters/sparsemem.html
+[3] https://patchwork.kernel.org/project/linux-arm-kernel/list/?series=909700
 
+Rob Clark (40):
+  drm/gpuvm: Don't require obj lock in destructor path
+  drm/gpuvm: Allow VAs to hold soft reference to BOs
+  drm/gem: Add ww_acquire_ctx support to drm_gem_lru_scan()
+  drm/sched: Add enqueue credit limit
+  iommu/io-pgtable-arm: Add quirk to quiet WARN_ON()
+  drm/msm: Rename msm_file_private -> msm_context
+  drm/msm: Improve msm_context comments
+  drm/msm: Rename msm_gem_address_space -> msm_gem_vm
+  drm/msm: Remove vram carveout support
+  drm/msm: Collapse vma allocation and initialization
+  drm/msm: Collapse vma close and delete
+  drm/msm: Don't close VMAs on purge
+  drm/msm: drm_gpuvm conversion
+  drm/msm: Convert vm locking
+  drm/msm: Use drm_gpuvm types more
+  drm/msm: Split out helper to get iommu prot flags
+  drm/msm: Add mmu support for non-zero offset
+  drm/msm: Add PRR support
+  drm/msm: Rename msm_gem_vma_purge() -> _unmap()
+  drm/msm: Drop queued submits on lastclose()
+  drm/msm: Lazily create context VM
+  drm/msm: Add opt-in for VM_BIND
+  drm/msm: Mark VM as unusable on GPU hangs
+  drm/msm: Add _NO_SHARE flag
+  drm/msm: Crashdump prep for sparse mappings
+  drm/msm: rd dumping prep for sparse mappings
+  drm/msm: Crashdec support for sparse
+  drm/msm: rd dumping support for sparse
+  drm/msm: Extract out syncobj helpers
+  drm/msm: Use DMA_RESV_USAGE_BOOKKEEP/KERNEL
+  drm/msm: Add VM_BIND submitqueue
+  drm/msm: Support IO_PGTABLE_QUIRK_NO_WARN_ON
+  drm/msm: Support pgtable preallocation
+  drm/msm: Split out map/unmap ops
+  drm/msm: Add VM_BIND ioctl
+  drm/msm: Add VM logging for VM_BIND updates
+  drm/msm: Add VMA unmap reason
+  drm/msm: Add mmu prealloc tracepoint
+  drm/msm: use trylock for debugfs
+  drm/msm: Bump UAPI version
+
+ drivers/gpu/drm/drm_gem.c                     |   14 +-
+ drivers/gpu/drm/drm_gpuvm.c                   |   38 +-
+ drivers/gpu/drm/msm/Kconfig                   |    1 +
+ drivers/gpu/drm/msm/Makefile                  |    1 +
+ drivers/gpu/drm/msm/adreno/a2xx_gpu.c         |   25 +-
+ drivers/gpu/drm/msm/adreno/a2xx_gpummu.c      |    5 +-
+ drivers/gpu/drm/msm/adreno/a3xx_gpu.c         |   17 +-
+ drivers/gpu/drm/msm/adreno/a4xx_gpu.c         |   17 +-
+ drivers/gpu/drm/msm/adreno/a5xx_debugfs.c     |    4 +-
+ drivers/gpu/drm/msm/adreno/a5xx_gpu.c         |   22 +-
+ drivers/gpu/drm/msm/adreno/a5xx_power.c       |    2 +-
+ drivers/gpu/drm/msm/adreno/a5xx_preempt.c     |   10 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.c         |   32 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.h         |    2 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c         |   49 +-
+ drivers/gpu/drm/msm/adreno/a6xx_gpu_state.c   |    6 +-
+ drivers/gpu/drm/msm/adreno/a6xx_preempt.c     |   10 +-
+ drivers/gpu/drm/msm/adreno/adreno_device.c    |    4 -
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c       |   99 +-
+ drivers/gpu/drm/msm/adreno/adreno_gpu.h       |   23 +-
+ .../drm/msm/disp/dpu1/dpu_encoder_phys_wb.c   |   14 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_formats.c   |   18 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_formats.h   |    2 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c       |   18 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_plane.c     |   14 +-
+ drivers/gpu/drm/msm/disp/dpu1/dpu_plane.h     |    4 +-
+ drivers/gpu/drm/msm/disp/mdp4/mdp4_crtc.c     |    6 +-
+ drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c      |   28 +-
+ drivers/gpu/drm/msm/disp/mdp4/mdp4_plane.c    |   12 +-
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_crtc.c     |    4 +-
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c      |   19 +-
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_plane.c    |   12 +-
+ drivers/gpu/drm/msm/dsi/dsi_host.c            |   14 +-
+ drivers/gpu/drm/msm/msm_drv.c                 |  184 +--
+ drivers/gpu/drm/msm/msm_drv.h                 |   35 +-
+ drivers/gpu/drm/msm/msm_fb.c                  |   18 +-
+ drivers/gpu/drm/msm/msm_fbdev.c               |    2 +-
+ drivers/gpu/drm/msm/msm_gem.c                 |  494 +++---
+ drivers/gpu/drm/msm/msm_gem.h                 |  247 ++-
+ drivers/gpu/drm/msm/msm_gem_prime.c           |   15 +
+ drivers/gpu/drm/msm/msm_gem_shrinker.c        |  104 +-
+ drivers/gpu/drm/msm/msm_gem_submit.c          |  295 ++--
+ drivers/gpu/drm/msm/msm_gem_vma.c             | 1471 ++++++++++++++++-
+ drivers/gpu/drm/msm/msm_gpu.c                 |  211 ++-
+ drivers/gpu/drm/msm/msm_gpu.h                 |  144 +-
+ drivers/gpu/drm/msm/msm_gpu_trace.h           |   14 +
+ drivers/gpu/drm/msm/msm_iommu.c               |  302 +++-
+ drivers/gpu/drm/msm/msm_kms.c                 |   18 +-
+ drivers/gpu/drm/msm/msm_kms.h                 |    2 +-
+ drivers/gpu/drm/msm/msm_mmu.h                 |   38 +-
+ drivers/gpu/drm/msm/msm_rd.c                  |   62 +-
+ drivers/gpu/drm/msm/msm_ringbuffer.c          |   10 +-
+ drivers/gpu/drm/msm/msm_submitqueue.c         |   96 +-
+ drivers/gpu/drm/msm/msm_syncobj.c             |  172 ++
+ drivers/gpu/drm/msm/msm_syncobj.h             |   37 +
+ drivers/gpu/drm/scheduler/sched_entity.c      |   19 +-
+ drivers/gpu/drm/scheduler/sched_main.c        |    3 +
+ drivers/iommu/io-pgtable-arm.c                |   27 +-
+ include/drm/drm_gem.h                         |   10 +-
+ include/drm/drm_gpuvm.h                       |   19 +-
+ include/drm/gpu_scheduler.h                   |   24 +-
+ include/linux/io-pgtable.h                    |    8 +
+ include/uapi/drm/msm_drm.h                    |  149 +-
+ 63 files changed, 3526 insertions(+), 1250 deletions(-)
+ create mode 100644 drivers/gpu/drm/msm/msm_syncobj.c
+ create mode 100644 drivers/gpu/drm/msm/msm_syncobj.h
+
+-- 
+2.49.0
 
