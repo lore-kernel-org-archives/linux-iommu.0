@@ -1,58 +1,59 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EB4BEACE
-	for <iommu@lists.linux.dev>; Mon, 19 May 2025 21:45:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 593142116F2
+	for <iommu@lists.linux.dev>; Mon, 19 May 2025 21:51:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747691147; cv=none; b=hlrNlyDI6VbwN1n7iuIuEJeXFX1KGGQa9VjqsIPpWA+TnODa7p2r+RrgKAx74VDG2OGcAeDAuahNBtFDDUVRbsel6V9SoO72t1Ubx4pKAz8LUGTxjj7sDh8gmQ2tns6hNX+EvLyZ6i5X4uwUlKdefBBlFwkCFPsqBy6jYjl7EVA=
+	t=1747691496; cv=none; b=WAAZ49TWh+mXOo1CBhq6rfDxl760O8pUAAGLyttYJae/uauC9dy9lYXJSn4F1rg4MHHivEd5+zY6SBxKQeiEytHrH6R8rr+qxlnmS8nSd1UXCIb+P9N7hwQUuVVxrtplabwVGbtSO9/Py8ryfpm1pputIlN2rHUbi6k+dT9DToU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747691147; c=relaxed/simple;
-	bh=dBmQ7ZVzsrxRsdMLl6QUAymnlQw5BhCQ/Hfi6mcSQGA=;
+	s=arc-20240116; t=1747691496; c=relaxed/simple;
+	bh=D+gc71TQ6arDdz5CgOztRV+6NsleF2QKzmZFFkhPPvA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Hw8eLZjLW+DwJS6l3ZAicPpB/Uyq6VLB2kGUvn0glmIMrQm7mexckSuZ5zllZ9u597O/U0kBOrwk6bs3b+q0EjwYXo/Ya+ueEiUag1Wb647d0Pp2GW2xHcXkDWIy/pzgEqyNdr4GpwacgjCI+uWzG0BRsEjJe4LfizZV2SiEYDw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gwNL3n2+; arc=none smtp.client-ip=209.85.218.52
+	 To:Cc:Content-Type; b=sJsJ7EQK8TnR5yaPAJB1WfQnbTKQ882hWDN7bKo5brCoaVGgVi3Dzie1mVb0io7Qyj2FhZXfgfD9ulv4M7AzUTsELyc7RyZ5k68KkA6U8jrT8v1110aQEDnbnEIg9vuvLrjMMPdNDiOaTT7I4u40Hs9edfMrWvEqI8Vq2ADGfv4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NoHPojb8; arc=none smtp.client-ip=209.85.166.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gwNL3n2+"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-ad560321ed9so250607766b.1
-        for <iommu@lists.linux.dev>; Mon, 19 May 2025 14:45:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NoHPojb8"
+Received: by mail-io1-f45.google.com with SMTP id ca18e2360f4ac-85e46f5c50fso465542439f.3
+        for <iommu@lists.linux.dev>; Mon, 19 May 2025 14:51:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1747691144; x=1748295944; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1747691494; x=1748296294; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lgwrUkrkaZb0leOIfftTpt2Z9U+8ge4TCRzTvr8HRfg=;
-        b=gwNL3n2+zCOvKsRW0/jUjRSEGOOYwh7I6RBgCOY1Dcbl2neDMWFt9gOH04weQhPRUB
-         73UiSyuY228AOXXwEo5t43JD1oJ401TT6KUTh5aiMAtpjGk1H4ZGFjilB7BoOvd/tULc
-         W6FZB+RuxVyj3Os2gauwHvG6EU1MJid2xn3+veFzqP/vVj8rYnDd9bnDNMcPZgaAxQ8E
-         77H4LgXsoIm/XPBKfadKtAm7TpfpRGVGj2G0HLuVagKJW1lLYQjqQ+Oai6R28JkoLAex
-         g+VGyLnQg54zgJdXkDsq/OYKRe3GkcvjVF0QSrYw6QI/aeaSe2UT04NSOLQAT+jiAbL9
-         xoAg==
+        bh=xPEYHOAa9cIet4iZua5k6szVG47y0INiUwKTR9frvBc=;
+        b=NoHPojb80SB5plIhJOiuinBKJQvGGF4Yu2gTPu/yPvzrEel/lYgP9ijSAC+4lQNagi
+         BIoJdgjmD9ZIntEDVe1Wonj8cX95gd7L4AOG/1EKns3msPVolJegit9CAZOC5rFHXapW
+         eB3A6M7RUhL/W81gMLpbLYnyiNFNKqb6Tsgv5WgAmAZXEbRegy6ZhjugsgrzRFLp5eb5
+         ZzUxa0IbXCKoly5Pbr/RA86D3x7BWHg0esBfV8nga2UosrpVkZvpw+pGmTpD/pxWeTRT
+         tYhOWYmkp8/SZyIEPQJ8YjaH84Db9S4hAcnXpBOYVlpCPdFfZRS2rSF7j2t/TpUJzVeh
+         a8EQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747691144; x=1748295944;
+        d=1e100.net; s=20230601; t=1747691494; x=1748296294;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=lgwrUkrkaZb0leOIfftTpt2Z9U+8ge4TCRzTvr8HRfg=;
-        b=Y1sMSrIK0HqTCOgT9uiqZS9fJF+T8uS+3dJ0F5Qsc8/znm99vILiDwfPAWsI/El8cz
-         aTd63Pj74OjVjqm/TOS1RzV6u74hlXs241h+yahwmsHz22AWe34jGcVYdfugcv5yyK9L
-         GnpAx0lJETnfs+6s6eSEDlV1t6sbMUlPrhRkI/O3B2iHAcMpJdDrJb0OkhF9cNJA56Rk
-         +76LQ9MlbuJyWgHUkJlu+zNESo9yG2xHCd/DdTyuBwuOVRExlRPJxBpn5iVQ/NCnJuu8
-         U+3nD17DIZ1Z+i/+HE/YeGbSQ0C8E3mhmULC89SJGn/zOnCaw1EMpngLSyr6z2pvg21l
-         UATQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVHKlZYWwoJXeIarkBJF+A6886rL9Kj45LJcb0moZSpHCF6j4y344iVL91BJL+OofuS5vqX5g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxF7LaFkyOjOs7mBc39ieA7qz7L76n7Glk+e3SjuC++HcW8yG9e
-	lUb1WJ5cOmffCFWIansEHUfQlJH1L8O+LVnFk8zwaVZ4qUOEsZor3GHVdUe/cXaw+gktzOyS5x5
-	jBmpA873v73OaIVK06lYFNPdoseq2Mig=
-X-Gm-Gg: ASbGncu0ZlhHANhqiiUs7y75CadU4ECTqRRPAQyAZlWox4gdCFbMkPr6cNXcMRWeyoW
-	mFlSiYgzQap4iS6E4ozJQaykxDz++oDbDr/DM/0TShzIUcKIPIEpSQp/Y+BIetEDv28bR+EEXlQ
-	ZVin8P7pjIpzweGWeCNn8JVRjB3qCUhOY=
-X-Google-Smtp-Source: AGHT+IGi6092BG38fgC8XNqiOOL5230Qmrls9fUA/vdLAMqijhah9L16wARI5KlQBQHVpTG9u4i5MttpQIJ/uhwrqx8=
-X-Received: by 2002:a17:907:3342:b0:ad5:465d:8855 with SMTP id
- a640c23a62f3a-ad5465d9f5amr870659766b.36.1747691143715; Mon, 19 May 2025
- 14:45:43 -0700 (PDT)
+        bh=xPEYHOAa9cIet4iZua5k6szVG47y0INiUwKTR9frvBc=;
+        b=Wa3DxYaBJzc89QteV8uOxMIkyjugl5qJPPfnNmLCCpm+wEzxtwGoI8lGFq/ePb2zRz
+         Nix4cdyUtEm4CeLvj77Sfp6Q7gG16L5+9nAqDYMbRRzY+icCVZgDKzEZrNUmHO9/sQ78
+         ePrkvZI7IMbpbYhZk+zPIpXi8fdLyNNrUyndhhQuhKEo3JPb0RQ0RkU/wP8uQGoCOySN
+         TThs8350ZfymQmyknWfGV9p9wGZQ3r1wAwTdAG4vtSW0dDrn4wzK0tdazyST4nrGrO8/
+         25Lq9TDJsu9vj5UNTygULQjEIAHfuJxjgVaYdh8FrIBRwOo/X/Lk7gaBYrXTf281elwl
+         +z8g==
+X-Forwarded-Encrypted: i=1; AJvYcCXGshFclGCb05HB07K5oVbf8U5yXzDgPmQf75KBUNHwvYRntBgauVcJt/C6r3E0rqp//G5Zeg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzqmuI5yFFSA/zSOtdTmbcRJCZWMj20MqE1n5XZOlwCRHIdDvzK
+	q8z9JvY4+Vpd9YVFge9TPyDxaOeAm5/iR5qT/QcyfG3H5T4g7njfawq9NmwYY1Lg/mx7qS2fnG6
+	C54P/ik2f3n3iCvHJM8IZxZ7Kq1gzZ14=
+X-Gm-Gg: ASbGncvxmwCNMEr9dFbuYHHSTO/sKRNsg3JWSStse1F9An7pkjN6Rmm46dHTePUR8yt
+	y888q4mtEkNJa7Eg5Ynb9uHZkAJPzGwrofC2DO/+6H98rKZce5AqZ2lwJtnj4ZV+aXPmr6Yzemr
+	kG6f9SPRQ/N5XUPb3zdrSvnmP/cEhlVEqKkCVdTI1xb590iiPgIUEYlp6Jdc0ybWI2zRcma5s7B
+	uXh8w==
+X-Google-Smtp-Source: AGHT+IH7GskHnBBBnN3dCWe5+4wA68V6kn1SwK+BKY5czWCCWv4gMQRXKFVR4ovK9isr0sjORC+Rjt5sK8DipW7Cf4U=
+X-Received: by 2002:a05:6602:6cce:b0:86a:93c:f5fb with SMTP id
+ ca18e2360f4ac-86a231901efmr1968076439f.1.1747691494249; Mon, 19 May 2025
+ 14:51:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,14 +61,14 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <20250519175348.11924-1-robdclark@gmail.com> <CAPM=9tw183FMOT8uUacqegnb5CREAyr8KbXxO2mCuFK-SmUB1A@mail.gmail.com>
- <CAF6AEGuDTGVq7sw4oVuHb+cOE_DuKbEPO956oddVcsV2boieoQ@mail.gmail.com>
-In-Reply-To: <CAF6AEGuDTGVq7sw4oVuHb+cOE_DuKbEPO956oddVcsV2boieoQ@mail.gmail.com>
-From: Dave Airlie <airlied@gmail.com>
-Date: Tue, 20 May 2025 07:45:31 +1000
-X-Gm-Features: AX0GCFtlQu6thz2-DodB9_hvAiBP83MybA9d3wKL9euWSYgx05ywhuPOmKRAvxs
-Message-ID: <CAPM=9twuSfvQ0_NUdRmp0_VtTE_Br7GAysRw+XOoX7BTxUBGYQ@mail.gmail.com>
+ <CAF6AEGuDTGVq7sw4oVuHb+cOE_DuKbEPO956oddVcsV2boieoQ@mail.gmail.com> <CAPM=9twuSfvQ0_NUdRmp0_VtTE_Br7GAysRw+XOoX7BTxUBGYQ@mail.gmail.com>
+In-Reply-To: <CAPM=9twuSfvQ0_NUdRmp0_VtTE_Br7GAysRw+XOoX7BTxUBGYQ@mail.gmail.com>
+From: Rob Clark <robdclark@gmail.com>
+Date: Mon, 19 May 2025 14:51:20 -0700
+X-Gm-Features: AX0GCFvmTvCANqDHHj2TPhXNkmFs3wC8dEXWRCEtBjip_pfclRDeM3uxGEixFZM
+Message-ID: <CAF6AEGs1hNGMMBjZuXoGjxF+JA1AHY_wx=gmqK4z=zShYoR6=w@mail.gmail.com>
 Subject: Re: [Linaro-mm-sig] [PATCH v5 00/40] drm/msm: sparse / "VM_BIND" support
-To: Rob Clark <robdclark@gmail.com>
+To: Dave Airlie <airlied@gmail.com>
 Cc: dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
 	linux-arm-msm@vger.kernel.org, Connor Abbott <cwabbott0@gmail.com>, 
 	Rob Clark <robdclark@chromium.org>, Abhinav Kumar <quic_abhinavk@quicinc.com>, 
@@ -90,57 +91,65 @@ Cc: dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, 20 May 2025 at 07:25, Rob Clark <robdclark@gmail.com> wrote:
+On Mon, May 19, 2025 at 2:45=E2=80=AFPM Dave Airlie <airlied@gmail.com> wro=
+te:
 >
-> On Mon, May 19, 2025 at 2:15=E2=80=AFPM Dave Airlie <airlied@gmail.com> w=
-rote:
+> On Tue, 20 May 2025 at 07:25, Rob Clark <robdclark@gmail.com> wrote:
 > >
-> > On Tue, 20 May 2025 at 03:54, Rob Clark <robdclark@gmail.com> wrote:
+> > On Mon, May 19, 2025 at 2:15=E2=80=AFPM Dave Airlie <airlied@gmail.com>=
+ wrote:
 > > >
-> > > From: Rob Clark <robdclark@chromium.org>
+> > > On Tue, 20 May 2025 at 03:54, Rob Clark <robdclark@gmail.com> wrote:
+> > > >
+> > > > From: Rob Clark <robdclark@chromium.org>
+> > > >
+> > > > Conversion to DRM GPU VA Manager[1], and adding support for Vulkan =
+Sparse
+> > > > Memory[2] in the form of:
+> > > >
+> > > > 1. A new VM_BIND submitqueue type for executing VM MSM_SUBMIT_BO_OP=
+_MAP/
+> > > >    MAP_NULL/UNMAP commands
+> > > >
+> > > > 2. A new VM_BIND ioctl to allow submitting batches of one or more
+> > > >    MAP/MAP_NULL/UNMAP commands to a VM_BIND submitqueue
+> > > >
+> > > > I did not implement support for synchronous VM_BIND commands.  Sinc=
+e
+> > > > userspace could just immediately wait for the `SUBMIT` to complete,=
+ I don't
+> > > > think we need this extra complexity in the kernel.  Synchronous/imm=
+ediate
+> > > > VM_BIND operations could be implemented with a 2nd VM_BIND submitqu=
+eue.
 > > >
-> > > Conversion to DRM GPU VA Manager[1], and adding support for Vulkan Sp=
-arse
-> > > Memory[2] in the form of:
-> > >
-> > > 1. A new VM_BIND submitqueue type for executing VM MSM_SUBMIT_BO_OP_M=
-AP/
-> > >    MAP_NULL/UNMAP commands
-> > >
-> > > 2. A new VM_BIND ioctl to allow submitting batches of one or more
-> > >    MAP/MAP_NULL/UNMAP commands to a VM_BIND submitqueue
-> > >
-> > > I did not implement support for synchronous VM_BIND commands.  Since
-> > > userspace could just immediately wait for the `SUBMIT` to complete, I=
- don't
-> > > think we need this extra complexity in the kernel.  Synchronous/immed=
-iate
-> > > VM_BIND operations could be implemented with a 2nd VM_BIND submitqueu=
-e.
+> > > This seems suboptimal for Vulkan userspaces. non-sparse binds are all
+> > > synchronous, you are adding an extra ioctl to wait, or do you manage
+> > > these via a different mechanism?
 > >
-> > This seems suboptimal for Vulkan userspaces. non-sparse binds are all
-> > synchronous, you are adding an extra ioctl to wait, or do you manage
-> > these via a different mechanism?
+> > Normally it's just an extra in-fence for the SUBMIT ioctl to ensure
+> > the binds happen before cmd execution
+> >
+> > When it comes to UAPI, it's easier to add something later, than to
+> > take something away, so I don't see a problem adding synchronous binds
+> > later if that proves to be needed.  But I don't think it is.
 >
-> Normally it's just an extra in-fence for the SUBMIT ioctl to ensure
-> the binds happen before cmd execution
+> I'm not 100% sure that is conformant behaviour to the vulkan spec,
 >
-> When it comes to UAPI, it's easier to add something later, than to
-> take something away, so I don't see a problem adding synchronous binds
-> later if that proves to be needed.  But I don't think it is.
+> Two questions come to mind:
+> 1. where is this out fence stored? vulkan being explicit with no
+> guarantee of threads doing things, seems like you'd need to use a lock
+> in the vulkan driver to store it, esp if multiple threads bind memory.
 
-I'm not 100% sure that is conformant behaviour to the vulkan spec,
+turnip is protected dev->vm_bind_fence_fd with a u_rwlock
 
-Two questions come to mind:
-1. where is this out fence stored? vulkan being explicit with no
-guarantee of threads doing things, seems like you'd need to use a lock
-in the vulkan driver to store it, esp if multiple threads bind memory.
+> 2. If it's fine to lazy bind on the hw side, do you also handle the
+> case where something is bound and immediately freed, where does the
+> fence go then, do you wait for the fence before destroying things?
 
-2. If it's fine to lazy bind on the hw side, do you also handle the
-case where something is bound and immediately freed, where does the
-fence go then, do you wait for the fence before destroying things?
+right no turnip is just relying on the UNMAP/unbind going thru the
+same queue.. but I guess it could also use vm_bind_fence_fd as an
+in-fence.
 
-Dave.
-
-
-Dave.
+BR,
+-R
