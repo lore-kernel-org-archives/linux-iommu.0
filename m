@@ -1,108 +1,104 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45F5425A2D7
-	for <iommu@lists.linux.dev>; Tue, 20 May 2025 15:39:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A16A92571D7;
+	Tue, 20 May 2025 15:41:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747755591; cv=none; b=rPTPruIOBozcB7eAW13wYYmp6wTmwNi5wH1tRYcUD1VOeNLsq/jmlx2Rux2rsTuwYycJ8eY1LMoTKGV1kVjAJcxY5mDEqQBRNEVEPQYbrQA1slxmDY5RsbHicOUZQo1wgQWsHDUMG240AnjS7F2hTMF6G6tjljfTWKD4meiphNQ=
+	t=1747755717; cv=none; b=S7RzSdtTyD9TmWNL0WQmGEtJ/i8OU+XJu3hQ3DJXNyZ6/HgE/WYdackFFH3Rv2j+lGakBlCWGn6hngskAnVK+jccBoT2TqEdWbX5oM1amiZphy/c4kD6TQvNtdWYUuIRWHE6eYHjctbB4eNGuHYdcfc0gEcSEcQUdkXlCB3kd3U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747755591; c=relaxed/simple;
-	bh=5qaDz5va7V/bOIPJZLz/3rD4zx13j2tjLgu6z+mJZvk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CDLGGtNMAEasXPLuCb40V8yTEoBhj9LQcOLbD3v6YKoQXda9C00tpYgTYTKMyZFMw8T5N5R6O503llCDVDO6s4HO9GmlharuFWfPm/O6javQjTaiSSiL2DwEpLVHEwpvWh3v8d4BXZajxqgfIg6mUK0HFY6ge627NVyiTRoAVNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=g5QqVXuB; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1747755717; c=relaxed/simple;
+	bh=iM0kAw4/nWyGDWNAeRKHD+BaGigBrgJDfwS7US+j1/o=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=cwOfSrLaABz4gvlfvcSd/qxLdBArXtwkc9iZvrmGNAaWoW5R/hIBWUJVY+km+4n4R3foK3a1mR3W5/vMtWxlOSh6Jqum4C2Az52TqzEp+FK32MWx/MaVtFhIeHv7PjM5R80brQ64XlMOJCOPHQw8Ez9QJEsHsNLPnMwWCNy86Og=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t27D2+vi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="g5QqVXuB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1747755589;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=GJ0rFA5ozhMdO1IEpBbuVAQP+phCnmZbFuLhRhdhX4A=;
-	b=g5QqVXuBWBtlgeWAmKN8VFW70sVZdwrChT7ExQMbbiIFhebWZoD9WJOYyX3sMDnWDy8YLV
-	WmHyP+xChnK7fd1w3RSmNB97wmxNFW1Z/+qv9Y6HduL5aocKQFTuTR2diPOJ9DF/HxP8pY
-	JEWeYtvlcsVY59At4diagQ0zXH8i2YA=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-425-o0A3TjjSNfWVJOHawoivFA-1; Tue, 20 May 2025 11:39:48 -0400
-X-MC-Unique: o0A3TjjSNfWVJOHawoivFA-1
-X-Mimecast-MFC-AGG-ID: o0A3TjjSNfWVJOHawoivFA_1747755587
-Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-85b3e93e052so102185839f.3
-        for <iommu@lists.linux.dev>; Tue, 20 May 2025 08:39:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747755586; x=1748360386;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GJ0rFA5ozhMdO1IEpBbuVAQP+phCnmZbFuLhRhdhX4A=;
-        b=OlJio5MO2Lxf9L7e9IXgu0m5vtMO1FkyKLQod59eAckQQGLmtsQeWSbOR++57FGcdM
-         UIXZLewEfmusMRTpOUIhLmutC01D76DETAozO2zf9Im44XoRsmrxEevQqHf2Iliy08ML
-         cb4O8g8YrA7qWhZPE2+A0jkuSbcJLTdbNNqPQf5XRtDnPByc4Qe4A2Y4Dp4EO9dGspje
-         jSu6gMyNXarYVDs7BsjRQvwMnCjnLR2hLrzH0mRf1TZiVSMi+sxjmtkejOasuPz7QVaD
-         mJBiZ7bz0MfKituvsuYDMEC8d8/FQkx65CJyRO04wW0Nj5Wdr8nHVOQDunM4y78q3iI1
-         DQvg==
-X-Gm-Message-State: AOJu0Yx1sYbHlaF7nI87wGXhlXhUpKz5WKL92VKLdsHZgYuWJKsTpeoQ
-	OfNh0tKIQnHLEk9giJA/AwIS6hzKVjBLVjxtXJ/DDS4516nKacuvIJwiiOviUiNx03SlRaVTbuK
-	x3UUhOFICrIu2hEk9GfIu4VYAa1EaS4qr4uStoN8VF/k4gaYxjYNoec696gVMmciU
-X-Gm-Gg: ASbGncs3qYJoPpcCDEEhXKmU3VVn5K74e54NJCwAvR1Xut4JX3bzdV5BtfkEDg79A5A
-	05oj6fZ0YGIkFuj4L1a34DSwUndRYLnDCXLIs/hOPidsU+apD2rNDlajNRpFsfg9nU/wWAinUvU
-	xfjwQZcAgh9sTUtiDin0O5HJgc0rRFsl3kgw4XnGwK5Z7kC+lb4hyLmvdO2KpjvUsvxcTSEvPJb
-	dGVcbuApJIkHIu87ONTxsfJO6O7kc/5tg7cytKv+Gb19lrEWKGftj58ro3/NtUo5IkRvPcySEKO
-	5D5qozG1rzXASJU=
-X-Received: by 2002:a05:6e02:4515:20b0:3dc:757b:3fa4 with SMTP id e9e14a558f8ab-3dc757b42a2mr12610645ab.7.1747755586652;
-        Tue, 20 May 2025 08:39:46 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IG3VbHHu3m+p8uONX+1ieaFf8GcikTyFLsLmu7hXitJ8VoWNtERX8CvL4Yw5GgMZaX+kUid8A==
-X-Received: by 2002:a05:6e02:4515:20b0:3dc:757b:3fa4 with SMTP id e9e14a558f8ab-3dc757b42a2mr12610565ab.7.1747755586291;
-        Tue, 20 May 2025 08:39:46 -0700 (PDT)
-Received: from redhat.com ([38.15.36.11])
-        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4fbcc3b1a96sm2298549173.51.2025.05.20.08.39.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 May 2025 08:39:45 -0700 (PDT)
-Date: Tue, 20 May 2025 09:39:43 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, kvm@vger.kernel.org, patches@lists.linux.dev
-Subject: Re: [PATCH v2] vfio/type1: Remove Fine Grained Superpages detection
-Message-ID: <20250520093943.05bbe2eb.alex.williamson@redhat.com>
-In-Reply-To: <0-v2-97fa1da8d983+412-vfio_fgsp_jgg@nvidia.com>
-References: <0-v2-97fa1da8d983+412-vfio_fgsp_jgg@nvidia.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t27D2+vi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28519C4CEE9;
+	Tue, 20 May 2025 15:41:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1747755717;
+	bh=iM0kAw4/nWyGDWNAeRKHD+BaGigBrgJDfwS7US+j1/o=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=t27D2+viqHtztdjdMHjpCAUF8Lu+Bh7vLVPgZNSS1odAFu1XXczgWH7kHbfpaBEGr
+	 HEgBUnBfyhAlQkRsvW0C1tYawmvIA2hhoWpcy/PRroqBUwvn/C+VhepxJ5F3DgVnk7
+	 1ZgMlfNhmBf5urqytVfLAomqHfodvYUYiRraCDn+hSn2x4zPupzSmDhaAXxKomruqa
+	 bI/OVbbtIx/+vBz5qyGqCRXiZmCcGflHovDOa/EhQt+4pZ1p8jYO/qh2UHJe8qMBk7
+	 mIG95JCsWo4nvdkFHHIHx9aLAvsD2D+vH5hbprSknGWT0DJ1oCdco1SCgGuSqjDRbz
+	 kdqVr+fGe9V7w==
+From: Will Deacon <will@kernel.org>
+To: dri-devel@lists.freedesktop.org,
+	Rob Clark <robdclark@gmail.com>
+Cc: catalin.marinas@arm.com,
+	kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	freedreno@lists.freedesktop.org,
+	linux-arm-msm@vger.kernel.org,
+	Connor Abbott <cwabbott0@gmail.com>,
+	Rob Clark <robdclark@chromium.org>,
+	Abhinav Kumar <quic_abhinavk@quicinc.com>,
+	=?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	=?UTF-8?q?Barnab=C3=A1s=20Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <ckoenig.leichtzumerken@gmail.com>,
+	Christopher Snowhill <chris@kode54.net>,
+	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+	Dmitry Baryshkov <lumag@kernel.org>,
+	Eugene Lepshy <fekz115@gmail.com>,
+	iommu@lists.linux.dev,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Jessica Zhang <quic_jesszhan@quicinc.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Jonathan Marek <jonathan@marek.ca>,
+	Jun Nie <jun.nie@linaro.org>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+	linaro-mm-sig@lists.linaro.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"Rob Herring (Arm)" <robh@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sean Paul <sean@poorly.run>
+Subject: Re: [PATCH v5 00/40] drm/msm: sparse / "VM_BIND" support
+Date: Tue, 20 May 2025 16:41:47 +0100
+Message-Id: <174774086363.2165484.11245120942986308301.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20250519175348.11924-1-robdclark@gmail.com>
+References: <20250519175348.11924-1-robdclark@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: 3Hmwi_LNhWzuCVM-sMrDTu_u0BamBWgK5oHQY7CAfGY_1747755587
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On Mon, 14 Apr 2025 10:46:39 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> VFIO is looking to enable an optimization where it can rely on a fast
-> unmap operation that returned the size of a larger IOPTE.
+On Mon, 19 May 2025 10:51:23 -0700, Rob Clark wrote:
+> Conversion to DRM GPU VA Manager[1], and adding support for Vulkan Sparse
+> Memory[2] in the form of:
 > 
-> Due to how the test was constructed this would only ever succeed on the
-> AMDv1 page table that supported an 8k contiguous size. Nothing else
-> supports this.
+> 1. A new VM_BIND submitqueue type for executing VM MSM_SUBMIT_BO_OP_MAP/
+>    MAP_NULL/UNMAP commands
 > 
-> Alex says the performance win was fairly minor, so lets remove this
-> code. Always use iommu_iova_to_phys() to extent contiguous pages.
+> 2. A new VM_BIND ioctl to allow submitting batches of one or more
+>    MAP/MAP_NULL/UNMAP commands to a VM_BIND submitqueue
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 49 +--------------------------------
->  1 file changed, 1 insertion(+), 48 deletions(-)
+> [...]
 
-Applied to vfio next branch for v6.16.  Thanks,
+Applied io-pgtable change to iommu (arm/smmu/updates), thanks!
 
-Alex
+[05/40] iommu/io-pgtable-arm: Add quirk to quiet WARN_ON()
+        https://git.kernel.org/iommu/c/3318f7b5cefb
 
+Cheers,
+-- 
+Will
+
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
