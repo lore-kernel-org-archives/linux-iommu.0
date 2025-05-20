@@ -1,66 +1,66 @@
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 167BD27AC30
-	for <iommu@lists.linux.dev>; Tue, 20 May 2025 19:09:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9541280A32
+	for <iommu@lists.linux.dev>; Tue, 20 May 2025 19:09:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747768145; cv=none; b=ortyFW2ODDXM9t8lo8P1Y9DmqenuShmmi0v/SIPM5myB2cACBNzjZwwWwy3XcjvP8f7I8r7XnuqN4YOJJYLgBZMf4fOmDZH8cqbO7I1me6hyaaaEDM10xAXYMDw65EwmhrVfpGnIcneBpJ9o9VIb3vAj1yuGVWHslGubH7vGHlY=
+	t=1747768147; cv=none; b=lxLjL2LZzkQuj2YHQh1XAJMu2n3HRd020WOW89HNgo2AfK2j4eiA1xxH5AvX2OzP7uXNVKYRqsFcdgnn0lG5tUKUBHurSGtoJNT1VZ8y7kptU6Y5nHxiY1Yu4hz6x4f4ks79k8jEsXoAhbdgR1aRYJUkk19AtXNiJ4T07zkTFa4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747768145; c=relaxed/simple;
-	bh=RnNUWR8apEx6WPWRc8HjEOtdMZqQUWqHrofPXnVy62Q=;
+	s=arc-20240116; t=1747768147; c=relaxed/simple;
+	bh=gk8DwE6MH3TUftDA43LAG4YX9fts1PWBfmK+nfds2g0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=MWd99MrBsqDlJA/x6Ve12BzfW50fI1w+0nKKEi2K3K9oi02hYqsZYFyU4JvW+q8lBjh+PZksLSCJSKiU5b6JyZG3ovi5xArAO3uq4YLicVyc6mDSxDv9P6n4p6ms2UxyQ1R5tOIBEuRiRF0xXv0zI9ExbRQPpJ/YSQkTRCBb5us=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GdtUVZ8N; arc=none smtp.client-ip=209.85.219.54
+	 In-Reply-To:To:Cc; b=f6zCVhFQ4q6N5Wg55TaCpo4nPli63LoIKHqR9r6RTlOeMeg7myzajxq5+S7nEW1DkERO5LFX/MeIWyNNFC2XkW9UTqnFM3Kg/z7aMKfkvUvDVvWEZTZOAOEvpRyTRPitsTH57mIQzshVsNIOSck5J87jrFeSzwMQTpcbZrgm5ps=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M/a8BfXU; arc=none smtp.client-ip=209.85.222.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GdtUVZ8N"
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-6f8af95ce87so8988296d6.3
-        for <iommu@lists.linux.dev>; Tue, 20 May 2025 12:09:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M/a8BfXU"
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7c964e8710eso40818885a.0
+        for <iommu@lists.linux.dev>; Tue, 20 May 2025 12:09:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1747768143; x=1748372943; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1747768145; x=1748372945; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=rlMnByBJdLmm3G9/G0GQ/d4DyVfZJhKLZ7MqYnU+doc=;
-        b=GdtUVZ8N49yUifKjfVD/oMx2rRkBNBhhm1cxnFDc8xwf+eLqTlXfIKacgDdg7rLDfj
-         83+zppXxtb1oEBD8LllLD+qImu482oZSGJo6yKF2qGiJpGY1CYV38y/nnHxvA0hy/n88
-         f7ZSLmEuYTRJ/a3PDOlqdwvgmsLZinp1Sg2pk0VLtXUGVuvaXIbpo1+DswxsOOspNF+z
-         796K/wlSN3vVLB3xh5u+ChXaK7NP+FMbldNZWJkAoO7/XfeEjZzArCUjgTAotqFHIINN
-         c1rPClxvB6t6twcJ6TI8VYxcDv3R4j6rPvuqLbAAyAyIxzfXHdp0HekySpf2Wp9Na5Bg
-         5LeQ==
+        bh=MuutgzGDaH8CjNyI4g6TYCQbDYXMk/DcTGlIQTdOozs=;
+        b=M/a8BfXURXgWFc9Cb9JPmae10JClG/CU14f3dUYiYqP0ZVr/bZe2t2VOll0rCEBp8/
+         mfqEwak0GHTLZ3/5EID/GRIHFdm4VnliJKcskb/YKXCDPGHnIhVI7koBsfr226VHxrb8
+         slA5UIUHZWJYV3o+bsWODTwavqJs076xHr3aFzU1iiLFldczjkGXRgnuG7m22VdJIZwq
+         02mEyAmlN4zTv26BZVLFN2wp/+ZpWqtriS3oqYv+Wf6V/1+gFnHl+TYsNBmYB20tXV5b
+         prQz2b35GpcX6EnCxbkcU3WLA3bUc0OO5MVmLFpeEiEK0wRTT+EqAmbUd20hBtdcVHFN
+         p7sA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747768143; x=1748372943;
+        d=1e100.net; s=20230601; t=1747768145; x=1748372945;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=rlMnByBJdLmm3G9/G0GQ/d4DyVfZJhKLZ7MqYnU+doc=;
-        b=sq+ryjmoD3zZazmBYkpCTjZcdcxat9GCts2vmCU1FlVPJq12OUkGiC3loRFs3823H5
-         hTTHC31bqTuksdk6ydhnZGXzZRhtjcGPEquSAbpdynFVW8pEu4qTIIUcynLypO224vLb
-         EV65xKze1CafBEMsuYaK+477JIYllgrNd87yD5/cSaDUNdfvUQc2fclPKUhmaR1mxv8E
-         di58hCCR7L3cihUIO9+5evQ38Pey94pshg/CZjAKLXjCvNqeeZ56LhNNY/+Fjf2KWbqz
-         lke6pg/E+caYbPlx5SFSeVQP5ETXbWIb6+ZbaipTKu7Dsa4aAa7BkYI3tYSvFWkCRe2v
-         VgYQ==
-X-Gm-Message-State: AOJu0YyrRIlUZJp78N+yECGI9/2WbEZfUF7/iP2kkEFgYj315zV9zz5U
-	oEmGsEY4ATtOCeUnD8xAnoDLD5m1MqDEX58fRrQlDuWxtbegztdtykBx
-X-Gm-Gg: ASbGnctTbMGHOvvPiDbRi2RY2oVp+iZ5cv/hHeZ/mo7Z65KzMtg7o/W+3DXsyWU62g9
-	gH+JwnWF80cL+QYYbHkVk7WL+H758xmq0DtceLlvmyfDiCiq+ZlRrdN1Dsj+6v50vIICt63MkxF
-	MuNM4E8pXKPVywhpuBeMgzWPmUG9IMzUfxI59Zz1eBNoeguzraHRWUJUT+mLm0/FgdJW+nCs8VQ
-	Iap87/aZ58oZ/n2evST8XSgAAUvFi7oyAfYdJUP0S+Mriy/WYvyyyR0eZM1HsHK6JE92VD5gdGy
-	YNpyaf+1IfNIajn9EdXA5m6HSieLf1s2kdXBtmDW8vVl/2aqH/et/j66KvdO8rt2dPFGYx/wGHr
-	WdQE7AgRvWnJBoyb2HdU=
-X-Google-Smtp-Source: AGHT+IGIrgJ2dmANNY3EjX9kZvxGmi8VdnrE3uOp5o3gsUKwQp+d16sgiHehsoeADCEn10ddqVWxMg==
-X-Received: by 2002:a05:622a:587:b0:48b:6eeb:f98e with SMTP id d75a77b69052e-494ae330988mr104811741cf.2.1747768142906;
-        Tue, 20 May 2025 12:09:02 -0700 (PDT)
+        bh=MuutgzGDaH8CjNyI4g6TYCQbDYXMk/DcTGlIQTdOozs=;
+        b=L/ZkcRN86gUCc7b63WMxWi14gWPCSxi6EwbgHC5MbXfj8QPLQZ9NFpUvQhUNMW2LIL
+         nAt45EZL3ZwklBxUzndp0il+tgKSgJPn+bvykGOKY+7E7PBfLYJs2HjWeoSrGhW1vkGw
+         G60CqxZfottJEE3g9Ika+bIaOySQvWvfbH/K+lTWJk8MbIUI2yN2cMOJln546vkhHm4p
+         VtuyQ66TlYu1jBLzaEeOgLDG5fvLZo9rVWFHC1Cgkhn+YoERZ3zNVFYYzdy3pXXKQPMf
+         n4+QHKyr2svbvW2FJsH0l9VgGbZZ1AycO1mFTzi+0I+yDx72WSSMry/1zrocY5kz10Tb
+         gk7g==
+X-Gm-Message-State: AOJu0YydRdWpqKG9r+M0qCzogPpRJkiDSzuV5kzx53wgPLsc4fzG2ItV
+	Vo0r9YnsRvzeNYObRa3TKXxNISvnZaq1Huvxx259lwvebcbBs8gcmadW56hPSGj2
+X-Gm-Gg: ASbGncugEjEvbXsshIs1RqPke1FAQy0wfGGV2j2oaJiJMZG01u4NZpYys8qJ3DYwK/I
+	Z5FlE80R0Ve/zdYuOmUHi7zz0tmLiWITdUOgrif/8U/AJocP7hMS162F8kpGF1UAAWMsSGo5Vbh
+	oocutCugFrLUmyQfq5yuXpD9/cp2JNjXDBGrJkka/NVWF3J62g08dQ2QtmXT3KHsPbt8ktFseHB
+	w9Wc4q65hFuNWylxZoqYL69R+MOlgkYceBTSp5Ol95q2Ob8vYd5EGFUJBQSHpLHjQPJUUz8Em4m
+	M4DGtEmf3ri5k/UR+P/cnQINnCHjF6zPJD3mLVhDZx3+Wa10YnfOgXJVeypeugNbwGZbE9aBMNQ
+	EbTja6599X88nB0tTn8+xHCjMY9snIQ==
+X-Google-Smtp-Source: AGHT+IGTEuOT5AKSY9QNH3BI4uSkpEqMzwIX5HeR3aoY35A9UU3EKtm3GcLNIXZ3fsDigIbw6flk4w==
+X-Received: by 2002:a05:622a:2c9:b0:474:fcf8:8f0e with SMTP id d75a77b69052e-494ae3736d5mr107613701cf.8.1747768144604;
+        Tue, 20 May 2025 12:09:04 -0700 (PDT)
 Received: from [192.168.124.1] (syn-067-243-142-039.res.spectrum.com. [67.243.142.39])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-494ae445b99sm76554051cf.48.2025.05.20.12.09.02
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-494ae445b99sm76554051cf.48.2025.05.20.12.09.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 May 2025 12:09:02 -0700 (PDT)
+        Tue, 20 May 2025 12:09:04 -0700 (PDT)
 From: Connor Abbott <cwabbott0@gmail.com>
-Date: Tue, 20 May 2025 15:08:56 -0400
-Subject: [PATCH v8 3/7] iommu/arm-smmu-qcom: Make set_stall work when the
- device is on
+Date: Tue, 20 May 2025 15:08:57 -0400
+Subject: [PATCH v8 4/7] drm/msm: Don't use a worker to capture fault
+ devcoredump
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,7 +69,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250520-msm-gpu-fault-fixes-next-v8-3-fce6ee218787@gmail.com>
+Message-Id: <20250520-msm-gpu-fault-fixes-next-v8-4-fce6ee218787@gmail.com>
 References: <20250520-msm-gpu-fault-fixes-next-v8-0-fce6ee218787@gmail.com>
 In-Reply-To: <20250520-msm-gpu-fault-fixes-next-v8-0-fce6ee218787@gmail.com>
 To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
@@ -82,90 +82,177 @@ Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, freedreno@lists.freedesktop.org, 
  Connor Abbott <cwabbott0@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1747768138; l=3453;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1747768138; l=6008;
  i=cwabbott0@gmail.com; s=20240426; h=from:subject:message-id;
- bh=RnNUWR8apEx6WPWRc8HjEOtdMZqQUWqHrofPXnVy62Q=;
- b=Gva2s5Z7Ds/ygUrvduDeZ/TWE6RzxCRXnJg0Zhx6Z4wRmr7VRKNIHU/2xJaO+oPPC4dZhG1Tb
- GdN7Dm+NI2yANHk93Y3MujPoXjVnGL92q+a8IWtX3FmhfkHr+wCKih3
+ bh=gk8DwE6MH3TUftDA43LAG4YX9fts1PWBfmK+nfds2g0=;
+ b=B32zCFW6SjtAi/CSZwadfMTfzVtd5ahW7RYfl/ZOrAxW3x+ocg/HybRu5g3ZhTJm3x1MT8Sqx
+ WcJt0qdXT4yBHPiW79Lj1VsiIe6m5qQgOqfSuL7uWBBsyLhmx41dhDo
 X-Developer-Key: i=cwabbott0@gmail.com; a=ed25519;
  pk=dkpOeRSXLzVgqhy0Idr3nsBr4ranyERLMnoAgR4cHmY=
 
-Up until now we have only called the set_stall callback during
-initialization when the device is off. But we will soon start calling it
-to temporarily disable stall-on-fault when the device is on, so handle
-that by checking if the device is on and writing SCTLR.
+Now that we use a threaded IRQ, it should be safe to do this in the
+fault handler.
+
+We can also remove fault_info from struct msm_gpu and just pass it
+directly.
 
 Signed-off-by: Connor Abbott <cwabbott0@gmail.com>
-Reviewed-by: Rob Clark <robdclark@gmail.com>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 33 +++++++++++++++++++++++++++---
- include/linux/adreno-smmu-priv.h           |  6 +++---
- 2 files changed, 33 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/msm/adreno/adreno_gpu.c | 22 ++++++++--------------
+ drivers/gpu/drm/msm/msm_gpu.c           | 20 +++++++++-----------
+ drivers/gpu/drm/msm/msm_gpu.h           |  8 ++------
+ 3 files changed, 19 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index c84730d33a30c013a37e603d10319fb83203eaa5..f7430c131c21f40308df36fe25fe75d31558c817 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -112,12 +112,39 @@ static void qcom_adreno_smmu_set_stall(const void *cookie, bool enabled)
- {
- 	struct arm_smmu_domain *smmu_domain = (void *)cookie;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu_domain->smmu);
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
-+	u32 mask = BIT(cfg->cbndx);
-+	bool stall_changed = !!(qsmmu->stall_enabled & mask) != enabled;
-+	unsigned long flags;
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+index 26db1f4b5fb90930bdbd2f17682bf47e35870936..4a6dc29ff7071940e440297f5fbbe4e2d06c3ffd 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
+@@ -257,14 +257,6 @@ int adreno_fault_handler(struct msm_gpu *gpu, unsigned long iova, int flags,
+ 	const char *type = "UNKNOWN";
+ 	bool do_devcoredump = info && !READ_ONCE(gpu->crashstate);
  
- 	if (enabled)
--		qsmmu->stall_enabled |= BIT(cfg->cbndx);
-+		qsmmu->stall_enabled |= mask;
- 	else
--		qsmmu->stall_enabled &= ~BIT(cfg->cbndx);
-+		qsmmu->stall_enabled &= ~mask;
+-	/*
+-	 * If we aren't going to be resuming later from fault_worker, then do
+-	 * it now.
+-	 */
+-	if (!do_devcoredump) {
+-		gpu->aspace->mmu->funcs->resume_translation(gpu->aspace->mmu);
+-	}
+-
+ 	/*
+ 	 * Print a default message if we couldn't get the data from the
+ 	 * adreno-smmu-priv
+@@ -291,16 +283,18 @@ int adreno_fault_handler(struct msm_gpu *gpu, unsigned long iova, int flags,
+ 			scratch[0], scratch[1], scratch[2], scratch[3]);
+ 
+ 	if (do_devcoredump) {
++		struct msm_gpu_fault_info fault_info = {};
 +
-+	/*
-+	 * If the device is on and we changed the setting, update the register.
-+	 * The spec pseudocode says that CFCFG is resampled after a fault, and
-+	 * we believe that no implementations cache it in the TLB, so it should
-+	 * be safe to change it without a TLB invalidation.
-+	 */
-+	if (stall_changed && pm_runtime_get_if_active(smmu->dev) > 0) {
-+		spin_lock_irqsave(&smmu_domain->cb_lock, flags);
-+
-+		u32 reg = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_SCTLR);
-+
-+		if (enabled)
-+			reg |= ARM_SMMU_SCTLR_CFCFG;
-+		else
-+			reg &= ~ARM_SMMU_SCTLR_CFCFG;
-+
-+		arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_SCTLR, reg);
-+
-+		spin_unlock_irqrestore(&smmu_domain->cb_lock, flags);
-+
-+		pm_runtime_put_autosuspend(smmu->dev);
-+	}
+ 		/* Turn off the hangcheck timer to keep it from bothering us */
+ 		timer_delete(&gpu->hangcheck_timer);
+ 
+-		gpu->fault_info.ttbr0 = info->ttbr0;
+-		gpu->fault_info.iova  = iova;
+-		gpu->fault_info.flags = flags;
+-		gpu->fault_info.type  = type;
+-		gpu->fault_info.block = block;
++		fault_info.ttbr0 = info->ttbr0;
++		fault_info.iova  = iova;
++		fault_info.flags = flags;
++		fault_info.type  = type;
++		fault_info.block = block;
+ 
+-		kthread_queue_work(gpu->worker, &gpu->fault_work);
++		msm_gpu_fault_crashstate_capture(gpu, &fault_info);
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/gpu/drm/msm/msm_gpu.c b/drivers/gpu/drm/msm/msm_gpu.c
+index c380d9d9f5af10b90ef733b05f5b0295c0445f38..457f019d507e954daeb609c313d37ee64fd492f9 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.c
++++ b/drivers/gpu/drm/msm/msm_gpu.c
+@@ -257,7 +257,8 @@ static void msm_gpu_crashstate_get_bo(struct msm_gpu_state *state,
  }
  
- static void qcom_adreno_smmu_set_prr_bit(const void *cookie, bool set)
-diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adreno-smmu-priv.h
-index abec23c7744f49bea70f3352da9385304ed3702e..d83c9175828f792f1f43bcc8056102a43d822c96 100644
---- a/include/linux/adreno-smmu-priv.h
-+++ b/include/linux/adreno-smmu-priv.h
-@@ -45,9 +45,9 @@ struct adreno_smmu_fault_info {
-  *                 TTBR0 translation is enabled with the specified cfg
-  * @get_fault_info: Called by the GPU fault handler to get information about
-  *                  the fault
-- * @set_stall:     Configure whether stall on fault (CFCFG) is enabled.  Call
-- *                 before set_ttbr0_cfg().  If stalling on fault is enabled,
-- *                 the GPU driver must call resume_translation()
-+ * @set_stall:     Configure whether stall on fault (CFCFG) is enabled. If
-+ *                 stalling on fault is enabled, the GPU driver must call
-+ *                 resume_translation()
-  * @resume_translation: Resume translation after a fault
-  *
-  * @set_prr_bit:   [optional] Configure the GPU's Partially Resident
+ static void msm_gpu_crashstate_capture(struct msm_gpu *gpu,
+-		struct msm_gem_submit *submit, char *comm, char *cmd)
++		struct msm_gem_submit *submit, struct msm_gpu_fault_info *fault_info,
++		char *comm, char *cmd)
+ {
+ 	struct msm_gpu_state *state;
+ 
+@@ -276,7 +277,8 @@ static void msm_gpu_crashstate_capture(struct msm_gpu *gpu,
+ 	/* Fill in the additional crash state information */
+ 	state->comm = kstrdup(comm, GFP_KERNEL);
+ 	state->cmd = kstrdup(cmd, GFP_KERNEL);
+-	state->fault_info = gpu->fault_info;
++	if (fault_info)
++		state->fault_info = *fault_info;
+ 
+ 	if (submit) {
+ 		int i;
+@@ -308,7 +310,8 @@ static void msm_gpu_crashstate_capture(struct msm_gpu *gpu,
+ }
+ #else
+ static void msm_gpu_crashstate_capture(struct msm_gpu *gpu,
+-		struct msm_gem_submit *submit, char *comm, char *cmd)
++		struct msm_gem_submit *submit, struct msm_gpu_fault_info *fault_info,
++		char *comm, char *cmd)
+ {
+ }
+ #endif
+@@ -405,7 +408,7 @@ static void recover_worker(struct kthread_work *work)
+ 
+ 	/* Record the crash state */
+ 	pm_runtime_get_sync(&gpu->pdev->dev);
+-	msm_gpu_crashstate_capture(gpu, submit, comm, cmd);
++	msm_gpu_crashstate_capture(gpu, submit, NULL, comm, cmd);
+ 
+ 	kfree(cmd);
+ 	kfree(comm);
+@@ -459,9 +462,8 @@ static void recover_worker(struct kthread_work *work)
+ 	msm_gpu_retire(gpu);
+ }
+ 
+-static void fault_worker(struct kthread_work *work)
++void msm_gpu_fault_crashstate_capture(struct msm_gpu *gpu, struct msm_gpu_fault_info *fault_info)
+ {
+-	struct msm_gpu *gpu = container_of(work, struct msm_gpu, fault_work);
+ 	struct msm_gem_submit *submit;
+ 	struct msm_ringbuffer *cur_ring = gpu->funcs->active_ring(gpu);
+ 	char *comm = NULL, *cmd = NULL;
+@@ -484,16 +486,13 @@ static void fault_worker(struct kthread_work *work)
+ 
+ 	/* Record the crash state */
+ 	pm_runtime_get_sync(&gpu->pdev->dev);
+-	msm_gpu_crashstate_capture(gpu, submit, comm, cmd);
++	msm_gpu_crashstate_capture(gpu, submit, fault_info, comm, cmd);
+ 	pm_runtime_put_sync(&gpu->pdev->dev);
+ 
+ 	kfree(cmd);
+ 	kfree(comm);
+ 
+ resume_smmu:
+-	memset(&gpu->fault_info, 0, sizeof(gpu->fault_info));
+-	gpu->aspace->mmu->funcs->resume_translation(gpu->aspace->mmu);
+-
+ 	mutex_unlock(&gpu->lock);
+ }
+ 
+@@ -882,7 +881,6 @@ int msm_gpu_init(struct drm_device *drm, struct platform_device *pdev,
+ 	init_waitqueue_head(&gpu->retire_event);
+ 	kthread_init_work(&gpu->retire_work, retire_worker);
+ 	kthread_init_work(&gpu->recover_work, recover_worker);
+-	kthread_init_work(&gpu->fault_work, fault_worker);
+ 
+ 	priv->hangcheck_period = DRM_MSM_HANGCHECK_DEFAULT_PERIOD;
+ 
+diff --git a/drivers/gpu/drm/msm/msm_gpu.h b/drivers/gpu/drm/msm/msm_gpu.h
+index e25009150579c08f7b98d4461a75757d1093734a..bed0692f5adb30e50d0448640a329158d1ffe5e5 100644
+--- a/drivers/gpu/drm/msm/msm_gpu.h
++++ b/drivers/gpu/drm/msm/msm_gpu.h
+@@ -253,12 +253,6 @@ struct msm_gpu {
+ #define DRM_MSM_HANGCHECK_PROGRESS_RETRIES 3
+ 	struct timer_list hangcheck_timer;
+ 
+-	/* Fault info for most recent iova fault: */
+-	struct msm_gpu_fault_info fault_info;
+-
+-	/* work for handling GPU ioval faults: */
+-	struct kthread_work fault_work;
+-
+ 	/* work for handling GPU recovery: */
+ 	struct kthread_work recover_work;
+ 
+@@ -705,6 +699,8 @@ static inline void msm_gpu_crashstate_put(struct msm_gpu *gpu)
+ 	mutex_unlock(&gpu->lock);
+ }
+ 
++void msm_gpu_fault_crashstate_capture(struct msm_gpu *gpu, struct msm_gpu_fault_info *fault_info);
++
+ /*
+  * Simple macro to semi-cleanly add the MAP_PRIV flag for targets that can
+  * support expanded privileges
 
 -- 
 2.47.1
