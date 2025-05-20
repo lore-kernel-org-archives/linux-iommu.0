@@ -1,102 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EBB21FFC54;
-	Tue, 20 May 2025 15:39:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45F5425A2D7
+	for <iommu@lists.linux.dev>; Tue, 20 May 2025 15:39:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747755542; cv=none; b=CjPukZX0cGEz9DJ0mp8wgj5jAuWEIF+QIOKZWE7xLM8md0U2VG2SmjU8MsiG3GX7uOIZ1ldm37jEBjofB1Nj/EQucvgF1KoUegxo79+09I/7ecZzMJ0fnd9y4TS/8WdtWef8lEjkmLyqne6Wuw1MIchhk1d6scMAvrkAvvanSHU=
+	t=1747755591; cv=none; b=rPTPruIOBozcB7eAW13wYYmp6wTmwNi5wH1tRYcUD1VOeNLsq/jmlx2Rux2rsTuwYycJ8eY1LMoTKGV1kVjAJcxY5mDEqQBRNEVEPQYbrQA1slxmDY5RsbHicOUZQo1wgQWsHDUMG240AnjS7F2hTMF6G6tjljfTWKD4meiphNQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747755542; c=relaxed/simple;
-	bh=sKOxL3UnucR2I5+tf+DEeVyHpzBBe8EpNpF/XVuowao=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gOty0uRDGVXBmqoYwCchbRPtgaDjGTm9wR/d7ySLFeFb+W1FCcOhz2UNhYU0DT75HQ2GrOLJX/sa1fWgVt9H203QnvPRoVr7WcV/qh0pRlRvsEOLCdbUj753EjB/a75duHSG9phbzUEnQiNJQGbqpV7UUmTawWHDThsWkV9/RVI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pa3eJuRk; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1747755591; c=relaxed/simple;
+	bh=5qaDz5va7V/bOIPJZLz/3rD4zx13j2tjLgu6z+mJZvk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=CDLGGtNMAEasXPLuCb40V8yTEoBhj9LQcOLbD3v6YKoQXda9C00tpYgTYTKMyZFMw8T5N5R6O503llCDVDO6s4HO9GmlharuFWfPm/O6javQjTaiSSiL2DwEpLVHEwpvWh3v8d4BXZajxqgfIg6mUK0HFY6ge627NVyiTRoAVNI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=g5QqVXuB; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pa3eJuRk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A7D9C4CEE9;
-	Tue, 20 May 2025 15:38:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1747755541;
-	bh=sKOxL3UnucR2I5+tf+DEeVyHpzBBe8EpNpF/XVuowao=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=pa3eJuRkABExyc48wkNOyqxvROSQjsTHTAdMuwIk+15FOgq/3pRi4Soy7iI5Vtmay
-	 ZxWcl+S50aSiv4CGGtltlQ585kbP+caRFc18ASkIRVC/83q6EyzkrO8iOIEo7l0oPU
-	 /3xzCGc6ohaNcj9ibX7QR5DOX2/7H6dOVoeySpjjt8dknoCgeIdRhPz8CTYVjvBVUv
-	 A7S3X/VK8JdkY9FEbULEsrI7yWSIgyxvMa0FMcK0zdCj5yf+HmsPsih8S8o5z+QlAW
-	 sPY2ID2lOVhLlhbkcNfvEJ+0HpuVW8AoEJ5RAdMtXFXJGEky4E7d6w2fMmQAZ5466Q
-	 nnMTyVrtMIA4Q==
-Date: Tue, 20 May 2025 16:38:56 +0100
-From: Will Deacon <will@kernel.org>
-To: Connor Abbott <cwabbott0@gmail.com>
-Cc: Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>, Sean Paul <sean@poorly.run>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	freedreno@lists.freedesktop.org
-Subject: Re: [PATCH v6 0/7] iommu/arm-smmu, drm/msm: Fixes for stall-on-fault
-Message-ID: <20250520153855.GG18901@willie-the-truck>
-References: <20250515-msm-gpu-fault-fixes-next-v6-0-4fe2a583a878@gmail.com>
- <20250520141857.GC18711@willie-the-truck>
- <CACu1E7HdJvbx_6L9KvX3n78_cbkrey8npo=O=AkEzg335wJC=g@mail.gmail.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="g5QqVXuB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1747755589;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=GJ0rFA5ozhMdO1IEpBbuVAQP+phCnmZbFuLhRhdhX4A=;
+	b=g5QqVXuBWBtlgeWAmKN8VFW70sVZdwrChT7ExQMbbiIFhebWZoD9WJOYyX3sMDnWDy8YLV
+	WmHyP+xChnK7fd1w3RSmNB97wmxNFW1Z/+qv9Y6HduL5aocKQFTuTR2diPOJ9DF/HxP8pY
+	JEWeYtvlcsVY59At4diagQ0zXH8i2YA=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-425-o0A3TjjSNfWVJOHawoivFA-1; Tue, 20 May 2025 11:39:48 -0400
+X-MC-Unique: o0A3TjjSNfWVJOHawoivFA-1
+X-Mimecast-MFC-AGG-ID: o0A3TjjSNfWVJOHawoivFA_1747755587
+Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-85b3e93e052so102185839f.3
+        for <iommu@lists.linux.dev>; Tue, 20 May 2025 08:39:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1747755586; x=1748360386;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=GJ0rFA5ozhMdO1IEpBbuVAQP+phCnmZbFuLhRhdhX4A=;
+        b=OlJio5MO2Lxf9L7e9IXgu0m5vtMO1FkyKLQod59eAckQQGLmtsQeWSbOR++57FGcdM
+         UIXZLewEfmusMRTpOUIhLmutC01D76DETAozO2zf9Im44XoRsmrxEevQqHf2Iliy08ML
+         cb4O8g8YrA7qWhZPE2+A0jkuSbcJLTdbNNqPQf5XRtDnPByc4Qe4A2Y4Dp4EO9dGspje
+         jSu6gMyNXarYVDs7BsjRQvwMnCjnLR2hLrzH0mRf1TZiVSMi+sxjmtkejOasuPz7QVaD
+         mJBiZ7bz0MfKituvsuYDMEC8d8/FQkx65CJyRO04wW0Nj5Wdr8nHVOQDunM4y78q3iI1
+         DQvg==
+X-Gm-Message-State: AOJu0Yx1sYbHlaF7nI87wGXhlXhUpKz5WKL92VKLdsHZgYuWJKsTpeoQ
+	OfNh0tKIQnHLEk9giJA/AwIS6hzKVjBLVjxtXJ/DDS4516nKacuvIJwiiOviUiNx03SlRaVTbuK
+	x3UUhOFICrIu2hEk9GfIu4VYAa1EaS4qr4uStoN8VF/k4gaYxjYNoec696gVMmciU
+X-Gm-Gg: ASbGncs3qYJoPpcCDEEhXKmU3VVn5K74e54NJCwAvR1Xut4JX3bzdV5BtfkEDg79A5A
+	05oj6fZ0YGIkFuj4L1a34DSwUndRYLnDCXLIs/hOPidsU+apD2rNDlajNRpFsfg9nU/wWAinUvU
+	xfjwQZcAgh9sTUtiDin0O5HJgc0rRFsl3kgw4XnGwK5Z7kC+lb4hyLmvdO2KpjvUsvxcTSEvPJb
+	dGVcbuApJIkHIu87ONTxsfJO6O7kc/5tg7cytKv+Gb19lrEWKGftj58ro3/NtUo5IkRvPcySEKO
+	5D5qozG1rzXASJU=
+X-Received: by 2002:a05:6e02:4515:20b0:3dc:757b:3fa4 with SMTP id e9e14a558f8ab-3dc757b42a2mr12610645ab.7.1747755586652;
+        Tue, 20 May 2025 08:39:46 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IG3VbHHu3m+p8uONX+1ieaFf8GcikTyFLsLmu7hXitJ8VoWNtERX8CvL4Yw5GgMZaX+kUid8A==
+X-Received: by 2002:a05:6e02:4515:20b0:3dc:757b:3fa4 with SMTP id e9e14a558f8ab-3dc757b42a2mr12610565ab.7.1747755586291;
+        Tue, 20 May 2025 08:39:46 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-4fbcc3b1a96sm2298549173.51.2025.05.20.08.39.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 May 2025 08:39:45 -0700 (PDT)
+Date: Tue, 20 May 2025 09:39:43 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, kvm@vger.kernel.org, patches@lists.linux.dev
+Subject: Re: [PATCH v2] vfio/type1: Remove Fine Grained Superpages detection
+Message-ID: <20250520093943.05bbe2eb.alex.williamson@redhat.com>
+In-Reply-To: <0-v2-97fa1da8d983+412-vfio_fgsp_jgg@nvidia.com>
+References: <0-v2-97fa1da8d983+412-vfio_fgsp_jgg@nvidia.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.43; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CACu1E7HdJvbx_6L9KvX3n78_cbkrey8npo=O=AkEzg335wJC=g@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: 3Hmwi_LNhWzuCVM-sMrDTu_u0BamBWgK5oHQY7CAfGY_1747755587
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, May 20, 2025 at 10:42:49AM -0400, Connor Abbott wrote:
-> On Tue, May 20, 2025 at 10:19 AM Will Deacon <will@kernel.org> wrote:
-> > On Thu, May 15, 2025 at 03:58:42PM -0400, Connor Abbott wrote:
-> > > drm/msm uses the stall-on-fault model to record the GPU state on the
-> > > first GPU page fault to help debugging. On systems where the GPU is
-> > > paired with a MMU-500, there were two problems:
-> > >
-> > > 1. The MMU-500 doesn't de-assert its interrupt line until the fault is
-> > >    resumed, which led to a storm of interrupts until the fault handler
-> > >    was called. If we got unlucky and the fault handler was on the same
-> > >    CPU as the interrupt, there was a deadlock.
-> > > 2. The GPU is capable of generating page faults much faster than we can
-> > >    resume them. GMU (GPU Management Unit) shares the same context bank
-> > >    as the GPU, so if there was a sudden spurt of page faults it would be
-> > >    effectively starved and would trigger a watchdog reset, made even
-> > >    worse because the GPU cannot be reset while there's a pending
-> > >    transaction leaving the GPU permanently wedged.
-> > >
-> > > Patches 1-2 and 4 fix the first problem by switching the IRQ to be a
-> > > threaded IRQ and then making drm/msm do its devcoredump work
-> > > synchronously in the threaded IRQ. Patch 4 is dependent on patches 1-2.
-> > > Patch 6 fixes the second problem and is dependent on patch 3. Patch 5 is
-> > > a cleanup for patch 4 and patch 7 is a subsequent further cleanup to get
-> > > rid of the resume_fault() callback once we switch resuming to being done
-> > > by the SMMU's fault handler.
-> >
-> > Thanks for reworking this; I think it looks much better now from the
-> > SMMU standpoint.
-> >
-> > > I've organized the series in the order that it should be picked up:
-> > >
-> > > - Patches 1-3 need to be applied to the iommu tree first.
-> >
-> > Which kernel version did you base these on? I can't see to apply the
-> > second patch, as you seem to have a stale copy of arm-smmu-qcom.c?
-> >
-> Sorry about that, for the next version I'll rebase on linux-next. I
-> was using an older version of msm-next for a while now.
+On Mon, 14 Apr 2025 10:46:39 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Can you base on v6.15-rc2 instead, please? linux-next is a moving
-target so it's not massively helpful to use that.
+> VFIO is looking to enable an optimization where it can rely on a fast
+> unmap operation that returned the size of a larger IOPTE.
+> 
+> Due to how the test was constructed this would only ever succeed on the
+> AMDv1 page table that supported an 8k contiguous size. Nothing else
+> supports this.
+> 
+> Alex says the performance win was fairly minor, so lets remove this
+> code. Always use iommu_iova_to_phys() to extent contiguous pages.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 49 +--------------------------------
+>  1 file changed, 1 insertion(+), 48 deletions(-)
 
-Cheers,
+Applied to vfio next branch for v6.16.  Thanks,
 
-Will
+Alex
+
