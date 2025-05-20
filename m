@@ -1,134 +1,86 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7842D25DCF6
-	for <iommu@lists.linux.dev>; Tue, 20 May 2025 09:12:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9488D269816
+	for <iommu@lists.linux.dev>; Tue, 20 May 2025 10:25:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747732374; cv=none; b=dsXqIVo2fR3ixLixU9Z/xkZLhGL6FSbzJSm/U3fIdnDdOyude0HpETDTD+LsHg7GASUSDplVtKOUZTXDsqeiTtuC1Hdb2yg9LwFbXWgEPF4jYYRP+UqeGWZVfQRvwISALyTmSBb1IL6O0guqQeTSvyjWcHD0l8c6YQAjMgoKhmA=
+	t=1747736756; cv=none; b=K5/XN4+O+0Q+0l27MzmAO+368JaRfZCqrqe90keqclWYauNUVE9RueVlCDR4OLUQZEwmXo4y8yFd8qSv5oFmdx+nNOz6YY1QMRaQyEpaPYsnc13E/SXv78DqeA1Alk1U1nQR4Nuhfqp8gB1iJ9/rTeuIZB9jpeKNAR7Qm/xt3wI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747732374; c=relaxed/simple;
-	bh=VyNSIUVE3L1AVI9sfU40qgyG3ZplchlZ8Y8Ao5j96PM=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=LluF4Apjswxq+70q5cVFaF3dwlGCgI4BcGR3FGe5xnreRzMyKjlt63bFfq733LwBPVv5rA2J3gbekXD3nDm0cpWlAYeGvsMAr/TTJnZPbcBmZL6CBFLx4Jz5lEVRIMohNlId3IvTJ7gibpcOueJ+9MD5JlFadtfzXuKNt754+oY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aL+LzJSU; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1747736756; c=relaxed/simple;
+	bh=wryatFIkuLCQN1Tc9+q9e8Buj5FBmAx9YvgucNUuu8k=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=pDEqb63k/h/qDVArM6vWejUvvq1XmSPUrZqNHrFtUhdlFTW6Of8Xxeb7TVvNiWePkeFs9j5dS0sBAHn13lnPU+ENcMkOoekhIjALuxr/k3x/ew6BM1LIa0zsOz1yOeFSdZjCykiqZDNvhxse+w6fRQ8905xqt/jIRMU2u/TXZWI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=HMx1bEbr; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aL+LzJSU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1747732372; x=1779268372;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=VyNSIUVE3L1AVI9sfU40qgyG3ZplchlZ8Y8Ao5j96PM=;
-  b=aL+LzJSUzSnOxPN8rIMqHhaEzbe2jVJkRi4Mb3bKoyV6641ARzYWZzjK
-   D2nZv7JBdmo7Yp4kVBwAp+b91rmZlOk7MX1AnCDTg6E1JgtTMQek8UGhd
-   PWlQrCJCfLKR3wy07vPtGs+72oySg7L1vQic7XEWlinAN9HQGfTly9GE3
-   IVgUddP9KcY3vnICGrhb0p1uWFxHH9/Xqe94Wr/BGxu7B6pxXKFw2lvkn
-   fdE35Ahmu4ORFUAMI/y8QiF6XXMN20WHAXa5W4rLV51fQJX8PgFHyUec8
-   l+2lEyYgggQPnnvu2HddJNkCo6DjwQmDG4b+VN7TPDWOVP7BCE/qqnnxW
-   w==;
-X-CSE-ConnectionGUID: 6gQcRP+GS86huAJLOnXOEw==
-X-CSE-MsgGUID: FWRGmO2GTnK/K0+16HyWHg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11438"; a="49810069"
-X-IronPort-AV: E=Sophos;i="6.15,302,1739865600"; 
-   d="scan'208";a="49810069"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2025 02:12:51 -0700
-X-CSE-ConnectionGUID: zyRZGchVQy2k9iJkYhgmYg==
-X-CSE-MsgGUID: cLs/JexxRjufODmenBzt8Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,302,1739865600"; 
-   d="scan'208";a="162938153"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.243.99]) ([10.124.243.99])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2025 02:12:49 -0700
-Message-ID: <b8ab3c01-0602-4980-8c31-0d16c5de2545@linux.intel.com>
-Date: Tue, 20 May 2025 17:12:46 +0800
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="HMx1bEbr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1747736746;
+	bh=wryatFIkuLCQN1Tc9+q9e8Buj5FBmAx9YvgucNUuu8k=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+	b=HMx1bEbrCHVfTNhtkwmAQnyGH+cil8ZJjLu7WM0axeM4Xu6mwkPfUgeggucWqIw/J
+	 DTB1Rw0v97BVUqV/lNXMMSLh55Qbwg35dNShVzzSYiuEp1gh55VO8wUWBvcGmLLWUP
+	 RWnzqBZ68Np+s0Yy8VT5VX09Qk9jpi086CCt87j5WGWYICB1rS3cSwExPUR6apiosq
+	 ggIlHMiZqRTW2Xz4DckzQayhwoHxM8fAIEMzq1AKNb099yfKsYJ1zm0g+DYhCVg/+4
+	 rZxLtZeYc6EPZ+WvD3FGWPBwx/BiDazpKHj8HnAvFYjKZlPQfw4Y16abt+PXJvoRO7
+	 W/UBaYHYTkl7Q==
+Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id A6E4917E0393;
+	Tue, 20 May 2025 12:25:45 +0200 (CEST)
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+To: kernel@collabora.com, Sen Chu <sen.chu@mediatek.com>, 
+ Sean Wang <sean.wang@mediatek.com>, Macpaul Lin <macpaul.lin@mediatek.com>, 
+ Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Matthias Brugger <matthias.bgg@gmail.com>, 
+ =?utf-8?q?N=C3=ADcolas_F=2E_R=2E_A=2E_Prado?= <nfraprado@collabora.com>, 
+ Hui Liu <hui.liu@mediatek.com>, Yong Wu <yong.wu@mediatek.com>, 
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, 
+ Tinghan Shen <tinghan.shen@mediatek.com>, 
+ Julien Massot <julien.massot@collabora.com>
+Cc: linux-pm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-mediatek@lists.infradead.org, iommu@lists.linux.dev
+In-Reply-To: <20250514-mt8395-dtb-errors-v2-0-d67b9077c59a@collabora.com>
+References: <20250514-mt8395-dtb-errors-v2-0-d67b9077c59a@collabora.com>
+Subject: Re: (subset) [PATCH v2 0/3] mt8395/mt6359: Fix several dtb-check
+ errors
+Message-Id: <174773674561.3414755.11029706067816008255.b4-ty@collabora.com>
+Date: Tue, 20 May 2025 12:25:45 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, linux-pci@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH v4 rc] iommu: Skip PASID validation for devices without
- PASID capability
-To: Tushar Dave <tdave@nvidia.com>, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, kevin.tian@intel.com, jgg@nvidia.com,
- yi.l.liu@intel.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20250520011937.3230557-1-tdave@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250520011937.3230557-1-tdave@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Mailer: b4 0.14.2
 
-On 5/20/2025 9:19 AM, Tushar Dave wrote:
-> Generally PASID support requires ACS settings that usually create
-> single device groups, but there are some niche cases where we can get
-> multi-device groups and still have working PASID support. The primary
-> issue is that PCI switches are not required to treat PASID tagged TLPs
-> specially so appropriate ACS settings are required to route all TLPs to
-> the host bridge if PASID is going to work properly.
+On Wed, 14 May 2025 10:19:55 +0200, Julien Massot wrote:
+> This patch series addresses several dtb-check errors reported for the mt8395-genio-1200-evk.dtb and mt8395-radxa-nio-12l.dtb device trees.
 > 
-> pci_enable_pasid() does check that each device that will use PASID has
-> the proper ACS settings to achieve this routing.
+> The fixes include:
+> - Adding the missing #sound-dai-cells property in the mt6397 binding.
+> - Allowing 5 interrupts in the MediaTek IOMMU binding to support MT8395 properly.
+> - Renaming the rtc node to match expected schema naming.
 > 
-> However, no-PASID devices can be combined with PASID capable devices
-> within the same topology using non-uniform ACS settings. In this case
-> the no-PASID devices may not have strict route to host ACS flags and
-> end up being grouped with the PASID devices.
-> 
-> This configuration fails to allow use of the PASID within the iommu
-> core code which wrongly checks if the no-PASID device supports PASID.
-> 
-> Fix this by ignoring no-PASID devices during the PASID validation. They
-> will never issue a PASID TLP anyhow so they can be ignored.
-> 
-> Fixes: c404f55c26fc ("iommu: Validate the PASID in iommu_attach_device_pasid()")
-> Cc:stable@vger.kernel.org
-> Signed-off-by: Tushar Dave<tdave@nvidia.com>
-> ---
-> 
-> changes in v4:
-> - rebase to 6.15-rc7
-> 
->   drivers/iommu/iommu.c | 43 ++++++++++++++++++++++++++++---------------
->   1 file changed, 28 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 4f91a740c15f..9d728800a862 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3366,10 +3366,12 @@ static int __iommu_set_group_pasid(struct iommu_domain *domain,
->   	int ret;
->   
->   	for_each_group_device(group, device) {
-> -		ret = domain->ops->set_dev_pasid(domain, device->dev,
-> -						 pasid, old);
-> -		if (ret)
-> -			goto err_revert;
-> +		if (device->dev->iommu->max_pasids > 0) {
-> +			ret = domain->ops->set_dev_pasid(domain, device->dev,
-> +							 pasid, old);
-> +			if (ret)
-> +				goto err_revert;
-> +		}
+> [...]
 
-You can save an indent by making it like this,
+Applied to v6.15-next/dts64, thanks!
 
-for_each_group_device(group, device) {
-	if (device->dev->iommu->max_pasids == 0)
-		continue;
+[3/3] arm64: dts: mt6359: Rename RTC node to match binding expectations
+      commit: e19de38cca6d037bf3ab5b9908d49e230f817062
 
-	ret = domain->ops->set_dev_pasid(domain, device->dev, pasid, old);
-	if (ret)
-		goto err_revert;
-}
+Cheers,
+Angelo
 
-Anyway,
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
