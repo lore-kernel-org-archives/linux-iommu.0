@@ -1,64 +1,66 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B71C26D4E3
-	for <iommu@lists.linux.dev>; Tue, 20 May 2025 19:09:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9001827A927
+	for <iommu@lists.linux.dev>; Tue, 20 May 2025 19:09:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747768142; cv=none; b=oOJx4uinTUa1CMbnaUvcEMB1tefdf41x/GuQEc+2lzxpGMaIrIrlvMAWM2vjGsapwIVT4K3cFKNAK1bfrIcb+AdEcsWAAPre/PvrGtFEvH9/GxCe2QyuzdJszDupz6sPj+cnsLSfVrlwixAqykgz4CWGsCb2UI9XNeCOuKim/6Y=
+	t=1747768143; cv=none; b=hzFLNy5kSsqpKuVraGcRwrCrjWNf4xMLhchaWwq//K7N3cfAbz+wieZNMyQDBQCL1wuayqTmz7HapZlJf0vlnbIN/61VFdola8eyLYfLfAs0/NK3Ky3pAdyZH4czvSFuvDgTG4o8eGTGHS561fvA2vJ60b03lnfXd4dvntedu1Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747768142; c=relaxed/simple;
-	bh=I1cIbwom2B32IbSq72YVeQcGdq7m4R+PKVkZdFMEOLQ=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=YEL4mf7UsX2JQt5LwAJSMt+vNUJnGVBmvDR0De7PDKqKu1pKtG+dsXREhRMX8I4YK4C9ubFxbzuHVq1R7t9KTY8pKOOph+msrWhk/gwYbsfT1T5FAwIEPx7gtG0lXLKCro4ueRLQymOPF4hVmwKjSoobgdv52umz3Yfg4C7bI/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CUkVBHCw; arc=none smtp.client-ip=209.85.222.171
+	s=arc-20240116; t=1747768143; c=relaxed/simple;
+	bh=ZBvYKn5K11+lNsz4zT1zMYa5IeR/X4du0GnqkshS5cY=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=XWkhhQX79QtOs16h0rRe9XhXi8LUUZCtr43wLRwlkQDIPpx3HteqkWI8oAH9L4GFLvVKvN3znL5AimUdvvgCdnCj5yToo/wKs5ybO/L5FYBVm/mJWQjtGA1S0Vy7teZUtyqbTZeDEywK60UQ2IFV3GgysTz3cCVVRQPEfDkZmP8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OevWc1ri; arc=none smtp.client-ip=209.85.160.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CUkVBHCw"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-7c5445cb72dso59872685a.3
-        for <iommu@lists.linux.dev>; Tue, 20 May 2025 12:09:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OevWc1ri"
+Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-479009c951cso12610211cf.1
+        for <iommu@lists.linux.dev>; Tue, 20 May 2025 12:09:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1747768139; x=1748372939; darn=lists.linux.dev;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=TiPFN3JOGIK1F9o5An3myfiKGu5aOmMHw/+V8iz5ZMA=;
-        b=CUkVBHCwAI2kvgBuvtW6AnhgaGh1S4vTuHe25jNkprBbIt/d+Vi83wD1ZqwGUD73+z
-         K7NSRdmybcfkHMDN7fjSUduIWrxFA1gj3TTmTox6JKSTqdgTofcZdSJTHdg8ZKQ+2kDa
-         wfGs0V1T8xTPiprhsZ+SiFdOL7Gn/j8BpwBHcFgh/QWtVIn3xZ4CjDf4JwyaurFceLKJ
-         0LnFz+CtDJMQ/X/YngMQjZeOhFcGWtp9Ficd7WCX6bOiyfNKDQL2EGSCZwAFhLp7wyss
-         8jxGU+kx8TENk8rQLyvJcr5W1+K67M8Wi9GVy1m/xJUJsWjTbOkjIK7A5QINDFb+w8fE
-         RJzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747768139; x=1748372939;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=gmail.com; s=20230601; t=1747768140; x=1748372940; darn=lists.linux.dev;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=TiPFN3JOGIK1F9o5An3myfiKGu5aOmMHw/+V8iz5ZMA=;
-        b=Ka1LJa0VgeU7w7QYqKkZJjhZICCijNrgl7tJS2BCSnrZqzIoYNe9nQmSna3f+uxdBo
-         6tMd0IaKLfjMhcwwhTvdDV4h72ZGKYU0xf46sDPx5cH8yRjzYqXAT2fczzMJm9Ym3HB8
-         XtCN9dFYE+RWgwot3Fqyi0zvWTAgaRknne8e0tH7teW0N4WUsO0OdbgnZbMKSmx26cnd
-         TyqnEeD1IUcD+NfCW3FAroib3oGY80FBQZBkpaWqeKRk/+SOuWttIVNe0GU2fnmcrRbL
-         NqNMLIMdfyLiHJE7ZllvHlqWmU5gMfFIgpiwJjXOhb9yAgs9xu0oyeyjTcCVWqkQo+qF
-         ySuQ==
-X-Gm-Message-State: AOJu0Yyq/LZk8Jx8df/C4g5xSAlO61ydyZYaij3oEZFVh3IwpbnY4PS2
-	kd6c1xzKDEXjdVijqcWaKWvv/mCvJ9qk5qT8AZiH4wqE0KHoy5OMIgJ+
-X-Gm-Gg: ASbGncslv7S15BdKoDgIw4HKmrLU96jMENKLGcD4uoDi/EBrzxBc0c9Fxwkopvdi/48
-	2n2IOk/TGeX5Htj95yQ6drVRAHlH/4A3bDZF7sg8G+fnt2JnjXSYnuvt2hu/KVvJglUTfj4SXlF
-	FQn0Y3///GQj04b50q1VKtwgd3MP6/8Ofgo39ZZUtUIJQUNvvN9QVMaYi5d4Tskuk9A33YUaY3e
-	HjKFRwr55wdImVgziwpuYH8+jM1DNxfHVVtpjY7Ual96rlvRP8/nV+IghWP4nrkPvRlpG+EDJ3e
-	WqGtCTa+YH4md9Ss4uQDFOhglof9sWvrLtfalcxdYXQxokRk+oc717VjcqRTvaDSjGLs/vVaeHN
-	PO7y7VMc6ZqLwt5+wDPE=
-X-Google-Smtp-Source: AGHT+IEmBMiK5D6gNzmXfrX761lWGStYxNBrJZvudJzvab7Rp2ElyIbOXSVquGxbCO8PBrAmoeTxGA==
-X-Received: by 2002:a05:620a:2781:b0:7c3:d752:f256 with SMTP id af79cd13be357-7cd4674630bmr1041365885a.7.1747768139243;
-        Tue, 20 May 2025 12:08:59 -0700 (PDT)
+        bh=lvaowTnmN7oLC96D2HQ8Iw/m6LXgQG1UkyHMoTmfSNI=;
+        b=OevWc1riMBnCyoKaJY6SQNCF440E4wUf7Mii8ZifYJD2JbWpl9A3VyZSmgfKciy/qo
+         DcuLHGAQjA8Yb977zrarOWFtDuLI1aGeHCaSup3rFHIuODmStIBO+TGts485WKvzVw1G
+         WUUYae6GW3VbBC/EIT9FXF5OnaGL7XpXZMBezhipsiW+5rv+d3vi3rlvY/oqXREEIfDv
+         mukoO9F55WlcSYF4rIz/xfJnOIbVnoVx+c5+XatYwFGvv37Ej0Zu3f5XTlleMTM+3ifp
+         UFh7LxzTCy8wPkK5UqkakUZxbK7rC1WmmFnVUvBLlvcDwxKf5kSyV4wRzEDdMN7BULIG
+         Yxlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1747768140; x=1748372940;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=lvaowTnmN7oLC96D2HQ8Iw/m6LXgQG1UkyHMoTmfSNI=;
+        b=ku/yrcYqLyg3tTZuMijPHtO5x/qJRoFEwy+BkK1zhfIQvPE1L8p6A8LMpqdjQgEoXg
+         XfsM3Fz3S/fnGaXanHHMRs8M0Opo2W/rPOVR6XJDgtczrERUbSzCeguS27L9tl1FT04G
+         s2wqhNpeoaJOI3378b2Hd3e5bM13/CYlwNtLKu3r7uujb178BPoOgSKH4FbJYqd07fxI
+         z1lLAuVgjvo7ebORK6PLhppmYl1J0gXKSv2YpTpuEbejumR2NLKyufdqigTFp2p7iSkM
+         2Xed9Qtw9qERghkh/2jNlCPW/QuOOfpjcVWfV4zImgGb9v6dpGEC3BdEMWPHbR8Ario3
+         H3pQ==
+X-Gm-Message-State: AOJu0Yy4vjTbLj/8wNOOqVKE78hhzv91q1ftrPUh5FKg8ovSsLacfvbg
+	JQ1TR6J9XuEq1cF8PKcD0PR4RCWtrXp7zzbFeQ3514w10FDDLe/iZBbw
+X-Gm-Gg: ASbGncuafrPnDFAVTRyk3mDgI5ZHDDVQEnPI9GFAotbkLiRnTfpuKNF2Px92z8q8Mzw
+	lcuOt46t7MOZejoo6aYE1gNpEBXHlLUq9Ys3HDuProoWF2JMnhxz1J8EAvoAIC8ScoC36E/bt6u
+	NV74fsBqxQBq6ByCgmSC6+x97JU7JdqwlOdYTf1Qaz7cOgeVVywHMAmVeH6AfmWq3n8+S2FNsKM
+	bf6ODwb8pzMQcqtjGA6shMFrzK+8BNOUjMtCxbjFLiNgYkof9i9tcIvghnvc7Pu3cqq8C5pKsvj
+	drblcol1Nq7fHXSczQd7ozhMg5oOytYkwA7GPlquU3IaQuXeokCoGGnodvh5YWtnWZ8nJPweB7y
+	nZRpwoV9UGgrCYwoXTZqcmUPD6piULA==
+X-Google-Smtp-Source: AGHT+IHrhoVKr8ZuMW3LLmVacxqlRwznTBlrPPx7593+XpI6zjzFhRF7/0TUgT772pugTudEsg+iFQ==
+X-Received: by 2002:a05:622a:22a4:b0:494:b869:ac06 with SMTP id d75a77b69052e-494b869b287mr85977441cf.6.1747768140371;
+        Tue, 20 May 2025 12:09:00 -0700 (PDT)
 Received: from [192.168.124.1] (syn-067-243-142-039.res.spectrum.com. [67.243.142.39])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-494ae445b99sm76554051cf.48.2025.05.20.12.08.58
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-494ae445b99sm76554051cf.48.2025.05.20.12.08.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 May 2025 12:08:58 -0700 (PDT)
+        Tue, 20 May 2025 12:08:59 -0700 (PDT)
 From: Connor Abbott <cwabbott0@gmail.com>
-Subject: [PATCH v8 0/7] iommu/arm-smmu, drm/msm: Fixes for stall-on-fault
-Date: Tue, 20 May 2025 15:08:53 -0400
-Message-Id: <20250520-msm-gpu-fault-fixes-next-v8-0-fce6ee218787@gmail.com>
+Date: Tue, 20 May 2025 15:08:54 -0400
+Subject: [PATCH v8 1/7] iommu/arm-smmu-qcom: Enable threaded IRQ for Adreno
+ SMMUv2/MMU500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -67,13 +69,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAEXTLGgC/43QzW7DIAwH8FepOI/JfENPe49pBwJOitQkVUijT
- lXefaSXRjmgHf9G/hn7STJOCTM5n55kwiXlNA4l2I8TCRc/dEhTLJlw4AoYM7TPPe1ud9r6+3W
- mbXpgpgM+Zuo0CnAWuEBGSvttwtdr6f7+KfmS8jxOv69JC9uq/0AXRoE2wTVC8EZFaL663qfrZ
- xh7sqEL30EcKhAvUNRCBwncgORHSOwhXoFEgcC3HoApqzg7QvINCZAVSG6rIZMNCtPKII6Q2kH
- MVSBVIGeULgdwMdpwhPQbUkxVIF0g2SL3ygpvjT1CZgdVj222H+kQWQjOI6g9tK7rH2oL/4h2A
- gAA
-X-Change-ID: 20250117-msm-gpu-fault-fixes-next-96e3098023e1
+Message-Id: <20250520-msm-gpu-fault-fixes-next-v8-1-fce6ee218787@gmail.com>
+References: <20250520-msm-gpu-fault-fixes-next-v8-0-fce6ee218787@gmail.com>
+In-Reply-To: <20250520-msm-gpu-fault-fixes-next-v8-0-fce6ee218787@gmail.com>
 To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
  Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
  Sean Paul <sean@poorly.run>, Konrad Dybcio <konradybcio@kernel.org>, 
@@ -84,126 +82,61 @@ Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, freedreno@lists.freedesktop.org, 
  Connor Abbott <cwabbott0@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1747768138; l=5755;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1747768138; l=2173;
  i=cwabbott0@gmail.com; s=20240426; h=from:subject:message-id;
- bh=I1cIbwom2B32IbSq72YVeQcGdq7m4R+PKVkZdFMEOLQ=;
- b=i1oEoJC+lvHNjZGNrXyp+vl7Kutp44g7VBEaagMi5W0nsmizVrnl+FpNsaYxO69uzPtgHKPz5
- hsBP1dMI420AFEb+9PUrzKPDwASpVZR3eErIWOjvpKBFjzflOpeMf3d
+ bh=ZBvYKn5K11+lNsz4zT1zMYa5IeR/X4du0GnqkshS5cY=;
+ b=ViPeijvXoIUFv2QAC6sXPESomfVyzJ6s9UWCJTU2K3EndiqfiDH0VcJPIhmS25TOOhh6IVZsY
+ tWgr3r9EDqOCOO+X64zLIEayNFmirrauIr4/BJjbDt38yQUW2T81wXA
 X-Developer-Key: i=cwabbott0@gmail.com; a=ed25519;
  pk=dkpOeRSXLzVgqhy0Idr3nsBr4ranyERLMnoAgR4cHmY=
 
-drm/msm uses the stall-on-fault model to record the GPU state on the
-first GPU page fault to help debugging. On systems where the GPU is
-paired with a MMU-500, there were two problems:
+The recommended flow for stall-on-fault in SMMUv2 is the following:
 
-1. The MMU-500 doesn't de-assert its interrupt line until the fault is
-   resumed, which led to a storm of interrupts until the fault handler
-   was called. If we got unlucky and the fault handler was on the same
-   CPU as the interrupt, there was a deadlock.
-2. The GPU is capable of generating page faults much faster than we can
-   resume them. GMU (GPU Management Unit) shares the same context bank
-   as the GPU, so if there was a sudden spurt of page faults it would be
-   effectively starved and would trigger a watchdog reset, made even
-   worse because the GPU cannot be reset while there's a pending
-   transaction leaving the GPU permanently wedged.
+1. Resolve the fault.
+2. Write to FSR to clear the fault bits.
+3. Write RESUME to retry or fail the transaction.
 
-Patches 1-2 and 4 fix the first problem by switching the IRQ to be a
-threaded IRQ and then making drm/msm do its devcoredump work
-synchronously in the threaded IRQ. Patch 4 is dependent on patches 1-2.
-Patch 6 fixes the second problem and is dependent on patch 3. Patch 5 is
-a cleanup for patch 4 and patch 7 is a subsequent further cleanup to get
-rid of the resume_fault() callback once we switch resuming to being done
-by the SMMU's fault handler.
+MMU500 is designed with this sequence in mind. For example,
+experimentally we have seen on MMU500 that writing RESUME does not clear
+FSR.SS unless the original fault is cleared in FSR, so 2 must come
+before 3. FSR.SS is allowed to signal a fault (and does on MMU500) so
+that if we try to do 2 -> 1 -> 3 (while exiting from the fault handler
+after 2) we can get duplicate faults without hacks to disable
+interrupts.
 
-I've organized the series in the order that it should be picked up:
-
-- Patches 1-3 need to be applied to the iommu tree first.
-- Patches 4-6, which depend on 1-3 should be taken by drm/msm. We will
-  probably want to create an immutable tag and merge it into drm/msm to
-  be able to take them in the same cycle and avoid the temporary
-  regression noted in patch 2.
-- Patch 7 can be applied to the iommu tree later, it's just a smaller
-  cleanup dependent on the changes landing in drm/msm.
+However, resolving the fault typically requires lengthy operations that
+can stall, like bringing in pages from disk. The only current user,
+drm/msm, dumps GPU state before failing the transaction which indeed can
+stall. Therefore, from now on we will require implementations that want
+to use stall-on-fault to also enable threaded IRQs. Do that with the
+Adreno MMU implementations.
 
 Signed-off-by: Connor Abbott <cwabbott0@gmail.com>
 ---
-Changes in v8:
-- Make stall-on-fault debugfs file a wait time instead to make use in
-  igt easier (Rob).
-- Link to v7: https://lore.kernel.org/r/20250520-msm-gpu-fault-fixes-next-v7-0-96cd1cc9ae05@gmail.com
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Changes in v7:
-- Rebase on v6.15-rc2.
-- Add debugfs entry for whether stall-on-fault is enabled to help igt
-  tests that want to wait until the cooldown period is over to collect a
-  devcoredump (Rob).
-- Link to v6: https://lore.kernel.org/r/20250515-msm-gpu-fault-fixes-next-v6-0-4fe2a583a878@gmail.com
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 59d02687280e8d37b5e944619fcfe4ebd1bd6926..4d3b99babd3584ec971bef30cd533c35904fe7f5 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -585,6 +585,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
+ 	.alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
+ 	.write_sctlr = qcom_adreno_smmu_write_sctlr,
+ 	.tlb_sync = qcom_smmu_tlb_sync,
++	.context_fault_needs_threaded_irq = true,
+ };
+ 
+ static const struct arm_smmu_impl qcom_adreno_smmu_500_impl = {
+@@ -594,6 +595,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_500_impl = {
+ 	.alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
+ 	.write_sctlr = qcom_adreno_smmu_write_sctlr,
+ 	.tlb_sync = qcom_smmu_tlb_sync,
++	.context_fault_needs_threaded_irq = true,
+ };
+ 
+ static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *smmu,
 
-Changes in v6:
-- Rewrite to use a threaded IRQ instead in iommu/arm-smmu (Will). As a
-  result we can drop most of the previous changes and instead move
-  writing RESUME to the fault handler.
-- Link to v5: https://lore.kernel.org/r/20250319-msm-gpu-fault-fixes-next-v5-0-97561209dd8c@gmail.com
-
-Changes in v5:
-- Don't read CONTEXTIDR for stage 2 domains.
-- Clarify that we don't need TLB invalidation when changing
-  SMMU_CBn_SCTLR.CFCFG.
-- Link to v4: https://lore.kernel.org/r/20250304-msm-gpu-fault-fixes-next-v4-0-be14be37f4c3@gmail.com
-
-Changes in v4:
-- Add patches 1-2, which fix reading registers in drm/msm when
-  acknowledging the fault early. This was Robin's preferred solution
-  compared to making drm/msm's fault handler tell arm-smmu to resume the
-  fault.
-- Link to v3: https://lore.kernel.org/r/20250122-msm-gpu-fault-fixes-next-v3-0-0afa00158521@gmail.com
-
-Changes in v3:
-- Acknowledge the fault before resuming the transaction in patch 1.
-- Add suggested extra context to commit messages.
-- Link to v2: https://lore.kernel.org/r/20250120-msm-gpu-fault-fixes-next-v2-0-d636c4027042@gmail.com
-
-Changes in v2:
-- Remove unnecessary _irqsave when locking in IRQ handler (Robin)
-- Reuse existing spinlock for CFIE manipulation (Robin)
-- Lock CFCFG manipulation against concurrent CFIE manipulation
-- Don't use timer to re-enable stall-on-fault. (Rob)
-- Use more descriptive name for the function that re-enables
-  stall-on-fault if the cooldown period has ended. (Rob)
-- Link to v1: https://lore.kernel.org/r/20250117-msm-gpu-fault-fixes-next-v1-0-bc9b332b5d0b@gmail.com
-
----
-Connor Abbott (7):
-      iommu/arm-smmu-qcom: Enable threaded IRQ for Adreno SMMUv2/MMU500
-      iommu/arm-smmu: Move handing of RESUME to the context fault handler
-      iommu/arm-smmu-qcom: Make set_stall work when the device is on
-      drm/msm: Don't use a worker to capture fault devcoredump
-      drm/msm: Delete resume_translation()
-      drm/msm: Temporarily disable stall-on-fault after a page fault
-      iommu/smmu-arm-qcom: Delete resume_translation()
-
- drivers/gpu/drm/msm/adreno/a2xx_gpummu.c         |  5 ---
- drivers/gpu/drm/msm/adreno/a5xx_gpu.c            |  2 +
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c            |  4 ++
- drivers/gpu/drm/msm/adreno/adreno_gpu.c          | 54 +++++++++++++++++++-----
- drivers/gpu/drm/msm/adreno/adreno_gpu.h          |  2 +
- drivers/gpu/drm/msm/msm_debugfs.c                | 32 ++++++++++++++
- drivers/gpu/drm/msm/msm_drv.c                    |  4 ++
- drivers/gpu/drm/msm/msm_drv.h                    | 23 ++++++++++
- drivers/gpu/drm/msm/msm_gpu.c                    | 20 ++++-----
- drivers/gpu/drm/msm/msm_gpu.h                    |  8 +---
- drivers/gpu/drm/msm/msm_iommu.c                  | 12 ++----
- drivers/gpu/drm/msm/msm_mmu.h                    |  2 +-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c |  9 ++++
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c       | 43 +++++++++++++------
- drivers/iommu/arm/arm-smmu/arm-smmu.c            |  6 +++
- include/linux/adreno-smmu-priv.h                 |  8 ++--
- 16 files changed, 173 insertions(+), 61 deletions(-)
----
-base-commit: 8ffd015db85fea3e15a77027fda6c02ced4d2444
-change-id: 20250117-msm-gpu-fault-fixes-next-96e3098023e1
-
-Best regards,
 -- 
-Connor Abbott <cwabbott0@gmail.com>
+2.47.1
 
