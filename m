@@ -1,43 +1,45 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 104FC25F984;
-	Tue, 20 May 2025 22:42:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4430A383A5;
+	Wed, 21 May 2025 00:02:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747780946; cv=none; b=egWiFMeezupkYlEpXMAEE3woWMc7vZdI77AOlQIhcY3tQenzMX/8O+BCOQXGdy0reY3uah1RmynrechfQWRrkZ4kNjoQYKz8ImP7bO3CWZz1Ch8XD8TaAcShZ0xso3wzi9gqSHgdrCDGU6vaOgmKQcGbgpn6nvi8phIjgZL0FzE=
+	t=1747785734; cv=none; b=Dea/Eqv+xZDmJb+hNaNedN11++5ci8Hlq0FG4TihDRj/UYcBlDaLO76a1yiDmT5BwcYeOa6AOR9ev/WOFLmP2PL9XoO9zzp4Zd55KSjsuZ4gUGJY8UJErcW5iDDjH3kn+CoShGH2OYbicWb62CHwF03JtYcOHJTe9dXzZN92bpc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747780946; c=relaxed/simple;
-	bh=LEmHzMGZMeWbHV95axfvamFFe4GU6DbF7lodqwp38Jk=;
+	s=arc-20240116; t=1747785734; c=relaxed/simple;
+	bh=jXl0OotgD+85DVFJREE1im9n5MMc1eZmHD6Z/7IoqVI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jNm/JiBolc5BvNEQyKy2GDupDj0XgKYoAz8srJa9neBObpbQbRp/BW8xp1mkV3u3ZKflb/BwSYQfcljcVOtzpUe50pfV+7WksuGnO0GVdUGiLcNZ50DfauHndyn1IJ5s5hfAJGdJm+KQF0xGks0i9Jm1Dc8Wx8TsrCamZW5jqtQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=bvUGCBR4; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=CLISRe1S5CXabkLaM1O01uJYfu2yXz3l+V6YDfKFbSpssS6gw5iNmV+kLPFrNN03OMklkJsPNiodLE8p1RdYZYNiiqFQ0OLoUl2o0YDOQdheOKjCNX0ITfNphL6XjxCi3pJd5jCvOZRj1K7lq0dUYVXyfceX9nZPfN6BklRSCaI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xzpch6Ax; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="bvUGCBR4"
-Received: by linux.microsoft.com (Postfix, from userid 1152)
-	id 9616F2067864; Tue, 20 May 2025 15:42:24 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9616F2067864
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1747780944;
-	bh=DlpgK8+tZkkDHiRWgBwHzi2Y0cqlH2RIldw1jLBTIb4=;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xzpch6Ax"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6979FC4CEE9;
+	Wed, 21 May 2025 00:02:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1747785733;
+	bh=jXl0OotgD+85DVFJREE1im9n5MMc1eZmHD6Z/7IoqVI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=bvUGCBR4iqg/M7Vg3HP94282EcXsXC5noJNb1o/uDAj1lfvSmUtR3/enibqZKqGml
-	 IvzwXSS/YTm9/i/m4JJRERdIp388+J5wxgwzStIpmjQ4uI+6mrY/MlL8XjdktFOfqI
-	 o3HYFu1SfU5/WDFlksRh6wBlNWwZk7zhBZ5f0IOI=
-Date: Tue, 20 May 2025 15:42:24 -0700
-From: Shyam Saini <shyamsaini@linux.microsoft.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Jacob Pan <jacob.pan@linux.microsoft.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-	virtualization@lists.linux.dev, will@kernel.org,
-	eric.auger@redhat.com, code@tyhicks.com,
-	eahariha@linux.microsoft.com, vijayb@linux.microsoft.com
-Subject: Re: [PATCH v2 0/3] arm-smmu: select suitable IOVA
-Message-ID: <20250520224224.GA16365@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
-References: <20250410225030.2528385-1-shyamsaini@linux.microsoft.com>
- <20250410230008.GA6905@ziepe.ca>
- <67fff12d.650a0220.208c7c.d69dSMTPIN_ADDED_BROKEN@mx.google.com>
- <20250416181759.GF493866@ziepe.ca>
+	b=Xzpch6AxmJmqIKU1MNMhV6r+ZUcFyE6XLvHM/8foZm27SJCHk0oiZzxKvS94j6i/K
+	 1gqDikjs90pIPcOhm2XSK5TxKNJvUREDIvThJh44OOl673K2lmROFMKRbpa3bnbh/1
+	 bCCpoRvoukdb62EywWi100owxVeiKeKDkLxzO/beKegHX5lry/VkVsio4rmowXKUno
+	 MsrSxLt3UGrVCEsi2aKgSw+gl/TARELO0fKD9zI/uxbra9Oc5ez+jXSNNIDAf80xkd
+	 miNqtFsNT3w1dvKqVhTQq0t64LoiJsFxdXzPpQFSl+TKU0Q9eILO9w4f8DipERx8vZ
+	 xDw+67LsUtugw==
+Date: Tue, 20 May 2025 19:02:11 -0500
+From: Rob Herring <robh@kernel.org>
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: yong.wu@mediatek.com, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, krzk+dt@kernel.org, conor+dt@kernel.org,
+	matthias.bgg@gmail.com, iommu@lists.linux.dev,
+	linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	kernel@collabora.com
+Subject: Re: [PATCH v1 2/2] iommu/mediatek: Add support for Dimensity 1200
+ MT6893 MM IOMMU
+Message-ID: <20250521000211.GA1717916-robh@kernel.org>
+References: <20250410144008.475888-1-angelogioacchino.delregno@collabora.com>
+ <20250410144008.475888-3-angelogioacchino.delregno@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,59 +48,87 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250416181759.GF493866@ziepe.ca>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20250410144008.475888-3-angelogioacchino.delregno@collabora.com>
 
-Hi Jason,
-
-apologies for the delayed response.
-
-> On Wed, Apr 16, 2025 at 11:04:27AM -0700, Jacob Pan wrote:
+On Thu, Apr 10, 2025 at 04:40:08PM +0200, AngeloGioacchino Del Regno wrote:
+> Add support for the two MM IOMMUs found in the MediaTek Dimensity
+> 1200 (MT6893) SoC, used for display, camera, imgsys and vpu.
 > 
-> > Per last discussion "SMMU driver have a list of potential addresses and
-> > select the first one that does not intersect with the non-working IOVA
-> > ranges.". If we don't know what the "non-working IOVA" is, how do we
-> > know it does not intersect the "potential addresses"?
+> Since the MT6893 SoC is almost fully compatible with MT8192, also
+> move the mt8192_larb_region_msk before the newly introduced mt6893
+> platform data, as the larb regions from mt8192 are fully reused.
 > 
-> I had understood from previous discussions that this platform is
-> properly creating IOMMU_RESV_RESERVED regions for the IOVA that
-> doesn't work. Otherwise everything is broken..
+> Note that the only difference with MT8192 is that MT6893 needs the
+> SHARE_PGTABLE flag.
 > 
-> Presumably that happens through iommu_dma_get_resv_regions() calling
-> of_iommu_get_resv_regions() on a DT platform. There is a schema
-> describing how to do this, so platform firmware should be able to do it..
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
+>  drivers/iommu/mtk_iommu.c | 37 ++++++++++++++++++++++++++-----------
+>  1 file changed, 26 insertions(+), 11 deletions(-)
 > 
-> So the fix seems trivial enough to me:
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index b4c21aaed1266a..ebba18579151bc 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -3562,17 +3562,29 @@ static int arm_smmu_of_xlate(struct device *dev,
->  static void arm_smmu_get_resv_regions(struct device *dev,
->  				      struct list_head *head)
->  {
-> -	struct iommu_resv_region *region;
-> -	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> -
-> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-> -					 prot, IOMMU_RESV_SW_MSI, GFP_KERNEL);
-> -	if (!region)
-> -		return;
-> -
-> -	list_add_tail(&region->list, head);
-> +	static const u64 msi_bases[] = { MSI_IOVA_BASE, 0x12340000 };
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index df98d0c65f54..0a54c6521bf5 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -1550,6 +1550,31 @@ static const struct mtk_iommu_plat_data mt6795_data = {
+>  	.larbid_remap = {{0}, {1}, {2}, {3}, {4}}, /* Linear mapping. */
+>  };
 >  
->  	iommu_dma_get_resv_regions(dev, head);
+> +static const unsigned int mt8192_larb_region_msk[MT8192_MULTI_REGION_NR_MAX][MTK_LARB_NR_MAX] = {
+> +	[0] = {~0, ~0},				/* Region0: larb0/1 */
+> +	[1] = {0, 0, 0, 0, ~0, ~0, 0, ~0},	/* Region1: larb4/5/7 */
+> +	[2] = {0, 0, ~0, 0, 0, 0, 0, 0,		/* Region2: larb2/9/11/13/14/16/17/18/19/20 */
+> +	       0, ~0, 0, ~0, 0, ~(u32)(BIT(9) | BIT(10)), ~(u32)(BIT(4) | BIT(5)), 0,
+> +	       ~0, ~0, ~0, ~0, ~0},
+> +	[3] = {0},
+> +	[4] = {[13] = BIT(9) | BIT(10)},	/* larb13 port9/10 */
+> +	[5] = {[14] = BIT(4) | BIT(5)},		/* larb14 port4/5 */
+> +};
+> +
+> +static const struct mtk_iommu_plat_data mt6893_data = {
+> +	.m4u_plat     = M4U_MT8192,
+> +	.flags        = HAS_BCLK | OUT_ORDER_WR_EN | HAS_SUB_COMM_2BITS |
+> +			WR_THROT_EN | IOVA_34_EN | SHARE_PGTABLE | MTK_IOMMU_TYPE_MM,
+> +	.inv_sel_reg  = REG_MMU_INV_SEL_GEN2,
+> +	.banks_num    = 1,
+> +	.banks_enable = {true},
+> +	.iova_region  = mt8192_multi_dom,
+> +	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
+> +	.iova_region_larb_msk = mt8192_larb_region_msk,
+> +	.larbid_remap    = {{0}, {1}, {4, 5}, {7}, {2}, {9, 11, 19, 20},
+> +			    {0, 14, 16}, {0, 13, 18, 17}},
+> +};
+> +
+>  static const struct mtk_iommu_plat_data mt8167_data = {
+>  	.m4u_plat     = M4U_MT8167,
+>  	.flags        = RESET_AXI | HAS_LEGACY_IVRP_PADDR | MTK_IOMMU_TYPE_MM,
+> @@ -1673,17 +1698,6 @@ static const struct mtk_iommu_plat_data mt8188_data_vpp = {
+>  			   27, 28 /* ccu0 */, MTK_INVALID_LARBID}, {4, 6}},
+>  };
+>  
+> -static const unsigned int mt8192_larb_region_msk[MT8192_MULTI_REGION_NR_MAX][MTK_LARB_NR_MAX] = {
+> -	[0] = {~0, ~0},				/* Region0: larb0/1 */
+> -	[1] = {0, 0, 0, 0, ~0, ~0, 0, ~0},	/* Region1: larb4/5/7 */
+> -	[2] = {0, 0, ~0, 0, 0, 0, 0, 0,		/* Region2: larb2/9/11/13/14/16/17/18/19/20 */
+> -	       0, ~0, 0, ~0, 0, ~(u32)(BIT(9) | BIT(10)), ~(u32)(BIT(4) | BIT(5)), 0,
+> -	       ~0, ~0, ~0, ~0, ~0},
+> -	[3] = {0},
+> -	[4] = {[13] = BIT(9) | BIT(10)},	/* larb13 port9/10 */
+> -	[5] = {[14] = BIT(4) | BIT(5)},		/* larb14 port4/5 */
+> -};
+> -
+>  static const struct mtk_iommu_plat_data mt8192_data = {
+>  	.m4u_plat       = M4U_MT8192,
+>  	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
+> @@ -1777,6 +1791,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
+>  	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
+>  	{ .compatible = "mediatek,mt6779-m4u", .data = &mt6779_data},
+>  	{ .compatible = "mediatek,mt6795-m4u", .data = &mt6795_data},
+> +	{ .compatible = "mediatek.mt6893-iommu-mm", .data = &mt6893_data},
 
-my understand is, this hook is not called for all the devices, eg: pcie dts node
-doesn't use [1] "iommus" property instead it uses "iommu-map" property
-as a consequence, [1] while loop exits prematurely and iommu_dma_get_resv_regions()
-is not called, so there is no IOVA reservation for the pcie device. 
+Are you going to fix the typo>   ^
 
-Did i miss something? Please let me know.
+It is still warning with 'make dt_compatible_check' that it is 
+undocumented.
 
-[1] https://elixir.bootlin.com/linux/v6.15-rc7/source/drivers/of/device.c#L161
-
-Thanks,
-Shyam
+Rob
