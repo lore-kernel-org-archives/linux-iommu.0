@@ -1,84 +1,225 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D62CD1891AB
-	for <iommu@lists.linux.dev>; Wed, 21 May 2025 15:16:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4664019D06B
+	for <iommu@lists.linux.dev>; Wed, 21 May 2025 16:08:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747840589; cv=none; b=oYlhgi+6A1lUGn/b/vnA065R3M8Inqz+SqkjAGz4SzTEnLkPh0e9cEuyR8BKwrniXN/FkhXu4gEg1+i/mhTf6p523XOHz3HuVRxpNeSR0TH092/aahqJcqwCkkTkFzxoAzuTAS8UrlWw41+RsRD6MIVrcmVUnvtzF4ZEb/JMp7o=
+	t=1747843695; cv=none; b=HH/HtJqdsGqxVr0/16bUEtFl6UIDBDqL+PdYAu+HHqz/GKeGO3UzJA/If2lguLBlEiNIPfby08+0GB6APSp6IEAZ4IhktT7tm8CtnduAmrss7MAG6rElZAOlMWuEq7FovOsuBNioOK2JqDRN8RKN0tHDB96oo4vlyx78AF6PId0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747840589; c=relaxed/simple;
-	bh=rcecCSZgxXYbmeK45/Qv2JiTu7qRTSgAZkm1G2Upf04=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nVNqZkB3Ov16NesecyFZicK4KO0JweSLKna0uIMqu/BDX4diNvMvBUXqfnuoCwt2cj//1Lnrt3IgZM71y6Xj6Gz3bjUwRnTvgOpy57Jflx+tGnOe/c4TddA01rskOc8SDfbme99rBHKZttAvOfscNVsNcTQsvyOm7Wqg3XkEFqo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=i6l38Y+D; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="i6l38Y+D"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1747840585;
-	bh=rcecCSZgxXYbmeK45/Qv2JiTu7qRTSgAZkm1G2Upf04=;
-	h=From:To:Cc:Subject:Date:From;
-	b=i6l38Y+D8kDPWlbyUwquPW1SyH14xcmf0O23Ucu9qhRxkQRbFGZrdhiVmQpNE3vZE
-	 eGWl1jUD2+dKK3WWpexvl9YrZuPMOTBn/35BaHGSfL3obFsPmi+kNwLkEtzokD03NA
-	 7iXhWRinAHXlg1QID6KVdVFYL7qrSZp3lVm4CR9mijsPSZNU6uWB7fKmFLrMaJ6sHW
-	 YY9euo++/N+MPN8+HUj76Dw3teuE5EgWLVye494KBSBe060/AIheIvfOarbmv+PTSu
-	 GJu70haZPT3ja7RE5uMSFWNMciJUnifA7/j6papGU4ghSK2QjodvprHbj4ZEVhXHJI
-	 TtG3LzKLoGO5w==
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 2C19217E0FD4;
-	Wed, 21 May 2025 17:16:25 +0200 (CEST)
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-To: yong.wu@mediatek.com
-Cc: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	matthias.bgg@gmail.com,
-	angelogioacchino.delregno@collabora.com,
-	iommu@lists.linux.dev,
-	linux-mediatek@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	kernel@collabora.com,
-	robh@kernel.org
-Subject: [PATCH] iommu/mediatek: Fix compatible typo for mediatek,mt6893-iommu-mm
-Date: Wed, 21 May 2025 17:15:48 +0200
-Message-ID: <20250521151548.185910-1-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.49.0
+	s=arc-20240116; t=1747843695; c=relaxed/simple;
+	bh=r+PsOW+3c8fAoEJM7Hiht9PiePv9tWx8sLhz5yI7E0g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uhesvNOW9/pdukXpGhxV8k7VNdTpuCzfmcHxoyFsIs9+ig4zvQzbQTfvh1+lIKjq6wgO4+5deTliMoz5IcKZx7+WuWiaf+vpa9zF124rd889hXRznImUsBnkHtMBgVwLpTm/NotZDV+4S1cVBX7a6aGifJMCGC7GXNsZgo/InLU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 883A71515;
+	Wed, 21 May 2025 09:07:58 -0700 (PDT)
+Received: from [10.57.64.80] (unknown [10.57.64.80])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6D6A43F6A8;
+	Wed, 21 May 2025 09:08:10 -0700 (PDT)
+Message-ID: <a1e9c606-0255-4e3b-87d3-dadc3b819622@arm.com>
+Date: Wed, 21 May 2025 17:08:08 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 6/6] dma-mapping: benchmark: add IOVA support
+To: Luis Chamberlain <mcgrof@kernel.org>, vkoul@kernel.org,
+ chenxiang66@hisilicon.com, m.szyprowski@samsung.com, leon@kernel.org,
+ jgg@nvidia.com, alex.williamson@redhat.com, joel.granados@kernel.org
+Cc: iommu@lists.linux.dev, dmaengine@vger.kernel.org,
+ linux-block@vger.kernel.org, gost.dev@samsung.com
+References: <20250520223913.3407136-1-mcgrof@kernel.org>
+ <20250520223913.3407136-7-mcgrof@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250520223913.3407136-7-mcgrof@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-Fix the "mediatek.mt6893-iommu-mm" compatible string typo, as the
-dot was actually meant to be a comma: "mediatek,mt6893-iommu-mm".
+On 2025-05-20 11:39 pm, Luis Chamberlain wrote:
+> Add support to use the IOVA DMA API, and allow comparing and contrasting
+> to the streaming DMA API. Since the IOVA is intended to be an enhancement
+> when using an IOMMU which supports DMA over it only allow the IOVA to be
+> used proactively for devices which have this support, that is when
+> use_dma_iommu() is true. We don't try a fallback as the goal is clear,
+> only to use the IOVA when intended.
+> 
+> Example output, using intel-iommu on qemu against a random number
+> generator device, this output is completely artificial as its a VM
+> and its using more threads than the guest even has cores, the goal was
+> to at least visualize some numerical output on both paths:
+> 
+> ./tools/testing/selftests/dma/dma_map_benchmark -t 24 -i 2
+> === DMA Mapping Benchmark Results ===
+> Configuration: threads:24 seconds:20 node:-1 dir:BIDIRECTIONAL granule:1 iova:2
+> Buffer size: 1 pages (4 KB)
+> 
+> STREAMING DMA RESULTS:
+>    Map   latency:    12.3 μs (σ=257.9 μs)
+>    Unmap latency:     3.7 μs (σ=142.5 μs)
+>    Total latency:    16.0 μs
+> 
+> IOVA DMA RESULTS:
+>    Alloc   latency:     0.1 μs (σ= 31.1 μs)
+>    Link    latency:     2.5 μs (σ=116.9 μs)
+>    Sync    latency:     9.6 μs (σ=227.8 μs)
+>    Destroy latency:     3.6 μs (σ=141.2 μs)
+>    Total latency:    15.8 μs
+> 
+> PERFORMANCE COMPARISON:
+>    Streaming DMA total:    16.0 μs
+>    IOVA DMA total:         15.8 μs
+>    Performance ratio:      0.99x (IOVA is 1.3% faster)
+>    Streaming throughput:    62500 ops/sec
+>    IOVA throughput:         63291 ops/sec
+>    Streaming bandwidth:     244.1 MB/s
+>    IOVA bandwidth:          247.2 MB/s
+> 
+> IOVA OPERATION BREAKDOWN:
+>    Alloc:     0.6% (   0.1 μs)
+>    Link:     15.8% (   2.5 μs)
+>    Sync:     60.8% (   9.6 μs)
+>    Destroy:  22.8% (   3.6 μs)
+> 
+> RECOMMENDATIONS:
+>    ~ IOVA and Streaming APIs show similar performance
+> === End of Benchmark ===
+> 
+> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+> ---
+>   include/linux/map_benchmark.h                 |  11 +
+>   kernel/dma/Kconfig                            |   4 +-
+>   kernel/dma/map_benchmark.c                    | 417 +++++++++++++++++-
+>   .../testing/selftests/dma/dma_map_benchmark.c | 145 +++++-
+>   4 files changed, 562 insertions(+), 15 deletions(-)
+> 
+> diff --git a/include/linux/map_benchmark.h b/include/linux/map_benchmark.h
+> index 62674c83bde4..da7c9e3ddf21 100644
+> --- a/include/linux/map_benchmark.h
+> +++ b/include/linux/map_benchmark.h
+> @@ -7,6 +7,7 @@
+>   #define _KERNEL_DMA_BENCHMARK_H
+>   
+>   #define DMA_MAP_BENCHMARK       _IOWR('d', 1, struct map_benchmark)
+> +#define DMA_MAP_BENCHMARK_IOVA	_IOWR('d', 2, struct map_benchmark)
+>   #define DMA_MAP_MAX_THREADS     1024
+>   #define DMA_MAP_MAX_SECONDS     300
+>   #define DMA_MAP_MAX_TRANS_DELAY (10 * NSEC_PER_MSEC)
+> @@ -27,5 +28,15 @@ struct map_benchmark {
+>   	__u32 dma_dir; /* DMA data direction */
+>   	__u32 dma_trans_ns; /* time for DMA transmission in ns */
+>   	__u32 granule;  /* how many PAGE_SIZE will do map/unmap once a time */
+> +	__u32 has_iommu_dma;
 
-Fixes: f6a1e89ab6e3 ("iommu/mediatek: Add support for Dimensity 1200 MT6893 MM IOMMU")
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/iommu/mtk_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Why would userspace care about this? Either they asked for a streaming 
+benchmark and it's irrelevant, or they asked for an IOVA benchmark, 
+which either succeeded, or failed and this is ignored anyway.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 0a54c6521bf5..cb95fecf6016 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1791,7 +1791,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
- 	{ .compatible = "mediatek,mt6779-m4u", .data = &mt6779_data},
- 	{ .compatible = "mediatek,mt6795-m4u", .data = &mt6795_data},
--	{ .compatible = "mediatek.mt6893-iommu-mm", .data = &mt6893_data},
-+	{ .compatible = "mediatek,mt6893-iommu-mm", .data = &mt6893_data},
- 	{ .compatible = "mediatek,mt8167-m4u", .data = &mt8167_data},
- 	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
- 	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
--- 
-2.49.0
+> +	__u64 avg_iova_alloc_100ns;
+> +	__u64 avg_iova_link_100ns;
+> +	__u64 avg_iova_sync_100ns;
+> +	__u64 avg_iova_destroy_100ns;
+> +	__u64 iova_alloc_stddev;
+> +	__u64 iova_link_stddev;
+> +	__u64 iova_sync_stddev;
+> +	__u64 iova_destroy_stddev;
+> +	__u32 use_iova; /* 0=regular, 1=IOVA, 2=both */
 
+Conversely, why should the kernel have to care about this? If userspace 
+wants both benchmarks, they can just run both benchmarks, with whatever 
+number of threads for each they fancy. No need to have all that 
+complexity kernel-side. If there's a valid desire for running multiple 
+different benchmarks *simultaneously* then we should support that in 
+general (I can imagine it being potentially interesting to thrash the 
+IOVA allocator with several different sizes at once, for example.)
+
+That way, I'd also be inclined to give the new ioctl its own separate 
+structure for IOVA results, and avoid impacting the existing ABI.
+
+>   };
+>   #endif /* _KERNEL_DMA_BENCHMARK_H */
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index 31cfdb6b4bc3..e2d5784f46eb 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -261,10 +261,10 @@ config DMA_API_DEBUG
+>   	  If unsure, say N.
+>   
+>   config DMA_MAP_BENCHMARK
+> -	bool "Enable benchmarking of streaming DMA mapping"
+> +	bool "Enable benchmarking of streaming and IOVA DMA mapping"
+>   	depends on DEBUG_FS
+>   	help
+>   	  Provides /sys/kernel/debug/dma_map_benchmark that helps with testing
+> -	  performance of dma_(un)map_page.
+> +	  performance of the streaming DMA dma_(un)map_page and IOVA API.
+>   
+>   	  See tools/testing/selftests/dma/dma_map_benchmark.c
+> diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+> index b54345a757cb..3ae34433420b 100644
+> --- a/kernel/dma/map_benchmark.c
+> +++ b/kernel/dma/map_benchmark.c
+> @@ -18,6 +18,7 @@
+>   #include <linux/platform_device.h>
+>   #include <linux/slab.h>
+>   #include <linux/timekeeping.h>
+> +#include <linux/iommu-dma.h>
+
+Nit: these are currently in nice alphabetical order.
+
+>   struct map_benchmark_data {
+>   	struct map_benchmark bparam;
+[...]
+> @@ -112,7 +231,250 @@ static int map_benchmark_thread(void *data)
+>   	return ret;
+>   }
+>   
+> -static int do_map_benchmark(struct map_benchmark_data *map)
+> +static int do_iova_benchmark(struct map_benchmark_data *map)
+> +{
+> +	struct task_struct **tsk;
+> +	int threads = map->bparam.threads;
+> +	int node = map->bparam.node;
+> +	u64 iova_loops;
+> +	int ret = 0;
+> +	int i;
+> +
+> +	tsk = kmalloc_array(threads, sizeof(*tsk), GFP_KERNEL);
+> +	if (!tsk)
+> +		return -ENOMEM;
+> +
+> +	get_device(map->dev);
+> +
+> +	/* Create IOVA threads only */
+> +	for (i = 0; i < threads; i++) {
+> +		tsk[i] = kthread_create_on_node(benchmark_thread_iova, map,
+> +				node, "dma-iova-benchmark/%d", i);
+> +		if (IS_ERR(tsk[i])) {
+> +			pr_err("create dma_iova thread failed\n");
+> +			ret = PTR_ERR(tsk[i]);
+> +			while (--i >= 0)
+> +				kthread_stop(tsk[i]);
+> +			goto out;
+> +		}
+> +
+> +		if (node != NUMA_NO_NODE)
+> +			kthread_bind_mask(tsk[i], cpumask_of_node(node));
+> +	}
+
+Duplicating all the thread-wrangling code seems needlessly horrible - 
+surely it's easy enough to factor out the stats initialisation and final 
+calculation, along with the thread function itself. Perhaps as callbacks 
+in the map_benchmark_data?
+
+Similarly, each "thread function" itself only only actually needs to 
+consist of the respective "while (!kthread_should_stop())" loop - the 
+rest of map_benchmark_thread() could still be used as a common harness 
+to avoid duplicating the buffer management code as well.
+
+Thanks,
+Robin.
