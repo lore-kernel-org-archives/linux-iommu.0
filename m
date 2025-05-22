@@ -1,64 +1,46 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04E0A23E226;
-	Wed, 21 May 2025 23:41:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6C0FC1A5BA4
+	for <iommu@lists.linux.dev>; Thu, 22 May 2025 07:10:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747870898; cv=none; b=IFNGZKPX0G3vpSfgfnGhK0UK8OAPXDtbBon2eCzUJF6wFbZAhIxwm4taeE2iAHEB/paMvhu8jEwk7JAjrUezu7zNx5J2uLj++jL2vTbkUbe4Qnx0n1oSuWg1ZSN4jxvAKjABvAzN3mh6MQbkZD6KPjixC0t78FQt8RVpUcqzYHQ=
+	t=1747897846; cv=none; b=Fo58Z6cASfRChQY1MHOv+9ao9KFS5AAbjqVprlbn4puw0Md9h06e3iIPvTl+iJ4kKkvUaqvilt6x/SQh+LaRwnobRCmeJmAoWCaXeh+hTk5PMMx25MrTnvxseMjlz0njQPz618itGMlkI+kwNFA/UEX2C2XFJ3SjkroECd1aaYI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747870898; c=relaxed/simple;
-	bh=dmXBPaP+dUDCyAOUcCFQ6VMDi1A2rED504MmFv/HvAs=;
+	s=arc-20240116; t=1747897846; c=relaxed/simple;
+	bh=Ug1W8EFqGslpRqksKKj/3dbOeQK9KUmvYYxqb2arFMs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eTCaI29FXFy97/taqDYWoDeh7OP8jL5S3l5chtvJacxDEyhJ5PgGWo1DBMGW8S/kdcrQLWXLGEWknfjc7JcIfK/7e9GWu2AeAueGXRWC5X9W7Tj6j77atJCczOcp8A+rOkzB/NiZYpFVtxVPgS+uDaK295r5aSPnaSbiv0sk7Zo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Qr9rr0HD; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=pUqbx+x5cqmTDyA62KRzMYRQphYc5r7bq3tHUZBCoHCKMnVksIfV9nZ9guNdrqOKtCDFeqfZzUtIacGN0zdyRnA/hjN8gm0UWcNFXoC1a9A7KG/P6vBQQ3hg8S9OxQmQ4CaSBPmhc60Z5+Y4M+4fLY9h9mAAl5GESWieHB5nil8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=HUHdBhTU; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Qr9rr0HD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1747870897; x=1779406897;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=dmXBPaP+dUDCyAOUcCFQ6VMDi1A2rED504MmFv/HvAs=;
-  b=Qr9rr0HDKWov/+Q0/NVRtGHnerwKY6vs4Pw6Yj6Ki/L4QhrsVsN3rn8h
-   uQSkYzc7WI+V3Wx9tFdK302nrqC8NfrHjX9CKTjrnTah4zeQ/vp6LhuMz
-   XM5Woe+XFGSwRLX/GF73WWgsWKom+xHuBh+67NdhLPBOY/5OobxzNoOtv
-   70UOEqtk7WsZSuKptfCgY9yT1fu+PDbF3qqvHEu81eLoBM+RPYPtgqtMb
-   lKptwtQAeCXVrKPMzkECmn2+jlV6rl6iX7QZSTv3xQmTtu7om5DIxOnzT
-   s4a9pDIoLIv4HabfO+3MXufk+oCG/HcPCQKiAnh7+YocCeCt82LNTONe2
-   g==;
-X-CSE-ConnectionGUID: mwupOJn3TXWzosXjaHhT+g==
-X-CSE-MsgGUID: xy5j9T80Q5CpBv1kDwdMEg==
-X-IronPort-AV: E=McAfee;i="6700,10204,11440"; a="50014405"
-X-IronPort-AV: E=Sophos;i="6.15,304,1739865600"; 
-   d="scan'208";a="50014405"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2025 16:41:33 -0700
-X-CSE-ConnectionGUID: EZOuNzdTTNKiUHZ2LdKp4A==
-X-CSE-MsgGUID: Cu7r3II8RwerSm5FlU65kg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.15,304,1739865600"; 
-   d="scan'208";a="140836538"
-Received: from lkp-server01.sh.intel.com (HELO 1992f890471c) ([10.239.97.150])
-  by fmviesa010.fm.intel.com with ESMTP; 21 May 2025 16:41:28 -0700
-Received: from kbuild by 1992f890471c with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1uHt3u-000Ojg-18;
-	Wed, 21 May 2025 23:41:26 +0000
-Date: Thu, 22 May 2025 07:40:29 +0800
-From: kernel test robot <lkp@intel.com>
-To: Luis Chamberlain <mcgrof@kernel.org>, vkoul@kernel.org,
-	chenxiang66@hisilicon.com, m.szyprowski@samsung.com,
-	robin.murphy@arm.com, leon@kernel.org, jgg@nvidia.com,
-	alex.williamson@redhat.com, joel.granados@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
-	dmaengine@vger.kernel.org, linux-block@vger.kernel.org,
-	gost.dev@samsung.com, mcgrof@kernel.org
-Subject: Re: [PATCH 1/6] fake-dma: add fake dma engine driver
-Message-ID: <202505220711.3GeHexsR-lkp@intel.com>
-References: <20250520223913.3407136-2-mcgrof@kernel.org>
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="HUHdBhTU"
+Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id B6CBA4B84B;
+	Thu, 22 May 2025 09:10:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1747897836;
+	bh=Ug1W8EFqGslpRqksKKj/3dbOeQK9KUmvYYxqb2arFMs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=HUHdBhTUQEfVecMBl9oB1ALPOaub2zSsDxBIHLUEcP+0Aci6NH7lmJbOqiR1Uy61V
+	 E2STmdTOlzqitker2vja2GTYeZ+UaS80PLY/c6UikF5H6j4KJjrH4a3U0DCcr+jbKV
+	 d4974q/m8vay76lA3WYlxxrDgWPBzceZul20MmyN/nrEC/UKVN/hujXg4VSOVGMuvj
+	 dABS7SO3EpAozgMELyKbQLJG6V2bqfN463O4adn1dJ4I+uNQl0Oyo6NEBMrTrpFm4r
+	 OJOeOnDGU3slYxeJAgfiUKfdC2yCJCQtfMx9YGGI4ERasZNhvX4cM7r6oHt8BtTYLK
+	 giunrkE9QJR+Q==
+Date: Thu, 22 May 2025 09:10:35 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Tushar Dave <tdave@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, kevin.tian@intel.com,
+	jgg@nvidia.com, yi.l.liu@intel.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v4 rc] iommu: Skip PASID validation for devices without
+ PASID capability
+Message-ID: <aC7N6zeTWZJ-Adkj@8bytes.org>
+References: <20250520011937.3230557-1-tdave@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -67,41 +49,6 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250520223913.3407136-2-mcgrof@kernel.org>
+In-Reply-To: <20250520011937.3230557-1-tdave@nvidia.com>
 
-Hi Luis,
-
-kernel test robot noticed the following build warnings:
-
-[auto build test WARNING on linus/master]
-[also build test WARNING on v6.15-rc7 next-20250521]
-[cannot apply to vkoul-dmaengine/next shuah-kselftest/next shuah-kselftest/fixes sysctl/sysctl-next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Luis-Chamberlain/fake-dma-add-fake-dma-engine-driver/20250521-064035
-base:   linus/master
-patch link:    https://lore.kernel.org/r/20250520223913.3407136-2-mcgrof%40kernel.org
-patch subject: [PATCH 1/6] fake-dma: add fake dma engine driver
-config: alpha-randconfig-r113-20250522 (https://download.01.org/0day-ci/archive/20250522/202505220711.3GeHexsR-lkp@intel.com/config)
-compiler: alpha-linux-gcc (GCC) 12.4.0
-reproduce: (https://download.01.org/0day-ci/archive/20250522/202505220711.3GeHexsR-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202505220711.3GeHexsR-lkp@intel.com/
-
-sparse warnings: (new ones prefixed by >>)
->> drivers/dma/fake-dma.c:69:24: sparse: sparse: symbol 'single_fake_dma' was not declared. Should it be static?
-
-vim +/single_fake_dma +69 drivers/dma/fake-dma.c
-
-    68	
-  > 69	struct fake_dma_device *single_fake_dma;
-    70	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Applied, thanks. 
