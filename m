@@ -1,55 +1,109 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3A47E221D9B
-	for <iommu@lists.linux.dev>; Thu, 22 May 2025 07:13:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747898011; cv=none; b=CRluxNH9ZwMKzcLkRZRtMJABe6zZakhsge6eismBeNC02cRpZxhgfVw52f/UfNddF4d7ti2wZ0h5BvZ8tT9UMSti8gXCr4hXfNRPeESDQiagj4F+zbX4D0FpO8fZQj32C7hYCZ4rXWNIYKLf3JxLtiKZ+zLuRcmEQlS2yGC9pIo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747898011; c=relaxed/simple;
-	bh=lHuXjtnGIwA8Zzr3bT7RPQh03xIe4TvMRJ0gk9Qtcas=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=THSAAD1mAL8RttzriDFgp2IfzojCTxU6bBG6fcgNGmVrlRjMPTicBZEw5gr2xuXABnyJ+yckixNQH+Ma0a+D2k5iYK2oYpsDVNAJvJoUtTtwunWzslm+r+O34NZ8hkX1wJCua3NZx193ctdSdUBXuzv8dYZW5k+L24yvMfkRIgA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=T6dWlTr2; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="T6dWlTr2"
-Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id E68E84B84B;
-	Thu, 22 May 2025 09:13:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1747898008;
-	bh=lHuXjtnGIwA8Zzr3bT7RPQh03xIe4TvMRJ0gk9Qtcas=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C20E24EA8E;
+	Thu, 22 May 2025 07:52:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1747900331; cv=none; b=B73bQuV1cU0E+qsleTD/cmB8l/xImhklshk1xV/UEY9mv8bbSIpVjKy1tG1HFlTjUo5lN8teW/Wq8k+IgcJTcQRzib740Ld1dEgNQYRyId5SdU6VaqZ3Ti1c0f1cYlQvcmnLYjYyj7ae25/RwHY44iaBjoOB+X1clMysnDs5u1o=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1747900331; c=relaxed/simple;
+	bh=T6UY1TqGv//MKV9QGiY+pagJxws1WT6fHX3Dckvh8xc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tyllpH76Xq6R+WGBhlY2q1iMM9P3GUTf2gkG6rc4cFQXloOpNw2gsh3Aou+7NSZ1xniACisYLrh+mPRUTS3A3CzQIzQ7UIR0ZCgpJHmHwAaY3o1OhbAMeWhxPm2ILPaJebl6qMoX51Oiu89zq9CTPMWLbEJa6WB01c/0BY3U8HQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jhoVKYdE; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jhoVKYdE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AD75C4CEE4;
+	Thu, 22 May 2025 07:52:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1747900330;
+	bh=T6UY1TqGv//MKV9QGiY+pagJxws1WT6fHX3Dckvh8xc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=T6dWlTr2XT2GmGeCMyAcctcy1RpNQOI6pU+GjH0UCm9p0MJHc8NtF6tV1+D4/Q6Li
-	 R9ClH9GUmx7loyp1mMfjWd45Rrroit0lBeMnsR2tp98VEZpFbm7BWuiMCp9CnOj6a6
-	 RKAzvKkO0IFcoAB0kzGsyUhy4xyK4S+m2BGkuLSEgGNsauhZVyzBrjXz9/qv4S9CBd
-	 j6m72ZsK8uvVz9nIxbxt/ZTTnVQ+I2Kt2pHHmc4wQv9kFrGiQ7Up8+oqsZY8XF+8ZO
-	 Pl3TPP/1+QzvHlrxLyzFIXqqRDkLi5gI3jiZXeZyiloawz/nwhrJHThIZxEgKm5xOB
-	 7uQj+O145Q5Vw==
-Date: Thu, 22 May 2025 09:13:26 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: yong.wu@mediatek.com, will@kernel.org, robin.murphy@arm.com,
-	matthias.bgg@gmail.com, iommu@lists.linux.dev,
-	linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, kernel@collabora.com,
-	robh@kernel.org
-Subject: Re: [PATCH] iommu/mediatek: Fix compatible typo for
- mediatek,mt6893-iommu-mm
-Message-ID: <aC7OlsGLaFvl6n95@8bytes.org>
-References: <20250521151548.185910-1-angelogioacchino.delregno@collabora.com>
+	b=jhoVKYdEO+x6EgNOUvVzOtcWCsJW/PERVPRppCRhBEYlRsbztMloi3w6rNpXaC6cQ
+	 XEima4m1fFyVB8RUEoezKyuuoC0BCx9rgwPH2MtW+R5LiqeCqUwzQU54pesJXFAu3f
+	 ZsWRoxrPv0lrWj3NzRWjY2kDdAf3m2bFFcFpW+XlmhV/zAO0D79dECPPg/FSQBLlZ+
+	 bjgQig4eXpbHM0mfvMiYSSPhv6f6zDSdqRGwdim1muGBD9cTgVtP/DsaTDzZT3ZybJ
+	 JOwTxPwiNYDTSsBlDqFH7nZXxFFYWAwpmc3PCt5NiYXpWQAbNSHg8F49jeKeP9CYiE
+	 iyViKA7eIJ7ug==
+Date: Thu, 22 May 2025 09:52:07 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Julien Massot <julien.massot@collabora.com>
+Cc: kernel@collabora.com, Sen Chu <sen.chu@mediatek.com>, 
+	Sean Wang <sean.wang@mediatek.com>, Macpaul Lin <macpaul.lin@mediatek.com>, 
+	Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+	=?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado <nfraprado@collabora.com>, Hui Liu <hui.liu@mediatek.com>, Yong Wu <yong.wu@mediatek.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Tinghan Shen <tinghan.shen@mediatek.com>, 
+	linux-pm@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v2 1/3] dt-bindings: mfd: mediatek: mt6397: Add
+ #sound-dai-cells property
+Message-ID: <20250522-independent-ginger-bullfrog-4552d1@kuoka>
+References: <20250514-mt8395-dtb-errors-v2-0-d67b9077c59a@collabora.com>
+ <20250514-mt8395-dtb-errors-v2-1-d67b9077c59a@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250521151548.185910-1-angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20250514-mt8395-dtb-errors-v2-1-d67b9077c59a@collabora.com>
 
-Applied, thanks.
+On Wed, May 14, 2025 at 10:19:56AM GMT, Julien Massot wrote:
+> The 'mt6359.dtsi' file already uses the '#sound-dai-cells' property.
+> Add the corresponding property to the binding to fix the following
+> dtb-check error:
+> 
+> mediatek/mt8395-radxa-nio-12l.dtb: pmic: '#sound-dai-cells', 'mt6359rtc' do not match any of the regexes: 'pinctrl-[0-9]+'
+> from schema $id: http://devicetree.org/schemas/mfd/mediatek,mt6397.yaml#
+
+If this is a random drive-by, would be fine, but if that's your platform
+which you should know, then I expect this to be a real reason instead
+something which can easily be rejected with: what if DTS is wrong?
+
+I could not find the ASoC driver for that compatible and quick glance to
+MFD shown me no usage of dai cells, so you need proper explanation here.
+
+Especially, that there is a subnode audio-codec, so adding dai cells to
+the parent node feels just wrong. One is wrong - either subnode or
+parent is a codec.
+
+> 
+> Fixes: 9bc8353be720 ("arm64: dts: mt6359: Add #sound-dai-cells property")
+> Signed-off-by: Julien Massot <julien.massot@collabora.com>
+> ---
+>  Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml b/Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml
+> index 6a89b479d10fad3c8b61cab5a3af1453baca4d1a..9580c4ec1ae00f1dd1182357d8b0a5035a1b7f82 100644
+> --- a/Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml
+> +++ b/Documentation/devicetree/bindings/mfd/mediatek,mt6397.yaml
+> @@ -30,6 +30,9 @@ description: |
+>    See the following for pwrap node definitions:
+>    Documentation/devicetree/bindings/soc/mediatek/mediatek,pwrap.yaml
+>  
+> +allOf:
+> +  - $ref: /schemas/sound/dai-common.yaml#
+> +
+>  properties:
+>    compatible:
+>      oneOf:
+> @@ -53,6 +56,9 @@ properties:
+>    "#interrupt-cells":
+>      const: 2
+>  
+> +  '#sound-dai-cells':
+> +    const: 1
+
+Also extend the example, if there is one for such device.
+
+Best regards,
+Krzysztof
+
