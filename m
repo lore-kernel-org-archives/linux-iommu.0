@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4FD9C23814C
-	for <iommu@lists.linux.dev>; Thu, 22 May 2025 16:29:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 556CB29AB14;
+	Thu, 22 May 2025 16:54:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747931364; cv=none; b=CFthUAvOa4bV4v1+WZIohUqc9OZ5K3xpT/lP39yPbKKabAABIOeR0sA4MbLgqtvQ8nIJxoFeAsPgjx2rRXPY0OEjBvXpfm9FhQVpgHusYkKhgFZqifM7UxmRjOGYKyAuY4YlWqLpkUMmwZx6Vmb/8yx17F/aidlVjbuBzLcNwIM=
+	t=1747932863; cv=none; b=p8TgL1+AziAdhiapQ7AI8+m4qJf8HPl3D/rXiAxfEE1/JwHPFEjcbcqU/MDmAsb3rBdAm0L83kE7x1PGURDSEzXl2R4LfXymZPjxJI6Twntf0iUXQ1Pg6g6ItYHL1RGnShtx+vn5oDzaFa45ijx8MMrw+RAFSdZreCPfCAXCyTM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747931364; c=relaxed/simple;
-	bh=qWPSvt0Cw6gvSZwMUYIi0pwXwe641tNnsiGfT8CNCds=;
+	s=arc-20240116; t=1747932863; c=relaxed/simple;
+	bh=/p5BvwZ8BAJMaIviBKS1CuE/9kkviZsb/5GJtHMFnpw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GXcNmp6YRkOkWxD/RNiNIDiC85nvltGxGKqVJkVYAwRlIrnhWoftlOfMqE1yKNPneBi5dit411vEW6zLX/tgtV8f+XAwY8HP+CEl/vLJ4xVnM2fCdIUf5sh/fShuymomFDH6Zgmbha/ZynVSn2K+bQXJGqIMECzI5xjf6kuHPgw=
+	 In-Reply-To:Content-Type; b=BJCvT+uhV8UBqEotGyQFI0Yjgdxu+nl+SjwS5AdNXSoQvlsUkBakduHdz2PHzfkvPnbtNQ3nLSp2jdbfxkLSQVTcL19Xz1W5NAx1IB3Xi4irHT0x6FKD3seV2PI0URXGQF/1b+rXMhLUuBqte8liAkea/aBWpM4Ye/oytvMQBqc=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4CE681A2D;
-	Thu, 22 May 2025 09:29:07 -0700 (PDT)
-Received: from [10.57.47.3] (unknown [10.57.47.3])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 2B3FB3F5A1;
-	Thu, 22 May 2025 09:29:17 -0700 (PDT)
-Message-ID: <d690a126-690c-47ea-93d9-2a950b1bd2c4@arm.com>
-Date: Thu, 22 May 2025 17:29:16 +0100
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3B0681A2D;
+	Thu, 22 May 2025 09:54:06 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7BB243F673;
+	Thu, 22 May 2025 09:54:19 -0700 (PDT)
+Message-ID: <1963b2f4-32f8-428f-8f88-600bb6f2622d@arm.com>
+Date: Thu, 22 May 2025 17:54:18 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,220 +27,251 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RESEND PATCH v6 1/3] arm64: Add BBM Level 2 cpu feature
+Subject: Re: [PATCH] iommu: Avoid introducing more races
+To: Johan Hovold <johan@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Jason Gunthorpe <jgg@nvidia.com>, regressions@lists.linux.dev
+References: <09d901ad11b3a410fbb6e27f7d04ad4609c3fe4a.1741706365.git.robin.murphy@arm.com>
+ <aC71lkTn7_xfuivy@hovoldconsulting.com>
+From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Ryan Roberts <ryan.roberts@arm.com>, Will Deacon <will@kernel.org>,
- =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
- yang@os.amperecomputing.com, corbet@lwn.net, jean-philippe@linaro.org,
- robin.murphy@arm.com, joro@8bytes.org, akpm@linux-foundation.org,
- paulmck@kernel.org, mark.rutland@arm.com, joey.gouly@arm.com,
- maz@kernel.org, james.morse@arm.com, broonie@kernel.org,
- oliver.upton@linux.dev, baohua@kernel.org, david@redhat.com,
- ioworker0@gmail.com, jgg@ziepe.ca, nicolinc@nvidia.com, mshavit@google.com,
- jsnitsel@redhat.com, smostafa@google.com, kevin.tian@intel.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-References: <78fec33d-fe66-4352-be11-900f456c9af3@arm.com>
- <20250509134904.GA5707@willie-the-truck> <aB4nqtMJuvvp7Vwm@arm.com>
- <015746d7-ca46-4978-a441-09fba781fdd4@arm.com>
- <4709ff5a-f89c-426e-ae95-f8356808f4f5@arm.com>
- <99079d56-428b-4bc4-b20a-dc10032f2a2f@arm.com> <aCIiwrA_MOeVhFre@arm.com>
- <c5a74dfe-68e2-48f1-9bbb-06db8e62ffea@arm.com> <aCSHESk1DzShD4vt@arm.com>
- <0a909fc1-af17-4704-90b3-23359a00482d@arm.com> <aC9BajxkIv0UxWLq@arm.com>
-From: Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <aC9BajxkIv0UxWLq@arm.com>
+In-Reply-To: <aC71lkTn7_xfuivy@hovoldconsulting.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 22/05/2025 16:23, Catalin Marinas wrote:
-> Hi Suzuki,
+On 22/05/2025 10:59 am, Johan Hovold wrote:
+> On Tue, Mar 11, 2025 at 03:19:25PM +0000, Robin Murphy wrote:
+>> Although the lock-juggling is only a temporary workaround, we don't want
+>> it to make things avoidably worse. Jason was right to be nervous, since
+>> bus_iommu_probe() doesn't care *which* IOMMU instance it's probing for,
+>> so it probably is possible for one walk to finish a probe which a
+>> different walk started, thus we do want to check for that.
+>>
+>> Also there's no need to drop the lock just to have of_iommu_configure()
+>> do nothing when a fwspec already exists; check that directly and avoid
+>> opening a window at all in that (still somewhat likely) case.
+>>
+>> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>> I was rather expecting to send a v3 of "iommu: Get DT/ACPI parsing into
+>> the proper probe path", so I'm grateful that v2 was picked up, thanks!
+>> This is the difference as a fix/squash commit instead.
+>> ---
+>>   drivers/iommu/iommu.c | 8 +++++---
+>>   1 file changed, 5 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index d824fa5166e3..c6d40abe577e 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -415,13 +415,15 @@ static int iommu_init_device(struct device *dev)
+>>   	 * is buried in the bus dma_configure path. Properly unpicking that is
+>>   	 * still a big job, so for now just invoke the whole thing. The device
+>>   	 * already having a driver bound means dma_configure has already run and
+>> -	 * either found no IOMMU to wait for, or we're in its replay call right
+>> -	 * now, so either way there's no point calling it again.
+>> +	 * found no IOMMU to wait for, so there's no point calling it again.
+>>   	 */
+>> -	if (!dev->driver && dev->bus->dma_configure) {
+>> +	if (!dev->iommu->fwspec && !dev->driver && dev->bus->dma_configure) {
+>>   		mutex_unlock(&iommu_probe_device_lock);
+>>   		dev->bus->dma_configure(dev);
+>>   		mutex_lock(&iommu_probe_device_lock);
+>> +		/* If another instance finished the job for us, skip it */
+>> +		if (!dev->iommu || dev->iommu_group)
+>> +			return -ENODEV;
+>>   	}
+>>   	/*
+>>   	 * At this point, relevant devices either now have a fwspec which will
 > 
-> Thanks for looking at this.
+> I hit the below NULL-pointer dereference with 6.15-rc7 (when booting the
+> x1e80100-crd) and it looks like this fix would have prevented it, but
+> it's currently only queued for 6.16-rc1.
 > 
-> On Mon, May 19, 2025 at 10:45:31AM +0100, Suzuki K Poulose wrote:
->> On 14/05/2025 13:05, Catalin Marinas wrote:
->>> On Tue, May 13, 2025 at 10:15:49AM +0100, Suzuki K Poulose wrote:
->>>> On 12/05/2025 17:33, Catalin Marinas wrote:
->>>>> Stepping back a bit, we know that the MIDR allow-list implies
->>>>> BBML2_NOABORT (and at least BBML2 as in the ID regs). In theory, we need
->>>>
->>>> Please be aware that BBML2_NOABORT midr list may not always imply BBLM2 in
->>>> ID registers (e.g., AmpereOne. But the plan is to fixup the per cpu
->>>> ID register - struct cpuinfo_arm64 - for such cores at early boot,
->>>> individually, before it is used for sanitisation of the system wide
->>>> copy).
->>>
->>> Ah, good point. We can then ignore BBML2 ID regs and only rely on MIDR
->>> (and some future BBML3).
->>>
->>>>> So how about we introduce a WEAK_BOOT_CPU_FEATURE which gets enabled by
->>>>> the boot CPU if it has it _but_ cleared by any secondary early CPU if it
->>>>> doesn't (and never enabled by secondary CPUs). When the features are
->>>>> finalised, we know if all early CPUs had it. In combination with
->>>>> PERMITTED_FOR_LATE_CPU, we'd reject late CPUs that don't have it.
->>>>
->>>> That could work, but it introduces this "clearing" a capability, which
->>>> we don't do at the moment.
->>>>
->>>> We had an offline discussion about this some time ago, with Mark
->>>> Rutland. The best way to deal with this is to change the way we compute
->>>> capabilities. i.e.,
->>>>
->>>>
->>>> 1. Each boot CPU run through all the capabilities and maintain a per-cpu
->>>>      copy of the state.
->>>> 2. System wide capabilities can then be constructed from the all early
->>>>      boot CPU capability state (e.g., ANDing all the state from all CPUs
->>>>      for SCOPE_SYSTEM or ORing for LOCAL_CPU).
->>>>
->>>> But this requires a drastic change to the infrastructure.
->>>
->>> I think it's a lot simpler to achieve the ANDing - set the (system)
->>> capability if detected on the boot CPU, only clear it if missing on
->>> subsequent CPUs. See below on an attempt to introduce this. For lack of
->>> inspiration, I called it ARM64_CPUCAP_GLOBAL_CPU_FEATURE which has both
->>> SCOPE_LOCAL and SCOPE_SYSTEM. It's permitted for late CPUs but not
->>> optional if already enabled. The advantage of having both local&system
->>> is that the match function will be called for both scopes. I added a
->>> mask in to cpucap_default_scope() when calling matches() since so far
->>> no cap had both.
->>
->> Thanks, the change below does the trick. I am reasoning with the way
->> the scope has been defined (hacked ;-)).
->>
->> SCOPE_LOCAL_CPU && SCOPE_SYSTEM
->>
->> 1. SCOPE_LOCAL_CPU : Because you need to run this on all the (early) CPUs.
->>
->> 2. SCOPE_SYSTEM: To check if the capability holds at the end of the
->> smp boot.
->>
->> While, we really "detect" it on SCOPE_BOOT_CPU and only run the
->> cap checks, if that is available. But put another way, BOOT_CPU
->> is only used as an easy way to detect if this CPUs is the first
->> one to run the check vs at least one CPU has run and cleared the
->> cap.
+> It looks like the gpu smmu probe is racing with fastrpc probe and the
+> latter proceeds with iommu probe when the former temporarily releases
+> the iommu probe mutex. Note that the iommu->ready flag added by [1] does
+> not help since the apps smmu has already been probed.
 > 
-> Yes, we start with boot CPU and keep 'and-ing' new values onto it.
+> When the probe mutex is later reacquired, symlink creation fails and the
+> tear down path sets the iommu_dev pointer to NULL, which in turn
+> triggers the NULL pointer dereference in iommu_probe_device() when
+> calling probe_finalize().
 > 
->> I wonder if we could use some other flag to indicate the fact that,
->> a non-boot CPU is allowed to clear the capability explicitly, rather than
->> implying it with SCOPE_SYSTEM && SCOPE_LOCAL_CPU. Or may be make
->> it explicit that the capability must be matched on ALL cpus and
->> finalized at the end ?
+> [ Or something along those lines (e.g. as I'm not seeing the "something
+> fishy" warning in the manually saved serial console log). ]
 > 
-> I had such variant locally but then decided to reuse the SCOPE_SYSTEM
-> for this, more of a way to indicate that we want something system-wide
-> but checked per-CPU. We could add a new flag, though I was wondering
-> whether we can have a property that's checked both per-CPU and once more
-> system-wide. That's what actually happens with the above, then the probe
-> function can tell whether it was called in the CPU or system scope.
-> 
-> Alternatively, we can leave the local/system combining for later and
-> only add a flag to tell how they compose - "any" (default) vs "all".
-> 
->> /*
->>   * When paired with SCOPE_LOCAL_CPU, all CPUs must satisfy the
->>   * condition. This is different from SCOPE_SYSTEM, where the check
->>   * is performed only once at the end of SMP boot. But SCOPE_SYSTEM
->>   * may not be sufficient in cases where the capability depends on
->>   * properties that are not "sanitised" (e.g., MIDR_EL1) and must be
->>   * satisfied by all the early SMP boot CPUs.
->>   */
->> #define ARM64_CPUCAP_MATCH_ALL_EARLY_CPUS	((u16)BIT(7))
->>
->> statici inline bool cpucap_match_all_cpus(struct arm64_capability *cap)
->> {
->> 	return !!(cap->type & ARM64_CPUCAP_MATCH_ALL_EARLY_CPUS);
->> }
-> 
-> Yes, something like this would work.
-> 
->> Also, we already go through the capablity list to report the ones
->> with "cpumask" separately, and we could use that to also report
->> the ones with MATCH_ALL_CPUs. Something like:
->>
->>
->> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
->> index 9c4d6d552b25..14cbae51d802 100644
->> --- a/arch/arm64/kernel/cpufeature.c
->> +++ b/arch/arm64/kernel/cpufeature.c
->> @@ -3769,10 +3769,15 @@ static void __init setup_system_capabilities(void)
->>          for (int i = 0; i < ARM64_NCAPS; i++) {
->>                  const struct arm64_cpu_capabilities *caps = cpucap_ptrs[i];
->>
->> -		if (caps && caps->cpus && caps->desc &&
->> -			cpumask_any(caps->cpus) < nr_cpu_ids)
->> +		if (!caps || !caps->desc)
->> +			continue;
->> +
->> +		if (caps->cpus && cpumask_any(caps->cpus) < nr_cpu_ids)
->> 			pr_info("detected: %s on CPU%*pbl\n",
->> 				caps->desc, cpumask_pr_args(caps->cpus));
->> +
->> +		/* Report capabilities that had to be matched on all CPUs */
->> +		if (capcpucap_match_all_cpus(caps) && cpus_have_cap(caps))
->> +			pr_info("detected: %s\n", caps->desc);
->>          }
-> 
-> Yeah, I hacked something similar with the 'global' proposal based on
-> SCOPE_SYSTEM.
-> 
->>> ---------------------8<-----------------------------------------
->>> diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
->>> index c4326f1cb917..0b0b26a6f27b 100644
->>> --- a/arch/arm64/include/asm/cpufeature.h
->>> +++ b/arch/arm64/include/asm/cpufeature.h
->>> @@ -331,6 +331,15 @@ extern struct arm64_ftr_reg arm64_ftr_reg_ctrel0;
->>>    #define ARM64_CPUCAP_BOOT_CPU_FEATURE                  \
->>>    	(ARM64_CPUCAP_SCOPE_BOOT_CPU | ARM64_CPUCAP_PERMITTED_FOR_LATE_CPU)
->>> +/*
->>> + * CPU feature detected at boot time based on all CPUs. It is safe for a late
->>> + * CPU to have this feature even though the system hasn't enabled it, although
->>> + * the feature will not be used by Linux in this case. If the system has
->>> + * enabled this feature already, then every late CPU must have it.
->>> + */
->>> +#define ARM64_CPUCAP_GLOBAL_CPU_FEATURE			
->>
->> #define ARM64_CPUCAP_MATCH_ALL_CPU_FEATURE ?
->>
->> \
->>> +	 (ARM64_CPUCAP_SCOPE_LOCAL_CPU | ARM64_CPUCAP_SYSTEM_FEATURE)
->>
->>    (ARM64_CPUCAP_SCOPE_LOCAL_CPU | ARM64_CPUCAP_MATCH_ALL_EARLY_CPUS)
->>
->>
->>> +
->>>    struct arm64_cpu_capabilities {
->>>    	const char *desc;
->>>    	u16 capability;
->>> @@ -391,6 +400,11 @@ static inline int cpucap_default_scope(const struct arm64_cpu_capabilities *cap)
->>>    	return cap->type & ARM64_CPUCAP_SCOPE_MASK;
->>>    }
->>> +static inline bool cpucap_global_scope(const struct arm64_cpu_capabilities *cap)
->>
->> May be call it cpucap_match_all_cpus() ?
-> 
-> I can respin, the alternative looks good to me.
-> 
-> Now, we discussed offline of a different approach: for AmpereOne we'll
-> have to check MIDR early (as an erratum) and pretend it has BBML2,
-> populate the sanitised cpuid regs accordingly. We could do something
-> similar for the other CPUs, pretend it's something like BBML3 and get
-> the architects to commit to it (but this would delay the patchset).
-> 
-> TBH, I'd rather not hack this and only rely on the MIDR for BBM_NOABORT
-> (without any level) and the above MATCH_ALL_CPUS. My proposal is to
-> respin this with a MATCH_ALL_CPUS flag that only checks the MIDR. We can
-> later add a SCOPE_SYSTEM to the same capability that would 'or' in the
-> BBML3 cap (or just use two capabilities, though we end up with two many
-> branches or NOPs in the patched alternatives).
+> I've only seen this once, but it's clear that this is a regression in
+> 6.15 due to the iommu rework. If you agree that this fix would have
+> prevented it then perhaps we should try to get it into 6.15 final (or at
+> least backport it when 6.16-rc1 is out).
 
-Sounds good to me. Thanks for taking care of this.
+Indeed, at the time this was still only a hypothesised issue by 
+inspection, hence it wasn't definitively tagged as a fix. I did 
+subsequently manage to trigger the use-after-free case for a 
+non-IOMMU-client device once I started playing with async_probe - I 
+guess it's "nice" to have confirmation of the double-probe case too...
 
-Cheers
-Suzuki
+Since both fixes are now well-buried in the iommu/core branch, I'll make 
+a note to chase them up for stable at -rc1 as you say.
+
+Cheers,
+Robin.
 
 > 
-
+> Johan
+> 
+> [1] https://lore.kernel.org/lkml/88d54c1b48fed8279aa47d30f3d75173685bb26a.1745516488.git.robin.murphy@arm.com/
+> 
+> #regzbot ^introduced: bcb81ac6ae3c2ef95b44e7b54c3c9522364a245c
+> 
+> [    7.759456] arm-smmu 3da0000.iommu: probing hardware configuration...
+> [    7.792360] arm-smmu 3da0000.iommu: SMMUv2 with:
+> [    7.802065] arm-smmu 3da0000.iommu:  stage 1 translation
+> [    7.811229] arm-smmu 3da0000.iommu:  coherent table walk
+> [    7.811233] arm-smmu 3da0000.iommu:  stream matching with 24 register groups
+> [    7.811272] arm-smmu 3da0000.iommu:  22 context banks (0 stage-2 only)
+> [    7.820512] remoteproc remoteproc0: remote processor adsp is now up
+> [    7.821538] arm-smmu 3da0000.iommu:  Supported page sizes: 0x61311000
+> [    7.845913] qcom,fastrpc 6800000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+> [    7.851687] qcom,apr 6800000.remoteproc:glink-edge.adsp_apps.-1.-1: Adding APR/GPR dev: gprsvc:service:2:1
+> [    7.852191] qcom,apr 6800000.remoteproc:glink-edge.adsp_apps.-1.-1: Adding APR/GPR dev: gprsvc:service:2:2
+> [    7.852301] arm-smmu 3da0000.iommu:  Stage-1: 48-bit VA -> 40-bit IPA
+> [    7.853963] remoteproc remoteproc1: remote processor cdsp is now up
+> [    7.857232] qcom,fastrpc 32300000.remoteproc:glink-edge.fastrpcglink-apps-dsp.-1.-1: no reserved DMA memory for FASTRPC
+> [    7.861182] platform 32300000.remoteproc:glink-edge:fastrpc:compute-cb@1: Adding to iommu group 9
+> [    7.865501] arm-smmu 3da0000.iommu:  preserved 0 boot mappings
+> [    7.977602] platform 6800000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 10
+> [    7.991605] platform 3d00000.gpu: Adding to iommu group 11
+> [    7.998389] platform 32300000.remoteproc:glink-edge:fastrpc:compute-cb@2: Adding to iommu group 12
+> [    8.008816] platform 3d6a000.gmu: Adding to iommu group 13
+> [    8.016577] platform 6800000.remoteproc:glink-edge:fastrpc:compute-cb@4: Adding to iommu group 14
+> [    8.027036] platform 32300000.remoteproc:glink-edge:fastrpc:compute-cb@3: Adding to iommu group 15
+> [    8.037840] platform 6800000.remoteproc:glink-edge:fastrpc:compute-cb@5: Adding to iommu group 16
+> [    8.048473] platform 32300000.remoteproc:glink-edge:fastrpc:compute-cb@4: Adding to iommu group 17
+> [    8.068429] platform 6800000.remoteproc:glink-edge:fastrpc:compute-cb@6: Adding to iommu group 18
+> [    8.106128] sysfs: cannot create duplicate filename '/devices/platform/soc@0/15000000.iommu/iommu/smmu.0x00000000150
+> 00000/devices/6800000.remoteproc:glink-edge:fastrpc:compute-cb@6'
+> 
+> [    8.129705] CPU: 9 UID: 0 PID: 131 Comm: kworker/u50:4 Not tainted 6.15.0-rc7 #8 PREEMPT
+> [    8.129708] Hardware name: Qualcomm CRD, BIOS 6.0.241007.BOOT.MXF.2.4-00534.1-HAMOA-1 10/ 7/2024
+> [    8.129709] Workqueue: events_unbound deferred_probe_work_func
+> [    8.129715] Call trace:
+> [    8.129716]  show_stack+0x18/0x24 (C)
+> [    8.129719]  dump_stack_lvl+0xc0/0xd0
+> [    8.129722]  dump_stack+0x18/0x24
+> [    8.129724]  sysfs_warn_dup+0x64/0x80
+> [    8.129727]  sysfs_do_create_link_sd+0xf0/0xf8
+> [    8.129729]  sysfs_create_link_sd+0x14/0x20
+> [    8.129730]  sysfs_add_link_to_group+0x3c/0x68
+> [    8.129732]  iommu_device_link+0x40/0xb8
+> [    8.129735]  __iommu_probe_device+0x158/0x4b8
+> [    8.129737]  probe_iommu_group+0x3c/0x64
+> [    8.129739]  bus_for_each_dev+0x74/0xd0
+> [    8.129741]  iommu_device_register+0xd8/0x23c
+> [    8.129743]  arm_smmu_device_probe+0xc08/0xe94
+> [    8.129745]  platform_probe+0x68/0xd8
+> [    8.129747]  really_probe+0xc0/0x38c
+> [    8.129750]  __driver_probe_device+0x7c/0x160
+> [    8.129753]  driver_probe_device+0x40/0x110
+> [    8.129754]  __device_attach_driver+0xbc/0x158
+> [    8.129756]  bus_for_each_drv+0x80/0xdc
+> [    8.129754]  __device_attach_driver+0xbc/0x158
+> [    8.129756]  bus_for_each_drv+0x80/0xdc
+> [    8.129758]  __device_attach+0xa8/0x1d4
+> [    8.129759]  device_initial_probe+0x14/0x20
+> [    8.129761]  bus_probe_device+0xb0/0xb4
+> [    8.129763]  deferred_probe_work_func+0xa0/0xf4
+> [    8.129766]  process_one_work+0x20c/0x610
+> [    8.129769]  worker_thread+0x244/0x388
+> [    8.129771]  kthread+0x150/0x220
+> [    8.129773]  ret_from_fork+0x10/0x20
+> [    8.129808] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+> [    8.131501] platform 32300000.remoteproc:glink-edge:fastrpc:compute-cb@5: Adding to iommu group 11
+> [    8.131551] arm-smmu 3da0000.iommu: error -EEXIST: Failed to register iommu
+> [    8.131574] arm-smmu 3da0000.iommu: probe with driver arm-smmu failed with error -17
+> [    8.138242] Mem abort info:
+> [    8.138244]   ESR = 0x0000000096000004
+> [    8.138246]   EC = 0x25: DABT (current EL), IL = 32 bits
+> [    8.149780] platform 32300000.remoteproc:glink-edge:fastrpc:compute-cb@6: Adding to iommu group 13
+> [    8.150537] platform 32300000.remoteproc:glink-edge:fastrpc:compute-cb@7: Adding to iommu group 19
+> [    8.151166] platform 32300000.remoteproc:glink-edge:fastrpc:compute-cb@8: Adding to iommu group 20
+> [    8.152079] platform 32300000.remoteproc:glink-edge:fastrpc:compute-cb@10: Adding to iommu group 21
+> [    8.152765] platform 32300000.remoteproc:glink-edge:fastrpc:compute-cb@11: Adding to iommu group 22
+> [    8.153281]   SET = 0, FnV = 0
+> [    8.153283]   EA = 0, S1PTW = 0
+> [    8.153284]   FSC = 0x04: level 0 translation fault
+> [    8.153286] Data abort info:
+> [    8.153287]   ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
+> [    8.153387] platform 32300000.remoteproc:glink-edge:fastrpc:compute-cb@12: Adding to iommu group 23
+> [    8.154013] platform 32300000.remoteproc:glink-edge:fastrpc:compute-cb@13: Adding to iommu group 24
+> [    8.159590]   CM = 0, WnR = 0, TnD = 0, TagAccess = 0
+> [    8.159592]   GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+> [    8.225170] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000883bb6000
+> [    8.233976] [0000000000000010] pgd=0000000000000000, p4d=0000000000000000
+> [    8.234001] Internal error: Oops: 0000000096000004 [#1]  SMP
+> 
+> [    8.446080] CPU: 5 UID: 0 PID: 406 Comm: (udev-worker) Not tainted 6.15.0-rc7 #8 PREEMPT
+> [    8.446082] Hardware name: Qualcomm CRD, BIOS 6.0.241007.BOOT.MXF.2.4-00534.1-HAMOA-1 10/ 7/2024
+> [    8.459940] pstate: 61400005 (nZCv daif +PAN -UAO -TCO +DIT -SSBS BTYPE=--)
+> [    8.459942] pc : iommu_probe_device+0x50/0x7c
+> [    8.488201] lr : iommu_probe_device+0x44/0x7c
+> [    8.488203] sp : ffff800082543210
+> [    8.488204] x29: ffff800082543210 x28: 000000000000000c x27: 0000000000000001
+> [    8.488206] x26: 0000000000000000 x25: ffffd3551bac57c8 x24: 0000000000000000
+> [    8.502233] x23: 0000000000000002 x22: ffffd3551c0407c0 x21: ffffd3551c0407c0
+> [    8.502235] x20: 0000000000000000 x19: ffff23ce85720010 x18: 0000000000069e00
+> [    8.502237] x17: 0000000000000028 x16: 0000000000000000
+> [    8.523033]  x15: ffffd3551c1a5920
+> [    8.523035] x14: ffffd3551c20f720 x13: ffff23ce811c5ba0 x12: ffff23ce90b70568
+> [    8.523037] x11: ffffd3551c819960 x10: 0000000000000000 x9 : 0000000000000000
+> [    8.543927] x8 : ffffd3551c103000 x7 : ffff8000825430a0 x6 : ffff800082543030
+> [    8.543929] x5 : ffff800082544000 x4 : 0000000000000002 x3 : 0000000000000000
+> [    8.556981] x2 : 0000000000000000 x1 : 0000000000000000 x0 : 0000000000000000
+> [    8.556983] Call trace:
+> [    8.556984]  iommu_probe_device+0x50/0x7c (P)
+> [    8.582047]  of_iommu_configure+0x188/0x26c
+> [    8.582050]  of_dma_configure_id+0xcc/0x300
+> [    8.582053]  platform_dma_configure+0x80/0xa4
+> [    8.582054]  really_probe+0x74/0x38c
+> [    8.595015]  __driver_probe_device+0x7c/0x160
+> [    8.595017]  driver_probe_device+0x40/0x110
+> [    8.595019]  __device_attach_driver+0xbc/0x158
+> [    8.631849]  bus_for_each_drv+0x80/0xdc
+> [    8.631852]  __device_attach+0xa8/0x1d4
+> [    8.631853]  device_initial_probe+0x14/0x20
+> [    8.631855]  bus_probe_device+0xb0/0xb4
+> [    8.631857]  device_add+0x57c/0x784
+> [    8.653367]  of_device_add+0x44/0x60
+> [    8.653369]  of_platform_device_create_pdata+0x98/0x140
+> [    8.653371]  of_platform_bus_create+0x1b0/0x4d4
+> [    8.653372]  of_platform_populate+0x60/0x14c
+> [    8.653374]  fastrpc_rpmsg_probe+0x254/0x3d8 [fastrpc]
+> [    8.661542]  rpmsg_dev_probe+0xc0/0x1e0 [rpmsg_core]
+> [    8.671574]  really_probe+0xc0/0x38c
+> [    8.671577]  __driver_probe_device+0x7c/0x160
+> [    8.691391]  driver_probe_device+0x40/0x110
+> [    8.691391]  driver_probe_device+0x40/0x110
+> [    8.691392]  __driver_attach+0xfc/0x208
+> [    8.691393]  bus_for_each_dev+0x74/0xd0
+> [    8.691395]  driver_attach+0x24/0x30
+> [    8.691398]  bus_add_driver+0x110/0x234
+> [    8.715663]  driver_register+0x60/0x128
+> [    8.715665]  __register_rpmsg_driver+0x1c/0x28 [rpmsg_core]
+> [    8.715667]  fastrpc_init+0x40/0xb8 [fastrpc]
+> [    8.715669]  do_one_initcall+0x64/0x30c
+> [    8.730854]  do_init_module+0x58/0x204
+> [    8.730857]  load_module+0x1e24/0x1f6c
+> [    8.743016]  init_module_from_file+0x88/0xc4
+> [    8.743017]  idempotent_init_module+0x188/0x27c
+> [    8.743019]  __arm64_sys_finit_module+0x6c/0xec
+> [    8.743020]  invoke_syscall+0x48/0x110
+> [    8.743023]  el0_svc_common.constprop.0+0xc0/0xe0
+> [    8.760436]  do_el0_svc+0x1c/0x28
+> [    8.760438]  el0_svc+0x48/0x114
+> [    8.760441]  el0t_64_sync_handler+0xc8/0xcc
+> [    8.760443]  el0t_64_sync+0x198/0x19c
+> [    8.760445] Code: 940dd1a3 35000114 f9423260 f9405000 (f9400800)
+> [    8.760446] ---[ end trace 0000000000000000 ]---
