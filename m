@@ -1,57 +1,57 @@
-Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
+Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B49992E3379
-	for <iommu@lists.linux.dev>; Fri, 23 May 2025 01:01:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6002D2E62A7
+	for <iommu@lists.linux.dev>; Fri, 23 May 2025 01:01:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747962103; cv=none; b=AJ6enWhzlnCkj+wmo64zm8BMuC4uFqswgR6buQHKLQCrcNpTu/sEl9VGqqFVXwyw7M9LyOCdXfXjj6mVytRayvx4ACD2pM8tYhdj8y2kKqi+WSq25uN45DQzN6UaeKerbwAYsVxSua1dgGkwY9JhxFjY+3QV7wvZZ1SU/Ua1Mow=
+	t=1747962105; cv=none; b=hYGvwjyGitIqJfwTgicLcf9sVo2NUurP5Km6GmKuP1iCba8nBfGv0FoYG3LrnRLLP6e66GZpxBtjuxkSQE+N+vYfX3qdpZ3+tm90YT+vu+1s1haknO9xACEoM8FsDmKXMo471eU9YjqgH7QeX/TVng0DwOyByKgKtd+yFD61YCY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747962103; c=relaxed/simple;
-	bh=afVOpJ4NkdTCnGlO7BZombLV0TeNOaBswisvqbRPcJo=;
+	s=arc-20240116; t=1747962105; c=relaxed/simple;
+	bh=KsfYh+dTBbuGfYNIW3ziFqaFVeYMMEL6fm+SPmkC5dI=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=Ve3nBubXmVBnfWiboJTxA77/u/Xq66Nq+bJqT96XZRF3udf+Qu5+SJFcfBo1d4JljDrr0UyTOGRup9EXyKxJxl2MIqfOI6xlHPptKIb1n35mI/Yrka2qBuxSQBTuYxIvqtg1MgL8DnQR/De1Gr2zk0/QKBMnf9nBEZ+YGWGbtYo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=wU6zbP0H; arc=none smtp.client-ip=209.85.215.201
+	 To:Cc:Content-Type; b=MsZb02c9OcZ9tR0QJB1nD1ns6gXu2cpUjXiipPHCmvcTHRS1K9tWFyhinM1A0DEmYRf4EN9IDf320BLNRj94DQUx+6YuTHpwcEsvugGmy5hefMiByBgtOmD4NrKq4UqrhQlxjC1TT002/IcSz01NK58n0Oaj8kYqd/1mgpS3kzI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ALWbwOmk; arc=none smtp.client-ip=209.85.215.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wU6zbP0H"
-Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-b26e0fee541so5211618a12.1
-        for <iommu@lists.linux.dev>; Thu, 22 May 2025 18:01:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ALWbwOmk"
+Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-b26e120e300so8011446a12.1
+        for <iommu@lists.linux.dev>; Thu, 22 May 2025 18:01:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1747962101; x=1748566901; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1747962103; x=1748566903; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=IHC46AiM3qnXIL3uFh2RBrG63I23lKwAO4ZOidIFzK0=;
-        b=wU6zbP0HvJgvgMiD/cVj9HUDIpgHg4HcFK2tsc9vN4kNkYSQIN9JqpAE3NINNqna2l
-         72pvsIpEHOWnMax6z7UIGqit0C0nFDoRSRRBTsyyvgYjWZU37Ijjwyqey9EDoyTEnrhk
-         vDx5CcS/hitOUbMa+d3+y4D/OTLLAtX1GvDq6B5kIQFzzyWNb5NGIw1OOe+KBcExVXG7
-         cuoY06/FOOZuqT0f6UX59cPLv3HHxFxmEcPgCO+R5e9U60eDUWZhcXTci0w+sV4ORn6D
-         cXKOjrHVWV9WT9j1K8KqydT+DpQJ5tMchLeq/j2gPLxONtQ0e7SJIln78rSQ84lIssaQ
-         rX3w==
+        bh=R3ZFTLMU7HrPafLz7H8LY3RnxdvA+oHT6/HRYUM5hWg=;
+        b=ALWbwOmkrJHkVB/T3XAVEY8VGn9CU97W7W3+Qqm5xSO9O2k/e7kxcYv2SxuI8UoMoV
+         +kunXtNycrGen6SoymxFvQ4Ml45MfD1bWjz64Y8R6RusVIDsfDXmvSTZ5i5qG2Y8RMwS
+         I3LmO2Hx/HY0tpGTGSvriPyriCnApzPWf/euAmL8Q9GvbBaZCvte8bvhU4NyQrhp4LqS
+         znhrTNR/6FaG1RVAtBZ5A57QVuLhTbp5jOPPxlC0hVY8F0rKgc+cXAIwezNCW6hnIlrl
+         uXAuNI4QJvJDVg6R3WgiI1K1WI+8ggI+usDefSX9T8GehCw783+pLZ61KyG8s4fGPiX+
+         rMQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747962101; x=1748566901;
+        d=1e100.net; s=20230601; t=1747962103; x=1748566903;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=IHC46AiM3qnXIL3uFh2RBrG63I23lKwAO4ZOidIFzK0=;
-        b=cXKshH8QsrAngUKKGzsBGMlBvt4PBqKrwqGXyJv5S/CqOU/kQWpq8dHgyAD20I2IYj
-         LuJ5Z91nKuTIG5fyYJuYSqXbHEXnOhBQw+/uIzzBe0qF3ql0FqB9CM4ZYnjrXnL+iwER
-         x2nXhqKUXXX9d571LEDvLxIRTVD3UW7/GUa4AeqsIjyyu7aHquEiaE9kIAPlE5/aw/Mv
-         zNq2LdWTcsglXYpCz/p+NqazRBIy6jJgA03hF0j72vdrU07qNzWGHqON2BLWm67K41/r
-         B3eMBLbDdjhBE1br9HzLWiVWY6YnKyI+ryXAginLAnZqHd3z3RLmBpEdwNyjCxtDueFZ
-         Zdjg==
-X-Forwarded-Encrypted: i=1; AJvYcCUKm7N5OagLmBYEKF8Cv4T3kCTdLifME1zR89cXJjCbgTiVkeP2xr7/KWY65+GfpnFhuEQ5xA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyOhbhBvZ8yYte1tosINcwTF8FUjsgczl6vTglDiwIAxA6+0zU+
-	NQbnvY8KV8rAtygOaLgmVtgjA6tfozP4K2w0N8uLomPleAwc9zhBfG4aNI2WBxMknEKifSPTC4E
-	BrV1bew==
-X-Google-Smtp-Source: AGHT+IFKx4toGdoUHBPdA+oUHyZ0aWvYYcvHAK1ugv08dOHNkGrE3/X+OpJV9alJPESRVigE+cn0CzzRfh4=
-X-Received: from pfbhd3.prod.google.com ([2002:a05:6a00:6583:b0:742:a60b:3336])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6300:8b0f:b0:215:eb6b:8714
- with SMTP id adf61e73a8af0-2170cdf1503mr41735775637.30.1747962101096; Thu, 22
- May 2025 18:01:41 -0700 (PDT)
+        bh=R3ZFTLMU7HrPafLz7H8LY3RnxdvA+oHT6/HRYUM5hWg=;
+        b=o5lRJ57NigHidhd6vsIDSO0NHQKC+3ZTf7NVj6C0iA6oLrMn3ZPp5YvHvvevhZGlOP
+         8m1LP71KFxXASLehtLlDhQvdYJ3AjrVZeROp09zWVu3c94KGDszlSBIA+qBhzuN60UN4
+         XXoB3ZtblyXftXKrk7EVf/oNdxszAmCaXm3bhG0nVwuRfOWjxiBPUsJ3YDk6qlKmxDb6
+         NXB3JIgnv8hLh4UAsVRRQK9utpEQ/kY7VfWSXiHYxOhFmV5l3h12lxFw9NpN4Z93dxjf
+         9vUskSCIVx/tfL1ZP0tWDqqkDzYRhJgh/lKL7Y1ToHyfpgG3/vuTXzss5fCqF4lHJ+Ys
+         vlpA==
+X-Forwarded-Encrypted: i=1; AJvYcCV4wdqkhXIOBxlUEJog1bzCui/Q3xmPU9HoWYhffykorg7INlWCTCnzLOApe3ux0cnHcedxPQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxaURJtxTZinwJjZ8VsXSVw+IpVlsgvMGUiMyjFCSkkMLwBMiBr
+	x/IyuKGHvvN3u7DNSwHwoHQlSIcjbBABNo9IV3Pn67pyt6HY3pwj8RMUFwbYemR/Qkt8MIqKPVh
+	pPJmdHw==
+X-Google-Smtp-Source: AGHT+IEtGHV3UU5r6+on0Bi3QnTx914rosO/P/5CGIo8zL7GgKodqhGaDH9iis1m/ryoELkyNhSi6H+FbVI=
+X-Received: from pjbsi6.prod.google.com ([2002:a17:90b:5286:b0:2fc:1158:9fe5])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:3f4c:b0:2ee:5958:828
+ with SMTP id 98e67ed59e1d1-30e7d522155mr46027060a91.9.1747962102833; Thu, 22
+ May 2025 18:01:42 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Thu, 22 May 2025 17:59:59 -0700
+Date: Thu, 22 May 2025 18:00:00 -0700
 In-Reply-To: <20250523010004.3240643-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,9 +61,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250523010004.3240643-1-seanjc@google.com>
 X-Mailer: git-send-email 2.49.0.1151.ga128411c76-goog
-Message-ID: <20250523010004.3240643-55-seanjc@google.com>
-Subject: [PATCH v2 54/59] iommu/amd: WARN if KVM calls GA IRTE helpers without
- virtual APIC support
+Message-ID: <20250523010004.3240643-56-seanjc@google.com>
+Subject: [PATCH v2 55/59] KVM: SVM: Fold avic_set_pi_irte_mode() into its sole caller
 From: Sean Christopherson <seanjc@google.com>
 To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
@@ -74,56 +73,96 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-WARN if KVM attempts to update IRTE entries when virtual APIC isn't fully
-supported, as KVM should guard all such calls on IRQ posting being enabled.
+Fold avic_set_pi_irte_mode() into avic_refresh_apicv_exec_ctrl() in
+anticipation of moving the __avic_vcpu_{load,put}() calls into the
+critical section, and because having a one-off helper with a name that's
+easily confused with avic_pi_update_irte() is unnecessary.
 
+No functional change intended.
+
+Tested-by: Sairaj Kodilkar <sarunkod@amd.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- drivers/iommu/amd/iommu.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ arch/x86/kvm/svm/avic.c | 52 ++++++++++++++++++-----------------------
+ 1 file changed, 23 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index becef69a306d..926dcdfe08c8 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3836,8 +3836,10 @@ int amd_iommu_update_ga(int cpu, void *data)
- 	struct amd_ir_data *ir_data = (struct amd_ir_data *)data;
- 	struct irte_ga *entry = (struct irte_ga *) ir_data->entry;
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index bb74705d6cfd..9ddec6f3ad41 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -728,34 +728,6 @@ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu)
+ 	avic_handle_ldr_update(vcpu);
+ }
  
--	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) ||
--	    !entry || !entry->lo.fields_vapic.guest_mode)
-+	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
-+		return -EINVAL;
+-static void avic_set_pi_irte_mode(struct kvm_vcpu *vcpu, bool activate)
+-{
+-	int apic_id = kvm_cpu_get_apicid(vcpu->cpu);
+-	unsigned long flags;
+-	struct vcpu_svm *svm = to_svm(vcpu);
+-	struct kvm_kernel_irqfd *irqfd;
+-
+-	/*
+-	 * Here, we go through the per-vcpu ir_list to update all existing
+-	 * interrupt remapping table entry targeting this vcpu.
+-	 */
+-	spin_lock_irqsave(&svm->ir_list_lock, flags);
+-
+-	if (list_empty(&svm->ir_list))
+-		goto out;
+-
+-	list_for_each_entry(irqfd, &svm->ir_list, vcpu_list) {
+-		void *data = irqfd->irq_bypass_data;
+-
+-		if (activate)
+-			WARN_ON_ONCE(amd_iommu_activate_guest_mode(data, apic_id));
+-		else
+-			WARN_ON_ONCE(amd_iommu_deactivate_guest_mode(data));
+-	}
+-out:
+-	spin_unlock_irqrestore(&svm->ir_list_lock, flags);
+-}
+-
+ static void svm_ir_list_del(struct kvm_kernel_irqfd *irqfd)
+ {
+ 	struct kvm_vcpu *vcpu = irqfd->irq_bypass_vcpu;
+@@ -990,6 +962,10 @@ void avic_refresh_virtual_apic_mode(struct kvm_vcpu *vcpu)
+ void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
+ {
+ 	bool activated = kvm_vcpu_apicv_active(vcpu);
++	int apic_id = kvm_cpu_get_apicid(vcpu->cpu);
++	struct vcpu_svm *svm = to_svm(vcpu);
++	struct kvm_kernel_irqfd *irqfd;
++	unsigned long flags;
+ 
+ 	if (!enable_apicv)
+ 		return;
+@@ -1001,7 +977,25 @@ void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu)
+ 	else
+ 		avic_vcpu_put(vcpu);
+ 
+-	avic_set_pi_irte_mode(vcpu, activated);
++	/*
++	 * Here, we go through the per-vcpu ir_list to update all existing
++	 * interrupt remapping table entry targeting this vcpu.
++	 */
++	spin_lock_irqsave(&svm->ir_list_lock, flags);
 +
-+	if (!entry || !entry->lo.fields_vapic.guest_mode)
- 		return 0;
- 
- 	if (!ir_data->iommu)
-@@ -3856,7 +3858,10 @@ int amd_iommu_activate_guest_mode(void *data, int cpu)
- 	struct irte_ga *entry = (struct irte_ga *) ir_data->entry;
- 	u64 valid;
- 
--	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) || !entry)
-+	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
-+		return -EINVAL;
++	if (list_empty(&svm->ir_list))
++		goto out;
 +
-+	if (!entry)
- 		return 0;
- 
- 	valid = entry->lo.fields_vapic.valid;
-@@ -3885,8 +3890,10 @@ int amd_iommu_deactivate_guest_mode(void *data)
- 	struct irq_cfg *cfg = ir_data->cfg;
- 	u64 valid;
- 
--	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir) ||
--	    !entry || !entry->lo.fields_vapic.guest_mode)
-+	if (WARN_ON_ONCE(!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir)))
-+		return -EINVAL;
++	list_for_each_entry(irqfd, &svm->ir_list, vcpu_list) {
++		void *data = irqfd->irq_bypass_data;
 +
-+	if (!entry || !entry->lo.fields_vapic.guest_mode)
- 		return 0;
++		if (activated)
++			WARN_ON_ONCE(amd_iommu_activate_guest_mode(data, apic_id));
++		else
++			WARN_ON_ONCE(amd_iommu_deactivate_guest_mode(data));
++	}
++out:
++	spin_unlock_irqrestore(&svm->ir_list_lock, flags);
+ }
  
- 	valid = entry->lo.fields_remap.valid;
+ void avic_vcpu_blocking(struct kvm_vcpu *vcpu)
 -- 
 2.49.0.1151.ga128411c76-goog
 
