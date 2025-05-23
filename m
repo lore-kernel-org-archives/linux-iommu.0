@@ -1,64 +1,69 @@
 Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91F031C84AF
-	for <iommu@lists.linux.dev>; Fri, 23 May 2025 01:00:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D608202978
+	for <iommu@lists.linux.dev>; Fri, 23 May 2025 01:00:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747962013; cv=none; b=Tf1yXuKqKwp+RjXSjpXe8pNRuDbq44AG7wiKRxgq6AXySEi+QbG3IEwDYVYUJ1aPE/D3btLgrQGvv1EP3AQ5KhInuMECR5sgn/62+IKBTnBsKJE9zAr3ke6hYdmHh6NnIzDY7C2TPYAlcLaLzWeKIL9ujGzG3FzpQOvaP9qYIrQ=
+	t=1747962015; cv=none; b=WnQucuCoNGpLRh9lMCV6eVyIhdqw3hQN7cXHdTbqy12pBgzsM09g3xxheW5nToSpBoboSw4VsYoaRc2/DGUkVlB8knLPhWVqBcDr7oC9fTlGewIQIYim0wPuSH0pYawZF7YtJ7BupWvEzA2nmMrvwlEycI5rzJg7UzEtU++WzEY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747962013; c=relaxed/simple;
-	bh=biSP/RElUvnB1P1L6qHmpOQ1N71dp2oSy6pxd4IxXLY=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=PvT3cMpZ8H5nRHc5KWapselFmjpS2uRpUDpSqna3kRbYJYPGCc1ArgDuIVIxIb1DqGJe1NuhY4UKbRkmd6vg0Hvf4K8Q9b1lRPvJGduUzrnVE6v/xjrA4waT1xvJV4+N2J8oT6LbIy9w7SQBIJZHAalifv/VOj2liu1tI/VoO5E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WbEuTkVK; arc=none smtp.client-ip=209.85.216.74
+	s=arc-20240116; t=1747962015; c=relaxed/simple;
+	bh=aqId/MfG7UYKWnmP31wra99FFnDu4Tk8TU75m8cWlHk=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=s2XOf7OedX8FrDDhAhHdCo2NkzODyjcMfMaD0Zwvy+6OBuyck5hi7E1uBDI1OTkUEgB2FoVBu9hzRBGOE5UTF0Za5OXsoCYhyBWDjlFeGAfFVQZQqE3N0i6jwv0eX69AySzsAXTyS/eyms+PxuFVhwgj9ZykybHIP+hG6zQSF9c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=TiQhXrTh; arc=none smtp.client-ip=209.85.216.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WbEuTkVK"
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-30e9659a391so5599189a91.0
-        for <iommu@lists.linux.dev>; Thu, 22 May 2025 18:00:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TiQhXrTh"
+Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-30e8346b49cso7253017a91.0
+        for <iommu@lists.linux.dev>; Thu, 22 May 2025 18:00:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1747962011; x=1748566811; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:reply-to:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=nWmLXJzC9mxFkQYj92kdzkjh5kkvtzBuQ9m+OSqSfeU=;
-        b=WbEuTkVKz2SqwMfG1cfGue0m0f2MbXs0mmqw6YE5pGNpF1rvqngMrYyngZq+LViJY2
-         uMXP2O2ap12cXDhY153kNcNJkkUpu4TD/+lbfo5GfuqrCIvyXMUlLmjbLwIeHHV/4IhW
-         Y7Hpr+5aevFW6EKbI7ijx0xrVW7uz9Uav5AD38d7ffu2DomwHUxTW9uGkTjeZMTyXCsc
-         Nkb8hS6HiIFaxnwxqdji45pIApQBe4xkFySn8Z/iw+hp81NmfgmAmbEko0b8F+0rwcq9
-         U/PVHu8MeZJT8RKaf7U/XFGXRR1LPOBnHwXYExQ8WnFYN2LwtR1k7dHJMPdpnAlWyc5/
-         ORVw==
+        d=google.com; s=20230601; t=1747962012; x=1748566812; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
+        bh=h6Fi2uGZoFyI+fpVWxb9iu5QelXyEXqpjgp2EpCb/GA=;
+        b=TiQhXrThJFw1cLc1KtCoZHTe+1Pftgd12UU7I+P6ccxJRDUi1ChfBYKvpjAXksT7BG
+         HiZ1FEsZkUPCqxLqYbz9S8hPIZbsl2I5d0bZWqnKgE5NymtYN0KlYM333UzfCBWANl6I
+         bGbB9UoExODFg58cvBwezzSSxiRsG5e4OmlQ5dpXxPhtn7OWCyd/fkaQIIgg95QQH/yj
+         jYC19/9bsHWGVtJv48b5dPTHVbKYlU3QH4T+x1yV9ZtrHVaT9CStCdc+JusNXbHb5alx
+         K81yuF2QuE0F+Ct1GVOmINKYMJL59YYBiCyT6f9Kktt3v1IERf/E+aUp4Ye1ImTVTEuQ
+         d90A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747962011; x=1748566811;
-        h=cc:to:from:subject:message-id:mime-version:date:reply-to
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nWmLXJzC9mxFkQYj92kdzkjh5kkvtzBuQ9m+OSqSfeU=;
-        b=YMh9KXGG3N2hoO9siau90o5gijnweIek7Oc/j78vWS1RmklJRl80NaVSKg5R07DhxY
-         g6KP3KM6/+JKNZacUvvwR6o8fpldUgK8fF0LaBqsplnTCQQQxmbkyEC1oPl/B3PZ9o9f
-         0uQZDbVz8yjz6MU3hkFHQt5gW+MoOuUCsMCFYP3GXSDYor/RvOz1Uo7SImd51Wbb6tKM
-         3BzBX3M4AvM89ofQ3EY4qg9aeIs0vQFXBpvikdwJ7VwsMlIZ7mv8T1YJ/s5K0/YClsq2
-         pQVFYRGv9hTwhKLhC6BQh974HuhUTVtjae0r1Ngr1+rSKBe6PkifLEnHYfN0a1FKnrHb
-         NEBw==
-X-Forwarded-Encrypted: i=1; AJvYcCWtgkTof80HSoqvaoEVRoEnM3tJRssVzuzyh+pTJSJarIM7Jp6/5zrnHD/8YCtE7ucXSjq6rA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwYLFOsumpqm5Ma24J6t0ng/OWEZkewU1m7YV8R9SDlBQo3Dnss
-	Rqc2cnQGSlFCJHNsGxpCL+SIY1e9/zlirnLxb9oH2nY1Rf/4LVOXg++OJdfJlCxxekjUVAL9k3g
-	znVj8Fw==
-X-Google-Smtp-Source: AGHT+IGOgLpofs6bAdGinxnH4Es1IEAINUEcE+ZxHgfQ8A0l+jmCduN+XjF7ckQz21BAe1IxauoQZPltAZw=
-X-Received: from pjbqj8.prod.google.com ([2002:a17:90b:28c8:b0:2fc:2ee0:d38a])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:3d85:b0:2f9:d9fe:e72e
- with SMTP id 98e67ed59e1d1-30e8312dcd2mr50071317a91.16.1747962010923; Thu, 22
- May 2025 18:00:10 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1747962012; x=1748566812;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=h6Fi2uGZoFyI+fpVWxb9iu5QelXyEXqpjgp2EpCb/GA=;
+        b=S1Ms/yVI05/KkKwGpSjQKamu84svtdNwzsPx+7E570iYJagDJhN+htXHG/AvkaIwXZ
+         AFfrUi8M9d6i/daFWMBHdb9pXBdhHi8MxssYHGJ0zC1m1Nr7Ju0pOkXW1wVP5OgHVUGl
+         NCh/P+t3C36DggakCSQ1c4KxEY3wuvXkELGGVQRm9eBJqIubPQim3VWR7oUc/jglQn/V
+         eaJNrzQ6xgGTuI7JhppBP6tB+qSWaVpNrzj+N1pgjgazxgkAWcPMYHTU3l+/YQC8Hha/
+         XXdPr45/+U+CX6iBDetJBGCthS0ny8q3KkcEfytYo1z6MP943iVjqWe6O3e9qv6v+hGe
+         SJXg==
+X-Forwarded-Encrypted: i=1; AJvYcCVTSI5UrB+DPHbUnTLDEGq5KRmJTdZwd8aBaxuQIq03lUWgV1YW5NdKbO5p9pPyJdbjk0Ky8w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyU1kTYgKuG3TS80BErugTQRw5j1JqYQBbN2QHWg6JBsOVkXba0
+	bCiBeCUUSlIpN/uuGhPd3QFIJlVQS3mslO09y3/DG9mCb0NBCvxl7EAM78j0zL/+uPHT2VjEHYr
+	y0kE0kQ==
+X-Google-Smtp-Source: AGHT+IEmQ/iBobSURg+CBZvIq2SLSqxNOv+mYEeHW+hSWn3teTRHzGk20jzFX4bEh5sFDD0AsX6zHW7sN2o=
+X-Received: from pjbdy5.prod.google.com ([2002:a17:90b:6c5:b0:2fc:1356:bcc3])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:3dc7:b0:310:8d73:d9d9
+ with SMTP id 98e67ed59e1d1-3108d73da51mr17092365a91.18.1747962012532; Thu, 22
+ May 2025 18:00:12 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Thu, 22 May 2025 17:59:05 -0700
+Date: Thu, 22 May 2025 17:59:06 -0700
+In-Reply-To: <20250523010004.3240643-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
+References: <20250523010004.3240643-1-seanjc@google.com>
 X-Mailer: git-send-email 2.49.0.1151.ga128411c76-goog
-Message-ID: <20250523010004.3240643-1-seanjc@google.com>
-Subject: [PATCH v2 00/59] KVM: iommu: Overhaul device posted IRQs support
+Message-ID: <20250523010004.3240643-2-seanjc@google.com>
+Subject: [PATCH v2 01/59] KVM: x86: Pass new routing entries and irqfd when
+ updating IRTEs
 From: Sean Christopherson <seanjc@google.com>
 To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
@@ -69,177 +74,327 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-TL;DR: Overhaul device posted interrupts in KVM and IOMMU, and AVIC in
-       general.
+When updating IRTEs in response to a GSI routing or IRQ bypass change,
+pass the new/current routing information along with the associated irqfd.
+This will allow KVM x86 to harden, simplify, and deduplicate its code.
 
-This applies on the series to add CONFIG_KVM_IOAPIC (and to kill irq_comm.c):
+Since adding/removing a bypass producer is now conveniently protected with
+irqfds.lock, i.e. can't run concurrently with kvm_irq_routing_update(),
+use the routing information cached in the irqfd instead of looking up
+the information in the current GSI routing tables.
 
-  https://lore.kernel.org/all/20250519232808.2745331-1-seanjc@google.com
+Opportunistically convert an existing printk() to pr_info() and put its
+string onto a single line (old code that strictly adhered to 80 chars).
 
-Fix a variety of bugs related to device posted IRQs, especially on the
-AMD side, and clean up KVM's implementation (this series actually removes
-more code than it adds).
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/x86/include/asm/kvm_host.h |  6 ++++--
+ arch/x86/kvm/svm/avic.c         | 18 +++++++----------
+ arch/x86/kvm/svm/svm.h          |  5 +++--
+ arch/x86/kvm/vmx/posted_intr.c  | 19 ++++++++---------
+ arch/x86/kvm/vmx/posted_intr.h  |  8 ++++++--
+ arch/x86/kvm/x86.c              | 36 ++++++++++++++++++---------------
+ include/linux/kvm_host.h        |  7 +++++--
+ virt/kvm/eventfd.c              | 11 +++++-----
+ 8 files changed, 58 insertions(+), 52 deletions(-)
 
-Stating the obvious, this series is comically large.  Though it's smaller than
-v1! (Ignoring that I cheated by moving 15 patches to a prep series, and that
-Paolo already grabbed several patches).
-
-Sairaj, I applied your Tested-by somewhat sparingly, as some of the patches
-changed (most notably "Consolidate IRTE update when toggling AVIC on/off").
-Please holler if you want me to remove/add any tags.  And when you get time,
-I'd greatly appreciate a sanity check!
-
-Batch #1 is mostly SVM specific:
-
- - Cleans up various warts and bugs in the IRTE tracking
- - Fixes AVIC to not reject large VMs (honor KVM's ABI)
- - Wire up AVIC to enable_ipiv to support disabling IPI virtualization while
-   still utilizing device posted interrupts, and to workaround erratum #1235.
-
-Batch #3 overhauls the guts of IRQ bypass in KVM, and moves the vast majority
-of the logic to common x86; only the code that needs to communicate with the
-IOMMU is truly vendor specific.
-
-Batch #4 is more SVM/AVIC cleanups that are made possible by batch #3.
-
-Batch #5 adds WARNs and drops dead code after all the previous cleanups and
-fixes (I don't want to add the WARNs earlier; I don't see any point in adding
-WARNs in code that's known to be broken).
-
-Batch #6 is yet more SVM/AVIC cleanups, with the specific goal of configuring
-IRTEs to generate GA log interrupts if and only if KVM actually needs a wake
-event.
-
-v2:
- - Drop patches that were already merged.
- - Move code into irq.c, not x86.c. [Paolo]
- - Collect review/testing tags. [Sairaj, Vasant]
- - Sqaush fixup for a comment that was added in the prior patch. [Sairaj]
- - Rewrote the changelog for "Delete IRTE link from previous vCPU irrespective
-   of new routing". [Sairaj]
- - Actually drop "struct amd_svm_iommu_ir" and all usage in "Track per-vCPU
-   IRTEs using kvm_kernel_irqfd structure" (the previous version was getting
-   hilarious lucky with struct offsets). [Sairaj]
- - Drop unused params from kvm_pi_update_irte() and pi_update_irte(). [Sairaj]
- - Document the rules and behavior of amd_iommu_update_ga(). [Joerg]
- - Fix a changelog typo. [Paolo]
- - Document that GALogIntr isn't cached, i.e. can be safely updated without
-   an invalidation. [Joao, Vasant]
- - Rework avic_vcpu_{load,put}() to use an enumerated parameter instead of a
-   series of booleans. [Paolo]
- - Drop a redundant "&& new". [Francesco]
- - Drop the *** DO NOT MERGE *** testing hack patches.
-
-v1: https://lore.kernel.org/all/20250404193923.1413163-1-seanjc@google.com
-
-Maxim Levitsky (2):
-  KVM: SVM: Add enable_ipiv param, never set IsRunning if disabled
-  KVM: SVM: Disable (x2)AVIC IPI virtualization if CPU has erratum #1235
-
-Sean Christopherson (57):
-  KVM: x86: Pass new routing entries and irqfd when updating IRTEs
-  KVM: SVM: Track per-vCPU IRTEs using kvm_kernel_irqfd structure
-  KVM: SVM: Delete IRTE link from previous vCPU before setting new IRTE
-  iommu/amd: KVM: SVM: Delete now-unused cached/previous GA tag fields
-  KVM: SVM: Delete IRTE link from previous vCPU irrespective of new
-    routing
-  KVM: SVM: Drop pointless masking of default APIC base when setting
-    V_APIC_BAR
-  KVM: SVM: Drop pointless masking of kernel page pa's with AVIC HPA
-    masks
-  KVM: SVM: Add helper to deduplicate code for getting AVIC backing page
-  KVM: SVM: Drop vcpu_svm's pointless avic_backing_page field
-  KVM: SVM: Inhibit AVIC if ID is too big instead of rejecting vCPU
-    creation
-  KVM: SVM: Drop redundant check in AVIC code on ID during vCPU creation
-  KVM: SVM: Track AVIC tables as natively sized pointers, not "struct
-    pages"
-  KVM: SVM: Drop superfluous "cache" of AVIC Physical ID entry pointer
-  KVM: VMX: Move enable_ipiv knob to common x86
-  KVM: VMX: Suppress PI notifications whenever the vCPU is put
-  KVM: SVM: Add a comment to explain why avic_vcpu_blocking() ignores
-    IRQ blocking
-  iommu/amd: KVM: SVM: Use pi_desc_addr to derive ga_root_ptr
-  iommu/amd: KVM: SVM: Pass NULL @vcpu_info to indicate "not guest mode"
-  KVM: SVM: Stop walking list of routing table entries when updating
-    IRTE
-  KVM: VMX: Stop walking list of routing table entries when updating
-    IRTE
-  KVM: SVM: Extract SVM specific code out of get_pi_vcpu_info()
-  KVM: x86: Move IRQ routing/delivery APIs from x86.c => irq.c
-  KVM: x86: Nullify irqfd->producer after updating IRTEs
-  KVM: x86: Dedup AVIC vs. PI code for identifying target vCPU
-  KVM: x86: Move posted interrupt tracepoint to common code
-  KVM: SVM: Clean up return handling in avic_pi_update_irte()
-  iommu: KVM: Split "struct vcpu_data" into separate AMD vs. Intel
-    structs
-  KVM: Don't WARN if updating IRQ bypass route fails
-  KVM: Fold kvm_arch_irqfd_route_changed() into
-    kvm_arch_update_irqfd_routing()
-  KVM: x86: Track irq_bypass_vcpu in common x86 code
-  KVM: x86: Skip IOMMU IRTE updates if there's no old or new vCPU being
-    targeted
-  KVM: x86: Don't update IRTE entries when old and new routes were !MSI
-  KVM: SVM: Revert IRTE to legacy mode if IOMMU doesn't provide IR
-    metadata
-  KVM: SVM: Take and hold ir_list_lock across IRTE updates in IOMMU
-  iommu/amd: Document which IRTE fields amd_iommu_update_ga() can modify
-  iommu/amd: KVM: SVM: Infer IsRun from validity of pCPU destination
-  iommu/amd: Factor out helper for manipulating IRTE GA/CPU info
-  iommu/amd: KVM: SVM: Set pCPU info in IRTE when setting vCPU affinity
-  iommu/amd: KVM: SVM: Add IRTE metadata to affined vCPU's list if AVIC
-    is inhibited
-  KVM: SVM: Don't check for assigned device(s) when updating affinity
-  KVM: SVM: Don't check for assigned device(s) when activating AVIC
-  KVM: SVM: WARN if (de)activating guest mode in IOMMU fails
-  KVM: SVM: Process all IRTEs on affinity change even if one update
-    fails
-  KVM: SVM: WARN if updating IRTE GA fields in IOMMU fails
-  KVM: x86: Drop superfluous "has assigned device" check in
-    kvm_pi_update_irte()
-  KVM: x86: WARN if IRQ bypass isn't supported in kvm_pi_update_irte()
-  KVM: x86: WARN if IRQ bypass routing is updated without in-kernel
-    local APIC
-  KVM: SVM: WARN if ir_list is non-empty at vCPU free
-  KVM: x86: Decouple device assignment from IRQ bypass
-  KVM: VMX: WARN if VT-d Posted IRQs aren't possible when starting IRQ
-    bypass
-  KVM: SVM: Use vcpu_idx, not vcpu_id, for GA log tag/metadata
-  iommu/amd: WARN if KVM calls GA IRTE helpers without virtual APIC
-    support
-  KVM: SVM: Fold avic_set_pi_irte_mode() into its sole caller
-  KVM: SVM: Don't check vCPU's blocking status when toggling AVIC on/off
-  KVM: SVM: Consolidate IRTE update when toggling AVIC on/off
-  iommu/amd: KVM: SVM: Allow KVM to control need for GA log interrupts
-  KVM: SVM: Generate GA log IRQs only if the associated vCPUs is
-    blocking
-
- arch/x86/include/asm/irq_remapping.h |  17 +-
- arch/x86/include/asm/kvm-x86-ops.h   |   2 +-
- arch/x86/include/asm/kvm_host.h      |  20 +-
- arch/x86/include/asm/svm.h           |  13 +-
- arch/x86/kvm/irq.c                   | 140 ++++++
- arch/x86/kvm/svm/avic.c              | 702 ++++++++++++---------------
- arch/x86/kvm/svm/svm.c               |   4 +
- arch/x86/kvm/svm/svm.h               |  32 +-
- arch/x86/kvm/trace.h                 |  19 +-
- arch/x86/kvm/vmx/capabilities.h      |   1 -
- arch/x86/kvm/vmx/main.c              |   2 +-
- arch/x86/kvm/vmx/posted_intr.c       | 140 ++----
- arch/x86/kvm/vmx/posted_intr.h       |  10 +-
- arch/x86/kvm/vmx/vmx.c               |   2 -
- arch/x86/kvm/x86.c                   |  90 +---
- drivers/iommu/amd/amd_iommu_types.h  |   1 -
- drivers/iommu/amd/iommu.c            | 125 +++--
- drivers/iommu/intel/irq_remapping.c  |  10 +-
- include/linux/amd-iommu.h            |  25 +-
- include/linux/kvm_host.h             |   9 +-
- include/linux/kvm_irqfd.h            |   4 +
- virt/kvm/eventfd.c                   |  22 +-
- 22 files changed, 672 insertions(+), 718 deletions(-)
-
-
-base-commit: 3debd5461fba1dcb33e732b16153da0cf5d0c251
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index 21ccb122ab76..2a6ef1398da7 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -296,6 +296,7 @@ enum x86_intercept_stage;
+  */
+ #define KVM_APIC_PV_EOI_PENDING	1
+ 
++struct kvm_kernel_irqfd;
+ struct kvm_kernel_irq_routing_entry;
+ 
+ /*
+@@ -1844,8 +1845,9 @@ struct kvm_x86_ops {
+ 	void (*vcpu_blocking)(struct kvm_vcpu *vcpu);
+ 	void (*vcpu_unblocking)(struct kvm_vcpu *vcpu);
+ 
+-	int (*pi_update_irte)(struct kvm *kvm, unsigned int host_irq,
+-			      uint32_t guest_irq, bool set);
++	int (*pi_update_irte)(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
++			      unsigned int host_irq, uint32_t guest_irq,
++			      struct kvm_kernel_irq_routing_entry *new);
+ 	void (*pi_start_assignment)(struct kvm *kvm);
+ 	void (*apicv_pre_state_restore)(struct kvm_vcpu *vcpu);
+ 	void (*apicv_post_state_restore)(struct kvm_vcpu *vcpu);
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index 7338879d1c0c..adacf00d6664 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -18,6 +18,7 @@
+ #include <linux/hashtable.h>
+ #include <linux/amd-iommu.h>
+ #include <linux/kvm_host.h>
++#include <linux/kvm_irqfd.h>
+ 
+ #include <asm/irq_remapping.h>
+ 
+@@ -885,21 +886,14 @@ get_pi_vcpu_info(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
+ 	return 0;
+ }
+ 
+-/*
+- * avic_pi_update_irte - set IRTE for Posted-Interrupts
+- *
+- * @kvm: kvm
+- * @host_irq: host irq of the interrupt
+- * @guest_irq: gsi of the interrupt
+- * @set: set or unset PI
+- * returns 0 on success, < 0 on failure
+- */
+-int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+-			uint32_t guest_irq, bool set)
++int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
++			unsigned int host_irq, uint32_t guest_irq,
++			struct kvm_kernel_irq_routing_entry *new)
+ {
+ 	struct kvm_kernel_irq_routing_entry *e;
+ 	struct kvm_irq_routing_table *irq_rt;
+ 	bool enable_remapped_mode = true;
++	bool set = !!new;
+ 	int idx, ret = 0;
+ 
+ 	if (!kvm_arch_has_assigned_device(kvm) || !kvm_arch_has_irq_bypass())
+@@ -925,6 +919,8 @@ int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+ 		if (e->type != KVM_IRQ_ROUTING_MSI)
+ 			continue;
+ 
++		WARN_ON_ONCE(new && memcmp(e, new, sizeof(*new)));
++
+ 		/**
+ 		 * Here, we setup with legacy mode in the following cases:
+ 		 * 1. When cannot target interrupt to a specific vcpu.
+diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
+index e6f3c6a153a0..b35fce30d923 100644
+--- a/arch/x86/kvm/svm/svm.h
++++ b/arch/x86/kvm/svm/svm.h
+@@ -736,8 +736,9 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu);
+ void avic_vcpu_put(struct kvm_vcpu *vcpu);
+ void avic_apicv_post_state_restore(struct kvm_vcpu *vcpu);
+ void avic_refresh_apicv_exec_ctrl(struct kvm_vcpu *vcpu);
+-int avic_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+-			uint32_t guest_irq, bool set);
++int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
++			unsigned int host_irq, uint32_t guest_irq,
++			struct kvm_kernel_irq_routing_entry *new);
+ void avic_vcpu_blocking(struct kvm_vcpu *vcpu);
+ void avic_vcpu_unblocking(struct kvm_vcpu *vcpu);
+ void avic_ring_doorbell(struct kvm_vcpu *vcpu);
+diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
+index 5c615e5845bf..110fb19848ab 100644
+--- a/arch/x86/kvm/vmx/posted_intr.c
++++ b/arch/x86/kvm/vmx/posted_intr.c
+@@ -2,6 +2,7 @@
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+ 
+ #include <linux/kvm_host.h>
++#include <linux/kvm_irqfd.h>
+ 
+ #include <asm/irq_remapping.h>
+ #include <asm/cpu.h>
+@@ -294,17 +295,9 @@ void vmx_pi_start_assignment(struct kvm *kvm)
+ 	kvm_make_all_cpus_request(kvm, KVM_REQ_UNBLOCK);
+ }
+ 
+-/*
+- * vmx_pi_update_irte - set IRTE for Posted-Interrupts
+- *
+- * @kvm: kvm
+- * @host_irq: host irq of the interrupt
+- * @guest_irq: gsi of the interrupt
+- * @set: set or unset PI
+- * returns 0 on success, < 0 on failure
+- */
+-int vmx_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+-		       uint32_t guest_irq, bool set)
++int vmx_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
++		       unsigned int host_irq, uint32_t guest_irq,
++		       struct kvm_kernel_irq_routing_entry *new)
+ {
+ 	struct kvm_kernel_irq_routing_entry *e;
+ 	struct kvm_irq_routing_table *irq_rt;
+@@ -312,6 +305,7 @@ int vmx_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+ 	struct kvm_lapic_irq irq;
+ 	struct kvm_vcpu *vcpu;
+ 	struct vcpu_data vcpu_info;
++	bool set = !!new;
+ 	int idx, ret = 0;
+ 
+ 	if (!vmx_can_use_vtd_pi(kvm))
+@@ -329,6 +323,9 @@ int vmx_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+ 	hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
+ 		if (e->type != KVM_IRQ_ROUTING_MSI)
+ 			continue;
++
++		WARN_ON_ONCE(new && memcmp(e, new, sizeof(*new)));
++
+ 		/*
+ 		 * VT-d PI cannot support posting multicast/broadcast
+ 		 * interrupts to a vCPU, we still use interrupt remapping
+diff --git a/arch/x86/kvm/vmx/posted_intr.h b/arch/x86/kvm/vmx/posted_intr.h
+index 80499ea0e674..a94afcb55f7f 100644
+--- a/arch/x86/kvm/vmx/posted_intr.h
++++ b/arch/x86/kvm/vmx/posted_intr.h
+@@ -3,6 +3,9 @@
+ #define __KVM_X86_VMX_POSTED_INTR_H
+ 
+ #include <linux/bitmap.h>
++#include <linux/find.h>
++#include <linux/kvm_host.h>
++
+ #include <asm/posted_intr.h>
+ 
+ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu);
+@@ -11,8 +14,9 @@ void pi_wakeup_handler(void);
+ void __init pi_init_cpu(int cpu);
+ void pi_apicv_pre_state_restore(struct kvm_vcpu *vcpu);
+ bool pi_has_pending_interrupt(struct kvm_vcpu *vcpu);
+-int vmx_pi_update_irte(struct kvm *kvm, unsigned int host_irq,
+-		       uint32_t guest_irq, bool set);
++int vmx_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
++		       unsigned int host_irq, uint32_t guest_irq,
++		       struct kvm_kernel_irq_routing_entry *new);
+ void vmx_pi_start_assignment(struct kvm *kvm);
+ 
+ static inline int pi_find_highest_vector(struct pi_desc *pi_desc)
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 3ac6f7c83a06..8a4662bc2521 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -13630,31 +13630,31 @@ int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *cons,
+ 	struct kvm_kernel_irqfd *irqfd =
+ 		container_of(cons, struct kvm_kernel_irqfd, consumer);
+ 	struct kvm *kvm = irqfd->kvm;
+-	int ret;
++	int ret = 0;
+ 
+ 	kvm_arch_start_assignment(irqfd->kvm);
+ 
+ 	spin_lock_irq(&kvm->irqfds.lock);
+ 	irqfd->producer = prod;
+ 
+-	ret = kvm_x86_call(pi_update_irte)(irqfd->kvm,
+-					   prod->irq, irqfd->gsi, 1);
+-	if (ret)
+-		kvm_arch_end_assignment(irqfd->kvm);
+-
++	if (irqfd->irq_entry.type == KVM_IRQ_ROUTING_MSI) {
++		ret = kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, prod->irq,
++						   irqfd->gsi, &irqfd->irq_entry);
++		if (ret)
++			kvm_arch_end_assignment(irqfd->kvm);
++	}
+ 	spin_unlock_irq(&kvm->irqfds.lock);
+ 
+-
+ 	return ret;
+ }
+ 
+ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+ 				      struct irq_bypass_producer *prod)
+ {
+-	int ret;
+ 	struct kvm_kernel_irqfd *irqfd =
+ 		container_of(cons, struct kvm_kernel_irqfd, consumer);
+ 	struct kvm *kvm = irqfd->kvm;
++	int ret;
+ 
+ 	WARN_ON(irqfd->producer != prod);
+ 
+@@ -13667,11 +13667,13 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+ 	spin_lock_irq(&kvm->irqfds.lock);
+ 	irqfd->producer = NULL;
+ 
+-	ret = kvm_x86_call(pi_update_irte)(irqfd->kvm,
+-					   prod->irq, irqfd->gsi, 0);
+-	if (ret)
+-		printk(KERN_INFO "irq bypass consumer (token %p) unregistration"
+-		       " fails: %d\n", irqfd->consumer.token, ret);
++	if (irqfd->irq_entry.type == KVM_IRQ_ROUTING_MSI) {
++		ret = kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, prod->irq,
++						   irqfd->gsi, NULL);
++		if (ret)
++			pr_info("irq bypass consumer (token %p) unregistration fails: %d\n",
++				irqfd->consumer.token, ret);
++	}
+ 
+ 	spin_unlock_irq(&kvm->irqfds.lock);
+ 
+@@ -13679,10 +13681,12 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+ 	kvm_arch_end_assignment(irqfd->kvm);
+ }
+ 
+-int kvm_arch_update_irqfd_routing(struct kvm *kvm, unsigned int host_irq,
+-				   uint32_t guest_irq, bool set)
++int kvm_arch_update_irqfd_routing(struct kvm_kernel_irqfd *irqfd,
++				  struct kvm_kernel_irq_routing_entry *old,
++				  struct kvm_kernel_irq_routing_entry *new)
+ {
+-	return kvm_x86_call(pi_update_irte)(kvm, host_irq, guest_irq, set);
++	return kvm_x86_call(pi_update_irte)(irqfd, irqfd->kvm, irqfd->producer->irq,
++					    irqfd->gsi, new);
+ }
+ 
+ bool kvm_arch_irqfd_route_changed(struct kvm_kernel_irq_routing_entry *old,
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 0e151db44ecd..27c7087820cb 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -2397,6 +2397,8 @@ struct kvm_vcpu *kvm_get_running_vcpu(void);
+ struct kvm_vcpu * __percpu *kvm_get_running_vcpus(void);
+ 
+ #if IS_ENABLED(CONFIG_HAVE_KVM_IRQ_BYPASS)
++struct kvm_kernel_irqfd;
++
+ bool kvm_arch_has_irq_bypass(void);
+ int kvm_arch_irq_bypass_add_producer(struct irq_bypass_consumer *,
+ 			   struct irq_bypass_producer *);
+@@ -2404,8 +2406,9 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *,
+ 			   struct irq_bypass_producer *);
+ void kvm_arch_irq_bypass_stop(struct irq_bypass_consumer *);
+ void kvm_arch_irq_bypass_start(struct irq_bypass_consumer *);
+-int kvm_arch_update_irqfd_routing(struct kvm *kvm, unsigned int host_irq,
+-				  uint32_t guest_irq, bool set);
++int kvm_arch_update_irqfd_routing(struct kvm_kernel_irqfd *irqfd,
++				  struct kvm_kernel_irq_routing_entry *old,
++				  struct kvm_kernel_irq_routing_entry *new);
+ bool kvm_arch_irqfd_route_changed(struct kvm_kernel_irq_routing_entry *,
+ 				  struct kvm_kernel_irq_routing_entry *);
+ #endif /* CONFIG_HAVE_KVM_IRQ_BYPASS */
+diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
+index 11e5d1e3f12e..85581550dc8d 100644
+--- a/virt/kvm/eventfd.c
++++ b/virt/kvm/eventfd.c
+@@ -285,9 +285,9 @@ void __attribute__((weak)) kvm_arch_irq_bypass_start(
+ {
+ }
+ 
+-int  __attribute__((weak)) kvm_arch_update_irqfd_routing(
+-				struct kvm *kvm, unsigned int host_irq,
+-				uint32_t guest_irq, bool set)
++int __weak kvm_arch_update_irqfd_routing(struct kvm_kernel_irqfd *irqfd,
++					 struct kvm_kernel_irq_routing_entry *old,
++					 struct kvm_kernel_irq_routing_entry *new)
+ {
+ 	return 0;
+ }
+@@ -619,9 +619,8 @@ void kvm_irq_routing_update(struct kvm *kvm)
+ #if IS_ENABLED(CONFIG_HAVE_KVM_IRQ_BYPASS)
+ 		if (irqfd->producer &&
+ 		    kvm_arch_irqfd_route_changed(&old, &irqfd->irq_entry)) {
+-			int ret = kvm_arch_update_irqfd_routing(
+-					irqfd->kvm, irqfd->producer->irq,
+-					irqfd->gsi, 1);
++			int ret = kvm_arch_update_irqfd_routing(irqfd, &old, &irqfd->irq_entry);
++
+ 			WARN_ON(ret);
+ 		}
+ #endif
 -- 
 2.49.0.1151.ga128411c76-goog
 
