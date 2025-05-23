@@ -1,57 +1,57 @@
 Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66DE8215075
-	for <iommu@lists.linux.dev>; Fri, 23 May 2025 01:00:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A667216E23
+	for <iommu@lists.linux.dev>; Fri, 23 May 2025 01:00:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747962021; cv=none; b=BKEr6S974Jo2GhA3BFtX/j0TLrdQv1LFMlwFwBVI37ArubuYY9eigaUEOt9jkwb7PXIbc+gZxy6L6Ilndhy5kICWRtRkrQ6cTXPB2XnAejpEIWscFihb35WcU2+wThRoRipNCOq1mlZxsvzHcBsuBawF+ZdJxpCKryRK4lByvIQ=
+	t=1747962021; cv=none; b=J/Irli3Gg1noC72bSBjD+u817acVIwLvAvFmmKB5drHmUFtf2nE5RNib0BMOvePtK2bfaWbp+bKisMsOhiX+OYTb+9ZlPZZbiy0VttFFwRkQzOG1TMCBMpwpMK9Qq+GEXAIXYL2tDpxdGwy73GbGAjnHGlwE/Uc49mhLFviQ2iA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1747962021; c=relaxed/simple;
-	bh=oo94zQ9KP44wU971cBBIeljSw8H5jEienGLBcJLhnEk=;
+	bh=xtpaD7HVsJFlh7tiOLocGEu9Ud8v7ZkKhAZvNZl2KIA=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=M4HhscIX5qbrEudSGJpz+LUa/ItMcH2V1y9FUplWSFqEO2kysgFSmbQaD43ZL54YC25nMHTFcVhPNSk8MoEqmPYV9Ub7C/RyjObyXMdueHNnJl+lR/4MkEwIxiblhLPy3IVyGrz/p7vDCEcQazYUnaf6SSccbmcYuEnVVNboohk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=m6RWbBE1; arc=none smtp.client-ip=209.85.210.202
+	 To:Cc:Content-Type; b=ICxaLlry4TWuxV006LkwGWdNnR2xwttok8QM3Uhez+T1pWg+rfypFw30a4tjhL2sgjHATNgKUw3k+aS5sdfjVaUHjyyx0/paxRDrewGJvuQRRcgGgpXB75qsvuGZBv8kpvXrlmBBg7p3kfJ+XS4/kg6XjLwGNOnzw9f6e3VZPQY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bu57hg4+; arc=none smtp.client-ip=209.85.210.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="m6RWbBE1"
-Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-742c6140589so371827b3a.1
-        for <iommu@lists.linux.dev>; Thu, 22 May 2025 18:00:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bu57hg4+"
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-742cc20e11eso3918409b3a.1
+        for <iommu@lists.linux.dev>; Thu, 22 May 2025 18:00:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1747962017; x=1748566817; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1747962019; x=1748566819; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=Qq62gkgLP+wVktrApN5Abqg6uzedhCCWd9aEc00+u+w=;
-        b=m6RWbBE1RhB8xeZKaqW+0xkmJtpa7tep0gHIfm89kPmiP1pRPPemQrwx4qYyrFf+jm
-         MRal4FAvk3MUui4lbzhor0lc7fh2wWetHA6H13P7jXRgcDkSCDdYv9jVHHiRa+I8IwIu
-         RKUToo+cXu6GVIJZlSme7Eya4cfsAxbcy4gnJ5QNURpgXcu6dAeSp8apeie09cPkZUvz
-         7WRlLIsSrJz+qKdEDGQw/V03uEnqLbT7S7gHX/V0UuHBk41Wcnq9N8SGY1ggF+PpZNmp
-         QWj8bmwmO9YgFXh0prQOHQHb71KNYRt2sqOUntEbLwguixsXHTJV0PAZY0taz7UrFYxc
-         Dzyg==
+        bh=Y8ehtQMuf6IARUqP5Cyf64+dJov4SLh6VlRU3VKIIQ8=;
+        b=bu57hg4+w+debKwQTguGPwaEq11q2pGDrnAlz0DURZFjvToUmPr6k6qVaVOXCV9PCd
+         nQ9UVFTkXS9f7Yt1eruUJIe8lshAIz2a+tZhK23io/ZSc+eOcF5EV+JigXf+0hhx2VnJ
+         mSeDZUO9hiv5R3M6VFZMgAcIRB682vllQhaR9HiAHi64BhCjBNT+a+xXfthL+tfJ3aQV
+         NX4ot9XPaByoFR1UpmdMWEEim3Y7J3KIgdOwu+JNL5DMPlLaaT3CiVZSB8XxNAph59cQ
+         cKFld8jW3s7LivGFX5/NM9v/N4hc8FJa6GUdPcdupdGk/a0dZfCKP1FmCcc6irOX6PQe
+         23NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747962017; x=1748566817;
+        d=1e100.net; s=20230601; t=1747962019; x=1748566819;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Qq62gkgLP+wVktrApN5Abqg6uzedhCCWd9aEc00+u+w=;
-        b=VxRH5f5rWs8z5D1Nmu9MZF0ciy9UuLmCkJ1xrIHzA6o51vDZqIU/mlmHoBb4P9YMLy
-         XjL6cHkFFgoYFzsqDbifVjXDhjdaNQVy2Hj8wD/ccmxICANRLQlKNemwIarlGPQPpOk6
-         k0Xw6KzrJdp8R/CXeyydTgixZgX1sI7k1aLZ9Ts5ArWNHkS/hqssxaWEMC1ZKYVZbSZM
-         z3idPSVST7XsFh15pK6v+oiBOGrISF6mbZ5lNcyxNMefhYrqh3Yy/hHXK2XFOU/BvnZo
-         fF4D3AHBek9B7+9Tjg85ilCdtBn44u9pAZXt3dpLenKnlyJkyw+N5IZRiv7OnWZGA1W4
-         1mmA==
-X-Forwarded-Encrypted: i=1; AJvYcCX6oXYwSIXwaAfu7KrCjgyh755Y1/vb881fvZ9hvtaM1liLPPv00bT0636glq+rkvwXaaVwGA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyUWY4GYAi8hkUlmd9qtcGJ3NWBTFFQiOD+sa07uFn3zrlXePNH
-	eJ+RWlVI9a0TaY7nTcr+NcAkqTvpw9fSmu+3rJ87NE68g3jn35lJGTNi5rt+yNfakwMSTmyrUxO
-	HMp5SkA==
-X-Google-Smtp-Source: AGHT+IGuYoObsP1SNouvA21unXNvbU7VlCtk1/aF9baeg7tLlY7NAY16P1XuLv+D0VMCs09pXt7is6cf1ZE=
-X-Received: from pfqz29.prod.google.com ([2002:aa7:9e5d:0:b0:740:6f6:7346])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:2d8c:b0:73b:ac3d:9d6b
- with SMTP id d2e1a72fcca58-745ece00f2cmr2255014b3a.4.1747962017305; Thu, 22
- May 2025 18:00:17 -0700 (PDT)
+        bh=Y8ehtQMuf6IARUqP5Cyf64+dJov4SLh6VlRU3VKIIQ8=;
+        b=ZSVzumPWPELyaxdiQxPadXzF4UFtor+CPk4zoRHIA02Qw8OkRAoZkViTW1YV2zmJXh
+         sVcxr59IMgbMQBVcKqMxqfQKnQsss+wmVgyrJKxg0fGi1Ywl58bEhMHlwu6GLgxC92Zk
+         AdbxENJmUnyiaBo8FIL7uElQsCNGSZTsLG8TIx0y71cYs1nZggaS/U0Nv7qKSelf743P
+         cPBEc0hc0Aq1xnAzlOn5D49r4MYTM7lLyTlYYdVA/jOL7PWigpurwLSQtjcAlo8YeFK+
+         9U72CNaVQ+BmDtOBGR3/718b5Pjy5EOD5M6sdcMMRcHb9Fwx806iszCUXb5NlDeDnIDi
+         lXhA==
+X-Forwarded-Encrypted: i=1; AJvYcCVJrzMrYDBRwfHG2/oWSgv+3EoA+UbK5rHhC0NmwZ3ND8FmWC4E9aH8lzhuNjkHu+896Kw08g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwNvfl8A3b20tdtX7jtWVFu0amPORrcIeikm1T6T/EvZruMAM0B
+	OZCsbH+uTROaPe1NqTqIYA7GfHzoV7pKFPxlss7rZ+WFMudbxDmq6pufNGwOposxPynXZTMBPtG
+	OtBvvzQ==
+X-Google-Smtp-Source: AGHT+IEHm61pElXc5o66L35Mfu9cWxQa9x3UMSXO1VOYhFDjyuiVflcnZ6ZC6JzEj6wH5WWXGFCHISdtxs8=
+X-Received: from pfoi12.prod.google.com ([2002:aa7:87cc:0:b0:73e:665:360])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:9144:b0:736:4d05:2e2e
+ with SMTP id d2e1a72fcca58-742accc2342mr33071193b3a.6.1747962018848; Thu, 22
+ May 2025 18:00:18 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Thu, 22 May 2025 17:59:09 -0700
+Date: Thu, 22 May 2025 17:59:10 -0700
 In-Reply-To: <20250523010004.3240643-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,9 +61,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250523010004.3240643-1-seanjc@google.com>
 X-Mailer: git-send-email 2.49.0.1151.ga128411c76-goog
-Message-ID: <20250523010004.3240643-5-seanjc@google.com>
-Subject: [PATCH v2 04/59] iommu/amd: KVM: SVM: Delete now-unused
- cached/previous GA tag fields
+Message-ID: <20250523010004.3240643-6-seanjc@google.com>
+Subject: [PATCH v2 05/59] KVM: SVM: Delete IRTE link from previous vCPU
+ irrespective of new routing
 From: Sean Christopherson <seanjc@google.com>
 To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
@@ -74,87 +74,45 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Delete the amd_ir_data.prev_ga_tag field now that all usage is
-superfluous.
+Delete the IRTE link from the previous vCPU irrespective of the new
+routing state, i.e. even if the IRTE won't be configured to post IRQs to a
+vCPU.  Whether or not the new route is postable as no bearing on the *old*
+route.  Failure to delete the link can result in KVM incorrectly updating
+the IRTE, e.g. if the "old" vCPU is scheduled in/out.
 
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+Fixes: 411b44ba80ab ("svm: Implements update_pi_irte hook to setup posted interrupt")
 Tested-by: Sairaj Kodilkar <sarunkod@amd.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c             |  2 --
- drivers/iommu/amd/amd_iommu_types.h |  1 -
- drivers/iommu/amd/iommu.c           | 10 ----------
- include/linux/amd-iommu.h           |  2 +-
- 4 files changed, 1 insertion(+), 14 deletions(-)
+ arch/x86/kvm/svm/avic.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index ed7374f0bd5a..4e8380d2f017 100644
+index 4e8380d2f017..c981ce764b45 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -938,9 +938,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
- 		/**
- 		 * Here, pi is used to:
- 		 * - Tell IOMMU to use legacy mode for this interrupt.
--		 * - Retrieve ga_tag of prior interrupt remapping data.
- 		 */
--		pi.prev_ga_tag = 0;
- 		pi.is_guest_mode = false;
- 		ret = irq_set_vcpu_affinity(host_irq, &pi);
- 	}
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 5089b58e528a..57a96f3e7b84 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -1060,7 +1060,6 @@ struct irq_2_irte {
- };
+@@ -861,6 +861,12 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+ 	if (!kvm_arch_has_assigned_device(kvm) || !kvm_arch_has_irq_bypass())
+ 		return 0;
  
- struct amd_ir_data {
--	u32 cached_ga_tag;
- 	struct amd_iommu *iommu;
- 	struct irq_2_irte irq_2_irte;
- 	struct msi_msg msi_entry;
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index f34209b08b4c..f23635b062f0 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3887,23 +3887,13 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
- 	ir_data->cfg = irqd_cfg(data);
- 	pi_data->ir_data = ir_data;
- 
--	pi_data->prev_ga_tag = ir_data->cached_ga_tag;
- 	if (pi_data->is_guest_mode) {
- 		ir_data->ga_root_ptr = (pi_data->base >> 12);
- 		ir_data->ga_vector = vcpu_pi_info->vector;
- 		ir_data->ga_tag = pi_data->ga_tag;
- 		ret = amd_iommu_activate_guest_mode(ir_data);
--		if (!ret)
--			ir_data->cached_ga_tag = pi_data->ga_tag;
- 	} else {
- 		ret = amd_iommu_deactivate_guest_mode(ir_data);
--
--		/*
--		 * This communicates the ga_tag back to the caller
--		 * so that it can do all the necessary clean up.
--		 */
--		if (!ret)
--			ir_data->cached_ga_tag = 0;
- 	}
- 
- 	return ret;
-diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
-index 062fbd4c9b77..1f9b13d803c5 100644
---- a/include/linux/amd-iommu.h
-+++ b/include/linux/amd-iommu.h
-@@ -19,8 +19,8 @@ struct amd_iommu;
-  */
- struct amd_iommu_pi_data {
- 	u32 ga_tag;
--	u32 prev_ga_tag;
- 	u64 base;
++	/*
++	 * If the IRQ was affined to a different vCPU, remove the IRTE metadata
++	 * from the *previous* vCPU's list.
++	 */
++	svm_ir_list_del(irqfd);
 +
- 	bool is_guest_mode;
- 	struct vcpu_data *vcpu_data;
- 	void *ir_data;
+ 	pr_debug("SVM: %s: host_irq=%#x, guest_irq=%#x, set=%#x\n",
+ 		 __func__, host_irq, guest_irq, set);
+ 
+@@ -883,8 +889,6 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+ 
+ 		WARN_ON_ONCE(new && memcmp(e, new, sizeof(*new)));
+ 
+-		svm_ir_list_del(irqfd);
+-
+ 		/**
+ 		 * Here, we setup with legacy mode in the following cases:
+ 		 * 1. When cannot target interrupt to a specific vcpu.
 -- 
 2.49.0.1151.ga128411c76-goog
 
