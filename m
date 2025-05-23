@@ -1,65 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7DA32BDC3C;
-	Thu, 22 May 2025 19:38:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC30613AD1C
+	for <iommu@lists.linux.dev>; Fri, 23 May 2025 00:23:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747942729; cv=none; b=Rsa3ijRzxcIoQUdCxdUqHxuPDYaGEb5Cr20NS9ZtdPBUWnDYfFBf8bPXdUJPagVRDdDTF8ARH47Is0+aT8ICwKLB6EOAw+/KD9/XuZjd+6gjpDhvBmmaoE50vBoynL/6EgPESiSMDjY9lTSo7+To7KXYtlguyGnMYZt9F5VNd7I=
+	t=1747959815; cv=none; b=N28zYYpfCCfqFXwQ/J4ylwxVeg7BpzcZdLZfAnw0Z0Ib+M23i7YpPJ7lMLEoOsoGd4j5bfHgQYbo3GPerqEglNRU+fRKTwTbr0s25Jhe7iTTBsysknNWq2kcjCxfzG6GVUu3XyaRlkGSzKqj1oAvF5vXIhL1L3tks39sKJzshYQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747942729; c=relaxed/simple;
-	bh=YSTV4nrR9BcWNLjnzTxQXJEJv40M/G97zCOIOpydIcc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qSpegQF8tv7gyvbs5Yf3HXSReA4nY9LJejsy+73WAppg1XITkoUibcHI/212V/XGZMV6r5oEWaHWwOyic6zvTEZVHLt/6CzAC0OQ6TKt3bTA362wsvkiK4jk3kjNWG8smscjS/Tkbd43tTM0+WsTGniy5o9j+kP3uswv/sS9SpM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BviKpAsn; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1747959815; c=relaxed/simple;
+	bh=ni6/WBCjdM2RubNKz7PsaUr5XBFthV8eQFmuWwqwsnA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CRSuPpg8RPPL8vBkzn4e7g/6stVm00FSe0UEfsbAC+LCN62b0GsrZY0whYOddHIv9PvIAB8TGis2Q8ev7X7DlAgs8gW4sdO3uVZxA2mpgrx6RinGlxbqoV1xfYwrE+5tmsB6m4N+KFgYcLQMkVt6zxodzz7/fXbzueepjXqko4A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KbwIBKAY; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BviKpAsn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE94DC4CEE4;
-	Thu, 22 May 2025 19:38:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1747942729;
-	bh=YSTV4nrR9BcWNLjnzTxQXJEJv40M/G97zCOIOpydIcc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=BviKpAsnwN8/wHsxbVtqMWs6NQegDJNvtPqegexaj6V0gEVc8fklKCohTCjDArvDy
-	 vd0AbInp8fIIpGKgtNzaj2IztrPLKNlTqseo9nSnQr3iWSSp1vtHxih09JbvLf7/23
-	 tqeBqMK0j85D5Wb67Ak3a4bmcGpm/uuW694JJuPefwvQ9WCJWHDMTOz3X8b3e38Bbn
-	 9yiIH31hTt1aauy4ns9RjezhCd+zEWkUTB7I2q5lnbRj2dhCeBDjeOXbkpuOKGnyk5
-	 OR0+e4+q8JKQ3N12DbWS5XsOZDMA/gpd/ld+slatp1XYMTezM+J0jiwZ0E0xrukcbW
-	 7Gny4joijn39Q==
-Date: Thu, 22 May 2025 12:38:47 -0700
-From: Luis Chamberlain <mcgrof@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, vkoul@kernel.org,
-	chenxiang66@hisilicon.com, leon@kernel.org, jgg@nvidia.com,
-	alex.williamson@redhat.com, joel.granados@kernel.org,
-	iommu@lists.linux.dev, dmaengine@vger.kernel.org,
-	linux-block@vger.kernel.org, gost.dev@samsung.com,
-	Haavard.Skinnemoen@google.com,
-	Dan Williams <dan.j.williams@intel.com>
-Subject: Re: [PATCH 1/6] fake-dma: add fake dma engine driver
-Message-ID: <aC99RzlvdX0rnTNW@bombadil.infradead.org>
-References: <20250520223913.3407136-1-mcgrof@kernel.org>
- <20250520223913.3407136-2-mcgrof@kernel.org>
- <e3b98f16-2b9f-4cc1-8a54-29c6dfee918f@arm.com>
- <CGME20250521170724eucas1p28e65ef0ade407ce9e2cfe0b72da26d7a@eucas1p2.samsung.com>
- <aC4IRTo_HBxv9dVN@bombadil.infradead.org>
- <fe97e7ba-85d1-44c7-9de8-2082146f335d@samsung.com>
- <aC9X1VFrRJbH4bYm@bombadil.infradead.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KbwIBKAY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1747959814; x=1779495814;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ni6/WBCjdM2RubNKz7PsaUr5XBFthV8eQFmuWwqwsnA=;
+  b=KbwIBKAYJQE0T4zTCIwAp6oQMvQm6siTtPHLY42rs1papxPDuHZ+XehI
+   SvC+kjOkZGNSouzSoHBH5byWuWp7AvwLYcQ8PmY3zrp3sI2Je3jjv833I
+   0RdKBKk4DLLVVuxfZqDoEGNBTmjJgZbQkqd8FvDWqpA8GHfg4lY1C4HzQ
+   k041N+RJ7rfJ+bozqpA/QRVmpMb5EjnQL57NHSECYtTFFesSixzoG6+xD
+   veA9t0j+PzWxQOq/tfCCEeGBPa1RdFfYktCkuI0wBPAmJUNqSTgx0zHHW
+   aXL80wx8P4YZc/11x7Id7361hxte2HHXH38KbkGTVJD176+K4GD/WbBEU
+   Q==;
+X-CSE-ConnectionGUID: 4ZXPqOqaQbyT9R86YnYL6w==
+X-CSE-MsgGUID: Y2APtahYS0SzJrw6Zi8wSg==
+X-IronPort-AV: E=McAfee;i="6700,10204,11441"; a="67570558"
+X-IronPort-AV: E=Sophos;i="6.15,307,1739865600"; 
+   d="scan'208";a="67570558"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 May 2025 17:23:33 -0700
+X-CSE-ConnectionGUID: i5JzeATaSPiTz7BG0vKbSQ==
+X-CSE-MsgGUID: soLVEmIvSPu5NF+ajCyZ/g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.15,307,1739865600"; 
+   d="scan'208";a="140665149"
+Received: from ww-dev.sh.intel.com ([10.239.48.95])
+  by orviesa009.jf.intel.com with ESMTP; 22 May 2025 17:23:31 -0700
+From: Wei Wang <wei.w.wang@intel.com>
+To: baolu.lu@linux.intel.com,
+	kevin.tian@intel.com,
+	yi.l.liu@intel.com,
+	dwmw2@infradead.org,
+	jroedel@suse.de,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: Wei Wang <wei.w.wang@intel.com>
+Subject: [PATCH v1] iommu/vt-d: Remove the redundant logic in first_level_by_default()
+Date: Fri, 23 May 2025 16:10:56 +0800
+Message-ID: <20250523081056.223082-1-wei.w.wang@intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aC9X1VFrRJbH4bYm@bombadil.infradead.org>
+Content-Transfer-Encoding: 8bit
 
-On Thu, May 22, 2025 at 09:59:03AM -0700, Luis Chamberlain wrote:
-> I'll try the few knobs suggested by Leon to see if that enables it.
+This original implementation included redundant logic to determine whether
+first-stage translation should be used by default. Simplify it and
+preserve the original behavior:
+- Returns false in legacy mode (no scalable mode support).
+- Defaults to first-level translation when both FLTS and SLTS are
+  supported.
 
-That didn't help, but I'm more intruiged by giving the iommufd mocking a
-shot, so I'll try that next as I think that will ultimately be cleaner
-if possible.
+Signed-off-by: Wei Wang <wei.w.wang@intel.com>
+---
+ drivers/iommu/intel/iommu.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-  Luis
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index cb0b993bebb4..228da47ab7cd 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1366,15 +1366,7 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+  */
+ static bool first_level_by_default(struct intel_iommu *iommu)
+ {
+-	/* Only SL is available in legacy mode */
+-	if (!sm_supported(iommu))
+-		return false;
+-
+-	/* Only level (either FL or SL) is available, just use it */
+-	if (ecap_flts(iommu->ecap) ^ ecap_slts(iommu->ecap))
+-		return ecap_flts(iommu->ecap);
+-
+-	return true;
++	return sm_supported(iommu) && ecap_flts(iommu->ecap);
+ }
+ 
+ int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
+-- 
+2.43.0
+
