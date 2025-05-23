@@ -1,57 +1,57 @@
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
+Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0756B27D77D
-	for <iommu@lists.linux.dev>; Fri, 23 May 2025 01:01:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1957F27E7EE
+	for <iommu@lists.linux.dev>; Fri, 23 May 2025 01:01:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747962062; cv=none; b=nW0rpz6yVdDoSWMVjdto5Ap7uM0/CN2UDfLE2Ns+11jusn4MgZhe9rDtQRJfINfV53X/UFPpVfEzTWJ4zOjVgYxN/Kjiej03pYDAcArB/OzZwHeNlW7CSErvRJidriKwTLrjkVVMJLqq5INPjqfvki2ds/bBGvEep8wNFpesloA=
+	t=1747962063; cv=none; b=b3vJGdVjuRe53Aur8TCJ6k3JFN2re73bu2lfaXl0KerFLr1jS6Gy4lF/kYfJgNeY5A+yjO6ZpdIZbE2wKXkMrclCPL9xtwejD4J7ZCcmhR0W9W336RN4JvPxFjSZt63uuWvRN/TEExVKIv5HknYUGMovoSaRPBIG5+ybesW9Ci0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747962062; c=relaxed/simple;
-	bh=oNRMXcQ79z/ppsp/MdXUoLSNSsfC0IRqSoysTfP2n0c=;
+	s=arc-20240116; t=1747962063; c=relaxed/simple;
+	bh=CjEiv3EBSt3Kbej2hI7WprWBZwegAM8tmmcYdNo1npY=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=DqNfpoEYItxJpo6OSTw9RxmCjlnRW8gX+92OMgkZ6eT6LpX6j8KWKul6JgIPf7sHySHH+Z1QTvSZn4lBSdx5yoMLenAEkV/VDVEQw5J4P7UmGGsKp/ete9wDM/Jwu6ze0Ra0BTEVYXm3zIpENRgBUHERCTffL7NA/0TKsIQC2eA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rJPcRN5m; arc=none smtp.client-ip=209.85.216.74
+	 To:Cc:Content-Type; b=D3nZRAl3TnUxhsihGB8GTSlEn1YseKc3zr34j+hMYoK9fUDC6JJdRBQLtj0xHTceNvwSJxaq1NNkeyxNdS7KMqLdDyv4a4CssVILq9XE7Vhqde7jIK/NdRMZbK+ROIlm9Vf3UYOUcXOivY11zhDmyu+34sn4MmOrc5/NqCWH0Ak=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=2TzOpWao; arc=none smtp.client-ip=209.85.215.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rJPcRN5m"
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-30eac9886ffso4645758a91.1
-        for <iommu@lists.linux.dev>; Thu, 22 May 2025 18:01:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="2TzOpWao"
+Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-b1442e039eeso5515837a12.0
+        for <iommu@lists.linux.dev>; Thu, 22 May 2025 18:01:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1747962059; x=1748566859; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1747962061; x=1748566861; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=JMjSdTj+suhJzKf/G1gZtLOB7F2Sxx7/bINJC6X9hG0=;
-        b=rJPcRN5mTT2FOA6yozI6hebPB3Y7m2CmQlOFA3w9PtxnR6lZKhWldo+g1yIdW8oP81
-         TfIFEoef5l4JBsisXmqQWL/86vBVGfSdA/elGqgMNg1i3c0s/d/X/K3SN5NFM4PdTEu0
-         XlFr1Cep7ivgdFKhWgY53OQ4sL2HiApjFMFgGo1dt57EJoSz3gZMFLDFiaAaf0WUSF8k
-         H23HHeKqqDveRQWArpE3vyNOy6KbFU037oIkBedFjCCeJqSDL3pS9qhUhNqjhMNY73lJ
-         vUmZPuL8MO8Dqu4u2H8njCKp9ws121DGYwx0AhxKI4XgoWryytdmlXSv5dhw4+vajLDm
-         DsRw==
+        bh=I/V/wUMCmixrEnIVNqfJcxmN2QXnsdAPP3QKe6AvyEw=;
+        b=2TzOpWao2xIw8ToaVSPEn2Fr2lpNYE1b1CaQ2E513Hvw7I1gPuQNwJDY084xyqbGwa
+         BdfR8huqtQynHgctx66V4nfJJh+kYHOV1rUP6eClZfeA8y77XJed/Vo2azz3DIoAZibf
+         /o0EwjN83TNTCSTToyu607qDza6WjIMYpIwtuiR7RfGteD85yUBwq1f6rqLK93vRBJEH
+         C4TMeMSzvtm8x6hP85AQ4gYgP8GSpeaj4s7tL5X6rRzCPkla5Hc1UBzZMvBZ3fuBhOP5
+         uDnNrttHpWRqlcN82VYbW2w6IOZnxJ3l0+BS+qqK8ZdCAA1su30+ojxhBxY1ZBQq4Uha
+         7dpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747962059; x=1748566859;
+        d=1e100.net; s=20230601; t=1747962061; x=1748566861;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=JMjSdTj+suhJzKf/G1gZtLOB7F2Sxx7/bINJC6X9hG0=;
-        b=OJ27FPUEa3UnDrD6hM3gZ2yzCTdHUjY4oqA5zYLovTqsUgR4vAOuJZgI6m9OhixGTI
-         E0oNMkLkw2TSwelzmg+RMq+xAWQ3VvjBYwI5WHLAyMvUBKUNSKU0sxoP1K3iJkadDknC
-         vFYmE9qyDvZx+mXsaaYoDyIlnD43MAYHLetYbWKkHMtAVxi5BO0g39r6S8AS6GaB/q72
-         z8Wr/UkRASZgvfPWgBpeqiHoIwrw2gIuUZGnxDW3SytwSIjfY+N40Da42k9Aenpg+qmZ
-         NlTttVqASviUx/WMiAe5wcgouweTAY6Ool/4QOMbXNch5iJZau8Ta8TwlCU+hZ+Kri/E
-         FNKQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWwth4eMyd/FH21EZoIllyroJSzSeMix481rnWKhH98xdEeZyY70P/0S547vrOI2rsBzERfUA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyIKD8jJpxeNg+OGk/S/6AQIS9XAfxOfRkO5Uzyyfg7hhVLNTrq
-	jjrDOt02xqAHaDDnzbbWLwbtl8+AwqirkAKmMQtFivk5kafbiEG3WBo2QcHMUtvnVAH6ZXzT6b0
-	O+lIsAA==
-X-Google-Smtp-Source: AGHT+IF8c6fJ8yMCN4wj6UnyIXb58GYfChHNsI8pVlq/3hKy38hpN1X8/00HWG6ufh/FDU2XY+RsgA7OHYI=
-X-Received: from pjbnd11.prod.google.com ([2002:a17:90b:4ccb:b0:301:b354:8d63])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:17c7:b0:30e:a1ec:68dd
- with SMTP id 98e67ed59e1d1-310e96c95aemr1724491a91.8.1747962059471; Thu, 22
- May 2025 18:00:59 -0700 (PDT)
+        bh=I/V/wUMCmixrEnIVNqfJcxmN2QXnsdAPP3QKe6AvyEw=;
+        b=tmi+2eYUUtC5eBwpNuulJ9jzXBh1NrlvNm9mKzcdXTi5sm4/Jyp2Hnua8HLPZNJTc3
+         6D0SbOejeleGM4oGLZfpDQV7X3xDnHy8bcoLjf7IJ2DNthWJRhMWngXVzTMs0rdFiRxg
+         Fr4mW2m57njrloiH9gaJ/+cvvBJhNfqwHMa/Jx1ObAz9So+tEQ9VEGBjmsnQCm6F1J3W
+         /MjI5VQfSLQytMfWqrILo2R03atCeHP3ESDTYIaH8GXEGzOM6BGa8AFkFCPCUmF5d7L3
+         TCCgA8SjZb+yvI6BY0UCnw3Ne/SCSTAjcl1Oafx7HOvxSaMQ/09TQS1aVyOVr3DeVVIH
+         r/9w==
+X-Forwarded-Encrypted: i=1; AJvYcCXRBa4hPFQg/titSJ83V+C21Q1CW1LUd9RdZY2gbMWoDE+fvfV39LwMJCC1QXAAhzwt/LfIcQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxfnK56KGpu5k+Uo2fVF2xCZgAey84x6z3wk0Pff/B5g5Xipt9k
+	mdd5i2fxH7G6p5DG0MKfO3Tn757ukCg/9xsEq9QMQJeifCgnxU1X7Ebp3iYsef69/fIJh3pqFLG
+	SgiFrMg==
+X-Google-Smtp-Source: AGHT+IEotc86oF2PtG/8v7ATzTs0oMnFmKSHoNnIFngKOe27XotzUkoD7+iAiHXRlObAKnBtxXNE1dwWSgM=
+X-Received: from pgbcr12.prod.google.com ([2002:a05:6a02:410c:b0:b2b:2ba7:184f])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a20:748e:b0:1f5:6b36:f57a
+ with SMTP id adf61e73a8af0-2187a6de22bmr1225154637.39.1747962061182; Thu, 22
+ May 2025 18:01:01 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Thu, 22 May 2025 17:59:34 -0700
+Date: Thu, 22 May 2025 17:59:35 -0700
 In-Reply-To: <20250523010004.3240643-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,9 +61,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250523010004.3240643-1-seanjc@google.com>
 X-Mailer: git-send-email 2.49.0.1151.ga128411c76-goog
-Message-ID: <20250523010004.3240643-30-seanjc@google.com>
-Subject: [PATCH v2 29/59] iommu: KVM: Split "struct vcpu_data" into separate
- AMD vs. Intel structs
+Message-ID: <20250523010004.3240643-31-seanjc@google.com>
+Subject: [PATCH v2 30/59] KVM: Don't WARN if updating IRQ bypass route fails
 From: Sean Christopherson <seanjc@google.com>
 To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
@@ -74,201 +73,89 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Split the vcpu_data structure that serves as a handoff from KVM to IOMMU
-drivers into vendor specific structures.  Overloading a single structure
-makes the code hard to read and maintain, is *very* misleading as it
-suggests that mixing vendors is actually supported, and bastardizing
-Intel's posted interrupt descriptor address when AMD's IOMMU already has
-its own structure is quite unnecessary.
+Don't bother WARNing if updating an IRTE route fails now that vendor code
+provides much more precise WARNs.  The generic WARN doesn't provide enough
+information to actually debug the problem, and has obviously done nothing
+to surface the myriad bugs in KVM's implementation.
 
-Tested-by: Sairaj Kodilkar <sarunkod@amd.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/include/asm/irq_remapping.h | 15 ++++++++++++++-
- arch/x86/kvm/svm/avic.c              | 21 ++++++++-------------
- arch/x86/kvm/vmx/posted_intr.c       |  4 ++--
- drivers/iommu/amd/iommu.c            | 12 ++++--------
- drivers/iommu/intel/irq_remapping.c  | 10 +++++-----
- include/linux/amd-iommu.h            | 12 ------------
- 6 files changed, 33 insertions(+), 41 deletions(-)
+ arch/x86/kvm/irq.c       |  8 ++++----
+ include/linux/kvm_host.h |  6 +++---
+ virt/kvm/eventfd.c       | 15 ++++++---------
+ 3 files changed, 13 insertions(+), 16 deletions(-)
 
-diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index 5036f13ab69f..2dbc9cb61c2f 100644
---- a/arch/x86/include/asm/irq_remapping.h
-+++ b/arch/x86/include/asm/irq_remapping.h
-@@ -26,7 +26,20 @@ enum {
- 	IRQ_REMAP_X2APIC_MODE,
- };
+diff --git a/arch/x86/kvm/irq.c b/arch/x86/kvm/irq.c
+index f20b6da30d6f..b3ce870d1d91 100644
+--- a/arch/x86/kvm/irq.c
++++ b/arch/x86/kvm/irq.c
+@@ -606,11 +606,11 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *cons,
+ 	kvm_arch_end_assignment(irqfd->kvm);
+ }
  
--struct vcpu_data {
-+/*
-+ * This is mainly used to communicate information back-and-forth
-+ * between SVM and IOMMU for setting up and tearing down posted
-+ * interrupt
-+ */
-+struct amd_iommu_pi_data {
-+	u64 vapic_addr;		/* Physical address of the vCPU's vAPIC. */
-+	u32 ga_tag;
-+	u32 vector;		/* Guest vector of the interrupt */
-+	bool is_guest_mode;
-+	void *ir_data;
-+};
+-int kvm_arch_update_irqfd_routing(struct kvm_kernel_irqfd *irqfd,
+-				  struct kvm_kernel_irq_routing_entry *old,
+-				  struct kvm_kernel_irq_routing_entry *new)
++void kvm_arch_update_irqfd_routing(struct kvm_kernel_irqfd *irqfd,
++				   struct kvm_kernel_irq_routing_entry *old,
++				   struct kvm_kernel_irq_routing_entry *new)
+ {
+-	return kvm_pi_update_irte(irqfd, new);
++	kvm_pi_update_irte(irqfd, new);
+ }
+ 
+ bool kvm_arch_irqfd_route_changed(struct kvm_kernel_irq_routing_entry *old,
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index 27c7087820cb..ee79b1167e02 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -2406,9 +2406,9 @@ void kvm_arch_irq_bypass_del_producer(struct irq_bypass_consumer *,
+ 			   struct irq_bypass_producer *);
+ void kvm_arch_irq_bypass_stop(struct irq_bypass_consumer *);
+ void kvm_arch_irq_bypass_start(struct irq_bypass_consumer *);
+-int kvm_arch_update_irqfd_routing(struct kvm_kernel_irqfd *irqfd,
+-				  struct kvm_kernel_irq_routing_entry *old,
+-				  struct kvm_kernel_irq_routing_entry *new);
++void kvm_arch_update_irqfd_routing(struct kvm_kernel_irqfd *irqfd,
++				   struct kvm_kernel_irq_routing_entry *old,
++				   struct kvm_kernel_irq_routing_entry *new);
+ bool kvm_arch_irqfd_route_changed(struct kvm_kernel_irq_routing_entry *,
+ 				  struct kvm_kernel_irq_routing_entry *);
+ #endif /* CONFIG_HAVE_KVM_IRQ_BYPASS */
+diff --git a/virt/kvm/eventfd.c b/virt/kvm/eventfd.c
+index 85581550dc8d..a4f80fe8a5f3 100644
+--- a/virt/kvm/eventfd.c
++++ b/virt/kvm/eventfd.c
+@@ -285,11 +285,11 @@ void __attribute__((weak)) kvm_arch_irq_bypass_start(
+ {
+ }
+ 
+-int __weak kvm_arch_update_irqfd_routing(struct kvm_kernel_irqfd *irqfd,
+-					 struct kvm_kernel_irq_routing_entry *old,
+-					 struct kvm_kernel_irq_routing_entry *new)
++void __weak kvm_arch_update_irqfd_routing(struct kvm_kernel_irqfd *irqfd,
++					  struct kvm_kernel_irq_routing_entry *old,
++					  struct kvm_kernel_irq_routing_entry *new)
+ {
+-	return 0;
 +
-+struct intel_iommu_pi_data {
- 	u64 pi_desc_addr;	/* Physical address of PI Descriptor */
- 	u32 vector;		/* Guest vector of the interrupt */
- };
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index a0f3cdd2ea3f..6085a629c5e6 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -822,23 +822,18 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
- 	 */
- 	if (vcpu && kvm_vcpu_apicv_active(vcpu)) {
- 		/*
--		 * Try to enable guest_mode in IRTE.  Note, the address
--		 * of the vCPU's AVIC backing page is passed to the
--		 * IOMMU via vcpu_info->pi_desc_addr.
-+		 * Try to enable guest_mode in IRTE.
- 		 */
--		struct vcpu_data vcpu_info = {
--			.pi_desc_addr = avic_get_backing_page_address(to_svm(vcpu)),
--			.vector = vector,
--		};
--
--		struct amd_iommu_pi_data pi = {
--			.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id, vcpu->vcpu_id),
-+		struct amd_iommu_pi_data pi_data = {
-+			.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id,
-+					     vcpu->vcpu_id),
- 			.is_guest_mode = true,
--			.vcpu_data = &vcpu_info,
-+			.vapic_addr = avic_get_backing_page_address(to_svm(vcpu)),
-+			.vector = vector,
- 		};
- 		int ret;
- 
--		ret = irq_set_vcpu_affinity(host_irq, &pi);
-+		ret = irq_set_vcpu_affinity(host_irq, &pi_data);
- 		if (ret)
- 			return ret;
- 
-@@ -849,7 +844,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
- 		 * we can reference to them directly when we update vcpu
- 		 * scheduling information in IOMMU irte.
- 		 */
--		return svm_ir_list_add(to_svm(vcpu), irqfd, &pi);
-+		return svm_ir_list_add(to_svm(vcpu), irqfd, &pi_data);
- 	}
- 	return irq_set_vcpu_affinity(host_irq, NULL);
  }
-diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
-index 687ffde3b61c..3a23c30f73cb 100644
---- a/arch/x86/kvm/vmx/posted_intr.c
-+++ b/arch/x86/kvm/vmx/posted_intr.c
-@@ -303,12 +303,12 @@ int vmx_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
- 		       struct kvm_vcpu *vcpu, u32 vector)
- {
- 	if (vcpu) {
--		struct vcpu_data vcpu_info = {
-+		struct intel_iommu_pi_data pi_data = {
- 			.pi_desc_addr = __pa(vcpu_to_pi_desc(vcpu)),
- 			.vector = vector,
- 		};
  
--		return irq_set_vcpu_affinity(host_irq, &vcpu_info);
-+		return irq_set_vcpu_affinity(host_irq, &pi_data);
- 	} else {
- 		return irq_set_vcpu_affinity(host_irq, NULL);
+ bool __attribute__((weak)) kvm_arch_irqfd_route_changed(
+@@ -618,11 +618,8 @@ void kvm_irq_routing_update(struct kvm *kvm)
+ 
+ #if IS_ENABLED(CONFIG_HAVE_KVM_IRQ_BYPASS)
+ 		if (irqfd->producer &&
+-		    kvm_arch_irqfd_route_changed(&old, &irqfd->irq_entry)) {
+-			int ret = kvm_arch_update_irqfd_routing(irqfd, &old, &irqfd->irq_entry);
+-
+-			WARN_ON(ret);
+-		}
++		    kvm_arch_irqfd_route_changed(&old, &irqfd->irq_entry))
++			kvm_arch_update_irqfd_routing(irqfd, &old, &irqfd->irq_entry);
+ #endif
  	}
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 5141507587e1..36749efcc781 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -3860,10 +3860,10 @@ int amd_iommu_deactivate_guest_mode(void *data)
- }
- EXPORT_SYMBOL(amd_iommu_deactivate_guest_mode);
  
--static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
-+static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *info)
- {
- 	int ret;
--	struct amd_iommu_pi_data *pi_data = vcpu_info;
-+	struct amd_iommu_pi_data *pi_data = info;
- 	struct amd_ir_data *ir_data = data->chip_data;
- 	struct irq_2_irte *irte_info = &ir_data->irq_2_irte;
- 	struct iommu_dev_data *dev_data;
-@@ -3886,14 +3886,10 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
- 	ir_data->cfg = irqd_cfg(data);
- 
- 	if (pi_data) {
--		struct vcpu_data *vcpu_pi_info = pi_data->vcpu_data;
--
- 		pi_data->ir_data = ir_data;
- 
--		WARN_ON_ONCE(!pi_data->is_guest_mode);
--
--		ir_data->ga_root_ptr = (vcpu_pi_info->pi_desc_addr >> 12);
--		ir_data->ga_vector = vcpu_pi_info->vector;
-+		ir_data->ga_root_ptr = (pi_data->vapic_addr >> 12);
-+		ir_data->ga_vector = pi_data->vector;
- 		ir_data->ga_tag = pi_data->ga_tag;
- 		ret = amd_iommu_activate_guest_mode(ir_data);
- 	} else {
-diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
-index 3bc2a03cceca..6165bb919520 100644
---- a/drivers/iommu/intel/irq_remapping.c
-+++ b/drivers/iommu/intel/irq_remapping.c
-@@ -1244,10 +1244,10 @@ static void intel_ir_compose_msi_msg(struct irq_data *irq_data,
- static int intel_ir_set_vcpu_affinity(struct irq_data *data, void *info)
- {
- 	struct intel_ir_data *ir_data = data->chip_data;
--	struct vcpu_data *vcpu_pi_info = info;
-+	struct intel_iommu_pi_data *pi_data = info;
- 
- 	/* stop posting interrupts, back to the default mode */
--	if (!vcpu_pi_info) {
-+	if (!pi_data) {
- 		__intel_ir_reconfigure_irte(data, true);
- 	} else {
- 		struct irte irte_pi;
-@@ -1265,10 +1265,10 @@ static int intel_ir_set_vcpu_affinity(struct irq_data *data, void *info)
- 		/* Update the posted mode fields */
- 		irte_pi.p_pst = 1;
- 		irte_pi.p_urgent = 0;
--		irte_pi.p_vector = vcpu_pi_info->vector;
--		irte_pi.pda_l = (vcpu_pi_info->pi_desc_addr >>
-+		irte_pi.p_vector = pi_data->vector;
-+		irte_pi.pda_l = (pi_data->pi_desc_addr >>
- 				(32 - PDA_LOW_BIT)) & ~(-1UL << PDA_LOW_BIT);
--		irte_pi.pda_h = (vcpu_pi_info->pi_desc_addr >> 32) &
-+		irte_pi.pda_h = (pi_data->pi_desc_addr >> 32) &
- 				~(-1UL << PDA_HIGH_BIT);
- 
- 		ir_data->irq_2_iommu.posted_vcpu = true;
-diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
-index deeefc92a5cf..99b4fa9a0296 100644
---- a/include/linux/amd-iommu.h
-+++ b/include/linux/amd-iommu.h
-@@ -12,18 +12,6 @@
- 
- struct amd_iommu;
- 
--/*
-- * This is mainly used to communicate information back-and-forth
-- * between SVM and IOMMU for setting up and tearing down posted
-- * interrupt
-- */
--struct amd_iommu_pi_data {
--	u32 ga_tag;
--	bool is_guest_mode;
--	struct vcpu_data *vcpu_data;
--	void *ir_data;
--};
--
- #ifdef CONFIG_AMD_IOMMU
- 
- struct task_struct;
 -- 
 2.49.0.1151.ga128411c76-goog
 
