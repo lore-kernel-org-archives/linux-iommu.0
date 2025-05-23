@@ -1,57 +1,57 @@
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
+Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F36B2270571
-	for <iommu@lists.linux.dev>; Fri, 23 May 2025 01:00:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3971274FEE
+	for <iommu@lists.linux.dev>; Fri, 23 May 2025 01:00:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747962044; cv=none; b=snxrz46Mt0itdSkWKR3DgmnQrBgnww16O5n1YnusdcmKvSsrZB87l98HNjV+VJCezTwfcZH0zQ9g0GmFAqDMmf9+a6A72oVGoRxbA/xbmNH3NF/u7vL0esNNtWiJea++zHUoEkkDGxZ8p+RvSvHiOPqQDtZKW8jbC8deEFuIx64=
+	t=1747962047; cv=none; b=QehtZjdxtTNMffcOwIIReXpiaS1Pwz6DBxX6rr038M5uV+i6GtrHGP/7JeH6ngOnvB3rSpEGmW/bbEfcKT+4DuE2UityZP8MfIB/sX+i5x6XCqQIm2gc4JgD+UUtgIlJiDbR1JEBiXAYt0mqp31oZ3gLI3zb4qgKNeAun0bR24E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747962044; c=relaxed/simple;
-	bh=J1mv6D20whYTlmsfDBfjzwzrzJ6/jskwNzsjA8aeq6U=;
+	s=arc-20240116; t=1747962047; c=relaxed/simple;
+	bh=fW2G94RfLD78AMcqDsZ5ps4G4Sno9GFbL+j5/DPryVk=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=ARI0/5T0griv8XELcbilaqmkA8PcqnfI0OufzkSykQaszI2sv+RaFIeaxxVw7jusOw0KW0gQOzV4gpSJaOhsP1n+TyQXOF/Tubk3ZcBWjDsTqNPH5TBSRFZXkxnghvdvJe2RnpyDfZH6ZjKUPufIRfQiU6ZvYtZor+w+An5rk50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=YeLSw0ze; arc=none smtp.client-ip=209.85.216.74
+	 To:Cc:Content-Type; b=LprhCtsYKXHPWszS/1IcwE6OG/JcuU+0ZExuyyZhJdMFILO+AbpG9/FCGwUfRzFHUaeXk/a7jiRQ4//N+Lydwun7x4x87x6eK8YU5zcqGhvzBLvfKRLsYzeDPjp/p4C5dQ65pfnX5VJvK/slS1+u1T1TLTaE/nEY7H8PzBA6p5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ohUVgEr1; arc=none smtp.client-ip=209.85.215.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="YeLSw0ze"
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-30e8425926eso9531354a91.1
-        for <iommu@lists.linux.dev>; Thu, 22 May 2025 18:00:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ohUVgEr1"
+Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-b0e0c573531so5902589a12.3
+        for <iommu@lists.linux.dev>; Thu, 22 May 2025 18:00:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1747962042; x=1748566842; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1747962044; x=1748566844; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=fKnvJ2LV8riPZoPU3O/CI+BFOmSeLWZITljIzp2E0GU=;
-        b=YeLSw0zeM/YBu+uwpEcQ9T8pZsfqb2gmpO7QRzvtmHMwr05Red6uTpes+9GH3u+rF4
-         vkTeW2GsJhSL5XPAFKlv9CLUiqBl0dYwOt//PhDxXufidHavRS//Mwc7O7jkrRBhsRRv
-         gICWAtYTfZk0d69Pld1eCAN+hNsjKRzm4S0pfCKjaSQ8A43tT23um73gTFspOJptHNt5
-         XLBn1OpkQ70F//eMTUY6C/ukMm6TpbCRgC7ad3EYta0cxtZ21QdL4q3GQvqNB5fezMUK
-         dbyATQhhrdX4Ed/DxFJEmIpxYk+AvOHV3d+iT9WetgOpOZMzuPcmfn5MAiCNBpXcuQZc
-         742A==
+        bh=LEcBPUoa4oxCDsr/z1+DJV9LnDo6qsS8eDb1DWTU3As=;
+        b=ohUVgEr1vZMKrJd0ry9860McuN0bAzBsZNHkt3akEj1mt28mjiaQAIX8/CXhYX3CAu
+         f4/Lm56O40aJ1BkSf6tfdC+0QTGslmK3HQtjWUWbgV/2rRGc6kkguYyS4HqkarBruS2q
+         EiDQiBK7MdCpF21UmJVKrUe3T+WW+pICfYe57+kjLkRFB5upfMQxWyNx7LJftcJ4PS/+
+         71rwuKdELl0WHUsgbdaFerjO50FGlO85ecOHU7sYQgCPRPR9whSarqIcqka7liNW0oa1
+         u+xAbs8QCcDgcuo82cgQl9OkvpwtCG8XCj9r9kFxg9TZ0rt7UL9cntwG7uExl4107o33
+         tV5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747962042; x=1748566842;
+        d=1e100.net; s=20230601; t=1747962044; x=1748566844;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=fKnvJ2LV8riPZoPU3O/CI+BFOmSeLWZITljIzp2E0GU=;
-        b=JVwLkneuIeT7rtvV+3WfS4L2aaYqDgZFCf9yhg6fWlpnUVwq+vBNowcRiaOkycjXUa
-         6pDpJPYLbwZBMxT02v9Gtm3jxtUfHt9lALwv6KUTGG0AgOzpQr3L/wGP2EuCEh2zdtkc
-         UuPIugjAKM5/cCd9FAPY3+Un4+EEs8qh2t8dk1mWfXdXIF2t8QHYssQY5p3XzdypYWm8
-         9PI4Okpm/BYpFR5ozjaTix7m7pBGm9zLMa+x2g6MftZ77xKiBria7GGc9/vKIe0cfRyX
-         JyzTGDh5hkvhydubUxsvnNuCB/Rhob3F85byDM34bU+PtdbtO2wWM0YA0FbSn59DfHJv
-         wyNA==
-X-Forwarded-Encrypted: i=1; AJvYcCUo7Pk2brOnoNvk2EjL+NJ4GOMFFPqOKOYkXj+i6fLidzuTBlmX8QPGkwgJI2ZIqUqlFu01hA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyb9DZAnJBBbWOvS+3j/XCAJtyfxaOHbcDlhwqKs8fkWbXrTovf
-	qFo61puA+8F0AcjKn6NiJf6rh3fWBsHHIssoYE2ouJ5BfEomKnJa9iRFSqc+zSTVDb5VQYh7hcg
-	yBkvZhQ==
-X-Google-Smtp-Source: AGHT+IGR/Df5BJxs3ol6VXQkpzy/R+7lIXiH+7qF+fijHNHGe4vwvP4VxYidt3ojzy4f91Evs8kBdHkzJi4=
-X-Received: from pji7.prod.google.com ([2002:a17:90b:3fc7:b0:2fa:a30a:3382])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:5746:b0:2ee:f687:6acb
- with SMTP id 98e67ed59e1d1-30e830fc346mr35983530a91.13.1747962042547; Thu, 22
- May 2025 18:00:42 -0700 (PDT)
+        bh=LEcBPUoa4oxCDsr/z1+DJV9LnDo6qsS8eDb1DWTU3As=;
+        b=Y1ZqvgIijfGLgs10hgLOVbIVOUeQSrPJWqo3OI9ktGTbGuHASAmjL81s/sFZodfxth
+         3cy8h4cOkufu12uKN42Re81rI4B13L3pjgktuQYsjFpMqtkzHlkNxGsnLDZKaI20jby2
+         AnUHDBpKi/Uqa4jdCF9BSHDBAz9PhTnLCD8lgVvdbod8zAbs3dPneE/k+ME7V4B+7yEn
+         Q1T59vJnr2rIIDQoVqKtvaPNcvg0cF4yu8BGWCxFNiCdHnie7CsvJ+fF1u2wWKjQLgIT
+         V475WFIOfGXJD7pWlDAPXVyBy/iXy9VfrUITnKhhIECVcPCOgBTZi+eAwEqlgqHaLmSG
+         SQnw==
+X-Forwarded-Encrypted: i=1; AJvYcCXZP9V+fSoBoYesBwYVgIjGMP6/5vprUKXMuPWpAf+62Om1alTlz4KYkwhLiTjlGltUeNEAow==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwlGGy8oSVvVXoV0rG+VQGLppQwhQwP1tjJz5NYwW2ebl+KIQck
+	4eKI+/erolHma4vZiYdOKm+WwnC1zL6bACYK5XdR4KiZzmS4VHCiQBnke3yegx5115q7ZDZZkyh
+	Px8RM7Q==
+X-Google-Smtp-Source: AGHT+IGKaHuHYtNmHM5Kq9jQbWuDh5HQqrhGXZK4H0D0g7q7j+eU/9f1bdcnBIi1ajs832Ec0O94mR8aIqk=
+X-Received: from pjbsl8.prod.google.com ([2002:a17:90b:2e08:b0:301:1bf5:2f07])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:3b48:b0:2ee:d433:7c50
+ with SMTP id 98e67ed59e1d1-30e7d5ac7ecmr33843110a91.23.1747962044116; Thu, 22
+ May 2025 18:00:44 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Thu, 22 May 2025 17:59:24 -0700
+Date: Thu, 22 May 2025 17:59:25 -0700
 In-Reply-To: <20250523010004.3240643-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,8 +61,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250523010004.3240643-1-seanjc@google.com>
 X-Mailer: git-send-email 2.49.0.1151.ga128411c76-goog
-Message-ID: <20250523010004.3240643-20-seanjc@google.com>
-Subject: [PATCH v2 19/59] iommu/amd: KVM: SVM: Use pi_desc_addr to derive ga_root_ptr
+Message-ID: <20250523010004.3240643-21-seanjc@google.com>
+Subject: [PATCH v2 20/59] iommu/amd: KVM: SVM: Pass NULL @vcpu_info to
+ indicate "not guest mode"
 From: Sean Christopherson <seanjc@google.com>
 To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
@@ -73,68 +74,73 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Use vcpu_data.pi_desc_addr instead of amd_iommu_pi_data.base to get the
-GA root pointer.  KVM is the only source of amd_iommu_pi_data.base, and
-KVM's one and only path for writing amd_iommu_pi_data.base computes the
-exact same value for vcpu_data.pi_desc_addr and amd_iommu_pi_data.base,
-and fills amd_iommu_pi_data.base if and only if vcpu_data.pi_desc_addr is
-valid, i.e. amd_iommu_pi_data.base is fully redundant.
+Pass NULL to amd_ir_set_vcpu_affinity() to communicate "don't post to a
+vCPU" now that there's no need to communicate information back to KVM
+about the previous vCPU (KVM does its own tracking).
 
-Cc: Maxim Levitsky <mlevitsk@redhat.com>
-Reviewed-by: Joao Martins <joao.m.martins@oracle.com>
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
 Tested-by: Sairaj Kodilkar <sarunkod@amd.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c   | 7 +++++--
- drivers/iommu/amd/iommu.c | 2 +-
- include/linux/amd-iommu.h | 2 --
- 3 files changed, 6 insertions(+), 5 deletions(-)
+ arch/x86/kvm/svm/avic.c   | 16 ++++------------
+ drivers/iommu/amd/iommu.c | 10 +++++++---
+ 2 files changed, 11 insertions(+), 15 deletions(-)
 
 diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index 3cf929ac117f..461300bc5608 100644
+index 461300bc5608..6260bf3697ba 100644
 --- a/arch/x86/kvm/svm/avic.c
 +++ b/arch/x86/kvm/svm/avic.c
-@@ -893,8 +893,11 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+@@ -927,18 +927,10 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+ 		}
+ 	}
  
- 			enable_remapped_mode = false;
- 
--			/* Try to enable guest_mode in IRTE */
--			pi.base = avic_get_backing_page_address(svm);
-+			/*
-+			 * Try to enable guest_mode in IRTE.  Note, the address
-+			 * of the vCPU's AVIC backing page is passed to the
-+			 * IOMMU via vcpu_info->pi_desc_addr.
-+			 */
- 			pi.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id,
- 						     svm->vcpu.vcpu_id);
- 			pi.is_guest_mode = true;
+-	ret = 0;
+-	if (enable_remapped_mode) {
+-		/* Use legacy mode in IRTE */
+-		struct amd_iommu_pi_data pi;
+-
+-		/**
+-		 * Here, pi is used to:
+-		 * - Tell IOMMU to use legacy mode for this interrupt.
+-		 */
+-		pi.is_guest_mode = false;
+-		ret = irq_set_vcpu_affinity(host_irq, &pi);
+-	}
++	if (enable_remapped_mode)
++		ret = irq_set_vcpu_affinity(host_irq, NULL);
++	else
++		ret = 0;
+ out:
+ 	srcu_read_unlock(&kvm->irq_srcu, idx);
+ 	return ret;
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index f23635b062f0..512167f7aef4 100644
+index 512167f7aef4..5141507587e1 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -3888,7 +3888,7 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
- 	pi_data->ir_data = ir_data;
+@@ -3864,7 +3864,6 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
+ {
+ 	int ret;
+ 	struct amd_iommu_pi_data *pi_data = vcpu_info;
+-	struct vcpu_data *vcpu_pi_info = pi_data->vcpu_data;
+ 	struct amd_ir_data *ir_data = data->chip_data;
+ 	struct irq_2_irte *irte_info = &ir_data->irq_2_irte;
+ 	struct iommu_dev_data *dev_data;
+@@ -3885,9 +3884,14 @@ static int amd_ir_set_vcpu_affinity(struct irq_data *data, void *vcpu_info)
+ 		return -EINVAL;
  
- 	if (pi_data->is_guest_mode) {
--		ir_data->ga_root_ptr = (pi_data->base >> 12);
-+		ir_data->ga_root_ptr = (vcpu_pi_info->pi_desc_addr >> 12);
+ 	ir_data->cfg = irqd_cfg(data);
+-	pi_data->ir_data = ir_data;
+ 
+-	if (pi_data->is_guest_mode) {
++	if (pi_data) {
++		struct vcpu_data *vcpu_pi_info = pi_data->vcpu_data;
++
++		pi_data->ir_data = ir_data;
++
++		WARN_ON_ONCE(!pi_data->is_guest_mode);
++
+ 		ir_data->ga_root_ptr = (vcpu_pi_info->pi_desc_addr >> 12);
  		ir_data->ga_vector = vcpu_pi_info->vector;
  		ir_data->ga_tag = pi_data->ga_tag;
- 		ret = amd_iommu_activate_guest_mode(ir_data);
-diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
-index 1f9b13d803c5..deeefc92a5cf 100644
---- a/include/linux/amd-iommu.h
-+++ b/include/linux/amd-iommu.h
-@@ -19,8 +19,6 @@ struct amd_iommu;
-  */
- struct amd_iommu_pi_data {
- 	u32 ga_tag;
--	u64 base;
--
- 	bool is_guest_mode;
- 	struct vcpu_data *vcpu_data;
- 	void *ir_data;
 -- 
 2.49.0.1151.ga128411c76-goog
 
