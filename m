@@ -1,57 +1,57 @@
-Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
+Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64BA32DFA34
-	for <iommu@lists.linux.dev>; Fri, 23 May 2025 01:01:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DBEF2E3367
+	for <iommu@lists.linux.dev>; Fri, 23 May 2025 01:01:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747962099; cv=none; b=mdyda0mxgqzQKl+a0bOgQp2eBAjLl/7byiFT80kvuJ2reLhgo/fC+JjkkEZFgINHgbTFTDMu9r8Xe1PVXCTW4LvBuVeMZiH1aQGyzGM0/kk1mQVOBpv5iNElbQeKfcU8hdxfIAj6tF77dWSa2wPiuNCw1XCMDSdqeyDiO9+1PUM=
+	t=1747962102; cv=none; b=LbshiJgt/GSZZaUW5cErvxtB88KYQS9QZl84iJPknFDtYbMUpEHt+63bidi7kAHK5buxZOcddY/wKt2T0Ss0ESrBmZkjvJKNuIUkzI7hrx5fLgN9CIIxZCB9lbST/179rCqZ9UyBM0riP0RbQxmmQhX9R0+n3rBlSzkQfUp051A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747962099; c=relaxed/simple;
-	bh=NGIANfuyMzXoKJquKbW+ehrpEIHWV+x021PzJ4EknsQ=;
+	s=arc-20240116; t=1747962102; c=relaxed/simple;
+	bh=NCig6YHGLRFgPfrabyTYoAuvX536eJAkulIf4F/gxYI=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=oTh9LOAfLz2KhXAh2VFR+WmYmS3i84KNBDg9uCGPwBstzvdobbXvcnbooKX86bz4fTLGqXbFz2XKZfpH3/CpCBI0Yjsp3WDL4rUdro+y4/CqcVAPpMUnvUKcPRG+vpdVxSmIilAsnca6smyTsKuFITEzmUbQ3uojxHGR8wy0rxo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PsIPHQFE; arc=none smtp.client-ip=209.85.210.201
+	 To:Cc:Content-Type; b=ssCUs0oUgCPrp4NbNoaPgx8moz1edXY1+82FrC42x1IA5WvtCLH06Go00GQUVsRrUamZ8RJiEiYrhDoJaAThxBna956zYRwersv6/Q8/QzP5LeD/H8LvZlzP/mRjeJC0cSJb6Eb5mlE2Gto//HRmC184Q24dq6BmRWol/L5UOh4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NpWMHLpm; arc=none smtp.client-ip=209.85.216.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PsIPHQFE"
-Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-742b8c0eaf0so3422914b3a.2
-        for <iommu@lists.linux.dev>; Thu, 22 May 2025 18:01:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NpWMHLpm"
+Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-3108d5123c4so2087493a91.1
+        for <iommu@lists.linux.dev>; Thu, 22 May 2025 18:01:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1747962098; x=1748566898; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1747962099; x=1748566899; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=ExoOfw9G/N1sSoTRHxtPNhWhn4iA3dUD7FqrwsLiXLk=;
-        b=PsIPHQFErAh0g3qY3hAptZo5a4UboG+35FJxaQdnpzIhdsSUJyAR7w2ZC715H3wP5n
-         gRf4AhaHLLr1PbOOoFp3iyp4Zss1mca2kpgPNRmNbMpkpX7M0XqO8hHeJqt9LNVoAhks
-         07bhHVy9d4yhCKZeNrWjbiOMrRRU0eYRb9iZsQsrwWNJRYLCyrgBGYsV8Z+CddJ1y7ib
-         eNFQaYmVrcgpPQpYPzCZp9H5SNmJzB79CFu8zYmftSN5REvii0uB5lxG0LvXmY0H9R3p
-         mp/kPqzRF4fCy06lugJ1GujFGrT9kF7cBwDR2913Y8XJvEBt+NnbjXTXCmtMwew1NLjO
-         e2IQ==
+        bh=nqWl6kKGGVzLsyDM6W+SZZXuWlFhon7/lNEzScLQdD4=;
+        b=NpWMHLpmlXHJkz+Wu/2v9sOZsAJRKtcFOKXLKOJMGpduZO+OnlVLY4yeGktL0pC5cj
+         NzRNjAfIseVXNUylfIxujRw4uQzoySu2ZpJUfv3crb4/F4z5fLrJbV/6pRiqrclMW59w
+         iszDUXGgoQuPJP13Q4P7g9l83d6KLAAsH3rGq+OwkbVHH5vdKWKaB1p6ffQXKn84FGDF
+         Zh+5+CIF7iT4pxs9wR6X+pGeBI6zibKmM1jYnvWu4KQ0O/gNSU4N7NMiWq+nJYyek4f6
+         2GX5yK6qLYUps1hZsXkBULHC7Nb3IAxAd3tkaScJ90GYob6/+AIbdmiq2wGgUxRHejdT
+         D3Vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747962098; x=1748566898;
+        d=1e100.net; s=20230601; t=1747962099; x=1748566899;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=ExoOfw9G/N1sSoTRHxtPNhWhn4iA3dUD7FqrwsLiXLk=;
-        b=Mdpoy+erUd7/fn7HyNWhOUVF6E4P9/lUrO+a65goeO48jzUYwVtY5tsK+i3RIyBLqF
-         H1DgAFmc6yzH+WmA2sWEYKKGCAs7XQiMgilqCHmf1FDmubhHlmW2ANUN2H9g7fR3y9xe
-         g6dBktJy51Bl0jJlF9qbhVVEvmNs3/TrDfZBRB64ftgz1fIvc8wx4SMztlsGRtf+CeBx
-         IR58wjZ57grigA1mA/MGUrgPE+0+sqztRvlx4QufrE1xlrdTMW3JMxS2NF3Pw+WnfN1S
-         Hk+W/AB75DXZDwmhx2YjVvU/d1DVQmhabJz9xo4MeI2hz4AbFzGtaU1+eiBVZicVxYMj
-         SUFQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXw1twrtoO52IopAlMBmWupvqkMevpnGClwyYzR2sfRAigQWSUm/4edXOCHg7VjMsmpBlkP6w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwlComMrX3VLZdvFw/nLbA0DM/MZzfY9hYrKQ4+ylpVGsR3iEYM
-	D15jZrYwesyLrEuuGEn07lU8o2qmyTlP4xs2c5S7Hbg1oDQ6MCd5aiR8jHFuUvKEbP5+u0Q6PTF
-	MDutPcQ==
-X-Google-Smtp-Source: AGHT+IHRskctku8TAbxqTc5JSLZa7cBf4pJ0pj9pJzlkOC6dQa0UxJjlReXD4jK1iH3OFzYeZWUC+JH7b6A=
-X-Received: from pfaq8.prod.google.com ([2002:a05:6a00:a888:b0:742:a83f:bc0f])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:198e:b0:740:91e4:8107
- with SMTP id d2e1a72fcca58-742a963242bmr38441580b3a.0.1747962097793; Thu, 22
- May 2025 18:01:37 -0700 (PDT)
+        bh=nqWl6kKGGVzLsyDM6W+SZZXuWlFhon7/lNEzScLQdD4=;
+        b=oDqUAOHxVYzI5IGowLykHZ5ZUNeKBFzg26gp/ND2mcGz73BIOLY9aWb6mGA8z6M+iO
+         Wbvk2/hRqHoJA+bXFcYqL301Tub0IN3rC+fTFsLJCbkiD+l8Ra7niFlK7ZsZfhJGQikz
+         epq4r4OfSMOYUDRqEZh6xAdaJaMSMkGv9fksOUU/Daqgd6iyzB8xoDbOnXHLIYHrrZ6f
+         UDaKsbejx3l5Rs+3ojp1DnTzvesUPZmnsV8ucrn1DTuJRvn8gimdGR03kj1U5bO3gMPD
+         TLB+YWbjlUVRb2ubIt9ZXQ76y37DFKy9eNVQ6yI/8kfaswLWi0DilCO8RSePbMSJFsob
+         gHjA==
+X-Forwarded-Encrypted: i=1; AJvYcCWu+erKX2QZPJX+i7PjcbKFf50Y2q1sNTkrMGfpPQYdTHlfyY2B8cKAMrC9l/HGE8+XunxRxA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzVvDDKZ1Bny3co5Kcb8KyZiPepj5OIW/eJY+p52nTWJligZgou
+	WPwDpMy5nWEESG6UJ/9er7beMz70wJbTGuzaPYMEGKOitsIwz1UikIjrBj/6p6BUoKZyIYN6sBc
+	j231lrQ==
+X-Google-Smtp-Source: AGHT+IHfPxgYk0wR6t6dyJZ3yx5kSrKHj7TcYQcATL6HPxhlSG8Y4glc9acQIePiTqsfQiuWHduuc+FefIE=
+X-Received: from pjbpt18.prod.google.com ([2002:a17:90b:3d12:b0:2ff:6e58:8a0a])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:4b82:b0:2ff:7b28:a51a
+ with SMTP id 98e67ed59e1d1-30e8314db35mr46156413a91.17.1747962099385; Thu, 22
+ May 2025 18:01:39 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Thu, 22 May 2025 17:59:57 -0700
+Date: Thu, 22 May 2025 17:59:58 -0700
 In-Reply-To: <20250523010004.3240643-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,9 +61,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250523010004.3240643-1-seanjc@google.com>
 X-Mailer: git-send-email 2.49.0.1151.ga128411c76-goog
-Message-ID: <20250523010004.3240643-53-seanjc@google.com>
-Subject: [PATCH v2 52/59] KVM: VMX: WARN if VT-d Posted IRQs aren't possible
- when starting IRQ bypass
+Message-ID: <20250523010004.3240643-54-seanjc@google.com>
+Subject: [PATCH v2 53/59] KVM: SVM: Use vcpu_idx, not vcpu_id, for GA log tag/metadata
 From: Sean Christopherson <seanjc@google.com>
 To: Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, 
 	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
@@ -74,29 +73,109 @@ Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-WARN if KVM attempts to "start" IRQ bypass when VT-d Posted IRQs are
-disabled, to make it obvious that the logic is a sanity check, and so that
-a bug related to nr_possible_bypass_irqs is more like to cause noisy
-failures, e.g. so that KVM doesn't silently fail to wake blocking vCPUs.
+Use a vCPU's index, not its ID, for the GA log tag/metadata that's used to
+find and kick vCPUs when a device posted interrupt serves as a wake event.
+Lookups on a vCPU index are O(fast) (not sure what xa_load() actually
+provides), whereas a vCPU ID lookup is O(n) if a vCPU's ID doesn't match
+its index.
 
+Unlike the Physical APIC Table, which is accessed by hardware when
+virtualizing IPIs, hardware doesn't consume the GA tag, i.e. KVM _must_
+use APIC IDs to fill the Physical APIC Table, but KVM has free rein over
+the format/meaning of the GA tag.
+
+Tested-by: Sairaj Kodilkar <sarunkod@amd.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/vmx/posted_intr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kvm/svm/avic.c | 37 ++++++++++++++++++++-----------------
+ 1 file changed, 20 insertions(+), 17 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
-index 5671d59a6b6d..4a6d9a17da23 100644
---- a/arch/x86/kvm/vmx/posted_intr.c
-+++ b/arch/x86/kvm/vmx/posted_intr.c
-@@ -296,7 +296,7 @@ bool pi_has_pending_interrupt(struct kvm_vcpu *vcpu)
-  */
- void vmx_pi_start_bypass(struct kvm *kvm)
- {
--	if (!kvm_arch_has_irq_bypass())
-+	if (WARN_ON_ONCE(!vmx_can_use_vtd_pi(kvm)))
- 		return;
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index c55cbb0610b4..bb74705d6cfd 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -29,36 +29,39 @@
+ #include "svm.h"
  
- 	kvm_make_all_cpus_request(kvm, KVM_REQ_UNBLOCK);
+ /*
+- * Encode the arbitrary VM ID and the vCPU's default APIC ID, i.e the vCPU ID,
+- * into the GATag so that KVM can retrieve the correct vCPU from a GALog entry
+- * if an interrupt can't be delivered, e.g. because the vCPU isn't running.
++ * Encode the arbitrary VM ID and the vCPU's _index_ into the GATag so that
++ * KVM can retrieve the correct vCPU from a GALog entry if an interrupt can't
++ * be delivered, e.g. because the vCPU isn't running.  Use the vCPU's index
++ * instead of its ID (a.k.a. its default APIC ID), as KVM is guaranteed a fast
++ * lookup on the index, where as vCPUs whose index doesn't match their ID need
++ * to walk the entire xarray of vCPUs in the worst case scenario.
+  *
+- * For the vCPU ID, use however many bits are currently allowed for the max
++ * For the vCPU index, use however many bits are currently allowed for the max
+  * guest physical APIC ID (limited by the size of the physical ID table), and
+  * use whatever bits remain to assign arbitrary AVIC IDs to VMs.  Note, the
+  * size of the GATag is defined by hardware (32 bits), but is an opaque value
+  * as far as hardware is concerned.
+  */
+-#define AVIC_VCPU_ID_MASK		AVIC_PHYSICAL_MAX_INDEX_MASK
++#define AVIC_VCPU_IDX_MASK		AVIC_PHYSICAL_MAX_INDEX_MASK
+ 
+ #define AVIC_VM_ID_SHIFT		HWEIGHT32(AVIC_PHYSICAL_MAX_INDEX_MASK)
+ #define AVIC_VM_ID_MASK			(GENMASK(31, AVIC_VM_ID_SHIFT) >> AVIC_VM_ID_SHIFT)
+ 
+ #define AVIC_GATAG_TO_VMID(x)		((x >> AVIC_VM_ID_SHIFT) & AVIC_VM_ID_MASK)
+-#define AVIC_GATAG_TO_VCPUID(x)		(x & AVIC_VCPU_ID_MASK)
++#define AVIC_GATAG_TO_VCPUIDX(x)	(x & AVIC_VCPU_IDX_MASK)
+ 
+-#define __AVIC_GATAG(vm_id, vcpu_id)	((((vm_id) & AVIC_VM_ID_MASK) << AVIC_VM_ID_SHIFT) | \
+-					 ((vcpu_id) & AVIC_VCPU_ID_MASK))
+-#define AVIC_GATAG(vm_id, vcpu_id)					\
++#define __AVIC_GATAG(vm_id, vcpu_idx)	((((vm_id) & AVIC_VM_ID_MASK) << AVIC_VM_ID_SHIFT) | \
++					 ((vcpu_idx) & AVIC_VCPU_IDX_MASK))
++#define AVIC_GATAG(vm_id, vcpu_idx)					\
+ ({									\
+-	u32 ga_tag = __AVIC_GATAG(vm_id, vcpu_id);			\
++	u32 ga_tag = __AVIC_GATAG(vm_id, vcpu_idx);			\
+ 									\
+-	WARN_ON_ONCE(AVIC_GATAG_TO_VCPUID(ga_tag) != (vcpu_id));	\
++	WARN_ON_ONCE(AVIC_GATAG_TO_VCPUIDX(ga_tag) != (vcpu_idx));	\
+ 	WARN_ON_ONCE(AVIC_GATAG_TO_VMID(ga_tag) != (vm_id));		\
+ 	ga_tag;								\
+ })
+ 
+-static_assert(__AVIC_GATAG(AVIC_VM_ID_MASK, AVIC_VCPU_ID_MASK) == -1u);
++static_assert(__AVIC_GATAG(AVIC_VM_ID_MASK, AVIC_VCPU_IDX_MASK) == -1u);
+ 
+ static bool force_avic;
+ module_param_unsafe(force_avic, bool, 0444);
+@@ -139,16 +142,16 @@ int avic_ga_log_notifier(u32 ga_tag)
+ 	struct kvm_svm *kvm_svm;
+ 	struct kvm_vcpu *vcpu = NULL;
+ 	u32 vm_id = AVIC_GATAG_TO_VMID(ga_tag);
+-	u32 vcpu_id = AVIC_GATAG_TO_VCPUID(ga_tag);
++	u32 vcpu_idx = AVIC_GATAG_TO_VCPUIDX(ga_tag);
+ 
+-	pr_debug("SVM: %s: vm_id=%#x, vcpu_id=%#x\n", __func__, vm_id, vcpu_id);
+-	trace_kvm_avic_ga_log(vm_id, vcpu_id);
++	pr_debug("SVM: %s: vm_id=%#x, vcpu_idx=%#x\n", __func__, vm_id, vcpu_idx);
++	trace_kvm_avic_ga_log(vm_id, vcpu_idx);
+ 
+ 	spin_lock_irqsave(&svm_vm_data_hash_lock, flags);
+ 	hash_for_each_possible(svm_vm_data_hash, kvm_svm, hnode, vm_id) {
+ 		if (kvm_svm->avic_vm_id != vm_id)
+ 			continue;
+-		vcpu = kvm_get_vcpu_by_id(&kvm_svm->kvm, vcpu_id);
++		vcpu = kvm_get_vcpu(&kvm_svm->kvm, vcpu_idx);
+ 		break;
+ 	}
+ 	spin_unlock_irqrestore(&svm_vm_data_hash_lock, flags);
+@@ -785,7 +788,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+ 		 */
+ 		struct amd_iommu_pi_data pi_data = {
+ 			.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id,
+-					     vcpu->vcpu_id),
++					     vcpu->vcpu_idx),
+ 			.is_guest_mode = kvm_vcpu_apicv_active(vcpu),
+ 			.vapic_addr = avic_get_backing_page_address(to_svm(vcpu)),
+ 			.vector = vector,
 -- 
 2.49.0.1151.ga128411c76-goog
 
