@@ -1,134 +1,149 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67CF41F2388
-	for <iommu@lists.linux.dev>; Mon, 26 May 2025 12:11:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BB571EEA47
+	for <iommu@lists.linux.dev>; Mon, 26 May 2025 13:04:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748261476; cv=none; b=a6f9g1QGs3YD2RkkMdv66nAtnRthv7dLSMBXBIty6Al8wtYdV0og/f+2kQlU3+aHAaVkULp42RHsuBaQVR0Sjy1KKwT+UqFiAaX/efoVD23n5VG7bA8/lDceXlzfBbsz6qgF2Lf3sQo8NuEUT1apjX7uRFmonirAgdUnwK+VDmg=
+	t=1748264655; cv=none; b=fj0q957D/nadJCm5OUY+6iwUA+Rxr4BEZTP3QAtuQJ2Pe9Vxu5ZwJSR3TydqTr/uhF80aTw+LGuYJdfmNLtYk0acEgFAecws0bfTWS7NLtNOXv+8dBmJa5D+jYjnxLDHo/HX99fQZJ/krS6WV3VD2+a/yLkw0TliSoK7vsIaTl4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748261476; c=relaxed/simple;
-	bh=hrWZ8l1cZmzGb0rBjRlN4YTI9FJ+eVKg64HEKHwbNCc=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 References; b=gdcPRxoiPTcg0ufeFUOfnXxnoiR25BIxbFjrmp1GhFsu1cE62W0b9HW3Xt4GwzSjJnV9SXiOBblzNVtEPjk0K4FfPS/mUUmRlrOideHR8l+5ODcg7WRDdVk7SD6BLJTFWCbVtKLTr7etI9ayXdUjk8tBwEFcOBvZefDJdbRiko4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=QzVzaho+; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1748264655; c=relaxed/simple;
+	bh=wbVZiFmXwev0gwrEsOeAMboGoCc09zmui6KUEqZX+DE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OVzk8qkaMdkk5ceveMxR8bRZ1LU8eVEB99EW5tXvpg7sowb7WI6yESJFtZXtZd8uCSwHZxkguB4wb/oDXaIxHMZ42Xw6wI9UPKvDyI4u5eAC8WvujRig3gid6Kkv/Ne7jvp891iP/Au28wEbra/R4SE8DNUStKaQF2WpxU+Z7ts=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=d4422XPn; arc=none smtp.client-ip=209.85.167.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="QzVzaho+"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250526121112euoutp020939f6f970e100a8dc72a890f537db4f~DEovd-X3V0823508235euoutp02J;
-	Mon, 26 May 2025 12:11:12 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250526121112euoutp020939f6f970e100a8dc72a890f537db4f~DEovd-X3V0823508235euoutp02J
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1748261472;
-	bh=oEQfyNRCcF96rAB00+i4LTDnH6eyExMGUimV2Hx1YDM=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=QzVzaho+gT//bWlkOTURTWXtnc4hEIbMGV8JGp+3YxyiCKTP2iSsBUjdf1+HZQ4kU
-	 KfdrZt6CeW5/LJ23tYHTuLXJ3kJbiO3M7rL7lK/fpNvKAIkHIo4/mt7rD+GA9hvsRQ
-	 YvWT05wESqHMdmy9XXFENm1m1Kn4J6FrqN3/kJzQ=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20250526121111eucas1p277b74b79fe4ae4323fc687a06039044d~DEovH6I0i1358313583eucas1p2X;
-	Mon, 26 May 2025 12:11:11 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20250526121110eusmtip1782073e50a70b6e2a3e0c1a2ca4e7eda~DEotgHSUL0843308433eusmtip13;
-	Mon, 26 May 2025 12:11:10 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Leon Romanovsky <leon@kernel.org>, Jens Axboe
-	<axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>, Keith Busch
-	<kbusch@kernel.org>, Jake Edge <jake@lwn.net>, Jonathan Corbet
-	<corbet@lwn.net>, Jason Gunthorpe <jgg@ziepe.ca>, Zhu Yanjun
-	<zyjzyj2000@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Sagi Grimberg
-	<sagi@grimberg.me>, Bjorn Helgaas <bhelgaas@google.com>, Logan Gunthorpe
-	<logang@deltatee.com>, Yishai Hadas <yishaih@nvidia.com>, Shameer Kolothum
-	<shameerali.kolothum.thodi@huawei.com>, Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>, Andrew Morton
-	<akpm@linux-foundation.org>, linux-doc@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org, Niklas Schnelle
-	<schnelle@linux.ibm.com>, Chuck Lever <chuck.lever@oracle.com>, Luis
-	Chamberlain <mcgrof@kernel.org>, Matthew Wilcox <willy@infradead.org>, Dan
-	Williams <dan.j.williams@intel.com>, Kanchan Joshi <joshi.k@samsung.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>
-Subject: [GIT PULL] dma-mapping update for Linux 6.16
-Date: Mon, 26 May 2025 14:11:05 +0200
-Message-Id: <20250526121105.434835-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="d4422XPn"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-55320ddb9edso1086608e87.1
+        for <iommu@lists.linux.dev>; Mon, 26 May 2025 06:04:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1748264652; x=1748869452; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=P2yCa2GdViCiB3X5UlZL3nXJrusQdUTZkaipPeBJHwY=;
+        b=d4422XPnU/ROVzS8ercRTOKihSCIsVUYSyoK9QT3YzzaYj3cnRqn5VZqeDky52JG1d
+         jg9LhtkhX9h+9XMypAMYe+wf4++JRVWb1yPZJBwgEloubdEMe+XzhzYBqjys0ybxdc4v
+         yhzprN3q5+ox9xiTwyj+B2N7VJURUGfAfoehVVuoHGVJEiVomlsLX3DTLMFgurHrNQd8
+         4oZp4wYssi3m/v4P2++39f8uzQWD6lOY5odf57MbqZDWCDlkQvhLzlwm+yK/o6YDaf/2
+         R8gmikY29m0bPR0/PC06dPUKDxQ3TJTx6M+6a7anusxqb/4ienLpRZr4dJ5Wh80RR/Ed
+         5UUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1748264652; x=1748869452;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=P2yCa2GdViCiB3X5UlZL3nXJrusQdUTZkaipPeBJHwY=;
+        b=YpcfH6nYV7aZ4O1PSh0Cu0OaQGVflLPL95hR8LE/l84m2drSGYXXZxwAvL0CkH0iHH
+         U4djb7QOtPZoOLjIfFnhidh3Uy6BoL5oO+insqoZ7AqbSU4zDKCoBY5QqBkPoy+UK7gD
+         Chl5FtdW9jwvV449kpBBfTqL9t4L+sPVQaieLYsR4gsjrRmffE34IMUfq/xghHRElbAY
+         uLcWqAum/ZdVjGgJ0DwJ86yVCnsO4TRyP7RDtFtWA3NP3Kr7e37ZTfef9dY10nhcyoYi
+         YMF3PiCg6uHN2oAI0/Zw91f66g3qjXKg/k3UpXKLu8XnfWCqGbo3ofSRh66FMe4oA/45
+         OuUA==
+X-Forwarded-Encrypted: i=1; AJvYcCUMYXvpOKKszEMDwpWK7gWvwW2FaHYuD4XOMCLRhP8KkaYUU+Ip0LzJQaQ1S5a1jVB9G1RKhg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwgW3F3wUvVBNElGsCQVhUppIHoWSwyGqlPdAwGHUNb78t6ym1o
+	aC3j67ecBjx91CVy3UfSqrvvE7druRrC9KKswPz/GSLcf7zfra8LK3vh
+X-Gm-Gg: ASbGncslyj+ki0NAviGMmU0fKfgKuUXWUotGZ8vdxAISX75DXJKonnY9U1z0sF5eqdc
+	6ztKuAOZpE3RZTVmovnGx3WwEME0eLlDmfGGUyVC5RkpSxAlCV8vC8LdXcE1aefEa1YPho25Dcv
+	/yfMlvnT1vN1B9fQW5b5BkvfUKDfRehxpyh7VfzEF27KhEhixPS5SrScjajRmXoGX3/3VtOq9Om
+	k4Xr/QBPbCEpwxDxFef1hb+II4oic7B8CYgyHBuocbNB19Q3VT3a3jYgkWDPc7GHhIMGYcDDS3i
+	ntEuHrnArlLcm9rW3KZndoBVSyOM54QUgi/gJ30KxeuxT+SAMizQLDfLw7MTszkCp+g081c43el
+	cXTa8p5BRM3MdBWn7gbvarIp6h2ixA5UOwNDwtjQ=
+X-Google-Smtp-Source: AGHT+IHMvM2cn9Sebeh8KS/nonuFNkYq1+2FpxCDUBtOw1DGLegUUAF8fUEBN/E9/r6S37bXQ8AGvg==
+X-Received: by 2002:a05:6512:414e:b0:552:2115:ecc4 with SMTP id 2adb3069b0e04-5522115ee67mr1102763e87.50.1748264651113;
+        Mon, 26 May 2025 06:04:11 -0700 (PDT)
+Received: from [192.168.1.146] (dsl-hkibng22-54f8dc-251.dhcp.inet.fi. [84.248.220.251])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5532202f7fbsm422523e87.148.2025.05.26.06.04.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 May 2025 06:04:10 -0700 (PDT)
+Message-ID: <44a70b0c-af38-4706-90e3-0e0a7f6ad6f8@gmail.com>
+Date: Mon, 26 May 2025 16:04:09 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20250526121111eucas1p277b74b79fe4ae4323fc687a06039044d
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250526121111eucas1p277b74b79fe4ae4323fc687a06039044d
-X-EPHeader: CA
-X-CMS-RootMailID: 20250526121111eucas1p277b74b79fe4ae4323fc687a06039044d
-References: <CGME20250526121111eucas1p277b74b79fe4ae4323fc687a06039044d@eucas1p2.samsung.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH 1/2] rust: add initial scatterlist bindings
+To: Lyude Paul <lyude@redhat.com>, dakr@kernel.org
+Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
+ Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+ =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
+ Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
+ rust-for-linux@vger.kernel.org,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+ Petr Tesarik <petr@tesarici.cz>, Andrew Morton <akpm@linux-foundation.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ Sui Jingfeng <sui.jingfeng@linux.dev>, Randy Dunlap <rdunlap@infradead.org>,
+ Michael Kelley <mhklinux@outlook.com>
+References: <20250512095544.3334680-1-abdiel.janulgue@gmail.com>
+ <20250512095544.3334680-2-abdiel.janulgue@gmail.com>
+ <36b45e41522a61409b379c15f21bb547d4913d1e.camel@redhat.com>
+Content-Language: en-US
+From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+In-Reply-To: <36b45e41522a61409b379c15f21bb547d4913d1e.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The following changes since commit 0af2f6be1b4281385b618cb86ad946eded089ac8:
+Hi Lyude,
 
-  Linux 6.15-rc1 (2025-04-06 13:11:33 -0700)
+On 15/05/2025 23:01, Lyude Paul wrote:
+> 
+> I think you might have made a mistake below
+> 
+>> +impl<'a> Iterator for SGTableIter<'a> {
+>> +    type Item = &'a SGEntry;
+>> +
+>> +    fn next(&mut self) -> Option<Self::Item> {
+>> +        self.pos.map(|entry| {
+>> +            let sg = entry.as_raw();
+> 
+>                 ^ sg is the last iterator position
+> 
+>> +            // SAFETY: `sg` is guaranteed to be valid and non-NULL while inside this closure.
+>> +            unsafe {
+>> +                let next = bindings::sg_next(sg);
+> 
+>                     ^ and we fetch the next iterator position
+> 
+>> +                self.pos = (!next.is_null()).then(|| SGEntry::as_ref(next));
+>> +                SGEntry::as_ref(sg)
+> 
+>                     ^ but then we return the previous iterator position, sg
+>> +            }
+> 
 
-are available in the Git repository at:
+Just had a second look at this again.I think the previous code is okay. 
+I integrated the iterator fixes you suggested, however the mapped 
+sgtable crashes on dma_unmap_sgtable().
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-6.16-2025-05-26
+One hint is that the fix seems to skip the initial entry of the sgtable? 
+The previous code doesn't skip the initial entry when iterating:
 
-for you to fetch changes up to 3ee7d9496342246f4353716f6bbf64c945ff6e2d:
+fn next(&mut self) -> Option<Self::Item> {
 
-  docs: core-api: document the IOVA-based API (2025-05-06 08:36:54 +0200)
+   self.pos.take().map(|entry| {
+      let sg = entry.as_raw();
+      ^ sg is the current iterator position from self.pos
 
-----------------------------------------------------------------
-dma-mapping updates for Linux 6.16:
+      let next = bindings::sg_next(sg);
+      self.pos = (!next.is_null()).then(|| SGEntry::as_mut(next));
+      ^ update the iterator position for the next loop to sg_next()
+        or set to null if sg_next() is the last entry
 
-- new two step DMA mapping API, which is is a first step to a long path
-  to provide alternatives to scatterlist and to remove hacks, abuses and
-  design mistakes related to scatterlists; this new approach optimizes
-  some calls to DMA-IOMMU layer and cache maintenance by batching them,
-  reduces memory usage as it is no need to store mapped DMA addresses to
-  unmap them, and reduces some function call overhead; it is a combination
-  effort of many people, lead and developed by Christoph Hellwig and Leon
-  Romanovsky
+      SGEntry::as_mut(sg)
+      ^ Return the current iterator position
+    })
+}
 
-----------------------------------------------------------------
-Christoph Hellwig (6):
-      PCI/P2PDMA: Refactor the p2pdma mapping helpers
-      dma-mapping: move the PCI P2PDMA mapping helpers to pci-p2pdma.h
-      iommu: generalize the batched sync after map interface
-      iommu/dma: Factor out a iommu_dma_map_swiotlb helper
-      dma-mapping: add a dma_need_unmap helper
-      docs: core-api: document the IOVA-based API
 
-Leon Romanovsky (3):
-      iommu: add kernel-doc for iommu_unmap_fast
-      dma-mapping: Provide an interface to allow allocate IOVA
-      dma-mapping: Implement link/unlink ranges API
-
- Documentation/core-api/dma-api.rst |  71 ++++++
- drivers/iommu/dma-iommu.c          | 482 ++++++++++++++++++++++++++++++++-----
- drivers/iommu/iommu.c              |  84 ++++---
- drivers/pci/p2pdma.c               |  38 +--
- include/linux/dma-map-ops.h        |  54 -----
- include/linux/dma-mapping.h        |  85 +++++++
- include/linux/iommu.h              |   4 +
- include/linux/pci-p2pdma.h         |  85 +++++++
- kernel/dma/direct.c                |  44 ++--
- kernel/dma/mapping.c               |  18 ++
- 10 files changed, 764 insertions(+), 201 deletions(-)
-----------------------------------------------------------------
-
-Thanks!
-
-Best regards
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Regards,
+Abdiel
