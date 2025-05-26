@@ -1,109 +1,134 @@
-Received: from mx1.emlix.com (mx1.emlix.com [178.63.209.131])
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 504FF1C5F35
-	for <iommu@lists.linux.dev>; Mon, 26 May 2025 05:59:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.63.209.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67CF41F2388
+	for <iommu@lists.linux.dev>; Mon, 26 May 2025 12:11:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748239168; cv=none; b=c4DBjBX1/nfNmKkEJ4hR1SHRt3FGlXnkTC/Eu4nohmBJ5N7/lGC5Zsd3fxYkPYLfYUVYeKZpi9ez99K6CTHLpRTewnpMpZKOHun/+BjiVkqR4i/vqgxzcoBpH/TwKASXOaek+IiTq9LCL0RqeHmIpq9R9MC7nuDhfS6erAy1HyE=
+	t=1748261476; cv=none; b=a6f9g1QGs3YD2RkkMdv66nAtnRthv7dLSMBXBIty6Al8wtYdV0og/f+2kQlU3+aHAaVkULp42RHsuBaQVR0Sjy1KKwT+UqFiAaX/efoVD23n5VG7bA8/lDceXlzfBbsz6qgF2Lf3sQo8NuEUT1apjX7uRFmonirAgdUnwK+VDmg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748239168; c=relaxed/simple;
-	bh=amVhOvtnVUkPexUHLNKgBsdD5EQGhZS6THqccPnBV6Y=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=l3lIPLj9DzsIwF1JgIJ+8uVtV5GT+ZaaCYbaNxtfE9bypn0slLQVpSlLk79UjP3dXcqZo3PCpRUjEy5eYbk6pOb4/6ApZuEQKq/XQff0AL3HiyAQb4qGdz6dIV0c7+FgRJ607ZwkJTFu4cqZYvXtVUVTfZZXisgXj43y2j+3igs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com; spf=pass smtp.mailfrom=emlix.com; arc=none smtp.client-ip=178.63.209.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=emlix.com
-Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
-	(using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mx1.emlix.com (Postfix) with ESMTPS id ADE455F7EC;
-	Mon, 26 May 2025 07:59:17 +0200 (CEST)
-From: Rolf Eike Beer <eb@emlix.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Arnd Bergmann <arnd@kernel.org>
-Subject:
- Re: [PATCH 6/6] iommu: make inclusion of iommufd directory conditional
-Date: Mon, 26 May 2025 07:59:11 +0200
-Message-ID: <2783720.mvXUDI8C0e@devpool92.emlix.com>
-Organization: emlix GmbH
-In-Reply-To: <aCc0-ClDbiUpNUgh@8bytes.org>
-References:
- <1926170.CQOukoFCf9@devpool92.emlix.com>
- <5568089.Sb9uPGUboI@devpool92.emlix.com> <aCc0-ClDbiUpNUgh@8bytes.org>
+	s=arc-20240116; t=1748261476; c=relaxed/simple;
+	bh=hrWZ8l1cZmzGb0rBjRlN4YTI9FJ+eVKg64HEKHwbNCc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 References; b=gdcPRxoiPTcg0ufeFUOfnXxnoiR25BIxbFjrmp1GhFsu1cE62W0b9HW3Xt4GwzSjJnV9SXiOBblzNVtEPjk0K4FfPS/mUUmRlrOideHR8l+5ODcg7WRDdVk7SD6BLJTFWCbVtKLTr7etI9ayXdUjk8tBwEFcOBvZefDJdbRiko4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=QzVzaho+; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="QzVzaho+"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250526121112euoutp020939f6f970e100a8dc72a890f537db4f~DEovd-X3V0823508235euoutp02J;
+	Mon, 26 May 2025 12:11:12 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250526121112euoutp020939f6f970e100a8dc72a890f537db4f~DEovd-X3V0823508235euoutp02J
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1748261472;
+	bh=oEQfyNRCcF96rAB00+i4LTDnH6eyExMGUimV2Hx1YDM=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=QzVzaho+gT//bWlkOTURTWXtnc4hEIbMGV8JGp+3YxyiCKTP2iSsBUjdf1+HZQ4kU
+	 KfdrZt6CeW5/LJ23tYHTuLXJ3kJbiO3M7rL7lK/fpNvKAIkHIo4/mt7rD+GA9hvsRQ
+	 YvWT05wESqHMdmy9XXFENm1m1Kn4J6FrqN3/kJzQ=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20250526121111eucas1p277b74b79fe4ae4323fc687a06039044d~DEovH6I0i1358313583eucas1p2X;
+	Mon, 26 May 2025 12:11:11 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20250526121110eusmtip1782073e50a70b6e2a3e0c1a2ca4e7eda~DEotgHSUL0843308433eusmtip13;
+	Mon, 26 May 2025 12:11:10 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Leon Romanovsky <leon@kernel.org>, Jens Axboe
+	<axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>, Keith Busch
+	<kbusch@kernel.org>, Jake Edge <jake@lwn.net>, Jonathan Corbet
+	<corbet@lwn.net>, Jason Gunthorpe <jgg@ziepe.ca>, Zhu Yanjun
+	<zyjzyj2000@gmail.com>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel
+	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Sagi Grimberg
+	<sagi@grimberg.me>, Bjorn Helgaas <bhelgaas@google.com>, Logan Gunthorpe
+	<logang@deltatee.com>, Yishai Hadas <yishaih@nvidia.com>, Shameer Kolothum
+	<shameerali.kolothum.thodi@huawei.com>, Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>, Andrew Morton
+	<akpm@linux-foundation.org>, linux-doc@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	linux-nvme@lists.infradead.org, linux-pci@vger.kernel.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org, Niklas Schnelle
+	<schnelle@linux.ibm.com>, Chuck Lever <chuck.lever@oracle.com>, Luis
+	Chamberlain <mcgrof@kernel.org>, Matthew Wilcox <willy@infradead.org>, Dan
+	Williams <dan.j.williams@intel.com>, Kanchan Joshi <joshi.k@samsung.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>
+Subject: [GIT PULL] dma-mapping update for Linux 6.16
+Date: Mon, 26 May 2025 14:11:05 +0200
+Message-Id: <20250526121105.434835-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart12672725.O9o76ZdvQC";
- micalg="pgp-sha256"; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20250526121111eucas1p277b74b79fe4ae4323fc687a06039044d
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20250526121111eucas1p277b74b79fe4ae4323fc687a06039044d
+X-EPHeader: CA
+X-CMS-RootMailID: 20250526121111eucas1p277b74b79fe4ae4323fc687a06039044d
+References: <CGME20250526121111eucas1p277b74b79fe4ae4323fc687a06039044d@eucas1p2.samsung.com>
 
---nextPart12672725.O9o76ZdvQC
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"; protected-headers="v1"
-From: Rolf Eike Beer <eb@emlix.com>
-To: Joerg Roedel <joro@8bytes.org>
-Date: Mon, 26 May 2025 07:59:11 +0200
-Message-ID: <2783720.mvXUDI8C0e@devpool92.emlix.com>
-Organization: emlix GmbH
-In-Reply-To: <aCc0-ClDbiUpNUgh@8bytes.org>
-MIME-Version: 1.0
+The following changes since commit 0af2f6be1b4281385b618cb86ad946eded089ac8:
 
-On Freitag, 16. Mai 2025 14:52:08 Mitteleurop=C3=A4ische Sommerzeit Joerg R=
-oedel=20
-wrote:
-> On Mon, May 12, 2025 at 03:15:52PM +0200, Rolf Eike Beer wrote:
-> > Nothing in there is active if CONFIG_IOMMUFD is not enabled, so the who=
-le
-> > directory can depend on that switch as well.
-> >=20
-> > Fixes: 2ff4bed7fee7 ("iommufd: File descriptor, context, kconfig and
-> > makefiles") Signed-off-by: Rolf Eike Beer <eb@emlix.com>
-> > Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
->=20
-> Had to remove this patch from the branch as it caused compile breakage
-> with allmodconfig builds.
+  Linux 6.15-rc1 (2025-04-06 13:11:33 -0700)
 
-Given Arnds fix for smmuv3 this patch may work when the last part in iommuf=
-d/
-Makefile is omitted.
+are available in the Git repository at:
 
-Regards,
+  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-6.16-2025-05-26
 
-Eike
-=2D-=20
-Rolf Eike Beer
+for you to fetch changes up to 3ee7d9496342246f4353716f6bbf64c945ff6e2d:
 
-emlix GmbH
-Headquarters: Berliner Str. 12, 37073 G=C3=B6ttingen, Germany
-Phone +49 (0)551 30664-0, e-mail info@emlix.com
-District Court of G=C3=B6ttingen, Registry Number HR B 3160
-Managing Directors: Heike Jordan, Dr. Uwe Kracke
-VAT ID No. DE 205 198 055
-Office Berlin: Panoramastr. 1, 10178 Berlin, Germany
-Office Bonn: Bachstr. 6, 53115 Bonn, Germany
-http://www.emlix.com
+  docs: core-api: document the IOVA-based API (2025-05-06 08:36:54 +0200)
 
-emlix - your embedded Linux partner
---nextPart12672725.O9o76ZdvQC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+----------------------------------------------------------------
+dma-mapping updates for Linux 6.16:
 
------BEGIN PGP SIGNATURE-----
+- new two step DMA mapping API, which is is a first step to a long path
+  to provide alternatives to scatterlist and to remove hacks, abuses and
+  design mistakes related to scatterlists; this new approach optimizes
+  some calls to DMA-IOMMU layer and cache maintenance by batching them,
+  reduces memory usage as it is no need to store mapped DMA addresses to
+  unmap them, and reduces some function call overhead; it is a combination
+  effort of many people, lead and developed by Christoph Hellwig and Leon
+  Romanovsky
 
-iLMEAAEIAB0WIQQ/Uctzh31xzAxFCLur5FH7Xu2t/AUCaDQDLwAKCRCr5FH7Xu2t
-/PBLA/wJ/Ca4MJ2EAMowthdtYhMont3fj2J1QrmuqF6ygKe5KCtblj3s7otozgAw
-6CklNpQHha31GfLwQz314OEbrXZfPJM++MRmkOcryxgJ9Rn3UWLfAPyP8GN9o3h0
-JUr50iQaWSsacSa78sLhtevmydrfFltVEDJUFWxBHtDNMndDGA==
-=5oq1
------END PGP SIGNATURE-----
+----------------------------------------------------------------
+Christoph Hellwig (6):
+      PCI/P2PDMA: Refactor the p2pdma mapping helpers
+      dma-mapping: move the PCI P2PDMA mapping helpers to pci-p2pdma.h
+      iommu: generalize the batched sync after map interface
+      iommu/dma: Factor out a iommu_dma_map_swiotlb helper
+      dma-mapping: add a dma_need_unmap helper
+      docs: core-api: document the IOVA-based API
 
---nextPart12672725.O9o76ZdvQC--
+Leon Romanovsky (3):
+      iommu: add kernel-doc for iommu_unmap_fast
+      dma-mapping: Provide an interface to allow allocate IOVA
+      dma-mapping: Implement link/unlink ranges API
 
+ Documentation/core-api/dma-api.rst |  71 ++++++
+ drivers/iommu/dma-iommu.c          | 482 ++++++++++++++++++++++++++++++++-----
+ drivers/iommu/iommu.c              |  84 ++++---
+ drivers/pci/p2pdma.c               |  38 +--
+ include/linux/dma-map-ops.h        |  54 -----
+ include/linux/dma-mapping.h        |  85 +++++++
+ include/linux/iommu.h              |   4 +
+ include/linux/pci-p2pdma.h         |  85 +++++++
+ kernel/dma/direct.c                |  44 ++--
+ kernel/dma/mapping.c               |  18 ++
+ 10 files changed, 764 insertions(+), 201 deletions(-)
+----------------------------------------------------------------
 
+Thanks!
 
+Best regards
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
