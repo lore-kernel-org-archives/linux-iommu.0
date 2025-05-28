@@ -1,162 +1,138 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2052.outbound.protection.outlook.com [40.107.95.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 326EA1F3FDC;
-	Wed, 28 May 2025 18:08:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748455691; cv=fail; b=HLE3u19bf9ZnENygRVqP4CdH9iBAyAyke9PgLegMo1yGFI5QAoFftHF99BWVnmIQXScAPPKmTkoMiGE4j+J2GG2NM6I++OFEiNTp1HgPe7pWlcFFxKycA1r+urfsfFsb91KJgF+dCvSJ8EZbrYbTS9DPu6eVrJtXTk7epBqzv1M=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748455691; c=relaxed/simple;
-	bh=eeIosDLclYUwj28PrLn1VzvdyT1Imu1N0BnQ0+n0w4w=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=h25rpt1BMc6+9brxukMwcV4rmjULZYAdiDWYg6g9e4+R1o4dd/aRUi9yFKIFR5xssfft2cYX+SV2LZdHCDRITt5YzOHtpc5gIM4Sb5kkdF+zun3WrTh/OCeZQ3CVFHaKjbHOvx+pWX8Z07Ia72c6KKnX6yi1VG7o6uTEykBv5lQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=qhLpHU6k; arc=fail smtp.client-ip=40.107.95.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C45634C81
+	for <iommu@lists.linux.dev>; Wed, 28 May 2025 22:16:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.174
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1748470564; cv=none; b=EZtqyFQtiAU4K3MRS5doK9s++f6vDXG2FsFCysRCX2gcQPK9RQryU+EDifeVVvS4WwZjAPiQgLyZ23G5F6qzQ0Cd6uwvN0a2BxAl8L14XHFFub5JsXGlws1hgH8IZfZ1uGRHfbSr7cCEUF64DW6KKRU4a+vs7Oj7NsNrdYc8fFo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1748470564; c=relaxed/simple;
+	bh=yOrU7SGPQ3OrGhFEa4kTFyzjCvRlbqHUS+eLZvJ2fE8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TG/6RBxKDyFbBrnrmmG3UQVRwJzXKvdC0YeioJHiDZquHNjbbV7nyTib08k12YFR1ucukuLKGNGV87FR0Hi77jOvI6VAwXKpp+4moFsDaR82qSA54pqz9vBZlTDjOFh0osPUsVwqDA9EciAP2mgJOOL+kQnIwq6VTgZo7etJvYQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jfn8PIUZ; arc=none smtp.client-ip=209.85.208.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="qhLpHU6k"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Rzw/yeEEv/sjitQMPUz556j3OtzS7QO2eIfaAMBXYUcyGktqbvwMPuHR5nqluzQsDqp36M9PJdKHUJk9XvY4KjGxJ2K4yPjiVlIgWUcvcwEPlAma82d5dx3xfz5dKSIcW+PcBtOyIbZccD8v14J+gubK9ES6VR6mciYRwWS1wyfmvfc1eBeiFVDCfFDZL/NjF3pUzCcTB9HKnK0qmYu5AD0Jf/PZnCDNMicYoo8uzRkyENI2FjcYp1vHL+KQ8ntEJRXAHQtAaTgPcvefTFDodYcFz5qmyG82vcD0z7ohslxNvelSOrRm6vuoCMYqBeso6VvUZeI8TeY1VOmijVH2Fg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eeIosDLclYUwj28PrLn1VzvdyT1Imu1N0BnQ0+n0w4w=;
- b=TkUb60iYmUgepHbc2qiMQY1z6t/DB2yZ8s6Ch7fZf3NU5yJERZrPCStB8YFvRgDz9y8x4rgWaZcueapMDuoTsiS2HupDj6MBCq50WM+8gWCUeWCyxk83oDqgYbrnR1v9ArxzVljJEqRepkogBGbQg8ihJGeNwFL75tAEvp3FK8tc1DWkTZeiIyexjlNdY5jk9O7lzlyk3OOcdQS+FXqJG9rfd7E4AbLjUWLfkO/T/PFbrrGeUhH+CLq5PkmJ4Iad6RCvFFKG4Rr6sxjVWRgb/r4+iCFCwWZnrRYph4Hs4wGTm1RWaT8KGV3woljwZbCS7DlNxFTItJBLLsRj6HGSdg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=amd.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eeIosDLclYUwj28PrLn1VzvdyT1Imu1N0BnQ0+n0w4w=;
- b=qhLpHU6kfeaA66twVqbbHtE8zh3ZWGs1eiaNU8X5S1Lf3Kp/CcP3Xm/MbN/msrhqIT8kgeYQVtiQr44Ap/l+VzSQL6taiwpXSoLSP2bqcv8KAn+YfzeayxrKoxcOZoWW8sOwspFEBYExiWctyo2nH4qDRg2WZNCf+fSKu5S+vkNNlP9rbMOk5fZMWxgPL2Lv0SuHnbX9mYcq2ahAlxQkfd9to4SK9Bb45V0UCnDIBH15yCLxGDPmo7JX7+y6WmlRt/JZTTyE6WE1sOwcd8MkJPTNXa9OFXtkqRoLziKm5+PYGZtTQSAjAnhtcSFBBFq6U0k5G5AoxfZrDKj1nDgCTQ==
-Received: from BL0PR02CA0032.namprd02.prod.outlook.com (2603:10b6:207:3c::45)
- by MW3PR12MB4492.namprd12.prod.outlook.com (2603:10b6:303:57::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8769.26; Wed, 28 May
- 2025 18:08:06 +0000
-Received: from MN1PEPF0000ECD4.namprd02.prod.outlook.com
- (2603:10b6:207:3c:cafe::87) by BL0PR02CA0032.outlook.office365.com
- (2603:10b6:207:3c::45) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8769.18 via Frontend Transport; Wed,
- 28 May 2025 18:08:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- MN1PEPF0000ECD4.mail.protection.outlook.com (10.167.242.132) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8769.18 via Frontend Transport; Wed, 28 May 2025 18:08:05 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 28 May
- 2025 11:07:48 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Wed, 28 May
- 2025 11:07:47 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Wed, 28 May 2025 11:07:45 -0700
-Date: Wed, 28 May 2025 11:07:43 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <kevin.tian@intel.com>, <corbet@lwn.net>, <will@kernel.org>,
-	<bagasdotme@gmail.com>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
-	<shuah@kernel.org>, <jsnitsel@redhat.com>, <nathan@kernel.org>,
-	<peterz@infradead.org>, <yi.l.liu@intel.com>, <mshavit@google.com>,
-	<praan@google.com>, <zhangzekun11@huawei.com>, <iommu@lists.linux.dev>,
-	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <patches@lists.linux.dev>,
-	<mochs@nvidia.com>, <alok.a.tiwari@oracle.com>, <vasant.hegde@amd.com>,
-	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v5 09/29] iommufd: Do not unmap an owned iopt_area
-Message-ID: <aDdQ78ZPXexJILR4@Asurada-Nvidia>
-References: <cover.1747537752.git.nicolinc@nvidia.com>
- <3ddc8c678406772a8358a265912bb1c064f4c796.1747537752.git.nicolinc@nvidia.com>
- <20250528170845.GX61950@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jfn8PIUZ"
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-32a61af11ffso3844431fa.1
+        for <iommu@lists.linux.dev>; Wed, 28 May 2025 15:16:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1748470561; x=1749075361; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=sE2bIPrvcBK+tw3u4Z3n9q+Um+FsoesBae4mFssigCg=;
+        b=Jfn8PIUZF7eeRPfiGFLQq87T/pSyQvr4fAa2Xnzps0dTXzcUdsG6nyLhiiUinkqqel
+         H4WpIa/XncUGRcE30K9rXbzF62HK0amhlefaI8nKUHUPtzZ3o9j2u8Y4PqfSxgbsUpiF
+         Dg8OpSqEYpXGy+588a+qIikRKcVI/8SvciWcolor9WoDx0OB9mRGFEWnCFzj50NwuXCn
+         VTLQTgHVohr61rGJ+0meucFN7vz+LhCNP45C7s3OkI5b+9HAw5i+wlk7+exAd0JPpgGo
+         VMUzjtL7TYlRCsGrXsrzuYRpRSDe6jHRySNCsn0/4COAgQIQ76WzfcbQduWb81Vk1CKD
+         SGQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1748470561; x=1749075361;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=sE2bIPrvcBK+tw3u4Z3n9q+Um+FsoesBae4mFssigCg=;
+        b=CciCn1oMTQJZe3VUoyzsH1yM9SgH61I0PUJHpOLYs1b1uDW3J9dVKwrhffyBgYqwGT
+         gJZDpyZ/yp4Q1uyta4gw3vzYL7W6XCr6dOeN4pGTZ/xRXWWja9W7HFuYyrgasRlVgZNw
+         BVHvFn6PQAvksYPSlUc6HqsGGwBJ/jV9djZiUOCAppmaPprvVCdlvjWt/TzRuRmimk5Z
+         uPRPYPbfjMr0gaNqr5nDaRyw+20rdExU0VW+OdYJUvm+REp2t5ApnMRa+/BeHMAO+n/T
+         lHT2hJrVUvR2cGyBUaZ3W9e1OYgQSefUeCUSOJB8jUsevomirsOwxSKGJtAuvi1z1Eud
+         dSMQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXiusHDTzba4EjbeWrgus7ikF1oO/IJubCQ0XfXv/RsTYfB65Ao+O/peLejXeD9k7YD/aCfyQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwoFS1wgPrMXRLoai+8V42ZG3wK6cZNmYfJeFrUZ5P0BT68SU2I
+	QG77Dt+cViq4fzfibhMtu/+fV1pPmtYl18y8tRL7X7epOnCuIJVKnfdc
+X-Gm-Gg: ASbGnctlB53+/7Pvm/VyXcHn8UgwHICNyPyBNkZsS2XQ74zrza4uuP7fPs0Xv1wM1EG
+	0BP4QdyfXma+IVSnWBF96OJ5o3i+vMLRni56+QNiDbPMi4mlholppr64X1W0aKPjDq1ZT6G3XUI
+	QTFNu2zPhRO4prJA0zfnni71q6F+32Bc7iW2i9TaTKucAhqMupQJ3UD927MBNFeWRV3bYWYYlNN
+	Al/Mg7O9uo5dfxK95tECdu6IN73uSN5S7J5Z5XJK4ajZhEparmkz5CmwLyL3HICgxvuHKVLzTGM
+	MB8kDSnD1zSN/IbQ/NUt8NMY3/TabfXpE8qKgM/1WFEpLyQa88GIQ/ZzuB6uBs61DgajrDooWrS
+	X14pFlnoAmqQJ82qJxwWPFwuaQPLe
+X-Google-Smtp-Source: AGHT+IFuoR6xo29lnwzewO6jtWGAATl3ZfrBI/QrwrebjbEHcd1CciMFpJdZcqrbHs9oVwEdqnG4bg==
+X-Received: by 2002:a05:651c:19a2:b0:328:ff56:8da with SMTP id 38308e7fff4ca-32a82663ecdmr3777741fa.16.1748470560547;
+        Wed, 28 May 2025 15:16:00 -0700 (PDT)
+Received: from abj-NUC9VXQNX.. (dsl-hkibng22-54f8dc-251.dhcp.inet.fi. [84.248.220.251])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-32a85b55de7sm156911fa.53.2025.05.28.15.15.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 May 2025 15:15:59 -0700 (PDT)
+From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+To: jgg@ziepe.ca,
+	acourbot@nvidia.com,
+	dakr@kernel.org,
+	lyude@redhat.com
+Cc: Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>,
+	Gary Guo <gary@garyguo.net>,
+	=?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>,
+	Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	linux-kernel@vger.kernel.org (open list),
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	airlied@redhat.com,
+	rust-for-linux@vger.kernel.org,
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	Petr Tesarik <petr@tesarici.cz>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Sui Jingfeng <sui.jingfeng@linux.dev>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Michael Kelley <mhklinux@outlook.com>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Subject: [PATCH 0/2] rust: add initial scatterlist abstraction
+Date: Thu, 29 May 2025 01:14:04 +0300
+Message-ID: <20250528221525.1705117-1-abdiel.janulgue@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20250528170845.GX61950@nvidia.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MN1PEPF0000ECD4:EE_|MW3PR12MB4492:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5f56261f-7834-4720-4a06-08dd9e12986d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|82310400026|36860700013|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?9QluxvScCz268DfQKpx8VYZgKsh1SOdQYMODK7V35DTz0RL7sap/zwxqoASF?=
- =?us-ascii?Q?Z5q7R58RcMrQf8ouLcwCTGogjZiQhDWNDtGi/TDwTasMxkJJ4IOoUlUPCDlN?=
- =?us-ascii?Q?JmpVhxGmDaDly8fiH+NhsnugpStnIsPKNLd72SWcpOG3EbT7GDOCjYLBh7RT?=
- =?us-ascii?Q?qngzokrsSqct0zRidQ7iJ1IpaqNjB0X2jrjVlRB8tAZchtmk8NWCQhFkEQVh?=
- =?us-ascii?Q?cETW/BYkDj4Lb1OOM20Otva1PB/ZgsDSFwHBIOEe26kU1gLQ44oT9qhKbui5?=
- =?us-ascii?Q?tz/gkqeCVHZDlhUsbGHqkaAvW+oZmicnqmf9jeWmeMG9ywtDAQ/eFlkjsVJU?=
- =?us-ascii?Q?426tH+72zJfTFa4+L668/3Ax51t5aa/kVBMVryYiyifP7B86l1UIKusMCrXf?=
- =?us-ascii?Q?FED6t5akBEUfQOA89nUefNKQU7dYcgRD6WQor8nPNuN7Ui2yiYZ7207aR2m8?=
- =?us-ascii?Q?DpVjM4eqXgPIdD027JYJY3dP/rqDudBN68YSgkj+1clR7Nmi2RUccpFr/772?=
- =?us-ascii?Q?TiP/pI/DNs+S8VqO09dww1s6W2ehqbnJN475lfD4zwWrXQZPNAPE3Rl0j44f?=
- =?us-ascii?Q?e1P/mkx/v6Fbnp7GOnVgEFOqMU2rEGNAvog44Vjj7rYTLnndfeXbgqX6Xtws?=
- =?us-ascii?Q?7VkDAQem7QOCDaHvmiKeGOVNjj43fVJQcby6TlTjXviEniN3GdWwSQkyLKni?=
- =?us-ascii?Q?cftF7+VkVUAmzK6AfYVrN9m0m0slfbOLD+y6WeOqHl2CaI12hqKLfJjME2T/?=
- =?us-ascii?Q?D8jvktDbVS0l40Tb0cJ42Vc+a2gEc6Qxz5canOHcgG1HZnrcns7s0QiXy53i?=
- =?us-ascii?Q?KaphKi3WcJNiyu7tUV/UtzbvvcxsdRUZFrnkM/ftVlFOrE9Cjgh12J28qK8w?=
- =?us-ascii?Q?ec3YQttiQOisI+gz7gM07Qc24ZpdVZFqckUVyeN5PvoshMTXRSMCGf7ZE2dZ?=
- =?us-ascii?Q?7Oos5NfiS6QnxxIjjolZe86awPEEJiwyrn6NbCTX5l/+Ygvm6/YHJJ+n/LWg?=
- =?us-ascii?Q?kavc9r9za7aVCdK1rUaAkt+5WQcZYbZf+KnsFmlvstTgRmfHgpCnGvl0nQDN?=
- =?us-ascii?Q?6Wuryhjk5vfxbL/r3Et1+jbve+H3fAT6UeCABzWLA/q27FrMFeEOqzOgNQSr?=
- =?us-ascii?Q?tOeTeFuYuz6rqXD7ULxdATDdtiAGL7Fqm/ydWzjKgCG2S3coGtOgca3FaX5/?=
- =?us-ascii?Q?1m4ppVletNcsRRuZyxxPNDZE4D3Tm8u5rZTZv8Z8DFIuKYexkucKEHzEw879?=
- =?us-ascii?Q?d01tLqRL6Nfkc3wXmbUS96l+VahOv6HIGRVzk79W+QHSjd06VxkWBIdz1ik6?=
- =?us-ascii?Q?Uf9fV2a3Mio4M2T3/PqiAfxtNk2PpusxGngfbEiBsFd4AdVOFHcn/yutHfiG?=
- =?us-ascii?Q?aAlu8nnz2E+cALpU+HeHgr7N+R4EwQpjqagek+7X8aMjn9mwpQ/1vuTAsssb?=
- =?us-ascii?Q?kPKrQA6j3ClyrkQIap1EcUz1l78ad06TnKzurTXvTdVAqlXCFZUNaMm7w4yj?=
- =?us-ascii?Q?dWbfFvFuCmxGccl7bPX/5wBO8myRxnnLth+S?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(82310400026)(36860700013)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2025 18:08:05.8391
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5f56261f-7834-4720-4a06-08dd9e12986d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MN1PEPF0000ECD4.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4492
+Content-Transfer-Encoding: 8bit
 
-On Wed, May 28, 2025 at 02:08:45PM -0300, Jason Gunthorpe wrote:
-> Fundamentally this is supporting accesses that don't have an unmap op
-> callback.
+Hello all, this patch series is the next version of the initial
+scatterlist rust abstraction initially sent as RFC[0]. I appreciate
+all the feedback especially from Jason Gunthorpe[1] and Alexandre
+Courbot[2] in shaping the design of the API.
 
-Ah, I see.
+This particular version implements the typestate pattern referred to
+by Alexandre to fix the limitations of the scatterlist API. We now
+have two iterators, one for building the list and the other when the
+list is mapped via DMA for a device. This version introduces a cleaner
+flow of the state transitions and enforces restrictions in calling
+functions that are not allowed in a particular state of the sg_table
+i.e, querying the dma_addresses on a table that is not yet mapped via
+DMA or setting the pages on a sg_table that is already mapped via DMA.
 
-> It could be done differently, with the below just create your access
-> with a null ops. Prevent mdev drivers from doing this when they create
-> their accesses. We don't need to optimize this failure case so it is
-> fine to scan the xarray. All we really need to do here is eliminate
-> the WARN_ON.
+Doesn't apply to rust-next yet but is based instead on top of
+driver-core-next which provides the needed Device<Bound> functionality.
 
-Yes. That approach looks much cleaner.
+[0] https://lore.kernel.org/rust-for-linux/20250512095544.3334680-1-abdiel.janulgue@gmail.com/
+[1] https://lore.kernel.org/rust-for-linux/20250512164247.GF138689@ziepe.ca/
+[2] https://lore.kernel.org/rust-for-linux/D9VWA9ZQLY85.277DFA3YTH5R0@nvidia.com/
 
-Will replace the iopt_pin_pages patch.
+Abdiel Janulgue (2):
+  rust: add initial scatterlist bindings
+  samples: rust: add sample code for scatterlist bindings
 
-Thanks
-Nicolin
+ rust/bindings/bindings_helper.h |   1 +
+ rust/helpers/helpers.c          |   1 +
+ rust/helpers/scatterlist.c      |  25 +++
+ rust/kernel/dma.rs              |  17 ++
+ rust/kernel/lib.rs              |   1 +
+ rust/kernel/scatterlist.rs      | 369 ++++++++++++++++++++++++++++++++
+ samples/rust/rust_dma.rs        |  21 +-
+ 7 files changed, 434 insertions(+), 1 deletion(-)
+ create mode 100644 rust/helpers/scatterlist.c
+ create mode 100644 rust/kernel/scatterlist.rs
+
+
+-- 
+2.43.0
+
