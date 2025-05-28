@@ -1,256 +1,215 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2066.outbound.protection.outlook.com [40.107.244.66])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 162D326A091;
-	Wed, 28 May 2025 08:48:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.66
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748422096; cv=fail; b=nf8HWda7JTloP0xSYrwm1x2fB8gr885/YqKe4RLBMyTJLi8aCSHi5Bjn+4DFRV/2vZC8ZNpBcokhv/2IQs15RoyIPzwYMCcPusqRcSZy3DPRzr/9zt14mKKMgp8YYOFZvM4MLj64Asx9rvk+cBUCVGOHto2NfJOufBhkmihC8bg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748422096; c=relaxed/simple;
-	bh=Zn79XNMt0LyhWSsMJUZBPv6kyHLkG1heZ57VYJB3tV8=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=pu9YXgZHjhEcbgpu0Ny3E3TSPNkaLYkP+tjut6S4Uqps+apb8TTE6HsPOjBUtql2XUI4VJCC2AQ8Pf5N13Jkeef2umoLyN6wIFgIlhT0Zm0Hcqo4ox1f9PjCJQQp3IzQnDvIAz6/3CvGME9fDcnigFDn5RmNewlvguFo0+hQGUU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=uq2uTEF9; arc=fail smtp.client-ip=40.107.244.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB28626A0BF
+	for <iommu@lists.linux.dev>; Wed, 28 May 2025 08:52:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1748422354; cv=none; b=iCG9D/IyaGd5aNVM3Ab8gontvHrHWtDUDiMzSRYCAfpVWmxblKDog8T3ijov7sAM/J2a5ghsgK/zxN9XKnSxkQp7KIwLbnxImNNosEGaQDCLHCQAo0eQGT+h8UU6uJkR9po0wENf0rogROVsN2uyn6kruVflJPZgkh8mVbboue0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1748422354; c=relaxed/simple;
+	bh=VS1YaQxjzWGKR2linUA2fdWDK/V9RwaTCLlCddwHcGY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DtdDgLgz3IO1ZJGCeJaQCRezF/6v6BlBgeRdG21BtaiJsitmZAZ7U9364YZXjYpnBcUqibyKyih8lRRMfQJ1qlA98PUBEBSPhb5a2kllQMrsL05BuJTC/0WuRsh8nbpDuEqlj1X+Kb/kaNDOsmI1Fu+f+t4YWfIqzcn5HO+wEaY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Hnau/7mq; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="uq2uTEF9"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=EfGDgPhU89duaKn6p8B4drRD+y0XQ28FTZCOYKYD62jwgefRKl+SQ6HwJCSMAX7QJC5HH6ptg0WosvWOAImw3J5xVAQI00MvMU91PnKO+88YZewG8366IpF3/MMMhmOOMSFLJGWcXtd9GTjWyu1XOAIsAJXSQfeIn0ftUNyjNNCjso5GLYmJnZlx8RN6liLLjNVOmRhp23NsJlzV0M5juTdICWmj0u2e9lyhwNVLuauLxMOj8ijZRZlgAd/pi801Tns8wGVOe7bcUjXfiPwcJH+pyMn+8zOyAokkvqdwDJ6uknZAbNYBA/9mUmO7sZB76GZMB5rHrcmJW/87P8v7dQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1RoWipx2W4pN518CHVjrdLg/ppDkA8m3RYN039u4Rp8=;
- b=GY05fjmn342UoOtaoinM1doPeJPLsglnYmBkmsbMsZQIQJwUoNpOmkptX4Z0t/v3IG2NL+9aVi4wnq9hhUjCy8WtSCEgvzzeyZv7Pv407FP03aTilRzkDO17YaeQ3Hav0TXftLo065a4Bj0Ms2FZ2C90L+xXLOK/NbefnJHQrJjYLbXCoD920zSupYg3zAdqWHc77vc4Ih+DtGXoUNR68/amhJ/TZMZkSqSAv24LrLhvIFYiXpL6D3t/USJsTB9fuPsJZuw4kBLo40qv7Z8+x2cscpCYUtSrDF9pQ/CUtluOT4uXr1vYauPx/ZDjWA2QE/124Q1XYrDQS6xyLEfwRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1RoWipx2W4pN518CHVjrdLg/ppDkA8m3RYN039u4Rp8=;
- b=uq2uTEF9zK28nFHn1lSkcueyxrDtmqCwdNz7kGtXGFCRwAlsvdRIo6ba1t4jnWFGK1/P/iuGyZKw7lHqVy9tEy1kyUvk7S4KhW8xUgz9/BERKV4Glk4Dd1pomMmRRy86QdzgNrJaJUlybgi/S6S9ttx5amHKnulzrvOLh0OrPq8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- SJ1PR12MB6074.namprd12.prod.outlook.com (2603:10b6:a03:45f::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8769.26; Wed, 28 May
- 2025 08:48:11 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%4]) with mapi id 15.20.8769.022; Wed, 28 May 2025
- 08:48:11 +0000
-Message-ID: <8858d4d6-d360-4ef0-935c-bfd13ea54f42@amd.com>
-Date: Wed, 28 May 2025 14:17:56 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH rc] iommu/amd: Fix geometry.aperture_end for V2 tables
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- Joerg Roedel <jroedel@suse.de>, Jerry Snitselaar <jsnitsel@redhat.com>,
- patches@lists.linux.dev,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-References: <0-v1-6925ece6b623+296-amdv2_geo_jgg@nvidia.com>
- <d5a653df-9b43-4f13-8b1b-c3268c356592@amd.com>
- <20250424140613.GR1648741@nvidia.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20250424140613.GR1648741@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN4PR01CA0046.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:279::7) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Hnau/7mq"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 54S8pbm7007970
+	for <iommu@lists.linux.dev>; Wed, 28 May 2025 08:52:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=zjY+tolbRpC1WCpfxzU4Em6y
+	SlDLudFcmo1sJ1gl3Tk=; b=Hnau/7mqap/VbnG9tpq4s414rF8bv3QUyksN7dya
+	pHZZrUkxSjQBMgYlYJfsvGF2dKL0o2kOMdsq0QzCB//dRHGtwGUgW2ZxXO7OzFqS
+	jeysqUuayT3thtYuemt9C+R6NiiKFDAGlowTKU9zZo40DHJ2Z2W1wRs5zZSn9ORr
+	Le7qlSI9N9gDtDo+GrfAT/ui62q9wY5o2jsOKWsjhFvzPmxKg7/gsx5MEQBZHgKP
+	e7H+/hNJJLkB+O6fI4hJtwce1tNjvHjRGkvzn79UNwQW9VnRfvvLXe4ihbozm96o
+	yJLF/exG5WnIrJGXvF9qH1LhL8LAjlbKltCZWM623KOa+A==
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46u5ek1jdq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 28 May 2025 08:52:30 +0000 (GMT)
+Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-7cabd21579eso680674485a.3
+        for <iommu@lists.linux.dev>; Wed, 28 May 2025 01:52:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1748422349; x=1749027149;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zjY+tolbRpC1WCpfxzU4Em6ySlDLudFcmo1sJ1gl3Tk=;
+        b=IoI2eRKEMExk5sMkLxNkjeTB04gpQvHPbZuFn4laj601jLNMZyiyXarMaoJqCtwtmI
+         yUDH5Uy4SfF6tuynrGOBBB4caVCrEY0QGx9ZFE+mABF6xzMEFHJYWhiXt9PsSg7iMA6N
+         BH+QBxUsLJKUJJ8VpMkE/t5mzBs7ppfjSyr9rq32e8dqtFA+AgfrzJ6ruH4gVwpFV2V3
+         +TkpIei8cTdhWJxyVnBxI5W2we1tUM//Pe1cw6UpaVrXAjY9fpNWLjGJykwhcoACvoD3
+         5StrjRjS3tewHHqKXPaIChGeY7zFZrxEJerh0WasAeeUPSSWJPBOPj4fpssyAZELfntE
+         qdoA==
+X-Forwarded-Encrypted: i=1; AJvYcCWBUUqEJn+ElnE4WxR0glASXv6V7FnAF0Zh1SXYLMkAYQWZ1/EY1TYxIwrcOmoledWVGHPtxA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx0GJlm9lXICWLvRaa/VJVFE82bnXtJbSQjKQr2BluswjhYROzW
+	p1rKlUjh1DEVQcDz5BhCUfcXLk8tXOaevhPb5HCCk2cutq4ziybDi08Uje/dvTU0Z+IwnwBSyWA
+	9UynycuTkZdKpBJf/xwRsNf/Ock0qawAP6dg1qqbMfsAAFcuSkBHjdRrVFw==
+X-Gm-Gg: ASbGnctMvDdG0IcAGH1bC93u+cdOCXbqC9rHk2F9mhFsjUNplpGcqDNuO26ao8q0wxG
+	se5HsMTYAG4aZtOozXzjphtaznG1AvgmU+itRmpxRS5lPg4tlmuqBan9J9edRLK6P+NmzWy/QVL
+	ZdztEy5fZlg4w9JLC8fl+W5qDbs2rGMOkYmj3VgLGTezw7/uH7NmTgPNf42CHPCWhx4ineE18f5
+	1sWyxFyW80kvyIlH9RqdGtZqxEs/7jyXjgjH170iaQQ/IG0LcScVQOMC5ixAAqMTDcsvjy5nYoS
+	84yULuarmZeLFcjxki8WlZYqh/zLQ4ABob+ehz5ldePOHLmn23jT+eb/qWaZQTrNi1aOrauetoE
+	=
+X-Received: by 2002:a05:620a:2987:b0:7ca:f65c:2032 with SMTP id af79cd13be357-7ceecb6fb2fmr2414459485a.5.1748422349591;
+        Wed, 28 May 2025 01:52:29 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGocp7uTKkFG2D9UdXN34dHKFQ1I2EskkbQ4JFUqEXWZMh4qwL8V76qp3zCN3NhbzVXMQqHcw==
+X-Received: by 2002:a05:620a:2987:b0:7ca:f65c:2032 with SMTP id af79cd13be357-7ceecb6fb2fmr2414457285a.5.1748422349110;
+        Wed, 28 May 2025 01:52:29 -0700 (PDT)
+Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-32a79e9a5e2sm1557121fa.18.2025.05.28.01.52.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 May 2025 01:52:27 -0700 (PDT)
+Date: Wed, 28 May 2025 11:52:25 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Alexey Klimov <alexey.klimov@linaro.org>
+Cc: robdclark@gmail.com, will@kernel.org, robin.murphy@arm.com,
+        linux-arm-msm@vger.kernel.org, joro@8bytes.org, iommu@lists.linux.dev,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, andersson@kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Add SM6115 MDSS compatible
+Message-ID: <ehriorde5zbfoo6b7rzemnzegnwqfdobzwyjra755ynk2me2g6@om6g57n26zbp>
+References: <20250528003118.214093-1-alexey.klimov@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SJ1PR12MB6074:EE_
-X-MS-Office365-Filtering-Correlation-Id: d3e55a94-cfa3-4815-3a53-08dd9dc46001
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?eUVYZ0UvQTNmRjEramlvMkFVbzluTm1XcW11YmM4VldRYXdDTVF5eWRHVDlr?=
- =?utf-8?B?d1FKY2Q2alFpdmNzRmFmS1NoK0ZyNm9lWGtZWWtTT09CRlJzOEVCMjFXODZB?=
- =?utf-8?B?YjllZXZrVFc0dGd5OW9DSnpWdnJiZ3V0TnVqeVdrWGVzS1JvMVdaQ0hJd3Bn?=
- =?utf-8?B?SHdtSkg1a0hJK1gwS2ZoUmxHU2IwN0pLQ2FPTHRva2VhdER5V3hCRXlrY0Nu?=
- =?utf-8?B?OFhhdm5EclQrRW45Uy9EK1NCYUZBc3hIRkJJUlNiZi8vYjZSMTlkeXFuNE5Y?=
- =?utf-8?B?Y3RLMVlBWnZ3M1VIdk9IRDRiVlFJbTl2YjhmQjVVRXJBdlRZd1R2dDlDV3Ro?=
- =?utf-8?B?N3BKZ1NYUWVXZVBVL3Avby90S0hBUDlmM01kOHh6NHdUVVRsQVZHVDdCT2w1?=
- =?utf-8?B?akovQmUyRXJweHYrUmV5eW5tQ205QmwxVjAxUWxCdmtidnpJZ1NmQ3o0TU45?=
- =?utf-8?B?ZXZFQVFBQUsrd1AyN0tldW9zZDRpSG05elF0L1h0U3hoNkp1eTIyNDY2UWd4?=
- =?utf-8?B?N0FhRDluR3hrRU9XSmFWZ1dLaW90M3lYWFIrTW9iWk9uU1B1TS9pTy9TWnlF?=
- =?utf-8?B?eUdJc2R5Z2dFUFlaTnk3b2VSd01BSG5QZG1qOVJ5YS9wcFBmemlOaklWdGJm?=
- =?utf-8?B?dm92cW9KUkptL1YzQWNXUG81ak10eWttYnRjVUNjWFJMeU8yUkxORFd2a3Ny?=
- =?utf-8?B?OVFQWkhDcC9ibys0RnIvU0JRU0hmc09lZ2FxdkFySkZxU3pwcldScjRacTh0?=
- =?utf-8?B?dkV5alJrRzFOKzJ5SEttdjV3SjhxS0F1T2x0U1FTYi9udXltQzR3Z2VuM054?=
- =?utf-8?B?SVFXYnhPWDF2QWU4aE80d05ZLytzeHJJMHFvV2diYUFRYWUrU1lONDI5L25F?=
- =?utf-8?B?Mm1pS2VmYk9EbGhhK2hrL1NUS00rb21EYWJic2RHQkNlUW1RanlHT1VzV21z?=
- =?utf-8?B?UC9xL0l4dkgybng5VDE3Mzl4Z01yZi80ck1XaWU2VmN0T3RxT20wQUtXeFVH?=
- =?utf-8?B?UWs1WXJpZUFwVDFaa0RiNHVUazhXT1BidFQyRkdMTWxORFI2NmhmZHRyRHFG?=
- =?utf-8?B?RFJnNzEyOXppS3R6ZDBsdXF4RUdBSGo5UmZHYjR0WE53YVdiekgxT2JWZU9a?=
- =?utf-8?B?ejlveGh6WDgrTFNnK3BJbW9EZFVidld1dHE0dTAyRE9jRVFibWUzZC9zdG9K?=
- =?utf-8?B?aTBINWE5bThUa0FhVU9sT1djVXd1bm5YaVV4cjlDelZpVjBxSFBucWRaL3Nh?=
- =?utf-8?B?eUoyQUlJa0I4SWZVU1MxbklxZmk1Q3hrdnRoR3Q1YnhlZEdYL3c3V212MXVW?=
- =?utf-8?B?RW8xNSsrTTBUVkRyYVFCYnc5Z2MvRVJxc3RLSGNnaUpCRlArK2NSaUJNc3FG?=
- =?utf-8?B?WmpzczNDTXBnUmlwVXRkUG9pS2Z5VDZCdUd2RThyaWJsS0NoTURrVTdZN2JI?=
- =?utf-8?B?Qm53eGdaVUZkZzkyQ0ZyMXdYY3NYWjhQRHZuTFZ1L21XZHRqNVMrNDFPZnNZ?=
- =?utf-8?B?c3F1Yi83R2RlbWFLbC85c1RCRjEwelVaTU5uV1BKTmN1TUdiVHJNcjBZTDRl?=
- =?utf-8?B?b29EcXpnSkt4NWVsd0Jqbmh0dHJIMDRhTTlSYnJKalYxeUtkUFhISWwxSDFa?=
- =?utf-8?B?Y0w3TEdZT0ROTzJIdG5iN2QzVUVQYXFtTEY2M2tyVUdGb0dLSXE4aEFZMDFT?=
- =?utf-8?B?VThPMnJYejFJTHdRRzNXRURaQzRKNHN3alpIRnQzdnBJdGZQdFZSMWdxZkQx?=
- =?utf-8?B?SVY2RWpvcWNQbG92QzZMZjJpWlhPb2QrWnY3Q2FOK0VSWFhVU01Hb0FxNEcv?=
- =?utf-8?B?TWlCT2Q5eC9FYUxXMHRZM1V6UVlxaFlrOXgvbGJhZUhiSmVPV1NlMldYNk1q?=
- =?utf-8?B?VWFqeVlBMldkOWhVZWQ3Zk8yYTFRb01sYVFkS2srempZZ2wwUHczMkc3QmNq?=
- =?utf-8?Q?l8PnDRLMyvQ=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?czVlT1R6Y1VpZ0U2cTlYUHNkVWNVTWVaS1l4MUdlemNXRjJTMHA5aVVOcnlS?=
- =?utf-8?B?RzUzaXV1SHRqdE0zZkt2WlpnSzNUNjUvWmFvd0FLeHd3SjFtRVdJeTdwOW52?=
- =?utf-8?B?L1lQNEp5Mi9HNk5vNlZzR3RSbXBUN2hyY21sWU01dkc5WEtuYTJzbGYyRUd0?=
- =?utf-8?B?T3lhZUpGVTl6SHk4Wnp2RVgwcnBzTVN1SXo4QXhMRVJpUWVzNjhyazdRM1Ir?=
- =?utf-8?B?OUtrSldRZjhkdlQzZmF1bUZuVkhDMTdQZzhBNm1UUnhPUlUweEl2bnpKdVN5?=
- =?utf-8?B?QTI1MUp3V3NCaGt5Z0lOTUVteTBpNkl2dGJRMDFCN1R0RzJHQkxHUlBPbXJu?=
- =?utf-8?B?MkZtQzFyb3JuN2ZwSTdNMzErWC9GYkhwTWgyeW1QTDJLUXhCTEFFZHRyZVFy?=
- =?utf-8?B?SzVKMk5hejluTENhdFJ0QmcxUWlDVUt2eTM2RjFENm1zTEtTaVRIT1VrWEt2?=
- =?utf-8?B?UEx1bjl3dUI2bTQ3SHN2VndBQnBmeU5KWEEvSDNtQWZ3VU1mc3JYa24xK3B3?=
- =?utf-8?B?M3R1SG1PRlREV0UyR0JzQ0FtdHVHc0hFQzVKbmNTTnhUOFIybUxnQ1BJdUhQ?=
- =?utf-8?B?R210MXc3VVdMT0Y1bDJOdVFMek1xZFMyVytFZnpZczh4YjNyNysxYVFmUjVY?=
- =?utf-8?B?VkNyb3ZGOFBmbFE0aEk1VVdKRitKdklyQ21yaHRTelRlYlp2VGdvUjZTdnVP?=
- =?utf-8?B?OFljVHpGQm10NXNXUEtlMW9kamlhNDlOQnpKZ05uM21ibGgrb3RJREEwRkNL?=
- =?utf-8?B?MnViZGh3QWRQWTkwL0U1bGtENTI0WW9kZE5IZ0NidzRtMUh6cTdLSXJFNzVE?=
- =?utf-8?B?RHh4MGVxQTU1SXV0cnlXallzZ1o4S282VFBROHg0NndFbTZNOE54eVNFb1p4?=
- =?utf-8?B?UElqdG9BcmFjMnZOa2dSbndKNGNXVzVkYXNyb3hkQkFSTXFEeDdkdEMyZ2pP?=
- =?utf-8?B?Y240eUtRbjc1QmxleklBcGNLb3RtVXYyaXhMK2NtUUtDUkEvQXlYcmk3S0d4?=
- =?utf-8?B?RmwvOTRZa0pjclVBc084SUFHL2tSdWE2MEhaREIrQkhXaG54MEFXL0tuS0VR?=
- =?utf-8?B?SWVneWlvQjlvbStYSm9KVHVlQ1BFdUh5RnV1bmxmT2w5WXB0MlpKeGlxbVJu?=
- =?utf-8?B?MTMva2xJbm1xYVRVQzV1SWx5MW9UdDI4aXI1VmxGT0t3Z01WTGNrdVFOWFVv?=
- =?utf-8?B?NzJVYUVpYUJLa0pPbmtzZ1I2b0lNdWdPYndxaU84eG12NmYrZit6QmlDOVln?=
- =?utf-8?B?cVZTSHVKMzJKMjdHS3dGYTVPY2E2aTkxeVpWQSs4VWxuUStyeERDY2krSDlI?=
- =?utf-8?B?aDQwcnZzN2FBNDFhbmN4UjcrWG1ORmxLcHBiaHhUYVhJL3AyMDdFYkZaSU9C?=
- =?utf-8?B?U3Z2YjBGWW1UTGRlNU5NKzNwcFVqOWw2L0FJQlhpMlhhZnA4OGxncm9KRnYr?=
- =?utf-8?B?QWhvMUh5YXdnTnRXN3VHNCtjQUdIc0x3b1UrVTFKR0xNa2ZrL1RNTW9KVW1o?=
- =?utf-8?B?aU04Nkh2SzlQS3pXMndOMDh4ZDRYRlZlUHhoUncrd05yeWtiRFpnakx6YXF4?=
- =?utf-8?B?dlVHeHFvbmtkUy9KZmRkWnJVL045bFJRcWU2TTVKZmJFOW1lNHkvc1RCOXdN?=
- =?utf-8?B?UUZNTWNXWlQ0QnYrdHRuTmZqcld4NlovWEtRMHlpSWd5VDhhV244MGhHQUhF?=
- =?utf-8?B?M3I0MUZyM1h4TVY0cVlTM1ZpZExTN09XYlRyTGxmWnVMWXhlNHpyNG9PTjFm?=
- =?utf-8?B?RUNiYXhpOE83K3k1d01QbCtJWG5adkg4blBPTTh4MlZRaHZjTkFrbkxIc09U?=
- =?utf-8?B?YnR1eHR1aWU2WkR1QkxXNXhjRmwralFvOVhUYTNSMVNzYXdmeWpITlBFVG5G?=
- =?utf-8?B?a1h2RU1BRWgweVI0SnpDREszTFZPbVZGNEdLM3F3Umdlc2VuMHpGSGlYd2FD?=
- =?utf-8?B?blNUbm9tem1ocDVCVjBuNVlBL0VrS0VrOU50WVdEOUo1elU3UngxdUNFTng0?=
- =?utf-8?B?THRNK3NpUXZ6bkNlLy9nL1BIanltT3N3UDAralNFTm55MWhqOHE5REhJcU43?=
- =?utf-8?B?cGhiN0hjZ2tlWlRRbUphWUZ3MlFjSW5SdDNCWUFhcU1RaE9jZmRScHk3ZEdl?=
- =?utf-8?Q?9q/pYeJfwANWuRMM+EEYXZ5/M?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3e55a94-cfa3-4815-3a53-08dd9dc46001
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2025 08:48:11.0598
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HGhNE0u2Oe12Lat2htlibr02TON1Mj3IpHmxqeMZmnABmwpDOE86GCgueTRSv+kDIEuUbSre1NGSBpCy1oO5kQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6074
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250528003118.214093-1-alexey.klimov@linaro.org>
+X-Authority-Analysis: v=2.4 cv=GIgIEvNK c=1 sm=1 tr=0 ts=6836cece cx=c_pps
+ a=hnmNkyzTK/kJ09Xio7VxxA==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=dt9VzEwgFbYA:10 a=VwQbUJbxAAAA:8 a=KKAkSRfTAAAA:8 a=EUspDBNiAAAA:8
+ a=8fDSzOnEAZO3B2cnlLcA:9 a=CjuIK1q_8ugA:10 a=PEH46H7Ffwr30OY-TuGO:22
+ a=cvBusfyB2V15izCimMoJ:22
+X-Proofpoint-ORIG-GUID: rf1IfRguIxzewDW6rck0XMzniQYDJLTC
+X-Proofpoint-GUID: rf1IfRguIxzewDW6rck0XMzniQYDJLTC
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTI4MDA3NiBTYWx0ZWRfXwrC5k2jE7HqP
+ qKmZc0Rp39Ki39gydm4OgCqxNEN5ddmTcpsaS8ry1jXHSH2VgsV+/7r0jGztTeYWmRX4P2kywJU
+ t+DTzc3nzzRuTsB5gLgduk+ptexEG5j+498SBTDAn9yVDb7gDmP1EjQtzvM4Y2e5pvLKEqYkA0a
+ KXiawL1G2vKkzplngwXVUrnbrIshV0sKY4U0fPBbuIDhE4vnlcKfYiPmue5DivQNKrbjKtbMnea
+ 7xbZCSK9NnLKoBHe3BdMonDopP4fmMgT0tQvZFeWg9uFhvpnjPwPEmT4Yxzj63frf8dmKe+jjqK
+ +3JokmpJcGS4ag900rny/WMzYA6oLgNu38Z1bw3WLzYSXLUOO1rH9niACH42+1o8uBrkDV8X4Uz
+ WFZgJ4se7AmgbUdnoiIAvDvUAOn0p0895ms9Jn3ULKKKhtriTKv8IJ0gITF8d5Qf2hC9DBwv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-05-28_04,2025-05-27_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 malwarescore=0 bulkscore=0 clxscore=1015 lowpriorityscore=0
+ adultscore=0 priorityscore=1501 mlxscore=0 phishscore=0 spamscore=0
+ suspectscore=0 mlxlogscore=999 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505160000
+ definitions=main-2505280076
 
-Hi Jason,
-
-
-On 4/24/2025 7:36 PM, Jason Gunthorpe wrote:
-> On Thu, Apr 24, 2025 at 01:26:21PM +0530, Vasant Hegde wrote:
->> Hi Jason,
->>
->> On 4/17/2025 9:51 PM, Jason Gunthorpe wrote:
->>> The AMD IOMMU documentation seems pretty clear that the V2 table follows
->>> the normal CPU expectation of sign extension. This is shown in
->>>
->>>   Figure 25: AMD64 Long Mode 4-Kbyte Page Address Translation
->>>
->>> Where bits Sign-Extend [63:57] == [56]. This is typical for x86 which
->>> would have three regions in the page table: lower, non-canonical, upper.
->>>
->>> The manual describes that the V1 table does not sign extend in section
->>> 2.2.4 Sharing AMD64 Processor and IOMMU Page Tables GPA-to-SPA
->>>
->>> The iommu domain geometry does not directly support sign extended page
->>> tables. The driver should report only one of the lower/upper spaces. Solve
->>> this by removing the top VA bit from the geometry to use only the lower
->>> space.
->>>
->>> Adjust dma_max_address() to do this. It now returns:
->>>
->>> 5 Level:
->>>   Before 0x1ffffffffffffff
->>>   After  0x0ffffffffffffff
->>> 4 Level:
->>>   Before 0xffffffffffff
->>>   After  0x7fffffffffff
->>>
->>> Fixes: 11c439a19466 ("iommu/amd/pgtbl_v2: Fix domain max address")
->>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->>> ---
->>>  drivers/iommu/amd/iommu.c | 10 ++++++++--
->>>  1 file changed, 8 insertions(+), 2 deletions(-)
->>>
->>> AMD folks: I'm just reading the documentation, it would be good to confirm
->>> this understanding. I'm a bit surprised nobody hit this, but given the domain
->>> aperture was wildly wrong up till 2023 maybe it never gets exercised
->>> carefully.
->>
->> We have tested this with 4 and 5 level w/ some bench marks as well as w/
->> forcedac=1. It works fine. My understanding is IOMMU uses bit 56/47 as well for
->> address translation.
+On Wed, May 28, 2025 at 01:31:18AM +0100, Alexey Klimov wrote:
+> Add the SM6115 MDSS compatible to clients compatible list, as it also
+> needs that workaround.
+> Without this workaround, for example, QRB4210 RB2 which is based on
+> SM4250/SM6115 generates a lot of smmu unhandled context faults during
+> boot:
 > 
-> Yes, it should use bit 56 for address translation, that is part of the
-> page table architecture.
+> arm_smmu_context_fault: 116854 callbacks suppressed
+> arm-smmu c600000.iommu: Unhandled context fault: fsr=0x402,
+> iova=0x5c0ec600, fsynr=0x320021, cbfrsynra=0x420, cb=5
+> arm-smmu c600000.iommu: FSR    = 00000402 [Format=2 TF], SID=0x420
+> arm-smmu c600000.iommu: FSYNR0 = 00320021 [S1CBNDX=50 PNU PLVL=1]
+> arm-smmu c600000.iommu: Unhandled context fault: fsr=0x402,
+> iova=0x5c0d7800, fsynr=0x320021, cbfrsynra=0x420, cb=5
+> arm-smmu c600000.iommu: FSR    = 00000402 [Format=2 TF], SID=0x420
+> 
+> and also leads to failed initialisation of lontium lt9611uxc driver
+> and gpu afterwards:
 
-I have checked with HW architects.
-
-In DMA API mode (PASID=0), IOMMU HW does not use canonical addresses. It's safe
-to use bit 56 (5 level page table) -OR- bit 47 (4 level page table) for address
-translation (we don't need sign extension). However when PASID is *enabled*
-(PASID != 0), then IOMMU expects canonical address bit[63-57] should match
-bit[56]. Otherwise it will abort the request.
-
-I have requested spec writer to add details in the spec.
-
--Vasant
-
+Nit: there is nothing failing the lt9611uxc on its own. binding all MDSS
+components (triggered by lt9611uxc attaching to the DSI bus) produces
+the failure.
 
 > 
-> The question is what happen if a device uses IOVA 0x0100000000000000
-> with the iommu. This is a non-canonical address, so I think
-> architecturally on x86 it should be rejected. I would not be surprised
-> if some HW treats it the same as 0xFF00000000000000 - though that
-> would be dangerous.
+>  ------------[ cut here ]------------
+>  !aspace
+>  WARNING: CPU: 6 PID: 324 at drivers/gpu/drm/msm/msm_gem_vma.c:130 msm_gem_vma_init+0x150/0x18c [msm]
+>  Modules linked in: ... (long list of modules)
+>  CPU: 6 UID: 0 PID: 324 Comm: (udev-worker) Not tainted 6.15.0-03037-gaacc73ceeb8b #4 PREEMPT
+>  Hardware name: Qualcomm Technologies, Inc. QRB4210 RB2 (DT)
+>  pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+>  pc : msm_gem_vma_init+0x150/0x18c [msm]
+>  lr : msm_gem_vma_init+0x150/0x18c [msm]
+>  sp : ffff80008144b280
+>   		...
+>  Call trace:
+>   msm_gem_vma_init+0x150/0x18c [msm] (P)
+>   get_vma_locked+0xc0/0x194 [msm]
+>   msm_gem_get_and_pin_iova_range+0x4c/0xdc [msm]
+>   msm_gem_kernel_new+0x48/0x160 [msm]
+>   msm_gpu_init+0x34c/0x53c [msm]
+>   adreno_gpu_init+0x1b0/0x2d8 [msm]
+>   a6xx_gpu_init+0x1e8/0x9e0 [msm]
+>   adreno_bind+0x2b8/0x348 [msm]
+>   component_bind_all+0x100/0x230
+>   msm_drm_bind+0x13c/0x3d0 [msm]
+>   try_to_bring_up_aggregate_device+0x164/0x1d0
+>   __component_add+0xa4/0x174
+>   component_add+0x14/0x20
+>   dsi_dev_attach+0x20/0x34 [msm]
+>   dsi_host_attach+0x58/0x98 [msm]
+>   devm_mipi_dsi_attach+0x34/0x90
+>   lt9611uxc_attach_dsi.isra.0+0x94/0x124 [lontium_lt9611uxc]
+>   lt9611uxc_probe+0x540/0x5fc [lontium_lt9611uxc]
+>   i2c_device_probe+0x148/0x2a8
+>   really_probe+0xbc/0x2c0
+>   __driver_probe_device+0x78/0x120
+>   driver_probe_device+0x3c/0x154
+>   __driver_attach+0x90/0x1a0
+>   bus_for_each_dev+0x68/0xb8
+>   driver_attach+0x24/0x30
+>   bus_add_driver+0xe4/0x208
+>   driver_register+0x68/0x124
+>   i2c_register_driver+0x48/0xcc
+>   lt9611uxc_driver_init+0x20/0x1000 [lontium_lt9611uxc]
+>   do_one_initcall+0x60/0x1d4
+>   do_init_module+0x54/0x1fc
+>   load_module+0x1748/0x1c8c
+>   init_module_from_file+0x74/0xa0
+>   __arm64_sys_finit_module+0x130/0x2f8
+>   invoke_syscall+0x48/0x104
+>   el0_svc_common.constprop.0+0xc0/0xe0
+>   do_el0_svc+0x1c/0x28
+>   el0_svc+0x2c/0x80
+>   el0t_64_sync_handler+0x10c/0x138
+>   el0t_64_sync+0x198/0x19c
+>  ---[ end trace 0000000000000000 ]---
+>  msm_dpu 5e01000.display-controller: [drm:msm_gpu_init [msm]] *ERROR* could not allocate memptrs: -22
+>  msm_dpu 5e01000.display-controller: failed to load adreno gpu
+>  platform a400000.remoteproc:glink-edge:apr:service@7:dais: Adding to iommu group 19
+>  msm_dpu 5e01000.display-controller: failed to bind 5900000.gpu (ops a3xx_ops [msm]): -22
+>  msm_dpu 5e01000.display-controller: adev bind failed: -22
+>  lt9611uxc 0-002b: failed to attach dsi to host
+>  lt9611uxc 0-002b: probe with driver lt9611uxc failed with error -22
 > 
-> There is a significant correctness issue here with ATS, the IOMMU
-> *must not* allow address aliases to exist, so if it responds to ATS
-> queries at both 0x0100000000000000 and 0xFF00000000000000 with the
-> same PTE then it is security broken. The device ATC is only flushed
-> based on the canonical IOVA, so any aliases can remain in the ATC and
-> trigger UAF issues. This can possibly be triggered by userspace when
-> using VFIO :\
+> Suggested-by: Bjorn Andersson <andersson@kernel.org>
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Alexey Klimov <alexey.klimov@linaro.org>
+> ---
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> So the question is not about if bit 56/47 is used, but if the IOMMU hw
-> is validating the sign extension. Assuming it is validating then we
-> must not tell the iommu core code to use
->  0x0100000000000000 -> 0x01FFFFFFFFFFFFFF
-> as IOVA since it is not legal IOVA. This is why the bit width is
-> reduced by one when computing the aperture.
-> 
-> Given the security sensistivity with ATS the sign validation behavior
-> should be understood because I do plan to come with a patch to enable
-> the high address space for iommufd and if some AMD implementations
-> need to block that we should know :)
-> 
-> Thanks,
-> Jason
 
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+
+I'd also propose:
+
+Fixes: 3581b7062cec ("drm/msm/disp/dpu1: add support for display on SM6115")
+
+This way this is going to be fixed for all platforms using display on
+SM6115.
+
+-- 
+With best wishes
+Dmitry
