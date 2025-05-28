@@ -1,215 +1,184 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2084.outbound.protection.outlook.com [40.107.94.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB28626A0BF
-	for <iommu@lists.linux.dev>; Wed, 28 May 2025 08:52:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748422354; cv=none; b=iCG9D/IyaGd5aNVM3Ab8gontvHrHWtDUDiMzSRYCAfpVWmxblKDog8T3ijov7sAM/J2a5ghsgK/zxN9XKnSxkQp7KIwLbnxImNNosEGaQDCLHCQAo0eQGT+h8UU6uJkR9po0wENf0rogROVsN2uyn6kruVflJPZgkh8mVbboue0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748422354; c=relaxed/simple;
-	bh=VS1YaQxjzWGKR2linUA2fdWDK/V9RwaTCLlCddwHcGY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DtdDgLgz3IO1ZJGCeJaQCRezF/6v6BlBgeRdG21BtaiJsitmZAZ7U9364YZXjYpnBcUqibyKyih8lRRMfQJ1qlA98PUBEBSPhb5a2kllQMrsL05BuJTC/0WuRsh8nbpDuEqlj1X+Kb/kaNDOsmI1Fu+f+t4YWfIqzcn5HO+wEaY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Hnau/7mq; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E1D72836AF;
+	Wed, 28 May 2025 11:57:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.84
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1748433435; cv=fail; b=AwEqJyN1PCCLtA15QrLLCBpN9W3+/YA+Q0qu7eNwaEa38VJZNQZuh+jk8vzP3oMj0dzAFk8BBXnVi+Ctc7duBAPBcXMmrb5uyX2ESynLeFsBDHdlu9oRZc1tV0yKmKHJMi9GDd9ou6VjCKwQlr3LwBvpDByZDRBN9V2FbV9SU04=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1748433435; c=relaxed/simple;
+	bh=J2pl/tbdNHxmXhSJeyokXhToJlV6YyPXYzxuUcdK5bk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=aMnSbubhBUtDNcn/GJFyR3DWVY2hI9QiTIlJudfe8Y11v0VTcBHGh9imhs2E49ivXW3dC6r3CMFZcIoRoVayRJdT91E5jf2rAO14Ch8DCy6qejR7glOR7FNVFYQzAiEkj99hW+3ilPZ6Ubun5W48OfDUP06S8xZzHKMfseIWDIc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=H/hfJDvW; arc=fail smtp.client-ip=40.107.94.84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Hnau/7mq"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 54S8pbm7007970
-	for <iommu@lists.linux.dev>; Wed, 28 May 2025 08:52:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=zjY+tolbRpC1WCpfxzU4Em6y
-	SlDLudFcmo1sJ1gl3Tk=; b=Hnau/7mqap/VbnG9tpq4s414rF8bv3QUyksN7dya
-	pHZZrUkxSjQBMgYlYJfsvGF2dKL0o2kOMdsq0QzCB//dRHGtwGUgW2ZxXO7OzFqS
-	jeysqUuayT3thtYuemt9C+R6NiiKFDAGlowTKU9zZo40DHJ2Z2W1wRs5zZSn9ORr
-	Le7qlSI9N9gDtDo+GrfAT/ui62q9wY5o2jsOKWsjhFvzPmxKg7/gsx5MEQBZHgKP
-	e7H+/hNJJLkB+O6fI4hJtwce1tNjvHjRGkvzn79UNwQW9VnRfvvLXe4ihbozm96o
-	yJLF/exG5WnIrJGXvF9qH1LhL8LAjlbKltCZWM623KOa+A==
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 46u5ek1jdq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 28 May 2025 08:52:30 +0000 (GMT)
-Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-7cabd21579eso680674485a.3
-        for <iommu@lists.linux.dev>; Wed, 28 May 2025 01:52:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1748422349; x=1749027149;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zjY+tolbRpC1WCpfxzU4Em6ySlDLudFcmo1sJ1gl3Tk=;
-        b=IoI2eRKEMExk5sMkLxNkjeTB04gpQvHPbZuFn4laj601jLNMZyiyXarMaoJqCtwtmI
-         yUDH5Uy4SfF6tuynrGOBBB4caVCrEY0QGx9ZFE+mABF6xzMEFHJYWhiXt9PsSg7iMA6N
-         BH+QBxUsLJKUJJ8VpMkE/t5mzBs7ppfjSyr9rq32e8dqtFA+AgfrzJ6ruH4gVwpFV2V3
-         +TkpIei8cTdhWJxyVnBxI5W2we1tUM//Pe1cw6UpaVrXAjY9fpNWLjGJykwhcoACvoD3
-         5StrjRjS3tewHHqKXPaIChGeY7zFZrxEJerh0WasAeeUPSSWJPBOPj4fpssyAZELfntE
-         qdoA==
-X-Forwarded-Encrypted: i=1; AJvYcCWBUUqEJn+ElnE4WxR0glASXv6V7FnAF0Zh1SXYLMkAYQWZ1/EY1TYxIwrcOmoledWVGHPtxA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx0GJlm9lXICWLvRaa/VJVFE82bnXtJbSQjKQr2BluswjhYROzW
-	p1rKlUjh1DEVQcDz5BhCUfcXLk8tXOaevhPb5HCCk2cutq4ziybDi08Uje/dvTU0Z+IwnwBSyWA
-	9UynycuTkZdKpBJf/xwRsNf/Ock0qawAP6dg1qqbMfsAAFcuSkBHjdRrVFw==
-X-Gm-Gg: ASbGnctMvDdG0IcAGH1bC93u+cdOCXbqC9rHk2F9mhFsjUNplpGcqDNuO26ao8q0wxG
-	se5HsMTYAG4aZtOozXzjphtaznG1AvgmU+itRmpxRS5lPg4tlmuqBan9J9edRLK6P+NmzWy/QVL
-	ZdztEy5fZlg4w9JLC8fl+W5qDbs2rGMOkYmj3VgLGTezw7/uH7NmTgPNf42CHPCWhx4ineE18f5
-	1sWyxFyW80kvyIlH9RqdGtZqxEs/7jyXjgjH170iaQQ/IG0LcScVQOMC5ixAAqMTDcsvjy5nYoS
-	84yULuarmZeLFcjxki8WlZYqh/zLQ4ABob+ehz5ldePOHLmn23jT+eb/qWaZQTrNi1aOrauetoE
-	=
-X-Received: by 2002:a05:620a:2987:b0:7ca:f65c:2032 with SMTP id af79cd13be357-7ceecb6fb2fmr2414459485a.5.1748422349591;
-        Wed, 28 May 2025 01:52:29 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGocp7uTKkFG2D9UdXN34dHKFQ1I2EskkbQ4JFUqEXWZMh4qwL8V76qp3zCN3NhbzVXMQqHcw==
-X-Received: by 2002:a05:620a:2987:b0:7ca:f65c:2032 with SMTP id af79cd13be357-7ceecb6fb2fmr2414457285a.5.1748422349110;
-        Wed, 28 May 2025 01:52:29 -0700 (PDT)
-Received: from eriador.lumag.spb.ru (2001-14ba-a0c3-3a00--7a1.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::7a1])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-32a79e9a5e2sm1557121fa.18.2025.05.28.01.52.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 May 2025 01:52:27 -0700 (PDT)
-Date: Wed, 28 May 2025 11:52:25 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Alexey Klimov <alexey.klimov@linaro.org>
-Cc: robdclark@gmail.com, will@kernel.org, robin.murphy@arm.com,
-        linux-arm-msm@vger.kernel.org, joro@8bytes.org, iommu@lists.linux.dev,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, andersson@kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-qcom: Add SM6115 MDSS compatible
-Message-ID: <ehriorde5zbfoo6b7rzemnzegnwqfdobzwyjra755ynk2me2g6@om6g57n26zbp>
-References: <20250528003118.214093-1-alexey.klimov@linaro.org>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="H/hfJDvW"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=LjAVIaIyqNDbptbxKwyaBdXilSXQ0CiTitCk77uvJkV6abj7k9MDxZpp/kLKE2AMcBxfGnkO4Gv4anIntgGG/mVdh6zlxgHwWW28NZVG/gLvBnXoPbx4NR/FzvrzMg9okAbtyq2UJcXH0DvOzqW/qbN5Fm+28y338qnl0uFiqUrpgZlPSI6ZOxkzRSHt+Q9spF7WRfmLMWQlljU04bao+sZVtoKUOd0DjTwS40+RrTpLF8CzVe4MSk80M668JyEQJoaxZL3qBCE5437mwnGNdlYVC58LZVKbcgCPwzmi1LVuxSkMZjCvsbgFaxWOSeM/HNZGAszQzn9E+k89Q9YoSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uskr1FHLoSO7g/PEzdsEz/fmpy4PvxbO4VwQxWX7kIY=;
+ b=fqpK5hpADegBmOXeIqg4GxCzIakC+ZXfen7OcSTfX/iMAtpqDIewAxZ+YyX6NPdEjfQv/mABUOiwhlwGNvrM81mYi9dDGAKNnYTtDqtrfEwDnfS0iYNiz8IRIApw8S3MVLG1n2hVV89x+S2LZAkYsBkrS+OaQC54Bw1QFwn+631l+Rel5eepnYwm3sLhFCX6Zs0Xu5jYFXEynzJDG3mRt3Kjlx9WGp4Li5R+umKm6l/8TUfAhSykOdF61ub9HDFaRij4WZamXwiAgwPUiXjVcSeAB7wP8IXIOFbl2QRrVTiDwCw4/5N6mWY3whRVS64wvkzNWHyptZ2rdaJ2o1pu5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uskr1FHLoSO7g/PEzdsEz/fmpy4PvxbO4VwQxWX7kIY=;
+ b=H/hfJDvWGuLFfZjkwTrIaFTcTvRIvnUbKDEKCbTdlwwy6lfh6Nzl5g5pNlk5KllLgGsqll3FxtJ/kD9rlTYUN+HQBIbU0sC/2AUN6db5tuZ8ReVpc5u20G8ML+VGT5mKDLPXKGcgVf6L+T1L4OI23MSBbI8VIXOjSF/IfIF6wrSwGiocRFUAidltedZf11H5JPnvIycKQLjrDkcHMssBS6dnHCjdDMY7xeAQuDOY6f1lcxHvGTzeaaLhckjJNqMF6/7oNET51XF2WRUNM3LmG+boeG91z485VjweXs3zKzfsBlad3kVGZf/pdHYyNKZKeINdtdpFk2NjTGe8LguSLw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by DS0PR12MB9445.namprd12.prod.outlook.com (2603:10b6:8:1a1::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8769.26; Wed, 28 May
+ 2025 11:57:09 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%6]) with mapi id 15.20.8769.022; Wed, 28 May 2025
+ 11:57:09 +0000
+Date: Wed, 28 May 2025 08:57:08 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Joerg Roedel <jroedel@suse.de>,
+	Jerry Snitselaar <jsnitsel@redhat.com>, patches@lists.linux.dev,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH rc] iommu/amd: Fix geometry.aperture_end for V2 tables
+Message-ID: <20250528115708.GQ61950@nvidia.com>
+References: <0-v1-6925ece6b623+296-amdv2_geo_jgg@nvidia.com>
+ <d5a653df-9b43-4f13-8b1b-c3268c356592@amd.com>
+ <20250424140613.GR1648741@nvidia.com>
+ <8858d4d6-d360-4ef0-935c-bfd13ea54f42@amd.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8858d4d6-d360-4ef0-935c-bfd13ea54f42@amd.com>
+X-ClientProxiedBy: BL1PR13CA0344.namprd13.prod.outlook.com
+ (2603:10b6:208:2c6::19) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250528003118.214093-1-alexey.klimov@linaro.org>
-X-Authority-Analysis: v=2.4 cv=GIgIEvNK c=1 sm=1 tr=0 ts=6836cece cx=c_pps
- a=hnmNkyzTK/kJ09Xio7VxxA==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=dt9VzEwgFbYA:10 a=VwQbUJbxAAAA:8 a=KKAkSRfTAAAA:8 a=EUspDBNiAAAA:8
- a=8fDSzOnEAZO3B2cnlLcA:9 a=CjuIK1q_8ugA:10 a=PEH46H7Ffwr30OY-TuGO:22
- a=cvBusfyB2V15izCimMoJ:22
-X-Proofpoint-ORIG-GUID: rf1IfRguIxzewDW6rck0XMzniQYDJLTC
-X-Proofpoint-GUID: rf1IfRguIxzewDW6rck0XMzniQYDJLTC
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNTI4MDA3NiBTYWx0ZWRfXwrC5k2jE7HqP
- qKmZc0Rp39Ki39gydm4OgCqxNEN5ddmTcpsaS8ry1jXHSH2VgsV+/7r0jGztTeYWmRX4P2kywJU
- t+DTzc3nzzRuTsB5gLgduk+ptexEG5j+498SBTDAn9yVDb7gDmP1EjQtzvM4Y2e5pvLKEqYkA0a
- KXiawL1G2vKkzplngwXVUrnbrIshV0sKY4U0fPBbuIDhE4vnlcKfYiPmue5DivQNKrbjKtbMnea
- 7xbZCSK9NnLKoBHe3BdMonDopP4fmMgT0tQvZFeWg9uFhvpnjPwPEmT4Yxzj63frf8dmKe+jjqK
- +3JokmpJcGS4ag900rny/WMzYA6oLgNu38Z1bw3WLzYSXLUOO1rH9niACH42+1o8uBrkDV8X4Uz
- WFZgJ4se7AmgbUdnoiIAvDvUAOn0p0895ms9Jn3ULKKKhtriTKv8IJ0gITF8d5Qf2hC9DBwv
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
- definitions=2025-05-28_04,2025-05-27_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 malwarescore=0 bulkscore=0 clxscore=1015 lowpriorityscore=0
- adultscore=0 priorityscore=1501 mlxscore=0 phishscore=0 spamscore=0
- suspectscore=0 mlxlogscore=999 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505160000
- definitions=main-2505280076
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|DS0PR12MB9445:EE_
+X-MS-Office365-Filtering-Correlation-Id: 044eaab0-61ac-45b4-7c85-08dd9ddec632
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?HqAkNmftl9fhuFp9+cM3IQQ0reYFLqJz6ZkmYA6YtaY7gb44i2XKPMfS/2IU?=
+ =?us-ascii?Q?peP+NtUkwx4eazgG+Qdi31WTjwJ5rYno7AvB6eDjg9d6SogrryyvWr9BJkVE?=
+ =?us-ascii?Q?/T6GcsSBpMb8pMTtXN/lWGuJrGRFo1gX38kqZl/ZfbxnwgBZNCD3//7oGMcY?=
+ =?us-ascii?Q?Cph8CYr4pKPECUfAJhVrJEze/S8ZFL2oEg9UFeuLK7anOs72znWaxqk+t5rg?=
+ =?us-ascii?Q?JVQ5s8DCT/b+L/8/E11MdvoC6RwGBjgbM171jTa7qp98O+bpBsqyuao5XE3N?=
+ =?us-ascii?Q?do0xmeocqX7ejVMaFmLpmngv+x0J7im3MgL4h/EPQL6VkQw5ytDQfdOb5k+7?=
+ =?us-ascii?Q?SciRVfq0SczvbVXhUyQhkinyU7bdTjeEkf6HxHOzHpyAsrcjfKIvHxfjcIVM?=
+ =?us-ascii?Q?3ZNQrqJ10v8S1iBjLJk+68aHkYm+p926MFs+FUae/rdrjALC5JTalyLVN10z?=
+ =?us-ascii?Q?HXPLvwMeVBXUU851Pzq/htMX+YL4IvRq5N3et791ddhGi+kQN6t+a+8VEIGa?=
+ =?us-ascii?Q?X+rvCPAQzYtnNgSzDiXUU/nwyl3sm7O+zlALfQ/pTlBBffCIcsx2jRiEg1XC?=
+ =?us-ascii?Q?HniT7gUie4xP/Ousa4BLBoS5qt+JLjJrPzW/Jg5dPIwB7VzgtzG78DxPuiSR?=
+ =?us-ascii?Q?djtd2I6zx79j6s+NmH3OKigWLfW0RwRvMr/bSEhZKeN0rSJIfTI4M19k2hAZ?=
+ =?us-ascii?Q?I3KzfPYxcJ6RudPMyoKV3gb9PhGwGUjPd54z1GDAfXWNrOWloexKiBbr/IM/?=
+ =?us-ascii?Q?6Gp/pAjpg5XELt/a1pN1nWIfYNe1IEUPF36kxEmiWGXgMMnNwMMBJA3msALE?=
+ =?us-ascii?Q?NPuL9mM8f1trDorh1iqQrz8qvjm+HZz02ZNZagwCqObMwGhRI5p9i/of9HrE?=
+ =?us-ascii?Q?GfO/dmP5AWgmA/NzMyZaRuDMcVlBtotQEVxTnvjiCQf/lhL+zvOFecOlIoCP?=
+ =?us-ascii?Q?3gCSrVGB1jN1KNertdUdzzTpFs/0bvCii8vI4dKjv25CS87hC2Ok+S6dBnlZ?=
+ =?us-ascii?Q?vszmECo3F0xJgaqaAMgutfPj48NR8Q7OmxBZliyxWYFvpuZAY8nKkXkwK1+J?=
+ =?us-ascii?Q?6Ugt9RJ9zfT1Y7Vxoej0idfBBWqNDXG5D8RSxaGHwJ/11MyNVyHT8fKlrcMz?=
+ =?us-ascii?Q?OLwu9eiUjTvqcCPUDfLn1y1kcznA/1zLOXQ/ridjm/pMNRx2yIn05xGNHXhz?=
+ =?us-ascii?Q?PButFhA7cz5SpncCe3RXlnhgQBmf4/xTtAKxa1fhzpRDKUxVNeupX8pVJcyA?=
+ =?us-ascii?Q?O/QFDtCBybZFP2srbr2evKRZo7JpL2dE8DgCTtMDxVsbfaFyp+6I7y94dNev?=
+ =?us-ascii?Q?GmiczuLjMWLQE7JKHFCr+7daYdqquK1rFwVPpyEdiEhDQ50xBnBmtoB8GVZe?=
+ =?us-ascii?Q?zShTE1Xjn4Tj1aDeABXQVpP5HMseD8y22cEjp536nGC1qpL7ybOr7vsTmxbh?=
+ =?us-ascii?Q?sDCVUurStus=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?KU8dXohnTq75zux2nGCB0Gjv/mbN2q7ekdirxc/OvywYFVTanGVoP5kphtjA?=
+ =?us-ascii?Q?pCle/DaZjY1aaMg3i3adKpdWbt/mxYpUPG1F++uvbSum7GEB7PkjncDP4yOk?=
+ =?us-ascii?Q?lb9+RgWwCR4mL53rAhOHBs+ggU1PdLVoHOOvxg1SEFEsZaxrRKYWzMrl248r?=
+ =?us-ascii?Q?QdpCL2Qv6Qdb2LQDifHHxWQbrWSiHsgv3+RraqBMizPe0BaDBLTmlLc0p5Co?=
+ =?us-ascii?Q?UX35rPdMYaTBnyCCwWy+K6ULoR/rFsry42WbZ0YpFk5BQ7sFGhfSKz9M7wvK?=
+ =?us-ascii?Q?urIP/hGDVto+VH6PMq9hEbdso4hRFBFYyVXxVNA5f3LgvmsXSl0CP0nRbSeu?=
+ =?us-ascii?Q?f/qbLdXeLG7GpXblLgLa82Yx0/3MtId6mk8TGvbUWmJZLnP+h1knKXC1DE0v?=
+ =?us-ascii?Q?zcQY/gtGsn5dyOFXra0k+I13v++6uB/2DcqnBYWApAGsosRoTCg7Dd7tAYNr?=
+ =?us-ascii?Q?sXLKe0KcGw0YgribOWKx4Tq6PudCqq6mQQs275pPKiqZ834R68OhxMVug9m0?=
+ =?us-ascii?Q?MWBZ+v0KPl0LeA0N4MLtBFmwpbC4RfV+g67ZT0evHbFzGMOi6xkvdBYj01K7?=
+ =?us-ascii?Q?EcDM1rWlSrE8t1kmowjwkVz7i3cEEiKkCb0II9bUOiymtCRXG6plJROJq9ld?=
+ =?us-ascii?Q?zkPx+K1CCP9MWB9GjYLx4leXU4hPE6VtVSo3HL6+zrhqjzga9c/r8xBKFj+r?=
+ =?us-ascii?Q?0KQznSTMCkhRtIwqYrSxNBKVAmFZsINq+0xjjiTO87RtfpsL2bFpcN4dksVj?=
+ =?us-ascii?Q?CA+5HuPOF88sywEv7U2ZqANovvib7x8C/FxeiWQpILexvPozZfZuh8rSKw76?=
+ =?us-ascii?Q?PR53G4WsIGB5w8WfMzsWWEwgabwhOZb+WXvfsmXlhYYKSv6lGCLybGSSpprA?=
+ =?us-ascii?Q?qyApjJIZpODR/nFZgF314C9V9njmm051pw4EZHG9tk7AOB9mmZYnjSgeDAOP?=
+ =?us-ascii?Q?/K3I5EGznZiEVBYvhriTH0LlfH1Lx05gqHDa7KsFXl6PG6fCK1+gXBHMloSE?=
+ =?us-ascii?Q?YDm/3D+ZMmN7YOwUxwqF+nmSGORC2V5WErYHPXdXFqQpr0BUlHVZNodhY7qG?=
+ =?us-ascii?Q?h5gqh9rz1Q+DjAPAi7dYEYoIRBhytE4IozTxW+HulzerVMQD4RydQ36uax1j?=
+ =?us-ascii?Q?JwRCS3buqziDPpUkPjsjiejwJGDPEPpNpM0YBmj9Xtqpup1HgLrDvQWkHfqE?=
+ =?us-ascii?Q?vj5eyCPkR5XjiZ2YPv/cKVD52AJwD70BLjC8z7cr/ZilFEFlRTvg2xulIk2J?=
+ =?us-ascii?Q?m5dRGYdsxQqWVTyEDPCFBQrYfOeBvROnx/tGBXe3ONHb+YpF2fNHp9+h6Q2A?=
+ =?us-ascii?Q?npj3B8T5L3l7WH+Wd7pco//RUqgSgLuofY2C4AKR41eWRK7dYxLebe0igzXk?=
+ =?us-ascii?Q?06vmdsEfGL/Fl5SpH+canMIklnLOQxGcC/zTuxzy8IsJu/L5lH5mcRumhTT0?=
+ =?us-ascii?Q?jQvdvkou9lbXjAndFHUdJe2JlIjC5jUEcjw9Ia49zRyqBVWfxuU2P89UXb7r?=
+ =?us-ascii?Q?ZyIY0ve6wV2xXYcTgsVWsQ9DhxCiFey+v3vfUNV77YgxKuarehGiW1BoR+04?=
+ =?us-ascii?Q?kXDUmNl3K6Q3yaOyXqKzzIP6TBTS8oHmWvFLhvgt?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 044eaab0-61ac-45b4-7c85-08dd9ddec632
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2025 11:57:09.2242
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7qEQ1ugzM04eLruPB/g4H3VCpEvifHNaUY5X2whzFMnYJUtw46eS83FYQth91ECQ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB9445
 
-On Wed, May 28, 2025 at 01:31:18AM +0100, Alexey Klimov wrote:
-> Add the SM6115 MDSS compatible to clients compatible list, as it also
-> needs that workaround.
-> Without this workaround, for example, QRB4210 RB2 which is based on
-> SM4250/SM6115 generates a lot of smmu unhandled context faults during
-> boot:
+On Wed, May 28, 2025 at 02:17:56PM +0530, Vasant Hegde wrote:
+> > Yes, it should use bit 56 for address translation, that is part of the
+> > page table architecture.
 > 
-> arm_smmu_context_fault: 116854 callbacks suppressed
-> arm-smmu c600000.iommu: Unhandled context fault: fsr=0x402,
-> iova=0x5c0ec600, fsynr=0x320021, cbfrsynra=0x420, cb=5
-> arm-smmu c600000.iommu: FSR    = 00000402 [Format=2 TF], SID=0x420
-> arm-smmu c600000.iommu: FSYNR0 = 00320021 [S1CBNDX=50 PNU PLVL=1]
-> arm-smmu c600000.iommu: Unhandled context fault: fsr=0x402,
-> iova=0x5c0d7800, fsynr=0x320021, cbfrsynra=0x420, cb=5
-> arm-smmu c600000.iommu: FSR    = 00000402 [Format=2 TF], SID=0x420
+> I have checked with HW architects.
 > 
-> and also leads to failed initialisation of lontium lt9611uxc driver
-> and gpu afterwards:
+> In DMA API mode (PASID=0), IOMMU HW does not use canonical
+> addresses. 
 
-Nit: there is nothing failing the lt9611uxc on its own. binding all MDSS
-components (triggered by lt9611uxc attaching to the DSI bus) produces
-the failure.
+Do you really mean PASID=0 but still using a AMDv2 table with the
+GCR3? That seems wild that only PASID0 would break the normal rules
+for x86 page tables...
 
-> 
->  ------------[ cut here ]------------
->  !aspace
->  WARNING: CPU: 6 PID: 324 at drivers/gpu/drm/msm/msm_gem_vma.c:130 msm_gem_vma_init+0x150/0x18c [msm]
->  Modules linked in: ... (long list of modules)
->  CPU: 6 UID: 0 PID: 324 Comm: (udev-worker) Not tainted 6.15.0-03037-gaacc73ceeb8b #4 PREEMPT
->  Hardware name: Qualcomm Technologies, Inc. QRB4210 RB2 (DT)
->  pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
->  pc : msm_gem_vma_init+0x150/0x18c [msm]
->  lr : msm_gem_vma_init+0x150/0x18c [msm]
->  sp : ffff80008144b280
->   		...
->  Call trace:
->   msm_gem_vma_init+0x150/0x18c [msm] (P)
->   get_vma_locked+0xc0/0x194 [msm]
->   msm_gem_get_and_pin_iova_range+0x4c/0xdc [msm]
->   msm_gem_kernel_new+0x48/0x160 [msm]
->   msm_gpu_init+0x34c/0x53c [msm]
->   adreno_gpu_init+0x1b0/0x2d8 [msm]
->   a6xx_gpu_init+0x1e8/0x9e0 [msm]
->   adreno_bind+0x2b8/0x348 [msm]
->   component_bind_all+0x100/0x230
->   msm_drm_bind+0x13c/0x3d0 [msm]
->   try_to_bring_up_aggregate_device+0x164/0x1d0
->   __component_add+0xa4/0x174
->   component_add+0x14/0x20
->   dsi_dev_attach+0x20/0x34 [msm]
->   dsi_host_attach+0x58/0x98 [msm]
->   devm_mipi_dsi_attach+0x34/0x90
->   lt9611uxc_attach_dsi.isra.0+0x94/0x124 [lontium_lt9611uxc]
->   lt9611uxc_probe+0x540/0x5fc [lontium_lt9611uxc]
->   i2c_device_probe+0x148/0x2a8
->   really_probe+0xbc/0x2c0
->   __driver_probe_device+0x78/0x120
->   driver_probe_device+0x3c/0x154
->   __driver_attach+0x90/0x1a0
->   bus_for_each_dev+0x68/0xb8
->   driver_attach+0x24/0x30
->   bus_add_driver+0xe4/0x208
->   driver_register+0x68/0x124
->   i2c_register_driver+0x48/0xcc
->   lt9611uxc_driver_init+0x20/0x1000 [lontium_lt9611uxc]
->   do_one_initcall+0x60/0x1d4
->   do_init_module+0x54/0x1fc
->   load_module+0x1748/0x1c8c
->   init_module_from_file+0x74/0xa0
->   __arm64_sys_finit_module+0x130/0x2f8
->   invoke_syscall+0x48/0x104
->   el0_svc_common.constprop.0+0xc0/0xe0
->   do_el0_svc+0x1c/0x28
->   el0_svc+0x2c/0x80
->   el0t_64_sync_handler+0x10c/0x138
->   el0t_64_sync+0x198/0x19c
->  ---[ end trace 0000000000000000 ]---
->  msm_dpu 5e01000.display-controller: [drm:msm_gpu_init [msm]] *ERROR* could not allocate memptrs: -22
->  msm_dpu 5e01000.display-controller: failed to load adreno gpu
->  platform a400000.remoteproc:glink-edge:apr:service@7:dais: Adding to iommu group 19
->  msm_dpu 5e01000.display-controller: failed to bind 5900000.gpu (ops a3xx_ops [msm]): -22
->  msm_dpu 5e01000.display-controller: adev bind failed: -22
->  lt9611uxc 0-002b: failed to attach dsi to host
->  lt9611uxc 0-002b: probe with driver lt9611uxc failed with error -22
-> 
-> Suggested-by: Bjorn Andersson <andersson@kernel.org>
-> Cc: <stable@vger.kernel.org>
-> Signed-off-by: Alexey Klimov <alexey.klimov@linaro.org>
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
+We already know AMDv1 is different and that is documented, and it only
+works on PASID0.
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+> It's safe to use bit 56 (5 level page table) -OR- bit 47 (4 level
+> page table) for address translation (we don't need sign
+> extension). 
 
-I'd also propose:
+But does it validate that the upper bits are zero or does it ignore
+them? As I mentioned previously ignoring them breaks ATS.
 
-Fixes: 3581b7062cec ("drm/msm/disp/dpu1: add support for display on SM6115")
+> However when PASID is *enabled* (PASID != 0), then IOMMU
+> expects canonical address bit[63-57] should match bit[56]. Otherwise
+> it will abort the request.
 
-This way this is going to be fixed for all platforms using display on
-SM6115.
+Okay that's great at least.
 
--- 
-With best wishes
-Dmitry
+But this is a pain.. Since iommu_domains don't act differently
+depending on what PASID they are linked to we have to use the least
+common denominator, meaning we should disable use of the top bit
+entirely, and disable use of sign extension.
+
+> I have requested spec writer to add details in the spec.
+
+Yes please, this special behavior for PASID0 is very shocking.
+
+Jason
