@@ -1,85 +1,93 @@
-Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B0FE15D1
-	for <iommu@lists.linux.dev>; Thu, 29 May 2025 00:38:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1B422F37
+	for <iommu@lists.linux.dev>; Thu, 29 May 2025 00:45:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748479110; cv=none; b=FUPQOvSzmUQJ/hHFn4aB/e2X8cfP3Ij0DVg+DbDIoel1WO3c1MqIIHEERJInvVGV6iI4HOgGH1wprgxPcJOUT0kh+jLTF8tGBlCF38Tmshp89Q7mIu4hOS2FdSaUAZQqQV//XVkjmVpq3G4HSNXhzsWTLLsXmtP/Iu9qKAFhtR0=
+	t=1748479554; cv=none; b=udtSOGvkbsK8RkVd4P88yJOmij2EsDp8Cep+DY4RYH5uaZg2LvbN8tQ444ZyhqaId/ZmMQSSo5JaE7vacYtEEbHg30d35o6p/8Q9UVlzFlrlsV1Ln5sz5E4QkMPVxRP4wIrU+BDn7KN9VlayvYGS3k5GZAD3mC1iTHjCx5iqBfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748479110; c=relaxed/simple;
-	bh=ze/vE+pLOw8LtKqumJmv32tL8OFv0ndyxShmm8Q5lTg=;
+	s=arc-20240116; t=1748479554; c=relaxed/simple;
+	bh=RBRQJtrU1o/5GEIK3NL3AuJ9HmHI6MTEnzGsJ8BgC+8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MRhE7yFJgVmnCUlbd5eEKaU/F54WDOElSmWI/TiGrZo4qOb6+/WgzlUk7Mur7mo+afiKXBmaVxHx8UodvaqpoLLFxKUqXiXU4J7JTMrTuXQrkbbekwyAYIU8vdSdwf+As66atnvb+FwrTh733WFpgVFf1OVJ6x4HyRDEShhz234=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=pH+kIo9J; arc=none smtp.client-ip=209.85.219.48
+	 Content-Type:Content-Disposition:In-Reply-To; b=NrLfFNQZbf+I/pVzPSuFvnxnlPU7EwUcZMwXof7+5cNZaxKqgGDqdZ6MHCd4izWceqTbmSYbNNfKZyTp9piLa74fuLa3Ac4LkXMpuEPd8EghUTw+lK8QfTSeHAmbmEMu56P3rBaCzweTZjyUi345cy5g6X1+A0Jxf+DaGsHH5rU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=NKAQB+vp; arc=none smtp.client-ip=209.85.160.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="pH+kIo9J"
-Received: by mail-qv1-f48.google.com with SMTP id 6a1803df08f44-6faa9e72827so7326916d6.2
-        for <iommu@lists.linux.dev>; Wed, 28 May 2025 17:38:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="NKAQB+vp"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-47692b9d059so5181951cf.3
+        for <iommu@lists.linux.dev>; Wed, 28 May 2025 17:45:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1748479108; x=1749083908; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1748479551; x=1749084351; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sVQkha02xf9SMmtYT1jV9HNI/f56xB5GG/vabKlGDf4=;
-        b=pH+kIo9JCIM989xAeZgCTlHvTWVlV3FIi+EyRdOk30GYUcTtC1b1WxqmG3iktVw8u9
-         mfKFJSEB54m8Y63LxACD4PssiWCsp3ZvRgIhUhLNvLLb0tF9xiM4H0Tn5ClQAZFniTsO
-         0Vdhx1JN5hg6lWYCdTRRs4tMsYSwX7zYSQXUrDjiMeDR2bIrJwO0x5m7N3GCfSJA/DFs
-         01om6YaSlJL+NBd1ZELL0nLVQFclw+Cg4YSWVfnChg7ISGG1Pg4SnfaeEu+cnQxRm1As
-         OSX9Jp8i2WzdNcSCCD1f8VAs+pN4BJltOv0zAKuogPGlJMKVMMyJq7SKnaPnYn37+uv5
-         y8cg==
+        bh=u3lirCGQK/pK/dwoYb1WbV7HzR0WtFCYVJUxyqG54gc=;
+        b=NKAQB+vppv8DQ87KtdYR+SEIKevDU0krs2pY0lznstJfbDxMC+fzhK6VPeoqIWwPWq
+         Nd31MT+cquwnJNBL+U6ZMiFzFBdJzntvzhrNByVdB4FBDswPL6PSmR/fKfi6VeVPmD/r
+         Sy02AWvhNduY/0E3VA1RwlkuoRBrPvAYsAISDRVx6/fSYEptGM0bo0v44KCACTDBvKyK
+         oEbWYgoZkhpIn+mwqCpxXxGE2uAyNFFTQS8HK9ECe4i5JdO9czVLnQ2gML5qtaXgmK2B
+         ZvTiAY4x2vkVRc95s4HcowVg72ahaFVgfgKY2UNNOlYlSDrECsO+jaxuq4N158Bsr6XX
+         +Q7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1748479108; x=1749083908;
+        d=1e100.net; s=20230601; t=1748479551; x=1749084351;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sVQkha02xf9SMmtYT1jV9HNI/f56xB5GG/vabKlGDf4=;
-        b=K3DG4/3L+ylsQQ5ym0mdM2kqjAfEoze5FjKefM8+3YaKkQG8LUZz9vs6xDFWcWb7Ic
-         2Q+3jX1j2+I252Chg0J74r3DCaghcRnTQUs5xWY8BkQ2ls5ERu6xa3RwGkBRo0r3/PLE
-         lhW5NOKx/H1ym5yiZFcm5ll56UkYaW4cG//DxsQmjd8RyRK4hMw4/eR9cXS/u7h3sXXS
-         NkF7GYYRnNUpqfBR6SXyjOP+zYbMYkezMLfMA0RgtcVu/8DpyRjD2+hOhb0fvFFLLKV6
-         kzazU8sWCBNn6l7LcQRfH2yteqPMdXy+gEldR3dqcnGS1sRlY7EteKo6CB9GEE+7dreA
-         F19Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVWmuyCWFlISYyXQ0jgJDZ3tasLZiMiWb6BPvYjFcWkPfPbca3TEh+a6okOfICtfMXj7r+OtQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyr3h31GD0x1Zr+CgtC0om7GcKcxCi/TUd5TNPnSj2tAKwOHFG7
-	wx4a7zHV4e7U7e3fnshPRaLZUgVcF8YGi4shSFE6yTtkkDxV2ydGYnVYZuAUpS0agV0=
-X-Gm-Gg: ASbGncsKY3zjzAylTUGditQA0aV3EmAVD78b4Kl6ftYXiM4mAjM4T5MA5rXH+py+YHo
-	v8MMBhA1d2Y7LtGAsLSPKDbkmkNFnRU6d9JfHMCBAzW/oQwXlF4QURcn24E0ORt5coi6UwG6JX3
-	xAFi/Wv+HRUr7UibCG4/lRGO/B0p1Dp6OPiH/EmlDPZS+AIOXi+VkMASNDhiQ8CL1wJcxLnGHhX
-	efHrHBDKQfk6kqgt2adDEYA2XUdQ+mg821+/ryvuH1TA+gjM9r6+at6XndkW0VeP6Cf96EdFCAv
-	AhtWM0Wq1tLIooX6xcyWEuegZ9+dY5Yq1RwuD9VQ8K1OEDxWbDfRHyzey0gjpwLFt1smj8hPbOo
-	EUEVSYpoyUCzLy3Jg1zonk8AR3cM=
-X-Google-Smtp-Source: AGHT+IGrrQU6seLehXMngMNgswY4d6WsTh2X0qCSzttXJecRsw5bF1myMzmOuM/dLs2M8hI+8CLE1g==
-X-Received: by 2002:a05:6214:234e:b0:6fa:c85a:20c0 with SMTP id 6a1803df08f44-6fac85a2328mr4035616d6.28.1748479107982;
-        Wed, 28 May 2025 17:38:27 -0700 (PDT)
+        bh=u3lirCGQK/pK/dwoYb1WbV7HzR0WtFCYVJUxyqG54gc=;
+        b=tJODycgaDCb1Fw+DCylHP6I1qAckmnTWpXE416z9kiNt8IxNU93+vfaivVYBjzTFV/
+         ChSofxnrAYeUzXh2LBhKcpiqHewIxFyvTKVweJ2qaAeretecOwu01kAvThs2wrjXKkkS
+         SoBoUEpuRTM4jIa3XdUiRFCo63q21i4PWhd9lTrvPsei5r4Jul6Isj9PkcSEHkYt4Q/Z
+         H52OTY5ltQLr8lvr9BLdfqnJcNiYvTIt/nT1qDYsH7KiinQuIZq7YKbZHTXafb5py0sT
+         MTiuVEEDMVuA6Et77UH5O+8moMbdB59ZzsRKewHV6GaHduwdRn4LyJNBGsrnVoCXkUVX
+         p42w==
+X-Forwarded-Encrypted: i=1; AJvYcCUJtS344KjdK44qOHIvwX+gJusFItJJZdAswNzaymFz52Lyd2S5h1jqiUASA1XuJ1xlwCuFpg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxWhq3QcyA80WlfPqgCg2t2IMCreZCuKEDN3GWcrzQXhPjwLrVm
+	b9BfaSGOhVJH1rkWE3SDVWPbV8eIwfWKMIBmC56UosWdfDKrPi+UO+mj0uST3E6s9dU=
+X-Gm-Gg: ASbGncumA1wvTUNioyIPMwfzTkZbbbJcLl65gkB5xTo7QBWvadGn6yWY8oT5saofyxB
+	UTGPAhUaxe9EBM4ugOdK6oelrhILQ8abaXqSec4/ynGW7b/PveDiJgpYzpjabxP/7kADp9NaigZ
+	cbBP+XynrRpzBrQn7mzR1lBQNzQnnEzsFvzoRv5TMxAL60y524zINFooWokBmKd1FjFfwl3Fm8w
+	LWCkMo3TtMW0GJ9nKryEITr7JRWcCpdHnsMwgdXrXcz9UANRt3ovk07rm0YjzpKMYH9Mw6vKghh
+	MObTMqOVowTBlKsvGaSeWKzIwOLeX60pPLy1TZtadxteHdlKj15SnX+rb3ToAH3AbC9z29ftO8o
+	CYZjkZ7yxTxaaLFxHWKdbTrTXj5M=
+X-Google-Smtp-Source: AGHT+IHnqnRTolKjMO7lt2c7vFTmLmTqjyLGW4orbu4JZw/Ke3zfhB9aPh390EN0T2RwX/GWqU+5fg==
+X-Received: by 2002:a05:622a:6107:b0:494:7e11:fe59 with SMTP id d75a77b69052e-49f46d32fdbmr301749631cf.25.1748479551637;
+        Wed, 28 May 2025 17:45:51 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6fac6d337aesm2521866d6.8.2025.05.28.17.38.27
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4a435a633c8sm1683561cf.70.2025.05.28.17.45.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 May 2025 17:38:27 -0700 (PDT)
+        Wed, 28 May 2025 17:45:51 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1uKRHu-00000000qmU-32Wy;
-	Wed, 28 May 2025 21:38:26 -0300
-Date: Wed, 28 May 2025 21:38:26 -0300
+	id 1uKRP4-00000000qoo-1zjw;
+	Wed, 28 May 2025 21:45:50 -0300
+Date: Wed, 28 May 2025 21:45:50 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: Shyam Saini <shyamsaini@linux.microsoft.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-	virtualization@lists.linux.dev, will@kernel.org,
-	eric.auger@redhat.com, code@tyhicks.com,
-	eahariha@linux.microsoft.com, vijayb@linux.microsoft.com
-Subject: Re: [PATCH v2 0/3] arm-smmu: select suitable IOVA
-Message-ID: <20250529003826.GA192517@ziepe.ca>
-References: <20250410225030.2528385-1-shyamsaini@linux.microsoft.com>
- <20250410230008.GA6905@ziepe.ca>
- <67fff12d.650a0220.208c7c.d69dSMTPIN_ADDED_BROKEN@mx.google.com>
- <20250416181759.GF493866@ziepe.ca>
- <20250520224224.GA16365@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
- <20250525190703.GD12328@ziepe.ca>
- <20250527205428.GA14019@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
- <20250528000425.GC146260@ziepe.ca>
- <68379171.170a0220.191ee0.8d6bSMTPIN_ADDED_BROKEN@mx.google.com>
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Cc: acourbot@nvidia.com, dakr@kernel.org, lyude@redhat.com,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	open list <linux-kernel@vger.kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
+	rust-for-linux@vger.kernel.org,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	Petr Tesarik <petr@tesarici.cz>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Sui Jingfeng <sui.jingfeng@linux.dev>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH 1/2] rust: add initial scatterlist bindings
+Message-ID: <20250529004550.GB192517@ziepe.ca>
+References: <20250528221525.1705117-1-abdiel.janulgue@gmail.com>
+ <20250528221525.1705117-2-abdiel.janulgue@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,35 +96,36 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <68379171.170a0220.191ee0.8d6bSMTPIN_ADDED_BROKEN@mx.google.com>
+In-Reply-To: <20250528221525.1705117-2-abdiel.janulgue@gmail.com>
 
-On Wed, May 28, 2025 at 03:42:55PM -0700, Jacob Pan wrote:
+On Thu, May 29, 2025 at 01:14:05AM +0300, Abdiel Janulgue wrote:
+> +impl SGEntry<Unmapped> {
+> +    /// Set this entry to point at a given page.
+> +    pub fn set_page(&mut self, page: &Page, length: u32, offset: u32) {
+> +        let c: *mut bindings::scatterlist = self.0.get();
+> +        // SAFETY: according to the `SGEntry` invariant, the scatterlist pointer is valid.
+> +        // `Page` invariant also ensures the pointer is valid.
+> +        unsafe { bindings::sg_set_page(c, page.as_ptr(), length, offset) };
+> +    }
+> +}
 
-> > All IOVA that the platform cannot DMA from should be reported in the
-> > reserved_regions file as "reserved". You must make your platform
-> > achieve this.
-> > 
-> Just to double confirm, the expected reserved region should be marked as
-> "direct" instead of "msi", right?
+Wrong safety statement. sg_set_page captures the page.as_ptr() inside
+the C datastructure so the caller must ensure it holds a reference on
+the page while it is contained within the scatterlist.
 
-I don't know, it depends what is wrong with this platform.
+Which this API doesn't force to happen.
 
-"msi" is the SW_MSI region created by the iommu driver, ignore it.
+Most likely for this to work for rust you have to take a page
+reference here and ensure the page reference is put back during sg
+destruction. A typical normal pattern would 'move' the reference from
+the caller into the scatterlist.
 
-"reserved" should be from the DT and it says "my platform is broken,
-this IOVA doesn't work, don't use it"
+I also think set_page should not be exposed to rust at all, it should
+probably only build scatterlists using the append APIs inside scatter
+tables where the entire model is much cleaner.
 
-"direct" is something entirely different, it also should come from the
-DT and it says "must be mapped 1:1 (iova:physical) at all times" which
-usually means some FW or other component is controlling the device and
-doing DMA using that physical memory space which is unknown to the OS.
-
-Both cases would interfere with the MSI so if the DT/ACPI declares
-such regions that overlap with the SW_MSI address then Linux should
-select another SW_MSI address.
-
-From a linux perspective "reserved" just ignores those IOVA spaces
-while "direct" sets up 1:1 translations there. So FW using direct
-incorrectly could become a security problem.
+Because this is also wrong in the sense that it destroys whatever
+sg_page was already there, which may have been holding a page refcount
+and thus it would leak it.
 
 Jason
