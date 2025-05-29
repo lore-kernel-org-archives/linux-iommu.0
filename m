@@ -1,99 +1,185 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9B4A22CBC1
-	for <iommu@lists.linux.dev>; Thu, 29 May 2025 15:53:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1DE7C218EBA;
+	Thu, 29 May 2025 18:22:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748534014; cv=none; b=qxk2rf9uWNdeXSca1i/e8sfJnl6xlAbVrHRxoAN0l+Hqz1QtxP+KnW3DlZQR1Q7CzxzIsf18a3n4RuEM75KLkTqHe/kzylDLjOi4m6QnAgo6yApurTwTmieuExSHgm9BTe6hfsqSoI6gvQbaKLCCgYodhoDro+tegyZtv4eIA0g=
+	t=1748542941; cv=none; b=Sv1Om1Bvpy99unPjnRRtbOuGAJX2GaryfJn+eVPf5AgAMxAaKFjYqP/Qcrr5hG5Y5K560mbl61grj3zw/3ndHk2Hdh+CDAQv+o4HQfqtwzF7EGjZaX2SK/DVROtk2WLM2neJvtp3ha6mpF6KJrntwruaSIl5AVu3Wco2/1NompQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748534014; c=relaxed/simple;
-	bh=gpaKs8nDRKUL3IKkyljnJJf6SvliLquwp0sCaRjiIX0=;
+	s=arc-20240116; t=1748542941; c=relaxed/simple;
+	bh=IxRUv0yRFXS7zWyuEDMfUlf6Imbrrv1oX3cFtlL/1wk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dZvIKns1llxYrCvX3/0gXOCJUsx5x4Wi/OqiGRKnqxR/Nw4M64o8RQji29VihUcxXPBqUknu4/6dkI+mhtDah/R9bVxrDQ+FEFxumKM7vF2ZFNwBkIiDvMcQUmWhXmO2/gHiHQwbXXhSjZ5f/8ZB58ViKqM5GwoZge9vMvT+vnA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=JEVtj9sJ; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=PTwvEK69sIelHtmLI1P8Ff2U+16CoTuYFcZP7O1Bhqs8uzUl0ioajHk7vT75vIXGQbsvTvW7Q1QKXIALTPCZQiTrGAjk4wutWjBryoLvJwqk5QlDId/R03jSwjPQ1h6Q4zJQDsg+lbeQ1pV0Au4gTLuKBJKTd+pkYKXb+bJA9YM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=WRwwteRk; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="JEVtj9sJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1748534005;
-	bh=gpaKs8nDRKUL3IKkyljnJJf6SvliLquwp0sCaRjiIX0=;
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="WRwwteRk"
+Received: by linux.microsoft.com (Postfix, from userid 1152)
+	id 8A59F2078632; Thu, 29 May 2025 11:22:19 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 8A59F2078632
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1748542939;
+	bh=YNUyfyg1HbaBDiYAUpaOAIe/tOlUxr3f8C7O9P4Zl4s=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JEVtj9sJaIntHKm0eT3W+hHGiFjw4FjMyaLlOju9jajYO4VeHMdi2Tjvg/lCgGXah
-	 UThWegoLWpeqmmvUYgaj0+4ZpiajwGziCtU+Ufppe166JLv128Ol8yj7norkXV0sDk
-	 nobDXMcUJhUvU/kecHYToukrJE2sjv4kggAYDA6Xy8HEVNXN3w6+URJMKtBmdLlwb4
-	 HtIz+vFgWt0xRC+Dw6OT6jQEBSZIVE/e64UNVroO1fRgEPfRkKJwpf7BLZwwxTsreN
-	 L2UUPx7hUJH+ewUXx/xNMA8S9hG5dkdeoovbhMVIG3Wab/34v4kMmWNoTsZYWe5Y/O
-	 hUHvBhg40+MIQ==
-Received: from notapiano (unknown [IPv6:2600:4041:5b1a:9400:99d:464c:62e0:2118])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: nfraprado)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 03B0B17E0415;
-	Thu, 29 May 2025 17:53:20 +0200 (CEST)
-Date: Thu, 29 May 2025 11:53:08 -0400
-From: =?utf-8?B?TsOtY29sYXMgRi4gUi4gQS4=?= Prado <nfraprado@collabora.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Julien Massot <julien.massot@collabora.com>, kernel@collabora.com,
-	Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>,
-	Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Hui Liu <hui.liu@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Tinghan Shen <tinghan.shen@mediatek.com>, linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v2 1/3] dt-bindings: mfd: mediatek: mt6397: Add
- #sound-dai-cells property
-Message-ID: <cee1e8bc-f4b0-49b9-a67b-2f54382c3d8e@notapiano>
-References: <20250514-mt8395-dtb-errors-v2-0-d67b9077c59a@collabora.com>
- <20250514-mt8395-dtb-errors-v2-1-d67b9077c59a@collabora.com>
- <20250522-independent-ginger-bullfrog-4552d1@kuoka>
+	b=WRwwteRkcy3o05WG0KDJfOEL2Sk4Q0gxIYKM00uEeHmjwhMdhh3RPW5hTfEXDrgeK
+	 D5FSvORQZBKOdYa1WdudMDFpbVX5ye5V4OFoSwcKLpkSB90tX/RplK4BzifQMiVk0z
+	 zaU1gr1yS/SiWZkwTBSbD5y5cmDQuSkEEGw2oZ4Q=
+Date: Thu, 29 May 2025 11:22:19 -0700
+From: Shyam Saini <shyamsaini@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Jacob Pan <jacob.pan@linux.microsoft.com>, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	virtualization@lists.linux.dev, will@kernel.org,
+	eric.auger@redhat.com, code@tyhicks.com,
+	eahariha@linux.microsoft.com, vijayb@linux.microsoft.com
+Subject: Re: [PATCH v2 0/3] arm-smmu: select suitable IOVA
+Message-ID: <20250529182219.GA20289@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+References: <20250410225030.2528385-1-shyamsaini@linux.microsoft.com>
+ <20250410230008.GA6905@ziepe.ca>
+ <67fff12d.650a0220.208c7c.d69dSMTPIN_ADDED_BROKEN@mx.google.com>
+ <20250416181759.GF493866@ziepe.ca>
+ <20250520224224.GA16365@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+ <20250525190703.GD12328@ziepe.ca>
+ <20250527205428.GA14019@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+ <20250528000425.GC146260@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250522-independent-ginger-bullfrog-4552d1@kuoka>
+In-Reply-To: <20250528000425.GC146260@ziepe.ca>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 
-On Thu, May 22, 2025 at 09:52:07AM +0200, Krzysztof Kozlowski wrote:
-> On Wed, May 14, 2025 at 10:19:56AM GMT, Julien Massot wrote:
-> > The 'mt6359.dtsi' file already uses the '#sound-dai-cells' property.
-> > Add the corresponding property to the binding to fix the following
-> > dtb-check error:
+On Tue, May 27, 2025 at 09:04:25PM -0300, Jason Gunthorpe wrote:
+> On Tue, May 27, 2025 at 01:54:28PM -0700, Shyam Saini wrote:
+> > > The above is the only place that creates a IOMMU_RESV_SW_MSI so it is
+> > > definately called and used, right? If not where does your
+> > > IOMMU_RESV_SW_MSI come from?
 > > 
-> > mediatek/mt8395-radxa-nio-12l.dtb: pmic: '#sound-dai-cells', 'mt6359rtc' do not match any of the regexes: 'pinctrl-[0-9]+'
-> > from schema $id: http://devicetree.org/schemas/mfd/mediatek,mt6397.yaml#
+> > code tracing and printks in that code path suggests iommu_dma_get_resv_regions()
+> > called by vfio-pci driver, 
 > 
-> If this is a random drive-by, would be fine, but if that's your platform
-> which you should know, then I expect this to be a real reason instead
-> something which can easily be rejected with: what if DTS is wrong?
+> Yes, I know it is, that is how it setups the SW_MSI.
 > 
-> I could not find the ASoC driver for that compatible and quick glance to
-> MFD shown me no usage of dai cells, so you need proper explanation here.
+> > > As above, I've asked a few times now if your resv_regions() is
+> > > correct, meaning there is a reserved range covering the address space
+> > > that doesn't have working translation. That means
+> > > iommu_get_resv_regions() returns such a range.
+> > 
+> > sorry about missing that, i see msi iova being reserved:
+> > 
+> > cat /sys/kernel/iommu_groups/*/reserved_regions
+> > 0x0000000008000000 0x00000000080fffff msi
+> > 0x0000000008000000 0x00000000080fffff msi
+> > 0x0000000008000000 0x00000000080fffff msi
+> > 0x0000000008000000 0x00000000080fffff msi
+> > [output trimmed]
 > 
-> Especially, that there is a subnode audio-codec, so adding dai cells to
-> the parent node feels just wrong. One is wrong - either subnode or
-> parent is a codec.
+> But this does not seem correct, you should have a "reserved" region
+> covering 0x8000000 as well because you say your platform cannot do DMA
+> to 0x8000000 and this is why you are doing all this.
+> 
+> All IOVA that the platform cannot DMA from should be reported in the
+> reserved_regions file as "reserved". You must make your platform
+> achieve this.
 
-The driver is sound/soc/codecs/mt6359.c, which defines 2 DAIs. It's currently
-probed by the MFD through the driver name, hence the parent MFD device is the
-one used to register the audio component.
+so should it be for all the iommu groups?
 
-The right fix would probably be to add the compatible both to the ASoC and the
-MFD drivers, and then move the dai-cells to the sound subnode in DT.
+                no_dma_mem {
+                       reg = <0x0 0x8000000 0x0 0x100000>;
+                        no-map;
+                };
+ 
+i think that's how we reserve memory in general, eg: ramoops
+but this doesn't show up in:
+  /sys/kernel/iommu_groups/*/reserved_regions
+
+ 
+> > Yes, i tried that,
+> > 
+> > This is how my dts node looked like
+> > reserved-memory {
+> >                faulty_iova: resv_faulty {
+> >                        iommu-addresses = <&pcieX 0x8000000 0x100000>;
+> >                };
+> >                ..
+> >                ..
+> > }
+> > 
+> > &pcieX {
+> >     memory-region = <&faulty_iova>;
+> > };
+> > 
+> > I see it working for the devices which are calling
+> > iommu_get_resv_regions(), eg if I specify faulty_iova for dma
+> > controller dts node then i see an additional entry in the related
+> > group
+> 
+> Exactly, it has to flow from the DT into the reserved_regions, that is
+> essential.
+ 
+> So what is the problem if you have figured out how to fix up
+> /sys/kernel/iommu_groups/Y/reserved_regions?
+
+sorry, i haven't yet
+ 
+> If you found some cases where you can't get /sys/../reserved_regions
+> to report the right things from the DT then that needs to be addressed
+> first before you think about fixing SW_MSI.
+> 
+> I very vaguely recall we have some gaps on OF where the DMA-API code
+> is understanding parts of the DT that don't get mapped into
+> reserved_regions and nobody has cared to fix it because it only
+> effects VFIO. You may have landed in the seat that has to fix it :)
+
+I think this is the case we are dealing with?
+
+> But I still don't have a clear sense of what your actual problem is as
+> you are show DT that seems reasonable and saying that
+> /sys/../reserved_regions is working..
+
+/sys/../reserved_regions is working for certain devices like dma controller
+but it doesn't work for pcie devices and its vfio-pcie driver calling
+iommu_get_resv_regions() but we don't have dts node for vfio.
+I have confirmed this about pcie on two different platforms, it seems to be
+OF DMA-API gap that you hinted above, happy to work on that :), it would be
+great if you can share any other reference discussions to that problem
+
+When i specify this for dma controller:
+
+		faulty_iova: resv_faulty {
+			iommu-addresses = <&dmaX 0x8000000 0x100000>;
+		};
+&dmaX {
+	memory-region = <&faulty_iova>;
+};
+
+I see following:
+$ cat /sys/kernel/iommu_groups/y/reserved_regions 
+0x0000000008000000 0x00000000080fffff reserved
+0x00000000a0000000 0x00000000a00fffff msi
+
+Clarifying the Issue with MSI and SMMU Faults on Our Platform:
+
+We are encountering SMMU faults when using our userspace tool/driver that
+relies on MSI. Specifically, the issue arises when the MSI_IOVA_BASE is set
+to the current default value of 0x08000000.
+
+The observed fault is as follows:
+
+arm-smmu 64000000.iommu: Unhandled context fault: fsr=0x402, iova=0x00000040,
+fsynr=0x2f0013, cbfrsynra=0x102, cb=15
+
+Upon investigation, our hardware team confirmed that the memory region
+containing 0x08000000 is already mapped for other peripherals, making it
+unavailable for MSI usage.
+
+eg: using 0xa0000000 as MSI_IOVA_BASE solves our problem.
+
+let me know if you have any other questions
 
 Thanks,
-Nícolas
+Shyam
