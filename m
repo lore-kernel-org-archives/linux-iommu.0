@@ -1,122 +1,232 @@
-Received: from mx1.emlix.com (mx1.emlix.com [178.63.209.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3ED914885B
-	for <iommu@lists.linux.dev>; Mon,  2 Jun 2025 05:09:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.63.209.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93B82B65C;
+	Mon,  2 Jun 2025 05:50:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748840962; cv=none; b=EgejB+2Ts7P++KY4TUmg3oBZ4POdDg6FbkWuz5HoK4pMc4QBHi7csvp4cvypxshC1ZLkhAOrp6wybxYIC96UjTyzcB4sykTYpBuevkTbY114jtgY8WqA4iLnBWm6UAPVEcuI6+5sotmT9/Vn9b/XDYhcYlzQMnTs19aSlr7v7gc=
+	t=1748843417; cv=none; b=l5SH4oYBVewRRragluhLnAcKVsrsp6jNv9Swfzs/Ogm4zZnOGNgTcozP1/YBjaYbRHC61aKhag6LHGs7CBbouGtsip9uiZFlmMaydriKhILBfQLWfdiU6CqPdIVXl4QcD1cyLgn94+JL9TTne8fH/gGuFF4exM/N5w+69bgpKys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748840962; c=relaxed/simple;
-	bh=lMZ78FPtFBZxV+m67TF6REJkpUacIal4PFWF+mQQGPU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PTYYAajtaZe689Mxiws86iPEp1A7jiwDXC4VAVbBJ1uR0jbvMkFfNN5gvwvJTGrzPjViRIsj6YurCqBO2K5D9LOG8uDJbhudUz2MrX6vrhVcpkYT3ypI5DhTHhxcITglO1XBvF8rn8eEhgxw+sgrr7atruglqbLgH5LaTd5CRSY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com; spf=pass smtp.mailfrom=emlix.com; arc=none smtp.client-ip=178.63.209.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=emlix.com
-Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
-	(using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mx1.emlix.com (Postfix) with ESMTPS id 589F65F8AF;
-	Mon,  2 Jun 2025 07:09:12 +0200 (CEST)
-From: Rolf Eike Beer <eb@emlix.com>
-To: Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, Arnd Bergmann <arnd@kernel.org>
-Subject: Re: [git pull] IOMMU Updates for Linux v6.16
-Date: Mon, 02 Jun 2025 07:09:06 +0200
-Message-ID: <2784838.mvXUDI8C0e@devpool92.emlix.com>
-Organization: emlix GmbH
-In-Reply-To:
- <CAHk-=wh4qRwm7AQ8sBmQj7qECzgAhj4r73RtCDfmHo5SdcN0Jw@mail.gmail.com>
-References:
- <aDmght5YpHmJ6qZ2@8bytes.org>
- <CAHk-=wguPX5w3UVmQpOk+v1ahJwRzRNXKHUJB92cwJfNpMU4ZA@mail.gmail.com>
- <CAHk-=wh4qRwm7AQ8sBmQj7qECzgAhj4r73RtCDfmHo5SdcN0Jw@mail.gmail.com>
+	s=arc-20240116; t=1748843417; c=relaxed/simple;
+	bh=dhCKdaNGVDVa0JTWjU+OMRG/7HWBCYhvLNRz1AVVfXE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=Nd6QOPe/BUlSpZF5WgJpDN8AhhP+G2tN9KLLDsR9OqjJ18gB++9svNGu2XQxqbE3zbkqx3RzkeJTOlK7pvomaabv2xZgKlNwe2NVjsqYPYAuSiZthY4YLlmxPCw0igyHD1zFU8dv/uiOPi8hsUiaSf8nO2OTjgrFRpuXSoF2Fug=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G5Sd2nst; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G5Sd2nst"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44666C4CEEB;
+	Mon,  2 Jun 2025 05:50:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1748843416;
+	bh=dhCKdaNGVDVa0JTWjU+OMRG/7HWBCYhvLNRz1AVVfXE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=G5Sd2nstABBUN5D1nIItdFgV+88+1UPejyKervnRfy9iyIoVp/dv1N7AW4iwLkkRq
+	 9Eaaml3nHfPK1UNp1BNYzXmIcjmoirTwXw8t9nerrBwlWIWg9YJCgVbWITI15QZdMD
+	 bwGsYls8TnqnHrr04C2Suw2oQm16OycxnhpeYbkvRO+ByiC8T618kZzC59zz4MXo9H
+	 3TEefc7NGVkny+vE1KqLfupzE09RfLCTPXhTnpdNVEbeikKzA5ycSQZnGmumbAG1z3
+	 lzzGIWiZdry/9Lom+86S8+B7hlr5uZ4IRzUOl8kSR1VdzaSVTOxAbWTZuye6KCHguS
+	 AgRkt5LjU0ATw==
+X-Mailer: emacs 30.1 (via feedmail 11-beta-1 Q)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
+	sumit.semwal@linaro.org, christian.koenig@amd.com,
+	pbonzini@redhat.com, seanjc@google.com, alex.williamson@redhat.com,
+	jgg@nvidia.com, dan.j.williams@intel.com, aik@amd.com,
+	linux-coco@lists.linux.dev
+Cc: dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org, vivek.kasireddy@intel.com,
+	yilun.xu@intel.com, yilun.xu@linux.intel.com,
+	linux-kernel@vger.kernel.org, lukas@wunner.de, yan.y.zhao@intel.com,
+	daniel.vetter@ffwll.ch, leon@kernel.org, baolu.lu@linux.intel.com,
+	zhenzhong.duan@intel.com, tao1.su@intel.com,
+	linux-pci@vger.kernel.org, zhiw@nvidia.com, simona.vetter@ffwll.ch,
+	shameerali.kolothum.thodi@huawei.com, iommu@lists.linux.dev,
+	kevin.tian@intel.com
+Subject: Re: [RFC PATCH 20/30] vfio/pci: Do TSM Unbind before zapping bars
+In-Reply-To: <20250529053513.1592088-21-yilun.xu@linux.intel.com>
+References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
+ <20250529053513.1592088-21-yilun.xu@linux.intel.com>
+Date: Mon, 02 Jun 2025 10:50:11 +0530
+Message-ID: <yq5a34cilnxw.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart12677247.O9o76ZdvQC";
- micalg="pgp-sha256"; protocol="application/pgp-signature"
+Content-Type: text/plain
 
---nextPart12677247.O9o76ZdvQC
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"; protected-headers="v1"
-From: Rolf Eike Beer <eb@emlix.com>
-Subject: Re: [git pull] IOMMU Updates for Linux v6.16
-Date: Mon, 02 Jun 2025 07:09:06 +0200
-Message-ID: <2784838.mvXUDI8C0e@devpool92.emlix.com>
-Organization: emlix GmbH
-MIME-Version: 1.0
+Xu Yilun <yilun.xu@linux.intel.com> writes:
 
-On Samstag, 31. Mai 2025 07:20:02 Mitteleurop=C3=A4ische Sommerzeit Linus T=
-orvalds=20
-wrote:
-> On Fri, 30 May 2025 at 21:57, Linus Torvalds
->=20
-> <torvalds@linux-foundation.org> wrote:
-> > Bah. This seems very broken.
-> >=20
-> > I haven't bisected it, but my arm64 build - which I sadly didn't end
-> >=20
-> > up doing earlier today - breaks with modpost errors:
-> >    ERROR: modpost: "arm_smmu_make_cdtable_ste"
-> >=20
-> > [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
->=20
-> Ok, bisected to commit e436576b0231 ("iommu: make inclusion of
-> arm/arm-smmu-v3 directory conditional").
->=20
-> Which explains why I didn't see any obvious code changes that would
-> explain that.
->=20
-> This is with a plain "make allmodconfig" build, and I think the issue
-> is that CONFIG_ARM_SMMU_V3 is 'm', not 'y', and the change didn't take
-> that modular case into account at all.
->=20
-> I'll revert it, but I'll wait until tomorrow to see if somebody has an
-> alternative fix.
+> When device is TSM Bound, some of its MMIO regions are controlled by
+> secure firmware. E.g. TDX Connect would require these MMIO regions
+> mappeed in S-EPT and never unmapped until device Unbound. Zapping bars
+> irrespective of TSM Bound state may cause unexpected secure firmware
+> errors. It is always safe to do TSM Unbind first, transiting the device
+> to shared, then do whatever needed as before.
+>
+> Signed-off-by: Xu Yilun <yilun.xu@linux.intel.com>
+> ---
+>  drivers/vfio/pci/vfio_pci_config.c |  4 +++
+>  drivers/vfio/pci/vfio_pci_core.c   | 41 +++++++++++++++++++-----------
+>  drivers/vfio/pci/vfio_pci_priv.h   |  3 +++
+>  3 files changed, 33 insertions(+), 15 deletions(-)
+>
+> diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
+> index 7ac062bd5044..4ffe661c9e59 100644
+> --- a/drivers/vfio/pci/vfio_pci_config.c
+> +++ b/drivers/vfio/pci/vfio_pci_config.c
+> @@ -590,6 +590,7 @@ static int vfio_basic_config_write(struct vfio_pci_core_device *vdev, int pos,
+>  		new_mem = !!(new_cmd & PCI_COMMAND_MEMORY);
+>  
+>  		if (!new_mem) {
+> +			vfio_pci_tsm_unbind(vdev);
+>  			vfio_pci_zap_and_down_write_memory_lock(vdev);
+>  			vfio_pci_dma_buf_move(vdev, true);
+>
 
-Sorry for the mess. Arnd Bergmann already has a fix sent, looks like it got=
-=20
-stuck somewhere.
+Don't we need to re-bind the vdev with tsm_bind for the continued use of TDI?
 
-Regards,
+>  		} else {
+> @@ -712,6 +713,7 @@ static void vfio_lock_and_set_power_state(struct vfio_pci_core_device *vdev,
+>  					  pci_power_t state)
+>  {
+>  	if (state >= PCI_D3hot) {
+> +		vfio_pci_tsm_unbind(vdev);
+>  		vfio_pci_zap_and_down_write_memory_lock(vdev);
+>  		vfio_pci_dma_buf_move(vdev, true);
+>  	} else {
+> @@ -907,6 +909,7 @@ static int vfio_exp_config_write(struct vfio_pci_core_device *vdev, int pos,
+>  						 &cap);
+>  
+>  		if (!ret && (cap & PCI_EXP_DEVCAP_FLR)) {
+> +			vfio_pci_tsm_unbind(vdev);
+>  			vfio_pci_zap_and_down_write_memory_lock(vdev);
+>  			vfio_pci_dma_buf_move(vdev, true);
+>  			pci_try_reset_function(vdev->pdev);
+> @@ -992,6 +995,7 @@ static int vfio_af_config_write(struct vfio_pci_core_device *vdev, int pos,
+>  						&cap);
+>  
+>  		if (!ret && (cap & PCI_AF_CAP_FLR) && (cap & PCI_AF_CAP_TP)) {
+> +			vfio_pci_tsm_unbind(vdev);
+>  			vfio_pci_zap_and_down_write_memory_lock(vdev);
+>  			vfio_pci_dma_buf_move(vdev, true);
+>  			pci_try_reset_function(vdev->pdev);
+> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+> index 92544e54c9c3..a8437fcecca1 100644
+> --- a/drivers/vfio/pci/vfio_pci_core.c
+> +++ b/drivers/vfio/pci/vfio_pci_core.c
+> @@ -286,6 +286,7 @@ static int vfio_pci_runtime_pm_entry(struct vfio_pci_core_device *vdev,
+>  	 * The vdev power related flags are protected with 'memory_lock'
+>  	 * semaphore.
+>  	 */
+> +	vfio_pci_tsm_unbind(vdev);
+>  	vfio_pci_zap_and_down_write_memory_lock(vdev);
+>  	vfio_pci_dma_buf_move(vdev, true);
+>  
+> @@ -693,11 +694,7 @@ void vfio_pci_core_close_device(struct vfio_device *core_vdev)
+>  	eeh_dev_release(vdev->pdev);
+>  #endif
+>  
+> -	if (vdev->is_tsm_bound) {
+> -		vfio_iommufd_tsm_unbind(&vdev->vdev);
+> -		pci_release_regions(vdev->pdev);
+> -		vdev->is_tsm_bound = false;
+> -	}
+> +	__vfio_pci_tsm_unbind(vdev);
+>  
+>  	vfio_pci_core_disable(vdev);
+>  
+> @@ -1222,6 +1219,7 @@ static int vfio_pci_ioctl_reset(struct vfio_pci_core_device *vdev,
+>  	if (!vdev->reset_works)
+>  		return -EINVAL;
+>  
+> +	vfio_pci_tsm_unbind(vdev);
+>  	vfio_pci_zap_and_down_write_memory_lock(vdev);
+>  
+>  	/*
+> @@ -1491,12 +1489,32 @@ static int vfio_pci_ioctl_tsm_bind(struct vfio_pci_core_device *vdev,
+>  	return ret;
+>  }
+>  
+> +void __vfio_pci_tsm_unbind(struct vfio_pci_core_device *vdev)
+> +{
+> +	struct pci_dev *pdev = vdev->pdev;
+> +
+> +	lockdep_assert_held(&vdev->vdev.dev_set->lock);
+> +
+> +	if (!vdev->is_tsm_bound)
+> +		return;
+> +
+> +	vfio_iommufd_tsm_unbind(&vdev->vdev);
+> +	pci_release_regions(pdev);
+> +	vdev->is_tsm_bound = false;
+>
 
-Eike
-=2D-=20
-Rolf Eike Beer
+Do we really need to check vdev->is_tsm_bound? The tsm_ops lock already
+ensures that concurrent TSM operations can't happen, and repeated calls
+to bind()/unbind() seem to be handled safely by pci_tsm_bind and pci_tsm_unbind.
 
-emlix GmbH
-Headquarters: Berliner Str. 12, 37073 G=C3=B6ttingen, Germany
-Phone +49 (0)551 30664-0, e-mail info@emlix.com
-District Court of G=C3=B6ttingen, Registry Number HR B 3160
-Managing Directors: Heike Jordan, Dr. Uwe Kracke
-VAT ID No. DE 205 198 055
-Office Berlin: Panoramastr. 1, 10178 Berlin, Germany
-Office Bonn: Bachstr. 6, 53115 Bonn, Germany
-http://www.emlix.com
+> +}
+> +
+> +void vfio_pci_tsm_unbind(struct vfio_pci_core_device *vdev)
+> +{
+> +	mutex_lock(&vdev->vdev.dev_set->lock);
+> +	__vfio_pci_tsm_unbind(vdev);
+> +	mutex_unlock(&vdev->vdev.dev_set->lock);
+> +}
+>
 
-emlix - your embedded Linux partner
---nextPart12677247.O9o76ZdvQC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+If is_tsm_bound is no longer needed, and pci_release_regions /
+request_region_exclusive are now handled within pci_tsm_unbind / bind,
+do we still need mutex_lock() to guard this path?
 
------BEGIN PGP SIGNATURE-----
-
-iLMEAAEIAB0WIQQ/Uctzh31xzAxFCLur5FH7Xu2t/AUCaD0x8gAKCRCr5FH7Xu2t
-/KfyA/wPOfD5Mbr32oD0if+5JoaXI68IZAz3HHxDbBraW8JhmasIP98eX0M853IE
-YWn6VsR+eX0zEQX0JBmRR1iZzHh4FWC37ZkEWPy7LiZRtK43OnIpTYNshD42vgPE
-vpmMVVBOWdnsQJfZ7xrPB/zvNcMDmsbThbHIRgPiGWaUu2c9Qw==
-=NtdT
------END PGP SIGNATURE-----
-
---nextPart12677247.O9o76ZdvQC--
-
-
-
+> +
+>  static int vfio_pci_ioctl_tsm_unbind(struct vfio_pci_core_device *vdev,
+>  				     void __user *arg)
+>  {
+>  	unsigned long minsz = offsetofend(struct vfio_pci_tsm_unbind, flags);
+>  	struct vfio_pci_tsm_unbind tsm_unbind;
+> -	struct pci_dev *pdev = vdev->pdev;
+>  
+>  	if (copy_from_user(&tsm_unbind, arg, minsz))
+>  		return -EFAULT;
+> @@ -1504,15 +1522,7 @@ static int vfio_pci_ioctl_tsm_unbind(struct vfio_pci_core_device *vdev,
+>  	if (tsm_unbind.argsz < minsz || tsm_unbind.flags)
+>  		return -EINVAL;
+>  
+> -	mutex_lock(&vdev->vdev.dev_set->lock);
+> -
+> -	if (!vdev->is_tsm_bound)
+> -		return 0;
+> -
+> -	vfio_iommufd_tsm_unbind(&vdev->vdev);
+> -	pci_release_regions(pdev);
+> -	vdev->is_tsm_bound = false;
+> -	mutex_unlock(&vdev->vdev.dev_set->lock);
+> +	vfio_pci_tsm_unbind(vdev);
+>  
+>  	return 0;
+>  }
+> @@ -2526,6 +2536,7 @@ static int vfio_pci_dev_set_hot_reset(struct vfio_device_set *dev_set,
+>  			break;
+>  		}
+>  
+> +		__vfio_pci_tsm_unbind(vdev);
+>  		/*
+>  		 * Take the memory write lock for each device and zap BAR
+>  		 * mappings to prevent the user accessing the device while in
+> diff --git a/drivers/vfio/pci/vfio_pci_priv.h b/drivers/vfio/pci/vfio_pci_priv.h
+> index 6f3e8eafdc35..e5bf27f46a73 100644
+> --- a/drivers/vfio/pci/vfio_pci_priv.h
+> +++ b/drivers/vfio/pci/vfio_pci_priv.h
+> @@ -130,4 +130,7 @@ static inline void vfio_pci_dma_buf_move(struct vfio_pci_core_device *vdev,
+>  }
+>  #endif
+>  
+> +void __vfio_pci_tsm_unbind(struct vfio_pci_core_device *vdev);
+> +void vfio_pci_tsm_unbind(struct vfio_pci_core_device *vdev);
+> +
+>  #endif
+> -- 
+> 2.25.1
