@@ -1,88 +1,115 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 26E3370838
-	for <iommu@lists.linux.dev>; Tue,  3 Jun 2025 15:25:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9620423BF9F
+	for <iommu@lists.linux.dev>; Tue,  3 Jun 2025 15:32:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748964322; cv=none; b=sSYxWp+p/4qFp/pQg10OypnBmC8bt9wJ64UZcZYqZB+gFhILS1zJzCj113UYhgadd1Xb1SCwFGFpZIOXYBajQ5EDGje+YbPmXwD2sp4Z9a/Qky0hsNgWysBcsChgPB6Zj/jsaopexTEvAtGiccVOeiIPCNM29JuDJAHToJmvCDs=
+	t=1748964781; cv=none; b=OzovsPIJX0OxBG75WZlOCXnNYxuPUpxepqpU/BynGPe3MH7XHAG9PkhoCs/Sfo6OYWuDvyTvQ/bvJrUKXAIbNZYTRdIetNDy2pfauEXbcV6ZvrJiR1r4c+3YDUnZIF1I0PP6gKnsmVOsNqDGK3RBEd6naKO6rpGYUTjhZkbvFog=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748964322; c=relaxed/simple;
-	bh=6nMeOZRePXDVXDGcnFsQmTbfxsXNWxTL5IGoQ/WDvbs=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OIpPUhqpift1rwJ52A2Y9QteC9Ki+I/Ypo0Tc/D53T4y9PxYoDkzBRD/wyGnQ5+4lhDgyplPOU/B/DjOh98DyYC5LCWSFPHxeRlIEQ6S0xQGGZMm5IzJFzJllfXTRCtYMvq5tkI1Fgz1sk2GpeydWXmt8m17XHpCPd3E5r8TIlU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=Ex9vtb72; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1748964781; c=relaxed/simple;
+	bh=l9yh5roB6TAD+eJpxkrTHsMLVCJdRJ3KS9fKxDqDNog=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DRKoXE1fM9Co4TrlmBsvf8IVtwy5XBp5gk37ohuBvjBfFjG3anJq+8AgU+/o/eRBPV4aaZbUqRUNAKO4OGRTq7CENjgrXkvqQm2AN3/73uzrZUCsvQociIojo56pF7lLUkcNHud2uVFlG4WMvnpPS1u9hRRDD3U8lIh05lqmmYQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=o8BSCkcz; arc=none smtp.client-ip=209.85.222.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="Ex9vtb72"
-Received: from DESKTOP-0403QTC. (unknown [52.148.171.5])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 580672113A78;
-	Tue,  3 Jun 2025 08:25:20 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 580672113A78
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1748964320;
-	bh=cCFBN2LWKAne1DQ7nQtWUv+KKHq4WV3lvkNZXKSNhCA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
-	b=Ex9vtb72rLSb+vGkzYKBiKxYQpZAsLEPW3TIHqCqSuRYi3RKAEddGKijibCFd6S0Z
-	 na/ISsr8ljwhCG8KvhXtjYiRYl/0fPSDbI8c1/kvpPHsJnpMsrk/bwufoICVTA5z+9
-	 9iyLVujl1Fp2Dspi0AxC/H+qNn4Z35jwpx9CFvbw=
-Date: Tue, 3 Jun 2025 08:25:19 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: linux-kernel@vger.kernel.org, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Alex Williamson <alex.williamson@redhat.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>, Zhang Yu <zhangyu1@microsoft.com>, Easwar
- Hariharan <eahariha@linux.microsoft.com>, Saurabh Sengar
- <ssengar@linux.microsoft.com>, jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH 1/2] vfio: Fix unbalanced vfio_df_close call in no-iommu
- mode
-Message-ID: <20250603082519.7b5b063e@DESKTOP-0403QTC.>
-In-Reply-To: <20250602234903.GB376789@nvidia.com>
-References: <20250602234319.4404-1-jacob.pan@linux.microsoft.com>
-	<20250602234903.GB376789@nvidia.com>
-Reply-To: jacob.pan@linux.microsoft.com
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="o8BSCkcz"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-7d094e26252so831237785a.0
+        for <iommu@lists.linux.dev>; Tue, 03 Jun 2025 08:32:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1748964778; x=1749569578; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=1mtQW3fkkCN4JKD2bOxa9OSXsumf197V91aZsIjfwDI=;
+        b=o8BSCkczFJPL3U1aSDv2MolmVUOMwxxhYFI+YYxtAF/XTjqJX2bVb11ZzFTfs228GB
+         gBldj9SOD5Y68VM9p2pAL/B6yRreypeIgZJ2L2q4zBJ7HH3nFf9nEkRzmbx+8f/NYyQh
+         3gaeh7Zuycnh4H7ouGJkkCjdlNdU2/bEHKjUxe/5mdQNgSVNng3qp7CxFIYxjamQ4xpt
+         RPnzlzbV3RBVOliyrF2ZwJIEnzgNhR54ylDq6mrcSn397oOk4Bp4+0QVNpQGElhO3pFG
+         5jm5vcEuXVExhvnBpp9NGB0B4eEFIihX8rct88/f0tnjLgUy0lQQUwH42qdw4EcrlO1x
+         xTCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1748964778; x=1749569578;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1mtQW3fkkCN4JKD2bOxa9OSXsumf197V91aZsIjfwDI=;
+        b=KMaXZiiXQ3r3JevDkBWABCxKvIgfsadiKvCCqSJ5jqP/0O/g0cgORbYNitzNH/E5+I
+         giPXnbLHATv29BWbLWzHKkH62UthJp92jVA2qu6Q/DxRve4qdq/BbPotGI2oroInrvlv
+         Zn3CQaJFH+GN14GslXoT0l77aBKFlK/tz2kx5+mxdQZMHQdhkcPXFnIMuRz5XxeWQ+hh
+         TzvGxOQOq1rM0Fd4ncv6DVo1W+yZ0wJyUQnt5yKTP6rNiOhdeMoorxPH6jTXWben/XPH
+         2r7nwgsCygg/3ZBxNFiLq76ao+8LG4T44tp/0idE+qeAoTPRgMnqkuQVdUr1SDa/ODfa
+         FXAA==
+X-Forwarded-Encrypted: i=1; AJvYcCWke1tWKCSaVeDKkSAvDnUHPPCN+dYxPqZg6PbP2Zq0D2LZvlsdVYfguP1kzFX7lKKBpICfLQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxlUHaRugZ2UezWQSSm+D19mqBu5GasbQqmzLngHpXsZbiIb5wC
+	TYhmrBgZyjcAWd+2waJnWAP36032WtFjT7gmhXK8VbU/jX0Yr0Lk/B5HKAgJIK30H50=
+X-Gm-Gg: ASbGncsfsxyrj2SDYAcu2gb3u5fl+O6rEHJOhE7MZ6FAMjqDPSqy5aTX9LpMijLPBB/
+	9IPG1BkEB4ASn2P5FthEWkpmYfpmRqMsU/1coQwQr45IHfGDHEdDVqaY46UcZaU2yrZR3MX41Am
+	BxInUY9r87x/gf9QqqNAa0VyNMBEUL0IO+F3RgW1BQL/fG2jbetV4a5HTUffBxq3g/9sKUAliNr
+	0rUcYG38v6LxjgiMloDHnx98gXy5izl1Go3SBPotRz5yVMoDc/L9OGaeA13DFQx1Ajl9gqJdnDX
+	i7gybMiTSQLjZAygNmVhxjtnos72O/Wu+rEII6ej8miEW4Cgo4nMRrfZP6YsphRo4/ILLwwW1xe
+	DIaTUU+aE2Y2bqCq2biuweOL6RGU=
+X-Google-Smtp-Source: AGHT+IGNetUYleKkkekxf29HMZ0X2KdHF1aj+g1S3YQFzx43O8VQkGEV1jpWL/mxUQXnB44kVfrbIQ==
+X-Received: by 2002:a05:620a:6081:b0:7c3:d5a4:3df3 with SMTP id af79cd13be357-7d0a4e396a1mr2453954585a.34.1748964778475;
+        Tue, 03 Jun 2025 08:32:58 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7d09a1a70fasm854998785a.95.2025.06.03.08.32.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Jun 2025 08:32:58 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1uMTdJ-00000001j8y-2UtV;
+	Tue, 03 Jun 2025 12:32:57 -0300
+Date: Tue, 3 Jun 2025 12:32:57 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
+Cc: thierry.reding@gmail.com, vdumpa@nvidia.com, joro@8bytes.org,
+	will@kernel.org, robin.murphy@arm.com, jonathanh@nvidia.com,
+	baolu.lu@linux.intel.com, jsnitsel@redhat.com, jroedel@suse.de,
+	regressions@lists.linux.dev, linux-tegra@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [REGRESSION] EMEM address decode error when using Tegra210 media
+ engines
+Message-ID: <20250603153257.GB407166@ziepe.ca>
+References: <62e7f7fe-6200-4e4f-ad42-d58ad272baa6@tecnico.ulisboa.pt>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <62e7f7fe-6200-4e4f-ad42-d58ad272baa6@tecnico.ulisboa.pt>
 
-Hi Jason,
-
-On Mon, 2 Jun 2025 20:49:03 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Mon, Jun 02, 2025 at 04:43:18PM -0700, Jacob Pan wrote:
-> > For no-iommu enabled devices working under IOMMUFD VFIO compat
-> > mode, the group open path does not call vfio_df_open() and the
-> > open_count is 0. So calling vfio_df_close() in the group close path
-> > will trigger warning in vfio_assert_device_open(device);
-> > 
-> > E.g. The following warning can be seen by running VFIO test.
-> > https://github.com/awilliam/tests/blob/master/vfio-noiommu-pci-device-open.c
-> > CONFIG_VFIO_CONTAINER = n
-> > [   29.094781] vfio-pci 0000:02:01.0: vfio-noiommu device opened by
-> > user (vfio-noiommu-pc:164) Failed to get device info
-> > [   29.096540] ------------[ cut here ]------------
-> > [   29.096616] WARNING: CPU: 1 PID: 164 at
-> > drivers/vfio/vfio_main.c:487 vfio_df_close+0xac/0xb4
-> > 
-> > This patch adds checks for no-iommu mode and open_count to skip
-> > calling vfio_df_close.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
-> > ---
-> >  drivers/vfio/group.c | 7 ++++---
-> >  1 file changed, 4 insertions(+), 3 deletions(-)  
+On Tue, Jun 03, 2025 at 04:06:47PM +0100, Diogo Ivo wrote:
+> Hello,
 > 
-> Did you mean to resend the original version?
-my mistake, just sent v2.
+> Commit 50568f87d1e233e introduced a regression when trying to use the media
+> accelerators present on the Tegra X1 SoC.
+> 
+> I came across this regression when testing the branch [1] that leverages
+> the NVJPG engine in the Tegra X1 for decoding a JPEG file. After commit
+> 50568f87d1e233e we see the following error messages after submitting a job
+> through the TEGRA_CHANNEL_SUBMIT IOCTL:
 
-Thanks!
+Maybe this?
 
-Jacob
+@@ -567,7 +567,7 @@ static void tegra_smmu_set_pde(struct tegra_smmu_as *as, unsigned long iova,
+ 
+        /* The flush the page directory entry from caches */
+        dma_sync_single_range_for_device(smmu->dev, as->pd_dma, offset,
+-                                        sizeof(*pd), DMA_TO_DEVICE);
++                                        sizeof(pd->val[0]), DMA_TO_DEVICE);
+ 
+        /* And flush the iommu */
+        smmu_flush_ptc(smmu, as->pd_dma, offset);
 
+It is the only mistake I was able to notice.
 
+But I'd be puzzled - I'd expect bigger sizeof would make it slower not
+broken.. Though your crash sure looks like either missing cache
+coherency or a bad PTE construction.
+
+Jason
