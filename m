@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F09291F8BA6;
-	Tue,  3 Jun 2025 05:59:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B32325D21C;
+	Tue,  3 Jun 2025 06:27:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748930348; cv=none; b=OvMgherMkBqcwlGxdBN96+J/WM9yJE5XY2Nuhwm35a+r1YYQFE9aHd22776zw8C+7fSJnVWwtBqgdysaP2IrqKtdmRPNTWaTVXHgx9vxV9xPGENqxiTIMPc8+ZFC3Tr6CB3zrNSVOuF1FOn9JFOKwD55XZAwu8ewjWdURWTkmp4=
+	t=1748932052; cv=none; b=LxHvmE1z2cIifD/UqzMj85ihMkHBtxEOOFm6zWpzcG3jRNeTo8SfKwrFziW9nAY01URul3PxU4apNz9JJS1PGJZD2jcqoblcZp3y/rkKWl7AmoVmwDdqW2JkNQ0b4iIgFlhlXG9x3S59xlxkwROnWy1GR9j3sVIPjZ49xBEILI4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748930348; c=relaxed/simple;
-	bh=0SZMc9RMAD3OL6AmtIwhsT0nSCxX2GAwLNNSSQsvmVE=;
+	s=arc-20240116; t=1748932052; c=relaxed/simple;
+	bh=IWFtaiDn/XO87fJC+ux27MBKi9oToFneDr8KRC5wsd4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OihkIAVqqIQAyL8+T2B9Urj3ZXxdHyjEGPuoowRqm3fFIaTe6U6NAYvdGSWbWIssZHNipTU9ASqnNlfngAAhXVhM8o6O8fYVkx99nJGy0kUykF3rqAkM0DY1t6jwZpg7wjfctU52yVdDZckPBJWIff780EzFA4DQR9wQCjp5gbA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cO6kLy6e; arc=none smtp.client-ip=198.175.65.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=bRofTm8vcIStCP6A7SUG/x0skL+9tGlYCgiksRhInOda7F7cRg2dXPCBX5+V1/5uhLmjBzHJM9cYfmlFnEWE8D08ZSt9ez1YFpZfXX1d0R79q9XUW+Wls6r6PJgOjlI2gEQ1n+JESHCemCwLxSQ7W6ldY9Z0hp2kaUVcN+3VgBM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N0B6ORZk; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cO6kLy6e"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N0B6ORZk"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1748930347; x=1780466347;
+  t=1748932050; x=1780468050;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=0SZMc9RMAD3OL6AmtIwhsT0nSCxX2GAwLNNSSQsvmVE=;
-  b=cO6kLy6eAA+cP2piXZhj797U5e0CPwiogM/v4azF1dR4T1HqpKXAY9gJ
-   5iWvv2KHpx82l8KWFyZ0pvGD5PU52NR+cJ+o/xmmxmyIdvGb7DiwzCARC
-   Y54zuA4KXQMFT3/jb3fx5vBCXux3jwoF5Tb1gVzH8s8YdIW+icVPgP3Fw
-   Y+r+vGKnnwy1xT7/CAmDvEB0uFeaoBdjAgYQaDn87Q+OukpJ2amvHXQhd
-   GJuFkt7nKLsA+VW90hsqEAdHCiulWM0TbzpUdlWHVS04bLJ+d5XKaS+fw
-   LhfkDCbV9DAzropGgGds3liN3CldZOjfCXLiA0W54NYd0869VFWf6jzWn
-   g==;
-X-CSE-ConnectionGUID: rMMsdll/SlGFCjaoR0lufw==
-X-CSE-MsgGUID: jzcPIKT4SeavOdRVKmkAHA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11451"; a="73485491"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=IWFtaiDn/XO87fJC+ux27MBKi9oToFneDr8KRC5wsd4=;
+  b=N0B6ORZk+bxX3u4CffTeZf+QCag0rWLrzeeEdYMiWoAtn5eiNwrX/zbT
+   yzNEDQ2dK92gG8bLlHsubAcfkPsRMnwAKmxFpmKyma7OR3VDguCP/pWiX
+   nf+bT99LYxm8KQEaFVKhGVU5ynV/sGjnbxW50ZAEMoW3BgcCPTiOcnjRl
+   AzK/Nemly+nvR1o/YPFFi2CW278GWXvqn8SgVTmLDvZQ+cutA0AjNIj29
+   epN0YyDR9mo+NdYk4TkZ5HUDJEnb84qX4JRWsArWfr2U687Y3z1lnm/L5
+   WjNVmCptKjjerbNIBGKQtP5s0hxaEGCW62ep7b+o4YyoOde/gXGKQ7QGx
+   A==;
+X-CSE-ConnectionGUID: Uaxe7h4XRFWcabXgYzTblg==
+X-CSE-MsgGUID: 6ctWiYsOTQ6gYqeKE4IAGA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11451"; a="62314599"
 X-IronPort-AV: E=Sophos;i="6.16,205,1744095600"; 
-   d="scan'208";a="73485491"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2025 22:59:05 -0700
-X-CSE-ConnectionGUID: YBlVT30SRWmnzwryX2WviQ==
-X-CSE-MsgGUID: Ve/oAFGISO6sRzGF6gBGcA==
+   d="scan'208";a="62314599"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2025 23:27:29 -0700
+X-CSE-ConnectionGUID: BBpJLW0fTIe4Bl5L9UVquA==
+X-CSE-MsgGUID: NtyakwF0TsCvZXIGBKTDHw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,205,1744095600"; 
-   d="scan'208";a="149801571"
+   d="scan'208";a="149539306"
 Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orviesa004.jf.intel.com with ESMTP; 02 Jun 2025 22:58:59 -0700
-Date: Tue, 3 Jun 2025 13:52:27 +0800
+  by orviesa003.jf.intel.com with ESMTP; 02 Jun 2025 23:27:23 -0700
+Date: Tue, 3 Jun 2025 14:20:51 +0800
 From: Xu Yilun <yilun.xu@linux.intel.com>
 To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
 Cc: kvm@vger.kernel.org, sumit.semwal@linaro.org, christian.koenig@amd.com,
@@ -58,132 +58,114 @@ Cc: kvm@vger.kernel.org, sumit.semwal@linaro.org, christian.koenig@amd.com,
 	linux-pci@vger.kernel.org, zhiw@nvidia.com, simona.vetter@ffwll.ch,
 	shameerali.kolothum.thodi@huawei.com, iommu@lists.linux.dev,
 	kevin.tian@intel.com
-Subject: Re: [RFC PATCH 27/30] PCI/TSM: Add PCI driver callbacks to handle
- TSM requirements
-Message-ID: <aD6Nm7bBGddTc+pr@yilunxu-OptiPlex-7050>
+Subject: Re: [RFC PATCH 17/30] iommufd/device: Add TSM Bind/Unbind for TIO
+ support
+Message-ID: <aD6UQy4KwKcdSvVE@yilunxu-OptiPlex-7050>
 References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
- <20250529053513.1592088-28-yilun.xu@linux.intel.com>
- <yq5att4yjns2.fsf@kernel.org>
+ <20250529053513.1592088-18-yilun.xu@linux.intel.com>
+ <yq5awm9ujouz.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <yq5att4yjns2.fsf@kernel.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <yq5awm9ujouz.fsf@kernel.org>
 
-On Mon, Jun 02, 2025 at 06:36:37PM +0530, Aneesh Kumar K.V wrote:
+On Mon, Jun 02, 2025 at 06:13:16PM +0530, Aneesh Kumar K.V wrote:
 > Xu Yilun <yilun.xu@linux.intel.com> writes:
 > 
-> > Add optional PCI driver callbacks to notify TSM events. For now, these
-> > handlers may be called during pci_tsm_unbind(). By calling these
-> > handlers, TSM driver askes for external collaboration to finish entire
-> > TSM unbind flow.
-> >
-> > If platform TSM driver could finish TSM bind/unbind all by itself, don't
-> > call these handlers.
-> >
-> > Host may need to configure various system components according to
-> > platform trusted firmware's requirements. E.g. for Intel TDX Connect,
-> > host should do private MMIO mapping in S-EPT, trusted DMA setup, device
-> > ownership claiming and device TDISP state transition. Some operations are
-> > out of control of PCI TSM, so need collaboration by external components
-> > like IOMMU driver, KVM.
-> >
-> > Further more, trusted firmware may enforce executing these operations
-> > in a fixed sequence. E.g. Intel TDX Connect enforces the following
-> > sequences for TSM unbind:
-> >
-> >   1. STOP TDI via TDISP message STOP_INTERFACE
-> >   2. Private MMIO unmap from Secure EPT
-> >   3. Trusted Device Context Table cleanup for the TDI
-> >   4. TDI ownership reclaim and metadata free
-> >
-> > PCI TSM could do Step 1 and 4, but need KVM for Step 2 and IOMMU driver
-> > for Step 3. While it is possible TSM provides finer grained APIs like
-> > tdi_stop() & tdi_free(), and the caller ensures the sequence, it is
-> > better these specific enforcement could be managed in platform TSM
-> > driver. By introducing TSM handlers, platform TSM driver controls the
-> > operation sequence and notify other components to do the real work.
-> >
-> > Currently add 3 callbacks for TDX Connect. disable_mmio() is for
-> > VFIO to invalidate MMIO so that KVM could unmap them from S-EPT.
-> > recover_mmio() is to re-validate MMIO so that KVM could map them
-> > again for shared assigned device. disable_trusted_dma() is to cleanup
-> > trusted IOMMU setup.
-> >
-> > Signed-off-by: Xu Yilun <yilun.xu@linux.intel.com>
-> > ---
-> >  include/linux/pci-tsm.h | 7 +++++++
-> >  include/linux/pci.h     | 3 +++
-> >  2 files changed, 10 insertions(+)
-> >
-> > diff --git a/include/linux/pci-tsm.h b/include/linux/pci-tsm.h
-> > index 737767f8a9c5..ed549724eb5b 100644
-> > --- a/include/linux/pci-tsm.h
-> > +++ b/include/linux/pci-tsm.h
-> > @@ -157,6 +157,13 @@ struct pci_tsm_ops {
-> >  	int (*accept)(struct pci_dev *pdev);
-> >  };
-> >  
-> > +/* pci drivers callbacks for TSM */
-> > +struct pci_tsm_handlers {
-> > +	void (*disable_mmio)(struct pci_dev *dev);
-> > +	void (*recover_mmio)(struct pci_dev *dev);
-> > +	void (*disable_trusted_dma)(struct pci_dev *dev);
-> > +};
+> ....
+> 
+> > +/**
+> > + * iommufd_device_tsm_bind - Move a device to TSM Bind state
+> > + * @idev: device to attach
+> > + * @vdev_id: Input a IOMMUFD_OBJ_VDEVICE
+> > + *
+> > + * This configures for device Confidential Computing(CC), and moves the device
+> > + * to the TSM Bind state. Once this completes the device is locked down (TDISP
+> > + * CONFIG_LOCKED or RUN), waiting for guest's attestation.
+> > + *
+> > + * This function is undone by calling iommufd_device_tsm_unbind().
+> > + */
+> > +int iommufd_device_tsm_bind(struct iommufd_device *idev, u32 vdevice_id)
+> > +{
+> > +	struct iommufd_vdevice *vdev;
+> > +	int rc;
 > > +
-> >  enum pci_doe_proto {
-> >  	PCI_DOE_PROTO_CMA = 1,
-> >  	PCI_DOE_PROTO_SSESSION = 2,
-> > diff --git a/include/linux/pci.h b/include/linux/pci.h
-> > index 5f37957da18f..4f768b4658e8 100644
-> > --- a/include/linux/pci.h
-> > +++ b/include/linux/pci.h
-> > @@ -545,6 +545,7 @@ struct pci_dev {
-> >  #endif
-> >  #ifdef CONFIG_PCI_TSM
-> >  	struct pci_tsm *tsm;		/* TSM operation state */
-> > +	void *trusted_dma_owner;
-> >  #endif
-> >  	u16		acs_cap;	/* ACS Capability offset */
-> >  	u8		supported_speeds; /* Supported Link Speeds Vector */
-> > @@ -957,6 +958,7 @@ struct module;
-> >   * @sriov_get_vf_total_msix: PF driver callback to get the total number of
-> >   *              MSI-X vectors available for distribution to the VFs.
-> >   * @err_handler: See Documentation/PCI/pci-error-recovery.rst
-> > + * @tsm_handler: Optional driver callbacks to handle TSM requirements.
-> >   * @groups:	Sysfs attribute groups.
-> >   * @dev_groups: Attributes attached to the device that will be
-> >   *              created once it is bound to the driver.
-> > @@ -982,6 +984,7 @@ struct pci_driver {
-> >  	int  (*sriov_set_msix_vec_count)(struct pci_dev *vf, int msix_vec_count); /* On PF */
-> >  	u32  (*sriov_get_vf_total_msix)(struct pci_dev *pf);
-> >  	const struct pci_error_handlers *err_handler;
-> > +	struct pci_tsm_handlers *tsm_handler;
-> >  	const struct attribute_group **groups;
-> >  	const struct attribute_group **dev_groups;
-> >  	struct device_driver	driver;
-> > -- 
-> > 2.25.1
+> > +	if (!dev_is_pci(idev->dev))
+> > +		return -ENODEV;
+> > +
+> > +	vdev = container_of(iommufd_get_object(idev->ictx, vdevice_id, IOMMUFD_OBJ_VDEVICE),
+> > +			    struct iommufd_vdevice, obj);
+> > +	if (IS_ERR(vdev))
+> > +		return PTR_ERR(vdev);
+> > +
+> > +	if (vdev->dev != idev->dev) {
+> > +		rc = -EINVAL;
+> > +		goto out_put_vdev;
+> > +	}
+> > +
+> > +	mutex_lock(&idev->igroup->lock);
+> > +	if (idev->vdev) {
+> > +		rc = -EEXIST;
+> > +		goto out_unlock;
+> > +	}
+> > +
+> > +	rc = iommufd_vdevice_tsm_bind(vdev);
+> > +	if (rc)
+> > +		goto out_unlock;
+> > +
+> > +	idev->vdev = vdev;
+> > +	refcount_inc(&vdev->obj.users);
+> > +	mutex_unlock(&idev->igroup->lock);
+> > +
+> > +	/*
+> > +	 * Pairs with iommufd_device_tsm_unbind() - catches caller bugs attempting
+> > +	 * to destroy a bound device.
+> > +	 */
+> > +	refcount_inc(&idev->obj.users);
+> >
 > 
-> It looks like the TSM feature is currently interacting with several
-> components: struct pci_driver, VFIO, iommufd, and pci_tsm_ops.
-> 
-> Should we consider limiting this scattering? Would it make sense to
-> encapsulate this logic within pci_tsm_ops?
+> Do we really need this refcount_inc? As I understand it, the objects
 
-I'm keeping on trying which is a better solution. Encapsulating all in
-pci_tsm_ops is the most attactive one from SW POV, but only if the TSM
-operations has no impact/dependency to other components. Unfortunately
-it is not true, e.g. the private MMIO mapping/unmapping is actually
-a writting to leaf S-EPT entry, but it requires non-leaf page-table-page
-management in KVM.
+The idev refcount is not necessary, it is just to "catch caller bug".
+
+> aren't being pinned directly. Instead, the reference count seems to be
+> used more as a way to establish an object hierarchy, ensuring that
+> objects are freed in the correct order.
+> 
+> In vfio_pci_core_close_device(), you’re decrementing the reference, and
+> on the iommufd side, we’re covered because the VFIO bind operation takes
+> a file reference (fget)—so iommufd_fops_release() won’t be called
+> prematurely.
+
+Correct.
+
+> 
+> Wouldn’t it be simpler to skip the reference count increment altogether
+> and just call tsm_unbind in the virtual device’s destroy callback?
+> (iommufd_vdevice_destroy())
+
+The vdevice refcount is the main concern, there is also an IOMMU_DESTROY
+ioctl. User could just free the vdevice instance if no refcount, while VFIO
+is still in bound state. That seems not the correct free order.
 
 Thanks,
 Yilun
 
+> 
+> > +	goto out_put_vdev;
+> > +
+> > +out_unlock:
+> > +	mutex_unlock(&idev->igroup->lock);
+> > +out_put_vdev:
+> > +	iommufd_put_object(idev->ictx, &vdev->obj);
+> > +	return rc;
+> > +}
+> > +EXPORT_SYMBOL_NS_GPL(iommufd_device_tsm_bind, "IOMMUFD");
 > 
 > -aneesh
