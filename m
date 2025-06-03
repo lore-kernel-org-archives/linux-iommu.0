@@ -1,203 +1,189 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2087.outbound.protection.outlook.com [40.107.244.87])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7209E1F12F6;
-	Tue,  3 Jun 2025 05:41:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.87
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748929292; cv=fail; b=bpxsMudEMwbmJY2rRfo/naUCRj+650qyOmpP1MgNK+T0noQ24hsKjLj4GbAlTUj3veWsGylDxLLJp8mnz6JeeB+MqhZ1NRTAKNMybX/d2zVW3YANmOKlQFRsHDH1IvL+811y7zVDRh3ZJhzQPqthgmeQWq20PRebbtLsBDs8xsM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748929292; c=relaxed/simple;
-	bh=u2uvhyU+SFRwL5vp8XNU8rysw9V6BuEmQUMdYguJBVs=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MiMxUkB4RJYLVM3WKItNaoVX5fmbEEH5lwsFCKqqyDiTGQ5ysa8wAp7XEebIxfAgTFG9xrUkVcmkTCOFY+OAk5S+5XCA4FrerKx4Rg6jEcVRFdQBaJYhxi2dq0/GLtrInPHpiIwpZfHDW6Fnej/ZychvA6aZ/etbticlhF1T8e8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Cxje8MgF; arc=fail smtp.client-ip=40.107.244.87
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F09291F8BA6;
+	Tue,  3 Jun 2025 05:59:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1748930348; cv=none; b=OvMgherMkBqcwlGxdBN96+J/WM9yJE5XY2Nuhwm35a+r1YYQFE9aHd22776zw8C+7fSJnVWwtBqgdysaP2IrqKtdmRPNTWaTVXHgx9vxV9xPGENqxiTIMPc8+ZFC3Tr6CB3zrNSVOuF1FOn9JFOKwD55XZAwu8ewjWdURWTkmp4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1748930348; c=relaxed/simple;
+	bh=0SZMc9RMAD3OL6AmtIwhsT0nSCxX2GAwLNNSSQsvmVE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OihkIAVqqIQAyL8+T2B9Urj3ZXxdHyjEGPuoowRqm3fFIaTe6U6NAYvdGSWbWIssZHNipTU9ASqnNlfngAAhXVhM8o6O8fYVkx99nJGy0kUykF3rqAkM0DY1t6jwZpg7wjfctU52yVdDZckPBJWIff780EzFA4DQR9wQCjp5gbA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cO6kLy6e; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Cxje8MgF"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=p8g9AdseMXY0nyf+lILSeemJP8/XGkY1b4C3TrbvqX+WvN/qU4RP9wIRBcKpK/urTDPmGBbR8x32UY57liG93L+CjKOXwKsv4OuIse9t9ZhW8pf5YFv3959Onl8FrgSaCTmwzTAhFKS6rwSd809+M9gAJz+pl1OX3im+Uc0T0J2OIKD152MCSPVLX+0Rh2UgJZro46miCAXX/+IPwRnjleaKRLLUPeCAvsxqICW8fYbk/x3q8sEkoajN1+7TqTr3zlUL0h2zwQOM0jo7q8SaZ1UOoRh+OFv2SeGRQidzs7/woqAH9OnKfXaAsgi95+da9k/GywSXvIdk9IU3sa4X/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aSeb71u7Rm1nsA4Y5jWWgVcHnIHOUuaTeIOiZirOzUk=;
- b=HWAK9fpPBv6/MPdUctfgLAP0xri67TwO4DBYQ67gJjczW8KbuK0sFjxx9jMgJsMjSm7AkwukYF2no+ydPgIn4mRSIGcqPr0w/PYFPgAvfdORd0VhtABW0tlUPNzg/SlRwQOOgDKLu1FzcaRZN+bX4a+X9VQQB0JE8bfxgwXhiEVqCfj/GGQ1zIN8up0Abh5AnazmYgFWTFyf1HyaEPKktwSwnlVa0Z8d50e88/2NbRl26j4oZX7OyVmYQXzkZgjJ/rCi/UbAz89C7PCbdHRdBvLkdKxrAuXN1r2u8msJeyX8PkOvpEkC1MWH6EzqLUkJBtjgcOsuurydaVPM+y8dAg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=amd.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aSeb71u7Rm1nsA4Y5jWWgVcHnIHOUuaTeIOiZirOzUk=;
- b=Cxje8MgF2bskXF1P21dDp7HXny3d8DMFXf5CPS+rhesfgAIvFhZ6NUp3pGzq8/6nWRy7b9QR4TfqAhjm0hsSrjSkFxTUy+xtQKUtx7H7j2lmzFaOUnm8CKbdoRS2buq6qxDWkaQBPZTxoEAa3VI8T5itUdct9lejdmwrOyhVcM+l3WLFJx3S/zSwbdtvrJnYeDKkL5Z5byoqDU030XMa3kXOlyERG6JILYIvyEGkQnA+7KsIpxe/z9tmdtE+9GgK6GnDXoRiPMwhEp/l5+j028S0c8k/Bhrxr9aYhjg/nBEA05XiugU8l9mRLHyHtyUNvbxhBMqGyjfBn9djeEvLgg==
-Received: from BLAPR03CA0110.namprd03.prod.outlook.com (2603:10b6:208:32a::25)
- by DS0PR12MB8019.namprd12.prod.outlook.com (2603:10b6:8:14e::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8769.30; Tue, 3 Jun
- 2025 05:41:24 +0000
-Received: from BL6PEPF00020E61.namprd04.prod.outlook.com
- (2603:10b6:208:32a:cafe::c4) by BLAPR03CA0110.outlook.office365.com
- (2603:10b6:208:32a::25) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8769.18 via Frontend Transport; Tue,
- 3 Jun 2025 05:41:24 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BL6PEPF00020E61.mail.protection.outlook.com (10.167.249.22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8792.29 via Frontend Transport; Tue, 3 Jun 2025 05:41:23 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 2 Jun 2025
- 22:41:09 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Mon, 2 Jun
- 2025 22:41:08 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Mon, 2 Jun 2025 22:41:06 -0700
-Date: Mon, 2 Jun 2025 22:41:05 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <kevin.tian@intel.com>, <corbet@lwn.net>, <will@kernel.org>,
-	<bagasdotme@gmail.com>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
-	<shuah@kernel.org>, <jsnitsel@redhat.com>, <nathan@kernel.org>,
-	<peterz@infradead.org>, <yi.l.liu@intel.com>, <mshavit@google.com>,
-	<praan@google.com>, <zhangzekun11@huawei.com>, <iommu@lists.linux.dev>,
-	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <patches@lists.linux.dev>,
-	<mochs@nvidia.com>, <alok.a.tiwari@oracle.com>, <vasant.hegde@amd.com>,
-	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v5 14/29] iommufd/viommu: Add IOMMUFD_CMD_HW_QUEUE_ALLOC
- ioctl
-Message-ID: <aD6K8ZuAH+zjXIx2@Asurada-Nvidia>
-References: <cover.1747537752.git.nicolinc@nvidia.com>
- <5c509f092ba61d4c0852ba57b530888ffb864ccb.1747537752.git.nicolinc@nvidia.com>
- <20250530161455.GE233377@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cO6kLy6e"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1748930347; x=1780466347;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=0SZMc9RMAD3OL6AmtIwhsT0nSCxX2GAwLNNSSQsvmVE=;
+  b=cO6kLy6eAA+cP2piXZhj797U5e0CPwiogM/v4azF1dR4T1HqpKXAY9gJ
+   5iWvv2KHpx82l8KWFyZ0pvGD5PU52NR+cJ+o/xmmxmyIdvGb7DiwzCARC
+   Y54zuA4KXQMFT3/jb3fx5vBCXux3jwoF5Tb1gVzH8s8YdIW+icVPgP3Fw
+   Y+r+vGKnnwy1xT7/CAmDvEB0uFeaoBdjAgYQaDn87Q+OukpJ2amvHXQhd
+   GJuFkt7nKLsA+VW90hsqEAdHCiulWM0TbzpUdlWHVS04bLJ+d5XKaS+fw
+   LhfkDCbV9DAzropGgGds3liN3CldZOjfCXLiA0W54NYd0869VFWf6jzWn
+   g==;
+X-CSE-ConnectionGUID: rMMsdll/SlGFCjaoR0lufw==
+X-CSE-MsgGUID: jzcPIKT4SeavOdRVKmkAHA==
+X-IronPort-AV: E=McAfee;i="6700,10204,11451"; a="73485491"
+X-IronPort-AV: E=Sophos;i="6.16,205,1744095600"; 
+   d="scan'208";a="73485491"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2025 22:59:05 -0700
+X-CSE-ConnectionGUID: YBlVT30SRWmnzwryX2WviQ==
+X-CSE-MsgGUID: Ve/oAFGISO6sRzGF6gBGcA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,205,1744095600"; 
+   d="scan'208";a="149801571"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by orviesa004.jf.intel.com with ESMTP; 02 Jun 2025 22:58:59 -0700
+Date: Tue, 3 Jun 2025 13:52:27 +0800
+From: Xu Yilun <yilun.xu@linux.intel.com>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: kvm@vger.kernel.org, sumit.semwal@linaro.org, christian.koenig@amd.com,
+	pbonzini@redhat.com, seanjc@google.com, alex.williamson@redhat.com,
+	jgg@nvidia.com, dan.j.williams@intel.com, aik@amd.com,
+	linux-coco@lists.linux.dev, dri-devel@lists.freedesktop.org,
+	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+	vivek.kasireddy@intel.com, yilun.xu@intel.com,
+	linux-kernel@vger.kernel.org, lukas@wunner.de, yan.y.zhao@intel.com,
+	daniel.vetter@ffwll.ch, leon@kernel.org, baolu.lu@linux.intel.com,
+	zhenzhong.duan@intel.com, tao1.su@intel.com,
+	linux-pci@vger.kernel.org, zhiw@nvidia.com, simona.vetter@ffwll.ch,
+	shameerali.kolothum.thodi@huawei.com, iommu@lists.linux.dev,
+	kevin.tian@intel.com
+Subject: Re: [RFC PATCH 27/30] PCI/TSM: Add PCI driver callbacks to handle
+ TSM requirements
+Message-ID: <aD6Nm7bBGddTc+pr@yilunxu-OptiPlex-7050>
+References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
+ <20250529053513.1592088-28-yilun.xu@linux.intel.com>
+ <yq5att4yjns2.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250530161455.GE233377@nvidia.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF00020E61:EE_|DS0PR12MB8019:EE_
-X-MS-Office365-Filtering-Correlation-Id: aa3d182c-7bda-4590-1504-08dda26146e8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|7416014|376014|1800799024|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?JdF7qz4h0uLSjSVDDnx7RQvoWkNqOHSTQWiCtMdUKWLbyC9GoTjCwRn1PzSw?=
- =?us-ascii?Q?aSXo6hQSR9PWdYtO26yTp9RB2OkuNvVezWgDjrQGmzXRCT2d1TTROF0eoscM?=
- =?us-ascii?Q?EvHjN1Bx25V7Enua7logzDO+2NH6McQYLq74HKE1R9RMo72XoNYsCQWe37Km?=
- =?us-ascii?Q?rdkXqNxLGg87ALD+TGM6C5/5ZWkeY2AHANh6dd/04ZkFUaLv17HYD0NC8kFc?=
- =?us-ascii?Q?ntw2v0E93lw3kUgrMoC5gcUHkx5ibqxPbCb7ixgztHr1EJLNMDArMhutlRy3?=
- =?us-ascii?Q?TZ8ZhDL7qvOQgAgZVjzlSaMX1nDtluDr2uL0ow55yQHaemkpujaoOTKgSaWh?=
- =?us-ascii?Q?kM0lWuZdT435/u5TQx/szcQ+Mq0zxjxlDTgzPMe7fqA4KUH8s4EA+Jgy5Nmz?=
- =?us-ascii?Q?7tJm3UJpOnOvdAtkXZCJMHUBrABuJ/8u4uyDBEm1m3SCDJ17D14jGLApP1eY?=
- =?us-ascii?Q?lOFiwARn0eNJms1rMT8nNfbQQ1DrVT7Sb/JGyRtlfSQqQ+Vdq4uChE/CnETm?=
- =?us-ascii?Q?/M0QL+H4idctx/PStHkmabiVaF+tSRRTtixAfj9ppPJbhTA+hdFY+/7ZzvMA?=
- =?us-ascii?Q?s+fJP60m09gE8ezSET3ii6NWQrw8erd2GUIzimIgOTakbgc6SN7SeLhYc0PX?=
- =?us-ascii?Q?2j+VVpcrxRf6vtT0OD6iNr5a7w7Em/nztUcrNC61QJzZtG2GcCwmQgTYSuV8?=
- =?us-ascii?Q?ALGyCgeqZ8Y5PIvsFMdu3lXPcRasNSxPYgRhlHtXLjHlG6NBr/ABgq3RIjUf?=
- =?us-ascii?Q?3Gz/PqJ9ZRym6YGaXY//CVB5mM05joWCUHTSPDYDKnuTzbRb8lSvVtwes/hI?=
- =?us-ascii?Q?2Zdl9B2SNg/fsvCqsRUso6gKDAo5e8pslPnyTDNKQfWB6NJ1oj2MKAyWxVWP?=
- =?us-ascii?Q?9hAOxbya8s2OQ0XqFe1Sr5M6c8DnXMV67TL9yHxS+wrUCWfhrPe1d4jvQmC+?=
- =?us-ascii?Q?hODe8OY5mby0pHIFXo6f9Ou+7i9pIgi2v6wS0P9DoiO+PEfj/1EE1V1A0uGZ?=
- =?us-ascii?Q?F7MeawrPVruxpO7+mzJxjmpAuADdw4BHZreAyV/3IszFFmWpYwBznfBW3dCk?=
- =?us-ascii?Q?vO4t2PRUXUpETVJtrD60JCeIA5LX2PR76SOOem9RebyWI2iwVBEurZ9OkfPm?=
- =?us-ascii?Q?hLWeibqSX9dZGO3OQd4ojfLxHBb7RGoCXIXAIoRr4KafJ39t6PsadSo/dpcV?=
- =?us-ascii?Q?9oPUYVJsdFwJJwfASEw+r//VU9j4wueBEZWXhmqxGeqbfbQMTwT2NpuICBkv?=
- =?us-ascii?Q?9qzOuDyCN7FP1FtYxWhdCmwEfgBVT2uLrmWNCZM1C6kPLYFdMca05Wxa+6RW?=
- =?us-ascii?Q?96vMdt/PMiKOX7gE3yob/61xCe3KpWE1bNwU2+AbjQlN7HZhRFD0O5fGJVy2?=
- =?us-ascii?Q?itJXEfI6Ic/rC0Ax9oK/llYmrubfTsLV80Rz+NBcLmtpSxq+WLixcwyRmLoH?=
- =?us-ascii?Q?wkyM5+RVdjsGUG1iIUP04yHnO21bFEP+ecslosSUMEJc98hbYAkfIq1xFVQ+?=
- =?us-ascii?Q?JAL23pxXxbNNE+ussUjzKOy/uU3sYcil8oUG?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(7416014)(376014)(1800799024)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2025 05:41:23.9594
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa3d182c-7bda-4590-1504-08dda26146e8
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL6PEPF00020E61.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8019
+In-Reply-To: <yq5att4yjns2.fsf@kernel.org>
 
-On Fri, May 30, 2025 at 01:14:55PM -0300, Jason Gunthorpe wrote:
-> Put a size_t in the driver ops:
+On Mon, Jun 02, 2025 at 06:36:37PM +0530, Aneesh Kumar K.V wrote:
+> Xu Yilun <yilun.xu@linux.intel.com> writes:
 > 
->  size_t size_viommu;
->  size_t size_hw_queue;
+> > Add optional PCI driver callbacks to notify TSM events. For now, these
+> > handlers may be called during pci_tsm_unbind(). By calling these
+> > handlers, TSM driver askes for external collaboration to finish entire
+> > TSM unbind flow.
+> >
+> > If platform TSM driver could finish TSM bind/unbind all by itself, don't
+> > call these handlers.
+> >
+> > Host may need to configure various system components according to
+> > platform trusted firmware's requirements. E.g. for Intel TDX Connect,
+> > host should do private MMIO mapping in S-EPT, trusted DMA setup, device
+> > ownership claiming and device TDISP state transition. Some operations are
+> > out of control of PCI TSM, so need collaboration by external components
+> > like IOMMU driver, KVM.
+> >
+> > Further more, trusted firmware may enforce executing these operations
+> > in a fixed sequence. E.g. Intel TDX Connect enforces the following
+> > sequences for TSM unbind:
+> >
+> >   1. STOP TDI via TDISP message STOP_INTERFACE
+> >   2. Private MMIO unmap from Secure EPT
+> >   3. Trusted Device Context Table cleanup for the TDI
+> >   4. TDI ownership reclaim and metadata free
+> >
+> > PCI TSM could do Step 1 and 4, but need KVM for Step 2 and IOMMU driver
+> > for Step 3. While it is possible TSM provides finer grained APIs like
+> > tdi_stop() & tdi_free(), and the caller ensures the sequence, it is
+> > better these specific enforcement could be managed in platform TSM
+> > driver. By introducing TSM handlers, platform TSM driver controls the
+> > operation sequence and notify other components to do the real work.
+> >
+> > Currently add 3 callbacks for TDX Connect. disable_mmio() is for
+> > VFIO to invalidate MMIO so that KVM could unmap them from S-EPT.
+> > recover_mmio() is to re-validate MMIO so that KVM could map them
+> > again for shared assigned device. disable_trusted_dma() is to cleanup
+> > trusted IOMMU setup.
+> >
+> > Signed-off-by: Xu Yilun <yilun.xu@linux.intel.com>
+> > ---
+> >  include/linux/pci-tsm.h | 7 +++++++
+> >  include/linux/pci.h     | 3 +++
+> >  2 files changed, 10 insertions(+)
+> >
+> > diff --git a/include/linux/pci-tsm.h b/include/linux/pci-tsm.h
+> > index 737767f8a9c5..ed549724eb5b 100644
+> > --- a/include/linux/pci-tsm.h
+> > +++ b/include/linux/pci-tsm.h
+> > @@ -157,6 +157,13 @@ struct pci_tsm_ops {
+> >  	int (*accept)(struct pci_dev *pdev);
+> >  };
+> >  
+> > +/* pci drivers callbacks for TSM */
+> > +struct pci_tsm_handlers {
+> > +	void (*disable_mmio)(struct pci_dev *dev);
+> > +	void (*recover_mmio)(struct pci_dev *dev);
+> > +	void (*disable_trusted_dma)(struct pci_dev *dev);
+> > +};
+> > +
+> >  enum pci_doe_proto {
+> >  	PCI_DOE_PROTO_CMA = 1,
+> >  	PCI_DOE_PROTO_SSESSION = 2,
+> > diff --git a/include/linux/pci.h b/include/linux/pci.h
+> > index 5f37957da18f..4f768b4658e8 100644
+> > --- a/include/linux/pci.h
+> > +++ b/include/linux/pci.h
+> > @@ -545,6 +545,7 @@ struct pci_dev {
+> >  #endif
+> >  #ifdef CONFIG_PCI_TSM
+> >  	struct pci_tsm *tsm;		/* TSM operation state */
+> > +	void *trusted_dma_owner;
+> >  #endif
+> >  	u16		acs_cap;	/* ACS Capability offset */
+> >  	u8		supported_speeds; /* Supported Link Speeds Vector */
+> > @@ -957,6 +958,7 @@ struct module;
+> >   * @sriov_get_vf_total_msix: PF driver callback to get the total number of
+> >   *              MSI-X vectors available for distribution to the VFs.
+> >   * @err_handler: See Documentation/PCI/pci-error-recovery.rst
+> > + * @tsm_handler: Optional driver callbacks to handle TSM requirements.
+> >   * @groups:	Sysfs attribute groups.
+> >   * @dev_groups: Attributes attached to the device that will be
+> >   *              created once it is bound to the driver.
+> > @@ -982,6 +984,7 @@ struct pci_driver {
+> >  	int  (*sriov_set_msix_vec_count)(struct pci_dev *vf, int msix_vec_count); /* On PF */
+> >  	u32  (*sriov_get_vf_total_msix)(struct pci_dev *pf);
+> >  	const struct pci_error_handlers *err_handler;
+> > +	struct pci_tsm_handlers *tsm_handler;
+> >  	const struct attribute_group **groups;
+> >  	const struct attribute_group **dev_groups;
+> >  	struct device_driver	driver;
+> > -- 
+> > 2.25.1
 > 
-> Have the driver set it via a macro like INIT_RDMA_OBJ_SIZE
+> It looks like the TSM feature is currently interacting with several
+> components: struct pci_driver, VFIO, iommufd, and pci_tsm_ops.
 > 
-> #define INIT_RDMA_OBJ_SIZE(ib_struct, drv_struct, member)                      \
-> 	.size_##ib_struct =                                                    \
-> 		(sizeof(struct drv_struct) +                                   \
-> 		 BUILD_BUG_ON_ZERO(offsetof(struct drv_struct, member)) +      \
-> 		 BUILD_BUG_ON_ZERO(                                            \
-> 			 !__same_type(((struct drv_struct *)NULL)->member,     \
-> 				      struct ib_struct)))
+> Should we consider limiting this scattering? Would it make sense to
+> encapsulate this logic within pci_tsm_ops?
+
+I'm keeping on trying which is a better solution. Encapsulating all in
+pci_tsm_ops is the most attactive one from SW POV, but only if the TSM
+operations has no impact/dependency to other components. Unfortunately
+it is not true, e.g. the private MMIO mapping/unmapping is actually
+a writting to leaf S-EPT entry, but it requires non-leaf page-table-page
+management in KVM.
+
+Thanks,
+Yilun
+
 > 
-> Which proves the core structure is at the front.
-> 
-> Then the core code can allocate the object along with enough space for
-> the driver and call a driver function to init the driver portion of
-> the already allocated object.
-
-I found that the size_viommu or size_hw_queue might not work using
-a static macro as that RDMA one does:
-
- - The size in vIOMMU case is type dependent. E.g. smmuv3 driver
-   uses one iommu_ops to support two types: vSMMU and vCMDQ
-
- - Changing to a type-indexed size array would eventually result
-   some driver having a big size array, as the type number grows
-
-I came up with two alternatives:
-
-1) Define a get_viommu_size(unsigned int type) op: use a similar
-   macro in the driver function to return with:
-
-#define VIOMMU_STRUCT_SIZE(ib_struct, drv_struct, member)                      \
-	    (sizeof(drv_struct) +                                              \
- 		 BUILD_BUG_ON_ZERO(offsetof(drv_struct, member)) +             \
- 		 BUILD_BUG_ON_ZERO(!__same_type(((drv_struct *)NULL)->member,  \
- 						ib_struct)))
-
-	if (type == SMMU)
-		return VIOMMU_STRUCT_SIZE(
-			struct arm_vsmmu, struct iommufd_viommu, core);
-	return 0;
-
-2) Let core allocate with sizeof(struct iommufd_viommu), then let
-   driver krealloc during the viommu_init op call:
-
-	viommu = kzalloc(sizeof(struct iommufd_viommu), ...);
-	...
-	viommu = ops->viommu_init(viommu, dev, parent_dom, type);
-
-I am guessing that you may prefer 1 over 2? Or any better idea?
-
-Thanks
-Nicolin
+> -aneesh
