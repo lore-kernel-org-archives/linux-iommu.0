@@ -1,171 +1,80 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B32325D21C;
-	Tue,  3 Jun 2025 06:27:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A75838B;
+	Tue,  3 Jun 2025 12:18:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748932052; cv=none; b=LxHvmE1z2cIifD/UqzMj85ihMkHBtxEOOFm6zWpzcG3jRNeTo8SfKwrFziW9nAY01URul3PxU4apNz9JJS1PGJZD2jcqoblcZp3y/rkKWl7AmoVmwDdqW2JkNQ0b4iIgFlhlXG9x3S59xlxkwROnWy1GR9j3sVIPjZ49xBEILI4=
+	t=1748953127; cv=none; b=gmpcH+DT27z0X4Ci+POnNUk7RnX+YsfHy7N4ky+H3RNnIvT1HBWSfyQz37SUnwFpSa615QxqBdFT9cAK7GT4XNIaIEHWdFTeorh3NHBAs1V+jsfOYpxx5umVQSH5EA8Dlpna1jOrNLokhZcuyVE6i4aPqZm+DRHacilvch/tztg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748932052; c=relaxed/simple;
-	bh=IWFtaiDn/XO87fJC+ux27MBKi9oToFneDr8KRC5wsd4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bRofTm8vcIStCP6A7SUG/x0skL+9tGlYCgiksRhInOda7F7cRg2dXPCBX5+V1/5uhLmjBzHJM9cYfmlFnEWE8D08ZSt9ez1YFpZfXX1d0R79q9XUW+Wls6r6PJgOjlI2gEQ1n+JESHCemCwLxSQ7W6ldY9Z0hp2kaUVcN+3VgBM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N0B6ORZk; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1748953127; c=relaxed/simple;
+	bh=lIbv/HFizZ/7M6MW5NkVI5vENx0VdMaYNBVAP8G9wfw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=Spg2YIwc11DrWqvzOovzdyDM8YQYs40nv4a3LiwIqKQNJqcZLwOZ7uWe/wZr35uSgDqkaGmWK8iQSEyx8k9EK2faz+GuXsWXLbL7p0eYMz1/+sn5r88khmRtsrPnY3LuWH4CWUF2MifBff3IuQ+lVEzpB+ylDqMkYBd7AIquV0Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gc00Lol0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N0B6ORZk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1748932050; x=1780468050;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=IWFtaiDn/XO87fJC+ux27MBKi9oToFneDr8KRC5wsd4=;
-  b=N0B6ORZk+bxX3u4CffTeZf+QCag0rWLrzeeEdYMiWoAtn5eiNwrX/zbT
-   yzNEDQ2dK92gG8bLlHsubAcfkPsRMnwAKmxFpmKyma7OR3VDguCP/pWiX
-   nf+bT99LYxm8KQEaFVKhGVU5ynV/sGjnbxW50ZAEMoW3BgcCPTiOcnjRl
-   AzK/Nemly+nvR1o/YPFFi2CW278GWXvqn8SgVTmLDvZQ+cutA0AjNIj29
-   epN0YyDR9mo+NdYk4TkZ5HUDJEnb84qX4JRWsArWfr2U687Y3z1lnm/L5
-   WjNVmCptKjjerbNIBGKQtP5s0hxaEGCW62ep7b+o4YyoOde/gXGKQ7QGx
-   A==;
-X-CSE-ConnectionGUID: Uaxe7h4XRFWcabXgYzTblg==
-X-CSE-MsgGUID: 6ctWiYsOTQ6gYqeKE4IAGA==
-X-IronPort-AV: E=McAfee;i="6700,10204,11451"; a="62314599"
-X-IronPort-AV: E=Sophos;i="6.16,205,1744095600"; 
-   d="scan'208";a="62314599"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2025 23:27:29 -0700
-X-CSE-ConnectionGUID: BBpJLW0fTIe4Bl5L9UVquA==
-X-CSE-MsgGUID: NtyakwF0TsCvZXIGBKTDHw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,205,1744095600"; 
-   d="scan'208";a="149539306"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orviesa003.jf.intel.com with ESMTP; 02 Jun 2025 23:27:23 -0700
-Date: Tue, 3 Jun 2025 14:20:51 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: kvm@vger.kernel.org, sumit.semwal@linaro.org, christian.koenig@amd.com,
-	pbonzini@redhat.com, seanjc@google.com, alex.williamson@redhat.com,
-	jgg@nvidia.com, dan.j.williams@intel.com, aik@amd.com,
-	linux-coco@lists.linux.dev, dri-devel@lists.freedesktop.org,
-	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-	vivek.kasireddy@intel.com, yilun.xu@intel.com,
-	linux-kernel@vger.kernel.org, lukas@wunner.de, yan.y.zhao@intel.com,
-	daniel.vetter@ffwll.ch, leon@kernel.org, baolu.lu@linux.intel.com,
-	zhenzhong.duan@intel.com, tao1.su@intel.com,
-	linux-pci@vger.kernel.org, zhiw@nvidia.com, simona.vetter@ffwll.ch,
-	shameerali.kolothum.thodi@huawei.com, iommu@lists.linux.dev,
-	kevin.tian@intel.com
-Subject: Re: [RFC PATCH 17/30] iommufd/device: Add TSM Bind/Unbind for TIO
- support
-Message-ID: <aD6UQy4KwKcdSvVE@yilunxu-OptiPlex-7050>
-References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
- <20250529053513.1592088-18-yilun.xu@linux.intel.com>
- <yq5awm9ujouz.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gc00Lol0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2968FC4CEF3;
+	Tue,  3 Jun 2025 12:18:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1748953127;
+	bh=lIbv/HFizZ/7M6MW5NkVI5vENx0VdMaYNBVAP8G9wfw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=Gc00Lol03c0COxKmvkykuO0jByZSKmHnfcwjWFSpd6RA8+SiQxINw7k/2NFtPK602
+	 gLr/C/j70VUFHjw/e3SP5v0Bdar1wEDKFUn0lA8NM07vkCr8ivib4fNeqDGMmFwQst
+	 mThEI/dcm0pDgQPuzqx4a+ovt62auea6kGLYGjG1y5Dmr0P7TPdW1Q9psO+/KlpRzG
+	 hzQ4fd34laFoSdZNIvb61+ZWmXoTkpwW2ziS37pQhTapFUIFqQ7lsbopv6qIlCzCH0
+	 jB4jIG6x2gcrvNjAzq9CDbnCDlhQS2F0qvijFYreO1T6iAi3e9UMnUb8OYPamEelcP
+	 WdjE8VE3Pg6fg==
+From: Andreas Hindborg <a.hindborg@kernel.org>
+To: "Abdiel Janulgue" <abdiel.janulgue@gmail.com>
+Cc: <rust-for-linux@vger.kernel.org>,  <daniel.almeida@collabora.com>,
+  <dakr@kernel.org>,  <robin.murphy@arm.com>,  <aliceryhl@google.com>,
+  "Miguel Ojeda" <ojeda@kernel.org>,  "Alex Gaynor"
+ <alex.gaynor@gmail.com>,  "Boqun Feng" <boqun.feng@gmail.com>,  "Gary Guo"
+ <gary@garyguo.net>,  =?utf-8?Q?Bj=C3=B6rn?= Roy Baron
+ <bjorn3_gh@protonmail.com>,  "Benno
+ Lossin" <benno.lossin@proton.me>,  "Trevor Gross" <tmgross@umich.edu>,
+  "Valentin Obst" <kernel@valentinobst.de>,
+  <linux-kernel@vger.kernel.org>,  "Christoph Hellwig" <hch@lst.de>,
+  "Marek Szyprowski" <m.szyprowski@samsung.com>,  <airlied@redhat.com>,
+  <iommu@lists.linux.dev>
+Subject: Re: [PATCH v15 09/11] rust: dma: use `dma::Device` in
+ `CoherentAllocation`
+In-Reply-To: <20250317185345.2608976-10-abdiel.janulgue@gmail.com> (Abdiel
+	Janulgue's message of "Mon, 17 Mar 2025 20:52:16 +0200")
+References: <20250317185345.2608976-1-abdiel.janulgue@gmail.com>
+	<lGibBfz2PdlndvIn_JP9wiJAquaYfdfMYQxvpobEu3OqT9GZdduSYbeUl5VbO6j_EffHPosz4G8lpzZo4OhLGQ==@protonmail.internalid>
+	<20250317185345.2608976-10-abdiel.janulgue@gmail.com>
+User-Agent: mu4e 1.12.9; emacs 30.1
+Date: Tue, 03 Jun 2025 14:18:24 +0200
+Message-ID: <87bjr5588f.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <yq5awm9ujouz.fsf@kernel.org>
+Content-Type: text/plain
 
-On Mon, Jun 02, 2025 at 06:13:16PM +0530, Aneesh Kumar K.V wrote:
-> Xu Yilun <yilun.xu@linux.intel.com> writes:
-> 
-> ....
-> 
-> > +/**
-> > + * iommufd_device_tsm_bind - Move a device to TSM Bind state
-> > + * @idev: device to attach
-> > + * @vdev_id: Input a IOMMUFD_OBJ_VDEVICE
-> > + *
-> > + * This configures for device Confidential Computing(CC), and moves the device
-> > + * to the TSM Bind state. Once this completes the device is locked down (TDISP
-> > + * CONFIG_LOCKED or RUN), waiting for guest's attestation.
-> > + *
-> > + * This function is undone by calling iommufd_device_tsm_unbind().
-> > + */
-> > +int iommufd_device_tsm_bind(struct iommufd_device *idev, u32 vdevice_id)
-> > +{
-> > +	struct iommufd_vdevice *vdev;
-> > +	int rc;
-> > +
-> > +	if (!dev_is_pci(idev->dev))
-> > +		return -ENODEV;
-> > +
-> > +	vdev = container_of(iommufd_get_object(idev->ictx, vdevice_id, IOMMUFD_OBJ_VDEVICE),
-> > +			    struct iommufd_vdevice, obj);
-> > +	if (IS_ERR(vdev))
-> > +		return PTR_ERR(vdev);
-> > +
-> > +	if (vdev->dev != idev->dev) {
-> > +		rc = -EINVAL;
-> > +		goto out_put_vdev;
-> > +	}
-> > +
-> > +	mutex_lock(&idev->igroup->lock);
-> > +	if (idev->vdev) {
-> > +		rc = -EEXIST;
-> > +		goto out_unlock;
-> > +	}
-> > +
-> > +	rc = iommufd_vdevice_tsm_bind(vdev);
-> > +	if (rc)
-> > +		goto out_unlock;
-> > +
-> > +	idev->vdev = vdev;
-> > +	refcount_inc(&vdev->obj.users);
-> > +	mutex_unlock(&idev->igroup->lock);
-> > +
-> > +	/*
-> > +	 * Pairs with iommufd_device_tsm_unbind() - catches caller bugs attempting
-> > +	 * to destroy a bound device.
-> > +	 */
-> > +	refcount_inc(&idev->obj.users);
-> >
-> 
-> Do we really need this refcount_inc? As I understand it, the objects
+Hi Abdiel,
 
-The idev refcount is not necessary, it is just to "catch caller bug".
+"Abdiel Janulgue" <abdiel.janulgue@gmail.com> writes:
 
-> aren't being pinned directly. Instead, the reference count seems to be
-> used more as a way to establish an object hierarchy, ensuring that
-> objects are freed in the correct order.
-> 
-> In vfio_pci_core_close_device(), you’re decrementing the reference, and
-> on the iommufd side, we’re covered because the VFIO bind operation takes
-> a file reference (fget)—so iommufd_fops_release() won’t be called
-> prematurely.
+> From: Danilo Krummrich <dakr@kernel.org>
+>
+> Require a `&dyn dma::Device` in `CoherentAllocation`, such that DMA
+> memory can only be allocated with devices on potentially DMA capable
+> busses.
+>
+> Signed-off-by: Danilo Krummrich <dakr@kernel.org>
+> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 
-Correct.
+Did you see my comment on v14 [1]?
 
-> 
-> Wouldn’t it be simpler to skip the reference count increment altogether
-> and just call tsm_unbind in the virtual device’s destroy callback?
-> (iommufd_vdevice_destroy())
+Best regards,
+Andreas Hindborg
 
-The vdevice refcount is the main concern, there is also an IOMMU_DESTROY
-ioctl. User could just free the vdevice instance if no refcount, while VFIO
-is still in bound state. That seems not the correct free order.
 
-Thanks,
-Yilun
+[1] https://lore.kernel.org/lkml/87y0x2igjz.fsf@kernel.org/
 
-> 
-> > +	goto out_put_vdev;
-> > +
-> > +out_unlock:
-> > +	mutex_unlock(&idev->igroup->lock);
-> > +out_put_vdev:
-> > +	iommufd_put_object(idev->ictx, &vdev->obj);
-> > +	return rc;
-> > +}
-> > +EXPORT_SYMBOL_NS_GPL(iommufd_device_tsm_bind, "IOMMUFD");
-> 
-> -aneesh
