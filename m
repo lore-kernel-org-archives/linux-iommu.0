@@ -1,260 +1,307 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2050.outbound.protection.outlook.com [40.107.243.50])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A456E1DED4A
-	for <iommu@lists.linux.dev>; Wed,  4 Jun 2025 16:39:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749055178; cv=fail; b=rkQ690jTVQndRhPfqJAaYPhkdnRelXwEX1oJpXAIggmgFHVDSi1SAK9uuv77q6FYOmrVxjW3wPw80DmGasxJNadIr+4unxPch+MNeVyDDv1zLzW5rFlElV9VqvUcUmF3RBr+CsQXqgf4e0qp7GiDm/5YDyaeY2Yqxpn19Z63ZhE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749055178; c=relaxed/simple;
-	bh=0rk3R9SZ+AXNmTy8D21OmTkESyjvQg71OQKf90faPW8=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nSzmGTwLgFZTX4m7J8dP/igWRayjmDsvPIB6/P2my+NeZY35hGEcZ3BSKB8UEmZiBu/b3WTLTOzAgr+1aL0gHT6GvVdxrsd85QNPdX6jMTW3X2kiUK34V58TDnFcUHMc/MN4XyGYQ3paHmXoy+2EmxLlCtktr5DJ/IQal4J9y9k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=SZy2zeh+; arc=fail smtp.client-ip=40.107.243.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E98B32C85
+	for <iommu@lists.linux.dev>; Wed,  4 Jun 2025 17:12:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1749057123; cv=none; b=YbE+Wp7H8GQBCljT4Ecd72E7gXcqgemn7hvZEHxHAIE9bpAsFUJtm7lHNxamFbJE3FtGZpAu/xLgqgNq4CK+HI27UpntQSJ4kRTcwR64shPHRjyScg9vWyT5oeDUhW0hMvfqko6UwLb3iZtbi5rSVhvstQ2PvzLP0NdD3VR/ngQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1749057123; c=relaxed/simple;
+	bh=HiHytsPGnbds4NKPpbjAmG1nUz+qlL9ytwVZGIeGhZ4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nt9iKx/L4SvaRyYZeAILHtSnDujwNK8EOQQgM62Hhbdd3y+cOUMF9YKhs1daP3kZ4c8/p2W1rIQRrMB4o1nkHVp+R+f14jBsuzt8r9CKW0i0UIDSYSL6SDh7IDEl6Bx33+k9eg7mnujfZYtUyq91kanhYSpQVJwD6Uen6Suh2sc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Kv193UvV; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="SZy2zeh+"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=sjnY8KxTbWrfSq51jpsCIBushftu94KvgS327GbUjHkhdF7iPXQGXK+0+GLvL+QEFYgp+X/D2o3krY7RwOIZtGQdu+S8zAdRg1lVPuBnaZ0Xu6mEBSK+2Z4PTw9teIdcgVER/gpdS3NswjmTm7UDSObHSRVKjnpNkF4ssDJKK0f9xTtTTCy7b6TvnIDkhTt50tZYwVlrtgDrU4oZQcSgTKuqiTNVb0fbDSeXK0YngkWnczATxvqz1QcRcVJng29dCcFPoz+jVVlp7aqgUIrapCt8Jj2OaXxcdcLJBY5PYL//XXvhuYXuhAtKLv2UDlGY9nn4uNWUknRi6ybwVLljZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Dzu4iNpyeuOBW8qNSg9xV+4SnO95FhoMf0dI192aRfA=;
- b=ZVhEbL7Z8wMNRYPSXEOMv4R6BC2UmemVoi18R38wbVAWlpUugEBwoLRF8WEVBrvloqZDNpoRwoqRESRNiI79/JybpO8ke+XRxyXOJbvtycZGldwOWwEvV75QJY89VAUX9I/fMk40xHGY6ysTpZsSzrml7bdgl6eaQA8Reg+4q2AV/X6rOrInHvzwHKQThHlLz9Ic7XRUAZmrhBSzKcE36ws5kIZMlB9ufACOrpbjvflp6X1baXpSgfl+utxsg6lnWH8Y0Etcpf1TWABQvasiopMWosjkn7mPH+gEKMvuxKx2hI/NUyazm7heI27KnC5cn5p/i7TQ2i8YU0a6i8AHJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Dzu4iNpyeuOBW8qNSg9xV+4SnO95FhoMf0dI192aRfA=;
- b=SZy2zeh++PI7y7Qg8oioZVqypS3JwEtIbKFvB+5gqCBhXAES5bLccly3nHdbBfW9SQypSBkP7LBxuF89jX/kSLpiASBH2IS0s+k0It7cX0LxSRb/QR1gWFfWqUYKyG0AInIHd6R5DJ2zGHpHzZYFPlMEk6/R3HotE+9vy2LiCSg=
-Received: from MW4P223CA0023.NAMP223.PROD.OUTLOOK.COM (2603:10b6:303:80::28)
- by SA0PR12MB4382.namprd12.prod.outlook.com (2603:10b6:806:9a::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8792.34; Wed, 4 Jun
- 2025 16:39:32 +0000
-Received: from CO1PEPF000075F0.namprd03.prod.outlook.com
- (2603:10b6:303:80:cafe::22) by MW4P223CA0023.outlook.office365.com
- (2603:10b6:303:80::28) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8769.18 via Frontend Transport; Wed,
- 4 Jun 2025 16:39:32 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1PEPF000075F0.mail.protection.outlook.com (10.167.249.39) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8792.29 via Frontend Transport; Wed, 4 Jun 2025 16:39:31 +0000
-Received: from BLRDHSRIVAS.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 4 Jun
- 2025 11:39:28 -0500
-From: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-To: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>,
-	<iommu@lists.linux.dev>, <Vasant.Hegde@amd.com>,
-	<dheerajkumar.srivastava@amd.com>
-Subject: [PATCH v6 8/8] iommu/amd: Add documentation for AMD IOMMU debugfs support
-Date: Wed, 4 Jun 2025 22:06:47 +0530
-Message-ID: <20250604163647.1439-9-dheerajkumar.srivastava@amd.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20250604163647.1439-1-dheerajkumar.srivastava@amd.com>
-References: <20250604163647.1439-1-dheerajkumar.srivastava@amd.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Kv193UvV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1749057119;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=fDmYKcTik3HdHnbp9kttCgGiDzVQ6UMn5CSkP0a5vfo=;
+	b=Kv193UvV4vQV8qlWGEvQZAlGDkFKkphnPJPJ+WQ7uTB6CgVJxSWRGpEbmJfrnQuN9GglfQ
+	xWlub14t9i2t6pvc0WaURB1ZKyg8paDyXREk33fl/f6L9T2Y4bXby0G7UvCf9R/EN43Kxi
+	faiudvNvXBhLS7+NhMR7ZXCVrBiJWoE=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-384-Y9QOZt6nN4yo27WscSmTPw-1; Wed, 04 Jun 2025 13:11:58 -0400
+X-MC-Unique: Y9QOZt6nN4yo27WscSmTPw-1
+X-Mimecast-MFC-AGG-ID: Y9QOZt6nN4yo27WscSmTPw_1749057117
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-450cb902173so575065e9.1
+        for <iommu@lists.linux.dev>; Wed, 04 Jun 2025 10:11:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1749057117; x=1749661917;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=fDmYKcTik3HdHnbp9kttCgGiDzVQ6UMn5CSkP0a5vfo=;
+        b=uSccaQ/0fuO4YmP2RUMNgoQAgBxCVqGf7QbHzZ5Mx8SVnOAJgIRubNFrcdj15MBMKH
+         fRB2G+coZyNa4vRiT895eeNS3YSw+Y/SNWZMVIbNsPUW5f7o5Ar5ufrQyERw2hA40cu4
+         HrqOfjCYiNk0hp69znOS3VHd4kjd/jbPXio+UXXzKZ3zuRafNG4JN6vHWM2DbKa0I73L
+         /O/oDp1i38HZqNa0HaOnAP01+dMY9W9SvV3lyz+5a7DXVLTVITi+Zv/Sm5Gs9qBatW87
+         XJ7TU3y3/fyzcDdxmWL1hvl6vGxOjG3GwPTcoN7en/C7Oh3mx/L+u9B0l3EBy57hCVdH
+         fLzA==
+X-Forwarded-Encrypted: i=1; AJvYcCVoD+eDp2fBl5pqv/DES+XeLyosxaOaY+V1jLJbG9qqWctw2v5pzq4Zi90lSb7YJ3ZsR3wh/g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyk3wtc1SLb1U10WjGYPRd0oQFewTbMN6n8udzRdgIKLElCyyaQ
+	g3JGaJ5WXpQ+7kqlw3MPseYeMMaly+hLNeG8gJ/JT1Csqf/UQ92lMJxhQ1z5zbnbjEgwyEVJOyG
+	ytYfDmBG3CN8uGrAtdrEqOOVfLxycPfp6FAQkKyh8Fjq2lL5gauVNloEn
+X-Gm-Gg: ASbGncuZqaJkP+SrBFGKrzzWtCsE9hri1+OjdlrMXdHZ4D/H/Ku5IeYYbV43G6CtHbb
+	z0mBTQj7wniADpgzzvcFO+xQXcHsZHIcai+Sxj2TbyVgDICOhunVZnYhGZiO9O1XDwFzWkyZR7c
+	7yzLrg8CA3KzC5aulyN3ma9eY2eAqRyG9AVhrzFrqrQo30VpifsELFuwkXBbncIsOzVCzW7i3Uq
+	orxeQ49ZAPWbHkgmgzoiYGblFzXNQxtFnKT0MsBLErE6TEuMIh2GS7+4CTfaCDad24GHpkSrV+f
+	ay0HY/kenwiAaA==
+X-Received: by 2002:a05:600c:3b1f:b0:448:d54a:ca23 with SMTP id 5b1f17b1804b1-451f8854e92mr3973395e9.8.1749057116975;
+        Wed, 04 Jun 2025 10:11:56 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEspzn/21MdE4chVnb4+euJWwR2y7B8B3JjYm3OBvogR9YRRy0pD1DwLpOBJ/z0MGIz3j6UVw==
+X-Received: by 2002:a05:600c:3b1f:b0:448:d54a:ca23 with SMTP id 5b1f17b1804b1-451f8854e92mr3973065e9.8.1749057116433;
+        Wed, 04 Jun 2025 10:11:56 -0700 (PDT)
+Received: from [192.168.10.81] ([151.49.64.79])
+        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-3a4efe6ca08sm23102833f8f.33.2025.06.04.10.11.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Jun 2025 10:11:55 -0700 (PDT)
+Message-ID: <8b57d98d-aa53-40d9-ac5e-3f9b74643b38@redhat.com>
+Date: Wed, 4 Jun 2025 19:11:54 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000075F0:EE_|SA0PR12MB4382:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8a94430f-bb9c-4c91-3414-08dda38661f6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|376014|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?bH7P6FF9CIiU4T+E8orQFrFO15w0yQW2spgLXcU5QsJcPbfSTN4/H+W9afr7?=
- =?us-ascii?Q?1VuzNrFvqmuCZwbvx8ypsgyG1NzX3R3cu8tljk5dvpz80pABdaeDBc/wC2cU?=
- =?us-ascii?Q?elz6pfq8jgpJDdTfSfE+EYWDhro3/kKV7W4UjVi1P/ydau+i+siR5Y3O3p9T?=
- =?us-ascii?Q?BdUhtGxrEP2UE5oShHl7AjVYCC+j+JrawQLsbm7z5uTmViuOVzfyK45QKSLq?=
- =?us-ascii?Q?D22DNeJcDi/07u3CrpjC+sxu9KCL3ThAZrXkZXqS2dTUsyj+TYCBL0XGBWa2?=
- =?us-ascii?Q?d98LSmBXa5r2UMXkirtiyavWUYgKWluMBsXQUWvYXnttK2pL58heEsz24fqu?=
- =?us-ascii?Q?4liQKoPZm1GO0EiZZuDer/rMUlVPG4iSEcU+dpy18pXH9BWXXyaV1q8phRg+?=
- =?us-ascii?Q?2saGMDb+5DNAX1YbmDLQ4qvFoftOi5gpEyHA/aVNoqvJ1GNfQAb+jpQ7kpJM?=
- =?us-ascii?Q?tVoMZRCeMVTZCCzP9xgJiVOstxK5xLOdzXpxKR3ai4L1bQ81UeEnlaUu4aQ+?=
- =?us-ascii?Q?zb4bdBynZG07g+BhjLmipwwIuvVL1lTwl47/93OTg8hXUC49pCRulYfg6tNW?=
- =?us-ascii?Q?+Tut2a2dzuGvECP8xEnCDOVfWYHCzNf8W05MwjGeJMwgLrc7rKPHePZbuF87?=
- =?us-ascii?Q?PiPQLfGoyUWocM0HxfrU4Oj6I2xxTMzxwWQb+g4jm42rb83mSa2fQFW1xPnh?=
- =?us-ascii?Q?uN6HOvZ1btY3sNX/26qlffAxvY8jPb13qHMSZeKZluN3KWaX16qNmWspv+L1?=
- =?us-ascii?Q?WC8cxrMGE7JxeVufowjeR8NsKwQDS2xtufzwIN0YKSYXf+/7DD/fXjnDERXe?=
- =?us-ascii?Q?FI3jenJpi4Sr5pTZe7OUCD2tyz8byPI5/ctpRobBth24qQJnlB2bufYnyvsE?=
- =?us-ascii?Q?V2FCGYSXAzdgmv4vDOyFMsZNjfZsRmCr/9RI/WvrFMIPr4hsr6kZt+YVO9LX?=
- =?us-ascii?Q?boKKJNPsLYFDeP6Tv1brPo9VYkl1XsdX/j6+FhbpSLb/1e/WzENs6I1pS1ZH?=
- =?us-ascii?Q?7ER4aLs/9qfNpWPcAA0pO8QM545F3vO/ssyHfisYcSC9b9KOH9bMqFdfoVab?=
- =?us-ascii?Q?YCKFFPiox2eFj+VubfU5wGvLHwd4QbpFbxfLJ9OSYYNGUfvbIo6nko73zgmO?=
- =?us-ascii?Q?E7dOk/yVcWZLNBKFVBaAre/7YdRWHcTg/EDk0Kfs5JfHUYi1kYOJ/LDVA0HE?=
- =?us-ascii?Q?rtvVhMuc74uB1zXwQzNSKeE5FI4E/p6G82FRTh8jrdiJy/yhSWMtaOCQVGM2?=
- =?us-ascii?Q?lZaQj63I5CrEYHfXvfMJKbejwQGb7vHfcMDKdv/Do1a9hgI1H8T7YH1TRVVd?=
- =?us-ascii?Q?j0kX+nnXpM6yX+wVpZtDSCWLzis6ocIp/BuXg8MzDUhRsnBqLRa77TbyEjdJ?=
- =?us-ascii?Q?hH9zT7BFBTwU/CR2VeStodCQu9muoJroLF7crP/6u4I7j17edFnNEf7uqwHl?=
- =?us-ascii?Q?2vDur1JqV4M0beCmhb8/+LxYl7OF0eHZWRRg4G182B/KCjcgiLWDkHaurjDF?=
- =?us-ascii?Q?gYAt6Jr5AOo35yWELPUb0A4BOATJGLSEKByP?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(376014)(36860700013);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jun 2025 16:39:31.9484
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a94430f-bb9c-4c91-3414-08dda38661f6
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000075F0.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4382
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 00/59] KVM: iommu: Overhaul device posted IRQs support
+To: Sean Christopherson <seanjc@google.com>, Joerg Roedel <joro@8bytes.org>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
+Cc: kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Maxim Levitsky <mlevitsk@redhat.com>,
+ Joao Martins <joao.m.martins@oracle.com>,
+ Francesco Lavra <francescolavra.fl@gmail.com>,
+ David Matlack <dmatlack@google.com>
+References: <20250523010004.3240643-1-seanjc@google.com>
+From: Paolo Bonzini <pbonzini@redhat.com>
+Autocrypt: addr=pbonzini@redhat.com; keydata=
+ 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
+In-Reply-To: <20250523010004.3240643-1-seanjc@google.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: rNr96H_V5FkCHPVBDF5MQiPLhKm7degbxT-USIMn0KA_1749057117
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Add documentation describing how to use AMD IOMMU debugfs support to
-dump IOMMU data structures - IRT table, Device table, Registers (MMIO and
-Capability) and command buffer.
+On 5/23/25 02:59, Sean Christopherson wrote:
+> TL;DR: Overhaul device posted interrupts in KVM and IOMMU, and AVIC in
+>         general.
+> 
+> This applies on the series to add CONFIG_KVM_IOAPIC (and to kill irq_comm.c):
+> 
+>    https://lore.kernel.org/all/20250519232808.2745331-1-seanjc@google.com
+> 
+> Fix a variety of bugs related to device posted IRQs, especially on the
+> AMD side, and clean up KVM's implementation (this series actually removes
+> more code than it adds).
+> 
+> Stating the obvious, this series is comically large.  Though it's smaller than
+> v1! (Ignoring that I cheated by moving 15 patches to a prep series, and that
+> Paolo already grabbed several patches).
+> 
+> Sairaj, I applied your Tested-by somewhat sparingly, as some of the patches
+> changed (most notably "Consolidate IRTE update when toggling AVIC on/off").
+> Please holler if you want me to remove/add any tags.  And when you get time,
+> I'd greatly appreciate a sanity check!
+> 
+> Batch #1 is mostly SVM specific:
+> 
+>   - Cleans up various warts and bugs in the IRTE tracking
+>   - Fixes AVIC to not reject large VMs (honor KVM's ABI)
+>   - Wire up AVIC to enable_ipiv to support disabling IPI virtualization while
+>     still utilizing device posted interrupts, and to workaround erratum #1235.
+> 
+> Batch #3 overhauls the guts of IRQ bypass in KVM, and moves the vast majority
+> of the logic to common x86; only the code that needs to communicate with the
+> IOMMU is truly vendor specific.
+> 
+> Batch #4 is more SVM/AVIC cleanups that are made possible by batch #3.
+> 
+> Batch #5 adds WARNs and drops dead code after all the previous cleanups and
+> fixes (I don't want to add the WARNs earlier; I don't see any point in adding
+> WARNs in code that's known to be broken).
+> 
+> Batch #6 is yet more SVM/AVIC cleanups, with the specific goal of configuring
+> IRTEs to generate GA log interrupts if and only if KVM actually needs a wake
+> event.
 
-Signed-off-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
----
- Documentation/ABI/testing/debugfs-amd-iommu | 114 ++++++++++++++++++++
- 1 file changed, 114 insertions(+)
- create mode 100644 Documentation/ABI/testing/debugfs-amd-iommu
+Looks good - it's not even that different from v1.  Thanks!
 
-diff --git a/Documentation/ABI/testing/debugfs-amd-iommu b/Documentation/ABI/testing/debugfs-amd-iommu
-new file mode 100644
-index 000000000000..7d6cf1f602ed
---- /dev/null
-+++ b/Documentation/ABI/testing/debugfs-amd-iommu
-@@ -0,0 +1,114 @@
-+What:		/sys/kernel/debug/iommu/amd/iommu<x>/mmio
-+Date:		January 2025
-+Contact:	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-+Description:
-+		This is an input read/write access file. In this file, the user input
-+		mmio register offset for iommu<x> to print corresponding mmio register
-+		of iommu<x>.
-+
-+		Example:
-+		$ echo "0x18" > /sys/kernel/debug/iommu/amd/iommu00/mmio
-+		$ cat /sys/kernel/debug/iommu/amd/iommu00/mmio
-+
-+		Output:
-+		Offset:0x18 Value:0x000c22000003f48d
-+
-+What:		/sys/kernel/debug/iommu/amd/iommu<x>/capability
-+Date:		January 2025
-+Contact:	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-+Description:
-+		This is an input read/write access file. In this file, the user input
-+                capability register offset for iommu<x> to print corresponding capability
-+		register of iommu<x>.
-+
-+		Example:
-+		$ echo "0x10" > /sys/kernel/debug/iommu/amd/iommu00/capability
-+		$ cat /sys/kernel/debug/iommu/amd/iommu00/capability
-+
-+		Output:
-+		Offset:0x10 Value:0x00203040
-+
-+What:		/sys/kernel/debug/iommu/amd/iommu<x>/cmdbuf
-+Date:		January 2025
-+Contact:	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-+Description:
-+		This file is an output read only file that contains iommu<x> command
-+		buffer entries.
-+
-+		Examples:
-+		$ cat /sys/kernel/debug/iommu/amd/iommu<x>/cmdbuf
-+
-+		Output:
-+		CMD Buffer Head Offset:339 Tail Offset:339
-+		  0: 00835001 10000001 00003c00 00000000
-+		  1: 00000000 30000005 fffff003 7fffffff
-+		  2: 00835001 10000001 00003c01 00000000
-+		  3: 00000000 30000005 fffff003 7fffffff
-+		  4: 00835001 10000001 00003c02 00000000
-+		  5: 00000000 30000005 fffff003 7fffffff
-+		  6: 00835001 10000001 00003c03 00000000
-+		  7: 00000000 30000005 fffff003 7fffffff
-+		  8: 00835001 10000001 00003c04 00000000
-+		  9: 00000000 30000005 fffff003 7fffffff
-+		 10: 00835001 10000001 00003c05 00000000
-+		 11: 00000000 30000005 fffff003 7fffffff
-+		[...]
-+
-+What:		/sys/kernel/debug/iommu/amd/devid
-+Date:		January 2025
-+Contact:	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-+Description:
-+		This is an input read/write file that takes device id user input.
-+		This input can be used for dumping iommu data structures like
-+		interrupt remapping table, device table etc.
-+
-+		Example:
-+		1.
-+		$ echo 0000:01:00.0 > /sys/kernel/debug/iommu/amd/devid
-+		$ cat /sys/kernel/debug/iommu/amd/devid
-+
-+		Output:
-+		0000:01:00.0
-+
-+		2.
-+		$ echo 01:00.0 > /sys/kernel/debug/iommu/amd/devid
-+		$ cat /sys/kernel/debug/iommu/amd/devid
-+
-+		Output:
-+		0000:01:00.0
-+
-+What:		/sys/kernel/debug/iommu/amd/devtbl
-+Date:		January 2025
-+Contact:	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-+Description:
-+		This is an output read only file that contains device table entry for
-+		the device id input given in /sys/kernel/debug/iommu/amd/devid.
-+
-+		Example:
-+		$ cat /sys/kernel/debug/iommu/amd/devtbl
-+
-+		Output:
-+		DeviceId             QWORD[3]         QWORD[2]         QWORD[1]         QWORD[0] iommu
-+		0000:01:00.0 0000000000000000 20000001373b8013 0000000000000038 6000000114d7b603 iommu3
-+
-+What:		/sys/kernel/debug/iommu/amd/irqtbl
-+Date:		January 2025
-+Contact:	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
-+Description:
-+		This is an output read only file that contains IRT table valid entries
-+		for the device id input given in /sys/kernel/debug/iommu/amd/devid.
-+
-+		Example:
-+		$ cat /sys/kernel/debug/iommu/amd/irqtbl
-+
-+		Output:
-+		DeviceId 0000:01:00.0
-+		IRT[0000] 0000000000000020 0000000000000241
-+		IRT[0001] 0000000000000020 0000000000000841
-+		IRT[0002] 0000000000000020 0000000000002041
-+		IRT[0003] 0000000000000020 0000000000008041
-+		IRT[0004] 0000000000000020 0000000000020041
-+		IRT[0005] 0000000000000020 0000000000080041
-+		IRT[0006] 0000000000000020 0000000000200041
-+		IRT[0007] 0000000000000020 0000000000800041
-+		[...]
--- 
-2.25.1
+Paolo
+
+> v2:
+>   - Drop patches that were already merged.
+>   - Move code into irq.c, not x86.c. [Paolo]
+>   - Collect review/testing tags. [Sairaj, Vasant]
+>   - Sqaush fixup for a comment that was added in the prior patch. [Sairaj]
+>   - Rewrote the changelog for "Delete IRTE link from previous vCPU irrespective
+>     of new routing". [Sairaj]
+>   - Actually drop "struct amd_svm_iommu_ir" and all usage in "Track per-vCPU
+>     IRTEs using kvm_kernel_irqfd structure" (the previous version was getting
+>     hilarious lucky with struct offsets). [Sairaj]
+>   - Drop unused params from kvm_pi_update_irte() and pi_update_irte(). [Sairaj]
+>   - Document the rules and behavior of amd_iommu_update_ga(). [Joerg]
+>   - Fix a changelog typo. [Paolo]
+>   - Document that GALogIntr isn't cached, i.e. can be safely updated without
+>     an invalidation. [Joao, Vasant]
+>   - Rework avic_vcpu_{load,put}() to use an enumerated parameter instead of a
+>     series of booleans. [Paolo]
+>   - Drop a redundant "&& new". [Francesco]
+>   - Drop the *** DO NOT MERGE *** testing hack patches.
+> 
+> v1: https://lore.kernel.org/all/20250404193923.1413163-1-seanjc@google.com
+> 
+> Maxim Levitsky (2):
+>    KVM: SVM: Add enable_ipiv param, never set IsRunning if disabled
+>    KVM: SVM: Disable (x2)AVIC IPI virtualization if CPU has erratum #1235
+> 
+> Sean Christopherson (57):
+>    KVM: x86: Pass new routing entries and irqfd when updating IRTEs
+>    KVM: SVM: Track per-vCPU IRTEs using kvm_kernel_irqfd structure
+>    KVM: SVM: Delete IRTE link from previous vCPU before setting new IRTE
+>    iommu/amd: KVM: SVM: Delete now-unused cached/previous GA tag fields
+>    KVM: SVM: Delete IRTE link from previous vCPU irrespective of new
+>      routing
+>    KVM: SVM: Drop pointless masking of default APIC base when setting
+>      V_APIC_BAR
+>    KVM: SVM: Drop pointless masking of kernel page pa's with AVIC HPA
+>      masks
+>    KVM: SVM: Add helper to deduplicate code for getting AVIC backing page
+>    KVM: SVM: Drop vcpu_svm's pointless avic_backing_page field
+>    KVM: SVM: Inhibit AVIC if ID is too big instead of rejecting vCPU
+>      creation
+>    KVM: SVM: Drop redundant check in AVIC code on ID during vCPU creation
+>    KVM: SVM: Track AVIC tables as natively sized pointers, not "struct
+>      pages"
+>    KVM: SVM: Drop superfluous "cache" of AVIC Physical ID entry pointer
+>    KVM: VMX: Move enable_ipiv knob to common x86
+>    KVM: VMX: Suppress PI notifications whenever the vCPU is put
+>    KVM: SVM: Add a comment to explain why avic_vcpu_blocking() ignores
+>      IRQ blocking
+>    iommu/amd: KVM: SVM: Use pi_desc_addr to derive ga_root_ptr
+>    iommu/amd: KVM: SVM: Pass NULL @vcpu_info to indicate "not guest mode"
+>    KVM: SVM: Stop walking list of routing table entries when updating
+>      IRTE
+>    KVM: VMX: Stop walking list of routing table entries when updating
+>      IRTE
+>    KVM: SVM: Extract SVM specific code out of get_pi_vcpu_info()
+>    KVM: x86: Move IRQ routing/delivery APIs from x86.c => irq.c
+>    KVM: x86: Nullify irqfd->producer after updating IRTEs
+>    KVM: x86: Dedup AVIC vs. PI code for identifying target vCPU
+>    KVM: x86: Move posted interrupt tracepoint to common code
+>    KVM: SVM: Clean up return handling in avic_pi_update_irte()
+>    iommu: KVM: Split "struct vcpu_data" into separate AMD vs. Intel
+>      structs
+>    KVM: Don't WARN if updating IRQ bypass route fails
+>    KVM: Fold kvm_arch_irqfd_route_changed() into
+>      kvm_arch_update_irqfd_routing()
+>    KVM: x86: Track irq_bypass_vcpu in common x86 code
+>    KVM: x86: Skip IOMMU IRTE updates if there's no old or new vCPU being
+>      targeted
+>    KVM: x86: Don't update IRTE entries when old and new routes were !MSI
+>    KVM: SVM: Revert IRTE to legacy mode if IOMMU doesn't provide IR
+>      metadata
+>    KVM: SVM: Take and hold ir_list_lock across IRTE updates in IOMMU
+>    iommu/amd: Document which IRTE fields amd_iommu_update_ga() can modify
+>    iommu/amd: KVM: SVM: Infer IsRun from validity of pCPU destination
+>    iommu/amd: Factor out helper for manipulating IRTE GA/CPU info
+>    iommu/amd: KVM: SVM: Set pCPU info in IRTE when setting vCPU affinity
+>    iommu/amd: KVM: SVM: Add IRTE metadata to affined vCPU's list if AVIC
+>      is inhibited
+>    KVM: SVM: Don't check for assigned device(s) when updating affinity
+>    KVM: SVM: Don't check for assigned device(s) when activating AVIC
+>    KVM: SVM: WARN if (de)activating guest mode in IOMMU fails
+>    KVM: SVM: Process all IRTEs on affinity change even if one update
+>      fails
+>    KVM: SVM: WARN if updating IRTE GA fields in IOMMU fails
+>    KVM: x86: Drop superfluous "has assigned device" check in
+>      kvm_pi_update_irte()
+>    KVM: x86: WARN if IRQ bypass isn't supported in kvm_pi_update_irte()
+>    KVM: x86: WARN if IRQ bypass routing is updated without in-kernel
+>      local APIC
+>    KVM: SVM: WARN if ir_list is non-empty at vCPU free
+>    KVM: x86: Decouple device assignment from IRQ bypass
+>    KVM: VMX: WARN if VT-d Posted IRQs aren't possible when starting IRQ
+>      bypass
+>    KVM: SVM: Use vcpu_idx, not vcpu_id, for GA log tag/metadata
+>    iommu/amd: WARN if KVM calls GA IRTE helpers without virtual APIC
+>      support
+>    KVM: SVM: Fold avic_set_pi_irte_mode() into its sole caller
+>    KVM: SVM: Don't check vCPU's blocking status when toggling AVIC on/off
+>    KVM: SVM: Consolidate IRTE update when toggling AVIC on/off
+>    iommu/amd: KVM: SVM: Allow KVM to control need for GA log interrupts
+>    KVM: SVM: Generate GA log IRQs only if the associated vCPUs is
+>      blocking
+> 
+>   arch/x86/include/asm/irq_remapping.h |  17 +-
+>   arch/x86/include/asm/kvm-x86-ops.h   |   2 +-
+>   arch/x86/include/asm/kvm_host.h      |  20 +-
+>   arch/x86/include/asm/svm.h           |  13 +-
+>   arch/x86/kvm/irq.c                   | 140 ++++++
+>   arch/x86/kvm/svm/avic.c              | 702 ++++++++++++---------------
+>   arch/x86/kvm/svm/svm.c               |   4 +
+>   arch/x86/kvm/svm/svm.h               |  32 +-
+>   arch/x86/kvm/trace.h                 |  19 +-
+>   arch/x86/kvm/vmx/capabilities.h      |   1 -
+>   arch/x86/kvm/vmx/main.c              |   2 +-
+>   arch/x86/kvm/vmx/posted_intr.c       | 140 ++----
+>   arch/x86/kvm/vmx/posted_intr.h       |  10 +-
+>   arch/x86/kvm/vmx/vmx.c               |   2 -
+>   arch/x86/kvm/x86.c                   |  90 +---
+>   drivers/iommu/amd/amd_iommu_types.h  |   1 -
+>   drivers/iommu/amd/iommu.c            | 125 +++--
+>   drivers/iommu/intel/irq_remapping.c  |  10 +-
+>   include/linux/amd-iommu.h            |  25 +-
+>   include/linux/kvm_host.h             |   9 +-
+>   include/linux/kvm_irqfd.h            |   4 +
+>   virt/kvm/eventfd.c                   |  22 +-
+>   22 files changed, 672 insertions(+), 718 deletions(-)
+> 
+> 
+> base-commit: 3debd5461fba1dcb33e732b16153da0cf5d0c251
 
