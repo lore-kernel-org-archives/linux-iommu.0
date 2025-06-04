@@ -1,164 +1,124 @@
-Received: from mail-ej1-f65.google.com (mail-ej1-f65.google.com [209.85.218.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A04FD1E7C11
-	for <iommu@lists.linux.dev>; Wed,  4 Jun 2025 07:25:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3300A247296;
+	Wed,  4 Jun 2025 09:00:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749021941; cv=none; b=aCDuxNQPYWReXkqwplvRFwbUS2AkbB6ueqsN8r+NFpndB3D2ifRosUr32WmH9IS56PAxqkhkb7yX0SeIxeBAqaOvk7KLk1JPAz/hu4HTurkI5/nKF9u2FPRe/lwu2I6Q+bh5mHeLylTx6S/J/96OZ6Xg09W+EZ/5shAqe96qG6s=
+	t=1749027609; cv=none; b=kzJnhu96Ual3fFRk8OmzEgOs5p+5E2k0gWXxz+JY0EGZld+Oys32PRbTkkb+q7sV1QLtE12xVKMtVTXj90/MfM/HzPUfZ+mLOEJ2+4jUU5GmAd2nMD0uSehIyvnOgILdoKnzeu0Ee1K7d+R145YRjSbublToOxfY3jAcMX1y7UI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749021941; c=relaxed/simple;
-	bh=1t7qv+A6Nz7eR1m21oOGQ5Dl0LE/sq7hDSCBZWr7i4M=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=r+Pk+zFBbnzgW7CKMdLgsLml0nB+nJ272MkrO6eFL4xvbrjJaMRzcMKhKbVCUdXfY5hk2uHJMYfMT/x5gfZ9wEC270fBns0MLN7gVSmnTWXOw4vJ4VQGW1yutb5BvuW4MvxR2zRFHEv76HJWG4/TX154lE13qK7KXqd0qcSiP2M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jooYOCS2; arc=none smtp.client-ip=209.85.218.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1749027609; c=relaxed/simple;
+	bh=JHeR87LeBvTOD+NcJ7rkJFug+cKe5v03755b/Yn77RY=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=lz/eGM2TwjyWWDbV6xTtZmVpGcl+Ru5AsbNtPLW+ggOtnNpF6njm8yCHBRVn+d4gWcCer6270B69fVNHk7ALS4MnN8b05UWQkAd+3NyvJ7jBV1u/6/KEHFSXmNA+2N1l5y5mPMKf5zrPFNvgvuhshHyPnFIeT6SnDqp6dE7MwvE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YNMi0PRV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jooYOCS2"
-Received: by mail-ej1-f65.google.com with SMTP id a640c23a62f3a-ad88eb71eb5so798421666b.0
-        for <iommu@lists.linux.dev>; Wed, 04 Jun 2025 00:25:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1749021938; x=1749626738; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=NTJBF0zlkgV8NEXSrbX9kCVJQCiDuy34QKFs0Z6aUcI=;
-        b=jooYOCS2EiMG44drohZTRgukwm7vhsY8D8b2Tc8awUVjTf6xGNtn5uCz/cTSuzMcMi
-         ZCx/4TL1+4Up+ISTEkPBS75hbLSd19f4UOHt+JaXA284cqOdTWi/PlBmpBWHFeRKvunj
-         lONoPwagqtK4M8FZGvxBVa9t1c76LGRSx20pL8KRjk3lhUHKVJmSsAasIez/Dzed64ll
-         HgctMmIjqGoZnkYVyTf+NCOTDSByAOlgWMWG3cFSqE3UvpZumwfNx1ndvy8L6gmia905
-         aEbTn+L86d3mP+AGlp6dpuaIWYRs6rEI7NeS0dhOIjZ4bnd5HnIjqALG/psdus3xQVtd
-         h7AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749021938; x=1749626738;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NTJBF0zlkgV8NEXSrbX9kCVJQCiDuy34QKFs0Z6aUcI=;
-        b=W3HgYKTfL35TSC69NfPxR/gQFenIWEzkGKAh5ETAAVbTX0vCjxry4aDqAMWdPfNFTH
-         r73yhT6HI9gWN7IOmHY4mEPNOb7PBOjfruTVc51pAQQlLgM7hFNb6DY1aFYHL4VYJm1M
-         2vMpjipj0RXId57d2W1MxqHr/iAW9NYkIIV2xkiyKfYnhNyskNmR6VBiD7jQdrevhOvo
-         pnN3NDLmoPjOSS7WgzHgZotbSfFUlZVXKm44NV47UVIC01B+lj6hP/QwyQD8vcTudQkQ
-         IQmhW+5gVMuoodSy6Ig3jNiYxWleRRl9FYSl4GMKU8ENtFf750vgZE3kLrrGSOiaKHTB
-         1QzA==
-X-Forwarded-Encrypted: i=1; AJvYcCXN4Uxzh2z75RE1/BDMCg5E6tFj8M4GdUIkd1qK56fvI/1lh0JewKF/WuB71DGvomk4t5w+OQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw8yxNuhUB4N+Fy7M3AF3W4Myw3tMbQSsrZWQJefhSCe9dRek6n
-	S49HEEH9Sxh/6OlTNnInIAJ/HYNIH7tIH3eXASYGDaIvF7jncaUEr+it
-X-Gm-Gg: ASbGncuo03TEyZLaQRBy4VxDsl/7aLAljXgvVdzleD3H/AQ8Xu+S9KfdsDc8S/QBoD3
-	u2gctpZbWyHRsRn29KFo2kwuM6E43q9EoFpEsO/3FDLCU/0Jz9QWEt3yO+uGYV6CYdLkGovL8TG
-	VqOzhKFLFInPILxoidtx0bRFb/UbVhsoL6clbIOAOhmFygUuVh2OgmMQl0JhHvpmy6LtvGnAyaL
-	cwsAQb9DrhbS9CM1EnpXSajo25Izmjhrfc2tLV00BAtrM5VejGXRev9Hv2lNaLttmeTzUuUdttP
-	GnUnCWTvicgfxWZpHBmeo0+iR7yosvwz+/lDiEcoGgu45ZTdrbS3yPuwirr93sNEYUYANv9VQ/g
-	/HlSouxrW3/rbd0UCvRA6lEidz/hsZ3X3e9xzcSKBcdIrOaza3mDvWhs=
-X-Google-Smtp-Source: AGHT+IG4Kf5PhViqrLF+eMTC6S3fFHKzxFILRhsMk0cH0xe64tF6PCWmM4fnkEoQaNioUD5GKNphdw==
-X-Received: by 2002:a17:907:7248:b0:ad5:27b6:7fd1 with SMTP id a640c23a62f3a-addf8cf6f62mr159077866b.17.1749021937474;
-        Wed, 04 Jun 2025 00:25:37 -0700 (PDT)
-Received: from [26.26.26.1] (97.81.207.35.bc.googleusercontent.com. [35.207.81.97])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ada6ad39ef6sm1054395466b.154.2025.06.04.00.25.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Jun 2025 00:25:36 -0700 (PDT)
-Message-ID: <5fed2452-ae2a-4fca-8483-85ecf645ec1b@gmail.com>
-Date: Wed, 4 Jun 2025 15:25:42 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YNMi0PRV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67319C4CEE7;
+	Wed,  4 Jun 2025 08:59:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1749027608;
+	bh=JHeR87LeBvTOD+NcJ7rkJFug+cKe5v03755b/Yn77RY=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=YNMi0PRVBrQL7TUZfEAggFUQ4cYerIUDHHQvXVQ4Ql7w6vrNZ2Q+4XcAYwCt1QDYw
+	 1eJo1GcCdFQI/aDuDsgi7yZqP3ooz5vQOCtHW2UFhSnYtVDbartpf//xtFic2nNvGc
+	 7Hy3/KWhXsNA3huwmTLjAG9GPwRMsIkjND6zyKaDnmxnpA0YbF6/XoFTSudZgMh/HG
+	 7r/WM6InNriNEyLQ6Ll4pfLVhKjCZfNR0v2Z968XGgwjSPXzMonP2yIIVDKKgMSkRr
+	 nRkrE+KcTPlA2UsqKlOe4qOUYuQLLwY4Z5+bEf2vVmovEaqg8begmD8Ec3aY3eqyF5
+	 K39U0EXJ7q5Gg==
+X-Mailer: emacs 30.1 (via feedmail 11-beta-1 Q)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>, Xu Yilun <yilun.xu@linux.intel.com>
+Cc: kvm@vger.kernel.org, sumit.semwal@linaro.org, christian.koenig@amd.com,
+	pbonzini@redhat.com, seanjc@google.com, alex.williamson@redhat.com,
+	dan.j.williams@intel.com, aik@amd.com, linux-coco@lists.linux.dev,
+	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org, vivek.kasireddy@intel.com,
+	yilun.xu@intel.com, linux-kernel@vger.kernel.org, lukas@wunner.de,
+	yan.y.zhao@intel.com, daniel.vetter@ffwll.ch, leon@kernel.org,
+	baolu.lu@linux.intel.com, zhenzhong.duan@intel.com,
+	tao1.su@intel.com, linux-pci@vger.kernel.org, zhiw@nvidia.com,
+	simona.vetter@ffwll.ch, shameerali.kolothum.thodi@huawei.com,
+	iommu@lists.linux.dev, kevin.tian@intel.com
+Subject: Re: [RFC PATCH 17/30] iommufd/device: Add TSM Bind/Unbind for TIO
+ support
+In-Reply-To: <20250603122149.GH376789@nvidia.com>
+References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
+ <20250529053513.1592088-18-yilun.xu@linux.intel.com>
+ <yq5awm9ujouz.fsf@kernel.org> <aD6UQy4KwKcdSvVE@yilunxu-OptiPlex-7050>
+ <20250603122149.GH376789@nvidia.com>
+Date: Wed, 04 Jun 2025 14:10:43 +0530
+Message-ID: <yq5aplfj99x0.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] iommu/vt-d: Remove the redundant logic in
- first_level_by_default()
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- Ethan Zhao <haifeng.zhao@linux.intel.com>, "Wang, Wei W"
- <wei.w.wang@intel.com>, "baolu.lu@linux.intel.com"
- <baolu.lu@linux.intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>,
- "jroedel@suse.de" <jroedel@suse.de>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <20250523081056.223082-1-wei.w.wang@intel.com>
- <01e5d0a9-715a-48d4-a2a4-2a0b5d99149b@linux.intel.com>
- <BN9PR11MB5276CFBD4CF795CCB3ADCD1B8C66A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Ethan Zhao <etzhao1900@gmail.com>
-In-Reply-To: <BN9PR11MB5276CFBD4CF795CCB3ADCD1B8C66A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
+Jason Gunthorpe <jgg@nvidia.com> writes:
 
+> On Tue, Jun 03, 2025 at 02:20:51PM +0800, Xu Yilun wrote:
+>> > Wouldn=E2=80=99t it be simpler to skip the reference count increment a=
+ltogether
+>> > and just call tsm_unbind in the virtual device=E2=80=99s destroy callb=
+ack?
+>> > (iommufd_vdevice_destroy())
+>>=20
+>> The vdevice refcount is the main concern, there is also an IOMMU_DESTROY
+>> ioctl. User could just free the vdevice instance if no refcount, while V=
+FIO
+>> is still in bound state. That seems not the correct free order.
+>
+> Freeing the vdevice should automatically unbind it..
+>
 
-On 5/29/2025 2:11 PM, Tian, Kevin wrote:
->> From: Ethan Zhao <haifeng.zhao@linux.intel.com>
->> Sent: Thursday, May 29, 2025 1:48 PM
->>
->> 在 2025/5/23 16:10, Wei Wang 写道:
->>> This original implementation included redundant logic to determine
->> whether
->>> first-stage translation should be used by default. Simplify it and
->>> preserve the original behavior:
->>> - Returns false in legacy mode (no scalable mode support).
->>> - Defaults to first-level translation when both FLTS and SLTS are
->>>     supported.
->>>
->>> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
->>> ---
->>>    drivers/iommu/intel/iommu.c | 10 +---------
->>>    1 file changed, 1 insertion(+), 9 deletions(-)
->>>
->>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->>> index cb0b993bebb4..228da47ab7cd 100644
->>> --- a/drivers/iommu/intel/iommu.c
->>> +++ b/drivers/iommu/intel/iommu.c
->>> @@ -1366,15 +1366,7 @@ static void free_dmar_iommu(struct
->> intel_iommu *iommu)
->>>     */
->>>    static bool first_level_by_default(struct intel_iommu *iommu)
->>>    {
->>> -	/* Only SL is available in legacy mode */
->>> -	if (!sm_supported(iommu))
->>> -		return false;
->>> -
->>> -	/* Only level (either FL or SL) is available, just use it */
->>> -	if (ecap_flts(iommu->ecap) ^ ecap_slts(iommu->ecap))
->>> -		return ecap_flts(iommu->ecap);
->>> -
->>> -	return true;
->>
->> The function works like a digital circurt has 3 single bit inputs  sm,
->> flts, slts and one bit output ret.
->>
->> so the true value table of the orignal function looks like
->>
->>      sm   flts   slts    ret
->> a   0     x     x      false
->> b   1     1     0      true
->> c   1     0     1      false
->> d   1     1     1      true
->> e   1     0     0      true
-> 
-> 'e' is actually wrong. We should not return true when the 1st level
-> cap doesn't exist.
+One challenge I ran into during implementation was the dependency of
+vfio on iommufd_device. When vfio needs to perform a tsm_unbind,
+it only has access to an iommufd_device.
 
-If so, this patch should mention it fixes such case with fix tag, not
-  "removing the redundant logic with the same behavior".
+However, TSM operations like binding and unbinding are handled at the
+iommufd_vdevice level. The issue? There=E2=80=99s no direct link from
+iommufd_device back to iommufd_vdevice.
 
+To address this, I modified the following structures:
 
-Thanks,
-Ethan
-> 
->>
->>> +	return sm_supported(iommu) && ecap_flts(iommu->ecap);
->>
->> And the true value table of this new one looks like
->>
->>      sm  flts slts    ret
->>
->> f   1     1     x      true
->> g   1     0     x      false
->>
->> h   0     1     x      false
->> i    0     0     x      false
-> 
-> so this table is correct.
+modified   drivers/iommu/iommufd/iommufd_private.h
+@@ -428,6 +428,7 @@ struct iommufd_device {
+ 	/* protect iopf_enabled counter */
+ 	struct mutex iopf_lock;
+ 	unsigned int iopf_enabled;
++	struct iommufd_vdevice *vdev;
+ };
+=20
+ static inline struct iommufd_device *
+@@ -613,6 +614,7 @@ struct iommufd_vdevice {
+ 	struct iommufd_object obj;
+ 	struct iommufd_ctx *ictx;
+ 	struct iommufd_viommu *viommu;
++	struct iommufd_device *idev;
+ 	struct device *dev;
+ 	struct mutex	mutex;	/* mutex to synchronize updates to tsm_bound */
+ 	u64 id; /* per-vIOMMU virtual ID */
 
+These fields are updated during tsm_bind and tsm_unbind, so they must be
+protected by the appropriate locks:
+
+Updating vdevice->idev requires holding vdev->mutex (vdev_lock).
+Updating device->vdev requires idev->igroup->lock (idev_lock).
+
+tsm_unbind in vdevice_destroy:
+
+vdevice_destroy() ends up calling tsm_unbind() while holding only the
+vdev_lock. At first glance, this seems unsafe. But in practice, it's
+fine because the corresponding iommufd_device has already been destroyed
+when the VFIO device file descriptor was closed=E2=80=94triggering
+vfio_df_iommufd_unbind().
+
+I=E2=80=99ve added an in-code comment to explain why tsm_unbind() is safe h=
+ere
+without acquiring the idev_lock. Hope that is ok.
+
+-aneesh
