@@ -1,124 +1,107 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from smtp1.tecnico.ulisboa.pt (smtp1.tecnico.ulisboa.pt [193.136.128.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3300A247296;
-	Wed,  4 Jun 2025 09:00:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DB0D280339;
+	Wed,  4 Jun 2025 10:04:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.136.128.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749027609; cv=none; b=kzJnhu96Ual3fFRk8OmzEgOs5p+5E2k0gWXxz+JY0EGZld+Oys32PRbTkkb+q7sV1QLtE12xVKMtVTXj90/MfM/HzPUfZ+mLOEJ2+4jUU5GmAd2nMD0uSehIyvnOgILdoKnzeu0Ee1K7d+R145YRjSbublToOxfY3jAcMX1y7UI=
+	t=1749031475; cv=none; b=ZKnHyu9wnuvrgubZ0b/C/6xUViPgtCigvPut3eHXIWva9HX3zPNeXGN79Kwlv0fY5owSjAVRzUFrduVOP/ilCNaU/DXnjtFgO/qpoTzazH7FggXZACR3hiWBIGWk/PiM/9pIIhl40/iTgNkdxOQUSpUNe2y63AQKD4d5AkGNM40=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749027609; c=relaxed/simple;
-	bh=JHeR87LeBvTOD+NcJ7rkJFug+cKe5v03755b/Yn77RY=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=lz/eGM2TwjyWWDbV6xTtZmVpGcl+Ru5AsbNtPLW+ggOtnNpF6njm8yCHBRVn+d4gWcCer6270B69fVNHk7ALS4MnN8b05UWQkAd+3NyvJ7jBV1u/6/KEHFSXmNA+2N1l5y5mPMKf5zrPFNvgvuhshHyPnFIeT6SnDqp6dE7MwvE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YNMi0PRV; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1749031475; c=relaxed/simple;
+	bh=c6iNIx72UNMmJVTCkfgT/1P4wdsSf5JMfqG3qSXP2wA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GXmdxtNrCEvyYjjbixiLKad/HGYHASqvd0yJsWGXAbT9QmyEtjBSvWG4efwWHTOBxpSceESA9CPjvcURSFfjsIGZXwU+i+PCOj/yMR55ZAK6WmVCFT4uS1+09ZMei7/ZQ7AS8OhxsKKbG9+mZKQ8CzYwDuqIvnCOMcy0x7+GRS4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tecnico.ulisboa.pt; spf=pass smtp.mailfrom=tecnico.ulisboa.pt; dkim=pass (1024-bit key) header.d=tecnico.ulisboa.pt header.i=@tecnico.ulisboa.pt header.b=gPsK7tna; arc=none smtp.client-ip=193.136.128.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tecnico.ulisboa.pt
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tecnico.ulisboa.pt
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YNMi0PRV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67319C4CEE7;
-	Wed,  4 Jun 2025 08:59:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749027608;
-	bh=JHeR87LeBvTOD+NcJ7rkJFug+cKe5v03755b/Yn77RY=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=YNMi0PRVBrQL7TUZfEAggFUQ4cYerIUDHHQvXVQ4Ql7w6vrNZ2Q+4XcAYwCt1QDYw
-	 1eJo1GcCdFQI/aDuDsgi7yZqP3ooz5vQOCtHW2UFhSnYtVDbartpf//xtFic2nNvGc
-	 7Hy3/KWhXsNA3huwmTLjAG9GPwRMsIkjND6zyKaDnmxnpA0YbF6/XoFTSudZgMh/HG
-	 7r/WM6InNriNEyLQ6Ll4pfLVhKjCZfNR0v2Z968XGgwjSPXzMonP2yIIVDKKgMSkRr
-	 nRkrE+KcTPlA2UsqKlOe4qOUYuQLLwY4Z5+bEf2vVmovEaqg8begmD8Ec3aY3eqyF5
-	 K39U0EXJ7q5Gg==
-X-Mailer: emacs 30.1 (via feedmail 11-beta-1 Q)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>, Xu Yilun <yilun.xu@linux.intel.com>
-Cc: kvm@vger.kernel.org, sumit.semwal@linaro.org, christian.koenig@amd.com,
-	pbonzini@redhat.com, seanjc@google.com, alex.williamson@redhat.com,
-	dan.j.williams@intel.com, aik@amd.com, linux-coco@lists.linux.dev,
-	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
-	linaro-mm-sig@lists.linaro.org, vivek.kasireddy@intel.com,
-	yilun.xu@intel.com, linux-kernel@vger.kernel.org, lukas@wunner.de,
-	yan.y.zhao@intel.com, daniel.vetter@ffwll.ch, leon@kernel.org,
-	baolu.lu@linux.intel.com, zhenzhong.duan@intel.com,
-	tao1.su@intel.com, linux-pci@vger.kernel.org, zhiw@nvidia.com,
-	simona.vetter@ffwll.ch, shameerali.kolothum.thodi@huawei.com,
-	iommu@lists.linux.dev, kevin.tian@intel.com
-Subject: Re: [RFC PATCH 17/30] iommufd/device: Add TSM Bind/Unbind for TIO
- support
-In-Reply-To: <20250603122149.GH376789@nvidia.com>
-References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
- <20250529053513.1592088-18-yilun.xu@linux.intel.com>
- <yq5awm9ujouz.fsf@kernel.org> <aD6UQy4KwKcdSvVE@yilunxu-OptiPlex-7050>
- <20250603122149.GH376789@nvidia.com>
-Date: Wed, 04 Jun 2025 14:10:43 +0530
-Message-ID: <yq5aplfj99x0.fsf@kernel.org>
+	dkim=pass (1024-bit key) header.d=tecnico.ulisboa.pt header.i=@tecnico.ulisboa.pt header.b="gPsK7tna"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by smtp1.tecnico.ulisboa.pt (Postfix) with ESMTP id 46184600230C;
+	Wed,  4 Jun 2025 11:04:28 +0100 (WEST)
+X-Virus-Scanned: by amavis-2.13.0 (20230106) (Debian) at tecnico.ulisboa.pt
+Received: from smtp1.tecnico.ulisboa.pt ([127.0.0.1])
+ by localhost (smtp1.tecnico.ulisboa.pt [127.0.0.1]) (amavis, port 10025)
+ with LMTP id CcyCaA5SXgS9; Wed,  4 Jun 2025 11:04:25 +0100 (WEST)
+Received: from mail1.tecnico.ulisboa.pt (mail1.ist.utl.pt [193.136.128.10])
+	by smtp1.tecnico.ulisboa.pt (Postfix) with ESMTPS id 89B626003033;
+	Wed,  4 Jun 2025 11:04:24 +0100 (WEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tecnico.ulisboa.pt;
+	s=mail; t=1749031464;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=krMQNZUb+DoZ25aZwWJ+Z+Q6ZnY6TUDZtR3D+HpWcUo=;
+	b=gPsK7tnaMaoxm469r12223mYkxDEuyxiyQ+kCcrrzSq8AdGGu7ahFglicFlbPnRnYX2Mvq
+	VhBc0Spag6wIwdIJdtj7GWQ8Mm1nREFS0EmX3dYyDgdsgR9rQGaa1kLPXH1SJhLF11YPrc
+	NWrk/oPLhPnvGbC8wBjZ49giYpkPTNQ=
+Received: from [IPV6:2001:8a0:57db:f00:3ee2:38aa:e2c9:7dde] (unknown [IPv6:2001:8a0:57db:f00:3ee2:38aa:e2c9:7dde])
+	(Authenticated sender: ist187313)
+	by mail1.tecnico.ulisboa.pt (Postfix) with ESMTPSA id 8E7D4360084;
+	Wed,  4 Jun 2025 11:04:23 +0100 (WEST)
+Message-ID: <e3a4af61-b647-402e-801d-73862679c084@tecnico.ulisboa.pt>
+Date: Wed, 4 Jun 2025 11:04:22 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH rc] iommu/terga: Fix incorrect size calculation
+To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+ Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
+ linux-tegra@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy
+ <vdumpa@nvidia.com>, Will Deacon <will@kernel.org>
+Cc: Joerg Roedel <jroedel@suse.de>, patches@lists.linux.dev
+References: <0-v1-da7b8b3d57eb+ce-iommu_terga_sizeof_jgg@nvidia.com>
+Content-Language: en-US
+From: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
+In-Reply-To: <0-v1-da7b8b3d57eb+ce-iommu_terga_sizeof_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Jason Gunthorpe <jgg@nvidia.com> writes:
 
-> On Tue, Jun 03, 2025 at 02:20:51PM +0800, Xu Yilun wrote:
->> > Wouldn=E2=80=99t it be simpler to skip the reference count increment a=
-ltogether
->> > and just call tsm_unbind in the virtual device=E2=80=99s destroy callb=
-ack?
->> > (iommufd_vdevice_destroy())
->>=20
->> The vdevice refcount is the main concern, there is also an IOMMU_DESTROY
->> ioctl. User could just free the vdevice instance if no refcount, while V=
-FIO
->> is still in bound state. That seems not the correct free order.
->
-> Freeing the vdevice should automatically unbind it..
->
 
-One challenge I ran into during implementation was the dependency of
-vfio on iommufd_device. When vfio needs to perform a tsm_unbind,
-it only has access to an iommufd_device.
+On 6/3/25 8:14 PM, Jason Gunthorpe wrote:
+> This driver uses a mixture of ways to get the size of a PTE,
+> tegra_smmu_set_pde() did it as sizeof(*pd) which became wrong when pd
+> switched to a struct tegra_pd.
+> 
+> Switch pd back to a u32* in tegra_smmu_set_pde() so the sizeof(*pd)
+> returns 4.
+> 
+> Fixes: 50568f87d1e2 ("iommu/terga: Do not use struct page as the handle for as->pd memory")
+> Reported-by: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
+> Closes: https://lore.kernel.org/all/62e7f7fe-6200-4e4f-ad42-d58ad272baa6@tecnico.ulisboa.pt/
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>   drivers/iommu/tegra-smmu.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+> index 61897d50162dd7..e58fe9d8b9e77e 100644
+> --- a/drivers/iommu/tegra-smmu.c
+> +++ b/drivers/iommu/tegra-smmu.c
+> @@ -559,11 +559,11 @@ static void tegra_smmu_set_pde(struct tegra_smmu_as *as, unsigned long iova,
+>   {
+>   	unsigned int pd_index = iova_pd_index(iova);
+>   	struct tegra_smmu *smmu = as->smmu;
+> -	struct tegra_pd *pd = as->pd;
+> +	u32 *pd = &as->pd->val[pd_index];
+>   	unsigned long offset = pd_index * sizeof(*pd);
+>   
+>   	/* Set the page directory entry first */
+> -	pd->val[pd_index] = value;
+> +	*pd = value;
+>   
+>   	/* The flush the page directory entry from caches */
+>   	dma_sync_single_range_for_device(smmu->dev, as->pd_dma, offset,
+> 
+> base-commit: 7d4dfa6140f75b67f8eff3ae6ebc9937be94c4d3
 
-However, TSM operations like binding and unbinding are handled at the
-iommufd_vdevice level. The issue? There=E2=80=99s no direct link from
-iommufd_device back to iommufd_vdevice.
+Just to be explicit about it:
 
-To address this, I modified the following structures:
-
-modified   drivers/iommu/iommufd/iommufd_private.h
-@@ -428,6 +428,7 @@ struct iommufd_device {
- 	/* protect iopf_enabled counter */
- 	struct mutex iopf_lock;
- 	unsigned int iopf_enabled;
-+	struct iommufd_vdevice *vdev;
- };
-=20
- static inline struct iommufd_device *
-@@ -613,6 +614,7 @@ struct iommufd_vdevice {
- 	struct iommufd_object obj;
- 	struct iommufd_ctx *ictx;
- 	struct iommufd_viommu *viommu;
-+	struct iommufd_device *idev;
- 	struct device *dev;
- 	struct mutex	mutex;	/* mutex to synchronize updates to tsm_bound */
- 	u64 id; /* per-vIOMMU virtual ID */
-
-These fields are updated during tsm_bind and tsm_unbind, so they must be
-protected by the appropriate locks:
-
-Updating vdevice->idev requires holding vdev->mutex (vdev_lock).
-Updating device->vdev requires idev->igroup->lock (idev_lock).
-
-tsm_unbind in vdevice_destroy:
-
-vdevice_destroy() ends up calling tsm_unbind() while holding only the
-vdev_lock. At first glance, this seems unsafe. But in practice, it's
-fine because the corresponding iommufd_device has already been destroyed
-when the VFIO device file descriptor was closed=E2=80=94triggering
-vfio_df_iommufd_unbind().
-
-I=E2=80=99ve added an in-code comment to explain why tsm_unbind() is safe h=
-ere
-without acquiring the idev_lock. Hope that is ok.
-
--aneesh
+Tested-by: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
