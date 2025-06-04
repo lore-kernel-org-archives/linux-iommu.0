@@ -1,46 +1,46 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2074.outbound.protection.outlook.com [40.107.237.74])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2080.outbound.protection.outlook.com [40.107.236.80])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8E251DED7C
-	for <iommu@lists.linux.dev>; Wed,  4 Jun 2025 16:38:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EF3E1DED51
+	for <iommu@lists.linux.dev>; Wed,  4 Jun 2025 16:38:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.80
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749055104; cv=fail; b=T0ji1bR0Afg2DYeS3RAQ9QUH8YoBD/XiqyCIFS9RY+7oOwWB9EeU7zzkSDQ5tkCO3GVK3OdX7NL5fo1gB4jhnBRmXMJ1iWkbucc5TuXYmsLsWnUB/pQOXhx6tAGPCz/gfbu0Hhq9gAThzhkUK/h8XrHJZp/CjcF9LvKslgdHzq4=
+	t=1749055122; cv=fail; b=i2qzCl+uKtvT10uoHnEsVayCdB0mnf7P5sUXSAvis5U096/KcDJOg5L63MULJRoh4xrhlSJjOpj8cP+uEHu3EzVT2zs8JXNClSQM5zmYDt4TSYJy+gu3R5z82wj1hJX3GpZrWq1bsefYGJnbcJy9G+deNN0c+Gr9l9kAIas1zA4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749055104; c=relaxed/simple;
-	bh=rrrnIEHbzW1N9olh+46U9BKwE4kwgdbLwZLynlGszNk=;
+	s=arc-20240116; t=1749055122; c=relaxed/simple;
+	bh=QBWQMCp1ot/oUC+9LlM3uip373Cfb/f4BsQV3mezTH0=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=G/VH2ENk7Q1kbwcF0yKkNXAmSTAdd6R1SDyj2rdzpeHsGw3PU+qjPtuEOgtHllW4vKl05LW/vANbH8diH05fPAyBdmdvhS+geye+LUAwBNPc4eXr9ibJgjhgoedUcJz1hTnMwmQBIxJOnq9zI6cGYareyE3//DmO5hldKu7Iuek=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=W0u2/1P0; arc=fail smtp.client-ip=40.107.237.74
+	 MIME-Version:Content-Type; b=a7a8rzQ/AZ9GV5AHE4iKcVvx6vAa0EQJ6nZbC8h5CAclwChyMcNGyEIgkHQvTk7rMRPH0Ox0OK5kXW/e9DxoxCzs6TQ7Yj67px5SbtKKe2Znmo32XybM1dC1sHZRQnTUy44sCBtwMuRLThwn6Ynup+RENGlwMPLnQxiC5KTy70g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=gO8Dc16j; arc=fail smtp.client-ip=40.107.236.80
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="W0u2/1P0"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="gO8Dc16j"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=cl2boWwWghTVh4m/mHruAWF/oynzOPz7KFcbttAg7KJ3ojQPjqG9Sq7JOcEaMlvsq/a14tvgAkS2eBEZ426lCrEp5EFY7AGwohCkPQMdg193keeA4P2Ol0XT0wmamMO8TctQn5z7NfFeb3a39B42j5EjW6LKGVQew+ooEaOTWoEDjUsk/NDA2ukVS4IglSd5qFkxxJzxs3ntlhQ4VxCMkOAr4PZ75fKf9Zh+ueBREO6omoP3CH4E3dvASFZQcsetH9f5qN8jDB/LJiQDy/q7kiaZH9KmwzEvB9DXz0D+aa6sLpGz4MUGRR01dLKlZICw4XOnRfGwcFvNptJDxipy5g==
+ b=VnsbKckVVwpFVBQDPFMnkFGUA9/rGVxsvHRcdylF5R/xJTHeln/BKPDmIld//YEe3MtUrEX4A0uoNFufmK5ZmrDqCbhSL5pBY6OeqgkbH6xy1z9xcfot4VJOU8F+A3NM0/hgQBsaLKWOIt2IEHZI/mYY4WQjmZXZOozgK/C3hGn7JA6FjoxDb+BFRdNoXW7k21hIjxHmGkFwXf9xK28wU6EfEl3bQs6roPdoTJLmbou6JPoXFdRKu2Nr7YW6TqA4vAVwcRInvYKSwfiJ/YX7koAvSg+zuQE3b5l2dWf+jdL+t1DI/jXsbEFxOuFeobqAfd6zxK+2vpwZK8cGqE4P7w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5ymOvmTvCjIy5d7nKTYWHEAEeHpSUjjhMIDYfyBbbHI=;
- b=nBZBhCkB3UjwVj4zJ32/Xgwu4lPiWbBTjcDH3Aa1sEQEkGONANiVLVC0DqvhPdf8WVlj7z380cWLEfimddZ9bYDc0p/YZA5+EkGhXLfUO2LS+jTWfWpQkbERoNUYEkpZ/f5b1f1THEEl4XcFZJsbtBuIa2dhA8dAYofm9sDop/z/c/lukv4+qDS9BciQyoEskCkM1cMZ6Kibs1qhQYZGQa724Rs4h5rYRdOQ/DeeSF/L7FpHWSJXq53uCDt1WvVguGUnoN8sSMs64/OOvA3fekPo+hSnczrJ4hoBQ6+0o3fi0SyYriXEGENU5i0zuU0PmOOLmfLwKOrmDrnCSyc9aQ==
+ bh=Hcv8uK3Ii7YTtqii8MIgRit6IlZvaw4k09ONJ0OtYcc=;
+ b=vqb0wQM6Q85gLIvu7Ziifior1z949yliqLQ6q1LzOqyYHOcac7h3w3EMKnDitna2n8BveGTnAAKGuCeRTMJBhSI86/C94QZZfdXDh5erLXUI55DXRrDUztM+HJ1KSCUYfMOgPuMKhkWu1GFYnIG/9lhyGkiFrZV8RHvnVERHSJC/V+uDxsLAcA3HrJh2uR1n2MMDRKnM5LclU9TgOSqa6GUB74Mz0m4/DSIy5EWkTErIo5bWcapW/kQwC10fXYaZVuVm0o4+a09rkYotdUKToqbaPh6f1GFovURpCYKKeSmPx+xb5x4+cO6zypnHArOYPZVpa3AdoBnxDEJ4BtYaGw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
  (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5ymOvmTvCjIy5d7nKTYWHEAEeHpSUjjhMIDYfyBbbHI=;
- b=W0u2/1P0tKlVREoku0inKm9twZ+W8G3dctUqDccMu8MvKjApkJQYEZ16qNKPzNhm202L+giZ9Uv0khX6IOXZDrmDHdNkn9jW4tV9x3Opln6RmUDZo7VDbr8Dw4vsKk2PBibfJmvJDCbCF/fzP80x+alkXYbNPLGI7cmd2AnT1Vw=
-Received: from SJ0PR13CA0146.namprd13.prod.outlook.com (2603:10b6:a03:2c6::31)
- by DS4PR12MB9636.namprd12.prod.outlook.com (2603:10b6:8:27f::13) with
+ bh=Hcv8uK3Ii7YTtqii8MIgRit6IlZvaw4k09ONJ0OtYcc=;
+ b=gO8Dc16jizEgSURW+nJLQqdILbQzuN96YvXPcFB3BWYnA20/1ajvV+7C65yhEN+ShPVAqla+rAIRMgBU0Uv5NPaVLiubjmg5NyT5s9afeiZ7dWszJ0TVBh2ee6oden4R4/aPyTjyf2rRpCVOiQQUYQ0GDA4XgdlVRr1kbgVtWws=
+Received: from BY3PR04CA0021.namprd04.prod.outlook.com (2603:10b6:a03:217::26)
+ by DM6PR12MB4171.namprd12.prod.outlook.com (2603:10b6:5:21f::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8792.33; Wed, 4 Jun
- 2025 16:38:19 +0000
-Received: from CO1PEPF000075EE.namprd03.prod.outlook.com
- (2603:10b6:a03:2c6:cafe::44) by SJ0PR13CA0146.outlook.office365.com
- (2603:10b6:a03:2c6::31) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8769.16 via Frontend Transport; Wed,
- 4 Jun 2025 16:38:19 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8792.36; Wed, 4 Jun
+ 2025 16:38:37 +0000
+Received: from CO1PEPF000075F4.namprd03.prod.outlook.com
+ (2603:10b6:a03:217:cafe::ed) by BY3PR04CA0021.outlook.office365.com
+ (2603:10b6:a03:217::26) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8746.31 via Frontend Transport; Wed,
+ 4 Jun 2025 16:38:37 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,21 +48,21 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1PEPF000075EE.mail.protection.outlook.com (10.167.249.37) with Microsoft
+ CO1PEPF000075F4.mail.protection.outlook.com (10.167.249.43) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8792.29 via Frontend Transport; Wed, 4 Jun 2025 16:38:19 +0000
+ 15.20.8792.29 via Frontend Transport; Wed, 4 Jun 2025 16:38:36 +0000
 Received: from BLRDHSRIVAS.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 4 Jun
- 2025 11:38:15 -0500
+ 2025 11:38:33 -0500
 From: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
 To: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <will@kernel.org>,
 	<robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>,
 	<iommu@lists.linux.dev>, <Vasant.Hegde@amd.com>,
 	<dheerajkumar.srivastava@amd.com>
-Subject: [PATCH v6 4/8] iommu/amd: Add debugfs support to dump IOMMU command buffer
-Date: Wed, 4 Jun 2025 22:06:43 +0530
-Message-ID: <20250604163647.1439-5-dheerajkumar.srivastava@amd.com>
+Subject: [PATCH v6 5/8] iommu/amd: Add support for device id user input
+Date: Wed, 4 Jun 2025 22:06:44 +0530
+Message-ID: <20250604163647.1439-6-dheerajkumar.srivastava@amd.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20250604163647.1439-1-dheerajkumar.srivastava@amd.com>
 References: <20250604163647.1439-1-dheerajkumar.srivastava@amd.com>
@@ -78,160 +78,179 @@ X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000075EE:EE_|DS4PR12MB9636:EE_
-X-MS-Office365-Filtering-Correlation-Id: a1a618fd-8a66-4189-a162-08dda3863689
+X-MS-TrafficTypeDiagnostic: CO1PEPF000075F4:EE_|DM6PR12MB4171:EE_
+X-MS-Office365-Filtering-Correlation-Id: facfb49c-3c0b-4840-7902-08dda3864135
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|36860700013|82310400026;
+	BCL:0;ARA:13230040|82310400026|376014|36860700013|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?LQjugXzF17Sb0OQPMwSx2JKd3BVfduySxo3uphCm8YJGOWZ5XJRSyStToK2X?=
- =?us-ascii?Q?JvrqOAZvfAXFkxueXxRMLvlD7oB3PSjw8Te6TYjzbuIf/Us5bulWB/yYUkWL?=
- =?us-ascii?Q?QEV/OYYMgvHfXbZzxfybm+kjt9I1FXlFxHpC/9FIAGd3rym+ASmIqHag7EyE?=
- =?us-ascii?Q?Sb/CrFyveSnAWdC7E3srld04xARgwg/LqnWvueoJN9H33M4/P6fAmh8roQQK?=
- =?us-ascii?Q?2mUXkRpUQvJHiYJg6VaM3LD4VYprozAFlSLb+XpDRo1gTwcZaiFJPAaP8Siy?=
- =?us-ascii?Q?3gyE7HssL+EbFGzAkkQglqBcgAX+sS0klk2In6hO54t7gccCAa5szOaouGHg?=
- =?us-ascii?Q?hr9l5AiA642HGpQGqoY2mUhGbzmCsJjtgdCwaaiIfdomdxxX+GV/bFc5zbrg?=
- =?us-ascii?Q?nIV/w4LzKPVTcJTSlNrWk5c29aezSokZkG9GLqnC9lSqhQhqI4Qcjwy+bKpv?=
- =?us-ascii?Q?MFeMFXInUN++yyhU5kE+GDdIRJxd6KMSYR1o9Mv+ilImAVPz+0dYptzEhlWY?=
- =?us-ascii?Q?Cm4pwHZBI4uBuP7TGUDHjp6zCgmpgpV6qq++IXgdLKJ4hgC+q3B1j5TgyU8o?=
- =?us-ascii?Q?HUYMVnZXhr6Zy20AJ/i5JcW3oRyoI6gDxcS8+INbPvIzy5raW+jNvX61cYi9?=
- =?us-ascii?Q?iW/+nDC4duE+QTVWYLItSeNliH4k9jlXaTNClrHtpVu4ebcqaRJ8gjrbdFqJ?=
- =?us-ascii?Q?BQtpfv+7YDXJuSyw1mK1lxP22kpPR/3NmtYyjwlRY2/ywu/E3koWj/fU2Fwm?=
- =?us-ascii?Q?zb1csOWiQ3UKd95rMvXwAQMtNRu5uOpgA0iXD1GNxd0UK3CnxaYphPE5zsmQ?=
- =?us-ascii?Q?znA4DHnAUwYmPnUVvO/dd3XN8J/Ppzn8ls5hmJ8H6YxqF7IRQnrsUyNy69kj?=
- =?us-ascii?Q?gDhMnecCeS/Ols6/ThMR34NMvWqjB0auQwTG/oSQm41Fmmk6Sia8AaJejy0i?=
- =?us-ascii?Q?fxMXxXq36NDnWjzozPEnYBx2IANtUf5I7nnJGWmwYqnm5AiL2nmrjbE9dZf5?=
- =?us-ascii?Q?3w5fJPL447kVARM6Xn/Hq0OBk9FQvg0hOvjIQwK4pt2npDsjUNSl6poE99gA?=
- =?us-ascii?Q?LW5Y5FYiTUT/8kuDYu6uSVFyP5AdHe5mVpucMcWomfjNTT91qEQ0xUuAYDk0?=
- =?us-ascii?Q?XXpqlrzpgW1YEAvH2OqjI154uNfewk0bBnPxSlIGrmB8G/nRtNYZqrmMHY7c?=
- =?us-ascii?Q?n8oXOP4QoViTV0aD3qff/9z5Tghvy19rj3j8PznZ3LRL+E3Z+Z9y2j1BrknW?=
- =?us-ascii?Q?Wf8wxir9//4DhujhrEtqpV9P2hK7tG2goXJXsLGUAxhMcoEkCUA3XsAAEVof?=
- =?us-ascii?Q?/ItISKNfNW6frFbD6cCC5AFhHiS+IvOQHd3+LcyyZUCV+TbpmKVpjiuHH1SF?=
- =?us-ascii?Q?d1X7uZzdEP1XnlVxzAZbrvcb6qlaE0VTQxv10vrF+ld2+QD8GxFDsXGp/D20?=
- =?us-ascii?Q?dG0HRPBrBSSure/IUsqOYzvkGZGEy7qb+iST13H03I5QuZU/BhPmnIIn8+DZ?=
- =?us-ascii?Q?T1UzZCByqc0W4nMLvPaiMO/iOUCqRcd9T+5j?=
+	=?us-ascii?Q?0RqMEbKHaQ4N7lF3dVQLvt51QO28vEvXyGqcO7Rq33CzGVFZIHbX9Xc42S4l?=
+ =?us-ascii?Q?N5LKRX/9XIkGezphNE/Y3fgmzTzZgV3wf4MUClQhl72ONowWnd5NpkIk3ECu?=
+ =?us-ascii?Q?QmyhJ1nj1SywxwmgpYTQAIQ6vHRVI9FyPFPNkjUAX0L4JgL1RJ9nvQZOChIw?=
+ =?us-ascii?Q?L6wX6SIS7a6kkom4rQ0c1i3xLeBZ7nkzNfBdb9owNDImgs2PRizfQ/3a/T6b?=
+ =?us-ascii?Q?SLjpjpEmOuy8nN1hzOkVyOUEak2g21AUcCKHkGXo4VE8w06I25icAanmNn3V?=
+ =?us-ascii?Q?HFYMOSdOE81YBn7a03Ib96puWRUQrtsCgHvpLvzNw2dAgGZZ5s4FMvMmeOln?=
+ =?us-ascii?Q?fCtPChc+vDrLrdmcOT6rY+rrKXnO+CjlyxmfzBfgR7cKiuLe7NkLMbNLrqva?=
+ =?us-ascii?Q?h10RES7PS5UFQdYrA+emJXgB0VKudImgu9rwi9t7lokEwg39OfL2fc7pEnVJ?=
+ =?us-ascii?Q?IRXRTUTM1seDRdmpyYhaBHC8W8CyPmG3fX/x3hpRNDDo4gkk/dueQjwILd3N?=
+ =?us-ascii?Q?kzVVOYzN3i/hLi5AV/vihyPGrY5RydY+o0q1gatkWArFs6FXHxThcYfrogcW?=
+ =?us-ascii?Q?+TVGrwPz8069oiSxCJ+Gg16V7dQRtISwHNKjXTRfBC22m1enJ5Bq4kRp8aCv?=
+ =?us-ascii?Q?RSnZYKiel+eoJEi8RZjLJWwuS0FHK1nZAdvj36APD3/w06gEgGjADwsnZWFA?=
+ =?us-ascii?Q?VQv5oCTEZzBaz9hVf0EjncGkJFAXCpFTNCkW22R6io07PGnGrghTw3MPTQUB?=
+ =?us-ascii?Q?k3/Uegu4xGMjDE6BLeqBaU/46uYcUsbbjKHYoKzXSUEIm4Elv8azpkcoXHBb?=
+ =?us-ascii?Q?b2Di5CzqRFjZf+e3o/UXGLEUUiBB3BmKWT2wKvhMyTxc9N9T+fzkLjfOiJVO?=
+ =?us-ascii?Q?DMJwlMZVJqSKtcNzHHMYJjCMFp0AeTerWoo7O5glqmGXz6vdLCQIRgZO43qC?=
+ =?us-ascii?Q?Gg1IjQN4PCGNwqSKzbljcYIoQ+77zRmwa1MRch4t1iRouWF9l2G8bWHW0rXD?=
+ =?us-ascii?Q?xX3Z+9wfkmH00pIs72H5GU8hlTncB7Nn0Pn1azLmD1p1yGH5+wbuirfY1eKs?=
+ =?us-ascii?Q?f1dleHs4eUSryX3qiwdjBFmCAutTcRzUAZXQ3Vff6ebtUwalkMqZAV2kbwRF?=
+ =?us-ascii?Q?3spVDyDIQtIH52lQmKAwnljOcKi6kQSGyCRPT8d+dkJC30QZOVeLOuLJ/Tlj?=
+ =?us-ascii?Q?vvjQHgbD71BrwjXUFX5QtkCEsU6/G/nlTk1qAJHd3zfC3UnX7asmA8QZ3tL2?=
+ =?us-ascii?Q?3SSqw0TJvq5AfPtoFZBcVyLEG84y3jkDcW33w4bg4ht3kdUZ3/rYjjYYH0x1?=
+ =?us-ascii?Q?y8WkGhQAlFPsoGQUwMba5pVtQuiBJrKz4/XInfo0HbB1Gkyuwzj8fc5Tuk4r?=
+ =?us-ascii?Q?c0f9Yey67HS7Q3NBnqobzmcwnr/8VNp6UJL1Ae3oM06EOeyn0JkFTrxNyidE?=
+ =?us-ascii?Q?V62Tlv59Po8ftJMwAiy8Bk3XJqFshpXmPU0ckP2OeNfDkSgCYNRjis0m1OeT?=
+ =?us-ascii?Q?+0L2LEUoSatcSsG5ixFrcGELB9VtV+ns1RmT?=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(1800799024)(36860700013)(82310400026);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(376014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jun 2025 16:38:19.0944
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jun 2025 16:38:36.9974
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1a618fd-8a66-4189-a162-08dda3863689
+X-MS-Exchange-CrossTenant-Network-Message-Id: facfb49c-3c0b-4840-7902-08dda3864135
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000075EE.namprd03.prod.outlook.com
+	CO1PEPF000075F4.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS4PR12MB9636
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4171
 
-IOMMU driver sends command to IOMMU hardware via command buffer. In cases
-where IOMMU hardware fails to process commands in command buffer, dumping
-it is a valuable input to debug the issue.
+Dumping IOMMU data structures like device table, IRT, etc., for all devices
+on the system will be a lot of data dumped in a file. Also, user may want
+to dump and analyze these data structures just for one or few devices. So
+dumping IOMMU data structures like device table, IRT etc for all devices
+is not a good approach.
 
-IOMMU hardware processes command buffer entry at offset equals to the head
-pointer. Dumping just the entry at the head pointer may not always be
-useful. The current head may not be pointing to the entry of the command
-buffer which is causing the issue. IOMMU Hardware may have processed the
-entry and updated the head pointer. So dumping the entire command buffer
-gives a broad understanding of what hardware was/is doing. The command
-buffer dump will have all entries from start to end of the command buffer.
-Along with that, it will have a head and tail command buffer pointer
-register dump to facilitate where the IOMMU driver and hardware are in
-the command buffer for injecting and processing the entries respectively.
+Add "device id" user input to be used for dumping IOMMU data structures
+like device table, IRT etc in AMD IOMMU debugfs.
 
-Command buffer is a per IOMMU data structure. So dumping on per IOMMU
-basis.
 eg.
--> To get command buffer dump for iommu<x> (say, iommu00)
-   #cat /sys/kernel/debug/iommu/amd/iommu00/cmdbuf
+1. # echo 0000:01:00.0 > /sys/kernel/debug/iommu/amd/devid
+   # cat /sys/kernel/debug/iommu/amd/devid
+   Output : 0000:01:00.0
+
+2. # echo 01:00.0 > /sys/kernel/debug/iommu/amd/devid
+   # cat /sys/kernel/debug/iommu/amd/devid
+   Output : 0000:01:00.0
 
 Signed-off-by: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
 ---
- drivers/iommu/amd/amd_iommu_types.h |  7 +++++++
- drivers/iommu/amd/debugfs.c         | 26 ++++++++++++++++++++++++++
- drivers/iommu/amd/iommu.c           |  7 -------
- 3 files changed, 33 insertions(+), 7 deletions(-)
+ drivers/iommu/amd/debugfs.c | 80 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 80 insertions(+)
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 22679ca0bc26..2cf6fd676979 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -898,6 +898,13 @@ struct dev_table_entry {
- 	};
- };
- 
-+/*
-+ * Structure defining one entry in the command buffer
-+ */
-+struct iommu_cmd {
-+	u32 data[4];
-+};
-+
- /*
-  * Structure to sture persistent DTE flags from IVHD
-  */
 diff --git a/drivers/iommu/amd/debugfs.c b/drivers/iommu/amd/debugfs.c
-index 5ac12c3fe069..61fde9ebfcfa 100644
+index 61fde9ebfcfa..8b57ab4ab809 100644
 --- a/drivers/iommu/amd/debugfs.c
 +++ b/drivers/iommu/amd/debugfs.c
-@@ -106,6 +106,30 @@ static int iommu_capability_show(struct seq_file *m, void *unused)
- }
- DEFINE_SHOW_STORE_ATTRIBUTE(iommu_capability);
+@@ -16,6 +16,9 @@ static struct dentry *amd_iommu_debugfs;
  
-+static int iommu_cmdbuf_show(struct seq_file *m, void *unused)
+ #define	MAX_NAME_LEN	20
+ #define	OFS_IN_SZ	8
++#define	DEVID_IN_SZ	16
++
++static int sbdf = -1;
+ 
+ static ssize_t iommu_mmio_write(struct file *filp, const char __user *ubuf,
+ 				size_t cnt, loff_t *ppos)
+@@ -130,6 +133,80 @@ static int iommu_cmdbuf_show(struct seq_file *m, void *unused)
+ }
+ DEFINE_SHOW_ATTRIBUTE(iommu_cmdbuf);
+ 
++static ssize_t devid_write(struct file *filp, const char __user *ubuf,
++			   size_t cnt, loff_t *ppos)
 +{
-+	struct amd_iommu *iommu = m->private;
-+	struct iommu_cmd *cmd;
-+	unsigned long flag;
-+	u32 head, tail;
++	struct amd_iommu_pci_seg *pci_seg;
++	int seg, bus, slot, func;
++	struct amd_iommu *iommu;
++	char *srcid_ptr;
++	u16 devid;
 +	int i;
 +
-+	raw_spin_lock_irqsave(&iommu->lock, flag);
-+	head = readl(iommu->mmio_base + MMIO_CMD_HEAD_OFFSET);
-+	tail = readl(iommu->mmio_base + MMIO_CMD_TAIL_OFFSET);
-+	seq_printf(m, "CMD Buffer Head Offset:%d Tail Offset:%d\n",
-+		   (head >> 4) & 0x7fff, (tail >> 4) & 0x7fff);
-+	for (i = 0; i < CMD_BUFFER_ENTRIES; i++) {
-+		cmd = (struct iommu_cmd *)(iommu->cmd_buf + i * sizeof(*cmd));
-+		seq_printf(m, "%3d: %08x %08x %08x %08x\n", i, cmd->data[0],
-+			   cmd->data[1], cmd->data[2], cmd->data[3]);
++	sbdf = -1;
++
++	if (cnt >= DEVID_IN_SZ)
++		return -EINVAL;
++
++	srcid_ptr = memdup_user_nul(ubuf, cnt);
++	if (IS_ERR(srcid_ptr))
++		return PTR_ERR(srcid_ptr);
++
++	i = sscanf(srcid_ptr, "%x:%x:%x.%x", &seg, &bus, &slot, &func);
++	if (i != 4) {
++		i = sscanf(srcid_ptr, "%x:%x.%x", &bus, &slot, &func);
++		if (i != 3) {
++			kfree(srcid_ptr);
++			return -EINVAL;
++		}
++		seg = 0;
 +	}
-+	raw_spin_unlock_irqrestore(&iommu->lock, flag);
++
++	devid = PCI_DEVID(bus, PCI_DEVFN(slot, func));
++
++	/* Check if user device id input is a valid input */
++	for_each_pci_segment(pci_seg) {
++		if (pci_seg->id != seg)
++			continue;
++		if (devid > pci_seg->last_bdf) {
++			kfree(srcid_ptr);
++			return -EINVAL;
++		}
++		iommu = pci_seg->rlookup_table[devid];
++		if (!iommu) {
++			kfree(srcid_ptr);
++			return -ENODEV;
++		}
++		break;
++	}
++
++	if (pci_seg->id != seg) {
++		kfree(srcid_ptr);
++		return -EINVAL;
++	}
++
++	sbdf = PCI_SEG_DEVID_TO_SBDF(seg, devid);
++
++	kfree(srcid_ptr);
++
++	return cnt;
++}
++
++static int devid_show(struct seq_file *m, void *unused)
++{
++	u16 devid;
++
++	if (sbdf >= 0) {
++		devid = PCI_SBDF_TO_DEVID(sbdf);
++		seq_printf(m, "%04x:%02x:%02x.%x\n", PCI_SBDF_TO_SEGID(sbdf),
++			   PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid));
++	} else
++		seq_puts(m, "No or Invalid input provided\n");
 +
 +	return 0;
 +}
-+DEFINE_SHOW_ATTRIBUTE(iommu_cmdbuf);
++DEFINE_SHOW_STORE_ATTRIBUTE(devid);
 +
  void amd_iommu_debugfs_setup(void)
  {
  	struct amd_iommu *iommu;
-@@ -124,5 +148,7 @@ void amd_iommu_debugfs_setup(void)
- 				    &iommu_mmio_fops);
- 		debugfs_create_file("capability", 0644, iommu->debugfs, iommu,
- 				    &iommu_capability_fops);
-+		debugfs_create_file("cmdbuf", 0444, iommu->debugfs, iommu,
-+				    &iommu_cmdbuf_fops);
+@@ -151,4 +228,7 @@ void amd_iommu_debugfs_setup(void)
+ 		debugfs_create_file("cmdbuf", 0444, iommu->debugfs, iommu,
+ 				    &iommu_cmdbuf_fops);
  	}
++
++	debugfs_create_file("devid", 0644, amd_iommu_debugfs, NULL,
++			    &devid_fops);
  }
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index f34209b08b4c..522251f60e8e 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -62,13 +62,6 @@ static const struct iommu_dirty_ops amd_dirty_ops;
- 
- int amd_iommu_max_glx_val = -1;
- 
--/*
-- * general struct to manage commands send to an IOMMU
-- */
--struct iommu_cmd {
--	u32 data[4];
--};
--
- /*
-  * AMD IOMMU allows up to 2^16 different protection domains. This is a bitmap
-  * to know which ones are already in use.
 -- 
 2.25.1
 
