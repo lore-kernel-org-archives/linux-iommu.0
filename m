@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B67DE1A0711;
-	Wed,  4 Jun 2025 01:06:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FD112528E4;
+	Wed,  4 Jun 2025 01:06:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748999164; cv=none; b=a8QQ74yqaqt7L3X562IzxhaGlM0aGtPaayLOnc5BMl0Ec+Rc+37ksJJOw3MZFjMqnE2ZEP7Z9xRgVNEjKryVxVhnIHpr0JBbmjJ9Blv8yJP5u/Wgx2GB4kfW+UaTOo7bdMdpXPcOB1O6kYKbgL3QsF51BUe8Rp/ojqzIqFv4pmI=
+	t=1748999217; cv=none; b=mZxTpytBYLwkN9CenTh28queS482GpaQ8RS29IBCEwZIMjWR1iJiEVxitE4OiWF6TuDnTe97cuYvBpS0IfpUz+aMt9qOdM2WoKI6yf89H3q9SfAJKU7dP5TEqimkEPKeKtnHexgUzYWIHcGUgyD1wUCzINVXqwsYOQT4MW7FvJo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748999164; c=relaxed/simple;
-	bh=SuqEI8fhHqutMEYXj7T0VAkyjpP0gSaTDnQn54/iP/Q=;
+	s=arc-20240116; t=1748999217; c=relaxed/simple;
+	bh=/5s2nnsK7i7CquNY4PLZtWumLnwcLvyRJlMw3kLf4TU=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=FQnhzYXD7mPoQXxgtzib/Bn42C7IeArrhazAML2p+1HEtNTBgHtPXNnmuKW22jmTdcDFGBVld0HFLDJdhaFWhHVU3Snk9kWMn3XJ77PlDRZ6AUtMFFwXlpWoEXAcf4Gzr3IAEo0DSnov8r9CpxxYOyDKaGMBdjL1ZMb9a5Bhrns=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J1VoJBmI; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=IuJFZuZ0IQQo6gya2Vr6aq4ZLpkt8jFEwHuwfAPPwFoCF3dobJsB1yXcucgJ0npVfoOhE94aEiX2kArlu1pV2WZXpGJJDdEdGV5QSf0ySlbf47YaaEyOnE7gSi2p0K1WwSxOGXpeqVttqKUVD+ENCaZz/iz9JzmxgBr1dGsA1D8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U26OugFz; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J1VoJBmI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9E02C4CEF2;
-	Wed,  4 Jun 2025 01:06:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U26OugFz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A82AC4CEEF;
+	Wed,  4 Jun 2025 01:06:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1748999164;
-	bh=SuqEI8fhHqutMEYXj7T0VAkyjpP0gSaTDnQn54/iP/Q=;
+	s=k20201202; t=1748999217;
+	bh=/5s2nnsK7i7CquNY4PLZtWumLnwcLvyRJlMw3kLf4TU=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=J1VoJBmIcaK0+Oids98ro1ewoT5wGUr4hL8wnchAQfO+RT2cbPiAwRZ8FBrp70a/C
-	 4K/TzXQ2I/J2aSIe/+NaanrBdnDxj889aY/uO1jLHo3qfBZSR/mzYBiVMPebfwkwpM
-	 9+wg3oZQVV9eSkpOjHYgMZ7v19g1Pf6+0IiFJSEbv/DyuTE1svNCmiEODjq/7DgsRG
-	 YLMo66BqmXlGClceFnz4WEx/RmijIOP+NzLs0zf8NidPLGvEY2Ga0utC92PIX78k6J
-	 xokFROF4uWvFBbPkf4w0twJf4M1/b2WxJb8UbZdJm/ueXDKS6nqUZVZOwLR7co3EaB
-	 RrpS0Gih38AXg==
+	b=U26OugFzZogZjX+HpRDykTQ5iy1UpMD+UTN65OkSEBxSaRN76XQjVzd9Ejk03MT5N
+	 vBCo46r14F1F/ZGwlzqx+8Ge0hQph13zSZjYbOaf1LQxmUhLg0hgh4AaFRO1lpFIun
+	 nUQcQsDsZbNn4tGctMvG/MXiK7m9mG45tX8OPXrWJem6JcMrTtTgK/dh3KkTBYFQCp
+	 1q9MhpzLWwN4oHFEhY9PX8EsRVjbaHRftLlULOae7wfZ4N9rtFACU6TYZnBqVOEnbf
+	 a1wPpTlymI758uFtyO4doJKV5be7fR12buzEUZsf+jYslLHaOZXgyHjFJh/R4XnhB9
+	 GYAQt0rcjFoAQ==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
@@ -34,12 +34,12 @@ Cc: Sean Christopherson <seanjc@google.com>,
 	Sasha Levin <sashal@kernel.org>,
 	joro@8bytes.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 24/33] iommu/amd: Ensure GA log notifier callbacks finish running before module unload
-Date: Tue,  3 Jun 2025 21:05:15 -0400
-Message-Id: <20250604010524.6091-24-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 22/27] iommu/amd: Ensure GA log notifier callbacks finish running before module unload
+Date: Tue,  3 Jun 2025 21:06:15 -0400
+Message-Id: <20250604010620.6819-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250604010524.6091-1-sashal@kernel.org>
-References: <20250604010524.6091-1-sashal@kernel.org>
+In-Reply-To: <20250604010620.6819-1-sashal@kernel.org>
+References: <20250604010620.6819-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,7 +48,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.15.184
+X-stable-base: Linux 5.10.237
 Content-Transfer-Encoding: 8bit
 
 From: Sean Christopherson <seanjc@google.com>
@@ -110,10 +110,10 @@ benefit**.
  1 file changed, 8 insertions(+)
 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 7d38cc5c04e68..714c78bf69db0 100644
+index a9a3f9c649c7e..334303b1d27bb 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -679,6 +679,14 @@ int amd_iommu_register_ga_log_notifier(int (*notifier)(u32))
+@@ -750,6 +750,14 @@ int amd_iommu_register_ga_log_notifier(int (*notifier)(u32))
  {
  	iommu_ga_log_notifier = notifier;
  
