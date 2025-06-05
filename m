@@ -1,132 +1,228 @@
-Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com [209.85.221.68])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2070.outbound.protection.outlook.com [40.107.95.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F7FD1F4CB1
-	for <iommu@lists.linux.dev>; Thu,  5 Jun 2025 03:55:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.68
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749095730; cv=none; b=RrMTSaenEDe4/Rkqums6qual1oI0EcFBDwPPjryW6UuT8Nh4ZJ1RoukMMZtVNn2QD4Oidfp7ruwpVdZNSgYV7k5gmOrdjXcM1K2y1C+z6P1dEvD6CgSENC8lNLr/jUq31E0OFBDCf9Gef44avbuAtsZZ9EDm10LP/UoMhLUDeus=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749095730; c=relaxed/simple;
-	bh=6vV8BBBuLBseH4drZNDS1JiYTzhPY15/Bct2tXlZ1l8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Y6p6Aih7iKiO2bIM0YxtOqTkAV3odi9UxVv8KmnWg1GouyCAXQHE2V+K3tIycNd8C0Ct/rneob4SQoAu88LNNmeORyA5e4LVGd1QNpEIUZtjCUSQtb03c7hWSmisHpAbA08kW9Jefk7OLyK7ltTAy6vFywDshNGGIAEMSr1lYGU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DTJbI9ph; arc=none smtp.client-ip=209.85.221.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 305B754723;
+	Thu,  5 Jun 2025 04:11:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.70
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1749096688; cv=fail; b=mOM/PP9l+NOZYi2Hst26T+97Lt5NQnHc3C9Se92bF3LcL5Jj4bhi+HDU6Qdz1PYOYNrS5OJyWFosBBIUNaeEKKdpcLYEw7sur82HmdFe26wlP6gAZArYVr0cIAzw3XooSl0v+NMGhHg5d7QQR9sz3B3u1nOwvsi5fJC5XaWPHyo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1749096688; c=relaxed/simple;
+	bh=8pdUMsBCWnnyjs5MCXuwnM9GSzmUaG5aecYBoeH0PP0=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tQLYqDJ9FywYqhB/WNkprjigiW35IvQV3gOAl0mwvtajPRRyIDvwf6X7iKjFS35G8WnLJjK1SnYBjbHRV1LMRSGxPNi6J3ARhcum2hOTtaCA99BlPM07W5w/S85di1ar5AEqn/kJQU5VRJqSj50xdnYbdRLSKskiPwpbFFc5muI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=E0qno6MH; arc=fail smtp.client-ip=40.107.95.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DTJbI9ph"
-Received: by mail-wr1-f68.google.com with SMTP id ffacd0b85a97d-3a36efcadb8so386763f8f.0
-        for <iommu@lists.linux.dev>; Wed, 04 Jun 2025 20:55:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1749095726; x=1749700526; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=UFw1hVm4aqEwlAr8rCOCLfQ9NHkEpt5q96evQjKko24=;
-        b=DTJbI9phjO5pjcFukw6K3vKmnUHd53XS8gy2mFoOkjetzzrVTvWWNAPkx6XAccP3Gc
-         lbx+xAIjcUnXrrNpfqSad2RRkRFyMwDlwKCReWBejerIlo2CJvoU8Rs8I5mFxQlK5v33
-         nKdsVQGRuwtEn4HQq5EjDW09C7sQjIKRBdBOxgXRb/9kU+Z3GzzED93dLNCgj24rXIFd
-         /yAun0ViWpznALr0/jfrnw0sNCQxz74no4WHRAJZcVm3q2aUJ6hJEtCy3bNxF3KwYUZw
-         7I9JG/7DS17XKFUV5vtrTQDhk8PSHXTGFMG0zUSs1he12d2IlNnyu5MLWCqQfIWSbg7H
-         Drzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749095726; x=1749700526;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UFw1hVm4aqEwlAr8rCOCLfQ9NHkEpt5q96evQjKko24=;
-        b=bWO6oJvy1UtAsgePgr+w/ttKhzrtUyt4p3lDx3C1haMkmpfeR6KPAF4rrb+TMYFmiJ
-         tfuMugNNJEB/J8L6fZPP1T1wrCUypgMpyz+U8K/8RUrBhUb1EVfEaCHj/yg9IPstuMs/
-         fJNhzDQC/OSWS7Td+rTjLVPdaMmhlGJV64DQYrEVjo9buYUqWnKlNS2I/eG57XKdoBmT
-         3oDV6jXAheOCMeZanTl26MepxqNXlj5uge7X2dU3Hsce0RehW62UPjzUmwxQyJmGi2Ei
-         BbRvD4B+NQAfiXw2Uh+zz3gWL+5awjy1jcx92xtnZejaclOZCCR0wdO9O+jSqoF6baeu
-         cSkg==
-X-Forwarded-Encrypted: i=1; AJvYcCXYGeX6Cy+UaKU05f1VizL1E9j87T6tEkE29gztTENAZncLyzorcs5MH6XeyA/7w22g7NT5Ig==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxLEZEB7G8br1z68V8AoVgz1OxjBBFgSuUAKEwBWXVtIjxVtOeN
-	y/h5wMvUMYFvT5Sv6L9OMP91JM+hnlpluvG+HWjaBaHJ2e+RV/HwVk7f
-X-Gm-Gg: ASbGnctv5GGUgHvX/G4yfdj6D60mxiReCP+so0zwJe75QMitkq9BJUqkvluBM44/xcC
-	FlFgI9dvQIHQ1cMPPwAFHjcPXMkRxKFZul/+mJ2NikzgwxU7eNsQV6HIo+35urpTmYD8tETCSce
-	d/54XBM8888KageF6jDm0/JoUDwmpa3w3+ZeTuXKULdfIgiLr60qBzo/jDJq2ZcPRrv8AnIXGua
-	mtauwFUZF42PTSahAgt8x5pQr6FEJeI9SUFnwSNStiEzAm4c2KVeKOYqVfZDPcRPY8u43vZn5wA
-	Wj9XRgWJNPzU1giToJHOex021Nioha+nh4TD7m5Qwsj5io5c5o5IS/lSHn+945kw9/n5lfFE79l
-	3WcC98y2QuLckGYqyt6ASk0+OdE3T6R0xUXkHHD9RBEVTe0qyG+rpSQgcCnMXZtNh0SQ=
-X-Google-Smtp-Source: AGHT+IHs9o7cJ+ssmBhszqk9ddF0qXxrKNkv9fb9GFLwxoeRPawQyEP6ki2Pz/VW8vyNBzgyPg9SqQ==
-X-Received: by 2002:a5d:5f51:0:b0:3a4:f430:2547 with SMTP id ffacd0b85a97d-3a51d8f6105mr4140212f8f.6.1749095726307;
-        Wed, 04 Jun 2025 20:55:26 -0700 (PDT)
-Received: from [26.26.26.1] (ec2-18-153-191-229.eu-central-1.compute.amazonaws.com. [18.153.191.229])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a52bd85d51sm192467f8f.94.2025.06.04.20.55.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Jun 2025 20:55:25 -0700 (PDT)
-Message-ID: <d32ac499-fadb-401c-bb8c-9c3616da302a@gmail.com>
-Date: Thu, 5 Jun 2025 11:55:20 +0800
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="E0qno6MH"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=exGpfh44XYQ5cBey9w9dqEK0EWq0MFwtdq5engeYMgwBBXLc0rVRByLX8IkUtkpCB57WGaKhQU4/UfHZJQyFr8pbYPS06NqiuqpSVRwQ+Aj2GIlmu5dJ+pxuVi3/dN197NixTy0cR93q6Ky4PvuQ6j91ULlhbM0xKGVVCCGX14VmjWgY+ZyjHuyIpWqts+90hK/t4ut53H/YdJ6iWSpT9zwvyEshyu5XZ8NL/9mC0+m2khASpqZg+Dq1f9J+v1TCIuhQMIMdC1Ny1mg3T5uic20HdPf6N5I8iBSMl6H2fzpKYjtHx6S623U2ygaBcuuSf1Hljf/z3ceuaYbRom/JmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jgKKsFVdF58UbaFrttGZ6a/FWA/Vjp3HBVmzbQEExTI=;
+ b=qd9G76iNfsqnYi+h2lnH1svpbA7yQFOutMb35FhkVpBqTct3OL+BlIiGd7p3nMNv4JJmkZSBDnWOOB2u9rjyxv2GSdtEwmBVQrfaEagV4RQeJEs8y466Mz+eysdOoif/Ue7G1Bp4VGDVMk3wIAoCVeHynmsDoAqRdu8B+jYR0ECXN0xw00tANYU6ax40K9ZMFGXYckm+7NKdbosczPnsP0KUJfp0taURDKihCBGek5imTTgmsmJQfhYjHuGqevECKqHrFpgPXlbq33p/HnPE6bCGx1Qok8Ynqiv33v7F1Cv+mjVa7Q9cVBVrDtrVd1u0XkwyjNH7OxWQuEn1LFn3UA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=amd.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jgKKsFVdF58UbaFrttGZ6a/FWA/Vjp3HBVmzbQEExTI=;
+ b=E0qno6MHbvE0jUQpwdX+QomEIWSj0XeVkQxDAzvRLvTa//HwYBFulzKKpzpIlWTEXZsD0MGSlc33ALc9TuEQvW63IHh0eIDaj+92i3IatloD0P/NhN9zjfi0VIm1qsUytYNIsnUXer62n1qmS7Yhmt7/+MzWiCZq7yIqnexm3XDUaGvfopfsxzNIeQq1Hm1Ri5GSvUUZIu8w5B20s9EJ3HX+40IWJopF8u2BYwGrMBn5bcZ1YNV6qjEVXAswhK2xmglgMBuJJEMGmnhMJAqsMHT3Kb95KA2zv9OxmoQX6vco4TKA5SYhoFKiKTbNJqZE2ne223I1Mq3kwKZYMEhXRw==
+Received: from MW4PR03CA0021.namprd03.prod.outlook.com (2603:10b6:303:8f::26)
+ by DS7PR12MB6166.namprd12.prod.outlook.com (2603:10b6:8:99::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8769.31; Thu, 5 Jun
+ 2025 04:11:22 +0000
+Received: from MWH0EPF000971E3.namprd02.prod.outlook.com
+ (2603:10b6:303:8f:cafe::cf) by MW4PR03CA0021.outlook.office365.com
+ (2603:10b6:303:8f::26) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8769.18 via Frontend Transport; Thu,
+ 5 Jun 2025 04:11:22 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ MWH0EPF000971E3.mail.protection.outlook.com (10.167.243.70) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8792.29 via Frontend Transport; Thu, 5 Jun 2025 04:11:22 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 4 Jun 2025
+ 21:11:10 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Wed, 4 Jun
+ 2025 21:11:10 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Wed, 4 Jun 2025 21:11:08 -0700
+Date: Wed, 4 Jun 2025 21:11:07 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <kevin.tian@intel.com>, <corbet@lwn.net>, <will@kernel.org>,
+	<bagasdotme@gmail.com>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
+	<shuah@kernel.org>, <jsnitsel@redhat.com>, <nathan@kernel.org>,
+	<peterz@infradead.org>, <yi.l.liu@intel.com>, <mshavit@google.com>,
+	<praan@google.com>, <zhangzekun11@huawei.com>, <iommu@lists.linux.dev>,
+	<linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
+	<linux-kselftest@vger.kernel.org>, <patches@lists.linux.dev>,
+	<mochs@nvidia.com>, <alok.a.tiwari@oracle.com>, <vasant.hegde@amd.com>,
+	<dwmw2@infradead.org>, <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v5 10/29] iommufd: Abstract iopt_pin_pages and
+ iopt_unpin_pages helpers
+Message-ID: <aEEY28ZXH+NqiE+T@Asurada-Nvidia>
+References: <cover.1747537752.git.nicolinc@nvidia.com>
+ <49f7143c1b513049fd8158278a11d9f8b6c837d3.1747537752.git.nicolinc@nvidia.com>
+ <20250528171754.GY61950@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] iommu/vt-d: Remove dead code in
- intel_iommu_domain_alloc_paging_flags()
-To: Baolu Lu <baolu.lu@linux.intel.com>, Wei Wang <wei.w.wang@intel.com>,
- kevin.tian@intel.com, yi.l.liu@intel.com, dwmw2@infradead.org,
- jroedel@suse.de, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-References: <20250530091325.694456-1-wei.w.wang@intel.com>
- <f1f55968-28e0-4c5d-876b-1c5499b3c01a@linux.intel.com>
-Content-Language: en-US
-From: Ethan Zhao <etzhao1900@gmail.com>
-In-Reply-To: <f1f55968-28e0-4c5d-876b-1c5499b3c01a@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250528171754.GY61950@nvidia.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000971E3:EE_|DS7PR12MB6166:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7fd7a941-2d26-4da0-c002-08dda3e707f5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|1800799024|36860700013|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?irwrUwdBnW4V5O2E12GDeBHxc5T0JHYiYBZPwnSO9S7xWc1jaSL0zy5hSjVK?=
+ =?us-ascii?Q?ywARBocnaTF7QX8VMEtZG7rSmDjFoWY1QymUmRRa4RIMkCJPFRCO1YEF2idm?=
+ =?us-ascii?Q?2HLxJoi8j9u9wtBKq4/ndembkoZ0ZZcyu0sWGvOgyNDc6tlr32PHuH0ie7Dh?=
+ =?us-ascii?Q?wQjvzxRJMwc4IT9b3hV7aYd7jJpnHeGvxI/mAQCWWGhN5J9n9riitfQUOMf7?=
+ =?us-ascii?Q?zORTQzoNtXBh335xQ32erYf+Lw79WzcJCIP7Br1EOMI+2ON9e/nzFLnUW6rN?=
+ =?us-ascii?Q?MfwnXX9hIafGdLfPqSCxX3jsNOzwoL6Gkjw0vUdgxAhbkIBBq6IcKnqwal6Q?=
+ =?us-ascii?Q?MNB2OWCxBUXG39Ol7SgNv8MV1rINoubQ5ob4X/mq8cERqN1xE3xDnIDs4wgn?=
+ =?us-ascii?Q?M9AQ4KSfMi7mr3zcvTx731o0SZNmvYSLeyIflhrfjjRsD0+lifJNNVIcEALp?=
+ =?us-ascii?Q?o+ofljEfJ8fjdoylaybUIEOFLxFGSO2I/52Bqqq1gGq0PxypN9NDmUfeehv7?=
+ =?us-ascii?Q?4wiyTsSsre3SOhnvrA9ue3yGjBefKpsTgSloX4gLSiKkGJEFvBFfXGOII2hv?=
+ =?us-ascii?Q?GFRpzOPqa9RW95TmvIuhzKuxWZLUewJLiNHJzXB0MQo9uBU5hlD3c7d3EHzv?=
+ =?us-ascii?Q?6XvgtLF2Qu6eS1KRCGQUkMgKnOzH7/iakR88+0UtyE3wXEhViFyJm1kwS/Dc?=
+ =?us-ascii?Q?v/26qsmQOtmKL3c2cG+P3Ru9uJeGSq0z3BG+I3Jdvu+zR5BJpQYCS8Qbs/n6?=
+ =?us-ascii?Q?pMKFN15lnX/qBaSHv0nsgzYr6+K+LO7x5nkA8iiIPNbYGyxRxKLJbjhU3WiG?=
+ =?us-ascii?Q?jpG/9WLeqBpt6D94BsIlTVi+VdhxdQarKyOnjNZZRnPhAcXcieAVvSMHJTmu?=
+ =?us-ascii?Q?iVGh87IQTSe0VTlQsc7KwpM8TZPTb6QgPeITzJ1XLYf3QCF2WrfVcqFxHnMT?=
+ =?us-ascii?Q?DnAtTopWuQj0oSFQvRP6VrixNbY7MI2WwAmQxc+eveBFoyzXT3lI7P/dZs+9?=
+ =?us-ascii?Q?mRsOeb2Gdga8H3RM8cd5On6OvRQOK4S0KiXsuvZJNXBbTn6KL0Qmo1DkI6Sw?=
+ =?us-ascii?Q?vi5l3rySQk/MclkRSo/xxumF1dEkXpLmhBvdA7Ikqp6CtDa87wKyZl2QoFj8?=
+ =?us-ascii?Q?lGewcnp5TOBSYtO9Y3Q2pIiRe1DxvqsPPv1EKwSneFlju3aaiwAwy4TgAis8?=
+ =?us-ascii?Q?YGeiNPrGxVsaVtIq/3EDkw/JWxiB9peAYF10MkrFDMWoQh7epZux4Nkl+QEd?=
+ =?us-ascii?Q?tNJNzrTJp5eIxEYv/ogokHTFS60r0y89KUugwpq+rMj1xyAY6+8FfKs4cSRr?=
+ =?us-ascii?Q?ZgMrNJ7sx1P34nyC6GK4353Helake0YZFh8a8v5yo+VStNroew3KkilDqt/e?=
+ =?us-ascii?Q?Rn8IHESusZz7hh6mjVWbFUjqx6bKyaY3hpzVA/FP35bLt7Hdi1f0cblvY8Kn?=
+ =?us-ascii?Q?tWtejYFduUrUid2QNSkPEHZg8t2Ou/TUpBbMBhdBX49t4ftLN0eTnuXFYXZJ?=
+ =?us-ascii?Q?MGm61owc91+PJ135QKta6/fcL6QRdmA9ySUF?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700013)(376014)(7416014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jun 2025 04:11:22.1828
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7fd7a941-2d26-4da0-c002-08dda3e707f5
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000971E3.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6166
 
-
-
-On 6/3/2025 10:39 AM, Baolu Lu wrote:
-> On 5/30/25 17:13, Wei Wang wrote:
->> When dirty_tracking is enabled, first_stage is set to false to use the
->> second stage translation table. dmar_domain->use_first_level, which is
->> assigned from first_page, is guaranteed to be false when the execution
->> reaches the location of the code to be removed by this patch. So the
->> handling for dmar_domain->use_first_level being true there will never
->> be executed.
->>
->> Signed-off-by: Wei Wang<wei.w.wang@intel.com>
->> ---
->>   drivers/iommu/intel/iommu.c | 7 +------
->>   1 file changed, 1 insertion(+), 6 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index cb0b993bebb4..1145567c60f9 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -3418,13 +3418,8 @@ intel_iommu_domain_alloc_paging_flags(struct 
->> device *dev, u32 flags,
->>           spin_lock_init(&dmar_domain->s1_lock);
->>       }
->> -    if (dirty_tracking) {
->> -        if (dmar_domain->use_first_level) {
+On Wed, May 28, 2025 at 02:17:54PM -0300, Jason Gunthorpe wrote:
+> On Sat, May 17, 2025 at 08:21:27PM -0700, Nicolin Chen wrote:
+> > The new HW QUEUE object will be added for HW to access the guest queue for
+> > HW-accelerated virtualization feature. Some of HW QUEUEs are designed in a
+> > way of accessing the guest queue via a host physical address without doing
+> > a translation using the nesting parent IO page table, while others can use
+> > the guest physical address. For the former case, kernel working with a VMM
+> > needs to pin the physical pages backing the guest memory to lock them when
+> > HW QUEUE is accessing, and to ensure those physical pages to be contiguous
+> > in the physical address space.
+> > 
+> > This is very like the existing iommufd_access_pin_pages() that outputs the
+> > pinned page list for the caller to test its contiguity.
+> > 
+> > Move those code from iommufd_access_pin/unpin_pages() and related function
+> > for a pair of iopt helpers that can be shared with the HW QUEUE allocator.
+> > 
+> > Rename check_area_prot() to align with the existing iopt_area helpers, and
+> > inline it to the header since iommufd_access_rw() still uses it.
+> > 
+> > Reviewed-by: Pranjal Shrivastava <praan@google.com>
+> > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> > ---
+> >  drivers/iommu/iommufd/io_pagetable.h    |   8 ++
+> >  drivers/iommu/iommufd/iommufd_private.h |   6 ++
+> >  drivers/iommu/iommufd/device.c          | 119 ++----------------------
+> >  drivers/iommu/iommufd/io_pagetable.c    |  97 +++++++++++++++++++
+> >  4 files changed, 119 insertions(+), 111 deletions(-)
 > 
-> This *explicit* check enforces that dirty tracking cannot be supported
-> for a domain that relies on first-stage translation due to the lack of
-> enabling/disabling dirty tracking support.
+> And if you do what was suggested do we need this patch at all? Just
+> use the normal access sequence:
 > 
-> While this might appear redundant, this prevents potential issues
-> if related code is modified without awareness of this dependency. 
-There would always something sooner or later like this to stop the 
-improper configuration/coding , under an assumption that caller path 
-always coded perfect, indeed, we could remove a lot of error stopper code.
+>  iommufd_access_create(ops=NULL)
+>  iommufd_access_attach(viommu->hwpt->ioas)
+>  iommufd_access_pin_pages()
+> 
+> And store a viommu->access pointer to undo it all.
 
-But that world seems never works like that.
+I found the entire ictx would be locked by iommufd_access_create(),
+then the release fop couldn't even get invoked to destroy objects.
 
-Thanks,
-Ethan
-> 
->> -            iommu_domain_free(domain);
->> -            return ERR_PTR(-EOPNOTSUPP);
->> -        }
-> 
-> Thanks,
-> baolu
-> 
+I added a new flag to address this:
+-----------------------------------------------------------------
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index f25e272ae378c..a3e0ace583a66 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -1085,7 +1085,8 @@ void iommufd_access_destroy_object(struct iommufd_object *obj)
+        if (access->ioas)
+                WARN_ON(iommufd_access_change_ioas(access, NULL));
+        mutex_unlock(&access->ioas_lock);
+-       iommufd_ctx_put(access->ictx);
++       if (!access->ops->internal_use)
++               iommufd_ctx_put(access->ictx);
+ }
+ 
+ /**
+@@ -1126,7 +1127,8 @@ iommufd_access_create(struct iommufd_ctx *ictx,
+        /* The calling driver is a user until iommufd_access_destroy() */
+        refcount_inc(&access->obj.users);
+        access->ictx = ictx;
+-       iommufd_ctx_get(ictx);
++       if (!ops->internal_use)
++               iommufd_ctx_get(ictx);
+        iommufd_object_finalize(ictx, &access->obj);
+        *id = access->obj.id;
+        mutex_init(&access->ioas_lock);
+-----------------------------------------------------------------
 
+Btw, I think we can have an ops but only set unmap to NULL:
+ static const struct iommufd_access_ops hw_queue_access_ops = {
+        .needs_pin_pages = 1,
++       .internal_use = 1,
+        /* NULL unmap to reject IOMMUFD_CMD_IOAS_UNMAP */
+ };
+
+Having two flags makes the code slightly more readable. After all,
+HW queue does need to pin pages.
+
+Thanks
+Nicolin
