@@ -1,65 +1,65 @@
-Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com [209.85.128.66])
+Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com [209.85.221.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6750442C
-	for <iommu@lists.linux.dev>; Thu,  5 Jun 2025 03:34:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F7FD1F4CB1
+	for <iommu@lists.linux.dev>; Thu,  5 Jun 2025 03:55:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.68
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749094446; cv=none; b=UVVMkfEfSAq8KISAT8LJSn6QdCLfI2ZQGLRvRZHCsltqK6waZvcUDhQNqqneO3gtCG8ZLDIrAW5IQDUttZV2Fqg1oxUMP2h9cl0Ud4Fk0x3KKM5eT1rejXjP6k+sfsFWc794C5xBcu2mhUvA5FYeaLadP8D10SwGpBbuGmXQGaE=
+	t=1749095730; cv=none; b=RrMTSaenEDe4/Rkqums6qual1oI0EcFBDwPPjryW6UuT8Nh4ZJ1RoukMMZtVNn2QD4Oidfp7ruwpVdZNSgYV7k5gmOrdjXcM1K2y1C+z6P1dEvD6CgSENC8lNLr/jUq31E0OFBDCf9Gef44avbuAtsZZ9EDm10LP/UoMhLUDeus=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749094446; c=relaxed/simple;
-	bh=dQqP5Mw9oBgntBuM940PPtoh91B6oGN2B1g372Bat54=;
+	s=arc-20240116; t=1749095730; c=relaxed/simple;
+	bh=6vV8BBBuLBseH4drZNDS1JiYTzhPY15/Bct2tXlZ1l8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=gEP+EMeyq0cMA7ertZPVdM3682LgM75MbksHrG7+wTXpyn1okpboz2fk9vlp4CHwnHaZNL7pWKMuDmY1s54DlrxP5vKnWyiBruKR2ys0oBbCmjybK7yJaK0dQkOJj7tFMAHmBD37yyMdRPsfzu8RjPoi/Dfj1651211lykZT63k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SXyohwv7; arc=none smtp.client-ip=209.85.128.66
+	 In-Reply-To:Content-Type; b=Y6p6Aih7iKiO2bIM0YxtOqTkAV3odi9UxVv8KmnWg1GouyCAXQHE2V+K3tIycNd8C0Ct/rneob4SQoAu88LNNmeORyA5e4LVGd1QNpEIUZtjCUSQtb03c7hWSmisHpAbA08kW9Jefk7OLyK7ltTAy6vFywDshNGGIAEMSr1lYGU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DTJbI9ph; arc=none smtp.client-ip=209.85.221.68
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SXyohwv7"
-Received: by mail-wm1-f66.google.com with SMTP id 5b1f17b1804b1-450ce3a2dd5so4034425e9.3
-        for <iommu@lists.linux.dev>; Wed, 04 Jun 2025 20:34:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DTJbI9ph"
+Received: by mail-wr1-f68.google.com with SMTP id ffacd0b85a97d-3a36efcadb8so386763f8f.0
+        for <iommu@lists.linux.dev>; Wed, 04 Jun 2025 20:55:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1749094443; x=1749699243; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1749095726; x=1749700526; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:to:subject:user-agent:mime-version:date:message-id:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=/vEVlRXJsGRk+CYX2FZa+ooZ3uzbfFEcI/JYbkngtl4=;
-        b=SXyohwv7PV50WJBgnZCAvhwy4K2JlPyzS2rdYph2IDqaxZMJM7hxp412v/Nq47mq/z
-         K8hn8XTARsnGPGF1R0HvTegU4SrAWjSrh0HfqSoB3rExU9oSbBWOxd8L1W4fPzA1DuSn
-         r3lYyPxmppbMAClHXz4eH7UVO1SNgHqvh4eCO/eA6Ko/5r5xuCvEqGH2L6vJFW72jQTS
-         89aUPaFmO6hP30IiJgZ9aYrsuxGvqFybKhNj+CyPhxZJXdPwZ4J5YYLOkD9b9rYhpwuw
-         /U5WX5L9cAvG/FbgDEOCA47dobD4E/eaad3rcUARU653kAnaUiK4qotPRaxxNHv4jYdS
-         q0Zg==
+        bh=UFw1hVm4aqEwlAr8rCOCLfQ9NHkEpt5q96evQjKko24=;
+        b=DTJbI9phjO5pjcFukw6K3vKmnUHd53XS8gy2mFoOkjetzzrVTvWWNAPkx6XAccP3Gc
+         lbx+xAIjcUnXrrNpfqSad2RRkRFyMwDlwKCReWBejerIlo2CJvoU8Rs8I5mFxQlK5v33
+         nKdsVQGRuwtEn4HQq5EjDW09C7sQjIKRBdBOxgXRb/9kU+Z3GzzED93dLNCgj24rXIFd
+         /yAun0ViWpznALr0/jfrnw0sNCQxz74no4WHRAJZcVm3q2aUJ6hJEtCy3bNxF3KwYUZw
+         7I9JG/7DS17XKFUV5vtrTQDhk8PSHXTGFMG0zUSs1he12d2IlNnyu5MLWCqQfIWSbg7H
+         Drzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749094443; x=1749699243;
+        d=1e100.net; s=20230601; t=1749095726; x=1749700526;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=/vEVlRXJsGRk+CYX2FZa+ooZ3uzbfFEcI/JYbkngtl4=;
-        b=I314rD+tRCZvnRrvc7+Ek/rTzQ2NsRQ8nBdthZwaOTs2oRMkjHDyXHoPeS66uNDLPH
-         TPphcbPLs9p4+jPZw7bWm0g5W8CFyWLy60wDrh15kQoI8hbZ3uNfF+BJjan9RTQ2QiHI
-         9iuWsIKB0DKCopa+vbQBALWLjeeAtKugWNEwZTlWx+NsMBlVtZBMEKrEFvOb5eHmZLQu
-         v9yBrNcWOWTHUAR153lRgY3gE2PYOunxx/YcX6c5NGUv4TQa9TgJ7aX5G7VvJdbiS/fv
-         c3GKe3N5AGu77PZGzFNn879EwSM4WG1cwg7Oq8sREC/6uh17ODz2vqfiGCMR3yZgqPwd
-         aRZw==
-X-Forwarded-Encrypted: i=1; AJvYcCXNMoVgWZ/AgMhc3XdzF3NW27O8zW1YQLS7aLUt3PquLJJ55VYyUSNpsvBiBuSr2KXrQfXiuA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyEm1durWPLwhvBpMQJQOHj2JvAZwJbP5BAed/P6diwrWsiEKQ/
-	QHtB8sHrxie2cVgAfflkqccewAfjGk+NS4vB1w6ptOgplwBeolcUg+3b
-X-Gm-Gg: ASbGnctlsPr207/up0RcjO95Pr4ujjYwMkNEuPq5D83DFXMfX1Ak5Vb7BrNTiiIsfeR
-	duvHIBl52PO1OwzYd1kuBL4NiNPPaHt5TQq0pbF3H4/r4EgpYvyaZAOcmksavynAzi1PxiuGybS
-	fmMpLYD1eeu1saSG+d9lshdRzgX12lN2C9oYx4Kv8m12WROIXvXY4y6KSX+cW3tsoDiiiNGsKDv
-	hb4A2M9wVAdCnt8nieNXe7cZHFgavMX600VBIzFEtfVjPkGZwkls+bYXVGLXbwc8oMCMtKe6cAr
-	ZIpB09BOep76s+NYltD8X6LOEdR58J0oGlyKuk9KWeXnnXjVClKL0DEOwNjJG9A1RxsEpk0sbPH
-	k8Um99x3jkNeP5u3LvyWVqWrRoUc2kB5mPimPi0i22kG+hXwpa51nmAwqU2afeInXATU=
-X-Google-Smtp-Source: AGHT+IEZgXvmDKwf9FJeIM45CjWz76tqF1urHtCuuWuqbDzmF4SGEdtCa9SQaWtDO2CfP9KYiUjtrw==
-X-Received: by 2002:a05:600c:3e88:b0:450:d611:eb95 with SMTP id 5b1f17b1804b1-451f0b269a4mr51677185e9.17.1749094442734;
-        Wed, 04 Jun 2025 20:34:02 -0700 (PDT)
-Received: from [26.26.26.1] (ec2-63-177-217-227.eu-central-1.compute.amazonaws.com. [63.177.217.227])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-451f99198a9sm9586775e9.30.2025.06.04.20.33.58
+        bh=UFw1hVm4aqEwlAr8rCOCLfQ9NHkEpt5q96evQjKko24=;
+        b=bWO6oJvy1UtAsgePgr+w/ttKhzrtUyt4p3lDx3C1haMkmpfeR6KPAF4rrb+TMYFmiJ
+         tfuMugNNJEB/J8L6fZPP1T1wrCUypgMpyz+U8K/8RUrBhUb1EVfEaCHj/yg9IPstuMs/
+         fJNhzDQC/OSWS7Td+rTjLVPdaMmhlGJV64DQYrEVjo9buYUqWnKlNS2I/eG57XKdoBmT
+         3oDV6jXAheOCMeZanTl26MepxqNXlj5uge7X2dU3Hsce0RehW62UPjzUmwxQyJmGi2Ei
+         BbRvD4B+NQAfiXw2Uh+zz3gWL+5awjy1jcx92xtnZejaclOZCCR0wdO9O+jSqoF6baeu
+         cSkg==
+X-Forwarded-Encrypted: i=1; AJvYcCXYGeX6Cy+UaKU05f1VizL1E9j87T6tEkE29gztTENAZncLyzorcs5MH6XeyA/7w22g7NT5Ig==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxLEZEB7G8br1z68V8AoVgz1OxjBBFgSuUAKEwBWXVtIjxVtOeN
+	y/h5wMvUMYFvT5Sv6L9OMP91JM+hnlpluvG+HWjaBaHJ2e+RV/HwVk7f
+X-Gm-Gg: ASbGnctv5GGUgHvX/G4yfdj6D60mxiReCP+so0zwJe75QMitkq9BJUqkvluBM44/xcC
+	FlFgI9dvQIHQ1cMPPwAFHjcPXMkRxKFZul/+mJ2NikzgwxU7eNsQV6HIo+35urpTmYD8tETCSce
+	d/54XBM8888KageF6jDm0/JoUDwmpa3w3+ZeTuXKULdfIgiLr60qBzo/jDJq2ZcPRrv8AnIXGua
+	mtauwFUZF42PTSahAgt8x5pQr6FEJeI9SUFnwSNStiEzAm4c2KVeKOYqVfZDPcRPY8u43vZn5wA
+	Wj9XRgWJNPzU1giToJHOex021Nioha+nh4TD7m5Qwsj5io5c5o5IS/lSHn+945kw9/n5lfFE79l
+	3WcC98y2QuLckGYqyt6ASk0+OdE3T6R0xUXkHHD9RBEVTe0qyG+rpSQgcCnMXZtNh0SQ=
+X-Google-Smtp-Source: AGHT+IHs9o7cJ+ssmBhszqk9ddF0qXxrKNkv9fb9GFLwxoeRPawQyEP6ki2Pz/VW8vyNBzgyPg9SqQ==
+X-Received: by 2002:a5d:5f51:0:b0:3a4:f430:2547 with SMTP id ffacd0b85a97d-3a51d8f6105mr4140212f8f.6.1749095726307;
+        Wed, 04 Jun 2025 20:55:26 -0700 (PDT)
+Received: from [26.26.26.1] (ec2-18-153-191-229.eu-central-1.compute.amazonaws.com. [18.153.191.229])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a52bd85d51sm192467f8f.94.2025.06.04.20.55.23
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Jun 2025 20:34:01 -0700 (PDT)
-Message-ID: <d30b70da-d06e-4d96-b110-1459533e2943@gmail.com>
-Date: Thu, 5 Jun 2025 11:33:56 +0800
+        Wed, 04 Jun 2025 20:55:25 -0700 (PDT)
+Message-ID: <d32ac499-fadb-401c-bb8c-9c3616da302a@gmail.com>
+Date: Thu, 5 Jun 2025 11:55:20 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -67,115 +67,66 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1] iommu/vt-d: Remove the redundant logic in
- first_level_by_default()
-To: "Wang, Wei W" <wei.w.wang@intel.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Ethan Zhao <haifeng.zhao@linux.intel.com>,
- "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>, "dwmw2@infradead.org"
- <dwmw2@infradead.org>, "jroedel@suse.de" <jroedel@suse.de>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <20250523081056.223082-1-wei.w.wang@intel.com>
- <01e5d0a9-715a-48d4-a2a4-2a0b5d99149b@linux.intel.com>
- <BN9PR11MB5276CFBD4CF795CCB3ADCD1B8C66A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <5fed2452-ae2a-4fca-8483-85ecf645ec1b@gmail.com>
- <DS0PR11MB637325E3CD8FECC9A1D1213ADC6FA@DS0PR11MB6373.namprd11.prod.outlook.com>
+Subject: Re: [PATCH v1] iommu/vt-d: Remove dead code in
+ intel_iommu_domain_alloc_paging_flags()
+To: Baolu Lu <baolu.lu@linux.intel.com>, Wei Wang <wei.w.wang@intel.com>,
+ kevin.tian@intel.com, yi.l.liu@intel.com, dwmw2@infradead.org,
+ jroedel@suse.de, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+References: <20250530091325.694456-1-wei.w.wang@intel.com>
+ <f1f55968-28e0-4c5d-876b-1c5499b3c01a@linux.intel.com>
 Content-Language: en-US
 From: Ethan Zhao <etzhao1900@gmail.com>
-In-Reply-To: <DS0PR11MB637325E3CD8FECC9A1D1213ADC6FA@DS0PR11MB6373.namprd11.prod.outlook.com>
+In-Reply-To: <f1f55968-28e0-4c5d-876b-1c5499b3c01a@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
 
 
-On 6/5/2025 9:04 AM, Wang, Wei W wrote:
-> On Wednesday, June 4, 2025 3:26 PM, Ethan Zhao wrote:
->> On 5/29/2025 2:11 PM, Tian, Kevin wrote:
->>>> From: Ethan Zhao <haifeng.zhao@linux.intel.com>
->>>> Sent: Thursday, May 29, 2025 1:48 PM
->>>>
->>>> 在 2025/5/23 16:10, Wei Wang 写道:
->>>>> This original implementation included redundant logic to determine
->>>> whether
->>>>> first-stage translation should be used by default. Simplify it and
->>>>> preserve the original behavior:
->>>>> - Returns false in legacy mode (no scalable mode support).
->>>>> - Defaults to first-level translation when both FLTS and SLTS are
->>>>>      supported.
->>>>>
->>>>> Signed-off-by: Wei Wang <wei.w.wang@intel.com>
->>>>> ---
->>>>>     drivers/iommu/intel/iommu.c | 10 +---------
->>>>>     1 file changed, 1 insertion(+), 9 deletions(-)
->>>>>
->>>>> diff --git a/drivers/iommu/intel/iommu.c
->>>>> b/drivers/iommu/intel/iommu.c index cb0b993bebb4..228da47ab7cd
->>>>> 100644
->>>>> --- a/drivers/iommu/intel/iommu.c
->>>>> +++ b/drivers/iommu/intel/iommu.c
->>>>> @@ -1366,15 +1366,7 @@ static void free_dmar_iommu(struct
->>>> intel_iommu *iommu)
->>>>>      */
->>>>>     static bool first_level_by_default(struct intel_iommu *iommu)
->>>>>     {
->>>>> -	/* Only SL is available in legacy mode */
->>>>> -	if (!sm_supported(iommu))
->>>>> -		return false;
->>>>> -
->>>>> -	/* Only level (either FL or SL) is available, just use it */
->>>>> -	if (ecap_flts(iommu->ecap) ^ ecap_slts(iommu->ecap))
->>>>> -		return ecap_flts(iommu->ecap);
->>>>> -
->>>>> -	return true;
->>>>
->>>> The function works like a digital circurt has 3 single bit inputs
->>>> sm, flts, slts and one bit output ret.
->>>>
->>>> so the true value table of the orignal function looks like
->>>>
->>>>       sm   flts   slts    ret
->>>> a   0     x     x      false
->>>> b   1     1     0      true
->>>> c   1     0     1      false
->>>> d   1     1     1      true
->>>> e   1     0     0      true
->>>
->>> 'e' is actually wrong. We should not return true when the 1st level
->>> cap doesn't exist.
+On 6/3/2025 10:39 AM, Baolu Lu wrote:
+> On 5/30/25 17:13, Wei Wang wrote:
+>> When dirty_tracking is enabled, first_stage is set to false to use the
+>> second stage translation table. dmar_domain->use_first_level, which is
+>> assigned from first_page, is guaranteed to be false when the execution
+>> reaches the location of the code to be removed by this patch. So the
+>> handling for dmar_domain->use_first_level being true there will never
+>> be executed.
 >>
->> If so, this patch should mention it fixes such case with fix tag, not
->>    "removing the redundant logic with the same behavior".
+>> Signed-off-by: Wei Wang<wei.w.wang@intel.com>
+>> ---
+>>   drivers/iommu/intel/iommu.c | 7 +------
+>>   1 file changed, 1 insertion(+), 6 deletions(-)
 >>
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index cb0b993bebb4..1145567c60f9 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -3418,13 +3418,8 @@ intel_iommu_domain_alloc_paging_flags(struct 
+>> device *dev, u32 flags,
+>>           spin_lock_init(&dmar_domain->s1_lock);
+>>       }
+>> -    if (dirty_tracking) {
+>> -        if (dmar_domain->use_first_level) {
 > 
-> Probably not a fix (just code improvement). Your 'e' above is not possible
-> from the hardware side, and the old implementation doesn't have it too.
+> This *explicit* check enforces that dirty tracking cannot be supported
+> for a domain that relies on first-stage translation due to the lack of
+> enabling/disabling dirty tracking support.
 > 
-Is there any items in Intel VT-d spec to say "It is impossible to have 
-both flts and slts to false" or you design code under an assumption that 
-hardware always works perfect ?
+> While this might appear redundant, this prevents potential issues
+> if related code is modified without awareness of this dependency. 
+There would always something sooner or later like this to stop the 
+improper configuration/coding , under an assumption that caller path 
+always coded perfect, indeed, we could remove a lot of error stopper code.
 
-You made an assumption that the hardware never would reach there and 
-then got a conclusion 'e' doesn't exist ?
-
+But that world seems never works like that.
 
 Thanks,
 Ethan
 > 
->>>
->>>>
->>>>> +	return sm_supported(iommu) && ecap_flts(iommu->ecap);
->>>>
->>>> And the true value table of this new one looks like
->>>>
->>>>       sm  flts slts    ret
->>>>
->>>> f   1     1     x      true
->>>> g   1     0     x      false
->>>>
->>>> h   0     1     x      false
->>>> i    0     0     x      false
->>>
->>> so this table is correct.
+>> -            iommu_domain_free(domain);
+>> -            return ERR_PTR(-EOPNOTSUPP);
+>> -        }
+> 
+> Thanks,
+> baolu
 > 
 
