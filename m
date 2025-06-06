@@ -1,143 +1,137 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A620283FF6;
-	Fri,  6 Jun 2025 08:27:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA2F4191F7E;
+	Fri,  6 Jun 2025 09:33:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749198452; cv=none; b=Z9C0UAJTfJczivxzlN0Y7cY3RJtatcKwO0IpMDg5cYv0NyMB2p+LK/2Tr6fJpJ1zVdzHll1O/OXuc677fVu4Rcqu0uQENt7PxuH41R6NXLnXrbwx5scmDEV7Amt5zBQCiq91VlMeh0LHkAbrl6+T+hVsP8yf1oHcZEclOc5tfyg=
+	t=1749202383; cv=none; b=LfHZDB+fQPJwoA+b8NW67ziOGXUaLRd92/uHTIlhDcxHHzf2FugevwwC9MBWkihTmji3OfWjH1IJvvGB8LNpSW5VSfYolRzajMcHLHNF4so7OH6Dau/wmcRXe4FijHcdxYE7QH7Y0MV9TkBnxZeNGVsG+swMY9iz4OBJEW7dbD8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749198452; c=relaxed/simple;
-	bh=1rGlRVjSZPJRrzPluhWaoHUnHwZJhdUL6Aqwr9RzSoc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=T2bPn29mXfGthv4/kWAUZWT62raFNo0yjPvG/VAAoVkhvsSw6ckuq9ZzfH9GPLqCEoOLefqr4ny9P4AMW+abz5JdJ603OT2Vor1mnJwqQbIWuar0aw2B7yfFzkSatV6A1NvlFljlg5gjMZ9ba3mkx803txw2+zD7pVrc+yFcB+0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XSLGYVQl; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1749202383; c=relaxed/simple;
+	bh=a/cSRPXXvWMntEronSsbDihFTabNg3hkGiuEn4chUIA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=hDNEX4h/T4/K0Kd2eW1x3SUGBGrBOchYEjhs3Z+onwhEMhZhAnS78kMSvRMZpz5yKlnwxhO1FMNsY7RTBCDr8UsC6r2XueIhDuyH6hCTZ4Xg6PeF2KpKWLADSBt9mvCnfMKbVgtJCsRqdNwyPkfBGpaHJYQHKS7hNsjIntBxfxo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aHjUGbiM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XSLGYVQl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEDA4C4CEF0;
-	Fri,  6 Jun 2025 08:27:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aHjUGbiM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10A5FC4CEEB;
+	Fri,  6 Jun 2025 09:32:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749198451;
-	bh=1rGlRVjSZPJRrzPluhWaoHUnHwZJhdUL6Aqwr9RzSoc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=XSLGYVQlSts7oEwwuQ3Q08mw0laKIlKJOhi+9Mw3I5X38+oFfYNBRfM+1BYZzx0Bt
-	 sMj42KKZ5lO9nlBP0uzp04ltasOB0cptKlCizmE+Bgof5b8KXdbYyr+5/hHDBNHe1Q
-	 /2lTnuPhuCQBGBIaUrfVCim0AwYifrl4OaRNOMJaK8Yeun8jkemorn7jwc6Cd4l/O3
-	 VJe90UIjf+fIJ/gjduuPROp1BBG5ChtuSYVvYJEGg+d+Jok6yGyjrk/+4LPQlcp04A
-	 abcxgMlLF2hHFG5w2ThDNVfTUyyFxL3f+I9D8HcMT6YOKV+9RjVlIkvrPWhxTBvPLl
-	 wlNcuG+lgPnUw==
-Message-ID: <a9512a7d-1e8e-414a-9c92-b0a4e1af3617@kernel.org>
-Date: Fri, 6 Jun 2025 10:27:24 +0200
+	s=k20201202; t=1749202382;
+	bh=a/cSRPXXvWMntEronSsbDihFTabNg3hkGiuEn4chUIA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=aHjUGbiMRTgqmKBI5/NKSytER+wD+f8xtIQAG9im9jNLtdG0Euimvzu7mf27OGY9+
+	 02d4tGq5I3JSdFyRFuprtiwxviESlUW+rjOju0gNhU9O+51pPm9ArY1Jb4zZ9+iaFL
+	 4+tfVM5CGBw9LbksFk0KUh5/3IXXkhxjz3MX4gFhNP8vwp4S3zppGj+T6jvzfDfI3b
+	 mC65zomebElguFf6DZbQwXmqg3dRm2SZQ7UVQMkAS0eZMMVEXIPjCElKMlyC9MjPDR
+	 1CanswgBu1tw1VRmrDvt8/qS2s2JGvUgF4Q+c893ZONew80RB7FZKa7htzlP+zA8/a
+	 BvOmCaJ/eEw3w==
+X-Mailer: emacs 30.1 (via feedmail 11-beta-1 I)
+From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
+	sumit.semwal@linaro.org, christian.koenig@amd.com,
+	pbonzini@redhat.com, seanjc@google.com, alex.williamson@redhat.com,
+	dan.j.williams@intel.com, aik@amd.com, linux-coco@lists.linux.dev,
+	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org, vivek.kasireddy@intel.com,
+	yilun.xu@intel.com, linux-kernel@vger.kernel.org, lukas@wunner.de,
+	yan.y.zhao@intel.com, daniel.vetter@ffwll.ch, leon@kernel.org,
+	baolu.lu@linux.intel.com, zhenzhong.duan@intel.com,
+	tao1.su@intel.com, linux-pci@vger.kernel.org, zhiw@nvidia.com,
+	simona.vetter@ffwll.ch, shameerali.kolothum.thodi@huawei.com,
+	iommu@lists.linux.dev, kevin.tian@intel.com
+Subject: Re: [RFC PATCH 19/30] vfio/pci: Add TSM TDI bind/unbind IOCTLs for
+ TEE-IO support
+In-Reply-To: <20250605163339.GE19710@nvidia.com>
+References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
+ <20250529053513.1592088-20-yilun.xu@linux.intel.com>
+ <yq5ah60u8kev.fsf@kernel.org> <20250605151029.GC19710@nvidia.com>
+ <yq5a7c1q88oy.fsf@kernel.org> <20250605163339.GE19710@nvidia.com>
+Date: Fri, 06 Jun 2025 15:02:49 +0530
+Message-ID: <yq5a1prx8bb2.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/3] dt-bindings: mfd: mediatek: mt6397: Add
- #sound-dai-cells property
-To: =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= <nfraprado@collabora.com>
-Cc: Julien Massot <julien.massot@collabora.com>, kernel@collabora.com,
- Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>,
- Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
- <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Hui Liu <hui.liu@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Tinghan Shen
- <tinghan.shen@mediatek.com>, linux-pm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20250514-mt8395-dtb-errors-v2-0-d67b9077c59a@collabora.com>
- <20250514-mt8395-dtb-errors-v2-1-d67b9077c59a@collabora.com>
- <20250522-independent-ginger-bullfrog-4552d1@kuoka>
- <cee1e8bc-f4b0-49b9-a67b-2f54382c3d8e@notapiano>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJoF1BKBQkWlnSaAAoJEBuTQ307
- QWKbHukP/3t4tRp/bvDnxJfmNdNVn0gv9ep3L39IntPalBFwRKytqeQkzAju0whYWg+R/rwp
- +r2I1Fzwt7+PTjsnMFlh1AZxGDmP5MFkzVsMnfX1lGiXhYSOMP97XL6R1QSXxaWOpGNCDaUl
- ajorB0lJDcC0q3xAdwzRConxYVhlgmTrRiD8oLlSCD5baEAt5Zw17UTNDnDGmZQKR0fqLpWy
- 786Lm5OScb7DjEgcA2PRm17st4UQ1kF0rQHokVaotxRM74PPDB8bCsunlghJl1DRK9s1aSuN
- hL1Pv9VD8b4dFNvCo7b4hfAANPU67W40AaaGZ3UAfmw+1MYyo4QuAZGKzaP2ukbdCD/DYnqi
- tJy88XqWtyb4UQWKNoQqGKzlYXdKsldYqrLHGoMvj1UN9XcRtXHST/IaLn72o7j7/h/Ac5EL
- 8lSUVIG4TYn59NyxxAXa07Wi6zjVL1U11fTnFmE29ALYQEXKBI3KUO1A3p4sQWzU7uRmbuxn
- naUmm8RbpMcOfa9JjlXCLmQ5IP7Rr5tYZUCkZz08LIfF8UMXwH7OOEX87Y++EkAB+pzKZNNd
- hwoXulTAgjSy+OiaLtuCys9VdXLZ3Zy314azaCU3BoWgaMV0eAW/+gprWMXQM1lrlzvwlD/k
- whyy9wGf0AEPpLssLVt9VVxNjo6BIkt6d1pMg6mHsUEVzsFNBFVDXDQBEADNkrQYSREUL4D3
- Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
- MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
- OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
- GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
- 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
- YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
- 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
- BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
- JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
- 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
- YpsFAmgXUF8FCRaWWyoACgkQG5NDfTtBYptO0w//dlXJs5/42hAXKsk+PDg3wyEFb4NpyA1v
- qmx7SfAzk9Hf6lWwU1O6AbqNMbh6PjEwadKUk1m04S7EjdQLsj/MBSgoQtCT3MDmWUUtHZd5
- RYIPnPq3WVB47GtuO6/u375tsxhtf7vt95QSYJwCB+ZUgo4T+FV4hquZ4AsRkbgavtIzQisg
- Dgv76tnEv3YHV8Jn9mi/Bu0FURF+5kpdMfgo1sq6RXNQ//TVf8yFgRtTUdXxW/qHjlYURrm2
- H4kutobVEIxiyu6m05q3e9eZB/TaMMNVORx+1kM3j7f0rwtEYUFzY1ygQfpcMDPl7pRYoJjB
- dSsm0ZuzDaCwaxg2t8hqQJBzJCezTOIkjHUsWAK+tEbU4Z4SnNpCyM3fBqsgYdJxjyC/tWVT
- AQ18NRLtPw7tK1rdcwCl0GFQHwSwk5pDpz1NH40e6lU+NcXSeiqkDDRkHlftKPV/dV+lQXiu
- jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
- zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
- XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <cee1e8bc-f4b0-49b9-a67b-2f54382c3d8e@notapiano>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On 29/05/2025 17:53, Nícolas F. R. A. Prado wrote:
-> On Thu, May 22, 2025 at 09:52:07AM +0200, Krzysztof Kozlowski wrote:
->> On Wed, May 14, 2025 at 10:19:56AM GMT, Julien Massot wrote:
->>> The 'mt6359.dtsi' file already uses the '#sound-dai-cells' property.
->>> Add the corresponding property to the binding to fix the following
->>> dtb-check error:
->>>
->>> mediatek/mt8395-radxa-nio-12l.dtb: pmic: '#sound-dai-cells', 'mt6359rtc' do not match any of the regexes: 'pinctrl-[0-9]+'
->>> from schema $id: http://devicetree.org/schemas/mfd/mediatek,mt6397.yaml#
->>
->> If this is a random drive-by, would be fine, but if that's your platform
->> which you should know, then I expect this to be a real reason instead
->> something which can easily be rejected with: what if DTS is wrong?
->>
->> I could not find the ASoC driver for that compatible and quick glance to
->> MFD shown me no usage of dai cells, so you need proper explanation here.
->>
->> Especially, that there is a subnode audio-codec, so adding dai cells to
->> the parent node feels just wrong. One is wrong - either subnode or
->> parent is a codec.
-> 
-> The driver is sound/soc/codecs/mt6359.c, which defines 2 DAIs. It's currently
-> probed by the MFD through the driver name, hence the parent MFD device is the
+Jason Gunthorpe <jgg@nvidia.com> writes:
 
-It does not matter whether MFD or simple bus instantiates a device. Really.
+> On Thu, Jun 05, 2025 at 09:47:01PM +0530, Aneesh Kumar K.V wrote:
+>> Jason Gunthorpe <jgg@nvidia.com> writes:
+>>=20
+>> > On Thu, Jun 05, 2025 at 05:33:52PM +0530, Aneesh Kumar K.V wrote:
+>> >
+>> >> > +
+>> >> > +	/* To ensure no host side MMIO access is possible */
+>> >> > +	ret =3D pci_request_regions_exclusive(pdev, "vfio-pci-tsm");
+>> >> > +	if (ret)
+>> >> > +		goto out_unlock;
+>> >> > +
+>> >> >
+>> >>=20
+>> >> I am hitting failures here with similar changes. Can you share the Qe=
+mu
+>> >> changes needed to make this pci_request_regions_exclusive successful.
+>> >> Also after the TDI is unbound, we want the region ownership backto
+>> >> "vfio-pci" so that things continue to work as non-secure device. I do=
+n't
+>> >> see we doing that. I could add a pci_bar_deactivate/pci_bar_activate =
+in
+>> >> userspace which will result in vfio_unmap()/vfio_map(). But that does=
+n't
+>> >> release the region ownership.
+>> >
+>> > Again, IMHO, we should not be doing this dynamically. VFIO should do
+>> > pci_request_regions_exclusive() once at the very start and it should
+>> > stay that way.
+>> >
+>> > There is no reason to change it dynamically.
+>> >
+>> > The only decision to make is if all vfio should switch to exclusive
+>> > mode or if we need to make it optional for userspace.
+>>=20
+>> We only need the exclusive mode when the device is operating in secure
+>> mode, correct? That suggests we=E2=80=99ll need to dynamically toggle th=
+is
+>> setting based on the device=E2=80=99s security state.
+>
+> No, if the decision is that VFIO should allow this to be controlled by
+> userspace then userspace will tell iommufd to run in regions_exclusive
+> mode prior to opening the vfio cdev and VFIO will still do it once at
+> open time and never change it.
+>
 
-> one used to register the audio component.
+So this will be handled by setting
+vdevice::flags =3D IOMMUFD_PCI_REGION_EXCLUSIVE in
+iommufd_vdevice_alloc_ioctl()? And we set this flag when starting a
+secure guest, regardless of whether the device is TEE-capable or not
 
-I see codecs/mt6359.c registering the component, not the parent MFD
-device. This change does not look right but maybe the binding needs
-fixes as well.
+and vfio_pci_core_mmap() will do
+
+	if (!vdev->barmap[index]) {
+
+		if (core_vdev->iommufd_device &&
+		    iommufd_vdevice_region_exclusive(core_vdev->iommufd_device))
+			ret =3D pci_request_selected_regions_exclusive(pdev,
+							1 << index, "vfio-pci");
+		else
+			ret =3D pci_request_selected_regions(pdev,
+						1 << index, "vfio-pci");
 
 
 
-Best regards,
-Krzysztof
+
+>
+> The only thing request_regions does is block other drivers outside
+> vfio from using this memory space. There is no reason at all to change
+> this dynamically. A CC VMM using VFIO will never use a driver outside
+> VFIO to touch the VFIO controlled memory.
+>
+> Jason
+
+-aneesh
