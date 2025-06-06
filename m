@@ -1,220 +1,143 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27733284B46;
-	Fri,  6 Jun 2025 08:00:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A620283FF6;
+	Fri,  6 Jun 2025 08:27:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749196802; cv=none; b=hjqNXIAKG8fOrTBTzpGlgHAgeAcqRb5rAUt64uDNw0iSMtCNhN6Kl7mD+XH0sFXYhrZO1PLxzHkZ3ftXQckm9b5zsV431NRU67Ltx69Yq9dilAgc2Hyw2orMPNkrpNehXb5WDM6QNckk+tG7HBZzFwKoY5MkKiXYGIgxcAespF0=
+	t=1749198452; cv=none; b=Z9C0UAJTfJczivxzlN0Y7cY3RJtatcKwO0IpMDg5cYv0NyMB2p+LK/2Tr6fJpJ1zVdzHll1O/OXuc677fVu4Rcqu0uQENt7PxuH41R6NXLnXrbwx5scmDEV7Amt5zBQCiq91VlMeh0LHkAbrl6+T+hVsP8yf1oHcZEclOc5tfyg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749196802; c=relaxed/simple;
-	bh=KfrhofsOFofV4Yxp9rI2KSMcovauU9GJjmAbXeaDSsg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=JjCUHq9Ft9kCyTE6GP08o4vpTeXJ3kalbhC9wID8v6sU/6TcunrDe7fSxqFNuazVhB+NHi9cr8XaYm/rkCNbJFBTCUllqsNiYlO+TRTOg+V0vFSE1fnRLT8eSF9r7rYlv7233Gie2iZoR2UsFqtEe9K8SjO5qbQRrHYX80fnh+4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pqhLkbKM; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1749198452; c=relaxed/simple;
+	bh=1rGlRVjSZPJRrzPluhWaoHUnHwZJhdUL6Aqwr9RzSoc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=T2bPn29mXfGthv4/kWAUZWT62raFNo0yjPvG/VAAoVkhvsSw6ckuq9ZzfH9GPLqCEoOLefqr4ny9P4AMW+abz5JdJ603OT2Vor1mnJwqQbIWuar0aw2B7yfFzkSatV6A1NvlFljlg5gjMZ9ba3mkx803txw2+zD7pVrc+yFcB+0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XSLGYVQl; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pqhLkbKM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA779C4CEEB;
-	Fri,  6 Jun 2025 07:59:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XSLGYVQl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEDA4C4CEF0;
+	Fri,  6 Jun 2025 08:27:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749196801;
-	bh=KfrhofsOFofV4Yxp9rI2KSMcovauU9GJjmAbXeaDSsg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=pqhLkbKMkWlh09VG2BUFsVfs6NK4OKZbNwioszl4dtm7v6FQc/Us4v9H8idPC/YAZ
-	 R9D+pS+mxBdOKoDLgqtqaLdXdLYDHR597Gg2BMYpada9SrbtQR4t7wJ6ImnWZzHOGF
-	 5gnEw5tKPIaK4Qhwzw0wHveRseXshANV2N2aXKDZSBLnFRNaJV0E6A9mAQ3TDfvhAW
-	 nq1UgqiGf25d7D2QCO1dYHLdR3DKyUk5gBrQSU/DXnxiQOQSAcqvdEmw/eUcLOA38h
-	 uMHfd3tmg5iZSInah3S9vB1cxcIVwyIczZWhxfCIK6FtpP8QL5Pdy+ytPlW1pxl4sd
-	 CpZ9A7pZeYAkw==
-X-Mailer: emacs 30.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Xu Yilun <yilun.xu@linux.intel.com>, kvm@vger.kernel.org,
-	sumit.semwal@linaro.org, christian.koenig@amd.com,
-	pbonzini@redhat.com, seanjc@google.com, alex.williamson@redhat.com,
-	dan.j.williams@intel.com, aik@amd.com, linux-coco@lists.linux.dev,
-	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
-	linaro-mm-sig@lists.linaro.org, vivek.kasireddy@intel.com,
-	yilun.xu@intel.com, linux-kernel@vger.kernel.org, lukas@wunner.de,
-	yan.y.zhao@intel.com, daniel.vetter@ffwll.ch, leon@kernel.org,
-	baolu.lu@linux.intel.com, zhenzhong.duan@intel.com,
-	tao1.su@intel.com, linux-pci@vger.kernel.org, zhiw@nvidia.com,
-	simona.vetter@ffwll.ch, shameerali.kolothum.thodi@huawei.com,
-	iommu@lists.linux.dev, kevin.tian@intel.com
-Subject: Re: [RFC PATCH 17/30] iommufd/device: Add TSM Bind/Unbind for TIO
- support
-In-Reply-To: <20250604132403.GJ5028@nvidia.com>
-References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
- <20250529053513.1592088-18-yilun.xu@linux.intel.com>
- <yq5awm9ujouz.fsf@kernel.org> <aD6UQy4KwKcdSvVE@yilunxu-OptiPlex-7050>
- <20250603122149.GH376789@nvidia.com> <yq5aplfj99x0.fsf@kernel.org>
- <20250604132403.GJ5028@nvidia.com>
-Date: Fri, 06 Jun 2025 13:29:46 +0530
-Message-ID: <yq5a4iwt8fm5.fsf@kernel.org>
+	s=k20201202; t=1749198451;
+	bh=1rGlRVjSZPJRrzPluhWaoHUnHwZJhdUL6Aqwr9RzSoc=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=XSLGYVQlSts7oEwwuQ3Q08mw0laKIlKJOhi+9Mw3I5X38+oFfYNBRfM+1BYZzx0Bt
+	 sMj42KKZ5lO9nlBP0uzp04ltasOB0cptKlCizmE+Bgof5b8KXdbYyr+5/hHDBNHe1Q
+	 /2lTnuPhuCQBGBIaUrfVCim0AwYifrl4OaRNOMJaK8Yeun8jkemorn7jwc6Cd4l/O3
+	 VJe90UIjf+fIJ/gjduuPROp1BBG5ChtuSYVvYJEGg+d+Jok6yGyjrk/+4LPQlcp04A
+	 abcxgMlLF2hHFG5w2ThDNVfTUyyFxL3f+I9D8HcMT6YOKV+9RjVlIkvrPWhxTBvPLl
+	 wlNcuG+lgPnUw==
+Message-ID: <a9512a7d-1e8e-414a-9c92-b0a4e1af3617@kernel.org>
+Date: Fri, 6 Jun 2025 10:27:24 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/3] dt-bindings: mfd: mediatek: mt6397: Add
+ #sound-dai-cells property
+To: =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= <nfraprado@collabora.com>
+Cc: Julien Massot <julien.massot@collabora.com>, kernel@collabora.com,
+ Sen Chu <sen.chu@mediatek.com>, Sean Wang <sean.wang@mediatek.com>,
+ Macpaul Lin <macpaul.lin@mediatek.com>, Lee Jones <lee@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Matthias Brugger
+ <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ Hui Liu <hui.liu@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Tinghan Shen
+ <tinghan.shen@mediatek.com>, linux-pm@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ iommu@lists.linux.dev
+References: <20250514-mt8395-dtb-errors-v2-0-d67b9077c59a@collabora.com>
+ <20250514-mt8395-dtb-errors-v2-1-d67b9077c59a@collabora.com>
+ <20250522-independent-ginger-bullfrog-4552d1@kuoka>
+ <cee1e8bc-f4b0-49b9-a67b-2f54382c3d8e@notapiano>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <cee1e8bc-f4b0-49b9-a67b-2f54382c3d8e@notapiano>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Jason Gunthorpe <jgg@nvidia.com> writes:
+On 29/05/2025 17:53, Nícolas F. R. A. Prado wrote:
+> On Thu, May 22, 2025 at 09:52:07AM +0200, Krzysztof Kozlowski wrote:
+>> On Wed, May 14, 2025 at 10:19:56AM GMT, Julien Massot wrote:
+>>> The 'mt6359.dtsi' file already uses the '#sound-dai-cells' property.
+>>> Add the corresponding property to the binding to fix the following
+>>> dtb-check error:
+>>>
+>>> mediatek/mt8395-radxa-nio-12l.dtb: pmic: '#sound-dai-cells', 'mt6359rtc' do not match any of the regexes: 'pinctrl-[0-9]+'
+>>> from schema $id: http://devicetree.org/schemas/mfd/mediatek,mt6397.yaml#
+>>
+>> If this is a random drive-by, would be fine, but if that's your platform
+>> which you should know, then I expect this to be a real reason instead
+>> something which can easily be rejected with: what if DTS is wrong?
+>>
+>> I could not find the ASoC driver for that compatible and quick glance to
+>> MFD shown me no usage of dai cells, so you need proper explanation here.
+>>
+>> Especially, that there is a subnode audio-codec, so adding dai cells to
+>> the parent node feels just wrong. One is wrong - either subnode or
+>> parent is a codec.
+> 
+> The driver is sound/soc/codecs/mt6359.c, which defines 2 DAIs. It's currently
+> probed by the MFD through the driver name, hence the parent MFD device is the
 
-....
+It does not matter whether MFD or simple bus instantiates a device. Really.
 
->> tsm_unbind in vdevice_destroy:
->>=20
->> vdevice_destroy() ends up calling tsm_unbind() while holding only the
->> vdev_lock. At first glance, this seems unsafe. But in practice, it's
->> fine because the corresponding iommufd_device has already been destroyed
->> when the VFIO device file descriptor was closed=E2=80=94triggering
->> vfio_df_iommufd_unbind().
->
-> This needs some kind of fixing the idevice should destroy the vdevices
-> during idevice destruction so we don't get this out of order where the
-> idevice is destroyed before the vdevice.
->
-> This should be a separate patch as it is an immediate bug fix..
->
+> one used to register the audio component.
 
-Something like below?
+I see codecs/mt6359.c registering the component, not the parent MFD
+device. This change does not look right but maybe the binding needs
+fixes as well.
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 86244403b532..a49b293bd516 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -221,6 +221,8 @@ struct iommufd_device *iommufd_device_bind(struct iommu=
-fd_ctx *ictx,
- 	refcount_inc(&idev->obj.users);
- 	/* igroup refcount moves into iommufd_device */
- 	idev->igroup =3D igroup;
-+	idev->vdev   =3D NULL;
-+	mutex_init(&idev->lock);
-=20
- 	/*
- 	 * If the caller fails after this success it must call
-@@ -282,6 +284,12 @@ EXPORT_SYMBOL_NS_GPL(iommufd_ctx_has_group, "IOMMUFD");
-  */
- void iommufd_device_unbind(struct iommufd_device *idev)
- {
-+	/* this will be unlocked while destroying the idev obj */
-+	mutex_lock(&idev->lock);
-+
-+	if (idev->vdev)
-+		/* extra refcount taken during vdevice alloc */
-+		iommufd_object_destroy_user(idev->ictx, &idev->vdev->obj);
- 	iommufd_object_destroy_user(idev->ictx, &idev->obj);
- }
- EXPORT_SYMBOL_NS_GPL(iommufd_device_unbind, "IOMMUFD");
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommuf=
-d/iommufd_private.h
-index 9ccc83341f32..d85bd8b38751 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -425,6 +425,10 @@ struct iommufd_device {
- 	/* always the physical device */
- 	struct device *dev;
- 	bool enforce_cache_coherency;
-+	/* to protect the following members*/
-+	struct mutex lock;
-+	/* if there is a vdevice mapping the idev */
-+	struct iommufd_vdevice *vdev;
- };
-=20
- static inline struct iommufd_device *
-@@ -606,6 +610,7 @@ struct iommufd_vdevice {
- 	struct iommufd_ctx *ictx;
- 	struct iommufd_viommu *viommu;
- 	struct device *dev;
-+	struct iommufd_device *idev;
- 	u64 id; /* per-vIOMMU virtual ID */
- };
-=20
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 3df468f64e7d..c38303df536f 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -172,6 +172,11 @@ int iommufd_object_remove(struct iommufd_ctx *ictx,
- 		ictx->vfio_ioas =3D NULL;
- 	xa_unlock(&ictx->objects);
-=20
-+	if (obj->type =3D=3D IOMMUFD_OBJ_DEVICE) {
-+		/* idevice should be freed with lock held */
-+		struct iommufd_device *idev =3D container_of(obj, struct iommufd_device,=
- obj);
-+		mutex_unlock(&idev->lock);
-+	}
- 	/*
- 	 * Since users is zero any positive users_shortterm must be racing
- 	 * iommufd_put_object(), or we have a bug.
-diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
-index 01df2b985f02..17f189bc9e2c 100644
---- a/drivers/iommu/iommufd/viommu.c
-+++ b/drivers/iommu/iommufd/viommu.c
-@@ -84,15 +84,24 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucm=
-d)
- 	return rc;
- }
-=20
-+/* This will be called from iommufd_device_unbind  */
- void iommufd_vdevice_destroy(struct iommufd_object *obj)
- {
- 	struct iommufd_vdevice *vdev =3D
- 		container_of(obj, struct iommufd_vdevice, obj);
- 	struct iommufd_viommu *viommu =3D vdev->viommu;
-+	struct iommufd_device *idev =3D vdev->idev;
-+
-+	/*
-+	 * since we have an refcount on idev, it can't be freed.
-+	 */
-+	lockdep_assert_held(&idev->lock);
-=20
- 	/* xa_cmpxchg is okay to fail if alloc failed xa_cmpxchg previously */
- 	xa_cmpxchg(&viommu->vdevs, vdev->id, vdev, NULL, GFP_KERNEL);
- 	refcount_dec(&viommu->obj.users);
-+	idev->vdev =3D NULL;
-+	refcount_dec(&idev->obj.users);
- 	put_device(vdev->dev);
- }
-=20
-@@ -124,10 +133,15 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *=
-ucmd)
- 		goto out_put_idev;
- 	}
-=20
-+	mutex_lock(&idev->lock);
-+	if (idev->vdev) {
-+		rc =3D -EINVAL;
-+		goto out_put_idev_unlock;
-+	}
- 	vdev =3D iommufd_object_alloc(ucmd->ictx, vdev, IOMMUFD_OBJ_VDEVICE);
- 	if (IS_ERR(vdev)) {
- 		rc =3D PTR_ERR(vdev);
--		goto out_put_idev;
-+		goto out_put_idev_unlock;
- 	}
-=20
- 	vdev->id =3D virt_id;
-@@ -147,10 +161,18 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *=
-ucmd)
- 	if (rc)
- 		goto out_abort;
- 	iommufd_object_finalize(ucmd->ictx, &vdev->obj);
--	goto out_put_idev;
-+	/* don't allow idev free without vdev free */
-+	refcount_inc(&idev->obj.users);
-+	vdev->idev =3D idev;
-+	/* vdev lifecycle now managed by idev */
-+	idev->vdev =3D vdev;
-+	refcount_inc(&vdev->obj.users);
-+	goto out_put_idev_unlock;
-=20
- out_abort:
- 	iommufd_object_abort_and_destroy(ucmd->ictx, &vdev->obj);
-+out_put_idev_unlock:
-+	mutex_unlock(&idev->lock);
- out_put_idev:
- 	iommufd_put_object(ucmd->ictx, &idev->obj);
- out_put_viommu:
+
+
+Best regards,
+Krzysztof
