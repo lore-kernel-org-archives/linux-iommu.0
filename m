@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E4F714F98;
-	Fri,  6 Jun 2025 03:32:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7208322B;
+	Fri,  6 Jun 2025 04:32:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749180745; cv=none; b=uw6R9gigfZb3Id+G03xegkJ+wUoKsSDM8w2O2Id3bq/SGgA2XSbw0NgaSmE0ZOI6V17+3p19BYiIoUW0ewayLGKKdPGkVPBVgce2z7Jmsada8CDH3RpdSp+UwWA3hRAqGtfW+0/yjXjjUiZJrLI5VCfxYoPB9qS1zH9V0Y8fC9M=
+	t=1749184376; cv=none; b=DQAGNm13t+mlUJEIWdvLLh0mzQzxByXTCGbGlV1PS5oeQ+qX2DTNMZO17mPtYSI2Q32bOvTJ8V8EFp1WdG+ykb9gxFhLHwbECYJhR6KJ1FzVmKefzONVzyqOJVXP6geSQEh3lCo5PIkWS2oKGSH85Fv3L5/yacnJTX2iS7gG4Jw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749180745; c=relaxed/simple;
-	bh=Qcz12GY2obmAahfa+Hf4viUpaHRcvM1vkETwyIXnzVQ=;
+	s=arc-20240116; t=1749184376; c=relaxed/simple;
+	bh=yLDNyNn/xDL5lmtA4zeU4VCRJdc6yerfu8f1Dqe1TBs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nJJPx/ePDTaa/iPJSumhTBiFvPd9Iq18PTaaJqhDDPaafHQOZ6d39pkZm12NOrp2deM9IdDzISSTMLuaqe8cRQvsftraLe95LvDywCz9KdmbMRkjG+THhdle/CCcOLUCKT9pk0DkC9VyZeD7g3llNPt1CYDCX0WSkMhuzVzaH/s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bBtLj6+G; arc=none smtp.client-ip=198.175.65.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=vFpyq/rMXw3mV3EWuZdcJHKJUmhwZPecr0drCWeA50PKE0w6Nbmz3qxcEH0ue81ueNgwDYMkFdoFzqikvWvmG9ANUYJY1z683+u/LXK2b2CwWaGSUQ54iRAFqXuCgZb4/287u7zXFdXS+Cl7XMbcwZ99DfFBTRJojhPPdZRduzQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YQZP8hn+; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bBtLj6+G"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YQZP8hn+"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1749180745; x=1780716745;
+  t=1749184375; x=1780720375;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Qcz12GY2obmAahfa+Hf4viUpaHRcvM1vkETwyIXnzVQ=;
-  b=bBtLj6+G+KM9WWIWbB4mblwVOVF2RI7eOOLMcid7FfbjRRZ/c+3ZSC/j
-   5ihXRnJmcECztOCISIH6FbBJoYYZ5U00f7fx3qLnEeefDQCpi6r3xdQeq
-   HS5hFQlkWYzPCIKM5+O3h/i5zvnC1MzvPQ61zskCV/QIgbPGBOW5r4tJI
-   9D3ZIYgXQr25NyEvQT6ZqG7ek9KBH48WM/Hsm0TjgdV9IZdfIvjZBFY5/
-   7KipzjZuYun3aYkWz45NsgLmkIBYjqbnwr6FnZLgtZlxymDEo7nt00hah
-   V0z5boK4nvvhhy7c8itbcTlY3O4kd4OWpJAA0MpBzHwBJI3TTd782lC66
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=yLDNyNn/xDL5lmtA4zeU4VCRJdc6yerfu8f1Dqe1TBs=;
+  b=YQZP8hn+SOUfzKbwhx47ZKLENBZNgsFZubTErvJES9pTsRuolVvCshsW
+   UNELI6UU2wV1yrWw0LAk2gLe5/48qDFbZ7koz7y2SVxrbZY+4xG0Y+xKz
+   eaReq9JKvBGgynwp55+hjEb2rpxYHi50aYU9yeiyFMxeuvigosyUY+Dc+
+   Myejwa/wFPBS3Zw35w3GVRWCKE6aXpLHLKKQE5+wMITyl9D4+k27pLynb
+   4eg8aM/etT2Igig8URPNs470V+3v+4/IqxJKkoK4beJumRoatH5lF+96j
+   vVwpmvxHy9szYcIwoghKIu99UxsNwiDUrbEw/r5UM7kxhExZoXtJhqH5O
    A==;
-X-CSE-ConnectionGUID: ynyciEVuScmMb/+lr2CPRw==
-X-CSE-MsgGUID: r4LlTTWpToCr7ioVxDkj9g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11455"; a="51204998"
+X-CSE-ConnectionGUID: RCJcBjqySdm6Ob9883nUKA==
+X-CSE-MsgGUID: BWqmZ+X4Q6aGptFhidpNeQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11455"; a="51468942"
 X-IronPort-AV: E=Sophos;i="6.16,214,1744095600"; 
-   d="scan'208";a="51204998"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2025 20:32:24 -0700
-X-CSE-ConnectionGUID: +lkkTJKXTyuykVQI6XdC0g==
-X-CSE-MsgGUID: Fs5aCXcMTN+tx2jIxltA5A==
+   d="scan'208";a="51468942"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Jun 2025 21:32:54 -0700
+X-CSE-ConnectionGUID: a2NVxN3HTFG+xIUIK89PUA==
+X-CSE-MsgGUID: 8D/PmArNSKGGUGligSxiFg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,214,1744095600"; 
-   d="scan'208";a="149541684"
+   d="scan'208";a="182904220"
 Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmviesa003.fm.intel.com with ESMTP; 05 Jun 2025 20:32:17 -0700
-Date: Fri, 6 Jun 2025 11:25:36 +0800
+  by orviesa001.jf.intel.com with ESMTP; 05 Jun 2025 21:32:47 -0700
+Date: Fri, 6 Jun 2025 12:26:07 +0800
 From: Xu Yilun <yilun.xu@linux.intel.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, kvm@vger.kernel.org,
@@ -60,64 +60,88 @@ Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>, kvm@vger.kernel.org,
 	iommu@lists.linux.dev, kevin.tian@intel.com
 Subject: Re: [RFC PATCH 19/30] vfio/pci: Add TSM TDI bind/unbind IOCTLs for
  TEE-IO support
-Message-ID: <aEJfsFxVxXTDIucc@yilunxu-OptiPlex-7050>
+Message-ID: <aEJt39oExEUDg/Dh@yilunxu-OptiPlex-7050>
 References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
  <20250529053513.1592088-20-yilun.xu@linux.intel.com>
- <yq5aplfn210z.fsf@kernel.org>
- <aD24r44v0g1NgeZs@yilunxu-OptiPlex-7050>
- <yq5ajz5r8w6p.fsf@kernel.org>
- <aEFmPaYorqaYCKBY@yilunxu-OptiPlex-7050>
- <20250605150916.GB19710@nvidia.com>
+ <yq5ah60u8kev.fsf@kernel.org>
+ <20250605151029.GC19710@nvidia.com>
+ <yq5a7c1q88oy.fsf@kernel.org>
+ <20250605163339.GE19710@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250605150916.GB19710@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250605163339.GE19710@nvidia.com>
 
-On Thu, Jun 05, 2025 at 12:09:16PM -0300, Jason Gunthorpe wrote:
-> On Thu, Jun 05, 2025 at 05:41:17PM +0800, Xu Yilun wrote:
-> 
-> > No, this is not device side TDISP requirement. It is host side
-> > requirement to fix DMA silent drop issue. TDX enforces CPU S2 PT share
-> > with IOMMU S2 PT (does ARM do the same?), so unmap CPU S2 PT in KVM equals
-> > unmap IOMMU S2 PT.
+On Thu, Jun 05, 2025 at 01:33:39PM -0300, Jason Gunthorpe wrote:
+> On Thu, Jun 05, 2025 at 09:47:01PM +0530, Aneesh Kumar K.V wrote:
+> > Jason Gunthorpe <jgg@nvidia.com> writes:
 > > 
-> > If we allow IOMMU S2 PT unmapped when TDI is running, host could fool
-> > guest by just unmap some PT entry and suppress the fault event. Guest
-> > thought a DMA writting is successful but it is not and may cause
-> > data integrity issue.
-> 
-> So, TDX prevents *any* unmap, even of normal memory, from the S2 while
-> a guest is running?  Seems extreme?
+> > > On Thu, Jun 05, 2025 at 05:33:52PM +0530, Aneesh Kumar K.V wrote:
+> > >
+> > >> > +
+> > >> > +	/* To ensure no host side MMIO access is possible */
+> > >> > +	ret = pci_request_regions_exclusive(pdev, "vfio-pci-tsm");
+> > >> > +	if (ret)
+> > >> > +		goto out_unlock;
+> > >> > +
+> > >> >
+> > >> 
+> > >> I am hitting failures here with similar changes. Can you share the Qemu
+> > >> changes needed to make this pci_request_regions_exclusive successful.
 
-Prevents any unmap *not intended* by guest, even for normal memory.
+Jason has described the suggested static lockdown flow and we could
+try on that.  I just wanna help position your immediate failure.
 
-Guest could show its unmapping intention by issuing an "page release"
-firmware call then host is OK to unmap. This for normal memory.
+Maybe you still have QEMU mmapped the MMIO region.
 
-For MMIO, Guest implicitly hwo the intention by unbind the TDI first.
+int vfio_pci_core_mmap()
+{
+...
 
-> 
-> MMIO isn't special, if you have a rule like that for such a security
-> reason it should cover all of the S2.
+	if (!vdev->barmap[index]) {
+		ret = pci_request_selected_regions(pdev,
+						   1 << index, "vfio-pci");
+...
+}
 
-It does.
+Even for static lockdown, userspace should not mmap the MMIOs anymore.
 
 Thanks,
 Yilun
 
+> > >> Also after the TDI is unbound, we want the region ownership backto
+> > >> "vfio-pci" so that things continue to work as non-secure device. I don't
+> > >> see we doing that. I could add a pci_bar_deactivate/pci_bar_activate in
+> > >> userspace which will result in vfio_unmap()/vfio_map(). But that doesn't
+> > >> release the region ownership.
+> > >
+> > > Again, IMHO, we should not be doing this dynamically. VFIO should do
+> > > pci_request_regions_exclusive() once at the very start and it should
+> > > stay that way.
+> > >
+> > > There is no reason to change it dynamically.
+> > >
+> > > The only decision to make is if all vfio should switch to exclusive
+> > > mode or if we need to make it optional for userspace.
+> > 
+> > We only need the exclusive mode when the device is operating in secure
+> > mode, correct? That suggests we’ll need to dynamically toggle this
+> > setting based on the device’s security state.
 > 
-> > This is not a TDX specific problem, but different vendors has different
-> > mechanisms for this. For TDX, firmware fails the MMIO unmap for S2. For
-> > AMD, will trigger some HW protection called "ASID fence" [1]. Not sure
-> > how ARM handles this?
+> No, if the decision is that VFIO should allow this to be controlled by
+> userspace then userspace will tell iommufd to run in regions_exclusive
+> mode prior to opening the vfio cdev and VFIO will still do it once at
+> open time and never change it.
 > 
-> This seems even more extreme, if the guest gets a bad DMA address into
-> the device then the entire device gets killed? No chance to debug it?
+> The only thing request_regions does is block other drivers outside
+> vfio from using this memory space. There is no reason at all to change
+> this dynamically. A CC VMM using VFIO will never use a driver outside
+> VFIO to touch the VFIO controlled memory.
 > 
 > Jason
-> 
