@@ -1,30 +1,30 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 673BF1A5BA3;
-	Sun,  8 Jun 2025 12:56:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DF031A5BA3;
+	Sun,  8 Jun 2025 12:56:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749387365; cv=none; b=mh50BBLQpcp+JqyzVEKoVnWlrM5FX6CyCi2IxBWq7Vnf3KWFNy8Q+jR9WMtPVRYJRivKuHCyq5san7CYjI4MSHV/3Y5fcfj+Y0ZP9ZV34Ym09TyyGijncfnnIWrnKauTYBF1BiV28cJkRx7hWzzgJq3RdPoZcB/8KErBNix1Sy0=
+	t=1749387371; cv=none; b=lvKFIRcz2j9M5yaEfzliDQSN6Y4nbfMXpRk9WbwklAvf+HBJ8s4OH9PSJ8YKxpThWteNtS1RPY3fM6BkbH4CC+FEV9HiRq7zCbBRaTG3xAGosghZ3dJ3+rVRWJnjfwHp5CnDsPCEQw6isfsReOyye/h6aEyNH/X6dcCS7hHybpk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749387365; c=relaxed/simple;
-	bh=HsW2zCUxDl5RYn+pPsjZERgd/uueVELtDSucTTZej+o=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=d+hXgALm5lTKfc0B1Jr27p6hgiF0B22q2EwPna3hPUeaitoyco94YKk41+yKOlYtcaQS19X5G8l2I1BS/1OUOQCL0n9eZey0p3Z9P6x+uzHgRxDrohpX74qimtSLxZ9slC1onVlec9bDNiooX9div5FKXMJLGe8YoRmrn5eZKuI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oI3/L981; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1749387371; c=relaxed/simple;
+	bh=qpWUQRHI3tR3bkoGx/S4V8yPaOquSg8zYVLHUx1kaxc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=dMKUcEllLXREk31K0G4Zil8h7fQ22qqREBcgQV/Cz5XWGnlrobhR4rKmP8/dO6TbHCU36tEQEoTu98AttBndxogs+P260J9+bMZ27F/QSRd1ri/D+OtYDhjm7WoJ+iYP0h/rsNYe6ikAsgpHsmRh8i3VRRQBu+g7LyXHfQNs2I0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZMU6gftl; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oI3/L981"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F529C4CEEF;
-	Sun,  8 Jun 2025 12:56:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZMU6gftl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D36B6C4CEF1;
+	Sun,  8 Jun 2025 12:56:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749387365;
-	bh=HsW2zCUxDl5RYn+pPsjZERgd/uueVELtDSucTTZej+o=;
+	s=k20201202; t=1749387370;
+	bh=qpWUQRHI3tR3bkoGx/S4V8yPaOquSg8zYVLHUx1kaxc=;
 	h=From:To:Cc:Subject:Date:From;
-	b=oI3/L981GzUPAIqDfe5rwSXzxKHw1P5Peg+8lLywHRZp81382cAaBwiJ4RgtI47Ma
-	 ysFCuW90++e3iqyyABXwsDvIWnt1QM1AUt/NlvkqoJ3NETPkFZBpfdrxHtjJiy6gkZ
-	 hOlqJHdYY7YW3f8zMb9PHlbWro7KGoGKbbr1EITgH51GoXZZYRnnKw6mwGiVUfEQvb
-	 vZUJGU61QWmunOuY/ZZvMtyQZcZjDmTttbza4/uTR0znXYL3YmUd3N5pGqnl7057uA
-	 kMG3Hgjp6RXMk5w3+CJZ9v/GPX2GgjdBxynOoqmZ9Qgpzr3aEk6n1DGTdGvS8Sltpv
-	 BXxYCyLPTRRUw==
+	b=ZMU6gftlyxY5bnJpeMeeutAnLDoTPDVOk8G3xIi7//mNE+tEK/uk/a9qZOAGd5XFc
+	 ENBriDe00ayNR3Ik86p4WcUzrFJtVQ+e1maeJ8KJ3t4I6JAaTWeRVzlZha1W/NhHRj
+	 ksiVlPNzPal7g7fNMeU6WmulpgCDfZJ7cjLIL2qZDuF01ur4JzkHBxd9aoEaMspLHV
+	 inCvxMHDDjYSGl51lu1d+x+b5Cc3ckK3gwvKoEZqfkF9Sc9mjpcjBKRLowh0m1LuoF
+	 nMhyU8F+r/9auZZBc57aMMB9jL1XsPDTtu9VcS7ml6zZ7xb0PWSkr/kigM3DADGAUi
+	 REg3ynDRF+d6w==
 From: Sasha Levin <sashal@kernel.org>
 To: patches@lists.linux.dev,
 	stable@vger.kernel.org
@@ -34,10 +34,11 @@ Cc: Lukas Wunner <lukas@wunner.de>,
 	Joerg Roedel <jroedel@suse.de>,
 	Sasha Levin <sashal@kernel.org>,
 	joro@8bytes.org,
+	will@kernel.org,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.10 1/2] Revert "iommu/amd: Prevent binding other PCI drivers to IOMMU PCI devices"
-Date: Sun,  8 Jun 2025 08:56:01 -0400
-Message-Id: <20250608125603.934631-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 1/2] Revert "iommu/amd: Prevent binding other PCI drivers to IOMMU PCI devices"
+Date: Sun,  8 Jun 2025 08:56:07 -0400
+Message-Id: <20250608125608.934695-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -48,7 +49,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.10.238
+X-stable-base: Linux 5.4.294
 Content-Transfer-Encoding: 8bit
 
 From: Lukas Wunner <lukas@wunner.de>
@@ -155,14 +156,14 @@ fix and should be backported to maintain consistency with the related
 reverts and to remove code that inappropriately accesses internal kernel
 structures.
 
- drivers/iommu/amd/init.c | 3 ---
+ drivers/iommu/amd_iommu_init.c | 3 ---
  1 file changed, 3 deletions(-)
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index e09391ab3deb0..752edbf529f5f 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1876,9 +1876,6 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index de29512c75ccc..cd17deeedf349 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1751,9 +1751,6 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
  	if (!iommu->dev)
  		return -ENODEV;
  
