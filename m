@@ -1,178 +1,170 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2067.outbound.protection.outlook.com [40.107.96.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DF031A5BA3;
-	Sun,  8 Jun 2025 12:56:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749387371; cv=none; b=lvKFIRcz2j9M5yaEfzliDQSN6Y4nbfMXpRk9WbwklAvf+HBJ8s4OH9PSJ8YKxpThWteNtS1RPY3fM6BkbH4CC+FEV9HiRq7zCbBRaTG3xAGosghZ3dJ3+rVRWJnjfwHp5CnDsPCEQw6isfsReOyye/h6aEyNH/X6dcCS7hHybpk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749387371; c=relaxed/simple;
-	bh=qpWUQRHI3tR3bkoGx/S4V8yPaOquSg8zYVLHUx1kaxc=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=dMKUcEllLXREk31K0G4Zil8h7fQ22qqREBcgQV/Cz5XWGnlrobhR4rKmP8/dO6TbHCU36tEQEoTu98AttBndxogs+P260J9+bMZ27F/QSRd1ri/D+OtYDhjm7WoJ+iYP0h/rsNYe6ikAsgpHsmRh8i3VRRQBu+g7LyXHfQNs2I0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZMU6gftl; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5E3F1C8604
+	for <iommu@lists.linux.dev>; Mon,  9 Jun 2025 12:21:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.96.67
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1749471677; cv=fail; b=T7RnJHuUWaF/VpiQGq5Qu7ct6Yc3QXv8GUcGpkG4whME3VMOb07V92FQGEF/LgKe/FFHOdI55YsCUXHBYWj1+qtuL4hexxZaENfWvnLFWMPn9/tV9jXqxbbCcLn8VvZmrlRt6+OVgnAu0wgZ/rRpwdytYdImUePinZnLj3tVbO4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1749471677; c=relaxed/simple;
+	bh=AvkYcloWMSnNO+GXlJeZASS8aPlGiVr/y/GLqswHrBg=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=bqzo0hI3ChMbOnuIXastlF7u+jLrmt0m3/qa4bHg1YQq5jpjI4Q7DGnIvTsksg3sPxOMx/MYp+zQMgkmz1QwoGaw8QlvTKn86yE3pnKdUHkoenx7cZXKb6Z8++9J7tErLv136GiM7Za3dY5Gs6ZJlxEI+UKOvghKyyuW8+LRFjo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=FfqKaodg; arc=fail smtp.client-ip=40.107.96.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZMU6gftl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D36B6C4CEF1;
-	Sun,  8 Jun 2025 12:56:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1749387370;
-	bh=qpWUQRHI3tR3bkoGx/S4V8yPaOquSg8zYVLHUx1kaxc=;
-	h=From:To:Cc:Subject:Date:From;
-	b=ZMU6gftlyxY5bnJpeMeeutAnLDoTPDVOk8G3xIi7//mNE+tEK/uk/a9qZOAGd5XFc
-	 ENBriDe00ayNR3Ik86p4WcUzrFJtVQ+e1maeJ8KJ3t4I6JAaTWeRVzlZha1W/NhHRj
-	 ksiVlPNzPal7g7fNMeU6WmulpgCDfZJ7cjLIL2qZDuF01ur4JzkHBxd9aoEaMspLHV
-	 inCvxMHDDjYSGl51lu1d+x+b5Cc3ckK3gwvKoEZqfkF9Sc9mjpcjBKRLowh0m1LuoF
-	 nMhyU8F+r/9auZZBc57aMMB9jL1XsPDTtu9VcS7ml6zZ7xb0PWSkr/kigM3DADGAUi
-	 REg3ynDRF+d6w==
-From: Sasha Levin <sashal@kernel.org>
-To: patches@lists.linux.dev,
-	stable@vger.kernel.org
-Cc: Lukas Wunner <lukas@wunner.de>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	=?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kwilczynski@kernel.org>,
-	Joerg Roedel <jroedel@suse.de>,
-	Sasha Levin <sashal@kernel.org>,
-	joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.4 1/2] Revert "iommu/amd: Prevent binding other PCI drivers to IOMMU PCI devices"
-Date: Sun,  8 Jun 2025 08:56:07 -0400
-Message-Id: <20250608125608.934695-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="FfqKaodg"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=beI1RJocirv/hfuKOlpVTQFTKX8ieyIRnSRna4Hz9MpvJAJ/W9ivSeKWxLjTZckAYLyQ5TTw3U67mU215yARF0sQkN8PIaAd8Crwnw1YoaYnV5ualH5PJAgcErcSxTADg9Qyv5Loo1bLe6ipv7L5pO97eIt9/ZIcErvN4KZvZdD/Yt6As1uOes7pcy7sNtvnDiSX6k1S+iu2T7/WXthXR13DMtDTcyn8oVhMo7Lsp8v1ah56BVelbGW/GHKtXmLJmc0Zt5IRdq98YluFB865uMJ7LVfIPYv8QcHf2rYJZ2gz8Awz8NSZbmnzQkr3CV9TtcT6VlNK1jU4ndOsY+iBxg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7z1iDID1a6Qs4yJ3gZd6GcK43HtJ7WanN8DBoFodzkM=;
+ b=KFzxg8nLnW+k2cI8F5wrmEWysy7KH2MNuEqb0yTJI74w9YTbbrd6IE3KJyAfcx1n0Cb1wXTj1hd72GlsnVxnJTVYjfuoM1btoSXS7TMF8r0QzJimGwtZ1jxHlSaqs1BPATxR0ERxbO8xoteKobReEDuCc6Nz33JuGqgPZKJwdWGCBNJzVv6n6qQcstSuaBAzpD3Y1qHZxnbU5V4q5MwuOeDypMUOVk4IR6QZ4gouizGbLOtjMAEvc3ENCEK/CFUVJWdhRneZRDtHTJc9+P/EPYfRAZfVzdFB/RaidFbpUga8R32nTdrHFEHawt2qyd7BVQLH1buN4y4AIE+p6aRYgw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=google.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7z1iDID1a6Qs4yJ3gZd6GcK43HtJ7WanN8DBoFodzkM=;
+ b=FfqKaodg4ryrq4RD58J8Kzw0rBB+UbXd1CTFbp/97rt5XV68vJeVYNDXaRMCFzvKQqwSPlIOu67dNfQD9QmSEaa5Fp9s1o3NFCpdR1/9tqddHAra8Dlo6x5Aa29WTArUdcKqKlj6fBlln7Yzf/S6IG0jkNmnJTnT/XjKYxkovUw=
+Received: from BY5PR03CA0012.namprd03.prod.outlook.com (2603:10b6:a03:1e0::22)
+ by DS0PR12MB8219.namprd12.prod.outlook.com (2603:10b6:8:de::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8792.38; Mon, 9 Jun
+ 2025 12:21:13 +0000
+Received: from MWH0EPF000971E4.namprd02.prod.outlook.com
+ (2603:10b6:a03:1e0:cafe::aa) by BY5PR03CA0012.outlook.office365.com
+ (2603:10b6:a03:1e0::22) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8792.32 via Frontend Transport; Mon,
+ 9 Jun 2025 12:21:12 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ MWH0EPF000971E4.mail.protection.outlook.com (10.167.243.72) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8835.15 via Frontend Transport; Mon, 9 Jun 2025 12:21:12 +0000
+Received: from BLR-L1-SARUNKOD.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Mon, 9 Jun
+ 2025 07:21:07 -0500
+From: Sairaj Kodilkar <sarunkod@amd.com>
+To: <seanjc@google.com>
+CC: <baolu.lu@linux.intel.com>, <dmatlack@google.com>, <dwmw2@infradead.org>,
+	<francescolavra.fl@gmail.com>, <iommu@lists.linux.dev>,
+	<joao.m.martins@oracle.com>, <joro@8bytes.org>, <kvm@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <mlevitsk@redhat.com>, <pbonzini@redhat.com>,
+	<sarunkod@amd.com>, <vasant.hegde@amd.com>
+Subject: Re:[PATCH v2 00/59] KVM: iommu: Overhaul device posted IRQs support
+Date: Mon, 9 Jun 2025 17:50:50 +0530
+Message-ID: <20250609122050.28499-1-sarunkod@amd.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20250523010004.3240643-1-seanjc@google.com>
+References: <20250523010004.3240643-1-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-X-stable-base: Linux 5.4.294
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000971E4:EE_|DS0PR12MB8219:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4f93b16f-abe3-4415-5971-08dda7501f6b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|1800799024|82310400026|7416014|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?PyTcCbqcjwIhyEVMoDa48GkO9JnuH9pRvl1Rzthd523UNkObXy1TNignEd7T?=
+ =?us-ascii?Q?DFzfrsQ1BIXVYpTBTW74kVZfJiq1URggin0mKk++Gab4W7WzE/NYoPdKDMbT?=
+ =?us-ascii?Q?pp9F3dnj16tFzGtX3d0efC2IXPANk7PI7gclYImiJD30D9Y6si7X81hO+9h6?=
+ =?us-ascii?Q?43Z9mQsPQaKe4+RjUPKR1Iiwt5qn09Kfm29N0Z35NBti4UdlsbPU09pqNZ5E?=
+ =?us-ascii?Q?ROIFP+eftGO7J1RKwMe4JhukCYXj5N4YtLRFHfcsVVDLATIanJG09CqOz+He?=
+ =?us-ascii?Q?OufQBSXck9J6JBTrC0IikMfAfAsQDvDlYaBpqdUmjrC/ni6K5NDSb8i8uYEh?=
+ =?us-ascii?Q?lmpqw5mauX7Eo8ynyu5zdd0tCiQ7dW4AaEvN66huMTBj8wIYE5QKY65SZMVE?=
+ =?us-ascii?Q?ojoI9RFuRA/KdA6bPTyPlQ7ymsKL+FJfa5oArQT3vBm9OxDj237A/J6aj1HU?=
+ =?us-ascii?Q?LuQX35SmUamF5RyeI5Y2RrBxlObLEnLcU1PVcYbt49ZluDvfpS65Ek0MIWvC?=
+ =?us-ascii?Q?zV4iW0PeIYLZUrcOJYyBDaqpt8POpFwFGUljNxkZBc9ptZ06C60Tmapq8KQE?=
+ =?us-ascii?Q?Iy8oWb1Y+ywbNqux3qqkEptN7MqlRauEoSMhOIUNUCdKIJh0rocFlBpUdZ03?=
+ =?us-ascii?Q?BYHu662pHekdU/RZQFV/HjHQhjw1uPhwHZ4EfBq+oVRXIcxRx2O7Nwir2eag?=
+ =?us-ascii?Q?D+NkZjaCnI/0Kh60tKtxmaGJZgF3fbeGhkho63bsWep0UFKDAAoWjOy3wi4Z?=
+ =?us-ascii?Q?N/uUDTbiNsSF0oyRcS5O/BmwbVuSNIAoA+/eU7ELjEbD91J+YoPrxS1T1B/S?=
+ =?us-ascii?Q?qRC5jLNMd//vRDy3mIS7KQ6ayzU1vKMKd9lgdYgnZNiGPcl65FCG4GJVfuUg?=
+ =?us-ascii?Q?NGa9bLuFdy+GodSMN24raIM5JcuGdacke6YtuyOJ4tYteP+eiLyC7Jm+1K9U?=
+ =?us-ascii?Q?h5sGOe1NU0rgK5PXyvBZN6ZW9C0bAG9BMQIOeGvk1QRapr794eNAcYJzncfi?=
+ =?us-ascii?Q?zBD0RJ8bBG8ncLxMBZJxAtemqINNVy4msuGJYRRM0Ai695RzgmQkalGgJ3Z3?=
+ =?us-ascii?Q?0jXkHID3MZKhSe1+7aZGLfDy6TdVJBBP8Bn0Ys1MQTkjaiE6EHZGV0jToEAB?=
+ =?us-ascii?Q?Ab8yMSgXwDlF1R6kF66sunbkIIhybmeTKHOTnpir5n9bQmiAlugwEQ/FZ8lJ?=
+ =?us-ascii?Q?9U7L5hFe0aQwNK6YZkrimUvtwgPWieluNqXnFzICd5SdKbgiHPui89QCxxcC?=
+ =?us-ascii?Q?hLeietiSfIxoFYWSPziCHJwPG7PSop/4p2YuGTzC5LAB6mrakUydAGyYkJHp?=
+ =?us-ascii?Q?S8P5qmeEu0DUE3qeoIj7WuvWf97c++lWFEjHt/GbewCq4lqyIJ9tVqYifpNP?=
+ =?us-ascii?Q?bQ32eHnCAoBtRyyatFPX5ky8VKLPiGt0cFdNEaFoUQdeCEtvwU5ecMy5XKqn?=
+ =?us-ascii?Q?P+o0WW08d0HKE3KGHr92NZxOBtBBL3iwML0uXw4FTHfmnaAgk97/NHN+Vq1r?=
+ =?us-ascii?Q?wPYHHrXmA5O+FDhBawm7ED8g346UUZ3z1cDY?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(36860700013)(1800799024)(82310400026)(7416014)(376014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2025 12:21:12.1372
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4f93b16f-abe3-4415-5971-08dda7501f6b
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000971E4.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8219
 
-From: Lukas Wunner <lukas@wunner.de>
+Hi Sean,
 
-[ Upstream commit 3be5fa236649da6404f1bca1491bf02d4b0d5cce ]
+Sorry for the delay in testing. All sanity tests are OK. I reran the performance 
+test on the V2 and noticed that V2 has significantly more GALOG entries than V1
+for all three cases. I also noticed that the Guest Nvme interrupt rate has
+dropped for the 192 VCPUS.
 
-Commit 991de2e59090 ("PCI, x86: Implement pcibios_alloc_irq() and
-pcibios_free_irq()") changed IRQ handling on PCI driver probing.
-It inadvertently broke resume from system sleep on AMD platforms:
+I haven't figured out what is causing this. I will continue my investigation
+further.
 
-  https://lore.kernel.org/r/20150926164651.GA3640@pd.tnic/
+                          VCPUS = 32, Jobs per NVME = 8
+==============================================================================================
+                                         V2                         V1          Percent change
+----------------------------------------------------------------------------------------------
+Guest Nvme interrupts               124,260,796                 124,559,110             -0.20%
+IOPS (in kilo)                            4,790                       4,796             -0.01%
+GALOG entries                              8117                         169              4702%
+----------------------------------------------------------------------------------------------
 
-This was fixed by two independent commits:
 
-* 8affb487d4a4 ("x86/PCI: Don't alloc pcibios-irq when MSI is enabled")
-* cbbc00be2ce3 ("iommu/amd: Prevent binding other PCI drivers to IOMMU PCI devices")
+                          VCPUS = 64, Jobs per NVME = 16
+==============================================================================================
+                                         V2                         V1          Percent change
+----------------------------------------------------------------------------------------------
+Guest Nvme interrupts              102,394,358                   99,800,056             2.00% 
+IOPS (in kilo)                           4,796                        4,798            -0.04% 
+GALOG entries                           19,057                       11,923            59.83%
+----------------------------------------------------------------------------------------------
 
-The breaking change and one of these two fixes were subsequently reverted:
 
-* fe25d078874f ("Revert "x86/PCI: Don't alloc pcibios-irq when MSI is enabled"")
-* 6c777e8799a9 ("Revert "PCI, x86: Implement pcibios_alloc_irq() and pcibios_free_irq()"")
+                         VCPUS = 192, Jobs per NVME = 48
+==============================================================================================
+                                         V2                         V1          Percent change
+----------------------------------------------------------------------------------------------
+Guest Nvme interrupts               68,363,232                  78,066,512             -12.42%
+IOPS (in kilo)                           4,751                       4,749              -0.04%
+GALOG entries                           62,768                      56,215              11.66%
+----------------------------------------------------------------------------------------------
 
-This rendered the second fix unnecessary, so revert it as well.  It used
-the match_driver flag in struct pci_dev, which is internal to the PCI core
-and not supposed to be touched by arbitrary drivers.
-
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Krzysztof Wilczyński <kwilczynski@kernel.org>
-Acked-by: Joerg Roedel <jroedel@suse.de>
-Link: https://patch.msgid.link/9a3ddff5cc49512044f963ba0904347bd404094d.1745572340.git.lukas@wunner.de
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
-
-**YES**
-
-This commit should be backported to stable kernel trees.
-
-**Extensive Analysis:**
-
-**1. Context and Purpose:**
-This commit is part of a coordinated series of reverts addressing
-regressions introduced by commit 991de2e59090 ("PCI, x86: Implement
-pcibios_alloc_irq() and pcibios_free_irq()") which broke system
-suspend/resume on AMD platforms in v4.3. The original issue was fixed by
-two independent commits, one of which (cbbc00be2ce3) added the line
-`iommu->dev->match_driver = false;` to prevent other PCI drivers from
-binding to IOMMU devices.
-
-**2. Code Change Analysis:**
-The commit removes exactly one line from
-`drivers/iommu/amd/init.c:2034`:
-```c
-/* Prevent binding other PCI device drivers to IOMMU devices */
-iommu->dev->match_driver = false;
-```
-
-This line was setting the `match_driver` field of `struct pci_dev`,
-which the commit message correctly identifies as "internal to the PCI
-core and not supposed to be touched by arbitrary drivers."
-
-**3. Why This Should Be Backported:**
-
-**a) Part of Coordinated Fix Series:** This revert is the logical
-completion of a series of reverts that fixed major regressions. Looking
-at the similar commits provided as examples:
-- Similar Commit #1 (YES): Revert of x86/PCI pcibios-irq allocation
-- Similar Commit #2 (YES): Revert of PCI IRQ management helpers
-- Similar Commit #5 (YES): Revert of the original problematic
-  pcibios_alloc_irq implementation
-
-All these related reverts were marked for backporting, making this
-commit part of the same logical fix series.
-
-**b) Removes Inappropriate Code:** The commit eliminates code that
-violates kernel design principles by accessing internal PCI core
-structures from a driver. The `match_driver` field is not meant to be
-manipulated by individual drivers.
-
-**c) Cleanup After Main Fix:** Once the root cause (commit 991de2e59090)
-was reverted by commit 6c777e8799a9, the workaround became unnecessary.
-Keeping unnecessary workaround code, especially code that
-inappropriately accesses internal structures, is problematic.
-
-**d) Minimal Risk:** The change is extremely small and low-risk - it
-simply removes one line that was setting an internal field
-inappropriately.
-
-**e) Consistency and Completeness:** Since the other reverts in this
-series addressing the 991de2e59090 regressions were backported, this
-should be included for consistency and to ensure the cleanup is
-complete.
-
-**4. Stable Tree Criteria Met:**
-- ✅ Fixes inappropriate driver behavior (accessing internal PCI
-  structures)
-- ✅ Small and contained change
-- ✅ Part of a series addressing known regressions
-- ✅ Minimal risk of introducing new issues
-- ✅ Consistent with backporting decisions for related commits
-
-The commit represents necessary cleanup after a coordinated regression
-fix and should be backported to maintain consistency with the related
-reverts and to remove code that inappropriately accesses internal kernel
-structures.
-
- drivers/iommu/amd_iommu_init.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index de29512c75ccc..cd17deeedf349 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1751,9 +1751,6 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
- 	if (!iommu->dev)
- 		return -ENODEV;
- 
--	/* Prevent binding other PCI device drivers to IOMMU devices */
--	iommu->dev->match_driver = false;
--
- 	/* ACPI _PRT won't have an IRQ for IOMMU */
- 	iommu->dev->irq_managed = 1;
- 
--- 
-2.39.5
-
+Thanks
+Sairaj
