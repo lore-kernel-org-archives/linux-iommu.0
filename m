@@ -1,115 +1,280 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 025BC5789D;
-	Tue, 10 Jun 2025 03:48:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C45C21D59B;
+	Tue, 10 Jun 2025 04:26:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749527283; cv=none; b=RcPface6eB7pTR/+owj9PNTilCiy0P9jomjcgcV2YmfjjjvVjEDTBaab8q6kLvcpYkxem6kvnbF4nqSfniT6i/pTpqvyu8P4hoy0v88KTnQ+Nq7Qvyng0/pOQlYGem9lNhE32AE+v47Oqjx2zb6Dmc3RBqO0EH5iSVSHJAlncMY=
+	t=1749529621; cv=none; b=eXkcqkP726uHY1+PZ34W+ZaYHl1sRoczZowXAwJvutUN0XrPRA8G2ZIQXX8UBO1DzvP74DbvXJBlGklD37ixwqcxf34RFQmd4X96c2xBqCPwU8fKEyXHCIP5zqxvef337ZP6m97fvDPVTa7CU67nNu1TLMvmfhGEgFCJEhay0Z4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749527283; c=relaxed/simple;
-	bh=SuVp9AFmt8gLD64j4a+SRLxEwyPAPmST5oVeKyyVGVI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Mu8uHccwBCdDoNdl2v6G+sovkuBYpacsA6eHpP+f/r1PPH2PbphcqF/A6tfn2tAcHlaTtc/w4twB2vq/n3DRdGK9/WF2dAwMzEDtsu7UaLpz26BciL0asHsnf4iuwMIQne7dFmHa1kmWXtdeNslqPwm3dUNNlqORtBfjEiF1ofc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=csie.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.167.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=csie.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-55324062ea8so6500869e87.3;
-        Mon, 09 Jun 2025 20:48:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749527277; x=1750132077;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :reply-to:in-reply-to:references:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=nZk/7/4MvcJfckdyvA+r+JfqYVWkeTH5dDDkcVRzYjI=;
-        b=npvz1VhC5KA6u0OjMoj+2uReTIGarS2o8jVousLs6Afkzhd8G2R57JFi2vtTrJuNIJ
-         trK8Q5ZTy/MUU6pYPmu7a3wImIRNTuYxImi0OCZ6R7QGstT9gJyk836A9n2TROqACrde
-         ShR23YagqDPM14maJYdqzvvl7jGVDkCjYYVaN+LKOO/hwyVTAWp+8xSvSrnC8JP2CUHs
-         RiW7k8x1n1HafOs2cXfVkMfcHO36TRShZ9DqllJetOTYl3oJcBTye40+ffNVRoF7WZpW
-         uv44gW+BzbZeI/UAukkpG62i0uLZftUWs9qqL9TV/UEfhtKokT4Y9JnbZEQklBk9GEgI
-         ruFQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUuCNGfHBqrsxmopS937gDBeAwtbS+bXXK5kVommpfigOKLBmBzOQhCmKjnUKk6K0GnDjrXKw==@lists.linux.dev, AJvYcCUvBWV36XJYOLKOpC7fvHxX7VpGI6amZUqqFJZnQGcfsN9lTY8ekF3vodfzZRmg3XCu+NkEO0jpYXNe69A=@lists.linux.dev, AJvYcCVzieEgg+FGZ5ffHRcwXozLrXTLT7jKca0mRVIEKGYFbOwK1gWr7cCwsXdzL+fZt6+2eJVtMUNaS2Gb1C+Lbwo=@lists.linux.dev, AJvYcCXr7B6Zi6KNoG5QTqPDNe/GyUopy7xDFoKubMnKY0b0Ss6DvSWLmY9UIiiYgucGKcpA572X3Zw=@lists.linux.dev, AJvYcCXxmTeWUMZPEeI6IH1VA/4kHHFh7nNF3s3UL8M9CLWgdilKuMtwmdrALBKOG3qq6J22SNN8nyjFvw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxXp6RRlRhQDnjIthr9igEBeRZ9OfhtbYq1SJjIDsLDQhHTjKtW
-	cn726Lr4hREecR9o3iFQF1ETDFuPwZeePcLZg5HMnD7VRi36kVLRWnLTOn7do94sx3o=
-X-Gm-Gg: ASbGncsrvPv+DUbvpksIuO9QyjqNTU2b1+p5y7yJy8/fUBswHRxnEXmBnwD46G5/z0f
-	A3tUTXk8hrf8XLW1Hd/cEO8ANbBYLjzkVjE9T7o6pqr2vim7uqGHh0zZMPf+s3yQiTvTj4+dPPB
-	6VUw6VYAS0bV90P8WpW40M2hSuOvzmwqruVYvb3zeGwEVwLRDgjEz2vSORz1x7swo9qh46cH17X
-	CFQxt/GiguAjZqbHr5QdyhxfyU/M+QeQZjGfrPvp6tab16qgbisatogOFnr1Ht8gR9X3W/8SMkb
-	JFLihVKgval7KVc4MQfA3s3D1AfsGGYzMnvwZj7F5c2UvlYmOL5uB+wAW6CAmf2SLPXvRpOg5xq
-	X80WmCsTb3ssTW9Twknw=
-X-Google-Smtp-Source: AGHT+IGtAx3E0GkGm96xBngjQMnlMxOYfUOrjVJ/FWCIHj0a/rSABsf/iGXRzYWdHKJrM9Fw89B6Hw==
-X-Received: by 2002:a05:6512:3056:b0:553:2ca4:39d3 with SMTP id 2adb3069b0e04-55366c3288cmr4346426e87.48.1749527276542;
-        Mon, 09 Jun 2025 20:47:56 -0700 (PDT)
-Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com. [209.85.208.180])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-553676d03c2sm1402937e87.18.2025.06.09.20.47.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Jun 2025 20:47:55 -0700 (PDT)
-Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-310447fe59aso47865611fa.0;
-        Mon, 09 Jun 2025 20:47:54 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUUcfAxfY09EycBp3URiND+SBv5l3fAtTjE/yVJDQCqTgViZ2U0hOwQI67UUkk6+SOdgen3OGXK5g==@lists.linux.dev, AJvYcCVHDbgWHO5Uc/sxr4wVLoo4RRzbCjCVa54gMv3VMXTFGeQPNOpFW3dS6uqh+XjrukaSB1KaR9Pt/++VPN5uFOw=@lists.linux.dev, AJvYcCVIf1kXeQACZUBx1ahX1ocsBna+ZJ06MZ/3s10reUGmHlhH9mdabNk4+OmgjQhp/ecaAARxbBu1ABmhg5Y=@lists.linux.dev, AJvYcCVQPkd+8Lt9QXzKL35O4rANoTXKN0ALeSv4gzmTVhLLnwrGJK4oYgsZ7hBy+wIHh43+j0dN9g==@lists.linux.dev, AJvYcCWoGIUBgdLptIW9DQYxbVZvq5jIiVuoETE4gOYXvndBxnyt9nwnSBb2sJF+xY9Ii+ShUC3v0Ys=@lists.linux.dev
-X-Received: by 2002:a2e:b693:0:b0:32a:ddd2:208e with SMTP id
- 38308e7fff4ca-32adfc06f41mr30364041fa.9.1749527274652; Mon, 09 Jun 2025
- 20:47:54 -0700 (PDT)
+	s=arc-20240116; t=1749529621; c=relaxed/simple;
+	bh=zVMeygUHHn/zTdGqS6H1eKNIBQeFicUMi1Q6FSlCnas=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nE/FXcIw9famf3Z9Qnt+jNn6kpE2UAvco+XWKcJJ8Xo/1Hn82Hu/JUsrb5i2ZHouFdpHR2LxwV4ksQVhJs0zVwIsmGaT4cBm/ZcKBJTkm4IG/P5YP2GxsvO6DRmyz7viq6OvmZjfMWsoKDavL+0VyfZZkxpRPq9z4ZjwK8mTyPE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hbRUwTGa; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hbRUwTGa"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1749529620; x=1781065620;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=zVMeygUHHn/zTdGqS6H1eKNIBQeFicUMi1Q6FSlCnas=;
+  b=hbRUwTGaX9L2Tm1EZ7acfEORs4R9HtvkXfV2OOxscHoPqxUjYErv+A5L
+   16AZhzgcmrPO7RobDc2XxmKRWJ8aGPUR6X3lW3gnPIoxnQUmjjeIVIkg/
+   hD2nej90VPf21gS6XcV54VoQ6nV1VkS679HBljbCZ9S3H4BhuxoJGJIQX
+   D0eUdWJOs98h+TLO0lBezF2AT5CyVTVgOPyJGIIQTaSEvPfiXVcfFhnty
+   Qlep72lIjf90rzY9oul9fEXkuP70X0wazqMlfa2Ul3nwHQrlI07T34SLX
+   3ddc1Ak/7XL6TDCPnc37oGjiviJPSi4DVB/TivFQfvXK195ewjx8cB/U+
+   Q==;
+X-CSE-ConnectionGUID: 2X2qxjusQtKSbWh3hsaLJQ==
+X-CSE-MsgGUID: zOv6RNh7Qq+Cx/57rFqA5g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11459"; a="54253627"
+X-IronPort-AV: E=Sophos;i="6.16,224,1744095600"; 
+   d="scan'208";a="54253627"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2025 21:26:59 -0700
+X-CSE-ConnectionGUID: eF6I1IteTlKS02iByZITvA==
+X-CSE-MsgGUID: hsWPvFVFTMeAr8XXOr8fbA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,224,1744095600"; 
+   d="scan'208";a="146597798"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2025 21:26:56 -0700
+Message-ID: <183a8466-578c-4305-a16b-924b41b97322@linux.intel.com>
+Date: Tue, 10 Jun 2025 12:26:07 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v2-68a2e1ba507c+1fb-iommu_rm_ops_pgsize_jgg@nvidia.com> <4-v2-68a2e1ba507c+1fb-iommu_rm_ops_pgsize_jgg@nvidia.com>
-In-Reply-To: <4-v2-68a2e1ba507c+1fb-iommu_rm_ops_pgsize_jgg@nvidia.com>
-Reply-To: wens@csie.org
-From: Chen-Yu Tsai <wens@csie.org>
-Date: Tue, 10 Jun 2025 11:47:42 +0800
-X-Gmail-Original-Message-ID: <CAGb2v672aLfjX2_+=gnYEt09Z2m+sDoUi-weN2VsgtqnrK_fDw@mail.gmail.com>
-X-Gm-Features: AX0GCFvT3cfnNTYictCtJSVKUrXJH3fCgSrvu85ggYc6KyathRV-zklZHWwYSnM
-Message-ID: <CAGb2v672aLfjX2_+=gnYEt09Z2m+sDoUi-weN2VsgtqnrK_fDw@mail.gmail.com>
-Subject: Re: [PATCH v2 4/7] iommu: Remove iommu_ops pgsize_bitmap from simple drivers
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alexandre Ghiti <alex@ghiti.fr>, Alim Akhtar <alim.akhtar@samsung.com>, 
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Albert Ou <aou@eecs.berkeley.edu>, 
-	asahi@lists.linux.dev, Baolin Wang <baolin.wang@linux.alibaba.com>, 
-	David Woodhouse <dwmw2@infradead.org>, Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
-	Heiko Stuebner <heiko@sntech.de>, iommu@lists.linux.dev, Janne Grunau <j@jannau.net>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Jernej Skrabec <jernej.skrabec@gmail.com>, 
-	Jonathan Hunter <jonathanh@nvidia.com>, Joerg Roedel <joro@8bytes.org>, 
-	Krzysztof Kozlowski <krzk@kernel.org>, linux-arm-kernel@lists.infradead.org, 
-	linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org, 
-	linux-riscv@lists.infradead.org, linux-rockchip@lists.infradead.org, 
-	linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org, 
-	linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Matthias Brugger <matthias.bgg@gmail.com>, 
-	Matthew Rosato <mjrosato@linux.ibm.com>, Neal Gompa <neal@gompa.dev>, 
-	Orson Zhai <orsonzhai@gmail.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Paul Walmsley <paul.walmsley@sifive.com>, Rob Clark <robin.clark@oss.qualcomm.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Samuel Holland <samuel@sholland.org>, Sven Peter <sven@kernel.org>, 
-	Thierry Reding <thierry.reding@gmail.com>, Krishna Reddy <vdumpa@nvidia.com>, 
-	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>, 
-	Yong Wu <yong.wu@mediatek.com>, Chunyan Zhang <zhang.lyra@gmail.com>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>, patches@lists.linux.dev, 
-	Niklas Schnelle <schnelle@linux.ibm.com>, Sven Peter <sven@svenpeter.dev>, 
-	Tomasz Jeznach <tjeznach@rivosinc.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v1 1/2] iommu: Introduce iommu_dev_reset_prepare() and
+ iommu_dev_reset_done()
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, bhelgaas@google.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-pci@vger.kernel.org, patches@lists.linux.dev, pjaroszynski@nvidia.com,
+ vsethi@nvidia.com
+References: <cover.1749494161.git.nicolinc@nvidia.com>
+ <4153fb7131dda901b13a2e90654232fe059c8f09.1749494161.git.nicolinc@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <4153fb7131dda901b13a2e90654232fe059c8f09.1749494161.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jun 10, 2025 at 4:41=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> These drivers just have a constant value for their page size, move it
-> into their domain_alloc_paging function before setting up the geometry.
->
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Acked-by: Niklas Schnelle <schnelle@linux.ibm.com> # for s390-iommu.c
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+On 6/10/25 02:45, Nicolin Chen wrote:
+> Per PCIe r6.3, sec 10.3.1 IMPLEMENTATION NOTE, software should disable ATS
+> before initiating a Function Level Reset, and then ensure no invalidation
+> requests being issued to a device when its ATS capability is disabled.
+> 
+> Since pci_enable_ats() and pci_disable_ats() are called by an IOMMU driver
+> while an unsolicited FLR can happen at any time in the PCI layer, PCI code
+> has to notify the IOMMU subsystem about the ongoing FLR. Add a pair of new
+> IOMMU APIs that will be called by the PCI reset functions before&after the
+> reset routines.
+> 
+> However, if there is a domain attachment/replacement happening during an
+> ongoing reset, the ATS might be re-enabled between the two function calls.
+> So the iommu_dev_reset_prepare() has to hold the group mutex to avoid this
+> race condition, unitl iommu_dev_reset_done() is finished. Thus, these two
+> functions are a strong pair that must be used together.
+> 
+> Inside the mutex, these two functions will dock all RID and PASID domains
+> to an IOMMU_DOMAIN_BLOCKED. This would further disable ATS by two-fold: an
+> IOMMU driver should disable ATS in its control bits (e.g. SMMU's STE.EATS)
+> and an IOMMU driver should call pci_disable_ats() as well.
+> 
+> Notes:
+>   - This only works for IOMMU drivers that implemented ops->blocked_domain
+>     correctly with pci_disable_ats().
+>   - This only works for IOMMU drivers that will not issue ATS invalidation
+>     requests to the device, after it's docked at ops->blocked_domain.
+> Driver should fix itself to align with the aforementioned notes.
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->  drivers/iommu/exynos-iommu.c   | 3 ++-
->  drivers/iommu/ipmmu-vmsa.c     | 4 ++--
->  drivers/iommu/mtk_iommu_v1.c   | 3 ++-
->  drivers/iommu/omap-iommu.c     | 3 ++-
->  drivers/iommu/rockchip-iommu.c | 3 ++-
->  drivers/iommu/s390-iommu.c     | 2 +-
->  drivers/iommu/sprd-iommu.c     | 3 ++-
->  drivers/iommu/sun50i-iommu.c   | 3 ++-
+>   include/linux/iommu.h |  12 +++++
+>   drivers/iommu/iommu.c | 106 ++++++++++++++++++++++++++++++++++++++++++
+>   2 files changed, 118 insertions(+)
+> 
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 156732807994..a17161b8625a 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -1123,6 +1123,9 @@ void dev_iommu_priv_set(struct device *dev, void *priv);
+>   extern struct mutex iommu_probe_device_lock;
+>   int iommu_probe_device(struct device *dev);
+>   
+> +int iommu_dev_reset_prepare(struct device *dev);
+> +void iommu_dev_reset_done(struct device *dev);
+> +
+>   int iommu_device_use_default_domain(struct device *dev);
+>   void iommu_device_unuse_default_domain(struct device *dev);
+>   
+> @@ -1407,6 +1410,15 @@ static inline int iommu_fwspec_add_ids(struct device *dev, u32 *ids,
+>   	return -ENODEV;
+>   }
+>   
+> +static inline int iommu_dev_reset_prepare(struct device *dev)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline void iommu_dev_reset_done(struct device *dev)
+> +{
+> +}
+> +
+>   static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
+>   {
+>   	return NULL;
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index a4b606c591da..3c1854c5e55e 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -3795,6 +3795,112 @@ int iommu_replace_group_handle(struct iommu_group *group,
+>   }
+>   EXPORT_SYMBOL_NS_GPL(iommu_replace_group_handle, "IOMMUFD_INTERNAL");
+>   
+> +/*
+> + * Deadlock Alert
+> + *
+> + * Caller must use iommu_dev_reset_prepare() and iommu_dev_reset_done() together
+> + * before/after the core-level reset routine, as iommu_dev_reset_prepare() holds
+> + * the group->mutex that will be only released in iommu_dev_reset_done().
+> + */
+> +int iommu_dev_reset_prepare(struct device *dev)
+> +{
+> +	struct iommu_group *group = dev->iommu_group;
+> +	const struct iommu_ops *ops;
+> +	unsigned long pasid;
+> +	void *entry;
+> +	int ret;
+> +
+> +	/* Before locking */
+> +	if (!dev_has_iommu(dev))
+> +		return 0;
+> +
+> +	if (dev->iommu->require_direct) {
+> +		dev_warn(dev,
+> +			 "Firmware has requested this device have a 1:1 IOMMU mapping, rejecting configuring the device without a 1:1 mapping. Contact your platform vendor.\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	ops = dev_iommu_ops(dev);
 
-Acked-by: Chen-Yu Tsai <wens@csie.org> # sun50i-iommu.c
+Should this be protected by group->mutext?
+
+> +	if (!ops->blocked_domain) {
+> +		dev_warn(dev,
+> +			 "IOMMU driver doesn't support IOMMU_DOMAIN_BLOCKED\n");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	/*
+> +	 * group->mutex starts
+> +	 *
+> +	 * This has to hold the group mutex until the reset is done, to prevent
+> +	 * any RID or PASID domain attachment/replacement, which otherwise might
+> +	 * re-enable the ATS during the reset cycle.
+> +	 */
+> +	mutex_lock(&group->mutex);
+
+Is it possible that group has been freed when it reaches here?
+
+> +
+> +	/* Device is already attached to the blocked_domain. Nothing to do */
+> +	if (group->domain->type == IOMMU_DOMAIN_BLOCKED)
+> +		return 0;
+> +
+> +	/* Dock RID domain to blocked_domain while retaining group->domain */
+> +	ret = __iommu_attach_device(ops->blocked_domain, dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Dock PASID domains to blocked_domain while retaining pasid_array */
+> +	xa_lock(&group->pasid_array);
+> +	xa_for_each_start(&group->pasid_array, pasid, entry, 1)
+> +		iommu_remove_dev_pasid(dev, pasid,
+> +				       pasid_array_entry_to_domain(entry));
+> +	xa_unlock(&group->pasid_array);
+> +
+> +	/* group->mutex is held. Caller must invoke iommu_dev_reset_done() */
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_dev_reset_prepare);
+> +
+> +/*
+> + * This is the resume routine of iommu_dev_reset_prepare(). It unlocks the group
+> + * mutex at end, after all RID/PASID domains are re-attached.
+> + *
+> + * Note that, although unlikely, there is a risk that re-attaching domains might
+> + * fail due to some unexpected happening like OOM.
+> + */
+> +void iommu_dev_reset_done(struct device *dev)
+> +{
+> +	struct iommu_group *group = dev->iommu_group;
+> +	const struct iommu_ops *ops;
+> +	unsigned long pasid;
+> +	void *entry;
+> +
+> +	/* Previously unlocked */
+> +	if (!dev_has_iommu(dev))
+> +		return;
+> +	ops = dev_iommu_ops(dev);
+> +	if (!ops->blocked_domain)
+> +		return;
+
+Should it be a WARN_ON()? As proposed, reset_prepare and reset_done must
+be paired. So if reset_prepare returns failure, reset_done should not be
+called. Or not?
+
+> +
+> +	/* group->mutex held in iommu_dev_reset_prepare() continues from here */
+> +	WARN_ON(!lockdep_is_held(&group->mutex));
+
+Probably iommu_group_mutex_assert() and move it up?
+
+> +
+> +	if (group->domain->type == IOMMU_DOMAIN_BLOCKED)
+> +		goto unlock;
+> +
+> +	/* Shift RID domain back to group->domain */
+> +	WARN_ON(__iommu_attach_device(group->domain, dev));
+> +
+> +	/* Shift PASID domains back to domains retained in pasid_array */
+> +	xa_lock(&group->pasid_array);
+> +	xa_for_each_start(&group->pasid_array, pasid, entry, 1)
+> +		WARN_ON(__iommu_set_group_pasid(
+> +			pasid_array_entry_to_domain(entry), group, pasid,
+> +			ops->blocked_domain));
+> +	xa_unlock(&group->pasid_array);
+> +
+> +unlock:
+> +	mutex_unlock(&group->mutex);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_dev_reset_done);
+> +
+>   #if IS_ENABLED(CONFIG_IRQ_MSI_IOMMU)
+>   /**
+>    * iommu_dma_prepare_msi() - Map the MSI page in the IOMMU domain
+
+How about combining these two helpers? Something like,
+
+int iommu_dev_block_dma_and_action(struct device *dev,
+		int (*action)(struct pci_dev *dev))
+{
+	prepare();
+	action();
+	done();
+}
+
+?
+
+Thanks,
+baolu
