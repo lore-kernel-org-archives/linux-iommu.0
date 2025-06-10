@@ -1,25 +1,42 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EB9D435897;
-	Tue, 10 Jun 2025 16:31:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C56523F43C
+	for <iommu@lists.linux.dev>; Tue, 10 Jun 2025 16:34:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749573074; cv=none; b=f2PRHpHpynn6U3b5ussYqADqeJUPU7CI4ePQ0Pzags6ULrpRai64lb0eOAcxpH3bPF3dMP33BhC4utn3neoSU2wcBNz3EMm6u/acEGSkgyWrOXxOnceCY+YtoBhqOgYNUIifbRWEHhUw/xQeN2+x/8F3HWmySpu1uuPEHfZFxDs=
+	t=1749573267; cv=none; b=Kd4HKyzi0jR47LxjNJdNqeRIckzFVHXKOJ7AH6YP6Q6PhoO/t6dVs6mXckPyBQOCi1XCn/gNRDW09ufZ3g7VdxrvKYnx4yraQHzlL+mNGSWaavGq7t33SLEK0lqTZqG3JOEDTJj/fMNcg2HuDK2pgodP9JnJXyzB41Q9fhrAO6I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749573074; c=relaxed/simple;
-	bh=F5xlE2EujIwTysz180YfE4hRvqugMR5h8O/RMB/zU2M=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XZy/zw/ZoCK2Re3bVJDVwcxmDJJmQb0gMdtIdPuAtMvBkC8YDMiht2D2A+V6dbDpFe2LT8Cg+JIaE7+DaaVMUURPd3WnPAyIFtm1VHQxHpCRwWkdI7fss4Pgbp7+dJUBJnXXAfldC5JhW9q/MYXb/IE9I2cfGFdd4YMvPywlLj4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E640814BF;
-	Tue, 10 Jun 2025 09:30:52 -0700 (PDT)
-Received: from [10.57.79.109] (unknown [10.57.79.109])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8BB1C3F673;
-	Tue, 10 Jun 2025 09:31:10 -0700 (PDT)
-Message-ID: <f66bf027-5dbb-473b-b57f-ed3ed7914800@arm.com>
-Date: Tue, 10 Jun 2025 17:31:09 +0100
+	s=arc-20240116; t=1749573267; c=relaxed/simple;
+	bh=9UbyfmdD0N0dtcss4EwrOq1g2t3lQ+EWaP83S3mDTrY=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:In-Reply-To:
+	 Content-Type:References; b=R8UvRkYD0PyZlJ4NnMHBj/7aPaxvlFmfWbzRKbOSzTW5aHMtd4Ds0AHnyh+qbgUlXg/RhcgknAX9TjK1gs7EeOw8nqXJ7JN3KGW4V/snhDYpVXaJT0WEs+C04KjeNCIgWGgmR+zEKXnBaEm8Oum+JDgJcsHXOIF+ZDxCAggOr90=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=OE39vPKy; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="OE39vPKy"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250610163420euoutp027808700756bd3321a5948d09eb65af2f~Hu5xV7Hin1371513715euoutp020
+	for <iommu@lists.linux.dev>; Tue, 10 Jun 2025 16:34:20 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250610163420euoutp027808700756bd3321a5948d09eb65af2f~Hu5xV7Hin1371513715euoutp020
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1749573260;
+	bh=NS7GzjVzxQWVeneNGnikOfI3wBaZea46fIVMRvzt3fA=;
+	h=Date:Subject:From:To:Cc:In-Reply-To:References:From;
+	b=OE39vPKyqrq7U68twaogEU5JZBFGOcbJJ6ConSRJecWeHnrF1m7BY4w11r7p/M+zQ
+	 ZI2dpgINR57Y8CPwpGaWh4dUqPoRYPUKqNNgJXcewuShwRwExE+8KM8wTJCusyjAPa
+	 nEkfCGJDopqTNJxi9rs2hQLSoOvUyWwPUb6Huyl0=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20250610163420eucas1p25f008a064b4511f1c3bee4b862eaa94a~Hu5xE6xJS2358223582eucas1p2B;
+	Tue, 10 Jun 2025 16:34:20 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20250610163418eusmtip2e9144f0c61d4a2cdcbabc925173949e3~Hu5vrCJWM0431404314eusmtip2f;
+	Tue, 10 Jun 2025 16:34:18 +0000 (GMT)
+Message-ID: <3d65e71e-5847-4c0f-98ff-318086f14ee2@samsung.com>
+Date: Tue, 10 Jun 2025 18:34:18 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,84 +44,55 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC v1 1/2] iommu: Introduce iommu_dev_reset_prepare() and
- iommu_dev_reset_done()
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, Baolu Lu <baolu.lu@linux.intel.com>,
- joro@8bytes.org, will@kernel.org, bhelgaas@google.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-pci@vger.kernel.org, patches@lists.linux.dev, pjaroszynski@nvidia.com,
- vsethi@nvidia.com
-References: <cover.1749494161.git.nicolinc@nvidia.com>
- <4153fb7131dda901b13a2e90654232fe059c8f09.1749494161.git.nicolinc@nvidia.com>
- <183a8466-578c-4305-a16b-924b41b97322@linux.intel.com>
- <aEfZlKNk4xfb41RR@nvidia.com> <20250610130416.GC543171@nvidia.com>
- <d22320dd-2695-4f9b-bd72-38eabc1d934f@arm.com>
- <20250610153646.GH543171@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20250610153646.GH543171@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [Linaro-mm-sig] [PATCH v3 2/3] udmabuf: use sgtable-based
+ scatterlist wrappers
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev
+Cc: Gerd Hoffmann <kraxel@redhat.com>, Vivek Kasireddy
+	<vivek.kasireddy@intel.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+	Gurchetan Singh <gurchetansingh@chromium.org>, Robin Murphy
+	<robin.murphy@arm.com>, stable@vger.kernel.org
+Content-Language: en-US
+In-Reply-To: <c90bf515-9050-4ed7-b733-28b14536b913@samsung.com>
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20250610163420eucas1p25f008a064b4511f1c3bee4b862eaa94a
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20250507160922eucas1p11bd044bb458626dc0004bd2fd83605c0
+X-EPHeader: CA
+X-CMS-RootMailID: 20250507160922eucas1p11bd044bb458626dc0004bd2fd83605c0
+References: <20250507160913.2084079-1-m.szyprowski@samsung.com>
+	<CGME20250507160922eucas1p11bd044bb458626dc0004bd2fd83605c0@eucas1p1.samsung.com>
+	<20250507160913.2084079-3-m.szyprowski@samsung.com>
+	<7a6475cb-4ebe-46a3-92a2-f29fbc8e5e41@amd.com>
+	<c90bf515-9050-4ed7-b733-28b14536b913@samsung.com>
 
-On 2025-06-10 4:36 pm, Jason Gunthorpe wrote:
-> On Tue, Jun 10, 2025 at 03:40:40PM +0100, Robin Murphy wrote:
->> On 2025-06-10 2:04 pm, Jason Gunthorpe wrote:
->>> On Tue, Jun 10, 2025 at 12:07:00AM -0700, Nicolin Chen wrote:
->>>> On Tue, Jun 10, 2025 at 12:26:07PM +0800, Baolu Lu wrote:
->>>>> On 6/10/25 02:45, Nicolin Chen wrote:
->>>>>> +	ops = dev_iommu_ops(dev);
->>>>>
->>>>> Should this be protected by group->mutext?
->>>>
->>>> Not seemingly, but should require the iommu_probe_device_lock I
->>>> think.
+On 14.05.2025 15:44, Marek Szyprowski wrote:
+> On 08.05.2025 11:57, Christian König wrote:
+>> On 5/7/25 18:09, Marek Szyprowski wrote:
+>>> Use common wrappers operating directly on the struct sg_table 
+>>> objects to
+>>> fix incorrect use of scatterlists sync calls. dma_sync_sg_for_*()
+>>> functions have to be called with the number of elements originally 
+>>> passed
+>>> to dma_map_sg_*() function, not the one returned in sgtable's nents.
 >>>
->>> group and ops are not permitted to change while a driver is attached..
->>>
->>> IIRC the FLR code in PCI doesn't always ensure that (due to the sysfs
->>> paths), so yeah, this looks troubled. iommu_probe_device_lock perhaps
->>> would fix it.
+>>> Fixes: 1ffe09590121 ("udmabuf: fix dma-buf cpu access")
+>>> CC: stable@vger.kernel.org
+>>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>> Acked-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
+>> Reviewed-by: Christian König <christian.koenig@amd.com>
 >>
->> No, iommu_probe_device_lock is for protecting access to dev->iommu in the
->> probe path until the device is definitively assigned to a group (or not).
->> Fundamentally it defends against multiple sources triggering a probe of the
->> same device in parallel - once the device *is* probed it is no longer
->> relevant, and the group mutex is the right thing to protect all subsequent
->> operations.
-> 
-> Yes, adding iommu_probe_device_lock to iommu_deinit_device() would be
-> gross.
-> 
-> but something is required to protect the load of
-> dev->iommu_group.. dev->iommu_group->mutex can't protect itself
-> against a race UAF on deinit.
+>> Should I push this one to drm-misc-fixes for upstreaming?
+>
+> Yes, please. The other 2 patches have been taken by the media maintainers.
 
-Then you do iommu_group_get/put() around it as well. And I suppose 
-technically you also ought to check that the device is still actually in 
-the group once you have acquired the mutex (although perhaps that case 
-ends up crashing anyway once we proceed to attempting to reset the 
-already-disappeared device itself...)
+Gentle ping
 
-> READ_ONCE is good enough to protect from races with the probe path, no
-> need for iommu_probe_device_lock there.
-> 
-> In this case need to look at the PCI sysfs for races against the
-> iommu_release_device()/etc that is freeing the dev->iommu_group.
-> 
-> Maybe the sysfs is always removed before we get to release. Or maybe
-> the PCI FLR sysfs code should hold the device_lock..
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
- From a quick skim I suspect it's probably OK - at least device_del() 
-gets to bus_remove_device()->device_remove_groups() well enough before 
-the BUS_NOTIFY_REMOVED_DEVICE call that triggers iommu_release_device().
-
-And on an unrelated thought that's just come to mind, if we ever did FLR 
-with PASIDs enabled, presumably that's going to wipe out the PASID 
-configuration, so will the caller who requested the reset actually 
-expect the attachments at the IOMMU end to be preserved, or would they 
-assume to start over from scratch? Seems like there's not necessarily 
-one right answer there :/
-
-Thanks,
-Robin.
