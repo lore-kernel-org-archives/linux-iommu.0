@@ -1,99 +1,218 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C00CB25C81D;
-	Tue, 10 Jun 2025 06:42:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58A9E21C184;
+	Tue, 10 Jun 2025 06:53:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749537724; cv=none; b=hEHLzQ717TaG4FYwcGMoknazPGUDYnoaPezws6pSAior8+K6r3jcOpBl3jAw9z5Kp8O6LDn8UgNbo19ddWMp73OuRRMFVvz+l0Q2Hu+S7uI5dkXv3xUbcL3a/iGutEaW7OMOlbElak/mLJRqgB5l1mEA8xinP6P41iS6ZAxWgKg=
+	t=1749538415; cv=none; b=s9/eNuwiG8MNgNIE0v0nO/WdRRrWOhjvtDXdASCTHv90mvZqo2pK7j14C0v2OAYBnQgAhwxFKnR2VFl1w+zwF/9Ao+owFZTeOuYg+fVT3ishpsT4hP+f5Lk+7bzhTiWA+x5NONje8Yk/XkJOWaHDM68BwA/2k7YaPkmeCSIlxjM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749537724; c=relaxed/simple;
-	bh=mlIq0rj35hHowNTMUTsIRssPhHB0i/W0bi9ky3jkku0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Gk4npR/7GWwseECjFkvVuecN3pmyGOvd1N9eD9s+QkK8bjLRWrukeJ1P/Ge1SYj4vtIt9R9A8h8Fhdq8DKJ3PTwl0QRduhf3GNu90NQwGo+Bju4NNOLt4m/oB5f9Xt4jfgagzfXct8kOtBI3tHytsEhqDxXkxwb/bmPRTO9gkJw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nfIZm9Lu; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1749538415; c=relaxed/simple;
+	bh=wZqwKho69kQlxvMvKdRzNSzFkPge27kU09M5UoArVmw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=FuLKHs4bMokouryX6XTulRzJJijxhhhiGc5Kkeo5EnNZ2gylayXIE+tCKDYuDdAhEYaDr3tXgtJ3CBvxricuURvDWAVG8hAIiPLA719yWEU+SiaGOousG3sfidTBdBpTh2gy3sjPQN5dZmgZvkd4MtApith6xxo9I0DL4ZCgbn4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=InIWy4xi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nfIZm9Lu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1749537723; x=1781073723;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=mlIq0rj35hHowNTMUTsIRssPhHB0i/W0bi9ky3jkku0=;
-  b=nfIZm9LuuvnOmDnWEq/sHk0fmjE3b4yWpLM3DoLTUwuf6n5XTkYPX3dH
-   /mKDxJIPQR+ukESX8seZiWuKMkeqt7QEi1SaMIJl533ZcbcRPCjaPn1su
-   GPcjRgsRHvd+WRkVARfIhEYUss1HAwrtTIRUpMPsu/Up3gNxfW6arwLRB
-   1FUAvZ4S27PVQQf19dUuk6+zPC/3YXQnh8DHR4LV/vCe/Zp0zMJOrrSeR
-   XNehrdM+uCyXMdQ/UJlDAxbiUbb1gPyHclRP3YF5bUlzCePRAWpkqIR55
-   YHnQp2uViik+wKUIokm2B4y2GFfNJboR9+l9FvD90v4GN/VRrJOHtYJJz
-   w==;
-X-CSE-ConnectionGUID: CamrGX6oRW+8YtaC7TguEQ==
-X-CSE-MsgGUID: Qbn56Ap+RxSi2Szkwf/8SQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11459"; a="55424902"
-X-IronPort-AV: E=Sophos;i="6.16,224,1744095600"; 
-   d="scan'208";a="55424902"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2025 23:42:02 -0700
-X-CSE-ConnectionGUID: cKC6HGgKQBCwOQCJTnH5Zg==
-X-CSE-MsgGUID: 5e2z/EglQKaLY1TKbbQUAA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,224,1744095600"; 
-   d="scan'208";a="147249002"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jun 2025 23:42:00 -0700
-Message-ID: <06566252-25a9-4b68-8deb-e1fbd8b7a3b8@linux.intel.com>
-Date: Tue, 10 Jun 2025 14:41:11 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="InIWy4xi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BEB2C4CEEF;
+	Tue, 10 Jun 2025 06:52:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1749538414;
+	bh=wZqwKho69kQlxvMvKdRzNSzFkPge27kU09M5UoArVmw=;
+	h=From:To:Cc:Subject:Date:From;
+	b=InIWy4xizWFPC4COOj3bDP9F8L4MBxzxjTyG4Jl0NjFzmuc9EWE6eB8/yHJPSkEOD
+	 Kcg3f80TCllYPxvWcHqFjv8qjRjsqqs92h/zFQVv2LcSUYdpgjqrxtAN4F7Jy53cLd
+	 FIvWoZ46G6iFRISZ1f2LbkqsgvsoWhXmsDmArXvPhPKeJ5MrzpdkhMFkyzs1J7kGF9
+	 nwaxsQduYxMawJXgz5aWXbXXbbzGCKhvZ0NQr04+b4KCcJA7ajeta2A18GP7dLhaHJ
+	 UgxMYFUKDr/aM36Ld6iOuC90weGyTtBG3FYTzfU3+aHtzVYU73ICIFlqQtDHapQHl2
+	 7iCVE1b9K+L2g==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: [RFC PATCH] iommufd: Destroy vdevice on device unbind
+Date: Tue, 10 Jun 2025 12:21:46 +0530
+Message-ID: <20250610065146.1321816-1-aneesh.kumar@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/7] iommu/vtd: Do not wipe out the page table NID when
- devices detach
-To: Jason Gunthorpe <jgg@nvidia.com>, David Woodhouse <dwmw2@infradead.org>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Cc: patches@lists.linux.dev, Wei Wang <wei.w.wang@intel.com>
-References: <3-v1-20c73f153f4c+1895-vtd_prep_jgg@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <3-v1-20c73f153f4c+1895-vtd_prep_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 6/10/25 03:58, Jason Gunthorpe wrote:
-> The NID is used to control which NUMA node memory for the page table is
-> allocated it from. It should be a permanent property of the page table
-> when it was allocated and not change during attach/detach of devices.
-> 
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
-> ---
->   drivers/iommu/intel/iommu.c | 1 -
->   1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index ceb960a796e2ba..72b0769c391008 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1391,7 +1391,6 @@ void domain_detach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu)
->   	if (--info->refcnt == 0) {
->   		ida_free(&iommu->domain_ida, info->did);
->   		xa_erase(&domain->iommu_array, iommu->seq_id);
-> -		domain->nid = NUMA_NO_NODE;
+The iommufd subsystem uses the VFIO character device descriptor to bind
+a device file to an iommufd context via the VFIO_DEVICE_BIND_IOMMUFD
+ioctl. This binding returns a bind_id, which is then used in subsequent
+iommufd ioctls such as IOMMU_HWPT_ALLOC, IOMMU_VIOMMU_ALLOC, and
+IOMMU_VDEVICE_ALLOC.
 
-It appears that this is a fix. Before domain_alloc()'s retirement, no
-device pointer was passed to the domain allocation callback. Thus, the
-NUMA node ID could only be determined when the domain was attached to a
-device. Since we have introduced domain_alloc_paging, this should be
-removed. So,
+Among these, IOMMU_VDEVICE_ALLOC is special—the lifetime of a virtual
+device (vdevice) should be tied to the bound state of its physical
+device.
 
-Fixes: 7c204426b818 ("iommu/vt-d: Add domain_alloc_paging support")
+In the current kernel, there is no enforced dependency between
+iommufd_device and iommufd_vdevice. This patch introduces such a
+dependency: when the device is unbound, the associated vdevice is now
+automatically destroyed.
 
-?
+Although there is already an implicit dependency—vdevices can only be
+destroyed after the iommufd_device is unbound due to the VFIO cdev file
+descriptor holding a reference to the iommu file descriptor—this patch
+formalizes and extends that relationship. Now, the vdevice will be
+explicitly destroyed when its corresponding device is unbound.
 
-Thanks,
-baolu
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Kevin Tian <kevin.tian@intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+---
+ drivers/iommu/iommufd/device.c          |  8 ++++++++
+ drivers/iommu/iommufd/iommufd_private.h |  5 +++++
+ drivers/iommu/iommufd/main.c            |  6 ++++++
+ drivers/iommu/iommufd/viommu.c          | 26 +++++++++++++++++++++++--
+ 4 files changed, 43 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index 86244403b532..a49b293bd516 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -221,6 +221,8 @@ struct iommufd_device *iommufd_device_bind(struct iommufd_ctx *ictx,
+ 	refcount_inc(&idev->obj.users);
+ 	/* igroup refcount moves into iommufd_device */
+ 	idev->igroup = igroup;
++	idev->vdev   = NULL;
++	mutex_init(&idev->lock);
+ 
+ 	/*
+ 	 * If the caller fails after this success it must call
+@@ -282,6 +284,12 @@ EXPORT_SYMBOL_NS_GPL(iommufd_ctx_has_group, "IOMMUFD");
+  */
+ void iommufd_device_unbind(struct iommufd_device *idev)
+ {
++	/* this will be unlocked while destroying the idev obj */
++	mutex_lock(&idev->lock);
++
++	if (idev->vdev)
++		/* extra refcount taken during vdevice alloc */
++		iommufd_object_destroy_user(idev->ictx, &idev->vdev->obj);
+ 	iommufd_object_destroy_user(idev->ictx, &idev->obj);
+ }
+ EXPORT_SYMBOL_NS_GPL(iommufd_device_unbind, "IOMMUFD");
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 9ccc83341f32..d85bd8b38751 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -425,6 +425,10 @@ struct iommufd_device {
+ 	/* always the physical device */
+ 	struct device *dev;
+ 	bool enforce_cache_coherency;
++	/* to protect the following members*/
++	struct mutex lock;
++	/* if there is a vdevice mapping the idev */
++	struct iommufd_vdevice *vdev;
+ };
+ 
+ static inline struct iommufd_device *
+@@ -606,6 +610,7 @@ struct iommufd_vdevice {
+ 	struct iommufd_ctx *ictx;
+ 	struct iommufd_viommu *viommu;
+ 	struct device *dev;
++	struct iommufd_device *idev;
+ 	u64 id; /* per-vIOMMU virtual ID */
+ };
+ 
+diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+index 3df468f64e7d..bf653d16138e 100644
+--- a/drivers/iommu/iommufd/main.c
++++ b/drivers/iommu/iommufd/main.c
+@@ -172,6 +172,12 @@ int iommufd_object_remove(struct iommufd_ctx *ictx,
+ 		ictx->vfio_ioas = NULL;
+ 	xa_unlock(&ictx->objects);
+ 
++	if (obj->type == IOMMUFD_OBJ_DEVICE) {
++		/* idevice should be freed with lock held */
++		struct iommufd_device *idev = container_of(obj, struct iommufd_device, obj);
++
++		mutex_unlock(&idev->lock);
++	}
+ 	/*
+ 	 * Since users is zero any positive users_shortterm must be racing
+ 	 * iommufd_put_object(), or we have a bug.
+diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
+index 01df2b985f02..17f189bc9e2c 100644
+--- a/drivers/iommu/iommufd/viommu.c
++++ b/drivers/iommu/iommufd/viommu.c
+@@ -84,15 +84,24 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 	return rc;
+ }
+ 
++/* This will be called from iommufd_device_unbind  */
+ void iommufd_vdevice_destroy(struct iommufd_object *obj)
+ {
+ 	struct iommufd_vdevice *vdev =
+ 		container_of(obj, struct iommufd_vdevice, obj);
+ 	struct iommufd_viommu *viommu = vdev->viommu;
++	struct iommufd_device *idev = vdev->idev;
++
++	/*
++	 * since we have an refcount on idev, it can't be freed.
++	 */
++	lockdep_assert_held(&idev->lock);
+ 
+ 	/* xa_cmpxchg is okay to fail if alloc failed xa_cmpxchg previously */
+ 	xa_cmpxchg(&viommu->vdevs, vdev->id, vdev, NULL, GFP_KERNEL);
+ 	refcount_dec(&viommu->obj.users);
++	idev->vdev = NULL;
++	refcount_dec(&idev->obj.users);
+ 	put_device(vdev->dev);
+ }
+ 
+@@ -124,10 +133,15 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 		goto out_put_idev;
+ 	}
+ 
++	mutex_lock(&idev->lock);
++	if (idev->vdev) {
++		rc = -EINVAL;
++		goto out_put_idev_unlock;
++	}
+ 	vdev = iommufd_object_alloc(ucmd->ictx, vdev, IOMMUFD_OBJ_VDEVICE);
+ 	if (IS_ERR(vdev)) {
+ 		rc = PTR_ERR(vdev);
+-		goto out_put_idev;
++		goto out_put_idev_unlock;
+ 	}
+ 
+ 	vdev->id = virt_id;
+@@ -147,10 +161,18 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 	if (rc)
+ 		goto out_abort;
+ 	iommufd_object_finalize(ucmd->ictx, &vdev->obj);
+-	goto out_put_idev;
++	/* don't allow idev free without vdev free */
++	refcount_inc(&idev->obj.users);
++	vdev->idev = idev;
++	/* vdev lifecycle now managed by idev */
++	idev->vdev = vdev;
++	refcount_inc(&vdev->obj.users);
++	goto out_put_idev_unlock;
+ 
+ out_abort:
+ 	iommufd_object_abort_and_destroy(ucmd->ictx, &vdev->obj);
++out_put_idev_unlock:
++	mutex_unlock(&idev->lock);
+ out_put_idev:
+ 	iommufd_put_object(ucmd->ictx, &idev->obj);
+ out_put_viommu:
+-- 
+2.43.0
+
