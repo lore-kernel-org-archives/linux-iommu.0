@@ -1,109 +1,271 @@
-Received: from relay.hostedemail.com (smtprelay0012.hostedemail.com [216.40.44.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B03FE1DB125
-	for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 15:56:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=216.40.44.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39C5B24DCE7
+	for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 22:46:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749657406; cv=none; b=uCuIBQkH2Pz5cKkOUHDuCK6rbldGHbnsWLq7bua06JU6eJrkEH3If0Cf3vPjdYw5BzboCF8jzmWUZvZn6OeEJwbiC4XQiZ/yU2F9mUzJcib/0RraLcPhLa7Yx3aWwfaidUc4TjHTx9QdN7GvcTjwVCmdfJMJDtNc/tpsVAyyqwY=
+	t=1749682018; cv=none; b=UO6lbslsloe/0anZ56YrKzflnmKDAvxa0Fo86vNAAZY9SvtLYUbggH6vq8CiSWGN4EaAGnQDcS6jfWGlhLh4OM1gw7IwN/tj0JWuelOt3ZGe+gK4d5IC6ty2OH9gUD/5CgoLrXbd+xiY4Z7bJ8ZGQYjfyXN3E7QghKReDcCUzbI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749657406; c=relaxed/simple;
-	bh=toj2JtLdyChmNC+vIjY+Ugkl/HRFUXHuj2qZTM+EDyc=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YPRPmjS+BZwzGXX2SR8hEPv2R6CgQGWv1ojjTbHImJIS4TKgENcdgyyMkVy32IXmzrnooJr7EXH/Byc5CxffOwGNbzgU0Iz9MydkV5xtTwdF2waxBwSI8W8DW2uwyAPrnrBmKVQ34m2oRFrhLjSc/xn1cSaDX4S9DElyk6f+mY8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org; spf=pass smtp.mailfrom=goodmis.org; arc=none smtp.client-ip=216.40.44.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goodmis.org
-Received: from omf15.hostedemail.com (a10.router.float.18 [10.200.18.1])
-	by unirelay02.hostedemail.com (Postfix) with ESMTP id 4233512101E;
-	Wed, 11 Jun 2025 15:56:43 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: rostedt@goodmis.org) by omf15.hostedemail.com (Postfix) with ESMTPA id 5640C22;
-	Wed, 11 Jun 2025 15:56:41 +0000 (UTC)
-Date: Wed, 11 Jun 2025 11:56:40 -0400
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, Linux trace kernel
- <linux-trace-kernel@vger.kernel.org>, iommu@lists.linux.dev, Christoph
- Hellwig <hch@infradead.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon
- <will@kernel.org>
-Subject: Re: [PATCH] swiotlb: iommu/dma: Move trace_swiotlb_bounced() into
- swiotlb_tbl_map_single()
-Message-ID: <20250611115640.5e79bde8@batman.local.home>
-In-Reply-To: <e2d856b7-0214-49ab-a4c5-4e6ee2541c6d@arm.com>
-References: <20250611100103.7b3c28c8@batman.local.home>
-	<e2d856b7-0214-49ab-a4c5-4e6ee2541c6d@arm.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1749682018; c=relaxed/simple;
+	bh=vBnIq5pOWsjohn7+v57cT5BpsFB4ytz7OF7cElux4JU=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=dBJE1qdN0a5LE2Dn05jHrz+mWrjeVtc4BcljM7JlSNNvg+KTiYgZqaJNtTTxnsJQXUFPHyKEiy2HCHC4bBK3d6gZAtzNL9BJOdg6QbthOi/U9+Ozmju3A9WMBsHrG6fWgHnfxyVklENlyEQ4PyJCQjU75rC6swp/GdBMVnjab64=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=T7+NZjdd; arc=none smtp.client-ip=209.85.216.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="T7+NZjdd"
+Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-311f4f2e761so310994a91.2
+        for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 15:46:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1749682015; x=1750286815; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:reply-to:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=JuHtXaj1Biz1nUMcTjF2zl2xw7uUrRWD5AKPktJzapU=;
+        b=T7+NZjddQm5GGv3UyTjbERoi7KttOk8eagj0ZM9+Rt8PL0b2iSzPOe4uDLlYYk8aw1
+         FN7skj+pkOfkoEaQG63cWcovJ+K8uH9Q4irHEraoTSCY6emOmXXeYj2cZObBa9P+pC7B
+         NN793/8EgN0Pz6VEIHhmlPNfcHkRUEfduqbmtUoCRZuQqLQVosWaIGdtzQSCCJIQ1ZVV
+         1sa+r7xXNBS4I1QamyOQhsoA3jLAMXVwn8OXmZZBFtAXQ4srxvsMA3DSDbCTtBHi4qG5
+         JtY8Gdr8oiri+AH+OUSHNyWl12vmBuO7KQ1/myW89g7u0Px5EdY/zas4PCwuuMQnr9dT
+         ZBZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1749682015; x=1750286815;
+        h=cc:to:from:subject:message-id:mime-version:date:reply-to
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=JuHtXaj1Biz1nUMcTjF2zl2xw7uUrRWD5AKPktJzapU=;
+        b=SrwNwhaW9xfo6795JiYvNuRWRtEspAAj7udQBhvS2tKunJS1xFOQEAwG06QGG6c+dD
+         OKJq9tF8CZZS/teX//w/ohg//6Wf4AWfAbjK90BrK7DtYelHhab/yGxUrKwVsnRUEH5G
+         B1Q1K5RXsoCMQW6w97jNmGXcvhoLsRmNbMcGu9REwRlU6dFt+3hrmyAtL+vBxMob2eka
+         3BS4lgL8JVTNdTqZOYBJYKgt19iwx2/a1GRyicgEzQdQXNAEGxb8jRfDGK4ltqagCYhF
+         0WGNudYkz4RWOVF1hErpfppAiWeqUPZk/7gIEWzPmrNO8SrRpmtWMi3PeluldZda9k+k
+         +zQQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVbCru274s7zdt/CpZSLc2sHex+DFXNdOIWRXBlWVFcJSlZARzqNoFOyEntidfwWqgNDNG/Cw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxLELNp/aUmbd08q/esCYNPSliA0RKCalGiIGjp+cpxfRIRiTaH
+	AKqC4lPosP5C049bNeqp9h80iklMHSFvRYyD+WO9W5wQ94Th90GZhbeuQmoYKLaaqLgGbr4bq6V
+	Jnf0Hlg==
+X-Google-Smtp-Source: AGHT+IGScfhk9tXXQjQ5gd+DYVe69xOrENw6SUmp7AYJ+hW5WmHJfBnXO4CQhyqOWjviuMvO72zZmRDIqrc=
+X-Received: from pjwx3.prod.google.com ([2002:a17:90a:c2c3:b0:2fc:c98:ea47])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:288c:b0:311:ae39:3dad
+ with SMTP id 98e67ed59e1d1-313c08d2311mr1006186a91.30.1749682015616; Wed, 11
+ Jun 2025 15:46:55 -0700 (PDT)
+Reply-To: Sean Christopherson <seanjc@google.com>
+Date: Wed, 11 Jun 2025 15:45:03 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: kk5eoxyb7r96nwk1iitx31b3medra1wy
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: 5640C22
-X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
-X-Session-ID: U2FsdGVkX19sKjfs4T1xcTnvYw55LHQUM8lLVhuD1yU=
-X-HE-Tag: 1749657401-459559
-X-HE-Meta: U2FsdGVkX1/mrC0pkss+1d34xPrpmRmFMb8hARcvWQyl3cXRB0MRVkDtGCi5h73BlRWVqakJQgXNNtnz6agR0fWMpKXtUf+Fu2NRBUxvk+zUQEWhlNLTWg9JIMt9pVcXKzbZ8tDc2VoNYcHgOjPZIqvL40QMOW22YBY3Gp4mAIo+x2mUHG1gORF652ZHQAaCfPYWeQUZGII0qEXHcFRtRQDV6QXT8C/xtDTIcSbo3jY4GZRk7cjhVw2VlglupxyZFUcaDF4/pbhb3+Wul/euSH77I0NXq1CUMfd3OpO9jj+SrCC3LpgtVljS720yp5lPlhivGKcZzzLb/vnVekZPiQbrlwhaoD7P+nxyzneRowPEyRUXipLyxl8dRs+hy7oFsLPn+FdyJjJAI8SJsVOHT61tEzE9J4IB33913Jmm35IrWxeP1GP43aHybIc2NXxlikFk1zgaOVO9l01cdjyU8pRb/OvfWsivYrEsTQEc/b8=
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.50.0.rc1.591.g9c95f17f64-goog
+Message-ID: <20250611224604.313496-2-seanjc@google.com>
+Subject: [PATCH v3 00/62] KVM: iommu: Overhaul device posted IRQs support
+From: Sean Christopherson <seanjc@google.com>
+To: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
+Cc: linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
+	kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
+	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, 11 Jun 2025 15:28:52 +0100
-Robin Murphy <robin.murphy@arm.com> wrote:
+Marc/Oliver,
 
-> On 2025-06-11 3:01 pm, Steven Rostedt wrote:
-> > From: Steven Rostedt <rostedt@goodmis.org>
-> > 
-> > I'm working on code that will warn when a tracepoint is defined but not
-> > used. As the TRACE_EVENT() logic still creates all the code regardless if
-> > something calls the trace_<event>() function. It wastes around 5K per trace
-> > event (less for tracepoints).
-> > 
-> > But it seems that the code in drivers/iommu/dma-iommu.c does the opposite.
-> > It calls the trace_swiotlb_bounced() tracepoint without it being defined.
-> > The tracepoint is defined in kernel/dma/swiotlb.c when CONFIG_SWIOTLB is
-> > defined, but this code exists when that config is not defined.
-> > 
-> > This now fails with my work because I have all the callers reference the
-> > tracepoint that they will call.
-> > 
-> > Thanks to the kernel test robot, it found this:
-> > 
-> >    https://lore.kernel.org/all/202506091015.7zd87kI7-lkp@intel.com/
-> > 
-> > Instead of calling trace_swiotlb_bounced() from drivers/iommu/dma-iommu.c
-> > where it is useless when CONFIG_SWIOTLB is not defined, move the
-> > tracepoint into swiotlb_tbl_map_single(). This also makes it consistent
-> > with which memory is being traced (physical as supposed to dma address).  
-> 
-> Consistent with what? Certainly not the other callers which invoke the 
-> tracepoint with phys_to_dma(orig_addr), but will now do so twice with 
-> potentially different values. Arguably iommu-dma is already consistent 
-> as things stand, since it does not support static address offsets 
-> underneath IOMMU translation, and therefore orig_addr will always be 
-> equal to phys_to_dma(orig_addr) anyway. The point of interest really is 
-> in those other cases, where if there *were* a static DMA offset then 
-> phys_to_dma(orig_addr) would actually be a pretty meaningless value 
-> which is not used anywhere else and therefore not overly helpful to 
-> trace - neither the recognisable PA of the underlying memory itself, nor 
-> the actual DMA address which will be used subsequently, since at this 
-> point that's yet to be allocated.
+Patch 1 is an arm64 fix that I'm guessing you'll want to grab for 6.16.
+Assuming that's the case, I'll make sure this series lands on top of
+kvm/master (or maybe an -rc?) at the appropriate point in time.  Though if you
+can grab the patch sooner than later, that'd be super helpful :-)
 
-I only added that line because of what Christoph said. I'll let you
-folks hammer that point.
+Oh, and the other patches are of interest to arm64 are:
 
-> 
-> > Fixes: ed18a46262be4 ("iommu/dma: Factor out a iommu_dma_map_swiotlb helper")  
-> 
-> It's a fair bit older than that, try a63c357b9fd5 ("iommu/dma: Trace 
-> bounce buffer usage when mapping buffers") - looks like it's always just 
-> been hopeful of being DCE'd.
+  [PATCH v3 32/62] KVM: Don't WARN if updating IRQ bypass route fails
+  [PATCH v3 33/62] KVM: Fold kvm_arch_irqfd_route_changed() into kvm_arch_update_irqfd_routing()
 
-Ah, yeah, that's the real culprit. Thanks!
+In theory, I _think_ those could be moved earlier so that there aren't
+multi-arch patches buried in a massive x86-centric series, but I really don't
+want to try and re-disentangle x86's posted interrupt mess at this point.
 
-Well, it may be some time before I push my code that will cause this to
-fail to build, as I want to clean up the unused events before I add it
-(otherwise there's going to be lots of warnings whenever it's enabled).
 
--- Steve
+TL;DR: Overhaul device posted interrupts in KVM and IOMMU, and AVIC in
+       general.
+
+This applies on the series to add CONFIG_KVM_IOAPIC (and to kill irq_comm.c):
+
+  https://lore.kernel.org/all/20250611213557.294358-1-seanjc@google.com
+
+Fix a variety of bugs related to device posted IRQs, especially on the
+AMD side, and clean up KVM's implementation (this series actually removes
+more code than it adds).
+
+Batch #1 is new in this version, and consists of two aforementioned arm64
+changes.
+
+Batch #2 is mostly SVM specific:
+
+ - Cleans up various warts and bugs in the IRTE tracking
+ - Fixes AVIC to not reject large VMs (honor KVM's ABI)
+ - Wire up AVIC to enable_ipiv to support disabling IPI virtualization while
+   still utilizing device posted interrupts, and to workaround erratum #1235.
+
+Batch #3 overhauls the guts of IRQ bypass in KVM, and moves the vast majority
+of the logic to common x86; only the code that needs to communicate with the
+IOMMU is truly vendor specific.
+
+Batch #4 is more SVM/AVIC cleanups that are made possible by batch #3.
+
+Batch #5 adds WARNs and drops dead code after all the previous cleanups and
+fixes (I don't want to add the WARNs earlier; I don't see any point in adding
+WARNs in code that's known to be broken).
+
+Batch #6 is yet more SVM/AVIC cleanups, with the specific goal of configuring
+IRTEs to generate GA log interrupts if and only if KVM actually needs a wake
+event.
+
+v3:
+ - Rebase on kvm/next to pick up relevant arm64 irqfd routing changes, and
+   account for arm64 as appropriate.
+ - Fix a suspiciously similar bug in arm64's version of
+   kvm_arch_irqfd_route_changed().
+ - Add a patch to rename kvm_set_msi_irq() to kvm_msi_to_lapic_irq().
+
+v2:
+ - https://lore.kernel.org/all/20250523010004.3240643-1-seanjc@google.com
+ - Drop patches that were already merged.
+ - Move code into irq.c, not x86.c. [Paolo]
+ - Collect review/testing tags. [Sairaj, Vasant]
+ - Sqaush fixup for a comment that was added in the prior patch. [Sairaj]
+ - Rewrote the changelog for "Delete IRTE link from previous vCPU irrespective
+   of new routing". [Sairaj]
+ - Actually drop "struct amd_svm_iommu_ir" and all usage in "Track per-vCPU
+   IRTEs using kvm_kernel_irqfd structure" (the previous version was getting
+   hilarious lucky with struct offsets). [Sairaj]
+ - Drop unused params from kvm_pi_update_irte() and pi_update_irte(). [Sairaj]
+ - Document the rules and behavior of amd_iommu_update_ga(). [Joerg]
+ - Fix a changelog typo. [Paolo]
+ - Document that GALogIntr isn't cached, i.e. can be safely updated without
+   an invalidation. [Joao, Vasant]
+ - Rework avic_vcpu_{load,put}() to use an enumerated parameter instead of a
+   series of booleans. [Paolo]
+ - Drop a redundant "&& new". [Francesco]
+ - Drop the *** DO NOT MERGE *** testing hack patches.
+
+v1: https://lore.kernel.org/all/20250404193923.1413163-1-seanjc@google.com
+
+Maxim Levitsky (2):
+  KVM: SVM: Add enable_ipiv param, never set IsRunning if disabled
+  KVM: SVM: Disable (x2)AVIC IPI virtualization if CPU has erratum #1235
+
+Sean Christopherson (60):
+  KVM: arm64: Explicitly treat routing entry type changes as changes
+  KVM: arm64: WARN if unmapping vLPI fails
+  KVM: Pass new routing entries and irqfd when updating IRTEs
+  KVM: SVM: Track per-vCPU IRTEs using kvm_kernel_irqfd structure
+  KVM: SVM: Delete IRTE link from previous vCPU before setting new IRTE
+  iommu/amd: KVM: SVM: Delete now-unused cached/previous GA tag fields
+  KVM: SVM: Delete IRTE link from previous vCPU irrespective of new
+    routing
+  KVM: SVM: Drop pointless masking of default APIC base when setting
+    V_APIC_BAR
+  KVM: SVM: Drop pointless masking of kernel page pa's with AVIC HPA
+    masks
+  KVM: SVM: Add helper to deduplicate code for getting AVIC backing page
+  KVM: SVM: Drop vcpu_svm's pointless avic_backing_page field
+  KVM: SVM: Inhibit AVIC if ID is too big instead of rejecting vCPU
+    creation
+  KVM: SVM: Drop redundant check in AVIC code on ID during vCPU creation
+  KVM: SVM: Track AVIC tables as natively sized pointers, not "struct
+    pages"
+  KVM: SVM: Drop superfluous "cache" of AVIC Physical ID entry pointer
+  KVM: VMX: Move enable_ipiv knob to common x86
+  KVM: VMX: Suppress PI notifications whenever the vCPU is put
+  KVM: SVM: Add a comment to explain why avic_vcpu_blocking() ignores
+    IRQ blocking
+  iommu/amd: KVM: SVM: Use pi_desc_addr to derive ga_root_ptr
+  iommu/amd: KVM: SVM: Pass NULL @vcpu_info to indicate "not guest mode"
+  KVM: SVM: Stop walking list of routing table entries when updating
+    IRTE
+  KVM: VMX: Stop walking list of routing table entries when updating
+    IRTE
+  KVM: SVM: Extract SVM specific code out of get_pi_vcpu_info()
+  KVM: x86: Move IRQ routing/delivery APIs from x86.c => irq.c
+  KVM: x86: Nullify irqfd->producer after updating IRTEs
+  KVM: x86: Dedup AVIC vs. PI code for identifying target vCPU
+  KVM: x86: Move posted interrupt tracepoint to common code
+  KVM: SVM: Clean up return handling in avic_pi_update_irte()
+  iommu: KVM: Split "struct vcpu_data" into separate AMD vs. Intel
+    structs
+  KVM: Don't WARN if updating IRQ bypass route fails
+  KVM: Fold kvm_arch_irqfd_route_changed() into
+    kvm_arch_update_irqfd_routing()
+  KVM: x86: Track irq_bypass_vcpu in common x86 code
+  KVM: x86: Skip IOMMU IRTE updates if there's no old or new vCPU being
+    targeted
+  KVM: x86: Don't update IRTE entries when old and new routes were !MSI
+  KVM: SVM: Revert IRTE to legacy mode if IOMMU doesn't provide IR
+    metadata
+  KVM: SVM: Take and hold ir_list_lock across IRTE updates in IOMMU
+  iommu/amd: Document which IRTE fields amd_iommu_update_ga() can modify
+  iommu/amd: KVM: SVM: Infer IsRun from validity of pCPU destination
+  iommu/amd: Factor out helper for manipulating IRTE GA/CPU info
+  iommu/amd: KVM: SVM: Set pCPU info in IRTE when setting vCPU affinity
+  iommu/amd: KVM: SVM: Add IRTE metadata to affined vCPU's list if AVIC
+    is inhibited
+  KVM: SVM: Don't check for assigned device(s) when updating affinity
+  KVM: SVM: Don't check for assigned device(s) when activating AVIC
+  KVM: SVM: WARN if (de)activating guest mode in IOMMU fails
+  KVM: SVM: Process all IRTEs on affinity change even if one update
+    fails
+  KVM: SVM: WARN if updating IRTE GA fields in IOMMU fails
+  KVM: x86: Drop superfluous "has assigned device" check in
+    kvm_pi_update_irte()
+  KVM: x86: WARN if IRQ bypass isn't supported in kvm_pi_update_irte()
+  KVM: x86: WARN if IRQ bypass routing is updated without in-kernel
+    local APIC
+  KVM: SVM: WARN if ir_list is non-empty at vCPU free
+  KVM: x86: Decouple device assignment from IRQ bypass
+  KVM: VMX: WARN if VT-d Posted IRQs aren't possible when starting IRQ
+    bypass
+  KVM: SVM: Use vcpu_idx, not vcpu_id, for GA log tag/metadata
+  iommu/amd: WARN if KVM calls GA IRTE helpers without virtual APIC
+    support
+  KVM: SVM: Fold avic_set_pi_irte_mode() into its sole caller
+  KVM: SVM: Don't check vCPU's blocking status when toggling AVIC on/off
+  KVM: SVM: Consolidate IRTE update when toggling AVIC on/off
+  iommu/amd: KVM: SVM: Allow KVM to control need for GA log interrupts
+  KVM: SVM: Generate GA log IRQs only if the associated vCPUs is
+    blocking
+  KVM: x86: Rename kvm_set_msi_irq() => kvm_msi_to_lapic_irq()
+
+ arch/arm64/kvm/arm.c                 |  19 +-
+ arch/arm64/kvm/vgic/vgic-v4.c        |  10 +-
+ arch/x86/include/asm/irq_remapping.h |  17 +-
+ arch/x86/include/asm/kvm-x86-ops.h   |   2 +-
+ arch/x86/include/asm/kvm_host.h      |  23 +-
+ arch/x86/include/asm/svm.h           |  13 +-
+ arch/x86/kvm/irq.c                   | 152 +++++-
+ arch/x86/kvm/svm/avic.c              | 702 ++++++++++++---------------
+ arch/x86/kvm/svm/svm.c               |   4 +
+ arch/x86/kvm/svm/svm.h               |  32 +-
+ arch/x86/kvm/trace.h                 |  19 +-
+ arch/x86/kvm/vmx/capabilities.h      |   1 -
+ arch/x86/kvm/vmx/main.c              |   2 +-
+ arch/x86/kvm/vmx/posted_intr.c       | 140 ++----
+ arch/x86/kvm/vmx/posted_intr.h       |  10 +-
+ arch/x86/kvm/vmx/vmx.c               |   2 -
+ arch/x86/kvm/x86.c                   |  90 +---
+ drivers/iommu/amd/amd_iommu_types.h  |   1 -
+ drivers/iommu/amd/iommu.c            | 125 +++--
+ drivers/iommu/intel/irq_remapping.c  |  10 +-
+ include/kvm/arm_vgic.h               |   2 +-
+ include/linux/amd-iommu.h            |  25 +-
+ include/linux/kvm_host.h             |   9 +-
+ include/linux/kvm_irqfd.h            |   4 +
+ virt/kvm/eventfd.c                   |  22 +-
+ 25 files changed, 691 insertions(+), 745 deletions(-)
+
+
+base-commit: 06880162469d702d052e5d51b49a24e43f182af8
+-- 
+2.50.0.rc1.591.g9c95f17f64-goog
+
