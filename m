@@ -1,61 +1,102 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44F511A28D;
-	Wed, 11 Jun 2025 03:26:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B32C42CCC9;
+	Wed, 11 Jun 2025 04:51:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749612409; cv=none; b=qnTb/m8vCCtb5mrkJMBB3OdNYIxuPhOnioORq6VWQ9ZCmKDxY+bidQN/KXO4rBPD287q93qWglxfFGUaGn/3+/8sFnc24EVl0MXOOA88qHWJ+vBJPN2k+VSIKM4pZtpjL9vhcW0CApDX7QTGH2iPqIPtWCyb18AbFnZa07BvVXU=
+	t=1749617466; cv=none; b=SnrADV+kSb8aGDVkxQjqE66STcBw+oc+JLvy6BJoKIJM6BP7uyhRSTT3lHE6kk1y4zPnvAr3GvHI2y3ODsxhq5rvcK2Jo2jG8ajSIg7P6jWHOD7+SfcbR2xSfPiTChpRkvLLx1LlqDBdAEv1TIgLgEHqXxKJhBM5Zsj8Sl8ndgo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749612409; c=relaxed/simple;
-	bh=uYuWesBo4JGBNYOWlZORtJwdtxBUAbDm2zn76MvkOUs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pSNvF1DDNQ1VOGsEyL37A6Rq6NBk1xuRmILwH4F2XwDWvws0skL1gr+hhbdxPDSDbgz5VhEtNqv3Sm05Psi6zHynLtWRVslfEEZQQX7afOXcYF42+QT6Pb8JPGCrEh05jcarYJbuyg2gJ2L5UJoHA2Wbd+oGZ/4hNh7ydnjZp8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=EeC3JQdB; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	s=arc-20240116; t=1749617466; c=relaxed/simple;
+	bh=tQJqHS9D3oD2yrr4hr6rV32IS13ZgiCeQMLhGvBLfyg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=p4TE5/e6EH3kAAytMBS6Cl0nFzDGgh07GBpR5YTNT+Ek0A81vK3FsWAc9Ywu20C0OV1PLoI4DxibWreAHfRg26FCI5wjiNdlyNtMpcldo7TJzKsUncHt68eAzJ/soBDtLUOH1nagrmgNjI/hGYRO/Z/P7ewZDhLOoVfpJ7YwuSY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Uo4eb20j; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="EeC3JQdB"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=uYuWesBo4JGBNYOWlZORtJwdtxBUAbDm2zn76MvkOUs=; b=EeC3JQdB867FhRc1yLJ36KiOjP
-	t9DnSIZ3n2w6vcT1NwHeZrWa6DkwMSTjWWlYfkkvzmvpqP3KYduEdekJRKPOgZ8mZ/val6Smj+DXy
-	zinLA7W6QV3gqe4KP4Rq6v10M+tu8kFKQJLUjvgW/SPtFfVJOR2Fm/CjMjWrgRIe4ubkWEwYefglk
-	GHrKKzgip/MSM8PTyWMzyEnRGDLzXR8rI0Gg8gb2ERdCYdbNT+lIqX8jEM89l6Ed0FGEIWkWm8NdG
-	7l66j3DokAhXupveplizevJf8Xmx7iUKnDHTnbqNqe4hF+O3XtMSVA/a3L4LsP78P2bjbQlxIROBl
-	lsZp9ksA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uPC6s-00000008jdS-3VDi;
-	Wed, 11 Jun 2025 03:26:42 +0000
-Date: Tue, 10 Jun 2025 20:26:42 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: LKML <linux-kernel@vger.kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, iommu@lists.linux.dev
-Subject: Re: [RFC][PATCH] iommu/dma: Do not call swiotlb tracepoint when not
- defined
-Message-ID: <aEj3cmuigHRMB5H6@infradead.org>
-References: <20250610202457.5a599336@gandalf.local.home>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Uo4eb20j"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1749617464; x=1781153464;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=tQJqHS9D3oD2yrr4hr6rV32IS13ZgiCeQMLhGvBLfyg=;
+  b=Uo4eb20jEkgTWw4c56tjnZzzHHd0Mw6FqopQ1Rp2Oa24l2AfjICGlsSy
+   w7FNzR1P1Mw3w069Gsm6twVJtQ/aP4xysurQdIm4NMTiXwZUluvEjrrbY
+   VYetmi9PYMaPg6k9hUMOeokOfqhbkWHFDyxBY4qNS/QMwVjNwZxit4H38
+   xK6DNlBL2qLZbwotzFJAj222tFVjRPjYnKYLEX+qYIkhUrYnWlvTJN3g0
+   CTBtZsvb4H0UO6lsIXaAy/lUr6kkGttHwsjE6VzCYZbo8AVkDb3y3w85B
+   TXbKLkXnwmpJITSAZRBI0ScktUum6J01VyvRUykLWWAnmZ1wsy/fEAboC
+   w==;
+X-CSE-ConnectionGUID: 9Xi8S9YhQQeLLQeDr0ezHw==
+X-CSE-MsgGUID: oAM9rYVxTSyzWKN7rBCiBA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11460"; a="51884971"
+X-IronPort-AV: E=Sophos;i="6.16,227,1744095600"; 
+   d="scan'208";a="51884971"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2025 21:51:04 -0700
+X-CSE-ConnectionGUID: EazqtwJTQnKI3qJRQ2vXxw==
+X-CSE-MsgGUID: VijVnaRzRU2eFOQvmbJeog==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,227,1744095600"; 
+   d="scan'208";a="170236807"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jun 2025 21:51:02 -0700
+Message-ID: <da8a6938-c45f-4923-af52-1a34702f1b0a@linux.intel.com>
+Date: Wed, 11 Jun 2025 12:50:11 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250610202457.5a599336@gandalf.local.home>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 7/7] iommu/vtd: Split paging_domain_compatible()
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>, patches@lists.linux.dev,
+ Wei Wang <wei.w.wang@intel.com>
+References: <7-v1-20c73f153f4c+1895-vtd_prep_jgg@nvidia.com>
+ <39400661-9f18-4ba3-8cb8-d56ef548c9b0@linux.intel.com>
+ <20250610235125.GP543171@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250610235125.GP543171@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jun 10, 2025 at 08:24:57PM -0400, Steven Rostedt wrote:
-> Hopefully someone else can make a proper patch. I will be pushing my work
-> to linux-next during this cycle.
+On 6/11/25 07:51, Jason Gunthorpe wrote:
+> On Tue, Jun 10, 2025 at 03:12:43PM +0800, Baolu Lu wrote:
+>>> +	/*
+>>> +	 * FIXME this is locked wrong, it needs to be under the
+>>> +	 * dmar_domain->lock
+>>> +	 */
+>>>    	if (dmar_domain->force_snooping && !ecap_sc_support(iommu->ecap))
+>>>    		return -EINVAL;
+>>
+>> Perhaps we can use group->mutex to fix this in the future?
+> 
+> It is part of the iommu_domain, there is no clear group->mutex that
+> is affiliated with a domain, there can be multiple devices attached..
 
-Just move the trace point into swiotlb_tbl_map_single.
+Fair enough.
 
-Note that the current callers can't agree if they want to trace the
-physical or dma address, so that'll force standardize that as well.
+> Maybe we should change the enforce coherency away from a function op
+> and into a domain creation flag. Then it won't change at run time,
+> fixing this race, and we don't have the issue of possibly having PTEs
+> with the wrong bit already mapped into the domain.
 
+That's a better approach. enforce_cache_coherency is only used in vfio
+and iommufd, where the cache coherency is enforced just after the domain
+is allocated.
+
+> When this was first done that was harder, but now I think we have
+> enough infrastructure to do it easily..
+
+Yes. I can follow up with a patch series for broad discussion if you
+don't want to include it in this series.
+
+Thanks,
+baolu
