@@ -1,202 +1,109 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2052.outbound.protection.outlook.com [40.107.244.52])
+Received: from relay.hostedemail.com (smtprelay0010.hostedemail.com [216.40.44.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D39EA2E612C
-	for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 11:19:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749640794; cv=fail; b=PfcTpdu3C0ehrQRnBHnQiOyH1qFbbC7y+GKh36e3R9WX67amp4sd5nVnDU1/yaSPgzetOR16xAavWDBCqPW6acFIFhuWHLBpyBxZc6kldeWi/QD3etqVCmNXKRtGH/Kekcop8xL+kgYtk6v+KAMbdediy+obQPUMhkNOUCMJwJ4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749640794; c=relaxed/simple;
-	bh=OlOX3vMT7OqgZj80uqjy/k/4ls0dWLWP+kGnNJT131Q=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=ZlYjfyBAm7SFrt7S0ysBzm0yY7Ojt0NYrFfFtkJVdcrH0VR07l1ZK77bCMniLiD4fxQqy3wShO38fs11eEv/IuGhOUn89LtJil5BCmGru2BdSn/uJCoO1rY5LSHd31p8cSD5Y8vFoeY+oyERIvOLcZMLb4SDp7sZfQfb6Ep+61E=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=YvXzubxf; arc=fail smtp.client-ip=40.107.244.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="YvXzubxf"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Lmn151E2Lwluh6100Fcvs83imdmZWIFoZtIbiJNGEvCsIzGUQLDKepZvWOGcbxY73WFrV/BEotDovaJFYqYwOcTXw824PfL59V+Dwb0joAxmlJPsH52iOn1p7I7j+mANp2mEETDocxFp+RyAbSCMMyT4VPBvbPdMdfwQ+qarTX+S/oVpeNazeqnccwdQ3pzFlguYCIBVP/bCd6C/5YC1HBT809XQqIezyUFOaSCyEKghX+elcv8JYaNKwZiHiSNyPXaVMuUoZtHjXW93t4rxSnggoynDVUGB9h/dnkvcCtv+L6Yai6mvSIRlM6ln3h2u1wQBp4x4Q9L8E8y07oIX4A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XZFUedRIyTt2O4SD8rVHjFJlSmhpBCwzRP9uYCBd3kw=;
- b=g08OMl3RuzRKQtjkMo3npv0i/0oEiHLxNFgEu9DL1mVXAgYjr0PKZ1rwDSesqTt+2WKWit3SNqNp6vDakpHWeLsyWHe0tRr+km257jP24XzyMeY//P8E5O/xmR5K2hdqI1blJHG5uQKOxiKhBm1/797HRGChPQotgiP/B2SUXtY272H9j57yZKEp8mfQwfPWnhyhFkRX59xltAe4HCLBiBoTOJGXgjOQbpiBIXO5Sz5vop1VkpZf0hkXFvI8u73E64VzcCRJ+AuvqLIeL+n65iRxD3aEkSempSmISSud/VoVxQ4Fn55A/coSuDXgt29DZ73nubm80wwe+MbQfHWMjg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XZFUedRIyTt2O4SD8rVHjFJlSmhpBCwzRP9uYCBd3kw=;
- b=YvXzubxfPBzBzqRKZVrUzXKFXdWAQatk2FFraaKyQL5i4UH2HmWv54VebpUBXHPmKRwu8C4jeZDJf4XOdTAAEtlazq77kjp1qL++XWzii7bY8kdCnbdp9aP6wRyYrKd/bGKBi4/InjySb6IOT8f74vuxqqZV9v/ec0jMwI7Fn/g=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
- by LV3PR12MB9332.namprd12.prod.outlook.com (2603:10b6:408:20f::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8792.35; Wed, 11 Jun
- 2025 11:19:49 +0000
-Received: from PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::46fb:96f2:7667:7ca5]) by PH7PR12MB5685.namprd12.prod.outlook.com
- ([fe80::46fb:96f2:7667:7ca5%7]) with mapi id 15.20.8722.031; Wed, 11 Jun 2025
- 11:19:48 +0000
-Message-ID: <72d0a2fc-7387-4447-b556-5fb77fb34e79@amd.com>
-Date: Wed, 11 Jun 2025 13:19:42 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [Linaro-mm-sig] [PATCH v3 2/3] udmabuf: use sgtable-based
- scatterlist wrappers
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
- dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
- linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev
-Cc: Gerd Hoffmann <kraxel@redhat.com>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>,
- Sumit Semwal <sumit.semwal@linaro.org>,
- Gurchetan Singh <gurchetansingh@chromium.org>,
- Robin Murphy <robin.murphy@arm.com>, stable@vger.kernel.org
-References: <20250507160913.2084079-1-m.szyprowski@samsung.com>
- <CGME20250507160922eucas1p11bd044bb458626dc0004bd2fd83605c0@eucas1p1.samsung.com>
- <20250507160913.2084079-3-m.szyprowski@samsung.com>
- <7a6475cb-4ebe-46a3-92a2-f29fbc8e5e41@amd.com>
- <c90bf515-9050-4ed7-b733-28b14536b913@samsung.com>
- <3d65e71e-5847-4c0f-98ff-318086f14ee2@samsung.com>
-Content-Language: en-US
-From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-In-Reply-To: <3d65e71e-5847-4c0f-98ff-318086f14ee2@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: MN2PR08CA0008.namprd08.prod.outlook.com
- (2603:10b6:208:239::13) To PH7PR12MB5685.namprd12.prod.outlook.com
- (2603:10b6:510:13c::22)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 310E827FD6D
+	for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 14:01:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=216.40.44.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1749650469; cv=none; b=TgGVvwjLDcS9J7tb16LxwdTPrR+7+LcN6AN5cHXN1ZOUEUZ8g0w5Jr2U8h/l/+P1eF1pJYvPCx3+7JMc5oprrvr8USmOaRms2EQSbxk6D0p5lIJui9SLlXGElDluKs+YNdcDXT+OuKT0cb2NI4e1NajWCAYCcfVptOHpedb2Z6E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1749650469; c=relaxed/simple;
+	bh=NhrX07/ZRSceAn54EclTOUnzutUk0530NLo3rTyHdVw=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type; b=KFeMPRlaBJIr6M1y8RXO5Vqp8w1PDie4yAdxJxM1670RUdoctE8Ubha1yaz611g1pdeGPmDMJgocfKMy0P3vOFsRkWFA2eolwBolVTrTepzXw8y2H0DmWI36qlG0g/L6mUakPPStsAVbQJNG5TXv8Z6yhwG5pVvJvdTNLIr9NDQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org; spf=pass smtp.mailfrom=goodmis.org; arc=none smtp.client-ip=216.40.44.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=goodmis.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=goodmis.org
+Received: from omf10.hostedemail.com (a10.router.float.18 [10.200.18.1])
+	by unirelay03.hostedemail.com (Postfix) with ESMTP id 6D4FABE498;
+	Wed, 11 Jun 2025 14:01:05 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: rostedt@goodmis.org) by omf10.hostedemail.com (Postfix) with ESMTPA id 6FCE43E;
+	Wed, 11 Jun 2025 14:01:03 +0000 (UTC)
+Date: Wed, 11 Jun 2025 10:01:03 -0400
+From: Steven Rostedt <rostedt@goodmis.org>
+To: LKML <linux-kernel@vger.kernel.org>, Linux trace kernel
+ <linux-trace-kernel@vger.kernel.org>, iommu@lists.linux.dev
+Cc: Christoph Hellwig <hch@infradead.org>, Robin Murphy
+ <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>
+Subject: [PATCH] swiotlb: iommu/dma: Move trace_swiotlb_bounced() into
+ swiotlb_tbl_map_single()
+Message-ID: <20250611100103.7b3c28c8@batman.local.home>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|LV3PR12MB9332:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3c67e6f2-55af-4fb8-3c6d-08dda8d9e097
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|7416014|376014|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?S05aOFVHOWp1bjVDWDJzUWpJMVpFMk9RdW5nNGh2QjZ2MHZCVlIxTzUyeGZD?=
- =?utf-8?B?djlYUEljenNIUUsvQTFIdXR2dktWV2JBSlluZEdlUHZXT2VoS04zY2xnbWJ1?=
- =?utf-8?B?NGFQQ1JzZHlvQUhkSEhPUHpQb2hWQjU2MzdEVEFhVTRZZXJ0VEpjSFdyMFJC?=
- =?utf-8?B?VjdqN0pnbHdNbThwNjIrL21YNVFKKzBlWE92NlRRQzl2dzR4V0pwVHBaa0pu?=
- =?utf-8?B?MXNML3pCblRIc1ZqT3FYRUxadGJyWjZrNFhOcHBUTTlIeHc4aVVOaDNKMmZ2?=
- =?utf-8?B?Q1pLRnNVa3pJRHR4clg5c0M5cUM3TGxtUnRYR3p0ckI2c1hrWFdkZEJDYlpR?=
- =?utf-8?B?a2Y5SGRVdVNGY0xTTi9YeWIzd2tpbDJYbnhLQlIrYzV2TUxaeTk2WmJrM3R6?=
- =?utf-8?B?anYwRFkvQzRNVyt2N1RYZnJ0WUxlbTNDY3c0RzluWHgrLzErd2hVejl5VUNE?=
- =?utf-8?B?WlJabDFxRE04eDhtTFpPRnRoTU9Lanl1ZWpzSmtyS2ZSRk5TK3oxd0VFR0Rk?=
- =?utf-8?B?MHJQVGVoQ3F5LzZTdnFQWThBZnRzSXhOT3RhbGpLZ2FxcldqZnR5RStGdGZ4?=
- =?utf-8?B?OU1kcXdjUnRkWVBJdSsrcEkwTHZUOGU5MFJtaEVKTGFDd2lhdW1uV0xUN09t?=
- =?utf-8?B?ZDdRbVBzeVdxdDBaYVZ6NzRNZXQ4RkM5RkRwcGNyaUtwa3E4U3dIaHpLZ1R2?=
- =?utf-8?B?UnlUeHZaeC9IMGJlSWplN3lTRkxmRUlVNWdMc2VJeFBTc2l2VGd4MTZxbHhS?=
- =?utf-8?B?azhjR0tCWnNjRzZITmpOYUxwZG0rWkFvL2sreW9SRVdpTnBpQnErTzFPeWF1?=
- =?utf-8?B?UitMQTJBSW1rY2t1Y2NRcXNHWXFZdFgyaG9RTmdoSzBCYlgvcWY4Z3FJNndp?=
- =?utf-8?B?Nk8xejVEWEE5R1MxcWR1eS81UWZ5OWJPVUk4cEhKdzMxRTdudmthOEpQWXJ5?=
- =?utf-8?B?SmR6U1NoeEdPekRXWXFjVG1ZYkRVMGQ2NXRMODlTbTUxdHMySG1OOGhPUlRU?=
- =?utf-8?B?emxYcXhCK0lCTVZWaTVVWm1wY2xvK1dVTXdNbjBJK2R6ejhNNkY0bEtxNWFL?=
- =?utf-8?B?YzdvZlZYdzNrWW5rTG00T3lPbDNONnlJenNPZkJHODAvQm4rNHF1RzJKRmJ4?=
- =?utf-8?B?WjFOVVdneWNqSW9FdUswc2RPSVNIbXMxem82SnpZcVgzNjUzbG15SXdsYnRx?=
- =?utf-8?B?aVc4MnVLR1NyUEtkMGxIOE1NRkU4akJXS0luajMxNUhvUXhlSDNzank3bHFn?=
- =?utf-8?B?YVJxVzYxdXFCTlNTSjBFaVV3Nk9PV1ZhZzBwVXcraS9PME40bXBoT1VXWEpE?=
- =?utf-8?B?RzBFVWdzY3lsYkhKdHNwdDA1NnE2S001OXZ6d1N3bmk4azAzYmFKc2llTUg5?=
- =?utf-8?B?aUtLOFdwdHZkeWFLbnJ3TjJ5dEt5SnNXSzlmMDhHYWMyR2RrTUZybUtyYkF3?=
- =?utf-8?B?TGJhUERRcGx4RjhHbHdsdWhFWTV4S3NlRzBBbnZZS2lJNlA3NnhEZEVUc2dn?=
- =?utf-8?B?Z0ZWV0JnRXBGNkY4NGUzZXA1OUtkNVErU216MXNZcmV0UE9Pc0lyMHpBbDdT?=
- =?utf-8?B?MG05WUtramxYYzBFTStOY1JKSGhadVNUYjZFNHVUZ0dBUzV2YkpWVVBUOGVS?=
- =?utf-8?B?VWZyR1ZBUWNYbndRcXR0R24wUFhQUVNaNGxvVXRQZWp5dkltM1hOaEY3SUVR?=
- =?utf-8?B?TEMvZXJzdGVGZUMrcm1MUG12dHh5cTdYSTNWWWNET2tHZGtQWEhSUjlVUmtY?=
- =?utf-8?B?OXIvV3pTTjJ1bkpFTUxNbnJSeWtkSGhiY2JMWHRwSFRHVnQwV3lwRGRaYUVT?=
- =?utf-8?B?UXdTM1Y5dXBEaG1tcUZrNEgzbys2aStOZ3pXNmNpdXJXb1lXVmo5V3JRUHZP?=
- =?utf-8?B?VWxOMmFscWNPNjQyTU1ETXlhQVlPUG5ONXNodHQyenFtcUJrZ1lzMUdleGZU?=
- =?utf-8?Q?z3KGuKSchHM=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dW1qRlRrd2JsdnI1MjRKQ1dVajFGeWo3cjBnQ1RXV01SNXNYNy9NbXFscWZD?=
- =?utf-8?B?R0tJUVYrK3FVcDdBUWRFd2JwQUp6b1dMSHQ4SHV1RFdQNVJiL3g2OWQvOThX?=
- =?utf-8?B?NytQV1J0S2RUOXhUUFNGVkp3c0V2aXFsWnJ3UXFtWXA0S09JSWp2cTE3bW5H?=
- =?utf-8?B?TmRVRXNzNlBFWmJnUGVqckhKTkppaUROd01uOE5CMUN5NzlQWGRtVHNaVnE5?=
- =?utf-8?B?M2Ivc0lCbG9HK01TS1JyN05ibUgybXRkdEFMZjNUcTFMR2VaK2kzemhmM2hS?=
- =?utf-8?B?Vkh4OEZDZHAyU1RranBYRGxDUVlvSkdTcjZhQjVBbVM1UTZaamRYYXk2TjFB?=
- =?utf-8?B?dTZiZ0NlUEVTTmxZQ2U5UldkTHh6OVNLWHNqNVoyenF6TjdTVEIxMEIzbzhr?=
- =?utf-8?B?dytNR3hLcFo2OXRUNE9BeW1HbUFNY1MwR0xUS0RQMm1naGdlOWNCU3ozeFdH?=
- =?utf-8?B?QnFsanVPOFFpTVZLVUJLcHU3NFREMTgzeHhSbXg1c3htQVVrcFJtOE9KbkFy?=
- =?utf-8?B?Vmg0Q290NkNtdi9hS25CTlpoOEVkZnYwT05zNTAyUDV5RHdhb010ZHJoeWlN?=
- =?utf-8?B?aTdaN0FmNWk2dm5TaXRYSmF0Q3NVWG9RNUpoMm9yOXJINTBDQi9wMjNkTDN4?=
- =?utf-8?B?VUtUMHdmMnB4eHllR0JQaXEzK0QyQjI3NEh6SXFzaDJDOHF1Vy9XSTNPN3Jy?=
- =?utf-8?B?Y3JuNmJ4aEdQRWJkWWJzRjIxaFhuSEIyblpEL21NMkRaVEtjVXJHaWhQb1V4?=
- =?utf-8?B?OFMvVHlmdmEyZWQ0WHB3NzJMSkJRdlZMdk5WbWsza1VmRW5xYkZZMkRuUGhW?=
- =?utf-8?B?NWxPMVVzYXZ1cGNXR2xjd1ByWnhxcmowdnpTdmIrcTdIUWlCS2hsSUxrelcz?=
- =?utf-8?B?VG5WdzhObFp5emU3NEVSbjNSL3pEVVZTbGRMQTN4b25FU05VNWwwbFVzTGt2?=
- =?utf-8?B?ZTNFcUc0QXR0bE5LMFNYYjhubDV0RThobXVJNTZ0enlsdXdjbk5ZcVFhSDhQ?=
- =?utf-8?B?RlVVR3lOQ1VNWmVGQkhrZG1OaHR3V1daSXFJZjN0TmF4VXlmcnFraEZXbk5u?=
- =?utf-8?B?WFlySit5a2VReWE2VlZaWlRaN2laUW9vODlhN0NZUDRlbmh4ZW4wU0tIbHFW?=
- =?utf-8?B?dXlBWlVvek9KV2NmZDBGbFpKT2phWDZrVG1IVUxOWEhGK0YvTnRPUHJ3SFhP?=
- =?utf-8?B?eFRBM1JjWWFWY0NKZkhJRFZoUERyOGgxT2JRaSsrRkwwSWFvVlpidGk3cnhk?=
- =?utf-8?B?SU9oVGtNWHgvOEN3ekd0LzVTekE2amVXQmhDeDEyMVNJc2d2RDJuUkxBMFhj?=
- =?utf-8?B?enFUcG8xQmZmdUlRU2plUVQ0Zm1odXhEQk9naEdwNmhoeUhhWXJ5c1BWR1c5?=
- =?utf-8?B?SUUrVThER0VzQnN2YUZUWG4vWjhuemV0aU1CdkhuR3k1S1VjdG5nRlJhTUla?=
- =?utf-8?B?ZnorR2h1MEo1Z0NtaDhXc3k5VFVzYUp5R295ZC9YWjMyaXlUcmNKMmlJUDBs?=
- =?utf-8?B?VGVLOWlIZVVOcHhpdTNMY0ZEY01CK21NY0x3b2FObzI5T0tIZ1dKZkF5MnJU?=
- =?utf-8?B?WGUraGxQejgrWFhtdnp2RTdaQUxyM2lPZHdwRmlsU2xFNDQ1NmFEbW5HdzdC?=
- =?utf-8?B?V08zbEVnN0V1dGhVYWNVR2NiQ2ZtN1IwZ014MEMzdHladWNhRFB2SGpiL29h?=
- =?utf-8?B?UTZxZG9ncG1PSXNZNkVSWXU0d2ltZHF3ajBSU3N5dUQ3Nm9yaWtpaWZvNVEy?=
- =?utf-8?B?ZUI2TmdXQ2d2TmJ5TTlNa1NJS1VtWFpZa3p1MmJRUkFvUG10K1BXR3RURHZy?=
- =?utf-8?B?N0RHbkVBWmY4UGlFOWN3SEVtY3Z0dmlNUUUvc0pMSERFbHB6eXA1S2p4Yms2?=
- =?utf-8?B?QloyZEpHKytTWVo2RGFWS3N3cDE5bnY5L3EzWENiWmhyZmZRbCtlME1iNUhS?=
- =?utf-8?B?NUs1KzRvbjhZSi9OeVFSQ0FqZUNuS1Bjb3lCT3pYbWF6VkVwR0tIUWZibkpV?=
- =?utf-8?B?YkZZYVpmT1NvVVp6VW5VVjI1cVpPWVpRZytWMWowN0cxSTRyc21KM1htUXVZ?=
- =?utf-8?B?Sk5lNDdRdXQveVQ2SVRlZ2xlc3QyVW1yTER4RWpCUktiMHJJSlBEYnhRNmU3?=
- =?utf-8?Q?DZy+CXqo6kvIKE5arz9OaEwkB?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c67e6f2-55af-4fb8-3c6d-08dda8d9e097
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jun 2025 11:19:48.8673
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: A3H1puPoU91zftYCg/EKBdHuE0ihyfRoHyL4hoOIKjWJWhoDOWLDjhbCyiQbakrs
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9332
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Queue-Id: 6FCE43E
+X-Stat-Signature: zem11qtoa7ykw6s6gddeq3hq71qif9n9
+X-Rspamd-Server: rspamout07
+X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
+X-Session-ID: U2FsdGVkX18PYlVOI4oQyNuuyaYyZm8y38u7vsKXNRc=
+X-HE-Tag: 1749650463-15101
+X-HE-Meta: U2FsdGVkX18M7A5fI6gPAjUd2fEJ01YjEmjh1dDQzNYPemSoCd1WtbC40yqMvEmrGa9hOqxcdlCQy4XFylpb8spwpcafpM51yiX9QdT0V4GYPdx+TWqjEdf9EZViGd45soNlCOp/dBaJ5dJsy/k6uQhQtAdmIkDCChkWUwkDYnh2LdF/biASjAlu3IpPUiRwWKxnpFiI8Ho9dNs2AS5EyhGCVospmhYOKGIuKWtTTi8qjH0qJL8Nvp7yyjTZhZMXDNaqnBtQei/HYi5RawNDlegOwJajSrYhyT4sjuJKGPUINEsZAY5vObj/3RLe/kkZXq0+xTpKnHkpDdM9Hc+3ETjmBmqRE2I1hIMpnlG03H8MuwQXVsiALyZapJtS7AHPUHAtnKnqsxq1buBNbrq16RZQ987gI+r1Pseq5jAWJYjyTFZjBQKaCkbNAz+XVVlHRrUzoWV5jGmZj6YOnLDcTK25rrt7tmEZ4bbIZSRK2Is=
 
-On 6/10/25 18:34, Marek Szyprowski wrote:
-> On 14.05.2025 15:44, Marek Szyprowski wrote:
->> On 08.05.2025 11:57, Christian König wrote:
->>> On 5/7/25 18:09, Marek Szyprowski wrote:
->>>> Use common wrappers operating directly on the struct sg_table 
->>>> objects to
->>>> fix incorrect use of scatterlists sync calls. dma_sync_sg_for_*()
->>>> functions have to be called with the number of elements originally 
->>>> passed
->>>> to dma_map_sg_*() function, not the one returned in sgtable's nents.
->>>>
->>>> Fixes: 1ffe09590121 ("udmabuf: fix dma-buf cpu access")
->>>> CC: stable@vger.kernel.org
->>>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
->>>> Acked-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
->>> Reviewed-by: Christian König <christian.koenig@amd.com>
->>>
->>> Should I push this one to drm-misc-fixes for upstreaming?
->>
->> Yes, please. The other 2 patches have been taken by the media maintainers.
-> 
-> Gentle ping
+From: Steven Rostedt <rostedt@goodmis.org>
 
-Done.
+I'm working on code that will warn when a tracepoint is defined but not
+used. As the TRACE_EVENT() logic still creates all the code regardless if
+something calls the trace_<event>() function. It wastes around 5K per trace
+event (less for tracepoints).
 
-Thanks for the reminder, totally forgotten about that one.
+But it seems that the code in drivers/iommu/dma-iommu.c does the opposite.
+It calls the trace_swiotlb_bounced() tracepoint without it being defined.
+The tracepoint is defined in kernel/dma/swiotlb.c when CONFIG_SWIOTLB is
+defined, but this code exists when that config is not defined.
 
-Regards,
-Christian.
+This now fails with my work because I have all the callers reference the
+tracepoint that they will call.
 
-> 
-> Best regards
+Thanks to the kernel test robot, it found this:
+
+  https://lore.kernel.org/all/202506091015.7zd87kI7-lkp@intel.com/
+
+Instead of calling trace_swiotlb_bounced() from drivers/iommu/dma-iommu.c
+where it is useless when CONFIG_SWIOTLB is not defined, move the
+tracepoint into swiotlb_tbl_map_single(). This also makes it consistent
+with which memory is being traced (physical as supposed to dma address).
+
+Fixes: ed18a46262be4 ("iommu/dma: Factor out a iommu_dma_map_swiotlb helper")
+Closes: https://lore.kernel.org/all/20250610202457.5a599336@gandalf.local.home/
+Suggested-by: Christoph Hellwig <hch@infradead.org>
+Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+---
+ drivers/iommu/dma-iommu.c | 2 --
+ kernel/dma/swiotlb.c      | 2 ++
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index ea2ef53bd4fe..1935b360cc94 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -1153,8 +1153,6 @@ static phys_addr_t iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
+ 		return (phys_addr_t)DMA_MAPPING_ERROR;
+ 	}
+ 
+-	trace_swiotlb_bounced(dev, phys, size);
+-
+ 	phys = swiotlb_tbl_map_single(dev, phys, size, iova_mask(iovad), dir,
+ 			attrs);
+ 
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index abcf3fa63a56..c112f1d98861 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -1379,6 +1379,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 	phys_addr_t tlb_addr;
+ 	unsigned short pad_slots;
+ 
++	trace_swiotlb_bounced(dev, orig_addr, mapping_size);
++
+ 	if (!mem || !mem->nslabs) {
+ 		dev_warn_ratelimited(dev,
+ 			"Can not allocate SWIOTLB buffer earlier and can't now provide you with the DMA bounce buffer");
+-- 
+2.47.2
 
