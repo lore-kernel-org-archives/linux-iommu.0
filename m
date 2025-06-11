@@ -1,57 +1,57 @@
-Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 002C42D0283
-	for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 22:47:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A0832D1F61
+	for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 22:47:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749682045; cv=none; b=gKtYddpxD3ciaK9BJM8eqmuczDhIAX0cQQ7u4/o/ndQEOR3+YkonA7MwexFQoUXp8c5SMt0ZP/mswpZqQJ8Hxlz3m8+Z0uF2N4sZ2q11BAFaNlvGV83s6OwQoBvSFpFPwR5g2/WmrFAMfUrMuttw0t3gvp0uD02S2xsJlA7ryr4=
+	t=1749682046; cv=none; b=BFd6nyXpdTVNDYSrGqt1Zw52PIER9zcxsyc9kpWyWzzdyEmjdE7w4CQjJmA1hs1XO4AkxaD8TqIKwzz+y4zgJURnssdC235B42Kv3bH+wAR7es6RUJOSRhJPEVepCEXplMebFKOV5LXluXXG2NtdM4isDECx2YEO9tjnWf6hN7s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749682045; c=relaxed/simple;
-	bh=+hv/L1bIbXZPSlj1hiWZXItfDwwPTIV42fY47pjIvko=;
+	s=arc-20240116; t=1749682046; c=relaxed/simple;
+	bh=42cURYzNOSYVDWBQ0v/mU/h1dxNifaKTdnd5p1g+eHQ=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=elwcYtauDeyL9aIfyVQUJ9FpkfI3k3/aeMVZ9jnZPOISKTDtPsUuqSEOLuZyL7b/GD385aEasiKnRLMOpGPMX7lmAxUO7NeftPE7EjSVfgSnpbkbum7oHNl1r8RJiaOeq5F7tfKs4mkseRzXdqZllKki+9nB3mtD9wcMQDAdjeM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=lChituJy; arc=none smtp.client-ip=209.85.210.201
+	 To:Cc:Content-Type; b=ADVakcxCwWH35iMsCO46C7WxY8kBWO6snL105F31Xggh+mIpbnJEsIgM6ltpvRrBvBDsgp+c1H/IYAHeGP53Vljd+sBI6v/KoM2AcFHghGdhbZ7Ir3ofYgrQ2KlDuoJV1b38XunJYzCyTWU+KACFmPbNxVlmEAzdS7EVLlVEYXY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=JI6LeHY2; arc=none smtp.client-ip=209.85.216.73
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="lChituJy"
-Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-747cebffd4eso233086b3a.2
-        for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 15:47:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="JI6LeHY2"
+Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-31315427249so372135a91.1
+        for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 15:47:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1749682042; x=1750286842; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1749682044; x=1750286844; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=uVzEHyBaRiJNDQh5a5Dx7H8kv7wjszZU3WXvYcKHvtU=;
-        b=lChituJy53z0q8QT77d3LweI9x4nP2g8/lZ2XGhGV5du0wldwwJSZL6yfGaU8SgL9g
-         7kaen133+0DEVO5KbrF7OFuy1n/aCRkeznwnayV0aobTl7xAmSYDtev/G2PFrIShsgD5
-         pmwwn9ZbvPL6Onzy6irZiScRnUhEimvasgANB9jdk2cg15XDdqxNnJYsNj5N2ilo2+Ce
-         CIRAcdk/FX9RwabpY200Y+FV44cb04PXuCQVnH3x97NqgFnozyRpvlfNmcToYmVnpAoz
-         4kLdzX15YRXjU1OqPhttf9eW6GT1MxTrl+ELfJavZpcrh2q5ARdlV2mZy/Osl5zP0wUC
-         t7YQ==
+        bh=zSDDoR+RslpHc3sFyno+iStW5FaTxNYMSfnwl+S1QGs=;
+        b=JI6LeHY2K5RrH0nj8ZroH/FToT6wvP94fetB7r1VkUqN1wh0mxr/NPeJHspNhDxqNz
+         IJhxX1XUGIluc5EtJAe1ljFKnZnDodm+5HpP3Qa8gY4N5MyFLdqQ6OvYuhB51nrugL7n
+         hGhFyMucf/xXJoPkuMuyWVN2tgHldzWmuES4GJByvs2jzbfwby4snaBrf5PrV+OnhAmz
+         Ov7p+doRexZfgZcx+LwNlQFm5YVclFc7g89N0JBEt6oms5kUEGkTdZymZxn3zx1sDsqZ
+         cTKsIU7Z5SREN63+egKkHe+JKs+sZEX0CT3Trpk1mrzuPVXENpTK/Wx+Ly7zgS1XAoT4
+         qieQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749682042; x=1750286842;
+        d=1e100.net; s=20230601; t=1749682044; x=1750286844;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=uVzEHyBaRiJNDQh5a5Dx7H8kv7wjszZU3WXvYcKHvtU=;
-        b=q+O700IpWrZbpnbrzgbAqGVXVPg01/i/SqNR8ZJygqqPgPNtCPvgGBpGDPVur2EgST
-         zVPYfS0WwpnxFSWgPtLPzgwnmCZ47B05mBAKeUz+tdb4We23Qzbqrqpk3DOGoMlmXldZ
-         qakyQHMVK4GOT1JOx6oFLejf5BB91sHs2/Au6k5w7a4OK+4YmtQm5jEQDPncfJq5qrL6
-         H8woy2eGkJJFX1Y6XyGnA9xUta8ux+AKnnZrrDY4jcjnOV2RU12smK3CfNeN/rMY/cIk
-         UEgXcIKTpvO8zq7vFcafJqbsS/gynT01AAo9zo6nkWhEo7GtpSKZKkIr2Bw5kp1rRZnt
-         i3GA==
-X-Forwarded-Encrypted: i=1; AJvYcCW+P0T2/yVg3bMkD7cIGff0XJ0TFa2mBnDjlMXaYIh6k5GyK67dsEM6QzuKjYo0LWWe6oQHHA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzUFhvptwmWxpy8faToJKdThc2XXCLR3ZgaQO08Viu9BKLZf6iB
-	vL+MaljMn3/t/RneNNcwRu0qMcbgYnWfUH2ddl86RBv/SC8FQrKHPhkJyvdGpiqT59Ax20hG/wB
-	00Nh+Jg==
-X-Google-Smtp-Source: AGHT+IFakcvyKnqCueAUeZlAT109XlS9YCn8fDNscX2Sisdyt0t4bYMkEX6AxhE9x+pXQlvyQldIB86adbU=
-X-Received: from pfnx17.prod.google.com ([2002:aa7:84d1:0:b0:746:27ff:87f8])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a20:72a1:b0:210:1c3a:6804
- with SMTP id adf61e73a8af0-21f9bbb2da4mr712401637.31.1749682042326; Wed, 11
- Jun 2025 15:47:22 -0700 (PDT)
+        bh=zSDDoR+RslpHc3sFyno+iStW5FaTxNYMSfnwl+S1QGs=;
+        b=jtdjyxjQQsaxoYtdTmMSoca1HjOObLfSjsZS7sdXKQqs2p8I9P3sfxjX2SEg2we5Iu
+         AM98S1qWbeMbZrtab8wwPSJOFbYFPlwysDfVFzNQDSGZfUIqDW32ln7WfprMA0y2n7M3
+         G68QSE5FIsqhH4RnzLCrYtQv7XvBdH1HS6qvy0SxykAXwdr9m9Jrm3JjainH0dORcCLI
+         X6wIEExz8ORZNzbKrE+mVmdWc3n9npq5GuPTz94Va4YN9A5OknVyrPLrtDCbCxoUKAul
+         5douN8AAra9gcEGWkKcZUePWBCVS63PA4bpMehBTtkapbagCbUOCf7ToUkGlh8AJsJyk
+         84Dg==
+X-Forwarded-Encrypted: i=1; AJvYcCX973culLD5u2XkF/hBeGMDQNlWiAKJxvTBENxW8S7aGXD/jI/h+W4mizU7L1hlGO/g8V7d0Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwzCS7M9BC/EenlrLL4nzOylmnJxKiJFooq0u62aus458wRuP/U
+	Nuf/7xVBNwAwOYcgK8ULaj2xzj47U4/B14NUTSy0uk5LED/82C015jRdxTMikUZsx1mCa64hn5g
+	U3//BVg==
+X-Google-Smtp-Source: AGHT+IFW1CnJBjbF7Aa/vCphsUpZawH1JrjgBFuOplZJCnRAXG3kKQQQygDZU5VinjflvWeeW7y2BmvVPI0=
+X-Received: from pjbsq7.prod.google.com ([2002:a17:90b:5307:b0:313:2d44:397b])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:2642:b0:313:2f45:2fc8
+ with SMTP id 98e67ed59e1d1-313af1b2399mr7734150a91.18.1749682043833; Wed, 11
+ Jun 2025 15:47:23 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Wed, 11 Jun 2025 15:45:18 -0700
+Date: Wed, 11 Jun 2025 15:45:19 -0700
 In-Reply-To: <20250611224604.313496-2-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,9 +61,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250611224604.313496-2-seanjc@google.com>
 X-Mailer: git-send-email 2.50.0.rc1.591.g9c95f17f64-goog
-Message-ID: <20250611224604.313496-17-seanjc@google.com>
-Subject: [PATCH v3 15/62] KVM: SVM: Drop superfluous "cache" of AVIC Physical
- ID entry pointer
+Message-ID: <20250611224604.313496-18-seanjc@google.com>
+Subject: [PATCH v3 16/62] KVM: VMX: Move enable_ipiv knob to common x86
 From: Sean Christopherson <seanjc@google.com>
 To: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
 	Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
@@ -75,147 +74,70 @@ Cc: linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
 	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Drop the vCPU's pointer to its AVIC Physical ID entry, and simply index
-the table directly.  Caching a pointer address is completely unnecessary
-for performance, and while the field technically caches the result of the
-pointer calculation, it's all too easy to misinterpret the name and think
-that the field somehow caches the _data_ in the table.
+Move enable_ipiv to common x86 so that it can be reused by SVM to control
+IPI virtualization when AVIC is enabled.  SVM doesn't actually provide a
+way to truly disable IPI virtualization, but KVM can get close enough by
+skipping the necessary table programming.
 
-No functional change intended.
-
-Suggested-by: Maxim Levitsky <mlevitsk@redhat.com>
-Tested-by: Sairaj Kodilkar <sarunkod@amd.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/avic.c | 27 +++++++++++++++------------
- arch/x86/kvm/svm/svm.h  |  1 -
- 2 files changed, 15 insertions(+), 13 deletions(-)
+ arch/x86/include/asm/kvm_host.h | 1 +
+ arch/x86/kvm/vmx/capabilities.h | 1 -
+ arch/x86/kvm/vmx/vmx.c          | 2 --
+ arch/x86/kvm/x86.c              | 3 +++
+ 4 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-index bf18b0b643d9..0c0be274d29e 100644
---- a/arch/x86/kvm/svm/avic.c
-+++ b/arch/x86/kvm/svm/avic.c
-@@ -294,8 +294,6 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
- 		    AVIC_PHYSICAL_ID_ENTRY_VALID_MASK;
- 	WRITE_ONCE(kvm_svm->avic_physical_id_table[id], new_entry);
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index a9b709db7c59..cba82d7a701d 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1950,6 +1950,7 @@ struct kvm_arch_async_pf {
+ extern u32 __read_mostly kvm_nr_uret_msrs;
+ extern bool __read_mostly allow_smaller_maxphyaddr;
+ extern bool __read_mostly enable_apicv;
++extern bool __read_mostly enable_ipiv;
+ extern bool __read_mostly enable_device_posted_irqs;
+ extern struct kvm_x86_ops kvm_x86_ops;
  
--	svm->avic_physical_id_cache = &kvm_svm->avic_physical_id_table[id];
+diff --git a/arch/x86/kvm/vmx/capabilities.h b/arch/x86/kvm/vmx/capabilities.h
+index cb6588238f46..5316c27f6099 100644
+--- a/arch/x86/kvm/vmx/capabilities.h
++++ b/arch/x86/kvm/vmx/capabilities.h
+@@ -15,7 +15,6 @@ extern bool __read_mostly enable_ept;
+ extern bool __read_mostly enable_unrestricted_guest;
+ extern bool __read_mostly enable_ept_ad_bits;
+ extern bool __read_mostly enable_pml;
+-extern bool __read_mostly enable_ipiv;
+ extern int __read_mostly pt_mode;
+ 
+ #define PT_MODE_SYSTEM		0
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 9ff00ae9f05a..f79604bc0127 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -112,8 +112,6 @@ static bool __read_mostly fasteoi = 1;
+ module_param(fasteoi, bool, 0444);
+ 
+ module_param(enable_apicv, bool, 0444);
 -
- 	return 0;
- }
+-bool __read_mostly enable_ipiv = true;
+ module_param(enable_ipiv, bool, 0444);
  
-@@ -770,13 +768,16 @@ static int svm_ir_list_add(struct vcpu_svm *svm,
- 			   struct kvm_kernel_irqfd *irqfd,
- 			   struct amd_iommu_pi_data *pi)
- {
-+	struct kvm_vcpu *vcpu = &svm->vcpu;
-+	struct kvm *kvm = vcpu->kvm;
-+	struct kvm_svm *kvm_svm = to_kvm_svm(kvm);
- 	unsigned long flags;
- 	u64 entry;
+ module_param(enable_device_posted_irqs, bool, 0444);
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 93711a5ef272..f1b0dbce9a8b 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -226,6 +226,9 @@ EXPORT_SYMBOL_GPL(allow_smaller_maxphyaddr);
+ bool __read_mostly enable_apicv = true;
+ EXPORT_SYMBOL_GPL(enable_apicv);
  
- 	if (WARN_ON_ONCE(!pi->ir_data))
- 		return -EINVAL;
++bool __read_mostly enable_ipiv = true;
++EXPORT_SYMBOL_GPL(enable_ipiv);
++
+ bool __read_mostly enable_device_posted_irqs = true;
+ EXPORT_SYMBOL_GPL(enable_device_posted_irqs);
  
--	irqfd->irq_bypass_vcpu = &svm->vcpu;
-+	irqfd->irq_bypass_vcpu = vcpu;
- 	irqfd->irq_bypass_data = pi->ir_data;
- 
- 	spin_lock_irqsave(&svm->ir_list_lock, flags);
-@@ -787,7 +788,7 @@ static int svm_ir_list_add(struct vcpu_svm *svm,
- 	 * will update the pCPU info when the vCPU awkened and/or scheduled in.
- 	 * See also avic_vcpu_load().
- 	 */
--	entry = READ_ONCE(*(svm->avic_physical_id_cache));
-+	entry = READ_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id]);
- 	if (entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK)
- 		amd_iommu_update_ga(entry & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK,
- 				    true, pi->ir_data);
-@@ -964,17 +965,18 @@ avic_update_iommu_vcpu_affinity(struct kvm_vcpu *vcpu, int cpu, bool r)
- 
- void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- {
--	u64 entry;
-+	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
- 	int h_physical_id = kvm_cpu_get_apicid(cpu);
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 	unsigned long flags;
-+	u64 entry;
- 
- 	lockdep_assert_preemption_disabled();
- 
- 	if (WARN_ON(h_physical_id & ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK))
- 		return;
- 
--	if (WARN_ON_ONCE(!svm->avic_physical_id_cache))
-+	if (WARN_ON_ONCE(vcpu->vcpu_id * sizeof(entry) >= PAGE_SIZE))
- 		return;
- 
- 	/*
-@@ -996,14 +998,14 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- 	 */
- 	spin_lock_irqsave(&svm->ir_list_lock, flags);
- 
--	entry = READ_ONCE(*(svm->avic_physical_id_cache));
-+	entry = READ_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id]);
- 	WARN_ON_ONCE(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK);
- 
- 	entry &= ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
- 	entry |= (h_physical_id & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK);
- 	entry |= AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
- 
--	WRITE_ONCE(*(svm->avic_physical_id_cache), entry);
-+	WRITE_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id], entry);
- 	avic_update_iommu_vcpu_affinity(vcpu, h_physical_id, true);
- 
- 	spin_unlock_irqrestore(&svm->ir_list_lock, flags);
-@@ -1011,13 +1013,14 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
- 
- void avic_vcpu_put(struct kvm_vcpu *vcpu)
- {
--	u64 entry;
-+	struct kvm_svm *kvm_svm = to_kvm_svm(vcpu->kvm);
- 	struct vcpu_svm *svm = to_svm(vcpu);
- 	unsigned long flags;
-+	u64 entry;
- 
- 	lockdep_assert_preemption_disabled();
- 
--	if (WARN_ON_ONCE(!svm->avic_physical_id_cache))
-+	if (WARN_ON_ONCE(vcpu->vcpu_id * sizeof(entry) >= PAGE_SIZE))
- 		return;
- 
- 	/*
-@@ -1027,7 +1030,7 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
- 	 * can't be scheduled out and thus avic_vcpu_{put,load}() can't run
- 	 * recursively.
- 	 */
--	entry = READ_ONCE(*(svm->avic_physical_id_cache));
-+	entry = READ_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id]);
- 
- 	/* Nothing to do if IsRunning == '0' due to vCPU blocking. */
- 	if (!(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK))
-@@ -1046,7 +1049,7 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
- 	avic_update_iommu_vcpu_affinity(vcpu, -1, 0);
- 
- 	entry &= ~AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
--	WRITE_ONCE(*(svm->avic_physical_id_cache), entry);
-+	WRITE_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id], entry);
- 
- 	spin_unlock_irqrestore(&svm->ir_list_lock, flags);
- 
-diff --git a/arch/x86/kvm/svm/svm.h b/arch/x86/kvm/svm/svm.h
-index ec5d77d42a49..f225d0bed152 100644
---- a/arch/x86/kvm/svm/svm.h
-+++ b/arch/x86/kvm/svm/svm.h
-@@ -306,7 +306,6 @@ struct vcpu_svm {
- 
- 	u32 ldr_reg;
- 	u32 dfr_reg;
--	u64 *avic_physical_id_cache;
- 
- 	/*
- 	 * Per-vCPU list of irqfds that are eligible to post IRQs directly to
 -- 
 2.50.0.rc1.591.g9c95f17f64-goog
 
