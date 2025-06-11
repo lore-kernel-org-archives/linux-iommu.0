@@ -1,57 +1,57 @@
-Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com [209.85.214.201])
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F0D52DFA25
-	for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 22:47:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50DFC2DFA55
+	for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 22:47:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749682059; cv=none; b=e6NYKcI6FKoOKvamFULNg4Sh6wvA+LvIiyvt3A1RJUgsaXo8LT88h0lxzA3lkAsArrKZHzSWOzRzlsj9MN9TH7kp/hpJBZw0RLUqPrlTj/7Zeg34ooBhn5V4573f+AvRq068BOXtfKR2jjsbJgd7SYwYbUuGqDoC5wo+Rx8/DlI=
+	t=1749682061; cv=none; b=SD9wAKvYJn5vo+YgXSbr10780EyHkKuAa6R4nfaHOVnZBLj/6eJYVesRnhZP3DTqatVEDQpcAAilZ2EmCrfUTAlyy88wWBSWrBiq1/EVD9hTcSlOtadSakGKv2FnPSDvQsoAGj2SzHsDJL4FejBg6z70XsnZyT1H0NEy8U77LlQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749682059; c=relaxed/simple;
-	bh=kDWWk5Cm8hFBiObudWZIfYHjqEvfY5WfyYyH2K/VN5g=;
+	s=arc-20240116; t=1749682061; c=relaxed/simple;
+	bh=DGvP6Zuj2UF928rFFdkcq+ypjwhRo7X5XKRNjjR0TU0=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=Q9LXN4IZbU5ySzRYaaIi7jl2vZfZ3uT6MQ3zjEzuvR6QroQZxzxuS/eKnpLmElRhYtZWPvSbWW4HL5oouWPs0ZSiOlcuQ+7/H81arn0PSzoefZmp3bJRIfqyJAIJvRBIs7DiKdKDpARHqoNPiSccUvpxI8OLHOHljkfJxSgg43g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=LBPjSt9/; arc=none smtp.client-ip=209.85.214.201
+	 To:Cc:Content-Type; b=r5B/pgaJrpuDxVfb+tpUqwSXNX13FdsVzsQazT/vPmSq0aBt4ZHwFWTIWNPJ+qpq0ceFWOdPgAt1FzKJWv3pfveduRVEpwft1APBQYcOLxpiqhdBFbzZlGcY9JFY1gwen9SaTXoOddkRm2LbRK9X41JjjYXjFhNgSfZXSVEHyDc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GEcXSgnm; arc=none smtp.client-ip=209.85.210.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="LBPjSt9/"
-Received: by mail-pl1-f201.google.com with SMTP id d9443c01a7336-235e7550f7bso2125855ad.3
-        for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 15:47:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GEcXSgnm"
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-7394772635dso247724b3a.0
+        for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 15:47:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1749682057; x=1750286857; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1749682059; x=1750286859; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=nC93RHTPJR0hYLcAds88MrDeKfUjJXJiIT9n5WyFK68=;
-        b=LBPjSt9/b3rZmXRJnv2xZGz0HFKNuBBw4QVucn1C8pqmEyfQwx0sSeXb+4Kayy8/Ox
-         ZNy49yeUkTVNibXh0/oHHgTd7zFicDkgu//gVtV2QwAhJYiny/3gi9h4bqHqcEIfPeBW
-         VOsc6Pm0832WvDjEvUL9hb1zVuO0p02rloYa6r9w7N+QBjLEm4PkKFrss03C70V9lJV5
-         th3/BHaxZ3YX51ADs/8T+GXQOXKyywV94SbBz5gRF4vXOlpnsqQ5jmprHqyK/d/e+GiY
-         oE+ycihrfykoPWxAI4ddh4Qgk+Jz6VHZE/dWa8RLgvuOdytPUwDnYB83iwURn8UZlajI
-         hLFg==
+        bh=EWlaEFL1PUnGvKov0qrFcR2EuojVTo0yUVeuiRnl1MQ=;
+        b=GEcXSgnm5CDSXhgCFxYvN9ZUMxmNVlnHH331XilXBkJ8/W5o2m2dav7x6nCVcXrUMF
+         fllij0o7VMuSydbFrywPQa+FnhP8q/rY6lVAub4qUG2F9k5YuU0+KoWQetkdrR9quUme
+         rDz/26fCgvHAwbURbFYv82rHePwjv98Sp0hhWRvPrnMLjRA2RwP/CWooHYbFYpBqIIeK
+         3WQALewHC9ZabRMBqrPwrqGBy0Tohvj6CHEursQSGgAkhCN906/8oYvgjqhoggKm8Uwy
+         cwq5SE1tlfl9vv4URBTqySDJqcRZe3iwM/0o95GHZfZ22Q4wmW9d8GS1Lk9kNii0nvxb
+         fTSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749682057; x=1750286857;
+        d=1e100.net; s=20230601; t=1749682059; x=1750286859;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=nC93RHTPJR0hYLcAds88MrDeKfUjJXJiIT9n5WyFK68=;
-        b=gmpjH9bPhATktB0dX6jlyG5oqUBK8NXK4FCM1Lya5H+Q/+6fFr3alvXsuP9+2oJHO5
-         AG9d3AybITHmn+Sx1wS/rXYQdRA977crd2cWeqDWSvyZWrY/mJ0L7bYn2L+M3A88CRzF
-         CXKCESeNbaSj/VEAL2aLz2KY+UxM7+fSiPfsG6cIf5CjuhQLn4jlwQlJThhlivWUk3Cg
-         3z1Tloy1lCITKRR+jftbOEbuEZsgrU72UAeD6WuirTp1lpZJ0Q3L7ct6hXTPXyyltMhe
-         mzXeCvxcd4xs/TczIR9pzdnuPrexlGzEJi9lnxjVPaL171Il1+hiK+PmPyaSMPeYJ1n4
-         um4Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVK4qgj4Cq90mERywpyMKfAMooUOPmiGM6NKBPU88WoJyZ+C9G3S8xU7B5H8yk/aERwiWigBQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw9omHK5kmSiIBK3/AgItndMmHjWT3fGqbKSu/vUNN1dFhXEFqg
-	7U83A3XheZ9shV8hbCJPKOrLhFvakoEP5FgTzgOrpBmvUs5PVjiCbEA0VCgzeUDYfYD42CBArrT
-	fvO0PoQ==
-X-Google-Smtp-Source: AGHT+IHC+tL/ohPatgcKOK+9NRFx6tDroVAP77vbD+LWVMPFcp/p0UPjT16l7BqZ0WY1gMWbfEU6vC1Hc9s=
-X-Received: from plhb13.prod.google.com ([2002:a17:903:228d:b0:235:eb8d:8024])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:c94f:b0:234:bc4e:4eb8
- with SMTP id d9443c01a7336-2364caba922mr14235635ad.46.1749682056865; Wed, 11
- Jun 2025 15:47:36 -0700 (PDT)
+        bh=EWlaEFL1PUnGvKov0qrFcR2EuojVTo0yUVeuiRnl1MQ=;
+        b=KcxVB+u4s3d3JsbC9KjYimSqFzJjbyNrwF6fTHcPLc6BTJkhKtrlYIgjQT9WW95w/y
+         y05Id9H8Pyw9KUKZluGWxqfaohnRI3Clje/D0mntPHRun+QL5oaeK0yCiIx2HDS+24x8
+         8uAFs84Z/70u1T9qozIT0my/lFBwksL9N+JR5uxfaVEwOqFebo3Z1cWTZQKyN7Am5OSA
+         cNWT9mp7kUek/cbYdBLETA3WczEpBiiGL6lLnmdlienVwdTHCktFDpPjfqSyzgzSe5fT
+         0OlrR1ObzPlnSeVniOmhGJwogQpLbhY/nVvj6Cko8vt2uwHsZlXEJHTVv88sR25T8PMG
+         yLbw==
+X-Forwarded-Encrypted: i=1; AJvYcCViGCt7KViOU6CsiIAAr7CLLo1JC8wa8AOL6fcadnSpSMb/s5WUmPkgX7E9gUN/NhFVC5n54Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw98vR2yscuioAMLX0MV+7dzV53NZni90/jILLTpPpzJREdpk/A
+	C5ZMbVnH49c/UX7sZMMv+d8qUECYqfEfUMf0R3evxLGy0C9T0duvN81QRp1e5GdQ1WTH9drEw7q
+	Ny2sELg==
+X-Google-Smtp-Source: AGHT+IGqrnoO1KrxPHkw7mtKYmJwMGPuKTrPb0AcYQOuUunb5B6w6dzsz0HfUlLTGR+LG8OGb1BWB2PGJ7s=
+X-Received: from pfsq2.prod.google.com ([2002:a05:6a00:2a2:b0:746:25af:51c4])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:4095:b0:747:b043:41e8
+ with SMTP id d2e1a72fcca58-7487c2afac6mr1379741b3a.15.1749682058654; Wed, 11
+ Jun 2025 15:47:38 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Wed, 11 Jun 2025 15:45:27 -0700
+Date: Wed, 11 Jun 2025 15:45:28 -0700
 In-Reply-To: <20250611224604.313496-2-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,9 +61,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250611224604.313496-2-seanjc@google.com>
 X-Mailer: git-send-email 2.50.0.rc1.591.g9c95f17f64-goog
-Message-ID: <20250611224604.313496-26-seanjc@google.com>
-Subject: [PATCH v3 24/62] KVM: VMX: Stop walking list of routing table entries
- when updating IRTE
+Message-ID: <20250611224604.313496-27-seanjc@google.com>
+Subject: [PATCH v3 25/62] KVM: SVM: Extract SVM specific code out of get_pi_vcpu_info()
 From: Sean Christopherson <seanjc@google.com>
 To: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
 	Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
@@ -75,132 +74,99 @@ Cc: linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
 	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Now that KVM provides the to-be-updated routing entry, stop walking the
-routing table to find that entry.  KVM, via setup_routing_entry() and
-sanity checked by kvm_get_msi_route(), disallows having a GSI configured
-to trigger multiple MSIs, i.e. the for-loop can only process one entry.
+Genericize SVM's get_pi_vcpu_info() so that it can be shared with VMX.
+The only SVM specific information it provides is the AVIC back page, and
+that can be trivially retrieved by its sole caller.
 
+No functional change intended.
+
+Cc: Francesco Lavra <francescolavra.fl@gmail.com>
+Tested-by: Sairaj Kodilkar <sarunkod@amd.com>
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/vmx/posted_intr.c | 100 +++++++++++----------------------
- 1 file changed, 33 insertions(+), 67 deletions(-)
+ arch/x86/kvm/svm/avic.c | 25 ++++++++++++-------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
-index d4826a6b674f..e59eae11f476 100644
---- a/arch/x86/kvm/vmx/posted_intr.c
-+++ b/arch/x86/kvm/vmx/posted_intr.c
-@@ -302,78 +302,44 @@ int vmx_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
- 		       unsigned int host_irq, uint32_t guest_irq,
- 		       struct kvm_kernel_irq_routing_entry *new)
+diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+index a83769bb8123..3bbd565dcd0f 100644
+--- a/arch/x86/kvm/svm/avic.c
++++ b/arch/x86/kvm/svm/avic.c
+@@ -816,14 +816,14 @@ static int svm_ir_list_add(struct vcpu_svm *svm,
+  */
+ static int
+ get_pi_vcpu_info(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
+-		 struct vcpu_data *vcpu_info, struct vcpu_svm **svm)
++		 struct vcpu_data *vcpu_info, struct kvm_vcpu **vcpu)
  {
--	struct kvm_kernel_irq_routing_entry *e;
--	struct kvm_irq_routing_table *irq_rt;
--	bool enable_remapped_mode = true;
  	struct kvm_lapic_irq irq;
- 	struct kvm_vcpu *vcpu;
+-	struct kvm_vcpu *vcpu = NULL;
++	*vcpu = NULL;
+ 
+ 	kvm_set_msi_irq(kvm, e, &irq);
+ 
+-	if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu) ||
++	if (!kvm_intr_is_single_vcpu(kvm, &irq, vcpu) ||
+ 	    !kvm_irq_is_postable(&irq)) {
+ 		pr_debug("SVM: %s: use legacy intr remap mode for irq %u\n",
+ 			 __func__, irq.vector);
+@@ -832,8 +832,6 @@ get_pi_vcpu_info(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
+ 
+ 	pr_debug("SVM: %s: use GA mode for irq %u\n", __func__,
+ 		 irq.vector);
+-	*svm = to_svm(vcpu);
+-	vcpu_info->pi_desc_addr = avic_get_backing_page_address(*svm);
+ 	vcpu_info->vector = irq.vector;
+ 
+ 	return 0;
+@@ -845,7 +843,7 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+ {
+ 	bool enable_remapped_mode = true;
  	struct vcpu_data vcpu_info;
--	bool set = !!new;
--	int idx, ret = 0;
+-	struct vcpu_svm *svm = NULL;
++	struct kvm_vcpu *vcpu = NULL;
+ 	int ret = 0;
  
- 	if (!vmx_can_use_vtd_pi(kvm))
- 		return 0;
+ 	if (!kvm_arch_has_assigned_device(kvm) || !kvm_arch_has_irq_bypass())
+@@ -868,19 +866,20 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+ 	 * 4. IRQ has incompatible delivery mode (SMI, INIT, etc)
+ 	 */
+ 	if (new && new->type == KVM_IRQ_ROUTING_MSI &&
+-	    !get_pi_vcpu_info(kvm, new, &vcpu_info, &svm) &&
+-	    kvm_vcpu_apicv_active(&svm->vcpu)) {
++	    !get_pi_vcpu_info(kvm, new, &vcpu_info, &vcpu) &&
++	    kvm_vcpu_apicv_active(vcpu)) {
+ 		struct amd_iommu_pi_data pi;
  
--	idx = srcu_read_lock(&kvm->irq_srcu);
--	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
--	if (guest_irq >= irq_rt->nr_rt_entries ||
--	    hlist_empty(&irq_rt->map[guest_irq])) {
--		pr_warn_once("no route for guest_irq %u/%u (broken user space?)\n",
--			     guest_irq, irq_rt->nr_rt_entries);
--		goto out;
--	}
--
--	hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
--		if (e->type != KVM_IRQ_ROUTING_MSI)
--			continue;
--
--		WARN_ON_ONCE(new && memcmp(e, new, sizeof(*new)));
--
--		/*
--		 * VT-d PI cannot support posting multicast/broadcast
--		 * interrupts to a vCPU, we still use interrupt remapping
--		 * for these kind of interrupts.
--		 *
--		 * For lowest-priority interrupts, we only support
--		 * those with single CPU as the destination, e.g. user
--		 * configures the interrupts via /proc/irq or uses
--		 * irqbalance to make the interrupts single-CPU.
--		 *
--		 * We will support full lowest-priority interrupt later.
--		 *
--		 * In addition, we can only inject generic interrupts using
--		 * the PI mechanism, refuse to route others through it.
--		 */
--
--		kvm_set_msi_irq(kvm, e, &irq);
--		if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu) ||
--		    !kvm_irq_is_postable(&irq))
--			continue;
--
--		vcpu_info.pi_desc_addr = __pa(vcpu_to_pi_desc(vcpu));
--		vcpu_info.vector = irq.vector;
--
--		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id, e->gsi,
--				vcpu_info.vector, vcpu_info.pi_desc_addr, set);
--
--		if (!set)
--			continue;
--
--		enable_remapped_mode = false;
--
--		ret = irq_set_vcpu_affinity(host_irq, &vcpu_info);
--		if (ret < 0) {
--			printk(KERN_INFO "%s: failed to update PI IRTE\n",
--					__func__);
--			goto out;
--		}
--	}
--
--	if (enable_remapped_mode)
--		ret = irq_set_vcpu_affinity(host_irq, NULL);
--
--	ret = 0;
--out:
--	srcu_read_unlock(&kvm->irq_srcu, idx);
--	return ret;
-+	/*
-+	 * VT-d PI cannot support posting multicast/broadcast
-+	 * interrupts to a vCPU, we still use interrupt remapping
-+	 * for these kind of interrupts.
-+	 *
-+	 * For lowest-priority interrupts, we only support
-+	 * those with single CPU as the destination, e.g. user
-+	 * configures the interrupts via /proc/irq or uses
-+	 * irqbalance to make the interrupts single-CPU.
-+	 *
-+	 * We will support full lowest-priority interrupt later.
-+	 *
-+	 * In addition, we can only inject generic interrupts using
-+	 * the PI mechanism, refuse to route others through it.
-+	 */
-+	if (!new || new->type != KVM_IRQ_ROUTING_MSI)
-+		goto do_remapping;
+ 		enable_remapped_mode = false;
+ 
++		vcpu_info.pi_desc_addr = avic_get_backing_page_address(to_svm(vcpu));
 +
-+	kvm_set_msi_irq(kvm, new, &irq);
-+
-+	if (!kvm_intr_is_single_vcpu(kvm, &irq, &vcpu) ||
-+	    !kvm_irq_is_postable(&irq))
-+		goto do_remapping;
-+
-+	vcpu_info.pi_desc_addr = __pa(vcpu_to_pi_desc(vcpu));
-+	vcpu_info.vector = irq.vector;
-+
-+	trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id, guest_irq,
-+				 vcpu_info.vector, vcpu_info.pi_desc_addr, true);
-+
-+	return irq_set_vcpu_affinity(host_irq, &vcpu_info);
-+do_remapping:
-+	return irq_set_vcpu_affinity(host_irq, NULL);
- }
+ 		/*
+ 		 * Try to enable guest_mode in IRTE.  Note, the address
+ 		 * of the vCPU's AVIC backing page is passed to the
+ 		 * IOMMU via vcpu_info->pi_desc_addr.
+ 		 */
+-		pi.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id,
+-					     svm->vcpu.vcpu_id);
++		pi.ga_tag = AVIC_GATAG(to_kvm_svm(kvm)->avic_vm_id, vcpu->vcpu_id);
+ 		pi.is_guest_mode = true;
+ 		pi.vcpu_data = &vcpu_info;
+ 		ret = irq_set_vcpu_affinity(host_irq, &pi);
+@@ -893,11 +892,11 @@ int avic_pi_update_irte(struct kvm_kernel_irqfd *irqfd, struct kvm *kvm,
+ 		 * scheduling information in IOMMU irte.
+ 		 */
+ 		if (!ret)
+-			ret = svm_ir_list_add(svm, irqfd, &pi);
++			ret = svm_ir_list_add(to_svm(vcpu), irqfd, &pi);
+ 	}
+ 
+-	if (!ret && svm) {
+-		trace_kvm_pi_irte_update(host_irq, svm->vcpu.vcpu_id,
++	if (!ret && vcpu) {
++		trace_kvm_pi_irte_update(host_irq, vcpu->vcpu_id,
+ 					 guest_irq, vcpu_info.vector,
+ 					 vcpu_info.pi_desc_addr, !!new);
+ 	}
 -- 
 2.50.0.rc1.591.g9c95f17f64-goog
 
