@@ -1,310 +1,202 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2052.outbound.protection.outlook.com [40.107.244.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89E7A22B5A1;
-	Wed, 11 Jun 2025 09:46:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749635199; cv=none; b=lqYoaXs8XDE9ldM+5r7f5jsavhPRWbg8DhVwVlZoViTvLYZDRjKu/5fQlsJw+nkNB7QdMwJg1mpX0/A83H83STXO11rx14INivyRP8mcz0O4xQyM3O4rzSvhGMDUePl1Z5wWjjkDuxPiNxUfkE7U5cy3Luvtc0rMjw29Lbgg4r0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749635199; c=relaxed/simple;
-	bh=1nJPffGDWp+469Tu3HLFMSVE26vvsQDrRNZ43oyrncA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=J5H8kZbzsSuTl4tuBLHhvKFUs4KjwfKdl+vXSF1BMjkYUUQn3gNtiH2yKFFvePeD9RVHVpdbMLRX/o4xj+AKSc7K054ZxwKMKyIfhh1H0lctL+Ry/itGOXxRPjw52eZPYqrikSCccNeq1NSfCXo39X/abMGpgnvslT4lZ3ANBcg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=D7M0jQva; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D39EA2E612C
+	for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 11:19:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1749640794; cv=fail; b=PfcTpdu3C0ehrQRnBHnQiOyH1qFbbC7y+GKh36e3R9WX67amp4sd5nVnDU1/yaSPgzetOR16xAavWDBCqPW6acFIFhuWHLBpyBxZc6kldeWi/QD3etqVCmNXKRtGH/Kekcop8xL+kgYtk6v+KAMbdediy+obQPUMhkNOUCMJwJ4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1749640794; c=relaxed/simple;
+	bh=OlOX3vMT7OqgZj80uqjy/k/4ls0dWLWP+kGnNJT131Q=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=ZlYjfyBAm7SFrt7S0ysBzm0yY7Ojt0NYrFfFtkJVdcrH0VR07l1ZK77bCMniLiD4fxQqy3wShO38fs11eEv/IuGhOUn89LtJil5BCmGru2BdSn/uJCoO1rY5LSHd31p8cSD5Y8vFoeY+oyERIvOLcZMLb4SDp7sZfQfb6Ep+61E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=YvXzubxf; arc=fail smtp.client-ip=40.107.244.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="D7M0jQva"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250611094630euoutp020a8d12ac42d98b28cec73e3a51148e4c~H8_91aj7i2986829868euoutp02q;
-	Wed, 11 Jun 2025 09:46:30 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250611094630euoutp020a8d12ac42d98b28cec73e3a51148e4c~H8_91aj7i2986829868euoutp02q
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1749635190;
-	bh=Xc1Rw8rxxHeqcL2S98t+3Zj03z6AtNBwZXlDz1pqDvA=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=D7M0jQva/CmleKGyjhOgJl78zjV/oPx6s5KxnXtLUYYdEaml2NNAYdEs9/7As/Eia
-	 YSQHUvoHjilQEyBpFlxkzghHuFOR7/FgJCv4co3qfOojnfgqtbKkOvhpftKuev4720
-	 5cdGTpagHumvO3lEJCpPxI6ssKCDarO+B8joe2aE=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20250611094629eucas1p11c41674f1a6fcbefd14b4fd99166cae1~H8_9eZCnm1166611666eucas1p11;
-	Wed, 11 Jun 2025 09:46:29 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20250611094624eusmtip20a59cf478d3dc363416fa64f5fe470b4~H8_5DJCRv0322703227eusmtip2K;
-	Wed, 11 Jun 2025 09:46:24 +0000 (GMT)
-Message-ID: <ffa49c2a-9197-4820-96b0-636b3e649cf5@samsung.com>
-Date: Wed, 11 Jun 2025 11:46:24 +0200
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="YvXzubxf"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Lmn151E2Lwluh6100Fcvs83imdmZWIFoZtIbiJNGEvCsIzGUQLDKepZvWOGcbxY73WFrV/BEotDovaJFYqYwOcTXw824PfL59V+Dwb0joAxmlJPsH52iOn1p7I7j+mANp2mEETDocxFp+RyAbSCMMyT4VPBvbPdMdfwQ+qarTX+S/oVpeNazeqnccwdQ3pzFlguYCIBVP/bCd6C/5YC1HBT809XQqIezyUFOaSCyEKghX+elcv8JYaNKwZiHiSNyPXaVMuUoZtHjXW93t4rxSnggoynDVUGB9h/dnkvcCtv+L6Yai6mvSIRlM6ln3h2u1wQBp4x4Q9L8E8y07oIX4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XZFUedRIyTt2O4SD8rVHjFJlSmhpBCwzRP9uYCBd3kw=;
+ b=g08OMl3RuzRKQtjkMo3npv0i/0oEiHLxNFgEu9DL1mVXAgYjr0PKZ1rwDSesqTt+2WKWit3SNqNp6vDakpHWeLsyWHe0tRr+km257jP24XzyMeY//P8E5O/xmR5K2hdqI1blJHG5uQKOxiKhBm1/797HRGChPQotgiP/B2SUXtY272H9j57yZKEp8mfQwfPWnhyhFkRX59xltAe4HCLBiBoTOJGXgjOQbpiBIXO5Sz5vop1VkpZf0hkXFvI8u73E64VzcCRJ+AuvqLIeL+n65iRxD3aEkSempSmISSud/VoVxQ4Fn55A/coSuDXgt29DZ73nubm80wwe+MbQfHWMjg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XZFUedRIyTt2O4SD8rVHjFJlSmhpBCwzRP9uYCBd3kw=;
+ b=YvXzubxfPBzBzqRKZVrUzXKFXdWAQatk2FFraaKyQL5i4UH2HmWv54VebpUBXHPmKRwu8C4jeZDJf4XOdTAAEtlazq77kjp1qL++XWzii7bY8kdCnbdp9aP6wRyYrKd/bGKBi4/InjySb6IOT8f74vuxqqZV9v/ec0jMwI7Fn/g=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com (2603:10b6:510:13c::22)
+ by LV3PR12MB9332.namprd12.prod.outlook.com (2603:10b6:408:20f::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8792.35; Wed, 11 Jun
+ 2025 11:19:49 +0000
+Received: from PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::46fb:96f2:7667:7ca5]) by PH7PR12MB5685.namprd12.prod.outlook.com
+ ([fe80::46fb:96f2:7667:7ca5%7]) with mapi id 15.20.8722.031; Wed, 11 Jun 2025
+ 11:19:48 +0000
+Message-ID: <72d0a2fc-7387-4447-b556-5fb77fb34e79@amd.com>
+Date: Wed, 11 Jun 2025 13:19:42 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [Linaro-mm-sig] [PATCH v3 2/3] udmabuf: use sgtable-based
+ scatterlist wrappers
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+ linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev
+Cc: Gerd Hoffmann <kraxel@redhat.com>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ Gurchetan Singh <gurchetansingh@chromium.org>,
+ Robin Murphy <robin.murphy@arm.com>, stable@vger.kernel.org
+References: <20250507160913.2084079-1-m.szyprowski@samsung.com>
+ <CGME20250507160922eucas1p11bd044bb458626dc0004bd2fd83605c0@eucas1p1.samsung.com>
+ <20250507160913.2084079-3-m.szyprowski@samsung.com>
+ <7a6475cb-4ebe-46a3-92a2-f29fbc8e5e41@amd.com>
+ <c90bf515-9050-4ed7-b733-28b14536b913@samsung.com>
+ <3d65e71e-5847-4c0f-98ff-318086f14ee2@samsung.com>
+Content-Language: en-US
+From: =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+In-Reply-To: <3d65e71e-5847-4c0f-98ff-318086f14ee2@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: MN2PR08CA0008.namprd08.prod.outlook.com
+ (2603:10b6:208:239::13) To PH7PR12MB5685.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/7] iommu: Remove iommu_ops pgsize_bitmap from
- simple drivers
-To: Jason Gunthorpe <jgg@nvidia.com>, Alexandre Ghiti <alex@ghiti.fr>, Alim
-	Akhtar <alim.akhtar@samsung.com>, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Albert
-	Ou <aou@eecs.berkeley.edu>, asahi@lists.linux.dev, Baolin Wang
-	<baolin.wang@linux.alibaba.com>, David Woodhouse <dwmw2@infradead.org>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>, Heiko Stuebner
-	<heiko@sntech.de>, iommu@lists.linux.dev, Janne Grunau <j@jannau.net>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Jernej Skrabec
-	<jernej.skrabec@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>, Joerg
-	Roedel <joro@8bytes.org>, Krzysztof Kozlowski <krzk@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-mediatek@lists.infradead.org, linux-riscv@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org, Matthias Brugger <matthias.bgg@gmail.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>, Neal Gompa <neal@gompa.dev>, Orson
-	Zhai <orsonzhai@gmail.com>, Palmer Dabbelt <palmer@dabbelt.com>, Paul
-	Walmsley <paul.walmsley@sifive.com>, Rob Clark
-	<robin.clark@oss.qualcomm.com>, Robin Murphy <robin.murphy@arm.com>, Samuel
-	Holland <samuel@sholland.org>, Sven Peter <sven@kernel.org>, Thierry Reding
-	<thierry.reding@gmail.com>, Krishna Reddy <vdumpa@nvidia.com>,
-	virtualization@lists.linux.dev, Chen-Yu Tsai <wens@csie.org>, Will Deacon
-	<will@kernel.org>, Yong Wu <yong.wu@mediatek.com>, Chunyan Zhang
-	<zhang.lyra@gmail.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
-	patches@lists.linux.dev, Niklas Schnelle <schnelle@linux.ibm.com>, Sven
-	Peter <sven@svenpeter.dev>, Tomasz Jeznach <tjeznach@rivosinc.com>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <4-v2-68a2e1ba507c+1fb-iommu_rm_ops_pgsize_jgg@nvidia.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20250611094629eucas1p11c41674f1a6fcbefd14b4fd99166cae1
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250609204211eucas1p171527915cb5843e72782a02a3521d2c7
-X-EPHeader: CA
-X-CMS-RootMailID: 20250609204211eucas1p171527915cb5843e72782a02a3521d2c7
-References: <CGME20250609204211eucas1p171527915cb5843e72782a02a3521d2c7@eucas1p1.samsung.com>
-	<4-v2-68a2e1ba507c+1fb-iommu_rm_ops_pgsize_jgg@nvidia.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5685:EE_|LV3PR12MB9332:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3c67e6f2-55af-4fb8-3c6d-08dda8d9e097
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|7416014|376014|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?S05aOFVHOWp1bjVDWDJzUWpJMVpFMk9RdW5nNGh2QjZ2MHZCVlIxTzUyeGZD?=
+ =?utf-8?B?djlYUEljenNIUUsvQTFIdXR2dktWV2JBSlluZEdlUHZXT2VoS04zY2xnbWJ1?=
+ =?utf-8?B?NGFQQ1JzZHlvQUhkSEhPUHpQb2hWQjU2MzdEVEFhVTRZZXJ0VEpjSFdyMFJC?=
+ =?utf-8?B?VjdqN0pnbHdNbThwNjIrL21YNVFKKzBlWE92NlRRQzl2dzR4V0pwVHBaa0pu?=
+ =?utf-8?B?MXNML3pCblRIc1ZqT3FYRUxadGJyWjZrNFhOcHBUTTlIeHc4aVVOaDNKMmZ2?=
+ =?utf-8?B?Q1pLRnNVa3pJRHR4clg5c0M5cUM3TGxtUnRYR3p0ckI2c1hrWFdkZEJDYlpR?=
+ =?utf-8?B?a2Y5SGRVdVNGY0xTTi9YeWIzd2tpbDJYbnhLQlIrYzV2TUxaeTk2WmJrM3R6?=
+ =?utf-8?B?anYwRFkvQzRNVyt2N1RYZnJ0WUxlbTNDY3c0RzluWHgrLzErd2hVejl5VUNE?=
+ =?utf-8?B?WlJabDFxRE04eDhtTFpPRnRoTU9Lanl1ZWpzSmtyS2ZSRk5TK3oxd0VFR0Rk?=
+ =?utf-8?B?MHJQVGVoQ3F5LzZTdnFQWThBZnRzSXhOT3RhbGpLZ2FxcldqZnR5RStGdGZ4?=
+ =?utf-8?B?OU1kcXdjUnRkWVBJdSsrcEkwTHZUOGU5MFJtaEVKTGFDd2lhdW1uV0xUN09t?=
+ =?utf-8?B?ZDdRbVBzeVdxdDBaYVZ6NzRNZXQ4RkM5RkRwcGNyaUtwa3E4U3dIaHpLZ1R2?=
+ =?utf-8?B?UnlUeHZaeC9IMGJlSWplN3lTRkxmRUlVNWdMc2VJeFBTc2l2VGd4MTZxbHhS?=
+ =?utf-8?B?azhjR0tCWnNjRzZITmpOYUxwZG0rWkFvL2sreW9SRVdpTnBpQnErTzFPeWF1?=
+ =?utf-8?B?UitMQTJBSW1rY2t1Y2NRcXNHWXFZdFgyaG9RTmdoSzBCYlgvcWY4Z3FJNndp?=
+ =?utf-8?B?Nk8xejVEWEE5R1MxcWR1eS81UWZ5OWJPVUk4cEhKdzMxRTdudmthOEpQWXJ5?=
+ =?utf-8?B?SmR6U1NoeEdPekRXWXFjVG1ZYkRVMGQ2NXRMODlTbTUxdHMySG1OOGhPUlRU?=
+ =?utf-8?B?emxYcXhCK0lCTVZWaTVVWm1wY2xvK1dVTXdNbjBJK2R6ejhNNkY0bEtxNWFL?=
+ =?utf-8?B?YzdvZlZYdzNrWW5rTG00T3lPbDNONnlJenNPZkJHODAvQm4rNHF1RzJKRmJ4?=
+ =?utf-8?B?WjFOVVdneWNqSW9FdUswc2RPSVNIbXMxem82SnpZcVgzNjUzbG15SXdsYnRx?=
+ =?utf-8?B?aVc4MnVLR1NyUEtkMGxIOE1NRkU4akJXS0luajMxNUhvUXhlSDNzank3bHFn?=
+ =?utf-8?B?YVJxVzYxdXFCTlNTSjBFaVV3Nk9PV1ZhZzBwVXcraS9PME40bXBoT1VXWEpE?=
+ =?utf-8?B?RzBFVWdzY3lsYkhKdHNwdDA1NnE2S001OXZ6d1N3bmk4azAzYmFKc2llTUg5?=
+ =?utf-8?B?aUtLOFdwdHZkeWFLbnJ3TjJ5dEt5SnNXSzlmMDhHYWMyR2RrTUZybUtyYkF3?=
+ =?utf-8?B?TGJhUERRcGx4RjhHbHdsdWhFWTV4S3NlRzBBbnZZS2lJNlA3NnhEZEVUc2dn?=
+ =?utf-8?B?Z0ZWV0JnRXBGNkY4NGUzZXA1OUtkNVErU216MXNZcmV0UE9Pc0lyMHpBbDdT?=
+ =?utf-8?B?MG05WUtramxYYzBFTStOY1JKSGhadVNUYjZFNHVUZ0dBUzV2YkpWVVBUOGVS?=
+ =?utf-8?B?VWZyR1ZBUWNYbndRcXR0R24wUFhQUVNaNGxvVXRQZWp5dkltM1hOaEY3SUVR?=
+ =?utf-8?B?TEMvZXJzdGVGZUMrcm1MUG12dHh5cTdYSTNWWWNET2tHZGtQWEhSUjlVUmtY?=
+ =?utf-8?B?OXIvV3pTTjJ1bkpFTUxNbnJSeWtkSGhiY2JMWHRwSFRHVnQwV3lwRGRaYUVT?=
+ =?utf-8?B?UXdTM1Y5dXBEaG1tcUZrNEgzbys2aStOZ3pXNmNpdXJXb1lXVmo5V3JRUHZP?=
+ =?utf-8?B?VWxOMmFscWNPNjQyTU1ETXlhQVlPUG5ONXNodHQyenFtcUJrZ1lzMUdleGZU?=
+ =?utf-8?Q?z3KGuKSchHM=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5685.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?dW1qRlRrd2JsdnI1MjRKQ1dVajFGeWo3cjBnQ1RXV01SNXNYNy9NbXFscWZD?=
+ =?utf-8?B?R0tJUVYrK3FVcDdBUWRFd2JwQUp6b1dMSHQ4SHV1RFdQNVJiL3g2OWQvOThX?=
+ =?utf-8?B?NytQV1J0S2RUOXhUUFNGVkp3c0V2aXFsWnJ3UXFtWXA0S09JSWp2cTE3bW5H?=
+ =?utf-8?B?TmRVRXNzNlBFWmJnUGVqckhKTkppaUROd01uOE5CMUN5NzlQWGRtVHNaVnE5?=
+ =?utf-8?B?M2Ivc0lCbG9HK01TS1JyN05ibUgybXRkdEFMZjNUcTFMR2VaK2kzemhmM2hS?=
+ =?utf-8?B?Vkh4OEZDZHAyU1RranBYRGxDUVlvSkdTcjZhQjVBbVM1UTZaamRYYXk2TjFB?=
+ =?utf-8?B?dTZiZ0NlUEVTTmxZQ2U5UldkTHh6OVNLWHNqNVoyenF6TjdTVEIxMEIzbzhr?=
+ =?utf-8?B?dytNR3hLcFo2OXRUNE9BeW1HbUFNY1MwR0xUS0RQMm1naGdlOWNCU3ozeFdH?=
+ =?utf-8?B?QnFsanVPOFFpTVZLVUJLcHU3NFREMTgzeHhSbXg1c3htQVVrcFJtOE9KbkFy?=
+ =?utf-8?B?Vmg0Q290NkNtdi9hS25CTlpoOEVkZnYwT05zNTAyUDV5RHdhb010ZHJoeWlN?=
+ =?utf-8?B?aTdaN0FmNWk2dm5TaXRYSmF0Q3NVWG9RNUpoMm9yOXJINTBDQi9wMjNkTDN4?=
+ =?utf-8?B?VUtUMHdmMnB4eHllR0JQaXEzK0QyQjI3NEh6SXFzaDJDOHF1Vy9XSTNPN3Jy?=
+ =?utf-8?B?Y3JuNmJ4aEdQRWJkWWJzRjIxaFhuSEIyblpEL21NMkRaVEtjVXJHaWhQb1V4?=
+ =?utf-8?B?OFMvVHlmdmEyZWQ0WHB3NzJMSkJRdlZMdk5WbWsza1VmRW5xYkZZMkRuUGhW?=
+ =?utf-8?B?NWxPMVVzYXZ1cGNXR2xjd1ByWnhxcmowdnpTdmIrcTdIUWlCS2hsSUxrelcz?=
+ =?utf-8?B?VG5WdzhObFp5emU3NEVSbjNSL3pEVVZTbGRMQTN4b25FU05VNWwwbFVzTGt2?=
+ =?utf-8?B?ZTNFcUc0QXR0bE5LMFNYYjhubDV0RThobXVJNTZ0enlsdXdjbk5ZcVFhSDhQ?=
+ =?utf-8?B?RlVVR3lOQ1VNWmVGQkhrZG1OaHR3V1daSXFJZjN0TmF4VXlmcnFraEZXbk5u?=
+ =?utf-8?B?WFlySit5a2VReWE2VlZaWlRaN2laUW9vODlhN0NZUDRlbmh4ZW4wU0tIbHFW?=
+ =?utf-8?B?dXlBWlVvek9KV2NmZDBGbFpKT2phWDZrVG1IVUxOWEhGK0YvTnRPUHJ3SFhP?=
+ =?utf-8?B?eFRBM1JjWWFWY0NKZkhJRFZoUERyOGgxT2JRaSsrRkwwSWFvVlpidGk3cnhk?=
+ =?utf-8?B?SU9oVGtNWHgvOEN3ekd0LzVTekE2amVXQmhDeDEyMVNJc2d2RDJuUkxBMFhj?=
+ =?utf-8?B?enFUcG8xQmZmdUlRU2plUVQ0Zm1odXhEQk9naEdwNmhoeUhhWXJ5c1BWR1c5?=
+ =?utf-8?B?SUUrVThER0VzQnN2YUZUWG4vWjhuemV0aU1CdkhuR3k1S1VjdG5nRlJhTUla?=
+ =?utf-8?B?ZnorR2h1MEo1Z0NtaDhXc3k5VFVzYUp5R295ZC9YWjMyaXlUcmNKMmlJUDBs?=
+ =?utf-8?B?VGVLOWlIZVVOcHhpdTNMY0ZEY01CK21NY0x3b2FObzI5T0tIZ1dKZkF5MnJU?=
+ =?utf-8?B?WGUraGxQejgrWFhtdnp2RTdaQUxyM2lPZHdwRmlsU2xFNDQ1NmFEbW5HdzdC?=
+ =?utf-8?B?V08zbEVnN0V1dGhVYWNVR2NiQ2ZtN1IwZ014MEMzdHladWNhRFB2SGpiL29h?=
+ =?utf-8?B?UTZxZG9ncG1PSXNZNkVSWXU0d2ltZHF3ajBSU3N5dUQ3Nm9yaWtpaWZvNVEy?=
+ =?utf-8?B?ZUI2TmdXQ2d2TmJ5TTlNa1NJS1VtWFpZa3p1MmJRUkFvUG10K1BXR3RURHZy?=
+ =?utf-8?B?N0RHbkVBWmY4UGlFOWN3SEVtY3Z0dmlNUUUvc0pMSERFbHB6eXA1S2p4Yms2?=
+ =?utf-8?B?QloyZEpHKytTWVo2RGFWS3N3cDE5bnY5L3EzWENiWmhyZmZRbCtlME1iNUhS?=
+ =?utf-8?B?NUs1KzRvbjhZSi9OeVFSQ0FqZUNuS1Bjb3lCT3pYbWF6VkVwR0tIUWZibkpV?=
+ =?utf-8?B?YkZZYVpmT1NvVVp6VW5VVjI1cVpPWVpRZytWMWowN0cxSTRyc21KM1htUXVZ?=
+ =?utf-8?B?Sk5lNDdRdXQveVQ2SVRlZ2xlc3QyVW1yTER4RWpCUktiMHJJSlBEYnhRNmU3?=
+ =?utf-8?Q?DZy+CXqo6kvIKE5arz9OaEwkB?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c67e6f2-55af-4fb8-3c6d-08dda8d9e097
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5685.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jun 2025 11:19:48.8673
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: A3H1puPoU91zftYCg/EKBdHuE0ihyfRoHyL4hoOIKjWJWhoDOWLDjhbCyiQbakrs
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9332
 
-On 09.06.2025 22:41, Jason Gunthorpe wrote:
-> These drivers just have a constant value for their page size, move it
-> into their domain_alloc_paging function before setting up the geometry.
->
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Acked-by: Niklas Schnelle <schnelle@linux.ibm.com> # for s390-iommu.c
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/iommu/exynos-iommu.c   | 3 ++-
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com> # for exynos-iommu.c
->   drivers/iommu/ipmmu-vmsa.c     | 4 ++--
->   drivers/iommu/mtk_iommu_v1.c   | 3 ++-
->   drivers/iommu/omap-iommu.c     | 3 ++-
->   drivers/iommu/rockchip-iommu.c | 3 ++-
->   drivers/iommu/s390-iommu.c     | 2 +-
->   drivers/iommu/sprd-iommu.c     | 3 ++-
->   drivers/iommu/sun50i-iommu.c   | 3 ++-
->   drivers/iommu/tegra-smmu.c     | 3 ++-
->   9 files changed, 17 insertions(+), 10 deletions(-)
->
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index fcb6a0f7c08275..b62a8f35c3e851 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -925,6 +925,8 @@ static struct iommu_domain *exynos_iommu_domain_alloc_paging(struct device *dev)
->   	spin_lock_init(&domain->pgtablelock);
->   	INIT_LIST_HEAD(&domain->clients);
->   
-> +	domain->domain.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE;
-> +
->   	domain->domain.geometry.aperture_start = 0;
->   	domain->domain.geometry.aperture_end   = ~0UL;
->   	domain->domain.geometry.force_aperture = true;
-> @@ -1477,7 +1479,6 @@ static const struct iommu_ops exynos_iommu_ops = {
->   	.device_group = generic_device_group,
->   	.probe_device = exynos_iommu_probe_device,
->   	.release_device = exynos_iommu_release_device,
-> -	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
->   	.of_xlate = exynos_iommu_of_xlate,
->   	.default_domain_ops = &(const struct iommu_domain_ops) {
->   		.attach_dev	= exynos_iommu_attach_device,
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index 90341b24a81155..ffa892f6571406 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -430,7 +430,7 @@ static int ipmmu_domain_init_context(struct ipmmu_vmsa_domain *domain)
->   	 * non-secure mode.
->   	 */
->   	domain->cfg.quirks = IO_PGTABLE_QUIRK_ARM_NS;
-> -	domain->cfg.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K;
-> +	domain->cfg.pgsize_bitmap = domain->io_domain.pgsize_bitmap;
->   	domain->cfg.ias = 32;
->   	domain->cfg.oas = 40;
->   	domain->cfg.tlb = &ipmmu_flush_ops;
-> @@ -571,6 +571,7 @@ static struct iommu_domain *ipmmu_domain_alloc_paging(struct device *dev)
->   		return NULL;
->   
->   	mutex_init(&domain->mutex);
-> +	domain->io_domain.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K;
->   
->   	return &domain->io_domain;
->   }
-> @@ -882,7 +883,6 @@ static const struct iommu_ops ipmmu_ops = {
->   	 */
->   	.device_group = IS_ENABLED(CONFIG_ARM) && !IS_ENABLED(CONFIG_IOMMU_DMA)
->   			? generic_device_group : generic_single_device_group,
-> -	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
->   	.of_xlate = ipmmu_of_xlate,
->   	.default_domain_ops = &(const struct iommu_domain_ops) {
->   		.attach_dev	= ipmmu_attach_device,
-> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-> index 66824982e05fbf..496cfe37243ac2 100644
-> --- a/drivers/iommu/mtk_iommu_v1.c
-> +++ b/drivers/iommu/mtk_iommu_v1.c
-> @@ -288,6 +288,8 @@ static struct iommu_domain *mtk_iommu_v1_domain_alloc_paging(struct device *dev)
->   	if (!dom)
->   		return NULL;
->   
-> +	dom->domain.pgsize_bitmap = MT2701_IOMMU_PAGE_SIZE;
-> +
->   	return &dom->domain;
->   }
->   
-> @@ -582,7 +584,6 @@ static const struct iommu_ops mtk_iommu_v1_ops = {
->   	.probe_finalize = mtk_iommu_v1_probe_finalize,
->   	.release_device	= mtk_iommu_v1_release_device,
->   	.device_group	= generic_device_group,
-> -	.pgsize_bitmap	= MT2701_IOMMU_PAGE_SIZE,
->   	.owner          = THIS_MODULE,
->   	.default_domain_ops = &(const struct iommu_domain_ops) {
->   		.attach_dev	= mtk_iommu_v1_attach_device,
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 3c62337f43c677..21c218976143ef 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1584,6 +1584,8 @@ static struct iommu_domain *omap_iommu_domain_alloc_paging(struct device *dev)
->   
->   	spin_lock_init(&omap_domain->lock);
->   
-> +	omap_domain->domain.pgsize_bitmap = OMAP_IOMMU_PGSIZES;
-> +
->   	omap_domain->domain.geometry.aperture_start = 0;
->   	omap_domain->domain.geometry.aperture_end   = (1ULL << 32) - 1;
->   	omap_domain->domain.geometry.force_aperture = true;
-> @@ -1735,7 +1737,6 @@ static const struct iommu_ops omap_iommu_ops = {
->   	.release_device	= omap_iommu_release_device,
->   	.device_group	= generic_single_device_group,
->   	.of_xlate	= omap_iommu_of_xlate,
-> -	.pgsize_bitmap	= OMAP_IOMMU_PGSIZES,
->   	.default_domain_ops = &(const struct iommu_domain_ops) {
->   		.attach_dev	= omap_iommu_attach_dev,
->   		.map_pages	= omap_iommu_map,
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index 22f74ba33a0e38..f4a5ad096343ab 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -1081,6 +1081,8 @@ static struct iommu_domain *rk_iommu_domain_alloc_paging(struct device *dev)
->   	spin_lock_init(&rk_domain->dt_lock);
->   	INIT_LIST_HEAD(&rk_domain->iommus);
->   
-> +	rk_domain->domain.pgsize_bitmap = RK_IOMMU_PGSIZE_BITMAP;
-> +
->   	rk_domain->domain.geometry.aperture_start = 0;
->   	rk_domain->domain.geometry.aperture_end   = DMA_BIT_MASK(32);
->   	rk_domain->domain.geometry.force_aperture = true;
-> @@ -1171,7 +1173,6 @@ static const struct iommu_ops rk_iommu_ops = {
->   	.probe_device = rk_iommu_probe_device,
->   	.release_device = rk_iommu_release_device,
->   	.device_group = generic_single_device_group,
-> -	.pgsize_bitmap = RK_IOMMU_PGSIZE_BITMAP,
->   	.of_xlate = rk_iommu_of_xlate,
->   	.default_domain_ops = &(const struct iommu_domain_ops) {
->   		.attach_dev	= rk_iommu_attach_device,
-> diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-> index 433b59f435302b..9c80d61deb2c0b 100644
-> --- a/drivers/iommu/s390-iommu.c
-> +++ b/drivers/iommu/s390-iommu.c
-> @@ -557,6 +557,7 @@ static struct iommu_domain *s390_domain_alloc_paging(struct device *dev)
->   	}
->   	zdev->end_dma = zdev->start_dma + aperture_size - 1;
->   
-> +	s390_domain->domain.pgsize_bitmap = SZ_4K;
->   	s390_domain->domain.geometry.force_aperture = true;
->   	s390_domain->domain.geometry.aperture_start = 0;
->   	s390_domain->domain.geometry.aperture_end = max_tbl_size(s390_domain);
-> @@ -1158,7 +1159,6 @@ static struct iommu_domain blocking_domain = {
->   	.domain_alloc_paging = s390_domain_alloc_paging, \
->   	.probe_device = s390_iommu_probe_device, \
->   	.device_group = generic_device_group, \
-> -	.pgsize_bitmap = SZ_4K, \
->   	.get_resv_regions = s390_iommu_get_resv_regions, \
->   	.default_domain_ops = &(const struct iommu_domain_ops) { \
->   		.attach_dev	= s390_iommu_attach_device, \
-> diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-> index 941d1f361c8cda..c7ca1d8a0b1530 100644
-> --- a/drivers/iommu/sprd-iommu.c
-> +++ b/drivers/iommu/sprd-iommu.c
-> @@ -143,6 +143,8 @@ static struct iommu_domain *sprd_iommu_domain_alloc_paging(struct device *dev)
->   
->   	spin_lock_init(&dom->pgtlock);
->   
-> +	dom->domain.pgsize_bitmap = SPRD_IOMMU_PAGE_SIZE;
-> +
->   	dom->domain.geometry.aperture_start = 0;
->   	dom->domain.geometry.aperture_end = SZ_256M - 1;
->   	dom->domain.geometry.force_aperture = true;
-> @@ -410,7 +412,6 @@ static const struct iommu_ops sprd_iommu_ops = {
->   	.probe_device	= sprd_iommu_probe_device,
->   	.device_group	= generic_single_device_group,
->   	.of_xlate	= sprd_iommu_of_xlate,
-> -	.pgsize_bitmap	= SPRD_IOMMU_PAGE_SIZE,
->   	.owner		= THIS_MODULE,
->   	.default_domain_ops = &(const struct iommu_domain_ops) {
->   		.attach_dev	= sprd_iommu_attach_device,
-> diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-> index 76c9620af4bba8..de10b569d9a940 100644
-> --- a/drivers/iommu/sun50i-iommu.c
-> +++ b/drivers/iommu/sun50i-iommu.c
-> @@ -697,6 +697,8 @@ sun50i_iommu_domain_alloc_paging(struct device *dev)
->   
->   	refcount_set(&sun50i_domain->refcnt, 1);
->   
-> +	sun50i_domain->domain.pgsize_bitmap = SZ_4K;
-> +
->   	sun50i_domain->domain.geometry.aperture_start = 0;
->   	sun50i_domain->domain.geometry.aperture_end = DMA_BIT_MASK(32);
->   	sun50i_domain->domain.geometry.force_aperture = true;
-> @@ -842,7 +844,6 @@ static int sun50i_iommu_of_xlate(struct device *dev,
->   
->   static const struct iommu_ops sun50i_iommu_ops = {
->   	.identity_domain = &sun50i_iommu_identity_domain,
-> -	.pgsize_bitmap	= SZ_4K,
->   	.device_group	= generic_single_device_group,
->   	.domain_alloc_paging = sun50i_iommu_domain_alloc_paging,
->   	.of_xlate	= sun50i_iommu_of_xlate,
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index 61897d50162dd7..fa0913e9346c71 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -318,6 +318,8 @@ static struct iommu_domain *tegra_smmu_domain_alloc_paging(struct device *dev)
->   
->   	spin_lock_init(&as->lock);
->   
-> +	as->domain.pgsize_bitmap = SZ_4K;
-> +
->   	/* setup aperture */
->   	as->domain.geometry.aperture_start = 0;
->   	as->domain.geometry.aperture_end = 0xffffffff;
-> @@ -1002,7 +1004,6 @@ static const struct iommu_ops tegra_smmu_ops = {
->   	.probe_device = tegra_smmu_probe_device,
->   	.device_group = tegra_smmu_device_group,
->   	.of_xlate = tegra_smmu_of_xlate,
-> -	.pgsize_bitmap = SZ_4K,
->   	.default_domain_ops = &(const struct iommu_domain_ops) {
->   		.attach_dev	= tegra_smmu_attach_dev,
->   		.map_pages	= tegra_smmu_map,
+On 6/10/25 18:34, Marek Szyprowski wrote:
+> On 14.05.2025 15:44, Marek Szyprowski wrote:
+>> On 08.05.2025 11:57, Christian König wrote:
+>>> On 5/7/25 18:09, Marek Szyprowski wrote:
+>>>> Use common wrappers operating directly on the struct sg_table 
+>>>> objects to
+>>>> fix incorrect use of scatterlists sync calls. dma_sync_sg_for_*()
+>>>> functions have to be called with the number of elements originally 
+>>>> passed
+>>>> to dma_map_sg_*() function, not the one returned in sgtable's nents.
+>>>>
+>>>> Fixes: 1ffe09590121 ("udmabuf: fix dma-buf cpu access")
+>>>> CC: stable@vger.kernel.org
+>>>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>>> Acked-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
+>>> Reviewed-by: Christian König <christian.koenig@amd.com>
+>>>
+>>> Should I push this one to drm-misc-fixes for upstreaming?
+>>
+>> Yes, please. The other 2 patches have been taken by the media maintainers.
+> 
+> Gentle ping
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Done.
+
+Thanks for the reminder, totally forgotten about that one.
+
+Regards,
+Christian.
+
+> 
+> Best regards
 
