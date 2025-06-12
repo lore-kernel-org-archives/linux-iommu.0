@@ -1,168 +1,83 @@
-Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out30-124.freemail.mail.aliyun.com (out30-124.freemail.mail.aliyun.com [115.124.30.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1978A27380A
-	for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 22:48:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 158652A1C9
+	for <iommu@lists.linux.dev>; Thu, 12 Jun 2025 02:14:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749682125; cv=none; b=n5UAR17L3vc5UjtC++9/gyrLy1KKEo8cKVr5agibsGDAeCC0lQzAnxqt4BqRaqJW268blGhXsgZMdFHME9jU6F/TllGTmnILlCAh/BnM03r+Kqc/mO8De5SOJ8NPk8lGeafljghPCiQ4J/eWbt9iDHrarSKmw190s/WDvwWMZTY=
+	t=1749694466; cv=none; b=d+Exma45x9k1bUxp3ftzyhaZPgYhlBwwFfkX9bPmjGn4jnpaS9JH65GDfj7L3+rXbEiZQUHwyuaiyNLXSs/EE+7BwMFlJEEsw7kj1AXIeCe3O3fOqcVG4f9s9P08fB9hGrTZZaK+83QGAVDuZBsbjGy5a3VmSNTafgFdhOB4Qq0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749682125; c=relaxed/simple;
-	bh=01/TeXAv+/ld+0h+0i5gKdPXqo5VXKxKWxynJL1IDDI=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=LXId+xsp2ONirkzDOBeQcRJuQn1Fbeyswi6w8+/pR2sAWjCQxhu6DY7P15PRjEebwrVaLeFIuSnCfOsp+9M5flwfO5CHdKBMBVI9HBaS7ZUbzCKONny91+SYnHPyJgc+msRmI73lAQYvfvS+UBC476hPTAaXNDtRgofd72uh2yM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=jGbhrEx7; arc=none smtp.client-ip=209.85.214.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1749694466; c=relaxed/simple;
+	bh=EbXWInki+PyyE8fUuUZTQmF76D1Lk5S8/93PksOZ3ck=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=OdQ9YHpyt4DMX5xk4UNBI2UZMFaP8MoYEvh+uXmRoqVzQCTRtRXpnTAuf9Aj2V5nb9y/waaouPKHxbQ/Jo6MWBCLdRyKq+peZBE2Ugq26AF6l3S1ZjmhU61Q2mwwdNe4Oe/+SvOwm7O1dZ5J6mc/XX0Xm3R9g01weVFM1gFDvAU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=NAoaTQZ7; arc=none smtp.client-ip=115.124.30.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="jGbhrEx7"
-Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-235842baba4so2054335ad.3
-        for <iommu@lists.linux.dev>; Wed, 11 Jun 2025 15:48:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1749682123; x=1750286923; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:from:to:cc:subject:date:message-id:reply-to;
-        bh=A2H6mQAi3X2cVhbsLup4QR14EBoE/FmvQ1a87TN4T2w=;
-        b=jGbhrEx7rM3CX7Y9rQtP5fAFTXCZknmeDswqDAdbGNtwDK+y5eOhjS8cKzK2vuz1m0
-         TEToKwKbPsGPu5P00/Lty9EBTdKmGOMlU7XbGVQOdhwsgxJGUNBwtF83K+n9chMNrT0G
-         PSrvsgpQwooEhUpVk2OOGKBBizJp+ttV98/5HrtvpDb5qa6/RZ3455csFWkfM3Mqpw2B
-         hdH+aSzRcZu1Jo5HLTQXnWpzUlzIGZGq0H5vytmJ0z/eI6Dih1XRw9IcFXqprpTP6z6b
-         u4a1YJUgVn6Ko8zGz2zu3P14nlGY3u7r4O4idWDfJ0jPuz9qAcFWJuFWovmLok8J/OgW
-         P2jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749682123; x=1750286923;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:reply-to:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=A2H6mQAi3X2cVhbsLup4QR14EBoE/FmvQ1a87TN4T2w=;
-        b=U03SaaurBmYW2DbLdO+rT4ZaaWyVJkreYD3woCJdidkuxNWBTjqouROucbekabiLQg
-         MLzYeO3QOdQw7Xg3Q02DfPqANPMHoLyl0cPoBSIn762cF9WJvFpOtevsjbhibdFt4IWZ
-         QQfF+r7OKI5bVtIGaI4fICxW/xJ88arg0jwfNEU3nNfxvTf/xdKtOTR+k9EYIvhx8Gqd
-         v9hWfv6xhbXGo1shy6IEGcTnPQE6TCGvLCnbhaOgy4iYjUzge8j05QdqySg4qMJdhEha
-         CEoqiqX5fjG54sDOrdKjhA54rSkZT4lajgQWDznrwgtJUz7wrwShBefeeMwiqlUS4p8F
-         lP6g==
-X-Forwarded-Encrypted: i=1; AJvYcCVMQuedtVGe/4QMz4J3h/6C6TY3btggIp9iti5CpVE0eFapcFPzf/MXc39EV6arfEIfup9DlQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyw2+fiFxqem254WmnthHlgbOtb4svCXbUtSJuL21eQQVIidqQb
-	u6EPfWanjazoa1U/E7/eoeD1bdNPKGRc8aLb1xV7Ra06Nfk0jlIHygtAlBjgceKxqqX0cbonENg
-	h8aSmjg==
-X-Google-Smtp-Source: AGHT+IEmj8Wn93vyxOZ20/CzQNxDRl4F7IoOM7uRFd48VrtVcKzRebVp/cgdBntFE1vN9k4o1Eln3ZwGSvs=
-X-Received: from plhl7.prod.google.com ([2002:a17:903:1207:b0:21f:4f0a:c7e2])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:f54f:b0:234:ba37:87a5
- with SMTP id d9443c01a7336-23641b1aab7mr72956825ad.25.1749682123415; Wed, 11
- Jun 2025 15:48:43 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date: Wed, 11 Jun 2025 15:46:05 -0700
-In-Reply-To: <20250611224604.313496-2-seanjc@google.com>
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="NAoaTQZ7"
+DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=linux.alibaba.com; s=default;
+	t=1749694460; h=From:To:Subject:Date:Message-Id:MIME-Version;
+	bh=UNdnWvi0Uoy+eaWdEfSl14TNqMDEHW+OqfIgxD24jTE=;
+	b=NAoaTQZ7a/Fo5pdZGElhaFgj97Xxe2XHMbDuUhRyOvn6AtoKbj76gJgfutUN2c7wbkTCb+28WZC78aiDtoXgJ9YpgvKlTo7Fg6YDuhsJSFfQSPD3JwGdnWwdrzKLnDSazn+CEdIaYzaKJJ+2EBAvior1TkD1amrzzeN5vD4VzP0=
+Received: from localhost(mailfrom:feng.tang@linux.alibaba.com fp:SMTPD_---0Wdf0BoH_1749694457 cluster:ay36)
+          by smtp.aliyun-inc.com;
+          Thu, 12 Jun 2025 10:14:18 +0800
+From: Feng Tang <feng.tang@linux.alibaba.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Christoph Hellwig <hch@lst.de>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Feng Tang <feng.tang@linux.alibaba.com>
+Subject: [PATCH] dma-contiguous: hornor the cma address limit setup by user
+Date: Thu, 12 Jun 2025 10:14:17 +0800
+Message-Id: <20250612021417.44929-1-feng.tang@linux.alibaba.com>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250611224604.313496-2-seanjc@google.com>
-X-Mailer: git-send-email 2.50.0.rc1.591.g9c95f17f64-goog
-Message-ID: <20250611224604.313496-64-seanjc@google.com>
-Subject: [PATCH v3 62/62] KVM: x86: Rename kvm_set_msi_irq() => kvm_msi_to_lapic_irq()
-From: Sean Christopherson <seanjc@google.com>
-To: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
-	Sean Christopherson <seanjc@google.com>, Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
-	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>
-Cc: linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
-	kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
-	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
-	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Rename kvm_set_msi_irq() to kvm_msi_to_lapic_irq() to better capture what
-it actually does, e.g. it's _really_ easy to conflate kvm_set_msi_irq()
-with kvm_set_msi().
+When porting a cma related usage from x86_64 server to arm64 server,
+the "cma=4G@4G" setup failed on arm64. The reason is arm64 and some
+other architectures have specific physical address limit for reserved
+cma area, like 4GB due to the device's need for 32 bit dma. Actually
+lots of platforms of those architectures don't have this device dma
+limit, but still have to obey it, and are not able to reserve a huge
+cma pool.
 
-Opportunistically delete the public declaration and export, as they are
-no longer used/needed.
+This situation could be improved by honoring the user input cma
+physical address than the arch limit. As when users specify it, they
+already knows what the default is which probably can't suit them.
 
-No functional change intended.
-
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+Suggested-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Feng Tang <feng.tang@linux.alibaba.com>
 ---
- arch/x86/include/asm/kvm_host.h |  3 ---
- arch/x86/kvm/irq.c              | 14 +++++++-------
- 2 files changed, 7 insertions(+), 10 deletions(-)
+ kernel/dma/contiguous.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 01edcefbd937..af08b1acba04 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -2381,9 +2381,6 @@ bool kvm_vcpu_is_bsp(struct kvm_vcpu *vcpu);
- bool kvm_intr_is_single_vcpu(struct kvm *kvm, struct kvm_lapic_irq *irq,
- 			     struct kvm_vcpu **dest_vcpu);
- 
--void kvm_set_msi_irq(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
--		     struct kvm_lapic_irq *irq);
--
- static inline bool kvm_irq_is_postable(struct kvm_lapic_irq *irq)
- {
- 	/* We can only post Fixed and LowPrio IRQs */
-diff --git a/arch/x86/kvm/irq.c b/arch/x86/kvm/irq.c
-index 3e4338c6a712..83c91845389c 100644
---- a/arch/x86/kvm/irq.c
-+++ b/arch/x86/kvm/irq.c
-@@ -252,8 +252,9 @@ int kvm_irq_delivery_to_apic(struct kvm *kvm, struct kvm_lapic *src,
- 	return r;
- }
- 
--void kvm_set_msi_irq(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
--		     struct kvm_lapic_irq *irq)
-+static void kvm_msi_to_lapic_irq(struct kvm *kvm,
-+				 struct kvm_kernel_irq_routing_entry *e,
-+				 struct kvm_lapic_irq *irq)
- {
- 	struct msi_msg msg = { .address_lo = e->msi.address_lo,
- 			       .address_hi = e->msi.address_hi,
-@@ -271,7 +272,6 @@ void kvm_set_msi_irq(struct kvm *kvm, struct kvm_kernel_irq_routing_entry *e,
- 	irq->level = 1;
- 	irq->shorthand = APIC_DEST_NOSHORT;
- }
--EXPORT_SYMBOL_GPL(kvm_set_msi_irq);
- 
- static inline bool kvm_msi_route_invalid(struct kvm *kvm,
- 		struct kvm_kernel_irq_routing_entry *e)
-@@ -290,7 +290,7 @@ int kvm_set_msi(struct kvm_kernel_irq_routing_entry *e,
- 	if (!level)
- 		return -1;
- 
--	kvm_set_msi_irq(kvm, e, &irq);
-+	kvm_msi_to_lapic_irq(kvm, e, &irq);
- 
- 	return kvm_irq_delivery_to_apic(kvm, NULL, &irq, NULL);
- }
-@@ -313,7 +313,7 @@ int kvm_arch_set_irq_inatomic(struct kvm_kernel_irq_routing_entry *e,
- 		if (kvm_msi_route_invalid(kvm, e))
- 			return -EINVAL;
- 
--		kvm_set_msi_irq(kvm, e, &irq);
-+		kvm_msi_to_lapic_irq(kvm, e, &irq);
- 
- 		if (kvm_irq_delivery_to_apic_fast(kvm, NULL, &irq, &r, NULL))
- 			return r;
-@@ -486,7 +486,7 @@ void kvm_scan_ioapic_routes(struct kvm_vcpu *vcpu,
- 			if (entry->type != KVM_IRQ_ROUTING_MSI)
- 				continue;
- 
--			kvm_set_msi_irq(vcpu->kvm, entry, &irq);
-+			kvm_msi_to_lapic_irq(vcpu->kvm, entry, &irq);
- 
- 			if (!irq.trig_mode)
- 				continue;
-@@ -521,7 +521,7 @@ static int kvm_pi_update_irte(struct kvm_kernel_irqfd *irqfd,
- 		return -EINVAL;
- 
- 	if (entry && entry->type == KVM_IRQ_ROUTING_MSI) {
--		kvm_set_msi_irq(kvm, entry, &irq);
-+		kvm_msi_to_lapic_irq(kvm, entry, &irq);
- 
- 		/*
- 		 * Force remapped mode if hardware doesn't support posting the
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 8df0dfaaca18..67af8a55185d 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -222,7 +222,10 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
+ 	if (size_cmdline != -1) {
+ 		selected_size = size_cmdline;
+ 		selected_base = base_cmdline;
+-		selected_limit = min_not_zero(limit_cmdline, limit);
++
++		/* Hornor the user setup dma address limit */
++		selected_limit = limit_cmdline ?: limit;
++
+ 		if (base_cmdline + size_cmdline == limit_cmdline)
+ 			fixed = true;
+ 	} else {
 -- 
-2.50.0.rc1.591.g9c95f17f64-goog
+2.43.5
 
