@@ -1,88 +1,69 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CEBA1DDC37
-	for <iommu@lists.linux.dev>; Thu, 12 Jun 2025 06:41:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2DD942040A7;
+	Thu, 12 Jun 2025 07:18:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749710496; cv=none; b=E4JQFS63cG3oXQeddS+Q5HVLDgv9NuqzRL2kPUgAc+5pyPZGI+dKi5isLFLTagi49Ghlxpx0URjtDIL0IQW/cHP/Zu2ow9buX6rYG3mreKNJF1fX/OuC11VBfC5tCICsaXkptoFR+zutNmOcB1ulgtQjfn1GfnM6IweEjo8MFp4=
+	t=1749712736; cv=none; b=Zx2OLTb6xD+PnfY9dmv5udH0yiPmvw4KyLpl/aRZAEPAT77J0YxYJLn+vSsGmqMtWZKaqO7uuxDFAVlTVLo8HHPQ8/Z2soBpv4O4+7Us2JtR+Fo46x/FBj7A/Z9HStiSlG9BERMLasYRUncC3TVDHWs1zuYNbwmsH6IrE9QCj2Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749710496; c=relaxed/simple;
-	bh=A7TqxuB8t9bmTFkapNPal+O9p2AhATY2thZsPhLxr6Y=;
-	h=Message-ID:Date:MIME-Version:Subject:To:From:In-Reply-To:
-	 Content-Type:References; b=QVmvwQLDAjhVJxfzGDWQElbvk7/0d8wPgddqyEE8rhcOpXcbDiveOaEz3LsOMtwj62mYG93F0yWRmOAWg6+0v6LbvADNjtbaSALA3jpKrlL+eW6Dh40bVG9piKiSafBB/CWPBdggqtoibURElieKwHUgmSWa1GOCY1zqN7PZmfk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=KJGJ7Z2K; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1749712736; c=relaxed/simple;
+	bh=4qmZkNTOIJv0nI5aWiP+W1evef8vZNmuy8w6U8kXd+k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=N2UobpV55B3zZxM7hvptNlOyQkqYIJ+rVNDoKl24Hf7nQUp9fSdPfSoUB1sVED4tpWSCRDcHYvjVHSgaZ7eIf0T/t1HpOMTAoAuN5yvwri8HBx50dL4LQzjFBZeOA6/IXXfHIriedZHSu4V7r4650M03YMh9+q8xBZX4BBw7dF0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=ylprocBo; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="KJGJ7Z2K"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250612064131euoutp0211d0dbcc827497de50eae0033b7ca2ac~IOGvfRMU50072900729euoutp023
-	for <iommu@lists.linux.dev>; Thu, 12 Jun 2025 06:41:31 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250612064131euoutp0211d0dbcc827497de50eae0033b7ca2ac~IOGvfRMU50072900729euoutp023
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1749710491;
-	bh=7nYk7226mhpYPqAZ23fAfF9iNBbc+f6mM4CczYyFCIQ=;
-	h=Date:Subject:To:From:In-Reply-To:References:From;
-	b=KJGJ7Z2KRe6nwAJupdsYYMq7TGP1oGW628D9+BaS2tIb66lABtfShBULkRLe0EIqL
-	 4UHYM5OfqJzMMG7QTvaRxrC89YEEn4G7ClylxB6iRwEjdRnt1xCwfOW1hH0LMqtRxw
-	 lUuKPj9EisVcUmdK/B1QCR0iyvRRsSmBFu5bLjhU=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20250612064130eucas1p1f607c3f7d9b1751ee1bc48ccc5a0eea7~IOGvJlcn80968109681eucas1p15;
-	Thu, 12 Jun 2025 06:41:30 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20250612064130eusmtip1b9141f05b400d99bbb5c3913c5bc51a4~IOGuc7ewg2952629526eusmtip1M;
-	Thu, 12 Jun 2025 06:41:30 +0000 (GMT)
-Message-ID: <1da11218-64d4-49bc-a484-77390a5cd9bc@samsung.com>
-Date: Thu, 12 Jun 2025 08:41:29 +0200
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="ylprocBo"
+Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 297384D5B8;
+	Thu, 12 Jun 2025 09:18:47 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1749712727;
+	bh=4qmZkNTOIJv0nI5aWiP+W1evef8vZNmuy8w6U8kXd+k=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ylprocBot2TylMOuQkQ93WdxuWl0q9GES7/fL9w28zyTq1KLUI+JKWl0d4ht9kWMl
+	 G0y5Ab5oe+ZtB/Yq/RnI3UKNy1jJ2AL1G6niPBZbua3wJs04RcPOd1LmBDkwDsLZRP
+	 NTpb4935rnjG0BO0AAlVRSFChd16TNGyY8OjRPR2RSDcLIwzaadTh8YiEzdDuanyd+
+	 3rQYC/YKUwGiQJMuJ0bVkV+EUf2EnLRS3UmeCAfwXLma02/85aXhjpbAHkzTxXevki
+	 D58ILc80axa+osfNRogsPNIw6vVB6CoZQrHpKIsu3moyb9pbL+Jm8HPda7h4huDFfx
+	 opssgkMkxKm7w==
+Date: Thu, 12 Jun 2025 09:18:46 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, 
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, patches@lists.linux.dev, Wei Wang <wei.w.wang@intel.com>
+Subject: Re: [PATCH 0/7] Reorganize Intel VT-D to be ready for iommupt
+Message-ID: <ohwlzwslfmcvqthbzv2hpbu2fk32ybfp4yt5czwl3lfocbmh4s@lxi52z3giikm>
+References: <0-v1-20c73f153f4c+1895-vtd_prep_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] dma-contiguous: hornor the cma address limit setup by
- user
-To: Feng Tang <feng.tang@linux.alibaba.com>, Robin Murphy
-	<robin.murphy@arm.com>, Catalin Marinas <catalin.marinas@arm.com>, Andrew
-	Morton <akpm@linux-foundation.org>, Christoph Hellwig <hch@lst.de>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20250612021417.44929-1-feng.tang@linux.alibaba.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20250612064130eucas1p1f607c3f7d9b1751ee1bc48ccc5a0eea7
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250612021422eucas1p16c777f6fa46aa130d9b83ba80c2c11c3
-X-EPHeader: CA
-X-CMS-RootMailID: 20250612021422eucas1p16c777f6fa46aa130d9b83ba80c2c11c3
-References: <CGME20250612021422eucas1p16c777f6fa46aa130d9b83ba80c2c11c3@eucas1p1.samsung.com>
-	<20250612021417.44929-1-feng.tang@linux.alibaba.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0-v1-20c73f153f4c+1895-vtd_prep_jgg@nvidia.com>
 
-On 12.06.2025 04:14, Feng Tang wrote:
-> When porting a cma related usage from x86_64 server to arm64 server,
-> the "cma=4G@4G" setup failed on arm64. The reason is arm64 and some
-> other architectures have specific physical address limit for reserved
-> cma area, like 4GB due to the device's need for 32 bit dma. Actually
-> lots of platforms of those architectures don't have this device dma
-> limit, but still have to obey it, and are not able to reserve a huge
-> cma pool.
->
-> This situation could be improved by honoring the user input cma
-> physical address than the arch limit. As when users specify it, they
-> already knows what the default is which probably can't suit them.
->
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Feng Tang <feng.tang@linux.alibaba.com>
+Hi Jason,
 
-Thanks, applied to dma-mapping-fixes branch.
+On Mon, Jun 09, 2025 at 04:58:19PM -0300, Jason Gunthorpe wrote:
+> Jason Gunthorpe (7):
+>   iommu/vtd: Lift the __pa to
+>     domain_setup_first_level/intel_svm_set_dev_pasid()
+>   iommu/vtd: Fold domain_exit() into intel_iommu_domain_free()
+>   iommu/vtd: Do not wipe out the page table NID when devices detach
+>   iommu/vtd: Split intel_iommu_domain_alloc_paging_flags()
+>   iommu/vtd: Create unique domain ops for each stage
+>   iommu/vtd: Split intel_iommu_enforce_cache_coherency()
+>   iommu/vtd: Split paging_domain_compatible()
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Nit: The correct prefix for VT-d patches is "iommu/vt-d".
 
+Regards,
+
+	Joerg
