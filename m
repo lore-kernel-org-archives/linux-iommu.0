@@ -1,272 +1,165 @@
-Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2085.outbound.protection.outlook.com [40.107.237.85])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CC13246BC1
-	for <iommu@lists.linux.dev>; Thu, 12 Jun 2025 14:34:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749738879; cv=none; b=V22OYcgkU66qmKp/KkPMUDM0BE1Om/3DYOJcuRblAkmuzIZS6R7qXZ7HgNISF+KH6j15E8YRPwMlUg+EkpXFEYashp9qc624gN4SfcFb64S6vXXZtj2oPyNU223ww2wlDCatNz5eodBHFMhSRYjvHCXPj25qNV9jLWuQV+UE4JM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749738879; c=relaxed/simple;
-	bh=C5qtus052bCsWzLSi4k2AO3g61EBMbo6+ArX0lL6UPo=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=VWIr/oJ5LqDEvqFGZQiyPvmstFm0aMe5ctruEMXWijTcwpudvRDBvX83txaJY46FAmZKyfi2XSOaACjA9TTJuJwzSpB9eh3lSGSrENnG3zB1fZ+DQBg3Syws35etwUWqtzPVAh8lFJM1fT2kSoxDXRGq0qH2NAG4dFRWfPOhr/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bSqYrHdI; arc=none smtp.client-ip=209.85.216.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F4D63596B;
+	Thu, 12 Jun 2025 17:07:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.85
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1749748045; cv=fail; b=Zgb0OSHxlvYk6FRQ+aDMSSPHfz3NUC++sy6dlK33pv7xWkvt6OKPVU631UoCmwVaP80JYkvYhlUaLmBrhTAIkTfVmx1cL6h6Yh5DedYh53rUK2ZPZc0+1rQnyzkp/9vZBLgJMvNfUCuA4K8CfJj/tze9jNVgE8e+8iQToXd/zbI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1749748045; c=relaxed/simple;
+	bh=jv5Vyr/g07ojqzDZEcRYu8CJFdpSGbcSp9Pvgc8RKTY=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=U4TBGPw72wAUv/+tC6nVPjqiH+0OYRP/9F6kIHWKZgsfIFSyKD6eQNo5NMV0oGRLov6uMmudfOObmrlRBbDYORtYF4LACgVy1T8TU9WHNQW1d0d6l73wAuGQcDx5ZZRJZp0qdFxCGAc/HAcc44Tmz3zGykzzZSdb6Ab7q9rRPqc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PrVLNaGP; arc=fail smtp.client-ip=40.107.237.85
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bSqYrHdI"
-Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-311a6b43ed7so963260a91.1
-        for <iommu@lists.linux.dev>; Thu, 12 Jun 2025 07:34:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1749738877; x=1750343677; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=bCkqRQ65xZAC1T38W5bWrrAPN4EJG3gT3DO5Cch9Ys0=;
-        b=bSqYrHdIBaMv4sdp/VJguOcNvcnx6NvDdT9xJxM4oj5r2ciVKHUtZnuz7CWF50Ahn7
-         PIEfazL6P2mt6/V4zQTsxgo6w5iVJ0g21em8rBoGphSGDIqdCzG1+f1RIiQ+1gbzydb1
-         uvXkUrmudFNG3g90hG7Zm7sUiRqYOtikyVrnn2WEAyhNSkPtdnS+QLY79APUj6LD92HH
-         tkOGC9glvymBZhCR8e2H3sb2RTW/08MV3GwPWU4B5+9E62diTMftDd+/hMcOlG5iYnyE
-         zRi07pud+6c9ZMxgISTu4r+U+rAGd+1qYMW0wRYEGQOSURy5/HwtjL6Cfvv0ci+OQH4r
-         TyuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749738877; x=1750343677;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bCkqRQ65xZAC1T38W5bWrrAPN4EJG3gT3DO5Cch9Ys0=;
-        b=OsfBKqG8AWgdBKNALHaOdJUnnvfaVoD0j76+etgmIq0m8RR4sanxsPojeAyBLc8x08
-         VyhybS+aXjDZDk9S00x84SFI5HRteOIymHuwUuLq//5GtzywSzqawEN0h7/QoEOyZLVE
-         G2RXKKm+bp6DGYq+O8dDrd9ke/695Jkv1OOpXbSQdvuMcxM81de9K/VqI158LRKKwVM3
-         pWUtNbRA1u3tgzEKofm1SYT501bz7jo5r9Ve20KD6JOg2p14LgQ3iMuWlOBfS8r4lw7i
-         nm1lJmHf498dgoE8ZH9QhmD60inJ610/wpu4qGeCbV+CnXB+LFSYDI5mWFqiDB/3p8uC
-         ElCA==
-X-Forwarded-Encrypted: i=1; AJvYcCXkXFKqq7/e2n+rQo/jXlLyXMq5WuXtCXOsGmSckRPFt/xT/Hl/5Rgq1runFl8ppMVHgCEkDQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxkypAbqCNAEzPGWRvOb+vUce2Kge2IZ0npFyFXaPpmodziLVbp
-	NnltnJ9qzHvs6ZKMF5i8tK1I0/Hj4GWK2AqnuvZQo4eqroRNWKiqlEMrjFZJSwK8U9gBnJf++l8
-	SEiIKgA==
-X-Google-Smtp-Source: AGHT+IFvgFX45fAef1k8uZ/3DR+A7ppsnjKdR6QYSkMmUdo4ZfmyvklPkUSYEBb4bT/S6wp2Q15cPG3uYow=
-X-Received: from pjbof7.prod.google.com ([2002:a17:90b:39c7:b0:312:e5dd:9248])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:48c1:b0:311:ea13:2e63
- with SMTP id 98e67ed59e1d1-313d7dda00fmr200540a91.13.1749738876902; Thu, 12
- Jun 2025 07:34:36 -0700 (PDT)
-Date: Thu, 12 Jun 2025 07:34:35 -0700
-In-Reply-To: <86tt4lcgs3.wl-maz@kernel.org>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PrVLNaGP"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=VMbCwoErNgP/y4QK/9xC5cTuQPAfDU/L6vm7B7q1InVUOTTr3ML+qn4RtfMmMFHUYqRVqnrG3B0CY5TJpgSyj/SAlzm5HtYN30OifHJHGJhxz01hQN/VjRTSs/Trh6w7NiEOEJ987G1YJ7hB57j0/amRPeHksWe2pzXKy4JerP7hIwgT0UAbFbgIvipsw7Sc2/FtOWb5IM7Kxd4zbM8pGRw8coIIZ4lCFZmuD0A2QdVXgWIyfB4xzKIheZT6maQTY31AtVdYT1vCALhP7dpn5Ya18mKGDCXI3b3FHy1tvo2fCKNJs37rEJS6E+1izUKFA10ZyM2V++wDFd0e2pI1Zw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SOS4QBWMfZa0ntDYdWKw36vasyXju+x4Srhb59aFSe4=;
+ b=UndIsrGOKbm/alGeH9XM75n37BZKdse4MJkpIVErOHYYRbGk6C8zw3OCl4tkn9/epOUw7sdwW4dmVqlwRdKdozbvVE1Lfrro/ecVz9u2n8f/FK0nDwgSAP5gnWWzzjFUvxa77fl1kxp79v/UA2hVNgV6M1KtcMV0A5P4PLKu5K2+NCSZT2UUX4jKlmcOtyL6V3XyOeGslqN/cIPC3LxPkN7WgkRvYjKQVdCCdWb6HxymbYWYmHs7Smkz8F/4g0OW5mi69fSczqP0zut2Q/gKQGT1iVWxvGfM79goSE5Ou266msPsx7SGiJ/jUb9TRfZAdxLDJE/wXuRsdBYUSQNWDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=SOS4QBWMfZa0ntDYdWKw36vasyXju+x4Srhb59aFSe4=;
+ b=PrVLNaGPvP3orqCriZppaS/1y8PZCh9487w1MpZhrV0lWTnJkSnaVcmWRhDC2vOKS20WOlrQF383uLxKxBztWqSyC4yF9MN8zsP3VgkHg/U4VZ6Rs9sVxCBWykYszcVjX6Y+4mF/f7NYPI0Xq/snxohujarKIoGWsYWJhACrATS7wYaOmyxxNrWSR7kd4WyqOzN5iXapVOU8kY9GWW6ll975eopvxTcfHOpMDErZ5WSVRdI8oPjd0Qx9687vQu5FbYbLOC299WYaY2qzQM3KW3/Dkvi3A4EPRqLEYa8ptuKZmlY2d2tpIrHaYYODMd/7Obld417HFyx5e1ZAaLHFxA==
+Received: from BL0PR02CA0133.namprd02.prod.outlook.com (2603:10b6:208:35::38)
+ by DM4PR12MB7693.namprd12.prod.outlook.com (2603:10b6:8:103::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8835.18; Thu, 12 Jun
+ 2025 17:07:15 +0000
+Received: from BN3PEPF0000B078.namprd04.prod.outlook.com
+ (2603:10b6:208:35:cafe::1) by BL0PR02CA0133.outlook.office365.com
+ (2603:10b6:208:35::38) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8792.24 via Frontend Transport; Thu,
+ 12 Jun 2025 17:07:15 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN3PEPF0000B078.mail.protection.outlook.com (10.167.243.123) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8835.15 via Frontend Transport; Thu, 12 Jun 2025 17:07:14 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 12 Jun
+ 2025 10:06:55 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Thu, 12 Jun
+ 2025 10:06:55 -0700
+Received: from nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Thu, 12 Jun 2025 10:06:52 -0700
+Date: Thu, 12 Jun 2025 10:06:49 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: "jgg@nvidia.com" <jgg@nvidia.com>, "will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org"
+	<joro@8bytes.org>, "ddutile@redhat.com" <ddutile@redhat.com>, "Liu, Yi L"
+	<yi.l.liu@intel.com>, "peterz@infradead.org" <peterz@infradead.org>,
+	"jsnitsel@redhat.com" <jsnitsel@redhat.com>, "praan@google.com"
+	<praan@google.com>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "patches@lists.linux.dev"
+	<patches@lists.linux.dev>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v1 05/12] iommu: Introduce get_viommu_size and
+ viommu_init ops
+Message-ID: <aEsJKZLRTf36Dh3Q@nvidia.com>
+References: <cover.1749488870.git.nicolinc@nvidia.com>
+ <bc2c57254c40028e4dc74f32ac350826a26b3d8c.1749488870.git.nicolinc@nvidia.com>
+ <BN9PR11MB5276F17940D4B219D5B4F4BC8C74A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250611224604.313496-2-seanjc@google.com> <20250611224604.313496-4-seanjc@google.com>
- <86tt4lcgs3.wl-maz@kernel.org>
-Message-ID: <aErlezuoFJ8u0ue-@google.com>
-Subject: Re: [PATCH v3 02/62] KVM: arm64: WARN if unmapping vLPI fails
-From: Sean Christopherson <seanjc@google.com>
-To: Marc Zyngier <maz@kernel.org>
-Cc: Oliver Upton <oliver.upton@linux.dev>, Paolo Bonzini <pbonzini@redhat.com>, 
-	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
-	Lu Baolu <baolu.lu@linux.intel.com>, linux-arm-kernel@lists.infradead.org, 
-	kvmarm@lists.linux.dev, kvm@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Sairaj Kodilkar <sarunkod@amd.com>, 
-	Vasant Hegde <vasant.hegde@amd.com>, Maxim Levitsky <mlevitsk@redhat.com>, 
-	Joao Martins <joao.m.martins@oracle.com>, Francesco Lavra <francescolavra.fl@gmail.com>, 
-	David Matlack <dmatlack@google.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276F17940D4B219D5B4F4BC8C74A@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN3PEPF0000B078:EE_|DM4PR12MB7693:EE_
+X-MS-Office365-Filtering-Correlation-Id: e6f04d18-1cb6-4ff6-6dcd-08dda9d39484
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|7416014|82310400026|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?UTD8HR328U7fIMGXgo+ybW/0jNXjfQokZV+mwmVA/fQXkBouSNXuTqe60PKa?=
+ =?us-ascii?Q?FP2Iogxi1qsXKs094arjfR7rz0DImxVlMo9Fc7AdYbJ2KprtzLH3cWJ98Pm8?=
+ =?us-ascii?Q?Z5rUAumWKbN6RDZ1NL2oKqeIKCysiNiyuY+mr9RUz0hb+yJpoEreRSxTxIwn?=
+ =?us-ascii?Q?EKMkcabbcVeAaX4//bC23DvooyxoXdcfIRyB4fUF5S/ghPYdsYkzmhZfB+ot?=
+ =?us-ascii?Q?tjSthBp1M53v+DEaPVxoTLSLrKAMVPzrURVDeJ8FeF+WLgwLwAy1n9XTS/0x?=
+ =?us-ascii?Q?1kzbTdVFIsxaNcuIVUoWvOIVD+xpVcDax9fm89xWqTKQ5dQDXdkv2rYFeQ3v?=
+ =?us-ascii?Q?6HmyUHFPsFaSmSI9vWCTuIwDl9BCOvX2YGx3fYcn/InW16zdXo5tfHg3XG7L?=
+ =?us-ascii?Q?xAjdqsDgCZI72K0QES8WwHvzqytKOxBoOOyzeZI6+3qrCwzhGqa5ZdAhV7qm?=
+ =?us-ascii?Q?dlp75I1StftEXOGYnrq2UwbZN5udoZ+Z5FI569/nM+DP11i2CCEgd9Ap1F7w?=
+ =?us-ascii?Q?5fDxO3gw8S/w17J9ETtJhRTe5Ta2DqK8KTxpjYsn2P6aWtZSsba80NMCE5yS?=
+ =?us-ascii?Q?0fLt6wCkoaQYENz9YW20F/7zjPkTX4o4SMpcMAuUlPwRi56QvLELcYs31DbK?=
+ =?us-ascii?Q?/XntLKGWLBNpM8kCxaaVXjNlyXGm0QgZOaZ8OQVG2ztL1+4cOEmJWj913ZTa?=
+ =?us-ascii?Q?Mj1zj4/3bNnevI/65X1wZ6HcKmLOXudYAzPKwsgbbmmqI1QhRMghdFSVY8ot?=
+ =?us-ascii?Q?/e9o4adAvaeurd+2YUCFApS6FDCeqq3eqmylKuhv6Etd+WDhyxjvyj8tUel1?=
+ =?us-ascii?Q?WbMhivAWU+ZdeLlS5VNMzHgAz80nQF/3vvUEIK9IO+N4sdqZkyOuMt3qAnJB?=
+ =?us-ascii?Q?524i9IKbwCw7w9rOj2UfD9q6wvBZb9lpip3SAGHYN1s+n7iZZEzvL7SuI3zK?=
+ =?us-ascii?Q?Bl4f8oSpXdKDEWHMlmgyuIgj+pS9iwC7FFUgoOVEtUfaIExyn5KtQqv8A/Gw?=
+ =?us-ascii?Q?JP8uJuFfCJbsUqaHgpK0rIprE5AMtJFt8cRiupqnUgFR7OqQelF597XAHeP7?=
+ =?us-ascii?Q?X5E3eukNicckrzhmLsaXoqrYrmBsav6AhcBP3BLiPGdYyXOXGlZN/ZNj32UQ?=
+ =?us-ascii?Q?WotrjI0YExwTSmfXdBh+ZOSF0ZQUxP/FIpLyNvNrywm412fFMHjh6vCMHq37?=
+ =?us-ascii?Q?ex8z0nYMGsuH2Csz0vc9Kfe2Wj4imhiSUBPtrWGGN+96gKbiXgbzgIHLwmPy?=
+ =?us-ascii?Q?ZV/spteI54q+ilSezGcZMfPemgALOq6eIxE1PXRNVfhij0fSUqC0+HulBobM?=
+ =?us-ascii?Q?PUmJFZFH/TcS3Jt6c1GpzxsVwDwmgOs0dLWIHRRI99AznIjzYel41YGqBANU?=
+ =?us-ascii?Q?Rnto8x38NVxpREnVOehPUWEgcqljxZ9oCySedrmaPK6MLGzYKPRqP/Qb8GNM?=
+ =?us-ascii?Q?SaY9/+oxjxcT7hevR0zaGP+EJOc2pEXDQYo1hSfYN8X+St5a48Ehr2Oj9XEP?=
+ =?us-ascii?Q?xXVp20db+K0MRWNcK2ztvtuV0Mq6j+kuFFfZ?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(376014)(7416014)(82310400026)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jun 2025 17:07:14.9908
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6f04d18-1cb6-4ff6-6dcd-08dda9d39484
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN3PEPF0000B078.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7693
 
-On Thu, Jun 12, 2025, Marc Zyngier wrote:
-> On Wed, 11 Jun 2025 23:45:05 +0100,
-> Sean Christopherson <seanjc@google.com> wrote:
-> > 
-> > WARN if unmapping a vLPI in kvm_vgic_v4_unset_forwarding() fails, as
-> > failure means an IRTE has likely been left in a bad state, i.e. IRQs
-> > won't go where they should.
+On Thu, Jun 12, 2025 at 08:12:29AM +0000, Tian, Kevin wrote:
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Tuesday, June 10, 2025 1:13 AM
+> > + * @get_viommu_size: Get the size of a driver-level vIOMMU structure for a
+> > given
+> > + *                   @dev corresponding to @viommu_type. Driver should return
+> > an
+> > + *                   errno if vIOMMU isn't supported accordingly. It is required
+> > + *                   for driver to use the VIOMMU_STRUCT_SIZE macro to sanitize
+> > + *                   a driver-level vIOMMU structure related to the core one
 > 
-> I have no idea what an IRTE is.
+> What about returning size with '0' indicating NOSUPPORT?
 
-Sorry, x86 IOMMU terminology (Interrupt Remapping Table Entry).  I think the GIC
-terminology would be ITS entry?  Or maybe ITS mapping?
+I tend to support other errnos here. Basically this moves all the
+driver-level sanity checks from viommu_alloc to get_viommu_size,
+to reject an incompatible case immediately before allocating any
+structure. And there can be another errno than EOPNOTSUPP.
 
-> But not having an VLPI mapping for an interrupt at the point where we're
-> tearing down the forwarding is pretty benign. IRQs *still* go where they
-> should, and we don't lose anything.
-
-This is the code I'm trying to refer to:
-
-  static int its_vlpi_unmap(struct irq_data *d)
-  {
-	struct its_device *its_dev = irq_data_get_irq_chip_data(d);
-	u32 event = its_get_event_id(d);
-
-	if (!its_dev->event_map.vm || !irqd_is_forwarded_to_vcpu(d))  <=== this shouldn't happen?
-		return -EINVAL;
-
-	/* Drop the virtual mapping */
-	its_send_discard(its_dev, event);
-
-	/* and restore the physical one */
-	irqd_clr_forwarded_to_vcpu(d);
-	its_send_mapti(its_dev, d->hwirq, event);
-	lpi_update_config(d, 0xff, (lpi_prop_prio |
-				    LPI_PROP_ENABLED |
-				    LPI_PROP_GROUP1));
-
-	/* Potentially unmap the VM from this ITS */
-	its_unmap_vm(its_dev->its, its_dev->event_map.vm);
-
-	/*
-	 * Drop the refcount and make the device available again if
-	 * this was the last VLPI.
-	 */
-	if (!--its_dev->event_map.nr_vlpis) {
-		its_dev->event_map.vm = NULL;
-		kfree(its_dev->event_map.vlpi_maps);
-	}
-
-	return 0;
-  }
-
-When called from kvm_vgic_v4_unset_forwarding()
-
-	if (irq->hw) {
-		atomic_dec(&irq->target_vcpu->arch.vgic_cpu.vgic_v3.its_vpe.vlpi_count);
-		irq->hw = false;
-		ret = its_unmap_vlpi(host_irq);
-	}
-
-IIUC, irq->hw is set if and only if KVM has configured the IRQ to be fowarded
-directly to a vCPU.  Based on this comment in its_map_vlpi(): 
-
-	/*
-	 * The host will never see that interrupt firing again, so it
-	 * is vital that we don't do any lazy masking.
-	 */
-
-and this code in its_vlpi_map():
-
-
-		/* Drop the physical mapping */
-		its_send_discard(its_dev, event);
-
-my understanding is that the associated physical IRQ will not be delivered to the
-host while the IRQ is being forwarded to a vCPU.
-
-irq->hw should only become true for MSIs (I'm crossing my fingers that SGIs aren't
-in play here) if its_map_vlpi() succeeds:
-
-	ret = its_map_vlpi(virq, &map);
-	if (ret)
-		goto out_unlock_irq;
-
-	irq->hw		= true;
-	irq->host_irq	= virq;
-	atomic_inc(&map.vpe->vlpi_count);
-
-and so if its_unmap_vlpi() fails in kvm_vgic_v4_unset_forwarding(), then from KVM's
-perspective, the worst case scenario is that an IRQ has been left in a forwarded
-state, i.e. the physical mapping hasn't been reinstalled.
-
-KVM already WARNs if kvm_vgic_v4_unset_forwarding() fails when KVM is reacting to
-a routing change (this is the WARN I want to move into arch code so that
-kvm_arch_update_irqfd_routing() doesn't plumb a pointless error code up the stack):
-
-		if (irqfd->producer &&
-		    kvm_arch_irqfd_route_changed(&old, &irqfd->irq_entry)) {
-			int ret = kvm_arch_update_irqfd_routing(
-					irqfd->kvm, irqfd->producer->irq,
-					irqfd->gsi, 1);
-			WARN_ON(ret);
-		}
-
-It's only the kvm_arch_irq_bypass_del_producer() case where KVM doesn't WARN.  If
-that fails, then the IRQ has potentially been left in a forwarded state, despite
-whatever driver "owns" the physical IRQ having removed its producer.  E.g. if VFIO
-detaches its irqbypass producer and gives the device back to the host, then
-whatever is using the device in the host won't receive IRQs as expected.
-
-Looking at this again, its_free_ite() also WARNs on its_unmap_vlpi() failure, so
-wouldn't it make sense to have its_unmap_vlpi() WARN if irq_set_vcpu_affinity()
-fails?  The only possible failures are that the GIC doesn't have a v4 ITS (from
-its_irq_set_vcpu_affinity()):
-
-	/* Need a v4 ITS */
-	if (!is_v4(its_dev->its))
-		return -EINVAL;
-
-	guard(raw_spinlock)(&its_dev->event_map.vlpi_lock);
-
-	/* Unmap request? */
-	if (!info)
-		return its_vlpi_unmap(d);
-
-or that KVM has gotten out of sync with the GIC/ITS (from its_vlpi_unmap()):
-
-	if (!its_dev->event_map.vm || !irqd_is_forwarded_to_vcpu(d))
-		return -EINVAL;
-
-All of those failure scenario seem like warnable offences when KVM thinks it has
-configured the IRQ to be forwarded to a vCPU.
-
-E.g.
-
---
-diff --git a/arch/arm64/kvm/vgic/vgic-its.c b/arch/arm64/kvm/vgic/vgic-its.c
-index 534049c7c94b..98630dae910d 100644
---- a/arch/arm64/kvm/vgic/vgic-its.c
-+++ b/arch/arm64/kvm/vgic/vgic-its.c
-@@ -758,7 +758,7 @@ static void its_free_ite(struct kvm *kvm, struct its_ite *ite)
-        if (irq) {
-                scoped_guard(raw_spinlock_irqsave, &irq->irq_lock) {
-                        if (irq->hw)
--                               WARN_ON(its_unmap_vlpi(ite->irq->host_irq));
-+                               its_unmap_vlpi(ite->irq->host_irq);
- 
-                        irq->hw = false;
-                }
-diff --git a/arch/arm64/kvm/vgic/vgic-v4.c b/arch/arm64/kvm/vgic/vgic-v4.c
-index 193946108192..911170d4a9c8 100644
---- a/arch/arm64/kvm/vgic/vgic-v4.c
-+++ b/arch/arm64/kvm/vgic/vgic-v4.c
-@@ -545,10 +545,10 @@ int kvm_vgic_v4_unset_forwarding(struct kvm *kvm, int host_irq)
-        if (irq->hw) {
-                atomic_dec(&irq->target_vcpu->arch.vgic_cpu.vgic_v3.its_vpe.vlpi_count);
-                irq->hw = false;
--               ret = its_unmap_vlpi(host_irq);
-+               its_unmap_vlpi(host_irq);
-        }
- 
-        raw_spin_unlock_irqrestore(&irq->irq_lock, flags);
-        vgic_put_irq(kvm, irq);
--       return ret;
-+       return 0;
- }
-diff --git a/drivers/irqchip/irq-gic-v4.c b/drivers/irqchip/irq-gic-v4.c
-index 58c28895f8c4..8455b4a5fbb0 100644
---- a/drivers/irqchip/irq-gic-v4.c
-+++ b/drivers/irqchip/irq-gic-v4.c
-@@ -342,10 +342,10 @@ int its_get_vlpi(int irq, struct its_vlpi_map *map)
-        return irq_set_vcpu_affinity(irq, &info);
- }
- 
--int its_unmap_vlpi(int irq)
-+void its_unmap_vlpi(int irq)
- {
-        irq_clear_status_flags(irq, IRQ_DISABLE_UNLAZY);
--       return irq_set_vcpu_affinity(irq, NULL);
-+       WARN_ON_ONCE(irq_set_vcpu_affinity(irq, NULL));
- }
- 
- int its_prop_update_vlpi(int irq, u8 config, bool inv)
-diff --git a/include/linux/irqchip/arm-gic-v4.h b/include/linux/irqchip/arm-gic-v4.h
-index 7f1f11a5e4e4..0b0887099fd7 100644
---- a/include/linux/irqchip/arm-gic-v4.h
-+++ b/include/linux/irqchip/arm-gic-v4.h
-@@ -146,7 +146,7 @@ int its_commit_vpe(struct its_vpe *vpe);
- int its_invall_vpe(struct its_vpe *vpe);
- int its_map_vlpi(int irq, struct its_vlpi_map *map);
- int its_get_vlpi(int irq, struct its_vlpi_map *map);
--int its_unmap_vlpi(int irq);
-+void its_unmap_vlpi(int irq);
- int its_prop_update_vlpi(int irq, u8 config, bool inv);
- int its_prop_update_vsgi(int irq, u8 priority, bool group);
-
-
+Thanks
+Nicolin
