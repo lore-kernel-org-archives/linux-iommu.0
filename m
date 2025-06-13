@@ -1,110 +1,81 @@
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E5C8440C
-	for <iommu@lists.linux.dev>; Fri, 13 Jun 2025 12:42:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EEBD79F5;
+	Fri, 13 Jun 2025 12:50:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749818526; cv=none; b=iZx7tX+hnaNOVABN8ep0+P1QP8C0j4I2hABp/1UPJTBuqfIPr2zMRuRKFH82Zhz9P/08JKGwTB0cUnBK9sc7hkv8hfU5wKgIoVjWSxLe63IJB6HTzET7SoM9WMG0Zlrwpk4LAxf1PEXz/TuVPDA2I/v6mszYIYIB20/X0HK10Q4=
+	t=1749819026; cv=none; b=WoMwG0ICzgHu0NGkMx4pbhw/lIXCub1Qf/lWuacOdQlMwi5fuk085LDhydg3OdlgmNIl6aHcPfIYsA6WQYYxa/UfQ1pe+ey4E0J2ktrbtpP6EtpvADb/ZsbLxqLgSgYT312J6DweJAykBtAYYzOwCKYGtv/TvVzhtvmufdpy9w4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749818526; c=relaxed/simple;
-	bh=NF/1irqy4jJ1L6V66mqdBPhra41pySte+a4okmBQcdc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=V1sCnYgla+puEVDy1rrchec1HxK7rSZ1/vuV9pedelufwSpStzNFVkNw7/jbRXDE3SsocN1vqooaoQ/Gt0bNOP5f1GgFrAmgNQuUFFMnj8MtMVPUKAjHy439FIrvKkxhTqVjQxJq7zuFrSJqcOyTCnRdmeMwsnu2VVpGlOW6iOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=P72qkf6e; arc=none smtp.client-ip=209.85.160.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1749819026; c=relaxed/simple;
+	bh=79WqwjURJrzcM8vb/SrEx49AYycjsLMAMZFEZGKyt8U=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=WhGeVtfX7O78nZwc7GI21xeMF7rSkavPiBF/XkKn3wSUHagJDsAtdC1yZRNBFE/iMlQ99MckgvO+JCRU9zvMOJ0GTxfvfhAEZgXDPgcKvvsJ6mch2idBvKDzYa5rbiOFsaV+SN4IPmkO7AvQJvMFKruXr2ME5jsGlRDh7lyCV6Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cEulPce0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="P72qkf6e"
-Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-4a58f79d6e9so25325791cf.2
-        for <iommu@lists.linux.dev>; Fri, 13 Jun 2025 05:42:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1749818523; x=1750423323; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jl1a0a1dTiH9ND4pj3QHpu2/HcDZNYc3TWBsAo2QFhs=;
-        b=P72qkf6eGVn8XmozBBTJ+AmchCODCDxDSRHln4Yss6Y2PRN/1FvIYH221itEAk3Dey
-         /esuwlqLugc2+mhxhfHjK/T1FMlhw0n/2XWzc5aNRTV+wEPAzG73iW+f4G3+NWJ4DCi2
-         LiBYsZS2oGNLaDEmRnsKMHLuYQnPSDiJU+1oNkp2vhha4ag+/zHj/F3wPF2zhAe0N6dH
-         fi56qRPKh52zuadkaEXiAObGeMXUN3YwepE0ECxh7EpCI4aYNsSl0Y7Wb57fa9IlmTxN
-         fztVV5fYi+afXrQ+Z72NN7OhBwWBljk/Q0ktsr++Z0Oiw1hsYIIRtWeJBydaaqYLo/aY
-         Y/Vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749818523; x=1750423323;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jl1a0a1dTiH9ND4pj3QHpu2/HcDZNYc3TWBsAo2QFhs=;
-        b=ji3EIlsXCR2YDQ3jrJmeWqVz8DyLOdpy2nKjstaOL9TAlpzKmYYZANzDxNGXU1d/EM
-         7PXTCtnCTqopNzgi2cvM++neMu508NChXrW69iYNxyPOdfeB+uSAWAM+xVtQC8d5FLs2
-         bMyFBhnm/QAOD+JHD7aZFo22p++yxSVLFOHArypxYDgO70qlh2CaHvKTNaHHzay6VfEw
-         NWadX81j/Cp0BYZ7zSLNKjUb+t/c4yV9149qep9Z5PUcKlWpK6f8psPe59T01T5PdQyK
-         ML8ZCRzUzvXuznqL6wwpAwLSwV0/Z/+/K7E+0EBLraHVWrkqkOtXLfXlBlLtjRQeaso1
-         kOXg==
-X-Forwarded-Encrypted: i=1; AJvYcCUXhiOAYM+xGtW7PTZIK/w7vhJ3k2nkiYDCUgKgY8nOS3FA7HcZFLw9vl78ZdYQCGKmyZIE1Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxixZTcWJZh9WFl7mnAePtXBa2bHpPVcnZ5z+hNv2HwtVsUk+LA
-	PuZrIg3Ih8yI/kYD1dr54A0Y/lbyS9VIbZi8S7Oalg4bMvHM/jfLlmNiF+vLpxnJgTo=
-X-Gm-Gg: ASbGncuAvtM3bQUUrVwqZbCk530pePPB4kfrNWmX7wqJy2QuunpQ6rgFyQ0MPlFAtHz
-	TFhy58yEHpX/z3EgD7fdkym6+9uEGd6WAZ/p/fs/d9shbNrEZjhPnkZBxAwtECbPeQqpkugBLqi
-	EedwHruQfFlVdIpKtujt/tm7DPEwxPk2ZrfC6m1RqgQliHgm+rwDAqtUce2yqH8Lv3BgMaQc7FQ
-	VODS6GjOXGdIjeyqyuXorlDotDcIc/ypuYeODw7IBtl0q8Bbo2XFKoFOA1eD632P78ep9/bGBBE
-	uolitlTKpQ6itcm1xp9bT3wLrjAM1lF3tJg0beTO8JreOu2ROmvm3gzNv/Po14On1r1ZOp3OFuS
-	H3NVj31zDOOiKFcf/MGlohD9tKNIt9FSTWuv3a0Od29qVn0Tt
-X-Google-Smtp-Source: AGHT+IEMxc1apCXqPdiscCu3+jTMN5egyKcnrKpFBxG3GqFbDqJieLgrbOGckcJ4ZD2K8JgzUZhGZQ==
-X-Received: by 2002:a05:622a:1e85:b0:4a4:4af2:5cff with SMTP id d75a77b69052e-4a72fe5b8d7mr51010151cf.3.1749818523244;
-        Fri, 13 Jun 2025 05:42:03 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4a72a50985csm16302801cf.72.2025.06.13.05.42.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Jun 2025 05:42:02 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uQ3jO-00000004qLu-0nK4;
-	Fri, 13 Jun 2025 09:42:02 -0300
-Date: Fri, 13 Jun 2025 09:42:02 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH] iommufd: Destroy vdevice on device unbind
-Message-ID: <20250613124202.GD1130869@ziepe.ca>
-References: <20250610065146.1321816-1-aneesh.kumar@kernel.org>
- <BN9PR11MB527606182417BB7A35349F598C74A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250612172645.GA1011960@ziepe.ca>
- <BN9PR11MB5276B467ADCC57BC6571CA458C77A@BN9PR11MB5276.namprd11.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cEulPce0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B55CFC4CEE3;
+	Fri, 13 Jun 2025 12:50:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1749819025;
+	bh=79WqwjURJrzcM8vb/SrEx49AYycjsLMAMZFEZGKyt8U=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=cEulPce0chfJ/48f3xl++id2UE+66hPqoI/OwP4GXDX1qDNutroMdTPltj5gZAzNY
+	 BKSXlPQRTjYbLZjJkM/VUTcD62fQOjAqYuENIvXb+pFlPhE2VLMsNKPxM0t4NPacXp
+	 09IayyOwye8v9t0ujUPnQeFP82iuXgJdXs03fbfkHinzC3RvMUu0jUW7MegSx8oJo+
+	 kJhBbYUWO6BVJh8yNhHp1RKOjl3sSx4JqKlD2b6Kj40UI4hpbbbfWw2d8G+P7kwSEu
+	 FJ91hmg6iD5XK6M25MVyhtgva6tT2jTyRKhSOTCoivULEcYqkIoUhe6fnOqIdT/qKZ
+	 s/AcHZQchhbAg==
+From: Andreas Hindborg <a.hindborg@kernel.org>
+To: "Abdiel Janulgue" <abdiel.janulgue@gmail.com>
+Cc: <acourbot@nvidia.com>,  <dakr@kernel.org>,  "Miguel Ojeda"
+ <ojeda@kernel.org>,  "Alex Gaynor" <alex.gaynor@gmail.com>,  "Boqun Feng"
+ <boqun.feng@gmail.com>,  "Gary Guo" <gary@garyguo.net>,  =?utf-8?Q?Bj?=
+ =?utf-8?Q?=C3=B6rn?= Roy Baron
+ <bjorn3_gh@protonmail.com>,  "Benno Lossin" <benno.lossin@proton.me>,
+  "Alice Ryhl" <aliceryhl@google.com>,  "Trevor Gross" <tmgross@umich.edu>,
+  "Valentin Obst" <kernel@valentinobst.de>,
+  <linux-kernel@vger.kernel.org>,  "Marek Szyprowski"
+ <m.szyprowski@samsung.com>,  "Robin Murphy" <robin.murphy@arm.com>,
+  <airlied@redhat.com>,  <rust-for-linux@vger.kernel.org>,
+  <iommu@lists.linux.dev>,  "Petr Tesarik" <petr@tesarici.cz>,  "Andrew
+ Morton" <akpm@linux-foundation.org>,  "Herbert Xu"
+ <herbert@gondor.apana.org.au>,  "Sui Jingfeng" <sui.jingfeng@linux.dev>,
+  "Randy Dunlap" <rdunlap@infradead.org>,  "Michael Kelley"
+ <mhklinux@outlook.com>
+Subject: Re: [PATCH v4 1/3] rust: dma: clarify wording and be consistent in
+ `coherent` nomenclature
+In-Reply-To: <20250602085444.1925053-2-abdiel.janulgue@gmail.com> (Abdiel
+	Janulgue's message of "Mon, 02 Jun 2025 11:53:11 +0300")
+References: <20250602085444.1925053-1-abdiel.janulgue@gmail.com>
+	<9MKxKNA6QF7sSvlvmOX-7hZHeRN1N-Qm1EKm3nhZFgJLsmZAKhIrzu1ZeRy1w-4f7ZZGUEHhxLLILrq05UpOKA==@protonmail.internalid>
+	<20250602085444.1925053-2-abdiel.janulgue@gmail.com>
+User-Agent: mu4e 1.12.9; emacs 30.1
+Date: Fri, 13 Jun 2025 14:49:02 +0200
+Message-ID: <87y0tvbydd.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276B467ADCC57BC6571CA458C77A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain
 
-On Fri, Jun 13, 2025 at 07:31:48AM +0000, Tian, Kevin wrote:
-> yeah that seems to be the option if the said life-cycle dependency
-> cannot be removed...
-> 
-> conceptually it's still a bit unclean as the user needs to know that
-> the vdevice object is special after idevice is unbound i.e. it can only
-> be destroyed instead of supporting any other kind of operations.
+"Abdiel Janulgue" <abdiel.janulgue@gmail.com> writes:
 
-I would say userspace is somewhat malfunctioning if it destroys vfio
-before the vdevice. So the main aim here should be to contain the
-resulting mess, but still expect userspace to destroy the vdevice
-without a failure.
+> In the kernel, `consistent` and `coherent` are used interchangeably for the
+> region described in this api. Stick with `coherent` nomenclature
+> to show that dma_alloc_coherent() is being used, in addition to improving
+> the clarity in the DMA mapping attributes documentation.
+>
+> Reviewed-by: Benno Lossin <benno.lossin@proton.me>
+> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 
-> hmm if the user needs to build certain knowledge anyway can we 
-> go one step further to state that the vdevice will be destroyed
-> automatically once its idevice is unbound so the user shouldn't
-> attempt to explicitly destroy it again after unbind?
+Reviewed-by: Andreas Hindborg <a.hindborg@kernel.org>
 
-I would assume a malfunctioning userspace is probably going to destroy
-the vdevice explicitly. If it had proper knowledge it wouldn't have
-done this in the first place :)
 
-Jason
+Best regards,
+Andreas Hindborg
+
+
+
