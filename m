@@ -1,167 +1,277 @@
-Received: from fhigh-b8-smtp.messagingengine.com (fhigh-b8-smtp.messagingengine.com [202.12.124.159])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A37C2D8761;
-	Fri, 13 Jun 2025 07:35:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.159
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749800103; cv=none; b=gM8r+dj81dzDwcOCpkJIUYJWl78JDcaxuqhCURjdTGbN9W5ro9tBe9zV9WmVVjy1SjlHagOcBIVDzejxxKvJHuLChRZwC5ThT4IG1tSIwBM7SX+Nv96l7fmhYQMsy5CkMXLUdhW60BxmjBJxl24vw3mC9wOLU2e+VyG1W+KkHC4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749800103; c=relaxed/simple;
-	bh=fQ+Zm3/XGK+10ZRvK+XFYpZHWx6PqU9jm94xEvpjMQc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MSiQ08osfeOh+qYDxXcAZAtiSQBc+BeUBSmSYbl+MripyxteYMu4tGRFs0UuKgM/Q4bLBC/0PHMqFly9zoo+2hJU+GmMt2n7CbQNG0+ZMnFdtf0RO+RgoxQjm9N27zYLIYUOv+ECdWgQ8xGijOIR9b2eD8KEjxK5tPI8Ob7dcJc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=B67nTcCn; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=obGdjANf; arc=none smtp.client-ip=202.12.124.159
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D646F2C3774;
+	Fri, 13 Jun 2025 07:36:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.17
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1749800203; cv=fail; b=uKUK6BN4R0B0xYQ1hsGtUANDJTFGZRmM1gAQIctOjkFIf8T+kkZHDs25LojGXN03aE4qRk96J1mrbBqx26S5Fq1zF+ADIN4TwG7d70E13CN3K0uHSe5xxH8Q6I4Ng8/BecAoiWjxBLccHx3ZCEJucOUaTN8sEoBdhO2RXaUqdIo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1749800203; c=relaxed/simple;
+	bh=IAiPDKDHTC5sNQq8Sj+cOnpwfO2Vm884Rvkpb+tpC/o=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=ex6ip+NMwafRXPOS0b3NEjrujKNY/7sp/ki8/EkgPnoBWZvhk0J9etQInmACoX6tQALlBwNGDf29EdYNSnLuaxIUXFzAF/X78g4CHVz7GupMK7Eighm0R7KNVv6+i6CrJR4QK1HaqgDkAXft9TaJTeXMEEOVfYHR96h8hnLrEU4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PlUCwHJG; arc=fail smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="B67nTcCn";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="obGdjANf"
-Received: from phl-compute-07.internal (phl-compute-07.phl.internal [10.202.2.47])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id 78C582540150;
-	Fri, 13 Jun 2025 03:34:59 -0400 (EDT)
-Received: from phl-mailfrontend-01 ([10.202.2.162])
-  by phl-compute-07.internal (MEProxy); Fri, 13 Jun 2025 03:35:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
-	:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:subject
-	:subject:to:to; s=fm3; t=1749800099; x=1749886499; bh=heYYdoDlXF
-	OciX8bAT8IXpBAQStR+kpfE0iWQ6XRFa8=; b=B67nTcCnNzwgqqw5e9km6I+xvo
-	aP4x12BY0eqNXQd/5WAzuvx3iqVg+FZbcVKP5FKPEGSxxMuGAH3L/rfj418xIg70
-	/PvX1cbyeDwUVpAcivjtmOGjtx3ml0nmwCKa17nScrb2s5Q527q2h1/y4XBROHia
-	8nvdqwn17kBjrn8qoIQKRvcai0qtqKY6UiU2s0gziN05KRSAFQ4f9o6h6pNVDNwf
-	xVf1VeIBpzeymw1P0k9OGmTImtr8zQJULdyC5yrqJcK6g4oaNCLeMYXfXeMRE0RW
-	RFEC3RnE8yyU3OKG/xjyzlzvwyXSaM02E/VbYozacysEWXVmlLCujDx88tdQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-	1749800099; x=1749886499; bh=heYYdoDlXFOciX8bAT8IXpBAQStR+kpfE0i
-	WQ6XRFa8=; b=obGdjANf3TY83z9E4pcTsihvUy/NhNuL3IyPMSupSohNWxVy02l
-	DIhu0O7mPdBhG6LALj7QpvkuBLRqxCqUTe/FY4Lgl4LKVkszfBgYA8yw0VMo+P2L
-	IwQnsy9s2JORNu4cgB5/Ez7MBDt83hyhqL/wYquBx1at4LCZ2I+NQNwPDOr9FMkE
-	AyQ0zW/vRNT1xbbp1Z9aPEaYPnF9b5y3tP9zv1nlBYffAsC0pAWd1uHkLY0OEjuz
-	9fsO6TrlrTHGWtQ2xMgouIieOSKT87OUFxo4gbsF49Z8qiAQCflR1cgxccfM+ex0
-	aWWyY/hUGVsazvF765v54qnsr8ZcE2eWA8w==
-X-ME-Sender: <xms:odRLaLh6zoBCwTVNx3mvfgXtLKR5nE8PQpNCvoZQTZ4Yl_CbLvnwdw>
-    <xme:odRLaICswVPjz4ogeEyOqVrKMv3h2K0ju_EfqS7zm4Gl6Uf-UjFh8gN6posrOHBmL
-    iOC5OcwHsAR-lM2c_8>
-X-ME-Received: <xmr:odRLaLHK0aeEIyi6snr3y6ADuhS7i5ZXVIhpnmTkXcZQGxVBcNZK22osXdbJ_qmFKeLZKXiAXT60ogZi27I6ELmpNqrr_diVC9k>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtddugddujeefiecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
-    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
-    hnthhsucdlqddutddtmdenucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttdej
-    necuhfhrohhmpeflrghnnhgvucfirhhunhgruhcuoehjsehjrghnnhgruhdrnhgvtheqne
-    cuggftrfgrthhtvghrnhepgfdvffevleegudejfeefheehkeehleehfefgjefffeetudeg
-    tefhuedufeehfeetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilh
-    hfrhhomhepjhesjhgrnhhnrghurdhnvghtpdhnsggprhgtphhtthhopeefuddpmhhouggv
-    pehsmhhtphhouhhtpdhrtghpthhtohepshhvvghnsehkvghrnhgvlhdrohhrghdprhgtph
-    htthhopegrlhihshhsrgesrhhoshgvnhiifigvihhgrdhiohdprhgtphhtthhopehnvggr
-    lhesghhomhhprgdruggvvhdprhgtphhtthhopehulhhfrdhhrghnshhsohhnsehlihhnrg
-    hrohdrohhrghdprhgtphhtthhopehmthhurhhquhgvthhtvgessggrhihlihgsrhgvrdgt
-    ohhmpdhrtghpthhtohepshgsohihugeskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepsh
-    hrihhniheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheprghnughirdhshhihthhisehk
-    vghrnhgvlhdrohhrghdprhgtphhtthhopehrrghfrggvlheskhgvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:odRLaIS_fY6doz4TXul-16ldYhjIlpniGV2a8g4n6ltibGDTV-_mOQ>
-    <xmx:odRLaIznjucvvyZgRzf35RgUzJyDfO3OetS3EdETiVvnX76AZ8CLtw>
-    <xmx:odRLaO761ll-OM5SIk4RJpRBEoWwgMAB-KKWrDFl6U7GyN_JjqAY0g>
-    <xmx:odRLaNw8AJBTxtqIaToqpW5WlxojAdlTnU6UprMcyicXZwTH4PyLwQ>
-    <xmx:o9RLaB0Xg6U_mH9QzF5X9ggXCjEz7dkLBSNqyZGrq3Q-npIGYGL9kSgl>
-Feedback-ID: i47b949f6:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 13 Jun 2025 03:34:57 -0400 (EDT)
-Date: Fri, 13 Jun 2025 09:34:55 +0200
-From: Janne Grunau <j@jannau.net>
-To: Sven Peter <sven@kernel.org>
-Cc: Alyssa Rosenzweig <alyssa@rosenzweig.io>, Neal Gompa <neal@gompa.dev>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>,	Srinivas Kandagatla <srini@kernel.org>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Viresh Kumar <viresh.kumar@linaro.org>,	Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>,	Robin Murphy <robin.murphy@arm.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Vinod Koul <vkoul@kernel.org>,
-	Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,	Mark Brown <broonie@kernel.org>,
- Jaroslav Kysela <perex@perex.cz>,	Takashi Iwai <tiwai@suse.com>,
- Arnd Bergmann <arnd@arndb.de>,	asahi@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org,	linux-pm@vger.kernel.org,
- linux-kernel@vger.kernel.org,	linux-clk@vger.kernel.org,
- linux-i2c@vger.kernel.org,	iommu@lists.linux.dev,
- linux-input@vger.kernel.org,	dmaengine@vger.kernel.org,
- linux-sound@vger.kernel.org
-Subject: Re: [PATCH 00/11] Drop default ARCH_APPLE from Kconfig and use
- defconfig instead
-Message-ID: <20250613073455.GF3141695@robin.jannau.net>
-References: <20250612-apple-kconfig-defconfig-v1-0-0e6f9cb512c1@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PlUCwHJG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1749800201; x=1781336201;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=IAiPDKDHTC5sNQq8Sj+cOnpwfO2Vm884Rvkpb+tpC/o=;
+  b=PlUCwHJGhre38GKaeWcTN+1qhQCEmWqSgB6YIwwDgd5BXQyBvuOn8gO5
+   g2BcFT/ZmkyNUU8l9DiUBL0y83bdbmutAq0qkmkkYtLi1S7muKQs30mku
+   rxQSLNhn/iAGPJJ2/0OYiG5YrOuTWZKdeE5FWgCpTUMDi7vpRNW77El1A
+   LNm2j+Qtg9OwB9I1sBEVOQ8Z6ew+kvBsNjsnpEnqEYxpPr6Cco9m4rwL9
+   ZS1CIofGLEUHqqPR7WPfx/1rCEUAEtdnSeqXE44Cb4HU6w1Fisr7ajueU
+   HEKg0hesAc5Rb29L6ycl86gIwC6s0lrKuCmAAxis0xCiN1ShwbOZUhpmT
+   A==;
+X-CSE-ConnectionGUID: pw8y71z7RU63bR7Z+ctoiA==
+X-CSE-MsgGUID: 1xAPPEvfReCroo8bI6tqZA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11462"; a="51927377"
+X-IronPort-AV: E=Sophos;i="6.16,233,1744095600"; 
+   d="scan'208";a="51927377"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2025 00:36:40 -0700
+X-CSE-ConnectionGUID: vOjxpx9+TYa9KUL6EKsf7g==
+X-CSE-MsgGUID: uryrwITwTYucXZAb8D/lMw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,233,1744095600"; 
+   d="scan'208";a="147633859"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by fmviesa007.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jun 2025 00:36:39 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25; Fri, 13 Jun 2025 00:36:39 -0700
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25 via Frontend Transport; Fri, 13 Jun 2025 00:36:39 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (40.107.236.66)
+ by edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25; Fri, 13 Jun 2025 00:36:38 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=X2YxuMpxSQr3RWBEaUMNxFhQhXa/APaBmIjnjIRglyk1TOcBQ8JwQoUUGYXQJ77w/TGpOXpOz/nyoA51TjsFcwSIOyaHCAFxGy5IPwPzN/HvLGNr5Xx+zJEGB1PiiAOauS1udsH4uoSdU9AztwtTG1bElm9i8VXk3jLR9PVghFm84p8JHhndTZtxYyl5N8SCeZtSxoeQ4HC3Vi+NSOKpi/e5DIeL5akAurBLa/ZTVBb5tSv+RNns5pBZLez+nhkoRwCdFytnKsjqj/NS2I5bi176mx+T/POgMbDs77Pe3u93BlR7MRw1RxuTRUhkWqOUhbEkV6AGG8p267t8aCupyA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mT/6KouluPvz9HWKyo9zcKuSmWsMLV/OP5cETSTtMw0=;
+ b=Nubyb7THk7J6dCuj7tj1WSvAYQK5oNuRi0e+vVgigGQMJamxgqoe6wsB9vm0HtJ82iyZ2LWfdj3QX05zTSn2cxvPEj8UJlQXwD/nRev86IIUTO4n4rjyRxW5dZlozJV0PIMEhy8Flnb+9jIUcQmlA66wEInk8ExLcIlpKW2IBjtJgClQHVObUqgU8pxjI2LqQfF1Nab0mFcGqIPe0nRVU9coceFgfKs1PrxL0U1GV8/oFUgmCWv5GNd+gVMFftzKIJy9aBP0koNYLMtaw/V1+cZ6zX4KiioMKQUzj2RdKyFLphFnG0g0FcbrYkK45nbZX/IyvGreymZwjgSxTqMfPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by SJ1PR11MB6202.namprd11.prod.outlook.com (2603:10b6:a03:45b::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8813.29; Fri, 13 Jun
+ 2025 07:36:31 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%4]) with mapi id 15.20.8835.025; Fri, 13 Jun 2025
+ 07:36:30 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+CC: "jgg@nvidia.com" <jgg@nvidia.com>, "will@kernel.org" <will@kernel.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org"
+	<joro@8bytes.org>, "ddutile@redhat.com" <ddutile@redhat.com>, "Liu, Yi L"
+	<yi.l.liu@intel.com>, "peterz@infradead.org" <peterz@infradead.org>,
+	"jsnitsel@redhat.com" <jsnitsel@redhat.com>, "praan@google.com"
+	<praan@google.com>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "patches@lists.linux.dev"
+	<patches@lists.linux.dev>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>
+Subject: RE: [PATCH v1 07/12] iommu/arm-smmu-v3: Implement
+ arm_smmu_get_viommu_size and arm_vsmmu_init
+Thread-Topic: [PATCH v1 07/12] iommu/arm-smmu-v3: Implement
+ arm_smmu_get_viommu_size and arm_vsmmu_init
+Thread-Index: AQHb2WHzLJ2ABt636UCLQu+hzyE9l7P/MiKAgACXFACAAO+RsA==
+Date: Fri, 13 Jun 2025 07:36:30 +0000
+Message-ID: <BN9PR11MB52768A39F3D0594B3A79686A8C77A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <cover.1749488870.git.nicolinc@nvidia.com>
+ <55b1d69b2cceb685d4eb728a7a53572a9147993a.1749488870.git.nicolinc@nvidia.com>
+ <BN9PR11MB52764E40612C1293699E43F98C74A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <aEsL2mxfO0x3isog@nvidia.com>
+In-Reply-To: <aEsL2mxfO0x3isog@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SJ1PR11MB6202:EE_
+x-ms-office365-filtering-correlation-id: cc4ee7de-9b15-46a0-0281-08ddaa4d03ba
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014|38070700018;
+x-microsoft-antispam-message-info: =?us-ascii?Q?YPisDWgf5RgSeJH6GVLM5/YmxH1Mkc/qQF4kPJ4JA2gJrjVpRIwvZzMhGWsA?=
+ =?us-ascii?Q?2Ev+32jqExpNTnwcsJEN/VG11yRaU9cIFarFELTjDK8UB88N2dLNO6JJvXDT?=
+ =?us-ascii?Q?3PM6nu2PjZvp49BnTF01WXw7h0vwb2JE0lUy4HihHQneghkmM+FkbpKd5yeR?=
+ =?us-ascii?Q?OX1IgCFJmNAJO7+NVq2FZUfsFBwobgybFdS1PwXWo+LnDYDeHDpJ/qZ0xNJ+?=
+ =?us-ascii?Q?3yRuN+d9Y4qKor8dGpx87mH9pFre6csRSf0jwg9l30O8Lyawhat+qVP2Y1Bd?=
+ =?us-ascii?Q?l/FHBbAENn1d7xDnIyw+MtoepVzAJNsp7j2V2ESOs0Y0fN5zN376Z1NeFz9Y?=
+ =?us-ascii?Q?fbiHfurN5DGFMrUNnbA+BngZypRt6I6ValuTCP+dp3iU5RKL4irPyoX1i3gk?=
+ =?us-ascii?Q?MGA+W9LxH7XAIykNDTHy00FZU3ac/kyKw1DVhENiYVLnujqFcP8kpv5EryJr?=
+ =?us-ascii?Q?gSd2nBShshrJGypBraT9D7LPvZTUXDJzNmx48vjgfyAcdkpUA0xgJ470fnEE?=
+ =?us-ascii?Q?wHXwLRubQbJJ9+aGLpF7WFBp0Mz2n1qPG8ryFrMtOo0bLCUbhNPPn4AJ/eKJ?=
+ =?us-ascii?Q?DDW21La8ZKcJald0IaZg6jx42npBp5sBnuXSyaLz/tqWXQwvDX6tfKrnBOyc?=
+ =?us-ascii?Q?QUyfg8DW18bFGzY5S4iy/cLNbXW5bMTqV04zmvwhmYmlASkqD2DEvtR0mgKV?=
+ =?us-ascii?Q?x/s4f29Tejd94BGq7pUhb+AttR/fMoy2dACJ6mkXYBlxu9ragfjLf2FvgxAc?=
+ =?us-ascii?Q?lzmpt4lsJTxr4UIInlYeGqrYksb6Am6OSV4FDKFPtuc6/pAphqgSvYNLTods?=
+ =?us-ascii?Q?VTin0NrGd3ddvA7gFr9Kpv+Kt60Q5BtHi+c7Ajor8UiGmsnIwl4dlXWdSnfk?=
+ =?us-ascii?Q?c3QyOsAMGj9/1Pr35KI7i4pOHBuJBRrRM4tWHBGrxWGagyXTW1TYc99kMx3i?=
+ =?us-ascii?Q?WfIRbOyJDqpy/HgI+Hw+YbYy64fTSBmUZJBf23SFL4/h6mh39Zt3Hl9kj95/?=
+ =?us-ascii?Q?vK8f19ot8PUS7X2sX1ofwHNtQDoo0la+86e4eMbhUSfrtQHq/SpF+D6GkuW9?=
+ =?us-ascii?Q?JtwILnTryprgs0uns4kPeb0Qxwud+aivzGy+jVDjrhVyn3rCY+g759UtrXPC?=
+ =?us-ascii?Q?iNxYLWopflK79IHJKNb8pFkO5FIzoZVTkgp5swhelzIN3f6WzplobqMBRln2?=
+ =?us-ascii?Q?jIOBl3FUopIf0bHocLo2SHHSgDgAyOe2AaB+s64La7JflmtDNwYDXnPKQaDD?=
+ =?us-ascii?Q?Obb2OWP6p5mZM496zXO9x9rjmL7NntXZmTyD8M4fXD+BVUCHz5ZvOK/+MNyL?=
+ =?us-ascii?Q?gp7A9mHW0mjLmd33DmunSwKd75L2mXpowEAhKY+nPCF9iUqj0Rp7eAEVPjVq?=
+ =?us-ascii?Q?c0HyxQZY/4CoiBYnpFU+Bl7cw4HLaYZfwW7Ai7QYXP9A0iq9QEL1qjunwRZq?=
+ =?us-ascii?Q?l9S4VqCQKrlmHcuXRZX36WatowZ1q169OevPT4d8n6f7jtlsDIim2A=3D=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HnO5l2hseF20G3JuD2b+6L5A1JD8mZjpR/qceZeITUuCbVT6xgsXD9YSXcIw?=
+ =?us-ascii?Q?s3CAP8sIyhAFG4Nmt1Fcyy9AmXsyLnR0INNe2CC3DQ3ob+aGVnDDrg2bb1+L?=
+ =?us-ascii?Q?uOALdxKZWakARLFHgfma3FWAps7XjGLsaxrIjwxuoLi/d8aTC55BEs8k1hRe?=
+ =?us-ascii?Q?XbvN2sgBvY0WwNwrRfMp6o2NW83P26A4whOeczAq901I5ow1CD4qRRRETJmZ?=
+ =?us-ascii?Q?Zs9mIRMah6S1arPokPFH/G0HNYnkWS+VgKcdAKnhItwT3C3i0TX9/yIB7JZ8?=
+ =?us-ascii?Q?m3INBUAkGpgNvi1doEimAocBtsx/dXy0bN5j66+JC+WqHk1IT1moPwG39o0c?=
+ =?us-ascii?Q?1eSJECE/zyYJas3X0EsKFxmhkA+++q08fGcNNStChPyR8LJPNc0kNZlQe5Dg?=
+ =?us-ascii?Q?rFE7P22izj3jAxc8hv0wegMSi1liC8Ex/mdAFNNN4K+GStC0JLXqrD7/3hOv?=
+ =?us-ascii?Q?6YSlrXElNsatkEhMhOOzwO0lB/mIL0GC009jb57nJmS5fc4UomwynDZDgr+G?=
+ =?us-ascii?Q?Ps6urFkBfDq5NQutY9rsR0uSthEYnPS+SjF9mlhwt8B30C0qAm1lNTDIOuN0?=
+ =?us-ascii?Q?9CP/yubWfF+C1QOPxl5hBdmOds3gbSlXnhLQTJLwdxkYIaxOJt8ngBqo4XoG?=
+ =?us-ascii?Q?5UCg9JAPTonIcUaqxT0v1gNIYuKiTv2adyBkcNu3XK22P1MgW9uG0Yv/TCNv?=
+ =?us-ascii?Q?+irXY8pRYTgV8FE6ZxtigAf7N5sQd3WWmp2YXQ5u+5+4moaM7TmrUb2aPNRo?=
+ =?us-ascii?Q?G/le1Ue5X2oYOSRDHrD0+/j7onpUU9gQiN2+kyGbP2+yh1nzsf5xXE8UWS7d?=
+ =?us-ascii?Q?ZnTFI1Bk7e92pAK12vsDrAYE2P+qIcqF3iRaGqIsFc9KpkVUdE9FDn6g/TfY?=
+ =?us-ascii?Q?bQbgd4dqSUaVDw4Gj6u5yzHmpmWufWnVyR8NGwC5Dan0wG+WrVC/Cg5JcgU+?=
+ =?us-ascii?Q?m5O1bqzKNlXUGoUMMNOOWZ9J9SA6rPzzj0eOtS7yYg+HhRxDZOJfrkevS9jn?=
+ =?us-ascii?Q?RKNcYX4EZHH9e3vRpkxA9iBzrHDJetxw254y8jlHj3NZspdIN7zrr2+gwEx2?=
+ =?us-ascii?Q?7niLQn5TQTHUM07CBRkREVpWsyXZQeauONLENwME9UglQ0fOjviIhJjUmbKI?=
+ =?us-ascii?Q?3hMFGmDiwV/yBLb3rUkmtpDTDgA1h2xTElIbNRRdFzZYdU3Bh6h0Ceabhxaw?=
+ =?us-ascii?Q?4YIoB7vyzrOWjOW7LAwxg1/AAKQ4OAHIChpJtVkhY2z3cOcw+A4AvcFZCOaq?=
+ =?us-ascii?Q?SH1B6SMHrbFQvKsLR1UI0H8boD40qaP9009L+OOzygbYL9CNuvM9vEsWO5zI?=
+ =?us-ascii?Q?IAIxmlh7K/4tUKTzW9A/eAzcT6QpeeY+ooQwn83YxVDZOWU80u73kBoUbXeX?=
+ =?us-ascii?Q?y9m1q9caNt02GiK+eOaDw8/0IbH3oWbDNE6/JBlDTOVbSuGOt6Vl4a71JVD5?=
+ =?us-ascii?Q?h7qkmBIeGivB47BDfm6DgScp1cd8Z2is7AK9JjefmtlFh3l0rRkdVwIvznoS?=
+ =?us-ascii?Q?CrhWyx45nlPGTzckik50T7IsTZHyt2Cgg/K0XIDk631KalN98lmvCcszTzSW?=
+ =?us-ascii?Q?dE6xqCdRXTwVAmSKzir59JRFVsW0Ty591+WJI+U9?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20250612-apple-kconfig-defconfig-v1-0-0e6f9cb512c1@kernel.org>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc4ee7de-9b15-46a0-0281-08ddaa4d03ba
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jun 2025 07:36:30.7811
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: nzIECLd8umLHMsiFcvU7glxXb3E+xSAO6iWSVp5ZakBg+++qoIMezVtCRZfJCbSBkrYIn9sB+zJ3B5IEH/kXiA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR11MB6202
+X-OriginatorOrg: intel.com
 
-Hej,
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Friday, June 13, 2025 1:18 AM
+>=20
+> On Thu, Jun 12, 2025 at 08:20:30AM +0000, Tian, Kevin wrote:
+> > > From: Nicolin Chen <nicolinc@nvidia.com>
+> > > Sent: Tuesday, June 10, 2025 1:14 AM
+> > >
+> > > +int arm_smmu_get_viommu_size(enum iommu_viommu_type
+> > > viommu_type,
+> > > +			     struct device *dev, size_t *viommu_size)
+> > > +{
+> > > +	struct arm_smmu_master *master =3D dev_iommu_priv_get(dev);
+> > > +	struct arm_smmu_device *smmu =3D master->smmu;
+> > > +
+> > > +	if (!(smmu->features & ARM_SMMU_FEAT_NESTING))
+> > > +		return -EOPNOTSUPP;
+> > > +
+> > > +	/*
+> > > +	 * FORCE_SYNC is not set with FEAT_NESTING. Some study of the
+> > > exact HW
+> > > +	 * defect is needed to determine if arm_vsmmu_cache_invalidate()
+> > > needs
+> > > +	 * any change to remove this.
+> > > +	 */
+> > > +	if (WARN_ON(smmu->options &
+> > > ARM_SMMU_OPT_CMDQ_FORCE_SYNC))
+> > > +		return -EOPNOTSUPP;
+> > > +
+> > > +	/*
+> > > +	 * Must support some way to prevent the VM from bypassing the
+> > > cache
+> > > +	 * because VFIO currently does not do any cache maintenance.
+> > > canwbs
+> > > +	 * indicates the device is fully coherent and no cache maintenance =
+is
+> > > +	 * ever required, even for PCI No-Snoop. S2FWB means the S1 can't
+> > > make
+> > > +	 * things non-coherent using the memattr, but No-Snoop behavior is
+> > > not
+> > > +	 * effected.
+> > > +	 */
+> > > +	if (!arm_smmu_master_canwbs(master) &&
+> > > +	    !(smmu->features & ARM_SMMU_FEAT_S2FWB))
+> > > +		return -EOPNOTSUPP;
+> > > +
+> > > +	if (viommu_type !=3D IOMMU_VIOMMU_TYPE_ARM_SMMUV3)
+> > > +		return -EOPNOTSUPP;
+> >
+> > it's more intuitive to check it first.
+>=20
+> Agreed. But I kinda intentionally left it here. The SMMU driver
+> will have something like an impl_op->get_viommu_size in the HW
+> queue series. That can simply insert a piece:
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> @@ -415,6 +415,12 @@ int arm_smmu_get_viommu_size(enum
+> iommu_viommu_type viommu_type,
+>             !(smmu->features & ARM_SMMU_FEAT_S2FWB))
+>                 return -EOPNOTSUPP;
+>=20
+> +       if (smmu->impl_ops && smmu->impl_ops->vsmmu_size &&
+> +           viommu_type =3D=3D smmu->impl_ops->vsmmu_type) {
+> +               *viommu_size =3D smmu->impl_ops->vsmmu_size;
+> +               return 0;
+> +       }
+> +
+>         if (viommu_type !=3D IOMMU_VIOMMU_TYPE_ARM_SMMUV3)
+>                 return -EOPNOTSUPP;
+>=20
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 
-On Thu, Jun 12, 2025 at 09:11:24PM +0000, Sven Peter wrote:
-> 
-> When support for Apple Silicon was originally upstreamed we somehow
-> started using `default ARCH_APPLE` for most drivers. arm64 defconfig
-> also contains ARCH_APPLE=y such that this will turn into `default y`
-> there by default which is neither what we want nor how this is usually
-> done.
+Oh I see.
 
-It's not such an uncommon pattern. `git grep 'default ARCH_' --
-'*Kconfig'` has over 250 matches (not counting ARCH_APPLE) and from a
-cursory look not all CONFIG_* look essential for booting.
-I agree that the drivers covered here should not be built-in by default.
-An alternative would be using `default m if ARCH_APPLE` instead but that
-pattern is not common in the kernel. So just moving this to defconfig is
-fine by me.
+>=20
+> Otherwise, this following patch has to move the type check again.
+>=20
+> > btw does it make sense to also add below here?
+> > 	if (s2_parent->smmu !=3D master->smmu)
+> > 		return ERR_PTR(-EINVAL);
+>=20
+> I can't find a legit reason to forward the s2_parent to run this
+> sanity. "struct device *" is forwarded since the driver needs to
+> know the smmu pointer: A for the compatibility checks; b for the
+> smmu->impl_ops mentioned above.
+>=20
 
-> Let's fix all that by dropping the default everywhere and adding the
-> drivers to defconfig as modules instead of built-ins.
-> None of these patches depend on each other so we can just take them all
-> independently through the respective subsystem trees.
-> 
-> Best,
-> 
-> Sven
-> 
-> Signed-off-by: Sven Peter <sven@kernel.org>
-> ---
-> Sven Peter (11):
->       pmdomain: apple: Drop default ARCH_APPLE in Kconfig
->       soc: apple: Drop default ARCH_APPLE in Kconfig
->       clk: apple-nco: Drop default ARCH_APPLE in Kconfig
->       nvmem: apple: drop default ARCH_APPLE in Kconfig
->       i2c: apple: Drop default ARCH_APPLE in Kconfig
->       cpufreq: apple: drop default ARCH_APPLE in Kconfig
->       iommu/apple-dart: Drop default ARCH_APPLE in Kconfig
->       Input: apple_z2: Drop default ARCH_APPLE in Kconfig
->       dmaengine: apple-admac: Drop default ARCH_APPLE in Kconfig
->       ASoC: apple: mca: Drop default ARCH_APPLE in Kconfig
->       arm64: defconfig: Enable Apple Silicon drivers
-> 
->  arch/arm64/configs/defconfig      | 19 +++++++++++++++++++
->  drivers/clk/Kconfig               |  1 -
->  drivers/cpufreq/Kconfig.arm       |  1 -
->  drivers/dma/Kconfig               |  1 -
->  drivers/i2c/busses/Kconfig        |  1 -
->  drivers/input/touchscreen/Kconfig |  1 -
->  drivers/iommu/Kconfig             |  1 -
->  drivers/nvmem/Kconfig             |  1 -
->  drivers/pmdomain/apple/Kconfig    |  1 -
->  drivers/soc/apple/Kconfig         |  3 ---
->  sound/soc/apple/Kconfig           |  1 -
->  11 files changed, 19 insertions(+), 12 deletions(-)
-
-whole series
-
-Reviewed-by: Janne Grunau <j@jannau.net>
+yes
