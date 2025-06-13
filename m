@@ -1,305 +1,192 @@
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C08AA1E51F6;
-	Fri, 13 Jun 2025 17:08:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82DAB2135DE
+	for <iommu@lists.linux.dev>; Fri, 13 Jun 2025 17:32:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749834499; cv=none; b=R58uHtDg23SkwYygOrNhUu8Joez2bha5xcjGORg4bUWG2bGdz7Qkb6go1sYqHSTbQqRezdrl3t8SS+DGywt2CEZuzg8cDWsv7/HWirSu2ZzlZlkSF8/O4S5p2LpdJTAGftWU5Ki51UYmz9EsoGHt56sU0teS5zgvee3OVm0ilug=
+	t=1749835964; cv=none; b=uH3LBW+qJkZIRP+0PKd/2RQaOT50sHYoM9Tk08LuiUdSoPjGjkhBfQpEkq39//Lb8b7gUayHLyiV80Omdyql85g1jANTRFpTM2VQlkVAwRx6OKFE+LaRtUa/+1fFXLEg3hGKCwGaLdqRN4CANLVJpfDJJ74qVGBUEt383MVGnOo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749834499; c=relaxed/simple;
-	bh=SxQ5aZRaKr7SJ2Edr9xzhyEiJCBIH1xQJ6Kp0pb7UYc=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Content-Type; b=KZ/45QE46aosvO01rVoYcn+x2HFl+ujEXJAiJ1QY/o05myAt8E0Lb0MHdGKGPZe9FWxj1bzGo+Benq4WqI0Vw+INNjOPwjE8PkfMGa1gNnYDYhRgFzquMPyLzdVzisaKxKfGcNMjpWyRsdov+NQX5/CZVRuu0b8Vpe9p8keNF6Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EfGaN7vk; arc=none smtp.client-ip=209.85.222.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1749835964; c=relaxed/simple;
+	bh=cjd9e8n2oR+FGyt2kpnBqvrA+bZIjT8nUIEefDkbJjA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cfPnZ9Hy4z0/RJ2z++CCDxTI3NwsW/kyuP+hpqD5u7DjwOHqIFfVKP+O7v4QifRR2YTwLy3+alsz9FdEjjb1Mi3dTHTA52ViomztMkHs+KF4kESc9XO7DDe/pUQLEDkHWORamVBua7l8T9KAof0gmkX7yZX3+i7G25nQfY4hsYA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=syboBnT3; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EfGaN7vk"
-Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-7d0a0bcd3f3so260743185a.1;
-        Fri, 13 Jun 2025 10:08:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="syboBnT3"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-3a52874d593so2325541f8f.0
+        for <iommu@lists.linux.dev>; Fri, 13 Jun 2025 10:32:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1749834494; x=1750439294; darn=lists.linux.dev;
-        h=autocrypt:content-language:to:subject:from:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=jjngTerNTsAqM+UqVKPsC1zJPqVupaFyU1HBX+QwTvg=;
-        b=EfGaN7vkTz4gfeA2iiJrd4C6S9q3lW3wGS8hPKrv5DWlF7FULTVoSeKKhb0cDz/17q
-         xBafuXpk4Xu9LzDv8X0+prohL7tlYRUbxdwnex0YEQ/K6PBuhA0/Y+G/Bi1pQBZzkqSh
-         LSlLbA70mDfpaYHBBWVZSa03WvcBkKG48yxkoVKYOQ4atLurnsyWxg08ZuNokACc6b0M
-         45lF7Q1rSwcYK40lKfK5HfAhZv8eXofXjDU9uT2a5ZGsvKYo2ZjdTzxQHtdB6del544U
-         PZ7PhfYB/Hwfs7tZzfwX0X1EScqKNrlLJz/2okoV/dSVL4CRBFwNBj4R4CIcf65HxYcX
-         wzPw==
+        d=linaro.org; s=google; t=1749835960; x=1750440760; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ztUb1CK2ca+AmmvOq6nu5cc85DsCpI/YRfqf7x02fNA=;
+        b=syboBnT3zKJ9dFWEE1EGjPqHUTUe/7gObNiTVIMr68sjDrG8A3TABvyFaEugwkC+RE
+         BUgK1HwCoqGOZb+CZG3dhh+UQzuD0aX05NNwmoi8FHScscQBphp+SfewkTGlWzKQm7Xo
+         cYCqlOXNzzFsDLcyLIwXygDvwnHONLU1O+TY27jUcc1ZGonCR67/E7Pd/Yd0FfcpaKp7
+         aUUXEqqgvY1mNv2oKGtGshtQVH7VAq1rbcDeVjq3n8xutsKuclH+HqKYh/kcrgq6pjlt
+         GICocY4RMqpsrb2EjrpDoLlSdK9G1T+x/yK0kjNwZ/89zr/J8BCTCpaTWZJKjlK4TiKV
+         K1qA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749834494; x=1750439294;
-        h=autocrypt:content-language:to:subject:from:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jjngTerNTsAqM+UqVKPsC1zJPqVupaFyU1HBX+QwTvg=;
-        b=rU8Bin6ZA6EMtdy0z4oZsGUG7NUMZoROwn2jxgolTg+A2zPIKMmIU6FUP2mtFqKmq0
-         UaedMs2ut8vTI7lnu54V97D0gRunewfS+hfNAx2Y1HhmMh6Hzfw5Ux9D3BwX5IND+ASp
-         lK76BhW9RaLqikQnJp+K5gzF7JexBkLT6pX9MxfDOhXNeAkLhvcxNcjVp0UQTIW0LVc5
-         DaCFNbhhkdUWUxR4/qWgruGGzo+NMLG3k+XEaphG1nJ6GMsgcix1rvKqHMOEKxaQGLFq
-         WX+U7pzcVtvQ7XLboGfqDoWvrJmYQyE4F06UlqPpHNp57JMf/W8H8ZNiD2zIIzq9ZImi
-         Cr9w==
-X-Forwarded-Encrypted: i=1; AJvYcCWVEk4c2T1/O+sr9RsRSv3Mof4zKIZOqZYqsSyENwFHCYMNmcrEA6TQFMmguO7nwnNOP9DTJMf7CFkEzX8uxRE=@lists.linux.dev, AJvYcCWa97s6XnRd5jOTRpCLzrUQHksTflmC4XEjUCMO1inx4IaxGQfRs+t8K3PvPHzfZU8w4X3RVA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx2FaPn4rRRR2ZC0IhiKqeEBIsKBbY8asUqA4gAkjl1dVDoZvQA
-	nJQBRA9yP3ld6D7mOKwruUEofcSdn0blYnQZdN0axKFiUo0uBKAQA3rM
-X-Gm-Gg: ASbGncsuUuntSCea9IF1tZ06erEfgYFnKg1eXnzXlewpL+I4qSxjEmFwTPYaeUy6lTA
-	qAM8q3ar5h47Q8mMMiG5P0md1QMM4GWPnF3Vaafcv+PSJfpsvnx8PPWQR4m3MadWuOBMIJcFtQU
-	vA13j4FDdRJlO5NN4lHeS4WDpX+/fjMLkBDoRx6/h9H7f10k8mF2zuXFEqZzl84AWzR39e5/Ct9
-	wpVMqtCbMP9EhX8qnoL7cejA5JtqUigvQQm6UuRjNTbZ0HpiOb1JAuZxGWqZA5PvHVDM508DGzC
-	WSaFhc2B7LM9fA+abiIxMw/+1FF1yMDf1Jb9xd3BuW5EIXgei7x6Unix70KHIrxbut4=
-X-Google-Smtp-Source: AGHT+IGowXIyHTcjgqxOWc2ZqJB+betqeFmao3qtrPWupF3wMV+jTXKbGOTiQU8PspgXONx/ztVdfw==
-X-Received: by 2002:a05:620a:839b:b0:7c2:f39d:d0e0 with SMTP id af79cd13be357-7d3c512541emr251248085a.3.1749834494513;
-        Fri, 13 Jun 2025 10:08:14 -0700 (PDT)
-Received: from [10.138.10.6] ([89.187.178.201])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7d3c6854291sm14358685a.44.2025.06.13.10.08.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Jun 2025 10:08:13 -0700 (PDT)
-Message-ID: <c40da5dc-44c0-454e-8b1d-d3f42c299592@gmail.com>
-Date: Fri, 13 Jun 2025 13:08:07 -0400
+        d=1e100.net; s=20230601; t=1749835960; x=1750440760;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ztUb1CK2ca+AmmvOq6nu5cc85DsCpI/YRfqf7x02fNA=;
+        b=AH5mIpOTj77zejUNlvuLBaeJRhxCI0Yz2sZssjtA9erjqTTLdn/4FW55y0pKkIjSym
+         TZhY5Vr1adn38DiDYEb8WwIsZc6OMWT6e56NR3wd7+qhyed6AxWIAZPqGVO4xyftWAMY
+         GfuJzxXV10holKM0i9hsR1XaNYCLQPmNQ5Yy+bUjlH9tRwF0gv5T7lDi0mstOjjlRO5o
+         DFtuFCt2wiw0F+/lbH6ZmzZ5MeayWPdaB60Cdv+DdSFGBrXRYW7tdcJD+EJn9iKwaKnU
+         JiVhzQj/4P053PfbKaKsjmRrRxgIdc/MOMGCPNZY6NzGplXsED9tXb+QJrhQum8ZLM8V
+         usMQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVWmtSu4fwZeHcw79xtxs+K6VC/RvwQilzi+E7CWR6otr8AQbvmW/QTrvpUxL0I2Xem8Z8kjA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx4cGPDIwgv/JzUkKxnFUbtrOB+PTCB0/+vWa2zmG1RUktrqKG6
+	+3LLCow1nyA6Ymb7pC9X5l1NAA45JRZkznOpeBX0pxCozr4J1hW0ebCIMpGZio+ug18=
+X-Gm-Gg: ASbGnct9v29q5INEhfhHe5O3XmXdXSl8cxVbryuQsHPbTcHFIvj6v+JGO1dC16L+KaI
+	Qfzu8vAXrucp28Z9cj+BVnGn4J2FJdhP76YZhr4ZfdL8cXHvF1HzkngcnERPXOek0a6+DHLSPkd
+	avM+F5Lu3VsF1Qw1VFnLs9dhX0OlcuWBRpYy3hmE3E7am4+wYWD9XhFE6hJzRYpDdodyAicIo2g
+	gb6CE4emPPKXb2OqwtWLGR+cAymjvr/xcSHLSf11qLUqqcpO6eiYTRHMD8LN3M0VshXvcdEUZIh
+	6rB6Mo0weHzf4aeBjNDnHP2idTQ4He0pfQ/ir1V0Pv4ERrt8p38HqUSp4LfjkBsNYuE4Iw==
+X-Google-Smtp-Source: AGHT+IEYT7vrlwuZEZwaQvZcRRnUXPS9FnrmpBGm7dU1PJcmsjyw9hFaJHssD/ILloIFSkFm7tbgkA==
+X-Received: by 2002:a5d:6f01:0:b0:3a4:d8f8:fba7 with SMTP id ffacd0b85a97d-3a572367c78mr730290f8f.2.1749835959714;
+        Fri, 13 Jun 2025 10:32:39 -0700 (PDT)
+Received: from orion.home ([2a02:c7c:7213:c700:c8e2:ba7d:a1c6:463f])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4532e224888sm59212625e9.1.2025.06.13.10.32.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Jun 2025 10:32:39 -0700 (PDT)
+From: Alexey Klimov <alexey.klimov@linaro.org>
+To: robin.clark@oss.qualcomm.com,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	linux-arm-msm@vger.kernel.org
+Cc: joro@8bytes.org,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	andersson@kernel.org,
+	dmitry.baryshkov@oss.qualcomm.com
+Subject: [PATCH v2] iommu/arm-smmu-qcom: Add SM6115 MDSS compatible
+Date: Fri, 13 Jun 2025 18:32:38 +0100
+Message-ID: <20250613173238.15061-1-alexey.klimov@linaro.org>
+X-Mailer: git-send-email 2.47.2
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Demi Marie Obenour <demiobenour@gmail.com>
-Subject: Virtio interrupt remapping
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, virtualization@lists.linux.dev,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, devel@spectrum-os.org,
- Alyssa Ross <hi@alyssa.is>
-Content-Language: en-US
-Autocrypt: addr=demiobenour@gmail.com; keydata=
- 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
- +MYSfkEjBz0E8CLOcAw7JIwAaeBT
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------qWdLxZS1h0FGtlEsS2x3lgPK"
+Content-Transfer-Encoding: 8bit
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------qWdLxZS1h0FGtlEsS2x3lgPK
-Content-Type: multipart/mixed; boundary="------------Dh7fd73oXB3UU1mv5H6g5rH7";
- protected-headers="v1"
-From: Demi Marie Obenour <demiobenour@gmail.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, virtualization@lists.linux.dev,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, devel@spectrum-os.org,
- Alyssa Ross <hi@alyssa.is>
-Message-ID: <c40da5dc-44c0-454e-8b1d-d3f42c299592@gmail.com>
-Subject: Virtio interrupt remapping
+Add the SM6115 MDSS compatible to clients compatible list, as it also
+needs that workaround.
+Without this workaround, for example, QRB4210 RB2 which is based on
+SM4250/SM6115 generates a lot of smmu unhandled context faults during
+boot:
 
---------------Dh7fd73oXB3UU1mv5H6g5rH7
-Content-Type: multipart/mixed; boundary="------------gg0sHYbzU92ER616eRh0Jlk4"
+arm_smmu_context_fault: 116854 callbacks suppressed
+arm-smmu c600000.iommu: Unhandled context fault: fsr=0x402,
+iova=0x5c0ec600, fsynr=0x320021, cbfrsynra=0x420, cb=5
+arm-smmu c600000.iommu: FSR    = 00000402 [Format=2 TF], SID=0x420
+arm-smmu c600000.iommu: FSYNR0 = 00320021 [S1CBNDX=50 PNU PLVL=1]
+arm-smmu c600000.iommu: Unhandled context fault: fsr=0x402,
+iova=0x5c0d7800, fsynr=0x320021, cbfrsynra=0x420, cb=5
+arm-smmu c600000.iommu: FSR    = 00000402 [Format=2 TF], SID=0x420
 
---------------gg0sHYbzU92ER616eRh0Jlk4
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+and also failed initialisation of lontium lt9611uxc, gpu and dpu is
+observed:
+(binding MDSS components triggered by lt9611uxc have failed)
 
-I=E2=80=99m working on virtio-IOMMU interrupt remapping for Spectrum OS [=
-1],
-and am running into a problem.  All of the current interrupt remapping
-drivers use __init code during initialization, and I=E2=80=99m not sure h=
-ow to
-plumb the struct virtio_device * into the IOMMU initialization code.
+ ------------[ cut here ]------------
+ !aspace
+ WARNING: CPU: 6 PID: 324 at drivers/gpu/drm/msm/msm_gem_vma.c:130 msm_gem_vma_init+0x150/0x18c [msm]
+ Modules linked in: ... (long list of modules)
+ CPU: 6 UID: 0 PID: 324 Comm: (udev-worker) Not tainted 6.15.0-03037-gaacc73ceeb8b #4 PREEMPT
+ Hardware name: Qualcomm Technologies, Inc. QRB4210 RB2 (DT)
+ pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+ pc : msm_gem_vma_init+0x150/0x18c [msm]
+ lr : msm_gem_vma_init+0x150/0x18c [msm]
+ sp : ffff80008144b280
+  		...
+ Call trace:
+  msm_gem_vma_init+0x150/0x18c [msm] (P)
+  get_vma_locked+0xc0/0x194 [msm]
+  msm_gem_get_and_pin_iova_range+0x4c/0xdc [msm]
+  msm_gem_kernel_new+0x48/0x160 [msm]
+  msm_gpu_init+0x34c/0x53c [msm]
+  adreno_gpu_init+0x1b0/0x2d8 [msm]
+  a6xx_gpu_init+0x1e8/0x9e0 [msm]
+  adreno_bind+0x2b8/0x348 [msm]
+  component_bind_all+0x100/0x230
+  msm_drm_bind+0x13c/0x3d0 [msm]
+  try_to_bring_up_aggregate_device+0x164/0x1d0
+  __component_add+0xa4/0x174
+  component_add+0x14/0x20
+  dsi_dev_attach+0x20/0x34 [msm]
+  dsi_host_attach+0x58/0x98 [msm]
+  devm_mipi_dsi_attach+0x34/0x90
+  lt9611uxc_attach_dsi.isra.0+0x94/0x124 [lontium_lt9611uxc]
+  lt9611uxc_probe+0x540/0x5fc [lontium_lt9611uxc]
+  i2c_device_probe+0x148/0x2a8
+  really_probe+0xbc/0x2c0
+  __driver_probe_device+0x78/0x120
+  driver_probe_device+0x3c/0x154
+  __driver_attach+0x90/0x1a0
+  bus_for_each_dev+0x68/0xb8
+  driver_attach+0x24/0x30
+  bus_add_driver+0xe4/0x208
+  driver_register+0x68/0x124
+  i2c_register_driver+0x48/0xcc
+  lt9611uxc_driver_init+0x20/0x1000 [lontium_lt9611uxc]
+  do_one_initcall+0x60/0x1d4
+  do_init_module+0x54/0x1fc
+  load_module+0x1748/0x1c8c
+  init_module_from_file+0x74/0xa0
+  __arm64_sys_finit_module+0x130/0x2f8
+  invoke_syscall+0x48/0x104
+  el0_svc_common.constprop.0+0xc0/0xe0
+  do_el0_svc+0x1c/0x28
+  el0_svc+0x2c/0x80
+  el0t_64_sync_handler+0x10c/0x138
+  el0t_64_sync+0x198/0x19c
+ ---[ end trace 0000000000000000 ]---
+ msm_dpu 5e01000.display-controller: [drm:msm_gpu_init [msm]] *ERROR* could not allocate memptrs: -22
+ msm_dpu 5e01000.display-controller: failed to load adreno gpu
+ platform a400000.remoteproc:glink-edge:apr:service@7:dais: Adding to iommu group 19
+ msm_dpu 5e01000.display-controller: failed to bind 5900000.gpu (ops a3xx_ops [msm]): -22
+ msm_dpu 5e01000.display-controller: adev bind failed: -22
+ lt9611uxc 0-002b: failed to attach dsi to host
+ lt9611uxc 0-002b: probe with driver lt9611uxc failed with error -22
 
-What is the proper way to do this, where =E2=80=9Cproper=E2=80=9D means t=
-hat it doesn=E2=80=99t
-do something disgusting like =E2=80=9Cstuff the virtio device in a global=
+Suggested-by: Bjorn Andersson <andersson@kernel.org>
+Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+Fixes: 3581b7062cec ("drm/msm/disp/dpu1: add support for display on SM6115")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Alexey Klimov <alexey.klimov@linaro.org>
+---
 
-variable=E2=80=9D?
---=20
-Sincerely,
-Demi Marie Obenour (she/her/hers)
+v2:
+ - added tags as suggested by Dmitry;
+ - slightly updated text in the commit message.
 
+Previous version: https://lore.kernel.org/linux-arm-msm/20250528003118.214093-1-alexey.klimov@linaro.org/
 
---------------gg0sHYbzU92ER616eRh0Jlk4
-Content-Type: application/pgp-keys; name="OpenPGP_0xB288B55FFF9C22C1.asc"
-Content-Disposition: attachment; filename="OpenPGP_0xB288B55FFF9C22C1.asc"
-Content-Description: OpenPGP public key
-Content-Transfer-Encoding: quoted-printable
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
------BEGIN PGP PUBLIC KEY BLOCK-----
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 62874b18f645..c75023718595 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -379,6 +379,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+ 	{ .compatible = "qcom,sdm670-mdss" },
+ 	{ .compatible = "qcom,sdm845-mdss" },
+ 	{ .compatible = "qcom,sdm845-mss-pil" },
++	{ .compatible = "qcom,sm6115-mdss" },
+ 	{ .compatible = "qcom,sm6350-mdss" },
+ 	{ .compatible = "qcom,sm6375-mdss" },
+ 	{ .compatible = "qcom,sm8150-mdss" },
+-- 
+2.47.2
 
-xsFNBFp+A0oBEADffj6anl9/BHhUSxGTICeVl2tob7hPDdhHNgPR4C8xlYt5q49y
-B+l2nipdaq+4Gk6FZfqC825TKl7eRpUjMriwle4r3R0ydSIGcy4M6eb0IcxmuPYf
-bWpr/si88QKgyGSVZ7GeNW1UnzTdhYHuFlk8dBSmB1fzhEYEk0RcJqg4AKoq6/3/
-UorR+FaSuVwT7rqzGrTlscnTDlPWgRzrQ3jssesI7sZLm82E3pJSgaUoCdCOlL7M
-MPCJwI8JpPlBedRpe9tfVyfu3euTPLPxwcV3L/cfWPGSL4PofBtB8NUU6QwYiQ9H
-zx4xOyn67zW73/G0Q2vPPRst8LBDqlxLjbtx/WLR6h3nBc3eyuZ+q62HS1pJ5EvU
-T1vjyJ1ySrqtUXWQ4XlZyoEFUfpJxJoN0A9HCxmHGVckzTRl5FMWo8TCniHynNXs
-BtDQbabt7aNEOaAJdE7to0AH3T/Bvwzcp0ZJtBk0EM6YeMLtotUut7h2Bkg1b//r
-6bTBswMBXVJ5H44Qf0+eKeUg7whSC9qpYOzzrm7+0r9F5u3qF8ZTx55TJc2g656C
-9a1P1MYVysLvkLvS4H+crmxA/i08Tc1h+x9RRvqba4lSzZ6/Tmt60DPM5Sc4R0nS
-m9BBff0Nm0bSNRS8InXdO1Aq3362QKX2NOwcL5YaStwODNyZUqF7izjK4QARAQAB
-zTxEZW1pIE9iZW5vdXIgKElUTCBFbWFpbCBLZXkpIDxhdGhlbmFAaW52aXNpYmxl
-dGhpbmdzbGFiLmNvbT7CwY4EEwEIADgWIQR2h02fEza6IlkHHHGyiLVf/5wiwQUC
-X6YJvQIbAwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAKCRCyiLVf/5wiwWRhD/0Y
-R+YYC5Kduv/2LBgQJIygMsFiRHbR4+tWXuTFqgrxxFSlMktZ6gQrQCWe38WnOXkB
-oY6n/5lSJdfnuGd2UagZ/9dkaGMUkqt+5WshLFly4BnP7pSsWReKgMP7etRTwn3S
-zk1OwFx2lzY1EnnconPLfPBc6rWG2moA6l0WX+3WNR1B1ndqpl2hPSjT2jUCBWDV
-rGOUSX7r5f1WgtBeNYnEXPBCUUM51pFGESmfHIXQrqFDA7nBNiIVFDJTmQzuEqIy
-Jl67pKNgooij5mKzRhFKHfjLRAH4mmWZlB9UjDStAfFBAoDFHwd1HL5VQCNQdqEc
-/9lZDApqWuCPadZN+pGouqLysesIYsNxUhJ7dtWOWHl0vs7/3qkWmWun/2uOJMQh
-ra2u8nA9g91FbOobWqjrDd6x3ZJoGQf4zLqjmn/P514gb697788e573WN/MpQ5XI
-Fl7aM2d6/GJiq6LC9T2gSUW4rbPBiqOCeiUx7Kd/sVm41p9TOA7fEG4bYddCfDsN
-xaQJH6VRK3NOuBUGeL+iQEVF5Xs6Yp+U+jwvv2M5Lel3EqAYo5xXTx4ls0xaxDCu
-fudcAh8CMMqx3fguSb7Mi31WlnZpk0fDuWQVNKyDP7lYpwc4nCCGNKCj622ZSocH
-AcQmX28L8pJdLYacv9pU3jPy4fHcQYvmTavTqowGnM08RGVtaSBNYXJpZSBPYmVu
-b3VyIChsb3ZlciBvZiBjb2RpbmcpIDxkZW1pb2Jlbm91ckBnbWFpbC5jb20+wsF4
-BBMBAgAiBQJafgNKAhsDBgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRCyiLVf
-/5wiwYa/EACv8a2+MMou9cSCNoZBQaU+fTmyzft9hUE+0d5W2UY1RY3OsjFIzm9R
-/4SVccfsqOYLEo+S0vQMIIIqFEq3FCpXXwPzyimotps05VA8U3Bd7yseojFygOgK
-sAMOAee2RCaDDOnoJue01dfZMzzHPO/TVdp3OvnpWipfv5G1Xg96rwbhMLE3tg6N
-xwAHa31Bv4/Xq8CJOoIWvx6fcmZQpz01/lSvsYn0KrfEbTKkuUf0vM9JrCTCP2oz
-VNN5BYzqaq2M4r+jmSyeXLim922VOWqGkUEQ85BSEemqrRS06IU6NtEMsF8EWt/b
-hWjk/9GDKTcnpdJHTrMxTspExBiNrvpI2t+YPU5B/dJJAUxvmhFrbSIbdB8umBZs
-I3AMYrEmpAbh5x7jEjoskUC7uN3o9vpg1oCLS2ePDLtAtyBtbHnkA4xGD7ar8mem
-xpH9lY/i+sC6CyyIUWcUDnnagKyJP0m9ks0GLsTeOCA0bft2XA6rD6aaCnMUsndT
-ctrab42CV5XypjmC4U1rPJ8JQJUh1/3P48/8sMH+3krxpJ06KNWNFaUbaMTGiltZ
-7x9DngklSYrX0T+2G4kVXNmjaljwkoLahwLla2gUWwBSyofXdqyhQdwZsp01KXNQ
-UCyT/Pg+aDcm/E7OMV3d4lf7g/CSxiX2GSEe6BlhSz+Lmd7ZJ3g32M1ARGVtaSBN
-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
-EtJuZYM5blWncBOJCoWMnBEcTEo/viU3GgcVRw=3D=3D
-=3Dx94R
------END PGP PUBLIC KEY BLOCK-----
-
---------------gg0sHYbzU92ER616eRh0Jlk4--
-
---------------Dh7fd73oXB3UU1mv5H6g5rH7--
-
---------------qWdLxZS1h0FGtlEsS2x3lgPK
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEopQtqVJW1aeuo9/sszaHOrMp8lMFAmhMWvgACgkQszaHOrMp
-8lNYSxAAhuw4UdhuQeIBsxzM6h2WpmaBGQaz59tAJju4sICY6JUnm2Gn6avqpQ7o
-ZNGRTqH2qv/LMphsC7jn0sxs5GdaH0x8QfqcO8aDaYgP7E9eTURcmKdOtdxtASus
-pKdGpaSwzvASF4ZNwFJcwECKuMXJEjOLCWsZ6jVXVh7C2Tc/kMZSeNa3ZjfLuhJk
-T/OPnxgDdtj4KdMmT/ooK5pNHc/mUAci7GN/jZJtqpzRsG5d3PocK+qVpgtandDO
-S5bBJZ3xOS8f0DO4gAqkV+873QYq7ASTuqn/jFPepyQTfmFrskVg3k6KFjriG7S3
-NJrMyD5MNM6DR1U4tq/0vVN4Wnh3lD3nGMwF8bV60UMFOK3q32A76jIJnNYkh1Ga
-cTdg1hPMH+cGeBJPIVfnItiDdsYSt0o25ir4AZZto+LtythNadhhw5K2VUq/J8zN
-MI+GKN5/KQh/0os33K6KLug2gWxB/LjzDZTQQU40e2If4sOsLCAQGf0oJX2+ARzv
-AwOvWJzFZnh0wpPzU78k9W5SBQbf6v1fQyJ69Fb07VSiqpHAle6HUj8sYh6NMVAk
-VQQPpyOIVmV9ufhBVGduoGvVFzb4uspIEMishnO0wpn4elZL9hzoC7gFLatDN82q
-eN1701e9bJe2PWEOhNmj8C3xUYy4ea1Y7d/hu1Vc9UzzJ58PWow=
-=/hC5
------END PGP SIGNATURE-----
-
---------------qWdLxZS1h0FGtlEsS2x3lgPK--
