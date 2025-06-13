@@ -1,192 +1,115 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82DAB2135DE
-	for <iommu@lists.linux.dev>; Fri, 13 Jun 2025 17:32:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C1D61F3B83
+	for <iommu@lists.linux.dev>; Fri, 13 Jun 2025 18:13:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749835964; cv=none; b=uH3LBW+qJkZIRP+0PKd/2RQaOT50sHYoM9Tk08LuiUdSoPjGjkhBfQpEkq39//Lb8b7gUayHLyiV80Omdyql85g1jANTRFpTM2VQlkVAwRx6OKFE+LaRtUa/+1fFXLEg3hGKCwGaLdqRN4CANLVJpfDJJ74qVGBUEt383MVGnOo=
+	t=1749838428; cv=none; b=KoWCC+5Kj7dKGN/YfOydfH/2yM0tjKdLT29BHssVmm2IEsggUR/4sdLgpPNRKshOBlAeRudfQaBQ1pCT/XtQTEwe08TPuseVlyOv+vn4l512FFfbCZz/5LguyXPmZnPwFtAKS0qSsPkW+tef7VOUGoVBSpy5sW/Ldwl2PLW5hoE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749835964; c=relaxed/simple;
-	bh=cjd9e8n2oR+FGyt2kpnBqvrA+bZIjT8nUIEefDkbJjA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cfPnZ9Hy4z0/RJ2z++CCDxTI3NwsW/kyuP+hpqD5u7DjwOHqIFfVKP+O7v4QifRR2YTwLy3+alsz9FdEjjb1Mi3dTHTA52ViomztMkHs+KF4kESc9XO7DDe/pUQLEDkHWORamVBua7l8T9KAof0gmkX7yZX3+i7G25nQfY4hsYA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=syboBnT3; arc=none smtp.client-ip=209.85.221.42
+	s=arc-20240116; t=1749838428; c=relaxed/simple;
+	bh=UmgzyBzQ/jgUw39z2VUJbMgNeLwbSTLTYJ0VBxIVoxA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TKfUU1ev9wuZ8d8P1X+eNORpiM16CfisTgTHsCoFqGjYS9hIFaSzLzXISZj7AhhJ3U/ddHkyyrrrHz3YshFA+SkgHi39QaqucwQ3aZTMMyMFho+XdQpCetT6YEjD6zKFJEiMHVeWT4N8RL2R4o8a7x+5X3n7vNmQpd/+ukOwgk4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=mWJmb/jC; arc=none smtp.client-ip=209.85.208.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="syboBnT3"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-3a52874d593so2325541f8f.0
-        for <iommu@lists.linux.dev>; Fri, 13 Jun 2025 10:32:41 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="mWJmb/jC"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-6077dea37easo4646765a12.3
+        for <iommu@lists.linux.dev>; Fri, 13 Jun 2025 11:13:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1749835960; x=1750440760; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ztUb1CK2ca+AmmvOq6nu5cc85DsCpI/YRfqf7x02fNA=;
-        b=syboBnT3zKJ9dFWEE1EGjPqHUTUe/7gObNiTVIMr68sjDrG8A3TABvyFaEugwkC+RE
-         BUgK1HwCoqGOZb+CZG3dhh+UQzuD0aX05NNwmoi8FHScscQBphp+SfewkTGlWzKQm7Xo
-         cYCqlOXNzzFsDLcyLIwXygDvwnHONLU1O+TY27jUcc1ZGonCR67/E7Pd/Yd0FfcpaKp7
-         aUUXEqqgvY1mNv2oKGtGshtQVH7VAq1rbcDeVjq3n8xutsKuclH+HqKYh/kcrgq6pjlt
-         GICocY4RMqpsrb2EjrpDoLlSdK9G1T+x/yK0kjNwZ/89zr/J8BCTCpaTWZJKjlK4TiKV
-         K1qA==
+        d=linaro.org; s=google; t=1749838425; x=1750443225; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=0INhtq8UslCI0h3j7LA2BL7iWR70QyFmUejwynW5DK0=;
+        b=mWJmb/jCfbRc+Kv2imDhSKhBR6ZPfv8zKz53c+8zBvGepQQhydql69/KzMEnH4V3gc
+         APJ1k0OiljuJAi2Jt7nMgnndZUZjrQUOsCCOvxi4axMUlcGMTC7pUVaNC+PDGa8JPCef
+         Py1DvK2fIwRgrV/inWYuIY3Z8SnPVOjbVirUnCCtqglJptxorW9uS3yGNzQUXWrML43g
+         f9RJI5hjn7zmjcNgDKcTOmXfyxeMRH6JlvmqLtSSSq1FcbJL0BqIrgelOKJ3T99wdVoM
+         yjsNpptYDTHU66HPC0GI1CvFhCzedJtraW+4brZVYH5ZIsEIaVyIk72qrczK32wMQ/K8
+         Ty5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1749835960; x=1750440760;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ztUb1CK2ca+AmmvOq6nu5cc85DsCpI/YRfqf7x02fNA=;
-        b=AH5mIpOTj77zejUNlvuLBaeJRhxCI0Yz2sZssjtA9erjqTTLdn/4FW55y0pKkIjSym
-         TZhY5Vr1adn38DiDYEb8WwIsZc6OMWT6e56NR3wd7+qhyed6AxWIAZPqGVO4xyftWAMY
-         GfuJzxXV10holKM0i9hsR1XaNYCLQPmNQ5Yy+bUjlH9tRwF0gv5T7lDi0mstOjjlRO5o
-         DFtuFCt2wiw0F+/lbH6ZmzZ5MeayWPdaB60Cdv+DdSFGBrXRYW7tdcJD+EJn9iKwaKnU
-         JiVhzQj/4P053PfbKaKsjmRrRxgIdc/MOMGCPNZY6NzGplXsED9tXb+QJrhQum8ZLM8V
-         usMQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVWmtSu4fwZeHcw79xtxs+K6VC/RvwQilzi+E7CWR6otr8AQbvmW/QTrvpUxL0I2Xem8Z8kjA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx4cGPDIwgv/JzUkKxnFUbtrOB+PTCB0/+vWa2zmG1RUktrqKG6
-	+3LLCow1nyA6Ymb7pC9X5l1NAA45JRZkznOpeBX0pxCozr4J1hW0ebCIMpGZio+ug18=
-X-Gm-Gg: ASbGnct9v29q5INEhfhHe5O3XmXdXSl8cxVbryuQsHPbTcHFIvj6v+JGO1dC16L+KaI
-	Qfzu8vAXrucp28Z9cj+BVnGn4J2FJdhP76YZhr4ZfdL8cXHvF1HzkngcnERPXOek0a6+DHLSPkd
-	avM+F5Lu3VsF1Qw1VFnLs9dhX0OlcuWBRpYy3hmE3E7am4+wYWD9XhFE6hJzRYpDdodyAicIo2g
-	gb6CE4emPPKXb2OqwtWLGR+cAymjvr/xcSHLSf11qLUqqcpO6eiYTRHMD8LN3M0VshXvcdEUZIh
-	6rB6Mo0weHzf4aeBjNDnHP2idTQ4He0pfQ/ir1V0Pv4ERrt8p38HqUSp4LfjkBsNYuE4Iw==
-X-Google-Smtp-Source: AGHT+IEYT7vrlwuZEZwaQvZcRRnUXPS9FnrmpBGm7dU1PJcmsjyw9hFaJHssD/ILloIFSkFm7tbgkA==
-X-Received: by 2002:a5d:6f01:0:b0:3a4:d8f8:fba7 with SMTP id ffacd0b85a97d-3a572367c78mr730290f8f.2.1749835959714;
-        Fri, 13 Jun 2025 10:32:39 -0700 (PDT)
-Received: from orion.home ([2a02:c7c:7213:c700:c8e2:ba7d:a1c6:463f])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4532e224888sm59212625e9.1.2025.06.13.10.32.38
+        d=1e100.net; s=20230601; t=1749838425; x=1750443225;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0INhtq8UslCI0h3j7LA2BL7iWR70QyFmUejwynW5DK0=;
+        b=qwOX8KetkuuqUO5yAQVHed/+2wkrS14w0ly8Pn4cp8P7nSjyc5CP7zyh7qJqZ5VLmj
+         51m6vOdJ0XzNolWAdLU/P2oLUuY/wn+1EPfNwWzQ3ybDRqF4/HFEX6t1KUfaMFuMvtZ2
+         UPf6jQeCWC0z4VSuSz9MoYaQlTJOmabpCpNq504lVzb0hFm2oh2+VbcFouZOIbKyMDy7
+         XrHPdGVNUnaiap4bt8JhbZMfMEzpfNyN279ygb9LHNzSDW3Z8w4cKB737ijKpcy0YNC2
+         SsnQ2m5hEt7yxNJJkHbXUgmYG9rOlAU/WysmihNFo633kywz85Nv1PJqdbSCoc+HVhs8
+         F6TA==
+X-Forwarded-Encrypted: i=1; AJvYcCW9QSnCcXqIFDR4u7shco8u0KsmKtMHEDriWzbLsHHItobSfSYS5fe2UrnLX/I9LOFjlDkylg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzbbrRKNO4KTjz3TEiobAzMIykS7AIG6v5F+ud6mknrc+oV6SBR
+	N+rKg/aHYXmDzs8rBdGV8lMsQx3WTDfVpKgvoiFjMIpteViYT9/8Ls9BgZGFn9CIi0E=
+X-Gm-Gg: ASbGncuFkjq2iia2+bG8JLgc1ybZ9y1JK1SixhsK3QLVJ+T1o+wD3VhIwMcrHKaLTyp
+	eMNcH2x65u3GeXhqzLDFFagxzkon4MmX/tls3NeJa7R8TYyz+7JMz82ckvm+gNlv/8dJQ52cGHk
+	0hFKQdRGsGz7XAen1mJ5htPRv5/bcW74qL74RPK797SuMYWj5zuywuqftO07u56cuRODvrwMZVT
+	x+YsQtZ/kld4AmigB7oz3gl0Yd6lbWFbMtBBm2yVkX3CJ3fjlYG6By+UkoT/e3fuw0JfYxYoq0M
+	5C38g8L/iKQjyx+BYu5lYLCdTX0gT/S99RUFst4ki2gwl6136e3/UqX0Z4tbR+p6bMUEceIUDEQ
+	L78pC+7H+AGU=
+X-Google-Smtp-Source: AGHT+IE7chg7Stgbh4Yr4tdDPknvVXXUYCN1Cbm/Af0sSgXY5X2QBDtOR02WyyHHfHlz7aluSu81iw==
+X-Received: by 2002:a05:6402:2550:b0:5f3:857f:2b38 with SMTP id 4fb4d7f45d1cf-608d0948ae9mr218552a12.17.1749838424741;
+        Fri, 13 Jun 2025 11:13:44 -0700 (PDT)
+Received: from myrica (92.40.185.95.threembb.co.uk. [92.40.185.95])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-608b4a94d18sm1502508a12.67.2025.06.13.11.13.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Jun 2025 10:32:39 -0700 (PDT)
-From: Alexey Klimov <alexey.klimov@linaro.org>
-To: robin.clark@oss.qualcomm.com,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	linux-arm-msm@vger.kernel.org
-Cc: joro@8bytes.org,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	andersson@kernel.org,
-	dmitry.baryshkov@oss.qualcomm.com
-Subject: [PATCH v2] iommu/arm-smmu-qcom: Add SM6115 MDSS compatible
-Date: Fri, 13 Jun 2025 18:32:38 +0100
-Message-ID: <20250613173238.15061-1-alexey.klimov@linaro.org>
-X-Mailer: git-send-email 2.47.2
+        Fri, 13 Jun 2025 11:13:44 -0700 (PDT)
+Date: Fri, 13 Jun 2025 19:13:45 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Demi Marie Obenour <demiobenour@gmail.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, virtualization@lists.linux.dev,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	devel@spectrum-os.org, Alyssa Ross <hi@alyssa.is>
+Subject: Re: Virtio interrupt remapping
+Message-ID: <20250613181345.GA1350149@myrica>
+References: <c40da5dc-44c0-454e-8b1d-d3f42c299592@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <c40da5dc-44c0-454e-8b1d-d3f42c299592@gmail.com>
 
-Add the SM6115 MDSS compatible to clients compatible list, as it also
-needs that workaround.
-Without this workaround, for example, QRB4210 RB2 which is based on
-SM4250/SM6115 generates a lot of smmu unhandled context faults during
-boot:
+Hi,
 
-arm_smmu_context_fault: 116854 callbacks suppressed
-arm-smmu c600000.iommu: Unhandled context fault: fsr=0x402,
-iova=0x5c0ec600, fsynr=0x320021, cbfrsynra=0x420, cb=5
-arm-smmu c600000.iommu: FSR    = 00000402 [Format=2 TF], SID=0x420
-arm-smmu c600000.iommu: FSYNR0 = 00320021 [S1CBNDX=50 PNU PLVL=1]
-arm-smmu c600000.iommu: Unhandled context fault: fsr=0x402,
-iova=0x5c0d7800, fsynr=0x320021, cbfrsynra=0x420, cb=5
-arm-smmu c600000.iommu: FSR    = 00000402 [Format=2 TF], SID=0x420
+On Fri, Jun 13, 2025 at 01:08:07PM -0400, Demi Marie Obenour wrote:
+> I’m working on virtio-IOMMU interrupt remapping for Spectrum OS [1],
+> and am running into a problem.  All of the current interrupt remapping
+> drivers use __init code during initialization, and I’m not sure how to
+> plumb the struct virtio_device * into the IOMMU initialization code.
+> 
+> What is the proper way to do this, where “proper” means that it doesn’t
+> do something disgusting like “stuff the virtio device in a global
+> variable”?
 
-and also failed initialisation of lontium lt9611uxc, gpu and dpu is
-observed:
-(binding MDSS components triggered by lt9611uxc have failed)
+I'm not familiar at all with interrupt remapping, but I suspect a major
+hurdle will be device probing order: the PCI subsystem probes the
+virtio-pci transport device relatively late during boot, and the virtio
+driver probes the virtio-iommu device afterwards, at which point we can
+call viommu_probe() and inspect the device features and config.  This can
+be quite late in userspace if virtio and virtio-iommu get loaded as
+modules (which distros tend to do).
 
- ------------[ cut here ]------------
- !aspace
- WARNING: CPU: 6 PID: 324 at drivers/gpu/drm/msm/msm_gem_vma.c:130 msm_gem_vma_init+0x150/0x18c [msm]
- Modules linked in: ... (long list of modules)
- CPU: 6 UID: 0 PID: 324 Comm: (udev-worker) Not tainted 6.15.0-03037-gaacc73ceeb8b #4 PREEMPT
- Hardware name: Qualcomm Technologies, Inc. QRB4210 RB2 (DT)
- pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
- pc : msm_gem_vma_init+0x150/0x18c [msm]
- lr : msm_gem_vma_init+0x150/0x18c [msm]
- sp : ffff80008144b280
-  		...
- Call trace:
-  msm_gem_vma_init+0x150/0x18c [msm] (P)
-  get_vma_locked+0xc0/0x194 [msm]
-  msm_gem_get_and_pin_iova_range+0x4c/0xdc [msm]
-  msm_gem_kernel_new+0x48/0x160 [msm]
-  msm_gpu_init+0x34c/0x53c [msm]
-  adreno_gpu_init+0x1b0/0x2d8 [msm]
-  a6xx_gpu_init+0x1e8/0x9e0 [msm]
-  adreno_bind+0x2b8/0x348 [msm]
-  component_bind_all+0x100/0x230
-  msm_drm_bind+0x13c/0x3d0 [msm]
-  try_to_bring_up_aggregate_device+0x164/0x1d0
-  __component_add+0xa4/0x174
-  component_add+0x14/0x20
-  dsi_dev_attach+0x20/0x34 [msm]
-  dsi_host_attach+0x58/0x98 [msm]
-  devm_mipi_dsi_attach+0x34/0x90
-  lt9611uxc_attach_dsi.isra.0+0x94/0x124 [lontium_lt9611uxc]
-  lt9611uxc_probe+0x540/0x5fc [lontium_lt9611uxc]
-  i2c_device_probe+0x148/0x2a8
-  really_probe+0xbc/0x2c0
-  __driver_probe_device+0x78/0x120
-  driver_probe_device+0x3c/0x154
-  __driver_attach+0x90/0x1a0
-  bus_for_each_dev+0x68/0xb8
-  driver_attach+0x24/0x30
-  bus_add_driver+0xe4/0x208
-  driver_register+0x68/0x124
-  i2c_register_driver+0x48/0xcc
-  lt9611uxc_driver_init+0x20/0x1000 [lontium_lt9611uxc]
-  do_one_initcall+0x60/0x1d4
-  do_init_module+0x54/0x1fc
-  load_module+0x1748/0x1c8c
-  init_module_from_file+0x74/0xa0
-  __arm64_sys_finit_module+0x130/0x2f8
-  invoke_syscall+0x48/0x104
-  el0_svc_common.constprop.0+0xc0/0xe0
-  do_el0_svc+0x1c/0x28
-  el0_svc+0x2c/0x80
-  el0t_64_sync_handler+0x10c/0x138
-  el0t_64_sync+0x198/0x19c
- ---[ end trace 0000000000000000 ]---
- msm_dpu 5e01000.display-controller: [drm:msm_gpu_init [msm]] *ERROR* could not allocate memptrs: -22
- msm_dpu 5e01000.display-controller: failed to load adreno gpu
- platform a400000.remoteproc:glink-edge:apr:service@7:dais: Adding to iommu group 19
- msm_dpu 5e01000.display-controller: failed to bind 5900000.gpu (ops a3xx_ops [msm]): -22
- msm_dpu 5e01000.display-controller: adev bind failed: -22
- lt9611uxc 0-002b: failed to attach dsi to host
- lt9611uxc 0-002b: probe with driver lt9611uxc failed with error -22
+The way we know to hold off initializing dependent devices before the
+IOMMU is ready is by reading the firmware tables. In devicetree the
+"msi-parent" and "msi-map" properties point to the interrupt remapping
+device, so by reading those Linux knows to wait for the probe of the
+remapping device before setting up those endpoints. The ACPI VIOT
+describes this topology as well, although at the moment it does not have
+separate graphs for MMU and interrupts, like devicetree does (could
+probably be added to the spec if needed, but I'm guessing the topologies
+may be the same for a VM).  If the interrupt infrastructure supports
+probe deferral, then that's probably the way to go.
 
-Suggested-by: Bjorn Andersson <andersson@kernel.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Fixes: 3581b7062cec ("drm/msm/disp/dpu1: add support for display on SM6115")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Alexey Klimov <alexey.klimov@linaro.org>
----
-
-v2:
- - added tags as suggested by Dmitry;
- - slightly updated text in the commit message.
-
-Previous version: https://lore.kernel.org/linux-arm-msm/20250528003118.214093-1-alexey.klimov@linaro.org/
-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 62874b18f645..c75023718595 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -379,6 +379,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
- 	{ .compatible = "qcom,sdm670-mdss" },
- 	{ .compatible = "qcom,sdm845-mdss" },
- 	{ .compatible = "qcom,sdm845-mss-pil" },
-+	{ .compatible = "qcom,sm6115-mdss" },
- 	{ .compatible = "qcom,sm6350-mdss" },
- 	{ .compatible = "qcom,sm6375-mdss" },
- 	{ .compatible = "qcom,sm8150-mdss" },
--- 
-2.47.2
+Thanks,
+Jean
 
