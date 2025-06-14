@@ -1,81 +1,80 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ED934282E1
-	for <iommu@lists.linux.dev>; Sat, 14 Jun 2025 14:03:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749909824; cv=none; b=f+HbenIWhnKmJh5ZU24B3nWOgSPUGYqTGRBGcYgGgU6+PEBrrJQXLbLKyC7Msik/JZ/NppPPjDay8ueqXPuQ3vV3rnJmSxWVTRVNu9YqRyG3q83r7QEZHqwUqeLh4DCUsXk53yfEVJE5Zkqry7m4LDPk2nLymymVx67y/Xz8S0Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749909824; c=relaxed/simple;
-	bh=1ciXpSXfAcIrYvrm15RgzAAXrJPQV9bgDhj5Mb4BVXk=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=HRXsyFn3HjgtBOhVIBZDfSPzlATKtKaW2lDeVexebsqsZ7xw9bPVr9GPKlj+wXx5F8VwsVLpRrOZxVK/qaZeNUwySOjwBsB5MtwFYD8VBEYqm3p19zR39x9kY7ee51ttMgiGj6EgoaHGPen/UFGw66ajkhHNp9zzyRv1hfR9yXM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=M6oaN/Dv; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="M6oaN/Dv"
-Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 538EC4DE74;
-	Sat, 14 Jun 2025 16:03:34 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1749909814;
-	bh=1ciXpSXfAcIrYvrm15RgzAAXrJPQV9bgDhj5Mb4BVXk=;
-	h=Date:From:To:Cc:Subject:From;
-	b=M6oaN/DvaghN9IORbo1pK2oFmTaMLBL7EhrblcNuK3hyZ++ObWngPQOWppDbpCvaY
-	 uSfDkA3JfGEOZwVSdCHOf/dS74KwupubrhYfwm6c6XpNmKpBzQF0MYkvyft0edPhKs
-	 5ywiSO2iAO7bjIHOgD7Z4G9HGmfsHWvZLXFXGCYK7fZH05pPR+SchXhIbQenkQZBZs
-	 aom26V4jAiDMOY67lKDlW0jMzDkIxWo3IYdNbiYuJLLpzPFnOl2qhwkFDP9hqlJEJw
-	 lDSI42nhj+0m4N+wdQysZxpksHTStgfsRKH9EILtRzs1kVf4cnqQ22qONKZ/i5r48V
-	 jUtSL7mz0qfQw==
-Date: Sat, 14 Jun 2025 16:03:33 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Fix for Linux v6.16-rc1
-Message-ID: <aE2BNXtOVC2ss0us@8bytes.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B6531E990E
+	for <iommu@lists.linux.dev>; Sat, 14 Jun 2025 14:35:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1749911710; cv=none; b=im0LgI7eblUaD95DsM4Co+/qkcnwO0dhks3pt285LB8TF4bmDnvC4oZyw2q+wRKV3eTl/RFCOwe4AdOXmhfpgYJ7WhGYqlMp5XJy3mFk938MfBUNAGBIAa4hmEJpqpeQGQO3k7sRgzcYVNLOO74fdEIav8RQ8vmLaMj0Q/1s1T4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1749911710; c=relaxed/simple;
+	bh=LviThTNa7WFSySQCtkVWg9h/yH8uPysYxenL5Gkm01I=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=A2SK4jhYgjOcrJU2lnCQi8l74W11GcrSJ6eY1D18pMJ/MPK+4Pd4Yjac7QtuwJAeSAn5S/jZpA4m/6esQa4vC+f7bjhaRHcD986caW0iWF6rXvRY4HVzokux86bHV6vaP708xFyq+ztEuX2jU2Ckilf6oP/NnnpZr4P6WOTnhag=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.48])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4bKJbG0RyKzRk30;
+	Sat, 14 Jun 2025 22:30:50 +0800 (CST)
+Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
+	by mail.maildlp.com (Postfix) with ESMTPS id B15CB1800B1;
+	Sat, 14 Jun 2025 22:35:04 +0800 (CST)
+Received: from localhost.huawei.com (10.90.31.46) by
+ kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Sat, 14 Jun 2025 22:35:04 +0800
+From: Qinxin Xia <xiaqinxin@huawei.com>
+To: <21cnbao@gmail.com>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>
+CC: <yangyicong@huawei.com>, <hch@lst.de>, <iommu@lists.linux.dev>,
+	<jonathan.cameron@huawei.com>, <prime.zeng@huawei.com>,
+	<fanghao11@huawei.com>, <linux-kernel@vger.kernel.org>,
+	<linuxarm@huawei.com>, <xiaqinxin@huawei.com>
+Subject: [RESEND PATCH v4 1/4] dma-mapping: benchmark: Add padding to ensure uABI remained consistent
+Date: Sat, 14 Jun 2025 22:34:51 +0800
+Message-ID: <20250614143454.2927363-2-xiaqinxin@huawei.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20250614143454.2927363-1-xiaqinxin@huawei.com>
+References: <20250614143454.2927363-1-xiaqinxin@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: kwepems100002.china.huawei.com (7.221.188.206) To
+ kwepemj200003.china.huawei.com (7.202.194.15)
 
-Hi Linus,
+The padding field in the structure was previously reserved to
+maintain a stable interface for potential new fields, ensuring
+compatibility with user-space shared data structures.
+However,it was accidentally removed by tiantao in a prior commit,
+which may lead to incompatibility between user space and the kernel.
 
-The following changes since commit 19272b37aa4f83ca52bdf9c16d5d81bdd1354494:
+This patch reinstates the padding to restore the original structure
+layout and preserve compatibility.
 
-  Linux 6.16-rc1 (2025-06-08 13:44:43 -0700)
+Fixes: 8ddde07a3d28 ("dma-mapping: benchmark: extract a common header file for map_benchmark definition")
+Cc: stable@vger.kernel.org
+Acked-by: Barry Song <baohua@kernel.org>
+Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
+---
+ include/linux/map_benchmark.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-are available in the Git repository at:
+diff --git a/include/linux/map_benchmark.h b/include/linux/map_benchmark.h
+index 62674c83bde4..2ac2fe52f248 100644
+--- a/include/linux/map_benchmark.h
++++ b/include/linux/map_benchmark.h
+@@ -27,5 +27,6 @@ struct map_benchmark {
+ 	__u32 dma_dir; /* DMA data direction */
+ 	__u32 dma_trans_ns; /* time for DMA transmission in ns */
+ 	__u32 granule;  /* how many PAGE_SIZE will do map/unmap once a time */
++	__u8 expansion[76];     /* For future use */
+ };
+ #endif /* _KERNEL_DMA_BENCHMARK_H */
+-- 
+2.33.0
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-fixes-v6.16-rc1
-
-for you to fetch changes up to f9705d66fa7107fcd619083f7aae2afb0554a593:
-
-  iommu/tegra: Fix incorrect size calculation (2025-06-13 17:02:31 +0200)
-
-----------------------------------------------------------------
-IOMMU Fix for Linux v6.16-rc1:
-
-Including:
-
-	- NVidia Tegra: Fix PTE size calculation.
-
-----------------------------------------------------------------
-Jason Gunthorpe (1):
-      iommu/tegra: Fix incorrect size calculation
-
- drivers/iommu/tegra-smmu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
