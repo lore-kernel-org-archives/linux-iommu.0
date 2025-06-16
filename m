@@ -1,74 +1,81 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51350274652
-	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 09:53:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 442C3278E71;
+	Mon, 16 Jun 2025 10:03:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750067606; cv=none; b=nYz8DS9Yy2uYrv1bhvUtA3Cx6jDAn/U5ifaFl37VRFJHl5G8wvi12sCizZSRrTgIunE3bo6gbxNqM13piCDVSovBk90Lfd93Tk0f19b1SUbP4Z+4AfloDojMFIBh/ywUrLxdfjtBXbMiucVtbMAF0QOZ5ESJebFYOggm1Vix0lg=
+	t=1750068190; cv=none; b=uU/PAoW//ODD/9QHh98gL9xgPbKsX0fJ1CAj1NZRGgCVtmw1vgUPAsD+OSU9FShPQ9Rqn03gjB/I7FR3WwdwFR8IAm3k6B4l2VE+KNwZpkUYfojc4JaN5jz0alRnLBHttdz9DComBHdLAmtlyDQHlygi/NoOarFgOGsiV40HVX4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750067606; c=relaxed/simple;
-	bh=4cv8uE6pGypsCSgH3uyNQBvUvH0nntwDkgEVp1CQBYI=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZK8CArAGKWKViy5bRDgzMU8/ybwxGbH2XjdgFBL8Y00sMxq8pQcOdKGysyS5l9HXg+gt+BwsjWk9LTKDAsxcz129CrrIZ0q4hYImuDu7kUrcUxhwBgOKtF9LAxiWRgTDz7o6yM+vTKtoWVeHC3mNOWat/x2GGcRa04K9CYfkpOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.216])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4bLQHk0HX0z6L5JK;
-	Mon, 16 Jun 2025 17:51:14 +0800 (CST)
-Received: from frapeml500008.china.huawei.com (unknown [7.182.85.71])
-	by mail.maildlp.com (Postfix) with ESMTPS id DC218140119;
-	Mon, 16 Jun 2025 17:53:20 +0800 (CST)
-Received: from localhost (10.203.177.66) by frapeml500008.china.huawei.com
- (7.182.85.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Mon, 16 Jun
- 2025 11:53:20 +0200
-Date: Mon, 16 Jun 2025 10:53:18 +0100
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: Qinxin Xia <xiaqinxin@huawei.com>
-CC: <21cnbao@gmail.com>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
-	<yangyicong@huawei.com>, <hch@lst.de>, <iommu@lists.linux.dev>,
-	<prime.zeng@huawei.com>, <fanghao11@huawei.com>,
-	<linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
-Subject: Re: [RESEND PATCH v4 1/4] dma-mapping: benchmark: Add padding to
- ensure uABI remained consistent
-Message-ID: <20250616105318.00001132@huawei.com>
-In-Reply-To: <20250614143454.2927363-2-xiaqinxin@huawei.com>
-References: <20250614143454.2927363-1-xiaqinxin@huawei.com>
-	<20250614143454.2927363-2-xiaqinxin@huawei.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
+	s=arc-20240116; t=1750068190; c=relaxed/simple;
+	bh=XQM8j714x8CB0+wIsMuEuOxZKpbd7ep9EJ8KDVn9O04=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MspZ6jFnuxd1VpgE+walzLfOWFJIh0Icc/Cn3Ja1VaJj8MZgwzZgFR98YCM+uV2SDJTjLMghluvWO0WBE7EHOz4OeascCPgMd/1mGkozhXpzVXyTRwqRJ2wSeKBV8/HBYVbj57ScZdLVxDaiyBuPMtstZqCCfZTohurMnlHf7lk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bjo78z/u; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bjo78z/u"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F1DDC4CEEA;
+	Mon, 16 Jun 2025 10:03:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750068189;
+	bh=XQM8j714x8CB0+wIsMuEuOxZKpbd7ep9EJ8KDVn9O04=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Bjo78z/unMglag+thKwfukBAUjd4ObIDnwtDCbACbFN5dFlqSZb7v2YHP8Ec096Xz
+	 3bBI17L+F4CO4kHNuVKN4tT+N3y5D96977CfynimipzSkpa684O1LZf8Tpd8b3uXfH
+	 VjyIiqTLkKw0ooqWiFAab1+KWJAr5v0cdg1farxLQL2LQG3yXIKkAPYh1W1dX9/ga7
+	 jaEmX0vtnKB6tc/p+4nOfiX5AMUCLhbfPMmMgV3qM2RDzSnlJsw0r+EPs9u4X0rXfd
+	 gRIEN/qyLYZiLxAYWFv8B/s11wE2NTm2iv3Fjv3cL2qiaYUZ8LYvqLelF9dj8magUt
+	 O/gxT9SFf8NjQ==
+Date: Mon, 16 Jun 2025 11:03:04 +0100
+From: Will Deacon <will@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, robin.murphy@arm.com,
+	joro@8bytes.org, praan@google.com, yi.l.liu@intel.com,
+	peterz@infradead.org, jsnitsel@redhat.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+	baolu.lu@linux.intel.com
+Subject: Re: [PATCH v2 10/14] iommu/arm-smmu-v3: Replace arm_vsmmu_alloc with
+ arm_vsmmu_init
+Message-ID: <20250616100303.GA17132@willie-the-truck>
+References: <cover.1749882255.git.nicolinc@nvidia.com>
+ <64e4b4c33acd26e1bd676e077be80e00fb63f17c.1749882255.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: lhrpeml100004.china.huawei.com (7.191.162.219) To
- frapeml500008.china.huawei.com (7.182.85.71)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <64e4b4c33acd26e1bd676e077be80e00fb63f17c.1749882255.git.nicolinc@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Sat, 14 Jun 2025 22:34:51 +0800
-Qinxin Xia <xiaqinxin@huawei.com> wrote:
-
-> The padding field in the structure was previously reserved to
-> maintain a stable interface for potential new fields, ensuring
-> compatibility with user-space shared data structures.
-> However,it was accidentally removed by tiantao in a prior commit,
-> which may lead to incompatibility between user space and the kernel.
+On Fri, Jun 13, 2025 at 11:35:22PM -0700, Nicolin Chen wrote:
+> To ease the for-driver iommufd APIs, get_viommu_size and viommu_init ops
+> are introduced.
 > 
-> This patch reinstates the padding to restore the original structure
-> layout and preserve compatibility.
+> Sanitize the inputs and report the size of struct arm_vsmmu on success, in
+> arm_smmu_get_viommu_size().
 > 
-> Fixes: 8ddde07a3d28 ("dma-mapping: benchmark: extract a common header file for map_benchmark definition")
-> Cc: stable@vger.kernel.org
-> Acked-by: Barry Song <baohua@kernel.org>
-> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
+> Place the type sanity at the last, becase there will be soon an impl level
+> get_viommu_size op, which will require the same sanity tests prior. It can
+> simply insert a piece of code in front of the IOMMU_VIOMMU_TYPE_ARM_SMMUV3
+> sanity.
+> 
+> The core will ensure the viommu_type is set to the core vIOMMU object, and
+> pass in the same dev pointer, so arm_vsmmu_init() won't need to repeat the
+> same sanity tests but to simply init the arm_vsmmu struct.
+> 
+> Remove the arm_vsmmu_alloc, completing the replacement.
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 11 +++--
+>  .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 46 ++++++++++---------
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  3 +-
+>  3 files changed, 32 insertions(+), 28 deletions(-)
 
-FWIW I checked the patch above indeed accidentally dropped the padding and the structure
-is copied to userspace so this fix is correct.  Given it's not in a uapi header this
-only really affects the selftest I think this is mostly a case of there possibly being
-out of tree tools with a local copy of this structure definition.
+Acked-by: Will Deacon <will@kernel.org>
 
-Reviewed-by: Jonathan Cameron <jonathan.cameron@huawei.com>
+Will
