@@ -1,51 +1,95 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED90F27D770;
-	Mon, 16 Jun 2025 11:29:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15B1529CB48;
+	Mon, 16 Jun 2025 11:33:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750073378; cv=none; b=eCAd5CStDtT3sIB4lzTI7QI/lq4vNptuLlbuiwDIw9THuDv8IoRLMRZxUT592P20Z2Cf/RDwMJKP/XcXhGTLRRaVIjHdiNFd5l72cp0ljZq1G7SkTh1397kcHmIFP7sSvktTXO/AXc4TzgK0eQ/V2conygc/PYXbBFYUEd7t83o=
+	t=1750073616; cv=none; b=ahCNGZBtjSgRpzT9XJC96i2NGV7LH/ud49IO/0UoxWaAMlTulRJEIf19MSlsTCjnI9rf3AqiIWKZ//V/VlegkA73BTSj+PPFos7Aua/ks4Egzk63Hd6o07Fin9GaDc4XGPBw62P6pRgRgX29EfsqaJYzxIqUIfchebqw6po/OaI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750073378; c=relaxed/simple;
-	bh=VNpzq5XMajWseNHkJUpa4CQhSfFYhQigCVye/D7VuVM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=E5Pg/t5/LqkwfHlqYQn54vrYFs5TGF9oHiFRIqOkSDtk9UQ0sm5UsS3ckPXG73+BbiiRQ2Mf99EhWGX4vlQ011HGvKKgerEKQZxZHzePeTzhYybs8Tp6GW6xYchnP4EQdc/wtyTrnD04O6F6m8nRE2fhCG8WNLc8cSdumGjEqLY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 0EDF168D07; Mon, 16 Jun 2025 13:29:28 +0200 (CEST)
-Date: Mon, 16 Jun 2025 13:29:27 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: James Clark <james.clark@linaro.org>
-Cc: hch@lst.de, olteanv@gmail.com, broonie@kernel.org,
-	oe-kbuild-all@lists.linux.dev, arnd@arndb.de,
-	larisa.grigore@nxp.com, Frank.li@nxp.com, linux-spi@vger.kernel.org,
-	imx@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kernel test robot <lkp@intel.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev
-Subject: Re: [PATCH] dma-mapping: Stub out dma_{alloc,free,map}_pages() API
-Message-ID: <20250616112927.GA21689@lst.de>
-References: <202506160036.t9VDxF6p-lkp@intel.com> <20250616111749.316413-1-james.clark@linaro.org>
+	s=arc-20240116; t=1750073616; c=relaxed/simple;
+	bh=TaASRe4qgqRwxxXiP0Y/pcupbVmXyYU7JDAROJSiwPw=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=rdO0Fnl4bWmKNr2y1tVMeOOeYa4srkTYfo+YSS0qkrYl4JAfUbYzgZ0I3v4aSW6zu3bXEgaOOREodLL+FF7vTqdayoLmqUD01RBlpQoOtuQA1+jmjTjIgxAINBhNzMhV8r0xkXB0LXJZEuokYDGpbfGX25/Ko+5nyRNGRupaezM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XacZ9Hv+; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XacZ9Hv+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1750073615; x=1781609615;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=TaASRe4qgqRwxxXiP0Y/pcupbVmXyYU7JDAROJSiwPw=;
+  b=XacZ9Hv+jo2WeIQQWA2hO40n9JT6mSf2WQHFiXR5/p62QyjDhd6MUQZo
+   om+4ObtCh3ZPUrNi7zO2lPX4COvFKeCFkXIkbSoXdq0EkafGjSk5jAGoH
+   edIXe3SKuwzENwmTyMVVTtOvPBlhmhLHSxzh74BLSXLaPyyal851eHtO8
+   XyJnRCe4Z1eJ5BWTpHrln69dIvvzPwcTMUp4s3vlzWXFg2KuYvB/p+/1I
+   0WA3XzguNCThCBew7aqO2bj/fChN+HE25WmLxZ87zfb3ShtQN3HQVEiml
+   myDhJKtgq6CHFls7wwzkz7nz3OZewBvHkgD4Mo3yZAhA3RBHfOC1u33PY
+   Q==;
+X-CSE-ConnectionGUID: WrTnB81qSLuphksbzyc8yw==
+X-CSE-MsgGUID: ifNxQ+vxRRiujjiVAtRI/A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11465"; a="56014288"
+X-IronPort-AV: E=Sophos;i="6.16,241,1744095600"; 
+   d="scan'208";a="56014288"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2025 04:33:33 -0700
+X-CSE-ConnectionGUID: iWMVCjyURKeZAdHUUOXn7g==
+X-CSE-MsgGUID: 7yInmTY6T6CqB6tjeGUWbQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,241,1744095600"; 
+   d="scan'208";a="179345988"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.243.252]) ([10.124.243.252])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2025 04:33:25 -0700
+Message-ID: <a774510d-bc55-4ea5-bc1a-2d31cb5bf589@linux.intel.com>
+Date: Mon, 16 Jun 2025 19:33:22 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250616111749.316413-1-james.clark@linaro.org>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, bagasdotme@gmail.com, robin.murphy@arm.com,
+ joro@8bytes.org, thierry.reding@gmail.com, vdumpa@nvidia.com,
+ jonathanh@nvidia.com, shuah@kernel.org, jsnitsel@redhat.com,
+ nathan@kernel.org, peterz@infradead.org, yi.l.liu@intel.com,
+ mshavit@google.com, praan@google.com, zhangzekun11@huawei.com,
+ iommu@lists.linux.dev, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-tegra@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ patches@lists.linux.dev, mochs@nvidia.com, alok.a.tiwari@oracle.com,
+ vasant.hegde@amd.com, dwmw2@infradead.org
+Subject: Re: [PATCH v6 13/25] iommufd: Add mmap interface
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, kevin.tian@intel.com,
+ corbet@lwn.net, will@kernel.org
+References: <cover.1749884998.git.nicolinc@nvidia.com>
+ <c9929e0c9ec6f3f6348cd0c399d6fdfa9f35f973.1749884998.git.nicolinc@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <c9929e0c9ec6f3f6348cd0c399d6fdfa9f35f973.1749884998.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jun 16, 2025 at 12:17:49PM +0100, James Clark wrote:
-> The implementations are in mapping.c which requires HAS_DMA so stub them
-> out if not present. This is required for some drivers to pass randconfig
-> builds.
+On 6/14/2025 3:14 PM, Nicolin Chen wrote:
+> For vIOMMU passing through HW resources to user space (VMs), allowing a VM
+> to control the passed through HW directly by accessing hardware registers,
+> add an mmap infrastructure to map the physical MMIO pages to user space.
+> 
+> Maintain a maple tree per ictx as a translation table managing mmappable
+> regions, from an allocated for-user mmap offset to an iommufd_mmap struct,
+> where it stores the real PFN range for an io_remap_pfn_range call.
+> 
+> Keep track of the lifecycle of the mmappable region by taking refcount of
+> its owner, so as to enforce user space to unmap the region first before it
+> can destroy its owner object.
+> 
+> To allow an IOMMU driver to add and delete mmappable regions onto/from the
+> maple tree, add iommufd_viommu_alloc/destroy_mmap helpers.
+> 
+> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
+> Signed-off-by: Nicolin Chen<nicolinc@nvidia.com>
 
-No.  Just add the proper IS_ENABLED checks in the callers.  While these
-kinds of stubs used to be popular they are really nasty in that the
-calls unexpectedly just fail without the right depends.
-
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
