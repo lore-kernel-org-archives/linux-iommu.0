@@ -1,130 +1,341 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com [209.85.221.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 714A6288529
-	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 16:49:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFA52286409;
+	Mon, 16 Jun 2025 16:53:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750092585; cv=none; b=hGKs2C0E54Ivw6EXsqVUInj4xhyTGVLxQYWkcbigLoA44TTYzKMFDb1YndFJjJLX5ZI/HljU5kpBqwsw7X0PPg505o+Z6z/nHrOIhy2jTd9i/wJm2zkVAz9ftTjRZ+2nrjKLdcKlkeQFzMvU/bQ34eXCeehLQOYa0emagPahHA0=
+	t=1750092839; cv=none; b=nlhSEh5Bb0lSRE3/RnSWn+Do3NDVz9Lk64MphaKmNuwBX4yilpiLOlbGp+TrQvWnm3oFJTKZvk1Op1nZ7phq5mqMvujgmKdLTBj7jUUXz/D3/QjN84jO8kE9UuVX2lMwcUnyKPanxpqeUjotPxy4b1gqKGeEAD5rp3vaTC6DCZ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750092585; c=relaxed/simple;
-	bh=wbAqs2QPNshQFNfnQJ3Nsx3pqJB0co+3divXRM+3D9I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KkRtbnJml8JK+ca1mCUj/55fRQ+JoN5mxdDCbV4NSunUIZyGmMlLPHtNUn42Tonud/T8ICrux2eKDKGm+zJVJ0wAHQC0KyeN7NC8QaQoY7Md6IUYhpVMwkMUEPPBTEliVdGVDBZIcMZYNICWMKXE/pt9gyvsTk2DRDViwaXmD5A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=mb6Ff4lq; arc=none smtp.client-ip=209.85.222.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1750092839; c=relaxed/simple;
+	bh=igS8mv+v45tOcWlNTHtF9NhiQazaockeuqiW2Kw+QTg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=I9p1ts+jk09YnARU6OfdS7sNxugF9SCiLyUuzfQzgoT+4Yq0Pmb6+Y2mjUvs8MyiBkrE3NiU0XE/sWwl7ZzF4wqqdXpgExFL3hosObvHSn1Uybbhy1eyf5j3k3xBe8r3gi01xjsgoMjIt0W3cUoIup3ztjz4Sw8rBilLArv7JkU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HoMixsV1; arc=none smtp.client-ip=209.85.221.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="mb6Ff4lq"
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-7d3da67de87so71398585a.3
-        for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 09:49:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HoMixsV1"
+Received: by mail-vk1-f175.google.com with SMTP id 71dfb90a1353d-52f404ddf3eso2971107e0c.2;
+        Mon, 16 Jun 2025 09:53:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1750092582; x=1750697382; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9JkdL6Mk2e/49VSWyYi+MjdDg5JZvsaiQoJd8x2e2l8=;
-        b=mb6Ff4lqRIo4115X6uZ78rzIa2jYTQxyo6BLrZjeduJhZtf/U9Tagfgg7g2+IemZci
-         KjNG39N/k6aQfJx9dFn6Evz1tfgmP44haULFb/vDRFzEsp/L2L96Sm8Gz5sqZ1e3Pr4F
-         tqVXudahGGtyQDoVP6yExSHsejRs8YJPW2GLAN//TOuH1D7D3SUs7yeudxP+Gxmo7w2f
-         ujdvVrj4ktQxtQaiFfEXLas82a05TOB973W2zULtjRqHE8gBwjAPIHy6YFEFHhryoBXW
-         epTiW4vi5i2Sp/IaY4Vor62GBvPWGEkcfDoDiVUgnsyFC/GPZpaL9J/Kixc7tLCdF2Xo
-         KVeA==
+        d=gmail.com; s=20230601; t=1750092836; x=1750697636; darn=lists.linux.dev;
+        h=in-reply-to:autocrypt:from:content-language:references:cc:to
+         :subject:user-agent:mime-version:date:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=AE7bs1KlGj+87QO0pIL+WOFVmDGt3PYyqhE0LEoMulY=;
+        b=HoMixsV1Q2BWJaw/m9DMzcZugxCprt86T5Egoas66q4kEvDAQyJBC4ruggVoHjwu3a
+         J2h+kKzl7Z9m+hMrcGUZ1Dh+ZbNz0Q//HERBMlqwk7OLPtSSngiXBA/yHYovMBQiVA7F
+         UU07XJCto3wlxeM/3y7aEA0zwIgRuk+jLFTkbJ3YjJkApbYmionoF9UnAU+vzEXBd+St
+         TnfZIkVOdv+/yrM+Si0dFUClCVBTknAVWtxkgE4UOSpQ3NH1Nfjm1QpJjWDkg/8DBcxm
+         QVZN+YmSC4fZwUSQmB3dR5iGTQ1cirJleELJK71sV54copO78EvUi0pUmZcZRn+4qEex
+         W2/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750092582; x=1750697382;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9JkdL6Mk2e/49VSWyYi+MjdDg5JZvsaiQoJd8x2e2l8=;
-        b=Thl+1xvwHy+m82c9T+l0JFprqkLKS+KQhAq4odOt0lHJ/4SlYOczpN3/W8e69yM/iK
-         gYv7gOUSTgKxj/sJRAWNuZgQEfPXrcJIUvsnAzMbWjHIlTtjtlgNnPN7stMFgQ11A+Fk
-         ltUN9/GLV48NBBEVQ0zE2GuCX0Vnm7+ed2YtGaANz33RzLu4V9l3LkbsPcpIY5YsCWb2
-         BkY8sKpKJPhvXxiVYm+mo4bqIP3bORYNzFTwVpNSIq75H5tqRM9ciouTNs6LAgbES2EC
-         sjP0/qYJJLnXivEfFbswpLq1pujZJbsRyBNKeBBCpggNqO/vUsCehzlDH56c+/Pkz3Gq
-         wndA==
-X-Forwarded-Encrypted: i=1; AJvYcCVCIzgmxJWr57qdixsYkfZFldcNyzIdhvbQqOICfzt+JSOxZiWX+4rEduTE8Yygz9g8++wKSQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw9ccvajO8T/915C+6MPjI3jW/VUNu6m0PwSohqwo2Rl9F5NanW
-	v6iI7LW/jhR9Hpc40MgD29xw/4k8AncXco2MgnQcRc4535vTMQptuOCE/hETZ/LV83hAdQkNP/5
-	DnnmU
-X-Gm-Gg: ASbGncsXkDhy0TTnUizjZwvDhG1UKX/ebLO/Qw/itemSPjnsnLTUL+scdcgC6ikOPP/
-	Ekc5usoqdv0RCsKuCXvUdQDlGrn2A/2TjTzHCEmPfoLBkv2SMLWbU5eG6ZXg8qdj2wdDud8he7q
-	Rjveq4Q6aTb8d78DH5xPhshMrX5fURrtZ0jFR5dOQWquRGsofs4GWdYkEEg2yfzSDOJ4mV2wPs8
-	w773NfqlCHe/JeNXFTnzNvqs4jFqcRGmyi/KJdRYovc6bHTccDpwJ1R3whUsqFqLHWsckDBH+0n
-	BGBp8ZW4stKd9mt57n4JXx43H2Jp8rWVYrF+pdmqFChHqOyyWwlk/9DCwlpE91aX9fzS44aPaAl
-	psUAmtZJVukSalHgzIfVtZRWB1ElkkR7mTT8Jhw==
-X-Google-Smtp-Source: AGHT+IH7LW8HsfFZHHGu9OtydHNIM8xqpwob8vEfETKl1+Ftq+mpH3z1NlGNTqm4xT5IAWMHRxxaXw==
-X-Received: by 2002:a05:620a:2990:b0:7d3:9109:4472 with SMTP id af79cd13be357-7d3c6cda074mr1763524185a.37.1750092582358;
-        Mon, 16 Jun 2025 09:49:42 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7d3b8dfe954sm549843385a.31.2025.06.16.09.49.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Jun 2025 09:49:41 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uRD1h-00000005lad-1ENt;
-	Mon, 16 Jun 2025 13:49:41 -0300
-Date: Mon, 16 Jun 2025 13:49:41 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH] iommufd: Destroy vdevice on device unbind
-Message-ID: <20250616164941.GA1373692@ziepe.ca>
-References: <20250610065146.1321816-1-aneesh.kumar@kernel.org>
- <BN9PR11MB527606182417BB7A35349F598C74A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250612172645.GA1011960@ziepe.ca>
- <BN9PR11MB5276B467ADCC57BC6571CA458C77A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250613124202.GD1130869@ziepe.ca>
- <yq5abjqotim7.fsf@kernel.org>
- <BN9PR11MB527633CA2F698E83E12BFBD68C70A@BN9PR11MB5276.namprd11.prod.outlook.com>
+        d=1e100.net; s=20230601; t=1750092836; x=1750697636;
+        h=in-reply-to:autocrypt:from:content-language:references:cc:to
+         :subject:user-agent:mime-version:date:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AE7bs1KlGj+87QO0pIL+WOFVmDGt3PYyqhE0LEoMulY=;
+        b=cxKtfe08M/kQab9Uo73iur8a9YmYDLD9orr+AmeK30/tbmhT1iZjmqQeiBpdVt79KD
+         2RG8OL6/B58vdxdPpiSLveQFhcfa6l/KRMRseypM64SJok7QFW1DdxYsr9h2Oh8314MD
+         LS/n9AGeqBtLjp8TTSWnCCUvXcorM3MFqe1VOkPmWERhMD/8ecZjl4YPm5U7Le3k13fL
+         YKqkUnwEtTG/bh+vtgyACMgLyBuddIc/woMuGVUkq1R02iBuyBOVWkaiPf+ALUHZdjuH
+         d/xEGv/AzTqpKiURSaI2YiAVzj2U7panJmllVvO0tQHlv35ycwg2zmAcPvYnQGiRFWFj
+         CFOA==
+X-Forwarded-Encrypted: i=1; AJvYcCVV8Tac2CrY+bS64mSOa2asm3m49AR2H6lY9uWctjaqS1VohCViQAmo1L8sqc6cDx5nnhCQ5GI84xlG7Pl33mQ=@lists.linux.dev, AJvYcCW/Qz+cUZwT/cIEeKLq1kvB8fyN1Ycom9pqozKFVxA13jz4O1uCOEEDIK2LG8m9PWLX+vCZwA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwZDxTGP3dWV5oBJeAUV4eN8akJDY/d1FhkzNZ9Kt1EuLGXc3wv
+	v1mJRsLa4ef68Ttmc7FWq0hz4u/S4hgVcq+GQKX+oTx7gDEZmT7za0sa
+X-Gm-Gg: ASbGnctcKwbC19MFOZ91txbhPW1vaniePfXdEXTkn0qOhI7xOwxjW+L5DJAbNEX+Qx3
+	vpH6/hK+ACXqQDcP1N7L9S2rFbQ8cH6KiE+jpVdUQjhutQUtNXT3cgYo8eAk/xGH8C6wODIQC/x
+	jc8EotDcOQe5guSvKKot6soKdDS5ZEK2biQD8W1aMlLivbp34n83kfarRtXm19FoK1U+j6mLHL5
+	Tp7sn+xkB7aXbTlGEAwJb4g1aZOXztMnLpRIfgrwi6P6yyip6HFA8YtyBk6ExyP7qBYbGy61LJM
+	wqelE2i5bm4yXs2d6pDcJCypWpgHQoGXfTuozboBcuK8o5LWT1VQr2gnOtlXR9I56O4iOXZCUbJ
+	PKQ==
+X-Google-Smtp-Source: AGHT+IGNnenIbdhCRNDyp+CfvtJMv0s1mua35tN91shKjIdvYdLwxU636vL0h2PbPtCcuPCW4YFAxQ==
+X-Received: by 2002:ac5:c559:0:b0:531:4a67:16ad with SMTP id 71dfb90a1353d-5314a671b40mr5219504e0c.6.1750092836422;
+        Mon, 16 Jun 2025 09:53:56 -0700 (PDT)
+Received: from [10.138.10.6] ([89.187.178.201])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5313dd849e7sm1300357e0c.10.2025.06.16.09.53.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Jun 2025 09:53:55 -0700 (PDT)
+Message-ID: <8c3b08d5-24aa-4db2-84e1-dfd1d2c52065@gmail.com>
+Date: Mon, 16 Jun 2025 12:53:40 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB527633CA2F698E83E12BFBD68C70A@BN9PR11MB5276.namprd11.prod.outlook.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: Virtio-IOMMU interrupt remapping design
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>, =?UTF-8?Q?Eugenio_P=C3=A9rez?=
+ <eperezma@redhat.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Len Brown <lenb@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Alyssa Ross <hi@alyssa.is>,
+ virtualization@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux.dev, x86@kernel.org,
+ Spectrum OS Development <devel@spectrum-os.org>
+References: <> <a65d955c-192b-4e79-ab11-8e2af78b62af@gmail.com>
+ <20250616132031.GB1354058@ziepe.ca>
+Content-Language: en-US
+From: Demi Marie Obenour <demiobenour@gmail.com>
+Autocrypt: addr=demiobenour@gmail.com; keydata=
+ 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
+ +MYSfkEjBz0E8CLOcAw7JIwAaeBT
+In-Reply-To: <20250616132031.GB1354058@ziepe.ca>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------2moOxTn903NZZGa7yAz6amQg"
 
-On Mon, Jun 16, 2025 at 05:37:58AM +0000, Tian, Kevin wrote:
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------2moOxTn903NZZGa7yAz6amQg
+Content-Type: multipart/mixed; boundary="------------VPcIoc0R31Z8BiMlGxM7FjrE";
+ protected-headers="v1"
+From: Demi Marie Obenour <demiobenour@gmail.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>, =?UTF-8?Q?Eugenio_P=C3=A9rez?=
+ <eperezma@redhat.com>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Len Brown <lenb@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Dave Hansen <dave.hansen@linux.intel.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Alyssa Ross <hi@alyssa.is>,
+ virtualization@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux.dev, x86@kernel.org,
+ Spectrum OS Development <devel@spectrum-os.org>
+Message-ID: <8c3b08d5-24aa-4db2-84e1-dfd1d2c52065@gmail.com>
+Subject: Re: Virtio-IOMMU interrupt remapping design
+References: <> <a65d955c-192b-4e79-ab11-8e2af78b62af@gmail.com>
+ <20250616132031.GB1354058@ziepe.ca>
+In-Reply-To: <20250616132031.GB1354058@ziepe.ca>
 
-> the expected destruction flow from userspace is to IOMMU_DESTROY
-> the vdevice object before closing the vfio cdev fd which unbinds the
-> idevice.
-> 
-> now we are discussing how to handle a malfunction userspace which
-> violates that flow: let it be or add a tomestone state, after extending
-> unbind to destroy the vdevice...
+--------------VPcIoc0R31Z8BiMlGxM7FjrE
+Content-Type: multipart/mixed; boundary="------------m3JJGSh0ugchDzKD00qJ82OL"
 
-Right, to be clear the concern is
+--------------m3JJGSh0ugchDzKD00qJ82OL
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-close(vfio_cdev)
-ioctl(DESTROY, vdevice_id);
-close(iommufd)
+On 6/16/25 09:20, Jason Gunthorpe wrote:
+> On Sun, Jun 15, 2025 at 02:47:15PM -0400, Demi Marie Obenour wrote:
+>=20
+>> Is a paravirtualized IOMMU with interrupt remapping something that mak=
+es
+>> sense?
+>=20
+> IMHO linking interrupt remapping to the iommu is a poor design,
+> interrupt routing belongs in the irq subsystem, not in the iommu.
 
-Which is a possibile sequence for userspace/syzkaller to trigger.
+I agree.
 
-My position has historically been that DESTROY should not destroy some
-random unrelated object eg because a parallel thread did an allocation
-and re-used the kernel deleted ID. ID's that belong to userspace have
-to be retained right up until DESTROY.
+> The fact AMD and Intel both coupled their interrupt routing to their
+> iommu hardware is just a weird design decision. ARM didn't do this,
+> for instance.
 
-Thus we've historically avoided creating scenarios where IDs owned by
-userspace are destroyed by the kernel.
+Arm did the right thing here, IMO.
 
-Given we can say the above is illegal use of the API we could leave
-behind a tombstone in the xarray. The goal would be to prevent lookup
-of the object (since it is destroyed) and prevent reallocation of the
-ID.
+> So I would not try to do this at all, you should have a
+> para-virtualized IRQ interface, not an extension to virtio-iommu
+> adding interrupt handling. :\
 
-For instance a simple thing would be to drop in XA_ZERO_ENTRY, this
-will reserve the ID and fail all future operations. The userspace will
-get a failure on DESTROY so they know they did something wrong. The fd
-close will clean up the reserved ID.
+I don't disagree at all.
 
-We just need to make some decision about the above sequence.
+> AFAIK hyperv shows how to build something like this.
+Would this need KVM patches?  I'm concerned that implementing this
+in userspace would interact badly with the irqfd fast path.
+--=20
+Sincerely,
+Demi Marie Obenour (she/her/hers)
+--------------m3JJGSh0ugchDzKD00qJ82OL
+Content-Type: application/pgp-keys; name="OpenPGP_0xB288B55FFF9C22C1.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB288B55FFF9C22C1.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
-Jason
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+xsFNBFp+A0oBEADffj6anl9/BHhUSxGTICeVl2tob7hPDdhHNgPR4C8xlYt5q49y
+B+l2nipdaq+4Gk6FZfqC825TKl7eRpUjMriwle4r3R0ydSIGcy4M6eb0IcxmuPYf
+bWpr/si88QKgyGSVZ7GeNW1UnzTdhYHuFlk8dBSmB1fzhEYEk0RcJqg4AKoq6/3/
+UorR+FaSuVwT7rqzGrTlscnTDlPWgRzrQ3jssesI7sZLm82E3pJSgaUoCdCOlL7M
+MPCJwI8JpPlBedRpe9tfVyfu3euTPLPxwcV3L/cfWPGSL4PofBtB8NUU6QwYiQ9H
+zx4xOyn67zW73/G0Q2vPPRst8LBDqlxLjbtx/WLR6h3nBc3eyuZ+q62HS1pJ5EvU
+T1vjyJ1ySrqtUXWQ4XlZyoEFUfpJxJoN0A9HCxmHGVckzTRl5FMWo8TCniHynNXs
+BtDQbabt7aNEOaAJdE7to0AH3T/Bvwzcp0ZJtBk0EM6YeMLtotUut7h2Bkg1b//r
+6bTBswMBXVJ5H44Qf0+eKeUg7whSC9qpYOzzrm7+0r9F5u3qF8ZTx55TJc2g656C
+9a1P1MYVysLvkLvS4H+crmxA/i08Tc1h+x9RRvqba4lSzZ6/Tmt60DPM5Sc4R0nS
+m9BBff0Nm0bSNRS8InXdO1Aq3362QKX2NOwcL5YaStwODNyZUqF7izjK4QARAQAB
+zTxEZW1pIE9iZW5vdXIgKElUTCBFbWFpbCBLZXkpIDxhdGhlbmFAaW52aXNpYmxl
+dGhpbmdzbGFiLmNvbT7CwY4EEwEIADgWIQR2h02fEza6IlkHHHGyiLVf/5wiwQUC
+X6YJvQIbAwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgAAKCRCyiLVf/5wiwWRhD/0Y
+R+YYC5Kduv/2LBgQJIygMsFiRHbR4+tWXuTFqgrxxFSlMktZ6gQrQCWe38WnOXkB
+oY6n/5lSJdfnuGd2UagZ/9dkaGMUkqt+5WshLFly4BnP7pSsWReKgMP7etRTwn3S
+zk1OwFx2lzY1EnnconPLfPBc6rWG2moA6l0WX+3WNR1B1ndqpl2hPSjT2jUCBWDV
+rGOUSX7r5f1WgtBeNYnEXPBCUUM51pFGESmfHIXQrqFDA7nBNiIVFDJTmQzuEqIy
+Jl67pKNgooij5mKzRhFKHfjLRAH4mmWZlB9UjDStAfFBAoDFHwd1HL5VQCNQdqEc
+/9lZDApqWuCPadZN+pGouqLysesIYsNxUhJ7dtWOWHl0vs7/3qkWmWun/2uOJMQh
+ra2u8nA9g91FbOobWqjrDd6x3ZJoGQf4zLqjmn/P514gb697788e573WN/MpQ5XI
+Fl7aM2d6/GJiq6LC9T2gSUW4rbPBiqOCeiUx7Kd/sVm41p9TOA7fEG4bYddCfDsN
+xaQJH6VRK3NOuBUGeL+iQEVF5Xs6Yp+U+jwvv2M5Lel3EqAYo5xXTx4ls0xaxDCu
+fudcAh8CMMqx3fguSb7Mi31WlnZpk0fDuWQVNKyDP7lYpwc4nCCGNKCj622ZSocH
+AcQmX28L8pJdLYacv9pU3jPy4fHcQYvmTavTqowGnM08RGVtaSBNYXJpZSBPYmVu
+b3VyIChsb3ZlciBvZiBjb2RpbmcpIDxkZW1pb2Jlbm91ckBnbWFpbC5jb20+wsF4
+BBMBAgAiBQJafgNKAhsDBgsJCAcDAgYVCAIJCgsEFgIDAQIeAQIXgAAKCRCyiLVf
+/5wiwYa/EACv8a2+MMou9cSCNoZBQaU+fTmyzft9hUE+0d5W2UY1RY3OsjFIzm9R
+/4SVccfsqOYLEo+S0vQMIIIqFEq3FCpXXwPzyimotps05VA8U3Bd7yseojFygOgK
+sAMOAee2RCaDDOnoJue01dfZMzzHPO/TVdp3OvnpWipfv5G1Xg96rwbhMLE3tg6N
+xwAHa31Bv4/Xq8CJOoIWvx6fcmZQpz01/lSvsYn0KrfEbTKkuUf0vM9JrCTCP2oz
+VNN5BYzqaq2M4r+jmSyeXLim922VOWqGkUEQ85BSEemqrRS06IU6NtEMsF8EWt/b
+hWjk/9GDKTcnpdJHTrMxTspExBiNrvpI2t+YPU5B/dJJAUxvmhFrbSIbdB8umBZs
+I3AMYrEmpAbh5x7jEjoskUC7uN3o9vpg1oCLS2ePDLtAtyBtbHnkA4xGD7ar8mem
+xpH9lY/i+sC6CyyIUWcUDnnagKyJP0m9ks0GLsTeOCA0bft2XA6rD6aaCnMUsndT
+ctrab42CV5XypjmC4U1rPJ8JQJUh1/3P48/8sMH+3krxpJ06KNWNFaUbaMTGiltZ
+7x9DngklSYrX0T+2G4kVXNmjaljwkoLahwLla2gUWwBSyofXdqyhQdwZsp01KXNQ
+UCyT/Pg+aDcm/E7OMV3d4lf7g/CSxiX2GSEe6BlhSz+Lmd7ZJ3g32M1ARGVtaSBN
+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
+EtJuZYM5blWncBOJCoWMnBEcTEo/viU3GgcVRw=3D=3D
+=3Dx94R
+-----END PGP PUBLIC KEY BLOCK-----
+
+--------------m3JJGSh0ugchDzKD00qJ82OL--
+
+--------------VPcIoc0R31Z8BiMlGxM7FjrE--
+
+--------------2moOxTn903NZZGa7yAz6amQg
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEopQtqVJW1aeuo9/sszaHOrMp8lMFAmhQTB0ACgkQszaHOrMp
+8lN5oQ//ZLKaKakkI5pjCH8cDvKpwCN/ZDLx8bEjpNCd9WzlRzQGIVXWgLiMd0WL
+LPeQnSNANRFBQ4PVIp2Zk9765tFx6+HldcFoW1yR12vCmGrJK1pKFH2v4sGQ4/Q1
+mj1JUEHSGRlPUSNluHDl0x5lPdpQdflzFjnTJv/ybToPxApysNccdITTQx70WZ6o
+CBQ6uQmjY3ZnxRADOLFZlCP0CEjxILEWdCziu5GTUk+7CjQsFq1BPWAOMphPqbah
+dp+/H/eDkxEW/lC1C5BvmCy5BFqGeXaGxpk4HByTRXrer+x6EdPlz9FG72m1lU5Z
+4hJsevN/aezuQ9FR33sjvu74PjrPZTzZaKIsssGc+7IUUo6uhjg9kZLPXUWC8wj+
+MAF+pJcewV7LVnbaENAGiL5SK69dXxDPw44ZRaB7QwWUIu63ct3iCexjAfEgxHmx
+MbiFlfyuszXydbfRxOui0UIO2jpVaIaQHj0Ni+uKRe3SddXUnhWywNO27FDsRMDD
+3tQG97GDH2+JP4rRYBDr+ifeZGQPyNK3Oeuj+D/TNcTZytV/uXsJqc4Ql0k2y0un
+8+DSbfUaFHekXvBDx6Ko2FutFj3tIJnO1fq1ny9dVRTxgvY6hbfuX4D2Xoz6SH1/
+ZU8/Nz4+Fqy2U7d8+vtkv1PEvJBt99q4bIIKLCkaj4Xbfk/veek=
+=08Mu
+-----END PGP SIGNATURE-----
+
+--------------2moOxTn903NZZGa7yAz6amQg--
