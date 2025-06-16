@@ -1,37 +1,38 @@
 Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B5BC2BEFEB
-	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 14:56:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75C241E22E9
+	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 14:56:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750085782; cv=none; b=pcQEbDUCYlbiOSG7pXw1xHd40QvZTTp3eJodXdWMVTah9Wi/spaakX4ZgniMDel/u/Cr5eT441lRQ6Os3wp0QVuXYzu1d269TvadjpGVHHrtuMJ2fRjH9eFap2+d3dwOwWV+mJDicI9Dvjrlegcr76wVWgsOzn7cPV6c6cgqu9s=
+	t=1750085783; cv=none; b=kyU1IPbfs81VwMGDXbXF/YyXO0VjOQzRn6GOFcmUHrjRJEXzKEM1yLq/gY9X/Nvu5QERgZyBtCaTSKQzEPx4S00r2/18u5nJIyzvZium1wNaTUZU1o61ytQViKhz6sinqSdxmK4TmaLGhVz6xYKvakCNNQXSR64faAGEYyuhIsQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750085782; c=relaxed/simple;
-	bh=IPS5pyYgHpxPgbxv/IHzWa6tUPv1UYhANfe/623koZ8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Wj12bDVFtvsldOfmsIniO5Pi+vtjoMlHeVdIEmNyHDPY1aRLURMTWCBkrloAkr4ElvJlzHIdkyK4w81ahK7Cp+hNy7un7nOD9EAee25ZF2ek0fUpsBAxEqI4gu0ia49jwY1ZXcOEFDC+WIIJvu8EI6D3paeB8EYcs4FLfm8BeOc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=BxVRxFhV; arc=none smtp.client-ip=148.251.105.195
+	s=arc-20240116; t=1750085783; c=relaxed/simple;
+	bh=1qAxktOKxTbmW0PiEUnD73TVhfHHyVm3g/YRGIvKoo0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=QIxYpMOhLKHAUgcMTA63fDCYgmYwKTljv4yVHB2RogEi6JPEtGVRw70s/xGP2O0zX3VBRLU2ESUHjP7aeDATW5J6SmhzO60fE1WjMpgYtfhSQ+pbWyakVp4bTI+JMl/ZeYx4bLqykurRjvW9R6f+PHn8hHcS1gyusYLr07D8JHE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=D/48o0hS; arc=none smtp.client-ip=148.251.105.195
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="BxVRxFhV"
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="D/48o0hS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1750085773;
-	bh=IPS5pyYgHpxPgbxv/IHzWa6tUPv1UYhANfe/623koZ8=;
-	h=From:To:Cc:Subject:Date:From;
-	b=BxVRxFhVDcNmrDeC1P7uctqpOqyITQjUmL2LbGMF+iJg8NMWcE3x08UyLK1IYq8Xz
-	 9dcQrJltVxmVug43XszNFWEAHtwAm+hhX44hB0teZVItmBmKhG58IJ/K2yPCSB0PBs
-	 jt9KA4RjtPoUcF/w3CAWGVGW5uv49wFMF+YzpC3xQQP8CQgVD+KokYwALEAHpZN4Us
-	 mRWFOv6TQxj7Vw+KgWfHtxP48Xh2kMN7modxcVvNbYXQSpCVMwtyOHhLybmEsqN8nY
-	 PQHep9xrChhiclR2SMiAN1LHp5GDgCu7SdZv0hTY2ZwuCbFWHQpzGlBPAZGWSM14XP
-	 UefVISx0bXPnw==
+	s=mail; t=1750085774;
+	bh=1qAxktOKxTbmW0PiEUnD73TVhfHHyVm3g/YRGIvKoo0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=D/48o0hS+VOof0kZmubcLZBx8xyM7t61KMrnaKhdbnGOiRafcJqLF7/sGQtmXfeq4
+	 HIP9h9bHDfyXRmpAU+JfzXsFu3LneN2/SbH8sC1qeN23JpRjCefjhOutT4xYeEcr5R
+	 Ivn4z3126pRTla7dgZXQ6oBgEWcSPvp+hL7ozlablOpdJ5o6uWOVn3jlcqAyCMFtVi
+	 d+PjvWUzktDO/wPj/2g0WDENEus0XNvoyvEkjJTRJ3Q8qT2V+BAhbccnUVwTuoWIWU
+	 4sIwoMgQc1mkxHUGBZThb98dPEJ33amd1kshhEXEGEEt6jCxAOCDVPXr7Vd5Yr1aKx
+	 arraEZebs9ADw==
 Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:4811:e81c:4b33:730c])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: benjamin.gaignard)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id BE19517E088C;
-	Mon, 16 Jun 2025 16:56:12 +0200 (CEST)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 06DC417E10C7;
+	Mon, 16 Jun 2025 16:56:14 +0200 (CEST)
 From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 To: joro@8bytes.org,
 	will@kernel.org,
@@ -51,64 +52,107 @@ Cc: iommu@lists.linux.dev,
 	linux-media@vger.kernel.org,
 	kernel@collabora.com,
 	Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [PATCH 0/5] Add support for Verisilicon IOMMU used by media codec blocks
-Date: Mon, 16 Jun 2025 16:55:48 +0200
-Message-ID: <20250616145607.116639-1-benjamin.gaignard@collabora.com>
+Subject: [PATCH 2/5] dt-bindings: iommu: verisilicon: Add binding for VSI IOMMU
+Date: Mon, 16 Jun 2025 16:55:50 +0200
+Message-ID: <20250616145607.116639-3-benjamin.gaignard@collabora.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250616145607.116639-1-benjamin.gaignard@collabora.com>
+References: <20250616145607.116639-1-benjamin.gaignard@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=y
 Content-Transfer-Encoding: 8bit
 
-Hi all,
+Add a device tree binding for the Verisilicon (VSI) IOMMU. This IOMMU sits
+in front of hardware encoder and decoder blocks on SoCs using Verisilicon IP,
+such as the Rockchip RK3588.
 
-This patch series adds support for the Verisilicon IOMMU, which is found in front
-of hardware encoder and decoder blocks in several SoCs using Verisilicon IP. 
-A first implementation of this IOMMU is available on the Rockchip RK3588 SoC.
-
-Rockchip provides a driver for this hardware in their 6.1 kernel branch:
-https://github.com/rockchip-linux/kernel/blob/develop-6.1/drivers/iommu/rockchip-iommu-av1d.c
-
-This series includes:
-- a new binding for the Verisilicon IOMMU
-- a basic driver implementation
-- DT updates for RK3588
-- integration with the Verisilicon VPU driver.
-
-The driver was forward-ported from Rockchip’s 6.1 implementation, 
-the prefix was renamed to vsi for generality, and several fixes were applied.
-
-AV1 decoding was tested using the stateless VPU driver and Fluster.
-The test results show a score of 205/239, which confirms that no regressions
-were introduced by this series.
-
-Feedback and testing welcome.
-
-Thanks,
-Benjamin
-
-Benjamin Gaignard (5):
-  dt-bindings: vendor-prefixes: Add Verisilicon
-  dt-bindings: iommu: verisilicon: Add binding for VSI IOMMU
-  iommu: Add verisilicon IOMMU driver
-  arm64: dts: rockchip: Add verisilicon IOMMU node on RK3588
-  media: verisilicon: Flush IOMMU before decoding a frame
-
- .../bindings/iommu/verisilicon,iommu.yaml     |  71 ++
- .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
- arch/arm64/boot/dts/rockchip/rk3588-base.dtsi |  11 +
- drivers/iommu/Kconfig                         |   8 +
- drivers/iommu/Makefile                        |   1 +
- drivers/iommu/vsi-iommu.c                     | 900 ++++++++++++++++++
- .../media/platform/verisilicon/hantro_drv.c   |  11 +
- 7 files changed, 1004 insertions(+)
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+---
+ .../bindings/iommu/verisilicon,iommu.yaml     | 71 +++++++++++++++++++
+ 1 file changed, 71 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
- create mode 100644 drivers/iommu/vsi-iommu.c
 
+diff --git a/Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml b/Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
+new file mode 100644
+index 000000000000..acef855fc61d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
+@@ -0,0 +1,71 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/verisilicon,iommu.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Verisilicon IOMMU
++
++maintainers:
++  - Benjamin Gaignard <benjamin.gaignard@collabora.com>
++
++description: |+
++  A Versilicon iommu translates io virtual addresses to physical addresses for
++  its associated video decoder.
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - const: verisilicon,iommu
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: Core clock
++      - description: Interface clock
++
++  clock-names:
++    items:
++      - const: aclk
++      - const: iface
++
++  "#iommu-cells":
++    const: 0
++
++  power-domains:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++  - "#iommu-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/rockchip,rk3588-cru.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    bus {
++      #address-cells = <2>;
++      #size-cells = <2>;
++
++      vsi_mmu: iommu@fdca0000 {
++        compatible = "verisilicon,iommu";
++        reg = <0x0 0xfdca0000 0x0 0x600>;
++        interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH 0>;
++        clocks = <&cru ACLK_AV1>, <&cru PCLK_AV1>;
++        clock-names = "aclk", "iface";
++        #iommu-cells = <0>;
++      };
++    };
 -- 
 2.43.0
 
