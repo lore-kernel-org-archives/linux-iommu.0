@@ -1,208 +1,220 @@
-Received: from fhigh-b3-smtp.messagingengine.com (fhigh-b3-smtp.messagingengine.com [202.12.124.154])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E97E5288CAA;
-	Mon, 16 Jun 2025 18:34:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 215CB38DDB
+	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 19:40:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750098864; cv=none; b=tqPs50LLJVPTasUAkGFtPE4d6bNctHBrkXZnByUsOcmA92b2RIcXeCn9LDm98RHLDBqTdsn+dNcn4YPPN39lZgY5QnBOiFM9RDp5ojh00UvTXbqNMyfb8bT8rkC8TerYpv8Ble+AMDAJJms1QuJId8tTcSb7tNev7WSB4m3DF8w=
+	t=1750102813; cv=none; b=ZBR4saOKLMMWhUfNAA3ps5LUouC56MVAmoatTMbenBK+0DaPovJQ+Ahn+57Nry3ae442Z6aq3guKR0/DwlI5L29JCl19MqMQ5Lu4rtH7sfaZJvSKnF7EQBoF3LdMUf3dllLeu+5Qn2gbruBFuf/81YnfdUykMhk2IE8n/I03Cg8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750098864; c=relaxed/simple;
-	bh=KlD+453KlSU9FOwBe+BDpHVkmmltE1oD8QI3Tcq0vxk=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=MKU6ea0jd0O9pEW0bdIVRjpRoqXzfrJnGN0Gs28xNgsLoWGi1PwLZ8ye+FjdlaFT2XPJrD5Y4bf+CmduX3NB2Oq/mSqVV8qomCeIAUaBnwPljOJQGT9MEh6iKC+ev7UCqExiWUh2kDdhWs4FUvS459fTfRFbxCV5d0QkopXoVoQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=M8JgK99d; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=HMLLUKOL; arc=none smtp.client-ip=202.12.124.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1750102813; c=relaxed/simple;
+	bh=2HSj50ZkFeGvip9u2ovexwxRbE+rayK2QY+MngvUtSM=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=QMnT3xOutbSprlz5O9aEkmpZKCSD9N9MbU4z+bJBGcSHiFaeiNWweMI/RQIRh6iZr7aPfcVgC8HfSx5JbMw0ad6SUTnTf+jW18UW6OLCL0w1YGXSb1iCUM07ZCRzhHTnvbyPwrjqXrFkv1eP1/re26IlRM62ZOIsxYRkhiM5JUk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=fF43hVTA; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="M8JgK99d";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="HMLLUKOL"
-Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id C8059254012F;
-	Mon, 16 Jun 2025 14:34:20 -0400 (EDT)
-Received: from phl-imap-02 ([10.202.2.81])
-  by phl-compute-05.internal (MEProxy); Mon, 16 Jun 2025 14:34:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1750098860;
-	 x=1750185260; bh=y8hmEJ8IPHxQr9QAvRRYAO8ndpWyYDotDuUPccTwwbU=; b=
-	M8JgK99dtQaZZEduGIDJeOVeN5m3KzZ5Z0Rhk/THsifW3JkqJqhVvfyS4CpVCVl3
-	PCsGjFPWusY0URXvQmsZZSUEtWivjt7sEzgI4T7NrFs2l+QFEv3yfdRsnQ7WDfZV
-	XDOYNUbYzCOCkWl/EcBJmAox0nsczZQ6r3jkgXJxAtQTFjLk5gKl6TeoecsoC5xq
-	wpSAKj6lLUqfb1kEy/LlrTqnRCAe0TkI+JeXXvFHs/RRZiymFiDvloewOXI8ZXeu
-	Kj0dKrzqRPoc7HpKqgVyyS/28wzGfFFmdCorbpxGdh4WwKGqrtn8ADCjOgVaMtkQ
-	vQp5WW5f7dmZ38xxfpdu5A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1750098860; x=
-	1750185260; bh=y8hmEJ8IPHxQr9QAvRRYAO8ndpWyYDotDuUPccTwwbU=; b=H
-	MLLUKOL8dt7Gi2ZERo40kr9Sdfc9W3NucVjLNb34L2wAFK8rbgmbPKoDgeYNd7HU
-	Ie29AhaqbHhqK+U5Il55+DwCvBqXxWLwqG/Svj9h+yERHLGiWvCmdqihNOqG9ghU
-	PtHbdZpTAdn/tox79NXUUA+CzwRsoR5lXjQbCnjgkyThyIcgwGewcjCF+abLtc/C
-	dKKl4uzgzZxHdRBhLdhxOz5abAja+6hiCy5OFaUwdvxf+X3BzfKuKnMK9fDElryB
-	H+5U/eayY6Jr36Q3gIn4sWTyf/iqQyZk+68hSQATJ1mCtIuWd5Ug//3dH8ONEhNm
-	V/JwBmnrY4wS8BSiLuhuA==
-X-ME-Sender: <xms:rGNQaIzmrzoHEOtbGlEQWGn27-XEPLE8afk3BGL4zdkZ1txqTh8_Vg>
-    <xme:rGNQaMQNDT8D0c0osQ34K-n8Zs18qgvz0R_BTme4_-y3v9F--YtikGRqms5mJgOJo
-    gtmLktCKRKQq_7Tyyc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtddugddvjeefudcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
-    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
-    hnthhsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredt
-    tdenucfhrhhomhepfdetrhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusg
-    druggvqeenucggtffrrghtthgvrhhnpefhtdfhvddtfeehudekteeggffghfejgeegteef
-    gffgvedugeduveelvdekhfdvieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpegrrhhnugesrghrnhgusgdruggvpdhnsggprhgtphhtthhopedu
-    gedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtoheprhhosghinhdrmhhurhhphhihse
-    grrhhmrdgtohhmpdhrtghpthhtohepohhlthgvrghnvhesghhmrghilhdrtghomhdprhgt
-    phhtthhopehlkhhpsehinhhtvghlrdgtohhmpdhrtghpthhtohepsghrohhonhhivgeskh
-    gvrhhnvghlrdhorhhgpdhrtghpthhtohepjhgrmhgvshdrtghlrghrkheslhhinhgrrhho
-    rdhorhhgpdhrtghpthhtohepihhmgieslhhishhtshdrlhhinhhugidruggvvhdprhgtph
-    htthhopehiohhmmhhusehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepohgv
-    qdhksghuihhlugdqrghllheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhope
-    hhtghhsehlshhtrdguvg
-X-ME-Proxy: <xmx:rGNQaKVM_TKCwxHqW_hYDc45c4TK0NX6wqQ_Xn1_a5-Epqg0ilAy2Q>
-    <xmx:rGNQaGhMtUtCnc2UoSOj4ddvblDERz9q1TPsjsKP77rQ5alfBVXQbg>
-    <xmx:rGNQaKC8-vpBCP0sOhulOKXiHc77kaMwv7MJ6MKTNOwjKgHJ2YGkCg>
-    <xmx:rGNQaHKsoEa4_hrJxwI5CjNrcCVBUVb-_Dg3QA9pEONHe0MmYuhtBA>
-    <xmx:rGNQaDwdL5t9E4qhj7CN_seC2ojskFn3Pfd597TNfCGjp8LAci24b8Oz>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 0F0CD700063; Mon, 16 Jun 2025 14:34:20 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fF43hVTA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1750102810;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Jv0l4BNCIbAbpcAAOOCGBfYtJjS97nEwM6epWvM50jQ=;
+	b=fF43hVTAfDRzgYUulmljd/nN74DrKMmM1MDUtTJWDTfdVkAD1972+O7+SpDR2NGOnQ/tvr
+	DDJypodfbmM+0N5ubJlhGQSAz05d87FnqpEqKH/xofp6PTEYcS11vq3JybyQtQb0YgE7Ok
+	iBngBKAzcGf/3HiMK6Il9atEF3hvkhk=
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
+ [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-691-6D3Kh397N8S501neY78c2A-1; Mon, 16 Jun 2025 15:40:09 -0400
+X-MC-Unique: 6D3Kh397N8S501neY78c2A-1
+X-Mimecast-MFC-AGG-ID: 6D3Kh397N8S501neY78c2A_1750102808
+Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-86cf30a9be6so66244639f.0
+        for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 12:40:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750102808; x=1750707608;
+        h=content-transfer-encoding:mime-version:organization:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Jv0l4BNCIbAbpcAAOOCGBfYtJjS97nEwM6epWvM50jQ=;
+        b=cWLx19SbMq1ZPr3Ma68/8X7Q+TjnrwX8ETEPBOM4nK2t41BlWJ2HlyiALlDUdkZZAe
+         hQYKcbKFVtsdVLiXlfBP8YQmMA5VYN+5ku3nLOCgJ2o7KEm0sVq2BEYVl1jJxue/cNL+
+         NSjce4QXG9pi93bojZ6RYwW3ToidCq/WtSM3tVuoFsf+/jbvpYymFMe1cCdWoYuUq6Qy
+         uiYzyNol6JaY9A8OqBAr1dlLNFLiHCTL7BjmZguVX9e9gd7T/csWl9Fgm3N3kEllqvk6
+         9QvRq/oW2sylLLNGoy76+fMeECvd2lIE0jT/7IZAqTdmPBo4q3NFUm+QeEXsOrugIr8/
+         CNhA==
+X-Forwarded-Encrypted: i=1; AJvYcCX6XhXG1Ikcp1gZNCMK/6LtaIiw0GVRlDwsP855yD81Bh11NNzLV025duieI/zoTaVd4CUmKA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzslJhn4uFGQgyh7UPYzM6uBAzY73b2XsIk6oSz3d/9jzmaVNZZ
+	+xCf2GTQC+VKz0RHokXBYLfm13g8XkK2vrBeHA6F5WnK5sQXjVl9OWYA1TqWJq8q8G5vJB/DrSc
+	Qha8fvQtieSc0hy4JRMLNRnvse22rKjj9nJLFL5AzehTsFiYKXk9NQOWI
+X-Gm-Gg: ASbGnctofLMFwWdQ4KnTOmaN+rGRHKF5/ubYSNzPBqvyrD04xITAVkR7V/Xzlj2Kj+5
+	T5O37TpyZB7k9L3m+pPNic1KIzIzhmSZVF+fzRLV/MY5XTYsSVnSQITjX2yP4p72kPqQYDua1hW
+	pRXgi40h6ySP98nlHFAObXX2kX/tDCcuJWD/yZ3TS/WmWEsbSj3Izo9E31/8Wt8o1rWncrhQJvw
+	td29+XRdctsIBgzJLljpE+TbhhQ9CCb5FBbzCEfwO/Lz9GnSOA4pGqJ90+ZqJarr3eV+sgAqZdZ
+	DEYzLdV9warmVlcyfpEKwoBErg==
+X-Received: by 2002:a05:6602:1683:b0:873:13c6:f365 with SMTP id ca18e2360f4ac-875dedfd0efmr313067639f.5.1750102808218;
+        Mon, 16 Jun 2025 12:40:08 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFnRPBkV684dJntapdXKPif4JLdEUHjwAgaMW17ime3UOUTf06bvLAvLx4npqtrBInZ4sL6Jg==
+X-Received: by 2002:a05:6602:1683:b0:873:13c6:f365 with SMTP id ca18e2360f4ac-875dedfd0efmr313066539f.5.1750102807793;
+        Mon, 16 Jun 2025 12:40:07 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-50149ca3519sm1818547173.144.2025.06.16.12.40.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Jun 2025 12:40:06 -0700 (PDT)
+Date: Mon, 16 Jun 2025 13:40:04 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Jacob Pan <jacob.pan@linux.microsoft.com>, linux-kernel@vger.kernel.org,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, "Liu, Yi L"
+ <yi.l.liu@intel.com>, Zhang Yu <zhangyu1@microsoft.com>, Easwar Hariharan
+ <eahariha@linux.microsoft.com>, Saurabh Sengar
+ <ssengar@linux.microsoft.com>
+Subject: Re: [PATCH v2 2/2] vfio: Fix unbalanced vfio_df_close call in
+ no-iommu mode
+Message-ID: <20250616134004.60105ad5.alex.williamson@redhat.com>
+In-Reply-To: <20250616153455.GK1174925@nvidia.com>
+References: <20250603152343.1104-1-jacob.pan@linux.microsoft.com>
+	<20250603152343.1104-2-jacob.pan@linux.microsoft.com>
+	<20250613163103.3bca27cd.alex.williamson@redhat.com>
+	<20250614001555.GR1174925@nvidia.com>
+	<20250616084708.5a94ead7.alex.williamson@redhat.com>
+	<20250616153455.GK1174925@nvidia.com>
+Organization: Red Hat
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ThreadId: T4808b90e09d8ad4f
-Date: Mon, 16 Jun 2025 20:33:42 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "James Clark" <james.clark@linaro.org>, "Christoph Hellwig" <hch@lst.de>
-Cc: "Mark Brown" <broonie@kernel.org>, "Vladimir Oltean" <olteanv@gmail.com>,
- oe-kbuild-all@lists.linux.dev, "Larisa Grigore" <larisa.grigore@nxp.com>,
- "Frank Li" <Frank.li@nxp.com>, linux-spi@vger.kernel.org,
- imx@lists.linux.dev, linux-kernel@vger.kernel.org,
- "kernel test robot" <lkp@intel.com>,
- "Marek Szyprowski" <m.szyprowski@samsung.com>,
- "Robin Murphy" <robin.murphy@arm.com>, iommu@lists.linux.dev
-Message-Id: <fc18a185-277e-472a-959b-4c5354295691@app.fastmail.com>
-In-Reply-To: <9788991a-ac37-4fde-81db-c55035d00f27@app.fastmail.com>
-References: <20250616111749.316413-1-james.clark@linaro.org>
- <20250616112927.GA21689@lst.de>
- <5f1ca0ac-b66c-4b92-8f69-027c2468b117@sirena.org.uk>
- <20250616120832.GA24959@lst.de>
- <2d62254e-5cbe-4174-95d8-e80cae4f4543@sirena.org.uk>
- <20250616121444.GA25443@lst.de>
- <7cfcf919-3c7d-4f0c-911f-697ea3141080@linaro.org>
- <20250616131346.GB29838@lst.de>
- <83855c1a-c128-4762-9d6b-e17f2c4c8820@linaro.org>
- <d16bdc40-20d6-49db-bf41-18bb9b8e01fd@linaro.org>
- <20250616131944.GA30260@lst.de>
- <f723d490-c228-42d5-9f9f-158df54a092d@linaro.org>
- <9788991a-ac37-4fde-81db-c55035d00f27@app.fastmail.com>
-Subject: Re: [PATCH] dma-mapping: Stub out dma_{alloc,free,map}_pages() API
-Content-Type: text/plain
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: zJL4RXMCuNZtni-nzY-swtg66-zLpIFotujt_LsaeIk_1750102808
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, Jun 16, 2025, at 15:48, Arnd Bergmann wrote:
-> On Mon, Jun 16, 2025, at 15:23, James Clark wrote:
->> On 16/06/2025 2:19 pm, Christoph Hellwig wrote:
->
-> Maybe we can actually remove CONFIG_NO_DMA/CONFIG_HAS_DMA
-> entirely and remove all the checks for CONFIG_HAS_DMA? 
-> My guess is that this would only lead to a small code size
-> increase on the affected targets, but since they are not
-> actually trying to do DMA, and they all have a very limited
-> set of drivers they actually use, it won't break existing
-> code.
+On Mon, 16 Jun 2025 12:34:55 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-I tried removing the stubs on sh/j2 allmodconfig and found this:
+> On Mon, Jun 16, 2025 at 08:47:08AM -0600, Alex Williamson wrote:
+> > On Fri, 13 Jun 2025 21:15:55 -0300
+> > Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >   
+> > > On Fri, Jun 13, 2025 at 04:31:03PM -0600, Alex Williamson wrote:  
+> > > > On Tue,  3 Jun 2025 08:23:43 -0700
+> > > > Jacob Pan <jacob.pan@linux.microsoft.com> wrote:
+> > > >     
+> > > > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > > > 
+> > > > > For devices with no-iommu enabled in IOMMUFD VFIO compat mode, the group
+> > > > > open path skips vfio_df_open(), leaving open_count at 0. This causes a
+> > > > > warning in vfio_assert_device_open(device) when vfio_df_close() is called
+> > > > > during group close.
+> > > > > 
+> > > > > The correct behavior is to skip only the IOMMUFD bind in the device open
+> > > > > path for no-iommu devices. Commit 6086efe73498 omitted vfio_df_open(),
+> > > > > which was too broad. This patch restores the previous behavior, ensuring
+> > > > > the vfio_df_open is called in the group open path.
+> > > > > 
+> > > > > Fixes: 6086efe73498 ("vfio-iommufd: Move noiommu compat validation out of vfio_iommufd_bind()")
+> > > > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > > > > Tested-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> > > > > Signed-off-by: Jacob Pan <jacob.pan@linux.microsoft.com>
+> > > > > ---
+> > > > > v2: Use a fix from Jason
+> > > > > ---
+> > > > >  drivers/vfio/group.c     | 10 +++++-----
+> > > > >  drivers/vfio/iommufd.c   |  3 ---
+> > > > >  drivers/vfio/vfio_main.c | 26 ++++++++++++++++----------
+> > > > >  3 files changed, 21 insertions(+), 18 deletions(-)
+> > > > > 
+> > > > > diff --git a/drivers/vfio/group.c b/drivers/vfio/group.c
+> > > > > index c321d442f0da..8f5fe8a392de 100644
+> > > > > --- a/drivers/vfio/group.c
+> > > > > +++ b/drivers/vfio/group.c
+> > > > > @@ -192,18 +192,18 @@ static int vfio_df_group_open(struct vfio_device_file *df)
+> > > > >  		 * implies they expected translation to exist
+> > > > >  		 */
+> > > > >  		if (!capable(CAP_SYS_RAWIO) ||
+> > > > > -		    vfio_iommufd_device_has_compat_ioas(device, df->iommufd))
+> > > > > +		    vfio_iommufd_device_has_compat_ioas(device, df->iommufd)) {
+> > > > >  			ret = -EPERM;
+> > > > > -		else
+> > > > > -			ret = 0;
+> > > > > -		goto out_put_kvm;
+> > > > > +			goto out_put_kvm;
+> > > > > +		}
+> > > > >  	}
+> > > > >  
+> > > > >  	ret = vfio_df_open(df);
+> > > > >  	if (ret)
+> > > > >  		goto out_put_kvm;
+> > > > >  
+> > > > > -	if (df->iommufd && device->open_count == 1) {
+> > > > > +	if (df->iommufd && device->open_count == 1 &&
+> > > > > +	    !vfio_device_is_noiommu(device)) {    
+> > > > 
+> > > > Why do we need this?    
+> > > 
+> > > What I was trying to do is put all the logic about noiommu into only
+> > > vfio_df..open/close functions instead of sprikling it into a bunch of
+> > > other functions. That seemed to be the right point to make this cut.  
+> > 
+> > Alternatively we could be consistent about breaking out of the
+> > vfio/iommufd.c functions that aren't relevant to noiommu.  The
+> > container side handles noiommu internally, why should iommufd push
+> > handling up to the device file layer?  We're really just missing the
+> > bind path.  
+> 
+> Broadly what I was going for was to just remove the iommufd stuff
+> entirely from the DF layer rather than to half pretend there is an
+> iommufd layer below it. This should ideally go as far as not having an
+> iommufd_ctx at all. So things start to look really weird calling
+> iommufd functions without an iommufd ctx.
+> 
+> > > With this patch we move toward the vfio_df..open/close functions being
+> > > symmetrical in their decision making.  
+> > 
+> > But is it?  We special case all the iommufd paths to filter out noiommu
+> > but it's inconsistent with the legacy paths.  Thanks,  
+> 
+> The container still exists in noiommu mode and internally does things,
+> eg it has a container->noiommu indicationm and the vfio-noiommu ops to
+> manage this.
+> 
+> The iommufd should not exist and should never be used. They are
+> different cases.
+> 
+> If Jacob eventually does what I suggested in another email then we
+> would have a noiommu special mode inside iommufd and it would look
+> more like the container.
 
-ERROR: modpost: "dma_unmap_page_attrs" [drivers/bus/mhi/host/mhi.ko] undefined!
-ERROR: modpost: "dma_map_page_attrs" [drivers/bus/mhi/host/mhi.ko] undefined!
-ERROR: modpost: "dma_alloc_attrs" [drivers/bus/mhi/host/mhi.ko] undefined!
-ERROR: modpost: "dma_free_attrs" [drivers/bus/mhi/host/mhi.ko] undefined!
-ERROR: modpost: "dma_unmap_page_attrs" [drivers/soc/mediatek/mtk-cmdq-helper.ko] undefined!
-ERROR: modpost: "dma_map_page_attrs" [drivers/soc/mediatek/mtk-cmdq-helper.ko] undefined!
-ERROR: modpost: "dma_unmap_page_attrs" [drivers/soc/qcom/qcom-geni-se.ko] undefined!
-ERROR: modpost: "dma_map_page_attrs" [drivers/soc/qcom/qcom-geni-se.ko] undefined!
-ERROR: modpost: "dma_set_coherent_mask" [drivers/soc/ti/pruss.ko] undefined!
-ERROR: modpost: "dma_unmap_page_attrs" [drivers/virtio/virtio_ring.ko] undefined!
-WARNING: modpost: suppressed 733 unresolved symbol warnings because there were too many)
+A concise fix would be nice for stable backports though, so even if we
+want to move to testing noiommu in the device file layer or create a
+special mode in iommufd, the smallest, most consistent initial fix
+would be to continue the _group_open:
 
-Enabling HAS_DMA unconditionally all all the platforms builds:
+--- a/drivers/vfio/group.c
++++ b/drivers/vfio/group.c
+@@ -192,18 +192,18 @@ static int vfio_df_group_open(struct vfio_device_file *df)
+ 		 * implies they expected translation to exist
+ 		 */
+ 		if (!capable(CAP_SYS_RAWIO) ||
+-		    vfio_iommufd_device_has_compat_ioas(device, df->iommufd))
++		    vfio_iommufd_device_has_compat_ioas(device, df->iommufd)) {
+ 			ret = -EPERM;
+-		else
+-			ret = 0;
+-		goto out_put_kvm;
++			goto out_put_kvm;
++		}
+ 	}
 
---- a/arch/sh/Kconfig
-+++ b/arch/sh/Kconfig
-@@ -64,7 +64,6 @@ config SUPERH
-        select LOCK_MM_AND_FIND_VMA
-        select MODULES_USE_ELF_RELA
-        select NEED_SG_DMA_LENGTH
--       select NO_DMA if !MMU && !DMA_COHERENT
-        select NO_GENERIC_PCI_IOPORT_MAP if PCI
-        select OLD_SIGACTION
-        select OLD_SIGSUSPEND
-@@ -134,7 +133,7 @@ config SWAP_IO_SPACE
-        bool
- 
- config DMA_COHERENT
--       bool
-+       def_bool !MMU
- 
- config DMA_NONCOHERENT
-        def_bool !NO_DMA && !DMA_COHERENT
---- a/arch/um/Kconfig
-+++ b/arch/um/Kconfig
-@@ -22,7 +22,6 @@ config UML
-        select HAVE_DEBUG_KMEMLEAK
-        select HAVE_DEBUG_BUGVERBOSE
-        select HAVE_PAGE_SIZE_4KB
--       select NO_DMA if !UML_DMA_EMULATION
-        select OF_EARLY_FLATTREE if OF
-        select GENERIC_IRQ_SHOW
-        select GENERIC_CPU_DEVICES
---- a/arch/m68k/Kconfig
-+++ b/arch/m68k/Kconfig
-@@ -37,7 +37,6 @@ config M68K
-        select MMU_GATHER_NO_RANGE if MMU
-        select MODULES_USE_ELF_REL
-        select MODULES_USE_ELF_RELA
--       select NO_DMA if !MMU && !COLDFIRE
-        select OLD_SIGACTION
-        select OLD_SIGSUSPEND3
-        select UACCESS_MEMCPY if !MMU
-diff --git a/arch/m68k/Kconfig.cpu b/arch/m68k/Kconfig.cpu
-index c9a7e602d8a4..a1123e2fecdf 100644
---- a/arch/m68k/Kconfig.cpu
-+++ b/arch/m68k/Kconfig.cpu
-@@ -38,7 +38,6 @@ config SUN3
-        depends on MMU
-        select HAVE_ARCH_PFN_VALID
-        select LEGACY_TIMER_TICK
--       select NO_DMA
-        select M68020
-        help
-          This option enables support for the Sun 3 series of workstations
-@@ -558,4 +557,4 @@ config COLDFIRE_COHERENT_DMA
- config M68K_NONCOHERENT_DMA
-        bool
-        default y
--       depends on HAS_DMA && !COLDFIRE_COHERENT_DMA
-+       depends on HAS_DMA && !COLDFIRE_COHERENT_DMA && !SUN3
---- a/arch/m68k/kernel/dma.c
-+++ b/arch/m68k/kernel/dma.c
-@@ -8,7 +8,7 @@
- #include <linux/kernel.h>
- #include <asm/cacheflush.h>
- 
--#ifndef CONFIG_COLDFIRE
-+#if !defined(CONFIG_COLDFIRE) && !defined(CONFIG_SUN3)
- void arch_dma_prep_coherent(struct page *page, size_t size)
- {
-        cache_push(page_to_phys(page), size);
+
+And add a noiommu exit branch to _iommufd_bind, symmetric to unbind.
+Right?  Thanks,
+
+Alex
+
