@@ -1,105 +1,99 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3682610785;
-	Mon, 16 Jun 2025 04:28:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2F7B7262B;
+	Mon, 16 Jun 2025 04:40:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750048138; cv=none; b=ZaCTJG8LLJ5zva2ANlZT9uO2A0f0KIQ7TiQv8aBrU8k9ZJKjCuV7ixMv8ruYymhZkrckZgwtAaBlZys+LV3XFvg160zBPy5cs74gBLmjK1iPbeA8jQA5L9ACx20bUOK4Ad31Rb8AhdPl/iRhTo6f+LJ4lyv9tsYYJDKAuvmOntg=
+	t=1750048843; cv=none; b=a/F1bBzzuVRTAjB5LuV/A/CiSqp09RqDbIqVl+3UBkmaiRKvsi41NLkJkvucx6v+w0Nd3a1IjcIcUyIkuXcrX5lp1f6eQG6YVnu3pxGG3/dQtyzAkb3AMeCFP1ShySbme2ExPZt5Wr9BhfRceawi2R6eNUFOvjKf33hjU23pxdg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750048138; c=relaxed/simple;
-	bh=awP1xc//mTc2pj+5moZpYL+zfaPvMNLOmWiF5mIrl30=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=klDi03YwcUDFG8jyRqT3z1DtNiTuEMZY12MpUf4PkXMiEJM9OIvDlx3NH3GSo04+obDQAxrr+PKnIxrO1jXomQJqm6ImNVO8PjKV7eTVdy+hq5xVgf7jfjR/7KyCyg9ofua5Ac6Ht0zSC9NnG6aSkNoLzPUnOnJ1cM4me6HwREA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hLg23R5J; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750048843; c=relaxed/simple;
+	bh=TGHN5IjJzRSodYVswQbkuM8G3fZj/gxhvozJyWYCAMw=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=CTmTKD9K/SDxbVHqsmnwFVCZykw9dtRMgyZ+wipeCZ9TKYoZAHmg2PPN9oHkwdXYTwX+rm2DnsOVrAfMQT0V/gCQlfxqG4yNq1K7gpcXRHankIUShxE2AU8N2yc1UpAzqjqXfVC2nNx650T2ad1EOKuJF0rSKhUDof/1nk1C9xo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KeNuXSA6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hLg23R5J"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A68DC4CEEA;
-	Mon, 16 Jun 2025 04:28:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KeNuXSA6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C9C1C4CEEA;
+	Mon, 16 Jun 2025 04:40:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750048136;
-	bh=awP1xc//mTc2pj+5moZpYL+zfaPvMNLOmWiF5mIrl30=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=hLg23R5JLAruv7400Ij/HnexVCE3PWo8bDo+v6Wlr53TtfyjLcKwKQG2e4YxbdMdT
-	 zkZIwoo/E3hfO4hw1uKE67FdkP4oX3I1qPB5qrtJuH6mcPzYvO+H+ciJbA7XUHGRkh
-	 juyvJVJ2WszkIOAzW2XbZcgG3TT33sRl4+AYvbbsbjBW7+d8aHcll+08GN7Ww1f691
-	 leFlMvyohJqIJI8K1DU/X36bPfRCcrvd/p6ybhYPvSuM6KzRVn+MyfAGj4Fx5799Ji
-	 V9F1uPrxQmBEs7bcP0afiqMFwcJsYZBQT6YhO3k+FnrMuFTcw+swe/8b3ckO4h31Ak
-	 +xtmlm7NLoJcw==
-X-Mailer: emacs 30.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>, "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH] iommufd: Destroy vdevice on device unbind
-In-Reply-To: <20250613124202.GD1130869@ziepe.ca>
-References: <20250610065146.1321816-1-aneesh.kumar@kernel.org>
- <BN9PR11MB527606182417BB7A35349F598C74A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250612172645.GA1011960@ziepe.ca>
- <BN9PR11MB5276B467ADCC57BC6571CA458C77A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250613124202.GD1130869@ziepe.ca>
-Date: Mon, 16 Jun 2025 09:58:48 +0530
-Message-ID: <yq5abjqotim7.fsf@kernel.org>
+	s=k20201202; t=1750048843;
+	bh=TGHN5IjJzRSodYVswQbkuM8G3fZj/gxhvozJyWYCAMw=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
+	b=KeNuXSA6uKkfHRPo9/0yzTwWwVbqXmUIEmb+pj3q9uPRXbbw7346x1/GG3vvNKl/l
+	 aq8jkTvyH+g7m3oEgl71QVRighbGsfy78v8wJiaFq6HZVC5evfEYXuX0mFWGahOaYU
+	 e/mAfnVayKsomZFWjzpTbP9BfTeNzdXBpnynhFTGRl3Iz11mFocQbS4rsJvY48+owE
+	 IEg+VI1VKPtDdJovr9XyOihFQI0/ofEoipkgqjiA2N7ZeJReLu8JfvfFLytY8vEEwJ
+	 eoRlxtj3uG/Lw6MoTKFojv46sC69BjIhFBsNC85llDRCvb2kJBbI4M+S/xbkc4VaCA
+	 GfNJVfqGWtOhg==
+Date: Sun, 15 Jun 2025 23:40:42 -0500
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: Yong Wu <yong.wu@mediatek.com>, linux-mediatek@lists.infradead.org, 
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+ Will Deacon <will@kernel.org>, 
+ Project_Global_Chrome_Upstream_Group@mediatek.com, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Matthias Brugger <matthias.bgg@gmail.com>, iommu@lists.linux.dev, 
+ devicetree@vger.kernel.org, Ning li <ning.li@mediatek.com>
+To: Xueqi Zhang <xueqi.zhang@mediatek.com>
+In-Reply-To: <20250616025628.25454-2-xueqi.zhang@mediatek.com>
+References: <20250616025628.25454-1-xueqi.zhang@mediatek.com>
+ <20250616025628.25454-2-xueqi.zhang@mediatek.com>
+Message-Id: <175004884234.2151629.17180852934991161132.robh@kernel.org>
+Subject: Re: [RFC PATCH 1/8] dt-bindings: iommu: mediatek: Add mt8196
+ support
 
-Jason Gunthorpe <jgg@ziepe.ca> writes:
 
-> On Fri, Jun 13, 2025 at 07:31:48AM +0000, Tian, Kevin wrote:
->> yeah that seems to be the option if the said life-cycle dependency
->> cannot be removed...
->>=20
->> conceptually it's still a bit unclean as the user needs to know that
->> the vdevice object is special after idevice is unbound i.e. it can only
->> be destroyed instead of supporting any other kind of operations.
->
-> I would say userspace is somewhat malfunctioning if it destroys vfio
-> before the vdevice. So the main aim here should be to contain the
-> resulting mess, but still expect userspace to destroy the vdevice
-> without a failure.
->
+On Mon, 16 Jun 2025 10:56:07 +0800, Xueqi Zhang wrote:
+> 1. Mediatek has its own implementation for wrapper interrupts and
+> power management. Add the SoC specific compatible for MT8196
+> implementing arm,smmu-v3.
+> 2. APU SMMU need wait until its power is ready, thus add a phandle
+> smmu-mediatek-parents to its power node.
+> 
+> Signed-off-by: Xueqi Zhang <xueqi.zhang@mediatek.com>
+> ---
+>  .../bindings/iommu/arm,smmu-v3.yaml           | 24 ++++++++++++++++++-
+>  1 file changed, 23 insertions(+), 1 deletion(-)
+> 
 
-The destruction of the vdevice is triggered by the .release method of
-the iommufd file operations(iommufd_fops_release())
+My bot found errors running 'make dt_binding_check' on your patch:
 
-and the destruction of the idevice is driven by the .release method of
-vfio cdev.
+yamllint warnings/errors:
 
-    vfio_device_fops_release()
-    =E2=86=92 vfio_df_device_last_close()
-    =E2=86=92 vfio_iommufd_physical_unbind()
-    =E2=86=92 iommufd_device_unbind()
+dtschema/dtc warnings/errors:
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml: ignoring, error in schema: properties: compatible
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml: properties:compatible: [{'description': 'MediaTek SoCs implementing "arm,smmu-v3"', 'items': [{'enum': ['mediatek,mt8196-apu-smmu', 'mediatek,mt8196-mm-smmu']}, {'const': 'arm,smmu-v3'}]}] is not of type 'object', 'boolean'
+	from schema $id: http://json-schema.org/draft-07/schema#
+/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml: properties:compatible: [{'description': 'MediaTek SoCs implementing "arm,smmu-v3"', 'items': [{'enum': ['mediatek,mt8196-apu-smmu', 'mediatek,mt8196-mm-smmu']}, {'const': 'arm,smmu-v3'}]}] is not of type 'object', 'boolean'
+	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+Documentation/devicetree/bindings/iommu/arm,smmu-v3.example.dtb: /example-0/iommu@2b400000: failed to match any schema with compatible: ['arm,smmu-v3']
 
-The vfio subsystem also retains a reference to the iommufd file descriptor =
-through:
+doc reference errors (make refcheckdocs):
 
-    vfio_df_ioctl_bind_iommufd()
-    =E2=86=92 iommufd_ctx_from_fd()
+See https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20250616025628.25454-2-xueqi.zhang@mediatek.com
 
-This reference prevents the vdevice from being destroyed while the idevice =
-remains bound.
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
 
-So, IIUC, the current destruction flow is: first destroy vfio, and then des=
-troy the vdevice?
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
->
->> hmm if the user needs to build certain knowledge anyway can we=20
->> go one step further to state that the vdevice will be destroyed
->> automatically once its idevice is unbound so the user shouldn't
->> attempt to explicitly destroy it again after unbind?
->
-> I would assume a malfunctioning userspace is probably going to destroy
-> the vdevice explicitly. If it had proper knowledge it wouldn't have
-> done this in the first place :)
->
-> Jason
+pip3 install dtschema --upgrade
 
--aneesh
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
