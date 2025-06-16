@@ -1,132 +1,178 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A73F86340
-	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 16:06:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750089986; cv=pass; b=j7QR7u/nx0UkOyy9R15PJFO1brnFVBNx+zb8gbH7N6NwsKSWuTvEbcPF5XL+5dgZ16/9mx9lcU7VhLqA3BNv48w0olqekV64yR+LawyH7gXaMO0Oik8quvDEqrn1sgtrjRucsp6xN5Aa5q8uMqPVvi0i2V1/YGQ68ixA06H2Ejo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750089986; c=relaxed/simple;
-	bh=ASFFuuxt+NkRcr85V9Pfr5TSV45ijN++k4YYQyXOBPw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tnA7WPiMCqS/vaIKSXzwC3hhJTaPXJmzRG/B0WPN1IuNw6nK1gsg/WzsDF6x4QCYOg/u+6GGYWT80ECyr5mTlIo5RmQjX3D4T8SMhjz0CDGx/5ZGnWB2+u7mjEl0cNknLS5DXR4+o3tZiahAqNA+m+bpZilTCIE8H0o8SuYGMt8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=Cxej/lQU; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC6B0286880
+	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 16:07:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750090074; cv=none; b=Ar/HSVpugFc71+zgHzri68W3T2z8QHl1Fah/AVILLVzehiq3QvXFFNPX1NkSHa56KitXELhiFlxKV0qld6/4b5SxdGDbMxoPap4wjqaRioLuH1I/s+35+ZowJCwjaGzzYghKGlNJTsKZvbK4NJ506FZPTz3KuX7KC789nSCKqic=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750090074; c=relaxed/simple;
+	bh=ZA6S9shc1QEX3PEyqUllB6Vi85lndLEG0kzkNo7/Ypk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cIZ2f202gf6lsiy7zi67+fhOg2x7BHYZdegv01v1tx9glE6shVLHGdFGopjKn06l0c3Po++SicNBugab1eIllf2N+P3gYlZ5AaxkJdwKmW3/GJSEouGBgO6xhWC+VpRcq7X/4WM7iF1pTt9yDPt0WBDHgz6mzectv4KgejN0Bp8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=QGeKWQby; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="Cxej/lQU"
-ARC-Seal: i=1; a=rsa-sha256; t=1750089974; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=e3GNWk/WbTMBevIRzVxs0X0CrdY0pRAyPGz6jfHOmRORUsjwLA1tl83Tcg69Gdmjm6LtbNDMWkmzWPXstgPN13BL4cUCzalmADCecyqghzLvTPu7xIp5Zte6CJ7oUCnJXZEHBgK41h40PJKyFeuACrxbSi+mpnczIfdnz4rfot8=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1750089974; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=R2NIJYlZXUCPFvz62oOBC7RgnkUtxPH/uiLdx+Eefzw=; 
-	b=LPTH8d3DUcfCDo7jV04mDGb73PcRIZcqmB6HWL3b3Fwmaro5ZWuxr+RCxr3Gh3EofXC1PFLsCGqgykkco3tglMzjHesUsHPyai1hut15i1TFpPYezmbnoImx6TieTKuB6c2a9oBwESWEKNux8OyIhLTWlIF7v0/BhzqbDVUirqs=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
-	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1750089973;
-	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=R2NIJYlZXUCPFvz62oOBC7RgnkUtxPH/uiLdx+Eefzw=;
-	b=Cxej/lQUz2GTaTy62PcnOSfRvxKBanXxW0lGKW0AFWDQ7U+qDpLJSKzl0sFtrdA7
-	IlPkQnAXxZZRvNLvs2aFKNCn7ht/En6XoDdo+4KiSUwcNsn0YeE3BwU1TiJVG+uovHv
-	FdY7IkjAhFOlAV0AndUjZn8f5RMcY2IxVzacAGQM=
-Received: by mx.zohomail.com with SMTPS id 1750089971949421.80620542117106;
-	Mon, 16 Jun 2025 09:06:11 -0700 (PDT)
-Message-ID: <163a05ac-b0de-4345-8489-dbf858326908@collabora.com>
-Date: Mon, 16 Jun 2025 18:06:08 +0200
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QGeKWQby"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4532ff4331cso12489745e9.1
+        for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 09:07:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1750090071; x=1750694871; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=66enaQYzVszRsP2d3FubStZt1y7rSXnP5cI/cUMaHAc=;
+        b=QGeKWQbyU/SAfHAoO6GtXFXbt3ijSPkUCkuIpKwP475P1jv9cg04C4+4CY478Ua/Su
+         sw59k7B/vygjwPNoIltycCd+zYK/LQQVNq/3Wjw72nb71PpAiEDEg9bWDt6vOXOfx30y
+         wjafkVSXbXIO0425pCy+Jy7zPDXKOEw7K+JJw68mp0jdbVR8Sh/V80mQx1RBSgylhA0H
+         ThVphK6MGTcoM+Gw6nMcI8sSxxn8KHY7rWhs7FBXIQ2yvk+AAcKCgoYSbycR8nPr1TsK
+         dfutK5JSBnAAhefmT8munEEBGhJElOCzCxeAhccfj0JV+nk2VaZTt0+TXvVe6yVfDH4H
+         qfzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750090071; x=1750694871;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=66enaQYzVszRsP2d3FubStZt1y7rSXnP5cI/cUMaHAc=;
+        b=C+JhkjHs+vgLCKC76RB8eSJfbWsJonRPebVf7NRrPs6jaI9t1230ZmblgKmor4a0wK
+         4Ugmme9nxoHi4RUj/uoRzO3ymFjg5t8USBiWNJUcwqqRM2aIuER+zgaLyFMwGA+YqZuz
+         Y+5RV5akyKwxuwMmdrBNauXyM65cW8PHEiKUjqmTTAp52iC4NzvXWI/Ao60hqzMna1+1
+         S0RF3WmzCfvgMr8JPqvxFKwVER+ZsaDBrONjluJS9tit9HQpRz5wOCbvacvjW8D22NPg
+         keYko32DCbxEAy7ct5JXjtCnrBKVT3/HuO8jupnmgalswOBHLPANHL93JXM8F7x7sJ2n
+         0opg==
+X-Forwarded-Encrypted: i=1; AJvYcCWs+XVdOZbKTeCe9n3jyT0v2d0ir21RjtTiaH35e1iGoRvYnkgI6aOS/R8oqmWVSenWh0Bxsw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyNSVlCxOqUcbtKeSlyI1XYVaH1Vf2pnnUIV3SPE5hu0hYmKRVl
+	oQzHj1+9XCwS6rLEuVxczWYYlvVp+MwOcW6VmN8KNnPAxziNspkQZVayOvvdYyMHSeQ=
+X-Gm-Gg: ASbGncsKR9d6fKUM2XYI4nfwmZYkpfeidllhA2V5+TIh1552tah8f3RM8hASsSIzRFK
+	/IwWGnn/vwpcf+k0nObCcZtpGJthQfhcglEcMjQaiDmBnkVaD53ZCl+m6TGXSe9XhHnfuGlqLB8
+	/ZXW38vQNbSzVd4kreG8nZMl6tfR+zXK7wbIrEom8WPPh/g9iGZP0i4OrdFtamG0x15/L6/l69V
+	eZrM2pkAGGuVAs6Gr+5pRfylKaQOfRkbfAal7wJ4QA2rgeQzoTioqM5fpuFaFhi8JdDujhARDQR
+	wdy5YEFmLq0LE5VUOBH6Fc9cuKpvLuLLtvW3CrJGm1o9/bZD+jELA1UL+nhpQaPt9x61a+kpNFl
+	YvSCsaj66jCyaHg==
+X-Google-Smtp-Source: AGHT+IFm2XOGvEu+c2Vt4oKDTOhDYuX0Zc67/qbAzwRfpRIo4JlzBUdpBKcXvIOmlDkGO4s2VlIKAQ==
+X-Received: by 2002:a05:600c:3ba2:b0:442:dc6f:7a21 with SMTP id 5b1f17b1804b1-4533ca79d19mr100567515e9.3.1750090071100;
+        Mon, 16 Jun 2025 09:07:51 -0700 (PDT)
+Received: from myrica (92.40.185.180.threembb.co.uk. [92.40.185.180])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a568b19b32sm11602270f8f.67.2025.06.16.09.07.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Jun 2025 09:07:50 -0700 (PDT)
+Date: Mon, 16 Jun 2025 17:07:52 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Alyssa Ross <hi@alyssa.is>
+Cc: Demi Marie Obenour <demiobenour@gmail.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, virtualization@lists.linux.dev,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	devel@spectrum-os.org, Thomas Gleixner <tglx@linutronix.de>,
+	Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+	eric.auger@redhat.com
+Subject: Re: Virtio interrupt remapping
+Message-ID: <20250616160735.GA5171@myrica>
+References: <c40da5dc-44c0-454e-8b1d-d3f42c299592@gmail.com>
+ <20250613181345.GA1350149@myrica>
+ <6b661c62-c322-4f2b-8e4a-da1d5c5e48a1@gmail.com>
+ <877c1ed9o7.fsf@alyssa.is>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/5] dt-bindings: iommu: verisilicon: Add binding for VSI
- IOMMU
-To: Conor Dooley <conor@kernel.org>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
- nicolas.dufresne@collabora.com, p.zabel@pengutronix.de, mchehab@kernel.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
- kernel@collabora.com
-References: <20250616145607.116639-1-benjamin.gaignard@collabora.com>
- <20250616145607.116639-3-benjamin.gaignard@collabora.com>
- <20250616-winter-strict-db98f85db22d@spud>
- <5c971c09-c398-40a3-9ed5-ec38b6645e1d@collabora.com>
- <20250616-contempt-remix-5af2b7281cbd@spud>
- <2d251d7c-7906-4a66-9791-7f71e7a4b54d@collabora.com>
- <20250616-capped-rehab-6e7fd24d23ae@spud>
-Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <20250616-capped-rehab-6e7fd24d23ae@spud>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <877c1ed9o7.fsf@alyssa.is>
 
+[+Eric]
 
-Le 16/06/2025 à 17:58, Conor Dooley a écrit :
-> On Mon, Jun 16, 2025 at 05:50:50PM +0200, Benjamin Gaignard wrote:
->> Le 16/06/2025 à 17:42, Conor Dooley a écrit :
->>> On Mon, Jun 16, 2025 at 05:30:44PM +0200, Benjamin Gaignard wrote:
->>>> Le 16/06/2025 à 17:14, Conor Dooley a écrit :
->>>>> On Mon, Jun 16, 2025 at 04:55:50PM +0200, Benjamin Gaignard wrote:
->>>>>> Add a device tree binding for the Verisilicon (VSI) IOMMU. This IOMMU sits
->>>>>> in front of hardware encoder and decoder blocks on SoCs using Verisilicon IP,
->>>>>> such as the Rockchip RK3588.
->>>>>>
->>>>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
->>>>>> ---
->>>>>>     .../bindings/iommu/verisilicon,iommu.yaml     | 71 +++++++++++++++++++
->>>>>>     1 file changed, 71 insertions(+)
->>>>>>     create mode 100644 Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
->>>>>>
->>>>>> diff --git a/Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml b/Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
->>>>>> new file mode 100644
->>>>>> index 000000000000..acef855fc61d
->>>>>> --- /dev/null
->>>>>> +++ b/Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
->>>>>> @@ -0,0 +1,71 @@
->>>>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>>>>> +%YAML 1.2
->>>>>> +---
->>>>>> +$id: http://devicetree.org/schemas/iommu/verisilicon,iommu.yaml#
->>>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>>>>> +
->>>>>> +title: Verisilicon IOMMU
->>>>>> +
->>>>>> +maintainers:
->>>>>> +  - Benjamin Gaignard <benjamin.gaignard@collabora.com>
->>>>>> +
->>>>>> +description: |+
->>>>>> +  A Versilicon iommu translates io virtual addresses to physical addresses for
->>>>>> +  its associated video decoder.
->>>>>> +
->>>>>> +properties:
->>>>>> +  compatible:
->>>>>> +    oneOf:
->>>>>> +      - items:
->>>>>> +          - const: verisilicon,iommu
->>>>> You're missing a soc-specific compatible at the very least here, but is
->>>>> there really no versioning on the IP at all? I'd be surprised if
->>>>> verisilicon only produced exactly one version of an iommu IP.
->>>> I only aware this version of the iommu for the moment.
->>> "for the moment", yeah. Is there any information that could be used to
->>> version this available?
->> The hardware block isn't documented in the TRM so I don't know if there is a version
->> field or something like that.
->>
->>>> Does adding verisilicon,rk3588-iommu sound good for you ?
->>> It'd be "rockchip,rk3588-iommu", but sure.
->> "rockchip,rk3588-iommu" is already use for other MMUs in rk3588.
-> "rockchip,rk3588-video-iommu" then? Instances of an IP in an SoC get a
-> specific compatible with the SoC vendor's prefix, so having verisilicon
-> there isn't suitable unless they made the SoC.
+On Sat, Jun 14, 2025 at 10:11:52AM +0200, Alyssa Ross wrote:
+> Demi Marie Obenour <demiobenour@gmail.com> writes:
+> 
+> > On 6/13/25 14:13, Jean-Philippe Brucker wrote:
+> >> Hi,
+> >> 
+> >> On Fri, Jun 13, 2025 at 01:08:07PM -0400, Demi Marie Obenour wrote:
+> >>> I’m working on virtio-IOMMU interrupt remapping for Spectrum OS [1],
+> >>> and am running into a problem.  All of the current interrupt remapping
+> >>> drivers use __init code during initialization, and I’m not sure how to
+> >>> plumb the struct virtio_device * into the IOMMU initialization code.
+> >>>
+> >>> What is the proper way to do this, where “proper” means that it doesn’t
+> >>> do something disgusting like “stuff the virtio device in a global
+> >>> variable”?
+> >> 
+> >> I'm not familiar at all with interrupt remapping, but I suspect a major
+> >> hurdle will be device probing order: the PCI subsystem probes the
+> >> virtio-pci transport device relatively late during boot, and the virtio
+> >> driver probes the virtio-iommu device afterwards, at which point we can
+> >> call viommu_probe() and inspect the device features and config.  This can
+> >> be quite late in userspace if virtio and virtio-iommu get loaded as
+> >> modules (which distros tend to do).> 
+> >> The way we know to hold off initializing dependent devices before the
+> >> IOMMU is ready is by reading the firmware tables. In devicetree the
+> >> "msi-parent" and "msi-map" properties point to the interrupt remapping
+> >> device, so by reading those Linux knows to wait for the probe of the
+> >> remapping device before setting up those endpoints. The ACPI VIOT
+> >> describes this topology as well, although at the moment it does not have
+> >> separate graphs for MMU and interrupts, like devicetree does (could
+> >> probably be added to the spec if needed, but I'm guessing the topologies
+> >> may be the same for a VM).  If the interrupt infrastructure supports
+> >> probe deferral, then that's probably the way to go.
+> >
+> > I don't see any examples of probe deferral in the codebase.
 
-Other hardware video codecs have a different IOMMU so I will suggest
-"rockchip,rk3588-av1-iommu" which is specific to this video hardware block.
+I think the flow with VIOT is roughly:
 
+ // Scan an endpoint
+ pci_bus_add_device()
+  device_attach()
+   driver_probe_device()
+    really_probe()
+     dev->bus->dma_configure()
+      pci_dma_configure()
+       acpi_dma_configure()
+        acpi_iommu_configure_id()
+         viot_iommu_configure()
+	  viot_dev_iommu_init()
+	   acpi_iommu_fwspec_init()
+	    iommu_fwspec_init()
+	     driver_deferred_probe_check_state()
+	     iommu ready ? 0 : -EPROBE_DEFER
+
+So if the IOMMU isn't available at this point, base/dd.c adds the device
+to the deferred probe list, to be retried later. Later:
+
+ // Scan the IOMMU
+ ...
+  virtio_dev_probe()
+   viommu_probe()
+    iommu_device_register()
+     add to iommu_device_list
+     iommu->ready = true
+
+I believe after this probe completes, base/dd.c checks if dependent
+devices can now be probed:
+
+ driver_bound()
+  driver_deferred_probe_trigger()
+
+That should all be working and you don't need to add anything. The
+question is whether the interrupt core supports starting the setup of
+interrupt remapping in viommu_probe(), or if it needs to know of the
+IOMMU's config and features earlier during boot. Even if the viommu driver
+is builtin, those info may not be available early enough since they
+require PCI and virtio probe.
+
+> > Would it instead be possible to require virtio-iommu (and thus virtio)
+> > to be built-in rather than modules?
+> 
+> It's certainly possible to have an optional feature in the kernel that
+> depends on a module being built in where it otherwise wouldn't have to be.
+
+Agree, no problem requiring this as a first step, but the IOMMU probe
+might still not be early enough. 
+
+Thanks,
+Jean
