@@ -1,148 +1,120 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EF5427E1DC
-	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 10:16:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6F59275854
+	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 10:40:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750069011; cv=none; b=OtNab3bGot/J8k0mo++JB+O8aAUKP2tZ/X14lvipkkwkhQz1ssSm8UbLew1+luDRlGhj0k/kSJoahFYjZTL2ibP5tVADWD2ZqzoClL84GFaLv8fkdwHOxqVmz8VQWxa2EQRaoGxjOXtldfl1vSeeSBCwa2dHCKtLAAna35yKa1Y=
+	t=1750070452; cv=none; b=OXVw9/KAsKDWzA2+Wr23s0mWK55G6TCqv3LoRI0R0sEXpviPPS7I9a6qzQOVacAfF/m4Y/dtIXJ/mt99JX8bjz2q5OWxth8s8G/kCU7pDjOQJguU8f3gNXwB4Kyu6qFyMzdksUjiB+8AihCMQGkRirYJOO0sh5NlsIwgzeU5Ebo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750069011; c=relaxed/simple;
-	bh=gBJpNY8IJHaShcKvSsKrq9I+5X+qpSCJeCfTUVZqS4c=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lNifGmRNwbbotbvP/Fvm0uHHBESfT4i9gP9b0s9omiADZSkXfwGXHnnmwynpSXv284Iu/y+k6UjgMRTzUV75CwXv0RqLk+A8OXqC6oVYC6PvOIE6s4f+gLplMXvnn7h2roK/0/0zJrQ2zkQwLkWPXWUOFFBHEgU8liAFmqDLDH0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.216])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4bLQlw5yvJz6L5bl;
-	Mon, 16 Jun 2025 18:12:12 +0800 (CST)
-Received: from frapeml500008.china.huawei.com (unknown [7.182.85.71])
-	by mail.maildlp.com (Postfix) with ESMTPS id 41B5E140119;
-	Mon, 16 Jun 2025 18:16:46 +0800 (CST)
-Received: from localhost (10.203.177.66) by frapeml500008.china.huawei.com
- (7.182.85.71) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2507.39; Mon, 16 Jun
- 2025 12:16:45 +0200
-Date: Mon, 16 Jun 2025 11:16:44 +0100
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To: Qinxin Xia <xiaqinxin@huawei.com>
-CC: <21cnbao@gmail.com>, <m.szyprowski@samsung.com>, <robin.murphy@arm.com>,
-	<yangyicong@huawei.com>, <hch@lst.de>, <iommu@lists.linux.dev>,
-	<prime.zeng@huawei.com>, <fanghao11@huawei.com>,
-	<linux-kernel@vger.kernel.org>, <linuxarm@huawei.com>
-Subject: Re: [RESEND PATCH v4 4/4] selftests/dma: Add dma_map_sg support for
- dma_map_benchmark
-Message-ID: <20250616111644.0000565b@huawei.com>
-In-Reply-To: <20250614143454.2927363-5-xiaqinxin@huawei.com>
-References: <20250614143454.2927363-1-xiaqinxin@huawei.com>
-	<20250614143454.2927363-5-xiaqinxin@huawei.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
+	s=arc-20240116; t=1750070452; c=relaxed/simple;
+	bh=8XMWvcD5dIXEwocCT7V0Ty4mO1xZ8Yq21hFRXXg+GQA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=JdaTvkGFbDfOi4ggKXGFohKtEAsEJ/zFqq+DQD0jOJV8gmKn/HSLPGRrxKeZpXQTIgClHwEWU857pOZhLbc1TXSfKt2ozQcv2uf+IBfPGoQcFeFdb2c1c2hfsQhdV3VDaQkx5+ZWPEvL1YZub71Xn+7yiDL5cuo+oelDBvbKaWM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hvF5cAuj; arc=none smtp.client-ip=209.85.217.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hvF5cAuj"
+Received: by mail-vs1-f47.google.com with SMTP id ada2fe7eead31-4e7ef5d6bffso868748137.3
+        for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 03:40:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1750070449; x=1750675249; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yKcJBSl+Htuh3i5x90yiqO0jHstMNoYTds6WpGdMy9c=;
+        b=hvF5cAujH1ZOFkE8mqPlgb4ghsd6Jpay0I7Ts7QwLR0BbNCk46r2Gwo7fCpWsNUx6j
+         UpgPlPVK3XAslMfJvXzeEApCjQv45kTqiUKGq9DbsFvGDy2Oxd/7IFpzuL0EkFUM5G5Q
+         iNCA9VXGsXMM6CcdvAoDuSKZah4OZurpGLxnKYiSaIGpddotnuDAs/YavWZDGHXkZki6
+         DMSzHDeG7A9iQcaFOr57CH4TUyxKWKGHe9RfJZVcxMYHn6WdFyHcObq1NBlvD6uPra2I
+         ezxbzyM0pyN2Ui5Y/BvqEa8Go5wnur7mDOZ4/JJBS8xTJkB55a/qkD+QppCqyJ6uzBaL
+         qtBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750070449; x=1750675249;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=yKcJBSl+Htuh3i5x90yiqO0jHstMNoYTds6WpGdMy9c=;
+        b=g3FDvYF49hKdcFCcX4M3Go5/B6T+6Tnr2iSHXBc4ZQfeaFou/669vHaOb3GoSVXc+q
+         6ae1SsFyLNjVoQLn+8m2edFuy4z+vTAY1zWnoadP7PwnFfQJrMTrgQ5kLJXgE5cyJEZw
+         MTz4KBobZG/mIgayWuFTRuIbyaNIZZoBNDkIxvfUN4t5Zaw8A/BwwYpaaaL9uBsabXLq
+         6bVfqU1dP8b6rir8pRpU/xBZlD5ucToJH37+0gxrVBpucBNy5DT47/uOB5dLlISjglfk
+         XYa9f3z+RUX16Dh1KGdQ7715YQGOJK/yqOPOO4tmABva+CrMOYvGW8qaaw8wkWvLBjfz
+         GH9A==
+X-Forwarded-Encrypted: i=1; AJvYcCXC4DbTK5qbVlG3oAdopAYasUxRCIwSjhD2xq05EnY51EMzIGR7v4S0JtUm3tUx6GJpIDt8Pg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwSkj6J/Y0S3F7XLgysr28Nhj9sxxDjo6p5Lfx5NYYIUs4L8Y1M
+	C/4wZs4WWUTPD4ywWTTjIBljeks6tSNvmfa8EdhmhqCFXDTGaDwZ3bBHtAGzhMCrpohL0Z5G7nv
+	N3EfKE3rp9S7TYf/75KHRrwice4NC9uw=
+X-Gm-Gg: ASbGncsLGRdKVIy6hszq+znPIZenkyfBDkFSnTSgdmIMesBz22TTIofJpeLRPOVm160
+	e459I8DNDTNf992WO3VOvnyD/CeFBIdEHZNlnedRCALz3l2426DcdNGldV/paMNZNoKvpB9vuR6
+	zVm2HFQJzHbfYVB2ionTfj3M4KamL/tCaWkO742bHM9mFb
+X-Google-Smtp-Source: AGHT+IGyrVuaJSujsaH/Gb6IqSn1XaIFzPww+xgJhL0qSz46P+E9FU9vcP3CXBQsbgaUwh0W0CRlwO5C49KfqNRF7ss=
+X-Received: by 2002:a05:6102:4bc5:b0:4e6:eaed:7e2 with SMTP id
+ ada2fe7eead31-4e7f6188746mr5750214137.5.1750070449393; Mon, 16 Jun 2025
+ 03:40:49 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: lhrpeml100011.china.huawei.com (7.191.174.247) To
- frapeml500008.china.huawei.com (7.182.85.71)
+References: <20250614143454.2927363-1-xiaqinxin@huawei.com>
+ <20250614143454.2927363-2-xiaqinxin@huawei.com> <20250616105318.00001132@huawei.com>
+In-Reply-To: <20250616105318.00001132@huawei.com>
+From: Barry Song <21cnbao@gmail.com>
+Date: Mon, 16 Jun 2025 22:40:38 +1200
+X-Gm-Features: AX0GCFuFgGB6vPgX23Rf-5Mt2x4mXZwQlCu1ReuAWrQ4w8qJcActIkO0Jlw_fYo
+Message-ID: <CAGsJ_4wOB+cmGzuzzacwJGeUYgGLuKg94wuWC+mA-_=r0TVuhQ@mail.gmail.com>
+Subject: Re: [RESEND PATCH v4 1/4] dma-mapping: benchmark: Add padding to
+ ensure uABI remained consistent
+To: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Qinxin Xia <xiaqinxin@huawei.com>, m.szyprowski@samsung.com, robin.murphy@arm.com, 
+	yangyicong@huawei.com, hch@lst.de, iommu@lists.linux.dev, 
+	prime.zeng@huawei.com, fanghao11@huawei.com, linux-kernel@vger.kernel.org, 
+	linuxarm@huawei.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, 14 Jun 2025 22:34:54 +0800
-Qinxin Xia <xiaqinxin@huawei.com> wrote:
+On Mon, Jun 16, 2025 at 9:53=E2=80=AFPM Jonathan Cameron
+<Jonathan.Cameron@huawei.com> wrote:
+>
+> On Sat, 14 Jun 2025 22:34:51 +0800
+> Qinxin Xia <xiaqinxin@huawei.com> wrote:
+>
+> > The padding field in the structure was previously reserved to
+> > maintain a stable interface for potential new fields, ensuring
+> > compatibility with user-space shared data structures.
+> > However,it was accidentally removed by tiantao in a prior commit,
+> > which may lead to incompatibility between user space and the kernel.
+> >
+> > This patch reinstates the padding to restore the original structure
+> > layout and preserve compatibility.
+> >
+> > Fixes: 8ddde07a3d28 ("dma-mapping: benchmark: extract a common header f=
+ile for map_benchmark definition")
+> > Cc: stable@vger.kernel.org
+> > Acked-by: Barry Song <baohua@kernel.org>
+> > Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
+>
+> FWIW I checked the patch above indeed accidentally dropped the padding an=
+d the structure
+> is copied to userspace so this fix is correct.  Given it's not in a uapi =
+header this
+> only really affects the selftest I think this is mostly a case of there p=
+ossibly being
+> out of tree tools with a local copy of this structure definition.
 
-> Support for dma_map_sg, add option '-m' to distinguish mode.
-> 
-> i) Users can set option '-m' to select mode:
->    DMA_MAP_BENCH_SINGLE_MODE=0, DMA_MAP_BENCH_SG_MODE:=1
->    (The mode is also show in the test result).
+Somehow, I feel we have placed
+tools/testing/selftests/dma/dma_map_benchmark.c in the wrong location.
+As a selftest, it should have a mechanism to check kernel dependencies,
+start properly and automatically, and report pass or fail.
 
-shown
+dma_map_benchmark.c seems more like a tool that belongs in tools/dma,
+rather than a test.
 
-> ii) Users can set option '-g' to set sg_nents
->     (total count of entries in scatterlist)
->     the maximum number is 1024. Each of sg buf size is PAGE_SIZE.
->     e.g
->     [root@localhost]# ./dma_map_benchmark -m 1 -g 8 -t 8 -s 30 -d 2
->     dma mapping mode: DMA_MAP_BENCH_SG_MODE
->     dma mapping benchmark: threads:8 seconds:30 node:-1
->     dir:FROM_DEVICE granule/sg_nents: 8
->     average map latency(us):1.4 standard deviation:0.3
->     average unmap latency(us):1.3 standard deviation:0.3
->     [root@localhost]# ./dma_map_benchmark -m 0 -g 8 -t 8 -s 30 -d 2
->     dma mapping mode: DMA_MAP_BENCH_SINGLE_MODE
->     dma mapping benchmark: threads:8 seconds:30 node:-1
->     dir:FROM_DEVICE granule/sg_nents: 8
->     average map latency(us):1.0 standard deviation:0.3
->     average unmap latency(us):1.3 standard deviation:0.5
-> 
-> Reviewed-by: Barry Song <baohua@kernel.org>
-> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
-Looks fine to me.
-Reviewed-by: Jonathan Cameron <jonathan.cameron@huawei.com>
+>
+> Reviewed-by: Jonathan Cameron <jonathan.cameron@huawei.com>
 
-> ---
->  tools/testing/selftests/dma/dma_map_benchmark.c | 16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/dma/dma_map_benchmark.c b/tools/testing/selftests/dma/dma_map_benchmark.c
-> index b12f1f9babf8..c37cbc7e8766 100644
-> --- a/tools/testing/selftests/dma/dma_map_benchmark.c
-> +++ b/tools/testing/selftests/dma/dma_map_benchmark.c
-> @@ -27,6 +27,7 @@ int main(int argc, char **argv)
->  	int fd, opt;
->  	/* default single thread, run 20 seconds on NUMA_NO_NODE */
->  	int threads = 1, seconds = 20, node = -1;
-> +	int map_mode = DMA_MAP_BENCH_SINGLE_MODE;
->  	/* default dma mask 32bit, bidirectional DMA */
->  	int bits = 32, xdelay = 0, dir = DMA_MAP_BIDIRECTIONAL;
->  	/* default granule 1 PAGESIZE */
-> @@ -34,7 +35,7 @@ int main(int argc, char **argv)
->  
->  	int cmd = DMA_MAP_BENCHMARK;
->  
-> -	while ((opt = getopt(argc, argv, "t:s:n:b:d:x:g:")) != -1) {
-> +	while ((opt = getopt(argc, argv, "t:s:n:b:d:x:g:m:")) != -1) {
->  		switch (opt) {
->  		case 't':
->  			threads = atoi(optarg);
-> @@ -57,11 +58,20 @@ int main(int argc, char **argv)
->  		case 'g':
->  			granule = atoi(optarg);
->  			break;
-> +		case 'm':
-> +			map_mode = atoi(optarg);
-> +			break;
->  		default:
->  			return -1;
->  		}
->  	}
->  
-> +	if (map_mode >= DMA_MAP_BENCH_MODE_MAX) {
-> +		fprintf(stderr, "invalid map mode, DMA_MAP_BENCH_SINGLE_MODE:%d, DMA_MAP_BENCH_SG_MODE:%d\n",
-> +			DMA_MAP_BENCH_SINGLE_MODE, DMA_MAP_BENCH_SG_MODE);
-> +		exit(1);
-> +	}
-> +
->  	if (threads <= 0 || threads > DMA_MAP_MAX_THREADS) {
->  		fprintf(stderr, "invalid number of threads, must be in 1-%d\n",
->  			DMA_MAP_MAX_THREADS);
-> @@ -111,13 +121,15 @@ int main(int argc, char **argv)
->  	map.dma_dir = dir;
->  	map.dma_trans_ns = xdelay;
->  	map.granule = granule;
-> +	map.map_mode = map_mode;
->  
->  	if (ioctl(fd, cmd, &map)) {
->  		perror("ioctl");
->  		exit(1);
->  	}
->  
-> -	printf("dma mapping benchmark: threads:%d seconds:%d node:%d dir:%s granule: %d\n",
-> +	printf("dma mapping mode: %d\n", map_mode);
-> +	printf("dma mapping benchmark: threads:%d seconds:%d node:%d dir:%s granule/sg_nents: %d\n",
->  			threads, seconds, node, dir[directions], granule);
->  	printf("average map latency(us):%.1f standard deviation:%.1f\n",
->  			map.avg_map_100ns/10.0, map.map_stddev/10.0);
-
+Thanks
+Barry
