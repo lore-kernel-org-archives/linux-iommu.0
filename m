@@ -1,77 +1,76 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2063.outbound.protection.outlook.com [40.107.94.63])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2053.outbound.protection.outlook.com [40.107.236.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F05131D5CFB
-	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 05:02:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.63
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DA641DE4D2
+	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 05:02:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.53
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750050170; cv=fail; b=M5roDen+hUaUzF+UDs28WpdBxB5Oqm5rCT1HTD5HGmhtWQylH+cvDUMd6dcosrpldx5XIAmZpCvK8rx7PC9MjOSMaDY8vNGxZiFCO7CNNBipovVYDVQU/GaIzIgmKptjJeTwojN+E3tJst/lN8y3Pw/Mcn9jc4qv1fso71xUFtM=
+	t=1750050174; cv=fail; b=qtS0BxHKkDs6ojL/YblaW5UhU7qjc+WOVrLB+WL4UZLCUzBu3CiyfaN08jwhx/T93dQ778Ct2bWZwqA9hvmJhkkGLar2oSou22weo65HbuvfZX2V3i0BLDlK0TwyGQwEsTdp2pDiTGmvkCcTy1lEJ5mlwcKLHor4KiuwcJtHtnE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750050170; c=relaxed/simple;
-	bh=OcaSu5upayMqXAnVY3F5G71gnxO4Bf+QEGcG5++SEOg=;
+	s=arc-20240116; t=1750050174; c=relaxed/simple;
+	bh=qiQ5GkUGjZ+q8vJ7NUB4slVIlr4qCdmz8gr1nrPjyRE=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PdwOLU9eo60FWv9ZGVZjxz8XmqgqytaBdfWBmxQbka9TnmX5O7TCTWHgpYtMv10alDUOwLfqwNF5wuwsyY5Nrr1rqPxDuss7nBbn1uMbfNWB5G9yu2vKukfaYqPWr7can2ryLm5b72Xt4/98lG6kA7mIZ9pIynLgh3XqrbFWaA8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=BB6NdGuO; arc=fail smtp.client-ip=40.107.94.63
+	 MIME-Version:Content-Type; b=UXBE6+IFclUaa5ifP1jsJxO9//fmn9Q7EzDG5I/ltHRTDjLN7Zr4eB7I/oJzXQjC8i6v2b1UvP1kYKvdPjTp32egAhd5gHIzdqrM+hOSew+ZHE0movgF5QiI8miPFpuwkBUIRymMf7Nts5RuRToDWHcBv9SvCN/TDxdwC1bU8PY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=fLrz6rNW; arc=fail smtp.client-ip=40.107.236.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="BB6NdGuO"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="fLrz6rNW"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=WyzEyg0FX1yC4wlP3QMbwEr9/jAyjPLdHztNOIRQ8DlRiEeU4Wnf2ihWishTZBWLVt9pFYfZKWOhiLBICwgho+i5tIdRIUvkejRgepKlNRgp1MdWFFkG2EGnPZify775raIzyQlSo2+7GYy4yHiZvqmXK5ZZc336PRxN5VgIZJ4Mnbuo2u+qDi+bD3i11w5v6P2DmfxTjU3wNTCnuZRkm3qG5kLW0ivefhHXZ+AkWI3yGz5K2zRqaIOhwSlckPLhK+l8Lq5EcW31jXR1hpDC5Bc9F0vyfs40L4GcPpISO0PyqlFo8QORy/gIfbz3oJQRh9Ptomkbg4d68UweeYVzHw==
+ b=gS6A9iabMJxCED/vqVAVQMOh8mDqN6iHmiXBBugmidEY0l1ufjHnZsmAEy+Oefo+qSok3bELWd0UhK6eQyIcvBXsY5m/np2XCCbz8eNLuabt5KYFZ6KzEklXlraC/iHtWOOl01OJ4U5bgAvdatm12U10Q4/06kyOPhC3X7rMjKOHQP1CXRYxRi3/+laZYSFZd5Tundi154ehwGqKky8ii/qcWLxP+XIQk9oLl6WVB0QsQFZjE4RoB8VfnLRs2W7K9T/JbJjFgnELSM0vzfaL7+qy41gQDEXhcFi5/vgonlbS404ReELB2PFMAK5ssyUIrV8puVN2gQJnqu8XYjWGVw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=E6EA4sxPELEgtEIyjs+802VjbqVx/acNNDcI4XIxzS4=;
- b=gz+O7tjgqMgplmmb/hcgX5uKySj6L3+XiOxdsvaMnsNSxaNIRDJtBzAnJFejwPvw2oj68RhNXTgfOZY1JFAPi3bHwoyfyPs3wyxLPIOkjXXnvbSngJQ0JkoRxJ9cefsSuFogauQZPS3awc+DNwtd9fzR/7nr7xt9wr8Vtck3JB47FqmVcmjOHGQGojJOwIwfl2ArHzCFw7/sHdLXrUoMQAH05XLPRcGCMwE7oD+lOt7HyMrahFKF1WggxZ3HUJRcODcr3slj806wJ4388nBCU8RS5Ac3hbhNr8b9SrzItBQp6xxzZIiutqhBzggOfs2MCDncXRl82ahqoMAtmBomPA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
+ bh=TNyEDg/zLWkPXnZqMU+5O1XeM+QPexcOgKaAqNHBSaY=;
+ b=WlY/bsz8LW+/t99hMFNcHTWIQdnA4yMQladGmkh59BVJoroNHTRIJ4woihJLAHw826caxYhw5HarlLinUACe33fY+IZybSo4DmzyCFaaEywh+kmXjDWkLFMGDAnY1RXNrzQLEUn+XnLEi1LR8/jBO36SdZS7xDMrtjw1L4arE95VSlR+m2U5PeOJ3UKD2dm71MrFFx/HgWno9RbPCk1EZTyAh3PnExfJkiJFn/hTldapF0U2DPliFDkooOZAsvNYcH94d3IRqAYUAEV3OcuBmfXxI2iyZbFly17p2EubYNNFLxm0c4tGPlWnhtx/AmWh0zZx8PSQ/rxGPN+NZLzCvw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=temperror (sender ip
+ is 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=temperror action=none header.from=nvidia.com; dkim=none (message not
+ signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E6EA4sxPELEgtEIyjs+802VjbqVx/acNNDcI4XIxzS4=;
- b=BB6NdGuOmH7otcA74efyiW/LAyU+0L379p/+qFRB3cN8nexjbcHyRobnaKtAWsa91JWCdtON9zRgPIl/D9vvIz3WG5XzItpruqVqHHOIqmosaqXcL/5vorwc5ydRxkWdgyUXqt5eeykafDg1uSv78CAU3ytvR9XJoz8FN6qGnchlZwH/q0jvfKNY++fiWEgh2oZbuZTKCLlAKcbofRa7IGSpNBrknyP+tTGI65qjurpP1ot+qnDTbCrSAwOTrcrMoCKl4jL7s9FsxiBJNpROylFkBPl9YRIDhQQ2+/27dKnpLZyWrCULapSwUf50kBg72Mi+DKGWiQJU9NxmroRr4g==
-Received: from YQZPR01CA0107.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:c01:83::19)
- by MW4PR12MB7239.namprd12.prod.outlook.com (2603:10b6:303:228::5) with
+ bh=TNyEDg/zLWkPXnZqMU+5O1XeM+QPexcOgKaAqNHBSaY=;
+ b=fLrz6rNWPpRVq3LWXUE/k1RnJXrp1KCUdI08ENMChHsaK+Z3MPLsrYmT0B7jaxfSv0gKknxIg4ajiCPpkzHVgXCtfsxY2ct5XxTH4Okyb8dp44USH2ZHQP6N2NH3C9IT9EmZcXioIrR9M0wj+nqYgXr/WkRNSbj4q4/C4gal5zfWkIHumnnnXjtKSsYFoByeag1bGIQ4oUfww2H/SUCCs3/nC0+qXjoa9Z6geLaJjDD+ilWQpDAjAuhGZVUS550DY9Kp5VEY41xCtyJ7bj1paZOh7ygYoGPJNLy4xrB+sZqHpRCvekwq1xg3zrndeo/U/FtMqUuSMTaJ5Q/Xjs6ffA==
+Received: from SA1P222CA0177.NAMP222.PROD.OUTLOOK.COM (2603:10b6:806:3c4::25)
+ by MN0PR12MB6101.namprd12.prod.outlook.com (2603:10b6:208:3cb::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8835.25; Mon, 16 Jun
- 2025 05:02:42 +0000
-Received: from DS3PEPF0000C37D.namprd04.prod.outlook.com
- (2603:10b6:c01:83:cafe::f0) by YQZPR01CA0107.outlook.office365.com
- (2603:10b6:c01:83::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8835.26 via Frontend Transport; Mon,
- 16 Jun 2025 05:02:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8835.27; Mon, 16 Jun
+ 2025 05:02:47 +0000
+Received: from SN1PEPF00036F3D.namprd05.prod.outlook.com
+ (2603:10b6:806:3c4:cafe::31) by SA1P222CA0177.outlook.office365.com
+ (2603:10b6:806:3c4::25) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8835.29 via Frontend Transport; Mon,
+ 16 Jun 2025 05:02:47 +0000
+X-MS-Exchange-Authentication-Results: spf=temperror (sender IP is
+ 216.228.118.233) smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=temperror action=none header.from=nvidia.com;
+Received-SPF: TempError (protection.outlook.com: error in processing during
+ lookup of nvidia.com: DNS Timeout)
 Received: from mail.nvidia.com (216.228.118.233) by
- DS3PEPF0000C37D.mail.protection.outlook.com (10.167.23.7) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8835.15 via Frontend Transport; Mon, 16 Jun 2025 05:02:41 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ SN1PEPF00036F3D.mail.protection.outlook.com (10.167.248.21) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8835.15 via Frontend Transport; Mon, 16 Jun 2025 05:02:45 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
  (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Sun, 15 Jun
- 2025 22:02:24 -0700
+ 2025 22:02:26 -0700
 Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14; Sun, 15 Jun 2025 22:02:23 -0700
+ 15.2.1544.14; Sun, 15 Jun 2025 22:02:26 -0700
 Received: from Asurada-Nvidia.nvidia.com (10.127.8.11) by mail.nvidia.com
  (10.126.190.180) with Microsoft SMTP Server id 15.2.1544.14 via Frontend
- Transport; Sun, 15 Jun 2025 22:02:23 -0700
+ Transport; Sun, 15 Jun 2025 22:02:25 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
 To: <jgg@nvidia.com>, <kevin.tian@intel.com>
 CC: <shuah@kernel.org>, <joao.m.martins@oracle.com>,
 	<steven.sistare@oracle.com>, <iommu@lists.linux.dev>,
 	<linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
 	<thomas.weissschuh@linutronix.de>
-Subject: [PATCH rc 1/4] iommufd/selftest: Fix iommufd_dirty_tracking with large hugepage sizes
-Date: Sun, 15 Jun 2025 22:02:03 -0700
-Message-ID: <9515eb5cb58bc8dfec083df51550bd9ae6d60da9.1750049883.git.nicolinc@nvidia.com>
+Subject: [PATCH rc 4/4] iommufd/selftest: Fix build warnings due to uninitialized mfd
+Date: Sun, 15 Jun 2025 22:02:06 -0700
+Message-ID: <be226e78fd581585c22c6c7f33c14bfe4a0c3ef4.1750049883.git.nicolinc@nvidia.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <cover.1750049883.git.nicolinc@nvidia.com>
 References: <cover.1750049883.git.nicolinc@nvidia.com>
@@ -81,145 +80,141 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-NV-OnPremToCloud: AnonymousSubmission
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PEPF0000C37D:EE_|MW4PR12MB7239:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7ca8a423-e186-4a52-c83a-08ddac930602
+X-MS-TrafficTypeDiagnostic: SN1PEPF00036F3D:EE_|MN0PR12MB6101:EE_
+X-MS-Office365-Filtering-Correlation-Id: 43ace109-f0d6-4f47-9b0c-08ddac930890
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|376014|82310400026|1800799024|13003099007;
+	BCL:0;ARA:13230040|376014|82310400026|1800799024|36860700013|13003099007;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?pBwUDKokLgTch3yweUgAjr5sLkRb62UwaLKQ2ywZseFIq8uttXIk6H1xvHID?=
- =?us-ascii?Q?WxNw7vDbG7Cynr0h7eFqaoZGCg7r8qEi+FEbjZCyUvj82FnFB9ZXfOaIZ+e2?=
- =?us-ascii?Q?GuaWQU3OxE544UkpasKVlvd90c/9FN0bC83HE4N/fDAaBfheZ9Tiy3MdtNlc?=
- =?us-ascii?Q?G7Qs0KFN+Ks1wbRZFtdbhpu1xyWIjAROWASb70bDUMQZJxr8Z5MfNd75UKFv?=
- =?us-ascii?Q?+zxF5cNQRQ8hdpKV90Ti4lBJsAoyI1dmIPThLMHJxPNqBy2p6yl9v/K2nBgM?=
- =?us-ascii?Q?/HWFdcVJw8Z1i6kbGQBP6M4V3Cclv+ci8SFGIw9zdkRz7Rc4p9MB3XjMqSVM?=
- =?us-ascii?Q?BIDYk8DxGXhU+He4CwTgini8xLsg9FBz05Dv2vXc7BfSz0p3uPP8gurKZmIO?=
- =?us-ascii?Q?+bB8P7pgX9mOHoVB+C47GnSN1wMWn383LPVAJMw3r5otsyISFkHXCBzteMWe?=
- =?us-ascii?Q?yC3CeNRdxhDPT7LJ3B6e9OFouZX3MYuvNULlPn5mIKeoDdlBkb0b3lPbqp9K?=
- =?us-ascii?Q?KNvregDPDr/tOnFPSfTkfKB2WGeyobFO8xE4MyK6uRfO2MelNQ1PSoWQZWc3?=
- =?us-ascii?Q?AH4+tbM7YEwLAdg4EGkGnKUjuDNxMkVD3Dg//0gwpwhGogc4UKMb2JNLENEK?=
- =?us-ascii?Q?kC5PX27q8sFRVjW1qZhSKoyTnKdTatvgz/CwjQIoJb7Ye/KGayYatI/LEGtP?=
- =?us-ascii?Q?YLSXBJWQbzlL8tLpx/rtQNiJml93px0PftdIum4mKRO0lwtqw99ALzxi5kni?=
- =?us-ascii?Q?2KmOBKpUPTWNAv6tvmU5fbYu4hq86vqR11oI0zOPU0kTHOXyLuKH8flccAl0?=
- =?us-ascii?Q?bIbcK7ezsALIYPRFQ5JB23fhnk6u/ICAkHBXh/vNHSOFtl++iK4VDR2WI0+d?=
- =?us-ascii?Q?1odcb6x1KTNjRGk2uyxHJ4pESzc0Y3Wm5SBrLOL4DPkWWc8lnFU5r1qfM+St?=
- =?us-ascii?Q?XJv7qzwUzVfrOoGUWxmQIX13Zu29nl7rEoAz9STnWmIUHG0YiFEuWsuZ7WMY?=
- =?us-ascii?Q?XZ4hFLP2o1Hcsw6eGpv8y81UMOgdhxVYmzfxTv03Mqas5DWdbzdLc7JmDzGT?=
- =?us-ascii?Q?+FcR1Bz6vYVIWkp3S1Rhex6qHUgbL3JV8SrFV6rDoElFsGt57hpwY1cYntvT?=
- =?us-ascii?Q?Yx2LUMFzhEmYm18Fz7ab3qEqPfvHVvewOSOepf7jGOtPXrk9FrRnwpklWxd+?=
- =?us-ascii?Q?L8WrtQV2YorY4dT8ymkJLA7zqWnO0koes5GFGY8ZZHOtEMNfcd9h1TuAA5u2?=
- =?us-ascii?Q?+dRyEjIXfEo8Cj6+CbzWdExAqM0s7Cb0x4OxstmDIK4qquEOQyCN5O3XHW/a?=
- =?us-ascii?Q?T6aOAnVPjQeIc1RIyQd7yre26smNVOx1KS40NYMxxSJWzQ9vThxmP4p/EVr8?=
- =?us-ascii?Q?6h/uCikAlnsCQ9FTDLoo+zvQX1HQqUzmvh+LShdDnZGKpf823ecmAHm0QQf9?=
- =?us-ascii?Q?t+EsyAi/wEcDFvnDKrxNHTmT2oQ4Cr2Yg9dZDb5oYQaLm/pRZNH21xi5nYwI?=
- =?us-ascii?Q?S+GwQUqD8ZCL6K2EybV17XvcdqMMrQQHi8n3?=
+	=?utf-8?B?YVdZY09XY05HaUNjS1NKWTlaVkJVQU1GMDZ4UWRQMUhFY1M3alpJb2gxRWFW?=
+ =?utf-8?B?c2xrM0tBK1M0bjV6Qm5TVyt1eGUxckVZN20vMTRKYm1lSi9VVWxqSkMzcHNx?=
+ =?utf-8?B?dUxsbE9aQXJyUE5La2pCek5PbzRpWFhRYkx6REszaXM3UUtzNnd4MkZ2b2Nz?=
+ =?utf-8?B?Zk8xM25vaXdUQ210UGp4dTl4L3hjSXlXZXNqd3grNDZ6anBkT3BUY2xpcHBI?=
+ =?utf-8?B?OXVGajJXalRPZVdBRGxhdjlHYWNrMEJwOVZ1V2FOV2c3VmRHS0pRdkIxV3A2?=
+ =?utf-8?B?VVliVzVlZkVJeGI2R3pvVVRMaGdyc1c2UHR1cFNrVlFXR2pXMlhtL3dhTi9F?=
+ =?utf-8?B?RW9kL1dyVUxsK214MzJSbE5XR1dJSjFiUW5od2dldGprTjJhdFhxL2JiYTFs?=
+ =?utf-8?B?TzlwMnhiK2tSRUczSXVXSFZoWFBuNjNjOFZpNFM0N3FLazZMbXZwTThqaXdS?=
+ =?utf-8?B?VnNqVC9OOVNldE5uWlpxdGZkZGNvaXFtUlZFWXZRblU4RWpYZENDeXZsV1RT?=
+ =?utf-8?B?TE9aeWR0THRGQndWdjlscjVWU1BjbXFtTEgyMmEwOXlFVmJGdHBhYnNKd3hl?=
+ =?utf-8?B?bEFtNW5lb1FGSFVnckxZdlBhK0l2V0pWMWZYaFB3WitTemFmMG4vbkFaMGVq?=
+ =?utf-8?B?Mk5xVVJpOGRGTUMxeGY4eC9SWVJUd2xMVHlMcWxFMXE0Rzhtd093MXNkU3o0?=
+ =?utf-8?B?ZEtiemNQbDJHYjN5T2dvcHJRS0kvUEFQcHN1UE9hNmlxTkd3Z2dRenNLZWNM?=
+ =?utf-8?B?TG5ZRVRWR3pRMFd1Z056Lyt3VVRrV0IzbFM1WG05VmlHZGhsM3A3NE5KejJI?=
+ =?utf-8?B?MDFzU2s4QnU3QXQ5SkU2N1k1dkVTODAvdXpqYUpXT3FVVTltVmhjUDkzdjE3?=
+ =?utf-8?B?K1c2Slc5MEN6WUVJZVRQQytyMHdlUFcraGRZdmppUmJLaEFxN3dXcHA1U2VS?=
+ =?utf-8?B?Qk5tNEIwdFhFVWdWTFJpTUgrcVNXS25pYlJGMmpiTXRMNEhXekFqUjhWazdY?=
+ =?utf-8?B?WEdqekw4YTk4ajJidzdBeHhmOTl0akZEYi9sSDJPa2JweU9KcXNQcmwvd3cz?=
+ =?utf-8?B?RStDeUU3Y2wwR0ZyNTlVZWJFRjVRNHNzQnRjRmh0OVBqMVNDK3pscTAwVHMr?=
+ =?utf-8?B?UkVEYW1xTnU0K0c5RWIwVHRJMFdIM2NWZVpHSkJXNE9kZThINTYxclBJSlVL?=
+ =?utf-8?B?djY3U3FNT0pxK1dEVk9DcHY0ZWgreXprS0tJQmdRc1FzaUpNNnJEZjg3LzZB?=
+ =?utf-8?B?SS9ZUzM5ZFdobklQSmRoekxhVWw0TzBFR2dGbDVKM0N3cW1YODJyL0YzU1pQ?=
+ =?utf-8?B?c1NSZ2l4cGdzKysyTUZjdlN5VWxFZTNlZ0VqZG9jTnFpKzZhVlE4Q1lwaDhm?=
+ =?utf-8?B?YTNiSmtJdERpNTJqMlRpQTlxR0hKMjAvdTROSkpnNGlsVy9HVnRYb3h0VE5C?=
+ =?utf-8?B?RVhCaGpEVEhYa2hHNUNTSS9NMiszYlQ3Y2EveHBOMDU0TnlpQXZId1pDQjdr?=
+ =?utf-8?B?SmxwRTBzMmN1QUpOVnlNTnJIY2ZDK3dIZkM3ZGtFSXVFTlUvaHo1NHUrb0k0?=
+ =?utf-8?B?Rmt5MTZUOEV3Y0hrNStZZ0ZmK3ZBZUs0Wk1DNTFhRzBvMzg0bTVENVE3L1BS?=
+ =?utf-8?B?TGpCVlMySFpSYVM5dGNpRHdqd3hXa09nQ0IrK0ZaN09KMTRTMGhMbk9KSFJX?=
+ =?utf-8?B?a0RVWVMrUU1wc2hLUkx1VWtIeWQwK3Z1eVYra2MyZnh6U3ZkN3MyUk9lTmtv?=
+ =?utf-8?B?THRpVmU0S1BQS0hMTlNybFFqdlVmQXo4U1RxUzFLSEUwWUVPKzdQYnkvM21x?=
+ =?utf-8?B?WXZucmNiNXJucFpsbVU5RkpsQjhPdkF0UTczdS8wMzZUMm9UWnFHSjNWOGk5?=
+ =?utf-8?B?VFZtWjNub3J4QzNZVksrTXZjUytXVDhkd09FYzZqOU9yWWpnQi9RZDdaNDIz?=
+ =?utf-8?B?aS95VDFMZlR3RC9aVTlrMDRUdWhxUlNjQVFPMGwwcUsxcmRGRmFMbEtFcmRE?=
+ =?utf-8?B?ZWJXYXozTXgzbDN0azBUbTg3US91TktKN3dSd1NsQ1pPQTc1dE9lMDZYRnhQ?=
+ =?utf-8?B?SlRmVVdEU1AveTlUeDdwTW5jUVdJcHZpTTcyZz09?=
 X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(376014)(82310400026)(1800799024)(13003099007);DIR:OUT;SFP:1101;
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(82310400026)(1800799024)(36860700013)(13003099007);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2025 05:02:41.6061
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Jun 2025 05:02:45.8877
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ca8a423-e186-4a52-c83a-08ddac930602
+X-MS-Exchange-CrossTenant-Network-Message-Id: 43ace109-f0d6-4f47-9b0c-08ddac930890
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	DS3PEPF0000C37D.namprd04.prod.outlook.com
+	SN1PEPF00036F3D.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7239
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6101
 
-The hugepage test cases of iommufd_dirty_tracking have the 64MB and 128MB
-coverages. Both of them are smaller than the default hugepage size 512MB,
-when CONFIG_PAGE_SIZE_64KB=y. However, these test cases have a variant of
-using huge pages, which would mmap(MAP_HUGETLB) using these smaller sizes
-than the system hugepag size. This results in the kernel aligning up the
-smaller size to 512MB. If a memory was located between the upper 64/128MB
-size boundary and the hugepage 512MB boundary, it would get wiped out:
-https://lore.kernel.org/all/aEoUhPYIAizTLADq@nvidia.com/
+Commit 869c788909b9 ("selftests: harness: Stop using setjmp()/longjmp()")
+changed the harness structure. For some unknown reason, two build warnings
+occur to the iommufd selftest:
 
-Given that this aligning up behavior is well documented, we have no choice
-but to allocate a hugepage aligned size to avoid this unintended wipe out.
-Instead of relying on the kernel's internal force alignment, pass the same
-size to posix_memalign() and map().
+iommufd.c: In function ‘wrapper_iommufd_mock_domain_all_aligns’:
+iommufd.c:1807:17: warning: ‘mfd’ may be used uninitialized in this function
+ 1807 |                 close(mfd);
+      |                 ^~~~~~~~~~
+iommufd.c:1767:13: note: ‘mfd’ was declared here
+ 1767 |         int mfd;
+      |             ^~~
+iommufd.c: In function ‘wrapper_iommufd_mock_domain_all_aligns_copy’:
+iommufd.c:1870:17: warning: ‘mfd’ may be used uninitialized in this function
+ 1870 |                 close(mfd);
+      |                 ^~~~~~~~~~
+iommufd.c:1819:13: note: ‘mfd’ was declared here
+ 1819 |         int mfd;
+      |             ^~~
 
-On the other hand, the munmap() handler in the kernel doesn't align up, so
-we have to manually fix the munmap length to prevent a size mismatch.
+All the mfd have been used in the variant->file path only, so it's likely
+a false alarm.
 
-Also, fix the FIXTURE_TEARDOWN(), as it misuses an munmap() for the bitmap
-allocated via posix_memalign() and forgets to free the self->buffer.
+FWIW, the commit mentioned above does not cause this, yet it might affect
+gcc in a certain way that resulted in the warnings. It is also found that
+ading a dummy setjmp (which doesn't make sense) could mute the warnings:
+https://lore.kernel.org/all/aEi8DV+ReF3v3Rlf@nvidia.com/
 
-Fixes: a9af47e382a4 ("iommufd/selftest: Test IOMMU_HWPT_GET_DIRTY_BITMAP")
-Cc: stable@vger.kernel.org
+The job of this selftest is to catch kernel bug, while such warnings will
+unlikely disrupt its role. Mute the warning by force initializing the mfd
+and add an ASSERT_GT().
+
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 ---
- tools/testing/selftests/iommu/iommufd.c | 28 ++++++++++++++++++++-----
- 1 file changed, 23 insertions(+), 5 deletions(-)
+ tools/testing/selftests/iommu/iommufd.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
-index 1a8e85afe9aa..602f8540242b 100644
+index 393d95f88ad4..ca611ae5925f 100644
 --- a/tools/testing/selftests/iommu/iommufd.c
 +++ b/tools/testing/selftests/iommu/iommufd.c
-@@ -7,6 +7,7 @@
- #include <sys/eventfd.h>
+@@ -1749,13 +1749,15 @@ TEST_F(iommufd_mock_domain, all_aligns)
+ 	unsigned int end;
+ 	uint8_t *buf;
+ 	int prot = PROT_READ | PROT_WRITE;
+-	int mfd;
++	int mfd = -1;
  
- #define __EXPORTED_HEADERS__
-+#include <linux/const.h>
- #include <linux/vfio.h>
+ 	if (variant->file)
+ 		buf = memfd_mmap(buf_size, prot, MAP_SHARED, &mfd);
+ 	else
+ 		buf = mmap(0, buf_size, prot, self->mmap_flags, -1, 0);
+ 	ASSERT_NE(MAP_FAILED, buf);
++	if (variant->file)
++		ASSERT_GT(mfd, 0);
+ 	check_refs(buf, buf_size, 0);
  
- #include "iommufd_utils.h"
-@@ -2022,7 +2023,19 @@ FIXTURE_SETUP(iommufd_dirty_tracking)
- 	self->fd = open("/dev/iommu", O_RDWR);
- 	ASSERT_NE(-1, self->fd);
+ 	/*
+@@ -1801,13 +1803,15 @@ TEST_F(iommufd_mock_domain, all_aligns_copy)
+ 	unsigned int end;
+ 	uint8_t *buf;
+ 	int prot = PROT_READ | PROT_WRITE;
+-	int mfd;
++	int mfd = -1;
  
--	rc = posix_memalign(&self->buffer, HUGEPAGE_SIZE, variant->buffer_size);
-+	if (variant->hugepages) {
-+		/*
-+		 * Allocation must be aligned to the HUGEPAGE_SIZE, because the
-+		 * following mmap() will automatically align the length to be a
-+		 * multiple of the underlying huge page size. Failing to do the
-+		 * same at this allocation will result in a memory overwrite by
-+		 * the mmap().
-+		 */
-+		size = __ALIGN_KERNEL(variant->buffer_size, HUGEPAGE_SIZE);
-+	} else {
-+		size = variant->buffer_size;
-+	}
-+	rc = posix_memalign(&self->buffer, HUGEPAGE_SIZE, size);
- 	if (rc || !self->buffer) {
- 		SKIP(return, "Skipping buffer_size=%lu due to errno=%d",
- 			   variant->buffer_size, rc);
-@@ -2037,8 +2050,8 @@ FIXTURE_SETUP(iommufd_dirty_tracking)
- 		mmap_flags |= MAP_HUGETLB | MAP_POPULATE;
- 	}
- 	assert((uintptr_t)self->buffer % HUGEPAGE_SIZE == 0);
--	vrc = mmap(self->buffer, variant->buffer_size, PROT_READ | PROT_WRITE,
--		   mmap_flags, -1, 0);
-+	vrc = mmap(self->buffer, size, PROT_READ | PROT_WRITE, mmap_flags, -1,
-+		   0);
- 	assert(vrc == self->buffer);
+ 	if (variant->file)
+ 		buf = memfd_mmap(buf_size, prot, MAP_SHARED, &mfd);
+ 	else
+ 		buf = mmap(0, buf_size, prot, self->mmap_flags, -1, 0);
+ 	ASSERT_NE(MAP_FAILED, buf);
++	if (variant->file)
++		ASSERT_GT(mfd, 0);
+ 	check_refs(buf, buf_size, 0);
  
- 	self->page_size = MOCK_PAGE_SIZE;
-@@ -2066,8 +2079,13 @@ FIXTURE_SETUP(iommufd_dirty_tracking)
- 
- FIXTURE_TEARDOWN(iommufd_dirty_tracking)
- {
--	munmap(self->buffer, variant->buffer_size);
--	munmap(self->bitmap, DIV_ROUND_UP(self->bitmap_size, BITS_PER_BYTE));
-+	unsigned long size = variant->buffer_size;
-+
-+	if (variant->hugepages)
-+		size = __ALIGN_KERNEL(variant->buffer_size, HUGEPAGE_SIZE);
-+	munmap(self->buffer, size);
-+	free(self->buffer);
-+	free(self->bitmap);
- 	teardown_iommufd(self->fd, _metadata);
- }
- 
+ 	/*
 -- 
 2.43.0
 
