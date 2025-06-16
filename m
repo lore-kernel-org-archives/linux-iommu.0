@@ -1,63 +1,66 @@
-Received: from mail-pg1-f201.google.com (mail-pg1-f201.google.com [209.85.215.201])
+Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A487DBA42
-	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 20:32:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39FC718FDAB
+	for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 20:32:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750105933; cv=none; b=fGelLNX+QL2jX/lJG9OPrRz/15YIqBhCH2dSIbNcg/+YqzlxEPezfz3q+ij4tMemLUh3s9fql1w11SeZyF9YgbHN3OPw/D1MV1/9b559ryXaeszgRPbVy5XIwA6u9GdMdrlUOcwG1ioaHb3hQ70CXAdn+58PC8LthiZzFWgVQ4E=
+	t=1750105941; cv=none; b=B1qCIpUVl/kmc9Fn7X4cnYnFPWQ6duspYmIiDEEbQ19M15LT4ME9wasjVITfykwg7wBXRDKicrQXlvlr/uBWre5uQtxsJ9t/NOlBXiznWIOgPyEJ3t68rEObiJxDbX03FI7AkKaLFwLX8+svSZW0vMR+Hl4D1k+id8ZOfH8hJes=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750105933; c=relaxed/simple;
-	bh=OvpIphP+QvyB1tmiyJddwNfp0yaqPPRhi5H6RcM+Zgk=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=qc0AqErY1uSxM6XTkWokPM3Q+64I56e279C4ufVsYn5wmVUKug+1SUOGzEvQmRvXwCD9tUIUc5s9lh3FPSxKP/1UNWm3JhusVBZgF/fCnQK5Ii9TcARgj6rduANEH36oZ/atsYhqDl566tWZaNE+7m66GP88LmYt6ylrAlADXFo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=LqYNKXzj; arc=none smtp.client-ip=209.85.215.201
+	s=arc-20240116; t=1750105941; c=relaxed/simple;
+	bh=fBvWi4pFR2T41k9euCMuzRTjjYr1tMugdUu5Ch0mPvI=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=MCvzoRXm/10MBgsWkZq5tA7ztTUpxP/FuP3V8EZOhcubo6ainHX7O2zmH2PTR4pxodUAYag/GEdpe9EaqExDZDMMpRXZKtJCRzPQGYriy54003XP0pnD9Ay1LWi0FvugRi91PxSdz5Tc9EGrT4oS1gMDqeOut70ytZ36iGOcSA8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--praan.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=wtohzWo7; arc=none smtp.client-ip=209.85.210.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--praan.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="LqYNKXzj"
-Received: by mail-pg1-f201.google.com with SMTP id 41be03b00d2f7-b00e4358a34so3071235a12.0
-        for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 13:32:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wtohzWo7"
+Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-7394772635dso3526591b3a.0
+        for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 13:32:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1750105930; x=1750710730; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=DJQ5LYhXy80jclBEe7vFc+4jTtDtRCz1gB+PcU69ULY=;
-        b=LqYNKXzjKTsIuM63LDv+SuoWOVaxod7X4Z6QxcvVGFjp5o++4Xdu/Nu6iU069T2OQ8
-         I51238i7d91cyzDZylSEJORd7IzD9UZ70O7vUO81D5R1jEgUHQxBlNF2ZnfoRTu4QcqA
-         RNJNCWfGDwl75bofVZnExFRX2cfNBq10mKw3KqrKc6FEJQNRt/lQuFhk2WdSAiA8A9Mm
-         FQo9cCVxOXgmLq9Diyp9FSBJ+vJ63E5IU4N9gAZy3LLzk6iZ9i0sdzPIpWDIX6d4gZak
-         BZb1TU7ZQPaAC7dDjrgDjo+2P+X8w7g7e8gChIb86B77Yt7BD+bl15dXrH1t5xXuxhL8
-         lE1Q==
+        d=google.com; s=20230601; t=1750105939; x=1750710739; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mX7B9G8+EveHxktt/hXXfRgblm2Z+OTppEoxlub0uCc=;
+        b=wtohzWo7wQGX9u7LzeofRdk5FKLIoJCt167+zbhiGFieX4H9fsc6EjgcKCAovwH8H5
+         2lSfoLgq5sqtTEIYUV9vYA7XjTztYUYYepGJj6mr+DwMze0gJR7hG8xaNy0t5t0lx7Nn
+         pD9vQyLjoX0JXqfX7yr4W77zPv6h0tVjqGVpvlBw7327LhoUKRHrTNakmnIqyNXKh+lq
+         Caf6/xM/Gd9mmaSSwmirguenvqFyicRtvhAc4dhBoR2Jr7WkkZWsyAy0f+QT7D5l5uj7
+         vnjAz7IMKcwuKyR/TwbLeCEjZhAKBApa6LeL5i6DHESHLvtKSEZn9wiVdqr04vjkj9ob
+         Sogw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750105930; x=1750710730;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=DJQ5LYhXy80jclBEe7vFc+4jTtDtRCz1gB+PcU69ULY=;
-        b=ESiTAmh5LPWcMbkWRBfNFRKeJGZrc6NfbJO0EvUf2+SXCtUhEU1SxbiEUENeMlsgld
-         oU933US8JqhQtxP4uE8AwsqJMvTRq1otmc3ca6w8h0ck1m9FkL9c0ee8BZigpWXbDtq8
-         KCXEJqz2H3W3NweMugqpQnrCsWpfC/tvhsRKYE+2xMEVYJmJmqO75SNma/udt8iZn3Dy
-         tEmiodVC8/LnRfrReihsRQJXQ5gt+6XHo9EipeqmMbkAz0DVuGlnDiCcV/H4CLTXQJKe
-         EdSIUG20vaiyel2Jsq++oEjuE2gmwU7256wnvseBot/NYw7L6s/jSzwcLG8CHMpotvO1
-         3srA==
-X-Forwarded-Encrypted: i=1; AJvYcCW4H8qX6qGpYyggezrsYdCLdYJ77HryDLGWp9x+ABICWA5OWb3RLoCfIeur7bpOTyXg94k7DQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz+5ZMOTPrxpK1p4/1L6paUudkqy4+d3HmmUAS7A9Do6zXQhRKv
-	V4ghrQtM0RATzDLjoiuhRRScaYQVLOg90u8oFoaiUHBZSVm4qze93uOR8Mr53wzONB7tUaFjV1y
-	SIQ==
-X-Google-Smtp-Source: AGHT+IFpH/jmq3cPutaT+WuKR4tNfZQM7edVFqCO47/XLmIYHaLLs+7xvJCPaE0D0qmxvfOP+UafdHptbA==
-X-Received: from pflr18.prod.google.com ([2002:aa7:9892:0:b0:746:270f:79c0])
- (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:2e1a:b0:740:b372:be5
- with SMTP id d2e1a72fcca58-7489ce45fe5mr12758821b3a.9.1750105929914; Mon, 16
- Jun 2025 13:32:09 -0700 (PDT)
-Date: Mon, 16 Jun 2025 20:31:41 +0000
+        d=1e100.net; s=20230601; t=1750105939; x=1750710739;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mX7B9G8+EveHxktt/hXXfRgblm2Z+OTppEoxlub0uCc=;
+        b=YbtEFNCOZ9eawQ8ccOuCz3KfxVK/d6SwVfKTv9jA6XHmAZkYaA58z2y4Ijpb6kYi4s
+         /7jmiQetXezpzrk3sIgI99vFS89+9JSopJVAeoA6g+rT1IYY4S4/MPotePf9615i/hHA
+         Oq8/AwjoQG3RI9U7qM4xEfx9/V6b+2VAYQ6bJLm2jhJdP8Rpo7DBQxXmh9bEEJVRaSd2
+         y0jKmsmbefWyjbqE2gN0dhlK8ZZRPL7ZWatcWR+tAmWA2v3q86M4KyqW+So7a6ocx/nD
+         CFCJgkmOtzlwrYe/l3jbNyfRecKgprSg78mO7gkOtIwXtn/7jQnrDfgsX7ShKamPI/59
+         a+MQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVYesvTASkuv6iwh9+JrIN2/r8UfHGXmw+lhLs8PpWHXERvO3eh5FI8QnkVeTZQPJH0CTnqQA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzdx14cByCdmKEUHeO65jPYgwxjlp4KL4d7aEQqGWk4YtNUwjTX
+	K1eDkq+2Z82a5OVxZ8GzXjDKdj9PZWOtuhAQtweS+l1xitDAczbVje4yR2jSMMtKidJsCu1vUzf
+	tMQ==
+X-Google-Smtp-Source: AGHT+IGAtQy1DjAp0D2jj8esOaGogqTdlDy8RG8aCVa3b/6siaWa68Ktfr8mJDw32gKdrFIghgpX9VNilw==
+X-Received: from pfbjr36.prod.google.com ([2002:a05:6a00:9164:b0:746:257b:1d37])
+ (user=praan job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:b4d:b0:746:27fc:fea9
+ with SMTP id d2e1a72fcca58-7489cfff3e5mr13067624b3a.11.1750105939469; Mon, 16
+ Jun 2025 13:32:19 -0700 (PDT)
+Date: Mon, 16 Jun 2025 20:31:42 +0000
+In-Reply-To: <20250616203149.2649118-1-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
+References: <20250616203149.2649118-1-praan@google.com>
 X-Mailer: git-send-email 2.50.0.rc2.692.g299adb8693-goog
-Message-ID: <20250616203149.2649118-1-praan@google.com>
-Subject: [RFC PATCH v3 0/8] iommu/arm-smmu-v3: Implement Runtime/System Sleep ops
+Message-ID: <20250616203149.2649118-2-praan@google.com>
+Subject: [RFC PATCH v3 1/8] iommu/arm-smmu-v3: Refactor arm_smmu_setup_irqs
 From: Pranjal Shrivastava <praan@google.com>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
 	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
@@ -67,149 +70,113 @@ Cc: Nicolin Chen <nicolinc@nvidia.com>, Mostafa Saleh <smostafa@google.com>,
 	Pranjal Shrivastava <praan@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-As arm-smmu-v3 rapidly finds its way into SoCs designed for hand-held
-devices, power management capabilities, similar to its predecessors, are
-crucial for these applications. This series introduces power management
-support for the arm-smmu-v3 driver.
+Refactor arm_smmu_setup_irqs by splitting it into two parts, one for
+registering interrupt handlers and the other one for enabling interrupt
+generation in the hardware. This refactor helps in re-initialization of
+hardware interrupts as part of a subsequent patch that enables runtime
+power management for the arm-smmu-v3 driver.
 
-Design
-=======
-The arm-smmu-v3 primarily operates with in-memory data structures
-through HW registers pointing to these data structures in some fashion.
-The proposed design tries to make use of this fact for implementing the
-suspend and resume ops.
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Signed-off-by: Pranjal Shrivastava <praan@google.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 53 ++++++++++++++-------
+ 1 file changed, 36 insertions(+), 17 deletions(-)
 
-1. Suspend / Resume
-The idea for the "suspend" op is to wait till the cmd queues are flushed
-before disabling the SMMU through CR0. Note that waiting for the other 
-queues like the event queue and PRI queue is not required in this
-version as by design their bottom-halves hold a pm reference ensuring
-that if the suspend callback is invoked, both the queues have been
-drained. In order to avoid mis-use or spurious transactions 
-(b/w SMMU disable -> power-down), the GBPA register is configured to
-abort all transactions.
-
-The resume operation uses the `arm_smmu_device_reset` function which
-re-initializes the HW using the SW-copies maintained by the driver. For
-example, prod/cons for queues, base addresses for queues & tables. The
-arm_smmu_device_reset also clears the TLBs and config caches.
-
-2. Interrupt Re-config
-a. Wired irqs: The series refactors the `arm_smmu_setup_irqs` to be
-able to enable/disable irqs and install their handlers separately to
-help with the re-initialization of the interrupts correctly.
-
-b. MSIs: The series relies on caching the msi_msg and retrieving it
-through a newly introduced helper `arm_smmu_resume_msis()` which
-re-configures the *_IRQ_CFGn registers via writing back cached msi_msgs.
-
-3. Eliding TLBIs and CFGIs
-The existing pm_runtime helpers like pm_runtime_get_if_active() and
-pm_runtime_get_if_in_use(), are too strict for certain use cases. They
-fail if the device is in a transient state like RPM_SUSPENDING, which
-can lead to drivers making incorrect assumptions about the dev's state.
-
-These helpers don't suffice for cases where one wishes to elide HW TLB
-invalidations if the device is powered off. As discussed in the previous
-versions, it is wasteful to wake up the SMMU just to issue a TLBI since
-we anyway clear the TLBs and Config cache on resume. The existing APIs
-like pm_runtime_get_if_active or pm_runtime_get_if_in_use fail to help
-us acheive this. Consider the following sequence of operations:
-
-a. The SMMU is in `RPM_SUSPENDING` state
-b. The SMMU driver calls pm_runtime_get_if_active/in_use
-c. Depending on these API, the driver elides a HW clean-up op like:
-
-if (pm_runtime_get_if_in_active(dev))
-	invalidate_tlb(dev);
-else
-	// Skip flush, assuming device will fully suspend
-
-d. Now, a client wakes up, causing the SMMU's state to bounce from
-   RPM_SUSPENDING to RPM_ACTIVE without invoking any rpm callbacks
-   preventing the resume callback from clearing all TLBs.
-
-e. The SMMU continues operate with stale TLB entries.
-
-In order to avoid the above situation, this series introduces a new
-helper function, pm_runtime_get_if_not_suspended(), The new APU, 
-pm_runtime_get_if_not_suspended() increments the device's runtime 
-PM reference only if it's rpm state is NOT RPM_SUSPENDED and it cancels
-any pending autosuspend timers. This allows us to reliably clear TLBs or
-Config cache if the SMMU is NOT suspended, ensuring correct operation.
-
-4. Invoking runtime_pm_get/put
-Given that most of the configuration done by arm-smmu-v3 is stored in
-memory, the idea in this version of the series is to elide all TLBIs and
-CFGIs if the SMMU is suspended and only go ahead with ATC invalidations.
-
-Thus, for most calls, the SMMU driver would make the required changes to
-the in-memory data structures, but elide all TLBIs, CFGIs and prefetches
-This is done by introducing another runtime PM helper based on the newly
-introduced pm_runtime_get_if_not_suspended.
-
-Only places where the driver does a pm_runtime_resume_and_get is where
-touching the HW is unavoidable and important commands like ATC_INV and
-other commands resuming stalled transactions.
-
-Future Work / Potential Improvements
-Ensuring a pm reference is held for user-space controlled IOMMUs.
-As per a discussion with Will off-list, it was decided to remove the
-additional code for tracking user-owned IOMMUs / insecure attachments
-from the driver.
-
-Call for review
-Any insights/comments on the proposed changes are appreciated,
-especially in areas related to locking, atomic contexts, early resume, 
-PCIe-related considerations etc. or any other potential optimizations.
-
-Note: The series isn't tested with MSIs and weakly tested for PCIe
-clients. The same holds true for tegra241_cmdv changes. Any help in
-reviewing and testing these parts is much appreciated.
-
-Changelog:
-
-[v3]
- - Introduced `pm_runtime_get_if_not_suspended` API to avoid races due
-   to bouncing RPM states while eliding TLBIs as pointed out by Daniel.
- - Addressed Nicolin's comments regarding msi_resume and CMDQV flush
- - Addressed Daniel's comments about CMDQ locking and draining
- - Addressed issues related to draining the evtq and priq
- - Dropped the code to identify and track user-space attachments
-
-[v2]
- - https://lore.kernel.org/all/20250418233409.3926715-1-praan@google.com/
- - Introduced `arm_smmu_rpm_get_if_active` for eliding TLBIs & CFGIs
- - Updated the rpm helper invocation strategy.
- - Drained all queues in suspend callback (including tegra241-cmdv)
- - Cache and restore msi_msg instead of free-ing realloc-ing on resume
- - Added support to identify and track user-space attachments
- - Fixed the setup_irqs as per Nicolin & Mostafa's suggestions
- - Used force_runtime_suspend/resume instead as per Mostafa's suggestion.
- - Added "Reviewed-by" line from Mostafa on an unchanged patch
-
-[v1]
- - https://lore.kernel.org/all/20250319004254.2547950-1-praan@google.com/
-
-
-Pranjal Shrivastava (8):
-  iommu/arm-smmu-v3: Refactor arm_smmu_setup_irqs
-  iommu/arm-smmu-v3: Add a helper to drain cmd queues
-  iommu/tegra241-cmdqv: Add a helper to drain VCMDQs
-  iommu/arm-smmu-v3: Cache and restore MSI config
-  pm: runtime: Introduce pm_runtime_get_if_not_suspended()
-  iommu/arm-smmu-v3: Implement pm_runtime & system sleep ops
-  iommu/arm-smmu-v3: Enable pm_runtime and setup devlinks
-  iommu/arm-smmu-v3: Invoke pm_runtime before hw access
-
- drivers/base/power/runtime.c                  |  41 ++
- .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     |  11 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 378 ++++++++++++++++--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   9 +
- .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    |  27 ++
- include/linux/pm_runtime.h                    |   5 +
- 6 files changed, 438 insertions(+), 33 deletions(-)
-
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index f50c26596416..f19a77708d2c 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -4009,12 +4009,24 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+ 	}
+ }
+ 
+-static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
++static void arm_smmu_enable_irqs(struct arm_smmu_device *smmu)
+ {
+-	int ret, irq;
++	int ret;
+ 	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
+ 
+-	/* Disable IRQs first */
++	if (smmu->features & ARM_SMMU_FEAT_PRI)
++		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
++
++	ret = arm_smmu_write_reg_sync(smmu, irqen_flags,
++				      ARM_SMMU_IRQ_CTRL, ARM_SMMU_IRQ_CTRLACK);
++	if (ret)
++		dev_warn(smmu->dev, "failed to enable irqs\n");
++}
++
++static int arm_smmu_disable_irqs(struct arm_smmu_device *smmu)
++{
++	int ret;
++
+ 	ret = arm_smmu_write_reg_sync(smmu, 0, ARM_SMMU_IRQ_CTRL,
+ 				      ARM_SMMU_IRQ_CTRLACK);
+ 	if (ret) {
+@@ -4022,6 +4034,18 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+ 		return ret;
+ 	}
+ 
++	return 0;
++}
++
++static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
++{
++	int ret, irq;
++
++	/* Disable IRQs first */
++	ret = arm_smmu_disable_irqs(smmu);
++	if (ret)
++		return ret;
++
+ 	irq = smmu->combined_irq;
+ 	if (irq) {
+ 		/*
+@@ -4038,15 +4062,6 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+ 	} else
+ 		arm_smmu_setup_unique_irqs(smmu);
+ 
+-	if (smmu->features & ARM_SMMU_FEAT_PRI)
+-		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+-
+-	/* Enable interrupt generation on the SMMU */
+-	ret = arm_smmu_write_reg_sync(smmu, irqen_flags,
+-				      ARM_SMMU_IRQ_CTRL, ARM_SMMU_IRQ_CTRLACK);
+-	if (ret)
+-		dev_warn(smmu->dev, "failed to enable irqs\n");
+-
+ 	return 0;
+ }
+ 
+@@ -4189,11 +4204,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
+ 		}
+ 	}
+ 
+-	ret = arm_smmu_setup_irqs(smmu);
+-	if (ret) {
+-		dev_err(smmu->dev, "failed to setup irqs\n");
+-		return ret;
+-	}
++	/* Enable interrupt generation on the SMMU */
++	arm_smmu_enable_irqs(smmu);
+ 
+ 	if (is_kdump_kernel())
+ 		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
+@@ -4778,6 +4790,13 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	/* Check for RMRs and install bypass STEs if any */
+ 	arm_smmu_rmr_install_bypass_ste(smmu);
+ 
++	/* Setup interrupt handlers */
++	ret = arm_smmu_setup_irqs(smmu);
++	if (ret) {
++		dev_err(smmu->dev, "failed to setup irqs\n");
++		goto err_free_iopf;
++	}
++
+ 	/* Reset the device */
+ 	ret = arm_smmu_device_reset(smmu);
+ 	if (ret)
 -- 
 2.50.0.rc2.692.g299adb8693-goog
 
