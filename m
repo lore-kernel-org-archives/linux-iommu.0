@@ -1,442 +1,159 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com [209.85.210.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21B932EF2AB
-	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 16:32:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6490F2DFF3E
+	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 16:33:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750177944; cv=none; b=hGrl7gOLMhw2AeDUaQnQtcdU/hMMqr0sQNzI75a6WvQuqhliTPSPGYZfOz1oChcyuvjXcKwO+kIBenvTT0THqsbMo7xa2Ea5T1hnthWnj49kWCxokxn/rS4e8HnBSYT8KCkyLuRXVS23v//55EphXxa/dOfezlEnRJWaTKdfSZE=
+	t=1750178004; cv=none; b=E9lrws1gvWAQcaXas+CIELQgAjyZ6Xkz/X9hkNKgyI5Mm+COCtYpgMS7XLpQmy8i1T+PYjS73aziQJvmkLZ5NRvpbIAL81TA3llyn973K3x9vwiuONgPn5R0EI+3U/VCbsT6k6q4xYKFUCpPdiQMYcGFHZnBFMcqglGxiQV1bFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750177944; c=relaxed/simple;
-	bh=qvFO4rZP1vheikCq97E6JdYmCzgNrA/orS5E0K9O8kg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=s+Lm3VdvtkBTsrngRRVXYWft4/oa7BW/LTHCiHYqG2MlhlalE0G68h9Zc/9ixPHfBDNSf0BlSTe1N734ayywP+4qFSpYhshUoNlHA9YoN/9B22jFdRdg4HZbqftIPXJ8LVCfnxnK/vSzxF8Pvtn6VbfNXb5gU51JgT4I6cPVNk8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=nHIVRZFn; arc=none smtp.client-ip=209.85.222.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1750178004; c=relaxed/simple;
+	bh=wPJ3yKHy2XMTQqfdv8k8EDEfQPdSKTp026T+PxCf4Bw=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=ofolc7aWvLwmSEpgEHQ24xMlUuC1H/lv+Qv1I+6UW4oUczx8vuKIw1WdZyYT/2eKlq/7rjgQifwyHiUJBsQq33PXad2143Ts2PiNfj6JF5f6Oo4ppqeovGA2xD1gC4K2gY6BH+g2syhnMNazVykFAJkUFbI4lFMqoOd6ACHcotw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dyXPLcBR; arc=none smtp.client-ip=209.85.210.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="nHIVRZFn"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7d3900f90f6so641295485a.1
-        for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 09:32:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dyXPLcBR"
+Received: by mail-pf1-f202.google.com with SMTP id d2e1a72fcca58-747af0bf0ebso4852122b3a.1
+        for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 09:33:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1750177941; x=1750782741; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nC7rm+Bwrl6nau/SPrD4L98tdg/BZZbxkCiAvlgkDgo=;
-        b=nHIVRZFnOG3x+bkeTGjuDIEyZBEuoDx+QlF2UWGqiLm7fixaduVBJYbqHZ7KDq42BP
-         iEjay5Uiu1oGxMsRuhxflNeV6m/sI2VkqDxFYkv89FEPLoaNLGrnwfA8NuhZsBOq/qz3
-         yq+vc4Ggf57uhslpSEg2QrtTnw8P9YWrsI4zseWy0bSCRCRZlurDquBxgaW6gdH5scH1
-         pJgNZShfxxLz8Ydw4J2EZz+Zy2WULl3DmEDVtltE2nCTNB7zjZs42gxU34VvQFmDOBnq
-         BTTHkadY2Rb2esb+iYxYXxdyr2lgnm/kYS5PuZskYMdVoCtYAdIpnNfoCRBRGyGh79Ps
-         LcJw==
+        d=google.com; s=20230601; t=1750178002; x=1750782802; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=m5Zyre//7L5S9K+V+4OPyWpG1CcHuDNKjA2A/jB3Ga8=;
+        b=dyXPLcBRytRKR2WJdxZWGTYGBzlD32QIvj5P5YWPr2YGe7FEWfynXF7+dLQKJ2WmcK
+         LWSrq0dSWjPMUHA79eskJ4U+HYgU0nGAOOeZ1FCTUlK+IpIdB+Tu7s7gsXqhvwnPXaEe
+         +qOjkEV+ua08UyFUyi90lql7urKOZMFbqDqDn7eahceEtYOfd0uhc8aIBjupYi1aINIu
+         NJcl2VzK0d6dKlLH0FOPhllvbkTIC73v4wf1NRi5VnUbF1C7p6KyD4DPc/TO2zwLtbts
+         aFs2qX6co5xFaWNtVfMe6t6c05e6NFZ21EfEyP1vO3spMqj5j2d4YndNHfLOFVnuNKJ+
+         lvkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750177941; x=1750782741;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=nC7rm+Bwrl6nau/SPrD4L98tdg/BZZbxkCiAvlgkDgo=;
-        b=TYbGhVy0uAKwZwBwHtCo48q4DRYADVNBF+cJQS0B0jBn6mBdqSCCk4o4iDis2gxFSy
-         Iwo4z50CUheqpwCSuQYNNYfL3plBUVjeNFi/6W3XkSYu31DnPqLuqfr+kGz/mkU476QH
-         gjzOKT2O55LKuF+/e1ev90TMW/A8SarHgTZwzEwSdrPs+RctTbum2S4muP1OJoOIXRVQ
-         fh6dZ0cdE8/jyOekKsgG3quZpNPOd2DFNmxYoMkIf9eHlybM8JbYh1dpK0xxc1spbL4S
-         Mgwj9wMzJrjVrAuPJOiHW32LgKd9z9dYJ7VvIbtxNrhKWND5jShAlKBf0zijOQoMqAz1
-         dGeg==
-X-Forwarded-Encrypted: i=1; AJvYcCXWdmxAL5mddq4ReZc3l487/SELqFq1hIP05DrDSr9gTra6CfLenKBbkxroVzkYtp3E57WJyg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz6vbnxrNKB7EKQpi9h5PYhumTnJEndRZuuHeK7VbSpKO/3yrBz
-	jgVO3SMp2Es0R3VXbDUIyZjYWVKnZd0ixbGyCHsIDJ71c3LWQI/qvIOeDl8/puPBSeY=
-X-Gm-Gg: ASbGncu/kudmzcfXaClyvIVpmwQIGdYYvS8+aKUh5XBW1BCkQQgOGLdNnweqPXnabA5
-	EF/Vl8tc2AsgDMbw9vMdJQyKV3xaXyZqdBiXGpoP1QsY607QphlHzLMhZjWvH4l3Ed+WVH55EWx
-	kn0Q88dU1gCzs/zUQ7y3YwAQBuicbZQ0esSQbuaKxyOIVIpYiQPKfuwwFXcbiJdtVUpi2Q5LtxV
-	DzOVyJXzeHZfvPqw4w7wJL37RNqj8cIRmfEHNarP+QLusTQKgEXqYCzICY1p16J/lA2STzBKdSC
-	+MZxqNV3AU+AWKp9uJna5VvDrxd9YyC12yXSv0ArIsT6/id9OB11EgdbLLJ3mnIAWobg4wiD0Xg
-	MbmnynZurmpyB9x7yJ0H0ulWZ5Ys7x4yaBxqSdw==
-X-Google-Smtp-Source: AGHT+IEn/8UILucmSUjm3Ghk3vbiODu7JZ3ElN7VeLJXr7Tqd6s5+YqK3eHc6OVfIyOPTPJQFQWeeQ==
-X-Received: by 2002:a05:6214:2344:b0:6fa:bd17:32a with SMTP id 6a1803df08f44-6fb47798100mr185358346d6.29.1750177940786;
-        Tue, 17 Jun 2025 09:32:20 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6fb5f63431bsm8459256d6.43.2025.06.17.09.32.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jun 2025 09:32:20 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uRZER-00000006X8g-3Ob6;
-	Tue, 17 Jun 2025 13:32:19 -0300
-Date: Tue, 17 Jun 2025 13:32:19 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
-	nicolas.dufresne@collabora.com, p.zabel@pengutronix.de,
-	mchehab@kernel.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
-	kernel@collabora.com
-Subject: Re: [PATCH 3/5] iommu: Add verisilicon IOMMU driver
-Message-ID: <20250617163219.GF1376515@ziepe.ca>
-References: <20250616145607.116639-1-benjamin.gaignard@collabora.com>
- <20250616145607.116639-4-benjamin.gaignard@collabora.com>
+        d=1e100.net; s=20230601; t=1750178002; x=1750782802;
+        h=content-transfer-encoding:cc:to:from:subject:message-id:references
+         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=m5Zyre//7L5S9K+V+4OPyWpG1CcHuDNKjA2A/jB3Ga8=;
+        b=vozw9WmJsVSsOB9T2MASxc5/cETxNCCo5apOoHU11uOFhFq/YiwgaTXSgvjBN+Q6w7
+         I4CtqQcmqZnJhdVIFxu7BeP+YsOjjte92fY/8iCrUU1dnVdtib2c3EDCqxJcQUNlfZmb
+         MZEIGQGRGG3jMV2c4gEJtQ3jnOb9q7TLggaH/k6qT4kk/IJ7zwkq5Ac2eYSJsfWy70Ga
+         kOq2fvlj0/Gq7EbTr7MosEga7e+LFCgcunq1/3eNcPnArOzW70x5GolvIlmO8dObpRfv
+         YYDuSHFhNa6ZhuOLQYWsLBfdHWpmNy7tadXpcvaB4GYGOM4QPlpD3P3Qr8f8xkWzS8/w
+         CLeQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV2Jhko7UmhpzI1RD6MnCoUjo+reyvZ82saAI94AZPqdd51ERpIHEtznavdC9zc2r1kFGVL+g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxyJJ68cyMXfM7HmUyzN7uIXh5CXyx4CWKKXFPMxecX1OAMOL03
+	9YztTtT/bChFO13nB+hcQXwzZSRWHaR9mElN68G4aMSCmYVOS+jeTceblAP+6ZmNveCSDIsIIRX
+	g5pny+g==
+X-Google-Smtp-Source: AGHT+IGznCbVopLyCbJY+8Q1ZM+hTyrpfcDqYdoxZ7oVyP5z618lCsgFgNDzhTDn4xHf3X8k9i95X2JuvoQ=
+X-Received: from pgbdh21.prod.google.com ([2002:a05:6a02:b95:b0:b2e:b370:6975])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a21:3298:b0:1f5:5a0b:4768
+ with SMTP id adf61e73a8af0-21fbd558b04mr20200215637.21.1750178001731; Tue, 17
+ Jun 2025 09:33:21 -0700 (PDT)
+Date: Tue, 17 Jun 2025 09:33:20 -0700
+In-Reply-To: <qusmkqqsvc7hyuemddv66mooach7mdq66mxbk7qbr6if6spguj@k57k5lqmvt5u>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250616145607.116639-4-benjamin.gaignard@collabora.com>
+Mime-Version: 1.0
+References: <20250611224604.313496-2-seanjc@google.com> <20250611224604.313496-15-seanjc@google.com>
+ <qusmkqqsvc7hyuemddv66mooach7mdq66mxbk7qbr6if6spguj@k57k5lqmvt5u>
+Message-ID: <aFGY0KVUksf1a6xB@google.com>
+Subject: Re: [PATCH v3 13/62] KVM: SVM: Drop redundant check in AVIC code on
+ ID during vCPU creation
+From: Sean Christopherson <seanjc@google.com>
+To: Naveen N Rao <naveen@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
+	kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
+	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 16, 2025 at 04:55:51PM +0200, Benjamin Gaignard wrote:
+On Tue, Jun 17, 2025, Naveen N Rao wrote:
+> On Wed, Jun 11, 2025 at 03:45:16PM -0700, Sean Christopherson wrote:
+> >  static int avic_init_backing_page(struct kvm_vcpu *vcpu)
+> >  {
+> > -	u64 *entry, new_entry;
+> > -	int id =3D vcpu->vcpu_id;
+> > +	struct kvm_svm *kvm_svm =3D to_kvm_svm(vcpu->kvm);
+> >  	struct vcpu_svm *svm =3D to_svm(vcpu);
+> > +	u32 id =3D vcpu->vcpu_id;
+> > +	u64 *table, new_entry;
+> > =20
+> >  	/*
+> >  	 * Inhibit AVIC if the vCPU ID is bigger than what is supported by AV=
+IC
+> > @@ -291,6 +277,9 @@ static int avic_init_backing_page(struct kvm_vcpu *=
+vcpu)
+> >  		return 0;
+> >  	}
+> > =20
+> > +	BUILD_BUG_ON((AVIC_MAX_PHYSICAL_ID + 1) * sizeof(*table) > PAGE_SIZE =
+||
+> > +		     (X2AVIC_MAX_PHYSICAL_ID + 1) * sizeof(*table) > PAGE_SIZE);
+> 						    ^^^^^^^^^^^^^^
+> Renaming new_entry to just 'entry' and using sizeof(entry) makes this=20
+> more readable for me.
 
-> +static struct vsi_iommu *vsi_iommu_from_dev(struct device *dev)
-> +{
-> +	struct vsi_iommudata *data = dev_iommu_priv_get(dev);
-> +
-> +	return data ? data->iommu : NULL;
+Good call, though I think it makes sense to do that on top so as to minimiz=
+e the
+churn in this patch.  I'll post a patch, unless you want the honors?
 
-It would be a serious bug if dev_iommu_priv_get() is null, don't check
-for it, let it crash.
+> Otherwise, for this patch:
+> Reviewed-by: Naveen N Rao (AMD) <naveen@kernel.org>
+>=20
+> As an aside, there are a few static asserts to validate some of the=20
+> related macros. Can this also be a static_assert(), or is there is=20
+> reason to prefer BUILD_BUG_ON()?
 
-> +static struct iommu_domain *vsi_iommu_domain_alloc_paging(struct device *dev)
-> +{
-> +	struct vsi_iommu_domain *vsi_domain;
-> +
-> +	if (!dma_dev)
-> +		return NULL;
-> +
-> +	vsi_domain = kzalloc(sizeof(*vsi_domain), GFP_KERNEL);
-> +	if (!vsi_domain)
-> +		return NULL;
-> +
-> +	/*
-> +	 * iommu use a 2 level pagetable.
-> +	 * Each level1 (dt) and level2 (pt) table has 1024 4-byte entries.
-> +	 * Allocate one 4 KiB page for each table.
-> +	 */
-> +	vsi_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL | GFP_DMA32,
-> +					      SPAGE_SIZE);
-> +	if (!vsi_domain->dt)
-> +		goto err_free_domain;
-> +
-> +	vsi_domain->dt_dma = dma_map_single(dma_dev, vsi_domain->dt,
-> +					    SPAGE_SIZE, DMA_TO_DEVICE);
-> +	if (dma_mapping_error(dma_dev, vsi_domain->dt_dma)) {
-> +		dev_err(dma_dev, "DMA map error for DT\n");
-> +		goto err_free_dt;
-> +	}
-> +
-> +	vsi_domain->pta = iommu_alloc_pages_sz(GFP_KERNEL | GFP_DMA32,
-> +					       SPAGE_SIZE);
-> +	if (!vsi_domain->pta)
-> +		goto err_unmap_dt;
-> +
-> +	vsi_domain->pta_dma = dma_map_single(dma_dev, vsi_domain->pta,
-> +					     SPAGE_SIZE, DMA_TO_DEVICE);
-> +	if (dma_mapping_error(dma_dev, vsi_domain->pta_dma)) {
-> +		dev_err(dma_dev, "DMA map error for PTA\n");
-> +		goto err_free_pta;
-> +	}
-> +	vsi_domain->pta[0] = vsi_mk_pta(vsi_domain->dt_dma);
+For this particular assertion, static_assert() would be fine.  That said,
+BUILD_BUG_ON() is slightly preferred in this context.
 
-> +
-> +	vsi_table_flush(vsi_domain, vsi_domain->pta_dma, 1024);
-> +	vsi_table_flush(vsi_domain, vsi_domain->dt_dma, NUM_DT_ENTRIES);
+The advantage of BUILD_BUG_ON() is that it works so long as the condition i=
+s
+compile-time constant, whereas static_assert() requires the condition to an
+integer constant expression.  E.g. BUILD_BUG_ON() can be used so long as th=
+e
+condition is eventually resolved to a constant, whereas static_assert() has
+stricter requirements.
 
-dma_map_single already flushes, put things in the write order and no
-need to double flush.
+E.g. the fls64() assert below is fully resolved at compile time, but isn't =
+a
+purely constant expression, i.e. that one *needs* to be BUILD_BUG_ON().
 
-> +	spin_lock_init(&vsi_domain->iommus_lock);
-> +	spin_lock_init(&vsi_domain->dt_lock);
-> +	INIT_LIST_HEAD(&vsi_domain->iommus);
-> +
-> +	vsi_domain->domain.geometry.aperture_start = 0;
-> +	vsi_domain->domain.geometry.aperture_end   = DMA_BIT_MASK(32);
-> +	vsi_domain->domain.geometry.force_aperture = true;
+--
+arch/x86/kvm/svm/avic.c: In function =E2=80=98avic_init_backing_page=E2=80=
+=99:
+arch/x86/kvm/svm/avic.c:293:45: error: expression in static assertion is no=
+t constant
+  293 |         static_assert(__PHYSICAL_MASK_SHIFT <=3D
+include/linux/build_bug.h:78:56: note: in definition of macro =E2=80=98__st=
+atic_assert=E2=80=99
+   78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+      |                                                        ^~~~
+arch/x86/kvm/svm/avic.c:293:9: note: in expansion of macro =E2=80=98static_=
+assert=E2=80=99
+  293 |         static_assert(__PHYSICAL_MASK_SHIFT <=3D
+      |         ^~~~~~~~~~~~~
+make[5]: *** [scripts/Makefile.build:203: arch/x86/kvm/svm/avic.o] Error 1
+--
 
-Initialize domain.pgsize_bitmap here and remove this:
+The downside of BUILD_BUG_ON() is that it can't be used at global scope, i.=
+e.
+needs to be called from a function.
 
-+       .pgsize_bitmap = VSI_IOMMU_PGSIZE_BITMAP,
-
-It is going away.
-
-> +	return &vsi_domain->domain;
-> +
-> +err_free_pta:
-> +	iommu_free_pages(vsi_domain->pta);
-> +err_unmap_dt:
-> +	dma_unmap_single(dma_dev, vsi_domain->dt_dma,
-> +			 SPAGE_SIZE, DMA_TO_DEVICE);
-> +err_free_dt:
-> +	iommu_free_pages(vsi_domain->dt);
-> +err_free_domain:
-> +	kfree(vsi_domain);
-> +
-> +	return NULL;
-> +}
-> +
-> +static phys_addr_t vsi_iommu_iova_to_phys(struct iommu_domain *domain,
-> +					  dma_addr_t iova)
-> +{
-> +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
-> +	unsigned long flags;
-> +	phys_addr_t pt_phys, phys = 0;
-> +	u32 dte, pte;
-> +	u32 *page_table;
-> +
-> +	spin_lock_irqsave(&vsi_domain->dt_lock, flags);
-
-No locking should be here. Drivers are supposed to use cmpxchg to set
-the new tables to avoid races, however there is complexity around the
-cache flushing that this locking solves.
-
-IDK, you might be better to use the new iommupt stuff since all these
-algorithms including the complicated lockless cache flushing
-optmization are sorted out there.
-
-https://lore.kernel.org/linux-iommu/0-v3-a93aab628dbc+521-iommu_pt_jgg@nvidia.com/
-
-> +	dte_index = vsi_iova_dte_index(iova);
-> +	dte_addr = &vsi_domain->dt[dte_index];
-> +	dte = *dte_addr;
-> +	if (vsi_dte_is_pt_valid(dte))
-> +		goto done;
-> +
-> +	page_table = (u32 *)get_zeroed_page(GFP_ATOMIC | GFP_DMA32);
-> +	if (!page_table)
-> +		return ERR_PTR(-ENOMEM);
-
-Don't use get_zeroed_page for page table memory.
-
-> +
-> +	pt_dma = dma_map_single(dma_dev, page_table, SPAGE_SIZE, DMA_TO_DEVICE);
-> +	if (dma_mapping_error(dma_dev, pt_dma)) {
-> +		dev_err(dma_dev, "DMA mapping error while allocating page table\n");
-> +		free_page((unsigned long)page_table);
-> +		return ERR_PTR(-ENOMEM);
-> +	}
-> +
-> +	dte = vsi_mk_dte(pt_dma);
-> +	*dte_addr = dte;
-> +
-> +	vsi_table_flush(vsi_domain, pt_dma, NUM_PT_ENTRIES);
-> +	vsi_table_flush(vsi_domain,
-> +			vsi_domain->dt_dma + dte_index * sizeof(u32), 1);
-
-Double flushing again.
-
-> +static int vsi_iommu_map_iova(struct vsi_iommu_domain *vsi_domain, u32 *pte_addr,
-> +			      dma_addr_t pte_dma, dma_addr_t iova,
-> +			      phys_addr_t paddr, size_t size, int prot)
-> +{
-> +	unsigned int pte_count;
-> +	unsigned int pte_total = size / SPAGE_SIZE;
-> +	phys_addr_t page_phys;
-> +
-> +	assert_spin_locked(&vsi_domain->dt_lock);
-> +
-> +	for (pte_count = 0; pte_count < pte_total; pte_count++) {
-> +		u32 pte = pte_addr[pte_count];
-> +
-> +		if (vsi_pte_is_page_valid(pte))
-> +			goto unwind;
-> +
-> +		pte_addr[pte_count] = vsi_mk_pte(paddr, prot);
-
-So why is this:
-
-#define VSI_IOMMU_PGSIZE_BITMAP 0x007ff000
-
-If the sizes don't become encoded in the PTE? The bits beyond 4k
-should reflect actual ability to store those sizes in PTEs, eg using
-contiguous bits or something.
-
-> +		paddr += SPAGE_SIZE;
-> +	}
-> +
-> +	vsi_table_flush(vsi_domain, pte_dma, pte_total);
-> +
-> +	return 0;
-> +unwind:
-> +	/* Unmap the range of iovas that we just mapped */
-> +	vsi_iommu_unmap_iova(vsi_domain, pte_addr, pte_dma,
-> +			     pte_count * SPAGE_SIZE);
-> +
-> +	iova += pte_count * SPAGE_SIZE;
-> +	page_phys = vsi_pte_page_address(pte_addr[pte_count]);
-> +	pr_err("iova: %pad already mapped to %pa cannot remap to phys: %pa prot: %#x\n",
-> +	       &iova, &page_phys, &paddr, prot);
-
-No pr_errs prints on normal errors.
-
-> +static void vsi_iommu_detach_device(struct iommu_domain *domain,
-> +				    struct device *dev)
-> +{
-> +	struct vsi_iommu *iommu;
-> +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
-> +	unsigned long flags;
-> +	int ret;
-> +
-> +	/* Allow 'virtual devices' (eg drm) to detach from domain */
-> +	iommu = vsi_iommu_from_dev(dev);
-> +	if (WARN_ON(!iommu))
-> +		return;
-> +
-> +	dev_dbg(dev, "Detaching from iommu domain\n");
-> +
-> +	if (!iommu->domain)
-> +		return;
-> +
-> +	spin_lock_irqsave(&vsi_domain->iommus_lock, flags);
-> +	list_del_init(&iommu->node);
-> +	spin_unlock_irqrestore(&vsi_domain->iommus_lock, flags);
-
-The list del should probably be after the vsi_iommu_disable()? We
-expect invalidations to continue to keep the IOTLB consistent until
-the HW is no longer walking the page table.
-
-> +static struct iommu_device *vsi_iommu_probe_device(struct device *dev)
-> +{
-> +	struct vsi_iommudata *data;
-> +	struct vsi_iommu *iommu;
-> +
-> +	data = dev_iommu_priv_get(dev);
-> +	if (!data)
-> +		return ERR_PTR(-ENODEV);
-> +
-> +	iommu = vsi_iommu_from_dev(dev);
-> +
-> +	pr_info("%s,%d, consumer : %s, supplier : %s\n",
-> +		__func__, __LINE__, dev_name(dev), dev_name(iommu->dev));
-
-No prints
-
-> +	/*
-> +	 * link will free by platform_device_del(master) via
-> +	 * BUS_NOTIFY_REMOVED_DEVICE
-> +	 */
-> +	data->link = device_link_add(dev, iommu->dev,
-> +				     DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
-> +
-> +	/* set max segment size for dev, needed for single chunk map */
-> +	if (!dev->dma_parms)
-> +		dev->dma_parms = kzalloc(sizeof(*dev->dma_parms), GFP_KERNEL);
-> +	if (!dev->dma_parms)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	dma_set_max_seg_size(dev, DMA_BIT_MASK(32));
-
-I'm not sure this should be in an iommu driver??? Doesn't dma-iommu.c
-deal with this stuff
-
-> +static void vsi_iommu_release_device(struct device *dev)
-> +{
-> +	struct vsi_iommudata *data = dev_iommu_priv_get(dev);
-> +
-> +	device_link_del(data->link);
-
-Leaking data..
-
-> +static int vsi_iommu_of_xlate(struct device *dev,
-> +			      const struct of_phandle_args *args)
-> +{
-> +	struct platform_device *iommu_dev;
-> +	struct vsi_iommudata *data;
-> +
-> +	data = devm_kzalloc(dma_dev, sizeof(*data), GFP_KERNEL);
-> +	if (!data)
-> +		return -ENOMEM;
-> +
-> +	dev_info(dev, "%s,%d\n", __func__, __LINE__);
-> +	iommu_dev = of_find_device_by_node(args->np);
-> +
-> +	data->iommu = platform_get_drvdata(iommu_dev);
-> +
-> +	dev_iommu_priv_set(dev, data);
-
-Can you use iommu_fwspec_add_ids() instead of this?
-
-The only thing 'data' is doing here is to pass the iommu_dev, it is
-much better if you can get that from the fwspec in probe, like say ARM
-does it:
-
-	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-
-	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
-
-And then don't allocate memory in the of_xlate.
-
-> +static struct iommu_ops vsi_iommu_ops = {
-> +	.domain_alloc_paging = vsi_iommu_domain_alloc_paging,
-> +	.probe_device = vsi_iommu_probe_device,
-> +	.release_device = vsi_iommu_release_device,
-> +	.device_group = generic_single_device_group,
-> +	.pgsize_bitmap = VSI_IOMMU_PGSIZE_BITMAP,
-
-move pgsize_bitmap to alloc paging
-
-
-> +static int vsi_iommu_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct vsi_iommu *iommu;
-> +	struct resource *res;
-> +	int num_res = pdev->num_resources;
-> +	int err, i;
-> +
-> +	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
-> +	if (!iommu)
-> +		return -ENOMEM;
-> +
-> +	platform_set_drvdata(pdev, iommu);
-
-This should be done last after the function can't fail
-
-> +
-> +	iommu->group = iommu_group_alloc();
-> +	if (IS_ERR(iommu->group)) {
-> +		err = PTR_ERR(iommu->group);
-> +		goto err_unprepare_clocks;
-> +	}
-
-This should not be in iommu drivers. I'm guessing you want
-generic_single_device_group() ?
-
-> +	/*
-> +	 * use the first registered sysmmu device for performing
-> +	 * dma mapping operations on iommu page tables (cpu cache flush)
-> +	 */
-> +	if (!dma_dev)
-> +		dma_dev = &pdev->dev;
-
-Huh? This is racey, and why? What is the reason not to use the current
-device always? Put the dev in the iommu_domain during
-domain_alloc_paging and get it from  dev->iommu->iommu_dev->dev.
-
-> +
-> +	pm_runtime_enable(dev);
-> +
-> +	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
-> +	if (err)
-> +		goto err_put_group;
-> +
-> +	err = iommu_device_register(&iommu->iommu, &vsi_iommu_ops, dev);
-> +	if (err)
-> +		goto err_remove_sysfs;
-
-Register should usually be last.
-
-> +	for (i = 0; i < iommu->num_irq; i++) {
-> +		int irq = platform_get_irq(pdev, i);
-> +
-> +		if (irq < 0)
-> +			return irq;
-> +
-> +		err = devm_request_irq(iommu->dev, irq, vsi_iommu_irq,
-> +				       IRQF_SHARED, dev_name(dev), iommu);
-> +		if (err)
-> +			goto err_unregister;
-> +	}
-
-Why allocate interrupts after registration?
-
-Jason
+As a result, when adding an assertion in a function, using BUILD_BUG_ON() i=
+s
+slightly preferred, because it's less likely to break in the future.  E.g. =
+if
+X2AVIC_MAX_PHYSICAL_ID were changed to something that is a compile-time con=
+stant,
+but for whatever reason isn't a pure integer constant.
