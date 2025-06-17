@@ -1,79 +1,173 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 61E1A2F2377
-	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 16:05:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C2492DFF03
+	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 16:10:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750176303; cv=none; b=S/g14bFWkVLzh6VLGSAYA/+x2dgJLeVD4S3sN5EM1hpuYlGTle5Sv5mxXBAmu06C07PSEyuokmVjrENO55h/0lIC/crFtAvE7U5WtF2xooAyXleq832jBvkhQnLpERripOf9u/D8vreKcwC2QxdwQcqEl8XYAVAli0vQxvohZQU=
+	t=1750176614; cv=none; b=WfHdutalGoLmCgu+1D9rjoRzmz3R7NuXSs4vfz8qZC3CojIG2Un2d+94KFMvO6oPPhIvhsOqo/PFZjOz/xAxXfXYZ1BnNIKbC42M0abx0vtY6vA/58gSXJP+TlH6VYuQkHmLsYoSDwWWQNkJPc3D2LbJeH28dDBXWJjEZVLjV9o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750176303; c=relaxed/simple;
-	bh=AShrXstpxabo8piYDidsiIc4xCMvnXyyyySgGWqcjpM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=KGSdn+yeNlm6fZToWxsHhd8Kz1pDCCkngej134fZqL8Fs82EWtsSbaA7Zc9l4OI/WkhIdbkcSTOyD2GlwQc/YlZVh00oYxUag3SawosBdDfYc7duKkz5Uei8CyfxCDKreJSsLejftQ/1XHW94dAClC9y7l06KNtnOpRIxnxylLk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5A5D2150C;
-	Tue, 17 Jun 2025 09:04:40 -0700 (PDT)
-Received: from [10.1.196.50] (e121345-lin.cambridge.arm.com [10.1.196.50])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 267763F58B;
-	Tue, 17 Jun 2025 09:04:59 -0700 (PDT)
-Message-ID: <77867c46-d868-4496-a1a3-45feb0bdd604@arm.com>
-Date: Tue, 17 Jun 2025 17:04:57 +0100
+	s=arc-20240116; t=1750176614; c=relaxed/simple;
+	bh=tZ+fZ2k1EPsBMGXOim/2G6gz3Iic+QUqPhsBrJ7hjss=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=BLDdoeU/0yG0u/x3iHFfqDsrZ5OakADgbjzS3TaCw0c64I39UuIWVmoeR3oJ0gDJ7XTRWsJ5SBvR/A0X+CZgtNKr7PXx2I8ppcIdEYs4dsSuZzpWmpmF1xXQ0pwrZLL0ym774lVDcBOl3ELoKgLZNGmR/oYVf+I0TsoNPjLs58I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FRZQ/Sje; arc=none smtp.client-ip=209.85.216.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FRZQ/Sje"
+Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-313d346dc8dso6080885a91.1
+        for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 09:10:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1750176612; x=1750781412; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=mpe9oKaiEbfB05dXqSqSLq6O1r6s9FrJ+B97+HDCer0=;
+        b=FRZQ/SjeafESSJXCVTg3Y9Z2yd4Qo3Y+aEUrSZDC6ZpSUX16WVM0uzkQkza9wm1BCi
+         R1gSLElbOI/DpU+78+AiLVBbfA+/XbzZqk6kn7/yCW+eqWnftdX3O1WIiUErqoVuUuCc
+         QPfLVW+Qgm9coIFw4Pe5LcEM908cwqCw1NVDRoQMODoq8mn/veNfNpSRPRxz2Qf2JBzW
+         x7m/gI/Aw0YwQeKmjHkpGcHK00uzAqGugLog2FLlzcHe+7m3dDANyF8tw7A15nKMeHMO
+         rMBdL3H0XiSbh7KlsaOKPnYZt2KKQLB/nX2Aowl8o0bEPUq/7X/USqaB4Z0f0dk9JAl0
+         ZU6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750176612; x=1750781412;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mpe9oKaiEbfB05dXqSqSLq6O1r6s9FrJ+B97+HDCer0=;
+        b=h/MI9R0yxIIoQim8MWbbsWyxSgMJgB50MSkZaUQgzSP6rIR7xZdloY/v0ZUUCiQrWi
+         G8YOjJTTFyGGvYmm0f0o9Cix6Hv4ONITLn5ByaYpHRRWMgx+DcEi7PuiDPqSytJSLL0A
+         EEjmz4F3sC7foCBfYjr1gPX0sfLQC/Yu1GwH2fvis+vZkJCDm11z9mT90+0vwMToyXES
+         V6y5ePtJmZBHhCv8wzjRD4jGj5ZSOLLNhWoN/WqMoKtWHq7sH2os/zh9mUJot5Mvo3By
+         4D+dV0SZnzW7UZ+rBFSRoY3VW64y5pxuKFZOKyJ19xQpf+EfZaG1GLkJ6yucEnfIj3Ki
+         bhLQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXLq+MgG5jN+/bAmjqyuv6lR5CIbfbqvNq5MIkIZ11ZEt4FKFwjTmnUlPAtRjSjj2hLjMo6Mw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwfnXHi+3FIdKr3TeUL+vBf0CCeVMa3f0913fQ72B5tqUwxZQ0C
+	jpAMghB5zMSFudXL6r4LB1cVyKwuilH7oCPBHjtG21ATnQCCEXJnc13I+sAT+RGB/5DfxYZLl3q
+	TjW6IhQ==
+X-Google-Smtp-Source: AGHT+IFq1bSy5ue6p5VOY2+WKnKKimaXelT5uMjgsHODbKGY/Q+ifAgtUVMh8UXZFapv6bjOQtBJ96fEnfQ=
+X-Received: from pjl7.prod.google.com ([2002:a17:90b:2f87:b0:311:b3fb:9f74])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90b:55cd:b0:312:1ae9:152b
+ with SMTP id 98e67ed59e1d1-313f1d12fe0mr17819830a91.23.1750176611703; Tue, 17
+ Jun 2025 09:10:11 -0700 (PDT)
+Date: Tue, 17 Jun 2025 09:10:10 -0700
+In-Reply-To: <bmx43lru6mwdyun3ktcmoeezqw6baih7vgtykolsrmu5q2x7vu@xp5jrbbqwzej>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 5/5] media: verisilicon: Flush IOMMU before decoding a
- frame
-To: Benjamin Gaignard <benjamin.gaignard@collabora.com>,
- Jason Gunthorpe <jgg@ziepe.ca>
-Cc: joro@8bytes.org, will@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, heiko@sntech.de, nicolas.dufresne@collabora.com,
- p.zabel@pengutronix.de, mchehab@kernel.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- linux-media@vger.kernel.org, kernel@collabora.com
-References: <20250616145607.116639-1-benjamin.gaignard@collabora.com>
- <20250616145607.116639-6-benjamin.gaignard@collabora.com>
- <20250617155822.GE1376515@ziepe.ca>
- <30a48107-8e98-42dd-a5a7-9c87c9eb538d@collabora.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <30a48107-8e98-42dd-a5a7-9c87c9eb538d@collabora.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+References: <20250611224604.313496-2-seanjc@google.com> <20250611224604.313496-14-seanjc@google.com>
+ <bmx43lru6mwdyun3ktcmoeezqw6baih7vgtykolsrmu5q2x7vu@xp5jrbbqwzej>
+Message-ID: <aFGTYoxlLhZsiMUC@google.com>
+Subject: Re: [PATCH v3 12/62] KVM: SVM: Inhibit AVIC if ID is too big instead
+ of rejecting vCPU creation
+From: Sean Christopherson <seanjc@google.com>
+To: Naveen N Rao <naveen@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
+	kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
+	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
+Content-Type: text/plain; charset="us-ascii"
 
-On 17/06/2025 5:01 pm, Benjamin Gaignard wrote:
+On Tue, Jun 17, 2025, Naveen N Rao wrote:
+> On Wed, Jun 11, 2025 at 03:45:15PM -0700, Sean Christopherson wrote:
+> > diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> > index ab228872a19b..f0a74b102c57 100644
+> > --- a/arch/x86/kvm/svm/avic.c
+> > +++ b/arch/x86/kvm/svm/avic.c
+> > @@ -277,9 +277,19 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
+> >  	int id = vcpu->vcpu_id;
+> >  	struct vcpu_svm *svm = to_svm(vcpu);
+> >  
+> > +	/*
+> > +	 * Inhibit AVIC if the vCPU ID is bigger than what is supported by AVIC
+> > +	 * hardware.  Immediately clear apicv_active, i.e. don't wait until the
+> > +	 * KVM_REQ_APICV_UPDATE request is processed on the first KVM_RUN, as
+> > +	 * avic_vcpu_load() expects to be called if and only if the vCPU has
+> > +	 * fully initialized AVIC.
+> > +	 */
+> >  	if ((!x2avic_enabled && id > AVIC_MAX_PHYSICAL_ID) ||
+> > -	    (id > X2AVIC_MAX_PHYSICAL_ID))
+> > -		return -EINVAL;
+> > +	    (id > X2AVIC_MAX_PHYSICAL_ID)) {
+> > +		kvm_set_apicv_inhibit(vcpu->kvm, APICV_INHIBIT_REASON_PHYSICAL_ID_TOO_BIG);
+> > +		vcpu->arch.apic->apicv_active = false;
 > 
-> Le 17/06/2025 à 17:58, Jason Gunthorpe a écrit :
->> On Mon, Jun 16, 2025 at 04:55:53PM +0200, Benjamin Gaignard wrote:
->>> Flush the IOMMU mapping before decoding a frame to ensure that all 
->>> memory
->>> translations are properly applied.
->>>
->>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
->>> ---
->>>   drivers/media/platform/verisilicon/hantro_drv.c | 11 +++++++++++
->>>   1 file changed, 11 insertions(+)
->> This is a really big red flag.
->>
->> iommu translations are supposed to be controlled by the iommu driver
->> and should be flushed as part of the iommu map/unmap flows. It should
->> never be necessary to do something like this.
+> This bothers me a bit. kvm_create_lapic() does this:
+>           if (enable_apicv) {
+>                   apic->apicv_active = true;
+>                   kvm_make_request(KVM_REQ_APICV_UPDATE, vcpu);
+> 	  }
 > 
-> I have redone tests without this patch and the decode is perform correctly.
-> I will drop it in the next version.
-> I think I have fix the reference frame management in the driver so it 
-> becomes
-> useless.
+> But, setting apic->apicv_active to false here means KVM_REQ_APICV_UPDATE 
+> is going to be a no-op.
 
-If it turns out the hardware does require a TLBI to guarantee new 
-mappings are visible, though, then the correct way is to implement the 
-iotlb_sync_map op.
+That's fine, KVM_REQ_APICV_UPDATE is a nop in other scenarios, too.  I agree it's
+not ideal, but this is a rather extreme edge case and a one-time slow path, so I
+don't think it's worth doing anything special just to avoid KVM_REQ_APICV_UPDATE.
 
-Thanks,
-Robin.
+> This does not look to be a big deal given that kvm_create_lapic() itself 
+> is called just a bit before svm_vcpu_create() (which calls the above 
+> function through avic_init_vcpu()) in kvm_arch_vcpu_create(), so there 
+> isn't that much done before apicv_active is toggled.
+> 
+> But, this made me wonder if introducing a kvm_x86_op to check and 
+> enable/disable apic->apicv_active in kvm_create_lapic() might be cleaner 
+> overall
+
+Hmm, yes and no.  I completely agree that clearing apicv_active in avic.c is all
+kinds of gross, but clearing apic->apicv_active in lapic.c to handle this particular
+scenario is just as problematic, because then avic_init_backing_page() would need
+to check kvm_vcpu_apicv_active() to determine whether or not to allocate the backing
+page.  In a way, that's even worse, because setting apic->apicv_active by default
+is purely an optimization, i.e. leaving it %false _should_ work as well, it would
+just be suboptimal.  But if AVIC were to key off apic->apicv_active, that could
+lead to KVM incorrectly skipping allocation of the AVIC backing page.
+
+> Maybe even have it be the initialization point for APICv: 
+> apicv_init(), so we can invoke avic_init_vcpu() right away?
+
+I mostly like this idea (actually, I take that back; see below), but VMX throws
+a big wrench in things.  Unlike SVM, VMX doesn't have a singular "enable APICv"
+flag.  Rather, KVM considers "APICv" to be the combination of APIC-register
+virtualization, virtual interrupt delivery, and posted interrupts.
+
+Which is totally fine.  The big wrench is that the are other features that interact
+with "APICv" and require allocations.  E.g.  the APIC access page isn't actually
+tied to enable_apicv, it's tied to yet another VMX feature, "virtualize APIC
+accesses" (not to be confused with APIC-register virtualization; don't blame me,
+I didn't create the control knobs/names).
+
+As a result, KVM may need to allocate the APIC access page (not to be confused
+with the APIC *backing* page; again, don't blame me :-D) when enable_apicv=false,
+and even more confusingly, NOT allocate the APIC access page when enable_apicv=true.
+
+	if (cpu_need_virtualize_apic_accesses(vcpu)) {  <=== not an enable_apic check, *sigh*
+		err = kvm_alloc_apic_access_page(vcpu->kvm);
+		if (err)
+			goto free_vmcs;
+	}
+
+And for both SVM and VMX, IPI virtualization adds another wrinkle, in that the
+per-vCPU setup needs to fill an entry in a per-VM table.  And filling that entry
+needs to happen at the very end of vCPU creation, e.g. so that the vCPU can't be
+targeted until KVM is ready to run the vCPU.
+
+Ouch.  And I'm pretty sure there's a use-after-free in the AVIC code.  If
+svm_vcpu_alloc_msrpm() fails, the avic_physical_id_table[] will still have a pointer
+to freed vAPIC page.
+
+Thus, invoking avic_init_vcpu() "right away" is unfortunately flat out unsafe
+(took me a while to realize that).
+
+So while I 100% agree with your dislike of this patch, I think it's the least
+awful band-aid, at least in the short term.
+
+Longer term, I'd definitely be in favor of cleaning up the related flows, but I
+think that's best done on top of this series, because I suspect it'll be somewhat
+invasive.
