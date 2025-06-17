@@ -1,36 +1,78 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BB7A14A09C;
-	Tue, 17 Jun 2025 04:48:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CEF427461
+	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 05:43:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750135719; cv=none; b=P7cfLJvcwl6QKZq6eQIMsa1LiShzefhkyTEl07egar7niaox5myBKNMAMdNOlAGw56wSwdIdnUBpn8YlqY7WQY23YEd10TPyKuvfhvcgTMTLPGsmzAyB1cjHxbg7/p2/9lsFTnc1hqi84e14GG9ANInYXsDED/bd4GZ/bvcRfPA=
+	t=1750139002; cv=none; b=jxoJ1mqvNveHOyjgHqm89YiKhGsYmAfmbuPFtuUVs8d4Gaeo+zJmZwB3hWWhmzFexX13r3R7ySi8SGDsIexHS1EfYIfzRPylRDeVSA5dZbvz4s3B+V3+Dcj8jelrk7hdwYPQgnNVTKDOiDzwEweH9NjmnRF3GTDh0ZFshecPABA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750135719; c=relaxed/simple;
-	bh=HpbsjtUF8/0yEJq1r9APjd7aYWNq9AD83e/U0S1OeDk=;
+	s=arc-20240116; t=1750139002; c=relaxed/simple;
+	bh=SghC4et/z2EDycDOFtWYFVm+MtMf9BDEsdZTXx4JMDA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AJGti8Fo+ntIbUYtMh2mOP5Kv5Np7xYl7WRrRYRQTkCiL2y39USkCwMMh7ax9A8mzjoDboTDg9L1ZyS5mXzUTqHEO328kfXBSwN804kPKGLeM3MNBUE6f1aKmpzr0yZARVZWPNJCMxyhIczAtj7iHq5mO70tqpkLp1xGco0SuVI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id B627868D0E; Tue, 17 Jun 2025 06:48:33 +0200 (CEST)
-Date: Tue, 17 Jun 2025 06:48:33 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: James Clark <james.clark@linaro.org>, Christoph Hellwig <hch@lst.de>,
-	Mark Brown <broonie@kernel.org>,
-	Vladimir Oltean <olteanv@gmail.com>, oe-kbuild-all@lists.linux.dev,
-	Larisa Grigore <larisa.grigore@nxp.com>,
-	Frank Li <Frank.li@nxp.com>, linux-spi@vger.kernel.org,
-	imx@lists.linux.dev, linux-kernel@vger.kernel.org,
-	kernel test robot <lkp@intel.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev
-Subject: Re: [PATCH] dma-mapping: Stub out dma_{alloc,free,map}_pages() API
-Message-ID: <20250617044833.GE1824@lst.de>
-References: <20250616120832.GA24959@lst.de> <2d62254e-5cbe-4174-95d8-e80cae4f4543@sirena.org.uk> <20250616121444.GA25443@lst.de> <7cfcf919-3c7d-4f0c-911f-697ea3141080@linaro.org> <20250616131346.GB29838@lst.de> <83855c1a-c128-4762-9d6b-e17f2c4c8820@linaro.org> <d16bdc40-20d6-49db-bf41-18bb9b8e01fd@linaro.org> <20250616131944.GA30260@lst.de> <f723d490-c228-42d5-9f9f-158df54a092d@linaro.org> <9788991a-ac37-4fde-81db-c55035d00f27@app.fastmail.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=ai7wh10DFvA6dFU0tZI+gS1KhDMSIKBxAQmYzmzVyS1LjDRd1iEIxg6LodIQDpxmT3HkJ9yL4erS5pqdMGTeVUVlj+i/I3Trzz3B8Kxzok0nw3J+kbQcZ8SdSIT23Hf+W6/HkLrIzUE2R95acCscQItjGLPffRNDYq/4VSurmms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uFAbR2rS; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uFAbR2rS"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2348ac8e0b4so83715ad.1
+        for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 22:43:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1750139000; x=1750743800; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=vqy+/M9QHJY6wwtqs4c/CeBC/StH/tZ5ncI+kmSkSV8=;
+        b=uFAbR2rSZ+SLThRp4sh+Z2aHef+ATUn5y/OQqc4JpsG9eWpi72y1zQQxuxKHo2JhRz
+         ch6Lq/bwyb6/s4BrXQE5GbG79zNNsF/N4aKPngARFMMrweIQNhDfvHxVoGtF25nDXJQU
+         +BdK8n/VnVIdgaVtvfOIzo1NFmnH//99pyBySuXaq9xYmnOhW5sqY3iBrDDunkuGvFVa
+         5Ay3ruZv+RmRaWmh/sHr4cihgDblf3JhOc0Wo7sor74hTqQ4yL8roAVk/bPqjYOAYy4E
+         wulMuHpV0AWv3e78UvMbGrIoXMJGuSrBu70DCTmGmSeiN8EE6lfAPclQ7897gr/cNpl4
+         CEOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750139000; x=1750743800;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vqy+/M9QHJY6wwtqs4c/CeBC/StH/tZ5ncI+kmSkSV8=;
+        b=A9BXeVLjINtS13rNRbJjVh/+XkjrStTvo7fmaMIhVgppAq3VBnu+V2JgHMS1Y1Yoyd
+         o89AKPOr/Nl94xyG56aahudPC/gln/cYzalUDyHnTM+Es5UYJGHtZ59MrtIs97yi+oUE
+         epysZY4qCKpZvItjoDQEuTQshTmFf4j68hW7VUjbXZ0zIU/YwJ8fwbU1wHEZgew4ITdy
+         VqHx5udpIbeW1lLhZZm8g98mFl5dyLAkQ4rW2YQjdoaR7pY1VrnKtM97iLsjcv2e0Hl7
+         YlbXkyvnaX+BmqubG4xaZ3ARyrSYNnVa0pC3g1teQtES9utMEDEVgaTddoHAkILNhlXj
+         DHng==
+X-Forwarded-Encrypted: i=1; AJvYcCXas2F1OAWWcG4Rj6zChBX3dMkW5SPaLN4YJMrmFjOGS2gEURfP3ktg1BpwoIHdzvMmhMRUSQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzLdeqH93unFKaQsdzss1eYh5QWgbZXMn/9rLuRyNgG/+JCA4DG
+	BE65KyrsrgqPsRvl6PxPhju5icgfnAuz9yWp52dMCEbcJUFUaETS+z8sbMseDjcatg==
+X-Gm-Gg: ASbGncvPkW3tnnxC3RXNaYBr9l81JSeYUsxoLotZyBZDiKPX3r7tFTkdM7hDn5JO6cs
+	RoUpmvE26EKm5LVfnmUFirV6/i2OVZNLOCh7v3f7oD76HBXIFkHjqrWbgAF6BZoY5nA5UImotx7
+	TBums/YI+XTDPurA+PomJB6+PLwl3f4FB3WhWA1T1YMG1+iCcoTJnCrO9AubEWTD/UGFzy7DNHa
+	VBPWOGyWKaamnRxq21YXnt2hvuNC804Bv9xPXAaS9I0JA6j3+S2m6P/u7VCD/eK5ftomSHx2wUI
+	7IZWKZXV/GKJ+3LXTtW1FygGpzmCUWYTp1dsvl9+6bGsa3LrDhj8/wXoyJ8jI103+uYsEmFycm/
+	XCu/rrZ9bf/A5frHWu0/Z
+X-Google-Smtp-Source: AGHT+IFZAGH5Q2HoxTbpqlW9at8Yr/ZmYieszNEdcG0xorIcE8VWLoKmbjyoc4gI81zSv/z5UnBfOQ==
+X-Received: by 2002:a17:902:d48f:b0:234:c2e7:a0e7 with SMTP id d9443c01a7336-2366c5bf6d3mr7082695ad.4.1750138999607;
+        Mon, 16 Jun 2025 22:43:19 -0700 (PDT)
+Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-313c1bcbb39sm9722410a91.8.2025.06.16.22.43.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Jun 2025 22:43:19 -0700 (PDT)
+Date: Tue, 17 Jun 2025 05:43:09 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, yi.l.liu@intel.com,
+	peterz@infradead.org, jsnitsel@redhat.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+	baolu.lu@linux.intel.com
+Subject: Re: [PATCH v2 10/14] iommu/arm-smmu-v3: Replace arm_vsmmu_alloc with
+ arm_vsmmu_init
+Message-ID: <aFEAbc5URD93out3@google.com>
+References: <cover.1749882255.git.nicolinc@nvidia.com>
+ <64e4b4c33acd26e1bd676e077be80e00fb63f17c.1749882255.git.nicolinc@nvidia.com>
+ <aFCeCvKkm1MvT3xP@google.com>
+ <aFDPtzY3EygoOpUx@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,38 +81,57 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9788991a-ac37-4fde-81db-c55035d00f27@app.fastmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <aFDPtzY3EygoOpUx@nvidia.com>
 
-On Mon, Jun 16, 2025 at 03:48:50PM +0200, Arnd Bergmann wrote:
-> As far as I can tell, the difference here is that the
-> dma_alloc_coherent()/dma_free_coherent() calls all get stubbed
-> out, so the 827 drivers using those can all build cleanly on
-> mk68knommu, shnommu and UML, while dma_alloc_noncoherent()/
-> dma_free_noncoherent() are only used on 15 files that are all
-> guarded by some other Kconfig dependency at the moment and won't
-> build on the those platforms.
+On Mon, Jun 16, 2025 at 07:15:19PM -0700, Nicolin Chen wrote:
+> On Mon, Jun 16, 2025 at 10:43:22PM +0000, Pranjal Shrivastava wrote:
+> > On Fri, Jun 13, 2025 at 11:35:22PM -0700, Nicolin Chen wrote:
+> > > To ease the for-driver iommufd APIs, get_viommu_size and viommu_init ops
+> > > are introduced.
+> > > 
+> > > Sanitize the inputs and report the size of struct arm_vsmmu on success, in
+> > > arm_smmu_get_viommu_size().
+> > > 
+> > > Place the type sanity at the last, becase there will be soon an impl level
+> > > get_viommu_size op, which will require the same sanity tests prior. It can
+> > > simply insert a piece of code in front of the IOMMU_VIOMMU_TYPE_ARM_SMMUV3
+> > > sanity.
+> > > 
+> > 
+> > That's what I was wondering, so we plan to replace the impl->vsmmu_alloc
+> > op as well?
+> 
+> There is no such op in v6.16-rc1.
+> 
+> > > -	return &vsmmu->core;
+> > > +	viommu->ops = &arm_vsmmu_ops;
+> > > +	return 0;
+> > >  }
+> > 
+> > Seems much better now that the driver doesn't need to callback to the
+> > core for allocating viommu. One quick question though I see we've 
+> > removed the following too:
+> > 
+> >         if (master->smmu->impl_ops &&master->smmu->impl_ops->vsmmu_alloc)
+> > 	                vsmmu = master->smmu->impl_ops->vsmmu_alloc(
+> > 			                        master->smmu, s2_parent,
+> > 						ictx, viommu_type,
+> > 						user_data);
+> > 
+> > Not sure why don't I see that in the diffs.. do we plan to split this
+> > into an impl-specific size and init too?
+> 
+> Because there is no vsmmu_alloc in v6.16-rc1. I guess you are
+> referring to older versions of HW queue (vCMDQ) series that
+> was not merged?
 
-Yes, dma_alloc_coherent is from a time where stubbing out was
-still very common.
+That's right, my bad. I rebased the older series while pulling,
+apologies for the confusion!
 
-> I agree that it would be best to treat the coherent/noncoherent
-> cases the same, and I also think the existing stubs are a bit
-> silly, but just removing them would likely require fixing
-> hundreds of drivers with added Kconfig or IS_ENABLED() checks.
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
-I doubt it's that many, as most drivers and even subsystems simply
-depend on DMA.  There's probably at most a few dozen drivers
-supporting DMA but not requiring it.
+> 
+> Thanks
+> Nicolin
 
-> Maybe we can actually remove CONFIG_NO_DMA/CONFIG_HAS_DMA
-> entirely and remove all the checks for CONFIG_HAS_DMA? 
-> My guess is that this would only lead to a small code size
-> increase on the affected targets, but since they are not
-> actually trying to do DMA, and they all have a very limited
-> set of drivers they actually use, it won't break existing
-> code.
-
-Except for uml, the CONFIG_NO_DMA configs are usually very resource
-constraint, so I don't think that's a good idea.
-
+Thanks!
