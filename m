@@ -1,139 +1,124 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A5B7195FE8
-	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 19:46:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C03A5195FE8
+	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 19:47:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.149.199.84
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750189582; cv=none; b=pltfMhemgxm51orrjYAyWqraOK4PZ0Hj0815GdqNWRvrtJIle8N/o/em2Utu+vzqPtL1HLWJggcBkqve0CJLzr2mSARnsQyiAyhxYak0jLiONy/BT2lT2GGAASPRHtuNekVg32Bqre35YJ820GLPSWaUQJkFqp9Jt4jnVO3ymrA=
+	t=1750189674; cv=none; b=g9Ur+XK06cWCmWmgocXkR6EdN9vERBWG1pi2a6xk/TGiXQA3HV8Per88Jkjd3V/4GqVvuhKrYRgimcNyzF7VV+/bh2qemy0j4UwgDZZ4GUgEu20n2oJ+Z0BXB7tnNaiFGULEj4SUeMPo6n5yXyj/+GnwfNUZw7uVltV7sG9yft8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750189582; c=relaxed/simple;
-	bh=6SdbPPe9pmSE8+0ZJM1umJlBQZ1wA58S28tOdEyrjyY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=DoLchCqTgQ6ZHZtjhRXW1Ym3QVLCSlLcnp8UvHfjc/C6VxV7snewev2sBqO2GjXiH8Wz3zC1ML/kt4eHXTeReVDel9G0BPneWspnJlODry8QLJefI4Jk2NJSvcf5e7Lr8hL2KvlHYR+L6+L2vgjcZJ2dPBxCGnMlDHvvBeTuR7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BpUYHN0V; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1750189674; c=relaxed/simple;
+	bh=Q9tOR5c22jHIpcYcZ9y8ymWBNo0vDkkcxoGswVJQd9g=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=sqUhehYBDx50wJcPmrBvyGB/7ZQO4vRpYFYxPIbz4pZKfhkQYTy0Qv2MOeB/ZA8/oZ2+qNKLlYHQRWAzd4uoXSUuSQba4iimr31xpvgcu+MgQogX2SZzF2T0HokMGhtmoh72JKE5yZ/oM/YudBMi7k7feK4R0uwchjHPZ8Q4oaE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ispras.ru; spf=pass smtp.mailfrom=ispras.ru; dkim=pass (1024-bit key) header.d=ispras.ru header.i=@ispras.ru header.b=XOzGSRoQ; arc=none smtp.client-ip=83.149.199.84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ispras.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ispras.ru
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BpUYHN0V"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1750189579;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=icFJhskVkKQqZu2iPajxPrgD6zNA+fOLsrBnVy7h8EQ=;
-	b=BpUYHN0VDcvJs44dUruAbxmNqFYw/KcM/fTq5uN1sy92onDORvNq69P2y1h2ltnY/OkMO6
-	LsT1IWmPGHRNGbiFHQYPIp9sNjW53cz1iQjamQHPsWj66mjLifw94o132qRD/5YHXzRuBi
-	wBECYWv9fIWWdPitQAmzu/uZYfl+XYI=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-635-oFkuQSo0O6CZz1kG4QCF0w-1; Tue, 17 Jun 2025 15:46:17 -0400
-X-MC-Unique: oFkuQSo0O6CZz1kG4QCF0w-1
-X-Mimecast-MFC-AGG-ID: oFkuQSo0O6CZz1kG4QCF0w_1750189576
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-3a4f8fd1847so2217170f8f.1
-        for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 12:46:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750189576; x=1750794376;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=icFJhskVkKQqZu2iPajxPrgD6zNA+fOLsrBnVy7h8EQ=;
-        b=diL3kLjfYU02lfAe5xgZN4bnlpip7z7IBP6XW4R9eVqOKfc4yXzhhyEWytGtcVxvKO
-         RtRngMCPL5o5VtS4UIwW1FqPS2YALstmZHzk95iSAScJ3n1hND59fd6ssIAvy6gkhB1E
-         887R2rfGOB3ARsHVSQ0L38dTU0X+W+2lAJgec8q22VWKY74xyVxzcknZUaT7C5Opr+3D
-         ULgt4nDCTEmKRMYERHX43cRBVRS0D0lBavfxGDOENWDX3WgmeFZR0l+W3s0PW9Xi7MGT
-         hilsoi/COniBJRI7ycUdmtwIIk/76Fvv+T/ucqQG657w3HW34L1dM44hRQCIT3plMfk0
-         Jypg==
-X-Forwarded-Encrypted: i=1; AJvYcCXthVgp1vXmj/FgoQ0DG8J/D8Wx9Pkyp3bsx2eLBkPRtrL5EoCadRM61BU09U4n8P3ksNCckQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzpfYGO6y6q/hLcc6gKQRgJe9ZMOVvBaTkPE+X0fFIWRVod82S6
-	fqb2C3XPs+tDj5BmJ1NK1qCa7S/CL4yOEFbjNXQGdO8/dAezrDCUxTJNGwErwhHqDaqAfDbRAk8
-	qjS4iiXhVTiRcw1HFou8gRLOVIfk6/YYYOlx8BpSPiexE2ZTJHAjAesqi
-X-Gm-Gg: ASbGncuC5N9LyPVvVWfG+2cF+cIq/0Z2RPCATqAJV7Su1ym5m+/v9S9mKr5OBZvgOoJ
-	92qZkjB8GKhpYoffmLsREP1Bc27vuAOauP8GJkNtj8yEMk9BXta0eqTbumjZ57oGBQyyeTSTv9E
-	QWrqqvxb750nNPC69C5XIrXHwyCsYrYQAcWS2BB0cLMoNXEi/KeQJpE3Pj07neD32rHoIA6OU2a
-	orONt+Cfi2hCDghpVcGw/be/FeCwiiejt744sgGllkFrS94U9CTRJctATI5FhhDzZCGlbr8uYls
-	yatyEoSa/6Gt4J12
-X-Received: by 2002:a05:6000:2007:b0:3a5:25e0:1851 with SMTP id ffacd0b85a97d-3a5723660b5mr12195283f8f.7.1750189576215;
-        Tue, 17 Jun 2025 12:46:16 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFO9JZf66g6UmsF+FsTytz4QymacwGU4iFb1DNv63Dd/5GxeH4PDvqwykdFRQ9tUf5lrXqgjg==
-X-Received: by 2002:a05:6000:2007:b0:3a5:25e0:1851 with SMTP id ffacd0b85a97d-3a5723660b5mr12195258f8f.7.1750189575837;
-        Tue, 17 Jun 2025 12:46:15 -0700 (PDT)
-Received: from redhat.com ([2a06:c701:73ea:4300:f7cc:3f8:48e8:2142])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a568a543d9sm14603319f8f.5.2025.06.17.12.46.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jun 2025 12:46:15 -0700 (PDT)
-Date: Tue, 17 Jun 2025 15:46:12 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Demi Marie Obenour <demiobenour@gmail.com>
-Cc: Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Alyssa Ross <hi@alyssa.is>, virtualization@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-	iommu@lists.linux.dev, x86@kernel.org,
-	Spectrum OS Development <devel@spectrum-os.org>
-Subject: Re: Virtio-IOMMU interrupt remapping design
-Message-ID: <20250617154524-mutt-send-email-mst@kernel.org>
-References: <>
- <a65d955c-192b-4e79-ab11-8e2af78b62af@gmail.com>
+	dkim=pass (1024-bit key) header.d=ispras.ru header.i=@ispras.ru header.b="XOzGSRoQ"
+Received: from localhost (unknown [5.228.116.177])
+	by mail.ispras.ru (Postfix) with ESMTPSA id BD70C552F52E;
+	Tue, 17 Jun 2025 19:47:48 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru BD70C552F52E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+	s=default; t=1750189668;
+	bh=Ky902UmEJ2rxlwfcpu5ICzPaQwIKBWouHsS2V00UnZU=;
+	h=Date:From:To:Cc:Subject:From;
+	b=XOzGSRoQedoSyNgwuYswoFa9hiFGpmMHTrZX0tWFC6BpC5axO37pXAr1AqrvpAkJB
+	 baWWxB0GBAuvvTjVHrCdRcxo63zfWolg6KWXH2xVOoVVjVdmOMZraEhGTgQAZe1I+v
+	 v0pv66CjUrvxAZjaamGS4RbcRxzN+WAxxon8JJ8c=
+Date: Tue, 17 Jun 2025 22:47:48 +0300
+From: Fedor Pchelkin <pchelkin@ispras.ru>
+To: Lukas Wunner <lukas@wunner.de>, Ben Hutchings <ben@decadent.org.uk>
+Cc: Bjorn Helgaas <helgaas@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, linux-pci@vger.kernel.org, iommu@lists.linux.dev, 
+	dri-devel@lists.freedesktop.org, David Airlie <airlied@redhat.com>, lvc-project@linuxtesting.org
+Subject: amd-iommu / agpgart-amd64 problem: Resources present before probing
+Message-ID: <wpoivftgshz5b5aovxbkxl6ivvquinukqfvb5z6yi4mv7d25ew@edtzr2p74ckg>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <a65d955c-192b-4e79-ab11-8e2af78b62af@gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: 8958KrMq4YQlxrCPGjh5gCdV9JWvKP45I64X7IYP5x4_1750189576
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 
-On Sun, Jun 15, 2025 at 02:47:15PM -0400, Demi Marie Obenour wrote:
-> Virtio-IOMMU interrupt remapping turned out to be much harder than I
-> realized.  The main problem is that interrupt remapping is set up
-> very early in boot.  In fact, Linux calls the interrupt remapping probe
-> function from the APIC initialization code: x86_64_probe_apic ->
-> enable_IR_x2apic -> irq_remapping_prepare().  This is almost certainly
-> much before PCI has been initialized.  Also, the order in which devices
-> will be initialized is not something Linux guarantees at all, which is a
-> problem because interrupt remapping must be initialized before drivers
-> start setting up interrupts.  Otherwise, the interrupt remapping table
-> won't include entries for already-existing interrupts, and things will
-> either break badly, not get the benefit of interrupt remapping
-> security-wise, or both.
-> 
-> The reason I expect this doesn't cause problems for address translation
-> is that the IOMMU probably starts in bypass mode by default, meaning
-> that all DMA is permitted.  If the IOMMU is only used by VFIO or
-> IOMMUFD, it will not be needed until userspace starts up, which is after
-> the IOMMU has been initialized.  This isn't ideal, though, as it means
-> that kernel drivers operate without DMA protection.
-> 
-> Is a paravirtualized IOMMU with interrupt remapping something that makes
-> sense?  Absolutely!  However, the IOMMU should be considered a platform
-> device that must be initialized very early in boot.  Using virtio-IOMMU
-> with MMIO transport as the interface might be a reasonable option, but
-> the IOMMU needs to be enumerated via ACPI, device tree, or kernel
-> command line argument.  This allows it to be brought up before anything
-> capable of DMA is initialized.
-> 
-> Is this the right path to go down?  What do others think about this?
-> -- 
-> Sincerely,
-> Demi Marie Obenour (she/her/hers)
+Hello,
+
+there is a 
+
+  [    0.579232] pci 0000:00:00.2: Resources present before probing
+
+error message observed after
+
+  commit 3be5fa236649da6404f1bca1491bf02d4b0d5cce
+  Author: Lukas Wunner <lukas@wunner.de>
+  Date:   Fri Apr 25 11:24:21 2025 +0200
+  
+      Revert "iommu/amd: Prevent binding other PCI drivers to IOMMU PCI devices"
 
 
+After tracking this down I've found that it's agpgart-amd64 driver trying
+to bind to the IOMMU device:
 
-The project for this discussion is also virtio-comment,
-this ML is for driver work.
+  00:00.2 IOMMU: Advanced Micro Devices, Inc. [AMD] Family 17h-19h IOMMU
+          Subsystem: Lenovo Device 3803
+          Flags: bus master, fast devsel, latency 0, IRQ 25
+          Capabilities: <access denied>
+
+IOMMU device itself has no pci_driver attached to it but has a pci_dev,
+and its struct device already has some devres associated with it.
+
+agpgart-amd64 driver booting with 'agp_try_unsupported=1' (turns out it's
+a default behavior) traverses the devices on the PCI bus and tries to
+attach:
 
 
+static const struct pci_device_id agp_amd64_pci_promisc_table[] = {
+	{ PCI_DEVICE_CLASS(0, 0) },
+	{ }
+};
 
+...
+
+int __init agp_amd64_init(void)
+{
+...
+		/* Look for any AGP bridge */
+		agp_amd64_pci_driver.id_table = agp_amd64_pci_promisc_table;
+		err = driver_attach(&agp_amd64_pci_driver.driver);
+		if (err == 0 && agp_bridges_found == 0) {
+			pci_unregister_driver(&agp_amd64_pci_driver);
+			err = -ENODEV;
+		}
+
+
+IOMMU device is busy at the moment but, to my mind, lack of pci_driver
+associated with it leads driver core trying to bind it, too.
+
+But registering a pci_driver for IOMMU device is no good.
+
+Initial commit cbbc00be2ce3 ("iommu/amd: Prevent binding other PCI drivers
+to IOMMU PCI devices") was added in 2015, not sure whether the problem
+manifested before that. At least the commit message doesn't state that
+it tried to fix such kind of a bug.
+
+The problem on itself is no harm at the end as driver core handles the
+error and skips the device. But it still indicates a logical bug.
+
+
+The partial revert of the revert does work, obviously. Though it badly
+contradicts the intention to hide priv_flags manipulation in the PCI core.
+
+So I wonder whether agpgart-amd64 should be somehow fixed instead... to
+skip IOMMU device from its wildcard promiscuous PCI ID table? Or drop this
+'try_unsupported' feature entirely? 
+
+Would be glad to hear your thoughts on this.
+
+Found by Linux Verification Center (linuxtesting.org).
+
+--
+Thanks,
+Fedor
