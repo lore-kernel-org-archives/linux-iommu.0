@@ -1,141 +1,214 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8CC62E54D0
-	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 20:02:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F4C32EFD94;
+	Tue, 17 Jun 2025 20:15:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750190523; cv=none; b=d45jz8V5fP4kZL2HRdugk24VZulO8MPaQ5IHXELD2xlF5faU2iyDgo2AesbMpu4ZffeON3n2MZpvfKYbiyGYP3pWspOzvLqDWS3Kuf0RHoaNDCot10zW3rq5nA1wNd6k9JKGjjF5BafB/KQYr1oXNxby/B6fQUG24YQPB+XLEA4=
+	t=1750191340; cv=none; b=gEyS7wAjozn/6+3ZQH1NeGxXDV5XXYqAm5MAitNH5BSpHIRAP7OLhn5h6FOkfyjG3NCkZXiD3wTnWIJNKPcazcnQeLQ0uAQKWgC6GsnMS1i1sYJTjOhpsWFgIUyC2APEH/waHhGAT1cmP8y63bF1y1ZMsA1rM7t4/vFEHuHpzeA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750190523; c=relaxed/simple;
-	bh=XMvjS9h95kOV8JujLb2GDDrONYa4hpVobP4wUiW7o7o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=kSq2G1PSp6Vkqmal/0XZkBg/tWB3NRH+5V1uGMQu2IRsjt6oGArwvW8YvFohBjOXJCsvouVYFGhjCEhyJxUPwVtJgQuEN6oz23Kzow82gSlTb4U188WoU95q1wUbabZwAHcukIVD9n8D2llUiTXVBkh8zuCIC6UPghT3+1dNehU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=X/rhBhJb; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1750191340; c=relaxed/simple;
+	bh=BNmUk/sbpT2Q5E9Oblw1xlKKw3xh8sEe5PplgbpLbTg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rErCIj+ldPDgwqg6n3tIhxZIU+xyQPMZCyJWgld84L8lhIucdN/fbQmxYJlQpNGG11gcidpn5S/TBRYnWlcGlOBH1XutHO40LSy+Lf6VCjV+tdpXVw55Esu6SILIJ2yyTkXUeuWgRlmoqdPRTbMoJkGFHy1dhhtqDseM36V2oqk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SqxBtrMP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="X/rhBhJb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1750190520;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=O+NoG2Xo5HkG5dYXEBVx8rtfO3qQh/xgk518Z7oyOlQ=;
-	b=X/rhBhJbsd8a0qt3OVm4vEyhpoEpud7JSWr1ukksyefRO/hBcmuEMACGgR3bk4iIs+5gY4
-	hhsPypCwvJvn7cdQ+FlfKz+BVrkX99Py6YkvgMSyB7fOBZaoUygIV8zkCUbw6pxbVxtmr5
-	e0U02JDLQcOuCOerGTKBi0rbsHSvd08=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-76-wO9lMaOJOmCJfQAgczv4vQ-1; Tue, 17 Jun 2025 16:01:59 -0400
-X-MC-Unique: wO9lMaOJOmCJfQAgczv4vQ-1
-X-Mimecast-MFC-AGG-ID: wO9lMaOJOmCJfQAgczv4vQ_1750190518
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-450de98b28eso132385e9.0
-        for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 13:01:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750190518; x=1750795318;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=O+NoG2Xo5HkG5dYXEBVx8rtfO3qQh/xgk518Z7oyOlQ=;
-        b=B8gOrdNUgzn8MAIQw9wkuUjzTq160ks/7YsT9owGh6N1T1WixBzubM/Ml0/5sVhP9z
-         Yx+G+IfzA8iAehUZSO7rq1ditvzNTav1Wujio9QUAcNEKTHUFhJqZdhvyErmpxhcsEM+
-         q+qwYQKzxpYsIhOkrahusEpkT4a4GTX7uB6IM6madUN2hAHkhod0hhcRoc1++p30edMO
-         IgdXyxlu54iioXxhiGDpCPvEU93FuZWa9J031pa6XtOWOMGmQxm0mV1sce7gAfEDysiQ
-         GUTC+Kd2k6pgzaXjBDjYoz3LUxClva48QDZfe0Y9t/tr3TQI32YtSpe9uvrtlGc1DDOS
-         5GRQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWx8jjzFMVTQ6RzZIOH57TiwgyRkEWykuqLT/qeLIUk6gC4n111ZZ/Q1nTy21TBz1bzLt69QA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxqnF7FM5sDt84hC9NJKZWjwF0kh+Qe3Zwy0YqZYrNXIVUxmFkl
-	yXFiC8k11LFxhgPfzwLYF5tFwlDbf8KYYiRiHin6/YszPC0DURcr27eGto9/sxMIaAqG+fRpBCB
-	0yoyIovu9OSz9Del0GHMWIKwg3UBXEe1tNrXHfR4c+lQ92DvA3L9vEQFH
-X-Gm-Gg: ASbGncvYuTpPu9aI4BfKnxnoSk/sk4IJ0FJsh4gI8ry3wDy2I+VuRf717mF7rRcXpbN
-	zLHt/rfLPgC29bJBPRyyjj0cEAM9UppVmrJNrTYy8RCdsuk4iPH0xjwhbxFZ56+ywprYJUHJCcp
-	WdzFzNifYFHZXYc6TL0/RKKJL2Ygs4PAOL62SMr5N9Ry3bwY5lNgbbQZiNJNTX+NDrBQp7Zahby
-	+3PRBk+twL+TKwwH3J9JRBeajMe74otpQeCDq0anXxcsyJ3WLPhks0jRtWZ6uf45z8gCUc60B9/
-	L5D2dwpGLxRphwpb
-X-Received: by 2002:a05:600c:574b:b0:43c:ed33:a500 with SMTP id 5b1f17b1804b1-4533b2723fbmr106294615e9.10.1750190517526;
-        Tue, 17 Jun 2025 13:01:57 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHNEtk99gWXSpZ+RahNNIJ+KZNHzBGaVUSD+dSFjshNFQhawiqf1xX90P7+NZhpbwqFDbMbUg==
-X-Received: by 2002:a05:600c:574b:b0:43c:ed33:a500 with SMTP id 5b1f17b1804b1-4533b2723fbmr106294125e9.10.1750190517096;
-        Tue, 17 Jun 2025 13:01:57 -0700 (PDT)
-Received: from redhat.com ([2a06:c701:73ea:4300:f7cc:3f8:48e8:2142])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3a568b4cc7bsm14653724f8f.86.2025.06.17.13.01.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jun 2025 13:01:56 -0700 (PDT)
-Date: Tue, 17 Jun 2025 16:01:53 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Demi Marie Obenour <demiobenour@gmail.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	"H. Peter Anvin" <hpa@zytor.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Alyssa Ross <hi@alyssa.is>, virtualization@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-	iommu@lists.linux.dev, x86@kernel.org,
-	Spectrum OS Development <devel@spectrum-os.org>
-Subject: Re: Virtio-IOMMU interrupt remapping design
-Message-ID: <20250617160103-mutt-send-email-mst@kernel.org>
-References: <>
- <a65d955c-192b-4e79-ab11-8e2af78b62af@gmail.com>
- <20250616132031.GB1354058@ziepe.ca>
- <20250617154331-mutt-send-email-mst@kernel.org>
- <20250617195720.GI1376515@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SqxBtrMP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E109C4CEE3;
+	Tue, 17 Jun 2025 20:15:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750191339;
+	bh=BNmUk/sbpT2Q5E9Oblw1xlKKw3xh8sEe5PplgbpLbTg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=SqxBtrMPRLIKOxbCYb1xaHgCUukvdgMdXu4fowXJ1lglpg4sRhuJf0XGs17YWxogV
+	 dgeX/Hq36Cxoa6LbNaU8XmYkdIhvBvS3CR4K5vkENCnyvYUyrWuaVkK3f6IDQRbw03
+	 runwmunafiBWbZuXGxd0xuOdrp3t/PYUoPLn5Ln4TC/MFLZ36yTHqtVWaPgrqk8Ns8
+	 jFo/rmKNciAxyvl3JvQpjNP2j04xUXAzCC4Vh9/nxaZ1oFmZ1YXRIyFrDdLnS0sAMM
+	 GVqvtkUJlNkVFxcm3Bm8qGRKCA1NHpSiqu71h3yGnqYhTaGnzwVqrWsln3xqXe6XSC
+	 vL01ibke7ghUQ==
+Message-ID: <d40a585f-6eca-45dd-aa9f-7dcda065c80a@kernel.org>
+Date: Tue, 17 Jun 2025 15:15:35 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20250617195720.GI1376515@ziepe.ca>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: yVsPj9ZaZ8alxi-yqFX1MlK3UkNb7c-OFbLJ6uGtv5E_1750190518
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 6/6] vgaarb: Look at all PCI display devices in VGA
+ arbiter
+To: Daniel Dadap <ddadap@nvidia.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
+ Alex Deucher <alexander.deucher@amd.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Lukas Wunner <lukas@wunner.de>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
+ "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+ "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
+ "open list:SOUND" <linux-sound@vger.kernel.org>,
+ Mario Limonciello <mario.limonciello@amd.com>
+References: <20250617175910.1640546-1-superm1@kernel.org>
+ <20250617175910.1640546-7-superm1@kernel.org>
+ <aFHABY5yTYrJ4OUw@ddadap-lakeline.nvidia.com>
+Content-Language: en-US
+From: Mario Limonciello <superm1@kernel.org>
+In-Reply-To: <aFHABY5yTYrJ4OUw@ddadap-lakeline.nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jun 17, 2025 at 04:57:20PM -0300, Jason Gunthorpe wrote:
-> On Tue, Jun 17, 2025 at 03:44:20PM -0400, Michael S. Tsirkin wrote:
-> > On Mon, Jun 16, 2025 at 10:20:31AM -0300, Jason Gunthorpe wrote:
-> > > On Sun, Jun 15, 2025 at 02:47:15PM -0400, Demi Marie Obenour wrote:
-> > > 
-> > > > Is a paravirtualized IOMMU with interrupt remapping something that makes
-> > > > sense?
-> > > 
-> > > IMHO linking interrupt remapping to the iommu is a poor design,
-> > > interrupt routing belongs in the irq subsystem, not in the iommu.
-> > > 
-> > > The fact AMD and Intel both coupled their interrupt routing to their
-> > > iommu hardware is just a weird design decision. ARM didn't do this,
-> > > for instance.
-> > 
-> > why does it matter in which device it resides?
-> 
-> It would cleanup the boot process if the IRQ components were available
-> at the same time as the IRQ drivers instead of much later when the
-> iommu gets plugged in.
-> 
-> > Way I see it, there is little reason to remap interrupts without
-> > also using an iommu, so why not a single device.  what did I miss?
-> 
-> Remapping interrupts can be understood to be virtualizing the MSI
-> addr/data pair space so that the CPU controls where the interrupt goes
-> though its internal tables not the device through the addr/data.
-> 
-> On x86 you also need to use remapping to exceed the max CPU count that
-> can be encoded in the MSI, no iommu required to need this.
 
-More of an x86 quirk though, isn't it?
 
-> There is also some stuff related to IMS that could get improved here.
+On 6/17/25 2:20 PM, Daniel Dadap wrote:
+> On Tue, Jun 17, 2025 at 12:59:10PM -0500, Mario Limonciello wrote:
+>> From: Mario Limonciello <mario.limonciello@amd.com>
+>>
+>> On a mobile system with an AMD integrated GPU + NVIDIA discrete GPU the
+>> AMD GPU is not being selected by some desktop environments for any
+>> rendering tasks. This is because neither GPU is being treated as
+>> "boot_vga" but that is what some environments use to select a GPU [1].
+>>
+>> The VGA arbiter driver only looks at devices that report as PCI display
+>> VGA class devices. Neither GPU on the system is a PCI display VGA class
+>> device:
+>>
+>> c5:00.0 3D controller: NVIDIA Corporation Device 2db9 (rev a1)
+>> c6:00.0 Display controller: Advanced Micro Devices, Inc. [AMD/ATI] Device 150e (rev d1)
+>>
+>> If the GPUs were looked at the vga_is_firmware_default() function actually
+>> does do a good job at recognizing the case from the device used for the
+>> firmware framebuffer.
+>>
+>> Modify the VGA arbiter code and matching sysfs file entries to examine all
+>> PCI display class devices. The existing logic stays the same.
+>>
+>> This will cause all GPUs to gain a `boot_vga` file, but the correct device
+>> (AMD GPU in this case) will now show `1` and the incorrect device shows `0`.
+>> Userspace then picks the right device as well.
+>>
+>> Link: https://github.com/robherring/libpciaccess/commit/b2838fb61c3542f107014b285cbda097acae1e12 [1]
+>> Suggested-by: Daniel Dadap <ddadap@nvidia.com>
+>> Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>> ---
+>>   drivers/pci/pci-sysfs.c | 2 +-
+>>   drivers/pci/vgaarb.c    | 8 ++++----
+>>   2 files changed, 5 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+>> index 268c69daa4d57..c314ee1b3f9ac 100644
+>> --- a/drivers/pci/pci-sysfs.c
+>> +++ b/drivers/pci/pci-sysfs.c
+>> @@ -1707,7 +1707,7 @@ static umode_t pci_dev_attrs_are_visible(struct kobject *kobj,
+>>   	struct device *dev = kobj_to_dev(kobj);
+>>   	struct pci_dev *pdev = to_pci_dev(dev);
+>>   
+>> -	if (a == &dev_attr_boot_vga.attr && pci_is_vga(pdev))
+>> +	if (a == &dev_attr_boot_vga.attr && pci_is_display(pdev))
+>>   		return a->mode;
 > 
-> You don't need an iommu to enjoy those benefits.
+> I can't help but worry about userspace clients that might be checking for
+> the presence of the boot_vga sysfs file but don't check its contents. 
+
+Wouldn't those clients "already" be broken by such an assumption?
+We know today that there are systems with two VGA devices in them too.
+
+I'd think those should have both GPUs exporting a file and one having a 
+0 the other 1.
+
+> I
+> understand that it's the intention to expose the file for non-VGA display
+> controllers in the case where none of the display controllers are of the
+> VGA subclass, but one of them is the boot console device and should be
+> considered "VGA" for the purposes of the overloaded meaning of "VGA", but
+> if it isn't too much trouble to minimize the change to UAPI here, I'd be
+> more comfortable with only exposing this file for devices that really are
+> VGA and/or the firmware default.
 > 
-> Jason
+> Maybe something like making the condition:
+> 
+> if (a == &dev_attr_boot_vga.attr) {
+> 	if (pci_is_vga(pdev) ||
+> 	    (pci_is_display(pdev) && vga_default_device() == pdev))
+> 		return a->mode;
+> }
+> 
+> (maybe we don't even need the pci_is_display() check at that point? I
+> feel more comfortable leaving it in, though)
+
+I suppose it depends upon call order whether the above works or not.
+
+I'm not sure 'off hand' right now.
+
+ > > I'd expect that to do something like (assuming two-GPU hybrid system):
+> 
+> * Systems with one VGA controller and one 3D controller:
+>    * VGA controller gets boot_vga file, contents are "1"
+>    * 3D controller does not get boot_vga file
+> * Systems with no VGA controllers and two 3D controllers:
+>    * 3D controller driving the console gets boot_vga file: "1"
+>    * 3D controller not driving the console does not get boot_vga file
+> * Systems with two VGA controllers and no 3D controllers:
+>    * VGA controller driving the console gets boot_vga file: "1"
+>    * VGA controller not driving the console gets boot_vga file: "0"
+> 
+> i.e., the behavior would only be visibly different in the case with two
+> 3D controllers, like the one targeted by this patch. You and I have seen
+> the two VGA controller case in the wild, so we know it exists. 
+
+Yeah I wish we had some more data from that reporter right now to 
+potentially support a proposal that would help their system too.
+
+This patch as it is today will only help case 1 and 2.
+
+> The one 3D
+> and one VGA controller case is what I'd expect to be the common one, and
+> hopefully this will have the same behavior before and after this change
+> regardless of whether a muxed system defaults to dGPU (like hybrid Mac
+> notebooks) or iGPU (like other hybrid systems I'm accustomed to).
+> 
+>>   
+>>   	return 0;
+>> diff --git a/drivers/pci/vgaarb.c b/drivers/pci/vgaarb.c
+>> index 78748e8d2dbae..63216e5787d73 100644
+>> --- a/drivers/pci/vgaarb.c
+>> +++ b/drivers/pci/vgaarb.c
+>> @@ -1499,8 +1499,8 @@ static int pci_notify(struct notifier_block *nb, unsigned long action,
+>>   
+>>   	vgaarb_dbg(dev, "%s\n", __func__);
+>>   
+>> -	/* Only deal with VGA class devices */
+>> -	if (!pci_is_vga(pdev))
+>> +	/* Only deal with PCI display class devices */
+>> +	if (!pci_is_display(pdev))
+>>   		return 0;
+>>   
+>>   	/*
+>> @@ -1546,12 +1546,12 @@ static int __init vga_arb_device_init(void)
+>>   
+>>   	bus_register_notifier(&pci_bus_type, &pci_notifier);
+>>   
+>> -	/* Add all VGA class PCI devices by default */
+>> +	/* Add all PCI display class devices by default */
+>>   	pdev = NULL;
+>>   	while ((pdev =
+>>   		pci_get_subsys(PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
+>>   			       PCI_ANY_ID, pdev)) != NULL) {
+>> -		if (pci_is_vga(pdev))
+>> +		if (pci_is_display(pdev))
+>>   			vga_arbiter_add_pci_device(pdev);
+>>   	}
+>>   
+>> -- 
+>> 2.43.0
+>>
 
