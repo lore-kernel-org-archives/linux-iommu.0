@@ -1,137 +1,103 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CEF427461
-	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 05:43:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32FB4C2D1;
+	Tue, 17 Jun 2025 06:28:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750139002; cv=none; b=jxoJ1mqvNveHOyjgHqm89YiKhGsYmAfmbuPFtuUVs8d4Gaeo+zJmZwB3hWWhmzFexX13r3R7ySi8SGDsIexHS1EfYIfzRPylRDeVSA5dZbvz4s3B+V3+Dcj8jelrk7hdwYPQgnNVTKDOiDzwEweH9NjmnRF3GTDh0ZFshecPABA=
+	t=1750141702; cv=none; b=lDwcudUd9euXmblN4sR9Lzkqm4CnSZ4Hmn/QteNJfB6oJR/tzI08LjJOX7bT2K49Z/RQh7XBw0FEWif0iXxbsggUOqvS6HlqdEnf/HtWxHjDCx34K2qeN42Nh0aiIfYYIgkq5i9W8XJYxhqIxN0nhwpDMUB1pKWrvTm6O10edx8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750139002; c=relaxed/simple;
-	bh=SghC4et/z2EDycDOFtWYFVm+MtMf9BDEsdZTXx4JMDA=;
+	s=arc-20240116; t=1750141702; c=relaxed/simple;
+	bh=LF9auu4JR+Lf7VFoXANiRubeszBNmKcaT9+J6iYCMqQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ai7wh10DFvA6dFU0tZI+gS1KhDMSIKBxAQmYzmzVyS1LjDRd1iEIxg6LodIQDpxmT3HkJ9yL4erS5pqdMGTeVUVlj+i/I3Trzz3B8Kxzok0nw3J+kbQcZ8SdSIT23Hf+W6/HkLrIzUE2R95acCscQItjGLPffRNDYq/4VSurmms=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uFAbR2rS; arc=none smtp.client-ip=209.85.214.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Xzv9SfPAs9s+VVZuigNQYhs2joW+EJzL9vfOc8Xs8Av+tLkuU9Dl391vSRcdHvL5khfSt8xGn/an6dr4qtcsZ2I3MyisF9WAx0QeZo8X7J8fn53WS0mnktvFwzyott1On+LYpANGsO26eVqZ7mMiD12rJb1JGQQ1A4pBkDPTYmM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=si0ySmFf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uFAbR2rS"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2348ac8e0b4so83715ad.1
-        for <iommu@lists.linux.dev>; Mon, 16 Jun 2025 22:43:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1750139000; x=1750743800; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=vqy+/M9QHJY6wwtqs4c/CeBC/StH/tZ5ncI+kmSkSV8=;
-        b=uFAbR2rSZ+SLThRp4sh+Z2aHef+ATUn5y/OQqc4JpsG9eWpi72y1zQQxuxKHo2JhRz
-         ch6Lq/bwyb6/s4BrXQE5GbG79zNNsF/N4aKPngARFMMrweIQNhDfvHxVoGtF25nDXJQU
-         +BdK8n/VnVIdgaVtvfOIzo1NFmnH//99pyBySuXaq9xYmnOhW5sqY3iBrDDunkuGvFVa
-         5Ay3ruZv+RmRaWmh/sHr4cihgDblf3JhOc0Wo7sor74hTqQ4yL8roAVk/bPqjYOAYy4E
-         wulMuHpV0AWv3e78UvMbGrIoXMJGuSrBu70DCTmGmSeiN8EE6lfAPclQ7897gr/cNpl4
-         CEOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750139000; x=1750743800;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vqy+/M9QHJY6wwtqs4c/CeBC/StH/tZ5ncI+kmSkSV8=;
-        b=A9BXeVLjINtS13rNRbJjVh/+XkjrStTvo7fmaMIhVgppAq3VBnu+V2JgHMS1Y1Yoyd
-         o89AKPOr/Nl94xyG56aahudPC/gln/cYzalUDyHnTM+Es5UYJGHtZ59MrtIs97yi+oUE
-         epysZY4qCKpZvItjoDQEuTQshTmFf4j68hW7VUjbXZ0zIU/YwJ8fwbU1wHEZgew4ITdy
-         VqHx5udpIbeW1lLhZZm8g98mFl5dyLAkQ4rW2YQjdoaR7pY1VrnKtM97iLsjcv2e0Hl7
-         YlbXkyvnaX+BmqubG4xaZ3ARyrSYNnVa0pC3g1teQtES9utMEDEVgaTddoHAkILNhlXj
-         DHng==
-X-Forwarded-Encrypted: i=1; AJvYcCXas2F1OAWWcG4Rj6zChBX3dMkW5SPaLN4YJMrmFjOGS2gEURfP3ktg1BpwoIHdzvMmhMRUSQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzLdeqH93unFKaQsdzss1eYh5QWgbZXMn/9rLuRyNgG/+JCA4DG
-	BE65KyrsrgqPsRvl6PxPhju5icgfnAuz9yWp52dMCEbcJUFUaETS+z8sbMseDjcatg==
-X-Gm-Gg: ASbGncvPkW3tnnxC3RXNaYBr9l81JSeYUsxoLotZyBZDiKPX3r7tFTkdM7hDn5JO6cs
-	RoUpmvE26EKm5LVfnmUFirV6/i2OVZNLOCh7v3f7oD76HBXIFkHjqrWbgAF6BZoY5nA5UImotx7
-	TBums/YI+XTDPurA+PomJB6+PLwl3f4FB3WhWA1T1YMG1+iCcoTJnCrO9AubEWTD/UGFzy7DNHa
-	VBPWOGyWKaamnRxq21YXnt2hvuNC804Bv9xPXAaS9I0JA6j3+S2m6P/u7VCD/eK5ftomSHx2wUI
-	7IZWKZXV/GKJ+3LXTtW1FygGpzmCUWYTp1dsvl9+6bGsa3LrDhj8/wXoyJ8jI103+uYsEmFycm/
-	XCu/rrZ9bf/A5frHWu0/Z
-X-Google-Smtp-Source: AGHT+IFZAGH5Q2HoxTbpqlW9at8Yr/ZmYieszNEdcG0xorIcE8VWLoKmbjyoc4gI81zSv/z5UnBfOQ==
-X-Received: by 2002:a17:902:d48f:b0:234:c2e7:a0e7 with SMTP id d9443c01a7336-2366c5bf6d3mr7082695ad.4.1750138999607;
-        Mon, 16 Jun 2025 22:43:19 -0700 (PDT)
-Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-313c1bcbb39sm9722410a91.8.2025.06.16.22.43.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Jun 2025 22:43:19 -0700 (PDT)
-Date: Tue, 17 Jun 2025 05:43:09 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, will@kernel.org,
-	robin.murphy@arm.com, joro@8bytes.org, yi.l.liu@intel.com,
-	peterz@infradead.org, jsnitsel@redhat.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-	baolu.lu@linux.intel.com
-Subject: Re: [PATCH v2 10/14] iommu/arm-smmu-v3: Replace arm_vsmmu_alloc with
- arm_vsmmu_init
-Message-ID: <aFEAbc5URD93out3@google.com>
-References: <cover.1749882255.git.nicolinc@nvidia.com>
- <64e4b4c33acd26e1bd676e077be80e00fb63f17c.1749882255.git.nicolinc@nvidia.com>
- <aFCeCvKkm1MvT3xP@google.com>
- <aFDPtzY3EygoOpUx@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="si0ySmFf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DB45C4CEE7;
+	Tue, 17 Jun 2025 06:28:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750141701;
+	bh=LF9auu4JR+Lf7VFoXANiRubeszBNmKcaT9+J6iYCMqQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=si0ySmFf06Kx/pNC4mfe6nBcvFNV89lyyiFLJWdWrDmhso9gixojQO98veDgzlFS2
+	 bS4eVP0/5UE4jURK+g1fRox6cuIv53sWw8Du+l6BfR1pPc0WQR4nceAvkuxGbqQw9q
+	 HfsqK6V1xxQJPg7WDS0pb1SyDq2oY+HTxzLt4PdtAfaEnySYIVD2h9q+wO2LNP5LYB
+	 SHFzQ99MFGGSFuxx9uYyrD9ZT5pD96cdUNXz/RlL96Y9hQbrjGZN3HL3XSror6hl1l
+	 gCpKHF9/DfjEtIPPPvZWYUlLuCeyvNBZrGZFyXg9voZF6JW2FP/NWHR6QBwPzE7YJu
+	 snYheb0NY7lNQ==
+Date: Tue, 17 Jun 2025 08:28:19 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Xueqi Zhang <xueqi.zhang@mediatek.com>
+Cc: Yong Wu <yong.wu@mediatek.com>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Matthias Brugger <matthias.bgg@gmail.com>, 
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Project_Global_Chrome_Upstream_Group@mediatek.com, 
+	Ning li <ning.li@mediatek.com>, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 1/8] dt-bindings: iommu: mediatek: Add mt8196 support
+Message-ID: <20250617-woodoo-uakari-of-cubism-c2bedf@kuoka>
+References: <20250616025628.25454-1-xueqi.zhang@mediatek.com>
+ <20250616025628.25454-2-xueqi.zhang@mediatek.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <aFDPtzY3EygoOpUx@nvidia.com>
+In-Reply-To: <20250616025628.25454-2-xueqi.zhang@mediatek.com>
 
-On Mon, Jun 16, 2025 at 07:15:19PM -0700, Nicolin Chen wrote:
-> On Mon, Jun 16, 2025 at 10:43:22PM +0000, Pranjal Shrivastava wrote:
-> > On Fri, Jun 13, 2025 at 11:35:22PM -0700, Nicolin Chen wrote:
-> > > To ease the for-driver iommufd APIs, get_viommu_size and viommu_init ops
-> > > are introduced.
-> > > 
-> > > Sanitize the inputs and report the size of struct arm_vsmmu on success, in
-> > > arm_smmu_get_viommu_size().
-> > > 
-> > > Place the type sanity at the last, becase there will be soon an impl level
-> > > get_viommu_size op, which will require the same sanity tests prior. It can
-> > > simply insert a piece of code in front of the IOMMU_VIOMMU_TYPE_ARM_SMMUV3
-> > > sanity.
-> > > 
-> > 
-> > That's what I was wondering, so we plan to replace the impl->vsmmu_alloc
-> > op as well?
+On Mon, Jun 16, 2025 at 10:56:07AM GMT, Xueqi Zhang wrote:
+> 1. Mediatek has its own implementation for wrapper interrupts and
+> power management. Add the SoC specific compatible for MT8196
+> implementing arm,smmu-v3.
+> 2. APU SMMU need wait until its power is ready, thus add a phandle
+> smmu-mediatek-parents to its power node.
 > 
-> There is no such op in v6.16-rc1.
+> Signed-off-by: Xueqi Zhang <xueqi.zhang@mediatek.com>
+> ---
+>  .../bindings/iommu/arm,smmu-v3.yaml           | 24 ++++++++++++++++++-
+>  1 file changed, 23 insertions(+), 1 deletion(-)
 > 
-> > > -	return &vsmmu->core;
-> > > +	viommu->ops = &arm_vsmmu_ops;
-> > > +	return 0;
-> > >  }
-> > 
-> > Seems much better now that the driver doesn't need to callback to the
-> > core for allocating viommu. One quick question though I see we've 
-> > removed the following too:
-> > 
-> >         if (master->smmu->impl_ops &&master->smmu->impl_ops->vsmmu_alloc)
-> > 	                vsmmu = master->smmu->impl_ops->vsmmu_alloc(
-> > 			                        master->smmu, s2_parent,
-> > 						ictx, viommu_type,
-> > 						user_data);
-> > 
-> > Not sure why don't I see that in the diffs.. do we plan to split this
-> > into an impl-specific size and init too?
-> 
-> Because there is no vsmmu_alloc in v6.16-rc1. I guess you are
-> referring to older versions of HW queue (vCMDQ) series that
-> was not merged?
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+> index 75fcf4cb52d9..c9a99e54de69 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+> @@ -20,7 +20,12 @@ properties:
+>    $nodename:
+>      pattern: "^iommu@[0-9a-f]*"
+>    compatible:
+> -    const: arm,smmu-v3
+> +    - description: MediaTek SoCs implementing "arm,smmu-v3"
+> +      items:
+> +        - enum:
+> +            - mediatek,mt8196-apu-smmu
+> +            - mediatek,mt8196-mm-smmu
+> +        - const: arm,smmu-v3
 
-That's right, my bad. I rebased the older series while pulling,
-apologies for the confusion!
+You just broke every existing user, so this was not tested.
 
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
+Limited review follows - test your patches first.
 
-> 
-> Thanks
-> Nicolin
+>  
+>    reg:
+>      maxItems: 1
+> @@ -69,11 +74,28 @@ properties:
+>        register access with page 0 offsets. Set for Cavium ThunderX2 silicon that
+>        doesn't support SMMU page1 register space.
+>  
+> +  mediatek,smmu-parents:
+> +    $ref: /schemas/types.yaml#/definitions/phandle
+> +    description:
+> +      A phandle to the SMMU's power node. The SMMU should wait until its power
+> +      is ready
 
-Thanks!
+No, power domains express power relationship. Or some other existing
+properties or simply parent-child relationships.
+
+Best regards,
+Krzysztof
+
