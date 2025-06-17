@@ -1,230 +1,127 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from fhigh-a2-smtp.messagingengine.com (fhigh-a2-smtp.messagingengine.com [103.168.172.153])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3450293B5C;
-	Tue, 17 Jun 2025 08:07:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85E1F28FA89;
+	Tue, 17 Jun 2025 08:27:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.153
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750147632; cv=none; b=ntrxmS7XxrLlHLGNb4blFq1EaNnclbG6kBLPKQtsfcatURVxzpbrEPw93BJWpuGxrIkgPuwBRTMLHkFmQ0XQoGEgexwf6hsgaiJzvXzEFdUWl8LcRGBHorOPxsRBn4Secij55uOeQXyZ+2xgLnEgMgw3LxD42RqX1R2RLsgYxKg=
+	t=1750148835; cv=none; b=mgUZjXMoTBpxnLOUqH71Lj2q47isEOfchhXDVUyZptSHP/GA9NAhQZh5ZWSjO3lEPfvJcJNlK2/MSmTdjqQIxRl1fPAQqXBSRjNlzai8WdQpdq9nyqfLULen4r2C1zca9NqUL3leDQLPzlLVmb2mtQbwBt/D2Z7vln5y/YjRs4A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750147632; c=relaxed/simple;
-	bh=KYLiaVSweH1OEcMlxROlRhvYiENPdZ9jdUsrp6aJ5ZM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=NVzHQmNiqX1Dj8IcnHRsuuNFRq82oUxr3RxuaqRsr0ELi7v9xHv2vjYuGNGWSPWsVUfDm2rZxKHfAzymrt+5mpMUW/o1qdM9+4M4ZmNfzqsNmflhyzbxJNYiVTCsWIFTkvA5clmLzJP4VOyExO72okT6166kBHT1ewSFAVSkEwM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iQxcYs/y; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750148835; c=relaxed/simple;
+	bh=p+OBljdaXw+ZNWtuzpzHmw1IKToyT5gfg5mlshVql+U=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=YZhLupDcp5W5o8QGB9nDlAEMXjL0039QRzazAQZEXejI3AgKE85wZX9ZsG+7RdH6dOIzZlgxGnBYFKc81UMk6WNCcTi9Lfj5+mQk+fZ9PtF36uDc+t7w5PJz8r+7yBkO0p6KTGdk7vrzw2UaHnCzTORkW1cHHr396BZ+rXyudc4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=JrMdTAX9; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=TiaGR9+6; arc=none smtp.client-ip=103.168.172.153
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iQxcYs/y"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8B9AC4CEE3;
-	Tue, 17 Jun 2025 08:07:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750147631;
-	bh=KYLiaVSweH1OEcMlxROlRhvYiENPdZ9jdUsrp6aJ5ZM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=iQxcYs/ycwoPSCMYhNUtVOozwBZ4/rLkC6haME/bsSeEF7GG2fHvqQB8Spl0B6Urd
-	 8sg8MhNRAph2GhlSXng43BuUQtxYNmBrqVliI7i6LCa+iO5vSu6nGeqT5vdY0BNuNa
-	 0qlLaoQoZj5emLRVka0MvW9S5/wy2eiaOqqaYudJStPdF13rlVY06RzUQaw7PNUhD7
-	 TLdUZ6+chHnuz1kToubEKrA/rhNIPIwAQMdhz81rOA4jHTbbwTg5wLJJjj3EoVsDrO
-	 U0s2jqKdwVtIziOxKcdbVY/Igb1y/pDjPFtM03dkdLQywpVQeHL+o/GEa01AOQJuiH
-	 G6Gvh5mXJhZyQ==
-X-Mailer: emacs 30.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>, "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH] iommufd: Destroy vdevice on device unbind
-In-Reply-To: <20250616164941.GA1373692@ziepe.ca>
-References: <20250610065146.1321816-1-aneesh.kumar@kernel.org>
- <BN9PR11MB527606182417BB7A35349F598C74A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250612172645.GA1011960@ziepe.ca>
- <BN9PR11MB5276B467ADCC57BC6571CA458C77A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250613124202.GD1130869@ziepe.ca> <yq5abjqotim7.fsf@kernel.org>
- <BN9PR11MB527633CA2F698E83E12BFBD68C70A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250616164941.GA1373692@ziepe.ca>
-Date: Tue, 17 Jun 2025 13:37:04 +0530
-Message-ID: <yq5azfe6ssev.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="JrMdTAX9";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="TiaGR9+6"
+Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 7F1431140132;
+	Tue, 17 Jun 2025 04:27:12 -0400 (EDT)
+Received: from phl-imap-02 ([10.202.2.81])
+  by phl-compute-05.internal (MEProxy); Tue, 17 Jun 2025 04:27:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1750148832;
+	 x=1750235232; bh=AapnD22KoJa7oOuX3gAhhYqhmyCztWp6yYLSnan63Qg=; b=
+	JrMdTAX9qEcDetAUa8gdNPNggBZ0VX3PM6DceesLGYw2IrORWf27TSzqkmnGQASq
+	d4q0/aFTlgN+j151YjXwetWhqU++1gNAAM3/wJcrVezjZbNtokh0wXywUqJnYjWl
+	V22CGr1zRtIchMPQM3uY5QGFYsy8VxPqtJhmDukYplIMKRPF7UNfOUq6FSAKx77s
+	7Dp0nGj3nPCx711tOuHSN9n826eUz0LKOZ5BA3M8lWfA8unAo75XpoNe/xhBHq+L
+	HnYYc6he0p3/8CbJ/guwfDc6Ds4FMOieTbAJDhstQj25DiDaWVdvt6f3dPmxHEzK
+	w9JSCIsZ9NeULOzGArtRzQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1750148832; x=
+	1750235232; bh=AapnD22KoJa7oOuX3gAhhYqhmyCztWp6yYLSnan63Qg=; b=T
+	iaGR9+6KZg4HEiv45FneefPIinNWlBL01WyxEpIk/KeYNg8Csu5vZXBc8lHwFaZZ
+	1Gl4XEIaaiL2dKuGmHgLNYV2JcSDMbMqz8km5xLM4Hu+C6AfqSaIDjUURtBt3Nfk
+	I4gL8viWhaog930ranXn34kuMaMkVyoYxoYtXgtl5ANlPmDs2VWQ7H3YuUokkZhH
+	jYs6thLDTkH2Csy9qczXpbsYSTThicDoruFnMXciVUIn6I6OedUaksxm12ibgrQ/
+	dgP3eliOh4PgtQUhuBrz1LGxlGpmpy3yw+Fj6ykioPGQ9b2z//BBowcB12eu6Dwe
+	P0rpq26f5aX2j9QtAbWtg==
+X-ME-Sender: <xms:4CZRaE87h-nRftsg_6kNXBmMHLJq0HBhc0K1KAq5etLTTfRG0nqD0g>
+    <xme:4CZRaMtWp2Q2rX18Kmb_pYH-BmF7S8Xwm6yhQ4ZlllvofuxN_b0W995PZ9kLgWEZc
+    WV2JFrJwj_OBih0GYs>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtddugddvkeekjecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpggftfghnshhusghstghrihgsvgdp
+    uffrtefokffrpgfnqfghnecuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivg
+    hnthhsucdlqddutddtmdenucfjughrpefoggffhffvvefkjghfufgtgfesthejredtredt
+    tdenucfhrhhomhepfdetrhhnugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusg
+    druggvqeenucggtffrrghtthgvrhhnpefhtdfhvddtfeehudekteeggffghfejgeegteef
+    gffgvedugeduveelvdekhfdvieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
+    epmhgrihhlfhhrohhmpegrrhhnugesrghrnhgusgdruggvpdhnsggprhgtphhtthhopedu
+    gedpmhhouggvpehsmhhtphhouhhtpdhrtghpthhtoheprhhosghinhdrmhhurhhphhihse
+    grrhhmrdgtohhmpdhrtghpthhtohepohhlthgvrghnvhesghhmrghilhdrtghomhdprhgt
+    phhtthhopehlkhhpsehinhhtvghlrdgtohhmpdhrtghpthhtohepsghrohhonhhivgeskh
+    gvrhhnvghlrdhorhhgpdhrtghpthhtohepjhgrmhgvshdrtghlrghrkheslhhinhgrrhho
+    rdhorhhgpdhrtghpthhtohepihhmgieslhhishhtshdrlhhinhhugidruggvvhdprhgtph
+    htthhopehiohhmmhhusehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepohgv
+    qdhksghuihhlugdqrghllheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhope
+    hhtghhsehlshhtrdguvg
+X-ME-Proxy: <xmx:4CZRaKCuvjcZvNREdfFxg7iIlgpJRLaX9h2AZfDfVY1s02hVY8zVBg>
+    <xmx:4CZRaEeGdw1nk2-e77DoTV2ERy4elO4vkVOcQw0mJ0KZa4FHKtkn-g>
+    <xmx:4CZRaJO6P7aes_EnrNS8eMslf1FGeHJ1r8MzJsuZNsXD7hZuTGSX5Q>
+    <xmx:4CZRaOkeLdWNP6cyzVOuqYSq4wEESZMugGAQ2r2vHEWLkjFEkGhByg>
+    <xmx:4CZRaDTJrF_knVLInAnOd3RLFGXBxbBKmsQhFSvAGN7vnQ00aANYMEWt>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id 23FDD700062; Tue, 17 Jun 2025 04:27:12 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-ThreadId: T4808b90e09d8ad4f
+Date: Tue, 17 Jun 2025 10:26:51 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Christoph Hellwig" <hch@lst.de>
+Cc: "James Clark" <james.clark@linaro.org>, "Mark Brown" <broonie@kernel.org>,
+ "Vladimir Oltean" <olteanv@gmail.com>, oe-kbuild-all@lists.linux.dev,
+ "Larisa Grigore" <larisa.grigore@nxp.com>, "Frank Li" <Frank.li@nxp.com>,
+ linux-spi@vger.kernel.org, imx@lists.linux.dev, linux-kernel@vger.kernel.org,
+ "kernel test robot" <lkp@intel.com>,
+ "Marek Szyprowski" <m.szyprowski@samsung.com>,
+ "Robin Murphy" <robin.murphy@arm.com>, iommu@lists.linux.dev
+Message-Id: <76a8c896-d7ea-4471-99a2-34b3a7ac9804@app.fastmail.com>
+In-Reply-To: <5de445aa-048b-4f60-9045-df5d45341436@app.fastmail.com>
+References: <20250616120832.GA24959@lst.de>
+ <2d62254e-5cbe-4174-95d8-e80cae4f4543@sirena.org.uk>
+ <20250616121444.GA25443@lst.de>
+ <7cfcf919-3c7d-4f0c-911f-697ea3141080@linaro.org>
+ <20250616131346.GB29838@lst.de>
+ <83855c1a-c128-4762-9d6b-e17f2c4c8820@linaro.org>
+ <d16bdc40-20d6-49db-bf41-18bb9b8e01fd@linaro.org>
+ <20250616131944.GA30260@lst.de>
+ <f723d490-c228-42d5-9f9f-158df54a092d@linaro.org>
+ <9788991a-ac37-4fde-81db-c55035d00f27@app.fastmail.com>
+ <20250617044833.GE1824@lst.de>
+ <5de445aa-048b-4f60-9045-df5d45341436@app.fastmail.com>
+Subject: Re: [PATCH] dma-mapping: Stub out dma_{alloc,free,map}_pages() API
 Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-Jason Gunthorpe <jgg@ziepe.ca> writes:
+On Tue, Jun 17, 2025, at 09:53, Arnd Bergmann wrote:
 
-> On Mon, Jun 16, 2025 at 05:37:58AM +0000, Tian, Kevin wrote:
->
->> the expected destruction flow from userspace is to IOMMU_DESTROY
->> the vdevice object before closing the vfio cdev fd which unbinds the
->> idevice.
->> 
->> now we are discussing how to handle a malfunction userspace which
->> violates that flow: let it be or add a tomestone state, after extending
->> unbind to destroy the vdevice...
->
-> Right, to be clear the concern is
->
-> close(vfio_cdev)
-> ioctl(DESTROY, vdevice_id);
-> close(iommufd)
->
-> Which is a possibile sequence for userspace/syzkaller to trigger.
->
-> My position has historically been that DESTROY should not destroy some
-> random unrelated object eg because a parallel thread did an allocation
-> and re-used the kernel deleted ID. ID's that belong to userspace have
-> to be retained right up until DESTROY.
->
-> Thus we've historically avoided creating scenarios where IDs owned by
-> userspace are destroyed by the kernel.
->
-> Given we can say the above is illegal use of the API we could leave
-> behind a tombstone in the xarray. The goal would be to prevent lookup
-> of the object (since it is destroyed) and prevent reallocation of the
-> ID.
->
-> For instance a simple thing would be to drop in XA_ZERO_ENTRY, this
-> will reserve the ID and fail all future operations. The userspace will
-> get a failure on DESTROY so they know they did something wrong. The fd
-> close will clean up the reserved ID.
->
+> Between SH72xx/SH76xx, SUN3 and M68328, I believe the
+> supported machines are all limited to between 1MB and 32MB in
+> the maximum configuration, which is obviously extremely
+> tight.
 
-How do we reclaim that object id for further reuse? 
+I checked the exact numbers we're talking about here: enabling
+CONFIG_HAS_DMA on rsk7269_defconfig adds 10KB of extra vmlinux
+size, which doesn't seem too bad:
 
-is it that if there is a request for a iommufd_object_remove() with object
-refcount > 1, we insert a XA_ZERO_ENTRY and convert that to NULL entry
-on IOMMU_DESTROY?
+   text	   data	    bss	    dec	    hex	filename
+3295084	1111396	 112264	4518744	 44f358	vmlinux-before
+3302836	1113652	 112264	4528752	 451a70	vmlinux-after
 
-Something like below
-
-The below sequence will work with the changes as
- close(vfio_cdev) -> vdev destroy
- ioctl(DESTROY, vdevice_id); -> vdev object id reclaim
- close(iommufd)
-
- ioctl(DESTROY, vdevice_id); -> EBUSY
- close(vfio_cdev) -> vdev destroy
- close(iommufd)
-
-
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index 7b3f82afd295..1f8e4fd0e240 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -289,7 +289,7 @@ void iommufd_device_unbind(struct iommufd_device *idev)
- 
- 	if (idev->vdev)
- 		/* extra refcount taken during vdevice alloc */
--		iommufd_object_destroy_user(idev->ictx, &idev->vdev->obj);
-+		__iommufd_object_destroy_user(idev->ictx, &idev->vdev->obj, REMOVE_OBJ_FORCE);
- 	iommufd_object_destroy_user(idev->ictx, &idev->obj);
- }
- EXPORT_SYMBOL_NS_GPL(iommufd_device_unbind, "IOMMUFD");
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 9c4472df80c6..8c5fc0fe92ce 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -186,9 +186,9 @@ void iommufd_object_abort_and_destroy(struct iommufd_ctx *ictx,
- void iommufd_object_finalize(struct iommufd_ctx *ictx,
- 			     struct iommufd_object *obj);
- 
--enum {
--	REMOVE_WAIT_SHORTTERM = 1,
--};
-+#define	REMOVE_WAIT_SHORTTERM	BIT(0)
-+#define	REMOVE_OBJ_FORCE	BIT(1)
-+
- int iommufd_object_remove(struct iommufd_ctx *ictx,
- 			  struct iommufd_object *to_destroy, u32 id,
- 			  unsigned int flags);
-@@ -198,12 +198,13 @@ int iommufd_object_remove(struct iommufd_ctx *ictx,
-  * point the caller has no shortterm_users reference and at least the xarray
-  * will be holding one.
-  */
--static inline void iommufd_object_destroy_user(struct iommufd_ctx *ictx,
--					       struct iommufd_object *obj)
-+static inline void __iommufd_object_destroy_user(struct iommufd_ctx *ictx,
-+						 struct iommufd_object *obj,
-+						 unsigned int flags)
- {
- 	int ret;
- 
--	ret = iommufd_object_remove(ictx, obj, obj->id, REMOVE_WAIT_SHORTTERM);
-+	ret = iommufd_object_remove(ictx, obj, obj->id, flags | REMOVE_WAIT_SHORTTERM);
- 
- 	/*
- 	 * If there is a bug and we couldn't destroy the object then we did put
-@@ -213,6 +214,12 @@ static inline void iommufd_object_destroy_user(struct iommufd_ctx *ictx,
- 	WARN_ON(ret);
- }
- 
-+static inline void iommufd_object_destroy_user(struct iommufd_ctx *ictx,
-+						 struct iommufd_object *obj)
-+{
-+	return __iommufd_object_destroy_user(ictx, obj, 0);
-+}
-+
- /*
-  * The HWPT allocated by autodomains is used in possibly many devices and
-  * is automatically destroyed when its refcount reaches zero.
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index b7aa725e6b37..d27b61787a53 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -88,7 +88,8 @@ struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
- 
- 	xa_lock(&ictx->objects);
- 	obj = xa_load(&ictx->objects, id);
--	if (!obj || (type != IOMMUFD_OBJ_ANY && obj->type != type) ||
-+	if (!obj || xa_is_zero(obj) ||
-+	    (type != IOMMUFD_OBJ_ANY && obj->type != type) ||
- 	    !iommufd_lock_obj(obj))
- 		obj = ERR_PTR(-ENOENT);
- 	xa_unlock(&ictx->objects);
-@@ -157,17 +158,27 @@ int iommufd_object_remove(struct iommufd_ctx *ictx,
- 			ret = -ENOENT;
- 			goto err_xa;
- 		}
--	} else if (xa_is_zero(obj) || !obj) {
-+	} else if (xa_is_zero(obj)) {
-+		/* We can reclaim the id now. */
-+		xas_store(&xas, NULL);
-+		ret = 0;
-+		goto err_xa;
-+	} else if (!obj) {
- 		ret = -ENOENT;
- 		goto err_xa;
- 	}
- 
- 	if (!refcount_dec_if_one(&obj->users)) {
--		ret = -EBUSY;
--		goto err_xa;
-+		if (flags & REMOVE_OBJ_FORCE) {
-+			xas_store(&xas, XA_ZERO_ENTRY);
-+		} else {
-+			ret = -EBUSY;
-+			goto err_xa;
-+		}
-+	} else {
-+		xas_store(&xas, NULL);
- 	}
- 
--	xas_store(&xas, NULL);
- 	if (ictx->vfio_ioas == container_of(obj, struct iommufd_ioas, obj))
- 		ictx->vfio_ioas = NULL;
- 	xa_unlock(&ictx->objects);
-diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
-index d9749d9d2ffb..4fc74ada0e62 100644
---- a/drivers/iommu/iommufd/viommu.c
-+++ b/drivers/iommu/iommufd/viommu.c
-@@ -213,6 +213,8 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
- 	/* vdev lifecycle now managed by idev */
- 	idev->vdev = vdev;
- 	refcount_inc(&vdev->obj.users);
-+	/* Increment refcount since userspace can hold the obj id */
-+	refcount_inc(&vdev->obj.users);
- 	goto out_put_idev_unlock;
- 
- out_abort:
+      Arnd
