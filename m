@@ -1,103 +1,76 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E67E815539A;
-	Tue, 17 Jun 2025 04:24:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BB7A14A09C;
+	Tue, 17 Jun 2025 04:48:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750134272; cv=none; b=e7B7xo9F7kDGvGe9OOXlzLR/lKaAilfIvdd9XKFpRwpQVhAmYYWjqNijLD5lClVcmYXqj30vWmtwm4UqOfcAwKWlkCQWtGWxce9wPGFx39/w7UTpIRh0SQOsWOjCo6waKYlG+6EAWi6Nh7nInynq8IEENU3naa/h3ar5s1b39Mo=
+	t=1750135719; cv=none; b=P7cfLJvcwl6QKZq6eQIMsa1LiShzefhkyTEl07egar7niaox5myBKNMAMdNOlAGw56wSwdIdnUBpn8YlqY7WQY23YEd10TPyKuvfhvcgTMTLPGsmzAyB1cjHxbg7/p2/9lsFTnc1hqi84e14GG9ANInYXsDED/bd4GZ/bvcRfPA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750134272; c=relaxed/simple;
-	bh=hS1jLez6pg2f2TjhjY9W1XKul5ilJirXcpZ9vDFaRGE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MwY3Ug/NBwgQzAkHk1bUWg87QpdaR1pMU6p5RyH49ZcUYjjTtm4kC7cRAUvleY6JFldJFKNrkmPMULU3ceKiuA5uDDteGYZSpQd+FerEYaWD5ztpG0ripdaZhyet8G3a3JbrSfifuk9FEU87UOFKUC28sB1C9EX8SI6+zWIaMhA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ahzXS8Sg; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ahzXS8Sg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750134270; x=1781670270;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=hS1jLez6pg2f2TjhjY9W1XKul5ilJirXcpZ9vDFaRGE=;
-  b=ahzXS8SgbcC/OFnLD/sR7e5uKx+WsU5AdW1jFY2GVsRkvFZ9jFNS9NNl
-   g8TZmb2CfLQP1aUT85u26KJ3vNoNm4D50cgJcwS32leaOLmGweGcaFkrs
-   7kS2Ej5XAJlMhZSUEBgratyi9D5M9LsDc/x4Np77lmR5n0qAv20feEMg9
-   nzyZNZy2h0U5lhOoVG35hO2+cqgUsR2T34BCeSpT2NTMsQNiF8lbFbfnL
-   7V9W8dblkf32/G/VUMf3zuQ3kgA2WjuPhsaVW9794jPJWQUGmDkdsdN+F
-   e1LGvDoUM6dNRBAJbFrVzQuBYr1BHIIIh0F8+5KMqdVhpjESd1RtAglKr
-   g==;
-X-CSE-ConnectionGUID: UUZZ01nDR6ucEbhbK2BwUw==
-X-CSE-MsgGUID: QOW//3iPTSyffTCrGbfdUg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11465"; a="54909359"
-X-IronPort-AV: E=Sophos;i="6.16,242,1744095600"; 
-   d="scan'208";a="54909359"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2025 21:24:29 -0700
-X-CSE-ConnectionGUID: osI7mkNFQI24GZf/sZPogQ==
-X-CSE-MsgGUID: 9yvR0dzZRHWogZ9sJL5FrA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,242,1744095600"; 
-   d="scan'208";a="153956949"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jun 2025 21:24:22 -0700
-Message-ID: <c3842cc4-f057-4ab6-b0bd-f7742ca7c645@linux.intel.com>
-Date: Tue, 17 Jun 2025 12:23:20 +0800
+	s=arc-20240116; t=1750135719; c=relaxed/simple;
+	bh=HpbsjtUF8/0yEJq1r9APjd7aYWNq9AD83e/U0S1OeDk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AJGti8Fo+ntIbUYtMh2mOP5Kv5Np7xYl7WRrRYRQTkCiL2y39USkCwMMh7ax9A8mzjoDboTDg9L1ZyS5mXzUTqHEO328kfXBSwN804kPKGLeM3MNBUE6f1aKmpzr0yZARVZWPNJCMxyhIczAtj7iHq5mO70tqpkLp1xGco0SuVI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id B627868D0E; Tue, 17 Jun 2025 06:48:33 +0200 (CEST)
+Date: Tue, 17 Jun 2025 06:48:33 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: James Clark <james.clark@linaro.org>, Christoph Hellwig <hch@lst.de>,
+	Mark Brown <broonie@kernel.org>,
+	Vladimir Oltean <olteanv@gmail.com>, oe-kbuild-all@lists.linux.dev,
+	Larisa Grigore <larisa.grigore@nxp.com>,
+	Frank Li <Frank.li@nxp.com>, linux-spi@vger.kernel.org,
+	imx@lists.linux.dev, linux-kernel@vger.kernel.org,
+	kernel test robot <lkp@intel.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev
+Subject: Re: [PATCH] dma-mapping: Stub out dma_{alloc,free,map}_pages() API
+Message-ID: <20250617044833.GE1824@lst.de>
+References: <20250616120832.GA24959@lst.de> <2d62254e-5cbe-4174-95d8-e80cae4f4543@sirena.org.uk> <20250616121444.GA25443@lst.de> <7cfcf919-3c7d-4f0c-911f-697ea3141080@linaro.org> <20250616131346.GB29838@lst.de> <83855c1a-c128-4762-9d6b-e17f2c4c8820@linaro.org> <d16bdc40-20d6-49db-bf41-18bb9b8e01fd@linaro.org> <20250616131944.GA30260@lst.de> <f723d490-c228-42d5-9f9f-158df54a092d@linaro.org> <9788991a-ac37-4fde-81db-c55035d00f27@app.fastmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 07/25] iommufd/access: Add internal APIs for HW queue
- to use
-To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
- bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
- thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
- shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
- peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
- praan@google.com, zhangzekun11@huawei.com, iommu@lists.linux.dev,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
- linux-kselftest@vger.kernel.org, patches@lists.linux.dev, mochs@nvidia.com,
- alok.a.tiwari@oracle.com, vasant.hegde@amd.com, dwmw2@infradead.org
-References: <cover.1749884998.git.nicolinc@nvidia.com>
- <64145b184a0fa7c9b60532c9b475a51625edb77c.1749884998.git.nicolinc@nvidia.com>
- <20250616133719.GC1174925@nvidia.com> <aFDSNYOTToFSbFA2@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <aFDSNYOTToFSbFA2@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9788991a-ac37-4fde-81db-c55035d00f27@app.fastmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On 6/17/25 10:25, Nicolin Chen wrote:
->>>   struct iommufd_eventq {
->>>   	struct iommufd_object obj;
->>>   	struct iommufd_ctx *ictx;
->>> diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
->>> index 9293722b9cff..ad33f1e41a24 100644
->>> --- a/drivers/iommu/iommufd/device.c
->>> +++ b/drivers/iommu/iommufd/device.c
->>> @@ -1084,7 +1084,39 @@ void iommufd_access_destroy_object(struct iommufd_object *obj)
->>>   	if (access->ioas)
->>>   		WARN_ON(iommufd_access_change_ioas(access, NULL));
->>>   	mutex_unlock(&access->ioas_lock);
->>> -	iommufd_ctx_put(access->ictx);
->>> +	if (access->ops)
->>> +		iommufd_ctx_put(access->ictx);
->> I was hoping we could null the ictx to signal internal? That didn't
->> work out?
-> access->ictx should be NULL for internal. It should have been:
-> +	if (access->ictx)
-> +		iommufd_ctx_put(access->ictx);
+On Mon, Jun 16, 2025 at 03:48:50PM +0200, Arnd Bergmann wrote:
+> As far as I can tell, the difference here is that the
+> dma_alloc_coherent()/dma_free_coherent() calls all get stubbed
+> out, so the 827 drivers using those can all build cleanly on
+> mk68knommu, shnommu and UML, while dma_alloc_noncoherent()/
+> dma_free_noncoherent() are only used on 15 files that are all
+> guarded by some other Kconfig dependency at the moment and won't
+> build on the those platforms.
 
-access->ictx could be treated as user ownership token. If it's NULL,
-there is no user ownership, indicating it's owned by the kernel. This is
-the concept here?
+Yes, dma_alloc_coherent is from a time where stubbing out was
+still very common.
 
-Thanks,
-baolu
+> I agree that it would be best to treat the coherent/noncoherent
+> cases the same, and I also think the existing stubs are a bit
+> silly, but just removing them would likely require fixing
+> hundreds of drivers with added Kconfig or IS_ENABLED() checks.
+
+I doubt it's that many, as most drivers and even subsystems simply
+depend on DMA.  There's probably at most a few dozen drivers
+supporting DMA but not requiring it.
+
+> Maybe we can actually remove CONFIG_NO_DMA/CONFIG_HAS_DMA
+> entirely and remove all the checks for CONFIG_HAS_DMA? 
+> My guess is that this would only lead to a small code size
+> increase on the affected targets, but since they are not
+> actually trying to do DMA, and they all have a very limited
+> set of drivers they actually use, it won't break existing
+> code.
+
+Except for uml, the CONFIG_NO_DMA configs are usually very resource
+constraint, so I don't think that's a good idea.
+
