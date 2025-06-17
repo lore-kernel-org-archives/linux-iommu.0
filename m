@@ -1,75 +1,82 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E30342F2351
-	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 15:55:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F4952DFF06
+	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 15:58:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750175760; cv=none; b=FmIZbInu4IdJjgVj92G38hmVSLrwkwTOJlk8yasz2xUSoAXGdS+xqWS9RBu95ZVzJiDuOxBAgOxlCOK9vEgjA2aFvaVH5UfBSxBbb4CYuQwl8WvCfklWq6x0W96RLIH1hhY5duPGzibLNdKtNCCT95DSBHH6Ht8D5+pFep/mAKY=
+	t=1750175906; cv=none; b=fMX6X/N/nUy/q3LKsPd6Sdq1+fZOmDirzJsmyPcP9stgSI2gQfuEHDmWCyVFHQ9jCm3G46zyBeFmqIGHxz/GtU7AqsaSavSyJHkRQc6VWnyw6s32HmtHX0Yf0KxEdYnfeVpf+X5ISiJ/gQIwkMUn5mtDPMb2H1y5FLP8IDhKbpU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750175760; c=relaxed/simple;
-	bh=lOPGK2wBLpYT3HGjJWtnyQuuaqNgrLPd838FyM47en4=;
+	s=arc-20240116; t=1750175906; c=relaxed/simple;
+	bh=hqAmW2+tkDQoBFUTnquUpaKj3CzkKyd3cuJ8lhWF2fM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MlPJBQNd21BBn91AwDXrMegFeCVJv+aRNC0gYfAJABJBl8lxllXE5TuUG1fwUP8PW1/ePE1Ozegqral8Cy3C2N/pWV9fv87vUNeqw/qlltZcU78aaCkznzfvJGn8Q5TJLLsdqZzh5B5dcEs4bEA2sJ2VDJZPDzvrGVQitXfMfnM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hRBojH2e; arc=none smtp.client-ip=209.85.160.182
+	 Content-Type:Content-Disposition:In-Reply-To; b=aXUJ/+1uOT6yUIAPMx2X5CLek+4N2dA3itk7w0YPE5Mdj0AKl4hmPY6iWknScDZk3I4IrnwYWF25c3CH6U/BUP8CzwWMRz6xkjnIf9CLD+XHyyTHDT+p2Lud3RUwXZxitUJ/eYFCeqjWT8BnBYKajcpUGpim7FwpLqNHzq1sIfw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ON1YBUnc; arc=none smtp.client-ip=209.85.222.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hRBojH2e"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-4a43972dcd7so75440361cf.3
-        for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 08:55:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ON1YBUnc"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-7d098f7bd77so614012985a.0
+        for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 08:58:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1750175758; x=1750780558; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1750175903; x=1750780703; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fHiEAfP4gzQlO3+hd3Pxtez8+k1aqfmRcE8i41PL3io=;
-        b=hRBojH2eyzfi/kT7hIVM+LeRcNFjC8GJPiKobK6kfx9nkikpbhOFQFVeBGRzT5QHXP
-         saOv8y5H7LFxZVVsyaX8m5Cp6171A24+4L09R1S0ub2GhiRnnkeRq1OQZ+J/Z9VdEQjH
-         0ahbV7DoeHxWGDESHswIWJHMsM5np9ST1WLd2X+T1TpljrFDwCTKjfKZUvwfo54XCQpC
-         FygKDI86UPGwKBsA8gC58BwXOWDTpza8hV1gNi9W5yKBXaKXB/qFTjmxmHkLBEq9r0Fc
-         FmgJCFA+wVlsmdojW8ft/DjzNQJTgLSz7I9ihCvHX6edMHN99DQ094VaWqIk3OmD0kJe
-         5Wvg==
+        bh=5QVoUfdHdJ48HnCFe+0ux01ldLUN4WiVyX0euOzInBM=;
+        b=ON1YBUncutwB9tp6nMsEg8NV9W6THtc1a2kX84M5GtPtFjQIWnXaaed9NCEo2akDWr
+         /tp7rGUcE1r8nIg6h++uZyH/6T92vCZrKdOnsCYLlMaCX0P5Bh6GLDuJ+itWxKx58pYt
+         vE1cvJ+6Ga4RSSVwbT1w32Qa5gsOqek3R5R5g/DB0J+HUGl68iX/jWlCjH7GBQhNig3W
+         gvkFw7MvYayu10t0+GHrOmThkuS/4OBSJ0cRF+wEoneD8RSYhYpJYA2ZEOwkmcJPBwWX
+         0DRn7BlHXiLZs96lVo9PILcPkcrahfax8C4oCvk6gB8d7OFUZClzbb5BfSFyB/Uj3kuX
+         mBBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750175758; x=1750780558;
+        d=1e100.net; s=20230601; t=1750175903; x=1750780703;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fHiEAfP4gzQlO3+hd3Pxtez8+k1aqfmRcE8i41PL3io=;
-        b=tjLORmyvH14fvtYR4PZt27nJzbXhFn8oyCQkq3quDiZ7XodTCP4uoP9/PDPqz58SU8
-         HldYZveIjYwlRKeOC3dj2K35mnUNqTIek1uFMh53opg5XeR8bfkaL5pXw0RIF3edF2sW
-         vFWaXjIDKQZvWB2+rzOPDnN5w7SPKpGXuKJV5W5e4XruvERS+MAQvKPes0IZvY21qpgm
-         SM8zHPh2KORDM/MgkXIfwY4yxpBf3dGacNOZlY/UgttnUnbLcDItk3FMDv1S/sMCtk9T
-         Rxy7aJ6tEUroHBLlmcbWc9Z/c4CFciMYjOqdiAb2ZyMRx1sgdSiOeZiSaNafP9ezIElI
-         GPGA==
-X-Forwarded-Encrypted: i=1; AJvYcCWAwf5M4C0HVE5GkpSQyo1bs38wAsSdrO1l+WcFv1b2+KV+yQMKgVOi6AOUJDqvSgPJZD35IA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy8lGf6C3FkdYq6rzaHh/RF4/HwV+GaP06p3aWSrDsnuRcWCtPU
-	h8JmNazysIiCkN9g9Sf99aa+uT2LXRAVD+t4JZjXLIaMUY14XoKasXUEQT1U6eUFCp0=
-X-Gm-Gg: ASbGnct6ASaFS91cd9Z3kifxoY0eaqFPBnYwzqVpIYPrLg3h1/isN/tOcEL+16HySbl
-	iqKZ/1I5KcT1t4ulSCWZj21DXcNJgo+q5iC3KkOlXbPybXsrbQNBSTPvXb9rSLgiUdFyqhv0jMJ
-	0s580dRWgnoPzw1rcZKh/000gV3BDRVAWkFO9LjHyjMU2T5QiP1Vq4IcP0PPM8y6a7ngUk13Afd
-	Y8uJfiapKU53UBvdKVzg+XvJO0t6HwutwK+3p2qH4iwcY1HsokXel9SFp5LY+v270PGRULnSRSh
-	hgtbAtcfQdvM5wFaLsKxV3uHprxj7vC7vQ2AtGsnhoHiwTKAOHyndIpyqL0wHAiGKcJxfW7UeTI
-	sNYmscSsJNNV/uJMdbfdfqG97isZqhVXa87cFRA==
-X-Google-Smtp-Source: AGHT+IF+swq02oh++ntG5sh43vHbq7dO0kIbycrQJMgIerbV6mkh1G31T9NFcVqlSDZb4DoN622u4g==
-X-Received: by 2002:ac8:7d55:0:b0:4a4:41a1:b944 with SMTP id d75a77b69052e-4a73c51f7b3mr222738671cf.1.1750175757496;
-        Tue, 17 Jun 2025 08:55:57 -0700 (PDT)
+        bh=5QVoUfdHdJ48HnCFe+0ux01ldLUN4WiVyX0euOzInBM=;
+        b=w0Qre8RJ0v28lWdx3uu0VXF/4NxN0rOgGTjD4F4yAR+jDdEUN/UQGD7Pdc2477dVu2
+         IqBymlJiiiZX4Zkpjz9M4zW4Xc4FmNkeanoOuZ58ftZUtH20LP7tp7QQa2ziSJPh/q58
+         fcrJ8dh2OzlIDZhqYXRqSybswWEARVtCWA7pFwqHCw93hVXx1qBNmhZRmSWc1hj7SFRU
+         xNrTcnXUMbHeJfyGbULhY8uCPQKnsKbcITaTahp/jasMzeLY+QPn4i/9mAz5PWnn0Px1
+         nJ+jwi9rXb/GOBuiiC0Q0GqtvuBK60uSluA/pz41eGxcd5cwqA0TdudsFw7eCqHNixhl
+         UbFw==
+X-Forwarded-Encrypted: i=1; AJvYcCUB6k5Jd7Wyz9PU9GEU7+cYTGLmrqK/4JCwyMONIVfMr4pmVje241yt4yj+MJmHv9SSYIbQhQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwiPWu4sDjCwElFhhzNnvG7sI12//6G4LDCcTwwrELk5rXGJ08s
+	2jPu+geyyybQ334Vei7xjdiQ9fTA/LJtVjTp/hZD8bkqV6/CdJljGGEghnbIyY/TiQs=
+X-Gm-Gg: ASbGncsDqvHK4xdPrQNZtWV8RsuidmHxahi7arA2onafJLlnFqsnD1MMReWXsA+DQDQ
+	jQa3P17JapEKZGfWQC8lmGSDAtjirTTTznxRZ7zs6qwtqyStae6CpUsF9eEPcuublu5b8nkIe2t
+	aPaTapMM32Z456XMPaPUxj/mq2er3zHPuNGCsULqmMTzrfYxgPZnPVev/Lz7muInBkrEcJ7B9v2
+	J5+M4vdbXjkhJYceNktiAUHuwarek8dzKpizRYkhB9rQufs4yPWZ2Qs47LTntVUGHjXpHu7mbpg
+	Y9Bo4mJd9fHQ0Iz8/VN6WdZafJ4gRscNadx644asgp/KhVSTkJTCcGq0nngxP+dgd5c0Ccq95/a
+	NqIzR+EyuMpal0iD3RrnmGHIAic1ur+kbTYKsWQ==
+X-Google-Smtp-Source: AGHT+IGQBUFbF+tPc3zGviUG0wR17BWPg+rb3PkSRtQpO74uvfm4fcaKBtbG84+832ByxCugbO/j+w==
+X-Received: by 2002:a05:620a:44c5:b0:7d3:d14a:38aa with SMTP id af79cd13be357-7d3e07649b8mr472642785a.16.1750175903195;
+        Tue, 17 Jun 2025 08:58:23 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4a72a2c0506sm62393121cf.3.2025.06.17.08.55.57
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7d3b8e0535csm664773285a.41.2025.06.17.08.58.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jun 2025 08:55:57 -0700 (PDT)
+        Tue, 17 Jun 2025 08:58:22 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1uRYfE-00000006WT1-2PJ0;
-	Tue, 17 Jun 2025 12:55:56 -0300
-Date: Tue, 17 Jun 2025 12:55:56 -0300
+	id 1uRYha-00000006Wgi-0qrY;
+	Tue, 17 Jun 2025 12:58:22 -0300
+Date: Tue, 17 Jun 2025 12:58:22 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>
-Cc: dwmw2@infradead.org, baolu.lu@linux.intel.com,
-	fujita.tomonori@lab.ntt.co.jp, iommu@lists.linux.dev
-Subject: Re: [PATCH] iommu/vt-d: remove the CONFIG_X86 wrapping from iommu
- init hook
-Message-ID: <20250617155556.GD1376515@ziepe.ca>
-References: <20250616131740.3499289-1-vineeth@bitbyteword.org>
+To: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+	nicolas.dufresne@collabora.com, p.zabel@pengutronix.de,
+	mchehab@kernel.org, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
+	kernel@collabora.com
+Subject: Re: [PATCH 5/5] media: verisilicon: Flush IOMMU before decoding a
+ frame
+Message-ID: <20250617155822.GE1376515@ziepe.ca>
+References: <20250616145607.116639-1-benjamin.gaignard@collabora.com>
+ <20250616145607.116639-6-benjamin.gaignard@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -78,20 +85,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250616131740.3499289-1-vineeth@bitbyteword.org>
+In-Reply-To: <20250616145607.116639-6-benjamin.gaignard@collabora.com>
 
-On Mon, Jun 16, 2025 at 09:17:36AM -0400, Vineeth Pillai (Google) wrote:
-> iommu init hook is wrapped in CONFI_X86 and is a remnant of dmar.c when
-> it was a common code in "drivers/pci/dmar.c". This was added in commit
-> (9d5ce73a64be2 x86: intel-iommu: Convert detect_intel_iommu to use iommu_init hook)
+On Mon, Jun 16, 2025 at 04:55:53PM +0200, Benjamin Gaignard wrote:
+> Flush the IOMMU mapping before decoding a frame to ensure that all memory
+> translations are properly applied.
 > 
-> Now this is built only for x86. This config wrap could be removed.
-> 
-> Signed-off-by: Vineeth Pillai (Google) <vineeth@bitbyteword.org>
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 > ---
->  drivers/iommu/intel/dmar.c | 3 ---
->  1 file changed, 3 deletions(-)
+>  drivers/media/platform/verisilicon/hantro_drv.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+This is a really big red flag.
+
+iommu translations are supposed to be controlled by the iommu driver
+and should be flushed as part of the iommu map/unmap flows. It should
+never be necessary to do something like this.
 
 Jason
