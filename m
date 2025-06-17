@@ -1,174 +1,133 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1B92219A79
-	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 18:34:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D3F82EAB7E
+	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 18:52:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750185296; cv=none; b=MFjt5bnlxGJOCXt09JwpRPvldV/TycW6pGdxLn8/EOjrck3LvrZ5OdbM2b31OZScK0nLfHjL0jQtz1PFqXwLU9TSXvf/DKLtZvIV3QfXz7pjNKeNmj45ObYov8R8pl7mfywTCADuAR2FkqOiY7kMV4JrjtaPg6HV0TTQDXrZ9lE=
+	t=1750186371; cv=none; b=nVqNNSPXfAri1nNa5Xj2w5Blq2Z1JqBCkcwxXUkMnFOdWTRiXRILPAlYPwdDMIbbboRXjAu2bqM+sWOu6A5FT9ZdNlLlgQWTqGFQIFypSDnRruKv/lOJq2534wbduYb4Hj3eUALKeDHSrjw+Q8BEZTN1qb9sjGbiUA3Fb3NhH44=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750185296; c=relaxed/simple;
-	bh=vNXK4oDmkZ/5vEde1tk21+hvLrX1mK5D+uSj7F3uoxY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VKX+iug1xa71POz5VVAgV25xRwKjCslHYTAXGw4E1g131YouqEyb8KDFjIQS1XWAT0uMK33yrF6ngMNKa6Km1ktI4RImJqRVZkGy7QvBt5CVSVnhHpWo8cZFkVsvJhoWK9n/khbpCMXs1NE4aaESS1C2dLhgq+Bq1fE/HnJezAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=nH2M+Qvn; arc=none smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1750186371; c=relaxed/simple;
+	bh=+toRoMC/6o3ABSZSoj6kwUB+0AHRoQQb9StmVaDTJuU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=pBWzSqfK5eZkf2DiKf9z9lJXTvc0x0i5m3LA7DKpcVkHjflFPY/9gwDAGle2TpZo9sG6kOjbjASSHa/UU7Q6U9W89C5D3EdFrcRY/dsFlA7OVbG3aIuCv1Blg29ohWbOjRo7mkbXGn2bnkWieb/9k7UtJ++l3V5jNu5SKrBVhoo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=ZKbeD3Wf; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="nH2M+Qvn"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-4a4312b4849so70031941cf.1
-        for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 11:34:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1750185294; x=1750790094; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=IkUw7K1fNTUFr0XSmkjhiZVRjINQnKgrdCWIYf4LhiU=;
-        b=nH2M+QvnvhpYZdmnNrUG66sBdm0Ui4O1y+7gr1bNa6aquL4dIR470zxmbR6QEMQZSM
-         +qVCDq+FnqsOVwW4SAcYuJliM9ek+2w48X58ycd991BYI/pSxrP7jwYgKhwu0j6V3z2Z
-         cM/DU2d/CZVFXEezdJLisxl/LBhmDILeaL2pLZjjDNymf+mTU0gA59X0V4pdo3lKFGGC
-         Fg07/4/RVgN3G8HMB87aW4JfJGjU66KY5tOQr6WUsg0fJjESK+P0KKUZ3a2YULQcTRWa
-         RluEAktij16fF0JzqcvQhn/FluQaVvIIJ73ollsEfwAWTsyw1KfnGF1Oum/6QPHxNaz4
-         k8cQ==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ZKbeD3Wf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1750186369;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=j7GR8b6oq+VKsS7zEblPcoLobXIu9Z0EZdf91JZ1evE=;
+	b=ZKbeD3WfRCDTOey5Vy86vUt+ughS9QEHymGmXRC65wOlvVEG8ccZ3fM1zGrHpYMDh0GFov
+	uK97ndKOJ5O0VB/hU6opVZd1bgxdZ1PY3HAdgG6iWsDW3gpj6KHMl6MZszfL+Ay9SDwZmq
+	u9pYRVPKsB747QIeT9I1Rlgkn59Ytm4=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-413-AKiCiNgCNO2hm-qDpGHb8Q-1; Tue, 17 Jun 2025 14:52:43 -0400
+X-MC-Unique: AKiCiNgCNO2hm-qDpGHb8Q-1
+X-Mimecast-MFC-AGG-ID: AKiCiNgCNO2hm-qDpGHb8Q_1750186363
+Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-87333a93bd9so50996639f.1
+        for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 11:52:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750185294; x=1750790094;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=IkUw7K1fNTUFr0XSmkjhiZVRjINQnKgrdCWIYf4LhiU=;
-        b=BX87/RvL9oNBIWM61QTf/5c90bY08kDWK3isu3Zi8I5f+hslkdt1YBcnlDfjdZfm5g
-         HrEJbqtl0vGGOPRTwZ53ch8qcJkIfkTwneebJrJo7j708Ti/Cacix112NPCRM0HMuVk8
-         m22PcSZNI+oBpSB+Mjv+sbSCUoYZOhj5qugtsp36wa5bC2vgcvaEQvZIIps21kvuiAoP
-         1/kLrJ7x+A+nHM+VKYz8jLgiNQThqZOHkaQ0K91DJ7XhDfIhw37dqSdKCVqspLqouw44
-         xywBjmyUPN3DWdHav2zzHodEHYcetmFA8S+9Y+RICcsFOL7CFXtvjkJiF36XYMnNNgBc
-         X+MA==
-X-Forwarded-Encrypted: i=1; AJvYcCUlhpXb0SvnTJH/aVfHLtawv6F0uMjiHkvPEKLJoZ8krPWy3guDAaKRalieoDlZhjdP47ZSlQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxV4nLAKXp0zZvjO0yOhm25CQvZ4kn+p1aR2st44WWqQgxTleGg
-	OhtuHzmwl3jOb7WcN17VwVEcfiFeBLSTybJDAlDM1uguMZnT2aYH9K2VVav4fHAqdmFm71dfg23
-	+gHlS
-X-Gm-Gg: ASbGncvGZYV7pMVTHUFWjXNCTZLv1N/7wAJcWAZiW+RA7RnFNdlDs8DxJhaFyEEdioI
-	oMQR4Nrm5SRshlPvQYEtQ3i7iiohzqoJzFR2MVDHUT8lXz80Uc0EW17DruEFvo4PQPNpe4Fm+Nu
-	hwzW/5ASkTHsoJqUs+a7xTKK2MnHdUHjXaAwF2oikSJupFNQHEu8jcNVX/mNs3QHzc264ISv6eO
-	ZS2ZJyTZa6edz1jUBjaANHrr/Q7N6Tu//WvZMjOPBi1awTzrgIkEvEcOzFpAKEJhmfng4Gaqb6i
-	piZ4vCszOIylcFDRoPqDOEWk3hH6vNmMv6i/znca76O2bmK/kfafmkpEFVjeoN0+Acq6caQ8uGX
-	kiy8D5vuYWi/gQ0hjP65Dt0AMTBG7oGm0GIb3yA==
-X-Google-Smtp-Source: AGHT+IF+gpQV430tU9VpFbWOEEO9nCtbhkf7JKZT2vfz8vbnYNPhZr+BRPLWyOfEF+iclrfKMJ7agA==
-X-Received: by 2002:ac8:598b:0:b0:494:a2b8:88f0 with SMTP id d75a77b69052e-4a73c589061mr236405141cf.33.1750185293762;
-        Tue, 17 Jun 2025 11:34:53 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4a72a4b0cb9sm64018831cf.50.2025.06.17.11.34.53
+        d=1e100.net; s=20230601; t=1750186362; x=1750791162;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=j7GR8b6oq+VKsS7zEblPcoLobXIu9Z0EZdf91JZ1evE=;
+        b=mx/VD6Boa51HwBYQScbRQA17efmmBLqiNBPGOTHZ8Z7EgDvspYZBHJMaPwUus7vGXV
+         1mhASHPu/FK4sOaaFHl93D9Q5zulOuXbyQ9M0iayiAlSsP/oFsRN3qNR68XzPd4DJ5kf
+         AVa8c+1c4/gHxC/NR5C/2bhIYeGW09WxNFz6YviMMxpdbCrZzlU/0/A8Wzx+Sxgma0FQ
+         K3rU3B4VR4JGuK7OzQFalbrfY4t2+teFntD/k1LBkY6KemqnJpJzBZWeURPaGZVBjWnn
+         l0Zu4NPDDo8ESXVnWGc44ArYJWA6XgQPsDO0yHZFF4OcL05LE/ty+Nah5g5XaLIJEz/N
+         noaQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX7/XfJJhIX8antwkZrC8M8ck5bELGbAmeYxwV6z4tbkLB5+lL5mLdJqAhQC6bRP25XjgBohg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyYH3EUApQG2blCcQS2FzW891AAKAQDXbepjEXZ7pHGyorS/b7D
+	ULpJYxvcoM4Cex9GwZgdBh9GithyM2TAaGyrl5gdFVOHlJwG3rWJIsOzpNbove7/mTFa+9x4mVL
+	SA9HXPYT/t98MZ6gcTLwT7HT507nF8Z/rD2ygOJpjv8tI7DxTYgavDamu
+X-Gm-Gg: ASbGncvG9BU7NVpyKicxBeTSO3pIuNypk9AE7fl9YpqGb1k7dbpB6Cm7DnEIAGFpGde
+	+XYw92kn+aKDGyLZOGQ9EGP/28donjJ6G9+EBO5VQarj9sS40fKgjFr+EGuTz4vvlJ2jC5Z8Qjb
+	L3fT8By1cv9GSjAp7b03HaPJyy4jyOcQOgYT9IJTWBX/ry8kUB/Hheo2H0Hnd2xe52tcI6MhR85
+	RsUfQwPcGUxnLN5bPGNmU3a9lW63X99PFzs1DmDk+fNDlEFhPybuQDyliSHTuTmkOFO5kVUXW/D
+	M1W0RZiqMnuX7siZBaRMt4Q3AA==
+X-Received: by 2002:a05:6602:3414:b0:86a:24c0:8829 with SMTP id ca18e2360f4ac-87601391479mr183503839f.0.1750186362670;
+        Tue, 17 Jun 2025 11:52:42 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEKthDmryWBtQYhqN8X3vXXpFX6gedZAuw/STdWF8X1NR60JiUUJho0FZmRHCrhQiS9JYovUQ==
+X-Received: by 2002:a05:6602:3414:b0:86a:24c0:8829 with SMTP id ca18e2360f4ac-87601391479mr183500639f.0.1750186362211;
+        Tue, 17 Jun 2025 11:52:42 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id ca18e2360f4ac-875d5842a19sm225353839f.44.2025.06.17.11.52.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Jun 2025 11:34:53 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uRb92-00000006bm4-2q58;
-	Tue, 17 Jun 2025 15:34:52 -0300
-Date: Tue, 17 Jun 2025 15:34:52 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH] iommufd: Destroy vdevice on device unbind
-Message-ID: <20250617183452.GG1376515@ziepe.ca>
-References: <20250610065146.1321816-1-aneesh.kumar@kernel.org>
- <BN9PR11MB527606182417BB7A35349F598C74A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250612172645.GA1011960@ziepe.ca>
- <BN9PR11MB5276B467ADCC57BC6571CA458C77A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250613124202.GD1130869@ziepe.ca>
- <yq5abjqotim7.fsf@kernel.org>
- <BN9PR11MB527633CA2F698E83E12BFBD68C70A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250616164941.GA1373692@ziepe.ca>
- <yq5azfe6ssev.fsf@kernel.org>
+        Tue, 17 Jun 2025 11:52:40 -0700 (PDT)
+Date: Tue, 17 Jun 2025 12:52:35 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Mario Limonciello <superm1@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Alex Deucher
+ <alexander.deucher@amd.com>, Christian =?UTF-8?B?S8O2bmln?=
+ <christian.koenig@amd.com>, David Airlie <airlied@gmail.com>, Simona Vetter
+ <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>, Maarten Lankhorst
+ <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
+ Thomas Zimmermann <tzimmermann@suse.de>, David Woodhouse
+ <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai
+ <tiwai@suse.com>, dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+ linux-kernel@vger.kernel.org (open list), iommu@lists.linux.dev (open
+ list:INTEL IOMMU (VT-d)), linux-pci@vger.kernel.org (open list:PCI
+ SUBSYSTEM), kvm@vger.kernel.org (open list:VFIO DRIVER),
+ linux-sound@vger.kernel.org (open list:SOUND), Daniel Dadap
+ <ddadap@nvidia.com>, Mario Limonciello <mario.limonciello@amd.com>, Bjorn
+ Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH v2 2/6] vfio/pci: Use pci_is_display()
+Message-ID: <20250617125235.13017540.alex.williamson@redhat.com>
+In-Reply-To: <20250617175910.1640546-3-superm1@kernel.org>
+References: <20250617175910.1640546-1-superm1@kernel.org>
+	<20250617175910.1640546-3-superm1@kernel.org>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.43; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <yq5azfe6ssev.fsf@kernel.org>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: zCh4BgGDeaBbJFuGYgm4GEwN_9kKDQswp8KaqyIUk7w_1750186363
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jun 17, 2025 at 01:37:04PM +0530, Aneesh Kumar K.V wrote:
- 
-> How do we reclaim that object id for further reuse? 
+On Tue, 17 Jun 2025 12:59:06 -0500
+Mario Limonciello <superm1@kernel.org> wrote:
 
-Maybe just don't? Userspace did something it shouldn't, it now leaked
-8 bytes of kernel memory until the FD is closed.
-
-> is it that if there is a request for a iommufd_object_remove() with object
-> refcount > 1, we insert a XA_ZERO_ENTRY and convert that to NULL entry
-> on IOMMU_DESTROY?
-
-Oh no we can't do that, if the refcount is elevated that is a problem,
-it means some thread somewhere is using that memory.
-
-We can sleep and wait for shortterm_users to go to zero and if users
-is still elevated then we are toast. WARN_ON and reatin it in the
-xarray and hope for the best.
-
-So the thread that will trigger the detruction needs to have a users
-refcount of 1. Meaning users needs to be one while idle in the xarray,
-and the idevice destruction will obtain a users=2 from its pointer
-under some kind of lock.
-
-> -enum {
-> -	REMOVE_WAIT_SHORTTERM = 1,
-> -};
-> +#define	REMOVE_WAIT_SHORTTERM	BIT(0)
-> +#define	REMOVE_OBJ_FORCE	BIT(1)
-
-You can keep the enum for flags, but 'force' isn't the right name. I
-would think it is 'tombstone'
-
-> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-> index b7aa725e6b37..d27b61787a53 100644
-> --- a/drivers/iommu/iommufd/main.c
-> +++ b/drivers/iommu/iommufd/main.c
-> @@ -88,7 +88,8 @@ struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
+> From: Mario Limonciello <mario.limonciello@amd.com>
+> 
+> The inline pci_is_display() helper does the same thing.  Use it.
+> 
+> Suggested-by: Bjorn Helgaas <helgaas@kernel.org>
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+>  drivers/vfio/pci/vfio_pci_igd.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/vfio/pci/vfio_pci_igd.c b/drivers/vfio/pci/vfio_pci_igd.c
+> index ef490a4545f48..988b6919c2c31 100644
+> --- a/drivers/vfio/pci/vfio_pci_igd.c
+> +++ b/drivers/vfio/pci/vfio_pci_igd.c
+> @@ -437,8 +437,7 @@ static int vfio_pci_igd_cfg_init(struct vfio_pci_core_device *vdev)
 >  
->  	xa_lock(&ictx->objects);
->  	obj = xa_load(&ictx->objects, id);
-> -	if (!obj || (type != IOMMUFD_OBJ_ANY && obj->type != type) ||
-> +	if (!obj || xa_is_zero(obj) ||
-> +	    (type != IOMMUFD_OBJ_ANY && obj->type != type) ||
->  	    !iommufd_lock_obj(obj))
+>  bool vfio_pci_is_intel_display(struct pci_dev *pdev)
+>  {
+> -	return (pdev->vendor == PCI_VENDOR_ID_INTEL) &&
+> -	       ((pdev->class >> 16) == PCI_BASE_CLASS_DISPLAY);
+> +	return (pdev->vendor == PCI_VENDOR_ID_INTEL) && pci_is_display(pdev);
+>  }
+>  
+>  int vfio_pci_igd_init(struct vfio_pci_core_device *vdev)
 
-xa_load can't return xa_is_zero(), xas_load() can
+Acked-by: Alex Williamson <alex.williamson@redhat.com>
 
-We already use XA_ZERO_ENTRY to hold an ID during allocation till
-finalize.
-
-I think you want to add a new API
-
-iommufd_object_tombstone_user(idev->ictx, &idev->vdev->obj);
-
-Which I think is the same as the existing
-iommufd_object_destroy_user() except it uses tombstone..
-
-The only thing tombstone does is:
-
-	xas_store(&xas, (flags & REMOVE_OBJ_TOMBSTONE) ? XA_ZERO_ENTRY : NULL);
-
-All the rest of the logic including the users and shorterm check would
-be the same.
-
-> --- a/drivers/iommu/iommufd/viommu.c
-> +++ b/drivers/iommu/iommufd/viommu.c
-> @@ -213,6 +213,8 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
->  	/* vdev lifecycle now managed by idev */
->  	idev->vdev = vdev;
->  	refcount_inc(&vdev->obj.users);
-> +	/* Increment refcount since userspace can hold the obj id */
-> +	refcount_inc(&vdev->obj.users);
->  	goto out_put_idev_unlock;
-
-I don't think this should change.. There should be no extra user refs
-or userspace can't destroy it.
-
-The pointer back from the idevice needs locking to protect it while a
-refcount is obtained.
-
-Jason
