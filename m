@@ -1,143 +1,146 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2A752E2674
-	for <iommu@lists.linux.dev>; Tue, 17 Jun 2025 13:48:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750168115; cv=pass; b=j8MS8N11joJ7LueqvSdPd1SLr0lxb+6WbxxKTvoiJMM3NqdTgvjrE2N8WdMtd55OL72/oaJf724prjDMXsxB2rh4eEtj8OhHxBLhxj/s4IZfKjEb0fb9FyyOgh4VWLIVZq2HroYrJgP830DjPWZ+fC2XXJsubyZsds8ayxOXTzo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750168115; c=relaxed/simple;
-	bh=6mZjLMEQAoaVTDarhDT0Iufo+0fOPewuwVT6FR/dEHY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tlyDCO5fMShP8XmpvRBW2YMiYc/UQkd0S79JZv8nTT+b9qP+367DRnkExAW4l0WpDzqeoex9HojYQ9vF2xZkVNHMk0mD3Hx24k75KuSWwxAk0e0inXNrtOHvAFXbyX6u+8hy4km7Z6jlSyx9CiaFOG84nXg0qEcPTl1c5E/Tpy4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=O/Im1XKg; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C26842EF664;
+	Tue, 17 Jun 2025 14:30:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750170618; cv=none; b=CQY6n1YPYARtAGB2q9QQ2BLFMZldH3n9YjLDKtHTQgosdZMInxBpF2KO7SxKGyP0P2sfKK3VG/AyX1O5Nxm23FnljWyG4g2SJKAyd6MAdQvxyI7bQSDofwHc93nRHjhEiP2dcxP82Y4j2H86kz6MWwlJW6H/MBOfXKqxhP5JolY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750170618; c=relaxed/simple;
+	bh=fr2XMAsOts3e2z91VRBihiSkUtLYOX60usFN8g0EWAQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=S2+RdkCtpMA6XlGtruNHEVsWhzfbYMtTVstXkLHtbIFNmfL1q+QuHynAz3JviQw7yMz4gWkJqhavOB/vfQ6Re92STD3+o/i9iyOTRnFtXj70aJy+6ggPjizYnbGTA9LgD8vqPUSOsWTSIbph/y14LEZajEyvpn9qDHNEOMtJAVg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QDe3FgWK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="O/Im1XKg"
-ARC-Seal: i=1; a=rsa-sha256; t=1750168101; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=RYsbxIlGajViXkOxtq2KEf8LaUDJCjs2cfVNQMck7jnzD0YFELOk4Xa46PPdaQdzez7xix5UJzDIKv5M4VIq9ujJICGT/zBOvItqnwiwbWLoNMhca/69lAZwnBzh4o35yTrisvCjwiUZSLVy4SVE7nSHjeDZ/MFXKZTr7z4ZQBs=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1750168101; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=D4vJ4WUJydWruG0dqtzkAwR+nhnVb7UMToyievYWDJ8=; 
-	b=IUmQzhrEo9hCGLNL4aD8A9gDxDumRgxrWh98mcRcJWaUN32W0PTlhuCxL2T0CeSSlVKE/0kXdq1cd3kWF7olhpFizl095mF29IPa32ApSMw6xH+7UC7mGpfD4ef1kTiLV3+ARZXvMJN9gBeWQ0OPKNAIyeOFKWZ0RvAzeA/dIHQ=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
-	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1750168101;
-	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=D4vJ4WUJydWruG0dqtzkAwR+nhnVb7UMToyievYWDJ8=;
-	b=O/Im1XKgABAsdhserORFX21ekFxftRdla9wGdCm60WC/2lpb522k498YpEm5afgi
-	mAFRVWgct5SGPHMqENFUj6LbKkABgB/mrCWGJGi3mRzgYfZ7dreoOlKfpdfGzlnYxCx
-	3immDWE3ee1SBTfTjqMhhmEPTZb1EDF7/c6i9lik=
-Received: by mx.zohomail.com with SMTPS id 175016809925542.787085547648644;
-	Tue, 17 Jun 2025 06:48:19 -0700 (PDT)
-Message-ID: <2596fddc-aa76-4234-b182-1159c14b7cf8@collabora.com>
-Date: Tue, 17 Jun 2025 15:48:14 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QDe3FgWK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9838C4CEE7;
+	Tue, 17 Jun 2025 14:30:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750170618;
+	bh=fr2XMAsOts3e2z91VRBihiSkUtLYOX60usFN8g0EWAQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=QDe3FgWKdRYt+BIzMKBQF3t5wcdsgovRo8kcvLAZPRvtxyXl1IvJ1uNlEJh8U4szk
+	 WfnBWWcVDZzqXI61sDtZK990vZVY38xyHXdM8ZsdmGlYrWlwx9hSAd5jzQh+JAMcXz
+	 4UEuHs04KEVpn53uSj9FF9SyIfJ2TnYQ0oGXkwZw7S2c7eR/8u3FrqK1UJ/EVyn7J2
+	 FFrE/9UrKWA1xYiEFfIF+1CF254i3hvfP53fi2s9JlXyyKs/yG9t+uET8HDMiY7EM9
+	 lWYelt+tdc7MIPGZhMbltC42Afg6OnmSi0RmZVMPObkuYfe1NmfQf1XhBBxdk4SbUw
+	 0Rrk2MzTfwCJA==
+Date: Tue, 17 Jun 2025 19:55:01 +0530
+From: Naveen N Rao <naveen@kernel.org>
+To: Sean Christopherson <seanjc@google.com>
+Cc: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, kvm@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Sairaj Kodilkar <sarunkod@amd.com>, 
+	Vasant Hegde <vasant.hegde@amd.com>, Maxim Levitsky <mlevitsk@redhat.com>, 
+	Joao Martins <joao.m.martins@oracle.com>, Francesco Lavra <francescolavra.fl@gmail.com>, 
+	David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH v3 12/62] KVM: SVM: Inhibit AVIC if ID is too big instead
+ of rejecting vCPU creation
+Message-ID: <bmx43lru6mwdyun3ktcmoeezqw6baih7vgtykolsrmu5q2x7vu@xp5jrbbqwzej>
+References: <20250611224604.313496-2-seanjc@google.com>
+ <20250611224604.313496-14-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/5] iommu: Add verisilicon IOMMU driver
-To: Diederik de Haas <didi.debian@cknow.org>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
- nicolas.dufresne@collabora.com, p.zabel@pengutronix.de, mchehab@kernel.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
- kernel@collabora.com
-References: <20250616145607.116639-1-benjamin.gaignard@collabora.com>
- <20250616145607.116639-4-benjamin.gaignard@collabora.com>
- <DAOTVW4YEC5Q.STXG6APE0YGN@cknow.org>
-Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <DAOTVW4YEC5Q.STXG6APE0YGN@cknow.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250611224604.313496-14-seanjc@google.com>
+
+On Wed, Jun 11, 2025 at 03:45:15PM -0700, Sean Christopherson wrote:
+> Inhibit AVIC with a new "ID too big" flag if userspace creates a vCPU with
+> an ID that is too big, but otherwise allow vCPU creation to succeed.
+> Rejecting KVM_CREATE_VCPU with EINVAL violates KVM's ABI as KVM advertises
+> that the max vCPU ID is 4095, but disallows creating vCPUs with IDs bigger
+> than 254 (AVIC) or 511 (x2AVIC).
+> 
+> Alternatively, KVM could advertise an accurate value depending on which
+> AVIC mode is in use, but that wouldn't really solve the underlying problem,
+> e.g. would be a breaking change if KVM were to ever try and enable AVIC or
+> x2AVIC by default.
+> 
+> Cc: Maxim Levitsky <mlevitsk@redhat.com>
+> Tested-by: Sairaj Kodilkar <sarunkod@amd.com>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/include/asm/kvm_host.h |  9 ++++++++-
+>  arch/x86/kvm/svm/avic.c         | 14 ++++++++++++--
+>  arch/x86/kvm/svm/svm.h          |  3 ++-
+>  3 files changed, 22 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index 2a6ef1398da7..a9b709db7c59 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -1314,6 +1314,12 @@ enum kvm_apicv_inhibit {
+>  	 */
+>  	APICV_INHIBIT_REASON_LOGICAL_ID_ALIASED,
+>  
+> +	/*
+> +	 * AVIC is disabled because the vCPU's APIC ID is beyond the max
+> +	 * supported by AVIC/x2AVIC, i.e. the vCPU is unaddressable.
+> +	 */
+> +	APICV_INHIBIT_REASON_PHYSICAL_ID_TOO_BIG,
+> +
+>  	NR_APICV_INHIBIT_REASONS,
+>  };
+>  
+> @@ -1332,7 +1338,8 @@ enum kvm_apicv_inhibit {
+>  	__APICV_INHIBIT_REASON(IRQWIN),			\
+>  	__APICV_INHIBIT_REASON(PIT_REINJ),		\
+>  	__APICV_INHIBIT_REASON(SEV),			\
+> -	__APICV_INHIBIT_REASON(LOGICAL_ID_ALIASED)
+> +	__APICV_INHIBIT_REASON(LOGICAL_ID_ALIASED),	\
+> +	__APICV_INHIBIT_REASON(PHYSICAL_ID_TOO_BIG)
+>  
+>  struct kvm_arch {
+>  	unsigned long n_used_mmu_pages;
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index ab228872a19b..f0a74b102c57 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -277,9 +277,19 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
+>  	int id = vcpu->vcpu_id;
+>  	struct vcpu_svm *svm = to_svm(vcpu);
+>  
+> +	/*
+> +	 * Inhibit AVIC if the vCPU ID is bigger than what is supported by AVIC
+> +	 * hardware.  Immediately clear apicv_active, i.e. don't wait until the
+> +	 * KVM_REQ_APICV_UPDATE request is processed on the first KVM_RUN, as
+> +	 * avic_vcpu_load() expects to be called if and only if the vCPU has
+> +	 * fully initialized AVIC.
+> +	 */
+>  	if ((!x2avic_enabled && id > AVIC_MAX_PHYSICAL_ID) ||
+> -	    (id > X2AVIC_MAX_PHYSICAL_ID))
+> -		return -EINVAL;
+> +	    (id > X2AVIC_MAX_PHYSICAL_ID)) {
+> +		kvm_set_apicv_inhibit(vcpu->kvm, APICV_INHIBIT_REASON_PHYSICAL_ID_TOO_BIG);
+> +		vcpu->arch.apic->apicv_active = false;
+
+This bothers me a bit. kvm_create_lapic() does this:
+          if (enable_apicv) {
+                  apic->apicv_active = true;
+                  kvm_make_request(KVM_REQ_APICV_UPDATE, vcpu);
+	  }
+
+But, setting apic->apicv_active to false here means KVM_REQ_APICV_UPDATE 
+is going to be a no-op.
+
+This does not look to be a big deal given that kvm_create_lapic() itself 
+is called just a bit before svm_vcpu_create() (which calls the above 
+function through avic_init_vcpu()) in kvm_arch_vcpu_create(), so there 
+isn't that much done before apicv_active is toggled.
+
+But, this made me wonder if introducing a kvm_x86_op to check and 
+enable/disable apic->apicv_active in kvm_create_lapic() might be cleaner 
+overall. Maybe even have it be the initialization point for APICv: 
+apicv_init(), so we can invoke avic_init_vcpu() right away?
 
 
-Le 17/06/2025 à 15:04, Diederik de Haas a écrit :
-> Hi,
->
-> On Mon Jun 16, 2025 at 4:55 PM CEST, Benjamin Gaignard wrote:
->> Verisilicon IOMMU hardware block can be found in combination
-> Can there be only 1 hardware block or is multiple possible?
-> If only 1, then I'd start with "The Verisilicon ...".
-> If more then one, then I'd use "blocks".
->
->> with hardware video codecs (encoders or decoders) on
->> different SoCs.
-> This makes it sound like it can also be used with non-Verisilicon codecs
-> and based on the DT binding description, I get the _impression_ that
-> that is not the case?
-> But it's actually not clear to me if that's the case or not.
+- Naveen
 
-Only one hardware block exists on rk3588 and it can only be used
-by Verisilicon AV1 codec.
-
->
->> Enable it will allows to use non contiguous memory
-> "Enabling it will allow us to use non ..." or "Enable it to allow [the]
-> use of non ..." or "Enabling allows the use of non ..."
->
->> allocators for Verisilicon video codecs.
-> And the wrapping of the whole commit message is not following the
-> standards.
->
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
->> ---
->>   drivers/iommu/Kconfig     |   8 +
->>   drivers/iommu/Makefile    |   1 +
->>   drivers/iommu/vsi-iommu.c | 900 ++++++++++++++++++++++++++++++++++++++
->>   3 files changed, 909 insertions(+)
->>   create mode 100644 drivers/iommu/vsi-iommu.c
->>
->> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
->> index 0a33d995d15d..4cf4504dcc25 100644
->> --- a/drivers/iommu/Kconfig
->> +++ b/drivers/iommu/Kconfig
->> @@ -383,4 +383,12 @@ config SPRD_IOMMU
->>   
->>   	  Say Y here if you want to use the multimedia devices listed above.
->>   
->> +config VSI_IOMMU
->> +	bool "Verisilicon IOMMU Support"
->> +	depends on ARM64
->> +	select IOMMU_API
->> +	select ARM_DMA_USE_IOMMU
->> +	help
->> +	  Support for IOMMUs used by Verisilicon video decoders.
->> +
->>   endif # IOMMU_SUPPORT
->> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
->> index 355294fa9033..68aeff31af8b 100644
->> --- a/drivers/iommu/Makefile
->> +++ b/drivers/iommu/Makefile
->> @@ -34,3 +34,4 @@ obj-$(CONFIG_IOMMU_SVA) += iommu-sva.o
->>   obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
->>   obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
->>   obj-$(CONFIG_APPLE_DART) += apple-dart.o
->> +obj-$(CONFIG_VSI_IOMMU) += vsi-iommu.o
->> diff --git a/drivers/iommu/vsi-iommu.c b/drivers/iommu/vsi-iommu.c
->> new file mode 100644
->> index 000000000000..f2fa1197916c
->> --- /dev/null
->> +++ b/drivers/iommu/vsi-iommu.c
->> @@ -0,0 +1,900 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +
-> No copyright statement? (or an informational header block?)
->
-> Cheers,
->    Diederik
->
->> +#include <linux/clk.h>
->> + <snip>
