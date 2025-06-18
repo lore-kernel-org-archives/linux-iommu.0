@@ -1,146 +1,173 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F5D42DE214
-	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 13:35:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 072032EAB92
+	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 14:03:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750253731; cv=none; b=nmlwn+UBoT+EcAh8NJhTcZKHc/pjHgiYfjPsaHN2DwY5cF8VhYrkrp/fUQVrEmRdZRqjYwnm+75as+TtDkfSQxJ5ihVL+v3LIFccdM07fAgsXvsNGD4G9D1DQqiISWJ3SPV9rskmA2UA2ZOM6oxNw25meHu/qi/se3n6MxsNFPQ=
+	t=1750255385; cv=none; b=bFjJQ+Pl4ljH+CQ1csyrSKgwdrEPkm3CyIwfpeQ6qbLMUroLhWY9VSdOSRUpEONfszQ4DoMLsDLzD1R0RJUfOpC56w/VfsDGynEIVXBHfY5Q+GBEUIKvqnCUcIUWcdoJ8TKIa69MUyC1FS5f3gVz9n9lsV089eXIbiLm9jsXlhE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750253731; c=relaxed/simple;
-	bh=YUKuXh5SY0qUucAYNMWolGFEnAIAiKVHC/5zy2Dg11w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iIxeZ3h432kZytQ3LdiGapANTroRQM5exHkXzbpPrQlCAfTs9754zrVe6yJBJr7F/R/jpuxQOWus5t98pdWC4lbqax9Fn25Ai0Nsbi9osSDHhcb0pfBxCk0QmUT8vl9KdM6GPMrxG4rnrofb3rdpr+Drya8Gpig+kC86rBHiPko=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=dgD/02XL; arc=none smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1750255385; c=relaxed/simple;
+	bh=O1PbK+K+iOaJ9uOAXQzgOQovXuQdJLKPgkjopgslFHM=;
+	h=MIME-Version:Date:From:To:Cc:Subject:Message-ID:Content-Type; b=iMK3ia6I+AbJfWMJ4yacyfCehPjwZS5rFPvwAyOjh7VmnRPqaTLercYtQjXomZxsCDxY3DFb8ozB0aGZ0vHJUsO/I/ppiLWsyHB/Lmby/qwE6BbiPEMhYHcUMjLJXBjRI0yOS8hOxKUEWGgS16Xb7Gguo8DtBe+n0HJIuCVbR0g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=fydRqcQr; arc=none smtp.client-ip=178.21.23.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dgD/02XL"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-4a58d95ea53so7729971cf.0
-        for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 06:35:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1750253728; x=1750858528; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=AY4ZJ1vscFIy0R+M6pav3Ha/u/JxcxhCRr8djwh7chI=;
-        b=dgD/02XLOFsPM/NeUJWgfx+2nxQpynFcHq0nurdeDaUDWULvTCwUHmjAKa3H1VD7FT
-         dAvlJ0/aFdEpaDPy3EW8TTVCPuwqm/upLXT0zwzdB/wzNPPqdwg8/xRUpLwoqMyv/44W
-         M5ZI/7FAa2teMMfpleWD1rVRfu5dXV9bASnMlC34hGLBt92yeJAPxhC1UUzuHVXQl+nG
-         UawBw0uUrc589WiDtjt9mqaPpnriv7RO12lqs3uUmDw21GpWSW5jaSUtvnc5ranlGaLY
-         BOPrdhXcNmzN6Lz9S8g2LUxqS9EdXWs13S3FHJFTucYKFaRsmk/fOnjwKzZGoIpp29jd
-         WQog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750253728; x=1750858528;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AY4ZJ1vscFIy0R+M6pav3Ha/u/JxcxhCRr8djwh7chI=;
-        b=hjeWfq/Z/rxWD6MIPPyNUvfSLdako37/PnA4W6AkraGNakoyZuq3ui2eSC3aXjCTJG
-         QcFyPEXgVag4CcJMty774tl1kJ6vakdmGwfhoMIT3/sWDzIuvX96PbJ9AdShtBGwkyHq
-         h0n1xA78uhyaFtHTcq2AkLWU12oOnn69e+QT4Ptl66G7vFaA2aUStzempCo0W07TPLUJ
-         Z/UldQTGO38JliiUVo6+YgyBm5A1WXCdcw4hefloW0APCZ9R/WVlto3iGZQlm0H9JhHb
-         FdRaVRl7B3peb/VASC3PDx5DV4Md/cuEOCwI3LpQ2OZAmbdb95e8JOoDcj+nD4CvtvuG
-         2ptg==
-X-Forwarded-Encrypted: i=1; AJvYcCVPC4Eq7oNVs092E+boyojJ6b+TWgyJ6UmoCavd/uaelyavujFvdoaLLWUBggrCGFtr25kXQw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywwk7Su6lUdu+1+EjsmujkuYqFQexHbpUNC8Zo+xYccV2pFaEAq
-	GGHQpzsjEzM1yebEihd7bPq+QvI7KGei+NPOdbjbu/SBnFNQQFIreg/HpybCe94nt5c=
-X-Gm-Gg: ASbGnctVjhzcyBNlAquGKan0k4UIJy9PBZ7HKRec0w7is7QduNdbfoBtHI/dycbAGk/
-	zTVNuf8SGwvm1/W4wD350ikTEafX1QFucXJZixM3vR6SAZYgOGNLVopMSEPx9K46QMf4L3j7A1Z
-	/XMDs+zVkX0+hrGvxFFRiUvIxJ505NrVwMS0Q62/SLK8sy2xbcxSD1u+BIhiVylhpx8REfiSgfX
-	V/E108UjtSbojxeJFoJQzag+oZ0SABGSkvHXgb47+NigG8yjrzl7CSt+L8xv5dZdl/0PdfDh2Ak
-	mTCNazVMljMMg80TjRQA9+LAXpPHmIS2XmEIWPoa1OWdE/+QpyByk5KblAg31Ys9XLDwgvjUueI
-	XaJYqCfPRCNkXwnBnDCZZBP4SD6FfcizUmpgT/g==
-X-Google-Smtp-Source: AGHT+IGsYeo5oR58E16Y4uy0NYoRLYKcsVBhnBsH7gIPeELC0/haeVFoG0lLfoy8ZSud0bNejYLL9A==
-X-Received: by 2002:ac8:5dc7:0:b0:4a6:f00f:6618 with SMTP id d75a77b69052e-4a764347083mr38170631cf.10.1750253728385;
-        Wed, 18 Jun 2025 06:35:28 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4a72a52a1ddsm72059761cf.81.2025.06.18.06.35.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Jun 2025 06:35:27 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uRswp-00000006n7F-1PfS;
-	Wed, 18 Jun 2025 10:35:27 -0300
-Date: Wed, 18 Jun 2025 10:35:27 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH] iommufd: Destroy vdevice on device unbind
-Message-ID: <20250618133527.GQ1376515@ziepe.ca>
-References: <BN9PR11MB527606182417BB7A35349F598C74A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250612172645.GA1011960@ziepe.ca>
- <BN9PR11MB5276B467ADCC57BC6571CA458C77A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250613124202.GD1130869@ziepe.ca>
- <yq5abjqotim7.fsf@kernel.org>
- <BN9PR11MB527633CA2F698E83E12BFBD68C70A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250616164941.GA1373692@ziepe.ca>
- <yq5azfe6ssev.fsf@kernel.org>
- <20250617183452.GG1376515@ziepe.ca>
- <yq5awm99sjmr.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="fydRqcQr"
+Received: from mail01.disroot.lan (localhost [127.0.0.1])
+	by disroot.org (Postfix) with ESMTP id 99C9925EB3;
+	Wed, 18 Jun 2025 16:03:01 +0200 (CEST)
+X-Virus-Scanned: SPAM Filter at disroot.org
+Received: from layka.disroot.org ([127.0.0.1])
+ by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
+ id 2-zEN3twHaqE; Wed, 18 Jun 2025 16:03:00 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
+	t=1750255379; bh=O1PbK+K+iOaJ9uOAXQzgOQovXuQdJLKPgkjopgslFHM=;
+	h=Date:From:To:Cc:Subject;
+	b=fydRqcQrGo98IYyJJUMxTW4jXYe1mRH3InYNwM8rCap0W15AUIvxgN5RTa5RocT8p
+	 WofuNiA6rSkTPqA9UkfE9NX1dt2UAFDDeGdayY1kwjb9k1DxhMc2ua6L1aZ+xnyTQr
+	 bOFQfZHor0enlR8x0KcmVyf0VE7umXc8THrzoqHe/B/LKA69qpMGho747uMrnsejBh
+	 pmxP/HmSe9b/EZ7fEKZJSxbSueImJkfWbjYWFsMFPGQvvFRaUphk2NFWC6szHnQZOb
+	 L8vJNOQLOpRGenhkmBgx/KiaVIQ7OBLoMY+vuZpUUWZen76nBRptWm2EbAOfSyHhrS
+	 s0zmDr4nqhJ2Q==
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <yq5awm99sjmr.fsf@kernel.org>
+Date: Wed, 18 Jun 2025 14:02:59 +0000
+From: Kaustabh Chakraborty <kauschluss@disroot.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, Inki Dae <inki.dae@samsung.com>, Seung-Woo Kim
+ <sw0312.kim@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>
+Cc: iommu@lists.linux.dev, dri-devel@lists.freedesktop.org
+Subject: Help: Samsung Exynos 7870 DECON SYSMMU panic
+Message-ID: <544ad69cba52a9b87447e3ac1c7fa8c3@disroot.org>
+X-Sender: kauschluss@disroot.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jun 18, 2025 at 10:59:00AM +0530, Aneesh Kumar K.V wrote:
-> Jason Gunthorpe <jgg@ziepe.ca> writes:
-> 
-> > On Tue, Jun 17, 2025 at 01:37:04PM +0530, Aneesh Kumar K.V wrote:
-> >  
-> >> How do we reclaim that object id for further reuse? 
-> >
-> > Maybe just don't? Userspace did something it shouldn't, it now leaked
-> > 8 bytes of kernel memory until the FD is closed.
-> >
-> 
-> Between the two sequences below, Sequence 1 is the correct one, since we
-> want the object ID to be released after calling ioctl(DESTROY,
-> vdevice_id), right?
-> 
-> Sequence 1 (Correct):
-> 
-> close(vfio_cdev)          → triggers vdevice destruction  
-> ioctl(DESTROY, vdevice_id) → reclaims vdevice object ID  
-> close(iommufd)  
+Since bcb81ac6ae3c (iommu: Get DT/ACPI parsing into the proper probe path),
+The Samsung Exynos 7870 DECON device (with patches [1], [2], and [3]) seems
+to not work anymore. Upon closer inspection, I observe that there is an
+IOMMU crash.
 
-This is wrong, the vdevice has outlived the idevice
+[    2.918189] exynos-sysmmu 14860000.sysmmu: 14830000.decon: [READ] PAGE FAULT occurred at 0x6715b3e0
+[    2.918199] exynos-sysmmu 14860000.sysmmu: Page table base: 0x0000000044a14000
+[    2.918243] exynos-drm exynos-drm: bound 14830000.decon (ops decon_component_ops)
+[    2.922868] exynos-sysmmu 14860000.sysmmu:   Lv1 entry: 0x4205001
+[    2.922877] Kernel panic - not syncing: Unrecoverable System MMU Fault!
+[    2.922885] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.16.0-rc2-exynos7870 #722 PREEMPT 
+[    2.995312] Hardware name: Samsung Galaxy J7 Prime (DT)
+[    3.000509] Call trace:
+[    3.002938]  show_stack+0x18/0x24 (C)
+[    3.006582]  dump_stack_lvl+0x60/0x80
+[    3.010224]  dump_stack+0x18/0x24
+[    3.013521]  panic+0x168/0x360
+[    3.016558]  exynos_sysmmu_irq+0x224/0x2ac
+[         ...]
+[    3.108786] ---[ end Kernel panic - not syncing: Unrecoverable System MMU Fault! ]---
 
-> Sequence 2:
-> 
-> ioctl(DESTROY, vdevice_id) → returns EBUSY
+The commit has been introduced in mainline v6.15-rc1. I've also tested in
+v6.15, v6.15.2, and v6.16-rc2, and there have been no apparent changes.
 
-It should not return EBUSY, it should destry the vdevice.
+I've tried to revert the commit, and it does work that way. But on reading
+the commit message I understand that I need to find a proper solution here.
+I've tried to skim down the revert, and this is what I get - if i change
+line [4] as follows:
 
-The full sequence I would expect a sane userspace to do is:
+-		dev->bus->dma_configure(dev);
++		if (!strcmp(dev_name(dev), "14830000.decon"))
++			dev->bus->dma_configure(dev);
 
-open(vfio_cdev)
-ioctl(vfio_cdev, VFIO_DEVICE_BIND_IOMMUFD, iommufd)
-ioctl(iommufd, IOMMUFD_CMD_VIOMMU_ALLOC)
-ioctl(iommufd, IOMMUFD_CMD_VDEVICE_ALLOC)
-ioctl(iommufd, IOMMUFD_CMD_VDEVICE_DEALLOC)
-ioctl(iommufd, IOMMUFD_CMD_VIOMMU_DEALLOC)
-close(vfio_cdev);
+It really doesn't like dma_configure for some reason. It works, but:
 
-> > You can keep the enum for flags, but 'force' isn't the right name. I
-> > would think it is 'tombstone'
-> 
-> These values represent bit flags (e.g., 1, 2, 4, ...), meaning they are
-> not mutually exclusive and can be combined using bitwise operations. As
-> such, using an enum—which is typically intended for mutually exclusive
-> values—is not appropriate in this case?
+[    2.779291] exynos-decon 14830000.decon: late IOMMU probe at driver bind, something fishy here!
 
-Meh. It is common to use enum for holding flags too. iommufd does it in many
-places. There are good reasons to prefer to use enum vs #define.
+I believe the IOMMU hardware doesn't like the fact that it is being
+initialized/resumed too early. I formed this conclusion by comparing the
+logs:
 
-Jason
+mainline:
+[    1.274575] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_resume enter
+[    2.859656] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable enter
+[    2.864192] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_clocks enter
+[    2.869299] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 0x00000007
+[    2.875062] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_init_config enter
+[    2.880006] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000004 val 0x01100784
+[    2.885819] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_set_ptbase enter
+[    2.890677] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x0000000c val 0x00044a14
+[    2.896490] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_tlb_invalidate enter
+[    2.901695] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000010 val 0x00000001
+[    2.907507] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_vid enter
+[    2.912366] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 0x00000005
+[    2.912371] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_irq enter
+[    2.912836] [drm] Exynos DRM: using 14830000.decon device for DMA mapping operations
+[    2.918175] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_v5_get_fault_info enter
+[    2.918182] I_HAVE_ADDED_THESE: SYSMMU: show_fault_information enter
+[    2.918189] exynos-sysmmu 14860000.sysmmu: 14830000.decon: [READ] PAGE FAULT occurred at 0x6715b3e0
+[    2.918199] exynos-sysmmu 14860000.sysmmu: Page table base: 0x0000000044a14000
+[    2.918243] exynos-drm exynos-drm: bound 14830000.decon (ops decon_component_ops)
+[    2.922859] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
+[    2.922864] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+[    2.922868] exynos-sysmmu 14860000.sysmmu:   Lv1 entry: 0x4205001
+[    2.922877] Kernel panic - not syncing: Unrecoverable System MMU Fault!
+
+and with the patch above applied:
+[    3.018478] [drm] Exynos DRM: using 14830000.decon device for DMA mapping operations
+[    3.025794] exynos-drm exynos-drm: bound 14830000.decon (ops decon_component_ops)
+[    3.058655] exynos-dsi 14800000.dsi: [drm:samsung_dsim_host_attach] Attached td4300-panel device (lanes:4 bpp:24 mode-flags:0x23)
+[    3.070189] exynos-drm exynos-drm: bound 14800000.dsi (ops exynos_dsi_component_ops)
+[    3.078506] [drm] Initialized exynos 1.1.0 for exynos-drm on minor 1
+[    3.090747] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_map enter
+[    3.090845] I_HAVE_ADDED_THESE: SYSMMU: to_exynos_domain enter
+[    3.093325] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
+[    3.097662] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+[    3.102000] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+[    3.106337] I_HAVE_ADDED_THESE: SYSMMU: lv1set_section enter
+[    3.110762] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_set_pte enter
+[    3.115726] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_map enter
+[    3.120317] I_HAVE_ADDED_THESE: SYSMMU: to_exynos_domain enter
+[    3.124914] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
+[    3.129240] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+[    3.133578] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+[    3.137916] I_HAVE_ADDED_THESE: SYSMMU: lv1set_section enter
+[    3.142340] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_set_pte enter
+[         ...] (a lot of repetitions later)
+[    4.322904] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
+[    4.327230] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+[    4.331567] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+[    4.335905] I_HAVE_ADDED_THESE: SYSMMU: alloc_lv2entry enter
+[    4.340329] I_HAVE_ADDED_THESE: SYSMMU: page_entry enter
+[    4.344407] I_HAVE_ADDED_THESE: SYSMMU: lv2ent_offset enter
+[    4.348744] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+[    4.353082] I_HAVE_ADDED_THESE: SYSMMU: lv2set_page enter
+[    4.357246] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_set_pte enter
+[    4.362751] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_resume enter
+[    4.362767] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable enter
+[    4.362771] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_clocks enter
+[    4.362777] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 0x00000007
+[    4.362782] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_init_config enter
+[    4.362786] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000004 val 0x01100784
+[    4.362791] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_set_ptbase enter
+[    4.362795] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x0000000c val 0x00042a64
+[    4.362799] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_tlb_invalidate enter
+[    4.362803] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000010 val 0x00000001
+[    4.362808] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_vid enter
+[    4.362811] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 0x00000005
+
+Then it continues booting as usual.
+
+My lack of understanding of the IOMMU and DRM subsystems are really
+limiting my triaging capabilities here, therefore I ask for any form
+guidance or assistance with this.
+
+Thank you.
+
+[1] https://lore.kernel.org/r/20250612-exynosdrm-decon-v2-0-d6c1d21c8057@disroot.org
+[2] https://lore.kernel.org/all/20250612-exynos7870-drm-dts-v1-2-88c0779af6cb@disroot.org
+[3] https://lore.kernel.org/all/20250612-exynos7870-drm-dts-v1-3-88c0779af6cb@disroot.org
+[4] https://elixir.bootlin.com/linux/v6.16-rc2/source/drivers/iommu/iommu.c#L431
