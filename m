@@ -1,299 +1,194 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2083.outbound.protection.outlook.com [40.107.236.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F116127FB37
-	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 09:11:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750237892; cv=none; b=hHFFfqqidjO0qtsB3DYIYSbXKleiodr4ZgpCyIqlTGc78NVxQdcXdVugrUduLD34b+MndD2f2GvBkrgC5LwXhF0jCKkre4syFcXWcIuzhb2hbP9SXSJ8iCCBT8f3bq7i/XBZDCJ8A196g16xOgmWt2MO8EqfyXo9d20LAAYjLnQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750237892; c=relaxed/simple;
-	bh=wtk9Ai6A4vr3BAnsawlLRuT9qb0f0DfvHt+JKai0XOM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=haug+jxOi/2L31GBEmaaD8P+JrwgXhr7WosMthotAMzcaCcWjGaFPGmhUi0lyW8252NNEyJ83AG4R0d2p8qlkB1ickH470jEkYsJ1i84en0AeYZgJFmx+hmYMu62LRjDJwCBLNtuL9kD1o4qeCN+SkvSrhYojZoLZSy46JoXvtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=czm+tfj4; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=9GbG36Tq; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=czm+tfj4; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=9GbG36Tq; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B10427817A
+	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 11:38:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.83
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750246738; cv=fail; b=RAixwUBahiOwcBMVreQM27U+tAY5OALA4Ni7Zo94WNpfp7Ras4SoWgHinrI8H1SYzxN9t8XxOa0gvsd0acekyfxaIc5rdYdcqb2iVEw+VcXDCI5m3VsPZsn7He9EFYK9PkjnBpWQ3EaAUv5W0a6Oy5bAdHrgHImvoM5nHZIuqi8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750246738; c=relaxed/simple;
+	bh=8/XROG8FCMcY5Ws4TRe3AwZqA5bIHs9UG8m0dYoXA90=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=YFoWq63tO/cbIKdSggIrVR/ZVFnn6n06xOfG4j4mqnK6hKPhfIqGmIzb4Um5XBRzKL9IqwXAMvG3Lqw+v0qDUHbf1uv4rCVCPqL6kelGtME1r4aO75Sxyt23ImLmC4/fNZq1WJgAnWOChw9O6M0cyxLE+JPNGbDTPnG3Jsb4rMk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=LuDjsGgW; arc=fail smtp.client-ip=40.107.236.83
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="czm+tfj4";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="9GbG36Tq";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="czm+tfj4";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="9GbG36Tq"
-Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 32F081F7BD;
-	Wed, 18 Jun 2025 09:11:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1750237887; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=XT0YDbIFqwL77QwQbS95PqOFNQJH+g7ngu33WM22oqI=;
-	b=czm+tfj4qEcbk1y9278iyA8JIwTcdAWy0PP7QzUM6WOP4PlAPtyj5Z9W9+7oVWtEpjHsz6
-	cslpoQwvp3p6QpxOjzVlyBQNvCzHTxT3772NKhnadvCE9ZMa2fY0rxl4vddA4c645nNGz/
-	BxDsQYf8t77jI+OBaU0AuXbt6AGrE2c=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1750237887;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=XT0YDbIFqwL77QwQbS95PqOFNQJH+g7ngu33WM22oqI=;
-	b=9GbG36TqynDLngDbg0YEC/YS256YOPztJ/n6TDCAJtaLScp5NZZfeujTEorKo1M75xjwtG
-	3ld2E3SVdU6ttJAw==
-Authentication-Results: smtp-out2.suse.de;
-	none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1750237887; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=XT0YDbIFqwL77QwQbS95PqOFNQJH+g7ngu33WM22oqI=;
-	b=czm+tfj4qEcbk1y9278iyA8JIwTcdAWy0PP7QzUM6WOP4PlAPtyj5Z9W9+7oVWtEpjHsz6
-	cslpoQwvp3p6QpxOjzVlyBQNvCzHTxT3772NKhnadvCE9ZMa2fY0rxl4vddA4c645nNGz/
-	BxDsQYf8t77jI+OBaU0AuXbt6AGrE2c=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1750237887;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=XT0YDbIFqwL77QwQbS95PqOFNQJH+g7ngu33WM22oqI=;
-	b=9GbG36TqynDLngDbg0YEC/YS256YOPztJ/n6TDCAJtaLScp5NZZfeujTEorKo1M75xjwtG
-	3ld2E3SVdU6ttJAw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 8BF0613A3F;
-	Wed, 18 Jun 2025 09:11:26 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id rtvwIL6CUmhIFgAAD6G6ig
-	(envelope-from <tzimmermann@suse.de>); Wed, 18 Jun 2025 09:11:26 +0000
-Message-ID: <4b4224b8-aa91-4f21-8425-2adf9a2b3d38@suse.de>
-Date: Wed, 18 Jun 2025 11:11:26 +0200
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="LuDjsGgW"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=pFD7Y4OVPvT3nxyZfDI0ElTF2elwtx8YIMCIJf6S9cBEy675JwAP/WlaRO0u2dIQdwVC9uPVXceiKTd/kIgfoghuDMpAyqzD52K0numGkdPNu/wC7lrh+NMm0U9QiWviUzDSMXyURy7ZtPGocrk/l+TxteQ2P7w9mP3sgMU/VFldlO3jYEsB+t2F3OBzCGcC4b0mnNF4fNY8Id3lGM4DvLQKaP/k2VFWxR+xJ4UHaSlVIj5OLAGtgH68bzZf7kRrCEkma1Mkm6djuWZQbPO/1vd2RGsxaDLRm5T+JmxPU/MWVEltF7fDxkaODT9jhApbQEtu8hIxhbLOjwBNeHULfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CyK7aFbfIJmxRJ74o7lPPPsZYDMJKVCK3kWM5kvTckU=;
+ b=wtPQRcTyhN+LCIO5VZKw7uTJGLcGKrwfnc4yGeTdxfk1unhljqti0yZ6pP7nxkvJTGdKywtKNyzLBXI/QzS0ZpuBlJGYndxTn5L13sn3GG6uHp9Zfg5QliOMCAz8yuG1bH5eXfbGlqDCyzcEx/z8M1XyfHLsG/PiCYY+SzsonuO/Kz1heshbRfumIJLuxlv9722qJD879hftM534k78TgL4A1PYUxZV1pj28EOsPzl2LjCFiWtzW58GK2M+vXFAF8PW1fmnGUY8JhVKqVpRhH5Ygjq5bDX44nd8N2SnbaBCHo0TIeAqGS2AX09f0M6S2ugInTWqS1jfOphDYhPa5MA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CyK7aFbfIJmxRJ74o7lPPPsZYDMJKVCK3kWM5kvTckU=;
+ b=LuDjsGgWbpUxXkyJ6KtyQ0LM0fK5dKEH36guRx0bd47F7aw92bIESXqQr9to11RxAmXXFbnkoQXj/nKJ7BzWdDdAwZpieGmxizrs8+Wx6uRWAKV9x8ezSLA6aelfys8xnQg6bqxfY8bGFrZP4ShhYqEzcezAACj6rvw+MjPXWSoOpj54iPdnxMuco4GZIe8vxSPOSLfyfgzUrGEUN8EFKN8Dx2I0UT4DsEklvt1Qvp9junV2yglr1I/Uh6boRd0gBzDjcPTdWjvKdkgToB+KRE0M+xNWvOOubM3/8JJVjDfPELcPg7ZjZmv6v9VZjeF29g0pquuDoC8Q96R4A+RQAw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by SJ0PR12MB7007.namprd12.prod.outlook.com (2603:10b6:a03:486::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8835.32; Wed, 18 Jun
+ 2025 11:38:52 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8835.027; Wed, 18 Jun 2025
+ 11:38:52 +0000
+Date: Wed, 18 Jun 2025 08:38:50 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: kevin.tian@intel.com, shuah@kernel.org, joao.m.martins@oracle.com,
+	steven.sistare@oracle.com, iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+	thomas.weissschuh@linutronix.de
+Subject: Re: [PATCH rc 1/4] iommufd/selftest: Fix iommufd_dirty_tracking with
+ large hugepage sizes
+Message-ID: <20250618113850.GE1575786@nvidia.com>
+References: <cover.1750049883.git.nicolinc@nvidia.com>
+ <9515eb5cb58bc8dfec083df51550bd9ae6d60da9.1750049883.git.nicolinc@nvidia.com>
+ <20250616162501.GN1174925@nvidia.com>
+ <aFDMoMX8eL7azoUL@nvidia.com>
+ <20250617115948.GV1174925@nvidia.com>
+ <aFHc3UujzDIfmKeT@nvidia.com>
+ <20250617230136.GC1575786@nvidia.com>
+ <aFH+cUSi1GITvF3F@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aFH+cUSi1GITvF3F@nvidia.com>
+X-ClientProxiedBy: MN0PR03CA0007.namprd03.prod.outlook.com
+ (2603:10b6:208:52f::6) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 6/6] vgaarb: Look at all PCI display devices in VGA
- arbiter
-To: Mario Limonciello <superm1@kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- David Airlie <airlied@gmail.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
- Alex Deucher <alexander.deucher@amd.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Simona Vetter <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
- "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
- "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
- "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
- "open list:SOUND" <linux-sound@vger.kernel.org>,
- Daniel Dadap <ddadap@nvidia.com>,
- Mario Limonciello <mario.limonciello@amd.com>
-References: <20250617175910.1640546-1-superm1@kernel.org>
- <20250617175910.1640546-7-superm1@kernel.org>
- <20250617132228.434adebf.alex.williamson@redhat.com>
- <08257531-c8e4-47b1-a5d1-1e67378ff129@kernel.org>
-Content-Language: en-US
-From: Thomas Zimmermann <tzimmermann@suse.de>
-Autocrypt: addr=tzimmermann@suse.de; keydata=
- xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
- XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
- BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
- hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
- 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
- AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
- AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
- AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
- lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
- U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
- vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
- 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
- j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
- T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
- 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
- GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
- hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
- EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
- C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
- yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
- SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
- Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
- 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
-In-Reply-To: <08257531-c8e4-47b1-a5d1-1e67378ff129@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Flag: NO
-X-Spam-Score: -4.30
-X-Spamd-Result: default: False [-4.30 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	FREEMAIL_TO(0.00)[kernel.org,redhat.com,gmail.com];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	ARC_NA(0.00)[];
-	MID_RHS_MATCH_FROM(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	RCPT_COUNT_TWELVE(0.00)[25];
-	RCVD_TLS_ALL(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	TO_DN_ALL(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:mid,suse.de:email]
-X-Spam-Level: 
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|SJ0PR12MB7007:EE_
+X-MS-Office365-Filtering-Correlation-Id: 26b5b7d2-879e-4a31-9972-08ddae5cb2c8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?Z3h4cXZDN0FFUEpITUhNUi9tdGo0Q3VUOHNVZ1RjYy9GZy85OTJBQVZtNGN1?=
+ =?utf-8?B?V1BXbmhIeFFvWjRDWmZqY2xLR3dwOUlMQ1FyNWVuQ09ERUEyQ1ZZZmtYTDg2?=
+ =?utf-8?B?K2pTRzhhdGZNb2FPMUllMkRRdDZHVEY3amV0NWwreTE0NGlaNkN5Tjh2S3V1?=
+ =?utf-8?B?TExJUjI0WldFbjd6UmxsOTZnQkxjMGVobkdxdTFOUzhOdkdhTXl4ZFY4bHVl?=
+ =?utf-8?B?SGVmOVRMR1ZFeDVSZFMzRmRkUUtLdDV3NG5XRm9kcmp0RnlzYlUva3ViRkFY?=
+ =?utf-8?B?TkFrVTB4MFREd2dQWWFBemtwZmVjcFdKS25wRDdDTWE4RC9FcjNpVjlFcTJZ?=
+ =?utf-8?B?L2F1dzBaT2E2cmVQMGE2eGkrYmxLWEV0akpBbHB2elg3VlN4clZRVFA0ZG5B?=
+ =?utf-8?B?ajdycWlENnNGc0tPSkhaQTVjVlV0WTIzN3A5SXdjYTNyV2JaanBNS0ZCSmJp?=
+ =?utf-8?B?TWtHZS9OWHNlTlFQbUpodDNpRVUyWVVEbjhRZ2NEVW5uVXpNc0JZQ3JRQkxJ?=
+ =?utf-8?B?U3hNYnA1T0RzWjNKUWxxelpwSlA3SVYvRGEwN0RUYW4xUlY1eXlzREl4aEFK?=
+ =?utf-8?B?dVl0dXlKakRRY2REbExOVGxuWkxDbzFMREtGOWdsc0RyZFVaWG9OU29iaEpN?=
+ =?utf-8?B?bkFkeGRRekxCaDgxVlV1a3g2WmYzcUM1ZnovQ05SNS8zVFBrU1RXSkY0ZVpP?=
+ =?utf-8?B?Wnc0NnFTUWtWWllzWk42WmdwRlNwQnVZdVpBb290YkFYZlpiZE1rd0l6SERM?=
+ =?utf-8?B?WDBGVmk4bmxYSXhSRlpvSWxxK29aREZOM2FRRUkrUTN5WlptSlBZNHBFTFRz?=
+ =?utf-8?B?VDNVb2x1cG5leThzTkk4eEl2SFlWdW94U2JvdHJWdXFKbG5uYTJVV0hVYTdN?=
+ =?utf-8?B?eWQ4Snk3a0F3MUV4aDcvZjF0RU1EQ2NYck5IeGRaOExHVEJNVDYxMXpZZE9L?=
+ =?utf-8?B?VG13VWNjVUdVZHRKMjVFaXcxMUtaM2c1MzFKS3hZbTkweGFiZ2FxNnZ1Rnkv?=
+ =?utf-8?B?M3lUUVVBQXhkMUZUSHl1aEVoUDZDY3hnaWY4Q3VGN0drSnY5K1EzQVpmbWtM?=
+ =?utf-8?B?aGtLaWxONHNXbExxMk5hcVdicVNkdmdxK0ljdmM0bms5ckdtT3FkVTYzcnNl?=
+ =?utf-8?B?STM0citCOTJoTmRlSTZRVy9qSGVvN2EwdFNtOWg1WWhHVUVSTWovMVpObXlw?=
+ =?utf-8?B?UDZTYlh2QmlZbXFhZnF6Q01hTzMyL3FiOGhPZ09qOVVBeFhkWDRoODJoVU1C?=
+ =?utf-8?B?UlVpTXp2MGxEZDRFbmE2cnRsZTJlWDNGTUpQZGNrVzVYWS9IWHdtTmtkci95?=
+ =?utf-8?B?NjYwOUJ0b21MeVB6U1JlMkdmL3hmUHNRai9Gd2FlMitGSXNmL00xbkt3czVY?=
+ =?utf-8?B?TWo4WCtRVTc3L1VITWlDZUxIblN4TlJOOUVpTms2NVBCNER2amRqV21sUzBF?=
+ =?utf-8?B?dFpKWWRidWUyb1Y0NmxKalVpbDBMOUhUeDBINnNINENxWk5VSjlHeE10NTEw?=
+ =?utf-8?B?SjlIbFpWVlFCL3dzbzhUWW9OSDRvYUtDbHVqZFFPcGk1WGtCcVlDRXNYL3Jx?=
+ =?utf-8?B?WVlYSnNvandkNGRHVE8vOTQ5VDI3amNGeDdxMzY1aFFNbE9XTy9VK0NSZXlT?=
+ =?utf-8?B?L3QvYjhlQi8yeWxTQjljeE1tQlZUUWpmRDlidFRTUzFrWVRRc2VkU0FweWRH?=
+ =?utf-8?B?ZTdqcEx3dEVVc2grRC9iSEtXNmJRZlhUa0wyQUVuNVNDTmhJdDhjcnVCNkxO?=
+ =?utf-8?B?dHJLU1FDTnpQbFcyTmJ5bngxRlMwK3Zobk1neElZRzVjdWZiTm1ZTE5nLzk4?=
+ =?utf-8?B?Z0VsaDV6ZmJiMk5NVHk1c0dudU41OGNiekdwdE9xaDJnU1V6bCtkNmc4YU9S?=
+ =?utf-8?B?Q01aZmY1TVZhS3NneVJXWGNhY3p6VFpuYnZNemZocW5Vbnc9PQ==?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?d0RwUFdSSGpXS2JKR2tzOWRyTWdZWVk3SGNPNjdSNFFIQmdJR09vUnpOVEhs?=
+ =?utf-8?B?VC92UEx1VkowL2E5eVBPNEd5ZEc2aGVjVUxwdXc3ZS9DU2huamN1Q3dxTDZ4?=
+ =?utf-8?B?eU1RZW41cTFEVUVpWkdkaXZSOE1DZmVXTzF4K0cyeTRNa2lRaTJ4TXdkWXM5?=
+ =?utf-8?B?VHZsS2ZhR3U1UWgvQ1pta09uK1R4SEJtdm5YVVJoY2F4aVhuajZzejZtdzV4?=
+ =?utf-8?B?STN1M0xEZ0QvUG1oN2VDWXRiOWVZUDEwbkU1UEFWT0JXT3VqQ1I5aWlBUWdp?=
+ =?utf-8?B?WEo4MkpSUVBLN3Y5RGRraDViak9wOHJPYVZVeHE1OGlZUld3YXZDaFhlTUZT?=
+ =?utf-8?B?Zm12Sm5rYnZzU0txTCtNQVVaRHRDN3VUNkVjVEhNMFNacTB1OUx4LzZiN2RC?=
+ =?utf-8?B?M0ZPNFd2YXRxZ2FwMFZoYXlwUURBd0lRSE5pMmFKakEvV1VCNnM4QjFJTFVr?=
+ =?utf-8?B?WVliNG5xZnFWWGltUnNuNVRXQi8yQ0RKR2JLMEsrSHR5UVFEVi9XWTdjQzZK?=
+ =?utf-8?B?bmFUT2J2R00xb1JUWXJhYUFGS1RqQkRRYzZ4VnVlNWg3S2JpQnRkUlBuclJW?=
+ =?utf-8?B?UTFiRHpFZElJMWZ4UEFPMzZ4V1NNMFBBSlZYblMwdWJ3S1k4QklORmhFNEdN?=
+ =?utf-8?B?V0FWb09EQnhYdHFQdVA2bTFxNXVFWUQ1cW40TzArdy9MQzErQzdybnJJNXVy?=
+ =?utf-8?B?Tlhsb2hzY1Z4T3Q1dFcxeGlibWc2VENmcy9BWENZbnNUMnRUakRScTRjZ0U5?=
+ =?utf-8?B?aGdlUW8zMklWL1ZtdHdUSXhiU3dvYU5IcGV5ZFIwOUJMcVM1bVNiRjQ1aXdG?=
+ =?utf-8?B?d0djekQra1dOS29EVnVSeDY1akNPWmxUeFhRem5rR1JNT0RURFlSaS9VaFQ2?=
+ =?utf-8?B?cW9Rcndxd1AyWjR5UEZRUjJoRG54YjlnMWN0OE5IUk94MXBZMi8xWHBpa09j?=
+ =?utf-8?B?cWtOOUJkdmFmSUNGYVJaLzk2bXZUbkROT0NUMFBjMlhZNzFuUHJGQXFaOHV0?=
+ =?utf-8?B?VEg5WWs3STJsc1VFUExjQUV1TVRTWTBGZDZMM2lSMW9LbElva1p1cWw2QkhW?=
+ =?utf-8?B?RGZkZUFqUEM2eUFTNWlVdTJPUmJVS2h5RXl0R1VhWW05T0tPbGZhVSsyZkQx?=
+ =?utf-8?B?a2w5Z3hweEtDK09zY20xVVlyQ3g1UmtQOFJxSXdTcnpKOUM4SFF4MU9aaHB2?=
+ =?utf-8?B?QlNWempzd3I0UTd6OUlVcy9KUTRRMCsrOWNicmFScG1yYlBKK0ZDZm43S3Rp?=
+ =?utf-8?B?YXJBRzZLdVkra2FiU0YyK1hnYWF0d1lSTUJqNnJjN25YQWxuNFE0ajRPa1V1?=
+ =?utf-8?B?VlgrMlVReFRiOXUvZWdzZXMzY0c5YVNjbFhIUHZFbFVsQzl1YmNVWkxBUmZ5?=
+ =?utf-8?B?M1dCVS9tRFpDbXVqNkNpRHg2QWJTa1NNZ09hNDZ1VktaWGRKc0xCM0lNZXVP?=
+ =?utf-8?B?R2txZWUzVGs5OEh5cmJkeFYvVmNTRmlOdCtSSmhzRnJFZlU4eFg5Mm5oVUVP?=
+ =?utf-8?B?cDRUWGMreTYvUmRZT0dCcnMwcCswYnBaRnl0alFTaVBBeHp0aUlWRGtCMFBB?=
+ =?utf-8?B?UDNZcWp1MFo1b2hIaGtZVmZlZytOM0t2alpOTERUREhGQmY1d2xaNVJKb2No?=
+ =?utf-8?B?bm1aY2RMb0U4QTAvdWdBaWwvTzRqT1RGMEg3cWtvSHBFdmJyRHo5emllcDdS?=
+ =?utf-8?B?TFRra1VtWEsvMjJ1b0xWUFdsNjgxMXpoV2NpMjBWRHFFWXBLVDZtN0dSL3ZH?=
+ =?utf-8?B?MW1rdVpBdFJwcHllbGQ5Z1F1bkcvMi9EajRwOEdWOUZJSHJRRzdTbStlYUdX?=
+ =?utf-8?B?S3ZvVko1WUZhdzRWcmxaT0l0SDZOKysvYkFHN0Zac2QrS3ZIMHVESEk2VlFE?=
+ =?utf-8?B?VHhIVFY4WHpIT1c1c2ZNWDY3UHg0ZFdaMUltRHpjaWMxeEQrSGFJMDdWTzdK?=
+ =?utf-8?B?WmVzMnNlRHFuaEI3NUpyNmdBa2lZQmR3RVNhZUdxNTZHZS9GSTJRZEdMd2g4?=
+ =?utf-8?B?K0NjUk80ZGdjc2l5bElDUlI1V3kwVTlibm1mNy9FbzliMzhVU0pLWUNNUnZK?=
+ =?utf-8?B?MTFRVi9wZFRtVVlxbDc3bDZ1RGFSalhPQk5aWTd0ZElmV1BzTkNibTdyK2F2?=
+ =?utf-8?Q?hJHi8+e5mwDwV78GwVpwRZCxG?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 26b5b7d2-879e-4a31-9972-08ddae5cb2c8
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jun 2025 11:38:52.0109
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: F2ADaXKbyN8RLM+lSaZVsdHqKS5KtBHFo4YFIswGyRQnHJgElOB1O8e9a0Qe0Lda
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB7007
 
-Hi
+On Tue, Jun 17, 2025 at 04:46:57PM -0700, Nicolin Chen wrote:
+> On Tue, Jun 17, 2025 at 08:01:36PM -0300, Jason Gunthorpe wrote:
+> > On Tue, Jun 17, 2025 at 02:23:41PM -0700, Nicolin Chen wrote:
+> > > On Tue, Jun 17, 2025 at 08:59:48AM -0300, Jason Gunthorpe wrote:
+> > > > On Mon, Jun 16, 2025 at 07:02:08PM -0700, Nicolin Chen wrote:
+> > > > > ---breakdown---
+> > > > > After `posix_memalign()`:
+> > > > >   [ posix_memalign() memory ]  ← malloc thinks it owns this
+> > > > > 
+> > > > > Then `mmap(aligned_ptr, ..., MAP_FIXED)`:
+> > > > >   [ anonymous mmap region ]    ← malloc still thinks it owns this (!)
+> > > > >   ↑ mapped
+> > > > > ---end---
+> > > > 
+> > > > Yes, this is correct and what we are doing here. The allocator always
+> > > > owns it and we are just replacing the memory with a different mmap.
+> > > 
+> > > Hmm, if allocator always owns it. Does that mean the munmap() [3]
+> > > will release what [1] and [2] do (allocating and replacing)?
+> > 
+> > No, munmap doesn't destroy the allocator meta data.
+> 
+> Should we do something to that meta data?
 
-Am 17.06.25 um 22:22 schrieb Mario Limonciello:
->
->
-> On 6/17/25 2:22 PM, Alex Williamson wrote:
->> On Tue, 17 Jun 2025 12:59:10 -0500
->> Mario Limonciello <superm1@kernel.org> wrote:
->>
->>> From: Mario Limonciello <mario.limonciello@amd.com>
->>>
->>> On a mobile system with an AMD integrated GPU + NVIDIA discrete GPU the
->>> AMD GPU is not being selected by some desktop environments for any
->>> rendering tasks. This is because neither GPU is being treated as
->>> "boot_vga" but that is what some environments use to select a GPU [1].
->>>
->>> The VGA arbiter driver only looks at devices that report as PCI display
->>> VGA class devices. Neither GPU on the system is a PCI display VGA class
->>> device:
->>>
->>> c5:00.0 3D controller: NVIDIA Corporation Device 2db9 (rev a1)
->>> c6:00.0 Display controller: Advanced Micro Devices, Inc. [AMD/ATI] 
->>> Device 150e (rev d1)
->>>
->>> If the GPUs were looked at the vga_is_firmware_default() function 
->>> actually
->>> does do a good job at recognizing the case from the device used for the
->>> firmware framebuffer.
->>>
->>> Modify the VGA arbiter code and matching sysfs file entries to 
->>> examine all
->>> PCI display class devices. The existing logic stays the same.
->>>
->>> This will cause all GPUs to gain a `boot_vga` file, but the correct 
->>> device
->>> (AMD GPU in this case) will now show `1` and the incorrect device 
->>> shows `0`.
->>> Userspace then picks the right device as well.
->>>
->>> Link: 
->>> https://github.com/robherring/libpciaccess/commit/b2838fb61c3542f107014b285cbda097acae1e12 
->>> [1]
->>> Suggested-by: Daniel Dadap <ddadap@nvidia.com>
->>> Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
->>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
->>> ---
->>>   drivers/pci/pci-sysfs.c | 2 +-
->>>   drivers/pci/vgaarb.c    | 8 ++++----
->>>   2 files changed, 5 insertions(+), 5 deletions(-)
->>>
->>> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
->>> index 268c69daa4d57..c314ee1b3f9ac 100644
->>> --- a/drivers/pci/pci-sysfs.c
->>> +++ b/drivers/pci/pci-sysfs.c
->>> @@ -1707,7 +1707,7 @@ static umode_t 
->>> pci_dev_attrs_are_visible(struct kobject *kobj,
->>>       struct device *dev = kobj_to_dev(kobj);
->>>       struct pci_dev *pdev = to_pci_dev(dev);
->>>   -    if (a == &dev_attr_boot_vga.attr && pci_is_vga(pdev))
->>> +    if (a == &dev_attr_boot_vga.attr && pci_is_display(pdev))
->>>           return a->mode;
->>>         return 0;
->>> diff --git a/drivers/pci/vgaarb.c b/drivers/pci/vgaarb.c
->>> index 78748e8d2dbae..63216e5787d73 100644
->>> --- a/drivers/pci/vgaarb.c
->>> +++ b/drivers/pci/vgaarb.c
->>> @@ -1499,8 +1499,8 @@ static int pci_notify(struct notifier_block 
->>> *nb, unsigned long action,
->>>         vgaarb_dbg(dev, "%s\n", __func__);
->>>   -    /* Only deal with VGA class devices */
->>> -    if (!pci_is_vga(pdev))
->>> +    /* Only deal with PCI display class devices */
->>> +    if (!pci_is_display(pdev))
->>>           return 0;
->>>         /*
->>> @@ -1546,12 +1546,12 @@ static int __init vga_arb_device_init(void)
->>>         bus_register_notifier(&pci_bus_type, &pci_notifier);
->>>   -    /* Add all VGA class PCI devices by default */
->>> +    /* Add all PCI display class devices by default */
->>>       pdev = NULL;
->>>       while ((pdev =
->>>           pci_get_subsys(PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
->>>                      PCI_ANY_ID, pdev)) != NULL) {
->>> -        if (pci_is_vga(pdev))
->>> +        if (pci_is_display(pdev))
->>>               vga_arbiter_add_pci_device(pdev);
->>>       }
->>
->> At the very least a non-VGA device should not mark that it decodes
->> legacy resources, marking the boot VGA device is only a part of what
->> the VGA arbiter does.  It seems none of the actual VGA arbitration
->> interfaces have been considered here though.
->>
->> I still think this is a bad idea and I'm not sure Thomas didn't
->> withdraw his ack in the previous round[1].  Thanks,
->
-> Ah; I didn't realize that was intended to be a withdrawl.
-> If there's another version of this I'll remove it.
+My patch calls free on it which removes the metadata and might munmap
+the range (or re-use it, but that doesn't matter)
 
-Then let me formally withdraw the A-b.
-
-I think this updated patch doesn't address the concerns raised in the 
-previous reviews. AFAIU vgaarb is really only about VGA devices.
-
-Best regards
-Thomas
-
->
-> Dave,
->
-> What is your current temperature on this approach?
->
-> Do you still think it's best for something in the kernel or is this 
-> better done in libpciaccess?
->
-> Mutter, Kwin, and Cosmic all handle this case in the compositor.
->
->
->>
->> Alex
->>
->> [1]https://lore.kernel.org/all/bc0a3ac2-c86c-43b8-b83f-edfdfa5ee184@suse.de/ 
->>
->>
->
-
--- 
---
-Thomas Zimmermann
-Graphics Driver Developer
-SUSE Software Solutions Germany GmbH
-Frankenstrasse 146, 90461 Nuernberg, Germany
-GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
-HRB 36809 (AG Nuernberg)
-
+Jason
