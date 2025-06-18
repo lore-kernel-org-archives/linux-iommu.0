@@ -1,69 +1,167 @@
-Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC0B827F01C
-	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 14:06:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CDFD52E3AF1
+	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 14:07:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750255577; cv=none; b=m1W6ODZ/f6STaJpO5guN7GskU/kMSax75XYFnKmhGMgLZuwrLN6IJMhclZYdyZS1HNZwKKMnqad8vOOiq3yztQNMT2G7rbzVVnxd7k+/UUpcUu6ytdUZc3KqIxoelCvYekcGOgf0xHg3JkQ9j7L/RDn0d42JOuxIFOse7aWvOxw=
+	t=1750255670; cv=none; b=K8N0vcJ09n3mt1T5JgDcdoSIm2tjz7MCPO1ojIoymgOlqXp9HQjEw2kb/1cKIr4zFQR3icK1vZIhcwImRzHMjPX43YARSqxH/1LQYfrYBReenljZeUJ49uIqdIPzU1PcnxCNDXgqrZSMFLclZpZwg0zrXvq3dXRdBc3byVJyIfI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750255577; c=relaxed/simple;
-	bh=F+z3MjGV4TaCyb77dWy2XEtcmuTfBFweoyGTmfosw2k=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=T0Xcvy4o2xU7Ec3ieKIZ/rIrynujulePiC3fHAkRp0XIXmBfCcUfTvnGzhNBYeTJONQ/Lr9TiLHPhub+3J+cxMgcurzidbuitVVHH62zmHTxVVsmJE39JY546Y9/QFcN2lWyG2luyY/zQ/hp3Odp/lj0PzGtrVvnLmdkSEVAQnw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=RbLS+nEL; arc=none smtp.client-ip=178.21.23.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="RbLS+nEL"
-Received: from mail01.disroot.lan (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id 5C180256DF;
-	Wed, 18 Jun 2025 16:06:14 +0200 (CEST)
-X-Virus-Scanned: SPAM Filter at disroot.org
-Received: from layka.disroot.org ([127.0.0.1])
- by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
- id arg8hl3w8vFY; Wed, 18 Jun 2025 16:06:13 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1750255573; bh=F+z3MjGV4TaCyb77dWy2XEtcmuTfBFweoyGTmfosw2k=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=RbLS+nELQwq7MsUtGmmRxWu4zbFot/+uRZZvrKaZLQ2Ez/1Gb9qDwHVa0JeTCahLF
-	 o5Febd3cxIBcuMPLbfuK4nFyHvLCUwmz3t1Kv1FMMzuP2LNyblLKtQATP4cbGjnnDZ
-	 FJpBk9XORLf8RjbSESf8+PAsDlsrUoU/2PmmZ2+2z1ePDEcgbNl5VPsG9FQQQagyfF
-	 GHJxnlOMEg4vnk0Y6dPBGNjkK94ewGVXCTt+F0bBZJYdnmw0pG3OHpNDImRdjSl6lE
-	 q7822OQ7EXXZC0kOadB3uWjYJcWUC3jR1LCm/jDapcRclTrbvKvnVPsBPlmh3ALApG
-	 ojLQGnYGVPDsg==
+	s=arc-20240116; t=1750255670; c=relaxed/simple;
+	bh=pG8NniMrGNcy/cxaF/foI34zkEzuGepN6a4ichFsa9A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=PgWttnEGXhpzHljFEFcbkdlMNGX3coW/R5gVeHIN5vxcSxHX2OLS/UTbbYh4hi4GCEvTQygcQm2vYYgIzhrzmoWRYLN0lLNGVVWw1LpcBDGE58ULEKyL5LphEM1BOoJh5ylrFvYyDOyNVDjXSUqVpV+ER6mgU1laxNrZaTly5Ok=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8328714BF;
+	Wed, 18 Jun 2025 07:07:26 -0700 (PDT)
+Received: from [10.57.84.117] (unknown [10.57.84.117])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8393C3F66E;
+	Wed, 18 Jun 2025 07:07:43 -0700 (PDT)
+Message-ID: <e40989e9-9521-4915-9bae-eb7be1d4e056@arm.com>
+Date: Wed, 18 Jun 2025 15:07:41 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Wed, 18 Jun 2025 14:06:13 +0000
-From: Kaustabh Chakraborty <kauschluss@disroot.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel
- <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>, Inki Dae <inki.dae@samsung.com>, Seung-Woo Kim
- <sw0312.kim@samsung.com>, Kyungmin Park <kyungmin.park@samsung.com>
-Cc: iommu@lists.linux.dev, dri-devel@lists.freedesktop.org
-Subject: Re: Help: Samsung Exynos 7870 DECON SYSMMU panic
-In-Reply-To: <544ad69cba52a9b87447e3ac1c7fa8c3@disroot.org>
-References: <544ad69cba52a9b87447e3ac1c7fa8c3@disroot.org>
-Message-ID: <919fce023f7b8137dc69d0d55ed7edde@disroot.org>
-X-Sender: kauschluss@disroot.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 2/4] arm64: Add BBM Level 2 cpu feature
+Content-Language: en-GB
+To: =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
+ yang@os.amperecomputing.com, catalin.marinas@arm.com, will@kernel.org,
+ jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
+ maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
+ james.morse@arm.com, broonie@kernel.org, ardb@kernel.org, baohua@kernel.org,
+ suzuki.poulose@arm.com, david@redhat.com, jgg@ziepe.ca, nicolinc@nvidia.com,
+ jsnitsel@redhat.com, mshavit@google.com, kevin.tian@intel.com,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev
+References: <20250617095104.6772-1-miko.lenczewski@arm.com>
+ <20250617095104.6772-3-miko.lenczewski@arm.com>
+From: Ryan Roberts <ryan.roberts@arm.com>
+In-Reply-To: <20250617095104.6772-3-miko.lenczewski@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On 2025-06-18 14:02, Kaustabh Chakraborty wrote:
-> Since bcb81ac6ae3c (iommu: Get DT/ACPI parsing into the proper probe 
-> path),
-> The Samsung Exynos 7870 DECON device (with patches [1], [2], and [3]) 
-> seems
-> to not work anymore. Upon closer inspection, I observe that there is an
-> IOMMU crash.
+On 17/06/2025 10:51, Mikołaj Lenczewski wrote:
+> The Break-Before-Make cpu feature supports multiple levels (levels 0-2),
+> and this commit adds a dedicated BBML2 cpufeature to test against
+> support for.
 > 
-> [...]
+> To support BBML2 in as wide a range of contexts as we can, we want not
+> only the architectural guarantees that BBML2 makes, but additionally
+> want BBML2 to not create TLB conflict aborts. Not causing aborts avoids
+> us having to prove that no recursive faults can be induced in any path
+> that uses BBML2, allowing its use for arbitrary kernel mappings.
 > 
-> -		dev->bus->dma_configure(dev);
-> +		if (!strcmp(dev_name(dev), "14830000.decon"))
-s/!//
+> This feature builds on the previous ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
+> as all early cpus must support BBML2 for us to enable it (and any later
+> cpus must also support it to be onlined).
+> 
+> Not onlining late cpus that do not support BBML2 is unavoidable, as we
+> might currently be using BBML2 semantics for kernel memory regions. This
+> could cause faults in the late cpus, and would be difficult to unwind,
+> so let us avoid the case altogether.
+> 
+> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
+> ---
+>  arch/arm64/include/asm/cpufeature.h |  5 ++++
+>  arch/arm64/kernel/cpufeature.c      | 40 +++++++++++++++++++++++++++++
+>  arch/arm64/tools/cpucaps            |  1 +
+>  3 files changed, 46 insertions(+)
+> 
+> diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
+> index 155ebd040c55..bf13d676aae2 100644
+> --- a/arch/arm64/include/asm/cpufeature.h
+> +++ b/arch/arm64/include/asm/cpufeature.h
+> @@ -871,6 +871,11 @@ static inline bool system_supports_pmuv3(void)
+>  	return cpus_have_final_cap(ARM64_HAS_PMUV3);
+>  }
+>  
+> +static inline bool system_supports_bbml2_noabort(void)
+> +{
+> +	return alternative_has_cap_unlikely(ARM64_HAS_BBML2_NOABORT);
+> +}
+> +
+>  int do_emulate_mrs(struct pt_regs *regs, u32 sys_reg, u32 rt);
+>  bool try_emulate_mrs(struct pt_regs *regs, u32 isn);
+>  
+> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+> index f9c947166322..2e80ff237b96 100644
+> --- a/arch/arm64/kernel/cpufeature.c
+> +++ b/arch/arm64/kernel/cpufeature.c
+> @@ -2213,6 +2213,41 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
+>  	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
+>  }
+>  
+> +static bool has_bbml2_noabort(const struct arm64_cpu_capabilities *caps, int scope)
+> +{
+> +	/*
+> +	 * We want to allow usage of BBML2 in as wide a range of kernel contexts
+> +	 * as possible. This list is therefore an allow-list of known-good
+> +	 * implementations that both support BBML2 and additionally, fulfill the
+> +	 * extra constraint of never generating TLB conflict aborts when using
+> +	 * the relaxed BBML2 semantics (such aborts make use of BBML2 in certain
+> +	 * kernel contexts difficult to prove safe against recursive aborts).
+> +	 *
+> +	 * Note that implementations can only be considered "known-good" if their
+> +	 * implementors attest to the fact that the implementation never raises
+> +	 * TLBI conflict aborts for BBML2 mapping granularity changes.
+> +	 */
+> +	static const struct midr_range supports_bbml2_noabort_list[] = {
+> +		MIDR_REV_RANGE(MIDR_CORTEX_X4, 0, 3, 0xf),
+> +		MIDR_REV_RANGE(MIDR_NEOVERSE_V3, 0, 2, 0xf),
+> +		{}
+> +	};
+> +
+> +	/* Does our cpu guarantee to never raise TLB conflict aborts? */
+> +	if (!is_midr_in_range_list(supports_bbml2_noabort_list))
+> +		return false;
+> +
+> +	/*
+> +	 * We currently ignore the AA64_ID_MMFR2 register, and only care about
+> +	 * whether the MIDR check passes. This is because we specifically
+> +	 * care only about a stricter form of BBML2 (one guaranteeing noabort),
+> +	 * and so the MMFR2 check is pointless (all implementations passing the
+> +	 * MIDR check should also pass the MMFR2 check).
+> +	 */
+> +
+> +	return true;
+> +}
+> +
+>  #ifdef CONFIG_ARM64_PAN
+>  static void cpu_enable_pan(const struct arm64_cpu_capabilities *__unused)
+>  {
+> @@ -2980,6 +3015,11 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
+>  		.matches = has_cpuid_feature,
+>  		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, EVT, IMP)
+>  	},
+> +	{
+> +		.capability = ARM64_HAS_BBML2_NOABORT,
+> +		.type = ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
+> +		.matches = has_bbml2_noabort,
+
+Is there a reason you have removed the .desc from this? Without it, the kernel
+won't print a "detected" line when it enables the feature. Previously you had:
+
+		.desc = "BBM Level 2 without conflict abort",
+
+> +	},
+>  	{
+>  		.desc = "52-bit Virtual Addressing for KVM (LPA2)",
+>  		.capability = ARM64_HAS_LPA2,
+> diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
+> index 10effd4cff6b..2bd2bfaeddcd 100644
+> --- a/arch/arm64/tools/cpucaps
+> +++ b/arch/arm64/tools/cpucaps
+> @@ -45,6 +45,7 @@ HAS_LPA2
+>  HAS_LSE_ATOMICS
+>  HAS_MOPS
+>  HAS_NESTED_VIRT
+> +HAS_BBML2_NOABORT
+>  HAS_PAN
+>  HAS_PMUV3
+>  HAS_S1PIE
+
