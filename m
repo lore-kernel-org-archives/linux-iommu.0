@@ -1,167 +1,162 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CDFD52E3AF1
-	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 14:07:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F8252EAB6F
+	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 14:09:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750255670; cv=none; b=K8N0vcJ09n3mt1T5JgDcdoSIm2tjz7MCPO1ojIoymgOlqXp9HQjEw2kb/1cKIr4zFQR3icK1vZIhcwImRzHMjPX43YARSqxH/1LQYfrYBReenljZeUJ49uIqdIPzU1PcnxCNDXgqrZSMFLclZpZwg0zrXvq3dXRdBc3byVJyIfI=
+	t=1750255778; cv=none; b=HtvK1G5AfH4rBfoWsiXkSi7NP2l0SwQdANkQMB+jsEnmfd4YzX3uUmCohSkuv9USgwD39oWyVTbAEbNAqL9zYagqFLxfbwNrUjxnYFuJN4ZuicZbSk709boVaLoda38y4Jdq84yXkzm5zlYgqkkm8Us/hp8BpGJrMfSv5818VAU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750255670; c=relaxed/simple;
-	bh=pG8NniMrGNcy/cxaF/foI34zkEzuGepN6a4ichFsa9A=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=PgWttnEGXhpzHljFEFcbkdlMNGX3coW/R5gVeHIN5vxcSxHX2OLS/UTbbYh4hi4GCEvTQygcQm2vYYgIzhrzmoWRYLN0lLNGVVWw1LpcBDGE58ULEKyL5LphEM1BOoJh5ylrFvYyDOyNVDjXSUqVpV+ER6mgU1laxNrZaTly5Ok=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8328714BF;
-	Wed, 18 Jun 2025 07:07:26 -0700 (PDT)
-Received: from [10.57.84.117] (unknown [10.57.84.117])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8393C3F66E;
-	Wed, 18 Jun 2025 07:07:43 -0700 (PDT)
-Message-ID: <e40989e9-9521-4915-9bae-eb7be1d4e056@arm.com>
-Date: Wed, 18 Jun 2025 15:07:41 +0100
+	s=arc-20240116; t=1750255778; c=relaxed/simple;
+	bh=gAf934q3p4ztJVBWu9FZgouVimm2lufXshc7P1S6iuU=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=AvCxvkef47JaHqrRUN7KPNilGFE1uKXlzXcwP0eP3znvq3JubzszHzf+Gj364Q9QUqPoQtHfj/j5fqszhgZIWfayeYovgvtEzp+Hg595CtupyrJjYnLMQ4RBwu5ZRq6j7NkkhC0UxDupzqPuwS4T9qWubjmB9C3lGDbwQNkZCP8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=ppgQl6+n; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="ppgQl6+n"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1750255774;
+	bh=gAf934q3p4ztJVBWu9FZgouVimm2lufXshc7P1S6iuU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=ppgQl6+nsWC23/4f9LJacUgFTKJNMahegzF7Y5FvVr4c18gPkvgWewEJCbrg6AOpF
+	 XTYxF53I4HkHjm9Q0npO84c40U/hEhjN+qa2DyUoZsCG+zw5lfwF6ENWb1VLuwtimX
+	 3GMBVMfLcYE/C+rhKPqV1KlvbnCUnqPaNLtIWezhI0lVOGvd6V+Lzh8UPmzdLk54gT
+	 9pd3si11U+l8fb2v84mg14Fw8OF62U57yRz+jGsk+HuxecjFY52N2Dh+SEeoyCGfT5
+	 Q9NCBYCXU2gcRhlDhNth5rYhdWq1Pkwq2Qqljr+2o1Xnn/8gfxYG0x/lVs9HwnzXAv
+	 5o1rqJL2YVU+Q==
+Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:45c6:994a:f902:5c74])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: benjamin.gaignard)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 09FF417E10C7;
+	Wed, 18 Jun 2025 16:09:34 +0200 (CEST)
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+To: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	heiko@sntech.de,
+	nicolas.dufresne@collabora.com,
+	jgg@ziepe.ca
+Cc: iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	kernel@collabora.com,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Subject: [PATCH v2 2/5] dt-bindings: iommu: verisilicon: Add binding for VSI IOMMU
+Date: Wed, 18 Jun 2025 16:09:11 +0200
+Message-ID: <20250618140923.97693-3-benjamin.gaignard@collabora.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250618140923.97693-1-benjamin.gaignard@collabora.com>
+References: <20250618140923.97693-1-benjamin.gaignard@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 2/4] arm64: Add BBM Level 2 cpu feature
-Content-Language: en-GB
-To: =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
- yang@os.amperecomputing.com, catalin.marinas@arm.com, will@kernel.org,
- jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
- maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
- james.morse@arm.com, broonie@kernel.org, ardb@kernel.org, baohua@kernel.org,
- suzuki.poulose@arm.com, david@redhat.com, jgg@ziepe.ca, nicolinc@nvidia.com,
- jsnitsel@redhat.com, mshavit@google.com, kevin.tian@intel.com,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-References: <20250617095104.6772-1-miko.lenczewski@arm.com>
- <20250617095104.6772-3-miko.lenczewski@arm.com>
-From: Ryan Roberts <ryan.roberts@arm.com>
-In-Reply-To: <20250617095104.6772-3-miko.lenczewski@arm.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 17/06/2025 10:51, Mikołaj Lenczewski wrote:
-> The Break-Before-Make cpu feature supports multiple levels (levels 0-2),
-> and this commit adds a dedicated BBML2 cpufeature to test against
-> support for.
-> 
-> To support BBML2 in as wide a range of contexts as we can, we want not
-> only the architectural guarantees that BBML2 makes, but additionally
-> want BBML2 to not create TLB conflict aborts. Not causing aborts avoids
-> us having to prove that no recursive faults can be induced in any path
-> that uses BBML2, allowing its use for arbitrary kernel mappings.
-> 
-> This feature builds on the previous ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
-> as all early cpus must support BBML2 for us to enable it (and any later
-> cpus must also support it to be onlined).
-> 
-> Not onlining late cpus that do not support BBML2 is unavoidable, as we
-> might currently be using BBML2 semantics for kernel memory regions. This
-> could cause faults in the late cpus, and would be difficult to unwind,
-> so let us avoid the case altogether.
-> 
-> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
-> ---
->  arch/arm64/include/asm/cpufeature.h |  5 ++++
->  arch/arm64/kernel/cpufeature.c      | 40 +++++++++++++++++++++++++++++
->  arch/arm64/tools/cpucaps            |  1 +
->  3 files changed, 46 insertions(+)
-> 
-> diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
-> index 155ebd040c55..bf13d676aae2 100644
-> --- a/arch/arm64/include/asm/cpufeature.h
-> +++ b/arch/arm64/include/asm/cpufeature.h
-> @@ -871,6 +871,11 @@ static inline bool system_supports_pmuv3(void)
->  	return cpus_have_final_cap(ARM64_HAS_PMUV3);
->  }
->  
-> +static inline bool system_supports_bbml2_noabort(void)
-> +{
-> +	return alternative_has_cap_unlikely(ARM64_HAS_BBML2_NOABORT);
-> +}
-> +
->  int do_emulate_mrs(struct pt_regs *regs, u32 sys_reg, u32 rt);
->  bool try_emulate_mrs(struct pt_regs *regs, u32 isn);
->  
-> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-> index f9c947166322..2e80ff237b96 100644
-> --- a/arch/arm64/kernel/cpufeature.c
-> +++ b/arch/arm64/kernel/cpufeature.c
-> @@ -2213,6 +2213,41 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
->  	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
->  }
->  
-> +static bool has_bbml2_noabort(const struct arm64_cpu_capabilities *caps, int scope)
-> +{
-> +	/*
-> +	 * We want to allow usage of BBML2 in as wide a range of kernel contexts
-> +	 * as possible. This list is therefore an allow-list of known-good
-> +	 * implementations that both support BBML2 and additionally, fulfill the
-> +	 * extra constraint of never generating TLB conflict aborts when using
-> +	 * the relaxed BBML2 semantics (such aborts make use of BBML2 in certain
-> +	 * kernel contexts difficult to prove safe against recursive aborts).
-> +	 *
-> +	 * Note that implementations can only be considered "known-good" if their
-> +	 * implementors attest to the fact that the implementation never raises
-> +	 * TLBI conflict aborts for BBML2 mapping granularity changes.
-> +	 */
-> +	static const struct midr_range supports_bbml2_noabort_list[] = {
-> +		MIDR_REV_RANGE(MIDR_CORTEX_X4, 0, 3, 0xf),
-> +		MIDR_REV_RANGE(MIDR_NEOVERSE_V3, 0, 2, 0xf),
-> +		{}
-> +	};
-> +
-> +	/* Does our cpu guarantee to never raise TLB conflict aborts? */
-> +	if (!is_midr_in_range_list(supports_bbml2_noabort_list))
-> +		return false;
-> +
-> +	/*
-> +	 * We currently ignore the AA64_ID_MMFR2 register, and only care about
-> +	 * whether the MIDR check passes. This is because we specifically
-> +	 * care only about a stricter form of BBML2 (one guaranteeing noabort),
-> +	 * and so the MMFR2 check is pointless (all implementations passing the
-> +	 * MIDR check should also pass the MMFR2 check).
-> +	 */
-> +
-> +	return true;
-> +}
-> +
->  #ifdef CONFIG_ARM64_PAN
->  static void cpu_enable_pan(const struct arm64_cpu_capabilities *__unused)
->  {
-> @@ -2980,6 +3015,11 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
->  		.matches = has_cpuid_feature,
->  		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, EVT, IMP)
->  	},
-> +	{
-> +		.capability = ARM64_HAS_BBML2_NOABORT,
-> +		.type = ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
-> +		.matches = has_bbml2_noabort,
+Add a device tree binding for the Verisilicon (VSI) IOMMU.
+This IOMMU sits in front of hardware encoder and decoder
+blocks on SoCs using Verisilicon IP, such as the Rockchip RK3588.
 
-Is there a reason you have removed the .desc from this? Without it, the kernel
-won't print a "detected" line when it enables the feature. Previously you had:
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+---
+changes in version 2:
+- Add a compatible "rockchip,rk3588-av1-iommu"
+- Fix clock-names in binding 
+- Remove "vsi_mmu" label in binding example.
 
-		.desc = "BBM Level 2 without conflict abort",
+ .../bindings/iommu/verisilicon,iommu.yaml     | 72 +++++++++++++++++++
+ 1 file changed, 72 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
 
-> +	},
->  	{
->  		.desc = "52-bit Virtual Addressing for KVM (LPA2)",
->  		.capability = ARM64_HAS_LPA2,
-> diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
-> index 10effd4cff6b..2bd2bfaeddcd 100644
-> --- a/arch/arm64/tools/cpucaps
-> +++ b/arch/arm64/tools/cpucaps
-> @@ -45,6 +45,7 @@ HAS_LPA2
->  HAS_LSE_ATOMICS
->  HAS_MOPS
->  HAS_NESTED_VIRT
-> +HAS_BBML2_NOABORT
->  HAS_PAN
->  HAS_PMUV3
->  HAS_S1PIE
+diff --git a/Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml b/Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
+new file mode 100644
+index 000000000000..9ae4a45d76f4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
+@@ -0,0 +1,72 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/verisilicon,iommu.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Verisilicon IOMMU
++
++maintainers:
++  - Benjamin Gaignard <benjamin.gaignard@collabora.com>
++
++description: |+
++  A Versilicon iommu translates io virtual addresses to physical addresses for
++  its associated video decoder.
++
++properties:
++  compatible:
++    oneOf:
++      - enum:
++          - verisilicon,iommu
++          - rockchip,rk3588-av1-iommu
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: Core clock
++      - description: Interface clock
++
++  clock-names:
++    items:
++      - const: core
++      - const: iface
++
++  "#iommu-cells":
++    const: 0
++
++  power-domains:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++  - "#iommu-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/rockchip,rk3588-cru.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    bus {
++      #address-cells = <2>;
++      #size-cells = <2>;
++
++      iommu@fdca0000 {
++        compatible = "verisilicon,iommu";
++        reg = <0x0 0xfdca0000 0x0 0x600>;
++        interrupts = <GIC_SPI 109 IRQ_TYPE_LEVEL_HIGH 0>;
++        clocks = <&cru ACLK_AV1>, <&cru PCLK_AV1>;
++        clock-names = "core", "iface";
++        #iommu-cells = <0>;
++      };
++    };
+-- 
+2.43.0
 
