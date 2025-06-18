@@ -1,194 +1,457 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2083.outbound.protection.outlook.com [40.107.236.83])
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B10427817A
-	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 11:38:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.83
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 688B5185955
+	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 12:04:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750246738; cv=fail; b=RAixwUBahiOwcBMVreQM27U+tAY5OALA4Ni7Zo94WNpfp7Ras4SoWgHinrI8H1SYzxN9t8XxOa0gvsd0acekyfxaIc5rdYdcqb2iVEw+VcXDCI5m3VsPZsn7He9EFYK9PkjnBpWQ3EaAUv5W0a6Oy5bAdHrgHImvoM5nHZIuqi8=
+	t=1750248300; cv=pass; b=f8LBi8rtgmJXM8iEctEvDzi98s0qzXLNMqj9R3QVZhGAzSw9+2wGtUZHY7AOGWgg5e5HpifBVtjQqouu7XYwtRvA0LHDUE4bdTCKCn4cx9UQVQk7BfG1wqOBABzavcT0pJBKdOg6/jdJyHKlg14+dzWK8IguITORsPqfH+M/RCA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750246738; c=relaxed/simple;
-	bh=8/XROG8FCMcY5Ws4TRe3AwZqA5bIHs9UG8m0dYoXA90=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=YFoWq63tO/cbIKdSggIrVR/ZVFnn6n06xOfG4j4mqnK6hKPhfIqGmIzb4Um5XBRzKL9IqwXAMvG3Lqw+v0qDUHbf1uv4rCVCPqL6kelGtME1r4aO75Sxyt23ImLmC4/fNZq1WJgAnWOChw9O6M0cyxLE+JPNGbDTPnG3Jsb4rMk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=LuDjsGgW; arc=fail smtp.client-ip=40.107.236.83
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1750248300; c=relaxed/simple;
+	bh=HLTCgjBMjcVBC/TjdcNym1f49GnDVRGUT5u4rpDcCic=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=YbrchQeYAGAtazmyEAdUVdf9FR8Uaj7MrUqhbb1vG00YYhz5+VoMPjSn926lDeLrZrbWT8auHVk0JvhY9fvO4MqyW6x86q7iBEIqGiY9kxQraFihN8T5xMH8YU+1TdhXGuKoe0ZTKJM1IgY6GTk0UofvEASVwev5gcs1TE3lJ4A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=dZHM3y3m; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="LuDjsGgW"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=pFD7Y4OVPvT3nxyZfDI0ElTF2elwtx8YIMCIJf6S9cBEy675JwAP/WlaRO0u2dIQdwVC9uPVXceiKTd/kIgfoghuDMpAyqzD52K0numGkdPNu/wC7lrh+NMm0U9QiWviUzDSMXyURy7ZtPGocrk/l+TxteQ2P7w9mP3sgMU/VFldlO3jYEsB+t2F3OBzCGcC4b0mnNF4fNY8Id3lGM4DvLQKaP/k2VFWxR+xJ4UHaSlVIj5OLAGtgH68bzZf7kRrCEkma1Mkm6djuWZQbPO/1vd2RGsxaDLRm5T+JmxPU/MWVEltF7fDxkaODT9jhApbQEtu8hIxhbLOjwBNeHULfA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CyK7aFbfIJmxRJ74o7lPPPsZYDMJKVCK3kWM5kvTckU=;
- b=wtPQRcTyhN+LCIO5VZKw7uTJGLcGKrwfnc4yGeTdxfk1unhljqti0yZ6pP7nxkvJTGdKywtKNyzLBXI/QzS0ZpuBlJGYndxTn5L13sn3GG6uHp9Zfg5QliOMCAz8yuG1bH5eXfbGlqDCyzcEx/z8M1XyfHLsG/PiCYY+SzsonuO/Kz1heshbRfumIJLuxlv9722qJD879hftM534k78TgL4A1PYUxZV1pj28EOsPzl2LjCFiWtzW58GK2M+vXFAF8PW1fmnGUY8JhVKqVpRhH5Ygjq5bDX44nd8N2SnbaBCHo0TIeAqGS2AX09f0M6S2ugInTWqS1jfOphDYhPa5MA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CyK7aFbfIJmxRJ74o7lPPPsZYDMJKVCK3kWM5kvTckU=;
- b=LuDjsGgWbpUxXkyJ6KtyQ0LM0fK5dKEH36guRx0bd47F7aw92bIESXqQr9to11RxAmXXFbnkoQXj/nKJ7BzWdDdAwZpieGmxizrs8+Wx6uRWAKV9x8ezSLA6aelfys8xnQg6bqxfY8bGFrZP4ShhYqEzcezAACj6rvw+MjPXWSoOpj54iPdnxMuco4GZIe8vxSPOSLfyfgzUrGEUN8EFKN8Dx2I0UT4DsEklvt1Qvp9junV2yglr1I/Uh6boRd0gBzDjcPTdWjvKdkgToB+KRE0M+xNWvOOubM3/8JJVjDfPELcPg7ZjZmv6v9VZjeF29g0pquuDoC8Q96R4A+RQAw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by SJ0PR12MB7007.namprd12.prod.outlook.com (2603:10b6:a03:486::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8835.32; Wed, 18 Jun
- 2025 11:38:52 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8835.027; Wed, 18 Jun 2025
- 11:38:52 +0000
-Date: Wed, 18 Jun 2025 08:38:50 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: kevin.tian@intel.com, shuah@kernel.org, joao.m.martins@oracle.com,
-	steven.sistare@oracle.com, iommu@lists.linux.dev,
-	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-	thomas.weissschuh@linutronix.de
-Subject: Re: [PATCH rc 1/4] iommufd/selftest: Fix iommufd_dirty_tracking with
- large hugepage sizes
-Message-ID: <20250618113850.GE1575786@nvidia.com>
-References: <cover.1750049883.git.nicolinc@nvidia.com>
- <9515eb5cb58bc8dfec083df51550bd9ae6d60da9.1750049883.git.nicolinc@nvidia.com>
- <20250616162501.GN1174925@nvidia.com>
- <aFDMoMX8eL7azoUL@nvidia.com>
- <20250617115948.GV1174925@nvidia.com>
- <aFHc3UujzDIfmKeT@nvidia.com>
- <20250617230136.GC1575786@nvidia.com>
- <aFH+cUSi1GITvF3F@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aFH+cUSi1GITvF3F@nvidia.com>
-X-ClientProxiedBy: MN0PR03CA0007.namprd03.prod.outlook.com
- (2603:10b6:208:52f::6) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="dZHM3y3m"
+ARC-Seal: i=1; a=rsa-sha256; t=1750248266; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=RzZx55D2awi+fO2vkEHMWH9OOXJ32TdxQctGvr9yX9nPyH83ftFQemoHFHmrCJAzZKFlIzPlqXI9Y/pIPS39qdjOXGE2rfhvjqHK0FtrCzTsdmDBmTuOUtN2MRaHsV7n6s3LieS75ki/Vdw5PQs57e3ZboFFGrp6/ZfixJw2wx4=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1750248266; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=wNS5dTEF+2i7jwZ235uXxOrvBy69u8K8AlvOKsVbO1k=; 
+	b=j4lnktPmaR1nID6BIAnPS32tQUOqkHaZJZ8EKIKiNsi9aKI+7kEokVtw0vheCUK3Z89CCAodyzI0bJHmVYbIXxZBizdwx3THXcmsUw4doBg5U0TOswNjRJQRjRudDAPMmJLd2rYN5zzUwGd4m0TNLVK6GHmPaJNLj+3ZOAj9yqI=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
+	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1750248266;
+	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=wNS5dTEF+2i7jwZ235uXxOrvBy69u8K8AlvOKsVbO1k=;
+	b=dZHM3y3mc88EBNV5fkDMwN4t4E2+Gk/gxR8lfkPPQxYyzHZiGwyPUC3nPKDsm+sC
+	Nb2ywFBo7uAY2RuWS2A3hs5A8fts4yT4KaQUgu2/ZfwwH6iLR+vaZFFo8Wc1zDsqkjY
+	CpqE98SKzBrOoaoLqhzTk37FIKVkcqqb37+4CrOE=
+Received: by mx.zohomail.com with SMTPS id 1750248264710842.3799880621831;
+	Wed, 18 Jun 2025 05:04:24 -0700 (PDT)
+Message-ID: <ff32d7c1-d811-46b8-8d3d-458dfebd14f8@collabora.com>
+Date: Wed, 18 Jun 2025 14:04:19 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|SJ0PR12MB7007:EE_
-X-MS-Office365-Filtering-Correlation-Id: 26b5b7d2-879e-4a31-9972-08ddae5cb2c8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?Z3h4cXZDN0FFUEpITUhNUi9tdGo0Q3VUOHNVZ1RjYy9GZy85OTJBQVZtNGN1?=
- =?utf-8?B?V1BXbmhIeFFvWjRDWmZqY2xLR3dwOUlMQ1FyNWVuQ09ERUEyQ1ZZZmtYTDg2?=
- =?utf-8?B?K2pTRzhhdGZNb2FPMUllMkRRdDZHVEY3amV0NWwreTE0NGlaNkN5Tjh2S3V1?=
- =?utf-8?B?TExJUjI0WldFbjd6UmxsOTZnQkxjMGVobkdxdTFOUzhOdkdhTXl4ZFY4bHVl?=
- =?utf-8?B?SGVmOVRMR1ZFeDVSZFMzRmRkUUtLdDV3NG5XRm9kcmp0RnlzYlUva3ViRkFY?=
- =?utf-8?B?TkFrVTB4MFREd2dQWWFBemtwZmVjcFdKS25wRDdDTWE4RC9FcjNpVjlFcTJZ?=
- =?utf-8?B?L2F1dzBaT2E2cmVQMGE2eGkrYmxLWEV0akpBbHB2elg3VlN4clZRVFA0ZG5B?=
- =?utf-8?B?ajdycWlENnNGc0tPSkhaQTVjVlV0WTIzN3A5SXdjYTNyV2JaanBNS0ZCSmJp?=
- =?utf-8?B?TWtHZS9OWHNlTlFQbUpodDNpRVUyWVVEbjhRZ2NEVW5uVXpNc0JZQ3JRQkxJ?=
- =?utf-8?B?U3hNYnA1T0RzWjNKUWxxelpwSlA3SVYvRGEwN0RUYW4xUlY1eXlzREl4aEFK?=
- =?utf-8?B?dVl0dXlKakRRY2REbExOVGxuWkxDbzFMREtGOWdsc0RyZFVaWG9OU29iaEpN?=
- =?utf-8?B?bkFkeGRRekxCaDgxVlV1a3g2WmYzcUM1ZnovQ05SNS8zVFBrU1RXSkY0ZVpP?=
- =?utf-8?B?Wnc0NnFTUWtWWllzWk42WmdwRlNwQnVZdVpBb290YkFYZlpiZE1rd0l6SERM?=
- =?utf-8?B?WDBGVmk4bmxYSXhSRlpvSWxxK29aREZOM2FRRUkrUTN5WlptSlBZNHBFTFRz?=
- =?utf-8?B?VDNVb2x1cG5leThzTkk4eEl2SFlWdW94U2JvdHJWdXFKbG5uYTJVV0hVYTdN?=
- =?utf-8?B?eWQ4Snk3a0F3MUV4aDcvZjF0RU1EQ2NYck5IeGRaOExHVEJNVDYxMXpZZE9L?=
- =?utf-8?B?VG13VWNjVUdVZHRKMjVFaXcxMUtaM2c1MzFKS3hZbTkweGFiZ2FxNnZ1Rnkv?=
- =?utf-8?B?M3lUUVVBQXhkMUZUSHl1aEVoUDZDY3hnaWY4Q3VGN0drSnY5K1EzQVpmbWtM?=
- =?utf-8?B?aGtLaWxONHNXbExxMk5hcVdicVNkdmdxK0ljdmM0bms5ckdtT3FkVTYzcnNl?=
- =?utf-8?B?STM0citCOTJoTmRlSTZRVy9qSGVvN2EwdFNtOWg1WWhHVUVSTWovMVpObXlw?=
- =?utf-8?B?UDZTYlh2QmlZbXFhZnF6Q01hTzMyL3FiOGhPZ09qOVVBeFhkWDRoODJoVU1C?=
- =?utf-8?B?UlVpTXp2MGxEZDRFbmE2cnRsZTJlWDNGTUpQZGNrVzVYWS9IWHdtTmtkci95?=
- =?utf-8?B?NjYwOUJ0b21MeVB6U1JlMkdmL3hmUHNRai9Gd2FlMitGSXNmL00xbkt3czVY?=
- =?utf-8?B?TWo4WCtRVTc3L1VITWlDZUxIblN4TlJOOUVpTms2NVBCNER2amRqV21sUzBF?=
- =?utf-8?B?dFpKWWRidWUyb1Y0NmxKalVpbDBMOUhUeDBINnNINENxWk5VSjlHeE10NTEw?=
- =?utf-8?B?SjlIbFpWVlFCL3dzbzhUWW9OSDRvYUtDbHVqZFFPcGk1WGtCcVlDRXNYL3Jx?=
- =?utf-8?B?WVlYSnNvandkNGRHVE8vOTQ5VDI3amNGeDdxMzY1aFFNbE9XTy9VK0NSZXlT?=
- =?utf-8?B?L3QvYjhlQi8yeWxTQjljeE1tQlZUUWpmRDlidFRTUzFrWVRRc2VkU0FweWRH?=
- =?utf-8?B?ZTdqcEx3dEVVc2grRC9iSEtXNmJRZlhUa0wyQUVuNVNDTmhJdDhjcnVCNkxO?=
- =?utf-8?B?dHJLU1FDTnpQbFcyTmJ5bngxRlMwK3Zobk1neElZRzVjdWZiTm1ZTE5nLzk4?=
- =?utf-8?B?Z0VsaDV6ZmJiMk5NVHk1c0dudU41OGNiekdwdE9xaDJnU1V6bCtkNmc4YU9S?=
- =?utf-8?B?Q01aZmY1TVZhS3NneVJXWGNhY3p6VFpuYnZNemZocW5Vbnc9PQ==?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?d0RwUFdSSGpXS2JKR2tzOWRyTWdZWVk3SGNPNjdSNFFIQmdJR09vUnpOVEhs?=
- =?utf-8?B?VC92UEx1VkowL2E5eVBPNEd5ZEc2aGVjVUxwdXc3ZS9DU2huamN1Q3dxTDZ4?=
- =?utf-8?B?eU1RZW41cTFEVUVpWkdkaXZSOE1DZmVXTzF4K0cyeTRNa2lRaTJ4TXdkWXM5?=
- =?utf-8?B?VHZsS2ZhR3U1UWgvQ1pta09uK1R4SEJtdm5YVVJoY2F4aVhuajZzejZtdzV4?=
- =?utf-8?B?STN1M0xEZ0QvUG1oN2VDWXRiOWVZUDEwbkU1UEFWT0JXT3VqQ1I5aWlBUWdp?=
- =?utf-8?B?WEo4MkpSUVBLN3Y5RGRraDViak9wOHJPYVZVeHE1OGlZUld3YXZDaFhlTUZT?=
- =?utf-8?B?Zm12Sm5rYnZzU0txTCtNQVVaRHRDN3VUNkVjVEhNMFNacTB1OUx4LzZiN2RC?=
- =?utf-8?B?M0ZPNFd2YXRxZ2FwMFZoYXlwUURBd0lRSE5pMmFKakEvV1VCNnM4QjFJTFVr?=
- =?utf-8?B?WVliNG5xZnFWWGltUnNuNVRXQi8yQ0RKR2JLMEsrSHR5UVFEVi9XWTdjQzZK?=
- =?utf-8?B?bmFUT2J2R00xb1JUWXJhYUFGS1RqQkRRYzZ4VnVlNWg3S2JpQnRkUlBuclJW?=
- =?utf-8?B?UTFiRHpFZElJMWZ4UEFPMzZ4V1NNMFBBSlZYblMwdWJ3S1k4QklORmhFNEdN?=
- =?utf-8?B?V0FWb09EQnhYdHFQdVA2bTFxNXVFWUQ1cW40TzArdy9MQzErQzdybnJJNXVy?=
- =?utf-8?B?Tlhsb2hzY1Z4T3Q1dFcxeGlibWc2VENmcy9BWENZbnNUMnRUakRScTRjZ0U5?=
- =?utf-8?B?aGdlUW8zMklWL1ZtdHdUSXhiU3dvYU5IcGV5ZFIwOUJMcVM1bVNiRjQ1aXdG?=
- =?utf-8?B?d0djekQra1dOS29EVnVSeDY1akNPWmxUeFhRem5rR1JNT0RURFlSaS9VaFQ2?=
- =?utf-8?B?cW9Rcndxd1AyWjR5UEZRUjJoRG54YjlnMWN0OE5IUk94MXBZMi8xWHBpa09j?=
- =?utf-8?B?cWtOOUJkdmFmSUNGYVJaLzk2bXZUbkROT0NUMFBjMlhZNzFuUHJGQXFaOHV0?=
- =?utf-8?B?VEg5WWs3STJsc1VFUExjQUV1TVRTWTBGZDZMM2lSMW9LbElva1p1cWw2QkhW?=
- =?utf-8?B?RGZkZUFqUEM2eUFTNWlVdTJPUmJVS2h5RXl0R1VhWW05T0tPbGZhVSsyZkQx?=
- =?utf-8?B?a2w5Z3hweEtDK09zY20xVVlyQ3g1UmtQOFJxSXdTcnpKOUM4SFF4MU9aaHB2?=
- =?utf-8?B?QlNWempzd3I0UTd6OUlVcy9KUTRRMCsrOWNicmFScG1yYlBKK0ZDZm43S3Rp?=
- =?utf-8?B?YXJBRzZLdVkra2FiU0YyK1hnYWF0d1lSTUJqNnJjN25YQWxuNFE0ajRPa1V1?=
- =?utf-8?B?VlgrMlVReFRiOXUvZWdzZXMzY0c5YVNjbFhIUHZFbFVsQzl1YmNVWkxBUmZ5?=
- =?utf-8?B?M1dCVS9tRFpDbXVqNkNpRHg2QWJTa1NNZ09hNDZ1VktaWGRKc0xCM0lNZXVP?=
- =?utf-8?B?R2txZWUzVGs5OEh5cmJkeFYvVmNTRmlOdCtSSmhzRnJFZlU4eFg5Mm5oVUVP?=
- =?utf-8?B?cDRUWGMreTYvUmRZT0dCcnMwcCswYnBaRnl0alFTaVBBeHp0aUlWRGtCMFBB?=
- =?utf-8?B?UDNZcWp1MFo1b2hIaGtZVmZlZytOM0t2alpOTERUREhGQmY1d2xaNVJKb2No?=
- =?utf-8?B?bm1aY2RMb0U4QTAvdWdBaWwvTzRqT1RGMEg3cWtvSHBFdmJyRHo5emllcDdS?=
- =?utf-8?B?TFRra1VtWEsvMjJ1b0xWUFdsNjgxMXpoV2NpMjBWRHFFWXBLVDZtN0dSL3ZH?=
- =?utf-8?B?MW1rdVpBdFJwcHllbGQ5Z1F1bkcvMi9EajRwOEdWOUZJSHJRRzdTbStlYUdX?=
- =?utf-8?B?S3ZvVko1WUZhdzRWcmxaT0l0SDZOKysvYkFHN0Zac2QrS3ZIMHVESEk2VlFE?=
- =?utf-8?B?VHhIVFY4WHpIT1c1c2ZNWDY3UHg0ZFdaMUltRHpjaWMxeEQrSGFJMDdWTzdK?=
- =?utf-8?B?WmVzMnNlRHFuaEI3NUpyNmdBa2lZQmR3RVNhZUdxNTZHZS9GSTJRZEdMd2g4?=
- =?utf-8?B?K0NjUk80ZGdjc2l5bElDUlI1V3kwVTlibm1mNy9FbzliMzhVU0pLWUNNUnZK?=
- =?utf-8?B?MTFRVi9wZFRtVVlxbDc3bDZ1RGFSalhPQk5aWTd0ZElmV1BzTkNibTdyK2F2?=
- =?utf-8?Q?hJHi8+e5mwDwV78GwVpwRZCxG?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 26b5b7d2-879e-4a31-9972-08ddae5cb2c8
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jun 2025 11:38:52.0109
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: F2ADaXKbyN8RLM+lSaZVsdHqKS5KtBHFo4YFIswGyRQnHJgElOB1O8e9a0Qe0Lda
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB7007
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/5] iommu: Add verisilicon IOMMU driver
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+ nicolas.dufresne@collabora.com, p.zabel@pengutronix.de, mchehab@kernel.org,
+ iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
+ kernel@collabora.com
+References: <20250616145607.116639-1-benjamin.gaignard@collabora.com>
+ <20250616145607.116639-4-benjamin.gaignard@collabora.com>
+ <20250617163219.GF1376515@ziepe.ca>
+Content-Language: en-US
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <20250617163219.GF1376515@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, Jun 17, 2025 at 04:46:57PM -0700, Nicolin Chen wrote:
-> On Tue, Jun 17, 2025 at 08:01:36PM -0300, Jason Gunthorpe wrote:
-> > On Tue, Jun 17, 2025 at 02:23:41PM -0700, Nicolin Chen wrote:
-> > > On Tue, Jun 17, 2025 at 08:59:48AM -0300, Jason Gunthorpe wrote:
-> > > > On Mon, Jun 16, 2025 at 07:02:08PM -0700, Nicolin Chen wrote:
-> > > > > ---breakdown---
-> > > > > After `posix_memalign()`:
-> > > > >   [ posix_memalign() memory ]  ← malloc thinks it owns this
-> > > > > 
-> > > > > Then `mmap(aligned_ptr, ..., MAP_FIXED)`:
-> > > > >   [ anonymous mmap region ]    ← malloc still thinks it owns this (!)
-> > > > >   ↑ mapped
-> > > > > ---end---
-> > > > 
-> > > > Yes, this is correct and what we are doing here. The allocator always
-> > > > owns it and we are just replacing the memory with a different mmap.
-> > > 
-> > > Hmm, if allocator always owns it. Does that mean the munmap() [3]
-> > > will release what [1] and [2] do (allocating and replacing)?
-> > 
-> > No, munmap doesn't destroy the allocator meta data.
-> 
-> Should we do something to that meta data?
 
-My patch calls free on it which removes the metadata and might munmap
-the range (or re-use it, but that doesn't matter)
+Le 17/06/2025 à 18:32, Jason Gunthorpe a écrit :
+> On Mon, Jun 16, 2025 at 04:55:51PM +0200, Benjamin Gaignard wrote:
+>
+>> +static struct vsi_iommu *vsi_iommu_from_dev(struct device *dev)
+>> +{
+>> +	struct vsi_iommudata *data = dev_iommu_priv_get(dev);
+>> +
+>> +	return data ? data->iommu : NULL;
+> It would be a serious bug if dev_iommu_priv_get() is null, don't check
+> for it, let it crash.
 
-Jason
+Ok, I will simplify/merge the driver internal structure and remove this function.
+
+>> +static struct iommu_domain *vsi_iommu_domain_alloc_paging(struct device *dev)
+>> +{
+>> +	struct vsi_iommu_domain *vsi_domain;
+>> +
+>> +	if (!dma_dev)
+>> +		return NULL;
+>> +
+>> +	vsi_domain = kzalloc(sizeof(*vsi_domain), GFP_KERNEL);
+>> +	if (!vsi_domain)
+>> +		return NULL;
+>> +
+>> +	/*
+>> +	 * iommu use a 2 level pagetable.
+>> +	 * Each level1 (dt) and level2 (pt) table has 1024 4-byte entries.
+>> +	 * Allocate one 4 KiB page for each table.
+>> +	 */
+>> +	vsi_domain->dt = iommu_alloc_pages_sz(GFP_KERNEL | GFP_DMA32,
+>> +					      SPAGE_SIZE);
+>> +	if (!vsi_domain->dt)
+>> +		goto err_free_domain;
+>> +
+>> +	vsi_domain->dt_dma = dma_map_single(dma_dev, vsi_domain->dt,
+>> +					    SPAGE_SIZE, DMA_TO_DEVICE);
+>> +	if (dma_mapping_error(dma_dev, vsi_domain->dt_dma)) {
+>> +		dev_err(dma_dev, "DMA map error for DT\n");
+>> +		goto err_free_dt;
+>> +	}
+>> +
+>> +	vsi_domain->pta = iommu_alloc_pages_sz(GFP_KERNEL | GFP_DMA32,
+>> +					       SPAGE_SIZE);
+>> +	if (!vsi_domain->pta)
+>> +		goto err_unmap_dt;
+>> +
+>> +	vsi_domain->pta_dma = dma_map_single(dma_dev, vsi_domain->pta,
+>> +					     SPAGE_SIZE, DMA_TO_DEVICE);
+>> +	if (dma_mapping_error(dma_dev, vsi_domain->pta_dma)) {
+>> +		dev_err(dma_dev, "DMA map error for PTA\n");
+>> +		goto err_free_pta;
+>> +	}
+>> +	vsi_domain->pta[0] = vsi_mk_pta(vsi_domain->dt_dma);
+>> +
+>> +	vsi_table_flush(vsi_domain, vsi_domain->pta_dma, 1024);
+>> +	vsi_table_flush(vsi_domain, vsi_domain->dt_dma, NUM_DT_ENTRIES);
+> dma_map_single already flushes, put things in the write order and no
+> need to double flush.
+
+I don't get your point here, for me it flush two different pieces of memory.
+
+>
+>> +	spin_lock_init(&vsi_domain->iommus_lock);
+>> +	spin_lock_init(&vsi_domain->dt_lock);
+>> +	INIT_LIST_HEAD(&vsi_domain->iommus);
+>> +
+>> +	vsi_domain->domain.geometry.aperture_start = 0;
+>> +	vsi_domain->domain.geometry.aperture_end   = DMA_BIT_MASK(32);
+>> +	vsi_domain->domain.geometry.force_aperture = true;
+> Initialize domain.pgsize_bitmap here and remove this:
+>
+> +       .pgsize_bitmap = VSI_IOMMU_PGSIZE_BITMAP,
+>
+> It is going away.
+
+Will be in v2.
+
+>
+>> +	return &vsi_domain->domain;
+>> +
+>> +err_free_pta:
+>> +	iommu_free_pages(vsi_domain->pta);
+>> +err_unmap_dt:
+>> +	dma_unmap_single(dma_dev, vsi_domain->dt_dma,
+>> +			 SPAGE_SIZE, DMA_TO_DEVICE);
+>> +err_free_dt:
+>> +	iommu_free_pages(vsi_domain->dt);
+>> +err_free_domain:
+>> +	kfree(vsi_domain);
+>> +
+>> +	return NULL;
+>> +}
+>> +
+>> +static phys_addr_t vsi_iommu_iova_to_phys(struct iommu_domain *domain,
+>> +					  dma_addr_t iova)
+>> +{
+>> +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
+>> +	unsigned long flags;
+>> +	phys_addr_t pt_phys, phys = 0;
+>> +	u32 dte, pte;
+>> +	u32 *page_table;
+>> +
+>> +	spin_lock_irqsave(&vsi_domain->dt_lock, flags);
+> No locking should be here. Drivers are supposed to use cmpxchg to set
+> the new tables to avoid races, however there is complexity around the
+> cache flushing that this locking solves.
+>
+> IDK, you might be better to use the new iommupt stuff since all these
+> algorithms including the complicated lockless cache flushing
+> optmization are sorted out there.
+>
+> https://lore.kernel.org/linux-iommu/0-v3-a93aab628dbc+521-iommu_pt_jgg@nvidia.com/
+
+This series is not merged on mainline (at least I don't see it) so I will keep
+it like it is for the moment.
+
+>
+>> +	dte_index = vsi_iova_dte_index(iova);
+>> +	dte_addr = &vsi_domain->dt[dte_index];
+>> +	dte = *dte_addr;
+>> +	if (vsi_dte_is_pt_valid(dte))
+>> +		goto done;
+>> +
+>> +	page_table = (u32 *)get_zeroed_page(GFP_ATOMIC | GFP_DMA32);
+>> +	if (!page_table)
+>> +		return ERR_PTR(-ENOMEM);
+> Don't use get_zeroed_page for page table memory.
+
+I will use kmem_cache in v2
+
+>
+>> +
+>> +	pt_dma = dma_map_single(dma_dev, page_table, SPAGE_SIZE, DMA_TO_DEVICE);
+>> +	if (dma_mapping_error(dma_dev, pt_dma)) {
+>> +		dev_err(dma_dev, "DMA mapping error while allocating page table\n");
+>> +		free_page((unsigned long)page_table);
+>> +		return ERR_PTR(-ENOMEM);
+>> +	}
+>> +
+>> +	dte = vsi_mk_dte(pt_dma);
+>> +	*dte_addr = dte;
+>> +
+>> +	vsi_table_flush(vsi_domain, pt_dma, NUM_PT_ENTRIES);
+>> +	vsi_table_flush(vsi_domain,
+>> +			vsi_domain->dt_dma + dte_index * sizeof(u32), 1);
+> Double flushing again.
+
+Same here, for me I flushing two different memory area.
+
+>
+>> +static int vsi_iommu_map_iova(struct vsi_iommu_domain *vsi_domain, u32 *pte_addr,
+>> +			      dma_addr_t pte_dma, dma_addr_t iova,
+>> +			      phys_addr_t paddr, size_t size, int prot)
+>> +{
+>> +	unsigned int pte_count;
+>> +	unsigned int pte_total = size / SPAGE_SIZE;
+>> +	phys_addr_t page_phys;
+>> +
+>> +	assert_spin_locked(&vsi_domain->dt_lock);
+>> +
+>> +	for (pte_count = 0; pte_count < pte_total; pte_count++) {
+>> +		u32 pte = pte_addr[pte_count];
+>> +
+>> +		if (vsi_pte_is_page_valid(pte))
+>> +			goto unwind;
+>> +
+>> +		pte_addr[pte_count] = vsi_mk_pte(paddr, prot);
+> So why is this:
+>
+> #define VSI_IOMMU_PGSIZE_BITMAP 0x007ff000
+>
+> If the sizes don't become encoded in the PTE? The bits beyond 4k
+> should reflect actual ability to store those sizes in PTEs, eg using
+> contiguous bits or something.
+
+The iommu use arrays to store up to 1024 4k pages indexes so the size
+isn't coded in the PTE bits but the numbers of used indexes for each arrays.
+
+>
+>> +		paddr += SPAGE_SIZE;
+>> +	}
+>> +
+>> +	vsi_table_flush(vsi_domain, pte_dma, pte_total);
+>> +
+>> +	return 0;
+>> +unwind:
+>> +	/* Unmap the range of iovas that we just mapped */
+>> +	vsi_iommu_unmap_iova(vsi_domain, pte_addr, pte_dma,
+>> +			     pte_count * SPAGE_SIZE);
+>> +
+>> +	iova += pte_count * SPAGE_SIZE;
+>> +	page_phys = vsi_pte_page_address(pte_addr[pte_count]);
+>> +	pr_err("iova: %pad already mapped to %pa cannot remap to phys: %pa prot: %#x\n",
+>> +	       &iova, &page_phys, &paddr, prot);
+> No pr_errs prints on normal errors.
+
+I will remove it in v2
+
+>
+>> +static void vsi_iommu_detach_device(struct iommu_domain *domain,
+>> +				    struct device *dev)
+>> +{
+>> +	struct vsi_iommu *iommu;
+>> +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
+>> +	unsigned long flags;
+>> +	int ret;
+>> +
+>> +	/* Allow 'virtual devices' (eg drm) to detach from domain */
+>> +	iommu = vsi_iommu_from_dev(dev);
+>> +	if (WARN_ON(!iommu))
+>> +		return;
+>> +
+>> +	dev_dbg(dev, "Detaching from iommu domain\n");
+>> +
+>> +	if (!iommu->domain)
+>> +		return;
+>> +
+>> +	spin_lock_irqsave(&vsi_domain->iommus_lock, flags);
+>> +	list_del_init(&iommu->node);
+>> +	spin_unlock_irqrestore(&vsi_domain->iommus_lock, flags);
+> The list del should probably be after the vsi_iommu_disable()? We
+> expect invalidations to continue to keep the IOTLB consistent until
+> the HW is no longer walking the page table.
+
+I will do that in v2.
+
+>
+>> +static struct iommu_device *vsi_iommu_probe_device(struct device *dev)
+>> +{
+>> +	struct vsi_iommudata *data;
+>> +	struct vsi_iommu *iommu;
+>> +
+>> +	data = dev_iommu_priv_get(dev);
+>> +	if (!data)
+>> +		return ERR_PTR(-ENODEV);
+>> +
+>> +	iommu = vsi_iommu_from_dev(dev);
+>> +
+>> +	pr_info("%s,%d, consumer : %s, supplier : %s\n",
+>> +		__func__, __LINE__, dev_name(dev), dev_name(iommu->dev));
+> No prints
+>
+>> +	/*
+>> +	 * link will free by platform_device_del(master) via
+>> +	 * BUS_NOTIFY_REMOVED_DEVICE
+>> +	 */
+>> +	data->link = device_link_add(dev, iommu->dev,
+>> +				     DL_FLAG_STATELESS | DL_FLAG_PM_RUNTIME);
+>> +
+>> +	/* set max segment size for dev, needed for single chunk map */
+>> +	if (!dev->dma_parms)
+>> +		dev->dma_parms = kzalloc(sizeof(*dev->dma_parms), GFP_KERNEL);
+>> +	if (!dev->dma_parms)
+>> +		return ERR_PTR(-ENOMEM);
+>> +
+>> +	dma_set_max_seg_size(dev, DMA_BIT_MASK(32));
+> I'm not sure this should be in an iommu driver??? Doesn't dma-iommu.c
+> deal with this stuff
+
+You are right, I will remove it.
+
+>
+>> +static void vsi_iommu_release_device(struct device *dev)
+>> +{
+>> +	struct vsi_iommudata *data = dev_iommu_priv_get(dev);
+>> +
+>> +	device_link_del(data->link);
+> Leaking data..
+
+I will change the driver internal structures and remove data->link.
+
+>
+>> +static int vsi_iommu_of_xlate(struct device *dev,
+>> +			      const struct of_phandle_args *args)
+>> +{
+>> +	struct platform_device *iommu_dev;
+>> +	struct vsi_iommudata *data;
+>> +
+>> +	data = devm_kzalloc(dma_dev, sizeof(*data), GFP_KERNEL);
+>> +	if (!data)
+>> +		return -ENOMEM;
+>> +
+>> +	dev_info(dev, "%s,%d\n", __func__, __LINE__);
+>> +	iommu_dev = of_find_device_by_node(args->np);
+>> +
+>> +	data->iommu = platform_get_drvdata(iommu_dev);
+>> +
+>> +	dev_iommu_priv_set(dev, data);
+> Can you use iommu_fwspec_add_ids() instead of this?
+>
+> The only thing 'data' is doing here is to pass the iommu_dev, it is
+> much better if you can get that from the fwspec in probe, like say ARM
+> does it:
+>
+> 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+>
+> 	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+>
+> And then don't allocate memory in the of_xlate.
+
+I will rework driver probe and the internal structure to avoid allocate here.
+
+>
+>> +static struct iommu_ops vsi_iommu_ops = {
+>> +	.domain_alloc_paging = vsi_iommu_domain_alloc_paging,
+>> +	.probe_device = vsi_iommu_probe_device,
+>> +	.release_device = vsi_iommu_release_device,
+>> +	.device_group = generic_single_device_group,
+>> +	.pgsize_bitmap = VSI_IOMMU_PGSIZE_BITMAP,
+> move pgsize_bitmap to alloc paging
+
+ok
+
+>
+>
+>> +static int vsi_iommu_probe(struct platform_device *pdev)
+>> +{
+>> +	struct device *dev = &pdev->dev;
+>> +	struct vsi_iommu *iommu;
+>> +	struct resource *res;
+>> +	int num_res = pdev->num_resources;
+>> +	int err, i;
+>> +
+>> +	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
+>> +	if (!iommu)
+>> +		return -ENOMEM;
+>> +
+>> +	platform_set_drvdata(pdev, iommu);
+> This should be done last after the function can't fail
+
+sure I will fix it.
+
+>
+>> +
+>> +	iommu->group = iommu_group_alloc();
+>> +	if (IS_ERR(iommu->group)) {
+>> +		err = PTR_ERR(iommu->group);
+>> +		goto err_unprepare_clocks;
+>> +	}
+> This should not be in iommu drivers. I'm guessing you want
+> generic_single_device_group() ?
+
+I will remove it.
+
+>
+>> +	/*
+>> +	 * use the first registered sysmmu device for performing
+>> +	 * dma mapping operations on iommu page tables (cpu cache flush)
+>> +	 */
+>> +	if (!dma_dev)
+>> +		dma_dev = &pdev->dev;
+> Huh? This is racey, and why? What is the reason not to use the current
+> device always? Put the dev in the iommu_domain during
+> domain_alloc_paging and get it from  dev->iommu->iommu_dev->dev.
+
+I will change that too.
+
+>
+>> +
+>> +	pm_runtime_enable(dev);
+>> +
+>> +	err = iommu_device_sysfs_add(&iommu->iommu, dev, NULL, dev_name(dev));
+>> +	if (err)
+>> +		goto err_put_group;
+>> +
+>> +	err = iommu_device_register(&iommu->iommu, &vsi_iommu_ops, dev);
+>> +	if (err)
+>> +		goto err_remove_sysfs;
+> Register should usually be last.
+>
+>> +	for (i = 0; i < iommu->num_irq; i++) {
+>> +		int irq = platform_get_irq(pdev, i);
+>> +
+>> +		if (irq < 0)
+>> +			return irq;
+>> +
+>> +		err = devm_request_irq(iommu->dev, irq, vsi_iommu_irq,
+>> +				       IRQF_SHARED, dev_name(dev), iommu);
+>> +		if (err)
+>> +			goto err_unregister;
+>> +	}
+> Why allocate interrupts after registration?
+
+I will rework probe function to fix all that.
+
+Thanks for your remarks.
+Benjamin
+
+>
+> Jason
+>
