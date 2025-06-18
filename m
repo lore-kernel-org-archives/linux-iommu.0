@@ -1,195 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f201.google.com (mail-pf1-f201.google.com [209.85.210.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C8862F5481;
-	Wed, 18 Jun 2025 18:45:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 805AB20AF98
+	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 20:59:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750272344; cv=none; b=VQQS459a4GNaa4Gqe5i84mxCzJvWPQ5vqDWC3HfDuDvQnqCZm+0ne0tgoKgwCXr5U4PVQVZKGStNq8fl4DBtMSWKmlwqgwxt3gEqGc8EnDMvgMuFNYkML/1tCm8/ASoI5upg3ylth8keBzxYV7vFsIIzXd55LacoUFJtbj+6rOo=
+	t=1750280381; cv=none; b=niJ78HNsvJHD5+IEFbdny1Hl3hyxY49UwmldEWAwsWD8DDncKH2WhXDfDiibag++3W50uzSbPv74cW2cOc7rO4fSC+QmVmJRKS0XQk83KPfkMhwXGE0H4TjMCmupaWkJpDgKviCux/2J7w9lC20zViw79T2EwXKa8biXvY4VU5M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750272344; c=relaxed/simple;
-	bh=kbXAVpybQ2pDJoOh5xCA8sgCP7NubFSj4yGjwUtH7RA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=FUCmKbDnB2Lf/rLERu1ikfpCQkjFinhWIhNkxyPNyesM0JK2J+qpKCiBu+9MEVUbS+2DI92I9M/uk9psSvSeH92LhFVicjsQQM9JZ/4ShLe31e6rmA1Vuo5B1RkfGh/JSh3bT1Kyd++g24+nrB+padjsne7SWa3ruHWfFhQSdJw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hRrNC2H2; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750280381; c=relaxed/simple;
+	bh=TGl3VBkKi7oE2h+1aWKRYyzd0xAZ30Hgfd6PLNHMvvM=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=X4KwCeprguhbqm6JziF/em2TeTqk7yN5mQ9NmAYb4fm70645a9p6qhw/j37u4FtgCOZAZSepk6BIDX2KInDBQrI8AuElzoLTN6KELrToygKSECP4C6vhA5YniA2O4RCq/gk+khwIjbtisnfhW13HPNKhPbtThLrbiMiZxVaAOpQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=x3YzEp4f; arc=none smtp.client-ip=209.85.210.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hRrNC2H2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A706C4CEEF;
-	Wed, 18 Jun 2025 18:45:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750272343;
-	bh=kbXAVpybQ2pDJoOh5xCA8sgCP7NubFSj4yGjwUtH7RA=;
-	h=Date:Subject:To:References:From:In-Reply-To:From;
-	b=hRrNC2H2IBsPTgQYQSA8Xg3omiE3vcsZbrhWm88sx6eRH8ApMQXqxoWHRTIPc7Rgg
-	 sDNxvlqwAJiuitvuH0rkeYX6+Kvh18Eke5FU6A1CzSIyecKPJUq3wqICErHjeFnACP
-	 wE9z2GZ//HzavUx909tQyzmmHs9QiH5YPvhdRLOuzCYBQCF+1tYQ8B/y8nNiHoeOlZ
-	 gisotdvj7cUs+u1yyKmAGVYNjvjahEcOmg5E6AvyXgG51oB/DtETcrgxr7q3mQVLnL
-	 1qlaBFyuXZlEwql4Y3YW+agIOHa9ilzm+eer6pmJbOOwf3Dv5/e6dpaq1W+ml1XtL4
-	 Jbp89RX+5B4Ng==
-Message-ID: <8ee5d492-4777-4dc7-a001-0bdbb3bff2a4@kernel.org>
-Date: Wed, 18 Jun 2025 13:45:40 -0500
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="x3YzEp4f"
+Received: by mail-pf1-f201.google.com with SMTP id d2e1a72fcca58-747cebffd4eso41834b3a.2
+        for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 13:59:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1750280380; x=1750885180; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=aF8FChrkDuPz1pKDYbAfDf2mWO3Vl3/6TjWiBlEasWs=;
+        b=x3YzEp4f4q4pZjOeHLFAG8xwkUJv7tp3sIt3deUdKOP6H128/g3WgKL+SjSs5Fqdow
+         ambRtj3seyzMcQTWog+7Bj/TLmFzX6I6JttFlxIt3vCLgzi2BgLl6/W7HbRokw9YQV7G
+         ZM6kTGVc//+U28dtWDv7IC209URJovfmPEla2O874v6+jKyUtfpCHVgtL2CovX3nyO27
+         5LzzoFC5QIDyUH3nUBMNK66Vcd4ypiSxXkoOCFd72rl6LAW0QpcfXc47KyCBsY7QHl/S
+         7WGPp3TuEymc8Mq5mLgZgAPw0NhRa+dIEqjDujaP2wUdXNikSAcYBQrZ206P0KRWpR/e
+         xddA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750280380; x=1750885180;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=aF8FChrkDuPz1pKDYbAfDf2mWO3Vl3/6TjWiBlEasWs=;
+        b=YCzZ9fM/vlhCASXCpSUFW9ga4QQ6ql2qtq9Slmax3qCVQx145i6ck3VSb+jCIJP4XX
+         MddcXtVOod85ty0rsYlbqEHha+CAK20ZQUlVt3HclczQFk3cayy+QSo3RvKYIlvzqwdG
+         A2MJdLk2JgsZMT+Xziz1tvz5Epfr3Ic4YOxms8/l7+kbyELPZnHm9aaDm0Ye7az/qUrM
+         YFd/rSPjWucAoBVYjKu+fsOwDVGNO8p2M9bQjMBYGH4EchxJ910++0IY1mD4R/Go71YQ
+         yP3dTeOFwV2fnVh6wiGH5RIiotAmL1AVeh6XstSd2ZXHIRozgNSJbA1zM7PInTYJ9hlE
+         QB0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVl440xTvWthidVgSDdrYiU5q4yX8W9P4uHozzLOQPPRTBKkLQP3LMSjlSYP6vgQM0livLunw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxra5gyi9cgEt8SS/JYnCIRlIVFbzpSyS/svDyFAOXlDYg1ujSc
+	73h/wZtWZ1rfAAdevS7gB8Sc5H2H+UvrBzrBKCUIJSFeXVzo0G8MKfrzhfkqw3y67GYhEC3EQC7
+	L2/iB1A==
+X-Google-Smtp-Source: AGHT+IF2uJOMlygI0ECXMxjUKFr94MDL8dRFNErS7/emaEcq+7yIxFlJ3NplEPfGVdrHzu/gZljNYVWfvEE=
+X-Received: from pfoa20.prod.google.com ([2002:aa7:8654:0:b0:748:2476:b25f])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a00:4646:b0:748:3822:e8e0
+ with SMTP id d2e1a72fcca58-7489cfd5dbemr25408374b3a.13.1750280379840; Wed, 18
+ Jun 2025 13:59:39 -0700 (PDT)
+Date: Wed, 18 Jun 2025 13:59:38 -0700
+In-Reply-To: <7timm7vdq4vjwn6jo5bwgtbn3f7pdtdch7l5dws76pjg7syqwb@al5mifdmboog>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 6/6] vgaarb: Look at all PCI display devices in VGA
- arbiter
-To: Thomas Zimmermann <tzimmermann@suse.de>,
- Alex Williamson <alex.williamson@redhat.com>,
- David Airlie <airlied@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Alex Deucher <alexander.deucher@amd.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Simona Vetter <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
- "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
- "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
- "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
- "open list:SOUND" <linux-sound@vger.kernel.org>,
- Daniel Dadap <ddadap@nvidia.com>,
- Mario Limonciello <mario.limonciello@amd.com>
-References: <20250617175910.1640546-1-superm1@kernel.org>
- <20250617175910.1640546-7-superm1@kernel.org>
- <20250617132228.434adebf.alex.williamson@redhat.com>
- <08257531-c8e4-47b1-a5d1-1e67378ff129@kernel.org>
- <4b4224b8-aa91-4f21-8425-2adf9a2b3d38@suse.de>
- <aFLJTSIPVE0EnNvh@phenom.ffwll.local>
-Content-Language: en-US
-From: Mario Limonciello <superm1@kernel.org>
-In-Reply-To: <aFLJTSIPVE0EnNvh@phenom.ffwll.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+References: <20250611224604.313496-2-seanjc@google.com> <20250611224604.313496-14-seanjc@google.com>
+ <bmx43lru6mwdyun3ktcmoeezqw6baih7vgtykolsrmu5q2x7vu@xp5jrbbqwzej>
+ <aFGTYoxlLhZsiMUC@google.com> <7timm7vdq4vjwn6jo5bwgtbn3f7pdtdch7l5dws76pjg7syqwb@al5mifdmboog>
+Message-ID: <aFMoumQ8ILTLr7PZ@google.com>
+Subject: Re: [PATCH v3 12/62] KVM: SVM: Inhibit AVIC if ID is too big instead
+ of rejecting vCPU creation
+From: Sean Christopherson <seanjc@google.com>
+To: Naveen N Rao <naveen.rao@amd.com>
+Cc: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
+	kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
+	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
+Content-Type: text/plain; charset="us-ascii"
 
-On 6/18/2025 9:12 AM, Simona Vetter wrote:
-> On Wed, Jun 18, 2025 at 11:11:26AM +0200, Thomas Zimmermann wrote:
->> Hi
->>
->> Am 17.06.25 um 22:22 schrieb Mario Limonciello:
->>>
->>>
->>> On 6/17/25 2:22 PM, Alex Williamson wrote:
->>>> On Tue, 17 Jun 2025 12:59:10 -0500
->>>> Mario Limonciello <superm1@kernel.org> wrote:
->>>>
->>>>> From: Mario Limonciello <mario.limonciello@amd.com>
->>>>>
->>>>> On a mobile system with an AMD integrated GPU + NVIDIA discrete GPU the
->>>>> AMD GPU is not being selected by some desktop environments for any
->>>>> rendering tasks. This is because neither GPU is being treated as
->>>>> "boot_vga" but that is what some environments use to select a GPU [1].
->>>>>
->>>>> The VGA arbiter driver only looks at devices that report as PCI display
->>>>> VGA class devices. Neither GPU on the system is a PCI display VGA class
->>>>> device:
->>>>>
->>>>> c5:00.0 3D controller: NVIDIA Corporation Device 2db9 (rev a1)
->>>>> c6:00.0 Display controller: Advanced Micro Devices, Inc.
->>>>> [AMD/ATI] Device 150e (rev d1)
->>>>>
->>>>> If the GPUs were looked at the vga_is_firmware_default()
->>>>> function actually
->>>>> does do a good job at recognizing the case from the device used for the
->>>>> firmware framebuffer.
->>>>>
->>>>> Modify the VGA arbiter code and matching sysfs file entries to
->>>>> examine all
->>>>> PCI display class devices. The existing logic stays the same.
->>>>>
->>>>> This will cause all GPUs to gain a `boot_vga` file, but the
->>>>> correct device
->>>>> (AMD GPU in this case) will now show `1` and the incorrect
->>>>> device shows `0`.
->>>>> Userspace then picks the right device as well.
->>>>>
->>>>> Link: https://github.com/robherring/libpciaccess/commit/b2838fb61c3542f107014b285cbda097acae1e12
->>>>> [1]
->>>>> Suggested-by: Daniel Dadap <ddadap@nvidia.com>
->>>>> Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
->>>>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
->>>>> ---
->>>>>    drivers/pci/pci-sysfs.c | 2 +-
->>>>>    drivers/pci/vgaarb.c    | 8 ++++----
->>>>>    2 files changed, 5 insertions(+), 5 deletions(-)
->>>>>
->>>>> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
->>>>> index 268c69daa4d57..c314ee1b3f9ac 100644
->>>>> --- a/drivers/pci/pci-sysfs.c
->>>>> +++ b/drivers/pci/pci-sysfs.c
->>>>> @@ -1707,7 +1707,7 @@ static umode_t
->>>>> pci_dev_attrs_are_visible(struct kobject *kobj,
->>>>>        struct device *dev = kobj_to_dev(kobj);
->>>>>        struct pci_dev *pdev = to_pci_dev(dev);
->>>>>    -    if (a == &dev_attr_boot_vga.attr && pci_is_vga(pdev))
->>>>> +    if (a == &dev_attr_boot_vga.attr && pci_is_display(pdev))
->>>>>            return a->mode;
->>>>>          return 0;
->>>>> diff --git a/drivers/pci/vgaarb.c b/drivers/pci/vgaarb.c
->>>>> index 78748e8d2dbae..63216e5787d73 100644
->>>>> --- a/drivers/pci/vgaarb.c
->>>>> +++ b/drivers/pci/vgaarb.c
->>>>> @@ -1499,8 +1499,8 @@ static int pci_notify(struct
->>>>> notifier_block *nb, unsigned long action,
->>>>>          vgaarb_dbg(dev, "%s\n", __func__);
->>>>>    -    /* Only deal with VGA class devices */
->>>>> -    if (!pci_is_vga(pdev))
->>>>> +    /* Only deal with PCI display class devices */
->>>>> +    if (!pci_is_display(pdev))
->>>>>            return 0;
->>>>>          /*
->>>>> @@ -1546,12 +1546,12 @@ static int __init vga_arb_device_init(void)
->>>>>          bus_register_notifier(&pci_bus_type, &pci_notifier);
->>>>>    -    /* Add all VGA class PCI devices by default */
->>>>> +    /* Add all PCI display class devices by default */
->>>>>        pdev = NULL;
->>>>>        while ((pdev =
->>>>>            pci_get_subsys(PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
->>>>>                       PCI_ANY_ID, pdev)) != NULL) {
->>>>> -        if (pci_is_vga(pdev))
->>>>> +        if (pci_is_display(pdev))
->>>>>                vga_arbiter_add_pci_device(pdev);
->>>>>        }
->>>>
->>>> At the very least a non-VGA device should not mark that it decodes
->>>> legacy resources, marking the boot VGA device is only a part of what
->>>> the VGA arbiter does.  It seems none of the actual VGA arbitration
->>>> interfaces have been considered here though.
->>>>
->>>> I still think this is a bad idea and I'm not sure Thomas didn't
->>>> withdraw his ack in the previous round[1].  Thanks,
->>>
->>> Ah; I didn't realize that was intended to be a withdrawl.
->>> If there's another version of this I'll remove it.
->>
->> Then let me formally withdraw the A-b.
->>
->> I think this updated patch doesn't address the concerns raised in the
->> previous reviews. AFAIU vgaarb is really only about VGA devices.
+On Wed, Jun 18, 2025, Naveen N Rao wrote:
+> On Tue, Jun 17, 2025 at 09:10:10AM -0700, Sean Christopherson wrote:
+> > Hmm, yes and no.  I completely agree that clearing apicv_active in avic.c
+> > is all kinds of gross, but clearing apic->apicv_active in lapic.c to handle
+> > this particular scenario is just as problematic, because then
+> > avic_init_backing_page() would need to check kvm_vcpu_apicv_active() to
+> > determine whether or not to allocate the backing page.  In a way, that's
+> > even worse, because setting apic->apicv_active by default is purely an
+> > optimization, i.e. leaving it %false _should_ work as well, it would just
+> > be suboptimal.  But if AVIC were to key off apic->apicv_active, that could
+> > lead to KVM incorrectly skipping allocation of the AVIC backing page.
 > 
-> I missed the earlier version, but wanted to chime in that I concur. vgaarb
-> is about vga decoding, and modern gpu drivers are trying pretty hard to
-> disable that since it can cause pain. If we mix in the meaning of "default
-> display device" into this, we have a mess.
+> I understand your concern about key'ing off apic->apicv_active - that 
+> would definitely require a thorough audit and does add complexity to 
+> this.
 > 
-> I guess what does make sense is if the kernel exposes its notion of
-> "default display device", since we do have that in some sense with
-> simpledrm. At least on systems where simpledrm is a thing, but I think you
-> need some really old machines for that to not be the case.
+> However, as far as I can see, after your current series, we no longer 
+> maintain a pointer to the AVIC backing page, but instead rely on the 
+> lapic-allocated page.
 > 
-> Cheers, Sima
+> Were you referring to the APIC access page though? 
 
-Thanks guys.  Let's discard patch 6.  Here's a spin of an approach for 
-userspace that does something similar to what the compositors are doing.
-We can iterate on that.
+Gah, yes.  I was hyper aware of the two things when typing up the response, and
+still managed to screw up.  *sigh* :-)
 
-https://gitlab.freedesktop.org/xorg/lib/libpciaccess/-/merge_requests/38
+> That is behind kvm_apicv_activated() today, which looks to be problematic if
+> there are inhibits set during vcpu_create() and if those can be unset later?
+> Shouldn't we be allocating the apic access page unconditionally here?
 
-I think patches 1-5 still are valuable though.  So please add reviews to 
-those and we can take those without patch 6 if there is agreement.
+In theory, yes.  In practice, this guards against an unnecessary allocation for
+SEV+ guests (see APICV_INHIBIT_REASON_SEV).
+
+That said, I completely agree that checking kvm_apicv_activated() is weird and
+sketchy.  Hopefully that can be cleaned up, too (but after this series).
