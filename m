@@ -1,50 +1,80 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C3B727F01F
-	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 08:33:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F116127FB37
+	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 09:11:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750235617; cv=none; b=SpGJeR7FckIT8cqioPxIm01M3CiAHWxhKdljz/1nqZxl5SGNmkzjBckame0kxR6+MY75LbFoM+DYAD+suekg96DjPsxqrs0DzkNhk2SAtWERx/9vzxxbARL+me+Q2pFzBdKrAZlJDnold1bczwz+/HR/3U25yjpEcN1cs17seR8=
+	t=1750237892; cv=none; b=hHFFfqqidjO0qtsB3DYIYSbXKleiodr4ZgpCyIqlTGc78NVxQdcXdVugrUduLD34b+MndD2f2GvBkrgC5LwXhF0jCKkre4syFcXWcIuzhb2hbP9SXSJ8iCCBT8f3bq7i/XBZDCJ8A196g16xOgmWt2MO8EqfyXo9d20LAAYjLnQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750235617; c=relaxed/simple;
-	bh=fIu3H0X1ir+ab5DgfWZw8Zxf2egqeIQlXSOMOU+My5c=;
+	s=arc-20240116; t=1750237892; c=relaxed/simple;
+	bh=wtk9Ai6A4vr3BAnsawlLRuT9qb0f0DfvHt+JKai0XOM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=i4VIhubzAJEKUAe+BobFLMmBSY0E5svDZQc0+jTUXKt1joy07bh6JgkMFo8q7lLLbnSMTRUI/nRb1z6oCi4k0919pJGi3CPvHnt2uAzPBi6mQrxGGwPZvgk3J7DlygJi3hp4kaP18QY4RxNEWVEq+XYQyemEW7S6btFScuXMVvs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Yf3w0w0t; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 In-Reply-To:Content-Type; b=haug+jxOi/2L31GBEmaaD8P+JrwgXhr7WosMthotAMzcaCcWjGaFPGmhUi0lyW8252NNEyJ83AG4R0d2p8qlkB1ickH470jEkYsJ1i84en0AeYZgJFmx+hmYMu62LRjDJwCBLNtuL9kD1o4qeCN+SkvSrhYojZoLZSy46JoXvtY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=czm+tfj4; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=9GbG36Tq; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=czm+tfj4; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=9GbG36Tq; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Yf3w0w0t"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750235615; x=1781771615;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=fIu3H0X1ir+ab5DgfWZw8Zxf2egqeIQlXSOMOU+My5c=;
-  b=Yf3w0w0tjuPUX/qpwix3lbOgyKOhhjrtgX4u6ix48QnyspsVbKisJKj0
-   wwtGwr/osKcezOqPWy0XwiEanB9SiSCy6tp3XHJX0goCT8AhwwS4pwK53
-   4INX0Us4CD2QFhHemJ1ihfdthaDmwRtkqNEfjxAUIURID4CPCJ5yH2/jq
-   1lSQ0hP2fZcj8sjW6N1QwwPW+TTfY/8onTlRK8VpCVN/Y2QzXXOJbArBP
-   SoTtvkh0e2FkzzZBF1IQltFyTkLqGlS4BCf5K1Hv4nVu9KSXQVOAgaYEh
-   jnnmz1PJWomN5wt8u+y5/weWWYzbipz2znkLE/efENEJEfU3ZO+07Hjpg
-   A==;
-X-CSE-ConnectionGUID: 0izLqmSxR2CECA4evWdzHw==
-X-CSE-MsgGUID: Bl/lhnK5SOOyEz0hmpJ20g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11467"; a="63048636"
-X-IronPort-AV: E=Sophos;i="6.16,245,1744095600"; 
-   d="scan'208";a="63048636"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2025 01:32:27 -0700
-X-CSE-ConnectionGUID: XdbUQy3CRfOUfn7iOGHy+w==
-X-CSE-MsgGUID: HBtqD8F8So280xiJlFKgkg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,245,1744095600"; 
-   d="scan'208";a="149986926"
-Received: from mmowka-mobl.ger.corp.intel.com (HELO [10.245.101.212]) ([10.245.101.212])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jun 2025 01:32:20 -0700
-Message-ID: <231e4cef-2e44-4e25-9169-f298e72e8e07@linux.intel.com>
-Date: Wed, 18 Jun 2025 10:32:04 +0200
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="czm+tfj4";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="9GbG36Tq";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="czm+tfj4";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="9GbG36Tq"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 32F081F7BD;
+	Wed, 18 Jun 2025 09:11:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1750237887; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=XT0YDbIFqwL77QwQbS95PqOFNQJH+g7ngu33WM22oqI=;
+	b=czm+tfj4qEcbk1y9278iyA8JIwTcdAWy0PP7QzUM6WOP4PlAPtyj5Z9W9+7oVWtEpjHsz6
+	cslpoQwvp3p6QpxOjzVlyBQNvCzHTxT3772NKhnadvCE9ZMa2fY0rxl4vddA4c645nNGz/
+	BxDsQYf8t77jI+OBaU0AuXbt6AGrE2c=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1750237887;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=XT0YDbIFqwL77QwQbS95PqOFNQJH+g7ngu33WM22oqI=;
+	b=9GbG36TqynDLngDbg0YEC/YS256YOPztJ/n6TDCAJtaLScp5NZZfeujTEorKo1M75xjwtG
+	3ld2E3SVdU6ttJAw==
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1750237887; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=XT0YDbIFqwL77QwQbS95PqOFNQJH+g7ngu33WM22oqI=;
+	b=czm+tfj4qEcbk1y9278iyA8JIwTcdAWy0PP7QzUM6WOP4PlAPtyj5Z9W9+7oVWtEpjHsz6
+	cslpoQwvp3p6QpxOjzVlyBQNvCzHTxT3772NKhnadvCE9ZMa2fY0rxl4vddA4c645nNGz/
+	BxDsQYf8t77jI+OBaU0AuXbt6AGrE2c=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1750237887;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=XT0YDbIFqwL77QwQbS95PqOFNQJH+g7ngu33WM22oqI=;
+	b=9GbG36TqynDLngDbg0YEC/YS256YOPztJ/n6TDCAJtaLScp5NZZfeujTEorKo1M75xjwtG
+	3ld2E3SVdU6ttJAw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 8BF0613A3F;
+	Wed, 18 Jun 2025 09:11:26 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id rtvwIL6CUmhIFgAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Wed, 18 Jun 2025 09:11:26 +0000
+Message-ID: <4b4224b8-aa91-4f21-8425-2adf9a2b3d38@suse.de>
+Date: Wed, 18 Jun 2025 11:11:26 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,59 +82,218 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v14 02/19] x86: Secure Launch Kconfig
-To: Ross Philipson <ross.philipson@oracle.com>, linux-kernel@vger.kernel.org,
- x86@kernel.org, linux-integrity@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-crypto@vger.kernel.org, kexec@lists.infradead.org,
- linux-efi@vger.kernel.org, iommu@lists.linux.dev
-Cc: dpsmith@apertussolutions.com, tglx@linutronix.de, mingo@redhat.com,
- bp@alien8.de, hpa@zytor.com, dave.hansen@linux.intel.com, ardb@kernel.org,
- mjg59@srcf.ucam.org, James.Bottomley@hansenpartnership.com,
- peterhuewe@gmx.de, jarkko@kernel.org, jgg@ziepe.ca, luto@amacapital.net,
- nivedita@alum.mit.edu, herbert@gondor.apana.org.au, davem@davemloft.net,
- corbet@lwn.net, ebiederm@xmission.com, dwmw2@infradead.org,
- baolu.lu@linux.intel.com, kanth.ghatraju@oracle.com,
- andrew.cooper3@citrix.com, trenchboot-devel@googlegroups.com
-References: <20250421162712.77452-1-ross.philipson@oracle.com>
- <20250421162712.77452-3-ross.philipson@oracle.com>
-Content-Language: pl
-From: "Mowka, Mateusz" <mateusz.mowka@linux.intel.com>
-In-Reply-To: <20250421162712.77452-3-ross.philipson@oracle.com>
+Subject: Re: [PATCH v2 6/6] vgaarb: Look at all PCI display devices in VGA
+ arbiter
+To: Mario Limonciello <superm1@kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ David Airlie <airlied@gmail.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,
+ Alex Deucher <alexander.deucher@amd.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Simona Vetter <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
+ "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+ "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
+ "open list:SOUND" <linux-sound@vger.kernel.org>,
+ Daniel Dadap <ddadap@nvidia.com>,
+ Mario Limonciello <mario.limonciello@amd.com>
+References: <20250617175910.1640546-1-superm1@kernel.org>
+ <20250617175910.1640546-7-superm1@kernel.org>
+ <20250617132228.434adebf.alex.williamson@redhat.com>
+ <08257531-c8e4-47b1-a5d1-1e67378ff129@kernel.org>
+Content-Language: en-US
+From: Thomas Zimmermann <tzimmermann@suse.de>
+Autocrypt: addr=tzimmermann@suse.de; keydata=
+ xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
+ XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
+ BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
+ hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
+ 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
+ AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
+ AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
+ AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
+ lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
+ U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
+ vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
+ 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
+ j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
+ T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
+ 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
+ GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
+ hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
+ EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
+ C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
+ yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
+ SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
+ Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
+ 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
+In-Reply-To: <08257531-c8e4-47b1-a5d1-1e67378ff129@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spam-Flag: NO
+X-Spam-Score: -4.30
+X-Spamd-Result: default: False [-4.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	FREEMAIL_TO(0.00)[kernel.org,redhat.com,gmail.com];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	ARC_NA(0.00)[];
+	MID_RHS_MATCH_FROM(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[25];
+	RCVD_TLS_ALL(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_DN_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:mid,suse.de:email]
+X-Spam-Level: 
 
+Hi
 
-On 21-Apr-25 6:26 PM, Ross Philipson wrote:
-> Initial bits to bring in Secure Launch functionality. Add Kconfig
-> options for compiling in/out the Secure Launch code.
+Am 17.06.25 um 22:22 schrieb Mario Limonciello:
 >
-> Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
-
-Acked-by: Mateusz Mowka <mateusz.mowka@linux.intel.com>
-
-> ---
->   arch/x86/Kconfig | 11 +++++++++++
->   1 file changed, 11 insertions(+)
 >
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 4b9f378e05f6..badde1e9742e 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -2001,6 +2001,17 @@ config EFI_RUNTIME_MAP
->   
->   	  See also Documentation/ABI/testing/sysfs-firmware-efi-runtime-map.
->   
-> +config SECURE_LAUNCH
-> +	bool "Secure Launch support"
-> +	depends on X86_64 && X86_X2APIC && TCG_TIS && TCG_CRB && CRYPTO_LIB_SHA1 && CRYPTO_LIB_SHA256
-> +	help
-> +	   The Secure Launch feature allows a kernel to be loaded
-> +	   directly through an Intel TXT measured launch. Intel TXT
-> +	   establishes a Dynamic Root of Trust for Measurement (DRTM)
-> +	   where the CPU measures the kernel image. This feature then
-> +	   continues the measurement chain over kernel configuration
-> +	   information and init images.
-> +
->   source "kernel/Kconfig.hz"
->   
->   config ARCH_SUPPORTS_KEXEC
+> On 6/17/25 2:22 PM, Alex Williamson wrote:
+>> On Tue, 17 Jun 2025 12:59:10 -0500
+>> Mario Limonciello <superm1@kernel.org> wrote:
+>>
+>>> From: Mario Limonciello <mario.limonciello@amd.com>
+>>>
+>>> On a mobile system with an AMD integrated GPU + NVIDIA discrete GPU the
+>>> AMD GPU is not being selected by some desktop environments for any
+>>> rendering tasks. This is because neither GPU is being treated as
+>>> "boot_vga" but that is what some environments use to select a GPU [1].
+>>>
+>>> The VGA arbiter driver only looks at devices that report as PCI display
+>>> VGA class devices. Neither GPU on the system is a PCI display VGA class
+>>> device:
+>>>
+>>> c5:00.0 3D controller: NVIDIA Corporation Device 2db9 (rev a1)
+>>> c6:00.0 Display controller: Advanced Micro Devices, Inc. [AMD/ATI] 
+>>> Device 150e (rev d1)
+>>>
+>>> If the GPUs were looked at the vga_is_firmware_default() function 
+>>> actually
+>>> does do a good job at recognizing the case from the device used for the
+>>> firmware framebuffer.
+>>>
+>>> Modify the VGA arbiter code and matching sysfs file entries to 
+>>> examine all
+>>> PCI display class devices. The existing logic stays the same.
+>>>
+>>> This will cause all GPUs to gain a `boot_vga` file, but the correct 
+>>> device
+>>> (AMD GPU in this case) will now show `1` and the incorrect device 
+>>> shows `0`.
+>>> Userspace then picks the right device as well.
+>>>
+>>> Link: 
+>>> https://github.com/robherring/libpciaccess/commit/b2838fb61c3542f107014b285cbda097acae1e12 
+>>> [1]
+>>> Suggested-by: Daniel Dadap <ddadap@nvidia.com>
+>>> Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+>>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>>> ---
+>>>   drivers/pci/pci-sysfs.c | 2 +-
+>>>   drivers/pci/vgaarb.c    | 8 ++++----
+>>>   2 files changed, 5 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+>>> index 268c69daa4d57..c314ee1b3f9ac 100644
+>>> --- a/drivers/pci/pci-sysfs.c
+>>> +++ b/drivers/pci/pci-sysfs.c
+>>> @@ -1707,7 +1707,7 @@ static umode_t 
+>>> pci_dev_attrs_are_visible(struct kobject *kobj,
+>>>       struct device *dev = kobj_to_dev(kobj);
+>>>       struct pci_dev *pdev = to_pci_dev(dev);
+>>>   -    if (a == &dev_attr_boot_vga.attr && pci_is_vga(pdev))
+>>> +    if (a == &dev_attr_boot_vga.attr && pci_is_display(pdev))
+>>>           return a->mode;
+>>>         return 0;
+>>> diff --git a/drivers/pci/vgaarb.c b/drivers/pci/vgaarb.c
+>>> index 78748e8d2dbae..63216e5787d73 100644
+>>> --- a/drivers/pci/vgaarb.c
+>>> +++ b/drivers/pci/vgaarb.c
+>>> @@ -1499,8 +1499,8 @@ static int pci_notify(struct notifier_block 
+>>> *nb, unsigned long action,
+>>>         vgaarb_dbg(dev, "%s\n", __func__);
+>>>   -    /* Only deal with VGA class devices */
+>>> -    if (!pci_is_vga(pdev))
+>>> +    /* Only deal with PCI display class devices */
+>>> +    if (!pci_is_display(pdev))
+>>>           return 0;
+>>>         /*
+>>> @@ -1546,12 +1546,12 @@ static int __init vga_arb_device_init(void)
+>>>         bus_register_notifier(&pci_bus_type, &pci_notifier);
+>>>   -    /* Add all VGA class PCI devices by default */
+>>> +    /* Add all PCI display class devices by default */
+>>>       pdev = NULL;
+>>>       while ((pdev =
+>>>           pci_get_subsys(PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
+>>>                      PCI_ANY_ID, pdev)) != NULL) {
+>>> -        if (pci_is_vga(pdev))
+>>> +        if (pci_is_display(pdev))
+>>>               vga_arbiter_add_pci_device(pdev);
+>>>       }
+>>
+>> At the very least a non-VGA device should not mark that it decodes
+>> legacy resources, marking the boot VGA device is only a part of what
+>> the VGA arbiter does.  It seems none of the actual VGA arbitration
+>> interfaces have been considered here though.
+>>
+>> I still think this is a bad idea and I'm not sure Thomas didn't
+>> withdraw his ack in the previous round[1].  Thanks,
+>
+> Ah; I didn't realize that was intended to be a withdrawl.
+> If there's another version of this I'll remove it.
+
+Then let me formally withdraw the A-b.
+
+I think this updated patch doesn't address the concerns raised in the 
+previous reviews. AFAIU vgaarb is really only about VGA devices.
+
+Best regards
+Thomas
+
+>
+> Dave,
+>
+> What is your current temperature on this approach?
+>
+> Do you still think it's best for something in the kernel or is this 
+> better done in libpciaccess?
+>
+> Mutter, Kwin, and Cosmic all handle this case in the compositor.
+>
+>
+>>
+>> Alex
+>>
+>> [1]https://lore.kernel.org/all/bc0a3ac2-c86c-43b8-b83f-edfdfa5ee184@suse.de/ 
+>>
+>>
+>
+
+-- 
+--
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Frankenstrasse 146, 90461 Nuernberg, Germany
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+HRB 36809 (AG Nuernberg)
+
