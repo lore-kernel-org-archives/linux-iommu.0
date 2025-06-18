@@ -1,68 +1,73 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6759C19D880;
-	Wed, 18 Jun 2025 04:54:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F042D2AD14;
+	Wed, 18 Jun 2025 05:01:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750222443; cv=none; b=S0SEGGzSjF4TWN2xwhr9OeZytiafn+x+VD6qu40yIQtFFQcMfgd2jpMjGe0JhHhjkQcExBLiU+JhPXf+gh80ou+68k7fHL1YXJkinMBQRO+3Qz0Gz1phKZtq4BcuPK6RRBBwhWRhi9nqAdk5/3IgmELjxRe2NjRmHQK2dBi+8xQ=
+	t=1750222902; cv=none; b=HDquFgiYEyomOBhIeWHRfxL0ny4wQrOohOWTEbiSzz5tUBpdqn2Vr2E3+SuCjVHCPRxALrnQvi0l7nD9zzvWWqAbYXu2sR/Zzr551KvZ3X4Ze6HPixJ+tWxmWW5wVrcKqRIIx4wogjP4jXrhoI2aMM+F7SNMFMBBs9WqpCQBR4c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750222443; c=relaxed/simple;
-	bh=DEKlm+ejo/0mzszOUsL53ctVVQ1j4m3qewxhIFLcv0M=;
+	s=arc-20240116; t=1750222902; c=relaxed/simple;
+	bh=W4i8qDV6jVubz5hu6Md2H0YeWT1kUXFb3dG2JZ/Daf4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bLHbfGUo5xUWsK+obR0jTu9LzaVhRer8xUTjsnQPIWp8zreMJyysMT0TEERC53S5J92bZtpptOVk3bdIu2jaYfj89mMvYNSPUFVkNbj1fHuegPPi+TykYiJIQXVTFj7OgiPZ71LrmdSXCk9dkcYZuTQsiVWFxSPGzcAC/+wIW/s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aBmDeLa5; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=BCgyHrfNudV58i3wNxPumaR2H8TeOIurL16FY/iR7X55TjKWE1A+gCdxI0XFF1+epkYqqQU0H/lIARTGBwScxu9CNrrX2laKo+fJuXtivTfYERkv8LIfCu2G0PAIWlT4z74w1BZGV9b0bnuAI3x5xAE+B80aVDxnTKQy0gx8IZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PYbVkYCg; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aBmDeLa5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PYbVkYCg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750222441; x=1781758441;
+  t=1750222901; x=1781758901;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=DEKlm+ejo/0mzszOUsL53ctVVQ1j4m3qewxhIFLcv0M=;
-  b=aBmDeLa52izon3Pw2x1Sg9K9GJsDE8F0Ta/cPwgethzmwYQ5ZkiJmtHP
-   1v0hz+npA9+kH3Aqkl7J0z3yTCzWlJxdR5oHDsXWWJeQen8LhM23wUZ4T
-   3jL6paYgCv+RAFOnZYVEoWEuA+DXbPu0GXRaiOhDYWHKw6M7Q+C7BKkWb
-   rVkG7MUMQZ7d+uAgLuM0UflEUaLrswCpxWWs/iC9g9p2MiAw111FU2z+h
-   Xg9ZsjUhRhemA1l29QkA/hOGRrRJ9MLeEmzhLqCQdn1Frgwm6nzVhQh/9
-   SQ3UColpFyv3vrbSlCyHvKeXArPcTdSKztItwoIocNYjyv6UnT7KSiA/7
-   Q==;
-X-CSE-ConnectionGUID: hIFTR1n+SQ2cpCzGnBwS/Q==
-X-CSE-MsgGUID: EymeTMhZSaail8WpXmJX3w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11467"; a="63460454"
+  bh=W4i8qDV6jVubz5hu6Md2H0YeWT1kUXFb3dG2JZ/Daf4=;
+  b=PYbVkYCg6dFBa5+bJJnNKJl8UKPcsX0tJCgJlzXbKQ/AttmVWV5b8ytu
+   jayczWD0KL9y/1zxfU72iGFzjxzk4Ek+tE6iWxXcg+upe6EkpN5yxCHPH
+   kRW6ZtJW/Z5LEKAliBQxVF8PaETPPbd5Hz9Yai08s7bK1JoyfYb1FCCnq
+   3/tEBxCY8OFg+NSLVTOxnXn8em5WgAqzmlDkhC/B09QtLK2gQQmFlRpCp
+   e2G4JsW/75WWI1N8bYUyEEavxH8QGJuIYYhl3DSHA1MaE1KdLXRJCDKkK
+   kf2ofkJaapYWl7voTvo9Cc6aXmyXVAdlS8+7eQQbVJzWVU/v4ur25+Epg
+   g==;
+X-CSE-ConnectionGUID: b8FT6BKvT+WuxkH6mLuWmA==
+X-CSE-MsgGUID: 5npPU4ZRQTOyFE7UGutP2w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11467"; a="56227562"
 X-IronPort-AV: E=Sophos;i="6.16,245,1744095600"; 
-   d="scan'208";a="63460454"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2025 21:54:01 -0700
-X-CSE-ConnectionGUID: IlMBVbuZTBeIdVORDtt5FA==
-X-CSE-MsgGUID: fyNBzSTZSCeodXZuqA5+kw==
+   d="scan'208";a="56227562"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jun 2025 22:01:40 -0700
+X-CSE-ConnectionGUID: Gm/9BwRlTnCzyem2RZOImg==
+X-CSE-MsgGUID: oj3tfdjmRECdvZHIuARvuQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,245,1744095600"; 
-   d="scan'208";a="149026086"
-Received: from lkp-server01.sh.intel.com (HELO e8142ee1dce2) ([10.239.97.150])
-  by fmviesa007.fm.intel.com with ESMTP; 17 Jun 2025 21:53:57 -0700
-Received: from kbuild by e8142ee1dce2 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1uRko7-000JPW-1J;
-	Wed, 18 Jun 2025 04:53:55 +0000
-Date: Wed, 18 Jun 2025 12:53:41 +0800
-From: kernel test robot <lkp@intel.com>
-To: Benjamin Gaignard <benjamin.gaignard@collabora.com>, joro@8bytes.org,
-	will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
-	nicolas.dufresne@collabora.com, p.zabel@pengutronix.de,
-	mchehab@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
-	kernel@collabora.com,
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: Re: [PATCH 3/5] iommu: Add verisilicon IOMMU driver
-Message-ID: <202506181230.D53QwmdL-lkp@intel.com>
-References: <20250616145607.116639-4-benjamin.gaignard@collabora.com>
+   d="scan'208";a="153976738"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmviesa005.fm.intel.com with ESMTP; 17 Jun 2025 22:01:33 -0700
+Date: Wed, 18 Jun 2025 12:54:18 +0800
+From: Xu Yilun <yilun.xu@linux.intel.com>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: kvm@vger.kernel.org, sumit.semwal@linaro.org, christian.koenig@amd.com,
+	pbonzini@redhat.com, seanjc@google.com, alex.williamson@redhat.com,
+	jgg@nvidia.com, dan.j.williams@intel.com, aik@amd.com,
+	linux-coco@lists.linux.dev, dri-devel@lists.freedesktop.org,
+	linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
+	vivek.kasireddy@intel.com, yilun.xu@intel.com,
+	linux-kernel@vger.kernel.org, lukas@wunner.de, yan.y.zhao@intel.com,
+	daniel.vetter@ffwll.ch, leon@kernel.org, baolu.lu@linux.intel.com,
+	zhenzhong.duan@intel.com, tao1.su@intel.com,
+	linux-pci@vger.kernel.org, zhiw@nvidia.com, simona.vetter@ffwll.ch,
+	shameerali.kolothum.thodi@huawei.com, iommu@lists.linux.dev,
+	kevin.tian@intel.com
+Subject: Re: [RFC PATCH 19/30] vfio/pci: Add TSM TDI bind/unbind IOCTLs for
+ TEE-IO support
+Message-ID: <aFJGet5JS4ed7xfc@yilunxu-OptiPlex-7050>
+References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
+ <20250529053513.1592088-20-yilun.xu@linux.intel.com>
+ <yq5aplfn210z.fsf@kernel.org>
+ <aD24r44v0g1NgeZs@yilunxu-OptiPlex-7050>
+ <yq5ajz5r8w6p.fsf@kernel.org>
+ <aEFmPaYorqaYCKBY@yilunxu-OptiPlex-7050>
+ <yq5a5xgwt82d.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,39 +76,109 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250616145607.116639-4-benjamin.gaignard@collabora.com>
+In-Reply-To: <yq5a5xgwt82d.fsf@kernel.org>
 
-Hi Benjamin,
+On Mon, Jun 16, 2025 at 01:46:42PM +0530, Aneesh Kumar K.V wrote:
+> Xu Yilun <yilun.xu@linux.intel.com> writes:
+> 
+> > On Wed, Jun 04, 2025 at 07:07:18PM +0530, Aneesh Kumar K.V wrote:
+> >> Xu Yilun <yilun.xu@linux.intel.com> writes:
+> >> 
+> >> > On Sun, Jun 01, 2025 at 04:15:32PM +0530, Aneesh Kumar K.V wrote:
+> >> >> Xu Yilun <yilun.xu@linux.intel.com> writes:
+> >> >> 
+> >> >> > Add new IOCTLs to do TSM based TDI bind/unbind. These IOCTLs are
+> >> >> > expected to be called by userspace when CoCo VM issues TDI bind/unbind
+> >> >> > command to VMM. Specifically for TDX Connect, these commands are some
+> >> >> > secure Hypervisor call named GHCI (Guest-Hypervisor Communication
+> >> >> > Interface).
+> >> >> >
+> >> >> > The TSM TDI bind/unbind operations are expected to be initiated by a
+> >> >> > running CoCo VM, which already have the legacy assigned device in place.
+> >> >> > The TSM bind operation is to request VMM make all secure configurations
+> >> >> > to support device work as a TDI, and then issue TDISP messages to move
+> >> >> > the TDI to CONFIG_LOCKED or RUN state, waiting for guest's attestation.
+> >> >> >
+> >> >> > Do TSM Unbind before vfio_pci_core_disable(), otherwise will lead
+> >> >> > device to TDISP ERROR state.
+> >> >> >
+> >> >> 
+> >> >> Any reason these need to be a vfio ioctl instead of iommufd ioctl?
+> >> >> For ex: https://lore.kernel.org/all/20250529133757.462088-3-aneesh.kumar@kernel.org/
+> >> >
+> >> > A general reason is, the device driver - VFIO should be aware of the
+> >> > bound state, and some operations break the bound state. VFIO should also
+> >> > know some operations on bound may crash kernel because of platform TSM
+> >> > firmware's enforcement. E.g. zapping MMIO, because private MMIO mapping
+> >> > in secure page tables cannot be unmapped before TDI STOP [1].
+> >> >
+> >> > Specifically, for TDX Connect, the firmware enforces MMIO unmapping in
+> >> > S-EPT would fail if TDI is bound. For AMD there seems also some
+> >> > requirement about this but I need Alexey's confirmation.
+> >> >
+> >> > [1] https://lore.kernel.org/all/aDnXxk46kwrOcl0i@yilunxu-OptiPlex-7050/
+> >> >
+> >> 
+> >> According to the TDISP specification (Section 11.2.6), clearing either
+> >> the Bus Master Enable (BME) or Memory Space Enable (MSE) bits will cause
+> >> the TDI to transition to an error state. To handle this gracefully, it
+> >> seems necessary to unbind the TDI before modifying the BME or MSE bits.
+> >
+> > Yes. But now the suggestion is never let VFIO do unbind, instead VFIO
+> > should block these operations when device is bound.
+> >
+> >> 
+> >> If I understand correctly, we also need to unmap the Stage-2 mapping due
+> >> to the issue described in commit
+> >> abafbc551fddede3e0a08dee1dcde08fc0eb8476. Are there any additional
+> >> reasons we would want to unmap the Stage-2 mapping for the BAR (as done
+> >> in vfio_pci_zap_and_down_write_memory_lock)?
+> >
+> > I think no more reason. 
+> >
+> >> 
+> >> Additionally, with TDX, it appears that before unmapping the Stage-2
+> >> mapping for the BAR, we should first unbind the TDI (ie, move it to the
+> >> "unlock" state?) Is this step related Section 11.2.6 of the TDISP spec,
+> >> or is it driven by a different requirement?
+> >
+> > No, this is not device side TDISP requirement. It is host side
+> > requirement to fix DMA silent drop issue. TDX enforces CPU S2 PT share
+> > with IOMMU S2 PT (does ARM do the same?), so unmap CPU S2 PT in KVM equals
+> > unmap IOMMU S2 PT.
+> >
+> > If we allow IOMMU S2 PT unmapped when TDI is running, host could fool
+> > guest by just unmap some PT entry and suppress the fault event. Guest
+> > thought a DMA writting is successful but it is not and may cause
+> > data integrity issue.
+> >
+> 
+> I am still trying to find more details here. How did the guest conclude
+> DMA writing is successful?
 
-kernel test robot noticed the following build warnings:
+Traditionally VMM is the trusted entity. If there is no IOMMU fault
+reported, guest assumes DMA writing is successful.
 
-[auto build test WARNING on robh/for-next]
-[also build test WARNING on rockchip/for-next linus/master v6.16-rc2 next-20250617]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> Guest would timeout waiting for DMA to complete
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Benjamin-Gaignard/dt-bindings-vendor-prefixes-Add-Verisilicon/20250616-225842
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-patch link:    https://lore.kernel.org/r/20250616145607.116639-4-benjamin.gaignard%40collabora.com
-patch subject: [PATCH 3/5] iommu: Add verisilicon IOMMU driver
-config: arm64-randconfig-r111-20250618 (https://download.01.org/0day-ci/archive/20250618/202506181230.D53QwmdL-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 15.1.0
-reproduce: (https://download.01.org/0day-ci/archive/20250618/202506181230.D53QwmdL-lkp@intel.com/reproduce)
+There is no *generic* machanism to detect or wait for a single DMA
+write completion. They are "posted" in terms of PCIe.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202506181230.D53QwmdL-lkp@intel.com/
+Thanks,
+Yilun
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/iommu/vsi-iommu.c:890:24: sparse: sparse: symbol 'rockchip_vsi_iommu_driver' was not declared. Should it be static?
-
-vim +/rockchip_vsi_iommu_driver +890 drivers/iommu/vsi-iommu.c
-
-   889	
- > 890	struct platform_driver rockchip_vsi_iommu_driver = {
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+> if the host hides the interrupt delivery of failed DMA transfer?
+> 
+> >
+> > This is not a TDX specific problem, but different vendors has different
+> > mechanisms for this. For TDX, firmware fails the MMIO unmap for S2. For
+> > AMD, will trigger some HW protection called "ASID fence" [1]. Not sure
+> > how ARM handles this?
+> >
+> > https://lore.kernel.org/all/aDnXxk46kwrOcl0i@yilunxu-OptiPlex-7050/
+> >
+> > Thanks,
+> > Yilun
+> >
+> 
+> -aneesh
