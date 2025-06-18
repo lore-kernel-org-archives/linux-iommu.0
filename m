@@ -1,79 +1,86 @@
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEC362EF9D7
-	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 14:57:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4801C2EE601
+	for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 15:00:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750258650; cv=none; b=tIMbvT4dr59F0bbE7fZmMQETpb7uy4F3mG5ezDzhfF9NGnn3S2HsoFDTAZxrvSIES0TISW4B2AJ/qCEXReMJe8/wGkxt9rgsH7Ohns+rok2GWJ8erHWVsbWWUY58Z2Wt3LFtTZqM7OeFXhiq1PDTTpsTM0dul2/w21CxF1PfA1Y=
+	t=1750258823; cv=none; b=cyK45qoPYyjmBDGEkDbYnDrtJWptoZ/++dpT/5vh2AW6v+AgKn4lQv6EjYV5cqyuET8bMG4l6XQ2gnkzNoR7ke4B4keMvNOYYIp/GDFooqwCOitDyY0fDetKO9q5FABATROzehMj44ATBOR6HMTkgnVczOwAd3sS/IL8jhcVGJ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750258650; c=relaxed/simple;
-	bh=OPezsAgE4NKsy9v1Mr0Ip+bSrXVKO25UcHNhgGBFSFc=;
+	s=arc-20240116; t=1750258823; c=relaxed/simple;
+	bh=1XEQ/vx/9M/0Z/ONOs4n2AjYGm4cFrrb8VsMsNtcnFU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iepBTJIU6hwEYVqh9XmYDiVzYWJFzroOgGOmgxvIVcXuLoLe8CiWXK6L5gup4PQ5LBkW3/eolUp1RAr8ByPsVinlkjhwWkaHW5dK5OkSBe09frUguu3Jt54VR4aNbEW4WFyAUeOrvqFwzESkr586K77iWCvZBZSgJVZ8/aFV/qQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Gjuld4i4; arc=none smtp.client-ip=209.85.222.173
+	 Content-Type:Content-Disposition:In-Reply-To; b=W6LGi60ZI6h2k84L277PeVvKDwyDYwn2Rdqp8f6Li98AULYZi+wjgmrJ/qSA7aL9h5n4SeKu6avEWzqzLE+Op/+JMwSoRpvAVrvWq74PFhAHInX6CW+garvUyg4bmxhGCi3BgMPuAl/w9tNeIkdaPrlrvJv3s8kJlNNQkMWXXxg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Ozpwihvc; arc=none smtp.client-ip=209.85.222.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Gjuld4i4"
-Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-7d3e7641b76so71548085a.3
-        for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 07:57:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ozpwihvc"
+Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-7caeeef95d4so781674385a.2
+        for <iommu@lists.linux.dev>; Wed, 18 Jun 2025 08:00:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1750258648; x=1750863448; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1750258820; x=1750863620; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nWuA5n/7XV52piKpzEtlj4+eRvGXTp7zsvMDV3q1c/g=;
-        b=Gjuld4i4HVS/ZfUyAHXAJvSW7sSan3tlPwX0Dk0M6bnU2Xf1USvCK57APTHGJXgaN3
-         5uZv7Yu2gsNOlKkJaBZHEbgLtuLA1yh2yNBwZS8cUPe9nq7r88L8cuQZRH7CFegd60ym
-         hqSwIZ3z/AwpWgDkJQBzuXpcblCVQ/3WVPe1iIDZOmod2vMCb5X0ydYjLq4UvsQr+OTj
-         lZLICWaGWUd/Cpw7RQtmiKbRacvhYzckBfPuKToI2Gygg/WxH/ao6xjdpOauPqQliDTx
-         av5HmBIhmkweia+9lCHhEcPP50373Sfr4aMswRfdLM1YWMhm913xDvatEktxXt3y5ojZ
-         kz1w==
+        bh=Vgoqcy77dCbehp2iwR94a5PWkF4ktryddedGtroeuu8=;
+        b=Ozpwihvcf/SBjE3iUSJf1IkLTGxnq78fKAZSj72wY83AV7etviIaaPv+6r4LdE9yY7
+         MyWeNI6WARvi8p44S5nAh22qWde+vmBdyLvP1cd+WEC4mkKk5q+Y2MSvsl8XN2WL8N6o
+         2ZVWXjAZfMqlOqXmpLwChduoU3VpJBSIgbZguNaV6Otd5cXzBRMFY57v6O73/wvLrmxl
+         2Vn9j/NZj1hk/r2fFtCh6G45wMGfbGN5k6uVKhQy0+UtUrTAfrBwE/gollHjdCXdRtUF
+         aBkMntIf/FNxFPluMih9fPiWnz1pP9kXtceOMVKOTucGinSx8FGBTiI4AW8m6XIHfzPw
+         J5Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750258648; x=1750863448;
+        d=1e100.net; s=20230601; t=1750258820; x=1750863620;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=nWuA5n/7XV52piKpzEtlj4+eRvGXTp7zsvMDV3q1c/g=;
-        b=KcgDvaZSuoAPo30jrgUjnCHmSgZMrZDGz5xKXDc1xpB80QVifhgxlPSv9QxC93voLH
-         fL8FpQxSnl04izsK+4Nww1s/IAP+IvgS2DUl1MeF+0YmM0kR8rAnsxde3X5rhfK0GW/2
-         yoxC+fWNIDNpVL4R2TAWPJvx8GpxokmKyeV7CV+4dJlG6Kyrwqcvlei0klquh5zrbCvg
-         Se4S/0CNdYdp5BdMp6wnKtop81KDCgphSUFmZLClVtTOtKUu4s0y2OgebqHPq+vM4JXI
-         8MaJe/AsycO6BLABW+sHmacf31fVBru440UTOmohqUWRGV1S8X1MRXzDai6Tt1IR+11D
-         C6kg==
-X-Forwarded-Encrypted: i=1; AJvYcCUkmBnX80Zj2Ig3uHIa5N6emloB8aXOwyseLMUtt8mGljmKHcDQYtuhAbJyPe4gRyIhUSerGQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwHcKJ/7UszE8798CT4Y8vzhdGgOAHgxOZvKSiq5UWmrer87KON
-	ylnO8fWddr7cylK1vLKFiKk7jZ7WKaUqPNStlxAmKN7Chmm9D49mhZDlAspoPJRDGqc=
-X-Gm-Gg: ASbGncv4yeS2CvRqJFRYxpLLjaHdPUKR8y3zrXOFChhDdN+nNx1ODUp0N+1AVL17Kwb
-	DlM5v0oeQKIq4xeycXcoBbJ0TLoMPBiaGjl6W+uAscfMC9mUKBqjq+q1+dmK+Lro6azBEnuhQUW
-	qd2eySoynyjM3k1vT3qW/gvERbbKWzuIim+dUC40AOcGzQV9zUIEyy43yjDptaoOAiZArKydOvR
-	LlNsUIzlyu0iBjFl4U1m2cqoAOlPWsr0dTAtkqalWxkoZLFyJtwhtLxNd2oJOCKmTRDkEnWV9L5
-	YavETjv7jpFT+Cc5twY8vPmTJsh8YgX3iMgM/tgxKdJp6ro07JQEd6hcaBICi30bHu20PmAhPv/
-	GcsMfHJ4GwQnpfhzo3mSlWFEVFtRemZrOI6Q3uw==
-X-Google-Smtp-Source: AGHT+IEqAm8w07CYn9jssi0u9N9oTKmQEBd4zXaVvYiKXP4kVC2Pg2ZszP/NIklhkByTPLh6hrPUVw==
-X-Received: by 2002:a05:620a:2720:b0:7d3:8fd2:c0cd with SMTP id af79cd13be357-7d3c6d0c5e6mr2844239185a.56.1750258645240;
-        Wed, 18 Jun 2025 07:57:25 -0700 (PDT)
+        bh=Vgoqcy77dCbehp2iwR94a5PWkF4ktryddedGtroeuu8=;
+        b=A2mC8JSzr55cgqCNO9PdBLMmOlVP/7XaPjhFxfJRTnUAXQRQtlu9nsh0D63Uf6bQjU
+         94b/SHEfoc7VIMUQEdiO+vit6AoqzQYt9NjQdKw2ppua9aZJYpDtla+FNhrKEnV/2tmU
+         STfoyt3t/el5xab4pfztk1sVQH7ULDi90Gl+hKjk0d9qfD4tHewXFQGlGpDdPUQNIFI5
+         0oQ0XS6W6AOf194VX6P3pPeLaUIWwHrjyScUv17uApB6XL3P09roo3MrRuF9VfEsIsU7
+         0JNRriwy3CpXrla8Ukag1PRIhyntSxpjgZWUv3Ftakq4DiMRAy3tEhaDxU6pFfMF4j/C
+         +s2A==
+X-Forwarded-Encrypted: i=1; AJvYcCUZOMvRDdsjsZdGXf0LdymDUrlUXvYJUJgX3WNCYumy7bKnVnzuPsrFPubkBpzzxGNB5Ohy+Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx/Ojfj6nCfUcswuw05BIOO+F0FLaKEuqI1/a5NPkhBiqDGIlmc
+	90rRzBAhuJyWAGjG+axuK8t1ONzdfalCqmVqUiSk6dLXkB/NYU9FlHFl5/c61dPOv5o=
+X-Gm-Gg: ASbGncvcPL2dlFFJY7m0olHmuefaH/REOZXvxueowE+tGc1zl018ghQm8CVPuBpi2bD
+	CmYwTjL6HeG2tJ2x5WlUTJqBquVNohLWlaoaubhUqMwtS4cGdEB5eJrCQRsPUfhpxbGLyP8Rmb3
+	7aPjRg32oSTQAuSwIfS0OQF6kUNf8tWl5EsU4vyEE4RTNmfjSRsSQXXjkU7nwjE+/Nqqj5SYMCo
+	sG5ZHtZ2UdDyMrCnlhD74r8qKqYCTB8Ednoi9f9rBnWsKWQRtXHjungN2cXTUELGpeOkUHeoXZc
+	2XHLPQBPZXEUJBLP4U9qCvBwv/Oz20sYaJhj25/Aspk2ts3gLyOuvkJuF2K/9RSEtyRYeuYvsEf
+	TWRTT3tmIEIpY80IH056IDIwetlIl04BR6gBWsQ==
+X-Google-Smtp-Source: AGHT+IEmXnt3uIyq+wbp3haWWpVf5H5IK0A8maNryrSJ2ysQfTpYtx8UqGj3mP+8PAcrc8mbSZcjjw==
+X-Received: by 2002:a05:6214:29e7:b0:6fb:15d2:494a with SMTP id 6a1803df08f44-6fb477a51f7mr239650176d6.41.1750258819801;
+        Wed, 18 Jun 2025 08:00:19 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7d3b8edf51fsm771719285a.93.2025.06.18.07.57.24
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6fb525553c3sm38390486d6.104.2025.06.18.08.00.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Jun 2025 07:57:24 -0700 (PDT)
+        Wed, 18 Jun 2025 08:00:19 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1uRuE7-00000006osS-460H;
-	Wed, 18 Jun 2025 11:57:23 -0300
-Date: Wed, 18 Jun 2025 11:57:23 -0300
+	id 1uRuGw-00000006oub-19lH;
+	Wed, 18 Jun 2025 12:00:18 -0300
+Date: Wed, 18 Jun 2025 12:00:18 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
-	nicolas.dufresne@collabora.com, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, kernel@collabora.com
-Subject: Re: [PATCH v2 3/5] iommu: Add verisilicon IOMMU driver
-Message-ID: <20250618145723.GR1376515@ziepe.ca>
-References: <20250618140923.97693-1-benjamin.gaignard@collabora.com>
- <20250618140923.97693-4-benjamin.gaignard@collabora.com>
+To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC PATCH] iommufd: Destroy vdevice on device unbind
+Message-ID: <20250618150018.GS1376515@ziepe.ca>
+References: <BN9PR11MB5276B467ADCC57BC6571CA458C77A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250613124202.GD1130869@ziepe.ca>
+ <yq5abjqotim7.fsf@kernel.org>
+ <BN9PR11MB527633CA2F698E83E12BFBD68C70A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250616164941.GA1373692@ziepe.ca>
+ <yq5azfe6ssev.fsf@kernel.org>
+ <20250617183452.GG1376515@ziepe.ca>
+ <yq5awm99sjmr.fsf@kernel.org>
+ <20250618133527.GQ1376515@ziepe.ca>
+ <yq5att4drtj7.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -82,80 +89,38 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250618140923.97693-4-benjamin.gaignard@collabora.com>
+In-Reply-To: <yq5att4drtj7.fsf@kernel.org>
 
-On Wed, Jun 18, 2025 at 04:09:12PM +0200, Benjamin Gaignard wrote:
-> +config VSI_IOMMU
-> +	bool "Verisilicon IOMMU Support"
-> +	depends on ARM64
-> +	select IOMMU_API
-> +	select ARM_DMA_USE_IOMMU
+On Wed, Jun 18, 2025 at 08:22:44PM +0530, Aneesh Kumar K.V wrote:
+> > The full sequence I would expect a sane userspace to do is:
+> >
+> > open(vfio_cdev)
+> > ioctl(vfio_cdev, VFIO_DEVICE_BIND_IOMMUFD, iommufd)
+> > ioctl(iommufd, IOMMUFD_CMD_VIOMMU_ALLOC)
+> > ioctl(iommufd, IOMMUFD_CMD_VDEVICE_ALLOC)
+> > ioctl(iommufd, IOMMUFD_CMD_VDEVICE_DEALLOC)
+> > ioctl(iommufd, IOMMUFD_CMD_VIOMMU_DEALLOC)
+> > close(vfio_cdev);
+> >
+> 
+> And if the user does
+> 
+> open(vfio_cdev)
+> ioctl(vfio_cdev, VFIO_DEVICE_BIND_IOMMUFD, iommufd)
+> ioctl(iommufd, IOMMUFD_CMD_VIOMMU_ALLOC)
+> ioctl(iommufd, IOMMUFD_CMD_VDEVICE_ALLOC)
+> close(vfio_cdev);   -> this should call vdevice_destroy because idevice is getting destroyed here (we will put XA_ZERO_ENTRY here).
 
-ARM_DMA_USE_IOMMU is only used by ARM32, you don't need it if you
-depends on ARM64
+Yes, we have to destroy the vdevice internally here
 
-> +static void vsi_iommu_release_device(struct device *dev)
-> +{
-> +	struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
-> +
-> +	device_link_remove(dev, iommu->dev);
-> +}
+> ioctl(iommufd, IOMMUFD_CMD_VDEVICE_DEALLOC) -> No error, we convert the XA_ZERO_ENTRY to NULL here?
 
-This does not seem right, release is supposed to reprogram the HW to
-stop walking any page table.
+This should probably fail since the user has done something wrong and
+it would be the only way to realize it. The failure could clean up the
+tombstone, or it could just leak I don't have a strong feeling.
 
-You should implement a static blocked (or identity?) domain that idles
-the hardware and use that as the blocked and release_domain in the
-ops.
-
-The logic around vsi_iommu_detach_device() and
-vsi_iommu_attach_device() is also not quite right. The attach can
-happen while iommu->domain is already set and doesn't deal with
-removing the iommu from the old domain's list.
-
-I would probably change vsi_iommu_enable() into vsi_iommu_set_paging()
-and then presumably vsi_iommu_disable() is vsi_iommu_set_blocking() ?
-
-vsi_iommu_detach_device() should be deleted and integrated into the
-blocked domain and attach error unwind.
-
-> +static int vsi_iommu_of_xlate(struct device *dev,
-> +			      const struct of_phandle_args *args)
-> +{
-> +	struct platform_device *iommu_dev;
-> +
-> +	if (!dev_iommu_priv_get(dev)) {
-> +		iommu_dev = of_find_device_by_node(args->np);
-> +		if (WARN_ON(!iommu_dev))
-> +			return -EINVAL;
-> +
-> +		dev_iommu_priv_set(dev, platform_get_drvdata(iommu_dev));
-> +	}
-
-The driver should ideally not be calling dev_iommu_priv_set/get here,
-and this leads the reference doesn't it? Do what ARM did to locate
-the iommu_dev.
-
-I would also add a comment here:
-
-> +static int vsi_iommu_map(struct iommu_domain *domain, unsigned long _iova,
-> +                        phys_addr_t paddr, size_t size, size_t count,
-> +                        int prot, gfp_t gfp, size_t *mapped)
-> +{
-> +       struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
-> +       unsigned long flags;
-> +       dma_addr_t pte_dma, iova = (dma_addr_t)_iova;
-> +       u32 *page_table, *pte_addr;
-> +       u32 dte, pte_index;
-> +       int ret;
-
-/*
- * IOMMU drivers are not supposed to lock the page table, however this
- * driver does not safely handle the cache flushing or table
- * installation across concurrent threads so locking is used as a simple
- * solution.
- */
-
-> +       spin_lock_irqsave(&vsi_domain->dt_lock, flags);
+If you leak then using XA_ZERO_ENTRY is easy, if you want to clean up
+then you'd have to have a global static 'tombstone object' that sits
+in the xarray.
 
 Jason
