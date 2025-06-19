@@ -1,83 +1,81 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 222AF221574
-	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 09:49:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC456222584
+	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 10:26:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750326565; cv=none; b=Vs5jTRrLMxoiIFRj4SJhdO0BB2VB3X8fMmmB1OyN98zmGRnJsxjMvP8Q7PzgiJV1zGCg9A/5SR1WOZVO5tPgjpol8gUCCfAq9ZbZVdHACoJsqmjFCNZkynIvuXfNSKRJw0p1cDdBqR20LH/0z0sgZIg73oQp0GjDzbrecndCV4I=
+	t=1750328804; cv=none; b=YUuIKvo4TGMrF0NSTblwbac4yGMgLb3JnQqPW3XFsFPfS+n1Jd1F1RwtYQzYMloLqqk/voLkB7AWQ63b+LKrUKF10v4QZ0wfD/xtz16o4vMExiBSrMzfZ4JTEubeb16ePvC003LWyxXjFQxH67Ofn/9UpEAFTCbrTJf+bFTB4P4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750326565; c=relaxed/simple;
-	bh=3LkyeQl0t9LM+cj52xpO+Ax9lI0k6dCYkCdTOXS+hWU=;
+	s=arc-20240116; t=1750328804; c=relaxed/simple;
+	bh=l5p9J2QLOh7J7ogYCt7vV0BkK248vYvNV1+J7U/FHbI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q7C2OBZA+k9Lar2EslzUEgHbi402qmXXwyAVs7WYC5MbF23VrsrQZCqT/vWfHpDWrFGHDCwgjN6xK76PHT/qLNSMyqKT1IzW0L49Hsw9BuBsf8mP5ek48R/+utuHysElID6Sk629YFNxixV92dSWFH+n7pQZt+FspZxzzwpH0uM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=JGgcvCRf; arc=none smtp.client-ip=209.85.214.169
+	 Content-Type:Content-Disposition:In-Reply-To; b=LBYAyks59lh4P1T/A5R51ltAGYSnhiulEJPtfHfZuUAcWeSEwttB3/6s0SvL9TVVqh60Lg65oGTueR+iUuikwLUcgTDI3jVFYaSkcdP/CqPgKfohhXM2dc7+ZsZWu0CHpCOFRHDwciO4MlnvV+3HePzkR3dHBOjt0Ltk+61grwE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tWTG/ziN; arc=none smtp.client-ip=209.85.214.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="JGgcvCRf"
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2348ac8e0b4so111115ad.1
-        for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 02:49:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tWTG/ziN"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-235e389599fso166615ad.0
+        for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 03:26:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1750326562; x=1750931362; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1750328801; x=1750933601; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=17oxjeeFsHFeG65L770MNpFPAUdse/NuAwqFBcFBF84=;
-        b=JGgcvCRfTC4wEkUcctXxlsxIBZXG1zlYPKMy9JqFi7UTwp5+0Hkvu7cIlGZ0UCoelX
-         TChjqncu94js1E0fqy+cJiOT82plxZ7uf0zUX5N0OFwCoZDuktmaZ0dre0tkgiNV6Hgp
-         PIDyFJzxL6yC3GAQnvhd6dK32EkQjlJ0tcwZ6qAqqtdzgVxiS9ps6tGLlx4AjCZMEZtu
-         yXOGXG63Yy1wQmSI6C8qyL/TdPYxvO1AXqfmdw3Iopl61+3fJdYgvBNxtcegLzLnWBMh
-         Wvx7e2tNgqZ5ctptECKKYizsguV2RFO7EMKYviVXXIBt/mxsTpdmZZnmWelsSK2R+6Ii
-         oqcw==
+        bh=jrdYKQcH3sp0apOchPLnA+m1+Ly6Mzn8RffcZko3gSE=;
+        b=tWTG/ziNoLiTMyY4B5n8sSG56o5u9RABLzN3mXRsshxIAvjFJvYFf6KO+Ipi2jyw4+
+         ifPkLqGCpfznjnI7ThOkVGoS3ebOkwewpweVqubUQhsv3XWBRgQDa8lB1hQvQnTXJEWE
+         PDFssiKMcVjA5kH+jQmC/QTYxGbXR1fqMnopZv9TS222aK7jd3hzFN7BdOkJEu4MkVi4
+         gigSnEi78YX26LJFxbginlPw30xEttUXOdOjVbqCdCmBUZ37lnPcyUTztBD6u3Uht+vx
+         HYICPicXnBA+eEyfSXNpiaQ7BJnCUDeJs4FiLXX0Gh6+TMP0SB1+ObnEB5O1LiLaNllv
+         lrEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750326562; x=1750931362;
+        d=1e100.net; s=20230601; t=1750328801; x=1750933601;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=17oxjeeFsHFeG65L770MNpFPAUdse/NuAwqFBcFBF84=;
-        b=izWX+T6ayIur02eIFzp+oQ29X9bbqhyU1tdoVbbAuevfSMI5UNwbXLx2Yb0pqf1dBK
-         KSOBWGNpsv0r8nc1X+wtqjAnL6AjcnmenXung9uFSB6hF5SzNdF7+gepfHbDlW8SYT33
-         3drbHbgoj6LpL5uzJlykvRhdFmpqDSi6HdRDalMI1NbLU3ruAlHrQWT0hLOJbYPcNxS0
-         J+rpwBwpWqIG2RiYqKtUUeSNnIkNPQpXpI+CAHpxzNX8v+hZRooVElXa19k/CqzUUzoK
-         egPvbEgSPbIZvOeDH0RDS+ii7xKpIoha8EcUl/IqEtMwMfrD55h5VokfJs/ndKl5Pz8v
-         A1QA==
-X-Forwarded-Encrypted: i=1; AJvYcCWj6hulEcNGlZoCbSWEw4Fv4igGCkvvm79ctY/4J9tpZGlPjfGR670/ab9HQ3yXpfkT9X/Z0A==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxTUTC9XYbBgopcn31fI+KAhSq+oCRDvs/dT7JV7KV3SOqIBWmD
-	2ePcjY7xn+KsOomQlqK/qJmE0QZMiOmwqJDSqhJhrvjWMfnmK5LZ0MNM6+boFropxQ==
-X-Gm-Gg: ASbGncsnWHIovG2Yf0EbgG6gOdJgyfNclD/ctgNpibVemd/kXmrwlxBmJ5ON/sTikef
-	ZN/Ls404GJRLFxZpBavipVJyi33ZflFLmuZ21OAwwE+REg1dW3sDHNzjl36W2TpxLCUkUPJO0EB
-	AgLeJCB1cePAPzn7pZf9iMcNf092/yLdrVvBjiOv6igKXtBTMaav16i5tjtKeOkb0PnRGWAUmGG
-	WtrkPR2G0i9ewyUmbU4IYiJUZf3D65r4MlAK1oAXB/HkI9bVdqKSp2DNE++vl7pGZwKfWwMmGAq
-	BY+4t06NB6o5mw+jVBxOmj8DfT0pIG3W3jkYAgqB7fHwr7/jEzTLl/G3wgTm8TERbRgcBwc5Nt5
-	La4xPuk46/cLW7qsHQoFp
-X-Google-Smtp-Source: AGHT+IEuCYASVN8j1eZMJIcAvoBEAqstpKSSgGIYZ2iYQuSQhTyrI+a8+/330LWZVAAW9AYW4syqlA==
-X-Received: by 2002:a17:902:fc46:b0:234:bcd0:3d6f with SMTP id d9443c01a7336-237cdfe9619mr1746815ad.1.1750326562236;
-        Thu, 19 Jun 2025 02:49:22 -0700 (PDT)
+        bh=jrdYKQcH3sp0apOchPLnA+m1+Ly6Mzn8RffcZko3gSE=;
+        b=s8djsoS4gbrzeOkhL2N4I79aJRsPis92wc7jyoc966MXjXf8NcMIobmCFlCTV0tYMR
+         9Zwv+dozowICS4vaMGtjFWv6Dxa+6UGMXRd8xkQjPfacV/kRpLuqteDJtr9cyq5wOEd/
+         312LV+eG7IVisPBKJIwtiPnXtFEqOiL5G552Q1NGo6p5Uce71lQvwrvefwOWhFDDDjcT
+         zEAz37tJkeHpCtu3cyKKGS7iDJA/anXp+ACAbqMUEJiZGmOeXlZp8EgGmF6h328Ag5Wp
+         BdYp/mmcCOA7PCnmoEkGXMyxVUOdDTOebTik9plR2Z5vehF7tzebOq5XpYCVzPcpXVEI
+         d6yA==
+X-Forwarded-Encrypted: i=1; AJvYcCWxOwhN+ikU9wmiGitmjPcJNrwEJ1VaTv2gl1S8ROsqnpYbCrFcL+UdlOm4kB/BncMtTk9SFw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw2tDEU5rQ2CHJFQfjGpDqAv0f8P7GWGojTOFcx0KjxOgQQGSY9
+	vAbzjqZYuxNh7Dn9RaH4wRTV4tyBsAHqadrhjit6JuEDPEBZNhp1CM+pBlQ5yIARCg==
+X-Gm-Gg: ASbGncuwJGg/mF2/ejtblxUvz/rR7wProc514neuxGyNsw9NHdg5HUtmme/8uUDWpiB
+	ym9WzDeJe+1gkwKePtRKWxy7ud2/59gFgyv9MfAYnKaBIkzxASNMIt5zRvWN+jpsVHBk/tHyEsG
+	/xSXtYDEh9d+7zSgcZOoXHMUQDEPLZv7jCIPafvz5lNLS5eitFllLTZc+dlG+8jttRptTrdgZWa
+	wdEMDfJ9PRHEeMUAbVLKkq9hMj+QIgtsse42WSq7OKIAxgGMqdTN8UEEwPKeEPjrMf06OQ2tQhF
+	/uVbNldXiMqcC0QrOp+NKoaHUyWEfdH6d/PRL6ojZpvWhWOFGv3tNDQFw1VkkGxaVH6lg/oYmbS
+	jf5uWA0uot0CZFZaz+5Lf
+X-Google-Smtp-Source: AGHT+IGiUkrhNhPK9lXuO365Ne3OwVoTaAk8SvrZ2YyadUl+5Mml/HIcLv4k3/+1+30tV1lrdYYgXA==
+X-Received: by 2002:a17:902:e5c3:b0:224:6c8:8d84 with SMTP id d9443c01a7336-237cca5ada5mr2619125ad.4.1750328800415;
+        Thu, 19 Jun 2025 03:26:40 -0700 (PDT)
 Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2365deb04a6sm116435595ad.178.2025.06.19.02.49.16
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-748900b04e4sm12850712b3a.121.2025.06.19.03.26.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Jun 2025 02:49:21 -0700 (PDT)
-Date: Thu, 19 Jun 2025 09:49:10 +0000
+        Thu, 19 Jun 2025 03:26:39 -0700 (PDT)
+Date: Thu, 19 Jun 2025 10:26:28 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, kevin.tian@intel.com, corbet@lwn.net,
-	will@kernel.org, bagasdotme@gmail.com, robin.murphy@arm.com,
-	joro@8bytes.org, thierry.reding@gmail.com, vdumpa@nvidia.com,
-	jonathanh@nvidia.com, shuah@kernel.org, jsnitsel@redhat.com,
-	nathan@kernel.org, peterz@infradead.org, yi.l.liu@intel.com,
-	mshavit@google.com, zhangzekun11@huawei.com, iommu@lists.linux.dev,
+Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
+	bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
+	peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
+	zhangzekun11@huawei.com, iommu@lists.linux.dev,
 	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
 	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
 	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com,
 	dwmw2@infradead.org, baolu.lu@linux.intel.com
-Subject: Re: [PATCH v6 07/25] iommufd/access: Add internal APIs for HW queue
- to use
-Message-ID: <aFPdFnKvus57cGOU@google.com>
+Subject: Re: [PATCH v6 08/25] iommufd/viommu: Add driver-defined vDEVICE
+ support
+Message-ID: <aFPl1LD8r3Du-Far@google.com>
 References: <cover.1749884998.git.nicolinc@nvidia.com>
- <64145b184a0fa7c9b60532c9b475a51625edb77c.1749884998.git.nicolinc@nvidia.com>
- <20250616133719.GC1174925@nvidia.com>
- <aFDSNYOTToFSbFA2@nvidia.com>
+ <937d515032be07af36c06a4adb662ee2f7693c75.1749884998.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,85 +84,176 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aFDSNYOTToFSbFA2@nvidia.com>
+In-Reply-To: <937d515032be07af36c06a4adb662ee2f7693c75.1749884998.git.nicolinc@nvidia.com>
 
-On Mon, Jun 16, 2025 at 07:25:57PM -0700, Nicolin Chen wrote:
-> On Mon, Jun 16, 2025 at 10:37:19AM -0300, Jason Gunthorpe wrote:
-> > On Sat, Jun 14, 2025 at 12:14:32AM -0700, Nicolin Chen wrote:
-> > > Now, access->ops can be NULL, to support an internal use case for the new
-> > > HW queue object. Since an access object in this case will be allocated by
-> > > an inernal iommufd object, the refcount on the ictx should be skipped, so
-> > > as not to deadlock the release of the ictx as it would otherwise wait for
-> > > the release of the access first during the release of the internal object
-> > > that could wait for the release of ictx:
-> > >     ictx --releases--> hw_queue --releases--> access
-> > >       ^                                         |
-> > >       |_________________releases________________v
-> > > 
-> > > Add a set of lightweight internal APIs to unlink access and ictx:
-> > >     ictx --releases--> hw_queue --releases--> access
-> > > 
-> > > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > > ---
-> > >  drivers/iommu/iommufd/iommufd_private.h |  8 ++++
-> > >  drivers/iommu/iommufd/device.c          | 59 +++++++++++++++++++++----
-> > >  2 files changed, 58 insertions(+), 9 deletions(-)
-> > > 
-> > > diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> > > index 4a375a8c9216..468717d5e5bc 100644
-> > > --- a/drivers/iommu/iommufd/iommufd_private.h
-> > > +++ b/drivers/iommu/iommufd/iommufd_private.h
-> > > @@ -484,6 +484,14 @@ void iopt_remove_access(struct io_pagetable *iopt,
-> > >  			struct iommufd_access *access, u32 iopt_access_list_id);
-> > >  void iommufd_access_destroy_object(struct iommufd_object *obj);
-> > >  
-> > > +/* iommufd_access for internal use */
-> > > +struct iommufd_access *iommufd_access_create_internal(struct iommufd_ctx *ictx);
-> > > +#define iommufd_access_destroy_internal(ictx, access) \
-> > > +	iommufd_object_destroy_user(ictx, &(access)->obj)
-> > 
-> > Use a static inline please
-> > 
-> > > +int iommufd_access_attach_internal(struct iommufd_access *access,
-> > > +				   struct iommufd_ioas *ioas);
-> > > +#define iommufd_access_detach_internal(access) iommufd_access_detach(access)
-> > 
-> > 
-> > >  struct iommufd_eventq {
-> > >  	struct iommufd_object obj;
-> > >  	struct iommufd_ctx *ictx;
-> > > diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-> > > index 9293722b9cff..ad33f1e41a24 100644
-> > > --- a/drivers/iommu/iommufd/device.c
-> > > +++ b/drivers/iommu/iommufd/device.c
-> > > @@ -1084,7 +1084,39 @@ void iommufd_access_destroy_object(struct iommufd_object *obj)
-> > >  	if (access->ioas)
-> > >  		WARN_ON(iommufd_access_change_ioas(access, NULL));
-> > >  	mutex_unlock(&access->ioas_lock);
-> > > -	iommufd_ctx_put(access->ictx);
-> > > +	if (access->ops)
-> > > +		iommufd_ctx_put(access->ictx);
-> > 
-> > I was hoping we could null the ictx to signal internal? That didn't
-> > work out?
+On Sat, Jun 14, 2025 at 12:14:33AM -0700, Nicolin Chen wrote:
+> NVIDIA VCMDQ driver will have a driver-defined vDEVICE structure and do
+> some HW configurations with that.
 > 
-> access->ictx should be NULL for internal. It should have been:
-> +	if (access->ictx)
-> +		iommufd_ctx_put(access->ictx);
+> To allow IOMMU drivers to define their own vDEVICE structures, move the
+> struct iommufd_vdevice to the public header and provide a pair of viommu
+> ops, similar to get_viommu_size and viommu_init.
+> 
+> Doing this, however, creates a new window between the vDEVICE allocation
+> and its driver-level initialization, during which an abort could happen
+> but it can't invoke a driver destroy function from the struct viommu_ops
+> since the driver structure isn't initialized yet. vIOMMU object doesn't
+> have this problem, since its destroy op is set via the viommu_ops by the
+> driver viommu_init function. Thus, vDEVICE should do something similar:
+> add a destroy function pointer inside the struct iommufd_vdevice instead
+> of the struct iommufd_viommu_ops.
+> 
+> Note that there is unlikely a use case for a type dependent vDEVICE, so
+> a static vdevice_size is probably enough for the near term instead of a
+> get_vdevice_size function op.
+> 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/iommufd/iommufd_private.h |  7 -------
+>  include/linux/iommufd.h                 | 26 +++++++++++++++++++++++++
+>  drivers/iommu/iommufd/viommu.c          | 26 ++++++++++++++++++++++++-
+>  3 files changed, 51 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+> index 468717d5e5bc..e6b1eb2ab375 100644
+> --- a/drivers/iommu/iommufd/iommufd_private.h
+> +++ b/drivers/iommu/iommufd/iommufd_private.h
+> @@ -638,13 +638,6 @@ void iommufd_viommu_destroy(struct iommufd_object *obj);
+>  int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd);
+>  void iommufd_vdevice_destroy(struct iommufd_object *obj);
+>  
+> -struct iommufd_vdevice {
+> -	struct iommufd_object obj;
+> -	struct iommufd_viommu *viommu;
+> -	struct device *dev;
+> -	u64 id; /* per-vIOMMU virtual ID */
+> -};
+> -
+>  #ifdef CONFIG_IOMMUFD_TEST
+>  int iommufd_test(struct iommufd_ucmd *ucmd);
+>  void iommufd_selftest_destroy(struct iommufd_object *obj);
+> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+> index 2d1bf2f97ee3..f3b5cfdb6d53 100644
+> --- a/include/linux/iommufd.h
+> +++ b/include/linux/iommufd.h
+> @@ -104,6 +104,16 @@ struct iommufd_viommu {
+>  	enum iommu_viommu_type type;
+>  };
+>  
+> +struct iommufd_vdevice {
+> +	struct iommufd_object obj;
+> +	struct iommufd_viommu *viommu;
+> +	struct device *dev;
+> +	u64 id; /* per-vIOMMU virtual ID */
+
+Nit: Why not call this viommu_id?
+
+> +
+> +	/* Clean up all driver-specific parts of an iommufd_vdevice */
+> +	void (*destroy)(struct iommufd_vdevice *vdev);
+> +};
+> +
+>  /**
+>   * struct iommufd_viommu_ops - vIOMMU specific operations
+>   * @destroy: Clean up all driver-specific parts of an iommufd_viommu. The memory
+> @@ -120,6 +130,14 @@ struct iommufd_viommu {
+>   *                    array->entry_num to report the number of handled requests.
+>   *                    The data structure of the array entry must be defined in
+>   *                    include/uapi/linux/iommufd.h
+> + * @vdevice_size: Size of the driver-defined vDEVICE structure per this vIOMMU
+> + * @vdevice_init: Initialize the driver-level structure of a vDEVICE object, or
+> + *                related HW procedure. @vdev is already initialized by iommufd
+> + *                core: vdev->dev and vdev->viommu pointers; vdev->id carries a
+> + *                per-vIOMMU virtual ID (refer to struct iommu_vdevice_alloc in
+> + *                include/uapi/linux/iommufd.h)
+> + *                If driver has a deinit function to revert what vdevice_init op
+> + *                does, it should set it to the @vdev->destroy function pointer
+>   */
+>  struct iommufd_viommu_ops {
+>  	void (*destroy)(struct iommufd_viommu *viommu);
+> @@ -128,6 +146,8 @@ struct iommufd_viommu_ops {
+>  		const struct iommu_user_data *user_data);
+>  	int (*cache_invalidate)(struct iommufd_viommu *viommu,
+>  				struct iommu_user_data_array *array);
+> +	const size_t vdevice_size;
+> +	int (*vdevice_init)(struct iommufd_vdevice *vdev);
+>  };
+>  
+>  #if IS_ENABLED(CONFIG_IOMMUFD)
+> @@ -224,4 +244,10 @@ static inline int iommufd_viommu_report_event(struct iommufd_viommu *viommu,
+>  	 BUILD_BUG_ON_ZERO(offsetof(drv_struct, member)) +                     \
+>  	 BUILD_BUG_ON_ZERO(!__same_type(struct iommufd_viommu,                 \
+>  					((drv_struct *)NULL)->member)))
+> +
+> +#define VDEVICE_STRUCT_SIZE(drv_struct, member)                                \
+> +	(sizeof(drv_struct) +                                                  \
+> +	 BUILD_BUG_ON_ZERO(offsetof(drv_struct, member)) +                     \
+> +	 BUILD_BUG_ON_ZERO(!__same_type(struct iommufd_vdevice,                \
+> +					((drv_struct *)NULL)->member)))
+>  #endif
+> diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
+> index c5eea9900c54..28ea5d026222 100644
+> --- a/drivers/iommu/iommufd/viommu.c
+> +++ b/drivers/iommu/iommufd/viommu.c
+> @@ -116,6 +116,8 @@ void iommufd_vdevice_destroy(struct iommufd_object *obj)
+>  		container_of(obj, struct iommufd_vdevice, obj);
+>  	struct iommufd_viommu *viommu = vdev->viommu;
+>  
+> +	if (vdev->destroy)
+> +		vdev->destroy(vdev);
+>  	/* xa_cmpxchg is okay to fail if alloc failed xa_cmpxchg previously */
+>  	xa_cmpxchg(&viommu->vdevs, vdev->id, vdev, NULL, GFP_KERNEL);
+>  	refcount_dec(&viommu->obj.users);
+> @@ -126,6 +128,7 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+>  {
+>  	struct iommu_vdevice_alloc *cmd = ucmd->cmd;
+>  	struct iommufd_vdevice *vdev, *curr;
+> +	size_t vdev_size = sizeof(*vdev);
+>  	struct iommufd_viommu *viommu;
+>  	struct iommufd_device *idev;
+>  	u64 virt_id = cmd->virt_id;
+> @@ -150,7 +153,22 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+>  		goto out_put_idev;
+>  	}
+>  
+> -	vdev = iommufd_object_alloc_ucmd(ucmd, vdev, IOMMUFD_OBJ_VDEVICE);
+> +	if (viommu->ops && viommu->ops->vdevice_size) {
+> +		/*
+> +		 * It is a driver bug for:
+> +		 * - ops->vdevice_size smaller than the core structure size
+> +		 * - not implementing a pairing ops->vdevice_init op
+> +		 */
+> +		if (WARN_ON_ONCE(viommu->ops->vdevice_size < vdev_size ||
+> +				 !viommu->ops->vdevice_init)) {
+> +			rc = -EOPNOTSUPP;
+> +			goto out_put_idev;
+> +		}
+> +		vdev_size = viommu->ops->vdevice_size;
+> +	}
+> +
+> +	vdev = (struct iommufd_vdevice *)_iommufd_object_alloc_ucmd(
+> +		ucmd, vdev_size, IOMMUFD_OBJ_VDEVICE);
+>  	if (IS_ERR(vdev)) {
+>  		rc = PTR_ERR(vdev);
+>  		goto out_put_idev;
+> @@ -168,6 +186,12 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+>  		goto out_put_idev;
+>  	}
+>  
+> +	if (viommu->ops && viommu->ops->vdevice_init) {
+> +		rc = viommu->ops->vdevice_init(vdev);
+> +		if (rc)
+> +			goto out_put_idev;
+> +	}
+> +
+>  	cmd->out_vdevice_id = vdev->obj.id;
+>  	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
 > 
 
-Ohh sorry, just saw this. +1, I too believe this is better than relying
-on access->ops being NULL.
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
-> > I would at least add a comment here this is filtering internal that
-> > doesn't have ictx. Maybe a little inline 'iommufd_access_is_internal'
-> > is appropriate. We'll be sad down the road if we need ops for
-> > internal.
+> -- 
+> 2.43.0
 > 
-> Yea, an inline will be cleaner. Will add that.
-> 
-
-Ack.
-
-Thanks,
-Praan
