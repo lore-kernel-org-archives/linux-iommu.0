@@ -1,27 +1,27 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DBBA7221704
-	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 11:51:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0199E22B59F
+	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 11:52:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750333902; cv=none; b=fz46y//c3jXzQP+PIbReUxBU1D7WbBObKslinwUt4n8oH+XNBVcHhgco7liDB2SxnREROfdZe+hhABQCV/bVRnvnKtgIG5a+4tPSdUR+5MjTDaC2kyDIl1JE1fVD5B3E/mtViNVq/tIoII+7EGnl18LN0ovcPnEmUL2Lw0dCKEs=
+	t=1750333924; cv=none; b=L1STLxE/AedVUmilQLJ0AuvUPUhkNl/9ggucrqL8UIIxwc3tYnT88sOg9/jJJTYQN9s2xssum/D2A4Zpw6MCIpOd6Y9N71RxIqSRIHM5FoQVtoe52Idr6if3bkEAriZ8XpQEtD4VB7yHrOoGOb3kLb97hHV78QbDYaDSBijpE54=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750333902; c=relaxed/simple;
-	bh=cV46gl3pjPGt2Sftob+tBt5M1wyyalH/s2Lx039lCQk=;
+	s=arc-20240116; t=1750333924; c=relaxed/simple;
+	bh=YLzbhb0hLth3oKZTnV2Nw5J3HjCSrsrpaFPC53QOQIM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=i2fRRsU2xOhWb54b+meulAwhrjaANvdWTFjYvqlEbif2dxmAbCwtmLnDFoTtNdtgXTpHP8MdIbow6VXpZhyEKdurwr+DwMak7ZGupsAGirrbsUuvjqOD2mxvJ7buqF3QE+kJiYKzNsop1Q2wi9drkywYyi2KWb2Yg1L0BGTxzcI=
+	 Content-Type:Content-Disposition:In-Reply-To; b=Q99XW7fnfyxSiViqiGgG1XQ3uGF7xtlVSzl//PzCGdbDDYt7seD31dU/fOwfKUejaM9k1y2MfvCT29dTTBBOSnsrWJj5AdCi/T2kBTujpHbaqle9XvjtqNqDU+yALOXwSdakNpTN4ou+qJW1vSqGRI/OJs0XFDn69GvUJVhKNGA=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0570A106F;
-	Thu, 19 Jun 2025 04:51:20 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 51AE312FC;
+	Thu, 19 Jun 2025 04:51:42 -0700 (PDT)
 Received: from e133081.arm.com (unknown [10.1.28.99])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 95C8D3F66E;
-	Thu, 19 Jun 2025 04:51:35 -0700 (PDT)
-Date: Thu, 19 Jun 2025 12:51:32 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 22C1A3F66E;
+	Thu, 19 Jun 2025 04:51:57 -0700 (PDT)
+Date: Thu, 19 Jun 2025 12:51:55 +0100
 From: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: ryan.roberts@arm.com, yang@os.amperecomputing.com, will@kernel.org,
+To: Ryan Roberts <ryan.roberts@arm.com>
+Cc: yang@os.amperecomputing.com, catalin.marinas@arm.com, will@kernel.org,
 	jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
 	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
 	james.morse@arm.com, broonie@kernel.org, ardb@kernel.org,
@@ -31,10 +31,12 @@ Cc: ryan.roberts@arm.com, yang@os.amperecomputing.com, will@kernel.org,
 	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
 	iommu@lists.linux.dev
 Subject: Re: [PATCH v7 2/4] arm64: Add BBM Level 2 cpu feature
-Message-ID: <20250619115132.GA20673@e133081.arm.com>
+Message-ID: <20250619115155.GB20673@e133081.arm.com>
 References: <20250617095104.6772-1-miko.lenczewski@arm.com>
  <20250617095104.6772-3-miko.lenczewski@arm.com>
- <aFPu4SorUGlFt-2p@arm.com>
+ <e40989e9-9521-4915-9bae-eb7be1d4e056@arm.com>
+ <20250619085701.GA10805@e133081.arm.com>
+ <8c6f1c91-176c-4382-b631-79948e8de16f@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,106 +46,50 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <aFPu4SorUGlFt-2p@arm.com>
+In-Reply-To: <8c6f1c91-176c-4382-b631-79948e8de16f@arm.com>
 
-On Thu, Jun 19, 2025 at 12:05:05PM +0100, Catalin Marinas wrote:
-> On Tue, Jun 17, 2025 at 09:51:02AM +0000, Mikołaj Lenczewski wrote:
-> > diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-> > index f9c947166322..2e80ff237b96 100644
-> > --- a/arch/arm64/kernel/cpufeature.c
-> > +++ b/arch/arm64/kernel/cpufeature.c
-> > @@ -2213,6 +2213,41 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
-> >  	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
-> >  }
-> >  
-> > +static bool has_bbml2_noabort(const struct arm64_cpu_capabilities *caps, int scope)
-> > +{
-> > +	/*
-> > +	 * We want to allow usage of BBML2 in as wide a range of kernel contexts
-> > +	 * as possible. This list is therefore an allow-list of known-good
-> > +	 * implementations that both support BBML2 and additionally, fulfill the
-> > +	 * extra constraint of never generating TLB conflict aborts when using
-> > +	 * the relaxed BBML2 semantics (such aborts make use of BBML2 in certain
-> > +	 * kernel contexts difficult to prove safe against recursive aborts).
-> > +	 *
-> > +	 * Note that implementations can only be considered "known-good" if their
-> > +	 * implementors attest to the fact that the implementation never raises
-> > +	 * TLBI conflict aborts for BBML2 mapping granularity changes.
+On Thu, Jun 19, 2025 at 10:20:14AM +0100, Ryan Roberts wrote:
+> On 19/06/2025 09:57, Mikołaj Lenczewski wrote:
+> > On Wed, Jun 18, 2025 at 03:07:41PM +0100, Ryan Roberts wrote:
+> >> On 17/06/2025 10:51, Mikołaj Lenczewski wrote:
+> >>>  #ifdef CONFIG_ARM64_PAN
+> >>>  static void cpu_enable_pan(const struct arm64_cpu_capabilities *__unused)
+> >>>  {
+> >>> @@ -2980,6 +3015,11 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
+> >>>  		.matches = has_cpuid_feature,
+> >>>  		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, EVT, IMP)
+> >>>  	},
+> >>> +	{
+> >>> +		.capability = ARM64_HAS_BBML2_NOABORT,
+> >>> +		.type = ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
+> >>> +		.matches = has_bbml2_noabort,
+> >>
+> >> Is there a reason you have removed the .desc from this? Without it, the kernel
+> >> won't print a "detected" line when it enables the feature. Previously you had:
+> >>
+> >> 		.desc = "BBM Level 2 without conflict abort",
+> >>
+> >>> +	},
+> >>>  	{
+> >>>  		.desc = "52-bit Virtual Addressing for KVM (LPA2)",
+> >>>  		.capability = ARM64_HAS_LPA2, 
+> >>
+> > 
+> > Damn it! I completely forgot to birng that back. Yet another remenant of
+> > the NO_BBML2_NOABORT version we had discussed in v6, because a
+> > description field would have been confusing due to the double negation:
+> > 
+> > https://lore.kernel.org/all/83d1f7af-3dc7-45f9-94f3-8a0917c051d2@arm.com/
+> > 
+> > Thank you very much for spotting this Ryan! Ill return the description,
+> > and respin on Monday (unless it is possible to do this as a RESEND or
+> > similar, but I doubt it since this is technically a functional change) :/
+> > 
 > 
-> s/TLBI/TLB/
-> 
-
-ACK
-
-> > +	 */
-> > +	static const struct midr_range supports_bbml2_noabort_list[] = {
-> > +		MIDR_REV_RANGE(MIDR_CORTEX_X4, 0, 3, 0xf),
-> > +		MIDR_REV_RANGE(MIDR_NEOVERSE_V3, 0, 2, 0xf),
-> > +		{}
-> > +	};
-> > +
-> > +	/* Does our cpu guarantee to never raise TLB conflict aborts? */
-> > +	if (!is_midr_in_range_list(supports_bbml2_noabort_list))
-> > +		return false;
-> > +
-> > +	/*
-> > +	 * We currently ignore the AA64_ID_MMFR2 register, and only care about
-> 
-> s/AA64_ID_MMFR2/ID_AA64MMFR2_EL1/
+> I think probably just send out a new version.
 > 
 
 ACK
-
-> > +	 * whether the MIDR check passes. This is because we specifically
-> > +	 * care only about a stricter form of BBML2 (one guaranteeing noabort),
-> > +	 * and so the MMFR2 check is pointless (all implementations passing the
-> > +	 * MIDR check should also pass the MMFR2 check).
-> 
-> I think there's at least one implementation that behaves as
-> BBML2-noabort but does not have the ID field advertising BBML2.
-> 
-
-Yes, I put "should" instead of "will" because of the AmpereOne
-situation, but I didn't want to "name and shame". Should I explicitly
-call this out? Or would you like me to soften the vocabulary here to imply
-that as long as the MIDR passes, the MMFR2 check is not important?
-
-> > +	 */
-> > +
-> > +	return true;
-> > +}
-> > +
-> >  #ifdef CONFIG_ARM64_PAN
-> >  static void cpu_enable_pan(const struct arm64_cpu_capabilities *__unused)
-> >  {
-> > @@ -2980,6 +3015,11 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
-> >  		.matches = has_cpuid_feature,
-> >  		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, EVT, IMP)
-> >  	},
-> > +	{
-> > +		.capability = ARM64_HAS_BBML2_NOABORT,
-> > +		.type = ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
-> > +		.matches = has_bbml2_noabort,
-> > +	},
-> >  	{
-> >  		.desc = "52-bit Virtual Addressing for KVM (LPA2)",
-> >  		.capability = ARM64_HAS_LPA2,
-> > diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
-> > index 10effd4cff6b..2bd2bfaeddcd 100644
-> > --- a/arch/arm64/tools/cpucaps
-> > +++ b/arch/arm64/tools/cpucaps
-> > @@ -45,6 +45,7 @@ HAS_LPA2
-> >  HAS_LSE_ATOMICS
-> >  HAS_MOPS
-> >  HAS_NESTED_VIRT
-> > +HAS_BBML2_NOABORT
-> >  HAS_PAN
-> >  HAS_PMUV3
-> >  HAS_S1PIE
-> 
-> Otherwise it looks fine.
-> 
-> Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
 
 -- 
 Kind regards,
