@@ -1,259 +1,128 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC456222584
-	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 10:26:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30F2E220689;
+	Thu, 19 Jun 2025 11:05:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750328804; cv=none; b=YUuIKvo4TGMrF0NSTblwbac4yGMgLb3JnQqPW3XFsFPfS+n1Jd1F1RwtYQzYMloLqqk/voLkB7AWQ63b+LKrUKF10v4QZ0wfD/xtz16o4vMExiBSrMzfZ4JTEubeb16ePvC003LWyxXjFQxH67Ofn/9UpEAFTCbrTJf+bFTB4P4=
+	t=1750331112; cv=none; b=OwJJLcoPD7ShzzChdKT69hQ+NkoFP2XRbHNymOlI03BjZRYTS5SOD7SXlvHxCiGawIbkV1oQ1NuXcj69TPPuzCO/3t66h2bhhng3+QonZKE6RYoslxvYE3K1Wklr3joz0WQZsI7vb+Yic+FUd4mYLI581+fxabVXAIuMf8Rly+0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750328804; c=relaxed/simple;
-	bh=l5p9J2QLOh7J7ogYCt7vV0BkK248vYvNV1+J7U/FHbI=;
+	s=arc-20240116; t=1750331112; c=relaxed/simple;
+	bh=rYhliljQfdXy0EYM3FNValqPiZeolZqxBnCCabM44Cs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LBYAyks59lh4P1T/A5R51ltAGYSnhiulEJPtfHfZuUAcWeSEwttB3/6s0SvL9TVVqh60Lg65oGTueR+iUuikwLUcgTDI3jVFYaSkcdP/CqPgKfohhXM2dc7+ZsZWu0CHpCOFRHDwciO4MlnvV+3HePzkR3dHBOjt0Ltk+61grwE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tWTG/ziN; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tWTG/ziN"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-235e389599fso166615ad.0
-        for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 03:26:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1750328801; x=1750933601; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jrdYKQcH3sp0apOchPLnA+m1+Ly6Mzn8RffcZko3gSE=;
-        b=tWTG/ziNoLiTMyY4B5n8sSG56o5u9RABLzN3mXRsshxIAvjFJvYFf6KO+Ipi2jyw4+
-         ifPkLqGCpfznjnI7ThOkVGoS3ebOkwewpweVqubUQhsv3XWBRgQDa8lB1hQvQnTXJEWE
-         PDFssiKMcVjA5kH+jQmC/QTYxGbXR1fqMnopZv9TS222aK7jd3hzFN7BdOkJEu4MkVi4
-         gigSnEi78YX26LJFxbginlPw30xEttUXOdOjVbqCdCmBUZ37lnPcyUTztBD6u3Uht+vx
-         HYICPicXnBA+eEyfSXNpiaQ7BJnCUDeJs4FiLXX0Gh6+TMP0SB1+ObnEB5O1LiLaNllv
-         lrEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750328801; x=1750933601;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jrdYKQcH3sp0apOchPLnA+m1+Ly6Mzn8RffcZko3gSE=;
-        b=s8djsoS4gbrzeOkhL2N4I79aJRsPis92wc7jyoc966MXjXf8NcMIobmCFlCTV0tYMR
-         9Zwv+dozowICS4vaMGtjFWv6Dxa+6UGMXRd8xkQjPfacV/kRpLuqteDJtr9cyq5wOEd/
-         312LV+eG7IVisPBKJIwtiPnXtFEqOiL5G552Q1NGo6p5Uce71lQvwrvefwOWhFDDDjcT
-         zEAz37tJkeHpCtu3cyKKGS7iDJA/anXp+ACAbqMUEJiZGmOeXlZp8EgGmF6h328Ag5Wp
-         BdYp/mmcCOA7PCnmoEkGXMyxVUOdDTOebTik9plR2Z5vehF7tzebOq5XpYCVzPcpXVEI
-         d6yA==
-X-Forwarded-Encrypted: i=1; AJvYcCWxOwhN+ikU9wmiGitmjPcJNrwEJ1VaTv2gl1S8ROsqnpYbCrFcL+UdlOm4kB/BncMtTk9SFw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw2tDEU5rQ2CHJFQfjGpDqAv0f8P7GWGojTOFcx0KjxOgQQGSY9
-	vAbzjqZYuxNh7Dn9RaH4wRTV4tyBsAHqadrhjit6JuEDPEBZNhp1CM+pBlQ5yIARCg==
-X-Gm-Gg: ASbGncuwJGg/mF2/ejtblxUvz/rR7wProc514neuxGyNsw9NHdg5HUtmme/8uUDWpiB
-	ym9WzDeJe+1gkwKePtRKWxy7ud2/59gFgyv9MfAYnKaBIkzxASNMIt5zRvWN+jpsVHBk/tHyEsG
-	/xSXtYDEh9d+7zSgcZOoXHMUQDEPLZv7jCIPafvz5lNLS5eitFllLTZc+dlG+8jttRptTrdgZWa
-	wdEMDfJ9PRHEeMUAbVLKkq9hMj+QIgtsse42WSq7OKIAxgGMqdTN8UEEwPKeEPjrMf06OQ2tQhF
-	/uVbNldXiMqcC0QrOp+NKoaHUyWEfdH6d/PRL6ojZpvWhWOFGv3tNDQFw1VkkGxaVH6lg/oYmbS
-	jf5uWA0uot0CZFZaz+5Lf
-X-Google-Smtp-Source: AGHT+IGiUkrhNhPK9lXuO365Ne3OwVoTaAk8SvrZ2YyadUl+5Mml/HIcLv4k3/+1+30tV1lrdYYgXA==
-X-Received: by 2002:a17:902:e5c3:b0:224:6c8:8d84 with SMTP id d9443c01a7336-237cca5ada5mr2619125ad.4.1750328800415;
-        Thu, 19 Jun 2025 03:26:40 -0700 (PDT)
-Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-748900b04e4sm12850712b3a.121.2025.06.19.03.26.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Jun 2025 03:26:39 -0700 (PDT)
-Date: Thu, 19 Jun 2025 10:26:28 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
-	bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
-	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-	shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
-	peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
-	zhangzekun11@huawei.com, iommu@lists.linux.dev,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
-	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com
-Subject: Re: [PATCH v6 08/25] iommufd/viommu: Add driver-defined vDEVICE
- support
-Message-ID: <aFPl1LD8r3Du-Far@google.com>
-References: <cover.1749884998.git.nicolinc@nvidia.com>
- <937d515032be07af36c06a4adb662ee2f7693c75.1749884998.git.nicolinc@nvidia.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=QbSDDlWHmQbdnCpfEnYtIc4xsGprD8X/3Cu3+a4C0zfxPNrM3OyyvtxX7Xd5wZsUowtEc9iFGSpkAercEEgHH5Sgs5QRISmURuqFcrJx9gtUHKNhXWW5j0Luo4Js8eKdEzjv0vkDKBW2ans73Ar0STIVoYwzukNhel0XvAO/v/I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF159C4CEEA;
+	Thu, 19 Jun 2025 11:05:07 +0000 (UTC)
+Date: Thu, 19 Jun 2025 12:05:05 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
+Cc: ryan.roberts@arm.com, yang@os.amperecomputing.com, will@kernel.org,
+	jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
+	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
+	james.morse@arm.com, broonie@kernel.org, ardb@kernel.org,
+	baohua@kernel.org, suzuki.poulose@arm.com, david@redhat.com,
+	jgg@ziepe.ca, nicolinc@nvidia.com, jsnitsel@redhat.com,
+	mshavit@google.com, kevin.tian@intel.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v7 2/4] arm64: Add BBM Level 2 cpu feature
+Message-ID: <aFPu4SorUGlFt-2p@arm.com>
+References: <20250617095104.6772-1-miko.lenczewski@arm.com>
+ <20250617095104.6772-3-miko.lenczewski@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <937d515032be07af36c06a4adb662ee2f7693c75.1749884998.git.nicolinc@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250617095104.6772-3-miko.lenczewski@arm.com>
 
-On Sat, Jun 14, 2025 at 12:14:33AM -0700, Nicolin Chen wrote:
-> NVIDIA VCMDQ driver will have a driver-defined vDEVICE structure and do
-> some HW configurations with that.
-> 
-> To allow IOMMU drivers to define their own vDEVICE structures, move the
-> struct iommufd_vdevice to the public header and provide a pair of viommu
-> ops, similar to get_viommu_size and viommu_init.
-> 
-> Doing this, however, creates a new window between the vDEVICE allocation
-> and its driver-level initialization, during which an abort could happen
-> but it can't invoke a driver destroy function from the struct viommu_ops
-> since the driver structure isn't initialized yet. vIOMMU object doesn't
-> have this problem, since its destroy op is set via the viommu_ops by the
-> driver viommu_init function. Thus, vDEVICE should do something similar:
-> add a destroy function pointer inside the struct iommufd_vdevice instead
-> of the struct iommufd_viommu_ops.
-> 
-> Note that there is unlikely a use case for a type dependent vDEVICE, so
-> a static vdevice_size is probably enough for the near term instead of a
-> get_vdevice_size function op.
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/iommufd/iommufd_private.h |  7 -------
->  include/linux/iommufd.h                 | 26 +++++++++++++++++++++++++
->  drivers/iommu/iommufd/viommu.c          | 26 ++++++++++++++++++++++++-
->  3 files changed, 51 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> index 468717d5e5bc..e6b1eb2ab375 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -638,13 +638,6 @@ void iommufd_viommu_destroy(struct iommufd_object *obj);
->  int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd);
->  void iommufd_vdevice_destroy(struct iommufd_object *obj);
+On Tue, Jun 17, 2025 at 09:51:02AM +0000, Mikołaj Lenczewski wrote:
+> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+> index f9c947166322..2e80ff237b96 100644
+> --- a/arch/arm64/kernel/cpufeature.c
+> +++ b/arch/arm64/kernel/cpufeature.c
+> @@ -2213,6 +2213,41 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
+>  	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
+>  }
 >  
-> -struct iommufd_vdevice {
-> -	struct iommufd_object obj;
-> -	struct iommufd_viommu *viommu;
-> -	struct device *dev;
-> -	u64 id; /* per-vIOMMU virtual ID */
-> -};
-> -
->  #ifdef CONFIG_IOMMUFD_TEST
->  int iommufd_test(struct iommufd_ucmd *ucmd);
->  void iommufd_selftest_destroy(struct iommufd_object *obj);
-> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-> index 2d1bf2f97ee3..f3b5cfdb6d53 100644
-> --- a/include/linux/iommufd.h
-> +++ b/include/linux/iommufd.h
-> @@ -104,6 +104,16 @@ struct iommufd_viommu {
->  	enum iommu_viommu_type type;
->  };
->  
-> +struct iommufd_vdevice {
-> +	struct iommufd_object obj;
-> +	struct iommufd_viommu *viommu;
-> +	struct device *dev;
-> +	u64 id; /* per-vIOMMU virtual ID */
+> +static bool has_bbml2_noabort(const struct arm64_cpu_capabilities *caps, int scope)
+> +{
+> +	/*
+> +	 * We want to allow usage of BBML2 in as wide a range of kernel contexts
+> +	 * as possible. This list is therefore an allow-list of known-good
+> +	 * implementations that both support BBML2 and additionally, fulfill the
+> +	 * extra constraint of never generating TLB conflict aborts when using
+> +	 * the relaxed BBML2 semantics (such aborts make use of BBML2 in certain
+> +	 * kernel contexts difficult to prove safe against recursive aborts).
+> +	 *
+> +	 * Note that implementations can only be considered "known-good" if their
+> +	 * implementors attest to the fact that the implementation never raises
+> +	 * TLBI conflict aborts for BBML2 mapping granularity changes.
 
-Nit: Why not call this viommu_id?
+s/TLBI/TLB/
 
+> +	 */
+> +	static const struct midr_range supports_bbml2_noabort_list[] = {
+> +		MIDR_REV_RANGE(MIDR_CORTEX_X4, 0, 3, 0xf),
+> +		MIDR_REV_RANGE(MIDR_NEOVERSE_V3, 0, 2, 0xf),
+> +		{}
+> +	};
 > +
-> +	/* Clean up all driver-specific parts of an iommufd_vdevice */
-> +	void (*destroy)(struct iommufd_vdevice *vdev);
-> +};
+> +	/* Does our cpu guarantee to never raise TLB conflict aborts? */
+> +	if (!is_midr_in_range_list(supports_bbml2_noabort_list))
+> +		return false;
 > +
->  /**
->   * struct iommufd_viommu_ops - vIOMMU specific operations
->   * @destroy: Clean up all driver-specific parts of an iommufd_viommu. The memory
-> @@ -120,6 +130,14 @@ struct iommufd_viommu {
->   *                    array->entry_num to report the number of handled requests.
->   *                    The data structure of the array entry must be defined in
->   *                    include/uapi/linux/iommufd.h
-> + * @vdevice_size: Size of the driver-defined vDEVICE structure per this vIOMMU
-> + * @vdevice_init: Initialize the driver-level structure of a vDEVICE object, or
-> + *                related HW procedure. @vdev is already initialized by iommufd
-> + *                core: vdev->dev and vdev->viommu pointers; vdev->id carries a
-> + *                per-vIOMMU virtual ID (refer to struct iommu_vdevice_alloc in
-> + *                include/uapi/linux/iommufd.h)
-> + *                If driver has a deinit function to revert what vdevice_init op
-> + *                does, it should set it to the @vdev->destroy function pointer
->   */
->  struct iommufd_viommu_ops {
->  	void (*destroy)(struct iommufd_viommu *viommu);
-> @@ -128,6 +146,8 @@ struct iommufd_viommu_ops {
->  		const struct iommu_user_data *user_data);
->  	int (*cache_invalidate)(struct iommufd_viommu *viommu,
->  				struct iommu_user_data_array *array);
-> +	const size_t vdevice_size;
-> +	int (*vdevice_init)(struct iommufd_vdevice *vdev);
->  };
->  
->  #if IS_ENABLED(CONFIG_IOMMUFD)
-> @@ -224,4 +244,10 @@ static inline int iommufd_viommu_report_event(struct iommufd_viommu *viommu,
->  	 BUILD_BUG_ON_ZERO(offsetof(drv_struct, member)) +                     \
->  	 BUILD_BUG_ON_ZERO(!__same_type(struct iommufd_viommu,                 \
->  					((drv_struct *)NULL)->member)))
+> +	/*
+> +	 * We currently ignore the AA64_ID_MMFR2 register, and only care about
+
+s/AA64_ID_MMFR2/ID_AA64MMFR2_EL1/
+
+> +	 * whether the MIDR check passes. This is because we specifically
+> +	 * care only about a stricter form of BBML2 (one guaranteeing noabort),
+> +	 * and so the MMFR2 check is pointless (all implementations passing the
+> +	 * MIDR check should also pass the MMFR2 check).
+
+I think there's at least one implementation that behaves as
+BBML2-noabort but does not have the ID field advertising BBML2.
+
+> +	 */
 > +
-> +#define VDEVICE_STRUCT_SIZE(drv_struct, member)                                \
-> +	(sizeof(drv_struct) +                                                  \
-> +	 BUILD_BUG_ON_ZERO(offsetof(drv_struct, member)) +                     \
-> +	 BUILD_BUG_ON_ZERO(!__same_type(struct iommufd_vdevice,                \
-> +					((drv_struct *)NULL)->member)))
->  #endif
-> diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
-> index c5eea9900c54..28ea5d026222 100644
-> --- a/drivers/iommu/iommufd/viommu.c
-> +++ b/drivers/iommu/iommufd/viommu.c
-> @@ -116,6 +116,8 @@ void iommufd_vdevice_destroy(struct iommufd_object *obj)
->  		container_of(obj, struct iommufd_vdevice, obj);
->  	struct iommufd_viommu *viommu = vdev->viommu;
->  
-> +	if (vdev->destroy)
-> +		vdev->destroy(vdev);
->  	/* xa_cmpxchg is okay to fail if alloc failed xa_cmpxchg previously */
->  	xa_cmpxchg(&viommu->vdevs, vdev->id, vdev, NULL, GFP_KERNEL);
->  	refcount_dec(&viommu->obj.users);
-> @@ -126,6 +128,7 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+> +	return true;
+> +}
+> +
+>  #ifdef CONFIG_ARM64_PAN
+>  static void cpu_enable_pan(const struct arm64_cpu_capabilities *__unused)
 >  {
->  	struct iommu_vdevice_alloc *cmd = ucmd->cmd;
->  	struct iommufd_vdevice *vdev, *curr;
-> +	size_t vdev_size = sizeof(*vdev);
->  	struct iommufd_viommu *viommu;
->  	struct iommufd_device *idev;
->  	u64 virt_id = cmd->virt_id;
-> @@ -150,7 +153,22 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
->  		goto out_put_idev;
->  	}
->  
-> -	vdev = iommufd_object_alloc_ucmd(ucmd, vdev, IOMMUFD_OBJ_VDEVICE);
-> +	if (viommu->ops && viommu->ops->vdevice_size) {
-> +		/*
-> +		 * It is a driver bug for:
-> +		 * - ops->vdevice_size smaller than the core structure size
-> +		 * - not implementing a pairing ops->vdevice_init op
-> +		 */
-> +		if (WARN_ON_ONCE(viommu->ops->vdevice_size < vdev_size ||
-> +				 !viommu->ops->vdevice_init)) {
-> +			rc = -EOPNOTSUPP;
-> +			goto out_put_idev;
-> +		}
-> +		vdev_size = viommu->ops->vdevice_size;
-> +	}
-> +
-> +	vdev = (struct iommufd_vdevice *)_iommufd_object_alloc_ucmd(
-> +		ucmd, vdev_size, IOMMUFD_OBJ_VDEVICE);
->  	if (IS_ERR(vdev)) {
->  		rc = PTR_ERR(vdev);
->  		goto out_put_idev;
-> @@ -168,6 +186,12 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
->  		goto out_put_idev;
->  	}
->  
-> +	if (viommu->ops && viommu->ops->vdevice_init) {
-> +		rc = viommu->ops->vdevice_init(vdev);
-> +		if (rc)
-> +			goto out_put_idev;
-> +	}
-> +
->  	cmd->out_vdevice_id = vdev->obj.id;
->  	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-> 
+> @@ -2980,6 +3015,11 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
+>  		.matches = has_cpuid_feature,
+>  		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, EVT, IMP)
+>  	},
+> +	{
+> +		.capability = ARM64_HAS_BBML2_NOABORT,
+> +		.type = ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
+> +		.matches = has_bbml2_noabort,
+> +	},
+>  	{
+>  		.desc = "52-bit Virtual Addressing for KVM (LPA2)",
+>  		.capability = ARM64_HAS_LPA2,
+> diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
+> index 10effd4cff6b..2bd2bfaeddcd 100644
+> --- a/arch/arm64/tools/cpucaps
+> +++ b/arch/arm64/tools/cpucaps
+> @@ -45,6 +45,7 @@ HAS_LPA2
+>  HAS_LSE_ATOMICS
+>  HAS_MOPS
+>  HAS_NESTED_VIRT
+> +HAS_BBML2_NOABORT
+>  HAS_PAN
+>  HAS_PMUV3
+>  HAS_S1PIE
 
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
+Otherwise it looks fine.
 
-> -- 
-> 2.43.0
-> 
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
