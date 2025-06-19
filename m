@@ -1,218 +1,166 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10F463085B2
-	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 16:28:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750350493; cv=pass; b=HFJ77Tbv51dWvDoe3ieKf8c/pHpbQKFE0BMFPE9+CEQ+6jwDKEDdhUk10+DK6NBMd/0MkDnlIEX8uzsoEp68xRCB2J/d6KGpyO7Q5JbGHUyzgAe6qv1JaJUCNvQVyaJWEMSwVkoWM/XYNYijYu5QiVbOpAamP7T4TbxMND9SXDc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750350493; c=relaxed/simple;
-	bh=0A5Hirrm/1Adlqdoo/cMvx+fh1eWGCy/X/w+oEcbnGc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OUd4dP+bmexreMoJADYqSyCGyUAB+wOZZWoJTLBm+iHVlqj0l5PLcsS1tStZfGGz4oWWtcqQn8L1oBgVd/KOnADkj6sprVaaSrDJBKnydtg0znGXH6/FW8UgNa39qvaqh5zyyyLVtULwmxaYxdOcvRjzuox2tOiq7rUveGo8I5Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=dvQ7yEn2; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEC7628C2B2
+	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 16:59:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.44
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750352373; cv=none; b=XVA7jkB37148DVUBa9JbdhspIP3f2WUieF66775CiNzCe6fxPJEuuuNKoysoamdJZJ+MQ0325ccYo4uOVcNzQ+IxVqbTpVD+Gc0J31u70HaSRZl9tAzx5L0jmJzfrtit51JHaYXcyOM5fqsUZRqtyDYFgI6Ajp24P+4Yc6um984=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750352373; c=relaxed/simple;
+	bh=uHeSXjDfXn7lYF+oBRLTKymZl/nezk6X31UcWI8RzH4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MvzF4AK6I21C9piPkU/ut2t1CVCWgJ3AeTwGawCrGc0Dq3sk+3BBOESaePWce7lC3pH8OAN/EB6hmNzZ4ZVsOg3xriC4fYdN9Q4exNx1bv0IXw5BB4iaK4gbWE2Y1rsb23fjAD8Ls921W1z+kPynk692YTZS4/eR2bsQkKl6FUk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ZTFYCnJ4; arc=none smtp.client-ip=209.85.210.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="dvQ7yEn2"
-ARC-Seal: i=1; a=rsa-sha256; t=1750350477; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=cv7cshst83TrnjaCmvllkmN1E3sluuWfbFU/aFnHdPxoIiZ74Loz0kiUfgovvgZ9sJYPLVZZ5KaCsNfmfW/eD4viLVe3FzHDtRCrLauA6KTwCPETGX6LMA+xfQWDd/8+AjJwT6ATyCi6mJUwnB067uUd3H/aKvuOEef0p2yENNY=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1750350477; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=rVGVg+OYlp1Qk6fmw5rcJaBayL/Ch3LmOzOtD7sBbTQ=; 
-	b=B0fqkAYa1GChomZVAEO8hfuVtA/6ws8c7t3h8M1AMqoAjq7gj9nw2PVe8pTi9l1if57Q9V1dfbjTA8gXgrjMOPTMmc8xyQE9IgicFCC2pty4fyQcBfXe9BDZJNR/vOJ9NmbER7U2d12zDxTtQ6yfZ7H+j/HR7Z8PZQ9Skg1GPWU=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
-	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1750350477;
-	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=rVGVg+OYlp1Qk6fmw5rcJaBayL/Ch3LmOzOtD7sBbTQ=;
-	b=dvQ7yEn2PkcD9rwE4l1CKHMASbvPLEKc8iMdkF4UT5JFyJbQth2T7ltguaEV52P+
-	w6omdqpFnEr5iFwF9Bq66ybOCsFCGpaWNv0ptKQhpWkcujvJm6vvRypW8BxGu7AXeKT
-	k9M6aG032aBMEPm9XL3CX86YUj+7zt54lbzahZHM=
-Received: by mx.zohomail.com with SMTPS id 1750350476585176.7450336893728;
-	Thu, 19 Jun 2025 09:27:56 -0700 (PDT)
-Message-ID: <073ffe14-d631-4a4f-8668-ddeb7d611448@collabora.com>
-Date: Thu, 19 Jun 2025 18:27:52 +0200
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ZTFYCnJ4"
+Received: by mail-ot1-f44.google.com with SMTP id 46e09a7af769-73884ccffcbso806054a34.1
+        for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 09:59:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1750352371; x=1750957171; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=WU789LESDPx6spX9Gu45wOPXnZU17iFeIzBAgdevUwE=;
+        b=ZTFYCnJ4KEZyEGJtghyYTXq6qJ8mzX2RuaJJYWpI20+BIYRbhZUPH0OPkSmckmkN/V
+         23M1bMS625j4ls2GZtilQ0EMszYObMohrdv+4LlxbF2Qs1RUy8fXCM9WE23G+8biQ44A
+         KzCOImOOw+bgYwO2UiGzWGFOH0qgvDl5rLrxE4iqnMDzfYDmAGSf9ry1mP1P0kyAbFjr
+         etVcJbtGAqMZTJNVR8esAKKVmgpQHVAW3rrzYF9ymz5yslSuPN8fhO3kmLlq5E0rj+kS
+         XyuzdqL4qmYg/wZisgKsqlT4Wl893sXcB5qF36RTwLG66q1YWJ/b7KhbsWLMw/pkVpYD
+         gIHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750352371; x=1750957171;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=WU789LESDPx6spX9Gu45wOPXnZU17iFeIzBAgdevUwE=;
+        b=CLY9RPIBUAu1fwzi/+uHZ2Ad1N1CCt8hyFCxqbx1wsy28xnx04m85OQGniuSnRpNtY
+         1jkjujOUj/8BfGBmRDTHSCF1FTi3X7wC1OVOL5JY5RzOPVHhveRv2ef/GlCPM64dl9aJ
+         C6JLXiFir8diLKZTyK2T7Jcbolg8nN7+1oMGWKNdbtSeUlHNORLglagmjdmyh8RQnJcm
+         vYz9M8jtfCH8CvnURvAUZ7s/p5PA6DkzOTIvTMzlsbx3s6vhFez4H/iLN5y/XJo85hWZ
+         D2QRbe280mJ5zvQRznGsgSFXu+nBGUOt4cqmZh/f8k8s3GZJxXVd6fRITYoNqG/3wSW+
+         nspg==
+X-Forwarded-Encrypted: i=1; AJvYcCU2gCFNsqO/OhGWBuBDKRHUPfsrRqacrdbRQiITl+cgt570LXDLlSopQeBvClh7WWOVPQ9NJw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwCucoQUGxCplPxAkIR7n4zQdHePzYtjVbXgOKUwdHzB4KwzQbW
+	Tu1bPM9nUNsXzJmcQF+4CuNoXLSn31IzXZxQv0ovuSWJTNPl0i6m63fr6Wjo8V+PkUc=
+X-Gm-Gg: ASbGncsYe3y2W+ChIIIXgsgaxIisgRhXtZ77Dbj0PofYbnYLoRpIxINnN44PIsF6ga0
+	pGKdyGX8BQdbP5cOq48CAQZXtY5Wzh8kyiMkMZUINd4kNzr52LocA3nN0Y8C6DoYrMKPKfAdsgS
+	fRoP3zCyDez5ONBopEU5vIwxP736vSPkHvm+AkI43AoKqmNEjXRWN2+Bu92IYv5uPuVWPH4Kv/T
+	Xu5PvAqEPb6W+sIuy5vDu3LMoUSCxiDKJZiGemR8E8jJHkscSMpAvuEGhoEjgHHwCGQpuz0OGLB
+	S1uPBrfJSYUu5SwE4Sm9jbRg0VrxQ/hFUejK
+X-Google-Smtp-Source: AGHT+IFIVSAeEPqWaR7ouc36Dp5BIP5quliMTNtM08oDDkQu9GEu/sRTek8upP25DBEtFCz1lvvpVw==
+X-Received: by 2002:a05:6830:6c8a:b0:73a:8a8a:5151 with SMTP id 46e09a7af769-73a8a8a5334mr1331051a34.17.1750352370711;
+        Thu, 19 Jun 2025 09:59:30 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-73a284ff5f4sm2339324a34.43.2025.06.19.09.59.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Jun 2025 09:59:30 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1uSIbo-000000003GJ-3nRB;
+	Thu, 19 Jun 2025 13:59:28 -0300
+Date: Thu, 19 Jun 2025 13:59:28 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+	nicolas.dufresne@collabora.com, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, kernel@collabora.com
+Subject: Re: [PATCH v3 3/5] iommu: Add verisilicon IOMMU driver
+Message-ID: <20250619165928.GA10257@ziepe.ca>
+References: <20250619131232.69208-1-benjamin.gaignard@collabora.com>
+ <20250619131232.69208-4-benjamin.gaignard@collabora.com>
+ <20250619134752.GB1643390@ziepe.ca>
+ <073ffe14-d631-4a4f-8668-ddeb7d611448@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/5] iommu: Add verisilicon IOMMU driver
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
- nicolas.dufresne@collabora.com, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- kernel@collabora.com
-References: <20250619131232.69208-1-benjamin.gaignard@collabora.com>
- <20250619131232.69208-4-benjamin.gaignard@collabora.com>
- <20250619134752.GB1643390@ziepe.ca>
-Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <20250619134752.GB1643390@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <073ffe14-d631-4a4f-8668-ddeb7d611448@collabora.com>
 
+On Thu, Jun 19, 2025 at 06:27:52PM +0200, Benjamin Gaignard wrote:
+> 
+> Le 19/06/2025 à 15:47, Jason Gunthorpe a écrit :
 
-Le 19/06/2025 à 15:47, Jason Gunthorpe a écrit :
-> On Thu, Jun 19, 2025 at 03:12:24PM +0200, Benjamin Gaignard wrote:
->
->> +static struct iommu_domain *vsi_iommu_domain_alloc_paging(struct device *dev)
->> +{
->> +	struct vsi_iommu *iommu = vsi_iommu_get_from_dev(dev);
->> +	struct vsi_iommu_domain *vsi_domain;
->> +
->> +	vsi_domain = kzalloc(sizeof(*vsi_domain), GFP_KERNEL);
->> +	if (!vsi_domain)
->> +		return NULL;
->> +
->> +	vsi_domain->dma_dev = iommu->dev;
->> +	iommu->domain = &vsi_identity_domain;
-> ?? alloc paging should not change the iommu.
->
-> Probably this belongs in vsi_iommu_probe_device if the device starts
-> up in an identity translation mode.
+> > Ugh. This ignores the gfp flags that are passed into map because you
+> > have to force atomic due to the spinlock that shouldn't be there :(
+> > This means it does not set GFP_KERNEL_ACCOUNT when required. It would
+> > be better to continue to use the passed in GFP flags but override them
+> > to atomic mode.
+> 
+> I will add a gfp_t parameter and use it like that:
+> page_table = iommu_alloc_pages_sz(gfp | GFP_ATOMIC | GFP_DMA32, SPAGE_SIZE);
 
-Your are right it useless here, I will remove it.
+This will or together GFP_ATOMIC and GFP_KERNEL, I don't think that
+works..
 
->
->> +static u32 *vsi_dte_get_page_table(struct vsi_iommu_domain *vsi_domain, dma_addr_t iova)
->> +{
->> +	u32 *page_table, *dte_addr;
->> +	u32 dte_index, dte;
->> +	phys_addr_t pt_phys;
->> +	dma_addr_t pt_dma;
->> +
->> +	assert_spin_locked(&vsi_domain->dt_lock);
->> +
->> +	dte_index = vsi_iova_dte_index(iova);
->> +	dte_addr = &vsi_domain->dt[dte_index];
->> +	dte = *dte_addr;
->> +	if (vsi_dte_is_pt_valid(dte))
->> +		goto done;
->> +
->> +	page_table = (u32 *)iommu_alloc_pages_sz(GFP_ATOMIC | GFP_DMA32, SPAGE_SIZE);
-> Unnecessary casts are not the kernel style, I saw a couple others too
->
-> Ugh. This ignores the gfp flags that are passed into map because you
-> have to force atomic due to the spinlock that shouldn't be there :(
-> This means it does not set GFP_KERNEL_ACCOUNT when required. It would
-> be better to continue to use the passed in GFP flags but override them
-> to atomic mode.
+> > > +static int vsi_iommu_attach_device(struct iommu_domain *domain,
+> > > +				   struct device *dev)
+> > > +{
+> > > +	struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+> > > +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
+> > > +	unsigned long flags;
+> > > +	int ret;
+> > > +
+> > > +	if (WARN_ON(!iommu))
+> > > +		return -ENODEV;
+> > > +
+> > > +	/* iommu already attached */
+> > > +	if (iommu->domain == domain)
+> > > +		return 0;
+> > > +
+> > > +	ret = vsi_iommu_identity_attach(&vsi_identity_domain, dev);
+> > > +	if (ret)
+> > > +		return ret;
+> > Hurm, this is actually quite bad, now that it is clear the HW is in an
+> > identity mode it is actually a security problem for VFIO to switch the
+> > translation to identity during attach_device. I'd really prefer new
+> > drivers don't make this mistake.
+> > 
+> > It seems the main thing motivating this is the fact a linked list has
+> > only a single iommu->node so you can't attach the iommu to both the
+> > new/old domain and atomically update the page table base.
+> > 
+> > Is it possible for the HW to do a blocking behavior? That would be an
+> > easy fix.. You should always be able to force this by allocating a
+> > shared top page table level during probe time and making it entirely
+> > empty while staying always in the paging mode. Maybe there is a less
+> > expensive way.
+> > 
+> > Otherwise you probably have work more like the other drivers and
+> > allocate a struct for each attachment so you can have the iommu
+> > attached two domains during the switch over and never drop to an
+> > identity mode.
+> 
+> I will remove the switch to identity domain and it will works fine.
 
-I will add a gfp_t parameter and use it like that:
-page_table = iommu_alloc_pages_sz(gfp | GFP_ATOMIC | GFP_DMA32, SPAGE_SIZE);
+You'll loose invalidations..
 
->
->> +static int vsi_iommu_identity_attach(struct iommu_domain *domain,
->> +				     struct device *dev)
->> +{
->> +	struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
->> +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
->> +	unsigned long flags;
->> +	int ret;
->> +
->> +	if (WARN_ON(!iommu))
->> +		return -ENODEV;
-> These WARN_ON's should be removed. ops are never called by the core
-> without a probed device.
+Maybe the easiest thing is to squish vsi_iommu_enable() and reorganize
+it so that the spinlock is held across the register programming and
+then you can atomically under the lock change the registers and change
+the linked list. The register write cannot fail so this is fine.
 
-ok
+This should probably also flush the iotlb inside the lock.
 
->
->> +static int vsi_iommu_attach_device(struct iommu_domain *domain,
->> +				   struct device *dev)
->> +{
->> +	struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
->> +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
->> +	unsigned long flags;
->> +	int ret;
->> +
->> +	if (WARN_ON(!iommu))
->> +		return -ENODEV;
->> +
->> +	/* iommu already attached */
->> +	if (iommu->domain == domain)
->> +		return 0;
->> +
->> +	ret = vsi_iommu_identity_attach(&vsi_identity_domain, dev);
->> +	if (ret)
->> +		return ret;
-> Hurm, this is actually quite bad, now that it is clear the HW is in an
-> identity mode it is actually a security problem for VFIO to switch the
-> translation to identity during attach_device. I'd really prefer new
-> drivers don't make this mistake.
->
-> It seems the main thing motivating this is the fact a linked list has
-> only a single iommu->node so you can't attach the iommu to both the
-> new/old domain and atomically update the page table base.
->
-> Is it possible for the HW to do a blocking behavior? That would be an
-> easy fix.. You should always be able to force this by allocating a
-> shared top page table level during probe time and making it entirely
-> empty while staying always in the paging mode. Maybe there is a less
-> expensive way.
->
-> Otherwise you probably have work more like the other drivers and
-> allocate a struct for each attachment so you can have the iommu
-> attached two domains during the switch over and never drop to an
-> identity mode.
+> > Which will cause the core code to automatically run through to
+> > vsi_iommu_disable() prior to calling vsi_iommu_release_device(), which
+> > will avoid UAF problems.
+> > 
+> > Also, should the probe functions be doing some kind of validation that
+> > there is only one struct device attached?
+> 
+> which kind of validation ?
 
-I will remove the switch to identity domain and it will works fine.
+That only one device probed to the iommu?
 
->
->> +	iommu->domain = domain;
->> +
->> +	spin_lock_irqsave(&vsi_domain->iommus_lock, flags);
->> +	list_add_tail(&iommu->node, &vsi_domain->iommus);
->> +	spin_unlock_irqrestore(&vsi_domain->iommus_lock, flags);
->> +
->> +	ret = pm_runtime_get_if_in_use(iommu->dev);
->> +	if (!ret || WARN_ON_ONCE(ret < 0))
->> +		return 0;
-> This probably should have a comment, is the idea the resume will setup
-> the domain? How does locking of iommu->domain work in that case?
->
-> Maybe the suspend resume paths should be holding the group mutex..
->
->> +	ret = vsi_iommu_enable(iommu);
->> +	if (ret)
->> +		WARN_ON(vsi_iommu_identity_attach(&vsi_identity_domain, dev));
-> Is this necessary though? vsi_iommu_enable failure cases don't change
-> the HW, and a few lines above was an identity_attach. Just delay
-> setting iommu->domain until it succeeds, and this is a simple error.
-
-I think I will change vsi_iommu_enable() prototype to:
-static int vsi_iommu_enable(struct vsi_iommu *iommu, struct iommu_domain *domain)
-and do iommu->domain = domain; at the end of the function if everything goes correctly.
-
-
-> iommu->domain = domain;
->
->
->> +static struct iommu_ops vsi_iommu_ops = {
->> +	.identity_domain = &vsi_identity_domain,
-> Add:
->
->    .release_domain = &vsi_identity_domain,
->
-> Which will cause the core code to automatically run through to
-> vsi_iommu_disable() prior to calling vsi_iommu_release_device(), which
-> will avoid UAF problems.
->
-> Also, should the probe functions be doing some kind of validation that
-> there is only one struct device attached?
-
-which kind of validation ?
-
->
-> Jason
+Jason
