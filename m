@@ -1,75 +1,57 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F258822756A;
-	Thu, 19 Jun 2025 11:16:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C04B21CA18;
+	Thu, 19 Jun 2025 11:36:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750331773; cv=none; b=Cn02xStyC0hyHXZB+tSkdHRBQVntTkFf5GIobq//SVIyYhOYWwJVgVlFob1QbAOe5wYqMNx48N2qDpGbLAU67ZMEiKUN4cIotu52VPOavYMAjxKZx0lq27+SXJMzPFmU+9FySKVHmhvlFZfJQknq1Gk64UVhpGRJR+mUcFq2w0g=
+	t=1750333017; cv=none; b=jgzifRyyJFpt1hm4YY/9daNo6ERKFNt+gBUrz11h2QMp6oTam+wZcm7ImyqAoEYFNgqKT1FeA03of1A+puHFud4RNFVlkVs7vUK2pHHIsHaMrVvv/T/s4dOaZnExdjQXV2NlCCXlRuQIPOj6b3xUWPjhXf2sRLhE0AAMLDccvpw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750331773; c=relaxed/simple;
-	bh=jea73dDCsJTbDnvK9qLSZgHnRvFrbqUdo+tNLbeXebg=;
+	s=arc-20240116; t=1750333017; c=relaxed/simple;
+	bh=Gri7/g3bAHx7LWfhuIKR98Zyl/ct+4pGh1unbJ/Tpcc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pSk8nsCAUPl63ktknm1zTf4EtcIlVPDA285sDsARt75LFA+MlXnAuTvUxxbGYeehoKzd8u6YRn5Uhe/GYmKWHwkTw8QciCpG8VsH4rIjcTWjk/EhHR3/87aXOOtkmu2BqQSd2JPf0EODDvBlF6CzdhXVFIUjk/3TN8/tY58qRbc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NpjDXNnv; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NpjDXNnv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4900C4CEF2;
-	Thu, 19 Jun 2025 11:16:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750331772;
-	bh=jea73dDCsJTbDnvK9qLSZgHnRvFrbqUdo+tNLbeXebg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=NpjDXNnvhgyelNAPwYMk/Zg6boRmLZoy4OsyTJJvgCN53kEJ9bOHRqd5nFt+KWe5A
-	 Jzx9eI/IHaFsxchjXd5uRkht7+rd0bI3lHnzNGwivbQnlb4LKJBZg0eEGvGOWoB3+t
-	 xzA5+CHkxoUeF6quvSATgOx0jdlJDhrqNDB3nLr8AAthJO+mv/t8757yq3HiOmgamE
-	 eBZm0yFwN+Awj17xBCsdjw3mTq0pMD6WTc5r+McIlDma/9a8i62AwBcpfydl3NEh39
-	 XdXxlzenW3/Oa+qXV+ktyUCxWwRwEkWoqRlblB8ZU6MBUUD7bHrRENd5Vd39PcEkSQ
-	 EKtChBTGgVlow==
-Date: Thu, 19 Jun 2025 16:39:37 +0530
-From: Naveen N Rao <naveen@kernel.org>
-To: Sean Christopherson <seanjc@google.com>
-Cc: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
-	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
-	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Sairaj Kodilkar <sarunkod@amd.com>, 
-	Vasant Hegde <vasant.hegde@amd.com>, Maxim Levitsky <mlevitsk@redhat.com>, 
-	Joao Martins <joao.m.martins@oracle.com>, Francesco Lavra <francescolavra.fl@gmail.com>, 
-	David Matlack <dmatlack@google.com>
-Subject: Re: [PATCH v3 15/62] KVM: SVM: Drop superfluous "cache" of AVIC
- Physical ID entry pointer
-Message-ID: <bknceu6nswhlz2c6lx3zc4afnrmq63dsriqctexincvs5jjk6v@7wlm2lf4czlh>
-References: <20250611224604.313496-2-seanjc@google.com>
- <20250611224604.313496-17-seanjc@google.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=vEoTj/1znnk2Or7pa3EmBtCOFxtIw4gZ/8dIyZ07tNQ1PJ4CZE6XLEnknyAiCU5RZUs+lxFre0gYOnyWim12kIbytQAhcccFKw0F/9zQmvesg/DIMOAqdBYVOik6rF75tKe8sZmA0AwtXalRCl3aYbaSWqC5HbtB7DZqySFFGrg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D254DC4CEF0;
+	Thu, 19 Jun 2025 11:36:51 +0000 (UTC)
+Date: Thu, 19 Jun 2025 12:36:49 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
+Cc: ryan.roberts@arm.com, yang@os.amperecomputing.com, will@kernel.org,
+	jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
+	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
+	james.morse@arm.com, broonie@kernel.org, ardb@kernel.org,
+	baohua@kernel.org, suzuki.poulose@arm.com, david@redhat.com,
+	jgg@ziepe.ca, nicolinc@nvidia.com, jsnitsel@redhat.com,
+	mshavit@google.com, kevin.tian@intel.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v7 3/4] iommu/arm: Add BBM Level 2 smmu feature
+Message-ID: <aFP2UXFNoLiLUpo8@arm.com>
+References: <20250617095104.6772-1-miko.lenczewski@arm.com>
+ <20250617095104.6772-4-miko.lenczewski@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250611224604.313496-17-seanjc@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250617095104.6772-4-miko.lenczewski@arm.com>
 
-On Wed, Jun 11, 2025 at 03:45:18PM -0700, Sean Christopherson wrote:
-> Drop the vCPU's pointer to its AVIC Physical ID entry, and simply index
-> the table directly.  Caching a pointer address is completely unnecessary
-> for performance, and while the field technically caches the result of the
-> pointer calculation, it's all too easy to misinterpret the name and think
-> that the field somehow caches the _data_ in the table.
+On Tue, Jun 17, 2025 at 09:51:03AM +0000, Mikołaj Lenczewski wrote:
+> For supporting BBM Level 2 for userspace mappings, we want to ensure
+> that the smmu also supports its own version of BBM Level 2. Luckily, the
+> smmu spec (IHI 0070G 3.21.1.3) is stricter than the aarch64 spec (DDI
+> 0487K.a D8.16.2), so already guarantees that no aborts are raised when
+> BBM level 2 is claimed.
 > 
-> No functional change intended.
+> Add the feature and testing for it under arm_smmu_sva_supported().
 > 
-> Suggested-by: Maxim Levitsky <mlevitsk@redhat.com>
-> Tested-by: Sairaj Kodilkar <sarunkod@amd.com>
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->  arch/x86/kvm/svm/avic.c | 27 +++++++++++++++------------
->  arch/x86/kvm/svm/svm.h  |  1 -
->  2 files changed, 15 insertions(+), 13 deletions(-)
+> Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
 
-Reviewed-by: Naveen N Rao (AMD) <naveen@kernel.org>
-
-- Naveen
-
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
