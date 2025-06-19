@@ -1,79 +1,98 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A746DF9DA
-	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 14:46:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62E1D278753;
+	Thu, 19 Jun 2025 15:02:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750344391; cv=none; b=D09lh5a13JTy1YkXGpOBf28sQiEiqtKybRd+ca0TxXUVZLSvvEmqNYE21ecrU8+3+82P4FXv3TdJTlEdeI2b2W0sz2vFwtSe6rvRgM6jxNH/zbr8PaqZ1IF6HLPr2aE+ISe3v6jmvbCqOmndp+UxJQDrJwBhx2s/NAOKi/g9eGQ=
+	t=1750345362; cv=none; b=TMvXbnz4LZA2WDHgnoy+lDMz13o35dYlCc1YnNXB5PzamfXbjv7UT+B2tYbe9/zp1SFlhsZvrGEyyqw7NlvcwRWtkpyc18Wkb2GFZQDDL44fS0rQN5ceeDQEK0UTxXtYPWfKtYfY3+DUOVjdKvAwuioIJxKcblyADfwpmJ+UFLU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750344391; c=relaxed/simple;
-	bh=FjWTlszoS/nSjiZ3mVeHygOJk11nmAc6LjxOMWHqbvs=;
+	s=arc-20240116; t=1750345362; c=relaxed/simple;
+	bh=WMUgOCPru52VAFqEHtr6GwXaBkUBQdB2s1jxRDDNld0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RuIzlNW8bdyQLpaLn07KiOYLJr5+asLux7IEuPib9htrStawQigcNbrk+hysZKRVJTlGu08HW9N8TACAMKsG7P7uawUsm4OKu4ArCMRjE77UsoSnfCmoiwnKEs8EEtZqJuVu1lwjTUCn+fqI3jVj/COn7NyVp0KKugRswjCkxiE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F1A26113E;
-	Thu, 19 Jun 2025 07:46:08 -0700 (PDT)
-Received: from e133081.arm.com (e133081.arm.com [10.1.36.98])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C68F63F66E;
-	Thu, 19 Jun 2025 07:46:23 -0700 (PDT)
-Date: Thu, 19 Jun 2025 15:46:20 +0100
-From: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: ryan.roberts@arm.com, yang@os.amperecomputing.com, will@kernel.org,
-	jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	james.morse@arm.com, broonie@kernel.org, ardb@kernel.org,
-	baohua@kernel.org, suzuki.poulose@arm.com, david@redhat.com,
-	jgg@ziepe.ca, nicolinc@nvidia.com, jsnitsel@redhat.com,
-	mshavit@google.com, kevin.tian@intel.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v7 2/4] arm64: Add BBM Level 2 cpu feature
-Message-ID: <20250619144620.GA30368@e133081.arm.com>
-References: <20250617095104.6772-1-miko.lenczewski@arm.com>
- <20250617095104.6772-3-miko.lenczewski@arm.com>
- <aFPu4SorUGlFt-2p@arm.com>
- <20250619115132.GA20673@e133081.arm.com>
- <aFQUmWC1MYhai1fo@arm.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=us6XRKv1rcUQ0Ak7HuXHBfGjcBy2mGgayG37JXky3S5mTavG8kkxnKEZdvtyCmBuDjh6kjxfCVBKANJn1wDGI9UjBNBHote+OuQE5kmz1iqMcoMY8B0SXnbObr0LlxOqzrcFhqxU3RRnLNz5K7E3lwPrK1/AqoUEACXk12XfraM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YX0TziWK; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YX0TziWK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD4C4C4CEEA;
+	Thu, 19 Jun 2025 15:02:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750345361;
+	bh=WMUgOCPru52VAFqEHtr6GwXaBkUBQdB2s1jxRDDNld0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YX0TziWK1LG1a7QkFBlLUDt9JBwOReEQ9+u42HbJfQwQFeLvUjfTgbpIedIwqhvT2
+	 IJqmHF6ev3cY1lPLf/l0TJebZiPvvp1YXfAmB7kWYNXtFJaQKyV0gz+GnlgYVWpq9W
+	 1tHjLm3EDkj/QmvXjX7lfsTq5zfABrg4eUjbIuJCFZl4iKsHdpYYLvbIAFCbteRaBr
+	 vXTKnEIXRniwycPDhoHypmCNdghR35KGofNaOBYiid1nnuLRkiNYKUbS8nmhZWuW8d
+	 uMb0oiQtuQDlpZuPqQLZn53O0B4/cdDz4G2//V8GYYoTchb7xsswUbhLbEkmiBFqtX
+	 vl+UdsYqQVbhQ==
+Date: Thu, 19 Jun 2025 16:02:36 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Sebastian Reichel <sebastian.reichel@collabora.com>
+Cc: Benjamin Gaignard <benjamin.gaignard@collabora.com>, joro@8bytes.org,
+	will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+	nicolas.dufresne@collabora.com, jgg@ziepe.ca, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, kernel@collabora.com
+Subject: Re: [PATCH v3 2/5] dt-bindings: iommu: verisilicon: Add binding for
+ VSI IOMMU
+Message-ID: <20250619-nape-iphone-0fd4f9889452@spud>
+References: <20250619131232.69208-1-benjamin.gaignard@collabora.com>
+ <20250619131232.69208-3-benjamin.gaignard@collabora.com>
+ <n5ddeogrpgctrljnxjfxqaz22qfnxsgm6ro7qihbjeyhd5br44@ojlzlz7gsuzb>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="ZsCqWODAaq6bj8Vt"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aFQUmWC1MYhai1fo@arm.com>
+In-Reply-To: <n5ddeogrpgctrljnxjfxqaz22qfnxsgm6ro7qihbjeyhd5br44@ojlzlz7gsuzb>
 
-On Thu, Jun 19, 2025 at 02:46:01PM +0100, Catalin Marinas wrote:
-> On Thu, Jun 19, 2025 at 12:51:32PM +0100, Mikołaj Lenczewski wrote:
-> > On Thu, Jun 19, 2025 at 12:05:05PM +0100, Catalin Marinas wrote:
-> > > On Tue, Jun 17, 2025 at 09:51:02AM +0000, Mikołaj Lenczewski wrote:
-> > > > +	 * whether the MIDR check passes. This is because we specifically
-> > > > +	 * care only about a stricter form of BBML2 (one guaranteeing noabort),
-> > > > +	 * and so the MMFR2 check is pointless (all implementations passing the
-> > > > +	 * MIDR check should also pass the MMFR2 check).
-> > > 
-> > > I think there's at least one implementation that behaves as
-> > > BBML2-noabort but does not have the ID field advertising BBML2.
-> > > 
-> > 
-> > Yes, I put "should" instead of "will" because of the AmpereOne
-> > situation, but I didn't want to "name and shame". Should I explicitly
-> > call this out? Or would you like me to soften the vocabulary here to imply
-> > that as long as the MIDR passes, the MMFR2 check is not important?
-> 
-> I missed the "should" part. Anyway, I would just drop the explanation
-> from "This is because...".
-> 
-> -- 
-> Catalin
 
-OK, not a problem! Will drop it.
+--ZsCqWODAaq6bj8Vt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
--- 
-Kind regards,
-Mikołaj Lenczewski
+On Thu, Jun 19, 2025 at 04:19:32PM +0200, Sebastian Reichel wrote:
+> Hi,
+>=20
+> On Thu, Jun 19, 2025 at 03:12:23PM +0200, Benjamin Gaignard wrote:
+> > +properties:
+> > +  compatible:
+> > +    items:
+> > +      - const: verisilicon,iommu
+> > +      - const: rockchip,rk3588-iommu-1.2
+>=20
+> The entries should be ordered the other way around, so that the
+> "generic" compatible is the fallback. Also the 1.2 version is from
+> Verisilicon. It does not really make sense for Rockchip. So I
+> think it should look like this:
+>=20
+> properties:
+>   compatible:
+>     items:
+>       - const: rockchip,rk3588-av1-iommu
+>       - const: verisilicon,iommu-1.2
+
+If you're not sure Benjamin, please just ask questions. There's been
+like 3 versions of this patch, soon to be 4, in like 3 days, two of
+which could have been avoided if you just asked "is this what you mean"?
+
+--ZsCqWODAaq6bj8Vt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaFQmjAAKCRB4tDGHoIJi
+0mu2AQDy10QjeZsSnzVsEXfW6RViKo+rWauSa17R3QQdXnwOggEArRSd9DXggCSu
++9Yh5AMC+TMbCL1HN15ms1SSzBkkVgY=
+=sX7T
+-----END PGP SIGNATURE-----
+
+--ZsCqWODAaq6bj8Vt--
