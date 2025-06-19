@@ -1,61 +1,57 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08FAC30E854;
-	Thu, 19 Jun 2025 19:47:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D272B30E826;
+	Thu, 19 Jun 2025 19:51:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750362446; cv=none; b=WkS37pEbeIZrZCIfn+99h3gfUTrv++/JunF1Vn8Nhx+GZBxBurZJAz0lqO76fTUO/kK8aHj0gwffccbe/Obk6yeQe3XabhbpCKMNUPjxNnBxfQ/Mzhk5MZLGB7dwvbrztwDpYw73O0SxFyLdLSIm+RL3PK9OpqCMmm3WWMdCOZo=
+	t=1750362673; cv=none; b=LHJHkh03P54ONnwZLIVP0m5VeqA23pUckW9wTRL0/B5+7gyppDJlvHFlAQsRxl6EVPT+Cjr9dru3WsbHzH5HFQ/Iynj9McKr/hQ3cFZxUH5xAp8Vij//r4nGgMkr1PL/sirrbz2HZ2Y78mLaDbSL66FqPKLNwuu1f/b2S7ySSow=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750362446; c=relaxed/simple;
-	bh=FxOqWOEttpXyX7SXQRkI+oFJay4p3Z37vnaUBCg0uew=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LKXi8hrw1PXxMuLvfSSotAHYGIYL85x59doKCBD5W/ZnYEfmflkqSBEYZT7x9MygO2BHwTQXcb/IyK957QZCSlvbdl8Plcha2+qL4V1LDmoX5U7km8rZfpQ+rpNDcgZDUmU31q+yk/wyTPQtY9OqpCqyItABEkucs4QBFEIn4tY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 547E3C4CEED;
-	Thu, 19 Jun 2025 19:47:21 +0000 (UTC)
-Date: Thu, 19 Jun 2025 20:47:18 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
-Cc: ryan.roberts@arm.com, yang@os.amperecomputing.com, will@kernel.org,
-	jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	james.morse@arm.com, broonie@kernel.org, ardb@kernel.org,
-	baohua@kernel.org, suzuki.poulose@arm.com, david@redhat.com,
-	jgg@ziepe.ca, nicolinc@nvidia.com, jsnitsel@redhat.com,
-	mshavit@google.com, kevin.tian@intel.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v7 4/4] arm64/mm: Elide tlbi in contpte_convert() under
- BBML2
-Message-ID: <aFRpRnXi3tP_iHEJ@arm.com>
-References: <20250617095104.6772-1-miko.lenczewski@arm.com>
- <20250617095104.6772-5-miko.lenczewski@arm.com>
- <aFRlDSZ2PPnHixjc@arm.com>
+	s=arc-20240116; t=1750362673; c=relaxed/simple;
+	bh=anb81OEG4hgZhk30oTpxHvHdm1Zaf844E/3J8ziG24M=;
+	h=Content-Type:MIME-Version:In-Reply-To:References:Subject:From:Cc:
+	 To:Date:Message-ID; b=rBszlvuSlp3JuBQiIpraRhsY2x/8cbVjkhqB+2dGNNiIDtn8oeyfm5LjY4Zy746VclcBtU+KoSnDpsppvz15LJ+HhacDALZEOEIvKEF5eBrFUz3W91NMDVrQ+E9wkeEcpkIqsRe52F7DiXwvCnuQne9fq+9MNJ1xadb6IOaSNY0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K+LvtMM2; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K+LvtMM2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EA69C4CEEA;
+	Thu, 19 Jun 2025 19:51:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750362672;
+	bh=anb81OEG4hgZhk30oTpxHvHdm1Zaf844E/3J8ziG24M=;
+	h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+	b=K+LvtMM2sTUk0ihGb949GgfIiwtJROqxy/0GvXgajl3JH2BYSrI125gfojR4BeQty
+	 TSYaMsKuj7A9dAq8Px2oWBMpuPTs+iVCQgSILCBtHoUUhUTaIK3xukTT3mPJurGD9L
+	 63W2AWBlQMNZjQ1BVF/VbGHlDlj/kBg9X3/a9HyKRckncEqm+XIVff0w7fN1T+xUEN
+	 WZZjvSIMYUPb+Fdq4Z6BbNfSYQHx16TkVrNsIyKiKvv+UlUoLvcD1wAgpJhHCaenzf
+	 stjgnTopwpI8eEVKLVQJEsalaRJNfAoEfklsG9EqdfaAc7LCfg9hyHOrayO+bARk5U
+	 nIaA4oxs78Mzw==
+Content-Type: text/plain; charset="utf-8"
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aFRlDSZ2PPnHixjc@arm.com>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20250612-apple-kconfig-defconfig-v1-3-0e6f9cb512c1@kernel.org>
+References: <20250612-apple-kconfig-defconfig-v1-0-0e6f9cb512c1@kernel.org> <20250612-apple-kconfig-defconfig-v1-3-0e6f9cb512c1@kernel.org>
+Subject: Re: [PATCH 03/11] clk: apple-nco: Drop default ARCH_APPLE in Kconfig
+From: Stephen Boyd <sboyd@kernel.org>
+Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org, linux-i2c@vger.kernel.org, iommu@lists.linux.dev, linux-input@vger.kernel.org, dmaengine@vger.kernel.org, linux-sound@vger.kernel.org, Sven Peter <sven@kernel.org>
+To: Alyssa Rosenzweig <alyssa@rosenzweig.io>, Andi Shyti <andi.shyti@kernel.org>, Arnd Bergmann <arnd@arndb.de>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Janne Grunau <j@jannau.net>, Jaroslav Kysela <perex@perex.cz>, Joerg Roedel <joro@8bytes.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Martin =?utf-8?q?Povi=C5=A1er?= <povik+lin@cutebit.org>, Michael Turquette <mturquette@baylibre.com>, Neal Gompa <neal@gompa.dev>, Rafael J. Wysocki <rafael@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Srinivas Kandagatla <srini@kernel.org>, Sven Peter <sven@kernel.org>, Takashi Iwai <tiwai@suse.com>, Ulf Hansson <ulf.hansson@linaro.org>, Vinod Koul <vkoul@kernel.org>, Viresh Kumar <viresh.kumar@linaro.org>, Will Deacon <will@kernel.org>
+Date: Thu, 19 Jun 2025 12:51:11 -0700
+Message-ID: <175036267134.4372.17303378707831060122@lazor>
+User-Agent: alot/0.11
 
-On Thu, Jun 19, 2025 at 08:29:24PM +0100, Catalin Marinas wrote:
-> On Tue, Jun 17, 2025 at 09:51:04AM +0000, Mikołaj Lenczewski wrote:
-> > +	if (!system_supports_bbml2_noabort())
-> > +		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
-> >  
-> >  	__set_ptes(mm, start_addr, start_ptep, pte, CONT_PTES);
-> 
-> Eliding the TLBI here is all good but looking at the overall set_ptes(),
-> why do we bother with unfold+fold for BBML2? Can we not just change
-> them in place without going through __ptep_get_and_clear()?
+Quoting Sven Peter (2025-06-12 14:11:27)
+> When the first driver for Apple Silicon was upstreamed we accidentally
+> included `default ARCH_APPLE` in its Kconfig which then spread to almost
+> every subsequent driver. As soon as ARCH_APPLE is set to y this will
+> pull in many drivers as built-ins which is not what we want.
+> Thus, drop `default ARCH_APPLE` from Kconfig.
+>=20
+> Signed-off-by: Sven Peter <sven@kernel.org>
+> ---
 
-Ah, it's unlikely that we'd be able to fold them back if only one pte in
-the range was modified, so this optimisation would very rarely/never
-trigger. So, for this patch:
-
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Applied to clk-next
