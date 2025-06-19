@@ -1,47 +1,81 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4864921FF31;
-	Thu, 19 Jun 2025 11:45:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB61822DFA5
+	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 11:47:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750333548; cv=none; b=LugsCo/TaVVqrPCS8kIAtJM2oD4vQpxwkonrZd4MXxGxGHoPK5ENYE/cAjWLd6aJ3D3cvElht2LopNfF80/X+5UpZwDrFNLBdmaPOXthuAf+CTApOZg7MdAMUdzXPVK0NU7ouogzuKgVVNWbMvTPqZhFFjVDiAOMJqB2s7FhgEU=
+	t=1750333660; cv=none; b=jm32NdcugdwPxSkjttNNlGz6EGmJ6EFfiutAQDZC36LCGnRUagBfeo6brorklzSfu08nLfN+pzEdKRcTJiYP92zdd7ESKXZ/DfJKSLyzUxtlwK3cDr8I9VAQ29mPk3NXYBHmT10aT2p0VYL/OJ+E/HS/rRwIG8pzb91m1iMQVf4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750333548; c=relaxed/simple;
-	bh=vHD3lkaGKBaHMp6CdM1wZKNCsSPyM5DrFzrbeCyGBAY=;
+	s=arc-20240116; t=1750333660; c=relaxed/simple;
+	bh=l6Xo2u+S5d7TcFeamcILKuqUG2JxPDCCMjkKufM4aVU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=b3iZUGqImRA0KJyG2SPO7VB8uEahqGHe+ABRKjzyCMpr1lcyT/Sbh52gSvrS1VmGuErtcc8nUkvgdjjqrL0xgIDIr8OVjEj6LsVAACR9zXDzSuc8vqZgKfS+VngqZH8L4m8E6n2gsmg8exQvT+k4+ebGFroKhY7KiMqB1zjdmpM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sAQ/3Twk; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=j9AZ7axmJZX+0DdQ+dvnrtd8aKe1gUj5M1sz0mc5UPDgBqk3CI43rbAY6yq/UP96rXSLFTEY2VR12oJIwe7f375vqC77ulry9SCTyPBK4JIl+PcZxDR+EJ1URLrwjzFmW7DKNtuDXR44vJDz0s+TYwoJiJi9BsJqTHaJrZmYaw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BETZxj7T; arc=none smtp.client-ip=209.85.214.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sAQ/3Twk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1D00C4CEEA;
-	Thu, 19 Jun 2025 11:45:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750333547;
-	bh=vHD3lkaGKBaHMp6CdM1wZKNCsSPyM5DrFzrbeCyGBAY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=sAQ/3TwkHh4tQny7cI0HaO5x3reXpZGwght1TNFGLHkVqT2VcLfQwYoafTXZdKJ8E
-	 pkEwQMfdQXLe9JopRJuwqPlDxDGVzpMStLRBs+PzCYRKs2iR7Tg48zGsuYtVaR1XMK
-	 P/U2Rohl3rmIQPiwEa70bQ3kqvJIz9Xbg8QHgFWkwfXfP1N8Cutc0AHM/HrVFk2qYD
-	 LQ5UZeix+K8IGaOplmtbU8EyaB2TDRexl+WovO2T/vvpbwxuxsvsESbp5bDJSesFrT
-	 9RgAJDhuRJxatju67tTg932hwF/eHBvcS+QL/D3qKE0lA7w1iyk458gB3R9tpDEqNn
-	 HwWiUp9bNwWyg==
-Date: Thu, 19 Jun 2025 17:01:30 +0530
-From: Naveen N Rao <naveen@kernel.org>
-To: Sean Christopherson <seanjc@google.com>
-Cc: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
-	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
-	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Sairaj Kodilkar <sarunkod@amd.com>, 
-	Vasant Hegde <vasant.hegde@amd.com>, Maxim Levitsky <mlevitsk@redhat.com>, 
-	Joao Martins <joao.m.martins@oracle.com>, Francesco Lavra <francescolavra.fl@gmail.com>, 
-	David Matlack <dmatlack@google.com>
-Subject: Re: [PATCH v3 17/62] KVM: SVM: Add enable_ipiv param, never set
- IsRunning if disabled
-Message-ID: <2eqjnjnszlmhlnvw6kcve4exjnpy7skguypwtmxutb2gecs3an@gcou53thsqww>
-References: <20250611224604.313496-2-seanjc@google.com>
- <20250611224604.313496-19-seanjc@google.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BETZxj7T"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-235ca5eba8cso150135ad.0
+        for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 04:47:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1750333656; x=1750938456; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=09J0YSNlS/RD38iZ7EgK8rqCHnRR998neTro1uy3CQ8=;
+        b=BETZxj7TGn5rAU35Ea6OnfRf+gBSF4WZcO1YsaXP0CWuybaUtOtJ4tRH+R+NjhvEG/
+         HCf//7vJsDlFgesILjhF5HXtEcpRxnqqXJTz/hyNIL3RgT3JlgD9Zo9xJFUJyrps4x+8
+         hwzx/VbVJaufYprzB7hWXOKEzMfgu1bJ1yUjoowFTs4NadFyDPcG+ZOUbYCkoFvfDC8n
+         HLZrQ+32YPhQr3mRvprnY2X7X9oYbZbe8yAHuFEeuwebU6KlQ9CmbRB51wZVUPqPKUNA
+         PLzv4MHqtFlsXtqkdWffJRI0ybJt6TXNmQAsWIUHUaAhxT5ke7nouR6yztzIq33isx8l
+         Cg9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750333656; x=1750938456;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=09J0YSNlS/RD38iZ7EgK8rqCHnRR998neTro1uy3CQ8=;
+        b=vYWJdBDZFmCAc8VVpd1Tn35v4sYlmb9zZXWV2nEUZHO1OgbMjeNHjfkneNuu/imk6U
+         HFGA2VzRymtys/XleVq92Q9+tTBSCoxgqe0SEB1l5Dh88mYu3i+C6pbpCWuQS8VLn02b
+         NZ3WjjDGMSMn/By2gI7TjWWlSbipEwiLbawgyruCRqB/Dyo6Sex+g5y+TrZ5vgh2Ntj2
+         jZyGBXpLi45mARxfu+mHnKCMfksWl0RoxNIccuJy024Q0hTNxSbKMmp1VvUhCakrcVGj
+         3Ao86yToVtgo+VT8+CY93L0x9QIyGs3huUCeCsJVRVsd1Rh8pwVzrH05OfSM+yFgnRyY
+         /aWA==
+X-Forwarded-Encrypted: i=1; AJvYcCVXGA1TqHLsjTRepu96kFzNnVW/rXIlSWCZvT3fadOKjTVB5bqNy38n2jz5cA1WFKF5Vjzu9Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywwh0/DKW3fEmVIFBHAezZrmlmhpFPcCQL9pOCuqnXcRsNfvGyW
+	chDx371seOnt8RoyKXdBebJm4kSVUN7ycdV069gFySAAhqhFLF5fLl3BRZv+LTxZhw==
+X-Gm-Gg: ASbGnctH10ee86Y0qMVVAgrUgYy3cuQUloWuivrJL7YbiJdErUb4uU3COhKzlp+KvNt
+	H4bXuHS+4QUKCXDpul9rb/MRuzTBsB1O5X4ObkCVbWI0pd+YEQ5+BQiwfXAyTqoOSx+2Cw5B3ST
+	uRkIiXzhlbvV9Lgv22dlIc0t4CI39aNEvq0D1EquCTZGKTJGamvqzq/yAhq3y39emmmyZWaEVsN
+	36qXDDcdDcEi3DD/qKABI0h5jIodD7BGZXYI3objv28xTPR7PysyCrsfMY2PQRTRjOhPtLMQeb2
+	i7+GhtXJ0uIKJiAd4qpdy8r/V44RC5/b6ltvqg0G0YuJ0t+KX51PttMoa9uWwb++KR+DjXqKTWd
+	6wCpyB4p8BhJljqR9QmfmZRy1AJrt9c4=
+X-Google-Smtp-Source: AGHT+IGbvEiTa5QOLk5NW8yLzYkB32wsjmC6sfvRD4CcA87KLToKCvr4HcCmPmyYeXbSKEiK4HR2MA==
+X-Received: by 2002:a17:903:2b03:b0:215:42a3:e844 with SMTP id d9443c01a7336-237ce0478f4mr2445465ad.17.1750333655627;
+        Thu, 19 Jun 2025 04:47:35 -0700 (PDT)
+Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3158a23c0c5sm1932766a91.13.2025.06.19.04.47.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Jun 2025 04:47:35 -0700 (PDT)
+Date: Thu, 19 Jun 2025 11:47:24 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
+	bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
+	peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
+	zhangzekun11@huawei.com, iommu@lists.linux.dev,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
+	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com
+Subject: Re: [PATCH v6 20/25] iommu/arm-smmu-v3-iommufd: Add hw_info to
+ impl_ops
+Message-ID: <aFP4zHIVT6epJeLb@google.com>
+References: <cover.1749884998.git.nicolinc@nvidia.com>
+ <f36b5e42bac83d0cdf5773cad1c3a44c3eaed396.1749884998.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,135 +84,62 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250611224604.313496-19-seanjc@google.com>
+In-Reply-To: <f36b5e42bac83d0cdf5773cad1c3a44c3eaed396.1749884998.git.nicolinc@nvidia.com>
 
-On Wed, Jun 11, 2025 at 03:45:20PM -0700, Sean Christopherson wrote:
-> From: Maxim Levitsky <mlevitsk@redhat.com>
+On Sat, Jun 14, 2025 at 12:14:45AM -0700, Nicolin Chen wrote:
+> This will be used by Tegra241 CMDQV implementation to report a non-default
+> HW info data.
 > 
-> Let userspace "disable" IPI virtualization for AVIC via the enable_ipiv
-> module param, by never setting IsRunning.  SVM doesn't provide a way to
-> disable IPI virtualization in hardware, but by ensuring CPUs never see
-> IsRunning=1, every IPI in the guest (except for self-IPIs) will generate a
-> VM-Exit.
-
-I think this is good to have regardless of the erratum. Not sure about VMX,
-but does it make sense to intercept writes to the self-ipi MSR as well?
-
-> 
-> To avoid setting the real IsRunning bit, while still allowing KVM to use
-> each vCPU's entry to update GA log entries, simply maintain a shadow of
-> the entry, without propagating IsRunning updates to the real table when
-> IPI virtualization is disabled.
-> 
-> Providing a way to effectively disable IPI virtualization will allow KVM
-> to safely enable AVIC on hardware that is susceptible to erratum #1235,
-> which causes hardware to sometimes fail to detect that the IsRunning bit
-> has been cleared by software.
-> 
-> Note, the table _must_ be fully populated, as broadcast IPIs skip invalid
-> entries, i.e. won't generate VM-Exit if every entry is invalid, and so
-> simply pointing the VMCB at a common dummy table won't work.
-> 
-> Alternatively, KVM could allocate a shadow of the entire table, but that'd
-> be a waste of 4KiB since the per-vCPU entry doesn't actually consume an
-> additional 8 bytes of memory (vCPU structures are large enough that they
-> are backed by order-N pages).
-> 
-> Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-> [sean: keep "entry" variables, reuse enable_ipiv, split from erratum]
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > ---
->  arch/x86/kvm/svm/avic.c | 32 ++++++++++++++++++++++++++------
->  arch/x86/kvm/svm/svm.c  |  2 ++
->  arch/x86/kvm/svm/svm.h  |  8 ++++++++
->  3 files changed, 36 insertions(+), 6 deletions(-)
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h         | 1 +
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c | 8 ++++++--
+>  2 files changed, 7 insertions(+), 2 deletions(-)
 > 
-> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> index 0c0be274d29e..48c737e1200a 100644
-> --- a/arch/x86/kvm/svm/avic.c
-> +++ b/arch/x86/kvm/svm/avic.c
-> @@ -292,6 +292,13 @@ static int avic_init_backing_page(struct kvm_vcpu *vcpu)
->  	/* Setting AVIC backing page address in the phy APIC ID table */
->  	new_entry = avic_get_backing_page_address(svm) |
->  		    AVIC_PHYSICAL_ID_ENTRY_VALID_MASK;
-> +	svm->avic_physical_id_entry = new_entry;
-> +
-> +	/*
-> +	 * Initialize the real table, as vCPUs must have a valid entry in order
-> +	 * for broadcast IPIs to function correctly (broadcast IPIs ignore
-> +	 * invalid entries, i.e. aren't guaranteed to generate a VM-Exit).
-> +	 */
->  	WRITE_ONCE(kvm_svm->avic_physical_id_table[id], new_entry);
->  
->  	return 0;
-> @@ -769,8 +776,6 @@ static int svm_ir_list_add(struct vcpu_svm *svm,
->  			   struct amd_iommu_pi_data *pi)
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 07589350b2a1..c408a035e65d 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -721,6 +721,7 @@ struct arm_smmu_impl_ops {
+>  	int (*init_structures)(struct arm_smmu_device *smmu);
+>  	struct arm_smmu_cmdq *(*get_secondary_cmdq)(
+>  		struct arm_smmu_device *smmu, struct arm_smmu_cmdq_ent *ent);
+> +	void *(*hw_info)(struct arm_smmu_device *smmu, u32 *length, u32 *type);
+>  	const size_t vsmmu_size;
+>  	const enum iommu_viommu_type vsmmu_type;
+>  	int (*vsmmu_init)(struct arm_vsmmu *vsmmu,
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> index 445365ae19e0..1c138aff73d1 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
+> @@ -10,13 +10,17 @@
+>  void *arm_smmu_hw_info(struct device *dev, u32 *length, u32 *type)
 >  {
->  	struct kvm_vcpu *vcpu = &svm->vcpu;
-> -	struct kvm *kvm = vcpu->kvm;
-> -	struct kvm_svm *kvm_svm = to_kvm_svm(kvm);
->  	unsigned long flags;
->  	u64 entry;
+>  	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+> +	const struct arm_smmu_impl_ops *impl_ops = master->smmu->impl_ops;
+>  	struct iommu_hw_info_arm_smmuv3 *info;
+>  	u32 __iomem *base_idr;
+>  	unsigned int i;
 >  
-> @@ -788,7 +793,7 @@ static int svm_ir_list_add(struct vcpu_svm *svm,
->  	 * will update the pCPU info when the vCPU awkened and/or scheduled in.
->  	 * See also avic_vcpu_load().
->  	 */
-> -	entry = READ_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id]);
-> +	entry = svm->avic_physical_id_entry;
->  	if (entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK)
->  		amd_iommu_update_ga(entry & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK,
->  				    true, pi->ir_data);
-> @@ -998,14 +1003,26 @@ void avic_vcpu_load(struct kvm_vcpu *vcpu, int cpu)
->  	 */
->  	spin_lock_irqsave(&svm->ir_list_lock, flags);
->  
-> -	entry = READ_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id]);
-> +	entry = svm->avic_physical_id_entry;
->  	WARN_ON_ONCE(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK);
->  
->  	entry &= ~AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK;
->  	entry |= (h_physical_id & AVIC_PHYSICAL_ID_ENTRY_HOST_PHYSICAL_ID_MASK);
->  	entry |= AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
->  
-> +	svm->avic_physical_id_entry = entry;
-> +
-> +	/*
-> +	 * If IPI virtualization is disabled, clear IsRunning when updating the
-> +	 * actual Physical ID table, so that the CPU never sees IsRunning=1.
-> +	 * Keep the APIC ID up-to-date in the entry to minimize the chances of
-> +	 * things going sideways if hardware peeks at the ID.
-> +	 */
-> +	if (!enable_ipiv)
-> +		entry &= ~AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
-> +
->  	WRITE_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id], entry);
-> +
->  	avic_update_iommu_vcpu_affinity(vcpu, h_physical_id, true);
->  
->  	spin_unlock_irqrestore(&svm->ir_list_lock, flags);
-> @@ -1030,7 +1047,7 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
->  	 * can't be scheduled out and thus avic_vcpu_{put,load}() can't run
->  	 * recursively.
->  	 */
-> -	entry = READ_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id]);
-> +	entry = svm->avic_physical_id_entry;
->  
->  	/* Nothing to do if IsRunning == '0' due to vCPU blocking. */
->  	if (!(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK))
-> @@ -1049,7 +1066,10 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
->  	avic_update_iommu_vcpu_affinity(vcpu, -1, 0);
->  
->  	entry &= ~AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
-> -	WRITE_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id], entry);
-> +	svm->avic_physical_id_entry = entry;
-> +
-> +	if (enable_ipiv)
-> +		WRITE_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id], entry);
+>  	if (*type != IOMMU_HW_INFO_TYPE_DEFAULT &&
+> -	    *type != IOMMU_HW_INFO_TYPE_ARM_SMMUV3)
+> -		return ERR_PTR(-EOPNOTSUPP);
+> +	    *type != IOMMU_HW_INFO_TYPE_ARM_SMMUV3) {
+> +		if (!impl_ops || !impl_ops->hw_info)
+> +			return ERR_PTR(-EOPNOTSUPP);
+> +		return impl_ops->hw_info(master->smmu, length, type);
+> +	}
 
-If enable_ipiv is false, then isRunning bit will never be set and we 
-would have bailed out earlier. So, the check for enable_ipiv can be 
-dropped here (or converted into an assert).
+I'm not sure if I get this right.. if the user (while porting a VMM or
+something) mistakenly passes *type == IOMMU_HW_INFO_TYPE_INTEL_VTD here,
+they'll get impl-specific info? I agree in that case the impl-specific
+driver needs to check the type, but shouldn't we simply return from here
+itself if the type isn't arm-smmu-v3?
 
-- Naveen
-
+>  
+>  	info = kzalloc(sizeof(*info), GFP_KERNEL);
+>  	if (!info)
+> -- 
+> 2.43.0
+> 
