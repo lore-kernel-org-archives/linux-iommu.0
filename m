@@ -1,145 +1,150 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB61822DFA5
-	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 11:47:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id DBBA7221704
+	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 11:51:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750333660; cv=none; b=jm32NdcugdwPxSkjttNNlGz6EGmJ6EFfiutAQDZC36LCGnRUagBfeo6brorklzSfu08nLfN+pzEdKRcTJiYP92zdd7ESKXZ/DfJKSLyzUxtlwK3cDr8I9VAQ29mPk3NXYBHmT10aT2p0VYL/OJ+E/HS/rRwIG8pzb91m1iMQVf4=
+	t=1750333902; cv=none; b=fz46y//c3jXzQP+PIbReUxBU1D7WbBObKslinwUt4n8oH+XNBVcHhgco7liDB2SxnREROfdZe+hhABQCV/bVRnvnKtgIG5a+4tPSdUR+5MjTDaC2kyDIl1JE1fVD5B3E/mtViNVq/tIoII+7EGnl18LN0ovcPnEmUL2Lw0dCKEs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750333660; c=relaxed/simple;
-	bh=l6Xo2u+S5d7TcFeamcILKuqUG2JxPDCCMjkKufM4aVU=;
+	s=arc-20240116; t=1750333902; c=relaxed/simple;
+	bh=cV46gl3pjPGt2Sftob+tBt5M1wyyalH/s2Lx039lCQk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j9AZ7axmJZX+0DdQ+dvnrtd8aKe1gUj5M1sz0mc5UPDgBqk3CI43rbAY6yq/UP96rXSLFTEY2VR12oJIwe7f375vqC77ulry9SCTyPBK4JIl+PcZxDR+EJ1URLrwjzFmW7DKNtuDXR44vJDz0s+TYwoJiJi9BsJqTHaJrZmYaw4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BETZxj7T; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BETZxj7T"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-235ca5eba8cso150135ad.0
-        for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 04:47:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1750333656; x=1750938456; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=09J0YSNlS/RD38iZ7EgK8rqCHnRR998neTro1uy3CQ8=;
-        b=BETZxj7TGn5rAU35Ea6OnfRf+gBSF4WZcO1YsaXP0CWuybaUtOtJ4tRH+R+NjhvEG/
-         HCf//7vJsDlFgesILjhF5HXtEcpRxnqqXJTz/hyNIL3RgT3JlgD9Zo9xJFUJyrps4x+8
-         hwzx/VbVJaufYprzB7hWXOKEzMfgu1bJ1yUjoowFTs4NadFyDPcG+ZOUbYCkoFvfDC8n
-         HLZrQ+32YPhQr3mRvprnY2X7X9oYbZbe8yAHuFEeuwebU6KlQ9CmbRB51wZVUPqPKUNA
-         PLzv4MHqtFlsXtqkdWffJRI0ybJt6TXNmQAsWIUHUaAhxT5ke7nouR6yztzIq33isx8l
-         Cg9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750333656; x=1750938456;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=09J0YSNlS/RD38iZ7EgK8rqCHnRR998neTro1uy3CQ8=;
-        b=vYWJdBDZFmCAc8VVpd1Tn35v4sYlmb9zZXWV2nEUZHO1OgbMjeNHjfkneNuu/imk6U
-         HFGA2VzRymtys/XleVq92Q9+tTBSCoxgqe0SEB1l5Dh88mYu3i+C6pbpCWuQS8VLn02b
-         NZ3WjjDGMSMn/By2gI7TjWWlSbipEwiLbawgyruCRqB/Dyo6Sex+g5y+TrZ5vgh2Ntj2
-         jZyGBXpLi45mARxfu+mHnKCMfksWl0RoxNIccuJy024Q0hTNxSbKMmp1VvUhCakrcVGj
-         3Ao86yToVtgo+VT8+CY93L0x9QIyGs3huUCeCsJVRVsd1Rh8pwVzrH05OfSM+yFgnRyY
-         /aWA==
-X-Forwarded-Encrypted: i=1; AJvYcCVXGA1TqHLsjTRepu96kFzNnVW/rXIlSWCZvT3fadOKjTVB5bqNy38n2jz5cA1WFKF5Vjzu9Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywwh0/DKW3fEmVIFBHAezZrmlmhpFPcCQL9pOCuqnXcRsNfvGyW
-	chDx371seOnt8RoyKXdBebJm4kSVUN7ycdV069gFySAAhqhFLF5fLl3BRZv+LTxZhw==
-X-Gm-Gg: ASbGnctH10ee86Y0qMVVAgrUgYy3cuQUloWuivrJL7YbiJdErUb4uU3COhKzlp+KvNt
-	H4bXuHS+4QUKCXDpul9rb/MRuzTBsB1O5X4ObkCVbWI0pd+YEQ5+BQiwfXAyTqoOSx+2Cw5B3ST
-	uRkIiXzhlbvV9Lgv22dlIc0t4CI39aNEvq0D1EquCTZGKTJGamvqzq/yAhq3y39emmmyZWaEVsN
-	36qXDDcdDcEi3DD/qKABI0h5jIodD7BGZXYI3objv28xTPR7PysyCrsfMY2PQRTRjOhPtLMQeb2
-	i7+GhtXJ0uIKJiAd4qpdy8r/V44RC5/b6ltvqg0G0YuJ0t+KX51PttMoa9uWwb++KR+DjXqKTWd
-	6wCpyB4p8BhJljqR9QmfmZRy1AJrt9c4=
-X-Google-Smtp-Source: AGHT+IGbvEiTa5QOLk5NW8yLzYkB32wsjmC6sfvRD4CcA87KLToKCvr4HcCmPmyYeXbSKEiK4HR2MA==
-X-Received: by 2002:a17:903:2b03:b0:215:42a3:e844 with SMTP id d9443c01a7336-237ce0478f4mr2445465ad.17.1750333655627;
-        Thu, 19 Jun 2025 04:47:35 -0700 (PDT)
-Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3158a23c0c5sm1932766a91.13.2025.06.19.04.47.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Jun 2025 04:47:35 -0700 (PDT)
-Date: Thu, 19 Jun 2025 11:47:24 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
-	bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
-	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-	shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
-	peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
-	zhangzekun11@huawei.com, iommu@lists.linux.dev,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
-	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com
-Subject: Re: [PATCH v6 20/25] iommu/arm-smmu-v3-iommufd: Add hw_info to
- impl_ops
-Message-ID: <aFP4zHIVT6epJeLb@google.com>
-References: <cover.1749884998.git.nicolinc@nvidia.com>
- <f36b5e42bac83d0cdf5773cad1c3a44c3eaed396.1749884998.git.nicolinc@nvidia.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=i2fRRsU2xOhWb54b+meulAwhrjaANvdWTFjYvqlEbif2dxmAbCwtmLnDFoTtNdtgXTpHP8MdIbow6VXpZhyEKdurwr+DwMak7ZGupsAGirrbsUuvjqOD2mxvJ7buqF3QE+kJiYKzNsop1Q2wi9drkywYyi2KWb2Yg1L0BGTxzcI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0570A106F;
+	Thu, 19 Jun 2025 04:51:20 -0700 (PDT)
+Received: from e133081.arm.com (unknown [10.1.28.99])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 95C8D3F66E;
+	Thu, 19 Jun 2025 04:51:35 -0700 (PDT)
+Date: Thu, 19 Jun 2025 12:51:32 +0100
+From: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: ryan.roberts@arm.com, yang@os.amperecomputing.com, will@kernel.org,
+	jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
+	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
+	james.morse@arm.com, broonie@kernel.org, ardb@kernel.org,
+	baohua@kernel.org, suzuki.poulose@arm.com, david@redhat.com,
+	jgg@ziepe.ca, nicolinc@nvidia.com, jsnitsel@redhat.com,
+	mshavit@google.com, kevin.tian@intel.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v7 2/4] arm64: Add BBM Level 2 cpu feature
+Message-ID: <20250619115132.GA20673@e133081.arm.com>
+References: <20250617095104.6772-1-miko.lenczewski@arm.com>
+ <20250617095104.6772-3-miko.lenczewski@arm.com>
+ <aFPu4SorUGlFt-2p@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <f36b5e42bac83d0cdf5773cad1c3a44c3eaed396.1749884998.git.nicolinc@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aFPu4SorUGlFt-2p@arm.com>
 
-On Sat, Jun 14, 2025 at 12:14:45AM -0700, Nicolin Chen wrote:
-> This will be used by Tegra241 CMDQV implementation to report a non-default
-> HW info data.
+On Thu, Jun 19, 2025 at 12:05:05PM +0100, Catalin Marinas wrote:
+> On Tue, Jun 17, 2025 at 09:51:02AM +0000, Mikołaj Lenczewski wrote:
+> > diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
+> > index f9c947166322..2e80ff237b96 100644
+> > --- a/arch/arm64/kernel/cpufeature.c
+> > +++ b/arch/arm64/kernel/cpufeature.c
+> > @@ -2213,6 +2213,41 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
+> >  	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
+> >  }
+> >  
+> > +static bool has_bbml2_noabort(const struct arm64_cpu_capabilities *caps, int scope)
+> > +{
+> > +	/*
+> > +	 * We want to allow usage of BBML2 in as wide a range of kernel contexts
+> > +	 * as possible. This list is therefore an allow-list of known-good
+> > +	 * implementations that both support BBML2 and additionally, fulfill the
+> > +	 * extra constraint of never generating TLB conflict aborts when using
+> > +	 * the relaxed BBML2 semantics (such aborts make use of BBML2 in certain
+> > +	 * kernel contexts difficult to prove safe against recursive aborts).
+> > +	 *
+> > +	 * Note that implementations can only be considered "known-good" if their
+> > +	 * implementors attest to the fact that the implementation never raises
+> > +	 * TLBI conflict aborts for BBML2 mapping granularity changes.
 > 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h         | 1 +
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c | 8 ++++++--
->  2 files changed, 7 insertions(+), 2 deletions(-)
+> s/TLBI/TLB/
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 07589350b2a1..c408a035e65d 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -721,6 +721,7 @@ struct arm_smmu_impl_ops {
->  	int (*init_structures)(struct arm_smmu_device *smmu);
->  	struct arm_smmu_cmdq *(*get_secondary_cmdq)(
->  		struct arm_smmu_device *smmu, struct arm_smmu_cmdq_ent *ent);
-> +	void *(*hw_info)(struct arm_smmu_device *smmu, u32 *length, u32 *type);
->  	const size_t vsmmu_size;
->  	const enum iommu_viommu_type vsmmu_type;
->  	int (*vsmmu_init)(struct arm_vsmmu *vsmmu,
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> index 445365ae19e0..1c138aff73d1 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> @@ -10,13 +10,17 @@
->  void *arm_smmu_hw_info(struct device *dev, u32 *length, u32 *type)
->  {
->  	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> +	const struct arm_smmu_impl_ops *impl_ops = master->smmu->impl_ops;
->  	struct iommu_hw_info_arm_smmuv3 *info;
->  	u32 __iomem *base_idr;
->  	unsigned int i;
->  
->  	if (*type != IOMMU_HW_INFO_TYPE_DEFAULT &&
-> -	    *type != IOMMU_HW_INFO_TYPE_ARM_SMMUV3)
-> -		return ERR_PTR(-EOPNOTSUPP);
-> +	    *type != IOMMU_HW_INFO_TYPE_ARM_SMMUV3) {
-> +		if (!impl_ops || !impl_ops->hw_info)
-> +			return ERR_PTR(-EOPNOTSUPP);
-> +		return impl_ops->hw_info(master->smmu, length, type);
-> +	}
 
-I'm not sure if I get this right.. if the user (while porting a VMM or
-something) mistakenly passes *type == IOMMU_HW_INFO_TYPE_INTEL_VTD here,
-they'll get impl-specific info? I agree in that case the impl-specific
-driver needs to check the type, but shouldn't we simply return from here
-itself if the type isn't arm-smmu-v3?
+ACK
 
->  
->  	info = kzalloc(sizeof(*info), GFP_KERNEL);
->  	if (!info)
-> -- 
-> 2.43.0
+> > +	 */
+> > +	static const struct midr_range supports_bbml2_noabort_list[] = {
+> > +		MIDR_REV_RANGE(MIDR_CORTEX_X4, 0, 3, 0xf),
+> > +		MIDR_REV_RANGE(MIDR_NEOVERSE_V3, 0, 2, 0xf),
+> > +		{}
+> > +	};
+> > +
+> > +	/* Does our cpu guarantee to never raise TLB conflict aborts? */
+> > +	if (!is_midr_in_range_list(supports_bbml2_noabort_list))
+> > +		return false;
+> > +
+> > +	/*
+> > +	 * We currently ignore the AA64_ID_MMFR2 register, and only care about
 > 
+> s/AA64_ID_MMFR2/ID_AA64MMFR2_EL1/
+> 
+
+ACK
+
+> > +	 * whether the MIDR check passes. This is because we specifically
+> > +	 * care only about a stricter form of BBML2 (one guaranteeing noabort),
+> > +	 * and so the MMFR2 check is pointless (all implementations passing the
+> > +	 * MIDR check should also pass the MMFR2 check).
+> 
+> I think there's at least one implementation that behaves as
+> BBML2-noabort but does not have the ID field advertising BBML2.
+> 
+
+Yes, I put "should" instead of "will" because of the AmpereOne
+situation, but I didn't want to "name and shame". Should I explicitly
+call this out? Or would you like me to soften the vocabulary here to imply
+that as long as the MIDR passes, the MMFR2 check is not important?
+
+> > +	 */
+> > +
+> > +	return true;
+> > +}
+> > +
+> >  #ifdef CONFIG_ARM64_PAN
+> >  static void cpu_enable_pan(const struct arm64_cpu_capabilities *__unused)
+> >  {
+> > @@ -2980,6 +3015,11 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
+> >  		.matches = has_cpuid_feature,
+> >  		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, EVT, IMP)
+> >  	},
+> > +	{
+> > +		.capability = ARM64_HAS_BBML2_NOABORT,
+> > +		.type = ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
+> > +		.matches = has_bbml2_noabort,
+> > +	},
+> >  	{
+> >  		.desc = "52-bit Virtual Addressing for KVM (LPA2)",
+> >  		.capability = ARM64_HAS_LPA2,
+> > diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
+> > index 10effd4cff6b..2bd2bfaeddcd 100644
+> > --- a/arch/arm64/tools/cpucaps
+> > +++ b/arch/arm64/tools/cpucaps
+> > @@ -45,6 +45,7 @@ HAS_LPA2
+> >  HAS_LSE_ATOMICS
+> >  HAS_MOPS
+> >  HAS_NESTED_VIRT
+> > +HAS_BBML2_NOABORT
+> >  HAS_PAN
+> >  HAS_PMUV3
+> >  HAS_S1PIE
+> 
+> Otherwise it looks fine.
+> 
+> Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+
+-- 
+Kind regards,
+Mikołaj Lenczewski
