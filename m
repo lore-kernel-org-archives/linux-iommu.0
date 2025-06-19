@@ -1,93 +1,131 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E21023E33D;
-	Thu, 19 Jun 2025 12:36:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E6072459CF
+	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 13:12:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750336569; cv=none; b=mGTMSG3BuA2psz81howi1myt+3/ZGiCxuIKCgeiqakQ6b4ML5Z9Trs/RFwuzwdnhs6iuSYVBcHpvroHceRRNIab1Kysl3PLMv3/ICw86JGagQdn9S1soV773tPahiH7lGIA2swbRleIM68pETmvQnBc1MDHwMw4ng4VDwyqq0zg=
+	t=1750338761; cv=none; b=u8ORTNZ9k9LFCGHJa2ZKP0HTMKqMAFaSj0Cw5UlQe/jT5SJTDxOxNpAAPLGHwmuY3dDaCfX+Tx+POKH5oR0ho+8NSeyJK2cZ6zSr7qyHfYFGENI4UCqbOL51Z4eB7tBc9ubUJVH4k7py4sXsr56P+k6pmhX9jHmdLqraHwu6SPA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750336569; c=relaxed/simple;
-	bh=/VJpImzxCawSJoEGcFeP8vUU7BIQ4dI0KhLFtoTx7bc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IXrzHpB/P8PIjbN/a4UWqyAzgBdHRBAGVz/Yic35gb1cIpiOPrXDKhVP8MKpT1Zo9EVSUE9jvhu+RdvT0lbwJSvnWGgHp2zgtAR6MD62YZpjbsSPNtKwflb62tzby6A4Cx9ameXzr2L7lVBsqw/Qe+Kov+raQG4rnaTEVdjz9/o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c1Y/hTGy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750338761; c=relaxed/simple;
+	bh=Ork85X//Hh9e5Enb36KwQRqXelZ7oSr9ZRWSSzEpQ7k=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=aTq/FrHVxyD1i4jAvo4AuNnsYgHksCKxKnNRQGQfggjfgEDh4sTaXRg+fe73z59zAm+XLtcHWQj1tHlEDWJ2Vc9kVznJqH8I0ONiOMRF3VyJEyYesCuMrUMC5BQGtXRhSEggvDAQygf7nHFi62Ow09QD0KkbWpSQUdgcNXxlGMg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=iTr9XAn4; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c1Y/hTGy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E63BAC4CEEF;
-	Thu, 19 Jun 2025 12:36:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750336568;
-	bh=/VJpImzxCawSJoEGcFeP8vUU7BIQ4dI0KhLFtoTx7bc=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=c1Y/hTGyqUZJGUEUZUgtVqR3Lm17+BC5/oGuq7U0MY9mRxFOpx8TksxBQFWzwj+wt
-	 jEy76Nl7yxYCsizm6p1ACyoakPYuXbaHyea8vjawdVUwUEXB67cLo2mywRNSRPnZZR
-	 jLvvtZc3noD9GTNNvl/P2i9D4sEs9Glcc1Hos1IRliawpbMyMzUncJM2dRGOg1R+wi
-	 WDyRAmJPSXOpjxL5i1hijcLxC1hQjvyrbcSxVaD0s8v3p9iR2sytHkUnZOi7d/HRBt
-	 0JzkIRCsINQ33XXUgJXpOXUCnrVVnQMN3OBk33vSIgVcw/c7e0wtYxln1z+nKqk7J2
-	 Hp79FJ1Q3IldQ==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=valley-girl.lan)
-	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.95)
-	(envelope-from <maz@kernel.org>)
-	id 1uSEUw-008Fdk-8C;
-	Thu, 19 Jun 2025 13:36:06 +0100
-From: Marc Zyngier <maz@kernel.org>
-To: Oliver Upton <oliver.upton@linux.dev>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Sean Christopherson <seanjc@google.com>
-Cc: linux-arm-kernel@lists.infradead.org,
-	kvmarm@lists.linux.dev,
-	kvm@vger.kernel.org,
-	iommu@lists.linux.dev,
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="iTr9XAn4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1750338757;
+	bh=Ork85X//Hh9e5Enb36KwQRqXelZ7oSr9ZRWSSzEpQ7k=;
+	h=From:To:Cc:Subject:Date:From;
+	b=iTr9XAn4jvk5BZir348XWWxi2oAsbZH9f8i1/44hpdnevwibIx6O4tBTxRUgIKLoM
+	 Slm1yEbcZ/hQxdJ5C6+27qnwa9PLfIpphg1pLqFPlNof60zCpTn9SBHhI4tuVJsLAE
+	 5S3Fi2SZU5uY6ab1W+L1pYX+Ml+aDksUPJlfr6hVBzIn2fTZi20nuJMRAu88oitk2n
+	 VajsAfEgnomxFXn0dGdWKYBdxshHPz3ksTXz6ddkuhu99JwHLIvG2FWs3cEmZqlHdc
+	 6Irkih+YYpOwBr6BsGkFrXch1qK7Nau4oSHr2vGrAxBEf9hDmg1LtaGEUL9z7jCenx
+	 xAvAqKWWUY4gQ==
+Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:ba4e:a6e2:6d63:7f02])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: benjamin.gaignard)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 0FC0C17E05C1;
+	Thu, 19 Jun 2025 15:12:37 +0200 (CEST)
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+To: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	heiko@sntech.de,
+	nicolas.dufresne@collabora.com,
+	jgg@ziepe.ca
+Cc: iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Sairaj Kodilkar <sarunkod@amd.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Maxim Levitsky <mlevitsk@redhat.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	Francesco Lavra <francescolavra.fl@gmail.com>,
-	David Matlack <dmatlack@google.com>
-Subject: Re: (subset) [PATCH v3 01/62] KVM: arm64: Explicitly treat routing entry type changes as changes
-Date: Thu, 19 Jun 2025 13:36:02 +0100
-Message-Id: <175033652435.3069576.5168060744496766238.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <20250611224604.313496-3-seanjc@google.com>
-References: <20250611224604.313496-2-seanjc@google.com> <20250611224604.313496-3-seanjc@google.com>
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	kernel@collabora.com,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Subject: [PATCH v3 0/5]  Add support for Verisilicon IOMMU used by media codec blocks
+Date: Thu, 19 Jun 2025 15:12:21 +0200
+Message-ID: <20250619131232.69208-1-benjamin.gaignard@collabora.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=y
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: oliver.upton@linux.dev, pbonzini@redhat.com, joro@8bytes.org, dwmw2@infradead.org, baolu.lu@linux.intel.com, seanjc@google.com, linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, sarunkod@amd.com, vasant.hegde@amd.com, mlevitsk@redhat.com, joao.m.martins@oracle.com, francescolavra.fl@gmail.com, dmatlack@google.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 
-On Wed, 11 Jun 2025 15:45:04 -0700, Sean Christopherson wrote:
-> Explicitly treat type differences as GSI routing changes, as comparing MSI
-> data between two entries could get a false negative, e.g. if userspace
-> changed the type but left the type-specific data as-
-> 
-> Note, the same bug was fixed in x86 by commit bcda70c56f3e ("KVM: x86:
-> Explicitly treat routing entry type changes as changes").
-> 
-> [...]
+Hi all,
 
-Applied to fixes, thanks!
+This patch series adds support for the Verisilicon IOMMU, which is found in front
+of hardware encoder and decoder blocks in several SoCs using Verisilicon IP. 
+A first implementation of this IOMMU is available on the Rockchip RK3588 SoC.
 
-[01/62] KVM: arm64: Explicitly treat routing entry type changes as changes
-        commit: 1fbe6861a6d9a942fb8ab8677ddf1ecb86b1af60
+Rockchip provides a driver for this hardware in their 6.1 kernel branch:
+https://github.com/rockchip-linux/kernel/blob/develop-6.1/drivers/iommu/rockchip-iommu-av1d.c
 
-Cheers,
+This series includes:
+- a new binding for the Verisilicon IOMMU
+- a basic driver implementation
+- DT updates for RK3588
 
-	M.
+The driver was forward-ported from Rockchip’s 6.1 implementation, 
+the prefix was renamed to vsi for generality, and several fixes were applied.
+
+AV1 decoding was tested using the stateless VPU driver and Fluster.
+The test results show a score of 205/239, which confirms that no regressions
+were introduced by this series.
+
+Feedback and testing welcome.
+
+changes in version 3:
+- Change compatible to "rockchip,rk3588-iommu-1.2"
+- Fix compatible in .yaml
+- Update DT and driver to use "rockchip,rk3588-iommu-1.2" compatible
+- Set CONFIG_VSI_IOMMU as module in defconfig
+- Create an identity domain for the driver
+- Fix double flush issue
+- Rework attach/detach logic
+- Simplify xlate function
+- Discover iommu device like done in ARM driver
+- Remove ARM_DMA_USE_IOMMU from Kconfig
+
+changes in version 2:
+- Add a compatible "rockchip,rk3588-av1-iommu"
+- Fix clock-names in binding 
+- Remove "vsi_mmu" label in binding example.
+- Rework driver probe function
+- Remove double flush
+- Rework driver internal structures and avoid allocate
+  in xlate function.
+- Do not touch to VPU driver anymore (path removed)
+- Add a patch to enable the driver in arm64 defconfig
+
+Benjamin Gaignard (5):
+  dt-bindings: vendor-prefixes: Add Verisilicon
+  dt-bindings: iommu: verisilicon: Add binding for VSI IOMMU
+  iommu: Add verisilicon IOMMU driver
+  arm64: dts: rockchip: Add verisilicon IOMMU node on RK3588
+  arm64: defconfig: enable Verisilicon IOMMU
+
+ .../bindings/iommu/verisilicon,iommu.yaml     |  71 ++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
+ arch/arm64/boot/dts/rockchip/rk3588-base.dtsi |  11 +
+ arch/arm64/configs/defconfig                  |   1 +
+ drivers/iommu/Kconfig                         |  11 +
+ drivers/iommu/Makefile                        |   1 +
+ drivers/iommu/vsi-iommu.c                     | 874 ++++++++++++++++++
+ 7 files changed, 971 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
+ create mode 100644 drivers/iommu/vsi-iommu.c
+
 -- 
-Without deviation from the norm, progress is not possible.
-
+2.43.0
 
