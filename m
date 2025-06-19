@@ -1,91 +1,67 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F66124EAB1
-	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 13:12:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDAA51EDA2A;
+	Thu, 19 Jun 2025 13:46:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750338765; cv=none; b=Rk0AgcisJ+gyWbuAv6qIx2s5REfFBtbdmVhBoVKL+6RW20J9e8pDRx9reDfQELEFiIqzOrOkKOOJRzUcA5XfT1gBsbREMyeegaGPQFEFtZjus7UhFwu4Mw7/fVeQQXzXpPfuZ3QGbotAoZ5fK6BDJhIQMv4yNbumkPN94fcMxYQ=
+	t=1750340768; cv=none; b=H+WqSRBYs2y/yijIJF0Emhc+ZrnDlHkaCQ5k1dhaOwV3aaYMUNaCmsUlDkUCCi9K9MFX7fZiWxi5o4S0BFiQnIEms0RqOMF4ImwpyJXY5nYdw3Shi+vAaHk67TocCFnMtSe9Oc4DxlZ8NX6gSCRnSTZ7hCdAWbzB0oLqOB8n/F8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750338765; c=relaxed/simple;
-	bh=Z78NWR7QyeVMigQFDY67KY2IgrDEq55C5grWjS25FAY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=K67k9lmXwq3fvM1gzNIc8G3l9QkoVmVMTeVhuVK6S8n5BOaIl3YNvpA8Sp7fF7vXNs9S84nzdcj51/6YI+bg77XwhxdoKdlT9Ec/7cu+aD5Z/0qM8pLpmWdDcka32VddDxYaU8pqxYMei8XbsPuFAx13z1R5UeLGjG6msbtBe/I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=U4RKiBhm; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="U4RKiBhm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1750338760;
-	bh=Z78NWR7QyeVMigQFDY67KY2IgrDEq55C5grWjS25FAY=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=U4RKiBhmILzi/KWLUQ19nHOBAApZDOYBl6lHwlG5+xdPFC2UQ4P0zxHWKYcm/qb/D
-	 amWo8qkqi2ukixzW9BsNWdCVOsTX6AFiNaBRHTu/MRMME99Mw1tEIqfDNoL9Vj0Xv/
-	 Q/TorqS+WIeoakla64ukAiBC0LD1IXWS7bAFTm0aFllGy9MvIl+bo7nHP3+0U3JyAw
-	 Sn4Xm6pQyPCJFja5K0Nz6cNnDZnJ25PF308/fmaQNanSlTrQHkg1+2aAoJtwR+wj/k
-	 sbdWHAOyajtsQxbTXobic73Jf/ydhEiosLFOIhFvuJvzSaRkHK4Z6FEJUQiMzJUizB
-	 66vyVfwvuRe9Q==
-Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:ba4e:a6e2:6d63:7f02])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: benjamin.gaignard)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id F38B217E0CF6;
-	Thu, 19 Jun 2025 15:12:39 +0200 (CEST)
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-To: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	heiko@sntech.de,
-	nicolas.dufresne@collabora.com,
-	jgg@ziepe.ca
-Cc: iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	kernel@collabora.com,
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [PATCH v3 5/5] arm64: defconfig: enable Verisilicon IOMMU
-Date: Thu, 19 Jun 2025 15:12:26 +0200
-Message-ID: <20250619131232.69208-6-benjamin.gaignard@collabora.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250619131232.69208-1-benjamin.gaignard@collabora.com>
-References: <20250619131232.69208-1-benjamin.gaignard@collabora.com>
+	s=arc-20240116; t=1750340768; c=relaxed/simple;
+	bh=CxmE7gb6BqmwL8WS1UR7jU57trPXDnvp2EPKQWRkaAM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Jf8d9fNz0Hpbh/a8IdVjpFPO0LURivWPanbJYXrKJ2ro70th0QACqpoOLlktBjcDGksFzix2nTZsA+2twFSmmCwBIAOBeMT+CeW/sGHciS7lN1cbYPhdaoVIUmXGy7ZdPCkEwW16c9crs+32FC7nGPhiV3Go3sGeyATesat09H8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B68DFC4CEEF;
+	Thu, 19 Jun 2025 13:46:03 +0000 (UTC)
+Date: Thu, 19 Jun 2025 14:46:01 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
+Cc: ryan.roberts@arm.com, yang@os.amperecomputing.com, will@kernel.org,
+	jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
+	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
+	james.morse@arm.com, broonie@kernel.org, ardb@kernel.org,
+	baohua@kernel.org, suzuki.poulose@arm.com, david@redhat.com,
+	jgg@ziepe.ca, nicolinc@nvidia.com, jsnitsel@redhat.com,
+	mshavit@google.com, kevin.tian@intel.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v7 2/4] arm64: Add BBM Level 2 cpu feature
+Message-ID: <aFQUmWC1MYhai1fo@arm.com>
+References: <20250617095104.6772-1-miko.lenczewski@arm.com>
+ <20250617095104.6772-3-miko.lenczewski@arm.com>
+ <aFPu4SorUGlFt-2p@arm.com>
+ <20250619115132.GA20673@e133081.arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250619115132.GA20673@e133081.arm.com>
 
-Enable Verisilicon IOMMU used by RK3588 AV1 hardware codec.
+On Thu, Jun 19, 2025 at 12:51:32PM +0100, Mikołaj Lenczewski wrote:
+> On Thu, Jun 19, 2025 at 12:05:05PM +0100, Catalin Marinas wrote:
+> > On Tue, Jun 17, 2025 at 09:51:02AM +0000, Mikołaj Lenczewski wrote:
+> > > +	 * whether the MIDR check passes. This is because we specifically
+> > > +	 * care only about a stricter form of BBML2 (one guaranteeing noabort),
+> > > +	 * and so the MMFR2 check is pointless (all implementations passing the
+> > > +	 * MIDR check should also pass the MMFR2 check).
+> > 
+> > I think there's at least one implementation that behaves as
+> > BBML2-noabort but does not have the ID field advertising BBML2.
+> > 
+> 
+> Yes, I put "should" instead of "will" because of the AmpereOne
+> situation, but I didn't want to "name and shame". Should I explicitly
+> call this out? Or would you like me to soften the vocabulary here to imply
+> that as long as the MIDR passes, the MMFR2 check is not important?
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
----
-changes in version 3:
-- Set CONFIG_VSI_IOMMU as module in defconfig
+I missed the "should" part. Anyway, I would just drop the explanation
+from "This is because...".
 
- arch/arm64/configs/defconfig | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
-index 897fc686e6a9..a5122990ecfa 100644
---- a/arch/arm64/configs/defconfig
-+++ b/arch/arm64/configs/defconfig
-@@ -1451,6 +1451,7 @@ CONFIG_ARM_SMMU=y
- CONFIG_ARM_SMMU_V3=y
- CONFIG_MTK_IOMMU=y
- CONFIG_QCOM_IOMMU=y
-+CONFIG_VSI_IOMMU=m
- CONFIG_REMOTEPROC=y
- CONFIG_IMX_REMOTEPROC=y
- CONFIG_MTK_SCP=m
 -- 
-2.43.0
-
+Catalin
