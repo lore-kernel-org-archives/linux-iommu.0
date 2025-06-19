@@ -1,96 +1,86 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0199E22B59F
-	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 11:52:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4DF3221FDF;
+	Thu, 19 Jun 2025 12:05:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750333924; cv=none; b=L1STLxE/AedVUmilQLJ0AuvUPUhkNl/9ggucrqL8UIIxwc3tYnT88sOg9/jJJTYQN9s2xssum/D2A4Zpw6MCIpOd6Y9N71RxIqSRIHM5FoQVtoe52Idr6if3bkEAriZ8XpQEtD4VB7yHrOoGOb3kLb97hHV78QbDYaDSBijpE54=
+	t=1750334713; cv=none; b=VHm8htiHPMNlQp31180EJRogRIUcJrWIB8nRtgFO0CrjN+TWyp5KGHm5sYjZszrXHc5YJ/gESi+LlrZHKwXVBLlPF2sjsytcanZYBNYsqNwdSDNsq8oHuqRgNeIFLriAILmjKg5EriuYimUuLkZgVXklG5BcdDKD735ewdz0AHk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750333924; c=relaxed/simple;
-	bh=YLzbhb0hLth3oKZTnV2Nw5J3HjCSrsrpaFPC53QOQIM=;
+	s=arc-20240116; t=1750334713; c=relaxed/simple;
+	bh=MunQ7b3vU7ftVz8YaGhqxMkxEggblwQtVf1vjF4zllU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q99XW7fnfyxSiViqiGgG1XQ3uGF7xtlVSzl//PzCGdbDDYt7seD31dU/fOwfKUejaM9k1y2MfvCT29dTTBBOSnsrWJj5AdCi/T2kBTujpHbaqle9XvjtqNqDU+yALOXwSdakNpTN4ou+qJW1vSqGRI/OJs0XFDn69GvUJVhKNGA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 51AE312FC;
-	Thu, 19 Jun 2025 04:51:42 -0700 (PDT)
-Received: from e133081.arm.com (unknown [10.1.28.99])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 22C1A3F66E;
-	Thu, 19 Jun 2025 04:51:57 -0700 (PDT)
-Date: Thu, 19 Jun 2025 12:51:55 +0100
-From: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
-To: Ryan Roberts <ryan.roberts@arm.com>
-Cc: yang@os.amperecomputing.com, catalin.marinas@arm.com, will@kernel.org,
-	jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	james.morse@arm.com, broonie@kernel.org, ardb@kernel.org,
-	baohua@kernel.org, suzuki.poulose@arm.com, david@redhat.com,
-	jgg@ziepe.ca, nicolinc@nvidia.com, jsnitsel@redhat.com,
-	mshavit@google.com, kevin.tian@intel.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v7 2/4] arm64: Add BBM Level 2 cpu feature
-Message-ID: <20250619115155.GB20673@e133081.arm.com>
-References: <20250617095104.6772-1-miko.lenczewski@arm.com>
- <20250617095104.6772-3-miko.lenczewski@arm.com>
- <e40989e9-9521-4915-9bae-eb7be1d4e056@arm.com>
- <20250619085701.GA10805@e133081.arm.com>
- <8c6f1c91-176c-4382-b631-79948e8de16f@arm.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZKd6QRfGhMLjotIRVlRydxIx5+A0ZRVpSH2sApxST5QTmyj1wrsmCrjo9mfWmB5nTWjW8HZdCQxD2Xws9now7xeRbosDT8ZXzDpiTFa3pUqjcSzI7Jr5lLH3EnO8J0jQvYrflB4xMpbDMebFOmhA6C1GRUReXU3oeXsNCUMrjlo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m1Q3A8RC; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m1Q3A8RC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9235EC4CEEA;
+	Thu, 19 Jun 2025 12:05:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750334712;
+	bh=MunQ7b3vU7ftVz8YaGhqxMkxEggblwQtVf1vjF4zllU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=m1Q3A8RCpduNXFnV1EPgCHLC9lFs/gD7zgVnx+w5hK9aQCHLcxE/5v5kKlafYvKOR
+	 fv11q1LKEieqxfDcNuftuxAJyk26/kCIlycJcf0bKS8u2uycArEG2sSyc6rtuwYoe3
+	 pi4j2i2NqKO/EsSQs1IkvdpDAIHT7B+gtxnX+hOCoJ4P0iX82AY4Gwq5IsvNCU48/H
+	 V1T287pkyxSnVzPkzrONol9U9ParA/pnUU+HRSpRVdsv8wfbYj7RR4Guf7fAnmdFOp
+	 eZTEzn6COjyNsbq8c7qE6VbyhnYRbr1DispP+jA8oO2nM7/7lGuuC58AfTMN8DvxCM
+	 +WMTvjs3CWfYw==
+Date: Thu, 19 Jun 2025 17:31:04 +0530
+From: Naveen N Rao <naveen@kernel.org>
+To: Sean Christopherson <seanjc@google.com>
+Cc: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, kvm@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Sairaj Kodilkar <sarunkod@amd.com>, 
+	Vasant Hegde <vasant.hegde@amd.com>, Maxim Levitsky <mlevitsk@redhat.com>, 
+	Joao Martins <joao.m.martins@oracle.com>, Francesco Lavra <francescolavra.fl@gmail.com>, 
+	David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH v3 17/62] KVM: SVM: Add enable_ipiv param, never set
+ IsRunning if disabled
+Message-ID: <fpb6l3xwyksd7s5izmrhr4hfrkmfeavbgfatokgl5sdeh75mtx@f6gcad774zeh>
+References: <20250611224604.313496-2-seanjc@google.com>
+ <20250611224604.313496-19-seanjc@google.com>
+ <2eqjnjnszlmhlnvw6kcve4exjnpy7skguypwtmxutb2gecs3an@gcou53thsqww>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8c6f1c91-176c-4382-b631-79948e8de16f@arm.com>
+In-Reply-To: <2eqjnjnszlmhlnvw6kcve4exjnpy7skguypwtmxutb2gecs3an@gcou53thsqww>
 
-On Thu, Jun 19, 2025 at 10:20:14AM +0100, Ryan Roberts wrote:
-> On 19/06/2025 09:57, Mikołaj Lenczewski wrote:
-> > On Wed, Jun 18, 2025 at 03:07:41PM +0100, Ryan Roberts wrote:
-> >> On 17/06/2025 10:51, Mikołaj Lenczewski wrote:
-> >>>  #ifdef CONFIG_ARM64_PAN
-> >>>  static void cpu_enable_pan(const struct arm64_cpu_capabilities *__unused)
-> >>>  {
-> >>> @@ -2980,6 +3015,11 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
-> >>>  		.matches = has_cpuid_feature,
-> >>>  		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, EVT, IMP)
-> >>>  	},
-> >>> +	{
-> >>> +		.capability = ARM64_HAS_BBML2_NOABORT,
-> >>> +		.type = ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
-> >>> +		.matches = has_bbml2_noabort,
-> >>
-> >> Is there a reason you have removed the .desc from this? Without it, the kernel
-> >> won't print a "detected" line when it enables the feature. Previously you had:
-> >>
-> >> 		.desc = "BBM Level 2 without conflict abort",
-> >>
-> >>> +	},
-> >>>  	{
-> >>>  		.desc = "52-bit Virtual Addressing for KVM (LPA2)",
-> >>>  		.capability = ARM64_HAS_LPA2, 
-> >>
-> > 
-> > Damn it! I completely forgot to birng that back. Yet another remenant of
-> > the NO_BBML2_NOABORT version we had discussed in v6, because a
-> > description field would have been confusing due to the double negation:
-> > 
-> > https://lore.kernel.org/all/83d1f7af-3dc7-45f9-94f3-8a0917c051d2@arm.com/
-> > 
-> > Thank you very much for spotting this Ryan! Ill return the description,
-> > and respin on Monday (unless it is possible to do this as a RESEND or
-> > similar, but I doubt it since this is technically a functional change) :/
-> > 
+On Thu, Jun 19, 2025 at 05:01:30PM +0530, Naveen N Rao wrote:
+> On Wed, Jun 11, 2025 at 03:45:20PM -0700, Sean Christopherson wrote:
+> > @@ -1030,7 +1047,7 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
+> >  	 * can't be scheduled out and thus avic_vcpu_{put,load}() can't run
+> >  	 * recursively.
+> >  	 */
+> > -	entry = READ_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id]);
+> > +	entry = svm->avic_physical_id_entry;
+> >  
+> >  	/* Nothing to do if IsRunning == '0' due to vCPU blocking. */
+> >  	if (!(entry & AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK))
+> > @@ -1049,7 +1066,10 @@ void avic_vcpu_put(struct kvm_vcpu *vcpu)
+> >  	avic_update_iommu_vcpu_affinity(vcpu, -1, 0);
+> >  
+> >  	entry &= ~AVIC_PHYSICAL_ID_ENTRY_IS_RUNNING_MASK;
+> > -	WRITE_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id], entry);
+> > +	svm->avic_physical_id_entry = entry;
+> > +
+> > +	if (enable_ipiv)
+> > +		WRITE_ONCE(kvm_svm->avic_physical_id_table[vcpu->vcpu_id], entry);
 > 
-> I think probably just send out a new version.
-> 
+> If enable_ipiv is false, then isRunning bit will never be set and we 
+> would have bailed out earlier. So, the check for enable_ipiv can be 
+> dropped here (or converted into an assert).
 
-ACK
+Ignore this, I got this wrong, sorry. The earlier check is against the 
+local copy of the physical ID table entry, which will indeed have 
+isRunning set so this is all good.
 
--- 
-Kind regards,
-Mikołaj Lenczewski
+- Naveen
+
