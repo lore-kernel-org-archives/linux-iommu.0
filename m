@@ -1,128 +1,375 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30F2E220689;
-	Thu, 19 Jun 2025 11:05:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EE67224254
+	for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 11:16:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750331112; cv=none; b=OwJJLcoPD7ShzzChdKT69hQ+NkoFP2XRbHNymOlI03BjZRYTS5SOD7SXlvHxCiGawIbkV1oQ1NuXcj69TPPuzCO/3t66h2bhhng3+QonZKE6RYoslxvYE3K1Wklr3joz0WQZsI7vb+Yic+FUd4mYLI581+fxabVXAIuMf8Rly+0=
+	t=1750331772; cv=none; b=bMgmpHV3nn47/J9nCIoVbg3f57WV6ZBGEEUFnH8O7lSeLIv4MMRPt1d8e6/0ZhG+LwwYNBTNvuHZ7j3wMhqQxe/umAsRv/LMie5BOVtI4H4E4PbU1S/Py4+vx848UxvuH6Jm3lgpYloYDlUrbkOC/QUQ65y4HDddJMdOrewk4Cs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750331112; c=relaxed/simple;
-	bh=rYhliljQfdXy0EYM3FNValqPiZeolZqxBnCCabM44Cs=;
+	s=arc-20240116; t=1750331772; c=relaxed/simple;
+	bh=JNzJ+ikVlKEZOEeS2Nkj64WAcOodHqRpXfrd0eO7bg4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QbSDDlWHmQbdnCpfEnYtIc4xsGprD8X/3Cu3+a4C0zfxPNrM3OyyvtxX7Xd5wZsUowtEc9iFGSpkAercEEgHH5Sgs5QRISmURuqFcrJx9gtUHKNhXWW5j0Luo4Js8eKdEzjv0vkDKBW2ans73Ar0STIVoYwzukNhel0XvAO/v/I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF159C4CEEA;
-	Thu, 19 Jun 2025 11:05:07 +0000 (UTC)
-Date: Thu, 19 Jun 2025 12:05:05 +0100
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: =?utf-8?Q?Miko=C5=82aj?= Lenczewski <miko.lenczewski@arm.com>
-Cc: ryan.roberts@arm.com, yang@os.amperecomputing.com, will@kernel.org,
-	jean-philippe@linaro.org, robin.murphy@arm.com, joro@8bytes.org,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	james.morse@arm.com, broonie@kernel.org, ardb@kernel.org,
-	baohua@kernel.org, suzuki.poulose@arm.com, david@redhat.com,
-	jgg@ziepe.ca, nicolinc@nvidia.com, jsnitsel@redhat.com,
-	mshavit@google.com, kevin.tian@intel.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH v7 2/4] arm64: Add BBM Level 2 cpu feature
-Message-ID: <aFPu4SorUGlFt-2p@arm.com>
-References: <20250617095104.6772-1-miko.lenczewski@arm.com>
- <20250617095104.6772-3-miko.lenczewski@arm.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=dcSdJkGLoDOVcREY7OFviKIFLKWqCjTqF7Zh4p9LHV/KSDoC8wDsPnh3HiJsNTRzBcaPMg8sth0u0VEc083e8YsMzToHmFltxe2jZnNqt/lAS/clH7/9k1NePjkPPIevyQ7apfMoAUIM4VAgBnS/cUBYXOz0/Z+p1r8nM8C08LU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Q/56bQXE; arc=none smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Q/56bQXE"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-235e389599fso173615ad.0
+        for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 04:16:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1750331769; x=1750936569; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=J0K5kka6ny6/IX+friUQkiPa7P6oG70XusQAK8iDSEg=;
+        b=Q/56bQXECKkZaBhArrHXCRonWl/aDXgRJJfL8jvCEt17xpuykBKpGrya9yG5Dtj2Tz
+         epxjvZytwO1oKN0siGIbQjZ7PYBE5SoKlbDvCWkH/hoNUSpmIPLTJRLSFl93OfcOK1Df
+         JKc+TXX6VoWRJlCojSHTYsKrEDTrTJy70rWh8kG4Y/qZ0Ow9hU9HJdVw5DDoF1QpeJt8
+         /3xjjUIxhquL6KvqU+Lm466iz5q4l5QHdGnWS7LRlmCrtcVtmgt/6ow2U9WFt5dUGfc1
+         G5yIWHycbQ6BCQIlZCVXN+0G+KdCGemSFI/gL++NuHKiWhmVXgfp+vVutQ2OwlKj4AC5
+         mTuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750331769; x=1750936569;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=J0K5kka6ny6/IX+friUQkiPa7P6oG70XusQAK8iDSEg=;
+        b=X48UjIbAvPmygx38PWrUzBOJ4KxJ6kUWwJCfH6NLOl6u0a5bWehqF5gmBEm4Bj0TlE
+         c3ef8++zuQJG1YKca8I3Uu2k+PTXV0ZGWdNrJrm/Iv1govXHj4emkEkfmRoB8MYJBoPZ
+         UavYK/o5hH/hvgMJtie8rIUlul8k91bRtpVkK2ltaRP10JBbaZ/tp2R6ITjdsmfLb8Pn
+         5CkAnPN6HivdQbrD7EBY9cYFs8qDTKpw+89sGFU+eUb9mXa+XmCv08ht3vDRH4Sbb01X
+         gGgquoNDV5oXP7OC0aHxiSnd4wnSaFISXDNwiu+ACtEh6Kdkixj9WO0GdgCZVY4jw/Px
+         +wFg==
+X-Forwarded-Encrypted: i=1; AJvYcCXdblINMLojtV0VA0CiWZhzO6p8Btryn5J6ZEvzwqvNlSQD6jsNj8hxt4UdLvw71+24yw5gGA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzM61extkuB1AOdbLRUGTbS/h602rarlKTYJAOkaei/+Y8UBJ26
+	bSiBMKvq5HGDZx/pqVKWKaWivUZvrYmLtlKdK8MDoTM+lAMow+Xwe36BZEv7gW9zyw==
+X-Gm-Gg: ASbGncs8ZMUESBL0gwDvPhwMZuOcWuJpiaXySAFpNnp1M9rUnfpPzMF/xr2zsAGHv1M
+	pbZNZtyTF2EonU6NGzdo7m4U/U0imIYV5yqFAVwFpbDP+LsWCsCzl1mEbfE/8bZ+rbwiLpr7ohq
+	dQqdjC6g3fJrGrh7HxojYegfZqIR3ylh7mijL2kbEXWl3FRtU5IXD19WEeq9kOUInTjy64kpGU0
+	524q4kwiRjaHgW10QQyxwpnU0JrOCM6umlRZuoFSUsh4HBHNhj1LJGeSblbyTG0ekU3rjfrbIb2
+	mJxWekPGhFgaoMsnrYVmhb4uHfq35QjLp3peIu9odKlz61Bidvga51vJ2zTiLZOC6nSwhZLllSu
+	1ItCPiuVk520o4vKueBCS
+X-Google-Smtp-Source: AGHT+IGLBsKU5Xvykqrr05mmuSSE5AlVTYBeY0JsehoP0OVQHYRUJcJLrjggBr4O05auamlyHYplKw==
+X-Received: by 2002:a17:903:1b64:b0:234:b2bf:e676 with SMTP id d9443c01a7336-237ce039494mr2004475ad.11.1750331769012;
+        Thu, 19 Jun 2025 04:16:09 -0700 (PDT)
+Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3158a3188a3sm1912852a91.36.2025.06.19.04.16.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Jun 2025 04:16:08 -0700 (PDT)
+Date: Thu, 19 Jun 2025 11:15:57 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
+	bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
+	peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
+	zhangzekun11@huawei.com, iommu@lists.linux.dev,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
+	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com
+Subject: Re: [PATCH v6 13/25] iommufd: Add mmap interface
+Message-ID: <aFPxbfDJZzG2EqxQ@google.com>
+References: <cover.1749884998.git.nicolinc@nvidia.com>
+ <c9929e0c9ec6f3f6348cd0c399d6fdfa9f35f973.1749884998.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250617095104.6772-3-miko.lenczewski@arm.com>
+In-Reply-To: <c9929e0c9ec6f3f6348cd0c399d6fdfa9f35f973.1749884998.git.nicolinc@nvidia.com>
 
-On Tue, Jun 17, 2025 at 09:51:02AM +0000, Mikołaj Lenczewski wrote:
-> diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-> index f9c947166322..2e80ff237b96 100644
-> --- a/arch/arm64/kernel/cpufeature.c
-> +++ b/arch/arm64/kernel/cpufeature.c
-> @@ -2213,6 +2213,41 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
->  	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
+On Sat, Jun 14, 2025 at 12:14:38AM -0700, Nicolin Chen wrote:
+> For vIOMMU passing through HW resources to user space (VMs), allowing a VM
+> to control the passed through HW directly by accessing hardware registers,
+> add an mmap infrastructure to map the physical MMIO pages to user space.
+> 
+> Maintain a maple tree per ictx as a translation table managing mmappable
+> regions, from an allocated for-user mmap offset to an iommufd_mmap struct,
+> where it stores the real PFN range for an io_remap_pfn_range call.
+> 
+> Keep track of the lifecycle of the mmappable region by taking refcount of
+> its owner, so as to enforce user space to unmap the region first before it
+> can destroy its owner object.
+> 
+> To allow an IOMMU driver to add and delete mmappable regions onto/from the
+> maple tree, add iommufd_viommu_alloc/destroy_mmap helpers.
+>
+
+The usage of mtree seems fine now, storing pfns ranges as compared to
+pointers in v3. Input validation checks, vma checks and destroy op look
+good.
+
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
+
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/iommufd/iommufd_private.h | 14 ++++++
+>  include/linux/iommufd.h                 | 42 ++++++++++++++++
+>  drivers/iommu/iommufd/driver.c          | 51 ++++++++++++++++++++
+>  drivers/iommu/iommufd/main.c            | 64 +++++++++++++++++++++++++
+>  4 files changed, 171 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+> index 1bb1c0764bc2..e8192f79fe42 100644
+> --- a/drivers/iommu/iommufd/iommufd_private.h
+> +++ b/drivers/iommu/iommufd/iommufd_private.h
+> @@ -7,6 +7,7 @@
+>  #include <linux/iommu.h>
+>  #include <linux/iommufd.h>
+>  #include <linux/iova_bitmap.h>
+> +#include <linux/maple_tree.h>
+>  #include <linux/rwsem.h>
+>  #include <linux/uaccess.h>
+>  #include <linux/xarray.h>
+> @@ -44,6 +45,7 @@ struct iommufd_ctx {
+>  	struct xarray groups;
+>  	wait_queue_head_t destroy_wait;
+>  	struct rw_semaphore ioas_creation_lock;
+> +	struct maple_tree mt_mmap;
+>  
+>  	struct mutex sw_msi_lock;
+>  	struct list_head sw_msi_list;
+> @@ -55,6 +57,18 @@ struct iommufd_ctx {
+>  	struct iommufd_ioas *vfio_ioas;
+>  };
+>  
+> +/* Entry for iommufd_ctx::mt_mmap */
+> +struct iommufd_mmap {
+> +	struct iommufd_object *owner;
+> +
+> +	/* Allocated start position in mt_mmap tree */
+> +	unsigned long startp;
+> +
+> +	/* Physical range for io_remap_pfn_range() */
+> +	unsigned long mmio_pfn;
+> +	unsigned long num_pfns;
+> +};
+> +
+>  /*
+>   * The IOVA to PFN map. The map automatically copies the PFNs into multiple
+>   * domains and permits sharing of PFNs between io_pagetable instances. This
+> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+> index acf0e8f0c630..0da9bc8f94f3 100644
+> --- a/include/linux/iommufd.h
+> +++ b/include/linux/iommufd.h
+> @@ -251,6 +251,11 @@ int _iommufd_object_depend(struct iommufd_object *obj_dependent,
+>  			   struct iommufd_object *obj_depended);
+>  void _iommufd_object_undepend(struct iommufd_object *obj_dependent,
+>  			      struct iommufd_object *obj_depended);
+> +int _iommufd_alloc_mmap(struct iommufd_ctx *ictx, struct iommufd_object *owner,
+> +			phys_addr_t mmio_addr, size_t length,
+> +			unsigned long *offset);
+> +void _iommufd_destroy_mmap(struct iommufd_ctx *ictx,
+> +			   struct iommufd_object *owner, unsigned long offset);
+>  struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
+>  				       unsigned long vdev_id);
+>  int iommufd_viommu_get_vdev_id(struct iommufd_viommu *viommu,
+> @@ -271,6 +276,20 @@ _iommufd_object_undepend(struct iommufd_object *obj_dependent,
+>  {
 >  }
 >  
-> +static bool has_bbml2_noabort(const struct arm64_cpu_capabilities *caps, int scope)
+> +static inline int _iommufd_alloc_mmap(struct iommufd_ctx *ictx,
+> +				      struct iommufd_object *owner,
+> +				      phys_addr_t mmio_addr, size_t length,
+> +				      unsigned long *offset)
 > +{
-> +	/*
-> +	 * We want to allow usage of BBML2 in as wide a range of kernel contexts
-> +	 * as possible. This list is therefore an allow-list of known-good
-> +	 * implementations that both support BBML2 and additionally, fulfill the
-> +	 * extra constraint of never generating TLB conflict aborts when using
-> +	 * the relaxed BBML2 semantics (such aborts make use of BBML2 in certain
-> +	 * kernel contexts difficult to prove safe against recursive aborts).
-> +	 *
-> +	 * Note that implementations can only be considered "known-good" if their
-> +	 * implementors attest to the fact that the implementation never raises
-> +	 * TLBI conflict aborts for BBML2 mapping granularity changes.
-
-s/TLBI/TLB/
-
-> +	 */
-> +	static const struct midr_range supports_bbml2_noabort_list[] = {
-> +		MIDR_REV_RANGE(MIDR_CORTEX_X4, 0, 3, 0xf),
-> +		MIDR_REV_RANGE(MIDR_NEOVERSE_V3, 0, 2, 0xf),
-> +		{}
-> +	};
-> +
-> +	/* Does our cpu guarantee to never raise TLB conflict aborts? */
-> +	if (!is_midr_in_range_list(supports_bbml2_noabort_list))
-> +		return false;
-> +
-> +	/*
-> +	 * We currently ignore the AA64_ID_MMFR2 register, and only care about
-
-s/AA64_ID_MMFR2/ID_AA64MMFR2_EL1/
-
-> +	 * whether the MIDR check passes. This is because we specifically
-> +	 * care only about a stricter form of BBML2 (one guaranteeing noabort),
-> +	 * and so the MMFR2 check is pointless (all implementations passing the
-> +	 * MIDR check should also pass the MMFR2 check).
-
-I think there's at least one implementation that behaves as
-BBML2-noabort but does not have the ID field advertising BBML2.
-
-> +	 */
-> +
-> +	return true;
+> +	return -EOPNOTSUPP;
 > +}
 > +
->  #ifdef CONFIG_ARM64_PAN
->  static void cpu_enable_pan(const struct arm64_cpu_capabilities *__unused)
+> +static inline void _iommufd_destroy_mmap(struct iommufd_ctx *ictx,
+> +					 struct iommufd_object *owner,
+> +					 unsigned long offset)
+> +{
+> +}
+> +
+>  static inline struct device *
+>  iommufd_viommu_find_dev(struct iommufd_viommu *viommu, unsigned long vdev_id)
 >  {
-> @@ -2980,6 +3015,11 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
->  		.matches = has_cpuid_feature,
->  		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, EVT, IMP)
->  	},
-> +	{
-> +		.capability = ARM64_HAS_BBML2_NOABORT,
-> +		.type = ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
-> +		.matches = has_bbml2_noabort,
-> +	},
->  	{
->  		.desc = "52-bit Virtual Addressing for KVM (LPA2)",
->  		.capability = ARM64_HAS_LPA2,
-> diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
-> index 10effd4cff6b..2bd2bfaeddcd 100644
-> --- a/arch/arm64/tools/cpucaps
-> +++ b/arch/arm64/tools/cpucaps
-> @@ -45,6 +45,7 @@ HAS_LPA2
->  HAS_LSE_ATOMICS
->  HAS_MOPS
->  HAS_NESTED_VIRT
-> +HAS_BBML2_NOABORT
->  HAS_PAN
->  HAS_PMUV3
->  HAS_S1PIE
-
-Otherwise it looks fine.
-
-Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+> @@ -338,4 +357,27 @@ static inline int iommufd_viommu_report_event(struct iommufd_viommu *viommu,
+>  		_iommufd_object_undepend(&dependent->member.obj,               \
+>  					 &depended->member.obj);               \
+>  	})
+> +
+> +/*
+> + * Helpers for IOMMU driver to alloc/destroy an mmapable area for a structure.
+> + *
+> + * To support an mmappable MMIO region, kernel driver must first register it to
+> + * iommufd core to allocate an @offset, during a driver-structure initialization
+> + * (e.g. viommu_init op). Then, it should report to user space this @offset and
+> + * the @length of the MMIO region for mmap syscall.
+> + */
+> +static inline int iommufd_viommu_alloc_mmap(struct iommufd_viommu *viommu,
+> +					    phys_addr_t mmio_addr,
+> +					    size_t length,
+> +					    unsigned long *offset)
+> +{
+> +	return _iommufd_alloc_mmap(viommu->ictx, &viommu->obj, mmio_addr,
+> +				   length, offset);
+> +}
+> +
+> +static inline void iommufd_viommu_destroy_mmap(struct iommufd_viommu *viommu,
+> +					       unsigned long offset)
+> +{
+> +	_iommufd_destroy_mmap(viommu->ictx, &viommu->obj, offset);
+> +}
+>  #endif
+> diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
+> index 70b7917da0cb..8220b61d8c8d 100644
+> --- a/drivers/iommu/iommufd/driver.c
+> +++ b/drivers/iommu/iommufd/driver.c
+> @@ -31,6 +31,57 @@ void _iommufd_object_undepend(struct iommufd_object *obj_dependent,
+>  }
+>  EXPORT_SYMBOL_NS_GPL(_iommufd_object_undepend, "IOMMUFD");
+>  
+> +/*
+> + * Allocate an @offset to return to user space to use for an mmap() syscall
+> + *
+> + * Driver should use a per-structure helper in include/linux/iommufd.h
+> + */
+> +int _iommufd_alloc_mmap(struct iommufd_ctx *ictx, struct iommufd_object *owner,
+> +			phys_addr_t mmio_addr, size_t length,
+> +			unsigned long *offset)
+> +{
+> +	struct iommufd_mmap *immap;
+> +	unsigned long startp;
+> +	int rc;
+> +
+> +	if (!PAGE_ALIGNED(mmio_addr))
+> +		return -EINVAL;
+> +	if (!length || !PAGE_ALIGNED(length))
+> +		return -EINVAL;
+> +
+> +	immap = kzalloc(sizeof(*immap), GFP_KERNEL);
+> +	if (!immap)
+> +		return -ENOMEM;
+> +	immap->owner = owner;
+> +	immap->num_pfns = length >> PAGE_SHIFT;
+> +	immap->mmio_pfn = mmio_addr >> PAGE_SHIFT;
+> +
+> +	rc = mtree_alloc_range(&ictx->mt_mmap, &startp, immap, immap->num_pfns,
+> +			       0, U32_MAX >> PAGE_SHIFT, GFP_KERNEL);
+> +	if (rc < 0) {
+> +		kfree(immap);
+> +		return rc;
+> +	}
+> +
+> +	immap->startp = startp;
+> +	/* mmap() syscall will right-shift the offset in vma->vm_pgoff */
+> +	*offset = startp << PAGE_SHIFT;
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_NS_GPL(_iommufd_alloc_mmap, "IOMMUFD");
+> +
+> +/* Driver should use a per-structure helper in include/linux/iommufd.h */
+> +void _iommufd_destroy_mmap(struct iommufd_ctx *ictx,
+> +			   struct iommufd_object *owner, unsigned long offset)
+> +{
+> +	struct iommufd_mmap *immap;
+> +
+> +	immap = mtree_erase(&ictx->mt_mmap, offset >> PAGE_SHIFT);
+> +	WARN_ON_ONCE(!immap || immap->owner != owner);
+> +	kfree(immap);
+> +}
+> +EXPORT_SYMBOL_NS_GPL(_iommufd_destroy_mmap, "IOMMUFD");
+> +
+>  /* Caller should xa_lock(&viommu->vdevs) to protect the return value */
+>  struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
+>  				       unsigned long vdev_id)
+> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+> index 4e8dbbfac890..339a269ebbc8 100644
+> --- a/drivers/iommu/iommufd/main.c
+> +++ b/drivers/iommu/iommufd/main.c
+> @@ -275,6 +275,7 @@ static int iommufd_fops_open(struct inode *inode, struct file *filp)
+>  	xa_init_flags(&ictx->objects, XA_FLAGS_ALLOC1 | XA_FLAGS_ACCOUNT);
+>  	xa_init(&ictx->groups);
+>  	ictx->file = filp;
+> +	mt_init_flags(&ictx->mt_mmap, MT_FLAGS_ALLOC_RANGE);
+>  	init_waitqueue_head(&ictx->destroy_wait);
+>  	mutex_init(&ictx->sw_msi_lock);
+>  	INIT_LIST_HEAD(&ictx->sw_msi_list);
+> @@ -479,11 +480,74 @@ static long iommufd_fops_ioctl(struct file *filp, unsigned int cmd,
+>  	return ret;
+>  }
+>  
+> +static void iommufd_fops_vma_open(struct vm_area_struct *vma)
+> +{
+> +	struct iommufd_mmap *immap = vma->vm_private_data;
+> +
+> +	refcount_inc(&immap->owner->users);
+> +}
+> +
+> +static void iommufd_fops_vma_close(struct vm_area_struct *vma)
+> +{
+> +	struct iommufd_mmap *immap = vma->vm_private_data;
+> +
+> +	refcount_dec(&immap->owner->users);
+> +}
+> +
+> +static const struct vm_operations_struct iommufd_vma_ops = {
+> +	.open = iommufd_fops_vma_open,
+> +	.close = iommufd_fops_vma_close,
+> +};
+> +
+> +/* The vm_pgoff must be pre-allocated from mt_mmap, and given to user space */
+> +static int iommufd_fops_mmap(struct file *filp, struct vm_area_struct *vma)
+> +{
+> +	struct iommufd_ctx *ictx = filp->private_data;
+> +	size_t length = vma->vm_end - vma->vm_start;
+> +	struct iommufd_mmap *immap;
+> +	int rc;
+> +
+> +	if (!PAGE_ALIGNED(length))
+> +		return -EINVAL;
+> +	if (!(vma->vm_flags & VM_SHARED))
+> +		return -EINVAL;
+> +	if (vma->vm_flags & VM_EXEC)
+> +		return -EPERM;
+> +
+> +	/* vma->vm_pgoff carries an index to an mtree entry (immap) */
+> +	immap = mtree_load(&ictx->mt_mmap, vma->vm_pgoff);
+> +	if (!immap)
+> +		return -ENXIO;
+> +	/*
+> +	 * mtree_load() returns the immap for any contained pgoff, only allow
+> +	 * the immap thing to be mapped
+> +	 */
+> +	if (vma->vm_pgoff != immap->startp)
+> +		return -ENXIO;
+> +	if (length != immap->num_pfns << PAGE_SHIFT)
+> +		return -ENXIO;
+> +
+> +	vma->vm_pgoff = 0;
+> +	vma->vm_private_data = immap;
+> +	vma->vm_ops = &iommufd_vma_ops;
+> +	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
+> +
+> +	rc = io_remap_pfn_range(vma, vma->vm_start, immap->mmio_pfn, length,
+> +				vma->vm_page_prot);
+> +	if (rc)
+> +		return rc;
+> +
+> +	/* vm_ops.open won't be called for mmap itself. */
+> +	refcount_inc(&immap->owner->users);
+> +	return rc;
+> +}
+> +
+>  static const struct file_operations iommufd_fops = {
+>  	.owner = THIS_MODULE,
+>  	.open = iommufd_fops_open,
+>  	.release = iommufd_fops_release,
+>  	.unlocked_ioctl = iommufd_fops_ioctl,
+> +	.mmap = iommufd_fops_mmap,
+>  };
+>  
+>  /**
+> -- 
+> 2.43.0
+> 
