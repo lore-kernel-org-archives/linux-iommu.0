@@ -1,60 +1,37 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from mail-m155116.qiye.163.com (mail-m155116.qiye.163.com [101.71.155.116])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ABE0221290
-	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 06:10:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BA6F230BFF
+	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 07:55:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.71.155.116
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750399836; cv=none; b=UpGYwM6P+OANbFg4Qr2FdxzXpwWb5bBYGC3Fc9TXhdjXitdphYrQU9/8IS+pm6KhAu6wp9QNQvZTpRG82FZZveHC5CQIElK7p2OkURGc1n6uFKS0mQK5Z170oceCynq9wYOg2JkhaTfU25o4iEAIiY6QA+4+BkUm5FSvRO0qL6A=
+	t=1750406127; cv=none; b=cwSoZ1MVYLjYKoVSr/UTKVraTX7qTLGonHEllyqaASUF9z34U1axgiC5ZikuZBeT0J3hwPdFXwDDNoi1hyvNnO8JOu7D79DFFaHsHujH5rN+deedQ5Neb+fYNX8CZEKYWzHvhgBAEOdMYem1MY3wbcpWTZRaKIayDzMLJrLjRrc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750399836; c=relaxed/simple;
-	bh=MHJanwY6fC5DvEjyFwwCVe+35ey974zZGBx0Y330LEw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=i/Pt9wLcPPBjHoRbd2Lh0grbKgQuoQTn+IDfuHqZrf5/evxQN0HTjLASfTL4iQ+ugi3XI0VaQwrft9XwNaw1Q/TtAKXZojD3QQ5xY+tgFdh4+i8Ab+pBjqDL8wuR5VDvmNPM+MYdOMZh8ZEyzs16hH4cgAHazv6fRIUy2aJkPGI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DUdaOiXp; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1750406127; c=relaxed/simple;
+	bh=w7rTv3sIl0EOEcVHEWBc/sq8wPWv37FKriyzxpLIL4U=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=PkVwpxYam9wJhLRtAnDI2ojO1Hrn79UgyLTpkddZa9M6xHl5SgIKwFTkp2/mFKAHajmi4p/yBZgHXj6hHtCoO/S0KlRuV0FWAc8kVKBVWS7pwp+mG5MVxBU3s7PcHcIj7nKyYTIeFnF/wYhotQlO4Gy8gT3VAtN8gnErrqMh8Hk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=gjphdfhh; arc=none smtp.client-ip=101.71.155.116
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DUdaOiXp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750399835; x=1781935835;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=MHJanwY6fC5DvEjyFwwCVe+35ey974zZGBx0Y330LEw=;
-  b=DUdaOiXpAIEGV214C05ePN8vd0mO89QCX/2PGDbYRPzqUlOPmA0MKloh
-   F584RjnZxhCfvl+HDAXQl+mx2PmCuBrEf7BHcKbUhZrVXsI9huaoX2wtE
-   K869IM9auY1sUyBRtI7JPqj8baMLxnJjwkGv2M7N9FKyr6+N4eiIo92ss
-   TZXBQP2uspEX3WuPtgeah/QbzNzLsV+Q7fZtgxBMRXwSEGNev2ZYY7nfs
-   mu6MaGoEVT1B9VzClqVxR8PbDijU1VW2viPuNtThcbcxW+w2r9BVpd5/Q
-   03XHbP1riFF0KRseuV/GGt8xWiHNp0aKfELw4RkMpHDKwhk9QagUKUSfu
-   A==;
-X-CSE-ConnectionGUID: aN/z/ItzSZa750bXwhD5Dg==
-X-CSE-MsgGUID: TWewbuOPRze8l4bBrQIEfg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11469"; a="52739741"
-X-IronPort-AV: E=Sophos;i="6.16,250,1744095600"; 
-   d="scan'208";a="52739741"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2025 23:10:35 -0700
-X-CSE-ConnectionGUID: xuRE8HhTQvmuxZy4+OJG+A==
-X-CSE-MsgGUID: YihgLFvVT2SqD8EF48tANA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,250,1744095600"; 
-   d="scan'208";a="150412278"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa007.fm.intel.com with ESMTP; 19 Jun 2025 23:10:32 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev,
+	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="gjphdfhh"
+Received: from xxm-vm.localdomain (unknown [58.22.7.114])
+	by smtp.qiye.163.com (Hmail) with ESMTP id 195b0d954;
+	Fri, 20 Jun 2025 15:39:57 +0800 (GMT+08:00)
+From: Simon Xue <xxm@rock-chips.com>
+To: joro@8bytes.org,
+	will@kernel.org,
+	heiko@sntech.de
+Cc: robin.murphy@arm.com,
+	iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	stable@vger.kernel.org
-Subject: [PATCH 1/1] iommu/vt-d: Enable ATS before cache tag assignment
-Date: Fri, 20 Jun 2025 14:08:02 +0800
-Message-ID: <20250620060802.3036137-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
+	Simon Xue <xxm@rock-chips.com>
+Subject: [PATCH] iommu/rockchip: prevent iommus dead loop when two masters share one IOMMU
+Date: Fri, 20 Jun 2025 15:39:45 +0800
+Message-Id: <20250620073945.572523-1-xxm@rock-chips.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,94 +39,53 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZQ0gZTVZDTxkdTBlKGB5CT0NWFRQJFh
+	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUpLSU9PT0
+	hVSktLVUpCS0tZBg++
+X-HM-Tid: 0a978c47ae6e03ackunmcb7fa41f11474ac
+X-HM-MType: 1
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PRw6EAw*HjEzGisJIx4uTE5M
+	KR8wCylVSlVKTE5LT0tOSkJDTUpCVTMWGhIXVQMDFjsJFBgQVhgTEgsIVRgUFkVZV1kSC1lBWU5D
+	VUlJVUxVSkpPWVdZCAFZQUpDTU43Bg++
+DKIM-Signature:a=rsa-sha256;
+	b=gjphdfhh0nY/GJYzRcfVJLITkUA9LoiEU4bSerBb1bo+c9pCMFJkOkidlToWHQpYlOZquPRjwWiOZiqvTHhLVt12/bdOUFOMxw8xSvgaqshVn/lgJ/QqwG+b5YBpP5q+q8zub84WTJq+3wclsYsX/ij5L4BT7MMm8nv66xVyKGU=; s=default; c=relaxed/relaxed; d=rock-chips.com; v=1;
+	bh=MIAoOLarClJnlNEVDtXTBGL5MPjZ94Xdyikr6suQV3Y=;
+	h=date:mime-version:subject:message-id:from;
 
-Commit <4f1492efb495> ("iommu/vt-d: Revert ATS timing change to fix boot
-failure") placed the enabling of ATS in the probe_finalize callback. This
-occurs after the default domain attachment, which is when the ATS cache
-tag is assigned. Consequently, the device TLB cache tag is missed when the
-domain is attached, leading to the device TLB not being invalidated in the
-iommu_unmap paths.
+When two masters share an IOMMU, calling ops->of_xlate during
+the second master's driver init may overwrite iommu->domain set
+by the first. This causes the check if (iommu->domain == domain)
+in rk_iommu_attach_device() to fail, resulting in the same
+iommu->node being added twice to &rk_domain->iommus, which can
+lead to an infinite loop in subsequent &rk_domain->iommus operations.
 
-Fix it by moving the ATS enabling to the default domain attachment path,
-ensuring ATS is enabled before the cache tag assignment.
-
-Fixes: 4f1492efb495 ("iommu/vt-d: Revert ATS timing change to fix boot failure")
-Cc: stable@vger.kernel.org
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Simon Xue <xxm@rock-chips.com>
 ---
- drivers/iommu/intel/iommu.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ drivers/iommu/rockchip-iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 7aa3932251b2..863ccb47bcca 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -54,6 +54,7 @@
- 				__DOMAIN_MAX_PFN(gaw), (unsigned long)-1))
- #define DOMAIN_MAX_ADDR(gaw)	(((uint64_t)__DOMAIN_MAX_PFN(gaw)) << VTD_PAGE_SHIFT)
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 22f74ba33a0e..e6bb3c784017 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1157,7 +1157,6 @@ static int rk_iommu_of_xlate(struct device *dev,
+ 		return -ENOMEM;
  
-+static void sm_iommu_enable_pcicaps(struct device *dev);
- static void __init check_tylersburg_isoch(void);
- static int rwbf_quirk;
+ 	data->iommu = platform_get_drvdata(iommu_dev);
+-	data->iommu->domain = &rk_identity_domain;
+ 	dev_iommu_priv_set(dev, data);
  
-@@ -1825,10 +1826,11 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
- 	else
- 		ret = domain_setup_second_level(iommu, domain, dev,
- 						IOMMU_NO_PASID, NULL);
--
- 	if (ret)
- 		goto out_block_translation;
+ 	platform_device_put(iommu_dev);
+@@ -1195,6 +1194,8 @@ static int rk_iommu_probe(struct platform_device *pdev)
+ 	if (!iommu)
+ 		return -ENOMEM;
  
-+	/* PCI ATS enablement must happen before cache tag assigning. */
-+	sm_iommu_enable_pcicaps(dev);
- 	ret = cache_tag_assign_domain(domain, dev, IOMMU_NO_PASID);
- 	if (ret)
- 		goto out_block_translation;
-@@ -3765,11 +3767,18 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
- 	return ERR_PTR(ret);
- }
- 
--static void intel_iommu_probe_finalize(struct device *dev)
-+static void sm_iommu_enable_pcicaps(struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 	struct intel_iommu *iommu = info->iommu;
- 
-+	/*
-+	 * Called only in iommu_device_register() path when iommu is
-+	 * configured in the scalable mode.
-+	 */
-+	if (!sm_supported(iommu) || READ_ONCE(iommu->iommu.ready))
-+		return;
++	iommu->domain = &rk_identity_domain;
 +
- 	/*
- 	 * The PCIe spec, in its wisdom, declares that the behaviour of the
- 	 * device is undefined if you enable PASID support after ATS support.
-@@ -3780,7 +3789,7 @@ static void intel_iommu_probe_finalize(struct device *dev)
- 	    !pci_enable_pasid(to_pci_dev(dev), info->pasid_supported & ~1))
- 		info->pasid_enabled = 1;
- 
--	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev))
-+	if (!dev_is_real_dma_subdevice(dev))
- 		iommu_enable_pci_ats(info);
- 	iommu_enable_pci_pri(info);
- }
-@@ -4309,6 +4318,7 @@ static int identity_domain_attach_dev(struct iommu_domain *domain, struct device
- 		ret = intel_pasid_setup_pass_through(iommu, dev, IOMMU_NO_PASID);
- 	else
- 		ret = device_setup_pass_through(dev);
-+	sm_iommu_enable_pcicaps(dev);
- 
- 	if (!ret)
- 		info->domain_attached = true;
-@@ -4359,7 +4369,6 @@ const struct iommu_ops intel_iommu_ops = {
- 	.domain_alloc_sva	= intel_svm_domain_alloc,
- 	.domain_alloc_nested	= intel_iommu_domain_alloc_nested,
- 	.probe_device		= intel_iommu_probe_device,
--	.probe_finalize		= intel_iommu_probe_finalize,
- 	.release_device		= intel_iommu_release_device,
- 	.get_resv_regions	= intel_iommu_get_resv_regions,
- 	.device_group		= intel_iommu_device_group,
+ 	platform_set_drvdata(pdev, iommu);
+ 	iommu->dev = dev;
+ 	iommu->num_mmu = 0;
 -- 
-2.43.0
+2.34.1
 
