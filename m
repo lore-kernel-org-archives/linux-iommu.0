@@ -1,81 +1,43 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CD8A2777E2
-	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 08:47:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750409235; cv=none; b=p5iGmXfywr3b7s1IKZx9YsxystrThiGRPHQUhG/kwRwn7qqr5RyW+ddSZuvXF+Syv6mNF50NHc1gpvXlCDAmtdodktG/tcXMTcE5uDox0EFjLvgsVN4vsYlXH1+GejRdKWxdeu68l+VDVAJqd423zFKXCB4LTa7V2KmeTUdUPD8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750409235; c=relaxed/simple;
-	bh=GXSflG0yKe1qMkQARxBDtJMWbx6VGTmIP9TUrcMoi/8=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 797D51E51D
+	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 08:58:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750409892; cv=pass; b=YYzpg3cw+y2XSHVDuuBCDYPxvSgZVk0fRFF2wogSxeHskK5t2ed9CUqg2gitjL4Q5PT34WI3njHgxCdScxtmVURpv75hHyY7aG+jwwDoufdE++Ls5wCIzhLdU17uzstoSzNAHJOn9T1tvyDYyn3cR1+fEJhzIq315uzN0fNK3a0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750409892; c=relaxed/simple;
+	bh=nd6lNJQJMgtdo/PbcsQurZxZ5lgWHwgPQW/FoSfehAM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MK/OZwuAMwZUAMuJCIx9YTejpR5CTAy0Rv7o23kei5x0xOIilrl23g/SSkP1aaEhdvXw6J6hxE5cCfMefKemEhsWg3TS0fRXur6BgGf3P11Y9b4QW9l4nMQEWVa3Q3fbIxIAYltLW0yBbOS21iK+p6KYPJ0qwtPQSMVOTg43Ddo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=ps+yobF3; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=2KO7IdIn; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=ps+yobF3; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=2KO7IdIn; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	 In-Reply-To:Content-Type; b=TtGrtChlecCwgXNTTUt6ee2gtuhcV1+WVCIdvtZpRfRG7wIXO2CUx8+rRrcZjcT1W2n0F84bN+1mwnIhcBKjsnf2r9vRy7zUpu/OGIrTnjc+DynVGyeBSR2u7O1K44m6p/XTVddCXVi+H6RFi71uBarqrLytqv0tcBvQT9mIVgY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=bwu7KTuZ; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="ps+yobF3";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="2KO7IdIn";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="ps+yobF3";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="2KO7IdIn"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id AF4E01F7E5;
-	Fri, 20 Jun 2025 08:47:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1750409230; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=ZLa5X7wxdWQ6+syLonbvAplc7z5SeBdYIpHos8aUDtw=;
-	b=ps+yobF3zHkdTu2iEURYTuyXHsEoh31LJwYLDN9XYUu48IK5m4q6Dcc3x89jQCPg3Unhzs
-	2TA2XFexBPzNnrW4GY9PifIZzgyxVSCrRvl4Y+flsWUlLjjC6mFvsj25qI4ptf3U19FNiT
-	24CYC/UYDphLDDTYrnYu7iFdYz/iKTM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1750409230;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=ZLa5X7wxdWQ6+syLonbvAplc7z5SeBdYIpHos8aUDtw=;
-	b=2KO7IdInN0irDXfRf4Vpbto9kS7Zto6G3esKyFOGYB9R4CIUQGuLK2uaGT51Lt62ErQ3cz
-	Ic1TLnqB+9sXGrAg==
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=ps+yobF3;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=2KO7IdIn
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1750409230; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=ZLa5X7wxdWQ6+syLonbvAplc7z5SeBdYIpHos8aUDtw=;
-	b=ps+yobF3zHkdTu2iEURYTuyXHsEoh31LJwYLDN9XYUu48IK5m4q6Dcc3x89jQCPg3Unhzs
-	2TA2XFexBPzNnrW4GY9PifIZzgyxVSCrRvl4Y+flsWUlLjjC6mFvsj25qI4ptf3U19FNiT
-	24CYC/UYDphLDDTYrnYu7iFdYz/iKTM=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1750409230;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=ZLa5X7wxdWQ6+syLonbvAplc7z5SeBdYIpHos8aUDtw=;
-	b=2KO7IdInN0irDXfRf4Vpbto9kS7Zto6G3esKyFOGYB9R4CIUQGuLK2uaGT51Lt62ErQ3cz
-	Ic1TLnqB+9sXGrAg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id E91EC136BA;
-	Fri, 20 Jun 2025 08:47:09 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id XizANg0gVWjSZgAAD6G6ig
-	(envelope-from <tzimmermann@suse.de>); Fri, 20 Jun 2025 08:47:09 +0000
-Message-ID: <a22ecd33-460d-41bf-920c-529645d173e3@suse.de>
-Date: Fri, 20 Jun 2025 10:47:09 +0200
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="bwu7KTuZ"
+ARC-Seal: i=1; a=rsa-sha256; t=1750409876; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=Mq3qTKsL5r1KYcnnjvTDAVHYvEnt0aED5H4duJSo8Gy3Y4nAktucNzBe6vU584JxxysFh6zFY+1XBQzt8Wxfuj+0Hf9MlqPJ46hnJKtxB+O7iAk5ZbbuCwyIf4ZyKe3tJ7++JEAO/O6TAK1u9fXinPeYZPL8l25i4m9zkaZEJds=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1750409876; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=tzBawclOe43ERcZy7J4jDWUUu+0y9y9V1OwtTyJQ2WE=; 
+	b=D/fZcV0UdEQw+4qwX4OqmMXSs0MvYyzyvYX5wxA4GQ3P4vWtjPs/S8479qdqXGVzGGHWeJA1AFeimwwgoJCP0VEX27zqV5szIQYGNZLe00Uo+LNJ2nNUeN8Pkjm2uKHMDh0eR0NNGjWvjV9Cb+V/YJANaFNiQS7sM4X9LAidunc=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
+	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1750409876;
+	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=tzBawclOe43ERcZy7J4jDWUUu+0y9y9V1OwtTyJQ2WE=;
+	b=bwu7KTuZfvrC6M7JAww+/apj+S39B/ZUCQlkizCi0hoEqEvcD8DWsicieWYggztI
+	L0Z+CZATiGgkNIGp9rJCu9TLMH9CVWL+zFBlj2KqZGvg1h4NLCsim1UcT4BCWj/Bvu5
+	7d3ebBG98Fdlk5gIDwlxGSW9js6BXjudO5fcdcqk=
+Received: by mx.zohomail.com with SMTPS id 1750409873940494.49871510642583;
+	Fri, 20 Jun 2025 01:57:53 -0700 (PDT)
+Message-ID: <e034a111-93eb-42e8-a533-46553b4f5588@collabora.com>
+Date: Fri, 20 Jun 2025 10:57:49 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,156 +45,128 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 7/7] fbcon: Make a symlink to the device selected as
- primary
-To: Mario Limonciello <superm1@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Lukas Wunner <lukas@wunner.de>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
- "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
- "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
- "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
- "open list:SOUND" <linux-sound@vger.kernel.org>,
- Daniel Dadap <ddadap@nvidia.com>,
- Mario Limonciello <mario.limonciello@amd.com>
-References: <20250620024943.3415685-1-superm1@kernel.org>
- <20250620024943.3415685-8-superm1@kernel.org>
+Subject: Re: [PATCH v3 3/5] iommu: Add verisilicon IOMMU driver
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+ nicolas.dufresne@collabora.com, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ kernel@collabora.com
+References: <20250619131232.69208-1-benjamin.gaignard@collabora.com>
+ <20250619131232.69208-4-benjamin.gaignard@collabora.com>
+ <20250619134752.GB1643390@ziepe.ca>
+ <073ffe14-d631-4a4f-8668-ddeb7d611448@collabora.com>
+ <20250619165928.GA10257@ziepe.ca>
 Content-Language: en-US
-From: Thomas Zimmermann <tzimmermann@suse.de>
-Autocrypt: addr=tzimmermann@suse.de; keydata=
- xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
- XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
- BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
- hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
- 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
- AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
- AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
- AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
- lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
- U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
- vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
- 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
- j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
- T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
- 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
- GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
- hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
- EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
- C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
- yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
- SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
- Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
- 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
-In-Reply-To: <20250620024943.3415685-8-superm1@kernel.org>
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <20250619165928.GA10257@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spamd-Result: default: False [-4.51 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	TO_DN_ALL(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	ARC_NA(0.00)[];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	RCPT_COUNT_TWELVE(0.00)[25];
-	MIME_TRACE(0.00)[0:+];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	FREEMAIL_CC(0.00)[amd.com,gmail.com,ffwll.ch,wunner.de,linux.intel.com,kernel.org,infradead.org,8bytes.org,arm.com,redhat.com,perex.cz,suse.com,lists.freedesktop.org,vger.kernel.org,lists.linux.dev,nvidia.com];
-	RCVD_TLS_ALL(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	MID_RHS_MATCH_FROM(0.00)[];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	DKIM_TRACE(0.00)[suse.de:+];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:dkim,suse.de:mid,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,amd.com:email]
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Rspamd-Queue-Id: AF4E01F7E5
-X-Rspamd-Action: no action
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Spam-Score: -4.51
+Content-Transfer-Encoding: 8bit
 
-Hi
 
-Am 20.06.25 um 04:49 schrieb Mario Limonciello:
-> From: Mario Limonciello <mario.limonciello@amd.com>
+Le 19/06/2025 à 18:59, Jason Gunthorpe a écrit :
+> On Thu, Jun 19, 2025 at 06:27:52PM +0200, Benjamin Gaignard wrote:
+>> Le 19/06/2025 à 15:47, Jason Gunthorpe a écrit :
+>>> Ugh. This ignores the gfp flags that are passed into map because you
+>>> have to force atomic due to the spinlock that shouldn't be there :(
+>>> This means it does not set GFP_KERNEL_ACCOUNT when required. It would
+>>> be better to continue to use the passed in GFP flags but override them
+>>> to atomic mode.
+>> I will add a gfp_t parameter and use it like that:
+>> page_table = iommu_alloc_pages_sz(gfp | GFP_ATOMIC | GFP_DMA32, SPAGE_SIZE);
+> This will or together GFP_ATOMIC and GFP_KERNEL, I don't think that
+> works..
+
+I have test it, I don't see conflicts or errors. What worries you ?
+
 >
-> Knowing which device is the primary device can be useful for userspace
-> to make decisions on which device to start a display server.
+>>>> +static int vsi_iommu_attach_device(struct iommu_domain *domain,
+>>>> +				   struct device *dev)
+>>>> +{
+>>>> +	struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
+>>>> +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
+>>>> +	unsigned long flags;
+>>>> +	int ret;
+>>>> +
+>>>> +	if (WARN_ON(!iommu))
+>>>> +		return -ENODEV;
+>>>> +
+>>>> +	/* iommu already attached */
+>>>> +	if (iommu->domain == domain)
+>>>> +		return 0;
+>>>> +
+>>>> +	ret = vsi_iommu_identity_attach(&vsi_identity_domain, dev);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>> Hurm, this is actually quite bad, now that it is clear the HW is in an
+>>> identity mode it is actually a security problem for VFIO to switch the
+>>> translation to identity during attach_device. I'd really prefer new
+>>> drivers don't make this mistake.
+>>>
+>>> It seems the main thing motivating this is the fact a linked list has
+>>> only a single iommu->node so you can't attach the iommu to both the
+>>> new/old domain and atomically update the page table base.
+>>>
+>>> Is it possible for the HW to do a blocking behavior? That would be an
+>>> easy fix.. You should always be able to force this by allocating a
+>>> shared top page table level during probe time and making it entirely
+>>> empty while staying always in the paging mode. Maybe there is a less
+>>> expensive way.
+>>>
+>>> Otherwise you probably have work more like the other drivers and
+>>> allocate a struct for each attachment so you can have the iommu
+>>> attached two domains during the switch over and never drop to an
+>>> identity mode.
+>> I will remove the switch to identity domain and it will works fine.
+> You'll loose invalidations..
 >
-> Create a link to that device called 'primary_device'.
+> Maybe the easiest thing is to squish vsi_iommu_enable() and reorganize
+> it so that the spinlock is held across the register programming and
+> then you can atomically under the lock change the registers and change
+> the linked list. The register write cannot fail so this is fine.
 >
-> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-> ---
->   drivers/video/fbdev/core/fbcon.c | 10 +++++++++-
->   1 file changed, 9 insertions(+), 1 deletion(-)
+> This should probably also flush the iotlb inside the lock.
+
+I will try to summarize:
+in vsi_iommu_attach_device() I should:
+- take the lock
+- do nothing if the domain is the same.
+- if iommu is used (ie powered up):
+   - update the registers to enable the iommu
+   - flush
+   - update the link list
+- update iommu->domain
+- release the lock
+
+in vsi_iommu_identity_attach() I should:
+- take the lock
+- do nothing if the domain is the same.
+- if iommu is used (ie powered up):
+   - disable the iommu
+   - remove the node from the list
+- update iommu->domain
+- release the lock
+
+vsi_iommu_suspend() and vsi_iommu_resume() will also have to take the lock
+before calling vsi_iommu_disable() and vsi_iommu_enable().
+
+sound good for you ?
+
+Do I have to switch to identity domain in vsi_iommu_attach_device()
+before applying the requested domain ?
+
+Regards,
+Benjamin
+
 >
-> diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-> index 2df48037688d1..46f21570723e5 100644
-> --- a/drivers/video/fbdev/core/fbcon.c
-> +++ b/drivers/video/fbdev/core/fbcon.c
-
-You cannot rely on this, as fbcon might be disabled entirely.
-
-Best regards
-Thomas
-
-> @@ -2934,7 +2934,7 @@ static void fbcon_select_primary(struct fb_info *info)
->   {
->   	if (!map_override && primary_device == -1 &&
->   	    video_is_primary_device(info->device)) {
-> -		int i;
-> +		int i, r;
->   
->   		printk(KERN_INFO "fbcon: %s (fb%i) is primary device\n",
->   		       info->fix.id, info->node);
-> @@ -2949,6 +2949,10 @@ static void fbcon_select_primary(struct fb_info *info)
->   			       first_fb_vc + 1, last_fb_vc + 1);
->   			info_idx = primary_device;
->   		}
-> +		r = sysfs_create_link(&fbcon_device->kobj, &info->device->kobj,
-> +				      "primary_device");
-> +		if (r)
-> +			pr_err("fbcon: Failed to link to primary device: %d\n", r);
->   	}
->   
->   }
-> @@ -3376,6 +3380,10 @@ void __init fb_console_init(void)
->   
->   void __exit fb_console_exit(void)
->   {
-> +#ifdef CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY
-> +	if (primary_device != -1)
-> +		sysfs_remove_link(&fbcon_device->kobj, "primary_device");
-> +#endif
->   #ifdef CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER
->   	console_lock();
->   	if (deferred_takeover)
-
--- 
---
-Thomas Zimmermann
-Graphics Driver Developer
-SUSE Software Solutions Germany GmbH
-Frankenstrasse 146, 90461 Nuernberg, Germany
-GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
-HRB 36809 (AG Nuernberg)
-
+>>> Which will cause the core code to automatically run through to
+>>> vsi_iommu_disable() prior to calling vsi_iommu_release_device(), which
+>>> will avoid UAF problems.
+>>>
+>>> Also, should the probe functions be doing some kind of validation that
+>>> there is only one struct device attached?
+>> which kind of validation ?
+> That only one device probed to the iommu?
+>
+> Jason
