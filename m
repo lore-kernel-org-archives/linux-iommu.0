@@ -1,91 +1,203 @@
-Received: from mail-m155116.qiye.163.com (mail-m155116.qiye.163.com [101.71.155.116])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BA6F230BFF
-	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 07:55:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.71.155.116
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 932AE233128
+	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 08:12:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750406127; cv=none; b=cwSoZ1MVYLjYKoVSr/UTKVraTX7qTLGonHEllyqaASUF9z34U1axgiC5ZikuZBeT0J3hwPdFXwDDNoi1hyvNnO8JOu7D79DFFaHsHujH5rN+deedQ5Neb+fYNX8CZEKYWzHvhgBAEOdMYem1MY3wbcpWTZRaKIayDzMLJrLjRrc=
+	t=1750407131; cv=none; b=lOJXnoAo3SPfzg1MVF2rVxBlFW47tB+dQY466pV7Qa7o2yWV8cawr9VPtmh5hi1N2Eu3+r4887OiRnhf4MO84vkYoiQeOOO8gTUbCVwzTUPf0fZB6ju0JSh+85xF7Zj+TOVBVTyidJ1C+5TNkUQXw1a5pE7QrcgN/0rf6UC8sTw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750406127; c=relaxed/simple;
-	bh=w7rTv3sIl0EOEcVHEWBc/sq8wPWv37FKriyzxpLIL4U=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=PkVwpxYam9wJhLRtAnDI2ojO1Hrn79UgyLTpkddZa9M6xHl5SgIKwFTkp2/mFKAHajmi4p/yBZgHXj6hHtCoO/S0KlRuV0FWAc8kVKBVWS7pwp+mG5MVxBU3s7PcHcIj7nKyYTIeFnF/wYhotQlO4Gy8gT3VAtN8gnErrqMh8Hk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com; spf=pass smtp.mailfrom=rock-chips.com; dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b=gjphdfhh; arc=none smtp.client-ip=101.71.155.116
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=rock-chips.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rock-chips.com
+	s=arc-20240116; t=1750407131; c=relaxed/simple;
+	bh=IySXIDBYq4vmS4M9SKbQdvVBQkhfmrzbRdY90uiaR30=;
+	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XS+ji+wcaMJaF+bEDzKKeBLSkXFUrUzrDHPx/sML6dq2rXEkYPJ92WC3bKWRzZ2MhLDRgifFq+7fL0wSTwaHd3LCOjrDcfVcrAZWSNe/tsfJAJH+rLYNQUGm1iEt4q0ARvV+xa8KeZ+uv8JOCQT5ouJZCFj+c4NOjc7juZlie28=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=OBWBCHAR; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=3h0+eN6V; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=fUdcnFrp; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=ojMZvkR0; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=rock-chips.com header.i=@rock-chips.com header.b="gjphdfhh"
-Received: from xxm-vm.localdomain (unknown [58.22.7.114])
-	by smtp.qiye.163.com (Hmail) with ESMTP id 195b0d954;
-	Fri, 20 Jun 2025 15:39:57 +0800 (GMT+08:00)
-From: Simon Xue <xxm@rock-chips.com>
-To: joro@8bytes.org,
-	will@kernel.org,
-	heiko@sntech.de
-Cc: robin.murphy@arm.com,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	Simon Xue <xxm@rock-chips.com>
-Subject: [PATCH] iommu/rockchip: prevent iommus dead loop when two masters share one IOMMU
-Date: Fri, 20 Jun 2025 15:39:45 +0800
-Message-Id: <20250620073945.572523-1-xxm@rock-chips.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="OBWBCHAR";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="3h0+eN6V";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="fUdcnFrp";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="ojMZvkR0"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id C6217211A3;
+	Fri, 20 Jun 2025 08:12:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1750407128; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=i7kW58skzLpE69Ly01+iLIrtetXieZGB3GPtzPrrsLQ=;
+	b=OBWBCHAR9o85tR369wgyeXRrAFc65qZxA6/aRe5NVKwB4M9kR+bb+FuggKiQb0RIU0vphY
+	tBOzo8rK3Zq2Otmp9uVt83ctMUVHe7qVP6aFWLkqy83ygZGV/zIKF1JK3pa5MPVlyf73rG
+	AYmAS/pLpK9KL7N0C4tglNg1969UNGU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1750407128;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=i7kW58skzLpE69Ly01+iLIrtetXieZGB3GPtzPrrsLQ=;
+	b=3h0+eN6Vr4J1zm94U2714SSwhes1Ne9QsCFk2Q8ZlvfZzxhzUpjh3Tf8odTelmjVanFuLO
+	PhRaoJzRhhX4ANDw==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=fUdcnFrp;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=ojMZvkR0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1750407127; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=i7kW58skzLpE69Ly01+iLIrtetXieZGB3GPtzPrrsLQ=;
+	b=fUdcnFrpRttKc1DoD4Ijo2314YkjuN2bOCfB8yJh4FGfmbvK4eXQWpccrPHiWyKsS40cMr
+	wcY9dBZ+37WgJJURknz7x7OovFjUbtcEprgeJLmHxNs6Od67FLgfD82K73wMu2qc3YZ1x1
+	3wOFU+fsLKjbuW3xhhvMMAX4JwrfRlk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1750407127;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=i7kW58skzLpE69Ly01+iLIrtetXieZGB3GPtzPrrsLQ=;
+	b=ojMZvkR0JXsCOSBrQFCIISZmcGBVKlmps9Qlj2W9WhozsiIHjtrQiqvVDSCfIuriNXRa/9
+	OUbu/ECvCvYcwwCw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 27CB313A9C;
+	Fri, 20 Jun 2025 08:12:07 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id QeeUCNcXVWiZXAAAD6G6ig
+	(envelope-from <tiwai@suse.de>); Fri, 20 Jun 2025 08:12:07 +0000
+Date: Fri, 20 Jun 2025 10:12:06 +0200
+Message-ID: <87msa2x25l.wl-tiwai@suse.de>
+From: Takashi Iwai <tiwai@suse.de>
+To: Mario Limonciello <superm1@kernel.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>,	Alex Deucher
+ <alexander.deucher@amd.com>,	Christian =?ISO-8859-1?Q?K=F6nig?=
+ <christian.koenig@amd.com>,	David Airlie <airlied@gmail.com>,	Simona Vetter
+ <simona@ffwll.ch>,	Lukas Wunner <lukas@wunner.de>,	Maarten Lankhorst
+ <maarten.lankhorst@linux.intel.com>,	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,	David Woodhouse
+ <dwmw2@infradead.org>,	Lu Baolu <baolu.lu@linux.intel.com>,	Joerg Roedel
+ <joro@8bytes.org>,	Will Deacon <will@kernel.org>,	Robin Murphy
+ <robin.murphy@arm.com>,	Alex Williamson <alex.williamson@redhat.com>,
+	Jaroslav Kysela <perex@perex.cz>,	Takashi Iwai <tiwai@suse.com>,
+	dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+	linux-kernel@vger.kernel.org (open list),	iommu@lists.linux.dev (open
+ list:INTEL IOMMU (VT-d)),	linux-pci@vger.kernel.org (open list:PCI
+ SUBSYSTEM),	kvm@vger.kernel.org (open list:VFIO DRIVER),
+	linux-sound@vger.kernel.org (open list:SOUND),	Daniel Dadap
+ <ddadap@nvidia.com>,	Mario Limonciello <mario.limonciello@amd.com>,	Simona
+ Vetter <simona.vetter@ffwll.ch>,	Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH v3 5/7] ALSA: hda: Use pci_is_display()
+In-Reply-To: <20250620024943.3415685-6-superm1@kernel.org>
+References: <20250620024943.3415685-1-superm1@kernel.org>
+	<20250620024943.3415685-6-superm1@kernel.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-	tZV1koWUFDSUNOT01LS0k3V1ktWUFJV1kPCRoVCBIfWUFZQ0gZTVZDTxkdTBlKGB5CT0NWFRQJFh
-	oXVRMBExYaEhckFA4PWVdZGBILWUFZTkNVSUlVTFVKSk9ZV1kWGg8SFR0UWUFZT0tIVUpLSU9PT0
-	hVSktLVUpCS0tZBg++
-X-HM-Tid: 0a978c47ae6e03ackunmcb7fa41f11474ac
-X-HM-MType: 1
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PRw6EAw*HjEzGisJIx4uTE5M
-	KR8wCylVSlVKTE5LT0tOSkJDTUpCVTMWGhIXVQMDFjsJFBgQVhgTEgsIVRgUFkVZV1kSC1lBWU5D
-	VUlJVUxVSkpPWVdZCAFZQUpDTU43Bg++
-DKIM-Signature:a=rsa-sha256;
-	b=gjphdfhh0nY/GJYzRcfVJLITkUA9LoiEU4bSerBb1bo+c9pCMFJkOkidlToWHQpYlOZquPRjwWiOZiqvTHhLVt12/bdOUFOMxw8xSvgaqshVn/lgJ/QqwG+b5YBpP5q+q8zub84WTJq+3wclsYsX/ij5L4BT7MMm8nv66xVyKGU=; s=default; c=relaxed/relaxed; d=rock-chips.com; v=1;
-	bh=MIAoOLarClJnlNEVDtXTBGL5MPjZ94Xdyikr6suQV3Y=;
-	h=date:mime-version:subject:message-id:from;
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-Spamd-Result: default: False [-3.51 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	MID_CONTAINS_FROM(1.00)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	ARC_NA(0.00)[];
+	RCPT_COUNT_TWELVE(0.00)[21];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	MIME_TRACE(0.00)[0:+];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	FREEMAIL_CC(0.00)[google.com,amd.com,gmail.com,ffwll.ch,wunner.de,linux.intel.com,kernel.org,suse.de,infradead.org,8bytes.org,arm.com,redhat.com,perex.cz,suse.com,lists.freedesktop.org,vger.kernel.org,lists.linux.dev];
+	RCVD_TLS_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	TO_DN_SOME(0.00)[];
+	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	DKIM_TRACE(0.00)[suse.de:+];
+	R_RATELIMIT(0.00)[to_ip_from(RL19doqawnwjg494dhy1bqfax3)];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim,suse.de:mid,suse.de:email,nvidia.com:email]
+X-Spam-Level: 
+X-Spam-Flag: NO
+X-Rspamd-Queue-Id: C6217211A3
+X-Rspamd-Action: no action
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Score: -3.51
 
-When two masters share an IOMMU, calling ops->of_xlate during
-the second master's driver init may overwrite iommu->domain set
-by the first. This causes the check if (iommu->domain == domain)
-in rk_iommu_attach_device() to fail, resulting in the same
-iommu->node being added twice to &rk_domain->iommus, which can
-lead to an infinite loop in subsequent &rk_domain->iommus operations.
+On Fri, 20 Jun 2025 04:49:41 +0200,
+Mario Limonciello wrote:
+> 
+> From: Mario Limonciello <mario.limonciello@amd.com>
+> 
+> The inline pci_is_display() helper does the same thing.  Use it.
+> 
+> Reviewed-by: Daniel Dadap <ddadap@nvidia.com>
+> Reviewed-by: Simona Vetter <simona.vetter@ffwll.ch>
+> Suggested-by: Bjorn Helgaas <helgaas@kernel.org>
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
 
-Signed-off-by: Simon Xue <xxm@rock-chips.com>
----
- drivers/iommu/rockchip-iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Reviewed-by: Takashi Iwai <tiwai@suse.de>
 
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index 22f74ba33a0e..e6bb3c784017 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1157,7 +1157,6 @@ static int rk_iommu_of_xlate(struct device *dev,
- 		return -ENOMEM;
- 
- 	data->iommu = platform_get_drvdata(iommu_dev);
--	data->iommu->domain = &rk_identity_domain;
- 	dev_iommu_priv_set(dev, data);
- 
- 	platform_device_put(iommu_dev);
-@@ -1195,6 +1194,8 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (!iommu)
- 		return -ENOMEM;
- 
-+	iommu->domain = &rk_identity_domain;
-+
- 	platform_set_drvdata(pdev, iommu);
- 	iommu->dev = dev;
- 	iommu->num_mmu = 0;
--- 
-2.34.1
 
+thanks,
+
+Takashi
+
+> ---
+>  sound/hda/hdac_i915.c     | 2 +-
+>  sound/pci/hda/hda_intel.c | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/sound/hda/hdac_i915.c b/sound/hda/hdac_i915.c
+> index e9425213320ea..44438c799f957 100644
+> --- a/sound/hda/hdac_i915.c
+> +++ b/sound/hda/hdac_i915.c
+> @@ -155,7 +155,7 @@ static int i915_gfx_present(struct pci_dev *hdac_pci)
+>  
+>  	for_each_pci_dev(display_dev) {
+>  		if (display_dev->vendor != PCI_VENDOR_ID_INTEL ||
+> -		    (display_dev->class >> 16) != PCI_BASE_CLASS_DISPLAY)
+> +		    !pci_is_display(display_dev))
+>  			continue;
+>  
+>  		if (pci_match_id(denylist, display_dev))
+> diff --git a/sound/pci/hda/hda_intel.c b/sound/pci/hda/hda_intel.c
+> index e5210ed48ddf1..a165c44b43940 100644
+> --- a/sound/pci/hda/hda_intel.c
+> +++ b/sound/pci/hda/hda_intel.c
+> @@ -1465,7 +1465,7 @@ static struct pci_dev *get_bound_vga(struct pci_dev *pci)
+>  				 * the dGPU is the one who is involved in
+>  				 * vgaswitcheroo.
+>  				 */
+> -				if (((p->class >> 16) == PCI_BASE_CLASS_DISPLAY) &&
+> +				if (pci_is_display(p) &&
+>  				    (atpx_present() || apple_gmux_detect(NULL, NULL)))
+>  					return p;
+>  				pci_dev_put(p);
+> @@ -1477,7 +1477,7 @@ static struct pci_dev *get_bound_vga(struct pci_dev *pci)
+>  			p = pci_get_domain_bus_and_slot(pci_domain_nr(pci->bus),
+>  							pci->bus->number, 0);
+>  			if (p) {
+> -				if ((p->class >> 16) == PCI_BASE_CLASS_DISPLAY)
+> +				if (pci_is_display(p))
+>  					return p;
+>  				pci_dev_put(p);
+>  			}
+> -- 
+> 2.43.0
+> 
