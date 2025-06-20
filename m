@@ -1,118 +1,145 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 675F1218ADC;
-	Fri, 20 Jun 2025 02:50:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 941171BEF77
+	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 03:32:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750387818; cv=none; b=FcfFB0uGLwhHU2PYtSX6c6kHI4Y+pHoLVC9NO1zU2p2eV4qF4ppzp2jubzc0d7Y3d2MVztyMzzx2tplp8I57rVahs1mnwjswgu98S86y67EqJlEBDloBONg48T/bmthYcYuo2Nj7jUGBPPml1gcxm0Yr9+lN3OOAEdNx7xLxa9g=
+	t=1750390355; cv=none; b=U9MQpUIMonZr2JY6fGxr+Tldt6g/ylllnfzRHa0Ngdoq0qjI6vySPbmLH9UsAPOXIWcKz/De03zycaId5AC5BrV8wbwsj0To7q/htgKAPNQykPsQXE1yv0y1b3tIXTbIjIX3EyBFqWoIF3HiPDHqqfuoyiTmAc69FVSTXnpOngU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750387818; c=relaxed/simple;
-	bh=klJlszl08GEvhj7kAFdQZmJniKnIexv1qYhrTfixYqU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=l50lqKNgSXupmtNFYRYds8mfLTj2iVd2qHoIrorwKFzFgpjIJIzgmEHEzh+L8gsSHGs4hwAb9DBrnjSZzQsl4grzQGXz7PPRYEqMlPt9/Dh76CBKhBvf2ndypVFYAMW7Bplay9Hbguf/1djyRwryZ5LVV1TpUvFu0kmhtgdsmdY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=naIyrRPL; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750390355; c=relaxed/simple;
+	bh=9Hg5pobEE7M3tPGS8XdU/oGbneOqIPiRWFR/3Cld4kE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WmT5wPnRRI9tlwK9VUMLV36PaHBCF49HtFPlfKx5Fr3ffTgFCmIXnnPJ+TLfm5A8N1peatPM2vefmtLL2zJRzQmZ8ts9O7jsCjDrt+lV9PSM9dAtPGSkxzqJYZ86A4R/hkB1Zx5JdkF6AYuw3KUJeGh48ijF4aWAGhGy1+8uFDE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MxbS3juN; arc=none smtp.client-ip=209.85.214.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="naIyrRPL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADD48C4CEF1;
-	Fri, 20 Jun 2025 02:50:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750387817;
-	bh=klJlszl08GEvhj7kAFdQZmJniKnIexv1qYhrTfixYqU=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=naIyrRPLeY2lvdbu5xv1/dFUU8Zqa7AM0VH0zT/DdWK8tthyBzVRvimPKtfoyYjsf
-	 SQl6Sr9yMGCeMz7yRvwr4BUHETBWncZVp/I7i40NUYUB+7SMi3irgX3KG/6f6FHCek
-	 bpupS2Y9yn4SwsMVlOc1EBsU4yHxrMLEER3DMaGs2giiJt9gjbPZhgY/YNukW6xadH
-	 ALg/fHc0XA9/HFgwygPKLOI6vJmbkR1YZVlRx77+d4asemrgs0nGcO1yGaI/z6TxEP
-	 CSQFdVsyA0aLxTcy+dmiEiwLAxlnI4GdRWA8z5rSS3Ath1qWVEoHYebH87S4gjQ+SN
-	 9K4SCJePtMdSA==
-From: Mario Limonciello <superm1@kernel.org>
-To: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>,
-	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-	David Airlie <airlied@gmail.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Lukas Wunner <lukas@wunner.de>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-	linux-kernel@vger.kernel.org (open list),
-	iommu@lists.linux.dev (open list:INTEL IOMMU (VT-d)),
-	linux-pci@vger.kernel.org (open list:PCI SUBSYSTEM),
-	kvm@vger.kernel.org (open list:VFIO DRIVER),
-	linux-sound@vger.kernel.org (open list:SOUND),
-	Daniel Dadap <ddadap@nvidia.com>,
-	Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH v3 7/7] fbcon: Make a symlink to the device selected as primary
-Date: Thu, 19 Jun 2025 21:49:43 -0500
-Message-ID: <20250620024943.3415685-8-superm1@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250620024943.3415685-1-superm1@kernel.org>
-References: <20250620024943.3415685-1-superm1@kernel.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MxbS3juN"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2348ac8e0b4so228855ad.1
+        for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 20:32:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1750390352; x=1750995152; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=qa/VDd/mSdDHpuvSCZ3/ODd1JXeFiiam1MgWlPeSiGs=;
+        b=MxbS3juNazFI5is62dE1QGwkxbnh1/mTssw8Zt2VwoJ1UMaM17CpAQH+9awzNOPr4V
+         9EfDJ8RMeHNvLhq0+tb39Xa7iKQK2971LrlciLuJQXthl2FwXbj0nHLMCuqkRLfG2eED
+         pfTVV/qqJAT02CqdQBJqQYE2h8vuRuNC7SZlDYQYOX1bkYCg79wcATGO374WVKG1Pge8
+         9Q7o3vOHI5iGV4v04FoLoHrTv5S5/h+TeFvzZexmE4ZOyK9kF1DMW0Si1RAtnSMpEQPl
+         7dWreDngW5+AAaBCDtWtLR1g5/CV9bV1HvEzBK5WuueK5qGKa65TGW4ad08d/b2eJx0V
+         /NPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750390352; x=1750995152;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qa/VDd/mSdDHpuvSCZ3/ODd1JXeFiiam1MgWlPeSiGs=;
+        b=c5PF6DlCszHccQSDn+iMPIdTlfOwMPvHvVMRE7J0+NiopUo9T1famxb77Jz0sKDTZY
+         APt4LPodYE9a/bMX+FgdppQ1rJdierLx3ZccALySWtjSYOoz2KfFTYzOmsoBVxFZdF2F
+         ZeDPGx1lDEQmGzUM04kqDjxJM+wSNENcMSJ8pZU0tIZJuDbcUqGBUO5HD6ZClSLk7o7z
+         L1gZVV+r1TgNw3r23Z0DtMvK75xlHol+tDDHR/8WLIIzKRWtkhRHUKa2+KyAy69BRRka
+         V/aCYmCHLJtdIdo/6+zOJiiLHh8GmrEDsGTbIcOlFsTN3S/Qo4jxzdG3q2xUcfMilATa
+         HqJA==
+X-Forwarded-Encrypted: i=1; AJvYcCX+80MBXnZssGGIttvPvvtPiFUKbT0jD3YiTopWGWaJ409eQprNyM4skmD1Uo/ApGtPVTJnfg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Ywufbc8w0Z9AwSYO8DOD3DIBoAViPrfJFjyza4KQ70MK3KE174B
+	x5dVnBl2NB03Bthfy0dAnMt+fx6fz6n2zZvZGd4DOhNY8ykvEs4pJlYGAPuxEjCrSg==
+X-Gm-Gg: ASbGnctN154y7QNPS8zBpxdVv4YJrdG2A1m1UmZfBW7WQI0a5C7OqhIj5A+lwQOdRN8
+	F9Y8IuCM8QacrkCNhUA0FcsLVKYxOt+4jQCLycmPhRQom+7YeG0CByg1/0YRyOPl1r9ovYNevT/
+	CtK4TKD1r3kqaDA6vXEHlKRvA8m5evKG+QZyaavVyTRtC7ao0kFG7W7ys3igjhYSXSlBdYHFJLa
+	MCuzgkgmOZkrVgmQPsxaj/lKmSiUws+LYuHk4Hnd7E3F8XyU97RHOadfnn1bb8XnAeXIptDpNcN
+	9tizceX7wo6oaNzTkGHUYZr+KFyEdYWGuDpyaxR3O1dzYVXcik8EUaUo4y9kOym0SXxiKugOsIt
+	4U0U8PDx+236tg7x6jG/aubeSSijcxL0=
+X-Google-Smtp-Source: AGHT+IERsl+HTUr1rqxITuYHKylDMvSd/CxPtRuNjbrAMl+KyO4xPzytclG3wi1xtC95QCov1vt9OA==
+X-Received: by 2002:a17:903:1667:b0:215:f0c6:4dbf with SMTP id d9443c01a7336-237cc9fd3d7mr4672645ad.14.1750390351828;
+        Thu, 19 Jun 2025 20:32:31 -0700 (PDT)
+Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-237d83ce860sm6966175ad.65.2025.06.19.20.32.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Jun 2025 20:32:31 -0700 (PDT)
+Date: Fri, 20 Jun 2025 03:32:19 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
+	corbet@lwn.net, will@kernel.org, bagasdotme@gmail.com,
+	robin.murphy@arm.com, joro@8bytes.org, thierry.reding@gmail.com,
+	vdumpa@nvidia.com, jonathanh@nvidia.com, shuah@kernel.org,
+	jsnitsel@redhat.com, nathan@kernel.org, peterz@infradead.org,
+	yi.l.liu@intel.com, mshavit@google.com, zhangzekun11@huawei.com,
+	iommu@lists.linux.dev, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-tegra@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	patches@lists.linux.dev, mochs@nvidia.com, alok.a.tiwari@oracle.com,
+	vasant.hegde@amd.com, dwmw2@infradead.org, baolu.lu@linux.intel.com
+Subject: Re: [PATCH v6 20/25] iommu/arm-smmu-v3-iommufd: Add hw_info to
+ impl_ops
+Message-ID: <aFTWQ4v6aZABpzeV@google.com>
+References: <cover.1749884998.git.nicolinc@nvidia.com>
+ <f36b5e42bac83d0cdf5773cad1c3a44c3eaed396.1749884998.git.nicolinc@nvidia.com>
+ <aFP4zHIVT6epJeLb@google.com>
+ <20250619185325.GB17127@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250619185325.GB17127@nvidia.com>
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+On Thu, Jun 19, 2025 at 03:53:25PM -0300, Jason Gunthorpe wrote:
+> On Thu, Jun 19, 2025 at 11:47:24AM +0000, Pranjal Shrivastava wrote:
+> > I'm not sure if I get this right.. if the user (while porting a VMM or
+> > something) mistakenly passes *type == IOMMU_HW_INFO_TYPE_INTEL_VTD here,
+> > they'll get impl-specific info?
+> 
+> It should call the impl hw_info which should fail?
+> 
+> +static void *tegra241_cmdqv_hw_info(struct arm_smmu_device *smmu, u32 *length,
+> +				    u32 *type)
+> +{
+> +	if (*type != IOMMU_HW_INFO_TYPE_TEGRA241_CMDQV)
+> +		return ERR_PTR(-EOPNOTSUPP);
+> 
+> If impl ops is null/etc then it fails:
+> 
+> +             if (!impl_ops || !impl_ops->hw_info)
+> +                     return ERR_PTR(-EOPNOTSUPP);
+> 
+> Where does IOMMU_HW_INFO_TYPE_INTEL_VTD return something?
+> 
 
-Knowing which device is the primary device can be useful for userspace
-to make decisions on which device to start a display server.
+I mean, the check in the driver (for e.g. arm-smmu-v3) is:
 
-Create a link to that device called 'primary_device'.
+ if (*type != IOMMU_HW_INFO_TYPE_DEFAULT &&
+     *type != IOMMU_HW_INFO_TYPE_ARM_SMMUV3)
 
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
- drivers/video/fbdev/core/fbcon.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+     // call impl_ops
 
-diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/core/fbcon.c
-index 2df48037688d1..46f21570723e5 100644
---- a/drivers/video/fbdev/core/fbcon.c
-+++ b/drivers/video/fbdev/core/fbcon.c
-@@ -2934,7 +2934,7 @@ static void fbcon_select_primary(struct fb_info *info)
- {
- 	if (!map_override && primary_device == -1 &&
- 	    video_is_primary_device(info->device)) {
--		int i;
-+		int i, r;
- 
- 		printk(KERN_INFO "fbcon: %s (fb%i) is primary device\n",
- 		       info->fix.id, info->node);
-@@ -2949,6 +2949,10 @@ static void fbcon_select_primary(struct fb_info *info)
- 			       first_fb_vc + 1, last_fb_vc + 1);
- 			info_idx = primary_device;
- 		}
-+		r = sysfs_create_link(&fbcon_device->kobj, &info->device->kobj,
-+				      "primary_device");
-+		if (r)
-+			pr_err("fbcon: Failed to link to primary device: %d\n", r);
- 	}
- 
- }
-@@ -3376,6 +3380,10 @@ void __init fb_console_init(void)
- 
- void __exit fb_console_exit(void)
- {
-+#ifdef CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY
-+	if (primary_device != -1)
-+		sysfs_remove_link(&fbcon_device->kobj, "primary_device");
-+#endif
- #ifdef CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER
- 	console_lock();
- 	if (deferred_takeover)
--- 
-2.43.0
+My point is that in-case someone passed INTEL_VTD type, we would end up
+calling impl_ops->hw_info and then the impl_ops->hw_info shall check for
+the type to return -EOPNOTSUPP. Either we should clearly mention that
+each impl_op implementing hw_info *must* add another type and check for
+it OR we could have sub-types for implementations extending a main type
+somehow?
 
+
+> > I agree in that case the impl-specific
+> > driver needs to check the type, but shouldn't we simply return from here
+> > itself if the type isn't arm-smmu-v3?
+> 
+> Then how do you return IOMMU_HW_INFO_TYPE_TEGRA241_CMDQV?
+> 
+
+The current version is just fine with a doc string mentioning type
+checks within impl_ops->hw_info OR we could have sub-types for
+implementations extending some architectural IOMMU. 
+
+I'm just trying to avoid weird bug reports in the future because some
+impl didn't check for their type.
+
+> Jason
+
+Thanks
+Praan
