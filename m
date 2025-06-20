@@ -1,89 +1,95 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from out-188.mta0.migadu.com (out-188.mta0.migadu.com [91.218.175.188])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CBB130E853
-	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 20:46:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C7BC230BCC
+	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 20:46:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750452364; cv=none; b=dr4ybXg+c9L2iCwToOIjMmtf0e/NZSakxzepU3K8PNc2hNYxu4xqx0q1nrsFHA3PR1Q/j5U4sbrVprGvhyCq4aAbiocp4CybZU1usPbdq0nzSaZlyMbKNHL2baw2Ali4Tdh9sruOdWdxDwuoSxiembX41JYRRfdG9ls6Sk8uVpQ=
+	t=1750452401; cv=none; b=gaElKg8t/9PsyU+O3xpLm0y1xx3aJc2TzXf/4Az6SMuqXJRA75azNNVg66yhR8/+zp0xCH0srEn3T3/Fiz6c5z78GbOiHGGLk+UfFGZnPLAS5iujoNBOIAvq7/aXE77dgcrW3CN0TmHLz9mnL/Y/cArB/Rohk/R48F/wX44/E7o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750452364; c=relaxed/simple;
-	bh=mGxKurpsvHmgW89VHzKxiFNLvfM2W4TYEkHDY6+Y9n8=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Ihay/u8pTcRAHZcyAvOtsGGPnvYPi6i/xqtAiGgB4H8V9yswqgG+1Cf7kxHppBuCI/QCT1+GvlUVMu/lcgVrG3GeOTy1aS6jV+qfJy4ltn6oBYYhER3FAR42iVSbhyEx5xHIrU1S6e6CdPEkocwmerVuIaH2U436/SY0vSjFAD4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[IPv6:::1])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <l.stach@pengutronix.de>)
-	id 1uSicJ-0008Gr-KZ; Fri, 20 Jun 2025 22:45:43 +0200
-Message-ID: <c7dd8ac53170cafab5489f98d3da13f65cd67a1a.camel@pengutronix.de>
-Subject: Re: [PATCH v3 3/5] iommu: Add verisilicon IOMMU driver
-From: Lucas Stach <l.stach@pengutronix.de>
-To: Robin Murphy <robin.murphy@arm.com>, Benjamin Gaignard
-	 <benjamin.gaignard@collabora.com>, joro@8bytes.org, will@kernel.org, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de, 
-	nicolas.dufresne@collabora.com, jgg@ziepe.ca
-Cc: iommu@lists.linux.dev, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	linux-rockchip@lists.infradead.org, kernel@collabora.com
-Date: Fri, 20 Jun 2025 22:45:41 +0200
-In-Reply-To: <43276c9a-5434-467c-abb2-dd2806ab81d0@arm.com>
-References: <20250619131232.69208-1-benjamin.gaignard@collabora.com>
-	 <20250619131232.69208-4-benjamin.gaignard@collabora.com>
-	 <43276c9a-5434-467c-abb2-dd2806ab81d0@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.52.4 (3.52.4-2.fc40) 
+	s=arc-20240116; t=1750452401; c=relaxed/simple;
+	bh=PeikzViu08NQWTbsah1WIOxZg1rvu0au6ayjQVoeClo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O2B7dB8UJEnYrF2XVdjqiqhaEIIGnLB6C9f0N9BdNcbZeaqtKKATCAdh8D7NU02X6BXhn42kZhZGhUjsLiZiy3kTZfwHTfHt3UZDuFinAyI9DMt0q6kKHKZ2FJQgij0BNiMLEwWn+HlXD8C+1kzOyU6RDT0nwpC5frM407vqwZ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=wB2JMktH; arc=none smtp.client-ip=91.218.175.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="wB2JMktH"
+Date: Fri, 20 Jun 2025 13:45:54 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1750452395;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=ByAPDQByeMdLRhDMIGN/IiSb/H4BbcIKGrfBibrThdw=;
+	b=wB2JMktH26IhXs7XGQI53IupRTDVbGuWl0qkGpR4EDdkm6Y0SKYhHCVQ3hJR8Rqu2hK1LA
+	N1NJF2AJ9y/cp/vQqHMdmu8F0Mj3Qd4i049KApbe8HC1z3bEABA5689uiXgYJFwU2g76pp
+	zOPEZ4caj/QyY29FLXxszr21nzjdq9A=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Oliver Upton <oliver.upton@linux.dev>
+To: Sean Christopherson <seanjc@google.com>
+Cc: Marc Zyngier <maz@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
+	kvm@vger.kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Sairaj Kodilkar <sarunkod@amd.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Maxim Levitsky <mlevitsk@redhat.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Francesco Lavra <francescolavra.fl@gmail.com>,
+	David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH v3 02/62] KVM: arm64: WARN if unmapping vLPI fails
+Message-ID: <aFXIgrmU8uSA6YHS@linux.dev>
+References: <20250611224604.313496-2-seanjc@google.com>
+ <20250611224604.313496-4-seanjc@google.com>
+ <86tt4lcgs3.wl-maz@kernel.org>
+ <aErlezuoFJ8u0ue-@google.com>
+ <aEyOcJJsys9mm_Xs@linux.dev>
+ <aFWY2LTVIxz5rfhh@google.com>
+ <aFWtB6Vmn9MnfkEi@linux.dev>
+ <aFWws7h3L-iN52sF@google.com>
+ <aFW2NISX0q11sop1@linux.dev>
+ <aFXFO6_lVV5PpGW-@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: l.stach@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: iommu@lists.linux.dev
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aFXFO6_lVV5PpGW-@google.com>
+X-Migadu-Flow: FLOW_OUT
 
-Am Freitag, dem 20.06.2025 um 20:37 +0100 schrieb Robin Murphy:
-> On 19/06/2025 2:12 pm, Benjamin Gaignard wrote:
-> > The Verisilicon IOMMU hardware block can be found in combination
-> > with Verisilicon hardware video codecs (encoders or decoders) on
-> > different SoCs.
-> > Enable it will allow us to use non contiguous memory allocators
-> > for Verisilicon video codecs.
-> >=20
-> > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> > ---
->=20
-[...]
-> I'm especially curious what this "pta" really is - is the comment above=
-=20
-> just wrong, and you've actually got a 3-level pagetable supporting=20
-> somewhere between 33 and 42 bits of VA? If not, then the additional=20
-> level of indirection would very much seem to imply some kind of=20
-> mechanism for accommodating multiple pagetables at once, and in that=20
-> case, is it like a PASID table where the client device gets to choose=20
-> which entry to use, or a StreamID table to disambiguate multiple client=
-=20
-> devices? (Where in the latter case it should most likely belong to the=
-=20
-> IOMMU rather than the domain, and you probably want nonzero #iommu-cells=
-=20
-> in the DT binding for the client IDs).
->=20
-PTA is short for page table array and it's another level of indirection
-to select the page tables to be used for the specific translation. On
-the Vivante GPU, where this MMU IP originated, the GPU can select the
-index into this array to be used for a specific command stream to
-implement GPU client isolation, so it's much like a PASID table.
+On Fri, Jun 20, 2025 at 01:31:55PM -0700, Sean Christopherson wrote:
+> On Fri, Jun 20, 2025, Oliver Upton wrote:
+> > On Fri, Jun 20, 2025 at 12:04:19PM -0700, Sean Christopherson wrote:
+> > > If I post it as a standalone patch, could you/Marc put it into a stable topic
+> > > branch based on kvm/master? (kvm/master now has patch 1, yay!)  Then I can create
+> > > a topic branch for this mountain of stuff based on the arm64 topic branch.
+> > 
+> > Ok, how about making the arm64 piece patch 1 in your series and you take
+> > the whole pile. If we need it, I'll bug you for a ref that only has the
+> > first change.
+> 
+> Any preference as to whether I formally post the last version, or if I apply it
+> directly from this thread?
 
-I have no idea if and how the integration with the video codecs can
-select the PTA index.
+Since I have this email on my phone I'm always in favor of not getting
+spammed :) This thread has all the discourse too, so likely a better
+artifact.
 
-Regards,
-Lucas
+> > That ok?
+> 
+> Ya, works for me.  What's the going bribe rate for an ack these days?  :-D
 
+Usually about the cost of a pint ;-) For the arm64 bits:
+
+Acked-by: Oliver Upton <oliver.upton@linux.dev>
+
+-- 
+Thanks,
+Oliver
