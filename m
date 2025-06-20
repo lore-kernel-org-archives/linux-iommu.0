@@ -1,43 +1,33 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0CC528DF1F
-	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 14:42:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750430544; cv=pass; b=SRLS7+JZzgcl0O4idYLYPf6xpP0a58B0PVKVVHhGhZF0H0YXGd9pdeEDRYV5rKabBnENcdcUfB/owjkBz9kQWiTY2hMKO7CAvvuNzY6EmgS+rAxfR1Un91Y7fOuJ6pLEKW913oDTsBqyx8XnM6amE2OLisGNpSa3LAC0DA+7leo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750430544; c=relaxed/simple;
-	bh=rMJu2UXBnvM9uD9OHpHx6JI8BGT6zoxThOLhRn3Aijw=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=sOmylOj4SYaZg3CyBbzP28Ua21zP/+Y72ws9ew3NlWi9sFk96gkrBMv7yF6mZ023JSdSwpgzoOwhq/ciBjStJw4HnNLiiiYD4bidntXi+lc87j7hT6yElm9ekOqljk3Zwlp4XUR/oIkskUJ1lYoE2yTvVm9TFIFO1vydt6+PLjw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=eeBxYF7s; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A28952DA74B;
+	Fri, 20 Jun 2025 15:56:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750435016; cv=none; b=qZ5QJritlJMBkVd60c+Ja387NGt7/PcHRLid7pLMwfyhiryJr3exjOnNQCJGce0MyAq1wTaC3MF079NfA17vgd+AicsFAsUkgS0HbW5bYDPlXPfMxqF0F7W/ugDL499AwlHeRoFzcqoZO5GrgtX3bhA6wHhdAK9xQVWl4adzb7A=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750435016; c=relaxed/simple;
+	bh=0/Yq00Po9hqFh21kg/bqFD/QAGJ5CVo5hl9dHMq0V5o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=aTxu2mhVP/FtnbE8PM0ldkBPXTi0basPeGUYcvL3N6XYLvfYc8cDpOI+CGYMAWiQG9xmygM/arUMWH1g7ePHOXLpmNQH8WxTBqR3Fq7NpgGKuFgSKqev4Bz7poTJ7JlsS7SCcXkUx6eQ4iNEJypP5SknjjSiZEW6b0e/bJn8M/I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dMluZ3go; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="eeBxYF7s"
-ARC-Seal: i=1; a=rsa-sha256; t=1750430529; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=QQdc9mPxR21z/9fW611G9vSMqf7TsDD27B7xiWMPks+eyo2+3ZeYj5m/DLkJrmt1I1HtgTB0wbFUR09QywUhWsqzCCeNf3jTYFU0eAUphFWdx0mI1regBAGCvCwPYik6HADPRbwJG6JyG2RMh5P4G2H48xH/9ehi3+ErNJwhNpo=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1750430529; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=0RgeqPv/W813/uRIAYius/Svm9hUK+Z0QxNA+vZX/e0=; 
-	b=BPGm4OMEh4iJHEQuXmOmQsjy79cZnAnSA3FYnTDkVEQPaUzcN4p/YDaCJhdy7KRgXUts3FztdupVCsxFYnjcvIpeS1PSwgap4qhL551ZLpPy2wI+LeeNxpxMq7ogqYm+WI3ZJiaQRDvJ6pA/YNOOjvdjWhWcUdZ9DLgMbevZ8p8=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
-	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1750430528;
-	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:From:From:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=0RgeqPv/W813/uRIAYius/Svm9hUK+Z0QxNA+vZX/e0=;
-	b=eeBxYF7sktRJuUwtk9bJLpOwGIhCSnAjt9GkIFf2aMQlsB6mkNzNb9higiqQOBpw
-	DngTI9DNQlNFkBjewa5cJE1lSQ/GzsYKv0XVZlpyYhyum0km3MS9mwQNZDfkydDd3M8
-	FMxgGiQHKNpIfYWgVsSFYiEyW6dduLrearp1cDRI=
-Received: by mx.zohomail.com with SMTPS id 1750430526349829.0777010527344;
-	Fri, 20 Jun 2025 07:42:06 -0700 (PDT)
-Message-ID: <3337df6c-f800-4610-8689-fbd4b4a5d07a@collabora.com>
-Date: Fri, 20 Jun 2025 16:42:02 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dMluZ3go"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DFB9C4CEEF;
+	Fri, 20 Jun 2025 15:56:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750435016;
+	bh=0/Yq00Po9hqFh21kg/bqFD/QAGJ5CVo5hl9dHMq0V5o=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=dMluZ3goj5wb11sMDmc3+xCKL1yqf1bsRZI3DxM7uG1KXtXt6C7MAqktYANFHHSuf
+	 Frgwrq+4RZBVltnb5P6MkMmrn1V8fD0OxVdrVTSfZT+rQG2Imxj5XevWyFkdZCmiY+
+	 ch/RwVduOAGedgkwB7gIRW0jutMz12GvWKhtnHqQF7Q273p3a1Mxw09XmodM6IdZWf
+	 mBLzMLbaMt7KS9Qt1zJoyPXRZH7OYcp3YYF2sL4h+l/1t5V4l2yjFI0QsyU9eIPJGS
+	 URhtkW63RC9+TxOytsaLyDgSj5zAc1DJw6+22JfmondzKh0LMan4WBUMSolFC4+7NY
+	 9S8CfRC6cet/w==
+Message-ID: <b3462e88-e24a-43d9-8437-b6d378a3b5d3@kernel.org>
+Date: Fri, 20 Jun 2025 10:56:53 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,157 +35,146 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/5] iommu: Add verisilicon IOMMU driver
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
- nicolas.dufresne@collabora.com, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- kernel@collabora.com
-References: <20250619131232.69208-1-benjamin.gaignard@collabora.com>
- <20250619131232.69208-4-benjamin.gaignard@collabora.com>
- <20250619134752.GB1643390@ziepe.ca>
- <073ffe14-d631-4a4f-8668-ddeb7d611448@collabora.com>
- <20250619165928.GA10257@ziepe.ca>
- <e034a111-93eb-42e8-a533-46553b4f5588@collabora.com>
- <20250620120509.GA39770@ziepe.ca>
- <d9a1b9ab-b6ab-4364-a1b7-df4debc21bc1@collabora.com>
+Subject: Re: [PATCH v3 7/7] fbcon: Make a symlink to the device selected as
+ primary
+To: Thomas Zimmermann <tzimmermann@suse.de>,
+ Bjorn Helgaas <bhelgaas@google.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Lukas Wunner <lukas@wunner.de>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
+ "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+ "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
+ "open list:SOUND" <linux-sound@vger.kernel.org>,
+ Daniel Dadap <ddadap@nvidia.com>,
+ Mario Limonciello <mario.limonciello@amd.com>
+References: <20250620024943.3415685-1-superm1@kernel.org>
+ <20250620024943.3415685-8-superm1@kernel.org>
+ <a22ecd33-460d-41bf-920c-529645d173e3@suse.de>
 Content-Language: en-US
-In-Reply-To: <d9a1b9ab-b6ab-4364-a1b7-df4debc21bc1@collabora.com>
+From: Mario Limonciello <superm1@kernel.org>
+In-Reply-To: <a22ecd33-460d-41bf-920c-529645d173e3@suse.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
+On 6/20/25 3:47 AM, Thomas Zimmermann wrote:
+> Hi
+> 
+> Am 20.06.25 um 04:49 schrieb Mario Limonciello:
+>> From: Mario Limonciello <mario.limonciello@amd.com>
+>>
+>> Knowing which device is the primary device can be useful for userspace
+>> to make decisions on which device to start a display server.
+>>
+>> Create a link to that device called 'primary_device'.
+>>
+>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>> ---
+>>   drivers/video/fbdev/core/fbcon.c | 10 +++++++++-
+>>   1 file changed, 9 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/ 
+>> core/fbcon.c
+>> index 2df48037688d1..46f21570723e5 100644
+>> --- a/drivers/video/fbdev/core/fbcon.c
+>> +++ b/drivers/video/fbdev/core/fbcon.c
+> 
+> You cannot rely on this, as fbcon might be disabled entirely.
 
-Le 20/06/2025 à 15:52, Benjamin Gaignard a écrit :
->
-> Le 20/06/2025 à 14:05, Jason Gunthorpe a écrit :
->> On Fri, Jun 20, 2025 at 10:57:49AM +0200, Benjamin Gaignard wrote:
->>> Le 19/06/2025 à 18:59, Jason Gunthorpe a écrit :
->>>> On Thu, Jun 19, 2025 at 06:27:52PM +0200, Benjamin Gaignard wrote:
->>>>> Le 19/06/2025 à 15:47, Jason Gunthorpe a écrit :
->>>>>> Ugh. This ignores the gfp flags that are passed into map because you
->>>>>> have to force atomic due to the spinlock that shouldn't be there :(
->>>>>> This means it does not set GFP_KERNEL_ACCOUNT when required. It 
->>>>>> would
->>>>>> be better to continue to use the passed in GFP flags but override 
->>>>>> them
->>>>>> to atomic mode.
->>>>> I will add a gfp_t parameter and use it like that:
->>>>> page_table = iommu_alloc_pages_sz(gfp | GFP_ATOMIC | GFP_DMA32, 
->>>>> SPAGE_SIZE);
->>>> This will or together GFP_ATOMIC and GFP_KERNEL, I don't think that
->>>> works..
->>> I have test it, I don't see conflicts or errors. What worries you ?
->> Just looking at the bitmaps I'm not sure? Did you run with lockdep?
->
-> Yes and it complains about that.
-> I see that sun50i driver have more less the same struct than my driver
-> but doesn't use lock. I will try see if I can remove the lock.
+So the other idea I had was to have a new file boot_console.
 
-I have replace the two spinlock by a mutex in vsi_iommu structure.
-It seems it works well and lockdep doesn't complain anymore.
+How would you feel about this instead (or even in addition to the symlink)?
 
->
->>>>>>> +static int vsi_iommu_attach_device(struct iommu_domain *domain,
->>>>>>> +                   struct device *dev)
->>>>>>> +{
->>>>>>> +    struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
->>>>>>> +    struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
->>>>>>> +    unsigned long flags;
->>>>>>> +    int ret;
->>>>>>> +
->>>>>>> +    if (WARN_ON(!iommu))
->>>>>>> +        return -ENODEV;
->>>>>>> +
->>>>>>> +    /* iommu already attached */
->>>>>>> +    if (iommu->domain == domain)
->>>>>>> +        return 0;
->>>>>>> +
->>>>>>> +    ret = vsi_iommu_identity_attach(&vsi_identity_domain, dev);
->>>>>>> +    if (ret)
->>>>>>> +        return ret;
->>>>>> Hurm, this is actually quite bad, now that it is clear the HW is 
->>>>>> in an
->>>>>> identity mode it is actually a security problem for VFIO to 
->>>>>> switch the
->>>>>> translation to identity during attach_device. I'd really prefer new
->>>>>> drivers don't make this mistake.
->>>>>>
->>>>>> It seems the main thing motivating this is the fact a linked list 
->>>>>> has
->>>>>> only a single iommu->node so you can't attach the iommu to both the
->>>>>> new/old domain and atomically update the page table base.
->>>>>>
->>>>>> Is it possible for the HW to do a blocking behavior? That would 
->>>>>> be an
->>>>>> easy fix.. You should always be able to force this by allocating a
->>>>>> shared top page table level during probe time and making it entirely
->>>>>> empty while staying always in the paging mode. Maybe there is a less
->>>>>> expensive way.
->>>>>>
->>>>>> Otherwise you probably have work more like the other drivers and
->>>>>> allocate a struct for each attachment so you can have the iommu
->>>>>> attached two domains during the switch over and never drop to an
->>>>>> identity mode.
->>>>> I will remove the switch to identity domain and it will works fine.
->>>> You'll loose invalidations..
->>>>
->>>> Maybe the easiest thing is to squish vsi_iommu_enable() and reorganize
->>>> it so that the spinlock is held across the register programming and
->>>> then you can atomically under the lock change the registers and change
->>>> the linked list. The register write cannot fail so this is fine.
->>>>
->>>> This should probably also flush the iotlb inside the lock.
->>> I will try to summarize:
->>> in vsi_iommu_attach_device() I should:
->>> - take the lock
->>> - do nothing if the domain is the same.
->>> - if iommu is used (ie powered up):
->>>    - update the registers to enable the iommu
->>>    - flush
->>>    - update the link list
->>> - update iommu->domain
->>> - release the lock
->> That sounds believable, yes.. Though can you do the "powered up" checks
->> inside the spinlock - are they sleeping? Can they be done before the
->> spinlock?
->>
->>> in vsi_iommu_identity_attach() I should:
->>> - take the lock
->>> - do nothing if the domain is the same.
->>> - if iommu is used (ie powered up):
->>>    - disable the iommu
->>>    - remove the node from the list
->>> - update iommu->domain
->>> - release the lock
->> And maybe flush too? How does the caching hw work at this point? You
->> can't have stale entries in the cache when you switch back to an
->> enabled/translating configuration. So either the HW flushes implicitly
->> or you need to add a flush somewhere..
->
-> I do not have the documentation for the hardware but it seems that
-> enable/disable are enough to do the job.
->
->
->>> vsi_iommu_suspend() and vsi_iommu_resume() will also have to take 
->>> the lock
->>> before calling vsi_iommu_disable() and vsi_iommu_enable().
->> Yes, if they use iommu->domain that seems good
->>
->> If the above locking is a problem then I'd use the group mutex instead
->> during resume/suspend. The attach functions are already called with
->> the group mutex held.
->
-> Does group mutex is also called when using vsi_iommu_map or 
-> vsi_iommu_unmap ?
->
->>
->>> Do I have to switch to identity domain in vsi_iommu_attach_device()
->>> before applying the requested domain ?
->> No, that is what creates the security problem. What you want is to
->> update the HW registers in a way that the HW just changes hitlessly
->> from one translation to another, then flush the cache.
->>
->> Jason
+diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+index 268c69daa4d5..8535950b4c0f 100644
+--- a/drivers/pci/pci-sysfs.c
++++ b/drivers/pci/pci-sysfs.c
+@@ -30,6 +30,7 @@
+  #include <linux/msi.h>
+  #include <linux/of.h>
+  #include <linux/aperture.h>
++#include <asm/video.h>
+  #include "pci.h"
+
+  #ifndef ARCH_PCI_DEV_GROUPS
+@@ -679,6 +680,13 @@ const struct attribute_group *pcibus_groups[] = {
+         NULL,
+  };
+
++static ssize_t boot_console_show(struct device *dev, struct 
+device_attribute *attr,
++                                char *buf)
++{
++       return sysfs_emit(buf, "%u\n", video_is_primary_device(dev));
++}
++static DEVICE_ATTR_RO(boot_console);
++
+  static ssize_t boot_vga_show(struct device *dev, struct 
+device_attribute *attr,
+                              char *buf)
+  {
+@@ -1698,6 +1706,7 @@ late_initcall(pci_sysfs_init);
+
+  static struct attribute *pci_dev_dev_attrs[] = {
+         &dev_attr_boot_vga.attr,
++       &dev_attr_boot_console.attr,
+         NULL,
+  };
+
+@@ -1710,6 +1719,9 @@ static umode_t pci_dev_attrs_are_visible(struct 
+kobject *kobj,
+         if (a == &dev_attr_boot_vga.attr && pci_is_vga(pdev))
+                 return a->mode;
+
++       if (a == &dev_attr_boot_console.attr && pci_is_display(pdev))
++               return a->mode;
++
+         return 0;
+  }
+
+
+> 
+> Best regards
+> Thomas
+> 
+>> @@ -2934,7 +2934,7 @@ static void fbcon_select_primary(struct fb_info 
+>> *info)
+>>   {
+>>       if (!map_override && primary_device == -1 &&
+>>           video_is_primary_device(info->device)) {
+>> -        int i;
+>> +        int i, r;
+>>           printk(KERN_INFO "fbcon: %s (fb%i) is primary device\n",
+>>                  info->fix.id, info->node);
+>> @@ -2949,6 +2949,10 @@ static void fbcon_select_primary(struct fb_info 
+>> *info)
+>>                      first_fb_vc + 1, last_fb_vc + 1);
+>>               info_idx = primary_device;
+>>           }
+>> +        r = sysfs_create_link(&fbcon_device->kobj, &info->device->kobj,
+>> +                      "primary_device");
+>> +        if (r)
+>> +            pr_err("fbcon: Failed to link to primary device: %d\n", r);
+>>       }
+>>   }
+>> @@ -3376,6 +3380,10 @@ void __init fb_console_init(void)
+>>   void __exit fb_console_exit(void)
+>>   {
+>> +#ifdef CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY
+>> +    if (primary_device != -1)
+>> +        sysfs_remove_link(&fbcon_device->kobj, "primary_device");
+>> +#endif
+>>   #ifdef CONFIG_FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER
+>>       console_lock();
+>>       if (deferred_takeover)
+> 
+
