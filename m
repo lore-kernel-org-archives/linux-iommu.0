@@ -1,150 +1,133 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF62C2E6108
-	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 16:10:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 939F1283FE1
+	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 16:35:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750435849; cv=none; b=J8ceGxpWNmhNvBdfelUElqDy+3NBWleNZx/zYbowxd6jIbSgNOiHMdi+3lySZ8fPjtdgSfdEruMnaCY2tHy0sC6QPmm5G0vAgF1+IwPq7id4Rff+RxinHPyOCpPlomw0f5dXZVA8QqDuTSGmfK8nJafBmb++O157GzLnOZqPM/8=
+	t=1750437314; cv=none; b=B5pBwEvCBGBBIwAHKb8zE6XUvZA6ZNknNV/Dwbr3ETaaHznVBOmeKWFIyhPl1l38E7CfdVC84uFDU9yh29MhJegJPXjj2BQ6Rzj9Y4GEFPWhgxYmEGzEVO/9moYjRLIZ8wep80S+644x69W2tmgVoAswbu9cE+ZV+L2OHqVD/Pc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750435849; c=relaxed/simple;
-	bh=VU2bZVSWS7Y7D+L7/7Dt5pIdIlosy1fuUbSFKypwv5o=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fwSmdREqNd61xIJ1rcWz39UEmQK3C45lUhjZEYSRGuyOqd3nX391ml4VcEUZOV5+7Ip7rtGAxeZxKPENAtnBUf0GpEuJnwn663PonhOWW2tKeprpOIVD2Px5CEnoSe+dEaiPr2oI2BR+gBcqWlQz8AbFIGrubKl468HJZO7S4mE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6A26016F2;
-	Fri, 20 Jun 2025 09:10:27 -0700 (PDT)
-Received: from [10.1.30.146] (XHFQ2J9959.cambridge.arm.com [10.1.30.146])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 207873F58B;
-	Fri, 20 Jun 2025 09:10:42 -0700 (PDT)
-Message-ID: <7105112f-b0bb-4191-b3c9-93522162319c@arm.com>
-Date: Fri, 20 Jun 2025 17:10:41 +0100
+	s=arc-20240116; t=1750437314; c=relaxed/simple;
+	bh=NfmPX0yVFBBCDiBkKX9NhyYVI/32o1GQomiZQ8lwj04=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Fqqew/IFfUbiaL/DUc472BF3F6tel7oWxaWj6YjMCXrvSJAMg1AzCu9lZ92AzTtcElwrl8ph/4/ckUWR1QiVvEIT5W/lk4JbameEEOhnjQwrFQr4spscGLS6GUv13cxwlpv4tU5oePIPgmOcBd9XrrkqIgaXeS8p2QEU5dz8JlA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=nowgvNM7; arc=none smtp.client-ip=209.85.160.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="nowgvNM7"
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-4a442a3a2bfso30978851cf.1
+        for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 09:35:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1750437311; x=1751042111; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=hFurqnYI+L7RUrkwAcAgkoscsXJUHEF+OS7OBiZvdjs=;
+        b=nowgvNM7XWwyc8LR4mTBRcX4AU7dRuRfK7TdP9Mt69yhXlaeZ5rX87kZ0Cmx34CT4+
+         VwZm9LbV9BWfbFyZwWiQSpAcymhHLGuU5OmVIV+GBoR3UjwAZaSaKoqdFcDbXcaDYc5y
+         0qvXliuHwiR9O5jN0F94xt//w89D4tXwTRbIBuOjx2uUztOokG5yrAUd7WlBp9P9Z/oq
+         nb3gQkY58vhqnZx8SRXa0QWVrxFGPSkFJYV8gc0L/+DX5BTPBUhRiO8C2/EKLE38fA0P
+         5pLgYSqmVm7P58KU1M2FgHP5nkD59KgdDnQpbbwcEhL6iAPxbdR+qUhgmkgNvGvb8e9E
+         2cEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750437311; x=1751042111;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hFurqnYI+L7RUrkwAcAgkoscsXJUHEF+OS7OBiZvdjs=;
+        b=wVfhoRBH6ze2RmdhmY5EXZMXprTnxr8XGtKNRkRzXYNun5EkNMpSK44S3XRuYsdR+K
+         K4HxcTssmR0c1GMtj2qvoegWOnZw9x7ab1PsxH4t+PpwEjLlubzv8z1PC6ZFeuUvBnyh
+         CheQHOhPJvKYQaydxn0xG78BEDcKdmwxC5gsYjSc/KpUXGaZoX/Pqee8Fo1faPPCosHL
+         4b4hDojnjOHRmbnpsVW7n5zdgvzxWJea8witjr5Intau2DzIbvpTDCmK9gBcnWnkIGKo
+         dv525Wk81U5tgYDiGQ8TC6DsgmmGyhQ18hGEGq3PWmro3SBVaLCPmTMPOrbJ6Wq3aWS5
+         qeOw==
+X-Forwarded-Encrypted: i=1; AJvYcCXXG9IyZMhFaDVAaNm9NSultchpynwy9y5JQ8LINBllFC2JRBxTZtsFEFezeB1ePUFHpLhA1A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwYCR35hHSGR3nkkmIzyM8+TNvvCyZPjyeikXMWTwqn+Lt7Keth
+	YqxxDzGnvhkl2KVDEkTHAupjG6y78TkC6S0UXhiT944Cz9DfRQ/IwrjZxKi1GZj+ep4=
+X-Gm-Gg: ASbGncs7AdBMM+vCq+PgERM5seaLvU1160xhkx6mC6PBzQQk43C19yT1TlI1Jzeqjfo
+	Ume1kaAtyOk2g792a5OEqXaGq36KNucMF+qujAqc1MV0b5O7MEcddr6gGTTsZNZQhnUqOWQbsup
+	lJo1t1jg0GmdwujK1ZPzSisU3D0CsKqM3Iwptp8Gu0jEMeskXlhWccfL31DAw2p3dhW9KXXWY3c
+	uDi8t3ywBnnIkHYgaK0B83KdGhJeSpiU0qESYh+bDusBfWLMRszaBQRkTejfllHuCed3JaNw4Mh
+	In8ec21/eyjR7wbRPJmoExuPaTwwfJNnUvFl6Qf90R4+PauCEZ+3J6v17Xh1VeBS7X4pwh8diFU
+	xPvQELrXbPe+XHRWXEhcdMnOhC8HriUQ72pUzhw==
+X-Google-Smtp-Source: AGHT+IFA6k631lKxrYTYm+6L/JASXk2MoP+urHg89b8SmimDGgONLFl8B84S2EQnZ661ul3HBMs1NQ==
+X-Received: by 2002:a05:622a:1307:b0:4a7:2357:dc81 with SMTP id d75a77b69052e-4a77a23abbfmr54566761cf.3.1750437311156;
+        Fri, 20 Jun 2025 09:35:11 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4a779d9dbfesm10698501cf.36.2025.06.20.09.35.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Jun 2025 09:35:10 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1uSehp-00000000Es0-48hW;
+	Fri, 20 Jun 2025 13:35:09 -0300
+Date: Fri, 20 Jun 2025 13:35:09 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+	nicolas.dufresne@collabora.com, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, kernel@collabora.com
+Subject: Re: [PATCH v3 3/5] iommu: Add verisilicon IOMMU driver
+Message-ID: <20250620163509.GB39770@ziepe.ca>
+References: <20250619131232.69208-1-benjamin.gaignard@collabora.com>
+ <20250619131232.69208-4-benjamin.gaignard@collabora.com>
+ <20250619134752.GB1643390@ziepe.ca>
+ <073ffe14-d631-4a4f-8668-ddeb7d611448@collabora.com>
+ <20250619165928.GA10257@ziepe.ca>
+ <e034a111-93eb-42e8-a533-46553b4f5588@collabora.com>
+ <20250620120509.GA39770@ziepe.ca>
+ <d9a1b9ab-b6ab-4364-a1b7-df4debc21bc1@collabora.com>
+ <3337df6c-f800-4610-8689-fbd4b4a5d07a@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 4/4] arm64/mm: Elide tlbi in contpte_convert() under
- BBML2
-Content-Language: en-GB
-To: Catalin Marinas <catalin.marinas@arm.com>,
- =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>
-Cc: yang@os.amperecomputing.com, will@kernel.org, jean-philippe@linaro.org,
- robin.murphy@arm.com, joro@8bytes.org, maz@kernel.org,
- oliver.upton@linux.dev, joey.gouly@arm.com, james.morse@arm.com,
- broonie@kernel.org, ardb@kernel.org, baohua@kernel.org,
- suzuki.poulose@arm.com, david@redhat.com, jgg@ziepe.ca, nicolinc@nvidia.com,
- jsnitsel@redhat.com, mshavit@google.com, kevin.tian@intel.com,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-References: <20250617095104.6772-1-miko.lenczewski@arm.com>
- <20250617095104.6772-5-miko.lenczewski@arm.com> <aFRlDSZ2PPnHixjc@arm.com>
-From: Ryan Roberts <ryan.roberts@arm.com>
-In-Reply-To: <aFRlDSZ2PPnHixjc@arm.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <3337df6c-f800-4610-8689-fbd4b4a5d07a@collabora.com>
 
-On 19/06/2025 20:29, Catalin Marinas wrote:
-> On Tue, Jun 17, 2025 at 09:51:04AM +0000, Mikołaj Lenczewski wrote:
->> diff --git a/arch/arm64/mm/contpte.c b/arch/arm64/mm/contpte.c
->> index bcac4f55f9c1..203357061d0a 100644
->> --- a/arch/arm64/mm/contpte.c
->> +++ b/arch/arm64/mm/contpte.c
->> @@ -68,7 +68,144 @@ static void contpte_convert(struct mm_struct *mm, unsigned long addr,
->>  			pte = pte_mkyoung(pte);
->>  	}
->>  
->> -	__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
->> +	/*
->> +	 * On eliding the __tlb_flush_range() under BBML2+noabort:
->> +	 *
->> +	 * NOTE: Instead of using N=16 as the contiguous block length, we use
->> +	 *       N=4 for clarity.
->> +	 *
->> +	 * NOTE: 'n' and 'c' are used to denote the "contiguous bit" being
->> +	 *       unset and set, respectively.
->> +	 *
->> +	 * We worry about two cases where contiguous bit is used:
->> +	 *  - When folding N smaller non-contiguous ptes as 1 contiguous block.
->> +	 *  - When unfolding a contiguous block into N smaller non-contiguous ptes.
->> +	 *
->> +	 * Currently, the BBML0 folding case looks as follows:
->> +	 *
->> +	 *  0) Initial page-table layout:
->> +	 *
->> +	 *   +----+----+----+----+
->> +	 *   |RO,n|RO,n|RO,n|RW,n| <--- last page being set as RO
->> +	 *   +----+----+----+----+
->> +	 *
->> +	 *  1) Aggregate AF + dirty flags using __ptep_get_and_clear():
->> +	 *
->> +	 *   +----+----+----+----+
->> +	 *   |  0 |  0 |  0 |  0 |
->> +	 *   +----+----+----+----+
->> +	 *
->> +	 *  2) __flush_tlb_range():
->> +	 *
->> +	 *   |____ tlbi + dsb ____|
->> +	 *
->> +	 *  3) __set_ptes() to repaint contiguous block:
->> +	 *
->> +	 *   +----+----+----+----+
->> +	 *   |RO,c|RO,c|RO,c|RO,c|
->> +	 *   +----+----+----+----+
+On Fri, Jun 20, 2025 at 04:42:02PM +0200, Benjamin Gaignard wrote:
 > 
-> From the initial layout to point (3), we are also changing the
-> permission. Given the rules you mentioned in the Arm ARM, I think that's
-> safe (hardware seeing either the old or the new attributes). The
-> FEAT_BBM description, however, only talks about change between larger
-> and smaller blocks but no mention of also changing the attributes at the
-> same time. Hopefully the microarchitects claiming certain CPUs don't
-> generate conflict aborts understood what Linux does.
+> Le 20/06/2025 à 15:52, Benjamin Gaignard a écrit :
+> > 
+> > Le 20/06/2025 à 14:05, Jason Gunthorpe a écrit :
+> > > On Fri, Jun 20, 2025 at 10:57:49AM +0200, Benjamin Gaignard wrote:
+> > > > Le 19/06/2025 à 18:59, Jason Gunthorpe a écrit :
+> > > > > On Thu, Jun 19, 2025 at 06:27:52PM +0200, Benjamin Gaignard wrote:
+> > > > > > Le 19/06/2025 à 15:47, Jason Gunthorpe a écrit :
+> > > > > > > Ugh. This ignores the gfp flags that are passed into map because you
+> > > > > > > have to force atomic due to the spinlock that shouldn't be there :(
+> > > > > > > This means it does not set GFP_KERNEL_ACCOUNT when
+> > > > > > > required. It would
+> > > > > > > be better to continue to use the passed in GFP flags
+> > > > > > > but override them
+> > > > > > > to atomic mode.
+> > > > > > I will add a gfp_t parameter and use it like that:
+> > > > > > page_table = iommu_alloc_pages_sz(gfp | GFP_ATOMIC |
+> > > > > > GFP_DMA32, SPAGE_SIZE);
+> > > > > This will or together GFP_ATOMIC and GFP_KERNEL, I don't think that
+> > > > > works..
+> > > > I have test it, I don't see conflicts or errors. What worries you ?
+> > > Just looking at the bitmaps I'm not sure? Did you run with lockdep?
+> > 
+> > Yes and it complains about that.
+> > I see that sun50i driver have more less the same struct than my driver
+> > but doesn't use lock. I will try see if I can remove the lock.
 > 
->> +	 *
->> +	 *  4) The kernel will eventually __flush_tlb() for changed page:
->> +	 *
->> +	 *                  |____| <--- tlbi + dsb
-> [...]
->> +	 * It is also important to note that at the end of the BBML2 folding
->> +	 * case, we are still left with potentially all N TLB entries still
->> +	 * cached (the N-1 non-contiguous ptes, and the single contiguous
->> +	 * block). However, over time, natural TLB pressure will cause the
->> +	 * non-contiguous pte TLB entries to be flushed, leaving only the
->> +	 * contiguous block TLB entry. This means that omitting the tlbi+dsb is
->> +	 * not only correct, but also keeps our eventual performance benefits.
-> 
-> Step 4 above implies some TLB flushing from the core code eventually.
-> What is the situation mentioned in the paragraph above? Is it only until
-> we get the TLB flushing from the core code?
+> I have replace the two spinlock by a mutex in vsi_iommu structure.
+> It seems it works well and lockdep doesn't complain anymore.
 
-I think the point that Miko is making here is that at some point between step 3
-and 4, we could end up with up to any 3 of the original small entries as well as
-the large entry in the TLB. Then the flush at step 4 will only remove the small
-entry at the last entry and the large entry - i.e. it will only remove the
-entries that overlap the region that the tlbi targets, and up to 3 of the small
-entries may be left in the TLB after step 4. Our rationale here was that this is
-safe due to BBML2 and it will naturally sort itself out over time with natural
-eviction.
+You cannot use a sleeping lock within the map/unmap
+functions. Removing the lock is hard for your case because you have
+the cache flushing problem.
 
-> 
-> [...]
->> +	if (!system_supports_bbml2_noabort())
->> +		__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
->>  
->>  	__set_ptes(mm, start_addr, start_ptep, pte, CONT_PTES);
-> 
-> Eliding the TLBI here is all good but looking at the overall set_ptes(),
-> why do we bother with unfold+fold for BBML2? Can we not just change
-> them in place without going through __ptep_get_and_clear()?
+Maybe mask GFP_KERNEL off and then or back in GFP_ATOMIC.
 
-We need to collect the access and dirty bits so we can apply the aggregate
-across all entries. We can only accurately collect the access and dirty bits if
-we go via invalid, otherwise the HW could update after we have read the old
-entry but before we have written the new entry.
-
-Thanks,
-Ryan
-
+Jason
