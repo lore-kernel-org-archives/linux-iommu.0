@@ -1,83 +1,68 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 941171BEF77
-	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 03:32:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 655A51DED5C;
+	Fri, 20 Jun 2025 04:29:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750390355; cv=none; b=U9MQpUIMonZr2JY6fGxr+Tldt6g/ylllnfzRHa0Ngdoq0qjI6vySPbmLH9UsAPOXIWcKz/De03zycaId5AC5BrV8wbwsj0To7q/htgKAPNQykPsQXE1yv0y1b3tIXTbIjIX3EyBFqWoIF3HiPDHqqfuoyiTmAc69FVSTXnpOngU=
+	t=1750393759; cv=none; b=a5Jf1BGzPxnQdwjHXoYNqcRzVNu/a9A+9U9U6DSD94KF8ErCEHkT/a2q2fmplJyB5tRD91ougqvpFLrwzeLTZeFExNDySKiN2M+4pL1vCggppZAKxDFNDwpDJR+mTGltWTrC1RoyZ7GFTkkT6YvU9br/nI8syuhV8BFEt1WnaDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750390355; c=relaxed/simple;
-	bh=9Hg5pobEE7M3tPGS8XdU/oGbneOqIPiRWFR/3Cld4kE=;
+	s=arc-20240116; t=1750393759; c=relaxed/simple;
+	bh=It+X+LhsWdDOwjdBav4EX8XJ1EMBhJqb7BxwKfvsvlY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WmT5wPnRRI9tlwK9VUMLV36PaHBCF49HtFPlfKx5Fr3ffTgFCmIXnnPJ+TLfm5A8N1peatPM2vefmtLL2zJRzQmZ8ts9O7jsCjDrt+lV9PSM9dAtPGSkxzqJYZ86A4R/hkB1Zx5JdkF6AYuw3KUJeGh48ijF4aWAGhGy1+8uFDE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MxbS3juN; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=NXh9sp/ou7DD8mF+kZClT9dBSCTwACmu0e55/cH99OteSVwl+zz5l9XQweu4j6qYpB0R7VKXJBQnDIXeYltsET4nHNc1tgwbOuh3D4EfeIQcApZ7Mc2b8lV1hyPVSHpJpV+V60IG2HCfrV4gTI1oEeeIayLyOU7iJMw4Lv/KAjU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Keo9qEQ5; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MxbS3juN"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2348ac8e0b4so228855ad.1
-        for <iommu@lists.linux.dev>; Thu, 19 Jun 2025 20:32:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1750390352; x=1750995152; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qa/VDd/mSdDHpuvSCZ3/ODd1JXeFiiam1MgWlPeSiGs=;
-        b=MxbS3juNazFI5is62dE1QGwkxbnh1/mTssw8Zt2VwoJ1UMaM17CpAQH+9awzNOPr4V
-         9EfDJ8RMeHNvLhq0+tb39Xa7iKQK2971LrlciLuJQXthl2FwXbj0nHLMCuqkRLfG2eED
-         pfTVV/qqJAT02CqdQBJqQYE2h8vuRuNC7SZlDYQYOX1bkYCg79wcATGO374WVKG1Pge8
-         9Q7o3vOHI5iGV4v04FoLoHrTv5S5/h+TeFvzZexmE4ZOyK9kF1DMW0Si1RAtnSMpEQPl
-         7dWreDngW5+AAaBCDtWtLR1g5/CV9bV1HvEzBK5WuueK5qGKa65TGW4ad08d/b2eJx0V
-         /NPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750390352; x=1750995152;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qa/VDd/mSdDHpuvSCZ3/ODd1JXeFiiam1MgWlPeSiGs=;
-        b=c5PF6DlCszHccQSDn+iMPIdTlfOwMPvHvVMRE7J0+NiopUo9T1famxb77Jz0sKDTZY
-         APt4LPodYE9a/bMX+FgdppQ1rJdierLx3ZccALySWtjSYOoz2KfFTYzOmsoBVxFZdF2F
-         ZeDPGx1lDEQmGzUM04kqDjxJM+wSNENcMSJ8pZU0tIZJuDbcUqGBUO5HD6ZClSLk7o7z
-         L1gZVV+r1TgNw3r23Z0DtMvK75xlHol+tDDHR/8WLIIzKRWtkhRHUKa2+KyAy69BRRka
-         V/aCYmCHLJtdIdo/6+zOJiiLHh8GmrEDsGTbIcOlFsTN3S/Qo4jxzdG3q2xUcfMilATa
-         HqJA==
-X-Forwarded-Encrypted: i=1; AJvYcCX+80MBXnZssGGIttvPvvtPiFUKbT0jD3YiTopWGWaJ409eQprNyM4skmD1Uo/ApGtPVTJnfg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywufbc8w0Z9AwSYO8DOD3DIBoAViPrfJFjyza4KQ70MK3KE174B
-	x5dVnBl2NB03Bthfy0dAnMt+fx6fz6n2zZvZGd4DOhNY8ykvEs4pJlYGAPuxEjCrSg==
-X-Gm-Gg: ASbGnctN154y7QNPS8zBpxdVv4YJrdG2A1m1UmZfBW7WQI0a5C7OqhIj5A+lwQOdRN8
-	F9Y8IuCM8QacrkCNhUA0FcsLVKYxOt+4jQCLycmPhRQom+7YeG0CByg1/0YRyOPl1r9ovYNevT/
-	CtK4TKD1r3kqaDA6vXEHlKRvA8m5evKG+QZyaavVyTRtC7ao0kFG7W7ys3igjhYSXSlBdYHFJLa
-	MCuzgkgmOZkrVgmQPsxaj/lKmSiUws+LYuHk4Hnd7E3F8XyU97RHOadfnn1bb8XnAeXIptDpNcN
-	9tizceX7wo6oaNzTkGHUYZr+KFyEdYWGuDpyaxR3O1dzYVXcik8EUaUo4y9kOym0SXxiKugOsIt
-	4U0U8PDx+236tg7x6jG/aubeSSijcxL0=
-X-Google-Smtp-Source: AGHT+IERsl+HTUr1rqxITuYHKylDMvSd/CxPtRuNjbrAMl+KyO4xPzytclG3wi1xtC95QCov1vt9OA==
-X-Received: by 2002:a17:903:1667:b0:215:f0c6:4dbf with SMTP id d9443c01a7336-237cc9fd3d7mr4672645ad.14.1750390351828;
-        Thu, 19 Jun 2025 20:32:31 -0700 (PDT)
-Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-237d83ce860sm6966175ad.65.2025.06.19.20.32.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Jun 2025 20:32:31 -0700 (PDT)
-Date: Fri, 20 Jun 2025 03:32:19 +0000
-From: Pranjal Shrivastava <praan@google.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Keo9qEQ5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1750393758; x=1781929758;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=It+X+LhsWdDOwjdBav4EX8XJ1EMBhJqb7BxwKfvsvlY=;
+  b=Keo9qEQ5Me4M6lnMHAooEkniX/BuacjOypwTVSfNkzPiFvCa1083Vqb0
+   3dRO/zfUC/QjMx2Jq5Avt9YqUxwyBCPQ0iO9diLkgp9UQsBPaBJ2NUCJK
+   PmUV5FnBaV/4yxgSu+Q5QLUBUohxn5bL8vkSDsb7fDvUfTS8xO5216cCV
+   G6yRpcojuR36yJF/JmTj/lU+20fZ4h1We0ASXtYhapz8SvqxeDMvbsQfV
+   +AKVFXGO+e712zu8kKOCf50wA7vxAa+QuvuxTcgLEzeRPG1kApnFM49po
+   5PV/5kSuWZTs20SEMKvoRmZ6pGoQmxjPgBS+RNiMY0+FbVYQTa4yd0SRT
+   g==;
+X-CSE-ConnectionGUID: kaogmasLS1OdSjQa8pebdA==
+X-CSE-MsgGUID: gnWxWa9XTr+e1uUSYutXew==
+X-IronPort-AV: E=McAfee;i="6800,10657,11469"; a="40257704"
+X-IronPort-AV: E=Sophos;i="6.16,250,1744095600"; 
+   d="scan'208";a="40257704"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2025 21:29:17 -0700
+X-CSE-ConnectionGUID: rWOJemhGSAKbmpWp/SKpxg==
+X-CSE-MsgGUID: 6a20+jVmRau5+Pgdg0r32w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,250,1744095600"; 
+   d="scan'208";a="154817573"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmviesa003.fm.intel.com with ESMTP; 19 Jun 2025 21:29:11 -0700
+Date: Fri, 20 Jun 2025 12:21:49 +0800
+From: Xu Yilun <yilun.xu@linux.intel.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
-	corbet@lwn.net, will@kernel.org, bagasdotme@gmail.com,
-	robin.murphy@arm.com, joro@8bytes.org, thierry.reding@gmail.com,
-	vdumpa@nvidia.com, jonathanh@nvidia.com, shuah@kernel.org,
-	jsnitsel@redhat.com, nathan@kernel.org, peterz@infradead.org,
-	yi.l.liu@intel.com, mshavit@google.com, zhangzekun11@huawei.com,
-	iommu@lists.linux.dev, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-tegra@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	patches@lists.linux.dev, mochs@nvidia.com, alok.a.tiwari@oracle.com,
-	vasant.hegde@amd.com, dwmw2@infradead.org, baolu.lu@linux.intel.com
-Subject: Re: [PATCH v6 20/25] iommu/arm-smmu-v3-iommufd: Add hw_info to
- impl_ops
-Message-ID: <aFTWQ4v6aZABpzeV@google.com>
-References: <cover.1749884998.git.nicolinc@nvidia.com>
- <f36b5e42bac83d0cdf5773cad1c3a44c3eaed396.1749884998.git.nicolinc@nvidia.com>
- <aFP4zHIVT6epJeLb@google.com>
- <20250619185325.GB17127@nvidia.com>
+Cc: kvm@vger.kernel.org, sumit.semwal@linaro.org, christian.koenig@amd.com,
+	pbonzini@redhat.com, seanjc@google.com, alex.williamson@redhat.com,
+	dan.j.williams@intel.com, aik@amd.com, linux-coco@lists.linux.dev,
+	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org, vivek.kasireddy@intel.com,
+	yilun.xu@intel.com, linux-kernel@vger.kernel.org, lukas@wunner.de,
+	yan.y.zhao@intel.com, daniel.vetter@ffwll.ch, leon@kernel.org,
+	baolu.lu@linux.intel.com, zhenzhong.duan@intel.com,
+	tao1.su@intel.com, linux-pci@vger.kernel.org, zhiw@nvidia.com,
+	simona.vetter@ffwll.ch, shameerali.kolothum.thodi@huawei.com,
+	aneesh.kumar@kernel.org, iommu@lists.linux.dev,
+	kevin.tian@intel.com
+Subject: Re: [RFC PATCH 00/30] Host side (KVM/VFIO/IOMMUFD) support for TDISP
+ using TSM
+Message-ID: <aFTh3YASDNtyAc+k@yilunxu-OptiPlex-7050>
+References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
+ <20250602133727.GD233377@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,60 +71,58 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250619185325.GB17127@nvidia.com>
+In-Reply-To: <20250602133727.GD233377@nvidia.com>
 
-On Thu, Jun 19, 2025 at 03:53:25PM -0300, Jason Gunthorpe wrote:
-> On Thu, Jun 19, 2025 at 11:47:24AM +0000, Pranjal Shrivastava wrote:
-> > I'm not sure if I get this right.. if the user (while porting a VMM or
-> > something) mistakenly passes *type == IOMMU_HW_INFO_TYPE_INTEL_VTD here,
-> > they'll get impl-specific info?
+On Mon, Jun 02, 2025 at 10:37:27AM -0300, Jason Gunthorpe wrote:
+> On Thu, May 29, 2025 at 01:34:43PM +0800, Xu Yilun wrote:
 > 
-> It should call the impl hw_info which should fail?
+> > This series has 3 sections:
 > 
-> +static void *tegra241_cmdqv_hw_info(struct arm_smmu_device *smmu, u32 *length,
-> +				    u32 *type)
-> +{
-> +	if (*type != IOMMU_HW_INFO_TYPE_TEGRA241_CMDQV)
-> +		return ERR_PTR(-EOPNOTSUPP);
+> I really think this is too big to try to progress, even in RFC
+> form.
+
+Sorry, I missed this message...
+
+Yeah, I just try to give a overview of what components we need, what the
+expect flow would be like for the first time. Also vendors need as much
+components as possible to enable their own HW and verify this flow works.
+
+We could split into small topics then.
+
+>  
+> > Patch 1 - 11 deal with the private MMIO mapping in KVM MMU via DMABUF.
+> > Leverage Jason & Vivek's latest VFIO dmabuf series [3], see Patch 2 - 4.
+> > The concern for get_pfn() kAPI [4] is not addressed so are marked as
+> > HACK, will investigate later.
 > 
-> If impl ops is null/etc then it fails:
+> I would probably split this out entirely into its own topic. It
+> doesn't seem directly related to TSM as KVM can use DMABUF for good
+> reasons independently .
+
+Yes, since I'm not work on improving this for now, I'll not include this
+part next time. Will start independent thread if there is update.
+
 > 
-> +             if (!impl_ops || !impl_ops->hw_info)
-> +                     return ERR_PTR(-EOPNOTSUPP);
+> > Patch 12 - 22 is about TSM Bind/Unbind/Guest request management in VFIO
+> > & IOMMUFD. Picks some of Shameer's patch in [5], see Patch 12 & 14.
 > 
-> Where does IOMMU_HW_INFO_TYPE_INTEL_VTD return something?
+> This is some reasonable topic on its own after Dan's series
+
+OK, I'll just focus on this for next version.
+
+>  
+> > Patch 23 - 30 is a solution to meet the TDX specific sequence
+> > enforcement on various device Unbind cases, including converting device
+> > back to shared, hot unplug, TD destroy. Start with a tdx_tsm driver
+> > prototype and finally implement the Unbind enforcement inside the
+> > driver. To be honest it is still awkward to me, but I need help.
 > 
+> Then you have a series or two to implement TDX using the infrastructure.
 
-I mean, the check in the driver (for e.g. arm-smmu-v3) is:
+Yeah, this should happen after "IOMMUFD for trusted".
 
- if (*type != IOMMU_HW_INFO_TYPE_DEFAULT &&
-     *type != IOMMU_HW_INFO_TYPE_ARM_SMMUV3)
+Thanks,
+Yilun
 
-     // call impl_ops
-
-My point is that in-case someone passed INTEL_VTD type, we would end up
-calling impl_ops->hw_info and then the impl_ops->hw_info shall check for
-the type to return -EOPNOTSUPP. Either we should clearly mention that
-each impl_op implementing hw_info *must* add another type and check for
-it OR we could have sub-types for implementations extending a main type
-somehow?
-
-
-> > I agree in that case the impl-specific
-> > driver needs to check the type, but shouldn't we simply return from here
-> > itself if the type isn't arm-smmu-v3?
 > 
-> Then how do you return IOMMU_HW_INFO_TYPE_TEGRA241_CMDQV?
-> 
-
-The current version is just fine with a doc string mentioning type
-checks within impl_ops->hw_info OR we could have sub-types for
-implementations extending some architectural IOMMU. 
-
-I'm just trying to avoid weird bug reports in the future because some
-impl didn't check for their type.
-
 > Jason
-
-Thanks
-Praan
