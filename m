@@ -1,106 +1,213 @@
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+Received: from mail-pj1-f74.google.com (mail-pj1-f74.google.com [209.85.216.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AE0C2E62AB
-	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 16:36:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 627F61FE45A
+	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 17:22:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750437378; cv=none; b=fnNA4goZm6PHjza9+XUkOrQZrB/7ubvbMRL6L82896tNCUhZFt2OaU/dGKg+Nojd+X7Wjn5TCrXebv6Fr4pto1OvzJptcwkhlWsqYPI/uZW7mqX8z1/Qk5/qzmMMKDnALQAMuWTU5WLBKFB0ic2IVwduqCd3JC8p6hIYhHxbMes=
+	t=1750440155; cv=none; b=fJ+s2rOcckinF0M6s6l5vDZ+OgJyCG1BGeRJnHf/bRxEdTuSfdDB+XGqt3SP0cobee6wXPrUM50lJQcL0asK+s6YF5oe+BthzTtYLRwnhg3AjClHGsvy//3NjQG4NMWO2QA/S+oJ11coJbt9TaH87XgSP63X7KtYE+wjLqufDow=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750437378; c=relaxed/simple;
-	bh=GB2QSxOXPLCCKsHcC8diOJcoWq3MI5uEslI8P9rodFw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WSXqgRrfUq9Fl/kCJBSEMgWOI7KNiNO/7q/iLIV3hVg2bYkG0zlhIMdf7g8koCASP4ri7lR6C+Sum2xtY2JFwChcJcbzT5vUIYzSWqEI+CPJ9PBwsxml4TKr3frDrJoqbXnkuPwuDJMHwYCkvyvI/sEiSUHFbSGD44ScoE1+i/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=NWwokxp7; arc=none smtp.client-ip=209.85.219.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1750440155; c=relaxed/simple;
+	bh=6ISGtVsG/IWGFssbzjNwBrProURsy368G0H6yNcnXt4=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=KK2GC65RZNpKlEtOmcmajzEZkbU0EBcJFs9gI/2CUspiELeNclJm4IPxdYL4bfD5lgAlx4kOtdKJQ75h1dd5l3ZJKaygBTyFgi5x85we+7yDDzQ4XcZtuCqU0Oi8CcMHny4kKaIQP8TK3uWWVYErAXgygGnOhBmK4syjNqalHmM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fR/hqiRi; arc=none smtp.client-ip=209.85.216.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="NWwokxp7"
-Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6fb0a05b56cso41798936d6.3
-        for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 09:36:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fR/hqiRi"
+Received: by mail-pj1-f74.google.com with SMTP id 98e67ed59e1d1-31218e2d5b0so3307386a91.2
+        for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 10:22:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1750437376; x=1751042176; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uJYXWxLY4HLgWwCr48sF3PGs/sRochGTLyGIU3biNNU=;
-        b=NWwokxp7YQsnIzB9rdjPT9Z2eWTZ2jYTNGbZ1TWpgKhlgOPQoSwB8tfShFaMkudeij
-         A/PUU2AUbMNoAVtMrkXuc7RbhI9yAMqHWaoSyj2eRbJfqUY5tfe55MF62XXyBLkK4ykr
-         MObMQ6nClcqEw+nwhG91+Tx+P4RNBr6Lnx1EMm7ZKgKLMK/qkUIswzde3Z3E0ATp8aqj
-         v+GSlOWgpQkpYxXGpGJNfQ94yNVTe+onIEiQFZQlgBaI+LAhxcEfVlekkRRx22HSAnJX
-         UKLgdR8FXSlxpbJmk9szXeb4V5OqvZ3yX41LMC4s51Xm9PFZOy/kwLahkLYXexlBqrXq
-         ryOA==
+        d=google.com; s=20230601; t=1750440153; x=1751044953; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=NErYkcwCW0ofBX6e5hYOIbXlxwjpJ4sRagkANyVcFH4=;
+        b=fR/hqiRiJ7CS3FrAe/umN/LHMa0/c0AXdaiVLYt+9aLjr3YFaWVtx8z7I6HxBxbmmo
+         Tf0Bmx/4ZLjRQs1qOhsT9MYvwkvWG4yzTicTDBRGAIT6Gz9qjaZXLj7yUikI8agZnXwV
+         GPaPT5M+p3hIoVKPQVe1l/0BiUVz8lJQJDaQV/GlDVjOAYEGrQXPPdKFqyuRF4LqH6oJ
+         Iv3s3NSp1sHIuqn0scsvtnnVjDr8fkUvn7svlLJM/O9yaPW58Zw3aZOvqYW5B7yeFVvR
+         rTMd13vRMEKTJJyoWVHVJdX4uytGn74XGO88RTpvhpeyYsMrCtiEwaTqPYM+bxK25xLj
+         kitQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750437376; x=1751042176;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uJYXWxLY4HLgWwCr48sF3PGs/sRochGTLyGIU3biNNU=;
-        b=nUAd2I8BKxwufOVonQEqbYgplYm7B5D2y1z9Kvc7+SG1IaJn9pQum1KqkhmrF7HQ9b
-         RhtiM8exdbUtdlqLdIvfQFvJjNmns7ao7/HZdXjT63291dqutd0zcqX3mAO36TveP1Fa
-         +np3jx0Sxhso/SBH4S9D5Zbw9pf7lUfDBrxFdhNqXBPjEhI5c5OwXgPKKOqrl8ngJMSX
-         hvIT2sTQfQi8jEDayvYV63C+gNbnstNzxopIC1x2l6i/Fl3/9FAxN6tnVQ1nb2RswQdf
-         VKGR4SCv3FtsqJburFDOtnmAWXEA/vjOA7ByTM0iPnZeqkmR5l4gxTWct6Rft5nFSUt1
-         Ow1w==
-X-Forwarded-Encrypted: i=1; AJvYcCUHDEIjU+ScNjtF1GJZuQNHquGufZaCopGY89Kx2njLrhOo2GVnNH3cgEojYiUfyrL9y+/dtQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxSl3wwCPfEX3m+oFcAAKoTnvQL+cVsAkgFZJmcCeklyfwgGskh
-	GHjNtKI5xkgPCuYqVAFuOicRd454ghAL5mTnTajbXf/ktqiXToQBunhyM86+cuGpBKk=
-X-Gm-Gg: ASbGncuG3ojOpWpZeRAStiBDPqgcMFDSuXwsXdPbty1lXUfEUdChNzKF58MOUsTRbec
-	zdnsQ3EYT2iS00N0kHd4Ko9ygNVTdiWnda3iewA8tysWNq+YZ1EWGGZ62OjFwlGekcmGc7AWEBb
-	z5etWbkhZqvOt7hWy893lhDMizgUf7qgROxtPowKvCIcznKblqckzkFB8xWEdVlwAj7nQd2x7x2
-	FRTccZPytr+2A4ANvM1CW+8agMGSI+6qAuDdcarPSNQu8UAh9dQKd+/eRyO8I2g177D/r2OHQxI
-	oJXRjbW2vr/1UIDsuu5W0y9MAa4fPlhudNzkNKpU0R+Esky/Jucus1zmbAylcBlS7G1vlUhSlfL
-	mCQcY4agRR7E2TppkHJLrPkct4HduZauR+wHp2Q==
-X-Google-Smtp-Source: AGHT+IHyontIEkY5vAgGgYhS+U+r5SqIyyHQ9UkviOZGeU6jrV3bzO+5OOnHkugt3y3GJ2IEIkVU5A==
-X-Received: by 2002:ad4:5de4:0:b0:6fa:ccb6:602a with SMTP id 6a1803df08f44-6fd0a51b3d7mr63974736d6.20.1750437376130;
-        Fri, 20 Jun 2025 09:36:16 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-6fd09596e6bsm13876946d6.100.2025.06.20.09.36.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Jun 2025 09:36:15 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uSeit-00000000EsP-10Pb;
-	Fri, 20 Jun 2025 13:36:15 -0300
-Date: Fri, 20 Jun 2025 13:36:15 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
-	nicolas.dufresne@collabora.com, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, kernel@collabora.com
-Subject: Re: [PATCH v3 3/5] iommu: Add verisilicon IOMMU driver
-Message-ID: <20250620163615.GC39770@ziepe.ca>
-References: <20250619131232.69208-1-benjamin.gaignard@collabora.com>
- <20250619131232.69208-4-benjamin.gaignard@collabora.com>
- <20250619134752.GB1643390@ziepe.ca>
- <073ffe14-d631-4a4f-8668-ddeb7d611448@collabora.com>
- <20250619165928.GA10257@ziepe.ca>
- <e034a111-93eb-42e8-a533-46553b4f5588@collabora.com>
- <20250620120509.GA39770@ziepe.ca>
- <d9a1b9ab-b6ab-4364-a1b7-df4debc21bc1@collabora.com>
+        d=1e100.net; s=20230601; t=1750440153; x=1751044953;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=NErYkcwCW0ofBX6e5hYOIbXlxwjpJ4sRagkANyVcFH4=;
+        b=opMIhvOHYrq1ZgvWmVL+EWT1KXK4VQo1I5Nsf5IanFwj7Dx6IDKsv6XCS8PhY59SY/
+         YSlsWk+QRTKdq34cp4MQMGHpAegGpaLQRAI911iS79ULnFmFfeU9NQ03ZHmgy/HvWC9u
+         GdPDJp/UAv9SplWAb3xQ69R8SmqbRX6DJqAt+VaqwUYy4ZoLj9cnroEficiVMY5elJ95
+         5DElUZF/8/fSNKHCkTuAStle1WJQj1yznz1+XUBDvyG/1PxfTk7I6/dUrxpIL/WvHcrY
+         jFOFC5rqFiFTPiuyDAsoBPKMnXFb91wphE6O6/udSaBpUG+9eYsTDirtCvIsBJMnulBj
+         DUMg==
+X-Forwarded-Encrypted: i=1; AJvYcCUWfbJgdNxRSgTS+2A/OsoX8SjlIpbIoeUaR2di5mq5cUYMX7Sb5SkiCYSIVy9pjiJniQBqOw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyW2WPjnPx1yxlUsgrwsTsjONzBkKVJF7cihGONW+z3OZVhLz1c
+	Ol3Q7Cd6KsylnILrLdaBjvpHWCroHFfrTxxlvLdHPyo4uGKvsqQZK3ZQ9yUtzKZoLgIu9k08m4B
+	BLj+1kg==
+X-Google-Smtp-Source: AGHT+IHXGxBdpxT88k3O204/zN4ifc12tJw1aK+nMcKj7rx2Ml8z17hcOCexso6J6CnRpxLft2px3MEAX6w=
+X-Received: from pjbpl17.prod.google.com ([2002:a17:90b:2691:b0:311:4aa8:2179])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:90a:c883:b0:311:ab20:159a
+ with SMTP id 98e67ed59e1d1-3159d8d9098mr6199506a91.29.1750440153664; Fri, 20
+ Jun 2025 10:22:33 -0700 (PDT)
+Date: Fri, 20 Jun 2025 10:22:32 -0700
+In-Reply-To: <aEyOcJJsys9mm_Xs@linux.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d9a1b9ab-b6ab-4364-a1b7-df4debc21bc1@collabora.com>
+Mime-Version: 1.0
+References: <20250611224604.313496-2-seanjc@google.com> <20250611224604.313496-4-seanjc@google.com>
+ <86tt4lcgs3.wl-maz@kernel.org> <aErlezuoFJ8u0ue-@google.com> <aEyOcJJsys9mm_Xs@linux.dev>
+Message-ID: <aFWY2LTVIxz5rfhh@google.com>
+Subject: Re: [PATCH v3 02/62] KVM: arm64: WARN if unmapping vLPI fails
+From: Sean Christopherson <seanjc@google.com>
+To: Oliver Upton <oliver.upton@linux.dev>
+Cc: Marc Zyngier <maz@kernel.org>, Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
+	kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
+	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
+Content-Type: text/plain; charset="us-ascii"
 
-On Fri, Jun 20, 2025 at 03:52:46PM +0200, Benjamin Gaignard wrote:
-> > > vsi_iommu_suspend() and vsi_iommu_resume() will also have to take the lock
-> > > before calling vsi_iommu_disable() and vsi_iommu_enable().
-> > Yes, if they use iommu->domain that seems good
-> > 
-> > If the above locking is a problem then I'd use the group mutex instead
-> > during resume/suspend. The attach functions are already called with
-> > the group mutex held.
+On Fri, Jun 13, 2025, Oliver Upton wrote:
+> On Thu, Jun 12, 2025 at 07:34:35AM -0700, Sean Christopherson wrote:
+> > On Thu, Jun 12, 2025, Marc Zyngier wrote:
+> > > But not having an VLPI mapping for an interrupt at the point where we're
+> > > tearing down the forwarding is pretty benign. IRQs *still* go where they
+> > > should, and we don't lose anything.
 > 
-> Does group mutex is also called when using vsi_iommu_map or vsi_iommu_unmap ?
+> The VM may not actually be getting torn down, though. The series of
+> fixes [*] we took for 6.16 addressed games that VMMs might be playing on
+> irqbypass for a live VM.
+> 
+> [*] https://lore.kernel.org/kvmarm/20250523194722.4066715-1-oliver.upton@linux.dev/
+> 
+> > All of those failure scenario seem like warnable offences when KVM thinks it has
+> > configured the IRQ to be forwarded to a vCPU.
+> 
+> I tend to agree here, especially considering how horribly fragile GICv4
+> has been in some systems. I know of a couple implementations where ITS
+> command failures and/or unmapped MSIs are fatal for the entire machine.
+> Debugging them has been a genuine pain in the ass.
+> 
+> WARN'ing when state tracking for vLPIs is out of whack would've made it
+> a little easier.
 
-No
+Marc, does this look and read better?
 
-Jason
+I'd really, really like to get this sorted out asap, as it's the only thing
+blocking the series, and I want to get the series into linux-next early next
+week, before I go OOO for ~10 days.
+
+--
+From: Sean Christopherson <seanjc@google.com>
+Date: Thu, 12 Jun 2025 16:51:47 -0700
+Subject: [PATCH] KVM: arm64: WARN if unmapping a vLPI fails in any path
+
+When unmapping a vLPI, WARN if nullifying vCPU affinity fails, not just if
+failure occurs when freeing an ITE.  If undoing vCPU affinity fails, then
+odds are very good that vLPI state tracking has has gotten out of whack,
+i.e. that KVM and the GIC disagree on the state of an IRQ/vLPI.  At best,
+inconsistent state means there is a lurking bug/flaw somewhere.  At worst,
+the inconsistency could eventually be fatal to the host, e.g. if an ITS
+command fails because KVM's view of things doesn't match reality/hardware.
+
+Note, only the call from kvm_arch_irq_bypass_del_producer() by way of
+kvm_vgic_v4_unset_forwarding() doesn't already WARN.  Common KVM's
+kvm_irq_routing_update() WARNs if kvm_arch_update_irqfd_routing() fails.
+For that path, if its_unmap_vlpi() fails in kvm_vgic_v4_unset_forwarding(),
+the only possible causes are that the GIC doesn't have a v4 ITS (from
+its_irq_set_vcpu_affinity()):
+
+        /* Need a v4 ITS */
+        if (!is_v4(its_dev->its))
+                return -EINVAL;
+
+        guard(raw_spinlock)(&its_dev->event_map.vlpi_lock);
+
+        /* Unmap request? */
+        if (!info)
+                return its_vlpi_unmap(d);
+
+or that KVM has gotten out of sync with the GIC/ITS (from its_vlpi_unmap()):
+
+        if (!its_dev->event_map.vm || !irqd_is_forwarded_to_vcpu(d))
+                return -EINVAL;
+
+All of the above failure scenarios are warnable offences, as they should
+never occur absent a kernel/KVM bug.
+
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+---
+ arch/arm64/kvm/vgic/vgic-its.c     | 2 +-
+ arch/arm64/kvm/vgic/vgic-v4.c      | 4 ++--
+ drivers/irqchip/irq-gic-v4.c       | 4 ++--
+ include/linux/irqchip/arm-gic-v4.h | 2 +-
+ 4 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm64/kvm/vgic/vgic-its.c b/arch/arm64/kvm/vgic/vgic-its.c
+index 534049c7c94b..98630dae910d 100644
+--- a/arch/arm64/kvm/vgic/vgic-its.c
++++ b/arch/arm64/kvm/vgic/vgic-its.c
+@@ -758,7 +758,7 @@ static void its_free_ite(struct kvm *kvm, struct its_ite *ite)
+ 	if (irq) {
+ 		scoped_guard(raw_spinlock_irqsave, &irq->irq_lock) {
+ 			if (irq->hw)
+-				WARN_ON(its_unmap_vlpi(ite->irq->host_irq));
++				its_unmap_vlpi(ite->irq->host_irq);
+ 
+ 			irq->hw = false;
+ 		}
+diff --git a/arch/arm64/kvm/vgic/vgic-v4.c b/arch/arm64/kvm/vgic/vgic-v4.c
+index 193946108192..911170d4a9c8 100644
+--- a/arch/arm64/kvm/vgic/vgic-v4.c
++++ b/arch/arm64/kvm/vgic/vgic-v4.c
+@@ -545,10 +545,10 @@ int kvm_vgic_v4_unset_forwarding(struct kvm *kvm, int host_irq)
+ 	if (irq->hw) {
+ 		atomic_dec(&irq->target_vcpu->arch.vgic_cpu.vgic_v3.its_vpe.vlpi_count);
+ 		irq->hw = false;
+-		ret = its_unmap_vlpi(host_irq);
++		its_unmap_vlpi(host_irq);
+ 	}
+ 
+ 	raw_spin_unlock_irqrestore(&irq->irq_lock, flags);
+ 	vgic_put_irq(kvm, irq);
+-	return ret;
++	return 0;
+ }
+diff --git a/drivers/irqchip/irq-gic-v4.c b/drivers/irqchip/irq-gic-v4.c
+index 58c28895f8c4..8455b4a5fbb0 100644
+--- a/drivers/irqchip/irq-gic-v4.c
++++ b/drivers/irqchip/irq-gic-v4.c
+@@ -342,10 +342,10 @@ int its_get_vlpi(int irq, struct its_vlpi_map *map)
+ 	return irq_set_vcpu_affinity(irq, &info);
+ }
+ 
+-int its_unmap_vlpi(int irq)
++void its_unmap_vlpi(int irq)
+ {
+ 	irq_clear_status_flags(irq, IRQ_DISABLE_UNLAZY);
+-	return irq_set_vcpu_affinity(irq, NULL);
++	WARN_ON_ONCE(irq_set_vcpu_affinity(irq, NULL));
+ }
+ 
+ int its_prop_update_vlpi(int irq, u8 config, bool inv)
+diff --git a/include/linux/irqchip/arm-gic-v4.h b/include/linux/irqchip/arm-gic-v4.h
+index 7f1f11a5e4e4..0b0887099fd7 100644
+--- a/include/linux/irqchip/arm-gic-v4.h
++++ b/include/linux/irqchip/arm-gic-v4.h
+@@ -146,7 +146,7 @@ int its_commit_vpe(struct its_vpe *vpe);
+ int its_invall_vpe(struct its_vpe *vpe);
+ int its_map_vlpi(int irq, struct its_vlpi_map *map);
+ int its_get_vlpi(int irq, struct its_vlpi_map *map);
+-int its_unmap_vlpi(int irq);
++void its_unmap_vlpi(int irq);
+ int its_prop_update_vlpi(int irq, u8 config, bool inv);
+ int its_prop_update_vsgi(int irq, u8 priority, bool group);
+ 
+
+base-commit: 4fc39a165c70a49991b7cc29be3a19eddcd9e5b9
+--
