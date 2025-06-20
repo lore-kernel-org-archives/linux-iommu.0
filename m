@@ -1,128 +1,155 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 655A51DED5C;
-	Fri, 20 Jun 2025 04:29:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ABE0221290
+	for <iommu@lists.linux.dev>; Fri, 20 Jun 2025 06:10:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750393759; cv=none; b=a5Jf1BGzPxnQdwjHXoYNqcRzVNu/a9A+9U9U6DSD94KF8ErCEHkT/a2q2fmplJyB5tRD91ougqvpFLrwzeLTZeFExNDySKiN2M+4pL1vCggppZAKxDFNDwpDJR+mTGltWTrC1RoyZ7GFTkkT6YvU9br/nI8syuhV8BFEt1WnaDk=
+	t=1750399836; cv=none; b=UpGYwM6P+OANbFg4Qr2FdxzXpwWb5bBYGC3Fc9TXhdjXitdphYrQU9/8IS+pm6KhAu6wp9QNQvZTpRG82FZZveHC5CQIElK7p2OkURGc1n6uFKS0mQK5Z170oceCynq9wYOg2JkhaTfU25o4iEAIiY6QA+4+BkUm5FSvRO0qL6A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750393759; c=relaxed/simple;
-	bh=It+X+LhsWdDOwjdBav4EX8XJ1EMBhJqb7BxwKfvsvlY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NXh9sp/ou7DD8mF+kZClT9dBSCTwACmu0e55/cH99OteSVwl+zz5l9XQweu4j6qYpB0R7VKXJBQnDIXeYltsET4nHNc1tgwbOuh3D4EfeIQcApZ7Mc2b8lV1hyPVSHpJpV+V60IG2HCfrV4gTI1oEeeIayLyOU7iJMw4Lv/KAjU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Keo9qEQ5; arc=none smtp.client-ip=192.198.163.16
+	s=arc-20240116; t=1750399836; c=relaxed/simple;
+	bh=MHJanwY6fC5DvEjyFwwCVe+35ey974zZGBx0Y330LEw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=i/Pt9wLcPPBjHoRbd2Lh0grbKgQuoQTn+IDfuHqZrf5/evxQN0HTjLASfTL4iQ+ugi3XI0VaQwrft9XwNaw1Q/TtAKXZojD3QQ5xY+tgFdh4+i8Ab+pBjqDL8wuR5VDvmNPM+MYdOMZh8ZEyzs16hH4cgAHazv6fRIUy2aJkPGI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DUdaOiXp; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Keo9qEQ5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DUdaOiXp"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750393758; x=1781929758;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=It+X+LhsWdDOwjdBav4EX8XJ1EMBhJqb7BxwKfvsvlY=;
-  b=Keo9qEQ5Me4M6lnMHAooEkniX/BuacjOypwTVSfNkzPiFvCa1083Vqb0
-   3dRO/zfUC/QjMx2Jq5Avt9YqUxwyBCPQ0iO9diLkgp9UQsBPaBJ2NUCJK
-   PmUV5FnBaV/4yxgSu+Q5QLUBUohxn5bL8vkSDsb7fDvUfTS8xO5216cCV
-   G6yRpcojuR36yJF/JmTj/lU+20fZ4h1We0ASXtYhapz8SvqxeDMvbsQfV
-   +AKVFXGO+e712zu8kKOCf50wA7vxAa+QuvuxTcgLEzeRPG1kApnFM49po
-   5PV/5kSuWZTs20SEMKvoRmZ6pGoQmxjPgBS+RNiMY0+FbVYQTa4yd0SRT
-   g==;
-X-CSE-ConnectionGUID: kaogmasLS1OdSjQa8pebdA==
-X-CSE-MsgGUID: gnWxWa9XTr+e1uUSYutXew==
-X-IronPort-AV: E=McAfee;i="6800,10657,11469"; a="40257704"
+  t=1750399835; x=1781935835;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=MHJanwY6fC5DvEjyFwwCVe+35ey974zZGBx0Y330LEw=;
+  b=DUdaOiXpAIEGV214C05ePN8vd0mO89QCX/2PGDbYRPzqUlOPmA0MKloh
+   F584RjnZxhCfvl+HDAXQl+mx2PmCuBrEf7BHcKbUhZrVXsI9huaoX2wtE
+   K869IM9auY1sUyBRtI7JPqj8baMLxnJjwkGv2M7N9FKyr6+N4eiIo92ss
+   TZXBQP2uspEX3WuPtgeah/QbzNzLsV+Q7fZtgxBMRXwSEGNev2ZYY7nfs
+   mu6MaGoEVT1B9VzClqVxR8PbDijU1VW2viPuNtThcbcxW+w2r9BVpd5/Q
+   03XHbP1riFF0KRseuV/GGt8xWiHNp0aKfELw4RkMpHDKwhk9QagUKUSfu
+   A==;
+X-CSE-ConnectionGUID: aN/z/ItzSZa750bXwhD5Dg==
+X-CSE-MsgGUID: TWewbuOPRze8l4bBrQIEfg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11469"; a="52739741"
 X-IronPort-AV: E=Sophos;i="6.16,250,1744095600"; 
-   d="scan'208";a="40257704"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2025 21:29:17 -0700
-X-CSE-ConnectionGUID: rWOJemhGSAKbmpWp/SKpxg==
-X-CSE-MsgGUID: 6a20+jVmRau5+Pgdg0r32w==
+   d="scan'208";a="52739741"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jun 2025 23:10:35 -0700
+X-CSE-ConnectionGUID: xuRE8HhTQvmuxZy4+OJG+A==
+X-CSE-MsgGUID: YihgLFvVT2SqD8EF48tANA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,250,1744095600"; 
-   d="scan'208";a="154817573"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmviesa003.fm.intel.com with ESMTP; 19 Jun 2025 21:29:11 -0700
-Date: Fri, 20 Jun 2025 12:21:49 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: kvm@vger.kernel.org, sumit.semwal@linaro.org, christian.koenig@amd.com,
-	pbonzini@redhat.com, seanjc@google.com, alex.williamson@redhat.com,
-	dan.j.williams@intel.com, aik@amd.com, linux-coco@lists.linux.dev,
-	dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org,
-	linaro-mm-sig@lists.linaro.org, vivek.kasireddy@intel.com,
-	yilun.xu@intel.com, linux-kernel@vger.kernel.org, lukas@wunner.de,
-	yan.y.zhao@intel.com, daniel.vetter@ffwll.ch, leon@kernel.org,
-	baolu.lu@linux.intel.com, zhenzhong.duan@intel.com,
-	tao1.su@intel.com, linux-pci@vger.kernel.org, zhiw@nvidia.com,
-	simona.vetter@ffwll.ch, shameerali.kolothum.thodi@huawei.com,
-	aneesh.kumar@kernel.org, iommu@lists.linux.dev,
-	kevin.tian@intel.com
-Subject: Re: [RFC PATCH 00/30] Host side (KVM/VFIO/IOMMUFD) support for TDISP
- using TSM
-Message-ID: <aFTh3YASDNtyAc+k@yilunxu-OptiPlex-7050>
-References: <20250529053513.1592088-1-yilun.xu@linux.intel.com>
- <20250602133727.GD233377@nvidia.com>
+   d="scan'208";a="150412278"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by fmviesa007.fm.intel.com with ESMTP; 19 Jun 2025 23:10:32 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/1] iommu/vt-d: Enable ATS before cache tag assignment
+Date: Fri, 20 Jun 2025 14:08:02 +0800
+Message-ID: <20250620060802.3036137-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250602133727.GD233377@nvidia.com>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Jun 02, 2025 at 10:37:27AM -0300, Jason Gunthorpe wrote:
-> On Thu, May 29, 2025 at 01:34:43PM +0800, Xu Yilun wrote:
-> 
-> > This series has 3 sections:
-> 
-> I really think this is too big to try to progress, even in RFC
-> form.
+Commit <4f1492efb495> ("iommu/vt-d: Revert ATS timing change to fix boot
+failure") placed the enabling of ATS in the probe_finalize callback. This
+occurs after the default domain attachment, which is when the ATS cache
+tag is assigned. Consequently, the device TLB cache tag is missed when the
+domain is attached, leading to the device TLB not being invalidated in the
+iommu_unmap paths.
 
-Sorry, I missed this message...
+Fix it by moving the ATS enabling to the default domain attachment path,
+ensuring ATS is enabled before the cache tag assignment.
 
-Yeah, I just try to give a overview of what components we need, what the
-expect flow would be like for the first time. Also vendors need as much
-components as possible to enable their own HW and verify this flow works.
+Fixes: 4f1492efb495 ("iommu/vt-d: Revert ATS timing change to fix boot failure")
+Cc: stable@vger.kernel.org
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-We could split into small topics then.
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 7aa3932251b2..863ccb47bcca 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -54,6 +54,7 @@
+ 				__DOMAIN_MAX_PFN(gaw), (unsigned long)-1))
+ #define DOMAIN_MAX_ADDR(gaw)	(((uint64_t)__DOMAIN_MAX_PFN(gaw)) << VTD_PAGE_SHIFT)
+ 
++static void sm_iommu_enable_pcicaps(struct device *dev);
+ static void __init check_tylersburg_isoch(void);
+ static int rwbf_quirk;
+ 
+@@ -1825,10 +1826,11 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
+ 	else
+ 		ret = domain_setup_second_level(iommu, domain, dev,
+ 						IOMMU_NO_PASID, NULL);
+-
+ 	if (ret)
+ 		goto out_block_translation;
+ 
++	/* PCI ATS enablement must happen before cache tag assigning. */
++	sm_iommu_enable_pcicaps(dev);
+ 	ret = cache_tag_assign_domain(domain, dev, IOMMU_NO_PASID);
+ 	if (ret)
+ 		goto out_block_translation;
+@@ -3765,11 +3767,18 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 	return ERR_PTR(ret);
+ }
+ 
+-static void intel_iommu_probe_finalize(struct device *dev)
++static void sm_iommu_enable_pcicaps(struct device *dev)
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 	struct intel_iommu *iommu = info->iommu;
+ 
++	/*
++	 * Called only in iommu_device_register() path when iommu is
++	 * configured in the scalable mode.
++	 */
++	if (!sm_supported(iommu) || READ_ONCE(iommu->iommu.ready))
++		return;
++
+ 	/*
+ 	 * The PCIe spec, in its wisdom, declares that the behaviour of the
+ 	 * device is undefined if you enable PASID support after ATS support.
+@@ -3780,7 +3789,7 @@ static void intel_iommu_probe_finalize(struct device *dev)
+ 	    !pci_enable_pasid(to_pci_dev(dev), info->pasid_supported & ~1))
+ 		info->pasid_enabled = 1;
+ 
+-	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev))
++	if (!dev_is_real_dma_subdevice(dev))
+ 		iommu_enable_pci_ats(info);
+ 	iommu_enable_pci_pri(info);
+ }
+@@ -4309,6 +4318,7 @@ static int identity_domain_attach_dev(struct iommu_domain *domain, struct device
+ 		ret = intel_pasid_setup_pass_through(iommu, dev, IOMMU_NO_PASID);
+ 	else
+ 		ret = device_setup_pass_through(dev);
++	sm_iommu_enable_pcicaps(dev);
+ 
+ 	if (!ret)
+ 		info->domain_attached = true;
+@@ -4359,7 +4369,6 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.domain_alloc_sva	= intel_svm_domain_alloc,
+ 	.domain_alloc_nested	= intel_iommu_domain_alloc_nested,
+ 	.probe_device		= intel_iommu_probe_device,
+-	.probe_finalize		= intel_iommu_probe_finalize,
+ 	.release_device		= intel_iommu_release_device,
+ 	.get_resv_regions	= intel_iommu_get_resv_regions,
+ 	.device_group		= intel_iommu_device_group,
+-- 
+2.43.0
 
->  
-> > Patch 1 - 11 deal with the private MMIO mapping in KVM MMU via DMABUF.
-> > Leverage Jason & Vivek's latest VFIO dmabuf series [3], see Patch 2 - 4.
-> > The concern for get_pfn() kAPI [4] is not addressed so are marked as
-> > HACK, will investigate later.
-> 
-> I would probably split this out entirely into its own topic. It
-> doesn't seem directly related to TSM as KVM can use DMABUF for good
-> reasons independently .
-
-Yes, since I'm not work on improving this for now, I'll not include this
-part next time. Will start independent thread if there is update.
-
-> 
-> > Patch 12 - 22 is about TSM Bind/Unbind/Guest request management in VFIO
-> > & IOMMUFD. Picks some of Shameer's patch in [5], see Patch 12 & 14.
-> 
-> This is some reasonable topic on its own after Dan's series
-
-OK, I'll just focus on this for next version.
-
->  
-> > Patch 23 - 30 is a solution to meet the TDX specific sequence
-> > enforcement on various device Unbind cases, including converting device
-> > back to shared, hot unplug, TD destroy. Start with a tdx_tsm driver
-> > prototype and finally implement the Unbind enforcement inside the
-> > driver. To be honest it is still awkward to me, but I need help.
-> 
-> Then you have a series or two to implement TDX using the infrastructure.
-
-Yeah, this should happen after "IOMMUFD for trusted".
-
-Thanks,
-Yilun
-
-> 
-> Jason
