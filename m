@@ -1,101 +1,108 @@
-Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [83.223.95.100])
+Received: from maynard.decadent.org.uk (maynard.decadent.org.uk [65.21.191.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16E8118C00B
-	for <iommu@lists.linux.dev>; Sat, 21 Jun 2025 09:40:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.223.95.100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BEE517BD9;
+	Sat, 21 Jun 2025 12:08:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.21.191.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750498835; cv=none; b=a+m99elFu5EPSlOJTG6uQmEFhy26/o47p8rDMNhgdtyXjQkyqmCbeWlFyef363TsB0WhBibH9La082DhJ8JHqUo6wRL9BpwFx9cv/bMCXunSRC3tGRnVKgaDFMlxz/VOVkDakQREUX3OqlFZ7izsbfxcFYjDS4Gcg5gKjaqf+wQ=
+	t=1750507698; cv=none; b=g09zmv+jusa0aZxX3evMzJ2xN0VAKYhtRgdU3dgawoGoesXyd/Dhi27L7xyyEWGNddIelI2toXBE/MeBVASSOPNybPFELdKzGvwZ4ThN38ZFSKDw6/6e45zsVCEBXZUofd0rKdI67n0+RT1h+EHIPg+dSTCYwNcB8sOcmmS3NF4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750498835; c=relaxed/simple;
-	bh=3oFUE314c8LR6x/bGKxcKKEAmi6Y9IpyoJK4xPzcOso=;
-	h=Message-Id:From:Date:Subject:To:Cc; b=jkuZ5bryisLKYoDb9uDNa55ssqb9dMtZxAfW2jL2pfAjv9h3R9GwaRSuori6FoUfpB5lX5s8XJGqrakS5RBIR5F5qbPiFnHkGy9o6pH7fVvHjVV90x6uwjMXg9UatXgKo6+CfDjB09tEHtzY9e/NvShbBL8Oyje323Qvq9RDzIg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=pass smtp.mailfrom=wunner.de; arc=none smtp.client-ip=83.223.95.100
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wunner.de
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
-	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
-	by bmailout1.hostsharing.net (Postfix) with ESMTPS id 3C6B02C06849;
-	Sat, 21 Jun 2025 11:40:24 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-	id 1DA393A19EA; Sat, 21 Jun 2025 11:40:24 +0200 (CEST)
-Message-Id: <f8ff40f35a9a5836d1371f60e85c09c5735e3c5e.1750497201.git.lukas@wunner.de>
-From: Lukas Wunner <lukas@wunner.de>
-Date: Sat, 21 Jun 2025 11:40:23 +0200
-Subject: [PATCH] agp/amd64: Bind to unsupported devices only if AGP is present
-To: David Airlie <airlied@redhat.com>, Bjorn Helgaas <helgaas@kernel.org>
-Cc: Ben Hutchings <ben@decadent.org.uk>, Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Andi Kleen <ak@linux.intel.com>, Ahmed Salem <x0rw3ll@gmail.com>, Borislav Petkov <bp@alien8.de>, dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, linux-pci@vger.kernel.org
+	s=arc-20240116; t=1750507698; c=relaxed/simple;
+	bh=PVutjCvF0vPCTCFJSyQhPTr8h5VKHWz6rTR2umg5+dU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=ZLrw7MJWvaR8PZXdIucBLI1CHBpXvtAVCBY86LneVfy4icbjR6iKel0TwqWYEZAxWfEiQjMSdkDjwbZ0l8uLp0ZdKRWwEN177JymjS0UuS1WjG0CspE7O0zYgwBCWbY66SizkZd8m9EZUrfm5KP0yqVNusraY/J8a7nhk5IAugg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=decadent.org.uk; spf=pass smtp.mailfrom=decadent.org.uk; arc=none smtp.client-ip=65.21.191.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=decadent.org.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=decadent.org.uk
+Received: from [2a02:578:851f:1501:2e0:4cff:fe68:186] (helo=deadeye)
+	by maynard with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <ben@decadent.org.uk>)
+	id 1uSx0d-002Zp7-17;
+	Sat, 21 Jun 2025 12:07:46 +0000
+Received: from ben by deadeye with local (Exim 4.98.2)
+	(envelope-from <ben@decadent.org.uk>)
+	id 1uSx0b-00000002DA8-2BOP;
+	Sat, 21 Jun 2025 14:07:45 +0200
+Message-ID: <b73fbb3e3f03d842f36e6ba2e6a8ad0bb4b904fd.camel@decadent.org.uk>
+Subject: Re: [PATCH] agp/amd64: Bind to unsupported devices only if AGP is
+ present
+From: Ben Hutchings <ben@decadent.org.uk>
+To: Lukas Wunner <lukas@wunner.de>, David Airlie <airlied@redhat.com>, Bjorn
+ Helgaas <helgaas@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Suravee Suthikulpanit	
+ <suravee.suthikulpanit@amd.com>, Andi Kleen <ak@linux.intel.com>, Ahmed
+ Salem	 <x0rw3ll@gmail.com>, Borislav Petkov <bp@alien8.de>, 
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, 
+	linux-pci@vger.kernel.org
+Date: Sat, 21 Jun 2025 14:07:40 +0200
+In-Reply-To: <f8ff40f35a9a5836d1371f60e85c09c5735e3c5e.1750497201.git.lukas@wunner.de>
+References: 
+	<f8ff40f35a9a5836d1371f60e85c09c5735e3c5e.1750497201.git.lukas@wunner.de>
+Content-Type: multipart/signed; micalg="pgp-sha512";
+	protocol="application/pgp-signature"; boundary="=-IShTDvXsHnknrgU9+DAa"
+User-Agent: Evolution 3.56.1-1 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+X-SA-Exim-Connect-IP: 2a02:578:851f:1501:2e0:4cff:fe68:186
+X-SA-Exim-Mail-From: ben@decadent.org.uk
+X-SA-Exim-Scanned: No (on maynard); SAEximRunCond expanded to false
 
-Since commit 172efbb40333 ("AGP: Try unsupported AGP chipsets on x86-64 by
-default"), the AGP driver for AMD Opteron/Athlon64 CPUs attempts to bind
-to any PCI device.
 
-On modern CPUs exposing an AMD IOMMU, this results in a message with
-KERN_CRIT severity:
+--=-IShTDvXsHnknrgU9+DAa
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-  pci 0000:00:00.2: Resources present before probing
+On Sat, 2025-06-21 at 11:40 +0200, Lukas Wunner wrote:
+> Since commit 172efbb40333 ("AGP: Try unsupported AGP chipsets on x86-64 b=
+y
+> default"), the AGP driver for AMD Opteron/Athlon64 CPUs attempts to bind
+> to any PCI device.
+>=20
+> On modern CPUs exposing an AMD IOMMU, this results in a message with
+> KERN_CRIT severity:
+>=20
+>   pci 0000:00:00.2: Resources present before probing
+>=20
+> The driver used to bind only to devices exposing the AGP Capability, but
+> that restriction was removed by commit 6fd024893911 ("amd64-agp: Probe
+> unknown AGP devices the right way").
+[...]
 
-The driver used to bind only to devices exposing the AGP Capability, but
-that restriction was removed by commit 6fd024893911 ("amd64-agp: Probe
-unknown AGP devices the right way").
+That didn't remove any restriction as the probe function still started
+by checking for an AGP capability.  The change I made was that the
+driver would actually bind to devices with the AGP capability instead of
+starting to use them without binding.
 
-Reinstate checking for AGP presence to avoid the message.
+Ben.
 
-Fixes: 3be5fa236649 (Revert "iommu/amd: Prevent binding other PCI drivers to IOMMU PCI devices")
-Reported-by: Fedor Pchelkin <pchelkin@ispras.ru>
-Closes: https://lore.kernel.org/r/wpoivftgshz5b5aovxbkxl6ivvquinukqfvb5z6yi4mv7d25ew@edtzr2p74ckg/
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
----
-Compile tested only, I do not have a machine with AMD IOMMU at my disposal.
+--=20
+Ben Hutchings
+All the simple programs have been written, and all the good names taken
 
-Reporter is not cc'ed because ispras.ru is an OFAC sanctioned entity,
-which prohibits me from two-way engagement with the reporter:
-https://sanctionssearch.ofac.treas.gov/Details.aspx?id=50890
-https://www.linuxfoundation.org/blog/navigating-global-regulations-and-open-source-us-ofac-sanctions
+--=-IShTDvXsHnknrgU9+DAa
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
 
- drivers/char/agp/amd64-agp.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+-----BEGIN PGP SIGNATURE-----
 
-diff --git a/drivers/char/agp/amd64-agp.c b/drivers/char/agp/amd64-agp.c
-index bf49096..4bf508b 100644
---- a/drivers/char/agp/amd64-agp.c
-+++ b/drivers/char/agp/amd64-agp.c
-@@ -735,6 +735,18 @@ static int agp_amd64_resume(struct device *dev)
- 	.driver.pm  = &agp_amd64_pm_ops,
- };
- 
-+static bool __init agp_dev_present(void)
-+{
-+	struct pci_dev *pdev = NULL;
-+
-+	for_each_pci_dev(pdev)
-+		if (pci_find_capability(pdev, PCI_CAP_ID_AGP)) {
-+			pci_dev_put(pdev);
-+			return true;
-+		}
-+
-+	return false;
-+}
- 
- /* Not static due to IOMMU code calling it early. */
- int __init agp_amd64_init(void)
-@@ -761,7 +773,7 @@ int __init agp_amd64_init(void)
- 		}
- 
- 		/* First check that we have at least one AMD64 NB */
--		if (!amd_nb_num()) {
-+		if (!amd_nb_num() || !agp_dev_present()) {
- 			pci_unregister_driver(&agp_amd64_pci_driver);
- 			return -ENODEV;
- 		}
--- 
-2.47.2
+iQIzBAABCgAdFiEErCspvTSmr92z9o8157/I7JWGEQkFAmhWoIwACgkQ57/I7JWG
+EQlQtA/+JWg9KmRhoIceKsq3MOX5PVC5l817NZi+UTsWn7CY9PLm0O3cYDOA1xpk
+eNBOcGI856GwPXtS49QYSg24cri4ZmIITsQ7/MsQTcWLiKXafH5zJK8qAI41hDae
+68THfQ7P3wCE7C1l2EeKpRB00WY9qdDvIM9NchQhhdwDvxSIz5CiUI7SQ0oOPfDS
+rkdSYMKD3SmsdS1TmzxpvdhOinHLgQz7J1ytZyHKS3fVW0W/s3UUXaNrCBKHfpEF
+DjqcGCoi4iZGzAE8GFCxQbCzHLDcOWa5KwEeOk65qwmlXMTicx6WSNAI+X/hfwoa
+UwdYdq5ZyN+NmWeovD2hrB8ft2yuMi+vbtNub3a0Q2wnEHMt7J6LtTcsLkXrr7te
+6ugunBIOtBXNQQgmkXqy2fIsIhmLvWW9X0PE/yTqs8FqoPvNBsWQKI6PucYklizH
+ng5AKucwYbUGm59AKKzO2cAt+scr/iQnD2YPjCLqpXD5+Qgb2Z8KKQFqU4FwG85a
+/iVdVb6rYISMm/yQiPXQoepyS7JmR2OOCxer7NNLil0V9NZbOZdwpu03goaoL+in
+v3cG6YGJaVhRrFFJ2BMG9RIRAHsWeXdYNNCWvXO3k9dw4foeNuJrs4AT+QqFpVFb
+8nHbjQAXT4i2kziPGLivlNVit3pwVwxoNd84L5C2M7h3xADwNTQ=
+=2m0D
+-----END PGP SIGNATURE-----
 
+--=-IShTDvXsHnknrgU9+DAa--
