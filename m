@@ -1,116 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C65D19007D;
-	Sun, 22 Jun 2025 06:03:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFC7318C03F;
+	Sun, 22 Jun 2025 09:14:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750572199; cv=none; b=E0AF23Qc6a3gZptuyIyHUpIFhRpy5wbYQP3NThSmgzeYx9RKPy/Y+VWkS9RKB9TD7GPT+CBbWl82BJVVzc+duPEn/qR50Q8UzuM5pP9a0kgHxJWNkVRcB6EO0yCEU94g4angV861Bhi9q45Cb3R7oEb7am1RBglPOCpPw30rstg=
+	t=1750583656; cv=none; b=Fo71aa2nSDZ7IPchaKwTYOjRNjbTAZVM0hhM2ag5uIurMq/dVDtv9guHGRW5YhKqGOzK4RTTTM0vBSLG9WMpXgEJNG1r4c5ib5t6LbGzUS4oiOCbG8uEZO/1EuoMwXScbRwF5aAUCKCMRx/uRGLiAyAKLVD8c5B8rV9eFe3MFJM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750572199; c=relaxed/simple;
-	bh=6Q8FrnkdsmldV9GcNFIT4wN8l3RVnI5WN8GsaLdbscs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=me5mqr3/V+CAB+juQqhgHdAzjDYHNUzj+PdKxMaJWW0XvDQ+pZGEhGJIiRb7a1Saz82uuWPA05jfhAnWwCTp8Bs3OLA1IJuluOQuII/FfevNHhtxbzEM9XVFGzh+ONhhWUTVasTv6v5S0u8zvoXFYJddSdqprfgs6XX3r1OAl3Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L8wdi/Dj; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1750583656; c=relaxed/simple;
+	bh=FR0kk1ZyP4ATa4YOUOaLsb7MR+jvx6ZZw5j0miDtcgM=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=f0tJM1GcP2pBHJ1xrkbGkgBkQx0b1bP4ZXEeGz32HwidR34StckRV2Jw37f/4CGgpgTSNiHdXovZKrP0gKD/4bphUHhIaCsmY82lOQhxRxIdHPu8sd1rhJspa2Ruqv764dqZnWUyBHG0PVzqk20UrjM+gznK+YYkhd47ovSh7qI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sUG2TJzd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L8wdi/Dj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750572198; x=1782108198;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6Q8FrnkdsmldV9GcNFIT4wN8l3RVnI5WN8GsaLdbscs=;
-  b=L8wdi/DjgBkqsUn6VOoMUpREt3Ueq5Xaa97I4q9kIfo7H6zgy5qFsRVF
-   3A80sxjmBVgAAkY4ZzV2Wx11uqohPQANJ5StaRXfXGqZX7ycGLTE2nTVr
-   wb7/usA9SAJKMxQZ0cbtLfkOwfmnpqEAlQaIQvZc56H5kTzxrYSt+n7gv
-   N6fuV59hOiM12mdQUcz7rXyd6sZiDlST0oiSyQ13UVPQsD5fsgSytpuiX
-   ZEPvIuTsU9unMTEhtmSrlEcdhqOZXxUoz3v8pJAFx1+febSv93NrzmFXU
-   WOxkhA2lrU2ZETnX0blqkjNBSWjJlLXriPvqoDd7RVgAfN8s9DmYfokld
-   Q==;
-X-CSE-ConnectionGUID: eZUDpb8FQb+0NnUMOAcr2w==
-X-CSE-MsgGUID: +aOQCAhWTS+RzBgL3ExPcw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11470"; a="63473346"
-X-IronPort-AV: E=Sophos;i="6.16,255,1744095600"; 
-   d="scan'208";a="63473346"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2025 23:03:16 -0700
-X-CSE-ConnectionGUID: YCSARsZ5RWG/zST+8dcpBQ==
-X-CSE-MsgGUID: 3MdxRylsSUqbPeP8nS9RvA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,255,1744095600"; 
-   d="scan'208";a="150871451"
-Received: from lkp-server01.sh.intel.com (HELO e8142ee1dce2) ([10.239.97.150])
-  by fmviesa007.fm.intel.com with ESMTP; 21 Jun 2025 23:03:10 -0700
-Received: from kbuild by e8142ee1dce2 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1uTDnI-000N5q-1P;
-	Sun, 22 Jun 2025 06:03:08 +0000
-Date: Sun, 22 Jun 2025 14:02:35 +0800
-From: kernel test robot <lkp@intel.com>
-To: Mario Limonciello <superm1@kernel.org>,
-	Bjorn Helgaas <helgaas@kernel.org>
-Cc: oe-kbuild-all@lists.linux.dev, Alex Deucher <alexander.deucher@amd.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Lukas Wunner <lukas@wunner.de>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-	"(open list:INTEL IOMMU (VT-d))" <iommu@lists.linux.dev>,
-	linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-	linux-sound@vger.kernel.org, Daniel Dadap <ddadap@nvidia.com>,
-	Mario Limonciello <mario.limonciello@amd.com>
-Subject: Re: [PATCH v3 6/7] PCI/VGA: Move check for firmware default out of
- VGA arbiter
-Message-ID: <202506221312.49Fy1aNA-lkp@intel.com>
-References: <20250620024943.3415685-7-superm1@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sUG2TJzd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C90C6C4CEE3;
+	Sun, 22 Jun 2025 09:14:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750583655;
+	bh=FR0kk1ZyP4ATa4YOUOaLsb7MR+jvx6ZZw5j0miDtcgM=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=sUG2TJzdERrgA1aUMcnNuFM/6Qlm/KqJZq20pmR2XvNqiOZxo41fyBzgYecB8NmGi
+	 00nX4LvGveW7uZ7cIslW//6k5zfg/Iqwj89eytcAxkf8JkbGkpDZNOrsYSv/GRSnKz
+	 kYmio20WPm2fmsA5ka972FkEPkgcxZIf2SjoqknRu76WPPc2Jkw1FJq95w/rT9OgAB
+	 paAdmX2NoloQyHEAobczyCdWtntL5ZfZKhdxDiABT59xhJ+hk23EJngelVRLIr17aw
+	 aKmaraDnxDg5UT+u03Ry0TsOBPcfitx40+1VhZ6e2pV4sIei1+qg8GYOGRNc958D6U
+	 t/hH1Crz5y+dA==
+From: Sven Peter <sven@kernel.org>
+To: Sven Peter <sven@kernel.org>
+Cc: asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-pm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-clk@vger.kernel.org,
+	linux-i2c@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-input@vger.kernel.org,
+	dmaengine@vger.kernel.org,
+	linux-sound@vger.kernel.org,
+	Janne Grunau <j@jannau.net>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Neal Gompa <neal@gompa.dev>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Vinod Koul <vkoul@kernel.org>,
+	=?UTF-8?q?Martin=20Povi=C5=A1er?= <povik+lin@cutebit.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>,
+	Arnd Bergmann <arnd@arndb.de>
+Subject: Re: (subset) [PATCH 00/11] Drop default ARCH_APPLE from Kconfig and use defconfig instead
+Date: Sun, 22 Jun 2025 11:13:55 +0200
+Message-Id: <175058357351.73238.16083953894785363103.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.39.5 (Apple Git-154)
+In-Reply-To: <20250612-apple-kconfig-defconfig-v1-0-0e6f9cb512c1@kernel.org>
+References: <20250612-apple-kconfig-defconfig-v1-0-0e6f9cb512c1@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250620024943.3415685-7-superm1@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-Hi Mario,
+On Thu, 12 Jun 2025 21:11:24 +0000, Sven Peter wrote:
+> When support for Apple Silicon was originally upstreamed we somehow
+> started using `default ARCH_APPLE` for most drivers. arm64 defconfig
+> also contains ARCH_APPLE=y such that this will turn into `default y`
+> there by default which is neither what we want nor how this is usually
+> done.
+> Let's fix all that by dropping the default everywhere and adding the
+> drivers to defconfig as modules instead of built-ins.
+> None of these patches depend on each other so we can just take them all
+> independently through the respective subsystem trees.
+> 
+> [...]
 
-kernel test robot noticed the following build errors:
+Applied to git@github.com:AsahiLinux/linux.git (asahi-soc/drivers-6.17), thanks!
 
-[auto build test ERROR on pci/next]
-[also build test ERROR on pci/for-linus tiwai-sound/for-next tiwai-sound/for-linus awilliam-vfio/next awilliam-vfio/for-linus tip/x86/core linus/master v6.16-rc2 next-20250620]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+[02/11] soc: apple: Drop default ARCH_APPLE in Kconfig
+        https://github.com/AsahiLinux/linux/commit/65293c3276de
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Mario-Limonciello/PCI-Add-helper-for-checking-if-a-PCI-device-is-a-display-controller/20250620-105220
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git next
-patch link:    https://lore.kernel.org/r/20250620024943.3415685-7-superm1%40kernel.org
-patch subject: [PATCH v3 6/7] PCI/VGA: Move check for firmware default out of VGA arbiter
-config: sparc-defconfig (https://download.01.org/0day-ci/archive/20250622/202506221312.49Fy1aNA-lkp@intel.com/config)
-compiler: sparc-linux-gcc (GCC) 15.1.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250622/202506221312.49Fy1aNA-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202506221312.49Fy1aNA-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   sparc-linux-ld: drivers/pci/vgaarb.o: in function `vga_arbiter_add_pci_device':
->> vgaarb.c:(.text+0x14ec): undefined reference to `video_is_primary_device'
->> sparc-linux-ld: vgaarb.c:(.text+0x174c): undefined reference to `video_is_primary_device'
-
+Best regards,
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Sven Peter <sven@kernel.org>
+
