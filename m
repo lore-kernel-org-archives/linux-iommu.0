@@ -1,127 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51193134CF;
-	Sat, 21 Jun 2025 16:01:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C65D19007D;
+	Sun, 22 Jun 2025 06:03:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750521703; cv=none; b=Km6J8Vt3A4mZ5EuXrinObRvwKiCPhPmOB9kpcO1ZrQRJDISTM6/XeTPrtNia16NcYe0ipGiMNj6nsrwnmM/qSSuVuJuesiytxJcJgvETf7WW5DF8tvN6XRLBEPYY5P8F8hkpkQJ880OlWNRGKMRZ6utt1xe8qJWibZJluI8LyTg=
+	t=1750572199; cv=none; b=E0AF23Qc6a3gZptuyIyHUpIFhRpy5wbYQP3NThSmgzeYx9RKPy/Y+VWkS9RKB9TD7GPT+CBbWl82BJVVzc+duPEn/qR50Q8UzuM5pP9a0kgHxJWNkVRcB6EO0yCEU94g4angV861Bhi9q45Cb3R7oEb7am1RBglPOCpPw30rstg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750521703; c=relaxed/simple;
-	bh=7z06BI2WfCKHgocG5mZp+KFS5XZpvyaukvIGuVj/RlU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=F9FTd7ICjmVh1PnwdvbZLUw2TwCOGk/CSfVT7resyUV9W7rUOFgM5OPUaQ/beboDwo5j6orFxcCPpckjuDmvXYOq2MPu+7fLQzcIj62zuKiZuwWOJc9PaAKveVeNx3b9vIObzk+bPy4xPTXMRQ/XELjTL/CYwsqsvzzQXxcOFxk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uDwXevel; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750572199; c=relaxed/simple;
+	bh=6Q8FrnkdsmldV9GcNFIT4wN8l3RVnI5WN8GsaLdbscs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=me5mqr3/V+CAB+juQqhgHdAzjDYHNUzj+PdKxMaJWW0XvDQ+pZGEhGJIiRb7a1Saz82uuWPA05jfhAnWwCTp8Bs3OLA1IJuluOQuII/FfevNHhtxbzEM9XVFGzh+ONhhWUTVasTv6v5S0u8zvoXFYJddSdqprfgs6XX3r1OAl3Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L8wdi/Dj; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uDwXevel"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3502C4CEE7;
-	Sat, 21 Jun 2025 16:01:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750521701;
-	bh=7z06BI2WfCKHgocG5mZp+KFS5XZpvyaukvIGuVj/RlU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=uDwXevel3/1jiq4Sl2EDKgEHARqYuu8Bl7nrJLZ8lUCzHpBkeoumIp6jzt/ZP4Nsl
-	 wqLBEHqbQv7BeGHwV/DPP5ckgANF6VbYI5AyU+Yd7Skc57x9V4PhZEjE744+ExYRFr
-	 AkERmpzc03BtzkqT5tG8hywtOyMFB4oMbjoTgSssty33EMxdWKqHIONBBQ3NX56YP1
-	 1s66LaJ7sUP5cIPW3qhTCIyNXnqk1AvoKqeUz+bq+RtWlN5ktVenNOvVQfcXtnbR0P
-	 yISLwmztKCaQ6JNWVfJn38zjoEhxBT4pRdcGegeMhL6zVqHpjw3aesU2v9O/kMhLww
-	 W9a4U4D46RlpQ==
-Message-ID: <d5a616f3-67a3-4504-904e-6cec503ab157@kernel.org>
-Date: Sat, 21 Jun 2025 18:01:33 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L8wdi/Dj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1750572198; x=1782108198;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6Q8FrnkdsmldV9GcNFIT4wN8l3RVnI5WN8GsaLdbscs=;
+  b=L8wdi/DjgBkqsUn6VOoMUpREt3Ueq5Xaa97I4q9kIfo7H6zgy5qFsRVF
+   3A80sxjmBVgAAkY4ZzV2Wx11uqohPQANJ5StaRXfXGqZX7ycGLTE2nTVr
+   wb7/usA9SAJKMxQZ0cbtLfkOwfmnpqEAlQaIQvZc56H5kTzxrYSt+n7gv
+   N6fuV59hOiM12mdQUcz7rXyd6sZiDlST0oiSyQ13UVPQsD5fsgSytpuiX
+   ZEPvIuTsU9unMTEhtmSrlEcdhqOZXxUoz3v8pJAFx1+febSv93NrzmFXU
+   WOxkhA2lrU2ZETnX0blqkjNBSWjJlLXriPvqoDd7RVgAfN8s9DmYfokld
+   Q==;
+X-CSE-ConnectionGUID: eZUDpb8FQb+0NnUMOAcr2w==
+X-CSE-MsgGUID: +aOQCAhWTS+RzBgL3ExPcw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11470"; a="63473346"
+X-IronPort-AV: E=Sophos;i="6.16,255,1744095600"; 
+   d="scan'208";a="63473346"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jun 2025 23:03:16 -0700
+X-CSE-ConnectionGUID: YCSARsZ5RWG/zST+8dcpBQ==
+X-CSE-MsgGUID: 3MdxRylsSUqbPeP8nS9RvA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,255,1744095600"; 
+   d="scan'208";a="150871451"
+Received: from lkp-server01.sh.intel.com (HELO e8142ee1dce2) ([10.239.97.150])
+  by fmviesa007.fm.intel.com with ESMTP; 21 Jun 2025 23:03:10 -0700
+Received: from kbuild by e8142ee1dce2 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1uTDnI-000N5q-1P;
+	Sun, 22 Jun 2025 06:03:08 +0000
+Date: Sun, 22 Jun 2025 14:02:35 +0800
+From: kernel test robot <lkp@intel.com>
+To: Mario Limonciello <superm1@kernel.org>,
+	Bjorn Helgaas <helgaas@kernel.org>
+Cc: oe-kbuild-all@lists.linux.dev, Alex Deucher <alexander.deucher@amd.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Lukas Wunner <lukas@wunner.de>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+	dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+	"(open list:INTEL IOMMU (VT-d))" <iommu@lists.linux.dev>,
+	linux-pci@vger.kernel.org, kvm@vger.kernel.org,
+	linux-sound@vger.kernel.org, Daniel Dadap <ddadap@nvidia.com>,
+	Mario Limonciello <mario.limonciello@amd.com>
+Subject: Re: [PATCH v3 6/7] PCI/VGA: Move check for firmware default out of
+ VGA arbiter
+Message-ID: <202506221312.49Fy1aNA-lkp@intel.com>
+References: <20250620024943.3415685-7-superm1@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 11/11] arm64: defconfig: Enable Apple Silicon drivers
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: asahi@lists.linux.dev, Stephen Boyd <sboyd@kernel.org>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>, Janne Grunau <j@jannau.net>,
- linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
- Srinivas Kandagatla <srini@kernel.org>, linux-kernel@vger.kernel.org,
- Viresh Kumar <viresh.kumar@linaro.org>, Neal Gompa <neal@gompa.dev>,
- linux-clk@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
- linux-i2c@vger.kernel.org, Takashi Iwai <tiwai@suse.com>,
- Liam Girdwood <lgirdwood@gmail.com>, =?UTF-8?Q?Martin_Povi=C5=A1er?=
- <povik+lin@cutebit.org>, Joerg Roedel <joro@8bytes.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
- Mark Brown <broonie@kernel.org>, iommu@lists.linux.dev,
- linux-input@vger.kernel.org, dmaengine@vger.kernel.org,
- linux-sound@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>,
- Ulf Hansson <ulf.hansson@linaro.org>,
- Michael Turquette <mturquette@baylibre.com>,
- Andi Shyti <andi.shyti@kernel.org>, Will Deacon <will@kernel.org>
-References: <20250612-apple-kconfig-defconfig-v1-0-0e6f9cb512c1@kernel.org>
- <20250612-apple-kconfig-defconfig-v1-11-0e6f9cb512c1@kernel.org>
- <2e022f4e-4c87-4da1-9d02-f7a3ae7c5798@arm.com>
-Content-Language: en-US
-From: Sven Peter <sven@kernel.org>
-In-Reply-To: <2e022f4e-4c87-4da1-9d02-f7a3ae7c5798@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250620024943.3415685-7-superm1@kernel.org>
 
-On 13.06.25 18:50, Robin Murphy wrote:
-> On 2025-06-12 10:11 pm, Sven Peter wrote:
->> Enable drivers for hardware present on Apple Silicon machines.
->> The power domain and interrupt driver should be built-it since these are
->> critical for the system to boot, the rest can be build as modules.
-> 
-> Nit: I'd be tempted to put this patch first, just in case anyone 
-> bisecting with "make defconfig" in their process lands in the middle and 
-> suddenly loses some drivers (although arguably them going from "=y" to 
-> "=m" could still be a surprise, but at least a bit less so).
+Hi Mario,
 
-Ah, that's a good point that I hadn't even thought about.
-Now that most of these have already been merged into different trees 
-that ship has sailed though.
+kernel test robot noticed the following build errors:
 
-> 
-> [...]
->> @@ -1504,6 +1520,7 @@ CONFIG_ARCH_TEGRA_194_SOC=y
->>   CONFIG_ARCH_TEGRA_234_SOC=y
->>   CONFIG_TI_PRUSS=m
->>   CONFIG_OWL_PM_DOMAINS=y
->> +CONFIG_APPLE_PMGR_PWRSTATE=y
-> 
-> If this is critical for any Apple platform to work then it would 
-> probably make sense to explicitly select it from ARCH_APPLE, as is done 
-> for APPLE_AIC...
+[auto build test ERROR on pci/next]
+[also build test ERROR on pci/for-linus tiwai-sound/for-next tiwai-sound/for-linus awilliam-vfio/next awilliam-vfio/for-linus tip/x86/core linus/master v6.16-rc2 next-20250620]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
+url:    https://github.com/intel-lab-lkp/linux/commits/Mario-Limonciello/PCI-Add-helper-for-checking-if-a-PCI-device-is-a-display-controller/20250620-105220
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git next
+patch link:    https://lore.kernel.org/r/20250620024943.3415685-7-superm1%40kernel.org
+patch subject: [PATCH v3 6/7] PCI/VGA: Move check for firmware default out of VGA arbiter
+config: sparc-defconfig (https://download.01.org/0day-ci/archive/20250622/202506221312.49Fy1aNA-lkp@intel.com/config)
+compiler: sparc-linux-gcc (GCC) 15.1.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250622/202506221312.49Fy1aNA-lkp@intel.com/reproduce)
 
-Documentation/kbuild/kconfig-language.rst:
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202506221312.49Fy1aNA-lkp@intel.com/
 
-   select should be used with care. select will force a symbol to a value
-   without visiting the dependencies. By abusing select you are able to
-   select a symbol FOO even if FOO depends on BAR that is not set. In
-   general use select only for non-visible symbols (no prompts anywhere)
-   and for symbols with no dependencies. That will limit the usefulness
-   but on the other hand avoid the illegal configurations all over.
+All errors (new ones prefixed by >>):
 
+   sparc-linux-ld: drivers/pci/vgaarb.o: in function `vga_arbiter_add_pci_device':
+>> vgaarb.c:(.text+0x14ec): undefined reference to `video_is_primary_device'
+>> sparc-linux-ld: vgaarb.c:(.text+0x174c): undefined reference to `video_is_primary_device'
 
-That's probably fine for APPLE_AIC which only depends on ARM64 (and 
-ARCH_APPLE) which is guaranteed to be set when ARCH_APPLE is set anyway.
-APPLE_PMGR_PWRSTATE also has an additional dependency on PM so it should 
-probably remain in defconfig and not use select.
-
-
->>   CONFIG_RASPBERRYPI_POWER=y
->>   CONFIG_IMX_SCU_PD=y
->>   CONFIG_QCOM_CPR=y
->> @@ -1567,6 +1584,7 @@ CONFIG_QCOM_PDC=y
->>   CONFIG_QCOM_MPM=y
->>   CONFIG_TI_SCI_INTR_IRQCHIP=y
->>   CONFIG_TI_SCI_INTA_IRQCHIP=y
->> +CONFIG_APPLE_AIC=y
-> 
-> ...which I think means this would already be redundant.
-
-Yup, this can be dropped.
-
-
-Thanks,
-
-Sven
-
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
