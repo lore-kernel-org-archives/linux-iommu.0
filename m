@@ -1,56 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 060F426D4C6;
-	Mon, 23 Jun 2025 15:43:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E826B253B67;
+	Mon, 23 Jun 2025 15:58:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750693384; cv=none; b=KmdLK5SnOovyb1sfQNBKNCQJMdi9ZGFk6Gyc0axXo5rjhhoQsno8aTkkhNKjw7sxAO00z+g+gY1N96wDNDcRQLJA+JxVbJgaJwst5cIeeZHFkfSke2CJCxz1hpKVUHYqCV4NSJEKzgO1ktsz4e8LXfvjZvgVe1TwT7v2GioGees=
+	t=1750694320; cv=none; b=nToXZ0xxR8zhHDGMgvqaat42T5qeiXG0ISIsh5IutRQXdVfGDK+fygtTzTV3lP0gqmMIBnw64n4vFUvyLwLMzI7jE4nRj9jULwhXmYUNzwI1P1m1ZlhNWdw9FaOBCB3IrVSNIHl89osKI8lB7v9lAGmfUXNqqYagGRacQpmZKHo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750693384; c=relaxed/simple;
-	bh=DEsBc+hs49pm8VweFdAsT/RduB+CaSEOw49ute5T254=;
+	s=arc-20240116; t=1750694320; c=relaxed/simple;
+	bh=MBmtOH9m6zr81wji+yIuMSpqTbR3C3+WuqdmMBu0WVU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uQcHaHLObQWICP9igmBC4U0WWueLKlEuxhVgGjY1Q41kroq/hdYBCOh60tJp0Ci3n4FOkEZFLwBh1yESIzpbPIaLLigOReacAWwOUUuKYymCGf7+OJUk/zImrHERzH8yXq6sjTWSFUYUNWl8W2NnZOGEcrvHyaxE4c4u+8dXrrQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Uo4+3kr0; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=d57bslakNdTIszY6dHd518I7wUToFRn81gU/Vr8cPa8BO9DR2bou+EL/GfnhYJOpDgzm+D6GGST4RSRT3i+eg8Ib0iReGyNaEXKXzeR2uTK1mwErrPd6z+ujJuHa6AO9C3q2SRqP6iI3smDNzpLh/goCovPEiAvfiPXPncFNgbE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a/hdkmmf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Uo4+3kr0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C80CC4CEEA;
-	Mon, 23 Jun 2025 15:42:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a/hdkmmf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81277C4CEEA;
+	Mon, 23 Jun 2025 15:58:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750693383;
-	bh=DEsBc+hs49pm8VweFdAsT/RduB+CaSEOw49ute5T254=;
+	s=k20201202; t=1750694317;
+	bh=MBmtOH9m6zr81wji+yIuMSpqTbR3C3+WuqdmMBu0WVU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Uo4+3kr0C+qRmuQBrmqoJaywznJcg9JXcxC0SHXwxKUQmxEDdm4JkwJlAYxC5d3SY
-	 l7OXpXpZZv8GJ02aC/3Wr/+lBCRAfuLUGNiNDC6cjQIj5yIuQOP86smwD5zZis1Kcg
-	 FXyMj4UHdoQsBM73LciSAVKbsnh7tsrpzPi4TK7s+QRuKiWzRfM9MQdGFlEElhIwVH
-	 31Kygn94r2vDUsKKl/6kT7ujEcpjJtdeCaT4iHPWi2FwCLJReByCSUbf5Ibp2Zv4CX
-	 E8XmFyr1NwFrBE/fBG+8jhi1jWsYRoTobogifQGKilvlmxib8Lb0VmRI0FouG1UTza
-	 9Vo+0s8N5FpvA==
-Date: Mon, 23 Jun 2025 17:42:56 +0200
-From: Danilo Krummrich <dakr@kernel.org>
-To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Cc: acourbot@nvidia.com, Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
-	rust-for-linux@vger.kernel.org,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	Petr Tesarik <petr@tesarici.cz>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Sui Jingfeng <sui.jingfeng@linux.dev>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v4 0/3] Additional improvements for dma coherent allocator
-Message-ID: <aFl2AOUQ-CKYgIn8@cassiopeiae>
-References: <20250602085444.1925053-1-abdiel.janulgue@gmail.com>
+	b=a/hdkmmf37JuuBRRIQqHxENDG6LmCaTmsJp2DHu7KCr0mZRs4pMvtzIzwaJWRy3Xa
+	 4fYQWPNVfpITMNEkZLGMafBo6GVgCwxjW8sW0YsiqKG/unwlNXMPR4GpPrZy6AwCzZ
+	 vvAWz50fwIGN7BHS5wK8ouR+ISNxq8yd16oS8fYckmhD5hAvz0hvTy7muPjfc4kxbg
+	 QyicczYhD/4fzwCShSSpTX4eWkVEvInZKE5MBwmC2xDCqWQUWSqTN5dHU18wYrSTHG
+	 QLZyUBoHa9ZkMEWNMJZV0ebpOq8Q6Z89vV3uYkr98l4tGodaCeAaa0iiLEfybrQRRd
+	 1nRuvP660Ry6w==
+Date: Mon, 23 Jun 2025 21:24:37 +0530
+From: Naveen N Rao <naveen@kernel.org>
+To: Sean Christopherson <seanjc@google.com>
+Cc: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, kvm@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Sairaj Kodilkar <sarunkod@amd.com>, 
+	Vasant Hegde <vasant.hegde@amd.com>, Maxim Levitsky <mlevitsk@redhat.com>, 
+	Joao Martins <joao.m.martins@oracle.com>, Francesco Lavra <francescolavra.fl@gmail.com>, 
+	David Matlack <dmatlack@google.com>
+Subject: Re: [PATCH v3 20/62] KVM: SVM: Add a comment to explain why
+ avic_vcpu_blocking() ignores IRQ blocking
+Message-ID: <pxtvegopzsyhn7lelksclxiiee7tumppu76553rax7octqpy7i@giclgo667htf>
+References: <20250611224604.313496-2-seanjc@google.com>
+ <20250611224604.313496-22-seanjc@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -59,20 +50,76 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250602085444.1925053-1-abdiel.janulgue@gmail.com>
+In-Reply-To: <20250611224604.313496-22-seanjc@google.com>
 
-On Mon, Jun 02, 2025 at 11:53:10AM +0300, Abdiel Janulgue wrote:
+On Wed, Jun 11, 2025 at 03:45:23PM -0700, Sean Christopherson wrote:
+> Add a comment to explain why KVM clears IsRunning when putting a vCPU,
+> even though leaving IsRunning=1 would be ok from a functional perspective.
+> Per Maxim's experiments, a misbehaving VM could spam the AVIC doorbell so
+> fast as to induce a 50%+ loss in performance.
+> 
+> Link: https://lore.kernel.org/all/8d7e0d0391df4efc7cb28557297eb2ec9904f1e5.camel@redhat.com
+> Cc: Maxim Levitsky <mlevitsk@redhat.com>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>  arch/x86/kvm/svm/avic.c | 31 ++++++++++++++++++-------------
+>  1 file changed, 18 insertions(+), 13 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index bf8b59556373..3cf929ac117f 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -1121,19 +1121,24 @@ void avic_vcpu_blocking(struct kvm_vcpu *vcpu)
+>  	if (!kvm_vcpu_apicv_active(vcpu))
+>  		return;
+>  
+> -       /*
+> -        * Unload the AVIC when the vCPU is about to block, _before_
+> -        * the vCPU actually blocks.
+> -        *
+> -        * Any IRQs that arrive before IsRunning=0 will not cause an
+> -        * incomplete IPI vmexit on the source, therefore vIRR will also
+> -        * be checked by kvm_vcpu_check_block() before blocking.  The
+> -        * memory barrier implicit in set_current_state orders writing
+> -        * IsRunning=0 before reading the vIRR.  The processor needs a
+> -        * matching memory barrier on interrupt delivery between writing
+> -        * IRR and reading IsRunning; the lack of this barrier might be
+> -        * the cause of errata #1235).
+> -        */
+> +	/*
+> +	 * Unload the AVIC when the vCPU is about to block, _before_ the vCPU
+> +	 * actually blocks.
+> +	 *
+> +	 * Note, any IRQs that arrive before IsRunning=0 will not cause an
+> +	 * incomplete IPI vmexit on the source; kvm_vcpu_check_block() handles
+> +	 * this by checking vIRR one last time before blocking.  The memory
+> +	 * barrier implicit in set_current_state orders writing IsRunning=0
+> +	 * before reading the vIRR.  The processor needs a matching memory
+> +	 * barrier on interrupt delivery between writing IRR and reading
+> +	 * IsRunning; the lack of this barrier might be the cause of errata #1235).
+> +	 *
+> +	 * Clear IsRunning=0 even if guest IRQs are disabled, i.e. even if KVM
+> +	 * doesn't need to detect events for scheduling purposes.  The doorbell
 
-Applied to alloc-next, thanks!
+Nit: just IsRunning (you can drop the =0 part).
 
-> Abdiel Janulgue (3):
->   rust: dma: clarify wording and be consistent in `coherent`
->     nomenclature
->   rust: dma: convert the read/write macros to return Result
+Trying to understand the significance of IRQs being disabled here. Is 
+that a path KVM tries to optimize? Theoretically, it looks like we want 
+to clear IsRunning regardless of whether the vCPU is blocked so as to 
+prevent the guest from spamming the host with AVIC doorbells -- compared 
+to always keeping IsRunning set so as to speed up VM entry/exit.
 
-  [ Fix line length in dma_read!(). - Danilo ]
+> +	 * used to signal running vCPUs cannot be blocked, i.e. will perturb the
+> +	 * CPU and cause noisy neighbor problems if the VM is sending interrupts
+> +	 * to the vCPU while it's scheduled out.
+> +	 */
+>  	avic_vcpu_put(vcpu);
+>  }
 
->   rust: dma: add as_slice/write functions for CoherentAllocation
+Otherwise, this LGTM.
+Acked-by: Naveen N Rao (AMD) <naveen@kernel.org>
 
-  [ Fix line length and slightly reword safety comment in doc-test of
-    CoherentAllocation::write(); fix formatting issue. - Danilo ]
+
+Thanks,
+Naveen
+
