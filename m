@@ -1,174 +1,111 @@
-Received: from mail-pg1-f202.google.com (mail-pg1-f202.google.com [209.85.215.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC0E92BDC34
-	for <iommu@lists.linux.dev>; Mon, 23 Jun 2025 16:18:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0875F1E1A05;
+	Mon, 23 Jun 2025 18:48:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750695529; cv=none; b=QlIY3mNd722+mGxVHDSP3wxGJxrIWPLZMwvijIJstOo3eDm6p+O6G7LxJIUrlO5ulVoq5db/I+pg4EoS2onTwCLm3XhlB3wVJ8WtwjMV3BLl5JXHhpbE+mRsEwL64Wf/5M+IRKq/CS5z6o8O3VLB/72GdnDkQzTqpeJOU7D3PBI=
+	t=1750704488; cv=none; b=cv1z4AlAHqgjy/pF+jpVC/t1cwXUVgkoKyzCIGY3Ms2IiRB5QexGQO9R86GH0v4wwFKYFIYrowKamvpS3MTDvtBNqKusK1VQJMglxEFwUG+MCOfUA0rHD9NcwvSebV6c0rTFSHkZvKje+q5FnJEtcWCQ8IKGWmmQg8mncO6w4pM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750695529; c=relaxed/simple;
-	bh=EDHaxySB1XyXigRSYjSRI7C2L41azpKZfXI/ttcEEo0=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=Kf6DFmtonUY/KwiqnOmUMVtENyJllPhQw1ijnUc3+4YhFPcRqxsco06MxI/Ma2Ki7HIgQYlsumwu9ex7FWOlcR+1HvSZt+yK2QNcXVrERLNzloHXHfgTKZn+XmMYQ25NjdzVZ58FNI9uvGmMmu4FyQd+upCKWxDKXquTCEpryFA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=PkbOP9F4; arc=none smtp.client-ip=209.85.215.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
+	s=arc-20240116; t=1750704488; c=relaxed/simple;
+	bh=GY8tIufr4Hd6SlZygWeAkfnwAyZfajXtBmdtfEVITZg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=HQQ5n6s/4yRS+EoBlr1vobdQ5CMPzfgDYGIuk9PP9Iz31QfJvU3517b3OL7apr/y6ufLWqjRXGO+5kRiCjV/FZ0D7bjlF0232w9/afbLLjrZFWHpewh0pHqxdYhWmgLkO5vfXpkbjbWs3rq3WQyUnxtYBT4jNPalUY8cam37Xi0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MSvgL1q5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="PkbOP9F4"
-Received: by mail-pg1-f202.google.com with SMTP id 41be03b00d2f7-b115fb801bcso5069782a12.3
-        for <iommu@lists.linux.dev>; Mon, 23 Jun 2025 09:18:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1750695527; x=1751300327; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=OOkpzMlhlXRiMCNdOIvauV/qFub0T/UowmpNSsYnBL4=;
-        b=PkbOP9F44aaEFBpJA6zaDI6BJTOCHblVVeyKribH2t06HWG8TG32r0B31/RXz4B++A
-         kQJ2H6ia4pRZvtHHzg79KWjpXmmDncCLkJdk43DLXRizXrxfZ7uXi3aT50Mjxsb2xxvt
-         83FZ3urZhNAffm7O9efdVZH6vgXe51DeHrQVXs12Q9eDhSzBpQUfC+iUKy2Tec0vX6zO
-         0JQMV62qDJ/ooyoU3H3LLJYrDr03rv2bdT1T+gFeG59Hoxef3MrgmtRTKprvsg5eVxhr
-         dNHQ247BZt2N4dfHGawxlqy8c6AmbLnetMI1A0ikn6jmDM+YhqVbeWzAH93x0tQmbAoj
-         61hQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750695527; x=1751300327;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=OOkpzMlhlXRiMCNdOIvauV/qFub0T/UowmpNSsYnBL4=;
-        b=WRBuoKbGBER8lx9ewoRuI/X6AltGHqth91n3pdq7ZcVfhWS9zf9HwiCB6plneFH3c5
-         WeChK+bz7RmUZ0ZzA4WJm+3BM89/BuNoV6kERWgoi3pohPrE9qil86PrcHOaMwPyyRnl
-         XDuJQnk+6MGzSmVsNWdUnv5qGNtGvhwn4pKx2y3UTsxny7sw1yaSJoPh1I988AcykmuP
-         nI3oo6lolq6hnLQ6RFIK+qZCvubBhBUdqg+HzuBtciAnyUK0/6Il42X0D9uWgQLncZUc
-         roiNw6XbWLBt7W0JiuiZ9O/tE4Lrw6xFq/c0c89pUQr0buKk3oxMn731E18hqilJllnp
-         l5cw==
-X-Forwarded-Encrypted: i=1; AJvYcCXe1Jv5rlJrmPgT/7FR4iAQihNvXNLoINmwd6Ors7Wl/6ioGR4FkD5hEQN/ZLHIKCiyAM725w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxnAhkL9W5l6qtVsorHeKThLEZWwTxCrLiXAE7axVe11aQZ1/xC
-	B5rm/E/HOz61rMcW/q4FYIeuvr7KiZ/Ad1ukPVr0G0T1dOjnEVhHIpJjLA9tIH75aRn6EWDG1tj
-	XcAjrgg==
-X-Google-Smtp-Source: AGHT+IENQipggL2SOcRyFklB3/6faa8uHHLu36CbWgSZEypv6kRSEUBRnwpSzpoNeCEIYgBhsThVyFLxqUA=
-X-Received: from pfug19.prod.google.com ([2002:a05:6a00:793:b0:749:8f7:e14e])
- (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a05:6a20:c992:b0:21f:5c9d:498e
- with SMTP id adf61e73a8af0-22026d32fe2mr19839452637.7.1750695527173; Mon, 23
- Jun 2025 09:18:47 -0700 (PDT)
-Date: Mon, 23 Jun 2025 09:18:45 -0700
-In-Reply-To: <pxtvegopzsyhn7lelksclxiiee7tumppu76553rax7octqpy7i@giclgo667htf>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MSvgL1q5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4790CC4CEEA;
+	Mon, 23 Jun 2025 18:48:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750704487;
+	bh=GY8tIufr4Hd6SlZygWeAkfnwAyZfajXtBmdtfEVITZg=;
+	h=From:To:Cc:Subject:Date:From;
+	b=MSvgL1q5wZGV5IyyqUmlkvkUm7K0i8jPT1haS86qUQi+Kq92/DOHXePlD9lPVaMss
+	 oQYDZSms3mw8PVeDaBUngX0e49Q+iWyDeaVhFCQktYG5ShQLIIXNVyUuf3M1OkB7U+
+	 Q2hXfc1EfR7RP1vMRaq+T97sMyMwsLxxFVM3HWADNlMK4KlXkOwJF6PsUAKkPd/RWw
+	 Vx+YKnTT9vgkxhmRUykmTqyXw9/sGEqyXM2FGvCJN4DjBfeEBsqn3Vc8UFAvAQ72rw
+	 GczZPRxH0XE/cp9RLMf0oOOZX/ZrTwU4w2UB4IONrlDYWh57Sc82zUzdX5vm6XUIhq
+	 Yhc7XqWstP+RA==
+From: Mario Limonciello <superm1@kernel.org>
+To: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+	David Airlie <airlied@gmail.com>,
+	Simona Vetter <simona@ffwll.ch>,
+	Lukas Wunner <lukas@wunner.de>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jaroslav Kysela <perex@perex.cz>,
+	Takashi Iwai <tiwai@suse.com>,
+	dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
+	linux-kernel@vger.kernel.org (open list),
+	iommu@lists.linux.dev (open list:INTEL IOMMU (VT-d)),
+	linux-pci@vger.kernel.org (open list:PCI SUBSYSTEM),
+	kvm@vger.kernel.org (open list:VFIO DRIVER),
+	linux-sound@vger.kernel.org (open list:SOUND),
+	Daniel Dadap <ddadap@nvidia.com>,
+	Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH v4 0/8] Adjust fbcon console device detection
+Date: Mon, 23 Jun 2025 13:47:49 -0500
+Message-ID: <20250623184757.3774786-1-superm1@kernel.org>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20250611224604.313496-2-seanjc@google.com> <20250611224604.313496-22-seanjc@google.com>
- <pxtvegopzsyhn7lelksclxiiee7tumppu76553rax7octqpy7i@giclgo667htf>
-Message-ID: <aFl-ZYyf9guxSkHE@google.com>
-Subject: Re: [PATCH v3 20/62] KVM: SVM: Add a comment to explain why
- avic_vcpu_blocking() ignores IRQ blocking
-From: Sean Christopherson <seanjc@google.com>
-To: Naveen N Rao <naveen@kernel.org>
-Cc: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
-	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
-	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
-	kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
-	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
-	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
-Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Mon, Jun 23, 2025, Naveen N Rao wrote:
-> On Wed, Jun 11, 2025 at 03:45:23PM -0700, Sean Christopherson wrote:
-> > Add a comment to explain why KVM clears IsRunning when putting a vCPU,
-> > even though leaving IsRunning=1 would be ok from a functional perspective.
-> > Per Maxim's experiments, a misbehaving VM could spam the AVIC doorbell so
-> > fast as to induce a 50%+ loss in performance.
-> > 
-> > Link: https://lore.kernel.org/all/8d7e0d0391df4efc7cb28557297eb2ec9904f1e5.camel@redhat.com
-> > Cc: Maxim Levitsky <mlevitsk@redhat.com>
-> > Signed-off-by: Sean Christopherson <seanjc@google.com>
-> > ---
-> >  arch/x86/kvm/svm/avic.c | 31 ++++++++++++++++++-------------
-> >  1 file changed, 18 insertions(+), 13 deletions(-)
-> > 
-> > diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> > index bf8b59556373..3cf929ac117f 100644
-> > --- a/arch/x86/kvm/svm/avic.c
-> > +++ b/arch/x86/kvm/svm/avic.c
-> > @@ -1121,19 +1121,24 @@ void avic_vcpu_blocking(struct kvm_vcpu *vcpu)
-> >  	if (!kvm_vcpu_apicv_active(vcpu))
-> >  		return;
-> >  
-> > -       /*
-> > -        * Unload the AVIC when the vCPU is about to block, _before_
-> > -        * the vCPU actually blocks.
-> > -        *
-> > -        * Any IRQs that arrive before IsRunning=0 will not cause an
-> > -        * incomplete IPI vmexit on the source, therefore vIRR will also
-> > -        * be checked by kvm_vcpu_check_block() before blocking.  The
-> > -        * memory barrier implicit in set_current_state orders writing
-> > -        * IsRunning=0 before reading the vIRR.  The processor needs a
-> > -        * matching memory barrier on interrupt delivery between writing
-> > -        * IRR and reading IsRunning; the lack of this barrier might be
-> > -        * the cause of errata #1235).
-> > -        */
-> > +	/*
-> > +	 * Unload the AVIC when the vCPU is about to block, _before_ the vCPU
-> > +	 * actually blocks.
-> > +	 *
-> > +	 * Note, any IRQs that arrive before IsRunning=0 will not cause an
-> > +	 * incomplete IPI vmexit on the source; kvm_vcpu_check_block() handles
-> > +	 * this by checking vIRR one last time before blocking.  The memory
-> > +	 * barrier implicit in set_current_state orders writing IsRunning=0
-> > +	 * before reading the vIRR.  The processor needs a matching memory
-> > +	 * barrier on interrupt delivery between writing IRR and reading
-> > +	 * IsRunning; the lack of this barrier might be the cause of errata #1235).
-> > +	 *
-> > +	 * Clear IsRunning=0 even if guest IRQs are disabled, i.e. even if KVM
-> > +	 * doesn't need to detect events for scheduling purposes.  The doorbell
-> 
-> Nit: just IsRunning (you can drop the =0 part).
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-Hmm, not really.  It could be:
+This series started out as changes to VGA arbiter to try to handle a case
+of a system with 2 GPUs that are not VGA devices [1].  This was discussed
+but decided not to overload the VGA arbiter for non VGA devices.
 
-	/* Note, any IRQs that arrive while IsRunning is set will not cause an
+Instead move the x86 specific detection of framebuffer resources into x86
+specific code that the fbcon can use to properly identify the primary
+device. This code is still called from the VGA arbiter, and the logic does
+not change there. To avoid regression default to VGA arbiter and only fall
+back to looking up with x86 specific detection method.
 
-or
+In order for userspace to also be able to discover which device was the
+primary video display device create a new sysfs file 'boot_display'.
 
-	/* Note, any IRQs that arrive while IsRunning=1 will not cause an
+Mario Limonciello (8):
+  PCI: Add helper for checking if a PCI device is a display controller
+  vfio/pci: Use pci_is_display()
+  vga_switcheroo: Use pci_is_display()
+  iommu/vt-d: Use pci_is_display()
+  ALSA: hda: Use pci_is_display()
+  Fix access to video_is_primary_device() when compiled without
+    CONFIG_VIDEO
+  PCI/VGA: Move check for firmware default out of VGA arbiter
+  PCI: Add a new 'boot_display' attribute
 
-but that's just regurgitating the spec.  The slightly more interesting scenario
-that's being described here is what will happen if an IRQ arrives _just_ before
-the below code toggle IsRunning from 1 => 0.
+ Documentation/ABI/testing/sysfs-bus-pci |  9 +++++++
+ arch/parisc/include/asm/video.h         |  2 +-
+ arch/sparc/include/asm/video.h          |  2 ++
+ arch/x86/include/asm/video.h            |  2 ++
+ arch/x86/video/video-common.c           | 13 ++++++++-
+ drivers/gpu/vga/vga_switcheroo.c        |  2 +-
+ drivers/iommu/intel/iommu.c             |  2 +-
+ drivers/pci/pci-sysfs.c                 | 14 ++++++++++
+ drivers/pci/vgaarb.c                    | 36 ++-----------------------
+ drivers/vfio/pci/vfio_pci_igd.c         |  3 +--
+ include/linux/pci.h                     | 15 +++++++++++
+ sound/hda/hdac_i915.c                   |  2 +-
+ sound/pci/hda/hda_intel.c               |  4 +--
+ 13 files changed, 63 insertions(+), 43 deletions(-)
 
-> Trying to understand the significance of IRQs being disabled here. Is 
-> that a path KVM tries to optimize?
 
-Yep.  KVM doesn't need a notification for the undelivered (virtual) IRQ, because
-it won't be handled by the vCPU until the vCPU enables IRQs, and thus it's not a
-valid wake event for the vCPU.
+base-commit: 86731a2a651e58953fc949573895f2fa6d456841
+-- 
+2.43.0
 
-So, *if* spurious doorbells didn't affect performance or functionality, then
-ideally KVM would leave IsRunning=1, e.g. so that the IOMMU doesn't need to
-generate GA log events, and so that other vCPUs aren't forced to VM-Exit when
-sending an IPI.  Unfortunately, spurious doorbells are quite intrusive, and so
-KVM "needs" to clear IsRunning.
-
-> Theoretically, it looks like we want to clear IsRunning regardless of whether
-> the vCPU is blocked so as to prevent the guest from spamming the host with
-> AVIC doorbells -- compared to always keeping IsRunning set so as to speed up
-> VM entry/exit.
-
-Yep, exactly.
-
-> > +	 * used to signal running vCPUs cannot be blocked, i.e. will perturb the
-> > +	 * CPU and cause noisy neighbor problems if the VM is sending interrupts
-> > +	 * to the vCPU while it's scheduled out.
-> > +	 */
-> >  	avic_vcpu_put(vcpu);
-> >  }
-> 
-> Otherwise, this LGTM.
-> Acked-by: Naveen N Rao (AMD) <naveen@kernel.org>
-> 
-> 
-> Thanks,
-> Naveen
-> 
