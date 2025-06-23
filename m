@@ -1,91 +1,115 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F409136988;
-	Mon, 23 Jun 2025 10:48:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 30DB917F7;
+	Mon, 23 Jun 2025 11:33:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750675733; cv=none; b=Cn9YU/BcSu0ikrEG2rS1ME8ydxP9Fs9PApaw30iA1Qy0NuSAAQ3AtOTds75YpIQZX9tG0PHFVs3fHenDt44TVhvbe5TNmne2M4N3GMPrGDy+d3y/tngAiERLme7NxJUAFVvC9FQbYiO8Q5Jdw3ytOhRI80DFkUVSYiu6w1fuQP8=
+	t=1750678399; cv=none; b=OMSxc5Tg2QOCcDtMX+2TiltrRaAWKSl2jlMpzpiMcOhfsqsknkpb+Hv+eqaLSPYd9dlWB0ofEIR8C9nXKkbYr6Tksk0zF1CrWSxM+kXMSZBNO2uUIJovllWQEJ9aR0hoO4qkmQEQ74Jp2qR/1DeTyyYZzd93Tmgn6uTtXEc/KQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750675733; c=relaxed/simple;
-	bh=GeiFc7fkYtw2PiNgSxLbHE9VEewIkyxJ97+h2sDlPWE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BBgUFfvV9JXGrRP2PjGYBBKIUDxMYFGOKB+TO2Xi5vZU4Ncn/kMZxCHIhaE5gbqW3UUFsltqBVDv2aCSJDibqeXxYUGh4QF3r3dLsFk0bSaqVnK8KRqdspZNyimQaQ8fpJpKxy3wyRRF1fXQkI9JRSltOJvwC9uBttU5EzfCEk8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PYEM387M; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PYEM387M"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B19AC4CEF2;
-	Mon, 23 Jun 2025 10:48:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750675732;
-	bh=GeiFc7fkYtw2PiNgSxLbHE9VEewIkyxJ97+h2sDlPWE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=PYEM387M2psgVE2tb0EwhsInLMPQjhG7/iZjloP4oYCadD9zFGQjfoCkngU2nBn4j
-	 ZtjKAHh/K0U5HyjNhPn8LgGC3mrFLOf2cy1tzTfy9Wj/Ds31wly05dSbbxaYhKsItd
-	 O13P4GBuwDHshV1nkSwnQCSPg2G0fN1yd7BJV7RgsMv7+kLRFbYizrWLeQlFINhEPm
-	 JLTSPH/Cs3R43kdHUJHONuE2Zq3CXb/6bOmSa90m9TnPQ8/eRMWhsqOS9FgUsyDZSb
-	 bFYKhdqVb3JincAkzMdkR0dqzVYxdhHOytVPtYRg/bOeZJYJo+P8XitEmpBg/re+L0
-	 OvPgeesbzz7LQ==
-Date: Mon, 23 Jun 2025 16:15:13 +0530
-From: Naveen N Rao <naveen@kernel.org>
-To: Sean Christopherson <seanjc@google.com>
-Cc: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
-	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
-	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Sairaj Kodilkar <sarunkod@amd.com>, 
-	Vasant Hegde <vasant.hegde@amd.com>, Maxim Levitsky <mlevitsk@redhat.com>, 
-	Joao Martins <joao.m.martins@oracle.com>, Francesco Lavra <francescolavra.fl@gmail.com>, 
-	David Matlack <dmatlack@google.com>
-Subject: Re: [PATCH v3 17/62] KVM: SVM: Add enable_ipiv param, never set
- IsRunning if disabled
-Message-ID: <basmpkilvhmg52pktjkpkqwmfcx2nnpbv75c6dxs73w7ehnwam@yyeft6vgabk7>
-References: <20250611224604.313496-2-seanjc@google.com>
- <20250611224604.313496-19-seanjc@google.com>
- <2eqjnjnszlmhlnvw6kcve4exjnpy7skguypwtmxutb2gecs3an@gcou53thsqww>
- <aFVylP1XzMoqocOx@google.com>
+	s=arc-20240116; t=1750678399; c=relaxed/simple;
+	bh=4Byfl6XKyk9PR8pgbpDrhICsoDtDHYLEMWWU/ZfABpQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=auHR+kGm+7JP2QY0g7IvT4YwOlV2+673CwGq15E82cr3js23L6HzEw5U8Jqk1ri8mJfb73KYhiAzsA9u3ag31cztjDwyE6ikmqAghmX+D+lCfWXkGcq9iAKqheKJpjo4zeHj4AuJj0/kJQJv4R4Y8BPdtIF6b4+hg4zR62fcLkg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 43268113E;
+	Mon, 23 Jun 2025 04:32:58 -0700 (PDT)
+Received: from [10.57.29.116] (unknown [10.57.29.116])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3092E3F66E;
+	Mon, 23 Jun 2025 04:33:12 -0700 (PDT)
+Message-ID: <9f80f7c4-01a3-4a03-94dc-2a19136707f8@arm.com>
+Date: Mon, 23 Jun 2025 12:33:03 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 11/11] arm64: defconfig: Enable Apple Silicon drivers
+To: Sven Peter <sven@kernel.org>
+Cc: asahi@lists.linux.dev, Stephen Boyd <sboyd@kernel.org>,
+ Alyssa Rosenzweig <alyssa@rosenzweig.io>, Janne Grunau <j@jannau.net>,
+ linux-arm-kernel@lists.infradead.org, linux-pm@vger.kernel.org,
+ Srinivas Kandagatla <srini@kernel.org>, linux-kernel@vger.kernel.org,
+ Viresh Kumar <viresh.kumar@linaro.org>, Neal Gompa <neal@gompa.dev>,
+ linux-clk@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+ linux-i2c@vger.kernel.org, Takashi Iwai <tiwai@suse.com>,
+ Liam Girdwood <lgirdwood@gmail.com>, =?UTF-8?Q?Martin_Povi=C5=A1er?=
+ <povik+lin@cutebit.org>, Joerg Roedel <joro@8bytes.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Jaroslav Kysela <perex@perex.cz>,
+ Mark Brown <broonie@kernel.org>, iommu@lists.linux.dev,
+ linux-input@vger.kernel.org, dmaengine@vger.kernel.org,
+ linux-sound@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ Ulf Hansson <ulf.hansson@linaro.org>,
+ Michael Turquette <mturquette@baylibre.com>,
+ Andi Shyti <andi.shyti@kernel.org>, Will Deacon <will@kernel.org>
+References: <20250612-apple-kconfig-defconfig-v1-0-0e6f9cb512c1@kernel.org>
+ <20250612-apple-kconfig-defconfig-v1-11-0e6f9cb512c1@kernel.org>
+ <2e022f4e-4c87-4da1-9d02-f7a3ae7c5798@arm.com>
+ <d5a616f3-67a3-4504-904e-6cec503ab157@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <d5a616f3-67a3-4504-904e-6cec503ab157@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <aFVylP1XzMoqocOx@google.com>
 
-On Fri, Jun 20, 2025 at 07:39:16AM -0700, Sean Christopherson wrote:
-> On Thu, Jun 19, 2025, Naveen N Rao wrote:
-> > On Wed, Jun 11, 2025 at 03:45:20PM -0700, Sean Christopherson wrote:
-> > > From: Maxim Levitsky <mlevitsk@redhat.com>
-> > > 
-> > > Let userspace "disable" IPI virtualization for AVIC via the enable_ipiv
-> > > module param, by never setting IsRunning.  SVM doesn't provide a way to
-> > > disable IPI virtualization in hardware, but by ensuring CPUs never see
-> > > IsRunning=1, every IPI in the guest (except for self-IPIs) will generate a
-> > > VM-Exit.
-> > 
-> > I think this is good to have regardless of the erratum. Not sure about VMX,
-> > but does it make sense to intercept writes to the self-ipi MSR as well?
+On 2025-06-21 5:01 pm, Sven Peter wrote:
+> On 13.06.25 18:50, Robin Murphy wrote:
+>> On 2025-06-12 10:11 pm, Sven Peter wrote:
+>>> Enable drivers for hardware present on Apple Silicon machines.
+>>> The power domain and interrupt driver should be built-it since these are
+>>> critical for the system to boot, the rest can be build as modules.
+>>
+>> Nit: I'd be tempted to put this patch first, just in case anyone 
+>> bisecting with "make defconfig" in their process lands in the middle 
+>> and suddenly loses some drivers (although arguably them going from 
+>> "=y" to "=m" could still be a surprise, but at least a bit less so).
 > 
-> That doesn't work for AVIC, i.e. if the guest is MMIO to access the virtual APIC.
+> Ah, that's a good point that I hadn't even thought about.
+> Now that most of these have already been merged into different trees 
+> that ship has sailed though.
 
-Right, I was thinking about the Self-IPI MSR, but the ICR will also need 
-to be intercepted.
+Yeah, like I say it's only minor and rather contrived anyway. Not a big 
+worry.
 
+>> [...]
+>>> @@ -1504,6 +1520,7 @@ CONFIG_ARCH_TEGRA_194_SOC=y
+>>>   CONFIG_ARCH_TEGRA_234_SOC=y
+>>>   CONFIG_TI_PRUSS=m
+>>>   CONFIG_OWL_PM_DOMAINS=y
+>>> +CONFIG_APPLE_PMGR_PWRSTATE=y
+>>
+>> If this is critical for any Apple platform to work then it would 
+>> probably make sense to explicitly select it from ARCH_APPLE, as is 
+>> done for APPLE_AIC...
 > 
-> Regardless, I don't see any reason to manually intercept self-IPIs when IPI
-> virtualization is disabled.  AFAIK, there's no need to do so for correctness,
-> and Intel's self-IPI virtualization isn't tied to IPI virtualization either.
-> Self-IPI virtualization is enabled by virtual interrupt delivery, which in turn
-> is enabled by KVM when enable_apicv is true:
 > 
->   Self-IPI virtualization occurs only if the “virtual-interrupt delivery”
->   VM-execution control is 1.
+> Documentation/kbuild/kconfig-language.rst:
+> 
+>    select should be used with care. select will force a symbol to a value
+>    without visiting the dependencies. By abusing select you are able to
+>    select a symbol FOO even if FOO depends on BAR that is not set. In
+>    general use select only for non-visible symbols (no prompts anywhere)
+>    and for symbols with no dependencies. That will limit the usefulness
+>    but on the other hand avoid the illegal configurations all over.
+> 
+> 
+> That's probably fine for APPLE_AIC which only depends on ARM64 (and 
+> ARCH_APPLE) which is guaranteed to be set when ARCH_APPLE is set anyway.
+> APPLE_PMGR_PWRSTATE also has an additional dependency on PM so it should 
+> probably remain in defconfig and not use select.
 
-Excellent, for this patch:
-Reviewed-by: Naveen N Rao (AMD) <naveen@kernel.org>
+Sorry if the implication wasn't clear, but I did mean "select it" in the 
+sense of "select it and all of its necessary dependencies in a manner 
+that works correctly". The same argument applies all the way down - if a 
+!PM config will not be able to boot on ARCH_APPLE platforms due to 
+forcibly deselecting APPLE_PMGR_PWRSTATE, then there is little point in 
+permitting that combination. Which of course the user would already have 
+to disable at least ARCH_MXC, ARCH_ROCKCHIP, ARCH_TEGRA and 
+ARCH_VEXPRESS to achieve in the first place ;)
 
 Thanks,
-Naveen
+Robin.
