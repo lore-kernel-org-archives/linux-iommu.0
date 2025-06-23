@@ -1,124 +1,101 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DE39283140
-	for <iommu@lists.linux.dev>; Mon, 23 Jun 2025 15:14:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E407F28ECDF
+	for <iommu@lists.linux.dev>; Mon, 23 Jun 2025 15:30:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750691646; cv=none; b=QF4N7NB3YPrwDu7xPmdLqVem7GOTT3kUbtq132UjX8ctDNehGseqtdRykcD3UTol3rDBx2LVn2wsPu9/VzfZQ74Ee3mb6kvymJv7/EDluT1wpXlTFUpftOhmRnR2sz1VNP2ymllVD3w4tivKv8XZtvafIpzxXwjfI4WcklNXNZ8=
+	t=1750692610; cv=none; b=SKBK+wK3sQgTP0NlEYWjuETyFqfd0vszZrhBG4YiyTFCMGhAEeIkEfIFHwM0gSolLqsqwkC31cNvrVwQ/21vphrf7s4giu9VxMKxyI9yTK6EW3SwiDkJMlEL7P6Lgr5PhuszAUcwL889rZVACI4+CG/Fo2bj/6Xx+pQE0JNdSlc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750691646; c=relaxed/simple;
-	bh=T97FIRu7KTdXAKAuE2uiR/N85Qp0pQvg5x4paRRjBE0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Vr+++J6gstwyS7yjNeElarlcN33p2mk5v4OJ9TXAiweCkmufKM/IZ0OlaAq0+2hPwM52tIMt07wEwbvySvag8DUyN4MEw4pol/IZDTJmkK/tZtdhI8Scl7u9Mpw4tAF7sZ0yzbVAT5eIv6xhmqnf7f4oZZclV0GJUiKNIHHRe5g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=lZ2HHS+8; arc=none smtp.client-ip=209.85.214.169
+	s=arc-20240116; t=1750692610; c=relaxed/simple;
+	bh=L/cfSGnSX28XY4cLKESl0PHduhleGIW8TtQJ6a7uSMg=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=PKke9as3/eOlmffJ2KOs4XKO5NJoegsNhMc+l2Ms5cY+SmvTRG6s7qXLwFTUyvle4v534Ufytvo4N6PinqC0CMel+RH69dnT1JBoL9bA/VgRHUWqogHvEM/0cELFAqbLU3urH6Mo6fXxr1rPp9UhQbpoDdd8BGa3swdScKPe9uE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=1HXLUdgZ; arc=none smtp.client-ip=209.85.214.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--seanjc.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="lZ2HHS+8"
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-2357c61cda7so223505ad.1
-        for <iommu@lists.linux.dev>; Mon, 23 Jun 2025 08:14:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="1HXLUdgZ"
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-23638e1605dso30301715ad.0
+        for <iommu@lists.linux.dev>; Mon, 23 Jun 2025 08:30:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1750691644; x=1751296444; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=sQjNcvHYakrNgjIQGLE/wyS2yfZF4798fujbYGUPWpc=;
-        b=lZ2HHS+8iV9qToBbN9H7BKcz9WrbWe74+R+stKoQ8S++Q0mQ/4CKX+HZZnr/p5/lvo
-         1gFcNYRLVS2lmTQbyw9nTZCsxGZbIoqn4wij3lZ7kBZc/yPyga2FEXOJQog7qRkSc7EY
-         BxoLKl0g6krhruBvlz8o2GX9+IIqohNjgCVbDis+xIVPoPiQi+MTAfu0YrZe4SGx8Jm1
-         IrzGi1vpJINQT/OTEQVDzZg01xUkXCX5ojulw2q/j+7ETuGcWuJ1x4b4etje2xjdf4Cw
-         aumQZPHX+vC7lAd/+WsFQAwBUASDGwGdfo8NeBkIs5I7W6KhnK2FKerCxfcK3CIsxfLy
-         WZdA==
+        d=google.com; s=20230601; t=1750692608; x=1751297408; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=KdWZjBOZrnoU5S/xxe3p4LyXR96yMFXC81nKL3+yk3w=;
+        b=1HXLUdgZVdg9xeEiuy2UdlWq8CG+frtcwPIraHkPh1Z0IZR/XOszgOemOC9YPEEHUF
+         q1KVailL+EelZxZFFnlv7upC65+yse/hTSHoBBz/ERawX5oR3desG7b0VTBS09vvZvFb
+         8elgoCsEbdSOBYsk0nRgVzeZ3y2YKMN08a3Fu3ARBfPlpjG5fk2Fso3ZR/vUyZ+b3Kpi
+         nh1HcK1+BU5FSVb0R+UksyGgWza6Ynv4LCYKApBy2+Qd22nLHLUfwumkOmZO2DDzHYGT
+         B4iMXs0XaG01QT//K7DBX0J7lZxPabgNl2ncelMKfh7w91fYGa8IBLRMJfz/XWX85lEr
+         fR7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750691644; x=1751296444;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=sQjNcvHYakrNgjIQGLE/wyS2yfZF4798fujbYGUPWpc=;
-        b=VGyJOr+xhAQRRSRfXNzL/cb/l9I5zXg/xSqcRbi1ItgDH+ZWN70uq+m7ZkiqBG7nRZ
-         Dvbcnc4JBl93rAu3/h55tpTXxivHQsdWBGudUukwLj2qv6IhxKsOEbiNcA1viI9rs0L1
-         Jpp6Usw7GulIh2Hm9jJl6Y75heKIyQo66hdK1W7Pe59jnkRTbwEc9i81KL3jCMSbEl8g
-         2jy3PioMoq5OsDnSnUIpouSXNKA77o0rtTVLOWCcqmqw5LqssJioL/40WK93iNPAnReJ
-         m/9SP3kOc9kG2wDOMQgBqU7jtNb+xXQBBcWUs4/xFWQDlRMUc/rTqy0EDbHdnzbr3Lfk
-         jA8w==
-X-Forwarded-Encrypted: i=1; AJvYcCXz9QcHrARU0Geuc0nEkkAkxjEAdxlkWN0KdLiKnSB/oqPCaEPcov1VqiP+0bDefUs3X/jxkw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwY12ixMBvVyUImGfkDjb6zaoqNg74WtSo0olG/BY4+YbsLQ/Uh
-	EIKEsTaebeOr5FgFGHJmfmVbvFx1wyAqKv4hSZ49gCn2s3Q7wPrk12MhxVgdpGICiw==
-X-Gm-Gg: ASbGnct2PLUlZ0WKo77TPMz5bJOj2Ua9IT/H1bDY1YAvhaqjB08LGGFFKxYTtxhda4X
-	cx9axOgCRq0UXSJgYmp+JlfMbVXyY2PLrh8pbwREEnd2wraVkD7bLgO3GrQUimqEl0G7OXrPXGF
-	Ci9ZJ0qSQLMS1XEW9D1HS7qGbhBtpn5e79M0SotpchLyAl0tysGZ0NagYqdRxUhQA8Udz9kYwml
-	2X8AT1bW/gasVCgbRSxNhMVtHDCSLKTUDXkcMNevXJ6zQdL76DhFU+tT601vtOVQml4jIfxXUqB
-	iRvO7DaRG+qLttSJGJomdDnd8uOgqvWiRqwPlk3Cff65cNL7ZQKy2rhITqnNIEPEpVy1WE3Iz5O
-	joBE6SDs2CgzQHwBZUpfDKNvROf3Jr1E=
-X-Google-Smtp-Source: AGHT+IFjZuHSmjWz3mlyiiORGjulfaekm2TrngIFHZiE0ZqJkNGQDEFi3n1LBmgMIlW05C9z3Da4aQ==
-X-Received: by 2002:a17:902:e951:b0:224:6c8:8d84 with SMTP id d9443c01a7336-237e478a96fmr4808555ad.4.1750691643222;
-        Mon, 23 Jun 2025 08:14:03 -0700 (PDT)
-Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3158a23e6fbsm11004566a91.14.2025.06.23.08.13.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Jun 2025 08:14:02 -0700 (PDT)
-Date: Mon, 23 Jun 2025 15:13:51 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, kevin.tian@intel.com, corbet@lwn.net,
-	will@kernel.org, bagasdotme@gmail.com, robin.murphy@arm.com,
-	joro@8bytes.org, thierry.reding@gmail.com, vdumpa@nvidia.com,
-	jonathanh@nvidia.com, shuah@kernel.org, jsnitsel@redhat.com,
-	nathan@kernel.org, peterz@infradead.org, yi.l.liu@intel.com,
-	mshavit@google.com, zhangzekun11@huawei.com, iommu@lists.linux.dev,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
-	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com
-Subject: Re: [PATCH v6 20/25] iommu/arm-smmu-v3-iommufd: Add hw_info to
- impl_ops
-Message-ID: <aFlvLw0SHgYiA614@google.com>
-References: <cover.1749884998.git.nicolinc@nvidia.com>
- <f36b5e42bac83d0cdf5773cad1c3a44c3eaed396.1749884998.git.nicolinc@nvidia.com>
- <aFP4zHIVT6epJeLb@google.com>
- <20250619185325.GB17127@nvidia.com>
- <aFTWQ4v6aZABpzeV@google.com>
- <aFZE+MhTOCvbkKbH@nvidia.com>
+        d=1e100.net; s=20230601; t=1750692608; x=1751297408;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KdWZjBOZrnoU5S/xxe3p4LyXR96yMFXC81nKL3+yk3w=;
+        b=eBhZonBEZakSk4tWrLQE1U+ue6WzVOfLZn3GKvCHnHFcTHNOv7uY1AaEPhq3c9eDNF
+         JUKikWZHFQ7gB4L/KFQ43N+bfmOqdBBhPmkDrEE2Y5/pwTPskp4iu05ZfJndDnVlLoHB
+         LiPDGtTk+WBKlxSXXwlv0bzcCfF2QGGVzVVIeSLQkwjobmB1DF6U0yXEEXn2QNAGlwKm
+         mP6Eh6Z3nhF1IIIEjY4vqQthH+koP3PVBgXQMFGUDNmgj9IUEWveBoqN2jbVxbBBkbJM
+         DMmvx4VnBfohNpiNg/BLmnjYFzUqRgk3vnklzfSJzksiZbd2jBO93Z4R0dtG43Mjit6k
+         Bn3g==
+X-Forwarded-Encrypted: i=1; AJvYcCX+8GS8lrbf1JUM1JS8iVcPc3NynXQ9X3I6PNlL3dz4WrEGkS7p14fr4aWuI/YKOuqPq1JVpg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz9wZ9TIb/TH0kW6N+tW848q2aajmz/JnYCUicFrFu+4b8Sncvt
+	J9B5R1czOxuTcQsxhh2AD2CScdAjnoDkO23VpB0Qe2xVixMcdihARNZTVe0hDu6d7fVwBa3O1iG
+	5OtPOsw==
+X-Google-Smtp-Source: AGHT+IEMdoRNFqlp7zHt8uHjKfPleNVgWrvxFNisVXQLf3SXuV2EWfHq7AYIrMPraED+yf8roaT/XGVYptg=
+X-Received: from plhw5.prod.google.com ([2002:a17:903:2f45:b0:234:a456:85ba])
+ (user=seanjc job=prod-delivery.src-stubby-dispatcher) by 2002:a17:902:da8c:b0:236:6e4f:d439
+ with SMTP id d9443c01a7336-237d9965716mr203757385ad.23.1750692608274; Mon, 23
+ Jun 2025 08:30:08 -0700 (PDT)
+Date: Mon, 23 Jun 2025 08:30:07 -0700
+In-Reply-To: <jskiyda3defofthrtniugcdbcoftx4o5yvgt47koswq64qf7d7@2pzrr5v5yssy>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aFZE+MhTOCvbkKbH@nvidia.com>
+Mime-Version: 1.0
+References: <20250611224604.313496-2-seanjc@google.com> <20250611224604.313496-20-seanjc@google.com>
+ <jskiyda3defofthrtniugcdbcoftx4o5yvgt47koswq64qf7d7@2pzrr5v5yssy>
+Message-ID: <aFly_5c0aqTOGEem@google.com>
+Subject: Re: [PATCH v3 18/62] KVM: SVM: Disable (x2)AVIC IPI virtualization if
+ CPU has erratum #1235
+From: Sean Christopherson <seanjc@google.com>
+To: Naveen N Rao <naveen@kernel.org>
+Cc: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
+	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, 
+	kvm@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Sairaj Kodilkar <sarunkod@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Maxim Levitsky <mlevitsk@redhat.com>, Joao Martins <joao.m.martins@oracle.com>, 
+	Francesco Lavra <francescolavra.fl@gmail.com>, David Matlack <dmatlack@google.com>
+Content-Type: text/plain; charset="us-ascii"
 
-On Fri, Jun 20, 2025 at 10:36:56PM -0700, Nicolin Chen wrote:
-> On Fri, Jun 20, 2025 at 03:32:19AM +0000, Pranjal Shrivastava wrote:
-> > My point is that in-case someone passed INTEL_VTD type, we would end up
-> > calling impl_ops->hw_info and then the impl_ops->hw_info shall check for
-> > the type to return -EOPNOTSUPP. Either we should clearly mention that
-> > each impl_op implementing hw_info *must* add another type and check for
-> > it
-> 
-> Let's add this:
-> 
-> @@ -721,6 +721,11 @@ struct arm_smmu_impl_ops {
->         int (*init_structures)(struct arm_smmu_device *smmu);
->         struct arm_smmu_cmdq *(*get_secondary_cmdq)(
->                 struct arm_smmu_device *smmu, struct arm_smmu_cmdq_ent *ent);
-> +       /*
-> +        * An implementation should define its own type other than the default
-> +        * IOMMU_HW_INFO_TYPE_ARM_SMMUV3. And it must validate the input @type
-> +        * to return its own structure.
-> +        */
->         void *(*hw_info)(struct arm_smmu_device *smmu, u32 *length, u32 *type);
->         const size_t vsmmu_size;
->         const enum iommu_viommu_type vsmmu_type;
-> 
-> And I found that we could have another patch changing "u32 *type"
-> to "enum iommufd_hw_info_flags *type" to avoid some duplications
-> in the kdocs.
-> 
+On Mon, Jun 23, 2025, Naveen N Rao wrote:
+> On Wed, Jun 11, 2025 at 03:45:21PM -0700, Sean Christopherson wrote:
+> > diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> > index 48c737e1200a..bf8b59556373 100644
+> > --- a/arch/x86/kvm/svm/avic.c
+> > +++ b/arch/x86/kvm/svm/avic.c
+> > @@ -1187,6 +1187,14 @@ bool avic_hardware_setup(void)
+> >  	if (x2avic_enabled)
+> >  		pr_info("x2AVIC enabled\n");
+> >  
+> > +	/*
+> > +	 * Disable IPI virtualization for AMD Family 17h CPUs (Zen1 and Zen2)
+> > +	 * due to erratum 1235, which results in missed GA log events and thus
+> 							^^^^^^^^^^^^^
+> Not sure I understand the reference to GA log events here -- those are 
+> only for device interrupts and not IPIs.
 
-Yea, that sounds good. Thanks!
+Doh, you're absolutely right.  I'll fix to this when applying:
 
-> Thanks
-> Nicolin
+	/*
+	 * Disable IPI virtualization for AMD Family 17h CPUs (Zen1 and Zen2)
+	 * due to erratum 1235, which results in missed VM-Exits on the sender
+	 * and thus missed wake events for blocking vCPUs due to the CPU
+	 * failing to see a software update to clear IsRunning.
+	 */
