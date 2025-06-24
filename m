@@ -1,96 +1,252 @@
-Received: from out203-205-221-245.mail.qq.com (out203-205-221-245.mail.qq.com [203.205.221.245])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2B7726AABD;
-	Tue, 24 Jun 2025 08:42:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.205.221.245
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A920D27A90F
+	for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 09:06:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750754554; cv=none; b=pMa0yMawPlp9tTEMrE3XPQcy3wb8+xTOhRbA+IXgz0p/HoAvQsAaB3FJ+3AIFQWRldNknvk8rhZou3EHyPkVuQY4cdr7u6TE6zwXcqlqd/u9TjKp3xiyAnmSUfpIpw8+wQ6RVk0do6crylPWXSvpW0lW39qBqeoG6Do50vCyu+g=
+	t=1750756008; cv=none; b=XUGQYw9KSIcSLpy9ACkr1PhFDFdw+rwFMQnBi0A8O8Gpv1PKzUOZTJSUHeENhUYdi5t4E6akEo9PU/A7YLtdM2WNK5S4LksHFGnxswGiwGtLXOxKCcYvP5tOF/d/KOAEV9zGUrx5SNpkT+njb3YPWJ8HtIdtExnrRf2xhgtfnlA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750754554; c=relaxed/simple;
-	bh=79sCu4PyYzVHW/Z8QGotil/TpK5J5xXTNlL9Xox50k8=;
-	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version; b=oADWGhktTkNEw2ID90vusozC7NEjFrdq3J9I9dRaRgQ2fh14ryd3clQRL14oll8x1mZWe1Z6BDYMAltGNEvqPgbfE7RDh4ZJhDv3y3nMJTbZg+yDkWqIq2qWBuIrEguwQnO8dnRbbEBE9Ok4AsVb49PA0l8+gBN0tBB6BT5TjbA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=dyL5sGeG; arc=none smtp.client-ip=203.205.221.245
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
+	s=arc-20240116; t=1750756008; c=relaxed/simple;
+	bh=oxW2aAAfKBhOjlWbxlJ/FAtpZq04AOHQ+xCrx3SgYHY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=aSgkEucAh9acCHqlw52zDwTt+/Y5zlTvpcTYcK2lgdzCHs6/7tLqkclaFsHBck82eCeK75S7jcyNKFEmYn8P1wB4tQ3/Q9o4zKPqbmLaHwJkp++BoV6kDK2HKpHALh56DS2zuPIJ3ogcRDfJO1blM2IpfEVX2LGvxMw7EyO+9o0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=xi/QlwlW; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=Y9LCmN9J; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=E5mo4GVk; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=oREfj0fF; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="dyL5sGeG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-	s=s201512; t=1750754528;
-	bh=v6o/ShoJvWLhlSyxTPkbAI0fwmABW2L1+nINfU74Drk=;
-	h=From:To:Cc:Subject:Date;
-	b=dyL5sGeGpTzQFff0ZXcn7gm5frvC5bqhjbuv/f17ZYvhKLLDeY7Pnp8ZETmM7B0t+
-	 DABu7EN5FsapnPyxMDGpVO1PpP0LOkpPS/ILMaSPgq+wXD3k6UgQfxdAK+3FfLgfsv
-	 Y8fs4dOPsM+i2uTFwz4sD/SEWAhH64nCveJFtLDE=
-Received: from KernelDevBox.byted.org ([115.190.40.13])
-	by newxmesmtplogicsvrszgpuc5-0.qq.com (NewEsmtp) with SMTP
-	id 8ED3EC23; Tue, 24 Jun 2025 16:35:45 +0800
-X-QQ-mid: xmsmtpt1750754145t96osdqnj
-Message-ID: <tencent_889D023A2A9B04DE8D592DFE961C5893C706@qq.com>
-X-QQ-XMAILINFO: MKFQA+k1yb/29nquRTkIAQGt4f0wbGob7cvjvfJ8CF+sR9wKkmiBC4dNgvLeJp
-	 fixeD0fmRyYLywArMVqyEdBYo7uQ8yPnXXLlbyMm4HBRjboZHX3FLGP4Bbb7VFN4RaNqY+X4GehU
-	 f4QYVOorW3Bk3TABhklZlbqMXxqjYgdjIHBSF4Ze3WiBFF8Wv9Byx2YmeTcfCtdvLpQKe3UlSf2F
-	 b8F/Y4uWPkjishF6MQA0NyXN9TLHNhK9Y6O4VvhufylnkiCIJLLurm4AOKaV/VM3U9HXSdZv4L4p
-	 YRzqU8Okk51I6z9qMfccSJVOUHHIOh74DSiYVlqtWg/dJI/6e1LoAhejfUTvBhxk8o23H7c0Ium4
-	 uqiGeop7q/29K2vxFgGHvjqwk+1mBqGS40M3erJFpy9d64szRhXiOxcMmuIfQrcjDDLqOsBllKaX
-	 uG8OEpOwstYHThd+rBlObgV4oaebCyV0y9r1riLs3rMHmNghnrCbJ0duI2nm/OQZz2CSWstBA3pb
-	 xTEsTFO2A5SQSi56BC8el+mhuVVlA9sNf+1d5k8SZVDqL7pp/j0z5jhxLbgl3JMOyGgPaTeNVGrB
-	 xVdXzslCI7I5XDLr73rTMZnsA6beB3UkWvNGb6Y9qNCLOhblY3oplPcR5m5aAI55nmauJloK36rY
-	 e55jd8RhPTGRdnbbXBkTKCGgtZCsfNJqWUzhRaa19caR5M+KRIHQwWyMWgByD11bV3cePftyoCGw
-	 waNu4oaU8wfrlpic9SsIckgUYPvbGo2wyyhBA+tBpuFMX37B9qLms8GgW8faqCFHiFB9fBEZRjPz
-	 0WUhwSxqMZjhBrn57Qhpko3uKfVxmeZQnQXTCqx9Kb229VWpQutaezaNyNQzZsvTvoCQJcdKMlw/
-	 FT2TiyaEtrenAcNntLbl/wHU2LSPNE+rxUvbDzkJZc6ftfgeeI+C0T7NQzW2N29jPAeiG849zwcD
-	 4SLSIHudFSsaNHQ43WfkJSkDgVFXddrcbmgkySGMUgX/OA/p1X6E1bivdg54fwW44odbtAetliGU
-	 2NO1WuaA==
-X-QQ-XMRINFO: MSVp+SPm3vtS1Vd6Y4Mggwc=
-From: Zhang Shurong <zhang_shurong@foxmail.com>
-To: joro@8bytes.org
-Cc: will@kernel.org,
-	robin.murphy@arm.com,
-	wens@csie.org,
-	jernej.skrabec@gmail.com,
-	samuel@sholland.org,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-sunxi@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Zhang Shurong <zhang_shurong@foxmail.com>
-Subject: [PATCH] The sun50i_iommu_of_xlate() function didn't properly handle the case where of_find_device_by_node() returns NULL. This could lead to a NULL pointer dereference when accessing platform_get_drvdata(iommu_pdev) if the device node couldn't be found.
-Date: Tue, 24 Jun 2025 16:35:43 +0800
-X-OQ-MSGID: <20250624083543.1232205-1-zhang_shurong@foxmail.com>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="xi/QlwlW";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="Y9LCmN9J";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="E5mo4GVk";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="oREfj0fF"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id D7A7A21174;
+	Tue, 24 Jun 2025 09:06:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1750756003; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=9lICjNkiewMZFMzrpHfU5ovumYbwTZRme9bMEyMsD/M=;
+	b=xi/QlwlWq8NLVSwyspSzkPKvKMA6Uvj8/W9IFdzSFQMZ+ayNwxoQ7cp2wwdex97PvJgFlo
+	x2f/4oVPrxX02VMjazKS8ra2I9oaBaKqNmT3rxbP2v97idRqli2arNKpl/rNn7z5z2COdO
+	7+ljTlARtsgKwvd1zlhYhRoTz1XsnuM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1750756003;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=9lICjNkiewMZFMzrpHfU5ovumYbwTZRme9bMEyMsD/M=;
+	b=Y9LCmN9JTWkqSIjoqHkEfxTSRml/p11vY01knXb//RDebqmAaD1GQiHEbhGpors9cm5R2y
+	CTBVZa09ODuiO0Bw==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=E5mo4GVk;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=oREfj0fF
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1750756002; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=9lICjNkiewMZFMzrpHfU5ovumYbwTZRme9bMEyMsD/M=;
+	b=E5mo4GVk3aRBGPmQF64SGv7r/9Z7BrhMxT4Br3ozs8DXcDb//Oxu3nHGSXqq7o7Mb7CLZo
+	IMLqC5HhH2wB7OabuAKDxSBbULfeVUwIiW40R1/IDWT12tchJxMWR5KfDDB9oIDWVupYrc
+	wnYgtTWRX1PCzt/kDQ6JBbhPNcnau4c=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1750756002;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=9lICjNkiewMZFMzrpHfU5ovumYbwTZRme9bMEyMsD/M=;
+	b=oREfj0fFjtCcmySuYyx4a2eVlsi9oKqRPyLTW1pAnJyz47RDYq0CXOXEI70b1LsSzPwU5h
+	OgkxMNrQ9mrgSXBQ==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 35F1213A24;
+	Tue, 24 Jun 2025 09:06:42 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id gHhlC6JqWmhnFgAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Tue, 24 Jun 2025 09:06:42 +0000
+Message-ID: <6dedf895-1681-4fe3-8ca4-68fd05070ef2@suse.de>
+Date: Tue, 24 Jun 2025 11:06:41 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 6/8] Fix access to video_is_primary_device() when
+ compiled without CONFIG_VIDEO
+To: Mario Limonciello <superm1@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Lukas Wunner <lukas@wunner.de>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
+ "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+ "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
+ "open list:SOUND" <linux-sound@vger.kernel.org>,
+ Daniel Dadap <ddadap@nvidia.com>,
+ Mario Limonciello <mario.limonciello@amd.com>,
+ kernel test robot <lkp@intel.com>
+References: <20250623184757.3774786-1-superm1@kernel.org>
+ <20250623184757.3774786-7-superm1@kernel.org>
+Content-Language: en-US
+From: Thomas Zimmermann <tzimmermann@suse.de>
+Autocrypt: addr=tzimmermann@suse.de; keydata=
+ xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
+ XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
+ BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
+ hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
+ 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
+ AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
+ AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
+ AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
+ lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
+ U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
+ vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
+ 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
+ j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
+ T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
+ 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
+ GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
+ hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
+ EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
+ C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
+ yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
+ SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
+ Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
+ 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
+In-Reply-To: <20250623184757.3774786-7-superm1@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spamd-Result: default: False [-4.51 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	TO_DN_ALL(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	ARC_NA(0.00)[];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCPT_COUNT_TWELVE(0.00)[26];
+	MIME_TRACE(0.00)[0:+];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FREEMAIL_CC(0.00)[amd.com,gmail.com,ffwll.ch,wunner.de,linux.intel.com,kernel.org,infradead.org,8bytes.org,arm.com,redhat.com,perex.cz,suse.com,lists.freedesktop.org,vger.kernel.org,lists.linux.dev,nvidia.com,intel.com];
+	RCVD_TLS_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	MID_RHS_MATCH_FROM(0.00)[];
+	R_RATELIMIT(0.00)[to_ip_from(RLqbkuqg11osc55coksncbnarj)];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DKIM_TRACE(0.00)[suse.de:+];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns,suse.de:dkim,suse.de:mid,suse.de:email,intel.com:email]
+X-Spam-Level: 
+X-Spam-Flag: NO
+X-Rspamd-Queue-Id: D7A7A21174
+X-Rspamd-Action: no action
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Score: -4.51
 
-Add a WARN_ON() check to detect this condition and return -ENODEV when it
-occurs. This ensures proper error handling and helps diagnose incorrect
-device tree configurations at runtime.
 
-Fixes: 4100b8c229b3 ("iommu: Add Allwinner H6 IOMMU driver")
-Signed-off-by: Zhang Shurong <zhang_shurong@foxmail.com>
----
- drivers/iommu/sun50i-iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index 76c9620af4bb..0f85850269ae 100644
---- a/drivers/iommu/sun50i-iommu.c
-+++ b/drivers/iommu/sun50i-iommu.c
-@@ -833,6 +833,9 @@ static int sun50i_iommu_of_xlate(struct device *dev,
- 				 const struct of_phandle_args *args)
- {
- 	struct platform_device *iommu_pdev = of_find_device_by_node(args->np);
-+	if (WARN_ON(!iommu_pdev))
-+		return -ENODEV;
-+
- 	unsigned id = args->args[0];
- 
- 	dev_iommu_priv_set(dev, platform_get_drvdata(iommu_pdev));
+Am 23.06.25 um 20:47 schrieb Mario Limonciello:
+> From: Mario Limonciello <mario.limonciello@amd.com>
+>
+> When compiled without CONFIG_VIDEO the architecture specific
+> implementations of video_is_primary_device() include prototypes and
+> assume that video-common.c will be linked. Guard against this so that the
+> fallback inline implementation that returns false will be used when
+> compiled without CONFIG_VIDEO.
+>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Closes: https://lore.kernel.org/oe-kbuild-all/202506221312.49Fy1aNA-lkp@intel.com/
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+
+Acked-by: Thomas Zimmermann <tzimmermann@suse.de>
+
+> ---
+> v4:
+>   * new patch
+> ---
+>   arch/parisc/include/asm/video.h | 2 +-
+>   arch/sparc/include/asm/video.h  | 2 ++
+>   arch/x86/include/asm/video.h    | 2 ++
+>   3 files changed, 5 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/parisc/include/asm/video.h b/arch/parisc/include/asm/video.h
+> index c5dff3223194a..a9d50ebd6e769 100644
+> --- a/arch/parisc/include/asm/video.h
+> +++ b/arch/parisc/include/asm/video.h
+> @@ -6,7 +6,7 @@
+>   
+>   struct device;
+>   
+> -#if defined(CONFIG_STI_CORE)
+> +#if defined(CONFIG_STI_CORE) && defined(CONFIG_VIDEO)
+>   bool video_is_primary_device(struct device *dev);
+>   #define video_is_primary_device video_is_primary_device
+>   #endif
+> diff --git a/arch/sparc/include/asm/video.h b/arch/sparc/include/asm/video.h
+> index a6f48f52db584..773717b6d4914 100644
+> --- a/arch/sparc/include/asm/video.h
+> +++ b/arch/sparc/include/asm/video.h
+> @@ -19,8 +19,10 @@ static inline pgprot_t pgprot_framebuffer(pgprot_t prot,
+>   #define pgprot_framebuffer pgprot_framebuffer
+>   #endif
+>   
+> +#ifdef CONFIG_VIDEO
+>   bool video_is_primary_device(struct device *dev);
+>   #define video_is_primary_device video_is_primary_device
+> +#endif
+>   
+>   static inline void fb_memcpy_fromio(void *to, const volatile void __iomem *from, size_t n)
+>   {
+> diff --git a/arch/x86/include/asm/video.h b/arch/x86/include/asm/video.h
+> index 0950c9535fae9..08ec328203ef8 100644
+> --- a/arch/x86/include/asm/video.h
+> +++ b/arch/x86/include/asm/video.h
+> @@ -13,8 +13,10 @@ pgprot_t pgprot_framebuffer(pgprot_t prot,
+>   			    unsigned long offset);
+>   #define pgprot_framebuffer pgprot_framebuffer
+>   
+> +#ifdef CONFIG_VIDEO
+>   bool video_is_primary_device(struct device *dev);
+>   #define video_is_primary_device video_is_primary_device
+> +#endif
+>   
+>   #include <asm-generic/video.h>
+>   
+
 -- 
-2.39.5
+--
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Frankenstrasse 146, 90461 Nuernberg, Germany
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+HRB 36809 (AG Nuernberg)
 
