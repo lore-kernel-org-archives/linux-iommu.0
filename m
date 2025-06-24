@@ -1,62 +1,60 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AF571F463B
-	for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 06:42:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79B1917A2E2
+	for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 06:55:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750747373; cv=none; b=Cpi4B+LiEATneBUIpax+c3Rk2U7ql/IKiKhYX9U+sYG+UAdrqaRla4sTTXl5WD8bApox5WoHKJcQDllAzBnwEp8tNwd8NvfhQlhthdlIK6pMr/AxXANFo3JkYRbf/ZYuMfTt3OleHhloo8FxzuhMBMEEmOg0MNc7JKsNZifKGAA=
+	t=1750748123; cv=none; b=HI45cHoGZ96qrWIGpKQ6ub2IzHhgLgmCYrm1XWUO7vxLdCt3tdK55c28uqqx16ff0AKIXWBIh4sykwhOTYFgj7AeJcE3BVt53Qbn873L1v7h0aLwAT6oWbJXdOQpLqtc5RoU/6v2Fd/iP6IW07NX+ywWGXUYT3Zd0lD5cN4/bSI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750747373; c=relaxed/simple;
-	bh=onLRsAPAlqNyYp1MJ0vIrTl+4YIOU0c9R/hbGwqKhJs=;
+	s=arc-20240116; t=1750748123; c=relaxed/simple;
+	bh=tXHl/fqunYnn9miDE1bZcQNgfI8xMAEVRtl7KrUO6C8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=h4/GHg8HgD81ZmjW8TONEU2EKiL2KthY51hNw5n2ovDon9NlulpUD4blaykcIQm18fMIC7c9/GPESLZO82G0fBUfo2LbudbClscy6R0fFJeCJgZl6NSQWZngxWANvPgmiccLvyPBM12naTUZngYLc0iBIHGpGiT2Ra+tfQVODC8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bnVdFEuJ; arc=none smtp.client-ip=192.198.163.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=dfzRriRtHa7544WkRPxjKMLNUfThxUG0c+PeaAUTbkYX66gP5WrXmtl0V7rXLfnngItEx9qgglnYcQiD8CmrGlyo9x0jyrQwSJb5+zb0jpLMAQy93tFO0akvmme1Q2FOPS7Vgjgi6CH1oFEUjSMYx8CsxlhEBYCJbwAe7S8HeYg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mfdqEhHT; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bnVdFEuJ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mfdqEhHT"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750747371; x=1782283371;
+  t=1750748121; x=1782284121;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=onLRsAPAlqNyYp1MJ0vIrTl+4YIOU0c9R/hbGwqKhJs=;
-  b=bnVdFEuJXaFTWy+axihK6klOLelJGeRzFhZMDAmUvVK5a4r/5FoSuUP6
-   qydk0goMTwNLwPZYIKSYUzlgw7vA4n+Kdcjy84tr18OgkE300hqGEjyEf
-   BoluzsjafiRjyDSUoXfn09gFY/OjxOYHSPFNlBODkbWhr7lIrUn3wUwMj
-   XaY6OYzvqCtuCtToKar3xP7u1SU9+86DxU2RnO8zwbF+ooWgepqzU1V19
-   /ZBpfdLkDjOU+fDYlu7vMvUV4bPzK4hIfi5bvytWicv8BUJqumLrnHkl0
-   9wxKKqCbSvR1KK3ZwQYbPI42DtQtW1AVJHzx8dtUZODqa2tmqW5EKnUgM
+  bh=tXHl/fqunYnn9miDE1bZcQNgfI8xMAEVRtl7KrUO6C8=;
+  b=mfdqEhHTp6oig5U1AhL4eQcynP6TXATqztrCJrey8YFCjsbgGqeVUKvx
+   7GMI4sIrcShcn45nnPH2wyMl7BUxmBaz+/Vp/KxafY6SHur7pDNoUq9YS
+   ffFggWgLFgdAlBRvwzGRm23p4GqasKjqCAZWDYW/YuJOmKLOxl5MY6L+V
+   3serwyjp+y+zTHjx7ba9QB3jsommPZaAGNLjaAZZ4XK8NzcMNeWtVnsyn
+   RgUCjUGjRyYwL9wrLKdRHP+VJaOmrq+F3pBIweLI4SZ77+4hO76wZVG3s
+   sadHt06WcWcT0Bm/+6GqkFknp1Kzkem9cyczhpB2N89NCFYO/eLX2/vCM
    Q==;
-X-CSE-ConnectionGUID: odijikTISUW4FZrtixGASA==
-X-CSE-MsgGUID: mpfVJWQURvelG2tw0B62gA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11473"; a="56778567"
+X-CSE-ConnectionGUID: EzYes6I0SkuFRMHoKTL6ww==
+X-CSE-MsgGUID: FjJh9T8sQ2yuwjhR1KKFig==
+X-IronPort-AV: E=McAfee;i="6800,10657,11473"; a="52200146"
 X-IronPort-AV: E=Sophos;i="6.16,260,1744095600"; 
-   d="scan'208";a="56778567"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2025 23:42:51 -0700
-X-CSE-ConnectionGUID: zIIJLWnkSvePKeiZ+NRlUw==
-X-CSE-MsgGUID: LTi3RoF9Rq+ChNs3lCwJLg==
+   d="scan'208";a="52200146"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2025 23:55:20 -0700
+X-CSE-ConnectionGUID: J+lBBPhlSe66ItEBZ8CM5w==
+X-CSE-MsgGUID: GxudAC+RSpqdHxvxokPFZg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,260,1744095600"; 
-   d="scan'208";a="151583142"
+   d="scan'208";a="151967165"
 Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orviesa009.jf.intel.com with ESMTP; 23 Jun 2025 23:42:47 -0700
-Date: Tue, 24 Jun 2025 14:35:14 +0800
+  by fmviesa006.fm.intel.com with ESMTP; 23 Jun 2025 23:55:17 -0700
+Date: Tue, 24 Jun 2025 14:47:44 +0800
 From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: jgg@nvidia.com, jgg@ziepe.ca, kevin.tian@intel.com, will@kernel.org,
-	aneesh.kumar@kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, joro@8bytes.org, robin.murphy@arm.com,
-	shuah@kernel.org, nicolinc@nvidia.com, aik@amd.com,
-	dan.j.williams@intel.com, yilun.xu@intel.com
-Subject: Re: [PATCH v2 2/4] iommufd/viommu: Fix the uninitialized
- iommufd_vdevice::ictx
-Message-ID: <aFpHInZwCC2N34Fh@yilunxu-OptiPlex-7050>
+To: jgg@nvidia.com, jgg@ziepe.ca, kevin.tian@intel.com, will@kernel.org,
+	aneesh.kumar@kernel.org
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, joro@8bytes.org,
+	robin.murphy@arm.com, shuah@kernel.org, nicolinc@nvidia.com,
+	aik@amd.com, dan.j.williams@intel.com, baolu.lu@linux.intel.com,
+	yilun.xu@intel.com
+Subject: Re: [PATCH v2 3/4] iommufd: Destroy vdevice on idevice destroy
+Message-ID: <aFpKEO7/+Xf6Wu+d@yilunxu-OptiPlex-7050>
 References: <20250623094946.1714996-1-yilun.xu@linux.intel.com>
- <20250623094946.1714996-3-yilun.xu@linux.intel.com>
- <ff1a3fc1-3671-4cff-917f-5ea44bd2451e@linux.intel.com>
+ <20250623094946.1714996-4-yilun.xu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -65,41 +63,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ff1a3fc1-3671-4cff-917f-5ea44bd2451e@linux.intel.com>
+In-Reply-To: <20250623094946.1714996-4-yilun.xu@linux.intel.com>
 
-On Tue, Jun 24, 2025 at 11:24:02AM +0800, Baolu Lu wrote:
-> On 6/23/25 17:49, Xu Yilun wrote:
-> > Fix the uninitialized iommufd_vdevice::ictx. No code was using this
-> > field before, but later vdevice will use it to sync up with idevice on
-> > destroy paths.
-> > 
-> > Fixes: 0ce5c2477af2 ("iommufd/viommu: Add IOMMUFD_OBJ_VDEVICE and IOMMU_VDEVICE_ALLOC ioctl")
-> > Cc:<stable@vger.kernel.org>
-> > Signed-off-by: Xu Yilun<yilun.xu@linux.intel.com>
-> > ---
-> >   drivers/iommu/iommufd/viommu.c | 1 +
-> >   1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
-> > index 01df2b985f02..4577b88c8560 100644
-> > --- a/drivers/iommu/iommufd/viommu.c
-> > +++ b/drivers/iommu/iommufd/viommu.c
-> > @@ -130,6 +130,7 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
-> >   		goto out_put_idev;
-> >   	}
-> > +	vdev->ictx = ucmd->ictx;
-> 
-> iommufd_vdevice::ictx has been removed by this commit:
-> 
-> 6e235a772199 ("iommufd: Drop unused ictx in struct iommufd_vdevice")
-> 
-> in linux-next.
+> +void iommufd_vdevice_destroy(struct iommufd_object *obj)
+> +{
+> +	struct iommufd_vdevice *vdev =
+> +		container_of(obj, struct iommufd_vdevice, obj);
+> +
+> +	mutex_lock(&vdev->idev->igroup->lock);
+> +	iommufd_vdevice_abort(obj);
+> +	mutex_unlock(&vdev->idev->igroup->lock);
+> +	wake_up_interruptible_all(&vdev->ictx->destroy_wait);
 
-Ah, I see the thread. This patch should be dropped.
+Should change to
+
+        wake_up_interruptible_all(&vdev->viommu->ictx->destroy_wait);
+
+since vdev->ictx will be deleted.
 
 Thanks,
 Yilun
-
-> 
-> Thanks,
-> baolu
