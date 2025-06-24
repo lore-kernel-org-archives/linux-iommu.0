@@ -1,146 +1,238 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CDA829825B
-	for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 12:22:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.43
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750767769; cv=none; b=f75K/ShoDA9Gnxf4Ap5U+khcCV8vQTRjDEm+LxtC99SiiMeet7bCRX5KfgQj6DTI0XY6FzDv/f9cNi6E4+9SxIRDR76J7OMDW2Vdipq/h1Yql4qsdt0c7HvMioP3RzZq0euHj+OwjVSDvpQS+YDpCUnxGOpK4TmFR/loEFCJBf4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750767769; c=relaxed/simple;
-	bh=ueipJTTN4GIT99VDYZR+nAvHf+JWom0KrWneDnWo3sI=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Bcv/yyl8wVB+8DPgulVsltjw+tH+2YoCxCxaZglRWKUF+jfBaTTyb7yVCQY288DndlmhniSISJxq78vOzDfiTBhIp3AeW83my5vcgNqQ0xsexfW+46pFWwD9CZQDm69daXpvREmHB5lxeTTNn49nhkkkqq/y2YCKAJ6KYNqqhTo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=GUM580xP; arc=none smtp.client-ip=209.85.218.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9A702A1A4
+	for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 12:24:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.19
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750767901; cv=fail; b=tmq+rQu4UMF/cZIouSV9SziCSIxLkAr9NT9OtmWz749ICUqZK0OdHVnvQz90NilwqSfRy2UlK9b1hrREz/6tmdmfxARErWE8FoPOHLwz9UmGQe6Cp/9FTe/dW7Ww61kAwlZOJUQqJS2G5twApryZDj50rCQOJytQPYAvZZtWYw0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750767901; c=relaxed/simple;
+	bh=wrzbE9SV5EqskKRX2ITpgR2Xo4/2mq9ZrtimxFMNyus=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=HmOK8gM+G+EQ8Bm48JcjxPT+7lpCCLm7VrmWN2a5c+k5h9O/ncdZuJ7+xxgVhDV3vII84WQ3z4n0yUfGWQ6Yfo3gZmJ8J2jFxeIyKH9gJTp5oT+KjyzlS9odEXB72IsLX590OUPSnih51nd2LXwrLIR6I+G6khx77rMu44bhNCI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fRayj7F2; arc=fail smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="GUM580xP"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-ad89dc2d8b4so77701866b.3
-        for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 05:22:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1750767765; x=1751372565; darn=lists.linux.dev;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=cYR0mvGjbB1t9PwMrSYQystitWjrVQqAGcccPxG+GgU=;
-        b=GUM580xPTILHhHA8f+SReSzGu1tDKZXDmotRV87f0dPnwGhBhMELG4MshksxX9qnwa
-         1d086/zl/QRHZC1QJ/yzJ4KBBb3AK8aFybvrmZNeGFQ7tbUudnsIykSi+KB/gzF7cWVm
-         usdzSUvy8gCT2tp5CmpV9gt00S8BUyFWKJP3/0m/gOn8+XA2rkKxUppkdpSU9AMnqdRo
-         Lr9ES8LMCtKnA+fTXT/FFVJmmdj4Pq/KI1vqAzFcjEbnH0l8KgK9TSMY2qGFbdJWaOBb
-         mDuYs5drqs41XXgcCodlLVoyDcVYF4Iu8YPH3m6lgMMK3X+zvkDTNKOlgSFwSfWvNGP5
-         BLkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750767765; x=1751372565;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=cYR0mvGjbB1t9PwMrSYQystitWjrVQqAGcccPxG+GgU=;
-        b=xL4OVFVnPmTu+obxDoqAJOmv9zkqxf0TaYz/uK8A7JeOAZ3Yck0CrsAfVCXJ0rpJMg
-         Wunn7Ak/llb79KbH9YllgxjvvXSJgd4AvLfAUlHqdwgiXzz1y/m4XJEB4WzgzGjcukEG
-         T49DOQJoGKePo9j5kVSHnWuY1RC/C7oVILu0BpZwfmo2ZpX96Jdd4jvDv2aO0nn3zAJN
-         HJBIdgBEi6D0r6IIkmKL4IA8cXY6JOlNTS9hdN1nHs1Qv7Bq08Epm1EB6RYdlLzORaiU
-         tqf2x1GYabYUVmW0hw/it7gI2tZDZjlbZy/tKHtkVyWHGIekQpzauzlCu6lqedtwDYqa
-         Z6hw==
-X-Gm-Message-State: AOJu0YyN+bSYaT91UQposKrpQ/02gbA6bMrR4lHutsvOl/kGOUTPP6kX
-	3c3i6XcUyIHdfLQk3PpbEt2866NdypszomjRFObbytDos82dpHqBdeRKGoCDvm3crWw=
-X-Gm-Gg: ASbGncufkaOmRw4qhO+uerDT5cBjsN2Q1DC5VOK/twHPE96xZJ7h4aGwNM6+V9WMjuH
-	ktOFG4AQlpb85XjKWDKCeZ8jHJfxFIs+IWx84GidcQsXPjq66i8k8bQeGp3Ve0LH4wpCb5pJ2F1
-	v8TZKtgTSgL6WhiJqFufiizQfg91AlgQg+YRfVlV0xx3kiPOpNlPPSuRuJSC3O6wxyAMb9q2bwy
-	5lpvMESqr4mc3Sdz/lr+9912xTrn1769A8y+mqBf2J+dLBuU3vEx0dzoXFw5gAjNqOh6ic4RtnO
-	etbOtsvlkt14NyUjJBi11jXJSHZtArvOj2mInK4RGslNQuHhXHUB+uV5aCfufDmWX2oVQQ8yfC4
-	UWCtyiQ==
-X-Google-Smtp-Source: AGHT+IEsZ//+E0/Q5JRbtMOjfmMwrd6ZqBEhvEMcASAfMvO4Z78K40GvJpneVMJGYeJGXSRojLvxIw==
-X-Received: by 2002:a17:906:9fc8:b0:ad8:8200:ecfc with SMTP id a640c23a62f3a-ae0578e005amr526516566b.5.1750767765372;
-        Tue, 24 Jun 2025 05:22:45 -0700 (PDT)
-Received: from [192.168.1.29] ([178.197.222.89])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ae0b3448efbsm56794966b.177.2025.06.24.05.22.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Jun 2025 05:22:44 -0700 (PDT)
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Date: Tue, 24 Jun 2025 14:22:32 +0200
-Subject: [PATCH v3 3/3] iommu: mtk_iommu_v1: Simplify by dropping local
- 'mtk_mapping' variable
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fRayj7F2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1750767900; x=1782303900;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=wrzbE9SV5EqskKRX2ITpgR2Xo4/2mq9ZrtimxFMNyus=;
+  b=fRayj7F2vAMkXiOTVOF5IZnyHyUhXFBxZ8u/Cqg6Iu9HtsQNElbfplw6
+   uMO5bwy7pC+r6NjqA5BJaMKSiR3MG1CdLXGDTO/R20LP5VsMkcSBY8f2J
+   L5Gm9uKDHziblX/wm5nSQG/z1cJ8Dk5rZ5k5+DN/vvDvCB3N9bQPTNrn2
+   zzyrKlIz7zIONPc5Dk1n7X8yj3cpzsh8lCgia+3Y5aNaXkafKrDfw915Z
+   7dtDaxeY2yYKCpTbyFLdUz5ZTLRTRw0eZ31von6FORbAb/lyVCVzHD7wH
+   yiM3/9QjQr03smSueKadJHkeilvEcHlSFwGdLrj5uPVQAI4DbT8i2RLLi
+   A==;
+X-CSE-ConnectionGUID: z/OsSHysQzaiDkTJidbG2g==
+X-CSE-MsgGUID: RUa5QA4gThuIQiKC4t9jIA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11474"; a="52121014"
+X-IronPort-AV: E=Sophos;i="6.16,261,1744095600"; 
+   d="scan'208";a="52121014"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 05:24:59 -0700
+X-CSE-ConnectionGUID: +4/NQ8qPQ5SH7vT2SKoipg==
+X-CSE-MsgGUID: jCg2wW12TcCZS7Hfk12cqQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,261,1744095600"; 
+   d="scan'208";a="156477231"
+Received: from orsmsx902.amr.corp.intel.com ([10.22.229.24])
+  by orviesa004.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jun 2025 05:24:59 -0700
+Received: from ORSMSX902.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25; Tue, 24 Jun 2025 05:24:58 -0700
+Received: from ORSEDG901.ED.cps.intel.com (10.7.248.11) by
+ ORSMSX902.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25 via Frontend Transport; Tue, 24 Jun 2025 05:24:58 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (40.107.92.51) by
+ edgegateway.intel.com (134.134.137.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25; Tue, 24 Jun 2025 05:24:58 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=dZ6vIASdgtanv/QplUhKnnmxqWFdhkKsoutynGeXrgsTbI17Qak5L1jZvw72XF80m/B1ZNdB/MiAsi8fDR/C820dqUi5TBMUt/ihMrV9Vsc3RCk0cCibggRVymnEQx0YbbTsTKx2QZ24f+wBHWUdlOR1tFBmOxMo4QP3TL5OH02jnYASuX2f8Il+Q8AiV+0gEsjCyDjojRjq5qq3y3WvtAWOItsP6I/ytxicx7NwzUGuGEXfHVtgDg2NLJmYr0S/A6WqTxrS4KeU8GfmYYVcRUvBnv/ajy/L8ADx0MQ25qQUUIOWwC5o7bu0NR639nrOMGnpKyq7YcXkJtLQlrdPmQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+SQ4Wg5oBy5sP34nwadGUEiqy28gllcriGGdO4yzkJM=;
+ b=GSKssCiABq2zN1ktzpkmrQjMS7pZCxBfdfp9denV/zw0u3EdWagbO+KdcE2aR4wAaE/1y7VwzEYMT+Ej/52zhdYO/NVmNZJE+IjgUlO6wFH3p4+YRO3yEmxoKBtkR7BY94Ipmv7R5mOdJvEh2hmaSho1bwb7qv9ViZGBharyp6ieWa2416KjAL2wM2cSC6XoNnmW3dmv4Oo/30ZAcUYkBJuoBNDQHlKzZl0RIKf5d6hdTmItFrQ/IM1zw3QJsFhCMpnfqF1fc+d/7U1BLXWZ2Nz4+mTfO2NvJvOWrAwoD5NMnGxCRbYu1GWt5Xi4E4kjDwB9y5107Gs0+u3HH0/Irw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by DM3PPF5217261E0.namprd11.prod.outlook.com (2603:10b6:f:fc00::f21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8769.26; Tue, 24 Jun
+ 2025 12:24:40 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%4]) with mapi id 15.20.8857.026; Tue, 24 Jun 2025
+ 12:24:40 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Aneesh Kumar K.V <aneesh.kumar@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Joerg Roedel
+	<joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>
+Subject: RE: [RFC PATCH] iommufd: Destroy vdevice on device unbind
+Thread-Topic: [RFC PATCH] iommufd: Destroy vdevice on device unbind
+Thread-Index: AQHb2dRy0pZb6YCA9kCQvhSriVTQbbP/KocwgACgJoCAAOcYcIAAW7EAgAQtLwCAAA6p8IAAwFeAgAEAUQCAAK9oAIAAtsMAgACH6YCAABWYAIAAAh0AgAkjV4CAAB4LQA==
+Date: Tue, 24 Jun 2025 12:24:40 +0000
+Message-ID: <BN9PR11MB527677E136550FEBBF3AAFF28C78A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <BN9PR11MB5276B467ADCC57BC6571CA458C77A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250613124202.GD1130869@ziepe.ca> <yq5abjqotim7.fsf@kernel.org>
+ <BN9PR11MB527633CA2F698E83E12BFBD68C70A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20250616164941.GA1373692@ziepe.ca> <yq5azfe6ssev.fsf@kernel.org>
+ <20250617183452.GG1376515@ziepe.ca> <yq5awm99sjmr.fsf@kernel.org>
+ <20250618133527.GQ1376515@ziepe.ca> <yq5att4drtj7.fsf@kernel.org>
+ <20250618150018.GS1376515@ziepe.ca> <yq5a8qlh5t0c.fsf@kernel.org>
+In-Reply-To: <yq5a8qlh5t0c.fsf@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DM3PPF5217261E0:EE_
+x-ms-office365-filtering-correlation-id: 84cfa244-1a47-4b9b-9155-08ddb31a17c8
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|376014|38070700018;
+x-microsoft-antispam-message-info: =?us-ascii?Q?DgFiRDIfAI171HeOAlLcGts4DUW0beKXb/NB8KqUh6RrC51jMr9g4NJC3jUP?=
+ =?us-ascii?Q?NKr+5ohrM69/GXGC4FpxDvAJvxHlwUswWdk+0huSVHn6IjfIFWjKV8GsY500?=
+ =?us-ascii?Q?7+zun+aIriIU76EiY+Th5alfAIQv4M3erdO/KkspAxxXKK2jisK2iwEgCesg?=
+ =?us-ascii?Q?hCzO7e9ymi7O74baNZ/xe7d2MozNmssUuxt/9f1PKK5eB8kFpPY0NMCOWX0m?=
+ =?us-ascii?Q?KwgmXXL81UStycbiFARYZq7bvTMqeSEOscKyx7nAoQdeWrSfava4VT4lppVz?=
+ =?us-ascii?Q?JX+mq2Qu1VvqE87NME2okmfA6pgJkyfgLSzDAhL3rPDh5PAq9BeLHfUjmZL7?=
+ =?us-ascii?Q?nnuPWim8FJX+lUZuRvV7TUivc78+UXZY43/HmTu28FLLyq/c4zhufd6VoBEU?=
+ =?us-ascii?Q?YVLdF9dj/YyDTKd8RsR8nVp2CTLy4RXAUYri1ZywU4Lejf50CQ2sjkbEy7aV?=
+ =?us-ascii?Q?2PO+fOQ5P2uhmNoimtRVl3wm0BbJvBh1RYwQcUAxuSHspRwH3SEbQHoN1++O?=
+ =?us-ascii?Q?ZOXQaLm0PeCDdKnetELuY2dWeQxx3qfvMRWBYeMX0hes0YD0ooXFCXfiicyl?=
+ =?us-ascii?Q?q9F65ioln7FvPz23uo2M0cpRJUNowA/oZ10olHAD0EfxE0y5hRxJIqAUXPBV?=
+ =?us-ascii?Q?n275I12Y1ZkxVjd9cQaEp50RqRNHnd8Ptm+6LPNbbe7z/R8sovLhNehjF133?=
+ =?us-ascii?Q?DoGaDPX4K5ZmH3l4xMCZztudXHhG5cwOIi83CC9vS0FhCDmpcVFDPT8MR95i?=
+ =?us-ascii?Q?+Lz6xQj9Bgrt8cN8OfjUx5+fjX7PttL1OaEY7rwysW1wKH0OxdyrsRqz7SlB?=
+ =?us-ascii?Q?V1Zj9T4h8tGFdzAAdzLXbFo8mU9IRj7WLe2VDxU3M0tOOoAK23Ks64adyJzD?=
+ =?us-ascii?Q?FiIxJMt89DDpP6dLzQ0rugZQq2XWKEBaLsq3g0/gSWbDpvb/sNffbpUJ3H8P?=
+ =?us-ascii?Q?By5o2lf1GoeQbZ+iEeaLCGJvsEwZ5fW0ex1Z8zREBEtV4n+jJg3Fdzq/aQSM?=
+ =?us-ascii?Q?1cJ0LIcj5OsAFxsLC87bMMb52VZml5QtNWPxhGYe6Bolvaa0EA6Bgzd3ODop?=
+ =?us-ascii?Q?Lka9Ek3pYcQ5Q0qAn2xYBFVr8Q1HbvnuGQ+ft62tM4U01Ecl+BJ0Lv44czBY?=
+ =?us-ascii?Q?80r/gg2Ew+XD8pXCwDSiu4P7D4J88Z2AetNG9XTWh52mPrm56j7uzZWYaNHK?=
+ =?us-ascii?Q?NvbsWh2+Dd6dPlNI8iLquot3J0pXMIXJxbb83egKcariHTPvImYTofz24lrH?=
+ =?us-ascii?Q?uqwgV8wSNmxnQOPR9H+jIrvqojhDyNbw2EJJgy/rodbicW0s1ln/r4HglVbF?=
+ =?us-ascii?Q?T5j7kIHFN2Sn4nhN0h5ImaaFD2e8LbNLKBF4OhYbgSoq3rLOUxMa44+yPzW8?=
+ =?us-ascii?Q?yha0Wn7hUsyLjy+Gx5B+/qbM2GFDHtubUEIeveyI3Aoa3+XDLtBxTAbEkgrI?=
+ =?us-ascii?Q?d9gKOKhXkMKZxG9+OArkdtmtifJDkaIHNGVBzq+LQ0j4yNP27cKzl9YSBQP+?=
+ =?us-ascii?Q?yhp6ZgC+Or8quUQ=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?GZavI6Ovde1NZ9rtccKOHgtVL0ZWVpkZkKoQsJGxUtj6LX6GMl/P+qg1Jmt3?=
+ =?us-ascii?Q?1e9+l/Tt5LqzCXBj6KzhB0DVSIP5fG7cmfgRs3I7G681bXtGZxEaNJoH6d6q?=
+ =?us-ascii?Q?hnpzTet3/bL674JbwPFTS9XIIr/dhq4E/GzV+EgskDjPrmABb9F5RphOG99Q?=
+ =?us-ascii?Q?Q5HSwliDbH7TQ32sOHvYouVprJnyqf5/tuEQ9T+E8wl78aGAuyb3mM8jgnZV?=
+ =?us-ascii?Q?guqxHp0ZRr33iFIUpBjZq7pvKZbABGQ+ad4zac7isgsj0KaUl7DqZzRdmQDs?=
+ =?us-ascii?Q?U0qBilAP/lEdG7VRR1AQxW9u6W7QSNg7no2Nwv+2riRETQBHUS4bibvLLW+A?=
+ =?us-ascii?Q?wtgKRpdNmt6/OjgNBDHU0JnDEGwIf53eLQRKn4h/fnhfqylBSNLX6f1Q0SH8?=
+ =?us-ascii?Q?oU8zAdjjKFvXorm4lHMTtum1nIQ5HIECGo8Yy7XzHdJb9e/Q+mNqZ8ZkpOJY?=
+ =?us-ascii?Q?H3lxUIvh6NsHC1xO/raGEPg/nnH2X4PfScCR0dcHr+aJRAjBvl+vH/CYy5oi?=
+ =?us-ascii?Q?i3Ps4EsCrnQB2J1FDrkIBiLWnp7AdA1BW2XKU8Q6YUK49ncuzaP+K+yrtMCk?=
+ =?us-ascii?Q?EpwuAMwhNPG4ZfcM7C72pvpCYdEmjB+w1IXAAMOd/+aOUqTyeBOMPHlDsPxW?=
+ =?us-ascii?Q?ql0qKlaBR78OW5UeEt9F9sScXfPI9jZIJBWuXE7462yS1DuZvjPdNCe3uukI?=
+ =?us-ascii?Q?4M+IeKI2HwEu/TUlOwfpKrjbbyKJTpelcNVSlEGUlL9a71IM08TKYUsHJD5W?=
+ =?us-ascii?Q?ay3t1pnAW9MO0DrX8jVUDhgoi0TsPRPPXmtIieeiHxpTuahSIzTGzj7UUC7r?=
+ =?us-ascii?Q?9mCt7RLmLVanqRrEKN8aISrx5hW6nmQ1SifBi2EGjaBBSEfL9HuhGcpP8lXL?=
+ =?us-ascii?Q?cP8raR3sVtjaYiKrXzAXsy6HSZ0lAfks5z8UewUcS+qIThjyOfsP8oom8B/s?=
+ =?us-ascii?Q?SaDDZc8/xTvH9KjuG5RlApdkBDn1GUFHW0PfBzBq/K05AHBmxKLNSfFV5SQa?=
+ =?us-ascii?Q?XJRApHS+HNytoBtBwW1oyijBCG5Rya/hdv1wK94usMqKxsx6VUgadG5jCKBm?=
+ =?us-ascii?Q?ajQXHPGPBPI2+QB9dMpf5mASXKFYNV0jUatFEUnhpI3B6N1n5/zhRG/FEPSc?=
+ =?us-ascii?Q?v2kED5v4Zr4Gb3xR3h5lVHqQF0gd4rnMSB1BggUdBrk1PIiaPElmoCli8kFZ?=
+ =?us-ascii?Q?6kiN1zdah9vwgT9JqXnsEGpt48sm5CwTshauC/fPUdHlxHrjyAu34MtbazMg?=
+ =?us-ascii?Q?ZvuB6E3Yb1vzh1ushvMk8z5kFA+j/S2KK7PNJOswtNau2DHBrJfEETXCzfoH?=
+ =?us-ascii?Q?IbuEJ9A3zreKJwc+wbX0wvfTyAzEF6cJJfpjgCg5xI3cn7vO+KR0qouybpKM?=
+ =?us-ascii?Q?1vN9TbrveBSp1qbNn6Lhj0zdW2slVt5ix+QkFRhrSqdbfRO4a1+jTu6unCHh?=
+ =?us-ascii?Q?3DVAYG7ZLjgt7tRmElAnTA61BBvV065dtH2gaWuUe/SPzifiaHCsO9ubEboq?=
+ =?us-ascii?Q?3c2iiPLm6hpYEALZiINqjs176eWLtiHXqvom/0Xr0uqIhjT6DyWY5VuDqsJ1?=
+ =?us-ascii?Q?rt/okkE3cffLu8kz0ZVCuXotnVhn3q7nQlci+vWW?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250624-syscon-phandle-args-iommu-v3-3-1a36487d69b8@linaro.org>
-References: <20250624-syscon-phandle-args-iommu-v3-0-1a36487d69b8@linaro.org>
-In-Reply-To: <20250624-syscon-phandle-args-iommu-v3-0-1a36487d69b8@linaro.org>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Yong Wu <yong.wu@mediatek.com>, 
- Matthias Brugger <matthias.bgg@gmail.com>, 
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1470;
- i=krzysztof.kozlowski@linaro.org; h=from:subject:message-id;
- bh=ueipJTTN4GIT99VDYZR+nAvHf+JWom0KrWneDnWo3sI=;
- b=kA0DAAoBwTdm5oaLg9cByyZiAGhamI7Iw+ClTaksgGzVRNZBqEwhCMHErWdDPgl3KBLt2cw5H
- IkCMwQAAQoAHRYhBN3SYig9ERsjO264qME3ZuaGi4PXBQJoWpiOAAoJEME3ZuaGi4PXrSMQAJis
- 3J5R/L2EfwRPOX20YInJ3r9Rj4cm59Hk4gwBb6sJBPC42WJRFUfriJKoBwOrXG4/wGCneYOvHGn
- F5h1zJLrIknW/Rr3eQU2JmiXfvfG05b4wEn2q59T4z98TmmqESvXISsSy8InCeK/ui4qCEormFm
- WCluiPBO7+kmKT471cc0V8LUPwBidaXYQy0bvjwLALYhsZSyss5hTi0lqvTpmEOIPjJQPZ8S44U
- y8hpaLmPwJZaSNbSxVJ7jgDmEG0OCU2Lp5Hfk8m76ijVsRAjp7vbifVJJcmzAwVnLwz/Mhp9zqR
- 701ZiWueSdJOpFBr9dnum4uzJtbfmdAOcAaZrtr9fZ6/8ODcEjp7a1R4JPWaqzdwTcMrjXDcDSp
- 5ucG899MrwqT2WEahy5IreqJFG9SGntaDTDewpOcO1+l+iqe/4TFw1rrvC+vK9qOdHK9DnBc3T2
- 6cDBQMuhRGre8ruUf6h1li4CfqdYwi1szocZJHVAsr2PQZvMjWtWLBToNtCdJbPXEhD5loEEwpO
- Fck8zxNaq4AlXafOpg2uWSWvYs13l4VTCztSq9QCYclHzDZhCXukRHSJtPuCdNnQjAO4JtF4LQP
- BdA7mfHdmewfVjvi6I+fwWRhECj2Z5cyuRBK9DFSYqceUX0/iMGPS6nRoDGeG9QYu1NFWb5FYv+
- /WU5W
-X-Developer-Key: i=krzysztof.kozlowski@linaro.org; a=openpgp;
- fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 84cfa244-1a47-4b9b-9155-08ddb31a17c8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jun 2025 12:24:40.5746
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Rn/5XOUNIti1Vl5K2GiQRhC1ntEeNYksvoUrliMQ+GximpdSyPgnVsZOwjQPmDI7qLnClCuTbeB7jZmJLmAYqg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM3PPF5217261E0
+X-OriginatorOrg: intel.com
 
-Storing 'data->mapping' in local variable in
-mtk_iommu_v1_probe_finalize() does not make the code easier to read.
-Use the 'data->mapping' directly.
+> From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
+> Sent: Tuesday, June 24, 2025 6:33 PM
+> Jason Gunthorpe <jgg@ziepe.ca> writes:
+>=20
+> > On Wed, Jun 18, 2025 at 08:22:44PM +0530, Aneesh Kumar K.V wrote:
+> >> > The full sequence I would expect a sane userspace to do is:
+> >> >
+> >> > open(vfio_cdev)
+> >> > ioctl(vfio_cdev, VFIO_DEVICE_BIND_IOMMUFD, iommufd)
+> >> > ioctl(iommufd, IOMMUFD_CMD_VIOMMU_ALLOC)
+> >> > ioctl(iommufd, IOMMUFD_CMD_VDEVICE_ALLOC)
+> >> > ioctl(iommufd, IOMMUFD_CMD_VDEVICE_DEALLOC)
+> >> > ioctl(iommufd, IOMMUFD_CMD_VIOMMU_DEALLOC)
+> >> > close(vfio_cdev);
+> >> >
+> >>
+> >> And if the user does
+> >>
+> >> open(vfio_cdev)
+> >> ioctl(vfio_cdev, VFIO_DEVICE_BIND_IOMMUFD, iommufd)
+> >> ioctl(iommufd, IOMMUFD_CMD_VIOMMU_ALLOC)
+> >> ioctl(iommufd, IOMMUFD_CMD_VDEVICE_ALLOC)
+> >> close(vfio_cdev);   -> this should call vdevice_destroy because idevic=
+e is
+> getting destroyed here (we will put XA_ZERO_ENTRY here).
+> >
+> > Yes, we have to destroy the vdevice internally here
+> >
+> >> ioctl(iommufd, IOMMUFD_CMD_VDEVICE_DEALLOC) -> No error, we
+> convert the XA_ZERO_ENTRY to NULL here?
+> >
+> > This should probably fail since the user has done something wrong and
+> > it would be the only way to realize it. The failure could clean up the
+> > tombstone, or it could just leak I don't have a strong feeling.
+> >
+> > If you leak then using XA_ZERO_ENTRY is easy, if you want to clean up
+> > then you'd have to have a global static 'tombstone object' that sits
+> > in the xarray.
+>=20
+> I have a related question w.r.t iommufd_fops_release(). How is that safe
+> against a parallel iommufd_destroy()?
+>=20
+> in iommufd_fops_release ()
+> xa_for_each(&ictx->objects, index, obj) {
+>=20
+>                             ---> A parallel iommufd_destroy() can free th=
+e obj here ?
+>=20
+> 	if (!refcount_dec_if_one(&obj->users))
+> 		continue;
+>=20
+> }
 
-ARM64 W=1 builds also complain with:
-
-  mtk_iommu_v1.c:512:28: error: variable 'mtk_mapping' set but not used [-Werror,-Wunused-but-set-variable]
-
-but this is not being fixed here and 'data' still won't be used in such
-compile test.
-
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
----
-
-Old warning is changed now to:
-
-  error: variable 'data' set but not used [-Werror,-Wunused-but-set-variable]
----
- drivers/iommu/mtk_iommu_v1.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 66824982e05fbfdda224276ad41b90f9d5f9ca4e..bbe3e9d901c69ac6405d9549a4481fc80f1adb80 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -509,14 +509,12 @@ static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
- 
- static void mtk_iommu_v1_probe_finalize(struct device *dev)
- {
--	struct dma_iommu_mapping *mtk_mapping;
- 	struct mtk_iommu_v1_data *data;
- 	int err;
- 
- 	data        = dev_iommu_priv_get(dev);
--	mtk_mapping = data->mapping;
- 
--	err = arm_iommu_attach_device(dev, mtk_mapping);
-+	err = arm_iommu_attach_device(dev, data->mapping);
- 	if (err)
- 		dev_err(dev, "Can't create IOMMU mapping - DMA-OPS will not work\n");
- }
-
--- 
-2.48.1
-
+@release is called when a fd is closed, while the fd cannot be closed
+when there is ongoing ioctl on it. So when iommufd_fops_release()
+is invoked there is no parallel user-initiated operation.
