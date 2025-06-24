@@ -1,33 +1,25 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D99112E610B;
-	Tue, 24 Jun 2025 16:48:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E21BA2236F8
+	for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 17:12:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750783729; cv=none; b=KuoIaMrPDy0+lPWIdvUEYgAv0AIV5DZxukEF665FaKJul3pDgSfpofTEwjXZ6z840+eO5XIyJeVpaBGI6Mb6b5xhw7ASuZxRSIitPLxfI6zltUtswqMCVtF1eMbWpS7yly2yMz3p/bVJK7tLFwo1EbMbKIwRRaPlF/HJMRGuAMA=
+	t=1750785170; cv=none; b=Msvqp1MrPrgY+1Z0aALaveLwEqZr3r6Mt+GfxktItEePSGYblZ5F/Vj9x5iVAYF3VVOjgvKZtPNgfiRVcjENlkG7o7q9NUMFEJu47USPbSZQ0Ef6GxYbJvFi8x+1X9w7LEnzWX94NIpEmdid0er6N3EVBjR5OJ+s2eW88uBkeAA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750783729; c=relaxed/simple;
-	bh=oQ1jbpZY26uLhcovpi99AHhjhynbQIDhCOwniw/kLP0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iuhwGsEa8SrOAad6pSsBt5GkRTE6DBpbP9hsK6wIgl9zrU1HAweTqPK9X4ZZCFXfuEfBEVUH4kNFL7uGZZJgzmVNAKoumsVnTmiQjkgXrKSRpROYoeFHR+9ZMv/38uffRszrj+IcntkHq8N9/OXSrL5/dU/nsO29iBHjfWVPH8o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TfvzZR/f; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TfvzZR/f"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A303AC4CEE3;
-	Tue, 24 Jun 2025 16:48:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750783728;
-	bh=oQ1jbpZY26uLhcovpi99AHhjhynbQIDhCOwniw/kLP0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=TfvzZR/fYpui/a9fNXGb7tsI/EUZhlLeCnYb27CR99Srqf6zNPIOsJlmfeTuFanQd
-	 +U8LSrvF2KJfjmg9Dj8afnFHGuJNPLwcACdFl9oekBU5rVtPUCXwyKp49bEiA6va0G
-	 D822dRBTWbaEg42k/S41DXH5Fm+CLGFZTkyzOG7ykSr4sOkWqV+nX+CXeB3OUOogMJ
-	 +hsktnQLM+lh57CpY8wjn/nzK9UO55m2DoY0PiaAF+ylQ4aV6DjBd16hW7pTGD+Piy
-	 9tWuJ4Lfcrmp1JfhNZoShtc5/hVK1DzqJLhRd0eqhUmr1upBlQhxNkTsFcvNdSBGMt
-	 ys6f6Kg5zVTRA==
-Message-ID: <939129a9-0a93-4539-b651-b08fcddf57b5@kernel.org>
-Date: Tue, 24 Jun 2025 11:48:45 -0500
+	s=arc-20240116; t=1750785170; c=relaxed/simple;
+	bh=RoPSiJMTQmwSf7fRAUrbIZ1ptAWU190Bq9zLmYfcGPM=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=hDTjq1heZbKXgj+7bkGCOIawVKxr+jxmRmICkG4etj7BxO0C1yGaqbDM5DWuUqubckwSLNt4385xO7F83Gzi0LlCqgETknQhaFSDNshoUCUs1x7oi1pR7Zjgq3lDzqs1sQJyCxNCSABGTPfW6apAIiN2g3k5aOfXrbZFyUItpXs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2DD0F113E;
+	Tue, 24 Jun 2025 10:12:30 -0700 (PDT)
+Received: from [10.57.29.113] (unknown [10.57.29.113])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6EE703F58B;
+	Tue, 24 Jun 2025 10:12:46 -0700 (PDT)
+Message-ID: <0bc60699-eeaa-4121-8d93-0274862f5aed@arm.com>
+Date: Tue, 24 Jun 2025 18:12:43 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,169 +27,153 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 7/8] PCI/VGA: Move check for firmware default out of
- VGA arbiter
-To: Thomas Zimmermann <tzimmermann@suse.de>,
- Bjorn Helgaas <bhelgaas@google.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Lukas Wunner <lukas@wunner.de>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
- "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
- "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
- "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
- "open list:SOUND" <linux-sound@vger.kernel.org>,
- Daniel Dadap <ddadap@nvidia.com>,
- Mario Limonciello <mario.limonciello@amd.com>
-References: <20250623184757.3774786-1-superm1@kernel.org>
- <20250623184757.3774786-8-superm1@kernel.org>
- <f0e70269-b55e-4ac8-b052-da092a177eda@suse.de>
-Content-Language: en-US
-From: Mario Limonciello <superm1@kernel.org>
-In-Reply-To: <f0e70269-b55e-4ac8-b052-da092a177eda@suse.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: Help: Samsung Exynos 7870 DECON SYSMMU panic
+To: Kaustabh Chakraborty <kauschluss@disroot.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Inki Dae <inki.dae@samsung.com>,
+ Seung-Woo Kim <sw0312.kim@samsung.com>,
+ Kyungmin Park <kyungmin.park@samsung.com>
+Cc: iommu@lists.linux.dev, dri-devel@lists.freedesktop.org
+References: <544ad69cba52a9b87447e3ac1c7fa8c3@disroot.org>
+Content-Language: en-GB
+In-Reply-To: <544ad69cba52a9b87447e3ac1c7fa8c3@disroot.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 6/24/25 4:21 AM, Thomas Zimmermann wrote:
+On 2025-06-18 3:02 pm, Kaustabh Chakraborty wrote:
+> Since bcb81ac6ae3c (iommu: Get DT/ACPI parsing into the proper probe path),
+> The Samsung Exynos 7870 DECON device (with patches [1], [2], and [3]) seems
+> to not work anymore. Upon closer inspection, I observe that there is an
+> IOMMU crash.
 > 
-> 
-> Am 23.06.25 um 20:47 schrieb Mario Limonciello:
->> From: Mario Limonciello <mario.limonciello@amd.com>
->>
->> The x86 specific check for whether a framebuffer belongs to a device
->> works for display devices as well as VGA devices.  Callers to
->> video_is_primary_device() can benefit from checking non-VGA display
->> devices.
->>
->> Move the x86 specific check into x86 specific code, and adjust VGA
->> arbiter to call that code as well. This allows fbcon to find the
->> right PCI device on systems that don't have VGA devices.
->>
->> Suggested-by: Thomas Zimmermann <tzimmermann@suse.de>
->> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
->> ---
->> v4:
->>   * use helper
->> ---
->>   arch/x86/video/video-common.c | 13 ++++++++++++-
->>   drivers/pci/vgaarb.c          | 36 ++---------------------------------
->>   2 files changed, 14 insertions(+), 35 deletions(-)
->>
->> diff --git a/arch/x86/video/video-common.c b/arch/x86/video/video- 
->> common.c
->> index 81fc97a2a837a..917568e4d7fb1 100644
->> --- a/arch/x86/video/video-common.c
->> +++ b/arch/x86/video/video-common.c
->> @@ -9,6 +9,7 @@
->>   #include <linux/module.h>
->>   #include <linux/pci.h>
->> +#include <linux/screen_info.h>
->>   #include <linux/vgaarb.h>
->>   #include <asm/video.h>
->> @@ -27,6 +28,7 @@ EXPORT_SYMBOL(pgprot_framebuffer);
->>   bool video_is_primary_device(struct device *dev)
->>   {
->> +    struct screen_info *si = &screen_info;
->>       struct pci_dev *pdev;
->>       if (!dev_is_pci(dev))
->> @@ -34,7 +36,16 @@ bool video_is_primary_device(struct device *dev)
->>       pdev = to_pci_dev(dev);
->> -    return (pdev == vga_default_device());
->> +    if (!pci_is_display(pdev))
->> +        return false;
->> +
->> +    if (pdev == vga_default_device())
->> +        return true;
->> +
->> +    if (pdev == screen_info_pci_dev(si))
->> +        return true;
->> +
->> +    return false;
->>   }
->>   EXPORT_SYMBOL(video_is_primary_device);
->> diff --git a/drivers/pci/vgaarb.c b/drivers/pci/vgaarb.c
->> index 78748e8d2dbae..15ab58c70b016 100644
->> --- a/drivers/pci/vgaarb.c
->> +++ b/drivers/pci/vgaarb.c
->> @@ -26,12 +26,12 @@
->>   #include <linux/poll.h>
->>   #include <linux/miscdevice.h>
->>   #include <linux/slab.h>
->> -#include <linux/screen_info.h>
->>   #include <linux/vt.h>
->>   #include <linux/console.h>
->>   #include <linux/acpi.h>
->>   #include <linux/uaccess.h>
->>   #include <linux/vgaarb.h>
->> +#include <asm/video.h>
->>   static void vga_arbiter_notify_clients(void);
->> @@ -554,38 +554,6 @@ void vga_put(struct pci_dev *pdev, unsigned int 
->> rsrc)
->>   }
->>   EXPORT_SYMBOL(vga_put);
->> -static bool vga_is_firmware_default(struct pci_dev *pdev)
->> -{
->> -#if defined(CONFIG_X86)
->> -    u64 base = screen_info.lfb_base;
->> -    u64 size = screen_info.lfb_size;
->> -    struct resource *r;
->> -    u64 limit;
->> -
->> -    /* Select the device owning the boot framebuffer if there is one */
->> -
->> -    if (screen_info.capabilities & VIDEO_CAPABILITY_64BIT_BASE)
->> -        base |= (u64)screen_info.ext_lfb_base << 32;
->> -
->> -    limit = base + size;
->> -
->> -    /* Does firmware framebuffer belong to us? */
->> -    pci_dev_for_each_resource(pdev, r) {
->> -        if (resource_type(r) != IORESOURCE_MEM)
->> -            continue;
->> -
->> -        if (!r->start || !r->end)
->> -            continue;
->> -
->> -        if (base < r->start || limit >= r->end)
->> -            continue;
->> -
->> -        return true;
->> -    }
->> -#endif
->> -    return false;
->> -}
->> -
->>   static bool vga_arb_integrated_gpu(struct device *dev)
->>   {
->>   #if defined(CONFIG_ACPI)
->> @@ -623,7 +591,7 @@ static bool vga_is_boot_device(struct vga_device 
->> *vgadev)
->>       if (boot_vga && boot_vga->is_firmware_default)
->>           return false;
->> -    if (vga_is_firmware_default(pdev)) {
->> +    if (video_is_primary_device(&pdev->dev)) {
-> 
-> Doesn't this generate a cyclic dependency between vgaarb and video? I 
-> find this call cycle hard to reason about because 
-> vgaarb_default_device() depends on the results of these boot-device 
-> tests. Maybe keep vga_is_firmware_default() and just replace its content 
-> with a call to screen_info_pci_dev().
-> Best regards
-> Thomas
+> [    2.918189] exynos-sysmmu 14860000.sysmmu: 14830000.decon: [READ] PAGE FAULT occurred at 0x6715b3e0
+> [    2.918199] exynos-sysmmu 14860000.sysmmu: Page table base: 0x0000000044a14000
+> [    2.918243] exynos-drm exynos-drm: bound 14830000.decon (ops decon_component_ops)
+> [    2.922868] exynos-sysmmu 14860000.sysmmu:   Lv1 entry: 0x4205001
+> [    2.922877] Kernel panic - not syncing: Unrecoverable System MMU Fault!
+> [    2.922885] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.16.0-rc2-exynos7870 #722 PREEMPT
+> [    2.995312] Hardware name: Samsung Galaxy J7 Prime (DT)
+> [    3.000509] Call trace:
+> [    3.002938]  show_stack+0x18/0x24 (C)
+> [    3.006582]  dump_stack_lvl+0x60/0x80
+> [    3.010224]  dump_stack+0x18/0x24
+> [    3.013521]  panic+0x168/0x360
+> [    3.016558]  exynos_sysmmu_irq+0x224/0x2ac
+> [         ...]
+> [    3.108786] ---[ end Kernel panic - not syncing: Unrecoverable System MMU Fault! ]---
 
-OK, I'll do that, thanks.
+For starters, what if you just remove this panic() from the IOMMU 
+driver? Frankly it seems a bit excessive anyway...
 
+ From the logs below it seems there is apparently unexpected traffic 
+already going through the IOMMU when it wakes up. Is this the DRM 
+drivers doing something sketchy, or has the bootloader left the display 
+running for a splash screen? However in the latter case I don't 
+obviously see why delaying the IOMMU probe should make much difference, 
+given that the decon driver should still be waiting for it either way.
+
+Thanks,
+Robin.
+
+> The commit has been introduced in mainline v6.15-rc1. I've also tested in
+> v6.15, v6.15.2, and v6.16-rc2, and there have been no apparent changes.
 > 
->>           vgadev->is_firmware_default = true;
->>           return true;
->>       }
+> I've tried to revert the commit, and it does work that way. But on reading
+> the commit message I understand that I need to find a proper solution here.
+> I've tried to skim down the revert, and this is what I get - if i change
+> line [4] as follows:
 > 
+> -		dev->bus->dma_configure(dev);
+> +		if (!strcmp(dev_name(dev), "14830000.decon"))
+> +			dev->bus->dma_configure(dev);
+> 
+> It really doesn't like dma_configure for some reason. It works, but:
+> 
+> [    2.779291] exynos-decon 14830000.decon: late IOMMU probe at driver bind, something fishy here!
+> 
+> I believe the IOMMU hardware doesn't like the fact that it is being
+> initialized/resumed too early. I formed this conclusion by comparing the
+> logs:
+> 
+> mainline:
+> [    1.274575] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_resume enter
+> [    2.859656] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable enter
+> [    2.864192] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_clocks enter
+> [    2.869299] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 0x00000007
+> [    2.875062] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_init_config enter
+> [    2.880006] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000004 val 0x01100784
+> [    2.885819] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_set_ptbase enter
+> [    2.890677] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x0000000c val 0x00044a14
+> [    2.896490] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_tlb_invalidate enter
+> [    2.901695] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000010 val 0x00000001
+> [    2.907507] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_vid enter
+> [    2.912366] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 0x00000005
+> [    2.912371] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_irq enter
+> [    2.912836] [drm] Exynos DRM: using 14830000.decon device for DMA mapping operations
+> [    2.918175] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_v5_get_fault_info enter
+> [    2.918182] I_HAVE_ADDED_THESE: SYSMMU: show_fault_information enter
+> [    2.918189] exynos-sysmmu 14860000.sysmmu: 14830000.decon: [READ] PAGE FAULT occurred at 0x6715b3e0
+> [    2.918199] exynos-sysmmu 14860000.sysmmu: Page table base: 0x0000000044a14000
+> [    2.918243] exynos-drm exynos-drm: bound 14830000.decon (ops decon_component_ops)
+> [    2.922859] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
+> [    2.922864] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+> [    2.922868] exynos-sysmmu 14860000.sysmmu:   Lv1 entry: 0x4205001
+> [    2.922877] Kernel panic - not syncing: Unrecoverable System MMU Fault!
+> 
+> and with the patch above applied:
+> [    3.018478] [drm] Exynos DRM: using 14830000.decon device for DMA mapping operations
+> [    3.025794] exynos-drm exynos-drm: bound 14830000.decon (ops decon_component_ops)
+> [    3.058655] exynos-dsi 14800000.dsi: [drm:samsung_dsim_host_attach] Attached td4300-panel device (lanes:4 bpp:24 mode-flags:0x23)
+> [    3.070189] exynos-drm exynos-drm: bound 14800000.dsi (ops exynos_dsi_component_ops)
+> [    3.078506] [drm] Initialized exynos 1.1.0 for exynos-drm on minor 1
+> [    3.090747] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_map enter
+> [    3.090845] I_HAVE_ADDED_THESE: SYSMMU: to_exynos_domain enter
+> [    3.093325] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
+> [    3.097662] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+> [    3.102000] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+> [    3.106337] I_HAVE_ADDED_THESE: SYSMMU: lv1set_section enter
+> [    3.110762] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_set_pte enter
+> [    3.115726] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_map enter
+> [    3.120317] I_HAVE_ADDED_THESE: SYSMMU: to_exynos_domain enter
+> [    3.124914] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
+> [    3.129240] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+> [    3.133578] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+> [    3.137916] I_HAVE_ADDED_THESE: SYSMMU: lv1set_section enter
+> [    3.142340] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_set_pte enter
+> [         ...] (a lot of repetitions later)
+> [    4.322904] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
+> [    4.327230] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+> [    4.331567] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+> [    4.335905] I_HAVE_ADDED_THESE: SYSMMU: alloc_lv2entry enter
+> [    4.340329] I_HAVE_ADDED_THESE: SYSMMU: page_entry enter
+> [    4.344407] I_HAVE_ADDED_THESE: SYSMMU: lv2ent_offset enter
+> [    4.348744] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
+> [    4.353082] I_HAVE_ADDED_THESE: SYSMMU: lv2set_page enter
+> [    4.357246] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_set_pte enter
+> [    4.362751] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_resume enter
+> [    4.362767] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable enter
+> [    4.362771] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_clocks enter
+> [    4.362777] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 0x00000007
+> [    4.362782] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_init_config enter
+> [    4.362786] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000004 val 0x01100784
+> [    4.362791] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_set_ptbase enter
+> [    4.362795] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x0000000c val 0x00042a64
+> [    4.362799] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_tlb_invalidate enter
+> [    4.362803] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000010 val 0x00000001
+> [    4.362808] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_vid enter
+> [    4.362811] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 0x00000005
+> 
+> Then it continues booting as usual.
+> 
+> My lack of understanding of the IOMMU and DRM subsystems are really
+> limiting my triaging capabilities here, therefore I ask for any form
+> guidance or assistance with this.
+> 
+> Thank you.
+> 
+> [1] https://lore.kernel.org/r/20250612-exynosdrm-decon-v2-0-d6c1d21c8057@disroot.org
+> [2] https://lore.kernel.org/all/20250612-exynos7870-drm-dts-v1-2-88c0779af6cb@disroot.org
+> [3] https://lore.kernel.org/all/20250612-exynos7870-drm-dts-v1-3-88c0779af6cb@disroot.org
+> [4] https://elixir.bootlin.com/linux/v6.16-rc2/source/drivers/iommu/iommu.c#L431
 
