@@ -1,95 +1,105 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A116C170826
-	for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 04:44:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AF571F463B
+	for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 06:42:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750740257; cv=none; b=LzeCUGDBXckUJ2KNaZwjw8DLf0MwzppdreYjjw5sq3QNzCdA3d5lmxsEFZesX20QFMEYDxyWNkFfCcFQgEzIV6TmTm2NmDN7OsNSKi0J2v3hez4Bke8W20iw1tS9iLEU1gXeOTPTQdlVdz310JjlMckm3V/oRh5etHJQ1O0sSxE=
+	t=1750747373; cv=none; b=Cpi4B+LiEATneBUIpax+c3Rk2U7ql/IKiKhYX9U+sYG+UAdrqaRla4sTTXl5WD8bApox5WoHKJcQDllAzBnwEp8tNwd8NvfhQlhthdlIK6pMr/AxXANFo3JkYRbf/ZYuMfTt3OleHhloo8FxzuhMBMEEmOg0MNc7JKsNZifKGAA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750740257; c=relaxed/simple;
-	bh=70vF/+LDkN4q7jTfHlGAIAhxNTippQO8QdvV+YYKln0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tJ+krbfzJFJXTnuT324anmRIgToSYgkFNB5+GKiQfCvROOfV0x4Bgig9eU+qcb5JElHTjbE77bcvUtdOWGjLeSMxbDnwFqFw067kqA0cjOG8WGSClK3RyvKTTfvFueZ4Tx5BEKG+b0SqMEoiyb7rw5/dzDiYgW+c5y9tce7H1Cs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LtJg/Vod; arc=none smtp.client-ip=198.175.65.18
+	s=arc-20240116; t=1750747373; c=relaxed/simple;
+	bh=onLRsAPAlqNyYp1MJ0vIrTl+4YIOU0c9R/hbGwqKhJs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=h4/GHg8HgD81ZmjW8TONEU2EKiL2KthY51hNw5n2ovDon9NlulpUD4blaykcIQm18fMIC7c9/GPESLZO82G0fBUfo2LbudbClscy6R0fFJeCJgZl6NSQWZngxWANvPgmiccLvyPBM12naTUZngYLc0iBIHGpGiT2Ra+tfQVODC8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bnVdFEuJ; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LtJg/Vod"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bnVdFEuJ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750740255; x=1782276255;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=70vF/+LDkN4q7jTfHlGAIAhxNTippQO8QdvV+YYKln0=;
-  b=LtJg/VodfdOJE0vsCBm0M4TQNyrN5nxq20QX2i5afMTULXVLmiHC9azW
-   1bbBRV5aRdiPdCxhmk1i/VmAEFTPDikYXq+RVBk7Qpc6FFBhMMw0clXcn
-   f+JxwNu8kJG9+gGgX7DrLbWj+rb3wBZJyp2+fittPdZpNRpKTy+WdyQyf
-   acgfAmLpuuhr6wBpHVhwUDW03GDtsZ41YSPz2e4e539FcaDUHDtekXxdH
-   Xzva66R3IRroVEN/1+Ld4fbb9G5I96u4zVg8DRfYxZGFbMHDx09/LMoaE
-   hAXQw27z7s+/UU2FY/D+eoVF8/xU+Q3ZKnszsDz6JDWZjb8FZ32SaACMh
-   A==;
-X-CSE-ConnectionGUID: 12pD+JysQRWQR6pU+2M/yQ==
-X-CSE-MsgGUID: N7XC/r1tQ8WK0rdu0rl+Ig==
-X-IronPort-AV: E=McAfee;i="6800,10657,11473"; a="53097157"
+  t=1750747371; x=1782283371;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=onLRsAPAlqNyYp1MJ0vIrTl+4YIOU0c9R/hbGwqKhJs=;
+  b=bnVdFEuJXaFTWy+axihK6klOLelJGeRzFhZMDAmUvVK5a4r/5FoSuUP6
+   qydk0goMTwNLwPZYIKSYUzlgw7vA4n+Kdcjy84tr18OgkE300hqGEjyEf
+   BoluzsjafiRjyDSUoXfn09gFY/OjxOYHSPFNlBODkbWhr7lIrUn3wUwMj
+   XaY6OYzvqCtuCtToKar3xP7u1SU9+86DxU2RnO8zwbF+ooWgepqzU1V19
+   /ZBpfdLkDjOU+fDYlu7vMvUV4bPzK4hIfi5bvytWicv8BUJqumLrnHkl0
+   9wxKKqCbSvR1KK3ZwQYbPI42DtQtW1AVJHzx8dtUZODqa2tmqW5EKnUgM
+   Q==;
+X-CSE-ConnectionGUID: odijikTISUW4FZrtixGASA==
+X-CSE-MsgGUID: mpfVJWQURvelG2tw0B62gA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11473"; a="56778567"
 X-IronPort-AV: E=Sophos;i="6.16,260,1744095600"; 
-   d="scan'208";a="53097157"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2025 21:44:14 -0700
-X-CSE-ConnectionGUID: /IMDF3uBQ862VPPddpuBuw==
-X-CSE-MsgGUID: ZdH+2z/NRSGVG1dkvjtRHw==
+   d="scan'208";a="56778567"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2025 23:42:51 -0700
+X-CSE-ConnectionGUID: zIIJLWnkSvePKeiZ+NRlUw==
+X-CSE-MsgGUID: LTi3RoF9Rq+ChNs3lCwJLg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,260,1744095600"; 
-   d="scan'208";a="157578062"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jun 2025 21:44:08 -0700
-Message-ID: <06992407-0c84-4f3f-a89a-5986024928a4@linux.intel.com>
-Date: Tue, 24 Jun 2025 12:42:51 +0800
+   d="scan'208";a="151583142"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by orviesa009.jf.intel.com with ESMTP; 23 Jun 2025 23:42:47 -0700
+Date: Tue, 24 Jun 2025 14:35:14 +0800
+From: Xu Yilun <yilun.xu@linux.intel.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: jgg@nvidia.com, jgg@ziepe.ca, kevin.tian@intel.com, will@kernel.org,
+	aneesh.kumar@kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, joro@8bytes.org, robin.murphy@arm.com,
+	shuah@kernel.org, nicolinc@nvidia.com, aik@amd.com,
+	dan.j.williams@intel.com, yilun.xu@intel.com
+Subject: Re: [PATCH v2 2/4] iommufd/viommu: Fix the uninitialized
+ iommufd_vdevice::ictx
+Message-ID: <aFpHInZwCC2N34Fh@yilunxu-OptiPlex-7050>
+References: <20250623094946.1714996-1-yilun.xu@linux.intel.com>
+ <20250623094946.1714996-3-yilun.xu@linux.intel.com>
+ <ff1a3fc1-3671-4cff-917f-5ea44bd2451e@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 4/8] iommu/vt-d: Use pci_is_display()
-To: Mario Limonciello <superm1@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Lukas Wunner <lukas@wunner.de>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
- "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
- "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
- "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
- "open list:SOUND" <linux-sound@vger.kernel.org>,
- Daniel Dadap <ddadap@nvidia.com>,
- Mario Limonciello <mario.limonciello@amd.com>,
- Simona Vetter <simona.vetter@ffwll.ch>, Bjorn Helgaas <helgaas@kernel.org>
-References: <20250623184757.3774786-1-superm1@kernel.org>
- <20250623184757.3774786-5-superm1@kernel.org>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250623184757.3774786-5-superm1@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ff1a3fc1-3671-4cff-917f-5ea44bd2451e@linux.intel.com>
 
-On 6/24/25 02:47, Mario Limonciello wrote:
-> From: Mario Limonciello<mario.limonciello@amd.com>
+On Tue, Jun 24, 2025 at 11:24:02AM +0800, Baolu Lu wrote:
+> On 6/23/25 17:49, Xu Yilun wrote:
+> > Fix the uninitialized iommufd_vdevice::ictx. No code was using this
+> > field before, but later vdevice will use it to sync up with idevice on
+> > destroy paths.
+> > 
+> > Fixes: 0ce5c2477af2 ("iommufd/viommu: Add IOMMUFD_OBJ_VDEVICE and IOMMU_VDEVICE_ALLOC ioctl")
+> > Cc:<stable@vger.kernel.org>
+> > Signed-off-by: Xu Yilun<yilun.xu@linux.intel.com>
+> > ---
+> >   drivers/iommu/iommufd/viommu.c | 1 +
+> >   1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
+> > index 01df2b985f02..4577b88c8560 100644
+> > --- a/drivers/iommu/iommufd/viommu.c
+> > +++ b/drivers/iommu/iommufd/viommu.c
+> > @@ -130,6 +130,7 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+> >   		goto out_put_idev;
+> >   	}
+> > +	vdev->ictx = ucmd->ictx;
 > 
-> The inline pci_is_display() helper does the same thing.  Use it.
+> iommufd_vdevice::ictx has been removed by this commit:
 > 
-> Reviewed-by: Daniel Dadap<ddadap@nvidia.com>
-> Reviewed-by: Simona Vetter<simona.vetter@ffwll.ch>
-> Suggested-by: Bjorn Helgaas<helgaas@kernel.org>
-> Signed-off-by: Mario Limonciello<mario.limonciello@amd.com>
+> 6e235a772199 ("iommufd: Drop unused ictx in struct iommufd_vdevice")
+> 
+> in linux-next.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Ah, I see the thread. This patch should be dropped.
+
+Thanks,
+Yilun
+
+> 
+> Thanks,
+> baolu
