@@ -1,174 +1,140 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2089.outbound.protection.outlook.com [40.107.236.89])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-il1-f205.google.com (mail-il1-f205.google.com [209.85.166.205])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B360C26CE08
-	for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 18:01:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.89
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750788084; cv=fail; b=KFUO2sLmHmhbufpTScemch42VnDi4vzVJfqFA2r2CqADPg81oBi8jlDb3xF2WKHJjQGErvAyRbE0SfVKQNikJOjERJf+2mtRfkZQMh9BD2p25MKJbxWXkNM8+OwWfqyxM7/rHtKkJSccZoR6WSfGLQeSLQFqiFk9Jy7a04mvpGo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750788084; c=relaxed/simple;
-	bh=5Ni1NPGOZyphDijmrGiWL02+n+JStbd1ojfNKZM4snE=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AyCq5l3T3c1tVBa9gFp5xiMJYctCxLu6GpLNxawNe4MFYIX9+DrzK1/SK9NzexEoxnVJVX6ni3FUTcgeZI7wmyr2B06EI09V2DubZkljRclaUFgQiznER24fPceWauENfx8acBvnJv4geuOGHrkD2sIcvBxL0gMMfxx2JqJEXlg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Tvhewtu3; arc=fail smtp.client-ip=40.107.236.89
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Tvhewtu3"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=oiRGp95/E8aEwDDPjax3tFFAmfoOhf2brDFE/f34NmEaN9e+Gr0umZgNCftDZSKRn7Oh9xQRS9h1Qgv4vcqGO8+BfsQKOduHzVCYuImoW7ikAbg4Uj5McK0n3gPBMRhlV+YtZMbDVBFFWCkdkwmP8JCI8+NnJF65PN4ky/rN0BdBbpsQPSh9f38+2UrZxeWMhGcLTFj1KYVJxek2VA1162ef7lLOQrM5AmAuuWdZ4a0l5ZkHmDfFc5KNwA2UcMyPX9m2NUYVQo/LLwrQIk1rAmQAK5rbtGxjLD1VkKF/onl6pWV/UO3ZUr5hlWTq+viLF1/5FbpNewRkNNOsovkMaQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1OJ4ofSmuBRIzTl6zbVagr21vkH7GdeC4IfLtIIPLck=;
- b=HhXkOPs8F/VI7fT8H/mR6Q+Cjo7dwf4QtAxCITCyliR3N2L1pfiKMKF0Sj0LqwhCPlm6bcbbSpBfPGTQtWX1TKZ6V76IKd2QtabvuMCiXIbd/HR8id0OSXioOLaG3yxomDPQGju8GkjfuZDoHGTBZkupA4b15WyRjfIV7Mz79bxIHdH0nOsPQBh5Uv4gpDAqzcAvos7ESj0JrELQjANaM920DN+GGoTVK2JE0zWpRBF/+j//YiHezI8mdaZP6bL6ODvPMU7E0Fqr4oP4y9Os4K7nrf0DQT/HhvqytFlFSs8xok9CTGGdeOjbt6wcAvzAm5eVcq+6iuVQrfWKV6GgxA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1OJ4ofSmuBRIzTl6zbVagr21vkH7GdeC4IfLtIIPLck=;
- b=Tvhewtu3BG2wY9uHP8xtr8DtKpWrPpM+a7CrkR6UJU4dzAQtl5cBT/eCj03oHSPnxGiwtYFYljNWwwM7gT67bymgK4tO/shS/ooYbeMCclvR3540PlXGeX23V0bGbcIzPrgITdzMj3ODd5ZuSIw5D3t1cvPOIvVhxY+Y6/+9Xhxx/toJpEgwy1Q/X8pDd1qKCagJdd+0YlV3PqEPd1iutOSnkS4I3ZLpc+EqVRRzB63UQh0A8Nf4+mxykFtv4Fs6V6Z+dBRtZ2/KAXfkJGanjSdOv2EP8sIZPmQtZN1kMgIy5cuT/H/aVSJgQu/MUxO/EHhSE+Z2PH2mrbsZnmCDTQ==
-Received: from CH0PR03CA0376.namprd03.prod.outlook.com (2603:10b6:610:119::23)
- by CH3PR12MB8356.namprd12.prod.outlook.com (2603:10b6:610:130::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8857.28; Tue, 24 Jun
- 2025 18:01:15 +0000
-Received: from CH1PEPF0000A349.namprd04.prod.outlook.com
- (2603:10b6:610:119:cafe::99) by CH0PR03CA0376.outlook.office365.com
- (2603:10b6:610:119::23) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8857.29 via Frontend Transport; Tue,
- 24 Jun 2025 18:01:15 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- CH1PEPF0000A349.mail.protection.outlook.com (10.167.244.9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8880.14 via Frontend Transport; Tue, 24 Jun 2025 18:01:15 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 24 Jun
- 2025 11:00:57 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Tue, 24 Jun
- 2025 11:00:57 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.13) by mail.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server id 15.2.1544.14 via Frontend
- Transport; Tue, 24 Jun 2025 11:00:56 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <jgg@nvidia.com>, <kevin.tian@intel.com>
-CC: <shuah@kernel.org>, <joao.m.martins@oracle.com>,
-	<steven.sistare@oracle.com>, <iommu@lists.linux.dev>,
-	<linux-kselftest@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<thomas.weissschuh@linutronix.de>
-Subject: [PATCH rc v2 2/4] iommufd/selftest: Add missing close(mfd) in memfd_mmap()
-Date: Tue, 24 Jun 2025 11:00:46 -0700
-Message-ID: <a363a69dbf453d4bc1bde276f3b16778620488e1.1750787928.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1750787928.git.nicolinc@nvidia.com>
-References: <cover.1750787928.git.nicolinc@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFAAD170826
+	for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 19:02:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.205
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750791750; cv=none; b=blLx9EkiCRxDduCnwo94tE+EWhuAcv4TVseQwtlHry1cpPhNG3+QO92GfbvAAGAyn2YVmfcBy9m7SPVICizZD+mQ6QvUutAwVfUoBmKoR30f2aSJK5TGL34Z1FU1EABIzMmQlUN0w7Y/9gJTljzSIJnONntX0alIUWGtnXLAw6Y=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750791750; c=relaxed/simple;
+	bh=O0gFzXOU6bBYNceD9Mk1SINCLL1DWYmVSUSwT8C0/Ys=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=SL9VsBEPG+1aEKOEzPVFT5jv2bks5qsC29tf74I15VaKxCogxtuXDzrL3JYO/VucqoOwgkqmWLmagXStfwVckTloQaOES0sPcscrhf+Ya+Li0PY1uskwe2hLEPp1K2aMHucQtqNyPFOf3W6yyjCgrkbDvPpo9GI+q5O05hlJdXE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.205
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f205.google.com with SMTP id e9e14a558f8ab-3ddd01c6f9bso1837305ab.1
+        for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 12:02:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750791748; x=1751396548;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Xv0opqnUy3DoijGykm0kwmTQcZr6xsjlBLIf8bKI7h0=;
+        b=aA3JBOywhUbQ3Sum1OMQ5W7DbnYHj7FIn1nQgH7VAsTRm56Juw2+4azzwzpLCSSYI9
+         VvOD4nIGFDbRB7yTbpQ8C24D4k7Qh6Hx/qCSPp9ifnY0SHjtfwz3xOx95qK5oRVkUXZx
+         n9k7Ly/rSthNEDX/zEv13Ryr+t3TxRjFMgfrct/biEAXvpeugpdv0A+b0jSvzgZtRkhn
+         LiHUgpzUJ7GPR76vgsyTT+ITa8D7HXJkEo/I89jXLBE9uOUWU2VswChmqVf/KBT/K6T+
+         5+E35yeXJyn6M0rUepKO+D0EOA7Z+Qw6Aa4oiCu19rU6qAeJ7gfudBf8cULQF4AVrsWm
+         enmg==
+X-Gm-Message-State: AOJu0YwVMo2X5YvKv5dibIEpNhE4MQdw3zXoI6JPPC0M956IqW7Ntg4P
+	T2f1/3ibquBwOWU7X6S6uysAY05NG0PunxtQ4GdWOx9Kc3DSZcjUmkoYJJqmXkDGWRsRbAg3Q7C
+	QBvU81nsueeE/+cW465bmkVK865xi5R3UX9zbsxUSmhjkvxk+bKw8z+qRWKNjkw==
+X-Google-Smtp-Source: AGHT+IFyw4/s4f0Wf6MFmbd7vcvsPCfQxEAct1BguQB1AnsNkBIdribQp31ZKGKnnn0l7deJEhYqriaRST84VEQLcTy9bk7TrvTs
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH1PEPF0000A349:EE_|CH3PR12MB8356:EE_
-X-MS-Office365-Filtering-Correlation-Id: ff7addf7-ecf1-4c78-87cb-08ddb3491ce3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|36860700013|82310400026|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?3E5K4QhUnconqACVDQwcciOcCkBEn/WzinqQ6J9XSBg/yMhDA+L5654vtys1?=
- =?us-ascii?Q?hyUtZuygShHnfZg/WQuOhS1u/FzwQ/K2w4oTxur77lpM40wymiXHihoKgmGF?=
- =?us-ascii?Q?ITaSXn+XbsaQeITUqHnJBBHiTBRnbxHOJielsCXQM8beKNOx5PSJFslrvNus?=
- =?us-ascii?Q?0jRbW4LsUfswLYwrl6vebp7vaM2K1xL91dhcek0KSssEhtl9906Uc/oEuz2G?=
- =?us-ascii?Q?hamGNOTZ69FVUh1kn9Aea+vu+ODSq4Ia7ZtNi2Zs/PgPCg5TQfcWKgp6r0ps?=
- =?us-ascii?Q?8ruJsHcVSOWKu1O0Ny4mtE8P8jgRgn418fycMTcpk7q3ndpZYQ4R4B2fR4QL?=
- =?us-ascii?Q?v0cXBMzhIBVF940zkAy2nYBrMFtZtffcJwj13LSoX6rjfsJ24+1iq9t4cMLW?=
- =?us-ascii?Q?I6b6ceDQirof4QqooGPq/njSBOOZSKMhY9UrBLD5Utqw3Y+y1STEAMr3qtHT?=
- =?us-ascii?Q?Bic1kzzNvt5+idwDukapMixiqFwN2+UyE04xr7YXtB6hJ+b83XM1gbAJakrA?=
- =?us-ascii?Q?FM4LSZoZkMc3y3WnkvTNs8eXSuLWCQp01a5hsbgLNOuVDtJvVB3sUu4a0rDi?=
- =?us-ascii?Q?qU+jZ0VZu0qq9rXY8oVtsmZosO8fbv7gDE7sLh6yjc3xNUzMbQbQs31e5EQ3?=
- =?us-ascii?Q?RvraN32UNiQxNpGs7GEOKf9E0xysrvIY21t49vEWB+F4Ov1vAzanRVI4+GIu?=
- =?us-ascii?Q?6e2aA1O5LATpp4vJsxQOpmcNHQkuknskv6EOMdF4eOV5hv/5BLz/8mx+W6FX?=
- =?us-ascii?Q?kXDUj/zhAg07rvyJ641cG3gODYafDll1c9raWxDTRTDgp6bUT683esa0MLZD?=
- =?us-ascii?Q?kyIHbv2E00NAyLUTwizy+ef00tIulGtmRDNxhLjegrKwalIX9cV5IC/g/6sD?=
- =?us-ascii?Q?cvtGUiIPgRYJOyV0TRGiNLQV+NKgOaPYanPxtfoAzJVNLEYus1WHGRZtpAx8?=
- =?us-ascii?Q?DR/t0OTSXqVIJ3++37Y8rNe7O+Zeq7QYE5mr6n8D/wqJ4UrHqhmhxnB/Ober?=
- =?us-ascii?Q?SqA/qvLgXOcKiZimgMXLdWKRjWVeFskBc+Zos+REqagzIm013l8/8uKCR0u0?=
- =?us-ascii?Q?lzTtEThjgKbj4x3g18EDAAI5w1Ms9j6uG5LSs1fP4UnB/ufaLFWFdLNiJoYW?=
- =?us-ascii?Q?EcC/Jgb3s8hgHjWedy5V50aayBwxs64bIvh6Bw1MWEC03X9AefGhYEi7JL3O?=
- =?us-ascii?Q?yGxX7J5wOQEhGPoeH0VLYSV0w5/ltRde7r4SilbQq/SKgAL72zdjsKoPHfru?=
- =?us-ascii?Q?RmJ4dJF1LWnfllaxaom/jETCyH7lvovN4FV2+x0+LMLwMsIKhfy0VhJ+3Azi?=
- =?us-ascii?Q?QuAwvqPLmWZkiB/7uFfTY6MFCVqHVEKNvoze9EHy521MzjiHC+p/rvYm2Uay?=
- =?us-ascii?Q?NfOdBMjBulGDxt3qNMfVEuD/jVjt9u4T2avw1KkKcn0Yq+/J1fyj+lYh/p4z?=
- =?us-ascii?Q?Ymbcxdny2LQGENQYX9GyBqdvQfOZbKzT1BuXLjLjcTfZ0gFi8A2NfEvHUvo9?=
- =?us-ascii?Q?wDItRMiGXDGm6ZG5EaUUQUJFlIGLNxfGLNyP?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(82310400026)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jun 2025 18:01:15.3587
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ff7addf7-ecf1-4c78-87cb-08ddb3491ce3
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH1PEPF0000A349.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8356
+X-Received: by 2002:a05:6e02:184c:b0:3d4:2ea4:6b87 with SMTP id
+ e9e14a558f8ab-3df32d9de81mr510555ab.11.1750791748245; Tue, 24 Jun 2025
+ 12:02:28 -0700 (PDT)
+Date: Tue, 24 Jun 2025 12:02:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <685af644.a00a0220.2e5631.0094.GAE@google.com>
+Subject: [syzbot] [iommu?] WARNING in iopt_map_pages (2)
+From: syzbot <syzbot+c2f65e2801743ca64e08@syzkaller.appspotmail.com>
+To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
+	syzkaller-bugs@googlegroups.com, will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Do not forget to close mfd in the error paths, since none of the callers
-would close it when ASSERT_NE(MAP_FAILED, buf) fails.
+Hello,
 
-Fixes: 0bcceb1f51c7 ("iommufd: Selftest coverage for IOMMU_IOAS_MAP_FILE")
-Cc: stable@vger.kernel.org
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+syzbot found the following issue on:
+
+HEAD commit:    86731a2a651e Linux 6.16-rc3
+git tree:       upstream
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=1488eb0c580000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=34e751e88b020813
+dashboard link: https://syzkaller.appspot.com/bug?extid=c2f65e2801743ca64e08
+compiler:       Debian clang version 20.1.6 (++20250514063057+1e4d39e07757-1~exp1~20250514183223.118), Debian LLD 20.1.6
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=145cbb0c580000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=125cbb0c580000
+
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/42f791fcfdf5/disk-86731a2a.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/13fce21e7fbc/vmlinux-86731a2a.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/55232ab2d633/bzImage-86731a2a.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c2f65e2801743ca64e08@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 5834 at drivers/iommu/iommufd/io_pagetable.c:283 iopt_alloc_area_pages drivers/iommu/iommufd/io_pagetable.c:283 [inline]
+WARNING: CPU: 0 PID: 5834 at drivers/iommu/iommufd/io_pagetable.c:283 iopt_map_pages+0xce7/0xda0 drivers/iommu/iommufd/io_pagetable.c:367
+Modules linked in:
+CPU: 0 UID: 0 PID: 5834 Comm: syz-executor127 Not tainted 6.16.0-rc3-syzkaller #0 PREEMPT(full) 
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 05/07/2025
+RIP: 0010:iopt_alloc_area_pages drivers/iommu/iommufd/io_pagetable.c:283 [inline]
+RIP: 0010:iopt_map_pages+0xce7/0xda0 drivers/iommu/iommufd/io_pagetable.c:367
+Code: 89 d8 48 8d 65 d8 5b 41 5c 41 5d 41 5e 41 5f 5d e9 4e f6 17 06 cc e8 c8 94 68 fc 90 0f 0b 90 e9 ca f7 ff ff e8 ba 94 68 fc 90 <0f> 0b 90 e9 88 f5 ff ff e8 2c 1b 15 06 44 89 f1 80 e1 07 80 c1 03
+RSP: 0018:ffffc90003fb7880 EFLAGS: 00010293
+RAX: ffffffff8557f866 RBX: 00000000ffffffea RCX: ffff88802f885a00
+RDX: 0000000000000000 RSI: 00000000ffffffea RDI: 0000000000000000
+RBP: ffffc90003fb7ab0 R08: ffff88802f885a00 R09: 0000000000000002
+R10: 00000000ffffffff R11: 0000000000000000 R12: ffffc90003fb7b70
+R13: dffffc0000000000 R14: ffff88803340d810 R15: ffffc90003fb7ce0
+FS:  0000555556f1e380(0000) GS:ffff888125a1c000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000200000000000 CR3: 0000000077afa000 CR4: 00000000003526f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ iopt_map_common+0x2bb/0x4f0 drivers/iommu/iommufd/io_pagetable.c:411
+ iopt_map_user_pages+0xbc/0xd0 drivers/iommu/iommufd/io_pagetable.c:452
+ iommufd_ioas_map+0x392/0x4c0 drivers/iommu/iommufd/ioas.c:276
+ iommufd_fops_ioctl+0x446/0x520 drivers/iommu/iommufd/main.c:419
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:907 [inline]
+ __se_sys_ioctl+0xfc/0x170 fs/ioctl.c:893
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xfa/0x3b0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7f5a2c8b13e9
+Code: 48 83 c4 28 c3 e8 37 17 00 00 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fff5a46ce18 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000200000000000 RCX: 00007f5a2c8b13e9
+RDX: 0000200000000080 RSI: 0000000000003b85 RDI: 0000000000000003
+RBP: 00007f5a2c924610 R08: 00007fff5a46cfe8 R09: 00007fff5a46cfe8
+R10: 00007fff5a46cfe8 R11: 0000000000000246 R12: 0000000000000001
+R13: 00007fff5a46cfd8 R14: 0000000000000001 R15: 0000000000000001
+ </TASK>
+
+
 ---
- tools/testing/selftests/iommu/iommufd_utils.h | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
-index 72f6636e5d90..6e967b58acfd 100644
---- a/tools/testing/selftests/iommu/iommufd_utils.h
-+++ b/tools/testing/selftests/iommu/iommufd_utils.h
-@@ -60,13 +60,18 @@ static inline void *memfd_mmap(size_t length, int prot, int flags, int *mfd_p)
- {
- 	int mfd_flags = (flags & MAP_HUGETLB) ? MFD_HUGETLB : 0;
- 	int mfd = memfd_create("buffer", mfd_flags);
-+	void *buf = MAP_FAILED;
- 
- 	if (mfd <= 0)
- 		return MAP_FAILED;
- 	if (ftruncate(mfd, length))
--		return MAP_FAILED;
-+		goto out;
- 	*mfd_p = mfd;
--	return mmap(0, length, prot, flags, mfd, 0);
-+	buf = mmap(0, length, prot, flags, mfd, 0);
-+out:
-+	if (buf == MAP_FAILED)
-+		close(mfd);
-+	return buf;
- }
- 
- /*
--- 
-2.43.0
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
 
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
