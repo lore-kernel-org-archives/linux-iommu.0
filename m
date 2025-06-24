@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E21BA2236F8
-	for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 17:12:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E2F7219A95
+	for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 17:15:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750785170; cv=none; b=Msvqp1MrPrgY+1Z0aALaveLwEqZr3r6Mt+GfxktItEePSGYblZ5F/Vj9x5iVAYF3VVOjgvKZtPNgfiRVcjENlkG7o7q9NUMFEJu47USPbSZQ0Ef6GxYbJvFi8x+1X9w7LEnzWX94NIpEmdid0er6N3EVBjR5OJ+s2eW88uBkeAA=
+	t=1750785327; cv=none; b=Ug02HZjHovq7tJITjAXdNPpoh52tjijwb0uUHKqc5adnplVBvUGoZDWwYoXXxJ9g6Tw/vnUJhZ80ixQfSNaorTzorhPNpzR+ru1DrLsie5fIn9hI+a2mFPJ6empXx6kpsfSXK9cEmCPn3Te7oNf1dMu+7NU3ynDTZmWdPZQsZ/8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750785170; c=relaxed/simple;
-	bh=RoPSiJMTQmwSf7fRAUrbIZ1ptAWU190Bq9zLmYfcGPM=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=hDTjq1heZbKXgj+7bkGCOIawVKxr+jxmRmICkG4etj7BxO0C1yGaqbDM5DWuUqubckwSLNt4385xO7F83Gzi0LlCqgETknQhaFSDNshoUCUs1x7oi1pR7Zjgq3lDzqs1sQJyCxNCSABGTPfW6apAIiN2g3k5aOfXrbZFyUItpXs=
+	s=arc-20240116; t=1750785327; c=relaxed/simple;
+	bh=J++vCXdEMdLhhQCO5UEyk2FcYNCV+7ZfNWoyOrnq74c=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ib5t9B5bUF7Ewx95A/1t9dUx6gwcsr+GIaQiLFn2BveONUvIK74WorIqGDUfQHV1Q204VWep2d/lOQeqQ1m1YgGKXzm3WD8N2MtuRAXm4qw/ZyNh7dWxKI9REvbt5fA1fkl4eCJcsffCpwu/aBnTTHjyFl3qkCMRjqtq18olhFY=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2DD0F113E;
-	Tue, 24 Jun 2025 10:12:30 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C77C5113E;
+	Tue, 24 Jun 2025 10:15:07 -0700 (PDT)
 Received: from [10.57.29.113] (unknown [10.57.29.113])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6EE703F58B;
-	Tue, 24 Jun 2025 10:12:46 -0700 (PDT)
-Message-ID: <0bc60699-eeaa-4121-8d93-0274862f5aed@arm.com>
-Date: Tue, 24 Jun 2025 18:12:43 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D9A6C3F58B;
+	Tue, 24 Jun 2025 10:15:23 -0700 (PDT)
+Message-ID: <bc1b7891-d2d4-4104-b52d-dfa956e0a6a3@arm.com>
+Date: Tue, 24 Jun 2025 18:15:21 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,153 +27,67 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/3] iommu: omap: Drop redundant check if
+ ti,syscon-mmuconfig exists
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Yong Wu <yong.wu@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+References: <20250624-syscon-phandle-args-iommu-v3-0-1a36487d69b8@linaro.org>
+ <20250624-syscon-phandle-args-iommu-v3-1-1a36487d69b8@linaro.org>
 From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: Help: Samsung Exynos 7870 DECON SYSMMU panic
-To: Kaustabh Chakraborty <kauschluss@disroot.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Inki Dae <inki.dae@samsung.com>,
- Seung-Woo Kim <sw0312.kim@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>
-Cc: iommu@lists.linux.dev, dri-devel@lists.freedesktop.org
-References: <544ad69cba52a9b87447e3ac1c7fa8c3@disroot.org>
 Content-Language: en-GB
-In-Reply-To: <544ad69cba52a9b87447e3ac1c7fa8c3@disroot.org>
+In-Reply-To: <20250624-syscon-phandle-args-iommu-v3-1-1a36487d69b8@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2025-06-18 3:02 pm, Kaustabh Chakraborty wrote:
-> Since bcb81ac6ae3c (iommu: Get DT/ACPI parsing into the proper probe path),
-> The Samsung Exynos 7870 DECON device (with patches [1], [2], and [3]) seems
-> to not work anymore. Upon closer inspection, I observe that there is an
-> IOMMU crash.
-> 
-> [    2.918189] exynos-sysmmu 14860000.sysmmu: 14830000.decon: [READ] PAGE FAULT occurred at 0x6715b3e0
-> [    2.918199] exynos-sysmmu 14860000.sysmmu: Page table base: 0x0000000044a14000
-> [    2.918243] exynos-drm exynos-drm: bound 14830000.decon (ops decon_component_ops)
-> [    2.922868] exynos-sysmmu 14860000.sysmmu:   Lv1 entry: 0x4205001
-> [    2.922877] Kernel panic - not syncing: Unrecoverable System MMU Fault!
-> [    2.922885] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.16.0-rc2-exynos7870 #722 PREEMPT
-> [    2.995312] Hardware name: Samsung Galaxy J7 Prime (DT)
-> [    3.000509] Call trace:
-> [    3.002938]  show_stack+0x18/0x24 (C)
-> [    3.006582]  dump_stack_lvl+0x60/0x80
-> [    3.010224]  dump_stack+0x18/0x24
-> [    3.013521]  panic+0x168/0x360
-> [    3.016558]  exynos_sysmmu_irq+0x224/0x2ac
-> [         ...]
-> [    3.108786] ---[ end Kernel panic - not syncing: Unrecoverable System MMU Fault! ]---
+On 2025-06-24 1:22 pm, Krzysztof Kozlowski wrote:
+> The syscon_regmap_lookup_by_phandle() will fail if property does not
+> exist, so doing of_property_read_bool() earlier is redundant.  Drop that
+> check and move error message to syscon_regmap_lookup_by_phandle() error
+> case while converting it to dev_err_probe().
 
-For starters, what if you just remove this panic() from the IOMMU 
-driver? Frankly it seems a bit excessive anyway...
+Sure, may as well.
 
- From the logs below it seems there is apparently unexpected traffic 
-already going through the IOMMU when it wakes up. Is this the DRM 
-drivers doing something sketchy, or has the bootloader left the display 
-running for a splash screen? However in the latter case I don't 
-obviously see why delaying the IOMMU probe should make much difference, 
-given that the decon driver should still be waiting for it either way.
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-Thanks,
-Robin.
-
-> The commit has been introduced in mainline v6.15-rc1. I've also tested in
-> v6.15, v6.15.2, and v6.16-rc2, and there have been no apparent changes.
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>   drivers/iommu/omap-iommu.c | 14 +++-----------
+>   1 file changed, 3 insertions(+), 11 deletions(-)
 > 
-> I've tried to revert the commit, and it does work that way. But on reading
-> the commit message I understand that I need to find a proper solution here.
-> I've tried to skim down the revert, and this is what I get - if i change
-> line [4] as follows:
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index 3c62337f43c67720a15b67e8b610da7886f6f39c..4448c0a512137c79195112eea25d762266c77bc3 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1123,23 +1123,15 @@ static int omap_iommu_dra7_get_dsp_system_cfg(struct platform_device *pdev,
+>   					      struct omap_iommu *obj)
+>   {
+>   	struct device_node *np = pdev->dev.of_node;
+> -	int ret;
+>   
+>   	if (!of_device_is_compatible(np, "ti,dra7-dsp-iommu"))
+>   		return 0;
+>   
+> -	if (!of_property_read_bool(np, "ti,syscon-mmuconfig")) {
+> -		dev_err(&pdev->dev, "ti,syscon-mmuconfig property is missing\n");
+> -		return -EINVAL;
+> -	}
+> -
+>   	obj->syscfg =
+>   		syscon_regmap_lookup_by_phandle(np, "ti,syscon-mmuconfig");
+> -	if (IS_ERR(obj->syscfg)) {
+> -		/* can fail with -EPROBE_DEFER */
+> -		ret = PTR_ERR(obj->syscfg);
+> -		return ret;
+> -	}
+> +	if (IS_ERR(obj->syscfg))
+> +		return dev_err_probe(&pdev->dev, PTR_ERR(obj->syscfg),
+> +				     "ti,syscon-mmuconfig property is missing\n");
+>   
+>   	if (of_property_read_u32_index(np, "ti,syscon-mmuconfig", 1,
+>   				       &obj->id)) {
 > 
-> -		dev->bus->dma_configure(dev);
-> +		if (!strcmp(dev_name(dev), "14830000.decon"))
-> +			dev->bus->dma_configure(dev);
-> 
-> It really doesn't like dma_configure for some reason. It works, but:
-> 
-> [    2.779291] exynos-decon 14830000.decon: late IOMMU probe at driver bind, something fishy here!
-> 
-> I believe the IOMMU hardware doesn't like the fact that it is being
-> initialized/resumed too early. I formed this conclusion by comparing the
-> logs:
-> 
-> mainline:
-> [    1.274575] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_resume enter
-> [    2.859656] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable enter
-> [    2.864192] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_clocks enter
-> [    2.869299] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 0x00000007
-> [    2.875062] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_init_config enter
-> [    2.880006] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000004 val 0x01100784
-> [    2.885819] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_set_ptbase enter
-> [    2.890677] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x0000000c val 0x00044a14
-> [    2.896490] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_tlb_invalidate enter
-> [    2.901695] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000010 val 0x00000001
-> [    2.907507] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_vid enter
-> [    2.912366] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 0x00000005
-> [    2.912371] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_irq enter
-> [    2.912836] [drm] Exynos DRM: using 14830000.decon device for DMA mapping operations
-> [    2.918175] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_v5_get_fault_info enter
-> [    2.918182] I_HAVE_ADDED_THESE: SYSMMU: show_fault_information enter
-> [    2.918189] exynos-sysmmu 14860000.sysmmu: 14830000.decon: [READ] PAGE FAULT occurred at 0x6715b3e0
-> [    2.918199] exynos-sysmmu 14860000.sysmmu: Page table base: 0x0000000044a14000
-> [    2.918243] exynos-drm exynos-drm: bound 14830000.decon (ops decon_component_ops)
-> [    2.922859] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
-> [    2.922864] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
-> [    2.922868] exynos-sysmmu 14860000.sysmmu:   Lv1 entry: 0x4205001
-> [    2.922877] Kernel panic - not syncing: Unrecoverable System MMU Fault!
-> 
-> and with the patch above applied:
-> [    3.018478] [drm] Exynos DRM: using 14830000.decon device for DMA mapping operations
-> [    3.025794] exynos-drm exynos-drm: bound 14830000.decon (ops decon_component_ops)
-> [    3.058655] exynos-dsi 14800000.dsi: [drm:samsung_dsim_host_attach] Attached td4300-panel device (lanes:4 bpp:24 mode-flags:0x23)
-> [    3.070189] exynos-drm exynos-drm: bound 14800000.dsi (ops exynos_dsi_component_ops)
-> [    3.078506] [drm] Initialized exynos 1.1.0 for exynos-drm on minor 1
-> [    3.090747] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_map enter
-> [    3.090845] I_HAVE_ADDED_THESE: SYSMMU: to_exynos_domain enter
-> [    3.093325] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
-> [    3.097662] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
-> [    3.102000] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
-> [    3.106337] I_HAVE_ADDED_THESE: SYSMMU: lv1set_section enter
-> [    3.110762] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_set_pte enter
-> [    3.115726] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_map enter
-> [    3.120317] I_HAVE_ADDED_THESE: SYSMMU: to_exynos_domain enter
-> [    3.124914] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
-> [    3.129240] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
-> [    3.133578] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
-> [    3.137916] I_HAVE_ADDED_THESE: SYSMMU: lv1set_section enter
-> [    3.142340] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_set_pte enter
-> [         ...] (a lot of repetitions later)
-> [    4.322904] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
-> [    4.327230] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
-> [    4.331567] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
-> [    4.335905] I_HAVE_ADDED_THESE: SYSMMU: alloc_lv2entry enter
-> [    4.340329] I_HAVE_ADDED_THESE: SYSMMU: page_entry enter
-> [    4.344407] I_HAVE_ADDED_THESE: SYSMMU: lv2ent_offset enter
-> [    4.348744] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
-> [    4.353082] I_HAVE_ADDED_THESE: SYSMMU: lv2set_page enter
-> [    4.357246] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_set_pte enter
-> [    4.362751] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_resume enter
-> [    4.362767] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable enter
-> [    4.362771] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_clocks enter
-> [    4.362777] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 0x00000007
-> [    4.362782] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_init_config enter
-> [    4.362786] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000004 val 0x01100784
-> [    4.362791] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_set_ptbase enter
-> [    4.362795] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x0000000c val 0x00042a64
-> [    4.362799] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_tlb_invalidate enter
-> [    4.362803] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000010 val 0x00000001
-> [    4.362808] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_vid enter
-> [    4.362811] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 0x00000005
-> 
-> Then it continues booting as usual.
-> 
-> My lack of understanding of the IOMMU and DRM subsystems are really
-> limiting my triaging capabilities here, therefore I ask for any form
-> guidance or assistance with this.
-> 
-> Thank you.
-> 
-> [1] https://lore.kernel.org/r/20250612-exynosdrm-decon-v2-0-d6c1d21c8057@disroot.org
-> [2] https://lore.kernel.org/all/20250612-exynos7870-drm-dts-v1-2-88c0779af6cb@disroot.org
-> [3] https://lore.kernel.org/all/20250612-exynos7870-drm-dts-v1-3-88c0779af6cb@disroot.org
-> [4] https://elixir.bootlin.com/linux/v6.16-rc2/source/drivers/iommu/iommu.c#L431
 
