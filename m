@@ -1,474 +1,201 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2056.outbound.protection.outlook.com [40.107.92.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C5882D6608;
-	Wed, 25 Jun 2025 16:54:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750870458; cv=none; b=lCe676Vfp9bpHiXN6gGVbMFwYVSnuFP7lqUnoGmJvkr0S4rfLjxq46NHXhKf6zdnRHEtiuWKSR9Yf73vJuc5Y6CEzJC07sjn+lS+MD2A/CB7ZJYPi3kzKVw9fJ9xSnEFK61pfOywEAx3B1elAYSTv/i6m/cECZ2Ttxa8Vu2HRXM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750870458; c=relaxed/simple;
-	bh=aPxjxJWGiCb0ED+Q6lL0luiCScS2iIlBYHdBk7QF9os=;
-	h=Date:Message-ID:From:To:Cc:Subject:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LvjDLVNYQYrzfVdi1vAsVVb2CLQ+FSmiHiXAyODisxNe960WSrz5ndpPeCfJ0EiJnUbTaI7LZImPm9LCTtmwQvl8cmq8Pqzr5i0mvAHD33MYZ21FEj88QdMX76UNMj0Gxd853mAG3NgNBpWQWZyWzQ1VsSLIo0K2w5t1fSz8TXk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FV0JBA1s; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1D4126B758;
+	Wed, 25 Jun 2025 17:33:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.56
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750872808; cv=fail; b=Ipck9PsA/8i48yk3IfhkfUuN2Ywzse20o63fAc+E9VUdnnkUjjAueUIblGRXIyOQH72aW4fHRnhEhPNSS8P0c4kP0LU9tO4A2oXYVnRhWT9sSEUQmdGVcMOYV3PY7iQqZhxbG8STtK4NcjPUmA32ZTGyBgbULQh6Iz+DjkKUR9w=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750872808; c=relaxed/simple;
+	bh=+XEpzaHfnpPt1R7BMIQa8tVRUN4JvFTnX7aiLvoZUUs=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JaVkyR/RoXyYwvHZV6zhaH03mKZU64zXpN73IQyIZZNxZ6Yy9JPtHM0VAwidxjhuqUznAZ2eCeCGWQKMrQqcq0DDVrlF5gVSxBFQC2xW8MI2hgo0SlxLwfIFh+MgQqdjjeKnRcIQVE4Ca5c9w005ySCVmUXRr2hmi/9fmv4wo4g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=rTxzWXXj; arc=fail smtp.client-ip=40.107.92.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FV0JBA1s"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3728C4CEEA;
-	Wed, 25 Jun 2025 16:54:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750870458;
-	bh=aPxjxJWGiCb0ED+Q6lL0luiCScS2iIlBYHdBk7QF9os=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=FV0JBA1suI0PwfbGzPhet3TxCWgxxoSVq2m4XKNTM4Yn7G5fQzMMnrY9sXLZbnMoj
-	 N8YUYS7pwKe/GYayCce8y7XJLSkTGvtoGa8kimdPB746Rj6OK4B6OLTU5TQpz+F4Av
-	 GtzCd0AsxnyB+4GK+bJOWqil30eHQtag3Sr6bFjjhCTPmnsVyhpefbyQWXEEMqj3KN
-	 DHMdjfDxx6JuJe4oRX/FMyKzdbKER5AKpQkyd4/CyS0AjQUMQdaP99yzIL39692V8y
-	 4yWDAj2q9kH2IGS6alPWJvGK9rJElq305PSxsF1wUozi8ZXjYDZDlblLldduy6vpvz
-	 v+cFOZ6rt6nmA==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=goblin-girl.misterjones.org)
-	by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.95)
-	(envelope-from <maz@kernel.org>)
-	id 1uUTO3-009y7S-8p;
-	Wed, 25 Jun 2025 17:54:15 +0100
-Date: Wed, 25 Jun 2025 17:54:13 +0100
-Message-ID: <8634bndaoa.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: Will Deacon <will@kernel.org>
-Cc: Xueqi Zhang <xueqi.zhang@mediatek.com>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Project_Global_Chrome_Upstream_Group@mediatek.com,
-	Ning li <ning.li@mediatek.com>,
-	linux-mediatek@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [RFC PATCH 6/8] iommu/arm-smmu-v3: mediatek: Add wrapper handle for IRQ
-In-Reply-To: <aFqKWAqC0o8yzVIq@willie-the-truck>
-References: <20250616025628.25454-1-xueqi.zhang@mediatek.com>
-	<20250616025628.25454-7-xueqi.zhang@mediatek.com>
-	<aFqKWAqC0o8yzVIq@willie-the-truck>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/30.1
- (aarch64-unknown-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="rTxzWXXj"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=iMDQ4KE48BVzvysYtGAeiFuyzPFsp9zbyT7/j5LFxGC9knjA6Xei8TBIAlQ47o2FfPsTqw0uhHQ2gb8M3fcXlz3/HOHo5sNBWizEIonYKor1VIQ2VhUlqKVmLtP+E+akO5xK1tzrfDgUxMBuLCzBTiX+SNLwJHnu0/cWcksyTjMGa8v9fpqxCb5V+p6b/330y3sVkE7sH0t1uH0JkVY2b2nLj0yFuUI7yfKPBB0hsPQlF3vFO+jPPVNeEvp4ANL0o2XvUj3mN1E+kPPSobLI4Kv9TGD1MtILEcBHA1Uc3wPsZq13jcTXtCm4T8WitUC4zYxv2nBEQ3XksXxUW9H0Ug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ay+OoYaAjDj9hZe+qVQx/WgvfjaQQCv+QQtBOyngybE=;
+ b=eTZVt9FRojx02Xtmwyv8CahpQ8guIcYQ7vHeHt0aUoBOtm5z4RmrwQ+RJ2Sts47BYofNL1qBhdN9j2zAAiRl/gP9LQiSvMyk1mRdPCLQROexAoMruGfgGjCu8WvoVHOppsPjo+wUK97EhtlEDtIF+6Xto8ttUPk2jo8saqydAToO6ExhLaYBG+k8PhUF0jCdqUXLGtEFGSbvfFE1l4OTV7AgCQhPxWTn3pYE8gGx0jz34qtHMusKk1tXSEOPjAPvFxk6pnC5Vc9y+b/VLMGfH3Jgi7UaGb1mpM4g0UyJIla66iEsocDjRhoZoxE/LCYJvHA6v5m9T22sJNnLAC7lEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ay+OoYaAjDj9hZe+qVQx/WgvfjaQQCv+QQtBOyngybE=;
+ b=rTxzWXXjRjN7JGPzwJGr8aiJ4kjIgVZMSWEUNAh4z3sOBIUp+lmuftlnp6DlLKCc5Gs6DDU04ypPgiLF++vtB6S5fsnpQ+qQXYWSFzEosZSZuJcQPcHwF5HijTJxgvB9iEDKfemYWyA2+/Cfncfvh9NaMbmpXbi8gk0U9n5YRM/yTOFEWJrPXtDN6cOAQr8T5RsBsqZ5xCNXyY51a+lj7QfA+JpZ9QRplMTH9SjcalmI0yroCyG9slqsgHVqD7h7TSIafyubeyBbk72l5AvG5+tJraNBdbLH07q542QpZmmnZbfrXIli1lsDzcI4NhU5bOLgjc57xjTZ1f1bYoXxAQ==
+Received: from BN1PR13CA0028.namprd13.prod.outlook.com (2603:10b6:408:e2::33)
+ by SJ1PR12MB6243.namprd12.prod.outlook.com (2603:10b6:a03:456::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8835.30; Wed, 25 Jun
+ 2025 17:33:22 +0000
+Received: from BL02EPF0001A101.namprd05.prod.outlook.com
+ (2603:10b6:408:e2:cafe::9d) by BN1PR13CA0028.outlook.office365.com
+ (2603:10b6:408:e2::33) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8880.16 via Frontend Transport; Wed,
+ 25 Jun 2025 17:33:20 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ BL02EPF0001A101.mail.protection.outlook.com (10.167.241.132) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8880.14 via Frontend Transport; Wed, 25 Jun 2025 17:33:20 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 25 Jun
+ 2025 10:33:12 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Wed, 25 Jun 2025 10:33:11 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Wed, 25 Jun 2025 10:33:10 -0700
+Date: Wed, 25 Jun 2025 10:33:09 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: "jgg@nvidia.com" <jgg@nvidia.com>, "corbet@lwn.net" <corbet@lwn.net>,
+	"will@kernel.org" <will@kernel.org>, "bagasdotme@gmail.com"
+	<bagasdotme@gmail.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"joro@8bytes.org" <joro@8bytes.org>, "thierry.reding@gmail.com"
+	<thierry.reding@gmail.com>, "vdumpa@nvidia.com" <vdumpa@nvidia.com>,
+	"jonathanh@nvidia.com" <jonathanh@nvidia.com>, "shuah@kernel.org"
+	<shuah@kernel.org>, "jsnitsel@redhat.com" <jsnitsel@redhat.com>,
+	"nathan@kernel.org" <nathan@kernel.org>, "peterz@infradead.org"
+	<peterz@infradead.org>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"mshavit@google.com" <mshavit@google.com>, "praan@google.com"
+	<praan@google.com>, "zhangzekun11@huawei.com" <zhangzekun11@huawei.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-doc@vger.kernel.org"
+	<linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org"
+	<linux-tegra@vger.kernel.org>, "linux-kselftest@vger.kernel.org"
+	<linux-kselftest@vger.kernel.org>, "patches@lists.linux.dev"
+	<patches@lists.linux.dev>, "mochs@nvidia.com" <mochs@nvidia.com>,
+	"alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>, "vasant.hegde@amd.com"
+	<vasant.hegde@amd.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v6 06/25] iommufd/access: Allow access->ops to be NULL
+ for internal use
+Message-ID: <aFwy1V81mmM6R/yU@Asurada-Nvidia>
+References: <cover.1749884998.git.nicolinc@nvidia.com>
+ <e6a989c4dd9cb94aa4a98d46ed56a2afcb41b70d.1749884998.git.nicolinc@nvidia.com>
+ <BN9PR11MB52766D0C0B12F1F10A6BE7548C7BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <aFwlu7FlfIP85gko@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: will@kernel.org, xueqi.zhang@mediatek.com, yong.wu@mediatek.com, robin.murphy@arm.com, joro@8bytes.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com, Project_Global_Chrome_Upstream_Group@mediatek.com, ning.li@mediatek.com, linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, iommu@lists.linux.dev
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <aFwlu7FlfIP85gko@Asurada-Nvidia>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL02EPF0001A101:EE_|SJ1PR12MB6243:EE_
+X-MS-Office365-Filtering-Correlation-Id: fc3bf00f-a8b4-4a94-0640-08ddb40e60de
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|36860700013|82310400026|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?Xvg1vGQEWv8PvdcMD90bZq63guzx/PT0227WMo3s95vpbBnYMD7wWDttUk3s?=
+ =?us-ascii?Q?hR8OkpB4LqXQMNOWInvqk2Yiun2rcOvaiwNPjccu+4souQFxWF7OBKLm9LXS?=
+ =?us-ascii?Q?TydMm4fsxX2+WZKQ8pWkgqnBrv2qa2xWUQmBEYPS9Yw+gEtmhkiP/Laho6Ab?=
+ =?us-ascii?Q?QqpNBcrG2OQbSKe1a8lPu5ojWckUWiqGy3Yt3kpXlPQLyES9JTPBbPMhjq22?=
+ =?us-ascii?Q?vr0nPnbiySSVwckzBfg67QIabIjrJnD6/m0aBFkOlH8ZJzNd1ioEp1f9N1Cy?=
+ =?us-ascii?Q?KF9z4Ir1wTu6gqLosOcfn2QaC0Ejx24U5nMNkpNToO4pIDi4hFgBxUgHyW4Q?=
+ =?us-ascii?Q?aGH5sMZlqT2gDE0eNR6XD2P57uWZQEX3/8RnOcwndhD/b8XVKfIydPAFpKOH?=
+ =?us-ascii?Q?WEoq47RN6kKMOb+Fqeej3Hcjs+9G40hfo8gBaoFGlkGNj+8vRSolV6YyfObm?=
+ =?us-ascii?Q?Zy59muMV0o+Xzz4DU5CawYWXfthMQinUEF/IFA40e+R4cuCx6DO/s9+2NpKU?=
+ =?us-ascii?Q?5IERosOTsoqMECDG/LGfYmXOeuKLeq9rjb6wgqjdQEObHCJ/9TcZGz3j1oFU?=
+ =?us-ascii?Q?obWTD66Ehee32h8N8IcJd5fjWFhNtH528vSs+t6RCvIIkHIaxjJYk6pEHXmA?=
+ =?us-ascii?Q?aCD/5AzYYRwCUsHRFioTQy8tE6dsOzQ4bkDA7WOdUg2BBKw4n5MNIJchAHmU?=
+ =?us-ascii?Q?IZQEIfuTFY2ODXSxfEQkr/Lr4nCaJ+t8R5ZBMspb+JlvQgWC/YoXAfvo5tp/?=
+ =?us-ascii?Q?ZCHNAOR6u/bqdBkSpTBx3J4Dmc68dccxatRWZmv1UWNCn2iEQ8kKzXfVY3EV?=
+ =?us-ascii?Q?PemV+MXX6iJgPNVWmpxqWKs9QRMnqqcPlT6kJMg2dFjR4INhz3KasuTFn0Kq?=
+ =?us-ascii?Q?O5YztEuICZi0irg/VPxCxiUkXFojCZ9H/h+UKG2ssA1ERQencrV140AfMkd8?=
+ =?us-ascii?Q?RWCOfXqJaMd72GVIVXWYiyDq2OT06kC/+I2PwG/a6mmZuo4/etLN4g2qPSJO?=
+ =?us-ascii?Q?G+bXQrK5uXnPzCXY84wwciWzXyDcRWttERukutzfSkVzmbD4+R95THBX2Wdg?=
+ =?us-ascii?Q?IeIR1Ez2e+GRKIEsJiVCtf09WFkUTVFVEhiHDzPLUjHWoxvuu390jHkKchy4?=
+ =?us-ascii?Q?vYFPRuYn3zGC6X5Ye/5p3qmGOBp1KFiFhe42w57/6niu/ScHt4u7mVXRdo1u?=
+ =?us-ascii?Q?g0gJ+JjlJ+68sF9pVEVYuEvo2fbUhySjZaxnsLSfz3J7NN3ZFaLJPsYNuKuI?=
+ =?us-ascii?Q?R2k97t1BnXwFygweJJWicBxNrFTBuF4T4+zqc2YqTZ6L9N1IzHzxSVEfJhVb?=
+ =?us-ascii?Q?IRbDgDduU1934Sa7dfwFaaxiSlCcpnbP2RV/IUSphWRUQ8SfZKb2/oCp2PTV?=
+ =?us-ascii?Q?fKTT5rlpGioJakzgpQdSdbzUC3xWphZOrvdOSGJ6GidJl1Pe2ChPjzKAVzd/?=
+ =?us-ascii?Q?gvnI6DMa+puyK4b/6hj7xvyjMVIZPF9xCqhbcn6aM/9nJ0aUHJehjBvhQAYs?=
+ =?us-ascii?Q?QjOCg0MlNZ4qA0zWLoOsDM65oXCeJB48jDsj?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(36860700013)(82310400026)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2025 17:33:20.2388
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: fc3bf00f-a8b4-4a94-0640-08ddb40e60de
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL02EPF0001A101.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6243
 
-On Tue, 24 Jun 2025 12:22:00 +0100,
-Will Deacon <will@kernel.org> wrote:
-> 
-> [+Marc for irqchip question at the end]
-> 
-> On Mon, Jun 16, 2025 at 10:56:12AM +0800, Xueqi Zhang wrote:
-> > Mediatek SMMU interrupt is low level active rather than the standard
-> > edge.Process Mediatek SMMU wrapper interrupt and dump detailed
-> > information when a translation fault occurs.
+On Wed, Jun 25, 2025 at 09:37:18AM -0700, Nicolin Chen wrote:
+> On Wed, Jun 25, 2025 at 03:38:19AM +0000, Tian, Kevin wrote:
+> > > From: Nicolin Chen <nicolinc@nvidia.com>
+> > > Sent: Saturday, June 14, 2025 3:15 PM
+> > > 
+> > > +int iommufd_access_notify_unmap(struct io_pagetable *iopt, unsigned long
+> > > iova,
+> > > +				unsigned long length)
+> > >  {
+> > >  	struct iommufd_ioas *ioas =
+> > >  		container_of(iopt, struct iommufd_ioas, iopt);
+> > >  	struct iommufd_access *access;
+> > >  	unsigned long index;
+> > > +	int ret = 0;
+> > > 
+> > >  	xa_lock(&ioas->iopt.access_list);
+> > >  	xa_for_each(&ioas->iopt.access_list, index, access) {
+> > > +		if (!access->ops || !access->ops->unmap) {
+> > > +			ret = -EBUSY;
+> > > +			goto unlock;
+> > > +		}
 > > 
-> > Signed-off-by: Xueqi Zhang <xueqi.zhang@mediatek.com>
-> > ---
-> >  .../arm/arm-smmu-v3/arm-smmu-v3-mediatek.c    | 349 +++++++++++++++++-
-> >  1 file changed, 347 insertions(+), 2 deletions(-)
+> > then accesses before this one have been notified to unpin the area
+> > while accesses afterwards are left unnotified.
+> > 
+> > in the end the unmap fails but with some side-effect incurred.
+> > 
+> > I'm not sure whether this intermediate state may lead to any undesired
+> > effect later. Just raise it in case you or Jason already thought about it.
 > 
-> I think this probably needs splitting in two parts so that the low-level
-> IRQ handling is separate from the fault diagnostic reporting.
+> That's a good point. When an access blocks the unmap, there is no
+> unmap happening so no point in notifying devices for ops->unmap.
 > 
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-mediatek.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-mediatek.c
-> > index 48290366e596..448166c1ca64 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-mediatek.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-mediatek.c
-> > @@ -14,7 +14,122 @@
-> >  
-> >  #include "arm-smmu-v3.h"
-> >  
-> > +#include <linux/soc/mediatek/mtk_sip_svc.h>
-> > +#include <linux/arm-smccc.h>
-> > +
-> > +#define SMMUWP_GLB_CTL0			(0x0)
-> > +#define CTL0_STD_AXI_MODE_DIS		BIT(0)
-> > +#define CTL0_MON_DIS			BIT(1)
-> > +#define CTL0_DCM_EN			BIT(2)
-> > +#define CTL0_WRAPPER_CK_AOEN		BIT(3)
-> > +#define CTL0_AUTO_AXDOMAIN_EN		BIT(4)
-> > +#define CTL0_IRQ_BUSY_EN		BIT(5)
-> > +#define CTL0_ABT_CNT_CLR		BIT(6)
-> > +#define CTL0_LEGACY_AXCACHE		BIT(7)
-> > +#define CTL0_COMMIT_DIS			BIT(8)
-> > +#define CTL0_AUTO_SLP_DIS		BIT(9)
-> > +#define CTL0_STTSL_DIS			BIT(10)
-> > +#define CTL0_CFG_TAB_DCM_EN		BIT(11)
-> > +#define CTL0_CPU_PARTID_DIS		BIT(14)
-> > +/* New bits of SMMU wrapper extension */
-> > +#define CTL0_TCU2SLC_DCM_EN		BIT(18)
-> > +#define CTL0_APB_DCM_EN			BIT(19)
-> > +#define CTL0_DVM_DCM_EN			BIT(20)
-> > +#define CTL0_CPU_TBU_PARTID_DIS		BIT(21)
-> > +
-> > +#define SMMUWP_IRQ_STA			(0x80)
-> > +#define STA_TCU_GLB_INTR		BIT(0)
-> > +#define STA_TCU_CMD_SYNC_INTR		BIT(1)
-> > +#define STA_TCU_EVTQ_INTR		BIT(2)
-> > +#define STA_TCU_PRI_INTR		BIT(3)
-> > +#define STA_TCU_PMU_INTR		BIT(4)
-> > +#define STA_TCU_RAS_CRI			BIT(5)
-> > +#define STA_TCU_RAS_ERI			BIT(6)
-> > +#define STA_TCU_RAS_FHI			BIT(7)
-> > +
-> > +#define SMMUWP_IRQ_ACK			(0x84)
-> > +
-> > +#define SMMUWP_IRQ_ACK_CNT		(0x88)
-> > +#define IRQ_ACK_CNT_MSK			GENMASK(7, 0)
-> > +
-> > +/* SMMU non-secure interrupt pending count register, count 20 */
-> > +#define SMMUWP_IRQ_CNTx(cnt)		(0x100 + 0x4 * (cnt))
-> > +
-> > +#define SMMU_TCU_CTL1_AXSLC		(0x204)
-> > +#define AXSLC_BIT_FIELD			GENMASK(8, 4)
-> > +#define AXSLC_CACHE			BIT(5)
-> > +#define AXSLC_ALLOCATE			BIT(6)
-> > +#define AXSLC_SPECULATIVE		BIT(7)
-> > +#define AXSLC_SET			(AXSLC_CACHE | AXSLC_ALLOCATE | AXSLC_SPECULATIVE)
-> > +#define SLC_SB_ONLY_EN			BIT(1)
-> > +
-> > +/* SMMU TBUx read translation fault monitor0 */
-> > +#define SMMUWP_TBUx_RTFM0(tbu)		(0x380 + 0x100 * (tbu))
-> > +#define RTFM0_FAULT_AXI_ID		GENMASK_ULL(19, 0)
-> > +#define RTFM0_FAULT_DET			BIT(31)
-> > +
-> > +/* SMMU TBUx read translation fault monitor1 */
-> > +#define SMMUWP_TBUx_RTFM1(tbu)		(0x384 + 0x100 * (tbu))
-> > +#define RTFM1_FAULT_VA_35_32		GENMASK_ULL(3, 0)
-> > +#define RTFM1_FAULT_VA_31_12		GENMASK_ULL(31, 12)
-> > +
-> > +/* SMMU TBUx read translation fault monitor2 */
-> > +#define SMMUWP_TBUx_RTFM2(tbu)		(0x388 + 0x100 * (tbu))
-> > +#define RTFM2_FAULT_SID			GENMASK_ULL(7, 0)
-> > +#define RTFM2_FAULT_SSID		GENMASK_ULL(15, 8)
-> > +#define RTFM2_FAULT_SSIDV		BIT(16)
-> > +#define RTFM2_FAULT_SECSID		BIT(17)
-> > +
-> > +/* SMMU TBUx write translation fault monitor0 */
-> > +#define SMMUWP_TBUx_WTFM0(tbu)		(0x390 + 0x100 * (tbu))
-> > +#define WTFM0_FAULT_AXI_ID		GENMASK_ULL(19, 0)
-> > +#define WTFM0_FAULT_DET			BIT(31)
-> > +
-> > +/* SMMU TBUx write translation fault monitor1 */
-> > +#define SMMUWP_TBUx_WTFM1(tbu)		(0x394 + 0x100 * (tbu))
-> > +#define WTFM1_FAULT_VA_35_32		GENMASK_ULL(3, 0)
-> > +#define WTFM1_FAULT_VA_31_12		GENMASK_ULL(31, 12)
-> > +
-> > +/* SMMU TBUx write translation fault monitor2 */
-> > +#define SMMUWP_TBUx_WTFM2(tbu)		(0x398 + 0x100 * (tbu))
-> > +#define WTFM2_FAULT_SID			GENMASK_ULL(7, 0)
-> > +#define WTFM2_FAULT_SSID		GENMASK_ULL(15, 8)
-> > +#define WTFM2_FAULT_SSIDV		BIT(16)
-> > +#define WTFM2_FAULT_SECSID		BIT(17)
-> > +
-> > +/* SMMU TBU Manual OG Control High Register0 */
-> > +#define SMMUWP_TBU0_MOGH0		(0x3b4)
-> > +#define MOGH_EN				BIT(29)
-> > +#define MOGH_RW				BIT(28)
-> > +
-> > +/* SMMU translation fault TBUx */
-> > +#define SMMUWP_TF_TBU_MSK		GENMASK(26, 24)
-> > +#define SMMUWP_TF_TBU(tbu)		FIELD_PREP(SMMUWP_TF_TBU_MSK, tbu)
-> > +
-> > +#define SMMU_FAULT_RS_INTERVAL		DEFAULT_RATELIMIT_INTERVAL
-> > +#define SMMU_FAULT_RS_BURST		(1)
-> > +
-> > +#define STRSEC(sec)			((sec) ? "SECURE" : "NORMAL")
-> > +
-> > +#define WP_OFFSET_MT8196		0x1e0000
-> > +
-> >  #define MTK_SMMU_COMP_STR_LEN		64
-> > +
-> > +#define MTK_SMMU_FAULT_IOVA(low, high) ((low) | (((u64)(high) & 0xf) << 32))
-> > +
-> > +#define SMMU_SUCCESS			(0)
-> > +#define SMMU_ID_ERR			(1)
-> > +#define SMMU_CMD_ERR			(2)
-> > +#define SMMU_PARA_INVALID		(3)
-> > +#define SMMU_NEED			(4)
-> > +#define SMMU_NONEED			(5)
-> > +
-> > +/* plat flags: */
-> > +#define SMMU_SKIP_PM_CLK		BIT(0)
-> > +#define SMMU_CLK_AO_EN			BIT(1)
-> > +#define SMMU_AXSLC_EN			BIT(2)
-> > +#define SMMU_DIS_CPU_PARTID		BIT(3)
-> > +#define SMMU_DIS_CPU_TBU_PARTID		BIT(4)
-> >  #define SMMU_REQUIRE_PARENT		BIT(5)
-> >  #define MTK_SMMU_HAS_FLAG(pdata, _x)    (!!(((pdata)->flags) & (_x)))
-> >  
-> > @@ -25,22 +140,30 @@ enum mtk_smmu_type {
-> >  };
-> >  
-> >  struct mtk_smmu_v3_plat {
-> > +	u32			wp_offset;
-> > +	unsigned int		tbu_cnt;
-> >  	enum mtk_smmu_type	smmu_type;
-> >  	u32			flags;
-> >  };
-> >  
-> >  struct mtk_smmu_v3 {
-> >  	struct arm_smmu_device	smmu;
-> > +	void __iomem			*wp_base;
-> >  	const struct mtk_smmu_v3_plat *plat_data;
-> >  };
-> >  
-> >  static const struct mtk_smmu_v3_plat mt8196_data_mm = {
-> > +	.wp_offset		= WP_OFFSET_MT8196,
-> > +	.tbu_cnt		= 3,
-> >  	.smmu_type		= MTK_SMMU_MM,
-> > +	.flags			= SMMU_AXSLC_EN,
-> >  };
-> >  
-> >  static const struct mtk_smmu_v3_plat mt8196_data_apu = {
-> > +	.wp_offset		= WP_OFFSET_MT8196,
-> > +	.tbu_cnt		= 3,
-> >  	.smmu_type		= MTK_SMMU_APU,
-> > -	.flags			= SMMU_REQUIRE_PARENT,
-> > +	.flags			= SMMU_AXSLC_EN | SMMU_REQUIRE_PARENT,
-> >  };
-> >  
-> >  struct mtk_smmu_v3_of_device_data {
-> > @@ -70,17 +193,228 @@ static const struct mtk_smmu_v3_plat *mtk_smmu_v3_get_plat_data(const struct dev
-> >  	return NULL;
-> >  }
-> >  
-> > +static inline void smmu_write_field(void __iomem *base,
-> > +				    unsigned int reg,
-> > +				    unsigned int mask,
-> > +				    unsigned int val)
-> > +{
-> > +	unsigned int regval;
-> > +
-> > +	regval = readl_relaxed(base + reg);
-> > +	regval = (regval & (~mask)) | val;
-> > +	writel_relaxed(regval, base + reg);
-> > +}
-> > +
-> > +static void smmu_init_wpcfg(struct arm_smmu_device *smmu)
-> > +{
-> > +	struct mtk_smmu_v3 *mtk_smmu_v3 = to_mtk_smmu_v3(smmu);
-> > +	void __iomem *wp_base = mtk_smmu_v3->wp_base;
-> > +
-> > +	/* DCM basic setting */
-> > +	smmu_write_field(wp_base, SMMUWP_GLB_CTL0, CTL0_DCM_EN, CTL0_DCM_EN);
-> > +	smmu_write_field(wp_base, SMMUWP_GLB_CTL0, CTL0_CFG_TAB_DCM_EN,
-> > +			 CTL0_CFG_TAB_DCM_EN);
-> > +
-> > +	smmu_write_field(wp_base, SMMUWP_GLB_CTL0,
-> > +			 CTL0_TCU2SLC_DCM_EN | CTL0_APB_DCM_EN |
-> > +			 CTL0_DVM_DCM_EN,
-> > +			 CTL0_TCU2SLC_DCM_EN | CTL0_APB_DCM_EN |
-> > +			 CTL0_DVM_DCM_EN);
-> > +
-> > +	if (MTK_SMMU_HAS_FLAG(mtk_smmu_v3->plat_data, SMMU_DIS_CPU_PARTID))
-> > +		smmu_write_field(wp_base, SMMUWP_GLB_CTL0, CTL0_CPU_PARTID_DIS,
-> > +				 CTL0_CPU_PARTID_DIS);
-> > +	if (MTK_SMMU_HAS_FLAG(mtk_smmu_v3->plat_data, SMMU_DIS_CPU_TBU_PARTID))
-> > +		smmu_write_field(wp_base, SMMUWP_GLB_CTL0,
-> > +				 CTL0_CPU_TBU_PARTID_DIS, CTL0_CPU_TBU_PARTID_DIS);
-> > +
-> > +	/* Used for MM_SMMMU read command overtaking */
-> > +	if (mtk_smmu_v3->plat_data->smmu_type == MTK_SMMU_MM)
-> > +		smmu_write_field(wp_base, SMMUWP_GLB_CTL0, CTL0_STD_AXI_MODE_DIS,
-> > +				 CTL0_STD_AXI_MODE_DIS);
-> > +
-> > +	/* Set AXSLC */
-> > +	if (MTK_SMMU_HAS_FLAG(mtk_smmu_v3->plat_data, SMMU_AXSLC_EN)) {
-> > +		smmu_write_field(wp_base, SMMUWP_GLB_CTL0,
-> > +				 CTL0_STD_AXI_MODE_DIS, CTL0_STD_AXI_MODE_DIS);
-> > +		smmu_write_field(wp_base, SMMU_TCU_CTL1_AXSLC, AXSLC_BIT_FIELD,
-> > +				 AXSLC_SET);
-> > +		smmu_write_field(wp_base, SMMU_TCU_CTL1_AXSLC, SLC_SB_ONLY_EN,
-> > +				 SLC_SB_ONLY_EN);
-> > +	}
-> > +}
-> > +
-> > +/* Consume SMMU wrapper interrupt bit */
-> > +static unsigned int
-> > +smmuwp_consume_intr(void __iomem *wp_base, unsigned int irq_bit)
-> > +{
-> > +	unsigned int pend_cnt;
-> > +
-> > +	pend_cnt = readl_relaxed(wp_base + SMMUWP_IRQ_CNTx(__ffs(irq_bit)));
-> > +	smmu_write_field(wp_base, SMMUWP_IRQ_ACK_CNT, IRQ_ACK_CNT_MSK, pend_cnt);
-> > +	writel_relaxed(irq_bit, wp_base + SMMUWP_IRQ_ACK);
-> > +
-> > +	return pend_cnt;
-> > +}
-> > +
-> > +/* clear translation fault mark */
-> > +static void smmuwp_clear_tf(void __iomem *wp_base)
-> > +{
-> > +	smmu_write_field(wp_base, SMMUWP_GLB_CTL0, CTL0_ABT_CNT_CLR, CTL0_ABT_CNT_CLR);
-> > +	smmu_write_field(wp_base, SMMUWP_GLB_CTL0, CTL0_ABT_CNT_CLR, 0);
-> > +}
-> > +
-> > +static u32 smmuwp_fault_id(u32 axi_id, u32 tbu_id)
-> > +{
-> > +	u32 fault_id = (axi_id & ~SMMUWP_TF_TBU_MSK) | (SMMUWP_TF_TBU(tbu_id));
-> > +
-> > +	return fault_id;
-> > +}
-> > +
-> > +/* Process TBU translation fault Monitor */
-> > +static bool smmuwp_process_tf(struct arm_smmu_device *smmu)
-> > +{
-> > +	struct mtk_smmu_v3 *mtk_smmu_v3 = to_mtk_smmu_v3(smmu);
-> > +	void __iomem *wp_base = mtk_smmu_v3->wp_base;
-> > +	unsigned int sid, ssid, secsidv, ssidv;
-> > +	u32 i, regval, va35_32, axiid, fault_id;
-> > +	u64 fault_iova;
-> > +	bool tf_det = false;
-> > +
-> > +	for (i = 0; i < mtk_smmu_v3->plat_data->tbu_cnt; i++) {
-> > +		regval = readl_relaxed(wp_base + SMMUWP_TBUx_RTFM0(i));
-> > +		if (!(regval & RTFM0_FAULT_DET))
-> > +			goto write;
-> > +
-> > +		tf_det = true;
-> > +		axiid = FIELD_GET(RTFM0_FAULT_AXI_ID, regval);
-> > +		fault_id = smmuwp_fault_id(axiid, i);
-> > +
-> > +		regval = readl_relaxed(wp_base + SMMUWP_TBUx_RTFM1(i));
-> > +		va35_32 = FIELD_GET(RTFM1_FAULT_VA_35_32, regval);
-> > +		fault_iova = MTK_SMMU_FAULT_IOVA(regval & RTFM1_FAULT_VA_31_12, va35_32);
-> > +
-> > +		regval = readl_relaxed(wp_base + SMMUWP_TBUx_RTFM2(i));
-> > +		sid = FIELD_GET(RTFM2_FAULT_SID, regval);
-> > +		ssid = FIELD_GET(RTFM2_FAULT_SSID, regval);
+> And, when the function is re-entered, there could be a duplicated
+> ops->unmap call for those devices that are already notified once?
 > 
-> We already print a bunch of this stuff in arm_smmu_dump_event() now that
-> Pranjal has improved the logic. I don't see the value in printing the
-> same information twice, so we should trim down the extra diagnostics here
-> so that (a) the information is distinct from that provided by the core
-> driuver code and (b) it's relevant to Linux (e.g. there's no need to
-> print information about secure transactions).
-> 
-> The core driver code should also print some delimiters around the
-> implementation-defined data as well. Out of curiosity, is the TBU
-> monitor part of Arm's IP or is this additional hardware from MTK?
-> 
-> > +		ssidv = FIELD_GET(RTFM2_FAULT_SSIDV, regval);
-> > +		secsidv = FIELD_GET(RTFM2_FAULT_SECSID, regval);
-> > +		dev_err_ratelimited(smmu->dev, "TF read in %s world, TBU_id-%d-fault_id:0x%x(0x%x)\n",
-> > +				    STRSEC(secsidv), i, fault_id, axiid);
-> > +		dev_err_ratelimited(smmu->dev,
-> > +				    "iova:0x%llx, sid:%d, ssid:%d, ssidv:%d, secsidv:%d\n",
-> > +				    fault_iova, sid, ssid, ssidv, secsidv);
-> > +
-> > +write:
-> > +		regval = readl_relaxed(wp_base + SMMUWP_TBUx_WTFM0(i));
-> > +		if (!(regval & WTFM0_FAULT_DET))
-> > +			continue;
-> > +
-> > +		tf_det = true;
-> > +		axiid = FIELD_GET(WTFM0_FAULT_AXI_ID, regval);
-> > +		fault_id = smmuwp_fault_id(axiid, i);
-> > +
-> > +		regval = readl_relaxed(wp_base + SMMUWP_TBUx_WTFM1(i));
-> > +		va35_32 = FIELD_GET(WTFM1_FAULT_VA_35_32, regval);
-> > +		fault_iova = MTK_SMMU_FAULT_IOVA(regval & RTFM1_FAULT_VA_31_12, va35_32);
-> > +
-> > +		regval = readl_relaxed(wp_base + SMMUWP_TBUx_WTFM2(i));
-> > +		sid = FIELD_GET(WTFM2_FAULT_SID, regval);
-> > +		ssid = FIELD_GET(WTFM2_FAULT_SSID, regval);
-> > +		ssidv = FIELD_GET(WTFM2_FAULT_SSIDV, regval);
-> > +		secsidv = FIELD_GET(WTFM2_FAULT_SECSID, regval);
-> > +		dev_err_ratelimited(smmu->dev, "TF write in %s world, TBU_id-%d-fault_id:0x%x(0x%x)\n",
-> > +				    STRSEC(secsidv), i, fault_id, axiid);
-> > +		dev_err_ratelimited(smmu->dev,
-> > +				    "iova:0x%llx, sid:%d, ssid:%d, ssidv:%d, secsidv:%d\n",
-> > +				    fault_iova, sid, ssid, ssidv, secsidv);
-> 
-> nit: but I don't think we should use the _ratelimited() prints here as it
-> could end up with random lines being dropped.
-> 
-> > +/* Process SMMU wrapper interrupt */
-> > +static int mtk_smmu_v3_smmuwp_irq_handler(int irq, struct arm_smmu_device *smmu)
-> > +{
-> > +	struct mtk_smmu_v3 *mtk_smmuv3 = to_mtk_smmu_v3(smmu);
-> > +	void __iomem *wp_base = mtk_smmuv3->wp_base;
-> > +	unsigned int irq_sta, pend_cnt;
-> > +
-> > +	irq_sta = readl_relaxed(wp_base + SMMUWP_IRQ_STA);
-> > +	if (irq_sta == 0)
-> > +		return 0;
-> > +
-> > +	if (irq_sta & STA_TCU_GLB_INTR) {
-> > +		pend_cnt = smmuwp_consume_intr(wp_base, STA_TCU_GLB_INTR);
-> > +		dev_dbg(smmu->dev,
-> > +			"IRQ_STA:0x%x, Non-secure TCU global interrupt detected pending_cnt: %d\n",
-> > +			irq_sta, pend_cnt);
-> > +	}
-> > +
-> > +	if (irq_sta & STA_TCU_CMD_SYNC_INTR) {
-> > +		pend_cnt = smmuwp_consume_intr(wp_base, STA_TCU_CMD_SYNC_INTR);
-> > +		dev_dbg(smmu->dev,
-> > +			"IRQ_STA:0x%x, Non-secure TCU CMD_SYNC interrupt detected pending_cnt: %d\n",
-> > +			irq_sta, pend_cnt);
-> > +	}
-> > +
-> > +	if (irq_sta & STA_TCU_EVTQ_INTR) {
-> > +		pend_cnt = smmuwp_consume_intr(wp_base, STA_TCU_EVTQ_INTR);
-> > +		dev_dbg(smmu->dev,
-> > +			"IRQ_STA:0x%x, Non-secure TCU EVTQ interrupt detected pending_cnt: %d\n",
-> > +			irq_sta, pend_cnt);
-> > +	}
-> > +
-> > +	if (irq_sta & STA_TCU_PRI_INTR) {
-> > +		pend_cnt = smmuwp_consume_intr(wp_base, STA_TCU_PRI_INTR);
-> > +		dev_dbg(smmu->dev, "IRQ_STA:0x%x, TCU PRI interrupt detected pending_cnt: %d\n",
-> > +			irq_sta, pend_cnt);
-> > +	}
-> > +
-> > +	if (irq_sta & STA_TCU_PMU_INTR) {
-> > +		pend_cnt = smmuwp_consume_intr(wp_base, STA_TCU_PMU_INTR);
-> > +		dev_dbg(smmu->dev, "IRQ_STA:0x%x, TCU PMU interrupt detected pending_cnt: %d\n",
-> > +			irq_sta, pend_cnt);
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> 
-> Hrm. I wonder whether this would be better off treated as a chained irqchip
-> rather than hiding the logic inside the SMMU driver? It effectively looks
-> like a demuxer to me.
+> So, if we play safe, there can be a standalone xa_for_each to dig
+> for !access->ops->unmap. And it could be a bit cleaner to add an
+> iommufd_access_has_internal_use() to be called under those rwsems.
 
-Yeah, that's effectively what this is.
+Correct: it has to be under the xa_lock. So, this pre-check needs
+to be done in this function.
 
-However, it isn't clear this has the basic mask/unmask logic that we'd
-expect for an irqchip, and I doubt you'd want the irqchip to pry into
-the SMMU code for that to mask/unmask the individual interrupt
-sources.
-
-The other thing is that I don't see any actual handling here.
-smmuwp_consume_intr() ACKs the interrupt, and that's it. I'm not even
-sure why this code exists at all (but I haven't read the series, TBH).
-
-Thanks,
-
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
+Thanks
+Nicolin
