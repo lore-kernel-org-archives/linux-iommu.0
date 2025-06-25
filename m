@@ -1,143 +1,117 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7C148263C8A
-	for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 13:07:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 432B6263F28;
+	Wed, 25 Jun 2025 13:19:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750856853; cv=none; b=g66EUAjIdIPQVytpfQvfkjhwp8z19zRr/4bAmGhmsv9ZW1mLiDsYFR6tvVbtdXjQRjLVT4VgZVXMaHVrTkw1pPwJaD0WJDiUxAPTcqE9DBntTLDEcP/jIt/KQc8Mr4wlDYiksReVSANk7xnBAw93W4fCRn1DMgxOjuJeBHDp+B4=
+	t=1750857559; cv=none; b=baZ6Nl/55HP6ipXsxrumMY7fJpVoSx41aiXv0ctyAvSu9OEOmRwS+xJnMzXSy1xovfQFFR0vQf+/00Lz4W/W5Tv2Gea8+6boXQzjTEJ9WptcYQKGIUcyK4ijLwimpHjWFJ+4budprDJP0dxcyAYmq/tsK1Rh8trgJLIjKF46KCw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750856853; c=relaxed/simple;
-	bh=GpFWUZ4b12cBUigOMFnVPzlZyBG72pWZ7OUuzdeXks0=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=MngSesGN/+tZsX+GFg/yapD4XgeyBnWUfibOK37pfHoCcZBqfZlN5u+XLMK/53lM4yMxvXdYCKDJz/+MRprBRnmUwiZk9rl2e3EA3fZaDLL47IoV9XsCpBLxcHsoyisJE42PT2x7Sciz/k81dSf5jTd8NuZHQjaEVPMhbsc6TgQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7BE26106F;
-	Wed, 25 Jun 2025 06:07:11 -0700 (PDT)
-Received: from [10.57.84.221] (unknown [10.57.84.221])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9D1B03F58B;
-	Wed, 25 Jun 2025 06:07:25 -0700 (PDT)
-Message-ID: <636c8901-6e05-479f-ae06-ee391d4d36e8@arm.com>
-Date: Wed, 25 Jun 2025 14:07:23 +0100
+	s=arc-20240116; t=1750857559; c=relaxed/simple;
+	bh=x2+9WyiMKk51YbdrrEHH1emdFd89rPiPsvikAZYGQgc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=sQGWbjE2WUuD9HLw+046AS23jyhq3LN0JaJ2LOP9z5RT+AS4Pe0kILrt+w6ahYctqTL7tKzn/SLi+a9060bOGShJyLOFhT6VS3rNRfY/Yioic3csj35zoitA23GdgNpeC6VnVNO661GFoS7KFPPEySggdxjlg44tLOKTTKwJMx4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=l10zw3Wd; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="l10zw3Wd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82CB0C4CEEF;
+	Wed, 25 Jun 2025 13:19:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1750857554;
+	bh=x2+9WyiMKk51YbdrrEHH1emdFd89rPiPsvikAZYGQgc=;
+	h=From:To:Cc:Subject:Date:From;
+	b=l10zw3WdyXEdS9RctXGPVEXxHMOvYtV9GQIdtQEmyQsrO4jkjVzkws3Uvq5/54YKC
+	 BWk+L1U7dSr6RPgo1R4HkxtMaD51XQsZVWhcz3kfQaIPgtBG+dHPqgSCNm460cQH3m
+	 2hGxhgaSoUU5/cunK9skYGzD0OOpw8n+4wvZBCbCPoNtqZknn8v0E+BKl0w+MyvZYa
+	 XMNB3afOwqLGCPStz6Wmqck3EA/fUOYHSMz7BKlUnJa//u0/py1Po/qzjyplclhZcq
+	 ZrSyz77b7diqxCv/D8r8QvFup7HF/YiJcjJW6vAfghZqn5Tq1J4odLTaEzz4PJKE6n
+	 pcKtlnV78DPoA==
+From: Leon Romanovsky <leon@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	=?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>,
+	Alexander Potapenko <glider@google.com>,
+	Marco Elver <elver@google.com>,
+	Dmitry Vyukov <dvyukov@google.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	=?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	iommu@lists.linux.dev,
+	virtualization@lists.linux.dev,
+	kasan-dev@googlegroups.com,
+	linux-trace-kernel@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: [PATCH 0/8] dma-mapping: migrate to physical address-based API
+Date: Wed, 25 Jun 2025 16:18:57 +0300
+Message-ID: <cover.1750854543.git.leon@kernel.org>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 4/4] arm64/mm: Elide tlbi in contpte_convert() under
- BBML2
-Content-Language: en-GB
-From: Ryan Roberts <ryan.roberts@arm.com>
-To: Catalin Marinas <catalin.marinas@arm.com>,
- =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>
-Cc: yang@os.amperecomputing.com, will@kernel.org, jean-philippe@linaro.org,
- robin.murphy@arm.com, joro@8bytes.org, maz@kernel.org,
- oliver.upton@linux.dev, joey.gouly@arm.com, james.morse@arm.com,
- broonie@kernel.org, ardb@kernel.org, baohua@kernel.org,
- suzuki.poulose@arm.com, david@redhat.com, jgg@ziepe.ca, nicolinc@nvidia.com,
- jsnitsel@redhat.com, mshavit@google.com, kevin.tian@intel.com,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-References: <20250617095104.6772-1-miko.lenczewski@arm.com>
- <20250617095104.6772-5-miko.lenczewski@arm.com> <aFRlDSZ2PPnHixjc@arm.com>
- <7105112f-b0bb-4191-b3c9-93522162319c@arm.com>
-In-Reply-To: <7105112f-b0bb-4191-b3c9-93522162319c@arm.com>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 20/06/2025 17:10, Ryan Roberts wrote:
-> On 19/06/2025 20:29, Catalin Marinas wrote:
->> On Tue, Jun 17, 2025 at 09:51:04AM +0000, Mikołaj Lenczewski wrote:
->>> diff --git a/arch/arm64/mm/contpte.c b/arch/arm64/mm/contpte.c
->>> index bcac4f55f9c1..203357061d0a 100644
->>> --- a/arch/arm64/mm/contpte.c
->>> +++ b/arch/arm64/mm/contpte.c
->>> @@ -68,7 +68,144 @@ static void contpte_convert(struct mm_struct *mm, unsigned long addr,
->>>  			pte = pte_mkyoung(pte);
->>>  	}
->>>  
->>> -	__flush_tlb_range(&vma, start_addr, addr, PAGE_SIZE, true, 3);
->>> +	/*
->>> +	 * On eliding the __tlb_flush_range() under BBML2+noabort:
->>> +	 *
->>> +	 * NOTE: Instead of using N=16 as the contiguous block length, we use
->>> +	 *       N=4 for clarity.
->>> +	 *
->>> +	 * NOTE: 'n' and 'c' are used to denote the "contiguous bit" being
->>> +	 *       unset and set, respectively.
->>> +	 *
->>> +	 * We worry about two cases where contiguous bit is used:
->>> +	 *  - When folding N smaller non-contiguous ptes as 1 contiguous block.
->>> +	 *  - When unfolding a contiguous block into N smaller non-contiguous ptes.
->>> +	 *
->>> +	 * Currently, the BBML0 folding case looks as follows:
->>> +	 *
->>> +	 *  0) Initial page-table layout:
->>> +	 *
->>> +	 *   +----+----+----+----+
->>> +	 *   |RO,n|RO,n|RO,n|RW,n| <--- last page being set as RO
->>> +	 *   +----+----+----+----+
->>> +	 *
->>> +	 *  1) Aggregate AF + dirty flags using __ptep_get_and_clear():
->>> +	 *
->>> +	 *   +----+----+----+----+
->>> +	 *   |  0 |  0 |  0 |  0 |
->>> +	 *   +----+----+----+----+
->>> +	 *
->>> +	 *  2) __flush_tlb_range():
->>> +	 *
->>> +	 *   |____ tlbi + dsb ____|
->>> +	 *
->>> +	 *  3) __set_ptes() to repaint contiguous block:
->>> +	 *
->>> +	 *   +----+----+----+----+
->>> +	 *   |RO,c|RO,c|RO,c|RO,c|
->>> +	 *   +----+----+----+----+
->>
->> From the initial layout to point (3), we are also changing the
->> permission. Given the rules you mentioned in the Arm ARM, I think that's
->> safe (hardware seeing either the old or the new attributes). The
->> FEAT_BBM description, however, only talks about change between larger
->> and smaller blocks but no mention of also changing the attributes at the
->> same time. Hopefully the microarchitects claiming certain CPUs don't
->> generate conflict aborts understood what Linux does.
+This series refactors the DMA mapping to use physical addresses
+as the primary interface instead of page+offset parameters. This
+change aligns the DMA API with the underlying hardware reality where
+DMA operations work with physical addresses, not page structures.
 
-I think what you are saying is that despite going via invalid, the HW may see
-this direct transition:
+The series consists of 8 patches that progressively convert the DMA
+mapping infrastructure from page-based to physical address-based APIs:
 
-+----+----+----+----+
-|RO,n|RO,n|RO,n|RW,n|
-+----+----+----+----+
-to:
-+----+----+----+----+
-|RO,c|RO,c|RO,c|RO,c|
-+----+----+----+----+
+The series maintains backward compatibility by keeping the old
+page-based API as wrapper functions around the new physical
+address-based implementations.
 
-There are 2 logical operations here. The first is changing the permissions of
-the last entry. The second is changing the size of the entry.
+Thanks
 
-As I understand it, it's permissible in the architecture to update the
-permissions of the a PTE without break-before-make and without issuing a tlbi
-afterwards; in that case the HW may apply either the old permissions or the new
-permissions up until a future tlbi (after which the new permissions are
-guarranteed). That's the first logical operation.
+Leon Romanovsky (8):
+  dma-debug: refactor to use physical addresses for page mapping
+  dma-mapping: rename trace_dma_*map_page to trace_dma_*map_phys
+  iommu/dma: rename iommu_dma_*map_page to iommu_dma_*map_phys
+  dma-mapping: convert dma_direct_*map_page to be phys_addr_t based
+  kmsan: convert kmsan_handle_dma to use physical addresses
+  dma-mapping: fail early if physical address is mapped through platform
+    callback
+  dma-mapping: export new dma_*map_phys() interface
+  mm/hmm: migrate to physical address-based DMA mapping API
 
-The second logical operation is permitted by FEAT_BBM level 2.
+ Documentation/core-api/dma-api.rst |  4 +-
+ arch/powerpc/kernel/dma-iommu.c    |  4 +-
+ drivers/iommu/dma-iommu.c          | 14 +++----
+ drivers/virtio/virtio_ring.c       |  4 +-
+ include/linux/dma-map-ops.h        |  8 ++--
+ include/linux/dma-mapping.h        | 13 ++++++
+ include/linux/iommu-dma.h          |  7 ++--
+ include/linux/kmsan.h              | 12 +++---
+ include/trace/events/dma.h         |  4 +-
+ kernel/dma/debug.c                 | 28 ++++++++-----
+ kernel/dma/debug.h                 | 16 ++++---
+ kernel/dma/direct.c                |  6 +--
+ kernel/dma/direct.h                | 13 +++---
+ kernel/dma/mapping.c               | 67 +++++++++++++++++++++---------
+ kernel/dma/ops_helpers.c           |  6 +--
+ mm/hmm.c                           |  8 ++--
+ mm/kmsan/hooks.c                   | 36 ++++++++++++----
+ tools/virtio/linux/kmsan.h         |  2 +-
+ 18 files changed, 159 insertions(+), 93 deletions(-)
 
-So both logical operations are permitted and the Arm ARM doesn't mention any
-requirement to "separate" these operations with a tlbi or anything else, as far
-as I can see.
-
-So I would interpret that combining these 2 in the way we have should be safe.
-RNGLXZ and RJQQTC give further insight into the spirit of the spec. But I agree
-this isn't spelled out super clearly.
-
-Perhaps we can move forwards based on this understanding, and I will seek some
-clarifying words to be added to the Arm ARM?
-
-Thanks,
-Ryan
+-- 
+2.49.0
 
