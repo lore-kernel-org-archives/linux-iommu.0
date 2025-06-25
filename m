@@ -1,145 +1,194 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2057.outbound.protection.outlook.com [40.107.96.57])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6EA81E1C3F;
-	Wed, 25 Jun 2025 15:38:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750865896; cv=none; b=b/Wg/IN/mn4/+de3F+T3m0Et3x60NCw2uUY+xwQgdHhKXmCD0Gwy+f5c5n38bFizbGe9hfJlkHalyzjRfDhYlYRX9UDi7Wa8ipJzSp7WKgXUhecoBgDS2RH4ykXPlZ3nY/HSEvlaE2YKY8PqXIpr22PomH0wmYDBlOUpflPl5as=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750865896; c=relaxed/simple;
-	bh=DdxS8fK+k+4jJXT/e+VE5Z7hLWA+bNaknSmckFwX8wo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MtGExylV9Ra2BlnH4Ne3hHHkyGaZyGmZedANE6flFXYg40Mxa7NkPoTFreAVgcJq2OTyFLlJjBZP9H2pDgDAyghdVjJP4rs4iOMc4Y7JkR5ukfRX+DRI5gf0t49aRkbC/TfhV8+9lLpvmYO2nJX6CH51eavpH5bxX3jdpofxU8Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dv2z/It3; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F033F2BE7CD;
+	Wed, 25 Jun 2025 16:07:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.96.57
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750867637; cv=fail; b=jh0FWctxwpkFwDMPJzWAFNksKOhYmIgGyZmwofuCCWjNzu4nHzJo1UtqrrVBix7/STJRiisCokqqknnvSKLWhqoYN+LYqelhthgKQRQwheoPGZxYt2IneiJJJKl+o9Pot6JRV1Ko0VZIbCAxMEghRtWw8kRG8DbPzPQrD9sfQeM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750867637; c=relaxed/simple;
+	bh=DUd8Y4ShlMgeYweIoWv7SUeLUNS90GPtR14QBNvHxOU=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DjQ8DtUSZ/3gIgTxc/3U+hIOE27FLNUEMl/4rSIceSV3DWxuDkzbvc5Dq8zwiNPFk4fomBZL5ZTWhrypjj/KwzaWu+CVroidS+DLKZzcs4u/CPiP5hqiKG6MxXy3GmR2zV56DE5Nc+814jrFSRBc2hDhUA4RXA/1OcuSfDo9B9k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=OkFQk0Ue; arc=fail smtp.client-ip=40.107.96.57
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dv2z/It3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74CC2C4CEEA;
-	Wed, 25 Jun 2025 15:38:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750865895;
-	bh=DdxS8fK+k+4jJXT/e+VE5Z7hLWA+bNaknSmckFwX8wo=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=dv2z/It31S17vagV0qD/YG5Cs2xuaGCisG/MbnWq93zzaUaUrXfiITmuJmPyJHwj2
-	 nuYNJ9rGhpx/rmwcVlVvK8JVPDARGPgUOiSjlIwptVSwOUXYz20nLXVgoGzjl4GnvY
-	 LPtfY5IWEoNiJ/TJy+BqTqea3mtmXtFONVvBzy5/xqT4jDN2G40iQOremK7E9wCqTi
-	 DBbEfJsTzL8nVPUCssNUtOU8I2AXv63MDwg9llG0CBQd5uCbM7k5iAmGPdjPLhACi3
-	 r9Pk4sC1SWmvJqzefP6200Jp81E1uqxJnpuzPsYH+VL/KdRMihIBWKc8gyvuQ25wFq
-	 alh8oPqaYSR9w==
-Date: Wed, 25 Jun 2025 20:58:16 +0530
-From: Naveen N Rao <naveen@kernel.org>
-To: Sean Christopherson <seanjc@google.com>
-Cc: Marc Zyngier <maz@kernel.org>, Oliver Upton <oliver.upton@linux.dev>, 
-	Paolo Bonzini <pbonzini@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
-	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev, kvm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Sairaj Kodilkar <sarunkod@amd.com>, 
-	Vasant Hegde <vasant.hegde@amd.com>, Maxim Levitsky <mlevitsk@redhat.com>, 
-	Joao Martins <joao.m.martins@oracle.com>, Francesco Lavra <francescolavra.fl@gmail.com>, 
-	David Matlack <dmatlack@google.com>
-Subject: Re: [PATCH v3 20/62] KVM: SVM: Add a comment to explain why
- avic_vcpu_blocking() ignores IRQ blocking
-Message-ID: <ha3rq3ybk4c63bov2ix6yyajggep6zdulsd2e44vqw4ctufeiq@env4pl5m3wz6>
-References: <20250611224604.313496-2-seanjc@google.com>
- <20250611224604.313496-22-seanjc@google.com>
- <pxtvegopzsyhn7lelksclxiiee7tumppu76553rax7octqpy7i@giclgo667htf>
- <aFl-ZYyf9guxSkHE@google.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="OkFQk0Ue"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=k2S7SPSOAYVF51EePsbEeaPHfIOOuoPgpRs7FBQ6hcI45kuxLc2SGks2tkEyUMNGmDlVmNW2kSIbuBwiIEWqGdX/Sd8JvX21+ktfheLGCE9z9t9jBhS52mzaJPmfFN5geUpCqjgRsHJ1TUNe20wNyWPoe5KH5khE965JTb3DDyCNlXa6bJIzTiJ/HJkzAMyDWxzuJZEmugTF5vD6Nr4534L/iK9ff4KR9A8mr8neMWoCQU5/EaTlCQIbOR6nOjx8fEYhy7i7//Mupuiqfh4WJItWKbsnCFLAPhE22Q3Zw95sJxoNRneCgh5Zsc29FeWu7YgwArq71vQEEI+xbv2DJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UC2mbc7JZe7O60f/VwMDCqefneEOePUwQNU7lAytoyk=;
+ b=A8YRD3HnkR32EBNlUCkXN3cJi/DB7FilfEZ4NoelD9X6lJcIFiS8DyHUXEg+n5mLnp4LQD+aOw6BSu7EgOrxgaUCqlxzgI0BSAtL+5oauPDftmxi64CwOZSTGRu5ZMN056IZDqLEM7hffC6INfTL0oBaUtu/JYVcKRSDgrt9aZNKCbD3/ePoS4RZnqvkFfwKgimgQij0JuNiU5+mVA9zlMYNSLmjAu9GR1ajQviUIvuFrPA7I8C9bjQTdhAe5zctp1MEZNHTQR/sSWmTv4/+/yjnGms6XscwsH+2tkqLpj1m3I1+k5Q+RhhKl/UjIYrb1Wd2x9CrLUNBkpaxUGqxjw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UC2mbc7JZe7O60f/VwMDCqefneEOePUwQNU7lAytoyk=;
+ b=OkFQk0UehXHR9wvG/7Bomxne3gqmvQ+bulEGT/gLAJlzEBWFRqkKEZBQqPTUeoE7wcn+d93/2G6zjVNnKkSRx1TY2em5d40HTGW3se2jru99WX2pd+zv58sif4GWp7M00LabjHoL26T4gj1gyQ/ZaEOzFfiMsq8c/JcdeLgka+Ht7EsSMmJiKHmgxxoX3OPgaeJVPCVSgFu+MxGsWFaxvq28y2JJ4eDTFyk6FbXzi4yZ5ksYDsSN7pfYQECkhzMxJ6n9OKO4rceLHJnKmBm3AGqEOqPQU4Q1ir8175B09rt2dGOQfLDqD6nn2rvIQ/WSiPfzv9XYWm+hCAYcedWNGg==
+Received: from CH0PR03CA0033.namprd03.prod.outlook.com (2603:10b6:610:b3::8)
+ by PH7PR12MB8108.namprd12.prod.outlook.com (2603:10b6:510:2bc::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8857.25; Wed, 25 Jun
+ 2025 16:07:11 +0000
+Received: from CH3PEPF0000000B.namprd04.prod.outlook.com
+ (2603:10b6:610:b3:cafe::e3) by CH0PR03CA0033.outlook.office365.com
+ (2603:10b6:610:b3::8) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8857.30 via Frontend Transport; Wed,
+ 25 Jun 2025 16:07:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ CH3PEPF0000000B.mail.protection.outlook.com (10.167.244.38) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8880.14 via Frontend Transport; Wed, 25 Jun 2025 16:07:11 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 25 Jun
+ 2025 09:06:57 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Wed, 25 Jun 2025 09:06:56 -0700
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Wed, 25 Jun 2025 09:06:54 -0700
+Date: Wed, 25 Jun 2025 09:06:53 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+CC: Baolu Lu <baolu.lu@linux.intel.com>, "jgg@nvidia.com" <jgg@nvidia.com>,
+	"corbet@lwn.net" <corbet@lwn.net>, "will@kernel.org" <will@kernel.org>,
+	"bagasdotme@gmail.com" <bagasdotme@gmail.com>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"thierry.reding@gmail.com" <thierry.reding@gmail.com>, "vdumpa@nvidia.com"
+	<vdumpa@nvidia.com>, "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
+	"shuah@kernel.org" <shuah@kernel.org>, "jsnitsel@redhat.com"
+	<jsnitsel@redhat.com>, "nathan@kernel.org" <nathan@kernel.org>,
+	"peterz@infradead.org" <peterz@infradead.org>, "Liu, Yi L"
+	<yi.l.liu@intel.com>, "mshavit@google.com" <mshavit@google.com>,
+	"praan@google.com" <praan@google.com>, "zhangzekun11@huawei.com"
+	<zhangzekun11@huawei.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org"
+	<linux-tegra@vger.kernel.org>, "linux-kselftest@vger.kernel.org"
+	<linux-kselftest@vger.kernel.org>, "patches@lists.linux.dev"
+	<patches@lists.linux.dev>, "mochs@nvidia.com" <mochs@nvidia.com>,
+	"alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>, "vasant.hegde@amd.com"
+	<vasant.hegde@amd.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>
+Subject: Re: [PATCH v6 10/25] iommufd/viommu: Add IOMMUFD_CMD_HW_QUEUE_ALLOC
+ ioctl
+Message-ID: <aFwenQwrKz8rHY9T@Asurada-Nvidia>
+References: <cover.1749884998.git.nicolinc@nvidia.com>
+ <7dfb002613f224f57a069d27e7bf2b306b0a5ba0.1749884998.git.nicolinc@nvidia.com>
+ <1ab8030b-8d2f-4ebe-a280-6d0e4e1d17c7@linux.intel.com>
+ <aE+976F9zPsjtfry@nvidia.com>
+ <BN9PR11MB5276002043AF3D0970C7AEF58C7BA@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <aFl-ZYyf9guxSkHE@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <BN9PR11MB5276002043AF3D0970C7AEF58C7BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PEPF0000000B:EE_|PH7PR12MB8108:EE_
+X-MS-Office365-Filtering-Correlation-Id: 56e2b7c5-ecc8-4e75-6152-08ddb40257e0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|7416014|36860700013|376014|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?YmhwRWJ4QjZENXRUQ0M5NE5FY2N4OElSbmtLVithaEc5MXVkLzdQS3kzQ1pn?=
+ =?utf-8?B?WUcvVnZHNGtsVU5ZblY2SHk3NjIzRnptVnhRTlUrVFdXR3lRL0tkNmlxUDFu?=
+ =?utf-8?B?SEZ0SEhsTXR5c01GSWtKS29rVHBpU29wNVJ4ckFmTEpldGs2QzZWUFJzNHlm?=
+ =?utf-8?B?eGFXNDM1eEZ2aTJwMi90QTNNcHpLY01wOFBHZmhHTTltV2IyYTZHZ3M0RmpF?=
+ =?utf-8?B?R21ZNlZHZGYyQUx4ZmNMLzhxNjRvdUhKSzRJeG51RGpuQjJtaVAxVmJmZlJN?=
+ =?utf-8?B?TngrZGRMWWRpUlNrRmw5SE1UN05Wa1JmWnBwMG5VNVYvR04rNy9pcTFhdGVT?=
+ =?utf-8?B?andJdStPamdPWWgwMWJ0SlNoWG45NWdheGw4NU5zYnV2NUxrcmRSWGhra0NU?=
+ =?utf-8?B?YXM1WlBoSlBVV1hRazE5RXh1M1l6Z1pMVW93b2Vmd3JIOEJSL010S01XaFNS?=
+ =?utf-8?B?TG92eUdhOXFFcUV0cEkxZHFLSUltUnJ0bDNXK2JYK0Z1MjFVdkZ1ZjF2OFNP?=
+ =?utf-8?B?MWlLaDQ5YVQyTThmbjF2L1U4WFBJb0piVWVPOG96dENiUTY3aDAvTklsb0l2?=
+ =?utf-8?B?eEpBSTVoQUt4STVoS3ZDWXdyS0NwQU5vei80NXJJZmZvZ3ZYUXJpaG9oV2FS?=
+ =?utf-8?B?T2RhWUNqVm8rd2pTcWtPaG5NVCtFV2YxbWxsVVpNZDNmMGpoNkhCOUNjS1hP?=
+ =?utf-8?B?c0ZUZWM2S2krSEJ1N2pEVUZwd0MxZHZ3bUpxVTRPR0NNdmxpeTlxU3krSklY?=
+ =?utf-8?B?SSszY1JtbTBEalF6OTFldEI3dGxScHcxUVRxRFZoMjJhZEtLQUNVTFpKRkF3?=
+ =?utf-8?B?N3ViblFtZUNVQVQzbVFObkRBeEpkSW52ejh5d1ZLZ2FHNkVZSWlaSFhuazM0?=
+ =?utf-8?B?V0Z6WEVUck9UQm44VktMd0xyUjBicUJUL1hWQjlmVnFGTWc5cDZsNXJqVHIx?=
+ =?utf-8?B?dUNpR2FUeWZqS2hBNkJlRWhMOHcveHFKYjdYNkFHQzBXc1luTDNaYzdyU3Zw?=
+ =?utf-8?B?V255RzFWZ0U5em9iOHNTK255ano3VHlFQkR6NWV2TVhQWGluQXFSUk9WNklJ?=
+ =?utf-8?B?YTQ5YnFsUmZLcUJQVlc4c1lUZnlKVFM3VGV0ZXVBQWVnSDFwWVlmQVl5WXZq?=
+ =?utf-8?B?SmRMcllId3AwMlFQSzdiUW9OUmtuSmNxbFVvZzV6UVR3QjZ4RjZNaHJDSTlz?=
+ =?utf-8?B?VUNZdVc4ZVE5RFU2TTZDbTJhU3BGRWk3T1ovbkJYZzlmaG9NanRYZ3FrRDJD?=
+ =?utf-8?B?T2hWQzh1WjhqaDAvVG5pa0dHYzkyWTBDb3dnZ0JKVk52ZkFPM0gxQklGZW5v?=
+ =?utf-8?B?SHRRRmtJbFIwRWhQQVduRmMxVnRkaE5CNmpZSkFpV3lYSE5NV3VKWTVUQ01y?=
+ =?utf-8?B?bVR0aHpyR3BoS2RPbVpORkRNcGt1VkJYUGRIL2NMUWZUTko0V3cwbmhlekdG?=
+ =?utf-8?B?WEZmaXo2YU03Z0J1V2ZXbUlrVyt0bEt5eDRMUkxmMXpjWXdWRXN5ZlI5M05P?=
+ =?utf-8?B?NjlIdmVTU1U5cjZVZnZiYUU5LzFCRlRWZkMreHRVckRkcWRxcTljOEx0alJE?=
+ =?utf-8?B?eEhqclZxT2tzOUI2Mk1OYXVkM050STZxanhPQUgwOGF4Q0R4NWJUMFZmMEJ1?=
+ =?utf-8?B?S29lYzIrblAyQWlSNEVVeE1oWmRIb2w4dk41Q1RuYmFmQnNtS3V6VHZiZUEz?=
+ =?utf-8?B?RThiYlJrejBWejBFczJMWUY1azJCTlBGQi9NZm50QW16SGt6d2ZoTU5GRFFs?=
+ =?utf-8?B?YWJ2ekpQU0J1Qlp3Y2E4L0JnZUtkeFZQSVZURk8vVmhObmxHcnljbEVZRnhG?=
+ =?utf-8?B?OWlMaUJPa3hkVXN1aDNqeHliTHFSVDdRdTd4ZGc3eFQ2VXdodEN2MGxwZFB6?=
+ =?utf-8?B?a0FZK3poMjVIeDE1bzV6Umk5RG5zWkZUOEViRjQ3aG9SamYxNVQ5Yks2eE53?=
+ =?utf-8?B?V1EzV254WHRhMEhqR0ZmVE9rby90UE1MUk1TdkhVeWN3WCs5Mkxqa1V4TWx3?=
+ =?utf-8?B?V0VJNDIxV2d0NlpWYmNEeVBUZDhNSEl1TERTQ0w2MFVHQWp2SzRod2YrOVda?=
+ =?utf-8?Q?P5FBcu?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(7416014)(36860700013)(376014)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2025 16:07:11.2153
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 56e2b7c5-ecc8-4e75-6152-08ddb40257e0
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH3PEPF0000000B.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB8108
 
-On Mon, Jun 23, 2025 at 09:18:45AM -0700, Sean Christopherson wrote:
-> On Mon, Jun 23, 2025, Naveen N Rao wrote:
-> > On Wed, Jun 11, 2025 at 03:45:23PM -0700, Sean Christopherson wrote:
-> > > Add a comment to explain why KVM clears IsRunning when putting a vCPU,
-> > > even though leaving IsRunning=1 would be ok from a functional perspective.
-> > > Per Maxim's experiments, a misbehaving VM could spam the AVIC doorbell so
-> > > fast as to induce a 50%+ loss in performance.
-> > > 
-> > > Link: https://lore.kernel.org/all/8d7e0d0391df4efc7cb28557297eb2ec9904f1e5.camel@redhat.com
-> > > Cc: Maxim Levitsky <mlevitsk@redhat.com>
-> > > Signed-off-by: Sean Christopherson <seanjc@google.com>
-> > > ---
-> > >  arch/x86/kvm/svm/avic.c | 31 ++++++++++++++++++-------------
-> > >  1 file changed, 18 insertions(+), 13 deletions(-)
-> > > 
-> > > diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
-> > > index bf8b59556373..3cf929ac117f 100644
-> > > --- a/arch/x86/kvm/svm/avic.c
-> > > +++ b/arch/x86/kvm/svm/avic.c
-> > > @@ -1121,19 +1121,24 @@ void avic_vcpu_blocking(struct kvm_vcpu *vcpu)
-> > >  	if (!kvm_vcpu_apicv_active(vcpu))
-> > >  		return;
-> > >  
-> > > -       /*
-> > > -        * Unload the AVIC when the vCPU is about to block, _before_
-> > > -        * the vCPU actually blocks.
-> > > -        *
-> > > -        * Any IRQs that arrive before IsRunning=0 will not cause an
-> > > -        * incomplete IPI vmexit on the source, therefore vIRR will also
-> > > -        * be checked by kvm_vcpu_check_block() before blocking.  The
-> > > -        * memory barrier implicit in set_current_state orders writing
-> > > -        * IsRunning=0 before reading the vIRR.  The processor needs a
-> > > -        * matching memory barrier on interrupt delivery between writing
-> > > -        * IRR and reading IsRunning; the lack of this barrier might be
-> > > -        * the cause of errata #1235).
-> > > -        */
-> > > +	/*
-> > > +	 * Unload the AVIC when the vCPU is about to block, _before_ the vCPU
-> > > +	 * actually blocks.
-> > > +	 *
-> > > +	 * Note, any IRQs that arrive before IsRunning=0 will not cause an
-> > > +	 * incomplete IPI vmexit on the source; kvm_vcpu_check_block() handles
-> > > +	 * this by checking vIRR one last time before blocking.  The memory
-> > > +	 * barrier implicit in set_current_state orders writing IsRunning=0
-> > > +	 * before reading the vIRR.  The processor needs a matching memory
-> > > +	 * barrier on interrupt delivery between writing IRR and reading
-> > > +	 * IsRunning; the lack of this barrier might be the cause of errata #1235).
-> > > +	 *
-> > > +	 * Clear IsRunning=0 even if guest IRQs are disabled, i.e. even if KVM
-> > > +	 * doesn't need to detect events for scheduling purposes.  The doorbell
+On Wed, Jun 25, 2025 at 03:43:08AM +0000, Tian, Kevin wrote:
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Monday, June 16, 2025 2:47 PM
+> > > Leave other logics to the patches that introduce
+> > > ops->hw_queue_init? I guess that would make this patch more readible.
 > > 
-> > Nit: just IsRunning (you can drop the =0 part).
+> > The patch is doing in the way to support the hw_queue_init_phys
+> > case only. It is just adding some extra FIXMEs as the guideline
+> > for the future patch adding hw_queue_init op.
+> > 
+> > I personally don't feel these are confusing. Maybe you can help
+> > point out what specific wording feels odd here? Maybe "FIXME"s
+> > should be "TODO"s?
+> > 
+> > I could also drop all of these guideline if they are considered
+> > very unnecessary.
+> > 
 > 
-> Hmm, not really.  It could be:
-> 
-> 	/* Note, any IRQs that arrive while IsRunning is set will not cause an
-> 
-> or
-> 
-> 	/* Note, any IRQs that arrive while IsRunning=1 will not cause an
-> 
-> but that's just regurgitating the spec.  The slightly more interesting scenario
-> that's being described here is what will happen if an IRQ arrives _just_ before
-> the below code toggle IsRunning from 1 => 0.
+> Probably you can put some info in the function comment instead
+> of being scattered in the code? anyway when the 2nd method
+> is added in future we'll review and make sure it aligned with the
+> caveat here. 😊
 
-Oh, you're right. I was referring to the last paragraph starting with 
-"Clear IsRunning=0 even if", which to me feels like a double negation. 
-It reads better if it is "Clear IsRunning even if ..."
+Yea, probably can drop them. I think AMD will figure it out easily :)
 
-> 
-> > Trying to understand the significance of IRQs being disabled here. Is 
-> > that a path KVM tries to optimize?
-> 
-> Yep.  KVM doesn't need a notification for the undelivered (virtual) IRQ, because
-> it won't be handled by the vCPU until the vCPU enables IRQs, and thus it's not a
-> valid wake event for the vCPU.
-> 
-> So, *if* spurious doorbells didn't affect performance or functionality, then
-> ideally KVM would leave IsRunning=1, e.g. so that the IOMMU doesn't need to
-> generate GA log events, and so that other vCPUs aren't forced to VM-Exit when
-> sending an IPI.  Unfortunately, spurious doorbells are quite intrusive, and so
-> KVM "needs" to clear IsRunning.
-
-Ok, got that. kvm_arch_vcpu_blocking() looks like it exists precisely 
-for this reason.
-
-Thanks,
-Naveen
-
+Thanks
+Nicolin
