@@ -1,121 +1,76 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id DB59317333F
-	for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 14:16:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [176.9.242.62])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6A8A25F998
+	for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 14:33:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=176.9.242.62
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750861009; cv=none; b=i+N+w1Jkty47tDKigdyEIvQEPO7fAGgnKDViOPbCnxEWNSrG2ImbO7jd34j+Fd4bjNfO3OhNbR4H06sS91iU4p5AinScIxcw1GQRmJY7SeOjsVoH+muqfAX3nrCBukVU068r2wR/VND6m/gGYj1FHQb/7g8r6ZBbv3CQ59vevm8=
+	t=1750862016; cv=none; b=NlLb4xc/Wbq2qFVkcDhPr5guXuXnyuh5DSLi+EOs2etzd/92wAe1OY7T+Rv4k8Ys2+yBFHAk2E3AN5KZk8eWvSUiw0wFqOCvNgPsinfQZ7pnVJbpyO8l/QeJux7Y1yj/IiKsZzddq1mF+R9uMXgv1/SncUmA5H7SMJ1Ej/2d47o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750861009; c=relaxed/simple;
-	bh=qK+i+U+6rzfemAyvripjb73RvpT/DUf/CWO5dfpdbds=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qpqqui3VxEFWIWU8KOHCXwUq6QB+l7azoB0hqbNPs1jERRz/Vy9kKbvOMnm7QDQTH24IF5Su4OHQEW2V89lA5DAguonLBNBBFi8bVI2tqEgy8qdEdZum0m3AE8oVyNV0mYldbQkm6PsdYTRLOk7sdFdxuX+gJ6tOHbKBlN0ar1A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C842B106F;
-	Wed, 25 Jun 2025 07:16:28 -0700 (PDT)
-Received: from [10.57.84.221] (unknown [10.57.84.221])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E7E9B3F66E;
-	Wed, 25 Jun 2025 07:16:42 -0700 (PDT)
-Message-ID: <40c6e847-3be1-4d12-ab23-6ac5e0f1bd4a@arm.com>
-Date: Wed, 25 Jun 2025 15:16:41 +0100
+	s=arc-20240116; t=1750862016; c=relaxed/simple;
+	bh=/iLj6/oPmFHXVXdglfTrWoLI8TAW+tGOKSkB0IDapSA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iJcWhTfhi/cw0oSYFRnhMEE3HjxfpnkNdnibP4l7u+ADgGgmhMAG8I1ipEx50guAcFJS+lEIbZsyHddfn7P/WMFZtZsIpIgI3n/5XavOykn+opp0aEH0memMX6JMF1hGk0F29cxMJG1BtTe3J8HRXdRTSDR/FvVVNU1ZyZBHFGc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=none smtp.mailfrom=h08.hostsharing.net; arc=none smtp.client-ip=176.9.242.62
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
+	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
+	by bmailout3.hostsharing.net (Postfix) with ESMTPS id 18D2B2C000A8;
+	Wed, 25 Jun 2025 16:33:32 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+	id DD5D43B7098; Wed, 25 Jun 2025 16:33:31 +0200 (CEST)
+Date: Wed, 25 Jun 2025 16:33:31 +0200
+From: Lukas Wunner <lukas@wunner.de>
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Ben Hutchings <ben@decadent.org.uk>, David Airlie <airlied@redhat.com>,
+	Bjorn Helgaas <helgaas@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Andi Kleen <ak@linux.intel.com>, Ahmed Salem <x0rw3ll@gmail.com>,
+	Borislav Petkov <bp@alien8.de>, dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org
+Subject: Re: [PATCH] agp/amd64: Bind to unsupported devices only if AGP is
+ present
+Message-ID: <aFwIu0QveVuJZNoU@wunner.de>
+References: <f8ff40f35a9a5836d1371f60e85c09c5735e3c5e.1750497201.git.lukas@wunner.de>
+ <b73fbb3e3f03d842f36e6ba2e6a8ad0bb4b904fd.camel@decadent.org.uk>
+ <aFalrV1500saBto5@wunner.de>
+ <279f63810875f2168c591aab0f30f8284d12fe02.camel@decadent.org.uk>
+ <aFa8JJaRP-FUyy6Y@wunner.de>
+ <9077aab5304e1839786df9adb33c334d10c69397.camel@decadent.org.uk>
+ <98012c55-1e0d-4c1b-b650-5bb189d78009@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 4/4] arm64/mm: Elide tlbi in contpte_convert() under
- BBML2
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Catalin Marinas <catalin.marinas@arm.com>,
- =?UTF-8?Q?Miko=C5=82aj_Lenczewski?= <miko.lenczewski@arm.com>,
- yang@os.amperecomputing.com, will@kernel.org, jean-philippe@linaro.org,
- robin.murphy@arm.com, joro@8bytes.org, maz@kernel.org,
- oliver.upton@linux.dev, joey.gouly@arm.com, james.morse@arm.com,
- broonie@kernel.org, ardb@kernel.org, baohua@kernel.org,
- suzuki.poulose@arm.com, david@redhat.com, nicolinc@nvidia.com,
- jsnitsel@redhat.com, mshavit@google.com, kevin.tian@intel.com,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-References: <20250617095104.6772-1-miko.lenczewski@arm.com>
- <20250617095104.6772-5-miko.lenczewski@arm.com> <aFRlDSZ2PPnHixjc@arm.com>
- <7105112f-b0bb-4191-b3c9-93522162319c@arm.com>
- <636c8901-6e05-479f-ae06-ee391d4d36e8@arm.com>
- <20250625133735.GB213144@ziepe.ca>
-From: Ryan Roberts <ryan.roberts@arm.com>
-In-Reply-To: <20250625133735.GB213144@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <98012c55-1e0d-4c1b-b650-5bb189d78009@redhat.com>
 
-On 25/06/2025 14:37, Jason Gunthorpe wrote:
-> On Wed, Jun 25, 2025 at 02:07:23PM +0100, Ryan Roberts wrote:
->> I think what you are saying is that despite going via invalid, the HW may see
->> this direct transition:
->>
->> +----+----+----+----+
->> |RO,n|RO,n|RO,n|RW,n|
->> +----+----+----+----+
->> to:
->> +----+----+----+----+
->> |RO,c|RO,c|RO,c|RO,c|
->> +----+----+----+----+
->>
->> There are 2 logical operations here. The first is changing the permissions of
->> the last entry. The second is changing the size of the entry.
->>
->> As I understand it, it's permissible in the architecture to update the
->> permissions of the a PTE without break-before-make and without issuing a tlbi
->> afterwards; in that case the HW may apply either the old permissions or the new
->> permissions up until a future tlbi (after which the new permissions are
->> guarranteed). That's the first logical operation.
->>
->> The second logical operation is permitted by FEAT_BBM level 2.
->>
->> So both logical operations are permitted and the Arm ARM doesn't mention any
->> requirement to "separate" these operations with a tlbi or anything else, as far
->> as I can see.
->>
->> So I would interpret that combining these 2 in the way we have should be safe.
->> RNGLXZ and RJQQTC give further insight into the spirit of the spec. But I agree
->> this isn't spelled out super clearly.
->>
->> Perhaps we can move forwards based on this understanding, and I will seek some
->> clarifying words to be added to the Arm ARM?
+On Wed, Jun 25, 2025 at 04:08:38PM +0200, Hans de Goede wrote:
+> Lukas made me aware of this attempt to fix the KERN_CRIT msg, because
+> I wrote a slightly different patch to fix this:
 > 
-> FWIW this matches my understanding as well.
+> https://lore.kernel.org/dri-devel/20250625112411.4123-1-hansg@kernel.org/
 > 
-> AFAIK the actual physical issue for BBM < 2 is the TLB lookup HW
-> cannot tolerate having two entries that overlap in address because of
-> different sizes. Every lookup must return exactly one result. If more
-> results are returned the HW fails in some way.
-> 
-> For BBM 2 if the HW lookup gets more than one result the HW selects
-> one unpredictably and uses that.
-> 
-> Permissions shouldn't have any impact because they do not effect how
-> the lookup is performed, they are the result of the lookup.
+> This seems like a cleaner fix to me and something which would be good
+> to have regardless since currently the driver_attach() call is doing
+> too much work because the promisc table catches an unnecessary wide
+> net / match matching many PCI devices which cannot be AGP capable
+> at all.
 
-Totally agree with all of this! But ideally we want the Arm ARM to be
-unambiguous so that we can implement against that rather than against our
-understanding of the HW issues and what the Arm ARM "almost certainly intended".
+So how do you know that all of these unsupported devices have
+PCI_CLASS_BRIDGE_HOST?  The only thing we know is that an AGP
+Capability must be present.
 
-> 
-> I've been looking at implementing BBM 2 support on the iommu side and
-> I didn't see anything that said we cannot do arbitary transformations
-> under BBM 2? For instance when degrading from a contiguous range of
-> block descriptors down to single page descriptors I'm expecting to go
-> like:
->     16x2M -> 2M -> 4k -> FLUSH
+In particular, AGP 3.0 sec 2.5 explicitly allows PCI-to-PCI bridges
+in addition to Host-to-PCI bridges.
 
-If this is just changing sizes, it's definitely, explcitly safe in the Arm ARM
-(I haven't read the equivalent SMMU text). And there isn't a requirement to
-flush at the end. You only need to flush the (sub-)ranges where permissions or
-whatever have changed.
+Thanks,
 
-> 
-> Jason
-
+Lukas
