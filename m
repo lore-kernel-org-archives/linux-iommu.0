@@ -1,129 +1,132 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 077FA18C008
-	for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 06:48:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE36520E01E
+	for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 07:32:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750834094; cv=none; b=DkN1lgZzrwZnSf6Br44U/Sx7A0mAXyGQiyLyleqDPd0fhcyHHjqaIhe9fmgiOINGxEllei/tvt9AImZaR9iciomLdOdbZrSXPfSgHCRoAuyBnGZXwq0s+7ajLdJVrAUBWsF3gBecYUrqMW0KEq5rVYKwaADUMK8YRsZd0roN2kg=
+	t=1750836735; cv=none; b=ESf1ujNwa6Ov2USlpp1HdEXLrFDB72YkyZOX2P6oPZImwmZF7j89QrBGG+a8hIYwssgtTazlTe6XQNulcrnDXCMDbQXHFSnBoGuz1quUGJXPP4gjT84f010g7jiTjDL/jkiu0VJCFensBg4ENXVJ+tfZAxZSMIeT9WlnU39W03I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750834094; c=relaxed/simple;
-	bh=YRgTBG6ahEu12RrN56cHbtpyvTptKXyTAvXP+cLX6BA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=iXGkz0ghmXGWgTkBLPjBAxUJhAgosmuTUFheB2BBGdLmlfb8HiONezzBdlSF2b/ISzu2CqFRqu9QmJI3fcsYLF4MsZGEiD8cwc+Qsu+egMKY5HI6GoV324dGlrEufHnNaNQ1I8e8AOfs6jNmhx1m+9gWWweB7jAYwfMRVrr+PLo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Z1+/ex1G; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1750836735; c=relaxed/simple;
+	bh=t3Wq1fod3wQxTIEB7OP08UfQKVsMYS8GGGHFeuqKWo8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GcSYo0cUgK0s+yra46hOOkwHY2S0vvKTEpXesyYBv59/whe0dt+AaSC/ZerDLdmpnwQI5nr1HI0f5zr4mteuqZMCu0vfjDc4C5N2L+NKbtJjVxEFme1G5mo5l9DC6KA8M54qB2mrFF8d2chdQwI0/F7HifUOBkcpQnuVpRluPJM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LP2hvVn0; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z1+/ex1G"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-22c33677183so14399435ad.2
-        for <iommu@lists.linux.dev>; Tue, 24 Jun 2025 23:48:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1750834092; x=1751438892; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=vDntjPY9BcK8XP41EjKymaWC9cq9DzX53giAwjmriis=;
-        b=Z1+/ex1G3tuBMmkNy7/eyvICg72YDoNjFzG8KCM4uqpKo2Lv6sQvFnnDUuY1K53Ef8
-         x3aXtsnKRok4wUKj5Z6/MR+C1dc++mIptiydEOvWzaHI1+nSfdCYOnCsS4sewM5aqajD
-         Pjhnmpk2e7QDjCPfDCDm79vxVe3NqBrJLDLhWm/4ER+gdvlMYWSa1YclUy6kj/4iDodw
-         Hovuuj3JwVAXps8EleUk1t1q3KzWS2kpGk1hy4m1Zo95SMWELT3T2BtczlQIk/6YU892
-         TkqrJDU537LddM7OFsS8eoKv1rG9cVfygaBcp2vNpVQyhjggvd72HDf1Ouf1uJ4kpwec
-         MEbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750834092; x=1751438892;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vDntjPY9BcK8XP41EjKymaWC9cq9DzX53giAwjmriis=;
-        b=NQmhx3Z3wpTgSC+PYB47uO11PswMilrVle9hG5t+O47vZlxMH74E+V6v3nfFdkT0Y7
-         dUI6EVL5WQrVPcBW7skafKgKKDZ6I3nrDw0JlmWLBvLzbCtrNSOvMb0PinayvSUgRs/d
-         GM04Ft7XZ9OUoRL6b0iUy24UpubOGEuS55FMOKwJrdBHIDaFMUKStl6Y5zp02jmhrDon
-         WP1xdKHGwFrIJqfq+xHJXTSq6elHyE39ShdW+PgXhf2rMDi2SByckNvo0SSoQmcNvV5H
-         yM0ZuRZBid0aasJQWr73/xeYCg22xHf6in2Vl/RfWhJ2luPECH/EKtXpW1NJJ1ja5AVC
-         mRQA==
-X-Forwarded-Encrypted: i=1; AJvYcCWxtMR4dys8+8HS495fFw4QPYOtPTpTy3SRLGt5taZbmEWPU9QaiwObVxADc4LOGJAAE+idTQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxQIKCW5t28+CMxJhprIXSZmT3v3eQTsYt7t7JJWl64Rxgv+igK
-	cX27O3m3ZAoHDMRkKCQo6Fz9yD8/FXdR5KLJkZZjWuIxl6NN3SkGDSDk
-X-Gm-Gg: ASbGncsH5zWr+SgQKOOVktfgDsbGhTPs0LBbvJ0UxrTrfh9UjOA2dOHuOUVyDzecc3U
-	NC/24/xnwOTqx2j28/qfkuGwViaCLvLShdogiVWL8FYA4H6oPWUco16XdKkz4CvIDLPZcM0zq4X
-	A+VPz/pDkeczoEH2X1OEIJ/v6gWPy2qVuPkGUDHMP715NaDf4POMVD655BacNbR+GtVsQ8Jrsrc
-	fcPtp7Z4DEQHLz+Ld0i/ncPGhTxcB0dn9vVa5XpBhE5yRUVbNl1zehSxyR6UG3YoutGRd1loTvL
-	V7oDlOue027Q/DzfFq7G1TRQllzwG7cRSB9jTkRwvKiQesT1JvgrliABDlXGIZGebl2BWLUmpNH
-	l
-X-Google-Smtp-Source: AGHT+IHHpkRLh4Fi55uEQqLaLiIKZWApjITR844g5L0jj94q2zh5jkCtC479Nj3Tmpcpwwt3a8pnNA==
-X-Received: by 2002:a17:902:d492:b0:234:8c64:7878 with SMTP id d9443c01a7336-2382409e007mr34322915ad.11.1750834092167;
-        Tue, 24 Jun 2025 23:48:12 -0700 (PDT)
-Received: from tiger.hygon.cn ([112.64.138.194])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-237d866b659sm127470495ad.168.2025.06.24.23.48.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Jun 2025 23:48:11 -0700 (PDT)
-From: YangWencheng <east.moutain.yang@gmail.com>
-To: east.moutain.yang@gmail.com
-Cc: joro@8bytes.org,
-	suravee.suthikulpanit@amd.com,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/amd: clear SME flag for mmio pages
-Date: Wed, 25 Jun 2025 14:48:02 +0800
-Message-ID: <20250625064802.3640589-1-east.moutain.yang@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LP2hvVn0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1750836734; x=1782372734;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=t3Wq1fod3wQxTIEB7OP08UfQKVsMYS8GGGHFeuqKWo8=;
+  b=LP2hvVn0/nDjednflOWr0WwfXHGhfKKELOo+KTRNCvb2G8t+jbejEKWM
+   vqx1u+gDFYyF+2y3KDY7gmu9p0Bn4tebVI1bIRc7hGrrMmQatGor9ZKea
+   rV9VF16ihvaCVQQAltMmADYtm3ZKlRU0S5in9qfDivU1jkSeX/8+2XHpx
+   qUWyiIZUaS2Y3vspo1pFbzmaKAUErFGhPq9xi8w3ZDCI3CoN4I2TT1t+7
+   nD2Me171u+9SSyw3WRuarhJyc/hw/WKH+USXXr5sWf8QEseC6jeB/eTIy
+   pkkAKvPrpCU2N9xvurDNTT0Ec5ENoROc86Scu4bdg2TH4PXNsEeDIVImT
+   Q==;
+X-CSE-ConnectionGUID: KePTkGzwQma+H1PjwWxvVg==
+X-CSE-MsgGUID: oIC/TM+YTBW3ifZLec4nzA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11474"; a="53159726"
+X-IronPort-AV: E=Sophos;i="6.16,264,1744095600"; 
+   d="scan'208";a="53159726"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2025 00:32:13 -0700
+X-CSE-ConnectionGUID: JvsPcGPVTo+HbZDMSRX4ag==
+X-CSE-MsgGUID: KVSJEOu9TWuvEHkw4tR7qw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,264,1744095600"; 
+   d="scan'208";a="152629995"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by orviesa008.jf.intel.com with ESMTP; 25 Jun 2025 00:32:09 -0700
+Date: Wed, 25 Jun 2025 15:24:33 +0800
+From: Xu Yilun <yilun.xu@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: kevin.tian@intel.com, will@kernel.org, aneesh.kumar@kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	joro@8bytes.org, robin.murphy@arm.com, shuah@kernel.org,
+	nicolinc@nvidia.com, aik@amd.com, dan.j.williams@intel.com,
+	baolu.lu@linux.intel.com, yilun.xu@intel.com
+Subject: Re: [PATCH v2 1/4] iommufd: Add iommufd_object_tombstone_user()
+ helper
+Message-ID: <aFukMWTmupyHXCxw@yilunxu-OptiPlex-7050>
+References: <20250623094946.1714996-1-yilun.xu@linux.intel.com>
+ <20250623094946.1714996-2-yilun.xu@linux.intel.com>
+ <20250624133520.GA150753@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250624133520.GA150753@nvidia.com>
 
-If paddr is a mmio address, clear the SME flag. It makes no sense to
-set SME bit on MMIO address.
----
- drivers/iommu/amd/io_pgtable.c    | 6 ++++--
- drivers/iommu/amd/io_pgtable_v2.c | 6 +++++-
- 2 files changed, 9 insertions(+), 3 deletions(-)
+On Tue, Jun 24, 2025 at 10:35:20AM -0300, Jason Gunthorpe wrote:
+> On Mon, Jun 23, 2025 at 05:49:43PM +0800, Xu Yilun wrote:
+> > @@ -251,16 +252,30 @@ static int iommufd_fops_release(struct inode *inode, struct file *filp)
+> >  	 */
+> >  	while (!xa_empty(&ictx->objects)) {
+> >  		unsigned int destroyed = 0;
+> > -		unsigned long index;
+> >  
+> > -		xa_for_each(&ictx->objects, index, obj) {
+> > -			if (!refcount_dec_if_one(&obj->users))
+> > -				continue;
+> 
+> I don't think you need all these changes..
+> 
+> xa_for_each will skip the XA_ZERO_ENTRIES because it won't return NULL
+> 
+> xa_empty() will fail, but just remove it.
+> 
+> @@ -288,6 +288,7 @@ static int iommufd_fops_release(struct inode *inode, struct file *filp)
+>         struct iommufd_sw_msi_map *next;
+>         struct iommufd_sw_msi_map *cur;
+>         struct iommufd_object *obj;
+> +       bool empty;
+>  
+>         /*
+>          * The objects in the xarray form a graph of "users" counts, and we have
+> @@ -298,11 +299,13 @@ static int iommufd_fops_release(struct inode *inode, struct file *filp)
+>          * until the entire list is destroyed. If this can't progress then there
+>          * is some bug related to object refcounting.
+>          */
+> -       while (!xa_empty(&ictx->objects)) {
+> +       do {
+>                 unsigned int destroyed = 0;
+>                 unsigned long index;
+>  
+> +               empty = true;
+>                 xa_for_each(&ictx->objects, index, obj) {
+> +                       empty = false;
+>                         if (!refcount_dec_if_one(&obj->users))
+>                                 continue;
+>                         destroyed++;
+> @@ -313,8 +316,13 @@ static int iommufd_fops_release(struct inode *inode, struct file *filp)
+>                 /* Bug related to users refcount */
+>                 if (WARN_ON(!destroyed))
+>                         break;
+> -       }
+> -       WARN_ON(!xa_empty(&ictx->groups));
+> +       } while (!empty);
+> +
+> +       /*
+> +        * There may be some tombstones left over from
+> +        * iommufd_object_tombstone_user()
+> +        */
+> +       xa_destroy(&ictx->groups);
 
-diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
-index 4d308c071134..88b204449c2c 100644
---- a/drivers/iommu/amd/io_pgtable.c
-+++ b/drivers/iommu/amd/io_pgtable.c
-@@ -352,15 +352,17 @@ static int iommu_v1_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
- 			updated = true;
- 
- 		if (count > 1) {
--			__pte = PAGE_SIZE_PTE(__sme_set(paddr), pgsize);
-+			__pte = PAGE_SIZE_PTE(paddr, pgsize);
- 			__pte |= PM_LEVEL_ENC(7) | IOMMU_PTE_PR | IOMMU_PTE_FC;
- 		} else
--			__pte = __sme_set(paddr) | IOMMU_PTE_PR | IOMMU_PTE_FC;
-+			__pte = paddr | IOMMU_PTE_PR | IOMMU_PTE_FC;
- 
- 		if (prot & IOMMU_PROT_IR)
- 			__pte |= IOMMU_PTE_IR;
- 		if (prot & IOMMU_PROT_IW)
- 			__pte |= IOMMU_PTE_IW;
-+		if (pfn_valid(__phys_to_pfn(paddr)))
-+			__pte = __sme_set(__pte);
- 
- 		for (i = 0; i < count; ++i)
- 			pte[i] = __pte;
-diff --git a/drivers/iommu/amd/io_pgtable_v2.c b/drivers/iommu/amd/io_pgtable_v2.c
-index b47941353ccb..b301fb8e58fa 100644
---- a/drivers/iommu/amd/io_pgtable_v2.c
-+++ b/drivers/iommu/amd/io_pgtable_v2.c
-@@ -65,7 +65,11 @@ static u64 set_pte_attr(u64 paddr, u64 pg_size, int prot)
- {
- 	u64 pte;
- 
--	pte = __sme_set(paddr & PM_ADDR_MASK);
-+	if (pfn_valid(__phys_to_pfn(paddr)))
-+		pte = __sme_set(paddr & PM_ADDR_MASK);
-+	else
-+		pte = paddr & PM_ADDR_MASK;
-+
- 	pte |= IOMMU_PAGE_PRESENT | IOMMU_PAGE_USER;
- 	pte |= IOMMU_PAGE_ACCESS | IOMMU_PAGE_DIRTY;
- 
--- 
-2.43.0
+I'm good to it. I was obsessed to ensure the xarray super clean.
 
+Thanks,
+Yilun
+
+> 
+> 
+> Jason
