@@ -1,249 +1,115 @@
-Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D60FB2080C4
-	for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 07:39:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE08626C38D
+	for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 08:37:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750837195; cv=none; b=TBu8PhMXqmvwUitK7gHHE8d5XZDIROTWreGnKUtMFdhULbjAzVur1a5lkzM52XZ7uVERIK4erwZB9dUJ34cE4CSxEyGcZP7TnypdhUlfXIVBbK/mRZ6I0ZTXJ4KLuXmiu+THAoEvmaRmoQGl0cqlvrx8dBdTSuN2rVRfQJOkh1c=
+	t=1750840669; cv=none; b=XuUBjzpGr9wsD8Ac0HjJQclBAbSDeqqbQAfikguYoorqERp3TmnJm9lWZcvVRE3gOQPKT2qwTmVCr0fQGofoqXXS/GTD3wS7hcsGIJEjOVYFkiMw8S639hMaewd5aJcJttRbyYC8unOpBctihO1U+hO8qRNeaoChIbJ4CFjw6NU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750837195; c=relaxed/simple;
-	bh=AuR96wc9Rq7SVW8BvDL6W1qqi62iyIosXRkHfO52IhE=;
-	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 Message-ID:Content-Type; b=VpzfeJhw9122/RPR2uBqxdIRNlqQm0ouCtA1/sTSc2dm0PFyYdusLw+IR7qvTAsHrM11DNZe8KRR981gRsS0HgqHRXvAIGS+CZVuNrSYQyQDwJX6cKGpRUKJosAdUbRdzTZmIB9mlSlScYZJMx5vZu90dYKO2t+jy8SKPxI3VCQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=NWcpCm7N; arc=none smtp.client-ip=178.21.23.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
+	s=arc-20240116; t=1750840669; c=relaxed/simple;
+	bh=EwvPZo7oTwprahWbVv9CKBqzmPZmEw39Hs2j42qQ/og=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GH3odMgDe0AydpuuA/i3GsDcsRVhUMNawfRqxBnJb9/r2pdif8sPdkqQoZ8oyWqbYL4onrPvlyPWmbkbRGazysub0ZbrbKxXacQaD28bXA8e4Y3I5Ln/O7frMDhJcuKBmjfgBgZkID/M8VSI9fNzGkWCZs18qJxTEWkgtGGJtm4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hubp5UU3; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="NWcpCm7N"
-Received: from mail01.disroot.lan (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id DA06020B0B;
-	Wed, 25 Jun 2025 09:39:49 +0200 (CEST)
-X-Virus-Scanned: SPAM Filter at disroot.org
-Received: from layka.disroot.org ([127.0.0.1])
- by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
- id aONj4NaHxltX; Wed, 25 Jun 2025 09:39:48 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1750837187; bh=AuR96wc9Rq7SVW8BvDL6W1qqi62iyIosXRkHfO52IhE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References;
-	b=NWcpCm7Nr7TXICQZ6AorjyBPiInrQlpImUpAh8TvZheLgKJunXH/hki/Ivh54fO8L
-	 58acLyiaz/WUGLcjOaBIs2BmJtL+0E6WMGQQY7/hJTqD8HOmK+caTt1liUfv9dEF+m
-	 q+l3LZZotMgGjyanYT2BQI6MwrSlbVHE9NWJbp7m18pm2uEXrfylNr3Dsx4wOYyrKF
-	 6PDjBMmDB3Yjnf8oxwQLw56msI7tPFiv13d93G3oxlQLEbXJD47jTyOmZvvuEpiz4N
-	 j0FxuFJQoIQNXPf8IWT1E/WXqliss8PquffY2sGX61qJexCd6WACcMd2eQyCXi/IDP
-	 Wf1QdfG98CpOw==
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hubp5UU3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1750840668; x=1782376668;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=EwvPZo7oTwprahWbVv9CKBqzmPZmEw39Hs2j42qQ/og=;
+  b=hubp5UU38PSXiCuc7fNociJgOLGw26qbE3CshVPjlwfbIdGVb3J9FoND
+   7oJguUliiX1wzDt1XrKSHn7pbA7luAvvLiayS79S/qL02ERd6o7eV7YHt
+   MDxKDTluELgWP3TpUoPlKEPgGGtM51uWrHiTHfdWmTTw0QTeKPui9/Glk
+   7TUkcEaXDjhuZbrYwQtvkp5MbOQfypqWd+NxCtdYz6uNgmuZXziEqKsrk
+   X10DZ14Pdws8P5paZROZMgUayC2qqY7/egtliEkTRoUFlrzYWPKpMSNmq
+   W8esqrw6//Z/nrnTvMHnMXiR8U/T+4MZxgUTF3GORfoPrZRJuQDz11MMT
+   Q==;
+X-CSE-ConnectionGUID: b3FVGParTtqYJpvhlfC2+Q==
+X-CSE-MsgGUID: LF/j0nhGRPiXdNEhLkmmjg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11474"; a="52973199"
+X-IronPort-AV: E=Sophos;i="6.16,264,1744095600"; 
+   d="scan'208";a="52973199"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2025 01:37:39 -0700
+X-CSE-ConnectionGUID: whELoIkaQLOb2fMkjiX5Eg==
+X-CSE-MsgGUID: WWOHAobDSV6gRb7pT1MS+w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,264,1744095600"; 
+   d="scan'208";a="156186620"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmviesa003.fm.intel.com with ESMTP; 25 Jun 2025 01:37:36 -0700
+Date: Wed, 25 Jun 2025 16:29:59 +0800
+From: Xu Yilun <yilun.xu@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: kevin.tian@intel.com, will@kernel.org, aneesh.kumar@kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	joro@8bytes.org, robin.murphy@arm.com, shuah@kernel.org,
+	nicolinc@nvidia.com, aik@amd.com, dan.j.williams@intel.com,
+	baolu.lu@linux.intel.com, yilun.xu@intel.com
+Subject: Re: [PATCH v2 4/4] iommufd/selftest: Add coverage for vdevice
+ tombstone
+Message-ID: <aFuzh4OPmjfemD8I@yilunxu-OptiPlex-7050>
+References: <20250623094946.1714996-1-yilun.xu@linux.intel.com>
+ <20250623094946.1714996-5-yilun.xu@linux.intel.com>
+ <20250624134145.GB150753@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Wed, 25 Jun 2025 07:39:47 +0000
-From: Kaustabh Chakraborty <kauschluss@disroot.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel
- <joro@8bytes.org>, Will Deacon <will@kernel.org>, Inki Dae
- <inki.dae@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Kyungmin
- Park <kyungmin.park@samsung.com>, iommu@lists.linux.dev,
- dri-devel@lists.freedesktop.org
-Subject: Re: Help: Samsung Exynos 7870 DECON SYSMMU panic
-In-Reply-To: <0bc60699-eeaa-4121-8d93-0274862f5aed@arm.com>
-References: <544ad69cba52a9b87447e3ac1c7fa8c3@disroot.org>
- <0bc60699-eeaa-4121-8d93-0274862f5aed@arm.com>
-Message-ID: <c338c9f7528fdcba56c088390c4ccffc@disroot.org>
-X-Sender: kauschluss@disroot.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250624134145.GB150753@nvidia.com>
 
-On 2025-06-24 17:12, Robin Murphy wrote:
-> On 2025-06-18 3:02 pm, Kaustabh Chakraborty wrote:
->> Since bcb81ac6ae3c (iommu: Get DT/ACPI parsing into the proper probe 
->> path),
->> The Samsung Exynos 7870 DECON device (with patches [1], [2], and [3]) 
->> seems
->> to not work anymore. Upon closer inspection, I observe that there is 
->> an
->> IOMMU crash.
->> 
->> [    2.918189] exynos-sysmmu 14860000.sysmmu: 14830000.decon: [READ] 
->> PAGE FAULT occurred at 0x6715b3e0
->> [    2.918199] exynos-sysmmu 14860000.sysmmu: Page table base: 
->> 0x0000000044a14000
->> [    2.918243] exynos-drm exynos-drm: bound 14830000.decon (ops 
->> decon_component_ops)
->> [    2.922868] exynos-sysmmu 14860000.sysmmu:   Lv1 entry: 0x4205001
->> [    2.922877] Kernel panic - not syncing: Unrecoverable System MMU 
->> Fault!
->> [    2.922885] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 
->> 6.16.0-rc2-exynos7870 #722 PREEMPT
->> [    2.995312] Hardware name: Samsung Galaxy J7 Prime (DT)
->> [    3.000509] Call trace:
->> [    3.002938]  show_stack+0x18/0x24 (C)
->> [    3.006582]  dump_stack_lvl+0x60/0x80
->> [    3.010224]  dump_stack+0x18/0x24
->> [    3.013521]  panic+0x168/0x360
->> [    3.016558]  exynos_sysmmu_irq+0x224/0x2ac
->> [         ...]
->> [    3.108786] ---[ end Kernel panic - not syncing: Unrecoverable 
->> System MMU Fault! ]---
+On Tue, Jun 24, 2025 at 10:41:45AM -0300, Jason Gunthorpe wrote:
+> On Mon, Jun 23, 2025 at 05:49:46PM +0800, Xu Yilun wrote:
+> > diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
+> > index 1a8e85afe9aa..092e1344447e 100644
+> > --- a/tools/testing/selftests/iommu/iommufd.c
+> > +++ b/tools/testing/selftests/iommu/iommufd.c
+> > @@ -3014,6 +3014,19 @@ TEST_F(iommufd_viommu, vdevice_cache)
+> >  	}
+> >  }
+> >  
+> > +TEST_F(iommufd_viommu, vdevice_tombstone)
+> > +{
+> > +	uint32_t viommu_id = self->viommu_id;
+> > +	uint32_t dev_id = self->device_id;
+> > +	uint32_t vdev_id = 0;
+> > +
+> > +	if (dev_id) {
 > 
-> For starters, what if you just remove this panic() from the IOMMU 
-> driver? Frankly it seems a bit excessive anyway...
+> Why the if? The test should work or skip, not silently skip.
+> 
+> self->device_id is setup by the fixture, it can't be absent.
 
-I've tried that, sysmmu repeatedly keeps issuing interrupts (yes, even
-after clearing the interrupt bit) indefinitely.
+It can, when the variant no_viommu.
+
+I agree this should not be silently skipped, see below changes:
+Should also apply to viommu_alloc_nested_iopf, vdevice_cache.
+
++TEST_F(iommufd_viommu, vdevice_tombstone)
++{
++       uint32_t viommu_id = self->viommu_id;
++       uint32_t dev_id = self->device_id;
++       uint32_t vdev_id = 0;
++
++       if (!dev_id)
++               SKIP(return, "Skipping test for variant no_viommu");
++
++       test_cmd_vdevice_alloc(viommu_id, dev_id, 0x99, &vdev_id);
++       test_ioctl_destroy(self->stdev_id);
++       EXPECT_ERRNO(ENOENT, _test_ioctl_destroy(self->fd, vdev_id));
++}
+
+Thanks,
+Yilun
 
 > 
-> From the logs below it seems there is apparently unexpected traffic 
-> already going through the IOMMU when it wakes up. Is this the DRM 
-> drivers doing something sketchy, or has the bootloader left the display 
-> running for a splash screen? However in the latter case I don't 
-> obviously see why delaying the IOMMU probe should make much difference, 
-> given that the decon driver should still be waiting for it either way.
-
-The display is initialized by the bootloader for splash yes, but I 
-reckon
-it doesn't use the IOMMU as it's accessible from a framebuffer region.
-
-> 
-> Thanks,
-> Robin.
-> 
->> The commit has been introduced in mainline v6.15-rc1. I've also tested 
->> in
->> v6.15, v6.15.2, and v6.16-rc2, and there have been no apparent 
->> changes.
->> 
->> I've tried to revert the commit, and it does work that way. But on 
->> reading
->> the commit message I understand that I need to find a proper solution 
->> here.
->> I've tried to skim down the revert, and this is what I get - if i 
->> change
->> line [4] as follows:
->> 
->> -		dev->bus->dma_configure(dev);
->> +		if (!strcmp(dev_name(dev), "14830000.decon"))
->> +			dev->bus->dma_configure(dev);
->> 
->> It really doesn't like dma_configure for some reason. It works, but:
->> 
->> [    2.779291] exynos-decon 14830000.decon: late IOMMU probe at driver 
->> bind, something fishy here!
->> 
->> I believe the IOMMU hardware doesn't like the fact that it is being
->> initialized/resumed too early. I formed this conclusion by comparing 
->> the
->> logs:
->> 
->> mainline:
->> [    1.274575] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_resume enter
->> [    2.859656] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable enter
->> [    2.864192] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_clocks 
->> enter
->> [    2.869299] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 
->> 0x00000007
->> [    2.875062] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_init_config enter
->> [    2.880006] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000004 val 
->> 0x01100784
->> [    2.885819] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_set_ptbase enter
->> [    2.890677] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x0000000c val 
->> 0x00044a14
->> [    2.896490] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_tlb_invalidate 
->> enter
->> [    2.901695] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000010 val 
->> 0x00000001
->> [    2.907507] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_vid enter
->> [    2.912366] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 
->> 0x00000005
->> [    2.912371] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_irq enter
->> [    2.912836] [drm] Exynos DRM: using 14830000.decon device for DMA 
->> mapping operations
->> [    2.918175] I_HAVE_ADDED_THESE: SYSMMU: 
->> exynos_sysmmu_v5_get_fault_info enter
->> [    2.918182] I_HAVE_ADDED_THESE: SYSMMU: show_fault_information 
->> enter
->> [    2.918189] exynos-sysmmu 14860000.sysmmu: 14830000.decon: [READ] 
->> PAGE FAULT occurred at 0x6715b3e0
->> [    2.918199] exynos-sysmmu 14860000.sysmmu: Page table base: 
->> 0x0000000044a14000
->> [    2.918243] exynos-drm exynos-drm: bound 14830000.decon (ops 
->> decon_component_ops)
->> [    2.922859] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
->> [    2.922864] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
->> [    2.922868] exynos-sysmmu 14860000.sysmmu:   Lv1 entry: 0x4205001
->> [    2.922877] Kernel panic - not syncing: Unrecoverable System MMU 
->> Fault!
->> 
->> and with the patch above applied:
->> [    3.018478] [drm] Exynos DRM: using 14830000.decon device for DMA 
->> mapping operations
->> [    3.025794] exynos-drm exynos-drm: bound 14830000.decon (ops 
->> decon_component_ops)
->> [    3.058655] exynos-dsi 14800000.dsi: [drm:samsung_dsim_host_attach] 
->> Attached td4300-panel device (lanes:4 bpp:24 mode-flags:0x23)
->> [    3.070189] exynos-drm exynos-drm: bound 14800000.dsi (ops 
->> exynos_dsi_component_ops)
->> [    3.078506] [drm] Initialized exynos 1.1.0 for exynos-drm on minor 
->> 1
->> [    3.090747] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_map enter
->> [    3.090845] I_HAVE_ADDED_THESE: SYSMMU: to_exynos_domain enter
->> [    3.093325] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
->> [    3.097662] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
->> [    3.102000] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
->> [    3.106337] I_HAVE_ADDED_THESE: SYSMMU: lv1set_section enter
->> [    3.110762] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_set_pte enter
->> [    3.115726] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_map enter
->> [    3.120317] I_HAVE_ADDED_THESE: SYSMMU: to_exynos_domain enter
->> [    3.124914] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
->> [    3.129240] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
->> [    3.133578] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
->> [    3.137916] I_HAVE_ADDED_THESE: SYSMMU: lv1set_section enter
->> [    3.142340] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_set_pte enter
->> [         ...] (a lot of repetitions later)
->> [    4.322904] I_HAVE_ADDED_THESE: SYSMMU: section_entry enter
->> [    4.327230] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
->> [    4.331567] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
->> [    4.335905] I_HAVE_ADDED_THESE: SYSMMU: alloc_lv2entry enter
->> [    4.340329] I_HAVE_ADDED_THESE: SYSMMU: page_entry enter
->> [    4.344407] I_HAVE_ADDED_THESE: SYSMMU: lv2ent_offset enter
->> [    4.348744] I_HAVE_ADDED_THESE: SYSMMU: lv1ent_offset enter
->> [    4.353082] I_HAVE_ADDED_THESE: SYSMMU: lv2set_page enter
->> [    4.357246] I_HAVE_ADDED_THESE: SYSMMU: exynos_iommu_set_pte enter
->> [    4.362751] I_HAVE_ADDED_THESE: SYSMMU: exynos_sysmmu_resume enter
->> [    4.362767] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable enter
->> [    4.362771] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_clocks 
->> enter
->> [    4.362777] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 
->> 0x00000007
->> [    4.362782] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_init_config enter
->> [    4.362786] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000004 val 
->> 0x01100784
->> [    4.362791] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_set_ptbase enter
->> [    4.362795] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x0000000c val 
->> 0x00042a64
->> [    4.362799] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_tlb_invalidate 
->> enter
->> [    4.362803] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000010 val 
->> 0x00000001
->> [    4.362808] I_HAVE_ADDED_THESE: SYSMMU: __sysmmu_enable_vid enter
->> [    4.362811] I_HAVE_ADDED_THESE: SYSMMU: write: reg 0x00000000 val 
->> 0x00000005
->> 
->> Then it continues booting as usual.
->> 
->> My lack of understanding of the IOMMU and DRM subsystems are really
->> limiting my triaging capabilities here, therefore I ask for any form
->> guidance or assistance with this.
->> 
->> Thank you.
->> 
->> [1] 
->> https://lore.kernel.org/r/20250612-exynosdrm-decon-v2-0-d6c1d21c8057@disroot.org
->> [2] 
->> https://lore.kernel.org/all/20250612-exynos7870-drm-dts-v1-2-88c0779af6cb@disroot.org
->> [3] 
->> https://lore.kernel.org/all/20250612-exynos7870-drm-dts-v1-3-88c0779af6cb@disroot.org
->> [4] 
->> https://elixir.bootlin.com/linux/v6.16-rc2/source/drivers/iommu/iommu.c#L431
+> Jason
