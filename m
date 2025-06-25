@@ -1,260 +1,140 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from leonov.paulk.fr (leonov.paulk.fr [185.233.101.22])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A00E82820BA
-	for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 09:46:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 259E229ACFA;
+	Wed, 25 Jun 2025 10:11:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.233.101.22
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750844791; cv=none; b=uDFtiovc5Adl5MZ9l32pAqu8zUXy4nxhIkELz5IZBARPh3NONP8eQe7wnpKov9TQOGN7SoyfOhqoizRN2PiwzP/fjCir014JA9qZ4FS0G+U3rHDPlcyI2GWRw/MJhepiyleOh9SNxYNABFNV5UM2szU4m5QY8WPToDNP9AdIefY=
+	t=1750846286; cv=none; b=mJiiWNBL8vcKg2LZjfrZbsP+gf4KF0WsITl4ZYCP71KgkyZS6xlLKahjI8w89ouqsfKh8uKR4GT1LrNdXsLIyzJvrlmgG/TiPUYNOCyREYYixnP4e11ssHvnKwWRljZ3bVGu0IyUsADMbUQR2QpdN9YAQwC0S7wZPn41hcbWCTo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750844791; c=relaxed/simple;
-	bh=VahF800RD6awzaPHIvyJkfnSmFed4yTzKvqtc6h4VSY=;
+	s=arc-20240116; t=1750846286; c=relaxed/simple;
+	bh=evgwnQ6wjQ/l/an0YGPGf/N9dzJNpcYErEe2QytG78M=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YFCmMzlMkWFW5nJBYFF42jHuzW5do8tMxyMhHKDJagJNbpjo0bRCyGAblShXU7iRAF6nVkabI5VMMjRoAT6ukUyKqzSefp/XeV6JdqCfWGkEZqIHDZG+lu2LVUBfqHUqGY61rBxpGOCVr3iVCGHFHhTarHhsGSnlgW/qIM1Jicg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Dq9LtvWA; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Dq9LtvWA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1750844789; x=1782380789;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VahF800RD6awzaPHIvyJkfnSmFed4yTzKvqtc6h4VSY=;
-  b=Dq9LtvWAJyv8Do22ksoIMS8pFKJgBPNfFVrCk+SAfVdaSaGdWbWOL7L5
-   JPphI7ENi0Z/dRGhxeKv1v7N3s/T7IA9r80pZGWz0WYY40ot91xzfJcKe
-   Y9cFF+pCjhBaeEQGre2Yq0ZRF1I2AZJU8e8u7ZVE4n80w90fap+HcFTQj
-   dR2M8S87P9kQk8C8WPjo9VUPazs1CjkHEcurqZBCb57AB5cbETI1CLByr
-   CWv3Br8/NW4gUH9QSvOdtYTx/9Dr4s7R7sWl9EZRYARNKAxfbMV42sxAk
-   TSGD59Nd9Zcw1GVFmBDRSTEPZ16L66HP3ICzNC9C8M5KSfEuVHlDP7LMH
-   Q==;
-X-CSE-ConnectionGUID: j1HQfKFkS+Szu0yeVz9twQ==
-X-CSE-MsgGUID: f6pv4I3jQcmNGJ9kB2dLcg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11474"; a="52337922"
-X-IronPort-AV: E=Sophos;i="6.16,264,1744095600"; 
-   d="scan'208";a="52337922"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2025 02:46:28 -0700
-X-CSE-ConnectionGUID: UA3V2zXlRkS4ZS9/NnWkrQ==
-X-CSE-MsgGUID: /m4EyaggQxm2KjJxNyFJVw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,264,1744095600"; 
-   d="scan'208";a="151681300"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by orviesa006.jf.intel.com with ESMTP; 25 Jun 2025 02:46:25 -0700
-Date: Wed, 25 Jun 2025 17:38:48 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>
-Cc: jgg@nvidia.com, jgg@ziepe.ca, kevin.tian@intel.com, will@kernel.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	joro@8bytes.org, robin.murphy@arm.com, shuah@kernel.org,
-	nicolinc@nvidia.com, aik@amd.com, dan.j.williams@intel.com,
-	baolu.lu@linux.intel.com, yilun.xu@intel.com
-Subject: Re: [PATCH v2 3/4] iommufd: Destroy vdevice on idevice destroy
-Message-ID: <aFvDqAGAM3RbPh8G@yilunxu-OptiPlex-7050>
-References: <20250623094946.1714996-1-yilun.xu@linux.intel.com>
- <20250623094946.1714996-4-yilun.xu@linux.intel.com>
- <yq5a1pr85noj.fsf@kernel.org>
+	 Content-Type:Content-Disposition:In-Reply-To; b=bI/7ThntuMxn/hnD2fPB6GsR28Q+IbZNNaUq5PxJGZZAiHuBqr3mv5XqOGKV94lRvANYEuhjk2UvhorPFqMA2JYsuAk/zCUcXPM1LOQnhBKEudzeybShW3uckagGQITDbu2Pxyfj8lLnx8G8u+0ktwVsQ9z0LuAcc8ULAGUimGU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sys-base.io; spf=pass smtp.mailfrom=sys-base.io; arc=none smtp.client-ip=185.233.101.22
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sys-base.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sys-base.io
+Received: from laika.paulk.fr (12.234.24.109.rev.sfr.net [109.24.234.12])
+	by leonov.paulk.fr (Postfix) with ESMTPS id ABBC81F00056;
+	Wed, 25 Jun 2025 10:11:14 +0000 (UTC)
+Received: by laika.paulk.fr (Postfix, from userid 65534)
+	id 51893AC7B2B; Wed, 25 Jun 2025 10:11:12 +0000 (UTC)
+X-Spam-Level: 
+Received: from shepard (unknown [192.168.1.1])
+	by laika.paulk.fr (Postfix) with ESMTPSA id DA68DAC7B19;
+	Wed, 25 Jun 2025 10:11:09 +0000 (UTC)
+Date: Wed, 25 Jun 2025 12:11:07 +0200
+From: Paul Kocialkowski <paulk@sys-base.io>
+To: Parthiban <parthiban@linumiz.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Maxime Ripard <mripard@kernel.org>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Vinod Koul <vkoul@kernel.org>,
+	Kishon Vijay Abraham I <kishon@kernel.org>, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linux-clk@vger.kernel.org,
+	linux-gpio@vger.kernel.org, linux-phy@lists.infradead.org
+Subject: Re: [PATCH 10/22] pinctrl: sunxi: add missed lvds pins for a100/a133
+Message-ID: <aFvLO6GUY6NezkcF@shepard>
+References: <20241227-a133-display-support-v1-0-13b52f71fb14@linumiz.com>
+ <20241227-a133-display-support-v1-10-13b52f71fb14@linumiz.com>
+ <aFu3fAMa8KPwjPbX@shepard>
+ <9c3ea5fb-a045-46bd-9753-26ffa67fe1bc@linumiz.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="hh+oSgryr9OFE2vD"
 Content-Disposition: inline
-In-Reply-To: <yq5a1pr85noj.fsf@kernel.org>
+In-Reply-To: <9c3ea5fb-a045-46bd-9753-26ffa67fe1bc@linumiz.com>
 
-On Wed, Jun 25, 2025 at 12:10:28PM +0530, Aneesh Kumar K.V wrote:
-> Xu Yilun <yilun.xu@linux.intel.com> writes:
-> 
-> > Destroy iommufd_vdevice(vdev) on iommufd_idevice(idev) destroy so that
-> > vdev can't outlive idev.
-> >
-> > iommufd_device(idev) represents the physical device bound to iommufd,
-> > while the iommufd_vdevice(vdev) represents the virtual instance of the
-> > physical device in the VM. The lifecycle of the vdev should not be
-> > longer than idev. This doesn't cause real problem on existing use cases
-> > cause vdev doesn't impact the physical device, only provides
-> > virtualization information. But to extend vdev for Confidential
-> > Computing(CC), there are needs to do secure configuration for the vdev,
-> > e.g. TSM Bind/Unbind. These configurations should be rolled back on idev
-> > destroy, or the external driver(VFIO) functionality may be impact.
-> >
-> > Building the association between idev & vdev requires the two objects
-> > pointing each other, but not referencing each other. This requires
-> > proper locking. This is done by reviving some of Nicolin's patch [1].
-> >
-> > There are 3 cases on idev destroy:
-> >
-> >   1. vdev is already destroyed by userspace. No extra handling needed.
-> >   2. vdev is still alive. Use iommufd_object_tombstone_user() to
-> >      destroy vdev and tombstone the vdev ID.
-> >   3. vdev is being destroyed by userspace. The vdev ID is already freed,
-> >      but vdev destroy handler is not complete. The idev destroy handler
-> >      should wait for vdev destroy completion.
-> >
-> > [1]: https://lore.kernel.org/all/53025c827c44d68edb6469bfd940a8e8bc6147a5.1729897278.git.nicolinc@nvidia.com/
-> >
-> > Original-by: Nicolin Chen <nicolinc@nvidia.com>
-> > Original-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-> > Signed-off-by: Xu Yilun <yilun.xu@linux.intel.com>
-> 
-> This is the latest version I have. But as Jason suggested we can
-> possibly switch to short term users to avoid parallel destroy returning
-> EBUSY.
 
-We can discuss in that thread, I have the same question as Kevin.
+--hh+oSgryr9OFE2vD
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> I am using a mutex lock to block parallel vdevice destroy.
+On Wed 25 Jun 25, 15:06, Parthiban wrote:
+>=20
+> On 6/25/25 2:16 PM, Paul Kocialkowski wrote:
+> > Hi and thanks for your work!
+> >=20
+> > On Fri 27 Dec 24, 16:37, Parthiban Nallathambi wrote:
+> >> lvds, lcd, dsi all shares the same GPIO D bank and lvds0
+> >> data 3 lines and lvds1 pins are missed, add them.
+> > Would it also make sense to submit device-tree pin definitions here?
+>=20
+> this patch is already merged.=20
+> git show --stat cef4f1b5ba99a964cd6dd248bb373520573c972f
+> commit cef4f1b5ba99a964cd6dd248bb373520573c972f
+> Author: Parthiban Nallathambi <parthiban@linumiz.com>
+> Date:   Fri Dec 27 16:37:57 2024 +0530
+>=20
+>     pinctrl: sunxi: add missed lvds pins for a100/a133
+>    =20
+>     lvds, lcd, dsi all shares the same GPIO D bank and lvds0
+>     data 3 lines and lvds1 pins are missed, add them.
+>    =20
+>     Signed-off-by: Parthiban Nallathambi <parthiban@linumiz.com>
+>     Link: https://lore.kernel.org/20241227-a133-display-support-v1-10-13b=
+52f71fb14@linumiz.com
+>     Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>=20
+>  drivers/pinctrl/sunxi/pinctrl-sun50i-a100.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+>=20
+> Do you mean the consumer/board devicetree changes?
 
-I don't find reason to add a new lock rather than reuse the
-idev->igroup->lock, which is already reviewed in Nicolin's series.
+I mean the pin definitions for lvds in the sun50i-a100.dtsi device-tree.
 
-[...]
+But maybe you wanted to submit those after the bindings/driver changes are
+merged?
 
-> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-> index 3df468f64e7d..fd82140e6320 100644
-> --- a/drivers/iommu/iommufd/main.c
-> +++ b/drivers/iommu/iommufd/main.c
-> @@ -81,14 +81,16 @@ void iommufd_object_abort_and_destroy(struct iommufd_ctx *ictx,
->  struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
->  					  enum iommufd_object_type type)
->  {
-> +	XA_STATE(xas, &ictx->objects, id);
->  	struct iommufd_object *obj;
->  
->  	if (iommufd_should_fail())
->  		return ERR_PTR(-ENOENT);
->  
->  	xa_lock(&ictx->objects);
-> -	obj = xa_load(&ictx->objects, id);
-> -	if (!obj || (type != IOMMUFD_OBJ_ANY && obj->type != type) ||
-> +	obj = xas_load(&xas);
-> +	if (!obj || xa_is_zero(obj) ||
+Cheers,
 
-xas_load() & filter out zero entries, then what's the difference from
-xa_load()?
+Paul
 
-> +	    (type != IOMMUFD_OBJ_ANY && obj->type != type) ||
->  	    !iommufd_lock_obj(obj))
->  		obj = ERR_PTR(-ENOENT);
->  	xa_unlock(&ictx->objects);
+--=20
+Paul Kocialkowski,
 
-[...]
+Independent contractor - sys-base - https://www.sys-base.io/
+Free software developer - https://www.paulk.fr/
 
->  static int iommufd_destroy(struct iommufd_ucmd *ucmd)
->  {
-> +	int ret;
->  	struct iommu_destroy *cmd = ucmd->cmd;
-> +	struct iommufd_object *obj;
-> +	struct iommufd_device *idev = NULL;
-> +
-> +	obj = iommufd_get_object(ucmd->ictx, cmd->id, IOMMUFD_OBJ_ANY);
-> +	/* Destroying vdevice requires an idevice lock */
-> +	if (!IS_ERR(obj) && obj->type == IOMMUFD_OBJ_VDEVICE) {
-> +		struct iommufd_vdevice *vdev =
-> +			container_of(obj, struct iommufd_vdevice, obj);
-> +		/*
-> +		 * since vdev have an refcount on idev, this is safe.
-> +		 */
-> +		idev = vdev->idev;
-> +		mutex_lock(&idev->lock);
-> +		/* drop the additonal reference taken above */
-> +		iommufd_put_object(ucmd->ictx, obj);
-> +	}
-> +
-> +	ret = iommufd_object_remove(ucmd->ictx, NULL, cmd->id, 0);
-> +	if (idev)
-> +		mutex_unlock(&idev->lock);
+Expert in multimedia, graphics and embedded hardware support with Linux.
 
-I'm trying best not to add vdev/idev specific things to generic
-code. I also don't prefer adding a idev specific lock around generic
-object remove flow. That makes idev/vdev way to special. So for these
-locking things, I prefer more to Nicolin's v5 and revives them.
+--hh+oSgryr9OFE2vD
+Content-Type: application/pgp-signature; name=signature.asc
 
->  
-> -	return iommufd_object_remove(ucmd->ictx, NULL, cmd->id, 0);
-> +	return ret;
->  }
->  
+-----BEGIN PGP SIGNATURE-----
 
-[...]
+iQIzBAEBCgAdFiEEAbcMXZQMtj1fphLChP3B6o/ulQwFAmhbyzsACgkQhP3B6o/u
+lQyMGQ//f2vAQYHKFknpEFa9G97bwQAoBFvWmQSD1wmDY326lLbX+9Y05O/nICdQ
+datMQbAA6GBDyn///enJBKK2AURU+BrqhBgKbsbBFFSRcfxgqOrBRts1XgjbAA4J
+jdl51KH2mhO3rL83JU/DhlwedeW2q/JeZrlFxVV/DL94tc3WRVFHINq3XipGHfk/
+l2VdJ9XHwzIz1it4ZG/ypB5reTIvdskJQCjGqqEwpLy2BkYsVvVIW4ASYCWR76A4
+CJfYGi3RTEZxDTmiLpLrUiezKLT2y0sZybhIDlFYZG8aVAoMvmDYZafpsotsRD+E
+jv9Et5dsl/In0DiCJLdmNGgwdmVgQcn/Ln7D5Ad5hqUqHx5tteJ5Vc+XWVVXTVEh
+ngvtcEvY3PornqJ/yAmYqz8UZ0+ZPMjLUM5cBrO0kiVYU6//99FOZRLba7VpDrqt
+PpwHreipKusGGSgKjwNU0JBszR61dT9eEBF4CnyTJmsnH/CYgXk3ToqbwYrWInUD
+rmClxHtOUwQ+BUAz3GL7YszrAzifLjqmKTFtIydFEIi/xWI/7LDeImEjAjHtk0Vk
+eGDxBau9WCqk8IUf7kneF6UcCD2M+9rs8k+2p8rvO6gQOv6I7Ioq1sPfqmWSyA5v
+uVQSDI7Amj0SKgFZmKuXry4Qw/EWu+BNGf3Xii0csbO0ZAuxVos=
+=Yy5s
+-----END PGP SIGNATURE-----
 
-> @@ -147,10 +160,17 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
->  	if (rc)
->  		goto out_abort;
->  	iommufd_object_finalize(ucmd->ictx, &vdev->obj);
-> -	goto out_put_idev;
-> +	/* don't allow idev free without vdev free */
-> +	refcount_inc(&idev->obj.users);
-
-IIRC, it has been suggested no long term refcount to kernel created
-object. Besides, you actually disallow nothing.
-
-> +	vdev->idev = idev;
-> +	/* vdev lifecycle now managed by idev */
-> +	idev->vdev = vdev;
-> +	goto out_put_idev_unlock;
->  
->  out_abort:
->  	iommufd_object_abort_and_destroy(ucmd->ictx, &vdev->obj);
-> +out_put_idev_unlock:
-> +	mutex_unlock(&idev->lock);
->  out_put_idev:
->  	iommufd_put_object(ucmd->ictx, &idev->obj);
->  out_put_viommu:
-> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-> index 6328c3a05bcd..0bf4f8b7f8d2 100644
-> --- a/drivers/vfio/pci/vfio_pci_core.c
-> +++ b/drivers/vfio/pci/vfio_pci_core.c
-> @@ -694,6 +694,12 @@ void vfio_pci_core_close_device(struct vfio_device *core_vdev)
->  #if IS_ENABLED(CONFIG_EEH)
->  	eeh_dev_release(vdev->pdev);
->  #endif
-> +
-> +	/* destroy vdevice which involves tsm unbind before we disable pci disable */
-> +	if (core_vdev->iommufd_device)
-> +		iommufd_device_tombstone_vdevice(core_vdev->iommufd_device);
-
-Ah.. I think all our effort to destroy vdevice on idevice destruction
-is to hide the sequence details from VFIO.
-
-> +
-> +	/* tsm unbind should happen before this */
->  	vfio_pci_core_disable(vdev);
-
-I did mention there is still issue when vdevice lifecycle problem is
-solved. That VFIO for now do device disable configurations before
-iommufd_device_unbind() and cause problem. But my quick idea would
-be (not tested):
-
-@@ -544,12 +544,14 @@ static void vfio_df_device_last_close(struct vfio_device_file *df)
-
-        lockdep_assert_held(&device->dev_set->lock);
-
--       if (device->ops->close_device)
--               device->ops->close_device(device);
-        if (iommufd)
-                vfio_df_iommufd_unbind(df);
-        else
-                vfio_device_group_unuse_iommu(device);
-+
-+       if (device->ops->close_device)
-+               device->ops->close_device(device);
-
->  
->  	mutex_lock(&vdev->igate);
-> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-> index 34b6e6ca4bfa..8de3d903bfc0 100644
-> --- a/include/linux/iommufd.h
-> +++ b/include/linux/iommufd.h
-> @@ -63,6 +63,7 @@ void iommufd_device_detach(struct iommufd_device *idev, ioasid_t pasid);
->  
->  struct iommufd_ctx *iommufd_device_to_ictx(struct iommufd_device *idev);
->  u32 iommufd_device_to_id(struct iommufd_device *idev);
-> +void iommufd_device_tombstone_vdevice(struct iommufd_device *idev);
->  
->  struct iommufd_access_ops {
->  	u8 needs_pin_pages : 1;
+--hh+oSgryr9OFE2vD--
