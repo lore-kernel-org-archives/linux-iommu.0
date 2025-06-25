@@ -1,149 +1,179 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2163025D540
-	for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 11:34:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 588CD1EF39E
+	for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 11:34:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750851282; cv=none; b=QS0fFRXdPUaQ+1DcLyo0hmrRMCTsDrYclxwgXSBS+DdMajfVvV5OLS1RMwZAY9r0eQRRq81xcedHFGfr9iH+DH4ilBlORbuxRTtktUW4c/lBNLfVFqMnDQb53YpVEXQQkNutLG6xFh/D2GBlTB6wfDMK1oGFR2fo1HBPlDVS3ro=
+	t=1750851289; cv=none; b=rHTNPFq53b2h84fkzpsQ3k9ZDDxIxpW8wG+4Yr/ilaAogEqxpbmqc1jk+e9gfVuhHnfuczzFaP4BnvfqbFezYMQnaZWJwTd6gvxDtjkTnofnjxzuDDp/PFIFRiXT9sBucY9bRaSDRukHyCe2ENuvlt7kVXSjtbI0eCXYGnQGT4E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750851282; c=relaxed/simple;
-	bh=o8dJSJP4RpfXiTvqkcvoFNJh11YmSXQCSWxCBj8VNJA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uLTkfZAMLi9vWkgO3XlmzKAfFiUiRUhkgjzpUlFKVySriYYYrp0qZboVKipV6QOdtWnZA1GRAHQRYlytVRuLINn13+5u1sxQLaZI+3fzNuYgFTaIn5jSoW11Fmo3DNVhWxUqjYzOFqS1buySWnIEEaN2DI7BgTLB1k4pMBf8W0o=
+	s=arc-20240116; t=1750851289; c=relaxed/simple;
+	bh=ejRT6DM9BeZPl0mRhesDHbqNFch789VSPDhLQOhW+5I=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=JZccYnT4P6C9lG6J1ms1gYgBSo+ALakCCmJb+yMeqcq3CGOQ0b2cqD4Tp4dlIjujnueH8uaVECZy6h6cvkcybhcz+d4N549R3z3H/aqvAPtV2bFqgLo7Fwt2vTlA91msgfWcOA8rKNzYenWN0HVnYt+rNE67ti4rqhyUi6TsGVc=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3059C106F;
-	Wed, 25 Jun 2025 04:34:22 -0700 (PDT)
-Received: from [10.57.31.57] (unknown [10.57.31.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BF7353F58B;
-	Wed, 25 Jun 2025 04:34:38 -0700 (PDT)
-Message-ID: <647ca0c3-9ea5-42e4-8f76-038987d5ae1e@arm.com>
-Date: Wed, 25 Jun 2025 12:34:36 +0100
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7239B113E;
+	Wed, 25 Jun 2025 04:34:28 -0700 (PDT)
+Received: from mazurka.cambridge.arm.com (mazurka.cambridge.arm.com [10.2.80.43])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C784B3F58B;
+	Wed, 25 Jun 2025 04:34:42 -0700 (PDT)
+From: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
+To: ryan.roberts@arm.com,
+	yang@os.amperecomputing.com,
+	catalin.marinas@arm.com,
+	will@kernel.org,
+	jean-philippe@linaro.org,
+	robin.murphy@arm.com,
+	joro@8bytes.org,
+	maz@kernel.org,
+	oliver.upton@linux.dev,
+	joey.gouly@arm.com,
+	james.morse@arm.com,
+	broonie@kernel.org,
+	ardb@kernel.org,
+	baohua@kernel.org,
+	suzuki.poulose@arm.com,
+	david@redhat.com,
+	jgg@ziepe.ca,
+	nicolinc@nvidia.com,
+	jsnitsel@redhat.com,
+	mshavit@google.com,
+	kevin.tian@intel.com,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
+Subject: [PATCH v8 0/4] Initial BBML2 support for contpte_convert()
+Date: Wed, 25 Jun 2025 11:34:31 +0000
+Message-ID: <20250625113435.26849-1-miko.lenczewski@arm.com>
+X-Mailer: git-send-email 2.49.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Help: Samsung Exynos 7870 DECON SYSMMU panic
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
- Kaustabh Chakraborty <kauschluss@disroot.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Inki Dae <inki.dae@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>, iommu@lists.linux.dev,
- dri-devel@lists.freedesktop.org
-References: <544ad69cba52a9b87447e3ac1c7fa8c3@disroot.org>
- <0bc60699-eeaa-4121-8d93-0274862f5aed@arm.com>
- <CGME20250625073955eucas1p2913134af8cc26dcb2145188f8a43256b@eucas1p2.samsung.com>
- <c338c9f7528fdcba56c088390c4ccffc@disroot.org>
- <833aef10-9fcf-4abd-bea8-c34ea7ed6bb2@samsung.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <833aef10-9fcf-4abd-bea8-c34ea7ed6bb2@samsung.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 2025-06-25 9:42 am, Marek Szyprowski wrote:
-> On 25.06.2025 09:39, Kaustabh Chakraborty wrote:
->> On 2025-06-24 17:12, Robin Murphy wrote:
->>> On 2025-06-18 3:02 pm, Kaustabh Chakraborty wrote:
->>>> Since bcb81ac6ae3c (iommu: Get DT/ACPI parsing into the proper probe
->>>> path),
->>>> The Samsung Exynos 7870 DECON device (with patches [1], [2], and
->>>> [3]) seems
->>>> to not work anymore. Upon closer inspection, I observe that there is an
->>>> IOMMU crash.
->>>>
->>>> [    2.918189] exynos-sysmmu 14860000.sysmmu: 14830000.decon: [READ]
->>>> PAGE FAULT occurred at 0x6715b3e0
->>>> [    2.918199] exynos-sysmmu 14860000.sysmmu: Page table base:
->>>> 0x0000000044a14000
->>>> [    2.918243] exynos-drm exynos-drm: bound 14830000.decon (ops
->>>> decon_component_ops)
->>>> [    2.922868] exynos-sysmmu 14860000.sysmmu:   Lv1 entry: 0x4205001
->>>> [    2.922877] Kernel panic - not syncing: Unrecoverable System MMU
->>>> Fault!
->>>> [    2.922885] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted
->>>> 6.16.0-rc2-exynos7870 #722 PREEMPT
->>>> [    2.995312] Hardware name: Samsung Galaxy J7 Prime (DT)
->>>> [    3.000509] Call trace:
->>>> [    3.002938]  show_stack+0x18/0x24 (C)
->>>> [    3.006582]  dump_stack_lvl+0x60/0x80
->>>> [    3.010224]  dump_stack+0x18/0x24
->>>> [    3.013521]  panic+0x168/0x360
->>>> [    3.016558]  exynos_sysmmu_irq+0x224/0x2ac
->>>> [         ...]
->>>> [    3.108786] ---[ end Kernel panic - not syncing: Unrecoverable
->>>> System MMU Fault! ]---
->>>
->>> For starters, what if you just remove this panic() from the IOMMU
->>> driver? Frankly it seems a bit excessive anyway...
->>
->> I've tried that, sysmmu repeatedly keeps issuing interrupts (yes, even
->> after clearing the interrupt bit) indefinitely.
->>
-> Right, this is because decon device is still accessing system memory in
-> a loop trying to display the splash screen. That panic is indeed a bit
-> excessive, but what else IOMMU driver can do if no page fault handle is
-> registered?
+Hi All,
 
-Report the unhandled fault and continue, like most drivers already do. 
-If there's another fault, then that can get reported as well. It's kind 
-of the point that if a misbehaving device has been prevented from 
-accessing memory then it has *not* adversely affected the rest of the 
-system.
+This patch series extends the cpufeature framework to add support for
+easily matching against all early cpus, and builds on this to add initial
+support for eliding Break-Before-Make requirements on systems that support
+BBML2 and additionally guarantee to never raise a conflict abort.
 
-I suppose if one wanted to be really clever then a driver could 
-implement its own backoff mechanism where if it detects a sustained high 
-rate of unhandled faults then it disables its interrupt for a bit, to 
-mitigate the physical interrupt storm as well as avoid flooding the 
-kernel log more than is useful.
+This support conceptually reorders and then elides both a TLB invalidation
+and a DSB in contpte_convert(), when BBML2 is supported. This leads to
+a 12% improvement when executing a microbenchmark designed to force the
+pathological path where contpte_convert() gets called. This represents
+an 80% reduction in the cost of calling contpte_convert().
 
->>>  From the logs below it seems there is apparently unexpected traffic
->>> already going through the IOMMU when it wakes up. Is this the DRM
->>> drivers doing something sketchy, or has the bootloader left the
->>> display running for a splash screen? However in the latter case I
->>> don't obviously see why delaying the IOMMU probe should make much
->>> difference, given that the decon driver should still be waiting for
->>> it either way.
->>
->> The display is initialized by the bootloader for splash yes, but I reckon
->> it doesn't use the IOMMU as it's accessible from a framebuffer region.
-> 
-> Right, bootloader configured decon device to display splash screen, what
-> means that decon device is constantly reading splash screen pixel data
-> from system memory. There is no such thing as a 'framebuffer region', it
-> is just a system memory, which exynos sysmmu protects when enabled. So
-> far this issue of splash screen from bootloader has not yet been solved
-> in mainline. On other Exynos based supported boards this works only
-> because there are also power domain drivers enabled, which are
-> instantiated before the display related device and respective sysmmu
-> device. That power domain driver shuts down power effectively disabling
-> the display before the sysmmu gets probbed.
+We clarify both the correctness and performance benefits of this elision
+with respect to the relevant Arm ARM passages, via substantial comments
+in the contpte_convert() source.
 
-And presumably the sysmmu device itself doesn't need to depend on that 
-power domain? OK, that at least makes sense.
+This series is based on v6.16-rc3 (86731a2a651e).
 
-> Long time ago I've pointed this issue and proposed some simple solution
-> like a special initial identity mapping for the memory range used for
-> splash screen, but that proposal is no longer applicable for the current
-> code.
-> 
-> As a workaround I would suggest to shutdown display in the decon device
-> before starting the kernel (i.e. from the 'kernel loading mid-stage
-> bootloader' if you have such).
+Notes
+======
 
-We do now have the tools to handle this properly - if the bootloader can 
-be updated to add the appropriate "iommu-addresses" property[1] to the 
-framebuffer reservation, then it's a case of hooking up support in 
-exynos-iommu via of_iommu_get_resv_regions().
+Patch 1 extends the cpufeature framework machinery as discussed in [1],
+to allows checking for the presence of a feature on all early boot cpus
+(and on all late cpus when they are brought online).
 
-For a short-term kernel-side hack you could probably implement 
-.def_domain_type to force IDENTITY for decon devices, as long as you can 
-then convince the DRM driver to pick another device to grab a DMA ops 
-domain from.
+Patch 2 implements an allow-list of cpus that support BBML2, but with
+the additional constraint of never causing TLB conflict aborts. We
+settled on this constraint because we will use the feature for kernel
+mappings in the future, for which we cannot handle conflict aborts
+safely.
 
-Thanks,
-Robin.
+Patch 2 implements a MIDR check but does not implement an
+ID_AA64MMFR2_EL1 check, as the BBML2_NOABORT MIDR check is stricter (the
+idreg check would allow conflict aborts, the MIDR check does not).
+
+Yang Shi has a series at [2] that aims to use BBML2 to enable splitting
+the linear map at runtime. This series partially overlaps with it to add
+the cpu feature. We believe this series is fully compatible with Yang's
+requirements and could go first.
+
+[1]:
+  https://lore.kernel.org/all/aCSHESk1DzShD4vt@arm.com/
+
+[2]:
+  https://lore.kernel.org/linux-arm-kernel/20250304222018.615808-1-yang@os.amperecomputing.com/
+
+Changelog
+=========
+
+v8:
+  - restore missing cpucap description
+  - fix misspelled documentation
+  - rebase onto v6.16-rc3
+
+v7:
+  - https://lore.kernel.org/all/20250617095104.6772-1-miko.lenczewski@arm.com/
+  - fix up some minor spelling and formatting nits
+  - integrate cpufeature framework patch to each bbml2 detection
+  - avoid making feature register check, rely on MIDR check
+  - rebase onto v6.16-rc2
+
+v6:
+  - https://lore.kernel.org/all/20250428153514.55772-2-miko.lenczewski@arm.com/
+  - clarify correctness and performance of elision of __tlb_flush_range()
+  - rebase onto v6.15-rc3
+
+v5:
+  - https://lore.kernel.org/all/20250325093625.55184-1-miko.lenczewski@arm.com/
+  - fixup coding style nits
+  - document motivation for kernel commandline parameter
+
+v4:
+  - https://lore.kernel.org/all/20250319150533.37440-2-miko.lenczewski@arm.com/
+  - rebase onto v6.14-rc5
+  - switch from arm64 sw feature override to hw feature override
+  - reintroduce has_cpuid_feature() check in addition to MIDR check
+
+v3:
+  - https://lore.kernel.org/all/20250313104111.24196-2-miko.lenczewski@arm.com/
+  - rebase onto v6.14-rc4
+  - add arm64.nobbml2 commandline override
+  - squash "delay tlbi" and "elide tlbi" patches
+
+v2:
+  - https://lore.kernel.org/all/20250228182403.6269-2-miko.lenczewski@arm.com/
+  - fix buggy MIDR check to properly account for all boot+late cpus
+  - add smmu bbml2 feature check
+
+v1:
+  - https://lore.kernel.org/all/20250219143837.44277-3-miko.lenczewski@arm.com/
+  - rebase onto v6.14-rc3
+  - remove kvm bugfix patches from series
+  - strip out conflict abort handler code
+  - switch from blocklist to allowlist of bmml2+noabort implementations
+  - remove has_cpuid_feature() in favour of MIDR check
+
+rfc-v1:
+  - https://lore.kernel.org/all/20241211154611.40395-1-miko.lenczewski@arm.com/
+  - https://lore.kernel.org/all/20241211160218.41404-1-miko.lenczewski@arm.com/
+
+Catalin Marinas (1):
+  arm64: cpufeature: Introduce MATCH_ALL_EARLY_CPUS capability type
+
+Mikołaj Lenczewski (3):
+  arm64: Add BBM Level 2 cpu feature
+  iommu/arm: Add BBM Level 2 smmu feature
+  arm64/mm: Elide tlbi in contpte_convert() under BBML2
+
+ arch/arm64/include/asm/cpufeature.h           |  28 ++++
+ arch/arm64/kernel/cpufeature.c                |  98 ++++++++++--
+ arch/arm64/mm/contpte.c                       | 139 +++++++++++++++++-
+ arch/arm64/tools/cpucaps                      |   1 +
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   3 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |   3 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   2 +
+ 7 files changed, 262 insertions(+), 12 deletions(-)
+
+-- 
+2.49.0
+
