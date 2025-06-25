@@ -1,23 +1,23 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7B1925DAE2
-	for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 11:34:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C77F25E465
+	for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 11:34:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750851294; cv=none; b=jYkuGxLwpfcx5DuH7IY+z5ZLz7a07Yu1xYugObmxgiph2tl9+stpHLslyMOydVqbN/T2fJ2g1Gr97iOMNWnQXM8Irv36/0o8XyYeouUnr5z8vPNlb91dpVaVQi7aVcRlzbcd3uafmyvxQm98JzdUT2T8w1QaJX0OLx7zhy9QIy0=
+	t=1750851297; cv=none; b=sMRqrM4MaUdJXzKhWcOfIqp3WGf64phoxZy391mWGRrCrhF5V136l8niM/uQmPfKdTe9RebqsLd+/s+b2VE5iY3txID15SvSKBUV4IXc9ov0gCsLfccrSqTt/wvv2mpI/4nRW/xClNnvJdnC6+LXpzG8Nl8NjFQAeRFM1iZPEZ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750851294; c=relaxed/simple;
-	bh=RbP84HcCEnwX9DUuFw/tD8N6Pg3hmMFQLfZUlLdOBs0=;
+	s=arc-20240116; t=1750851297; c=relaxed/simple;
+	bh=34RXRTCBCz54ZXIryn1Qbk9MUJlyFYgKwnPZunDPXoo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=UHxOcN+A8SJrFSXJOFgrwD0uCMmZyiYL36zWpjx698QvSAiuVTLJysBIsBeJdxSVjnuroB9vda5Ruunl6ENqJ5zn7S87D+2/XGvTvBZqamj4oKh7MSLzuwaRZPSJoKncbojNM/jQyupWglTUMAeuu4viRZyRS7AI84SRwG4sH80=
+	 MIME-Version:Content-Type; b=nXKPlS7S72Nu15CHEzHZuUSWm9V2oomZWhTrLJ6Xyc4scQnzi/SHJZaTBylTzp4KMgdQIByZwvuWpfAnE0OYnoqXmFTmjZnvalnIFpT1WMoVaK6OCE3cn2FZt3x2tmvgcmhLNFwdA93e6bHOmtFFrty1gG2RQymvn7dRcczP0Ok=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D4D9C204C;
-	Wed, 25 Jun 2025 04:34:32 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1FAD62050;
+	Wed, 25 Jun 2025 04:34:37 -0700 (PDT)
 Received: from mazurka.cambridge.arm.com (mazurka.cambridge.arm.com [10.2.80.43])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 134DA3F58B;
-	Wed, 25 Jun 2025 04:34:46 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 75D6C3F58B;
+	Wed, 25 Jun 2025 04:34:51 -0700 (PDT)
 From: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
 To: ryan.roberts@arm.com,
 	yang@os.amperecomputing.com,
@@ -43,11 +43,10 @@ To: ryan.roberts@arm.com,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	iommu@lists.linux.dev
-Cc: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>,
-	Suzuki K Poulose <Suzuki.Poulose@arm.com>
-Subject: [PATCH v8 1/4] arm64: cpufeature: Introduce MATCH_ALL_EARLY_CPUS capability type
-Date: Wed, 25 Jun 2025 11:34:32 +0000
-Message-ID: <20250625113435.26849-2-miko.lenczewski@arm.com>
+Cc: =?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
+Subject: [PATCH v8 2/4] arm64: Add BBM Level 2 cpu feature
+Date: Wed, 25 Jun 2025 11:34:33 +0000
+Message-ID: <20250625113435.26849-3-miko.lenczewski@arm.com>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250625113435.26849-1-miko.lenczewski@arm.com>
 References: <20250625113435.26849-1-miko.lenczewski@arm.com>
@@ -60,167 +59,118 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From: Catalin Marinas <catalin.marinas@arm.com>
+The Break-Before-Make cpu feature supports multiple levels (levels 0-2),
+and this commit adds a dedicated BBML2 cpufeature to test against
+support for.
 
-For system-wide capabilities, the kernel has the SCOPE_SYSTEM type. Such
-capabilities are checked once the SMP boot has completed using the
-sanitised ID registers. However, there is a need for a new capability
-type similar in scope to the system one but with checking performed
-locally on each CPU during boot (e.g. based on MIDR_EL1 which is not a
-sanitised register).
+To support BBML2 in as wide a range of contexts as we can, we want not
+only the architectural guarantees that BBML2 makes, but additionally
+want BBML2 to not create TLB conflict aborts. Not causing aborts avoids
+us having to prove that no recursive faults can be induced in any path
+that uses BBML2, allowing its use for arbitrary kernel mappings.
 
-Introduce ARM64_CPUCAP_MATCH_ALL_EARLY_CPUS which, together with
-ARM64_CPUCAP_SCOPE_LOCAL_CPU, ensures that such capability is enabled
-only if all early CPUs have it. For ease of use, define
-ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE which combines SCOPE_LOCAL_CPU,
-PERMITTED_FOR_LATE_CPUS and MATCH_ALL_EARLY_CPUS.
+This feature builds on the previous ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
+as all early cpus must support BBML2 for us to enable it (and any later
+cpus must also support it to be onlined).
 
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Not onlining late cpus that do not support BBML2 is unavoidable, as we
+might currently be using BBML2 semantics for kernel memory regions. This
+could cause faults in the late cpus, and would be difficult to unwind,
+so let us avoid the case altogether.
+
 Signed-off-by: Mikołaj Lenczewski <miko.lenczewski@arm.com>
-Reviewed-by: Suzuki K Poulose <Suzuki.Poulose@arm.com>
+Reviewed-by: Catalin Marinas <catalin.marinas@arm.com>
+Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
 ---
- arch/arm64/include/asm/cpufeature.h | 23 +++++++++++
- arch/arm64/kernel/cpufeature.c      | 60 +++++++++++++++++++++++------
- 2 files changed, 72 insertions(+), 11 deletions(-)
+ arch/arm64/include/asm/cpufeature.h |  5 ++++
+ arch/arm64/kernel/cpufeature.c      | 38 +++++++++++++++++++++++++++++
+ arch/arm64/tools/cpucaps            |  1 +
+ 3 files changed, 44 insertions(+)
 
 diff --git a/arch/arm64/include/asm/cpufeature.h b/arch/arm64/include/asm/cpufeature.h
-index c4326f1cb917..155ebd040c55 100644
+index 155ebd040c55..bf13d676aae2 100644
 --- a/arch/arm64/include/asm/cpufeature.h
 +++ b/arch/arm64/include/asm/cpufeature.h
-@@ -275,6 +275,14 @@ extern struct arm64_ftr_reg arm64_ftr_reg_ctrel0;
- #define ARM64_CPUCAP_OPTIONAL_FOR_LATE_CPU	((u16)BIT(5))
- /* Panic when a conflict is detected */
- #define ARM64_CPUCAP_PANIC_ON_CONFLICT		((u16)BIT(6))
-+/*
-+ * When paired with SCOPE_LOCAL_CPU, all early CPUs must satisfy the
-+ * condition. This is different from SCOPE_SYSTEM where the check is performed
-+ * only once at the end of the SMP boot on the sanitised ID registers.
-+ * SCOPE_SYSTEM is not suitable for cases where the capability depends on
-+ * properties local to a CPU like MIDR_EL1.
-+ */
-+#define ARM64_CPUCAP_MATCH_ALL_EARLY_CPUS	((u16)BIT(7))
- 
- /*
-  * CPU errata workarounds that need to be enabled at boot time if one or
-@@ -304,6 +312,16 @@ extern struct arm64_ftr_reg arm64_ftr_reg_ctrel0;
- 	(ARM64_CPUCAP_SCOPE_LOCAL_CPU		|	\
- 	 ARM64_CPUCAP_OPTIONAL_FOR_LATE_CPU	|	\
- 	 ARM64_CPUCAP_PERMITTED_FOR_LATE_CPU)
-+/*
-+ * CPU feature detected at boot time and present on all early CPUs. Late CPUs
-+ * are permitted to have the feature even if it hasn't been enabled, although
-+ * the feature will not be used by Linux in this case. If all early CPUs have
-+ * the feature, then every late CPU must have it.
-+ */
-+#define ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE		\
-+	 (ARM64_CPUCAP_SCOPE_LOCAL_CPU		|	\
-+	  ARM64_CPUCAP_PERMITTED_FOR_LATE_CPU	|	\
-+	  ARM64_CPUCAP_MATCH_ALL_EARLY_CPUS)
- 
- /*
-  * CPU feature detected at boot time, on one or more CPUs. A late CPU
-@@ -391,6 +409,11 @@ static inline int cpucap_default_scope(const struct arm64_cpu_capabilities *cap)
- 	return cap->type & ARM64_CPUCAP_SCOPE_MASK;
+@@ -871,6 +871,11 @@ static inline bool system_supports_pmuv3(void)
+ 	return cpus_have_final_cap(ARM64_HAS_PMUV3);
  }
  
-+static inline bool cpucap_match_all_early_cpus(const struct arm64_cpu_capabilities *cap)
++static inline bool system_supports_bbml2_noabort(void)
 +{
-+	return cap->type & ARM64_CPUCAP_MATCH_ALL_EARLY_CPUS;
++	return alternative_has_cap_unlikely(ARM64_HAS_BBML2_NOABORT);
 +}
 +
- /*
-  * Generic helper for handling capabilities with multiple (match,enable) pairs
-  * of call backs, sharing the same capability bit.
+ int do_emulate_mrs(struct pt_regs *regs, u32 sys_reg, u32 rt);
+ bool try_emulate_mrs(struct pt_regs *regs, u32 isn);
+ 
 diff --git a/arch/arm64/kernel/cpufeature.c b/arch/arm64/kernel/cpufeature.c
-index b34044e20128..f9c947166322 100644
+index f9c947166322..7a3c404288d5 100644
 --- a/arch/arm64/kernel/cpufeature.c
 +++ b/arch/arm64/kernel/cpufeature.c
-@@ -3370,18 +3370,49 @@ static void update_cpu_capabilities(u16 scope_mask)
- 
- 	scope_mask &= ARM64_CPUCAP_SCOPE_MASK;
- 	for (i = 0; i < ARM64_NCAPS; i++) {
-+		bool match_all = false;
-+		bool caps_set = false;
-+		bool boot_cpu = false;
-+
- 		caps = cpucap_ptrs[i];
--		if (!caps || !(caps->type & scope_mask) ||
--		    cpus_have_cap(caps->capability) ||
--		    !caps->matches(caps, cpucap_default_scope(caps)))
-+		if (!caps || !(caps->type & scope_mask))
- 			continue;
- 
--		if (caps->desc && !caps->cpus)
-+		match_all = cpucap_match_all_early_cpus(caps);
-+		caps_set = cpus_have_cap(caps->capability);
-+		boot_cpu = scope_mask & SCOPE_BOOT_CPU;
-+
-+		/*
-+		 * Unless it's a match-all CPUs feature, avoid probing if
-+		 * already detected.
-+		 */
-+		if (!match_all && caps_set)
-+			continue;
-+
-+		/*
-+		 * A match-all CPUs capability is only set when probing the
-+		 * boot CPU. It may be cleared subsequently if not detected on
-+		 * secondary ones.
-+		 */
-+		if (match_all && !caps_set && !boot_cpu)
-+			continue;
-+
-+		if (!caps->matches(caps, cpucap_default_scope(caps))) {
-+			if (match_all)
-+				__clear_bit(caps->capability, system_cpucaps);
-+			continue;
-+		}
-+
-+		/*
-+		 * Match-all CPUs capabilities are logged later when the
-+		 * system capabilities are finalised.
-+		 */
-+		if (!match_all && caps->desc && !caps->cpus)
- 			pr_info("detected: %s\n", caps->desc);
- 
- 		__set_bit(caps->capability, system_cpucaps);
- 
--		if ((scope_mask & SCOPE_BOOT_CPU) && (caps->type & SCOPE_BOOT_CPU))
-+		if (boot_cpu && (caps->type & SCOPE_BOOT_CPU))
- 			set_bit(caps->capability, boot_cpucaps);
- 	}
+@@ -2213,6 +2213,38 @@ static bool hvhe_possible(const struct arm64_cpu_capabilities *entry,
+ 	return arm64_test_sw_feature_override(ARM64_SW_FEATURE_OVERRIDE_HVHE);
  }
-@@ -3782,17 +3813,24 @@ static void __init setup_system_capabilities(void)
- 	enable_cpu_capabilities(SCOPE_ALL & ~SCOPE_BOOT_CPU);
- 	apply_alternatives_all();
  
--	/*
--	 * Log any cpucaps with a cpumask as these aren't logged by
--	 * update_cpu_capabilities().
--	 */
- 	for (int i = 0; i < ARM64_NCAPS; i++) {
- 		const struct arm64_cpu_capabilities *caps = cpucap_ptrs[i];
- 
--		if (caps && caps->cpus && caps->desc &&
--			cpumask_any(caps->cpus) < nr_cpu_ids)
-+		if (!caps || !caps->desc)
-+			continue;
++static bool has_bbml2_noabort(const struct arm64_cpu_capabilities *caps, int scope)
++{
++	/*
++	 * We want to allow usage of BBML2 in as wide a range of kernel contexts
++	 * as possible. This list is therefore an allow-list of known-good
++	 * implementations that both support BBML2 and additionally, fulfill the
++	 * extra constraint of never generating TLB conflict aborts when using
++	 * the relaxed BBML2 semantics (such aborts make use of BBML2 in certain
++	 * kernel contexts difficult to prove safe against recursive aborts).
++	 *
++	 * Note that implementations can only be considered "known-good" if their
++	 * implementors attest to the fact that the implementation never raises
++	 * TLB conflict aborts for BBML2 mapping granularity changes.
++	 */
++	static const struct midr_range supports_bbml2_noabort_list[] = {
++		MIDR_REV_RANGE(MIDR_CORTEX_X4, 0, 3, 0xf),
++		MIDR_REV_RANGE(MIDR_NEOVERSE_V3, 0, 2, 0xf),
++		{}
++	};
 +
-+		/*
-+		 * Log any cpucaps with a cpumask as these aren't logged by
-+		 * update_cpu_capabilities().
-+		 */
-+		if (caps->cpus && cpumask_any(caps->cpus) < nr_cpu_ids)
- 			pr_info("detected: %s on CPU%*pbl\n",
- 				caps->desc, cpumask_pr_args(caps->cpus));
++	/* Does our cpu guarantee to never raise TLB conflict aborts? */
++	if (!is_midr_in_range_list(supports_bbml2_noabort_list))
++		return false;
 +
-+		/* Log match-all CPUs capabilities */
-+		if (cpucap_match_all_early_cpus(caps) &&
-+		    cpus_have_cap(caps->capability))
-+			pr_info("detected: %s\n", caps->desc);
- 	}
- 
- 	/*
++	/*
++	 * We currently ignore the ID_AA64MMFR2_EL1 register, and only care
++	 * about whether the MIDR check passes.
++	 */
++
++	return true;
++}
++
+ #ifdef CONFIG_ARM64_PAN
+ static void cpu_enable_pan(const struct arm64_cpu_capabilities *__unused)
+ {
+@@ -2980,6 +3012,12 @@ static const struct arm64_cpu_capabilities arm64_features[] = {
+ 		.matches = has_cpuid_feature,
+ 		ARM64_CPUID_FIELDS(ID_AA64MMFR2_EL1, EVT, IMP)
+ 	},
++	{
++		.desc = "BBM Level 2 without conflict abort",
++		.capability = ARM64_HAS_BBML2_NOABORT,
++		.type = ARM64_CPUCAP_EARLY_LOCAL_CPU_FEATURE,
++		.matches = has_bbml2_noabort,
++	},
+ 	{
+ 		.desc = "52-bit Virtual Addressing for KVM (LPA2)",
+ 		.capability = ARM64_HAS_LPA2,
+diff --git a/arch/arm64/tools/cpucaps b/arch/arm64/tools/cpucaps
+index 10effd4cff6b..2bd2bfaeddcd 100644
+--- a/arch/arm64/tools/cpucaps
++++ b/arch/arm64/tools/cpucaps
+@@ -45,6 +45,7 @@ HAS_LPA2
+ HAS_LSE_ATOMICS
+ HAS_MOPS
+ HAS_NESTED_VIRT
++HAS_BBML2_NOABORT
+ HAS_PAN
+ HAS_PMUV3
+ HAS_S1PIE
 -- 
 2.49.0
 
