@@ -1,144 +1,182 @@
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 345741CAA85
-	for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 05:06:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66BFA1DE8BE
+	for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 05:06:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750914370; cv=none; b=G+fjv/rUMeyKCCdJc6fTAk+OzJX/zP0SckMo3k39oKsh9Qi2wpWkRifJGqcq/e2XP87pyqJTf8MV+JTSiX03zknJ6sRiwO/QhBVH6IsmuUOMtTLG7+oTQTpe7Yqnt6syVbDR36ZTHOrGLelmRGfVzBQNwJZuHmD/ydEAKadBAGs=
+	t=1750914411; cv=none; b=PDhvz0JTisYLBWMxPYdXscDogAS+NqsK79qHhkzexbldxrMqRS5ibvQzdDTTg7XjH56TiUorswf+TWQcv31kXgghu8ykveeIN3a/rSEkIoJ26BFlamLvRO5fDghfXs44Xs1MyYi9SyiawDQD2Kfyv8TQRV2KU01Mk4ZVz/ZIKOs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750914370; c=relaxed/simple;
-	bh=SlJAuSKpyDkgrbvJ3UERKHC+t9+jkJayQEaDBL/a9TY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HKhYMWypluyyYxQCfvr6O30280eW0kj4VcVrT//Q2oEWKLI+GfKog8qqKfZEw9C4019hAx/kcXzMcre5DTxwJ1NVgrdPsmrzPwoqUmOEkIu9s1f723vzKbKBCjLjsnLj1cXQYw0bn6gCIPSlxni+QtlN8opM+K22hFDvh3lXkuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=OfL3QiGM; arc=none smtp.client-ip=209.85.208.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1750914411; c=relaxed/simple;
+	bh=X7Sjk2ka0Kelqb0sjdo5AsKsObeeRUiz7gwR3nkrZnQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pQvgJMMaxDTa0ZsNy/hCaB/Oj6OjWvrJyZ92A1y7xt237409ncGoWrtMwgwjSoaplWr8CaK6coQMP80IXhTSji0VYs18D8u8Nsev2Lrmv193aRMgNpOsvSf03FCjrWONfSdM4pFQ4KZdylVm+eLxVbcUSlQ73Rx28M8EGvtUpPA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jV1JW7kb; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="OfL3QiGM"
-Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-606b39b19b6so102844a12.1
-        for <iommu@lists.linux.dev>; Wed, 25 Jun 2025 22:06:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1750914366; x=1751519166; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UtVCqJAeH13XxyBvl5sUjNns6ovF/jyU+YftL8Si5vI=;
-        b=OfL3QiGMoKzeYsCMt8MghA9yIMzmLkyzglg/g4gwkQt5gl3zueXZ5fq9enyQv69uJe
-         4R8kGHT3mvCMtQvohSgNVX91jmceoYbtXNhfNFPLfRNuLKBnu4b6YsgTsh8asSD0J1jE
-         mM2obw9wRNNZ4J+LudRp1U0778qaMaozx3HaM7XG3+3wjhBmmetVVF7OmDcGggGN4tXR
-         57M81G1/Pg73AOYBSqSqdy0C/I45wrxagep3HsSUbbQLZADk7CpYwhHFTXewZ79DGEqK
-         0Z5jjMQ8z3HhkdMDKedz376iiy4NqNaYEPxuMKygxqVxX53kfDHM9/8LqHARsmtMfOmF
-         cf4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750914366; x=1751519166;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=UtVCqJAeH13XxyBvl5sUjNns6ovF/jyU+YftL8Si5vI=;
-        b=Qw2ObLkdFLYTxYDkEdDjRpleFZSsieyzscdMWAAEps8z2e/Ni4brXBv1x/yu3kqwUQ
-         QEnLsYf0OeUsGfgLaru6MKobDrq1HdYtilUbdgdW8EGO2RqXc5vNH7WL+QdK7vFEFe4p
-         bxxrprqixRSb3LTBtM4y1YgR8nqFr8Ew6Ku79Rsq56cseVtY6BntIheaT1ClqrYHjB8E
-         wU0IFU2oyIEOGBnn5/XI+oZ1sa/I/fsCxyW7NYCSoVVn9Mt/k4gaN8kkDqp3mX67UaaS
-         5WSN7hu/PGE7MkIQbJ01hyILD58/dHadgCmyhYEi32dEMoMHeli2ywqgdHgnJOFGAZNc
-         KF1Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVkf6WhiTaQuEFJBv9hFn0XVoanIE0n7Sflgl0w6hml/ZnkMCcPWe/OS9Ey4LHWvNdKCtKQ4w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywb+EPKghX7GcAL6RJzUoRZFuYXsRH56ANwZ2giCLilBYkwX8g0
-	cuFkrzAvrl59287aAnUmVwk4SwDuwmGQG5SmMNPt+tIDo+wciV8uPDhrxG+8QeiFM9s=
-X-Gm-Gg: ASbGncsM+2rNmkbWTc+CtLgPNkvOh7VHkJ3h5YkjoQNuqZuFyPpCNp8Cc76ksXGY9IO
-	UhppTGshwAty1FDHrlcFNXUULKidy9f+I4K0O0+3hoiXdMSOGcR9maG2B6MdC8QeVc66BxkAuAr
-	f2/PNpmnxZsT90xfXBwZ2LomDeJ2YU6pmAKbqdGAb5EwW0XSCfYr5sQOkHSgEx6/vsyBJ01L9Qf
-	4TCzUHP5lNOBGvcRnqvPp2uTU7CFLm9LzhK8F1gY9z47ARdwfcuLmcIICJNpxfGVgLcEO64g6pA
-	KD/fQAtjHe/jK7ILGl6Lqg04sQbUc/H4VLSheWHzg9w1vQ==
-X-Google-Smtp-Source: AGHT+IGL+2QsRWwulNb9W8gpCcvsfj+qYhvE5q/YlnOTjKxvi2e+r0wusCertjz9fW8rlZ/Gl3vWfw==
-X-Received: by 2002:a05:6402:5114:b0:60c:3cca:6515 with SMTP id 4fb4d7f45d1cf-60c4dbc656dmr1619383a12.4.1750914366035;
-        Wed, 25 Jun 2025 22:06:06 -0700 (PDT)
-Received: from mordecai.tesarici.cz ([213.235.133.108])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-60c2f196fa7sm3318565a12.2.2025.06.25.22.06.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Jun 2025 22:06:05 -0700 (PDT)
-Date: Thu, 26 Jun 2025 07:06:02 +0200
-From: Petr Tesarik <ptesarik@suse.com>
-To: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
- <robin.murphy@arm.com
-Cc: Bagas Sanjaya <bagasdotme@gmail.com>, Jonathan Corbet <corbet@lwn.net>,
- Andrew Morton <akpm@linux-foundation.org>, Leon Romanovsky
- <leon@kernel.org>, Keith Busch <kbusch@kernel.org>, Caleb Sander Mateos
- <csander@purestorage.com>, Sagi Grimberg <sagi@grimberg.me>, Jens Axboe
- <axboe@kernel.dk>, John Garry <john.g.garry@oracle.com>, "open
- list:DOCUMENTATION" <linux-doc@vger.kernel.org>, open list
- <linux-kernel@vger.kernel.org>, "open list:MEMORY MANAGEMENT"
- <linux-mm@kvack.org>, iommu@lists.linux.dev
-Subject: Re: [PATCH 7/8] docs: dma-api: update streaming DMA API physical
- address constraints
-Message-ID: <20250626070602.3d42b607@mordecai.tesarici.cz>
-In-Reply-To: <aFynHWAYtKPFT55P@archie.me>
-References: <20250624133923.1140421-1-ptesarik@suse.com>
-	<20250624133923.1140421-8-ptesarik@suse.com>
-	<aFynHWAYtKPFT55P@archie.me>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.50; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jV1JW7kb"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1750914409; x=1782450409;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=X7Sjk2ka0Kelqb0sjdo5AsKsObeeRUiz7gwR3nkrZnQ=;
+  b=jV1JW7kbS54Dc2Mgkgp+CY/LJO3IJrChzY0cj8ZgMw8oNjbDAL7UpXCl
+   umKrz6XBm03kUUg0GLzgjur/01hd7mWUYWk7i1GRrrPMDrMws7gUds0dq
+   0Udxiv3jfh5m3VWwSpHii6Het68bR4Zh+Eu0DgOYCJ57BIP/NQ3G4NQ62
+   5mxekSMCvgyeOUEZ5wnXMwWzjxEyMwixQ6D33Q4Lu5Yc6pBczYRGQHC43
+   jJD6vruS7U3lTrxk/GvGl73pnDtQ4OxPL14UgUgn9A3AeR1F0aSyAKe6G
+   BW7VRUmXHnniiNij5wzZvl2oOE77Td8zSjXtiZNLx85aUG1N98HduNH25
+   g==;
+X-CSE-ConnectionGUID: QAzKU0zPTBGAtXORPoIWqQ==
+X-CSE-MsgGUID: h/jbBkFvTcaygrAg1ORJDw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11475"; a="63796513"
+X-IronPort-AV: E=Sophos;i="6.16,266,1744095600"; 
+   d="scan'208";a="63796513"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2025 22:06:49 -0700
+X-CSE-ConnectionGUID: dHz4p7K0Q2CozheQPadrjg==
+X-CSE-MsgGUID: h2potp3fTl6LIjl7AwgsSQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,266,1744095600"; 
+   d="scan'208";a="156672267"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmviesa005.fm.intel.com with ESMTP; 25 Jun 2025 22:06:45 -0700
+Date: Thu, 26 Jun 2025 12:59:07 +0800
+From: Xu Yilun <yilun.xu@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "jgg@nvidia.com" <jgg@nvidia.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>,
+	"will@kernel.org" <will@kernel.org>,
+	"aneesh.kumar@kernel.org" <aneesh.kumar@kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"shuah@kernel.org" <shuah@kernel.org>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"aik@amd.com" <aik@amd.com>,
+	"Williams, Dan J" <dan.j.williams@intel.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"Xu, Yilun" <yilun.xu@intel.com>
+Subject: Re: [PATCH v2 3/4] iommufd: Destroy vdevice on idevice destroy
+Message-ID: <aFzTm76sdoYJ9hpG@yilunxu-OptiPlex-7050>
+References: <20250623094946.1714996-1-yilun.xu@linux.intel.com>
+ <20250623094946.1714996-4-yilun.xu@linux.intel.com>
+ <BN9PR11MB5276DCB10B6B08811206C3A28C78A@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276DCB10B6B08811206C3A28C78A@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-On Thu, 26 Jun 2025 08:49:17 +0700
-Bagas Sanjaya <bagasdotme@gmail.com> wrote:
-
-> On Tue, Jun 24, 2025 at 03:39:22PM +0200, Petr Tesarik wrote:
-> > diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
-> > index cd432996949c..65132ec88104 100644
-> > --- a/Documentation/core-api/dma-api.rst
-> > +++ b/Documentation/core-api/dma-api.rst
-> > @@ -210,18 +210,12 @@ DMA_BIDIRECTIONAL	direction isn't known
-> >  	this API should be obtained from sources which guarantee it to be
-> >  	physically contiguous (like kmalloc).
-> >  
-> > -	Further, the DMA address of the memory must be within the dma_mask of
-> > -	the device.  To ensure that the memory allocated by kmalloc is within
-> > -	the dma_mask, the driver may specify various platform-dependent flags
-> > -	to restrict the DMA address range of the allocation (e.g., on x86,
-> > -	GFP_DMA guarantees to be within the first 16MB of available DMA
-> > -	addresses, as required by ISA devices).
-> > -
-> > -	Note also that the above constraints on physical contiguity and
-> > -	dma_mask may not apply if the platform has an IOMMU (a device which
-> > -	maps an I/O DMA address to a physical memory address).  However, to be
-> > -	portable, device driver writers may *not* assume that such an IOMMU
-> > -	exists.
-> > +	Mapping may also fail if the memory is not within the DMA mask of the
-> > +	device.  However, this constraint does not apply if the platform has
-> > +	an IOMMU (a device which maps an I/O DMA address to a physical memory
-> > +	address), or the kernel is configured with SWIOTLB (bounce buffers).
-> > +	It is reasonable to assume that at least one of these mechanisms
-> > +	allows streaming DMA to any physical address.
-
-Now I realize this last sentence may be contentious...
-
-@Marek, @Robin Do you agree that device drivers should not be concerned
-about the physical address of a buffer passed to the streaming DMA API?
-
-I mean, are there any real-world systems with:
-  * some RAM that is not DMA-addressable,
-  * no IOMMU,
-  * CONFIG_SWIOTLB is not set?
-
-FWIW if _I_ received a bug report that a device driver fails to submit
-I/O on such a system, I would politely explain the reporter that their
-kernel is misconfigured, and they should enable CONFIG_SWIOTLB.
-
-Just my two cents,
-Petr T
-
-> >  .. warning::
-> >    
+On Tue, Jun 24, 2025 at 08:22:11AM +0000, Tian, Kevin wrote:
+> > From: Xu Yilun <yilun.xu@linux.intel.com>
+> > Sent: Monday, June 23, 2025 5:50 PM
+> > 
+> > +static void iommufd_device_remove_vdev(struct iommufd_device *idev)
+> > +{
+> > +	bool vdev_removing = false;
+> > +
+> > +	mutex_lock(&idev->igroup->lock);
+> > +	if (idev->vdev) {
+> > +		struct iommufd_vdevice *vdev;
+> > +
+> > +		vdev = iommufd_get_vdevice(idev->ictx, idev->vdev->obj.id);
+> > +		if (IS_ERR(vdev)) {
+> > +			/* vdev is removed from xarray, but is not
+> > destroyed/freed */
+> > +			vdev_removing = true;
+> > +			goto unlock;
+> > +		}
+> > +
+> > +		/* Should never happen */
+> > +		if (WARN_ON(vdev != idev->vdev)) {
+> > +			idev->vdev = NULL;
+> > +			iommufd_put_object(idev->ictx, &vdev->obj);
+> > +			goto unlock;
+> > +		}
+> > +
+> > +		/*
+> > +		 * vdev cannot be destroyed after refcount_inc, safe to
+> > release
 > 
-> LGTM, thanks!
+> "vdev cannot be destroyed by userspace"
 > 
-> Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> > +		 * idev->igroup->lock and use idev->vdev afterward.
+> > +		 */
+> > +		refcount_inc(&idev->vdev->obj.users);
+> > +		iommufd_put_object(idev->ictx, &idev->vdev->obj);
+> 
+> s/idev->vdev/vdev/
 
-Thank you for the review, Bagas.
+Will adopt these fixes.
+
+> 
+> > @@ -124,18 +139,28 @@ int iommufd_vdevice_alloc_ioctl(struct
+> > iommufd_ucmd *ucmd)
+> >  		goto out_put_idev;
+> >  	}
+> > 
+> > +	mutex_lock(&idev->igroup->lock);
+> > +	if (idev->vdev) {
+> > +		rc = -EEXIST;
+> > +		goto out_unlock_igroup;
+> > +	}
+> > +
+> >  	vdev = iommufd_object_alloc(ucmd->ictx, vdev,
+> > IOMMUFD_OBJ_VDEVICE);
+> >  	if (IS_ERR(vdev)) {
+> >  		rc = PTR_ERR(vdev);
+> > -		goto out_put_idev;
+> > +		goto out_unlock_igroup;
+> >  	}
+> > 
+> > +	/* vdev can't outlive idev, vdev->idev is always valid, need no refcnt
+> > */
+> > +	vdev->idev = idev;
+> >  	vdev->ictx = ucmd->ictx;
+> >  	vdev->id = virt_id;
+> >  	vdev->dev = idev->dev;
+> >  	get_device(idev->dev);
+> 
+> this is not necessary now, as idevice already holds a reference to device
+> and now vdevice cannot outlive idevice.
+
+I agree.
+
+Besides, Jason suggests use vdev->dev for iommufd_vdevice_abort() safe
+reentrancy. I think we could change to use vdev->viommu.
+
+@@ -93,10 +93,17 @@ void iommufd_vdevice_abort(struct iommufd_object *obj)
+
+        lockdep_assert_held(&idev->igroup->lock);
+
++       /*
++        * iommufd_vdevice_abort() could be reentrant, by
++        * iommufd_device_unbind() or by iommufd_destroy(). Cleanup only once.
++        */
++       if (!viommu)
++               return;
++
+        /* xa_cmpxchg is okay to fail if alloc failed xa_cmpxchg previously */
+        xa_cmpxchg(&viommu->vdevs, vdev->id, vdev, NULL, GFP_KERNEL);
+        refcount_dec(&viommu->obj.users);
+-       put_device(vdev->dev);
++       vdev->viommu = NULL;
+        idev->vdev = NULL;
+
+Thanks,
+Yilun
+
+
+
+
+
+
+
+
