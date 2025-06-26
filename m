@@ -1,57 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D01A1DF980;
-	Thu, 26 Jun 2025 21:47:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A60A228314A
+	for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 22:43:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750974443; cv=none; b=f1BDn3b+XdWWLZTBBD2IhwTs+FjCDElAXhtGw0+Eyomb0GAEH1W9XDFHK+DjfP/uTBi82sB+RdJfmYfwnOW92qrMNq+5VeSDW73OG4nJdFnd+h20K2Z+OCAaqsKBiq4nQLl0VRmhxQcGEoGqFxjncfXtgCYeYXJlPH3P3DtmWYc=
+	t=1750977839; cv=none; b=K9KBpsskXWIv2rdnmi+eqzyeDs029MH9mFesMPRnD3OcT1rxE9EZFFPgI9ThHy/xm2L5CjpyzyN9H8W0OqGIZMvfA3eX2hh5wN5TBzSahVLgKZSZokXB61cgLPJCykvljjKNjDP2UjCINWpHwsLYKMtFo6VFqB/BE5Lmo3wKKx4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750974443; c=relaxed/simple;
-	bh=hxQVzBMNwyC88HTo8GzVCXXrinORweyOG/ceTNc1kGM=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=vABZW1PEqBJwo8pbdEzIQXuxNat1PhMRB+YTWpNonAflQvV/Di1wfzi6SG13S4lnKU80A+fgbXi79ZZpW8WW2AdgvA32wP/8Fl9ay2ud6VWcbzAuhvYLsK2ec7SBExzpNe5yoUathTCBBWCXATlaA7QJNn608FN7zgEYtDt/NvQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UgXmVwi2; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750977839; c=relaxed/simple;
+	bh=VfoblnNBGqtqqaCDzhQ9efnYRcPTy5UeogBREfnrevs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pR6TlLVJTRHmzdqbKDuDjyMUSb9KyJG2Yi4S7AheCD5aVwKtlncWPDGMBYdJ2GQNQRzmwZcAp3UU3LBrQBLZipiIn3by7IXFxabXiDWxh4j2i/C3R+xvu10tw1G+JtcnV5jn/wI7M+hXy8pohudgD8N3c+KPNj+ioG/o64UjKYE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=m6wIYpV1; arc=none smtp.client-ip=209.85.222.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UgXmVwi2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB0A8C4CEEB;
-	Thu, 26 Jun 2025 21:47:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750974443;
-	bh=hxQVzBMNwyC88HTo8GzVCXXrinORweyOG/ceTNc1kGM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=UgXmVwi2rCspNSmYuTGBVBB5eZtbt0N8aMBn19wXnNbJDBpzVoKGeEI8qzxdZLWqu
-	 1Ynn3B8WPGbXQbmkMpuWmrRzpEElcnoGHQv5OXP6j66CtEr6Szwb0G6kWjDE4+0Evp
-	 SmfOa6ipBqiY8TMUW12WOhwBER/p7n3saqwFiWmdHO2ALllJtX+QP5pMHySRCHR3tp
-	 H4oLzTFK4nmOUf5SnEGTBdjkW2Dt+Xcp+K4Q+NqVYSq3VRAzx4piP5uFPMlrHovCye
-	 uZ7KbYkkIQJeAit/jV3So7jOqhyet5n5U6Gaxdth/dF0Qy0yGwwqF8o/ZYJuUeUUUX
-	 3at8xacc2T1Zw==
-Date: Thu, 26 Jun 2025 16:47:21 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Mario Limonciello <superm1@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Lukas Wunner <lukas@wunner.de>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="m6wIYpV1"
+Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-7d3f1bd7121so147591785a.3
+        for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 15:43:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1750977836; x=1751582636; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=If95dr5h6255AmUKlhN6F3DaBJnLFhLX776luHKpLCQ=;
+        b=m6wIYpV1Q2uQwb7/HvpEDcOEzOOLoqLdUmvDc8Iq1FN8d2wVcQ6S3S7C3n4rZBU6Rx
+         EqpNVSeiETC6xaunm3OBreZQMOqBajbPJYYJUwyd9TjxhBnaV3uwMQlA3J1pou18RXmO
+         vaqxINQ69cXHb8j2p1knWe041uZdIjVPqN+AzTdqtizoZ6bHyoupycT6MDywsEo7++8V
+         AhQ1snobxQUpzmbWP9fvVnu7aYPWevThXbXJSA4hpIgI0YC2AtjbyUT+nE6SZTc8SvVF
+         pN6M808hhkSSM8FoUrL1/1BlcOjSZOWYQgvR/BOD5yp2NXXdjhdHb1TvW88fDzYfJShd
+         HEvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1750977836; x=1751582636;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=If95dr5h6255AmUKlhN6F3DaBJnLFhLX776luHKpLCQ=;
+        b=QWsKd2P/SGDcksmjCuTvqcwt42Qrl2sKN3oBRugyvQt8yxeuIrNRtsbqdB1AaglVYv
+         D/nppPiI6Qds8ZFruYPBaCK8FB6hMn+FDYSQGsCbIcdGRnwrk0KeZ1npq5EufZY/jNJt
+         uALVB34/+JOqC/ra7TRaOTDru8x726+EN4LDHZaIViUBht0jnEitBY/WjEj3SxfWnTeG
+         WBNCOKrk6c9EKq45hW/t6IvkxvLhk4CtGAwXhS3iau2z0yTtP4AG+pMcSr5Q34QD+7qH
+         VKgCPJBss9M6IofGPlnU+vN/zPYcb8WhL5YjXHnNYjUGNZU1DyCsBN8skmBIb0rs2m84
+         nA0A==
+X-Forwarded-Encrypted: i=1; AJvYcCU1l9u5Q5CRN1ovohaiWnlvmMhoiKbtF9wRzaFwNy0XXiibZY/UM+pHoIgVRj3w5GuUhaW/sw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz52HfxVkNox4hXNq6bCEi/6oeIxvzwpU6SMOX+hMpQ9BtqcQko
+	3uZMPt8PyuvAkIoGSb8qE4vOf31Tj1Etck71901eBgo7+cQlQvnlqsIecER7XhMKlhI=
+X-Gm-Gg: ASbGncseUa2XzUF4Gt99RhFawgnW98PCG3GeSqJhpShNtqDqvhOMZ5Z+Iglv8cfEvJY
+	pgqTIyiO57dc2EnLeqED2Iq1CbmIJ7qsxiVEE5CLLy48PYUIaMJMBJvb2d2nhakTtMlXIfyjzbk
+	AWMay3WGQs3SK9gGh6egiaUgnpcyBCrnebh7/4fxEPRcT8mSH/v8neAzKm9eUyaQoL2xL8s0bNF
+	9g4Cm1XjEcctzPeQ8o6exEwJkuyNkfVQ/nn17bmsMBARr2pfq9g4bCrdIZcdaSA5AVFbj9+X01t
+	dA3JxHPYPssn0+jKllz5XUn2cxn3tvAUpLvu
+X-Google-Smtp-Source: AGHT+IFZ3zSfjYQzxyz1yM8Fepo5JqoekfbsnijfBYQsXPZ/Ajozpgkhms1b0mgB5wFz5VVdckjdGw==
+X-Received: by 2002:a05:620a:6188:b0:7d4:3af3:8ef9 with SMTP id af79cd13be357-7d44394f4b7mr170906885a.19.1750977836523;
+        Thu, 26 Jun 2025 15:43:56 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4a7fc57c537sm4265211cf.57.2025.06.26.15.43.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Jun 2025 15:43:55 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1uUvJz-00000001h7a-0mlm;
+	Thu, 26 Jun 2025 19:43:55 -0300
+Date: Thu, 26 Jun 2025 19:43:55 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Cc: Alexandre Courbot <acourbot@nvidia.com>, Lyude Paul <lyude@redhat.com>,
+	dakr@kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
 	open list <linux-kernel@vger.kernel.org>,
-	"open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
-	"open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
-	"open list:VFIO DRIVER" <kvm@vger.kernel.org>,
-	"open list:SOUND" <linux-sound@vger.kernel.org>,
-	Daniel Dadap <ddadap@nvidia.com>,
-	Mario Limonciello <mario.limonciello@amd.com>
-Subject: Re: [PATCH v5 9/9] PCI: Add a new 'boot_display' attribute
-Message-ID: <20250626214721.GA1642412@bhelgaas>
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
+	rust-for-linux@vger.kernel.org,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	Petr Tesarik <petr@tesarici.cz>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Sui Jingfeng <sui.jingfeng@linux.dev>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH 1/2] rust: add initial scatterlist bindings
+Message-ID: <20250626224355.GE213144@ziepe.ca>
+References: <20250528221525.1705117-2-abdiel.janulgue@gmail.com>
+ <20250529004550.GB192517@ziepe.ca>
+ <DA9JTYA0EQU8.26M0ZX80FOBWY@nvidia.com>
+ <95ff963ddabf7c3cd2cfd07d0231a0073ff6847e.camel@redhat.com>
+ <DAED5BUK7TUQ.4JRHFMWZ99W3@nvidia.com>
+ <27e17dbf-df6a-48fc-a652-ad48a776f668@gmail.com>
+ <DAENGORNRVZH.2KIGKFV5C5G3L@nvidia.com>
+ <f787046921fd608c385dc5c559883c5d70839507.camel@redhat.com>
+ <DAP96FEJ0XWT.PWYMIE8IJAVQ@nvidia.com>
+ <e2677c26-1c25-4a34-b666-9dcfa9642fd1@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,106 +103,41 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <58625a35-4a3e-4c91-939d-9f0d6635f8c0@kernel.org>
+In-Reply-To: <e2677c26-1c25-4a34-b666-9dcfa9642fd1@gmail.com>
 
-On Thu, Jun 26, 2025 at 04:12:21PM -0500, Mario Limonciello wrote:
-> On 6/26/2025 3:45 PM, Bjorn Helgaas wrote:
-> > On Tue, Jun 24, 2025 at 03:30:42PM -0500, Mario Limonciello wrote:
-> > > From: Mario Limonciello <mario.limonciello@amd.com>
-> > > 
-> > > On systems with multiple GPUs there can be uncertainty which GPU is the
-> > > primary one used to drive the display at bootup. In order to disambiguate
-> > > this add a new sysfs attribute 'boot_display' that uses the output of
-> > > video_is_primary_device() to populate whether a PCI device was used for
-> > > driving the display.
-> > > 
-> > > Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-> > 
-> > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> > 
-> > Question below.
-> > 
-> > > ---
-> > > v4:
-> > >   * new patch
-> > > ---
-> > >   Documentation/ABI/testing/sysfs-bus-pci |  9 +++++++++
-> > >   drivers/pci/pci-sysfs.c                 | 14 ++++++++++++++
-> > >   2 files changed, 23 insertions(+)
-> > > 
-> > > diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-> > > index 69f952fffec72..897cfc1b0de0f 100644
-> > > --- a/Documentation/ABI/testing/sysfs-bus-pci
-> > > +++ b/Documentation/ABI/testing/sysfs-bus-pci
-> > > @@ -612,3 +612,12 @@ Description:
-> > >   		  # ls doe_features
-> > >   		  0001:01        0001:02        doe_discovery
-> > > +
-> > > +What:		/sys/bus/pci/devices/.../boot_display
-> > > +Date:		October 2025
-> > > +Contact:	Linux PCI developers <linux-pci@vger.kernel.org>
-> > > +Description:
-> > > +		This file indicates whether the device was used as a boot
-> > > +		display. If the device was used as the boot display, the file
-> > > +		will contain "1". If the device is a display device but wasn't
-> > > +		used as a boot display, the file will contain "0".
-> > 
-> > Is there a reason to expose this file if it wasn't a boot display
-> > device?  Maybe it doesn't need to exist at all unless it contains "1"?
-> 
-> I was mostly thinking that it's a handy way for userspace to know whether
-> the kernel even supports this feature.  If userspace sees that file on any
-> GPU as it walks a list then it knows it can use that for a hint.
-> 
-> But if you would rather it only shows up for the boot display yes it's
-> possible to do I think.  It's just more complexity to the visibility lookup
-> to also call video_is_primary_device().
+On Thu, Jun 26, 2025 at 11:31:15PM +0300, Abdiel Janulgue wrote:
+> Just commenting on this bit. From what I've seen, we don't actually leak
+> anything. The cast only creates a reference to the original C `struct
+> sg_table` object which was allocated and owned by whichever kernel subsystem
+> called sg_alloc_table(). Rust doesn't even allow us to take ownership or to
+> dereference the value, so this one is safe. Destructors are not called on
+> those "casted" objects.
 
-I think for a singleton situation like this it makes more sense to
-only expose the file for one device, not several files where only one
-of them contains "1".
+This does not seem the right kind of philosophy.
 
-> > > diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-> > > index 268c69daa4d57..5bbf79b1b953d 100644
-> > > --- a/drivers/pci/pci-sysfs.c
-> > > +++ b/drivers/pci/pci-sysfs.c
-> > > @@ -30,6 +30,7 @@
-> > >   #include <linux/msi.h>
-> > >   #include <linux/of.h>
-> > >   #include <linux/aperture.h>
-> > > +#include <asm/video.h>
-> > >   #include "pci.h"
-> > >   #ifndef ARCH_PCI_DEV_GROUPS
-> > > @@ -679,6 +680,13 @@ const struct attribute_group *pcibus_groups[] = {
-> > >   	NULL,
-> > >   };
-> > > +static ssize_t boot_display_show(struct device *dev, struct device_attribute *attr,
-> > > +				 char *buf)
-> > > +{
-> > > +	return sysfs_emit(buf, "%u\n", video_is_primary_device(dev));
-> > > +}
-> > > +static DEVICE_ATTR_RO(boot_display);
-> > > +
-> > >   static ssize_t boot_vga_show(struct device *dev, struct device_attribute *attr,
-> > >   			     char *buf)
-> > >   {
-> > > @@ -1698,6 +1706,7 @@ late_initcall(pci_sysfs_init);
-> > >   static struct attribute *pci_dev_dev_attrs[] = {
-> > >   	&dev_attr_boot_vga.attr,
-> > > +	&dev_attr_boot_display.attr,
-> > >   	NULL,
-> > >   };
-> > > @@ -1710,6 +1719,11 @@ static umode_t pci_dev_attrs_are_visible(struct kobject *kobj,
-> > >   	if (a == &dev_attr_boot_vga.attr && pci_is_vga(pdev))
-> > >   		return a->mode;
-> > > +#ifdef CONFIG_VIDEO
-> > > +	if (a == &dev_attr_boot_display.attr && pci_is_display(pdev))
-> > > +		return a->mode;
-> > > +#endif
-> > > +
-> > >   	return 0;
-> > >   }
-> > > -- 
-> > > 2.43.0
-> > > 
-> 
+Every pointer out of the kernel APIs has some kind of implicit
+lifetime contract.
+
+Eg if you have
+  b = get_b(a);
+
+Then the lifetime of b might well be 'alive so long as a is alive'
+
+Or if you have some function pointer callback
+  void op_foo(a) {}
+
+The lifetime of a might well be 'alive only within the function'
+
+AFAICT rust needs to figure out these implicit rules and the compiler
+needs to enforce them.
+
+Eg
+
+ a = make_a()
+ b = get_b(a)
+ destroy_a()
+ do_something(b)
+
+Should be something impossible.
+
+Jason
