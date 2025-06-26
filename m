@@ -1,269 +1,165 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F5FF2EFDA0
-	for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 19:40:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53B32220F2D
+	for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 20:31:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750966848; cv=none; b=QIe536bg+v/MLHk3tOldMhuaeYf2OWPr9WRVZzdHEjos/2qGuArBTAKBkwVvJ/X/2QzfvUPmYvAf6Mpk38pboNwSuJ3q8lpldnZYWgO3nVcmRj3orfs2gopmnqDnUde0e2byEVxty20p1dE0Jc7lonc1Crb3lAZQxahgYW9EWHA=
+	t=1750969883; cv=none; b=HETDehvAsJqFSmOXqIiUaKGbsy0EUXnmrHONbQs67W664YFQQ8LolzUCSgwCKNuEi/yAfVPF5zL5ISVWE9m1dUb/0EhvF8JLtUa/XtZpOFvVKJB32truOZhCkFg/gCHDphbdSCgQvmPZApAk8Jo9TClBLs5GUVC+xay/LgWVALc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750966848; c=relaxed/simple;
-	bh=dM9I99bqjM9rdGoo0uOuC6Ud0JHcGJfH4Mjr85h64Pw=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pkDacWp3X8Qvf76sIlpL8R/b6a4vsHIKj0lP8KhDkZc2vpVW1EdyEe/32lP4IacWTLGwy0iJRLRuSNdzs6M73B7f4OF9Gq0/aGDw/U6ZA53oTMu+SS9APaBh8R8KOrOaPXp7hCPj3X35s9LJHdvfJNcs4Ho+2pWZSuo7gDo3InY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=CY/zkd1Y; arc=none smtp.client-ip=209.85.208.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1750969883; c=relaxed/simple;
+	bh=/7uLT/5QzU2c97p0dDWXOrLBhujNl00Oz5cNwO/D3YQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uTgYlEGDnyaKxCWk/hLRc/HQvsF4JpIBxIyEB8Zka5Zdmnm/mPFKxSene+fg/PU/uO59t07Snyuo6rAPYiTE8yanKnRJV+kBGJXS6OLFUwmGzOdTnbpz62VfhpuXbMwzAycaFz12xA26QpGsS4bd4Kc+nFa2qJZoqbjJFw+DGCc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m/9FG2tU; arc=none smtp.client-ip=209.85.208.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="CY/zkd1Y"
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-60bbfe9e864so211730a12.1
-        for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 12:40:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m/9FG2tU"
+Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-32b3b250621so13133191fa.2
+        for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 13:31:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1750966844; x=1751571644; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yi0zyP0lhLzXRnA/JuxxkK7pzdS3ZWCjFq9wZFiffhA=;
-        b=CY/zkd1YFbXy5l4wIidu6BD46V+ImYDoZrpqsw2R1bhd2XmDsPLsxg1D9Hyp1N0uIG
-         LB33njtdmSZe1LcWppXivKGNKoA0gRGyt+Ww2RFWvpy4A+mNXvSlr1bgU4RTTRzybUSy
-         E9q/p0UIBvElmMCOU1hNjxRO3lS4ziGWx0RzLRGQYL+sBVLE90bHkWUdsgSdyWTSbHKW
-         1lVY+kovcno/RVHqS6AWYuOBs/Tp8fIoIDt45DIEiIZmwBW0f9gAN28NlkNIFAfEqSQ8
-         Fnc+KpIGDvjGcOzTks3htjrSinAH6zC6NBnSFV9U7sNA4142/iyfR0vTYr+okNoUaiNO
-         3Gow==
+        d=gmail.com; s=20230601; t=1750969878; x=1751574678; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=mRgtLChVcwC91XDcRTbMS+jnkMAGg5kUPg69daDLGww=;
+        b=m/9FG2tUSkX0qIiX0aWhDaEgtgfdL6RUJC6yOF3edLLt+XvFkIykFGC0EZgddcOUM/
+         e4TN9UmddGbt9Yfg+E9HlaLFDbdzvjvA0UncVJztFAmp6uNa6xjngLvOsj7Fmr7ICTh2
+         okr9UQR/AkVjqJQiB0ofECU+V0aanW6yjMTXsD90XfLavo++kjSStyp/IbMykEYsm948
+         aSjk7MWFAjf7sXDTbgWCBVw6VuvwwBnTMvWmi00oG1wTXOviSAoupK4hqmSVx8gaGoS2
+         RM+YFowp7+JtvMViM6jf6CmQKgKlZN1G0J+h5th33DW06+Jb5OZvF9WPmFDePWFuoEVA
+         J/9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1750966844; x=1751571644;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=yi0zyP0lhLzXRnA/JuxxkK7pzdS3ZWCjFq9wZFiffhA=;
-        b=TUt1sZjOxfyQ/7qQsX6jXCwSBPKOIB/4w0dopmbUnECH7qO/RWcnrWIH7rIKiR1iR+
-         CVXHR5rqZsdG+2TD1MD5NKUUAwK+1hSZslML6LJz/EQUlynLAmWx43tg9dhNp8yVulOK
-         B1mdJMsaU2JwEB85Q/5MNmT/vuMArKqCaw7vOki16k8eajSNJj5jFHM1d3UCIn5PoC90
-         QA1yI3KVMM6a3XR2T7jjtX7J3f0fiUelMdr12xD3v0Iy59l9JP38PPInzYwqC8FaGun4
-         RHpYT/LN2voQ5fbMdYMdbk3E1lzucgM4LqfWfrBsy8cEYiTQTOpCuzJvMRTEnO3sAW/7
-         ybMQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW4My9x1j+ELXpgIjiEN3eX+FWngZx2GzjTp1qiBoEtqVl31N1qh3QaBlp0J/AiQSMbz2R0nQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwY4Z6iLR0exj+OW/7YfjFLNXgrsuz997+5AXjtjhnX2oOJxyfZ
-	aP7z/fSKhBOnpR6GDHuq11wd5zBP8HBCn64p9Wwv1N/oXjqN23dhKxw/r+iZQ4DMJwY=
-X-Gm-Gg: ASbGncv5rAJ4EeeD9C/WWVjXGPfY0cCB8jaNWxrBpZkpzhUhKG3qGqRmpt/HkXGD+H0
-	Y8LKESGImzgQV4FTlGIWsAFYT0vT3WeE1Gxea6CF0TtOnulFyVmRxqT22IVJJmR2pO/J7tXU/Oh
-	naiPcCQCGBfw5OJXw9Rkmv+rotyUZYTOt+7R1j2PyYabCiMqNF0pFC7j/E3WXyRB+H6s4ZhzaBC
-	rAM1M0gtjAehr0awzVXh0Vz1NSKp2hw7BuP43Kk3vH+dcYUCGukRv+pvKMMBg4R3Q0SdFVMHcKO
-	1hcD6zKxCf7y+0x+Q85GUVKSkINpiP4kyA79UDTeJkPmaA==
-X-Google-Smtp-Source: AGHT+IEsYVBfqLRZXizUOunREMSsJk6JMVGmiEF90edDyS4wLX4c3Ncf8ou/Y+kyS4pvWL6h/0lOPQ==
-X-Received: by 2002:a05:6402:3585:b0:60c:3c9b:4862 with SMTP id 4fb4d7f45d1cf-60c88e394b2mr90760a12.7.1750966843715;
-        Thu, 26 Jun 2025 12:40:43 -0700 (PDT)
-Received: from mordecai.tesarici.cz ([213.235.133.102])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-60c83208aa2sm400637a12.74.2025.06.26.12.40.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Jun 2025 12:40:43 -0700 (PDT)
-Date: Thu, 26 Jun 2025 21:40:38 +0200
-From: Petr Tesarik <ptesarik@suse.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Bagas Sanjaya
- <bagasdotme@gmail.com>, Jonathan Corbet <corbet@lwn.net>, Andrew Morton
- <akpm@linux-foundation.org>, Leon Romanovsky <leon@kernel.org>, Keith Busch
- <kbusch@kernel.org>, Caleb Sander Mateos <csander@purestorage.com>, Sagi
- Grimberg <sagi@grimberg.me>, Jens Axboe <axboe@kernel.dk>, John Garry
- <john.g.garry@oracle.com>, "open list:DOCUMENTATION"
- <linux-doc@vger.kernel.org>, open list <linux-kernel@vger.kernel.org>,
- "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>, iommu@lists.linux.dev
-Subject: Re: [PATCH 7/8] docs: dma-api: update streaming DMA API physical
- address constraints
-Message-ID: <20250626214038.2d005bb5@mordecai.tesarici.cz>
-In-Reply-To: <0f95be6d-2e13-4281-98b5-6d4311a3b98f@arm.com>
-References: <20250624133923.1140421-1-ptesarik@suse.com>
-	<20250624133923.1140421-8-ptesarik@suse.com>
-	<aFynHWAYtKPFT55P@archie.me>
-	<20250626070602.3d42b607@mordecai.tesarici.cz>
-	<bdb3a37a-a9d3-44c1-8eb7-41912c976ad1@arm.com>
-	<20250626154818.46b0cfb1@mordecai.tesarici.cz>
-	<0f95be6d-2e13-4281-98b5-6d4311a3b98f@arm.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.50; x86_64-suse-linux-gnu)
+        d=1e100.net; s=20230601; t=1750969878; x=1751574678;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mRgtLChVcwC91XDcRTbMS+jnkMAGg5kUPg69daDLGww=;
+        b=A+GcdmsztgYCjl7Hp+Xx+aVz2QFvMzJ+XJPRV368ZBfuwHzymsdeBVw43LQKfvP2jr
+         Wvc5HGcMgKGEwodwz9MzKao3+nQOi0CYpNXPJhUvlrhzqhwAMaf3291I72pL8rpGRt+b
+         Dxlj7deNWKGVuR8QLiCpJuLWgSYRRNdR2uovU+L9/zDoFSemJzfCZIZimI5ZuCzNVLdi
+         0gB+jsqsNbrJJWSDxyfzNHZPhuDL/mBHm6qZe/IppNOUkO87e05WuQbL0lP8bXJ/PEP4
+         0QwSKNYPRcBSiIAlH7L38t7AYA3N+fzxK9nD1+I0pGtQ+6U6V4MlLvzyhuSMfWEwVMx4
+         cVTw==
+X-Forwarded-Encrypted: i=1; AJvYcCWTQLrkV+BDFIbZ85SwrqvPxoqK5uiRfqX2Kw88O2vEMucEHrnBcmsuF0MLZ08akOPfW9WjWw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yzp2KeaA1/y02o5tSmHEWrximgU4677Y9s6Thih+WzXevUdSjIT
+	RFACMJMbpiNL5fmjfQ8r6b5slvVgA1f4jGJiDg0su1U/l0Tlk/oNVcf7
+X-Gm-Gg: ASbGnctTzM/EYp1WGiDgCrSxSxmBsU/UDVCgZhcgpsp0B2AHUQOR8L0R/rvpq006IQL
+	kzVuaRk1HPnr1Ap1SXvwu2g+T7PX8TG+OldtCPAZ92L3lZLtHUFdIyIqWkBQ61vKipjxnX2NXFZ
+	jMsgaJWu1vHch4sOkf0V6RhPcLHxG3chIt04TrNIldccAQEYPWFDbfbilC/sxSFmds7ltznL3l2
+	VSKdEPeWKNR0/vo7RS4qkX0Jb9fRTwc6R7tm9Ximrm326HwO2Ejk37gMVMVkym2gGH2zike3be8
+	tvvXK9JDhW7JbEHMRpjZv9Am1b3gZL9r02xv5EoWyJrQiCG7iJQRhqkV6Pe+mGzBAGG85zaRCgH
+	W75MxpAyM3+Rol5+0ZrLlrp+WoxHrF3viB7n+LQE=
+X-Google-Smtp-Source: AGHT+IHYfF74apNZsEVj5yD91rWsqIQcDDehaUjeuYFFZ6knoVUZVAJYhiRM9u8vG5icCh7X99mhpA==
+X-Received: by 2002:a05:6512:31d0:b0:553:abcd:cf51 with SMTP id 2adb3069b0e04-5550ba16ad6mr269700e87.40.1750969878092;
+        Thu, 26 Jun 2025 13:31:18 -0700 (PDT)
+Received: from [192.168.1.146] (dsl-hkibng22-54f8dc-251.dhcp.inet.fi. [84.248.220.251])
+        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-32cd2ec5ef3sm3072181fa.60.2025.06.26.13.31.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Jun 2025 13:31:16 -0700 (PDT)
+Message-ID: <e2677c26-1c25-4a34-b666-9dcfa9642fd1@gmail.com>
+Date: Thu, 26 Jun 2025 23:31:15 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] rust: add initial scatterlist bindings
+To: Alexandre Courbot <acourbot@nvidia.com>, Lyude Paul <lyude@redhat.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>
+Cc: dakr@kernel.org, Miguel Ojeda <ojeda@kernel.org>,
+ Alex Gaynor <alex.gaynor@gmail.com>, Boqun Feng <boqun.feng@gmail.com>,
+ Gary Guo <gary@garyguo.net>, =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?=
+ <bjorn3_gh@protonmail.com>, Benno Lossin <benno.lossin@proton.me>,
+ Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
+ Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>,
+ open list <linux-kernel@vger.kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
+ rust-for-linux@vger.kernel.org,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+ Petr Tesarik <petr@tesarici.cz>, Andrew Morton <akpm@linux-foundation.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ Sui Jingfeng <sui.jingfeng@linux.dev>, Randy Dunlap <rdunlap@infradead.org>,
+ Michael Kelley <mhklinux@outlook.com>
+References: <20250528221525.1705117-1-abdiel.janulgue@gmail.com>
+ <20250528221525.1705117-2-abdiel.janulgue@gmail.com>
+ <20250529004550.GB192517@ziepe.ca> <DA9JTYA0EQU8.26M0ZX80FOBWY@nvidia.com>
+ <95ff963ddabf7c3cd2cfd07d0231a0073ff6847e.camel@redhat.com>
+ <DAED5BUK7TUQ.4JRHFMWZ99W3@nvidia.com>
+ <27e17dbf-df6a-48fc-a652-ad48a776f668@gmail.com>
+ <DAENGORNRVZH.2KIGKFV5C5G3L@nvidia.com>
+ <f787046921fd608c385dc5c559883c5d70839507.camel@redhat.com>
+ <DAP96FEJ0XWT.PWYMIE8IJAVQ@nvidia.com>
+Content-Language: en-US
+From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+In-Reply-To: <DAP96FEJ0XWT.PWYMIE8IJAVQ@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Thu, 26 Jun 2025 17:45:18 +0100
-Robin Murphy <robin.murphy@arm.com> wrote:
 
-> On 26/06/2025 2:48 pm, Petr Tesarik wrote:
-> > On Thu, 26 Jun 2025 10:58:00 +0100
-> > Robin Murphy <robin.murphy@arm.com> wrote:
-> >   
-> >> On 2025-06-26 6:06 am, Petr Tesarik wrote:  
-> >>> On Thu, 26 Jun 2025 08:49:17 +0700
-> >>> Bagas Sanjaya <bagasdotme@gmail.com> wrote:
-> >>>      
-> >>>> On Tue, Jun 24, 2025 at 03:39:22PM +0200, Petr Tesarik wrote:  
-> >>>>> diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
-> >>>>> index cd432996949c..65132ec88104 100644
-> >>>>> --- a/Documentation/core-api/dma-api.rst
-> >>>>> +++ b/Documentation/core-api/dma-api.rst
-> >>>>> @@ -210,18 +210,12 @@ DMA_BIDIRECTIONAL	direction isn't known
-> >>>>>    	this API should be obtained from sources which guarantee it to be
-> >>>>>    	physically contiguous (like kmalloc).
-> >>>>>    
-> >>>>> -	Further, the DMA address of the memory must be within the dma_mask of
-> >>>>> -	the device.  To ensure that the memory allocated by kmalloc is within
-> >>>>> -	the dma_mask, the driver may specify various platform-dependent flags
-> >>>>> -	to restrict the DMA address range of the allocation (e.g., on x86,
-> >>>>> -	GFP_DMA guarantees to be within the first 16MB of available DMA
-> >>>>> -	addresses, as required by ISA devices).
-> >>>>> -
-> >>>>> -	Note also that the above constraints on physical contiguity and
-> >>>>> -	dma_mask may not apply if the platform has an IOMMU (a device which
-> >>>>> -	maps an I/O DMA address to a physical memory address).  However, to be
-> >>>>> -	portable, device driver writers may *not* assume that such an IOMMU
-> >>>>> -	exists.
-> >>>>> +	Mapping may also fail if the memory is not within the DMA mask of the
-> >>>>> +	device.  However, this constraint does not apply if the platform has
-> >>>>> +	an IOMMU (a device which maps an I/O DMA address to a physical memory
-> >>>>> +	address), or the kernel is configured with SWIOTLB (bounce buffers).
-> >>>>> +	It is reasonable to assume that at least one of these mechanisms
-> >>>>> +	allows streaming DMA to any physical address.  
-> >>>
-> >>> Now I realize this last sentence may be contentious...  
-> >>
-> >> The whole paragraph is wrong as written, not least because it is
-> >> conflating two separate things: "any physical address" is objectively
-> >> untrue, since SWIOTLB can only bounce from buffers within by the
-> >> kernel's linear/direct map, i.e. not highmem, not random memory
-> >> carveouts, and and definitely not PAs which are not RAM at all.  
-> > 
-> > I see, saying "any" was indeed too strong.
-> >   
-> >> Secondly, even if the source buffer *is* bounceable/mappable, there is
-> >> still no guarantee at all that it can actually be made to appear at a
-> >> DMA address within an arbitrary DMA mask. We aim for a general
-> >> expectation that 32-bit DMA masks should be well-supported (but still
-> >> not 100% guaranteed), but anything smaller can absolutely still have a
-> >> high chance of failing, e.g. due to the SWIOTLB buffer being allocated
-> >> too high or limited IOVA space.  
-> > 
-> > Of course this cannot be guaranteed. The function may always fail and
-> > return DMA_MAPPING_ERROR. No doubts about it.
-> >   
-> >>> @Marek, @Robin Do you agree that device drivers should not be concerned
-> >>> about the physical address of a buffer passed to the streaming DMA API?
-> >>>
-> >>> I mean, are there any real-world systems with:
-> >>>     * some RAM that is not DMA-addressable,
-> >>>     * no IOMMU,
-> >>>     * CONFIG_SWIOTLB is not set?  
-> >>
-> >> Yes, almost certainly, because "DMA-addressable" depends on individual
-> >> devices. You can't stop a user from sticking, say, a Broadcom 43xx WiFi
-> >> card into a PCI slot on an i.MX6 board with 2GB of RAM that *starts*
-> >> just above its 31-bit DMA capability. People are still using AMD Seattle
-> >> machines, where even though arm64 does have SWIOTLB it's essentially
-> >> useless since RAM starts up around 40 bits IIRC (and although they do
-> >> also have SMMUs for PCI, older firmware didn't advertise them).  
-> > 
-> > Some of these scenarios can never work properly because of hardware
-> > limitations. There's nothing software can do about a bus master which
-> > cannot address any RAM in the machine. I'm not trying to claim that an
-> > operating system kernel can do magic and square the circle. If that's
-> > how it sounded, then my wording needs to be improved.
-> > 
-> > IIUC the expected audience of this document are device driver authors.
-> > They want a clear guidance on how they should allocate buffers for the
-> > streaming DMA API. Now, it is my understanding that device drivers
-> > should *not* have to care about the physical location of a buffer
-> > passed to the streaming DMA API.
-> > 
-> > Even if a bus master implements less than 32 address bits in hardware,
-> > I'm convinced that device drivers should not have to examine the system
-> > to check if an IOMMU is available and try to guess whether a buffer
-> > must be bounced, and how exactly the bounce buffer should be allocated.  
+
+On 18/06/2025 04:03, Alexandre Courbot wrote:
+> Hi Lyude, sorry for taking so long to come back to this!
 > 
-> It's never been suggested that drivers should do that; indeed trying to 
-> poke into and second-guess the DMA API implementation is generally even 
-> less OK than making blind assumptions about what it might do. The 
-> overall message here is essentially "if you want to do streaming DMA 
-> then you may need to be wary of where your memory comes from." We can't 
-> just throw that out and say "Yeah it's fine now, whatever you do the API 
-> will deal with it" because that simply isn't true as a general 
-> statement; drivers dealing with limited DMA masks *do* still need to be 
-> concerned with GFP_DMA (or even GFP_DMA32 might still be advisable in 
-> certain cases) if they want to have an appreciable chance of success. 
-> All that's different these days is that notion of "limited" generally 
-> meaning "32 bits or smaller".
-
-We're on the same page then. I'm going to make a better explanation of
-how things work and what is expected from DMA API users.
-
-Thank you very much for your feedback! I'm sure it will be greatly
-appreciated by future generations of device driver authors.
-
-> > If we can agree on this, I can iron out the details for a v2 of this
-> > patch series.
-> >   
-> >>> FWIW if _I_ received a bug report that a device driver fails to submit
-> >>> I/O on such a system, I would politely explain the reporter that their
-> >>> kernel is misconfigured, and they should enable CONFIG_SWIOTLB.  
-> >>
-> >> It's not really that simple. SWIOTLB, ZONE_DMA, etc. require platform
-> >> support, which end users can't just turn on if it's not there to begin with.  
-> > 
-> > I know this very well. As you may not be aware, my ultimate goal is to
-> > get rid of ZONE_DMA and instead enhance the buddy allocator to allow
-> > allocations within an arbitrary physical address range, which will not
-> > rely on platform support. But that's another story; for now, let's just
-> > agree on how the DMA API is supposed to work.  
+> On Tue Jun 10, 2025 at 2:44 AM JST, Lyude Paul wrote:
+>> On Thu, 2025-06-05 at 22:56 +0900, Alexandre Courbot wrote:
+>>> On Thu Jun 5, 2025 at 10:30 PM JST, Abdiel Janulgue wrote:
+>>>>
+>>>>
+>>>> On 05/06/2025 08:51, Alexandre Courbot wrote:
+>>>>> Maybe I need more context to understand your problem, but the point of
+>>>>> this design is precisely that it doesn't make any assumption about the
+>>>>> memory layout - all `P` needs to do is provide the pages describing the
+>>>>> memory backing.
+>>>>>
+>>>>> Assuming that `_owner` here is the owner of the memory, couldn't you
+>>>>> flip your data layout and pass `_owner` (or rather a newtype wrapping
+>>>>> it) to `SGTable`, thus removing the need for a custom type?
+>>>>
+>>>> I think what Lyude has in mind here (Lyude, correct me if I'm wrong) is
+>>>> for cases where we need to have a rust SGTable instances for those
+>>>> struct sg_table that we didn't allocate ourselves for instance in the
+>>>> gem shmem bindings. So memory layout needs to match for
+>>>> #[repr(transparent)] to work
+>>>
+>>> Thanks, I think I am starting to understand and this is a problem
+>>> indeed. I should probably take a look at the DRM code to get my answers,
+>>> but IIUC in `OwnedSGTable`, `sg_table` is already provided by the C side
+>>> and is backed by `_owner`?
+>>
+>> Correct. You generally create a gem shmem object, and then you can call a
+>> function to ask gem to create an sg_table and hand it back to you. I should
+>> note my priorities have shifted a bit from trying to get shmem bindings
+>> upstream, but currently it's still the best example I have of this usecase.
+>>
+>> So, for gem shmem this means we can operate with an SGTable in two ways:
+>>
+>>   * gem_shmem_object.sg_table() -> Result<&kernel::scatterlist::SGTable>
+>>   * gem_shmem_object.owned_sg_table() ->
+>>     Result<kernel::drm::gem::shmem::OwnedSGTable<T: DriverObject>
+>>
+>> I'm going to call the first return type SGTable and the second one
+>> OwnedSGTable, just so I can type a bit less.
+>>
+>> The first, sg_table(), quite literally just calls drm_gem_shmem_get_pages_sgt
+>> which attempts to allocate the table and return a pointer to it on success. We
+>> then cast that to &SGTable and return it to the user. This can be good for
 > 
-> Indeed that might actually end up pushing things in the opposite 
-> direction, at least in some cases. Right now, a driver with, say, a 
-> 40-bit DMA mask is usually better off not special-casing DMA buffers, 
-> and just making plain GFP_KERNEL allocations for everything (on the 
-> assumption that 64-bit systems with masses of memory *should* have 
-> SWIOTLB to cover things in the worst case), vs. artificially 
-> constraining its DMA buffers to GFP_DMA32 and having to deal with 
-> allocation failure more often. However with a more precise and flexible 
-> allocator, there's then a much stronger incentive for such drivers to 
-> explicitly mark *every* allocation that may be used for DMA, in order to 
-> get the optimal behaviour.
+> Mmm but if you cast the returned C pointer into a `&SGTable`, then who
+> owns (and is responsible for freeing) the `SGTable` it refers to? If the
+> pointer is just turned into a reference then this might leak the `struct
+> sg_table`.
+> 
 
-I have a different opinion. Most buffers that are passed to the
-streaming DMA API are I/O data (data read from/written to disk, or
-received from/sent to network). For the write/send case, these pages
-were previously allocated by user space, and at that point the kernel
-had no clue that they would be later used for device I/O.
+Just commenting on this bit. From what I've seen, we don't actually leak 
+anything. The cast only creates a reference to the original C `struct 
+sg_table` object which was allocated and owned by whichever kernel 
+subsystem called sg_alloc_table(). Rust doesn't even allow us to take 
+ownership or to dereference the value, so this one is safe. Destructors 
+are not called on those "casted" objects.
 
-For example, consider this user-space sequence:
-
-	buffer = malloc(BUFFER_SIZE);
-	fill_in_data(buffer);
-	res = write(fd, buffer, BUFFER_SIZE);
-
-The write(2) syscall will try to do zero copy, and that's how the
-buffer address is passed down to a device driver. If the buffer is not
-directly accessible by the device, its content must be copied to a
-different physical location. That should be done by SWIOTLB, not the
-device driver. Last chance to chose a better placement for the buffer
-was at malloc(3) time, but at that time the device driver was not
-involved at all. Er, yes, we may want to provide an ioctl to allocate
-a suitable buffer for a target device. I think DRM even had such an
-ioctl once and then removed it, because it was not used in any released
-userspace code...
-
-In short, the device driver has no control of how these buffers were
-allocated, and it's not fair to expect anything from the driver.
-
-Sure, there are also control data structures, e.g. Tx/Rx rings, but
-they are typically allocated during device initialization (or ndo_open)
-using the coherent DMA API and reused for all subsequent I/O.
-
-In summary, yes, it would be great if we could reduce bouncing, but
-most of that work has already been done, and there's little left for
-improvement. So, why am I working on a PAR (Physical Address Range)
-Allocator? Certainly not to help users of the streaming DMA API. No,
-but it should help dynamic SWIOTLB when the primary SWIOTLB is
-allocated in an unsuitable physical location.
-
-Petr T
+/Abdiel
