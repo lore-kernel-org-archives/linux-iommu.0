@@ -1,198 +1,121 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2085.outbound.protection.outlook.com [40.107.244.85])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73F7930749E;
-	Wed, 25 Jun 2025 23:06:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.85
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750892816; cv=fail; b=Kk+o4KWlXyHyGxrEtOzFgcznG95Iis6/fFZGp9ByWNz6RlwA3wWWKNZjDKAlM+AIT9Y0TqNVxfDaPe3q5dcyiBhGevpw2u7oyNJ0YpgRT0jqHEP3aIaIM8cikn8J8ApwztFrWYkiNbai7vrz/e03eIZZAVEhZQxDzUPAdcdiyoY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750892816; c=relaxed/simple;
-	bh=h3AiQMbsqUS49429qO7WisZ5+uqsoLroJzjEsMkQPe8=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j/KOCIW+WnngQ69xDC8aUEUPwEew0F8/L9+gg9nxNunemafALkyDoGNP+7TKRlKDEtAECf5xMllBYFN5OynxSnveWgdZTlfuW2NraGidSbyzi9XkKXF6OPGKbFUWwTsRNTH0KfRiOeIn10VmcGWH46QcmwLhWc1BiGCjiVICQhg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=eusxB6Kr; arc=fail smtp.client-ip=40.107.244.85
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AC7B1B85FD
+	for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 03:38:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750909130; cv=none; b=K6dHwdcv3TLUDnOitv6F3WdrWnmWXDcgIEXHIv/Z2tof18mTBMm5IFB3OCEgyBZeIS50sk06i6vIccpjGWnkbNsEOY5L75LoJKeVUT4G/O4TNF+mdpLiFecYBuBRth1ci/w4zSHKBeMb9SEVglpPFeDFtgRfycuagww7eyPQjl4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750909130; c=relaxed/simple;
+	bh=qsb+gqnjKhUuAhN7Z7oyO9sPPXSOXU/jB3r2Fqw2FHU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dZS4hi54d/iiHLCc2fFAV1Hbg/WOBq6DHQ0KERsOxC/qHGnGygwWfqomE7b8jjPgrYdsd71qwSInWqEWcfFtSG0ExqnRx7HYcKgURVtgKdOQmuVB9tDYfoY7sft3dArCiNW/7V7ZP18PE51kXKKdBHR2nnbcTIh75DTGl44sidM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h8s4+H5p; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="eusxB6Kr"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gdfneLGnE/ZIAURwg9G75sraJtRIPhnMmrv3xIVYtxqURGptP5KAQZJl2aVLBOTQrhaqm+hX3nKy6R66egOVn8OG73Vwj+gYwj4iUpuFn+PnltM2tsRFbG0EMCu7ipcPs6vryJ8Vg3pnimD7vjqE0fXMK7AqgysbhG0m7qmEtmmKU84c/8FtPteSgJOwvxq/8Dznr1ysd2IeteGPIxd1ybZOon9x3fb6+fIirlZoT4VnzeR7P4q7g3mNY9hzVfrdLOpQv/CD+vFeG4P/T8cNNqz/wq/k0WkRADUUqZWyYNvH8jkzclAqp5tBMy+gRzv/5wY6tM7YbPWUBNRla+06ZA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=phh4OKodGMYsUpPWJQe7GkTpUyN1Fr6QxceJrdgSRY4=;
- b=Px7RgKqjF3mFK+rdFbtvZwPBw8wOIL6QceDudz/RhK12w517+gCMMdlK7JWYE8dLqcr7fwh1E8AMZrwXUdTiCqmoOd8tGy2h92MYy/tpi7WCayj+qlBk4UpcLfIZjVtkxo28I0ssPgpgbecaOrfOS+a+3m9X5hII3R5D6laadPXUpWIocIKD3e+yog4q1oNq/odQnG1Impo9OpTDaqIHIYNzbRitWUCkaBKz0f+zreGWZ0URy4Of4bT6Ikl0bUIRiVXcz19vCp/RChsxUiUAgNP5pgxy17At4lM/xNvgADol/geKb3eSebMHdLBoqkNVxBkoCdBm/9i0YqI8Mxl3Gg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=phh4OKodGMYsUpPWJQe7GkTpUyN1Fr6QxceJrdgSRY4=;
- b=eusxB6KrZvg1s5XMKSPvVM1iDfuY2gdjXmrktxAKex+F8YnpWcoVYFw8dL3fTv88PCgoNAFXO3lr4Z8ib7p+C89GQHenzUTWspw9bPF/mJ1BI0nltfAfbbnrNahQctVz1pR/8eYbK/RlQjavTm3zKO9DgaQkSKsvjr2Jwa+1Wv8B0DkLYHoiTpOjuRmGjwg0Ma3R13bYWuxCEvKFPp+iLm2ePyFlOCjMbu9BZs4Byy4MN6YyVLzbgkqp3OD8EhGIzkrJPvfsfjXsH0XQiykTYpHVYWVgwEFSqi8tTOH88yuLQ6sf8SNWM2RgNBTLArNbNSTI5KHH5y8uKr/hpMNHcA==
-Received: from BL0PR05CA0013.namprd05.prod.outlook.com (2603:10b6:208:91::23)
- by SA5PPF9BB0D8619.namprd12.prod.outlook.com (2603:10b6:80f:fc04::8d8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8678.27; Wed, 25 Jun
- 2025 23:06:49 +0000
-Received: from BN1PEPF0000468C.namprd05.prod.outlook.com
- (2603:10b6:208:91:cafe::13) by BL0PR05CA0013.outlook.office365.com
- (2603:10b6:208:91::23) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8880.18 via Frontend Transport; Wed,
- 25 Jun 2025 23:06:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BN1PEPF0000468C.mail.protection.outlook.com (10.167.243.137) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8880.14 via Frontend Transport; Wed, 25 Jun 2025 23:06:49 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 25 Jun
- 2025 16:06:32 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Wed, 25 Jun
- 2025 16:06:30 -0700
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Wed, 25 Jun 2025 16:06:29 -0700
-Date: Wed, 25 Jun 2025 16:06:27 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: "jgg@nvidia.com" <jgg@nvidia.com>, "corbet@lwn.net" <corbet@lwn.net>,
-	"will@kernel.org" <will@kernel.org>, "bagasdotme@gmail.com"
-	<bagasdotme@gmail.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "thierry.reding@gmail.com"
-	<thierry.reding@gmail.com>, "vdumpa@nvidia.com" <vdumpa@nvidia.com>,
-	"jonathanh@nvidia.com" <jonathanh@nvidia.com>, "shuah@kernel.org"
-	<shuah@kernel.org>, "jsnitsel@redhat.com" <jsnitsel@redhat.com>,
-	"nathan@kernel.org" <nathan@kernel.org>, "peterz@infradead.org"
-	<peterz@infradead.org>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"mshavit@google.com" <mshavit@google.com>, "praan@google.com"
-	<praan@google.com>, "zhangzekun11@huawei.com" <zhangzekun11@huawei.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-doc@vger.kernel.org"
-	<linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org"
-	<linux-tegra@vger.kernel.org>, "linux-kselftest@vger.kernel.org"
-	<linux-kselftest@vger.kernel.org>, "patches@lists.linux.dev"
-	<patches@lists.linux.dev>, "mochs@nvidia.com" <mochs@nvidia.com>,
-	"alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>, "vasant.hegde@amd.com"
-	<vasant.hegde@amd.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v6 10/25] iommufd/viommu: Add IOMMUFD_CMD_HW_QUEUE_ALLOC
- ioctl
-Message-ID: <aFyA881sUUjxHCFh@Asurada-Nvidia>
-References: <cover.1749884998.git.nicolinc@nvidia.com>
- <7dfb002613f224f57a069d27e7bf2b306b0a5ba0.1749884998.git.nicolinc@nvidia.com>
- <BN9PR11MB52763496C4A0066A77FED5B48C7BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h8s4+H5p"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1750909129; x=1782445129;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=qsb+gqnjKhUuAhN7Z7oyO9sPPXSOXU/jB3r2Fqw2FHU=;
+  b=h8s4+H5pdwJbPSqBhAKNYNrF/zOyHw1NYA+3WdfmL0oppLayqVJJ7Bvt
+   /SsBo3QlpzaScxVp02QBEnWqR9pEPd1NaUeqfwasCZaqjPI5lYjuLcynT
+   TkcvkLx++PUomw3dN+nfcgqpLzqGmLM58wY40M9fbpry+vdv6qxd0yQXi
+   8uwoI9qMW3TjO1rwKkSjm+XQE3/04P9dEKODPkTX5tv2iX62KW5f9aQus
+   M0KBO+IdAfly0KnIGAUWEoHBsctkIJfJ0R2Jf+CCDU8mjvBe+t1PMQejG
+   FfYwpBM0nXT2CreG1+TTsjzeLBQivTohmVi0hfJTYWcyyP6N9dTQVt+Mp
+   w==;
+X-CSE-ConnectionGUID: wgmYLpWjSHe9Uau1zXoNFw==
+X-CSE-MsgGUID: cQoGVx1xSJi5ZmQUPc4wjA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11475"; a="75735524"
+X-IronPort-AV: E=Sophos;i="6.16,266,1744095600"; 
+   d="scan'208";a="75735524"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jun 2025 20:38:48 -0700
+X-CSE-ConnectionGUID: 7VMGBjGrQFCQzhMD7SVYgA==
+X-CSE-MsgGUID: ElzvkcQWTgWMxRDG1dks8Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,266,1744095600"; 
+   d="scan'208";a="156431983"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by fmviesa003.fm.intel.com with ESMTP; 25 Jun 2025 20:38:45 -0700
+Date: Thu, 26 Jun 2025 11:31:06 +0800
+From: Xu Yilun <yilun.xu@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: kevin.tian@intel.com, will@kernel.org, aneesh.kumar@kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	joro@8bytes.org, robin.murphy@arm.com, shuah@kernel.org,
+	nicolinc@nvidia.com, aik@amd.com, dan.j.williams@intel.com,
+	baolu.lu@linux.intel.com, yilun.xu@intel.com
+Subject: Re: [PATCH v2 3/4] iommufd: Destroy vdevice on idevice destroy
+Message-ID: <aFy++lne6X+1bFlM@yilunxu-OptiPlex-7050>
+References: <20250623094946.1714996-1-yilun.xu@linux.intel.com>
+ <20250623094946.1714996-4-yilun.xu@linux.intel.com>
+ <20250624145346.GC150753@nvidia.com>
+ <aFvKCEt6FadGtYr+@yilunxu-OptiPlex-7050>
+ <20250625123832.GF167785@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB52763496C4A0066A77FED5B48C7BA@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN1PEPF0000468C:EE_|SA5PPF9BB0D8619:EE_
-X-MS-Office365-Filtering-Correlation-Id: cb8a59f8-8666-4583-07f8-08ddb43cf73e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|7416014|82310400026|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?8auYxNS8Bpirza8fm/OjFSPFNimFwtKg3TdooQhsPgbV4iE+/SiHu5c29Qvg?=
- =?us-ascii?Q?JBK3o1tBkoUptpRIoeVaEI/OciGqjiz124VwkRetgLeJQmz8UN6aO6e0KYLb?=
- =?us-ascii?Q?XvHliY6RjpqlUx4zgRA9ETF9c0InFCyCvEoOcT9SLYInAAD91q9uaxsBa8tk?=
- =?us-ascii?Q?sSPYj0YyW/6YuREzRt2z9K7qMGCskvMd6Z1NDqJVKxSuA9rXu+VA0kPdVkGU?=
- =?us-ascii?Q?JEeYldJv92LoGuY9dCsx1xnhbm0jEcgKdfF7nFcevuH5ECcwCdVNENpcmzEC?=
- =?us-ascii?Q?qu8YzRsmRxOyD9nSJRwXRPZ4hFVUqxZMQwT7CwEoM/2q8cOZ0/VJONTsKQWV?=
- =?us-ascii?Q?g0TDEHHQJY+AiI+C94LxL4C62BGwTaB81/hWVALLrPaTCHC0cPHWj0av/Dgv?=
- =?us-ascii?Q?/q85NzGsUCEtJpmz+GnQ2WxLs7UcKv85ia4Ou7x7nBcPLbK2HSI/vAte2LZt?=
- =?us-ascii?Q?HDNXSxuFKcUOHNbd5idvkgoTJsABDSzS96QCaPURqMwgEn1Bt6NSl6eAj7r7?=
- =?us-ascii?Q?1rly3JsuG4EwMj9elpYeLHoC2/3P7HOhmtU+37BuvW0Q+EjQuy/O7+Nw3Obo?=
- =?us-ascii?Q?EhLaP5erf/3vDQf42xy+PcWBboXMDsiC5k4vBCCEptDfPAMR87EmuWRxNdob?=
- =?us-ascii?Q?HYzkHulJjqlw526NeBwHxht+GUspzRYOKCQ9Ezh2q6Z62M0srZgHYqa2CAbU?=
- =?us-ascii?Q?y+7MezcSGj2pjsVZH/6XK+XqCxcQtgpTcjuye/Gi76aH2JWSi3DEzglYkB+A?=
- =?us-ascii?Q?HUj29h95gr3BDPcVpRTZF25sDoSB0Y5hmazvdnTpniPMLO4eqAxvh5zmrrsr?=
- =?us-ascii?Q?zvEgBVx3v68Nih1qiNhRpfjK70llRjHwXqyI//s6fZklo6PeAblzpGSZVL4/?=
- =?us-ascii?Q?qQ7aNIwvUOwu3qauXfSLdHDIJMzeFlvvPEu15nUGgAMmN7tzVlHSKpwQTznd?=
- =?us-ascii?Q?IYY3WPQbD4Nh7g6hkmrte5QAaAhd5aKBXND7AO75DPKfVZTTJrhaJSdmIvy6?=
- =?us-ascii?Q?APhOYXpVHI1sbeim1FJhqLHVefCy/VUgJkR0rOpbtumDnBwliL+bjXyArpTC?=
- =?us-ascii?Q?NlNh15YkMJhQyrXtMNuSRw22thsyxY32qQ4ZyoymjJr3GwjQcff2sBHv91Oe?=
- =?us-ascii?Q?rMI3MxZYL5maxAX7oNPjKFvp30bPjvbWshOW4TzhByhjBhWcFS48whPNfVWM?=
- =?us-ascii?Q?7PzdcbrTcH5B+d/+POu6zIUylsOzpGdd8fBGlfQHOpBXmvoby8FCWCkIY+0X?=
- =?us-ascii?Q?lfaVDZruPMsMjoZ2Q9izeHJVKS0Pn8PkyouICkwI3evPNSDaH9xseZ0UvP6F?=
- =?us-ascii?Q?FrzshiARub6PeMBaXu35n0pzLWkUipgly+Ki//dRdADi0IebZrNldliAjHLX?=
- =?us-ascii?Q?yd9aXB7ml05pII2DPvXBUIfJtHqW+Cg35B5/2e4otF6gEJTAiFfDOxdgKRbr?=
- =?us-ascii?Q?UsVQ+gUL9SV58h0bCr2/ZvEZ27HK3yRv38zMjqxlnlcUObMsg/S7HkQKvjy6?=
- =?us-ascii?Q?4/Yow/ew9urUICCzG7ljWReb+L92z1osAD9C?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(7416014)(82310400026)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2025 23:06:49.3675
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cb8a59f8-8666-4583-07f8-08ddb43cf73e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN1PEPF0000468C.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA5PPF9BB0D8619
+In-Reply-To: <20250625123832.GF167785@nvidia.com>
 
-On Wed, Jun 25, 2025 at 03:45:08AM +0000, Tian, Kevin wrote:
-> > From: Nicolin Chen <nicolinc@nvidia.com>
-> > Sent: Saturday, June 14, 2025 3:15 PM
-> > +
-> > +	offset =
-> > +		cmd->nesting_parent_iova - PAGE_ALIGN(cmd-
-> > >nesting_parent_iova);
-> > +	max_npages = DIV_ROUND_UP(offset + cmd->length, PAGE_SIZE);
-> > +
-> > +	/*
-> > +	 * FIXME allocation may fail when sizeof(*pages) * max_npages is
-> > +	 * larger than PAGE_SIZE. This might need a new API returning a
-> > +	 * bio_vec or something more efficient.
-> > +	 */
-> > +	pages = kcalloc(max_npages, sizeof(*pages), GFP_KERNEL);
-> > +	if (!pages)
-> > +		return ERR_PTR(-ENOMEM);
-> > +
+On Wed, Jun 25, 2025 at 09:38:32AM -0300, Jason Gunthorpe wrote:
+> On Wed, Jun 25, 2025 at 06:06:00PM +0800, Xu Yilun wrote:
+> > > 	/*
+> > > 	 * We don't know what thread is actually going to destroy the vdev, but
+> > > 	 * once the vdev is destroyed the pointer is NULL'd. At this
+> > > 	 * point idev->users is 0 so no other thread can set a new vdev.
+> > > 	 */
+> > > 	if (!wait_event_timeout(idev->ictx->destroy_wait,
+> > > 				!READ_ONCE(idev->vdev),
+> > > 				msecs_to_jiffies(60000)))
+> > > 		pr_crit("Time out waiting for iommufd vdevice removed\n");
+> > > }
+> > > 
+> > > Though there is a cleaner option here, you could do:
+> > > 
+> > > 	mutex_lock(&idev->igroup->lock);
+> > > 	if (idev->vdev)
+> > > 		iommufd_vdevice_abort(&idev->vdev->obj);
+> > > 	mutex_unlock(&idev->igroup->lock);
+> > > 
+> > > And make it safe to call abort twice, eg by setting dev to NULL and
+> > > checking for that. First thread to get to the igroup lock, either via
+> > > iommufd_vdevice_destroy() or via the above will do the actual abort
+> > > synchronously without any wait_event_timeout. That seems better??
+> > 
+> > I'm good to both options, but slightly tend not to make vdevice so
+> > special from other objects, so still prefer the wait_event option.
 > 
-> any allocation may fail... can you elaborate more here? How does
-> PAGE_SIZE become a boundary?
+> The wait_event is a ugly hack though, even in its existing code. The
+> above version is better because it doesn't have any failure mode and
+> doesn't introduce any unlocked use of the idev->vdev which is easier
+> to reason about, no READ_ONCE/WRITE_ONCE/etc
+> 
+> It sounds like you should largely leave the existing other parts the
+> same as this v2, though can you try reorganize it to look a little
+> more like the version I shared?
 
-Memory fragmentation can be the reason. It's easy to get one page
-but not for contiguous pages.
+Sure. But may I confirm that your only want reentrant
+iommufd_vdevice_abort() but not your iommufd_object_remove_tombstone()
+changes?
 
-Jason suggested to use kvcalloc, so I am adding this:
-@@ -249,11 +249,10 @@ iommufd_hw_queue_alloc_phys(struct iommu_hw_queue_alloc *cmd,
-        max_npages = DIV_ROUND_UP(offset + cmd->length, PAGE_SIZE);
+To me, grab a shortterm_users but not a user is a new operation model. I
+hesitate to add it when the existing refcount_inc(&obj->user) works for
+this case.
 
-        /*
--        * FIXME allocation may fail when sizeof(*pages) * max_npages is
--        * larger than PAGE_SIZE. This might need a new API returning a
--        * bio_vec or something more efficient.
-+        * Use kvcalloc() to avoid memory fragmentation for a large page array.
-+        * Set __GFP_NOWARN to avoid syzkaller blowups
-         */
--       pages = kcalloc(max_npages, sizeof(*pages), GFP_KERNEL);
-+       pages = kvcalloc(max_npages, sizeof(*pages), GFP_KERNEL | __GFP_NOWARN);
-        if (!pages)
-                return ERR_PTR(-ENOMEM);
+Thanks,
+Yilun
 
-Thanks
-Nicolin
+> 
+> Jason
+> 
