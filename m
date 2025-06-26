@@ -1,183 +1,174 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA93312DDA1;
-	Thu, 26 Jun 2025 23:33:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 908F912DDA1;
+	Thu, 26 Jun 2025 23:44:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750980801; cv=none; b=qiSjOj+UiZ7S5Ih7OQgV3nB9/3WPhb8Dwbmpxwvpy5eD7YSRvvSSImfR5J54MV1XvBjkRWLVKkH3B0TYBpWtNVVJgmX1HLFtsAHkK/SY3hJy9wTG4YbmigrbowK5CMlTXIn2k20H0po1TEiFTQ7HKSQaxAXO/eTagV1olSJo3KM=
+	t=1750981472; cv=none; b=mYbpStGn3ARRkugKmHD0SyEtGQgQMABQ6lqAlGOKcscUpvdQay6pgDaO4pRATTpRWq86skMoxvQ8vB+IJDyCCbagnOrWf4l8nRhkQShOViLhrfl3+TBtEgkdLSMDTZ2VdkpWSRMfAhGpbA2+/Iqllpzr2Jmod+Z/e4u7zBfU/Ws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750980801; c=relaxed/simple;
-	bh=vbC2GLOPug5kOMvejYkJyMkJ9xu1B3O8gjNYLt5ErVk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=URh/4PPzx8hXdYod+bsNtCjKDl7HcPrb/VT8CRaVsyYbxfmwjIIq+5bR358EHKwH+mjRRsRz7l3b4xd5sWTc4Vjwjx0dTXpiCf3H1OrZf0GFMVBVY3i4k/4WH3w2m+A8+E0baEtSlO68VzddD5+wo/529NNxrQ+cZtmUz+TbzCs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DW9xo6/l; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1750981472; c=relaxed/simple;
+	bh=6GR56atUSt+bKa4y7fIYRqGS50kbuDnTWP0AsyJpTbU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rgY7CFJuitxaqvX0P049alLN+4/vc9O6cjIUhmLzhM4IENpZM+8JSDJm2fjfqVdeLgX+GWHQRu88KUnBy0NReB+REsbyW2XF0t10XWr/CT4NYYemEmZ3uB8qHyLsbaz9NAGF7BJKLssiz6kBt11g6oE0OAMGcyDZaNv4KowEJ7Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GeKUV2eT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DW9xo6/l"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59CECC4CEEB;
-	Thu, 26 Jun 2025 23:33:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GeKUV2eT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AB91C4CEEB;
+	Thu, 26 Jun 2025 23:44:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750980800;
-	bh=vbC2GLOPug5kOMvejYkJyMkJ9xu1B3O8gjNYLt5ErVk=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=DW9xo6/lYAVQiwgc1gQ50Tgcs4VY4qQJqnlo3+KOkhY4Ig4ItPZ/hQ8pP8sl2717W
-	 LrXTt2n9Tuohuix3Qg8C0pWunv8kympVYEFcI7hS/fGqIaLGL8da1MH/Ar6JXnH6FT
-	 bsDihuEDI4RD0UegoB2QyZiRSa/f1Z02MM1O0jPa3Lzb8tyVCrmjqUTl9oAkewG/CN
-	 dmnglJAANFHsnviXQc7QcSktYcwsm1e3esJTNxIN2QLkbt/mJGFFeOxzccZGLI2gyB
-	 6beMyO8BIt4Elomey3lOqu0ZYg0kygV3LmEtminDytwzgzLC3jZPpeQVbFh8q1ztQG
-	 CjxHW59JgL7RQ==
-Message-ID: <5cc01163-1feb-4a18-8060-27f4da39b2e4@kernel.org>
-Date: Thu, 26 Jun 2025 18:33:15 -0500
+	s=k20201202; t=1750981472;
+	bh=6GR56atUSt+bKa4y7fIYRqGS50kbuDnTWP0AsyJpTbU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GeKUV2eT7stYLibvFNyt2+U9+BWAI7aNDwUBYqlIG8GrzxAHfQbM++zJA4yqObHRt
+	 N1zCSGg8uNTEV3Bhe4bWdy2nDoRizw+LfI/B/uZlkcDRiQ3NPpgj7gPRXr62gj3NWg
+	 oeS/Vqc9+Rqd/Aj8GMmShwEvVtUoHzHU2n9d74opMMvkCtHs3mXBd5gK+netVfupnp
+	 yykaRGfjON3CcHqlthe9S2LjHHAaYDyRiE+akk0e3TakcxL7R5tmnN/WQ8cQhGCOow
+	 Rqc0ukbpAlR4mzRRNqY38g8tJtFSpccGrHH75WMzqUboCSUeFUsFM02hIdjkj2+xYv
+	 sYSfy2dhYjxEA==
+Date: Fri, 27 Jun 2025 01:44:24 +0200
+From: Danilo Krummrich <dakr@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	Alexandre Courbot <acourbot@nvidia.com>,
+	Lyude Paul <lyude@redhat.com>, Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <benno.lossin@proton.me>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Valentin Obst <kernel@valentinobst.de>,
+	open list <linux-kernel@vger.kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
+	rust-for-linux@vger.kernel.org,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	Petr Tesarik <petr@tesarici.cz>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Sui Jingfeng <sui.jingfeng@linux.dev>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH 1/2] rust: add initial scatterlist bindings
+Message-ID: <aF3bWKvj0eCHnATV@pollux>
+References: <20250529004550.GB192517@ziepe.ca>
+ <DA9JTYA0EQU8.26M0ZX80FOBWY@nvidia.com>
+ <95ff963ddabf7c3cd2cfd07d0231a0073ff6847e.camel@redhat.com>
+ <DAED5BUK7TUQ.4JRHFMWZ99W3@nvidia.com>
+ <27e17dbf-df6a-48fc-a652-ad48a776f668@gmail.com>
+ <DAENGORNRVZH.2KIGKFV5C5G3L@nvidia.com>
+ <f787046921fd608c385dc5c559883c5d70839507.camel@redhat.com>
+ <DAP96FEJ0XWT.PWYMIE8IJAVQ@nvidia.com>
+ <e2677c26-1c25-4a34-b666-9dcfa9642fd1@gmail.com>
+ <20250626224355.GE213144@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 9/9] PCI: Add a new 'boot_display' attribute
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
- Alex Deucher <alexander.deucher@amd.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
- Lukas Wunner <lukas@wunner.de>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
- "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
- "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
- "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
- "open list:SOUND" <linux-sound@vger.kernel.org>,
- Daniel Dadap <ddadap@nvidia.com>,
- Mario Limonciello <mario.limonciello@amd.com>
-References: <20250626214721.GA1642412@bhelgaas>
-Content-Language: en-US
-From: Mario Limonciello <superm1@kernel.org>
-In-Reply-To: <20250626214721.GA1642412@bhelgaas>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250626224355.GE213144@ziepe.ca>
 
-
-
-On 6/26/25 4:47 PM, Bjorn Helgaas wrote:
-> On Thu, Jun 26, 2025 at 04:12:21PM -0500, Mario Limonciello wrote:
->> On 6/26/2025 3:45 PM, Bjorn Helgaas wrote:
->>> On Tue, Jun 24, 2025 at 03:30:42PM -0500, Mario Limonciello wrote:
->>>> From: Mario Limonciello <mario.limonciello@amd.com>
->>>>
->>>> On systems with multiple GPUs there can be uncertainty which GPU is the
->>>> primary one used to drive the display at bootup. In order to disambiguate
->>>> this add a new sysfs attribute 'boot_display' that uses the output of
->>>> video_is_primary_device() to populate whether a PCI device was used for
->>>> driving the display.
->>>>
->>>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
->>>
->>> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
->>>
->>> Question below.
->>>
->>>> ---
->>>> v4:
->>>>    * new patch
->>>> ---
->>>>    Documentation/ABI/testing/sysfs-bus-pci |  9 +++++++++
->>>>    drivers/pci/pci-sysfs.c                 | 14 ++++++++++++++
->>>>    2 files changed, 23 insertions(+)
->>>>
->>>> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
->>>> index 69f952fffec72..897cfc1b0de0f 100644
->>>> --- a/Documentation/ABI/testing/sysfs-bus-pci
->>>> +++ b/Documentation/ABI/testing/sysfs-bus-pci
->>>> @@ -612,3 +612,12 @@ Description:
->>>>    		  # ls doe_features
->>>>    		  0001:01        0001:02        doe_discovery
->>>> +
->>>> +What:		/sys/bus/pci/devices/.../boot_display
->>>> +Date:		October 2025
->>>> +Contact:	Linux PCI developers <linux-pci@vger.kernel.org>
->>>> +Description:
->>>> +		This file indicates whether the device was used as a boot
->>>> +		display. If the device was used as the boot display, the file
->>>> +		will contain "1". If the device is a display device but wasn't
->>>> +		used as a boot display, the file will contain "0".
->>>
->>> Is there a reason to expose this file if it wasn't a boot display
->>> device?  Maybe it doesn't need to exist at all unless it contains "1"?
->>
->> I was mostly thinking that it's a handy way for userspace to know whether
->> the kernel even supports this feature.  If userspace sees that file on any
->> GPU as it walks a list then it knows it can use that for a hint.
->>
->> But if you would rather it only shows up for the boot display yes it's
->> possible to do I think.  It's just more complexity to the visibility lookup
->> to also call video_is_primary_device().
+On Thu, Jun 26, 2025 at 07:43:55PM -0300, Jason Gunthorpe wrote:
+> On Thu, Jun 26, 2025 at 11:31:15PM +0300, Abdiel Janulgue wrote:
+> > Just commenting on this bit. From what I've seen, we don't actually leak
+> > anything. The cast only creates a reference to the original C `struct
+> > sg_table` object which was allocated and owned by whichever kernel subsystem
+> > called sg_alloc_table(). Rust doesn't even allow us to take ownership or to
+> > dereference the value, so this one is safe. Destructors are not called on
+> > those "casted" objects.
 > 
-> I think for a singleton situation like this it makes more sense to
-> only expose the file for one device, not several files where only one
-> of them contains "1".
+> This does not seem the right kind of philosophy.
+> 
+> Every pointer out of the kernel APIs has some kind of implicit
+> lifetime contract.
 
-I did an experiment with this but the PCI resources aren't ready at the 
-time visibility is determined.
+Yes, and it also comes with a contract of ownership of the object behind the
+pointer.
 
-So either:
-* the sysfs file creation needs to be deferred similar to 
-pci_create_resource_files() does
+> Eg if you have
+>   b = get_b(a);
 
-or
+Given the below I assume you mean taking a reference of an object B that is
+embedded in an object A, rather than taking a reference count, which 'get'
+implies a bit.
 
-* call to sysfs_update_group() is needed to recalculate visibility.
+I.e.:
+
+	struct A {
+	    b: B,
+	}
+	
+	impl A {
+	    fn get_b(&self) -> &B {
+	        &self.b
+	    }
+	}
+
+> Then the lifetime of b might well be 'alive so long as a is alive'
+
+Yes, and it is a good example of what Abdiel means. In your example a owns b,
+which means that the type A is responsible to destroy its instance of B once it
+is destroyed itself.
+
+This means that a.get_b() returns a reference b of the type B that is bound to
+the lifetime of the object a.
+
+Dropping the reference b does nothing, since it does not have ownership of the
+instance of B.
+
+Please find a runnable example in [1] (and please also let me know if I
+misunderstood you).
 
 > 
->>>> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
->>>> index 268c69daa4d57..5bbf79b1b953d 100644
->>>> --- a/drivers/pci/pci-sysfs.c
->>>> +++ b/drivers/pci/pci-sysfs.c
->>>> @@ -30,6 +30,7 @@
->>>>    #include <linux/msi.h>
->>>>    #include <linux/of.h>
->>>>    #include <linux/aperture.h>
->>>> +#include <asm/video.h>
->>>>    #include "pci.h"
->>>>    #ifndef ARCH_PCI_DEV_GROUPS
->>>> @@ -679,6 +680,13 @@ const struct attribute_group *pcibus_groups[] = {
->>>>    	NULL,
->>>>    };
->>>> +static ssize_t boot_display_show(struct device *dev, struct device_attribute *attr,
->>>> +				 char *buf)
->>>> +{
->>>> +	return sysfs_emit(buf, "%u\n", video_is_primary_device(dev));
->>>> +}
->>>> +static DEVICE_ATTR_RO(boot_display);
->>>> +
->>>>    static ssize_t boot_vga_show(struct device *dev, struct device_attribute *attr,
->>>>    			     char *buf)
->>>>    {
->>>> @@ -1698,6 +1706,7 @@ late_initcall(pci_sysfs_init);
->>>>    static struct attribute *pci_dev_dev_attrs[] = {
->>>>    	&dev_attr_boot_vga.attr,
->>>> +	&dev_attr_boot_display.attr,
->>>>    	NULL,
->>>>    };
->>>> @@ -1710,6 +1719,11 @@ static umode_t pci_dev_attrs_are_visible(struct kobject *kobj,
->>>>    	if (a == &dev_attr_boot_vga.attr && pci_is_vga(pdev))
->>>>    		return a->mode;
->>>> +#ifdef CONFIG_VIDEO
->>>> +	if (a == &dev_attr_boot_display.attr && pci_is_display(pdev))
->>>> +		return a->mode;
->>>> +#endif
->>>> +
->>>>    	return 0;
->>>>    }
->>>> -- 
->>>> 2.43.0
->>>>
->>
+> Or if you have some function pointer callback
+>   void op_foo(a) {}
 
+This is a great example too, since it can have both ownership semantics:
+
+  1) The pointer 'a' in the op_foo() callback points to an object that is owed
+     by some other object somewhere else, but the callback gives you the
+     guarantee that the pointer 'a' is valid throughout op_foo(). In this case
+     we can create a reference of the abstracting type in rust. In this case the
+     lifetime of the reference is limited to the scope of this function.
+     Dropping the reference does nothing, since we don't own the object behind
+     the shared reference.
+
+  2) The pointer 'a' in the op_foo() callback points to an object that we have
+     to take (back) ownership of, hence only creating a reference of the
+     abstracting type would leak the object eventually. Instead, we have to
+     re-create the actual object instance, which would usually be some Arc<T>,
+     KBox<T>, etc. In this case, we took (back) ownership of the object and
+     hence the lifetime depends on what we do with the object subsequently. If
+     we drop() it, the destructor is called.
+
+> The lifetime of a might well be 'alive only within the function'
+> 
+> AFAICT rust needs to figure out these implicit rules and the compiler
+> needs to enforce them.
+> 
+> Eg
+> 
+>  a = make_a()
+>  b = get_b(a)
+>  destroy_a()
+>  do_something(b)
+> 
+> Should be something impossible.
+
+Correct, this should give you a compile error. You can also see this case in my
+example in [1].
+
+In Rust you can also describe lifetime relationships with explicit lifetime
+annotations. For instance, you could have a function signature like this:
+
+	fn do_something<'a>(dev: &'a Device<Bound>) -> MyType + 'a
+
+This means that the reference to the bound device has a lifetime of 'a and the
+compiler ensures that the new instance of the type MyType returned by the
+function can't out-live the reference to the bound device.
+
+[1] https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=eed9d9c3e3ee187a9294961223e6b833
