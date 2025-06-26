@@ -1,173 +1,186 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2063.outbound.protection.outlook.com [40.107.101.63])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D6EB2E4274
-	for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 15:04:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.63
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750950281; cv=fail; b=EM7lhOyWpJQMn8YX+RSMp4cWCQs7gCqSKnfm/HLfYTsxXFE1nINa5G+tvUwcpOqPzXgoDoqFgfMUVA4RewpsLAjSh4wC5UwbyolYWqnB9TZ0QD2yV/G0CRfXYSWFvg0KvKC+XhJ5e94gAA2zlQJ9Nn+9Bjle24tpBkEdwtwpirw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750950281; c=relaxed/simple;
-	bh=kyB7cNVGXzOYnHkRh+0TNIY7dqp0JzYgLMEsriTvd9w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=jpFJJbmnTHsx8v24tcyCAsPh8PUwg8tHksqdat2B10zsz6Yc33zKw58y6cTVKeq5dqiae0VmwmDJFOqlRL4f6Z27mSCuY3aPGVb444C1Lxs+Kz9mIVYrBG90UzYM8ykhJnNai3t7+6zQljcAdBc+aisV8hzspFtUXyGnz86dGnM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=sXA/h/wP; arc=fail smtp.client-ip=40.107.101.63
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="sXA/h/wP"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=pq3ZEbNfUIhhxLw0wtwYNeHPkBcT7W2KiIRqyfiZO29MyZpEkJha/ZqXDGCB1mUIPbsCzuYlNmIQBXptUOYLsGXaBJxeKDm+3P0zQiBsyulXfvgZ+f/AOgJAb/X8iayvdr++CwgQB5UlYRC5BFK/zULARo1BC8bTK4mbVnZ1L2tCOnByVHkfjBufFqf0drZS0AIPkC9qpfGrNIxK3LCZaV2BbKkZDFh2sDq1FbN2bJA17xL7PbKzKPCOaPLXQ4MDywwdHqNiEibatFNEKz5lWPFe0iJTjRfMMWloYliam6lJJo1kLK+gwLdZaAlbvC33+md0nOOJz1RP27/E+cbFSA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kcl15vk1/lkqUE4jIC7djZXWxPkEiy9KqO92HXC0UU0=;
- b=jDOPOcrsEM0EQfgJotxDva3jLJIKi4AzdNU6EMvKayzQo0Kn6iVaB9fyfcyIs9yqxGiQW7DiD1F0JUMdiY4warL7A/drjfnP14g+gkYqrcgFExCVDcmP4Wfaevdej90iTa5UEP3mmwSnPAXNfGwi4g/9RjXebGWMzIwUEi8IMXmNmDidVzUzkPdyxLC2LN9M0gkWYxMMFUGqoT6TgdBTKYifQTdAgwu4MXidHaeh1LQ+brA5qq9go+mZLNiGf789X+uWxBX7uOBeR2yGNtA759+TYcFhwf7J0M71FyGqtVjC4/cbjnO22PR7UBW16pu8fQkRzeuTZdtanOphodVTrA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kcl15vk1/lkqUE4jIC7djZXWxPkEiy9KqO92HXC0UU0=;
- b=sXA/h/wPtOgZapUiHsgn15rpT6hOgktip0WC5WitUmgHzpKgaWHdNKlpsEpLW/zZXothc8y1EgaDyyspjpp68C02hZkCm8hzTKom0OYj5lQf6NrvY9Y94l3QIRH2RB9vSTngYYwSBM94rABbUDn+UM49hSU4XU/p/x1bp5C1L9vZzTMGASFU61jmX2io/Mt3njDJds+TXia2e03CRn4sUR35wHSEWBUt3Ytmp0t24JL0mYxTQzOsCYWtgCCb4LkrKkqC0wWElO9/3Le3L6UzfcDNh+ecLf3zuRavaal91r0We6JjytjFmXNeOAohAjwo3HpEh2E93/tAVlbGMznWow==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by CH1PPF2D39B31FF.namprd12.prod.outlook.com (2603:10b6:61f:fc00::60a) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8835.26; Thu, 26 Jun
- 2025 15:04:36 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8835.027; Thu, 26 Jun 2025
- 15:04:36 +0000
-Date: Thu, 26 Jun 2025 12:04:34 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: kevin.tian@intel.com, shuah@kernel.org, joao.m.martins@oracle.com,
-	steven.sistare@oracle.com, iommu@lists.linux.dev,
-	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-	thomas.weissschuh@linutronix.de
-Subject: Re: [PATCH rc v2 0/4] Fix iommufd selftest FAIL and warnings with
- v6.16
-Message-ID: <20250626150434.GM167785@nvidia.com>
-References: <cover.1750787928.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1750787928.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: SA1PR03CA0022.namprd03.prod.outlook.com
- (2603:10b6:806:2d3::27) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 68E741E008B
+	for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 16:45:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750956329; cv=none; b=Z9XrLP/MHT2wL5cgZ3e43MFbPaBmw5FBMkvjNJyY1yC4yeX6xdyO/k9AfdzWEmaXDH5vFF2igqtBxHJZ6X2mLclFk0QlTSSBhjJ/8vX6Vk4rz1710tWJYpv8Gvuxb0gPHSKOqQQwiUKM2tZTQxTP9oexXB/sPQGVcbtQlQIXwyU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750956329; c=relaxed/simple;
+	bh=Pxdh9QV5lAVnaM2iXn6GFDZxOod8efY6UTUkN/h/bT4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LUokY8RwhFVs8BhSSnTrjwTjeVA3e9rhtOupGihltzJ1PIaZA60rYC0UA07yHkUG1ZK9CFygVMBBqTJXtnQjTqyO4uHokORMzy+QoDDpTTUCcHafc01Z9U7+wUHR6yKwwXWSBiQ4gLsJMk1m9NIHU2Eq+ww/V5/Yyp4I1RSOmT8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 466FC1758;
+	Thu, 26 Jun 2025 09:45:09 -0700 (PDT)
+Received: from [10.1.196.50] (e121345-lin.cambridge.arm.com [10.1.196.50])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 924AB3F66E;
+	Thu, 26 Jun 2025 09:45:24 -0700 (PDT)
+Message-ID: <0f95be6d-2e13-4281-98b5-6d4311a3b98f@arm.com>
+Date: Thu, 26 Jun 2025 17:45:18 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CH1PPF2D39B31FF:EE_
-X-MS-Office365-Filtering-Correlation-Id: dcc4f2b1-34dc-4d46-8f19-08ddb4c2c416
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?5yeTKkaCe0DP94SnFqJzlT7Jd0zacWXZxj6Jbnh7R9fv6q5PgsWqOrqkLTl2?=
- =?us-ascii?Q?JbIr0yzcvnG1BbEDQSOdUiLBbMTtZIVolOc7ZVk7n2xvvre1+zaeuWTHIxEw?=
- =?us-ascii?Q?qcKEQ6a7/Ns9GbzzXQS+cVOVf5wHt4M/r1/eV0iCHgc600HDKRmq7GltTWlq?=
- =?us-ascii?Q?IkvUndKd85W1wy/8volPNIX69HPZvhBHBL87ca5wmdQYCiFwQBNMgbJTGZGR?=
- =?us-ascii?Q?oE0oZmPiYmtDOfsNZdodUib+2eGqFIoT0GISdQ3wYOe4zinJi7cFQ6senm+k?=
- =?us-ascii?Q?6u4pZ4giv/TCcO3K1rF3CBiXRP2KuLWfj4BLb9tzs6bXqwRj+nghFxV5hce1?=
- =?us-ascii?Q?hU8lRqw3AFNfpnaJkidBAgnRAVmtGPpJiEkXFFw9q1pKsTEmklWNN5O0Mf9N?=
- =?us-ascii?Q?tbB/WtsA+goAht12qITv2xQ8mEoNpkMzGZDgNsFGhyZb4FkRY+CzMvpj1xZq?=
- =?us-ascii?Q?MvcJ+d2Q3uRZCE6JFiKJiXREsNkE2PgqALAvVrI6b6hco8JzFSvGLbOJpR7Z?=
- =?us-ascii?Q?/Jovj7zALUODAUN7at0iJHXbLalUeNOlESvs7TTEAE7oPcUp+NiUY0q2MI7r?=
- =?us-ascii?Q?6Ww6sX7vMhui3mHLVLPaHhki35hgEXJupid6+xIMkPruo+JcAMz7unofGT0b?=
- =?us-ascii?Q?t7nzYrATncwf4frtYJTOLrxGQsqLs/Sw3T64tvcE1ZtDoMPVNWn9xoKsEeNn?=
- =?us-ascii?Q?cPSViwD2CaVRzhymP3d52fOrmWxfY1pD7bsB5pAZfulHSojQ7gCuvG4+3r42?=
- =?us-ascii?Q?x8cJylkOVuCXo5jeZ+zUt2LAh9DGg3q/s3nUV0t2PpFoZyXFFIM6AzSRrUAj?=
- =?us-ascii?Q?YPv0HGcUd3kiKtddHiRA7mdAKOfhgjGw6BEc2SuogL1bQxAkWUaCEcf8xyJX?=
- =?us-ascii?Q?JsvhhoyHRZ20a7BCZ+GUs53hZ+KrfGRYutPC9AUlIoKWd78AVntvx7CkLVil?=
- =?us-ascii?Q?UJAT7p86b+7plt6FZ0EgFLJtwRrkxHEGChKrezirqPPsA5uGtR+7GT3Pt3Ix?=
- =?us-ascii?Q?KHAM5UK3oGabyMz7+cAUfqXCloDxWrXQY0L6Fhab/Bhe4BcRGwTyEIMX2qUF?=
- =?us-ascii?Q?8ngy30iasLrAKs57kiYm4+CaVk4KZhHDrkfS7uAdMt9jqB6GfQ2Vkg6G1ruh?=
- =?us-ascii?Q?tta02HYOYLVldxAVxjFkgg/2qfz3hl6ApLegnpUSrdHUm9m6nozR9NLlhtqM?=
- =?us-ascii?Q?lAV/rkY+/aiXIejvCpsLPbPv37ZQf4NM9yRJbmIr6rQ/LLXCm9lBvB+IDkip?=
- =?us-ascii?Q?rrb4y7/9WPGa4M/GqnQyXMYQQ/DdEdfYyNClldpG2N2TXyEqLm55MBa0J/kV?=
- =?us-ascii?Q?hCVMKuLRa0QqaYmRi575EDMVkT1M/d//b3q1ieVEroKRnw7vR2UCb8uC6RTc?=
- =?us-ascii?Q?jY6L13Y40b1pFw2ifGb8zLmXKvovaOwYmWpUnktPoamlB/yn4YDDWa1p0JG9?=
- =?us-ascii?Q?vl/No42TgCY=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?tARmX5k4fMabD4BBk8hPKju3sPE6IZRP6nSmRf6Mxl3SaaqzlBpMzJUX2/9S?=
- =?us-ascii?Q?IPjJmkcsSkZYE/E8cmYO3qO4mqNwbDjWt+YumDuzaVX6jzdBeTdiF6bkk26I?=
- =?us-ascii?Q?e4gijLgzFhjw5x4DxuUHK0n6zIcMGjEWdWwMp7JMCKU/jb7D5gFIV3X018w/?=
- =?us-ascii?Q?7LRRXbLvMNUi3efN8fKElJtgA0tC4/Mialpkkq3OIYRPXqU29flwzH0x+80b?=
- =?us-ascii?Q?h0rP449Ofw9WnrC5lofcf0Zi0ZY0GVRy8o3b306Ilf8GV5r56VwV6UzQ7+st?=
- =?us-ascii?Q?0R0tuXSI2j3EOAZ9spVGXGrpsYg0G2rInSsz+6jJSoazids1+HQe/DUV2vgK?=
- =?us-ascii?Q?Uh4fI9ZeYNFk/V4IDIAFGlOyJeQooRfiyoOu+vlomvXPPknmqzPVyET7YaPd?=
- =?us-ascii?Q?dmkdJtSBy8+WzXzM7Kpws+DJPh/pJS2o/+3iaK7QH2s2StaAy165sxBPVJ/2?=
- =?us-ascii?Q?L6g5sJWA8cL+mtUXd0HHGNw6DLpXjiPnrRhZye0nvandHAEPy079XfM2CWQ5?=
- =?us-ascii?Q?cEXw/+D8rhO70bh8mnPU9naCqicHuyiYl4dj8YCSypVG4fqu1VJf6xcgX2n4?=
- =?us-ascii?Q?vCrn8KLVPmoTpJ28qF+abtdZ+549lcKTxsMckJX+KwwTRfl+kUgTy5Y20agR?=
- =?us-ascii?Q?BO0wf7GTFWZQp/WgATSW9O7Xb8X5SKydM20Wcr3S3wa6Z3W9/KOsNpHOWjL2?=
- =?us-ascii?Q?WuYF8L4qpinsRIAuJjtP9OawR4ZdM/0/wFr72EcvL7sioenO/6m8GjA8G98F?=
- =?us-ascii?Q?gWoBGkmZG2kef4DTHFQZ8QqFXYx/Js52wtL/KP7TMzNv/fYDpl6Vz4Iy6e2k?=
- =?us-ascii?Q?Q5XRa+KybT0+0bPwpf3xbuS98MGH/PoWr03qnX1EzlEZPqYUsqX6duBBBmV+?=
- =?us-ascii?Q?b3SNXFdHAwl3+mkDsT8bBWLngnDdfVa1JOo8Ow90lghn3IEcTXeBprw+WUs1?=
- =?us-ascii?Q?wfFng2JMcqtVgT37X3C3yVMksGj+msV0duHommzZe3GGIyYH6ew1lUBQnzIh?=
- =?us-ascii?Q?JiEUUHIgCzuAQ7w/dVhfiXK8iw7Fd8B8vjeZVETGS0CRXhFH8SgFCoTU8U9S?=
- =?us-ascii?Q?R7Ojty2ZI+S9DoSHaK9kdAGGhGBRxs2Sui2AELUGZsbiEOvEZyN/5Qb5gYMP?=
- =?us-ascii?Q?8XVMrFPVwR97L5toAHgj8L1fXx9GmeqAbP6VNGwnufvVhSg+yH8gZTGElsnR?=
- =?us-ascii?Q?/wRzM2ybInnCHbWPHBe+zALNsWN9Hz+PLK9q4jWaUB6jS0C+TQEvYlXIaBCi?=
- =?us-ascii?Q?kQCkiL2lYwxH7GpeFk3lgt8ppeo4FUK3TM2m6Nj8Gwtk/V7BTrk2FQANp0OQ?=
- =?us-ascii?Q?JjPZ8ZecU2ZBW8PFF9PDlqprZk/y8Nwg0W7FYDiOuhmDIIJVrcCePY48Vaxf?=
- =?us-ascii?Q?+RUkhT/rToeKuaPF2NwCAxKTLWbibwuG3YneoTBnMtZdc0OahEbqsSmUTrMR?=
- =?us-ascii?Q?kil5HUcKuc9FKa0u3u0igr8dk6cdTkbsi4qi5dC73umgPQ9vBGCCxVnEZ3jd?=
- =?us-ascii?Q?HJEhi+CsxOBWrfPWTFtJgtQZQVPvKxoPAc6qBqcQJti5FOLUuv32iIBYqb7L?=
- =?us-ascii?Q?0n674zpgDKnrQdu+13bfpRaHhU3LqaSuGlmt4HsP?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dcc4f2b1-34dc-4d46-8f19-08ddb4c2c416
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2025 15:04:36.6590
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qvQzrvW4/eaxNPdVq5q0HoUxzVndxl7Lfv/o+BpJNNUcMuLY/1t68AKhiQ7LkQpj
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH1PPF2D39B31FF
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 7/8] docs: dma-api: update streaming DMA API physical
+ address constraints
+To: Petr Tesarik <ptesarik@suse.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+ Bagas Sanjaya <bagasdotme@gmail.com>, Jonathan Corbet <corbet@lwn.net>,
+ Andrew Morton <akpm@linux-foundation.org>, Leon Romanovsky
+ <leon@kernel.org>, Keith Busch <kbusch@kernel.org>,
+ Caleb Sander Mateos <csander@purestorage.com>,
+ Sagi Grimberg <sagi@grimberg.me>, Jens Axboe <axboe@kernel.dk>,
+ John Garry <john.g.garry@oracle.com>,
+ "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>, iommu@lists.linux.dev
+References: <20250624133923.1140421-1-ptesarik@suse.com>
+ <20250624133923.1140421-8-ptesarik@suse.com> <aFynHWAYtKPFT55P@archie.me>
+ <20250626070602.3d42b607@mordecai.tesarici.cz>
+ <bdb3a37a-a9d3-44c1-8eb7-41912c976ad1@arm.com>
+ <20250626154818.46b0cfb1@mordecai.tesarici.cz>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250626154818.46b0cfb1@mordecai.tesarici.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jun 24, 2025 at 11:00:44AM -0700, Nicolin Chen wrote:
-> A few selftest harness changes being merged to v6.16, which exposed some
-> bugs and vulnerabilities in the iommufd selftest code. Fix them properly.
+On 26/06/2025 2:48 pm, Petr Tesarik wrote:
+> On Thu, 26 Jun 2025 10:58:00 +0100
+> Robin Murphy <robin.murphy@arm.com> wrote:
 > 
-> Note that the patch fixing the build warnings at mfd is not ideal, as it
-> has possibly hit some corner case in the gcc:
-> https://lore.kernel.org/all/aEi8DV+ReF3v3Rlf@nvidia.com/
+>> On 2025-06-26 6:06 am, Petr Tesarik wrote:
+>>> On Thu, 26 Jun 2025 08:49:17 +0700
+>>> Bagas Sanjaya <bagasdotme@gmail.com> wrote:
+>>>    
+>>>> On Tue, Jun 24, 2025 at 03:39:22PM +0200, Petr Tesarik wrote:
+>>>>> diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
+>>>>> index cd432996949c..65132ec88104 100644
+>>>>> --- a/Documentation/core-api/dma-api.rst
+>>>>> +++ b/Documentation/core-api/dma-api.rst
+>>>>> @@ -210,18 +210,12 @@ DMA_BIDIRECTIONAL	direction isn't known
+>>>>>    	this API should be obtained from sources which guarantee it to be
+>>>>>    	physically contiguous (like kmalloc).
+>>>>>    
+>>>>> -	Further, the DMA address of the memory must be within the dma_mask of
+>>>>> -	the device.  To ensure that the memory allocated by kmalloc is within
+>>>>> -	the dma_mask, the driver may specify various platform-dependent flags
+>>>>> -	to restrict the DMA address range of the allocation (e.g., on x86,
+>>>>> -	GFP_DMA guarantees to be within the first 16MB of available DMA
+>>>>> -	addresses, as required by ISA devices).
+>>>>> -
+>>>>> -	Note also that the above constraints on physical contiguity and
+>>>>> -	dma_mask may not apply if the platform has an IOMMU (a device which
+>>>>> -	maps an I/O DMA address to a physical memory address).  However, to be
+>>>>> -	portable, device driver writers may *not* assume that such an IOMMU
+>>>>> -	exists.
+>>>>> +	Mapping may also fail if the memory is not within the DMA mask of the
+>>>>> +	device.  However, this constraint does not apply if the platform has
+>>>>> +	an IOMMU (a device which maps an I/O DMA address to a physical memory
+>>>>> +	address), or the kernel is configured with SWIOTLB (bounce buffers).
+>>>>> +	It is reasonable to assume that at least one of these mechanisms
+>>>>> +	allows streaming DMA to any physical address.
+>>>
+>>> Now I realize this last sentence may be contentious...
+>>
+>> The whole paragraph is wrong as written, not least because it is
+>> conflating two separate things: "any physical address" is objectively
+>> untrue, since SWIOTLB can only bounce from buffers within by the
+>> kernel's linear/direct map, i.e. not highmem, not random memory
+>> carveouts, and and definitely not PAs which are not RAM at all.
 > 
-> This is on github:
-> https://github.com/nicolinc/iommufd/commits/iommufd_selftest_fixes-v6.16
+> I see, saying "any" was indeed too strong.
 > 
-> Changelog:
-> v2
->  * Add "Reviewed-by" from Jason
->  * Only use kfree() in the teardown()
->  * Add an mmap_buffer_size for readability
-> v1
->  https://lore.kernel.org/all/cover.1750049883.git.nicolinc@nvidia.com/
+>> Secondly, even if the source buffer *is* bounceable/mappable, there is
+>> still no guarantee at all that it can actually be made to appear at a
+>> DMA address within an arbitrary DMA mask. We aim for a general
+>> expectation that 32-bit DMA masks should be well-supported (but still
+>> not 100% guaranteed), but anything smaller can absolutely still have a
+>> high chance of failing, e.g. due to the SWIOTLB buffer being allocated
+>> too high or limited IOVA space.
 > 
-> Thanks
-> Nicolin
+> Of course this cannot be guaranteed. The function may always fail and
+> return DMA_MAPPING_ERROR. No doubts about it.
 > 
-> Nicolin Chen (4):
->   iommufd/selftest: Fix iommufd_dirty_tracking with large hugepage sizes
->   iommufd/selftest: Add missing close(mfd) in memfd_mmap()
->   iommufd/selftest: Add asserts testing global mfd
->   iommufd/selftest: Fix build warnings due to uninitialized mfd
+>>> @Marek, @Robin Do you agree that device drivers should not be concerned
+>>> about the physical address of a buffer passed to the streaming DMA API?
+>>>
+>>> I mean, are there any real-world systems with:
+>>>     * some RAM that is not DMA-addressable,
+>>>     * no IOMMU,
+>>>     * CONFIG_SWIOTLB is not set?
+>>
+>> Yes, almost certainly, because "DMA-addressable" depends on individual
+>> devices. You can't stop a user from sticking, say, a Broadcom 43xx WiFi
+>> card into a PCI slot on an i.MX6 board with 2GB of RAM that *starts*
+>> just above its 31-bit DMA capability. People are still using AMD Seattle
+>> machines, where even though arm64 does have SWIOTLB it's essentially
+>> useless since RAM starts up around 40 bits IIRC (and although they do
+>> also have SMMUs for PCI, older firmware didn't advertise them).
+> 
+> Some of these scenarios can never work properly because of hardware
+> limitations. There's nothing software can do about a bus master which
+> cannot address any RAM in the machine. I'm not trying to claim that an
+> operating system kernel can do magic and square the circle. If that's
+> how it sounded, then my wording needs to be improved.
+> 
+> IIUC the expected audience of this document are device driver authors.
+> They want a clear guidance on how they should allocate buffers for the
+> streaming DMA API. Now, it is my understanding that device drivers
+> should *not* have to care about the physical location of a buffer
+> passed to the streaming DMA API.
+> 
+> Even if a bus master implements less than 32 address bits in hardware,
+> I'm convinced that device drivers should not have to examine the system
+> to check if an IOMMU is available and try to guess whether a buffer
+> must be bounced, and how exactly the bounce buffer should be allocated.
 
-Applied to for-rc, thanks
+It's never been suggested that drivers should do that; indeed trying to 
+poke into and second-guess the DMA API implementation is generally even 
+less OK than making blind assumptions about what it might do. The 
+overall message here is essentially "if you want to do streaming DMA 
+then you may need to be wary of where your memory comes from." We can't 
+just throw that out and say "Yeah it's fine now, whatever you do the API 
+will deal with it" because that simply isn't true as a general 
+statement; drivers dealing with limited DMA masks *do* still need to be 
+concerned with GFP_DMA (or even GFP_DMA32 might still be advisable in 
+certain cases) if they want to have an appreciable chance of success. 
+All that's different these days is that notion of "limited" generally 
+meaning "32 bits or smaller".
 
-Jason
+> If we can agree on this, I can iron out the details for a v2 of this
+> patch series.
+> 
+>>> FWIW if _I_ received a bug report that a device driver fails to submit
+>>> I/O on such a system, I would politely explain the reporter that their
+>>> kernel is misconfigured, and they should enable CONFIG_SWIOTLB.
+>>
+>> It's not really that simple. SWIOTLB, ZONE_DMA, etc. require platform
+>> support, which end users can't just turn on if it's not there to begin with.
+> 
+> I know this very well. As you may not be aware, my ultimate goal is to
+> get rid of ZONE_DMA and instead enhance the buddy allocator to allow
+> allocations within an arbitrary physical address range, which will not
+> rely on platform support. But that's another story; for now, let's just
+> agree on how the DMA API is supposed to work.
+
+Indeed that might actually end up pushing things in the opposite 
+direction, at least in some cases. Right now, a driver with, say, a 
+40-bit DMA mask is usually better off not special-casing DMA buffers, 
+and just making plain GFP_KERNEL allocations for everything (on the 
+assumption that 64-bit systems with masses of memory *should* have 
+SWIOTLB to cover things in the worst case), vs. artificially 
+constraining its DMA buffers to GFP_DMA32 and having to deal with 
+allocation failure more often. However with a more precise and flexible 
+allocator, there's then a much stronger incentive for such drivers to 
+explicitly mark *every* allocation that may be used for DMA, in order to 
+get the optimal behaviour.
+
+Thanks,
+Robin.
