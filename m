@@ -1,176 +1,173 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2063.outbound.protection.outlook.com [40.107.101.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE4CE2F272C
-	for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 14:49:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750949352; cv=none; b=GcURYcP+zWqueWNGYpElW1B8YQqvJBc/3hUmCJ0HELJlBLohZxwclFyPorQiKb01uPnFS3Rj17JJK3ghs1s7Iw9YJW27RZ/fuO0wfdW6o07dwTu8D3Z8/USmIuPdAPf3/rJ4TSgGteDJUjWIMT0Q2e3VKWKVgl3BS415k1kKni4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750949352; c=relaxed/simple;
-	bh=C0IP1ldijdRmaS+puKQkDDZEbW3+UTuiddetXdu9lN0=;
-	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=PpN9XtfiCq6NrrZeoeuVdmEGq1TXIJ6zHfFk/+03Nu7AjkENlvJOCuPZfvRiaSaApT4owHfU+Kqfl2Y6khEP4qKrywm3KU5UyTEH4NZ58tgJxuZkr2w+/ik1RQuYnOpsanx/dDfbKec259ig/5H7KdOrAA2pJZocmu+lc86eRXU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=IzbHoiGj; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=S6eZxFlM; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D6EB2E4274
+	for <iommu@lists.linux.dev>; Thu, 26 Jun 2025 15:04:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.63
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750950281; cv=fail; b=EM7lhOyWpJQMn8YX+RSMp4cWCQs7gCqSKnfm/HLfYTsxXFE1nINa5G+tvUwcpOqPzXgoDoqFgfMUVA4RewpsLAjSh4wC5UwbyolYWqnB9TZ0QD2yV/G0CRfXYSWFvg0KvKC+XhJ5e94gAA2zlQJ9Nn+9Bjle24tpBkEdwtwpirw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750950281; c=relaxed/simple;
+	bh=kyB7cNVGXzOYnHkRh+0TNIY7dqp0JzYgLMEsriTvd9w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=jpFJJbmnTHsx8v24tcyCAsPh8PUwg8tHksqdat2B10zsz6Yc33zKw58y6cTVKeq5dqiae0VmwmDJFOqlRL4f6Z27mSCuY3aPGVb444C1Lxs+Kz9mIVYrBG90UzYM8ykhJnNai3t7+6zQljcAdBc+aisV8hzspFtUXyGnz86dGnM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=sXA/h/wP; arc=fail smtp.client-ip=40.107.101.63
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="IzbHoiGj";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="S6eZxFlM"
-From: Nam Cao <namcao@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1750949348;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RK/wtTylOOst3NoQPmbj1UZ1alu1ISJX0ZCcg+3yGNk=;
-	b=IzbHoiGj+9g+AeqRYueTLqqKo2pzmdJzwlgXQAHhiXT5JpRZtBUa6j8rblYJXWcewvc4f1
-	/ejYslBo+r17GkM80uKZrqEBG3aN5FYaq1oqep4V3yCp/4KOkoKKPx+8mOj9JSrhu/zHMR
-	IdGs1R407AuQr1IWKDpbVKpOQdJMjFZvegTh5DxQUkfiR0Qwq4XlJ0NMX2Hg20cWpL0WpR
-	3W6xn1zh5mqtrgWPN2BveBWINIECilb01H4D1CvgDBFO1k+/7Asvs5BHBHkhS7U/v9jblQ
-	n78g1A01ZeHnHMdK3dfgu5o28DeUaacG7RqyqCBnzhx6PrQT/HowQs8rYe9QOA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1750949348;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RK/wtTylOOst3NoQPmbj1UZ1alu1ISJX0ZCcg+3yGNk=;
-	b=S6eZxFlMNrrRZ8j7VzqgbsByaj9JBTsLHnPMjQcFcFh3J3oi5xgNUOCXu/twS7APcQCbup
-	HMxYSTYfsZRZOlDQ==
-To: Marc Zyngier <maz@kernel.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] iommu/intel: Convert to msi_create_parent_irq_domain() helper
-Date: Thu, 26 Jun 2025 16:48:55 +0200
-Message-Id: <169c793c50be8493cfd9d11affb00e9ed6341c36.1750858125.git.namcao@linutronix.de>
-In-Reply-To: <cover.1750858125.git.namcao@linutronix.de>
-References: <cover.1750858125.git.namcao@linutronix.de>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="sXA/h/wP"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=pq3ZEbNfUIhhxLw0wtwYNeHPkBcT7W2KiIRqyfiZO29MyZpEkJha/ZqXDGCB1mUIPbsCzuYlNmIQBXptUOYLsGXaBJxeKDm+3P0zQiBsyulXfvgZ+f/AOgJAb/X8iayvdr++CwgQB5UlYRC5BFK/zULARo1BC8bTK4mbVnZ1L2tCOnByVHkfjBufFqf0drZS0AIPkC9qpfGrNIxK3LCZaV2BbKkZDFh2sDq1FbN2bJA17xL7PbKzKPCOaPLXQ4MDywwdHqNiEibatFNEKz5lWPFe0iJTjRfMMWloYliam6lJJo1kLK+gwLdZaAlbvC33+md0nOOJz1RP27/E+cbFSA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kcl15vk1/lkqUE4jIC7djZXWxPkEiy9KqO92HXC0UU0=;
+ b=jDOPOcrsEM0EQfgJotxDva3jLJIKi4AzdNU6EMvKayzQo0Kn6iVaB9fyfcyIs9yqxGiQW7DiD1F0JUMdiY4warL7A/drjfnP14g+gkYqrcgFExCVDcmP4Wfaevdej90iTa5UEP3mmwSnPAXNfGwi4g/9RjXebGWMzIwUEi8IMXmNmDidVzUzkPdyxLC2LN9M0gkWYxMMFUGqoT6TgdBTKYifQTdAgwu4MXidHaeh1LQ+brA5qq9go+mZLNiGf789X+uWxBX7uOBeR2yGNtA759+TYcFhwf7J0M71FyGqtVjC4/cbjnO22PR7UBW16pu8fQkRzeuTZdtanOphodVTrA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kcl15vk1/lkqUE4jIC7djZXWxPkEiy9KqO92HXC0UU0=;
+ b=sXA/h/wPtOgZapUiHsgn15rpT6hOgktip0WC5WitUmgHzpKgaWHdNKlpsEpLW/zZXothc8y1EgaDyyspjpp68C02hZkCm8hzTKom0OYj5lQf6NrvY9Y94l3QIRH2RB9vSTngYYwSBM94rABbUDn+UM49hSU4XU/p/x1bp5C1L9vZzTMGASFU61jmX2io/Mt3njDJds+TXia2e03CRn4sUR35wHSEWBUt3Ytmp0t24JL0mYxTQzOsCYWtgCCb4LkrKkqC0wWElO9/3Le3L6UzfcDNh+ecLf3zuRavaal91r0We6JjytjFmXNeOAohAjwo3HpEh2E93/tAVlbGMznWow==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by CH1PPF2D39B31FF.namprd12.prod.outlook.com (2603:10b6:61f:fc00::60a) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8835.26; Thu, 26 Jun
+ 2025 15:04:36 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8835.027; Thu, 26 Jun 2025
+ 15:04:36 +0000
+Date: Thu, 26 Jun 2025 12:04:34 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: kevin.tian@intel.com, shuah@kernel.org, joao.m.martins@oracle.com,
+	steven.sistare@oracle.com, iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+	thomas.weissschuh@linutronix.de
+Subject: Re: [PATCH rc v2 0/4] Fix iommufd selftest FAIL and warnings with
+ v6.16
+Message-ID: <20250626150434.GM167785@nvidia.com>
+References: <cover.1750787928.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1750787928.git.nicolinc@nvidia.com>
+X-ClientProxiedBy: SA1PR03CA0022.namprd03.prod.outlook.com
+ (2603:10b6:806:2d3::27) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CH1PPF2D39B31FF:EE_
+X-MS-Office365-Filtering-Correlation-Id: dcc4f2b1-34dc-4d46-8f19-08ddb4c2c416
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?5yeTKkaCe0DP94SnFqJzlT7Jd0zacWXZxj6Jbnh7R9fv6q5PgsWqOrqkLTl2?=
+ =?us-ascii?Q?JbIr0yzcvnG1BbEDQSOdUiLBbMTtZIVolOc7ZVk7n2xvvre1+zaeuWTHIxEw?=
+ =?us-ascii?Q?qcKEQ6a7/Ns9GbzzXQS+cVOVf5wHt4M/r1/eV0iCHgc600HDKRmq7GltTWlq?=
+ =?us-ascii?Q?IkvUndKd85W1wy/8volPNIX69HPZvhBHBL87ca5wmdQYCiFwQBNMgbJTGZGR?=
+ =?us-ascii?Q?oE0oZmPiYmtDOfsNZdodUib+2eGqFIoT0GISdQ3wYOe4zinJi7cFQ6senm+k?=
+ =?us-ascii?Q?6u4pZ4giv/TCcO3K1rF3CBiXRP2KuLWfj4BLb9tzs6bXqwRj+nghFxV5hce1?=
+ =?us-ascii?Q?hU8lRqw3AFNfpnaJkidBAgnRAVmtGPpJiEkXFFw9q1pKsTEmklWNN5O0Mf9N?=
+ =?us-ascii?Q?tbB/WtsA+goAht12qITv2xQ8mEoNpkMzGZDgNsFGhyZb4FkRY+CzMvpj1xZq?=
+ =?us-ascii?Q?MvcJ+d2Q3uRZCE6JFiKJiXREsNkE2PgqALAvVrI6b6hco8JzFSvGLbOJpR7Z?=
+ =?us-ascii?Q?/Jovj7zALUODAUN7at0iJHXbLalUeNOlESvs7TTEAE7oPcUp+NiUY0q2MI7r?=
+ =?us-ascii?Q?6Ww6sX7vMhui3mHLVLPaHhki35hgEXJupid6+xIMkPruo+JcAMz7unofGT0b?=
+ =?us-ascii?Q?t7nzYrATncwf4frtYJTOLrxGQsqLs/Sw3T64tvcE1ZtDoMPVNWn9xoKsEeNn?=
+ =?us-ascii?Q?cPSViwD2CaVRzhymP3d52fOrmWxfY1pD7bsB5pAZfulHSojQ7gCuvG4+3r42?=
+ =?us-ascii?Q?x8cJylkOVuCXo5jeZ+zUt2LAh9DGg3q/s3nUV0t2PpFoZyXFFIM6AzSRrUAj?=
+ =?us-ascii?Q?YPv0HGcUd3kiKtddHiRA7mdAKOfhgjGw6BEc2SuogL1bQxAkWUaCEcf8xyJX?=
+ =?us-ascii?Q?JsvhhoyHRZ20a7BCZ+GUs53hZ+KrfGRYutPC9AUlIoKWd78AVntvx7CkLVil?=
+ =?us-ascii?Q?UJAT7p86b+7plt6FZ0EgFLJtwRrkxHEGChKrezirqPPsA5uGtR+7GT3Pt3Ix?=
+ =?us-ascii?Q?KHAM5UK3oGabyMz7+cAUfqXCloDxWrXQY0L6Fhab/Bhe4BcRGwTyEIMX2qUF?=
+ =?us-ascii?Q?8ngy30iasLrAKs57kiYm4+CaVk4KZhHDrkfS7uAdMt9jqB6GfQ2Vkg6G1ruh?=
+ =?us-ascii?Q?tta02HYOYLVldxAVxjFkgg/2qfz3hl6ApLegnpUSrdHUm9m6nozR9NLlhtqM?=
+ =?us-ascii?Q?lAV/rkY+/aiXIejvCpsLPbPv37ZQf4NM9yRJbmIr6rQ/LLXCm9lBvB+IDkip?=
+ =?us-ascii?Q?rrb4y7/9WPGa4M/GqnQyXMYQQ/DdEdfYyNClldpG2N2TXyEqLm55MBa0J/kV?=
+ =?us-ascii?Q?hCVMKuLRa0QqaYmRi575EDMVkT1M/d//b3q1ieVEroKRnw7vR2UCb8uC6RTc?=
+ =?us-ascii?Q?jY6L13Y40b1pFw2ifGb8zLmXKvovaOwYmWpUnktPoamlB/yn4YDDWa1p0JG9?=
+ =?us-ascii?Q?vl/No42TgCY=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?tARmX5k4fMabD4BBk8hPKju3sPE6IZRP6nSmRf6Mxl3SaaqzlBpMzJUX2/9S?=
+ =?us-ascii?Q?IPjJmkcsSkZYE/E8cmYO3qO4mqNwbDjWt+YumDuzaVX6jzdBeTdiF6bkk26I?=
+ =?us-ascii?Q?e4gijLgzFhjw5x4DxuUHK0n6zIcMGjEWdWwMp7JMCKU/jb7D5gFIV3X018w/?=
+ =?us-ascii?Q?7LRRXbLvMNUi3efN8fKElJtgA0tC4/Mialpkkq3OIYRPXqU29flwzH0x+80b?=
+ =?us-ascii?Q?h0rP449Ofw9WnrC5lofcf0Zi0ZY0GVRy8o3b306Ilf8GV5r56VwV6UzQ7+st?=
+ =?us-ascii?Q?0R0tuXSI2j3EOAZ9spVGXGrpsYg0G2rInSsz+6jJSoazids1+HQe/DUV2vgK?=
+ =?us-ascii?Q?Uh4fI9ZeYNFk/V4IDIAFGlOyJeQooRfiyoOu+vlomvXPPknmqzPVyET7YaPd?=
+ =?us-ascii?Q?dmkdJtSBy8+WzXzM7Kpws+DJPh/pJS2o/+3iaK7QH2s2StaAy165sxBPVJ/2?=
+ =?us-ascii?Q?L6g5sJWA8cL+mtUXd0HHGNw6DLpXjiPnrRhZye0nvandHAEPy079XfM2CWQ5?=
+ =?us-ascii?Q?cEXw/+D8rhO70bh8mnPU9naCqicHuyiYl4dj8YCSypVG4fqu1VJf6xcgX2n4?=
+ =?us-ascii?Q?vCrn8KLVPmoTpJ28qF+abtdZ+549lcKTxsMckJX+KwwTRfl+kUgTy5Y20agR?=
+ =?us-ascii?Q?BO0wf7GTFWZQp/WgATSW9O7Xb8X5SKydM20Wcr3S3wa6Z3W9/KOsNpHOWjL2?=
+ =?us-ascii?Q?WuYF8L4qpinsRIAuJjtP9OawR4ZdM/0/wFr72EcvL7sioenO/6m8GjA8G98F?=
+ =?us-ascii?Q?gWoBGkmZG2kef4DTHFQZ8QqFXYx/Js52wtL/KP7TMzNv/fYDpl6Vz4Iy6e2k?=
+ =?us-ascii?Q?Q5XRa+KybT0+0bPwpf3xbuS98MGH/PoWr03qnX1EzlEZPqYUsqX6duBBBmV+?=
+ =?us-ascii?Q?b3SNXFdHAwl3+mkDsT8bBWLngnDdfVa1JOo8Ow90lghn3IEcTXeBprw+WUs1?=
+ =?us-ascii?Q?wfFng2JMcqtVgT37X3C3yVMksGj+msV0duHommzZe3GGIyYH6ew1lUBQnzIh?=
+ =?us-ascii?Q?JiEUUHIgCzuAQ7w/dVhfiXK8iw7Fd8B8vjeZVETGS0CRXhFH8SgFCoTU8U9S?=
+ =?us-ascii?Q?R7Ojty2ZI+S9DoSHaK9kdAGGhGBRxs2Sui2AELUGZsbiEOvEZyN/5Qb5gYMP?=
+ =?us-ascii?Q?8XVMrFPVwR97L5toAHgj8L1fXx9GmeqAbP6VNGwnufvVhSg+yH8gZTGElsnR?=
+ =?us-ascii?Q?/wRzM2ybInnCHbWPHBe+zALNsWN9Hz+PLK9q4jWaUB6jS0C+TQEvYlXIaBCi?=
+ =?us-ascii?Q?kQCkiL2lYwxH7GpeFk3lgt8ppeo4FUK3TM2m6Nj8Gwtk/V7BTrk2FQANp0OQ?=
+ =?us-ascii?Q?JjPZ8ZecU2ZBW8PFF9PDlqprZk/y8Nwg0W7FYDiOuhmDIIJVrcCePY48Vaxf?=
+ =?us-ascii?Q?+RUkhT/rToeKuaPF2NwCAxKTLWbibwuG3YneoTBnMtZdc0OahEbqsSmUTrMR?=
+ =?us-ascii?Q?kil5HUcKuc9FKa0u3u0igr8dk6cdTkbsi4qi5dC73umgPQ9vBGCCxVnEZ3jd?=
+ =?us-ascii?Q?HJEhi+CsxOBWrfPWTFtJgtQZQVPvKxoPAc6qBqcQJti5FOLUuv32iIBYqb7L?=
+ =?us-ascii?Q?0n674zpgDKnrQdu+13bfpRaHhU3LqaSuGlmt4HsP?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dcc4f2b1-34dc-4d46-8f19-08ddb4c2c416
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jun 2025 15:04:36.6590
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qvQzrvW4/eaxNPdVq5q0HoUxzVndxl7Lfv/o+BpJNNUcMuLY/1t68AKhiQ7LkQpj
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH1PPF2D39B31FF
 
-From: Marc Zyngier <maz@kernel.org>
+On Tue, Jun 24, 2025 at 11:00:44AM -0700, Nicolin Chen wrote:
+> A few selftest harness changes being merged to v6.16, which exposed some
+> bugs and vulnerabilities in the iommufd selftest code. Fix them properly.
+> 
+> Note that the patch fixing the build warnings at mfd is not ideal, as it
+> has possibly hit some corner case in the gcc:
+> https://lore.kernel.org/all/aEi8DV+ReF3v3Rlf@nvidia.com/
+> 
+> This is on github:
+> https://github.com/nicolinc/iommufd/commits/iommufd_selftest_fixes-v6.16
+> 
+> Changelog:
+> v2
+>  * Add "Reviewed-by" from Jason
+>  * Only use kfree() in the teardown()
+>  * Add an mmap_buffer_size for readability
+> v1
+>  https://lore.kernel.org/all/cover.1750049883.git.nicolinc@nvidia.com/
+> 
+> Thanks
+> Nicolin
+> 
+> Nicolin Chen (4):
+>   iommufd/selftest: Fix iommufd_dirty_tracking with large hugepage sizes
+>   iommufd/selftest: Add missing close(mfd) in memfd_mmap()
+>   iommufd/selftest: Add asserts testing global mfd
+>   iommufd/selftest: Fix build warnings due to uninitialized mfd
 
-Now that we have a concise helper to create an MSI parent domain,
-switch the Intel IOMMU remapping over to that.
+Applied to for-rc, thanks
 
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Nam Cao <tglx@linutronix.de>
-Link: https://lore.kernel.org/all/20241204124549.607054-10-maz@kernel.org
----
- drivers/iommu/Kconfig               |  1 +
- drivers/iommu/intel/irq_remapping.c | 28 ++++++++++++++--------------
- 2 files changed, 15 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 0a33d995d15dd..c5ce712a37b9f 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -200,6 +200,7 @@ source "drivers/iommu/riscv/Kconfig"
- config IRQ_REMAP
- 	bool "Support for Interrupt Remapping"
- 	depends on X86_64 && X86_IO_APIC && PCI_MSI && ACPI
-+	select IRQ_MSI_LIB
- 	help
- 	  Supports Interrupt remapping for IO-APIC and MSI devices.
- 	  To use x2apic mode in the CPU's which support x2APIC enhancements or
-diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_=
-remapping.c
-index cf7b6882ec755..2ef71ba696b1f 100644
---- a/drivers/iommu/intel/irq_remapping.c
-+++ b/drivers/iommu/intel/irq_remapping.c
-@@ -10,6 +10,7 @@
- #include <linux/hpet.h>
- #include <linux/pci.h>
- #include <linux/irq.h>
-+#include <linux/irqchip/irq-msi-lib.h>
- #include <linux/acpi.h>
- #include <linux/irqdomain.h>
- #include <linux/crash_dump.h>
-@@ -518,8 +519,14 @@ static void iommu_enable_irq_remapping(struct intel_io=
-mmu *iommu)
-=20
- static int intel_setup_irq_remapping(struct intel_iommu *iommu)
- {
-+	struct irq_domain_info info =3D {
-+		.ops		=3D &intel_ir_domain_ops,
-+		.parent		=3D arch_get_ir_parent_domain(),
-+		.domain_flags	=3D IRQ_DOMAIN_FLAG_ISOLATED_MSI,
-+		.size		=3D INTR_REMAP_TABLE_ENTRIES,
-+		.host_data	=3D iommu,
-+	};
- 	struct ir_table *ir_table;
--	struct fwnode_handle *fn;
- 	unsigned long *bitmap;
- 	void *ir_table_base;
-=20
-@@ -544,25 +551,16 @@ static int intel_setup_irq_remapping(struct intel_iom=
-mu *iommu)
- 		goto out_free_pages;
- 	}
-=20
--	fn =3D irq_domain_alloc_named_id_fwnode("INTEL-IR", iommu->seq_id);
--	if (!fn)
-+	info.fwnode =3D irq_domain_alloc_named_id_fwnode("INTEL-IR", iommu->seq_i=
-d);
-+	if (!info.fwnode)
- 		goto out_free_bitmap;
-=20
--	iommu->ir_domain =3D
--		irq_domain_create_hierarchy(arch_get_ir_parent_domain(),
--					    0, INTR_REMAP_TABLE_ENTRIES,
--					    fn, &intel_ir_domain_ops,
--					    iommu);
-+	iommu->ir_domain =3D msi_create_parent_irq_domain(&info, &dmar_msi_parent=
-_ops);
- 	if (!iommu->ir_domain) {
- 		pr_err("IR%d: failed to allocate irqdomain\n", iommu->seq_id);
- 		goto out_free_fwnode;
- 	}
-=20
--	irq_domain_update_bus_token(iommu->ir_domain,  DOMAIN_BUS_DMAR);
--	iommu->ir_domain->flags |=3D IRQ_DOMAIN_FLAG_MSI_PARENT |
--				   IRQ_DOMAIN_FLAG_ISOLATED_MSI;
--	iommu->ir_domain->msi_parent_ops =3D &dmar_msi_parent_ops;
--
- 	ir_table->base =3D ir_table_base;
- 	ir_table->bitmap =3D bitmap;
- 	iommu->ir_table =3D ir_table;
-@@ -608,7 +606,7 @@ static int intel_setup_irq_remapping(struct intel_iommu=
- *iommu)
- 	irq_domain_remove(iommu->ir_domain);
- 	iommu->ir_domain =3D NULL;
- out_free_fwnode:
--	irq_domain_free_fwnode(fn);
-+	irq_domain_free_fwnode(info.fwnode);
- out_free_bitmap:
- 	bitmap_free(bitmap);
- out_free_pages:
-@@ -1530,6 +1528,8 @@ static const struct irq_domain_ops intel_ir_domain_op=
-s =3D {
-=20
- static const struct msi_parent_ops dmar_msi_parent_ops =3D {
- 	.supported_flags	=3D X86_VECTOR_MSI_FLAGS_SUPPORTED | MSI_FLAG_MULTI_PCI_=
-MSI,
-+	.bus_select_token	=3D DOMAIN_BUS_DMAR,
-+	.bus_select_mask	=3D MATCH_PCI_MSI,
- 	.prefix			=3D "IR-",
- 	.init_dev_msi_info	=3D msi_parent_init_dev_msi_info,
- };
---=20
-2.39.5
-
+Jason
