@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2D80A298989
-	for <iommu@lists.linux.dev>; Fri, 27 Jun 2025 10:24:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E070A298270
+	for <iommu@lists.linux.dev>; Fri, 27 Jun 2025 10:42:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751019899; cv=none; b=aHaE/JMTOJJ8UYJ5cbtEX48+puisMaabq3M66ny2H7YQ0P8PgXomMn4yGW5pV/BrzdFG2vbgZgUBbPMd5i/uHHvbPKjx1TokJsQwlRIrcFfpBSCo867rhIM+TOHhhbL6X0nBTc/aWiKiT2zOKouIVrORbv++qyUL3yBTmT1kN8E=
+	t=1751020974; cv=none; b=P59466i9IAMeUpYscsRJurIIRt+CdZzFekv7DubTk+04SYx6ZEKEu/MFJbF8yMj22S7HIWDrRFnU7hYZhOOG1vY9lREV9m1g4UJ7HNOhHwi87N2haOEBK/1Dcz+P1m5PNrajF+g3eV1ujQjZvpr2OC75OrGrLZ7BjGE8RqsKkwc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751019899; c=relaxed/simple;
-	bh=bQSa1k2KObGYTsvnGVKo0UkNQZjhV4fuHVuqN5pq/KU=;
+	s=arc-20240116; t=1751020974; c=relaxed/simple;
+	bh=kQlsDwXrPFgl1A/aQW7glaPsDNQH27Vku+YZxYijmN0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ugIZG5+0ivsFCqHOo73yqp580kr0x+JrGHcthP0D+h9cO1WkBDZPvnNHPlA4fwSX5lBFOD5DCN7ttFcsrW9lKg27OLsADY8APq3FJgjDmAC4WsICcs+W2YE1HmvPY+eT/cNtEulwMS4/qjLrMmg5xZvhgs36D9dNxm3bblXh5Xc=
+	 In-Reply-To:Content-Type; b=BH8YNzv5J0F+y51gt3v7wevcJPVxIufxZkwSPR7DOVE7VJvdCCPAwziwe+/dwZJ3yW4XxXU5KP2oipqJZslLIxfcS9dIRYvueQpAWm8YMMamEHQlikcep8hRY9aqnN/udh5WU0GfDndJ+FlDzxfk7s8H5FhnsIR61lNPGT++PXk=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 452A31A00;
-	Fri, 27 Jun 2025 03:24:40 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0907D1A00;
+	Fri, 27 Jun 2025 03:42:35 -0700 (PDT)
 Received: from [10.57.30.59] (unknown [10.57.30.59])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A88C33F58B;
-	Fri, 27 Jun 2025 03:24:55 -0700 (PDT)
-Message-ID: <fd3bd8b1-4108-445a-b65f-4769d73e6e63@arm.com>
-Date: Fri, 27 Jun 2025 11:24:53 +0100
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E9D143F58B;
+	Fri, 27 Jun 2025 03:42:50 -0700 (PDT)
+Message-ID: <43acfcd8-b359-448f-bbb6-da1b71a64f45@arm.com>
+Date: Fri, 27 Jun 2025 11:42:48 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,88 +27,88 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: ath12k_pci errors and loss of connectivity in 6.12.y branch
-To: Baochen Qiang <baochen.qiang@oss.qualcomm.com>,
- Matt Mower <mowerm@gmail.com>, Jeff Johnson <jjohnson@kernel.org>,
- will@kernel.org, joro@8bytes.org, Hegde Vasant <Vasant.Hegde@amd.com>
-Cc: linux-wireless@vger.kernel.org, ath12k@lists.infradead.org,
- 1107521@bugs.debian.org, iommu@lists.linux.dev
-References: <CAPDiVH8gaBH6o_OY-zUWYpDbj5mhiqmofKGb71gLgHOi4vA=Vw@mail.gmail.com>
- <0ba2176e-3339-4a8b-850a-ca5643939c8b@oss.qualcomm.com>
+Subject: Re: SMMUv3 interrupt handling via custom logic
+To: Michal Simek <michal.simek@amd.com>, Will Deacon <will@kernel.org>,
+ "Stabellini, Stefano" <stefano.stabellini@amd.com>
+Cc: linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+ iommu@lists.linux.dev,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "Sarangi, Anirudha" <anirudha.sarangi@amd.com>
+References: <0482d84e-871b-4522-b94b-29a97c87ff66@amd.com>
 From: Robin Murphy <robin.murphy@arm.com>
 Content-Language: en-GB
-In-Reply-To: <0ba2176e-3339-4a8b-850a-ca5643939c8b@oss.qualcomm.com>
+In-Reply-To: <0482d84e-871b-4522-b94b-29a97c87ff66@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-+Vasant
-
-On 2025-06-27 6:39 am, Baochen Qiang wrote:
-> [+ IOMMU list]
+On 2025-06-27 8:19 am, Michal Simek wrote:
+> Hi Will and Robin, (+Stefano, Anirudha)
 > 
-> On 6/27/2025 12:21 AM, Matt Mower wrote:
->> Dear maintainer,
->>
->> I have been experiencing lost network connection with the ath12k_pci driver
->> in the linux-6.12.y kernel branch. Often, when the issue occurs, the
->> network does not recover until I reboot the computer. A full report of the
->> errors I encounter, the symptoms that arise, and several dmesg attachments
->> are in https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1107521 . I have
->> attached a dmesg from 6.12.34 for convenience. The short summary is:
->>
->> 1. I started noticing log lines like the following soon after boot when I
->> updated from 6.12.22 to 6.12.27. After these events occur, the network goes
->> down and often does not come back up.
->>     ath12k_pci 0000:c2:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT
->> domain=0x0010 address=0xfea00000 flags=0x0020]
->> 2. I was able to reproduce this issue very rarely in 6.12.12 and 6.12.22.
->> The issue always occurs soon after boot in 6.12.27, 6.12.30, 6.12.33, and
->> 6.12.34.
->> 3. I have not reproduced the issue in 6.15.2 or 6.15.3.
->> 4. In some cases, when shutting down the computer, a kernel bug caused my
->> computer to hang. I haven't determined whether this is related to the issue
->> above or an independent issue. Search the bug report
->> for PXL_20250611_140820085.jpg to see a picture of the kernel bug on my
->> laptop screen.
->> 5. I have tested two firmware versions:
->>     a. fw_version 0x1108811c fw_build_timestamp 2025-05-17 00:21 fw_build_id
->> QC_IMAGE_VERSION_STRING=WLAN.HMT.1.1.c5-00284.1-QCAHMTSWPL_V1.0_V2.0_SILICONZ-3
->>     b. fw_version 0x100301e1 fw_build_timestamp 2023-12-06 04:05 fw_build_id
->> QC_IMAGE_VERSION_STRING=WLAN.HMT.1.0.c5-00481-QCAHMTSWPL_V1.0_V2.0_SILICONZ-3
->>
->> Thanks,
->> Matt
->>
+> We are using smmu-v3 in our SOC and I would like to ask you for 
+> recommendation how to handle our interrupt cases.
 > 
-> I had a quick test with 6.12.27 kernel on both my Intel desktop and AMD RD but didn't hit
-> the issue. And I am using WLAN.HMT.1.1.c5-00284.1-QCAHMTSWPL_V1.0_V2.0_SILICONZ-3.
+> here is description which we are using
 > 
-> As mentioned in the Debian bug report, since reverting ath12k patches does not fix this
-> issue, maybe it comes from the IOMMU subsystem?
+> smmu: iommu@ec000000 {
+>      compatible = "arm,smmu-v3";
+>      reg = <...>;
+>      #iommu-cells = <1>;
+>      interrupt-names = "combined";
+>      interrupts = <0 169 4>;
+> };
+> 
+> but it is missing one important detail which just arise that actually 
+> there is additional HW logic which deals with SMMU interrupts separately.
+> There is a secure part (global, cmd, event - gerror, cmdq-sync, eventq 
+> in DT)
+> and non secure part (pri, global, cmd, event - priq, gerror, cmdq-sync, 
+> eventq in DT).
+> Based on my information all these interrupts should be acked once 
+> handled to be able to get another one.
+> The driver itself is able to handle them separately but we didn't create 
+> any solution to reach custom HW to do it.
+> 
+> I looked at f935448acf46 ("iommu/arm-smmu-v3: Add workaround for Cavium 
+> ThunderX2 erratum #126") which introduced combined IRQs but it looks 
+> like that there is no need for additional ACK of that IRQs.
 
-Faults are usually still indicative of the client driver/subsystem doing 
-something not quite right - racily performing dma_unmap before the 
-device has actually finished making accesses; mapping the wrong size 
-such that the device accesses off the end of the mapping (this can often 
-run into another valid mapping so not necessarily fault); mapping the 
-wrong DMA direction such that the device then tries to write to a 
-read-only page. However I suppose it's not impossible that some fix to 
-amd-iommu in that period might have changed its behaviour in a way that 
-exacerbates things - Vasant, does this strike a chord with anything 
-you're aware of?
+Per the architecture, SMMU interrupts are logically edge-triggered so 
+there is nothing to clear at the SMMU end (the "interrupt status" is 
+implicit in whatever condition caused an interrupt to be sent, e.g. the 
+event queue becoming non-empty, SMMU_GERROR becoming different from 
+SMMU_GERRORN, etc.)
 
-A couple more things I'd try on the ath12k side: firstly, boot with 
-"iommu.strict=1" and see if that makes the faults any more 
-frequent/reproducible; if a fault is fairly easily reproducible, then 
-use the DMA API and/or IOMMU API tracepoints to compare the fault 
-address to prior DMA mapping activity - that can usually reveal the 
-nature of the bug enough to then know what to go looking for.
+If this is an Arm SMMU IP (MMU-600/700/S3) then the physical interrupt 
+outputs are most definitely rising-edge. If somone's stuck some 
+interrupt combiner in between those and the main interrupt controller, 
+then yes, that interrupt combiner really should have its own driver.
 
-I wouldn't put much significance in whatever happens *after* the fault - 
-presumably the driver is assuming the blocked DMA write has completed, 
-so then goes on to read some incomplete descriptor as if it were valid, 
-and thus may fall over in all manner of entertaining ways on bogus data.
+> The HW logic itself is handling secure and non secure settings for SMMU 
+> that's why would be the best to avoid directly mapping it in Linux.
+> 
+> One way to go is to create secondary interrupt controller driver
+> a) ioremap one with notice about secure part because we are using SMMU 
+> only with NS world
+> b) firmware based to tunnel accesses via SMCs and allow only access to 
+> limited amount of registers
+> 
+> The second way is likely create any hooks in the driver to be able to 
+> provide additional SOC specific hooks.
+
+If this thing is munging *all* the SMMU interrupt outputs as I suspect, 
+then the big problem with that idea is that "the driver" is at least two 
+separate drivers (SMMU and PMU), 3 if it has RAS and you ever want to 
+entertain the idea of kernel-first handling.
 
 Thanks,
 Robin.
+
+> 
+> I am not quite sure which way would be the best that's why I would like 
+> to get some recommendation from you.
+> 
+> Stefano: please correct me if any of my description is not accurate.
+> 
+> Thanks,
+> Michal
 
