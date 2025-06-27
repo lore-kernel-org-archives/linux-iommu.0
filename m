@@ -1,182 +1,155 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D2DD2904;
-	Fri, 27 Jun 2025 16:15:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 781392EB5B9
+	for <iommu@lists.linux.dev>; Fri, 27 Jun 2025 16:28:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751040955; cv=none; b=Zwwcxx6zrJUKlg03/mPVqyl/41zsuEE2wy/X7YdytZhvHk/p4r03PIOmSwtOff6QLSLmtXpkzaUbc3SEDSLYa645qrV64PBfKWKqHq191qRu+7EdVV9/OEI5SgH7ZMiNfQYwxp4TCAvPtGalhDeVAFE45pysE/4FBTDO7Nga9a0=
+	t=1751041734; cv=none; b=h9RCoOkyBucLoNdQmEFtPWK7SfWrige4rAeCbMTOT/2s6vW5jgLNanS/v4mCxFhxlNHDH04vE5s3pNEWkSbhAvxXCdn8wtsmBsMLLIzeQihtVKEO+xJpk4XkA1v1jDyaM379vM6aPT6LTEc4Z3N4R+w0JfIiKS5sQjpMZk6lAS0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751040955; c=relaxed/simple;
-	bh=ngjP2j/mogEBHJHVAdxePa/ZTfx8oWY4hps0ZIisoVM=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=asE4CWgXbeXpaf6J6rwIPDHuI+KP2V+56GYnnFJHHcw1JozwTIAJ0+4Bo4V63L28HhEmmJxpXgw7JDfCCuvUFfpB0hOomWaLbRO1DB8w1QKNcxg0JyjzhxgyyvPalB2b+cE918I90lIDSWVpCrFHHVVFsu3qOuuoc2JuthUoOHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d3pfO07Y; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1751041734; c=relaxed/simple;
+	bh=ckwNK5l6kNEQi0dMFT1BhLSPph3IS47PHdxbRsKbg2c=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=h8xnllTPiivBBg5bRWAz7d+aa84Lr/eSvhbLolt80GI+e7rviQXfCvrdAjvAhnuUzw1or8ssxiEW5w+Rzr6pSqdJCOx5kfQY8QZk/sNGPwEAqhZWWAO25uTNQRLoKZvr9KPYOT9vNVM8peLDdunhPMXYgXzLl+G0qWNVv2R/ddQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aLwpXCGl; arc=none smtp.client-ip=209.85.219.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d3pfO07Y"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0DEAC4CEE3;
-	Fri, 27 Jun 2025 16:15:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1751040953;
-	bh=ngjP2j/mogEBHJHVAdxePa/ZTfx8oWY4hps0ZIisoVM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=d3pfO07YLCIK1I43m79Ck6t80cQIjU0rIm1HCmhgWy+yeE0cyqsL6+xQ78s/Mn//j
-	 HA//ehNfgC/ue6v0at98gGIDu73K9Tny0zIY9K14a7CUWza29A19uWAsLKtroQ/HN6
-	 7ysGjEs5pDT8rTa0uUg30IBvvS/55l7xkYGo63rew18C3Qgf/yKOuqVaUpv81a2coD
-	 FBv1qJe0+TQvQgR1duQ2iJmAU+hSAYuZpcCB14O6ytfEFOoOCfYKED2M6DvC354U5x
-	 djlnN1/jqbuJeWOXwRgHOZ2Uxv2GL3PzvoSt3fu0nwbSBoVBa/CENboYJGRPOH0b3X
-	 k1lsRpMl0X3eg==
-Date: Fri, 27 Jun 2025 11:15:52 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Mario Limonciello <superm1@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Lukas Wunner <lukas@wunner.de>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	"open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
-	"open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
-	"open list:VFIO DRIVER" <kvm@vger.kernel.org>,
-	"open list:SOUND" <linux-sound@vger.kernel.org>,
-	Daniel Dadap <ddadap@nvidia.com>,
-	Mario Limonciello <mario.limonciello@amd.com>
-Subject: Re: [PATCH v5 9/9] PCI: Add a new 'boot_display' attribute
-Message-ID: <20250627161552.GA1671755@bhelgaas>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aLwpXCGl"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-6fafdd322d3so95536d6.3
+        for <iommu@lists.linux.dev>; Fri, 27 Jun 2025 09:28:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1751041731; x=1751646531; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Pwe6yBI0hTTSV4QKO/x65G0lF6NWazoC/YzcyBgyfJc=;
+        b=aLwpXCGlOBo6MfNZHF2fjfaVYTsQpHrd+wAcCm3nomHB0lY4EEU6zYfu0+JYcESsZw
+         hB2U72Wf3IugPBOtNOLV3gxtUkaze1fpFu5l7PUymhZI4Elc+Ak/sOHiBB5NL39fX9VS
+         xw2HXkg7+fG5B6FRVfZy0lDtMiGdvjHItnfwFfVHOVrVyYjlwrMLJwGnUUp5X5xfao0W
+         ytvLx+C1udRXPZu9mvPU+s18Ax+mgsF/Qxn17SDLHtJsTMpDoZcJbhds4uX/qAjNm2Hn
+         ZFx8TcGxUdkwVnUvo/GCIn98/Pw4Er9Q9jKb/G9a1swBBXFTNkUWhtJfL6uyZYFcRUGh
+         FEiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751041731; x=1751646531;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Pwe6yBI0hTTSV4QKO/x65G0lF6NWazoC/YzcyBgyfJc=;
+        b=q5uOOxZzWlK1PBLh5l5LQXnR2ydFFVacvrx9R3L8rrAD0jMFnrOl+T/5WZ0ptBZMSA
+         uqrj0oUucOCKwKKDyCC4bbgGngBLNYV8PRTN+EPsBxIbFM4M6PlEIDkAqvPMgaHXEMWn
+         zni6bXVOQkmu52P5QnlzFPx6XpXN+zYU7LpNElsmJrLhlQ/6zrUVW2tkK7F9BBu3UhjG
+         Ll5g/EI5d8PRGpXczfN9ZDj/ns8Y938X8zIxs0s4/fMNMUgRFQ1uRNNVEzu1z6pG/Ol4
+         5NUqgM7uvU0ivI8mubUkuHCBLfoBi+IqfNcaecIPMkiVLd1qnnl6MoTcUkcxSwgjhnFC
+         Wk0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCW7GNSgn9j7ydg2KCjhNPP815taST5SwlWw/BPrewEMIKvH81TjdE5yHliOxglBMFF36uqQ6w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx0TXyHb8Ou7PqP/NIqfjyb+sbtl2YyQYjf/w1ZdljVxs+DWQwH
+	2vusVkIE26kadM9h2j+e/SxFg9n8IKgO9pO9vLaBfEBSh7+PwANNUUYpiIt38T/u7t6K3SqHFI/
+	iBER0e4ojdX6GC4GYhtHpvGDV/RdiGnSEY2GE+LpP
+X-Gm-Gg: ASbGncsN7tMp1YOE07yWjdU1LE5VuGkbir3BkgmZBtgPe7ErSNb9zAsK++c3UUIFXns
+	MblYBEvmrtw5Vg5mBmFMLsfvSc/bIOEvEqDdYG9XGss8Y7onmSesJ4zF1CfMx6sVczdrJcYgE6O
+	o+MerFolnL1m9NyBIQeor8E2ITltVKcUydtPdj/DIRITZti1qB6jYtmIiRxVWFDNpo8f5WumVJ1
+	w==
+X-Google-Smtp-Source: AGHT+IEaFjJbudXPZvs4+gz+Ul1aN+IO1A0S+wtT0rUBrPe4/pZbkYPC1YJ6B1u6KB5gj2C6Oj3GAR3BNtAmvLY3bsQ=
+X-Received: by 2002:ad4:5c6b:0:b0:6fb:33f7:5f34 with SMTP id
+ 6a1803df08f44-70002ee7d52mr61421106d6.43.1751041731049; Fri, 27 Jun 2025
+ 09:28:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5cc01163-1feb-4a18-8060-27f4da39b2e4@kernel.org>
+References: <cover.1750854543.git.leon@kernel.org> <cabe5b75fe1201baa6ecd209546c1f0913fc02ef.1750854543.git.leon@kernel.org>
+ <CAG_fn=XWP-rpV-D2nV-a3wMbzqLn2T-43tyGnoS2AhVGU8oZMw@mail.gmail.com> <20250626184504.GK17401@unreal>
+In-Reply-To: <20250626184504.GK17401@unreal>
+From: Alexander Potapenko <glider@google.com>
+Date: Fri, 27 Jun 2025 18:28:14 +0200
+X-Gm-Features: Ac12FXzk502TgF39Kdk9rDaSo7SztNg9o8ROEHR27kqxNaOw7yX3TSWKD6zOmLM
+Message-ID: <CAG_fn=WeK8q2g0bRna+fFx+ks4HbfoG3Tnw8PpSdmfdH=3+S=A@mail.gmail.com>
+Subject: Re: [PATCH 5/8] kmsan: convert kmsan_handle_dma to use physical addresses
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>, 
+	Jonathan Corbet <corbet@lwn.net>, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, 
+	Christophe Leroy <christophe.leroy@csgroup.eu>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>, 
+	Jason Wang <jasowang@redhat.com>, Xuan Zhuo <xuanzhuo@linux.alibaba.com>, 
+	=?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>, 
+	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+	=?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>, 
+	Andrew Morton <akpm@linux-foundation.org>, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org, 
+	iommu@lists.linux.dev, virtualization@lists.linux.dev, 
+	kasan-dev@googlegroups.com, linux-trace-kernel@vger.kernel.org, 
+	linux-mm@kvack.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jun 26, 2025 at 06:33:15PM -0500, Mario Limonciello wrote:
-> On 6/26/25 4:47 PM, Bjorn Helgaas wrote:
-> > On Thu, Jun 26, 2025 at 04:12:21PM -0500, Mario Limonciello wrote:
-> > > On 6/26/2025 3:45 PM, Bjorn Helgaas wrote:
-> > > > On Tue, Jun 24, 2025 at 03:30:42PM -0500, Mario Limonciello wrote:
-> > > > > From: Mario Limonciello <mario.limonciello@amd.com>
-> > > > > 
-> > > > > On systems with multiple GPUs there can be uncertainty which GPU is the
-> > > > > primary one used to drive the display at bootup. In order to disambiguate
-> > > > > this add a new sysfs attribute 'boot_display' that uses the output of
-> > > > > video_is_primary_device() to populate whether a PCI device was used for
-> > > > > driving the display.
-> > > > > 
-> > > > > Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-> > > > 
-> > > > Acked-by: Bjorn Helgaas <bhelgaas@google.com>
-> > > > 
-> > > > Question below.
-> > > > 
-> > > > > ---
-> > > > > v4:
-> > > > >    * new patch
-> > > > > ---
-> > > > >    Documentation/ABI/testing/sysfs-bus-pci |  9 +++++++++
-> > > > >    drivers/pci/pci-sysfs.c                 | 14 ++++++++++++++
-> > > > >    2 files changed, 23 insertions(+)
-> > > > > 
-> > > > > diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-> > > > > index 69f952fffec72..897cfc1b0de0f 100644
-> > > > > --- a/Documentation/ABI/testing/sysfs-bus-pci
-> > > > > +++ b/Documentation/ABI/testing/sysfs-bus-pci
-> > > > > @@ -612,3 +612,12 @@ Description:
-> > > > >    		  # ls doe_features
-> > > > >    		  0001:01        0001:02        doe_discovery
-> > > > > +
-> > > > > +What:		/sys/bus/pci/devices/.../boot_display
-> > > > > +Date:		October 2025
-> > > > > +Contact:	Linux PCI developers <linux-pci@vger.kernel.org>
-> > > > > +Description:
-> > > > > +		This file indicates whether the device was used as a boot
-> > > > > +		display. If the device was used as the boot display, the file
-> > > > > +		will contain "1". If the device is a display device but wasn't
-> > > > > +		used as a boot display, the file will contain "0".
-> > > > 
-> > > > Is there a reason to expose this file if it wasn't a boot display
-> > > > device?  Maybe it doesn't need to exist at all unless it contains "1"?
-> > > 
-> > > I was mostly thinking that it's a handy way for userspace to know whether
-> > > the kernel even supports this feature.  If userspace sees that file on any
-> > > GPU as it walks a list then it knows it can use that for a hint.
-> > > 
-> > > But if you would rather it only shows up for the boot display yes it's
-> > > possible to do I think.  It's just more complexity to the visibility lookup
-> > > to also call video_is_primary_device().
-> > 
-> > I think for a singleton situation like this it makes more sense to
-> > only expose the file for one device, not several files where only one
-> > of them contains "1".
-> 
-> I did an experiment with this but the PCI resources aren't ready at the time
-> visibility is determined.
-> 
-> So either:
-> * the sysfs file creation needs to be deferred similar to
-> pci_create_resource_files() does
-> 
-> or
-> 
-> * call to sysfs_update_group() is needed to recalculate visibility.
+On Thu, Jun 26, 2025 at 8:45=E2=80=AFPM Leon Romanovsky <leon@kernel.org> w=
+rote:
+>
+> On Thu, Jun 26, 2025 at 07:43:06PM +0200, Alexander Potapenko wrote:
+> > On Wed, Jun 25, 2025 at 3:19=E2=80=AFPM Leon Romanovsky <leon@kernel.or=
+g> wrote:
+> > >
+> > > From: Leon Romanovsky <leonro@nvidia.com>
+Acked-by: Alexander Potapenko <glider@google.com>
 
-Sigh, yeah, that's an old annoying problem.  I think deferring as you
-did is fine.
+> >
+> > Hi Leon,
+> >
+> > >
+> > > Convert the KMSAN DMA handling function from page-based to physical
+> > > address-based interface.
+> > >
+> > > The refactoring renames kmsan_handle_dma() parameters from accepting
+> > > (struct page *page, size_t offset, size_t size) to (phys_addr_t phys,
+> > > size_t size).
+> >
+> > Could you please elaborate a bit why this is needed? Are you fixing
+> > some particular issue?
+>
+> It is soft of the fix and improvement at the same time.
+> Improvement:
+> It allows direct call to kmsan_handle_dma() without need
+> to convert from phys_addr_t to struct page for newly introduced
+> dma_map_phys() routine.
+>
+> Fix:
+> It prevents us from executing kmsan for addresses that don't have struct =
+page
+> (for example PCI_P2PDMA_MAP_THRU_HOST_BRIDGE pages), which we are doing
+> with original code.
+>
+> dma_map_sg_attrs()
+>  -> __dma_map_sg_attrs()
+>   -> dma_direct_map_sg()
+>    -> PCI_P2PDMA_MAP_THRU_HOST_BRIDGE and nents > 0
+>     -> kmsan_handle_dma_sg();
+>      -> kmsan_handle_dma(g_page(item) <---- this is "fake" page.
+>
+> We are trying to build DMA API that doesn't require struct pages.
 
-> > > > > diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-> > > > > index 268c69daa4d57..5bbf79b1b953d 100644
-> > > > > --- a/drivers/pci/pci-sysfs.c
-> > > > > +++ b/drivers/pci/pci-sysfs.c
-> > > > > @@ -30,6 +30,7 @@
-> > > > >    #include <linux/msi.h>
-> > > > >    #include <linux/of.h>
-> > > > >    #include <linux/aperture.h>
-> > > > > +#include <asm/video.h>
-> > > > >    #include "pci.h"
-> > > > >    #ifndef ARCH_PCI_DEV_GROUPS
-> > > > > @@ -679,6 +680,13 @@ const struct attribute_group *pcibus_groups[] = {
-> > > > >    	NULL,
-> > > > >    };
-> > > > > +static ssize_t boot_display_show(struct device *dev, struct device_attribute *attr,
-> > > > > +				 char *buf)
-> > > > > +{
-> > > > > +	return sysfs_emit(buf, "%u\n", video_is_primary_device(dev));
-> > > > > +}
-> > > > > +static DEVICE_ATTR_RO(boot_display);
-> > > > > +
-> > > > >    static ssize_t boot_vga_show(struct device *dev, struct device_attribute *attr,
-> > > > >    			     char *buf)
-> > > > >    {
-> > > > > @@ -1698,6 +1706,7 @@ late_initcall(pci_sysfs_init);
-> > > > >    static struct attribute *pci_dev_dev_attrs[] = {
-> > > > >    	&dev_attr_boot_vga.attr,
-> > > > > +	&dev_attr_boot_display.attr,
-> > > > >    	NULL,
-> > > > >    };
-> > > > > @@ -1710,6 +1719,11 @@ static umode_t pci_dev_attrs_are_visible(struct kobject *kobj,
-> > > > >    	if (a == &dev_attr_boot_vga.attr && pci_is_vga(pdev))
-> > > > >    		return a->mode;
-> > > > > +#ifdef CONFIG_VIDEO
-> > > > > +	if (a == &dev_attr_boot_display.attr && pci_is_display(pdev))
-> > > > > +		return a->mode;
-> > > > > +#endif
-> > > > > +
-> > > > >    	return 0;
-> > > > >    }
-> > > > > -- 
-> > > > > 2.43.0
-> > > > > 
-> > > 
-> 
+Thanks for clarifying that!
+
+> > KMSAN only works on 64-bit systems, do we actually have highmem on any =
+of these?
+>
+> I don't know, but the original code had this check:
+>   344         if (PageHighMem(page))
+>   345                 return;
+>
+> Thanks
+
+Ouch, I overlooked that, sorry!
+
+I spent a while trying to understand where this code originated from,
+and found the following discussion:
+https://lore.kernel.org/all/20200327170647.GA22758@lst.de/
+
+It's still unclear to me whether we actually need this check, because
+with my config it doesn't produce any code.
+But I think this shouldn't be blocking your patch, I'd rather make a
+follow-up fix.
