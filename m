@@ -1,65 +1,220 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E27D32D3EEF;
-	Fri, 27 Jun 2025 15:35:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751038504; cv=none; b=lTH1iNOEY9ZtW7Ltfy1pnZr/ukLNdaBw9L4JsM5T+QaxgJhIr8k46aJoH7NoDvzfHYw629ckUM4JsgMp453LzxjHHOPeWOUwnKMhET9dWqF74cR/FldW7skI5gW0Vy1pv3XsDwPSp8AFxzkL9uZiU8IRj6rR0+JPSCIA6sF/+w8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751038504; c=relaxed/simple;
-	bh=AcJS8zEIgvrM6xzr9e5LCAw5uvraDFnTURDqSsoCQFM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pUx8Ob7bUedJB4KOloobGFD6SU8Ix/j7KvX4PAV5Lpm2GvtZPV7oxEIyzqOPGByEII0JxIJO1T/CNOryCdDnRoFEzHC4P4oVvBCsAZ3kWseG8gsGQg3FeHzmI3KOJ6Qso+reL+N3w0eYMCUEy1XcH3pNLn+X9DCGncFV7msODL8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=seiUzu0J; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="seiUzu0J"
-Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 14CDF4EFDE;
-	Fri, 27 Jun 2025 17:34:56 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1751038496;
-	bh=AcJS8zEIgvrM6xzr9e5LCAw5uvraDFnTURDqSsoCQFM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=seiUzu0J5pF91dl7UmH+KL0pOHeL6IhLuTDNG5qV4eYBzeMpYjoOQxPYKAUdQ/zSB
-	 p/1Q+kRTegEsF4EeKflXx2BbKlxe3TXbX7ID+4m86Xb4Z7LGOEMAG8U75pNF7TAcQY
-	 zzDXOO9Iwd2oBTFQLoNOkxr8Z9vDf2h5wuLP7+XIZrsM6xDdLlME+3DnUhOYvJKmob
-	 XlTz0nlSn3SlHfXEux0utyU+DxxUBtfbLI4uqipNciicL5w7xY0iQLqdgaOCfLhwZG
-	 5lZv8qEaTnkoeyTRTUVK7MPftthtuCwLvBvGf4mgdD9EZc8gwQdYmEAuSlMIvEVBY7
-	 n9Zm58rrh4sBg==
-Date: Fri, 27 Jun 2025 17:34:54 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	patches@lists.linux.dev
-Subject: Re: [PATCH] iommu/msm: Remove ops->pgsize_bitmap
-Message-ID: <aF66Hifxw2FWOnP9@8bytes.org>
-References: <0-v1-662aad101e51+45-iommu_rm_ops_pgsize_msm_jgg@nvidia.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA4C72E9EA1;
+	Fri, 27 Jun 2025 15:37:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751038647; cv=none; b=e5F122OolxuDqFUFT1ZBANUm0OowKA5LU68Tgt2wtnyHNIDVpiR7rOkND/PW2rKPaclzYOXLhKSWSZJ/687KkQDFa6Y6zSE4tiOwgdxQy7YaP38NJdcJc2tRZzqbdO6eiC6HXJnCjo++2om4Q8z9J7sjLU8z7P9Ge9XTzeLDsk8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751038647; c=relaxed/simple;
+	bh=7b0S+xBwIa7igq8QUYqdr4evJcTqCm38nHadXrYRYbE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=IYcrcv3tvt4w8apimGRr4nWELhzDpW/Diiy3zZulyLdcAeGrnVMBdclGTxD5AlLLzCmWadbnzCkgd9ja8/SLkohgEMNIqTWwcMHj7iP0jhRZRziUUO29gOmpi/iKoqWJ36yTb+ah8dUEV5Jap707XYYyulcf/LJO6tTVvfNrK74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sa8K2E/e; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sa8K2E/e"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4F1FC4CEF1;
+	Fri, 27 Jun 2025 15:37:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1751038647;
+	bh=7b0S+xBwIa7igq8QUYqdr4evJcTqCm38nHadXrYRYbE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=sa8K2E/eVZkHmeMbCBPct2ZYkNYa/FxqwSXyfxCbFDtUP9fiZRsmnY0oukRkr/mDs
+	 9jEK7RqmntSL73on8iHlfh92MC3dbU2zdMRonHV2mOEkwJqx2NdBpv1ZdTJ67xqbBT
+	 sDxqTRWI0JoSV2gQYnPZYQ3AC3MC9jqMrGGqUqk7BNjHvQfpcbMBD3cQ0J7y/zXNVe
+	 fBzKvHzfLOg/D46POIB9nLSVWDVv0bXawp5qcRnJIAmLpHg12C2nh6+68hYVcgKhJC
+	 JoOvDwpZ3yRFeLQFcPYac8ll95aOuHm/fKwF1HfyH3Cg85bH3dxwV6csRlPS4h/rj2
+	 gq7XxgrCDSGbw==
+Message-ID: <8878af70-3eb8-495b-b8df-43a10285c4f5@kernel.org>
+Date: Fri, 27 Jun 2025 10:37:23 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0-v1-662aad101e51+45-iommu_rm_ops_pgsize_msm_jgg@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 9/9] PCI: Add a new 'boot_display' attribute
+To: Thomas Zimmermann <tzimmermann@suse.de>,
+ Bjorn Helgaas <bhelgaas@google.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Lukas Wunner <lukas@wunner.de>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
+ "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+ "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
+ "open list:SOUND" <linux-sound@vger.kernel.org>,
+ Daniel Dadap <ddadap@nvidia.com>,
+ Mario Limonciello <mario.limonciello@amd.com>
+References: <20250627043108.3141206-1-superm1@kernel.org>
+ <20250627043108.3141206-10-superm1@kernel.org>
+ <41587824-4a05-4ead-b24c-4729007cd663@suse.de>
+Content-Language: en-US
+From: Mario Limonciello <superm1@kernel.org>
+In-Reply-To: <41587824-4a05-4ead-b24c-4729007cd663@suse.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jun 27, 2025 at 10:02:10AM -0300, Jason Gunthorpe wrote:
-> This driver just uses a constant, put it in domain_alloc_paging and use
-> the domain's value instead of ops during finalise.
+On 6/27/2025 2:07 AM, Thomas Zimmermann wrote:
+> Hi
 > 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/msm_iommu.c | 7 +++----
->  1 file changed, 3 insertions(+), 4 deletions(-)
+> Am 27.06.25 um 06:31 schrieb Mario Limonciello:
+>> From: Mario Limonciello <mario.limonciello@amd.com>
+>>
+>> On systems with multiple GPUs there can be uncertainty which GPU is the
+>> primary one used to drive the display at bootup. In order to disambiguate
+>> this add a new sysfs attribute 'boot_display' that uses the output of
+>> video_is_primary_device() to populate whether a PCI device was used for
+>> driving the display.
+>>
+>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>> ---
+>> v6:
+>>   * Only show for the device that is boot display
+>>   * Only create after PCI device sysfs files are initialized to ensure
+>>     that resources are ready.
+>> v4:
+>>   * new patch
+>> ---
+>>   Documentation/ABI/testing/sysfs-bus-pci |  8 +++++
+>>   drivers/pci/pci-sysfs.c                 | 46 +++++++++++++++++++++++++
+> 
+> The code looks good. Just one more question: could this be added 
+> independently from the PCI bus (at a reasonable cost)? There are other 
+> busses that can host the boot display. Alternatively, we'd add this 
+> attribute per bus as needed.
 
-Applied, thanks.
+It depends upon the underlying hardware implementation.  On x86 it's 
+always PCI and so I realized there is a requirement that PCI resources 
+are setup before screen_info event works.
 
-Queued it right before "iommu: Remove ops->pgsize_bitmap" in the core
-branch.
+That is the v5 version of this patch would have had a potential race 
+condition with userspace where boot_display didn't always show '1' if 
+userspace read it too quickly.
+
+Other architecture's hardware implementation might have similar problem.
+
+So in summary I think it would be better to do it per-bus.  If we 
+realize there is indeed code duplication we can always move this to a 
+common helper at that point.
+
+> 
+> Best regards
+> Thomas
+> 
+>>   2 files changed, 54 insertions(+)
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ 
+>> ABI/testing/sysfs-bus-pci
+>> index 69f952fffec72..8b455b1a58852 100644
+>> --- a/Documentation/ABI/testing/sysfs-bus-pci
+>> +++ b/Documentation/ABI/testing/sysfs-bus-pci
+>> @@ -612,3 +612,11 @@ Description:
+>>             # ls doe_features
+>>             0001:01        0001:02        doe_discovery
+>> +
+>> +What:        /sys/bus/pci/devices/.../boot_display
+>> +Date:        October 2025
+>> +Contact:    Linux PCI developers <linux-pci@vger.kernel.org>
+>> +Description:
+>> +        This file indicates the device was used as a boot
+>> +        display. If the device was used as the boot display, the file
+>> +        will be present and contain "1".
+>> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+>> index 268c69daa4d57..cc766461de1da 100644
+>> --- a/drivers/pci/pci-sysfs.c
+>> +++ b/drivers/pci/pci-sysfs.c
+>> @@ -30,6 +30,7 @@
+>>   #include <linux/msi.h>
+>>   #include <linux/of.h>
+>>   #include <linux/aperture.h>
+>> +#include <asm/video.h>
+>>   #include "pci.h"
+>>   #ifndef ARCH_PCI_DEV_GROUPS
+>> @@ -679,6 +680,13 @@ const struct attribute_group *pcibus_groups[] = {
+>>       NULL,
+>>   };
+>> +static ssize_t boot_display_show(struct device *dev, struct 
+>> device_attribute *attr,
+>> +                 char *buf)
+>> +{
+>> +    return sysfs_emit(buf, "1\n");
+>> +}
+>> +static DEVICE_ATTR_RO(boot_display);
+>> +
+>>   static ssize_t boot_vga_show(struct device *dev, struct 
+>> device_attribute *attr,
+>>                    char *buf)
+>>   {
+>> @@ -1246,6 +1254,37 @@ static int pci_create_attr(struct pci_dev 
+>> *pdev, int num, int write_combine)
+>>       return 0;
+>>   }
+>> +/**
+>> + * pci_create_boot_display_file - create a file in sysfs for @dev
+>> + * @pdev: dev in question
+>> + *
+>> + * Creates a file `boot_display` in sysfs for the PCI device @pdev
+>> + * if it is the boot display device.
+>> + */
+>> +static int pci_create_boot_display_file(struct pci_dev *pdev)
+>> +{
+>> +#ifdef CONFIG_VIDEO
+>> +    if (video_is_primary_device(&pdev->dev))
+>> +        return sysfs_create_file(&pdev->dev.kobj, 
+>> &dev_attr_boot_display.attr);
+>> +#endif
+>> +    return 0;
+>> +}
+>> +
+>> +/**
+>> + * pci_remove_boot_display_file - remove the boot display file for @dev
+>> + * @pdev: dev in question
+>> + *
+>> + * Removes the file `boot_display` in sysfs for the PCI device @pdev
+>> + * if it is the boot display device.
+>> + */
+>> +static void pci_remove_boot_display_file(struct pci_dev *pdev)
+>> +{
+>> +#ifdef CONFIG_VIDEO
+>> +    if (video_is_primary_device(&pdev->dev))
+>> +        sysfs_remove_file(&pdev->dev.kobj, &dev_attr_boot_display.attr);
+>> +#endif
+>> +}
+>> +
+>>   /**
+>>    * pci_create_resource_files - create resource files in sysfs for @dev
+>>    * @pdev: dev in question
+>> @@ -1654,9 +1693,15 @@ static const struct attribute_group 
+>> pci_dev_resource_resize_group = {
+>>   int __must_check pci_create_sysfs_dev_files(struct pci_dev *pdev)
+>>   {
+>> +    int retval;
+>> +
+>>       if (!sysfs_initialized)
+>>           return -EACCES;
+>> +    retval = pci_create_boot_display_file(pdev);
+>> +    if (retval)
+>> +        return retval;
+>> +
+>>       return pci_create_resource_files(pdev);
+>>   }
+>> @@ -1671,6 +1716,7 @@ void pci_remove_sysfs_dev_files(struct pci_dev 
+>> *pdev)
+>>       if (!sysfs_initialized)
+>>           return;
+>> +    pci_remove_boot_display_file(pdev);
+>>       pci_remove_resource_files(pdev);
+>>   }
+> 
+
