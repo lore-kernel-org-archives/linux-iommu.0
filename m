@@ -1,80 +1,240 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA54D2E8DE5
-	for <iommu@lists.linux.dev>; Fri, 27 Jun 2025 15:07:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A5ED2EA496
+	for <iommu@lists.linux.dev>; Fri, 27 Jun 2025 15:34:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751036844; cv=none; b=cF9tjYWeHSdoBbecSQJzuH3hI8bl90tTR6rh0dwsEmt/ny+Z3nRe6gmpwH4VC+XnNBiU45JhaenKriDTlEG/KBFspkwd4anGsEfi64zxr3W3pLuBwzteV5d7Jrgl/ZyPtfQ0sJcI69/MfPkZ30z3ycwCquBNYo7mvhNyBajVwf8=
+	t=1751038474; cv=none; b=FD0fRhYmheXhM5z+d8G39WZx42z78Q713a3aRStMgkmnpVIZovp00Ll/eby4cryh6YRu9a6mT/8KmYxGIleXgrLyjAk0FjEbupUm2SBv+PaRI0iK5/Cd/0iNrafdxZ6x+KPS+JNoZvOlUU1V2gItEy9m0iuVA76MC1f6B71PIPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751036844; c=relaxed/simple;
-	bh=YBLiQwD2JcIulowafWOsVO78jCU0GAnY0Q+qLWPz6KI=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=VfgUeNiRXDOGOI4NINY78gpkTljvK/W53+KbNcUqD34ATrDQib4DBccQvhakFA09n3H3xXrFEU8/9pWIsjz1R23RLIxadaJn089ygPPBRE/+bN+kZWaOXilCjPNtPHKfQE9QpYmRLbC+D2R4BW+b/l/SxvAEYtETNuWxb36amAE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C92EF1A00;
-	Fri, 27 Jun 2025 08:07:04 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.50])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B9E403F66E;
-	Fri, 27 Jun 2025 08:07:20 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Cc: iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org,
-	yong.wu@mediatek.com,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] iommu/mediatek-v1: Tidy up probe_finalize
-Date: Fri, 27 Jun 2025 16:07:10 +0100
-Message-Id: <7c78149504900bc6c98a9c48f4418934b72d89ac.1751036478.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
+	s=arc-20240116; t=1751038474; c=relaxed/simple;
+	bh=Ew8lpjg2KGw8RUtsdIdGkXQu5umyWwe0BTLTaVIb67w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PubGX2aDgrRmuhYGKP0QwpsxOOT4npnJZ6PVtVxyV8qilBrGLaWA3APd/CFAhwfgJvmN151/ECY8mwH/MTmi+7l9u7r4SOPpZnqMZ5UL/9vXDCC+D1ms+n78TIwvKmhqJdygu85who9ikOXEhjKq3DUI5SkRtpPXd0WRyAHLTkk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ZIh7/9dP; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ZIh7/9dP"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55RCMVYT007805
+	for <iommu@lists.linux.dev>; Fri, 27 Jun 2025 15:34:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	fhpcGE0kY2U2qHSOUrNH4gIXVYCbpgzCRlKlqKyiksA=; b=ZIh7/9dPTaRIKAbz
+	qtcRTfYJUmfDMD/1CB8sEgyGGumkjtTwe+1FCskmH91irz9aLvC7+w8nrjV0yIl5
+	QB0xqTRmG3P3Ft7yR9hK7RMWZYwi2POUq3sly/dUJ48WJWKJ9oC/oYfZUNb7O7vm
+	LRWccN5ciTm5RhWLpEa4ACEx19S+i4nLKISatypp1vBgmGk4bGCx72jy9YNPJfE0
+	o0qY4acjP6oYf70tubxgG7+gVbaXm9gWVcLv0iapLnGrDbi7elYbdiW8YQARPy4E
+	GwNMvpxwKqqfzTXYEUxP9yi+/mXni1WFKeH7ELAXBg4/7DE74URNzH7E2BxvGiH2
+	99Dl+w==
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47fbhqwphx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Fri, 27 Jun 2025 15:34:31 +0000 (GMT)
+Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-7d2038aae69so3721085a.0
+        for <iommu@lists.linux.dev>; Fri, 27 Jun 2025 08:34:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751038470; x=1751643270;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fhpcGE0kY2U2qHSOUrNH4gIXVYCbpgzCRlKlqKyiksA=;
+        b=cam9SnQG+qdXIE5h5QN6p+uZMssCf1Sc+hP/i9uHF1YeKW7ejggrKMNKInbaKhpklD
+         nb1aWa1NV/yawWNkDTtajrG4v72uezRHmIFyAEa7TSMwLpTMaauBB0NO8oyuVqDUioK5
+         7tYlw5bUPe9QOud2OUZgkkG7pw7cO2VLOtKTGP+3jlw7BAvMZXRPeaKKLJmEahx0WQnq
+         xp4wmdp3ANbOYKtqXeh/b71olKjoIx0lSOMQh7E5L/j0FSLfZu6sKhNNYgzDsTvRgqaB
+         u5/3nj3N0ofyiK/i3xHeUFqKlshmKF/DDDcNuGXCTK+b3gMT5FYV42+qbw8p4gAl2k2q
+         UUiA==
+X-Forwarded-Encrypted: i=1; AJvYcCXnoNPC2rE31TNlL3IYdRrYAzLpEA8UvrJg4twAXcWEHjEYaRxi74Pd+6uIkzFZkmQbl0F+Og==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyDS2DfKe0RE3kYN6QdrOoF4sBNZdqxqW1ML317G1nbR1heTONZ
+	Huqcixk6mKqSY0abq0AlhE3GeCrmY9hqJPAZwz2KTMld8AhklGsO2A7lJNQlOmr/UMuhR/j5c16
+	GW3/IvdXBbXnkEKgqu9Pea+LhCkQFWOSOSPJ12EIOVxHph6fAAm4ibz4aHA==
+X-Gm-Gg: ASbGnctdA1nonJxmSYpwDFqBrQQG77zfVxu2RRVANr00zXTzMQn7hAAyxrRWC0hlDjm
+	yAJkxffUVBmD1dyeZyUX6IxfMFaSvq9wRzrELhzCzUH7hX1UfVd/ETNlYO81SvCyQ3FgLxBTEIN
+	2y4V7COByzrsYC/oVI4WyjNUhH7YoTcKnosiTX4D/UomgB+GD9pv8so9JnZWeJrOVL1Y48tvOTm
+	Q8ai63wVYRbUTDG3PO6nIfoSKbUsNIF4rpTck7U6klsEFinnkm1YJ6AlxrqyZeYabZJrqr1eEZJ
+	eTpdcaQzqd4rdBaYV0ujk5S6ctwlV3TKQAGGhg1CI8DqMe0uIDGDFL/EDF9rx4heeaEYfKCozEY
+	QYrs=
+X-Received: by 2002:a05:620a:4390:b0:7c0:bc63:7b73 with SMTP id af79cd13be357-7d443966417mr201232985a.13.1751038470184;
+        Fri, 27 Jun 2025 08:34:30 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHzOTtjkZGz3phOnalpunb7y20OgdgwVxcjlA9JNDAl2YYT7eAuxSBmhUwNsqtuPUIJtvAnnQ==
+X-Received: by 2002:a05:620a:4390:b0:7c0:bc63:7b73 with SMTP id af79cd13be357-7d443966417mr201228685a.13.1751038469653;
+        Fri, 27 Jun 2025 08:34:29 -0700 (PDT)
+Received: from [192.168.143.225] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ae35363b244sm142288066b.30.2025.06.27.08.34.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 27 Jun 2025 08:34:28 -0700 (PDT)
+Message-ID: <3fbae47b-d20d-426b-a967-b584e32b8c6e@oss.qualcomm.com>
+Date: Fri, 27 Jun 2025 17:34:24 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 14/14] arm64: dts: qcom: Add The Fairphone (Gen. 6)
+To: Luca Weiss <luca.weiss@fairphone.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, Vinod Koul <vkoul@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Robert Marko <robimarko@gmail.com>,
+        Das Srinagesh <quic_gurus@quicinc.com>,
+        Thomas Gleixner
+ <tglx@linutronix.de>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Cc: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-mmc@vger.kernel.org
+References: <20250625-sm7635-fp6-initial-v1-0-d9cd322eac1b@fairphone.com>
+ <20250625-sm7635-fp6-initial-v1-14-d9cd322eac1b@fairphone.com>
+ <4200b3b8-5669-4d5a-a509-d23f921b0449@oss.qualcomm.com>
+ <DAXA7TKVM4GI.J6C7M3D1J1XF@fairphone.com>
+ <6d4e77b3-0f92-44dd-b9b0-3129a5f3785b@oss.qualcomm.com>
+ <DAXEA131KUXZ.WTO7PST1F3X6@fairphone.com>
+Content-Language: en-US
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <DAXEA131KUXZ.WTO7PST1F3X6@fairphone.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: YVoNzsDm7VfYvFns4oOWdptyLL-Lx8rZ
+X-Authority-Analysis: v=2.4 cv=Id+HWXqa c=1 sm=1 tr=0 ts=685eba07 cx=c_pps
+ a=HLyN3IcIa5EE8TELMZ618Q==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
+ a=IkcTkHD0fZMA:10 a=6IFa9wvqVegA:10 a=huVnaSGCcg0LVUp1CDwA:9
+ a=QEXdDO2ut3YA:10 a=bTQJ7kPSJx9SKPbeHEYW:22
+X-Proofpoint-GUID: YVoNzsDm7VfYvFns4oOWdptyLL-Lx8rZ
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjI3MDEyNiBTYWx0ZWRfXyvA+0gb/DcZa
+ NJtllSgxWzA6EPoNsQ+lISwkdyaHAP9i50UhJMJzM6hYy7lJ6RxpM8ZLp8+rVRZmbOn459tJvPu
+ eDsWxOrKcALh5HzVxP07TWUEBVlElYD1fgDa1CNrdlFoDmhprYxtSuU/I2sGN5n4FzvVNzvsJ2f
+ 2NEuCigLQ7r8AeNeYNpJJI+/L2AUMwsXH2QGonT659K405jNoxxHPCm7UdsGLo0GmCkld8nkeAw
+ b2/bdsgNeSWIDGx64ShyIq/+niNMpJSTMLXJ5iMm+C3HJUMtwkV9hyYJuNhap4we9z/i2KZma8i
+ sOGc7e9sFN29RGHYcMHhuWRVNW8F5+bgYQ6cHxJIPNKkzwmE9cUtYuhKLsCsBrLwTx6SYddH3oU
+ 7TsHOU7XV9gZzskk3sUeJx7QnexkBVYEue+mMrcZKJQT25QZYTnCt+7s1lKTzRcUwD4bMwxw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
+ definitions=2025-06-27_04,2025-06-26_05,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 priorityscore=1501 mlxlogscore=999 phishscore=0 bulkscore=0
+ clxscore=1015 impostorscore=0 mlxscore=0 lowpriorityscore=0 malwarescore=0
+ suspectscore=0 adultscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
+ definitions=main-2506270126
 
-Krzysztof points out that although the driver now supports COMPILE_TEST
-for other architectures, it does not build cleanly with W=1 where the
-stubbed-out ARM API can lead to an unused variable warning.
+On 6/27/25 4:44 PM, Luca Weiss wrote:
+> On Fri Jun 27, 2025 at 4:34 PM CEST, Konrad Dybcio wrote:
+>> On 6/27/25 1:33 PM, Luca Weiss wrote:
+>>> On Wed Jun 25, 2025 at 4:38 PM CEST, Konrad Dybcio wrote:
+>>>> On 6/25/25 11:23 AM, Luca Weiss wrote:
+>>>>> Add a devicetree for The Fairphone (Gen. 6) smartphone, which is based
+>>>>> on the SM7635 SoC.
+>>>>
+>>>> [...]
+>>>>
+>>>>> +	/* Dummy panel for simple-framebuffer dimension info */
+>>>>> +	panel: panel {
+>>>>> +		compatible = "boe,bj631jhm-t71-d900";
+>>>>> +		width-mm = <65>;
+>>>>> +		height-mm = <146>;
+>>>>> +	};
+>>>>
+>>>> I haven't ran through all the prerequisite-xx-id, but have
+>>>> you submitted a binding for this?
+>>>
+>>> Actually not, kind of forgot about this. I believe I can create a
+>>> (mostly?) complete binding for the panel, but this simple description
+>>> for only width-mm & height-mm will differ from the final one, which will
+>>> have the DSI port, pinctrl, reset-gpios and various supplies.
+>>>
+>>> I think I'll just drop it from v2 and keep it locally only, to get the
+>>> simpledrm scaling right.
+>>
+>> Yeah I think that'd be best in general
+> 
+> Ack
 
-Since this is effectively the correct intent of the code in such cases,
-mark it as __maybe_unused, tidying up some cruft in the process.
+[...]
 
-Reported-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
+>>>>> +&pm8550vs_d {
+>>>>> +	status = "disabled";
+>>>>> +};
+>>>>> +
+>>>>> +&pm8550vs_e {
+>>>>> +	status = "disabled";
+>>>>> +};
+>>>>> +
+>>>>> +&pm8550vs_g {
+>>>>> +	status = "disabled";
+>>>>> +};
+>>>>
+>>>> Hm... perhaps we should disable these by deafult
+>>>
+>>> Do you want me to do this in this patchset, or we clean this up later at
+>>> some point? I'd prefer not adding even more dependencies to my patch
+>>> collection right now.
+>>
+>> I can totally hear that..
+>>
+>> Let's include it in this patchset, right before SoC addition
+>> I don't think there's any pm8550vs users trying to get merged in
+>> parallel so it should be OK
+> 
+> Okay, can do. Disable all of them (_c, _d, _e, _g), and re-enable them
+> in current users? I assume there might also be boards that only have
+> e.g. _d and no _c.
 
-Since I'd already got as far as thinking this through, I figure I may
-as well save Krzysztof the trouble of rewriting it :)
- 
- drivers/iommu/mtk_iommu_v1.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+I suppose it's only fair to do so, in line with
 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 66824982e05f..2fc18e194e19 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -509,14 +509,10 @@ static struct iommu_device *mtk_iommu_v1_probe_device(struct device *dev)
- 
- static void mtk_iommu_v1_probe_finalize(struct device *dev)
- {
--	struct dma_iommu_mapping *mtk_mapping;
--	struct mtk_iommu_v1_data *data;
-+	__maybe_unused struct mtk_iommu_v1_data *data = dev_iommu_priv_get(dev);
- 	int err;
- 
--	data        = dev_iommu_priv_get(dev);
--	mtk_mapping = data->mapping;
--
--	err = arm_iommu_attach_device(dev, mtk_mapping);
-+	err = arm_iommu_attach_device(dev, data->mapping);
- 	if (err)
- 		dev_err(dev, "Can't create IOMMU mapping - DMA-OPS will not work\n");
- }
--- 
-2.39.2.101.g768bb238c484.dirty
+d37e2646c8a5 ("arm64: dts: qcom: x1e80100-pmics: Enable all SMB2360 separately")
 
+
+>>>>> +&usb_1 {
+>>>>> +	dr_mode = "otg";
+>>>>> +
+>>>>> +	/* USB 2.0 only */
+>>>>
+>>>> Because there's no usb3phy description yet, or due to hw design?
+>>>
+>>> HW design. Funnily enough with clk_ignore_unused this property is not
+>>> needed, and USB(2.0) works fine then. Just when (I assume) the USB3
+>>> clock is turned off which the bootloader has enabled, USB stops working.
+>>
+>> The USB controller has two possible clock sources: the PIPE_CLK that
+>> the QMPPHY outputs, or the UTMI clock (qcom,select-utmi-as-pipe-clk).
+> 
+> So okay like this for you, for a USB2.0-only HW?
+
+Yeah, maybe change the comment to something like:
+
+/* USB 2.0 only (RX/TX lanes physically not routed) */
+
+to avoid getting this question asked again
+
+>> Because you said there's no USB3, I'm assuming DP-over-Type-C won't
+>> be a thing either? :(
+> 
+> Yep. I'd have preferred USB3+DP as well since it's actually quite cool
+> to have with proper Linux. On Android, at least on older versions it's
+> barely usable imo. Can't even properly watch videos on the big screen
+> with that SW stack.
+
+Bummer! Not something we can change though :(
+
+Konrad
