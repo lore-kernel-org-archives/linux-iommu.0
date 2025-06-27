@@ -1,174 +1,200 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 908F912DDA1;
-	Thu, 26 Jun 2025 23:44:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750981472; cv=none; b=mYbpStGn3ARRkugKmHD0SyEtGQgQMABQ6lqAlGOKcscUpvdQay6pgDaO4pRATTpRWq86skMoxvQ8vB+IJDyCCbagnOrWf4l8nRhkQShOViLhrfl3+TBtEgkdLSMDTZ2VdkpWSRMfAhGpbA2+/Iqllpzr2Jmod+Z/e4u7zBfU/Ws=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750981472; c=relaxed/simple;
-	bh=6GR56atUSt+bKa4y7fIYRqGS50kbuDnTWP0AsyJpTbU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rgY7CFJuitxaqvX0P049alLN+4/vc9O6cjIUhmLzhM4IENpZM+8JSDJm2fjfqVdeLgX+GWHQRu88KUnBy0NReB+REsbyW2XF0t10XWr/CT4NYYemEmZ3uB8qHyLsbaz9NAGF7BJKLssiz6kBt11g6oE0OAMGcyDZaNv4KowEJ7Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GeKUV2eT; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A2069443
+	for <iommu@lists.linux.dev>; Fri, 27 Jun 2025 00:00:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.17
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1750982443; cv=fail; b=lUfEnCWcwGuqOmYpY9gHIECysWcxxqKuOjv8HdJ/JJ43t1lglHBWhfDjhhiXPL7Rp5hQLarYMUidiNUuTPrI3a8U8o0UxPCPkeoXAlTqWtMawrMw34H22F7Q5vDuxXO+cZCpoCRWslj+oH+BvYmiBW2YlrAjGwJRey84tTjVxdA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1750982443; c=relaxed/simple;
+	bh=xCOZRX46y2xUTT97VuP+8Gjvt+GI/4MrMFPulphmiSw=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=sCZmrtKC1dtFVEILI/3iNYDojP8W9FvkeWWhX/iAbrJZQup9EsCrQh9n9HCWgxDew1bkQgrE2/3R9l8ghdklSWcx7vERJAynoT+jbcJosIczYQTAaK7JR7zH9oTpLm+PIky245a+AwSAzKTfQ1B3KCv6jqxMQj3EpG0/KwNGFXw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W6hOGHM0; arc=fail smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GeKUV2eT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AB91C4CEEB;
-	Thu, 26 Jun 2025 23:44:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1750981472;
-	bh=6GR56atUSt+bKa4y7fIYRqGS50kbuDnTWP0AsyJpTbU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=GeKUV2eT7stYLibvFNyt2+U9+BWAI7aNDwUBYqlIG8GrzxAHfQbM++zJA4yqObHRt
-	 N1zCSGg8uNTEV3Bhe4bWdy2nDoRizw+LfI/B/uZlkcDRiQ3NPpgj7gPRXr62gj3NWg
-	 oeS/Vqc9+Rqd/Aj8GMmShwEvVtUoHzHU2n9d74opMMvkCtHs3mXBd5gK+netVfupnp
-	 yykaRGfjON3CcHqlthe9S2LjHHAaYDyRiE+akk0e3TakcxL7R5tmnN/WQ8cQhGCOow
-	 Rqc0ukbpAlR4mzRRNqY38g8tJtFSpccGrHH75WMzqUboCSUeFUsFM02hIdjkj2+xYv
-	 sYSfy2dhYjxEA==
-Date: Fri, 27 Jun 2025 01:44:24 +0200
-From: Danilo Krummrich <dakr@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	Alexandre Courbot <acourbot@nvidia.com>,
-	Lyude Paul <lyude@redhat.com>, Miguel Ojeda <ojeda@kernel.org>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
-	=?iso-8859-1?Q?Bj=F6rn?= Roy Baron <bjorn3_gh@protonmail.com>,
-	Benno Lossin <benno.lossin@proton.me>,
-	Andreas Hindborg <a.hindborg@kernel.org>,
-	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
-	Valentin Obst <kernel@valentinobst.de>,
-	open list <linux-kernel@vger.kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
-	rust-for-linux@vger.kernel.org,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	Petr Tesarik <petr@tesarici.cz>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Sui Jingfeng <sui.jingfeng@linux.dev>,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH 1/2] rust: add initial scatterlist bindings
-Message-ID: <aF3bWKvj0eCHnATV@pollux>
-References: <20250529004550.GB192517@ziepe.ca>
- <DA9JTYA0EQU8.26M0ZX80FOBWY@nvidia.com>
- <95ff963ddabf7c3cd2cfd07d0231a0073ff6847e.camel@redhat.com>
- <DAED5BUK7TUQ.4JRHFMWZ99W3@nvidia.com>
- <27e17dbf-df6a-48fc-a652-ad48a776f668@gmail.com>
- <DAENGORNRVZH.2KIGKFV5C5G3L@nvidia.com>
- <f787046921fd608c385dc5c559883c5d70839507.camel@redhat.com>
- <DAP96FEJ0XWT.PWYMIE8IJAVQ@nvidia.com>
- <e2677c26-1c25-4a34-b666-9dcfa9642fd1@gmail.com>
- <20250626224355.GE213144@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W6hOGHM0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1750982440; x=1782518440;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=xCOZRX46y2xUTT97VuP+8Gjvt+GI/4MrMFPulphmiSw=;
+  b=W6hOGHM0iQPNUiytpi8u5sialLuQ8td+lm919JIbzexR95vWup20OCcD
+   2J3Sz9cg52AmSXqhbPd+FSwejR9BgcK+XJtoJHVyytmmune5y7Tue1sZY
+   JWnEYQz7Kx/OxS+pQHtCeqpLyOImOGB9+eHnZGK1FJE7f6VfJ209DBC9V
+   545iJZG71Pp5jLmrY0uf84hHqVlaCByAIZx8c8nIiwHQMV8zZ0V7lE2EV
+   0ygjmp7fYA2hYOLX691qtVQNUQ4iTEfGR110Qo0zYeBitkhbl8q8ZHGUD
+   aIrlbhqQNwJsfzAcRfIHU9UheBT7NgIynl+blBTrGlD54E5cDeINuu5VD
+   A==;
+X-CSE-ConnectionGUID: Jv9pme/GSf6Y7bG8W50CKw==
+X-CSE-MsgGUID: YH8jv5MgTcK/n5IDFf++bA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11476"; a="53260040"
+X-IronPort-AV: E=Sophos;i="6.16,268,1744095600"; 
+   d="scan'208";a="53260040"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2025 17:00:40 -0700
+X-CSE-ConnectionGUID: tDAU/w4LQ3qEDXHyoASQZA==
+X-CSE-MsgGUID: xpWDyWlfQ4qmvPH85OrtAA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,268,1744095600"; 
+   d="scan'208";a="153370835"
+Received: from orsmsx901.amr.corp.intel.com ([10.22.229.23])
+  by fmviesa010.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jun 2025 17:00:39 -0700
+Received: from ORSMSX903.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX901.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25; Thu, 26 Jun 2025 17:00:38 -0700
+Received: from ORSEDG902.ED.cps.intel.com (10.7.248.12) by
+ ORSMSX903.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25 via Frontend Transport; Thu, 26 Jun 2025 17:00:38 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (40.107.244.45)
+ by edgegateway.intel.com (134.134.137.112) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.25; Thu, 26 Jun 2025 17:00:38 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=hKGognUS0f5+scHzUauJKQIZsjm+2P9Q5Tvhv6A4EeVGxCQ7dpfSKFZd7QuTrYdZBWHHXn1q2LyELPXxq0mtH/nSAsb3sOv/6ufKj2tNzbZtVXxpDE2FzqrVVQb9348nDgVOVDhaRqSvH4gPWQ0ZpsKDL+/av2IZMH0vCvQjvme+x7G/6NTK4ZYT8sWcj0Oh7raWOLBlvkEmkeF16rmEKnUXbr811+gFw+JHugeRcGqhSrilEQ0hhaswQbY3IVu0675/AV/eQ0WW2eDfiMbrDrvto5BKS+5vfiz+QTZOpN7b/6w48sJu8DdPLkJHJ2KTQctlE6921dp4P8gXeU2Z/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xCOZRX46y2xUTT97VuP+8Gjvt+GI/4MrMFPulphmiSw=;
+ b=Iyz2B174zA7pcbZ3/9e3ee5TjgT0+POoQODy/EZbFQArta7cdXvkrylkiP7h478EN2UgXlZ+7RNu99flJmQCaoaa+VMciklqN4tPUAW30+6guqp2mecYIICMjtz/x70HGUicCxqi7mmZwjUgwXJWK5fnIS4dvNZixoFk7YZdNTl8G3kGlLnmpsddhCq2yt7Z+FV7RrRvnzjlADAf5HK96aMlzBpb7i1FqnjqOCffDnxdc/JHT0/jDdVJhCe0ItaogKzaUD5Fpr9IhzLHn94Z1zMFlQjNYSPu3xY2zxAJBJkdQokInH8IhZzBkcG8h9TXJRoRX9EA6ZsvI6svyhPJIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by LV1PR11MB8792.namprd11.prod.outlook.com (2603:10b6:408:2b5::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8857.29; Fri, 27 Jun
+ 2025 00:00:36 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b576:d3bd:c8e0:4bc1%4]) with mapi id 15.20.8857.026; Fri, 27 Jun 2025
+ 00:00:36 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Lin,
+ Shuicheng" <shuicheng.lin@intel.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: RE: [PATCH v2 1/1] iommu/vt-d: Assign devtlb cache tag on ATS
+ enablement
+Thread-Topic: [PATCH v2 1/1] iommu/vt-d: Assign devtlb cache tag on ATS
+ enablement
+Thread-Index: AQHb5Y6WVDzFNgUxy06TUOHvXavd/LQWIb1Q
+Date: Fri, 27 Jun 2025 00:00:35 +0000
+Message-ID: <BN9PR11MB5276C8DA11EC1F412757E5F08C45A@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20250625050135.3129955-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20250625050135.3129955-1-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|LV1PR11MB8792:EE_
+x-ms-office365-filtering-correlation-id: 852ebdf8-d7ed-4ac0-5336-08ddb50da4c7
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|376014|38070700018;
+x-microsoft-antispam-message-info: =?us-ascii?Q?RKOe7fdttdvA583Awt2zsTgruugdtIEk/DjWWf5kb4OOXOgPicLTmo1wDKJ6?=
+ =?us-ascii?Q?ac/S96ynSJslqQgxCAk/J204MmKyQ9AmkiDjdp3Kf3h1c84idQKG3oGYHllr?=
+ =?us-ascii?Q?ElS0R2pd0pGe3BkTTEPHUwZczSPrWR9ySdUZcsMAYikK5SzKD4dqcCOboYJL?=
+ =?us-ascii?Q?qaor+JF3jrWJ5hlYChtXIDrQZ91Ld+GLk6JM9ChIjF1BLMw6lefO3rcVAgNP?=
+ =?us-ascii?Q?PtQIbBLzNkWdKqtXdP96h1aeJe/ibu80RaJVJyOGN5TXTlQr2hsvubl9R1SX?=
+ =?us-ascii?Q?FSoEOPSBQljwjtiwJFX2B0CKafbRVSjdmcUtOzriQC0vUbDtyaIdcjclSspk?=
+ =?us-ascii?Q?8yDj+5EOi5rYdxoaEnQNBioa0SP8N7j6viTOnK1Zc9M8LgRA9kVeZXVVkbbB?=
+ =?us-ascii?Q?b57x+XIoNbLZ2ukJJYmAt5OCWQPlANNsly/oHGR9ZeGV4Lu+W+Qw7pWLB7qo?=
+ =?us-ascii?Q?frg3Lls1wQNle1db8/XjGURio7R0HqgEfTlyTkka2sPcjchOnhY0AKtkSbPO?=
+ =?us-ascii?Q?rncZLArfj8ofihqWMwlRtgEz0c2u5T6xcvgVFDZdIuJo8E9QFZmyQ4EYi/Ak?=
+ =?us-ascii?Q?Aj8kmGFx1e31BCLaTdSr2ZV84O+9cIQcgzG54+OAuXnOI45JJLfQTQZoRxAv?=
+ =?us-ascii?Q?Knno+0b+gV8hls5iYUE3kazg8qWrDLmC2iR5BsGiPJiktDEw6wkRLitXi3Zy?=
+ =?us-ascii?Q?0D0X4Vghpj5TEoFxGJaBd9BtE769YeKjlHh5IB59uDseG5ly0BGab8gxrsCc?=
+ =?us-ascii?Q?Tu1acGRfBBL3R1PPcbfzmOuTx+ywxk4LqdBO9he5v9sk1WSxccJHHfOBlphG?=
+ =?us-ascii?Q?+ckrahYiDL77Is6DPruKwjvj0Hd4BirBBCWG10fxM14EiH8lMfyMF1GF3MqH?=
+ =?us-ascii?Q?VBqcGPv9ZLz3CWoMUHGtZsGXUM9mtjQTfloOVsGD8l+3FnrvpaXDA9MShkTP?=
+ =?us-ascii?Q?HUqodQAuSptfcvg2BXXEJU6IKh8AmLx8lm0tFFwSznBO8eitwLxjX58vIBNu?=
+ =?us-ascii?Q?JZ1vEDEfr9AS/7Y2jM5KrfRnaqB2m+1jRHFMKBY4SeG6zZ+QvrhMguz04gkR?=
+ =?us-ascii?Q?AoDPkLi2xFv6TUGaZS4qy4lz/CO6Fhf+X8r6ITbePHjienqmM5Og8u59EL2A?=
+ =?us-ascii?Q?fPfyrETKDk8uPvCY5RPy8U4y5M0A68HhH/UKbMP3ghKvBD9ormtQuhQJYLCL?=
+ =?us-ascii?Q?CLszt1Sge3E7dcS9IGaA4kXZBFUAk5knLqJ5l/V7ENsXmAxPESuxCnqPuMqT?=
+ =?us-ascii?Q?vjp+reNvIfkKAuTCLL84UkdhXexeVd5IrQNchgE5vLKRR2krXyJH8hfTgSve?=
+ =?us-ascii?Q?46KKXgZv8ATV+JbLKd98HfEv/2/eDRAwpMvmrUEzRwjni2CryBc0j+6cUNK9?=
+ =?us-ascii?Q?UfLVF0HHmIat/FoDp2WNb3EeiyfFEi368MZQaDauI3GETD6u5v++uqHbU7zE?=
+ =?us-ascii?Q?+PVsQIPYiUxM42RpwRdSj2p5u8JxbnjJpY/CmlixHtbXQ3WKwCgShQ=3D=3D?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?0Nprn9lChvAvzE4qiOjjOHDA+zz9YZJJriA4PgVZsCUtEBCSogX6JOslH5Tm?=
+ =?us-ascii?Q?+TxcHWCGFmcLNF30Hhmua76QEsZdQf6i3/yFQqCXzaoTEWuBP8bVVoiO1hlT?=
+ =?us-ascii?Q?adljddrJPibWwS8GiENEEFWh2+yt+e+19O9FyZTmaMrCXgGkShSYmDLtBfdx?=
+ =?us-ascii?Q?jc7j77/VVQ0Q5N1dAUkpOTiekBoQaZeM+sjBNPvMCJ2yt5eUJmKiI2T3Q1uk?=
+ =?us-ascii?Q?znM+Vw7dDX9Q1Gl2nkSIIrXQADYvKE1MyRQAL4IutVxN9cZC9HhUXwli40Hn?=
+ =?us-ascii?Q?/yvVpvR+1TA9v4aTO1hdI1Zs7Wl/fohvkjScKLmM4c4A/uUlUxxOpcCW32bm?=
+ =?us-ascii?Q?IVfKy141Oiq17dLxcBTWMaOvYjySAlyVFCG7VXXytcZmg3Zif1kXGMzn50Bd?=
+ =?us-ascii?Q?Ngz7LDtzH6uGeA+owTDBzcYa5LKH8bqL4UbHXpmIEk5CzMd1bBn+8RnC/+ru?=
+ =?us-ascii?Q?7C2Y+VUZ2kGxie3pjNy+djkJjNQEdCYkc+StfM4qp0P83bQQiVsCeHcF0FWY?=
+ =?us-ascii?Q?4aEVNOYiwcASSP0rTKH1XIsh6T8z5Y9VV5GcRbj9oqyqCqMsz1qpespK/Us+?=
+ =?us-ascii?Q?J9+LJFSH2wh6NKjUc4GslrDPx+VE/jTrSQftDSJ1WEw7KYuoyIUgaH4q6fC9?=
+ =?us-ascii?Q?D98NXEmJNunLlumRLR7uzw8+d5NpUw7Hckw/PqxcFycSKEGkJkdL8eOst52Y?=
+ =?us-ascii?Q?EEAtEj58X1OGD8YU1vfPX0xlLDdoFBE7adNBaarXEMwwLb6o8Lf0i+Huz0bm?=
+ =?us-ascii?Q?bQgPwavjR9IEVa4Y14lYtbMzccu4ejB84wLxamr8awLrMKzrjSfz6H//Lsru?=
+ =?us-ascii?Q?Eh3O/bN7nj9bWe3NXQZuq9syYWIDK6ZguMiECb/CGYQxxcTr5WyuXYQWSLkk?=
+ =?us-ascii?Q?4TkMHtTUtYHUd5ItbyuoS5d1zrml43ua6csBvVvoPzTw2/h3RkNGCQD5ttWi?=
+ =?us-ascii?Q?qlJk9J9iqNVAnR7wLJlxjqvwdMIFB7PUBXf8yuaAq9U6vRz5rKY9RTSyWFHu?=
+ =?us-ascii?Q?bZs9CRr2bhJQPN5+kxNj2zFvOJov1qDPaZrro6tgRaqHUiR6B4soORZ7XZ6q?=
+ =?us-ascii?Q?1dYib7gY983RV3+Ldot3aw/sqVwEKDg+P46LDybiVYfixPPSq1N58pxUGjtL?=
+ =?us-ascii?Q?wbdjm5iM+Lcj8OGEt6JlD/EUIfCPxbJGGHqri8fZoe5L2QAiVx/0T3YdWV4P?=
+ =?us-ascii?Q?7722g7EZpGHpmWxNGnuvbQJFsDV5UIXAvZdanIWdxplNMf6T7LomWXcDhMDJ?=
+ =?us-ascii?Q?LmVXNy99XPxujR23ZgT6UOiavwS04ru/h8S4FMp3cEHbHr+tAQNQBYbbk1U6?=
+ =?us-ascii?Q?2/H/K+gNVFlvyuya/DWr9glNsA9MaRRfo47wtC0JODtKNTMY9/guZarC0B0u?=
+ =?us-ascii?Q?Ie8UH4hkVaQTGjx797WktmhR/sD41SXCKFJJjJonZ3KuQB3/36Jxjabqc9s5?=
+ =?us-ascii?Q?1S7Z0EGdfsfB1oXuqW86n55atJCsz/FushgXyaXyJJ6vFRjNveG8qv5yxv2l?=
+ =?us-ascii?Q?V858tKMwIGwq/QNzTpO+QjS1Ei5CEtdfTF5y8VkeuOFyAVFgzeXQBgOAK6n2?=
+ =?us-ascii?Q?zOOS35pv8nQgWjnT+bULEo8T7LDKrt0BIL0l4fEk?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250626224355.GE213144@ziepe.ca>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 852ebdf8-d7ed-4ac0-5336-08ddb50da4c7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jun 2025 00:00:35.9702
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mHjxdxp4Jg33P5/hEPfM7HAwQ7N1+0FN3+qAoy7HdgdSfojkZKDpYKSViYLrCO1PHW5yLSLnxAhVZcxMCAGbYQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV1PR11MB8792
+X-OriginatorOrg: intel.com
 
-On Thu, Jun 26, 2025 at 07:43:55PM -0300, Jason Gunthorpe wrote:
-> On Thu, Jun 26, 2025 at 11:31:15PM +0300, Abdiel Janulgue wrote:
-> > Just commenting on this bit. From what I've seen, we don't actually leak
-> > anything. The cast only creates a reference to the original C `struct
-> > sg_table` object which was allocated and owned by whichever kernel subsystem
-> > called sg_alloc_table(). Rust doesn't even allow us to take ownership or to
-> > dereference the value, so this one is safe. Destructors are not called on
-> > those "casted" objects.
-> 
-> This does not seem the right kind of philosophy.
-> 
-> Every pointer out of the kernel APIs has some kind of implicit
-> lifetime contract.
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Wednesday, June 25, 2025 1:02 PM
+>=20
+> Commit <4f1492efb495> ("iommu/vt-d: Revert ATS timing change to fix boot
+> failure") placed the enabling of ATS in the probe_finalize callback. This
+> occurs after the default domain attachment, which is when the ATS cache
+> tag is assigned. Consequently, the device TLB cache tag is missed when th=
+e
+> domain is attached, leading to the device TLB not being invalidated in th=
+e
+> iommu_unmap paths.
+>=20
+> Fix this by assigning the CACHE_TAG_DEVTLB cache tag when ATS is enabled.
+>=20
+> Fixes: 4f1492efb495 ("iommu/vt-d: Revert ATS timing change to fix boot
+> failure")
+> Cc: stable@vger.kernel.org
+> Suggested-by: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Tested-by: Shuicheng Lin <shuicheng.lin@intel.com>
 
-Yes, and it also comes with a contract of ownership of the object behind the
-pointer.
-
-> Eg if you have
->   b = get_b(a);
-
-Given the below I assume you mean taking a reference of an object B that is
-embedded in an object A, rather than taking a reference count, which 'get'
-implies a bit.
-
-I.e.:
-
-	struct A {
-	    b: B,
-	}
-	
-	impl A {
-	    fn get_b(&self) -> &B {
-	        &self.b
-	    }
-	}
-
-> Then the lifetime of b might well be 'alive so long as a is alive'
-
-Yes, and it is a good example of what Abdiel means. In your example a owns b,
-which means that the type A is responsible to destroy its instance of B once it
-is destroyed itself.
-
-This means that a.get_b() returns a reference b of the type B that is bound to
-the lifetime of the object a.
-
-Dropping the reference b does nothing, since it does not have ownership of the
-instance of B.
-
-Please find a runnable example in [1] (and please also let me know if I
-misunderstood you).
-
-> 
-> Or if you have some function pointer callback
->   void op_foo(a) {}
-
-This is a great example too, since it can have both ownership semantics:
-
-  1) The pointer 'a' in the op_foo() callback points to an object that is owed
-     by some other object somewhere else, but the callback gives you the
-     guarantee that the pointer 'a' is valid throughout op_foo(). In this case
-     we can create a reference of the abstracting type in rust. In this case the
-     lifetime of the reference is limited to the scope of this function.
-     Dropping the reference does nothing, since we don't own the object behind
-     the shared reference.
-
-  2) The pointer 'a' in the op_foo() callback points to an object that we have
-     to take (back) ownership of, hence only creating a reference of the
-     abstracting type would leak the object eventually. Instead, we have to
-     re-create the actual object instance, which would usually be some Arc<T>,
-     KBox<T>, etc. In this case, we took (back) ownership of the object and
-     hence the lifetime depends on what we do with the object subsequently. If
-     we drop() it, the destructor is called.
-
-> The lifetime of a might well be 'alive only within the function'
-> 
-> AFAICT rust needs to figure out these implicit rules and the compiler
-> needs to enforce them.
-> 
-> Eg
-> 
->  a = make_a()
->  b = get_b(a)
->  destroy_a()
->  do_something(b)
-> 
-> Should be something impossible.
-
-Correct, this should give you a compile error. You can also see this case in my
-example in [1].
-
-In Rust you can also describe lifetime relationships with explicit lifetime
-annotations. For instance, you could have a function signature like this:
-
-	fn do_something<'a>(dev: &'a Device<Bound>) -> MyType + 'a
-
-This means that the reference to the bound device has a lifetime of 'a and the
-compiler ensures that the new instance of the type MyType returned by the
-function can't out-live the reference to the bound device.
-
-[1] https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=eed9d9c3e3ee187a9294961223e6b833
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
