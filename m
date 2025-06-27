@@ -1,47 +1,48 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3F48621858D
-	for <iommu@lists.linux.dev>; Fri, 27 Jun 2025 07:12:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E69FB1D5154;
+	Fri, 27 Jun 2025 07:16:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751008336; cv=none; b=UN2pfxWYbOmcG1ydnaeLwzWcIL4Yb0ii+GI5nAua0kem2mTifHNdLTw+I4uLtN4BVQb5n5slkOXTT39Z/X/3QL90ZR/LnOYrFJ0nwJVE4zI/b3as01iGjBmQCf02PPBbcL/KeHvgQQuwSBcJEqQr7NkjWOD0VTRX9/HCrOH+vHQ=
+	t=1751008589; cv=none; b=aH624hrMl4J2vZgcPfnnKl4C3nAxCTOdzfCwBgLAzZSr+i3lRk1EPZDkX540rK+RyepA6vAunCckhH1/3zXDXv2pxOSLB9XXww61zLxUmIeGKbUa5hp3WmbEYsElhrnlDdwK8gQVjsXWtL4T4go8mBb7BoJKUi3vEfitAcm2ehk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751008336; c=relaxed/simple;
-	bh=hViMdqb6dxMsSc22iEs4gFV/W3OyUowtbhavaS4N2C4=;
+	s=arc-20240116; t=1751008589; c=relaxed/simple;
+	bh=uBKXF6vM8NfVlqAtE7zDF6I8dzJzNc3fCBNdDoutpU0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=e6v9ZtLtBFS0c+4S13UYKhNiP/G9TrKc27Aw7NhkiHQo55fm+Um4OEJAdeayu/CZlSb2FUDMg8z/3TsKIg9MM7WSzTqiIV+HGmfml2dcnvq5P5WqTVyyD4+JnrJ4Od1kZK/0Vg76iLrc9O6MNzWNDox0tS5XJA5TlkolXGiQ/sc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=os8eh9Om; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=aHyUlBO1MwTIPFE46qB3WKP47C5fRB6CV2/xBeEJXOKrsgfz4x5P7l0SfHaUE3PO8fb2a+0C1xhIbvrLmPnet4b8ACEW0xMZY48NIsmUE2tNLS8DNxV768R8tf6B50COvS4vzYZxqNLffnzxipwevY9LuSuDjUIx0CxlRyTOQ+o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=NcPb/K2M; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="os8eh9Om"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="NcPb/K2M"
 Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 382E94D686;
-	Fri, 27 Jun 2025 09:12:13 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id DC8864EF8A;
+	Fri, 27 Jun 2025 09:16:26 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1751008333;
-	bh=hViMdqb6dxMsSc22iEs4gFV/W3OyUowtbhavaS4N2C4=;
+	s=default; t=1751008587;
+	bh=uBKXF6vM8NfVlqAtE7zDF6I8dzJzNc3fCBNdDoutpU0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=os8eh9OmTEn/Dx1LHcwVX5y/zK9/DPU+4gdnpJKgvmO8zgLCFp6UyZQzhdVu/eTB5
-	 ymyVzF6dt2XSAV1mvIVjI4FKvk41lONyZrMBQn4PxkBdn1BcFwrjk/vusMYrkdD0+t
-	 b4IEj9E5srjbXb25KOIHy0R+93xNZ1Hp+3MskKXm6EyeWCW/Myweg9idpwczBK5DIU
-	 5UIc1k7ayRmlhP+3k0Yp1KlD3ld/piGG2aRMG6PjylYIXcPeC6+G8+jwYAjKQOlAD/
-	 U7ACVw6okT+2NBBXG0Nx+ZNTUt18dp9sVNkVpInqzvcmgrKjHyI8oS+0vwQhkOXQub
-	 +76+NJjhyQ8GQ==
-Date: Fri, 27 Jun 2025 09:12:12 +0200
+	b=NcPb/K2MNA6v5UAJKyjVIWtTDJW1lvixW+t/T5N7+COup8OWRQ43PYOax9pP703H/
+	 Pfz8CHP+e5tr2GMW0rgL9g2iUic+LOy09BSquqNOVvmPtMt+F+8Jtly86xWOqnsw9+
+	 IgYME6KPy6P6uzLMs2nEOWuRES3Rx6ODmue4yBK+UKKjv4txAq2fsxN+tXNHnB9E3A
+	 wXoEMMmmPhAlWKfviTw/eOiGTV+vgUVffBaMLF8vinx+mWyFmZf6uo6UjqnHf9a80n
+	 8RBXBnmpFdArB7D3PF4Ggr81DNf6CU0RExxWOIJreXBRTLwEYYBM4eoCZA2FQmYasN
+	 v1r165GitYyxw==
+Date: Fri, 27 Jun 2025 09:16:25 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Simon Xue <xxm@rock-chips.com>
-Cc: will@kernel.org, heiko@sntech.de, robin.murphy@arm.com,
+To: Zhang Shurong <zhang_shurong@foxmail.com>
+Cc: will@kernel.org, robin.murphy@arm.com, wens@csie.org,
+	jernej.skrabec@gmail.com, samuel@sholland.org,
 	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v3] iommu/rockchip: prevent iommus dead loop when two
- masters share one IOMMU
-Message-ID: <aF5ETB6HEGywYKS9@8bytes.org>
-References: <20250623010532.584409-1-xxm@rock-chips.com>
- <20250623020018.584802-1-xxm@rock-chips.com>
+	linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] The sun50i_iommu_of_xlate() function didn't properly
+ handle the case where of_find_device_by_node() returns NULL. This could lead
+ to a NULL pointer dereference when accessing
+ platform_get_drvdata(iommu_pdev) if the device node couldn't be found.
+Message-ID: <aF5FSez2w-Y3c2za@8bytes.org>
+References: <tencent_889D023A2A9B04DE8D592DFE961C5893C706@qq.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,28 +51,11 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250623020018.584802-1-xxm@rock-chips.com>
+In-Reply-To: <tencent_889D023A2A9B04DE8D592DFE961C5893C706@qq.com>
 
-On Mon, Jun 23, 2025 at 10:00:18AM +0800, Simon Xue wrote:
-> When two masters share an IOMMU, calling ops->of_xlate during
-> the second master's driver init may overwrite iommu->domain set
-> by the first. This causes the check if (iommu->domain == domain)
-> in rk_iommu_attach_device() to fail, resulting in the same
-> iommu->node being added twice to &rk_domain->iommus, which can
-> lead to an infinite loop in subsequent &rk_domain->iommus operations.
-> 
-> Cc: <stable@vger.kernel.org>
-> Fixes: 25c2325575cc ("iommu/rockchip: Add missing set_platform_dma_ops callback")
-> Signed-off-by: Simon Xue <xxm@rock-chips.com>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> 
-> v3:
->    Add missing `Cc: stable@vger.kernel.org` in commit message.
->    No functional changes.
-> v2:
->    No functional changes.
-> ---
->  drivers/iommu/rockchip-iommu.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+The subject line is too long, use something short which describes WHAT
+the patch does. The WHY can be placed into the commit message.
 
-Applied for -rc, thanks.
+Thanks,
+
+	Joerg
