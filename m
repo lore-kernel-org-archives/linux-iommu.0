@@ -1,443 +1,225 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2046.outbound.protection.outlook.com [40.107.223.46])
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83C7A224249;
-	Sat, 28 Jun 2025 07:43:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A99591372
+	for <iommu@lists.linux.dev>; Sat, 28 Jun 2025 08:09:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=210.61.82.184
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751096595; cv=fail; b=SWRfKeTX1jk/vPluT9yGlX0BtdJDj5sE1NNVpoIeee9LjEBeCVjsY2pqLIdpF6hhAM4zjSP1pf7Hp4ELKrg2G6tT9Wh4G6htxBHzo1VCHxQHZIkiowecfWr97MUwM1nuZLK8idwazUywm3uOmHF7MjWOablmemyyKIm2QX0n+yg=
+	t=1751098170; cv=fail; b=EhWLbGbTWPCx8qadMmLR3lyjOSTRFUERSl9uybeaLvpGD6cubsCFULTmHmLHqO5U8E/Gch1+MqhZ/7cvOagy8Ed7i5qyMt34+H6JGrRrZTY898bNAcsn+HBnlbi8gaqgXZp9RvM88JO3245mMn0fhDbvh5CxD3imzZMjgmlFAyA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751096595; c=relaxed/simple;
-	bh=DSUJWXZVAgg+0M4G2a7NSxbWRxWTNKCUe8W0PqXzOzY=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MB2lFFcly9k1Z9k4wWbgwApMd6+8HslxG/wSpue0qty+jQD/+vJwDEMu4VYL0AsvJKoqh3LKPAJ+i6rKfXpxz7cFzONfYgmXyz/0b9eJypNMfHO7z0XA3rFEKGYW4kRdX5QlPbYe2Zz9S7WjdjwcfSefiAd9lyQ5ymsuPVhqbj4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=LhVmLBR3; arc=fail smtp.client-ip=40.107.223.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1751098170; c=relaxed/simple;
+	bh=+b7bkuffgIlXbI2MnfNJ3rbRy/4bHgI0Aomzxa7izCs=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=M7H7ZboIQSG7FsqmeeP3VTkJMyrzgYcWChSgYbLwtLoqOg9GyveLcPYMVU8GouiCyFFZCtfJoTr+ekt5i8jpaMJ9CbYaXT47iE5ZgX2vHNLk6R0+iB+ZG4BHzYNd2uepB9ooY8nRl9Zv+jG7LKrptWeTVAYAH8oZ342H/TRd+sk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=kZmMKjHZ; dkim=pass (1024-bit key) header.d=mediateko365.onmicrosoft.com header.i=@mediateko365.onmicrosoft.com header.b=fahf8u5u; arc=fail smtp.client-ip=210.61.82.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="LhVmLBR3"
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="kZmMKjHZ";
+	dkim=pass (1024-bit key) header.d=mediateko365.onmicrosoft.com header.i=@mediateko365.onmicrosoft.com header.b="fahf8u5u"
+X-UUID: 2fcdb3d053f711f0b33aeb1e7f16c2b6-20250628
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=MIME-Version:Content-Transfer-Encoding:Content-ID:Content-Type:In-Reply-To:References:Message-ID:Date:Subject:CC:To:From; bh=+b7bkuffgIlXbI2MnfNJ3rbRy/4bHgI0Aomzxa7izCs=;
+	b=kZmMKjHZCNzH0Q+YNdXpEZbBLrsXeHdDWMm4Nglnt2C8Db7YIvyG9iLrEyaJ0IyzrEmoR5A4c8ZBFEH6hIC01S4TXFJoamky+V6WsXPYUADOmQo1YMhXX7t7rfwey7tsDN/CnXIOLowUvEehMYbX1TyuXjb1NBkJ3z+ryLfywgk=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.3.2,REQID:28546209-d8d8-415c-8938-d61bebbb74a8,IP:0,UR
+	L:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:r
+	elease,TS:0
+X-CID-META: VersionHash:9eb4ff7,CLOUDID:7962a873-15a7-4ae6-ad4b-94c27b45c266,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:80|81|82|83|102|110|111,TC:nil,Conte
+	nt:0|50,EDM:-3,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,
+	OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
+X-CID-BVR: 0,NGT
+X-CID-BAS: 0,NGT,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
+X-UUID: 2fcdb3d053f711f0b33aeb1e7f16c2b6-20250628
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 1682787871; Sat, 28 Jun 2025 16:09:17 +0800
+Received: from mtkmbs10n2.mediatek.inc (172.21.101.183) by
+ mtkmbs13n1.mediatek.inc (172.21.101.193) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.39; Sat, 28 Jun 2025 16:09:15 +0800
+Received: from SEYPR02CU001.outbound.protection.outlook.com (172.21.101.237)
+ by mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server id
+ 15.2.1258.39 via Frontend Transport; Sat, 28 Jun 2025 16:09:13 +0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=R0+kohvDRaRIxPymFiDUTGmfPnO7kWmwb/Q9DiryRNuwFdQnlx6FjLNVy4wY6roriOgZ3Y9fTmErjLIiPMO5LC33E3vsMz78TdbplD6jQwiQSPo/8Q7VXXYzNdMcRaltgeGi2ZgBvjmOK/7ZWsy1WHxJWMSJxKQeKypSOen3wJv7eRq3YXvHRy0DP6rQAT/+exG2PL/sAimVXVB2JlccO4/ad6vDrLqBswuAwBvb9X4b/tjTD8K5chwd1Z0ceYDTrPM9/wHQ7gSVSpGNKSyjhs+YJDG5z+LMJIYZKvftbxfEp3X1fvI1xbx+EdrlNYkISPndrIeI8uAHzs31zIIaBA==
+ b=Ju4h/ymKYPdo+KT5vp4nmGM8cGgGuUVWeoNvrOCBExMTRPMNZI9CNQu4hFaujYcQ/k7re3TdTkYy18ueT3W8oFty+3veL9R+/wyZ/qL6ZWkJPKBJw6iV9X88aKFae9NQjgl8dvNfPhdk20UK2zWEqyXAJ57Fo6hD+GxUqSuevaTIhIYnK6mKW4sY9oaOw2MpBo1Km5ZLA6By0Xqvw7fCUYxF0xlnUTHPVuDIcHWyLSWI25He9ufRp3B5V1iyyYPYDI1nus5Tf7oUg878Kcj1IeIA+KIJ3oyK/pRVHhwp8KZX8hGvcX9AQS8kmoj2xqQBBM+GlekITq5QxoY+OKmg8w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=W/jwPQRi4RYqn+THHKz9zgiZld7K8iajcbiMrsdXnmo=;
- b=bttyn1mbvq8dB18lolihFJsOxhpX4hcfY6u4OMQ3AnpLguBY2oFgQ+Q7VCiG/s48MaXxBwKv+mu4l0PlU8KC9oQdgVz6sXHOLInfMKTaaoHguXgfsAJKoHgvRpTNBudmWWFAEx5K2ldiAogFxL45YIkt1386c++A0OzhnYlXXkooqWZg0Rt4CZt4F269tFNWbidQj69lbFJc5AmxqBlON0jSZX+rXGwm6doDPfn3iVRdP316PGfWCwYh8kU0hMbWhPLcTlYFU+tkmRLC0XrWOmVJqWjN2HO2ysfF+y8GIy12uxTMdHtiIKNNlGKEeaI6cYJq6B/0SclWuRyJh/VTTQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=+b7bkuffgIlXbI2MnfNJ3rbRy/4bHgI0Aomzxa7izCs=;
+ b=bVPrCL5O/Bnz+FxbsnPHFKQJA42+SGs54fBDOb6Huuc3pAWUE0wQB4CY5ZMjEMrgR76Km39WkNbWeI/lmT1KxQWaF5I+4dfyvIrsdkewLIm7TGqS7oGFJfCmNcbfDWEZmzh1h/S2oGnF8HKK5c/spVH6cVbviGxo0jBzf+nU1ULLQStpk7/WRbHjEvyVc3tUVcqrBhKE9mc1SgNvoRUicpr9NnzDWLu3VjH8d4Qa2zThs9lBLy2KlnxteucY2G0L1YkGm9JgepokRRVgnTbVtIZfn0Xr6r+Ylqarv926kmRchr/nv6am004feZOdKSFHtVa/dMor85YFrMcOzzClOw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mediatek.com; dmarc=pass action=none header.from=mediatek.com;
+ dkim=pass header.d=mediatek.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mediateko365.onmicrosoft.com; s=selector2-mediateko365-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W/jwPQRi4RYqn+THHKz9zgiZld7K8iajcbiMrsdXnmo=;
- b=LhVmLBR3dS0i5bWc1ssU0naJo/RTU7L6f0BqUWWfSVUzdYXNmrqAllzdYSm8lAZ52CO+odg+uauvq/Gkrf4X0nrfvN7N2CqMZngBJZ8VpkiO2AlM/j+BVV4X9QwYsWXEHvQe6ZA2HPbTvs5RgjDHpOxjqgv4osCAc2HBUiE6YyfC96BhZbsZ6Bi4FN5EvUy7R5G4t5UEF9BiTiPAULHidxhKDNMZEjHV+fdX9D3ZQJ/C7v0oYErNEEAEGlNDWp1WtXLX4InbYVaLYRt/LeWNRDfpB8meJu7iwPXAHD4lLlFlD54e2xGefWmtNJMV3uBPa+c7Y3z4Y/QTO7QKdsctTw==
-Received: from SA9PR13CA0063.namprd13.prod.outlook.com (2603:10b6:806:23::8)
- by MW4PR12MB7263.namprd12.prod.outlook.com (2603:10b6:303:226::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8880.22; Sat, 28 Jun
- 2025 07:43:07 +0000
-Received: from SN1PEPF000252A3.namprd05.prod.outlook.com
- (2603:10b6:806:23:cafe::e9) by SA9PR13CA0063.outlook.office365.com
- (2603:10b6:806:23::8) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8901.7 via Frontend Transport; Sat,
- 28 Jun 2025 07:43:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SN1PEPF000252A3.mail.protection.outlook.com (10.167.242.10) with Microsoft
+ bh=+b7bkuffgIlXbI2MnfNJ3rbRy/4bHgI0Aomzxa7izCs=;
+ b=fahf8u5uq29pk7dQjZnnEPI/k7yRrCnJsOans6C0ktS/yP3AErUDw6ddwW71bA1BcFBRKavwM+bBUjEY2WSQc1tpZ84+50K5YBuadiw54M2/23UACVUMrxk8hQEJvMsZPOphOcKZDFbHgfjAjbntRMDd0GRIVr9eItqt+YG3uls=
+Received: from SI2PR03MB5885.apcprd03.prod.outlook.com (2603:1096:4:142::7) by
+ SEYPR03MB6651.apcprd03.prod.outlook.com (2603:1096:101:81::5) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8880.14 via Frontend Transport; Sat, 28 Jun 2025 07:43:06 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Sat, 28 Jun
- 2025 00:42:53 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Sat, 28 Jun
- 2025 00:42:53 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.13) by mail.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server id 15.2.1544.14 via Frontend
- Transport; Sat, 28 Jun 2025 00:42:52 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: <jgg@nvidia.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <rafael@kernel.org>, <lenb@kernel.org>,
-	<bhelgaas@google.com>
-CC: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-acpi@vger.kernel.org>, <linux-pci@vger.kernel.org>,
-	<patches@lists.linux.dev>, <pjaroszynski@nvidia.com>, <vsethi@nvidia.com>,
-	<helgaas@kernel.org>, <baolu.lu@linux.intel.com>
-Subject: [PATCH RFC v2 4/4] pci: Suspend iommu function prior to resetting a device
-Date: Sat, 28 Jun 2025 00:42:42 -0700
-Message-ID: <7889db2790263640c6e9bb98956c3a3d55b87ee6.1751096303.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1751096303.git.nicolinc@nvidia.com>
-References: <cover.1751096303.git.nicolinc@nvidia.com>
+ 15.20.8857.26; Sat, 28 Jun 2025 08:09:10 +0000
+Received: from SI2PR03MB5885.apcprd03.prod.outlook.com
+ ([fe80::683a:246a:d31f:1c0]) by SI2PR03MB5885.apcprd03.prod.outlook.com
+ ([fe80::683a:246a:d31f:1c0%4]) with mapi id 15.20.8857.026; Sat, 28 Jun 2025
+ 08:09:10 +0000
+From: =?utf-8?B?WW9uZyBXdSAo5ZC05YuHKQ==?= <Yong.Wu@mediatek.com>
+To: "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org"
+	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>
+CC: "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-mediatek@lists.infradead.org"
+	<linux-mediatek@lists.infradead.org>, "krzysztof.kozlowski@linaro.org"
+	<krzysztof.kozlowski@linaro.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>
+Subject: Re: [PATCH] iommu/mediatek-v1: Tidy up probe_finalize
+Thread-Topic: [PATCH] iommu/mediatek-v1: Tidy up probe_finalize
+Thread-Index: AQHb53VEisHr2dLbFkqkI30NqU7XaLQYOO6A
+Date: Sat, 28 Jun 2025 08:09:10 +0000
+Message-ID: <26474a6747afc1e018a2c99fc5589ef545a26bea.camel@mediatek.com>
+References: <7c78149504900bc6c98a9c48f4418934b72d89ac.1751036478.git.robin.murphy@arm.com>
+In-Reply-To: <7c78149504900bc6c98a9c48f4418934b72d89ac.1751036478.git.robin.murphy@arm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=mediatek.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SI2PR03MB5885:EE_|SEYPR03MB6651:EE_
+x-ms-office365-filtering-correlation-id: 87311a11-dd88-4521-a34e-08ddb61b0ffb
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|376014|366016|1800799024|38070700018;
+x-microsoft-antispam-message-info: =?utf-8?B?Vm0wTktDeDdSYWdzSzhFdm1GSkZJZkJxMy9pVGVMdlBQbEg3M0F3Zit2d3JN?=
+ =?utf-8?B?alQ0RnU5QTRhN2lraTI0dytqL0VWY2FCVHpmbitxYVR5WTNQVmt4eGxTYnVE?=
+ =?utf-8?B?Qi9CbzRDemZSV21BM0wxSWZqVDBlYVlNS2oxQzlkOFdVNlJ5aFBKcUtBZjZ5?=
+ =?utf-8?B?d1pnZGZTUnBSa1cyYXl2ODlIM29SQnFueVlGdVJwME16YlRWTHdEODlaWFQ0?=
+ =?utf-8?B?dStTZWxlb3lRUWFpY29wMGtiZVZYajh5VEZQZmRQaVJINlJpdVBNTEwrcUlW?=
+ =?utf-8?B?SjdoVk9TZ0oyYnVqLzZGZlFXWENxZnBVK3IzeXFyU2Q0THd1RnFzSlBFWC9V?=
+ =?utf-8?B?ei9naUpBdE9idkdLSnBERzNLaDMyRnZsUDdmZkQ5ak9rd0FTcnk5WDYrYTFz?=
+ =?utf-8?B?c0c2aHAyMW1wWDNqSmppU2xXMlhPZ3RVVTdKZTkwYnNqTkN6c1Y2Ykk3QWo2?=
+ =?utf-8?B?NzVkY0NBOHRrZ1dWQks0d29uZ05tbGRJbmRSUHJHbE9GdGRVNkVrWVdBOUFs?=
+ =?utf-8?B?UW9meEtRYXh1OHRBbm9UNkhtUnhvcGtFUXlsR0ovdE5XRGVjYjk2Sk5oSDNv?=
+ =?utf-8?B?enRva2hIb3I0N0NFUERmMTdDc2YwcTdRZUtjY2s0RDhOTnVXbUZ2L0tIcGlF?=
+ =?utf-8?B?UUtlbFBZcllYd1Y0R3NyUDNCNWtXRHphaUZtamN4NUdtU2ExeEtCSVoxRFZy?=
+ =?utf-8?B?aW1WNVcvWFg2cGJzczVhdUpqTnZ3aFhra1pZd1NNVWxxMUUzOUZjTXFIbEFL?=
+ =?utf-8?B?LzB5WTVPRGNxREZDczZPbWJ0bFIvWFh2T1ZQbFYwSVZTeWVVdFZWenpEaU9s?=
+ =?utf-8?B?MUhZOW1EbmFDTFhWWERQaTR0T0hPSC9GVmNtek1mOHRQZE93UVRBQVFYTkZi?=
+ =?utf-8?B?T2xqOTlraFd4UmxKQjlsMnZZVzZCOWZQTUloKzRuNENBUDh2ZzhIYnc0d2tX?=
+ =?utf-8?B?VkxoUHVseUNaNTVYVXVkU0ZaOW9FUnRvb1YxQzlmeUViWEQ4SFlPejdmRVk5?=
+ =?utf-8?B?dmdEYTNDV1pjOWpvZDcvSmNjUjBCcDVaNnVGVjdYNGJWS2hUMStTMXZLYXJB?=
+ =?utf-8?B?Y2xoRVJCK0RWbHI1aFBYNS8xcy82ZTB3M29EOVVrRlJKc1pJRm5yVDRzcHN6?=
+ =?utf-8?B?ZXJuN0E3QW15Rm15WWxkeU93Y0EzTUZsY3E0WW1wRk5vQi9DVHJzZFNFQmtH?=
+ =?utf-8?B?KzJPQ01HMm9Ja24wdDRXNE9DVy9ZVG5NM004K2tSYkppUmRxTU9oN2YydTFi?=
+ =?utf-8?B?U21PSFJGS0dFRjJ6dm02T2RKSzJFeFE0V21NbUtyOVh0ZzJYOGp6V3Vadlhw?=
+ =?utf-8?B?anVLcFRmTEZ4SXJyc1cvV1hUOFlMUnZLVkhTV215Rlo0Z3hwcGdaU3Y3dWR6?=
+ =?utf-8?B?Vit2OHNLYmlJbm9zRG1HdExrTk80ejBVaUEvRTJxdEVwMTZrb1pIcHBsYUdD?=
+ =?utf-8?B?d1RkTExYZHl2QktlM0Q4SW1NMDM3dUNEeVhMMnh2eDhYbWN4WHhKMWZ6N2c1?=
+ =?utf-8?B?NTlaRWo2YlR6NUtvejZ1MW5qd1dZS1FsTUFTcUdkOC9qMlYxY1hId0tUS1Zn?=
+ =?utf-8?B?UDNVeWs1N3Erem5oUkRYZGxNV1dTK3RwTG9HV2taNXRsTlFJMnlIMUZhRFZO?=
+ =?utf-8?B?ZUcraXoxbzZkeEtCVG12dDZsdlhXWUtPUkdIR3VGdjBkSTVQM1FqYmx4MEgy?=
+ =?utf-8?B?eW5JRm5jbFZPbmVKc3FmRGUxdTdqMHl5a3VNYS91YzlTVDg5K2IwVHhpQjZV?=
+ =?utf-8?B?b2JCL3d6UUpyWnk2bXpvREh5dTJhL2FDZnF5SVVpVURkOUEzNzUrbGFMVUVL?=
+ =?utf-8?B?azVVUnI5ZzBKWDcrQ0JlVnJQZ0pRWW1jblhBbkRIY3dCakRSK2JPTHk1bTRn?=
+ =?utf-8?B?UXB2dFVMdDFKc015dm8wSkQyTWFMRU1WTUJGRG1sbG9QSHEwWFp6aU1tMldD?=
+ =?utf-8?B?VlU1Y05CYXZia2ovcXAzOEN0d0JSUEtPcy9QV3gxSjBjZGN5aDFnR3REMEFF?=
+ =?utf-8?B?eERWeGJBN3dBPT0=?=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SI2PR03MB5885.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?b1VmK0FmOWhjQnR4dWJ5S3VvdWdURjZ3aHhNYlRmeWhHZVVCd05IOGxxYzJW?=
+ =?utf-8?B?dmhWQlRXTnAxWFlwUW04NkpUbUZUbWdqT0dYVk1MVHQ2Uk5DMWYrRjcreElE?=
+ =?utf-8?B?NjNLblc0MkRGWWFmT2J3TUgzRlpnWEZHZm1rdFhUWVhQWTdhRkhFWG5WSzV2?=
+ =?utf-8?B?WER6UkNNUGVhTmdlVFBRQWFNSXgyWnZUU3NXMGFscW4rU01zeWxodTNOeTd2?=
+ =?utf-8?B?cnZmMGR3cDRNVUNIMUpka0hUUHNzN1JqRlEwalhnZXNxb1RXRHFwWmY5ZmhG?=
+ =?utf-8?B?eThFT2NaZkhQOFRJMnFYbC93UVBiVHZrQ2g4MXZ0eEhEYjdGZTJzVHhCdUl0?=
+ =?utf-8?B?cGlqcVBvajZwSm0xNWZPVnZQSjVWdzd1NGNtZFFsdzRWdHZhN1pTOHo1azdv?=
+ =?utf-8?B?VTMrK0c0d3JvRCtPbldQV1VYSjVNR0VPd3R4Y1NMYzA3Z1dOVnN2NTllNTFD?=
+ =?utf-8?B?Ziswd3RLNUMrWUFJTWFadHJTTmd6LzI0U2NqcjVPNDd2R0ZnZGJ4RmJYUjVV?=
+ =?utf-8?B?SzVReGdyL3ZoTFA2MW5rVldWL1RydURWOXc1MDA4dzN3eVpZNllUN0VqZENZ?=
+ =?utf-8?B?QXh0RnNFd3B3TXVDQjQzZzZiR1lsRnhVS2Fsd1d0QWF2cGdLNEFRbUV3VjdJ?=
+ =?utf-8?B?eVVjVDZxL21ZMWt4c2RRS0tQZHRvQ1k1Z1VTbWpDTXdub2EvMmw5dkJUbzJu?=
+ =?utf-8?B?ZU9sR2o5Q001VEdzOFNEa2F6SkJjZDIzZURnR0VHRTRVREpTWnozQldxVEpE?=
+ =?utf-8?B?QzdiWjY1QjZ3dWhsNHgrUFNpSExlOEpCdmt0QmV1WE1sU1BNWWZZZzlUQWxN?=
+ =?utf-8?B?eUdjZnNiaTFPZTZxQ3diTS9wTjBpMVhieXZzUjJ2V3VOZExtRHFiMzBiYmhR?=
+ =?utf-8?B?cjVFK1N3bnQ5UFNINkFWdUlXdms3YzA1aHFMQUVadTVZazRoUDVXV1g2djJT?=
+ =?utf-8?B?YUc1SXhPSjJ2VTBtKzVrak5zUUVTWXRMdVFFSlRSOXFrYndOellSL1dEZFNZ?=
+ =?utf-8?B?cWwxTTZHMk96TnJYOS8xM0VXMmVMSCtsTUZldG55Z2VlMVNmV3lzQ3luZHll?=
+ =?utf-8?B?STRwVTVod0dodFRLdjRlRWxMb2pYTEZ2UEFRT1pwQ0cxa0Z2RWJXckFZVGJQ?=
+ =?utf-8?B?MzV3ZzYrL1dvb1BQT2FEOHhFSERtVVZvdzZRd2pmZDdWRnJrMDQ0ckFtVU1o?=
+ =?utf-8?B?Nk92MHc4SDlZQ0xhWmM5VzhIbll3YmFHSUIrYS9oMWpFOTJCbWF2VGNwL3Vv?=
+ =?utf-8?B?QjIxaTd1M2gyVC9ReTV3TkN1QytIUmtCTjY1WkZXRlQrZHdoRVVhbk1BNkl5?=
+ =?utf-8?B?NjJwOHFPVlpSTFEyeFZrZStPZU41RytIVG4zVGdrdnVwaE5mcjRuZW5DcWZm?=
+ =?utf-8?B?MjhvZDdXektldXI1T3VNVE9HckdXajgycStZSngrMVBlbTN0b2NtRzdKN3VD?=
+ =?utf-8?B?NWk3YzBmZWFxMVAvSnFxWnlwd3FVbzRXVC92NGJPd2NlR0hITThYMmhFdTVL?=
+ =?utf-8?B?YU9VeC83eFJkNlB5UVFLNWRhaVVEb3NENWJiSEFqa2xoOHo3MUhVbXJrQkp3?=
+ =?utf-8?B?YzFUZXlHRGpUR3VaQ3RjdVhKTUcwWGNUUFZTRVd0YVlDcXBkRnZQOS9vWHFa?=
+ =?utf-8?B?YkJQK0lLYTBFN2t4QW5WeWxJV2hPTnVrVkp4MUl2LzNRTXkwQ0R6bHBtM1Av?=
+ =?utf-8?B?ZE5kTXZzckxieXRsRDBUelJyd29jdGdGSkJUZTdpVUE0Rm5jbGtuV3NXYVFT?=
+ =?utf-8?B?VjJ1ZzI4cy9UQjhSOGNvOGtOQ1g0Z3FtTFc5anJoRTBWL1N6WnBDckVMa0pQ?=
+ =?utf-8?B?d05tc0Q2VWNpcjhhWmZCUDBVSWE2cFdxRktoaUFuY25yZDczeXlQVkVMTzdt?=
+ =?utf-8?B?NEk1WjRWTlpzdngyMStyRFdSeDVjYjgvL2wzc21oRkxFTHVKaGhpbzZiT0hu?=
+ =?utf-8?B?U3JFYmJJVVpZTUh4MWlBM3hBMlMrOTVqd3JUa012blFHN2VkSzROZk9sYXFI?=
+ =?utf-8?B?MUpNNHU4aklUWEwrT2ZRRFVNVlI4VWRFa25vZnFyS3ZRUUZUWC9BU25jemta?=
+ =?utf-8?B?OVJoVzdiUFBsWFZETnI5TUhBdllST0prZFhHODE4aU53dE9vKytFa1F6blNZ?=
+ =?utf-8?Q?DToH+4rBI3mflZ2ThF8E8Alxb?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <BDDF04F3CA9AE94AAFEBDC8E670087DD@apcprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF000252A3:EE_|MW4PR12MB7263:EE_
-X-MS-Office365-Filtering-Correlation-Id: c910519f-fe3e-409c-dceb-08ddb6176bde
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|36860700013|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?HJ8OIdtPdaAWJ1ho3LhFz4SrMh5HgtsgFzvxnxY2YOlT4Pc/tr4c3ZqarIqm?=
- =?us-ascii?Q?pSf3W3TmHFLRVJ+MOwV+TJbDCidCPSihZVXvm9pBMoC4Z5PNUtJESj12xvu4?=
- =?us-ascii?Q?rlwpB/lPtMKQGn12aRzC+hVFe+peyMI/d4GCvDxmeSlyOmSghRAgxJgAT3Cy?=
- =?us-ascii?Q?Kb+YDeshlGNfZDvAeQnwwcpvF11zwoRMMznGbY6z++FP5dmB0+WgkeMd/R/U?=
- =?us-ascii?Q?B6BTAArOachcUP+fqNW3kToPWIdII2yKkWJnWZJTtVzb69kcr+9A2RF1vgNl?=
- =?us-ascii?Q?PA9ULG+CpYP1HeNrLfgZVSQkIalADDfT38RRyQWZ6wjAdBf7qRzjO4AnCkwB?=
- =?us-ascii?Q?NhA93oXNkEvKod5x/3OcENs5P96jNGIijg4d0z4olTKFwtS4bB+832Hspiha?=
- =?us-ascii?Q?8xQFwlBE2nfOxHea7DwNJC4UFEFhfBkd9dqgPfmvo2Xd81H9ld2SmUxGskFB?=
- =?us-ascii?Q?z5psXrtt4vAKnqL3r972wZY8jRc/KFDVs4KI0HBy3V8m/qGT/MzcJauxq81m?=
- =?us-ascii?Q?13zwloBB+ugII1l7rXt3fpvlDz8owENWvAlaZ6Kv6qC0tzeELnPa7dkUXe1Q?=
- =?us-ascii?Q?Hmint8QYO/B9WexT6cBPOJ7FGNFzZbRuzXpL+Wh+1LKOhcBY6k7lPidWOumq?=
- =?us-ascii?Q?kZgGtkLuxaneOUTuEPE6Bkn90z7ntEgIN6wyNJkHKCf0stcMN+lNTHOg2OSg?=
- =?us-ascii?Q?R7vYWqF4Ehlql4fIHj/LJaULXCxfuGYcTleubWYgObhuUu1P5aSiBrtT1w7x?=
- =?us-ascii?Q?JM7Saf6XJ2Uye0IR6Vglc9FnfQHl+5KNHlQ9dH6+mMMZB6XEeeUm4vX6DTSx?=
- =?us-ascii?Q?dUAk+9L341BAJrWtEDexVbImG0S/1vMrCn0O4COVPwsKXuSRafOTcbPvcAI4?=
- =?us-ascii?Q?9ettNIgaBwCbyWjI7Zyi0XEDIhNJmU5LdCwLjNFT+wUWrLlkN1jBBuaepgYK?=
- =?us-ascii?Q?R/NdWkcCOBPVBsmBDZb7bnv6O2Oc5b6QC32bQ6+qFP6gUxKTntJU23vUAVhs?=
- =?us-ascii?Q?pNv7yi0mAO4b6fKikHmuCBwOHeIKgP8BUdgNCjNFwm26aChVqdnAvnOEpJ0T?=
- =?us-ascii?Q?8F7pmPkVfwmhTHE1kjSW0JhBtT6OWKDJJi7Cv6D0drzpP4aexTbmS+fEo2Qs?=
- =?us-ascii?Q?QllNf+Y/8Jz4ZaV00WVH/SzSk8evld7nUvohtN8M4Igk4t8Re7PT6MdZa3y3?=
- =?us-ascii?Q?tCJQcf5vvsPdS1Ou1dCcNgHuoxElHjyNsY5zKp3qYo2/GKeuF6hckTrIvaLb?=
- =?us-ascii?Q?YvRWYoJSaJPvbZjSvcBhr7Y5lk4th4bnDbjgPpfbVNSQdkuCzZXs7AW1+QLX?=
- =?us-ascii?Q?96ZcjO7OUC2Q0xyS9iGK8fK/h0EraEkq9qBW5sggSKhCNPSYnxnGwyl0HI4Y?=
- =?us-ascii?Q?xLTnIGeXvt31DDKqy0lf2rawYFd36a5V/8I2xM4wlvTXLhVA/2G3XzrulKm7?=
- =?us-ascii?Q?kyc0TjQG4aqffH+9M5Ohpio6/4CzmQn80Wb9X1tIEB+bUZs1p0c0dEJ/fWl+?=
- =?us-ascii?Q?Af3hYUNmP9myBpiQV5tCBdJvItWOiRCA0n61?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700013)(376014)(7416014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2025 07:43:06.5277
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SI2PR03MB5885.apcprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 87311a11-dd88-4521-a34e-08ddb61b0ffb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jun 2025 08:09:10.4556
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c910519f-fe3e-409c-dceb-08ddb6176bde
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF000252A3.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7263
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a7687ede-7a6b-4ef6-bace-642f677fbe31
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Mom/xJU4OWTSmS0Erw6aoJIR+ivvg43KB0BrJdV1fE0OF3Nzsq3vzPmBhPUfxdQ9QiapIhk3lwAl2ok6tprsLg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR03MB6651
+X-MTK: N
 
-PCIe permits a device to ignore ATS invalidation TLPs, while processing a
-reset. This creates a problem visible to the OS where an ATS invalidation
-command will time out: e.g. an SVA domain will have no coordination with a
-reset event and can racily issue ATS invalidations to a resetting device.
-
-The PCIe spec in sec 10.3.1 IMPLEMENTATION NOTE recommends to disable and
-block ATS before initiating a Function Level Reset. It also mentions that
-other reset methods could have the same vulnerability as well.
-
-Now iommu_dev_reset_prepare/done() helpers are introduced for this matter.
-Use them in all the existing reset functions, which will attach the device
-to an IOMMU_DOMAIN_BLOCKED during a reset, so as to allow IOMMU driver to:
- - invoke pci_disable_ats() and pci_enable_ats() respectively
- - wait for all ATS invalidations to complete
- - stop issuing new ATS invalidations
- - fence any incoming ATS queries
-
-Add a warning if ATS isn't disabled, in which case IOMMU driver should fix
-itself to disable ATS following the design in iommu_dev_reset_prepare().
-
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- drivers/pci/pci-acpi.c | 21 ++++++++++-
- drivers/pci/pci.c      | 84 +++++++++++++++++++++++++++++++++++++++---
- drivers/pci/quirks.c   | 27 +++++++++++++-
- 3 files changed, 124 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-index b78e0e417324..727957f193ca 100644
---- a/drivers/pci/pci-acpi.c
-+++ b/drivers/pci/pci-acpi.c
-@@ -9,6 +9,7 @@
- 
- #include <linux/delay.h>
- #include <linux/init.h>
-+#include <linux/iommu.h>
- #include <linux/irqdomain.h>
- #include <linux/pci.h>
- #include <linux/msi.h>
-@@ -974,6 +975,7 @@ void pci_set_acpi_fwnode(struct pci_dev *dev)
- int pci_dev_acpi_reset(struct pci_dev *dev, bool probe)
- {
- 	acpi_handle handle = ACPI_HANDLE(&dev->dev);
-+	int ret = 0;
- 
- 	if (!handle || !acpi_has_method(handle, "_RST"))
- 		return -ENOTTY;
-@@ -981,12 +983,27 @@ int pci_dev_acpi_reset(struct pci_dev *dev, bool probe)
- 	if (probe)
- 		return 0;
- 
-+	/*
-+	 * Per PCIe r6.3, sec 10.3.1 IMPLEMENTATION NOTE, software disables ATS
-+	 * before initiating a reset. Notify the iommu driver that enabled ATS.
-+	 */
-+	ret = iommu_dev_reset_prepare(&dev->dev);
-+	if (ret) {
-+		pci_err(dev, "failed to stop IOMMU\n");
-+		return ret;
-+	}
-+
-+	/* Something wrong with the iommu driver that failed to disable ATS */
-+	if (dev->ats_enabled)
-+		pci_err(dev, "failed to stop ATS. ATS invalidation may time out\n");
-+
- 	if (ACPI_FAILURE(acpi_evaluate_object(handle, "_RST", NULL, NULL))) {
- 		pci_warn(dev, "ACPI _RST failed\n");
--		return -ENOTTY;
-+		ret = -ENOTTY;
- 	}
- 
--	return 0;
-+	iommu_dev_reset_done(&dev->dev);
-+	return ret;
- }
- 
- bool acpi_pci_power_manageable(struct pci_dev *dev)
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index e9448d55113b..ddb7a10ef500 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -13,6 +13,7 @@
- #include <linux/delay.h>
- #include <linux/dmi.h>
- #include <linux/init.h>
-+#include <linux/iommu.h>
- #include <linux/msi.h>
- #include <linux/of.h>
- #include <linux/pci.h>
-@@ -4518,13 +4519,30 @@ EXPORT_SYMBOL(pci_wait_for_pending_transaction);
-  */
- int pcie_flr(struct pci_dev *dev)
- {
-+	int ret = 0;
-+
- 	if (!pci_wait_for_pending_transaction(dev))
- 		pci_err(dev, "timed out waiting for pending transaction; performing function level reset anyway\n");
- 
-+	/*
-+	 * Per PCIe r6.3, sec 10.3.1 IMPLEMENTATION NOTE, software disables ATS
-+	 * before initiating a reset. Notify the iommu driver that enabled ATS.
-+	 * Have to call it after waiting for pending DMA transaction.
-+	 */
-+	ret = iommu_dev_reset_prepare(&dev->dev);
-+	if (ret) {
-+		pci_err(dev, "failed to stop IOMMU\n");
-+		return ret;
-+	}
-+
-+	/* Something wrong with the iommu driver that failed to disable ATS */
-+	if (dev->ats_enabled)
-+		pci_err(dev, "failed to stop ATS. ATS invalidation may time out\n");
-+
- 	pcie_capability_set_word(dev, PCI_EXP_DEVCTL, PCI_EXP_DEVCTL_BCR_FLR);
- 
- 	if (dev->imm_ready)
--		return 0;
-+		goto done;
- 
- 	/*
- 	 * Per PCIe r4.0, sec 6.6.2, a device must complete an FLR within
-@@ -4533,7 +4551,11 @@ int pcie_flr(struct pci_dev *dev)
- 	 */
- 	msleep(100);
- 
--	return pci_dev_wait(dev, "FLR", PCIE_RESET_READY_POLL_MS);
-+	ret = pci_dev_wait(dev, "FLR", PCIE_RESET_READY_POLL_MS);
-+
-+done:
-+	iommu_dev_reset_done(&dev->dev);
-+	return ret;
- }
- EXPORT_SYMBOL_GPL(pcie_flr);
- 
-@@ -4561,6 +4583,7 @@ EXPORT_SYMBOL_GPL(pcie_reset_flr);
- 
- static int pci_af_flr(struct pci_dev *dev, bool probe)
- {
-+	int ret = 0;
- 	int pos;
- 	u8 cap;
- 
-@@ -4587,10 +4610,25 @@ static int pci_af_flr(struct pci_dev *dev, bool probe)
- 				 PCI_AF_STATUS_TP << 8))
- 		pci_err(dev, "timed out waiting for pending transaction; performing AF function level reset anyway\n");
- 
-+	/*
-+	 * Per PCIe r6.3, sec 10.3.1 IMPLEMENTATION NOTE, software disables ATS
-+	 * before initiating a reset. Notify the iommu driver that enabled ATS.
-+	 * Have to call it after waiting for pending DMA transaction.
-+	 */
-+	ret = iommu_dev_reset_prepare(&dev->dev);
-+	if (ret) {
-+		pci_err(dev, "failed to stop IOMMU\n");
-+		return ret;
-+	}
-+
-+	/* Something wrong with the iommu driver that failed to disable ATS */
-+	if (dev->ats_enabled)
-+		pci_err(dev, "failed to stop ATS. ATS invalidation may time out\n");
-+
- 	pci_write_config_byte(dev, pos + PCI_AF_CTRL, PCI_AF_CTRL_FLR);
- 
- 	if (dev->imm_ready)
--		return 0;
-+		goto done;
- 
- 	/*
- 	 * Per Advanced Capabilities for Conventional PCI ECN, 13 April 2006,
-@@ -4600,7 +4638,11 @@ static int pci_af_flr(struct pci_dev *dev, bool probe)
- 	 */
- 	msleep(100);
- 
--	return pci_dev_wait(dev, "AF_FLR", PCIE_RESET_READY_POLL_MS);
-+	ret = pci_dev_wait(dev, "AF_FLR", PCIE_RESET_READY_POLL_MS);
-+
-+done:
-+	iommu_dev_reset_done(&dev->dev);
-+	return ret;
- }
- 
- /**
-@@ -4621,6 +4663,7 @@ static int pci_af_flr(struct pci_dev *dev, bool probe)
- static int pci_pm_reset(struct pci_dev *dev, bool probe)
- {
- 	u16 csr;
-+	int ret;
- 
- 	if (!dev->pm_cap || dev->dev_flags & PCI_DEV_FLAGS_NO_PM_RESET)
- 		return -ENOTTY;
-@@ -4635,6 +4678,20 @@ static int pci_pm_reset(struct pci_dev *dev, bool probe)
- 	if (dev->current_state != PCI_D0)
- 		return -EINVAL;
- 
-+	/*
-+	 * Per PCIe r6.3, sec 10.3.1 IMPLEMENTATION NOTE, software disables ATS
-+	 * before initiating a reset. Notify the iommu driver that enabled ATS.
-+	 */
-+	ret = iommu_dev_reset_prepare(&dev->dev);
-+	if (ret) {
-+		pci_err(dev, "failed to stop IOMMU\n");
-+		return ret;
-+	}
-+
-+	/* Something wrong with the iommu driver that failed to disable ATS */
-+	if (dev->ats_enabled)
-+		pci_err(dev, "failed to stop ATS. ATS invalidation may time out\n");
-+
- 	csr &= ~PCI_PM_CTRL_STATE_MASK;
- 	csr |= PCI_D3hot;
- 	pci_write_config_word(dev, dev->pm_cap + PCI_PM_CTRL, csr);
-@@ -4645,7 +4702,9 @@ static int pci_pm_reset(struct pci_dev *dev, bool probe)
- 	pci_write_config_word(dev, dev->pm_cap + PCI_PM_CTRL, csr);
- 	pci_dev_d3_sleep(dev);
- 
--	return pci_dev_wait(dev, "PM D3hot->D0", PCIE_RESET_READY_POLL_MS);
-+	ret = pci_dev_wait(dev, "PM D3hot->D0", PCIE_RESET_READY_POLL_MS);
-+	iommu_dev_reset_done(&dev->dev);
-+	return ret;
- }
- 
- /**
-@@ -5100,6 +5159,20 @@ static int cxl_reset_bus_function(struct pci_dev *dev, bool probe)
- 	if (rc)
- 		return -ENOTTY;
- 
-+	/*
-+	 * Per PCIe r6.3, sec 10.3.1 IMPLEMENTATION NOTE, software disables ATS
-+	 * before initiating a reset. Notify the iommu driver that enabled ATS.
-+	 */
-+	rc = iommu_dev_reset_prepare(&dev->dev);
-+	if (rc) {
-+		pci_err(dev, "failed to stop IOMMU\n");
-+		return rc;
-+	}
-+
-+	/* Something wrong with the iommu driver that failed to disable ATS */
-+	if (dev->ats_enabled)
-+		pci_err(dev, "failed to stop ATS. ATS invalidation may time out\n");
-+
- 	if (reg & PCI_DVSEC_CXL_PORT_CTL_UNMASK_SBR) {
- 		val = reg;
- 	} else {
-@@ -5114,6 +5187,7 @@ static int cxl_reset_bus_function(struct pci_dev *dev, bool probe)
- 		pci_write_config_word(bridge, dvsec + PCI_DVSEC_CXL_PORT_CTL,
- 				      reg);
- 
-+	iommu_dev_reset_done(&dev->dev);
- 	return rc;
- }
- 
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index d7f4ee634263..7a66c01392d9 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -21,6 +21,7 @@
- #include <linux/pci.h>
- #include <linux/isa-dma.h> /* isa_dma_bridge_buggy */
- #include <linux/init.h>
-+#include <linux/iommu.h>
- #include <linux/delay.h>
- #include <linux/acpi.h>
- #include <linux/dmi.h>
-@@ -4223,6 +4224,30 @@ static const struct pci_dev_reset_methods pci_dev_reset_methods[] = {
- 	{ 0 }
- };
- 
-+static int __pci_dev_specific_reset(struct pci_dev *dev, bool probe,
-+				    const struct pci_dev_reset_methods *i)
-+{
-+	int ret;
-+
-+	/*
-+	 * Per PCIe r6.3, sec 10.3.1 IMPLEMENTATION NOTE, software disables ATS
-+	 * before initiating a reset. Notify the iommu driver that enabled ATS.
-+	 */
-+	ret = iommu_dev_reset_prepare(&dev->dev);
-+	if (ret) {
-+		pci_err(dev, "failed to stop IOMMU\n");
-+		return ret;
-+	}
-+
-+	/* Something wrong with the iommu driver that failed to disable ATS */
-+	if (dev->ats_enabled)
-+		pci_err(dev, "failed to stop ATS. ATS invalidation may time out\n");
-+
-+	ret = i->reset(dev, probe);
-+	iommu_dev_reset_done(&dev->dev);
-+	return ret;
-+}
-+
- /*
-  * These device-specific reset methods are here rather than in a driver
-  * because when a host assigns a device to a guest VM, the host may need
-@@ -4237,7 +4262,7 @@ int pci_dev_specific_reset(struct pci_dev *dev, bool probe)
- 		     i->vendor == (u16)PCI_ANY_ID) &&
- 		    (i->device == dev->device ||
- 		     i->device == (u16)PCI_ANY_ID))
--			return i->reset(dev, probe);
-+			return __pci_dev_specific_reset(dev, probe, i);
- 	}
- 
- 	return -ENOTTY;
--- 
-2.43.0
-
+T24gRnJpLCAyMDI1LTA2LTI3IGF0IDE2OjA3ICswMTAwLCBSb2JpbiBNdXJwaHkgd3JvdGU6DQo+
+IEV4dGVybmFsIGVtYWlsIDogUGxlYXNlIGRvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFj
+aG1lbnRzIHVudGlsDQo+IHlvdSBoYXZlIHZlcmlmaWVkIHRoZSBzZW5kZXIgb3IgdGhlIGNvbnRl
+bnQuDQo+IA0KPiANCj4gS3J6eXN6dG9mIHBvaW50cyBvdXQgdGhhdCBhbHRob3VnaCB0aGUgZHJp
+dmVyIG5vdyBzdXBwb3J0cw0KPiBDT01QSUxFX1RFU1QNCj4gZm9yIG90aGVyIGFyY2hpdGVjdHVy
+ZXMsIGl0IGRvZXMgbm90IGJ1aWxkIGNsZWFubHkgd2l0aCBXPTEgd2hlcmUgdGhlDQo+IHN0dWJi
+ZWQtb3V0IEFSTSBBUEkgY2FuIGxlYWQgdG8gYW4gdW51c2VkIHZhcmlhYmxlIHdhcm5pbmcuDQo+
+IA0KPiBTaW5jZSB0aGlzIGlzIGVmZmVjdGl2ZWx5IHRoZSBjb3JyZWN0IGludGVudCBvZiB0aGUg
+Y29kZSBpbiBzdWNoDQo+IGNhc2VzLA0KPiBtYXJrIGl0IGFzIF9fbWF5YmVfdW51c2VkLCB0aWR5
+aW5nIHVwIHNvbWUgY3J1ZnQgaW4gdGhlIHByb2Nlc3MuDQo+IA0KPiBSZXBvcnRlZC1ieTogS3J6
+eXN6dG9mIEtvemxvd3NraSA8a3J6eXN6dG9mLmtvemxvd3NraUBsaW5hcm8ub3JnPg0KPiBTaWdu
+ZWQtb2ZmLWJ5OiBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBoeUBhcm0uY29tPg0KDQpSZXZpZXdl
+ZC1ieTogWW9uZyBXdSA8eW9uZy53dUBtZWRpYXRlay5jb20+DQoNCj4gLS0tDQo+IA0KPiBTaW5j
+ZSBJJ2QgYWxyZWFkeSBnb3QgYXMgZmFyIGFzIHRoaW5raW5nIHRoaXMgdGhyb3VnaCwgSSBmaWd1
+cmUgSSBtYXkNCj4gYXMgd2VsbCBzYXZlIEtyenlzenRvZiB0aGUgdHJvdWJsZSBvZiByZXdyaXRp
+bmcgaXQgOikNCj4gDQo+ICBkcml2ZXJzL2lvbW11L210a19pb21tdV92MS5jIHwgOCArKy0tLS0t
+LQ0KPiAgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgNiBkZWxldGlvbnMoLSkNCj4g
+DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L210a19pb21tdV92MS5jDQo+IGIvZHJpdmVy
+cy9pb21tdS9tdGtfaW9tbXVfdjEuYw0KPiBpbmRleCA2NjgyNDk4MmUwNWYuLjJmYzE4ZTE5NGUx
+OSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9pb21tdS9tdGtfaW9tbXVfdjEuYw0KPiArKysgYi9k
+cml2ZXJzL2lvbW11L210a19pb21tdV92MS5jDQo+IEBAIC01MDksMTQgKzUwOSwxMCBAQCBzdGF0
+aWMgc3RydWN0IGlvbW11X2RldmljZQ0KPiAqbXRrX2lvbW11X3YxX3Byb2JlX2RldmljZShzdHJ1
+Y3QgZGV2aWNlICpkZXYpDQo+IA0KPiAgc3RhdGljIHZvaWQgbXRrX2lvbW11X3YxX3Byb2JlX2Zp
+bmFsaXplKHN0cnVjdCBkZXZpY2UgKmRldikNCj4gIHsNCj4gLSAgICAgICBzdHJ1Y3QgZG1hX2lv
+bW11X21hcHBpbmcgKm10a19tYXBwaW5nOw0KPiAtICAgICAgIHN0cnVjdCBtdGtfaW9tbXVfdjFf
+ZGF0YSAqZGF0YTsNCj4gKyAgICAgICBfX21heWJlX3VudXNlZCBzdHJ1Y3QgbXRrX2lvbW11X3Yx
+X2RhdGEgKmRhdGEgPQ0KPiBkZXZfaW9tbXVfcHJpdl9nZXQoZGV2KTsNCj4gICAgICAgICBpbnQg
+ZXJyOw0KPiANCj4gLSAgICAgICBkYXRhICAgICAgICA9IGRldl9pb21tdV9wcml2X2dldChkZXYp
+Ow0KPiAtICAgICAgIG10a19tYXBwaW5nID0gZGF0YS0+bWFwcGluZzsNCj4gLQ0KPiAtICAgICAg
+IGVyciA9IGFybV9pb21tdV9hdHRhY2hfZGV2aWNlKGRldiwgbXRrX21hcHBpbmcpOw0KPiArICAg
+ICAgIGVyciA9IGFybV9pb21tdV9hdHRhY2hfZGV2aWNlKGRldiwgZGF0YS0+bWFwcGluZyk7DQo+
+ICAgICAgICAgaWYgKGVycikNCj4gICAgICAgICAgICAgICAgIGRldl9lcnIoZGV2LCAiQ2FuJ3Qg
+Y3JlYXRlIElPTU1VIG1hcHBpbmcgLSBETUEtT1BTDQo+IHdpbGwgbm90IHdvcmtcbiIpOw0KPiAg
+fQ0KPiAtLQ0KPiAyLjM5LjIuMTAxLmc3NjhiYjIzOGM0ODQuZGlydHkNCj4gDQo=
