@@ -1,135 +1,235 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D74223C50E;
-	Sat, 28 Jun 2025 14:40:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B73911E502
+	for <iommu@lists.linux.dev>; Sat, 28 Jun 2025 15:39:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751121634; cv=none; b=sO2P+Z17B4CEsloxCCLbpdn5p5yTw5dztgGLrQ3udZjSyXmnFeS8ftdSQHNzPPrj/8Rjsau1ICHPd7LwVIBHPAf0q/y5QHd+Q6mg0a0m9X2u43CQh3yN4MVz7TBfRXhrdv1jzeOVclqQ6KkSk7YXTb0ny6LQfvZ6Tcj4s/06NEc=
+	t=1751125170; cv=none; b=RbLDukWkZcP4bNtB2leAXxpq3dG6XKgjaYuMt4RkgNSgz0o0YKVUpQE3m5qx0KHT2aXIF+W0PekX1cvHCAapZuowfJpZVl1VyDgg7gvvwR3UnvThWJdDjQ4oqqVNinyF5CQjH8QjZJW9VTovxQhhIYe81S/VZsAsXC/uXBpJ92w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751121634; c=relaxed/simple;
-	bh=/Lu5LTfcFXkeWsxjRBcxgn1uQUXHqbZ5PSxmsunseSs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HYBOSnLJIuRY+h3FE2L8LYVv+HLbt36KOUCC6yhc9O4H+BRoqe/vKicvtcAL30gO4LcmOZC+Rwj776ozeaIbi+bruCVCU9q+gBmNOOcnPN0r/nxqV7otGAi5iV34uwo2uzy0fYQGCQl6vk4LBHdXeu3DT3oXSquSVe5cwr3Ag+E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nlxdowWT; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1751125170; c=relaxed/simple;
+	bh=MAQKmI8S7t9LNfnxF8fmiIvKsSjFJfaa1W+DVIN2WcY=;
+	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
+	 Message-ID:Content-Type; b=ZLRtYq+Qu5UMR9jXe8TVCmzi9+zM6ACtYlA5XRtWGZZ3vvQw0iWWlyRkxNEgea+9lC38FfRIE9jT0z8uyMKqFoVP2avJWolM1xVTTBKESrForR1AHmInePYLCf0Gb7fd7my2xTtad6ctOyADAHNJTlrWMlRrz5nGDTNlI6Dp0ng=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=aBFKiiJ1; arc=none smtp.client-ip=178.21.23.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nlxdowWT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1751121633; x=1782657633;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=/Lu5LTfcFXkeWsxjRBcxgn1uQUXHqbZ5PSxmsunseSs=;
-  b=nlxdowWTsbMG/M6aPTc71gGJ+8WJMH66TRF6StRaq/gMYQ4Bzq5+ZFlc
-   uMmumP9Ikj4QNlqiOB9r99/p+7w+iV4NCC2WgQR5n2/IgO+lWQ2iny9O6
-   tWCArLziTNCpL1QSd9UNvYmpgl+gCVoUZ4yeFaf2TGsjqNw7hp5DynnHg
-   FpG/48/4ThI7ro8LdkCwmGHo3L3pHSQrebkNi7kCAG0gKJfpR/kT+7nvr
-   IVEaFMWa81XXovwJfJBcD5mhgVn2kOaKUtg8TsERdL/C2894mFvNV/E7W
-   a48JLZL5f2Nyp3lGwQgr4udranEl440WXLdnS9xEKyegVwaWNxHLO52tj
-   g==;
-X-CSE-ConnectionGUID: N8dYUnLgQbiSlZuJWAQzHw==
-X-CSE-MsgGUID: 23MaVvsGTz+VvYtlTgr1Mw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11478"; a="57189743"
-X-IronPort-AV: E=Sophos;i="6.16,273,1744095600"; 
-   d="scan'208";a="57189743"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jun 2025 07:40:32 -0700
-X-CSE-ConnectionGUID: j1rXOS1xRES1LHHDv8h1yw==
-X-CSE-MsgGUID: bzHqMp1BQXeH9Myq/cxsjw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,273,1744095600"; 
-   d="scan'208";a="176727413"
-Received: from lkp-server01.sh.intel.com (HELO e8142ee1dce2) ([10.239.97.150])
-  by fmviesa002.fm.intel.com with ESMTP; 28 Jun 2025 07:40:27 -0700
-Received: from kbuild by e8142ee1dce2 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1uVWjB-000X7V-05;
-	Sat, 28 Jun 2025 14:40:25 +0000
-Date: Sat, 28 Jun 2025 22:39:55 +0800
-From: kernel test robot <lkp@intel.com>
-To: Mario Limonciello <superm1@kernel.org>,
-	Bjorn Helgaas <helgaas@kernel.org>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	Alex Deucher <alexander.deucher@amd.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Lukas Wunner <lukas@wunner.de>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-	"(open list:INTEL IOMMU (VT-d))" <iommu@lists.linux.dev>,
-	linux-pci@vger.kernel.org, kvm@vger.kernel.org,
-	linux-sound@vger.kernel.org, Daniel Dadap <ddadap@nvidia.com>,
-	Mario Limonciello <mario.limonciello@amd.com>
-Subject: Re: [PATCH v6 9/9] PCI: Add a new 'boot_display' attribute
-Message-ID: <202506282240.aqA0j5M3-lkp@intel.com>
-References: <20250627043108.3141206-10-superm1@kernel.org>
+	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="aBFKiiJ1"
+Received: from mail01.disroot.lan (localhost [127.0.0.1])
+	by disroot.org (Postfix) with ESMTP id 8792E26133;
+	Sat, 28 Jun 2025 17:39:18 +0200 (CEST)
+X-Virus-Scanned: SPAM Filter at disroot.org
+Received: from layka.disroot.org ([127.0.0.1])
+ by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
+ id 7oLuNc2H4JJ9; Sat, 28 Jun 2025 17:39:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
+	t=1751125156; bh=MAQKmI8S7t9LNfnxF8fmiIvKsSjFJfaa1W+DVIN2WcY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References;
+	b=aBFKiiJ1JQxUVq4gi5srRL/GUE9jd4l6Pxr7EziUpr+cnkgOD8klsHLQUPZjvpHZM
+	 f/acQ431P7vHn6zIrL601phR0y3oKWWU+MLvQQlugHcQiAnvvyJA7JRHoD0xoTpK50
+	 002/kcxpKpGHCsjExbvK6vrL0YLa1NeHBmspPsONhTYRNLUXyvXM9sV+mjclNCwtiV
+	 +HMhmC2Y1yrVnGrNsQk4eRg9jW3rf1VN0bZj8ztAZRKztOmfS6aSFD3dh6rImYWrPX
+	 DUhXmeFg0BCK3rgnfJyX4HTN8kBsNm7IIjHmztqJUFoLU90KCd0KU42ylNa5dhPGKz
+	 YsM2pprYkGRRA==
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250627043108.3141206-10-superm1@kernel.org>
+Date: Sat, 28 Jun 2025 15:39:16 +0000
+From: Kaustabh Chakraborty <kauschluss@disroot.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, Inki Dae
+ <inki.dae@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>, Kyungmin
+ Park <kyungmin.park@samsung.com>, iommu@lists.linux.dev,
+ dri-devel@lists.freedesktop.org
+Subject: Re: Help: Samsung Exynos 7870 DECON SYSMMU panic
+In-Reply-To: <647ca0c3-9ea5-42e4-8f76-038987d5ae1e@arm.com>
+References: <544ad69cba52a9b87447e3ac1c7fa8c3@disroot.org>
+ <0bc60699-eeaa-4121-8d93-0274862f5aed@arm.com>
+ <CGME20250625073955eucas1p2913134af8cc26dcb2145188f8a43256b@eucas1p2.samsung.com>
+ <c338c9f7528fdcba56c088390c4ccffc@disroot.org>
+ <833aef10-9fcf-4abd-bea8-c34ea7ed6bb2@samsung.com>
+ <647ca0c3-9ea5-42e4-8f76-038987d5ae1e@arm.com>
+Message-ID: <d17f98b09deab279edf063465e9f654d@disroot.org>
+X-Sender: kauschluss@disroot.org
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi Mario,
+On 2025-06-25 11:34, Robin Murphy wrote:
+> On 2025-06-25 9:42 am, Marek Szyprowski wrote:
+>> On 25.06.2025 09:39, Kaustabh Chakraborty wrote:
+>>> On 2025-06-24 17:12, Robin Murphy wrote:
+>>>> On 2025-06-18 3:02 pm, Kaustabh Chakraborty wrote:
+>>>>> Since bcb81ac6ae3c (iommu: Get DT/ACPI parsing into the proper 
+>>>>> probe
+>>>>> path),
+>>>>> The Samsung Exynos 7870 DECON device (with patches [1], [2], and
+>>>>> [3]) seems
+>>>>> to not work anymore. Upon closer inspection, I observe that there 
+>>>>> is an
+>>>>> IOMMU crash.
+>>>>> 
+>>>>> [    2.918189] exynos-sysmmu 14860000.sysmmu: 14830000.decon: 
+>>>>> [READ]
+>>>>> PAGE FAULT occurred at 0x6715b3e0
+>>>>> [    2.918199] exynos-sysmmu 14860000.sysmmu: Page table base:
+>>>>> 0x0000000044a14000
+>>>>> [    2.918243] exynos-drm exynos-drm: bound 14830000.decon (ops
+>>>>> decon_component_ops)
+>>>>> [    2.922868] exynos-sysmmu 14860000.sysmmu:   Lv1 entry: 
+>>>>> 0x4205001
+>>>>> [    2.922877] Kernel panic - not syncing: Unrecoverable System MMU
+>>>>> Fault!
+>>>>> [    2.922885] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted
+>>>>> 6.16.0-rc2-exynos7870 #722 PREEMPT
+>>>>> [    2.995312] Hardware name: Samsung Galaxy J7 Prime (DT)
+>>>>> [    3.000509] Call trace:
+>>>>> [    3.002938]  show_stack+0x18/0x24 (C)
+>>>>> [    3.006582]  dump_stack_lvl+0x60/0x80
+>>>>> [    3.010224]  dump_stack+0x18/0x24
+>>>>> [    3.013521]  panic+0x168/0x360
+>>>>> [    3.016558]  exynos_sysmmu_irq+0x224/0x2ac
+>>>>> [         ...]
+>>>>> [    3.108786] ---[ end Kernel panic - not syncing: Unrecoverable
+>>>>> System MMU Fault! ]---
+>>>> 
+>>>> For starters, what if you just remove this panic() from the IOMMU
+>>>> driver? Frankly it seems a bit excessive anyway...
+>>> 
+>>> I've tried that, sysmmu repeatedly keeps issuing interrupts (yes, 
+>>> even
+>>> after clearing the interrupt bit) indefinitely.
+>>> 
+>> Right, this is because decon device is still accessing system memory 
+>> in
+>> a loop trying to display the splash screen. That panic is indeed a bit
+>> excessive, but what else IOMMU driver can do if no page fault handle 
+>> is
+>> registered?
+> 
+> Report the unhandled fault and continue, like most drivers already do. 
+> If there's another fault, then that can get reported as well. It's kind 
+> of the point that if a misbehaving device has been prevented from 
+> accessing memory then it has *not* adversely affected the rest of the 
+> system.
+> 
+> I suppose if one wanted to be really clever then a driver could 
+> implement its own backoff mechanism where if it detects a sustained 
+> high rate of unhandled faults then it disables its interrupt for a bit, 
+> to mitigate the physical interrupt storm as well as avoid flooding the 
+> kernel log more than is useful.
+> 
+>>>>  From the logs below it seems there is apparently unexpected traffic
+>>>> already going through the IOMMU when it wakes up. Is this the DRM
+>>>> drivers doing something sketchy, or has the bootloader left the
+>>>> display running for a splash screen? However in the latter case I
+>>>> don't obviously see why delaying the IOMMU probe should make much
+>>>> difference, given that the decon driver should still be waiting for
+>>>> it either way.
+>>> 
+>>> The display is initialized by the bootloader for splash yes, but I 
+>>> reckon
+>>> it doesn't use the IOMMU as it's accessible from a framebuffer 
+>>> region.
+>> 
+>> Right, bootloader configured decon device to display splash screen, 
+>> what
+>> means that decon device is constantly reading splash screen pixel data
+>> from system memory. There is no such thing as a 'framebuffer region', 
+>> it
+>> is just a system memory, which exynos sysmmu protects when enabled. So
+>> far this issue of splash screen from bootloader has not yet been 
+>> solved
+>> in mainline. On other Exynos based supported boards this works only
+>> because there are also power domain drivers enabled, which are
+>> instantiated before the display related device and respective sysmmu
+>> device. That power domain driver shuts down power effectively 
+>> disabling
+>> the display before the sysmmu gets probbed.
+> 
+> And presumably the sysmmu device itself doesn't need to depend on that 
+> power domain? OK, that at least makes sense.
+> 
+>> Long time ago I've pointed this issue and proposed some simple 
+>> solution
+>> like a special initial identity mapping for the memory range used for
+>> splash screen, but that proposal is no longer applicable for the 
+>> current
+>> code.
+>> 
+>> As a workaround I would suggest to shutdown display in the decon 
+>> device
+>> before starting the kernel (i.e. from the 'kernel loading mid-stage
+>> bootloader' if you have such).
+> 
+> We do now have the tools to handle this properly - if the bootloader 
+> can be updated to add the appropriate "iommu-addresses" property[1] to 
+> the framebuffer reservation, then it's a case of hooking up support in 
+> exynos-iommu via of_iommu_get_resv_regions().
 
-kernel test robot noticed the following build warnings:
+Hey, thanks a lot! I got it to work. [1] [2]
 
-[auto build test WARNING on pci/next]
-[also build test WARNING on pci/for-linus tiwai-sound/for-next tiwai-sound/for-linus tip/x86/core linus/master v6.16-rc3 next-20250627]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+The Exynos IOMMU driver doesn't have support for get_resv_regions in
+iommu_ops. So I tried to find existing drivers which have it 
+implemented,
+for examples. [3] [4] [5]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Mario-Limonciello/PCI-Add-helper-for-checking-if-a-PCI-device-is-a-display-controller/20250627-123349
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git next
-patch link:    https://lore.kernel.org/r/20250627043108.3141206-10-superm1%40kernel.org
-patch subject: [PATCH v6 9/9] PCI: Add a new 'boot_display' attribute
-config: powerpc-bluestone_defconfig (https://download.01.org/0day-ci/archive/20250628/202506282240.aqA0j5M3-lkp@intel.com/config)
-compiler: clang version 21.0.0git (https://github.com/llvm/llvm-project e04c938cc08a90ae60440ce22d072ebc69d67ee8)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250628/202506282240.aqA0j5M3-lkp@intel.com/reproduce)
+All of them have some reserved region allocation before calling
+iommu_dma_get_resv_regions(). I don't know what they are, and I don't 
+know
+what base and length should be used for sysmmu. Either way I gave it a 
+shot
+with [6]:
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202506282240.aqA0j5M3-lkp@intel.com/
+#define EXYNOS_DEV_ADDR_START	0x20000000
+#define EXYNOS_DEV_ADDR_SIZE	0x40000000
 
-All warnings (new ones prefixed by >>):
+static void exynos_iommu_get_resv_regions(struct device *dev,
+					  struct list_head *head)
+{
+	struct iommu_resv_region *region;
+	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
 
->> drivers/pci/pci-sysfs.c:688:8: warning: unused variable 'dev_attr_boot_display' [-Wunused-variable]
-     688 | static DEVICE_ATTR_RO(boot_display);
-         |        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/device.h:199:26: note: expanded from macro 'DEVICE_ATTR_RO'
-     199 |         struct device_attribute dev_attr_##_name = __ATTR_RO(_name)
-         |                                 ^~~~~~~~~~~~~~~~
-   <scratch space>:54:1: note: expanded from here
-      54 | dev_attr_boot_display
-         | ^~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
+	region = iommu_alloc_resv_region(EXYNOS_DEV_ADDR_START, 
+EXYNOS_DEV_ADDR_SIZE,
+					 prot, IOMMU_RESV_SW_MSI, GFP_KERNEL);
+	if (!region)
+		return;
 
+	list_add_tail(&region->list, head);
 
-vim +/dev_attr_boot_display +688 drivers/pci/pci-sysfs.c
+	iommu_dma_get_resv_regions(dev, head);
+}
 
-   682	
-   683	static ssize_t boot_display_show(struct device *dev, struct device_attribute *attr,
-   684					 char *buf)
-   685	{
-   686		return sysfs_emit(buf, "1\n");
-   687	}
- > 688	static DEVICE_ATTR_RO(boot_display);
-   689	
+...and it worked. It works even without that first allocation, so not
+sure why and if its needed.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+I need some input for making it upstreamable (mainly if the base and
+length are correct or no), I'll send a patch.
+
+[1] 
+https://elixir.bootlin.com/linux/v6.15.3/source/drivers/iommu/of_iommu.c#L206
+[2] 
+https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/reserved-memory/reserved-memory.yaml
+[3] 
+https://elixir.bootlin.com/linux/v6.15.3/source/drivers/iommu/apple-dart.c#L966
+[4] 
+https://elixir.bootlin.com/linux/v6.15.3/source/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c#L3573
+[5] 
+https://elixir.bootlin.com/linux/v6.15.3/source/drivers/iommu/arm/arm-smmu/arm-smmu.c#L1594
+[6] 
+https://elixir.bootlin.com/linux/v6.15.3/source/drivers/gpu/drm/exynos/exynos_drm_dma.c#L30
+
+> 
+> For a short-term kernel-side hack you could probably implement 
+> .def_domain_type to force IDENTITY for decon devices, as long as you 
+> can then convince the DRM driver to pick another device to grab a DMA 
+> ops domain from.
+> 
+> Thanks,
+> Robin.
