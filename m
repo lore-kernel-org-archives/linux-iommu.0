@@ -1,191 +1,248 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2084.outbound.protection.outlook.com [40.107.236.84])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C5E38F54;
-	Mon, 30 Jun 2025 17:29:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.84
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751304573; cv=fail; b=NbKvpTDux6ltLdO3cfX/ICUIsD2ejXUBNyz84xqSc/8bv4hLZrsLYeCM9ONphIwGJS/IzR50SygrrkZI/TRM5snPRgd4zwkvuRSE40W+TfdQpDyP/swftabrqTHdTEr5EqcSI8uOJvFXu4eRPDEkaSj619mGmnSFNiBzmxqebhE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751304573; c=relaxed/simple;
-	bh=wpNxn/y/AI823oWvfQAig0e7fjoc196Yxdtcov2RluI=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Sq36BGjjIogh9A9r6DdAUWwwGiy3ibsHqgroWirwjxuH9mdJ/jclexhjsWWzuMYI9xnMhgyLaZ6LeISFDaJrtWGP4eTc/xqqwWT/ILkkE89IQoZRjzzFnkvsViaXFk6tUtYd5mLyj1Nq/H6uC07jCMO4KJ7r5x4Hq3lqHmhnmOw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PyNhdClM; arc=fail smtp.client-ip=40.107.236.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 539ED1C5D57;
+	Mon, 30 Jun 2025 18:37:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751308627; cv=none; b=VagqheQpqhmNFawEU0R2xox5q1dAeRuQ6mOmUb2oYR0LOfgHquLSbNMt9E4j4ruvpStUD7EYUInJ0lYWVFyphBQsCtDXqjA/zJ2SfMaVcm52pjDjCIkHZeWjmif/laKftCB8vvL3FcCP8lcrglkPUpjg5PCSyj9dfZjeY0hanuQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751308627; c=relaxed/simple;
+	bh=c9uAtQKv4NYSwOH3r6TmzxlDwchzoTPDdAumVK3QfAE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=j9ljZb2ZkYUtDnBjYW+h4OcgimPKR0kThJqQ1T3bBE953/h1Og7Utq6JIWlipkN4dp6Lrn8JZ67VS2GM40ACvhY/BrhKveg450F98aYK+Qbj94ahfhjNaFqn+9MnCtwganSuEIE2cSsXU58OFBDBAaFW3hGB+kP5j+itMHvvngo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cN0BY4IO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PyNhdClM"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=wC4OyAHtqzFPqc0LTne3TLr0sL7SWjkUK8ZBm59BnrDOq/Z8V41fjhaAPEOpib0njMeMBSJ9L9TZOmHlryLTrpWRIpt26Q7P3cuADJwjOxOMm9EyMQ+f1rtAscM40LlWTrO4lIEJ1hcK60RsH4ut1dthvccWQqUxkntbJqfK1N8daK7JVfLE2bozMljfSvaxMbtIiX2hnMhsORNmpy+ciOeoRe9FlfsF1A2mZII4UA8RYrQG7CDJ5vOiYdAvpwyGATWa1oIEnsDo4mEfm34qMUASbBmvuYx+ZWjObCzxIykyl7tZLtxsRUUEaAlFLkDDjoqHbOedr+IhysGQ12ltPA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RR0NOwXmOzvSHeFvRZD+dS3FjsJqs2bN1M93RvUsTc4=;
- b=uvMgeMpyKKVrIGKMc85T6O4ILssYJASI34K8NUuI9l7aG49Cbs2DgrRXfqSCKHKYCoQ3ttFCw5P4S2LL4aYnC6I6UyAWl4a+YuLOEQOa8cA6KiFg4hyRq9p8hNxhCqhJfTntwVeOTCSzKx7LNEybQcohowLTC7tOk2iWcIb6+B/l7TtHwMlQ0qMgOSomh/J0bu0PmuV0pv/SckNklrPOHxDfyAOkzi6/CiEnu3njlTC/neJD1TtM8OwFVJQcpL0athsNNkKGVICXB+DWnEv39kp1ZMmXCu1vlQgFQ+YLcZzMeEJd5YReLA0CJZfOodXgRDk7r5vsBC3E9ILxWIB/jQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RR0NOwXmOzvSHeFvRZD+dS3FjsJqs2bN1M93RvUsTc4=;
- b=PyNhdClMYG3JjQS/5ICFLdqgzRHtUCuiv5NOkvQ6dm/Hs+Y8XolrY/YWJjZ0KWFGFV20qQ8wE52gQtgB36vyWNSFvgnoaOFCR2QjUjeLbxRowDgt8pmFB05ibU75STKQkjP+v2jiUMb3F0ekgldaBh9KbyyJWePTOzURCZVr5eEP0YscGsi3EIEZ58XpxAlthEzqZNb1AgJmMM0xmoYpTqZX2ivCF1Sfib6HXv3dN8BLkgL6MFYNfnakPbkdJ736/S56Wc8j/LPVBeCUbFdGubgsoGKdr3+1WyZ8Eb0L2/WvsyabXYwJz7J4Eezj0YEyDR+Kj/eYTtLzCa6Gr9uq8g==
-Received: from MW4PR04CA0179.namprd04.prod.outlook.com (2603:10b6:303:85::34)
- by BL3PR12MB6451.namprd12.prod.outlook.com (2603:10b6:208:3ba::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8880.26; Mon, 30 Jun
- 2025 17:29:27 +0000
-Received: from SJ1PEPF00001CE3.namprd05.prod.outlook.com
- (2603:10b6:303:85:cafe::cb) by MW4PR04CA0179.outlook.office365.com
- (2603:10b6:303:85::34) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8880.29 via Frontend Transport; Mon,
- 30 Jun 2025 17:29:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- SJ1PEPF00001CE3.mail.protection.outlook.com (10.167.242.11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8901.15 via Frontend Transport; Mon, 30 Jun 2025 17:29:27 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 30 Jun
- 2025 10:29:16 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14; Mon, 30 Jun 2025 10:29:14 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Mon, 30 Jun 2025 10:29:14 -0700
-Date: Mon, 30 Jun 2025 10:29:12 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Baolu Lu <baolu.lu@linux.intel.com>, <joro@8bytes.org>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <rafael@kernel.org>, <lenb@kernel.org>,
-	<bhelgaas@google.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <patches@lists.linux.dev>,
-	<pjaroszynski@nvidia.com>, <vsethi@nvidia.com>, <helgaas@kernel.org>
-Subject: Re: [PATCH RFC v2 3/4] iommu: Introduce iommu_dev_reset_prepare()
- and iommu_dev_reset_done()
-Message-ID: <aGLIEhoIiUIjI/MP@Asurada-Nvidia>
-References: <cover.1751096303.git.nicolinc@nvidia.com>
- <9042270b6c2d15a53e66d22d29b87c1c59e60669.1751096303.git.nicolinc@nvidia.com>
- <e505c970-e519-44c6-a316-e5d186f216ca@linux.intel.com>
- <20250630123814.GS167785@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cN0BY4IO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30071C4CEE3;
+	Mon, 30 Jun 2025 18:37:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1751308626;
+	bh=c9uAtQKv4NYSwOH3r6TmzxlDwchzoTPDdAumVK3QfAE=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=cN0BY4IOJa5X2g2U3gCon69bn9LJ3stx8QA5hrzXp/BuSkQlIBXr9owVFkfIQTC+i
+	 gbevZsHJPC1WyYnYvdPYEL91IJ2/N6DoxveR04QbFyx6sA2nWsmVNYb+lJgXF96SeX
+	 fTjZxs0DpCyyGxjUuaRuWOYr6/l9sIVsSazrq5LY2WB2f0ldsBh5FxaOJ/LUm5hb/G
+	 f+VS55iyLyYAY0W6MI5CHOqOhkPU+GCAeYMEAit1eh6ZOWaRVokC0AYuKghiH9ePAu
+	 1USlB1R/WPC6UZHa4PM5WQsndNqeQ7z2FC8TedHUsWzGl4QbBpdCr6Ld4RD2WKYpPy
+	 9JTJKfTYMm60g==
+Message-ID: <8f9efe23-c774-477d-97ad-8e22532ad6b2@kernel.org>
+Date: Mon, 30 Jun 2025 14:37:06 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20250630123814.GS167785@nvidia.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE3:EE_|BL3PR12MB6451:EE_
-X-MS-Office365-Filtering-Correlation-Id: 791fd3b4-8515-4848-cb23-08ddb7fba9e1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|36860700013|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Wc9+eeHUu1bSVvag5xdGMbB+OSsviQpFAhCcfluyPA3J/Ssfs7jvrHFVwdt4?=
- =?us-ascii?Q?uhKwJAew0xJAgFxaWFFAnZCrMTpwyQDd+3PIF3TK3CPPUJg/TI3odJoSckEQ?=
- =?us-ascii?Q?w1Xgber1NM35Ir0Za5Q9Zya4OCb9HfKDOK6TEnFgGg9HmRN7J1fzpnxoQed7?=
- =?us-ascii?Q?CDkWHmfeE3+ohVUCni5P7X3xT+dNEBplexdHI6I4mvkz4F34Ie1QnQrVokg9?=
- =?us-ascii?Q?qokW1IFk9e3rBMl4cL0S4wPokcBqY82GQrUf+ffnTAWUOVelA7eV0KcbUF75?=
- =?us-ascii?Q?TchaV1JfxmzoosBRqTofbyc25bIZKhTStx5tSAPkgBTZMCSikfYKjYslSW4I?=
- =?us-ascii?Q?Z9IuyUG8HZNelhV77s5qWMQAxd/dIZOip5MIfPPhSF7j0slWtIc6ST0lA+FH?=
- =?us-ascii?Q?tmC2YxdKGyuSn8CM1tHNe21Qt7i9mMCgWHLA1ULLnjo6MhDvi9lEsYEdGKWx?=
- =?us-ascii?Q?1iIasyBWno6YCvBIEAlHTIOFhDaKbMvKW8q1q7aOvw9E/rOzondsEnb7N9Wd?=
- =?us-ascii?Q?lJDMwIu3jtFPpTG4PJ3jf1Jh88iHwZaU0BShalpuLg2QFh14DSE/N6gSvsHY?=
- =?us-ascii?Q?ubVs4Gg88zM7/5wV13RQLELFfX/TA51Ahoypf8GnwoKsaap6BxEc0+IEKDht?=
- =?us-ascii?Q?3mfWQu5k+Age3Bq81eeZEnBHzsK9NhxwNi+48l3ThOOyvJIRigKu92lmDPLT?=
- =?us-ascii?Q?5WisISyP6OwNJWUL2IA3bpbBGv0ckOdHywjA8mwt4B9p+Efa86ZH2rZuTn34?=
- =?us-ascii?Q?TGe3ugKBA6gqkWXVn65HnvhbnkathOKgp/R9GFG9fJgSVO4BRpyhzvyBd69T?=
- =?us-ascii?Q?VwiBhA1ZdJIFxEUvWBdHu0B1Ga2SkbkXmMURRQEcX8WSzkVmBvwQiEXOz//s?=
- =?us-ascii?Q?AulDce4ZcYi4La1Pq8XwWWF2YoRyYE7QrwiQ5s3Iy8JQZ72tK293hEbhB07p?=
- =?us-ascii?Q?MkfhrRecDU5PXMDrjSKkVuz46s5/RR9eH/Jeqthu57vf7VTwX6fwwCErgo0P?=
- =?us-ascii?Q?bfIsgYBugXymuIe7bR6unRyBeKMqXl5i+ZSKuS81cBYflf9d/12uYIKg6ykO?=
- =?us-ascii?Q?Y9CJ3hkw5vWQyAo+dxCXpaFrgB79dFhl99GriL6p+rtTzQBwaNrXLRIeyJx3?=
- =?us-ascii?Q?cvuwchPNa/r9munbj/igznNkgyIEgObroFQHpgrN5av99aFPlP9eetiLhSL+?=
- =?us-ascii?Q?OGEmxCBxeRVhWBduCozy2zXeS7LlD5gJm8nDd9XQ+PFtkcCQFiaOjr345uxz?=
- =?us-ascii?Q?Qu9t/S2Vl4EWzPjTjx+aXWM3Uobz4ld5AkIlnEgfqFxBRXcm5IKJgHeVB8he?=
- =?us-ascii?Q?hzjU0VfVW6tQ2WuJX4+9q/raZ2lNpNCMutMRou10A7xl+5JhKFa21p6mJfGi?=
- =?us-ascii?Q?Dv96A6XYjIysJV8+AaQRhQ7sFG3DG+2HZ2a/FktZSHreAaElKlkayvX7rLEn?=
- =?us-ascii?Q?/T5EeAe9sjeCY92jcT4o/RxPCoTfUjb1as1Qx14m4f5lSaZ3NfxhbxGnxrqC?=
- =?us-ascii?Q?Ee5IvTlEGfOdxgjMbRUn2559Cbi6RZYEaU2P?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700013)(376014)(7416014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2025 17:29:27.1051
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 791fd3b4-8515-4848-cb23-08ddb7fba9e1
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00001CE3.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6451
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 9/9] PCI: Add a new 'boot_display' attribute
+To: Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Simona Vetter <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
+ "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+ "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
+ "open list:SOUND" <linux-sound@vger.kernel.org>,
+ Daniel Dadap <ddadap@nvidia.com>,
+ Mario Limonciello <mario.limonciello@amd.com>,
+ Bjorn Helgaas <bhelgaas@google.com>
+References: <20250627043108.3141206-1-superm1@kernel.org>
+ <20250627043108.3141206-10-superm1@kernel.org>
+ <41587824-4a05-4ead-b24c-4729007cd663@suse.de>
+ <8878af70-3eb8-495b-b8df-43a10285c4f5@kernel.org>
+ <732aeb75-71e7-49e7-a5f2-2080ee94a273@suse.de>
+Content-Language: en-US
+From: Mario Limonciello <superm1@kernel.org>
+In-Reply-To: <732aeb75-71e7-49e7-a5f2-2080ee94a273@suse.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Jun 30, 2025 at 09:38:14AM -0300, Jason Gunthorpe wrote:
-> On Sat, Jun 28, 2025 at 09:28:12PM +0800, Baolu Lu wrote:
->  
-> > Does this mean the IOMMU driver should disable ATS when ops-
-> > >blocked_domain is used? This might not be feasible because ops-
-> > >blocked_domain might possibly be attached to a PASID of a device,
-> > while other PASIDs still use ATS for functionality.
+On 6/30/2025 2:24 AM, Thomas Zimmermann wrote:
+> Hi
 > 
-> No.. The above should be setting everything, including PASIDs to the
-> blocked domain.
+> Am 27.06.25 um 17:37 schrieb Mario Limonciello:
+>> On 6/27/2025 2:07 AM, Thomas Zimmermann wrote:
+>>> Hi
+>>>
+>>> Am 27.06.25 um 06:31 schrieb Mario Limonciello:
+>>>> From: Mario Limonciello <mario.limonciello@amd.com>
+>>>>
+>>>> On systems with multiple GPUs there can be uncertainty which GPU is the
+>>>> primary one used to drive the display at bootup. In order to 
+>>>> disambiguate
+>>>> this add a new sysfs attribute 'boot_display' that uses the output of
+>>>> video_is_primary_device() to populate whether a PCI device was used for
+>>>> driving the display.
+>>>>
+>>>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>>>> ---
+>>>> v6:
+>>>>   * Only show for the device that is boot display
+>>>>   * Only create after PCI device sysfs files are initialized to ensure
+>>>>     that resources are ready.
+>>>> v4:
+>>>>   * new patch
+>>>> ---
+>>>>   Documentation/ABI/testing/sysfs-bus-pci |  8 +++++
+>>>>   drivers/pci/pci-sysfs.c                 | 46 +++++++++++++++++++++ 
+>>>> ++++
+>>>
+>>> The code looks good. Just one more question: could this be added 
+>>> independently from the PCI bus (at a reasonable cost)? There are 
+>>> other busses that can host the boot display. Alternatively, we'd add 
+>>> this attribute per bus as needed.
+>>
+>> It depends upon the underlying hardware implementation.  On x86 it's 
+>> always PCI and so I realized there is a requirement that PCI resources 
+>> are setup before screen_info event works.
+>>
+>> That is the v5 version of this patch would have had a potential race 
+>> condition with userspace where boot_display didn't always show '1' if 
+>> userspace read it too quickly.
+>>
+>> Other architecture's hardware implementation might have similar problem.
+>>
+>> So in summary I think it would be better to do it per-bus.  If we 
+>> realize there is indeed code duplication we can always move this to a 
+>> common helper at that point.
 > 
-> The driver doesn't have to disable ATS at the device, but ARM does.
-
-Oh, the code is expecting a pci_disable_ats() call, as the next
-patch will check if ats is disabled on the PCI side..
-
-If that's the case, we'd have to leave the ATS enabled but only
-trust that iommu driver won't issue any new ATS invalidation?
-
-Or should we ask driver to be "must" v.s. "doesn't have to"?
-
-> > > +	/* Device is already attached to the blocked_domain. Nothing to do */
-> > > +	if (group->domain->type == IOMMU_DOMAIN_BLOCKED)
-> > > +		goto unlock;
-> > 
-> > "group->domain->type == IOMMU_DOMAIN_BLOCKED" means that IOMMU_NO_PASID
-> > is docked in the blocking DMA state, but it doesn't imply that other
-> > PASIDs are also in the blocking DMA state. Therefore, we might still
-> > need the following lines to handle other PASIDs.
+> Ok, makes sense. With the kernel test robot's issues fixed:
 > 
-> Yes, we always have to check the xarray.
+> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
 
-OK. This check should apply to the RID domain attach only then.
-
-> > On the other hand, perhaps we should use "group->domain == ops-
-> > >blocked_domain" instead of "group->domain->type ==
-> > IOMMU_DOMAIN_BLOCKED" to make the code consistent with the commit
-> > message.
+Thanks, I've got a fix locally for it.
 > 
-> ops->blocked_domain is not good, we support devices without static
-> blocking domain. But yes, using DOMAIN_BLOCKED is not greap, there is
-> a group->blocked_domain that should be used and will dynamicaly create
-> an empty paging domain if needed.
+> I guess that interface also needs some sort of OK from user-space devs?
+> 
 
-You mean we should use the group->blocking_domain, even if it was
-allocated to be a paging domain as the driver doesn't understand
-a IOMMU_DOMAIN_BLOCKED yet?
+Who needs to OK it?  I do have MR's for matching userspace 
+implementations mentioned in the cover letter already.
 
-Thanks
-Nicolin
+> Best regards
+> Thomas
+> 
+>>
+>>>
+>>> Best regards
+>>> Thomas
+>>>
+>>>>   2 files changed, 54 insertions(+)
+>>>>
+>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/ 
+>>>> Documentation/ ABI/testing/sysfs-bus-pci
+>>>> index 69f952fffec72..8b455b1a58852 100644
+>>>> --- a/Documentation/ABI/testing/sysfs-bus-pci
+>>>> +++ b/Documentation/ABI/testing/sysfs-bus-pci
+>>>> @@ -612,3 +612,11 @@ Description:
+>>>>             # ls doe_features
+>>>>             0001:01        0001:02        doe_discovery
+>>>> +
+>>>> +What:        /sys/bus/pci/devices/.../boot_display
+>>>> +Date:        October 2025
+>>>> +Contact:    Linux PCI developers <linux-pci@vger.kernel.org>
+>>>> +Description:
+>>>> +        This file indicates the device was used as a boot
+>>>> +        display. If the device was used as the boot display, the file
+>>>> +        will be present and contain "1".
+>>>> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+>>>> index 268c69daa4d57..cc766461de1da 100644
+>>>> --- a/drivers/pci/pci-sysfs.c
+>>>> +++ b/drivers/pci/pci-sysfs.c
+>>>> @@ -30,6 +30,7 @@
+>>>>   #include <linux/msi.h>
+>>>>   #include <linux/of.h>
+>>>>   #include <linux/aperture.h>
+>>>> +#include <asm/video.h>
+>>>>   #include "pci.h"
+>>>>   #ifndef ARCH_PCI_DEV_GROUPS
+>>>> @@ -679,6 +680,13 @@ const struct attribute_group *pcibus_groups[] = {
+>>>>       NULL,
+>>>>   };
+>>>> +static ssize_t boot_display_show(struct device *dev, struct 
+>>>> device_attribute *attr,
+>>>> +                 char *buf)
+>>>> +{
+>>>> +    return sysfs_emit(buf, "1\n");
+>>>> +}
+>>>> +static DEVICE_ATTR_RO(boot_display);
+>>>> +
+>>>>   static ssize_t boot_vga_show(struct device *dev, struct 
+>>>> device_attribute *attr,
+>>>>                    char *buf)
+>>>>   {
+>>>> @@ -1246,6 +1254,37 @@ static int pci_create_attr(struct pci_dev 
+>>>> *pdev, int num, int write_combine)
+>>>>       return 0;
+>>>>   }
+>>>> +/**
+>>>> + * pci_create_boot_display_file - create a file in sysfs for @dev
+>>>> + * @pdev: dev in question
+>>>> + *
+>>>> + * Creates a file `boot_display` in sysfs for the PCI device @pdev
+>>>> + * if it is the boot display device.
+>>>> + */
+>>>> +static int pci_create_boot_display_file(struct pci_dev *pdev)
+>>>> +{
+>>>> +#ifdef CONFIG_VIDEO
+>>>> +    if (video_is_primary_device(&pdev->dev))
+>>>> +        return sysfs_create_file(&pdev->dev.kobj, 
+>>>> &dev_attr_boot_display.attr);
+>>>> +#endif
+>>>> +    return 0;
+>>>> +}
+>>>> +
+>>>> +/**
+>>>> + * pci_remove_boot_display_file - remove the boot display file for 
+>>>> @dev
+>>>> + * @pdev: dev in question
+>>>> + *
+>>>> + * Removes the file `boot_display` in sysfs for the PCI device @pdev
+>>>> + * if it is the boot display device.
+>>>> + */
+>>>> +static void pci_remove_boot_display_file(struct pci_dev *pdev)
+>>>> +{
+>>>> +#ifdef CONFIG_VIDEO
+>>>> +    if (video_is_primary_device(&pdev->dev))
+>>>> +        sysfs_remove_file(&pdev->dev.kobj, 
+>>>> &dev_attr_boot_display.attr);
+>>>> +#endif
+>>>> +}
+>>>> +
+>>>>   /**
+>>>>    * pci_create_resource_files - create resource files in sysfs for 
+>>>> @dev
+>>>>    * @pdev: dev in question
+>>>> @@ -1654,9 +1693,15 @@ static const struct attribute_group 
+>>>> pci_dev_resource_resize_group = {
+>>>>   int __must_check pci_create_sysfs_dev_files(struct pci_dev *pdev)
+>>>>   {
+>>>> +    int retval;
+>>>> +
+>>>>       if (!sysfs_initialized)
+>>>>           return -EACCES;
+>>>> +    retval = pci_create_boot_display_file(pdev);
+>>>> +    if (retval)
+>>>> +        return retval;
+>>>> +
+>>>>       return pci_create_resource_files(pdev);
+>>>>   }
+>>>> @@ -1671,6 +1716,7 @@ void pci_remove_sysfs_dev_files(struct pci_dev 
+>>>> *pdev)
+>>>>       if (!sysfs_initialized)
+>>>>           return;
+>>>> +    pci_remove_boot_display_file(pdev);
+>>>>       pci_remove_resource_files(pdev);
+>>>>   }
+>>>
+>>
+> 
+
