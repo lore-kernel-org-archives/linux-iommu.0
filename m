@@ -1,200 +1,130 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f182.google.com (mail-pf1-f182.google.com [209.85.210.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A078942AA5
-	for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 03:09:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EFA078F4E
+	for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 03:48:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751252991; cv=none; b=IrZEatk+kPnna4FXfbpZKDV0NehpLyqed6ov4h2u4K4zGwlv3xYyP6b9flMOMWy/OUhBzn5aGvj8V/Td/N4Ogk/U6HhAkfZHlGdry4B0NYM4dZ/60R5vuD4zuo+G+EAMGH8O7+frEKvpDtG9Q+TGIK0y05Rkcq/UNmoc11DV2XU=
+	t=1751255293; cv=none; b=BjFXCl3gvlkI2iTQb1mhNLJxFfIX5DrSFpqqbosUtcPF82UYqXLjwuREm+gsaAjYOOyC759ybSRpBd9X/0L591d83nimw9lB4rRATWknGT/oPpB6rdRTvF80U5r6GyROMI9zzCxPT/qr9MwCvdJBzIposzytAKdu2ucPsuNxxak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751252991; c=relaxed/simple;
-	bh=t5JwbbNEl0lnqERUNCit63TPZ7Qwsr0qqua3KN/g6I8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aILLfjgmsHigbS1VY/XXHlb+S5doV75eDcNCjVGfvJwX28mvav7r2S2Zo9LPbWoAM9r5Y3iCqNn7F6wzXpGTl6Tp1ymVwFA5c29oBN+l0iYvU+BqWLxeGjoy7TP8Xg3knLPkQutB5NHcrGxLbWFtjkHIWZ3HZLuQTkHy1bUIoYA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gz5IdP0F; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1751255293; c=relaxed/simple;
+	bh=LBM4mSRpBpLLuf5KUL4CdOdRDoNegAjkYl+r+qplyOQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=YCQJgbN8BbFkluV64wMGokGFMh8BnRqv5GzJuu/0ds3XTAibi61ol+GzoCXUtZ2eZZiWzuOArAOWhoMXw1eCZ/yqog6BfxHC7BvdOHsBURv7KQ7s9Limv/DkVhgNuLmkrmXXW6sifNvlYDvCxilJfUQE/2nAvAnRoOE+hcB22/c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=cAOpQsJS; arc=none smtp.client-ip=209.85.210.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gz5IdP0F"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1751252990; x=1782788990;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=t5JwbbNEl0lnqERUNCit63TPZ7Qwsr0qqua3KN/g6I8=;
-  b=gz5IdP0FyNlrAcUzKrwfP9ccSVpofdSpieN8CrW2FGyBHwDqgj65/UlN
-   CfI5bSGXdbt8FZpGVdYzwtKZQfTivcJCDWp96QacIXkRgpd92z+4tsV9O
-   9/LGmbfm5RPgkZXSl629X7jVyE5QNFamB3inW+ymEg9U2QJDngExZxM3/
-   t/tUdSAV0x+7LOljMl6E5AARTLqzQXO7idim0e+7zYrPCeiQ2se6zJINj
-   dkbQtbdJk4d5s7Pd9NOLuYlhgUbZTv5U1IVnF60J0lBbiBajLGaKBvnKb
-   Qe2F17R+3luDJ1fcqvzUj9UNmrTkQPf96egjakp/78QWFso9Gx4eldcEI
-   A==;
-X-CSE-ConnectionGUID: fIadQtCqQMun9cyaRohREw==
-X-CSE-MsgGUID: cAvOIMrkRNOsc0WDXf4JJg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11479"; a="53591351"
-X-IronPort-AV: E=Sophos;i="6.16,276,1744095600"; 
-   d="scan'208";a="53591351"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2025 20:09:49 -0700
-X-CSE-ConnectionGUID: E4oAp4QZRLSUDeJtJj1lsQ==
-X-CSE-MsgGUID: 7PAEcqyeQySnkpDCiiggrA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,276,1744095600"; 
-   d="scan'208";a="152958221"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2025 20:09:46 -0700
-Message-ID: <b531ec51-625b-4ea0-a0e1-a90c02cb5e8a@linux.intel.com>
-Date: Mon, 30 Jun 2025 11:08:22 +0800
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="cAOpQsJS"
+Received: by mail-pf1-f182.google.com with SMTP id d2e1a72fcca58-7481600130eso2119873b3a.3
+        for <iommu@lists.linux.dev>; Sun, 29 Jun 2025 20:48:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google; t=1751255291; x=1751860091; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=yFeBhYBHOrC/0c43zTo39sGlheeTzLpojcRGicgsOS8=;
+        b=cAOpQsJSVJyL4U54IbWcM8y7OiocL8F9JxAZAQMekDzkVVpGp7zvOhiQy8L18nOTwS
+         AUtbzUpKMF1lepkrZzSWLLychYTIkJdszmpHN7UGLV6YQdICmkocgwJrNcqnzFqFdAmz
+         Q/pv9RH0+8vUwBFnhI6f0iGhiHu31Fligoar8xWk8H0H493IvzpDIakpNYbfQzmkBLs/
+         RHpdwX4CnIJ1NA2+s6JCKOvGarzhFDMs0iaiOnVxJZbl7bU+yp3g0AM8DqZy99kB0ut9
+         dorD6Viz4gjf03+ioEre/Ng5QqKo6m6MrWtgQXoAxgvrBebKxFddVc7WaNVhHKZQe0fa
+         qQsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751255291; x=1751860091;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yFeBhYBHOrC/0c43zTo39sGlheeTzLpojcRGicgsOS8=;
+        b=MUq7pYqapGsZg+an2KyZE1cnGPUi1J2Tv4+1uWZu0De3upL6FhE6vA7Eb4EUAeLe5p
+         bcznXOmZpjkJ9lqwcZWQjT09IHtpvH4I6TYS6Tgo3WQUrUgYa689RjkPkvbP2VZjd3Xl
+         B44RORfdiofhQgRfOi5GSddO0Z8xqIegJzNtURRrOeGLlovhrPUjqhS6C/XG8t4UdN+A
+         RMLJgPFOUELagIz6BR3ShsH7AuoyNcXTEgivfn6vRMkK/ToSM8nKfFLLkd2ucOFo8NIO
+         SnHSHggueEiBGa1kAhq4B2XUf479zPG2BuOPD+0/qkNjHBUIsqpHA6ZLQPWAEvhmkF8E
+         FNbA==
+X-Forwarded-Encrypted: i=1; AJvYcCUvOapy1AQS8fWUG4ViftvYs1oSQSdFct4vErWILpUWOdFaZsJNNwfU4bwy6fflD+gQLYsIew==@lists.linux.dev
+X-Gm-Message-State: AOJu0YycxdKmm7+dZkE8y+pQzRbAeaDtfNt5h7vjQN9IRZSGdVYzsae0
+	Ej2z1FhVr9iYHoEpfM8BAu6+3banuR9mMjzEKNlCmcMQGeN47r8OrNurJjpEx0jQPio=
+X-Gm-Gg: ASbGnctrHixLYNLXX9ke3yh3Tj4oUZ2s4o2gSDVC5zXgxm6ExaBdUACifWqe9HIv8Kv
+	e6wR5V+XGXtxIfg3eCuHvJWN1Sf7AXNWKRdK/LeRQKwMJnj1QqwPgEEffWlHhTnsuGBfWxoQqxt
+	Waa9aFBu2QHOJ+ckOCK9rYNlCbCOyq7DjYPRczQVdktU/8KuevHEI8p+OBxNwZTNPnsAiQkkltq
+	aHNDD1lzDXwqkJJb8pBwga9jV3wHPaK/rtMIKFRUv1RrFSH5+NaFgHk9uKfNKhGg4B8wnc1bxhm
+	FoV5Uh8iUWDhA23HS3E5aHD7EtYPgq6zZVsJ8C/tZTCgk8l+kCr+xAkqeTrPIBm4iV9glfsP
+X-Google-Smtp-Source: AGHT+IEzTTqz9HI75CbRtfblsCPZ+bl54XYhiD9/Nlz3V+rIBZOaNxNzGv638imyLy83nUUnGEXiUg==
+X-Received: by 2002:a05:6a00:3e25:b0:748:2f4e:ab4e with SMTP id d2e1a72fcca58-74af6fcf67emr16315764b3a.11.1751255291494;
+        Sun, 29 Jun 2025 20:48:11 -0700 (PDT)
+Received: from sunil-pc.Dlink ([106.51.195.230])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-74af57efaecsm7837862b3a.161.2025.06.29.20.48.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 Jun 2025 20:48:10 -0700 (PDT)
+From: Sunil V L <sunilvl@ventanamicro.com>
+To: linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	linux-acpi@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Alexandre Ghiti <alex@ghiti.fr>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>,
+	Tomasz Jeznach <tjeznach@rivosinc.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Anup Patel <apatel@ventanamicro.com>,
+	Atish Patra <atishp@rivosinc.com>,
+	Andrew Jones <ajones@ventanamicro.com>,
+	Sunil V L <sunilvl@ventanamicro.com>
+Subject: [PATCH v3 0/3] RISC-V: Add ACPI support for IOMMU
+Date: Mon, 30 Jun 2025 09:18:00 +0530
+Message-ID: <20250630034803.1611262-1-sunilvl@ventanamicro.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/5] iommufd: Add iommufd_object_tombstone_user()
- helper
-To: Xu Yilun <yilun.xu@linux.intel.com>, jgg@nvidia.com, jgg@ziepe.ca,
- kevin.tian@intel.com, will@kernel.org, aneesh.kumar@kernel.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, joro@8bytes.org,
- robin.murphy@arm.com, shuah@kernel.org, nicolinc@nvidia.com, aik@amd.com,
- dan.j.williams@intel.com, yilun.xu@intel.com
-References: <20250627033809.1730752-1-yilun.xu@linux.intel.com>
- <20250627033809.1730752-2-yilun.xu@linux.intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250627033809.1730752-2-yilun.xu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 6/27/25 11:38, Xu Yilun wrote:
-> Add the iommufd_object_tombstone_user() helper, which allows the caller
-> to destroy an iommufd object created by userspace.
-> 
-> This is useful on some destroy paths when the kernel caller finds the
-> object should have been removed by userspace but is still alive. With
-> this helper, the caller destroys the object but leave the object ID
-> reserved (so called tombstone). The tombstone prevents repurposing the
-> object ID without awareness of the original user.
-> 
-> Since this happens for abnomal userspace behavior, for simplicity, the
-> tombstoned object ID would be permanently leaked until
-> iommufd_fops_release(). I.e. the original user gets an error when
-> calling ioctl(IOMMU_DESTROY) on that ID.
-> 
-> The first use case would be to ensure the iommufd_vdevice can't outlive
-> the associated iommufd_device.
-> 
-> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
-> Co-developed-by: Aneesh Kumar K.V (Arm)<aneesh.kumar@kernel.org>
-> Signed-off-by: Aneesh Kumar K.V (Arm)<aneesh.kumar@kernel.org>
-> Signed-off-by: Xu Yilun<yilun.xu@linux.intel.com>
-> ---
->   drivers/iommu/iommufd/iommufd_private.h | 23 ++++++++++++++++++++++-
->   drivers/iommu/iommufd/main.c            | 19 ++++++++++++++++---
->   2 files changed, 38 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> index 9ccc83341f32..fbc9ef78d81f 100644
-> --- a/drivers/iommu/iommufd/iommufd_private.h
-> +++ b/drivers/iommu/iommufd/iommufd_private.h
-> @@ -187,7 +187,8 @@ void iommufd_object_finalize(struct iommufd_ctx *ictx,
->   			     struct iommufd_object *obj);
->   
->   enum {
-> -	REMOVE_WAIT_SHORTTERM = 1,
-> +	REMOVE_WAIT_SHORTTERM	= BIT(0),
-> +	REMOVE_OBJ_TOMBSTONE	= BIT(1),
->   };
->   int iommufd_object_remove(struct iommufd_ctx *ictx,
->   			  struct iommufd_object *to_destroy, u32 id,
-> @@ -213,6 +214,26 @@ static inline void iommufd_object_destroy_user(struct iommufd_ctx *ictx,
->   	WARN_ON(ret);
->   }
->   
-> +/*
-> + * Similar to iommufd_object_destroy_user(), except that the object ID is left
-> + * reserved/tombstoned.
-> + */
-> +static inline void iommufd_object_tombstone_user(struct iommufd_ctx *ictx,
-> +						 struct iommufd_object *obj)
-> +{
-> +	int ret;
-> +
-> +	ret = iommufd_object_remove(ictx, obj, obj->id,
-> +				    REMOVE_WAIT_SHORTTERM | REMOVE_OBJ_TOMBSTONE);
-> +
-> +	/*
-> +	 * If there is a bug and we couldn't destroy the object then we did put
-> +	 * back the caller's users refcount and will eventually try to free it
-> +	 * again during close.
-> +	 */
-> +	WARN_ON(ret);
-> +}
-> +
->   /*
->    * The HWPT allocated by autodomains is used in possibly many devices and
->    * is automatically destroyed when its refcount reaches zero.
-> diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-> index 3df468f64e7d..620923669b42 100644
-> --- a/drivers/iommu/iommufd/main.c
-> +++ b/drivers/iommu/iommufd/main.c
-> @@ -167,7 +167,7 @@ int iommufd_object_remove(struct iommufd_ctx *ictx,
->   		goto err_xa;
->   	}
->   
-> -	xas_store(&xas, NULL);
-> +	xas_store(&xas, (flags & REMOVE_OBJ_TOMBSTONE) ? XA_ZERO_ENTRY : NULL);
->   	if (ictx->vfio_ioas == container_of(obj, struct iommufd_ioas, obj))
->   		ictx->vfio_ioas = NULL;
->   	xa_unlock(&ictx->objects);
-> @@ -239,6 +239,7 @@ static int iommufd_fops_release(struct inode *inode, struct file *filp)
->   	struct iommufd_sw_msi_map *next;
->   	struct iommufd_sw_msi_map *cur;
->   	struct iommufd_object *obj;
-> +	bool empty;
->   
->   	/*
->   	 * The objects in the xarray form a graph of "users" counts, and we have
-> @@ -249,23 +250,35 @@ static int iommufd_fops_release(struct inode *inode, struct file *filp)
->   	 * until the entire list is destroyed. If this can't progress then there
->   	 * is some bug related to object refcounting.
->   	 */
-> -	while (!xa_empty(&ictx->objects)) {
-> +	for (;;) {
->   		unsigned int destroyed = 0;
->   		unsigned long index;
->   
-> +		empty = true;
->   		xa_for_each(&ictx->objects, index, obj) {
-> +			empty = false;
+This series adds support for RISC-V IOMMU on ACPI based platforms.
+RISC-V IO Mapping Table (RIMT) is a new static ACPI table [1] introduced
+to communicate IOMMU information to the OS.
 
-People like me, who don't know the details of how xa_for_each() and
-xa_empty() work, will ask why "empty = xa_empty()" isn't used here. So
-it's better to add some comments to make it more readable.
+[1] - https://github.com/riscv-non-isa/riscv-acpi-rimt/releases/download/v1.0/rimt-spec.pdf
 
-/* XA_ZERO_ENTRY is treated as a null entry by xa_for_each(). */
+Changes since v2:
+	1) Rebased to 6.16-rc4
+	2) Removed Anup's SOB and link tags added by mistake in v2.
 
-Others look good to me.
+Changes since v1:
+	1) Rebased to v6.16-rc1.
+	2) Dropped ACPICA patch since it is already available in 6.16-rc1.
+	3) Added Rafael's ACK.
+	4) Fixed few issues found by bots.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
->   			if (!refcount_dec_if_one(&obj->users))
->   				continue;
-> +
->   			destroyed++;
->   			xa_erase(&ictx->objects, index);
->   			iommufd_object_ops[obj->type].destroy(obj);
->   			kfree(obj);
->   		}
-> +
-> +		if (empty)
-> +			break;
-> +
->   		/* Bug related to users refcount */
->   		if (WARN_ON(!destroyed))
->   			break;
->   	}
+Sunil V L (3):
+  ACPI: RISC-V: Add support for RIMT
+  ACPI: scan: Add support for RISC-V in acpi_iommu_configure_id()
+  iommu/riscv: Add ACPI support
 
-Thanks,
-baolu
+ MAINTAINERS                          |   1 +
+ arch/riscv/Kconfig                   |   1 +
+ drivers/acpi/Kconfig                 |   4 +
+ drivers/acpi/riscv/Kconfig           |   7 +
+ drivers/acpi/riscv/Makefile          |   1 +
+ drivers/acpi/riscv/init.c            |   2 +
+ drivers/acpi/riscv/init.h            |   1 +
+ drivers/acpi/riscv/rimt.c            | 523 +++++++++++++++++++++++++++
+ drivers/acpi/scan.c                  |   9 +-
+ drivers/iommu/riscv/iommu-platform.c |  17 +-
+ drivers/iommu/riscv/iommu.c          |  10 +
+ include/linux/acpi_rimt.h            |  26 ++
+ 12 files changed, 599 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/acpi/riscv/Kconfig
+ create mode 100644 drivers/acpi/riscv/rimt.c
+ create mode 100644 include/linux/acpi_rimt.h
+
+-- 
+2.43.0
+
