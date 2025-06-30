@@ -1,84 +1,191 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2084.outbound.protection.outlook.com [40.107.236.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 517D8292B25;
-	Mon, 30 Jun 2025 17:19:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751303961; cv=none; b=Pgs1tkESH54uw7+y68kmMIKbpux4CGV9c3HPYBqPVWs0UGwWxNkF/5sATncgrRGwjKWmU/RL+6RIwDnqnUsUmWx/r3EGgxAVc+8YuYRAfHbmY6pFNw6V2qWH7tRXdnFL3YgPqucBCCmhF2T3FHXI9GAIKATHutsrMDgUg9XS2fw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751303961; c=relaxed/simple;
-	bh=jo1IF2pZkSbKcofr/cGm017l2YthC5rKRBKO7j15hdw=;
-	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=S+qHR8vxd6gw97WURNjN2WNS5a3z5o6wulScpxSk5HQc+uas+l+jnMLNJcBIwG+cS/aWY0HAszMixq8xwItFFbYTfLFETz41jG7rIatyuuWbioyt4lAZn/dEcRT20xC+9fYtA7bNcVTq35iuBOT3eepsJvKEYf8aI7tS/eHFcB4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C08F4C4CEF1;
-	Mon, 30 Jun 2025 17:19:16 +0000 (UTC)
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: ryan.roberts@arm.com,
-	yang@os.amperecomputing.com,
-	will@kernel.org,
-	jean-philippe@linaro.org,
-	robin.murphy@arm.com,
-	joro@8bytes.org,
-	maz@kernel.org,
-	oliver.upton@linux.dev,
-	joey.gouly@arm.com,
-	james.morse@arm.com,
-	broonie@kernel.org,
-	ardb@kernel.org,
-	baohua@kernel.org,
-	suzuki.poulose@arm.com,
-	david@redhat.com,
-	jgg@ziepe.ca,
-	nicolinc@nvidia.com,
-	jsnitsel@redhat.com,
-	mshavit@google.com,
-	kevin.tian@intel.com,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	=?UTF-8?q?Miko=C5=82aj=20Lenczewski?= <miko.lenczewski@arm.com>
-Subject: Re: [PATCH v8 0/4] Initial BBML2 support for contpte_convert()
-Date: Mon, 30 Jun 2025 18:19:14 +0100
-Message-Id: <175130394786.1397341.8393706123668185892.b4-ty@arm.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250625113435.26849-1-miko.lenczewski@arm.com>
-References: <20250625113435.26849-1-miko.lenczewski@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C5E38F54;
+	Mon, 30 Jun 2025 17:29:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.84
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751304573; cv=fail; b=NbKvpTDux6ltLdO3cfX/ICUIsD2ejXUBNyz84xqSc/8bv4hLZrsLYeCM9ONphIwGJS/IzR50SygrrkZI/TRM5snPRgd4zwkvuRSE40W+TfdQpDyP/swftabrqTHdTEr5EqcSI8uOJvFXu4eRPDEkaSj619mGmnSFNiBzmxqebhE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751304573; c=relaxed/simple;
+	bh=wpNxn/y/AI823oWvfQAig0e7fjoc196Yxdtcov2RluI=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Sq36BGjjIogh9A9r6DdAUWwwGiy3ibsHqgroWirwjxuH9mdJ/jclexhjsWWzuMYI9xnMhgyLaZ6LeISFDaJrtWGP4eTc/xqqwWT/ILkkE89IQoZRjzzFnkvsViaXFk6tUtYd5mLyj1Nq/H6uC07jCMO4KJ7r5x4Hq3lqHmhnmOw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PyNhdClM; arc=fail smtp.client-ip=40.107.236.84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PyNhdClM"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=wC4OyAHtqzFPqc0LTne3TLr0sL7SWjkUK8ZBm59BnrDOq/Z8V41fjhaAPEOpib0njMeMBSJ9L9TZOmHlryLTrpWRIpt26Q7P3cuADJwjOxOMm9EyMQ+f1rtAscM40LlWTrO4lIEJ1hcK60RsH4ut1dthvccWQqUxkntbJqfK1N8daK7JVfLE2bozMljfSvaxMbtIiX2hnMhsORNmpy+ciOeoRe9FlfsF1A2mZII4UA8RYrQG7CDJ5vOiYdAvpwyGATWa1oIEnsDo4mEfm34qMUASbBmvuYx+ZWjObCzxIykyl7tZLtxsRUUEaAlFLkDDjoqHbOedr+IhysGQ12ltPA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RR0NOwXmOzvSHeFvRZD+dS3FjsJqs2bN1M93RvUsTc4=;
+ b=uvMgeMpyKKVrIGKMc85T6O4ILssYJASI34K8NUuI9l7aG49Cbs2DgrRXfqSCKHKYCoQ3ttFCw5P4S2LL4aYnC6I6UyAWl4a+YuLOEQOa8cA6KiFg4hyRq9p8hNxhCqhJfTntwVeOTCSzKx7LNEybQcohowLTC7tOk2iWcIb6+B/l7TtHwMlQ0qMgOSomh/J0bu0PmuV0pv/SckNklrPOHxDfyAOkzi6/CiEnu3njlTC/neJD1TtM8OwFVJQcpL0athsNNkKGVICXB+DWnEv39kp1ZMmXCu1vlQgFQ+YLcZzMeEJd5YReLA0CJZfOodXgRDk7r5vsBC3E9ILxWIB/jQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RR0NOwXmOzvSHeFvRZD+dS3FjsJqs2bN1M93RvUsTc4=;
+ b=PyNhdClMYG3JjQS/5ICFLdqgzRHtUCuiv5NOkvQ6dm/Hs+Y8XolrY/YWJjZ0KWFGFV20qQ8wE52gQtgB36vyWNSFvgnoaOFCR2QjUjeLbxRowDgt8pmFB05ibU75STKQkjP+v2jiUMb3F0ekgldaBh9KbyyJWePTOzURCZVr5eEP0YscGsi3EIEZ58XpxAlthEzqZNb1AgJmMM0xmoYpTqZX2ivCF1Sfib6HXv3dN8BLkgL6MFYNfnakPbkdJ736/S56Wc8j/LPVBeCUbFdGubgsoGKdr3+1WyZ8Eb0L2/WvsyabXYwJz7J4Eezj0YEyDR+Kj/eYTtLzCa6Gr9uq8g==
+Received: from MW4PR04CA0179.namprd04.prod.outlook.com (2603:10b6:303:85::34)
+ by BL3PR12MB6451.namprd12.prod.outlook.com (2603:10b6:208:3ba::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8880.26; Mon, 30 Jun
+ 2025 17:29:27 +0000
+Received: from SJ1PEPF00001CE3.namprd05.prod.outlook.com
+ (2603:10b6:303:85:cafe::cb) by MW4PR04CA0179.outlook.office365.com
+ (2603:10b6:303:85::34) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8880.29 via Frontend Transport; Mon,
+ 30 Jun 2025 17:29:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ SJ1PEPF00001CE3.mail.protection.outlook.com (10.167.242.11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8901.15 via Frontend Transport; Mon, 30 Jun 2025 17:29:27 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 30 Jun
+ 2025 10:29:16 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Mon, 30 Jun 2025 10:29:14 -0700
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Mon, 30 Jun 2025 10:29:14 -0700
+Date: Mon, 30 Jun 2025 10:29:12 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Baolu Lu <baolu.lu@linux.intel.com>, <joro@8bytes.org>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <rafael@kernel.org>, <lenb@kernel.org>,
+	<bhelgaas@google.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
+	<linux-pci@vger.kernel.org>, <patches@lists.linux.dev>,
+	<pjaroszynski@nvidia.com>, <vsethi@nvidia.com>, <helgaas@kernel.org>
+Subject: Re: [PATCH RFC v2 3/4] iommu: Introduce iommu_dev_reset_prepare()
+ and iommu_dev_reset_done()
+Message-ID: <aGLIEhoIiUIjI/MP@Asurada-Nvidia>
+References: <cover.1751096303.git.nicolinc@nvidia.com>
+ <9042270b6c2d15a53e66d22d29b87c1c59e60669.1751096303.git.nicolinc@nvidia.com>
+ <e505c970-e519-44c6-a316-e5d186f216ca@linux.intel.com>
+ <20250630123814.GS167785@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250630123814.GS167785@nvidia.com>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE3:EE_|BL3PR12MB6451:EE_
+X-MS-Office365-Filtering-Correlation-Id: 791fd3b4-8515-4848-cb23-08ddb7fba9e1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|1800799024|36860700013|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?Wc9+eeHUu1bSVvag5xdGMbB+OSsviQpFAhCcfluyPA3J/Ssfs7jvrHFVwdt4?=
+ =?us-ascii?Q?uhKwJAew0xJAgFxaWFFAnZCrMTpwyQDd+3PIF3TK3CPPUJg/TI3odJoSckEQ?=
+ =?us-ascii?Q?w1Xgber1NM35Ir0Za5Q9Zya4OCb9HfKDOK6TEnFgGg9HmRN7J1fzpnxoQed7?=
+ =?us-ascii?Q?CDkWHmfeE3+ohVUCni5P7X3xT+dNEBplexdHI6I4mvkz4F34Ie1QnQrVokg9?=
+ =?us-ascii?Q?qokW1IFk9e3rBMl4cL0S4wPokcBqY82GQrUf+ffnTAWUOVelA7eV0KcbUF75?=
+ =?us-ascii?Q?TchaV1JfxmzoosBRqTofbyc25bIZKhTStx5tSAPkgBTZMCSikfYKjYslSW4I?=
+ =?us-ascii?Q?Z9IuyUG8HZNelhV77s5qWMQAxd/dIZOip5MIfPPhSF7j0slWtIc6ST0lA+FH?=
+ =?us-ascii?Q?tmC2YxdKGyuSn8CM1tHNe21Qt7i9mMCgWHLA1ULLnjo6MhDvi9lEsYEdGKWx?=
+ =?us-ascii?Q?1iIasyBWno6YCvBIEAlHTIOFhDaKbMvKW8q1q7aOvw9E/rOzondsEnb7N9Wd?=
+ =?us-ascii?Q?lJDMwIu3jtFPpTG4PJ3jf1Jh88iHwZaU0BShalpuLg2QFh14DSE/N6gSvsHY?=
+ =?us-ascii?Q?ubVs4Gg88zM7/5wV13RQLELFfX/TA51Ahoypf8GnwoKsaap6BxEc0+IEKDht?=
+ =?us-ascii?Q?3mfWQu5k+Age3Bq81eeZEnBHzsK9NhxwNi+48l3ThOOyvJIRigKu92lmDPLT?=
+ =?us-ascii?Q?5WisISyP6OwNJWUL2IA3bpbBGv0ckOdHywjA8mwt4B9p+Efa86ZH2rZuTn34?=
+ =?us-ascii?Q?TGe3ugKBA6gqkWXVn65HnvhbnkathOKgp/R9GFG9fJgSVO4BRpyhzvyBd69T?=
+ =?us-ascii?Q?VwiBhA1ZdJIFxEUvWBdHu0B1Ga2SkbkXmMURRQEcX8WSzkVmBvwQiEXOz//s?=
+ =?us-ascii?Q?AulDce4ZcYi4La1Pq8XwWWF2YoRyYE7QrwiQ5s3Iy8JQZ72tK293hEbhB07p?=
+ =?us-ascii?Q?MkfhrRecDU5PXMDrjSKkVuz46s5/RR9eH/Jeqthu57vf7VTwX6fwwCErgo0P?=
+ =?us-ascii?Q?bfIsgYBugXymuIe7bR6unRyBeKMqXl5i+ZSKuS81cBYflf9d/12uYIKg6ykO?=
+ =?us-ascii?Q?Y9CJ3hkw5vWQyAo+dxCXpaFrgB79dFhl99GriL6p+rtTzQBwaNrXLRIeyJx3?=
+ =?us-ascii?Q?cvuwchPNa/r9munbj/igznNkgyIEgObroFQHpgrN5av99aFPlP9eetiLhSL+?=
+ =?us-ascii?Q?OGEmxCBxeRVhWBduCozy2zXeS7LlD5gJm8nDd9XQ+PFtkcCQFiaOjr345uxz?=
+ =?us-ascii?Q?Qu9t/S2Vl4EWzPjTjx+aXWM3Uobz4ld5AkIlnEgfqFxBRXcm5IKJgHeVB8he?=
+ =?us-ascii?Q?hzjU0VfVW6tQ2WuJX4+9q/raZ2lNpNCMutMRou10A7xl+5JhKFa21p6mJfGi?=
+ =?us-ascii?Q?Dv96A6XYjIysJV8+AaQRhQ7sFG3DG+2HZ2a/FktZSHreAaElKlkayvX7rLEn?=
+ =?us-ascii?Q?/T5EeAe9sjeCY92jcT4o/RxPCoTfUjb1as1Qx14m4f5lSaZ3NfxhbxGnxrqC?=
+ =?us-ascii?Q?Ee5IvTlEGfOdxgjMbRUn2559Cbi6RZYEaU2P?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700013)(376014)(7416014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2025 17:29:27.1051
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 791fd3b4-8515-4848-cb23-08ddb7fba9e1
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF00001CE3.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6451
 
-On Wed, 25 Jun 2025 11:34:31 +0000, Mikołaj Lenczewski wrote:
-> This patch series extends the cpufeature framework to add support for
-> easily matching against all early cpus, and builds on this to add initial
-> support for eliding Break-Before-Make requirements on systems that support
-> BBML2 and additionally guarantee to never raise a conflict abort.
+On Mon, Jun 30, 2025 at 09:38:14AM -0300, Jason Gunthorpe wrote:
+> On Sat, Jun 28, 2025 at 09:28:12PM +0800, Baolu Lu wrote:
+>  
+> > Does this mean the IOMMU driver should disable ATS when ops-
+> > >blocked_domain is used? This might not be feasible because ops-
+> > >blocked_domain might possibly be attached to a PASID of a device,
+> > while other PASIDs still use ATS for functionality.
 > 
-> This support conceptually reorders and then elides both a TLB invalidation
-> and a DSB in contpte_convert(), when BBML2 is supported. This leads to
-> a 12% improvement when executing a microbenchmark designed to force the
-> pathological path where contpte_convert() gets called. This represents
-> an 80% reduction in the cost of calling contpte_convert().
+> No.. The above should be setting everything, including PASIDs to the
+> blocked domain.
 > 
-> [...]
+> The driver doesn't have to disable ATS at the device, but ARM does.
 
-Applied to arm64 (for-next/user-contig-bbml2), thanks!
+Oh, the code is expecting a pci_disable_ats() call, as the next
+patch will check if ats is disabled on the PCI side..
 
-[1/4] arm64: cpufeature: Introduce MATCH_ALL_EARLY_CPUS capability type
-      https://git.kernel.org/arm64/c/3eb06f6ce3af
-[2/4] arm64: Add BBM Level 2 cpu feature
-      https://git.kernel.org/arm64/c/5aa4b625762e
-[3/4] iommu/arm: Add BBM Level 2 smmu feature
-      https://git.kernel.org/arm64/c/212c439bdd8f
-[4/4] arm64/mm: Elide tlbi in contpte_convert() under BBML2
-      https://git.kernel.org/arm64/c/83bbd6be7d17
+If that's the case, we'd have to leave the ATS enabled but only
+trust that iommu driver won't issue any new ATS invalidation?
 
--- 
-Catalin
+Or should we ask driver to be "must" v.s. "doesn't have to"?
 
+> > > +	/* Device is already attached to the blocked_domain. Nothing to do */
+> > > +	if (group->domain->type == IOMMU_DOMAIN_BLOCKED)
+> > > +		goto unlock;
+> > 
+> > "group->domain->type == IOMMU_DOMAIN_BLOCKED" means that IOMMU_NO_PASID
+> > is docked in the blocking DMA state, but it doesn't imply that other
+> > PASIDs are also in the blocking DMA state. Therefore, we might still
+> > need the following lines to handle other PASIDs.
+> 
+> Yes, we always have to check the xarray.
+
+OK. This check should apply to the RID domain attach only then.
+
+> > On the other hand, perhaps we should use "group->domain == ops-
+> > >blocked_domain" instead of "group->domain->type ==
+> > IOMMU_DOMAIN_BLOCKED" to make the code consistent with the commit
+> > message.
+> 
+> ops->blocked_domain is not good, we support devices without static
+> blocking domain. But yes, using DOMAIN_BLOCKED is not greap, there is
+> a group->blocked_domain that should be used and will dynamicaly create
+> an empty paging domain if needed.
+
+You mean we should use the group->blocking_domain, even if it was
+allocated to be a paging domain as the driver doesn't understand
+a IOMMU_DOMAIN_BLOCKED yet?
+
+Thanks
+Nicolin
