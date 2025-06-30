@@ -1,196 +1,138 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CB9423908B
-	for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 10:21:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40CC02459F3
+	for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 10:26:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751278902; cv=none; b=T5dGF37x4nALYRnsPHDOt19P3RxFj9MuHFHdbcF/Fa29E0W3Z913GnF00vj0ejtKDtOUuytmqF6mhNhpfINSbZ6DSgnFhN0s28wtymo/a9nbrehbsICQ9CNj6gaSAOXNhfm7KjP6ucuS2vOilD4Q1JxX5uzY5h7ZcNf0XSSFl1Q=
+	t=1751279206; cv=none; b=mtomi/u8C7RiDcSqcbTjTGaVAgCqAiVznbECkGeLHN5QYW+gLZp9OXjoJEnwM3HHPDzev8hpFyahzhHuP1muTAT2iJqtVytU/zLVnyfWV645cGndR7RjpKC1gwHJKTfqih+907QWuutdLUqRB85neqWXV21UQu/iS+44jOdMlFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751278902; c=relaxed/simple;
-	bh=6BYE8AWJQLw8WAxO3Q5aBUTeX661u26mmGmL2fLnCZI=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=ZMWte7gXrGUqnavwgketK7hnIDbExh7q2oki11a66LE2f4YHBKu7r6zsvOtsSr7qa+q8pwN9/G47kSDHNun7FRn/BLvFh4O9OMkUM4vTKnj6oqc9WoJAu6fhK348Zy/savK5e+cz1NnnMcAB0RIFBNeAVlnbXegcAUBW7TruN40=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com; spf=pass smtp.mailfrom=fairphone.com; dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b=InlAl7xr; arc=none smtp.client-ip=209.85.218.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fairphone.com
+	s=arc-20240116; t=1751279206; c=relaxed/simple;
+	bh=lP9cZ5ZVd213PgYvBxRjMQzsYmVuhyx9RNU0p02YOoU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OvGBYdR4igamwkdRt+Nxa4MSUxyAynSYXLy7eHEmD/uiHB6QUKlWNo/xZq6c8YHrEW1QwiKb+sclI1jQ0nLN5X8oS+o7V8Qw+NJyrD3Zv667OnHjeWl5/2+PLnfKfgDpHdKO4nuOABn+lJyMzEn/apAOWNbAvxKxqD4uFedL74w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dLTv09gW; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b="InlAl7xr"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-ae35f36da9dso404555766b.0
-        for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 03:21:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair; t=1751278898; x=1751883698; darn=lists.linux.dev;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=91/ZncbDlmcGCt22EAMRhuZKL6uaG/hY8UyZ2Q+pYCo=;
-        b=InlAl7xrEZlZAmmN4hc05hZMnLCB7CPj77QaldIV9qeTV4iz2a47AYSXGcBdzCQuux
-         qxsJjwxQjd/75JORVywic7f/sbnuvVZ23d3HDr7O72Yi3X6O1TDA5sE7RY37nCVH0qTA
-         CzJSCzCmBsvATDYCTekVRytqiIZz0pwCTQdXhFVy1Sz26yFzHh91ACfqUTlH7kOL8uHr
-         VqTitpSKfufRsGy5/rFHS7AogzXcgWhiLcWqic7VNirLNV21EE8oyJUXHIrkGxTJeHA+
-         o5aoPBCWbQbPKyZNnw4at0XSsU7EdeI6khEAQERwqJ/4RXd5hgkdF57Yc/2q6kd+wbG6
-         XK6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751278898; x=1751883698;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=91/ZncbDlmcGCt22EAMRhuZKL6uaG/hY8UyZ2Q+pYCo=;
-        b=B16Yb6T5OPzdyHt5APjEdlTCLu8d3iLlu235YxLqc4UYqkYn/IQOAc5vHkfefhP+yo
-         VF0VQZqUeRCzl+j9odGLZdiO9IpMc2R0Pyv3YbSTxbEJ/2Nv9SEJvs8/BCM+5im5MWDM
-         BqUtPp+Cy4/3zOGLkWXAMzwA5XkOh5wGLuYYgKns0sntrNOoTT9+xPp+Cut3tDJeXqKI
-         e/7J8wdUufjbEIfHy5E7oFm2yhVc//JFu6O5xEdnEzkQ0EgzSj2N0uxOWMAsWq6yYh+T
-         YyR+U0WHu4q+VEVN/5t2GfnX+/PLkA4FnB62EGNIRBkWxnh4BxejgzylvjKSCaT1dKMA
-         1oyw==
-X-Forwarded-Encrypted: i=1; AJvYcCUEngff6roam3zwx7uQraWQSH+5YU2mxPuGBUzi6BctGbQgFdBiH6g3K5P81fu0ji5Wr3j5rA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy0gSvj32NakDLWyp0kT0IueUCWckBOaPgHC2/WJTBF3AgQ3+uq
-	y6Iq+CEDgJBfgSTNbq6XyIekQzRSkfDlUYWZbLDXhTfn2vAgYHndbT8u4s+otvIr1K8=
-X-Gm-Gg: ASbGnct5fq1lMQEVI63rEufUasuPdVTF7dD0NLbfJa+5Uobx3R/c7Ubdk6IUN2FlImr
-	96206SUPBggVmG2wkazpsS1YH3ddPIP3yjrfLldjc7EBc1AAaKmfeDnLon3ns6zcLWYkaPit2lo
-	VWTTbtkeshcS/M5miervIpW8irdDKggt/snJAFTMTwJJwROGFaz5GiM8YUEMUC4BkdGFmFpbX0i
-	P1DQqaoOzZn+11XuPxWBdr7CtaOZOnpJSaog/i4besRVOEcf8LdXWG5nqqj2x6Ji/FOleYA5vWQ
-	YH5mwtBNowWYtXsKZz2ayD+lTETk0HsSQSu/9U6i8XDaBQAO6iBZmFCkrOJg1YgDiHmO617bXp5
-	seH8qxQVQA0jVu4TqXQg1JwGfwuZI6o0QWG+Pwyj16POMaOc1Y/wwoFiD58OPdka5aFV5GpQ=
-X-Google-Smtp-Source: AGHT+IG0udIx5/vSjab4jTXQgQOixHxgW8J50sJp+ilVqsU6WQ7uEmPrf6nFFV5tvDzy3dhkra701g==
-X-Received: by 2002:a17:907:9691:b0:ae0:c6fb:2140 with SMTP id a640c23a62f3a-ae3500f374emr1085087666b.32.1751278898278;
-        Mon, 30 Jun 2025 03:21:38 -0700 (PDT)
-Received: from localhost (2001-1c00-3b8a-ea00-c4de-d39d-05f4-c77a.cable.dynamic.v6.ziggo.nl. [2001:1c00:3b8a:ea00:c4de:d39d:5f4:c77a])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ae35365a95esm649858666b.59.2025.06.30.03.21.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Jun 2025 03:21:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dLTv09gW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1751279205; x=1782815205;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=lP9cZ5ZVd213PgYvBxRjMQzsYmVuhyx9RNU0p02YOoU=;
+  b=dLTv09gWJGuFIV45jQ6fBd4MxrvHrV3Y1+ImF+UNJrr8uRfUOAQGjdP1
+   OM/iEm66qw7Sr9Mkrilx9Jrdr16bIpjrzKQMOebDQu22H8tYXcvswPyVR
+   IL22mFegGsKy78NyJWU/1YPCyvq3pjU+LPtVLwUVUgEI5xwTHJsGBRF61
+   Yufo8Xd3zstOsRF8TQtm3oLrx/NimhqPgiaezeut+iWksfJgSP3HvKFOR
+   J9fR6l5XQzT45xWSXzZGyUtIOxBbdVOr8nPAnlqLR8NvhwIggXX8NU/S7
+   QPg1tD+xYSJbqMPOhYLOtHsh76VMlMwR6WP3cIWjtxoVbcHG5Rh6J7dZ9
+   g==;
+X-CSE-ConnectionGUID: uzM9d+tbRK6J7766eKfRuw==
+X-CSE-MsgGUID: xgeo56fpS8CgT7mPB0pcuQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11479"; a="53649395"
+X-IronPort-AV: E=Sophos;i="6.16,277,1744095600"; 
+   d="scan'208";a="53649395"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jun 2025 03:26:45 -0700
+X-CSE-ConnectionGUID: 6QCD6s3aRCuhF1tFyrQ++Q==
+X-CSE-MsgGUID: ifNOHc7BR3KyP2lv8WUJbw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,277,1744095600"; 
+   d="scan'208";a="152900050"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
+  by orviesa006.jf.intel.com with ESMTP; 30 Jun 2025 03:26:41 -0700
+Date: Mon, 30 Jun 2025 18:18:50 +0800
+From: Xu Yilun <yilun.xu@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "jgg@nvidia.com" <jgg@nvidia.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>,
+	"will@kernel.org" <will@kernel.org>,
+	"aneesh.kumar@kernel.org" <aneesh.kumar@kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"shuah@kernel.org" <shuah@kernel.org>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"aik@amd.com" <aik@amd.com>,
+	"Williams, Dan J" <dan.j.williams@intel.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"Xu, Yilun" <yilun.xu@intel.com>
+Subject: Re: [PATCH v3 2/5] iommufd: Destroy vdevice on idevice destroy
+Message-ID: <aGJkitx6wjfQ888t@yilunxu-OptiPlex-7050>
+References: <20250627033809.1730752-1-yilun.xu@linux.intel.com>
+ <20250627033809.1730752-3-yilun.xu@linux.intel.com>
+ <BL1PR11MB52712CE938B57E41C34580908C46A@BL1PR11MB5271.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Mon, 30 Jun 2025 12:21:36 +0200
-Message-Id: <DAZSK2NT6TAT.1N6A4I8ETH92W@fairphone.com>
-Cc: <~postmarketos/upstreaming@lists.sr.ht>, <phone-devel@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-pm@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
- <linux-crypto@vger.kernel.org>, <dmaengine@vger.kernel.org>,
- <linux-mmc@vger.kernel.org>
-Subject: Re: [PATCH 14/14] arm64: dts: qcom: Add The Fairphone (Gen. 6)
-From: "Luca Weiss" <luca.weiss@fairphone.com>
-To: "Konrad Dybcio" <konrad.dybcio@oss.qualcomm.com>, "Will Deacon"
- <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>, "Joerg Roedel"
- <joro@8bytes.org>, "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
- <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>, "Rafael J.
- Wysocki" <rafael@kernel.org>, "Viresh Kumar" <viresh.kumar@linaro.org>,
- "Manivannan Sadhasivam" <mani@kernel.org>, "Herbert Xu"
- <herbert@gondor.apana.org.au>, "David S. Miller" <davem@davemloft.net>,
- "Vinod Koul" <vkoul@kernel.org>, "Bjorn Andersson" <andersson@kernel.org>,
- "Konrad Dybcio" <konradybcio@kernel.org>, "Robert Marko"
- <robimarko@gmail.com>, "Das Srinagesh" <quic_gurus@quicinc.com>, "Thomas
- Gleixner" <tglx@linutronix.de>, "Jassi Brar" <jassisinghbrar@gmail.com>,
- "Amit Kucheria" <amitk@kernel.org>, "Thara Gopinath"
- <thara.gopinath@gmail.com>, "Daniel Lezcano" <daniel.lezcano@linaro.org>,
- "Zhang Rui" <rui.zhang@intel.com>, "Lukasz Luba" <lukasz.luba@arm.com>,
- "Ulf Hansson" <ulf.hansson@linaro.org>
-X-Mailer: aerc 0.20.1-0-g2ecb8770224a-dirty
-References: <20250625-sm7635-fp6-initial-v1-0-d9cd322eac1b@fairphone.com>
- <20250625-sm7635-fp6-initial-v1-14-d9cd322eac1b@fairphone.com>
- <4200b3b8-5669-4d5a-a509-d23f921b0449@oss.qualcomm.com>
- <DAXA7TKVM4GI.J6C7M3D1J1XF@fairphone.com>
- <6d4e77b3-0f92-44dd-b9b0-3129a5f3785b@oss.qualcomm.com>
- <DAXEA131KUXZ.WTO7PST1F3X6@fairphone.com>
- <3fbae47b-d20d-426b-a967-b584e32b8c6e@oss.qualcomm.com>
-In-Reply-To: <3fbae47b-d20d-426b-a967-b584e32b8c6e@oss.qualcomm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BL1PR11MB52712CE938B57E41C34580908C46A@BL1PR11MB5271.namprd11.prod.outlook.com>
 
-On Fri Jun 27, 2025 at 5:34 PM CEST, Konrad Dybcio wrote:
-> On 6/27/25 4:44 PM, Luca Weiss wrote:
->> On Fri Jun 27, 2025 at 4:34 PM CEST, Konrad Dybcio wrote:
->>> On 6/27/25 1:33 PM, Luca Weiss wrote:
->>>> On Wed Jun 25, 2025 at 4:38 PM CEST, Konrad Dybcio wrote:
->>>>> On 6/25/25 11:23 AM, Luca Weiss wrote:
->>>>>> Add a devicetree for The Fairphone (Gen. 6) smartphone, which is bas=
-ed
->>>>>> on the SM7635 SoC.
->>>>>
->>>>> [...]
->>>>>
->>>>>> +&pm8550vs_d {
->>>>>> +	status =3D "disabled";
->>>>>> +};
->>>>>> +
->>>>>> +&pm8550vs_e {
->>>>>> +	status =3D "disabled";
->>>>>> +};
->>>>>> +
->>>>>> +&pm8550vs_g {
->>>>>> +	status =3D "disabled";
->>>>>> +};
->>>>>
->>>>> Hm... perhaps we should disable these by deafult
->>>>
->>>> Do you want me to do this in this patchset, or we clean this up later =
-at
->>>> some point? I'd prefer not adding even more dependencies to my patch
->>>> collection right now.
->>>
->>> I can totally hear that..
->>>
->>> Let's include it in this patchset, right before SoC addition
->>> I don't think there's any pm8550vs users trying to get merged in
->>> parallel so it should be OK
->>=20
->> Okay, can do. Disable all of them (_c, _d, _e, _g), and re-enable them
->> in current users? I assume there might also be boards that only have
->> e.g. _d and no _c.
->
-> I suppose it's only fair to do so, in line with
->
-> d37e2646c8a5 ("arm64: dts: qcom: x1e80100-pmics: Enable all SMB2360 separ=
-ately")
+On Mon, Jun 30, 2025 at 06:27:51AM +0000, Tian, Kevin wrote:
+> > From: Xu Yilun <yilun.xu@linux.intel.com>
+> > Sent: Friday, June 27, 2025 11:38 AM
+> > 
+> > +static void iommufd_device_remove_vdev(struct iommufd_device *idev)
+> > +{
+> > +	struct iommufd_vdevice *vdev;
+> > +
+> > +	mutex_lock(&idev->igroup->lock);
+> > +	/* vdev has been completely destroyed by userspace */
+> > +	if (!idev->vdev)
+> > +		goto out_unlock;
+> > +
+> > +	vdev = iommufd_get_vdevice(idev->ictx, idev->vdev->obj.id);
+> > +	if (IS_ERR(vdev)) {
+> > +		/*
+> > +		 * vdev is removed from xarray by userspace, but is not
+> > +		 * destroyed/freed. Since iommufd_vdevice_abort() is
+> > reentrant,
+> > +		 * safe to destroy vdev here.
+> > +		 */
+> > +		iommufd_vdevice_abort(&idev->vdev->obj);
+> > +		goto out_unlock;
+> > +	}
+> 
+> let's add a comment that vdev is still freed in iommufd_destroy()
+> in this situation.
 
-Sounds good, I've prepared this change for v2.
+Yes.
 
->
->
->>>>>> +&usb_1 {
->>>>>> +	dr_mode =3D "otg";
->>>>>> +
->>>>>> +	/* USB 2.0 only */
->>>>>
->>>>> Because there's no usb3phy description yet, or due to hw design?
->>>>
->>>> HW design. Funnily enough with clk_ignore_unused this property is not
->>>> needed, and USB(2.0) works fine then. Just when (I assume) the USB3
->>>> clock is turned off which the bootloader has enabled, USB stops workin=
-g.
->>>
->>> The USB controller has two possible clock sources: the PIPE_CLK that
->>> the QMPPHY outputs, or the UTMI clock (qcom,select-utmi-as-pipe-clk).
->>=20
->> So okay like this for you, for a USB2.0-only HW?
->
-> Yeah, maybe change the comment to something like:
->
-> /* USB 2.0 only (RX/TX lanes physically not routed) */
->
-> to avoid getting this question asked again
+> 
+> > -void iommufd_vdevice_destroy(struct iommufd_object *obj)
+> > +void iommufd_vdevice_abort(struct iommufd_object *obj)
+> >  {
+> >  	struct iommufd_vdevice *vdev =
+> >  		container_of(obj, struct iommufd_vdevice, obj);
+> >  	struct iommufd_viommu *viommu = vdev->viommu;
+> > +	struct iommufd_device *idev = vdev->idev;
+> > +
+> > +	lockdep_assert_held(&idev->igroup->lock);
+> > +
+> > +	/*
+> > +	 * iommufd_vdevice_abort() could be reentrant, by
+> > +	 * iommufd_device_unbind() or by iommufd_destroy(). Cleanup only
+> > once.
+> > +	 */
+> > +	if (!viommu)
+> > +		return;
+> 
+> Just check idev->vdev, to be consistent with the other path.
 
-Ack
+I think there is problem here. From your comments above, vdev could be
+aborted/destroyed by iommufd_destroy() again *after* idev is freed.
+That means in iommufd_vdevice_abort/destroy(), usage of vdev->idev or
+idev->vdev or vdev->idev->igroup->lock may be invalid.
 
-/* USB 2.0 only, HW does not support USB 3.x */
+I need to reconsider this, seems we need a dedicated vdev lock to
+synchronize concurrent vdev abort/destroy.
 
-Regards
-Luca
-
->
->>> Because you said there's no USB3, I'm assuming DP-over-Type-C won't
->>> be a thing either? :(
->>=20
->> Yep. I'd have preferred USB3+DP as well since it's actually quite cool
->> to have with proper Linux. On Android, at least on older versions it's
->> barely usable imo. Can't even properly watch videos on the big screen
->> with that SW stack.
->
-> Bummer! Not something we can change though :(
->
-> Konrad
+Thanks,
+Yilun
 
