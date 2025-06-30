@@ -1,266 +1,230 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2073.outbound.protection.outlook.com [40.107.244.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF70C23F40F
-	for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 21:59:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751320800; cv=none; b=MVeepU32DVHAwp2J+YO/B848poeKA/Wstugx5kO/kyOKvmT3eZ8+2V9YUS+P4wm/GheYILKmdlAbjWqrTXMxlyc9OZ6hJbi51BDddbc9m/eFa0jnBVFojRxHS0YuBfy9fj7kKoUh/bv7ft0fNjz2cumul9EXYQbc7TJmL2jB3DY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751320800; c=relaxed/simple;
-	bh=zuloaCZER//BFJaKOvxnCQbs1oE1h9o1l00traZvW+k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rtYH4NPt8SpSsUJT09CeagxpcHxjkHJehNaxsP+cu/4pP9YCEI0cqWhJftH2kgYJ+176E7jitKBXK+I/bdMrzHnR6dlmbjKF6JwyGUUBoCgZ/Cg6T/P3uT9oZ9prWn2AFX0H4vB1BP8xq9b4rJx+22ADMU6/R3sY2FWJVZgI4vQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=et1/w5/J; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E91ED2EA746;
+	Mon, 30 Jun 2025 22:28:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.73
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751322529; cv=fail; b=q4k1YiGw+fZs6EtzXB9YaKSyMNjHj3JvYFVrXGbew9mpOuZO+h6HkElSpP03lI2f1n5RrrYaBiS/a2PKlZglFga0ikUH41w1g8AzCvMQc4OMFZdpx6qQR3824ews638tOP8f1XIb3+GcmIRj7AqTH7CGDHforNXrT9BxaXLZ+kc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751322529; c=relaxed/simple;
+	bh=t8ZRLT4dAOJoi9qYvcz1aLUiTR1o0uH4yxQ5NuejWNY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=VuLoR6nWBIk4fvq4abvXot4JJ7QkUCPQzMaf1Ykww3bOaDcU/VEG91olZW7c0Omv+3BtJscycB7o3hVWXZV6vOmW5CccenvsbB/4d/Nx5hzJFdswXnfa99wzgcUIOOprXRTPum+IAZatKCf60ChbpRj4RJwnCl1CBE/zHNjcaUc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=joyR/3iE; arc=fail smtp.client-ip=40.107.244.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="et1/w5/J"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 55UGVaWM032752
-	for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 21:59:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=qcppdkim1; bh=j5Bn6WtEbimwKYIt4/ZjgnbS
-	pY9GsCsqCOMb7LdunEU=; b=et1/w5/JkJ7dXjXHYCkG8PGJ0gnTKCmfuMUAHgEo
-	HMusIxEdMGHLVJMBvRXcHeFJ0IU8yHu338YA+kKlJ8zoqUKay/z8lRaXyYA5xXQe
-	TvnFe7sGzVvRjLokMOAw9kZDHFwXOY0Y0VWk5XtDY5ivwcpJOldPKRyo0jsu82W1
-	67+g32o0eWSyLsW7C+lEHxRGzbCq8ncj10DBJcBvDfY5E/VHglRmsaJDBguRp+s7
-	tcQINy6lXufuwmV5jYBFBFKJHeiXSGnUQYng1bF6DrIdzL7T+BseAAMVuz0GKOTu
-	wwQiYhV6I7cl5nv7Eb2HThnTgr28MTwHHOVMFmYjdqxN8g==
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com [209.85.216.69])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47j7qm67yq-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 21:59:56 +0000 (GMT)
-Received: by mail-pj1-f69.google.com with SMTP id 98e67ed59e1d1-313f702d37fso2371852a91.3
-        for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 14:59:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751320794; x=1751925594;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=j5Bn6WtEbimwKYIt4/ZjgnbSpY9GsCsqCOMb7LdunEU=;
-        b=Zgx8wQ4+5p26MJuv7nPjMJZu2gZYi6XRiYmakfV03Gd6tvTS6heAlolvvjPPhrzYMc
-         CCTvgOVve5MXQNqRISkD5Y8hv8EfNs3/p3VIIsZNjlEYw2DVp3p437TabqLgNHNf73dC
-         m7CJb+rL+fN1/ur12JljK7//wxyHYOSXuOAQbAU4hkjuDDaKehFtwmJUHOGaCvhbtEGT
-         dfbjCFW89AzbuQmTsfFn+erWdhe5RIxXVH5EYABcz52qhZ8iK2rLoiZRkQ1sKNKxNh3d
-         3tAk6cecQm15iqJbKDu1Q9OVZyjPxc3ZKq0h1AOxTIfppMty+SQmk+zL3+hBKJqooRkg
-         0sHw==
-X-Forwarded-Encrypted: i=1; AJvYcCXzvD8Q/atn69D7O4KhsQMtF+aWtBpNJfkKfwIVBvmvQCa/MMUukx2xY3qos+LGz39wOP8B1w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw51C1g4AboSybojit4WIe7XfMxyPoo0xzMFrWpfRvEgfj5bj06
-	dxHoYQKLBYFe2PdGBqmJCFifQgWVI6epjDnhsFHhzDnKxgNSU/L28PNEbZjzlAX1HF8N/S7QSda
-	BTXgKsWQn5M0z7n9KcgzBoO86KRQjLk0Y0oowUVQNiCz4CSemma3M19/cxQ==
-X-Gm-Gg: ASbGncvGWTSbGXS5jd3fww9zPtcNwU02gcAwxhMYgHCShFODyliMwD2wf/x+fqhM9Rx
-	qTH2YmL7E0BWbbk1mavh6o3AaB4sedEtpLFzL2SW/rkJurm6IPc9tiwXF4uga+CZ/bg9tSHYnrq
-	lCR0gCrXP+24U3KOLHLhTiU/G7M1s0OHS8rwI6G7wWheEfP5hEBSiegW7OB61kzXMOLVJMyVTug
-	qhRYY/jzeZVK/tYPOkY1Aa8KHx/nZ7hJ2VCJFDamUBaHu/B7CcY0k9j4SMuU7FzuvlHDS8sIh3H
-	J8R3X8AO9HcYfAi0DnhWD+Hjv1JIgYJSXGOQODm8zYEHK1v0jaspDIBLNIKrFyI984g7NkR2QjF
-	T64ih6w==
-X-Received: by 2002:a17:90b:268d:b0:312:e91c:e340 with SMTP id 98e67ed59e1d1-318c9283adfmr21494836a91.35.1751320793805;
-        Mon, 30 Jun 2025 14:59:53 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGb3EC+ajrtLWff/5gPWkKDnqD5kFdfXbHl7+2iA8bxSslPgNcBKF5TWjxSHHYgk8wAF+S2XQ==
-X-Received: by 2002:a17:90b:268d:b0:312:e91c:e340 with SMTP id 98e67ed59e1d1-318c9283adfmr21494807a91.35.1751320793324;
-        Mon, 30 Jun 2025 14:59:53 -0700 (PDT)
-Received: from hu-bjorande-lv.qualcomm.com (Global_NAT1.qualcomm.com. [129.46.96.20])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-315f542661asm14131485a91.26.2025.06.30.14.59.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Jun 2025 14:59:52 -0700 (PDT)
-Date: Mon, 30 Jun 2025 14:59:49 -0700
-From: Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>
-To: Luca Weiss <luca.weiss@fairphone.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>, Vinod Koul <vkoul@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Robert Marko <robimarko@gmail.com>,
-        Das Srinagesh <quic_gurus@quicinc.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-mmc@vger.kernel.org
-Subject: Re: [PATCH 00/14] Various dt-bindings for SM7635 and The Fairphone
- (Gen. 6) addition
-Message-ID: <aGMI1Zv6D+K+vWZL@hu-bjorande-lv.qualcomm.com>
-References: <20250625-sm7635-fp6-initial-v1-0-d9cd322eac1b@fairphone.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="joyR/3iE"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ijgkP/lKNXZs7THLwL892KX2viEfPN2I6y41Hz+c9kOeVi3FluQCPoJPNG3//Jw1wz1ZbHDbaRHqYq2yNN2R4ExotbF8mGtCRlfDVzIJzIvKKRgtUxR9YNyDrtzIlaXZv0lu1YQogf2J5ne3opGbtRVv2y+CNsx/FRe7Ql2VUEszTc8v3fRf7Zv9XSphZ5mxPBoiKFZ1qM17edtoDjydGobKrBRP9QJOhvlo4SFNnodVB+0BtyINZQzqk3QupQNBpv0c8g9bVLgFyb06jEMp06HiUJ502tiU99O7U91pOE+YCXdBynVNZwzV6QxVp4sJyRzsfYFE+cY1ScQ+qzkF5Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bShY+QBOEsWJJnJ5ZfAAWfxse45J8OkKk4hh6OQaaUo=;
+ b=WeTV9J1lWLd3+7gjEZTVJcHuKSevVHLEytAD1ssU29NV9EG4DpMlersgxukfvXGtH1SSpWA/DJ3Tj+gGGmM4j4yDpZ2jJ74Wg3EN3lCqXZic2iTOOBs2BzEe9qM9pgGsYMU1jxSdcb/yDWlTR13cg7XrqXkmEMxYYD8cVSm7yeFKJ2k06jCa8dKg7vWk5dRNOPzcF4OZ+wof2Amho4r7ePrPIn+fX85bicdSlFUmVFcaKl/ecI799gfXkAEPTPCpwrS/XYiu2MtWPnl3YZvBaLbVY35EgN+owJ0MO3cv5LAsmgIVFDYY7buAJgywlE03Qujxinslkr18CWxoWZiJiw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bShY+QBOEsWJJnJ5ZfAAWfxse45J8OkKk4hh6OQaaUo=;
+ b=joyR/3iEW61IxxATI2+cA4HjhXqv+7NPwFfk/NOqg+joESBozcUxfCTFWAT/VfprCJsXVHYPYbf4daYEc5ZFWPsWY46lW9usQeh+FmojqE7PU99FI8cpRs7glSHlT+5ga9NRtUdRvfHV6DqelU5bhDU+slSDN/vg4i7Md8zKzUNgvD9yLGFUdJ3uV1UzW1+vEV5l+uPbvcqH9v64tpiNE4jNMre3R84lbai9h2CtAWdNvQWMovkr0Y1sNBZ0oWn7x5LCD4GMXqcf9pO+Gc6KbMhnMHOMfkb2/ACzSS9o/qkjSZu5QM0tHUfx6gE/IBJOlxm7j9koWLwL6GlHE8RloA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by MN6PR12MB8566.namprd12.prod.outlook.com (2603:10b6:208:47c::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8880.25; Mon, 30 Jun
+ 2025 22:28:44 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8880.030; Mon, 30 Jun 2025
+ 22:28:44 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Bjorn Helgaas <bhelgaas@google.com>,
+	iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-pci@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	galshalom@nvidia.com,
+	Joerg Roedel <jroedel@suse.de>,
+	Kevin Tian <kevin.tian@intel.com>,
+	kvm@vger.kernel.org,
+	maorg@nvidia.com,
+	patches@lists.linux.dev,
+	tdave@nvidia.com,
+	Tony Zhu <tony.zhu@intel.com>
+Subject: [PATCH 01/11] PCI: Move REQ_ACS_FLAGS into pci_regs.h as PCI_ACS_ISOLATED
+Date: Mon, 30 Jun 2025 19:28:31 -0300
+Message-ID: <1-v1-74184c5043c6+195-pcie_switch_groups_jgg@nvidia.com>
+In-Reply-To: <0-v1-74184c5043c6+195-pcie_switch_groups_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BY5PR17CA0015.namprd17.prod.outlook.com
+ (2603:10b6:a03:1b8::28) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250625-sm7635-fp6-initial-v1-0-d9cd322eac1b@fairphone.com>
-X-Authority-Analysis: v=2.4 cv=C4TpyRP+ c=1 sm=1 tr=0 ts=686308dc cx=c_pps
- a=vVfyC5vLCtgYJKYeQD43oA==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=kj9zAlcOel0A:10 a=6IFa9wvqVegA:10 a=6H0WHjuAAAAA:8 a=ykmX_Yx8RuNhN3dvDKMA:9
- a=CjuIK1q_8ugA:10 a=rl5im9kqc5Lf4LNbBjHf:22 a=Soq9LBFxuPC4vsCAQt-j:22
-X-Proofpoint-ORIG-GUID: d3tkcAa66EGtIEx0CyXh6pcxUx570onu
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjMwMDE4MCBTYWx0ZWRfXxmw7Jv7DQbTQ
- 0bEcNbZP8AWYVyZAxtUjM7iPqeD1X07rLUcmbarg8NUlc3OQ8q6zPQAOm3PEJUgoqxzlat1X/e7
- APeRaScZWJxFm7nv7qlsxHt/+wH3pYbhmaOX3w8/hgNLONrUwoiVYXz2771B9dwz0N41glLxYCa
- b6mIPgjWAPKqUCReEYcpJ9hk0KGO6r1zT1hjiviMOloM8pEJ6851ehJO2c5FJg2JdiPsHa1LYs9
- Pwi90gVay7PS98HuhdlSfX7XzrmGTXLKZtE5BWvYhU1hoRzlUMaM33ZXRvIAC55skB2AZBWzTC5
- hiXwnB8XCIQuDKRbub2eY33gvGtTNkT+QjIe2XYydVJzWjQAtRV2LzJ1M9NF7P1eJPQrYbEZQuJ
- jtNsTMKhEkc0XDl1RWFJgsDwU1jb1TXjLVcOVXSTie3Sh+akiBszN0pqSaMMJfyRPpud8rRz
-X-Proofpoint-GUID: d3tkcAa66EGtIEx0CyXh6pcxUx570onu
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-06-30_05,2025-06-27_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 phishscore=0 suspectscore=0 bulkscore=0 lowpriorityscore=0
- clxscore=1011 priorityscore=1501 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 malwarescore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2506300180
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|MN6PR12MB8566:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1ffe79e5-19e8-46dd-4a2d-08ddb82578c1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?Ae8FrVY68pD/8ZL0lLv9tB2u7l821AxbDWkSZVoYNN1Q/xuEey+LrcIOznS3?=
+ =?us-ascii?Q?npuXI4+NZc8abMtA4/YZTD3wOJb/4EgbsKcHjt7ZqKxy2mYU6d+rhX+YKkZn?=
+ =?us-ascii?Q?LAxuqI45jOwDvXc4icHn0X7Z7By4H9A1p1rGg6Z+UTDLBZ3Daejb0aK0aM1e?=
+ =?us-ascii?Q?RUrt90Kr7XJZx+BdGxnriVWGz3Kj8P+MeMyQ080rlvc/xv85e+TZn66X5HKY?=
+ =?us-ascii?Q?HZ0YS+zWrlumXqoTlW23Yzav/me3LkdULG9/tA7OOo69WPuw4LD2yTluiAdc?=
+ =?us-ascii?Q?ruogGJxlwDFrZgrvzAyRGTiiAIC0X7u3/5Xx0txBpejEeWZFm/JKwK+aUmOi?=
+ =?us-ascii?Q?FwCJEzwd28BqG3xu/I4ObDZjsYzKdhu5onP9ZWUx/k7JCMr2DuZEWllc9Njh?=
+ =?us-ascii?Q?w4FVTzrGd/QHtI8jd5gr5igxU3UFieHoDwrUVL59S3KkR7laZswxoDwoDOUX?=
+ =?us-ascii?Q?UKYS7zJ2izM4STrbNX4REQKuc/rwbY2fOcVwM2jjJhkauPEGjrNXSWQD1SOG?=
+ =?us-ascii?Q?yxvSjVkmwU6uoCfF3JxvFuPSygfgKen3PRoaS52DPeaO+i7sIuc3DmfTG+UA?=
+ =?us-ascii?Q?jxTjOTfvwUKS1dBB3x8ZZWFtmcV+2GI+Bw/Gp5cHUdb02KpAARPLdasZD6lQ?=
+ =?us-ascii?Q?XJTcZF2kPXCQ0x3An6okT5y90rlUV2A5spr3Yu3KeeNCYeBsV8wWbC0aNulj?=
+ =?us-ascii?Q?klAzYW+/g88R3sQKa/fv3WXpx4zNeX+gIDNLoPID06aj/DHbh2jHGbR99zMk?=
+ =?us-ascii?Q?bat5NhH/c0BQjV/Ugr4WH3hWK1Tfwitfrg2nM+rm31U7HdfmrpR3/L1r5Ltb?=
+ =?us-ascii?Q?X5PTU4yeUWx+8rWyIhevE6rY//la7k9hYE5hEkqGZAQW8vfWdVselFlRUqkS?=
+ =?us-ascii?Q?r3wdIpzv9s7+sd2ZvlBzI4iFprXMOEcgl9/F+9VMTqhiHQgx8GjNhcrhQibq?=
+ =?us-ascii?Q?/gddBXMr2oO8MJjfrmVk36l9gcuRpnRJ+iL4XR7tE6diEAJt+oocYbxq6wSM?=
+ =?us-ascii?Q?ZGW7Gu2cyqpTeEwkCz5ee2IYEtuNQHTAXjk982j+blk/v5DCBN8/vDvMc6KM?=
+ =?us-ascii?Q?VlvCvMbesLGMpFZ7aBNlCK/r8u5DYihMR93RYAkstwWBbQX2E2DHyyskO1Ln?=
+ =?us-ascii?Q?FaMHsJVlfNC52BVKkBNPREYGUY7TTtIy4YWpINqtVleyFnZELyUjCsQdh9JP?=
+ =?us-ascii?Q?e9zJG/2IZIJ9hemP+dUvFS1Ll4R6gf6Vo/OV7jLWnswXZAZ2Q8QH6TdGiE3W?=
+ =?us-ascii?Q?n/uoJrpSSUfiVmC2941m/pUimuan+QYpzvgM41i8tI/qm1CS73AD7mjFLF5P?=
+ =?us-ascii?Q?Q8ahNTjWdiZrZ6Bf4OMOEFWvfynDNViOHGIilWAhCnhc6bBMhWEtBxF4EhE4?=
+ =?us-ascii?Q?746BGVVug/xNCxPni1+CTW0kWt2YV+LxS0oj+L5OqM6SvVruhX/GMn+IEzyD?=
+ =?us-ascii?Q?QqaQHhA0iqk=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?k0U7BTZIyiRqLnCnMXyWhCSV5wqYhcZP6N24nRiytRSHKUFoJiYsg0Cqtkdq?=
+ =?us-ascii?Q?KzA4qgHa5seexRBACxB9MIjWMxd2C/K6Ehcy5GPVPUhVlOuvJPOEF0mUomT5?=
+ =?us-ascii?Q?0YTaZKtdkj+2EjxjdKbD111sscfGK5X5gPjgjq0kPKzDIxIowHb8hs2AorjZ?=
+ =?us-ascii?Q?T8xCKdy1D7lHKgCY3xTLnbAjyqhKYkX6LUjANEOsO7yIvB1yRxt0Z0vUKxj6?=
+ =?us-ascii?Q?JxhKlxONx+vzeVO7Rx75Wp9sOn7X1k5ZxpF38fo9AiGUzpeC7tJfM/SI6sHC?=
+ =?us-ascii?Q?6lj+vQT8AsS/FppIaGcDk+0rqGBTY5E3FaGj/LRP1+6KRsFhzGdwGIIH6OZQ?=
+ =?us-ascii?Q?qCtc3iCP1obR61SavEuYzfg3TkMfiFUmc68Gx/ZArowS/Vgr5AU2/UMBCnVn?=
+ =?us-ascii?Q?255VIihw9wjH4XqjG6elLnF1YWdSyhipwAHYpEWy217tyuT4zfh6w53mBXM4?=
+ =?us-ascii?Q?8HEfzZ8jU811kuW7pUhzvJFNowPaNKfWkA6r0LC53FsfMDgpKM9RWnIwinoS?=
+ =?us-ascii?Q?R2qHnNujwixSVj9UjwPGGgGhIVSRVVMl3e3Z1l195R8nOAKWNB+65l1e5Gx6?=
+ =?us-ascii?Q?1qeNHFGBjPpHbv5zYx5HY0i6XGLWoAQwWnt7QDP72fqzckZzZJ5L7dC6Mb78?=
+ =?us-ascii?Q?NUapijX2B19yuJcIh8snvWLgpS1YXiheuDqCcyGA/CJl2Ci7xGlVurIhCxyW?=
+ =?us-ascii?Q?6I4+Nuu8lBIhDiLuYoWJ5hIPEe5AjAcEwlzxVSSDyDk3YkrmUFGezYhCVSxm?=
+ =?us-ascii?Q?nIh3Q2nWr6mvQnEevhhXASZVvwGDQH8TWWeQLGg2hzOb1yNey5ivwLXAbpp2?=
+ =?us-ascii?Q?3V49pBkK6+f12LgygLOrSBXiYARAzFP/S44J0wC24cBTJz6E2uH84bMtV6xm?=
+ =?us-ascii?Q?THFUibtgL0nJNauQRWnWKPw0muI3djQ6kbRidc2MeiSNhFAlTxFeVhBLPVfs?=
+ =?us-ascii?Q?sQoDsCeujeBT9iJzjW2Ro+TVwEulaBr/m1kQnPIwwXcqC/MhV7tJKI7jCVvB?=
+ =?us-ascii?Q?9XGT3A1cCg9kFhFH8yjDodwCi2L6//IteOCVwoW9zbA02bNRbSp2uYmISnY4?=
+ =?us-ascii?Q?mtl8WvgBnaB40QSzc2tgtcOXDXZ/zASJZ0fjte9itg7jPjsCEDYpyXFjR9Cx?=
+ =?us-ascii?Q?ps5CXv2LoIEAhOWZxUb/zW/Qxr6VYvx0qZ0HbklH3vnfCm5BfVnskdQ8rGeb?=
+ =?us-ascii?Q?tpjfCSpv0uO3J+3LaTy+dWrLrtuI+ObePLw8Ld2kX+vOXMpIID56O+hqcGnZ?=
+ =?us-ascii?Q?n1PegTFxa42LhgBXGBam1wgir7G/XkVIxt6mUJqAzwRlpPEyPSo8NHSbzRfa?=
+ =?us-ascii?Q?b6+5q3Y6+hVKg+UJEwI/iVVv3oN9yKIhdkqI3Gw3s7HziQgA2/9ZMxEiHpZw?=
+ =?us-ascii?Q?TQDBgu3IX2Ag+OxHb6jM2zXLw4ayRboN4NKF0JHq3ZwVvEjKLNo5mVnzsFC5?=
+ =?us-ascii?Q?Sks8EtSavspYODcH0ka/y6sADPKU9PFYtJpMMIJInM432muhNPGLpvGStwGt?=
+ =?us-ascii?Q?neusX5oo6Lhwr0+w0FChUTrF4rWu7XenKw+o43seaD+go+2qzp9HI2MTmuKe?=
+ =?us-ascii?Q?/E+NMT/MABiw1OoewLzaZzY9AeI8O3CIL+5whw9x?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ffe79e5-19e8-46dd-4a2d-08ddb82578c1
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2025 22:28:44.1100
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8JKl2qhDRxRQA+X/ZHSllJrTZnI4VAuCtrnjK8qqfUqwR0IVfbWeD8uXkxlhO2nq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR12MB8566
 
-On Wed, Jun 25, 2025 at 11:22:55AM +0200, Luca Weiss wrote:
-> Document various bits of the SM7635 SoC in the dt-bindings, which don't
-> really need any other changes.
-> 
-> Then we can add the dtsi for the SM7635 SoC and finally add a dts for
-> the newly announced The Fairphone (Gen. 6) smartphone.
-> 
-> Dependencies:
-> * The dt-bindings should not have any dependencies on any other patches.
-> * The qcom dts bits depend on most other SM7635 patchsets I have sent in
->   conjuction with this one. The exact ones are specified in the b4 deps.
-> 
+The next patch wants to use this constant, share it.
 
-Very nice to see the various patches for this platform on LKML!
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/iommu.c         | 16 +++-------------
+ include/uapi/linux/pci_regs.h | 10 ++++++++++
+ 2 files changed, 13 insertions(+), 13 deletions(-)
 
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index a4b606c591da66..d265de874b14b6 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1408,16 +1408,6 @@ EXPORT_SYMBOL_GPL(iommu_group_id);
+ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+ 					       unsigned long *devfns);
+ 
+-/*
+- * To consider a PCI device isolated, we require ACS to support Source
+- * Validation, Request Redirection, Completer Redirection, and Upstream
+- * Forwarding.  This effectively means that devices cannot spoof their
+- * requester ID, requests and completions cannot be redirected, and all
+- * transactions are forwarded upstream, even as it passes through a
+- * bridge where the target device is downstream.
+- */
+-#define REQ_ACS_FLAGS   (PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
+-
+ /*
+  * For multifunction devices which are not isolated from each other, find
+  * all the other non-isolated functions and look for existing groups.  For
+@@ -1430,13 +1420,13 @@ static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
+ 	struct pci_dev *tmp = NULL;
+ 	struct iommu_group *group;
+ 
+-	if (!pdev->multifunction || pci_acs_enabled(pdev, REQ_ACS_FLAGS))
++	if (!pdev->multifunction || pci_acs_enabled(pdev, PCI_ACS_ISOLATED))
+ 		return NULL;
+ 
+ 	for_each_pci_dev(tmp) {
+ 		if (tmp == pdev || tmp->bus != pdev->bus ||
+ 		    PCI_SLOT(tmp->devfn) != PCI_SLOT(pdev->devfn) ||
+-		    pci_acs_enabled(tmp, REQ_ACS_FLAGS))
++		    pci_acs_enabled(tmp, PCI_ACS_ISOLATED))
+ 			continue;
+ 
+ 		group = get_pci_alias_group(tmp, devfns);
+@@ -1580,7 +1570,7 @@ struct iommu_group *pci_device_group(struct device *dev)
+ 		if (!bus->self)
+ 			continue;
+ 
+-		if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
++		if (pci_acs_path_enabled(bus->self, NULL, PCI_ACS_ISOLATED))
+ 			break;
+ 
+ 		pdev = bus->self;
+diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
+index a3a3e942dedffc..6edffd31cd8e2c 100644
+--- a/include/uapi/linux/pci_regs.h
++++ b/include/uapi/linux/pci_regs.h
+@@ -1008,6 +1008,16 @@
+ #define PCI_ACS_CTRL		0x06	/* ACS Control Register */
+ #define PCI_ACS_EGRESS_CTL_V	0x08	/* ACS Egress Control Vector */
+ 
++/*
++ * To consider a PCI device isolated, we require ACS to support Source
++ * Validation, Request Redirection, Completer Redirection, and Upstream
++ * Forwarding.  This effectively means that devices cannot spoof their
++ * requester ID, requests and completions cannot be redirected, and all
++ * transactions are forwarded upstream, even as it passes through a
++ * bridge where the target device is downstream.
++ */
++#define PCI_ACS_ISOLATED (PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
++
+ /* SATA capability */
+ #define PCI_SATA_REGS		4	/* SATA REGs specifier */
+ #define  PCI_SATA_REGS_MASK	0xF	/* location - BAR#/inline */
+-- 
+2.43.0
 
-Can you please use the name "milos" in compatibles and filenames instead
-of sm7635.
-
-Regards,
-Bjorn
-
-> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-> ---
-> Luca Weiss (14):
->       dt-bindings: arm-smmu: document the support on SM7635
->       dt-bindings: cpufreq: qcom-hw: document SM7635 CPUFREQ Hardware
->       dt-bindings: crypto: qcom,prng: document SM7635
->       dt-bindings: firmware: qcom,scm: document SM7635 SCM Firmware Interface
->       dt-bindings: qcom,pdc: document the SM7635 Power Domain Controller
->       dt-bindings: mailbox: qcom-ipcc: document the SM7635 Inter-Processor Communication Controller
->       dt-bindings: soc: qcom,aoss-qmp: document the SM7635 Always-On Subsystem side channel
->       dt-bindings: thermal: qcom-tsens: document the SM7635 Temperature Sensor
->       dt-bindings: dma: qcom,gpi: document the SM7635 GPI DMA Engine
->       dt-bindings: mmc: sdhci-msm: document the SM7635 SDHCI Controller
->       dt-bindings: soc: qcom: qcom,pmic-glink: document SM7635 compatible
->       dt-bindings: arm: qcom: Add SM7635 and The Fairphone (Gen. 6)
->       arm64: dts: qcom: Add initial SM7635 dtsi
->       arm64: dts: qcom: Add The Fairphone (Gen. 6)
-> 
->  Documentation/devicetree/bindings/arm/qcom.yaml    |    6 +
->  .../bindings/cpufreq/cpufreq-qcom-hw.yaml          |    2 +
->  .../devicetree/bindings/crypto/qcom,prng.yaml      |    1 +
->  .../devicetree/bindings/dma/qcom,gpi.yaml          |    1 +
->  .../devicetree/bindings/firmware/qcom,scm.yaml     |    2 +
->  .../bindings/interrupt-controller/qcom,pdc.yaml    |    1 +
->  .../devicetree/bindings/iommu/arm,smmu.yaml        |    3 +
->  .../devicetree/bindings/mailbox/qcom-ipcc.yaml     |    1 +
->  .../devicetree/bindings/mmc/sdhci-msm.yaml         |    1 +
->  .../bindings/soc/qcom/qcom,aoss-qmp.yaml           |    1 +
->  .../bindings/soc/qcom/qcom,pmic-glink.yaml         |    1 +
->  .../devicetree/bindings/thermal/qcom-tsens.yaml    |    1 +
->  arch/arm64/boot/dts/qcom/Makefile                  |    1 +
->  arch/arm64/boot/dts/qcom/sm7635-fairphone-fp6.dts  |  837 ++++++
->  arch/arm64/boot/dts/qcom/sm7635.dtsi               | 2806 ++++++++++++++++++++
->  15 files changed, 3665 insertions(+)
-> ---
-> base-commit: d9946fe286439c2aeaa7953b8c316efe5b83d515
-> change-id: 20250623-sm7635-fp6-initial-15e40fef53cd
-> prerequisite-change-id: 20250616-eusb2-repeater-tuning-f56331c6b1fa:v2
-> prerequisite-patch-id: 5c504d171a4d1acd9ec376e01e0dd0fddbad92b8
-> prerequisite-patch-id: 0c97dcf5472fbed8ef4cffbd482f3169fe1e972d
-> prerequisite-change-id: 20250617-simple-drm-fb-icc-89461c559913:v2
-> prerequisite-patch-id: 1ce32150adbe39ad43d9a702623b55937d92a17c
-> prerequisite-patch-id: 3562d9a85381bee745402619a7acba9b951f145c
-> prerequisite-patch-id: f8447266657b779a546ecbbbc2e38bd61c422f08
-> prerequisite-patch-id: cb9d07c82e73ab3691e0ace9604bfa69cdd6bb64
-> prerequisite-patch-id: 18ab6ca6a024e5b8ea8138111064db593d72da35
-> prerequisite-change-id: 20250620-sm7635-socinfo-8c6ee8d82c9d:v1 # optional
-> prerequisite-patch-id: f1b2e11df96c271c9e3d010084809f361ee4249c
-> prerequisite-patch-id: 1471abf17230db340c67a84b5a9009f1f2ea6e0e
-> prerequisite-patch-id: 57bff00c4fedce1b78615375f12517b955dd1d16
-> prerequisite-change-id: 20250620-sm7635-pinctrl-9fe3d869346b:v1
-> prerequisite-patch-id: 43b88c44c6fc5b72a490cd3acc5d2585206e81f2
-> prerequisite-patch-id: b3b6ebd4a288bd4abf227c939a1a92eafb2cf2c8
-> prerequisite-change-id: 20250620-sm7635-clocks-7699d338dc37:v1
-> prerequisite-patch-id: 48485e0e7e8a992695af1690f8cd2c09c227a4bf
-> prerequisite-patch-id: 4685ceba3f900ad6d1d2ae35116d37f64a171d5d
-> prerequisite-patch-id: 80f71dad0c0a77da98e5e66b592f38db6d81b4b1
-> prerequisite-patch-id: 49a2fa1a14931d9143da232969e7487061466930
-> prerequisite-patch-id: f5d1794f61488235644f78ffc28e3dacdab215d1
-> prerequisite-patch-id: ab257573067ff09c94270e1fa6ad4de1480c06b9
-> prerequisite-patch-id: 6608bd3f2e198a0780736aebcea3b47ee03df9ef
-> prerequisite-patch-id: c463d0d2d84c8786ed9a09016f43b4657cbc231e
-> prerequisite-patch-id: e113e76af37f01befaf4059ee3063cb45b27fd6b
-> prerequisite-patch-id: 40f8b8acd07a9ff7da8683b1be6a58872250e849
-> prerequisite-change-id: 20250620-sm7635-clocks-misc-0f359ad830ea:v1
-> prerequisite-patch-id: 127f332296fced39a2fd2f9a1f446ba30ec28ceb
-> prerequisite-patch-id: d21a0c8ceb06523c9f3f4ce569d28714878b3f84
-> prerequisite-patch-id: 87029a8844ef174ab3e0f953a1d16957fe6c13cc
-> prerequisite-patch-id: 095c767d7b7aa67d47026589c926636e57349ca6
-> prerequisite-change-id: 20250620-sm7635-rpmhpd-dcb5dc066ce2:v1
-> prerequisite-patch-id: d71fe15334032610c05cb55aeb28bfaa44e3530c
-> prerequisite-patch-id: 729544e856b8046f7a311b719d9495f8b33c1e1f
-> prerequisite-change-id: 20250620-sm7635-icc-e495e0e66109:v1
-> prerequisite-patch-id: b387217215d6f83cbd50c380171b159a2f1406d8
-> prerequisite-patch-id: bffd82274c35f6d520f524aa2a9c1c4bef7e047e
-> prerequisite-change-id: 20250620-sm7635-eusb-phy-d3bab648cdf1:v1
-> prerequisite-patch-id: c242c9b099d738214def29d2e464b64be5f14e62
-> prerequisite-patch-id: 8c1eb426c08bc1ec9462e77139b3b64d5e1453e9
-> prerequisite-patch-id: cdbc469ab33002c6bf697c033755b598dd1a621e
-> prerequisite-patch-id: 6bb2900bb530880091622ef47d141fe1f5756a52
-> prerequisite-change-id: 20250620-sm7635-eusb-repeater-0d78f557290f:v1
-> prerequisite-patch-id: 5c504d171a4d1acd9ec376e01e0dd0fddbad92b8
-> prerequisite-patch-id: 0c97dcf5472fbed8ef4cffbd482f3169fe1e972d
-> prerequisite-patch-id: a618abb349c3de5b49f79b4b0f86d9ab502ad500
-> prerequisite-patch-id: 09f91ff3a25c16a0375bdfec80604a64eab0b4fb
-> prerequisite-patch-id: 8fca8b09d70409c5c78f9f1b77d0a4c75bce38cf
-> prerequisite-patch-id: f5c2c24d2baefcd7ff91718529ab2f2c264ab99f
-> prerequisite-change-id: 20250620-sm7635-remoteprocs-149da64084b8:v1
-> prerequisite-patch-id: 3c95a20dd456dfee100f2833de4e9931a2073c7d
-> prerequisite-patch-id: 5292d77663ea9c44346b8da86bda36e0cce3fe56
-> prerequisite-patch-id: 015edcb2a69b5e837dc7edfbc7adc22145ba611b
-> prerequisite-change-id: 20250620-sm7635-pmiv0104-34a679937d9d:v1
-> prerequisite-patch-id: 8fca8b09d70409c5c78f9f1b77d0a4c75bce38cf
-> prerequisite-patch-id: f5c2c24d2baefcd7ff91718529ab2f2c264ab99f
-> prerequisite-patch-id: d7a06ece910e7844c60b910fe8eed30ad2458f34
-> prerequisite-patch-id: e91b741c9cfc80aa149bfd8e43cae90ca58e17f2
-> prerequisite-patch-id: 5ba4a49c3792cb208ee064a6ba13545e40cb70ac
-> prerequisite-patch-id: 5bdfcbdd226f7223c04a65c1a3cdcc3ecad38858
-> prerequisite-change-id: 20250620-sm7635-pmxr2230-ee55a86a8c2b:v1
-> prerequisite-patch-id: f0bd6e083324f954b988647bb42d4e2be179fbda
-> prerequisite-patch-id: 8fe1c0fc544e8bcb35522c5eba0b36e83bfd0c19
-> prerequisite-patch-id: 525c9eb0087025024bb0aaec1ed1d7d2c0bc8f03
-> prerequisite-change-id: 20250623-pm7550-pmr735b-rpmh-regs-06087e5b3a99:v1
-> prerequisite-patch-id: 7360606a06f8fba3ea9a8f84b4ecfb8209e91ab0
-> prerequisite-patch-id: 7a06a346abdb7f7386912b92f2b84af87e7439a9
-> prerequisite-patch-id: 1e1a6eb9c5421812c07421f9fa7e3f16b26a42da
-> prerequisite-patch-id: 224df3e4068bee3a17bde32e16cd9366c55b5faf
-> 
-> Best regards,
-> -- 
-> Luca Weiss <luca.weiss@fairphone.com>
-> 
