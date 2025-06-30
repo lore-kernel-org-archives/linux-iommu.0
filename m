@@ -1,223 +1,240 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5FF1E27E1B1
-	for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 12:09:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751285397; cv=none; b=pOYOSxAvuUBjCsa/6xNAA2n0CXgv84xeQ8ABR2McGD98F++ZX4DFYk8onn0hhPgPO/BN+525MMQq3J4XVuRQj00yD6cLBEhMEr5RWT/ObKRXO8uIHC/vdGOQO7ECwLN1dLZmk6RYMmv7pIibTR1/K/4f/p2tzDfc7OAivYqZ7WM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751285397; c=relaxed/simple;
-	bh=mQ6vP9Fdd9l8hu7pGZ3FnQgcetZ7dLP+JzADsnCEPLU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=pCQFA5EvSinrbT1eEJp3tSaG0b+9yEsrRMdBReEmpjcWwpaYQ2OVxVn2S4sDxMRJ8oW/HYLTt0d2OqQRG8otbya5ZYVjxvYFJDgpMLRvFpM0xxuEa/BJLOZyOyKw/nDgJO/+GRs8Gq/8jaDw+GPXl52cTCM8IaLc3Pel05pWFs8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7644D1D34;
-	Mon, 30 Jun 2025 05:09:38 -0700 (PDT)
-Received: from [10.1.196.50] (e121345-lin.cambridge.arm.com [10.1.196.50])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D3D7A3F58B;
-	Mon, 30 Jun 2025 05:09:52 -0700 (PDT)
-Message-ID: <fc6591c0-285e-4482-9ce3-6e2b671dd581@arm.com>
-Date: Mon, 30 Jun 2025 13:09:49 +0100
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2044.outbound.protection.outlook.com [40.107.236.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F18D428D827;
+	Mon, 30 Jun 2025 12:38:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751287101; cv=fail; b=soH9dNb5zg2a0rFySI09gyquUCL5DA28YtDprnugxuFDpcBA+5HGmX8c3zuC4Ii7fYb4esYUpXXwDgSa4gE8irMgvGVxT42Mq3uZtiTR2erd6B2p8NZZgIv9WePE4Eq+jI7iqyzr1VaGs6VzZnWDvlxLR4XPj+xwfT/Fk+gUaDw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751287101; c=relaxed/simple;
+	bh=Vz3HUg5H/6Yfgd/61fm2ktGC6S35crhTlydg8lVkPtY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=jiwfhQ3hXm3muAq5Ori5cvus7nUb1hn3a2rRZ0ULNWJ1r4/9CNQ//TOLZB9kJ9dI5qdJvWYUm/i7fbmKXijBnktWb9OuUNoR1RjPUHGrmBcU+bkxxoAyrkJR/wo1Qe4afA0v4B0WrFQIM3NHPHAhYq60/sKGgXHrhMCRGD1JxUo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=MC3aA7KZ; arc=fail smtp.client-ip=40.107.236.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="MC3aA7KZ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=CW0WKzeF8TMxH70QOEUUji2axfw1EzIcf3MqqEBjLwfUYni25Jer8i2BCGwj9gJISi30yGGKNyRbYwyXXtOgpKzLeAkm263KnxCXdvMsVft2jd+0nCPnhd+2v83oX5ZuUqoJUhkSGPC4z+BvmmHAaFtNjs/ZrZvBqXLH3x48hOw8Dbn60FqlNDQF5zoWVBSb0pwa+QJcPynvbSyjlKlUv4RnjM1SF0+rE9u6jGZS3Y9Ut9IctctsZ1gaDONZBs6SMfAVwC9KyFE+9k+Sz+QECXsLm+xyZOucBfcPcfCp4uOYh5sSYKBvnvXD13VSgRQokm1qcc4f5WYLyD168ZJmfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ts0FO/qAWfJ1T4Sk/gm41Eihb19KKbyhtMOqq5A0kP0=;
+ b=aZq2sDiwTuwcH3HCoOVBiU+NGPm38fIsjeqT6i8N+nlWMcMK50MDsKnWIDOQ0alfgX9YcQUZXXT2ELaoOnvCAfXnU2cz22UXAHV09jzB3bR3t4c/YgTM01BwhgoDkqWcjiOPSAYIBs7ce1CtKkmoFdhNFQxgMqnentq9FvyNLUOXxE9PUCSLL3W0uC87TjsgdTtLR8smFejYMSgFSu3G7KJfYllw0I+WM78NshJqSujBsYCExdFLtyp8U4ADkVo7zd26Az6OJFQ+BjovvnvUmh8daKwv3DesYo/+aLj22M3aLn0imZJeumQLoFZbJ+9FZBusq1WWY8mV0b+Qv4n0cA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ts0FO/qAWfJ1T4Sk/gm41Eihb19KKbyhtMOqq5A0kP0=;
+ b=MC3aA7KZGKlDu8r4gwsjrqFiD5Ua0C/rk90+kxBq6fF6lLrCFXdVHvpW28IxuKxMbTaTh7elaXLT6WKXaUOJULWv5dnllPQAwXai+Q9PLfuHvtst8Uh8xtt8aBgpCa4Id7sm0+rg00u5+JqOrX0NSK+77s3nUpx8tZpz4LiQM8p+DHR0t34CJZM8afnxgr5vLVU63NkQfloqFoKzSL9CLH87nFSitvM8tvnvCyukA91QGNetTvT5/t8ciKuZFkOlaRcHw4VbaEt0IiZtLwmRY2dJ7uUX4Qg1O4+/UFRyX+6Hz60Q1ft8/7OSEU/8ccOkPpS2Z0pB/10IK60Y/IFxjg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by LV8PR12MB9183.namprd12.prod.outlook.com (2603:10b6:408:193::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8835.26; Mon, 30 Jun
+ 2025 12:38:16 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8880.030; Mon, 30 Jun 2025
+ 12:38:16 +0000
+Date: Mon, 30 Jun 2025 09:38:14 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org, will@kernel.org,
+	robin.murphy@arm.com, rafael@kernel.org, lenb@kernel.org,
+	bhelgaas@google.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+	linux-pci@vger.kernel.org, patches@lists.linux.dev,
+	pjaroszynski@nvidia.com, vsethi@nvidia.com, helgaas@kernel.org
+Subject: Re: [PATCH RFC v2 3/4] iommu: Introduce iommu_dev_reset_prepare()
+ and iommu_dev_reset_done()
+Message-ID: <20250630123814.GS167785@nvidia.com>
+References: <cover.1751096303.git.nicolinc@nvidia.com>
+ <9042270b6c2d15a53e66d22d29b87c1c59e60669.1751096303.git.nicolinc@nvidia.com>
+ <e505c970-e519-44c6-a316-e5d186f216ca@linux.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e505c970-e519-44c6-a316-e5d186f216ca@linux.intel.com>
+X-ClientProxiedBy: BY3PR04CA0026.namprd04.prod.outlook.com
+ (2603:10b6:a03:217::31) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Help: Samsung Exynos 7870 DECON SYSMMU panic
-To: Kaustabh Chakraborty <kauschluss@disroot.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Inki Dae <inki.dae@samsung.com>, Seung-Woo Kim <sw0312.kim@samsung.com>,
- Kyungmin Park <kyungmin.park@samsung.com>, iommu@lists.linux.dev,
- dri-devel@lists.freedesktop.org
-References: <544ad69cba52a9b87447e3ac1c7fa8c3@disroot.org>
- <0bc60699-eeaa-4121-8d93-0274862f5aed@arm.com>
- <CGME20250625073955eucas1p2913134af8cc26dcb2145188f8a43256b@eucas1p2.samsung.com>
- <c338c9f7528fdcba56c088390c4ccffc@disroot.org>
- <833aef10-9fcf-4abd-bea8-c34ea7ed6bb2@samsung.com>
- <647ca0c3-9ea5-42e4-8f76-038987d5ae1e@arm.com>
- <d17f98b09deab279edf063465e9f654d@disroot.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <d17f98b09deab279edf063465e9f654d@disroot.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|LV8PR12MB9183:EE_
+X-MS-Office365-Filtering-Correlation-Id: f8e3d0cc-16d9-46ee-3e3e-08ddb7d2fc48
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?LQNBiecb1WvNXyD9jCgMro3UlDv75gYItYs8m+KekseVNUf32MY/+Ayo1gOA?=
+ =?us-ascii?Q?/1TSNeTnCKOmvAQTScpGuVmRBW15l68tjIrxYfMJp0//UgGNZZhbJt5m+9Cs?=
+ =?us-ascii?Q?Zdgfb/79OjRAUMlveSEIqYhPLDEp/T+V0XryaIhWzy5UR/eXAeZodPo23CuA?=
+ =?us-ascii?Q?hit/VkRUp7s/CJZI16iOnR5TlRa2jcWGKAd2knb7uMnUz2277taACGDuIE+I?=
+ =?us-ascii?Q?TBvT41+R1VWXdDQXLxhnDv1Lb2nk17Cuvvx7baqxKtKCba/zxO5Jmfk5/Ohv?=
+ =?us-ascii?Q?Hlurw3j2eZvREGqcbniEtA9wld7TcAXKILL+C5PfJmm4QI8icuCc9dWPbbK/?=
+ =?us-ascii?Q?bxu9nw7pSJFEjCLIH4K+LpLVUrmYq7yu9vkAJMrjTypVkzUwbWl1yoqZK/Tu?=
+ =?us-ascii?Q?NT3TJagon9AJvjmjHzkrGh1guaqQG/96JX9el/GQzvDVBknrSHhGogZBWHdd?=
+ =?us-ascii?Q?/QKB63rZ5z+uI8QUenkcFOhHXJCouQtnSXAr2X/AUhFUG/1g9QaLyq1ys2EW?=
+ =?us-ascii?Q?/1QIRShHoOopG4H27YJEG4wmfC6kRXsCaYSMHJmmvIccpAakoG0fJE02xXtu?=
+ =?us-ascii?Q?cU8f/Vok06xrN0MK5qbAlLLdYQwMqGAIV1zeycN2EcPPFEqPZv47qzaa6g+x?=
+ =?us-ascii?Q?piBdOnVyEwJDPaibGwG/Zdd2RORPlHQJyTMJkroICtKyREIAbXkoB/tcvsQr?=
+ =?us-ascii?Q?jrnauIpWJrhjkYwUBU0aWR7cAWSYRIBZAZKwbmFyz/pwQeNh3l75xDzbxXUU?=
+ =?us-ascii?Q?zv9m1OvyyObBNjm86czl/eGIp7tJgJsR6x+I+mRnkZPU0sgm3CAAPbO6IX+I?=
+ =?us-ascii?Q?wlVhwVyBX1ETnLJfK1KKGP7eoN12F91lI87To3sqPgzdufbw6iUsSnb9ohTC?=
+ =?us-ascii?Q?z3lVQLFG0dTELrJizY8gbVWFWELVVA4wRU82zvcugB5ZXaotPawwFpxK2nog?=
+ =?us-ascii?Q?4iRsWwjo+1duGDtvkv10eGp5UPc2AsWf51pBIa+xxfVsOL7gOhGEe8mNBFfR?=
+ =?us-ascii?Q?sxG4IPtO51Bqnk3ZgD3/Rbff3l+nirf/d8jp337Z7RRg/0PGZlWacvZyE+lE?=
+ =?us-ascii?Q?lizqXTMFV4CpnZ7Or4kofI54eHxtIBJ+yaGTquUfW+ZHpwWm8JjNS/zo7Zf7?=
+ =?us-ascii?Q?3lbqCejj9L9tO4V9bb8INRCP5/3nBAvCCZMipFB8d0Hcr14IkZQrQtvQePx8?=
+ =?us-ascii?Q?v3iaG2g2PHeUzcqkqeyw55KR5YICqULQ4pMxmmo1E9SvmsLdZecFvEjVFVKT?=
+ =?us-ascii?Q?OXSndWDuoqBDD+ddSySzviWK5IKZk9kTwgWmM+iQMRwnF4BK3NrgeLZX6vmz?=
+ =?us-ascii?Q?e+EkEWuVgovIICseZ+AayD3BYK3HNqlDWj+gsAlHThq0HnVUdo9vMd6XB4bs?=
+ =?us-ascii?Q?JC5t5WstFXsl9h8CIESxeJfATTntFElm49zEhczn8/9fKVeLqg=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?MUdFVkTjW7MvBu/JWMSJ39sFQdjScFjLxE5u8GIE467JtZPLQib/aS8UxDGL?=
+ =?us-ascii?Q?fO4LE6lpH9y/afZazBnjzJ+na9RpMmBJstlxE8tkwE8JwNBlyfuGxPYxGceo?=
+ =?us-ascii?Q?6CARA8Kkbphj6kSjXyLIcurLVUncVlvQSsJ6jNoJMOo14zGum4r35MmmwrdL?=
+ =?us-ascii?Q?ZNOHjQDbp//zJKFWH06LTac/dTxyiwS4gWE3tODjUh/XZX9mN7f1Zic72vVr?=
+ =?us-ascii?Q?SuprcYd9pbyqkuGX/rMZtR/VCZT9BWuaJT0RBdT3wsdstzlpTe5fivnAWUNd?=
+ =?us-ascii?Q?NrJ23+KGnmt//fJc+LBdadqhnxJQesxI9hilcTPpwEOcize4ezvAlB7rejKZ?=
+ =?us-ascii?Q?h3BUV2ES38ZJ/cLL92/OHGR+kPc2+RNxSdW0Pja5BLZqFwkjmu8v7JcXBget?=
+ =?us-ascii?Q?0gMN/Q/Q02uh0wkCA3oagU/u9YfjtrpCQn196Imz6MW5D4Rqu15bTpCiXXqI?=
+ =?us-ascii?Q?J+lTc6Q71ivnmrwCUgn1GMf5xsu0onlC7Cjvz/8H1Fk70BPHu/ZsktxNJ4by?=
+ =?us-ascii?Q?jstn9PrgZB7WXIIw1gvTkqzf+MRp3FkFlslik+33Mz61CvyR7ie1tWfRT2y6?=
+ =?us-ascii?Q?1uimF+v/QSN8ZIO2SLy33RFEpi2a18FOy3QX3ikkyds7vyROiBNkLWV5tozl?=
+ =?us-ascii?Q?jeKGnGxhTSoxDoslTSbmPxP6HWYKqKbPD82GNKBRNH/+4qAGx80hP9VzL/Ka?=
+ =?us-ascii?Q?Wk8bs2D5Mh8z0XGVeq65GNkjizxSh7cR711JWVaqFG32KzHF6sohXDzOK+8E?=
+ =?us-ascii?Q?YI0wt4rEG+FYaKhORjW+EyEkeEZ8MrtcevXU5ZQaKrXQ1+jXtfYmfHsuN28I?=
+ =?us-ascii?Q?5AJ5vP9MJA/cmUBbU5FE5Rj4/PLgIHRzK7E46rDmuQOhVXISJHuPNeLoKgUw?=
+ =?us-ascii?Q?5mdcKfsAKEviCiRPA4g4HnijGSIm4v/8JZMeDo5piEKwFlDWiPK/fHl8ZEVW?=
+ =?us-ascii?Q?bqC9hahNMjv2TwfhYP4rgnXVApYGJyeQLL3hKRaQnkwIGk1FPgJFmcUKHdlZ?=
+ =?us-ascii?Q?uoF/0OiTfgE+rOYFdgigxZagh6Flp0TQMAdPPUiWOjQZ0FhUinWQJiP95MTP?=
+ =?us-ascii?Q?5kQQfy+Lyg6MfmyFDpZp8cUPzVUbqr63lmAv6UFWo0DbnLjiO292IS9jutEU?=
+ =?us-ascii?Q?Nc6luCIpMjPE0+4lCdi1ZZ+EwZu/l+d+qgdESDDZi7/lXb5Hms+epZXTVv83?=
+ =?us-ascii?Q?hvdeRU28g+XQ2mSYjrjoxt2IbdQsP+SMScthJZ+sW/fBrvcbgUoVckN8mt7u?=
+ =?us-ascii?Q?TfqAZVrpRUU5ingWJ7Ms5oKNZE7e6I0Rjqy2e8TQUkHRplscMqDfuhDGgVOW?=
+ =?us-ascii?Q?CVMw2FaOBHMDnfllLnl0SpmYxmBRQX0ZUU0a8fyDCrO7NM918D0EICmseRsQ?=
+ =?us-ascii?Q?eWIRGd3iX1hDv12EdugnK9EB7w7wcQuz/nxSZ779OJlhz43u7Qk+U49PsfHv?=
+ =?us-ascii?Q?9UC0Mkk9fuCahZnskA6V4V4QDdqpaNq+e61VLJJC9/G/L0a9RbjjzbKKt64F?=
+ =?us-ascii?Q?bh4y/71ulw+0L5N/i/kDj3Fivco4JOyx6q1/OolUnYkg36Lh+X1A3MALStcy?=
+ =?us-ascii?Q?/JFKJCQDrtU2hKJMcC7EOBOzlKRS0fy8CVZD1uAa?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8e3d0cc-16d9-46ee-3e3e-08ddb7d2fc48
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2025 12:38:16.4936
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: U89lxLOmxNNaGk0qzgftxhRa9rQvG3pNGAZ0RSUo0Y5VkIQMUsBFtWaqk8bws837
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9183
 
-On 28/06/2025 4:39 pm, Kaustabh Chakraborty wrote:
-> On 2025-06-25 11:34, Robin Murphy wrote:
->> On 2025-06-25 9:42 am, Marek Szyprowski wrote:
->>> On 25.06.2025 09:39, Kaustabh Chakraborty wrote:
->>>> On 2025-06-24 17:12, Robin Murphy wrote:
->>>>> On 2025-06-18 3:02 pm, Kaustabh Chakraborty wrote:
->>>>>> Since bcb81ac6ae3c (iommu: Get DT/ACPI parsing into the proper probe
->>>>>> path),
->>>>>> The Samsung Exynos 7870 DECON device (with patches [1], [2], and
->>>>>> [3]) seems
->>>>>> to not work anymore. Upon closer inspection, I observe that there 
->>>>>> is an
->>>>>> IOMMU crash.
->>>>>>
->>>>>> [    2.918189] exynos-sysmmu 14860000.sysmmu: 14830000.decon: [READ]
->>>>>> PAGE FAULT occurred at 0x6715b3e0
->>>>>> [    2.918199] exynos-sysmmu 14860000.sysmmu: Page table base:
->>>>>> 0x0000000044a14000
->>>>>> [    2.918243] exynos-drm exynos-drm: bound 14830000.decon (ops
->>>>>> decon_component_ops)
->>>>>> [    2.922868] exynos-sysmmu 14860000.sysmmu:   Lv1 entry: 0x4205001
->>>>>> [    2.922877] Kernel panic - not syncing: Unrecoverable System MMU
->>>>>> Fault!
->>>>>> [    2.922885] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted
->>>>>> 6.16.0-rc2-exynos7870 #722 PREEMPT
->>>>>> [    2.995312] Hardware name: Samsung Galaxy J7 Prime (DT)
->>>>>> [    3.000509] Call trace:
->>>>>> [    3.002938]  show_stack+0x18/0x24 (C)
->>>>>> [    3.006582]  dump_stack_lvl+0x60/0x80
->>>>>> [    3.010224]  dump_stack+0x18/0x24
->>>>>> [    3.013521]  panic+0x168/0x360
->>>>>> [    3.016558]  exynos_sysmmu_irq+0x224/0x2ac
->>>>>> [         ...]
->>>>>> [    3.108786] ---[ end Kernel panic - not syncing: Unrecoverable
->>>>>> System MMU Fault! ]---
->>>>>
->>>>> For starters, what if you just remove this panic() from the IOMMU
->>>>> driver? Frankly it seems a bit excessive anyway...
->>>>
->>>> I've tried that, sysmmu repeatedly keeps issuing interrupts (yes, even
->>>> after clearing the interrupt bit) indefinitely.
->>>>
->>> Right, this is because decon device is still accessing system memory in
->>> a loop trying to display the splash screen. That panic is indeed a bit
->>> excessive, but what else IOMMU driver can do if no page fault handle is
->>> registered?
->>
->> Report the unhandled fault and continue, like most drivers already do. 
->> If there's another fault, then that can get reported as well. It's 
->> kind of the point that if a misbehaving device has been prevented from 
->> accessing memory then it has *not* adversely affected the rest of the 
->> system.
->>
->> I suppose if one wanted to be really clever then a driver could 
->> implement its own backoff mechanism where if it detects a sustained 
->> high rate of unhandled faults then it disables its interrupt for a 
->> bit, to mitigate the physical interrupt storm as well as avoid 
->> flooding the kernel log more than is useful.
->>
->>>>>  From the logs below it seems there is apparently unexpected traffic
->>>>> already going through the IOMMU when it wakes up. Is this the DRM
->>>>> drivers doing something sketchy, or has the bootloader left the
->>>>> display running for a splash screen? However in the latter case I
->>>>> don't obviously see why delaying the IOMMU probe should make much
->>>>> difference, given that the decon driver should still be waiting for
->>>>> it either way.
->>>>
->>>> The display is initialized by the bootloader for splash yes, but I 
->>>> reckon
->>>> it doesn't use the IOMMU as it's accessible from a framebuffer region.
->>>
->>> Right, bootloader configured decon device to display splash screen, what
->>> means that decon device is constantly reading splash screen pixel data
->>> from system memory. There is no such thing as a 'framebuffer region', it
->>> is just a system memory, which exynos sysmmu protects when enabled. So
->>> far this issue of splash screen from bootloader has not yet been solved
->>> in mainline. On other Exynos based supported boards this works only
->>> because there are also power domain drivers enabled, which are
->>> instantiated before the display related device and respective sysmmu
->>> device. That power domain driver shuts down power effectively disabling
->>> the display before the sysmmu gets probbed.
->>
->> And presumably the sysmmu device itself doesn't need to depend on that 
->> power domain? OK, that at least makes sense.
->>
->>> Long time ago I've pointed this issue and proposed some simple solution
->>> like a special initial identity mapping for the memory range used for
->>> splash screen, but that proposal is no longer applicable for the current
->>> code.
->>>
->>> As a workaround I would suggest to shutdown display in the decon device
->>> before starting the kernel (i.e. from the 'kernel loading mid-stage
->>> bootloader' if you have such).
->>
->> We do now have the tools to handle this properly - if the bootloader 
->> can be updated to add the appropriate "iommu-addresses" property[1] to 
->> the framebuffer reservation, then it's a case of hooking up support in 
->> exynos-iommu via of_iommu_get_resv_regions().
-> 
-> Hey, thanks a lot! I got it to work. [1] [2]
+On Sat, Jun 28, 2025 at 09:28:12PM +0800, Baolu Lu wrote:
+ 
+> Does this mean the IOMMU driver should disable ATS when ops-
+> >blocked_domain is used? This might not be feasible because ops-
+> >blocked_domain might possibly be attached to a PASID of a device,
+> while other PASIDs still use ATS for functionality.
 
-Hurrah!
+No.. The above should be setting everything, including PASIDs to the
+blocked domain.
 
-> The Exynos IOMMU driver doesn't have support for get_resv_regions in
-> iommu_ops. So I tried to find existing drivers which have it implemented,
-> for examples. [3] [4] [5]
-> 
-> All of them have some reserved region allocation before calling
-> iommu_dma_get_resv_regions(). I don't know what they are, and I don't know
-> what base and length should be used for sysmmu. Either way I gave it a shot
-> with [6]:
-> 
-> #define EXYNOS_DEV_ADDR_START    0x20000000
-> #define EXYNOS_DEV_ADDR_SIZE    0x40000000
-> 
-> static void exynos_iommu_get_resv_regions(struct device *dev,
->                        struct list_head *head)
-> {
->      struct iommu_resv_region *region;
->      int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
-> 
->      region = iommu_alloc_resv_region(EXYNOS_DEV_ADDR_START, 
-> EXYNOS_DEV_ADDR_SIZE,
->                       prot, IOMMU_RESV_SW_MSI, GFP_KERNEL);
->      if (!region)
->          return;
-> 
->      list_add_tail(&region->list, head);
-> 
->      iommu_dma_get_resv_regions(dev, head);
-> }
-> 
-> ...and it worked. It works even without that first allocation, so not
-> sure why and if its needed.
+The driver doesn't have to disable ATS at the device, but ARM does.
 
-No, unless you have client devices that use MSIs *and* you want to 
-support VFIO for them, you don't need to make up a SW_MSI region - feel 
-free to hook up ".get_resv_regions = iommu_dma_get_resv_regions" directly.
+It does have to stop issuing invalidations, which is part of the
+definition of blocked in the first place.
 
-The only other thing to be wary of in general here is the window between 
-initialising the IOMMU device itself and attaching the client(s) (e.g. 
-SMMUv3 has to take special care there). However in this particular case 
-I guess you're OK, since exynos_sysmmu_probe() doesn't really touch the 
-hardware anyway, and you don't have that intermediate "globally enabled 
-without client-specific config" state which can disrupt traffic on the 
-bigger more complicated IOMMUs.
-
-Thanks,
-Robin.
-
-> I need some input for making it upstreamable (mainly if the base and
-> length are correct or no), I'll send a patch.
+> >   - This only works for IOMMU drivers that will not issue ATS invalidation
+> >     requests to the device, after it's docked at ops->blocked_domain.
+> > Driver should fix itself to align with the aforementioned notes.
 > 
-> [1] 
-> https://elixir.bootlin.com/linux/v6.15.3/source/drivers/iommu/of_iommu.c#L206
-> [2] 
-> https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/reserved-memory/reserved-memory.yaml
-> [3] 
-> https://elixir.bootlin.com/linux/v6.15.3/source/drivers/iommu/apple-dart.c#L966
-> [4] 
-> https://elixir.bootlin.com/linux/v6.15.3/source/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c#L3573
-> [5] 
-> https://elixir.bootlin.com/linux/v6.15.3/source/drivers/iommu/arm/arm-smmu/arm-smmu.c#L1594
-> [6] 
-> https://elixir.bootlin.com/linux/v6.15.3/source/drivers/gpu/drm/exynos/exynos_drm_dma.c#L30
+> My understanding of the requirements for the iommu drivers is: when all
+> PASIDs are docked in the blocking DMA state, the IOMMU driver should:
 > 
->>
->> For a short-term kernel-side hack you could probably implement 
->> .def_domain_type to force IDENTITY for decon devices, as long as you 
->> can then convince the DRM driver to pick another device to grab a DMA 
->> ops domain from.
->>
->> Thanks,
->> Robin.
+> - Flush all outstanding ATS invalidation requests;
+
+Arugably driver needs to have serialized ATS invalidation
+synchronously during the change to the blocked domain. The prior
+paging domain could be immediately freed so lingering invalidations
+are probably an existing bug.
+
+> - Stop issuing any further ATS invalidations;
+
+Yes
+
+> - Configure the hardware to reject further ATS translation requests.
+
+Not required. Blocked domain inherently responds to all ATS
+translation requests with no-present which is not allowed to be
+cached.
+
+> > +int iommu_dev_reset_prepare(struct device *dev)
+> > +{
+> > +	const struct iommu_ops *ops;
+> > +	struct iommu_group *group;
+> > +	unsigned long pasid;
+> > +	void *entry;
+> > +	int ret = 0;
+> > +
+> > +	if (!dev_has_iommu(dev))
+> > +		return 0;
+> > +
+> > +	if (dev->iommu->require_direct) {
+> > +		dev_warn(
+> > +			dev,
+> > +			"Firmware has requested this device have a 1:1 IOMMU mapping, rejecting configuring the device without a 1:1 mapping. Contact your platform vendor.\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	/* group will be put in iommu_dev_reset_done() */
+> > +	group = iommu_group_get(dev);
+> > +
+> > +	/* Caller ensures no racy iommu_release_device(), so this won't UAF */
+> > +	mutex_lock(&group->mutex);
+> > +
+> > +	ops = dev_iommu_ops(dev);
+> > +	if (!ops->blocked_domain) {
+> > +		dev_warn(dev,
+> > +			 "IOMMU driver doesn't support IOMMU_DOMAIN_BLOCKED\n");
+> > +		ret = -EOPNOTSUPP;
+> > +		goto unlock;
+> > +	}
+> > +
+> > +	device_to_group_device(dev)->pending_reset = true;
+> > +
+> > +	/* Device is already attached to the blocked_domain. Nothing to do */
+> > +	if (group->domain->type == IOMMU_DOMAIN_BLOCKED)
+> > +		goto unlock;
+> 
+> "group->domain->type == IOMMU_DOMAIN_BLOCKED" means that IOMMU_NO_PASID
+> is docked in the blocking DMA state, but it doesn't imply that other
+> PASIDs are also in the blocking DMA state. Therefore, we might still
+> need the following lines to handle other PASIDs.
+
+Yes, we always have to check the xarray.
+
+> On the other hand, perhaps we should use "group->domain == ops-
+> >blocked_domain" instead of "group->domain->type ==
+> IOMMU_DOMAIN_BLOCKED" to make the code consistent with the commit
+> message.
+
+ops->blocked_domain is not good, we support devices without static
+blocking domain. But yes, using DOMAIN_BLOCKED is not greap, there is
+a group->blocked_domain that should be used and will dynamicaly create
+an empty paging domain if needed.
+
+Jason
