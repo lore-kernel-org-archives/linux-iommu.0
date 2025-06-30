@@ -1,189 +1,192 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2078.outbound.protection.outlook.com [40.107.223.78])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f43.google.com (mail-oa1-f43.google.com [209.85.160.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CC421DFE26
-	for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 19:34:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.78
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751312062; cv=fail; b=oJ1Dl4Uad/bwm4bCJ259eIJsWfWvgMF4Oe6iHqcp0unkmY3vI+YGFkIfVVarKHseTcsMQcoYlTGzKZwbMt5hVWh9R428CcDBtracSDbgvZhGV4pdLCntievwZG8AwwozeC66YMFZt1TFDYkVHveKm9EYrT/vkO8fREyXrMayZfM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751312062; c=relaxed/simple;
-	bh=ihPdzWrtWjfhMvn9MTg8KbWjCRYqCc7J22awCB4Ngg4=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uSebK0axoCDOM3+UibnpKaSkOG2wrECD1q/LMcobwiOsvuqWC+8Rj917YqlN+aBMuX1B3fYEhvJH6f+04pGI5T3FmzovthKJGaVx+CJEGno9qe3N5934pgCR+wRm782BNArWcS8mqBEFUeHPgOiV5oW+/gs6bTeGVeKJdRABANo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=WsJ5frh6; arc=fail smtp.client-ip=40.107.223.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E4F828C031
+	for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 19:51:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.43
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751313075; cv=none; b=X1gdq8owkUBXXjqARK3HWHlU2ARKEFqMs9wRV6N9rXE0Hmo4GBX7n+BAFhafIa9IqJzkIIs3+0idxD2yZoNjFzcyqZxukkqL/Er58N2SKq+XSWOuek3Xu9cTIELxuy402uEm2LmlKd4WFxZQ8cCtyFcm5mqT+Cu0YZAjZWWTysI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751313075; c=relaxed/simple;
+	bh=dZRgZSkGylWVAacMRcxHxNoUOFGbYD3K1ocJpzmzm2k=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ewHgg8V6+WRsVG1RbrUmseD5/dsEe0PWKQbcJ6/k+YQrlGjzaIZ8JltVXuFC2LLAXHSpG3xRmszp+/qsQlj/TsI9VaWWqRZmQfK/HP4sNV+nHlNWOG8mSzlu3BS9JWAZKtgXNKHYLVcjJDlQ+de3qZEIvUCNErBTu8rAh4c67KQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=UvV9yFmb; arc=none smtp.client-ip=209.85.160.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="WsJ5frh6"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=pnuBZtv+2ofiDFyLItobAaxV94VjjCPjZ+rAuamY3ggm1R6ZB85iOfVFGw7l1hFXlarzFuS5xARmCFEb4ibBXvtACs/m52UD2iUFBR39giRQtGPZjBL9t+s2DzlJyaxcXs27a/zD4FZtQ68tlA+Lr9rbMqGsr07W+kdVIVVeTfREJMP6CuLTTwR9GcDzX/BoOgt07HCKy92NvOrMe7W1fqbdKxkSC+YXQFt2GAw2oDZGnjANu9p8V6C3eFkoSFq1hnbNTosMmsYfEi7buzdCM0ofv3h1CZsBe8iHqzX+fhDpiK2jOz76gVHQbKzTjpwQmCRLamT9yCaiInjz4UlXSg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Gnjy+RpRV921LvA1P4Ggk7vhp6Lsrnk9RGK9sQMmQbI=;
- b=ZmDKemvZEojGbIa2guVrwssh9ckFW6Z3wjqvizRRfvTLdniPI79YjQdd57P/OUAUAIP5anomIdwwhPQ+BGYgh186Y54wa5VDKh6xulxlmFh5EE+qjO6uBKtutFl4MT4U+hDPWwtoiHYXiRvbv63XV5RYuyKr9JoJ5gsUF+LPf3AKpFKbLiLYok2L2B8I2q4TDZcL1BQBYC7ObhP3PfK/LxIAUPdA4PVrcUDlqCWV38n6omAYM8TNc3kT/Vzi1BxcDwAqiQxWiNiYBP8ZZAhq8XooLtx+i3xJGgZIOs/QdK8x28npknbeVY/4bjagRTMzLIyVVj1yvxiaSJZkb8g2dQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=linux.intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Gnjy+RpRV921LvA1P4Ggk7vhp6Lsrnk9RGK9sQMmQbI=;
- b=WsJ5frh6aCnJFJN+spcbvjOuhq1AZOBlA4R7xH0lVLC8MnI31HcyXfroMh3MHi/Q5yKzfzk5qebR0vx2AjZFk7lqOeBepjeKwanW68Ow72RJ+quv6CsXSYzF4IccCyh4mUUHaCGugVNhkOb//0m/67DD756I3DFxW9Q/R/RG5sLKLLIFtbR/bTnxcgcmoIQfjOGbjuPj1QWuQtoTVL3ZNqpoJnu7xA7f1V+lL4ce0ol8213nHhfLQPsE4xl1pGmmqyjzhmKaz/o+EboejGn+mh+elbX4/8IFYo6Gg+L5eFplnxGw8k9bjU0CDv0tsQ0Ww/xmfbPFgUvpRPLcV24dhA==
-Received: from SA1P222CA0160.NAMP222.PROD.OUTLOOK.COM (2603:10b6:806:3c3::6)
- by BY1PR12MB8446.namprd12.prod.outlook.com (2603:10b6:a03:52d::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8835.29; Mon, 30 Jun
- 2025 19:34:18 +0000
-Received: from SN1PEPF00036F42.namprd05.prod.outlook.com
- (2603:10b6:806:3c3:cafe::f6) by SA1P222CA0160.outlook.office365.com
- (2603:10b6:806:3c3::6) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8880.32 via Frontend Transport; Mon,
- 30 Jun 2025 19:34:18 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- SN1PEPF00036F42.mail.protection.outlook.com (10.167.248.26) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8901.15 via Frontend Transport; Mon, 30 Jun 2025 19:34:17 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Mon, 30 Jun
- 2025 12:34:05 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14; Mon, 30 Jun 2025 12:34:05 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Mon, 30 Jun 2025 12:34:04 -0700
-Date: Mon, 30 Jun 2025 12:34:03 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Xu Yilun <yilun.xu@linux.intel.com>
-CC: <jgg@nvidia.com>, <jgg@ziepe.ca>, <kevin.tian@intel.com>,
-	<will@kernel.org>, <aneesh.kumar@kernel.org>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <joro@8bytes.org>, <robin.murphy@arm.com>,
-	<shuah@kernel.org>, <aik@amd.com>, <dan.j.williams@intel.com>,
-	<baolu.lu@linux.intel.com>, <yilun.xu@intel.com>
-Subject: Re: [PATCH v3 2/5] iommufd: Destroy vdevice on idevice destroy
-Message-ID: <aGLmq8D88mN5lkmN@Asurada-Nvidia>
-References: <20250627033809.1730752-1-yilun.xu@linux.intel.com>
- <20250627033809.1730752-3-yilun.xu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="UvV9yFmb"
+Received: by mail-oa1-f43.google.com with SMTP id 586e51a60fabf-2ea6dd628a7so2751322fac.1
+        for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 12:51:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1751313072; x=1751917872; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ga4y3MOQS/NhUmQF1ukYLMYf01uWr2HXnuupm/ZCD24=;
+        b=UvV9yFmbhoMG33SDuDfFGW7yvMupgEHUr7o1PMWh5sLWUSRtY6+gIScrnKa/3Kwy4z
+         QC0fxVX4ws3Ooc10jSrMufA6BoMAUbCNv4VESiily3HfGS4Or0KnMOKs/ePl6mLPqHPU
+         MmpQv06DlppeJEJwK27UBVy44auTcgDP2NcqNsk/JPGBIEEp+o/PCsfn4Bvxq1MgYMNV
+         JsVnAy+4RrMLilP6Fq5RXpsmTvOx0E3LfdlC8kvwqpnJ8WYH22QJei7xxVtMQZxfaF+r
+         FaFxfxb0Jm50wj3mGaSmm0I5EKXsF+gz1j4wxtbnFjDTNAK1FTHjRObn4cnCXQZomBsU
+         3YRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751313072; x=1751917872;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Ga4y3MOQS/NhUmQF1ukYLMYf01uWr2HXnuupm/ZCD24=;
+        b=tLN/n9/zjVKYD+Jpm38LMMJoiZ4qnGRFRYKmgJjLtAVVyFUGaT7ZM/L62F3aI3LW9B
+         LmxHX9HkZJlcOEmqrF5tRkRwtefpR8Pde4IbDregfRriKwlBenjD/LcjSQwPO1pd99CY
+         bJBRzRzU0drR1k7qr4+alp13gbHzw7DgrlmnOJuz3/THv+R5JP8Mnb/++45R5yXddLFm
+         8M3y0Hpd8bLg8KwhklaVrm7Adfa6R3kBl3ypS8/PDPSyXJHSPva8L9Ou/JIgN5433pfn
+         +kVLvq5Djx87diBcF85Byz9S1i9KETAZweWnaJK7atajGDFDLYoshL/+Lyoq/23TSNdf
+         ot1w==
+X-Forwarded-Encrypted: i=1; AJvYcCVRbF8DlW6ZxqV0mUcArO+G9rEBW4QuyoR4vFC464nOYL0BUa/BmiP+H55k6spJiEqVzQ0n0A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxF9uQTT2tTuzPg3g4jg+vNT5Y9uRnhaQKQDNa2tIfBjJjaEiym
+	kdBO3vHRBrHaKEdeF8T7B0r/YoK+KLEsHSdZExHZhopH6wBRXrY2dOtdoWXVEOQUyXdv6/lx7Hk
+	1RldqnFt7+ftrWREU1YARKlAUeMej+hX+VkklPER+
+X-Gm-Gg: ASbGncvqvi9v/FuM+wiF/59raLwYxNb2ubFaVHwwRxr6z5myQAdVcPKjWsU9lJlgwZ1
+	eOSUun8x8h3OoJ53N8UURa0ltFFDHhcqI+Q2hNrT3fk9H5tCRt/OWFjvQLnltJxWtM/Sq6g4zTk
+	rlySaJ9mCdldfpDUXqydS3JVNMQRZuAK2bFcphSfb8
+X-Google-Smtp-Source: AGHT+IHRDrJscnosC1ZeT+2J6X1LwE0WFgWPIrMVmWeOWgj5sfxh2F6EAd7QnzFSZOpkIKhjeOC1jIHYzrsZvVxF+Xo=
+X-Received: by 2002:a05:6870:7905:b0:2ea:841f:773c with SMTP id
+ 586e51a60fabf-2efed759ab7mr11102999fac.35.1751313072313; Mon, 30 Jun 2025
+ 12:51:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20250627033809.1730752-3-yilun.xu@linux.intel.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF00036F42:EE_|BY1PR12MB8446:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7e2a20af-25af-453b-4c8f-08ddb80d1a7e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|36860700013|7416014|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?FLkPjQ9d0iR6qNwYiNLyBmhB988DVZxIUKUJ9XWDmtXdGHiCyU5NcegQu4fN?=
- =?us-ascii?Q?Af4WlbWCE7mzMvxEPIPl3b5PaG3aFnQcfUnXG0ZYZnWFCbt6PUWjozRIig6I?=
- =?us-ascii?Q?ImZktojA0lZB+iyF1CfU1G317tWuI1neSp21spnQpAzW6Vx2N9V46HO/TWxg?=
- =?us-ascii?Q?eUzJRbZpZKThGEd+tXFkzlLzieQol9xY5NBccw+FBIfdfkopgcFj+OOyVslF?=
- =?us-ascii?Q?xyOH1hviNcjxXE0I8g5SWmGar2aN2+P7UuZjZYTGa0xwtU533pkrjz+33kXq?=
- =?us-ascii?Q?nxMj/NcTO8vaxQoyyZcEMagiV3zVuiomPAU4S65iQxCuo4DsYu+pBe6O7ni6?=
- =?us-ascii?Q?BTADA4h3ANwcuQhmklvgZZ+x+gBJ+DSZI+VuS4SXvNuExoZoOfOh6V+OTR6V?=
- =?us-ascii?Q?qGrxkoD9d3EwFhwrUWz3V+pjxeQvMtrpugH6gR4XQbRhX3EnKgVunsh9C9fN?=
- =?us-ascii?Q?LEtKDLbaBaJ87rMafm5dKWwx+v33RKb67n4tETD8RMxUUwZjVzRczSWjy/yU?=
- =?us-ascii?Q?V4t3Ebvhl9v7h86WknwPtpzuvfCV9TBvZwXwxZtVRbvQnlqF1ZavP5mIRegD?=
- =?us-ascii?Q?emCKnOlhpnV77ToW3YCHI0/+CDfRSbQ3gxAEx2jIBlTfpjv3UESZZpjnypnp?=
- =?us-ascii?Q?zX6Pott3LVHq0a9SLNNUz3r81ZyoFLi1xjRIVDUOq9jPCH9G7eyCEQtxT1I8?=
- =?us-ascii?Q?jeXO/8aV3W8RRtHp9a2ouIe4LTmQrCEbU+xVQTSbRaPXzxzCyKYiqqcpPayZ?=
- =?us-ascii?Q?+K//LcjTY7JLxJ3m8SzxFD/8u4Y1J53XnEwd3YtfAxS+cBA7Sd+dxa+nKpVX?=
- =?us-ascii?Q?54BRd/qGoFCJ7DIm56Yih4IPX5WLcdCne0q0QNHBou6sEdJxkkqJP3rH3WWK?=
- =?us-ascii?Q?KGeEj8gqEfrMcZreAzAOG/5wjykWJZiD2zkbT9L1qT7PyAHXj5Cw9caYbqQY?=
- =?us-ascii?Q?Ua/0SIlGIQsSVSfAnVcScWIXVUAyARFXKV8IFMkRI32pAMPM/eOC/RJGhNvw?=
- =?us-ascii?Q?IaiV6gbSgVhIWAOs0r8KqAFb+A2adFfb/mU4Ho9lMIDjciXsMrGZdyT2YDfJ?=
- =?us-ascii?Q?9kCvurK6EPLzgBgRYb6WakqVkCOC08/pAO0rtjoraIfSfeIsqGB4YThggbBw?=
- =?us-ascii?Q?x6lNOAe58iffvtUGa80Gy8C63CXRm9a7rGWwQW9mcPxqHXv4lH6Wzg/j0l7L?=
- =?us-ascii?Q?KQt12g2s+p1cUk6XdlP9Q+xLCriZ6CMJhDdCTyYuFCWoU4Cwbn2gCWpMmliQ?=
- =?us-ascii?Q?BdBLk9ls7TRnV0RyVar4vdK4JLyiyzum3tZAScUgMwAz84ELuaRU8UfYhaHG?=
- =?us-ascii?Q?8RKBM2VSsN2OrLQx1bl/qJUgX4gW9KC1yyCCvnprmHK0pYmED1rt8LYgwJVu?=
- =?us-ascii?Q?/6jpfB/xJ/PIKu6QgTuf79or2LxEP3iRP5UsQmDHvHxHM3ymSh3Jdxbg1Qbi?=
- =?us-ascii?Q?Sc+khfYqy3n4oRmTH3auWdNe7geQwdzAUCkNI0d7jewMbuD90RpriBJRVl2V?=
- =?us-ascii?Q?RaEasr2srt2pvQIQYwaxnvph4AmOTbv9oqQapGYrSJfbAwIoyWzeeYXYUQ?=
- =?us-ascii?Q?=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(36860700013)(7416014)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jun 2025 19:34:17.3737
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7e2a20af-25af-453b-4c8f-08ddb80d1a7e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF00036F42.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY1PR12MB8446
+References: <CAL0q8a6pOBZbWYdwKzC1U-PuH4rgf2miv0jcF=fWVZt_dUZHmw@mail.gmail.com>
+ <20250630133343.GA26040@lst.de>
+In-Reply-To: <20250630133343.GA26040@lst.de>
+From: Ben Copeland <ben.copeland@linaro.org>
+Date: Mon, 30 Jun 2025 20:51:01 +0100
+X-Gm-Features: Ac12FXw8R8mMZVmm9DFkYryumLpFODa-57Pyd4kyo7Xil12Rg1NLjYfQ9ut-Kvw
+Message-ID: <CAL0q8a7sE4a00ehKrkyepA_xA3Z2HiGv0LazvYe=2NciTkkPFQ@mail.gmail.com>
+Subject: Re: next-20250627: IOMMU DMA warning during NVMe I/O completion after 06cae0e3f61c
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-kernel@vger.kernel.org, lkft-triage@lists.linaro.org, 
+	regressions@lists.linux.dev, linux-nvme@lists.infradead.org, 
+	Dan Carpenter <dan.carpenter@linaro.org>, kbusch@kernel.org, axboe@kernel.dk, 
+	sagi@grimberg.me, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Jun 27, 2025 at 11:38:06AM +0800, Xu Yilun wrote:
-> +static void iommufd_device_remove_vdev(struct iommufd_device *idev)
-> +{
-> +	struct iommufd_vdevice *vdev;
-> +
-> +	mutex_lock(&idev->igroup->lock);
-> +	/* vdev has been completely destroyed by userspace */
-> +	if (!idev->vdev)
-> +		goto out_unlock;
-> +
-> +	vdev = iommufd_get_vdevice(idev->ictx, idev->vdev->obj.id);
-> +	if (IS_ERR(vdev)) {
-> +		/*
-> +		 * vdev is removed from xarray by userspace, but is not
-> +		 * destroyed/freed. Since iommufd_vdevice_abort() is reentrant,
-> +		 * safe to destroy vdev here.
-> +		 */
-> +		iommufd_vdevice_abort(&idev->vdev->obj);
-> +		goto out_unlock;
+Hello Christoph,
 
-This is the case #3, i.e. a racing vdev destory, in the commit log?
+On Mon, 30 Jun 2025 at 14:33, Christoph Hellwig <hch@lst.de> wrote:
+>
+> Hi Ben,
+>
+> > [   32.857521] iommu_dma_unmap_page+0xc4/0xe8 (P)
+>
+> Can you resolve this to a source location for me. i.e.
+>
+> gdb vmlinux
+>
+> l *(iommu_dma_unmap_page+0xc4)
 
-I think it is worth clarifying that there is a concurrent destroy:
-		/*
-		 * An ongoing vdev destroy ioctl has removed the vdev from the
-		 * object xarray but has not finished iommufd_vdevice_destroy()
-		 * yet, as it is holding the same mutex. Destroy the vdev here,
-		 * i.e. the iommufd_vdevice_destroy() will be a NOP once it is
-		 * unlocked.
-		 */
+Sure, here's the kernel stack trace.
 
-> @@ -147,10 +183,12 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
->  	if (rc)
->  		goto out_abort;
->  	iommufd_object_finalize(ucmd->ictx, &vdev->obj);
-> -	goto out_put_idev;
-> +	goto out_unlock_igroup;
->  
->  out_abort:
->  	iommufd_object_abort_and_destroy(ucmd->ictx, &vdev->obj);
-> +out_unlock_igroup:
-> +	mutex_unlock(&idev->igroup->lock);
+[   32.699872] WARNING: drivers/iommu/dma-iommu.c:1232 at
+iommu_dma_unmap_page+0xc4/0xe8, CPU#13: swapper/13/0
+[   32.714204] Modules linked in: cdc_ether usbnet sm3_ce nvme sha3_ce
+nvme_core xhci_pci_renesas arm_cspmu_module arm_spe_pmu ipmi_devintf
+arm_cmn ipmi_msghandler cppc_cpufreq fuse drm backlight ip_tables
+x_tables
+[   32.732967] CPU: 13 UID: 0 PID: 0 Comm: swapper/13 Tainted: G W
+6.16.0-rc3-next-20250627 #1 PREEMPT
+[   32.743562] Tainted: [W]=WARN
+[   32.749381] Hardware name: Inspur NF5280R7/Mitchell MB, BIOS
+04.04.00004001 2025-02-04 22:23:30 02/04/2025
+[   32.759020] pstate: 63400009 (nZCv daif +PAN -UAO +TCO +DIT -SSBS BTYPE=--)
+[   32.768746] pc : iommu_dma_unmap_page
+(/builds/linux/drivers/iommu/dma-iommu.c:1232 (discriminator 1))
+[   32.776040] lr : iommu_dma_unmap_page
+(/builds/linux/drivers/iommu/dma-iommu.c:1232 (discriminator 1))
+[   32.780559] sp : ffff8000801afde0
+[   32.783861] x29: ffff8000801afde0 x28: 0000000000000005 x27: fff00001d7d230f0
+[   32.790983] x26: 0000000000000000 x25: fff00001003da0c8 x24: 0000000000000002
+[   32.798106] x23: 0000000000000000 x22: 0000000000001000 x21: 00000000feed5000
+[   32.805229] x20: fff00001003da0c8 x19: fff00001d7d23000 x18: 0000000000080000
+[   32.812352] x17: 0000000000000040 x16: ffffae5c7594ea68 x15: 0000000000000000
+[   32.819474] x14: 000000000007ffff x13: 0000000000000001 x12: 000000000000002c
+[   32.826597] x11: 00000000000fffff x10: ffffffffffffffff x9 : ffffae5c76358e60
+[   32.833719] x8 : ffff8000801afd68 x7 : ffffae5c76358a78 x6 : 00000000feed5001
+[   32.840842] x5 : 000000000000000d x4 : ffffae5c76358a78 x3 : 0000000000000000
+[   32.847965] x2 : 0000000000000000 x1 : fff00001027e54c0 x0 : 0000000000000000
+[   32.855088] Call trace:
+[   32.857521] iommu_dma_unmap_page
+(/builds/linux/drivers/iommu/dma-iommu.c:1232 (discriminator 1)) (P)
+[   32.862039] dma_unmap_page_attrs (/builds/linux/kernel/dma/mapping.c:193)
+[   32.866385] nvme_unmap_data
+(/home/ben/linux/linux/drivers/nvme/host/nvme.h:788
+/home/ben/linux/linux/drivers/nvme/host/pci.c:1077) nvme
+[   32.870904] nvme_pci_complete_rq
+(/home/ben/linux/linux/drivers/nvme/host/pci.c:1051
+/home/ben/linux/linux/drivers/nvme/host/pci.c:1063
+/home/ben/linux/linux/drivers/nvme/host/pci.c:1071) nvme
+[   32.878632] blk_complete_reqs (/builds/linux/block/blk-mq.c:1223
+(discriminator 1))
+[   32.885320] blk_done_softirq (/builds/linux/block/blk-mq.c:1230)
+[   32.892006] handle_softirqs
+(/builds/linux/arch/arm64/include/asm/jump_label.h:36
+/builds/linux/include/trace/events/irq.h:142
+/builds/linux/kernel/softirq.c:580)
+[   32.896436] __do_softirq (/builds/linux/kernel/softirq.c:614)
+[   32.899912] ____do_softirq (/builds/linux/arch/arm64/kernel/irq.c:82)
+[   32.903561] call_on_irq_stack (/builds/linux/arch/arm64/kernel/entry.S:897)
+[   32.907472] do_softirq_own_stack (/builds/linux/arch/arm64/kernel/irq.c:87)
+[   32.911642] __irq_exit_rcu (/builds/linux/kernel/softirq.c:460
+/builds/linux/kernel/softirq.c:680)
+[   32.915378] irq_exit_rcu (/builds/linux/kernel/softirq.c:698
+(discriminator 1))
+[   32.918854] el1_interrupt
+(/builds/linux/arch/arm64/include/asm/current.h:19
+/builds/linux/arch/arm64/kernel/entry-common.c:280
+/builds/linux/arch/arm64/kernel/entry-common.c:586
+/builds/linux/arch/arm64/kernel/entry-common.c:598)
+[   32.922418] el1h_64_irq_handler
+(/builds/linux/arch/arm64/kernel/entry-common.c:604)
+[   32.926502] el1h_64_irq (/builds/linux/arch/arm64/kernel/entry.S:596)
+[   32.929891] cpuidle_enter_state
+(/builds/linux/drivers/cpuidle/cpuidle.c:292) (P)
+[   32.934410] cpuidle_enter
+(/builds/linux/drivers/cpuidle/cpuidle.c:391 (discriminator 2))
+[   32.937972] do_idle (/builds/linux/kernel/sched/idle.c:160
+/builds/linux/kernel/sched/idle.c:235
+/builds/linux/kernel/sched/idle.c:330)
+[   32.941188] cpu_startup_entry
+(/builds/linux/kernel/sched/idle.c:428 (discriminator 1))
+[   32.945098] secondary_start_kernel
+(/builds/linux/arch/arm64/include/asm/atomic_ll_sc.h:95 (discriminator
+2) /builds/linux/arch/arm64/include/asm/atomic.h:28 (discriminator 2)
+/builds/linux/include/linux/atomic/atomic-arch-fallback.h:546
+(discriminator 2)
+/builds/linux/include/linux/atomic/atomic-arch-fallback.h:994
+(discriminator 2)
+/builds/linux/include/linux/atomic/atomic-instrumented.h:436
+(discriminator 2) /builds/linux/include/linux/sched/mm.h:37
+(discriminator 2) /builds/linux/arch/arm64/kernel/smp.c:214
+(discriminator 2))
+[   32.949617] __secondary_switched (/builds/linux/arch/arm64/kernel/head.S:405)
+[   32.953788] ---[ end trace 0000000000000000 ]---
 
-Looks like we will have to partially revert the _ucmd allocator,
-in this function:
-https://lore.kernel.org/all/107b24a3b791091bb09c92ffb0081c56c413b26d.1749882255.git.nicolinc@nvidia.com/
 
-Please try fixing the conflicts on top of Jason's for-next tree.
+>
+> Also what IOMMU driver is this device using?  It looks like it
+> might not support a 4k IOMMU page size.
+>
 
-Thanks
-Nicolin
+From the boot log, I can see
+
+[    1.083447] arm-smmu-v3 arm-smmu-v3.16.auto: option mask 0x0
+[    1.083460] arm-smmu-v3 arm-smmu-v3.16.auto: IDR0.HTTU
+features(0x600000) overridden by FW configuration (0x0)
+[    1.083463] arm-smmu-v3 arm-smmu-v3.16.auto: ias 48-bit, oas 48-bit
+(features 0x0094dfef)
+
+Let me know if there is anything else.
+
+Ben
