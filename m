@@ -1,50 +1,80 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C38EE6BFC0;
-	Mon, 30 Jun 2025 06:12:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03E0719CC28
+	for <iommu@lists.linux.dev>; Mon, 30 Jun 2025 06:24:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751263957; cv=none; b=dmmhLQe7ctVFZ1CTHqJlrnYuaKlIz4ccVU/DqZKKtTvb/NU4KhvOEK16CVlYRdsuKOo/BJslXsapbh0eX45PaPWSihgP2awsklR8hxBXhVE/CuJ+Me32gEB/usruS0FsyZs/DBkZmbIZo6M5xttfX5E+UPGdrgpolG9DXi30LkA=
+	t=1751264667; cv=none; b=uMCEyLZkUnqwKMF+BeDrPsNa+9drIJKAx94LyjEiEodyH3YjkCV7kVZcPOw3WaGd8ac8rSmf5ds8sxS7vnR3pYSV/L+iVxQ0GW2+G4UBocQregR5du1MkC/FUA4O9CHy7diWgBTn2U6+i1c1zzOt2atVHYLlNu9rfewnxscoAPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751263957; c=relaxed/simple;
-	bh=McN2deu/0pGB55PloWO5vfr7rpgpFCsXgzpOPVUQSic=;
+	s=arc-20240116; t=1751264667; c=relaxed/simple;
+	bh=oIU0nlGeVkImkEVtE9FV85Qh8TUxliMwVa0aurlyVic=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=P6puq3TNvr/YHW7XJ2KX6NjrdW57ETF52w4DPJi3MUdw1vW2uOkzsAF58ANevIG9hdvnr8mLwSGQvNkrZxKIpeJs8NIhWdHZaFZv3hWiuwj741eOOqLO7FMlUPtMle3529PCZ7NXh+nWA6QdcN7M0+YRSp3rwy3UHuMNDsCApYo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XYwp9Z+c; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 In-Reply-To:Content-Type; b=l+MOK1ehnlTNnBnOqDhMDiq7G6/mRIJ+7I2d5wNrvt3zvZiItcMP2BC3thcIrBRztepYygthrdjyKGHeNj+mFecrB4RgUctUbsbtcd2n1OzCP8Fh9jn8vZ0GcRkS2aVaDZQckbd+XfJiBT9CBtA7oINyRfY+o3lIYIY2n2eREdo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=JekC85cB; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=GGwRzyBi; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=JekC85cB; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=GGwRzyBi; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XYwp9Z+c"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1751263956; x=1782799956;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=McN2deu/0pGB55PloWO5vfr7rpgpFCsXgzpOPVUQSic=;
-  b=XYwp9Z+cfUHi6NZz4hVFuxCXIMDOF/YQttsK0fUm+g9OXv+Prbg1LXKP
-   jqO2ZQTlpHrJt6ZZXnCMtSpmHbnfmnXjXhD4/2ZbzbG1LBBNt7/oETFPK
-   JbLKdJRPBHO1DkWC7bGsja/PyG9BmtoM3zDPhvab2xne5b+QzNt7Q3Su1
-   UL3bAhp4AJ9KJMTW6Ik4P4H7Z4lRPsb24LqvDtROmwGcWvsgjojOrWCkG
-   HSgH0gVBxV7DKn4qunhS6ijCw8toUDT80Re2MHQHHxImg98DDmHVPkq58
-   tTnK2EMyWrQM3f/TSj0ISmK31UUW18LvqfrZKiSLtDXCdXGmFLSs05PG5
-   g==;
-X-CSE-ConnectionGUID: Qhi6W2pTSNK8Cv/ghOXUxg==
-X-CSE-MsgGUID: Q6jssHTUT/6lb1dqN5ZtfQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11479"; a="70911810"
-X-IronPort-AV: E=Sophos;i="6.16,277,1744095600"; 
-   d="scan'208";a="70911810"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2025 23:12:35 -0700
-X-CSE-ConnectionGUID: oRo7BY5pRD2ivAJyrq3SBg==
-X-CSE-MsgGUID: pDCvSic+QquWyYCEOFjRiw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,277,1744095600"; 
-   d="scan'208";a="153546707"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jun 2025 23:12:33 -0700
-Message-ID: <46253700-8b98-47e1-bde5-1bd2fd9f528b@linux.intel.com>
-Date: Mon, 30 Jun 2025 14:11:09 +0800
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="JekC85cB";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="GGwRzyBi";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="JekC85cB";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="GGwRzyBi"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 43F2B1F38C;
+	Mon, 30 Jun 2025 06:24:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1751264663; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=PJyKYbqfUL2wuHqkoQTXa/2DpfteGgypmUTFXMIUHEE=;
+	b=JekC85cBCcHb3DEaAnCwMMACuYvXv0XARsQOlldGFLIsFkXSclY3qWwtQqnB6XYQEAYbfD
+	j7V4NqbWPRF6E+FErOimaVZt27sMaF5Uy8dQuyokPkO/qxm0t2CzY3ezdk/3sKwywVzj7F
+	gMOYpGve7HcD7sr8H2hkOtgyb6psutQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1751264663;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=PJyKYbqfUL2wuHqkoQTXa/2DpfteGgypmUTFXMIUHEE=;
+	b=GGwRzyBir+mjkzaB6HZuN97WHsuDsbZHQboPp33uC56cilryUX3S8vfROKa8qTRlmD9cJI
+	wbPyOQqIB6DDOtCw==
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1751264663; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=PJyKYbqfUL2wuHqkoQTXa/2DpfteGgypmUTFXMIUHEE=;
+	b=JekC85cBCcHb3DEaAnCwMMACuYvXv0XARsQOlldGFLIsFkXSclY3qWwtQqnB6XYQEAYbfD
+	j7V4NqbWPRF6E+FErOimaVZt27sMaF5Uy8dQuyokPkO/qxm0t2CzY3ezdk/3sKwywVzj7F
+	gMOYpGve7HcD7sr8H2hkOtgyb6psutQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1751264663;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=PJyKYbqfUL2wuHqkoQTXa/2DpfteGgypmUTFXMIUHEE=;
+	b=GGwRzyBir+mjkzaB6HZuN97WHsuDsbZHQboPp33uC56cilryUX3S8vfROKa8qTRlmD9cJI
+	wbPyOQqIB6DDOtCw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id A55F813983;
+	Mon, 30 Jun 2025 06:24:22 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id lSErJ5YtYmiLVgAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Mon, 30 Jun 2025 06:24:22 +0000
+Message-ID: <732aeb75-71e7-49e7-a5f2-2080ee94a273@suse.de>
+Date: Mon, 30 Jun 2025 08:24:22 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,37 +82,263 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 6/7] iommu/vt-d: Split
- intel_iommu_enforce_cache_coherency()
-To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>,
- "patches@lists.linux.dev" <patches@lists.linux.dev>,
- "Wang, Wei W" <wei.w.wang@intel.com>
-References: <0-v2-e5c01fc5ce82+26216-vtd_prep_jgg@nvidia.com>
- <6-v2-e5c01fc5ce82+26216-vtd_prep_jgg@nvidia.com>
- <BN9PR11MB52763C1B4AED06073FAF79EE8C77A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20250613131253.GA1163305@nvidia.com>
+Subject: Re: [PATCH v6 9/9] PCI: Add a new 'boot_display' attribute
+To: Mario Limonciello <superm1@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Lukas Wunner <lukas@wunner.de>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
+ "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+ "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
+ "open list:SOUND" <linux-sound@vger.kernel.org>,
+ Daniel Dadap <ddadap@nvidia.com>,
+ Mario Limonciello <mario.limonciello@amd.com>
+References: <20250627043108.3141206-1-superm1@kernel.org>
+ <20250627043108.3141206-10-superm1@kernel.org>
+ <41587824-4a05-4ead-b24c-4729007cd663@suse.de>
+ <8878af70-3eb8-495b-b8df-43a10285c4f5@kernel.org>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250613131253.GA1163305@nvidia.com>
+From: Thomas Zimmermann <tzimmermann@suse.de>
+Autocrypt: addr=tzimmermann@suse.de; keydata=
+ xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
+ XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
+ BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
+ hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
+ 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
+ AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
+ AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
+ AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
+ lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
+ U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
+ vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
+ 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
+ j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
+ T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
+ 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
+ GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
+ hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
+ EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
+ C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
+ yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
+ SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
+ Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
+ 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
+In-Reply-To: <8878af70-3eb8-495b-b8df-43a10285c4f5@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spamd-Result: default: False [-4.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	RCVD_TLS_ALL(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	ARC_NA(0.00)[];
+	MID_RHS_MATCH_FROM(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_CC(0.00)[amd.com,gmail.com,ffwll.ch,wunner.de,linux.intel.com,kernel.org,infradead.org,8bytes.org,arm.com,redhat.com,perex.cz,suse.com,lists.freedesktop.org,vger.kernel.org,lists.linux.dev,nvidia.com];
+	RCPT_COUNT_TWELVE(0.00)[25];
+	FROM_EQ_ENVFROM(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	TO_DN_ALL(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[amd.com:email,imap1.dmz-prg2.suse.org:helo]
+X-Spam-Level: 
+X-Spam-Flag: NO
+X-Spam-Score: -4.30
 
-On 6/13/25 21:12, Jason Gunthorpe wrote:
-> On Fri, Jun 13, 2025 at 09:56:44AM +0000, Tian, Kevin wrote:
->> pasid_pte_config_nestd():
->> 	if (s2_domain->force_snooping)
->> 		pasid_set_pgsnp(pte);	
+Hi
+
+Am 27.06.25 um 17:37 schrieb Mario Limonciello:
+> On 6/27/2025 2:07 AM, Thomas Zimmermann wrote:
+>> Hi
 >>
->> we either need set it for second level or also check set_pte_snp
->> here.
-> Okay, I'm deleting set_pte_snp, so lets set force_snooping
+>> Am 27.06.25 um 06:31 schrieb Mario Limonciello:
+>>> From: Mario Limonciello <mario.limonciello@amd.com>
+>>>
+>>> On systems with multiple GPUs there can be uncertainty which GPU is the
+>>> primary one used to drive the display at bootup. In order to 
+>>> disambiguate
+>>> this add a new sysfs attribute 'boot_display' that uses the output of
+>>> video_is_primary_device() to populate whether a PCI device was used for
+>>> driving the display.
+>>>
+>>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>>> ---
+>>> v6:
+>>>   * Only show for the device that is boot display
+>>>   * Only create after PCI device sysfs files are initialized to ensure
+>>>     that resources are ready.
+>>> v4:
+>>>   * new patch
+>>> ---
+>>>   Documentation/ABI/testing/sysfs-bus-pci |  8 +++++
+>>>   drivers/pci/pci-sysfs.c                 | 46 
+>>> +++++++++++++++++++++++++
+>>
+>> The code looks good. Just one more question: could this be added 
+>> independently from the PCI bus (at a reasonable cost)? There are 
+>> other busses that can host the boot display. Alternatively, we'd add 
+>> this attribute per bus as needed.
+>
+> It depends upon the underlying hardware implementation.  On x86 it's 
+> always PCI and so I realized there is a requirement that PCI resources 
+> are setup before screen_info event works.
+>
+> That is the v5 version of this patch would have had a potential race 
+> condition with userspace where boot_display didn't always show '1' if 
+> userspace read it too quickly.
+>
+> Other architecture's hardware implementation might have similar problem.
+>
+> So in summary I think it would be better to do it per-bus.  If we 
+> realize there is indeed code duplication we can always move this to a 
+> common helper at that point.
 
-Hi Jason, do you have a new version of this series? I'm planning to
-queue this for the next merge cycle.
+Ok, makes sense. With the kernel test robot's issues fixed:
 
-Thanks,
-baolu
+Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+
+I guess that interface also needs some sort of OK from user-space devs?
+
+Best regards
+Thomas
+
+>
+>>
+>> Best regards
+>> Thomas
+>>
+>>>   2 files changed, 54 insertions(+)
+>>>
+>>> diff --git a/Documentation/ABI/testing/sysfs-bus-pci 
+>>> b/Documentation/ ABI/testing/sysfs-bus-pci
+>>> index 69f952fffec72..8b455b1a58852 100644
+>>> --- a/Documentation/ABI/testing/sysfs-bus-pci
+>>> +++ b/Documentation/ABI/testing/sysfs-bus-pci
+>>> @@ -612,3 +612,11 @@ Description:
+>>>             # ls doe_features
+>>>             0001:01        0001:02        doe_discovery
+>>> +
+>>> +What:        /sys/bus/pci/devices/.../boot_display
+>>> +Date:        October 2025
+>>> +Contact:    Linux PCI developers <linux-pci@vger.kernel.org>
+>>> +Description:
+>>> +        This file indicates the device was used as a boot
+>>> +        display. If the device was used as the boot display, the file
+>>> +        will be present and contain "1".
+>>> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+>>> index 268c69daa4d57..cc766461de1da 100644
+>>> --- a/drivers/pci/pci-sysfs.c
+>>> +++ b/drivers/pci/pci-sysfs.c
+>>> @@ -30,6 +30,7 @@
+>>>   #include <linux/msi.h>
+>>>   #include <linux/of.h>
+>>>   #include <linux/aperture.h>
+>>> +#include <asm/video.h>
+>>>   #include "pci.h"
+>>>   #ifndef ARCH_PCI_DEV_GROUPS
+>>> @@ -679,6 +680,13 @@ const struct attribute_group *pcibus_groups[] = {
+>>>       NULL,
+>>>   };
+>>> +static ssize_t boot_display_show(struct device *dev, struct 
+>>> device_attribute *attr,
+>>> +                 char *buf)
+>>> +{
+>>> +    return sysfs_emit(buf, "1\n");
+>>> +}
+>>> +static DEVICE_ATTR_RO(boot_display);
+>>> +
+>>>   static ssize_t boot_vga_show(struct device *dev, struct 
+>>> device_attribute *attr,
+>>>                    char *buf)
+>>>   {
+>>> @@ -1246,6 +1254,37 @@ static int pci_create_attr(struct pci_dev 
+>>> *pdev, int num, int write_combine)
+>>>       return 0;
+>>>   }
+>>> +/**
+>>> + * pci_create_boot_display_file - create a file in sysfs for @dev
+>>> + * @pdev: dev in question
+>>> + *
+>>> + * Creates a file `boot_display` in sysfs for the PCI device @pdev
+>>> + * if it is the boot display device.
+>>> + */
+>>> +static int pci_create_boot_display_file(struct pci_dev *pdev)
+>>> +{
+>>> +#ifdef CONFIG_VIDEO
+>>> +    if (video_is_primary_device(&pdev->dev))
+>>> +        return sysfs_create_file(&pdev->dev.kobj, 
+>>> &dev_attr_boot_display.attr);
+>>> +#endif
+>>> +    return 0;
+>>> +}
+>>> +
+>>> +/**
+>>> + * pci_remove_boot_display_file - remove the boot display file for 
+>>> @dev
+>>> + * @pdev: dev in question
+>>> + *
+>>> + * Removes the file `boot_display` in sysfs for the PCI device @pdev
+>>> + * if it is the boot display device.
+>>> + */
+>>> +static void pci_remove_boot_display_file(struct pci_dev *pdev)
+>>> +{
+>>> +#ifdef CONFIG_VIDEO
+>>> +    if (video_is_primary_device(&pdev->dev))
+>>> +        sysfs_remove_file(&pdev->dev.kobj, 
+>>> &dev_attr_boot_display.attr);
+>>> +#endif
+>>> +}
+>>> +
+>>>   /**
+>>>    * pci_create_resource_files - create resource files in sysfs for 
+>>> @dev
+>>>    * @pdev: dev in question
+>>> @@ -1654,9 +1693,15 @@ static const struct attribute_group 
+>>> pci_dev_resource_resize_group = {
+>>>   int __must_check pci_create_sysfs_dev_files(struct pci_dev *pdev)
+>>>   {
+>>> +    int retval;
+>>> +
+>>>       if (!sysfs_initialized)
+>>>           return -EACCES;
+>>> +    retval = pci_create_boot_display_file(pdev);
+>>> +    if (retval)
+>>> +        return retval;
+>>> +
+>>>       return pci_create_resource_files(pdev);
+>>>   }
+>>> @@ -1671,6 +1716,7 @@ void pci_remove_sysfs_dev_files(struct pci_dev 
+>>> *pdev)
+>>>       if (!sysfs_initialized)
+>>>           return;
+>>> +    pci_remove_boot_display_file(pdev);
+>>>       pci_remove_resource_files(pdev);
+>>>   }
+>>
+>
+
+-- 
+--
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Frankenstrasse 146, 90461 Nuernberg, Germany
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+HRB 36809 (AG Nuernberg)
+
