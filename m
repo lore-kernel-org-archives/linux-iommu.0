@@ -1,123 +1,134 @@
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBAEC27CCE4
-	for <iommu@lists.linux.dev>; Tue,  1 Jul 2025 17:12:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.125.188.123
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C460283128
+	for <iommu@lists.linux.dev>; Tue,  1 Jul 2025 18:18:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.223.78.240
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751389922; cv=none; b=ULXMbZw1iQaFwEqsG86hUYcQfE+H+3W/B/MWuLsaMNIM2oIqVAfTgdjH1HSHJPAPDQYGDpVys0X3brS13Vs7+qccfvUDlpMn/f5GmYdLIw6WeBSCt2XTsNra4rCJgCF0Xa8KQ8VE+DrWpIOA7DSor+8FMrIQx+K3xTS+rEVWuX0=
+	t=1751393941; cv=none; b=Gpb+HR/K0Y+HQL0HVUWVB0fYzdR1f2/E/AqmWjxvZ0RsAbAzYbMR59eXpVrwNnzASTXJYWHSPsSRRpA25lzsoRslKDbJBJ4TgYz4ATupxkk7dTgnhHv2RX/cAMB7BDc0+cTOiAIVeiEGCtp1pL83xoAzTenGENIn658JEPFWNTs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751389922; c=relaxed/simple;
-	bh=SX2heC/Qk6afxGMZKjrW09kyPvYeBI0adPXbi3Fnvpc=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version; b=k97T/jy/5F/JshydD/74Ikfm3BqxDkKO+zceuj5IrPwl/UJaqW5zGsXgQfMpF2Irgp9WGNmUIER9tbo6j4SfTKIqYfHC43I2nexB9loOv/K3vt1ojYb76NW8ZpKV1TUwSSV4Ia2t9x+hBHqnUsN0j0h1DQcMJgTwYyhyaeGFoik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com; spf=pass smtp.mailfrom=canonical.com; dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b=V112o1VV; arc=none smtp.client-ip=185.125.188.123
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=canonical.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=canonical.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=canonical.com header.i=@canonical.com header.b="V112o1VV"
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com [209.85.208.69])
+	s=arc-20240116; t=1751393941; c=relaxed/simple;
+	bh=px7phovNT5PQUKjV0J2k2pWUSUnsijwglUegTDNnP0g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EvhhrzXIUFb64+ur3VPOGCzlBTRucIy10nmGSEj97EtY+DLdzrc9aSo7H67c2i4tph1RscXHYDeWtHs7cfMn6nMf6Jw+Ap3ZaCRfuiwXeDl5P52MalcYuA0RvqREr4fJNuv7SJMTEIZpi0tlP5BhE2ORx/hu8OK36qQGjP319zY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=none smtp.mailfrom=h08.hostsharing.net; arc=none smtp.client-ip=83.223.78.240
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 003663F718
-	for <iommu@lists.linux.dev>; Tue,  1 Jul 2025 17:11:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-	s=20210705; t=1751389919;
-	bh=sU2Tqd6bdvzOLtqB6osCLzx8U1+d3a8Z2ezfvd4F1oM=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version;
-	b=V112o1VV2QxMLTvcTGpeF/WYRTKUJkMo5a/+qa4o3v9f6RqdsSEtqNtErNMvfRnNC
-	 b/msaHiZdTukqAshsKHKbvFmZZAbycV+T9sRWit1X55rRisAJUBXmgWD0uBgMZwt4L
-	 i84Rt7gR6Gafbw/MPa8YuHkDrw6wpn3ZJjWT4M08QoCx98WtOKscVCx0R+K+DXdVTg
-	 0CyLd5gEAIWxLz6HLjT2Zd/zrr94qLjeURt7pf1BFOCXbpvI1ilpBtnozbLkqGnbtx
-	 QL8tFmbW9E/jZgoebywGyppgGsQPiXfDrBWMFseZiz90NO7XaAYPI9UQZmnYPgyDLE
-	 OBpn5+y5QnQrQ==
-Received: by mail-ed1-f69.google.com with SMTP id 4fb4d7f45d1cf-60c776678edso5783974a12.1
-        for <iommu@lists.linux.dev>; Tue, 01 Jul 2025 10:11:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751389918; x=1751994718;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=sU2Tqd6bdvzOLtqB6osCLzx8U1+d3a8Z2ezfvd4F1oM=;
-        b=LjmLMXx/uLmRm+jkoRT3rv9LGvHajJDKUyURlAjlW6RNUFxMQjk7voEkScASXeotOz
-         r0vmJIZ5wc6mHQ1tQATKH595cMqsVRpdFT1+RJP63HnZDgZnaqo+bkr/R6JUryQfsStA
-         nqJ1SG39Hew9SFuT2KaikrRaKS1W/l/jMk0QKI21GRLvsHYEnlbzmpuhzry/uZsZ8wCp
-         NvSxp5mcof0ibAecP3cdj7IWFpMQgKyWolCutnahX+1x3cqd7SQqGam1rPyxQlmHHGMb
-         tN5hGK32PPPqZNV9KVPhbcl19aVwJS/EjJjlOfffO756zZmXdIGHdVHZAGJCLQgNRNIB
-         VGDw==
-X-Forwarded-Encrypted: i=1; AJvYcCWKANfc/LcnJyQlC8QAqsK57oCKgDOFMopeDnbEvrQBVWlyRZFhiOqthl9kz/duKx7SELpN8Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzYCfDVgezcGqaJUQ/AB/v2CwJqUcKCDT9i13ElblGPriszTeho
-	n5dQfXuwdJk1Af6AyAi+xUA5ZgWgo5nSSkjR0pi/nLLAcyipg0yeS3pmVJqWYwR/TY2x5v2UgmY
-	AB4q00Cxo7KyrrDU3WWVCHB4y+GiiGykGC/zRHzcA78bKxAoHeoFeUm8NSOpaNOvJRSViPeWc+S
-	ejkMal74k=
-X-Gm-Gg: ASbGncsGl0rPOZSnJnN88b18Tmvr0q6p8otbxmWeBMefHYLJ2q5RF8Pt4NS038Cr6H9
-	beloX5uSu5VLDRbllpJiISJy/1eceqX/T3CG1KeKNB/KZ6EFOSkaGYLPL339iuqI3bpPD8tJC8Q
-	xwr/nWeG+QRTjeNqOnPHpKsBhEfCz44zbTf8nPuNT6KhxYNwYLZHuDg5xSTISgCCxbbHZAmL8Ok
-	1TTq8ZggKm4J0qC9VIytWJREN9U0GTXBw/6iHSVZGf3LQNpQA6Xi1kGpoC3IC2BaxXupqlMQmyf
-	AzPOruyeCd3gE5Sh3B8z2vX8yciKxxJtHEvGuMMaIkwL6bGZtbru5UzRV7eIjGEV
-X-Received: by 2002:a50:ed87:0:b0:608:40bf:caed with SMTP id 4fb4d7f45d1cf-60e3a8f3b4cmr2512624a12.7.1751389917970;
-        Tue, 01 Jul 2025 10:11:57 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEu8J6lVnS+AjHzqRmWb7aXWSa8lc+z3NV7ufWDiI84tWqPRb7bwIpffBsf/O52QDBXHBTQ1w==
-X-Received: by 2002:a50:ed87:0:b0:608:40bf:caed with SMTP id 4fb4d7f45d1cf-60e3a8f3b4cmr2512601a12.7.1751389917513;
-        Tue, 01 Jul 2025 10:11:57 -0700 (PDT)
-Received: from t14s.. (adsl-6.109.242.31.tellas.gr. [109.242.31.6])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-60c828bbea9sm7818156a12.1.2025.07.01.10.11.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Jul 2025 10:11:57 -0700 (PDT)
-From: Ioanna Alifieraki <ioanna-maria.alifieraki@canonical.com>
-To: baolu.lu@linux.intel.com,
-	kevin.tian@intel.com,
-	jroedel@suse.de,
-	robin.murphy@arm.com,
-	will@kernel.org,
-	joro@8bytes.org,
-	dwmw2@infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	regressions@lists.linux.dev,
-	stable@vger.kernel.org
-Subject: [REGRESSION][BISECTED] Performance Regression in IOMMU/VT-d Since Kernel 6.10
-Date: Tue,  1 Jul 2025 20:11:54 +0300
-Message-Id: <20250701171154.52435-1-ioanna-maria.alifieraki@canonical.com>
-X-Mailer: git-send-email 2.34.1
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
+	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
+	by bmailout2.hostsharing.net (Postfix) with ESMTPS id DF1A62009180;
+	Tue,  1 Jul 2025 20:18:56 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+	id CAF983D5715; Tue,  1 Jul 2025 20:18:56 +0200 (CEST)
+Date: Tue, 1 Jul 2025 20:18:56 +0200
+From: Lukas Wunner <lukas@wunner.de>
+To: Ben Hutchings <ben@decadent.org.uk>
+Cc: David Airlie <airlied@redhat.com>, Bjorn Helgaas <helgaas@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Andi Kleen <ak@linux.intel.com>, Ahmed Salem <x0rw3ll@gmail.com>,
+	Borislav Petkov <bp@alien8.de>, dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org,
+	Hans de Goede <hdegoede@redhat.com>
+Subject: Re: [PATCH] agp/amd64: Bind to unsupported devices only if AGP is
+ present
+Message-ID: <aGQmkIbRy4sRKD0Y@wunner.de>
+References: <f8ff40f35a9a5836d1371f60e85c09c5735e3c5e.1750497201.git.lukas@wunner.de>
+ <b73fbb3e3f03d842f36e6ba2e6a8ad0bb4b904fd.camel@decadent.org.uk>
+ <aFalrV1500saBto5@wunner.de>
+ <279f63810875f2168c591aab0f30f8284d12fe02.camel@decadent.org.uk>
+ <aFa8JJaRP-FUyy6Y@wunner.de>
+ <9077aab5304e1839786df9adb33c334d10c69397.camel@decadent.org.uk>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9077aab5304e1839786df9adb33c334d10c69397.camel@decadent.org.uk>
 
-#regzbot introduced: 129dab6e1286
+On Tue, Jun 24, 2025 at 11:54:46PM +0200, Ben Hutchings wrote:
+> On Sat, 2025-06-21 at 16:05 +0200, Lukas Wunner wrote:
+> > So please propose a more accurate explanation.
+> 
+> Something like "The driver iterates over all PCI devices, checking for
+> an AGP capability.  Since commit 6fd024893911 ("amd64-agp: Probe unknown
+> AGP devices the right way") this is done with driver_attach() and a
+> wildcard PCI ID table, and the preparation for probing the IOMMU device
+> produces this error message."
 
-Hello everyone,
-
-We've identified a performance regression that starts with linux
-kernel 6.10 and persists through 6.16(tested at commit e540341508ce).
-Bisection pointed to commit:
-129dab6e1286 ("iommu/vt-d: Use cache_tag_flush_range_np() in iotlb_sync_map").
-
-The issue occurs when running fio against two NVMe devices located
-under the same PCIe bridge (dual-port NVMe configuration). Performance
-drops compared to configurations where the devices are on different
-bridges.
-
-Observed Performance:
-- Before the commit: ~6150 MiB/s, regardless of NVMe device placement.
-- After the commit:
-  -- Same PCIe bridge: ~4985 MiB/s
-  -- Different PCIe bridges: ~6150 MiB/s
+Thanks, I will respin and amend the commit message.
 
 
-Currently we can only reproduce the issue on a Z3 metal instance on
-gcp. I suspect the issue can be reproducible if you have a dual port
-nvme on any machine.
-At [1] there's a more detailed description of the issue and details
-on the reproducer. 
+> Thinking about this further:
+> 
+> - Why *does* the IOMMU device have resources assigned but no driver
+>   bound?  Is that the real bug?
 
-Could you please advise on the appropriate path forward to mitigate or
-address this regression?
+I don't really know, I was hoping the AMD IOMMU maintainers could
+comment on that.
 
-Thanks,
-Jo
 
-[1] https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2115738
+> - If not, and there's a general problem with this promiscuous probing,
+>   would it make more sense to:
+>   1. Restore the search for an AGP capability in agp_amd64_init().
+>   2. If and only if an AGP device is found, poke the appropriate device
+>      ID into agp_amd64_pci_promisc_table and then call driver_attach().
+>   ?
+
+I like the idea.  I've realized that we've got pci_add_dynid() for
+just this sort of thing.  It avoids the need to poke device IDs
+into an array at runtime.  The (as yet completely untested) patch
+below should do the trick.
+
+-- >8 --
+
+diff --git a/drivers/char/agp/amd64-agp.c b/drivers/char/agp/amd64-agp.c
+index bf49096..9b9c473 100644
+--- a/drivers/char/agp/amd64-agp.c
++++ b/drivers/char/agp/amd64-agp.c
+@@ -720,11 +720,6 @@ static int agp_amd64_resume(struct device *dev)
+ 
+ MODULE_DEVICE_TABLE(pci, agp_amd64_pci_table);
+ 
+-static const struct pci_device_id agp_amd64_pci_promisc_table[] = {
+-	{ PCI_DEVICE_CLASS(0, 0) },
+-	{ }
+-};
+-
+ static DEFINE_SIMPLE_DEV_PM_OPS(agp_amd64_pm_ops, NULL, agp_amd64_resume);
+ 
+ static struct pci_driver agp_amd64_pci_driver = {
+@@ -739,7 +734,8 @@ static int agp_amd64_resume(struct device *dev)
+ /* Not static due to IOMMU code calling it early. */
+ int __init agp_amd64_init(void)
+ {
+-	int err = 0;
++	struct pci_dev *pdev = NULL;
++	int err, ret;
+ 
+ 	if (agp_off)
+ 		return -EINVAL;
+@@ -767,8 +763,15 @@ int __init agp_amd64_init(void)
+ 		}
+ 
+ 		/* Look for any AGP bridge */
+-		agp_amd64_pci_driver.id_table = agp_amd64_pci_promisc_table;
+-		err = driver_attach(&agp_amd64_pci_driver.driver);
++		for_each_pci_dev(pdev)
++			if (pci_find_capability(pdev, PCI_CAP_ID_AGP)) {
++				ret = pci_add_dynid(&agp_amd64_pci_driver,
++						    pdev->vendor, pdev->device,
++						    pdev->subvendor,
++						    pdev->subdevice, 0, 0, 0);
++				if (ret)
++					err = ret;
++			}
+ 		if (err == 0 && agp_bridges_found == 0) {
+ 			pci_unregister_driver(&agp_amd64_pci_driver);
+ 			err = -ENODEV;
