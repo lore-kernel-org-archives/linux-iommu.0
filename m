@@ -1,84 +1,47 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46B762F4307
-	for <iommu@lists.linux.dev>; Tue,  1 Jul 2025 20:43:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FE3A306DCA;
+	Tue,  1 Jul 2025 21:01:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751402621; cv=none; b=gOMyO1Fk8EAADX9jiAghmbwGpoVluDadpKkYhI8DVAqzUM8DzXbQjrLJXOCaqUTSccF7/SOlZhhAKt1VJeM1RjSI4tX8FnZHYKhrwLm9sNEZsmMZi7ToorPcr4Px5SKigz14nabS+xov9Yd49A+ZlPdq9st4bWUwmY/SxFm2BWA=
+	t=1751403662; cv=none; b=GSy21A3SUiH7pxAb184+ZicohYbRcAxbF+8AXN9sdUMxmlLbihRVuPPwYpn67i4+Pmn1iMQKtJo+P4KWytO9/doDmWfQeXlYg8sGV/APi6paQTQukjnR6gj6x/KyFBzFlxrGgniK2+MtDo2oVNfzHobWvoK0GhNisWErgwTMDfs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751402621; c=relaxed/simple;
-	bh=t6w6HZ3d39NHLiwdzdaqKTFFJH+mBfnQBGoBzloEzXs=;
+	s=arc-20240116; t=1751403662; c=relaxed/simple;
+	bh=KxNo7MC9iL3A0G0AkoA1BW65gW/zw4LvgAtZBo2U6AM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=f9x9TGNEKh0P9PujAUIIjIcX0M7aEGZ4zMC8GWSnoqh7UAW+cDn4GmKmPMcW06hbcrNQC3UT/OfNWL7QGEAGt4qFi2yWSB+Y8KHYBgXMKF6riP0yQfjJamutt1IKagS9kDofhAG2e/iYklNF0tq1zWJ0w31gjqKvEENDBYj8zJM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=o8XIm6An; arc=none smtp.client-ip=209.85.214.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=EXswJvTxt7xISTPA3MJyxz0KnASFqSO08g9uHqFJxT1U0JWyGIguIEZ+gf7/vt+LAHEUAvvpVrXvWpYC/cLQWK2NmE6MCloIFRQ0N4+rk7mzVIXwWhDboN35SV1qv5VzpJquh/pml1j1l5214DZEJzM8eXFQ+6h9B6qRTwC20V0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gv3z6fjb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="o8XIm6An"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2357c61cda7so207495ad.1
-        for <iommu@lists.linux.dev>; Tue, 01 Jul 2025 13:43:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1751402619; x=1752007419; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Gp4ARI8yx8eK5+ZYKJ4V0qAwq8T5VmfMZEWG24JsVtU=;
-        b=o8XIm6AneMQ6KWGywadin08eKeSZhEt8Nb6TTPmb53MYuOwk3u9E2uPYDC0EczVhaR
-         aRqg9PU4UBAI4umlVBju+MBzW4FBGXjljqy6Th3hMpMVrS0ybEvyxwY3tXDNGRhMaJHj
-         5e34vdNh2S+Nsf11EASLhnKFzFhiaIz8D+Eco3BKauoTmhtykIEdavfS6qk67ZUa4Q8a
-         4jzZSal0xeK/uWbnTibJmwvFDI7cDOjdzUzaJ7T+g/GIPT66qZuc1NRQoQ14klSe6Nso
-         +UahBRH61wMX6MTXzcqrwPtRO6db4dK8PiRqh9wrLi27zHnZsdo6E9+ojR8yXqT/zBVL
-         vqcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751402619; x=1752007419;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Gp4ARI8yx8eK5+ZYKJ4V0qAwq8T5VmfMZEWG24JsVtU=;
-        b=SkhePhYdtQ4krqVOfzEJdI2bj7/avyZ4BNbT4gQEiBHuv53mzH0+P/NArSnHSAzYKB
-         nSvPS87HBMeaf+dgoox5lofD0ixKHuFWQiONIXJSParRDpUpFZ7eD0sBpNygbk/t2sfS
-         lCvMKTbSDDsTM9Rv9GEY7zRpX8cHw4gOA6IuQvuCjbiZkAwb4xUM8nYIjqvKSfRs/74h
-         3AElkYrjKcNS10SBUC7SBONaYcsk8x+bmjZjU1vzA10SDq7aHc9y8h5kwHVNOyxofS8U
-         VYlFLxVdBYo5JtVPY5A9tm8hUnJGxXzhRXcIa/T+BbybYK3T8YBjYdYt/YCKJUgwMA85
-         jKCQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUFmoGUEHc5C1/sElXrCmvaC4+omBmgLV2VcCA67z6YhCR7ifk6EGV/74fWf3EOMGlIxOGR5Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy5I3SFHn+TAr3HyBUdH4X+5GoDaUd6IC6Qq3PwHFaKj25m83F5
-	OVu/3TEECjg1fRBcZxPyrlDayjHDj8ruPQ1nvNBa2YpBCG/BhRTW9uvLcbbwpexuzg==
-X-Gm-Gg: ASbGnctzD/m8bXe3e6E2f+PxjpSIEBiFuPvajtF5q3ENeFX5B9raMTUwLTNjF/ehC4L
-	dadIudXEnGAjwFCvLHEG0xPluKujMb2yQGvP9d4Rx1TdItCpDPSBsQhjGM5UsywNO1E7N/TgMbK
-	8a/YrNhdEEcdIEpr4L++BPbOL7yyKGkCmjpO0p0uaKC4jeEEiS7XzOWVrzlxvnS5A77aWpg1kIX
-	C5lh5QLJYVkp1h2qdw8PXa4gHFCSmszjXnpm6LcOn7ywVhYYAQ487NkqtO2fgcPX8dEPi9C2qGM
-	BfapGp5+bp3clhSA/QVlptvY6xpVEFDph5g0BxdWUeB7r9N4qzaNe7c0jGnPd+/jofcqqISyCf7
-	qOno9Y+iDJs7rXOnJoODy
-X-Google-Smtp-Source: AGHT+IEgQNF03gTMPFMuZ5i4oqeFgT9l/mftJxCXd5iV8tzIDEl3pR9lFMVTJeBzdy2r/6gfVZ+O7w==
-X-Received: by 2002:a17:902:e54e:b0:231:d0ef:e8ff with SMTP id d9443c01a7336-23c5ff29f9dmr4133295ad.8.1751402619181;
-        Tue, 01 Jul 2025 13:43:39 -0700 (PDT)
-Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-74af541bdeasm12778586b3a.53.2025.07.01.13.43.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 01 Jul 2025 13:43:38 -0700 (PDT)
-Date: Tue, 1 Jul 2025 20:43:30 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
-	bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
-	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-	shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
-	peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
-	zhangzekun11@huawei.com, iommu@lists.linux.dev,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
-	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com
-Subject: Re: [PATCH v7 27/28] iommu/tegra241-cmdqv: Add user-space use support
-Message-ID: <aGRIctg4T6cQECx4@google.com>
-References: <cover.1750966133.git.nicolinc@nvidia.com>
- <539ee2ec112162abdba511574e2205a77b425059.1750966133.git.nicolinc@nvidia.com>
- <aGQGm1-i4M75b9Qp@google.com>
- <aGQ6KCI9OZEwHdxS@Asurada-Nvidia>
- <aGQ_F7Qx3scbbA-J@google.com>
- <aGRDtYRXFLoT+PrI@Asurada-Nvidia>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gv3z6fjb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C37B9C4CEF5;
+	Tue,  1 Jul 2025 21:01:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1751403662;
+	bh=KxNo7MC9iL3A0G0AkoA1BW65gW/zw4LvgAtZBo2U6AM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Gv3z6fjbqba15oqwRlg4HTHo/E6gMJCSHGUj2KvcDZ+/SHoTsjxAHsANNmtHzNz0j
+	 z6zwAvM5Wkzt1tV/k9PNX3BYm/GdVqh3OkA8EPH7QBRwfn+o4QaOPf2s96HMJtwqu9
+	 gqFoITlilEaPpY7g4b+InUW2ikQFTUmrtJ0+9FzXEidhH8GIlOxjcmyL/iX8/jkDNv
+	 GoAoZzLspR0OvKwV6/7yY4T++V+NGSscI8LgbSB+qYkB4jv/VjXHdzyk8vhfz/yTKM
+	 SjVvUFngMePnvAYa71Xd1L4DIKVoefDbw0+1rAcCKS6OC4xpGrfu8shp2E8nq9N7If
+	 8cCCvGYUDGqAg==
+Date: Tue, 1 Jul 2025 17:00:58 -0400
+From: Keith Busch <kbusch@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Ben Copeland <ben.copeland@linaro.org>, linux-kernel@vger.kernel.org,
+	lkft-triage@lists.linaro.org, regressions@lists.linux.dev,
+	linux-nvme@lists.infradead.org,
+	Dan Carpenter <dan.carpenter@linaro.org>, axboe@kernel.dk,
+	sagi@grimberg.me, iommu@lists.linux.dev,
+	Leon Romanovsky <leonro@nvidia.com>
+Subject: Re: next-20250627: IOMMU DMA warning during NVMe I/O completion
+ after 06cae0e3f61c
+Message-ID: <aGRMilWhgF4z0WOf@kbusch-mbp>
+References: <CAL0q8a6pOBZbWYdwKzC1U-PuH4rgf2miv0jcF=fWVZt_dUZHmw@mail.gmail.com>
+ <20250630133343.GA26040@lst.de>
+ <aGLyswGYD6Zai_sI@kbusch-mbp>
+ <20250701132936.GA18807@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,112 +50,101 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aGRDtYRXFLoT+PrI@Asurada-Nvidia>
+In-Reply-To: <20250701132936.GA18807@lst.de>
 
-On Tue, Jul 01, 2025 at 01:23:17PM -0700, Nicolin Chen wrote:
-> On Tue, Jul 01, 2025 at 08:03:35PM +0000, Pranjal Shrivastava wrote:
-> > On Tue, Jul 01, 2025 at 12:42:32PM -0700, Nicolin Chen wrote:
-> > > On Tue, Jul 01, 2025 at 04:02:35PM +0000, Pranjal Shrivastava wrote:
-> > > > On Thu, Jun 26, 2025 at 12:34:58PM -0700, Nicolin Chen wrote:
-> > > > > +/**
-> > > > > + * struct tegra241_vintf_sid - Virtual Interface Stream ID Replacement
-> > > > > + * @core: Embedded iommufd_vdevice structure, holding virtual Stream ID
-> > > > > + * @vintf: Parent VINTF pointer
-> > > > > + * @sid: Physical Stream ID
-> > > > > + * @idx: Replacement index in the VINTF
-> > > > > + */
-> > > > > +struct tegra241_vintf_sid {
-> > > > > +	struct iommufd_vdevice core;
-> > > > > +	struct tegra241_vintf *vintf;
-> > > > > +	u32 sid;
-> > > > > +	u8 idx;
-> > > > >  };
-> > > > 
-> > > > AFAIU, This seems to be a handle for sid -> vintf mapping.. it yes, then
-> > > > I'm not sure if "Virtual Interface Stream ID Replacement" clarifies that?
-> > > 
-> > > No. It's for vSID to pSID mappings. I had it explained in commit log:
-> > > 
-> > 
-> > I get that, it's for vSID -> pSID mapping which also "happens to" point
-> > to the vintf.. all I wanted to say was that the description is unclear..
-> > We could've described it as "Vintf SID map" or something, but I guess
-> > it's fine the way it is too.. your call.
-> 
-> The "replace" word is borrowed from the "SID_REPLACE" HW register.
-> 
-> But I think it's okay to call it just "mapping", if that makes it
-> clearer.
-> 
+On Tue, Jul 01, 2025 at 03:29:36PM +0200, Christoph Hellwig wrote:
+> Yes, that's broken, and I remember fixing it before.  A little digging
+> shows that my fixes disappeared between the oct 30 version of Leon's
+> dma-split branch and the latest one somewhere.  Below is what should
+> restore it, but at least when forcing my Intel IOMMU down this path it
+> still has issues with VPTEs already set.  So maybe Bob should not try
+> it quite yet.  I'll try to get to it, but my availability today and
+> tomorrow is a bit limited.
 
-Anything works. Maybe let it be as is.
+Let's say we're using ARM64 SMMU configured with 64k granularity like I
+showed earlier.
 
-> > > > > +static struct iommufd_viommu_ops tegra241_cmdqv_viommu_ops = {
-> > > > > +	.destroy = tegra241_cmdqv_destroy_vintf_user,
-> > > > > +	.alloc_domain_nested = arm_vsmmu_alloc_domain_nested,
-> > > > > +	.cache_invalidate = arm_vsmmu_cache_invalidate,
-> > > > 
-> > > > I see that we currently use the main cmdq to issue these cache
-> > > > invalidations (there's a FIXME in arm_vsmmu_cache_invalidate). I was
-> > > > hoping for this series to change that but I'm assuming there's another
-> > > > series coming for that?
-> > > > 
-> > > > Meanwhile, I guess it'd be good to call that out for folks who have
-> > > > Grace and start trying out this feature.. I'm assuming they won't see
-> > > > as much perf improvement with this series alone since we're still using
-> > > > the main CMDQ in the upstream code?
-> > > 
-> > > VCMDQ only accelerates invalidation commands.
-> > > 
-> > 
-> > I get that.. but I see we're using `arm_vsmmu_cache_invalidate` here
-> > from arm-smmu-v3-iommufd.c which seems to issue all commands to
-> > smmu->cmdq as of now (the code has a FIXME as well), per the code:
-> > 
-> > 	/* FIXME always uses the main cmdq rather than trying to group by type */
-> >         ret = arm_smmu_cmdq_issue_cmdlist(smmu, &smmu->cmdq, last->cmd,
-> > 					  cur - last, true);
-> > 
-> > I was hoping this FIXME to be addressed in this series..
-> 
-> Oh, that's not related.
-> 
-> The main goal of this series is to route all invalidation commands
-> to the VCMDQ HW. And this is where Grace users can see perf gains
-> mentioned in the cover letter or commit log, from eliminating the
-> VM Exits at those most frequently used commands.
-> 
-> Any non-invalidation commands will just reuse what we have with the
-> standard SMMU nesting. And even if we did something to that FIXME,
-> there is no significant perf gain as it's going down the trapping
-> pathway, i.e. the VM Exits are always there.
-> 
-> > > That is for non-invalidation commands that VCMDQ doesn't support,
-> > > so they still have to go in the standard nesting pathway.
-> > > 
-> > > Let's add a line:
-> > > 	/* for non-invalidation commands use */
-> > 
-> > Umm.. I was talking about the cache_invalidate op? I think there's some
-> > misunderstanding here? What am I missing?
-> 
-> That line is exactly for cache_invalidate. All the non-invalidation
-> commands will be sent to he arm_vsmmu_cache_invalidate() by VMM, as
-> it means.
-> 
-> Or perhaps calling them "non-accelerated commands" would be nicer.
+Now let's send a read command with 128k transfer, and let's assume the
+payload is two 64k aligned physical segments, so we have 2 bvecs.
 
-Uhh okay, so there'll be a separate driver in the VM issuing invalidation
-commands directly to the CMDQV thus we don't see any of it's part here?
+Since nvme's virtual boundary is smaller than the iommu's granule, we
+won't attempt to coalesce. We instead iommu map each bvec segment
+individually.
 
-AND for non-invalidation commands, we trap out and the VMM ends up
-calling the `cache_invalidate` op of the viommu?
+And let's say each segment just so happens to get consecutive IOVA's.
+The mapping side had done each segment individually, but your proposal
+here will assume the contiguous dma_addr ranges were done as a single
+larger mapping. Is that okay?
 
-Is that understanding correct?
-
-> 
-> Thanks
-> Nicolin
-
-Thanks
-Praan
+> diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+> index 38be1505dbd9..02bb5cf5db1a 100644
+> --- a/drivers/nvme/host/pci.c
+> +++ b/drivers/nvme/host/pci.c
+> @@ -678,40 +678,55 @@ static void nvme_free_prps(struct request *req)
+>  	enum dma_data_direction dir = rq_dma_dir(req);
+>  	int length = iod->total_len;
+>  	dma_addr_t dma_addr;
+> -	int i, desc;
+> +	int prp_len, i, desc;
+>  	__le64 *prp_list;
+> +	dma_addr_t dma_start;
+>  	u32 dma_len;
+>  
+>  	dma_addr = le64_to_cpu(iod->cmd.common.dptr.prp1);
+> -	dma_len = min_t(u32, length,
+> -		NVME_CTRL_PAGE_SIZE - (dma_addr & (NVME_CTRL_PAGE_SIZE - 1)));
+> -	length -= dma_len;
+> +	prp_len = NVME_CTRL_PAGE_SIZE - (dma_addr & (NVME_CTRL_PAGE_SIZE - 1));
+> +	prp_len = min(length, prp_len);
+> +	length -= prp_len;
+>  	if (!length) {
+> -		dma_unmap_page(dma_dev, dma_addr, dma_len, dir);
+> +		dma_unmap_page(dma_dev, dma_addr, prp_len, dir);
+>  		return;
+>  	}
+>  
+> +	dma_start = dma_addr;
+> +	dma_len = prp_len;
+> +	dma_addr = le64_to_cpu(iod->cmd.common.dptr.prp2);
+> +
+>  	if (length <= NVME_CTRL_PAGE_SIZE) {
+> -		dma_unmap_page(dma_dev, dma_addr, dma_len, dir);
+> -		dma_addr = le64_to_cpu(iod->cmd.common.dptr.prp2);
+> -		dma_unmap_page(dma_dev, dma_addr, length, dir);
+> -		return;
+> +		if (dma_addr != dma_start + dma_len) {
+> +			dma_unmap_page(dma_dev, dma_start, dma_len, dir);
+> +			dma_start = dma_addr;
+> +			dma_len = 0;
+> +		}
+> +		dma_len += length;
+> +		goto done;
+>  	}
+>  
+>  	i = 0;
+>  	desc = 0;
+>  	prp_list = iod->descriptors[desc];
+>  	do {
+> -		dma_unmap_page(dma_dev, dma_addr, dma_len, dir);
+>  		if (i == NVME_CTRL_PAGE_SIZE >> 3) {
+>  			prp_list = iod->descriptors[++desc];
+>  			i = 0;
+>  		}
+>  
+>  		dma_addr = le64_to_cpu(prp_list[i++]);
+> -		dma_len = min(length, NVME_CTRL_PAGE_SIZE);
+> -		length -= dma_len;
+> +		if (dma_addr != dma_start + dma_len) {
+> +			dma_unmap_page(dma_dev, dma_start, dma_len, dir);
+> +			dma_start = dma_addr;
+> +			dma_len = 0;
+> +		}
+> +		prp_len = min(length, NVME_CTRL_PAGE_SIZE);
+> +		dma_len += prp_len;
+> +		length -= prp_len;
+>  	} while (length);
+> +done:
+> +	dma_unmap_page(dma_dev, dma_start, dma_len, dir);
+>  }
+>  
+>  static void nvme_free_sgls(struct request *req)
