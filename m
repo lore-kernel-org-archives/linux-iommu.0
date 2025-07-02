@@ -1,73 +1,81 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 226BC140E34
-	for <iommu@lists.linux.dev>; Wed,  2 Jul 2025 07:10:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 143A622F767
+	for <iommu@lists.linux.dev>; Wed,  2 Jul 2025 07:49:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751440242; cv=none; b=NKdKMAjKu6uPpQtRWHAjQhYwNnyPG3d9j4Cp/4X9DrzGAMgunvQUsTPXV4OEHVznrZ9tfQf/G2m7zJlT4b8N3bomhNJuTbobeomOC94ukFx/DohSmlPYYbD715gvkujn5FBTYn+k5yeWPYMTRL3MLeh2tQFd3Xr5TPMaSuNtw4I=
+	t=1751442582; cv=none; b=uGze+aatar0WwgpvV3Brrbqvq3QDgLIctQZwmyJR4gUotquOf5EEtZ5pkdwP8r4y+/ZMafXw5FWYIIo5m/SO2PDs3XAiIeylI4bmNdS4DBgqWjlk6EplapFQ4PBqzQRbUdpCwQI2Lj+EvbpG4u6QmOwET8/BKgo5oxnAEBkCr5E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751440242; c=relaxed/simple;
-	bh=wM5KftaeQRn6qwIcY5rniJjwgWxiV9BfDTasKj4vsFU=;
+	s=arc-20240116; t=1751442582; c=relaxed/simple;
+	bh=90eOtoDZR87XEjTT5OSrKcgQ+qlNMG8Uc+U/vnDdH1w=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=n344jz9kCqkDSb6JHg7OtXLPHRkZicojkw7kPWDSrz9G7a0yf1/RIBQIQuoL8DxMjTlph0J8l5zEWHZMTbH/GuJrQvbj/DSFowELk8dj73LxAUDNb18IYL2PAo7Y2Z7rVqg3dBjmYEkSTYK1Qog4sKeyNZ5omruR7Te1tM/+EAw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=KeAvkgy7; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 In-Reply-To:Content-Type; b=eOKJ7tKhUm8k/sNM4gc5EYRxDAhV+6GhfLH8RpJp5vf7F2A0IKCQBFgJF4+WGlr9CyJ+/iBtmitom6xb8WE5ERiZTF5j7KMH9MXRbfHgnbOrHdJE869CctQ7qYBgfxKvWeN0nzjrWGMYaylmP04PbmVvcfAkm9d6zqe898z4MPM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=oz3WEWgg; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=c6+OnuAK; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=oz3WEWgg; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=c6+OnuAK; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="KeAvkgy7"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 561N7h6L029816
-	for <iommu@lists.linux.dev>; Wed, 2 Jul 2025 07:10:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	RCA3laQUQgLfr4d3l5ToyQ/eRvjHKHLDwpnt3NLlado=; b=KeAvkgy7miYsdzsE
-	076/VOy1kJ3L98Gd5ihfqHoKdRQ/AYP8yI3ee9KhynregnxtjLo3AJYMAR02gAix
-	RuwjdIKO39fyJZJsvOedZe/KOAs9qzlu6Hcs3mSu1OKYKzdaLjwZVtyHInEWJj2j
-	WAOsZb3sNlPKuCU8WgGNEM6XuKuO16v+g18wo/AB3ddyDYUHeCeJXNq/GRIVjddp
-	1cC5PWoWGvIjYjba7ggfjlrfWuo0f3n3fbW8DoQdzVqf9Zk7BB71f5OSuJXXV8Xp
-	X662SA3//wsU5iDyZ055lwbjiCLmFNCzZE8xK3+pTF5qE/7YSyeW1dol+G9NXXeW
-	qpTgLw==
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com [209.85.210.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47m02v5kbw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 02 Jul 2025 07:10:39 +0000 (GMT)
-Received: by mail-pf1-f200.google.com with SMTP id d2e1a72fcca58-74943a7cd9aso6423019b3a.3
-        for <iommu@lists.linux.dev>; Wed, 02 Jul 2025 00:10:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751440239; x=1752045039;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RCA3laQUQgLfr4d3l5ToyQ/eRvjHKHLDwpnt3NLlado=;
-        b=wKkIapIGBEjY8c7dUJ+1KA4Wyf4PlQj55QkMSdfEckNXSA3wC2amAYEw6BluiT8iF3
-         6QKftA94LO/djO5divNgcyB/XL2pB4mFKgI6x7cwpvN++wuTJEJHhc0vIgnugLcNnOM/
-         6HrQgGenfxYAkwsVBTVGYlpTxe9ssfdMODgz9ybiFDhiph0NOTPLZUFFb0AIpmP/pM/b
-         ZoXtR5WkmXcfy/XYg0yVn5JNnMDU4w03bzodGWvuOu2zSArMckU/xGM7rXxxh3WXQwgg
-         4w59TI5EtBSfAPUiMkUQIMDfD9qDIK+LQ3RSzerWX2n4J/MptK7ewqn3n0O2JPxFRh50
-         Zn9g==
-X-Forwarded-Encrypted: i=1; AJvYcCX/DXey5+X4actlE+NbBcokDUus0Aw6wHD5krP4wd1rdpoO9nN2NRcCcYPjunOK7V5kxFRnkQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyFs3zSJYhu7XS9mOFsq840lU5ptRmGCOzC6qTZpxXzKCWy2IWJ
-	akaLhi9aJdZ16keYYU5JsHN1VCbSQ46vbp3StRpQtkJF/1V5Eoy6jvZeJiIohIYEZtrKE+UHj9K
-	qL38kjr/pg9jOVoNJHjbsb3hDB+0G/z1EnQQPShayj3dwbJ+uhotLQqcUuQ==
-X-Gm-Gg: ASbGnctgRzKpNI14O1kJ4Sl5dxqYnFbGPyIetvg+I3F4+sI9g9PVTWEFWFYmPPyb8aQ
-	e5awx5GAejc7EveAB+AKG8YQ4LxXevaqKtvJ5iU5s2M5ZYnwiCF1s07e5dpwCC9k2YR2oUTF7gE
-	vb7nlaVyPpSVHRaQ0EJYBGnPDuXUFv+9FtbIENGerMCmDgeihDKroqjsKBl8USJklD5xuxN5SXy
-	21qDVTgqLxkR1BNm/1E6yvqnUQtrT3aDtJSB6TRSEqSgVgLZT/8m6PuaGpofbMCN8aaEIC79UvN
-	CZv6jZOHzVHMVKIA3zGzlJXSrCoAjvtsRXE7abINTd9fQ2dVjoxvfMSPEHE2KxSO/UZ0NgnsSgV
-	8UhIAyLJurvvWdl0=
-X-Received: by 2002:a05:6a00:1a8e:b0:748:2ac2:f8c3 with SMTP id d2e1a72fcca58-74b51513b5bmr2503476b3a.24.1751440239063;
-        Wed, 02 Jul 2025 00:10:39 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHuPtEnawlGMpCtfFrj4XZgsJyOlvmqGRqt3CEEGBVF1/+L6vgFtb/yE1jQDvC02NOyWgzA9A==
-X-Received: by 2002:a05:6a00:1a8e:b0:748:2ac2:f8c3 with SMTP id d2e1a72fcca58-74b51513b5bmr2503447b3a.24.1751440238639;
-        Wed, 02 Jul 2025 00:10:38 -0700 (PDT)
-Received: from [10.133.33.132] (tpe-colo-wan-fw-bordernet.qualcomm.com. [103.229.16.4])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-74af57ed353sm13034533b3a.153.2025.07.02.00.10.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Jul 2025 00:10:38 -0700 (PDT)
-Message-ID: <e008afed-819d-43eb-8895-2c7aaf24ec13@oss.qualcomm.com>
-Date: Wed, 2 Jul 2025 15:10:34 +0800
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="oz3WEWgg";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="c6+OnuAK";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="oz3WEWgg";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="c6+OnuAK"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 31CD62111F;
+	Wed,  2 Jul 2025 07:49:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1751442577; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=5qgNZZo+UhrOw0qZY5yzCbxyS0sZdhvhyBwDFlNZPn0=;
+	b=oz3WEWggc4R2HbV+0+aBPK1Y4RXZcIi7eBbXCZ3EUjcEJYUISWyZOfEEQKRlJzF2QYtVtm
+	ZTzk4NmRlRThEsLY2ImfBhTn7L9aGgH6w0ndqs1uKk+QtPrRToWYrRK0yN8VZJlQuSeif6
+	YgR6+CZfcXqmuC5EkymSxi0yMWnlxEY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1751442577;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=5qgNZZo+UhrOw0qZY5yzCbxyS0sZdhvhyBwDFlNZPn0=;
+	b=c6+OnuAKYY9awBdfeywvmh/5Gc+JIqt5Hl6RyTduPv+ZgHTefqJqPsT5+irWeoLvJHFmYs
+	U82NN1d5cKdzJ3Dg==
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=oz3WEWgg;
+	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=c6+OnuAK
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1751442577; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=5qgNZZo+UhrOw0qZY5yzCbxyS0sZdhvhyBwDFlNZPn0=;
+	b=oz3WEWggc4R2HbV+0+aBPK1Y4RXZcIi7eBbXCZ3EUjcEJYUISWyZOfEEQKRlJzF2QYtVtm
+	ZTzk4NmRlRThEsLY2ImfBhTn7L9aGgH6w0ndqs1uKk+QtPrRToWYrRK0yN8VZJlQuSeif6
+	YgR6+CZfcXqmuC5EkymSxi0yMWnlxEY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1751442577;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=5qgNZZo+UhrOw0qZY5yzCbxyS0sZdhvhyBwDFlNZPn0=;
+	b=c6+OnuAKYY9awBdfeywvmh/5Gc+JIqt5Hl6RyTduPv+ZgHTefqJqPsT5+irWeoLvJHFmYs
+	U82NN1d5cKdzJ3Dg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 956D213A24;
+	Wed,  2 Jul 2025 07:49:36 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id s2TeIpDkZGjoQQAAD6G6ig
+	(envelope-from <tzimmermann@suse.de>); Wed, 02 Jul 2025 07:49:36 +0000
+Message-ID: <ef053350-975b-4685-8e09-0493d526801d@suse.de>
+Date: Wed, 2 Jul 2025 09:49:36 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,132 +83,299 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: ath12k_pci errors and loss of connectivity in 6.12.y branch
-To: Matt Mower <mowerm@gmail.com>, Vasant Hegde <vasant.hegde@amd.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Jeff Johnson <jjohnson@kernel.org>,
-        will@kernel.org, joro@8bytes.org, linux-wireless@vger.kernel.org,
-        ath12k@lists.infradead.org, 1107521@bugs.debian.org,
-        iommu@lists.linux.dev
-References: <CAPDiVH8gaBH6o_OY-zUWYpDbj5mhiqmofKGb71gLgHOi4vA=Vw@mail.gmail.com>
- <0ba2176e-3339-4a8b-850a-ca5643939c8b@oss.qualcomm.com>
- <fd3bd8b1-4108-445a-b65f-4769d73e6e63@arm.com>
- <4a13d862-1bbb-4a98-bc1d-219bf78f7c0d@amd.com>
- <CAPDiVH-kVCUY8DKexT9OqAZsvkZ5_CGo8d8nENYA-kD=s_x8wA@mail.gmail.com>
+Subject: Re: [PATCH v6 9/9] PCI: Add a new 'boot_display' attribute
+To: Mario Limonciello <superm1@kernel.org>, David Airlie <airlied@gmail.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Simona Vetter <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
+ "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+ "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
+ "open list:SOUND" <linux-sound@vger.kernel.org>,
+ Daniel Dadap <ddadap@nvidia.com>,
+ Mario Limonciello <mario.limonciello@amd.com>,
+ Bjorn Helgaas <bhelgaas@google.com>
+References: <20250627043108.3141206-1-superm1@kernel.org>
+ <20250627043108.3141206-10-superm1@kernel.org>
+ <41587824-4a05-4ead-b24c-4729007cd663@suse.de>
+ <8878af70-3eb8-495b-b8df-43a10285c4f5@kernel.org>
+ <732aeb75-71e7-49e7-a5f2-2080ee94a273@suse.de>
+ <8f9efe23-c774-477d-97ad-8e22532ad6b2@kernel.org>
 Content-Language: en-US
-From: Baochen Qiang <baochen.qiang@oss.qualcomm.com>
-In-Reply-To: <CAPDiVH-kVCUY8DKexT9OqAZsvkZ5_CGo8d8nENYA-kD=s_x8wA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzAyMDA1NiBTYWx0ZWRfXy42N5wrRwkZ9
- fgmCc6TIhHKisC68AT3/qqfnAky7hv8kmcj0h0E/MQR98vDc+Lj1A14Xpv3l68ZaG+EB++iRu03
- vYssmZhWccNnKe4aNMe41G/bJ/Y2E44BhzpyjquoFu4RBQ23vS3tRIi76A5c1Po3VhWmqCnxjXW
- ucDgWeZ/BantzxS5I595CLBZ7UEovbrqJZn7M9i8jfKVhE0/zhg0FgWze2F+ifdsq6KzZ+h1JP+
- Yc+tHD86YsfHC4rq/+EYR5NhofeaGpkinoqAf6gXfK6yY0gfAPOZgJU8chyKmw26Mk00+qQYHHP
- tPEcnLcYnkBxDKGzCbuHtZV7QxrF6zAEYOdVsroHhTzKoZaI1+FQS3ZxgkjvjktB0dznJzqX7Pe
- Ku5Jj+8Ca5cwRWBskPAGYogexjF5HN/u+kHAxiMxfRuHmHIuev4Rs3V/b+YlBeBqUD2TgxlN
-X-Authority-Analysis: v=2.4 cv=Y8L4sgeN c=1 sm=1 tr=0 ts=6864db70 cx=c_pps
- a=mDZGXZTwRPZaeRUbqKGCBw==:117 a=nuhDOHQX5FNHPW3J6Bj6AA==:17
- a=IkcTkHD0fZMA:10 a=Wb1JkmetP80A:10 a=1xDctz_ZAAAA:8 a=PsUJ3HgR6tW1sV_hUDoA:9
- a=QEXdDO2ut3YA:10 a=zc0IvFSfCIW2DFIPzwfm:22 a=1a1P4aADmYxDp9Cj9Seq:22
-X-Proofpoint-GUID: N0I-4p1DCHeyLujMXH7lzlpIJIqwZyhm
-X-Proofpoint-ORIG-GUID: N0I-4p1DCHeyLujMXH7lzlpIJIqwZyhm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-07-01_02,2025-06-27_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 clxscore=1015 priorityscore=1501 mlxlogscore=999
- lowpriorityscore=0 impostorscore=0 malwarescore=0 bulkscore=0 phishscore=0
- mlxscore=0 spamscore=0 suspectscore=0 classifier=spam authscore=0 authtc=n/a
- authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2505280000 definitions=main-2507020056
+From: Thomas Zimmermann <tzimmermann@suse.de>
+Autocrypt: addr=tzimmermann@suse.de; keydata=
+ xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
+ XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
+ BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
+ hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
+ 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
+ AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
+ AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
+ AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
+ lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
+ U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
+ vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
+ 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
+ j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
+ T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
+ 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
+ GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
+ hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
+ EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
+ C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
+ yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
+ SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
+ Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
+ 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
+In-Reply-To: <8f9efe23-c774-477d-97ad-8e22532ad6b2@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spamd-Result: default: False [-4.51 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MX_GOOD(-0.01)[];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FREEMAIL_TO(0.00)[kernel.org,gmail.com];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	RCPT_COUNT_TWELVE(0.00)[25];
+	TO_DN_ALL(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	ARC_NA(0.00)[];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	RCVD_TLS_ALL(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from];
+	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
+	MID_RHS_MATCH_FROM(0.00)[];
+	DKIM_TRACE(0.00)[suse.de:+];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[amd.com:email,suse.de:dkim,suse.de:mid,suse.de:email,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns]
+X-Spam-Level: 
+X-Spam-Flag: NO
+X-Rspamd-Queue-Id: 31CD62111F
+X-Rspamd-Action: no action
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Score: -4.51
 
+Hi
 
+Am 30.06.25 um 20:37 schrieb Mario Limonciello:
+> On 6/30/2025 2:24 AM, Thomas Zimmermann wrote:
+>> Hi
+>>
+>> Am 27.06.25 um 17:37 schrieb Mario Limonciello:
+>>> On 6/27/2025 2:07 AM, Thomas Zimmermann wrote:
+>>>> Hi
+>>>>
+>>>> Am 27.06.25 um 06:31 schrieb Mario Limonciello:
+>>>>> From: Mario Limonciello <mario.limonciello@amd.com>
+>>>>>
+>>>>> On systems with multiple GPUs there can be uncertainty which GPU 
+>>>>> is the
+>>>>> primary one used to drive the display at bootup. In order to 
+>>>>> disambiguate
+>>>>> this add a new sysfs attribute 'boot_display' that uses the output of
+>>>>> video_is_primary_device() to populate whether a PCI device was 
+>>>>> used for
+>>>>> driving the display.
+>>>>>
+>>>>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>>>>> ---
+>>>>> v6:
+>>>>>   * Only show for the device that is boot display
+>>>>>   * Only create after PCI device sysfs files are initialized to 
+>>>>> ensure
+>>>>>     that resources are ready.
+>>>>> v4:
+>>>>>   * new patch
+>>>>> ---
+>>>>>   Documentation/ABI/testing/sysfs-bus-pci |  8 +++++
+>>>>>   drivers/pci/pci-sysfs.c                 | 46 
+>>>>> +++++++++++++++++++++ ++++
+>>>>
+>>>> The code looks good. Just one more question: could this be added 
+>>>> independently from the PCI bus (at a reasonable cost)? There are 
+>>>> other busses that can host the boot display. Alternatively, we'd 
+>>>> add this attribute per bus as needed.
+>>>
+>>> It depends upon the underlying hardware implementation.  On x86 it's 
+>>> always PCI and so I realized there is a requirement that PCI 
+>>> resources are setup before screen_info event works.
+>>>
+>>> That is the v5 version of this patch would have had a potential race 
+>>> condition with userspace where boot_display didn't always show '1' 
+>>> if userspace read it too quickly.
+>>>
+>>> Other architecture's hardware implementation might have similar 
+>>> problem.
+>>>
+>>> So in summary I think it would be better to do it per-bus.  If we 
+>>> realize there is indeed code duplication we can always move this to 
+>>> a common helper at that point.
+>>
+>> Ok, makes sense. With the kernel test robot's issues fixed:
+>>
+>> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+>
+> Thanks, I've got a fix locally for it.
+>>
+>> I guess that interface also needs some sort of OK from user-space devs?
+>>
+>
+> Who needs to OK it?  I do have MR's for matching userspace 
+> implementations mentioned in the cover letter already.
 
-On 7/2/2025 1:17 PM, Matt Mower wrote:
->> A couple more things I'd try on the ath12k side: firstly, boot with
->> "iommu.strict=1" and see if that makes the faults any more
->> frequent/reproducible;
-> 
-> The issue is easy enough to reproduce in 6.12.27 onward and I may be
-> mistaken about the rarity in 6.12.22; I reproduced it relatively
-> quickly in .22 today, so if this was the primary purpose for setting
-> iommu.strict=1, then testing with or without strict works. FWIW, I did
-> test iommu.strict=1 with 6.15.3 and still have not reproduced this
-> issue there.
-> 
->> if a fault is fairly easily reproducible, then
->> use the DMA API and/or IOMMU API tracepoints to compare the fault
->> address to prior DMA mapping activity - that can usually reveal the
->> nature of the bug enough to then know what to go looking for.
-> 
-> This is unfamiliar territory for me, so I hope the following is at
-> least close to what you requested. If not, happy to provide more test
-> results based on a set of instructions. Here's what I did:
-> 
-> 1. Set CONFIG_DMA_API_DEBUG=y
-> 2. Set kernel command line to: iommu.strict=1 log_buf_len=100M
-> dma_debug_driver=ath12k_pci trace_event=dma:*,iommu:*
-> 3. Booted and waited for page fault, then cat'd
-> /sys/kernel/tracing/trace to a file.
-> 
-> Additionally, though I'm pretty sure this is irrelevant now, I added
-> logging after each dma_map_single() in the ath12k driver to print the
-> function name and resultant address to the kernel log.
-> 
-> Comparing the addresses of several io_page_fault lines in the trace
-> and in the kernel log, they line up. So, I'm hopeful this is on the
-> right track.
-> 
-> DMA/IOMMU trace: https://cmphys.com/ath12k/iommu_dma_trace-20250701.log
-> Kernel log with additional logging:
-> https://cmphys.com/ath12k/dmesg-6.12.35-20250701.log
-> Diff showing extra logging added to v6.12.35:
-> https://cmphys.com/ath12k/ath12k-extra-logging-6.12.35-20250701.diff
+The MRs are the right place. Maybe ask Dave Airlie for a comment. He was 
+most outspoken against the original approach.
 
-Thanks, the log is helpful.
+Best regards
+Thomas
 
-So the whole thing is:
+>
+>> Best regards
+>> Thomas
+>>
+>>>
+>>>>
+>>>> Best regards
+>>>> Thomas
+>>>>
+>>>>>   2 files changed, 54 insertions(+)
+>>>>>
+>>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/ 
+>>>>> Documentation/ ABI/testing/sysfs-bus-pci
+>>>>> index 69f952fffec72..8b455b1a58852 100644
+>>>>> --- a/Documentation/ABI/testing/sysfs-bus-pci
+>>>>> +++ b/Documentation/ABI/testing/sysfs-bus-pci
+>>>>> @@ -612,3 +612,11 @@ Description:
+>>>>>             # ls doe_features
+>>>>>             0001:01        0001:02        doe_discovery
+>>>>> +
+>>>>> +What:        /sys/bus/pci/devices/.../boot_display
+>>>>> +Date:        October 2025
+>>>>> +Contact:    Linux PCI developers <linux-pci@vger.kernel.org>
+>>>>> +Description:
+>>>>> +        This file indicates the device was used as a boot
+>>>>> +        display. If the device was used as the boot display, the 
+>>>>> file
+>>>>> +        will be present and contain "1".
+>>>>> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+>>>>> index 268c69daa4d57..cc766461de1da 100644
+>>>>> --- a/drivers/pci/pci-sysfs.c
+>>>>> +++ b/drivers/pci/pci-sysfs.c
+>>>>> @@ -30,6 +30,7 @@
+>>>>>   #include <linux/msi.h>
+>>>>>   #include <linux/of.h>
+>>>>>   #include <linux/aperture.h>
+>>>>> +#include <asm/video.h>
+>>>>>   #include "pci.h"
+>>>>>   #ifndef ARCH_PCI_DEV_GROUPS
+>>>>> @@ -679,6 +680,13 @@ const struct attribute_group *pcibus_groups[] 
+>>>>> = {
+>>>>>       NULL,
+>>>>>   };
+>>>>> +static ssize_t boot_display_show(struct device *dev, struct 
+>>>>> device_attribute *attr,
+>>>>> +                 char *buf)
+>>>>> +{
+>>>>> +    return sysfs_emit(buf, "1\n");
+>>>>> +}
+>>>>> +static DEVICE_ATTR_RO(boot_display);
+>>>>> +
+>>>>>   static ssize_t boot_vga_show(struct device *dev, struct 
+>>>>> device_attribute *attr,
+>>>>>                    char *buf)
+>>>>>   {
+>>>>> @@ -1246,6 +1254,37 @@ static int pci_create_attr(struct pci_dev 
+>>>>> *pdev, int num, int write_combine)
+>>>>>       return 0;
+>>>>>   }
+>>>>> +/**
+>>>>> + * pci_create_boot_display_file - create a file in sysfs for @dev
+>>>>> + * @pdev: dev in question
+>>>>> + *
+>>>>> + * Creates a file `boot_display` in sysfs for the PCI device @pdev
+>>>>> + * if it is the boot display device.
+>>>>> + */
+>>>>> +static int pci_create_boot_display_file(struct pci_dev *pdev)
+>>>>> +{
+>>>>> +#ifdef CONFIG_VIDEO
+>>>>> +    if (video_is_primary_device(&pdev->dev))
+>>>>> +        return sysfs_create_file(&pdev->dev.kobj, 
+>>>>> &dev_attr_boot_display.attr);
+>>>>> +#endif
+>>>>> +    return 0;
+>>>>> +}
+>>>>> +
+>>>>> +/**
+>>>>> + * pci_remove_boot_display_file - remove the boot display file 
+>>>>> for @dev
+>>>>> + * @pdev: dev in question
+>>>>> + *
+>>>>> + * Removes the file `boot_display` in sysfs for the PCI device @pdev
+>>>>> + * if it is the boot display device.
+>>>>> + */
+>>>>> +static void pci_remove_boot_display_file(struct pci_dev *pdev)
+>>>>> +{
+>>>>> +#ifdef CONFIG_VIDEO
+>>>>> +    if (video_is_primary_device(&pdev->dev))
+>>>>> +        sysfs_remove_file(&pdev->dev.kobj, 
+>>>>> &dev_attr_boot_display.attr);
+>>>>> +#endif
+>>>>> +}
+>>>>> +
+>>>>>   /**
+>>>>>    * pci_create_resource_files - create resource files in sysfs 
+>>>>> for @dev
+>>>>>    * @pdev: dev in question
+>>>>> @@ -1654,9 +1693,15 @@ static const struct attribute_group 
+>>>>> pci_dev_resource_resize_group = {
+>>>>>   int __must_check pci_create_sysfs_dev_files(struct pci_dev *pdev)
+>>>>>   {
+>>>>> +    int retval;
+>>>>> +
+>>>>>       if (!sysfs_initialized)
+>>>>>           return -EACCES;
+>>>>> +    retval = pci_create_boot_display_file(pdev);
+>>>>> +    if (retval)
+>>>>> +        return retval;
+>>>>> +
+>>>>>       return pci_create_resource_files(pdev);
+>>>>>   }
+>>>>> @@ -1671,6 +1716,7 @@ void pci_remove_sysfs_dev_files(struct 
+>>>>> pci_dev *pdev)
+>>>>>       if (!sysfs_initialized)
+>>>>>           return;
+>>>>> +    pci_remove_boot_display_file(pdev);
+>>>>>       pci_remove_resource_files(pdev);
+>>>>>   }
+>>>>
+>>>
+>>
+>
 
-#1 ath12k allocates/maps it at a very early stage:
-   (udev-worker)-532     [010] .....     4.878076: map: IOMMU: iova=0x00000000fe980000 -
-0x00000000fea00000 paddr=0x000000010ec80000 size=524288
-   (udev-worker)-532     [010] .....     4.878079: dma_alloc: 0000:c2:00.0
-dma_addr=fe980000 size=524288 virt_addr=000000006cadbcb1 flags=GFP_KERNEL attrs=
-
-#2 here it is unmapped/freed
-   kworker/u64:0-12      [011] .....   327.747763: dma_free: 0000:c2:00.0
-dma_addr=fe980000 size=524288 virt_addr=000000006cadbcb1 attrs=
-   kworker/u64:0-12      [011] .....   327.747766: unmap: IOMMU: iova=0x00000000fe980000 -
-0x00000000fea00000 size=524288 unmapped_size=524288
-
-#3 then the page fault
-irq/26-AMD-Vi-154     [006] .....   327.753942: io_page_fault: IOMMU:ath12k_pci
-0000:c2:00.0 iova=0x00000000fe980000 flags=0x0001
-
-#4 here seems ath12k is recovering
-[  327.849022] mhi mhi0: Requested to power ON
-
-This gives me the impression that the IOMMU page fault is caused by misbehaved firmware
-which crashes. The sequence is, first firmware crashes, then host gets that event and
-begins to recover, during which some DMA buffer is freed/unmapped. However the firmware
-does not know that and continues to access it, and hence the page fault.
-
-
-Matt, could you help enable verbose ath12k log to verify my guess?
-
-modprobe ath12k debug_mask=0xffffffff
-
-note this would make ath12k throws lots of logs. Here the purpose is to check whether
-firmware crash happens before the page fault. You may monitor
-
-	ath12k_dbg(ab, ATH12K_DBG_BOOT, "reset starting\n");
-
-in ath12k_core_reset(), which is the entry of ath12k recovery process.
-
-And one more thing, the issue buffer is handled by dma_alloc/free_xxx API family, so
-adding logs to dma_map/unmap_xxx API does not help here.
-
-> 
-> Thanks,
-> Matt
+-- 
+--
+Thomas Zimmermann
+Graphics Driver Developer
+SUSE Software Solutions Germany GmbH
+Frankenstrasse 146, 90461 Nuernberg, Germany
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
+HRB 36809 (AG Nuernberg)
 
