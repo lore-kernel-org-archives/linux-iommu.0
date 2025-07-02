@@ -1,89 +1,98 @@
-Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [83.223.95.100])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01E8330AABA
-	for <iommu@lists.linux.dev>; Wed,  2 Jul 2025 14:53:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1D912E03E8
+	for <iommu@lists.linux.dev>; Wed,  2 Jul 2025 15:24:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.223.95.100
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751468020; cv=none; b=hILZYsZgIrlQ6QCzv4vaFMvIpDbJWiq8SZaBav5wSsY6Hxxr26Fh8W76nilqT0efFI7Z6mqN5nSQiz4qyft+EBPil+uHEwTBF71H/+ETcyUIPMhVJzX2Y8w+oHnDe48AMkyE2JYx2YOmdBFXKes0O2LMW2iyy1qnUy5wVXoeq/Q=
+	t=1751469851; cv=none; b=jef22rqWOAWnVxa0cwDxdPUhMn/XqDEsYNBgJizAUww7I9DXXhBN+fOhGjoaNVUWN55GYDmMicO0uxIpwku2h68DdnjmrRJKGZInsqgVjDXuBfrjSVLvkEv1fS8v6rDgKYEFcyPkXA0VzOXG2QEb/M79Qt3c2K/5A7vYiHhtKVU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751468020; c=relaxed/simple;
-	bh=beP7drDYJiC2bUAZWTxtY2Y/4PtwO1+nbUvqiOO5/vg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=F7aqPUc3SMpEbAIi6aW88qOCs9RUVNI677edvKUgDlt9bE1W708Ya9R/RHgE1czzMK8FWCssQ2lwoX49XPuqGEsFhwRyGqCYXOqO1aPs7CgKjIFtFztdPf9+28YVROUh2P0UWzOZph1ADrBMOOum1QzVuSl3LZNt1Im0xDV36U4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MKRX/Mxu; arc=none smtp.client-ip=209.85.208.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MKRX/Mxu"
-Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-60707b740a6so7156027a12.0
-        for <iommu@lists.linux.dev>; Wed, 02 Jul 2025 07:53:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1751468017; x=1752072817; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=DPM1T2LNHQfKhij9F/iyvK/25eoDUaIBSajpXKOmcoE=;
-        b=MKRX/MxuvqgetKuXvZAvtRODEpJxY3/R9ouFWAMe4NAbVUPrItGMJoPQGSh5dyGYDt
-         i7VtCnSQeb8X/7neFmJnR0vBesYimm4k/Czn2teC5lis9UeGIRvU2DvcUyp1OQv6VY8E
-         ktzBWOT27Wh4TdBe6Iy++caQOVZnd+azmVjOAcBEb6ZPIjZeG52GkB71zqCPs64FlcZ/
-         LnWVGuxit+KOV5aH599QRuixIXwJhbDzIe/UDcIVpjA3xlSQ0jksHX9XYEMadKMPcMWF
-         ZT2IibH2vog3fV19VbIrs6ZykNHojP8yI42VH8HCBQGgFO6dZu2PjwWVAMg4Ijbp120h
-         0WCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751468017; x=1752072817;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=DPM1T2LNHQfKhij9F/iyvK/25eoDUaIBSajpXKOmcoE=;
-        b=CUZmELoWmIbfeyYWKbFTyepWHwztzP9tQhnAt4TNyzOA/MyNf+GtaKpx9c4JTi6iju
-         dJ8OoGqG/Vyut4LpVzoLpuU13Vwg5tOJzydPWZVzAAZsXjRB/YG6maDB+xIu8ThXuk9c
-         I9iqS1jmFOnfUYFWYKgXDcKcZEmY8ePoJ+N4f7qbVWcqMkM4RyTXxqfltwlxqcYGUo2M
-         CCncPwnb247DPBtvp5BWTc93NwlQDVLmoTW9UUqCHtyLYiD8mK3PuaVyuEc1J/sDQlD8
-         lKvkiBocEclB62QbEGr6sc8/XUWrRJONoPz5T5B6GHWQbQPd3gijH0HWPcOw1/myPwVt
-         +6gw==
-X-Forwarded-Encrypted: i=1; AJvYcCXuTflkjw8It5u0S6XDAxGQ6slTOYqPEEEXi4aEK/opw9VkpDa4qKIWQmqVCZoLwv21R44+aw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzrOX2u/CEouAD13NUmLgxq5zYsFjZqxQ/YE721gTdj3h1EH8Ni
-	mMZV1iltiqNK8nFswbRBfqhz8PFiIOdBkaG4LxU1rTr/ACOAJPe64cru/oT5wHwQqGsCVVxVWci
-	5D2W4544MsvIIpOi37N71UHDlT1GNuNg=
-X-Gm-Gg: ASbGncvGC3ENhEMrgD03qrmukbLeb+16PtehcT6SE31o5DA398rZTf5qvPScuaTHmmp
-	QBrtvglPPaI6h9G7NaXIHt85N3KivKsx1tqaqcLxQlRimEfRrvMSZzBok6Orn64JsWnabZHnySW
-	Vpif5OQssop37oVCEOnjPewJb18kuxlKH8a8N+NeYaUZhWehFr6xYPd1681PafE1xORKDkI4YWB
-	g==
-X-Google-Smtp-Source: AGHT+IFmjVcaAlwKjAztbNsqFiGATow/TiLkiXA3EwSVpmOxrMIFRhzcapgfz5nrrTRgAUyHU/AqUz9S6WnnECsyKnc=
-X-Received: by 2002:a17:907:db16:b0:ae3:cab8:d9d8 with SMTP id
- a640c23a62f3a-ae3cab8d9f0mr175432066b.41.1751468016986; Wed, 02 Jul 2025
- 07:53:36 -0700 (PDT)
+	s=arc-20240116; t=1751469851; c=relaxed/simple;
+	bh=REQJvMOxPN1zceDMB+5oPsUix0Ymins0V8euAwSCMcE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ooCONp42GjFqaD9LXK3dAntTNoAoEbFHHp1TNXxK/5XqdPpYNzbiHhJXpkJjIUMtsLsO54oYa2lS4Z+zBhivr3EjXtKb/3cppvOS+A9D2mKx1LtHH3SLnDorvijgdJ8dReKxS3f7+HZFBXEpduZt5hjkYoOL7ogpZLRbEYCWGV8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=none smtp.mailfrom=h08.hostsharing.net; arc=none smtp.client-ip=83.223.95.100
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
+	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
+	by bmailout1.hostsharing.net (Postfix) with ESMTPS id E67242C06841;
+	Wed,  2 Jul 2025 17:24:06 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+	id CEC83402D97; Wed,  2 Jul 2025 17:24:06 +0200 (CEST)
+Date: Wed, 2 Jul 2025 17:24:06 +0200
+From: Lukas Wunner <lukas@wunner.de>
+To: Hans de Goede <hdegoede@redhat.com>
+Cc: Ben Hutchings <ben@decadent.org.uk>, David Airlie <airlied@redhat.com>,
+	Bjorn Helgaas <helgaas@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Andi Kleen <ak@linux.intel.com>, Ahmed Salem <x0rw3ll@gmail.com>,
+	Borislav Petkov <bp@alien8.de>, dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev, linux-pci@vger.kernel.org
+Subject: Re: [PATCH] agp/amd64: Bind to unsupported devices only if AGP is
+ present
+Message-ID: <aGVPFh8bxWpeD4OP@wunner.de>
+References: <f8ff40f35a9a5836d1371f60e85c09c5735e3c5e.1750497201.git.lukas@wunner.de>
+ <b73fbb3e3f03d842f36e6ba2e6a8ad0bb4b904fd.camel@decadent.org.uk>
+ <aFalrV1500saBto5@wunner.de>
+ <279f63810875f2168c591aab0f30f8284d12fe02.camel@decadent.org.uk>
+ <aFa8JJaRP-FUyy6Y@wunner.de>
+ <9077aab5304e1839786df9adb33c334d10c69397.camel@decadent.org.uk>
+ <98012c55-1e0d-4c1b-b650-5bb189d78009@redhat.com>
+ <aFwIu0QveVuJZNoU@wunner.de>
+ <eb98477c-2d5c-4980-ab21-6aed8f0451c9@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAPDiVH8gaBH6o_OY-zUWYpDbj5mhiqmofKGb71gLgHOi4vA=Vw@mail.gmail.com>
- <0ba2176e-3339-4a8b-850a-ca5643939c8b@oss.qualcomm.com> <fd3bd8b1-4108-445a-b65f-4769d73e6e63@arm.com>
- <4a13d862-1bbb-4a98-bc1d-219bf78f7c0d@amd.com> <CAPDiVH-kVCUY8DKexT9OqAZsvkZ5_CGo8d8nENYA-kD=s_x8wA@mail.gmail.com>
- <e008afed-819d-43eb-8895-2c7aaf24ec13@oss.qualcomm.com>
-In-Reply-To: <e008afed-819d-43eb-8895-2c7aaf24ec13@oss.qualcomm.com>
-From: Matt Mower <mowerm@gmail.com>
-Date: Wed, 2 Jul 2025 07:53:25 -0700
-X-Gm-Features: Ac12FXwmRNy0XV6HfwF_miAtw-Zu6Zd6a4pUwqmVNkw4VdKWa75ipABJl-DtuBk
-Message-ID: <CAPDiVH-xPDmx-KQx7YJY=7+kwJNbGY-rEu-w+cz18p=kjnKFsw@mail.gmail.com>
-Subject: Re: ath12k_pci errors and loss of connectivity in 6.12.y branch
-To: Baochen Qiang <baochen.qiang@oss.qualcomm.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Jeff Johnson <jjohnson@kernel.org>, will@kernel.org, joro@8bytes.org, 
-	linux-wireless@vger.kernel.org, ath12k@lists.infradead.org, 
-	1107521@bugs.debian.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <eb98477c-2d5c-4980-ab21-6aed8f0451c9@redhat.com>
 
-> Matt, could you help enable verbose ath12k log to verify my guess?
+On Wed, Jun 25, 2025 at 08:43:45PM +0200, Hans de Goede wrote:
+> On 25-Jun-25 4:33 PM, Lukas Wunner wrote:
+> > So how do you know that all of these unsupported devices have
+> > PCI_CLASS_BRIDGE_HOST?
+> 
+> The top of the driver says
+> 
+>  * This is a GART driver for the AMD Opteron/Athlon64 on-CPU northbridge.
+>  * It also includes support for the AMD 8151 AGP bridge
+> 
+> Note this only talks about north bridges.
+> 
+> Also given the age of AGP, I would expect the agp_amd64_pci_table[]
+> to be pretty much complete and the need for probing for unknown AGP
+> capable bridges is likely a relic which can be disabled by default.
+> 
+> Actually the amd64-agp code is weird in that has support for
+> unknown AGP bridges enabled by default in the first place.
+> 
+> The global probe unknown AGP bridges bool which is called
+> agp_try_unsupported_boot is false by default.
+> 
+> As discussed in the thread with my patch, we should probably
+> just change the AMD specific agp_try_unsupported to default
+> to false too.
 
-Here are kernel logs with ath12k debugging enabled:
-1. WLAN.HMT.1.0.c5-00481-QCAHMTSWPL_V1.0_V2.0_SILICONZ-3
-   https://cmphys.com/ath12k/dmesg-6.12.35-ath12kdebug-fw0x100301e1-20250702.log
-2. WLAN.HMT.1.1.c5-00284.1-QCAHMTSWPL_V1.0_V2.0_SILICONZ-3
-   https://cmphys.com/ath12k/dmesg-6.12.35-ath12kdebug-fw0x1108811c-20250702.log
+Since the breaking change (causing the annoying message) was introduced
+in this cycle, I think we should err on the side of caution and avoid
+the risk of creating new regressions, if at all possible.
 
-I captured these after setting CONFIG_ATH12K_DEBUG=y and running "echo
-0xffffffff > /sys/module/ath12k/parameters/debug_mask" during boot
-(using @reboot in crontab).
+However if you are willing to deal with potential fallout, I would like
+to encourage you to set "agp_try_unsupported = 0" (which the Kconfig
+help text suggests is already the case) as a patch for the next cycle.
+
+If you could give v2 of my (just submitted) patch a spin and respond
+with a Tested-by on success, I'd be grateful.  I think this could go
+in either through drm-misc-fixes or pci/for-linus (since the offending
+commit went in through the pci tree).
+
+Thanks!
+
+Lukas
