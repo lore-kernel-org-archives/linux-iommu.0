@@ -1,81 +1,51 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 143A622F767
-	for <iommu@lists.linux.dev>; Wed,  2 Jul 2025 07:49:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DD0D24338F;
+	Wed,  2 Jul 2025 09:00:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751442582; cv=none; b=uGze+aatar0WwgpvV3Brrbqvq3QDgLIctQZwmyJR4gUotquOf5EEtZ5pkdwP8r4y+/ZMafXw5FWYIIo5m/SO2PDs3XAiIeylI4bmNdS4DBgqWjlk6EplapFQ4PBqzQRbUdpCwQI2Lj+EvbpG4u6QmOwET8/BKgo5oxnAEBkCr5E=
+	t=1751446808; cv=none; b=MS0kRAMZr1SWTRM/XPo5YBU6wlDXk7bDAKhpBevWT5hDF06sRAjJJw9vxp8LTxzLlg/uZANgSBmHKHrbTCB6hFvkCCeyq9TTdIQulHKLR1y1b4zPQ0GxPf32ApK4dU41rtOU5Ju0fHRzjW1T4d9k3VXereHY+t+YvTrmAeJQof8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751442582; c=relaxed/simple;
-	bh=90eOtoDZR87XEjTT5OSrKcgQ+qlNMG8Uc+U/vnDdH1w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=eOKJ7tKhUm8k/sNM4gc5EYRxDAhV+6GhfLH8RpJp5vf7F2A0IKCQBFgJF4+WGlr9CyJ+/iBtmitom6xb8WE5ERiZTF5j7KMH9MXRbfHgnbOrHdJE869CctQ7qYBgfxKvWeN0nzjrWGMYaylmP04PbmVvcfAkm9d6zqe898z4MPM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=oz3WEWgg; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=c6+OnuAK; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=oz3WEWgg; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=c6+OnuAK; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	s=arc-20240116; t=1751446808; c=relaxed/simple;
+	bh=ozh9/+qetdy1B44Hk1ck9qSNB6VPcxBClhcVl6wJg/8=;
+	h=Content-Type:Message-ID:Date:MIME-Version:Subject:From:To:
+	 References:In-Reply-To; b=oWO/fzultzCS6K5deDupbbW0EjWar6q+JIzUH9GkzcM8+oP4XCtHtCBcq7UuaEyR/Tkk/XEWZy/1p6rtSOSBNyMt65SjGuAHYpLikE8X+Ki0jTdXnO0VjQIPU8Am3JXBEn/kA7aeSpZWgdG1IFKe9Lc0QfTeTWOvTO15Ty8Rkd8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NibrHSar; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="oz3WEWgg";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="c6+OnuAK";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="oz3WEWgg";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="c6+OnuAK"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 31CD62111F;
-	Wed,  2 Jul 2025 07:49:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1751442577; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=5qgNZZo+UhrOw0qZY5yzCbxyS0sZdhvhyBwDFlNZPn0=;
-	b=oz3WEWggc4R2HbV+0+aBPK1Y4RXZcIi7eBbXCZ3EUjcEJYUISWyZOfEEQKRlJzF2QYtVtm
-	ZTzk4NmRlRThEsLY2ImfBhTn7L9aGgH6w0ndqs1uKk+QtPrRToWYrRK0yN8VZJlQuSeif6
-	YgR6+CZfcXqmuC5EkymSxi0yMWnlxEY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1751442577;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=5qgNZZo+UhrOw0qZY5yzCbxyS0sZdhvhyBwDFlNZPn0=;
-	b=c6+OnuAKYY9awBdfeywvmh/5Gc+JIqt5Hl6RyTduPv+ZgHTefqJqPsT5+irWeoLvJHFmYs
-	U82NN1d5cKdzJ3Dg==
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.de header.s=susede2_rsa header.b=oz3WEWgg;
-	dkim=pass header.d=suse.de header.s=susede2_ed25519 header.b=c6+OnuAK
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1751442577; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=5qgNZZo+UhrOw0qZY5yzCbxyS0sZdhvhyBwDFlNZPn0=;
-	b=oz3WEWggc4R2HbV+0+aBPK1Y4RXZcIi7eBbXCZ3EUjcEJYUISWyZOfEEQKRlJzF2QYtVtm
-	ZTzk4NmRlRThEsLY2ImfBhTn7L9aGgH6w0ndqs1uKk+QtPrRToWYrRK0yN8VZJlQuSeif6
-	YgR6+CZfcXqmuC5EkymSxi0yMWnlxEY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1751442577;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=5qgNZZo+UhrOw0qZY5yzCbxyS0sZdhvhyBwDFlNZPn0=;
-	b=c6+OnuAKYY9awBdfeywvmh/5Gc+JIqt5Hl6RyTduPv+ZgHTefqJqPsT5+irWeoLvJHFmYs
-	U82NN1d5cKdzJ3Dg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 956D213A24;
-	Wed,  2 Jul 2025 07:49:36 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id s2TeIpDkZGjoQQAAD6G6ig
-	(envelope-from <tzimmermann@suse.de>); Wed, 02 Jul 2025 07:49:36 +0000
-Message-ID: <ef053350-975b-4685-8e09-0493d526801d@suse.de>
-Date: Wed, 2 Jul 2025 09:49:36 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NibrHSar"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1751446807; x=1782982807;
+  h=message-id:date:mime-version:subject:from:to:references:
+   in-reply-to;
+  bh=ozh9/+qetdy1B44Hk1ck9qSNB6VPcxBClhcVl6wJg/8=;
+  b=NibrHSarcbASkUMY6PsYzDfDSSIelJvkne6Et1OXD7zvqID7Iz4F+w2s
+   3RrhAzZlXbdaDGkGAl9D1G9IwHuEtFzfG3xERdoYPEQfgO9J8BLbNI9hE
+   22SzEmpb1zwr/UbNKGk4b6xu+faaMb7l2hXdTnrs+N5BdkeNc2ciJx7N2
+   LDzngQaoyIHsPH0dkhrkhxDUMTkdK7hypbvZ/qxaLLqymHF1aAf/DjL5e
+   gwiGQ8wHv3Y9/HwPUn4k7PPuRJg9M2+Hw7E42be7ilZuucJbl2UA+Tfqh
+   rb4vHFYWFKT/pXTlUg+lX8iQo/24+56vIoJSLwKxkvZbHsqb9rnzVvxNi
+   w==;
+X-CSE-ConnectionGUID: H9/uu8R5QhCY60QZfrLLTg==
+X-CSE-MsgGUID: cYDzBT0SRGquiupXLg4qSg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11481"; a="63979302"
+X-IronPort-AV: E=Sophos;i="6.16,281,1744095600"; 
+   d="scan'208,223";a="63979302"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2025 02:00:06 -0700
+X-CSE-ConnectionGUID: RifH1KUrRtuZRm+aVX2CrQ==
+X-CSE-MsgGUID: ZQGBJ625SRK6jkZ5y9Bn8Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,281,1744095600"; 
+   d="scan'208,223";a="154342502"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.243.252]) ([10.124.243.252])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2025 02:00:03 -0700
+Content-Type: multipart/mixed; boundary="------------3m0g6PfBR00YwHw0BbrfPgi0"
+Message-ID: <96d68cb2-9240-4179-bca0-8ad2d70ab281@linux.intel.com>
+Date: Wed, 2 Jul 2025 17:00:00 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,299 +53,182 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 9/9] PCI: Add a new 'boot_display' attribute
-To: Mario Limonciello <superm1@kernel.org>, David Airlie <airlied@gmail.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Simona Vetter <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
- "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
- "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
- "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
- "open list:SOUND" <linux-sound@vger.kernel.org>,
- Daniel Dadap <ddadap@nvidia.com>,
- Mario Limonciello <mario.limonciello@amd.com>,
- Bjorn Helgaas <bhelgaas@google.com>
-References: <20250627043108.3141206-1-superm1@kernel.org>
- <20250627043108.3141206-10-superm1@kernel.org>
- <41587824-4a05-4ead-b24c-4729007cd663@suse.de>
- <8878af70-3eb8-495b-b8df-43a10285c4f5@kernel.org>
- <732aeb75-71e7-49e7-a5f2-2080ee94a273@suse.de>
- <8f9efe23-c774-477d-97ad-8e22532ad6b2@kernel.org>
+Subject: Re: [REGRESSION][BISECTED] Performance Regression in IOMMU/VT-d Since
+ Kernel 6.10
+From: Baolu Lu <baolu.lu@linux.intel.com>
+To: Ioanna Alifieraki <ioanna-maria.alifieraki@canonical.com>,
+ kevin.tian@intel.com, jroedel@suse.de, robin.murphy@arm.com,
+ will@kernel.org, joro@8bytes.org, dwmw2@infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ regressions@lists.linux.dev, stable@vger.kernel.org
+References: <20250701171154.52435-1-ioanna-maria.alifieraki@canonical.com>
+ <7d2214f3-3b54-4b74-a18b-aca1fdf4fdb4@linux.intel.com>
 Content-Language: en-US
-From: Thomas Zimmermann <tzimmermann@suse.de>
-Autocrypt: addr=tzimmermann@suse.de; keydata=
- xsBNBFs50uABCADEHPidWt974CaxBVbrIBwqcq/WURinJ3+2WlIrKWspiP83vfZKaXhFYsdg
- XH47fDVbPPj+d6tQrw5lPQCyqjwrCPYnq3WlIBnGPJ4/jreTL6V+qfKRDlGLWFjZcsrPJGE0
- BeB5BbqP5erN1qylK9i3gPoQjXGhpBpQYwRrEyQyjuvk+Ev0K1Jc5tVDeJAuau3TGNgah4Yc
- hdHm3bkPjz9EErV85RwvImQ1dptvx6s7xzwXTgGAsaYZsL8WCwDaTuqFa1d1jjlaxg6+tZsB
- 9GluwvIhSezPgnEmimZDkGnZRRSFiGP8yjqTjjWuf0bSj5rUnTGiyLyRZRNGcXmu6hjlABEB
- AAHNJ1Rob21hcyBaaW1tZXJtYW5uIDx0emltbWVybWFubkBzdXNlLmRlPsLAjgQTAQgAOAIb
- AwULCQgHAgYVCgkICwIEFgIDAQIeAQIXgBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftODH
- AAoJEGgNwR1TC3ojx1wH/0hKGWugiqDgLNXLRD/4TfHBEKmxIrmfu9Z5t7vwUKfwhFL6hqvo
- lXPJJKQpQ2z8+X2vZm/slsLn7J1yjrOsoJhKABDi+3QWWSGkaGwRJAdPVVyJMfJRNNNIKwVb
- U6B1BkX2XDKDGffF4TxlOpSQzdtNI/9gleOoUA8+jy8knnDYzjBNOZqLG2FuTdicBXblz0Mf
- vg41gd9kCwYXDnD91rJU8tzylXv03E75NCaTxTM+FBXPmsAVYQ4GYhhgFt8S2UWMoaaABLDe
- 7l5FdnLdDEcbmd8uLU2CaG4W2cLrUaI4jz2XbkcPQkqTQ3EB67hYkjiEE6Zy3ggOitiQGcqp
- j//OwE0EWznS4AEIAMYmP4M/V+T5RY5at/g7rUdNsLhWv1APYrh9RQefODYHrNRHUE9eosYb
- T6XMryR9hT8XlGOYRwKWwiQBoWSDiTMo/Xi29jUnn4BXfI2px2DTXwc22LKtLAgTRjP+qbU6
- 3Y0xnQN29UGDbYgyyK51DW3H0If2a3JNsheAAK+Xc9baj0LGIc8T9uiEWHBnCH+RdhgATnWW
- GKdDegUR5BkDfDg5O/FISymJBHx2Dyoklv5g4BzkgqTqwmaYzsl8UxZKvbaxq0zbehDda8lv
- hFXodNFMAgTLJlLuDYOGLK2AwbrS3Sp0AEbkpdJBb44qVlGm5bApZouHeJ/+n+7r12+lqdsA
- EQEAAcLAdgQYAQgAIAIbDBYhBHIX+6yM6c9jRKFo5WgNwR1TC3ojBQJftOH6AAoJEGgNwR1T
- C3ojVSkIALpAPkIJPQoURPb1VWjh34l0HlglmYHvZszJWTXYwavHR8+k6Baa6H7ufXNQtThR
- yIxJrQLW6rV5lm7TjhffEhxVCn37+cg0zZ3j7zIsSS0rx/aMwi6VhFJA5hfn3T0TtrijKP4A
- SAQO9xD1Zk9/61JWk8OysuIh7MXkl0fxbRKWE93XeQBhIJHQfnc+YBLprdnxR446Sh8Wn/2D
- Ya8cavuWf2zrB6cZurs048xe0UbSW5AOSo4V9M0jzYI4nZqTmPxYyXbm30Kvmz0rYVRaitYJ
- 4kyYYMhuULvrJDMjZRvaNe52tkKAvMevcGdt38H4KSVXAylqyQOW5zvPc4/sq9c=
-In-Reply-To: <8f9efe23-c774-477d-97ad-8e22532ad6b2@kernel.org>
+In-Reply-To: <7d2214f3-3b54-4b74-a18b-aca1fdf4fdb4@linux.intel.com>
+
+This is a multi-part message in MIME format.
+--------------3m0g6PfBR00YwHw0BbrfPgi0
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spamd-Result: default: False [-4.51 / 50.00];
-	BAYES_HAM(-3.00)[100.00%];
-	NEURAL_HAM_LONG(-1.00)[-1.000];
-	R_DKIM_ALLOW(-0.20)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	NEURAL_HAM_SHORT(-0.20)[-1.000];
-	MIME_GOOD(-0.10)[text/plain];
-	MX_GOOD(-0.01)[];
-	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	FREEMAIL_TO(0.00)[kernel.org,gmail.com];
-	FUZZY_BLOCKED(0.00)[rspamd.com];
-	RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	RCPT_COUNT_TWELVE(0.00)[25];
-	TO_DN_ALL(0.00)[];
-	MIME_TRACE(0.00)[0:+];
-	ARC_NA(0.00)[];
-	TO_MATCH_ENVRCPT_ALL(0.00)[];
-	FREEMAIL_ENVRCPT(0.00)[gmail.com];
-	RCVD_TLS_ALL(0.00)[];
-	RCVD_COUNT_TWO(0.00)[2];
-	FROM_EQ_ENVFROM(0.00)[];
-	FROM_HAS_DN(0.00)[];
-	SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from];
-	RECEIVED_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	MID_RHS_MATCH_FROM(0.00)[];
-	DKIM_TRACE(0.00)[suse.de:+];
-	RCVD_VIA_SMTP_AUTH(0.00)[];
-	DBL_BLOCKED_OPENRESOLVER(0.00)[amd.com:email,suse.de:dkim,suse.de:mid,suse.de:email,imap1.dmz-prg2.suse.org:helo,imap1.dmz-prg2.suse.org:rdns]
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Rspamd-Queue-Id: 31CD62111F
-X-Rspamd-Action: no action
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Spam-Score: -4.51
 
-Hi
+On 7/2/2025 1:14 PM, Baolu Lu wrote:
+> On 7/2/25 01:11, Ioanna Alifieraki wrote:
+>> #regzbot introduced: 129dab6e1286
+>>
+>> Hello everyone,
+>>
+>> We've identified a performance regression that starts with linux
+>> kernel 6.10 and persists through 6.16(tested at commit e540341508ce).
+>> Bisection pointed to commit:
+>> 129dab6e1286 ("iommu/vt-d: Use cache_tag_flush_range_np() in 
+>> iotlb_sync_map").
+>>
+>> The issue occurs when running fio against two NVMe devices located
+>> under the same PCIe bridge (dual-port NVMe configuration). Performance
+>> drops compared to configurations where the devices are on different
+>> bridges.
+>>
+>> Observed Performance:
+>> - Before the commit: ~6150 MiB/s, regardless of NVMe device placement.
+>> - After the commit:
+>>    -- Same PCIe bridge: ~4985 MiB/s
+>>    -- Different PCIe bridges: ~6150 MiB/s
+>>
+>>
+>> Currently we can only reproduce the issue on a Z3 metal instance on
+>> gcp. I suspect the issue can be reproducible if you have a dual port
+>> nvme on any machine.
+>> At [1] there's a more detailed description of the issue and details
+>> on the reproducer.
+> 
+> This test was running on bare metal hardware instead of any
+> virtualization guest, right? If that's the case,
+> cache_tag_flush_range_np() is almost a no-op.
+> 
+> Can you please show me the capability register of the IOMMU by:
+> 
+> #cat /sys/bus/pci/devices/[pci_dev_name]/iommu/intel-iommu/cap
 
-Am 30.06.25 um 20:37 schrieb Mario Limonciello:
-> On 6/30/2025 2:24 AM, Thomas Zimmermann wrote:
->> Hi
->>
->> Am 27.06.25 um 17:37 schrieb Mario Limonciello:
->>> On 6/27/2025 2:07 AM, Thomas Zimmermann wrote:
->>>> Hi
->>>>
->>>> Am 27.06.25 um 06:31 schrieb Mario Limonciello:
->>>>> From: Mario Limonciello <mario.limonciello@amd.com>
->>>>>
->>>>> On systems with multiple GPUs there can be uncertainty which GPU 
->>>>> is the
->>>>> primary one used to drive the display at bootup. In order to 
->>>>> disambiguate
->>>>> this add a new sysfs attribute 'boot_display' that uses the output of
->>>>> video_is_primary_device() to populate whether a PCI device was 
->>>>> used for
->>>>> driving the display.
->>>>>
->>>>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
->>>>> ---
->>>>> v6:
->>>>>   * Only show for the device that is boot display
->>>>>   * Only create after PCI device sysfs files are initialized to 
->>>>> ensure
->>>>>     that resources are ready.
->>>>> v4:
->>>>>   * new patch
->>>>> ---
->>>>>   Documentation/ABI/testing/sysfs-bus-pci |  8 +++++
->>>>>   drivers/pci/pci-sysfs.c                 | 46 
->>>>> +++++++++++++++++++++ ++++
->>>>
->>>> The code looks good. Just one more question: could this be added 
->>>> independently from the PCI bus (at a reasonable cost)? There are 
->>>> other busses that can host the boot display. Alternatively, we'd 
->>>> add this attribute per bus as needed.
->>>
->>> It depends upon the underlying hardware implementation.  On x86 it's 
->>> always PCI and so I realized there is a requirement that PCI 
->>> resources are setup before screen_info event works.
->>>
->>> That is the v5 version of this patch would have had a potential race 
->>> condition with userspace where boot_display didn't always show '1' 
->>> if userspace read it too quickly.
->>>
->>> Other architecture's hardware implementation might have similar 
->>> problem.
->>>
->>> So in summary I think it would be better to do it per-bus.  If we 
->>> realize there is indeed code duplication we can always move this to 
->>> a common helper at that point.
->>
->> Ok, makes sense. With the kernel test robot's issues fixed:
->>
->> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
->
-> Thanks, I've got a fix locally for it.
->>
->> I guess that interface also needs some sort of OK from user-space devs?
->>
->
-> Who needs to OK it?  I do have MR's for matching userspace 
-> implementations mentioned in the cover letter already.
+Also, can you please try whether the below changes make any difference?
+I've also attached a patch file to this email so you can apply the
+change more easily.
 
-The MRs are the right place. Maybe ask Dave Airlie for a comment. He was 
-most outspoken against the original approach.
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 7aa3932251b2..f60201ee4be0 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1796,6 +1796,18 @@ static int domain_setup_first_level(struct 
+intel_iommu *iommu,
+  					  (pgd_t *)pgd, flags, old);
+  }
 
-Best regards
-Thomas
++static bool domain_need_iotlb_sync_map(struct dmar_domain *domain,
++				       struct intel_iommu *iommu)
++{
++	if (cap_caching_mode(iommu->cap) && !domain->use_first_level)
++		return true;
++
++	if (rwbf_quirk || cap_rwbf(iommu->cap))
++		return true;
++
++	return false;
++}
++
+  static int dmar_domain_attach_device(struct dmar_domain *domain,
+  				     struct device *dev)
+  {
+@@ -1833,6 +1845,8 @@ static int dmar_domain_attach_device(struct 
+dmar_domain *domain,
+  	if (ret)
+  		goto out_block_translation;
 
->
->> Best regards
->> Thomas
->>
->>>
->>>>
->>>> Best regards
->>>> Thomas
->>>>
->>>>>   2 files changed, 54 insertions(+)
->>>>>
->>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/ 
->>>>> Documentation/ ABI/testing/sysfs-bus-pci
->>>>> index 69f952fffec72..8b455b1a58852 100644
->>>>> --- a/Documentation/ABI/testing/sysfs-bus-pci
->>>>> +++ b/Documentation/ABI/testing/sysfs-bus-pci
->>>>> @@ -612,3 +612,11 @@ Description:
->>>>>             # ls doe_features
->>>>>             0001:01        0001:02        doe_discovery
->>>>> +
->>>>> +What:        /sys/bus/pci/devices/.../boot_display
->>>>> +Date:        October 2025
->>>>> +Contact:    Linux PCI developers <linux-pci@vger.kernel.org>
->>>>> +Description:
->>>>> +        This file indicates the device was used as a boot
->>>>> +        display. If the device was used as the boot display, the 
->>>>> file
->>>>> +        will be present and contain "1".
->>>>> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
->>>>> index 268c69daa4d57..cc766461de1da 100644
->>>>> --- a/drivers/pci/pci-sysfs.c
->>>>> +++ b/drivers/pci/pci-sysfs.c
->>>>> @@ -30,6 +30,7 @@
->>>>>   #include <linux/msi.h>
->>>>>   #include <linux/of.h>
->>>>>   #include <linux/aperture.h>
->>>>> +#include <asm/video.h>
->>>>>   #include "pci.h"
->>>>>   #ifndef ARCH_PCI_DEV_GROUPS
->>>>> @@ -679,6 +680,13 @@ const struct attribute_group *pcibus_groups[] 
->>>>> = {
->>>>>       NULL,
->>>>>   };
->>>>> +static ssize_t boot_display_show(struct device *dev, struct 
->>>>> device_attribute *attr,
->>>>> +                 char *buf)
->>>>> +{
->>>>> +    return sysfs_emit(buf, "1\n");
->>>>> +}
->>>>> +static DEVICE_ATTR_RO(boot_display);
->>>>> +
->>>>>   static ssize_t boot_vga_show(struct device *dev, struct 
->>>>> device_attribute *attr,
->>>>>                    char *buf)
->>>>>   {
->>>>> @@ -1246,6 +1254,37 @@ static int pci_create_attr(struct pci_dev 
->>>>> *pdev, int num, int write_combine)
->>>>>       return 0;
->>>>>   }
->>>>> +/**
->>>>> + * pci_create_boot_display_file - create a file in sysfs for @dev
->>>>> + * @pdev: dev in question
->>>>> + *
->>>>> + * Creates a file `boot_display` in sysfs for the PCI device @pdev
->>>>> + * if it is the boot display device.
->>>>> + */
->>>>> +static int pci_create_boot_display_file(struct pci_dev *pdev)
->>>>> +{
->>>>> +#ifdef CONFIG_VIDEO
->>>>> +    if (video_is_primary_device(&pdev->dev))
->>>>> +        return sysfs_create_file(&pdev->dev.kobj, 
->>>>> &dev_attr_boot_display.attr);
->>>>> +#endif
->>>>> +    return 0;
->>>>> +}
->>>>> +
->>>>> +/**
->>>>> + * pci_remove_boot_display_file - remove the boot display file 
->>>>> for @dev
->>>>> + * @pdev: dev in question
->>>>> + *
->>>>> + * Removes the file `boot_display` in sysfs for the PCI device @pdev
->>>>> + * if it is the boot display device.
->>>>> + */
->>>>> +static void pci_remove_boot_display_file(struct pci_dev *pdev)
->>>>> +{
->>>>> +#ifdef CONFIG_VIDEO
->>>>> +    if (video_is_primary_device(&pdev->dev))
->>>>> +        sysfs_remove_file(&pdev->dev.kobj, 
->>>>> &dev_attr_boot_display.attr);
->>>>> +#endif
->>>>> +}
->>>>> +
->>>>>   /**
->>>>>    * pci_create_resource_files - create resource files in sysfs 
->>>>> for @dev
->>>>>    * @pdev: dev in question
->>>>> @@ -1654,9 +1693,15 @@ static const struct attribute_group 
->>>>> pci_dev_resource_resize_group = {
->>>>>   int __must_check pci_create_sysfs_dev_files(struct pci_dev *pdev)
->>>>>   {
->>>>> +    int retval;
->>>>> +
->>>>>       if (!sysfs_initialized)
->>>>>           return -EACCES;
->>>>> +    retval = pci_create_boot_display_file(pdev);
->>>>> +    if (retval)
->>>>> +        return retval;
->>>>> +
->>>>>       return pci_create_resource_files(pdev);
->>>>>   }
->>>>> @@ -1671,6 +1716,7 @@ void pci_remove_sysfs_dev_files(struct 
->>>>> pci_dev *pdev)
->>>>>       if (!sysfs_initialized)
->>>>>           return;
->>>>> +    pci_remove_boot_display_file(pdev);
->>>>>       pci_remove_resource_files(pdev);
->>>>>   }
->>>>
->>>
->>
->
++	domain->iotlb_sync_map |= domain_need_iotlb_sync_map(domain, iommu);
++
+  	return 0;
 
+  out_block_translation:
+@@ -3945,7 +3959,10 @@ static bool risky_device(struct pci_dev *pdev)
+  static int intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
+  				      unsigned long iova, size_t size)
+  {
+-	cache_tag_flush_range_np(to_dmar_domain(domain), iova, iova + size - 1);
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++
++	if (dmar_domain->iotlb_sync_map)
++		cache_tag_flush_range_np(dmar_domain, iova, iova + size - 1);
+
+  	return 0;
+  }
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 3ddbcc603de2..7ab2c34a5ecc 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -614,6 +614,9 @@ struct dmar_domain {
+  	u8 has_mappings:1;		/* Has mappings configured through
+  					 * iommu_map() interface.
+  					 */
++	u8 iotlb_sync_map:1;		/* Need to flush IOTLB cache or write
++					 * buffer when creating mappings.
++					 */
+
+  	spinlock_t lock;		/* Protect device tracking lists */
+  	struct list_head devices;	/* all devices' list */
 -- 
---
-Thomas Zimmermann
-Graphics Driver Developer
-SUSE Software Solutions Germany GmbH
-Frankenstrasse 146, 90461 Nuernberg, Germany
-GF: Ivo Totev, Andrew Myers, Andrew McDonald, Boudien Moerman
-HRB 36809 (AG Nuernberg)
+2.43.0
 
+Thanks,
+baolu
+--------------3m0g6PfBR00YwHw0BbrfPgi0
+Content-Type: text/plain; charset=UTF-8;
+ name="0001-iommu-vt-d-Avoid-unnecessary-cache_tag_flush_range_n.patch"
+Content-Disposition: attachment;
+ filename*0="0001-iommu-vt-d-Avoid-unnecessary-cache_tag_flush_range_n.pa";
+ filename*1="tch"
+Content-Transfer-Encoding: base64
+
+RnJvbSBkZGM0MjEwYTMzNjUxNDdkZjk3OGJkMGJmNDVkODI0YjljODY5ODc3IE1vbiBTZXAg
+MTcgMDA6MDA6MDAgMjAwMQpGcm9tOiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwu
+Y29tPgpEYXRlOiBXZWQsIDIgSnVsIDIwMjUgMTY6NTE6NDggKzA4MDAKU3ViamVjdDogW1BB
+VENIIDEvMV0gaW9tbXUvdnQtZDogQXZvaWQgdW5uZWNlc3NhcnkgY2FjaGVfdGFnX2ZsdXNo
+X3JhbmdlX25wKCkKCkZvciB0ZXN0IHB1cnBvc2Ugb25seSEKClNpZ25lZC1vZmYtYnk6IEx1
+IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5pbnRlbC5jb20+Ci0tLQogZHJpdmVycy9pb21tdS9p
+bnRlbC9pb21tdS5jIHwgMTkgKysrKysrKysrKysrKysrKysrLQogZHJpdmVycy9pb21tdS9p
+bnRlbC9pb21tdS5oIHwgIDMgKysrCiAyIGZpbGVzIGNoYW5nZWQsIDIxIGluc2VydGlvbnMo
+KyksIDEgZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2ludGVsL2lv
+bW11LmMgYi9kcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMKaW5kZXggN2FhMzkzMjI1MWIy
+Li5mNjAyMDFlZTRiZTAgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUu
+YworKysgYi9kcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmMKQEAgLTE3OTYsNiArMTc5Niwx
+OCBAQCBzdGF0aWMgaW50IGRvbWFpbl9zZXR1cF9maXJzdF9sZXZlbChzdHJ1Y3QgaW50ZWxf
+aW9tbXUgKmlvbW11LAogCQkJCQkgIChwZ2RfdCAqKXBnZCwgZmxhZ3MsIG9sZCk7CiB9CiAK
+K3N0YXRpYyBib29sIGRvbWFpbl9uZWVkX2lvdGxiX3N5bmNfbWFwKHN0cnVjdCBkbWFyX2Rv
+bWFpbiAqZG9tYWluLAorCQkJCSAgICAgICBzdHJ1Y3QgaW50ZWxfaW9tbXUgKmlvbW11KQor
+eworCWlmIChjYXBfY2FjaGluZ19tb2RlKGlvbW11LT5jYXApICYmICFkb21haW4tPnVzZV9m
+aXJzdF9sZXZlbCkKKwkJcmV0dXJuIHRydWU7CisKKwlpZiAocndiZl9xdWlyayB8fCBjYXBf
+cndiZihpb21tdS0+Y2FwKSkKKwkJcmV0dXJuIHRydWU7CisKKwlyZXR1cm4gZmFsc2U7Cit9
+CisKIHN0YXRpYyBpbnQgZG1hcl9kb21haW5fYXR0YWNoX2RldmljZShzdHJ1Y3QgZG1hcl9k
+b21haW4gKmRvbWFpbiwKIAkJCQkgICAgIHN0cnVjdCBkZXZpY2UgKmRldikKIHsKQEAgLTE4
+MzMsNiArMTg0NSw4IEBAIHN0YXRpYyBpbnQgZG1hcl9kb21haW5fYXR0YWNoX2RldmljZShz
+dHJ1Y3QgZG1hcl9kb21haW4gKmRvbWFpbiwKIAlpZiAocmV0KQogCQlnb3RvIG91dF9ibG9j
+a190cmFuc2xhdGlvbjsKIAorCWRvbWFpbi0+aW90bGJfc3luY19tYXAgfD0gZG9tYWluX25l
+ZWRfaW90bGJfc3luY19tYXAoZG9tYWluLCBpb21tdSk7CisKIAlyZXR1cm4gMDsKIAogb3V0
+X2Jsb2NrX3RyYW5zbGF0aW9uOgpAQCAtMzk0NSw3ICszOTU5LDEwIEBAIHN0YXRpYyBib29s
+IHJpc2t5X2RldmljZShzdHJ1Y3QgcGNpX2RldiAqcGRldikKIHN0YXRpYyBpbnQgaW50ZWxf
+aW9tbXVfaW90bGJfc3luY19tYXAoc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLAogCQkJ
+CSAgICAgIHVuc2lnbmVkIGxvbmcgaW92YSwgc2l6ZV90IHNpemUpCiB7Ci0JY2FjaGVfdGFn
+X2ZsdXNoX3JhbmdlX25wKHRvX2RtYXJfZG9tYWluKGRvbWFpbiksIGlvdmEsIGlvdmEgKyBz
+aXplIC0gMSk7CisJc3RydWN0IGRtYXJfZG9tYWluICpkbWFyX2RvbWFpbiA9IHRvX2RtYXJf
+ZG9tYWluKGRvbWFpbik7CisKKwlpZiAoZG1hcl9kb21haW4tPmlvdGxiX3N5bmNfbWFwKQor
+CQljYWNoZV90YWdfZmx1c2hfcmFuZ2VfbnAoZG1hcl9kb21haW4sIGlvdmEsIGlvdmEgKyBz
+aXplIC0gMSk7CiAKIAlyZXR1cm4gMDsKIH0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUv
+aW50ZWwvaW9tbXUuaCBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuaAppbmRleCAzZGRi
+Y2M2MDNkZTIuLjdhYjJjMzRhNWVjYyAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9pbnRl
+bC9pb21tdS5oCisrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuaApAQCAtNjE0LDYg
+KzYxNCw5IEBAIHN0cnVjdCBkbWFyX2RvbWFpbiB7CiAJdTggaGFzX21hcHBpbmdzOjE7CQkv
+KiBIYXMgbWFwcGluZ3MgY29uZmlndXJlZCB0aHJvdWdoCiAJCQkJCSAqIGlvbW11X21hcCgp
+IGludGVyZmFjZS4KIAkJCQkJICovCisJdTggaW90bGJfc3luY19tYXA6MTsJCS8qIE5lZWQg
+dG8gZmx1c2ggSU9UTEIgY2FjaGUgb3Igd3JpdGUKKwkJCQkJICogYnVmZmVyIHdoZW4gY3Jl
+YXRpbmcgbWFwcGluZ3MuCisJCQkJCSAqLwogCiAJc3BpbmxvY2tfdCBsb2NrOwkJLyogUHJv
+dGVjdCBkZXZpY2UgdHJhY2tpbmcgbGlzdHMgKi8KIAlzdHJ1Y3QgbGlzdF9oZWFkIGRldmlj
+ZXM7CS8qIGFsbCBkZXZpY2VzJyBsaXN0ICovCi0tIAoyLjQzLjAKCg==
+
+--------------3m0g6PfBR00YwHw0BbrfPgi0--
