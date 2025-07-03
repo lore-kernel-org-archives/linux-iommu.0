@@ -1,88 +1,63 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 994771A073F
-	for <iommu@lists.linux.dev>; Thu,  3 Jul 2025 18:48:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 904812F2C66
+	for <iommu@lists.linux.dev>; Thu,  3 Jul 2025 19:29:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751568534; cv=none; b=bAWnOFD4LXdOFxFkHGaXmag+m1b3g2hIiBvQRqd1DgcycrsJrSRNYmJH8Wbohv8K4EFr/Nkxr3lD+JlTpWZsgHmvc2XSSEY7OJjf0D5/ImDvMVQflilaaZBoQjw2ixuzW8DjP3NDO/gMI9Ix68GbibyRSxefTBibGJI8IBL/GPM=
+	t=1751571001; cv=none; b=AY9JgAo0htLjluxjE7A+fz2tD4UNFS9RKG+UhZ1tWJ6QKPk8eg9MhZhMNooc2lOBLk0ussYwLrSaDKdNemeMbiZYL6f/rjvR+Q8q+W/fJ0hQxjaHTZuGEsOQClRSQ41m6r8Fu8psjVoMnVmXm/fBBLSgsaCaxh/EaMW2zH7K5Iw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751568534; c=relaxed/simple;
-	bh=5O1P4Qi5Ly7Yl1j45j9wqhnY5nin4eGqfmQLo0FqHpI=;
+	s=arc-20240116; t=1751571001; c=relaxed/simple;
+	bh=S5LofzUEXpq1vyCwo3YZcP+hQsGsFW0lU5QbNdytI7I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mBbEWUvqzxbF8F4JDs2u6n45qG3dznPIDGgkQVM2rAbYYHlkas5zt0TuxkF7s3k3GmTaLA+T68TRhTC2O7c9U4UAczeVpOrnfplg90hDpfh2ESn7qohPOTT+YG2qfyL8OjB/VZc3zUJvLdiNlODNm5w3+rq5gjWBGPaVX+4uDoU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Not6820V; arc=none smtp.client-ip=209.85.214.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=ddFsB1lXEFPCKqemmiDmLq1jom80FdLVLrIcBWtLHqedmo+LuhjrFCFYflezQMRDfrNhtFjnf5i1+3v7Kmv1/IPQWWEEcNgXPlmfWaV4sFUV6lsT/HWQ+4fafYy9rVk7ZEQlEYCxK5VIj78QWM5Ywl/Pu4cvi+oKv6a8FfG1P5Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cEiKHGt4; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Not6820V"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2357c61cda7so193035ad.1
-        for <iommu@lists.linux.dev>; Thu, 03 Jul 2025 11:48:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1751568532; x=1752173332; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qvzyiHvZKWRtHA7KGz4JH1KLn6i77WWlalz4Eq7c2XY=;
-        b=Not6820VU/nIiIx+77bNTzUtaZll6jvNAhFD6BOoGOeUyZ7xUR5+jxHnDFbF17rjue
-         KnZXNTevO8CX6rnfT4DoQSSAmfyomIb/fqdFmgTihaU1JYs2yIeDF0Ro7AsVADfJ83U7
-         HD9yEjqiY2AkIxTBb5qcyhutx+TreMeX/ym/D337C39YQXCb2+Cz8V/cYUYTzLEgT4+T
-         qLvS64RsSgbb82F+SE3tbK5WiE/Bv1oPRFhiyTDE792IjDbuEahwGT75XvHFuOmrSduT
-         gAB0QJ+qvFPLdVVu9L+u+C3+xgBkI8orE3K3k9HEQ21vayW4uqVGKz4FYLsGH3VsyrFu
-         efAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751568532; x=1752173332;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qvzyiHvZKWRtHA7KGz4JH1KLn6i77WWlalz4Eq7c2XY=;
-        b=gIx23dz6du/WJ9NNz4VZ3eRpqZlYi0RHEsVxacwUThp05Gts2KBCVaTO3j5YXyinOg
-         eLxDROJieJda3rGhR/mge3CtwUYnt/h4gUtoiUY3/22L4T7zAzY9RCkwBqYodSzcaXjO
-         A6ljL0Un49Xl6eXkmHTsdSHHk9zjjl69SGMX2V7bhjjxKeL9ktm2rWbWf6MI1WsdmRhF
-         DQwXL2ZIaYBZfyR4yw0jtN/K0V0O/j/9Uvr/ZtBV8QRxCBWH500PoW+yUVQGpk/ZH3Qj
-         jLpg8wtuo4H1bIAiU8H+AVYUpwwF0lliX9caMt3pLmlNQhE9SHz5Cu0N1BrQfktj3GCc
-         maOA==
-X-Forwarded-Encrypted: i=1; AJvYcCXLPKT2yjVH7JyksnkpHa/XJ5C7vSQqzPXyiIGxBZXdzwmRxy2kmR5ofd4eMK5ClmaXhqQ+zQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzR8jus+U7EckSMlwlUhoFmQplKh/Qx/Wn6snIB1EVs1yTb5Smz
-	4DFmJTUvtKEvKUSFh5KdoOegpcKzCIDjwGVlSPcwe4cADiEE8HXCGgR3OGn+t7jJWw==
-X-Gm-Gg: ASbGncvpM2yogxHb/ugw8laCpIXHEVKJ6/go6qlTwm+DMBHGHBSAAeqsxEAC34NYG4x
-	Itl5w6gKv5hYX/7PgV8hK7aNKW/klKUnDMqSOJO98kl2zzKN1Asp74s5kXqpBJPtjzO51h8Nb5/
-	z/xI6Va6Su2b2+03z5AnuSa/rYjk9WLue8G9zEe2XNBAhrhfv8lorDdl1d6lKoqCiODOeFEtI/D
-	D1+PfvQAz9+sckKajghDRIrVHRJiXjBqm4ep9YRxzmYZgAe0TymCQcsVTkNRtGRLa1X9ylj11BU
-	a2khtBQoPONBBIcBnhrplLdVb5cmLenaWS2Zb78KCn7biwxi6Vqj9MoK9BoZmOLrm7eZiRjGxk/
-	85puCU6AMtiCZDTNFMYzB
-X-Google-Smtp-Source: AGHT+IFuOFQYDWLy9dMFwm2BVYD/G6HSHUIkq7TbiXmhTvbZxzCpO4493oWkzZnsDCA2OiWThdj2eQ==
-X-Received: by 2002:a17:902:d582:b0:215:65f3:27ef with SMTP id d9443c01a7336-23c79ada924mr4107505ad.12.1751568531582;
-        Thu, 03 Jul 2025 11:48:51 -0700 (PDT)
-Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-23c8431a381sm1926105ad.20.2025.07.03.11.48.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jul 2025 11:48:51 -0700 (PDT)
-Date: Thu, 3 Jul 2025 18:48:42 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
-	corbet@lwn.net, will@kernel.org, bagasdotme@gmail.com,
-	robin.murphy@arm.com, joro@8bytes.org, thierry.reding@gmail.com,
-	vdumpa@nvidia.com, jonathanh@nvidia.com, shuah@kernel.org,
-	jsnitsel@redhat.com, nathan@kernel.org, peterz@infradead.org,
-	yi.l.liu@intel.com, mshavit@google.com, zhangzekun11@huawei.com,
-	iommu@lists.linux.dev, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-tegra@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	patches@lists.linux.dev, mochs@nvidia.com, alok.a.tiwari@oracle.com,
-	vasant.hegde@amd.com, dwmw2@infradead.org, baolu.lu@linux.intel.com
-Subject: Re: [PATCH v7 27/28] iommu/tegra241-cmdqv: Add user-space use support
-Message-ID: <aGbQipeSn0aZnwZU@google.com>
-References: <aGRIctg4T6cQECx4@google.com>
- <aGRcPSwaJkTeUrMx@Asurada-Nvidia>
- <aGRmaOORg-YDfncY@google.com>
- <aGRozoIDIlgl9H9x@Asurada-Nvidia>
- <aGR55PUBnwb8qT8U@google.com>
- <aGSBTpY0nkdp2TTL@Asurada-Nvidia>
- <aGSNmf5Q82xEbDpX@google.com>
- <20250702180541.GD1139770@nvidia.com>
- <aGaXqwzfLwsgCH6n@google.com>
- <20250703175532.GF1209783@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cEiKHGt4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1751571000; x=1783107000;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=S5LofzUEXpq1vyCwo3YZcP+hQsGsFW0lU5QbNdytI7I=;
+  b=cEiKHGt4uhUoqQJrj50jHHAsYspKmgmVIW5/yhkQgN0oZ3VFin1bxYuZ
+   KuxN9MuZwcBRR6ERl1mAOapcZRHczReK1F3gNZssOgYPXdHJ0/da0IarB
+   lIZtT7WhJBUxuyvKQczAJKRrTZQI8diom5zjvxu65bgUVlHLiIhaxwDSD
+   lcICqnP6LuG7mpqqSp4VdnvC0PqK8rF4YPnAb5lj+6Z7GCUze6T56YUdJ
+   SdcUN/ywTaQkylBZNuW0Lr8MTq7T3V5BNqg7Pm9KvFEMh/GK4zNQRXiHK
+   CDd1CkQJCS/4YwvMd6YchP7UjYQkyOg1VQhg3jBiCvppqFO76VsjWt/zq
+   A==;
+X-CSE-ConnectionGUID: bUj1eWNTRHOX5XhHyQUTfQ==
+X-CSE-MsgGUID: evFUfwL9SiacESxZZcLvHA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11483"; a="54024338"
+X-IronPort-AV: E=Sophos;i="6.16,285,1744095600"; 
+   d="scan'208";a="54024338"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2025 12:30:00 -0700
+X-CSE-ConnectionGUID: gJ+8UEYCShSEF1UXpBmqjg==
+X-CSE-MsgGUID: ktih2KroQKWMHOuYOaJtxQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,285,1744095600"; 
+   d="scan'208";a="185399038"
+Received: from tassilo.jf.intel.com (HELO tassilo) ([10.54.38.190])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2025 12:29:58 -0700
+Date: Thu, 3 Jul 2025 12:29:57 -0700
+From: Andi Kleen <ak@linux.intel.com>
+To: Lukas Wunner <lukas@wunner.de>
+Cc: David Airlie <airlied@redhat.com>, Bjorn Helgaas <helgaas@kernel.org>,
+	Ben Hutchings <ben@decadent.org.uk>, Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Ahmed Salem <x0rw3ll@gmail.com>, Borislav Petkov <bp@alien8.de>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	linux-pci@vger.kernel.org
+Subject: Re: [PATCH v2] agp/amd64: Check AGP Capability before binding to
+ unsupported devices
+Message-ID: <aGbaNd3qCK3WvAe-@tassilo>
+References: <b29e7fbfc6d146f947603d0ebaef44cbd2f0d754.1751468802.git.lukas@wunner.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -91,49 +66,20 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250703175532.GF1209783@nvidia.com>
+In-Reply-To: <b29e7fbfc6d146f947603d0ebaef44cbd2f0d754.1751468802.git.lukas@wunner.de>
 
-On Thu, Jul 03, 2025 at 02:55:32PM -0300, Jason Gunthorpe wrote:
-> On Thu, Jul 03, 2025 at 02:46:03PM +0000, Pranjal Shrivastava wrote:
-> 
-> > Right.. I was however hoping we'd also trap commands like CMD_PRI_RESP
-> > and CMD_RESUME...I'm not sure if they should be accelerated via CMDQV..
-> > I guess I'll need to look and understand a little more if they are..
-> 
-> Right now these commands are not supported by vSMMUv3 in Linux.
-> 
-> They probably should be trapped, but completing a PRI (or resuming a
-> stall which we will treat the same) will go through the PRI/page fault
-> logic in iommufd not the cache invalidate.
-> 
 
-Ahh, thanks for this, that saved a lot of my time! And yes, I see some
-functions in eventq.c calling the iopf_group_response which settles the
-CMD_RESUME. So.. I assume these resume commands would be trapped and
-*actually* executed through this or a similar path for vPRI. 
+I suspect these days it would be also reasonable to drop it this old
+hack.
 
-Meh, I had been putting off reading up the fault parts of iommufd, 
-I guess I'll go through that too, now :) 
+If any of these old chipsets are still missing I would rather adds its
+PCI-ID.
 
-> > > The goal of the SMMU driver when it detects CMDQV support is to route
-> > > all supported invalidations to CMDQV queues and then balance those
-> > > queues across CPUs to reduce lock contention.
-> > 
-> > I see.. that makes sense.. so it's a relatively small gain (but a nice
-> > one). Thanks for clarifying!
-> 
-> On bare metal the gain is small (due to locking and balancing), while
-> on virtualization the gain is huge (due to no trapping).
-> 
+There will be certainly not any new unknown ones for these old CPUs.
 
-Ohh yes, I meant the bare metal gains here.. for virtualization, it's
-definitely huge (as reported too).
+Also there shouldn't be that many high speed devices that need the 
+old 4GB IOMMU anyways, and for low speed ones it's fine to use swiotlb
+instead.
 
-> Regardless the SMMU driver uses cmdqv support if the HW says it is
-> there.
->
-> Jason
->
+-Andi
 
-Thanks!
-Praan
