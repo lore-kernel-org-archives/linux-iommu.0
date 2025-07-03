@@ -1,114 +1,176 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC2AE1FFC46
-	for <iommu@lists.linux.dev>; Thu,  3 Jul 2025 22:14:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52CE8230269
+	for <iommu@lists.linux.dev>; Thu,  3 Jul 2025 22:17:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751580848; cv=none; b=qpKCsnmGtIfDRyySdSdweKwH9W8FHexHRVxU8+1HEvFNammeA2yGFqImCFlwQyn4aXYIahXT+TWoCERm4I+vJUmzulGRdSLlq3yE+B5U6AvjgagVcpGZNxD96L6vw+pwfK3UVvHb5u5Ih34DvZXFqILuRw1ZVIGf7FMoVLrb3iQ=
+	t=1751581057; cv=none; b=P1/Py5L3F/cq5jToNTh3qIMm0X3YfaXz9DY3FOYvXik0xoK+5UzVanJHpiCuj3ixYBTdExoHUev4tZ68Bf0SdDcLJonQwehNKwE9ivLWF41srAfN6keDNjfg9Doeu2flVLz8GywhY+oUZkrzKGtlomUijmtao+FohS2RGJjJk58=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751580848; c=relaxed/simple;
-	bh=UkzW8Ro69MEnCly9rrVk9a1BN9hioGbdCMPz+Y+hFRs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mw9G2EOACf3V1d6/sS2MuFTd8XJlgxyZkW+0c8pE1DVDb5QzrKv+r3vhMiKBS7bVvd5aCUDMdQAm6x4I1GJIN0CagYCvGk9cfPV27mTp+xwMXP75dXHZVMCRD7queuwtgHHI0g140dkl++3ybtMqXOX591ReSNTjw7fGij52ko4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ueO/fa3E; arc=none smtp.client-ip=209.85.214.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1751581057; c=relaxed/simple;
+	bh=4ypezCMzqx2m8rAZovbE9cWrKwtdXpCPRYKVPomZyMo=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=LFHIpD49D8wTnew8yhGL5DhCaQ1Hd4s+Ldvw0RmvnmHcX56B2bdriJyAoI/n4F/0qZvO8xyUcYQVg0YATIn0VKs05nqwyxKm+oDQ2X25NXGzwtFRyeUS+F2zm8AoXtCa0o5V7jNAWIEFSjDTkJ62Sccf2BFWVfUZNRy0pJZ4YMY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=JMm777n2; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ueO/fa3E"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-235e389599fso273385ad.0
-        for <iommu@lists.linux.dev>; Thu, 03 Jul 2025 15:14:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1751580843; x=1752185643; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MuHvBdZctEtzhPELFeCYnZqsR6O+CCEh7cw6bo3Z+rc=;
-        b=ueO/fa3ELf0tubhn2XM21xdao2CGpP2WY8DIH7pWC4kv22QzRYKCuXXOl0hHEwYLD0
-         4Fx9AlPtkRwYAhPhCnpIW1xCTn+IvTg5fdnnypN3MMXge5A/kkd44co4mldS4MbdjZa/
-         FyCtE/iCGHYsRJH5SkFOTgU0dCMkkty/ru9y9+iJ1U4pfeP2djaZfBNRkVZGgNyyaUm+
-         cI0RKLFT7G0+fTYlfTIAO2+Ek8XuuiFGuJR4NE6Le9mhP83iK8HCyUhMwOEgObJBePdK
-         nsbq/+vKMPNNLJp89iHe8gZFtbI0wnJ7jPx+zij1H9+gQeX7dQ1+EmcIAuOY/HPkCaeE
-         qi9g==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JMm777n2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1751581055;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=4dsjcnePffsNnJ3iYlPAnCmr2JiGAFkwGmeExoquH+U=;
+	b=JMm777n2C4DRY6n4IcybNH0M902Y3PPE39VX7XpSCYgWYI2Bfx4mJoL0EqATC6Yl+fE+p1
+	Cmzln35bao8gfZyHLSxoWU7JPFChm9EtYbOSGiEZhoKeGjmT6hxZIG9n6jYPuMh8kc1mdP
+	GACvx7YlZB9sjtfkOKMzRZe30efToG4=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-258-YRn_sJstNEi-gJO0AdsX4A-1; Thu, 03 Jul 2025 18:17:32 -0400
+X-MC-Unique: YRn_sJstNEi-gJO0AdsX4A-1
+X-Mimecast-MFC-AGG-ID: YRn_sJstNEi-gJO0AdsX4A_1751581051
+Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-875cdf03c23so4941739f.2
+        for <iommu@lists.linux.dev>; Thu, 03 Jul 2025 15:17:31 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751580843; x=1752185643;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MuHvBdZctEtzhPELFeCYnZqsR6O+CCEh7cw6bo3Z+rc=;
-        b=Za9E4b8CncU0cJRM7SokXi4jOdA6vaIBBhk2PXQ0HyX4o6U7XJtJ2C8Dt+LVcxpK3r
-         MhZnMzJ4chb9nRQe7jrUiIx5KwVDNJXKqNLle897cZUz67gkEQRQEOU+Ese47U5r/JTu
-         Khonoq/QRdorEcv9IUBbAsj0U9h3oDwq904lZ2CnyF6nP7g6hAHEEY2Nn9EEq1e35BSt
-         CZ8DeovT8wNH7ns/kmQVSwhCS5HyQrpNxwHRejQdVALrnYAwenO8NkhH9Uu5SquhRj0+
-         xCWv7LAofRnRl6DwXzVA6eTEpZnciIJsfILy6t+yMvqOTka/hHvxGNUHterwqtOb1WKd
-         itEA==
-X-Forwarded-Encrypted: i=1; AJvYcCU/0arZtlIHVubDLLTSI2mf2Dr3V/RNfnnyRh36BmU8hf0nDbQAPQzFxnVYw8JSP+975+/mjA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzFJkrcn68IuRB6DveKyUa7scX8Ptprj0qNUFeg9UJFDPYWi3aH
-	zQykjzW/PBAh4ELwoMODgyXaG46BVE/VIvaV7H25bQwkHDwhQvOoscRlpZCte44grA==
-X-Gm-Gg: ASbGncspcMRfi2TG6PJhOMaJHkvjuhOUw4L5UjKpxWF5EroKuvBrFuCEI4RDA+CaQTH
-	ip0AX+RCb8sD3Y8njMjZKv7A/BeZUPDte+f1w0nOpLyCA0v/nohUQM2qo61yN9TSwlJNDgS9FZM
-	urfRorPKoOZn3iuIn+zIYakdMkkthHTfR++kU/bKZ+kQnR6VJIH+4BNF7A7ZiIZA0MTGhy/I/2f
-	trd3ECelE5LZlXqsjf5nciiadNc9lLwLbAhs7Yya/b3v6C9M5Fvuy7FfjV2iDVBK+GSIbzCR9z6
-	oc0MfsqzK2W6sJU+SYHjfCW4YWO01m9idV29kvUzvdO2CYmOg1bczTBDjeD4wjVkxHCN7XR0Cam
-	CFeZMb4i4jqwLWtY9HuPdl5ggpxqkORB3+CKGkA==
-X-Google-Smtp-Source: AGHT+IH31YOAgpp6cWXPyDDiSdW0FsgI8z3zIJNlzWY7vAq0H2n7kS+w2YKYWOMSnIdeLnEkqfRSUA==
-X-Received: by 2002:a17:902:ebca:b0:234:9f02:e937 with SMTP id d9443c01a7336-23c7ac250c0mr3191765ad.25.1751580842742;
-        Thu, 03 Jul 2025 15:14:02 -0700 (PDT)
-Received: from google.com (135.228.125.34.bc.googleusercontent.com. [34.125.228.135])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-23c8455ec28sm4302055ad.117.2025.07.03.15.14.01
+        d=1e100.net; s=20230601; t=1751581051; x=1752185851;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=4dsjcnePffsNnJ3iYlPAnCmr2JiGAFkwGmeExoquH+U=;
+        b=Ulril4RDsxo4fkFc0Hs92iAkCp1blWb5ZqsEGa15jAsNNjetlujbPb6aBtNl1OwlaY
+         DKuMaPJXtSi3CwI00PQEk3J/rYGavAXJ/VionMByoPnJCPdaW2xxAfBYTBCeChRVNR4E
+         P96yMyIthba/I8T4LjXxjzKIj2WarYE7+pDtMEl7O31ptn9n3ukHZUaCoi+qkNKj6BiZ
+         wug0KhbgLj3NqnY8vdqNaJHZQPlgPKrqERroubv+wiukcJ0f1CMNoCvSpQ1SZESoZco2
+         U9BoQP7ChVvMMsV0x/Ag+H3nkPsYnLr4BijlalbqdIEWYBc2JRNGn7l+vPt2hcMeMns2
+         NENQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXCZD9KQ6lLSla3Wo+n5KKlpokiUZjiqXMmNECpgIwPQuEstRL6g4aNzBx5z+JQ4EcwTLvsxA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzO9lt9+dHPMbVd106FQyUsCBQrXOZQ55KQyiyl32Ri4wG4dWWE
+	XfEjz7jaDY5TXdnje6B4y4CQdsAlMeej7ek9+wvK2eYCLPkAVyRd00gw06adBX+DfgdnIufnl9I
+	JVWI6oznM/wXMfWlKggPIT4Sf8n4z70IB4bOG6XoLaUoLGLJNqqtycMv1
+X-Gm-Gg: ASbGnctYOklcGgbsv6WmYWcDC6Xl+CvIO/BEGz8GSg7rawVJ1nl43gyU6uLrwVeGaYe
+	T34ddaOKmHHHy/R6Jy/AxaJOAPeWV5n/m9aj0woyaLJiLZA9B7i9LDho3TBTW1IEnqkBnLf91CD
+	jHZDB9fD+cN4FyMuCDhw6LhxG4QNgKKQB5oyFe5OTQ/2OS0KemWYTJO4vgv/vNjnMxCKQLnowM4
+	RECaXj/odz79N3lrVL3xLclVIiyw78sJC7SS3OXez8LhhYemjBpniSuQOwNUgZ3lmIeYlX3PHCC
+	6e4PuTTb7wK6W8i6mLYxW7gqyQ==
+X-Received: by 2002:a05:6602:1607:b0:864:9c2b:f842 with SMTP id ca18e2360f4ac-876e13a009dmr22654439f.0.1751581051200;
+        Thu, 03 Jul 2025 15:17:31 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHK1hmIX7xtD4BcGg0tZpgeCzpZcsDTIoTx2ZGihjZIL7CUA+/RzY0cwRoZX1T3Wpx/+Vp+hg==
+X-Received: by 2002:a05:6602:1607:b0:864:9c2b:f842 with SMTP id ca18e2360f4ac-876e13a009dmr22652739f.0.1751581050636;
+        Thu, 03 Jul 2025 15:17:30 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-503b599c53csm153978173.24.2025.07.03.15.17.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Jul 2025 15:14:02 -0700 (PDT)
-Date: Thu, 3 Jul 2025 22:13:55 +0000
-From: Carlos Llamas <cmllamas@google.com>
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Rolf Eike Beer <eb@emlix.com>,
-	Arnd Bergmann <arnd@arndb.de>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
-	Nate Watterson <nwatterson@nvidia.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu: arm: fix building smmuv3 as loadable module
-Message-ID: <aGcAo3pUwdsa-mON@google.com>
-References: <20250523121257.2340274-1-arnd@kernel.org>
+        Thu, 03 Jul 2025 15:17:29 -0700 (PDT)
+Date: Thu, 3 Jul 2025 16:17:27 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev, Joerg Roedel
+ <joro@8bytes.org>, linux-pci@vger.kernel.org, Robin Murphy
+ <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Lu Baolu
+ <baolu.lu@linux.intel.com>, galshalom@nvidia.com, Joerg Roedel
+ <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+ maorg@nvidia.com, patches@lists.linux.dev, tdave@nvidia.com, Tony Zhu
+ <tony.zhu@intel.com>
+Subject: Re: [PATCH 02/11] PCI: Add pci_bus_isolation()
+Message-ID: <20250703161727.09316904.alex.williamson@redhat.com>
+In-Reply-To: <20250703153030.GA1322329@nvidia.com>
+References: <0-v1-74184c5043c6+195-pcie_switch_groups_jgg@nvidia.com>
+	<2-v1-74184c5043c6+195-pcie_switch_groups_jgg@nvidia.com>
+	<20250701132859.2a6661a7.alex.williamson@redhat.com>
+	<20250703153030.GA1322329@nvidia.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.43; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250523121257.2340274-1-arnd@kernel.org>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: _fS9a6ezkiYCjHuFvMqaqYVKmPcY9YWsbgtM4RoZcF8_1751581051
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, May 23, 2025 at 02:12:53PM +0200, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> The smmu-v3 kunit test fail to link when the SMMU driver is configured
-> as a loadable mdoule:
-> 
-> ERROR: modpost: "arm_smmu_make_cdtable_ste" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
-> ERROR: modpost: "arm_smmu_make_s2_domain_ste" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
-> ERROR: modpost: "arm_smmu_make_s1_cd" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
-> ERROR: modpost: "arm_smmu_make_bypass_ste" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
-> ERROR: modpost: "arm_smmu_make_abort_ste" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
-> ERROR: modpost: "arm_smmu_make_sva_cd" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
-> ERROR: modpost: "arm_smmu_get_ste_used" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
-> ERROR: modpost: "arm_smmu_write_entry" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
-> ERROR: modpost: "arm_smmu_get_cd_used" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
-> 
-> The problem is that the drivers/iommu/arm/arm-smmu-v3/Makefile only gets
-> parsed while building modules, but the driver itself is accidentally marked
-> as built-in unconditionally, so not only does the kunit test fail, but the
-> entire driver is missing.
-> 
-> Change the driver configuration back to $(CONFIG_ARM_SMMU_V3) so it
-> actually gets build here.
-> 
-> Fixes: e436576b0231 ("iommu: make inclusion of arm/arm-smmu-v3 directory conditional")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
+On Thu, 3 Jul 2025 12:30:30 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-Thanks, this fixed our allmodconfig builds downstream.
+> On Tue, Jul 01, 2025 at 01:28:59PM -0600, Alex Williamson wrote:
+> > > +enum pci_bus_isolation pci_bus_isolated(struct pci_bus *bus)
+> > > +{
+> > > +	struct pci_dev *bridge = bus->self;
+> > > +	int type;
+> > > +
+> > > +	/* Consider virtual busses isolated */
+> > > +	if (!bridge)
+> > > +		return PCIE_ISOLATED;
+> > > +	if (pci_is_root_bus(bus))
+> > > +		return PCIE_ISOLATED;  
+> > 
+> > How do we know the root bus isn't conventional?  
+> 
+> If I read this right this is dead code..
+> 
+> /*
+>  * Returns true if the PCI bus is root (behind host-PCI bridge),
+>  * false otherwise
+>  *
+>  * Some code assumes that "bus->self == NULL" means that bus is a root bus.
+>  * This is incorrect because "virtual" buses added for SR-IOV (via
+>  * virtfn_add_bus()) have "bus->self == NULL" but are not root buses.
+>  */
+> static inline bool pci_is_root_bus(struct pci_bus *pbus)
+> {
+> 	return !(pbus->parent);
+> 
+> Looking at the call chain of pci_alloc_bus():
+>  pci_alloc_child_bus() - Parent bus may not be NULL
+>  pci_add_new_bus() - All callers pass !NULL bus
+>  pci_register_host_bridge() - Sets self and parent to NULL
+> 
+> Thus if pci_is_root() == true implies bus->self == NULL so we can't
+> get here.
 
-Tested-by: Carlos Llamas <cmllamas@google.com>
+Yep, seems correct.
+
+> So I will change it to be like:
+> 
+> 	/*
+> 	 * This bus was created by pci_register_host_bridge(). There is nothing
+> 	 * upstream of this, assume it contains the TA and that the root complex
+> 	 * does not allow P2P without going through the IOMMU.
+> 	 */
+> 	if (pci_is_root_bus(bus))
+> 		return PCIE_ISOLATED;
+
+Ok, but did we sidestep the question of whether the root bus can be
+conventional?
+
+> 
+> 	/*
+> 	 * Sometimes SRIOV VFs can have a "virtual" bus if the SRIOV RID's
+> 	 * extend past the bus numbers of the parent. The spec says that SRIOV
+> 	 * VFs and PFs should act the same as functions in a MFD. MFD isolation
+> 	 * is handled outside this function.
+> 	 */
+> 	if (!bridge)
+> 		return PCIE_ISOLATED;
+> 
+> And now it seems we never took care with SRIOV, along with the PF
+> every SRIOV VF needs to have its ACS checked as though it was a MFD..
+
+There's actually evidence that we did take care to make sure VFs never
+flag themselves as multifunction in order to avoid the multifunction
+ACS tests.  I think we'd see lots of devices suddenly unusable for one
+of their intended use cases if we grouped VFs that don't expose an ACS
+capability.  Also VFs from multiple PFs exist on the same virtual bus,
+so I imagine if the PF supports ACS but the VF doesn't, you'd end up
+with multiple isolation domains on the same bus.  Thus, we've so far
+take the approach that "surely the hw vendor intended these to be used
+independently", and only considered the isolation upstream from the VFs.
+Thanks,
+
+Alex
+
