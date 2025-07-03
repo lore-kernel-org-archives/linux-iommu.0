@@ -1,179 +1,201 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D7CB2AD25;
-	Thu,  3 Jul 2025 08:46:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13A8623BCF1;
+	Thu,  3 Jul 2025 09:30:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751532378; cv=none; b=W2KdGPbhDXUluTIHFteB0+4vVDQ/pnZSPgI0Hc5NdcTnApuqfyemToq39yWlFIS09VZOPoqml7GLU4ZJinOk3sblFT67WVKiGJlT/ZhLRi3Yp3ACMXP6m7lKGSqqF87kBJrhHl35MbtDfGfnv8QCTu3I+XSo63TUA5vPx2oeUwQ=
+	t=1751535052; cv=none; b=DigVtPwWDKCnr7XQnMHnTWdhArwAuwyWHtvQJux/NQMKy9EnAdfuq9Yf9BJy6UGl5ayJFaf65NYEkbkEDG3Kpcowq+m7dXuAQvQFDWxPjcG25gkR+/7G4ZQj9Kn9OmDmRS8FTIx5Y5MfSr+dszfe/6DxSWBL8eIsecw/AYwWuS8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751532378; c=relaxed/simple;
-	bh=O9usTxhDHfLcTpuq8xPp2WlePI7M1F+dg5efcZC39oY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=I9ZHloIdbnIOvCzJ3X8GacFopRjghwljbk/jqXdvvvpbPL0e3lHC1b/c+8Ek5cf36Ql2tDQgZMn++Drjc3VhE2rsDeKKLWPzKn9j9YPaA1azDW0gP/cUUN/5ut5/s9AABZ537IfRIJV12evk5MmaCiZP8A51hjJdcK8OZxzOEAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NG5UNXMh; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NG5UNXMh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83553C4CEE3;
-	Thu,  3 Jul 2025 08:46:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1751532377;
-	bh=O9usTxhDHfLcTpuq8xPp2WlePI7M1F+dg5efcZC39oY=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=NG5UNXMhWC6eZ5jBGL0/+BOWH6EGU5YtD0bIhJRutPXvUnrBUObK+G3X0+1q3+Nm4
-	 scgX62QHjUzqME6mZjzb4U4WH1wNbIIao5a5tSRr/rvRqDpwOoG3/M1gCQfGgZgKg7
-	 B1UDHrAxTeqmmXGccDLQL0PVcVSXLFpsnHFfuy+RCDnmQhA4wYQawO+kSDGzwAgAxH
-	 lEd+qxQdUaU+GnKIFecjxr2HXDXApiSUFqqIos19/zBR2iCqoU35YDwDw+7e5mrMq3
-	 C4OQtZpGHoONucvQqs0xzX1AewQUjjDm9UxjXv8/ykUsuCOCO9OHFO6tyth9oQL7ML
-	 PcTigfGkrWFzg==
-Message-ID: <81db2fce-34db-46e7-8c68-bc4cb1a03d25@kernel.org>
-Date: Thu, 3 Jul 2025 10:46:12 +0200
+	s=arc-20240116; t=1751535052; c=relaxed/simple;
+	bh=5dEuxX6YNR/26yYDBwOG+R9/sOuOWGvFuUFdmXGa/us=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EG0Gs7wUfZsmR6BJ5Z7qU+aS10HWn+Qmc+b38yBCRr8ZTPXmX/L0BmQZo4DFXEuX0IV2gaqF9csLiaY+r4C/TLwHZIZxFXTD2qSfYJM9Fsa3yRWDZhPkKt6y/JmziGMkYuqJKMaUgB0d+txhk9g4dvYIVA/l/yVCiVus+gRKhM4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 880E668C4E; Thu,  3 Jul 2025 11:30:43 +0200 (CEST)
+Date: Thu, 3 Jul 2025 11:30:42 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Keith Busch <kbusch@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Ben Copeland <ben.copeland@linaro.org>,
+	linux-kernel@vger.kernel.org, lkft-triage@lists.linaro.org,
+	regressions@lists.linux.dev, linux-nvme@lists.infradead.org,
+	Dan Carpenter <dan.carpenter@linaro.org>, axboe@kernel.dk,
+	sagi@grimberg.me, iommu@lists.linux.dev,
+	Leon Romanovsky <leonro@nvidia.com>
+Subject: Re: next-20250627: IOMMU DMA warning during NVMe I/O completion
+ after 06cae0e3f61c
+Message-ID: <20250703093042.GA7387@lst.de>
+References: <CAL0q8a6pOBZbWYdwKzC1U-PuH4rgf2miv0jcF=fWVZt_dUZHmw@mail.gmail.com> <20250630133343.GA26040@lst.de> <aGLyswGYD6Zai_sI@kbusch-mbp> <20250701132936.GA18807@lst.de> <aGRMilWhgF4z0WOf@kbusch-mbp>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] agp/amd64: Check AGP Capability before binding to
- unsupported devices
-To: Lukas Wunner <lukas@wunner.de>, David Airlie <airlied@redhat.com>,
- Bjorn Helgaas <helgaas@kernel.org>
-Cc: Ben Hutchings <ben@decadent.org.uk>, Joerg Roedel <joro@8bytes.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Andi Kleen <ak@linux.intel.com>, Ahmed Salem <x0rw3ll@gmail.com>,
- Borislav Petkov <bp@alien8.de>, Thomas Gleixner <tglx@linutronix.de>,
- dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
- linux-pci@vger.kernel.org
-References: <b29e7fbfc6d146f947603d0ebaef44cbd2f0d754.1751468802.git.lukas@wunner.de>
-Content-Language: en-US, nl
-From: Hans de Goede <hansg@kernel.org>
-In-Reply-To: <b29e7fbfc6d146f947603d0ebaef44cbd2f0d754.1751468802.git.lukas@wunner.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aGRMilWhgF4z0WOf@kbusch-mbp>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-Hi Lukas,
-
-On 2-Jul-25 5:15 PM, Lukas Wunner wrote:
-> Since commit 172efbb40333 ("AGP: Try unsupported AGP chipsets on x86-64
-> by default"), the AGP driver for AMD Opteron/Athlon64 CPUs has attempted
-> to bind to any PCI device possessing an AGP Capability.
+On Tue, Jul 01, 2025 at 05:00:58PM -0400, Keith Busch wrote:
+> On Tue, Jul 01, 2025 at 03:29:36PM +0200, Christoph Hellwig wrote:
+> > Yes, that's broken, and I remember fixing it before.  A little digging
+> > shows that my fixes disappeared between the oct 30 version of Leon's
+> > dma-split branch and the latest one somewhere.  Below is what should
+> > restore it, but at least when forcing my Intel IOMMU down this path it
+> > still has issues with VPTEs already set.  So maybe Bob should not try
+> > it quite yet.  I'll try to get to it, but my availability today and
+> > tomorrow is a bit limited.
 > 
-> Commit 6fd024893911 ("amd64-agp: Probe unknown AGP devices the right
-> way") subsequently reworked the driver to perform a bind attempt to
-> any PCI device (regardless of AGP Capability) and reject a device in
-> the driver's ->probe() hook if it lacks the AGP Capability.
+> Let's say we're using ARM64 SMMU configured with 64k granularity like I
+> showed earlier.
 > 
-> On modern CPUs exposing an AMD IOMMU, this subtle change results in an
-> annoying message with KERN_CRIT severity:
+> Now let's send a read command with 128k transfer, and let's assume the
+> payload is two 64k aligned physical segments, so we have 2 bvecs.
 > 
->   pci 0000:00:00.2: Resources present before probing
+> Since nvme's virtual boundary is smaller than the iommu's granule, we
+> won't attempt to coalesce. We instead iommu map each bvec segment
+> individually.
 > 
-> The message is emitted by the driver core prior to invoking a driver's
-> ->probe() hook.  The check for an AGP Capability in the ->probe() hook
-> happens too late to prevent the message.
-> 
-> The message has appeared only recently with commit 3be5fa236649 (Revert
-> "iommu/amd: Prevent binding other PCI drivers to IOMMU PCI devices").
-> Prior to the commit, no driver could bind to AMD IOMMUs.
-> 
-> The reason for the message is that an MSI is requested early on for the
-> AMD IOMMU, which results in a call from msi_sysfs_create_group() to
-> devm_device_add_group().  A devres resource is thus attached to the
-> driver-less AMD IOMMU, which is normally not allowed, but presumably
-> cannot be avoided because requesting the MSI from a regular PCI driver
-> might be too late.
-> 
-> Avoid the message by once again checking for an AGP Capability *before*
-> binding to an unsupported device.  Achieve that by way of the PCI core's
-> dynid functionality.
-> 
-> pci_add_dynid() can fail only with -ENOMEM (on allocation failure) or
-> -EINVAL (on bus_to_subsys() failure).  It doesn't seem worth the extra
-> code to propagate those error codes out of the for_each_pci_dev() loop,
-> so simply error out with -ENODEV if there was no successful bind attempt.
-> In the -ENOMEM case, a splat is emitted anyway, and the -EINVAL case can
-> never happen because it requires failure of bus_register(&pci_bus_type),
-> in which case there's no driver probing of PCI devices.
-> 
-> Hans has voiced a preference to no longer probe unsupported devices by
-> default (i.e. set agp_try_unsupported = 0).  In fact, the help text for
-> CONFIG_AGP_AMD64 pretends this to be the default.  Alternatively, he
-> proposes probing only devices with PCI_CLASS_BRIDGE_HOST.  However these
-> approaches risk regressing users who depend on the existing behavior.
-> 
-> Fixes: 3be5fa236649 (Revert "iommu/amd: Prevent binding other PCI drivers to IOMMU PCI devices")
-> Reported-by: Fedor Pchelkin <pchelkin@ispras.ru>
-> Closes: https://lore.kernel.org/r/wpoivftgshz5b5aovxbkxl6ivvquinukqfvb5z6yi4mv7d25ew@edtzr2p74ckg/
-> Reported-by: Hans de Goede <hansg@kernel.org>
-> Closes: https://lore.kernel.org/r/20250625112411.4123-1-hansg@kernel.org/
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
-> ---
-> Changes v1 -> v2:
->  * Use pci_add_dynid() to bind only to devices with AGP Capability
->    (based on a suggestion from Ben).
->  * Rephrase commit message to hopefully explain the history more accurately.
->    Explain why resources are attached to the driver-less AMD IOMMU
->    (requested by Ben).
->  * Acknowledge Hans as reporter.
+> And let's say each segment just so happens to get consecutive IOVA's.
+> The mapping side had done each segment individually, but your proposal
+> here will assume the contiguous dma_addr ranges were done as a single
+> larger mapping. Is that okay?
 
-Thank you for the new version.
+Not on the DMA API level, and depending on the implementation also
+not in practice.
 
-I can confirm that this fixes the issue for me and the code also looks
-good to me:
+I think the idea to reconstruct the dma addresses from PRPs should
+be considered a failure by now.  It works fine for SGLs, but for
+PRPs we're better off just stashing them away.  Bob, can you try
+something like the patch below?  To be fully safe it needs a mempool,
+and it could use some cleanups, but it does pass testing on my setup
+here, so I'd love to see if if fixes your issue.
 
-Tested-by: Hans de Goede <hansg@kernel.org>
-Reviewed-by: Hans de Goede <hansg@kernel.org>
-
-Regards,
-
-Hans
-
-
-
-
->  drivers/char/agp/amd64-agp.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/char/agp/amd64-agp.c b/drivers/char/agp/amd64-agp.c
-> index bf490967241a..2505df1f4e69 100644
-> --- a/drivers/char/agp/amd64-agp.c
-> +++ b/drivers/char/agp/amd64-agp.c
-> @@ -720,11 +720,6 @@ static const struct pci_device_id agp_amd64_pci_table[] = {
->  
->  MODULE_DEVICE_TABLE(pci, agp_amd64_pci_table);
->  
-> -static const struct pci_device_id agp_amd64_pci_promisc_table[] = {
-> -	{ PCI_DEVICE_CLASS(0, 0) },
-> -	{ }
-> -};
-> -
->  static DEFINE_SIMPLE_DEV_PM_OPS(agp_amd64_pm_ops, NULL, agp_amd64_resume);
->  
->  static struct pci_driver agp_amd64_pci_driver = {
-> @@ -739,6 +734,7 @@ static struct pci_driver agp_amd64_pci_driver = {
->  /* Not static due to IOMMU code calling it early. */
->  int __init agp_amd64_init(void)
->  {
-> +	struct pci_dev *pdev = NULL;
->  	int err = 0;
->  
->  	if (agp_off)
-> @@ -767,9 +763,13 @@ int __init agp_amd64_init(void)
->  		}
->  
->  		/* Look for any AGP bridge */
-> -		agp_amd64_pci_driver.id_table = agp_amd64_pci_promisc_table;
-> -		err = driver_attach(&agp_amd64_pci_driver.driver);
-> -		if (err == 0 && agp_bridges_found == 0) {
-> +		for_each_pci_dev(pdev)
-> +			if (pci_find_capability(pdev, PCI_CAP_ID_AGP))
-> +				pci_add_dynid(&agp_amd64_pci_driver,
-> +					      pdev->vendor, pdev->device,
-> +					      pdev->subsystem_vendor,
-> +					      pdev->subsystem_device, 0, 0, 0);
-> +		if (agp_bridges_found == 0) {
->  			pci_unregister_driver(&agp_amd64_pci_driver);
->  			err = -ENODEV;
->  		}
-
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index f5cf90ddc3e9..f1242e321a58 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -262,6 +262,11 @@ enum nvme_iod_flags {
+ 	IOD_SINGLE_SEGMENT	= 1U << 2,
+ };
+ 
++struct dma_vec {
++	dma_addr_t addr;
++	unsigned int len;
++};
++
+ /*
+  * The nvme_iod describes the data in an I/O.
+  */
+@@ -274,6 +279,8 @@ struct nvme_iod {
+ 	unsigned int total_len;
+ 	struct dma_iova_state dma_state;
+ 	void *descriptors[NVME_MAX_NR_DESCRIPTORS];
++	struct dma_vec *dma_vecs;
++	unsigned int nr_dma_vecs;
+ 
+ 	dma_addr_t meta_dma;
+ 	struct sg_table meta_sgt;
+@@ -676,42 +683,12 @@ static void nvme_free_prps(struct request *req)
+ 	struct nvme_queue *nvmeq = req->mq_hctx->driver_data;
+ 	struct device *dma_dev = nvmeq->dev->dev;
+ 	enum dma_data_direction dir = rq_dma_dir(req);
+-	int length = iod->total_len;
+-	dma_addr_t dma_addr;
+-	int i, desc;
+-	__le64 *prp_list;
+-	u32 dma_len;
+-
+-	dma_addr = le64_to_cpu(iod->cmd.common.dptr.prp1);
+-	dma_len = min_t(u32, length,
+-		NVME_CTRL_PAGE_SIZE - (dma_addr & (NVME_CTRL_PAGE_SIZE - 1)));
+-	length -= dma_len;
+-	if (!length) {
+-		dma_unmap_page(dma_dev, dma_addr, dma_len, dir);
+-		return;
+-	}
+-
+-	if (length <= NVME_CTRL_PAGE_SIZE) {
+-		dma_unmap_page(dma_dev, dma_addr, dma_len, dir);
+-		dma_addr = le64_to_cpu(iod->cmd.common.dptr.prp2);
+-		dma_unmap_page(dma_dev, dma_addr, length, dir);
+-		return;
+-	}
+-
+-	i = 0;
+-	desc = 0;
+-	prp_list = iod->descriptors[desc];
+-	do {
+-		dma_unmap_page(dma_dev, dma_addr, dma_len, dir);
+-		if (i == NVME_CTRL_PAGE_SIZE >> 3) {
+-			prp_list = iod->descriptors[++desc];
+-			i = 0;
+-		}
++	unsigned int i;
+ 
+-		dma_addr = le64_to_cpu(prp_list[i++]);
+-		dma_len = min(length, NVME_CTRL_PAGE_SIZE);
+-		length -= dma_len;
+-	} while (length);
++	for (i = 0; i < iod->nr_dma_vecs; i++)
++		dma_unmap_page(dma_dev, iod->dma_vecs[i].addr,
++				iod->dma_vecs[i].len, dir);
++	kfree(iod->dma_vecs);
+ }
+ 
+ static void nvme_free_sgls(struct request *req)
+@@ -770,6 +747,17 @@ static blk_status_t nvme_pci_setup_data_prp(struct request *req,
+ 	unsigned int prp_len, i;
+ 	__le64 *prp_list;
+ 
++	if (dma_need_unmap(nvmeq->dev->dev)) {
++		/* XXX: use mempool */
++		iod->dma_vecs = kmalloc_array(blk_rq_nr_phys_segments(req),
++				sizeof(struct dma_vec), GFP_NOIO);
++		if (!iod->dma_vecs)
++			return BLK_STS_RESOURCE;
++		iod->dma_vecs[0].addr = iter->addr;
++		iod->dma_vecs[0].len = iter->len;
++		iod->nr_dma_vecs++;
++	}
++
+ 	/*
+ 	 * PRP1 always points to the start of the DMA transfers.
+ 	 *
+@@ -793,6 +781,11 @@ static blk_status_t nvme_pci_setup_data_prp(struct request *req,
+ 				goto bad_sgl;
+ 			goto done;
+ 		}
++		if (dma_need_unmap(nvmeq->dev->dev)) {
++			iod->dma_vecs[iod->nr_dma_vecs].addr = iter->addr;
++			iod->dma_vecs[iod->nr_dma_vecs].len = iter->len;
++			iod->nr_dma_vecs++;
++		}
+ 	}
+ 
+ 	/*
+@@ -838,6 +831,12 @@ static blk_status_t nvme_pci_setup_data_prp(struct request *req,
+ 					goto bad_sgl;
+ 				goto done;
+ 			}
++			if (dma_need_unmap(nvmeq->dev->dev)) {
++				iod->dma_vecs[iod->nr_dma_vecs].addr =
++					iter->addr;
++				iod->dma_vecs[iod->nr_dma_vecs].len = iter->len;
++				iod->nr_dma_vecs++;
++			}
+ 		}
+ 
+ 		/*
+@@ -1108,6 +1107,7 @@ static blk_status_t nvme_prep_rq(struct request *req)
+ 	iod->nr_descriptors = 0;
+ 	iod->total_len = 0;
+ 	iod->meta_sgt.nents = 0;
++	iod->nr_dma_vecs = 0;
+ 
+ 	ret = nvme_setup_cmd(req->q->queuedata, req);
+ 	if (ret)
