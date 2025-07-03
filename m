@@ -1,165 +1,163 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 297944414
-	for <iommu@lists.linux.dev>; Thu,  3 Jul 2025 02:19:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3F1E1F5437
+	for <iommu@lists.linux.dev>; Thu,  3 Jul 2025 03:18:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751509200; cv=none; b=eHZxJspiL/24HgqJJ8o6ii6EEnMtiM9+ZyJ32rDIn+a+B546lRZsOqYxp0do427I3FnzBraQuIMK92GcGJ+GtyMi/kwOMdiJhCqtpzbXXvm/GVgrTPqjQ/QqqPAt/NkoLh/n4Gwe6+h8zdMGhA+6mFvm/r7tRwOsd6EQOKmiGII=
+	t=1751512692; cv=none; b=s4/vVD4PViroQOPmD/VEtYBYyGcgGiUwvcpf2HXORLuL7cXhsK14NkZE+Aan2i4JfQZtcYFCnMqZWNMUSaXuBlTJ9Y1aLQpvGxomrJMuSDWPmdOZSb41ahJ3YxLG4TBcLBiRNy2UeXzarofkDv01h0ZymvnZRc+/lLbJ84AnKNU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751509200; c=relaxed/simple;
-	bh=rnEUDMnYf8STp5GPvVbg/Y3l1whTuYYaxsE/wbhNOXg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nuNzRQmw0LgLi11L7yQww7kYwLFQE3XEW1vjj5Tyneoiw61gLY/WRsC9viXr7NBoDNqDiltS++8xHjU2IZMd3+i1Wj/4QGwVtPVTKXhWyCbVZLzeJM6i1fADKOOxeRBZ4clV2aSK75fixeBgonn8VM/O8e+qjsT6g9JF6mH1vaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=DuHUAMO0; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1751512692; c=relaxed/simple;
+	bh=HqUI1KPm0vQFCo7eoNaYy5FdR+YYqlgXUQ4gK/8aBm0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IkC5um6WRK8pSw3yG6ePubyzJl8aRYn8DJwWLaApWaEbe7N9/HWgw7MoseeNm8cyWaYDcN1WqwpxdtdQVnsNDIguo/wm0eWBe2XOfG7s2B+/BwkcY9M+IQFUmLI4ryXfiITAM+hf4/PRuPqj0id1OziDk0hSzcFVK9yFnR41xSU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=a/9AXaZW; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="DuHUAMO0"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 562LudOR028616
-	for <iommu@lists.linux.dev>; Thu, 3 Jul 2025 02:19:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	8SgoQMCb+yk35vcEdpnooOFtFCFlzwJMMzcRzUpYFpU=; b=DuHUAMO0wJJ826x9
-	2hFz2U8l84fCq0lDxIDdk7LI/JRjI5ffzrJ3OtmkS6dvTo/u/vfAFgw+lSYsNYGj
-	lLWb0WgecX2zpCu/9Xie9g/KS5Kh0zuS4QC0ScXvU8EQX+USdX++NI1qvLJxWdkO
-	fPQlRDIA5sPgLw27bg0GQJO1jd/gi/J4TjxZOXYZU4bJhj1IG4NS72aE+dz3NryL
-	Z58KsHBiGbO15jmX6kMGiElLhEaV7FcMICq+rECbM6QTJhBlGhQFahu9cjGDhstO
-	ol85ejBTl9ixSx4UguVWEFuh6i+LWDOitCm1TZEZmzdGniquEM3oX1LpXw/B10A9
-	59poJQ==
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47j7bvxue4-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Thu, 03 Jul 2025 02:19:56 +0000 (GMT)
-Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-235e1d70d67so38017955ad.0
-        for <iommu@lists.linux.dev>; Wed, 02 Jul 2025 19:19:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751509196; x=1752113996;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8SgoQMCb+yk35vcEdpnooOFtFCFlzwJMMzcRzUpYFpU=;
-        b=Pm3HfYi9JfsxyIP6T9XU9+m6NSHLx8UI1w3KXJPubPEG7qq0xpx3CuYAgY05Ima+Yw
-         2U5fWkkS8+wo/6Rul3YHtlCTjJUWAgR2UYNNAHbWW1y48oqnI8mOvhGb7JmP7KRnGM6c
-         KmCc4x6+4mIyU0I20XsOaZgRusvu5BvWYE7FnubNb1tsV1u595Fo+5Szn1ssjGRlVEI4
-         K5MgBectP81YRIWj8U7r62IygURJhnU1mN9i/pn2czbdKl0M8OsMKhVku8XkWDeQj1Od
-         MwE4uS9cOam4kJ8eirtdXqj4rqwxyhiak2oBEEdpKuXk1xOvOn9wDtyT24KaahxjhkU/
-         3NhA==
-X-Forwarded-Encrypted: i=1; AJvYcCWdW3Lf0Xtiq0m5whtTjz0TOpebMbBBVuHomez0mh50ejo+DKBejA3EsjlGSmU0Mt1GwhlJrg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy6z+tLSGfKUXJTXki4lG0zEgauS80PpiCse3NDaXAZVYEVoJgR
-	JCeY9I07F4wqd1XR2rf/au2Boo8LNm9xGDBDXh9bqXhXuNPjb4PMTgoWOUpvHOzikphgtENX2Q0
-	EOhJ01L2pW0jHCDI8yI07OvdDXekHZRbdQtT43pTwQ0fAsJLJRYlRCA5zYQ==
-X-Gm-Gg: ASbGncswEE7PVHZj1kJVsdYIislDda2cFOOmtz225LPmwjBcAFDR9s47REXY2/iy3Ut
-	ExWBW1f41U9gHVGVQcvXXmxz0sbJTGtoulU+NHjecUYEX0D7ZRMng/Hpyhnid8KOYWkxhNm6Npv
-	L5A7PNcg3P5Pt4wolLG/jSnLBKKSljAY5xtfI3wYaVQe0+XhYUwkiq0kc34yXV8mwzSzShP0dBc
-	K7SIaHfRHcFoTIfvSV3hpR7/unwN2Gws6PCuXeIPxnJ4Zcx4+GZkTDzgiJtSsMq9hCMqI1OpfD/
-	IY7oRH30cXtaJrkuUQe2tLJh8bIjrtcBaCUkFez48PDjwQI9QMoFdGjEwr+gvVlgPaVZlEboFnU
-	e3N7g8/tHjA/1p18=
-X-Received: by 2002:a17:903:22cf:b0:234:8c64:7885 with SMTP id d9443c01a7336-23c6e594071mr82030005ad.53.1751509196034;
-        Wed, 02 Jul 2025 19:19:56 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGTss5kyY0B6320sF3R/MAVC1HUnXlJ+1X/RIYQnabOP0u++yoy3pq4btZm9MwuOzM1nPMzMQ==
-X-Received: by 2002:a17:903:22cf:b0:234:8c64:7885 with SMTP id d9443c01a7336-23c6e594071mr82029645ad.53.1751509195566;
-        Wed, 02 Jul 2025 19:19:55 -0700 (PDT)
-Received: from [10.133.33.139] (tpe-colo-wan-fw-bordernet.qualcomm.com. [103.229.16.4])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-23acb3b8ec2sm140834865ad.183.2025.07.02.19.19.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 02 Jul 2025 19:19:55 -0700 (PDT)
-Message-ID: <979be2a9-9d0b-4382-8519-2f6fbcac5375@oss.qualcomm.com>
-Date: Thu, 3 Jul 2025 10:19:51 +0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a/9AXaZW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1751512690; x=1783048690;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=HqUI1KPm0vQFCo7eoNaYy5FdR+YYqlgXUQ4gK/8aBm0=;
+  b=a/9AXaZWWX6cr/QmoSUx/47zqeqaY+Eeuv2PRBDOiHVo2pIyQzL01QOd
+   LAygyOEnYXEbNEctnGYOqTQ+IHmMp47A8kwbT5gFBEnONaTV5PkNcttFX
+   RlQK4Y9goywxnCv6Q9ITtSBKXIjJiXC/KCrZgCF8B/vPRZKXOEcAgfXnH
+   OVjF80ZjdqUQFjoAA56UzvdRWsWEg2+wEO9I9JB8akWHmEFd32zH3Er80
+   q64kC+CgN5Lww+D3GMthGNaes1T8i+mzuUKjOZ7xiBdlaVFlv9Ancfwe0
+   /BLVhAXAdrdm7b0N+vCJAiKqY3qgoqRoUh9YSKnUoa7YR3APLjc8lFFpA
+   g==;
+X-CSE-ConnectionGUID: XnQv2AuGR6CLxYOikRLDgQ==
+X-CSE-MsgGUID: dUMLdMWgQiqmZNjyQd19hA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11482"; a="53793041"
+X-IronPort-AV: E=Sophos;i="6.16,283,1744095600"; 
+   d="scan'208";a="53793041"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jul 2025 20:18:09 -0700
+X-CSE-ConnectionGUID: WjkuFrhFRPe0tvxLm541Jg==
+X-CSE-MsgGUID: 4SaYQt3+TeyUNSVmnAX2KQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,283,1744095600"; 
+   d="scan'208";a="153658519"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by orviesa010.jf.intel.com with ESMTP; 02 Jul 2025 20:18:06 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Ioanna Alifieraki <ioanna-maria.alifieraki@canonical.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/1] iommu/vt-d: Optimize iotlb_sync_map for non-caching/non-RWBF modes
+Date: Thu,  3 Jul 2025 11:15:45 +0800
+Message-ID: <20250703031545.3378602-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: ath12k_pci errors and loss of connectivity in 6.12.y branch
-To: Matt Mower <mowerm@gmail.com>
-Cc: Vasant Hegde <vasant.hegde@amd.com>, Robin Murphy <robin.murphy@arm.com>,
-        Jeff Johnson <jjohnson@kernel.org>, will@kernel.org, joro@8bytes.org,
-        linux-wireless@vger.kernel.org, ath12k@lists.infradead.org,
-        1107521@bugs.debian.org, iommu@lists.linux.dev
-References: <CAPDiVH8gaBH6o_OY-zUWYpDbj5mhiqmofKGb71gLgHOi4vA=Vw@mail.gmail.com>
- <0ba2176e-3339-4a8b-850a-ca5643939c8b@oss.qualcomm.com>
- <fd3bd8b1-4108-445a-b65f-4769d73e6e63@arm.com>
- <4a13d862-1bbb-4a98-bc1d-219bf78f7c0d@amd.com>
- <CAPDiVH-kVCUY8DKexT9OqAZsvkZ5_CGo8d8nENYA-kD=s_x8wA@mail.gmail.com>
- <e008afed-819d-43eb-8895-2c7aaf24ec13@oss.qualcomm.com>
- <CAPDiVH-xPDmx-KQx7YJY=7+kwJNbGY-rEu-w+cz18p=kjnKFsw@mail.gmail.com>
-Content-Language: en-US
-From: Baochen Qiang <baochen.qiang@oss.qualcomm.com>
-In-Reply-To: <CAPDiVH-xPDmx-KQx7YJY=7+kwJNbGY-rEu-w+cz18p=kjnKFsw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: aFZaObR_Y0fto_K973M7RZYCUvZSvHFy
-X-Authority-Analysis: v=2.4 cv=RJCzH5i+ c=1 sm=1 tr=0 ts=6865e8cd cx=c_pps
- a=IZJwPbhc+fLeJZngyXXI0A==:117 a=nuhDOHQX5FNHPW3J6Bj6AA==:17
- a=IkcTkHD0fZMA:10 a=Wb1JkmetP80A:10 a=1xDctz_ZAAAA:8 a=x-Jbw-KjGOrRcKConVEA:9
- a=QEXdDO2ut3YA:10 a=uG9DUKGECoFWVXl0Dc02:22 a=1a1P4aADmYxDp9Cj9Seq:22
-X-Proofpoint-ORIG-GUID: aFZaObR_Y0fto_K973M7RZYCUvZSvHFy
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzAzMDAxNiBTYWx0ZWRfX6jaB+D2xZzkp
- bKonTVnKu24tWWmfYQTWtFx7WYGICT0VDc/IsngKfufMF26nUdNr0wPZXI5JoHh3QkGUlkCLXhv
- Byg4eTqNEsSVRyPI3n6lCJ693l89R8O1xLgMCgTrgCTENmB8hcm4wT2XV9MC23Bp474nno1yWca
- 36L3bELvK79d6Ydt7J9IOCSura+Wgtertn6FrUfjr1ES+VQXUME64PyxWb4nMWVXE7lFCEIf3ae
- HROLCAMiKxmPCdf95NpZCsAbpTmpstQ32xtOl/655JfamQsdXZlA1eu9QFoSTR2yf8AQB+VzJhC
- IvTdGQaLN3md8AVoC3pRIowG4mGY5l/6iMtcXij7yMqNUN+UqfJJg7d9YAk37TirYqjqnHO84xk
- UR5eiPQMU7PXPMWB2H5VsP6R7wxaII4K5IwTgG2tawj+kh4FVvZNiIUKBNXtYAVfw2cbh7jl
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-07-03_01,2025-07-02_04,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 impostorscore=0 priorityscore=1501 mlxlogscore=999 adultscore=0
- malwarescore=0 clxscore=1015 lowpriorityscore=0 mlxscore=0 phishscore=0
- bulkscore=0 suspectscore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2507030016
+Content-Transfer-Encoding: 8bit
 
+The iotlb_sync_map iommu ops allows drivers to perform necessary cache
+flushes when new mappings are established. For the Intel iommu driver,
+this callback specifically serves two purposes:
 
+- To flush caches when a second-stage page table is attached to a device
+  whose iommu is operating in caching mode (CAP_REG.CM==1).
+- To explicitly flush internal write buffers to ensure updates to memory-
+  resident remapping structures are visible to hardware (CAP_REG.RWBF==1).
 
-On 7/2/2025 10:53 PM, Matt Mower wrote:
->> Matt, could you help enable verbose ath12k log to verify my guess?
-> 
-> Here are kernel logs with ath12k debugging enabled:
+However, in scenarios where neither caching mode nor the RWBF flag is
+active, the cache_tag_flush_range_np() helper, which is called in the
+iotlb_sync_map path, effectively becomes a no-op.
 
-Thanks Matt.
+Despite being a no-op, cache_tag_flush_range_np() involves iterating
+through all cache tags of the iommu's attached to the domain, protected
+by a spinlock. This unnecessary execution path introduces overhead,
+leading to a measurable I/O performance regression. On systems with NVMes
+under the same bridge, performance was observed to drop from approximately
+~6150 MiB/s down to ~4985 MiB/s.
 
-I see firmware crash before IOMMU fault in both logs, which verifies my guess.
+Introduce a flag in the dmar_domain structure. This flag will only be set
+when iotlb_sync_map is required (i.e., when CM or RWBF is set). The
+cache_tag_flush_range_np() is called only for domains where this flag is
+set.
 
-> 1. WLAN.HMT.1.0.c5-00481-QCAHMTSWPL_V1.0_V2.0_SILICONZ-3
->    https://cmphys.com/ath12k/dmesg-6.12.35-ath12kdebug-fw0x100301e1-20250702.log
+Reported-by: Ioanna Alifieraki <ioanna-maria.alifieraki@canonical.com>
+Closes: https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2115738
+Link: https://lore.kernel.org/r/20250701171154.52435-1-ioanna-maria.alifieraki@canonical.com
+Fixes: 129dab6e1286 ("iommu/vt-d: Use cache_tag_flush_range_np() in iotlb_sync_map")
+Cc: stable@vger.kernel.org
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 19 ++++++++++++++++++-
+ drivers/iommu/intel/iommu.h |  3 +++
+ 2 files changed, 21 insertions(+), 1 deletion(-)
 
-[   91.625809] ath12k_pci 0000:c2:00.0: mhi notify status reason MHI_CB_EE_RDDM
-[   91.625916] ath12k_pci 0000:c2:00.0: reset starting
-[   91.674375] ath12k_pci 0000:c2:00.0: waiting recovery start...
-[   91.679445] ath12k_pci 0000:c2:00.0: setting mhi state: POWER_OFF(3)
-[   91.680721] ath12k_pci 0000:c2:00.0: qmi wifi fw del server
-[   91.680754] ath12k_pci 0000:c2:00.0: setting mhi state: DEINIT(1)
-[   91.681842] ath12k_pci 0000:c2:00.0: cookie:0x0
-[   91.681858] ath12k_pci 0000:c2:00.0: WLAON_WARM_SW_ENTRY 0x14c4e54
-[   91.687109] ath12k_pci 0000:c2:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0010
-address=0xfe980000 flags=0x0020]
-
-
-> 2. WLAN.HMT.1.1.c5-00284.1-QCAHMTSWPL_V1.0_V2.0_SILICONZ-3
->    https://cmphys.com/ath12k/dmesg-6.12.35-ath12kdebug-fw0x1108811c-20250702.log
-> 
-
-[  113.621429] ath12k_pci 0000:c2:00.0: mhi notify status reason MHI_CB_EE_RDDM
-[  113.621794] ath12k_pci 0000:c2:00.0: reset starting
-[  113.670134] ath12k_pci 0000:c2:00.0: waiting recovery start...
-[  113.675177] ath12k_pci 0000:c2:00.0: setting mhi state: POWER_OFF(3)
-[  113.676331] ath12k_pci 0000:c2:00.0: setting mhi state: DEINIT(1)
-[  113.676581] ath12k_pci 0000:c2:00.0: qmi wifi fw del server
-[  113.676874] ath12k_pci 0000:c2:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT domain=0x0010
-address=0xfea50000 flags=0x0020]
-
-> I captured these after setting CONFIG_ATH12K_DEBUG=y and running "echo
-> 0xffffffff > /sys/module/ath12k/parameters/debug_mask" during boot
-> (using @reboot in crontab).
-
-Unfortunately I can not tell the root cause to the firmware crash from host log.
-Internally I will try to repro this issue, in the meanwhile, Matt, could you help do some
-more work to narrow down the problematic change?
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 7aa3932251b2..f60201ee4be0 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1796,6 +1796,18 @@ static int domain_setup_first_level(struct intel_iommu *iommu,
+ 					  (pgd_t *)pgd, flags, old);
+ }
+ 
++static bool domain_need_iotlb_sync_map(struct dmar_domain *domain,
++				       struct intel_iommu *iommu)
++{
++	if (cap_caching_mode(iommu->cap) && !domain->use_first_level)
++		return true;
++
++	if (rwbf_quirk || cap_rwbf(iommu->cap))
++		return true;
++
++	return false;
++}
++
+ static int dmar_domain_attach_device(struct dmar_domain *domain,
+ 				     struct device *dev)
+ {
+@@ -1833,6 +1845,8 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
+ 	if (ret)
+ 		goto out_block_translation;
+ 
++	domain->iotlb_sync_map |= domain_need_iotlb_sync_map(domain, iommu);
++
+ 	return 0;
+ 
+ out_block_translation:
+@@ -3945,7 +3959,10 @@ static bool risky_device(struct pci_dev *pdev)
+ static int intel_iommu_iotlb_sync_map(struct iommu_domain *domain,
+ 				      unsigned long iova, size_t size)
+ {
+-	cache_tag_flush_range_np(to_dmar_domain(domain), iova, iova + size - 1);
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++
++	if (dmar_domain->iotlb_sync_map)
++		cache_tag_flush_range_np(dmar_domain, iova, iova + size - 1);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 3ddbcc603de2..7ab2c34a5ecc 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -614,6 +614,9 @@ struct dmar_domain {
+ 	u8 has_mappings:1;		/* Has mappings configured through
+ 					 * iommu_map() interface.
+ 					 */
++	u8 iotlb_sync_map:1;		/* Need to flush IOTLB cache or write
++					 * buffer when creating mappings.
++					 */
+ 
+ 	spinlock_t lock;		/* Protect device tracking lists */
+ 	struct list_head devices;	/* all devices' list */
+-- 
+2.43.0
 
