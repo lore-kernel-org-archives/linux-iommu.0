@@ -1,150 +1,97 @@
-Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from sender4-pp-o95.zoho.com (sender4-pp-o95.zoho.com [136.143.188.95])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D84881EE7B7
-	for <iommu@lists.linux.dev>; Fri,  4 Jul 2025 17:54:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751651669; cv=none; b=hYvKDTjCS6FuVjO+Vbe6U4fiR7cGxIb6nh4+SnXP9AVpKtcYZdNiYTpTr7ljUOCyVeybULiwVnxNjHdTD1xBnSFucccsPYIWU/KQwATxla3W9P/klzD0qouKXRlPtqO77COmJNSJrJu34rrlN2jdBwc5ZzT8bcxrYleVLXwMS8Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751651669; c=relaxed/simple;
-	bh=qTNc7+1p4sx/z+Ihm4/J09j0G//xpF1WUSAnIfFyOOI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ngoI/H/E8EHcSvdAS56HaUaZ3jN/0h/++TMurozW5xiy9H8sz3KfEEun1utnyh0uUGdJ1Msei+ZTCyvNm2LOf+hPa+YCdTunBLx3oc9tnCQJpZon0heTnlFruxTCFOKfody2JUe25Gu1WSbQNHTXz/TNbYbXNVf75YpXS/RDs/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=IU9VG1dM; arc=none smtp.client-ip=209.85.215.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 876532147F5;
+	Fri,  4 Jul 2025 20:11:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.95
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751659891; cv=pass; b=QVjuLBB9hjfI7h6GqTR21r+RuUNwR26TTjenPGSrQ60cJGsOMNm+xp0RjIYfRGwojK4djvmRgL3wN0P9pH1bvUjFVmLtlOlFeKEjwZrhFf90Qy6yFMig/066hBQDPeIA/zMqZxPwt/OIjJGAmLT9+gVXCY3MijxSjGqJboPRhQg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751659891; c=relaxed/simple;
+	bh=tbHHnTlNkCpzlQtAhMkpX0bIjaDfvn0DAgb1CscNph8=;
+	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
+	 MIME-Version:Content-Type; b=mBduQuV7BrR298NpgY/F5BAxcIx/K9YO0C+7wZm7uQcGma2xHGG0CeFUUNCcEQMLXIGFVPu4QjX0O9chcF+0hKUgZCYYs+l4zQbiyfCBSOgAsGKR8IDioLRKzTIT8OCI2B3cj2fmuwtgdk7iRBBDWqnLBsthLx0t9RRFPY3Kya4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=zohomail.com; spf=pass smtp.mailfrom=zohomail.com; dkim=pass (1024-bit key) header.d=zohomail.com header.i=safinaskar@zohomail.com header.b=aA1Tf5hE; arc=pass smtp.client-ip=136.143.188.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=zohomail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zohomail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="IU9VG1dM"
-Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-af51596da56so906253a12.0
-        for <iommu@lists.linux.dev>; Fri, 04 Jul 2025 10:54:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1751651667; x=1752256467; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XuxUGCJzgBIyontDTdqwJrs5j4TnI5gqZ41JcRqn9+o=;
-        b=IU9VG1dMGOPB5Fnkb5AZd7p4O+XXFXpPqHf7Bq17JX4VoosOK/AOmKLBTvK1V1UwlL
-         CS1ozUfA+YqrB7C5nhH+wpQDu09XOOViP8dvxUy57BBOcdVUh4wHxbuhcvZcGWmj5rsH
-         WPot0nHmUaNVsVQ0LkTpKr6p9xYuoSYZIXty4qNQVJNqyYG/zOSwxwN0lrgsO1oxuwrC
-         Lnno2gsYEjjzggyxn2ebNHPJup5hEuXMlRwrDa7zyDG2k9cXCv5NSQsvQbBF5yqlWAxu
-         70+dqP4vPPyB7U6NbMIyzSauczmLOzeMXdnU0oJ7SK5q30/qUoQaqomORHedNYZtaWI9
-         kPZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751651667; x=1752256467;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XuxUGCJzgBIyontDTdqwJrs5j4TnI5gqZ41JcRqn9+o=;
-        b=tBx6qMHbiZ+YVLu+tegxxdYmIbqvaid3nm920IRGhPHlrhMg2FcSwTg8mJ8l+0JjT3
-         HUHre1UwHDVa4nhptg6aZiYMXvpLj2ByFzxy5O/TPcxiS5nrsM3czu9+HphPcFY9iYRL
-         X/NuQ25MqitV/qgjO48VnqiBtzQ7nyYu2rj/9fyHWC0vuh1ooGad3enxcpP875trtlol
-         CCLQOIECHWrkmEOgNbcSQ2qNuAGuwb111AX/1aAOCXxvCMWat+FNEC/8lQOMnCEqHpYO
-         r6sUwx9zkuVFElSEn2yWSzfZGmuNbAAdWfXuGFWMByeJ1MMq9/vGgEk1g8uyfDUa71/M
-         3VUg==
-X-Forwarded-Encrypted: i=1; AJvYcCXzgSz57/YvquABJVZw2CT5bzU7dolH3NNcNXwdE0A/k/RNQkVmDjA5XU3sIpSGYxsXcysf1g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzLWUky8OWMZa/jSTxjCQRRVXrKVvc/ZMGcbCOj21ox514JfQzA
-	uuDbN8omTmckoWQnB9Ig5K8CaZOT1nVmQXQ2G9XJOgLEE9+3P5B/5/FzzphLYKBK7DM=
-X-Gm-Gg: ASbGncs33FxjGKCU9l7rbNkN7D95WLdv1JNd5y3ZHoykFGU+PaOu25oUKdY30pP0UJF
-	zbN8jt3nO1wQFY0XRzPx3oUBPzB1JhuwwZ+wX5j0/3KltqnsAGlxw8OIVQk9nqTOe3iSuW7ZDaD
-	LXa4itednWbJompyPLCIVhjQOk9fXEQ16xJwrY72/3MhHBTfX/+0AE/3apBUkUfQdH+RSRsA4/i
-	zygtChkoxfrC8q6FVexDEagVSaSEHmuiwDG1icIMMUuwgPPylIsgcVLuLaT9evtpSCq75DGIH/M
-	mBSB8DaZcEQpmiLRjyRMUlEuUsG3gzZRPAAR
-X-Google-Smtp-Source: AGHT+IEh1aJoFY/nLlH7wiffnloJQKoRXxbF/IF6yLU1DedrCGkd2rfvxrkg/X7+7Uo3KEx9efT39g==
-X-Received: by 2002:a17:90a:dfcc:b0:313:1e9d:404b with SMTP id 98e67ed59e1d1-31aadcf8e2bmr4389360a91.2.1751651667045;
-        Fri, 04 Jul 2025 10:54:27 -0700 (PDT)
-Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-31aaae4095asm2682225a91.8.2025.07.04.10.54.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Jul 2025 10:54:26 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uXkcD-00000005zua-0liE;
-	Fri, 04 Jul 2025 14:54:25 -0300
-Date: Fri, 4 Jul 2025 14:54:25 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
-	nicolas.dufresne@collabora.com, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, kernel@collabora.com
-Subject: Re: [PATCH v4 3/5] iommu: Add verisilicon IOMMU driver
-Message-ID: <20250704175425.GM904431@ziepe.ca>
-References: <20250623153931.158765-1-benjamin.gaignard@collabora.com>
- <20250623153931.158765-4-benjamin.gaignard@collabora.com>
+	dkim=pass (1024-bit key) header.d=zohomail.com header.i=safinaskar@zohomail.com header.b="aA1Tf5hE"
+ARC-Seal: i=1; a=rsa-sha256; t=1751659886; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=CiuPrGCxm9Vh++d47K22nTz4RfdB3w4mCpeU8bSaxyNusDFL0hMRh5VnFRpreAe12ISo2f0s2bJX1bl1NBIdVZ6ehaoYyNNMqaWIPee7p0kmYknlPC3spUVzGDDBjppTicBTIXBuEXipVZ5O70GRKX/Y0gmSRX+hDDSvPyiMTBI=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1751659886; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=TS8ZTkfMUMynjI4o3xDUHXwFY9c3gzxNKeP+4/m0WhY=; 
+	b=GhkZzEojlPUustFtaNRrZzmw0Nm3gWf4iNKZFYdiRkc4SM+DpwH0kDkFKCOwK6P5NyXjSlft1gIXmBuf2wWicyEbqPI5u2myyGaQYFA3wrNAre8kKM2loR7FY7M+/oNm7zv0AB/Ye5/Clur/OTi5NRczt+5SXzKXK6OzNK8ivq4=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=zohomail.com;
+	spf=pass  smtp.mailfrom=safinaskar@zohomail.com;
+	dmarc=pass header.from=<safinaskar@zohomail.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1751659886;
+	s=zm2022; d=zohomail.com; i=safinaskar@zohomail.com;
+	h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID:Message-Id:Reply-To;
+	bh=TS8ZTkfMUMynjI4o3xDUHXwFY9c3gzxNKeP+4/m0WhY=;
+	b=aA1Tf5hE9yIqTf+z8pF0tuqMt27dbViTC9CVHAM3LmqTufEGbjcqDiKBKvwt5PfI
+	kPTDGPYdlMxsofuIIofLH02E9VzvYP0/MaOeRwGfJxGHUtWYGrPemldovjbqCqz2mPb
+	AXdtU5VmmDkeTG6byxbWF5M92WHbOvX+e3hWvbBk=
+Received: from mail.zoho.com by mx.zohomail.com
+	with SMTP id 1751659883598268.00403358374285; Fri, 4 Jul 2025 13:11:23 -0700 (PDT)
+Received: from  [212.73.77.104] by mail.zoho.com
+	with HTTP;Fri, 4 Jul 2025 13:11:23 -0700 (PDT)
+Date: Sat, 05 Jul 2025 00:11:23 +0400
+From: Askar Safin <safinaskar@zohomail.com>
+To: "Jani Nikula" <jani.nikula@linux.intel.com>
+Cc: "regressions" <regressions@lists.linux.dev>,
+	"intel-gfx" <intel-gfx@lists.freedesktop.org>,
+	"kexec" <kexec@lists.infradead.org>,
+	"dri-devel" <dri-devel@lists.freedesktop.org>,
+	"iommu" <iommu@lists.linux.dev>, "Ben Hutchings" <benh@debian.org>,
+	"joonaslahtinen" <joonas.lahtinen@linux.intel.com>,
+	"josesouza" <jose.souza@intel.com>,
+	"davehansen" <dave.hansen@linux.intel.com>
+Message-ID: <197d710ac39.10e2c241536088.2706332519040181850@zohomail.com>
+In-Reply-To: <cd3ca680ac5751368941713c1071e04d69544d47@intel.com>
+References: <197d1dc3bff.c01ddb9024897.1898328361232711826@zohomail.com> <cd3ca680ac5751368941713c1071e04d69544d47@intel.com>
+Subject: Re: Second kexec_file_load (but not kexec_load) fails on i915 if
+ CONFIG_INTEL_IOMMU_DEFAULT_ON=n
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250623153931.158765-4-benjamin.gaignard@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
+Feedback-ID: rr080112272253fe969a23595c85f91a500000523677c6bdb1982768f926de5e850d1de0b95032a6f4e2403a:zu080112275608904759347c1a8aa6344e00004b892033285efa420125ce24acd53f46b26bce7a66f1b1c3af:rf0801122bdab4c8b6ba9c8fd2fda7bf3c000084e058e1ee92c3f3e119dc5a80b99351bae666e7813a8f88542aa41c26:ZohoMail
 
-On Mon, Jun 23, 2025 at 05:39:27PM +0200, Benjamin Gaignard wrote:
-> The Verisilicon IOMMU hardware block can be found in combination
-> with Verisilicon hardware video codecs (encoders or decoders) on
-> different SoCs.
-> Enable it will allow us to use non contiguous memory allocators
-> for Verisilicon video codecs.
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> ---
-> change in version 4:
-> - Kconfig dependencies
-> - Fix the remarks done by Jason and Robin: locking, clocks, macros
->   probing, pm_runtime, atomic allocation.
+ ---- On Fri, 04 Jul 2025 12:29:01 +0400  Jani Nikula <jani.nikula@linux.intel.com> wrote --- 
+ > Thanks for the detailed debug info. I'm afraid all I can say at this
+ > point is, please file all of this in a bug report as described in
+ > [1]. Please add the drm.debug related options, and attach the dmesgs and
+ > configs in the bug instead of pointing at external sites.
 
-It broadly seems OK to me
+Okay, now let me speculate how to fix this bug. :) I think someone with moderate kexec understanding
+and with Intel GPU should do this: reproduce the bug and then slowly modify kexec_file_load code until it
+becomes kexec_load code. (Or vice versa.) In the middle of this modification the bug stops to reproduce,
+and so we will know what exactly causes it.
 
-Though I did notice this:
+kexec_file_load and kexec_load should behave the same. If they do not, then we should
+understand, why. We should closely review their code.
 
-> +static struct iommu_domain *vsi_iommu_domain_alloc_paging(struct device *dev)
-> +{
-> +	struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
-> +	struct vsi_iommu_domain *vsi_domain;
-> +
-> +	vsi_domain = kzalloc(sizeof(*vsi_domain), GFP_KERNEL);
-> +	if (!vsi_domain)
-> +		return NULL;
-> +
-> +	vsi_domain->iommu = iommu;
+Also, in case of kexec_load kernel uncompressing and parsing performed by "kexec" userspace
+tool, and in case of kexec_file_load by kernel. So we should closely review this two uncompressing/parsing code fragments.
+I think that this bug is related to kexec, not to i915. And thus it should be fixed by kexec people, not by i915 people. (But I may be wrong.)
 
-So we store the iommu in the domain? And use the iommu->lock all over
-the place
+But okay, I reported it to that bug tracker anyway: https://gitlab.freedesktop.org/drm/i915/kernel/-/issues/14598
 
-> +static int vsi_iommu_attach_device(struct iommu_domain *domain,
-> +				   struct device *dev)
-> +{
-> +	struct vsi_iommu *iommu = dev_iommu_priv_get(dev);
-> +	struct vsi_iommu_domain *vsi_domain = to_vsi_domain(domain);
-> +	unsigned long flags;
-> +	int ret = 0;
-> +
-> +	ret = pm_runtime_resume_and_get(iommu->dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	spin_lock_irqsave(&iommu->lock, flags);
-> +	/* iommu already attached */
-> +	if (iommu->domain == domain)
-> +		goto unlock;
+Maybe there is separate kexec bug tracker?
 
-But here we don't check that the domain matches the iommu of dev.
+Also, your bug tracker is cool. One can attach files in the middle of report. Why not whole kernel uses it? :)
 
-This seems a bit weird to me, I didn't quite get why the domain uses
-iommu->lock instead of just having its own per-domain lock?
+--
+Askar Safin
+https://types.pl/@safinaskar
 
-But if it does use iommu->lock then this does need to prevent using
-domains with the wrong iommu because the also use the wrong lock and
-then this:
-
-> +
-> +	vsi_iommu_enable(iommu, domain);
-> +	list_add_tail(&iommu->node, &vsi_domain->iommus);
-
-Is not safe?
-
-Jason
