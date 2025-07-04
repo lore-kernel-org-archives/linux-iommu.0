@@ -1,233 +1,185 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2085.outbound.protection.outlook.com [40.107.94.85])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 594062D6408
-	for <iommu@lists.linux.dev>; Fri,  4 Jul 2025 13:33:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751636006; cv=none; b=nDVDM2/BFOpeqDqBHqXc5PYWdVEemoiITyPQA/OXSUAZ5xyVb9qGbhwvaUlPsSZ9JN3Wi/O17jBGeAHauknkgQAx2+Un0tapvX0O+AAs1quy2LWVVZFFrRvJ7qH+pN+Y1J9/guBv8Pm5XgmjWiwO914oX1WEMd+TBxusCeRDEdg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751636006; c=relaxed/simple;
-	bh=z42LDkuolS9YgXumBsS3MC4BEk9xN8qz+yiSbmoxW6o=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=HYJlq/5fGxCnTkzS5JdnU9konHGuqq0LBD8HJKYQQE5Dv2q9vlIYVwGDuvdIvmgU45Ad4SItKbRwJ2dVaO97pJvVT5DZjPIVCMVdhQByvHi7GQCUlhPXkJVOU/+xgFD3cYPEZtz9CPv6LE5tkCvUpWna1yBDLZMTZjm91bW3yTY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hKb2A09a; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62A562F549C;
+	Fri,  4 Jul 2025 13:33:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.85
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751636018; cv=fail; b=LRSpxhWmd2Hasu7FQvzyIzn11dM//Zy/LvtjjpoO4BtOcT7hFtSgvidBAG/2Sz6JyiruCw94YDbcIEssUnDAW6UP93L5V9l311oDONtqGco1tmns2a1NgaxSz6oVpZrKdj/sOnKxdyFvCCPTdB9oEF3vpYarnmwvo7/zQHGtqDY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751636018; c=relaxed/simple;
+	bh=WPEvkPNRg9cUCXj0Wp7X7gd+GJJOMUIcdMsKQKYnReQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=QXHlV2W7IhM+dviABqU77KDgk03AL68PRUKTWHaeCnIlsRk3Dcpv9iN0Y4VGK7df5WzQzES1wxOGhfyP9R0MY3tLBy+qRqRo83yX5N7sE9Ycu9RBECIgXKF6tT5qsC5cG67a+1550R6SlZXzRHxWgva80zIq9aBeS9QLw7JRsdo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=bmUG50cT; arc=fail smtp.client-ip=40.107.94.85
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hKb2A09a"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1751636004; x=1783172004;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=z42LDkuolS9YgXumBsS3MC4BEk9xN8qz+yiSbmoxW6o=;
-  b=hKb2A09a2WuV/VKTinHiada7s4Dn7VIsjROhpOSk92Cq/rk1DJGEzgzM
-   X/lu6Sh6INqnLalN8QWK4ajte+MRTEn9L5fzJGulM+j2OGyGq3PIcwwTX
-   g9sRA+FOsuJQ+D4GNYXhEIkV83Wh0Ll3lOwAhG74aCyew+js+X4jIYdXR
-   DHqNqj3ZTT8gehNpUGjfY207Pajtn4+upDaipX44B1c2m/1wqUCOTAdAv
-   FNGnKWgTEzXLC+zQID0/LQI3Vvb2PM9byTWwY8GuvN/QSe6D/q957WWzz
-   lYVuTHsdIv1Ha3WWErvidIvF3CjYlyi1mtOomHKnk71TETQLrBOAOAgX3
-   A==;
-X-CSE-ConnectionGUID: sHpx0aA5T8OdMBiA7gbBNg==
-X-CSE-MsgGUID: NFB5kxOYQc2SE2jotJb5hA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11484"; a="57745465"
-X-IronPort-AV: E=Sophos;i="6.16,287,1744095600"; 
-   d="scan'208";a="57745465"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2025 06:33:23 -0700
-X-CSE-ConnectionGUID: rvD1co8HREGar8mrGv+E+A==
-X-CSE-MsgGUID: flIxni0MRcifNrAf8V4YHQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,287,1744095600"; 
-   d="scan'208";a="155407459"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa010.fm.intel.com with ESMTP; 04 Jul 2025 06:33:19 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Jann Horn <jannh@google.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Dave Hansen <dave.hansen@intel.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Andy Lutomirski <luto@kernel.org>
-Cc: iommu@lists.linux.dev,
-	security@kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	stable@vger.kernel.org
-Subject: [PATCH 1/1] iommu/sva: Invalidate KVA range on kernel TLB flush
-Date: Fri,  4 Jul 2025 21:30:56 +0800
-Message-ID: <20250704133056.4023816-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="bmUG50cT"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=GNjqVIZekY2NKrz7R51M2smkBStSFBYbLn9Kc3Yb3Bfmu5YfiE4mU4oTqzRu/fJaThUaOG68E1pb8IAnxP+MdX61dF06AMOKA2Pv3fI68AwUEpSF+Kl/wCB1bXBTtGNaHVJnc9Z+ab5MrEfnXhpgZu1Gppik7ol9Ho2s6DHUWS9BYh/TtinVarO9XCUYjmwenKXsaYFQ8Di6PCMDh5OFVy52Gr+V/8smyRXzadBbBtncHMDCJNaPI67hftsBBHB83a+wvhoM1XBvEZuow+pIdJerYnBJkOPISd3EtOxyj+gLfyi96Kk8a8/thYfp68FweQsuexx5akDeDEwtubxJMw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6NEnLZ3xPergNSyaZLXtQI8DAUow7Zw94RFQ0icxedE=;
+ b=muaPQMl8nWyeuM1q38ykcSkEez1iLkWwxYgMrmzXMs++wxOfdSdeWd/hybAfQet1Zj/qOzZXP2p+7niRIlwECJJ1JtncjoWZS9j+sDx3l8OwjDO8DgYJvw4gA7nSS/edOLi7gQ5ze2X7NDiOtIKUguJETFASv/VKoG8roRzEMGmzONA/taOFCKngayPUV0dJZtQMdE1Q7y8c62M8ImRCOf6HPGaX8kWH2KxuQMO7p3ECWMAGYMKjXqGM+D7dhbrPf+4hOORruqCn8KTB3W6q2O1FoI/Kz9oUwmxIaaRkx8nTgdpwG6UT+fJnoRxvbZXV04V0m7F1U9yqGUZ0hlsO+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6NEnLZ3xPergNSyaZLXtQI8DAUow7Zw94RFQ0icxedE=;
+ b=bmUG50cTMTP+ROR0A/pDEcRbDkA4KmSbEqM6Nwr7KH6V5OZwmlZiKQzZxhGQ4JBYBtTuQxu8Puk5n2Y0En0pL76EgXLxF0me1DC1JwejgDp3pZ5DYaHXvuY19s7To8Hod+wvvBraVdkC9PVnVg45AFTOyEiI81cMePwANsqfJh1c7rE4DDNfe/WGcmr+PcXZEsaxf3BQm+njRvK05pOhdIDzb+zpyNEayJ7bJKcCsv1jtMpPlt6ThOlsqtecjBQxtnf4UjLlTPBX5CuNb0TsPlTAuVCktrZLfKYIutmJTcQHrpCXyoYc3asjr3xQQHiv79yJOazeTwox5+CLIzO2Xw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by BN7PPF48E601ED5.namprd12.prod.outlook.com (2603:10b6:40f:fc02::6ce) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8835.29; Fri, 4 Jul
+ 2025 13:33:34 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8880.030; Fri, 4 Jul 2025
+ 13:33:34 +0000
+Date: Fri, 4 Jul 2025 10:33:32 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: kevin.tian@intel.com, corbet@lwn.net, will@kernel.org,
+	bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
+	peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
+	praan@google.com, zhangzekun11@huawei.com, iommu@lists.linux.dev,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+	linux-kselftest@vger.kernel.org, patches@lists.linux.dev,
+	mochs@nvidia.com, alok.a.tiwari@oracle.com, vasant.hegde@amd.com,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com
+Subject: Re: [PATCH v7 13/28] iommufd/viommu: Add IOMMUFD_CMD_HW_QUEUE_ALLOC
+ ioctl
+Message-ID: <20250704133332.GA1410929@nvidia.com>
+References: <cover.1750966133.git.nicolinc@nvidia.com>
+ <31ab67fa5c4fc1f2c8bea74fa23c1da7b97b9a93.1750966133.git.nicolinc@nvidia.com>
+ <20250704132602.GQ1209783@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250704132602.GQ1209783@nvidia.com>
+X-ClientProxiedBy: BYAPR01CA0007.prod.exchangelabs.com (2603:10b6:a02:80::20)
+ To CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|BN7PPF48E601ED5:EE_
+X-MS-Office365-Filtering-Correlation-Id: 937c6064-33f9-442f-bb04-08ddbaff5fc4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?o3MLpb2dLpmtFMbydRHDysRVpO/qYPRsXqfRjxtmBnYCFf/MjJXKAF2JrK1R?=
+ =?us-ascii?Q?uG9i1jK9mnvb7A3jQA718k7EQHu5pK20ribpnOC0KNp7qQjicRfWbQ56+7ct?=
+ =?us-ascii?Q?Kfysrual67EinZUo3zBZPkQzTAyMlfF/3aOjpeET7PWx+NuZqzZgX2/o92Pz?=
+ =?us-ascii?Q?7aPKtEqigsqV/8HdJjSW4QUGFDJSFnEyq6uoneiHmqy2E04tDovdt8Q1oyDY?=
+ =?us-ascii?Q?lejohHTJZQv20H4H5+sSU6C6HvbqdjznbDY+vq8e5bSn5YRrKgbAxpP3rR1Q?=
+ =?us-ascii?Q?UzPD23kjqTR8pYMAFN6S55zUf/m9HgHMZ1vga1Nf9fXiemay+Ha8s/Db2PB7?=
+ =?us-ascii?Q?1Ha33t7mBUJw4Zg6mz4ARW0O6QfR9YW3zkJl1yZZAAZRWv16EEQbKli7yqKR?=
+ =?us-ascii?Q?R/B9tZBpnTbbyQtsmiSLA6GCz86fxAeSSUXaFdJA/zIEP8xEp/SsjN/m1Hyb?=
+ =?us-ascii?Q?S3QT4ib5HhUea4r2BUINrqW5NLrJ4hH9Ux6VOAtYpCBn1Im3PU7+LAoYKvLu?=
+ =?us-ascii?Q?aYFqGAsRGwXCe7MazpT+eTtaSZfMi/B/L1+qjv/qm/C36H6GpsKoBkZvuif8?=
+ =?us-ascii?Q?gyG09Ri+qyDp5hHS/VkU1mK25wGbZwUu0J8BHFooP9cbTV39cdhVgc5HMapq?=
+ =?us-ascii?Q?j/fOVAv3u1lh/64a1S71XVj94fiGQKn9TtU9LGNP0lylF9Njkj0jg1E1zemO?=
+ =?us-ascii?Q?oapMosMriNmC67HZ1PyvZLywpD38HhXYk3Wqu/WyRajYkJO0zTAhgcd+r1Zg?=
+ =?us-ascii?Q?MslaZ/DHp3dr6IqlwtUoz0zQgS0XfZ7s7l4pi4SjvM9/BIRlJugZquWhaZeG?=
+ =?us-ascii?Q?7S/ch05LBVPmeGR9eABlj1+27rmx4lNAK0wdz2x2OnBGepPYjdxKIkJ63jUn?=
+ =?us-ascii?Q?VgzO8sPfov124lgVNHfpkXpt7jXB62WSObH6WjZCRHGwek1d1e6Uk+pVBhfR?=
+ =?us-ascii?Q?GEPzAtbZ+Jc9vjydeN3820bvrWeYvXs08FWOMovAQXEAQgZ3JRDH30HG3c+w?=
+ =?us-ascii?Q?6OERhwTlicWzzkicYUTptVxKsufmhUNW47BvJP7xoD+MJaVXMTwhbZPoXKhD?=
+ =?us-ascii?Q?/Z+eLBJ5YKGQ/TuJboXOdkkI815ynLjNttCbmitmfFCepYAetxzDIqD0vZAa?=
+ =?us-ascii?Q?/03Lp1hxBKVGvU9oET6sm4Nw3qZkCPTCb+e/smbBTMZFjGF+VfRcGCwbhOO4?=
+ =?us-ascii?Q?B45HcgWwuNYcWWTgsZBgJ0PVGUW7gmh2gxjcpNuiZRMTua1Us/Dr1foaUoWv?=
+ =?us-ascii?Q?BVuWCzWVTdY8YnBBy0I6IXLYa8D6vODx3PdeXO0PFJ6IOSXHzs+boN4BXkUk?=
+ =?us-ascii?Q?tY8AJEAAzzq27LOxL48PH1LsA/FUNKuRNdydsZk8XY612wFj+VVbY83AM/Zq?=
+ =?us-ascii?Q?pKfHcj5czVa+eLAVgpl2cP7PBS9OeaND9djbHhyCyRX6qcL9mK3hhPnRzlkr?=
+ =?us-ascii?Q?w4iC5bka46g=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?dDlVzVl6Q8O8kBcjriEqoUd9kqh01GkKgWVQpLTXT5v3Q3/ZPB3h040Jn4Zf?=
+ =?us-ascii?Q?0uOJBKJrDtfE8Ifwf9HxM+YfgVAMtSeq+4vvlF0uyh91IVEJi3Ym0xwTCLum?=
+ =?us-ascii?Q?As3ILF1JSMMi4l5WlvaMZb9DH0msK94YNZEz+UEge/e5kXcIGdFKNbqS6/Yi?=
+ =?us-ascii?Q?UpEpX0HRd1zICdzSiJvPIQjlRJSh9tFfVXJ3ExNKL5/gC29hDai1SUfvs4MC?=
+ =?us-ascii?Q?Vd0zITIsaxu3j5BIzTmics46HZr5D9Yvxy6ytd8kkBKb4r5u3kQC3k9ccAa5?=
+ =?us-ascii?Q?Tsiwg9DBwEtIsghqwZ8bVCBLNlxE0mOhrjT9tWhKFPbU0JvN0Okgv6CKeozP?=
+ =?us-ascii?Q?MvMaWkgGcozTX00Dl24ydx2q8ys74IGN/tQ4E8roYUplZQ1y8vcuUEjhAKs4?=
+ =?us-ascii?Q?dPqiktzePGC8xVee4SVw1h6gmmP1Rwv79VSOTnVXXJSGpjAqTtQL547X4y1/?=
+ =?us-ascii?Q?OOZfBEzMkscsG8/qQVawruJLl6MCZ9IoBSrixONNG6eom6cSXMh95FkoZr+i?=
+ =?us-ascii?Q?0ZrVvsLUL9sJqhVcPWejOr66IVxr7dVjaCsq3lLE2AulPdqBk0oVQiMtavG3?=
+ =?us-ascii?Q?1kI+782BdSGNJI2DF1LtXFLelDFVz92jiwpC+SI8zMFNu4qRjhBDDTHKi6qm?=
+ =?us-ascii?Q?XaCBCrdA2gWh9MkSnDnBlLu2meuCW9PbVSTcTspmpWmYT4sYiPATInCdWlsK?=
+ =?us-ascii?Q?Z1yK6M1I1kf9En4b/VPA5XqoxXNsYkUds6Mn11Oz0VkJsW5uNbZYxf7UNr59?=
+ =?us-ascii?Q?RwaSoRfV6r1QjxD+xEbjnlL11my19W9zJiZestuqoqIBq5/Arjl7CJDpAx+h?=
+ =?us-ascii?Q?SbFgfa3+Rq6kFigB3OlgWUCHdDznXDnFT0NM5MEjbK2eo1fIb+Qbgfz+IsZ4?=
+ =?us-ascii?Q?CW5/v7b8gotjWP6ZI12qFhelyJMuj80fbAOwmqpfDJqI1yXt8fTzG2Dl1uzi?=
+ =?us-ascii?Q?Fwrlxh1N90DUSlxTWpU69xrG4IgdVQwbl0smtd1AjyV+lK9nmy4i4wuhIchS?=
+ =?us-ascii?Q?lC4iBjnTshBSXQ4TUDOG8dAFkp5ADcPrY8mBvOU9QvAIKF69bm1QfuXYSrXt?=
+ =?us-ascii?Q?P/jnzKaEIb+Rmg7fxm8mOZuAW3XKUX9cRIsoH7HQibcUE4o+LIaCSXWRm0Ev?=
+ =?us-ascii?Q?1j6PFwK23apSrsK1H1ntOCsoAinw/q8iqL6IrvjKVuWL4kVyxOkEBHhsEvXO?=
+ =?us-ascii?Q?QuAUsBeUBUflvYrt2ZTeWlVJ0QdFvsi4SJREGdHtPV2Bzuyn37tylw1NSoww?=
+ =?us-ascii?Q?JZMAZs3BaPvDoLtprKZteNf/nxeSyGxuKYqF3aEtgih9QrcgG2mQ68Piqk8m?=
+ =?us-ascii?Q?RJLLd9frv0EmrrR3FtsDJwA+IPDegUxTgQvb/sYsCpnrbrvrlyrpYvfvcxz/?=
+ =?us-ascii?Q?7mEM9XYZMuOftj/9zA6w0/zisa1i+QzTvrdeBOCTUjrwuA4+XN38Q8ljzI4b?=
+ =?us-ascii?Q?tfcKAPK7Xe2zV1wALBga/+wLGKVQMZxfrLLG9qc5o+Sy/dPFH3mPDCNXZmGu?=
+ =?us-ascii?Q?QhNWXIiRFln76KLa/bR2dqN7zPmoV/elwivDcbgis/GsD0JSM7O97VqbYuu2?=
+ =?us-ascii?Q?UmQdTU/x8dhpqM5acohfwzqgytkG1wH+Q+jG/i3H?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 937c6064-33f9-442f-bb04-08ddbaff5fc4
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2025 13:33:34.5550
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PDRCLOIm9zGI2ntJSgjc4Z/c6+TjPEIL6vin8NNr2HYP60GZBDBlGM1XwWAQclBG
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PPF48E601ED5
 
-The vmalloc() and vfree() functions manage virtually contiguous, but not
-necessarily physically contiguous, kernel memory regions. When vfree()
-unmaps such a region, it tears down the associated kernel page table
-entries and frees the physical pages.
+On Fri, Jul 04, 2025 at 10:26:02AM -0300, Jason Gunthorpe wrote:
 
-In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU hardware
-shares and walks the CPU's page tables. Architectures like x86 share
-static kernel address mappings across all user page tables, allowing the
-IOMMU to access the kernel portion of these tables.
+> /* DIV_ROUND_UP(offset + cmd->length, PAGE_SIZE) */
+> if (check_add_overflow(offset, cmd->length, &length))
+>    return -ERANGE;
+> if (check_add_overflow(length, PAGE_SIZE-1, &length))
+>    return -ERANGE;
+> if (length > SIZE_MAX)
+>    return -ERANGE;
+> max_npages = length / PAGE_SIZE;
 
-Modern IOMMUs often cache page table entries to optimize walk performance,
-even for intermediate page table levels. If kernel page table mappings are
-changed (e.g., by vfree()), but the IOMMU's internal caches retain stale
-entries, Use-After-Free (UAF) vulnerability condition arises. If these
-freed page table pages are reallocated for a different purpose, potentially
-by an attacker, the IOMMU could misinterpret the new data as valid page
-table entries. This allows the IOMMU to walk into attacker-controlled
-memory, leading to arbitrary physical memory DMA access or privilege
-escalation.
+Actually I see now that overflow.h supports mixed types, so this can
+be simplified:
 
-To mitigate this, introduce a new iommu interface to flush IOMMU caches
-and fence pending page table walks when kernel page mappings are updated.
-This interface should be invoked from architecture-specific code that
-manages combined user and kernel page tables.
+ size_t max_npages;
+ size_t length;
+ u64 offset;
+ size_t i;
 
-Fixes: 26b25a2b98e4 ("iommu: Bind process address spaces to devices")
-Cc: stable@vger.kernel.org
-Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- arch/x86/mm/tlb.c         |  2 ++
- drivers/iommu/iommu-sva.c | 32 +++++++++++++++++++++++++++++++-
- include/linux/iommu.h     |  4 ++++
- 3 files changed, 37 insertions(+), 1 deletion(-)
+ offset = cmd->nesting_parent_iova - PAGE_ALIGN(cmd->nesting_parent_iova);
 
-diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-index 39f80111e6f1..a41499dfdc3f 100644
---- a/arch/x86/mm/tlb.c
-+++ b/arch/x86/mm/tlb.c
-@@ -12,6 +12,7 @@
- #include <linux/task_work.h>
- #include <linux/mmu_notifier.h>
- #include <linux/mmu_context.h>
-+#include <linux/iommu.h>
- 
- #include <asm/tlbflush.h>
- #include <asm/mmu_context.h>
-@@ -1540,6 +1541,7 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
- 		kernel_tlb_flush_range(info);
- 
- 	put_flush_tlb_info();
-+	iommu_sva_invalidate_kva_range(start, end);
- }
- 
- /*
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 1a51cfd82808..154384eab8a3 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -10,6 +10,8 @@
- #include "iommu-priv.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
-+static DEFINE_STATIC_KEY_FALSE(iommu_sva_present);
-+static LIST_HEAD(iommu_sva_mms);
- static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
- 						   struct mm_struct *mm);
- 
-@@ -42,6 +44,7 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
- 		return ERR_PTR(-ENOSPC);
- 	}
- 	iommu_mm->pasid = pasid;
-+	iommu_mm->mm = mm;
- 	INIT_LIST_HEAD(&iommu_mm->sva_domains);
- 	/*
- 	 * Make sure the write to mm->iommu_mm is not reordered in front of
-@@ -132,8 +135,13 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 	if (ret)
- 		goto out_free_domain;
- 	domain->users = 1;
--	list_add(&domain->next, &mm->iommu_mm->sva_domains);
- 
-+	if (list_empty(&iommu_mm->sva_domains)) {
-+		if (list_empty(&iommu_sva_mms))
-+			static_branch_enable(&iommu_sva_present);
-+		list_add(&iommu_mm->mm_list_elm, &iommu_sva_mms);
-+	}
-+	list_add(&domain->next, &iommu_mm->sva_domains);
- out:
- 	refcount_set(&handle->users, 1);
- 	mutex_unlock(&iommu_sva_lock);
-@@ -175,6 +183,13 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
- 		list_del(&domain->next);
- 		iommu_domain_free(domain);
- 	}
-+
-+	if (list_empty(&iommu_mm->sva_domains)) {
-+		list_del(&iommu_mm->mm_list_elm);
-+		if (list_empty(&iommu_sva_mms))
-+			static_branch_disable(&iommu_sva_present);
-+	}
-+
- 	mutex_unlock(&iommu_sva_lock);
- 	kfree(handle);
- }
-@@ -312,3 +327,18 @@ static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
- 
- 	return domain;
- }
-+
-+void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end)
-+{
-+	struct iommu_mm_data *iommu_mm;
-+
-+	might_sleep();
-+
-+	if (!static_branch_unlikely(&iommu_sva_present))
-+		return;
-+
-+	guard(mutex)(&iommu_sva_lock);
-+	list_for_each_entry(iommu_mm, &iommu_sva_mms, mm_list_elm)
-+		mmu_notifier_arch_invalidate_secondary_tlbs(iommu_mm->mm, start, end);
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_invalidate_kva_range);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 156732807994..31330c12b8ee 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1090,7 +1090,9 @@ struct iommu_sva {
- 
- struct iommu_mm_data {
- 	u32			pasid;
-+	struct mm_struct	*mm;
- 	struct list_head	sva_domains;
-+	struct list_head	mm_list_elm;
- };
- 
- int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode);
-@@ -1571,6 +1573,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
- 					struct mm_struct *mm);
- void iommu_sva_unbind_device(struct iommu_sva *handle);
- u32 iommu_sva_get_pasid(struct iommu_sva *handle);
-+void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end);
- #else
- static inline struct iommu_sva *
- iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
-@@ -1595,6 +1598,7 @@ static inline u32 mm_get_enqcmd_pasid(struct mm_struct *mm)
- }
- 
- static inline void mm_pasid_drop(struct mm_struct *mm) {}
-+static inline void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end) {}
- #endif /* CONFIG_IOMMU_SVA */
- 
- #ifdef CONFIG_IOMMU_IOPF
--- 
-2.43.0
+ /* DIV_ROUND_UP(offset + cmd->length, PAGE_SIZE) */
+ if (check_add_overflow(offset, cmd->length, &length))
+    return -ERANGE;
+ if (check_add_overflow(length, PAGE_SIZE-1, &length))
+    return -ERANGE;
+ max_npages = length / PAGE_SIZE;
 
+Then the kcvalloc takes in size_t:
+
+kvmalloc_array_node_noprof(size_t n, size_t size, gfp_t flags, int node)
+
+So there is no silent cast and truncation.
+
+Jason
