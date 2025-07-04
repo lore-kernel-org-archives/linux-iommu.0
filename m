@@ -1,221 +1,310 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2050.outbound.protection.outlook.com [40.107.243.50])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66AB91078F;
-	Fri,  4 Jul 2025 04:09:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751602155; cv=fail; b=H1oc8Ho08l2rTEywQgwBA3USoqB4B62TJ7YFLcI0eaN7AUsxsWK9pY98KueqXNizkTHZmR+pv7CoUblMbewoSqGjYPxSmxtNNLa06oyleLEAwZdag2pzAGf2NWolFQC5OW8ibCIaK8Cp3y6Fl5BI+ZHLofmTzv9HvKCC6JDZJxg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751602155; c=relaxed/simple;
-	bh=kVSrP77AexIJcTL3EAQL6dZsh5Ezc3X7UvWJRfovN2c=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=agXZEkQkUoR6sowamUbg2Yxt2QfWgk/wo65VSnrZKu8Z27XpiyFSfQmEbqACw49HNNK3gLWIifM4Y/DHnxYpz4vl9bYKm6+xorIPgyEGqQ7iTMLdvY7z8Xc3NtRoRscOkiyYqEF0cIdAYRq5m7L0pcucsx29PKQTKC8tnv9Mfdw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Eh0BdinZ; arc=fail smtp.client-ip=40.107.243.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D71C42DAFD5;
+	Fri,  4 Jul 2025 08:29:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751617751; cv=none; b=cjM8QBC2IEKxcbZxNMHl6LGENfx1tLwTOoNdrPOGweyUNUWykPYSB+T/atzcgTaq0MzIDqCUDUk94yIsYU6CuLi5BOVf0/8AtSZhrkGevOLLFeJhIChbmtQlC/nkfsxvim2tDW3MpmFgW+m69uoSWuw6bCLrckTv1S39pBQPEVE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751617751; c=relaxed/simple;
+	bh=gG26AaTUPpVFlo+hmvLaEPOw27iCEk6y9MznH6i3r6Y=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=YQx3H020/zE4LjVyfJxjxJsNIcvUlMnicfIam2Pn3p8Mo76ueEce17VX/Xk44XOGY8tIvBT3Jt0TvIcFegJyOc3Eh2k0+uYfpt4sGTHi/64boxWEYB6eKXr6+0PStfVpK6EiW+eQCSgWp59YISbt4U1CeZNDsagzp+p2FXB4RUQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iPS3kRfF; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Eh0BdinZ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=qjev9KHLTsnsnDcxgBn1UmqR7+IAFm+DnpPKPTs4jvps7OJA4bP8HXyeSsmUNmGZcSE25cKxOZDyNAd6zmx/5BCky7FMW3gIW89LzLrkctYJh6fvmi+ymtnMmLPaRTmLj17+TgXUapWKwFry/7nQ8p++vOyg4F1f2ER4W/GoeOvuqL11HR1m9ldp2cjaOowGFmhJkU0swbnwscjubDEAxgqqIxoY6BbQ0Ba2F9xUf08VDb9vyMiH4MqOK4iD1zLNvHxu8wHi+DXDeNw5IZ5D96FGdOJQRquO66wN7BhlCoLzViTRVZNsyNz6+8o02mpkfWK3IEtgpPkInEboOx6wJQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YPbah+lSD8kZgpfDaIiS/pRd26Nwlta81qIk6i3ZLqA=;
- b=Wuyx6/jd6mxPLVI9ChUobmDLaR57a1iV7yK+raQ6HO//lTiEYECBS6KG8VTm5zFtw3TiqUm6wvUVKdRMWx+aLKiwlj4Smde3mHdg7l17FD46Y7vgd+vMpM/aGxaCygE25ttfpmAc3fvYeDpdSKRuP2RA+q/frSjAqoqyz/kKw/Xmrw4JyS1fU7x3K1JfaF9BFanrhN4QqOzsOnX+fa5aXreyaIyDeRlTO/EP5IRmtM3IhRD8ytXHTia/Xw13R+T6dFHa24spJ02+40tVwUubBfgbXJ/V4HSafouIxDPNDD4tCZtr0vGHM3qpR4Ohdo9UFD5EQyhYr5bDTs7qeiPvIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YPbah+lSD8kZgpfDaIiS/pRd26Nwlta81qIk6i3ZLqA=;
- b=Eh0BdinZc6qTSXOXql7W0M61C9SY/cAc/17+D3QLsu4Coq0WA6YWfN9d3IhqUgIgGvbZXu6adV4Gw24iQfnJ0IgS/oRWvsnOloELmU4xlQvpQ3iCsWNUcIsmCb3eSmbDUFL5nVxFd96o2j3iuoJ61Q6hFYg+vRRDqByyKEEXYdOFymqKXZ+Sqrg3J8p/+wvXcSNJPosPsUgqom691ARexnCeM9K3mlxg7BJeDysNkN4PsyLulvgWrf1NWlaDHJOn91cSoPqnXQY1VpibGLLu4EoahgrpI/muKfR3p+TYHO4oYIdN9G+8aHY0K62wQ1J6d7Uezl3/ytfEPMTh3nzyug==
-Received: from BN9PR03CA0181.namprd03.prod.outlook.com (2603:10b6:408:f9::6)
- by DM4PR12MB6590.namprd12.prod.outlook.com (2603:10b6:8:8f::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8901.19; Fri, 4 Jul
- 2025 04:09:10 +0000
-Received: from BL6PEPF0001AB52.namprd02.prod.outlook.com
- (2603:10b6:408:f9:cafe::16) by BN9PR03CA0181.outlook.office365.com
- (2603:10b6:408:f9::6) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8901.21 via Frontend Transport; Fri,
- 4 Jul 2025 04:09:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BL6PEPF0001AB52.mail.protection.outlook.com (10.167.241.4) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8901.15 via Frontend Transport; Fri, 4 Jul 2025 04:09:09 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 3 Jul 2025
- 21:08:54 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Thu, 3 Jul
- 2025 21:08:53 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Thu, 3 Jul 2025 21:08:51 -0700
-Date: Thu, 3 Jul 2025 21:08:50 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-CC: "jgg@nvidia.com" <jgg@nvidia.com>, "corbet@lwn.net" <corbet@lwn.net>,
-	"will@kernel.org" <will@kernel.org>, "bagasdotme@gmail.com"
-	<bagasdotme@gmail.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"joro@8bytes.org" <joro@8bytes.org>, "thierry.reding@gmail.com"
-	<thierry.reding@gmail.com>, "vdumpa@nvidia.com" <vdumpa@nvidia.com>,
-	"jonathanh@nvidia.com" <jonathanh@nvidia.com>, "shuah@kernel.org"
-	<shuah@kernel.org>, "jsnitsel@redhat.com" <jsnitsel@redhat.com>,
-	"nathan@kernel.org" <nathan@kernel.org>, "peterz@infradead.org"
-	<peterz@infradead.org>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"mshavit@google.com" <mshavit@google.com>, "praan@google.com"
-	<praan@google.com>, "zhangzekun11@huawei.com" <zhangzekun11@huawei.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-doc@vger.kernel.org"
-	<linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org"
-	<linux-tegra@vger.kernel.org>, "linux-kselftest@vger.kernel.org"
-	<linux-kselftest@vger.kernel.org>, "patches@lists.linux.dev"
-	<patches@lists.linux.dev>, "mochs@nvidia.com" <mochs@nvidia.com>,
-	"alok.a.tiwari@oracle.com" <alok.a.tiwari@oracle.com>, "vasant.hegde@amd.com"
-	<vasant.hegde@amd.com>, "dwmw2@infradead.org" <dwmw2@infradead.org>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v7 10/28] iommufd/access: Bypass access->ops->unmap for
- internal use
-Message-ID: <aGdT0uNtfIFLvnBO@Asurada-Nvidia>
-References: <cover.1750966133.git.nicolinc@nvidia.com>
- <a2b2a9704d7efff717448cbb76695e83f2fe67c9.1750966133.git.nicolinc@nvidia.com>
- <BN9PR11MB5276F03CF1E97173E711A5288C40A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <aGWSkRX4yUuuOVZ8@Asurada-Nvidia>
- <BN9PR11MB5276BED9EC2F89E805F6BA678C43A@BN9PR11MB5276.namprd11.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iPS3kRfF"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1751617749; x=1783153749;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version:content-transfer-encoding;
+  bh=gG26AaTUPpVFlo+hmvLaEPOw27iCEk6y9MznH6i3r6Y=;
+  b=iPS3kRfFySw3EtZoHIcCUq6YkPYeoansIvR6L19P+oVsvM3g9aMPXrhs
+   88PRlpMCzT0qoXEirxyd+XdaSMjLgCjbGMSM65bM+JcM+bK+mFGG5xCm0
+   GNRcWW40uc+5Fm3lxz/rPnW9By3FH/x+hmV9Y1Jegy9tOzycLOYiauQP9
+   D4d6F9H98f2k/zkqPjtOtCajYYKtZoN6iGIjgHExiMYgRyz8MXvEZW2+I
+   m6lzSj81FRJRvBFENqlHt32tDGtIwNS9ABPGxbfeSDY14opDPa3SEjLhz
+   xodK/O3yiLAnbSNZ11OXioLAnvO+t0hZI+/RSAuOInioyOcG0HBh5lQUz
+   Q==;
+X-CSE-ConnectionGUID: AoIC059mQ5S9cohnXGgQhA==
+X-CSE-MsgGUID: adRy/v85Somy6OZpN14i/w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11483"; a="53875384"
+X-IronPort-AV: E=Sophos;i="6.16,286,1744095600"; 
+   d="scan'208";a="53875384"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2025 01:29:08 -0700
+X-CSE-ConnectionGUID: UK+Tic1oRWivQ7E1XxZcgA==
+X-CSE-MsgGUID: SokHSIpkSIWzveBJV5HGOQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,286,1744095600"; 
+   d="scan'208";a="155164725"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.246.102])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Jul 2025 01:29:04 -0700
+From: Jani Nikula <jani.nikula@linux.intel.com>
+To: Askar Safin <safinaskar@zohomail.com>, regressions
+ <regressions@lists.linux.dev>, intel-gfx
+ <intel-gfx@lists.freedesktop.org>, kexec <kexec@lists.infradead.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>, iommu
+ <iommu@lists.linux.dev>, Ben Hutchings <benh@debian.org>
+Cc: anushasrivatsa <anusha.srivatsa@intel.com>, joonaslahtinen
+ <joonas.lahtinen@linux.intel.com>, tvrtkoursulin
+ <tvrtko.ursulin@linux.intel.com>, josesouza <jose.souza@intel.com>,
+ davehansen <dave.hansen@linux.intel.com>
+Subject: Re: Second kexec_file_load (but not kexec_load) fails on i915 if
+ CONFIG_INTEL_IOMMU_DEFAULT_ON=n
+In-Reply-To: <197d1dc3bff.c01ddb9024897.1898328361232711826@zohomail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <197d1dc3bff.c01ddb9024897.1898328361232711826@zohomail.com>
+Date: Fri, 04 Jul 2025 11:29:01 +0300
+Message-ID: <cd3ca680ac5751368941713c1071e04d69544d47@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276BED9EC2F89E805F6BA678C43A@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-NV-OnPremToCloud: AnonymousSubmission
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB52:EE_|DM4PR12MB6590:EE_
-X-MS-Office365-Filtering-Correlation-Id: 81394f77-9561-494c-2ced-08ddbab086f4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|376014|7416014|36860700013|13003099007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?0o9i3f7j0kp+sOt+5g2ZcxUCnNKVmGqi3aTzFEESLq3JgQBYaHdOJmkbgmIh?=
- =?us-ascii?Q?HKP5Km6qcPrFqOJZ5lflGhwikhtJ1kFCNB0hb1BkU5AkXQa4Jd7JueWp/fdx?=
- =?us-ascii?Q?2oKt/OrJw1KhN43JlQw30+yBCeX9sUY9+/388TAV4aX8mN7/gg64ce3Z64N4?=
- =?us-ascii?Q?HzbpRWYOOjlu01c6wrNHPHn5JWDHXGuz37TIj7vxY5udHS6tkJMXTknCipgC?=
- =?us-ascii?Q?paUgoxINKuPGuS0oIWz5pDgZoxLLaZz5sChnA+yvPVlX5+ilY6gsTJM4SFYS?=
- =?us-ascii?Q?USOVKu4sSbwejXi7vPi01jIHigVYzt5kD1L9u9/opcXDgrT+G7XBnu4pZDNB?=
- =?us-ascii?Q?MHuYqhyJnnjdWlBhHdPWZYh3jNidHZ3P7i0pfJ7IPJ7taJgo9kK5l6R/uSWJ?=
- =?us-ascii?Q?TFT1ESp/iEbn4ANPqw9A5U41w/2bRyCc7sTqQjdeNKiaB5y8XlbGqi1ezDFx?=
- =?us-ascii?Q?FTrxu/tm+gnI8GWe9N0O95LmE6TUJm1DlfcSd6GWdtS8rNY+rDrlZYmExvfn?=
- =?us-ascii?Q?UrqHmC1a+jek/Si8RoPBRrE9ve7Vw2JTD7hNYFFMsXKtSPZ879ccc4ayXLfz?=
- =?us-ascii?Q?pFf5pQTYRwQbxvTPEzbv4RfEG02uLrUYmdtrL4+UGMfd9bNm3aOF5UUdGuq0?=
- =?us-ascii?Q?mvUSjcJrkX/7wcYqInUpmwziGLdin0DAlv8YgOlf/1VK6V7NmLZuIfILwaK3?=
- =?us-ascii?Q?Knafk8MGpILV+kAkXP1y9QMOcVlht4dqajLg2MEjygt/ZJpZi/kE2hezxmce?=
- =?us-ascii?Q?Upio0oXKBU79IwhxF/8oRHCRC1ptnQ5Y/260FHlD/y/1vdeabrUiDm5Dn8hv?=
- =?us-ascii?Q?we3A0XrT0wuJslD2USsmFzIjOXpVje0oDTU7yg4o3bo8SJizdVQtZfCqLYPK?=
- =?us-ascii?Q?lHdBFFNUtYoi1DA6J7jRCxnXOw2HEEZWXvW+n6TbzR0L67n0r/66bPZDktyT?=
- =?us-ascii?Q?aadxov3oex44jW1r8/N7VNMNHsEDh26Z2mVANCMREryHpBHduf5rdnQqv93l?=
- =?us-ascii?Q?HTgVIOIXXoLLdlrnbldHkQZKyiyND4E9E7MAOqyKU79tdpMSLh1h6+t9O8rt?=
- =?us-ascii?Q?xmVER+Wwn7yBlCJ5RbuZrJqmsHqu3xWwAmSyn6fjt9fjdyR2ektH+iCp0PKa?=
- =?us-ascii?Q?+fZgUfkUciReVu+IgH+ELLoL7tJvNTzBBpon8bZc0CCm9gW9QIlUBWWjDpWJ?=
- =?us-ascii?Q?lThbw2T5oyT2ks+hO2W5GFMDk2E8Ct3CRr2UQsooQZTMtSYCfafth9sNposy?=
- =?us-ascii?Q?cGg+fFINYbMISael3610jo1g0zFGicmMuXo+qB9l50J4Jw2r6WP5rIRFcbb1?=
- =?us-ascii?Q?QKRc/ssQrT8wLa2xVTHUb9RgJAkz0yD1PiudEWvQJLaaPB1Jb2Ammx5ctCbQ?=
- =?us-ascii?Q?C7gM8uDT4PdhvYlYA/BEeiZjF+2yMH8/E82SuFUeK5o8Ih0Mrrpy5e9DVntK?=
- =?us-ascii?Q?34kaU5G3rVPwS5a5V4pxk2daw/poDcM2NrBnpwWdz6St+fw6srvwGc+EH6Lb?=
- =?us-ascii?Q?g2M4Ev6RiTkZo4RfsbDK29YkrBNfbLeyqOP8Y2O0A2SB9JlmBSR0obHHsg?=
- =?us-ascii?Q?=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(376014)(7416014)(36860700013)(13003099007);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Jul 2025 04:09:09.5733
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81394f77-9561-494c-2ced-08ddbab086f4
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL6PEPF0001AB52.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6590
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 03, 2025 at 04:57:34AM +0000, Tian, Kevin wrote:
-> I meant something like below:
-> 
-> iopt_unmap_iova_range()
-> {
-> 	bool internal_access = false;
-> 
-> 	down_read(&iopt->domains_rwsem);
-> 	down_write(&iopt->iova_rwsem);
-> 	/* Bypass any unmap if there is an internal access */
-> 	xa_for_each(&iopt->access_list, index, access) {
-> 		if (iommufd_access_is_internal(access)) {
-> 			internal_access = true;
-> 			break;
-> 		}
-> 	}
-> 
-> 	while ((area = iopt_area_iter_first(iopt, start, last))) {
-> 		if (area->num_access) {
-> 			if (internal_access) {
-> 				rc = -EBUSY;
-> 				goto out_unlock_iova;
-> 			}
-> 			up_write(&iopt->iova_rwsem);
-> 			up_read(&iopt->domains_rwsem);
-> 			iommufd_access_notify_unmap(iopt, area_first, length);	
-> 		}
-> 	}
-> }
-> 
-> it checks the access_list in the common path, but the cost should be
-> negligible when there is no access attached to this iopt. The upside
-> is that now unmap is denied explicitly in the area loop instead of 
-> still trying to unmap and then handling errors.
+On Thu, 03 Jul 2025, Askar Safin <safinaskar@zohomail.com> wrote:
+> TL;DR: I found a bug in strange interaction in kexec_file_load (but not k=
+exec_load) and i915
+> TL;DR#2: Second (sometimes third or forth) kexec (using kexec_file_load) =
+fails on my particular hardware
+> TL;DR#3: I did 55 expirements, each of them required a lot of boots, in t=
+otal I did 1908 boots
 
-Hmm, I realized that either way might be incorrect, as it iterates
-the entire iopt for any internal access regardless its iova ranges.
+Thanks for the detailed debug info. I'm afraid all I can say at this
+point is, please file all of this in a bug report as described in
+[1]. Please add the drm.debug related options, and attach the dmesgs and
+configs in the bug instead of pointing at external sites.
 
-What we really want is to reject an unmap against the same range as
-once pinged by an internal access, i.e. other range of unmap should
-be still allowed.
+BR,
+Jani.
 
-So, doing it at this level isn't enough. I think we should still go
-down to struct iopt_area as my v5 did:
-https://lore.kernel.org/all/3ddc8c678406772a8358a265912bb1c064f4c796.1747537752.git.nicolinc@nvidia.com/
-We'd only need to rename to num_locked as you suggested, i.e.
 
-@@ -719,6 +719,12 @@ static int iopt_unmap_iova_range(struct io_pagetable *iopt, unsigned long start,
- 			goto out_unlock_iova;
- 		}
- 
-+		/* The area is locked by an object that has not been destroyed */
-+		if (area->num_locked) {
-+			rc = -EBUSY;
-+			goto out_unlock_iova;
-+		}
-+
- 		if (area_first < start || area_last > last) {
- 			rc = -ENOENT;
- 			goto out_unlock_iova;
+[1] https://drm.pages.freedesktop.org/intel-docs/how-to-file-i915-bugs.html
 
-Thanks
-Nicolin
+
+>
+> Okay, so I found a bug. Steps to reproduce:
+> - I have Dell Precision 7780
+> - I have recent Debian x86_64 sid installed (bug reproducible with both D=
+ebian kernels and mainline ones)
+> - Bug is reproducible on many kernels, including very recent ones, for ex=
+ample 6.15.4
+> - Boot system, then do kexec into the same system using kexec_file_load. =
+I. e. pass --kexec-file-syscall to "kexec" command
+> - Then kexec from this kexec'ed system again (i. e. you should do two kex=
+ec's in a row)
+> - Then do 3rd kexec, etc
+> - Repeat kexec's until you do 100 kexec's or your system start to misbeha=
+ve
+>
+> On my computer the system starts to misbehave after some number of kexec'=
+s. This always happens after 2nd kexec attempt.
+> I. e. the first kexec is always successful. But second sometimes is not.
+> I never was able to perform 100 kexec's in a row.
+> After some kexec attempt the system starts to misbehave: oopses, panics, =
+locked system, etc.
+>
+> Notes:
+>
+> - I tried to bisect "kexec-tools" package, but bisect merely gave me comm=
+it, which switched to kexec_file_load as a default.
+> Bug is reproducible if we use kexec_file_load, but doesn't reproduce if w=
+e use kexec_load
+>
+> - Bug is reproducible even if we boot via init=3D/bin/bash (note: this me=
+ans that initramfs is still part of the boot process). (If we boot to norma=
+l GUI, bug is reproducible, too)
+>
+> - When I reproduce I use this command line: "root=3DUUID=3D... rootflags=
+=3Dsubvol=3D... ro init=3D..."
+>
+> - Debian package "plymouth" is required for reproducing. (It reproduces w=
+ith plymouth, but doesn't reproduce without plymouth.) But note that I neve=
+r see actual plymouth screen! I. e. presence of
+> "plymouth" on the system somehow affects bug reproduciblity despite plymo=
+uth animation never actually shown. I don't know why this happens, but I su=
+spect that I don't pass "splash" to kernel command line, and thus don't see=
+ plymouth screen. But I suspect that plymouth is still included to initramf=
+s and from there somehow affects boot process
+>
+> - Bug reproduces in Debian, but doesn't reproduce in Ubuntu. After a lot =
+of expirementing I finally understood why: Ubuntu kernel has CONFIG_INTEL_I=
+OMMU_DEFAULT_ON=3Dy, and Debian kernel has not. Additional expirements foun=
+d that it is culpit. I. e. the bug is reproducible with CONFIG_INTEL_IOMMU_=
+DEFAULT_ON=3Dn and not reproducbile with CONFIG_INTEL_IOMMU_DEFAULT_ON=3Dy =
+. (So advice for distributions: do what Ubuntu does, i. e. set CONFIG_INTEL=
+_IOMMU_DEFAULT_ON=3Dy to hide this bug)
+>
+> - Bug is not reproducible in old enough kernels, so I did bisect on Linux=
+. Bisect showed me these commits: d4a2393049..4a75f32fc7. I. e. bug is repr=
+oducible in 4a75f32fc7, but doesn't reproduce in d4a2393049. Between them t=
+here is a middle commit 52407c220c44c8dcc6a, which is not testable. Here ar=
+e these commits:
+>
+> commit 4a75f32fc783128d0c42ef73fa62a20379a66828
+> Author: Anusha Srivatsa <anusha.srivatsa@intel.com>
+>
+> =C2=A0 =C2=A0drm/i915/rpl-s: Add PCH Support for Raptor Lake S
+>
+> commit 52407c220c44c8dcc6aa8aa35ffc8a2db3c849a9
+> Author: Anusha Srivatsa <anusha.srivatsa@intel.com>
+>
+> =C2=A0 =C2=A0drm/i915/rpl-s: Add PCI IDS for Raptor Lake S
+>
+> It seems these commits merely added support for my Intel GPU model. So th=
+is is fake regression. I'm not sure this should be treated as proper regres=
+sion and whether regzbot should be notified. (What do you think?)
+>
+> Still formally this is regression: I did expirements and they show that b=
+ug present in 4a75f32fc783128d0c42 and not present before. (Side note: in l=
+atest kernels both wayland and x11 work, in d4a2393049 x11 works and waylan=
+d doesn't.)
+>
+> I tried to reproduce the bug in Qemu, but I was unable to do so. It seems=
+ Intel GPU is required, maybe even my particular model.
+>
+> Here is "lspci -vnn -d :*:0300" for my GPU:
+>
+> 00:02.0 VGA compatible controller [0300]: Intel Corporation Raptor Lake-S=
+ UHD Graphics [8086:a788] (rev 04) (prog-if 00 [VGA controller])
+>         Subsystem: Dell Raptor Lake-S UHD Graphics [1028:0c42]
+>         Flags: bus master, fast devsel, latency 0, IRQ 202, IOMMU group 0
+>         Memory at 604b000000 (64-bit, non-prefetchable) [size=3D16M]
+>         Memory at 4000000000 (64-bit, prefetchable) [size=3D256M]
+>         I/O ports at 3000 [size=3D64]
+>         Expansion ROM at 000c0000 [virtual] [disabled] [size=3D128K]
+>         Capabilities: [40] Vendor Specific Information: Len=3D0c <?>
+>         Capabilities: [70] Express Root Complex Integrated Endpoint, MSI =
+00
+>         Capabilities: [ac] MSI: Enable+ Count=3D1/1 Maskable+ 64bit-
+>         Capabilities: [d0] Power Management version 2
+>         Capabilities: [100] Process Address Space ID (PASID)
+>         Capabilities: [200] Address Translation Service (ATS)
+>         Capabilities: [300] Page Request Interface (PRI)
+>         Capabilities: [320] Single Root I/O Virtualization (SR-IOV)
+>         Kernel driver in use: i915
+>         Kernel modules: i915
+>
+> dmidecode:
+> https://zerobin.net/?aebea072b93d8122#z4W9URnV+k9ZZErhP4etQkxlfpyRKf++uKM=
+NoO5PGjs=3D
+>
+> - I use "root=3DUUID=3D... rootflags=3Dsubvol=3D... ro init=3D..." as a c=
+ommand line for reproducing. If I add "recovery nomodeset dis_ucode_ldr" (t=
+his is options used by Ubuntu in recovery mode), the bug stops to reproduce
+>
+> Again, in short, full list of things required for successful reproducing:
+> - Intel GPU, possibly my particular model
+> - Kernel with support for my model (4a75f32fc783128d0c42 and later up to =
+6.15.4)
+> - Kexec at least two times. (One kexec never fails, 100 kexec's in a row =
+never succeed)
+> - kexec_file_load as opposed to kexec_load
+> - Initramfs
+> - Lack of parameters "recovery nomodeset dis_ucode_ldr" (i. e. one of the=
+m stops reproducing)
+> - plymouth
+> - CONFIG_INTEL_IOMMU_DEFAULT_ON=3Dn
+>
+> Removing of ANY of them stops the bug, and I proved this by lots of expir=
+ements.
+>
+> In total I did 55+ expirements, each of them required up to 100 boots. In=
+ total I did 1908 (!!!!!!) boots on my physical laptop (I mean kexec boots =
+here). No, I'm not faking this number, here is my actual directories with r=
+esults:
+>
+> user@subvolume:~$ ls /rbt/kx-results/
+> @rec-2025-06-29T201723Z-bad-4    @rec-2025-06-29T214650Z-good-60  @rec-20=
+25-07-03T050626Z-bad-41    @rec-2025-07-03T104125Z-bad-28    @rec-2025-07-0=
+3T133705Z-bad-3
+> @rec-2025-06-29T203429Z-good-60  @rec-2025-06-29T215558Z-bad-8    @rec-20=
+25-07-03T060107Z-good-100  @rec-2025-07-03T111727Z-bad-13    @rec-2025-07-0=
+3T141647Z-good-100
+> @rec-2025-06-29T205626Z-good-60  @rec-2025-07-01T042949Z-bad-12   @rec-20=
+25-07-03T074810Z-good-100  @rec-2025-07-03T122242Z-good-100  @rec-2025-07-0=
+3T145705Z-good-100
+> @rec-2025-06-29T211612Z-bad-6    @rec-2025-07-02T120101Z-good-60  @rec-20=
+25-07-03T082914Z-good-100  @rec-2025-07-03T123958Z-bad-12    @rec-2025-07-0=
+3T152406Z-bad-50
+> @rec-2025-06-29T212932Z-good-60  @rec-2025-07-03T031038Z-good-60  @rec-20=
+25-07-03T100615Z-good-100  @rec-2025-07-03T132116Z-good-100  @rec-2025-07-0=
+3T154204Z-bad-15
+> user@subvolume:~$ ls /rbt/kx-manual-testing/
+> 2025-07-01-03-19-good-6  2025-07-01-03-56-good-4  2025-07-01-05-28-bad-3 =
+ 2025-07-01-06-35-bad-2  2025-07-01-09-46-good-8
+> 2025-07-01-03-44-good-3  2025-07-01-04-47-good-3  2025-07-01-06-19-bad-2 =
+ 2025-07-01-09-21-bad-2  2025-07-02-13-09-good
+> user@subvolume:~$ ls /rbt/kx-vanilla-results/
+> 2025-06-30T005219Z_5.16.0-kx-df0cc57e057f18e4-3e17eec5ff024b63_1626_good_=
+60      2025-06-30T023542Z_5.16.0-rc2-kx-87bb2a410dcfb617-9f30253daecd39e5_=
+1663_bad_4
+> 2025-06-30T012313Z_5.17.0-kx-f443e374ae131c16-91b07dce12a83fab_1674_bad_1=
+        2025-06-30T032312Z_5.16.0-rc2-kx-c9ee950a2ca55ea0-854a1f40ce042801_=
+1662_bad_6
+> 2025-06-30T013555Z_5.16.0-kx-22ef12195e13c5ec-9aaf880b25942f2a_1668_bad_7=
+        2025-06-30T033528Z_5.16.0-rc2-kx-ba884a411700dc56-854a1f40ce042801_=
+1662_good_60
+> 2025-06-30T014106Z_5.16.0-kx-9bcbf894b6872216-b828905f3cf12050_1664_bad_2=
+        2025-06-30T034645Z_5.16.0-rc2-kx-d4a23930490df39f-854a1f40ce042801_=
+1662_good_60
+> 2025-06-30T014634Z_5.16.0-rc5-kx-cb6846fbb83b574c-83e7c6cf2ede57b4_1663_b=
+ad_6    2025-06-30T035232Z_5.16.0-rc2-kx-4a75f32fc783128d-854a1f40ce042801_=
+1662_bad_5
+> 2025-06-30T015713Z_5.16.0-rc2-kx-15bb79910fe734ad-9f30253daecd39e5_1663_g=
+ood_60  2025-06-30T042058Z_5.16.0-rc2-kx-4a75f32fc783128d-854a1f40ce042801_=
+1662_bad_1
+> 2025-06-30T020235Z_5.16.0-rc5-kx-b06103b5325364e0-26176b9b704a5c24_1664_b=
+ad_6    2025-06-30T050000Z_6.15.4-kx-e60eb441596d1c70-2378f4efc5e956e5_2366=
+_bad_2
+> 2025-06-30T020717Z_5.16.0-rc5-kx-eacef9fd61dcf5ea-26176b9b704a5c24_1664_b=
+ad_1    2025-06-30T053011Z_6.15.4-kx-e60eb441596d1c70-2378f4efc5e956e5_2366=
+_good_60
+> 2025-06-30T021738Z_5.16.0-rc2-kx-67b858dd89932086-8d2f1d17f1e1933c_1662_g=
+ood_60  2025-06-30T060619Z_5.16.0-rc2-kx-d4a23930490df39f-854a1f40ce042801_=
+1662_good_60
+> 2025-06-30T022759Z_5.16.0-rc2-kx-17815f624a90579a-854a1f40ce042801_1662_g=
+ood_60  2025-06-30T061448Z_5.16.0-rc2-kx-4a75f32fc783128d-854a1f40ce042801_=
+1662_bad_1
+>
+> Each number in the end of file/directory name is number of boots. In tota=
+l we have 1908 boots. Testing was mostly automatical, using my script.
+>
+> Here is one example dmesg from mainline commit e60eb441596d1c70 (somewher=
+e around 6.15.4):
+>
+> https://zerobin.net/?119ff118fd47b363#BpziYs6dNz5PaT7H8w2hlveoEYa4DDtITGk=
+yd9o57LE=3D
+>
+> This is was dmesg from 2nd (and in the same time last) boot. The next boo=
+t (i. e. kexec) was unsuccessful. Corresponding config:
+>
+> https://zerobin.net/?009c807e1df41af8#gnmrswlbaFbdPTuzNq6NFkQd/Jhb3Ds0ZlL=
+iwNanXnc=3D
+>
+> If you want results from all expirements, here is a link: https://filebin=
+.net/45g2757b2iwaeen7 (1 Mb, expires after 7 days). Usually expirements com=
+e with full reproducer script.
+>
+> But what I described above is already enough, I think this link is not ne=
+eded.
+>
+> I will be available for testing in coming days, then I will switch to oth=
+er things, and so will not be available for testing.
+> If you want more time, then, please, ask for it, i. e. say me something l=
+ike "Please, be available for testing in more 10 days".
+>
+> --
+> Askar Safin
+> https://types.pl/@safinaskar
+>
+
+--=20
+Jani Nikula, Intel
