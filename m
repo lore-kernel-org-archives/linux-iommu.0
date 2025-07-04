@@ -1,45 +1,42 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1F9181ACEDA
-	for <iommu@lists.linux.dev>; Fri,  4 Jul 2025 08:33:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5AAD428A1C7
+	for <iommu@lists.linux.dev>; Fri,  4 Jul 2025 08:34:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751617994; cv=none; b=gC+tT60yRIIla1Ivs9m6Re93wCTNQzmIJNfX20e9BDTYY/6vQvc3HVu3fne7jfijx6DDymDuge1hFaK4IUoxp8MejAnQj2ykQKSBr250+ODwMz002izIX77VH0Wm4WJOA4w+KW9qlqnMC0Pz8QIuK+RFrGeqVKSks7PRdVmX0bE=
+	t=1751618062; cv=none; b=PhtQ0xshd0L1JhY+Njqs+37Gv0EvyCBt/lrPv7RphvEa29x1SMIc4UdPQrHtlqN6G8PyFwWGwKSyYdw67lyAxQIVcFm0gF8omb1q3/l7aIdJQuYkxO1g0ZH/Y+s9e3d1GyEDIl+eKiauv9LR7/Sy7+UGgdei+DIbimamZSq/6IY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751617994; c=relaxed/simple;
-	bh=1Wb4ZmTEJsSifboKDjUkFOYzbSZxSp7Cj7bjm5Uh7PE=;
+	s=arc-20240116; t=1751618062; c=relaxed/simple;
+	bh=EJn/cSZXH7BBYxWEIF85KO4s0OrkM0th50JGrpPlczQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pcHptVdt4aWeeJp+d2AYrMUzgV8d1s4BoltVt1ch18jOPj3rI452AZnJKHZLGYOADITwNcGTLEe/1mpnj+U0mwU9kCToVJ1kAXRJs3ana8kx78CIxjzj+siKFHYhJPC6evy4dNMNrMWks6OAhSKX76uUunC0oRjnChpCyLJsrQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=CNnwCTPp; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=EGAY97hR3GdJYW1sZnKsy+nnjtTjmhiRGW29KtjU0BldkAXD2EF21I0CXNIMobiznc4O9yTuj0BYLZ/bJ66eaCueoQQ8jzXwWSdCtw/3QXnJ8qavc7Vzsh1PMysKU6wCJ1I/WOwq5/MtXlNLdcBpnDnxu9vqxgJtQiQhJuns/To=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=PAixT2Em; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="CNnwCTPp"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="PAixT2Em"
 Received: from 8bytes.org (p4ffe03ae.dip0.t-ipconnect.de [79.254.3.174])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id C85A94D68A;
-	Fri,  4 Jul 2025 10:33:10 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 7E2434D68A;
+	Fri,  4 Jul 2025 10:34:19 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1751617990;
-	bh=1Wb4ZmTEJsSifboKDjUkFOYzbSZxSp7Cj7bjm5Uh7PE=;
+	s=default; t=1751618059;
+	bh=EJn/cSZXH7BBYxWEIF85KO4s0OrkM0th50JGrpPlczQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=CNnwCTPpeQ3dIUBs3CEaEcBZC9ZSCczy9UgnBvT7RwXD1li0Fl8Ns8E8bRwMZ8hb1
-	 aQVU10Jcq3V0vKhxLAUFoQ/yGL8ptcDaFIb/hDqL4JajHDN/IFDoi5rKadoCQLbTve
-	 5yD2txFQ7Rj6wyMYHK60tT7rAsOkkrOg4a0bZ0yWrS2x/2rZnS8fqRG1daeQysxkNa
-	 sA7BKstvqe0xAnCjwwsPwYDyOvyh35vX+heZDh0EsJcrm1lBRiJCc4HWcHEGxzz5x8
-	 b+xhiH7C2xJu2YcPBLrbFndAWwFjAANtkqudWJB4wt42MxtqZjuB/cL2+mzE5olZKY
-	 gC4UcxuJ7rqcg==
-Date: Fri, 4 Jul 2025 10:33:09 +0200
+	b=PAixT2EmfXRxmojutrLqbaeynKVHpFL+FqcT9uPjAV5kLPNQXCtsvVJ3kXJLc4cDC
+	 pHAOs/FGu3F89M4v4mkaef2g7jWLV8gzWlX5VGp9aY7wQ92bMm3QkikvcfOUTuREYo
+	 ENEfdU/T8+4W5MEp1UEYc9l0JYo2eXnrAinNAFDYgPUBs3gHjqZG83NxSLYWYKSWI0
+	 P9ErZ1/A69/H1FvxBLyj/TSl78rREkIj5oNgOuUdUBoVgwTpGSuwWwF6eTTj9RYDUz
+	 5hb+41JwUBygA8kLFrbnRn56JMHzmoyd+iSZQwTp4ZGxJxuy6IBfr/4Cp+Hu369lmA
+	 ZPgn4Xi5W5nEQ==
+Date: Fri, 4 Jul 2025 10:34:18 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: will@kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, yong.wu@mediatek.com,
-	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH] iommu/mediatek-v1: Tidy up probe_finalize
-Message-ID: <aGeRxYJrd48SIlJF@8bytes.org>
-References: <7c78149504900bc6c98a9c48f4418934b72d89ac.1751036478.git.robin.murphy@arm.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/1] [PULL REQUEST] iommu/vt-d: Fixes for v6.16-rc
+Message-ID: <aGeSCv7ewZl5o3SS@8bytes.org>
+References: <20250628100351.3198955-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,10 +45,28 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7c78149504900bc6c98a9c48f4418934b72d89ac.1751036478.git.robin.murphy@arm.com>
+In-Reply-To: <20250628100351.3198955-1-baolu.lu@linux.intel.com>
 
-On Fri, Jun 27, 2025 at 04:07:10PM +0100, Robin Murphy wrote:
->  drivers/iommu/mtk_iommu_v1.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
+On Sat, Jun 28, 2025 at 06:03:50PM +0800, Lu Baolu wrote:
+> Hi Joerg,
+> 
+> The following fix has been queued for v6.16-rc4:
+> 
+> - Assign devtlb cache tag on ATS enablement
+> 
+> It fixes a critical cache invalidation issue for ATS-capable devices. It
+> has been reviewed and is ready for merge. Can you please consider it?
+> 
+> Best regards,
+> baolu
+> 
+> 
+> Lu Baolu (1):
+>   iommu/vt-d: Assign devtlb cache tag on ATS enablement
+> 
+>  drivers/iommu/intel/cache.c |  5 ++---
+>  drivers/iommu/intel/iommu.c | 11 ++++++++++-
+>  drivers/iommu/intel/iommu.h |  2 ++
+>  3 files changed, 14 insertions(+), 4 deletions(-)
 
-Applied, thanks Robin.
+Applied, thanks Baolu.
