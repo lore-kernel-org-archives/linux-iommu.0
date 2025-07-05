@@ -1,411 +1,240 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2089.outbound.protection.outlook.com [40.107.243.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0BF61A0728
-	for <iommu@lists.linux.dev>; Sat,  5 Jul 2025 14:09:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751724579; cv=none; b=EyOtwpqrKh2zZdkUlcFuCJXP4VpCVbhPgjvESUgtPO4CBwzM73bxDxhbnNeZwz74AuM/L7kDzUnccuWPxFsIyTYSR3nG5hxeqPxWJrBVInbbUn7ZdObFPBwLy8ddhiF5/v8T0BO8zxcz0Im8MC9iTOUbELwRNabhjrkZh2oqwT8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751724579; c=relaxed/simple;
-	bh=yOeiKu4mBtr8VePwwU0rZXUhI1GOxOg8XAX7p3WgG6U=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=acspSmaotXWQwECCtp6mzIsktHMIf8Hwk96tSGnQnfg3CMu06FNVvNLaXTTs6RYEGRSOIAKEHFkpFlvkbH+89ZH9n+0x7F+wgr6KUkcst671U+O1IcPSa8/Y1ibIlpHaV+wruWj7VKbBCNkIGNXSCPRUxkQVF5vFZ3n3H6MzonI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=FFrIZmK9; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCE2E2CA9;
+	Sat,  5 Jul 2025 15:03:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.89
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1751727827; cv=fail; b=CQz/QhsnRuFLP5OH2hbShLeF2Kg6QjobjvtPh/2jZmoxDzUtD9Jrigjx2Pq4uh//MIk+cwYXD/XQXSrSYfg20pS5wd3JmK2JUzmDjIC3fG+qMLmgex0QhRipcGTOrE396QPKROFRIhgKjVr0XJ8EKOx8Jukt81bby/sDABSXI9s=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1751727827; c=relaxed/simple;
+	bh=qYKs80OFOvp72dHCLggo195POZ9C8XaoBEm0pa+MAyA=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Yj96ZTQdStMuT3TgS0qOYA6s28KeKfRrXtxBpXl5c64gSFkM1jizTCiV9OohdgK/u5haz1EXyKLwbnVuxyYB8z07/DWwu7OJ3zpTJlCcfEhEgNoGCFYninsgvHPSOSzWlyMciczvAOnOp3l7wz6Ns9/Svk6JNSdD4UXAAhTkPIY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=jIjpWgp+; arc=fail smtp.client-ip=40.107.243.89
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="FFrIZmK9"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 565BbIPX026400
-	for <iommu@lists.linux.dev>; Sat, 5 Jul 2025 14:09:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:to; s=
-	qcppdkim1; bh=+R5R9I2nJrR2QShZ+dop4SkxfXqvIouFXsGw6h1onwA=; b=FF
-	rIZmK98gOrDFTgLpU9cYQ6OJaKD7SMjEijqzCCkcnWOo/d1sJ/4HiX224ZtEUo0w
-	OPrNiZj418+PzDvvDYjaV6JFPTocuepmeydVVG6y/PPNSlA8iyokzw+2L6gmolnA
-	jN/IQlRu7CS9nN/G1mtzbXBHPctrCfm/R4YzAdbC1tT8bbPxcb6ZIemYHxHp2iC7
-	GQu8c0SCvA7vUhza9RacY1pmkgvMSEN8KCh3sigeQe7eKReZBPQDTbzQuzHFPZJ3
-	efbVo67SqtJHs0jlypt14J8w142X4hlGj3Te/RcjIn+oBhXfFvnZ+G7+S3Tzu8t5
-	mGJ8/PLGQ5SnfkLA/DFg==
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47pucm98nn-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Sat, 05 Jul 2025 14:09:36 +0000 (GMT)
-Received: by mail-oi1-f199.google.com with SMTP id 5614622812f47-40b27a33cd8so1707632b6e.1
-        for <iommu@lists.linux.dev>; Sat, 05 Jul 2025 07:09:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751724575; x=1752329375;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :reply-to:in-reply-to:references:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=+R5R9I2nJrR2QShZ+dop4SkxfXqvIouFXsGw6h1onwA=;
-        b=btTq7DCecyCPImo+3G6CtopAIZyg/dy2yt9vB6+hkw1FN1GdcZQo7CHPyMxSdOAvHG
-         S18L67PQOiqe+S7AL9FFMxt8zK0C5n5js/26gN8zrmIRIfq22YPS4cZWWx9MinAZtNQs
-         Bv8rn4xEbW/J4YP70KAOk7Uwd9BrCivbyy5j0P0ppk0pecRVXg00nwQpfJHmFbIYGqMW
-         g8XfUQAftNhTVTf/nIYM0ibyNDg6tqIuQwnk7uK23s/CVd6zceA38XCXZcZ/CGVVDpV9
-         QU2yl63yyxC/iJRBjgXjeaBKX/YJKYowCmdpgjvsO7CJRAc1DnA5vLDZAqd5434n9ZI5
-         6bYQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWT4ICjefVvlutOHJm6lZvLJGbGTXZqWO8BvAfECNl1P0S6p4ZrKwlnjs+POY2i/7+7wQrlcw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxmEbjZL7qSWQ/rX99HxCvPBEeH2WRZyXvHWHbBH+qhUilkNUHG
-	woACDgz9cyzG3Gxpp5PZOXBaVWU0Gz3fE3HekOZxavikc8DMQNzmurF24huvX47e3knmSx1VxRC
-	jQmXHAD3w4VuyRREZagmcJznSoUsMsAPBcckasXjb00KR6GGAlUjCqCY7Y556y8qi8Cqi7q5QTc
-	o5L62XiOdMw4g6OArYRTmHL1AspXre3scU
-X-Gm-Gg: ASbGncusZasb1km9IihtdI1hQWhnatH3Fn5LEtrxm4Kvs1PaYlUzxpFnFhAE8FAnIPZ
-	lgtvijfa1YkWJmj4fABmb359KsxLEGO5wd4n2f3ggudWmu18OSLgl6JibA4xD0yWhtScGmkTKR3
-	lURS1OCp+2ycCVcILsWHFLtkSs0OO0Zp0p39c=
-X-Received: by 2002:a05:6808:118b:b0:406:794b:462 with SMTP id 5614622812f47-40d071d00d9mr3649976b6e.0.1751724575189;
-        Sat, 05 Jul 2025 07:09:35 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHA3q5wqh/EEUmvvZC73mDnOVowdgQnzs4lFfcQ936+1v/mgxLsm36MjdYRojGl9YJyJa80drv/pWEU7h6E+Pc=
-X-Received: by 2002:a05:6808:118b:b0:406:794b:462 with SMTP id
- 5614622812f47-40d071d00d9mr3649953b6e.0.1751724574700; Sat, 05 Jul 2025
- 07:09:34 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="jIjpWgp+"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=clu/5CISrh9eIs2SRc88XALq1mIZuS2eLDDdjcb1QYfheKrBJQoln3vECrQtpuQo91/BF9F66yrGKqBM++/TqB8lqxMB07lb3YtGWFlrBsmiyN+MYQ2GoslZnOtsOZN+bcT/X1a+Jtn868L3Y+f9UtrfJFXZY4PqMAhwa+WFymlNtB9ab+BqqLR1h0DKaTryFcaEcd61UGfFIkWHD3o8ok++O6eguQd5vKt9yCyx0gNfEW2OTi9Yabp3D8tKUpPGA5x/p2rsjwJ6QCTuLehzToZouADPFhWJYwTOFmVtKXYDApFNEV86Iu3QUa+CE556Du+dYCV+hhXTly1qzjaZig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HQJAXpvHCW6eCgk5zoBB6QUeth/krclAtLV/LTqj8m8=;
+ b=R1Odrj+XD2rbUPodRnhCjqVrTaHq28QJC3aJqE3V0r/gHcQ39ZEf9sJTqHZxWM8wUuEO3js3zVsHOj3TBx6+fotgyj6gAk3p4nR3R+ar11go8/2zpBuyPyMuxLBCYff9D92pNiDBwqFmW6yZ6y+P/eOIr5VrLRKJCXpHH5H9zAGyhWUU3tiGOCnSJRzojSbnYPi3mZchpgRdOtKdLRCMxH032/wT9A09Qxcc2/xNPNCxbXsaYJmzEriXLiqSlpkzX4KNgjs1j2lKCRhR41QsgVWc9UZQXthPqft0rW4fo9b44/+VNJYXhys0XM4RbCYo1uv36ewD47b7NyqdgFRk7A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HQJAXpvHCW6eCgk5zoBB6QUeth/krclAtLV/LTqj8m8=;
+ b=jIjpWgp+IXdKoLEkSv5P/0vXO5/C1nHygBwF5WBuMP6z+FQe2sNriFFlpFjgIhY7lh5zajPCQj7aYwXhf4PNI7PlKvFWgkJhwLchUZyiZDXYWEF05gjWX++Z4KvSqA8JjOzUcY2/eF/SzJS38N44xHkZU2J5WMUdW2nFMnJx0g4=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ DS2PR12MB9776.namprd12.prod.outlook.com (2603:10b6:8:2bd::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8901.24; Sat, 5 Jul 2025 15:03:42 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5%5]) with mapi id 15.20.8901.018; Sat, 5 Jul 2025
+ 15:03:41 +0000
+Message-ID: <5d186300-7a94-497f-8d10-30eff1bd2795@amd.com>
+Date: Sat, 5 Jul 2025 20:33:27 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 03/29] iommufd/viommu: Explicitly define vdev->virt_id
+To: Nicolin Chen <nicolinc@nvidia.com>, jgg@nvidia.com, kevin.tian@intel.com,
+ corbet@lwn.net, will@kernel.org
+Cc: bagasdotme@gmail.com, robin.murphy@arm.com, joro@8bytes.org,
+ thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+ shuah@kernel.org, jsnitsel@redhat.com, nathan@kernel.org,
+ peterz@infradead.org, yi.l.liu@intel.com, mshavit@google.com,
+ praan@google.com, zhangzekun11@huawei.com, iommu@lists.linux.dev,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+ linux-kselftest@vger.kernel.org, patches@lists.linux.dev, mochs@nvidia.com,
+ alok.a.tiwari@oracle.com, dwmw2@infradead.org, baolu.lu@linux.intel.com
+References: <cover.1751677708.git.nicolinc@nvidia.com>
+ <146f91d9e1974cfdbbed3418373645295ce0cca1.1751677708.git.nicolinc@nvidia.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <146f91d9e1974cfdbbed3418373645295ce0cca1.1751677708.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN2PR01CA0105.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:27::20) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250705-iommu-fix-prr-v1-1-ef725033651c@oss.qualcomm.com>
-In-Reply-To: <20250705-iommu-fix-prr-v1-1-ef725033651c@oss.qualcomm.com>
-Reply-To: rob.clark@oss.qualcomm.com
-From: Rob Clark <rob.clark@oss.qualcomm.com>
-Date: Sat, 5 Jul 2025 07:09:23 -0700
-X-Gm-Features: Ac12FXy3XxVN2bch22DCGw0GFR8wOdtcX4y80G4QjD1Fqf0Tx93RWyLsTzUvS5k
-Message-ID: <CACSVV01nA4jbeUx-cbbKKvr0GPaLo=RtBJD-mYazFRnwbV0Wwg@mail.gmail.com>
-Subject: Re: [PATCH] iommu/arm-smmu: disable PRR on some of SMMU-500 platforms
-To: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Bibek Kumar Patro <quic_bibekkum@quicinc.com>, iommu@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Authority-Analysis: v=2.4 cv=GdQXnRXL c=1 sm=1 tr=0 ts=68693220 cx=c_pps
- a=yymyAM/LQ7lj/HqAiIiKTw==:117 a=IkcTkHD0fZMA:10 a=Wb1JkmetP80A:10
- a=NEAV23lmAAAA:8 a=EUspDBNiAAAA:8 a=gUAwG1mKp6tzq-jN0zEA:9 a=QEXdDO2ut3YA:10
- a=efpaJB4zofY2dbm2aIRb:22
-X-Proofpoint-GUID: BakcY_ZFzJZ_gU6TNHL-IZhbWGPVRqeV
-X-Proofpoint-ORIG-GUID: BakcY_ZFzJZ_gU6TNHL-IZhbWGPVRqeV
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzA1MDA5MiBTYWx0ZWRfXw037xw50d7U1
- pHUQI6FGRbCMi2HetF32H12fCOp69iVARfCs1X6pJPcG/CglWn337SwU5hSRcpPIPiOd0g0CCBI
- 3I2gdr/0pRTGHFS2Lglx7XslHiUBN8kJVhHWhny93Tut80K2ULGioymlOhmLSiUBa5hAYkauZUk
- degdNBZbP3P1yWrSMmkeWYAq85DtrhqOBonM8zYZstL3E4YKjEmgrs8X+xv83agb5CdnIToDmE6
- EV+k0L6NVbZeIXDS0LSvgu7afjAFACP0VVpXTIaBaStzAxfr+QPtT3QXd7ZeS5zrPPAKpIFzm0N
- IrF5JVt6BbSdFbSFey7DCrdQVMR+RMLenbYIlVJotuWMeYcgmfllYHSzK+ASrwqoasum/gEWf44
- jCULxsxYdb5OefjF5wMr/cdcLfB91sIPHSKR6w7Qs4WVgagfOba0ByWVgNKnV+8WEbOZEZTl
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-07-04_07,2025-07-04_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 phishscore=0 adultscore=0 bulkscore=0 clxscore=1011
- spamscore=0 suspectscore=0 mlxlogscore=999 priorityscore=1501 impostorscore=0
- malwarescore=0 mlxscore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2507050092
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|DS2PR12MB9776:EE_
+X-MS-Office365-Filtering-Correlation-Id: ae1e1c66-e98a-4484-21dc-08ddbbd5210b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|366016|1800799024|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?YlN4ckorQTUybk9KeEVHTjExdjhlemwxT2xDSEdkWHRNZVBFQm0wN2FlNGwy?=
+ =?utf-8?B?NzcvZ2kzd3dCZU9CZ3FWZlpWc0kxZUdlSHA5ZXBqSnU3K2dqRjNHWjVIM2w2?=
+ =?utf-8?B?U3BOdG9kN1EvZjlEUU8rckJkOWY5ZDhJWHN4ODdmN2R4Q2N1UHQxcXFycU9P?=
+ =?utf-8?B?MTZZS0xlNzk4eWptMXRuOHRBUFkzcHg3cktKbDR3RFQ4d2RrNUF6RHljQkdK?=
+ =?utf-8?B?MXRnVkFSWE1NUGg4U0hYTUhaUTRnSGdPazcyN3V0Q2ZMWUZWV0IyNlNsUGZO?=
+ =?utf-8?B?dWlBNnlYT1BqV3FBcG1QbEhXUys2WXNZbDZGYmhQeVo0Tm9ZZkJNZFAzMHJC?=
+ =?utf-8?B?ZGttalRTby9LRnJDbDRMSG85aW5EeXF0bDFlcUtvdEdLeDVYM3h2c2RYNisw?=
+ =?utf-8?B?b3o2bXFUcC9MUHdrOHZpTzhCSkhXY2t1K0xoeG1ieGJmYmRoZHlZSnlxY1hk?=
+ =?utf-8?B?MzlzMUtIM1MvOGhvU3hEQnBMTmhCN2dkYk1YRllzaU9HbGxxdnBIS2dUWXZ2?=
+ =?utf-8?B?U0VZSDFhb0hFT2xqZnA2N2U5V0x2dWlRSm8zc0Rvd2lyZWpsU2x3UEo0bnh6?=
+ =?utf-8?B?ay9yVkVzcyttOVQ5eStyNkdDbDhJd3RSRjNLQzh5Q01VNncvN2MySGQ0VEw5?=
+ =?utf-8?B?VE9HazdwekxjQmcya25XUnB6Q0Vab0pCMnA4Ym5DM0EzdnFEakl1M0gyRjQy?=
+ =?utf-8?B?elA0Z2xvem9mYkpTVVB4ZVlkMzJtajUyZkhBcHROQmQ1a2M3V3RiV3QyTFQ0?=
+ =?utf-8?B?ZE82K1ViaVRGNWxka29KWGNMaktkdHlZQ0piL3VGSm5FdVIzdEFKZGM0Titn?=
+ =?utf-8?B?K2JJTk1XYnNva1I4K2FHWlVHazVVSUVOUit5dkE4RC9vM25vZE0yL0xkRUEx?=
+ =?utf-8?B?eVFQMzZYQURiWXlmOEhxNFdJU1dhbEZJT3pxK05BV3BSVUtpQjM1TEF2RU9L?=
+ =?utf-8?B?bzNVMFhTeXJ5QUJrWWVBZlhpeEJTdk54OWU4SEdrMHQrMnZDbittaWxsVm1n?=
+ =?utf-8?B?Qnd2NDNPMG82WjQrbUhma2l3WDhNMG1ZdkFLTThQWmRhZ2NMaFZtalNYUVNC?=
+ =?utf-8?B?aXlWYUNMVVROSlF1SksxU09MQm1yaU1keExPbU5HSVBpK1RwNGl3MmJJeE1Z?=
+ =?utf-8?B?UkJzSkFIbkZZaGsxc1d4ZEl5aG1MVjBZNlRvK29yNC9lcENGTURLM241bWpR?=
+ =?utf-8?B?eXhBTGNzUDdxRVdEOVFLWHd1b2FzZVlDRDlLZS9KU2RPb0pDYXNIZkIweXY0?=
+ =?utf-8?B?RkNCaE1wNktadisyN1FwWG9LdkIweEhDRDFzd0JaK0VpUVZWc2VhVWlqMVZw?=
+ =?utf-8?B?RlRCKzZOZFFpbHp6OUtpK3VlcmNHeGtwM25jVEMyb3A4ajU4Wk1NMlg4SFRQ?=
+ =?utf-8?B?bjh4dHIyWXpsd2xibGpieWR1cWs5bGZ1MzE3OHBFNDY2elVJZzQ5aUxmRWVs?=
+ =?utf-8?B?NUZ0bHEvS2MzakdZMW5kVzNQR20wVnB0c0JLTGFzbCtNZHRWQVd5Z0hpMzI5?=
+ =?utf-8?B?SkdHSDY0Wmk1TmZTcmhETExYQ00vb1Y1SzdEdVp3YXYwRnFPdFZYZzZGMER5?=
+ =?utf-8?B?eGxGWmZRK0RsZnIydUxZZTBaVXdNUVNlQ29BREgxVGJCZHk3YWkyL21QV2RD?=
+ =?utf-8?B?VmN3VGhOOHlRdEczd0hML05lNHlhb2Vna0xDekZjQndkVXQvbHp3bUU1SmlX?=
+ =?utf-8?B?L0hxM2lCRC94Y3dubU1FTHROZk5OU2REekNCTW1HSzI4RXo2K2grZlp6b2Uz?=
+ =?utf-8?B?NEhUMUtGVkh0YmVjNGRsdlNEZG1ZV3pDUHlISTVTemdJUFhuaEVoa3dscXIy?=
+ =?utf-8?B?ZVdBcjBOVzFpVlZLS0NxK0RXMU9yOUNMcWNXbjhQYlRjNVh2LzFETlRUYVRI?=
+ =?utf-8?B?ek4yMVJ0MlZjbWp2UktGK3VObXBDSytia3RGTzhKSGtuM3c9PQ==?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?R2FzMTRBdytaM0FGMStRa3E2L1FCc0xrbm9qQmdybjFYTVFzdWVzazdPMGF1?=
+ =?utf-8?B?SDd3NlpUOThocytndVN5Vm5hMEZseEVFQ0M1ZjloRFVOb2RVUzBXTnU5eWNE?=
+ =?utf-8?B?c1dmbitPdi93SlA1VzdHRDdtbzNQTEtIVDFwZ3N2RVkzMmptaFVkOVUyRjlJ?=
+ =?utf-8?B?QjByMkEwVWVWMisrK0Jjc0ZlWEJiTEtWMzNwbklTRExYcUNjNkZjTGFLQzkw?=
+ =?utf-8?B?czFsMFhYbXQ1NTJPbDFSdURORVRSWmxCd01KTkZRS0ZNdm13MnA1SjBtQmpF?=
+ =?utf-8?B?UFJINWlzVlkvdmZWSGoyUHdiOUdjd1RzQ3N5QkNFcXRBNDhYdkRjcVplY3N6?=
+ =?utf-8?B?V2FRT2JZRFB4b0lHVVV6ZU81ZHBnQkVCNm5uOTJibWtjWkpwWE42eW9CWXVT?=
+ =?utf-8?B?RHZMaVFXVzMxSWYvYU5GVWZLazVKenBJQ1dQZ05kSmhOckRGZHlZZVFxMzlL?=
+ =?utf-8?B?cnBNamQ5QWdtR2RsMEx2VUJLbkRPL0lUNlltdGJRemNVS1ZzSVpmTGMwTjZS?=
+ =?utf-8?B?a0kwemk0dVZUOWJQSGRCNEVORmlub09aeGFwNWJHWXFsZVhOL2VIRVdpMmlH?=
+ =?utf-8?B?SVV4elFaZ0VlNnhaNDY5Y3dYSVByc2VIeWpveFNjSFpyazExN1ZTakc3VDJj?=
+ =?utf-8?B?blZ2UFRYRDQ4Qm9pKzZJQU1URDlCeEU3Z0U3bCtTVlVQMjZ6THFwczEyZTg0?=
+ =?utf-8?B?dWlHV29uL2Z0MDFvV2ZubHpKWjBpL1ZHQ2VXQis4L2czbXdCL2RFazdwcWxj?=
+ =?utf-8?B?U0owMkJtWUJ5dkJGV2VrV0ZHZTNwK0hOV29JY3NvRmJpVFZ4QlMzNWVBQ3du?=
+ =?utf-8?B?NFZ3bFRXSXIrU0NjbERCTjVKbG1LM1ludFZ4VDduN3RTZlQvR1pWK1gwaTEr?=
+ =?utf-8?B?ODRQYVRNKytMNHptQWNad25DRVYzRmRUVDlZeVdxSkdrNVo4ZXhHRnhQS2p0?=
+ =?utf-8?B?OE81VkwwbjJNaFl4MHMzMUxZczdjRThxVFE0TTJYKzRGNUYxWWc5bWlDdEhK?=
+ =?utf-8?B?bXd6bXlxcmtKd1czMDFlVDI3SnkrcVdpUU84MjMzTGtGc3ZqMG9iMUZ2dXdl?=
+ =?utf-8?B?NGJyU0pNYzA4eXhmKzZySDhoNWNBS2hBRnB4Q2FwZUxTQzhZZnpkU1hHT01K?=
+ =?utf-8?B?RTlzdUluMS92dDVxT0ZHWmpRd292c2tiM3RJRUFtL05lMXNqbHhXN2FZeU5m?=
+ =?utf-8?B?cHZnOTI5S2ZyV0tYVFhjeVFNTHlZZ1ZUYWhvTXlJTXZudzllWnFuVjd5RW9s?=
+ =?utf-8?B?VGFaOHlnWXZBUzBSbm0zSEVKYkdCUEsxZ3JqSzdWbndNckUwcXJWMGFCcmJW?=
+ =?utf-8?B?ZHZjbzVFVGFlM3gwcS9TUG1oZVVuRk13VjFGOE5vaUQzY1FYT2FZQ3NscVd5?=
+ =?utf-8?B?ZHFqdXF3VUt0bnhHM1loOUp6ZE1jbmkvUVBoTWxYUHlHSUxxNFovMHgxazhw?=
+ =?utf-8?B?dnhsTlFCTXE3T0JqNmdUNktnUSs5azRBWC9rUVluODBtQTB2blBZVTM1Qk00?=
+ =?utf-8?B?TW1NeTZCZ2I2eUczaUo0aW02WVo1ckplaStTb2c1bXJyWEZBZnpYb05ZQXBD?=
+ =?utf-8?B?WEpMSGpFNjRSeHAxekducUpqU093RXdLT1A4L1pKUHRFY2VKQUJPUkpleFlO?=
+ =?utf-8?B?Q252eXJwb28zcFhMM0lobis2QkdISDErTTRlMWV5NVUxYUl0akRmY1ZjcGMr?=
+ =?utf-8?B?OWU1UE9KTWN4OFBCNGRCOXZyQkoranNMQTFiRXAvTk1TVElvcEJkTURXNmFF?=
+ =?utf-8?B?VjBHNkdLMm5ZSFZVVVdiTjNBeE1Vb1dWeGFaSi9GaEloMVU4cjhDVWZ3Tk1n?=
+ =?utf-8?B?VllReDJJblhnd3hJN3FYdVdBaTNoVWlERFFSSFdPdEVYUjJkazJ2UEoxUm9V?=
+ =?utf-8?B?VnE1dlVyazR3akpiZytHNzVDeW1ubnN0NVcvK3BnRTFvRGNWRVJ1bE1PMmNz?=
+ =?utf-8?B?T2tjQWxLTmN1M09oclNMZ0doZjFNa0lZSy82MnZqclEyNnFvVUNNWFNJRFpU?=
+ =?utf-8?B?K1R2dGdtYnNtNW9BRjdTaWdKc2pONWJWSnBrVG5lQVM1aHUyT3YrSHlwMDk4?=
+ =?utf-8?B?QlV6TmNRV2w3NTJiNm9KU2xEdW9CaUE2YXpTMFZwYnZMWG83M05iRmNCTHZH?=
+ =?utf-8?Q?ubJZ9m9LgJkx5dK05FOMY7+DL?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae1e1c66-e98a-4484-21dc-08ddbbd5210b
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2025 15:03:41.7543
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: r81z7FihKyiAllvaOyEtO+lgqnL0m/XTWE/8Ri688kKrq2OnFypmfV+m0Qg6iB3K+w2gHkbJ5EwSRKvZOXXbyg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS2PR12MB9776
 
-On Sat, Jul 5, 2025 at 2:55=E2=80=AFAM Dmitry Baryshkov
-<dmitry.baryshkov@oss.qualcomm.com> wrote:
->
-> On some of the platforms (e.g. SM8250 / QRB5165-RB5) using PRR bits
-> resets the device, most likely because of the hyp limitations. Disable
-> PRR support on that platform. Instead of adding more compatible checks,
-> set PRR-related callbacks through the match data, making it easier for
-> other platforms to apply the same workaround.
->
-> Fixes: 7f2ef1bfc758 ("iommu/arm-smmu: Add support for PRR bit setup")
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+
+
+On 7/5/2025 6:43 AM, Nicolin Chen wrote:
+> The "id" is too genernal to get its meaning easily. Rename it explicitly to
+> "virt_id" and update the kdocs for readability. No functional changes.
+> 
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Reviewed-by: Pranjal Shrivastava <praan@google.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+
+-Vasant
+
 > ---
-> I currently don't have access to other devices from these generations.
-> It might be necessary to apply the same workaround to other platforms.
-
-It appears that a650 is the one special one:
-
-https://github.com/LineageOS/android_kernel_qcom_sm8550-modules/blob/lineag=
-e-21/qcom/opensource/graphics-kernel/adreno.c#L1257-L1262
-https://github.com/LineageOS/android_kernel_qcom_sm8550-modules/blob/lineag=
-e-21/qcom/opensource/graphics-kernel/kgsl_iommu.c#L2657-L2671
-
-so I think we can go with a simpler compatible check
-
-BR,
--R
-
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 134 ++++++++++++++++++-----=
-------
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |  11 ++-
->  2 files changed, 91 insertions(+), 54 deletions(-)
->
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/a=
-rm/arm-smmu/arm-smmu-qcom.c
-> index 62874b18f6459ad9a8b0542ab81c24e3e745c53d..f1cb30cd99af6020a8b472f11=
-d4999ad70d0bce0 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -55,6 +55,11 @@ static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_=
-device *smmu)
->         return container_of(smmu, struct qcom_smmu, smmu);
+>  drivers/iommu/iommufd/iommufd_private.h | 7 ++++++-
+>  drivers/iommu/iommufd/driver.c          | 2 +-
+>  drivers/iommu/iommufd/viommu.c          | 4 ++--
+>  3 files changed, 9 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+> index 4f5e8cd99c96..320635a177b7 100644
+> --- a/drivers/iommu/iommufd/iommufd_private.h
+> +++ b/drivers/iommu/iommufd/iommufd_private.h
+> @@ -634,7 +634,12 @@ struct iommufd_vdevice {
+>  	struct iommufd_object obj;
+>  	struct iommufd_viommu *viommu;
+>  	struct device *dev;
+> -	u64 id; /* per-vIOMMU virtual ID */
+> +
+> +	/*
+> +	 * Virtual device ID per vIOMMU, e.g. vSID of ARM SMMUv3, vDeviceID of
+> +	 * AMD IOMMU, and vRID of Intel VT-d
+> +	 */
+> +	u64 virt_id;
+>  };
+>  
+>  #ifdef CONFIG_IOMMUFD_TEST
+> diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
+> index 2fee399a148e..887719016804 100644
+> --- a/drivers/iommu/iommufd/driver.c
+> +++ b/drivers/iommu/iommufd/driver.c
+> @@ -30,7 +30,7 @@ int iommufd_viommu_get_vdev_id(struct iommufd_viommu *viommu,
+>  	xa_lock(&viommu->vdevs);
+>  	xa_for_each(&viommu->vdevs, index, vdev) {
+>  		if (vdev->dev == dev) {
+> -			*vdev_id = vdev->id;
+> +			*vdev_id = vdev->virt_id;
+>  			rc = 0;
+>  			break;
+>  		}
+> diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
+> index 25ac08fbb52a..bc8796e6684e 100644
+> --- a/drivers/iommu/iommufd/viommu.c
+> +++ b/drivers/iommu/iommufd/viommu.c
+> @@ -111,7 +111,7 @@ void iommufd_vdevice_destroy(struct iommufd_object *obj)
+>  	struct iommufd_viommu *viommu = vdev->viommu;
+>  
+>  	/* xa_cmpxchg is okay to fail if alloc failed xa_cmpxchg previously */
+> -	xa_cmpxchg(&viommu->vdevs, vdev->id, vdev, NULL, GFP_KERNEL);
+> +	xa_cmpxchg(&viommu->vdevs, vdev->virt_id, vdev, NULL, GFP_KERNEL);
+>  	refcount_dec(&viommu->obj.users);
+>  	put_device(vdev->dev);
 >  }
->
-> +static const struct qcom_smmu_impl *to_qcom_smmu_impl(const struct arm_s=
-mmu_impl *base)
-> +{
-> +       return container_of(base, struct qcom_smmu_impl, base);
-> +}
-> +
->  static void qcom_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
->                                 int sync, int status)
->  {
-> @@ -313,9 +318,9 @@ static void qcom_smmu_set_actlr_dev(struct device *de=
-v, struct arm_smmu_device *
->  static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_do=
-main,
->                 struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
->  {
-> -       const struct device_node *np =3D smmu_domain->smmu->dev->of_node;
->         struct arm_smmu_device *smmu =3D smmu_domain->smmu;
->         struct qcom_smmu *qsmmu =3D to_qcom_smmu(smmu);
-> +       const struct qcom_smmu_impl *qsmmu_impl =3D to_qcom_smmu_impl(smm=
-u->impl);
->         const struct of_device_id *client_match;
->         int cbndx =3D smmu_domain->cfg.cbndx;
->         struct adreno_smmu_priv *priv;
-> @@ -351,14 +356,8 @@ static int qcom_adreno_smmu_init_context(struct arm_=
-smmu_domain *smmu_domain,
->         priv->set_ttbr0_cfg =3D qcom_adreno_smmu_set_ttbr0_cfg;
->         priv->get_fault_info =3D qcom_adreno_smmu_get_fault_info;
->         priv->set_stall =3D qcom_adreno_smmu_set_stall;
-> -       priv->set_prr_bit =3D NULL;
-> -       priv->set_prr_addr =3D NULL;
-> -
-> -       if (of_device_is_compatible(np, "qcom,smmu-500") &&
-> -                       of_device_is_compatible(np, "qcom,adreno-smmu")) =
-{
-> -               priv->set_prr_bit =3D qcom_adreno_smmu_set_prr_bit;
-> -               priv->set_prr_addr =3D qcom_adreno_smmu_set_prr_addr;
-> -       }
-> +       priv->set_prr_bit =3D qsmmu_impl->set_prr_bit;
-> +       priv->set_prr_addr =3D qsmmu_impl->set_prr_addr;
->
->         return 0;
->  }
-> @@ -558,65 +557,89 @@ static int qcom_sdm845_smmu500_reset(struct arm_smm=
-u_device *smmu)
->         return ret;
->  }
->
-> -static const struct arm_smmu_impl qcom_smmu_v2_impl =3D {
-> -       .init_context =3D qcom_smmu_init_context,
-> -       .cfg_probe =3D qcom_smmu_cfg_probe,
-> -       .def_domain_type =3D qcom_smmu_def_domain_type,
-> -       .write_s2cr =3D qcom_smmu_write_s2cr,
-> -       .tlb_sync =3D qcom_smmu_tlb_sync,
-> +static const struct qcom_smmu_impl qcom_smmu_v2_impl =3D {
-> +       .base =3D {
-> +               .init_context =3D qcom_smmu_init_context,
-> +               .cfg_probe =3D qcom_smmu_cfg_probe,
-> +               .def_domain_type =3D qcom_smmu_def_domain_type,
-> +               .write_s2cr =3D qcom_smmu_write_s2cr,
-> +               .tlb_sync =3D qcom_smmu_tlb_sync,
-> +       },
->  };
->
-> -static const struct arm_smmu_impl qcom_smmu_500_impl =3D {
-> -       .init_context =3D qcom_smmu_init_context,
-> -       .cfg_probe =3D qcom_smmu_cfg_probe,
-> -       .def_domain_type =3D qcom_smmu_def_domain_type,
-> -       .reset =3D arm_mmu500_reset,
-> -       .write_s2cr =3D qcom_smmu_write_s2cr,
-> -       .tlb_sync =3D qcom_smmu_tlb_sync,
-> +static const struct qcom_smmu_impl qcom_smmu_500_impl =3D {
-> +       .base =3D {
-> +               .init_context =3D qcom_smmu_init_context,
-> +               .cfg_probe =3D qcom_smmu_cfg_probe,
-> +               .def_domain_type =3D qcom_smmu_def_domain_type,
-> +               .reset =3D arm_mmu500_reset,
-> +               .write_s2cr =3D qcom_smmu_write_s2cr,
-> +               .tlb_sync =3D qcom_smmu_tlb_sync,
->  #ifdef CONFIG_ARM_SMMU_QCOM_DEBUG
-> -       .context_fault =3D qcom_smmu_context_fault,
-> -       .context_fault_needs_threaded_irq =3D true,
-> +               .context_fault =3D qcom_smmu_context_fault,
-> +               .context_fault_needs_threaded_irq =3D true,
->  #endif
-> +       },
->  };
->
-> -static const struct arm_smmu_impl sdm845_smmu_500_impl =3D {
-> -       .init_context =3D qcom_smmu_init_context,
-> -       .cfg_probe =3D qcom_smmu_cfg_probe,
-> -       .def_domain_type =3D qcom_smmu_def_domain_type,
-> -       .reset =3D qcom_sdm845_smmu500_reset,
-> -       .write_s2cr =3D qcom_smmu_write_s2cr,
-> -       .tlb_sync =3D qcom_smmu_tlb_sync,
-> +static const struct qcom_smmu_impl sdm845_smmu_500_impl =3D {
-> +       .base =3D {
-> +               .init_context =3D qcom_smmu_init_context,
-> +               .cfg_probe =3D qcom_smmu_cfg_probe,
-> +               .def_domain_type =3D qcom_smmu_def_domain_type,
-> +               .reset =3D qcom_sdm845_smmu500_reset,
-> +               .write_s2cr =3D qcom_smmu_write_s2cr,
-> +               .tlb_sync =3D qcom_smmu_tlb_sync,
->  #ifdef CONFIG_ARM_SMMU_QCOM_DEBUG
-> -       .context_fault =3D qcom_smmu_context_fault,
-> -       .context_fault_needs_threaded_irq =3D true,
-> +               .context_fault =3D qcom_smmu_context_fault,
-> +               .context_fault_needs_threaded_irq =3D true,
->  #endif
-> +       },
-> +};
-> +
-> +static const struct qcom_smmu_impl qcom_adreno_smmu_v2_impl =3D {
-> +       .base =3D {
-> +               .init_context =3D qcom_adreno_smmu_init_context,
-> +               .cfg_probe =3D qcom_adreno_smmuv2_cfg_probe,
-> +               .def_domain_type =3D qcom_smmu_def_domain_type,
-> +               .alloc_context_bank =3D qcom_adreno_smmu_alloc_context_ba=
-nk,
-> +               .write_sctlr =3D qcom_adreno_smmu_write_sctlr,
-> +               .tlb_sync =3D qcom_smmu_tlb_sync,
-> +               .context_fault_needs_threaded_irq =3D true,
-> +       },
->  };
->
-> -static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl =3D {
-> -       .init_context =3D qcom_adreno_smmu_init_context,
-> -       .cfg_probe =3D qcom_adreno_smmuv2_cfg_probe,
-> -       .def_domain_type =3D qcom_smmu_def_domain_type,
-> -       .alloc_context_bank =3D qcom_adreno_smmu_alloc_context_bank,
-> -       .write_sctlr =3D qcom_adreno_smmu_write_sctlr,
-> -       .tlb_sync =3D qcom_smmu_tlb_sync,
-> -       .context_fault_needs_threaded_irq =3D true,
-> +static const struct qcom_smmu_impl qcom_adreno_smmu_500_noprr_impl =3D {
-> +       .base =3D {
-> +               .init_context =3D qcom_adreno_smmu_init_context,
-> +               .def_domain_type =3D qcom_smmu_def_domain_type,
-> +               .reset =3D arm_mmu500_reset,
-> +               .alloc_context_bank =3D qcom_adreno_smmu_alloc_context_ba=
-nk,
-> +               .write_sctlr =3D qcom_adreno_smmu_write_sctlr,
-> +               .tlb_sync =3D qcom_smmu_tlb_sync,
-> +               .context_fault_needs_threaded_irq =3D true,
-> +       },
->  };
->
-> -static const struct arm_smmu_impl qcom_adreno_smmu_500_impl =3D {
-> -       .init_context =3D qcom_adreno_smmu_init_context,
-> -       .def_domain_type =3D qcom_smmu_def_domain_type,
-> -       .reset =3D arm_mmu500_reset,
-> -       .alloc_context_bank =3D qcom_adreno_smmu_alloc_context_bank,
-> -       .write_sctlr =3D qcom_adreno_smmu_write_sctlr,
-> -       .tlb_sync =3D qcom_smmu_tlb_sync,
-> -       .context_fault_needs_threaded_irq =3D true,
-> +static const struct qcom_smmu_impl qcom_adreno_smmu_500_impl =3D {
-> +       .base =3D {
-> +               .init_context =3D qcom_adreno_smmu_init_context,
-> +               .def_domain_type =3D qcom_smmu_def_domain_type,
-> +               .reset =3D arm_mmu500_reset,
-> +               .alloc_context_bank =3D qcom_adreno_smmu_alloc_context_ba=
-nk,
-> +               .write_sctlr =3D qcom_adreno_smmu_write_sctlr,
-> +               .tlb_sync =3D qcom_smmu_tlb_sync,
-> +               .context_fault_needs_threaded_irq =3D true,
-> +       },
-> +       .set_prr_bit =3D qcom_adreno_smmu_set_prr_bit,
-> +       .set_prr_addr =3D qcom_adreno_smmu_set_prr_addr,
->  };
->
->  static struct arm_smmu_device *qcom_smmu_create(struct arm_smmu_device *=
-smmu,
->                 const struct qcom_smmu_match_data *data)
->  {
->         const struct device_node *np =3D smmu->dev->of_node;
-> -       const struct arm_smmu_impl *impl;
-> +       const struct qcom_smmu_impl *impl;
->         struct qcom_smmu *qsmmu;
->
->         if (!data)
-> @@ -639,7 +662,7 @@ static struct arm_smmu_device *qcom_smmu_create(struc=
-t arm_smmu_device *smmu,
->         if (!qsmmu)
->                 return ERR_PTR(-ENOMEM);
->
-> -       qsmmu->smmu.impl =3D impl;
-> +       qsmmu->smmu.impl =3D &impl->base;
->         qsmmu->data =3D data;
->
->         return &qsmmu->smmu;
-> @@ -686,6 +709,13 @@ static const struct qcom_smmu_match_data qcom_smmu_5=
-00_impl0_data =3D {
->         .client_match =3D qcom_smmu_actlr_client_of_match,
->  };
->
-> +static const struct qcom_smmu_match_data qcom_smmu_500_impl0_noprr_data =
-=3D {
-> +       .impl =3D &qcom_smmu_500_impl,
-> +       .adreno_impl =3D &qcom_adreno_smmu_500_noprr_impl,
-> +       .cfg =3D &qcom_smmu_impl0_cfg,
-> +       .client_match =3D qcom_smmu_actlr_client_of_match,
-> +};
-> +
->  /*
->   * Do not add any more qcom,SOC-smmu-500 entries to this list, unless th=
-ey need
->   * special handling and can not be covered by the qcom,smmu-500 entry.
-> @@ -712,7 +742,7 @@ static const struct of_device_id __maybe_unused qcom_=
-smmu_impl_of_match[] =3D {
->         { .compatible =3D "qcom,sm6375-smmu-500", .data =3D &qcom_smmu_50=
-0_impl0_data },
->         { .compatible =3D "qcom,sm7150-smmu-v2", .data =3D &qcom_smmu_v2_=
-data },
->         { .compatible =3D "qcom,sm8150-smmu-500", .data =3D &qcom_smmu_50=
-0_impl0_data },
-> -       { .compatible =3D "qcom,sm8250-smmu-500", .data =3D &qcom_smmu_50=
-0_impl0_data },
-> +       { .compatible =3D "qcom,sm8250-smmu-500", .data =3D &qcom_smmu_50=
-0_impl0_noprr_data },
->         { .compatible =3D "qcom,sm8350-smmu-500", .data =3D &qcom_smmu_50=
-0_impl0_data },
->         { .compatible =3D "qcom,sm8450-smmu-500", .data =3D &qcom_smmu_50=
-0_impl0_data },
->         { .compatible =3D "qcom,smmu-500", .data =3D &qcom_smmu_500_impl0=
-_data },
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/a=
-rm/arm-smmu/arm-smmu-qcom.h
-> index 8addd453f5f1c9659fbfbc68a84a3ab1267b356e..e805ad604339463b706a43e35=
-9ccca657d42a602 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-> @@ -24,10 +24,17 @@ struct qcom_smmu_config {
->         const u32 *reg_offset;
->  };
->
-> +struct qcom_smmu_impl {
-> +       struct arm_smmu_impl base;
-> +
-> +       void (*set_prr_bit)(const void *cookie, bool set);
-> +       void (*set_prr_addr)(const void *cookie, phys_addr_t page_addr);
-> +};
-> +
->  struct qcom_smmu_match_data {
->         const struct qcom_smmu_config *cfg;
-> -       const struct arm_smmu_impl *impl;
-> -       const struct arm_smmu_impl *adreno_impl;
-> +       const struct qcom_smmu_impl *impl;
-> +       const struct qcom_smmu_impl *adreno_impl;
->         const struct of_device_id * const client_match;
->  };
->
->
-> ---
-> base-commit: 7244e36657076b597ac21d118be9c0b0f15fc622
-> change-id: 20250705-iommu-fix-prr-600451b1d304
->
-> Best regards,
-> --
-> With best wishes
-> Dmitry
->
+> @@ -150,7 +150,7 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+>  		goto out_put_idev;
+>  	}
+>  
+> -	vdev->id = virt_id;
+> +	vdev->virt_id = virt_id;
+>  	vdev->dev = idev->dev;
+>  	get_device(idev->dev);
+>  	vdev->viommu = viommu;
+
