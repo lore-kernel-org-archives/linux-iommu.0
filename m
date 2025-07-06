@@ -1,200 +1,176 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBE7128C2DC;
-	Sun,  6 Jul 2025 14:36:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 015C314A09C
+	for <iommu@lists.linux.dev>; Sun,  6 Jul 2025 15:20:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751812607; cv=none; b=kFNLa8c0KMm4fDcvPES1CozCYZuwtwRfM3RlI01J4FH4e0em82wFoLtGdo3EdSGNbww7Mn6BLUsweLCFD6Ym/oappIDeceegKrzoBRf3lxAUhX9Bo//NF05OKquhpkhxa0jm7IRmZKa+hM4Vd+AF+xt5S6f2jblPBM7SvYkd5SU=
+	t=1751815235; cv=none; b=EIUd9PJG9p1CK9uWvR/rCiVq/zwYySNTmCQQtBMJPpicUZQraXDeV2yNBgXnM9lzmJCzFNQb4+PhZCqDym2m7afm1pIvZUG+gkpJl7OUBvaEaKPPQXkgsaV8fnDisFASkvsn5WlYiy3h9QXVUc+5sfbBPMWUhg9SeUYTXBEhZtM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751812607; c=relaxed/simple;
-	bh=mA7SFMfHy8OinIxgtmu9yWbldbYt6k6q8NSeQegNnJA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=rjwmW3d+zmb44h1qe9P7JWlotp93BpNvVkho1kl7iXDCgP5ksNWONugjnP2XiV73FO86YxyIqBQJhkNWNsx2vgFNCOagQMN4aUMkaqFDtQqIdcHHiaYRaO7UvwE5imtn54z8FbIcWEhyzLX84y8RcEWkUCyXD8rfkRYtV4Q4Z8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sYVYeC+6; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1751815235; c=relaxed/simple;
+	bh=+z1wjg10ZMq9xbw7PHPnNseuKsBQ72DoDrEYmBvqDy0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=BlG+WFfBFe8FYOt8mhuKAQJXlM0OWp1GzADgdLvTrsFoTtCvEbhhl+w2+LNCvyLywqNIsp1rQy5/pGmMosjeq13yUwVG0ivh5Lqddzu0KocfRtnsK+C4FxHXLXb3nMXnQWCROJRGxVH2VvPbhuvnxWTkf3sDP5GP7qMwvBEpwUc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=OXT/UdV3; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sYVYeC+6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BA94C4CEF4;
-	Sun,  6 Jul 2025 14:36:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1751812606;
-	bh=mA7SFMfHy8OinIxgtmu9yWbldbYt6k6q8NSeQegNnJA=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=sYVYeC+6e5OzGIchOu7GvaySxrAMZ+Bls0YeuisZup4XCUIRLsoBGtO+yoGMLuEbz
-	 BWzz0dfPhCzA6rCFKmi8QdDoeOhV3mmLqLskqGGhMFiVKHcEBvAvYWfBgNlI8N+fdI
-	 lpPH3flaG6PJJbHwr5ae62YYTCuxr5XkC2nLmfi0BP+InVH4+f3b9ETwE4p91f5LtX
-	 NXL01QEjUR0etWMbpJqif9KssgNkjfwwUywJYxEd6XRvZKTeMewbJbFfifB9L2wE1a
-	 IxlMW4hX3ZO+lWVzAAsGmTojyQt4cE9AOSC39/BlHNEPVXvwresJ6XINXMYLST9anZ
-	 6cS53xc8Tkymg==
-From: Mario Limonciello <superm1@kernel.org>
-To: David Airlie <airlied@gmail.com>,
-	Bjorn Helgaas <bhelgaas@google.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>,
-	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Lukas Wunner <lukas@wunner.de>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-	linux-kernel@vger.kernel.org (open list),
-	iommu@lists.linux.dev (open list:INTEL IOMMU (VT-d)),
-	linux-pci@vger.kernel.org (open list:PCI SUBSYSTEM),
-	kvm@vger.kernel.org (open list:VFIO DRIVER),
-	linux-sound@vger.kernel.org (open list:SOUND),
-	Daniel Dadap <ddadap@nvidia.com>,
-	Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH v7 9/9] PCI: Add a new 'boot_display' attribute
-Date: Sun,  6 Jul 2025 09:36:13 -0500
-Message-ID: <20250706143613.1972252-10-superm1@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250706143613.1972252-1-superm1@kernel.org>
-References: <20250706143613.1972252-1-superm1@kernel.org>
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="OXT/UdV3"
+Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5666OPwF008766
+	for <iommu@lists.linux.dev>; Sun, 6 Jul 2025 15:20:32 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:to; s=
+	qcppdkim1; bh=dLFAbZ9MMfXUGoM7SgNEwHVpWiLq2JEVpU4msHTUWsw=; b=OX
+	T/UdV3HYwYj0Ws0XuBFaj7YM6bc16bVP4VclQN+0EXkqPsQgFvHeAVoznuZi7pgs
+	+B9ur+s0e//caRQ1yp2Nvy9UyjCbmy+32YGVNfitc0L3J6LZSXoXiacu+QQDMfyo
+	gLBjZdSoY/xFGbMr+qTAXnKOCOo5JEmLDrJWyWF+MjQ4vvUiC/eeFrHFB4Ua0Lgi
+	3vrAJt9wKZiCO05Z2V9r2oazm73Hqt4b/cp3e/z4DZs9wCY5/vKknb4YeC40+VHN
+	qKwcuDO40vkYc6q45Iex+iugOznNb+gTWdpsXmwDJPBj0ufeEHvMxSKC3aMSvbMT
+	wX9NmNU4mRWnSAmLODKQ==
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com [209.85.167.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47psrk4x06-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Sun, 06 Jul 2025 15:20:32 +0000 (GMT)
+Received: by mail-oi1-f197.google.com with SMTP id 5614622812f47-4067aeea8c0so607194b6e.0
+        for <iommu@lists.linux.dev>; Sun, 06 Jul 2025 08:20:32 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751815231; x=1752420031;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :reply-to:in-reply-to:references:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=dLFAbZ9MMfXUGoM7SgNEwHVpWiLq2JEVpU4msHTUWsw=;
+        b=PyJuTxvknGoUFfWR98yFI21Rc+VyPdLMyQCw51n8Lkj4aCmySTQhdt2qiAvyJtaIdl
+         /bmfWd60o9shymT0EBduZjaf9T3/qt3GC/TBwzXd90R/yVJM7PgFsAkaY6l4WarAyfv2
+         nieZs1k4y038ac4cR7TVioR6MRH2JcG/8Sul/fIpJi3n96QmmEFYX3K51SOBUl73kHnL
+         Z/dln7b/R1fuh3FHg9Zv/ODFM172LKRqMsQyiBtGZzAWTwWp8aENe31zHFc+OGw1Q44S
+         tN4rKAJjWEMRw/ny5gnulmB91E2fcHMbXziGemyC5IIVFRMUTRwwoIzyWXbrv5SBXlyR
+         +F6g==
+X-Forwarded-Encrypted: i=1; AJvYcCXnfXQrTDz4VdNnP0/KJsCmwtKUzp8s0al7vPCxhbt+q3B8K+ehaN+zPieOlS8WesjTA4ERGQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw44eLxDsVeZRnPjuqpTUd2rG7XR/zPwusVT31nCh2WwP0PNgmg
+	o9sBUPwpipy7hAp0DmjG4Gd95QBo8+oM2xsm0WyES37RkmXfJD0DIEqai6dHhgCLQQr9K/CCZPg
+	jBPiJGKkXQLnfXGqj4Edc5QgBIgIMkRvk5TRGeYborHafQ3t/DnvUNy0GQWnsoK54lH/M6il5Kz
+	bxIPJYYpxZlcVUbScOcquJK0nWp/t6efpe
+X-Gm-Gg: ASbGncuAHPLHpFy1dMhPUqv+dnKhCEk7EKSAJPhww0/IZ+ZIt3yScW942naxaqfOaQD
+	VfIUY/zp1Ruih5CKxJ5Eds1lg/sYBZGmNAgkrJGjTBoUGaBt6Drdqv4/kqB695QrbApNVh3LhSC
+	beovoFKmjL6b0TzNhcgytPkK3Fn1nJAHhb//0=
+X-Received: by 2002:a05:6808:4701:b0:409:c6:c147 with SMTP id 5614622812f47-40d2b4715f8mr3439867b6e.6.1751815231014;
+        Sun, 06 Jul 2025 08:20:31 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFQ19HjfWS2qJ+/2HG/poPWfm2s0tMKpeheNoz9fX/o+Q8VwG+3oADAA9x4xsA7IVI4FHzXquARSSMgABetSuE=
+X-Received: by 2002:a05:6808:4701:b0:409:c6:c147 with SMTP id
+ 5614622812f47-40d2b4715f8mr3439853b6e.6.1751815230643; Sun, 06 Jul 2025
+ 08:20:30 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20250705-iommu-fix-prr-v2-1-406fecc37cf8@oss.qualcomm.com> <c20a9713-6f8d-4c20-a031-dc448404d073@oss.qualcomm.com>
+In-Reply-To: <c20a9713-6f8d-4c20-a031-dc448404d073@oss.qualcomm.com>
+Reply-To: rob.clark@oss.qualcomm.com
+From: Rob Clark <rob.clark@oss.qualcomm.com>
+Date: Sun, 6 Jul 2025 08:20:19 -0700
+X-Gm-Features: Ac12FXyNtpZjdRENeNHXo5Q0MJXp9o0sqLqUTlypqwb-wsX2wlCghESA5aSIn6I
+Message-ID: <CACSVV02ioJfDyYLj6ASeQwH91n5CGcz+GW0wsupWJaUkJyFmqQ@mail.gmail.com>
+Subject: Re: [PATCH v2] iommu/arm-smmu: disable PRR on SM8250
+To: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+Cc: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Bibek Kumar Patro <quic_bibekkum@quicinc.com>, iommu@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Connor Abbott <cwabbott0@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-ORIG-GUID: 2JUmNZtFmHNjc6_adSvN56j9kpEGedLv
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzA2MDA5OCBTYWx0ZWRfXzi1rH+AQp+aP
+ HCtf8kt49TJPefXnoqDhCdAqruNMZuhy973NwFweZkvg5p63lrRAqC9MB8+D+vpl4K6Q5k/VOt6
+ fHCNk405MQO7YioCZ3sJ9h0SdGrAMo+J2djJ0zAQ9nJJNvZhDryCX/Jd0s9G1GBu6A4W0PkoCw/
+ FNDQkxcATb8+aScS3VFestYBZoGK9ea1+PKCmlLTERZlvvvzOHn09tCH0RzQGzir5OYtIptISCl
+ DjGQWi2V27Lx7Xffi7ghe7gGgIib6z/s/3Pvm1qz5FWD2g4wOP9Mz2Ryr7/0OstbgNMSszwH1Nx
+ iUJaIgMvmsq76IwOhaqSfNVebUj4Es5UZSwMsSQhzvysI0rwqRxGQ5DE/rb59ZKZP+ZbdORKGt/
+ IjwBi+PZ22svn+lusOVObz0V2lB9wERDqiRVfVDKwEV779eVekOwphOK+FdCRDZgCwmOZZ+5
+X-Proofpoint-GUID: 2JUmNZtFmHNjc6_adSvN56j9kpEGedLv
+X-Authority-Analysis: v=2.4 cv=GtBC+l1C c=1 sm=1 tr=0 ts=686a9440 cx=c_pps
+ a=WJcna6AvsNCxL/DJwPP1KA==:117 a=IkcTkHD0fZMA:10 a=Wb1JkmetP80A:10
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=NKDI3HYFCsqCqSkob8kA:9 a=QEXdDO2ut3YA:10
+ a=_Y9Zt4tPzoBS9L09Snn2:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
+ definitions=2025-07-04_07,2025-07-04_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ mlxscore=0 clxscore=1015 spamscore=0 adultscore=0 phishscore=0 malwarescore=0
+ priorityscore=1501 lowpriorityscore=0 bulkscore=0 suspectscore=0
+ impostorscore=0 mlxlogscore=999 classifier=spam authscore=0 authtc=n/a
+ authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2505280000 definitions=main-2507060098
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+On Sun, Jul 6, 2025 at 7:22=E2=80=AFAM Akhil P Oommen <akhilpo@oss.qualcomm=
+.com> wrote:
+>
+> On 7/5/2025 9:38 PM, Dmitry Baryshkov wrote:
+> > On SM8250 / QRB5165-RB5 using PRR bits resets the device, most likely
+> > because of the hyp limitations. Disable PRR support on that platform.
+> >
+> > Fixes: 7f2ef1bfc758 ("iommu/arm-smmu: Add support for PRR bit setup")
+> > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+>
+> Reviewed-by: Akhil P Oommen <akhilpo@oss.qualcomm.com>
+>
+> Unfortunately, there is no way to detect firmware support for PRR safely
+> from KMD.
 
-On systems with multiple GPUs there can be uncertainty which GPU is the
-primary one used to drive the display at bootup. In order to disambiguate
-this add a new sysfs attribute 'boot_display' that uses the output of
-video_is_primary_device() to populate whether a PCI device was used for
-driving the display.
+I still am a bit curious about whether it is the ACLTR write that
+trips the fw out (doubtful, since we write other bits in that reg
+AFAICT) or the PRR_CFG_LADDR/UADDR write that does it.  In the latter
+case we could potentially use a reserved-region for the PRR page,
+instead of dynamically allocating it (if we knew what values are in
+LADDR/UADDR.. I guess 0x0?) to avoid reduced vk functionality on these
+devices.  AFAIU the vk extensions that depend on PRR are required for
+vkd3d.
 
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
-v7:
- * fix lkp failure
- * Add tag
-v6:
- * Only show for the device that is boot display
- * Only create after PCI device sysfs files are initialized to ensure
-   that resources are ready.
-v4:
- * new patch
----
- Documentation/ABI/testing/sysfs-bus-pci |  8 +++++
- drivers/pci/pci-sysfs.c                 | 46 +++++++++++++++++++++++++
- 2 files changed, 54 insertions(+)
+BR,
+-R
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-index 69f952fffec72..8b455b1a58852 100644
---- a/Documentation/ABI/testing/sysfs-bus-pci
-+++ b/Documentation/ABI/testing/sysfs-bus-pci
-@@ -612,3 +612,11 @@ Description:
- 
- 		  # ls doe_features
- 		  0001:01        0001:02        doe_discovery
-+
-+What:		/sys/bus/pci/devices/.../boot_display
-+Date:		October 2025
-+Contact:	Linux PCI developers <linux-pci@vger.kernel.org>
-+Description:
-+		This file indicates the device was used as a boot
-+		display. If the device was used as the boot display, the file
-+		will be present and contain "1".
-diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-index 268c69daa4d57..6b1a0ae254d3a 100644
---- a/drivers/pci/pci-sysfs.c
-+++ b/drivers/pci/pci-sysfs.c
-@@ -30,6 +30,7 @@
- #include <linux/msi.h>
- #include <linux/of.h>
- #include <linux/aperture.h>
-+#include <asm/video.h>
- #include "pci.h"
- 
- #ifndef ARCH_PCI_DEV_GROUPS
-@@ -679,6 +680,13 @@ const struct attribute_group *pcibus_groups[] = {
- 	NULL,
- };
- 
-+static ssize_t boot_display_show(struct device *dev, struct device_attribute *attr,
-+				 char *buf)
-+{
-+	return sysfs_emit(buf, "1\n");
-+}
-+static DEVICE_ATTR_RO(boot_display);
-+
- static ssize_t boot_vga_show(struct device *dev, struct device_attribute *attr,
- 			     char *buf)
- {
-@@ -1051,6 +1059,37 @@ void pci_remove_legacy_files(struct pci_bus *b)
- }
- #endif /* HAVE_PCI_LEGACY */
- 
-+/**
-+ * pci_create_boot_display_file - create a file in sysfs for @dev
-+ * @pdev: dev in question
-+ *
-+ * Creates a file `boot_display` in sysfs for the PCI device @pdev
-+ * if it is the boot display device.
-+ */
-+static int pci_create_boot_display_file(struct pci_dev *pdev)
-+{
-+#ifdef CONFIG_VIDEO
-+	if (video_is_primary_device(&pdev->dev))
-+		return sysfs_create_file(&pdev->dev.kobj, &dev_attr_boot_display.attr);
-+#endif
-+	return 0;
-+}
-+
-+/**
-+ * pci_remove_boot_display_file - remove the boot display file for @dev
-+ * @pdev: dev in question
-+ *
-+ * Removes the file `boot_display` in sysfs for the PCI device @pdev
-+ * if it is the boot display device.
-+ */
-+static void pci_remove_boot_display_file(struct pci_dev *pdev)
-+{
-+#ifdef CONFIG_VIDEO
-+	if (video_is_primary_device(&pdev->dev))
-+		sysfs_remove_file(&pdev->dev.kobj, &dev_attr_boot_display.attr);
-+#endif
-+}
-+
- #if defined(HAVE_PCI_MMAP) || defined(ARCH_GENERIC_PCI_MMAP_RESOURCE)
- /**
-  * pci_mmap_resource - map a PCI resource into user memory space
-@@ -1654,9 +1693,15 @@ static const struct attribute_group pci_dev_resource_resize_group = {
- 
- int __must_check pci_create_sysfs_dev_files(struct pci_dev *pdev)
- {
-+	int retval;
-+
- 	if (!sysfs_initialized)
- 		return -EACCES;
- 
-+	retval = pci_create_boot_display_file(pdev);
-+	if (retval)
-+		return retval;
-+
- 	return pci_create_resource_files(pdev);
- }
- 
-@@ -1671,6 +1716,7 @@ void pci_remove_sysfs_dev_files(struct pci_dev *pdev)
- 	if (!sysfs_initialized)
- 		return;
- 
-+	pci_remove_boot_display_file(pdev);
- 	pci_remove_resource_files(pdev);
- }
- 
--- 
-2.43.0
-
+> -Akhil.
+>
+> > ---
+> > I currently don't have access to other devices from these generations.
+> > It might be necessary to apply the same workaround to other platforms.
+> > ---
+> > Changes in v2:
+> > - Simplify the workaround as the issue seems to be limited to SM8250
+> >   only (Rob)
+> > - Link to v1: https://lore.kernel.org/r/20250705-iommu-fix-prr-v1-1-ef7=
+25033651c@oss.qualcomm.com
+> > ---
+> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu=
+/arm/arm-smmu/arm-smmu-qcom.c
+> > index 62874b18f6459ad9a8b0542ab81c24e3e745c53d..53d88646476e9f193a6275d=
+9c3ee3d084c215362 100644
+> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > @@ -355,7 +355,8 @@ static int qcom_adreno_smmu_init_context(struct arm=
+_smmu_domain *smmu_domain,
+> >       priv->set_prr_addr =3D NULL;
+> >
+> >       if (of_device_is_compatible(np, "qcom,smmu-500") &&
+> > -                     of_device_is_compatible(np, "qcom,adreno-smmu")) =
+{
+> > +         !of_device_is_compatible(np, "qcom,sm8250-smmu-500") &&
+> > +         of_device_is_compatible(np, "qcom,adreno-smmu")) {
+> >               priv->set_prr_bit =3D qcom_adreno_smmu_set_prr_bit;
+> >               priv->set_prr_addr =3D qcom_adreno_smmu_set_prr_addr;
+> >       }
+> >
+> > ---
+> > base-commit: 7244e36657076b597ac21d118be9c0b0f15fc622
+> > change-id: 20250705-iommu-fix-prr-600451b1d304
+> >
+> > Best regards,
+>
