@@ -1,61 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3653298261
-	for <iommu@lists.linux.dev>; Tue,  8 Jul 2025 08:20:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2A6018A6C4
+	for <iommu@lists.linux.dev>; Tue,  8 Jul 2025 08:42:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751962843; cv=none; b=nJWM8OEhdKpwPfqTaT+GvyxPJOAjdrr7iUVhSTFRQcEopsE7oWScNixmXevgV1afD68o4Nkk8dN+GI5EyOkilN70T03ucSFO9JN0oru+VSHZskpTES6Qwa6M5YAQcmuFmKWRLjFkIBZPFQEjCy6hin3alptmutrLDEyJcZkXwUs=
+	t=1751964177; cv=none; b=N20QOqau+Pwjv8Why3I8WbRv1reFwsL31rKLh6FyuJuBHXH0pgt+RxxafdwK1Q2+GzpTlG2NfTgnN3f7KCa0JPNiOaEklhkM42D3PQg/6mc5ljkVLgc/DIMfuSeRUHy2naMKRiBgLzFitb8smihcW/jqn0TzPP3fMI/sUO7bx0Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751962843; c=relaxed/simple;
-	bh=nlwrLtl03wZynLrI5W8nM8lCn/KPdVjQrbS6ywj+uns=;
+	s=arc-20240116; t=1751964177; c=relaxed/simple;
+	bh=3W2W/I5PQ0k88njtcDlNpRAxY+PQLpS+bhmOD8piEcc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LWNsvHIJZ7noy3clN/9GyuPHrLlMRb0lZLI+0ylxUcnpy5WBqgbEDF46Up40Ed6GznR7XrT5C6gZMPNo67p8730tKg5cgdo7Zwa3S096eoshkdRpjYn02RMarNCosv4CZR4MEUzeDEcSNKO3/pm6nMcar/GcCjSU7gIX+OSr9Qo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eOjT9l8u; arc=none smtp.client-ip=192.198.163.13
+	 Content-Type:Content-Disposition:In-Reply-To; b=SLHmxW68En+Eqx32X8cH4qbLU312g1ytpGyZuAFxqdNZUEOJdq/Daclqy6oH1mbKbwawASWVufZI9XD0q7fExWSv8KtUz7Rg3w1254lSU7q6ZQ2abvGC0kgcMP/FADnGctIDv5vjV6/x1jD8wFgBBnTNJDFC3a3nlkeS3KPiw0Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mx7zYsnL; arc=none smtp.client-ip=198.175.65.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eOjT9l8u"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mx7zYsnL"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1751962841; x=1783498841;
+  t=1751964176; x=1783500176;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=nlwrLtl03wZynLrI5W8nM8lCn/KPdVjQrbS6ywj+uns=;
-  b=eOjT9l8uHGGBlzAl126R3npX4xMzZ3DBUNt7zEhl/pq0+SaSz1JKVHS/
-   lFiz6qETEOMNM//muzuTYDfpiUQiBeavQ0CJU/JJnw6NHr+HMDAvuf76F
-   Y3XVJ/1fV3WJ3IG99tGa5MHWH9HA51tVP57D0egwYHzWggOT8zjo0uSJX
-   aFkfhPKe2f1RnqpbgtbUpnNrOoQ1Am9uXnSwkzOSr4m5BnSxvxDJQrx51
-   aEw5DauZgwsH5oeLLRjmqi0Uj4qiCW0tzmM01uM4jpnjbtyFa7bjnHWNO
-   eE0uEo20W1XV3uPad0mk/BJIJZ0jcQlAZcgfnwMxHRhnYO07kb7bjyjIZ
-   Q==;
-X-CSE-ConnectionGUID: Ogmut8wORgK0O4ciq3F1mg==
-X-CSE-MsgGUID: tOR1PFJ9RKOl+w9w+Xboww==
-X-IronPort-AV: E=McAfee;i="6800,10657,11487"; a="56804498"
+  bh=3W2W/I5PQ0k88njtcDlNpRAxY+PQLpS+bhmOD8piEcc=;
+  b=mx7zYsnLnA87j8LLqsayhx7qq+FXYTaqsol4dW9muA+8i46LV8WdU4U7
+   XlrQqt53BPQDdbwitqYzMC9nXy8qBL9+t9eaW0bIu2DKWahlqeOwtTWOM
+   esLZsqSuOwURZNEBIdKuxiNUEkUyhcgAUAF5QODUnps5V58RR+o+1tDWO
+   +XIUiiLDvddCHm+Ag0TbdeL7FiIPjXj+vD32HA207uC9LMXCL1P5z+y4Z
+   6D4OIsz5TRSyHMziduoTmtSFa/aAAzR/S1X/vMUoY2m72SIEKH3hSoc2F
+   KMRM7O7CeM1B7lbljT2lYsWdB9PVijmtii8/HP2jasi053XAhqnxLTA4/
+   g==;
+X-CSE-ConnectionGUID: VaJ3fhywQYOEUHp0BQWNOg==
+X-CSE-MsgGUID: nev/n+/bQemgNwaXgGPHAA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11487"; a="53911978"
 X-IronPort-AV: E=Sophos;i="6.16,296,1744095600"; 
-   d="scan'208";a="56804498"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2025 01:20:40 -0700
-X-CSE-ConnectionGUID: rfOLo3+WQk6TEMPo1o8iAw==
-X-CSE-MsgGUID: 4ZhITdttTuSc2poDAMha4w==
+   d="scan'208";a="53911978"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2025 01:42:56 -0700
+X-CSE-ConnectionGUID: 856l2fiJR0yNJyojHfaWLA==
+X-CSE-MsgGUID: K3I5cnZkSmGB5o9/Etfl8Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,296,1744095600"; 
-   d="scan'208";a="186392208"
+   d="scan'208";a="159974860"
 Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmviesa001.fm.intel.com with ESMTP; 08 Jul 2025 01:20:36 -0700
-Date: Tue, 8 Jul 2025 16:12:23 +0800
+  by orviesa004.jf.intel.com with ESMTP; 08 Jul 2025 01:42:52 -0700
+Date: Tue, 8 Jul 2025 16:34:37 +0800
 From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
 Cc: jgg@nvidia.com, jgg@ziepe.ca, kevin.tian@intel.com, will@kernel.org,
 	aneesh.kumar@kernel.org, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org, joro@8bytes.org, robin.murphy@arm.com,
-	shuah@kernel.org, aik@amd.com, dan.j.williams@intel.com,
-	baolu.lu@linux.intel.com, yilun.xu@intel.com
+	shuah@kernel.org, nicolinc@nvidia.com, aik@amd.com,
+	dan.j.williams@intel.com, yilun.xu@intel.com
 Subject: Re: [PATCH v3 2/5] iommufd: Destroy vdevice on idevice destroy
-Message-ID: <aGzS57bGWtg8BpEU@yilunxu-OptiPlex-7050>
+Message-ID: <aGzYHR0+/mjufmUQ@yilunxu-OptiPlex-7050>
 References: <20250627033809.1730752-1-yilun.xu@linux.intel.com>
  <20250627033809.1730752-3-yilun.xu@linux.intel.com>
- <aGLmq8D88mN5lkmN@Asurada-Nvidia>
+ <b5b84208-e43c-483e-838b-c42375d3bada@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,67 +64,60 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aGLmq8D88mN5lkmN@Asurada-Nvidia>
+In-Reply-To: <b5b84208-e43c-483e-838b-c42375d3bada@linux.intel.com>
 
-On Mon, Jun 30, 2025 at 12:34:03PM -0700, Nicolin Chen wrote:
-> On Fri, Jun 27, 2025 at 11:38:06AM +0800, Xu Yilun wrote:
-> > +static void iommufd_device_remove_vdev(struct iommufd_device *idev)
-> > +{
-> > +	struct iommufd_vdevice *vdev;
+> > -void iommufd_vdevice_destroy(struct iommufd_object *obj)
+> > +void iommufd_vdevice_abort(struct iommufd_object *obj)
+> >   {
+> >   	struct iommufd_vdevice *vdev =
+> >   		container_of(obj, struct iommufd_vdevice, obj);
+> >   	struct iommufd_viommu *viommu = vdev->viommu;
+> > +	struct iommufd_device *idev = vdev->idev;
 > > +
-> > +	mutex_lock(&idev->igroup->lock);
-> > +	/* vdev has been completely destroyed by userspace */
-> > +	if (!idev->vdev)
-> > +		goto out_unlock;
+> > +	lockdep_assert_held(&idev->igroup->lock);
 > > +
-> > +	vdev = iommufd_get_vdevice(idev->ictx, idev->vdev->obj.id);
-> > +	if (IS_ERR(vdev)) {
-> > +		/*
-> > +		 * vdev is removed from xarray by userspace, but is not
-> > +		 * destroyed/freed. Since iommufd_vdevice_abort() is reentrant,
-> > +		 * safe to destroy vdev here.
-> > +		 */
-> > +		iommufd_vdevice_abort(&idev->vdev->obj);
-> > +		goto out_unlock;
+> > +	/*
+> > +	 * iommufd_vdevice_abort() could be reentrant, by
+> > +	 * iommufd_device_unbind() or by iommufd_destroy(). Cleanup only once.
+> > +	 */
+> > +	if (!viommu)
+> > +		return;
+> >   	/* xa_cmpxchg is okay to fail if alloc failed xa_cmpxchg previously */
+> >   	xa_cmpxchg(&viommu->vdevs, vdev->id, vdev, NULL, GFP_KERNEL);
+> >   	refcount_dec(&viommu->obj.users);
+> >   	put_device(vdev->dev);
+> > +	vdev->viommu = NULL;
+> > +	idev->vdev = NULL;
 > 
-> This is the case #3, i.e. a racing vdev destory, in the commit log?
+> I feel it makes more sense to reorder the operations like this:
 > 
-> I think it is worth clarifying that there is a concurrent destroy:
-> 		/*
-> 		 * An ongoing vdev destroy ioctl has removed the vdev from the
-> 		 * object xarray but has not finished iommufd_vdevice_destroy()
-> 		 * yet, as it is holding the same mutex.
+> 	vdev->viommu = NULL;
+> 	vdev->idev = NULL;
+> 	idev->vdev = NULL;
+> 	put_device(vdev->dev);
+> 
+> put_device(vdev->dev) could potentially trigger other code paths that
+> might attempt to reference vdev or its associated pointers. Therefore,
+> it's safer to null all the relevant reference pointers before calling
+> put_device().
 
-Applied this part.
+Yep. due to other changes, now I keep:
 
->		 * Destroy the vdev here,
-> 		 * i.e. the iommufd_vdevice_destroy() will be a NOP once it is
-> 		 * unlocked.
-> 		 */
-> 
-> > @@ -147,10 +183,12 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
-> >  	if (rc)
-> >  		goto out_abort;
-> >  	iommufd_object_finalize(ucmd->ictx, &vdev->obj);
-> > -	goto out_put_idev;
-> > +	goto out_unlock_igroup;
-> >  
-> >  out_abort:
-> >  	iommufd_object_abort_and_destroy(ucmd->ictx, &vdev->obj);
-> > +out_unlock_igroup:
-> > +	mutex_unlock(&idev->igroup->lock);
-> 
-> Looks like we will have to partially revert the _ucmd allocator,
-> in this function:
-> https://lore.kernel.org/all/107b24a3b791091bb09c92ffb0081c56c413b26d.1749882255.git.nicolinc@nvidia.com/
-> 
-> Please try fixing the conflicts on top of Jason's for-next tree.
+        xa_cmpxchg(&viommu->vdevs, vdev->id, vdev, NULL, GFP_KERNEL);
+        refcount_dec(&viommu->obj.users);
++       idev->vdev = NULL;
+        put_device(vdev->dev);
 
-Yes, will rebase for next version.
+Anyway, vdev->dev would be completely dropped in next patch, so it
+doesn't matter much.
 
 Thanks,
 Yilun
 
 > 
-> Thanks
-> Nicolin
+> Others look good to me,
+> 
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> 
+> Thanks,
+> baolu
