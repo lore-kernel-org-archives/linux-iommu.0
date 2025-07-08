@@ -1,149 +1,177 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A43942E264F
-	for <iommu@lists.linux.dev>; Tue,  8 Jul 2025 15:57:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D0632E54DC
+	for <iommu@lists.linux.dev>; Tue,  8 Jul 2025 16:56:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751990259; cv=none; b=E2USmZR76HofcPNVwWclChWvjzRKw5+4/zZkKMYjMZLuqjNPXoqx8xPSRLN4BiJuFlj+cWWJHiBmvJLq7kuqYyOYasYYbmZM+l38bKpjVZZA/0ZkHWmHdsfGsCfyuYt3sUrzpe1la+ZriIDjDbjfjlPEbBgOTHND4lyN/dnveS4=
+	t=1751993821; cv=none; b=vETiUBaEq+Wp37iCsfI2ywqnU/fJYfQUBi3Ux3JSUIiZ4naS3gNHDbyMR9c8crgHPuf23kJaUeeXiiP4WqTHJkLI/e9o+UMnc6rNUelMMI5BsUsrU2zNVG6X+y9yD9s6l31JutGyQVb5aKAiVu9beQ9be14kjS97dzrapg6XvEo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751990259; c=relaxed/simple;
-	bh=CkzfE94IorgBBRqnMAAmMmq24EJdqyfxe6lmBjXxP6U=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:In-Reply-To:
-	 Content-Type:References; b=WArnoqqiATX6rfs/1pmBdLw90bS1Ft1OR/ImjBksq3FhEUzz88N9O/nZlaiwrztve5oCTZpdR8QpDfbgKqNq/wNTpnchNulhcpvLLqoyZGqcEtwuNGkAoxS6DxztvZYkPh52dj3iO10jiOvaf+NUvd+x7QOQfpAadLi58XBHJmM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=PAX9aPjm; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1751993821; c=relaxed/simple;
+	bh=Jg6cutNa4wTuOT/R/PBaYwp8fpjwjRddjQ2/p/+s89Q=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=b7vSIBdzOsgSXpEZ+zNZnboFBOR7TVpHsAQZ0xBOvrWGWvH2ihSAC8PsWa0dO1vb6AN+/3o6fwpyd7jzYrWhrAjP3/DTU/bnMy01q2r2mcLxNrdJVvbFfbxBxze+EYD+ewbVsqye+ZRqT2WNUEkazhPIQxHOPlDwkY47ByCTsBk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=iwiVprnC; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="PAX9aPjm"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250708155734euoutp016f00d71aba5a8544939f48342ca4edf7~QUdqw6s7j2055920559euoutp01K
-	for <iommu@lists.linux.dev>; Tue,  8 Jul 2025 15:57:34 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250708155734euoutp016f00d71aba5a8544939f48342ca4edf7~QUdqw6s7j2055920559euoutp01K
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1751990254;
-	bh=uyab8dr49wEubYW85hrXKyGCcYl1OC56FE0kAT8DEIc=;
-	h=Date:Subject:From:To:Cc:In-Reply-To:References:From;
-	b=PAX9aPjmQKMw6GLmeGQtiXElLQtSpy3YzZ/VZyQdgAMom5kiPE/FjvCg3WC/1+nPy
-	 10u5WabCCNOfLJhq7QAU3B1PpRxFQR3S//A+2qstDRiCAC24ehoVJf28O8MpDNi/Zp
-	 1CxnqxNQY3PzCfWVombnnMFfy4sDHCYVZ/YIErc0=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20250708155734eucas1p1407185657d9833058c6b35d11e1d0b01~QUdqUADk60849108491eucas1p1v;
-	Tue,  8 Jul 2025 15:57:34 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20250708155731eusmtip2162f9813a1cd05daa31b4d62d2bead82~QUdnRS2nc2073620736eusmtip2d;
-	Tue,  8 Jul 2025 15:57:30 +0000 (GMT)
-Message-ID: <b542bfa3-d680-4952-98fe-0a44ae3bddd7@samsung.com>
-Date: Tue, 8 Jul 2025 17:57:30 +0200
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="iwiVprnC"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 568AAbc5017123
+	for <iommu@lists.linux.dev>; Tue, 8 Jul 2025 16:56:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=WUhkVAeGLeKaNSN8AVmxhb1CINCnyT16ePT
+	Qp8qzBLo=; b=iwiVprnCBim/pwSuMC2ak0jO/SCNNEk1dfljlHQhWFV+RgIOSF4
+	8x3VNb2cq8DoWzS89s3B6KkAcAl1ipKr3WKRXAIkHdGQpcQj3/jXijAW5hH5tWpG
+	uBiRHMEW295kD/8BKmBk07afQsRghZbajQtd7fzdBoZwmUJpLqutx8nzlPtHxDPr
+	bHOPEHbnJ25GctFoOxrFMhv1D1M/GunAJaav3VOwcTzCZyGe+sZ/JHjihnISRCEF
+	l2ceBzAgFKx9WwXAr9gC+lpEzinunNt8OYtFgdfVfvzrLWEd0gVxB5eaEeXBLu05
+	/k/Ek5M0xtlTYTnYlQMkttVxBHsyUcmIaqg==
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47pvtkqrnw-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Tue, 08 Jul 2025 16:56:59 +0000 (GMT)
+Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-2382607509fso25303715ad.3
+        for <iommu@lists.linux.dev>; Tue, 08 Jul 2025 09:56:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751993818; x=1752598618;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=WUhkVAeGLeKaNSN8AVmxhb1CINCnyT16ePTQp8qzBLo=;
+        b=r06wOSwYqJ+Qwr5WGC7bcvl0F6zYEYu7u7plssvLJkWgK/1nGXT8ExMn9BeKyfhhaL
+         ftqO8Ck9Zetlqni50/gZeY7x/kwMtdm+Dm8Mwu55l8tf4/6XdwJi/ddm5vgkvuj+kmka
+         k38Vji5wNJvA8wdpfy65wcoXSvSDftuTtzzKifcG5lXz7rdEgv/mQBOD+hbXhhsMkBzS
+         nre+a3lrnldo5tc71aw8A2AN9CClvUssPDbwySLWlPO1EOfs+A32eXcJTbnwLokY3Ssl
+         CwZ0AiKKMXRn5q+wzbxSSh/sXoGBB0lbPW3EcxrRQWKr73WBhsD0cURfwElNH4kSpYE4
+         39oA==
+X-Forwarded-Encrypted: i=1; AJvYcCVBW6rMjOS5++KSN8flaKY/xnvoyfyvQ+40K3pKCqYqozKLo+MaVna6UXPE5yuHmB35u6JJNg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzPQGoLsSsXRAj5XELdx0Ue9jhqLZnloPjq5I79TcZJ5SZzo/8G
+	b+bobLMpxHYGqwm0PO3C6zuDkBItdSemijc30ZmVw1JR4phW/349lXzEdFVPM8FLcREoi2Oe5pD
+	tBRsqHpHPkC3QUPSYn/9FQh5qYtwgWzeo5qOGerd+t5TowahG75t5ilvG9Q==
+X-Gm-Gg: ASbGncvAwr2ICtFN5EUzwNvMIhY8f5v8RY67WDHSYyO0rdukXr9nnfNM5vGGvPKwmKU
+	OmpVFCyxRW0KK9pQLtmr7sbQQUq8allhSLnPkW3F5j6rBdeWbX22+QaPl50Z5VDg+DVPoG7ldMa
+	LDyWIK97qT4D86oqDyW8Ym/orO0t2GXT/fht2ommxY0hU1nB1y+fbCxYaF3aBH9RqthzNHo+ZAK
+	aTyE+9lE/N17kT+DMhZT4i6MwxxmrQhIAn6aPO/qKWLk7fUosSpvA45IrYcc8Dva13NYspzqNA2
+	hfoYZYvaWrh5c23CkPFgIjDACVxRijQBLykjNK30lLWtossvxtlaMWWzY4XE22hKfmK23m1rTGL
+	E5ZmpAAvQnw==
+X-Received: by 2002:a17:903:2352:b0:234:bca7:292e with SMTP id d9443c01a7336-23dd982c7a1mr3703895ad.14.1751993818320;
+        Tue, 08 Jul 2025 09:56:58 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFZcNw1wDJD3D+XT0Ei373cW7Pc2/gf94PN0YMqeTOB1MGWQEUOYM3VpYyc41cGoWyfIaY6gg==
+X-Received: by 2002:a17:903:2352:b0:234:bca7:292e with SMTP id d9443c01a7336-23dd982c7a1mr3703505ad.14.1751993817865;
+        Tue, 08 Jul 2025 09:56:57 -0700 (PDT)
+Received: from hu-obabatun-lv.qualcomm.com (Global_NAT1.qualcomm.com. [129.46.96.20])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-23c8431e4dasm124569365ad.30.2025.07.08.09.56.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Jul 2025 09:56:57 -0700 (PDT)
+From: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+To: robh@kernel.org, m.szyprowski@samsung.com
+Cc: saravanak@google.com, robin.murphy@arm.com, quic_obabatun@quicinc.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, william.zhang@broadcom.com,
+        kernel@oss.qualcomm.com, will@kernel.org, djakov@kernel.org,
+        Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+Subject: [PATCH] of: reserved_mem: Restructure call site for dma_contiguous_early_fixup()
+Date: Tue,  8 Jul 2025 09:56:27 -0700
+Message-Id: <20250708165627.845295-1-oreoluwa.babatunde@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/8] dma-mapping: migrate to physical address-based API
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Jonathan Corbet <corbet@lwn.net>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman
-	<mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy
-	<christophe.leroy@csgroup.eu>, Robin Murphy <robin.murphy@arm.com>, Joerg
-	Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Michael S.
-	Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Xuan Zhuo
- <xuanzhuo@linux.alibaba.com>, =?UTF-8?Q?Eugenio_P=C3=A9rez?=
- <eperezma@redhat.com>, Alexander Potapenko <glider@google.com>, Marco Elver
- <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>, Masami Hiramatsu
- <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>, Andrew Morton
- <akpm@linux-foundation.org>, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- iommu@lists.linux.dev, virtualization@lists.linux.dev,
- kasan-dev@googlegroups.com, linux-trace-kernel@vger.kernel.org,
- linux-mm@kvack.org, Jason Gunthorpe <jgg@ziepe.ca>
-Content-Language: en-US
-In-Reply-To: <39d43309-9f34-48bc-a9ad-108c607ba175@samsung.com>
 Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20250708155734eucas1p1407185657d9833058c6b35d11e1d0b01
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf
-X-EPHeader: CA
-X-CMS-RootMailID: 20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf
-References: <CGME20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf@eucas1p2.samsung.com>
-	<cover.1750854543.git.leon@kernel.org>
-	<35df6f2a-0010-41fe-b490-f52693fe4778@samsung.com>
-	<20250627170213.GL17401@unreal> <20250630133839.GA26981@lst.de>
-	<69b177dc-c149-40d3-bbde-3f6bad0efd0e@samsung.com>
-	<20250708110007.GF592765@unreal>
-	<261f2417-78a9-45b8-bcec-7e36421a243c@samsung.com>
-	<20250708120647.GG592765@unreal>
-	<39d43309-9f34-48bc-a9ad-108c607ba175@samsung.com>
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzA4MDE0MyBTYWx0ZWRfX20acelQ1Pehu
+ sAYq3yiTypNKOvTSGilmNdqiAujJsp9BMbMjTiAXieoPQ/tnJIXWq2s1ESBWS+4iEzbSiHw8FWW
+ cns9gJUwd6u1DaflmjwGMgpdl94xWTyjjMr60IB/Zwn++rTKZw9cCSM9y7eJATikuleI8/CTK+6
+ rHskv6NXzUbs9Pk7o8mKHnUSLpqxfMsto43YIJcRy4sy0iGfVGvgHE2YyNE5mYXyghaJwVOb2sT
+ FzfZ1aFbZhk+ivzhN0FumkqxkJ58eD8l5iu6OXu8t7myl5vFsybcHeWFhnULNz9SCG3Q6sPjhEZ
+ WBISjIHhcicg2TtSGMNef0ToU9nV/MusCO3WXbsZTTm9oW07IO2JALtG3hwVjj4OEhwMVOzTNqs
+ U/HYbOtGHenN9htyZP9eRIbpo25F8nISx5dWXfIPnDyXK3UmYVEFXxPLIJWEu/r538v1s+0F
+X-Authority-Analysis: v=2.4 cv=Vq0jA/2n c=1 sm=1 tr=0 ts=686d4ddb cx=c_pps
+ a=cmESyDAEBpBGqyK7t0alAg==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=Wb1JkmetP80A:10 a=EUspDBNiAAAA:8 a=xFDPACk5BDkwkGjAhYwA:9
+ a=1OuFwYUASf3TG4hYMiVC:22
+X-Proofpoint-ORIG-GUID: I0bkXD3x1SXe4q6xEFZKXbSmTh0tG9Hg
+X-Proofpoint-GUID: I0bkXD3x1SXe4q6xEFZKXbSmTh0tG9Hg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
+ definitions=2025-07-08_04,2025-07-07_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 adultscore=0 bulkscore=0 phishscore=0 lowpriorityscore=0
+ clxscore=1011 mlxscore=0 malwarescore=0 mlxlogscore=761 impostorscore=0
+ suspectscore=0 priorityscore=1501 classifier=spam authscore=0 authtc=n/a
+ authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2505280000 definitions=main-2507080143
 
-On 08.07.2025 14:56, Marek Szyprowski wrote:
-> On 08.07.2025 14:06, Leon Romanovsky wrote:
->> On Tue, Jul 08, 2025 at 01:45:20PM +0200, Marek Szyprowski wrote:
->>> On 08.07.2025 13:00, Leon Romanovsky wrote:
->>>> On Tue, Jul 08, 2025 at 12:27:09PM +0200, Marek Szyprowski wrote:
->>>>> On 30.06.2025 15:38, Christoph Hellwig wrote:
->>>>>> On Fri, Jun 27, 2025 at 08:02:13PM +0300, Leon Romanovsky wrote:
->>>>>>>> Thanks for this rework! I assume that the next step is to add 
->>>>>>>> map_phys
->>>>>>>> callback also to the dma_map_ops and teach various dma-mapping 
->>>>>>>> providers
->>>>>>>> to use it to avoid more phys-to-page-to-phys conversions.
->>>>>>> Probably Christoph will say yes, however I personally don't see any
->>>>>>> benefit in this. Maybe I wrong here, but all existing .map_page()
->>>>>>> implementation platforms don't support p2p anyway. They won't 
->>>>>>> benefit
->>>>>>> from this such conversion.
->>>>>> I think that conversion should eventually happen, and rather 
->>>>>> sooner than
->>>>>> later.
->>>>> Agreed.
->>>>>
->>>>> Applied patches 1-7 to my dma-mapping-next branch. Let me know if one
->>>>> needs a stable branch with it.
->>>> Thanks a lot, I don't think that stable branch is needed. 
->>>> Realistically
->>>> speaking, my VFIO DMA work won't be merged this cycle, We are in -rc5,
->>>> it is complete rewrite from RFC version and touches pci-p2p code (to
->>>> remove dependency on struct page) in addition to VFIO, so it will take
->>>> time.
->>>>
->>>> Regarding, last patch (hmm), it will be great if you can take it.
->>>> We didn't touch anything in hmm.c this cycle and have no plans to 
->>>> send PR.
->>>> It can safely go through your tree.
->>> Okay, then I would like to get an explicit ack from Jérôme for this.
->> Jerome is not active in HMM world for a long time already.
->> HMM tree is managed by us (RDMA) 
->> https://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git/log/?h=hmm
->> ➜  kernel git:(m/dmabuf-vfio) git log --merges mm/hmm.c
->> ...
->> Pull HMM updates from Jason Gunthorpe:
->> ...
->>
->> https://web.git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=58ba80c4740212c29a1cf9b48f588e60a7612209 
->>
->> +hmm        git 
->> git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git#hmm
->>
->> We just never bothered to reflect current situation in MAINTAINERS file.
->
-> Maybe this is the time to update it :)
->
-> I was just a bit confused that no-one commented the HMM patch, but if 
-> You maintain it, then this is okay.
+Restructure the call site for dma_contiguous_early_fixup() to
+where the reserved_mem nodes are being parsed from the DT so that
+dma_mmu_remap[] is populated before dma_contiguous_remap() is called.
 
+Fixes: 8a6e02d0c00e ("of: reserved_mem: Restructure how the reserved memory regions are processed")
+Signed-off-by: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+---
+ drivers/of/of_reserved_mem.c | 14 +++++++++++---
+ kernel/dma/contiguous.c      |  2 --
+ 2 files changed, 11 insertions(+), 5 deletions(-)
 
-I've applied the last patch to dma-mapping-for-next branch.
-
-
-Best regards
+diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+index 77016c0cc296..132d2c66cafc 100644
+--- a/drivers/of/of_reserved_mem.c
++++ b/drivers/of/of_reserved_mem.c
+@@ -25,6 +25,7 @@
+ #include <linux/memblock.h>
+ #include <linux/kmemleak.h>
+ #include <linux/cma.h>
++#include <linux/dma-map-ops.h>
+ 
+ #include "of_private.h"
+ 
+@@ -175,13 +176,17 @@ static int __init __reserved_mem_reserve_reg(unsigned long node,
+ 		base = dt_mem_next_cell(dt_root_addr_cells, &prop);
+ 		size = dt_mem_next_cell(dt_root_size_cells, &prop);
+ 
+-		if (size &&
+-		    early_init_dt_reserve_memory(base, size, nomap) == 0)
++		if (size && early_init_dt_reserve_memory(base, size, nomap) == 0) {
++			/* Architecture specific contiguous memory fixup. */
++			if (of_flat_dt_is_compatible(node, "shared-dma-pool"))
++				dma_contiguous_early_fixup(base, size);
++
+ 			pr_debug("Reserved memory: reserved region for node '%s': base %pa, size %lu MiB\n",
+ 				uname, &base, (unsigned long)(size / SZ_1M));
+-		else
++		} else {
+ 			pr_err("Reserved memory: failed to reserve memory for node '%s': base %pa, size %lu MiB\n",
+ 			       uname, &base, (unsigned long)(size / SZ_1M));
++		}
+ 
+ 		len -= t_len;
+ 	}
+@@ -472,6 +477,9 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
+ 		       uname, (unsigned long)(size / SZ_1M));
+ 		return -ENOMEM;
+ 	}
++	/* Architecture specific contiguous memory fixup. */
++	if (of_flat_dt_is_compatible(node, "shared-dma-pool"))
++		dma_contiguous_early_fixup(base, size);
+ 
+ 	/* Save region in the reserved_mem array */
+ 	fdt_reserved_mem_save_node(node, uname, base, size);
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 8df0dfaaca18..9e5d63efe7c5 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -480,8 +480,6 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
+ 		pr_err("Reserved memory: unable to setup CMA region\n");
+ 		return err;
+ 	}
+-	/* Architecture specific contiguous memory fixup. */
+-	dma_contiguous_early_fixup(rmem->base, rmem->size);
+ 
+ 	if (default_cma)
+ 		dma_contiguous_default_area = cma;
 -- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+2.34.1
 
