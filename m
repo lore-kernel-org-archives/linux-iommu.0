@@ -1,134 +1,116 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7900D17A2E0
-	for <iommu@lists.linux.dev>; Tue,  8 Jul 2025 12:56:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC6FEEEA8
+	for <iommu@lists.linux.dev>; Tue,  8 Jul 2025 14:06:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751979391; cv=none; b=tvVgBxFs+FuBZ3nRk0ut2GNCmmMWZ10QDpME/XzX+DAYJ+L2yaK9RaHxvCWCKedoWmdWgTje1mqiZPBMYBbwAVgTJNZ3X2Wzw/bUPTE4EosMg8lTuAXyRU3wFLcJ0XVvFYxr0Cb7WbzgCg0P860dXeuTuQf2itqy93aCPqlwM/U=
+	t=1751983593; cv=none; b=aqgx85fTeO9zR2azbHnLErYj/PgaNk6wmffuKoFKnVwGy4ZWRs+TJ7aXOPgFWv9uB46tOXIVoonAgVic3gzLXDeEmkuKMsBiP1fd8yeVDgm9Z650u1YwJ/fi1SqijlS2rIT+mcCGHPMAylyCuFGz47KZNBa08yeyQ/Kk9j5G5Ao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751979391; c=relaxed/simple;
-	bh=tJRA7m1/e900tlxVd4Za+3wH7OTzUtyyJem1XRv1vJ8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=DlUGzEzlxPAbeKiBHzYuqc2bQkc93BH0U/tItI9iNxTV2rByoBj29FG5K65YCyHc9WiTlpGn+9BsHSvIGxk4WjVePj68v2qdaJiSXCY4NTxOx2dn+DXLiXOevZ6/0XZWNp+2xyxFHxIA222iQf5wwksBh12rb/8leNjk1EcxFOI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=rUMpLiKt; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1751983593; c=relaxed/simple;
+	bh=BINVLnRgyb20mtAp5cKy1Cm5MJUnIiU9I4ytjoEXwOw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jPgTg5bi6kIWB7deZBSN3/VZAoVbbZYkb2fXwJ/OETRzN4xmricToIyLsSA6hWguKHnOIuPiu0uf5SX2nBMRIkpShm4xafSVtya6rJX33qhgLy3diGL5lTvmxhgR3bGIF8l0PuGNvxZAJJRPfZwwdTP3FRg6ahLVkkkAE/QySk8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=gzsk9cMF; arc=none smtp.client-ip=209.85.222.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="rUMpLiKt"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250708125626euoutp0173925ee8fa1edb023dc38b5e9b998357~QR-hI-ETy0959809598euoutp01d
-	for <iommu@lists.linux.dev>; Tue,  8 Jul 2025 12:56:26 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250708125626euoutp0173925ee8fa1edb023dc38b5e9b998357~QR-hI-ETy0959809598euoutp01d
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1751979386;
-	bh=7/XLYR0OqGT6q8wsQL9awTM8RahowyCK2kF3Lml5n78=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=rUMpLiKtylansmwZEOTSLIDw3e88apapi9cZUeM+VwB6dnZwW74YiawcqeB7aNHsz
-	 phmldqGZGmgcE5mbHZFMvy+/ua/qmdnZrQIXXdjq/6DIcaz3yi5eWLpP0dS+1ew2NU
-	 O2DMyf6ZjkU0E5KGbps8p5YBy+HTdwiEMA3XvUgM=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20250708125626eucas1p10fea4e2440d7273510ca606b8c879240~QR-go19vo0583905839eucas1p1z;
-	Tue,  8 Jul 2025 12:56:26 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20250708125622eusmtip2e8d499202aebc1a18605d526cd72bbdc~QR-dBQdu70489204892eusmtip2-;
-	Tue,  8 Jul 2025 12:56:22 +0000 (GMT)
-Message-ID: <39d43309-9f34-48bc-a9ad-108c607ba175@samsung.com>
-Date: Tue, 8 Jul 2025 14:56:21 +0200
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="gzsk9cMF"
+Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-7d45f5fde50so404809185a.2
+        for <iommu@lists.linux.dev>; Tue, 08 Jul 2025 07:06:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1751983591; x=1752588391; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Zi7H4e9g21Nfu25Zqs4l/n2K5Xp4dE24U9jx1txkOqM=;
+        b=gzsk9cMFyhNqKyxVlbQnp/hKXiKWaLZb9C9fyyrgvzdClcIDYhxexdshmHFdaTYLEQ
+         bKfkDoR5HO5iBxGMoYg7kA0qK5gorb03O+DQJOhdPUgLeR5R/P86Bl6XQ2ubbWxdyJfk
+         KO+Cbe64gYt7Yn0OQ1Oguh9w63+MTORIIY56xAwTGrMxGAEqQ8b64IUkzh0r8nLeVtdY
+         v66sI3SzJdSVM/vLbt31Y30bUy3oHo5EV8/cxOdEweoihq5HhZ4z6B2ZazBEThThwFbh
+         LSUk+t3yEkmmtXNLcvLSG7SYRD50QO8w52vMQQNjMolvQebdK45zcongk80BVDXmLPtg
+         UlYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1751983591; x=1752588391;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Zi7H4e9g21Nfu25Zqs4l/n2K5Xp4dE24U9jx1txkOqM=;
+        b=VlHkLQjksG3v+QRL9IpCbbX7OyyZu49prEICkaHXCe+WrOz1+1om6Io8A2W7XJIVtu
+         ioOTVTvXFy3Z4smGBahPgMrhVAY10QqDeXvWr7H9xS6fL6PPr+HrN7m333B8uE+IvpoE
+         XcytnLENStTaJWc7LGOybHKzLRB2/HKal1KqM8HLN9rBBDONvB+boXB40ibR0qd3ItCr
+         59jn9/AARUDq4sSi0bW33egpZenR7g3PzSoeOnDxC6X4VeWEUYw5pFbKf952iBcudrAZ
+         0pM5/Zsc9J6vB4OYZPYDyid5HS/USCfoFXJCeaH/AP4QKGWpM1Ln7hyRU7EjoXfQ/Axh
+         X8EQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXoTRQKQspJMp+ACZiOb4CZ8NSpTe9IxMijnAgMrvd70Ika52B3IwZK2Ei17MhC23ZpgrySxQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxzF4fk0clEhdz5ipdT0cq/nKxC9km8DLtt9rVCT/RaezvxtJ9I
+	/TBs8nBx+oL5qCfGF+WeOw9X4s+7b0ONLM1r0/V2zVFp4nxobhscg+PQMa3dhc0iJXA=
+X-Gm-Gg: ASbGncvN/h8dloY9ejfJBVuWtKQqyvUd9Du/RnBnsSKwjI2fVUZKW6jTLBBaAywTJg/
+	DUsO0RkV8HNI2NJEmhlrGUuq8I3XQGFpyLeuYGDjibbVlC5ckvmXR/BXt+uFB4lkMB1wybgrjGi
+	nXAs9fYEup1BPgOGFK1LIk95BeqIaaZFUGPZ33n7QpgQcexFDAl7DJlg/Lzoa2L67Qt2yzhd6dw
+	CKaWR2vhTxFtSmNc0b9S6ODANfcrU5ByrLXwIwMuApQ7vUzwMifkwcmvsmnuqM+m0z7XA9Cu1FS
+	jmzH2GWGKqQgfZP6hlg23iYCnLkzlzjAtl4qqskPmkqJPtKzYRjAJ8ohvrHPnIEvPHQ8Vp8rbwY
+	Ygq7WjQwZH/hUQU4g9mHTWfU1cF9/ivd4QiKQdw==
+X-Google-Smtp-Source: AGHT+IE/cztazeqpYwjRDoFWW5gJZRO8uoDuF7N/tMta0ZaCg/Nk+lDvQEF/OVmMyutYglTV2SlC/w==
+X-Received: by 2002:a05:620a:8009:b0:7d0:97b1:bfa with SMTP id af79cd13be357-7da01a8a1e3mr539517585a.8.1751983590756;
+        Tue, 08 Jul 2025 07:06:30 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7d5dbeb67f2sm781455285a.111.2025.07.08.07.06.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 08 Jul 2025 07:06:30 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1uZ8xp-00000006iCd-3LhG;
+	Tue, 08 Jul 2025 11:06:29 -0300
+Date: Tue, 8 Jul 2025 11:06:29 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Dave Hansen <dave.hansen@intel.com>,
+	Alistair Popple <apopple@nvidia.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Uladzislau Rezki <urezki@gmail.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
+	iommu@lists.linux.dev, security@kernel.org,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/sva: Invalidate KVA range on kernel TLB flush
+Message-ID: <20250708140629.GQ904431@ziepe.ca>
+References: <20250704133056.4023816-1-baolu.lu@linux.intel.com>
+ <0c6f6b3e-d68d-4deb-963e-6074944afff7@linux.intel.com>
+ <20250708122755.GV1410929@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/8] dma-mapping: migrate to physical address-based API
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Jonathan Corbet <corbet@lwn.net>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>, Michael Ellerman
-	<mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>, Christophe Leroy
-	<christophe.leroy@csgroup.eu>, Robin Murphy <robin.murphy@arm.com>, Joerg
-	Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Michael S.
-	Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Xuan Zhuo
- <xuanzhuo@linux.alibaba.com>, =?UTF-8?Q?Eugenio_P=C3=A9rez?=
- <eperezma@redhat.com>, Alexander Potapenko <glider@google.com>, Marco Elver
- <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>, Masami Hiramatsu
- <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>, Andrew Morton
- <akpm@linux-foundation.org>, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- iommu@lists.linux.dev, virtualization@lists.linux.dev,
- kasan-dev@googlegroups.com, linux-trace-kernel@vger.kernel.org,
- linux-mm@kvack.org, Jason Gunthorpe <jgg@ziepe.ca>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20250708120647.GG592765@unreal>
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20250708125626eucas1p10fea4e2440d7273510ca606b8c879240
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf
-X-EPHeader: CA
-X-CMS-RootMailID: 20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf
-References: <CGME20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf@eucas1p2.samsung.com>
-	<cover.1750854543.git.leon@kernel.org>
-	<35df6f2a-0010-41fe-b490-f52693fe4778@samsung.com>
-	<20250627170213.GL17401@unreal> <20250630133839.GA26981@lst.de>
-	<69b177dc-c149-40d3-bbde-3f6bad0efd0e@samsung.com>
-	<20250708110007.GF592765@unreal>
-	<261f2417-78a9-45b8-bcec-7e36421a243c@samsung.com>
-	<20250708120647.GG592765@unreal>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250708122755.GV1410929@nvidia.com>
 
-On 08.07.2025 14:06, Leon Romanovsky wrote:
-> On Tue, Jul 08, 2025 at 01:45:20PM +0200, Marek Szyprowski wrote:
->> On 08.07.2025 13:00, Leon Romanovsky wrote:
->>> On Tue, Jul 08, 2025 at 12:27:09PM +0200, Marek Szyprowski wrote:
->>>> On 30.06.2025 15:38, Christoph Hellwig wrote:
->>>>> On Fri, Jun 27, 2025 at 08:02:13PM +0300, Leon Romanovsky wrote:
->>>>>>> Thanks for this rework! I assume that the next step is to add map_phys
->>>>>>> callback also to the dma_map_ops and teach various dma-mapping providers
->>>>>>> to use it to avoid more phys-to-page-to-phys conversions.
->>>>>> Probably Christoph will say yes, however I personally don't see any
->>>>>> benefit in this. Maybe I wrong here, but all existing .map_page()
->>>>>> implementation platforms don't support p2p anyway. They won't benefit
->>>>>> from this such conversion.
->>>>> I think that conversion should eventually happen, and rather sooner than
->>>>> later.
->>>> Agreed.
->>>>
->>>> Applied patches 1-7 to my dma-mapping-next branch. Let me know if one
->>>> needs a stable branch with it.
->>> Thanks a lot, I don't think that stable branch is needed. Realistically
->>> speaking, my VFIO DMA work won't be merged this cycle, We are in -rc5,
->>> it is complete rewrite from RFC version and touches pci-p2p code (to
->>> remove dependency on struct page) in addition to VFIO, so it will take
->>> time.
->>>
->>> Regarding, last patch (hmm), it will be great if you can take it.
->>> We didn't touch anything in hmm.c this cycle and have no plans to send PR.
->>> It can safely go through your tree.
->> Okay, then I would like to get an explicit ack from Jérôme for this.
-> Jerome is not active in HMM world for a long time already.
-> HMM tree is managed by us (RDMA) https://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git/log/?h=hmm
-> ➜  kernel git:(m/dmabuf-vfio) git log --merges mm/hmm.c
-> ...
-> Pull HMM updates from Jason Gunthorpe:
-> ...
->
-> https://web.git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=58ba80c4740212c29a1cf9b48f588e60a7612209
-> +hmm		git	git://git.kernel.org/pub/scm/linux/kernel/git/rdma/rdma.git#hmm
->
-> We just never bothered to reflect current situation in MAINTAINERS file.
+On Tue, Jul 08, 2025 at 09:27:55AM -0300, Jason Gunthorpe wrote:
+> On Tue, Jul 08, 2025 at 01:42:53PM +0800, Baolu Lu wrote:
+> > > +void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end)
+> > > +{
+> > > +	struct iommu_mm_data *iommu_mm;
+> > > +
+> > > +	might_sleep();
+> > 
+> > Yi Lai <yi1.lai@intel.com> reported an issue here. This interface could
+> > potentially be called in a non-sleepable context.
+> 
+> Oh thats really bad, the notifiers inside the iommu driver are not
+> required to be called in a sleepable context either and I don't really
+> want to change that requirement.
 
-Maybe this is the time to update it :)
+Actually, I have got confused here with the hmm use of notifiers.
 
-I was just a bit confused that no-one commented the HMM patch, but if 
-You maintain it, then this is okay.
+The iommu drivers use arch_invalidate_secondary_tlbs so they are
+already in atomic contexts.
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+So your idea to use a spinlock seems correct.
 
+Jason
