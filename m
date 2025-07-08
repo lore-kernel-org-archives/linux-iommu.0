@@ -1,64 +1,64 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4923F28137E
-	for <iommu@lists.linux.dev>; Tue,  8 Jul 2025 15:32:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30328221DA5
+	for <iommu@lists.linux.dev>; Tue,  8 Jul 2025 15:34:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751988736; cv=none; b=BWuP7ov87NoniOFr6zSinT1/i4aL9GBFVauAa//v8azCPFVdbr+ajPJ8SCgO15wP0XWXkts43w7BqHFExWSyG7LZkuIXupYBZKcK+JjAeDOIxkN4Z7xgyPqxRSBdPTK5Yfddeo9/rTZRuuN1cCQ1J9wm0z8ypf6zLqSGK7YTwCM=
+	t=1751988880; cv=none; b=q9fkj/tGZwU7DDYiOIRFxe8LaA8WScwfYOu9zxpW6QaHXOFHQ9Um50muJGochQ5AVgIdMLgKZDFa8knCJ6KIwYvTDbifhmP/BIPI9ncvj2c78moUi3PNTor3IdFuqUTPZuxMuJOOAMOoYvqVRuNcBn7d1WtEHCkswdMgF1zr2rI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751988736; c=relaxed/simple;
-	bh=DjqbnqMauH7Rz5mYETfYJBnvKbcPqg9Bet2qd5QKtbg=;
+	s=arc-20240116; t=1751988880; c=relaxed/simple;
+	bh=XucScw/NbmPb5pcBHQQ74dUXMqcRmk/myhmxp/4Y1zY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KD36waNZhe9WUsB513q0eZ0Kz/pASRxrn0nHTBJ7Z2TjtFk1FY/70/qAEr29ReZYhunEjS+q5AzKy235ePWQ36M2eMQgkUEcHhlH/QwAWHKCuNwtK58uL3YQMAOm502AGnoIMCNoKtgjB5byswbmLhuu02K6/NlUuGcwttCexCU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Z5jrsC0B; arc=none smtp.client-ip=209.85.128.43
+	 Content-Type:Content-Disposition:In-Reply-To; b=lZ7x3J9XIhE6orvUVbV12u1TgR5VaJGDr9O0BtyIQ11b/jjdpwKpCaEmBdy18/GbQSq2LgKl2m/xt9DxMcz84oFvto5l0+6frOx/r25Z9XudJT1v7AiHaK3vdmxrkz7ygPgSEoPS+p2q8EdUwyL3HXts9hor1xOGc0BYDM0agL8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=36nEdpD1; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Z5jrsC0B"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-450dab50afeso72435e9.0
-        for <iommu@lists.linux.dev>; Tue, 08 Jul 2025 08:32:13 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="36nEdpD1"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-453a1208973so60565e9.1
+        for <iommu@lists.linux.dev>; Tue, 08 Jul 2025 08:34:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1751988732; x=1752593532; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1751988876; x=1752593676; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=GluJBwY9NbvnBeZjQZU45ssXk5Te8rweY8yFjh6vHuQ=;
-        b=Z5jrsC0BuziieFGYfI3tXk2DIVCsYOBrhG7rEYtX7PO5y18vTSqgvh6dmwhPThaCE2
-         BgMPN1JFYcaIm5HFeX7FC+D7vHO82RYHi+ua4EeD13RKofZkKUnaDbG03YMGjPY7D/TV
-         bsArwB+h+Pk6f3lZXwQgR757inXQe5xaLctyuEKJXAS0Jwz0W/vT979JwLG8mSeWKP0j
-         jVTuYAcVPrjdpWNTcKYFJO3jjPxbMNI5orNn7zvF5kSgKZ7hWkJ2oRayrFonXmO9mVVi
-         MCKzG3oCZ1AF46hrlMlvFlJbR43YZqyxi7NYlbEjSRuYEzGjfr4FXl/ZhLduRvIKS0ev
-         L3Cw==
+        bh=feHSqsXychGeLEEpp3conKG2GpdmxfXI5T95CnozGV8=;
+        b=36nEdpD1IWJTiAoSbyWrwVjLuXRJ5d1GHh1UsjgtKbHTodsrscV8CaIP4MkZ+lGTpp
+         ofFAJp7LFWqX1pLbxe09pPiXreRXS6dlkgSl4PqgtWhLTzhY/LA55ZRS3xs4nqIWw3Iq
+         TYyfnkFIZ5B0AyTXXK2p1mtEkxSoY7Q1B7QhrBtdrSEN0FRrOLVW7Z+sEyXtY9Pvy+uG
+         1jYooDiwl/I2FzP4hiwStvl+m7uosCKVIsoLgBFA3PuJ3YlSm7Pbx7+4K9r3N6tWsrQH
+         sWed2dGMT+SSG1ug+Yprjn4ASfTarpQHgoPMpN9ziQg2t4NcU6q0JAaC3cpqnUxWmjne
+         HnGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1751988732; x=1752593532;
+        d=1e100.net; s=20230601; t=1751988876; x=1752593676;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=GluJBwY9NbvnBeZjQZU45ssXk5Te8rweY8yFjh6vHuQ=;
-        b=RftVDlDBzfMT7h6RDSij8F+V0ObyKPhbMMcK9cRtwxJ5qc2PzO8y//ahO+71k1obLX
-         LRRpHN50Qz6SRq/+DcO08RvH/Z0fMFukJzTKL4NNU8HFmyxeTlOGxsbpyzGOqiD2FsJr
-         08BCLPx8//EK7E0g/A1/nvLSLw814NWRaE5tfd+8IzJU+VLhrWnJJnWoa+c4puy434y1
-         +hla8XqvKDWJ+u75qs0gd4UGKK9Zjf4CCEAZZoWL25Y+a/0XlC/Yku1iD+shO4NwpL0Z
-         f3EsCyoYRYA3hUJ5PMRDgfds7uUcAiB3htbW8XkaSK+KWyk8cb/RnM17GYz7uUtyyIlO
-         Ncrg==
-X-Forwarded-Encrypted: i=1; AJvYcCXVuCeuXDAlFU2f+u/fz3iHJ//1Bf5W/5TXpv2QhAdTJvB/NE4tevdgRfJf0MqLmlJ9rvOlEw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywf8xou67j8yCp9Wdwp8b0WZuI4k8hbGlqiw3Jc3+cAx+UGc9F2
-	NnBAqOuYjAl9MUdehlbAqQfC9Vv/7PU0qVbaUs3paKLWaBojLbjqyLjvtxissuVycg==
-X-Gm-Gg: ASbGncstNdtjfm++NinOk/fKiuPXe0JnoZhNHIrebNAvODMV6VaFOdk/YLysv8mDLuv
-	IiLAHHs9zdXBkl6WPPKXxlE3XFq/Lfos3LJOgn3io3sUtft96yNNu50Yy0+X+J7yUy9T3H6mnvn
-	hFpQ1xslGunW75iZkm/casJjRI7CHiaNtBskNktyRgGgvFVzhUpt9j7qvcXYXHHD9rXgXtICwsB
-	jLN3YMIMcTklnaym4ERwXLYWIk62uEqC4SLEUeesWO4aspM9cIbAlyliKH+yycfZxZhWNByt/mn
-	+dDkrlugp2SNrJ80Be8r6BY2WSexEq/LVUJexUUhX0TXp7kayL3C2KR08S8S5vazW8DqwNrG452
-	m0xm9yM31V1GRzZ6MnSWSkw==
-X-Google-Smtp-Source: AGHT+IHnYatH1sI2ufuwKjQVv2MCvFSOpO6A6OfrqnE4JgAAIbdjwPxZiCnVS5OvPt9na5pWkrZl7w==
-X-Received: by 2002:a05:600c:1497:b0:453:7edd:fdbb with SMTP id 5b1f17b1804b1-454cff07a94mr695735e9.4.1751988732147;
-        Tue, 08 Jul 2025 08:32:12 -0700 (PDT)
+        bh=feHSqsXychGeLEEpp3conKG2GpdmxfXI5T95CnozGV8=;
+        b=oSAOFnN1cf3eRzzsfNzUG2/H6M0wnk5urtoyV92Fg5UxjVZ8rIaFJNz7j/kE9DG4u5
+         ngJepXLdr78AT5yZGAaS0yRvrff39zpQakuMQNnhTtI6BsQmkix0wiRI14ISzX23iF+2
+         NaxaGLhPpXSciSqOkxQXDieLpERkTYsgl/5RrVp9H7+KdtLBh/5uVVKRJJP/y0codoIw
+         j+4SCijdZsm02k319lu/OATlVQelP1IkQHCYHs7jNh7EcS9hIt9y4610jDS5iGjMofjL
+         XxETeluPKHRJ9lsUcrE/p5tR9V1Yq16taX0XVjc9I9+hO8LX+oxm0Mtxwe/koxuMjvCC
+         4oWw==
+X-Forwarded-Encrypted: i=1; AJvYcCXKmo0W9IrRLa1K/LYymGwUwT/eVWlOt48jnR5gKuxrlYMF7/axgVqpvgZd24zg6bjaSFlzvw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxWHAoFYbGaQrzThkvzmTNYzOTQgMZLkcLKHj44zo72MFWHtAcy
+	lqjKkm8yeR4iyIL4/Voahy5t6RQfWwef5YaMdXNpyhHov70qM4SJroVa1MIF6MxdQA==
+X-Gm-Gg: ASbGnctt8hStMYj4s/mqxJ1iRYCpWmc56/TCZZD9F3y2yAHbnfbfP7JVmBxmXDEiH31
+	DdqnI6nlWTFsrGGUrMRxScL0xHmmrTz4qlaePpKdce+zo7zzeOC3PxtiP2AAvnhSpzHao8qfCr3
+	bhaouzhZ4ngRjChRXbD9TIxDEWAL+A0LGYYKcirFhRIcukPFYBUXHFmxs7mpRLaR61FI2N5K0Y0
+	8vg2bcSwU506m8u3IA3xVgRpz5fGiiXE9krjSaFD7cCjsKtOPYuStvXAyEBj3AEelr6LxMfsRQA
+	QscVuygIzGd721jaFLlAOFYuwIFuzrLwG0a/ON/h32/bi2+nL7JRzTERCFB3AQi6TeLLNK0ncDZ
+	i4w5Bq6vdH7R3k8X8I9c/ow==
+X-Google-Smtp-Source: AGHT+IGcbF9E7MwIJUCiW+cq9eupqN9Mpiah1DCww0TchXLfiklqhhZ6fgNOXfLxxB1UIZjWulU0Lw==
+X-Received: by 2002:a05:600c:a592:b0:453:65e6:b4a6 with SMTP id 5b1f17b1804b1-454cff2a04dmr794555e9.6.1751988876085;
+        Tue, 08 Jul 2025 08:34:36 -0700 (PDT)
 Received: from google.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b47225a2dcsm13269976f8f.71.2025.07.08.08.32.11
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b47285c6c9sm13139456f8f.89.2025.07.08.08.34.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Jul 2025 08:32:11 -0700 (PDT)
-Date: Tue, 8 Jul 2025 15:32:08 +0000
+        Tue, 08 Jul 2025 08:34:35 -0700 (PDT)
+Date: Tue, 8 Jul 2025 15:34:32 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Pranjal Shrivastava <praan@google.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -66,11 +66,11 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH v3 2/8] iommu/arm-smmu-v3: Add a helper to drain cmd
- queues
-Message-ID: <aG05-KFZRivJ5iHY@google.com>
+Subject: Re: [RFC PATCH v3 4/8] iommu/arm-smmu-v3: Cache and restore MSI
+ config
+Message-ID: <aG06iNeVAkEoZ8Ou@google.com>
 References: <20250616203149.2649118-1-praan@google.com>
- <20250616203149.2649118-3-praan@google.com>
+ <20250616203149.2649118-5-praan@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,102 +80,139 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250616203149.2649118-3-praan@google.com>
+In-Reply-To: <20250616203149.2649118-5-praan@google.com>
 
-On Mon, Jun 16, 2025 at 08:31:43PM +0000, Pranjal Shrivastava wrote:
-> Before we suspend SMMU, we want to ensure that all commands have been
-> flushed by all the queues i.e. the queues are empty. Add a helper
-> function that polls till the queues are dained.
+On Mon, Jun 16, 2025 at 08:31:45PM +0000, Pranjal Shrivastava wrote:
+> The SMMU's MSI configuration registers (*_IRQ_CFGn) containing target
+> address, data and memory attributes lose their state when the SMMU is
+> powered down. We'll need to cache and restore their contents to ensure
+> that MSIs work after the system resumes.
+> 
+> To address this, cache the original `msi_msg` within the `msi_desc`
+> when the configuration is first written by `arm_smmu_write_msi_msg`.
+> This primarily includes the target address and data since the memory
+> attributes are fixed.
+> 
+> Introduce a new helper `arm_smmu_resume_msis` which will later be called
+> during the driver's resume callback. The helper would retrieve the
+> cached MSI message for each relevant interrupt (evtq, gerr, priq) via
+> get_cached_msi_msg & re-config the registers via arm_smmu_write_msi_msg
 > 
 > Signed-off-by: Pranjal Shrivastava <praan@google.com>
 > ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 40 +++++++++++++++++++++
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 ++
->  2 files changed, 43 insertions(+)
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 45 +++++++++++++++++++++
+>  1 file changed, 45 insertions(+)
 > 
 > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index f19a77708d2c..0df1b17a09cc 100644
+> index 9ce00c959034..4699d3294d3e 100644
 > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -981,6 +981,46 @@ static int arm_smmu_cmdq_batch_submit(struct arm_smmu_device *smmu,
->  					   cmds->num, true);
+> @@ -3962,6 +3962,9 @@ static void arm_smmu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
+>  	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+>  	phys_addr_t *cfg = arm_smmu_msi_cfg[desc->msi_index];
+>  
+> +	/* Cache the msi_msg for resume */
+> +	desc->msg = *msg;
+
+All callers to arm_smmu_write_msi_msg() get the msg from
+get_cached_msi_msg() which already returns msi_desc::msg of this irq,
+so that seems redundant.
+
+
+> +
+>  	doorbell = (((u64)msg->address_hi) << 32) | msg->address_lo;
+>  	doorbell &= MSI_CFG0_ADDR_MASK;
+>  
+> @@ -3970,6 +3973,48 @@ static void arm_smmu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
+>  	writel_relaxed(ARM_SMMU_MEMATTR_DEVICE_nGnRE, smmu->base + cfg[2]);
 >  }
 >  
-> +int arm_smmu_queue_poll_until_empty(struct arm_smmu_device *smmu,
-> +				    struct arm_smmu_queue *q)
+> +static void arm_smmu_resume_msis(struct arm_smmu_device *smmu)
 > +{
-> +	struct arm_smmu_queue_poll qp;
-> +	struct arm_smmu_ll_queue *llq = &q->llq;
-> +	int ret = 0;
+> +	unsigned int irq;
+> +	struct msi_desc *desc;
+> +	struct msi_msg msg;
 > +
-> +	queue_poll_init(smmu, &qp);
-> +	do {
-> +		if (queue_empty(llq))
-> +			break;
+> +	if (!(smmu->features & ARM_SMMU_FEAT_MSI))
+> +		return;
 > +
-> +		ret = queue_poll(&qp);
-> +		WRITE_ONCE(llq->cons, readl_relaxed(q->cons_reg));
+> +	if (!smmu->dev->msi.domain)
+> +		return;
+Is there a reason that is needed?
+
+I’d expect irq_get_msi_desc() to return NULL if MSI is not used.
+Otherwise, I think dev_get_msi_domain() would be more suitable to check?
+
 > +
-> +	} while (!ret);
+> +	irq = smmu->evtq.q.irq;
+> +	desc = irq ? irq_get_msi_desc(irq) : NULL;
+> +	if (desc) {
+> +		get_cached_msi_msg(irq, &msg);
+> +		arm_smmu_write_msi_msg(desc, &msg);
+> +	} else {
+> +		dev_err(smmu->dev, "Failed to resume evtq msi");
+> +	}
 > +
-> +	return ret;
+> +	irq = smmu->gerr_irq;
+> +	desc = irq ? irq_get_msi_desc(irq) : NULL;
+> +	if (desc) {
+> +		get_cached_msi_msg(irq, &msg);
+> +		arm_smmu_write_msi_msg(desc, &msg);
+> +	} else {
+> +		dev_err(smmu->dev, "Failed to resume gerror msi");
+> +	}
+> +
+> +	if (smmu->features & ARM_SMMU_FEAT_PRI) {
+> +		irq = smmu->priq.q.irq;
+> +		desc = irq ? irq_get_msi_desc(irq) : NULL;
+> +		if (desc) {
+> +			get_cached_msi_msg(smmu->priq.q.irq, &msg);
+> +			arm_smmu_write_msi_msg(desc, &msg);
+> +		} else {
+> +			dev_err(smmu->dev, "Failed to resume priq msi");
+> +		}
+> +	}
 > +}
 > +
-> +static int arm_smmu_drain_queues(struct arm_smmu_device *smmu)
-> +{
-> +	struct arm_smmu_cmdq *cmdq = &smmu->cmdq;
-> +	unsigned long flags;
-> +	int ret;
-> +
-> +	/*
-> +	 * Since this is only called from the suspend callback, we
-> +	 * should be able to acquire the exclusive lock without failing.
-> +	 */
 
-I don’t understand the comment, can’t the command queue be busy at this
-point form another unmap context?
+This pattern seems to repeat, maybe it’s better in a macro
 
-> +	arm_smmu_cmdq_exclusive_trylock_irqsave(cmdq, flags);
-> +	ret = arm_smmu_queue_poll_until_empty(smmu, &smmu->cmdq.q);
-> +	arm_smmu_cmdq_exclusive_unlock_irqrestore(cmdq, flags);
-> +
-> +	if (ret)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
+Something as:
+#define smmu_resume_msi(smmu, _irq)  {	\
+	unsigned int irq;	\
+	struct msi_desc *desc; \
+	struct msi_msg msg; \
+	irq = smmu->_irq; \
+	desc = irq ? irq_get_msi_desc(irq) : NULL; \
+	if (desc) { \
+		get_cached_msi_msg(irq, &msg); \
+		arm_smmu_write_msi_msg(desc, &msg); \
+	} else {	\
+		dev_err(smmu->dev, "Failed to resume %s\n", #_irq);	\
+	} \
+}
 
-I wonder if that’s enough, I see that if arm_smmu_cmdq_issue_cmdlist()
-is called with sync=false, it won't touch the exclusive lock, so what
-happens if another driver keeps unmapping, that means that this thread
-can loop forever as prod keeps growing?
+static void arm_smmu_resume_msis(struct arm_smmu_device *smmu)
+{
+	if (!(smmu->features & ARM_SMMU_FEAT_MSI))
+		return;
 
-Thinking out loud about this, if the aim of draining the command queue
-is not TLB invalidation but ATC, maybe we need higher-level
-synchronization between those 2 and keep the command queue out of this.
-(this also applies for the next patch for tegra)
+	if (!smmu->dev->msi.domain)
+		return;
+
+	smmu_resume_msi(smmu, evtq.q.irq);
+	smmu_resume_msi(smmu, gerr_irq);
+	if (smmu->features & ARM_SMMU_FEAT_PRI)
+		smmu_resume_msi(smmu, priq.q.irq);
+}
+
 
 Thanks,
 Mostafa
 
->  static void arm_smmu_page_response(struct device *dev, struct iopf_fault *unused,
->  				   struct iommu_page_response *resp)
+>  static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
 >  {
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index dd1ad56ce863..461f1958e574 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -965,6 +965,9 @@ int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
->  int arm_smmu_cmdq_init(struct arm_smmu_device *smmu,
->  		       struct arm_smmu_cmdq *cmdq);
->  
-> +int arm_smmu_queue_poll_until_empty(struct arm_smmu_device *smmu,
-> +				    struct arm_smmu_queue *q);
-> +
->  static inline bool arm_smmu_master_canwbs(struct arm_smmu_master *master)
->  {
->  	return dev_iommu_fwspec_get(master->dev)->flags &
+>  	int ret, nvec = ARM_SMMU_MAX_MSIS;
 > -- 
 > 2.50.0.rc2.692.g299adb8693-goog
 > 
