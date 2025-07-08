@@ -1,254 +1,193 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2084.outbound.protection.outlook.com [40.107.96.84])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A92B22538F;
-	Tue,  8 Jul 2025 20:47:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.96.84
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752007643; cv=fail; b=EndDcQq/cY1Byn1xCwqMtke2ktn8QsYRO9OzpLMtndosESMJto6MJq47Qyb1n4pZDnoYp5mTZteJ6NhG4ve5wgzti45VmXy1ZbIVtQx8eNR9f0bMw1vlbys/CIk1XRS3DPeJ2PMa6r/DHIXIzx+fy2+mCEHjOzix4ElYzZFeP+c=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752007643; c=relaxed/simple;
-	bh=K9jdRdWj3a6DqlOYnnuAvARVkAdS+cx8htYgTtevuTg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=tFu7Hgf/YkvpORYpUTOFVRwBrchdJq38pUFiOSDJVPVjFDjucpTRKAQRsnC1rOHU6t4w2TQRoRg3mFXK2l02c6Mm6ykULC2BOpIvm/yJ+muF8w/wX7QbT+/uhgRx3fXifdsSjGL9Ld0ZRvl0nFqNPlUN1/3h1UlXvjapk5lxxhg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=YoB5QyEL; arc=fail smtp.client-ip=40.107.96.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AAE7221FA0
+	for <iommu@lists.linux.dev>; Tue,  8 Jul 2025 20:56:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752008194; cv=none; b=Nnd2wr54z1MyeXUrWspGzToNHuzAp0K7GvjmlHm0v8CeSGvgtpYhJ9/uUjC2BJ7kBkGpUFqnwOhUI4GGNMDNz7P9XQ+43ooItwVJRo4+OVL2wGGDofuDcjq3wuy3Ht8IPwYDba/BG9BwWqWLfh5jqNLnTmBSWHfjufUXtuPB1zA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752008194; c=relaxed/simple;
+	bh=QWPvRiiRNGFMyCgCGc86X3uMnNsiVudXBIDmZn8JYm0=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=HfWFANZ/QQVprS/WUFYmNWDLgjVj0P/L8BSqg949bNeiuDHnh2ytY4sMUO49FCThsGf0XF3ybl3pOMpGuWXSM9sAGeu46U3Mqt0WjZxhg3vq9BBxmg4BIEKLVdntMTXtPB02CXgtcX56ZlEnRhq8t/iwEumtjOWkWZj2Ohw7sMc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=whHZOQPV; arc=none smtp.client-ip=209.85.216.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="YoB5QyEL"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=NrPmIkBhT5XevKp5zUgS3oHPHoO6gcASCMvM9kwwvNvpfn+8vLsVfzWD+deImo/O789PDJ4Bz5gnHW6qMvz0pSySNygEbdgYwdF0FvGihONI07rOfKd3XzXVbnTs8W00PRNFEpgQqRDdnfjvCOJfOctxXkVi8a0mCs8YB7Ua/TrZ057Kl+sG0cBhiWxTODrCBHsfBQb3AIXdPieHbI53Z/eNJNHxcZU5qXk9MuoRKughe6o58mX7cEXrkaa3V59egD4HrrCYewct6UtIgLXqRPCVWmzueUNrpZVwk+Db50ZM9Foe9uEbmEkDqLXxMyloreG2GB3gr8ojrY9Yq2GVnA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XYti5GwnRDB/0DNqxvizMGN4PPesC2OZW+73qEpMWwY=;
- b=JpuScZCkXSz1YzvFuatPgVs+rCfdIjGCCyGEkHNDzBWz7VMGk+HYV6gJVOQTW/mGpfzesQlM5XXoJgW3AaAIg5cv9oh6wnCkSTpAkuxY2JpYtd5xrcN1ADnzaciKyoy/3708bzOj7iHZnLJPV8CLxcYNKUWMRkVyn+kehxbPIpxyXqLft0EuhdcA41OOuj6vwWtStjrQehJCtkVOQxmOn8DCtQEQN/0+ETYDkCSQgfJoSDwWGwodpNO6g4XTMcW/MsuchVCee66j6SsQppTA9nNtQ1E0BjUofRh9SVilkaRupu6y36NdJFq3L9IPj3P1zWadF63u8ughX5s+SHEdEw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XYti5GwnRDB/0DNqxvizMGN4PPesC2OZW+73qEpMWwY=;
- b=YoB5QyELCo7pS9D8GcYA5C5vJnT+HGyBenDtA5R9iF295ih/L8SYXYfqCVN9lZ7iHmu+bkDnmsZDVabE+Shu7CkHNgrycVik4nJSBIZ1pXd3/ZAESlDWkgXJlvWkr6RnKVyjqjSRZ9eJsi+532qyxYRuePJCQFwhZLpuYdS4wmogvOj3zU+E4TxBYD3OQKCTejHEbxJsv7mMgn6Tj3BCeT9kXG5WHIdvgVEYiTTaTR6LlEkNhiwSZs8Eq0ySB9wXhS691WnRKwRpwUA1lFqxrMuFQEtN6m5r32o6IyVPy7ZU4CB8iH8ICGg8hvHDO+0k0k5QOOyOKYMwUHoS3TEr7A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by BY5PR12MB4100.namprd12.prod.outlook.com (2603:10b6:a03:200::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8901.28; Tue, 8 Jul
- 2025 20:47:18 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8901.024; Tue, 8 Jul 2025
- 20:47:17 +0000
-Date: Tue, 8 Jul 2025 17:47:15 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, linux-pci@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, galshalom@nvidia.com,
-	Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
-	kvm@vger.kernel.org, maorg@nvidia.com, patches@lists.linux.dev,
-	tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
-Subject: Re: [PATCH 00/11] Fix incorrect iommu_groups with PCIe switches
-Message-ID: <20250708204715.GA1599700@nvidia.com>
-References: <0-v1-74184c5043c6+195-pcie_switch_groups_jgg@nvidia.com>
- <20250701154826.75a7aba6.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250701154826.75a7aba6.alex.williamson@redhat.com>
-X-ClientProxiedBy: SN7PR04CA0080.namprd04.prod.outlook.com
- (2603:10b6:806:121::25) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="whHZOQPV"
+Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-3137c2021a0so3855440a91.3
+        for <iommu@lists.linux.dev>; Tue, 08 Jul 2025 13:56:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1752008192; x=1752612992; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=3pXQkIHAJr9S1j3/p3ihualPbjTR8B2gdT4yaBml1p8=;
+        b=whHZOQPVAa4us9fkJaK1p5qPlFf25qqNhu7niGqChlQimoJl5MAvRhg8lSL4CNGgUu
+         gGoZwj9dmhJtGQ+slR5kXSFO3o9wPP6x1Nnlucjik95KmRJOOwV//kKjJr1SQXmbLBQf
+         jiaQZ1AAsIgYe29CT+ltrWMVFP2sMsxPEZWhPmpMGQm39ZxpXHCoaHTchTg6nG/W/aNl
+         ISHd4C1nknBMamfwWrKYQBMZlyXVNwY9ag5/gxHAAzGhfObO01X6ApaKEO26J5YQ9ujA
+         vJoAgMCfvq/BH9hEYbPK/WEc2nw4tkxXDCx2QrPVUOcFgvWZ77woBMaEphZh75S0vHOd
+         3+0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752008192; x=1752612992;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3pXQkIHAJr9S1j3/p3ihualPbjTR8B2gdT4yaBml1p8=;
+        b=BtFhJ0SSwZSzLzv/wCDeC9rbGGwlxtp8DJAOLIOSKnGM/QFesW+Nwd/3F4XSBgWswr
+         6RO7uLpD+d8xdCe9nUmRtLT46RuNGzb1UOVovy2suyHjXKdHXb8niv4Astk5p/aJ9tGd
+         sV9oFxICaQPEJ1Ihktt8Wl8ZzVnu9UOgMfFtwG/Ow8UON67ysPaXeLF8cA+JKvcWopWN
+         Bu4JU22C4doQtX7NmilDb9tW1Kkrvu6odn91iZaxqqiuJYL4DH/XPvsWxOqDuBeHRqz9
+         E7UxLK+lD+Dr2oPZXCXUf2OeHPDkCo5966IiSFpsCTvQS0rcNXFvHC9uQEXcB4E6Nkjc
+         31Ug==
+X-Forwarded-Encrypted: i=1; AJvYcCUma9j3YprVz00jGrBL0ttRoyBWmNCzIIbx68XpVbqYKrswYOsL2WzCm6WWMJenziXWaa8dTg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxB76i79bZr/9gS1mmZATkMI3mpxDX0A9isoCJ4xFbkM7aoOZgD
+	sMZy14dHBSE019NwH5cKgTTaE5jbOSRYCoMS49g4kF7cirD4ZnA7lPOGmm57GFrmVagw38oJFsl
+	XUPaZpmv+/PBSRYo/Xu/GCW5QTpfR/fFAewIDDpq88w==
+X-Gm-Gg: ASbGncu/bUNsnRMxOjOMYTdNTtv0zGPuPAXWp/A6rzLt6nqIFr/rNQpoG5mgcqk/Lbv
+	eJrhfdOdRjYASqC2BS5hzxLbqzsEe3HgCWMK7YpsvryF26+zJ+uOw3lZNwPM3jroi42LJcxL4l4
+	KtIQuIXNNC9ikTdQpuMHsRxMHXzEladcRowwcK/Xl9o+sG1qPK1zw2SNPQo09DxhpM7H5dHrCnB
+	KMo
+X-Google-Smtp-Source: AGHT+IGJjNBJUVHmy/B2HV316zkVrmSzrXj1371W7H8n8TnjXT5OrgmxYv4rWnEpdhhpl0rBK+7aMFoP2UGCRst496I=
+X-Received: by 2002:a17:90b:2250:b0:311:ffe8:20ee with SMTP id
+ 98e67ed59e1d1-31c2fd0c0d5mr60732a91.11.1752008191676; Tue, 08 Jul 2025
+ 13:56:31 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|BY5PR12MB4100:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9dacd996-d0e5-441d-d233-08ddbe60a062
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?1Uuk9X+76rYvlgq3r7/b/8KYnTStVxGZ6SmuyVXwV7bLDIUsWYTCZgnxLYTg?=
- =?us-ascii?Q?XfMf/MAPFqQMRO2f1o9PWsFpSUCDW8eoUneapaob9wA//6xuAO3JGzuNH5Yz?=
- =?us-ascii?Q?7U6x1WTmZq7jSSbjMhLQBjKL5Rchu0z+7rqvSUQG/ay8bep/Klr8QjBUkm/m?=
- =?us-ascii?Q?b+yZ+qQUG/UaA8stPs/mFF0lU/EjAbbQ38NBfDH32ODfM+AfJCzH4D+TvwrR?=
- =?us-ascii?Q?qTBOe0oVJJUg5vTqi+6ICRchxl4wIdaTIJao+T0Bs1q5I6C4i47cJT0LID1a?=
- =?us-ascii?Q?m3rof6xjWFr58RAOxhaZ3akB77FlygYIi0CGWz8IXQ7jy3NS8FzUKIId1qc9?=
- =?us-ascii?Q?0AWIolrw8g48ZtQ/CsIO+anAmp8oWzfANCGzLkSiYniMogTgPqMK10RPYdbA?=
- =?us-ascii?Q?nyoKWEw9z9JRDmts4fqyyMwbdGmJv78OceMxYMSo/aIqOgyCyvFUpu9ALp7h?=
- =?us-ascii?Q?Jjbro5PnGkdyQTHXZj1dc3aRrkhDQSYeGnwreGjnlOdoEt0OTV6VLqKHci5h?=
- =?us-ascii?Q?k4hsvrddf5x7aj/ZLdikziFFQiKauhKIvmTQi1XoPS1IGDvimbjI9R3OT2My?=
- =?us-ascii?Q?goBXTB8Oyt7V1/Z0U/LnOOk3LoyYL/XOJUoC9UkNefKgXHjGVuMC7aPK58V3?=
- =?us-ascii?Q?6tQa10wU0/m03wYDzh4TjsOlgCL9B+VLsRT+XNw6HYHTzbqby8V1iDI4tGZK?=
- =?us-ascii?Q?Wq2eZrt6exc5EExyPgHOEVMAYhvNyWsJo/YoUnjanAj1MpAQxBKWm7xy7wX1?=
- =?us-ascii?Q?TY0ITVHvvy7UOR06KWCYzjkO3irVAGB1TCic1+PR1aAQB0rukuIisX5CJWLl?=
- =?us-ascii?Q?Uki+4phmWIuK6oeP5e12N31hxm/jW6HGNrZaJPhr88cRGRQTsK84QrZV2N/v?=
- =?us-ascii?Q?jBGq1cC/S4IlnJCgmmchZ5XziyMGyIlso0NQl8YLT9lR5hIuf9qVjsF7qwrW?=
- =?us-ascii?Q?gXbf6GlBYn2OeVcJo+baWKEOWqpjdbrYo2JyZqg0kUFwGhDfLhmVZDWzUBif?=
- =?us-ascii?Q?rvEqG2YdyTGubjFWpkGRaCq6WMPij2J6EnBLPHBWeBhYX/tgbOTpdhnokvP8?=
- =?us-ascii?Q?Ycb2YkA9vrPZmjSN0sZfTQTKcLJWUo8gamW0qcqUz0Vm5zJLtJwwSobz01ns?=
- =?us-ascii?Q?8m9P7C/FkTIacfTYNAre0r58/riXgvW52gWhO6eYsSnKsvbNX8jCF2ylCXi2?=
- =?us-ascii?Q?S4HVEKKhRYL5K+yMH/vSRPLfLA4irjKf/TRzl0968tPQ9LVVResXHn/HtiUF?=
- =?us-ascii?Q?oxtSI9ygJB2RftbrvYv3PML+DTcQcgqX25kT08q92SXvpCqSJlTAgn+fpZh4?=
- =?us-ascii?Q?1/CSX204xT/823pSunoi/2jg4m1t0rHQ3nhvN5FHPABU7jVewJNOJ/8TtWCD?=
- =?us-ascii?Q?fyQcHZDhdtvqjPAfxa2x/1CT7mvArwPb6ITHaU5ZempPH/K3bg=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?tWbFVgV9LIGFmpbW5vhweIm11flusj4BEA1cnQDUUI5grE0GbTEwEXLZQZQu?=
- =?us-ascii?Q?iPt7KGwkGjMVqz1GgzXIEDi5oF2ZNKJ6RC4gSo4qFaL9uwysEQ3V2J8KSquz?=
- =?us-ascii?Q?xiMVe0pPgIrVVlVTclW7vzqA9bKSGbH0FjvGyzopjvsQ+w8w2sjyqmfFVlED?=
- =?us-ascii?Q?z1YNQ02geWUBJ4+gtucDQNIGxfwfBO5q/oi5evy0up7BA4QGTAop6ZaomVvW?=
- =?us-ascii?Q?5QeHvIb9qjRzHwZ2BWn/Vdx51Vg/L3QF0L2xIBrSwQKsXlgrfKGBoqHPt2os?=
- =?us-ascii?Q?enH/6+Z1DKJngTRTuL98HSTS1K2Hq+/teJOe6EqfUyiNON0+RDx6UI0LJHbQ?=
- =?us-ascii?Q?CpCQy86bijHd8B9CcfchTkG7C7WRZ+ejxofNUS1CgGAOGy+8+z/dx3dlTU5k?=
- =?us-ascii?Q?JxVUfocbnJTTv07sjQqjaRo/zB9e4Txvgz6ouh3LYdjxQxf5y78ZSbjLP/uz?=
- =?us-ascii?Q?XD9jKA4Q2uodWmlHobGikWdpC+2JhhLC3kT4TMp4PBTWGmL3DQQxKf+Sr5RX?=
- =?us-ascii?Q?a7d0x5uhKoVmJ2NTgXBXYN5GvEgHrwk61wzOMFzhOGWXrnnrPwwc8cx8bfJo?=
- =?us-ascii?Q?M0puqNsJE4tah84YeaxdYDSDM/60oK7p6lzJlk+xaVb5n9BSliKbbpgqnLB1?=
- =?us-ascii?Q?1v8Kz1dZVIylzPvvPALibgP/8PkWWTXfKyUEl2nIqs0Wa/NLWfte46lQGbD9?=
- =?us-ascii?Q?CKh83Ie5Nywioeuz9HNvktkV3stVg30PzsKXxo4TcIKdQm1NLSGabfSNXVhU?=
- =?us-ascii?Q?mHlpG4gvkcHeO96IswNBYHHm1B4rwUQpEH1SdO66N66C3s5uV/Rek/xwjkap?=
- =?us-ascii?Q?yZuwy6Bkll9xXF7poTnFk8CCjrejNbQNTxoK0tIOpzesAmbq7u0ma5NguWYY?=
- =?us-ascii?Q?gpeb+WuyD+vft78Gt4POlPXeCPsJdqdB8UfzI++qjSvWL4rMI+pNob7T3rgG?=
- =?us-ascii?Q?KfPSfmo9ziwa022wv4omy4X/rm/bcjmwPO9f0JYQ+3nGsGrMc/E4Nd9jqNYL?=
- =?us-ascii?Q?H/POCPxXoq47a3yrfQJKv0Z3owvteaHimZgYh8Ua+E2T6+aq1FLOnR9pcAhy?=
- =?us-ascii?Q?ewl+DYApNUUygPiLAV22dDSR0LRCUDt1z9Ky++8Ad/Zi99+jlp3WmgPcagma?=
- =?us-ascii?Q?KjTIkNcAUesB+j+dIUngh3Wlurb4DxreXy6GleyiN1MpO9boPil/B4r6zH7Q?=
- =?us-ascii?Q?Guz/0P0qudqEjjsicL6F3NIzbXlUf74oRBNGLyTV4cEKf/Gn7TBFBvSgeB8C?=
- =?us-ascii?Q?zEFEu5seYOxejo2dg+HDD9hHJLEbHXn3HJQ5xXSV2NroXzinUNLwBHhTsRNs?=
- =?us-ascii?Q?cUtJY/v0sPce/CMILsvezUE1WnLQYLURBnFn7RFlDIzt1uISAIsbBmFph80h?=
- =?us-ascii?Q?BvzTbbEGbnDRN4jv6Ypz1QNlpgrukRGEC5OTBwqPWJlyXPyesGXnBHgREqDF?=
- =?us-ascii?Q?toxh3KFRbmEjHxfI7NO0fxcZW8PkYZAuNSQxnYkECTF5ff/X9p5I0gEhM86Y?=
- =?us-ascii?Q?DaLYtC1lgfznrRNTwbj7XEQxLVuXIF8fJRgBinriOywkfmR4yhNAqoZYNHE/?=
- =?us-ascii?Q?PZKPPwYXd7KiyRNNge/Cnv6N6vtNlv2mRAnJ/v96?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9dacd996-d0e5-441d-d233-08ddbe60a062
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Jul 2025 20:47:17.6146
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QtOTYXnOGIws2HVsSW/hi06REMndN/brZBeRe9PPRxr6zNMeht9UDG6kvsJzppLK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4100
+From: Naresh Kamboju <naresh.kamboju@linaro.org>
+Date: Wed, 9 Jul 2025 02:26:20 +0530
+X-Gm-Features: Ac12FXxc-1PfLug_Y5gb__Es1xtxsWat7zzf8xE4vfR7Aio1kMdUlcUODvihcqg
+Message-ID: <CA+G9fYvif6kDDFar5ZK4Dff3XThSrhaZaJundjQYujaJW978yg@mail.gmail.com>
+Subject: next-20250702 WARNING iommu io-pgtable-arm.c at arm_lpae_map_pages qcom_iommu_map
+To: open list <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, 
+	lkft-triage@lists.linaro.org, Linux Regressions <regressions@lists.linux.dev>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Anders Roxell <anders.roxell@linaro.org>, 
+	Ben Copeland <benjamin.copeland@linaro.org>, Arnd Bergmann <arnd@arndb.de>, 
+	Dan Carpenter <dan.carpenter@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Jul 01, 2025 at 03:48:26PM -0600, Alex Williamson wrote:
+Regression identified while booting the Dragonboard 410c (Qualcomm
+APQ8016 SBC) using the Linux next-20250702 kernel tag. During device
+initialization, the kernel triggers a WARNING in the arm_lpae_map_pages()
+function, which is part of the IOMMU subsystem. The call trace also involves
+qcom_iommu_map().
 
-> Notably, each case where there's a dummy host bridge followed by some
-> number of additional functions (ie. 01.0, 02.0, 03.0, 08.0), that dummy
-> host bridge is tainting the function isolation and merging the group.
-> For instance each of these were previously a separate group and are now
-> combined into one group.
+Test environments:
+- Dragonboard-410c
 
-I was able to run some testing on a Milan system that seems similar.
+Regression Analysis:
+- New regression? Yes
+- Reproducibility? Yes
 
-It has the weird "Dummy Host Bridge" MFD. I fixed it with this:
+Boot regression: next-20250702 WARNING iommu io-pgtable-arm.c at
+arm_lpae_map_pages qcom_iommu_map
 
-/*
- * For some reason AMD likes to put "dummy functions" in their PCI hierarchy as
- * part of a multi function device. These are notable because they can't do
- * anything. No BARs and no downstream bus. Since they cannot accept P2P or
- * initiate any MMIO we consider them to be isolated from the rest of MFD. Since
- * they often accompany a real PCI bridge with downstream devices it is
- * important that the MFD be isolated. Annoyingly there is no ACS capability
- * reported we have to special case it.
- */
-static bool pci_dummy_function(struct pci_dev *pdev)
-{
-	if (pdev->class >> 8 == PCI_CLASS_BRIDGE_HOST && !pci_has_mmio(pdev))
-		return true;
-	return false;
-}
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-This AMD system has second weirdness:
+List of suspected patches with recent changes.
+ * https://lore.kernel.org/all/0-v2-68a2e1ba507c+1fb-iommu_rm_ops_pgsize_jgg@nvidia.com/
 
-40:01.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Starship/Matisse GPP Bridge (prog-if 00 [Normal decode])
-        Capabilities: [2a0 v1] Access Control Services
-                ACSCap: SrcValid+ TransBlk+ ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans+
-                ACSCtl: SrcValid- TransBlk- ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans-
-40:01.2 PCI bridge: Advanced Micro Devices, Inc. [AMD] Starship/Matisse GPP Bridge (prog-if 00 [Normal decode])
-        Capabilities: [2a0 v1] Access Control Services
-                ACSCap: SrcValid+ TransBlk+ ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans+
-                ACSCtl: SrcValid- TransBlk- ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans-
-40:01.3 PCI bridge: Advanced Micro Devices, Inc. [AMD] Starship/Matisse GPP Bridge (prog-if 00 [Normal decode])
-        Capabilities: [2a0 v1] Access Control Services
-                ACSCap: SrcValid+ TransBlk+ ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans+
-                ACSCtl: SrcValid+ TransBlk- ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans-
+## Boot log
 
-Notice the SrcValid- 
+[    9.504700] ------------[ cut here ]------------
+[    9.509432] WARNING: drivers/iommu/io-pgtable-arm.c:569 at
+arm_lpae_map_pages+0x30/0x1cc, CPU#0: udev-worker)/216
+[    9.514301] Modules linked in: snd_soc_core venus_core(+) qrtr
+videobuf2_dma_sg qcom_q6v5_mss v4l2_fwnode snd_compress adv7511
+llcc_qcom snd_pcm_dmaengine snd_pcm ocmem qcom_pil_info qcom_q6v5
+v4l2_async drm_exec snd_timer qcom_sysmon v4l2_mem2mem gpu_sched
+videobuf2_memops snd videobuf2_v4l2 qcom_common drm_dp_aux_bus
+qcom_spmi_temp_alarm qcom_pon qcom_spmi_vadc drm_display_helper
+rtc_pm8xxx soundcore videodev qcom_glink_smem qcom_vadc_common
+mdt_loader cec qmi_helpers qnoc_msm8916 videobuf2_common
+drm_client_lib mc phy_qcom_usb_hs qcom_stats qcom_rng ramoops socinfo
+rpmsg_ctrl rmtfs_mem rpmsg_char display_connector reed_solomon
+drm_kms_helper fuse drm backlight ip_tables x_tables
+[    9.562593] CPU: 0 UID: 0 PID: 216 Comm: (udev-worker) Not tainted
+6.16.0-rc4-next-20250702 #1 PREEMPT
+[    9.584779] Hardware name: Qualcomm Technologies, Inc. APQ 8016 SBC (DT)
+[    9.594059] pstate: 000000c5 (nzcv daIF -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    9.601002] pc : arm_lpae_map_pages
+(drivers/iommu/io-pgtable-arm.c:569 (discriminator 7))
+[    9.607682] lr : qcom_iommu_map (drivers/iommu/arm/arm-smmu/qcom_iommu.c:441)
+[    9.612196] sp : ffff800083a9b4e0
+[    9.616274] x29: ffff800083a9b4e0 x28: 0000000000000004 x27: 0000000000200000
+[    9.619579] x26: 0000000000000003 x25: ffff000004a2ec78 x24: ffff800083a9b550
+[    9.626698] x23: 0000000000000002 x22: 0000000000100000 x21: 000000008f400000
+[    9.633816] x20: 0000000000000000 x19: ffff000004a2eb48 x18: 0000000000000000
+[    9.640934] x17: ffff000003807000 x16: ffff000003806e00 x15: ffff000004a2ec78
+[    9.648051] x14: ffff000003ef8000 x13: 0000000000000001 x12: ffff000004a2ec10
+[    9.655170] x11: 0000000000000004 x10: 0000000000000820 x9 : 0000000000000000
+[    9.662287] x8 : ffff8000809fe7a4 x7 : ffff800083a9b550 x6 : 0000000000001000
+[    9.669406] x5 : 0000000000000003 x4 : 0000000000000002 x3 : 0000000000100000
+[    9.676530] x2 : 000000008f400000 x1 : 00000000dd800000 x0 : ffff000004a2ec00
+[    9.683643] Call trace:
+[    9.690752] arm_lpae_map_pages (drivers/iommu/io-pgtable-arm.c:569
+(discriminator 7)) (P)
+[    9.693013] iommu_map_nosync (drivers/iommu/iommu.c:2505)
+[    9.697524] iommu_map_sg (drivers/iommu/iommu.c:2677)
+[    9.701604] __iommu_dma_alloc_noncontiguous (drivers/iommu/dma-iommu.c:982)
+[    9.705253] iommu_dma_alloc (drivers/iommu/dma-iommu.c:1006
+drivers/iommu/dma-iommu.c:1650)
+[    9.710546] dma_alloc_attrs (kernel/dma/mapping.c:638)
+[    9.714452] venus_hfi_create+0xa8/0x248 venus_core
+[    9.718015] hfi_create+0x54/0x6c venus_core
+[    9.723221] venus_probe+0x254/0x574 venus_core
+[    9.727563] platform_probe (drivers/base/platform.c:1404)
+[    9.732333] really_probe (drivers/base/dd.c:579 drivers/base/dd.c:657)
+[    9.735979] __driver_probe_device (drivers/base/dd.c:799)
+[    9.739626] driver_probe_device (drivers/base/dd.c:829)
+[    9.743879] __driver_attach (drivers/base/dd.c:1216 drivers/base/dd.c:1155)
+[    9.747871] bus_for_each_dev (drivers/base/bus.c:370)
+[    9.751690] driver_attach (drivers/base/dd.c:1234)
+[    9.755510] bus_add_driver (drivers/base/bus.c:678)
+[    9.759330] driver_register (drivers/base/driver.c:249)
+[    9.762889] __platform_driver_register (drivers/base/platform.c:868)
+[    9.766623] qcom_venus_driver_init+0x20/0xfc0 venus_core
+[    9.771486] do_one_initcall (init/main.c:1269)
+[    9.776865] do_init_module (kernel/module/main.c:3046)
+[    9.780685] load_module (kernel/module/main.c:3516)
+[    9.784503] init_module_from_file (kernel/module/main.c:3709)
+[    9.788237] __arm64_sys_finit_module (kernel/module/main.c:3720
+kernel/module/main.c:3746 kernel/module/main.c:3730
+kernel/module/main.c:3730)
+[    9.792668] invoke_syscall (arch/arm64/include/asm/current.h:19
+arch/arm64/kernel/syscall.c:54)
+[    9.797264] el0_svc_common.constprop.0 (arch/arm64/kernel/syscall.c:139)
+[    9.800911] do_el0_svc (arch/arm64/kernel/syscall.c:152)
+[    9.805683] el0_svc (arch/arm64/include/asm/irqflags.h:55
+arch/arm64/include/asm/irqflags.h:76
+arch/arm64/kernel/entry-common.c:169
+arch/arm64/kernel/entry-common.c:182
+arch/arm64/kernel/entry-common.c:772)
+[    9.808982] el0t_64_sync_handler (arch/arm64/kernel/entry-common.c:791)
+[    9.811934] el0t_64_sync (arch/arm64/kernel/entry.S:600)
+[    9.816362] ---[ end trace 0000000000000000 ]---
 
-The kernel definately set SrcValid+, the device stored it, and it
-never set SrcValid-, yet somehow it got changed:
+## Source
+* Kernel version: 6.16.0-rc4-next-20250702
+* Git tree: https://kernel.googlesource.com/pub/scm/linux/kernel/git/next/linux-next.git
+* Git sha: 50c8770a42faf8b1c7abe93e7c114337f580a97d
+* Git describe: next-20250702
+* Project: https://qa-reports.linaro.org/lkft/linux-next-master/build/next-20250702
+* Architectures: arm64
+* Toolchains: gcc-13
+* Kconfigs: gcc-13-lkftconfig
 
-[    0.483828] pci 0000:40:01.1: pci_enable_acs:1089
-[    0.483828] pci 0000:40:01.1: pci_write_config_word:604 9 678 = 1d
-[    0.483831] pci 0000:40:01.1: ACS Set to 1d, readback=1d
-[..]
-[    0.826514] pci 0000:40:01.1: __pci_device_group:1635 Starting
-[    0.826517] pci 0000:40:01.1: pci_acs_flags_enabled:3668   ctrl=1c acs_flags=1d cap=5f
+## Build
+* Test log: https://qa-reports.linaro.org/api/testruns/28989497/log_file/
+* Test LAVA log: https://lkft.validation.linaro.org/scheduler/job/8339869#L3862
+* Test details:
+https://regressions.linaro.org/lkft/linux-next-master/next-20250702/boot/gcc-13-lkftconfig-no-kselftest-frag/
+* Test plan: https://tuxapi.tuxsuite.com/v1/groups/linaro/projects/lkft/tests/2zJgUBCVJbqFPufxneFurZszovX
+* Build link: https://storage.tuxsuite.com/public/linaro/lkft/builds/2zJgRgltAwUHEijfEA14MY3VTTF/
+* Kernel config:
+https://storage.tuxsuite.com/public/linaro/lkft/builds/2zJgRgltAwUHEijfEA14MY3VTTF/config
 
-I instrumented pci_write_config_word() and it isn't being called a
-second time. I didn't try to narrow this down, too weird. Guessing
-ACPI or FW?
-
-So the new logic puts all the above and the downstream into group due
-to insuffucient isolation which is the only degredation on this
-system, the LOM ethernet gets grouped together with the above MFD.
-
-Given in this case we explicitly have ACS flags we consider
-non-isolated I'm not sure there is anything to be done about it.
-
-Which raises a question if SrcValid should be part of grouping or not,
-it is more of a security enhancement, it doesn't permit/deny P2P
-between devices?
-
-> The endpoints result in equivalent grouping, but this is a case where I
-> don't understand how we have non-isolated functions yet isolated
-> subordinate buses.
-
-And I fixed this too, as above is showing, by marking the group of the
-MFD as non-isolated, thus forcing it to propogate downstream.
-
-> An Alder Lake system shows something similar:
-
-I also tested a bunch of Intel client systems. Some with an ACS quirk
-and one with the VMD/non transparent bridge setup. Those had no
-grouping changes, but no raptor lake in this group.
-
-> # lspci -vvvs 1c. | grep -e ^0 -e "Access Control Services"
-> 00:1c.0 PCI bridge: Intel Corporation Raptor Lake PCI Express Root Port #1 (rev 11) (prog-if 00 [Normal decode])
-> 00:1c.1 PCI bridge: Intel Corporation Device 7a39 (rev 11) (prog-if 00 [Normal decode])
-> 	Capabilities: [220 v1] Access Control Services
-> 00:1c.2 PCI bridge: Intel Corporation Raptor Point-S PCH - PCI Express Root Port 3 (rev 11) (prog-if 00 [Normal decode])
-> 	Capabilities: [220 v1] Access Control Services
-> 00:1c.3 PCI bridge: Intel Corporation Raptor Lake PCI Express Root Port #4 (rev 11) (prog-if 00 [Normal decode])
-> 	Capabilities: [220 v1] Access Control Services
-> 
-> So again the group is tainted by a device that cannot generate DMA, 
-
-It looks like 00:1c.0 is advertised as a root port, so it can generate
-DMA as part of its root port function bridging to something outside
-the root complex.
-
-This system doesn't seem to have anything downstream of that root port
-(currently plugged in?), but IMHO that port should have ACS. By spec I
-think it is correct to assume that without ACS traffic from downstream
-of the root port would be able to follow the internal loopback of the
-MFD.
-
-This will probably need a quirk, and it is different from the AMD case
-which used a host bridge..
-
-Any other idea?
-
-Jason
+--
+Linaro LKFT
+https://lkft.linaro.org
