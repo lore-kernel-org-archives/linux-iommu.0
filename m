@@ -1,137 +1,248 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC4EB1EEA40;
-	Wed,  9 Jul 2025 05:39:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 571C6BE6C
+	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 06:30:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752039594; cv=none; b=E0AfiZ6Xpc96IjOKudztMcWrZ1TNH7KdgIU0+c0Bn42y/A6rar7mBPuo/NDWQ1sRaSRxkW/tQ4s9ES+C9PiL1+67etPkENX4Dz9s2M9gzjmdCIgcAfmkc9cNe5E8KJfEt4vRUEfFrrwPnTnS3xv3j7opaLfSc9XEjg+8KQHQP1k=
+	t=1752042627; cv=none; b=Hh5nzIjt8gNktwKQuRnAcpEGLSbxPvVZ1J7cOZt5SNgFp5WjJMTO2yTObV0WOtoojWDzNM5DgeYfItNMBDm+bT1IqVXFmXXZ6I8pq0EFu2aZRNgW2cu1YCaNKFJTmpC5wEMROGprnO/N5J50XjSQx1ly604iBkt2Wny0+swvDkI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752039594; c=relaxed/simple;
-	bh=7zwyVyoHgAp6lLK9cesg4Iul0W95lo/nbGluCqo3G9s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=g0oxxR7s0QIJA/1T73zxG6xf85hKa8PLJesG2scimdz2ehq8QeidqaK2F0NB01okOOHDJxmRiBNT0dsYEFPV8MOdwg1Rss6Pd0Men/4//sqwr/pVsTTwhrciarzN4gUXeCUfVelTHLGs75E1akViG25FOiQGHdTSyX4fHinSAo0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JOoSWdp7; arc=none smtp.client-ip=198.175.65.17
+	s=arc-20240116; t=1752042627; c=relaxed/simple;
+	bh=ztwWtVLvW2JDQVkityE8xy5rSww8WpTrou8OU/HC1cY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=pvtcgaS2fFjSNrDzPd/uQhBM2fxLTs7PwKJkzAWJn3rEso3JNTh8KMbLaL8P4HqrvnLZRlf7pQqMRgN+VKHmY5QT6XIz+4BlFP4e4EyjirA6IDR2uV1C4C1VwArq+GybLhvxdiQMPX61vdKLbNC81mAsVX4XNMRlqOXWPt4Ncnw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SfATefAx; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JOoSWdp7"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SfATefAx"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752039594; x=1783575594;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7zwyVyoHgAp6lLK9cesg4Iul0W95lo/nbGluCqo3G9s=;
-  b=JOoSWdp7HVGji8y0HLuvzMhI+JMhf+Hop9tkt3KG3ueFktHYJzKqJg4B
-   PCKWf+aSDuWi0sT4F5CfKqcfeGyV76w4I0qrEVLJKsIXI3JbXfGy5A2I8
-   wHdoDCWuyQYDFSdX15YIRxBRFLbZ6lRkKkOGMFdNQ5L54iCVZPpNTr1Vh
-   wn/h58SnuXXmRn1KIvcyNzENqyn/pfFjJ7kbMuvd2apt7aJl5BFAsByfe
-   meHeGL+HOhyzaWuKd4StXQheJkkrJJ8En3wMy/3HnTOFzJQCxstngBevG
-   Hl3QiOEjaKQkViUrOJtq5rPT9lbTDH6P4Oa3uHq2pTNKQq4vAvmv/nK4i
-   A==;
-X-CSE-ConnectionGUID: 3yBS+toiSCGykQO9v5+t8Q==
-X-CSE-MsgGUID: wjoClcjvR3ibDhn2viUfGQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11487"; a="54263531"
+  t=1752042625; x=1783578625;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ztwWtVLvW2JDQVkityE8xy5rSww8WpTrou8OU/HC1cY=;
+  b=SfATefAxhrxYC6fxqHngDSYQpgapPk8AG1psjklAeueWx7l6w+2j414Z
+   zU9i9ZOLPKaTtPdx/cfNcBpouA0o4Kp4Ztv852BLHJLuK9hqqs3Pa/LE+
+   1KbVyPcTgnErLY4P2jvz+E/CF6CgrCOrki1NCwx7hRP2HmkfoPgpUyuba
+   VbAefHCFyCQKldB+kfnTa6BC6aWQ8prP2kGTt9AttyKF6W6j5s88iSBEM
+   uETWzM5uxu2a54POv1/exMPOuyG6SwXJFZjfgaTxi0mkrLPxaMq6N/np4
+   SX9ERbmXXf5+DM2Ix+jlVX71zhazH7zIS3FtBL+fTZL/A1QnkBcCCzZnV
+   g==;
+X-CSE-ConnectionGUID: rk/aEP4ETzah2//tzL9Vfg==
+X-CSE-MsgGUID: 3CdV5ieAT9KHjKipVms73g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11487"; a="64875338"
 X-IronPort-AV: E=Sophos;i="6.16,298,1744095600"; 
-   d="scan'208";a="54263531"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2025 22:39:53 -0700
-X-CSE-ConnectionGUID: 1z9kBPWUQaO4T6V0PNAAtA==
-X-CSE-MsgGUID: cEmge3AYT7uhOk7zwVLTTw==
+   d="scan'208";a="64875338"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2025 23:30:24 -0700
+X-CSE-ConnectionGUID: dUdpESooS/GLZSNpGEz/0Q==
+X-CSE-MsgGUID: dQGpmv9ETgmAFGNTOWGd0w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,298,1744095600"; 
-   d="scan'208";a="155303315"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmviesa007.fm.intel.com with ESMTP; 08 Jul 2025 22:39:47 -0700
-Date: Wed, 9 Jul 2025 13:31:31 +0800
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, will@kernel.org,
-	robin.murphy@arm.com, joro@8bytes.org, praan@google.com,
-	yi.l.liu@intel.com, peterz@infradead.org, jsnitsel@redhat.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, patches@lists.linux.dev,
-	baolu.lu@linux.intel.com
-Subject: Re: [PATCH v2 13/14] iommufd: Introduce iommufd_object_alloc_ucmd
- helper
-Message-ID: <aG3+s8rzcjeKazG8@yilunxu-OptiPlex-7050>
-References: <cover.1749882255.git.nicolinc@nvidia.com>
- <e7206d4227844887cc8dbf0cc7b0242580fafd9d.1749882255.git.nicolinc@nvidia.com>
+   d="scan'208";a="159723285"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by fmviesa003.fm.intel.com with ESMTP; 08 Jul 2025 23:30:20 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Jann Horn <jannh@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Dave Hansen <dave.hansen@intel.com>,
+	Alistair Popple <apopple@nvidia.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Uladzislau Rezki <urezki@gmail.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Andy Lutomirski <luto@kernel.org>,
+	"Tested-by : Yi Lai" <yi1.lai@intel.com>
+Cc: iommu@lists.linux.dev,
+	security@kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH v2 1/1] iommu/sva: Invalidate KVA range on kernel TLB flush
+Date: Wed,  9 Jul 2025 14:28:00 +0800
+Message-ID: <20250709062800.651521-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e7206d4227844887cc8dbf0cc7b0242580fafd9d.1749882255.git.nicolinc@nvidia.com>
+Content-Transfer-Encoding: 8bit
 
-> @@ -61,6 +61,24 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
->  	return ERR_PTR(rc);
->  }
->  
-> +struct iommufd_object *_iommufd_object_alloc_ucmd(struct iommufd_ucmd *ucmd,
-> +						  size_t size,
-> +						  enum iommufd_object_type type)
-> +{
-> +	struct iommufd_object *new_obj;
-> +
-> +	/* Something is coded wrong if this is hit */
-> +	if (WARN_ON(ucmd->new_obj))
-> +		return ERR_PTR(-EBUSY);
-> +
-> +	new_obj = _iommufd_object_alloc(ucmd->ictx, size, type);
-> +	if (IS_ERR(new_obj))
-> +		return new_obj;
-> +
-> +	ucmd->new_obj = new_obj;
-> +	return new_obj;
-> +}
-> +
->  /*
->   * Allow concurrent access to the object.
->   *
-> @@ -448,6 +466,13 @@ static long iommufd_fops_ioctl(struct file *filp, unsigned int cmd,
->  	if (ret)
->  		return ret;
->  	ret = op->execute(&ucmd);
-> +
-> +	if (ucmd.new_obj) {
-> +		if (ret)
-> +			iommufd_object_abort_and_destroy(ictx, ucmd.new_obj);
+The vmalloc() and vfree() functions manage virtually contiguous, but not
+necessarily physically contiguous, kernel memory regions. When vfree()
+unmaps such a region, it tears down the associated kernel page table
+entries and frees the physical pages.
 
-Sorry I didn't follow this thread before and maybe missed something.
+In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU hardware
+shares and walks the CPU's page tables. Architectures like x86 share
+static kernel address mappings across all user page tables, allowing the
+IOMMU to access the kernel portion of these tables.
 
-According to 70eadc7fc7ef, abort op is for the object that can assume
-the caller is holding the lock. But here is for no locking, so calling
-iommufd_object_abort_and_destroy() is quite confusing.
+Modern IOMMUs often cache page table entries to optimize walk performance,
+even for intermediate page table levels. If kernel page table mappings are
+changed (e.g., by vfree()), but the IOMMU's internal caches retain stale
+entries, Use-After-Free (UAF) vulnerability condition arises. If these
+freed page table pages are reallocated for a different purpose, potentially
+by an attacker, the IOMMU could misinterpret the new data as valid page
+table entries. This allows the IOMMU to walk into attacker-controlled
+memory, leading to arbitrary physical memory DMA access or privilege
+escalation.
 
-Is it better we change to:
+To mitigate this, introduce a new iommu interface to flush IOMMU caches
+and fence pending page table walks when kernel page mappings are updated.
+This interface should be invoked from architecture-specific code that
+manages combined user and kernel page tables.
 
-	if (ret) {
-		iommufd_object_ops[obj->type].destroy(obj);
-		iommufd_object_abort(ictx, obj);
-	}
+Fixes: 26b25a2b98e4 ("iommu: Bind process address spaces to devices")
+Cc: stable@vger.kernel.org
+Reported-by: Jann Horn <jannh@google.com>
+Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+Tested-by: Yi Lai <yi1.lai@intel.com>
+---
+ arch/x86/mm/tlb.c         |  2 ++
+ drivers/iommu/iommu-sva.c | 34 +++++++++++++++++++++++++++++++++-
+ include/linux/iommu.h     |  4 ++++
+ 3 files changed, 39 insertions(+), 1 deletion(-)
 
-Also explicitely assert iommufd_object_alloc_ucmd() and abort can't be
-used at the same time.
+Change log:
+v2:
+ - Remove EXPORT_SYMBOL_GPL(iommu_sva_invalidate_kva_range);
+ - Replace the mutex with a spinlock to make the interface usable in the
+   critical regions.
 
-in _iommufd_object_alloc_ucmd():
+v1: https://lore.kernel.org/linux-iommu/20250704133056.4023816-1-baolu.lu@linux.intel.com/
 
-	if (WARN_ON(iommufd_object_ops[type].abort))
-		return ERR_PTR(-EFAULT);
+diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+index 39f80111e6f1..a41499dfdc3f 100644
+--- a/arch/x86/mm/tlb.c
++++ b/arch/x86/mm/tlb.c
+@@ -12,6 +12,7 @@
+ #include <linux/task_work.h>
+ #include <linux/mmu_notifier.h>
+ #include <linux/mmu_context.h>
++#include <linux/iommu.h>
+ 
+ #include <asm/tlbflush.h>
+ #include <asm/mmu_context.h>
+@@ -1540,6 +1541,7 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
+ 		kernel_tlb_flush_range(info);
+ 
+ 	put_flush_tlb_info();
++	iommu_sva_invalidate_kva_range(start, end);
+ }
+ 
+ /*
+diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+index 1a51cfd82808..fd76aefa5a88 100644
+--- a/drivers/iommu/iommu-sva.c
++++ b/drivers/iommu/iommu-sva.c
+@@ -10,6 +10,9 @@
+ #include "iommu-priv.h"
+ 
+ static DEFINE_MUTEX(iommu_sva_lock);
++static DEFINE_STATIC_KEY_FALSE(iommu_sva_present);
++static LIST_HEAD(iommu_sva_mms);
++static DEFINE_SPINLOCK(iommu_mms_lock);
+ static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+ 						   struct mm_struct *mm);
+ 
+@@ -42,6 +45,7 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
+ 		return ERR_PTR(-ENOSPC);
+ 	}
+ 	iommu_mm->pasid = pasid;
++	iommu_mm->mm = mm;
+ 	INIT_LIST_HEAD(&iommu_mm->sva_domains);
+ 	/*
+ 	 * Make sure the write to mm->iommu_mm is not reordered in front of
+@@ -132,8 +136,15 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+ 	if (ret)
+ 		goto out_free_domain;
+ 	domain->users = 1;
+-	list_add(&domain->next, &mm->iommu_mm->sva_domains);
+ 
++	if (list_empty(&iommu_mm->sva_domains)) {
++		scoped_guard(spinlock_irqsave, &iommu_mms_lock) {
++			if (list_empty(&iommu_sva_mms))
++				static_branch_enable(&iommu_sva_present);
++			list_add(&iommu_mm->mm_list_elm, &iommu_sva_mms);
++		}
++	}
++	list_add(&domain->next, &iommu_mm->sva_domains);
+ out:
+ 	refcount_set(&handle->users, 1);
+ 	mutex_unlock(&iommu_sva_lock);
+@@ -175,6 +186,15 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
+ 		list_del(&domain->next);
+ 		iommu_domain_free(domain);
+ 	}
++
++	if (list_empty(&iommu_mm->sva_domains)) {
++		scoped_guard(spinlock_irqsave, &iommu_mms_lock) {
++			list_del(&iommu_mm->mm_list_elm);
++			if (list_empty(&iommu_sva_mms))
++				static_branch_disable(&iommu_sva_present);
++		}
++	}
++
+ 	mutex_unlock(&iommu_sva_lock);
+ 	kfree(handle);
+ }
+@@ -312,3 +332,15 @@ static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+ 
+ 	return domain;
+ }
++
++void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end)
++{
++	struct iommu_mm_data *iommu_mm;
++
++	if (!static_branch_unlikely(&iommu_sva_present))
++		return;
++
++	guard(spinlock_irqsave)(&iommu_mms_lock);
++	list_for_each_entry(iommu_mm, &iommu_sva_mms, mm_list_elm)
++		mmu_notifier_arch_invalidate_secondary_tlbs(iommu_mm->mm, start, end);
++}
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 156732807994..31330c12b8ee 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -1090,7 +1090,9 @@ struct iommu_sva {
+ 
+ struct iommu_mm_data {
+ 	u32			pasid;
++	struct mm_struct	*mm;
+ 	struct list_head	sva_domains;
++	struct list_head	mm_list_elm;
+ };
+ 
+ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode);
+@@ -1571,6 +1573,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+ 					struct mm_struct *mm);
+ void iommu_sva_unbind_device(struct iommu_sva *handle);
+ u32 iommu_sva_get_pasid(struct iommu_sva *handle);
++void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end);
+ #else
+ static inline struct iommu_sva *
+ iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+@@ -1595,6 +1598,7 @@ static inline u32 mm_get_enqcmd_pasid(struct mm_struct *mm)
+ }
+ 
+ static inline void mm_pasid_drop(struct mm_struct *mm) {}
++static inline void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end) {}
+ #endif /* CONFIG_IOMMU_SVA */
+ 
+ #ifdef CONFIG_IOMMU_IOPF
+-- 
+2.43.0
 
-Thanks,
-Yilun
-
-> +		else
-> +			iommufd_object_finalize(ictx, ucmd.new_obj);
-> +	}
->  	return ret;
->  }
->  
-> -- 
-> 2.43.0
-> 
-> 
