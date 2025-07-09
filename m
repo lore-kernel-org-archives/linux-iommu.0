@@ -1,199 +1,201 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2071.outbound.protection.outlook.com [40.107.243.71])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FD09279346;
-	Wed,  9 Jul 2025 08:56:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.71
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752051402; cv=fail; b=gXuuL9Xzakr+ukKccNNp7xOAmAR9QIjWNeS4g44uXmLuV4M/ed852C3Ne1h83iMxg6gUYq2VUU/b5NoxyZpWTRt/4Fu7Xo/7Cd2ynRdi6d3v1NBmRNJOzam3mRkaZszqb3Q/iUVxPYEV+qBtPdZUI3EF2Kyxjvh6rcPgClhI+bY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752051402; c=relaxed/simple;
-	bh=Faqzj0UzcbKeMFcUXGSAKV+Bgz0NH4WeHcJ5wvwnqvw=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GEK3urcYmDODjvk6XuBz4q+nRHGdHSZlbLXQwuKggR9SQ2w9u0+Na24YB5lS3Ss0UyZ+QnfN6gDEiWSfsnA6v82akgUvS1gzVJ2Mqtx+GJ+Cv8Iptmt1ST1gw5U3CCQ7A81frYjdvKPBJ48Aq/YTOCjhSY4bRsHaEJlvVsavLe4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Ed4zSRwD; arc=fail smtp.client-ip=40.107.243.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 368422D5A1B
+	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 10:44:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752057881; cv=none; b=Ko2CaQCX2fkTjULTV+vnGE+Exhyn9s2NDpScBX3C/RLWQobTYE6muhgf2L4xPDdb+ovvc4cNx9AdRXu3qtQJ5S3oJkamY4mhSi20OawT1JnDz4P7afxXngtvVffiAXtvtTTN4qZnOBZlgr9Yl8qaSHlkyL8r2dpYgkzwtcGY5CM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752057881; c=relaxed/simple;
+	bh=yOCb08n6dTxn+8x6DVj9LK4gXyvl6SKEuzpMFpGrFiY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hjcTOAarKQ2DpelSbDNRJTktJjUvJ6QAzIDqeVGSoOis3RvkisnykNL4p+AeXXZ82okzqAPvyvViENbA2Dw/2+FQxTE7I+i1Gt94i+2zoFWZ3NLwFE70IT7YUssPPBJfmVi7ikTUB33p0TZM9KWt9P3Vja/HUES/EmnONyB0Kdo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=hTnIuBw7; arc=none smtp.client-ip=209.85.216.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Ed4zSRwD"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=fM6uydJbqAdr8/v2Z589THIjemb6UNJ64YZtAkQlf6/ULLHcSAww/z32dIpSYfDX2a1O1ye54Tu4/5cdVepJdXJoM4HAtWSp+D+4mJj/VvG+v6SkoPMhup/r8BADcctN2Uw8e335IAlysBuETiHKifJeoxl66aLvpsLySJpuirTEKGTnvHim0pm0eDu1BeE/c/JtnyxPdXWwPvW9BoOCTigyxSRc3DsJSSUHz0oLEOT9cfii+VQ6pxYPZ7XI8h9g0bZ2IHVT+KISLFpm2b2bjbZQa0TfIp42eEYYyIVJcCvASL+HIjU9wqsGvwk9ZyBSgS/3MPWHOqroC7Z+j7KVJw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DYpNQw3z+Vi231QIPS94sd9NCTL0Aht5ZV1vQ4NWRtg=;
- b=Cil6x5sAKMIUAqdIPEgfwAQ6jwJOocZ+GZWkvODUJQrFifWaUg1ZLhC6mquubE9eBjzn8QW1WDXObgPXb6N1sBy1c2FrLL5D42pqihJhSESTSk44fk0StKoYtTdzrf0MjRfW2FJ/sXHmHZLTiWktW7J7JGT6eEOPZ/0KJNc4J+xOgrdzJ58ZKoA70lF8WHKTj1CqmT/S6CtcJVL6VrjeHEUcmcnVc2yeTBvNUP7D4bhyhsgKa3ahpKmlVxOWEwHYfv5wjepLBS5b1TOra0DrTmFTwyZ8pmX2Mq+9ScDCjHL9yqVSYpgZr92KpjkNv2fC+uDwRYUdcgS1p0tTH/GfLQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=nvidia.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DYpNQw3z+Vi231QIPS94sd9NCTL0Aht5ZV1vQ4NWRtg=;
- b=Ed4zSRwDYm9x2TvrlJaLJFQ1/O4hDtCgSLJVw4oLnbyhWCAE/X4MHhQoNbWK18alm0gMZkectT+6z1b9ER9+iKrvpsgUhF9B+aMoTYBGLC3SX/ntIVsVg7KkOplqI4EsHFukh0fjt7FGzHoCg5g/5ujUEBEy8lbQMSVKtA3Zzt4=
-Received: from CH2PR12CA0019.namprd12.prod.outlook.com (2603:10b6:610:57::29)
- by SA3PR12MB9105.namprd12.prod.outlook.com (2603:10b6:806:382::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8901.22; Wed, 9 Jul
- 2025 08:56:37 +0000
-Received: from CH2PEPF0000014A.namprd02.prod.outlook.com
- (2603:10b6:610:57:cafe::6e) by CH2PR12CA0019.outlook.office365.com
- (2603:10b6:610:57::29) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.8922.21 via Frontend Transport; Wed,
- 9 Jul 2025 08:56:37 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CH2PEPF0000014A.mail.protection.outlook.com (10.167.244.107) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.8922.22 via Frontend Transport; Wed, 9 Jul 2025 08:56:37 +0000
-Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Wed, 9 Jul
- 2025 03:56:36 -0500
-Received: from amd.com (10.180.168.240) by SATLEXMB04.amd.com (10.181.40.145)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39 via Frontend
- Transport; Wed, 9 Jul 2025 03:56:30 -0500
-Date: Wed, 9 Jul 2025 08:56:19 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Jonathan Corbet <corbet@lwn.net>, <iommu@lists.linux.dev>, Joerg Roedel
-	<joro@8bytes.org>, Justin Stitt <justinstitt@google.com>, Kevin Tian
-	<kevin.tian@intel.com>, <linux-doc@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <llvm@lists.linux.dev>, Bill Wendling
-	<morbo@google.com>, Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers
-	<nick.desaulniers+lkml@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, "Suravee
- Suthikulpanit" <suravee.suthikulpanit@amd.com>, Will Deacon
-	<will@kernel.org>, Alexey Kardashevskiy <aik@amd.com>, Alejandro Jimenez
-	<alejandro.j.jimenez@oracle.com>, James Gowans <jgowans@amazon.com>, "Michael
- Roth" <michael.roth@amd.com>, Pasha Tatashin <pasha.tatashin@soleen.com>,
-	<patches@lists.linux.dev>
-Subject: Re: [PATCH v3 15/15] iommupt: Add a kunit test for the IOMMU
- implementation
-Message-ID: <6onfcdqxaeq55fd6csdyovudfbx2f3baimonejkmgisab23os3@fzj3mjelpcob>
-References: <0-v3-a93aab628dbc+521-iommu_pt_jgg@nvidia.com>
- <15-v3-a93aab628dbc+521-iommu_pt_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hTnIuBw7"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-313910f392dso4448558a91.2
+        for <iommu@lists.linux.dev>; Wed, 09 Jul 2025 03:44:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1752057878; x=1752662678; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=D8B77kU2J+Ybm9h9uGUkEFQ01LW8PrgIRBca0KXYjU0=;
+        b=hTnIuBw7tpw+iNyjDrG+9m0KXYUqmxmiEokhQHbJgSOLK3mIb3ltvqqSDW+dhJyNu3
+         2L400ZaVmN1WWRpIWmwiyduinGw3jrq/ncgoGRTwRBiUyLSGzO1xBHsBkgIrxfDoACsb
+         ET7YHolSSZ+OacBgXfAbB8D0Fnfb+WgWZgxSMmfOtf5gvXkQ1xshHSZE5lbcxsjUPS/a
+         IAShN8Lwr+3jN3SawQ+ARRK3HBVLgYoo0pomfMMEHMwG1D4t+MjSgoVjkVJx/Ik9xXrC
+         ID8jxlTYTn/p8LSI1HNGzXo5wlySiQXJQC4qePrtrQLFOlLXjuOFNzFoWeH50xySLUz0
+         hx/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752057878; x=1752662678;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=D8B77kU2J+Ybm9h9uGUkEFQ01LW8PrgIRBca0KXYjU0=;
+        b=WPt57WXhKqnlR6cvA9cNX4SNSQW8h6y7ugfqUXiclWKPwvpUTtSRfwq8vmnsdCf9Vq
+         XEXAK6nxO9SKo+GTRsyBdJuumg3XtTvFqVEp1MJUHdFgUvYp+W3ZWgNAARw5KRqcXzKB
+         hsNtdUu9BP4zntDfNCHkmE1EKD4tY5PF7lM17cSiqMW3KE2iSPfWqthCUGbGEGK7k0y/
+         iz6r9fuqhP2K6sUuHOddFoupbJA0ZvS45RGAqJX1EkaBZ5zkTCHDrMNL1Gozc7hqtgGx
+         u7KeczcQiYS+n9T7hTgwYA0PGY6jLoeX36bBYamP/yS1hfhK9QemJ4S7DFmedBE9kWmK
+         C2iA==
+X-Forwarded-Encrypted: i=1; AJvYcCVIab2yoWeXzqbeS3FQws2Bjrx2hHHG/kLvnXI9gQfGHeIt03Y4VBzRILCGxitO+Vl/AvA5xQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxUQ8fW2W+ZtMGyFfvoZx9zT34GU5Op4Chi0W1zIGRr5YC4t0f1
+	v1E3+MeiSKrMMm9AZDsvzh6icMcn5iaQYqKn24uzMSW5LtHevS7SIrZ7Gb9u+qfUyA9CED3L4v/
+	fUuo00WxhF13CVAuF5xlf5kx6tyyiN1iblG/mISMLpw==
+X-Gm-Gg: ASbGnctjdPtRjVr/pikHDL6EhxHlGrLh2//DW3rz7GPZP9Fo3JZgUINQZK6v2n/uOlv
+	ii2fthbKElakOU3Avh4/wPCbNzsiezE3V3qS/8YUsEtKYTuHL3FTySVI8IuhXO+QK9fEm++kXEX
+	YG+/t2bjEMs/0tqytpzSHciCfqeILQ6olLyQH5aqkJ9TT3WiHQ3104ZKHOcrk2Z+rtrZowpPIrr
+	1pk
+X-Google-Smtp-Source: AGHT+IF2a95UFz+E3M7dK/4U3eUSAXdz1qQAmh7AbREiDIoBeb2vVRykyPSOAbfKv9PM3hbNEiDH/BibegL1kGds8rA=
+X-Received: by 2002:a17:90b:2811:b0:311:a314:c2d1 with SMTP id
+ 98e67ed59e1d1-31c2fd27addmr3020424a91.6.1752057878131; Wed, 09 Jul 2025
+ 03:44:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <15-v3-a93aab628dbc+521-iommu_pt_jgg@nvidia.com>
-Received-SPF: None (SATLEXMB04.amd.com: Ankit.Soni@amd.com does not designate
- permitted sender hosts)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF0000014A:EE_|SA3PR12MB9105:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8f91073c-0f5c-4270-5688-08ddbec68335
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|36860700013|82310400026|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?KXf2ZWuP1/We4DSTku25fisGqDSZn+Ox8XFIFivCnjln3+Kky95VIgZ/QmWm?=
- =?us-ascii?Q?K1xw7DQPhxMK8uEVd9bKbztkoAOk7go09Vs93D+IXHoa8fC0Pq1pk2HC45Yb?=
- =?us-ascii?Q?NXguWIwmtBn5TQN44Q+tF/5bkLU2XXt2t4iwYC9ZxIQq4qwodqOjmAp3Wl0E?=
- =?us-ascii?Q?kLKRjVmdzzmV6BWNkOBaOIfs3XbDtizr5VfMFu6SfKzg0wivHTFukx/qpMDL?=
- =?us-ascii?Q?aktfmIo2DHL4/07Gt1xdDiNDxW+jIeV7ZOEQgk6kMj6V644fVaEc5anxoEEB?=
- =?us-ascii?Q?u3BDIroJEu8Y7LyGwhyP2x3AFZiTAEgR0rAHWYv3zXjkkMtWm4Vq6rNfCLP2?=
- =?us-ascii?Q?NmGDMpceMc40xn9OoUyzLx+H9qs1UY0zBvi9It7jlCVzWTw7QprwIZowkDqh?=
- =?us-ascii?Q?10Orz9lPPNHfsPF1hFlCm9K9fRIsjS3hKC9LFf+lGflem97Uxrjoh7D7/pGJ?=
- =?us-ascii?Q?NCMhB9qayb4Pya6+taiJDD+XX1Y/AXmWhOgvX7UXvB1rzXfJVxrXUPR8Uyir?=
- =?us-ascii?Q?J8084h05q2YKMgUUTjpTAcmUEEQF6SOauZNVJTSy4T+cWfbl46LW5526cvC9?=
- =?us-ascii?Q?OSmO+zbNY3oRjOBpnYR6ixMz+A5DK5IlkE4wZKwEL8f/ngAE3jDuisy4HxRk?=
- =?us-ascii?Q?wxhciKKypI/w6dg7hJgj4au7sYm+VsfXgl8YrNaAtZbIKJGKoMOVkYb2OwHx?=
- =?us-ascii?Q?eoCW06RlPc9v69/lLrRbHXBo9A/2T9a1B8jt9DZ8Zp50aI1WyfbxSYRJobZu?=
- =?us-ascii?Q?8rNY9B0JuLIL3aW2rdaCGOoHyMnJhUYtIOY8V7X0Ntb1t8H/0uKqhNMPyRsk?=
- =?us-ascii?Q?09edDBB1OgI/+N2Xk8NW7N9ihk7L9FY53iqa7PZ0rZjFuM2TxIzCdoypa3e5?=
- =?us-ascii?Q?BAiB4SXpylM4VKtQc3ByILTAol/ucLE5asTD7pXQLfcvw4jXUyOYPVceKhXh?=
- =?us-ascii?Q?ycArvbzLhlQXep/KJPs+IqKAJtPD9UBgyTdHMCF6RDyVvLS/+iG85z0aCQK6?=
- =?us-ascii?Q?8v2e52Ryhw4SDFjDsCUMpEtYRlvNEkv9eQXsTfxMwAHDIzmVTql7DJIG93vK?=
- =?us-ascii?Q?iW3g2K89MEMN/g7lRolkpIct8I6S3mTEnzUrVQIuVoON1yl8qwQKsw59CUM3?=
- =?us-ascii?Q?zWF+PSGik1ILJsLvxZZG94yf84tFaXU4MoAss35vp02Syk8HwO0iz+Gy0AOC?=
- =?us-ascii?Q?7WlmvQXPuKZLy/GSVoXnAEvMQFJTdl5jMjJdmmRakDWeG00tJoIVmx/ZUsA6?=
- =?us-ascii?Q?aEZPqmO8VIrJjS56m214p46kQLOjFToA5N0s5r2ua9m53HmmEpX4VpmJSUA/?=
- =?us-ascii?Q?SwIIMNCuAs6/ksPPDuMArOWVfBykOADrd1sdSOeCrdWbnJan1yGDF+8RBy6e?=
- =?us-ascii?Q?s5cuzP9tpqxf2/Ptf+QVy6pYcpHpfvzlM7tXDxX289d4E7wrsc29hAc8vPXG?=
- =?us-ascii?Q?+wghv8LPZrVyG8oTqP8C+wkvXTizw2+sXezws4rdwikMF5XxDUU5QNUkRcWF?=
- =?us-ascii?Q?dCcn4gbW6vQkgvmnT+Su5Qx4Ahpg4wwpV6Il?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(376014)(36860700013)(82310400026)(7416014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2025 08:56:37.0052
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8f91073c-0f5c-4270-5688-08ddbec68335
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF0000014A.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB9105
+References: <CA+G9fYvif6kDDFar5ZK4Dff3XThSrhaZaJundjQYujaJW978yg@mail.gmail.com>
+ <20250709002521.GB1599700@nvidia.com>
+In-Reply-To: <20250709002521.GB1599700@nvidia.com>
+From: Naresh Kamboju <naresh.kamboju@linaro.org>
+Date: Wed, 9 Jul 2025 16:14:26 +0530
+X-Gm-Features: Ac12FXyU-FP3ktQ1sRAwSIeSHnaGDmqm4MOSRwtxAVa2cr-dh9UvRjWr4CHKisQ
+Message-ID: <CA+G9fYtOZLYe7yN7EdaEHLyJgVypgKFO2R6POoiEZv7PcLw+3A@mail.gmail.com>
+Subject: Re: next-20250702 WARNING iommu io-pgtable-arm.c at
+ arm_lpae_map_pages qcom_iommu_map
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: open list <linux-kernel@vger.kernel.org>, iommu@lists.linux.dev, 
+	lkft-triage@lists.linaro.org, Linux Regressions <regressions@lists.linux.dev>, 
+	Nicolin Chen <nicolinc@nvidia.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>, 
+	Anders Roxell <anders.roxell@linaro.org>, Ben Copeland <benjamin.copeland@linaro.org>, 
+	Arnd Bergmann <arnd@arndb.de>, Dan Carpenter <dan.carpenter@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+
+On Wed, 9 Jul 2025 at 05:55, Jason Gunthorpe <jgg@nvidia.com> wrote:
+>
+> On Wed, Jul 09, 2025 at 02:26:20AM +0530, Naresh Kamboju wrote:
+> > Regression identified while booting the Dragonboard 410c (Qualcomm
+> > APQ8016 SBC) using the Linux next-20250702 kernel tag. During device
+> > initialization, the kernel triggers a WARNING in the arm_lpae_map_pages()
+> > function, which is part of the IOMMU subsystem. The call trace also involves
+> > qcom_iommu_map().
+> >
+> > Test environments:
+> > - Dragonboard-410c
+> >
+> > Regression Analysis:
+> > - New regression? Yes
+> > - Reproducibility? Yes
+> >
+> > Boot regression: next-20250702 WARNING iommu io-pgtable-arm.c at
+> > arm_lpae_map_pages qcom_iommu_map
+> >
+> > Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+> >
+> > List of suspected patches with recent changes.
+> >  * https://lore.kernel.org/all/0-v2-68a2e1ba507c+1fb-iommu_rm_ops_pgsize_jgg@nvidia.com/
+>
+> Can you test this fix please:
 
 
-Hi Jason,
-I noticed a few minor nits that might be worth addressing in a future revision.
+I have tested this patch on top of Linux next-20250702 tag,
+and found kernel warning,
 
-On Mon, Jun 16, 2025 at 03:06:18PM -0300, Jason Gunthorpe wrote:
-> This intends to have high coverage of the page table format functions and
-> the IOMMU implementation itself, exercising the various corner cases.
-> 
-> The kunit can be run in the kunit framework, using commands like:
+[    1.510468] ------------[ cut here ]------------
+[    1.516302] WARNING: drivers/iommu/iommu.c:1142 at
+iommu_create_device_direct_mappings+0x240/0x258, CPU#1: swapper/0/1
+[    1.521001] Modules linked in:
+[    1.531485] CPU: 1 UID: 0 PID: 1 Comm: swapper/0 Not tainted
+6.16.0-rc4-next-20250702 #1 PREEMPT
+[    1.534538] Hardware name: Qualcomm Technologies, Inc. APQ 8016 SBC (DT)
+[    1.543473] pstate: 20000005 (nzCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    1.550241] pc : iommu_create_device_direct_mappings
+(drivers/iommu/iommu.c:1142 (discriminator 7))
+[    1.556924] lr : iommu_setup_default_domain
+(drivers/iommu/iommu.c:2992 (discriminator 1))
+[    1.563170] sp : ffff80008002b9c0
+[    1.568113] x29: ffff80008002b9e0 x28: 0000000000000000 x27: ffff80008174e2c0
+[    1.571596] x26: ffff000004c58030 x25: ffff800081d75228 x24: ffff80008221eba4
+[    1.578714] x23: ffff000003d99410 x22: ffff80008002b9c8 x21: ffff000003ce5900
+[    1.585833] x20: ffff000003ce5948 x19: ffff000002e6d5a0 x18: 0000000000000000
+[    1.592951] x17: ffff000003d4a000 x16: ffff000002c37e00 x15: 07690720076f0774
+[    1.600068] x14: 0000000000000000 x13: ffff800082237670 x12: 000000000003786e
+[    1.607185] x11: 0000000000000115 x10: 0000000000103758 x9 : 0000000000000000
+[    1.614303] x8 : ffff000003ce5d00 x7 : 0000000000000000 x6 : 000000000000003f
+[    1.621422] x5 : 0000000000000040 x4 : 0000000000000000 x3 : 0000000000000001
+[    1.628539] x2 : ffff000002ce0000 x1 : ffff000003d99410 x0 : 0000000000000003
+[    1.635660] Call trace:
+[    1.642766] iommu_create_device_direct_mappings
+(drivers/iommu/iommu.c:1142 (discriminator 7)) (P)
+[    1.645031] iommu_setup_default_domain (drivers/iommu/iommu.c:2992
+(discriminator 1))
+[    1.651277] iommu_device_register (drivers/iommu/iommu.c:1905
+drivers/iommu/iommu.c:277)
+[    1.655877] qcom_iommu_device_probe
+(drivers/iommu/arm/arm-smmu/qcom_iommu.c:860)
+[    1.660392] platform_probe (drivers/base/platform.c:1404)
+[    1.665163] really_probe (drivers/base/dd.c:579 drivers/base/dd.c:657)
+[    1.668723] __driver_probe_device (drivers/base/dd.c:799)
+[    1.672371] driver_probe_device (drivers/base/dd.c:829)
+[    1.676623] __driver_attach (drivers/base/dd.c:1216 drivers/base/dd.c:1155)
+[    1.680615] bus_for_each_dev (drivers/base/bus.c:370)
+[    1.684434] driver_attach (drivers/base/dd.c:1234)
+[    1.688255] bus_add_driver (drivers/base/bus.c:678)
+[    1.692073] driver_register (drivers/base/driver.c:249)
+[    1.695633] __platform_driver_register (drivers/base/platform.c:868)
+[    1.699368] qcom_iommu_init (drivers/iommu/arm/arm-smmu/qcom_iommu.c:943)
+[    1.704226] do_one_initcall (init/main.c:1269)
+[    1.707873] kernel_init_freeable (init/main.c:1330 (discriminator
+1) init/main.c:1347 (discriminator 1) init/main.c:1366 (discriminator
+1) init/main.c:1579 (discriminator 1))
+[    1.711607] kernel_init (init/main.c:1473)
+[    1.716118] ret_from_fork (arch/arm64/kernel/entry.S:863)
+[    1.719419] ---[ end trace 0000000000000000 ]---
+[    1.723302] iommu 1ef0000.iommu: IOMMU driver was not able to
+establish FW requested direct mapping.
+[    1.734231] platform 1c00000.gpu: Adding to iommu group 2
+[    1.748218] loop: module loaded
 
-The kunit tests can be run...
+Links:
+ - https://lkft.validation.linaro.org/scheduler/job/8350682#L2838
 
-> 
-> tools/testing/kunit/kunit.py run --build_dir build_kunit_arm64 --arch arm64 --make_options LLVM=-19 --kunitconfig ./drivers/iommu/generic_pt/.kunitconfig
-> tools/testing/kunit/kunit.py run --build_dir build_kunit_uml --kunitconfig ./drivers/iommu/generic_pt/.kunitconfig --kconfig_add CONFIG_WERROR=n --kconfig_add CONFIG_UML_PCI_OVER_VIRTIO_DEVICE_ID=100
-> tools/testing/kunit/kunit.py run --build_dir build_kunit_x86_64 --arch x86_64 --kunitconfig ./drivers/iommu/generic_pt/.kunitconfig
-> tools/testing/kunit/kunit.py run --build_dir build_kunit_i386 --arch i386 --kunitconfig ./drivers/iommu/generic_pt/.kunitconfig
-> tools/testing/kunit/kunit.py run --build_dir build_kunit_i386pae --arch i386 --kunitconfig ./drivers/iommu/generic_pt/.kunitconfig --kconfig_add CONFIG_X86_PAE=y
-> 
-> There are several interesting corner cases on the 32 bit platforms that
-> need checking.
-> 
-> Like the generic test they are run on the formats configuration list using
-
-how about "Like the generic tests, these are..."
-
-> kunit "params". This also checks the core iommu parts of the page table
-> code as it enters the logic through a mock iommu_domain.
-> 
-> The following are checked:
->  - PT_FEAT_DYNAMIC_TOP properly adds levels one by oen
-
-s/oen/one
-
->  - Evey page size can be iommu_map()'d, and mapping creates that size
-
-s/Evey/Every
-
->  - iommu_iova_to_phys() works with every page size
->  - Test converting OA -> non present -> OA when the two OAs overlap and
->    free table levels
->  - Test that unmap stops at holes, unmap doesn't split, and unmap returns
->    the right values for partial unmap requests
->  - Randomly map/unmap. Checks map with random sizes, that map fails when
->    hitting collions doing nothing, unmap/map with random intersections and
-
-s/collions/collisions
-
->    full unmap of random sizes. Also checked iommu_iova_to_phys() with random
-
-s/checked/checks
-
-Thanks,
--Ankit
-
-> -- 
-> 2.43.0
-> 
+> --- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> +++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+> @@ -229,7 +229,7 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+>                 goto out_unlock;
+>
+>         pgtbl_cfg = (struct io_pgtable_cfg) {
+> -               .pgsize_bitmap  = domain->pgsize_bitmap,
+> +               .pgsize_bitmap  = SZ_4K | SZ_64K | SZ_1M | SZ_16M,
+>                 .ias            = 32,
+>                 .oas            = 40,
+>                 .tlb            = &qcom_flush_ops,
+> @@ -246,6 +246,8 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+>                 goto out_clear_iommu;
+>         }
+>
+> +       /* Update the domain's page sizes to reflect the page table format */
+> +       domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
+>         domain->geometry.aperture_end = (1ULL << pgtbl_cfg.ias) - 1;
+>         domain->geometry.force_aperture = true;
+>
+> @@ -335,7 +337,6 @@ static struct iommu_domain *qcom_iommu_domain_alloc_paging(struct device *dev)
+>
+>         mutex_init(&qcom_domain->init_mutex);
+>         spin_lock_init(&qcom_domain->pgtbl_lock);
+> -       qcom_domain->domain.pgsize_bitmap = SZ_4K | SZ_64K | SZ_1M | SZ_16M;
+>
+>         return &qcom_domain->domain;
+>  }
+>
+> Of all the drivers qcom is the only one that uses the 64 bit arm page
+> table, 4 & 64k sizes, and was using the ops global. The io_pgtable
+> code will remove one of the two depending on PAGE_SIZE which makes
+> things inconsistent and hits that warn.
+>
+> Jason
