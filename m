@@ -1,94 +1,160 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23EE9271446
-	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 06:44:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9D5027EC78;
+	Wed,  9 Jul 2025 08:39:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752043460; cv=none; b=YU3a9dWYyeWNxS804E/e3lij7GJ1Csieaxd72gPPVw9ParcOlPjjDz5C3PkWihJuG5tA/lGarJYN720lI6gtGepr4kSiaYHV+WqWHTnsVzFqODaoPQy2Fidv8NY13LYtM7DR6fCNJj5onV6MQJYLrkl/2waJrkrzGlv2+wX3COE=
+	t=1752050375; cv=none; b=rV1OWeQADX0a/UVId6L7wpCEWcyUk3G39xXeV4dZvnV3/vrjBxAVwW0ON8YYG3wa0sxy0y/Xi0gIXMU44drvd78efl+7vvKlx+H2fNbvxaW3lUQDrLqR3A6c131TbScJM0wNrTDxRJUHIUEgfLhiP9facl7HX/3AL9olCQTNi4c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752043460; c=relaxed/simple;
-	bh=LQSsB569tHq9VHJp+YT8YnS0khI0VrYJiQIgsLVhLoc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=fG6ZpV2MTglSHGTf2lrEaN7ZDcsOIJKUwwCHASIWXU2iZ/Y7Zir0MvxJfWZRE69+IoO/med3G1KLxd4iNEvN+kNuVxocjrY3ebzwzOsw2Aut51i/o5sXHcuSaCElc+xfwv9HpVbBp9tAbKanHH9MM3kY7nTe7PARFOt/WiHekFI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m7ss6q7D; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1752050375; c=relaxed/simple;
+	bh=t5VSNcEehMTMmquqfqCWRO5GNuFwm77JFuq0jWmOL6s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fdbMwBBGLDwj8PKv5kz7S04ko2OpggsrIXxWa27+MNXFUDMVVYR13xOYiQ4mOgy9jCvA4tH/vOSmygAftX0o+3zACDum+QkoFYI7qb5exVwoD+vOF7F2aODBcwqpTcNLPdvq1YtiNwsWGjghx88DbbhuOqzrEPN4yDVCXP6unSM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UdGuN3m8; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m7ss6q7D"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AABE0C4CEF5
-	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 06:44:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752043459;
-	bh=LQSsB569tHq9VHJp+YT8YnS0khI0VrYJiQIgsLVhLoc=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=m7ss6q7De+/JMiUBKhr67WAAtz/Y6KPLPyZqQLNGkzeOocZsXvvLYVFH4/z99nChn
-	 p+n+Mib6h/7wWFtu8+JvW6jhRxmymr3dIaFUAjE7VkwhFYsYitLBcoHNqc5vFcKasK
-	 JrS/+L/G9YQWZr5viPl5HTLFoFFAfNNjwoe5c/fsyjhtEbKBBPDz/YlyvPB2YQXUsC
-	 ywdZkz5eZ6NaY+RQN2la1AZOhqsyuZK33GLhkvgKnQ3ZV9gBx4NhnQFAB0D4LCC8tJ
-	 XMnHsBfSXBwobGgi31Ep+h40IeNtkLEqqV4AScsHQ39aM+pUBJ+wiBNekbEghXMFb/
-	 IbZ56cTvswgBw==
-Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-611a7c617b4so1476896eaf.3
-        for <iommu@lists.linux.dev>; Tue, 08 Jul 2025 23:44:19 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXljVcSqbsQVlR1NJm15mn6uONJTnBfuQXIL/5Y8w4PC9KhopLt/d0IJRTeGE8yXJmVUKyjew==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxZvosTO6YTxKuKnaRx+U1F2luEvzed5Aylx+NzaLh4DdlBLFGG
-	gShwg1VZvsdGtxwpEd5o1ACgjpiMHxcaPLrfO2N5QCGlr4PERzfkEq4u7bfthLWjTzT19c3SDBL
-	5zL6H3MxqNn6CVGnu//Pkollv1ffVVGI=
-X-Google-Smtp-Source: AGHT+IEkc2wWAPLGpA+Df+Dz37BSSMGKPeqko3TaQhV1Kpi9RBTLw+UEgZfZ9QlXSIhRPHBowtulwpEGSU/cNLmOgok=
-X-Received: by 2002:a05:6820:308e:b0:611:7626:b5df with SMTP id
- 006d021491bc7-613cce21f05mr727326eaf.4.1752043458974; Tue, 08 Jul 2025
- 23:44:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UdGuN3m8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1752050374; x=1783586374;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=t5VSNcEehMTMmquqfqCWRO5GNuFwm77JFuq0jWmOL6s=;
+  b=UdGuN3m8twY0vLVJsUbrdiMrDDsNTEZAw3U1AqHyVrCz8a1mq4QjCfnF
+   jVTyZqCE8eCiL5A/4OSIueXX1OuRfOJPBbRjR/4trE6k1H/PtpRk7J6wx
+   34tZH316pMVV9Rh4TOdc9lbyGQ/AdH93nXkWnA7fNZQ03K/EtcVYKzR5N
+   R1L4RqNkWekqzN2iB6BVhArtlFiQb+YY0e4HfGil2Nb9+/pmlttxX9qBh
+   F5/j1BO+xWMR4RN/01DdZqEDQUBWVQqwSy9yIyDN+3Yq4VR46nTXWP5JB
+   /xcrgnB/KhV2HdzigLSq1wYHjbWXQUr8GeOCnjq4AaaAH5JWwKEzPAwKN
+   g==;
+X-CSE-ConnectionGUID: k/sPbr6ySx28N372NxqN6w==
+X-CSE-MsgGUID: 7jLZgPpcTXCL8BudK7y/ZA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11487"; a="65757429"
+X-IronPort-AV: E=Sophos;i="6.16,298,1744095600"; 
+   d="scan'208";a="65757429"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jul 2025 01:39:21 -0700
+X-CSE-ConnectionGUID: PBDRceqkTPSbk+KI6/bZSQ==
+X-CSE-MsgGUID: g0mu55mKQvKDPVjiEO9nuQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,298,1744095600"; 
+   d="scan'208";a="159755930"
+Received: from lkp-server01.sh.intel.com (HELO 9ee84586c615) ([10.239.97.150])
+  by fmviesa003.fm.intel.com with ESMTP; 09 Jul 2025 01:39:07 -0700
+Received: from kbuild by 9ee84586c615 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1uZQKT-0003J5-29;
+	Wed, 09 Jul 2025 08:39:01 +0000
+Date: Wed, 9 Jul 2025 16:38:07 +0800
+From: kernel test robot <lkp@intel.com>
+To: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>,
+	robh@kernel.org, m.szyprowski@samsung.com
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	saravanak@google.com, robin.murphy@arm.com,
+	quic_obabatun@quicinc.com, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	william.zhang@broadcom.com, kernel@oss.qualcomm.com,
+	will@kernel.org, djakov@kernel.org,
+	Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+Subject: Re: [PATCH] of: reserved_mem: Restructure call site for
+ dma_contiguous_early_fixup()
+Message-ID: <202507091614.ZsQ9sH7n-lkp@intel.com>
+References: <20250708165627.845295-1-oreoluwa.babatunde@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250616203149.2649118-1-praan@google.com> <20250616203149.2649118-6-praan@google.com>
-In-Reply-To: <20250616203149.2649118-6-praan@google.com>
-From: "Rafael J. Wysocki" <rafael@kernel.org>
-Date: Wed, 9 Jul 2025 08:44:06 +0200
-X-Gmail-Original-Message-ID: <CAJZ5v0jq7DL4z+q5XKcVUZQgojcxA8DgrMFncs1Z6skm+PVEmA@mail.gmail.com>
-X-Gm-Features: Ac12FXxSUcWrE2HT3j7kB_3BQQNWKtuP4_KiX1Fd83rawnvAir3er_hbKdTPKMM
-Message-ID: <CAJZ5v0jq7DL4z+q5XKcVUZQgojcxA8DgrMFncs1Z6skm+PVEmA@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 5/8] pm: runtime: Introduce pm_runtime_get_if_not_suspended()
-To: Pranjal Shrivastava <praan@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Mostafa Saleh <smostafa@google.com>, Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250708165627.845295-1-oreoluwa.babatunde@oss.qualcomm.com>
 
-On Mon, Jun 16, 2025 at 10:32=E2=80=AFPM Pranjal Shrivastava <praan@google.=
-com> wrote:
->
-> The existing opportunistic helpers like pm_runtime_get_if_active() and
-> pm_runtime_get_if_in_use(), are too strict for certain use cases. They
-> fail if the device is in a transient state like RPM_SUSPENDING, which
-> can lead to drivers making incorrect assumptions about the dev's state.
->
-> These helpers don't suffice for cases where one wishes to elide HW clean
-> up like queue flushes or TLB invalidations if the device is powered off.
-> It is wasteful to wake up the device in cases where the resume callback
-> resets the device well OR if the HW resets in a clean state. Thus, if a
-> device is powered off, it is preferred to elide any clean-up HW ops like
-> queue flushes / TLB invalidations when the device will resume afresh.
->
-> Consider the following sequence of operations:
->
-> 1. The device is in `RPM_SUSPENDING` state
-> 2. The driver calls pm_runtime_get_if_active/in_use
-> 3. Depending on these API, the driver elides a HW clean-up op like:
->
-> if (pm_runtime_get_if_in_active(dev))
->         invalidate_tlb(dev);
-> else
->         // Skip flush, assuming device will fully suspend
->
-> 4. Now, another rpm dev-linked device wakes up, causing the device's
->    state to bounce from RPM_SUSPENDING to RPM_ACTIVE without invoking
->    any rpm callbacks, preventing them from resetting the dev correctly.
+Hi Oreoluwa,
 
-This never happens.
+kernel test robot noticed the following build errors:
 
-If the status is RPM_SUSPENDING, the runtime suspend callback will be invok=
-ed.
+[auto build test ERROR on robh/for-next]
+[also build test ERROR on linus/master v6.16-rc5 next-20250708]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Oreoluwa-Babatunde/of-reserved_mem-Restructure-call-site-for-dma_contiguous_early_fixup/20250709-005858
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+patch link:    https://lore.kernel.org/r/20250708165627.845295-1-oreoluwa.babatunde%40oss.qualcomm.com
+patch subject: [PATCH] of: reserved_mem: Restructure call site for dma_contiguous_early_fixup()
+config: i386-buildonly-randconfig-003-20250709 (https://download.01.org/0day-ci/archive/20250709/202507091614.ZsQ9sH7n-lkp@intel.com/config)
+compiler: clang version 20.1.7 (https://github.com/llvm/llvm-project 6146a88f60492b520a36f8f8f3231e15f3cc6082)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250709/202507091614.ZsQ9sH7n-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202507091614.ZsQ9sH7n-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+>> drivers/of/of_reserved_mem.c:182:5: error: call to undeclared function 'dma_contiguous_early_fixup'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     182 |                                 dma_contiguous_early_fixup(base, size);
+         |                                 ^
+   drivers/of/of_reserved_mem.c:482:3: error: call to undeclared function 'dma_contiguous_early_fixup'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     482 |                 dma_contiguous_early_fixup(base, size);
+         |                 ^
+   2 errors generated.
+
+
+vim +/dma_contiguous_early_fixup +182 drivers/of/of_reserved_mem.c
+
+   150	
+   151	/*
+   152	 * __reserved_mem_reserve_reg() - reserve all memory described in 'reg' property
+   153	 */
+   154	static int __init __reserved_mem_reserve_reg(unsigned long node,
+   155						     const char *uname)
+   156	{
+   157		int t_len = (dt_root_addr_cells + dt_root_size_cells) * sizeof(__be32);
+   158		phys_addr_t base, size;
+   159		int len;
+   160		const __be32 *prop;
+   161		bool nomap;
+   162	
+   163		prop = of_get_flat_dt_prop(node, "reg", &len);
+   164		if (!prop)
+   165			return -ENOENT;
+   166	
+   167		if (len && len % t_len != 0) {
+   168			pr_err("Reserved memory: invalid reg property in '%s', skipping node.\n",
+   169			       uname);
+   170			return -EINVAL;
+   171		}
+   172	
+   173		nomap = of_get_flat_dt_prop(node, "no-map", NULL) != NULL;
+   174	
+   175		while (len >= t_len) {
+   176			base = dt_mem_next_cell(dt_root_addr_cells, &prop);
+   177			size = dt_mem_next_cell(dt_root_size_cells, &prop);
+   178	
+   179			if (size && early_init_dt_reserve_memory(base, size, nomap) == 0) {
+   180				/* Architecture specific contiguous memory fixup. */
+   181				if (of_flat_dt_is_compatible(node, "shared-dma-pool"))
+ > 182					dma_contiguous_early_fixup(base, size);
+   183	
+   184				pr_debug("Reserved memory: reserved region for node '%s': base %pa, size %lu MiB\n",
+   185					uname, &base, (unsigned long)(size / SZ_1M));
+   186			} else {
+   187				pr_err("Reserved memory: failed to reserve memory for node '%s': base %pa, size %lu MiB\n",
+   188				       uname, &base, (unsigned long)(size / SZ_1M));
+   189			}
+   190	
+   191			len -= t_len;
+   192		}
+   193		return 0;
+   194	}
+   195	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
