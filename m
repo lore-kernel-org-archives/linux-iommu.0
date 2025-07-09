@@ -1,87 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49A178F40
-	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 18:25:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EDBB023A98E
+	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 18:44:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752085541; cv=none; b=CscIAHKbB0gBmFcfe6XQINbH7foc1Cdz1zVvWNoBeX8Vb/EFgMx+k9k/DAM4MLcLeeBaPibcTuJ8NcvE2mmEcQeKX3ky+RK9GAedxNoY3GYodlfkA5ONidoaUvrp0H1n8RyKzevQcF3m1yoFZspPjPXghKwXrDoX0OFeDlkkCkM=
+	t=1752086675; cv=none; b=SEwTf9ulRWsbxZ4i2orJ1ecDxFhdcaNVY2CQurAfALq3Cwe8i71bU1JTF3IcatmdU7zozfL/ID/gz9Ria2gsdLTSzxF49b71VBinTrd5xRC7kntRKFQjH4YA/rBaBKZfZhBxpNoKvRGbLn8SYnfdt51tmvVpABPyJdJrUqBg4Go=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752085541; c=relaxed/simple;
-	bh=upzio2kGFiY7BDBlUw8c648KlV2ZsOsYlfXCLHKkvas=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=OD3NIro26B2mkVHKwGotEuLaFLZB54bXrSWS50nwGUCYGbkn1mlbDu303MsEhEzE3bZz5YrmaO/Iku5KFKW73G1g4Q5mLKztcF/czUsfFKTmP/VQjehLa7lP0Yp/BYzm5IWUDCKppHUVcA/mz3nOspGzSGe+CtNa7O44MexlvGY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Kdd6eJfB; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1752086675; c=relaxed/simple;
+	bh=LnSpViirecCt5hQ3qDHHxWMQrkVthi3qX9NY3MXKyqc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=IqDj9pm+H8hxt05QN05aWzLjX8TIQXo4xbnKVXc4MxIKPtBR/yg56gQC4oFSeA5ckmYg9QBypA7MMPYqOMX7xS13avhNmKzWXu5Ig90ZoBH4idJPVkoUXM6N8Dryod+CR/4U4te4SqCNMpu18UPtVelIhGzEnbcpS1K82JY6JN4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=PP9fz4hu; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kdd6eJfB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0A0EC4CEEF;
-	Wed,  9 Jul 2025 18:25:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752085541;
-	bh=upzio2kGFiY7BDBlUw8c648KlV2ZsOsYlfXCLHKkvas=;
-	h=From:To:Cc:Subject:Date:From;
-	b=Kdd6eJfBk97JKT4/vHp/qx10LaDBdvaFoYPma4pE6E/6ko0WJESU7HGtG+/GPpcsQ
-	 hzdefZsvNdemY812DCN2gQ5RtxmcuAuM2ncsfZt6DHLSc3uti3dZqpyUcI1h9vvaEj
-	 InIfbaQkrJ80rU/cBDphUawtt6YE/emFBjsUn5sEalaWG2ss5Vz4t6DIncKQcFZLij
-	 pwWX9wvYN8sbGgMkRIp5vihHjwlfqVX8ZMA0/P8VY7wpTTonErn4cwgn68Bbn1P6Ef
-	 widAmtpZ2LxoKZgUSLAlFLWh5ilWc5QT+bqDzHh+0vmxtCS0cR6yM6oIihOl6xGDUR
-	 ZgtJp2OnzdquA==
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Leon Romanovsky <leonro@nvidia.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	iommu@lists.linux.dev,
-	Stephen Rothwell <sfr@canb.auug.org.au>,
-	Christoph Hellwig <hch@lst.de>
-Subject: [PATCH] dma-mapping: properly calculate offset in the page
-Date: Wed,  9 Jul 2025 21:25:22 +0300
-Message-ID: <4f1d25f73d1a035fe5a7c9ff3818bfb0f16d3f88.1752085358.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.50.0
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="PP9fz4hu"
+Received: from DESKTOP-0403QTC. (unknown [20.191.74.188])
+	by linux.microsoft.com (Postfix) with ESMTPSA id E7028201A4A9;
+	Wed,  9 Jul 2025 11:44:32 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E7028201A4A9
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1752086673;
+	bh=G2dyhTNarlOLAveUVZiYAu+lzf15ztcoGNt03mbPme0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
+	b=PP9fz4hu1ioveQReVhuKlUAHtb9HH+nCfk2aboW5dHq5X3WKKZVE4nVVJWQKFS7+T
+	 fiR4bMl0Yp/IkEarB6JDAl2K7uTXv89F04ZOwbNQQb7AoULfiGkxhmoXdXl//7Voia
+	 CnY2mb9P8zlucmwoDrL+EObhYZejyi9wvZdxfRGE=
+Date: Wed, 9 Jul 2025 11:44:32 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Dave Hansen <dave.hansen@intel.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, Jann Horn
+ <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple
+ <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>, Uladzislau
+ Rezki <urezki@gmail.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, iommu@lists.linux.dev,
+ security@kernel.org, linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+ jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH 1/1] iommu/sva: Invalidate KVA range on kernel TLB flush
+Message-ID: <20250709114432.294425ff@DESKTOP-0403QTC.>
+In-Reply-To: <42c500b8-6ffb-4793-85c0-d3fbae0116f1@intel.com>
+References: <20250704133056.4023816-1-baolu.lu@linux.intel.com>
+	<20250709085158.0f050630@DESKTOP-0403QTC.>
+	<20250709162724.GE1599700@nvidia.com>
+	<20250709111527.5ba9bc31@DESKTOP-0403QTC.>
+	<42c500b8-6ffb-4793-85c0-d3fbae0116f1@intel.com>
+Reply-To: jacob.pan@linux.microsoft.com
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Hi Dave,
 
-Fix typo of offset calculation of dma_map_phys() function.
-In addition, reduce scope of rarely used variables.
+On Wed, 9 Jul 2025 11:22:34 -0700
+Dave Hansen <dave.hansen@intel.com> wrote:
 
-Fixes: ec7352735abf ("dma-mapping: export new dma_*map_phys() interface")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Closes: https://lore.kernel.org/all/20250709233953.7afb7a8a@canb.auug.org.au
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- kernel/dma/mapping.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+> On 7/9/25 11:15, Jacob Pan wrote:
+> >>> Is there a use case where a SVA user can access kernel memory in
+> >>> the first place?   =20
+> >> No. It should be fully blocked.
+> >> =20
+> > Then I don't understand what is the "vulnerability condition" being
+> > addressed here. We are talking about KVA range here. =20
+>=20
+> SVA users can't access kernel memory, but they can compel walks of
+> kernel page tables, which the IOMMU caches. The trouble starts if the
+> kernel happens to free that page table page and the IOMMU is using the
+> cache after the page is freed.
+>=20
+According to VT-d spec. 6.2.4 S1 IOTLB caching includes access
+privilege.
+"First-stage mappings:
+=E2=80=94 Each of these is a mapping from a input page number in a request =
+to the physical page frame
+to which it translates (derived from first-stage translation), along with i=
+nformation about
+access privileges and memory typing (if applicable)."
 
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 29e8594a725a..8d29ff76aa4d 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -156,9 +156,6 @@ dma_addr_t dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
- 		enum dma_data_direction dir, unsigned long attrs)
- {
- 	const struct dma_map_ops *ops = get_dma_ops(dev);
--	struct page *page = phys_to_page(phys);
--	size_t offset = offset_in_page(page);
--	bool is_pfn_valid = true;
- 	dma_addr_t addr;
- 
- 	BUG_ON(!valid_dma_direction(dir));
-@@ -172,6 +169,10 @@ dma_addr_t dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
- 	else if (use_dma_iommu(dev))
- 		addr = iommu_dma_map_phys(dev, phys, size, dir, attrs);
- 	else {
-+		struct page *page = phys_to_page(phys);
-+		size_t offset = offset_in_page(phys);
-+		bool is_pfn_valid = true;
-+
- 		if (IS_ENABLED(CONFIG_DMA_API_DEBUG))
- 			is_pfn_valid = pfn_valid(PHYS_PFN(phys));
- 
--- 
-2.50.0
+So you are saying IOMMU can cache user DMA initiated walks and cache
+with supervisor privilige? Since the SVA PASID is a user PASID, even if
+IOMMU uses the cache later on, how could it get supervior privilege?
+
 
