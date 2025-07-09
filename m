@@ -1,169 +1,230 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2087.outbound.protection.outlook.com [40.107.95.87])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 390841C1F13;
-	Wed,  9 Jul 2025 13:38:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752068318; cv=none; b=c16SIdn8tFpTaua7FkWDETuD83DbaGWYBRT/fGMU4B0A7rMYye9jCPPZIwVHxrjiNHLmgY7aszTHm89HwJGj/wzvVr17XZHyQ1oA3IhYNFZhoNxALRap5uE/GdPDlcCG401TYgNXHQGRWRVJ8aIxifASIdLhw/8ldUU6jFRuxt8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752068318; c=relaxed/simple;
-	bh=h8rkgdzFHzQfCXKGB13VqG6DTj3tCT4fvRbPC6Q9TJc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mpS8BdtiwYWXVFRJ8zCkYMsHN7mVG7ZYMkqezvOGiRnMUcIVwXgw5tn15Agqa1v6AkKDR1qBNXMRA948OrNEoqXdtMHvhY9+A8rWAIehKYtGh+KG29IJeDFX6CgrXHvLYGuqeRSBXtpjUM8ED79ncfQwcUWaFhoZr6G8Z43/GP4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cok7Ru6t; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF3172E7655;
+	Wed,  9 Jul 2025 14:52:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.87
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752072747; cv=fail; b=UMCgU0WWFx6H1/mESjEvmhjAGP3u/Iz+jUQFnO7JLZSFX17ItJOJZGRYCdIirfcF1pbPyhB0msZy2DKrBp3MTIrT8kPfN5eLA+M5/gatp/hoti2kObwCEoOGfoazkm9pvhbluf6QqxMEb3C0Rc0YHyIgCN4tSiZe81sIEgrRkX4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752072747; c=relaxed/simple;
+	bh=t8ZRLT4dAOJoi9qYvcz1aLUiTR1o0uH4yxQ5NuejWNY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=a3HnhrEdCCCGCCObY8IqEsukl//JYIyEqAgkMqBAxdarxKujjJFK60FRhnDfljTdaA3aSEPbH4l3umilbrJ19n/ZpPA36Qqjp3ejqfdFryHGxF4ctOnuYtubbcmu0Y2U1NBZsgI4+lX7mIYfEOWZS5xEzTVxAUQldQyRAhW1Vgo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=dA1Zufub; arc=fail smtp.client-ip=40.107.95.87
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cok7Ru6t"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FEC4C4CEEF;
-	Wed,  9 Jul 2025 13:38:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752068317;
-	bh=h8rkgdzFHzQfCXKGB13VqG6DTj3tCT4fvRbPC6Q9TJc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=cok7Ru6tbwPf8DJ/GhRrPstP/I0zh/TMSe60GW8wNsnXiRyHW+Tf9VR43hFMEXANp
-	 nA9yQR+3gGyjumTd2aR31jkaluaCPUfp9OJzMJNGL6iO1bosVebm+gtOam0s3LgviF
-	 0qgXZtR5I68ISvW6+7jrDWcLGDJ5eZ1lxF4wInZz59liiDUeFKysL48gZydSKKo/sV
-	 RBhFESjNO2O8yASjDhpRyrL3yew7ckHOedOhDO2NYrNdFPmP8ofnTqyxuSr/3hpl/V
-	 r9BARdBLahmPKDK4L5U6u/awlc3gw3+s31xuPfGtfv7Y4UgprYL97ykPOEARLt/Afz
-	 RKn2Zom/0ZhDw==
-Date: Wed, 9 Jul 2025 15:38:34 +0200
-From: Maxime Ripard <mripard@kernel.org>
-To: Nicolas Dufresne <nicolas@ndufresne.ca>
-Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
-	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
-	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Andrew Davis <afd@ti.com>, 
-	Jared Kangas <jkangas@redhat.com>, Mattijs Korpershoek <mkorpershoek@kernel.org>, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v6 0/2] dma-buf: heaps: Create a CMA heap for each CMA
- reserved region
-Message-ID: <20250709-spotted-ancient-oriole-c8bcd1@houat>
-References: <20250709-dma-buf-ecc-heap-v6-0-dac9bf80f35d@kernel.org>
- <49e3fa834aadb37452112bb704a1a1593c1fd0b8.camel@ndufresne.ca>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="dA1Zufub"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=W7vi41HM7bJilrfpHThb4ki5v4EbsMxJPk0d9KzP/uGQL2ZYiKtE5LyRdTVeZTwEByvWxUzdvMd+7bIE/tz/8zt/CBa+GYomZnxfr7zpPJ30EHN/jpuCCv23LtA7CIohElx09+EivZeI6SsgLlmwn+1yWDEUxG/lrKpHS0zxPg6h5d+DonCFYJurEakwhp0fSG/Q12FFGWTw3TvFfLVj8ecjcWLFlbkwuwMHRxj5E9Fxe673zN6Ryb9tzL8bgfFI5wS7AkfWRaNbgnnOg+FENtgRocM9pTahNTPvezYWYgjrpCrrqFmOzTtbg41TGtfZsaU0sX1KL2Uh2jl4+R41FQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bShY+QBOEsWJJnJ5ZfAAWfxse45J8OkKk4hh6OQaaUo=;
+ b=zAO4yv8LxYzlnCrAXCqa43FVIbc81FOALtY6t6e6soBjsNmTM5vHRuXoP836ehEPfoHIB/9MDuE79UXNkXYpYbYrTW5ZjcT3jADthhAgADRc5Wu16eDCBUcnG+PCELF6XE6Smtj8/1aJ60SbMoKC36YrTV7uOpi1aZYjrKXiwTQRClYlBBFtbfLBp5/GAxzBQTFv1wCOH+2LHM3CWiK40v7MCiowX4jbhD4Ns9DmQYYJGj9s1MizemJmo5dff6tAOimXN48l8RZaRxZEkmbQqyft43xcIhoJOGugHiXP3fmJHqfB7cXAphKGg6B4PMWSf6aqaPGLpaWjNK2apDZVKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bShY+QBOEsWJJnJ5ZfAAWfxse45J8OkKk4hh6OQaaUo=;
+ b=dA1ZufubZuq+9/tMIGC8MITVRggUjwHiLKIpc+RzRp70DGiJkx9rRC9AxOGKH7VlMVJSGh/eA0Rzbw0/KX7zprgpnkJUw0wBIvRbzSrBH7VbtDA0x/A5boQr9P3SbTcql+ISV4aotuMMk6han3ZL2+LVialPUuv0Mye/GBYLVtqRO47KNrn0iHb/2ffRXUgYRx/UxHBgwRnayQLNBBZdhgstskB6RJgdjHNIzItFUKbRQ4H33EM0eI/zq1lBv/ivt2eygjQEoB/BPkXd1b5z/2ONpyITMNtqnqpBPiNogXMy/nrYXfzfSDTNKfGd48aYnFtzJ0VEblVnutFU65lUbw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by MN0PR12MB6125.namprd12.prod.outlook.com (2603:10b6:208:3c7::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8901.23; Wed, 9 Jul
+ 2025 14:52:22 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8901.024; Wed, 9 Jul 2025
+ 14:52:21 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Bjorn Helgaas <bhelgaas@google.com>,
+	iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-pci@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	galshalom@nvidia.com,
+	Joerg Roedel <jroedel@suse.de>,
+	Kevin Tian <kevin.tian@intel.com>,
+	kvm@vger.kernel.org,
+	maorg@nvidia.com,
+	patches@lists.linux.dev,
+	tdave@nvidia.com,
+	Tony Zhu <tony.zhu@intel.com>
+Subject: [PATCH v2 01/16] PCI: Move REQ_ACS_FLAGS into pci_regs.h as PCI_ACS_ISOLATED
+Date: Wed,  9 Jul 2025 11:52:04 -0300
+Message-ID: <1-v2-4a9b9c983431+10e2-pcie_switch_groups_jgg@nvidia.com>
+In-Reply-To: <0-v2-4a9b9c983431+10e2-pcie_switch_groups_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SA1PR03CA0004.namprd03.prod.outlook.com
+ (2603:10b6:806:2d3::8) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha384;
-	protocol="application/pgp-signature"; boundary="t6erlqty7rzkhzhp"
-Content-Disposition: inline
-In-Reply-To: <49e3fa834aadb37452112bb704a1a1593c1fd0b8.camel@ndufresne.ca>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|MN0PR12MB6125:EE_
+X-MS-Office365-Filtering-Correlation-Id: 756b77a7-07bb-40eb-3b44-08ddbef8357a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?2eUiFb4duytLcGCIy8dPVjwQw8o84zSeflfj+SyivsmCIgjCyT+PvfjkhJUk?=
+ =?us-ascii?Q?d6NQqc6polO1PdgKLNffUV/WjteKJTJzYp9lnT3tcT8rdmlTY7GbU76uql1H?=
+ =?us-ascii?Q?pHJNmhax6OgDV2Cnalb4t82Ju07z8jvkDsA571dN+iKawWkfAAV4xDITSsyJ?=
+ =?us-ascii?Q?T985u0C1Gd1hUsKZUjjop1zFRuoojPjLjT6WeksV7EZBGi9Qg4zkL7Yo9vpm?=
+ =?us-ascii?Q?Rc4a2QGJW+hOfmqxHiZJ/XEP3ef3qC1raRPWMqw79yVc87D3wftQmly+SWVY?=
+ =?us-ascii?Q?U8CLgS+9Wb7rW84TsRYE0913c6M6h6SQ/Lg3+xd+oqFSVBpQwNBeBJ21MfVs?=
+ =?us-ascii?Q?ji5iQjk3lbIs5qYxDwurGAi19/uZYw4T9HrcZ2B1Y0hjXNKKkusLc2CHeEoJ?=
+ =?us-ascii?Q?dfUWpcvuEUtUSof0QGX/0IPOLulfLrk5c1xUvjltCgLT0kDcEe5ANwm2WDtZ?=
+ =?us-ascii?Q?K/Cc36VJXlcQPwQgtQ815yAr0tFGC6ORpKrTAyfWN5Qu2U+UrdzLdgpSNFWg?=
+ =?us-ascii?Q?mwIOVM5LlxCdyJN6Xj/SANUD+ZVz8yLpwoRIYPxgwa87LYbofieF5L2q1Sly?=
+ =?us-ascii?Q?4EifrPB+gSUF0VyL8BFvtKYQdudvQL/+fxUb3dYxQwDYSbWYZ7Lrn5kRUZzq?=
+ =?us-ascii?Q?zIzJ3HJlAPDFB2x2u1S9IWFlqkRX+zAEkQ3+Rz5xQqiFZitXy/7ToatYDA3z?=
+ =?us-ascii?Q?F/CwudiE984UXONWjy2/I8i7z+5UQYbHhFGXL6shGmsJnF+lLxlHHOXW1HRp?=
+ =?us-ascii?Q?uwNpjDI2DjWs87jv928+l3Sibvp6WF7hku0h4/zXwZVIeXltWoMO06YAoowZ?=
+ =?us-ascii?Q?35Rj9th9YuFjFtB+XchQCO6unrQpTCAGUEhnuBl5UgdV3yAWP2CVgPLueATY?=
+ =?us-ascii?Q?fJV9N3drF+wNPp+CaBxarvdEkvu0NEBksgRJ4Z1p/GHNCykskyY6rLP/mXK4?=
+ =?us-ascii?Q?UhiKAL3oCUSeFUYf6LSZq/ug8fEQVa104cPZ2YphLEMQZAzYekz4C+XR+7ch?=
+ =?us-ascii?Q?1SOhgdQM9be7RwR6VeYisygyudCMu5NpiIiFipNT8h4skjA0GrE2zqTuwYTs?=
+ =?us-ascii?Q?kIgCbS7LdBqVvSornclt/JhPERJOH5ZTKKDiFe1z4saobLWvfQXVZT88kDIn?=
+ =?us-ascii?Q?KLFlMgjb7XBkgMrBn+b7Wy8GHYPOJRpg00H8qkM6MbqZV49h5EpbiG44ROiI?=
+ =?us-ascii?Q?eGpdySJqezFwzBAowHUaRHfTBJBgycEYwMrfVrcG3p8CVn+N6Bi3lKd9thaN?=
+ =?us-ascii?Q?gsw25DXme2glYszoxzkSeQkj9ZPfilRkYF4wpvaHO0wAQZ9Ol6n+YLmSB2jx?=
+ =?us-ascii?Q?N6phgKSm75VSszZXLn34EzSDkjs023Vgo15NQk0MYjO2qqIriptO9OKvDApG?=
+ =?us-ascii?Q?b8v4jvJF4MkL9ImBvplNPKYpsVz/I05Aid486gTXYVQVvtWWAdIxCj+BW1gN?=
+ =?us-ascii?Q?LM6yfbY3hzQ=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(7416014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?w6+OqMOdLZnefIyxChiZGcw7oCbiuEe+XXir5HeEcWQTRNBkNBwwvv9iCdjA?=
+ =?us-ascii?Q?4h6l0+loIOiOhdob8GYaCQn+7/zEtdt299aLSNhoxCtmlPZh2ybxH80Y4+3A?=
+ =?us-ascii?Q?+SfhkRc3tFI/Le+yEPPT/iLV6xs8QsYJ31r0ETiHYudy/vMhCJEbDaGtzHzc?=
+ =?us-ascii?Q?afCFSDUCeTio3KnRxDpQRHndjTnuKUGnDEW61WeL5enapCNUGh21uENoUdD8?=
+ =?us-ascii?Q?d3MP52W0e6XJr4HixufyuUpFZoHyvDrfDnqFlZBb1B7GSgktIwkA11yRtWX/?=
+ =?us-ascii?Q?stQXgMEIVI6pT4Sx+ac3ccx0vvb1dH4rNCriAo3auWTVODfo/444B/NKj/6X?=
+ =?us-ascii?Q?aUXReKoY6aj1JE6UHIXl6qIMjS4NQKmsEnrbSse5Sykz8uBHR1nZZpb9mqKP?=
+ =?us-ascii?Q?JMFAknJA9vBSY125uz1ieGmUiXlBTA2BzGPhkg0AvWJjU/zLRdzDcOaLWDQG?=
+ =?us-ascii?Q?bwF0zLuQeSA8hgVO4qnhgTGUNEl3bqIPpRpdqk6oA8UJZt8JniqOYvFMYfKk?=
+ =?us-ascii?Q?g0xKnf3vpyHon2VCKa4JZGSfLSQzuBXwuElUakckoJ1xGIa4Qgg6O1wLkjxE?=
+ =?us-ascii?Q?Z4JVO9yxWcSholzJO+vfaR58Hu2GhQP2nu6TdlnkicU6kpGp/AD0/191sMQh?=
+ =?us-ascii?Q?Vlj8HMEfbR5zXqLa9LTa+rJFJ1Y+54yi2oVaNuufYhX77Ua/jqWxH9adeB3s?=
+ =?us-ascii?Q?3AALMCpIUwtAiiO+DYpiHp378QrX6UG6j589Ho6ODt7dD5WEmJPXTeOpe5Cp?=
+ =?us-ascii?Q?0hivqEF8C6WNvrunTO+HKKzsDYdJtUVkVvitDXdvtNd35Udu74CusM1jO77L?=
+ =?us-ascii?Q?BXaWDMEbAefSAtZSjdFZ2TINBOyxum/8lECiAKSu91M1OdP/8XXnNLV5ev6W?=
+ =?us-ascii?Q?A8t8qH0wWxcKNqjRVjOQ708xtnNGEGNUPm9khvqsw+wA9KuPbousg40XkNPQ?=
+ =?us-ascii?Q?TEfn1B5aKARJT78TZxMuXKoOsS57nEXfuSWkcGcFPDKT2o6IQip3EamEfz2J?=
+ =?us-ascii?Q?3PTIsxk4t6HetauqwcSnGGIpqH79q4PyxfiUH/uL07XJsiUQQZNHG2vrNJyS?=
+ =?us-ascii?Q?7YHEsh8BYdzQnMOt0gAr91GwQCDGrLxaVoMBS8CEHS1hKItv3ozmZMjn+vbV?=
+ =?us-ascii?Q?dOW5fCq99FeF7ko3eAO954ScZczcIrXMLbNZD+T7JluCdIEPr775epo8xDk9?=
+ =?us-ascii?Q?mcKuNnNRjZzUEsQEuZIp0B8+kz1ckwcOIF7eg/fQGZWmwAa9EBGDeFENkKs3?=
+ =?us-ascii?Q?9SzEZv0/GhrfZW6qP9yMPMQVdDo4PTleNLNP12jLkxsKFdilUA3vLaEfT3Xz?=
+ =?us-ascii?Q?DJv48jxKoOyd6KczLoBP41HLp30MyXX2WYVIRlukO97Q0wXXNVDdyST4FxOB?=
+ =?us-ascii?Q?T9JtYE0Z1hwK/3BcpNDcH8nyRHqujzIFrjnKMJ63Fid4dPCUXwJYw1IDJ1wr?=
+ =?us-ascii?Q?dvK5BENyFahad1waraYZlT8XhrjCssUkpNXbDies3OamJp9X4VlEzBanR+XD?=
+ =?us-ascii?Q?1+oCsZPw2IDpuO+Y3RK1ikatnGtWNvc+isYkR6f3wKB8gOVHbz2Qsg2ttCZU?=
+ =?us-ascii?Q?fU05nEtcGT5sy8CrmiuC+QLIC3EeEzSA2hgaCvWE?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 756b77a7-07bb-40eb-3b44-08ddbef8357a
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2025 14:52:21.7411
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: goAN5JMztkBEmtUNpTZo8i9ggD6cZdZbkJZ1C/Ju8dhG+odOo6K3s3xV9yhEOS/S
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6125
 
+The next patch wants to use this constant, share it.
 
---t6erlqty7rzkhzhp
-Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v6 0/2] dma-buf: heaps: Create a CMA heap for each CMA
- reserved region
-MIME-Version: 1.0
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/iommu.c         | 16 +++-------------
+ include/uapi/linux/pci_regs.h | 10 ++++++++++
+ 2 files changed, 13 insertions(+), 13 deletions(-)
 
-On Wed, Jul 09, 2025 at 09:10:02AM -0400, Nicolas Dufresne wrote:
-> Hi Maxime,
->=20
-> Le mercredi 09 juillet 2025 =E0 14:44 +0200, Maxime Ripard a =E9crit=A0:
-> > Hi,
-> >=20
-> > Here's another attempt at supporting user-space allocations from a
-> > specific carved-out reserved memory region.
-> >=20
-> > The initial problem we were discussing was that I'm currently working on
-> > a platform which has a memory layout with ECC enabled. However, enabling
-> > the ECC has a number of drawbacks on that platform: lower performance,
-> > increased memory usage, etc. So for things like framebuffers, the
-> > trade-off isn't great and thus there's a memory region with ECC disabled
-> > to allocate from for such use cases.
-> >=20
-> > After a suggestion from John, I chose to first start using heap
-> > allocations flags to allow for userspace to ask for a particular ECC
-> > setup. This is then backed by a new heap type that runs from reserved
-> > memory chunks flagged as such, and the existing DT properties to specify
-> > the ECC properties.
-> >=20
-> > After further discussion, it was considered that flags were not the
-> > right solution, and relying on the names of the heaps would be enough to
-> > let userspace know the kind of buffer it deals with.
-> >=20
-> > Thus, even though the uAPI part of it had been dropped in this second
-> > version, we still needed a driver to create heaps out of carved-out mem=
-ory
-> > regions. In addition to the original usecase, a similar driver can be
-> > found in BSPs from most vendors, so I believe it would be a useful
-> > addition to the kernel.
-> >=20
-> > Some extra discussion with Rob Herring [1] came to the conclusion that
-> > some specific compatible for this is not great either, and as such an
-> > new driver probably isn't called for either.
-> >=20
-> > Some other discussions we had with John [2] also dropped some hints that
-> > multiple CMA heaps might be a good idea, and some vendors seem to do
-> > that too.
-> >=20
-> > So here's another attempt that doesn't affect the device tree at all and
-> > will just create a heap for every CMA reserved memory region.
->=20
-> Does that means that if we carve-out memory for a co-processor operating =
-system,
-> that memory region is now available to userspace to allocate from ? Or is=
- there
-> a nuance to that ?
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index a4b606c591da66..d265de874b14b6 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1408,16 +1408,6 @@ EXPORT_SYMBOL_GPL(iommu_group_id);
+ static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+ 					       unsigned long *devfns);
+ 
+-/*
+- * To consider a PCI device isolated, we require ACS to support Source
+- * Validation, Request Redirection, Completer Redirection, and Upstream
+- * Forwarding.  This effectively means that devices cannot spoof their
+- * requester ID, requests and completions cannot be redirected, and all
+- * transactions are forwarded upstream, even as it passes through a
+- * bridge where the target device is downstream.
+- */
+-#define REQ_ACS_FLAGS   (PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
+-
+ /*
+  * For multifunction devices which are not isolated from each other, find
+  * all the other non-isolated functions and look for existing groups.  For
+@@ -1430,13 +1420,13 @@ static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
+ 	struct pci_dev *tmp = NULL;
+ 	struct iommu_group *group;
+ 
+-	if (!pdev->multifunction || pci_acs_enabled(pdev, REQ_ACS_FLAGS))
++	if (!pdev->multifunction || pci_acs_enabled(pdev, PCI_ACS_ISOLATED))
+ 		return NULL;
+ 
+ 	for_each_pci_dev(tmp) {
+ 		if (tmp == pdev || tmp->bus != pdev->bus ||
+ 		    PCI_SLOT(tmp->devfn) != PCI_SLOT(pdev->devfn) ||
+-		    pci_acs_enabled(tmp, REQ_ACS_FLAGS))
++		    pci_acs_enabled(tmp, PCI_ACS_ISOLATED))
+ 			continue;
+ 
+ 		group = get_pci_alias_group(tmp, devfns);
+@@ -1580,7 +1570,7 @@ struct iommu_group *pci_device_group(struct device *dev)
+ 		if (!bus->self)
+ 			continue;
+ 
+-		if (pci_acs_path_enabled(bus->self, NULL, REQ_ACS_FLAGS))
++		if (pci_acs_path_enabled(bus->self, NULL, PCI_ACS_ISOLATED))
+ 			break;
+ 
+ 		pdev = bus->self;
+diff --git a/include/uapi/linux/pci_regs.h b/include/uapi/linux/pci_regs.h
+index a3a3e942dedffc..6edffd31cd8e2c 100644
+--- a/include/uapi/linux/pci_regs.h
++++ b/include/uapi/linux/pci_regs.h
+@@ -1008,6 +1008,16 @@
+ #define PCI_ACS_CTRL		0x06	/* ACS Control Register */
+ #define PCI_ACS_EGRESS_CTL_V	0x08	/* ACS Egress Control Vector */
+ 
++/*
++ * To consider a PCI device isolated, we require ACS to support Source
++ * Validation, Request Redirection, Completer Redirection, and Upstream
++ * Forwarding.  This effectively means that devices cannot spoof their
++ * requester ID, requests and completions cannot be redirected, and all
++ * transactions are forwarded upstream, even as it passes through a
++ * bridge where the target device is downstream.
++ */
++#define PCI_ACS_ISOLATED (PCI_ACS_SV | PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF)
++
+ /* SATA capability */
+ #define PCI_SATA_REGS		4	/* SATA REGs specifier */
+ #define  PCI_SATA_REGS_MASK	0xF	/* location - BAR#/inline */
+-- 
+2.43.0
 
-There is a nuance to that :)
-
-You need to have the "reusable" property set which is documented as:
-
-      The operating system can use the memory in this region with the
-      limitation that the device driver(s) owning the region need to be
-      able to reclaim it back. Typically that means that the operating
-      system can use that region to store volatile or cached data that
-      can be otherwise regenerated or migrated elsewhere.
-
-https://github.com/devicetree-org/dt-schema/blob/main/dtschema/schemas/rese=
-rved-memory/reserved-memory.yaml#L87
-
-If it's not set, it's not exposed, and I'd expect a coprocessor memory
-region wouldn't be flagged as such.
-
-> For other carveout, such as RK3588 HDMI receiver, that is clearly a win, =
-giving
-> user the ability to allocate using externally supplied constraints rather=
- then
-> having to convince the v4l2 driver to match these. While keeping the safe=
-ty that
-> this carveout will yield valid addresses for the IP.
->=20
-> Will there be a generic way to find out which driver/device this carveout
-> belongs to ? In V4L2, only complex cameras have userspace drivers, everyt=
-hing
-> else is generic code.
-
-I believe it's a separate discussion, but the current stance is that the
-heap name is enough to identify in a platform-specific way where you
-allocate from. I've worked on documenting what a good name is so
-userspace can pick it up more easily here:
-
-https://lore.kernel.org/r/20250616-dma-buf-heap-names-doc-v2-1-8ae43174cdbf=
-@kernel.org
-
-But it's not really what you expected
-
-Maxime
-
---t6erlqty7rzkhzhp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaG5w1QAKCRAnX84Zoj2+
-dp3pAX9+Z09k44eaivapsVKw/NqvekdMSYnQGvkEfOP/NBTjJF5RGakuRbEE73Xk
-qKAYEiMBgKsMpFVvSS9l9pFXZtK1LVDJ1XtphLJBeHq/gZxL+5K0t2qMG09CpG18
-A+HJas+mmg==
-=pWj1
------END PGP SIGNATURE-----
-
---t6erlqty7rzkhzhp--
