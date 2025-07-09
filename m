@@ -1,145 +1,175 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34BAC285050
-	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 11:59:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AF5D28DF42;
+	Wed,  9 Jul 2025 12:45:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752062348; cv=none; b=B/M1HSkDtopBS0Uf9NwWdX8HSh5jMcPElQCrIevtEGxi29Do+S3MVytxlNoLeC2rZOl7R7vVcLUj4a0cv3S1xfuMTHrzyFBlI9ckz6mkxCBu3Dh6C+d6bMiXnemPaB8qf5Js3Ha7fOlGThy4TJRy5ysy4+saJXenEVOx7ekikLs=
+	t=1752065104; cv=none; b=LjSHeIZ+ADZYovqubxVujM6KN6MGBWWmiXDoBU7x119dsxnJT9IhEfaGOGk+xcPK8P9wen7CT2ZtEsp4lqtleA12cOdMT87xyK/OUZ2mKrvRIMIIChiMb9FABWRvxoc+BDk6AYjsmWe3/nI6jluWAuoGUfVZ/582W0rB5Y0325M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752062348; c=relaxed/simple;
-	bh=bgR5awQX0vKasE3O7EHtXSFXPFtLWKVOsswzgDdWlbs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cX+pa9m1LstwaWXgX9JZfh1uC13EVvmkaDrzKgqLg6Cz/WWqgef0+0kX7HaY8ptvKR7oxRdz41/I8Oym/KdmUED+Uee/Y3Ij0WlxRYbrximKbvfQQ/9GAUlRT8LNPRHZO673TAqY9dG5uFLU9oy0tdf9c6xmKYDKBvbqynrNib4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AUEpCT1Z; arc=none smtp.client-ip=209.85.167.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1752065104; c=relaxed/simple;
+	bh=5ig93j1gHmVqigZVEEovbc0sfYjFNVqIz+vVSrVJ/jo=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=YWxe1f4UpFQEXqrCnuBzPxILYsQejjRk+ha5DrkLaOr5+r1ZbYQj7vgTwn9G7XDTIkp5GW1rcw0Wc+HFX2s8VMLJCRut5Q8TNTquH8E+LkFEo/guW3EGk+I4OoNQwxsSnkvc9qtE2MimRUEO0Ryjknh4AMem3v9W6dWMo4TJy7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SU8qJ591; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AUEpCT1Z"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-553dceb342aso4822270e87.1
-        for <iommu@lists.linux.dev>; Wed, 09 Jul 2025 04:59:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1752062345; x=1752667145; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=cok7uU2jUvW7fnecoEr7WpQIhsCNVnn9HvuxNqMoKcs=;
-        b=AUEpCT1Z+o2MqLNUuV6+9v4fJpbtIPcrUZgeroZhaA+Egh/1fnxPHynnciPh82nIsS
-         fyZ3YaiVnHIqK4amlfVel4DBA/YUSMye6k61+pR/S2Ouh0hftKwO9AIyqPD2iVzZ/VUZ
-         xQ+bMN1+iiHdSRngtpZXlGCYsgYGr1n66t1yTfQ+Kx8f4zLxcbR6iGKhXk+xN+IKlEAh
-         K9cZhqlLiDNdEfCCz2tY+vOmIAhF8MeH4zZ8EwbN6n5NZI7F8t75FTifr1Rxsflsw0S4
-         OBpj2PYqkNV9XlbBDuJuserTI2yEy68LeczjYL6LmRXPhfQnqH8WwSBKyU9ljq4I429V
-         Q7lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752062345; x=1752667145;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cok7uU2jUvW7fnecoEr7WpQIhsCNVnn9HvuxNqMoKcs=;
-        b=Pl5d2h+mQDXKrjxdRdfmwPOJxrSG6YtFP5YqXivgC0MStE/izmDdMsBEe9JY1Rduva
-         nwzcNiYAIlI3Jxl/wQWnmuIuZRDgjX+qfokqBwJA2vb7+2oq1Gl02cIFzuIE6RLIMcYu
-         WeYMZYY8fKttvK037dBDttqHz1AVUtnv7My/eZAvKxIzSUK8ggoiBlqYjP7botirNTzv
-         XUPI7+VkMUfpXSPWq4cCfmb/ISSSCMlcONOigaPF2Xi6doL5WJvqDGybaI0Gm9/4KVoE
-         NwRXNDDPsuZpOw8wIjOYzbA7pWSba635a9ENQ2ambAP9lOkhVUG1Vr7pOlBuK4Tm/mQ6
-         Jb+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCX6jpKKY431TVtUXmE/LnimXrZZitWC4CO8fQx4ulgQ48urep3o/uSjtJMRrNBHYZDkEu4c1g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz84VQhp+ri8puxWBB5ge8Br76yqKBy317Wu89x5QfO8uzpmkQk
-	QqjVVP+p75SEhPOLcb1rAYKJ8xrPHvNbl5SAqkXC5x2C86fJZYwBlQx+
-X-Gm-Gg: ASbGncuu5IH8eyQY3ho661l3Dg8zayNTyTmJJr5u7aE1KmAtJd5ZASfpTsuHn2efF6O
-	oY32jZ6cXeHGnU0IPLKU56Lm3Nu8+VpKP7vI904LvcAA8iPrDaK0wvjynZj2pJ11VnKxXoZVCYT
-	aRKjxqxJ4+ZjXABMNyInXkh2gj2vEw6OFTufTZmFd2ssYSC0dFbEL0wCkwh6txW3CvRWXzUZOjZ
-	gwPJtZiwSSvBATrL350KWtckmFbDBxv+E1rXSgVLEvyjMY5ZATkOhS1UlubbQFWX6h7hQTmElgZ
-	vChOD2HjKPu6Z3fO1dvJ/qIKe2syZoQL9dgNezA2pkxxob2hNh3NvbMAAJq3D9vY1h/ZH8zLa3G
-	adU+9y3+j4kzh/6XSIls17KLz+MKDY60PRNR90YgIUSwoYi+WVg==
-X-Google-Smtp-Source: AGHT+IFC8/vApe5HFeNaNKqi+jWCcD3kQruu4TovfGc8AxarPCJVnGOQYHuNec4peOG7S/XWGGoTrA==
-X-Received: by 2002:a05:6512:3f0b:b0:553:2e27:6769 with SMTP id 2adb3069b0e04-558fa86e7cfmr643645e87.7.1752062344958;
-        Wed, 09 Jul 2025 04:59:04 -0700 (PDT)
-Received: from [192.168.1.146] (dsl-hkibng22-54f8dc-251.dhcp.inet.fi. [84.248.220.251])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-556384c8c42sm1981269e87.237.2025.07.09.04.59.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 09 Jul 2025 04:59:04 -0700 (PDT)
-Message-ID: <0206a7fa-ce7f-46af-8f1d-f9dedbb0a3d8@gmail.com>
-Date: Wed, 9 Jul 2025 14:59:03 +0300
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SU8qJ591"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE565C4CEEF;
+	Wed,  9 Jul 2025 12:45:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1752065104;
+	bh=5ig93j1gHmVqigZVEEovbc0sfYjFNVqIz+vVSrVJ/jo=;
+	h=From:Subject:Date:To:Cc:From;
+	b=SU8qJ591v3ZuHKWkIDNsGPC/TsUVy5S48YTk8I+wA/R98cRRp92a8dBLwXVe4UUQX
+	 h62V/N4GwCQnBqvMRN/dhOkcZT7Ssfa5mggfF34/0QPOqfEmWo15hH3XTHDCU3wiCv
+	 Y6nFOpZXhmwRDr5eeybDpTrDAlJ1IaiOkbNfKDKzdx+VyQnto48W5ciawaeUsIhJpU
+	 yDA6aEdBir32pT6DCYAmKoojkdWjZ811ES/KwYqd6iRccGhxFvUMJsmphaTBKEF8KY
+	 lEtAOdiJRJQu++19on2WBnLmlaE8lMvX0qRuyl7dlwb3WeSSmgMKEoXeNZiQeAFgpn
+	 y6+6c80EJRdVg==
+From: Maxime Ripard <mripard@kernel.org>
+Subject: [PATCH v6 0/2] dma-buf: heaps: Create a CMA heap for each CMA
+ reserved region
+Date: Wed, 09 Jul 2025 14:44:50 +0200
+Message-Id: <20250709-dma-buf-ecc-heap-v6-0-dac9bf80f35d@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] rust: add initial scatterlist bindings
-To: Alexandre Courbot <acourbot@nvidia.com>, jgg@ziepe.ca, lyude@redhat.com,
- dakr@kernel.org
-Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
- Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
- =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
- Benno Lossin <benno.lossin@proton.me>,
- Andreas Hindborg <a.hindborg@kernel.org>, Alice Ryhl <aliceryhl@google.com>,
- Trevor Gross <tmgross@umich.edu>, Valentin Obst <kernel@valentinobst.de>,
- open list <linux-kernel@vger.kernel.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
- rust-for-linux@vger.kernel.org,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
- Petr Tesarik <petr@tesarici.cz>, Andrew Morton <akpm@linux-foundation.org>,
- Herbert Xu <herbert@gondor.apana.org.au>,
- Sui Jingfeng <sui.jingfeng@linux.dev>, Randy Dunlap <rdunlap@infradead.org>,
- Michael Kelley <mhklinux@outlook.com>
-References: <20250626203247.816273-1-abdiel.janulgue@gmail.com>
- <20250626203247.816273-2-abdiel.janulgue@gmail.com>
- <DAZQ9OGC1648.2WWABTO7A7UU6@nvidia.com>
- <DAZVUN9N4GBT.38B6BX4CN516F@nvidia.com>
- <DB17XMDHU5M7.2M2KN9A8TJQOB@nvidia.com>
- <DB288AEQSBTC.63WK79TB77TW@nvidia.com>
-Content-Language: en-US
-From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
-In-Reply-To: <DB288AEQSBTC.63WK79TB77TW@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAEJkbmgC/33RyU7DMBAG4FeJfMaRx1uaCqG+B+LgZdKYkqbYa
+ QSq+u44KaigRBzHkr9Z/gtJGAMmsi0uJOIYUuiPudAPBXGtOe6RBp9rwhmXTIGivjPUnhuKztE
+ WzYnyjREAnrtaIsnfThGb8DGTzy+5bkMa+vg5dxhhev0HG4EyqqSz1jNZK4DdAeMR38o+7smkj
+ fxHUEwyWBF4FpgUjWdMGzDNQhC/hWpFEFmoK+e90EY1vF4I8i4ozlYESYFazxEasFZytxDUXdC
+ wNoOatjDWO7XRwsi/W1xvZ474fs6BDbdbkw5TMnNg2+Lxm2YggAsooeJS8yqP9XrIqZq0i+hbM
+ 5Su756m1KxJSHPRhWFbjLoETaNTudX1C/BYCfAjAgAA
+X-Change-ID: 20240515-dma-buf-ecc-heap-28a311d2c94e
+To: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
+ Sumit Semwal <sumit.semwal@linaro.org>, 
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+ "T.J. Mercier" <tjmercier@google.com>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>
+Cc: Andrew Davis <afd@ti.com>, Jared Kangas <jkangas@redhat.com>, 
+ Mattijs Korpershoek <mkorpershoek@kernel.org>, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+ iommu@lists.linux.dev, Maxime Ripard <mripard@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4178; i=mripard@kernel.org;
+ h=from:subject:message-id; bh=5ig93j1gHmVqigZVEEovbc0sfYjFNVqIz+vVSrVJ/jo=;
+ b=owGbwMvMwCmsHn9OcpHtvjLG02pJDBl5KT5Hp6VN1J1s9/a/8haBzfaebxOsuz9PEsiwblQvt
+ vuxue5vx1QWBmFOBlkxRZYnMmGnl7cvrnKwX/kDZg4rE8gQBi5OAZhIrCtjfeD3N8X7VM9EHM05
+ Jl/BWOmovOeVced54b2zy+tUznS/jS9Jq17zR7H35r4cp4uS0/9mMzYsKAxinxtWNtO6+rW+/f/
+ mhETDhTI+Eidjj/zu2bnbeRrH02e/PVaunM4VG3bQ2s5odSwA
+X-Developer-Key: i=mripard@kernel.org; a=openpgp;
+ fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
 
 Hi,
 
-On 03/07/2025 10:03, Alexandre Courbot wrote:
-> On Wed Jul 2, 2025 at 11:37 AM JST, Alexandre Courbot wrote:
->> Thoughts? If Abdiel is comfortable with this I can submit a v3 with this design
->> for review (putting myself as co-developer), on which Abdiel could then keep
->> iterating, as I suspect this would be easier to understand than this long email
->> :).
-> 
-> Figured I could just as well share the code with you and save both of us
-> some time. ^_^;
-> 
-> The top commit of this branch contains the proposal discussed:
-> 
-> https://github.com/Gnurou/linux/tree/scatterlists
-> 
-> The sample code has been updated to add dummy examples for the 3
-> use-cases discussed (reference to an existing `sg_table`, refcounted
-> reference, and owned data).
-> 
-> There are still things missing, including the typestate on `SGEntry`, as
-> it wasn't necessary to demonstrate the basic idea.
-> 
-> Note also that if we decide to only support DMA-mapped SG-entries, we
-> can remove a bunch of code, including the one that maps a `SGTable` if
-> the backing type implements `BorrowMut`.
-> 
-> For your consideration. :) Please feel free to take and use anything you
-> find useful.
+Here's another attempt at supporting user-space allocations from a
+specific carved-out reserved memory region.
 
-Sorry for the delay, just came back from a week vacation.
+The initial problem we were discussing was that I'm currently working on
+a platform which has a memory layout with ECC enabled. However, enabling
+the ECC has a number of drawbacks on that platform: lower performance,
+increased memory usage, etc. So for things like framebuffers, the
+trade-off isn't great and thus there's a memory region with ECC disabled
+to allocate from for such use cases.
 
-Regarding your question regarding why I dropped type-state, I thought 
-the general consensus here is to drop this approach:
+After a suggestion from John, I chose to first start using heap
+allocations flags to allow for userspace to ask for a particular ECC
+setup. This is then backed by a new heap type that runs from reserved
+memory chunks flagged as such, and the existing DT properties to specify
+the ECC properties.
 
-https://lore.kernel.org/lkml/DAC20AXGABW2.X147X4JPMRBS@nvidia.com/
+After further discussion, it was considered that flags were not the
+right solution, and relying on the names of the heaps would be enough to
+let userspace know the kind of buffer it deals with.
 
-I think I might have misunderstood after re-reading it now. What you 
-probably meant was to have no intermediate state from initialized to 
-mapped to create the sg_table?
+Thus, even though the uAPI part of it had been dropped in this second
+version, we still needed a driver to create heaps out of carved-out memory
+regions. In addition to the original usecase, a similar driver can be
+found in BSPs from most vendors, so I believe it would be a useful
+addition to the kernel.
 
-Anyways, thanks for the code above I'll look into this in detail and 
-pick bits to integrate into v3 :)
+Some extra discussion with Rob Herring [1] came to the conclusion that
+some specific compatible for this is not great either, and as such an
+new driver probably isn't called for either.
 
-/Abdiel
+Some other discussions we had with John [2] also dropped some hints that
+multiple CMA heaps might be a good idea, and some vendors seem to do
+that too.
+
+So here's another attempt that doesn't affect the device tree at all and
+will just create a heap for every CMA reserved memory region.
+
+It also falls nicely into the current plan we have to support cgroups in
+DRM/KMS and v4l2, which is an additional benefit.
+
+Let me know what you think,
+Maxime
+
+1: https://lore.kernel.org/all/20250707-cobalt-dingo-of-serenity-dbf92c@houat/
+2: https://lore.kernel.org/all/CANDhNCroe6ZBtN_o=c71kzFFaWK-fF5rCdnr9P5h1sgPOWSGSw@mail.gmail.com/
+
+Let me know what you think,
+Maxime
+
+Signed-off-by: Maxime Ripard <mripard@kernel.org>
+---
+Changes in v6:
+- Drop the new driver and allocate a CMA heap for each region now
+- Dropped the binding
+- Rebased on 6.16-rc5
+- Link to v5: https://lore.kernel.org/r/20250617-dma-buf-ecc-heap-v5-0-0abdc5863a4f@kernel.org
+
+Changes in v5:
+- Rebased on 6.16-rc2
+- Switch from property to dedicated binding
+- Link to v4: https://lore.kernel.org/r/20250520-dma-buf-ecc-heap-v4-1-bd2e1f1bb42c@kernel.org
+
+Changes in v4:
+- Rebased on 6.15-rc7
+- Map buffers only when map is actually called, not at allocation time
+- Deal with restricted-dma-pool and shared-dma-pool
+- Reword Kconfig options
+- Properly report dma_map_sgtable failures
+- Link to v3: https://lore.kernel.org/r/20250407-dma-buf-ecc-heap-v3-0-97cdd36a5f29@kernel.org
+
+Changes in v3:
+- Reworked global variable patch
+- Link to v2: https://lore.kernel.org/r/20250401-dma-buf-ecc-heap-v2-0-043fd006a1af@kernel.org
+
+Changes in v2:
+- Add vmap/vunmap operations
+- Drop ECC flags uapi
+- Rebase on top of 6.14
+- Link to v1: https://lore.kernel.org/r/20240515-dma-buf-ecc-heap-v1-0-54cbbd049511@kernel.org
+
+---
+Maxime Ripard (2):
+      dma/contiguous: Add helper to test reserved memory type
+      dma-buf: heaps: cma: Create CMA heap for each CMA reserved region
+
+ drivers/dma-buf/heaps/cma_heap.c | 52 +++++++++++++++++++++++++++++++++++++++-
+ include/linux/dma-map-ops.h      | 13 ++++++++++
+ kernel/dma/contiguous.c          |  7 ++++++
+ 3 files changed, 71 insertions(+), 1 deletion(-)
+---
+base-commit: 47633099a672fc7bfe604ef454e4f116e2c954b1
+change-id: 20240515-dma-buf-ecc-heap-28a311d2c94e
+prerequisite-message-id: <20250610131231.1724627-1-jkangas@redhat.com>
+prerequisite-patch-id: bc44be5968feb187f2bc1b8074af7209462b18e7
+prerequisite-patch-id: f02a91b723e5ec01fbfedf3c3905218b43d432da
+prerequisite-patch-id: e944d0a3e22f2cdf4d3b3906e5603af934696deb
+
+Best regards,
+-- 
+Maxime Ripard <mripard@kernel.org>
 
