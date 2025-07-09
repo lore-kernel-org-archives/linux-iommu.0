@@ -1,162 +1,189 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2087.outbound.protection.outlook.com [40.107.236.87])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 771C421421A
-	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 16:27:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.87
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752078451; cv=fail; b=F3tuFouGGG77ilR3Kmecwzht6rWxBu2b0J0Qjexw83GIA/lIyPWw0c10sL1fOkBIEnkEG5g6C4Cn7TKVigaNyuhMLcxa2S7cuFDuW9SekA7VELtZiS+YvaGA6Yd6Gixlw+DNiytISex0IVvwr6a3lmmtfC/mx54By68aYj4GqF8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752078451; c=relaxed/simple;
-	bh=KC+zilcQf6U2MCHfLZHxcIHrU4HWpTTab+Waxwh0Tpo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=B9dYazdtDyKHCWzRycyJ8RRPjQ2LphR2V3aztRyxDjF1B/IdLKJDXg332zs28I3rJtL++lp+cBvFkcCgU9H8ErlTMFQFv4HvqDNMRqdV9MK36hnad8cXbTnPhUcHnKbG7NjwHyKPgYVDD7qBKTgb0Z2GIKdstoPnDCL5NgV5X7M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PYodFvO7; arc=fail smtp.client-ip=40.107.236.87
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 597DD21CC43
+	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 16:35:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752078954; cv=none; b=RMsyp87VAslMllcTH8x9cO5Egk8yvsTDWoem67XVhY5tePlql7sb9a9LCrlKezsrih//EM7piTymdh/OI56OUaFMMYDJFhtlLaTIVg8TkA/BxQR8s0LZ0PRLAuElfo/RfaXeSZZV0hFBrqCkvfiI7asIiQTc5upwei/r6B2txr0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752078954; c=relaxed/simple;
+	bh=D6S7FxxYzbYrwZw17NYk+jIdqCqA1axBq+YKjK2ZNuo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=XOjCzossnsNCK8jzLPWiA2DqGF/dq7so5fqYfHj8J3pytKnutNOyp1bKxveaz+e8ePON+Da17VAvgXEetjPgw0j5S9mSSHHbJ2K7SHqJQ3wqSgnwJLv3vvKzelXz1H8Q37Rkmoo+p5HEhAUL+vS9puvL0aHo3NJo1wtYwyxm4tw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OI+leXs/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PYodFvO7"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=maTW+cDHEImOMdJFI6DK5dxPx2qx/JgQ/kzUB30ohwI3pdnGFVG3206bKBcQJ6NRVTRe/uBngcpzXqvYSSq4CfGTrsOleiOPiubRiACJoXdLGQXxWZszU7LHp2pNLYjRf/EIL6+UbuCqR+DY2aDWI53CbodWfqTF6y/Y8Q+bNxLvQqVXoM/fu65GZmZcnJc7DRUWOm0glzQ9RRNWzs0Vh7EiCW0cIdEKb98Flm6Vy3SWb050c1KMrU6DdJzyCPy4HbmUeBEeBKZ0wEijOZim6ISp8f/mg7SoR5xJzqh2wbHVwpuanwQnvOxMlWh3iBWkW9w6duYeo7Z+wYsTLIyywg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KC+zilcQf6U2MCHfLZHxcIHrU4HWpTTab+Waxwh0Tpo=;
- b=Qy8Gx3+vdVISFj6EWohy7p/Cd9QizgX00xl0YTZ1Au0PEeI595C/9UjoFatbn3oSTu7UoK0X8UfhanPrhHP9NC5GhBAIEp4LtfJVRS1QwZVOFGDA0yLI4x9cumM5eNQQ6ODVEUCBxbVfovzoB91jEGewpt0bZFpN6vaZRIo3+5odG5SS7kNp/5W5vZGPrxAyl3gGvBy7xTzPf8Yu2s5zAZQEKdTlb+KI5ic9EIMKmLmE/XYaSS5UJ7lLua2A1T9FTyrPxp5pXxJbMlok/1O6Ie2pmP3jranPljps9Vu8Wz62VSLJhpI0jsB3jMg/fAceqgpOeoZB6VOHkD8IFkzZOQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KC+zilcQf6U2MCHfLZHxcIHrU4HWpTTab+Waxwh0Tpo=;
- b=PYodFvO7y/Yex3H0UgG07SmiRR7BHeOhg9cLXGXWbV+rC09+PGAV4JaYMX734csx693ZLsWVQ7IrRMfU89gqw/nNTZ8llmdfIyp7BOAHZeaOjKDckWmim659GK/bUEkYALkLFlhmJ62i6FTanEco7qqPu8Oxk0Vc9Tz61qVkJrYaw9H2TfGi8zR351441FE8nPrGHHFpM3T+OR3efdcrM6LvaC2UFahGJB9FxMpfC4SYjoYiMWEkABAAJsFOPyG4ZscYpWQ0HK3qFLhsE0UAgX2fObwnjFtTeF827R3JcQRJQcNrlYbclkrHGKVd+p/irgwhuBvnlaQTUhY1UpnQEg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by DS7PR12MB6311.namprd12.prod.outlook.com (2603:10b6:8:94::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8901.27; Wed, 9 Jul
- 2025 16:27:26 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8901.024; Wed, 9 Jul 2025
- 16:27:26 +0000
-Date: Wed, 9 Jul 2025 13:27:24 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jacob Pan <jacob.pan@linux.microsoft.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Dave Hansen <dave.hansen@intel.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Andy Lutomirski <luto@kernel.org>, iommu@lists.linux.dev,
-	security@kernel.org, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/sva: Invalidate KVA range on kernel TLB flush
-Message-ID: <20250709162724.GE1599700@nvidia.com>
-References: <20250704133056.4023816-1-baolu.lu@linux.intel.com>
- <20250709085158.0f050630@DESKTOP-0403QTC.>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250709085158.0f050630@DESKTOP-0403QTC.>
-X-ClientProxiedBy: SA9PR13CA0089.namprd13.prod.outlook.com
- (2603:10b6:806:23::34) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OI+leXs/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BED81C4CEF9
+	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 16:35:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1752078953;
+	bh=D6S7FxxYzbYrwZw17NYk+jIdqCqA1axBq+YKjK2ZNuo=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=OI+leXs/1x9wLgZNyYyDiMqf66YK1bKbPpCchQLidjdr2tK4byiT95O3VIcYMEzvb
+	 GX9q4qZ2J2qRbIQ77gC4FNwUHMPlQC6U0ssx2pNtk8rNIdw90ZAFiRIRYmJVbFSADs
+	 n8qFBBfnVjn3fkdNvm6k6/HqMf07LjwJI9T9gWpe3C60ymvY2Q5uwUtppDEuZojjIP
+	 Lf2JGNln6q0pH2UASEexncnWA83dUuWsSuilWZOazZnfdlvMRJN8e2gZSotl+9GUI6
+	 myTQl/SSZxLpn3NAff/aJ9+wzPJnuq5OAmwqgOGIjRP1GHYPIJ5ZL/pTk4jCRzOywx
+	 8wDPauyqzUP/g==
+Received: by mail-oo1-f43.google.com with SMTP id 006d021491bc7-60be827f2b7so610601eaf.0
+        for <iommu@lists.linux.dev>; Wed, 09 Jul 2025 09:35:53 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCX0hPQUZ4TCJ2tvcRXLvvgLyOj+S3aQAod6n98Ml6PYpmDKZaCP80+zBtwOzVUzpA7BLgMuSg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx2vwSKKa4r68ppUywF5Qa+PVcKDGnuVFEicNcc9+6TYlX/iC0S
+	qYlWWyQJf69Nwxf06fh342VjJLbUwEl20B1aqn3kRNWIQD1FsItn0LqarzbhFJM+DzTsBq0gXdP
+	ARn042k73OS3sk0bElH9RvKC2sRnBEpM=
+X-Google-Smtp-Source: AGHT+IHSmggXc8Xq5cBVmYUENrE+YZ+KzyGCyKgC7sf3ZJW0ZHlvN0CN3DQ1N/vCPbco+LARqt+kc/zFBQr6FRtZoRM=
+X-Received: by 2002:a05:6871:727:b0:2d9:8f98:b0cd with SMTP id
+ 586e51a60fabf-2ff0c77d0ecmr114589fac.10.1752078952897; Wed, 09 Jul 2025
+ 09:35:52 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|DS7PR12MB6311:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1438eedb-9eae-4b98-eb23-08ddbf057dd4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?eLTrB3IOF4i8oAh+ryaANI+BC/mHjm3568Cr2/Nj9iDd5YOpLDBuPDehbCmv?=
- =?us-ascii?Q?FO5cG/uaXevFIbxXCtV7ImtZHkO/Oi+1oR5rImDG9IBQ4MBBoRr7pF/yWptK?=
- =?us-ascii?Q?33qXob/RQQ5E4chWnpn+owkDKMyg9kAIYBfHCvgmGw29jWfsJp0jIcA6m2Uz?=
- =?us-ascii?Q?5fVbDZYovpt0wMbXeG7wqJev+mIhn3Vztzhc8Qdazxa6o7UNl/ycKuSgJHY8?=
- =?us-ascii?Q?HP24WSPWs05xGZ7vFNzmFp7k3uADLXxNfi4GhMSAC9LVlP5ymgmbq0C33RU8?=
- =?us-ascii?Q?UWB/xkDjmx0o5rdq0lab4cw6r0LkxM+1JiopZsyyomoIzYvPjKMY4SB86GoY?=
- =?us-ascii?Q?emzG/Ky/SxFf16IS3Lu8abBfEkY1WRCX69JR/oLD2Uq8GnDnncLSizdngHui?=
- =?us-ascii?Q?v/CQec9JjSv4vgPlbtF/P3y8QIQRJy80PVXenKWNVV6Drnd2SLNKscg9KhRD?=
- =?us-ascii?Q?n/f+6JFJudIYQfxMv+q/T/HS1sGIEb6noUDQFX9CL0D6Pyev8duEdIVUqfXW?=
- =?us-ascii?Q?fmTj6CBkrBhMPNoU+X1G6DUGRPMQiy1bf4DK016iYJM1fWb7oDbNXfRQMxd4?=
- =?us-ascii?Q?+YdAK1TgYMtcm+bKiJJ8/MZ0fN3IZJl4AeKRdgu19wHt2SvxIfLvX6NIZPwM?=
- =?us-ascii?Q?NcczxtI6Vj0BprCF1UGBnuFpE8TXWMMJs5cppnSiABqJx9pyO7dS+Gp8/IuW?=
- =?us-ascii?Q?yh2qKI3v2876mjBED21Uc57mce8FU5sL34KHutOJg6Mn59RRgLoydc/lfFA/?=
- =?us-ascii?Q?xdjtIHoo/B2DzilD3AUps+ut1UYsLqE0gDX6oiV9XdqzN9tfCvZKdDK+eQyH?=
- =?us-ascii?Q?wJCZFZ85o/pWFi5+IfuS+lVCfWgDk7ji67h7mUd+9aDZU5ivsiQZSTyXGXGX?=
- =?us-ascii?Q?Km6D5CdQlbvfIm4nBnYpKxF9CWH6BI8Q6n2ZpdNl8edosIBQ2K/zhFIzY+eL?=
- =?us-ascii?Q?yzi7NbZFfpwVvPbErsW+7Jk0vKYdHNIo0zQRkw/W4svQEphnZ/N8PObTqmaP?=
- =?us-ascii?Q?ynzD1O8keoiKLgCa9Jf7T/g4w5PdQVizNbmXdckNfoAwfOT4Oa+8f0EJPhfr?=
- =?us-ascii?Q?R7l2hApBlJLKW+P/DEFytYsJCVG+g8yQFNOuv7J7vJXOM98C3CPLV7QHxkOR?=
- =?us-ascii?Q?hZfdjo/vdm+IlOYwJSBbuDPu75vl/Y0srvWgINUzK5QENlVE0WUbmTAduPrH?=
- =?us-ascii?Q?TN9VFAzGcbwgHTEov9EorGl2uJyJywJZ6BG4w4Cenhr+4bc1Cv1NQJYgLhY/?=
- =?us-ascii?Q?01MxiQUwDNoVFD0QfTVKfuEvMSuVLawlE73uuBaLNEvfsuXn3ZRw0C2hlIqG?=
- =?us-ascii?Q?4V8v2Go3KDHmE3Yn6Clq3p1CFIdhq4gmoHceLdQlrrkOvQJz9zK7jc/DY9Hg?=
- =?us-ascii?Q?gynsKGGeEwqO1XwN/paAWP05VeKn1OXHpJ2e/McmH1N9u6Ea4uAHDzQssO1r?=
- =?us-ascii?Q?gPRJ4AxjmmM=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?QP9rIezKcYNrfxHe4pU5Jht4S1JyiC14TvVhOWl9bTidYar2E1uKfEGRZZO2?=
- =?us-ascii?Q?Tl9fhO0pEzZYEntffmvJhvPNsfrDGdrm19/5j+NjUYaBa5H35u7RzEPPAqm3?=
- =?us-ascii?Q?Q0dxpArN56x82KJT0YtTs3RaaenSLWwjv2RqAhQk3xv8BtNXiHoy857wfrf1?=
- =?us-ascii?Q?3k21SzKIX7PUsJWdhuvvksKmThsNUSP0MiEbMgmP87hV/vonoCQ2cYWwlY9z?=
- =?us-ascii?Q?jQCHwaEs5jhYkDCp5W1+Tnvv7NcoePn2FJIPK3Sazf0C88sW0Mxvu93MClPb?=
- =?us-ascii?Q?N+66mzccipV90kSRI+IX0uveSpwh6F7Wlz/Fdq4qoyChZYWlL1r/zaHhtT0s?=
- =?us-ascii?Q?H5p9lXVfije5irhlk60hwVhowDXmMgUEpHYPpbKoj7TS4OJ5m9dTTu6BEYy6?=
- =?us-ascii?Q?2BjtvAZHiG6ZmFAzfnAiCygfFKsLY5udbiX2od6rIvtGkZhO5pvnu5ggvd/1?=
- =?us-ascii?Q?oQZEe3t/YINRwMGIxVQ5wsvvZyG+FdD/kHdf1HQrvHezGJVLl+ed+88M77th?=
- =?us-ascii?Q?zhKyatYzKX9C8Pl10rgh1vflfUvgcWuRNlLvZEETyqsG/m/jG7jzo9s7o55T?=
- =?us-ascii?Q?qSRVU2XQvy7mxLimjdxU9RTCjDmbqx2oF6P1CKpzzVpsiXZ09SC9Z4zUx4mn?=
- =?us-ascii?Q?0h2V5Rw5OHur/H1wnGg2KsAi2qrvOplnf9aDAz7d5hbcLF+wtuvGi1fTETE+?=
- =?us-ascii?Q?W++2XB22CeHqA65dRLwAf6sJNk9sTIJr3T7zZpBbq2iMBWYZ+UFAnMfVcWiZ?=
- =?us-ascii?Q?MmvGDbrs5OoMOHQeE42OjK2b7Bt86FC0/SFS2NVls4oCnJuaOYMTneBG5dNS?=
- =?us-ascii?Q?+FoziLTiJWrt9MaEL7SSWtCtx5CMhK3Ruzs5mmtP//O5ibOe2EFgS7EX/dOs?=
- =?us-ascii?Q?oLHGWgNmVDM8DfeAjOHK/qgmo87Ew/FrUoHjovYiPH1vrZpQrNMHJaWLnx33?=
- =?us-ascii?Q?kzozjyfgl8uuUv3fN92e23b4SpHlyFAnPxSZ1yJSkz+zdLav3+xpZpu5pO4C?=
- =?us-ascii?Q?WCPIb9iOfhfrvK9G6PT+qPXDI1t9xCHKG0FBJb7pWCuEoRBSn9+Ke1iY7Sfj?=
- =?us-ascii?Q?8BdOBnSOaLB4hrE/1zFgEKQ16QXDp19KkycHMkT8wOKSoBNamo7NOtuZzwad?=
- =?us-ascii?Q?bhyO7enrVot+mRt8tXIRWnkDvfjmnCy5ZNr1aPjgXcOyP8qSgYUSvzIbOaXV?=
- =?us-ascii?Q?0SYfkVwB47i1QLB42ZVBV8oH96+nXNWKn6/L1ruSW/XB0Sj0VlM23TiGYfvQ?=
- =?us-ascii?Q?/vV/Mu8X7/HJjjt1s4pNSvDH9hGLJWL/KcCBHWpaNZQxPawFoR87xxnlu6zJ?=
- =?us-ascii?Q?jBnBjzBwRDQYRoGEDyj0NH/gYdt/f3/1IEEPWvpW2T88A2aH57nZBF9iHW+U?=
- =?us-ascii?Q?Jqcbc6VhFI2i2VVA/+b7bNCnWiYlKweMgfXuCtuMvu0cqg+xV992j4qyKn6x?=
- =?us-ascii?Q?J5AxI83U66kIN2Q7KITZeennzX5yyEGMyELVeVnb+7Oyhhib3hYFeHrgP0V3?=
- =?us-ascii?Q?a3q0tNsanQ1QzT+usnPuf5kJSZxW0n+V5555VRM1G7Bl+1i9g5FRLIgA3MQI?=
- =?us-ascii?Q?X3qEHbAXn74FMjHD/6ZjwjRsWDrjfARlCm2rlXk3?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1438eedb-9eae-4b98-eb23-08ddbf057dd4
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2025 16:27:26.4918
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 45khU/aXISmF67RB/VSfv9BJy2BWYLVIDidgCrWLAdafOqEQz7OsxcruatnYHruL
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6311
+References: <20250616203149.2649118-1-praan@google.com> <20250616203149.2649118-6-praan@google.com>
+ <CAJZ5v0jq7DL4z+q5XKcVUZQgojcxA8DgrMFncs1Z6skm+PVEmA@mail.gmail.com> <aG6P6F-MEvL4SfNz@google.com>
+In-Reply-To: <aG6P6F-MEvL4SfNz@google.com>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Date: Wed, 9 Jul 2025 18:35:41 +0200
+X-Gmail-Original-Message-ID: <CAJZ5v0gGjt+pRbq2k7qL6E+TGhm8PYHm_VVrwg2ZEjSWk+5FRg@mail.gmail.com>
+X-Gm-Features: Ac12FXw6V8GTQr_hVS-SK1sa8By0efXKEUxEpZZ9G4sCddOLoOMAjO0DqLgxP9g
+Message-ID: <CAJZ5v0gGjt+pRbq2k7qL6E+TGhm8PYHm_VVrwg2ZEjSWk+5FRg@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 5/8] pm: runtime: Introduce pm_runtime_get_if_not_suspended()
+To: Pranjal Shrivastava <praan@google.com>
+Cc: "Rafael J. Wysocki" <rafael@kernel.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Mostafa Saleh <smostafa@google.com>, Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Jul 09, 2025 at 08:51:58AM -0700, Jacob Pan wrote:
-> > In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU
-> > hardware shares and walks the CPU's page tables. Architectures like
-> > x86 share static kernel address mappings across all user page tables,
-> > allowing the IOMMU to access the kernel portion of these tables.
+On Wed, Jul 9, 2025 at 5:51=E2=80=AFPM Pranjal Shrivastava <praan@google.co=
+m> wrote:
+>
+> On Wed, Jul 09, 2025 at 08:44:06AM +0200, Rafael J. Wysocki wrote:
+> > On Mon, Jun 16, 2025 at 10:32=E2=80=AFPM Pranjal Shrivastava <praan@goo=
+gle.com> wrote:
+> > >
+> > > The existing opportunistic helpers like pm_runtime_get_if_active() an=
+d
+> > > pm_runtime_get_if_in_use(), are too strict for certain use cases. The=
+y
+> > > fail if the device is in a transient state like RPM_SUSPENDING, which
+> > > can lead to drivers making incorrect assumptions about the dev's stat=
+e.
+> > >
+> > > These helpers don't suffice for cases where one wishes to elide HW cl=
+ean
+> > > up like queue flushes or TLB invalidations if the device is powered o=
+ff.
+> > > It is wasteful to wake up the device in cases where the resume callba=
+ck
+> > > resets the device well OR if the HW resets in a clean state. Thus, if=
+ a
+> >ppy to hear your feedback or any alternative ideas you might have > devi=
+ce is powered off, it is preferred to elide any clean-up HW ops like
+> > > queue flushes / TLB invalidations when the device will resume afresh.
+> > >
+> > > Consider the following sequence of operations:
+> > >
+> > > 1. The device is in `RPM_SUSPENDING` state
+> > > 2. The driver calls pm_runtime_get_if_active/in_use
+> > > 3. Depending on these API, the driver elides a HW clean-up op like:
+> > >
+> > > if (pm_runtime_get_if_in_active(dev))
+> > >         invalidate_tlb(dev);
+> > > else
+> > >         // Skip flush, assuming device will fully suspend
+> > >
+> > > 4. Now, another rpm dev-linked device wakes up, causing the device's
+> > >    state to bounce from RPM_SUSPENDING to RPM_ACTIVE without invoking
+> > >    any rpm callbacks, preventing them from resetting the dev correctl=
+y.
+> >
+> > This never happens.
+> >
+> > If the status is RPM_SUSPENDING, the runtime suspend callback will be i=
+nvoked.
+>
+> Ack, I believe we're talking about the check[1] in rpm_resume here:
 
-> Is there a use case where a SVA user can access kernel memory in the
-> first place?
+No, I'm talking about the fact that the status is changed to
+RPM_SUSPENDING right before invoking the callback.
 
-No. It should be fully blocked.
+>         if (dev->power.runtime_status =3D=3D RPM_RESUMING ||
+>             dev->power.runtime_status =3D=3D RPM_SUSPENDING) {
+>
+>             [...]
+>             /* Wait for the operation carried out in parallel with us. */
+>             [...]
+>             finish_wait(&dev->power.wait_queue, &wait);
+>             goto repeat;
+>
+> However, my worry is about the following situation:
+>
+>   rpm_suspend                      rpm_resume
+>
+>   rpm_status =3D RPM_SUSPENDING
+>                                    if (RPM_SUSPENDING)
+>                                    prepare_to wait(...)
+>
+>   // suspend fails
+>   retval =3D rpm_callback(...);
 
-Jason
+You're talking about the callback returning an error and your
+changelog is talking about a different situation.
+
+>   goto fail;
+>   [...]
+> fail:
+>   rpm_status =3D RPM_ACTIVE;
+>                                    finish_wait(...);
+>                                    goto repeat;
+>                                    repeat:
+>                                    if (rpm_status =3D=3D RPM_ACTIVE) {
+>                                         retval =3D 1;
+>                                         goto out;
+>                                    }
+>                                 out:
+>                                    [ ... ] // put_parent if one
+>
+>                                    // we return without resume cb();
+>                                    return retval;
+>
+> Now, if we rely on APIs based on pm_runtime_get_conditional(), which
+> might return 0 if (dev->power.runtime_status !=3D RPM_ACTIVE), we might
+> end up eliding some TLB invalidations in the period where the status was
+> RPM_SUSPENDING till it's back to RPM_ACTIVE due to a failed suspend.
+
+It actually depends on the reason why the callback returned an error.
+
+> This can cause some severe address-aliasing/ghost hit issues since the
+> TLB still has some stale entries..
+
+I'm not quite sure what you mean.
+
+> Instead, we'd like to ensure that the status IS suspended
+
+But you can't.
+
+That's the difference between RPM_ACTIVE and RPM_SUSPENDED.  If you
+bump up the runtime PM usage counter while the device is RPM_ACTIVE
+(and while holding its power.spinlock), it will not suspend.  There's
+no way to prevent a suspended device from resuming (other than
+disabling runtime PM for it).
+
+> to make a decision to elide the TLBI or not.
+>
+> What are your thoughts on this? I'm open to approaching it differently.
+
+IMV this is all misguided, sorry.
+
+> Happy to hear your feedback or any alternative ideas you might have
+
+Disable runtime PM for the device and check its runtime PM status,
+which cannot be transient at that point.  If it is RPM_ACTIVE, you
+need to flush the TLB.
+
+> [1] https://elixir.bootlin.com/linux/v6.16-rc5/source/drivers/base/power/=
+runtime.c#L808
