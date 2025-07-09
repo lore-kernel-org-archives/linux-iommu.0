@@ -1,248 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 571C6BE6C
-	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 06:30:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23EE9271446
+	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 06:44:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752042627; cv=none; b=Hh5nzIjt8gNktwKQuRnAcpEGLSbxPvVZ1J7cOZt5SNgFp5WjJMTO2yTObV0WOtoojWDzNM5DgeYfItNMBDm+bT1IqVXFmXXZ6I8pq0EFu2aZRNgW2cu1YCaNKFJTmpC5wEMROGprnO/N5J50XjSQx1ly604iBkt2Wny0+swvDkI=
+	t=1752043460; cv=none; b=YU3a9dWYyeWNxS804E/e3lij7GJ1Csieaxd72gPPVw9ParcOlPjjDz5C3PkWihJuG5tA/lGarJYN720lI6gtGepr4kSiaYHV+WqWHTnsVzFqODaoPQy2Fidv8NY13LYtM7DR6fCNJj5onV6MQJYLrkl/2waJrkrzGlv2+wX3COE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752042627; c=relaxed/simple;
-	bh=ztwWtVLvW2JDQVkityE8xy5rSww8WpTrou8OU/HC1cY=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=pvtcgaS2fFjSNrDzPd/uQhBM2fxLTs7PwKJkzAWJn3rEso3JNTh8KMbLaL8P4HqrvnLZRlf7pQqMRgN+VKHmY5QT6XIz+4BlFP4e4EyjirA6IDR2uV1C4C1VwArq+GybLhvxdiQMPX61vdKLbNC81mAsVX4XNMRlqOXWPt4Ncnw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SfATefAx; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1752043460; c=relaxed/simple;
+	bh=LQSsB569tHq9VHJp+YT8YnS0khI0VrYJiQIgsLVhLoc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=fG6ZpV2MTglSHGTf2lrEaN7ZDcsOIJKUwwCHASIWXU2iZ/Y7Zir0MvxJfWZRE69+IoO/med3G1KLxd4iNEvN+kNuVxocjrY3ebzwzOsw2Aut51i/o5sXHcuSaCElc+xfwv9HpVbBp9tAbKanHH9MM3kY7nTe7PARFOt/WiHekFI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m7ss6q7D; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SfATefAx"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752042625; x=1783578625;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ztwWtVLvW2JDQVkityE8xy5rSww8WpTrou8OU/HC1cY=;
-  b=SfATefAxhrxYC6fxqHngDSYQpgapPk8AG1psjklAeueWx7l6w+2j414Z
-   zU9i9ZOLPKaTtPdx/cfNcBpouA0o4Kp4Ztv852BLHJLuK9hqqs3Pa/LE+
-   1KbVyPcTgnErLY4P2jvz+E/CF6CgrCOrki1NCwx7hRP2HmkfoPgpUyuba
-   VbAefHCFyCQKldB+kfnTa6BC6aWQ8prP2kGTt9AttyKF6W6j5s88iSBEM
-   uETWzM5uxu2a54POv1/exMPOuyG6SwXJFZjfgaTxi0mkrLPxaMq6N/np4
-   SX9ERbmXXf5+DM2Ix+jlVX71zhazH7zIS3FtBL+fTZL/A1QnkBcCCzZnV
-   g==;
-X-CSE-ConnectionGUID: rk/aEP4ETzah2//tzL9Vfg==
-X-CSE-MsgGUID: 3CdV5ieAT9KHjKipVms73g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11487"; a="64875338"
-X-IronPort-AV: E=Sophos;i="6.16,298,1744095600"; 
-   d="scan'208";a="64875338"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jul 2025 23:30:24 -0700
-X-CSE-ConnectionGUID: dUdpESooS/GLZSNpGEz/0Q==
-X-CSE-MsgGUID: dQGpmv9ETgmAFGNTOWGd0w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,298,1744095600"; 
-   d="scan'208";a="159723285"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by fmviesa003.fm.intel.com with ESMTP; 08 Jul 2025 23:30:20 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Jann Horn <jannh@google.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Dave Hansen <dave.hansen@intel.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Andy Lutomirski <luto@kernel.org>,
-	"Tested-by : Yi Lai" <yi1.lai@intel.com>
-Cc: iommu@lists.linux.dev,
-	security@kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v2 1/1] iommu/sva: Invalidate KVA range on kernel TLB flush
-Date: Wed,  9 Jul 2025 14:28:00 +0800
-Message-ID: <20250709062800.651521-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m7ss6q7D"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AABE0C4CEF5
+	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 06:44:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1752043459;
+	bh=LQSsB569tHq9VHJp+YT8YnS0khI0VrYJiQIgsLVhLoc=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=m7ss6q7De+/JMiUBKhr67WAAtz/Y6KPLPyZqQLNGkzeOocZsXvvLYVFH4/z99nChn
+	 p+n+Mib6h/7wWFtu8+JvW6jhRxmymr3dIaFUAjE7VkwhFYsYitLBcoHNqc5vFcKasK
+	 JrS/+L/G9YQWZr5viPl5HTLFoFFAfNNjwoe5c/fsyjhtEbKBBPDz/YlyvPB2YQXUsC
+	 ywdZkz5eZ6NaY+RQN2la1AZOhqsyuZK33GLhkvgKnQ3ZV9gBx4NhnQFAB0D4LCC8tJ
+	 XMnHsBfSXBwobGgi31Ep+h40IeNtkLEqqV4AScsHQ39aM+pUBJ+wiBNekbEghXMFb/
+	 IbZ56cTvswgBw==
+Received: by mail-oo1-f49.google.com with SMTP id 006d021491bc7-611a7c617b4so1476896eaf.3
+        for <iommu@lists.linux.dev>; Tue, 08 Jul 2025 23:44:19 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCXljVcSqbsQVlR1NJm15mn6uONJTnBfuQXIL/5Y8w4PC9KhopLt/d0IJRTeGE8yXJmVUKyjew==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxZvosTO6YTxKuKnaRx+U1F2luEvzed5Aylx+NzaLh4DdlBLFGG
+	gShwg1VZvsdGtxwpEd5o1ACgjpiMHxcaPLrfO2N5QCGlr4PERzfkEq4u7bfthLWjTzT19c3SDBL
+	5zL6H3MxqNn6CVGnu//Pkollv1ffVVGI=
+X-Google-Smtp-Source: AGHT+IEkc2wWAPLGpA+Df+Dz37BSSMGKPeqko3TaQhV1Kpi9RBTLw+UEgZfZ9QlXSIhRPHBowtulwpEGSU/cNLmOgok=
+X-Received: by 2002:a05:6820:308e:b0:611:7626:b5df with SMTP id
+ 006d021491bc7-613cce21f05mr727326eaf.4.1752043458974; Tue, 08 Jul 2025
+ 23:44:18 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20250616203149.2649118-1-praan@google.com> <20250616203149.2649118-6-praan@google.com>
+In-Reply-To: <20250616203149.2649118-6-praan@google.com>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Date: Wed, 9 Jul 2025 08:44:06 +0200
+X-Gmail-Original-Message-ID: <CAJZ5v0jq7DL4z+q5XKcVUZQgojcxA8DgrMFncs1Z6skm+PVEmA@mail.gmail.com>
+X-Gm-Features: Ac12FXxSUcWrE2HT3j7kB_3BQQNWKtuP4_KiX1Fd83rawnvAir3er_hbKdTPKMM
+Message-ID: <CAJZ5v0jq7DL4z+q5XKcVUZQgojcxA8DgrMFncs1Z6skm+PVEmA@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 5/8] pm: runtime: Introduce pm_runtime_get_if_not_suspended()
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, 
+	"Rafael J. Wysocki" <rafael@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Mostafa Saleh <smostafa@google.com>, Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The vmalloc() and vfree() functions manage virtually contiguous, but not
-necessarily physically contiguous, kernel memory regions. When vfree()
-unmaps such a region, it tears down the associated kernel page table
-entries and frees the physical pages.
+On Mon, Jun 16, 2025 at 10:32=E2=80=AFPM Pranjal Shrivastava <praan@google.=
+com> wrote:
+>
+> The existing opportunistic helpers like pm_runtime_get_if_active() and
+> pm_runtime_get_if_in_use(), are too strict for certain use cases. They
+> fail if the device is in a transient state like RPM_SUSPENDING, which
+> can lead to drivers making incorrect assumptions about the dev's state.
+>
+> These helpers don't suffice for cases where one wishes to elide HW clean
+> up like queue flushes or TLB invalidations if the device is powered off.
+> It is wasteful to wake up the device in cases where the resume callback
+> resets the device well OR if the HW resets in a clean state. Thus, if a
+> device is powered off, it is preferred to elide any clean-up HW ops like
+> queue flushes / TLB invalidations when the device will resume afresh.
+>
+> Consider the following sequence of operations:
+>
+> 1. The device is in `RPM_SUSPENDING` state
+> 2. The driver calls pm_runtime_get_if_active/in_use
+> 3. Depending on these API, the driver elides a HW clean-up op like:
+>
+> if (pm_runtime_get_if_in_active(dev))
+>         invalidate_tlb(dev);
+> else
+>         // Skip flush, assuming device will fully suspend
+>
+> 4. Now, another rpm dev-linked device wakes up, causing the device's
+>    state to bounce from RPM_SUSPENDING to RPM_ACTIVE without invoking
+>    any rpm callbacks, preventing them from resetting the dev correctly.
 
-In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU hardware
-shares and walks the CPU's page tables. Architectures like x86 share
-static kernel address mappings across all user page tables, allowing the
-IOMMU to access the kernel portion of these tables.
+This never happens.
 
-Modern IOMMUs often cache page table entries to optimize walk performance,
-even for intermediate page table levels. If kernel page table mappings are
-changed (e.g., by vfree()), but the IOMMU's internal caches retain stale
-entries, Use-After-Free (UAF) vulnerability condition arises. If these
-freed page table pages are reallocated for a different purpose, potentially
-by an attacker, the IOMMU could misinterpret the new data as valid page
-table entries. This allows the IOMMU to walk into attacker-controlled
-memory, leading to arbitrary physical memory DMA access or privilege
-escalation.
-
-To mitigate this, introduce a new iommu interface to flush IOMMU caches
-and fence pending page table walks when kernel page mappings are updated.
-This interface should be invoked from architecture-specific code that
-manages combined user and kernel page tables.
-
-Fixes: 26b25a2b98e4 ("iommu: Bind process address spaces to devices")
-Cc: stable@vger.kernel.org
-Reported-by: Jann Horn <jannh@google.com>
-Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-Tested-by: Yi Lai <yi1.lai@intel.com>
----
- arch/x86/mm/tlb.c         |  2 ++
- drivers/iommu/iommu-sva.c | 34 +++++++++++++++++++++++++++++++++-
- include/linux/iommu.h     |  4 ++++
- 3 files changed, 39 insertions(+), 1 deletion(-)
-
-Change log:
-v2:
- - Remove EXPORT_SYMBOL_GPL(iommu_sva_invalidate_kva_range);
- - Replace the mutex with a spinlock to make the interface usable in the
-   critical regions.
-
-v1: https://lore.kernel.org/linux-iommu/20250704133056.4023816-1-baolu.lu@linux.intel.com/
-
-diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-index 39f80111e6f1..a41499dfdc3f 100644
---- a/arch/x86/mm/tlb.c
-+++ b/arch/x86/mm/tlb.c
-@@ -12,6 +12,7 @@
- #include <linux/task_work.h>
- #include <linux/mmu_notifier.h>
- #include <linux/mmu_context.h>
-+#include <linux/iommu.h>
- 
- #include <asm/tlbflush.h>
- #include <asm/mmu_context.h>
-@@ -1540,6 +1541,7 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
- 		kernel_tlb_flush_range(info);
- 
- 	put_flush_tlb_info();
-+	iommu_sva_invalidate_kva_range(start, end);
- }
- 
- /*
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 1a51cfd82808..fd76aefa5a88 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -10,6 +10,9 @@
- #include "iommu-priv.h"
- 
- static DEFINE_MUTEX(iommu_sva_lock);
-+static DEFINE_STATIC_KEY_FALSE(iommu_sva_present);
-+static LIST_HEAD(iommu_sva_mms);
-+static DEFINE_SPINLOCK(iommu_mms_lock);
- static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
- 						   struct mm_struct *mm);
- 
-@@ -42,6 +45,7 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
- 		return ERR_PTR(-ENOSPC);
- 	}
- 	iommu_mm->pasid = pasid;
-+	iommu_mm->mm = mm;
- 	INIT_LIST_HEAD(&iommu_mm->sva_domains);
- 	/*
- 	 * Make sure the write to mm->iommu_mm is not reordered in front of
-@@ -132,8 +136,15 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 	if (ret)
- 		goto out_free_domain;
- 	domain->users = 1;
--	list_add(&domain->next, &mm->iommu_mm->sva_domains);
- 
-+	if (list_empty(&iommu_mm->sva_domains)) {
-+		scoped_guard(spinlock_irqsave, &iommu_mms_lock) {
-+			if (list_empty(&iommu_sva_mms))
-+				static_branch_enable(&iommu_sva_present);
-+			list_add(&iommu_mm->mm_list_elm, &iommu_sva_mms);
-+		}
-+	}
-+	list_add(&domain->next, &iommu_mm->sva_domains);
- out:
- 	refcount_set(&handle->users, 1);
- 	mutex_unlock(&iommu_sva_lock);
-@@ -175,6 +186,15 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
- 		list_del(&domain->next);
- 		iommu_domain_free(domain);
- 	}
-+
-+	if (list_empty(&iommu_mm->sva_domains)) {
-+		scoped_guard(spinlock_irqsave, &iommu_mms_lock) {
-+			list_del(&iommu_mm->mm_list_elm);
-+			if (list_empty(&iommu_sva_mms))
-+				static_branch_disable(&iommu_sva_present);
-+		}
-+	}
-+
- 	mutex_unlock(&iommu_sva_lock);
- 	kfree(handle);
- }
-@@ -312,3 +332,15 @@ static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
- 
- 	return domain;
- }
-+
-+void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end)
-+{
-+	struct iommu_mm_data *iommu_mm;
-+
-+	if (!static_branch_unlikely(&iommu_sva_present))
-+		return;
-+
-+	guard(spinlock_irqsave)(&iommu_mms_lock);
-+	list_for_each_entry(iommu_mm, &iommu_sva_mms, mm_list_elm)
-+		mmu_notifier_arch_invalidate_secondary_tlbs(iommu_mm->mm, start, end);
-+}
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 156732807994..31330c12b8ee 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1090,7 +1090,9 @@ struct iommu_sva {
- 
- struct iommu_mm_data {
- 	u32			pasid;
-+	struct mm_struct	*mm;
- 	struct list_head	sva_domains;
-+	struct list_head	mm_list_elm;
- };
- 
- int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode);
-@@ -1571,6 +1573,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
- 					struct mm_struct *mm);
- void iommu_sva_unbind_device(struct iommu_sva *handle);
- u32 iommu_sva_get_pasid(struct iommu_sva *handle);
-+void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end);
- #else
- static inline struct iommu_sva *
- iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
-@@ -1595,6 +1598,7 @@ static inline u32 mm_get_enqcmd_pasid(struct mm_struct *mm)
- }
- 
- static inline void mm_pasid_drop(struct mm_struct *mm) {}
-+static inline void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end) {}
- #endif /* CONFIG_IOMMU_SVA */
- 
- #ifdef CONFIG_IOMMU_IOPF
--- 
-2.43.0
-
+If the status is RPM_SUSPENDING, the runtime suspend callback will be invok=
+ed.
