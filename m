@@ -1,36 +1,37 @@
 Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF330280305
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1197B280330
 	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 08:53:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752051226; cv=none; b=qZ8UFjhOUsGtgwwHtfJOgmIdpKPDMfMteXijtkseSAuDFsUxwmqFR14ZWvUeLZHAphqJPEY+Jd8JegzSIaGEgACPn7TK76ea39m2eQd7eRoQf1UtGswHCgHdExUuFoUmNBwtQUfWBxWx4kNonLENvG7Od6zDqBeAa7gah6lQs/c=
+	t=1752051226; cv=none; b=Uegraj5Mjo4HuFlWRRnCP9rj8TAPR+Uteq2LH9wwGEhnRMpmdzxgF3dvQbkn04c79jR+sTJG6phrRVB7A9b7wYfdwNXSddZxFV5fZ4g4UFscllok0nbyq1fhI3uxjN3uHKzdaUVGUQS5Nm7MrD3SS6d3CIxvKtfXuRpkjdA2xnU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1752051226; c=relaxed/simple;
-	bh=8IQx6W/1PdnreYyNzZK7oBqPlduYE0b8d+5NrbHzL0k=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ef3PLo0jv7/EqsLHXn+lLRPl42Vu3fNDk/utirAyBskEhsCmARQGUpd4UzG6BtRse274gTCmWnjOAT5CT+4NpHVjhAyUHGjJ/jLo1Y1RqhTldllhZpGBKnpDJ7lL/7ZsoviLC+8WVnNirCJXmR1rGmS5uu3l1PfV06cVzC7AU9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=Uftlh972; arc=none smtp.client-ip=148.251.105.195
+	bh=jWZNbtieMlukarfurzmaf+LlmGQDBBQxXt2OISoZBI8=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=toZcK1iIzSGwd1ou4CCpYhPyBnJK+FUd76F4ikoXafHvtOPjuV9VHPjO7uBW1JshGPjXQEvOvFcm69RmD0rVKHI3cmPWtj/Pi+ZTVnkxJWI2LOr1MAszGvOgx7H2hy5x9udt8C5/hUH4h+WEmPsGNr4/h8UcrRI/92Um0UR6wa4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=GGg8EwSx; arc=none smtp.client-ip=148.251.105.195
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="Uftlh972"
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="GGg8EwSx"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1752051222;
-	bh=8IQx6W/1PdnreYyNzZK7oBqPlduYE0b8d+5NrbHzL0k=;
-	h=From:To:Cc:Subject:Date:From;
-	b=Uftlh972MTTEqcOpOSkMnlptEKhlJK16hoz0M4o3cGXcQ3Oh5/QxoOI+LJd/8S4jF
-	 C/jkw+AVhjZ5FegZDN8CrAShwWjj30NcCDS+T1+bGr7tWemalzlLgUUznXxGfC7fgE
-	 55F9wm4puGgC/h3eGKaZbsaIzv1rWtKvUPrFqMYZZRbUDawwAPkatzsOoqnxGjn3kI
-	 IlFmZfF5VkWXXSYtDwjR8nBN7v1MjFsYrdI/4uIBeoEh7HlAKkpXUahyGopl2XHfLE
-	 /W9InXLwv8pCHqzG5miR7iZygrdaSAAaeAGnCEpS3VnFvFR/P3U65HDEX+zF6AAaFO
-	 6qypXe0QvgfOw==
+	s=mail; t=1752051223;
+	bh=jWZNbtieMlukarfurzmaf+LlmGQDBBQxXt2OISoZBI8=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=GGg8EwSxDwloZxnzrUqj5xAGCBoz0h7ZVfuKUBVA5gXoRrB+JYnMooojE14DNmOoP
+	 Xm1rMJlWdHb5lL8FX/JuuwyvLgbE/8rBuLe9zQbuTOPoLwkc04loRrzm2auPgwqQoM
+	 czAUovxwjgyFKNCWCesgR7CAEuWYZBwueMKViAwFgJzs3bi4MtKODCSYH+8v5QgGUz
+	 AaeNTG3nABqEblRLY0PqYSrWyjLkgajFg5q3//IVyGsTPUF/m3PSLSttUJCp2JRxEa
+	 P+rjY4EHNdYI+OLAuTFeVne1ZvlqdG4s8FDpAPhQq3XAh+rjYtrzkIr3ckYVCC67pK
+	 bvih4Q9UIYMfQ==
 Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:8d6b:4a4d:ad13:46c1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: benjamin.gaignard)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 5A9AC17E04AA;
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id EA15B17E08E3;
 	Wed,  9 Jul 2025 10:53:42 +0200 (CEST)
 From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 To: joro@8bytes.org,
@@ -48,98 +49,48 @@ Cc: iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org,
 	linux-rockchip@lists.infradead.org,
 	kernel@collabora.com,
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Subject: [PATCH v5 0/5] Add support for Verisilicon IOMMU used by media codec blocks
-Date: Wed,  9 Jul 2025 10:53:25 +0200
-Message-ID: <20250709085337.53697-1-benjamin.gaignard@collabora.com>
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v5 1/5] dt-bindings: vendor-prefixes: Add Verisilicon
+Date: Wed,  9 Jul 2025 10:53:26 +0200
+Message-ID: <20250709085337.53697-2-benjamin.gaignard@collabora.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250709085337.53697-1-benjamin.gaignard@collabora.com>
+References: <20250709085337.53697-1-benjamin.gaignard@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=y
 Content-Transfer-Encoding: 8bit
 
-Hi all,
+Verisilicon Microelectronics is a company based in Shanghai, China,
+developping hardware blocks for SoC.
 
-This patch series adds support for the Verisilicon IOMMU, which is found in front
-of hardware encoder and decoder blocks in several SoCs using Verisilicon IP. 
-A first implementation of this IOMMU is available on the Rockchip RK3588 SoC.
+https://verisilicon.com/
 
-Rockchip provides a driver for this hardware in their 6.1 kernel branch:
-https://github.com/rockchip-linux/kernel/blob/develop-6.1/drivers/iommu/rockchip-iommu-av1d.c
+Add their name to the list of vendors.
 
-This series includes:
-- a new binding for the Verisilicon IOMMU
-- a driver implementation
-- DT updates for RK3588
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-The driver was forward-ported from Rockchip’s 6.1 implementation, 
-the prefix was renamed to vsi for generality, and several fixes were applied.
-
-AV1 decoding was tested using the stateless VPU driver and Fluster.
-The test results show a score of 205/239, which confirms that no regressions
-were introduced by this series.
-
-Feedback and testing welcome.
-
-changes in version 5:
-- change locking schema to use 2 spin_locks: one to protect vsi_domain
-  data and one to protect vsi_iommu structure.
-- make suspend/resume more robust by calling disable/enable function.
-- rebased on top of v6.16-rc5
-
-changes in version 4:
-- rename and reorder compatibles fields.
-- Kconfig dependencies
-- Fix the remarks done by Jason and Robin: locking, clocks, macros
-  probing, pm_runtime, atomic allocation.
-
-changes in version 3:
-- Change compatible to "rockchip,rk3588-iommu-1.2"
-- Fix compatible in .yaml
-- Update DT and driver to use "rockchip,rk3588-iommu-1.2" compatible
-- Set CONFIG_VSI_IOMMU as module in defconfig
-- Create an identity domain for the driver
-- Fix double flush issue
-- Rework attach/detach logic
-- Simplify xlate function
-- Discover iommu device like done in ARM driver
-- Remove ARM_DMA_USE_IOMMU from Kconfig
-
-changes in version 2:
-- Add a compatible "rockchip,rk3588-av1-iommu"
-- Fix clock-names in binding 
-- Remove "vsi_mmu" label in binding example.
-- Rework driver probe function
-- Remove double flush
-- Rework driver internal structures and avoid allocate
-  in xlate function.
-- Do not touch to VPU driver anymore (path removed)
-- Add a patch to enable the driver in arm64 defconfig
-
-
- 
-Benjamin Gaignard (5):
-  dt-bindings: vendor-prefixes: Add Verisilicon
-  dt-bindings: iommu: verisilicon: Add binding for VSI IOMMU
-  iommu: Add verisilicon IOMMU driver
-  arm64: dts: rockchip: Add verisilicon IOMMU node on RK3588
-  arm64: defconfig: enable Verisilicon IOMMU
-
- .../bindings/iommu/verisilicon,iommu.yaml     |  71 ++
- .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
- arch/arm64/boot/dts/rockchip/rk3588-base.dtsi |  11 +
- arch/arm64/configs/defconfig                  |   1 +
- drivers/iommu/Kconfig                         |  11 +
- drivers/iommu/Makefile                        |   1 +
- drivers/iommu/vsi-iommu.c                     | 775 ++++++++++++++++++
- 7 files changed, 872 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iommu/verisilicon,iommu.yaml
- create mode 100644 drivers/iommu/vsi-iommu.c
-
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 5d2a7a8d3ac6..1baf8304c9ac 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -1635,6 +1635,8 @@ patternProperties:
+     description: Variscite Ltd.
+   "^vdl,.*":
+     description: Van der Laan b.v.
++  "^verisilicon,.*":
++    description: VeriSilicon Microelectronics
+   "^vertexcom,.*":
+     description: Vertexcom Technologies, Inc.
+   "^via,.*":
 -- 
 2.43.0
 
