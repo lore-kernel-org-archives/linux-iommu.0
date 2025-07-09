@@ -1,118 +1,225 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B7B02E8E01
-	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 15:52:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EC0FA2E8892
+	for <iommu@lists.linux.dev>; Wed,  9 Jul 2025 15:52:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752076323; cv=none; b=hadE1i/eYSBjlov38QkovKwTukOZ09x3x5S/zl0ro7bBGk5U3CYL22uv91+mrU0e/9/pwRveAkDQCt6fcGJkLMK2468RMY6sFDBxRvB+yhhvMFEdLkuBekQj186+izYvifJz5OnbpTtFHcvn+patXSh7gBSE5oErVeQAQl+FaBM=
+	t=1752076323; cv=none; b=eVSIt6CLb/465KmS6Z3eidwQbAfqMak9CdDjDpCmkA6UKpdK8jjSD9addVcXBNLhYwkiz/S/xqWWn9fIg4L1Ik/w2s02fonnqAomAVTp4YFh63mabuO09+/HFkp6m17jXRVyXyK5s+EauHM8/C2XVzXH7M4F3nNyCD7U1yw4T7g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1752076323; c=relaxed/simple;
-	bh=neRG5nAF9GeJJNLGC2/+CQkRxoRqo3/yEX8tkqU+KMg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ijlVBJoBP+ZVbvrc+3sUMecZriUF4eN3w0ydzbH11U6drx3Yyd5ONfJ15916GFYuStt8ck99N8hVCT5IhvSwF+YKm6TnVTcYcpx56LhkuLHFsaikfRe4tOF4KTJoBEQ8r0Wc0AhJVgj3OPzu4jrOW7dEc1YHqTttqL/10Bktxm8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=zes7Bwm6; arc=none smtp.client-ip=209.85.214.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	bh=3DsDfdqkVv4ziBEj/VU8EFLsz6DVoisR6+XDdFomHgY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=mTKQoYGdZyRM9CDU7vDzw2UIN91iZgrNDw+dE+1AcLujKiEp/9YGjChaYcIoa5DUPXcCZXh1fzcd1HtwUBRgdMudSJ0fP0xuKaqvm008rH7ibPKLy6Az2YhQ3R/qncX4KopqxVsUYsfObiXovsrDpIi8f7TP08dGr4NJWHCCTcs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=oj+7/dOZ; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="zes7Bwm6"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-23dd9ae5aacso175705ad.1
-        for <iommu@lists.linux.dev>; Wed, 09 Jul 2025 08:52:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1752076321; x=1752681121; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MaN6y96fso9eH16uqaS+k/SvhhSMtB2yBaj4L57hCLo=;
-        b=zes7Bwm65Cz2zWFAgp60LgES/BCzMQ59IIXTmKmb5+58rKICGTe2JkDqFzqR6K8ltN
-         ih1M2MJ638dKUqI//LP9qhtR/E/pYc7Jg4Uys4DgSe1bhVA2pY/MIfkKRrzotX0xuTIh
-         ZI62ok4Vv1iPZ7JE4c9/New/jSMDVxuZZYMSOKwOkhO3w1IiKCcAyhQHHb0I+j0CQAw9
-         OCfxkzHQC3Ab6DmqQa4PgqDpH+U1ehkmCUQoOmToCTIueUrGw5K03byAApKUQgLY5HiJ
-         d2qNpEW5yJ3G1eILRZZkx53ZssqWFL1ZjW/nk2KSIxL8/qn8PMmjQ2K2j3HwjwmDsJoX
-         f50A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752076321; x=1752681121;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MaN6y96fso9eH16uqaS+k/SvhhSMtB2yBaj4L57hCLo=;
-        b=JzD04ZvsBJwNGQfKdRXesZifPPRCdOEiotg7anWgnPIMkZ20V9qd0Z4kqEgWiOk6Oi
-         1nYfUo02PuQSn29dZ1J+6Jf9wCZT84LXh2jeIwkG1LKkvrRMFdLNviHoBV4YFKrSjnlc
-         7iy4kskpBzx6hbhrZoNKEk82U/V6sBGwX5oU8Q2AzH5FAZudiERMU+D3tzZT1GOtE6QT
-         ctzuF5UEZyKaE2NvG7ZGd51lpVkkORS0qdmavijfnlrUA2PvdSCQdkAu4Eq5RGpI2GXu
-         12T0h8JbJo4IYFy3Ven2Sv15yx7C0VwEeiv3xF7Y/0R7uGt6qjQm+vCnt/jE/HoOQC4k
-         TyDQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXii4cF3KIuBQj9CguSYVxKdKY0kPFMsDWH94H0qqb72pFZSvBdNLMaNEkt1oBdW1zkPd/kEw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxc7AM2V8Zskt0Kv5ryn55LgXaBT7DSoqjQ+dW4agkNE6x0TGrg
-	40IDoKpx2Hnr8MVUsDi/hx9kG1Jxt/YV1ov+TQcmLxRmXAvPWOmqGwQB7R/qnUdXgg==
-X-Gm-Gg: ASbGncv3mCyOia34mTRjrRitVaguowsRpelOpR61rMHnwNtvdRb2B2cI/eSRHyjjo/V
-	SV9QFtrgoQyEsoqbSRfq2Ik0AorNpwjn0WCAoPAUhPWZfWCwT8qztfq97NNuIfIHvDNVec+jLPI
-	x3lJ8jkIeYslBza966bQdeXPiWl0XAlkk/S28WsNsS8w227QqDwZfpiimDclNN+/PM0aJzndeBS
-	HK25xng8sNnUyPJTGzjlBqu+oisy8/GDAU3g57IRvmL09njs8Ar6EbC3wXUPREJ1Vz3lnOXDIor
-	8tVltdiIIvmi/VNnsMf1mLluwbKA8YsX+1ZMwC992r5pW+GR8AehD0acf/5WfuEq18BZ+z7BXdG
-	8YRiNdofgrVWw6qfsY60H
-X-Google-Smtp-Source: AGHT+IHuzmNy+B/oCO/2QqQlep5MB1emRbkOhmYvWpGIYJ6wPtcVhd41J2cjEkccVc0pChtBnmioUg==
-X-Received: by 2002:a17:902:f544:b0:231:f6bc:5c84 with SMTP id d9443c01a7336-23dda3a6a7dmr3334135ad.8.1752076316654;
-        Wed, 09 Jul 2025 08:51:56 -0700 (PDT)
-Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-74ce42a2638sm15075036b3a.137.2025.07.09.08.51.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Jul 2025 08:51:56 -0700 (PDT)
-Date: Wed, 9 Jul 2025 15:51:50 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Mostafa Saleh <smostafa@google.com>,
-	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH v3 5/8] pm: runtime: Introduce
- pm_runtime_get_if_not_suspended()
-Message-ID: <aG6QFk-2hG4DiOd5@google.com>
-References: <20250616203149.2649118-1-praan@google.com>
- <20250616203149.2649118-6-praan@google.com>
- <aG2U51i3lY4R88ot@Asurada-Nvidia>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="oj+7/dOZ"
+Received: from DESKTOP-0403QTC. (unknown [52.148.138.235])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 03C51201B1AB;
+	Wed,  9 Jul 2025 08:51:59 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 03C51201B1AB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1752076320;
+	bh=z9h/G1eX2eJTFIHCs2wISp++Fjv12UbzFJY2WerW6rE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
+	b=oj+7/dOZdVMG+aRN78QlQwoZDDwcmA+CtpB/jmBDyR4fZTLlJtN4/QTDkxKkGARCb
+	 IoRsDMx1V2MB7Zm5s2/8FpbcItosvocFltDI3rJu3I+uvaWXumLlj6zAzbWdpatlFv
+	 zLbtlmoabEdXdAuFTurgZIGx08h8cbQUTQKy9Nms=
+Date: Wed, 9 Jul 2025 08:51:58 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
+ Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, Jason
+ Gunthorpe <jgg@nvidia.com>, Jann Horn <jannh@google.com>, Vasant Hegde
+ <vasant.hegde@amd.com>, Dave Hansen <dave.hansen@intel.com>, Alistair
+ Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
+ Uladzislau Rezki <urezki@gmail.com>, Jean-Philippe Brucker
+ <jean-philippe@linaro.org>, Andy Lutomirski <luto@kernel.org>,
+ iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH 1/1] iommu/sva: Invalidate KVA range on kernel TLB flush
+Message-ID: <20250709085158.0f050630@DESKTOP-0403QTC.>
+In-Reply-To: <20250704133056.4023816-1-baolu.lu@linux.intel.com>
+References: <20250704133056.4023816-1-baolu.lu@linux.intel.com>
+Reply-To: jacob.pan@linux.microsoft.com
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aG2U51i3lY4R88ot@Asurada-Nvidia>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jul 08, 2025 at 03:00:07PM -0700, Nicolin Chen wrote:
-> On Mon, Jun 16, 2025 at 08:31:46PM +0000, Pranjal Shrivastava wrote:
-> > +int pm_runtime_get_if_not_suspended(struct device *dev)
-> > +{
-> > +	unsigned long flags;
-> > +	int retval;
-> > +
-> > +	spin_lock_irqsave(&dev->power.lock, flags);
-> > +	if (dev->power.disable_depth > 0) {
-> > +		retval = -EINVAL;
-> > +		goto out;
-> > +	}
-> > +
-> > +	if (dev->power.runtime_status == RPM_SUSPENDED) {
-> > +		retval = 0;
-> > +		goto out;
-> > +	}
-> > +
-> > +	/* Cancel the auto-suspend timer */
-> > +	pm_runtime_cancel_pending(dev);
-> > +	atomic_inc(&dev->power.usage_count);
-> > +	__update_runtime_status(dev, RPM_ACTIVE);
-> > +	retval = 1;
-> [...]
-> > +	spin_unlock_irqrestore(&dev->power.lock, flags);
-> > +
-> > +	return retval;
-> > +out:
-> > +	spin_unlock_irqrestore(&dev->power.lock, flags);
-> > +	return retval;
-> > +}
+Hi BaoLu,
+
+On Fri,  4 Jul 2025 21:30:56 +0800
+Lu Baolu <baolu.lu@linux.intel.com> wrote:
+
+> The vmalloc() and vfree() functions manage virtually contiguous, but
+> not necessarily physically contiguous, kernel memory regions. When
+> vfree() unmaps such a region, it tears down the associated kernel
+> page table entries and frees the physical pages.
+>
+> In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU
+> hardware shares and walks the CPU's page tables. Architectures like
+> x86 share static kernel address mappings across all user page tables,
+> allowing the IOMMU to access the kernel portion of these tables.
+Is there a use case where a SVA user can access kernel memory in the
+first place? It seems VT-d code does not set supervisor request (SRE)
+for the user PASID, I don't see SRE equivalent in AMD IOMMU GCR3 table.
+So the PTE U/S bit will prevent kernel memory access, no?
+
+> Modern IOMMUs often cache page table entries to optimize walk
+> performance, even for intermediate page table levels. If kernel page
+Just wondering if this patch has anything specific to "intermediate page
+table", since invalidation hint is always 0 so the intermediate TLBs
+are always flushed.
+
+> table mappings are changed (e.g., by vfree()), but the IOMMU's
+> internal caches retain stale entries, Use-After-Free (UAF)
+> vulnerability condition arises. If these freed page table pages are
+> reallocated for a different purpose, potentially by an attacker, the
+> IOMMU could misinterpret the new data as valid page table entries.
+> This allows the IOMMU to walk into attacker-controlled memory,
+> leading to arbitrary physical memory DMA access or privilege
+> escalation.
+> 
+> To mitigate this, introduce a new iommu interface to flush IOMMU
+> caches and fence pending page table walks when kernel page mappings
+> are updated. This interface should be invoked from
+> architecture-specific code that manages combined user and kernel page
+> tables.
+> 
+> Fixes: 26b25a2b98e4 ("iommu: Bind process address spaces to devices")
+> Cc: stable@vger.kernel.org
+> Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  arch/x86/mm/tlb.c         |  2 ++
+>  drivers/iommu/iommu-sva.c | 32 +++++++++++++++++++++++++++++++-
+>  include/linux/iommu.h     |  4 ++++
+>  3 files changed, 37 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+> index 39f80111e6f1..a41499dfdc3f 100644
+> --- a/arch/x86/mm/tlb.c
+> +++ b/arch/x86/mm/tlb.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/task_work.h>
+>  #include <linux/mmu_notifier.h>
+>  #include <linux/mmu_context.h>
+> +#include <linux/iommu.h>
 >  
-> One pair is enough.
+>  #include <asm/tlbflush.h>
+>  #include <asm/mmu_context.h>
+> @@ -1540,6 +1541,7 @@ void flush_tlb_kernel_range(unsigned long
+> start, unsigned long end) kernel_tlb_flush_range(info);
+>  
+>  	put_flush_tlb_info();
+> +	iommu_sva_invalidate_kva_range(start, end);
+>  }
+>  
+>  /*
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index 1a51cfd82808..154384eab8a3 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -10,6 +10,8 @@
+>  #include "iommu-priv.h"
+>  
+>  static DEFINE_MUTEX(iommu_sva_lock);
+> +static DEFINE_STATIC_KEY_FALSE(iommu_sva_present);
+> +static LIST_HEAD(iommu_sva_mms);
+>  static struct iommu_domain *iommu_sva_domain_alloc(struct device
+> *dev, struct mm_struct *mm);
+>  
+> @@ -42,6 +44,7 @@ static struct iommu_mm_data
+> *iommu_alloc_mm_data(struct mm_struct *mm, struct de return
+> ERR_PTR(-ENOSPC); }
+>  	iommu_mm->pasid = pasid;
+> +	iommu_mm->mm = mm;
+>  	INIT_LIST_HEAD(&iommu_mm->sva_domains);
+>  	/*
+>  	 * Make sure the write to mm->iommu_mm is not reordered in
+> front of @@ -132,8 +135,13 @@ struct iommu_sva
+> *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm if
+> (ret) goto out_free_domain;
+>  	domain->users = 1;
+> -	list_add(&domain->next, &mm->iommu_mm->sva_domains);
+>  
+> +	if (list_empty(&iommu_mm->sva_domains)) {
+> +		if (list_empty(&iommu_sva_mms))
+> +			static_branch_enable(&iommu_sva_present);
+> +		list_add(&iommu_mm->mm_list_elm, &iommu_sva_mms);
+> +	}
+> +	list_add(&domain->next, &iommu_mm->sva_domains);
+>  out:
+>  	refcount_set(&handle->users, 1);
+>  	mutex_unlock(&iommu_sva_lock);
+> @@ -175,6 +183,13 @@ void iommu_sva_unbind_device(struct iommu_sva
+> *handle) list_del(&domain->next);
+>  		iommu_domain_free(domain);
+>  	}
+> +
+> +	if (list_empty(&iommu_mm->sva_domains)) {
+> +		list_del(&iommu_mm->mm_list_elm);
+> +		if (list_empty(&iommu_sva_mms))
+> +			static_branch_disable(&iommu_sva_present);
+> +	}
+> +
+>  	mutex_unlock(&iommu_sva_lock);
+>  	kfree(handle);
+>  }
+> @@ -312,3 +327,18 @@ static struct iommu_domain
+> *iommu_sva_domain_alloc(struct device *dev, 
+>  	return domain;
+>  }
+> +
+> +void iommu_sva_invalidate_kva_range(unsigned long start, unsigned
+> long end) +{
+> +	struct iommu_mm_data *iommu_mm;
+> +
+> +	might_sleep();
+> +
+> +	if (!static_branch_unlikely(&iommu_sva_present))
+> +		return;
+> +
+> +	guard(mutex)(&iommu_sva_lock);
+> +	list_for_each_entry(iommu_mm, &iommu_sva_mms, mm_list_elm)
+> +
+> mmu_notifier_arch_invalidate_secondary_tlbs(iommu_mm->mm, start,
+> end); +} +EXPORT_SYMBOL_GPL(iommu_sva_invalidate_kva_range);
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 156732807994..31330c12b8ee 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -1090,7 +1090,9 @@ struct iommu_sva {
+>  
+>  struct iommu_mm_data {
+>  	u32			pasid;
+> +	struct mm_struct	*mm;
+>  	struct list_head	sva_domains;
+> +	struct list_head	mm_list_elm;
+>  };
+>  
+>  int iommu_fwspec_init(struct device *dev, struct fwnode_handle
+> *iommu_fwnode); @@ -1571,6 +1573,7 @@ struct iommu_sva
+> *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm);
+>  void iommu_sva_unbind_device(struct iommu_sva *handle);
+>  u32 iommu_sva_get_pasid(struct iommu_sva *handle);
+> +void iommu_sva_invalidate_kva_range(unsigned long start, unsigned
+> long end); #else
+>  static inline struct iommu_sva *
+>  iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+> @@ -1595,6 +1598,7 @@ static inline u32 mm_get_enqcmd_pasid(struct
+> mm_struct *mm) }
+>  
+>  static inline void mm_pasid_drop(struct mm_struct *mm) {}
+> +static inline void iommu_sva_invalidate_kva_range(unsigned long
+> start, unsigned long end) {} #endif /* CONFIG_IOMMU_SVA */
+>  
+>  #ifdef CONFIG_IOMMU_IOPF
 
-Ack. Will fix this.
