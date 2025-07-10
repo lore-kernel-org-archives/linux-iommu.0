@@ -1,139 +1,170 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 89F3422E3FA
-	for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 15:28:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752161298; cv=none; b=MH6e7ksFjhaHULjvCKYiLye+TcJ8lSJUtdIkIMLVF1EaMFN0V6jKnpUnyUNFTrwKwrlPA/6hgggRfuxoHXGXIGTTbUsb+V9XTt8FxPYbvexUOB/gmaiX6/O/ei2RRjLIgdyph2RPE+BAFjwbcXGp+CD3w68qYSbVG8HgBHlItIc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752161298; c=relaxed/simple;
-	bh=dGBvMw3vKqSm7Z2a1/le01d/kxMGm6gLqmJJF9b+F30=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jWh3Be31AjtAem/kmvbjIOnlK1Zp3w6KmCKZf+9DJwzOSBhrNCZIdWzAlWo3J+cxx7hSe72lYym3jOF/nXmQapKXiA9PgAyHw/4LsuZiSHMYzdxquqGWc9nM3nhJ6IUSV09CDWzjVndoQjy5BJknd3mbcKUEHZykNHV9TRHyunI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=i04o3jbP; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2075.outbound.protection.outlook.com [40.107.223.75])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7F662749DA;
+	Thu, 10 Jul 2025 15:32:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.75
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752161530; cv=fail; b=a1PDLfjRk5MgEq49cnMBzohIzcMhn6H0N34WmaUWHlhSV33++MW+rcDF4Vqq2/8dJAm5ZDU3tJOeL+7E0ntfZCf15aeaIDfLwTc+bYErrDuGsvYjIJAj3eVJislZ8/ev0ehrxCwKR/e/X2tJToYhDQGZsRrgNzLidz86PwqzrHM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752161530; c=relaxed/simple;
+	bh=clE3uB5m/LnLitKPOF/2a9w4o9ybywBvbdUO6kOJc0Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=sly/prxi7aj/iOhTarJtmRy2AbzkC+oTjYO4o/R94WTtMRsfqu4SzLF4HVyu3FTk2mJh+o0hebuSGlTHHGDUyKiFDB01kIagrSO8bSSimTtd2KRi047uX01Cx12gVTaelvUcHSF/joqAtvFYSsue/cbgbaA2lYzpwmYigblgbAI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hBXipNem; arc=fail smtp.client-ip=40.107.223.75
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="i04o3jbP"
-Received: from DESKTOP-0403QTC. (unknown [52.148.138.235])
-	by linux.microsoft.com (Postfix) with ESMTPSA id AAD03201659C;
-	Thu, 10 Jul 2025 08:28:09 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AAD03201659C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1752161290;
-	bh=b8OtibJpDleBLUM3qfv+/DrZpEmp0ZVWzP6n1DAx5BY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
-	b=i04o3jbPcZp8DbeuzYiFgO/zUUS78Z2hsAs4mBRQZ4h3Uwyjjvdz5fk5dNd/QblG9
-	 sJr5xO5Pk2kGIR4LYMqJMtAn3LRfdPLm8A+38MjSX+9f+9PYstM9WqrE3r2LWlnn63
-	 JTtlxElf6NDnFj5A748MwUNT60kFlkZORgfBoVGU=
-Date: Thu, 10 Jul 2025 08:28:08 -0700
-From: Jacob Pan <jacob.pan@linux.microsoft.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Will
- Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Kevin Tian
- <kevin.tian@intel.com>, Jann Horn <jannh@google.com>, Vasant Hegde
- <vasant.hegde@amd.com>, Dave Hansen <dave.hansen@intel.com>, Alistair
- Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
- Uladzislau Rezki <urezki@gmail.com>, Jean-Philippe Brucker
- <jean-philippe@linaro.org>, Andy Lutomirski <luto@kernel.org>,
- iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org, jacob.pan@linux.microsoft.com
-Subject: Re: [PATCH 1/1] iommu/sva: Invalidate KVA range on kernel TLB flush
-Message-ID: <20250710082808.52399e31@DESKTOP-0403QTC.>
-In-Reply-To: <2080aaea-0d6e-418e-8391-ddac9b39c109@linux.intel.com>
-References: <20250704133056.4023816-1-baolu.lu@linux.intel.com>
-	<20250709085158.0f050630@DESKTOP-0403QTC.>
-	<20250709162724.GE1599700@nvidia.com>
-	<20250709111527.5ba9bc31@DESKTOP-0403QTC.>
-	<2080aaea-0d6e-418e-8391-ddac9b39c109@linux.intel.com>
-Reply-To: jacob.pan@linux.microsoft.com
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hBXipNem"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=A67fIOI2rNwSJ+biujS5zuLiUKXHtxsM1HmpHoyuXQs9rO63IQSICrafvE1ZCleLy8e0oNA/Cdv5T8M50pPs+bdEisZ/zwJfQ/eIq9RKSsftkxbRyB7bx7tv3TTg3f4urisloBH6fTM9VyG5dH+xeNkTOIwRfVkwhl6t4B7BbzEL6bamKcv029NFW3DXszBxROIJV9I20Cwz31bc4gJXIl7JrLM8do0/l9THzVSErB+MpwJ2pynxJAZcdrYZ+Ti/dm9Svp2E0zOIdB7cPOrCt8ZW8Ngq32HfBgVOmUtGcGXQaIWZIxawV9ZFINYB0dnkLZTiQkKBBBAPpJHBa/CWDA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Oa8Bi6oG4Tbg22kaaVpAf0fyLgcz+NQdKYy8jTijgEY=;
+ b=pBl6RrveQLabo71is2v9ffpmz5NSuDu2p0bjJPYrQP867IbXSOAgzq10RuNy/i6XmSxDrrmgJAEybEzjLxqBoPd2zl1g7Xxv1iZpFj+2JZJtHT+mZiBtw4lZv/9yqyoC9M3T+PeXwtqxnw5EI/xngQsqdw5s4wRBf0DmOL2IsL3S+f/wlaDTiQDsGg+lTWNZicpAv78BHllXjpljhlkqaBQkZN5w173tG4kL3VelLggUfy8LANE3xi1g7MoYfDPIXViLxOAVAQoQi0n+MYQcJTsZX+s31micxqSqYsyCQymGNZ8FsIvIbAWT7N2MZ/caJo6IfSIszqYQTSlcLaDhdA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Oa8Bi6oG4Tbg22kaaVpAf0fyLgcz+NQdKYy8jTijgEY=;
+ b=hBXipNemZgl6rKrcSv0YJ1WTpbu6Iq1i9gE7gOLepKivZApTO5I0NuDIFYlsnluyJKtKYhobsTtBOgYI64ZZThiFcugQTBjvUufKzmPhxyRh/GfkgCSQp2um5eocMXOzhz22tHKCgwWkbPLlnJyEEZKGPQ+1FTQGc++VtVm7nB/OJ2lmphV14spcJGS/ad+vGk+l6jFpTzB4A8G1q3D8Dwi7RDDWoZJHq8S7OJj6pJI4aUSeKRTyD8xPs30F8R5RidRb4yFjqOzpnuChEZ0au/Y656SFVxDNn7eVdxJn8/moa0k5CvXEf9BhXaWon2X+8bvwdI5rbgEwM5c3ImxKIQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by CY5PR12MB6058.namprd12.prod.outlook.com (2603:10b6:930:2d::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8901.32; Thu, 10 Jul
+ 2025 15:32:05 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8901.024; Thu, 10 Jul 2025
+ 15:32:04 +0000
+Date: Thu, 10 Jul 2025 12:32:02 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Pranjal Shrivastava <praan@google.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
+	corbet@lwn.net, bagasdotme@gmail.com, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, thierry.reding@gmail.com,
+	vdumpa@nvidia.com, jonathanh@nvidia.com, shuah@kernel.org,
+	jsnitsel@redhat.com, nathan@kernel.org, peterz@infradead.org,
+	yi.l.liu@intel.com, mshavit@google.com, zhangzekun11@huawei.com,
+	iommu@lists.linux.dev, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-tegra@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	patches@lists.linux.dev, mochs@nvidia.com, alok.a.tiwari@oracle.com,
+	vasant.hegde@amd.com, dwmw2@infradead.org, baolu.lu@linux.intel.com
+Subject: Re: [PATCH v9 22/29] iommufd/selftest: Update hw_info coverage for
+ an input data_type
+Message-ID: <20250710153202.GO1599700@nvidia.com>
+References: <cover.1752126748.git.nicolinc@nvidia.com>
+ <f01a1e50cd7366f217cbf192ad0b2b79e0eb89f0.1752126748.git.nicolinc@nvidia.com>
+ <aG-fZv39ci6yip3z@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aG-fZv39ci6yip3z@google.com>
+X-ClientProxiedBy: SJ0PR03CA0362.namprd03.prod.outlook.com
+ (2603:10b6:a03:3a1::7) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|CY5PR12MB6058:EE_
+X-MS-Office365-Filtering-Correlation-Id: 93920ef7-9e05-4926-cbf4-08ddbfc6ec2c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|7416014|376014|7053199007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?XNCeu4tlCE3fK08Hre5gTx7XDH7AU/PcB3eQWF7djPbSsYaXWI843/68398x?=
+ =?us-ascii?Q?fHcerWAKByiD34A+l7Ac4Do/RKQ3UBxYhplM4c8J6YbvcHy9vCX4JX9Adlu5?=
+ =?us-ascii?Q?EbZ2T8T4/LmWdb9ulRYmSP/HRJx43dhEhhX/tI3HFNnY8C8WkqpPESm0vzhs?=
+ =?us-ascii?Q?3gayq96FEhoHnCk/B6RCexqD8N6ZCPKxd//fg1bjwgpI3f6Sd9prBZlzs3eV?=
+ =?us-ascii?Q?9ItestlaCNQ2skCN7VNI8dqTNzjnQPNqg8Az8KFUHoDUwSyFWF+hXBrcGPvQ?=
+ =?us-ascii?Q?81nZNd4OIaZp4hExHCNuteEEGcpPRxx7QttmE6e5eAIZ7kOuXDUs42jkeESK?=
+ =?us-ascii?Q?37lypsRlR9uBRoKRfc2VjYZPayXQ/ES01Y8TduMtBE+uoyK7WVksD0cVHl8b?=
+ =?us-ascii?Q?lQUm6equJF/DyAEXdWnvf7XP2gg2iez+UFHV9+VfZn8UHPmWCqecgyn9Cm+G?=
+ =?us-ascii?Q?meQdIEUbsc2/Barl153WMuK48yi/zQnf0z2c0pJdAuiuxfpD9YE0E3gCaODW?=
+ =?us-ascii?Q?p8IE8GJ61KGOhbrOeC+uvve0ccoZKYTPeCjOKCQq9L6RG7x5T5FIIFtyxpk6?=
+ =?us-ascii?Q?mo+kLOTZo6rrgyLvPQ4riYv5XsA23QTKmPUJJHXlq7aYBzDXHgptRAL21SWL?=
+ =?us-ascii?Q?dIncgKRxVR3ZKMlpSLrQS3f8XGWfV5EPiWKybT2w4P7HFrt/27DpXAh+morb?=
+ =?us-ascii?Q?+aoH6gSK+XeaCbehOpsaazDH/3ckY95C7pX8mGVxW7MGaA8PxApkN6Pvedmv?=
+ =?us-ascii?Q?2ArqwJfPGYjPFb3WagW4NqDvk5uteRVKDNcFDcOJUbi/4tpe/1yRwF4atUuq?=
+ =?us-ascii?Q?69BkM+jlJlMumxyipF+737iwIPNQ08x5GKvSLPtMrcXqCrBT41n8vY7S62dz?=
+ =?us-ascii?Q?JS+NN//0qvLwRMMrbKU0TQbfwJPPl1TBnxqQcs5hL8eAs+6dQP1rtJiHDdOe?=
+ =?us-ascii?Q?afWUCXwDbCfLLR3wqxA22z7nuLpf+AO2W+FQ0A/98OPzOPS8+cord1jKukrT?=
+ =?us-ascii?Q?r6N+bAAcVgH9hRZWR/IQ3+93OKXZ/W93LiiPTElz/sLqo4mdlV25mAC4bxJc?=
+ =?us-ascii?Q?Ba2IhURRhB+KI6vBYoFECDO9pIFxU9RVHwinFLRVXo9LfpJukk5EH8FQDQTk?=
+ =?us-ascii?Q?ig5Q1gVeOkpPcOGzCINKahepk1gaqCgUot7lRaM3/ma9iQNPqhEu32a8MHP8?=
+ =?us-ascii?Q?2yoPUCEDODknqYHrOcWl087nPuEF2qyECdjOsD7k+VHSRrGMGf5LKU0r3Pjf?=
+ =?us-ascii?Q?ZZpJQP0Mev6fj46a9PedRV8bm4evhK7WKesV4kIHLrj10OoDDm/yFHCbPLme?=
+ =?us-ascii?Q?pQvyLhhMiv4J++e77XsqMFXXFSRcqdWkoPynTw0Luvsx0U6JRfs0QyYaPm90?=
+ =?us-ascii?Q?eqmigGEA99I6RgS4hvMGs7wIVtudlpwpgqTInnrTFhN1JhbGmAqoPF6TU9JT?=
+ =?us-ascii?Q?lmIhRDjAm9M=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014)(7053199007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?OTccSKyNhiQVN5Mog+I0cF6JZUzcX8TzU/MJapKhUI9keit8l+plPqWhmJgM?=
+ =?us-ascii?Q?1Mnhy/Ovn/Jp0a5TbGibpyu1lhnmnidM0zfJ8A0wFyPgrTakO7Ze2MIeW3GA?=
+ =?us-ascii?Q?Iw0G9dICDA60gvM7Y95mDP1fasftHNQt6tFqm9FSPxLJnDetKwsW94C3olyp?=
+ =?us-ascii?Q?8G+9oPYMh8zeCH7ZiIY72fUItqaHlDFZK9U22ZLgDrPN9e4P2uJZKUEtiPoZ?=
+ =?us-ascii?Q?pcLivkxm85HS20UDFQJXBk9C+vb62bjWerH3Ni4hGC65T0MoTE9jX1Xg1ii4?=
+ =?us-ascii?Q?sJfBegAHGT2fj37j3q2h7SqJNvQH2MI64+GFplwzwRwOQ74pUum7CDFdQa13?=
+ =?us-ascii?Q?kWVydmW/i62qFSZebacOWcdrbPKujald3uMycA6fSkrN/bEECX4WY6zjdBrU?=
+ =?us-ascii?Q?00KlC0e6LXdVsuWy4WZE0Zanm67zexBG0lrldFladTsOIv0FavZF5uoYv8vv?=
+ =?us-ascii?Q?ciVT2/whGaGiuQN9lNAytxtz3CiRjYG2sUNOIRf0j/BSXbKjoQcBIiGzKdE1?=
+ =?us-ascii?Q?yeBNticEs9F7aeCZVb3LUk/fC5j/9j7tKj4AIhaQo1G81VtOESpBYMi3/apW?=
+ =?us-ascii?Q?xJdwczS3ZJWYjKZQ3A+wjzIDIwO2oVhtCeNtkGs5T5aDWi6hXBP3/nsVosK9?=
+ =?us-ascii?Q?HjM5c22CyMCaMEuA6SkK7i2qA4wPVgooXcmXDrjg/NSTodcZrUrnt6lBcR3c?=
+ =?us-ascii?Q?1dv1chlsIpF61Hx82HxTEmNm0oCaZ2BXCGucHG+tTcOLFuDlVAg3mt+jHG7o?=
+ =?us-ascii?Q?IiG6nan+GNHXuD0KF+adjaMwp15a4fTfWPAGSq/vmKDYPEu80+CBFEVRnqo1?=
+ =?us-ascii?Q?L/8EC28RSYxbr2CvZWUQGzgcqueUvelP8nYpyDCMCFaR6vbs/HewVIIVser8?=
+ =?us-ascii?Q?e5tzutFrobNFXXUu2orMRys9F+zD2rh/IuWY4Wj+fMNAwxK43uctkel2ZNCq?=
+ =?us-ascii?Q?nTf+Y/Ps6lhwpaK6siYpV+Jl5ARr+0BCkTw5BI4YE0Qm8obqVNlft6FiXUhN?=
+ =?us-ascii?Q?IFN6kyx7TCs960cY/ZGij6uOjYG1r7lSA1kbFH2XCMf4jDuzwXHCxNwbVHDp?=
+ =?us-ascii?Q?X41loPESx3SExB6bd1tIj4mSX+kOic+Sc/fWmmksBBMKxKC/7BDCRfIGl+In?=
+ =?us-ascii?Q?M7mIQ6KeHgUtkPx+7ngQRhoL701wnMoDVNG2NgrFb47tnBGEiFcwqEpBHbDj?=
+ =?us-ascii?Q?387CkRRMu0VmCQM0Z8Jc4nKZdVxePwA+/CtW9djGL6QFMjZrKhVHIXZl53ei?=
+ =?us-ascii?Q?zhqiGe1cUx0P9Pnfi0SaSeofV6kk/tXuHIwcX947Lzy7CytP3AuiVhLH38yQ?=
+ =?us-ascii?Q?yBAKYH2fyoHaM342lZEmjMz3dVxnKbI4yDRzHAuamtXzo8tl3UZkFxIAmlOg?=
+ =?us-ascii?Q?AC0iowaXWn0D0BUDUMMXgTYVB9Sfxq/eLhCyDtt9sRqJHuN39bXlWIIWrwTE?=
+ =?us-ascii?Q?2rgPFeg4yr24XnEfNgH0+XTGgK533kWx1GH5YfyTcR3gG2FXyZpwo0Pjucdp?=
+ =?us-ascii?Q?JSBYnMv2+Ah7f8HFa612zMp+Tj2EnAAVzALenG71Ojkmz7zvDfKVSC11I9mb?=
+ =?us-ascii?Q?ZppCuDkB7GMsn7sVXLK00F1QGOjq8gzhdVdTLFvg?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93920ef7-9e05-4926-cbf4-08ddbfc6ec2c
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jul 2025 15:32:04.5366
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Vk7i14YIBQ97yLOPXxZqvGR6dYNkWTAYK95wohLB24FhqDC/iyPMZC0ytvVgrnb+
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6058
 
-Hi Baolu,
-
-On Thu, 10 Jul 2025 10:57:19 +0800
-Baolu Lu <baolu.lu@linux.intel.com> wrote:
-
-> Hi Jacob,
-> 
-> On 7/10/25 02:15, Jacob Pan wrote:
-> > Hi Jason,
+On Thu, Jul 10, 2025 at 11:09:26AM +0000, Pranjal Shrivastava wrote:
+> On Wed, Jul 09, 2025 at 10:59:14PM -0700, Nicolin Chen wrote:
+> > Test both IOMMU_HW_INFO_TYPE_DEFAULT and IOMMU_HW_INFO_TYPE_SELFTEST, and
+> > add a negative test for an unsupported type.
 > > 
-> > On Wed, 9 Jul 2025 13:27:24 -0300
-> > Jason Gunthorpe <jgg@nvidia.com> wrote:
-> >   
-> >> On Wed, Jul 09, 2025 at 08:51:58AM -0700, Jacob Pan wrote:  
-> >>>> In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU
-> >>>> hardware shares and walks the CPU's page tables. Architectures
-> >>>> like x86 share static kernel address mappings across all user
-> >>>> page tables, allowing the IOMMU to access the kernel portion of
-> >>>> these tables.  
-> >>  
-> >>> Is there a use case where a SVA user can access kernel memory in
-> >>> the first place?  
-> >>
-> >> No. It should be fully blocked.
-> >>  
-> > Then I don't understand what is the "vulnerability condition" being
-> > addressed here. We are talking about KVA range here.  
+> > Also drop the unused mask in test_cmd_get_hw_capabilities() as checkpatch
+> > is complaining.
+> > 
+> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 > 
-> Let me take a real example:
+> Reviewed-by: Pranjal Shrivastava <praan@google.com>
 > 
-> A device might be mistakenly configured to access memory at IOVA
-> 0xffffa866001d5000 (a vmalloc'd memory region) with user-mode access
-> permission. The corresponding page table entries for this IOVA
-> translation, assuming a five-level page table, would appear as
-> follows:
-> 
-> PGD: Entry present with U/S bit set (1)
-> P4D: Entry present with U/S bit set (1)
-> PUD: Entry present with U/S bit set (1)
-> PMD: Entry present with U/S bit set (1)
-> PTE: Entry present with U/S bit clear (0)
-> 
-> When the IOMMU walks this page table, it may potentially cache all
-> present entries, regardless of the U/S bit's state. Upon reaching the
-> leaf PTE, the IOMMU performs a permission check. This involves
-> comparing the device's DMA access mode (in this case, user mode)
-> against the cumulative U/S permission derived from an AND operation
-> across all U/S bits in the traversed page table entries (which here
-> results in U/S == 0).
-why would IOMMU cache all the entries if the walk is not successful?
+> Note: I see a couple of warnings while building the selftests on Jason's
+> tree, but these seem unrelated to this series:
 
-Also, per x86 vm map how could this example (UUUUS) happen to SVA? i.e.
-sharing intermediate levels.
+This is fixed in v6.16-rc5
 
- ffffc90000000000 |  -55    TB | ffffe8ffffffffff |   32 TB | vmalloc/ioremap
- 0000000000000000 |    0       | 00007fffffffffff |  128 TB | user-space
-
-> The IOMMU correctly blocks this DMA access because the device's
-> requested access (user mode) exceeds the permissions granted by the
-> page table (supervisor-only at the PTE level). However, the PGD, P4D,
-> PUD, and PMD entries that were traversed might remain cached within
-> the IOMMU's paging structure cache.
-> 
-> Now, consider a scenario where the page table leaf page is freed and
-> subsequently repurposed, and the U/S bit at its previous location is
-> modified to 1. From the IOMMU's perspective, the page table for the
-> aforementioned IOVA would now appear as follows:
-> 
-> PGD: Entry present with U/S bit set (1) [retrieved from paging cache]
-> P4D: Entry present with U/S bit set (1) [retrieved from paging cache]
-> PUD: Entry present with U/S bit set (1) [retrieved from paging cache]
-> PMD: Entry present with U/S bit set (1) [retrieved from paging cache]
-> PTE: Entry present with U/S bit set (1) {read from physical memory}
-> 
-> As a result, the device could then potentially access the memory at
-> IOVA 0xffffa866001d5000 with user-mode permission, which was
-> explicitly disallowed.
-> 
-> Thanks,
-> baolu
-
+Jason
