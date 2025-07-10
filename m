@@ -1,83 +1,117 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBF2A28C86D
-	for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 09:02:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F5B42222D6
+	for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 09:04:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752138165; cv=none; b=pDyvDUUTD1tAGVv9XZG60hAqHvh3l+BxaNdIPpWca88WzxrWmsAqCbm8SYlDboicwS7HGxsA8T14L53T8J1XFfMLBHSq4SCadIPdhHqPC5RjwK1EGbDyONtQq3hLNUF/pNywGzXK8BXAyP1uM5WadoaiwU2IXcsLW+jckODuD1Q=
+	t=1752138272; cv=none; b=vAyhYzmwh/CRk+jdcZ4YGTqnWgSELnZjnBXQ8Nz2KhG+RPtdJby44hp6Jfq9ZgGsSVUOZDh+27y2a+xLHp4u2NQX7lmZmvuYcs8xxODuJaxOqGM88OPl69D8ECICQoK5JK9/n1h37FUiL7PXp/O79uF21eInVAATsOePYBv51OU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752138165; c=relaxed/simple;
-	bh=rnbYzhcyqsM7Cur/yLDLwbaGlPGjk71MN1i+Sn6PF7U=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=cDioIFtwxM561uM4XZGIGIPihpGv7JIrqn7awEAnFXZi6KV4YecqfrGyDz9IAavhd0ERK1n1mkLM/fbxkzrQ973n5IK1gJ3pczlyJbebeCiFqZf3urSyT6kYMBoL1RNvwkiogYy1mk5DLsLA+RC9hzFDH74r20GJl4rsO4InUAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EqH2zbZv; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1752138272; c=relaxed/simple;
+	bh=UHq0Bpn2ipr+kaNHbOBnceI/82zqPsegalrxYbyF9JQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=k5P0Fj2Atlr7C9HUBTDcB0sZngOAdyWfjzX30anUD2XHQG2T/eBjq+/ppITY4FeVhTJiE8HxiLvQl/Z6ca24otjRxnGziGoZvTtXTNaDRkGSHC/pgnfPJOHM5Ixkp/TkYMbDRS9tyBtaMazQ7VMXVacJXHF4eamHz9x06TXxm0Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rYAVBRZz; arc=none smtp.client-ip=209.85.214.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EqH2zbZv"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752138165; x=1783674165;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=rnbYzhcyqsM7Cur/yLDLwbaGlPGjk71MN1i+Sn6PF7U=;
-  b=EqH2zbZvi/+CHxVzqBIOLYPJI0LN4D1rpKQHcH/MAKn6uusYwFUY6NPd
-   NEChlpti97FUi3i61XLo4n+9GW0g8kr8tmNMT3ZMs7lMseEX0eL3bfYCB
-   lH0CN6wtl+447afZMd1VbrM/Yr3gA2UoxAy84/VVVwkesuzepLrOuj9sN
-   lneEl9IYoErT8QBtEwVeBIRJTkedgtcfe150C+7hc43dmfPZeYLFL/nrd
-   W5zqq1Yz2bvLe+1LG0yR5J+FwkyzdpSawloon3GlYEI0x3ifzJNryuQEG
-   h7G2slHnZPRovCLTL6CogyQ9sNNW+c4GNBl2lACubCnvJ513GJU3xL8rz
-   Q==;
-X-CSE-ConnectionGUID: yJ1SMTMqRWyz74i8AOvOnw==
-X-CSE-MsgGUID: MhAYAdtWRFupDJgMrmwhLQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11489"; a="71860151"
-X-IronPort-AV: E=Sophos;i="6.16,300,1744095600"; 
-   d="scan'208";a="71860151"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2025 02:02:44 -0700
-X-CSE-ConnectionGUID: jrT2+QECRDy8xPWYHiH2Lw==
-X-CSE-MsgGUID: 9a685G4zTluEDerg8XAcAA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,300,1744095600"; 
-   d="scan'208";a="179718270"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.243.252]) ([10.124.243.252])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2025 02:02:41 -0700
-Message-ID: <5a713081-7a1a-4ff2-8212-cbd4a6c63fc0@linux.intel.com>
-Date: Thu, 10 Jul 2025 17:02:40 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rYAVBRZz"
+Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-235e389599fso168145ad.0
+        for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 02:04:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1752138270; x=1752743070; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=DjeE3o0RxHj2yfYkiiw6nT6qNxm9Jz3LUgLh8cuza0U=;
+        b=rYAVBRZzdQVxiF2eS0+vltBAYxHR/mUhzf7x62KdCHpQFXAxaZhOdAvZ/UXaDVlyti
+         ScaTZvbNhscnGOf4XWsntbX8eYYR1VrwG24XCfLeQ16WeJLMgGXh/pE7rOxP2VDD0e3T
+         v6nZ3XrGd8tr36CZ0N1TgcoP/uotu3QwqYrXlEDnBaqNMUoSnjBFECDz6aVvqGyMECA6
+         Ts4fVoMYUo6J4M1kpNFxFtVBaWx6FOAcqdXDAlz6iuDLlcxu9A5RcTT9Xg69KRQFtQ4q
+         7ExQgcBXR5QFtQeul5vToh5QvVIRTybcIqRZxJlxmXL/YOmxDdksTkcBEbVxcydg2SA+
+         nLTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752138270; x=1752743070;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DjeE3o0RxHj2yfYkiiw6nT6qNxm9Jz3LUgLh8cuza0U=;
+        b=cVjJXDZehUTZCrphFmBdkm5PEi1N3HbHv0ZUbswHQOILBGFAAiyt9KhDnzqNEM6BNQ
+         xllKR1Q1zm+0ix6T0LNwGgO92AQtIgOi0n2Ze6ZPERNsCvwlRM+r6LrVRXNLD5YqyCYs
+         Dl1o193p5oLQwzcUVRlEKOpWj8BLh+rI9fwvJ1uGDrEytr2DDgly0KtPH7uQCUaX5JM3
+         9CSNNoCHN4xGrPvN16iwagyA8UqhRjw7CuERcF0hqHrd7KZcGQoPMGyTtMYhDAkcrURX
+         pk2vJOr1Hi8q1y6oZ03Gu7Dlr4DFzs15+stTM4hiiJdgjTW+RDV2XPDpF1Klz35d0728
+         03yQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVZH4O1J6tbhl5trIHfo4o7VpFQ8djSCVlR3TBMpfx2qhHxLeVoNn+JZ/nBrqzsBIA5HQyIHQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx0YwAZqdnF0CRMXZf0KnMiiND2HyMDF82LJKVoLtLs4kICm3kF
+	BOPFTzL4l6F/fMuo0FlMavwjerG1t921H0+wH+zjH2syoHqwFQtYWkvxJ7r9hKkgxg==
+X-Gm-Gg: ASbGncv3ly6MMRGf9hbQSJ2k/rOjdQpg6NPhHPCecQ3ao+eiEXd7qNxdByxMiKIi1gV
+	9oobV9LgzKLHcCdwcJAFlfbqAFDIxjId4JqzdGABJcox+42TQ9rLUPXkCD2QyXFytGS/hAWXjz2
+	8skYmyJaEUTuXyxgPMqD7twqIMooc/mPEul6MgX35Up/V5AhSPpad8JMi+3e3/XPcHGVHLH41pm
+	tQZ28JrL+UGxhTFjWs7wKdTKQGnTis0+Fs70gTpSYo68QVKoOkux2JWeexOHqmiUuX268f2FgtR
+	S3+hnJDpV+KQKWR7z//SCdv3/HDj3KvSvOs95Ou560S40NKnuf62C7ujW++N8BTIoNZ/NxQq3T1
+	clNdUOU25AeswkevdH4Rn
+X-Google-Smtp-Source: AGHT+IEUCwoHbQmo67knPJ74PmLn5sw1tOh05zzgGXqHLIH2hLihrsg/DC4THre9sZfOvA98I9mneg==
+X-Received: by 2002:a17:902:f547:b0:215:65f3:27ef with SMTP id d9443c01a7336-23de372b90dmr2361415ad.12.1752138270075;
+        Thu, 10 Jul 2025 02:04:30 -0700 (PDT)
+Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-74eb9f49502sm1369146b3a.115.2025.07.10.02.04.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Jul 2025 02:04:28 -0700 (PDT)
+Date: Thu, 10 Jul 2025 09:04:19 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, kevin.tian@intel.com,
+	corbet@lwn.net, will@kernel.org, bagasdotme@gmail.com,
+	robin.murphy@arm.com, joro@8bytes.org, thierry.reding@gmail.com,
+	vdumpa@nvidia.com, jonathanh@nvidia.com, shuah@kernel.org,
+	jsnitsel@redhat.com, nathan@kernel.org, peterz@infradead.org,
+	yi.l.liu@intel.com, mshavit@google.com, zhangzekun11@huawei.com,
+	iommu@lists.linux.dev, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-tegra@vger.kernel.org, linux-kselftest@vger.kernel.org,
+	patches@lists.linux.dev, mochs@nvidia.com, alok.a.tiwari@oracle.com,
+	vasant.hegde@amd.com, dwmw2@infradead.org, baolu.lu@linux.intel.com
+Subject: Re: [PATCH v7 27/28] iommu/tegra241-cmdqv: Add user-space use support
+Message-ID: <aG-CE0jUxK4k1FMb@google.com>
+References: <aGRmaOORg-YDfncY@google.com>
+ <aGRozoIDIlgl9H9x@Asurada-Nvidia>
+ <aGR55PUBnwb8qT8U@google.com>
+ <aGSBTpY0nkdp2TTL@Asurada-Nvidia>
+ <aGSNmf5Q82xEbDpX@google.com>
+ <20250702180541.GD1139770@nvidia.com>
+ <aGaXqwzfLwsgCH6n@google.com>
+ <20250703175532.GF1209783@nvidia.com>
+ <aGbQipeSn0aZnwZU@google.com>
+ <20250704125012.GK1209783@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>,
- CLEMENT MATHIEU--DRIF <clement.mathieu--drif@eviden.com>
-Subject: Re: [PATCH 2/2] iommu/vt-d: Deduplicate cache_tag_flush_all by
- reusing flush_range
-To: Ethan MILON <ethan.milon@eviden.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <20250708214821.30967-1-ethan.milon@eviden.com>
- <20250708214821.30967-2-ethan.milon@eviden.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250708214821.30967-2-ethan.milon@eviden.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250704125012.GK1209783@nvidia.com>
 
-On 7/9/2025 5:48 AM, Ethan MILON wrote:
-> The logic in cache_tag_flush_all() to iterate over cache tags and issue
-> TLB invalidations is largely duplicated in cache_tag_flush_range(), with
-> the only difference being the range parameters.
+On Fri, Jul 04, 2025 at 09:50:12AM -0300, Jason Gunthorpe wrote:
+> On Thu, Jul 03, 2025 at 06:48:42PM +0000, Pranjal Shrivastava wrote:
 > 
-> Extend cache_tag_flush_range() to handle a full address space flush when
-> called with start = 0 and end = ULONG_MAX. This allows
-> cache_tag_flush_all() to simply delegate to cache_tag_flush_range()
+> > Ahh, thanks for this, that saved a lot of my time! And yes, I see some
+> > functions in eventq.c calling the iopf_group_response which settles the
+> > CMD_RESUME. So.. I assume these resume commands would be trapped and
+> > *actually* executed through this or a similar path for vPRI. 
 > 
-> Signed-off-by: Ethan Milon<ethan.milon@eviden.com>
+> Yes, that is what Intel did. PRI has to be tracked in the kernel
+> because we have to ack requests eventually. If the VMM crashes the
+> kernel has to ack everything and try to clean up.
+> 
 
-The same issue as the PATCH 1/2.
+I see.. thanks for clarifying!
 
-Thanks,
-baplu
+> Also SMMUv3 does not support PRI today, just stall.
+> 
+
+Ack. Thanks!
+
+> Jason
+Praan
