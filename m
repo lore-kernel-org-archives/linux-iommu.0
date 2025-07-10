@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC37E26A1DD
-	for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 13:42:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCC3426D4D0
+	for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 13:42:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752154958; cv=none; b=rjFWajtumG06IX6p53aTrBq+sK7/wvR0daNueJwA439oAxaqIQmzkmGogxS02IOKbg0m8Xy499w/D4on36hl1D70mpfPKvhpWlpp7tehDzBLEIbMj4ZWqtGAFYadeNMPpq0s28BNhcz73aSqB0JHIXHSSQt5FtrWjjUPXmeFZCE=
+	t=1752154962; cv=none; b=hi9vVURbM6g8nWFlZ+/94+dAiFkZ38o7EDHhNh5eWVgsYXkFlMTHaY66stCF23Qg/kZizlcIN7ZooEd3xK7O51DfhGhCxs64JzranmKLO9xCt9qqDiklE+ULE6d7youi3LTndVNlgH+mH+YMh5XT4yZLlkVNSJe6kI/NsSriYXI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752154958; c=relaxed/simple;
-	bh=VQ8Am7+heAcHjPU5GdN2mMOsTJHb5LEzXq0oE4vZtJw=;
+	s=arc-20240116; t=1752154962; c=relaxed/simple;
+	bh=++9QqGL5xGzI1k7HkFDsKPdBKvQU6+NJOIQG63S2Sqo=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=BG34e2wWNJtGceEpt5BX7i+XlrLolSPus/EGmgQ8Nx2RXWG0gHzIYhQfdMyW+QWIIa9qzsxvRsxFS23PunlEn8H4XhdndHuhjthq4loukjsiQQZ0oiR9Bm0d5JilvKXoUe8NK/EiUC1Di8UmiqfJj8RY0Dia/aDpA+gvRQws/n4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=W9L7fsBW; arc=none smtp.client-ip=192.198.163.10
+	 MIME-Version; b=u/0ufucGrlMgOuPWo6Kr4/CZE0sdZtjjc3XLmjM4PpoPzgkk/iq7nKxpxX/x94AAiJsMsPEQLoZufIDInafH/JHGxGwx4tniF6GnQKgI9n55esGxdqeICqBhIXTNE5mVGBgWzrTrbXfn98o1U2wgo7Ga+wZuRNh2tu/i9vGa5J8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Qwe+8sMP; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="W9L7fsBW"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Qwe+8sMP"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752154957; x=1783690957;
+  t=1752154960; x=1783690960;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VQ8Am7+heAcHjPU5GdN2mMOsTJHb5LEzXq0oE4vZtJw=;
-  b=W9L7fsBWjpT7Jq4A+GvdK4cVnHEPNo8b4oXpH/hSRVrfXZ3S1cJNEIlx
-   DM1JEojgCX3buJyZxUZlnaah37bobdjY4nf8qpZNXrqBUPxL+FWCatjNM
-   ZFEHhQzoUWnymjp5VQlJdsRaOHFUXcpQ6+Dn7ZTYZCvEDZJqNq55QS9Yn
-   HBPRZD6/sHDNEv47ppqePGgfrXZuJmzNvRG3NP33o8rZLMh9g8wWO6Rct
-   Rw1GwfpVAtUm+Yy77ST7Kif+A5vzszcritQDn8rxA4rNcmy2YAhhCBzyb
-   NuOYtFG9u3W6YGq5ARxYIaU/yIKokqrvBPKrEtT5MhvzR3hKNku9UoPJb
-   w==;
-X-CSE-ConnectionGUID: 54nILBiqR3Gwij1C+2xgIA==
-X-CSE-MsgGUID: Uknf4/rMRG2DWC6tjoD+gw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11490"; a="65787674"
+  bh=++9QqGL5xGzI1k7HkFDsKPdBKvQU6+NJOIQG63S2Sqo=;
+  b=Qwe+8sMP3CWCdwCY4WynXIPXLxRUqoPy38GRDdLWYow1wX7jf2vxn/py
+   1cFAIzWJIkmnO34jsKUl5O35pLy6GZQook6WL6Y1JLCvjiVP0kiguUEJh
+   ahSUOmNvbM1BeAXdCmrrWnQywjHaRj+rkugYTXDp7jZnJbPGo3jXwKASX
+   XQM+W679ZSH6nizLXF658MYg4qcUYl48LYhbmzCdD/2IKLvFP0JFRbiSf
+   FIs24/Snvi2zN+n/bCnGxYiNsymFiPF2dbA+ZnHCWfqsoEm/p+MNgNNnC
+   D0gHXNb3ml7eQnEo3/cw6cksPLHLy7eHbuiuAe4phcaJDy+9xAPQetZmV
+   Q==;
+X-CSE-ConnectionGUID: ElKL0j9DQWyzhA2kDsI9pQ==
+X-CSE-MsgGUID: P4t4+0NlTqmXJLlM3xdo2g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11490"; a="65787683"
 X-IronPort-AV: E=Sophos;i="6.16,300,1744095600"; 
-   d="scan'208";a="65787674"
+   d="scan'208";a="65787683"
 Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2025 06:42:36 -0700
-X-CSE-ConnectionGUID: KfYVX4zpR7iGNkvrlQS/xw==
-X-CSE-MsgGUID: 3SQMCOxoSXuNnWiqWGqflA==
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2025 06:42:40 -0700
+X-CSE-ConnectionGUID: oIbFHR2uQPymFCkL1rI3GA==
+X-CSE-MsgGUID: Gw5oI0mHS3yueTKJYuuNCQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,300,1744095600"; 
-   d="scan'208";a="156809432"
+   d="scan'208";a="156809436"
 Received: from gnrd8.igk.intel.com ([10.123.232.137])
-  by fmviesa010.fm.intel.com with ESMTP; 10 Jul 2025 06:42:34 -0700
+  by fmviesa010.fm.intel.com with ESMTP; 10 Jul 2025 06:42:37 -0700
 From: Sergey Temerkhanov <sergey.temerkhanov@intel.com>
 To: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
@@ -53,9 +53,9 @@ Cc: David Woodhouse <dwmw2@infradead.org>,
 	Robin Murphy <robin.murphy@arm.com>,
 	Sergey Temerkhanov <sergey.temerkhanov@intel.com>,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/4] iommu: Pass the Requester ID in the fault parameter structure
-Date: Thu, 10 Jul 2025 13:42:12 +0000
-Message-ID: <20250710134215.97840-2-sergey.temerkhanov@intel.com>
+Subject: [PATCH v1 2/4] iommu: Add rid_notifier array to the dev_iommu structure
+Date: Thu, 10 Jul 2025 13:42:13 +0000
+Message-ID: <20250710134215.97840-3-sergey.temerkhanov@intel.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250710134215.97840-1-sergey.temerkhanov@intel.com>
 References: <20250710134215.97840-1-sergey.temerkhanov@intel.com>
@@ -67,48 +67,67 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Pass the Requester ID in the fault parameter structure to facilitate
-requester notifications on IOMMU faults.
+Add rid_notifier array to struct dev_iommu to facilitate
+requester notification of IOMMU faults.
 
 Signed-off-by: Sergey Temerkhanov <sergey.temerkhanov@intel.com>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iommu/intel/prq.c | 1 +
- include/linux/iommu.h     | 2 ++
- 2 files changed, 3 insertions(+)
+ drivers/iommu/iommu.c | 9 +++++++++
+ include/linux/iommu.h | 4 ++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
-index 52570e42a14c..d88385adc3cb 100644
---- a/drivers/iommu/intel/prq.c
-+++ b/drivers/iommu/intel/prq.c
-@@ -181,6 +181,7 @@ static void intel_prq_report(struct intel_iommu *iommu, struct device *dev,
- 	/* Fill in event data for device specific processing */
- 	event.fault.type = IOMMU_FAULT_PAGE_REQ;
- 	event.fault.prm.addr = (u64)desc->addr << VTD_PAGE_SHIFT;
-+	event.fault.prm.rid = desc->rid;
- 	event.fault.prm.pasid = desc->pasid;
- 	event.fault.prm.grpid = desc->prg_index;
- 	event.fault.prm.perm = prq_to_iommu_prot(desc);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index a4b606c591da..3789c16806a1 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -354,6 +354,7 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
+ 		return NULL;
+ 
+ 	mutex_init(&param->lock);
++	xa_init(&param->rid_notifiers);
+ 	dev->iommu = param;
+ 	return param;
+ }
+@@ -361,8 +362,16 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
+ void dev_iommu_free(struct device *dev)
+ {
+ 	struct dev_iommu *param = dev->iommu;
++	struct rid_notifier *notifier;
++	unsigned long rid;
+ 
+ 	dev->iommu = NULL;
++
++	xa_for_each(&param->rid_notifiers, rid, notifier)
++		kfree(notifier);
++
++	xa_destroy(&param->rid_notifiers);
++
+ 	if (param->fwspec) {
+ 		fwnode_handle_put(param->fwspec->iommu_fwnode);
+ 		kfree(param->fwspec);
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 156732807994..4ddb63a3f2cf 100644
+index 4ddb63a3f2cf..2062623fdf32 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -65,6 +65,7 @@ enum iommu_fault_type {
-  *         When IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID is set, the page response
-  *         must have the same PASID value as the page request. When it is clear,
-  *         the page response should not have a PASID.
-+ * @rid: Requester ID
-  * @pasid: Process Address Space ID
-  * @grpid: Page Request Group Index
-  * @perm: requested page permissions (IOMMU_FAULT_PERM_* values)
-@@ -76,6 +77,7 @@ struct iommu_fault_page_request {
- #define IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE	(1 << 1)
- #define IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID	(1 << 2)
- 	u32	flags;
-+	u32	rid;
- 	u32	pasid;
- 	u32	grpid;
- 	u32	perm;
+@@ -795,6 +795,8 @@ struct iommu_fault_param {
+  * @pci_32bit_workaround: Limit DMA allocations to 32-bit IOVAs
+  * @require_direct: device requires IOMMU_RESV_DIRECT regions
+  * @shadow_on_flush: IOTLB flushes are used to sync shadow tables
++ * @rid_notifiers: holds pointers and data to the notifier functions for
++ *                   specific RIDs
+  *
+  * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
+  *	struct iommu_group	*iommu_group;
+@@ -810,6 +812,8 @@ struct dev_iommu {
+ 	u32				pci_32bit_workaround:1;
+ 	u32				require_direct:1;
+ 	u32				shadow_on_flush:1;
++
++	struct xarray			rid_notifiers;
+ };
+ 
+ int iommu_device_register(struct iommu_device *iommu,
 -- 
 2.43.0
 
