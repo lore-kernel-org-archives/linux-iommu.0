@@ -1,148 +1,139 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B3382750FD
-	for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 15:21:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 89F3422E3FA
+	for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 15:28:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752160908; cv=none; b=nt6SFDOUYF8LUnk0TVMBlULVGsvCFrlRtInwSpw7bf0pCX5AyBCpvaV6H7S9ZKeG50Q1DMO2guHLYXMeoZ7kdgEzHGXM4ySj1/tUuFoaK6PjpBQR5TpwrLPryrwaXWaOvJBXnOQJziszPSPHhnPTjX9V32/Y4UIzBN6NKXV4Ros=
+	t=1752161298; cv=none; b=MH6e7ksFjhaHULjvCKYiLye+TcJ8lSJUtdIkIMLVF1EaMFN0V6jKnpUnyUNFTrwKwrlPA/6hgggRfuxoHXGXIGTTbUsb+V9XTt8FxPYbvexUOB/gmaiX6/O/ei2RRjLIgdyph2RPE+BAFjwbcXGp+CD3w68qYSbVG8HgBHlItIc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752160908; c=relaxed/simple;
-	bh=XBFo/gu29rdKzj82RosO8AtnYEeARx2QxBnK8YEBl7g=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Q5Yaq0F52oB1U6A6PLMBOKpF3FoWywcM1rz/TOX9jPZQEqBtRxNzISeuNusBnv50fUFP4hFcQ/mNsw9QZWA0HoxXrKUR0rSD4M2xOM8pIjALiGfyzUC4MbhL6eYnonxNHx4y55x+d6XA2Syh8PV7GX88dEja9MYE+bTbOc6sXzE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hQC1zIG5; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1752161298; c=relaxed/simple;
+	bh=dGBvMw3vKqSm7Z2a1/le01d/kxMGm6gLqmJJF9b+F30=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=jWh3Be31AjtAem/kmvbjIOnlK1Zp3w6KmCKZf+9DJwzOSBhrNCZIdWzAlWo3J+cxx7hSe72lYym3jOF/nXmQapKXiA9PgAyHw/4LsuZiSHMYzdxquqGWc9nM3nhJ6IUSV09CDWzjVndoQjy5BJknd3mbcKUEHZykNHV9TRHyunI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=i04o3jbP; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hQC1zIG5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752160907; x=1783696907;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=XBFo/gu29rdKzj82RosO8AtnYEeARx2QxBnK8YEBl7g=;
-  b=hQC1zIG5dkQqiaqpJSdMOd3O525ZOQEPJL3WMCfAO7A6TaYmD3JFMZRv
-   HqTNgUu9cMNAG6UrtagIrJLSxoqawZhdafGkxE6UypkeKYgDr9CPgifNJ
-   H2FoQKSSukQYLP1OJ9mKQ7dOmkIbcVOLnhAsWcMvPXOK51Uv0a1+Zo/Hz
-   bIHn470Vwcb4xynzjtGt8flBaeSy5R5iYeH+tfJMA8qRBCoyvfQjYmwiQ
-   0EyFkKMYFG6WSoSoL+NXVayQkOXCNGae/J9svA9MrN+bwgAsjEnAkL3Qh
-   1NlAJXFhjOQitCaox9wHub7KqVWxDCYuWMchphFQ9W3BChrkuYbNp8jcQ
-   g==;
-X-CSE-ConnectionGUID: +RMhMaCsRaWI+XHKze2Z0A==
-X-CSE-MsgGUID: Y6Hz1OPyQNieY/5A78ulyA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11490"; a="54323369"
-X-IronPort-AV: E=Sophos;i="6.16,300,1744095600"; 
-   d="scan'208";a="54323369"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2025 08:21:47 -0700
-X-CSE-ConnectionGUID: 87SnHDgcRSGOSI8EX00TIw==
-X-CSE-MsgGUID: cRlpHSQcT6eqlieQYBQ7kg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,300,1744095600"; 
-   d="scan'208";a="156681882"
-Received: from ldmartin-desk2.corp.intel.com (HELO [10.125.110.230]) ([10.125.110.230])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jul 2025 08:21:46 -0700
-Message-ID: <62580eab-3e68-4132-981a-84167d130d9f@intel.com>
-Date: Thu, 10 Jul 2025 08:26:06 -0700
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="i04o3jbP"
+Received: from DESKTOP-0403QTC. (unknown [52.148.138.235])
+	by linux.microsoft.com (Postfix) with ESMTPSA id AAD03201659C;
+	Thu, 10 Jul 2025 08:28:09 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AAD03201659C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1752161290;
+	bh=b8OtibJpDleBLUM3qfv+/DrZpEmp0ZVWzP6n1DAx5BY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Reply-To:From;
+	b=i04o3jbPcZp8DbeuzYiFgO/zUUS78Z2hsAs4mBRQZ4h3Uwyjjvdz5fk5dNd/QblG9
+	 sJr5xO5Pk2kGIR4LYMqJMtAn3LRfdPLm8A+38MjSX+9f+9PYstM9WqrE3r2LWlnn63
+	 JTtlxElf6NDnFj5A748MwUNT60kFlkZORgfBoVGU=
+Date: Thu, 10 Jul 2025 08:28:08 -0700
+From: Jacob Pan <jacob.pan@linux.microsoft.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Kevin Tian
+ <kevin.tian@intel.com>, Jann Horn <jannh@google.com>, Vasant Hegde
+ <vasant.hegde@amd.com>, Dave Hansen <dave.hansen@intel.com>, Alistair
+ Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
+ Uladzislau Rezki <urezki@gmail.com>, Jean-Philippe Brucker
+ <jean-philippe@linaro.org>, Andy Lutomirski <luto@kernel.org>,
+ iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, jacob.pan@linux.microsoft.com
+Subject: Re: [PATCH 1/1] iommu/sva: Invalidate KVA range on kernel TLB flush
+Message-ID: <20250710082808.52399e31@DESKTOP-0403QTC.>
+In-Reply-To: <2080aaea-0d6e-418e-8391-ddac9b39c109@linux.intel.com>
+References: <20250704133056.4023816-1-baolu.lu@linux.intel.com>
+	<20250709085158.0f050630@DESKTOP-0403QTC.>
+	<20250709162724.GE1599700@nvidia.com>
+	<20250709111527.5ba9bc31@DESKTOP-0403QTC.>
+	<2080aaea-0d6e-418e-8391-ddac9b39c109@linux.intel.com>
+Reply-To: jacob.pan@linux.microsoft.com
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>,
- Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, "Tested-by : Yi Lai" <yi1.lai@intel.com>,
- iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20250709062800.651521-1-baolu.lu@linux.intel.com>
- <ee7585bd-d87c-4f93-9c8e-b8c1d649cdfe@intel.com>
- <228cd2c9-b781-4505-8b54-42dab03f3650@linux.intel.com>
- <326c60aa-37f3-458d-a534-6e0106cc244b@intel.com>
- <20250710132234.GL1599700@nvidia.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Content-Language: en-US
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <20250710132234.GL1599700@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 7/10/25 06:22, Jason Gunthorpe wrote:
->> Why does this matter? We flush the CPU TLB in a bunch of different ways,
->> _especially_ when it's being done for kernel mappings. For example,
->> __flush_tlb_all() is a non-ranged kernel flush which has a completely
->> parallel implementation with flush_tlb_kernel_range(). Call sites that
->> use _it_ are unaffected by the patch here.
->>
->> Basically, if we're only worried about vmalloc/vfree freeing page
->> tables, then this patch is OK. If the problem is bigger than that, then
->> we need a more comprehensive patch.
-> I think we are worried about any place that frees page tables.
+Hi Baolu,
 
-The two places that come to mind are the remove_memory() code and
-__change_page_attr().
+On Thu, 10 Jul 2025 10:57:19 +0800
+Baolu Lu <baolu.lu@linux.intel.com> wrote:
 
-The remove_memory() gunk is in arch/x86/mm/init_64.c. It has a few sites
-that do flush_tlb_all(). Now that I'm looking at it, there look to be
-some races between freeing page tables pages and flushing the TLB. But,
-basically, if you stick to the sites in there that do flush_tlb_all()
-after free_pagetable(), you should be good.
+> Hi Jacob,
+> 
+> On 7/10/25 02:15, Jacob Pan wrote:
+> > Hi Jason,
+> > 
+> > On Wed, 9 Jul 2025 13:27:24 -0300
+> > Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >   
+> >> On Wed, Jul 09, 2025 at 08:51:58AM -0700, Jacob Pan wrote:  
+> >>>> In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU
+> >>>> hardware shares and walks the CPU's page tables. Architectures
+> >>>> like x86 share static kernel address mappings across all user
+> >>>> page tables, allowing the IOMMU to access the kernel portion of
+> >>>> these tables.  
+> >>  
+> >>> Is there a use case where a SVA user can access kernel memory in
+> >>> the first place?  
+> >>
+> >> No. It should be fully blocked.
+> >>  
+> > Then I don't understand what is the "vulnerability condition" being
+> > addressed here. We are talking about KVA range here.  
+> 
+> Let me take a real example:
+> 
+> A device might be mistakenly configured to access memory at IOVA
+> 0xffffa866001d5000 (a vmalloc'd memory region) with user-mode access
+> permission. The corresponding page table entries for this IOVA
+> translation, assuming a five-level page table, would appear as
+> follows:
+> 
+> PGD: Entry present with U/S bit set (1)
+> P4D: Entry present with U/S bit set (1)
+> PUD: Entry present with U/S bit set (1)
+> PMD: Entry present with U/S bit set (1)
+> PTE: Entry present with U/S bit clear (0)
+> 
+> When the IOMMU walks this page table, it may potentially cache all
+> present entries, regardless of the U/S bit's state. Upon reaching the
+> leaf PTE, the IOMMU performs a permission check. This involves
+> comparing the device's DMA access mode (in this case, user mode)
+> against the cumulative U/S permission derived from an AND operation
+> across all U/S bits in the traversed page table entries (which here
+> results in U/S == 0).
+why would IOMMU cache all the entries if the walk is not successful?
 
-As for the __change_page_attr() code, I think the only spot you need to
-hit is cpa_collapse_large_pages() and maybe the one in
-__split_large_page() as well.
+Also, per x86 vm map how could this example (UUUUS) happen to SVA? i.e.
+sharing intermediate levels.
 
-This is all disturbingly ad-hoc, though. The remove_memory() code needs
-fixing and I'll probably go try to bring some order to the chaos in the
-process of fixing it up. But that's a separate problem than this IOMMU fun.
+ ffffc90000000000 |  -55    TB | ffffe8ffffffffff |   32 TB | vmalloc/ioremap
+ 0000000000000000 |    0       | 00007fffffffffff |  128 TB | user-space
+
+> The IOMMU correctly blocks this DMA access because the device's
+> requested access (user mode) exceeds the permissions granted by the
+> page table (supervisor-only at the PTE level). However, the PGD, P4D,
+> PUD, and PMD entries that were traversed might remain cached within
+> the IOMMU's paging structure cache.
+> 
+> Now, consider a scenario where the page table leaf page is freed and
+> subsequently repurposed, and the U/S bit at its previous location is
+> modified to 1. From the IOMMU's perspective, the page table for the
+> aforementioned IOVA would now appear as follows:
+> 
+> PGD: Entry present with U/S bit set (1) [retrieved from paging cache]
+> P4D: Entry present with U/S bit set (1) [retrieved from paging cache]
+> PUD: Entry present with U/S bit set (1) [retrieved from paging cache]
+> PMD: Entry present with U/S bit set (1) [retrieved from paging cache]
+> PTE: Entry present with U/S bit set (1) {read from physical memory}
+> 
+> As a result, the device could then potentially access the memory at
+> IOVA 0xffffa866001d5000 with user-mode permission, which was
+> explicitly disallowed.
+> 
+> Thanks,
+> baolu
+
