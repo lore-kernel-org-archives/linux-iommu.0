@@ -1,163 +1,173 @@
-Received: from desiato.infradead.org (desiato.infradead.org [90.155.92.199])
+Received: from lelvem-ot02.ext.ti.com (lelvem-ot02.ext.ti.com [198.47.23.235])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8DBC28373;
-	Thu, 10 Jul 2025 13:54:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.92.199
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3D698494
+	for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 14:47:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.47.23.235
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752155686; cv=none; b=GWTguGHREk7MTTaj713X7ZmPaULMtXyhloNcSQ2fYxnEwHJn6T8vJG12lGSjUPbd9WWeZ0WgQzkMLAoVxm0RrYuWZCtKQ/K4YjLtva/Yls6mrYXl0xl6UAce6kh8bMD964lA67vYD4Z4ROBpKXtYHYaNS0MOa4kCuNrOWK3ZEM0=
+	t=1752158832; cv=none; b=LUwjyVz1dkDkIoDvTse8YNR4l/UmH35JkazUsFzNAdMGFLWrghd0W7/wWn1msLOzbn0mUc35HMJ/UM+qTeFuVEKUEPnPBNkkHiNZikDBv1PGo9aGbX71lnNqfDC+xamC6rsWv8Tf2bvIK/3Yr9YRShKimNPY+xfJzHsmz5Gz4uM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752155686; c=relaxed/simple;
-	bh=vzDzTu3wYXCAVPoqRRfXS0PLk58brc7izPX2nCVGDxw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FFboiMRV573SOfz28Im1cjOvBRmWfjdwuMaXO8xRa5ShCasVsJQ9SyonX+vWF27RdYLNNvEhf7kP/kjbkcwTvViVB/EVMLzqfF0aW0cj7IVg6p/2zr1q0HbPnsJeMqpDKaGsGEx5wmmGheqKk0Yw77VyHox1NFxwnMMoEjrxlsI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=Q9vefEVO; arc=none smtp.client-ip=90.155.92.199
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1752158832; c=relaxed/simple;
+	bh=+NET5jq87laiRAOdk2v/YwNceTh/l0Yy9qlZAWfZAKE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=lgfflXl0UrkLbbkPbA9vbhtP2B9kLhHasu/GPf/gcgxlIuVP/QTeSEipq3TDCZBRdxSupdyG8qzR+7l72L3YyixlKiQuSNUnj+PpGrAq6nP2VKlWRD3wXHwKDk2HsCzJUCSrhZAtxc7jWxbqw4Lk1SS/CQKFWzHIuP0RPGRao9c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=pt0eVK7j; arc=none smtp.client-ip=198.47.23.235
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Q9vefEVO"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=ukfpWO8KD6YeVMsUvRS88Tmw525WloSkaszXd9ES9Ac=; b=Q9vefEVOYiPxaq/DIq4ALZrpaa
-	Nv/CuUSH45+Hokqf8nj/t4ICwtfmq/w+wDUCEvTLdzB5Zm1WWeFOqjPz1BzqCS4KzeZtwmULeWctQ
-	X5aZQK/TUoFofj6SWV5sjIOj+wUhKujapMKnqvln9P7ZpHsIgdbTYK6FKwjCyrAKv4XHj9NCvqqJO
-	zvIfs7N77nV4t4Uo0SN4hbLyid/jydiQjd2vqxXpgZRxBruQiU8E8igBn88BU6HrWL7KHeQmIJNaO
-	umNwH5ZC57Eds9of4hdIUagPq9WsDpYsVR0/duiAh7AEFKHBBG3Yqcxmx1Ctw+Ijt2cSZHOGxOKIp
-	jxHM8I7w==;
-Received: from 77-249-17-252.cable.dynamic.v4.ziggo.nl ([77.249.17.252] helo=noisy.programming.kicks-ass.net)
-	by desiato.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uZrjN-000000091Tj-34Pw;
-	Thu, 10 Jul 2025 13:54:33 +0000
-Received: by noisy.programming.kicks-ass.net (Postfix, from userid 1000)
-	id 81088300158; Thu, 10 Jul 2025 15:54:32 +0200 (CEST)
-Date: Thu, 10 Jul 2025 15:54:32 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	Dave Hansen <dave.hansen@intel.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Andy Lutomirski <luto@kernel.org>,
-	"Tested-by : Yi Lai" <yi1.lai@intel.com>, iommu@lists.linux.dev,
-	security@kernel.org, linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-Message-ID: <20250710135432.GO1613376@noisy.programming.kicks-ass.net>
-References: <20250709062800.651521-1-baolu.lu@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="pt0eVK7j"
+Received: from fllvem-sh04.itg.ti.com ([10.64.41.54])
+	by lelvem-ot02.ext.ti.com (8.15.2/8.15.2) with ESMTP id 56AEkxnm1801024;
+	Thu, 10 Jul 2025 09:46:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1752158819;
+	bh=HI9GscUSSD2fE2PIITCexfukxvNp3vwU713gPPdAZCI=;
+	h=Date:Subject:To:CC:References:From:In-Reply-To;
+	b=pt0eVK7jLT+Yr6G90U0s0FMHe4FRhPJGTpeVOb+/scwsPmOw1UvwS9aSrNhSBMF0G
+	 FuyyETEKkaRasY+YAzfdoU40kOdfWipu8im+QBeFuxd7ylusBOw4Mx+0CIJzE+wvG7
+	 qlTrvYIo9nrfn2q2k7UkXwunELGPwjjHbr80Iw60=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+	by fllvem-sh04.itg.ti.com (8.18.1/8.18.1) with ESMTPS id 56AEkwaI3599200
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-SHA256 bits=128 verify=FAIL);
+	Thu, 10 Jul 2025 09:46:58 -0500
+Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.55; Thu, 10
+ Jul 2025 09:46:57 -0500
+Received: from lelvem-mr06.itg.ti.com (10.180.75.8) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.55 via
+ Frontend Transport; Thu, 10 Jul 2025 09:46:57 -0500
+Received: from [10.250.35.60] ([10.250.35.60])
+	by lelvem-mr06.itg.ti.com (8.18.1/8.18.1) with ESMTP id 56AEku9q1528476;
+	Thu, 10 Jul 2025 09:46:57 -0500
+Message-ID: <547da8d7-1967-4c56-8bc1-da22a5283b77@ti.com>
+Date: Thu, 10 Jul 2025 09:46:56 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250709062800.651521-1-baolu.lu@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 2/2] dma-buf: heaps: cma: Create CMA heap for each CMA
+ reserved region
+To: Maxime Ripard <mripard@kernel.org>
+CC: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Benjamin Gaignard
+	<benjamin.gaignard@collabora.com>,
+        Brian Starkey <Brian.Starkey@arm.com>,
+        John Stultz <jstultz@google.com>,
+        "T.J. Mercier" <tjmercier@google.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Krzysztof
+ Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Marek
+ Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>, Jared Kangas <jkangas@redhat.com>,
+        Mattijs Korpershoek
+	<mkorpershoek@kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linaro-mm-sig@lists.linaro.org>, <iommu@lists.linux.dev>
+References: <20250709-dma-buf-ecc-heap-v6-0-dac9bf80f35d@kernel.org>
+ <20250709-dma-buf-ecc-heap-v6-2-dac9bf80f35d@kernel.org>
+ <6045bcfb-35ef-410b-bd7c-0ca7c5c589c4@ti.com>
+ <20250710-daft-secret-squid-fb3eee@houat>
+Content-Language: en-US
+From: Andrew Davis <afd@ti.com>
+In-Reply-To: <20250710-daft-secret-squid-fb3eee@houat>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
 
-On Wed, Jul 09, 2025 at 02:28:00PM +0800, Lu Baolu wrote:
-> The vmalloc() and vfree() functions manage virtually contiguous, but not
-> necessarily physically contiguous, kernel memory regions. When vfree()
-> unmaps such a region, it tears down the associated kernel page table
-> entries and frees the physical pages.
+
+
+On 7/10/25 2:44 AM, Maxime Ripard wrote:
+> On Wed, Jul 09, 2025 at 11:14:37AM -0500, Andrew Davis wrote:
+>> On 7/9/25 7:44 AM, Maxime Ripard wrote:
+>>> Aside from the main CMA region, it can be useful to allow userspace to
+>>> allocate from the other CMA reserved regions.
+>>>
+>>> Indeed, those regions can have specific properties that can be useful to
+>>> a specific us-case.
+>>>
+>>> For example, one of them platform I've been with has ECC enabled on the
+>>> entire memory but for a specific region. Using that region to allocate
+>>> framebuffers can be particular beneficial because enabling the ECC has a
+>>> performance and memory footprint cost.
+>>>
+>>> Thus, exposing these regions as heaps user-space can allocate from and
+>>> import wherever needed allows to cover that use-case.
+>>>
+>>> For now, only shared-dma-pools regions with the reusable property (ie,
+>>> backed by CMA) are supported, but eventually we'll want to support other
+>>> DMA pools types.
+>>>
+>>> Signed-off-by: Maxime Ripard <mripard@kernel.org>
+>>> ---
+>>>    drivers/dma-buf/heaps/cma_heap.c | 52 +++++++++++++++++++++++++++++++++++++++-
+>>>    1 file changed, 51 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/cma_heap.c
+>>> index 0df007111975447d555714d61ead9699287fd65a..31a18683ee25788a800f3f878fd958718a930ff7 100644
+>>> --- a/drivers/dma-buf/heaps/cma_heap.c
+>>> +++ b/drivers/dma-buf/heaps/cma_heap.c
+>>> @@ -19,10 +19,12 @@
+>>>    #include <linux/err.h>
+>>>    #include <linux/highmem.h>
+>>>    #include <linux/io.h>
+>>>    #include <linux/mm.h>
+>>>    #include <linux/module.h>
+>>> +#include <linux/of.h>
+>>> +#include <linux/of_reserved_mem.h>
+>>>    #include <linux/scatterlist.h>
+>>>    #include <linux/slab.h>
+>>>    #include <linux/vmalloc.h>
+>>>    #define DEFAULT_CMA_NAME "default_cma_region"
+>>> @@ -421,7 +423,55 @@ static int __init add_default_cma_heap(void)
+>>>    				ERR_PTR(ret));
+>>>    	}
+>>>    	return 0;
+>>>    }
+>>> -module_init(add_default_cma_heap);
+>>> +
+>>> +static int __init add_cma_heaps(void)
+>>> +{
+>>> +	struct device_node *rmem_node;
+>>> +	struct device_node *node;
+>>> +	int ret;
+>>> +
+>>> +	ret = add_default_cma_heap();
+>>
+>> Will this double add the default CMA region if it was declared
+>> using DT (reserved-memory) when all those nodes are again scanned
+>> through below? Might need a check in that loop for linux,cma-default.
 > 
-> In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU hardware
-> shares and walks the CPU's page tables. Architectures like x86 share
-> static kernel address mappings across all user page tables, allowing the
-> IOMMU to access the kernel portion of these tables.
+> Yeah, but we probably should anyway. Otherwise, if linux,cma-default
+> ever change on a platform, we would get heaps appearing/disappearing as
+> we reboot, which doesn't sound great from a regression perspective.
 > 
-> Modern IOMMUs often cache page table entries to optimize walk performance,
-> even for intermediate page table levels. If kernel page table mappings are
-> changed (e.g., by vfree()), but the IOMMU's internal caches retain stale
-> entries, Use-After-Free (UAF) vulnerability condition arises. If these
-> freed page table pages are reallocated for a different purpose, potentially
-> by an attacker, the IOMMU could misinterpret the new data as valid page
-> table entries. This allows the IOMMU to walk into attacker-controlled
-> memory, leading to arbitrary physical memory DMA access or privilege
-> escalation.
+> Both would allocate from the same pool though, so we don't risk stepping
+> into each others toes. Or am I missing something?
 > 
-> To mitigate this, introduce a new iommu interface to flush IOMMU caches
-> and fence pending page table walks when kernel page mappings are updated.
-> This interface should be invoked from architecture-specific code that
-> manages combined user and kernel page tables.
 
-I must say I liked the kPTI based idea better. Having to iterate and
-invalidate an unspecified number of IOMMUs from non-preemptible context
-seems 'unfortunate'.
+You are not missing anything, having both wouldn't cause anything to break,
+but would cause heaps to appear/disappear based on how the CMA region was
+defined (DT vs kernel cmd line) which we should avoid.
 
-Why was this approach chosen over the kPTI one, where we keep a
-page-table root that simply does not include the kernel bits, and
-therefore the IOMMU will never see them (change) and we'll never have to
-invalidate?
+Andrew
 
-> @@ -132,8 +136,15 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
->  	if (ret)
->  		goto out_free_domain;
->  	domain->users = 1;
-> -	list_add(&domain->next, &mm->iommu_mm->sva_domains);
->  
-> +	if (list_empty(&iommu_mm->sva_domains)) {
-> +		scoped_guard(spinlock_irqsave, &iommu_mms_lock) {
-> +			if (list_empty(&iommu_sva_mms))
-> +				static_branch_enable(&iommu_sva_present);
-> +			list_add(&iommu_mm->mm_list_elm, &iommu_sva_mms);
-> +		}
-> +	}
-> +	list_add(&domain->next, &iommu_mm->sva_domains);
->  out:
->  	refcount_set(&handle->users, 1);
->  	mutex_unlock(&iommu_sva_lock);
-> @@ -175,6 +186,15 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
->  		list_del(&domain->next);
->  		iommu_domain_free(domain);
->  	}
-> +
-> +	if (list_empty(&iommu_mm->sva_domains)) {
-> +		scoped_guard(spinlock_irqsave, &iommu_mms_lock) {
-> +			list_del(&iommu_mm->mm_list_elm);
-> +			if (list_empty(&iommu_sva_mms))
-> +				static_branch_disable(&iommu_sva_present);
-> +		}
-> +	}
-> +
->  	mutex_unlock(&iommu_sva_lock);
->  	kfree(handle);
->  }
-
-This seems an odd coding style choice; why the extra unneeded
-indentation? That is, what's wrong with:
-
-	if (list_empty()) {
-		guard(spinlock_irqsave)(&iommu_mms_lock);
-		list_del();
-		if (list_empty()
-			static_branch_disable();
-	}
-
-> @@ -312,3 +332,15 @@ static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
->  
->  	return domain;
->  }
-> +
-> +void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end)
-> +{
-> +	struct iommu_mm_data *iommu_mm;
-> +
-> +	if (!static_branch_unlikely(&iommu_sva_present))
-> +		return;
-> +
-> +	guard(spinlock_irqsave)(&iommu_mms_lock);
-> +	list_for_each_entry(iommu_mm, &iommu_sva_mms, mm_list_elm)
-> +		mmu_notifier_arch_invalidate_secondary_tlbs(iommu_mm->mm, start, end);
-> +}
-
-This is absolutely the wrong way to use static_branch. You want them in
-inline functions guarding the function call, not inside the function
-call.
-
+>>> +	if (ret)
+>>> +		return ret;
+>>> +
+>>> +	rmem_node = of_find_node_by_path("/reserved-memory");
+>>> +	if (!rmem_node)
+>>> +		goto out;
+>>
+>> Can just return here, "out" path doesn't need to put a NULL node.
+> 
+> Oh, right. Thanks!
+> Maxime
