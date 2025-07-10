@@ -1,70 +1,82 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E3D7221F13
-	for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 08:38:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 099F328C842
+	for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 08:57:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752136720; cv=none; b=lqktLxvA+WE+sK0Um/mV+BxBbLmQ2Dl9Pl//Dvtma3VkKNndH4pJZN0AEnuaaKBQB39k8s5q3K28Nu+4Ad4pKqqY9u5sG65FlL58wDEMsR1obR03WCDIgbmAXKGbcPdny7fkaWSc4EB8qMMO+vzl03+3Q+Y/kPZXZ7NZw9u2pXk=
+	t=1752137832; cv=none; b=tbomgx4qjocPOTZ4iEemZ0L2QGkRSgefu1Q5md6lBg0xZXN0S3VZQB4BAOaY+jhxMddd8zmAT3yf9Aoq+vExeNfCWp1i5YZ6zOnGhM/B4NSA6bpmXyKDVNjXXHv/6v1WxWO/XYxYcgKDG0fyG1Dxe7k9nnc1pIxJuT3n75mqMnI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752136720; c=relaxed/simple;
-	bh=iPTSG8rWX5/aMDwwlMBzG13CC+5ujaQ3LSalqG4mVLk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ZxjZw8ycNKseHigu4CBwycl2dR9eOZjs4aaj6UhwRKTG21BQMSNRVC2bgJdnzNt6TycOGT8iMSqtna8zmU+YbsZLWQ14d63UbzWZAIRVPYHTRiMMcO1AYQJeA4pn8p/iiofbPMkZfKAHnsfdCq2qHVmzt5RmiBrDt/V982tPslI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=YC5eNALf; arc=none smtp.client-ip=209.85.221.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1752137832; c=relaxed/simple;
+	bh=Gv1WJClC1tC4/sg2T2gWmouJ8BsKHIBADGTH0c7EWHE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=gembFypFoufy/XkE6702zNDXzZj4yJj5+Yu7ek71UkXVkRJsPWfHQ6uIqXnjUzuffr/h5ZZsYfg68R2yvIkG5a7OdqWduFlP8CPEw5KhBTB+r9qrTF/ug4hK6pZdxNrAJz1mZa5w0QoGe1jATbo6IyiE6fIeSzE7O5x9ayRHWKE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=kXpt1W9c; arc=none smtp.client-ip=209.85.210.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="YC5eNALf"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-3a577ab8c34so38938f8f.3
-        for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 01:38:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="kXpt1W9c"
+Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-748e63d4b05so482943b3a.2
+        for <iommu@lists.linux.dev>; Thu, 10 Jul 2025 01:57:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=suse.com; s=google; t=1752136716; x=1752741516; darn=lists.linux.dev;
+        d=ventanamicro.com; s=google; t=1752137830; x=1752742630; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=AsOzu/Shb8U/5A8M6vSewxAHPdIcygl1ZysXscFwvaU=;
-        b=YC5eNALfouegCmCMEtdzjCalWakzRNH0GrtW7MQfRNuoiOUF6medLPPe3Ie6cop/v6
-         rZI+hsRvro5TUe/jj5q9hU19SHAoJbuiq8bZZw+tVykaAG8HrJjWSPtsCS4Z4LBsCJVa
-         hQle4zWxz6CBk6/uFhJ5R4au6gzWuvtS51neWRZ3/k+JCnniWBz7lY215XMTlgSdxQug
-         rtGECuHP75lSDK/17L7X9/BxhM42i+FCY8GgLBUZ0L4tCZcaRyVp6gr3CeOrJa/JcJL7
-         nroywkIPiQjxnMLpEwx/0gqVP+XTbEf7xjo31Nk67O8FxLha3pt+2fbQgBs6FoJ7cpn4
-         IUug==
+        bh=tlwOdpvqm2WGBMA6L87u6T1227AEA6wpnUUMMQcTASk=;
+        b=kXpt1W9cS+naZqy9YGjCpF3X51XIY++H3BNMvSwGThqT/obNZ1a1Q/hLT5gA0WPAng
+         XGSyVC8omEchoXtNVRG2zNUWIfyxYq/kqelTUCv1NxMrpuVQcmasmvh9zbBlT3ASmb5x
+         tbpF1B22m1eYVjcbfB3G69Rw18C3/oQnOKc8sX/067dioEpJOIubA0h72SxJIK+SMbwY
+         oDNchOObeIbMmw8lbWoU2rkV5+VSVLbTTefFIxw1ra3RPHXk+eXGUqk2MC428PEya4NM
+         KqAPwrVAsx15gjwt2RE4L7egUBDrOV8KgCKDSJGLh591jBH3Dqs1pVj7xP0fqyGOV4HD
+         adEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752136716; x=1752741516;
+        d=1e100.net; s=20230601; t=1752137830; x=1752742630;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=AsOzu/Shb8U/5A8M6vSewxAHPdIcygl1ZysXscFwvaU=;
-        b=fhB8xQ5+ffj1cRD8gas355wdgilo0fW3AphvqwhpUIwWUHJNKsvGDMCiqZLfbRbPhH
-         nefbZ0fuzEVBgEkufiAGeO98263QL/KiCC61XRv70/zI6Q4hUcJh47GuBvUhBan/87Q4
-         +mUMgrYkxoBAKoQnohQ5qACztc167tFLXJ5UN5eddauZxlp91iupuMx6a+oYSaLWw7Q2
-         3sYkgJmqYW4S/WQiKssje9wXORM62zfMlD1sZksyBhRmyQVhw/xZO7yJDaFYSfwLPtLj
-         u0DVeWF5veQSrEwjnCSs5rnNcxXZ5FHMFXGQziabyJwUQnP18MiwQ7srFSyr+TsdHXtF
-         17Dg==
-X-Gm-Message-State: AOJu0YwkuDczKENiS1d6ZbCAaAEzi1p+QV7b7B0JuAOToN2UxmhV01aE
-	fS0hcDez4hK74b6WAYQ3GpVvcUwOLVqBd7o06XKDWQUrr2Nr/q1kpy6ENx0daVYmlzc=
-X-Gm-Gg: ASbGncukwxR13UENCBiKFYVKWfvzvh7UGsq8x3cip6Mi3/P1660zmLAI7NdlWcYy4g9
-	6kUdWjgEhMUjlxei10Rq+tBnZZob5nDjtGcKYetAIWSK3apT/PQS2f2F7sdtTaedAjXdxuPGl6m
-	mlHnlSQEVGDTJ2GHG1J54Q53FW1nVGDYO5/KhHrSyc7Nsj0E4uQwtDmKjqa1IuB6/6qAc2sH1YU
-	XDyOSmYOP6J+W0jcqlS0y95CHzzlhSwSblS24OtXSBgfsBQHajUx7cqdxQAfHLxtOpEjOuDzn99
-	FwTr1oqU8F910/tv9CnhOqE1R0UQv9kMsvA4sueqbsbvXhDgswfDiZNSiJrLZP+C3R83ifVtWYi
-	3VbEc3ScaxxV1r4eMGMudSc8hovoLqyQlXytU9roIunMVX6Jmcic5
-X-Google-Smtp-Source: AGHT+IHjCyeYWj52MzibDcNe6h6uxoz7typzxZX5pbdy/ikZ9QMY/8GfHCHLtrwQvn8P5u6F0KuPsw==
-X-Received: by 2002:a5d:584e:0:b0:3a3:584b:f5d7 with SMTP id ffacd0b85a97d-3b5e45114b1mr1462475f8f.5.1752136716324;
-        Thu, 10 Jul 2025 01:38:36 -0700 (PDT)
-Received: from localhost (dynamic-2a00-1028-83b8-1e7a-b223-ac12-b926-9872.ipv6.o2.cz. [2a00:1028:83b8:1e7a:b223:ac12:b926:9872])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-454d50df5a1sm51191525e9.22.2025.07.10.01.38.35
+        bh=tlwOdpvqm2WGBMA6L87u6T1227AEA6wpnUUMMQcTASk=;
+        b=Exa1nAr7mOsRW6Q6XlIq1jv742OVWbHy71kN94GEhLKfcVbX1nBz7ts5+bIN86g77h
+         A48dxhXyiVv/trAn4FZ3wrR8wJG9tygNKYuQnUs7KN1CrQjOkKlsED+K7O8IOqHYsMXn
+         5P63iRFNHTBiKQe7yPtdNh+Txe046W+NAb5yhCna/RamgCqnbuRZMdr0/arI0oBN3Et2
+         /uuEXgRavYI8uW6cddOwyioN23rSx4J5+Q6ZgRRg8qPrCxpRfhqE+Ls6Y/l5aReviMml
+         v81rdUrSXKxCPAJBRcakMGimxg/SqJ0S8kidb9tlBHnWtkecQjwEnVQLIF6nGy8oZhxL
+         nVSw==
+X-Forwarded-Encrypted: i=1; AJvYcCWsLGfwa77yRHN1dhZxaQYuB77McIDQPeV34xNWSTyhkfvyncMAanQ4aYwWbuKeOkwhzl/4fQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyZilz4m2Wr3mCwrx0xRWfgRBtv6R9jqaucQG8Yf0tafcfnfLU5
+	ogn3hCXqVlpFTeRo1b6ZErF1ndBhNx745PzRNckVZf+s6AfrS3cGOMeo0nMiqJg4ECk=
+X-Gm-Gg: ASbGncv+m4/E0FPnL6OmiQpX1lrPyujlRGXwsMe+VroZXjUSTl+NhFHKbxgS8ZZowU/
+	nBwukDxWXuarIDz5vQyKIPMVgdnHvzX3Nrdya4ucx9V7APH0911ATwZ26fVK0jFFJxgghRrLiti
+	OyxpgPPz0SDMykno+wX+iTRmaObO9Kme+Y/YMdUsrLPejbfbLrPbCt2Kv0W7gZxN0Ka31mOBP5P
+	J+VwtBRN49gL8WGEbwdZaGllxCP1SmyUy+iV/GsAPZJVAtLNs9zKAtNYtrx+6PfgIxJQJtjIT78
+	qsuNjkAiaNaOB65N91Xi7uzVouPVvqJ/IVsU+R1B+ozQaaWZtbkL6QetXA7lCD7RdYpgZEhY
+X-Google-Smtp-Source: AGHT+IG3AYRQgNXjyXFYNRoL/ZLuNKUvG5hVCj8blaqb5ns3MkUlB3z7gJs1Bhkd61noA6Imw9KgzA==
+X-Received: by 2002:a05:6a20:e607:b0:216:1476:f71 with SMTP id adf61e73a8af0-23006851993mr3438087637.39.1752137830282;
+        Thu, 10 Jul 2025 01:57:10 -0700 (PDT)
+Received: from sunil-pc.Dlink ([106.51.195.230])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b3bbe52ecdcsm1522323a12.14.2025.07.10.01.57.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Jul 2025 01:38:35 -0700 (PDT)
-From: Petr Tesarik <ptesarik@suse.com>
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
-	linux-kernel@vger.kernel.org,
-	Petr Tesarik <ptesarik@suse.com>
-Subject: [PATCH] dma-direct: clean up the logic in __dma_direct_alloc_pages()
-Date: Thu, 10 Jul 2025 10:38:29 +0200
-Message-ID: <20250710083829.1853466-1-ptesarik@suse.com>
-X-Mailer: git-send-email 2.49.0
+        Thu, 10 Jul 2025 01:57:09 -0700 (PDT)
+From: Sunil V L <sunilvl@ventanamicro.com>
+To: linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	linux-acpi@vger.kernel.org,
+	iommu@lists.linux.dev
+Cc: Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Alexandre Ghiti <alex@ghiti.fr>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>,
+	Tomasz Jeznach <tjeznach@rivosinc.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Atish Kumar Patra <atishp@rivosinc.com>,
+	Anup Patel <apatel@ventanamicro.com>,
+	Andrew Jones <ajones@ventanamicro.com>,
+	Sunil V L <sunilvl@ventanamicro.com>
+Subject: [PATCH v4 0/3] RISC-V: Add ACPI support for IOMMU
+Date: Thu, 10 Jul 2025 14:26:54 +0530
+Message-ID: <20250710085657.2844330-1-sunilvl@ventanamicro.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -73,73 +85,53 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Convert a goto-based loop to a while() loop. To allow the simplification,
-return early when allocation from CMA is successful. As a bonus, this early
-return avoids a repeated dma_coherent_ok() check.
+This series adds support for RISC-V IOMMU on ACPI based platforms.
+RISC-V IO Mapping Table (RIMT) is a new static ACPI table [1] introduced
+to communicate IOMMU information to the OS.
 
-No functional change.
+[1] - https://github.com/riscv-non-isa/riscv-acpi-rimt/releases/download/v1.0/rimt-spec.pdf
 
-Signed-off-by: Petr Tesarik <ptesarik@suse.com>
----
- kernel/dma/direct.c | 31 +++++++++++++------------------
- 1 file changed, 13 insertions(+), 18 deletions(-)
+Changes since v3:
+	1) Rebased to 6.16-rc5
+	2) Addressed Drew's feedback on v3.
+		a) Reordered calling rimt_iommu_configure_id().
+		b) Removed unnecessary inline.
+		c) Added pr_fmt.
+		d) Removed redundant rimt_iommu_configure_id() stub.
+	3) Added Drew's RB tag in PATCH 3.
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 24c359d9c879..302e89580972 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -120,7 +120,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 		gfp_t gfp, bool allow_highmem)
- {
- 	int node = dev_to_node(dev);
--	struct page *page = NULL;
-+	struct page *page;
- 	u64 phys_limit;
- 
- 	WARN_ON_ONCE(!PAGE_ALIGNED(size));
-@@ -131,30 +131,25 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	gfp |= dma_direct_optimal_gfp_mask(dev, &phys_limit);
- 	page = dma_alloc_contiguous(dev, size, gfp);
- 	if (page) {
--		if (!dma_coherent_ok(dev, page_to_phys(page), size) ||
--		    (!allow_highmem && PageHighMem(page))) {
--			dma_free_contiguous(dev, page, size);
--			page = NULL;
--		}
-+		if (dma_coherent_ok(dev, page_to_phys(page), size) &&
-+		    (allow_highmem || !PageHighMem(page)))
-+			return page;
-+
-+		dma_free_contiguous(dev, page, size);
- 	}
--again:
--	if (!page)
--		page = alloc_pages_node(node, gfp, get_order(size));
--	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
-+
-+	while ((page = alloc_pages_node(node, gfp, get_order(size)))
-+	       && !dma_coherent_ok(dev, page_to_phys(page), size)) {
- 		__free_pages(page, get_order(size));
--		page = NULL;
- 
- 		if (IS_ENABLED(CONFIG_ZONE_DMA32) &&
- 		    phys_limit < DMA_BIT_MASK(64) &&
--		    !(gfp & (GFP_DMA32 | GFP_DMA))) {
-+		    !(gfp & (GFP_DMA32 | GFP_DMA)))
- 			gfp |= GFP_DMA32;
--			goto again;
--		}
--
--		if (IS_ENABLED(CONFIG_ZONE_DMA) && !(gfp & GFP_DMA)) {
-+		else if (IS_ENABLED(CONFIG_ZONE_DMA) && !(gfp & GFP_DMA))
- 			gfp = (gfp & ~GFP_DMA32) | GFP_DMA;
--			goto again;
--		}
-+		else
-+			return NULL;
- 	}
- 
- 	return page;
+Changes since v2:
+	1) Rebased to 6.16-rc4
+	2) Removed Anup's SOB and link tags added by mistake in v2.
+
+Changes since v1:
+	1) Rebased to v6.16-rc1.
+	2) Dropped ACPICA patch since it is already available in 6.16-rc1.
+	3) Added Rafael's ACK.
+	4) Fixed few issues found by bots.
+
+Sunil V L (3):
+  ACPI: RISC-V: Add support for RIMT
+  ACPI: scan: Add support for RISC-V in acpi_iommu_configure_id()
+  iommu/riscv: Add ACPI support
+
+ MAINTAINERS                          |   1 +
+ arch/riscv/Kconfig                   |   1 +
+ drivers/acpi/Kconfig                 |   4 +
+ drivers/acpi/riscv/Kconfig           |   7 +
+ drivers/acpi/riscv/Makefile          |   1 +
+ drivers/acpi/riscv/init.c            |   2 +
+ drivers/acpi/riscv/init.h            |   1 +
+ drivers/acpi/riscv/rimt.c            | 520 +++++++++++++++++++++++++++
+ drivers/acpi/scan.c                  |   4 +
+ drivers/iommu/riscv/iommu-platform.c |  17 +-
+ drivers/iommu/riscv/iommu.c          |  10 +
+ include/linux/acpi_rimt.h            |  28 ++
+ 12 files changed, 595 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/acpi/riscv/Kconfig
+ create mode 100644 drivers/acpi/riscv/rimt.c
+ create mode 100644 include/linux/acpi_rimt.h
+
 -- 
-2.49.0
+2.43.0
 
