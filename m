@@ -1,142 +1,233 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 441511442E8;
-	Fri, 11 Jul 2025 15:16:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74CD5182B4
+	for <iommu@lists.linux.dev>; Fri, 11 Jul 2025 15:51:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752246976; cv=none; b=hSXfD31sbYu3hsXaritZOJ3CA450J8+YmaGPkwKpIgBJELAkeNVLzKfwPn7ipw5Sb+YuWsVLEZ/QoZLua8UEwMJRs7UkY3B3ZRCDD6LXtefXTP79XU5elhqWmL87uefn55A7VL/BJCm183+qgxJ711iw24CeRWonq/RPTjawvM4=
+	t=1752249063; cv=none; b=XE5Dsq0wIuX8L/IqanDfzYYA8MIFtDaERbQ3GwcuTi29DPxBxqYRaz+72DMm63OYRaCRLozjwqC8h5XFJ432IWdLKGZ3VP43YUJE5BzCqZMi7iEtYnIPjBaNrMmhjPZkHSmp1CJPjeLhuyDnsGMPBFlVquzfC4GZzz8XQvnsNUU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752246976; c=relaxed/simple;
-	bh=dK4M9uBPxqDrfMVxnPZkLcSIMXrTxzxvvSQ7wb4uqbg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VKUnVAGVkwGU6f7sEhOeG8Z7fNsyo9DuGD76Y+rmEHbam9uDRd7CqcxeiD7HYBe/5VqxS5pSraVRiOu6gQuCzUl8GUPYXBNpTfeJ6c7gY2KMPt6Hr45Uppr9kpsSVHLJadhRFnCEnTbjzwsFFsvt56n3vCNuQ9hncQlUEyNcFU8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iXQg5Ts3; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1752249063; c=relaxed/simple;
+	bh=cRSEYeAZQIo3llsEJyfAYMMwsDk6fdhA/0tgZ9rZxlg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=AZe4doZMz7EuQ1Tb+AkL+1G3523mZYPiO3Sdi/TufV3NRIyIZ5WuCWZVsKg4/e+oWYnENG1afZzStK+ktPeI75bYmE7eMFvkpwiClqBOBzCdYMzLefvnnlpJRSqZgMPCIs6EwyLWcyBJ39ZO1mSPZ1u81RvZhzJzqCd6slQgyQ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Wc+pnU2I; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iXQg5Ts3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AD35C4CEED;
-	Fri, 11 Jul 2025 15:16:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752246975;
-	bh=dK4M9uBPxqDrfMVxnPZkLcSIMXrTxzxvvSQ7wb4uqbg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=iXQg5Ts3IrsbbjjSFPKGVDejC9h+eWfW6B6lymOICjdMqvZMystoiJ/5rHxJ5pOzf
-	 JCDmctGd+pQPeIOyd3M4+h4HSegH+98ZM+j2+4e6VUZ2tR0BjGur+IGS6I1IqarUQx
-	 iAdNkzRmA7eTsUERje7NPM7rbN0ZVAFrwG8DIh/E3iyRyOXgIFw/b+C4wQP1t/VfTw
-	 XFqI3KvIgVmNWSAQj66XSXgYdbjbODKMEYMWxhdlCu+WZbNwzuoznPf914oBYMKVT0
-	 JVFoG1SqHnsoTFmqGfP0e8mFAHCi0CC4DECIWnA6na2kYGzzVsmnV5hqKPiu2yWQSC
-	 HCkqRecou2UOA==
-Date: Fri, 11 Jul 2025 16:16:11 +0100
-From: Will Deacon <will@kernel.org>
-To: Stefano Stabellini <stefano.stabellini@amd.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Michal Simek <michal.simek@amd.com>,
-	linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-	iommu@lists.linux.dev,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	"Sarangi, Anirudha" <anirudha.sarangi@amd.com>, maz@kernel.org,
-	xueqi.zhang@mediatek.com
-Subject: Re: SMMUv3 interrupt handling via custom logic
-Message-ID: <aHEqu5mGannB0w6D@willie-the-truck>
-References: <0482d84e-871b-4522-b94b-29a97c87ff66@amd.com>
- <43acfcd8-b359-448f-bbb6-da1b71a64f45@arm.com>
- <alpine.DEB.2.22.394.2506271219070.862517@ubuntu-linux-20-04-desktop>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Wc+pnU2I"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1752249059;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=cYYFL7iSZ/ER1ZVOlySXlTIkEzpjXHGgym0ucB+NEiw=;
+	b=Wc+pnU2IeOrVbGRvobvvSYbd39b4iCJL8d9/2+ovyLPRjLi1WaNyQ0ld3wXKbr6ml/VP9h
+	4pCeSs7S7y2soWMHH6/9cK1+oEjfQEHyUK9mwHlypNCxEZeS9TqT3tjsactiA340chZnc4
+	TzXJMWfXjTDTeDIbKNpfaCnD5/nDFg8=
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
+ [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-8-Ygnr6fqnPPO2HH8sdoJDow-1; Fri, 11 Jul 2025 11:40:25 -0400
+X-MC-Unique: Ygnr6fqnPPO2HH8sdoJDow-1
+X-Mimecast-MFC-AGG-ID: Ygnr6fqnPPO2HH8sdoJDow_1752248424
+Received: by mail-io1-f71.google.com with SMTP id ca18e2360f4ac-86cf14fd106so49979239f.2
+        for <iommu@lists.linux.dev>; Fri, 11 Jul 2025 08:40:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752248424; x=1752853224;
+        h=content-transfer-encoding:mime-version:organization:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=cYYFL7iSZ/ER1ZVOlySXlTIkEzpjXHGgym0ucB+NEiw=;
+        b=dM3lyGX71VpGpotGIIFcCjrfyanxX4gs5olg7s7Au5ioX+wUNzxfXVjUo+IYKjOTz1
+         rWr7QQENpZHo2UWsbZKKxxPtqxTJW+TA5I8fzuyWq2pXWrmWX5kA/M72Uw2T5ugbrxf2
+         v+KlBeDy9mMP7GbvoM5D8j08PICBfzi+6IXnR79onPer6/VUhx9sDS7dQkwlLBMyvsTx
+         IVmyDuuoao3TlYuluFkEUfS/PkkUnCFO8swt8BH2nGne+yNlO6MceKaXIewdqXqd7QCQ
+         X4PZNGCD5b4iWdKvyDTT/LVYC+DTZfPl9PNAnkolOX3GLF2WN+xWbhEttPwhiX9O5mN4
+         Uarw==
+X-Forwarded-Encrypted: i=1; AJvYcCXDYANrfXj+FE1n7MHAal5h6A9NmRtvQCVyxGncVfCekQi35htEuj0ePAsGSyln1CtmjtjepA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwMpV7ZdjaFM2T1sx67QQUI+fCKHaS0LLSgHS1BkUWf/Mu1iXix
+	4l2IEl61rTBjItigsdyWqQFIoni7fiY71zudibWDXoCakXxn9L+MGOwsdzMRKLhZJqTZfogQW9l
+	oLOqJcKUIiVKECNBc7dwBDoLKtkG8ZGdEZV1BZ3gUz9lb2PIQI6lJ8yK7
+X-Gm-Gg: ASbGnctz9lpC1LYgYWpjz4LPihS/Z2u6tgUbajoGy2RcFN0ioBkQ2OW38qzAHTl3kGe
+	9KVN3zLAchmDECBa1va4nMDVhQJso49fxKZwFFUVXZqX/sQschQb8KR1b4xsx9J+MGaw6zRJOFA
+	j2b32VkgaVCiVGZDxdUaFoTYtXgWosjk1fG+Sw6U2B824iH88fcTQicywMpdIWX1z2unydg/pq/
+	+zUKUD4spSE7EutnL5GbrNz8r3NO1cIHdCdUMNAFDG17YndzpGboy5UrdqE5zycxt2lamD/oIDU
+	fjJ7kjpdEZFheYoWhlj9m7pxPAdWzc2QLrhHgcfHXRw=
+X-Received: by 2002:a05:6602:2cc2:b0:876:97b0:937b with SMTP id ca18e2360f4ac-87979228fb2mr95699039f.3.1752248424008;
+        Fri, 11 Jul 2025 08:40:24 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHHVY5rBGhqRO5sp2SLT2myg1EFX29cpDhlYNuKxgTlHNrK/eYcqxX7DYKWsncg808ZpGBEWg==
+X-Received: by 2002:a05:6602:2cc2:b0:876:97b0:937b with SMTP id ca18e2360f4ac-87979228fb2mr95697739f.3.1752248423477;
+        Fri, 11 Jul 2025 08:40:23 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id ca18e2360f4ac-8796b8c46f9sm107447039f.8.2025.07.11.08.40.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Jul 2025 08:40:22 -0700 (PDT)
+Date: Fri, 11 Jul 2025 09:40:20 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev, Joerg Roedel
+ <joro@8bytes.org>, linux-pci@vger.kernel.org, Robin Murphy
+ <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Lu Baolu
+ <baolu.lu@linux.intel.com>, galshalom@nvidia.com, Joerg Roedel
+ <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+ maorg@nvidia.com, patches@lists.linux.dev, tdave@nvidia.com, Tony Zhu
+ <tony.zhu@intel.com>
+Subject: Re: [PATCH 00/11] Fix incorrect iommu_groups with PCIe switches
+Message-ID: <20250711094020.697678fc.alex.williamson@redhat.com>
+In-Reply-To: <20250708204715.GA1599700@nvidia.com>
+References: <0-v1-74184c5043c6+195-pcie_switch_groups_jgg@nvidia.com>
+	<20250701154826.75a7aba6.alex.williamson@redhat.com>
+	<20250708204715.GA1599700@nvidia.com>
+Organization: Red Hat
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <alpine.DEB.2.22.394.2506271219070.862517@ubuntu-linux-20-04-desktop>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: UGX__9AQZ7T9K_cMlA10gOqGxQWWKW2U4nayk6f-XF8_1752248424
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hey Stefano, [+Marc]
+On Tue, 8 Jul 2025 17:47:15 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-On Fri, Jun 27, 2025 at 12:20:37PM -0700, Stefano Stabellini wrote:
-> On Fri, 27 Jun 2025, Robin Murphy wrote:
-> > On 2025-06-27 8:19 am, Michal Simek wrote:
-> > > We are using smmu-v3 in our SOC and I would like to ask you for
-> > > recommendation how to handle our interrupt cases.
-> > > 
-> > > here is description which we are using
-> > > 
-> > > smmu: iommu@ec000000 {
-> > >      compatible = "arm,smmu-v3";
-> > >      reg = <...>;
-> > >      #iommu-cells = <1>;
-> > >      interrupt-names = "combined";
-> > >      interrupts = <0 169 4>;
-> > > };
-> > > 
-> > > but it is missing one important detail which just arise that actually there
-> > > is additional HW logic which deals with SMMU interrupts separately.
-> > > There is a secure part (global, cmd, event - gerror, cmdq-sync, eventq in
-> > > DT)
-> > > and non secure part (pri, global, cmd, event - priq, gerror, cmdq-sync,
-> > > eventq in DT).
-> > > Based on my information all these interrupts should be acked once handled to
-> > > be able to get another one.
-> > > The driver itself is able to handle them separately but we didn't create any
-> > > solution to reach custom HW to do it.
-> > > 
-> > > I looked at f935448acf46 ("iommu/arm-smmu-v3: Add workaround for Cavium
-> > > ThunderX2 erratum #126") which introduced combined IRQs but it looks like
-> > > that there is no need for additional ACK of that IRQs.
-> > 
-> > Per the architecture, SMMU interrupts are logically edge-triggered so there is
-> > nothing to clear at the SMMU end (the "interrupt status" is implicit in
-> > whatever condition caused an interrupt to be sent, e.g. the event queue
-> > becoming non-empty, SMMU_GERROR becoming different from SMMU_GERRORN, etc.)
-> > 
-> > If this is an Arm SMMU IP (MMU-600/700/S3) then the physical interrupt outputs
-> > are most definitely rising-edge. If somone's stuck some interrupt combiner in
-> > between those and the main interrupt controller, then yes, that interrupt
-> > combiner really should have its own driver.
-> > 
-> > > The HW logic itself is handling secure and non secure settings for SMMU
-> > > that's why would be the best to avoid directly mapping it in Linux.
-> > > 
-> > > One way to go is to create secondary interrupt controller driver
-> > > a) ioremap one with notice about secure part because we are using SMMU only
-> > > with NS world
-> > > b) firmware based to tunnel accesses via SMCs and allow only access to
-> > > limited amount of registers
-> > > 
-> > > The second way is likely create any hooks in the driver to be able to
-> > > provide additional SOC specific hooks.
-> > 
-> > If this thing is munging *all* the SMMU interrupt outputs as I suspect, then
-> > the big problem with that idea is that "the driver" is at least two separate
-> > drivers (SMMU and PMU), 3 if it has RAS and you ever want to entertain the
-> > idea of kernel-first handling.
+> On Tue, Jul 01, 2025 at 03:48:26PM -0600, Alex Williamson wrote:
 > 
-> Yeah... I tend to favor simple solutions when possible and the secondary
-> interrupt controller driver approach is looking increasingly complex.
+> > Notably, each case where there's a dummy host bridge followed by some
+> > number of additional functions (ie. 01.0, 02.0, 03.0, 08.0), that dummy
+> > host bridge is tainting the function isolation and merging the group.
+> > For instance each of these were previously a separate group and are now
+> > combined into one group.  
+> 
+> I was able to run some testing on a Milan system that seems similar.
+> 
+> It has the weird "Dummy Host Bridge" MFD. I fixed it with this:
+> 
+> /*
+>  * For some reason AMD likes to put "dummy functions" in their PCI hierarchy as
+>  * part of a multi function device. These are notable because they can't do
+>  * anything. No BARs and no downstream bus. Since they cannot accept P2P or
+>  * initiate any MMIO we consider them to be isolated from the rest of MFD. Since
+>  * they often accompany a real PCI bridge with downstream devices it is
+>  * important that the MFD be isolated. Annoyingly there is no ACS capability
+>  * reported we have to special case it.
+>  */
+> static bool pci_dummy_function(struct pci_dev *pdev)
+> {
+> 	if (pdev->class >> 8 == PCI_CLASS_BRIDGE_HOST && !pci_has_mmio(pdev))
+> 		return true;
+> 	return false;
+> }
 
-I think that's probably the right way to go, though. Moving the
-configuration to firmware just means you now have two problems instead
-of one.
+Yeah, that might work since it does report itself as a host bridge.
+Probably noteworthy that you'd end up catching the Intel host bridge
+with this too.
+ 
+> This AMD system has second weirdness:
+> 
+> 40:01.1 PCI bridge: Advanced Micro Devices, Inc. [AMD] Starship/Matisse GPP Bridge (prog-if 00 [Normal decode])
+>         Capabilities: [2a0 v1] Access Control Services
+>                 ACSCap: SrcValid+ TransBlk+ ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans+
+>                 ACSCtl: SrcValid- TransBlk- ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans-
+> 40:01.2 PCI bridge: Advanced Micro Devices, Inc. [AMD] Starship/Matisse GPP Bridge (prog-if 00 [Normal decode])
+>         Capabilities: [2a0 v1] Access Control Services
+>                 ACSCap: SrcValid+ TransBlk+ ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans+
+>                 ACSCtl: SrcValid- TransBlk- ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans-
+> 40:01.3 PCI bridge: Advanced Micro Devices, Inc. [AMD] Starship/Matisse GPP Bridge (prog-if 00 [Normal decode])
+>         Capabilities: [2a0 v1] Access Control Services
+>                 ACSCap: SrcValid+ TransBlk+ ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans+
+>                 ACSCtl: SrcValid+ TransBlk- ReqRedir+ CmpltRedir+ UpstreamFwd+ EgressCtrl- DirectTrans-
+> 
+> Notice the SrcValid- 
+> 
+> The kernel definately set SrcValid+, the device stored it, and it
+> never set SrcValid-, yet somehow it got changed:
+> 
+> [    0.483828] pci 0000:40:01.1: pci_enable_acs:1089
+> [    0.483828] pci 0000:40:01.1: pci_write_config_word:604 9 678 = 1d
+> [    0.483831] pci 0000:40:01.1: ACS Set to 1d, readback=1d
+> [..]
+> [    0.826514] pci 0000:40:01.1: __pci_device_group:1635 Starting
+> [    0.826517] pci 0000:40:01.1: pci_acs_flags_enabled:3668   ctrl=1c acs_flags=1d cap=5f
+> 
+> I instrumented pci_write_config_word() and it isn't being called a
+> second time. I didn't try to narrow this down, too weird. Guessing
+> ACPI or FW?
+> 
+> So the new logic puts all the above and the downstream into group due
+> to insuffucient isolation which is the only degredation on this
+> system, the LOM ethernet gets grouped together with the above MFD.
+> 
+> Given in this case we explicitly have ACS flags we consider
+> non-isolated I'm not sure there is anything to be done about it.
+> 
+> Which raises a question if SrcValid should be part of grouping or not,
+> it is more of a security enhancement, it doesn't permit/deny P2P
+> between devices?
 
-It looks like MTK may have done something similar:
+Strange issue.  If a device can spoof a RID then it can theoretically
+inject a DMA payload as if it were another device.  That seems like
+basic security, not just an enhancement.
+ 
+> > The endpoints result in equivalent grouping, but this is a case where I
+> > don't understand how we have non-isolated functions yet isolated
+> > subordinate buses.  
+> 
+> And I fixed this too, as above is showing, by marking the group of the
+> MFD as non-isolated, thus forcing it to propogate downstream.
+> 
+> > An Alder Lake system shows something similar:  
+> 
+> I also tested a bunch of Intel client systems. Some with an ACS quirk
+> and one with the VMD/non transparent bridge setup. Those had no
+> grouping changes, but no raptor lake in this group.
+> 
+> > # lspci -vvvs 1c. | grep -e ^0 -e "Access Control Services"
+> > 00:1c.0 PCI bridge: Intel Corporation Raptor Lake PCI Express Root Port #1 (rev 11) (prog-if 00 [Normal decode])
+> > 00:1c.1 PCI bridge: Intel Corporation Device 7a39 (rev 11) (prog-if 00 [Normal decode])
+> > 	Capabilities: [220 v1] Access Control Services
+> > 00:1c.2 PCI bridge: Intel Corporation Raptor Point-S PCH - PCI Express Root Port 3 (rev 11) (prog-if 00 [Normal decode])
+> > 	Capabilities: [220 v1] Access Control Services
+> > 00:1c.3 PCI bridge: Intel Corporation Raptor Lake PCI Express Root Port #4 (rev 11) (prog-if 00 [Normal decode])
+> > 	Capabilities: [220 v1] Access Control Services
+> > 
+> > So again the group is tainted by a device that cannot generate DMA,   
+> 
+> It looks like 00:1c.0 is advertised as a root port, so it can generate
+> DMA as part of its root port function bridging to something outside
+> the root complex.
+> 
+> This system doesn't seem to have anything downstream of that root port
+> (currently plugged in?), but IMHO that port should have ACS. By spec I
+> think it is correct to assume that without ACS traffic from downstream
+> of the root port would be able to follow the internal loopback of the
+> MFD.
+> 
+> This will probably need a quirk, and it is different from the AMD case
+> which used a host bridge..
+> 
+> Any other idea?
 
-https://lore.kernel.org/r/20250616025628.25454-7-xueqi.zhang@mediatek.com
+This root port at 1c.0 does look like it could have a subordinate
+device, but there is no unpopulated slot/socket on this motherboard.
+Possibly another motherboard SKU could use these links for a wifi card.
+Versus the other root ports, it lacks routing of its interrupt line, it
+does have a secondary bus and apertures assigned, it has a PCIe
+capability that claims it has a slot (LnkCap 8GT/s x1), it has an MSI
+capability and a NULL capability, no extended config space.  I'm not
+sure if this vendor (Gigabyte) is unique in incompletely stubbing out
+this link or if this is par for the course.
 
-so if changes are needed to irqchip to handle the limited capabilities
-of the extra logic (as per Marc's comments in the thread above), it
-would be good to make sure that's reusable. What I really _don't_ want
-is a half-baked, custom interrupt handling mechanism in the IOMMU code.
+Again, it should be perfectly safe to assign things downstream of the
+ACS isolated root ports in the MFD to userspace drivers, their egress
+DMA is isolated.  It would only be ingress from an endpoint that seems
+like it cannot exist that would be troublesome.  I don't have a good
+solution.  Thanks,
 
-> In addition to what Robin mentioned, I understand that this email is
-> directed to linux-arm-kernel and the LKML, so the focus is naturally to
-> solve the problem for Linux. However, let me point out that this issue
-> also affects Xen, all hypervisors, and proprietary operating systems.
-> The "big problem" is even bigger :-(  Complexity will multiply very
-> quickly.
+Alex
 
-Sounds like you need to feed that back to the geniuses who designed this
-hardware :). If you want your hardware to work well with existing
-software, it's generally best to build it to spec.
-
-Will
