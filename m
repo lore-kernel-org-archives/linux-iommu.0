@@ -1,50 +1,72 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8404F237704
-	for <iommu@lists.linux.dev>; Fri, 11 Jul 2025 08:17:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B58D1FECB4
+	for <iommu@lists.linux.dev>; Fri, 11 Jul 2025 08:27:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752221830; cv=none; b=kAVQq9eNE2569DIkD/RlF43ti34N1ublqqb2GdAK9737ZIT1f8ga6m1Bb7K3nFgoV7GVtktUvvHsDGc4rPwhfcmFq/fm+U0JAE6blQ9ohbnyDwRT4SSOB+6kjsOsNzDbexSWDquhSQIf16T/TiVXQFB6hE+8QOOI4IrR30N8O1E=
+	t=1752222437; cv=none; b=B9zuXRkz8c3iE1sPQPfPGLXQnEKxroFJojwGOsS+P3UTbOoYoZgyuK7bMbZ8BUJ81l0m+/L/Wp7ENnwJ+oWJEO2in2Zb9W7ujUuVn5I6o1Zbo45yrC+eKrfR4UovKFUwa8FDjXcnpZoMp67hdhU/8Jk2qkPsZ3xjk71PCNepkMs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752221830; c=relaxed/simple;
-	bh=Ke7L+41wFbFBzuixd1ZJ5CmdlwqS9YunWTD9zUBFclk=;
+	s=arc-20240116; t=1752222437; c=relaxed/simple;
+	bh=frSrt/16VypNMrhlklfbIhGb02n3jTIlRwU6eokGfkA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TDMYSNs+QeLEvmJ6dEgaq1UiL4ih+2RwHcOWIiKg8m62CntLyXYIMm65uw2zLn5owlUx6oC2dX+LET4ysXKydDD/IRUV9Ih25LN4RoUAk8YxPo+lWgZt48lq1PH29UPYG3K4pKmVQ6IT19plmeiTKdH4vjeFrugMg/hZ1byr2c0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=I3EbB0/B; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=iFafhIKDdY4QD5Zd8eFLfRx6VQUcnO9jBZYjDxvhYZwYTD2IN284d0B+fQjPDqxMyG/dBb3kwY2Mrx/1wMqJ1Vw1h50OWMvyS6eZWGqiD0jp81MSHu9p9dqxe2YL3dBA2/whSKkfuhLTjCoAvoU5ADcqJ/CtuWD3UuWUpi6Y6Ko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=y09pysaZ; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="I3EbB0/B"
-Received: from localhost (unknown [167.220.232.230])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 88AFF201A4DA;
-	Fri, 11 Jul 2025 01:17:08 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 88AFF201A4DA
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1752221828;
-	bh=pMxWlgE2n/38wP+uBzLBo9danfvbk7bMc1DZjHftJHw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=I3EbB0/BWBsMrXvEuoXJMpspEPiy5UrZdegu7w/AdqEqtu4HlV389Gbf/Ol4GKFsh
-	 nUhmvmwsdncC664oWE7OjFtSCY/0duLUIOxdjokkJKWW73SNuUgRE9yOLF0Ii1M7ZW
-	 QG6M6C0jn50hZfS8+u9cRpYxqgPgGbGjvqxs4K+A=
-Date: Fri, 11 Jul 2025 16:17:06 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Dave Hansen <dave.hansen@intel.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Baolu Lu <baolu.lu@linux.intel.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>, 
-	Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Andy Lutomirski <luto@kernel.org>, 
-	"Tested-by : Yi Lai" <yi1.lai@intel.com>, iommu@lists.linux.dev, security@kernel.org, 
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-Message-ID: <6dn5n5cge7acmmfgb5zi7ctcbn5hiqyr2xhmgbdxohqydhgmtt@47nnr4tnzlnh>
-References: <20250709062800.651521-1-baolu.lu@linux.intel.com>
- <ee7585bd-d87c-4f93-9c8e-b8c1d649cdfe@intel.com>
- <228cd2c9-b781-4505-8b54-42dab03f3650@linux.intel.com>
- <326c60aa-37f3-458d-a534-6e0106cc244b@intel.com>
- <20250710132234.GL1599700@nvidia.com>
- <62580eab-3e68-4132-981a-84167d130d9f@intel.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="y09pysaZ"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2357c61cda7so86935ad.1
+        for <iommu@lists.linux.dev>; Fri, 11 Jul 2025 01:27:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1752222435; x=1752827235; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3wb1oowbSA1sVzCsjHghmLIDKPJGVzvuDr0F84v8tpM=;
+        b=y09pysaZu1T2EnBpodGmlaCP4nfFwmk87R0ODFfF53R8T6PM4MXrI79nZASiogxV37
+         08LKsCnO7GmJ4vM4J8rpd5J5t4t+LnhUbM5gXUySOxoEdK7ZQhN+LvqtB3E6ZoFqqu3L
+         9xESe1RTk4S3j29dgezbWAkwUC/w4RHWit9ybWDfFejfwPA4xZsZueiOzCnjGtGSYFmo
+         6CXI5yRqqxy/i8ca4ELZtdObmnkdl/fdDqCHqMtmmkxjmNa6gic211sJEb5hMaOo/Qdz
+         IdwswP0pO1cg8O/YMkuJnjUPqhRxyMd2djcewxDyeiX1WIxA/yzFtZAH7mvkgvrmoL7t
+         jnig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752222435; x=1752827235;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3wb1oowbSA1sVzCsjHghmLIDKPJGVzvuDr0F84v8tpM=;
+        b=Y5mOQsstDZr4K4jPlPzZxd5U+YyKXzxaLmnrFfvektQVVfcEdwm6fysD5zgEbVbeJi
+         gQ6CX43G0JG+kw16LbRkMieYxPjIHJRqa9oPxviE3EsB8Ts4q52YwGao8fZgl/p997aK
+         23A2bui2NScsAhlBKdBEVv8zN/0xcay6fHaou4lCY2Zd7Yu3L0hqcfG8yiOI2vPfoc6S
+         8tw9pRIixX6XABaIcX+kaZv9QbjuK2tp07O91pxw9j9gxP5pJrkYKoqokENPGaILXJYJ
+         Gt4/aQ8TTKUWv+Si7vK0Maj2C1mF8MAbV7JIVwnNmzss5OT/rY5mXypUqAv6Milr0A1Q
+         67iA==
+X-Forwarded-Encrypted: i=1; AJvYcCXc811N2EbvRNq5hkgaRcL9Q9/2fjt5Azqk9JEGIRxhTnxr4R/yJ6u42N0ju4+DXJewAvRGkA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxZTmYAdJa7zm67QUrW9WalYFLbRiHjCWlfVC05mK4N1UW5t40q
+	Toq0VhQk0WoahE/vPBgRgJ6Fh29l/d4ToiHW9k98TeV3McA0DP+ZP25N1EUK49KK76tASO+n8r0
+	JTmEPvg==
+X-Gm-Gg: ASbGncu9/iQA9ZuerfL/TYxs3lMwBPzphkXajcFrwy4eJlG6qRaZq93fQFoEbXBTN5g
+	UUbjMrRrCODDsjJ6QYXHPlNZ6AgMEhgF2biJJzW5ZWWiBl5XVWaFUMYvRoRETEzZUsv9t2F6E4B
+	ueFpy3sWZRYNu9e08syaN7Jl/O7zYR5IRC7SaYNl2GrbDVOjfWEXv/WQwJWuEHRc4P5tcVP50Pg
+	wPCmN12mZ220HQe6csCI8IQs+Qm9YSIGf5yDOiPyC8qN+O1EsOTVS5emQS/BJI28XS7dAhoj+F6
+	SaBnsLeea6j6CQy92JTC/xFuc7HaKoUkuvOr7FRcbh7D6Rlxkw5lFo+y+x/juUng4qPexT0LVrR
+	kxORp2ghv77soGsLkxRXKNhFuC0tVDnkFPe6PgImWcBM0G6zUu0iVtXsA
+X-Google-Smtp-Source: AGHT+IGeQ9pS0bpSEY5lDbAotdJ5VOyrB44rPnDqbo9ssdh5gUYxMq4qPQG8JgMf7SMyjdyq4iZMZg==
+X-Received: by 2002:a17:903:2b0b:b0:237:ef9c:ffd9 with SMTP id d9443c01a7336-23dee1c636bmr2323505ad.2.1752222434466;
+        Fri, 11 Jul 2025 01:27:14 -0700 (PDT)
+Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-23de42aefe2sm42788465ad.65.2025.07.11.01.27.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 11 Jul 2025 01:27:13 -0700 (PDT)
+Date: Fri, 11 Jul 2025 08:27:08 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, joro@8bytes.org, jgg@nvidia.com, kevin.tian@intel.com,
+	baolu.lu@linux.intel.com, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH rc] iommu/arm-smmu-v3: Revert vmaster in the error path
+Message-ID: <aHDK3PIpwWvkwJtB@google.com>
+References: <20250710233003.1662029-1-nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,45 +75,61 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <62580eab-3e68-4132-981a-84167d130d9f@intel.com>
+In-Reply-To: <20250710233003.1662029-1-nicolinc@nvidia.com>
 
-On Thu, Jul 10, 2025 at 08:26:06AM -0700, Dave Hansen wrote:
-> On 7/10/25 06:22, Jason Gunthorpe wrote:
-> >> Why does this matter? We flush the CPU TLB in a bunch of different ways,
-> >> _especially_ when it's being done for kernel mappings. For example,
-> >> __flush_tlb_all() is a non-ranged kernel flush which has a completely
-> >> parallel implementation with flush_tlb_kernel_range(). Call sites that
-> >> use _it_ are unaffected by the patch here.
-> >>
-> >> Basically, if we're only worried about vmalloc/vfree freeing page
-> >> tables, then this patch is OK. If the problem is bigger than that, then
-> >> we need a more comprehensive patch.
-> > I think we are worried about any place that frees page tables.
+On Thu, Jul 10, 2025 at 04:30:03PM -0700, Nicolin Chen wrote:
+> The error path in the arm_smmu_attach_prepare() was introduced with the
+> arm_smmu_enable_iopf(). Due to a rebase issue, it forgot to include the
+> revert of the vmaster.
 > 
-> The two places that come to mind are the remove_memory() code and
-> __change_page_attr().
+> Move kfree(state->vmaster) to the error path, to prevent memory leak.
 > 
-> The remove_memory() gunk is in arch/x86/mm/init_64.c. It has a few sites
-> that do flush_tlb_all(). Now that I'm looking at it, there look to be
-> some races between freeing page tables pages and flushing the TLB. But,
-> basically, if you stick to the sites in there that do flush_tlb_all()
-> after free_pagetable(), you should be good.
-> 
-> As for the __change_page_attr() code, I think the only spot you need to
-> hit is cpa_collapse_large_pages() and maybe the one in
-> __split_large_page() as well.
-> 
-> This is all disturbingly ad-hoc, though. The remove_memory() code needs
-> fixing and I'll probably go try to bring some order to the chaos in the
-> process of fixing it up. But that's a separate problem than this IOMMU fun.
-> 
+> Fixes: cfea71aea921 ("iommu/arm-smmu-v3: Put iopf enablement in the domain attach path")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 
-Could we consider to split the flush_tlb_kernel_range() into 2 different
-versions:
-- the one which only flushes the CPU TLB
-- the one which flushes the CPU paging structure cache and then notifies
-  IOMMU to do the same(e.g., in pud_free_pmd_page()/pmd_free_pte_page())?
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
 
+Thanks!
+Praan
 
-B.R.
-Yu
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 181d07bc1a9d..3c79cdbbd9e7 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2906,8 +2906,8 @@ int arm_smmu_attach_prepare(struct arm_smmu_attach_state *state,
+>  
+>  		master_domain = kzalloc(sizeof(*master_domain), GFP_KERNEL);
+>  		if (!master_domain) {
+> -			kfree(state->vmaster);
+> -			return -ENOMEM;
+> +			ret = -ENOMEM;
+> +			goto err_free_vmaster;
+>  		}
+>  		master_domain->domain = new_domain;
+>  		master_domain->master = master;
+> @@ -2941,7 +2941,6 @@ int arm_smmu_attach_prepare(struct arm_smmu_attach_state *state,
+>  		    !arm_smmu_master_canwbs(master)) {
+>  			spin_unlock_irqrestore(&smmu_domain->devices_lock,
+>  					       flags);
+> -			kfree(state->vmaster);
+>  			ret = -EINVAL;
+>  			goto err_iopf;
+>  		}
+> @@ -2967,6 +2966,8 @@ int arm_smmu_attach_prepare(struct arm_smmu_attach_state *state,
+>  	arm_smmu_disable_iopf(master, master_domain);
+>  err_free_master_domain:
+>  	kfree(master_domain);
+> +err_free_vmaster:
+> +	kfree(state->vmaster);
+>  	return ret;
+>  }
+>  
+> -- 
+> 2.43.0
+> 
+> 
