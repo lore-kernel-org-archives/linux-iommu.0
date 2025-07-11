@@ -1,92 +1,182 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92EFC19D07A
-	for <iommu@lists.linux.dev>; Fri, 11 Jul 2025 07:01:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A66C319D07A;
+	Fri, 11 Jul 2025 07:03:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752217287; cv=none; b=FjbSD9g7RQ32Nx1+abHud8q/sHmoT5Jup7aCXwMzzotPJEvEhFbiu65xpzA5ebstZ1MCK8rlSqJb9x/ZMeSKayh0+RVyfX/Cn2+++uPpiExc/g47VR8hSqA6SlbGcNIqKlRqL0CvU+AXG3L+0PnZrMtFckpo2QyHE0vAH7+nOzk=
+	t=1752217390; cv=none; b=FGm+QlcwYNqUUPOI2u0mfujgsWVuwz/x0BUc6sHQLy6fbfCzuDQoowxoQ7YsYQpau7NEucWnwyj6dWggvwsT1UHxccnmAvtzZjmb0/4KUjFK2ZnlIvZ4WtDBfAPnD9LqcNAOuuCTq3fsq+FzZTKliFgnu3QjtKMkMolWuXarTbk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752217287; c=relaxed/simple;
-	bh=JIOnGgolu/COLOQppNdzEF05M+7NretGhi5gKwNtgYo=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
-	 References; b=W6BVZT1zK1OPqYaAtJsUok2R8carXjfZty4Q+UcROec6oQMCy5es3DD3lnOq+ejDVCFRd2e8WbroE1hU8qdSupdxy2dt4et6KKq/r5FVYETMtKWCWBIt0mk4l7mNl1Ym+XUwOgRiOlpd2kLj2FAVWERBHWjhYD4lYD2MIgkpNKU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=X3KmgkOg; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1752217390; c=relaxed/simple;
+	bh=r1cPPxjdKgAs+R+18XIYemBgN1Sq2Z6+k2CL2xCS38E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=V6Bz/ISmGP9oSa4Ijk+7L+JYV8XXIDOO0iygfTCuguI6MBGNUj2O24qAJhdINHYfOb3pGMbtCaktjGNyBKHLFan4l7zEVUC7Hv8N/4u0jvUiItWQ6DzT2KFv/KFHUjsXWZN2LJd8Wqni6/lQZ1l5rI2ey89YxqM6C+nf6hQgtI4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qJPoCUmK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="X3KmgkOg"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250711070117euoutp0288a9615b70973bd8631992668a3bba3b~RIFSh84pp1393713937euoutp024
-	for <iommu@lists.linux.dev>; Fri, 11 Jul 2025 07:01:17 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250711070117euoutp0288a9615b70973bd8631992668a3bba3b~RIFSh84pp1393713937euoutp024
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1752217277;
-	bh=79bKppBldYti/ypqiN2CkZAAnEEIsuoO0YIZOoHX1RE=;
-	h=From:To:Cc:Subject:Date:References:From;
-	b=X3KmgkOgWtbVi694Oysshe0SNSyaRlttMC/eff2ZRCQ7Rfcj5KMV5i4Q1vTP89iXw
-	 MThWwJ3AHdK7e//Y9bdVpaXPQgsBrIZp2ogQ6RJ6X2/czLAOcn3NvjEH+1zA8/bIph
-	 mil2KXEWEbffBSQgIs/ff+c0t/DWNxN+2pLaZQGY=
-Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20250711070117eucas1p2788fee3599caf71ac5f0a5f811f6c6bb~RIFSTaXKZ1251012510eucas1p2o;
-	Fri, 11 Jul 2025 07:01:17 +0000 (GMT)
-Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20250711070117eusmtip2a4f965f590b2644d81d83724ea0b249d~RIFR9Ewm80454804548eusmtip2H;
-	Fri, 11 Jul 2025 07:01:17 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>, Robin Murphy
-	<robin.murphy@arm.com>, Feng Tang <feng.tang@linux.alibaba.com>
-Subject: [GIT PULL] dma-mapping fix for Linux 6.16
-Date: Fri, 11 Jul 2025 09:01:02 +0200
-Message-Id: <20250711070102.4071882-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qJPoCUmK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE0BFC4CEED;
+	Fri, 11 Jul 2025 07:03:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1752217390;
+	bh=r1cPPxjdKgAs+R+18XIYemBgN1Sq2Z6+k2CL2xCS38E=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qJPoCUmKk+Rg4BlVA6O9Ufe6nGAVL6283cDjW+2DMRSVdNcnLSN1FHEe0NftXVZXz
+	 80f2RSiGocdRqETQU/VuiJg3Asov1sFfaZh23ySNGrHUhJqETvONoSZvZHxAO1Q88M
+	 jgfFK5+o/3Hp9Yh8AZPC/0S5qFAW8/i4BIZljLhnTs+3EeEAiplTul9Wcn6+5WMJ08
+	 rK/DAU5AgW2brRpCb7LEwjrwql5ElTWhJ4qFb6eimaZcC5IxP+3V5GI89iglwJdhTF
+	 bndewVgkZ9ptvjRbkuPRpOSx2vxXW25sy6cBzrbA5DCDd8F8Sv5j9CmgXqRwpzAGZ3
+	 1hXEZoVEwd9ww==
+Date: Fri, 11 Jul 2025 09:03:07 +0200
+From: Maxime Ripard <mripard@kernel.org>
+To: Nicolas Dufresne <nicolas@ndufresne.ca>
+Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Andrew Davis <afd@ti.com>, 
+	Jared Kangas <jkangas@redhat.com>, Mattijs Korpershoek <mkorpershoek@kernel.org>, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v6 0/2] dma-buf: heaps: Create a CMA heap for each CMA
+ reserved region
+Message-ID: <20250711-super-pigeon-of-courage-205fb1@houat>
+References: <20250709-dma-buf-ecc-heap-v6-0-dac9bf80f35d@kernel.org>
+ <49e3fa834aadb37452112bb704a1a1593c1fd0b8.camel@ndufresne.ca>
+ <20250709-spotted-ancient-oriole-c8bcd1@houat>
+ <78c981eb7fafe864bea60c662ba5b474fbd44669.camel@ndufresne.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CMS-MailID: 20250711070117eucas1p2788fee3599caf71ac5f0a5f811f6c6bb
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250711070117eucas1p2788fee3599caf71ac5f0a5f811f6c6bb
-X-EPHeader: CA
-X-CMS-RootMailID: 20250711070117eucas1p2788fee3599caf71ac5f0a5f811f6c6bb
-References: <CGME20250711070117eucas1p2788fee3599caf71ac5f0a5f811f6c6bb@eucas1p2.samsung.com>
+Content-Type: multipart/signed; micalg=pgp-sha384;
+	protocol="application/pgp-signature"; boundary="vmeaee7jixrkjoeb"
+Content-Disposition: inline
+In-Reply-To: <78c981eb7fafe864bea60c662ba5b474fbd44669.camel@ndufresne.ca>
 
-The following changes since commit 19272b37aa4f83ca52bdf9c16d5d81bdd1354494:
 
-  Linux 6.16-rc1 (2025-06-08 13:44:43 -0700)
+--vmeaee7jixrkjoeb
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v6 0/2] dma-buf: heaps: Create a CMA heap for each CMA
+ reserved region
+MIME-Version: 1.0
 
-are available in the Git repository at:
+On Thu, Jul 10, 2025 at 11:21:02AM -0400, Nicolas Dufresne wrote:
+> Hi,
+>=20
+> Le mercredi 09 juillet 2025 =E0 15:38 +0200, Maxime Ripard a =E9crit=A0:
+> > > Will there be a generic way to find out which driver/device this carv=
+eout
+> > > belongs to ? In V4L2, only complex cameras have userspace drivers,
+> > > everything
+> > > else is generic code.
+> >=20
+> > I believe it's a separate discussion, but the current stance is that the
+> > heap name is enough to identify in a platform-specific way where you
+> > allocate from. I've worked on documenting what a good name is so
+> > userspace can pick it up more easily here:
+> >=20
+> > https://lore.kernel.org/r/20250616-dma-buf-heap-names-doc-v2-1-8ae43174=
+cdbf@kernel.org
+> >=20
+> > But it's not really what you expected
+>=20
+> From a dma-heap API, the naming rules seems necessary, but suggesting gen=
+eric
+> code to use "grep" style of search to match a heap is extremely fragile. =
+The
+> documentation you propose is (intentionally?) vague. For me, the naming i=
+s more
+> like giving proper names to your function calls do devs can make sense ou=
+t of
+> it.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-6.16-2025-07-11
+I agree, and made a proposal to implement some kind of heap capabilities
+discovery ioctl. The main concern at the time was that Android tried
+that with ION and it lead to a proliferation of poorly defined flags,
+and that names were enough to do so.
 
-for you to fetch changes up to aa807b9f22df2eee28593cbbabba0f93f4aa26c1:
+I still think that at some point we will need this, but I also don't
+have a good idea to address these concerns.
 
-  dma-contiguous: hornor the cma address limit setup by user (2025-06-12 08:38:40 +0200)
+> Stepping back a little, we already opened the door for in-driver use of h=
+eaps.
+> So perhaps the way forward is to have V4L2 drivers utilize heaps from ins=
+ide the
+> kernel. Once driver are fully ported, additional APIs could be added so t=
+hat
+> userspace can read which heap(s) is going to be used for the active
+> configuration, and which other heaps are known usable (enumerate them). T=
+here is
+> no need to add properties in that context, since these will derives from =
+the
+> driver configuration you picked. If you told you driver you doing secure =
+memory
+> playback, the driver will filter-out what can't be used.
+>=20
+> Examples out there often express simplified view of the problem. Your ECC=
+ video
+> playback case is a good one. Let's say you have performance issue in both
+> decoder and display due to ECC. You may think that you just allocate from=
+ a non-
+> ECC heap, import these into the decoder, and once filled, import these in=
+to the
+> display driver and you won.
+>=20
+> But in reality, your display buffer might not be the reference buffers, a=
+nd most
+> of the memory bandwidth in a modern decoder goes into reading reference f=
+rames
+> and the attached metadata (the later which may or may not be in the same
+> allocation block).
+>=20
+> Even once the reference frames get exposed to userspace (which is a long =
+term
+> goal), there will still be couple of buffers that just simply don't fit a=
+nd must
+> be kept hidden inside the driver.
+>=20
+> My general conclusion is that once these heap exists, and that we guarant=
+ee
+> platform specific unique names, we should probably build on top. Both use=
+rspace
+> and driver become consumers of the heap. And for the case where the platf=
+orm-
+> specific knowledge lives inside the kernel, then heaps are selected by the
+> kernel. Also, very little per-driver duplication will be needed, since 90=
+% of
+> the V4L2 driver share the allocator implementation.
+>=20
+> Does that makes any sense to anyone ?
 
-----------------------------------------------------------------
-dma-mapping fix for Linux 6.16
+It does, and it's roughly what we have in mind for the cgroups support
+in KMS and v4l2. The main issue with it is that knowing if you allocate
+=66rom a dedicated pool (which would use the dmem cgroup controller) or
+the main memory pool (which would use memcg) wasn't deterministic and
+thus you couldn't properly account.
 
-- small fix relevant to arm64 server and custom CMA configuration
-  (Feng Tang)
+The solution we have in mind right now is indeed to switch everyone to
+using heaps, and then exposing which cgroup that heap allocates from.
 
-----------------------------------------------------------------
-Feng Tang (1):
-      dma-contiguous: hornor the cma address limit setup by user
+Your proposal here has a few extra steps, but the main idea is there
+still.
 
- kernel/dma/contiguous.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-----------------------------------------------------------------
+Maxime
 
-Thanks!
+--vmeaee7jixrkjoeb
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Best regards
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+-----BEGIN PGP SIGNATURE-----
+
+iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaHC3JgAKCRAnX84Zoj2+
+djTSAX4+ygbjgM882h84BNhcHiUdIPVbWsDbOuHr/SYyMomXGq4GMdP8Pq4tqTQ5
+o9edDjYBgLsUonNYgX2zR0BSqIChiajJgi1nKcoj2mQh+7E0NZmvNGb/sc0lAGdM
+qlNsUjxuCQ==
+=VrhR
+-----END PGP SIGNATURE-----
+
+--vmeaee7jixrkjoeb--
