@@ -1,110 +1,121 @@
-Received: from layka.disroot.org (layka.disroot.org [178.21.23.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from xmbghk7.mail.qq.com (xmbghk7.mail.qq.com [43.163.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DBECDDC3
-	for <iommu@lists.linux.dev>; Sat, 12 Jul 2025 11:49:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.21.23.139
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 793E02BAF4;
+	Sat, 12 Jul 2025 16:16:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=43.163.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752321002; cv=none; b=Zx013cQlFKhYNtgrCn/+rrEoC7Mtk8egbjQqtdXsRZF/IJqSLaE20h0FEgFLcRZ20bCmdC/JT26fFwOM/QHhTI0CeaD6iInwt3i8ROGRGZUhA9qKypAs2hi2kqY8oAT6eoyWTqxns0s4dXxLqeyf//GbknOKMElw6RmLm9v8FfY=
+	t=1752337014; cv=none; b=Q9prG40MahJwRXiDhWYbGEUCXEalXY7FcLzHcBbEgFE7/VHkBLHzpPUlrNzoMkQmPCabIe4sPrq1IuSN/OQwH6TDKOE80WJOnpjJUB9r3oGtXy+PFFHDThX7O/s5A8uzOjool+gEO83uEp2BgfCW6jvJFhtV4pLIkRQQxBL9aPg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752321002; c=relaxed/simple;
-	bh=S+tYkmbasYOAVw0o6YkfoWz4FtmHaFsF4csZGWOvnmk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=V+J4SR3VYB9LJa/AJCu0NILyJGI8Oqk7Ca+n9M5YWWkiu9Zq+n/fZJ2rBn1IrPETT8ZW/R6nSiOIog1J2kcbkbZThjo8nYiJ3vaENDChVQvZBxVO/WYIRvvPqP4S1qBUw8TAv+FxRs3yVijz/87FEldBOO5AE25enupfLxHbzac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org; spf=pass smtp.mailfrom=disroot.org; dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b=IAslfoZL; arc=none smtp.client-ip=178.21.23.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=disroot.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=disroot.org
+	s=arc-20240116; t=1752337014; c=relaxed/simple;
+	bh=skSChtEzeBlvdjOZrJD8k59Y8JnUnMGTVqOSqxe5eTA=;
+	h=Message-ID:From:To:Cc:Subject:Date:MIME-Version; b=HrIBbSFfDiDDuAErbfjJiSYOnk3qwf3NJxtZ69Lt9STym39M/akAU8ws6B8wd+OSFPLDxdG0TLbPrOpfTFspj+Aiw/7emfcayIOsY+o5q+0jtc3swnO2IdtifkcvsD/o5Xghp2MO0GrpDNgG6MeuSLCeeNP2k8jGc8uwXLAtsoE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com; spf=pass smtp.mailfrom=foxmail.com; dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b=lOFiG+Vp; arc=none smtp.client-ip=43.163.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=foxmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=foxmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=disroot.org header.i=@disroot.org header.b="IAslfoZL"
-Received: from mail01.disroot.lan (localhost [127.0.0.1])
-	by disroot.org (Postfix) with ESMTP id 3C1D825D28;
-	Sat, 12 Jul 2025 13:49:58 +0200 (CEST)
-X-Virus-Scanned: SPAM Filter at disroot.org
-Received: from layka.disroot.org ([127.0.0.1])
- by localhost (disroot.org [127.0.0.1]) (amavis, port 10024) with ESMTP
- id UdEQUmxa2Ljx; Sat, 12 Jul 2025 13:49:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=disroot.org; s=mail;
-	t=1752320997; bh=S+tYkmbasYOAVw0o6YkfoWz4FtmHaFsF4csZGWOvnmk=;
-	h=From:Date:Subject:To:Cc;
-	b=IAslfoZLT3WCtll3Oqe0CeZ14PDMLkGO+Mkzk+z9CLeJ9LNnX9w8mT+z/85MxOvya
-	 F0fBcPK6ZCCyHEZHD+skxRk0J3rrJyWj3NuBbHYp7s7OnT4IGbdq6BC3huxAGyD+Mq
-	 piYjNY+QfL6zgFBqY5zMvTBrfLXFMfWLRiSBjmhvzRM+mou1OhgdJ+8zLlDoCspGt3
-	 ZRWCSNaQUAOJuJvR7L8vmPAOJMUFuD4NJVzDamzwMLVHJV/7VINa624PryIQoq2djV
-	 6BVztx3RX2wPI5X/RJjmxaOkjNUMRCg3AEYo+viyXjckO5MMf9VZ18m2e4Nsn653i+
-	 bARP1Jm/ZwsBA==
-From: Kaustabh Chakraborty <kauschluss@disroot.org>
-Date: Sat, 12 Jul 2025 17:19:30 +0530
-Subject: [PATCH] iommu/exynos: add support for reserved regions
+	dkim=pass (1024-bit key) header.d=foxmail.com header.i=@foxmail.com header.b="lOFiG+Vp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+	s=s201512; t=1752336999;
+	bh=HB1hz+ricoDCLB7RNvWCnPHdSK4a0MIDQPyM96qZLrk=;
+	h=From:To:Cc:Subject:Date;
+	b=lOFiG+VpQZAqBKq5Px/Uu9sdkNoElDUKdeH5A2vw35lMx2p0aoNupz/39onFz3YX8
+	 9D8Q/aJk+nLa/0BmUqV2eeZMstcTqDjSYLO0B4KaVP3vnRSMxWK815H2fPhl8PBft2
+	 AuQxlCkdPoOoKGLlUcQH8R7yorCol1eGpljzqGUA=
+Received: from KernelDevBox.byted.org ([115.190.40.10])
+	by newxmesmtplogicsvrszc16-0.qq.com (NewEsmtp) with SMTP
+	id 419B4E38; Sun, 13 Jul 2025 00:16:25 +0800
+X-QQ-mid: xmsmtpt1752336985tmnmdg17y
+Message-ID: <tencent_22664B08ACDCE35DE10E5546C2FB26B59605@qq.com>
+X-QQ-XMAILINFO: M84Ob7gbJGBWc01xJ7vkYkFSoybpZ2krgmPfjVOYXJ91Ln8jjLUHzFW0alz+Oj
+	 X2oy1OQm8f+cdzMidft6pl81ZjcmuCSuDXpQcWuPMfG2Pi2YWF62hfR0OiwNYK1f7e2gYmxXErba
+	 OV7OBlODTowdCIiY16gYCTeGutRSKz75a2MSsjGe2GuEwNMeHPrJf6ijIQrbxB+qneOp9rPMFuDx
+	 xcdRQx1RZe+Ekc740wBdVOhxVWHe0qBhGqDIsjPpjSOLzbCyBqxKMP3gtxLSDRLSbqH8I6/TFqCo
+	 BWwrR/FKIVeOdAXRCzVNlpckbMWjW3TyePIoo+NeTLN4uFLh0LWzJPY9JihqVXqXozr8F3+kjqLQ
+	 ZS8LqGw8tsRGY2c8bQgMsWCLd11LSKtu86Us787fVGi15F06adnHgjGoqyI1eHf3w1R+eqI4yZv9
+	 oUHyhMrOvUE/YVSrRIhSD5kx0fXU/yhTjDHmCr3bv3GTgZP1xxt2pGWlzs1nFuubEX+XsdL35YWz
+	 ArVv+QR8Jd4psGTurfjNH85xlAbGM94TSc/noMf++dyXNYkJG0uqEx0EhyhziY8IqW94DRAz9WLH
+	 /9YhpQ08Zqff0uiR07UbAhSk0/7e/yhdSMx5bvn7FXO5N7lBpJ7d5CAnae6f8zSKfOQz8Tpn2bJp
+	 ik268Hs2psc9pqOYzKvZ2KXDq0jW+LADhrBC3VcObXcynvpXJULaDGFvTSGplHjgmDW+TEmlKVRQ
+	 2tyyasOsfVRwFBxTTav88lw4fARkWW7obuGmqd+ZXMXCqgDUOMcY+OVathhVzp6hZAjTqKqZnHPW
+	 14P+87DYKbw8xD5xTDA/vqRsrX5AnyCh37RnTcaRVQL75pHe76/lK79rcxcaLVY2qFpUlDbvPrgP
+	 eWImY5bNSZaiKsuvIglIVgaR9O9Cp5il0GBWmx+5SQd2wHSJfu+07Y59c/FSrT1QiAZ6k8z3Hcos
+	 7EKs10ZOvXHhB8BD2Mqiwtx6e/WACgJ+PxuA6Wwx+51uX+WPJvwl/HXTt1dSBsVChhma/vFTg/Cg
+	 MtibJS5w==
+X-QQ-XMRINFO: Nq+8W0+stu50PRdwbJxPCL0=
+From: Zhang Shurong <zhang_shurong@foxmail.com>
+To: sven@kernel.org
+Cc: j@jannau.net,
+	alyssa@rosenzweig.io,
+	neal@gompa.dev,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Zhang Shurong <zhang_shurong@foxmail.com>
+Subject: [PATCH] iommu/dart: add missing put_device() call in apple_dart_of_xlate
+Date: Sun, 13 Jul 2025 00:16:24 +0800
+X-OQ-MSGID: <20250712161624.1850171-1-zhang_shurong@foxmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250712-exynos-sysmmu-resv-regions-v1-1-e79681fcab1a@disroot.org>
-X-B4-Tracking: v=1; b=H4sIAMlLcmgC/x2MMQqAMAwAvyKZDWjAUv2KOIiNNYNVGhRF/LvB5
- eCGuweUs7BCVzyQ+RSVLZnUZQHTMqbIKMEcqKKmctQiX3faFPXWdT0ws56GaJWic/VM3reBQgM
- 22DPPcv3zfnjfDywU1kRsAAAA
-X-Change-ID: 20250629-exynos-sysmmu-resv-regions-661f2889d2d5
-To: Marek Szyprowski <m.szyprowski@samsung.com>, 
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski <krzk@kernel.org>, 
- Alim Akhtar <alim.akhtar@samsung.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Kaustabh Chakraborty <kauschluss@disroot.org>
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1752320988; l=1824;
- i=kauschluss@disroot.org; s=20250202; h=from:subject:message-id;
- bh=S+tYkmbasYOAVw0o6YkfoWz4FtmHaFsF4csZGWOvnmk=;
- b=XrB80dr8a+JpILdcBo5C8ky8eoGj9SFiZjVCtse37Zu1p3PeiZQKE+VHre362XvQFhPjcTFZo
- rQBP0wI1zv3AWTuPsfcXTXWutuy7l58dImvg6ZriUEHbco9XIsfAiW1
-X-Developer-Key: i=kauschluss@disroot.org; a=ed25519;
- pk=h2xeR+V2I1+GrfDPAhZa3M+NWA0Cnbdkkq1bH3ct1hE=
+Content-Transfer-Encoding: 8bit
 
-The bootloader configures a reserved memory region for framebuffer,
-which is protected by the IOMMU. The kernel-side driver is oblivious as
-of which memory region is set up by the bootloader. In such case, the
-IOMMU tries to reference the reserved region - which is not reserved in
-the kernel anymore - and it results in an unrecoverable page fault. More
-information about it is provided in [1].
+The apple_dart_of_xlate() function obtains a platform device reference
+via of_find_device_by_node() but doesn't release it with put_device().
+This patch adds proper device reference handling to prevent memory
+leaks.
 
-Add support for reserved regions using iommu_dma_get_resv_regions().
-For OF supported boards, this requires defining the region in the
-iommu-addresses property of the IOMMU owner's node.
-
-Link: https://lore.kernel.org/r/544ad69cba52a9b87447e3ac1c7fa8c3@disroot.org [1]
-Signed-off-by: Kaustabh Chakraborty <kauschluss@disroot.org>
+Fixes: 46d1fb072e76 ("iommu/dart: Add DART iommu driver")
+Signed-off-by: Zhang Shurong <zhang_shurong@foxmail.com>
 ---
- drivers/iommu/exynos-iommu.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iommu/apple-dart.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index b62a8f35c3e8516ead6a41f92dc7c8dc057986a8..b6edd178fe25e7c258cc82c47e9170fb4db74064 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -22,6 +22,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/slab.h>
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index 190f28d76615..811bf5176568 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -796,8 +796,10 @@ static int apple_dart_of_xlate(struct device *dev,
  
-+#include "dma-iommu.h"
- #include "iommu-pages.h"
+ 	if (!cfg) {
+ 		cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
+-		if (!cfg)
++		if (!cfg)  {
++			put_device(&iommu_pdev->dev);
+ 			return -ENOMEM;
++		}
+ 		/* Will be ANDed with DART capabilities */
+ 		cfg->supports_bypass = true;
+ 	}
+@@ -805,8 +807,10 @@ static int apple_dart_of_xlate(struct device *dev,
  
- typedef u32 sysmmu_iova_t;
-@@ -1479,6 +1480,7 @@ static const struct iommu_ops exynos_iommu_ops = {
- 	.device_group = generic_device_group,
- 	.probe_device = exynos_iommu_probe_device,
- 	.release_device = exynos_iommu_release_device,
-+	.get_resv_regions = iommu_dma_get_resv_regions,
- 	.of_xlate = exynos_iommu_of_xlate,
- 	.default_domain_ops = &(const struct iommu_domain_ops) {
- 		.attach_dev	= exynos_iommu_attach_device,
-
----
-base-commit: a62b7a37e6fcf4a675b1548e7c168b96ec836442
-change-id: 20250629-exynos-sysmmu-resv-regions-661f2889d2d5
-
-Best regards,
+ 	cfg_dart = cfg->stream_maps[0].dart;
+ 	if (cfg_dart) {
+-		if (cfg_dart->pgsize != dart->pgsize)
++		if (cfg_dart->pgsize != dart->pgsize) {
++			put_device(&iommu_pdev->dev);
+ 			return -EINVAL;
++		}
+ 	}
+ 
+ 	cfg->supports_bypass &= dart->supports_bypass;
+@@ -825,6 +829,8 @@ static int apple_dart_of_xlate(struct device *dev,
+ 		}
+ 	}
+ 
++
++	put_device(&iommu_pdev->dev);
+ 	return -EINVAL;
+ }
+ 
 -- 
-Kaustabh Chakraborty <kauschluss@disroot.org>
+2.39.5
 
