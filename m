@@ -1,67 +1,66 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A26F72AD0C
-	for <iommu@lists.linux.dev>; Sun, 13 Jul 2025 08:06:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 003BB1DED5F
+	for <iommu@lists.linux.dev>; Sun, 13 Jul 2025 08:06:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752393976; cv=none; b=gICnJv2RK2xjbsftcEC2Az6zxzwGUV18KiPQvaW+ARa3nYnxetWgdAeAXLLiZfRrtJmX9+UP2ObMPJbBujVSeWn3J3FZOu15o9q2ziijfV7KLsixBVXXhMn70bdwLeWEnolg7YiDsa0mOa50XbX/YG9Z9/wqfhoubeyibdPq7dM=
+	t=1752393987; cv=none; b=ZJGTlluCWAgm+KHKDL33+sTsoGpMLF1t8ypL1mtM4Ld2cbVQr5AOXCc6ZeVJ/MQLfLx7CAglrJijbtIzSEkTLX05f2679OfA/1E7diY5Tsu5lb+/+1ktS3t+evsryxtVqeOtnP4tQGWj0iII1qIcZ60rT5rKz0hNYlczM10HkNc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752393976; c=relaxed/simple;
-	bh=nbSwp5ROysMSTLKLxq6Pg7q3VCWJ3MFGpodgkXirdrk=;
+	s=arc-20240116; t=1752393987; c=relaxed/simple;
+	bh=lXJt/yDsoHDSuPe8QmNNkzF3KEBLxNVR5QCRJEM7U6s=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=bHYUcFfiXvhkt2uWoBRA6rFLA86pv3BL7CGMyNTeUn8oRKSLH7QUb5ivD2SEBlmLlxxDnefsBDdQn6tJZ1Gr8aCRwUlvMvx4UqZcNa4xbY5A3RXOC2O8fs5ZUDn6zBfIphNXcHzvN/3g6NBBEUymKk/G+TaOIQ2eVa0i70yDitA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com; spf=pass smtp.mailfrom=fairphone.com; dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b=kGcD+DbH; arc=none smtp.client-ip=209.85.221.48
+	 In-Reply-To:To:Cc; b=kmIoZUsg3kBV4ft+nu2ChkaAReYR0661U4mIKeodNjf/iKWcREv7dkXkrYc6m5hH1W76FduP9bYmCPE6ZjjHCAWJNTjU9tUE7SLIRrMJnLxGWgx56985yJy42hFLlN7rE1IbPDoFq7cDmJzDtmgynzH4GlRR83KelQ1NrSuMfkE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com; spf=pass smtp.mailfrom=fairphone.com; dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b=b9PZfqtl; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fairphone.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b="kGcD+DbH"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-3a548a73ff2so2929765f8f.0
-        for <iommu@lists.linux.dev>; Sun, 13 Jul 2025 01:06:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b="b9PZfqtl"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-45363645a8eso22877355e9.1
+        for <iommu@lists.linux.dev>; Sun, 13 Jul 2025 01:06:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair; t=1752393973; x=1752998773; darn=lists.linux.dev;
+        d=fairphone.com; s=fair; t=1752393983; x=1752998783; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=qjkVBqGocvldr3+5pDfPNG/mAD5wl5azsqsATuuDVzU=;
-        b=kGcD+DbHX/PtQ2ryW8bVzTpCJBOn5ovVJms6qKJHqW4j8+SE79NFgtjWVpMC0Uo9GZ
-         B97yvMU5TLo/1MVtObvpaLCfvH41RJY79dK29NbvUl967od39eZ8EBBbXN9zDRRE7q/z
-         XxEQiZqfKJP+UM+ZCc8fesUKxMI/+Mx0u+uRMTfXAb7gDTFUaZii8FQMre3ZY2AamHe6
-         ZD4zgisOac1YMrwy4dP9PmOogRN1f/P6xDGA4+drbWnkF7FIEssQuGl858OpI5iYzaA7
-         IfN5YTrDE170jOvmr8eVTRzHY4ga8QMaLDYgepQQW4W+50s8PgoAs2X1M43J9mpF0KFw
-         ZGcA==
+        bh=Q3MxjLEtpRVyTZFb++atMk5EZAHm1SNpE6rDNgKP3WM=;
+        b=b9PZfqtllbma5TkWiBkfBRt5qIDOfHxxRUsZ4guWDAdIliG7Fk1GCBXFLfWY4a3iBk
+         UO61f1rD894LclUJq+aXC8yKd9mlmBgVRrIxjQX80JpqSA3wV6FtC5KJDtYLFAFrNQTv
+         GW20vTSs20JZbiwXqe/gG3YZiodjaDdB5kCFayVmwM5CKrJysyg8dhoWYmPvqijFPLrv
+         5sarJarGQqpSeEFFcI2Cz6HH4hKRxyXZKfcZxrlqTIkNP8ivFUvqQI4mrHwL4pAeHCvK
+         xYLkLYN9o/baIz8p1nynmH9HZB3IDxbEQq5k6w59L+F3YtQOGL6DtsOpJB1MKDVFEVx6
+         3lAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752393973; x=1752998773;
+        d=1e100.net; s=20230601; t=1752393983; x=1752998783;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=qjkVBqGocvldr3+5pDfPNG/mAD5wl5azsqsATuuDVzU=;
-        b=E+chJUaKDhsO09QyUJtkcj3jQDTVMQVQSW1EBJMY3Vu+bNVqA9YF3lXGXldXbVcUkc
-         SXngqvy1DTm6oNJ5QHUuf5SI7vH7xHpPjpS3qha24i9eaiwSRGUTKbbEhf8YQpV6wcN2
-         lg34cAoSApv5GWmZVgIm3bl/RgGalzS0XQErZJjShoPC1mz66/tTPrPaoRoIGQhnqShL
-         6DA9LnPRg4ZjOeaaOJunjL0nFAw4pPCPErsRwU4ZNqCkoiCCjQvMmVeqZG4V9UNaeZJQ
-         3lH5Uv3q6D1NT4VUi1imJr/Py66OZ8jI2X9VjtLNfRyIxoZBEHh/Y/HjsVFq4sTYr1dH
-         ze2A==
-X-Forwarded-Encrypted: i=1; AJvYcCVkeTFhk4gieiJR3BvFSwgYMCL8EyF3cVXcq9r6/29x4X2cDiRtCwk9k7zpnvDK8nZ3xQL/pg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yx11rr4iwCoFI6komgXaK60CgzX9M2f/2aIYAkoZ2YV1IrdiEZ1
-	Yok4Y0IusraNgVbdXOdxPQMj1fbikUPjIO6geR13LcWUTTZI6/sU0dcUBIVrPI9y/cw=
-X-Gm-Gg: ASbGnctcjKBSszUmMny4BWmO8lyvVe5wwd4+yxg46td5LbQQ7eINpBJB7DztgzDVLgr
-	WO3FQUmSRiADdLZyxAHV8cUinzuqRYvpSGUSLurFIQxIsvTOEfE2h6VFuOccv3g0SD1X//v1k55
-	7PY7znup1Z4OnhcIlZUVdOQHx4a6wYVoxB2dkBlT13ymO0UQK92B1jEnnNOiWsdx2VWsZDH00A9
-	qVV8MDbtQdrixv4SjOTCgpC6xr2DKGnKlDg1LPlWS3LhCaSzPiqJ0JS80zEOFGtCt2ltuq7Gk87
-	A+jLovQOvKzwh8MbpnDPteps1mkWdlgYNlj7yMb5UUhIwT4z4J588LKdOvzx2+lVqqxFMqycnZk
-	tjmxFbXyf1TkY5zS02JCLf+Aak9NBPb9MDJDx
-X-Google-Smtp-Source: AGHT+IE7aiBW0y1UJWTkFw2jo19wh2kKOFls92CeELkcuzfmOFh/b4a0X3Mbc9B6RVDds+HgM7Z+rg==
-X-Received: by 2002:a05:6000:4613:b0:3a5:2923:8006 with SMTP id ffacd0b85a97d-3b5f186ed15mr7662034f8f.25.1752393973014;
-        Sun, 13 Jul 2025 01:06:13 -0700 (PDT)
+        bh=Q3MxjLEtpRVyTZFb++atMk5EZAHm1SNpE6rDNgKP3WM=;
+        b=kd4iIDax8UiNsft491gXT1DvJZPlzY7XlocyHxRssg6Yb3Wfy4t/JbLtOUozLPHj/X
+         CKP+wIbcBTRfnVh9AHBpWrfpkYNXmY+S0jYR7fY1CXN80t4xU3hoZk5KbMChWnJ9n1Kg
+         AUAcpTo5WmqV1tWr2bHivNDpY0qEw98jP4bt8wd0Lw2IH7xjvgahM3ELSMc51XE1tH+x
+         osGtTTSj5uqv6OckxSMmgXq+wQoXe1HPvg70zd+1yzqfT2HGpY3hxETe4S3b84IKbzmi
+         qUeV4J4CO9q7kNlOpUx4usSa5noCkszxnoEHej/+IzKNKkHYUFdmLCQ7DmHiHNKAxqWQ
+         +spg==
+X-Forwarded-Encrypted: i=1; AJvYcCU5q6ZZGeu//le8oKte5foqeiFoPTv15jCv9oeEhj1ngqH6VNHYyKFXz69USXPzc9n1mqX8EQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxKXiycMyb3AewIs78a3iKp0pOqKPRkRd9FS0dgpLaBAiO3lNp2
+	UOWlsxqhhbEKanoU4OmwvwlyKAbhM3uEfSpgLXzPurDPNJCR4qA+0hPaqWBDQzk4cFc=
+X-Gm-Gg: ASbGncsifoUsY1LNlEf/OQC0pG/RkC1mUUeYGuD+o7arZLb4AumDPJBtDZalMpRMxBl
+	CDhnQp6+1Wm2aY//8XOm3aRwdEEtx3tjutmcGr5u77gKspa+KEoJR04Flz0hSgxcotlgu+J7DPN
+	JNBj87OlB8Iz3yDkApADbOVDLLN2IqsgHEEi6IEBcVDKP1IjByy2QiGp6Q1UWGKZy8azAbUYKyz
+	71hdCSD/m4BqZ8cImJc6e1C8b5nWcWh9nyRADJOie1q1rsjBOv31Wrdn5zaLxf/yE+qcMNLExta
+	LAkw8atUUNY5qlhwdl848hPNIJPClZ3u+HnDBO7hnIiHmpw19Hm+3Uoe2d1vfidCYRSEtcmsLDa
+	HAddIsNVGG+Bnkof4flW9hOT4pGVL8r8kuj9cI4tB4D7JNmY=
+X-Google-Smtp-Source: AGHT+IF2dijl2kk5jegjtYU+p2rAjAUxOPkElW1UrGDWDO80C/PI+gSKcgMJoxorFBd7cfrm8u/VBQ==
+X-Received: by 2002:a5d:6a49:0:b0:3a5:2848:2e78 with SMTP id ffacd0b85a97d-3b5f18ceba8mr7079826f8f.28.1752393983475;
+        Sun, 13 Jul 2025 01:06:23 -0700 (PDT)
 Received: from [192.168.224.50] ([213.208.155.167])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b5e8dc22a8sm9386608f8f.34.2025.07.13.01.06.04
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b5e8dc22a8sm9386608f8f.34.2025.07.13.01.06.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Jul 2025 01:06:12 -0700 (PDT)
+        Sun, 13 Jul 2025 01:06:23 -0700 (PDT)
 From: Luca Weiss <luca.weiss@fairphone.com>
-Date: Sun, 13 Jul 2025 10:05:24 +0200
-Subject: [PATCH v2 02/15] dt-bindings: cpufreq: qcom-hw: document Milos
- CPUFREQ Hardware
+Date: Sun, 13 Jul 2025 10:05:25 +0200
+Subject: [PATCH v2 03/15] dt-bindings: crypto: qcom,prng: document Milos
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -70,7 +69,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250713-sm7635-fp6-initial-v2-2-e8f9a789505b@fairphone.com>
+Message-Id: <20250713-sm7635-fp6-initial-v2-3-e8f9a789505b@fairphone.com>
 References: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
 In-Reply-To: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
@@ -95,41 +94,33 @@ Cc: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
  linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
  linux-mmc@vger.kernel.org, Luca Weiss <luca.weiss@fairphone.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1752393945; l=1165;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1752393945; l=875;
  i=luca.weiss@fairphone.com; s=20250611; h=from:subject:message-id;
- bh=nbSwp5ROysMSTLKLxq6Pg7q3VCWJ3MFGpodgkXirdrk=;
- b=URo7Ywj7eQLjWeGSKpTNmv79uc7iAPWio/PyLw17wxDECtuAiz2Bu3PfwHvwHO3pZ1RhCb5ag
- VyL+DFxfUJDDy0DR7snG/iq810fQKBhCUA6IIAt4osJpIsLJpCqxh/T
+ bh=lXJt/yDsoHDSuPe8QmNNkzF3KEBLxNVR5QCRJEM7U6s=;
+ b=YWlNKu1yk/YAFD8w90VWlOFTNCiHXfhuYzMgW1x9mK56voio6ksNRmFDk/XDI+kjQDc4mizBK
+ mmfj6LeJyvMD7UovUB4bVNyGfJtrvgMzTuaEsoMvHBWmXosueoYs69L
 X-Developer-Key: i=luca.weiss@fairphone.com; a=ed25519;
  pk=O1aw+AAust5lEmgrNJ1Bs7PTY0fEsJm+mdkjExA69q8=
 
-Document the CPUFREQ Hardware on the Milos SoC.
+Document Milos SoC compatible for the True Random Number Generator.
 
 Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
 ---
- Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/devicetree/bindings/crypto/qcom,prng.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml b/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
-index e0242bed33420a39b8a8cff4229ba9eee994ca30..4fcadba87fbb90f960201aa0763f1a22c0f0f9b5 100644
---- a/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
-+++ b/Documentation/devicetree/bindings/cpufreq/cpufreq-qcom-hw.yaml
-@@ -34,6 +34,7 @@ properties:
-       - description: v2 of CPUFREQ HW (EPSS)
-         items:
-           - enum:
-+              - qcom,milos-cpufreq-epss
-               - qcom,qcs8300-cpufreq-epss
-               - qcom,qdu1000-cpufreq-epss
-               - qcom,sa8255p-cpufreq-epss
-@@ -167,6 +168,7 @@ allOf:
-         compatible:
-           contains:
-             enum:
-+              - qcom,milos-cpufreq-epss
-               - qcom,qcs8300-cpufreq-epss
-               - qcom,sc7280-cpufreq-epss
-               - qcom,sm8250-cpufreq-epss
+diff --git a/Documentation/devicetree/bindings/crypto/qcom,prng.yaml b/Documentation/devicetree/bindings/crypto/qcom,prng.yaml
+index ed7e16bd11d33c16d0adf02c38419dbaee87ac48..0fdef054a1a30c363e0d99518351fb18124904f0 100644
+--- a/Documentation/devicetree/bindings/crypto/qcom,prng.yaml
++++ b/Documentation/devicetree/bindings/crypto/qcom,prng.yaml
+@@ -20,6 +20,7 @@ properties:
+               - qcom,ipq5332-trng
+               - qcom,ipq5424-trng
+               - qcom,ipq9574-trng
++              - qcom,milos-trng
+               - qcom,qcs615-trng
+               - qcom,qcs8300-trng
+               - qcom,sa8255p-trng
 
 -- 
 2.50.1
