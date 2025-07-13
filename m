@@ -1,136 +1,315 @@
-Received: from mout.web.de (mout.web.de [212.227.15.4])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A20991A2632;
-	Sat, 12 Jul 2025 18:23:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D33F1DDC33
+	for <iommu@lists.linux.dev>; Sun, 13 Jul 2025 08:06:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752344587; cv=none; b=h73riY7SVKKjqzi9NPjwRvmgWQ3Bb2RzMWnp84hAIioPsh+A1ps/AoGiSpHTJBS6yLuYxeKAN8lTyHWbqsyDzRNnBq0eSv6+FlCEzlX+bRsrSor/jznVWaoySv1x+3USqgiTo+zt3U74hBYjdSwFQV4GUrb4AY1B+2SvHk24kZA=
+	t=1752393962; cv=none; b=RwdeF21C2BbzruQEtnaVyPZ8WJA9B+MUETn9x7elimy0Li++vSPlh+wC2fsq+uHCb4yD3WVRp7fjPFPxyl/KtumPeVKJCAjkItFduYZ4crFBpnq/3uKBQp7jTKT8L6KZCI2NY7jfAgA2HjvCvkN1ixT8Z4PrYphfu+ljrXVNtkk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752344587; c=relaxed/simple;
-	bh=b+Bs7IErZJ67yIW9uXaQ0UvYB7JXe58jAhj0T8hXE7U=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
-	 In-Reply-To:Content-Type; b=WMHIi/mGnrmhfERkAIEYkWe+d2dAxOAq16Pk0S3eCndMxIdX9y7xGnTu9l8Y+mXKhK6euKSnYuX6kNghD+JUCYk+I+tn5+RjLqhYINPm9c5kbWEgEWVRiG04uPfB8NbH33O+BS1cJ2Fb/LgWO9XABIKBR3d1nFfp3fWfrAWuj1s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=DhFbAwcZ; arc=none smtp.client-ip=212.227.15.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+	s=arc-20240116; t=1752393962; c=relaxed/simple;
+	bh=sKo4y8QpCZfExvG8e5sr4tS96J9buiczaWtrwWfhuSM=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ikjU3OFPBBqrznIP8NQ4BmGYnMellVLCHtjaEYz6dL5WCwrOVXDZXtQXcyDN8MQriBITjPhkg5YKUcRmQMP8Lp+bU/8NLV8poKlMLSpudpw/deG5xtv7wEqdF42Dc9CYslBUMSnMh7Ycs6UH48QhTOz6J2Dy/SxbDYyVZca3QA8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com; spf=pass smtp.mailfrom=fairphone.com; dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b=1Z3BIEdv; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fairphone.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="DhFbAwcZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
-	s=s29768273; t=1752344540; x=1752949340; i=markus.elfring@web.de;
-	bh=b+Bs7IErZJ67yIW9uXaQ0UvYB7JXe58jAhj0T8hXE7U=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:References:
-	 Subject:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-	 cc:content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=DhFbAwcZ/OmSvFH/R/jvmAMR1Jq+ZEyd+Gm48Yg6Gpo1MhgywwBxEOQrzbnIDXcg
-	 dBt870M4FGSjqbqiPPM0YTqd35AV8fxf7S+Uj5fw8PiaQI6H9zr1es+PD+9zGmBvW
-	 jzkbYXnuRit7+YYTDWzO9WKfBZlPijZ3vnIR4/cis3jON6nA5aQXfO8K9NeV/f5r4
-	 SsKrRFBVfMQWxIrnS4Ybres8t0S7t42WZ5dh1gtkE1ptGaIGOBg7o1Hk7XSz5h6LU
-	 sKcRFYaaNV5FD3Nir1JbmfeQmZRwDbnlT6Iume7+VYtohn+TBXyVJadMstUtqm8mk
-	 2f4obL+mxGQ3LvVhBQ==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.29] ([94.31.69.234]) by smtp.web.de (mrweb005
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1M76bb-1uZIkF2fEd-008zWN; Sat, 12
- Jul 2025 20:22:20 +0200
-Message-ID: <0fb8863d-24eb-46c5-b52c-20313eeba5f5@web.de>
-Date: Sat, 12 Jul 2025 20:22:13 +0200
+	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b="1Z3BIEdv"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4561607166aso1376375e9.2
+        for <iommu@lists.linux.dev>; Sun, 13 Jul 2025 01:06:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fairphone.com; s=fair; t=1752393958; x=1752998758; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Z97mMSe/l3noDR//cRVhKxBrSPQEYiv3MttYExK1Ysw=;
+        b=1Z3BIEdvVnbHjpob5oy8u+uotYRxwtljC5YU2lFFhbxbX2rbMoFW3g13bK792NtTzz
+         5HSbaA+dAP3Xbj8jAPIpos2kvb5j6u7cot/1eZjKNyExAmaeiVLQHI0OlCosb93PojXe
+         IWDBDrqQKJcE+vwU5AraWuiG3ciIg0MwgaaLO0zH3aq51i0r+2Aav1DMXL/wcALD9Mf3
+         ICLwOPSKEaNNC+xzVxbaIh3yL8csgbetz/GNDAunxVgJRNkzZOvhltZ3BWf3D+bDDL2q
+         yIBhNsnrUEkCRdd5UZBdVb5yuswzeNYS8JT4tU8iMLxehHcPgdaQC+fwLu2/xb1UPTXb
+         SSYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752393958; x=1752998758;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Z97mMSe/l3noDR//cRVhKxBrSPQEYiv3MttYExK1Ysw=;
+        b=BGrRE+lopl6jhA9z8CZQhRp9dVCRvxfmkhmpSPhsZY1HLMwOuJtxx2zFcx2Lk3jPOo
+         WQYDOhfsOAb46SyAh4p/vKNgcXygKnrH0+fEz9XlckHeXKzwp53nl+LsQpBh1d6JuDsX
+         xDgAV2+V7QN8PSrBDgc/aNVUov8+e745TlC/QmmbbPAf+/oghjdOIaxuYdj8rj2KGJht
+         cC1Gx8OPrZwBHIhcTARAbTxuusUE43bIXSIaDowCOlf/v+8NLUxoEUy4Sda10NABHQWZ
+         sMLInJXccZgQDzFFcQi5LeWTP7OoAT9ba1Kcay1yvwrb4UnZiw17h7YNmSdg8H7A6dJa
+         8ltw==
+X-Forwarded-Encrypted: i=1; AJvYcCU5P6LXvlW7L2JEq74Di3/v3m64J1M8cRrZ6IWxBGXeGKCWYg+4A2k6rXRns4BvwUlIKVlMaw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwpFaTyACshhEMDBStw8qohdsv9bSf99tJvIe1OhblJnodYdTRA
+	X9dMA4/wnUkekrq0LTlNzYd90ieRSrfHmpw+f6oKyuI/eXDYamtGNlhJQuwWZ0QAkDQ=
+X-Gm-Gg: ASbGnct8OGaLu6Q3CpAu1xMLqlt2QDfLIMx7Ghb2He75MqSRlJErZJWWOax+Q0PWMaY
+	IOf9O5Puo7+eOVTtGE1K/UG29xb/KmQ8K9q+bpdA0vWhqU+z9VwQtQwtoaKY8GMyLPvAayM77ce
+	AYVsRWLTVVxBpLAFrS8dnlMChhnjZT5scvuE6YQ88C9+0/IWNSZ5vuGWt8NRUOEjubwb6u8UZUI
+	cNa3eMA5eDg/kuXYAizTnr22ux5R/ymncfpnHcjoOwELK5jaEbi06OU6im2QpgkEyN+obIEM4ZI
+	xR596T2nVP5ifkIiYKoYzs6ILuXdY5mhymcrFA5kKwZLROA5hh03N1NO/NyEIqm4AM27xo4EyJj
+	Dkht8bmpcamqUmlp519hRUJkC/2NBbNcj7YJ0
+X-Google-Smtp-Source: AGHT+IGqYkTrUFA/6ZLhOe0a+pJDWzQ1SqMwIXFzJQ1LYFoy/jcIr+hNXdKcCXDJeGfCkYC/lPYjlA==
+X-Received: by 2002:a05:600c:3595:b0:43b:c0fa:f9dd with SMTP id 5b1f17b1804b1-45565edcb2amr70388985e9.25.1752393958399;
+        Sun, 13 Jul 2025 01:05:58 -0700 (PDT)
+Received: from [192.168.224.50] ([213.208.155.167])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b5e8dc22a8sm9386608f8f.34.2025.07.13.01.05.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Jul 2025 01:05:57 -0700 (PDT)
+From: Luca Weiss <luca.weiss@fairphone.com>
+Subject: [PATCH v2 00/15] Various dt-bindings for Milos and The Fairphone
+ (Gen. 6) addition
+Date: Sun, 13 Jul 2025 10:05:22 +0200
+Message-Id: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: Zhang Shurong <zhang_shurong@foxmail.com>, asahi@lists.linux.dev,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Cc: LKML <linux-kernel@vger.kernel.org>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>, Janne Grunau <j@jannau.net>,
- =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>, Neal Gompa <neal@gompa.dev>,
- Robin Murphy <robin.murphy@arm.com>, Sven Peter <sven@kernel.org>,
- Will Deacon <will@kernel.org>
-References: <tencent_22664B08ACDCE35DE10E5546C2FB26B59605@qq.com>
-Subject: Re: [PATCH] iommu/dart: add missing put_device() call in
- apple_dart_of_xlate
-Content-Language: en-GB, de-DE
-From: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <tencent_22664B08ACDCE35DE10E5546C2FB26B59605@qq.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:7Pe6yXbnwhB4shA6wg6JB/d+e6tqUGqjSO6FJF4QxQFdwjypJor
- tU2Zr3uOtYSZMgBTlERCZxgJQop3PZVmTW5KOpIUtv3fmRHcOYEmkIUBo9xS8VKj9LETL1x
- HuoWZPoMZj7zUeWtrIw37uxp794pA5MOj309vNRdjsnqa1dBVhq6GAdVuWvEqXdA5eu6Pox
- jgVA3WaEU8PAN5gdHIBMQ==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:tsooBNPohCE=;OK1M4EhaYLfgT7yg3RO/lKuuxt7
- 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
- WSz7WxdKHPk9nrOjh/HOsElU2jMf89uSkE7
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAMdoc2gC/42TyW7cMBBEf2WgXNMGF5Eidcp/BD5QzaaHiBaa1
+ Ag2jPn3UOPJcrAhn4QW9KpaXai3plCOVJr+9NZk2mKJy1wH8f3U4NnNTwTR17kRTCimhYQydVo
+ qCElDnOMa3QhcUcsCBSXRNxVMmUJ8uYn+fHyfMz1fqvb6/vKfdHXahQU3sEVPCyKkcYTpMq4Rk
+ odtWeP8BF7z1iNZzqjrN9X8v91dQnMNdCmDgEyJ3EoZ1su8w0FpKTnqgQfXb+JjuIMSpzQS+Dx
+ BGCDWTYxtNUelrOXyM1CwPxcpC8Y5LGBQExlvBFrfb/z07bSktV7VjQcCKc645hFsIOmNtrLVw
+ 7Etjgv+KtBpa72UxqPsvgxNsSCwIJV13khG7pjMaTrXXDwOyiPTGkkcQ/sxqbWKGGnNme03eUD
+ sSUI6v4KXgxt0a9AHfmx0w/7mz3xnglKdsCx84c9oWlZKecECvLXe6ZaZdjDHy6YpboyzFmTrd
+ Get7PwevTjEXrIQkgGRUs5oZ1B8Hris33dKsfrInVTDLYm69FMBppnpSA3SWXvnB1cIcJmmuPa
+ nTT/UcmTkzd7Gcyzrkl9vjd/4rY53C/VRuTcODLxFL4Ugh3z4EVzM6bzM9FANmsfr9fobWKPjR
+ UYEAAA=
+X-Change-ID: 20250623-sm7635-fp6-initial-15e40fef53cd
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+ Viresh Kumar <viresh.kumar@linaro.org>, 
+ Manivannan Sadhasivam <mani@kernel.org>, 
+ Herbert Xu <herbert@gondor.apana.org.au>, 
+ "David S. Miller" <davem@davemloft.net>, Vinod Koul <vkoul@kernel.org>, 
+ Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Robert Marko <robimarko@gmail.com>, 
+ Das Srinagesh <quic_gurus@quicinc.com>, 
+ Thomas Gleixner <tglx@linutronix.de>, Jassi Brar <jassisinghbrar@gmail.com>, 
+ Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, 
+ Lukasz Luba <lukasz.luba@arm.com>, Ulf Hansson <ulf.hansson@linaro.org>
+Cc: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+ linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
+ linux-mmc@vger.kernel.org, Luca Weiss <luca.weiss@fairphone.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1752393945; l=12361;
+ i=luca.weiss@fairphone.com; s=20250611; h=from:subject:message-id;
+ bh=sKo4y8QpCZfExvG8e5sr4tS96J9buiczaWtrwWfhuSM=;
+ b=Kn4UrhmiQBELXj5IXqj2g5g9r43zN0IArxY8to5C/jjK/fFirD3vzMpj9pWlbX1xfosQpWoAp
+ Jr+kQOBlNhhDXfDvq3ApRZnBeWogJFNfArCihUMBWR59uH1mT1lW0XA
+X-Developer-Key: i=luca.weiss@fairphone.com; a=ed25519;
+ pk=O1aw+AAust5lEmgrNJ1Bs7PTY0fEsJm+mdkjExA69q8=
 
-> The apple_dart_of_xlate() function obtains a platform device reference
-> via of_find_device_by_node() but doesn't release it with put_device().
-> This patch adds proper device reference handling to prevent memory
-> leaks.
+Document various bits of the Milos SoC in the dt-bindings, which don't
+really need any other changes.
 
-Will another goto chain become helpful here?
+Then we can add the dtsi for the Milos SoC and finally add a dts for
+the newly announced The Fairphone (Gen. 6) smartphone.
 
-See also:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Do=
-cumentation/process/submitting-patches.rst?h=3Dv6.16-rc5#n94
+Dependencies:
+* The dt-bindings should not have any dependencies on any other patches.
+* The qcom dts bits depend on most other Milos patchsets I have sent in
+  conjuction with this one. The exact ones are specified in the b4 deps.
 
+Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+---
+Changes in v2:
+- Rebrand SM7635 to Milos as requested: https://lore.kernel.org/linux-arm-msm/aGMI1Zv6D+K+vWZL@hu-bjorande-lv.qualcomm.com/
+- Disable pm8550vs instances by default
+- Enable gpi_dma by default, sort pinctrl, update gpio-reserved-ranges
+  style, update USB2.0 comment, newlines before status, remove dummy
+  panel for simpledrm
+- Link to v1: https://lore.kernel.org/r/20250625-sm7635-fp6-initial-v1-0-d9cd322eac1b@fairphone.com
 
-Under which circumstances can the application of the attribute =E2=80=9Cpu=
-t_device=E2=80=9D grow?
-https://elixir.bootlin.com/linux/v6.16-rc5/source/include/linux/device.h#L=
-1140
+---
+Luca Weiss (15):
+      dt-bindings: arm-smmu: document the support on Milos
+      dt-bindings: cpufreq: qcom-hw: document Milos CPUFREQ Hardware
+      dt-bindings: crypto: qcom,prng: document Milos
+      dt-bindings: firmware: qcom,scm: document Milos SCM Firmware Interface
+      dt-bindings: qcom,pdc: document the Milos Power Domain Controller
+      dt-bindings: mailbox: qcom-ipcc: document the Milos Inter-Processor Communication Controller
+      dt-bindings: soc: qcom,aoss-qmp: document the Milos Always-On Subsystem side channel
+      dt-bindings: thermal: qcom-tsens: document the Milos Temperature Sensor
+      dt-bindings: dma: qcom,gpi: document the Milos GPI DMA Engine
+      dt-bindings: mmc: sdhci-msm: document the Milos SDHCI Controller
+      dt-bindings: soc: qcom: qcom,pmic-glink: document Milos compatible
+      dt-bindings: arm: qcom: Add Milos and The Fairphone (Gen. 6)
+      arm64: dts: qcom: pm8550vs: Disable different PMIC SIDs by default
+      arm64: dts: qcom: Add initial Milos dtsi
+      arm64: dts: qcom: Add The Fairphone (Gen. 6)
 
-Regards,
-Markus
+ Documentation/devicetree/bindings/arm/qcom.yaml    |    6 +
+ .../bindings/cpufreq/cpufreq-qcom-hw.yaml          |    2 +
+ .../devicetree/bindings/crypto/qcom,prng.yaml      |    1 +
+ .../devicetree/bindings/dma/qcom,gpi.yaml          |    1 +
+ .../devicetree/bindings/firmware/qcom,scm.yaml     |    2 +
+ .../bindings/interrupt-controller/qcom,pdc.yaml    |    1 +
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |    3 +
+ .../devicetree/bindings/mailbox/qcom-ipcc.yaml     |    1 +
+ .../devicetree/bindings/mmc/sdhci-msm.yaml         |    1 +
+ .../bindings/soc/qcom/qcom,aoss-qmp.yaml           |    1 +
+ .../bindings/soc/qcom/qcom,pmic-glink.yaml         |    1 +
+ .../devicetree/bindings/thermal/qcom-tsens.yaml    |    1 +
+ arch/arm64/boot/dts/qcom/Makefile                  |    1 +
+ arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts   |  815 ++++++
+ arch/arm64/boot/dts/qcom/milos.dtsi                | 2802 ++++++++++++++++++++
+ arch/arm64/boot/dts/qcom/pm8550vs.dtsi             |    8 +
+ arch/arm64/boot/dts/qcom/qcs8550-aim300.dtsi       |   16 +
+ arch/arm64/boot/dts/qcom/sm8550-hdk.dts            |   16 +
+ arch/arm64/boot/dts/qcom/sm8550-mtp.dts            |   16 +
+ arch/arm64/boot/dts/qcom/sm8550-qrd.dts            |   16 +
+ arch/arm64/boot/dts/qcom/sm8550-samsung-q5q.dts    |   16 +
+ .../dts/qcom/sm8550-sony-xperia-yodo-pdx234.dts    |   16 +
+ arch/arm64/boot/dts/qcom/sm8650-hdk.dts            |   16 +
+ arch/arm64/boot/dts/qcom/sm8650-mtp.dts            |   16 +
+ arch/arm64/boot/dts/qcom/sm8650-qrd.dts            |   16 +
+ 25 files changed, 3791 insertions(+)
+---
+base-commit: d9946fe286439c2aeaa7953b8c316efe5b83d515
+change-id: 20250623-sm7635-fp6-initial-15e40fef53cd
+prerequisite-change-id: 20250218-videocc-pll-multi-pd-voting-d614dce910e7:v5
+prerequisite-patch-id: 65d170393a409edd16388edaf8dee8cd6312c062
+prerequisite-patch-id: 00d97b0b5842bd24c063bf7f3ae611acb8eacc34
+prerequisite-patch-id: ae99f7dded35d31fc1162ca56f80d25ec284174b
+prerequisite-patch-id: 1b5366f870373196c64fb70351f787e45c5b6cd4
+prerequisite-patch-id: f4027959d4262d387c4d373bde32becfbcca18f4
+prerequisite-patch-id: 932d0000fecaffe8872f5a457dceb6f1bbba6c5e
+prerequisite-patch-id: fcc2e32ef92d284025097a73b7ba149e57216d6a
+prerequisite-patch-id: 0d3a206967fa72e69d006f6769a09fcd097ac6d7
+prerequisite-patch-id: e39d2a84153cdef28af6da7dcb0ea92f6ba3d848
+prerequisite-patch-id: 7369e91c8a3297c97cc6e1b5ac250dadf54181a4
+prerequisite-patch-id: 8ee0fcbab043cc34666bd112438138b32b894bbf
+prerequisite-patch-id: efccf2dcdb3fbdfdff6355cdb656e2f56deca7ba
+prerequisite-patch-id: f02fa97d2a57c174de8735001c605df64f6cd196
+prerequisite-patch-id: 7877c0402990c1d5f3c39b5b42f654c718fa9001
+prerequisite-patch-id: 741df345330dfdc4603b82c31708fd5260ef1e5f
+prerequisite-patch-id: 58e7c98be9a08205073ff258558db8dd7d35e818
+prerequisite-patch-id: e3e0409e24c5376aadb9dc74defa322def3d4498
+prerequisite-patch-id: 4657f379804236e49b21d23ff7263db829a0d287
+prerequisite-change-id: 20250616-eusb2-repeater-tuning-f56331c6b1fa:v2
+prerequisite-patch-id: 5c504d171a4d1acd9ec376e01e0dd0fddbad92b8
+prerequisite-patch-id: 0c97dcf5472fbed8ef4cffbd482f3169fe1e972d
+prerequisite-change-id: 20250617-simple-drm-fb-icc-89461c559913:v2
+prerequisite-patch-id: 1ce32150adbe39ad43d9a702623b55937d92a17c
+prerequisite-patch-id: 3562d9a85381bee745402619a7acba9b951f145c
+prerequisite-patch-id: f8447266657b779a546ecbbbc2e38bd61c422f08
+prerequisite-patch-id: cb9d07c82e73ab3691e0ace9604bfa69cdd6bb64
+prerequisite-patch-id: 18ab6ca6a024e5b8ea8138111064db593d72da35
+prerequisite-change-id: 20250620-sm7635-socinfo-8c6ee8d82c9d:v1 # optional
+prerequisite-patch-id: f1b2e11df96c271c9e3d010084809f361ee4249c
+prerequisite-patch-id: 1471abf17230db340c67a84b5a9009f1f2ea6e0e
+prerequisite-patch-id: 57bff00c4fedce1b78615375f12517b955dd1d16
+prerequisite-change-id: 20250620-sm7635-pinctrl-9fe3d869346b:v2
+prerequisite-patch-id: 8b2cb6c8afadbfe0861c1dcfd13be090b006bf73
+prerequisite-patch-id: 722295402ec0e0c5a6bbe167c1a97ddc315c0d18
+prerequisite-change-id: 20250620-sm7635-clocks-7699d338dc37:v2
+prerequisite-patch-id: 30b56c4075513c2b4a44b32a07f270b5cb08d098
+prerequisite-patch-id: 37be728e2df777fedd469f7da865e5a256a54b06
+prerequisite-patch-id: 32cc06fb5708d126263bc3ac132126e530f72d4a
+prerequisite-patch-id: d200c8de06976d3cfa9f1db896301019ab8a68d9
+prerequisite-patch-id: f13af5b3633a7969c35f3c1497c3968ff438aa7b
+prerequisite-patch-id: 70cc297fa29e022d4ffa74b0aad59f1ed1671e09
+prerequisite-patch-id: fb0950b5ebf9ebdbb4381762362f131544252bc7
+prerequisite-patch-id: c6593a406bcb7d9cb35bfa54b6fd8fbcaa58ae99
+prerequisite-patch-id: 6b126e92f96a5f2152d8ca296489aaf712bbaa17
+prerequisite-patch-id: 728eae32feac9247a5a822343f777ca678cd666c
+prerequisite-patch-id: 1c49368327e67c86e9e3523213c2d3f8469c226c
+prerequisite-change-id: 20250620-sm7635-clocks-misc-0f359ad830ea:v2
+prerequisite-patch-id: 6989bd0e4ad07de29b2c5d7f576596157bc6febd
+prerequisite-patch-id: 85526f03d5d021476f73b80788082be4f0e577db
+prerequisite-patch-id: a723402abcb006bf116a8dca9d6b813af882ec8a
+prerequisite-patch-id: c03b241d2252eaa82460a76e8115177b01fbfa31
+prerequisite-change-id: 20250620-sm7635-rpmhpd-dcb5dc066ce2:v2
+prerequisite-patch-id: 4f366d477db5c0ab18c263b1be8c67fde8747455
+prerequisite-patch-id: 5cc7814cf9a1e233d323ce8534cefb2ab24c4709
+prerequisite-change-id: 20250620-sm7635-icc-e495e0e66109:v3
+prerequisite-patch-id: cfef14406349a8de35f9a9f52a94c27b9760c98d
+prerequisite-patch-id: 2a0f6625a75fc2672c5b5b8838daf4c1b84dae06
+prerequisite-patch-id: c43395b7274c6c4866e293378c2784e1ede5796b
+prerequisite-patch-id: dc669619c955d963b478e6c5bf691b09a9e87e5c
+prerequisite-patch-id: ec455ecaae1134984fab4ee9b0ced416c8388733
+prerequisite-patch-id: b610e2d9aab84dd752188235293267130a540363
+prerequisite-patch-id: de89fdb08c0e9794ea1c758bb8429cd8648d16e9
+prerequisite-patch-id: 5ab96a904a60a84a151a2e776942a86b1edff4a5
+prerequisite-patch-id: 201c52a86199d5977dda00e4611811a57124c32b
+prerequisite-patch-id: 1af362b4eb70298089b1f407119831ed47d0e53a
+prerequisite-patch-id: 99fc9ac3f20c10960aeaf8f95fbab2299fc1299c
+prerequisite-patch-id: 719eac9c833b38f49f788d1f347f580523464ba5
+prerequisite-patch-id: e5897f2ff8c6a908cbf4424fe34782cdfd8e78f7
+prerequisite-patch-id: da0770cbea0b965c9cc1593f4f70316c1f06db74
+prerequisite-patch-id: 2db94237c903c9dc8adab9282375786f7646bdcf
+prerequisite-patch-id: 99f36df03d920c8e0735c6ff49b6ce24c64e1c4e
+prerequisite-patch-id: 666f687cbbd07cf9d2a18a8946d4b89f214919ee
+prerequisite-patch-id: 2b6bed1ff4cbe83734e1b9e73b8787fba5da12a2
+prerequisite-patch-id: d4ff7d798a7cf3260a91672dbabaca06e663651c
+prerequisite-patch-id: 133f755855d4d8b13759edcf79ce034725960673
+prerequisite-patch-id: 5e809c2603fb204d11a2bda4126df60ccbf46206
+prerequisite-patch-id: a5f457c883c17a5ea0f7226b4eeabc1354c965b7
+prerequisite-patch-id: fe9cbf613cf61082c75dfb358d0e362680849f17
+prerequisite-patch-id: 022a649bf46677564390068752121c6acf91cd74
+prerequisite-patch-id: 259e32af18576dbe8cff7f20633437a80f9a50f5
+prerequisite-patch-id: f316b9420653e078b04e2de499e4032e7d6b64ab
+prerequisite-patch-id: d39b4a58681c5e5699ba045d3a889d843d768262
+prerequisite-patch-id: 8e648304c8a8b21db26f1ae991abeb52a11d6ee8
+prerequisite-patch-id: 30b56c4075513c2b4a44b32a07f270b5cb08d098
+prerequisite-patch-id: 37be728e2df777fedd469f7da865e5a256a54b06
+prerequisite-patch-id: 32cc06fb5708d126263bc3ac132126e530f72d4a
+prerequisite-patch-id: d200c8de06976d3cfa9f1db896301019ab8a68d9
+prerequisite-patch-id: f13af5b3633a7969c35f3c1497c3968ff438aa7b
+prerequisite-patch-id: 70cc297fa29e022d4ffa74b0aad59f1ed1671e09
+prerequisite-patch-id: fb0950b5ebf9ebdbb4381762362f131544252bc7
+prerequisite-patch-id: c6593a406bcb7d9cb35bfa54b6fd8fbcaa58ae99
+prerequisite-patch-id: 6b126e92f96a5f2152d8ca296489aaf712bbaa17
+prerequisite-patch-id: 728eae32feac9247a5a822343f777ca678cd666c
+prerequisite-patch-id: 1c49368327e67c86e9e3523213c2d3f8469c226c
+prerequisite-patch-id: 5e03ae1c7a2396e40a26e42aaecedb529d2d303c
+prerequisite-patch-id: 7b1d5afc2b053faa03334e1ae15f604c5090f2e3
+prerequisite-change-id: 20250620-sm7635-eusb-phy-d3bab648cdf1:v2
+prerequisite-patch-id: 9572f752f2ec547c808d6e2be1cc508cd3749eee
+prerequisite-patch-id: d71ac98dcf98628013473a2f376e97f25122e0b6
+prerequisite-patch-id: cdbc469ab33002c6bf697c033755b598dd1a621e
+prerequisite-patch-id: ba8946f6b1adb9616d4541765f3858bfc044ae7c
+prerequisite-change-id: 20250620-sm7635-eusb-repeater-0d78f557290f:v2
+prerequisite-patch-id: 5c504d171a4d1acd9ec376e01e0dd0fddbad92b8
+prerequisite-patch-id: 0c97dcf5472fbed8ef4cffbd482f3169fe1e972d
+prerequisite-patch-id: a618abb349c3de5b49f79b4b0f86d9ab502ad500
+prerequisite-patch-id: 09f91ff3a25c16a0375bdfec80604a64eab0b4fb
+prerequisite-patch-id: 8fca8b09d70409c5c78f9f1b77d0a4c75bce38cf
+prerequisite-patch-id: f5c2c24d2baefcd7ff91718529ab2f2c264ab99f
+prerequisite-change-id: 20250620-sm7635-remoteprocs-149da64084b8:v3
+prerequisite-patch-id: 33c2e4cd2d8e7b9c253b86f6f3c42e4602d16b7d
+prerequisite-patch-id: 0d64e5738385b1c3138f9e8f1a3061e7ca995203
+prerequisite-change-id: 20250620-sm7635-pmiv0104-34a679937d9d:v2
+prerequisite-patch-id: 8fca8b09d70409c5c78f9f1b77d0a4c75bce38cf
+prerequisite-patch-id: f5c2c24d2baefcd7ff91718529ab2f2c264ab99f
+prerequisite-patch-id: d7a06ece910e7844c60b910fe8eed30ad2458f34
+prerequisite-patch-id: e91b741c9cfc80aa149bfd8e43cae90ca58e17f2
+prerequisite-patch-id: 5ba4a49c3792cb208ee064a6ba13545e40cb70ac
+prerequisite-patch-id: 9105660b1ac9a8cd5834cc82e42dc3aa4e64a029
+prerequisite-change-id: 20250620-sm7635-pmxr2230-ee55a86a8c2b:v2
+prerequisite-patch-id: 49135534a379bbbc76b5bc9db9de2d2ab9d387c5
+prerequisite-patch-id: ec7c10dc254b52f55557f3000e563c7512a67d48
+prerequisite-patch-id: a5ad0151f7c6d333457e1a0851428bd0667543f7
+prerequisite-patch-id: 66d255a641f459a3326d193d983fc3e025aff021
+prerequisite-patch-id: 4c1e65349589e4f90a0977e1cd9524275ffb4bca
+prerequisite-change-id: 20250623-pm7550-pmr735b-rpmh-regs-06087e5b3a99:v2
+prerequisite-patch-id: 7360606a06f8fba3ea9a8f84b4ecfb8209e91ab0
+prerequisite-patch-id: 7a06a346abdb7f7386912b92f2b84af87e7439a9
+prerequisite-patch-id: 1e1a6eb9c5421812c07421f9fa7e3f16b26a42da
+prerequisite-patch-id: 60b99e8b1e94effb4a012ac205e9d570146afc2d
+
+Best regards,
+-- 
+Luca Weiss <luca.weiss@fairphone.com>
+
