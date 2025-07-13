@@ -1,67 +1,67 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB881223DDF
-	for <iommu@lists.linux.dev>; Sun, 13 Jul 2025 08:07:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C2EC205E02
+	for <iommu@lists.linux.dev>; Sun, 13 Jul 2025 08:08:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752394080; cv=none; b=rpOqI6dycICdZLyUo/OQGxjRdiFQmfwwAG/xGDWJvMKkLJCmCVniW/75BGBj6sFd+T+TqKpT6ZuehkOpc3C4MbV3aFMgVKx9DIZwERx1xTqeCHrD89uwMiC2rZnhGuRLaIP04DmWZZFoQqcm1JCgztAuDkeEE3ktf3F9+4T+sMk=
+	t=1752394092; cv=none; b=EQ4l3g2gdZsVKi9hetKrO1cFc+4KXlvtWIY4fhDtvGIOzuAyxwq1b3E3IcUM5Hdq8VKV9uVfDa5eOJAOjpLmXPD0f0VSaE4X6nGWUaQE482zacWG9O0IJYF1lExkkHNRItC4M8srbAS+376zrSxb8Y9pKWvN08CHtgO2jCvbcyQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752394080; c=relaxed/simple;
-	bh=yPJZUHzJ6XbbvDpc1ODgE88aN81oenBu6+oDbLZi6Fw=;
+	s=arc-20240116; t=1752394092; c=relaxed/simple;
+	bh=TDGLdncjHrRfwJLeRJx0srg3hwRbkzZPPtbM9rMrBJ0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=o32odOIctPxvZaW4gJhDpTl9bONeoM9T9DUFthoeoY0wvw6mjs50OOCGEMIjLkcLgBYR0rKy+EF6VTP0/PRl1Gf+6JShpK6L/pXHzkoKjdXnML0mzdMI7NFSqV7ADHMxhqOF+AF5kHbMjZrmM9oqMQqNjsrnnldv3jh3gkGqssQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com; spf=pass smtp.mailfrom=fairphone.com; dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b=qBGJjhzh; arc=none smtp.client-ip=209.85.221.46
+	 In-Reply-To:To:Cc; b=Ao53SKrh5RA2FO8pY4Jd655w+zwoey7TruW6w6ZUM6ZirF10d21tutAixGOMs6cG6VdzPMAwgn7lylP/lNmiQ/bH2N8TKe/hGnh7vxls46jiMtDdgT9p3DV3Pj67R846aPaMmAFDezr/6p8i/c7K5hrwQJaF0QrQsPSTpxcGsgs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com; spf=pass smtp.mailfrom=fairphone.com; dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b=DB1goAKS; arc=none smtp.client-ip=209.85.221.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fairphone.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b="qBGJjhzh"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-3a51481a598so1774801f8f.3
-        for <iommu@lists.linux.dev>; Sun, 13 Jul 2025 01:07:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b="DB1goAKS"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-3a582e09144so2130892f8f.1
+        for <iommu@lists.linux.dev>; Sun, 13 Jul 2025 01:08:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair; t=1752394077; x=1752998877; darn=lists.linux.dev;
+        d=fairphone.com; s=fair; t=1752394087; x=1752998887; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=Uq6707S6F7Ph6Bn24TeKW5JdfT2AUuElQEXV+Ub8YnU=;
-        b=qBGJjhzhU1Jh5UrlpQy3Ao6boIDBKzFKZ/tzEAvpUxpWvCbsHK/2V202LHBeHLbJf+
-         SMHcMu/f8H9JruTRTXnzhlIDz86lsktHFNw+3CZhoQQtZaYnG8p63iuWcxHHpml9Kr1j
-         j2nYklohECeKm7j1wXfvPyZtRH9aWQQyTvr4NbDfkudwztreFX1XYspFd5R8uFs3sO/t
-         zgly0fmZlKdRU92MsrpP4d3gltMTMUryN6ZKIRwJp5q8g+w7NfMHFcgtHs+c7ezUCGNS
-         7ZFK4+E6okQBg2IXfY1Z9Q+t9V0jjRN+A3AEtFNUZPSCJGt+qVEXbqBvZfaG7RD9l0Yg
-         ZLOg==
+        bh=H+6gXYwyTRWuBa8Md4EiJFqvKmQqpIFr/3pDxL4GvdQ=;
+        b=DB1goAKSYxowVfb4qQ1cgUHmZlFWHzTlQtLGILB3JAYQyAUDsIeyHKzv2myai9xYjh
+         yrOKYFBqzHdGV22GaEp1NdNFFeb71ghwSvOyeoD5pG51fbh37mRXWzRVB8GO2k9JfNB0
+         O2flJVJoWaA+BVwE2hanNVz1LQhGh086zMkLpE89pCb/srtg0yz8SBTmrqSOxfsJY/yO
+         b8QDZcbZ497K+StqyRzPDOjZnDoRzKECv7qnQh7/OP0DgYGN1NqrnQKRZAAKUneiZdQ5
+         qCghr389to5fI1/58i4h15yAK/nsHQl8M4TxiLvEmAdWuU6JoHN4r/SEhay0xjDXc0KV
+         uGEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752394077; x=1752998877;
+        d=1e100.net; s=20230601; t=1752394087; x=1752998887;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Uq6707S6F7Ph6Bn24TeKW5JdfT2AUuElQEXV+Ub8YnU=;
-        b=DVogTA1GK8Q5QNN+ntvtaS7Ovq6YNbo6rkEKMx13Ryhdkmbq+fhJeIdqTpE1HGLjP5
-         GPn3fb3Qo2EpwtE8CibMCMSaLqchb6CeueJIWohM7EYuuWdCO/9QeRDk/T/QqDFQ/RJ8
-         qbqdVbOgnUgCPePjSOnbQPUsFlyddI43IaU95549/hwizuv6glxzH3ucC6KMJtGQKF19
-         Up2ffaW82uP48ticMCLC1QeD4M6OUzkhyF1wR0vN5mz/enxQKinWQaGWTRkZh3jxpY0W
-         JfR09XFvlS6hpy8eu7uyXiyVgXS3WX5/O6kAZR+av3Kah5kPftDvPRVXL98SJjfJwlU+
-         sdZw==
-X-Forwarded-Encrypted: i=1; AJvYcCUun7NzPIfNukiWoSS7pU7QxWOR/ZS2LX76npwAnNYwoOdZpjshTo+5dgaCHxZ9+9PHgvVOeA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzL3AFC9jgrhUEOb2vX69dutJQYi8itaovxYhqIXaSav1XCAG5l
-	fVGSkJSG1Gev8E40Pa96qF+DbUor1lxm2K8Q6H1D7+2pCPA35Kc80ON8XuvBGDUQzQM=
-X-Gm-Gg: ASbGnctMV3qAU4SpU6DpOWBmCMOsqWkLwuNsnGGv3kEYK4koXTq6NnfFWjhfV91ZIMX
-	ybIp4wcDgfRv3ayRQmHkvObB3Y1BIN5LNYxyK2zPSh042p9my4I7OPze3wL5DqxoWkR1LXY7gM1
-	2UmTi0XVyasbSJ2MtG9W9Iw/vKNpdAdJv0Xdl5oQMH9FFPUkF455Rmjn8aFZfWvxB+6QIWQUsgo
-	9gG6fz7Of7cSd69pV6kUmmfy5O4bhOgkimzvH9FdKYPFX+Zw4Q99EhvdVR5ZMhqB9htbhEP48yx
-	9fFOG9tmKNSZum8K8wvJ4/Yioje17FLayEbOcl2lqquu7/ShcjuWeAYeP4sPiJpsOxkXgus0tIj
-	OZeOhFRtansiCavqN9C8SA4QGz029g5Eqq/wu
-X-Google-Smtp-Source: AGHT+IGMCdx7d+JV7VT+NDUL2DlG4mtQQoySy69Gfp3Ds2b0lZ7KbU9s/Vv3M69/0Uqu3iIlOqMa4w==
-X-Received: by 2002:a05:6000:490e:b0:3b4:9dfa:b7 with SMTP id ffacd0b85a97d-3b5f2dd49c9mr7880135f8f.25.1752394077215;
-        Sun, 13 Jul 2025 01:07:57 -0700 (PDT)
+        bh=H+6gXYwyTRWuBa8Md4EiJFqvKmQqpIFr/3pDxL4GvdQ=;
+        b=O8zYlx+Rsc2wjgDeeoS/xoZvZGjNiAEjOJZs8pKea3K4xDMo7fS9nSH9sKJ1nfsv9p
+         WH3uLceJKBk+qrtx9LLPHoKl50sG0iiw7uWjJuGncRbtGoVKzrwfOfHiOUBv9Hqoywa0
+         lM0VCUQpSH4Wj0ZOdXDEESOy/prmeTiJuAMJa0apwaWA0sOVX7cLG+AyCWiGvFgvmYpp
+         TzlovRHLbrwo5bscKfUoc9vXfMlbePpoDT4meGOcIvkKUrcg58vJTcks5/szOv2in6LY
+         3oHn5WfKSJd3AQdWux98iyAZxE7d0v+by/prPu6bmuhN7sARS6NBU7nBLJaevUYvk8eX
+         HV8g==
+X-Forwarded-Encrypted: i=1; AJvYcCXfoDAuBW4IpnlOhQy07UM6qauwPxD2RWcuQ9V8278T/AhC9eqLancKZsBrOe4zq3wYfJ/j9A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzVrt0CGnI1nBdbbrxGkn50VdkzvIusYub34MknGzx2ydCAu1jh
+	Wa5ouUdy2X8/CZuaTPqMogh4xU53qMB06ltpZ89U22AwLZ7vDQTRevf2Gk5fcXXXs9g=
+X-Gm-Gg: ASbGnctqcuCW56S5+0lF+PmVH1CrbAZJhQF856thj0Ih+DcWKsXvqkYYH6p25brj0Y6
+	EsvmeYsrS5NvGa/8ViGjqjcTF5SrKKn7pUZldefFzRtCplyPnZ4ySFI+J7fRviXkkUjaZDM/xGg
+	1BKV5mNzvUTLN6e1Fpoa74ffLnsMBcJ1bQ607G5VZ9S6FtYOHMWGOuFxSMutci+aFN5nP6Nira1
+	suscsiSPnyUsbd/pLoP5NtTQVwg+yjJ9ftjnlB4HC+fvYhYU8AA94c24lhmOVal15n2QjINd07L
+	Yr8H/h2RtdCvFcTt+LmAFywE2S+a1gz2VlO1zJ5odiTey6gw5mIU8+7LRtlnPch9Y+6o9tnGXHs
+	zCLQaKHF80b/s1GBfzbJHO2PbAOoj4l/xCbT6
+X-Google-Smtp-Source: AGHT+IHlbVBRzVBx+TB+ru8FP2l2jobEeZXcX09t3vF/BFXG1VnybV1VXvA6fI2r0VYJILh3gQH2vA==
+X-Received: by 2002:a05:6000:4012:b0:3a4:c8c1:aed8 with SMTP id ffacd0b85a97d-3b5f2e229a9mr6323377f8f.39.1752394087188;
+        Sun, 13 Jul 2025 01:08:07 -0700 (PDT)
 Received: from [192.168.224.50] ([213.208.155.167])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b5e8dc22a8sm9386608f8f.34.2025.07.13.01.07.51
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b5e8dc22a8sm9386608f8f.34.2025.07.13.01.07.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Jul 2025 01:07:56 -0700 (PDT)
+        Sun, 13 Jul 2025 01:08:06 -0700 (PDT)
 From: Luca Weiss <luca.weiss@fairphone.com>
-Date: Sun, 13 Jul 2025 10:05:34 +0200
-Subject: [PATCH v2 12/15] dt-bindings: arm: qcom: Add Milos and The
- Fairphone (Gen. 6)
+Date: Sun, 13 Jul 2025 10:05:35 +0200
+Subject: [PATCH v2 13/15] arm64: dts: qcom: pm8550vs: Disable different
+ PMIC SIDs by default
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -70,7 +70,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250713-sm7635-fp6-initial-v2-12-e8f9a789505b@fairphone.com>
+Message-Id: <20250713-sm7635-fp6-initial-v2-13-e8f9a789505b@fairphone.com>
 References: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
 In-Reply-To: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
@@ -95,45 +95,322 @@ Cc: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
  linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
  linux-mmc@vger.kernel.org, Luca Weiss <luca.weiss@fairphone.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1752393945; l=994;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1752393945; l=8108;
  i=luca.weiss@fairphone.com; s=20250611; h=from:subject:message-id;
- bh=yPJZUHzJ6XbbvDpc1ODgE88aN81oenBu6+oDbLZi6Fw=;
- b=ymzq2LdMSZzjV86mE+IAARRAmbShVDeXvVgWjbmxw1Q6I+K7W0/9mujh7mmVhB2ZPk3JCIpSp
- C8m500WFnKfDTPHOjcBz48HP3rjsUZ2kL+OAwZmfz//lxGpiwkj5SEo
+ bh=TDGLdncjHrRfwJLeRJx0srg3hwRbkzZPPtbM9rMrBJ0=;
+ b=7/Ta1AVjfApt3ZZgioiKcM9HcANPYIqXuA2LD86TP3WHJJEb5D6A6bd7fmkfxJZCxeY/WKqID
+ y4uY7T/4HGWCJqYS2e5Ga+XlN8dfeKNnzax7x/f1PVibKRdXAhFmgrx
 X-Developer-Key: i=luca.weiss@fairphone.com; a=ed25519;
  pk=O1aw+AAust5lEmgrNJ1Bs7PTY0fEsJm+mdkjExA69q8=
 
-Document the Milos-based The Fairphone (Gen. 6) smartphone.
+Keep the different PMIC definitions in pm8550vs.dtsi disabled by
+default, and only enable them in boards explicitly.
+
+This allows to support boards better which only have pm8550vs_c, like
+the Milos/SM7635-based Fairphone (Gen. 6).
+
+Note: I assume that at least some of these devices with PM8550VS also
+don't have _c, _d, _e and _g, but this patch is keeping the resulting
+devicetree the same as before this change, disabling them on boards that
+don't actually have those is out of scope for this patch.
 
 Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
 ---
- Documentation/devicetree/bindings/arm/qcom.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/arm64/boot/dts/qcom/pm8550vs.dtsi                   |  8 ++++++++
+ arch/arm64/boot/dts/qcom/qcs8550-aim300.dtsi             | 16 ++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8550-hdk.dts                  | 16 ++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8550-mtp.dts                  | 16 ++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8550-qrd.dts                  | 16 ++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8550-samsung-q5q.dts          | 16 ++++++++++++++++
+ .../boot/dts/qcom/sm8550-sony-xperia-yodo-pdx234.dts     | 16 ++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8650-hdk.dts                  | 16 ++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8650-mtp.dts                  | 16 ++++++++++++++++
+ arch/arm64/boot/dts/qcom/sm8650-qrd.dts                  | 16 ++++++++++++++++
+ 10 files changed, 152 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index 56f78f0f3803fedcb6422efd6adec3bbc81c2e03..38871129f8a271bd5005a01f174ff5127a3faefa 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -34,6 +34,7 @@ description: |
-         ipq8074
-         ipq9574
-         mdm9615
-+        milos
-         msm8226
-         msm8660
-         msm8916
-@@ -155,6 +156,11 @@ properties:
-               - qcom,apq8084-sbc
-           - const: qcom,apq8084
+diff --git a/arch/arm64/boot/dts/qcom/pm8550vs.dtsi b/arch/arm64/boot/dts/qcom/pm8550vs.dtsi
+index 6426b431616bde2d960780be2bed4c623af246c2..7b5898c263ad8a687e8c914fbb0072c58799b6b2 100644
+--- a/arch/arm64/boot/dts/qcom/pm8550vs.dtsi
++++ b/arch/arm64/boot/dts/qcom/pm8550vs.dtsi
+@@ -98,6 +98,8 @@ pm8550vs_c: pmic@2 {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
  
-+      - items:
-+          - enum:
-+              - fairphone,fp6
-+          - const: qcom,milos
++		status = "disabled";
 +
-       - items:
-           - enum:
-               - microsoft,dempsey
+ 		pm8550vs_c_temp_alarm: temp-alarm@a00 {
+ 			compatible = "qcom,spmi-temp-alarm";
+ 			reg = <0xa00>;
+@@ -122,6 +124,8 @@ pm8550vs_d: pmic@3 {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
++		status = "disabled";
++
+ 		pm8550vs_d_temp_alarm: temp-alarm@a00 {
+ 			compatible = "qcom,spmi-temp-alarm";
+ 			reg = <0xa00>;
+@@ -146,6 +150,8 @@ pm8550vs_e: pmic@4 {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
++		status = "disabled";
++
+ 		pm8550vs_e_temp_alarm: temp-alarm@a00 {
+ 			compatible = "qcom,spmi-temp-alarm";
+ 			reg = <0xa00>;
+@@ -170,6 +176,8 @@ pm8550vs_g: pmic@6 {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
+ 
++		status = "disabled";
++
+ 		pm8550vs_g_temp_alarm: temp-alarm@a00 {
+ 			compatible = "qcom,spmi-temp-alarm";
+ 			reg = <0xa00>;
+diff --git a/arch/arm64/boot/dts/qcom/qcs8550-aim300.dtsi b/arch/arm64/boot/dts/qcom/qcs8550-aim300.dtsi
+index e6ac529e6b7216ac4b9e10900c5ddc9a06c9011c..e6ebb643203b62ba0050d11930576023207a2e35 100644
+--- a/arch/arm64/boot/dts/qcom/qcs8550-aim300.dtsi
++++ b/arch/arm64/boot/dts/qcom/qcs8550-aim300.dtsi
+@@ -366,6 +366,22 @@ &pm8550b_eusb2_repeater {
+ 	vdd3-supply = <&vreg_l5b_3p1>;
+ };
+ 
++&pm8550vs_c {
++	status = "okay";
++};
++
++&pm8550vs_d {
++	status = "okay";
++};
++
++&pm8550vs_e {
++	status = "okay";
++};
++
++&pm8550vs_g {
++	status = "okay";
++};
++
+ &sleep_clk {
+ 	clock-frequency = <32764>;
+ };
+diff --git a/arch/arm64/boot/dts/qcom/sm8550-hdk.dts b/arch/arm64/boot/dts/qcom/sm8550-hdk.dts
+index 9dfb248f9ab52b354453cf42c09d93bbee99214f..ae90b59172d845be9778901f979d579750511dcc 100644
+--- a/arch/arm64/boot/dts/qcom/sm8550-hdk.dts
++++ b/arch/arm64/boot/dts/qcom/sm8550-hdk.dts
+@@ -1111,6 +1111,22 @@ &pm8550b_eusb2_repeater {
+ 	vdd3-supply = <&vreg_l5b_3p1>;
+ };
+ 
++&pm8550vs_c {
++	status = "okay";
++};
++
++&pm8550vs_d {
++	status = "okay";
++};
++
++&pm8550vs_e {
++	status = "okay";
++};
++
++&pm8550vs_g {
++	status = "okay";
++};
++
+ &pon_pwrkey {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/qcom/sm8550-mtp.dts b/arch/arm64/boot/dts/qcom/sm8550-mtp.dts
+index fdcecd41297d6ebc81c5088472e4731ca0782fcb..7e0ff2f1c7cd56754e6df6f36634070b19ecf953 100644
+--- a/arch/arm64/boot/dts/qcom/sm8550-mtp.dts
++++ b/arch/arm64/boot/dts/qcom/sm8550-mtp.dts
+@@ -793,6 +793,22 @@ &pm8550b_eusb2_repeater {
+ 	vdd3-supply = <&vreg_l5b_3p1>;
+ };
+ 
++&pm8550vs_c {
++	status = "okay";
++};
++
++&pm8550vs_d {
++	status = "okay";
++};
++
++&pm8550vs_e {
++	status = "okay";
++};
++
++&pm8550vs_g {
++	status = "okay";
++};
++
+ &qupv3_id_0 {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/qcom/sm8550-qrd.dts b/arch/arm64/boot/dts/qcom/sm8550-qrd.dts
+index 49438a7e77ceaab9506158855b6262206bca94ec..594178ec9d3372ec657e08713a0ab2b620fc2b48 100644
+--- a/arch/arm64/boot/dts/qcom/sm8550-qrd.dts
++++ b/arch/arm64/boot/dts/qcom/sm8550-qrd.dts
+@@ -961,6 +961,22 @@ &pm8550b_eusb2_repeater {
+ 	vdd3-supply = <&vreg_l5b_3p1>;
+ };
+ 
++&pm8550vs_c {
++	status = "okay";
++};
++
++&pm8550vs_d {
++	status = "okay";
++};
++
++&pm8550vs_e {
++	status = "okay";
++};
++
++&pm8550vs_g {
++	status = "okay";
++};
++
+ &pon_pwrkey {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/qcom/sm8550-samsung-q5q.dts b/arch/arm64/boot/dts/qcom/sm8550-samsung-q5q.dts
+index 7d29a57a2b540708fa88fb59e821406f400a3174..af963f506269c954e3ab629d8092341a9e44f86a 100644
+--- a/arch/arm64/boot/dts/qcom/sm8550-samsung-q5q.dts
++++ b/arch/arm64/boot/dts/qcom/sm8550-samsung-q5q.dts
+@@ -533,6 +533,22 @@ volume_up_n: volume-up-n-state {
+ 	};
+ };
+ 
++&pm8550vs_c {
++	status = "okay";
++};
++
++&pm8550vs_d {
++	status = "okay";
++};
++
++&pm8550vs_e {
++	status = "okay";
++};
++
++&pm8550vs_g {
++	status = "okay";
++};
++
+ &pon_pwrkey {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/qcom/sm8550-sony-xperia-yodo-pdx234.dts b/arch/arm64/boot/dts/qcom/sm8550-sony-xperia-yodo-pdx234.dts
+index d90dc7b37c4a74cbfb03c929646fda3381413084..0e6ed6fce614706590ab37eb96c1077622d0d532 100644
+--- a/arch/arm64/boot/dts/qcom/sm8550-sony-xperia-yodo-pdx234.dts
++++ b/arch/arm64/boot/dts/qcom/sm8550-sony-xperia-yodo-pdx234.dts
+@@ -661,6 +661,22 @@ focus_n: focus-n-state {
+ 	};
+ };
+ 
++&pm8550vs_c {
++	status = "okay";
++};
++
++&pm8550vs_d {
++	status = "okay";
++};
++
++&pm8550vs_e {
++	status = "okay";
++};
++
++&pm8550vs_g {
++	status = "okay";
++};
++
+ &pm8550vs_g_gpios {
+ 	cam_pwr_a_cs: cam-pwr-a-cs-state {
+ 		pins = "gpio4";
+diff --git a/arch/arm64/boot/dts/qcom/sm8650-hdk.dts b/arch/arm64/boot/dts/qcom/sm8650-hdk.dts
+index d0912735b54e5090f9f213c2c9341e03effbbbff..19284298d64dfb39bab5355fd98f64b03931c998 100644
+--- a/arch/arm64/boot/dts/qcom/sm8650-hdk.dts
++++ b/arch/arm64/boot/dts/qcom/sm8650-hdk.dts
+@@ -1046,6 +1046,22 @@ &pm8550b_eusb2_repeater {
+ 	vdd3-supply = <&vreg_l5b_3p1>;
+ };
+ 
++&pm8550vs_c {
++	status = "okay";
++};
++
++&pm8550vs_d {
++	status = "okay";
++};
++
++&pm8550vs_e {
++	status = "okay";
++};
++
++&pm8550vs_g {
++	status = "okay";
++};
++
+ &pmk8550_rtc {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/qcom/sm8650-mtp.dts b/arch/arm64/boot/dts/qcom/sm8650-mtp.dts
+index 76ef43c10f77d8329ccf0a05c9d590a46372315f..ebc9b4b7bd881f8d9098d1a8b3ac281e9c94313b 100644
+--- a/arch/arm64/boot/dts/qcom/sm8650-mtp.dts
++++ b/arch/arm64/boot/dts/qcom/sm8650-mtp.dts
+@@ -688,6 +688,22 @@ &pm8550b_eusb2_repeater {
+ 	vdd3-supply = <&vreg_l5b_3p1>;
+ };
+ 
++&pm8550vs_c {
++	status = "okay";
++};
++
++&pm8550vs_d {
++	status = "okay";
++};
++
++&pm8550vs_e {
++	status = "okay";
++};
++
++&pm8550vs_g {
++	status = "okay";
++};
++
+ &qupv3_id_1 {
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/qcom/sm8650-qrd.dts b/arch/arm64/boot/dts/qcom/sm8650-qrd.dts
+index 71033fba21b56bc63620dca3e453c14191739675..97e29b8039d508e343c3136e61b237c7e9111aec 100644
+--- a/arch/arm64/boot/dts/qcom/sm8650-qrd.dts
++++ b/arch/arm64/boot/dts/qcom/sm8650-qrd.dts
+@@ -1002,6 +1002,22 @@ &pm8550b_eusb2_repeater {
+ 	vdd3-supply = <&vreg_l5b_3p1>;
+ };
+ 
++&pm8550vs_c {
++	status = "okay";
++};
++
++&pm8550vs_d {
++	status = "okay";
++};
++
++&pm8550vs_e {
++	status = "okay";
++};
++
++&pm8550vs_g {
++	status = "okay";
++};
++
+ &pmk8550_rtc {
+ 	status = "okay";
+ };
 
 -- 
 2.50.1
