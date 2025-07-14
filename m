@@ -1,93 +1,158 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from fout-a6-smtp.messagingengine.com (fout-a6-smtp.messagingengine.com [103.168.172.149])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12E5E1F541E
-	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 05:14:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F01F1367;
+	Mon, 14 Jul 2025 06:08:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.149
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752470070; cv=none; b=ifyd0bbdgaQBVWraviM02o1CDawmwC441YxCiXByQ6kw9ztWBxm1lip4buRfLCtsR8rKdhskWeOI5pBPq8zmup17XoYPLtp35zq2ZDKkIKB47DPy0RI2WlMPV8iCafYpxSnZ32aQHmkRGZzOR07K/4cUI0Q2mzFpTcExcyFgj2I=
+	t=1752473328; cv=none; b=KqN1gdTR6K3yTi8L5FqNRy786Esgr/kNBX6jpG+KMSWWCyxl2IsfqKi+uER3Jw91Icv2yHq9ynHRdpe3eNhLI8r5IxYwyepMZ7jhCckdzOO6fWD52WVIptHh8Q+yaISZRTSRhekK28gUEuQ866xOB+CXmjh9Cxaaizk3G5edVH4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752470070; c=relaxed/simple;
-	bh=uLXzfPa/kgjA8MlZVAsuBXTARbh4+BqvX/Egj4qEhWM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tHWmzU7HfU2AAVxRC6E3WdGovV1E8+k+Vs1yVH8+NYyHpjcjkfiK4W6M55+tjE3LCSZBJzz200jIcKUd924ByFIElp16j3MOqTmxUB2vRrrZ/gvBgMd9BaeImuEIQrJJnIdOwmoRoiztQr9vep83n7rb0rZS93gd6A5A4IcuLT4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cHq0tX6c; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1752473328; c=relaxed/simple;
+	bh=IT52CMMNQVZe/JpsyeRDyVjFNpZ1hXZyOCPsnriWGuY=;
+	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
+	 Subject:Content-Type; b=hQeTcZ/KiF3ujRi3wVOfAdtXCxUu78/FQqg112QL9Vngr6Fqsi4/Zyjeriw0uIRoO2wDhf0d9CAbeTKsnWvvm+1WeDaeHWRyqTJ/QztsTObAFC+d6K0a5QFHigy67n2DHx8ZuMlSTMjcVlJR5sAu6C+hLrRyzigWvbXe/fWRoI4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=aDQRSUNA; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=NMOIB9oI; arc=none smtp.client-ip=103.168.172.149
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cHq0tX6c"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752470069; x=1784006069;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=uLXzfPa/kgjA8MlZVAsuBXTARbh4+BqvX/Egj4qEhWM=;
-  b=cHq0tX6cj9zvc0Eu5bJqkUEZWYcRrueMr6/IcqSHryb5JJI4RxEYuBue
-   k+rqxzfXjzi8pW8In81Coow53Dc5uf5FH6kYINausTWpT33P8T1o11n/q
-   Ef5rIquiYayBwpViqni8Xz40wrSxAMfotb795VZcdyl6mSGZS//EyG68q
-   RfUvMUl8lfw6VH7PRs54qI5mK4MXTaeKrGx1arIROItm+aUSdc3LyJrFZ
-   bAi9Ebp9ijjZS4YSNdZkYXt1u96EEWjz5ig+XqDs+sejtK21yIzjxZ58N
-   jx6UKa5N2/JA4OOxFenNsyZntH/H1bRJIgtR9SKichQuS20mokEWU8EDW
-   w==;
-X-CSE-ConnectionGUID: Ctt+fSaFR3yJk2gZzFV1MA==
-X-CSE-MsgGUID: 9Z79kux2SBmP7E+prZLYEg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11491"; a="54512543"
-X-IronPort-AV: E=Sophos;i="6.16,310,1744095600"; 
-   d="scan'208";a="54512543"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2025 22:14:28 -0700
-X-CSE-ConnectionGUID: 0g2hrg2MSki0mDAsSz82Fw==
-X-CSE-MsgGUID: YmX11Dh5R1W/b8OofUraMQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,310,1744095600"; 
-   d="scan'208";a="156470642"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2025 22:14:26 -0700
-Message-ID: <551c46fd-d034-4b06-94a6-6080dc9b9600@linux.intel.com>
-Date: Mon, 14 Jul 2025 13:12:38 +0800
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="aDQRSUNA";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="NMOIB9oI"
+Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
+	by mailfout.phl.internal (Postfix) with ESMTP id 75D78EC0453;
+	Mon, 14 Jul 2025 02:08:45 -0400 (EDT)
+Received: from phl-imap-02 ([10.202.2.81])
+  by phl-compute-05.internal (MEProxy); Mon, 14 Jul 2025 02:08:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to; s=fm1; t=1752473325;
+	 x=1752559725; bh=RC+CFVWd/VWYy7402scfBHaFNOZ1+z4P3lAFBCgGdWQ=; b=
+	aDQRSUNAXm+/DcRr8JHFpYax0uaM0MtbIvLQBkPE0LGP414DcT3gKnoamV8T8SEN
+	xYDBlC2feBCzsPE8RIOl9gJX/ikFb2POYxKMPEA05S+M8ypfatJ8ALGNrb5cALTL
+	KDCKokVRPEcA/wH7mmkvLR21BSJnfsWKsmCPIHbSqW3OM967bPW7ofJ0SSVIqSJx
+	3LMnM/KApSyk04F8E1kcEeNy8Yh8Bz3/lpnj04X5uLq2XaQLMgFVQdx3k352jNpu
+	6MHc13Lzk98yPzAMgNkUOlqeSsAqcThKlOyCRgE+3WdAUM9G2skt5RrdeoJrr4+v
+	WcchmnE45GeMCekZhRbOAw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1752473325; x=
+	1752559725; bh=RC+CFVWd/VWYy7402scfBHaFNOZ1+z4P3lAFBCgGdWQ=; b=N
+	MOIB9oIK4aFGz/MAFD2nsL3q6bVhYxOa+1rkg2f7yWSgVHnNep35yY+c0xwQzgsP
+	vMRwxeJnGvzwwxmEaQjimrah2ANgib3/waRIs7J0MBff5JWK2BuRG3V/gs48X2mH
+	vlSX0MrI8YV61X2YvowWrBpkGbPwwZgKMONU56Du0DBDjQ5pvBmdCMh/Ak6cISlM
+	7YxINbF6R4HK3hpbeP6adI/ZbzcjdrSk1IZzjIJr2ToCdWjW9MBjV3kknOLRcbC1
+	bAbloGmDZcko0XSzOVQtxTfXl9rd+Dx5DcSZgsIirq7CM+sIpLRzc9Enub5Y6Rzk
+	eo+eEwiVAq6EJ3fdKbTeg==
+X-ME-Sender: <xms:6550aNISqkL_c_gKSI1GS6zwoONBMO-j0aQrHirsA-Dx9-qhip8wJw>
+    <xme:6550aJLL4Ox0N4jUEaYXAg0enHEgZ0Hvj03HUlMKvtRESzvOZlCtNu5UrKmGPZXjZ
+    N-Z2U0G_l8VX-cujzE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdehuddulecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
+    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
+    hrpefoggffhffvvefkjghfufgtgfesthejredtredttdenucfhrhhomhepfdetrhhnugcu
+    uegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtthgvrh
+    hnpefhtdfhvddtfeehudekteeggffghfejgeegteefgffgvedugeduveelvdekhfdvieen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnug
+    esrghrnhgusgdruggvpdhnsggprhgtphhtthhopeefuddpmhhouggvpehsmhhtphhouhht
+    pdhrtghpthhtohepjhhorhhoseeksgihthgvshdrohhrghdprhgtphhtthhopehvrghsrg
+    hnthdrhhgvghguvgesrghmugdrtghomhdprhgtphhtthhopehrohgsihhnrdhmuhhrphhh
+    hiesrghrmhdrtghomhdprhgtphhtthhopegsrghgrghsughothhmvgesghhmrghilhdrtg
+    homhdprhgtphhtthhopehthhhivghrrhihrdhrvgguihhnghesghhmrghilhdrtghomhdp
+    rhgtphhtthhopehmshhhrghvihhtsehgohhoghhlvgdrtghomhdprhgtphhtthhopehprh
+    grrghnsehgohhoghhlvgdrtghomhdprhgtphhtthhopeiihhgrnhhgiigvkhhunhduudes
+    hhhurgifvghirdgtohhmpdhrtghpthhtohepugifmhifvdesihhnfhhrrgguvggrugdroh
+    hrgh
+X-ME-Proxy: <xmx:6550aCsD6On8GiPFBuhmhjg2cQ8kX7cKAjv83xfvNnNf8nYQRggg1w>
+    <xmx:6550aKpYGV3_6_Cw9r9zZqL9Q_5umAHi98hyl4oNeTYJZsfFeuThwA>
+    <xmx:6550aEmSWAshMXkV1Pf880BQ9xBOxPKTnOyiXYTu6frVsoV0UZLpTA>
+    <xmx:6550aCT8AC-3Qk2ejJ1a-d5tfh-z3Z7Ik7HcexIq2X1piS7MnP9Efw>
+    <xmx:7Z50aC55r5eujMz0Dvb8Ej99ArwfSU_zftLIRLdUgHJFaXhmzaUc6tH4>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.phl.internal (Postfix, from userid 501)
+	id AB571700068; Mon, 14 Jul 2025 02:08:43 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Off for two weeks
-To: Will Deacon <will@kernel.org>, =?UTF-8?B?SsO2cmcgUsO2ZGVs?=
- <joro@8bytes.org>
-Cc: iommu@lists.linux.dev, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@nvidia.com>
-References: <ojjm5wbqi44t5v2qo752u7q36uvbrda7au5coskjbnxgaom6t5@ebbfcm7zmwfa>
- <aHE4Vo7rJAQVkZsA@willie-the-truck>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <aHE4Vo7rJAQVkZsA@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-ThreadId: T0ce86a4a9bc2801a
+Date: Mon, 14 Jul 2025 08:08:21 +0200
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Nicolin Chen" <nicolinc@nvidia.com>, "Jason Gunthorpe" <jgg@nvidia.com>
+Cc: "Kevin Tian" <kevin.tian@intel.com>, "Jonathan Corbet" <corbet@lwn.net>,
+ "Bagas Sanjaya" <bagasdotme@gmail.com>, "Will Deacon" <will@kernel.org>,
+ "Robin Murphy" <robin.murphy@arm.com>, "Joerg Roedel" <joro@8bytes.org>,
+ "Thierry Reding" <thierry.reding@gmail.com>, vdumpa@nvidia.com,
+ "Jon Hunter" <jonathanh@nvidia.com>, shuah <shuah@kernel.org>,
+ jsnitsel@redhat.com, "Nathan Chancellor" <nathan@kernel.org>,
+ "Peter Zijlstra" <peterz@infradead.org>, "Yi Liu" <yi.l.liu@intel.com>,
+ mshavit@google.com, praan@google.com, zhangzekun11@huawei.com,
+ iommu@lists.linux.dev, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-tegra@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ patches@lists.linux.dev, mochs@nvidia.com,
+ "ALOK TIWARI" <alok.a.tiwari@oracle.com>, vasant.hegde@amd.com,
+ "David Woodhouse" <dwmw2@infradead.org>,
+ "Baolu Lu" <baolu.lu@linux.intel.com>
+Message-Id: <db221336-2694-4fcf-a2b2-8fcb46ba3c9e@app.fastmail.com>
+In-Reply-To: 
+ <9a888a326b12aa5fe940083eae1156304e210fe0.1752126748.git.nicolinc@nvidia.com>
+References: <cover.1752126748.git.nicolinc@nvidia.com>
+ <9a888a326b12aa5fe940083eae1156304e210fe0.1752126748.git.nicolinc@nvidia.com>
+Subject: Re: [PATCH v9 17/29] iommufd: Add mmap interface
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 
-On 7/12/25 00:14, Will Deacon wrote:
-> On Fri, Jul 11, 2025 at 04:39:46PM +0200, Jörg Rödel wrote:
->> Just a note that I will be out for the next two weeks and not do any updates to
->> the IOMMU tree.
+On Thu, Jul 10, 2025, at 07:59, Nicolin Chen wrote:
+>  EXPORT_SYMBOL_NS_GPL(_iommufd_object_undepend, "IOMMUFD");
 > 
-> Have a good break, Joerg!
-> 
->> Will Deacon thankfully takes over during this time, so please
->> send everything his way :) I will be back on July 28th.
-> 
-> I'll do a sweep of the list and pick up what I spot but if folks think
-> that I may have missed something, please just shout. I'll switch to
-> "fixes only" mode middle of next week, given where we are in the cycle.
+> +/*
+> + * Allocate an @offset to return to user space to use for an mmap() 
+> syscall
+> + *
+> + * Driver should use a per-structure helper in include/linux/iommufd.h
+> + */
+> +int _iommufd_alloc_mmap(struct iommufd_ctx *ictx, struct 
+> iommufd_object *owner,
+> +			phys_addr_t mmio_addr, size_t length,
+> +			unsigned long *offset)
+> +{
+...
+> +
+> +	/* Skip the first page to ease caller identifying the returned offset 
+> */
+> +	rc = mtree_alloc_range(&ictx->mt_mmap, &startp, immap, immap->length,
+> +			       PAGE_SIZE, PHYS_ADDR_MAX, GFP_KERNEL);
 
-Hi Will,
 
-I didn't see this notice before sending the pull request of vt-d
-patches.
+This produces a warning on 32-bit targets with a 64-bit phys_addr_t,
+in practice this would be ARM Cortex-A15 or -A17 systems:
 
-https://lore.kernel.org/linux-iommu/20250714045028.958850-1-baolu.lu@linux.intel.com/
+In file included from include/linux/overflow.h:6,
+                 ...
+                 from drivers/iommu/iommufd/driver.c:4:
+drivers/iommu/iommufd/driver.c: In function '_iommufd_alloc_mmap':
+include/linux/limits.h:11:25: error: conversion from 'long long unsigned int' to 'long unsigned int' changes value from '18446744073709551615' to '4294967295' [-Werror=overflow]
+   11 | #define PHYS_ADDR_MAX   (~(phys_addr_t)0)
+      |                         ^~~~~~~~~~~~~~~~~
+drivers/iommu/iommufd/driver.c:61:43: note: in expansion of macro 'PHYS_ADDR_MAX'
+   61 |                                PAGE_SIZE, PHYS_ADDR_MAX, GFP_KERNEL);
+      |                                           ^~~~~~~~~~~~~
 
-I cc'ed it to the iommu mailing list. If it happens not appear in your
-mailbox, please let me know, I will send a v2.
 
-Thanks,
-baolu
+The mtree_alloc_range() interface explicitly operates on 'unsigned long'
+address values, so I don't see an immediate workaround for this that would
+make it work on these machines. On the other hand, 
+
+At the moment, the only drivers that select CONFIG_IOMMUFD_DRIVER
+on 32-bit Arm systems are CONFIG_PDS_VFIO_PCI and CONFIG_MLX5_VFIO_PCI.
+It's probably fine to make all three symbols "depends on 64BIT" for
+now, but I don't know if there may be more drivers like this in the
+future that actually could make sense on embedded systems.
+
+     Arnd
