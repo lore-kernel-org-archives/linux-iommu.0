@@ -1,146 +1,117 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BA4224888C
-	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 12:32:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 989E0225771
+	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 12:39:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752496345; cv=none; b=O29XfbB2PTEniWQsg55D62JsxnBC2djakbGQeRjvTylAcDbtrU3we2mn0d48beUEDH3rqljmFZcF5/hpHsaFLCSoI1kqYEryysETjVYy2mEgoCIu2SnxoWu5Ye4wkKgaagzwRDS3dmxcLZdocUe1GfxxAgzoDr0H6hg9PXDLp74=
+	t=1752496765; cv=none; b=jgKTqHWQ+rqFdF1gQx6a5OVm9qE03OBm8RFgedZyi/lOPKvGNTYYOjf8TbDAkhMWvFW1EusxkMSwGuGBd47Isd3LIOW43FhgPl7FVXt6hN6QtNdnWqAlB6AVVMDdIE45kKOfnk+A5jj1NQ/0VXN97+yKcXVurVi2eSLafdoV1ss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752496345; c=relaxed/simple;
-	bh=qYiuoKRE2NxLGDxKz6WhuSPkGY9D7Tn+i7spILVLy8k=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:Cc:
-	 References:In-Reply-To; b=ru1K16ZMYxUbzFOGDNKn4IM3J1Gjq/KGAo4C/ZRHWl8mBKwq46WX2XUmmQ/1RPdfeRSrMQxuMSJQsQziC7jqR8ANQSF3ycrRbN1E6niJ9BXOOVRIuRV/7P0LzLLj/uw+gEHgX7FLPRUeJnb3vSiqW+88+zKTWFVhWLs5JI0+SbI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com; spf=pass smtp.mailfrom=fairphone.com; dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b=CFcI7wCV; arc=none smtp.client-ip=209.85.218.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fairphone.com
+	s=arc-20240116; t=1752496765; c=relaxed/simple;
+	bh=TnP+vFs7IXRlmpvE3Fk2ALLQD/fNY7FOCcgBNk0jD4k=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=LUmA2+bkKDEzOId1QGcd2yf5fub+QQOLRWv56zAiot5clXmHfI3OlEUYzlkGBIsn/PPo3rvq177sI3HRtMHiii0bopi/c3+fw+cLqUBMmXuYeD2sbLaOgAfPxByzr6DWRFfQT6+bcrP10/NX3w89DBZT8XixzGQj4OM8xbAlXQg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=daHGGvxi; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b="CFcI7wCV"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-ae3b336e936so852640566b.3
-        for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 05:32:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="daHGGvxi"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-45617887276so8644035e9.2
+        for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 05:39:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair; t=1752496342; x=1753101142; darn=lists.linux.dev;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1752496762; x=1753101562; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6GT+QfWaXLUz2plhdm6tzk3KnJrg30pcNVb5s5dMBoo=;
-        b=CFcI7wCV8rt3hZOSIA6jc6pbgIb0X3Yplk2sfDrWQ1YqwzyHPpw6bpMPkwYi0tGqjg
-         MDBcLF2GHNHs3aaXTiOPf+u/REi+zQk1QflSDOuVG9oSH9rEByXbp8zy2loj585xDm9d
-         X5jwihgXZ5ajeOxsOFrq847iUWb+h/5XRCLU2G2K6XajXXM22Ci/EXAtUL0PCtChKXTf
-         GD+/fTBQLwq4J71gHfmYU+udA+AgQEZdRNiljPRxyrvDwYs8qG3xYu1FUQkGAzbr4tdT
-         nHQkZENmWTbQOC4gyM73YU3yGEY4IH1M+o7Os4JbAWXIsWfZGb+u2I+Va69lHcvcLpCx
-         N1Yg==
+        bh=Hu7d6TzejWOVv1PWLxvsbY8Bo8x9azrAfli/oRpw5r0=;
+        b=daHGGvxiTAlpcIyPRrN/w3xvfrF46vSuqdWHcS8Bus8weMYh+x6B+A5XUfKDPODREO
+         TW9it2CGZxgD/ZGkBBCqsxSaImBhoKAlTExUnDN04xvbu2rSPCil028tJaEMrbOw65+G
+         OofAV6Lkf07TZWNYk3xTIj53L4KtGRwbiJT14TpszOslWNSgqzTB9Xi1eTWFOLhiCOKZ
+         8sxi7LbMBMK/pSjxQcrqb5zRyrqQKJWv8AuPy4nreNyUfq5iuU8YCfKhld7QRR7bAmUg
+         k+sLQM06furjmRs14l4Tjt0GhGlIOGzM1KvcZ8PvhkTyLLlwpwevTARTUkNDZeXzvcr+
+         hLQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752496342; x=1753101142;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=6GT+QfWaXLUz2plhdm6tzk3KnJrg30pcNVb5s5dMBoo=;
-        b=ul0fzHntvDv140n7iTiEQ/+XcqIVcuLQ+J6uQtkwr4kDJq1ruYpiV1ZCA/PR3MHPaH
-         2o+7PEvJncKFElSuEVHWNSYpap02367G+ErFF+aTlImIBDpqafP0o+cXO6UcZrfJ4utj
-         lKtA6MWu+TfMuYlHC2C9Gn5RmZ/CssyE4KZaA68ERWDyhF4ZnbMH6Lv+dFoVEpONoykn
-         G6MyuGI4PFwQRDjh70WYq6G1+blSdPQXkX4WqRvWH3qHRyK057LMC7kJsDJiyREiq7iJ
-         MpY8EsFRXultd8Qaa99Z7F1wroAHHHKvroq3iGfzPQpzTFkdW6Vm9hc/Un6L2UISz1q9
-         G94w==
-X-Forwarded-Encrypted: i=1; AJvYcCUM7H7YPemNA17LOTno65vMHclRbr5HFuwaKoVT/4Gxo0HwQ4GFWmP68XE/ABeYBajh2erZhg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxPqIEDSvurkZ3RUqtqiw0pC3JwEMqPdVWFkPtsZUWUfgRQCBeh
-	vZLrhB5Bw7GuQS6XE4z0BYo7gq2NN3yzwEW++tCaRh2ODRK2TD2KCFhLmi+TRrdv4is=
-X-Gm-Gg: ASbGncv/UdLbACSY4+2eGSsN4DYbbq7C2GwDyiDouuINk/chHVwm175lbd9vTzWg9ut
-	z9ffwmFVUnSKXgm7E/+6PUK8z1k7XSBDrSzD8QjrNDCRt9zrdYkjgn7DqfiFplvN7ZTFB3IcNmV
-	ZfbaXz1H0CP27Sd8EFkOdNYYhVGKYXjbU5OxZVF6BzD+kOh1av8URfww01zTtax08a8qPkp9T86
-	qhibbHvgNSN7fK+XqYMsy4NaUHLzmE35pygdR4QWjaniPcEXzq5AanJKieZuXrWwIVEyATmvCaR
-	Lj4wuDw98dPBcawK58yTxQUk4inJlSoO1aA2+xh7vQXJdSL3ev59W5SLCidukcEWMeT55rDZBek
-	PdZ97YTcT4yi2X7ysr++ySSGOcvyHm20zgJIeRvWX6T/doIH0L7ejbQ6/blfmPIi5H0IwzzFp/g
-	UprBC3TIQ9ehDJ2jrI7ZeArfsN6WPm7FpUDw==
-X-Google-Smtp-Source: AGHT+IEdIUlKAIUoH3odRS/w1x3zJL/78SxmRMa+QOLnmU3zwNSH9f5FMxlA1f2U3nn/eb6t4vkm0Q==
-X-Received: by 2002:a17:906:7956:b0:ae3:cd73:e95a with SMTP id a640c23a62f3a-ae6fcbc356cmr1271518666b.36.1752496341821;
-        Mon, 14 Jul 2025 05:32:21 -0700 (PDT)
-Received: from localhost (2a02-8388-6584-6400-d322-7350-96d2-429d.cable.dynamic.v6.surfer.at. [2a02:8388:6584:6400:d322:7350:96d2:429d])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ae6e82962acsm818540766b.139.2025.07.14.05.32.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Jul 2025 05:32:21 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1752496762; x=1753101562;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Hu7d6TzejWOVv1PWLxvsbY8Bo8x9azrAfli/oRpw5r0=;
+        b=azNOP3U0nBsH0oL2jvtQQ3CzzcJhO9VpwLpHUO9e0DT4HhIDHyNygiiRcRymE6gZn9
+         PTgWnJ9I84ibsHSNXOZyzCCWB60PxcHAFoeThjT7HRUWkIPUZI+SnRoZBkVtLnuay8G1
+         WCG+l7BUC3IYTFoLhkrId1Msf7EBgHj2bWVcvqVvCiyaALBqm92u54em8DZCbzEVugBM
+         NoCfpc41G3iZnCtxlH8YIgdUhS4tWB7FZGdLLgAKcbk53I8oH8U1mUTCjTMJ1xsmgGkD
+         PJ7PFVuY9h3HH2w7yrpj1VQWjiojQoCulgTX95Jdv+XI4vkOH8bJtqvmHeKtjrVSLEIS
+         iOwg==
+X-Forwarded-Encrypted: i=1; AJvYcCXR2GppZ7XNZRjqFckhOwYKN0Y/JhzvSri+Rg0u9Jh0gu3nJG2BiLmQkaGQV9Rrdqg6cb3kGQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxY9TDI6vLm5Gnc27QTITSfRni8ajkQfgQyLd3RGgHsc7Tco1bd
+	qnxalCmgiTk0G2yd+hiswlec/Tq6G0oMMsqXbpvVRdL+LwKcxzX3iJ+w
+X-Gm-Gg: ASbGncuwPdM2UJ0Oc4feDaNtsLHiUtMZLXMagW3vR2XfoAFQTSZQ+/lx0ThH5lGbuFB
+	kWo9T2pDOajk15QM9di825P2Y3ub13Y43HYUVKSaHGcGcFJkzxy3F3cs3ebCOcDAM65MMG0Fgso
+	tfXdAWT0Akf74o+K3dlgj3F2cmQGbucXkcLYpNu0X1EENJQxYrAyYWkD9QguTyf3nPPdK6EKrye
+	pPmvBMSqZ7C2ALKV2M7xyWpQIWKaX3Q5yyNdfyzzcUO6g+diyAajyZvSkI3O/FIbGnG2vjkKqVN
+	QZztQzKlgjbz6TrrNUw/TWSZ8ppCTs1TIfbOi/1J6HDTjdIL9dALlnrwpMwL3eyrGUEyDbV7qkK
+	KvMt/61yzHaGkYvaeAaZXOQZgXI5FOxeaW/YF0SdKPmYmPOOPKyJ0L62ELJaVVtFLlWSJkZM=
+X-Google-Smtp-Source: AGHT+IGYYRHzkc0tCtHZgZ1HBPkUbfByAJiZ46m1oEz+lW6gbL5TanX3NgxDe/beQeMjz+LASAM6nw==
+X-Received: by 2002:a05:6000:5c2:b0:3a5:2b1d:7889 with SMTP id ffacd0b85a97d-3b5f2e26c9cmr9474793f8f.43.1752496761755;
+        Mon, 14 Jul 2025 05:39:21 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b5e8e2710bsm12288225f8f.99.2025.07.14.05.39.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Jul 2025 05:39:21 -0700 (PDT)
+Date: Mon, 14 Jul 2025 13:39:20 +0100
+From: David Laight <david.laight.linux@gmail.com>
+To: Dave Hansen <dave.hansen@intel.com>
+Cc: jacob.pan@linux.microsoft.com, Jason Gunthorpe <jgg@nvidia.com>, Lu
+ Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Kevin Tian
+ <kevin.tian@intel.com>, Jann Horn <jannh@google.com>, Vasant Hegde
+ <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>, Peter
+ Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, Andy Lutomirski
+ <luto@kernel.org>, iommu@lists.linux.dev, security@kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/sva: Invalidate KVA range on kernel TLB flush
+Message-ID: <20250714133920.55fde0f5@pumpkin>
+In-Reply-To: <42c500b8-6ffb-4793-85c0-d3fbae0116f1@intel.com>
+References: <20250704133056.4023816-1-baolu.lu@linux.intel.com>
+	<20250709085158.0f050630@DESKTOP-0403QTC.>
+	<20250709162724.GE1599700@nvidia.com>
+	<20250709111527.5ba9bc31@DESKTOP-0403QTC.>
+	<42c500b8-6ffb-4793-85c0-d3fbae0116f1@intel.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Mon, 14 Jul 2025 14:32:19 +0200
-Message-Id: <DBBS3S38CWTN.32RLYB9VEZAB@fairphone.com>
-Subject: Re: [PATCH v2 15/15] arm64: dts: qcom: Add The Fairphone (Gen. 6)
-From: "Luca Weiss" <luca.weiss@fairphone.com>
-To: "Konrad Dybcio" <konrad.dybcio@oss.qualcomm.com>, "Will Deacon"
- <will@kernel.org>, "Robin Murphy" <robin.murphy@arm.com>, "Joerg Roedel"
- <joro@8bytes.org>, "Rob Herring" <robh@kernel.org>, "Krzysztof Kozlowski"
- <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>, "Rafael J.
- Wysocki" <rafael@kernel.org>, "Viresh Kumar" <viresh.kumar@linaro.org>,
- "Manivannan Sadhasivam" <mani@kernel.org>, "Herbert Xu"
- <herbert@gondor.apana.org.au>, "David S. Miller" <davem@davemloft.net>,
- "Vinod Koul" <vkoul@kernel.org>, "Bjorn Andersson" <andersson@kernel.org>,
- "Konrad Dybcio" <konradybcio@kernel.org>, "Robert Marko"
- <robimarko@gmail.com>, "Das Srinagesh" <quic_gurus@quicinc.com>, "Thomas
- Gleixner" <tglx@linutronix.de>, "Jassi Brar" <jassisinghbrar@gmail.com>,
- "Amit Kucheria" <amitk@kernel.org>, "Thara Gopinath"
- <thara.gopinath@gmail.com>, "Daniel Lezcano" <daniel.lezcano@linaro.org>,
- "Zhang Rui" <rui.zhang@intel.com>, "Lukasz Luba" <lukasz.luba@arm.com>,
- "Ulf Hansson" <ulf.hansson@linaro.org>
-Cc: <~postmarketos/upstreaming@lists.sr.ht>, <phone-devel@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-pm@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
- <linux-crypto@vger.kernel.org>, <dmaengine@vger.kernel.org>,
- <linux-mmc@vger.kernel.org>
-X-Mailer: aerc 0.20.1-0-g2ecb8770224a-dirty
-References: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
- <20250713-sm7635-fp6-initial-v2-15-e8f9a789505b@fairphone.com>
- <6f8b86c7-96a5-4c7c-b54e-25b173084d95@oss.qualcomm.com>
-In-Reply-To: <6f8b86c7-96a5-4c7c-b54e-25b173084d95@oss.qualcomm.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon Jul 14, 2025 at 2:19 PM CEST, Konrad Dybcio wrote:
-> On 7/13/25 10:05 AM, Luca Weiss wrote:
->> Add a devicetree for The Fairphone (Gen. 6) smartphone, which is based
->> on the Milos/SM7635 SoC.
->>=20
->> Supported functionality as of this initial submission:
->> * Debug UART
->> * Regulators (PM7550, PM8550VS, PMR735B, PM8008)
->> * Remoteprocs (ADSP, CDSP, MPSS, WPSS)
->> * Power Button, Volume Keys, Switch
->> * Display (using simple-framebuffer)
->> * PMIC-GLINK (Charger, Fuel gauge, USB-C mode switching)
->> * Camera flash/torch LED
->> * SD card
->> * USB
->>=20
->> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
->> ---
->
-> [...]
->
->> +	reserved-memory {
->> +		/*
->> +		 * ABL is powering down display and controller if this node is
->> +		 * not named exactly "splash_region".
->> +		 */
->> +		splash_region@e3940000 {
->
-> Was it not possible to arrange for a fw update after all?
+On Wed, 9 Jul 2025 11:22:34 -0700
+Dave Hansen <dave.hansen@intel.com> wrote:
 
-I've made a patch to support both 'splash' and 'splash-region' but not
-sure when it's going to be included, I've sent the patch to the correct
-people internally last week. Since Android build cycles are always super
-slow, it'll take a the very least a month I guess.
+> On 7/9/25 11:15, Jacob Pan wrote:
+> >>> Is there a use case where a SVA user can access kernel memory in the
+> >>> first place?    
+> >> No. It should be fully blocked.
+> >>  
+> > Then I don't understand what is the "vulnerability condition" being
+> > addressed here. We are talking about KVA range here.  
+> 
+> SVA users can't access kernel memory, but they can compel walks of
+> kernel page tables, which the IOMMU caches. The trouble starts if the
+> kernel happens to free that page table page and the IOMMU is using the
+> cache after the page is freed.
+> 
+> That was covered in the changelog, but I guess it could be made a bit
+> more succinct.
+> 
 
->
-> fwiw the rest looks good
+Is it worth just never freeing the page tables used for vmalloc() memory?
+After all they are likely to be reallocated again.
 
-Thanks!
+That (should) only require IOMMU invalidate for pages that are actually
+used for io.
 
-Regards
-Luca
-
->
-> Konrad
-
+	David
