@@ -1,152 +1,81 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3E52223DE1
-	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 04:53:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A29E17736
+	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 05:01:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752468786; cv=none; b=si5S+e0xNLcXq6EF8nSbw57EvZ68O6XIFjc2+gZiyukrYVxxmjEl/jR5619Yldf5str4c892vcVB9h6LR6I9KEXXFeJEgYQ/ZJGFUWg9ge0iVrH/JASiXRYLjziSr873GJVRV2gE44PP3lUN5fGNiE5PDQ7C7sAjdykqFFDhpHU=
+	t=1752469298; cv=none; b=Nsce/pcd3rN2XX0Ejvz82Fx+wmIUcNMtQU1aw1Y+fC5RoPp7vde/wEGR870wldL+SobbvUzILfcll1IRInYdyhHEKEjdrkko1n0GpJCU93SxY36uBdna3RfU7AU5Tmbsp7Y7WSWAES/oWasQ0LU/5OfoYKUmjd4xzm/bsGizbEA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752468786; c=relaxed/simple;
-	bh=64tzP1tfDuZ1RLCBuSwPHPtDvngWJGj0WwdSjW827T8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mxjzikgMnawak53UlljmSpBcT42RF4jNb4lg91BUWION5GszViBasw4kDs0sP1kVfoLxRnkrSN7Z0x9DPm//D8RVfTJhZKW6bOFBtl9GPaBwI+QuocJl9asaQRA8L/ps11K+VtUvy0WXEi4SxpfjCYKWYWQbC8pnucG3w2wyitQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RTDljtOI; arc=none smtp.client-ip=192.198.163.19
+	s=arc-20240116; t=1752469298; c=relaxed/simple;
+	bh=iedqWXXc29ebPMBnvx7D68L+yu2KdGdPjWBeZMUQXlg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cOY39VnarFlYrwigfB2GRZOl4CEoInMDYGmhbossZDliiicjmSx30uWPUI2j0UQipWGzYtxr3O5TcqQaHd0ZrrxZ+oKaYlj94fah3NpexdK57IXhno3YLsHXG+qCD8tkoTW9EzLS8mhiffwNac90sn6WlhxQNWcqF0jKMz5EGRY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IPFP+ZsM; arc=none smtp.client-ip=192.198.163.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RTDljtOI"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IPFP+ZsM"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752468784; x=1784004784;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=64tzP1tfDuZ1RLCBuSwPHPtDvngWJGj0WwdSjW827T8=;
-  b=RTDljtOIlYvpyivuSCMlJMMUZNLgHeVN3I0x/Xk2Wk4mUw7hPXUOxcJQ
-   5bU0NjiUhXok5L8UbtUhC6KFU1Qm3Bz3NgKJQ4ZPJVmCXaeQit5lkm5wO
-   JqivrNy6rFZXsldYoLTAb6DgHV030REFVdiquZ3Dmy56tuu9f7QqI/EWr
-   9pMtVojnVFTwS0fLvihTb5wwIIYujqdH/1N2MVYX7xm6QKSJCHSEyNu0k
-   rlyF91hLrnUNaJ/LMfl05jAQgxXb7vwr7vYWoT8jXkuY34I2BImicyL7t
-   1RTMmnk+VVCEvO+4KthN2RM/sx/unyxhVXBIrLaQHplu58hCAHkLxu295
+  t=1752469297; x=1784005297;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=iedqWXXc29ebPMBnvx7D68L+yu2KdGdPjWBeZMUQXlg=;
+  b=IPFP+ZsMtR79Yvhi5ypSRwhzzuTqKN/+aUblzUGr78l/QFBhvJy2cG2X
+   WVrXMAWSO8HK//3aAyg3SDU2quLV23IvPyfgM09r8Q1bvHfkNkEy2tnhg
+   6mqmbE9wjiSvBhAe/tmMakhZ/5Ukx81r3ptPalNdB1d88VxPotz0muz3K
+   gRLRm0p95vaAMHw58Ik7oBV185dOTAj6PzSDtuC1tD0BM3uerBJ+CYvbS
+   eOxshW/1dBqxDLffOSLjVVU+rxcJ1OCDGHwsfYw+LlVvYyjSzzW27wuwD
+   Mq8/doIi6QoBivWR/8zYlSZ4X3qiTTAj4RBU2Q1nH5czDuDuNMZOvkvTY
    w==;
-X-CSE-ConnectionGUID: Y4KL2HpJTEWfc1hHYZI3EQ==
-X-CSE-MsgGUID: MwT93Rg/Qk6f/x3+LXBDqw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11491"; a="53765090"
+X-CSE-ConnectionGUID: fgPv6KpkTGef68TQFq+X6A==
+X-CSE-MsgGUID: 1gfBdoj8QjCZ87Phw1/IvQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11491"; a="53765506"
 X-IronPort-AV: E=Sophos;i="6.16,310,1744095600"; 
-   d="scan'208";a="53765090"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2025 21:53:04 -0700
-X-CSE-ConnectionGUID: sI5papjZSYy32hU6Zm8KQQ==
-X-CSE-MsgGUID: S/s6EJZzTHeJOQvwJCtiYw==
+   d="scan'208";a="53765506"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2025 22:01:35 -0700
+X-CSE-ConnectionGUID: /27e7M7tQW2TpifMLtzU+w==
+X-CSE-MsgGUID: cYW4fiZwS2+Eqz53LvVTrA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,310,1744095600"; 
-   d="scan'208";a="161166227"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa003.jf.intel.com with ESMTP; 13 Jul 2025 21:53:03 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 11/11] iommu/vt-d: Deduplicate cache_tag_flush_all by reusing flush_range
-Date: Mon, 14 Jul 2025 12:50:28 +0800
-Message-ID: <20250714045028.958850-12-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250714045028.958850-1-baolu.lu@linux.intel.com>
-References: <20250714045028.958850-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="157185063"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2025 22:01:34 -0700
+Message-ID: <a91ac342-f0ee-4667-8135-adcedbe7221b@linux.intel.com>
+Date: Mon, 14 Jul 2025 12:59:46 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/vt-d: remove the CONFIG_X86 wrapping from iommu
+ init hook
+To: "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>, dwmw2@infradead.org
+Cc: fujita.tomonori@lab.ntt.co.jp, iommu@lists.linux.dev
+References: <20250616131740.3499289-1-vineeth@bitbyteword.org>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250616131740.3499289-1-vineeth@bitbyteword.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Ethan Milon <ethan.milon@eviden.com>
+On 6/16/25 21:17, Vineeth Pillai (Google) wrote:
+> iommu init hook is wrapped in CONFI_X86 and is a remnant of dmar.c when
+> it was a common code in "drivers/pci/dmar.c". This was added in commit
+> (9d5ce73a64be2 x86: intel-iommu: Convert detect_intel_iommu to use iommu_init hook)
+> 
+> Now this is built only for x86. This config wrap could be removed.
+> 
+> Signed-off-by: Vineeth Pillai (Google)<vineeth@bitbyteword.org>
+> ---
+>   drivers/iommu/intel/dmar.c | 3 ---
+>   1 file changed, 3 deletions(-)
 
-The logic in cache_tag_flush_all() to iterate over cache tags and issue
-TLB invalidations is largely duplicated in cache_tag_flush_range(), with
-the only difference being the range parameters.
+Queued for linux-next. Thanks!
 
-Extend cache_tag_flush_range() to handle a full address space flush when
-called with start = 0 and end = ULONG_MAX. This allows
-cache_tag_flush_all() to simply delegate to cache_tag_flush_range()
-
-Signed-off-by: Ethan Milon <ethan.milon@eviden.com>
-Link: https://lore.kernel.org/r/20250708214821.30967-2-ethan.milon@eviden.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/cache.c | 34 ++++++++--------------------------
- drivers/iommu/intel/trace.h |  5 -----
- 2 files changed, 8 insertions(+), 31 deletions(-)
-
-diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
-index 071f78e67fcb..265e7290256b 100644
---- a/drivers/iommu/intel/cache.c
-+++ b/drivers/iommu/intel/cache.c
-@@ -434,7 +434,13 @@ void cache_tag_flush_range(struct dmar_domain *domain, unsigned long start,
- 	struct cache_tag *tag;
- 	unsigned long flags;
- 
--	addr = calculate_psi_aligned_address(start, end, &pages, &mask);
-+	if (start == 0 && end == ULONG_MAX) {
-+		addr = 0;
-+		pages = -1;
-+		mask = MAX_AGAW_PFN_WIDTH;
-+	} else {
-+		addr = calculate_psi_aligned_address(start, end, &pages, &mask);
-+	}
- 
- 	spin_lock_irqsave(&domain->cache_lock, flags);
- 	list_for_each_entry(tag, &domain->cache_tags, node) {
-@@ -475,31 +481,7 @@ void cache_tag_flush_range(struct dmar_domain *domain, unsigned long start,
-  */
- void cache_tag_flush_all(struct dmar_domain *domain)
- {
--	struct intel_iommu *iommu = NULL;
--	struct cache_tag *tag;
--	unsigned long flags;
--
--	spin_lock_irqsave(&domain->cache_lock, flags);
--	list_for_each_entry(tag, &domain->cache_tags, node) {
--		if (iommu && iommu != tag->iommu)
--			qi_batch_flush_descs(iommu, domain->qi_batch);
--		iommu = tag->iommu;
--
--		switch (tag->type) {
--		case CACHE_TAG_IOTLB:
--		case CACHE_TAG_NESTING_IOTLB:
--			cache_tag_flush_iotlb(domain, tag, 0, -1, 0, 0);
--			break;
--		case CACHE_TAG_DEVTLB:
--		case CACHE_TAG_NESTING_DEVTLB:
--			cache_tag_flush_devtlb_psi(domain, tag, 0, MAX_AGAW_PFN_WIDTH);
--			break;
--		}
--
--		trace_cache_tag_flush_all(tag);
--	}
--	qi_batch_flush_descs(iommu, domain->qi_batch);
--	spin_unlock_irqrestore(&domain->cache_lock, flags);
-+	cache_tag_flush_range(domain, 0, ULONG_MAX, 0);
- }
- 
- /*
-diff --git a/drivers/iommu/intel/trace.h b/drivers/iommu/intel/trace.h
-index 9defdae6ebae..6311ba3f1691 100644
---- a/drivers/iommu/intel/trace.h
-+++ b/drivers/iommu/intel/trace.h
-@@ -130,11 +130,6 @@ DEFINE_EVENT(cache_tag_log, cache_tag_unassign,
- 	TP_ARGS(tag)
- );
- 
--DEFINE_EVENT(cache_tag_log, cache_tag_flush_all,
--	TP_PROTO(struct cache_tag *tag),
--	TP_ARGS(tag)
--);
--
- DECLARE_EVENT_CLASS(cache_tag_flush,
- 	TP_PROTO(struct cache_tag *tag, unsigned long start, unsigned long end,
- 		 unsigned long addr, unsigned long pages, unsigned long mask),
--- 
-2.43.0
-
+--
+baolu
