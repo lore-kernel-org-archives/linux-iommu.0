@@ -1,387 +1,101 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0DAF246BA9
-	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 11:06:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A725D1E47A8;
+	Mon, 14 Jul 2025 11:23:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752491186; cv=none; b=D//envrIHWX+8/7WKrhBGB8NrIHTNldS7+ZnsNL1WsdTH+p84XlHlW7gl2fFUOVo37M5s7Gug/X3ijIMzf882hyNYkyEIZw6Ox1CvZx6JYpAe0yOeMSivr1dsQIe9hZY/WT3hulKscFe9Kz1+yOrPLMTa0yAF+XDkNGNY9B/SZA=
+	t=1752492204; cv=none; b=ehQUWMV/TS61YZgHoHgI7kf7q1OudbEoOcBWhlODcpBCh9VCJne2qEDZsnrWheaxy0EQj7v/XxmKhX2aRXIW98eFUPdVgzkDCg9Q3OU7lfpIxUsTNXVDyJa4zcDCsnwcj43gT98XBWuwqddblEK7E/WN+ghmPUV+BvnFRWnfr/k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752491186; c=relaxed/simple;
-	bh=TbeXNfFoP3vxZUzqcnSVxTS+nA/kiLeewg++BaGQMWQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YcTL0EA3ExPx4UP/aqaOIlsdLJg1Q9KzgxrTZdcqB4EpUdMtt/qZx7s3NhEbVlqNnadILbRbIsTOgMFOqjFq1VaFvcXshXmNLri1rtZKsmUnAglBkDZIpqRlKgMxaEGVKun/pmM/+lJsNUW+qQoGwllsHd3/Hpq0MS03PxT0blM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=mPs0cIJe; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1752492204; c=relaxed/simple;
+	bh=DY/dmG6LZNxcbok7TxYUWpoHqR8O26mknUUoN8ACEog=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Pund2UdI0t4fzdQS4jOS6Kh04eNIsdJef2t9pGUwLQmQaIVfHoAr0hK9yinmTUYNLmy2ZsHI5PuOlGJEcVu/3Th+iU7R0lvfPtqiHpq5O2YuzeyItyQW5Cac8//lgJ2HgJBKTti1PrjGYMcV3dybccu1fttyWwjJivraT1U9R8I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YYIReyAs; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="mPs0cIJe"
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 56EA1nNB030447
-	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 11:06:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	4YKrSFv1YGAiQMcAg6nzwovM4HAC9RQMF+xyu/4Z080=; b=mPs0cIJe8pzhvbW4
-	bObewQAZcRH06g6c74+oGoGrkHgfEh4KU/ZGgajSBxDEpWByVjm2kt8KwLQjItrR
-	/pcJwNXZdQt2SGahNizWFFQyoJC8rDYnbY4XKonXGS/1KD1UH4yV2QMdkzjPz2xX
-	rl+PhceJGJFodOSxTzHnip6XGH0CXO1WegyDK1b8rbSsDuAAtOaXC/Kxhpbzmyv+
-	6FXFbHeOwX7YCsrd3JBTfsHVy7aGkDpzkd5j6NgofOTA+qc+qh8RGZY/JfstRiCK
-	DkNv93rjqrHj4iaz79EJ0JHxVIvumqEqI96XmKU1NVYVyGm7SUF9O6+8xGXhQbE4
-	LWQJIw==
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com [209.85.160.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47ufu84d9u-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 11:06:23 +0000 (GMT)
-Received: by mail-qt1-f199.google.com with SMTP id d75a77b69052e-4a9bcdc73c0so7054851cf.1
-        for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 04:06:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752491182; x=1753095982;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4YKrSFv1YGAiQMcAg6nzwovM4HAC9RQMF+xyu/4Z080=;
-        b=PF16PuD1S/Z+jwCBUsbbQ2FpqsOUgKL/fa+LJHfj9lhVaihnUeEH++LcO4GjDwz0gw
-         ys5BtibsKrtR4pkWM28bSbB59wMeifvwmAJhrJRHeo8E5nc9kzcLHS5PTXMU9bzcH1Dh
-         e5pTzCYR7amE4+xwZ7Pce8mTL0k1vwrtI0STvaMaJ21vP159aXKjLXTeKVnGKYoHy8gI
-         cHwL9pR3o/zFfZhMQzy3Cblw/YZ53ueJCId0oeZaGFKgF5gcmxD8oqZ3AVsjTFjiCyri
-         2HuRivSY55AKAzAFxQAzhBoeGPeRluCaItFNekK3zPm22Cmzvz1KMT7QQtbLeDDUDziW
-         BJMw==
-X-Forwarded-Encrypted: i=1; AJvYcCUR+ONuXHzJf5qJCgESqxnCoMClY4UpkVFg5L3reWD1CtVjZHehq1ELEnXSETBWaBEi9bY9dg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz3oihjS0Dnrg/AgunqbNu+qFPz0UGj+cCfrUG9MkxHhvlHp0mC
-	PUONOPqcnWP8DbPs06ZCm+WHky841CdX/aAKEab5LfgyK7N9xcg0B2CWT0bAmF7GBE8zhOVa5vY
-	3Nx6ytwE7HtQx1oLDei4wjZzlZXM1oJiZ2K7bRRY36PD47zT8ecf6Ty2ESQ==
-X-Gm-Gg: ASbGncsMOEy5YoAxqME5Od+WosFAl0nNLHBwjzWuLQW5TI+y7aj67RxW+8VpGrtNpgI
-	WZUzM3hcMQy7S4zJM2VlFKmlfyCj7nY1jtdbOooWFZCIx7iar4Nrpf2jTuwh6jKS7IHtWmzyf82
-	Ub0ORX0mMaFctFuVRVw7cDCHjTtKNanEewogrYVt82A6lcVLlTnMilp5FNu1UX+kMm5aB3zmjiw
-	tm2Qp+KcE8XKaKDKnsQUMHvns30SMZ1jAb4+Ov4Ez3lcav8x3B+g0GOe9hIdwxVJ0FdK/gcDgD3
-	aKSuuhizpRIgg0c+yJwyboMFQHGGasCR+oWhwXSlIME3/2G5DssreqEHPtW9eQ45ZoQYaOsGf+i
-	+d8DbRB7b2T8l3esmUS4T
-X-Received: by 2002:a05:620a:4310:b0:7e3:2c0d:dbf8 with SMTP id af79cd13be357-7e32c0ddfc4mr149316985a.2.1752491182455;
-        Mon, 14 Jul 2025 04:06:22 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGhTZ0DLTBSSXPn3zW9zJaHv3/h9yak2ZP6Mp/ZJM1SbXkpqrQko6k3sUc726RTE5VQHh5bkw==
-X-Received: by 2002:a05:620a:4310:b0:7e3:2c0d:dbf8 with SMTP id af79cd13be357-7e32c0ddfc4mr149310085a.2.1752491181555;
-        Mon, 14 Jul 2025 04:06:21 -0700 (PDT)
-Received: from [192.168.143.225] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ae6e7ee46cdsm819147066b.60.2025.07.14.04.06.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Jul 2025 04:06:20 -0700 (PDT)
-Message-ID: <3e0299ad-766a-4876-912e-438fe2cc856d@oss.qualcomm.com>
-Date: Mon, 14 Jul 2025 13:06:17 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YYIReyAs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 429A9C4CEF4;
+	Mon, 14 Jul 2025 11:23:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1752492204;
+	bh=DY/dmG6LZNxcbok7TxYUWpoHqR8O26mknUUoN8ACEog=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YYIReyAs3klRSmt6LYTsKyntQGMMST6uGgl1PMjXnRAetY7AQsoBiwJvrRzLUDJjQ
+	 9+/oIXIjiJhUZxDMMT0hOetBJm/rFzgXsyWvVGoFfG9IorBcVt6IDqTXbarJ0ymFy5
+	 cimWTCGF/JHusIBPqWcXsNf1Dtg0D91D84wCbPQrrmKBW81Tly1rxv0rbBcBMBR/xW
+	 Gdo8CS5XaNtkcQnVELn4XZe/Mvm7dITTDR3V/84LWU04Oo8y83I4h6EQpKiAnLWm5R
+	 FFZnXmqk6VgYiH19Y5vzqCYtAwD+NKa4L4ZFs7ffUDEQ8RgL2mQkrNuokVSZPW0sT+
+	 /Sf3orGKxjPFw==
+Date: Mon, 14 Jul 2025 12:23:19 +0100
+From: Will Deacon <will@kernel.org>
+To: Zhang Shurong <zhang_shurong@foxmail.com>
+Cc: sven@kernel.org, j@jannau.net, alyssa@rosenzweig.io, neal@gompa.dev,
+	joro@8bytes.org, robin.murphy@arm.com, asahi@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/dart: add missing put_device() call in
+ apple_dart_of_xlate
+Message-ID: <aHTop3m5gdS4vwvk@willie-the-truck>
+References: <tencent_22664B08ACDCE35DE10E5546C2FB26B59605@qq.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 14/15] arm64: dts: qcom: Add initial Milos dtsi
-To: Luca Weiss <luca.weiss@fairphone.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>, Vinod Koul <vkoul@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Robert Marko <robimarko@gmail.com>,
-        Das Srinagesh <quic_gurus@quicinc.com>,
-        Thomas Gleixner
- <tglx@linutronix.de>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Cc: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux-mmc@vger.kernel.org
-References: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
- <20250713-sm7635-fp6-initial-v2-14-e8f9a789505b@fairphone.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20250713-sm7635-fp6-initial-v2-14-e8f9a789505b@fairphone.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzE0MDA2MyBTYWx0ZWRfX8F7KicXMOi3k
- 4NHVHDEsR7rD5PVGqKtXKnYXqJOgsQWq1yqCOTmt116EaX6/IJgFpRYx/R1hF8ZDsTT9ReU8Pxa
- kovTejhH1Uov02cCy+UGc24HA/0ze/Ws8LrQnzbG7HPaB9MLBs4p20qrZaeNgzb5a5mBgclVyoP
- pXKSyYsaxIKiRT6lOhnMS6K9Hb2+cEhPEyLRcn9qc9iSSF08+ru6qcSjE4USpZYvUU2c0t2bm1G
- yE2LwOyhHESJDNUwJWNR3ioKHnVroBFJlgspEbT+cObxBoVAUADCJg4PsF29aVMOkkwIhQ/dx43
- Wdiu0oJS9xg8f2sQfeAzerf/XXh9ppcKB4OjFhlNgSwjmW556LC+rbsAsR8BJE2ZMCnLfn8vKK9
- OHhs//c+UpZceBLur1GGwAyaGBa4MXIkRo96SGgOmWubpFkIEs4cTVYayS67qBYXhcrv1p30
-X-Proofpoint-ORIG-GUID: zRsBhNnzlkEGnet5kVozOqc1st19yroF
-X-Proofpoint-GUID: zRsBhNnzlkEGnet5kVozOqc1st19yroF
-X-Authority-Analysis: v=2.4 cv=f59IBPyM c=1 sm=1 tr=0 ts=6874e4af cx=c_pps
- a=WeENfcodrlLV9YRTxbY/uA==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
- a=IkcTkHD0fZMA:10 a=Wb1JkmetP80A:10 a=6H0WHjuAAAAA:8 a=N13MPgUakCYYuvbLhsgA:9
- a=QEXdDO2ut3YA:10 a=kacYvNCVWA4VmyqE58fU:22 a=Soq9LBFxuPC4vsCAQt-j:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-07-14_01,2025-07-14_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 lowpriorityscore=0 malwarescore=0 spamscore=0 mlxscore=0
- bulkscore=0 suspectscore=0 impostorscore=0 adultscore=0 priorityscore=1501
- mlxlogscore=999 phishscore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2507140063
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <tencent_22664B08ACDCE35DE10E5546C2FB26B59605@qq.com>
 
-On 7/13/25 10:05 AM, Luca Weiss wrote:
-> Add a devicetree description for the Milos SoC, which is for example
-> Snapdragon 7s Gen 3 (SM7635).
+On Sun, Jul 13, 2025 at 12:16:24AM +0800, Zhang Shurong wrote:
+> The apple_dart_of_xlate() function obtains a platform device reference
+> via of_find_device_by_node() but doesn't release it with put_device().
+> This patch adds proper device reference handling to prevent memory
+> leaks.
 > 
-> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+> Fixes: 46d1fb072e76 ("iommu/dart: Add DART iommu driver")
+> Signed-off-by: Zhang Shurong <zhang_shurong@foxmail.com>
 > ---
-
-[...]
-
-> +		cpu-map {
-> +			cluster0 {
-> +				core0 {
-> +					cpu = <&cpu0>;
-> +				};
+>  drivers/iommu/apple-dart.c | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index 190f28d76615..811bf5176568 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -796,8 +796,10 @@ static int apple_dart_of_xlate(struct device *dev,
+>  
+>  	if (!cfg) {
+>  		cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
+> -		if (!cfg)
+> +		if (!cfg)  {
+> +			put_device(&iommu_pdev->dev);
+>  			return -ENOMEM;
+> +		}
+>  		/* Will be ANDed with DART capabilities */
+>  		cfg->supports_bypass = true;
+>  	}
+> @@ -805,8 +807,10 @@ static int apple_dart_of_xlate(struct device *dev,
+>  
+>  	cfg_dart = cfg->stream_maps[0].dart;
+>  	if (cfg_dart) {
+> -		if (cfg_dart->pgsize != dart->pgsize)
+> +		if (cfg_dart->pgsize != dart->pgsize) {
+> +			put_device(&iommu_pdev->dev);
+>  			return -EINVAL;
+> +		}
+>  	}
+>  
+>  	cfg->supports_bypass &= dart->supports_bypass;
+> @@ -825,6 +829,8 @@ static int apple_dart_of_xlate(struct device *dev,
+>  		}
+>  	}
+>  
 > +
-> +				core1 {
-> +					cpu = <&cpu1>;
-> +				};
-> +
-> +				core2 {
-> +					cpu = <&cpu2>;
-> +				};
-> +
-> +				core3 {
-> +					cpu = <&cpu3>;
-> +				};
-> +			};
-> +
-> +			cluster1 {
-> +				core0 {
-> +					cpu = <&cpu4>;
-> +				};
-> +
-> +				core1 {
-> +					cpu = <&cpu5>;
-> +				};
-> +
-> +				core2 {
-> +					cpu = <&cpu6>;
-> +				};
-> +			};
-> +
-> +			cluster2 {
-> +				core0 {
-> +					cpu = <&cpu7>;
-> +				};
-> +			};
-> +		};
+> +	put_device(&iommu_pdev->dev);
+>  	return -EINVAL;
 
-I'm getting mixed information about the core topology.. 
+Why is it correct to retain the reference on the device in the cases
+where this function returns 0?
 
-What does dmesg say wrt this line?
-
-CPU%u: Booted secondary processor 0x%010lx [0x%08x]\n
-
-> +	pmu-a520 {
-> +		compatible = "arm,cortex-a520-pmu";
-> +		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_LOW>;
-> +	};
-> +
-> +	pmu-a720 {
-> +		compatible = "arm,cortex-a720-pmu";
-> +		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_LOW>;
-> +	};
-
-See:
-
-9ce52e908bd5 ("arm64: dts: qcom: sm8650: switch to interrupt-cells 4 to add PPI partitions")
-2c06e0797c32 ("arm64: dts: qcom: sm8650: add PPI interrupt partitions for the ARM PMUs")
-
-[...]
-
-> +		gcc: clock-controller@100000 {
-> +			compatible = "qcom,milos-gcc";
-> +			reg = <0x0 0x00100000 0x0 0x1f4200>;
-> +
-> +			clocks = <&rpmhcc RPMH_CXO_CLK>,
-> +				 <&sleep_clk>,
-> +				 <0>, /* pcie_0_pipe_clk */
-> +				 <0>, /* pcie_1_pipe_clk */
-> +				 <0>, /* ufs_phy_rx_symbol_0_clk */
-> +				 <0>, /* ufs_phy_rx_symbol_1_clk */
-> +				 <0>, /* ufs_phy_tx_symbol_0_clk */
-> +				 <0>; /* usb3_phy_wrapper_gcc_usb30_pipe_clk */
-> +			protected-clocks = <GCC_PCIE_1_AUX_CLK>, <GCC_PCIE_1_AUX_CLK_SRC>,
-> +					<GCC_PCIE_1_CFG_AHB_CLK>, <GCC_PCIE_1_MSTR_AXI_CLK>,
-> +					<GCC_PCIE_1_PHY_RCHNG_CLK>, <GCC_PCIE_1_PHY_RCHNG_CLK_SRC>,
-> +					<GCC_PCIE_1_PIPE_CLK>, <GCC_PCIE_1_PIPE_CLK_SRC>,
-> +					<GCC_PCIE_1_PIPE_DIV2_CLK>, <GCC_PCIE_1_PIPE_DIV2_CLK_SRC>,
-> +					<GCC_PCIE_1_SLV_AXI_CLK>, <GCC_PCIE_1_SLV_Q2A_AXI_CLK>;
-
-Does access control disallow accessing these on your prod-fused
-device?
-
-[...]
-
-> +		usb_1: usb@a600000 {
-> +			compatible = "qcom,milos-dwc3", "qcom,snps-dwc3";
-> +			reg = <0x0 0x0a600000 0x0 0x10000>;
-
-size = 0xfc_000
-
-[...]
-
-> +
-> +			clocks = <&gcc GCC_CFG_NOC_USB3_PRIM_AXI_CLK>,
-> +				 <&gcc GCC_USB30_PRIM_MASTER_CLK>,
-> +				 <&gcc GCC_AGGRE_USB3_PRIM_AXI_CLK>,
-> +				 <&gcc GCC_USB30_PRIM_SLEEP_CLK>,
-> +				 <&gcc GCC_USB30_PRIM_MOCK_UTMI_CLK>,
-> +				 <&rpmhcc RPMH_CXO_CLK>;
-> +			clock-names = "cfg_noc",
-> +				      "core",
-> +				      "iface",
-> +				      "sleep",
-> +				      "mock_utmi",
-> +				      "xo";
-> +
-> +			assigned-clocks = <&gcc GCC_USB30_PRIM_MOCK_UTMI_CLK>,
-> +					  <&gcc GCC_USB30_PRIM_MASTER_CLK>;
-> +			assigned-clock-rates = <19200000>, <133333333>;
-
-Set the latter to 200000000 - your device doesn't have USB3, but the
-next person may lose their hair about tracking down why it doesn't
-work on theirs
-
-[...]
-
-> +		pdc: interrupt-controller@b220000 {
-> +			compatible = "qcom,milos-pdc", "qcom,pdc";
-> +			reg = <0x0 0x0b220000 0x0 0x30000>, <0x0 0x174000f0 0x0 0x64>;
-
-1 per line, please
-
-> +			interrupt-parent = <&intc>;
-> +
-> +			qcom,pdc-ranges = <0 480 40>, <40 140 11>, <51 527 47>,
-> +					  <98 609 31>, <129 63 1>, <130 716 12>,
-> +					  <142 251 5>;
-> +
-> +			#interrupt-cells = <2>;
-> +			interrupt-controller;
-> +		};
-> +
-> +		tsens0: thermal-sensor@c228000 {
-> +			compatible = "qcom,milos-tsens", "qcom,tsens-v2";
-> +			reg = <0x0 0x0c228000 0x0 0x1ff>, /* TM */
-> +			      <0x0 0x0c222000 0x0 0x1ff>; /* SROT */
-
-drop the comments
-
-the sizes are 0x1000 for both regions for both controllers
-
-> +
-> +			interrupts = <GIC_SPI 506 IRQ_TYPE_LEVEL_HIGH>,
-
-pdc 26
-
-> +				     <GIC_SPI 640 IRQ_TYPE_LEVEL_HIGH>;
-> +			interrupt-names = "uplow",
-> +					  "critical";
-> +
-> +			#qcom,sensors = <15>;
-> +
-> +			#thermal-sensor-cells = <1>;
-> +		};
-> +
-> +		tsens1: thermal-sensor@c229000 {
-> +			compatible = "qcom,milos-tsens", "qcom,tsens-v2";
-> +			reg = <0x0 0x0c229000 0x0 0x1ff>, /* TM */
-> +			      <0x0 0x0c223000 0x0 0x1ff>; /* SROT */
-> +
-> +			interrupts = <GIC_SPI 507 IRQ_TYPE_LEVEL_HIGH>,
-
-pdc 27
-
-> +				     <GIC_SPI 641 IRQ_TYPE_LEVEL_HIGH>;
-> +			interrupt-names = "uplow",
-> +					  "critical";
-> +
-> +			#qcom,sensors = <14>;
-> +
-> +			#thermal-sensor-cells = <1>;
-> +		};
-> +
-> +		aoss_qmp: power-management@c300000 {
-> +			compatible = "qcom,milos-aoss-qmp", "qcom,aoss-qmp";
-> +			reg = <0x0 0x0c300000 0x0 0x400>;
-> +
-> +			interrupt-parent = <&ipcc>;
-> +			interrupts-extended = <&ipcc IPCC_CLIENT_AOP IPCC_MPROC_SIGNAL_GLINK_QMP
-> +						     IRQ_TYPE_EDGE_RISING>;
-> +
-> +			mboxes = <&ipcc IPCC_CLIENT_AOP IPCC_MPROC_SIGNAL_GLINK_QMP>;
-> +
-> +			#clock-cells = <0>;
-> +		};
-> +
-> +		sram@c3f0000 {
-> +			compatible = "qcom,rpmh-stats";
-> +			reg = <0x0 0x0c3f0000 0x0 0x400>;
-> +		};
-> +
-> +		spmi_bus: spmi@c400000 {
-> +			compatible = "qcom,spmi-pmic-arb";
-
-There's two bus instances on this platform, check out the x1e binding
-
-[...]
-
-> +		intc: interrupt-controller@17100000 {
-> +			compatible = "arm,gic-v3";
-> +			reg = <0x0 0x17100000 0x0 0x10000>,	/* GICD */
-> +			      <0x0 0x17180000 0x0 0x200000>;	/* GICR * 8 */
-
-drop the comments please
-
-[...]
-
-> +			clocks = <&rpmhcc RPMH_CXO_CLK>, <&gcc GCC_GPLL0>;
-> +			clock-names = "xo", "alternate";
-
-1 a line, please
-
-[...]
-
-> +		cpuss0-thermal {
-> +			thermal-sensors = <&tsens0 1>;
-> +
-> +			trips {
-> +				cpuss0-hot {
-> +					temperature = <110000>;
-> +					hysteresis = <1000>;
-> +					type = "hot";
-> +				};
-> +
-> +				cpuss0-critical {
-> +					temperature = <115000>;
-> +					hysteresis = <0>;
-> +					type = "critical";
-> +				};
-> +			};
-> +		};
-
-See:
-
-06eadce93697 ("arm64: dts: qcom: x1e80100: Drop unused passive thermal trip points for CPU")
-
-(tldr drop non-critical trips for CPU)
-
-Konrad
+Will
