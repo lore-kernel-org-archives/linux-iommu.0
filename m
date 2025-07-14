@@ -1,158 +1,132 @@
-Received: from fout-a6-smtp.messagingengine.com (fout-a6-smtp.messagingengine.com [103.168.172.149])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F01F1367;
-	Mon, 14 Jul 2025 06:08:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.149
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E904B22257B
+	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 06:13:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752473328; cv=none; b=KqN1gdTR6K3yTi8L5FqNRy786Esgr/kNBX6jpG+KMSWWCyxl2IsfqKi+uER3Jw91Icv2yHq9ynHRdpe3eNhLI8r5IxYwyepMZ7jhCckdzOO6fWD52WVIptHh8Q+yaISZRTSRhekK28gUEuQ866xOB+CXmjh9Cxaaizk3G5edVH4=
+	t=1752473593; cv=none; b=igOoekv+udMa6d19CmjRHHtyZr+15i0ZVbdSfN3hafj/fbYPUOR1PgkGMNmB7X1wUqaNU7MozAnULse8bKxi4rCkj9BgQl+7tEB+a6RqiS+ya1KswrRtB2hD5omuTaDCeptELbI3TP6KqMIndoZXoPGuI+yIKsHyyyaAUhK0neE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752473328; c=relaxed/simple;
-	bh=IT52CMMNQVZe/JpsyeRDyVjFNpZ1hXZyOCPsnriWGuY=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=hQeTcZ/KiF3ujRi3wVOfAdtXCxUu78/FQqg112QL9Vngr6Fqsi4/Zyjeriw0uIRoO2wDhf0d9CAbeTKsnWvvm+1WeDaeHWRyqTJ/QztsTObAFC+d6K0a5QFHigy67n2DHx8ZuMlSTMjcVlJR5sAu6C+hLrRyzigWvbXe/fWRoI4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=aDQRSUNA; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=NMOIB9oI; arc=none smtp.client-ip=103.168.172.149
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
+	s=arc-20240116; t=1752473593; c=relaxed/simple;
+	bh=K6rTZa+mjUsFCcLD5fAui8r+wQYrBXhnTQ2dLU8CeRU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=k/VDA0grBrMvshtcQ1hdjGI9Gd/6mVK5X/WdZjK9v5oFRhm/9D4Q4+6EsUjrlRSFWNSIIm54UWIpAa+0onJzeiXqZAXNeoaGT1nlZQKqwH6zkdscxH75WBDbmZdFY1aptYbO1oeVLHpCO2eRS8b0zwnIAlnea9endxOiKjMIvHU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iZpOnQkO; arc=none smtp.client-ip=209.85.208.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="aDQRSUNA";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="NMOIB9oI"
-Received: from phl-compute-05.internal (phl-compute-05.phl.internal [10.202.2.45])
-	by mailfout.phl.internal (Postfix) with ESMTP id 75D78EC0453;
-	Mon, 14 Jul 2025 02:08:45 -0400 (EDT)
-Received: from phl-imap-02 ([10.202.2.81])
-  by phl-compute-05.internal (MEProxy); Mon, 14 Jul 2025 02:08:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm1; t=1752473325;
-	 x=1752559725; bh=RC+CFVWd/VWYy7402scfBHaFNOZ1+z4P3lAFBCgGdWQ=; b=
-	aDQRSUNAXm+/DcRr8JHFpYax0uaM0MtbIvLQBkPE0LGP414DcT3gKnoamV8T8SEN
-	xYDBlC2feBCzsPE8RIOl9gJX/ikFb2POYxKMPEA05S+M8ypfatJ8ALGNrb5cALTL
-	KDCKokVRPEcA/wH7mmkvLR21BSJnfsWKsmCPIHbSqW3OM967bPW7ofJ0SSVIqSJx
-	3LMnM/KApSyk04F8E1kcEeNy8Yh8Bz3/lpnj04X5uLq2XaQLMgFVQdx3k352jNpu
-	6MHc13Lzk98yPzAMgNkUOlqeSsAqcThKlOyCRgE+3WdAUM9G2skt5RrdeoJrr4+v
-	WcchmnE45GeMCekZhRbOAw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1752473325; x=
-	1752559725; bh=RC+CFVWd/VWYy7402scfBHaFNOZ1+z4P3lAFBCgGdWQ=; b=N
-	MOIB9oIK4aFGz/MAFD2nsL3q6bVhYxOa+1rkg2f7yWSgVHnNep35yY+c0xwQzgsP
-	vMRwxeJnGvzwwxmEaQjimrah2ANgib3/waRIs7J0MBff5JWK2BuRG3V/gs48X2mH
-	vlSX0MrI8YV61X2YvowWrBpkGbPwwZgKMONU56Du0DBDjQ5pvBmdCMh/Ak6cISlM
-	7YxINbF6R4HK3hpbeP6adI/ZbzcjdrSk1IZzjIJr2ToCdWjW9MBjV3kknOLRcbC1
-	bAbloGmDZcko0XSzOVQtxTfXl9rd+Dx5DcSZgsIirq7CM+sIpLRzc9Enub5Y6Rzk
-	eo+eEwiVAq6EJ3fdKbTeg==
-X-ME-Sender: <xms:6550aNISqkL_c_gKSI1GS6zwoONBMO-j0aQrHirsA-Dx9-qhip8wJw>
-    <xme:6550aJLL4Ox0N4jUEaYXAg0enHEgZ0Hvj03HUlMKvtRESzvOZlCtNu5UrKmGPZXjZ
-    N-Z2U0G_l8VX-cujzE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdehuddulecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpefoggffhffvvefkjghfufgtgfesthejredtredttdenucfhrhhomhepfdetrhhnugcu
-    uegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtthgvrh
-    hnpefhtdfhvddtfeehudekteeggffghfejgeegteefgffgvedugeduveelvdekhfdvieen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrhhnug
-    esrghrnhgusgdruggvpdhnsggprhgtphhtthhopeefuddpmhhouggvpehsmhhtphhouhht
-    pdhrtghpthhtohepjhhorhhoseeksgihthgvshdrohhrghdprhgtphhtthhopehvrghsrg
-    hnthdrhhgvghguvgesrghmugdrtghomhdprhgtphhtthhopehrohgsihhnrdhmuhhrphhh
-    hiesrghrmhdrtghomhdprhgtphhtthhopegsrghgrghsughothhmvgesghhmrghilhdrtg
-    homhdprhgtphhtthhopehthhhivghrrhihrdhrvgguihhnghesghhmrghilhdrtghomhdp
-    rhgtphhtthhopehmshhhrghvihhtsehgohhoghhlvgdrtghomhdprhgtphhtthhopehprh
-    grrghnsehgohhoghhlvgdrtghomhdprhgtphhtthhopeiihhgrnhhgiigvkhhunhduudes
-    hhhurgifvghirdgtohhmpdhrtghpthhtohepugifmhifvdesihhnfhhrrgguvggrugdroh
-    hrgh
-X-ME-Proxy: <xmx:6550aCsD6On8GiPFBuhmhjg2cQ8kX7cKAjv83xfvNnNf8nYQRggg1w>
-    <xmx:6550aKpYGV3_6_Cw9r9zZqL9Q_5umAHi98hyl4oNeTYJZsfFeuThwA>
-    <xmx:6550aEmSWAshMXkV1Pf880BQ9xBOxPKTnOyiXYTu6frVsoV0UZLpTA>
-    <xmx:6550aCT8AC-3Qk2ejJ1a-d5tfh-z3Z7Ik7HcexIq2X1piS7MnP9Efw>
-    <xmx:7Z50aC55r5eujMz0Dvb8Ej99ArwfSU_zftLIRLdUgHJFaXhmzaUc6tH4>
-Feedback-ID: i56a14606:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id AB571700068; Mon, 14 Jul 2025 02:08:43 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iZpOnQkO"
+Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-60cc11b34f6so8787258a12.0
+        for <iommu@lists.linux.dev>; Sun, 13 Jul 2025 23:13:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1752473590; x=1753078390; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Vvozbmvdghn0xuJhVjwu4pQc8eFowQW5vD9wXdzvh2E=;
+        b=iZpOnQkOLkjfRAPmVin2jgLr4boULdSyLgtiucH/de6wyC+DsyLfjSGCmb4SJz2k/B
+         zvrC99pwn2Mk/FhvmQKHiieinArFEal0Ass5nC5Mjjb+At0e9REi84nt2XM/GOmJKlPI
+         Z430knrp+aqp65KsNm28P56ag6wHEZZPYlw75pLS6+ccTtG3WfF7/9eAgZn+1TKDeiqu
+         yHnXVq0WDxWqnZK0QNXIyTyfy6REslna89ha8rzkZGZtUv5d5IJs8qlbfu7nhBsovNkQ
+         LfkTx9w2OkSz0acNtd4KWVe8eQVM15oL9rrbzIz429zbQpL5cJrIdqffERxhvJH7bIBF
+         NwMg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752473590; x=1753078390;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Vvozbmvdghn0xuJhVjwu4pQc8eFowQW5vD9wXdzvh2E=;
+        b=wP0QYkoJnlhBaBNonjCjfuHc4rV9xuK3Euv1D/hVoYOrcb/4B2CAVca7Ti6VknrvYY
+         NUY50hSIFLmMV2ZM6Oh5RJozB55GSoPx5aJ4orOPW3WoRsX6ITTh8bqohOTm3nZ6Wg23
+         N85aWClexFIF24aMTwbiBKpaG1Wl2pT4qrdRuG6vOFq3y7bq6vWRke5P9r5vb6TwZTFf
+         Ek2sB4t8CRkAaLOakOi2lzCT4rHDLYkLiAzCW9XjJS3AAXV9MwOqJPfrm98O2w8kmgQc
+         sUXBBZ8cratP8Zyf1gP7s/y/e0+lQGPj50KcHqqiiOC/b0GPmTRL5fP94g5QEwGngWdT
+         /EIg==
+X-Forwarded-Encrypted: i=1; AJvYcCVROlVTnI4Wniz3WUUruGha9wpXIWgxPNM5glY3/ACq5+PckZi8ljkHCb5QJY0C8OC9T1HOmg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwDqCNdbI/2gWAh+C+XUv3ixRFz4SV+SoQ2Jlydl4MpLhPKBRpH
+	0qbsIB5le7OJTZ+rvVXoA864RVlw/yGM8I9ZD6KKH/AlV5Jda+1ndlvE
+X-Gm-Gg: ASbGncvHNGkAHkYB9oxjJ+25P2dU/ypg1/KIRk7hZ+mzxX5etUlV1EdHhSWY1640ePm
+	U1rTSLnaPtrwRVdb+wX7a+fcGMimhYXF3scK8pASbKpB5NlG5mJWywx3839tFXIGhAPsLK+OHww
+	ilZBi8YZVVQ1ZeAzEmjY6t9b8W7fvkJ4OO6LOTOUras6WHUAC2kzWL38oEwL0yoDbjjrik/6HTi
+	Bm+ZthEiGR2t70Q07WXOqit4ps5/lQN+0goVV/1lsy6f33kaAs8zbn+oZYoAHPt1grYfWJsIR8w
+	/yujU+urmzPm9nUBOTM/oJEZzG69mccZtgbdfUiPBwTdDGfs3mMHRjMFhq3HS320/5mHpqa3V7k
+	1+Um0ymualGng7Zz6WvnsOj+aW34dNPuPBVKmi0k56mqTfiVle/d242U4C46abLers/sRlVOvzK
+	K5ehx4xAo+6BoJwy/4cav2NA==
+X-Google-Smtp-Source: AGHT+IHhpjs0q3mi1BpnwNvryChqNwp5/Dw+yK56vrj/BWwwZ/DXYC0z9I3eOOpItRqe5sk1H/USWg==
+X-Received: by 2002:a17:906:9f86:b0:ae3:a4a6:a32e with SMTP id a640c23a62f3a-ae6e253ddf4mr1701256366b.29.1752473589912;
+        Sun, 13 Jul 2025 23:13:09 -0700 (PDT)
+Received: from [192.168.0.124] (ip-37-248-155-42.multi.internet.cyfrowypolsat.pl. [37.248.155.42])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-ae6e8294bc2sm766171566b.135.2025.07.13.23.13.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 13 Jul 2025 23:13:09 -0700 (PDT)
+Message-ID: <ee0d148e-71cd-4136-b3cb-145566abdfbe@gmail.com>
+Date: Mon, 14 Jul 2025 08:13:05 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ThreadId: T0ce86a4a9bc2801a
-Date: Mon, 14 Jul 2025 08:08:21 +0200
-From: "Arnd Bergmann" <arnd@arndb.de>
-To: "Nicolin Chen" <nicolinc@nvidia.com>, "Jason Gunthorpe" <jgg@nvidia.com>
-Cc: "Kevin Tian" <kevin.tian@intel.com>, "Jonathan Corbet" <corbet@lwn.net>,
- "Bagas Sanjaya" <bagasdotme@gmail.com>, "Will Deacon" <will@kernel.org>,
- "Robin Murphy" <robin.murphy@arm.com>, "Joerg Roedel" <joro@8bytes.org>,
- "Thierry Reding" <thierry.reding@gmail.com>, vdumpa@nvidia.com,
- "Jon Hunter" <jonathanh@nvidia.com>, shuah <shuah@kernel.org>,
- jsnitsel@redhat.com, "Nathan Chancellor" <nathan@kernel.org>,
- "Peter Zijlstra" <peterz@infradead.org>, "Yi Liu" <yi.l.liu@intel.com>,
- mshavit@google.com, praan@google.com, zhangzekun11@huawei.com,
- iommu@lists.linux.dev, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-tegra@vger.kernel.org, linux-kselftest@vger.kernel.org,
- patches@lists.linux.dev, mochs@nvidia.com,
- "ALOK TIWARI" <alok.a.tiwari@oracle.com>, vasant.hegde@amd.com,
- "David Woodhouse" <dwmw2@infradead.org>,
- "Baolu Lu" <baolu.lu@linux.intel.com>
-Message-Id: <db221336-2694-4fcf-a2b2-8fcb46ba3c9e@app.fastmail.com>
-In-Reply-To: 
- <9a888a326b12aa5fe940083eae1156304e210fe0.1752126748.git.nicolinc@nvidia.com>
-References: <cover.1752126748.git.nicolinc@nvidia.com>
- <9a888a326b12aa5fe940083eae1156304e210fe0.1752126748.git.nicolinc@nvidia.com>
-Subject: Re: [PATCH v9 17/29] iommufd: Add mmap interface
-Content-Type: text/plain
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/14] Various dt-bindings for SM7635 and The Fairphone
+ (Gen. 6) addition
+To: Bjorn Andersson <bjorn.andersson@oss.qualcomm.com>,
+ Luca Weiss <luca.weiss@fairphone.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Viresh Kumar <viresh.kumar@linaro.org>,
+ Manivannan Sadhasivam <mani@kernel.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ "David S. Miller" <davem@davemloft.net>, Vinod Koul <vkoul@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, Robert Marko <robimarko@gmail.com>,
+ Das Srinagesh <quic_gurus@quicinc.com>, Thomas Gleixner
+ <tglx@linutronix.de>, Jassi Brar <jassisinghbrar@gmail.com>,
+ Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>,
+ Lukasz Luba <lukasz.luba@arm.com>, Ulf Hansson <ulf.hansson@linaro.org>,
+ ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+ linux-mmc@vger.kernel.org
+References: <20250625-sm7635-fp6-initial-v1-0-d9cd322eac1b@fairphone.com>
+ <aGMI1Zv6D+K+vWZL@hu-bjorande-lv.qualcomm.com>
+Content-Language: en-US
+From: Artur Weber <aweber.kernel@gmail.com>
+In-Reply-To: <aGMI1Zv6D+K+vWZL@hu-bjorande-lv.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Thu, Jul 10, 2025, at 07:59, Nicolin Chen wrote:
->  EXPORT_SYMBOL_NS_GPL(_iommufd_object_undepend, "IOMMUFD");
+On 6/30/25 23:59, Bjorn Andersson wrote:
+> On Wed, Jun 25, 2025 at 11:22:55AM +0200, Luca Weiss wrote:
+>> Document various bits of the SM7635 SoC in the dt-bindings, which don't
+>> really need any other changes.
+>>
+>> Then we can add the dtsi for the SM7635 SoC and finally add a dts for
+>> the newly announced The Fairphone (Gen. 6) smartphone.
+>>
+>> Dependencies:
+>> * The dt-bindings should not have any dependencies on any other patches.
+>> * The qcom dts bits depend on most other SM7635 patchsets I have sent in
+>>    conjuction with this one. The exact ones are specified in the b4 deps.
+>>
 > 
-> +/*
-> + * Allocate an @offset to return to user space to use for an mmap() 
-> syscall
-> + *
-> + * Driver should use a per-structure helper in include/linux/iommufd.h
-> + */
-> +int _iommufd_alloc_mmap(struct iommufd_ctx *ictx, struct 
-> iommufd_object *owner,
-> +			phys_addr_t mmio_addr, size_t length,
-> +			unsigned long *offset)
-> +{
-...
-> +
-> +	/* Skip the first page to ease caller identifying the returned offset 
-> */
-> +	rc = mtree_alloc_range(&ictx->mt_mmap, &startp, immap, immap->length,
-> +			       PAGE_SIZE, PHYS_ADDR_MAX, GFP_KERNEL);
+> Very nice to see the various patches for this platform on LKML!
+> 
+> 
+> Can you please use the name "milos" in compatibles and filenames instead
+> of sm7635.
+Hi, small half-related question - does this mean that future Qualcomm
+SoC additions should use the codename for compatibles instead of the
+model number as well?
 
+I was working on SM7435 (parrot) patches a while back; when I get around
+to submitting those, will I have to use "parrot" or "sm7435" in the
+compatibles?
 
-This produces a warning on 32-bit targets with a 64-bit phys_addr_t,
-in practice this would be ARM Cortex-A15 or -A17 systems:
-
-In file included from include/linux/overflow.h:6,
-                 ...
-                 from drivers/iommu/iommufd/driver.c:4:
-drivers/iommu/iommufd/driver.c: In function '_iommufd_alloc_mmap':
-include/linux/limits.h:11:25: error: conversion from 'long long unsigned int' to 'long unsigned int' changes value from '18446744073709551615' to '4294967295' [-Werror=overflow]
-   11 | #define PHYS_ADDR_MAX   (~(phys_addr_t)0)
-      |                         ^~~~~~~~~~~~~~~~~
-drivers/iommu/iommufd/driver.c:61:43: note: in expansion of macro 'PHYS_ADDR_MAX'
-   61 |                                PAGE_SIZE, PHYS_ADDR_MAX, GFP_KERNEL);
-      |                                           ^~~~~~~~~~~~~
-
-
-The mtree_alloc_range() interface explicitly operates on 'unsigned long'
-address values, so I don't see an immediate workaround for this that would
-make it work on these machines. On the other hand, 
-
-At the moment, the only drivers that select CONFIG_IOMMUFD_DRIVER
-on 32-bit Arm systems are CONFIG_PDS_VFIO_PCI and CONFIG_MLX5_VFIO_PCI.
-It's probably fine to make all three symbols "depends on 64BIT" for
-now, but I don't know if there may be more drivers like this in the
-future that actually could make sense on embedded systems.
-
-     Arnd
+Best regards
+Artur
