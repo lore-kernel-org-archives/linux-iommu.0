@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 200EA17736
-	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 05:02:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0DC914A8E;
+	Mon, 14 Jul 2025 05:05:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752469381; cv=none; b=QhBTi9vdbtvllnBv8RXOX6v+TyhHjZzfwRz6YJ1GCzaCPrxYLVxF0HxZZ6lCTj56qdMQwv6ySq/w0ef3vO+y5KQ2AmLWWntwEO409aqP2fvD1UfVjpyjQSg4JQV4qTYhjItQBn8Xw3ICjmC3Yx8Nl2nh8jhFTvY+FvhIefiTqV8=
+	t=1752469502; cv=none; b=ULLJSrSZIM20T6E0sjAHIVsFvP52VcmhyZg7ahtS6qxOX26/NlQqB/TAhWWTlajCiHbfLf5DAjK7w3GS2nbd9VKklSumrxHf007zTv3adwLVl4NA9cPi0jPI46U74PvYhm3BHsY5Mz6w9Z43QrMfeV3Vx8b/vKBudzKHLprHIjY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752469381; c=relaxed/simple;
-	bh=bk+D5GWjlKkrsF4m2p4rY+C+7RTHgzpB647/hMjATqM=;
+	s=arc-20240116; t=1752469502; c=relaxed/simple;
+	bh=bBs0th1Lt9ao6wjmVxKc0IZG2cp7doHoM50mrOm2RyY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ZYmv66BxcbdvzF48usgJOoiJc2TognewSFoh97IK03bDE3LgR0mWHbqRepT6C2gt6XD4tTLydq2/EO7as56NE9rCRYy+k6jPs41ZAUqdmCSThIzdMERGx3tAslB76TI+/et59TQgAmWiWXJcPW+J1icmSwBzRNx/Pg2NGQetBvk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ml+e+nJj; arc=none smtp.client-ip=192.198.163.19
+	 In-Reply-To:Content-Type; b=I/qM9PZWiL145UTFvk5I5OfdN6SxzxP6we3K7lJngq7xy6HGWvhbXMFnCOG49kQyQY36h+bb6sobBGT1KrLbmeKEPrrohBlmjGt+JmUapKkxEqxH40E8ZJazJq/jB/iHOzRSDPz/xeQFwTeXe3V1goVm2aTuzn5AehKx6qabbjw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AGvbZ1ud; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ml+e+nJj"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AGvbZ1ud"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752469380; x=1784005380;
+  t=1752469501; x=1784005501;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=bk+D5GWjlKkrsF4m2p4rY+C+7RTHgzpB647/hMjATqM=;
-  b=ml+e+nJjq4AWNWbFiDfE9DXHfaO+kq9AoBG/ICziveZYt5qOXj8Zm8M6
-   gEFyq3apqq8FlQ3DAr0YpjBVhZsE6lHX0Gp1ZMi8DRY9snRb1BxRbVajY
-   1Oi+PqEUNFfGBeEmGCLU4bx/Uj6BT/lr96Ofva51JnPuAZfcL8bGNUNP9
-   FV03uFpScNrj+x5Llmxa0UjYewkRd89T7izMls/6xkkhGJRnUnguiBJro
-   sgewKmWSzv8SXhx8xWLDC6SLGeLq69cDRbUykptzMrEiX5kZcji08fGWu
-   uIAdL/krQS0BSRhNcX4zeSLR9S12j8LDoL8mVTclton+mItmuOz3RireW
-   Q==;
-X-CSE-ConnectionGUID: hD1av1S4S/u+nE5IkOiCtA==
-X-CSE-MsgGUID: FkelDW8hSVWPMwhQiaFsVw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11491"; a="53765666"
+  bh=bBs0th1Lt9ao6wjmVxKc0IZG2cp7doHoM50mrOm2RyY=;
+  b=AGvbZ1udbi/5b/cSCmoJcTfaSOEZk5rBhNCWMWHwOrrcgtw7mOV2+n8V
+   B+i85+1DN7yAylNA51UEVOm6EPrrKSqM6Y0aAeqOVs3O/gnq6jtifoVFi
+   qiQliMCWt2xGt/8XYPO8+5rxdIKRTxduPyEA9UgHe4VHmbqzPAbTAO7NS
+   TyFtGBqdmwQpnOJPWoM4/Snxhn/tk3BoPk7azzQuOsY4xgjZrbVf/LHPe
+   19uk5NBkEFxT4ukSOopc6jxR7lmk+B7nnwWLyHUBbYSUeeCiFH7cs0ZJI
+   56S5ND+o2z3etcgOojUmMtz3sjk/bCu3J23n8pZtlKs+rbH+muye/XUN7
+   A==;
+X-CSE-ConnectionGUID: nOdciKpNQyiRlJiRjTiYuQ==
+X-CSE-MsgGUID: yJ33UuXAQNu26eMqWyyhLw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11491"; a="54782225"
 X-IronPort-AV: E=Sophos;i="6.16,310,1744095600"; 
-   d="scan'208";a="53765666"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2025 22:02:59 -0700
-X-CSE-ConnectionGUID: BWuprgykSqi8fDTzocsl4Q==
-X-CSE-MsgGUID: rhP02i+NTCGJ7P8FPinBkA==
+   d="scan'208";a="54782225"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2025 22:05:00 -0700
+X-CSE-ConnectionGUID: ODEWPCAgRNSmYgjj1LKrbQ==
+X-CSE-MsgGUID: GwJR787cTWuZsYTZD2u3Ew==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,310,1744095600"; 
-   d="scan'208";a="157185381"
+   d="scan'208";a="187838527"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2025 22:02:57 -0700
-Message-ID: <131705ba-95f6-4ad5-9249-400b0ae97dee@linux.intel.com>
-Date: Mon, 14 Jul 2025 13:01:09 +0800
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jul 2025 22:04:57 -0700
+Message-ID: <6af5e16d-5cd7-4c18-9f8a-78740f24cc20@linux.intel.com>
+Date: Mon, 14 Jul 2025 13:03:10 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,59 +52,43 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] iommu/vt-d: Optimize iotlb_sync_map for
- non-caching/non-RWBF modes
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Ioanna Alifieraki <ioanna-maria.alifieraki@canonical.com>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20250703031545.3378602-1-baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v3 0/7] Reorganize Intel VT-D to be ready for iommupt
+To: Jason Gunthorpe <jgg@nvidia.com>, David Woodhouse <dwmw2@infradead.org>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+Cc: Kevin Tian <kevin.tian@intel.com>, patches@lists.linux.dev,
+ Wei Wang <wei.w.wang@intel.com>
+References: <0-v3-dbbe6f7e7ae3+124ffe-vtd_prep_jgg@nvidia.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250703031545.3378602-1-baolu.lu@linux.intel.com>
+In-Reply-To: <0-v3-dbbe6f7e7ae3+124ffe-vtd_prep_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 7/3/25 11:15, Lu Baolu wrote:
-> The iotlb_sync_map iommu ops allows drivers to perform necessary cache
-> flushes when new mappings are established. For the Intel iommu driver,
-> this callback specifically serves two purposes:
+On 6/30/25 23:03, Jason Gunthorpe wrote:
+> This is similar to a series I sent for AMD.
 > 
-> - To flush caches when a second-stage page table is attached to a device
->    whose iommu is operating in caching mode (CAP_REG.CM==1).
-> - To explicitly flush internal write buffers to ensure updates to memory-
->    resident remapping structures are visible to hardware (CAP_REG.RWBF==1).
+> Lightly reorganize some of the page table related code so there is greater
+> isolation between the first and second stage logic. iommupt will introduce
+> distinct types and code flows for first and second stages, having them all
+> combined together is difficult.
 > 
-> However, in scenarios where neither caching mode nor the RWBF flag is
-> active, the cache_tag_flush_range_np() helper, which is called in the
-> iotlb_sync_map path, effectively becomes a no-op.
+> Splitting actually makes things generally more understandable anyhow as
+> they do share only a little code. Most of the registers and logic are in
+> fact different. That was being obscured by small helper functions that
+> combine the first and second stage information.
 > 
-> Despite being a no-op, cache_tag_flush_range_np() involves iterating
-> through all cache tags of the iommu's attached to the domain, protected
-> by a spinlock. This unnecessary execution path introduces overhead,
-> leading to a measurable I/O performance regression. On systems with NVMes
-> under the same bridge, performance was observed to drop from approximately
-> ~6150 MiB/s down to ~4985 MiB/s.
+> This would replace some of the patches recently sent by Wei.
 > 
-> Introduce a flag in the dmar_domain structure. This flag will only be set
-> when iotlb_sync_map is required (i.e., when CM or RWBF is set). The
-> cache_tag_flush_range_np() is called only for domains where this flag is
-> set.
+> The full branch including the iommpt conversion is here:
 > 
-> Reported-by: Ioanna Alifieraki<ioanna-maria.alifieraki@canonical.com>
-> Closes:https://bugs.launchpad.net/ubuntu/+source/linux/+bug/2115738
-> Link:https://lore.kernel.org/r/20250701171154.52435-1-ioanna- 
-> maria.alifieraki@canonical.com
-> Fixes: 129dab6e1286 ("iommu/vt-d: Use cache_tag_flush_range_np() in iotlb_sync_map")
-> Cc:stable@vger.kernel.org
-> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> ---
->   drivers/iommu/intel/iommu.c | 19 ++++++++++++++++++-
->   drivers/iommu/intel/iommu.h |  3 +++
->   2 files changed, 21 insertions(+), 1 deletion(-)
+>      https://github.com/jgunthorpe/linux/commits/iommu_pt_vtd
+> 
+> v3:
+>   - Add intel_domain_is_fs/ss_paging() as wrappers around the ops check
+>   - Set force_snooping for the ss as well
 
-Queued for linux-next.
+Queued for linux-next. Thank you, Jason.
 
 --
 baolu
