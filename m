@@ -1,200 +1,236 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ACD63D76
-	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 07:22:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F4E11E5B63
+	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 09:01:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752477765; cv=none; b=ligRR8hh4KRzi0ImzMhdsWAj5a6+aKKN7Na+v+bk77zy3EvEtEMaZbOFTYH0rwOJ73CUM0CDWPPIiyps5BrkKIIW2KiW2lkLieIEQhzwRBFv95HLiTbVOn5c5xDDorjbvfVY7alaZMBgF4OQijwaef6TVLAr3UoBOfsgHZRp7ps=
+	t=1752483677; cv=none; b=gj36HaoSUQQ2rhMwcvNnHs+5a4x/RiipfdUypgc2C5m/CAtU3yXXVrjbVZddOKyas1fvEi7iYhLpJDcpixvyBTiOUBzs+PSqmki2DNanSixxbbnlW9zrrRPH3VPnDcXomzmwoPvct1Qyk7DYQKVmTvkKFJtHQFFbXrcZ2q6t4WU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752477765; c=relaxed/simple;
-	bh=hDVQKADURWbLhoPnDRnFeYYCgYSNTTnS+jXlsNlmAME=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JOiNWj+0gN7VEz3FdM5j728ym5y/gd5k5WWYaTiouYkYAcTznfNYO21ng/Y2R69PeiohTIDaZS04CYORMT/zV6Ve7kPFtP7Y1jEROJP28L4uZHcjYQ2MHHRkbtEVQiVOXDMmiKPbOSeeN4d0RglsQBIICMoNL88Iuqx45Az5SdQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LlMfniAo; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1752483677; c=relaxed/simple;
+	bh=bG9TxTD/lfyqkdSHvMetNEaP8nWqlrsNbjV9DFeaFP8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MFIiD0CzWy3+qSsRmKR9DmXgthh0s/p37kFmz/8aXkRRFwYY2LBjH7Y/idKtPcjO4KMe7JgDW2UxMQOUT1/tcMb7ppyGSn+pyY4Td5AU49VVrh1AZj00R7WGw9YvCwoEeMklXQzuByPh1nJWad/h/Plllli1RRDiqpJt37wCcUE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=wl0y81P2; arc=none smtp.client-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LlMfniAo"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752477764; x=1784013764;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=hDVQKADURWbLhoPnDRnFeYYCgYSNTTnS+jXlsNlmAME=;
-  b=LlMfniAowWHCrPn7hd5zP5gT39HuLKarurQB/RM0/+BwmML4q1lGBYjq
-   0XzGNucOQDDnlvOuPGy55clEy0QWU+VsmaLH/ibnUn/bmqCfV7UDUHpjC
-   1PATTQZZVLF5AmBJePCMk/HCPNxTqBqB0FQm1aCDDDfICKjt5GfL/NfMP
-   xSmRqJ+fQdF8ytnSZC1UHNXneTpzPlHOsLy8B660xCCEP4YRf9Wi4NQkv
-   qrFlyoB+QABOaJgHL6uinm0xMGyw1ReaGdcJ+thSgCRPubPITDiEpvuZC
-   2LH3ztPsRls0uEZO4wtzKfNyDYlALte9bVBFZQF2BMaV9UB8LybW4txs7
-   w==;
-X-CSE-ConnectionGUID: JRT9D0LuSlKXdHEpGSQlnQ==
-X-CSE-MsgGUID: c5cQTT0sSwOeCZIfbKmrsA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11491"; a="65238660"
-X-IronPort-AV: E=Sophos;i="6.16,310,1744095600"; 
-   d="scan'208";a="65238660"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2025 00:22:43 -0700
-X-CSE-ConnectionGUID: 2IcU3O8sSrCuARx+gnHZeg==
-X-CSE-MsgGUID: VaYw9ZAkRJSP4DbVRYx41w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,310,1744095600"; 
-   d="scan'208";a="194070265"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2025 00:22:42 -0700
-Message-ID: <33cb4d38-cfc1-496a-a8dc-18d911b6534d@linux.intel.com>
-Date: Mon, 14 Jul 2025 15:20:53 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="wl0y81P2"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-237f18108d2so274345ad.0
+        for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 02:01:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1752483674; x=1753088474; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=0cxrQqb0jpt8b/sc2zV313XiZaZHh32gcCu7m4bvXDc=;
+        b=wl0y81P2o9LOqdxjir31XK47XJup+5V6/sWcuOAIvDeCc7sf0bk3SdvGaGEPwRIb7Y
+         isBRiFmMLZMCD6iOyPsME+aJ9bSadZQO4PEqnbpe55hbhFF5i+qSGxZbz4S9vyI/gUId
+         3SoF9Vz1TOyPEuN8berkQW4XdGfW8oaztl+UiHOvguu6zVfQX+p/dUshSfGe9VZhzI5W
+         SB9Yya15OhTFcK0sUSwaE5ocFSm79jSuazSlbrNAdqFMbAKTUcyQB4kklA+TOTbT34gL
+         WyTUL9TnmdplNTULT8eMV43VqA+Z+pewc4+VYxMdp0t/zRJJU4nyte4rrlcnYj0gTt2B
+         qI5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752483674; x=1753088474;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=0cxrQqb0jpt8b/sc2zV313XiZaZHh32gcCu7m4bvXDc=;
+        b=wy5YUkgIPXEsjlkLl8ByASNR7fHWg18T+GRpbExl/jkTbxl+az9JP6TaB2r5G+cO39
+         LAxs1uAJe3dmDT/YMijTS/W7iGWD8X4AYooHCOy6InZ19tztxsSugHoGfCRmmvpb1+Px
+         4Ne9Ctv9yn7bclRdbEYHY5srw1KYSPjAN9/CXyTlxNbEVW1xaciJa5JqOQfPPrBJADWV
+         qP+C4xYyhJJYbe+lMl3r5ZczB+cJDKLuFY1mLdrenSVVj6gnqE4ZReGoysj70iOFppiZ
+         vqnzShEUqTwlTaxJEvbs0G2MMGdWWsdCFUflgR0/KYeDdivCgkrW968dsu/t3UUoOeSC
+         TkDQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU6kRYLyTWlxBqfmymrRolz7Shal7gFjU0FVX4KY9JS8ohV1xjbAu/TeCZSe1B4F00rcSKzAQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxDcRbymuLSTIQjKk8cQjXKM/wwEbK8dl2QxqZWsE34vu03QvFh
+	Tg92pQuEJ1VdkhAx84SX4d7SB/PzSnzA+VDtx6GCfpd46+vYwGQHSjUnJJWSMZn5fg==
+X-Gm-Gg: ASbGncs+46YqbWbOVn40+qEbVzFryPyR7vr4X0ENWHToQFxekndgzmWmL/uwikLflNQ
+	wonDsqQuJQqHiGbMGcf/viZ2CyGfdk12WD04CkuIMvRod6fnp61fCOAh+S12KxL4CShoQzYk4Zu
+	c2lcayuHTNL0WHzLffuKqW25hWy1Ec5PSg2dvKPc46Kvf3P/AJFfoDi3IsylQ+NzMB1qwWTtWYx
+	KUTFqT7Z2ZiQSMOMHcvfj1aWBdk/zCkKL8/enrvX4Q4qtsRJb20o0JF1AiN/E5Va7PjbnUZQfz5
+	OWnG+hr8iHpzvnJMHNyNoJPPE8VjDe0doTC9mVRrWQuo7GgZSvG44wmy5Z2cjwccalYplDK0qOn
+	sH3ikp9zJeR5M88n6PMXdodEd87m0INLXgf+XYRlhgWebuzPwPfCNoGYi
+X-Google-Smtp-Source: AGHT+IE85Y3NxyMyW1kaviY2+Lx+g7Ud5iWmAdn/SWe0D7UOgPgGXbouv0fuX4pX29Nc+kGxPfOPQg==
+X-Received: by 2002:a17:902:d50e:b0:234:a44e:fee8 with SMTP id d9443c01a7336-23df7b45ea5mr2997565ad.27.1752483673915;
+        Mon, 14 Jul 2025 02:01:13 -0700 (PDT)
+Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-23df3d7065bsm48781895ad.250.2025.07.14.02.01.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Jul 2025 02:01:13 -0700 (PDT)
+Date: Mon, 14 Jul 2025 09:01:07 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Daniel Mentz <danielmentz@google.com>, iommu@lists.linux.dev
+Subject: Re: [RFC PATCH v3 4/8] iommu/arm-smmu-v3: Cache and restore MSI
+ config
+Message-ID: <aHTHUxQTT6kXy5tS@google.com>
+References: <20250616203149.2649118-1-praan@google.com>
+ <20250616203149.2649118-5-praan@google.com>
+ <aG06iNeVAkEoZ8Ou@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: iommu/vt-d: Use-after-free on sva unbind device with pending
- IOPFs
-To: Ethan MILON <ethan.milon@eviden.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Cc: CLEMENT MATHIEU--DRIF <clement.mathieu--drif@eviden.com>,
- Zhenzhong Duan <zhenzhong.duan@intel.com>, Kevin Tian
- <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>
-References: <e8b37f3e-8539-40d4-8993-43a1f3ffe5aa@eviden.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <e8b37f3e-8539-40d4-8993-43a1f3ffe5aa@eviden.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aG06iNeVAkEoZ8Ou@google.com>
 
-On 7/11/25 21:03, Ethan MILON wrote:
-> Hi,
+On Tue, Jul 08, 2025 at 03:34:32PM +0000, Mostafa Saleh wrote:
+> On Mon, Jun 16, 2025 at 08:31:45PM +0000, Pranjal Shrivastava wrote:
+> > The SMMU's MSI configuration registers (*_IRQ_CFGn) containing target
+> > address, data and memory attributes lose their state when the SMMU is
+> > powered down. We'll need to cache and restore their contents to ensure
+> > that MSIs work after the system resumes.
+> > 
+> > To address this, cache the original `msi_msg` within the `msi_desc`
+> > when the configuration is first written by `arm_smmu_write_msi_msg`.
+> > This primarily includes the target address and data since the memory
+> > attributes are fixed.
+> > 
+> > Introduce a new helper `arm_smmu_resume_msis` which will later be called
+> > during the driver's resume callback. The helper would retrieve the
+> > cached MSI message for each relevant interrupt (evtq, gerr, priq) via
+> > get_cached_msi_msg & re-config the registers via arm_smmu_write_msi_msg
+> > 
+> > Signed-off-by: Pranjal Shrivastava <praan@google.com>
+> > ---
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 45 +++++++++++++++++++++
+> >  1 file changed, 45 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > index 9ce00c959034..4699d3294d3e 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > @@ -3962,6 +3962,9 @@ static void arm_smmu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
+> >  	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+> >  	phys_addr_t *cfg = arm_smmu_msi_cfg[desc->msi_index];
+> >  
+> > +	/* Cache the msi_msg for resume */
+> > +	desc->msg = *msg;
 > 
-> While testing SVA in QEMU with Intel IOMMU, I encountered a double free in
-> the kernel when unbinding a device with page requests still in flight. This
-> results in a use-after-free error and eventually a kernel panic:
+> All callers to arm_smmu_write_msi_msg() get the msg from
+> get_cached_msi_msg() which already returns msi_desc::msg of this irq,
+> so that seems redundant.
 > 
-> [   48.227596] refcount_t: underflow; use-after-free.
-> [   48.227949] WARNING: CPU: 3 PID: 313 at lib/refcount.c:28 refcount_warn_saturate+0xd8/0xe0
-> [   48.228531] Modules linked in: sva(OE) xfs(E) sr_mod(E) sd_mod(E) cdrom(E) sg(E) ahci(E) libahci(E) libata(E) e1000(E) dm_mod(E)
-> [   48.229460] CPU: 3 UID: 0 PID: 313 Comm: kworker/u16:4 Kdump: loaded Tainted: G           OE       6.16.0-rc5+ #59 PREEMPT(voluntary)
-> [   48.230231] Tainted: [O]=OOT_MODULE, [E]=UNSIGNED_MODULE
-> [   48.230568] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.16.3-0-ga6ed6b701f0a-prebuilt.qemu.org 04/01/2014
-> [   48.231278] Workqueue: iopf_queue/dmar0-iopfq iommu_sva_handle_iopf
-> [   48.231697] RIP: 0010:refcount_warn_saturate+0xd8/0xe0
-> [   48.232028] Code: ff 48 c7 c7 58 eb 2e 82 c6 05 40 2f 35 01 01 e8 ae e8 ab ff 0f 0b c3 48 c7 c7 00 eb 2e 82 c6 05 2c 2f 35 01 01 e8 98 e8 ab ff <0f> 0b c3 0f 1f 44 00 003
-> [   48.233202] RSP: 0018:ffffc900008afe50 EFLAGS: 00010286
-> [   48.233541] RAX: 0000000000000000 RBX: ffff888113dccb40 RCX: 0000000000000000
-> [   48.234007] RDX: ffff888861daa480 RSI: 0000000000000001 RDI: ffff888861d9c140
-> [   48.234461] RBP: ffff8881118e0000 R08: 0000000000000000 R09: ffffc900008afcf8
-> [   48.234942] R10: ffffc900008afcf0 R11: ffffffff829dfde8 R12: ffff888100f5c000
-> [   48.235396] R13: ffff888100051c00 R14: ffff888100f5c005 R15: ffff88810c480000
-> [   48.235860] FS:  0000000000000000(0000) GS:ffff8888dea4f000(0000) knlGS:0000000000000000
-> [   48.236381] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   48.236763] CR2: 0000558328aa6468 CR3: 0000000111332002 CR4: 0000000000770ef0
-> [   48.237222] PKRU: 55555554
-> [   48.237397] Call Trace:
-> [   48.237561]  <TASK>
-> [   48.237727]  iopf_free_group+0xe/0x20
-> [   48.237978]  process_one_work+0x197/0x3d0
-> [   48.238239]  worker_thread+0x23a/0x350
-> [   48.238487]  ? rescuer_thread+0x4a0/0x4a0
-> [   48.238760]  kthread+0xf8/0x230
-> [   48.238972]  ? finish_task_switch.isra.0+0x81/0x260
-> [   48.239290]  ? kthreads_online_cpu+0x110/0x110
-> [   48.239598]  ? kthreads_online_cpu+0x110/0x110
-> [   48.239899]  ret_from_fork+0x13b/0x170
-> [   48.240155]  ? kthreads_online_cpu+0x110/0x110
-> [   48.240434]  ret_from_fork_asm+0x11/0x20
-> [   48.240711]  </TASK>
-> [   48.240864] ---[ end trace 0000000000000000 ]---
-> 
-> The trace show that it's caused by a double free of the same iopf group :
-> 
-> irq/24-d-66        2..... : iommu_report_device_fault <-prq_event_thread
-> irq/24-d-66        2..... : iopf_get_dev_fault_param.isra.0 <-iommu_report_device_fault
-> irq/24-d-66        2..... : iopf_group_alloc <-iommu_report_device_fault
-> irq/24-d-66        2..... : iommu_sva_iopf_handler <-iommu_report_device_fault
->      test-1633      0..... : iommu_sva_unbind_device <-test_handle.isra.0
->      test-1633      0..... : iommu_detach_device_pasid <-iommu_sva_unbind_device
->      test-1633      0..... : iopf_queue_remove_device <-blocking_domain_set_dev_pasid
->      test-1633      0..... : iopf_free_group <-iopf_queue_remove_device
->      test-1633      0..... : iopf_put_dev_fault_param <-iopf_free_group
->      test-1633      0..... : iopf_put_dev_fault_param <-iopf_queue_remove_device
->      test-1633      0..... : iommu_domain_free <-iommu_sva_unbind_device
-> kworker/-313       3..... : iommu_sva_handle_iopf <-process_one_work
-> kworker/-313       3..... : iopf_group_response <-iommu_sva_handle_iopf
-> kworker/-313       3..... : iopf_free_group <-process_one_work
-> kworker/-313       3..... : iopf_put_dev_fault_param <-iopf_free_group
-> 
-> Unbinding a device while page requests are still in flight is likely an edge
-> case that shouldn't occur, but investigating it has led me to two questions:
-> 
-> 1. The issue appear at the commit 17fce9d2336d ("iommu/vt-d: Put iopf
-> enablement in domain attach path"), where device are now dynamically added and
-> removed from the iopf queue. This commit add a call to the new
-> iopf_for_domain_remove() function when removing pasid :
-> 
->> @@ -4041,6 +4053,7 @@ static int blocking_domain_set_dev_pasid(struct iommu_domain *domain,
->>   {
->>          struct device_domain_info *info = dev_iommu_priv_get(dev);
->>
->> +       iopf_for_domain_remove(old, dev);
->>          intel_pasid_tear_down_entry(info->iommu, dev, pasid, false);
->>          domain_remove_dev_pasid(old, dev, pasid);
->>
->>          return 0;
->>   }
-> 
-> Moving iopf_for_domain_remove() after domain_remove_dev_pasid() fix the issue
-> above.
 
-This probably is the right fix.
-
-The iommu driver must ensure that all in-flight page faults have been
-flushed before removing the device from the fault queue. Otherwise, a
-race condition will occur between the SVA unbind path and the fault
-handling path.
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ddb981ad0e19..b1f2a2fb7e06 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4075,8 +4075,8 @@ static int blocking_domain_set_dev_pasid(struct 
-iommu_domain *domain,
-  {
-         struct device_domain_info *info = dev_iommu_priv_get(dev);
-
--       iopf_for_domain_remove(old, dev);
-         intel_pasid_tear_down_entry(info->iommu, dev, pasid, false);
-+       iopf_for_domain_remove(old, dev);
-         domain_remove_dev_pasid(old, dev, pasid);
-
-         return 0;
-
-The intel_pasid_tear_down_entry() function is responsible for blocking
-hardware from generating new page faults and flushing all in-flight
-ones. Therefore, moving iopf_for_domain_remove() after this function
-should resolve this race condition.
-
-Thanks,
-baolu
+Can you point me to the caller? I quick grep shows me that only vfio,
+dw-dma and some spi drivers call get_cached_msi_msg().. I can't also
+find a place where the assignment desc->msg = msg happens except for in
+PCIe bus.
 
 > 
-> Shouldn't iopf_for_domain_remove() be called after
-> intel_pasid_tear_down_entry() or domain_remove_dev_pasid() to ensure the device
-> can no longer send page requests and the queue has been flushed? Is the current
-> ordering intentional?
+> > +
+> >  	doorbell = (((u64)msg->address_hi) << 32) | msg->address_lo;
+> >  	doorbell &= MSI_CFG0_ADDR_MASK;
+> >  
+> > @@ -3970,6 +3973,48 @@ static void arm_smmu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
+> >  	writel_relaxed(ARM_SMMU_MEMATTR_DEVICE_nGnRE, smmu->base + cfg[2]);
+> >  }
+> >  
+> > +static void arm_smmu_resume_msis(struct arm_smmu_device *smmu)
+> > +{
+> > +	unsigned int irq;
+> > +	struct msi_desc *desc;
+> > +	struct msi_msg msg;
+> > +
+> > +	if (!(smmu->features & ARM_SMMU_FEAT_MSI))
+> > +		return;
+> > +
+> > +	if (!smmu->dev->msi.domain)
+> > +		return;
+> Is there a reason that is needed?
 > 
-> 2. Regarding commit 9759ae2cee7c ("iommu: Fix potential memory leak in
-> iopf_queue_remove_device()"): the commit frees the pending IOPF groups, but in
-> the scenario above, direct references to the groups still exists either in the
-> handler or in the workqueue awaiting processing, leading to a double free.
-> Reverting this commit fix the issue above.
+> I’d expect irq_get_msi_desc() to return NULL if MSI is not used.
+
+Do you mean that this check is redundant as moving ahead we anyway seem
+to check irq_get_msi_desc for each irq?
+
+> Otherwise, I think dev_get_msi_domain() would be more suitable to check?
+
+Ack.
+
 > 
-> I am not sure to see where is the potential memory leak, is there a case where
-> a reference to a group exists only in the iommu_fault_param::faults that I'm
-> missing?
+> > +
+> > +	irq = smmu->evtq.q.irq;
+> > +	desc = irq ? irq_get_msi_desc(irq) : NULL;
+> > +	if (desc) {
+> > +		get_cached_msi_msg(irq, &msg);
+> > +		arm_smmu_write_msi_msg(desc, &msg);
+> > +	} else {
+> > +		dev_err(smmu->dev, "Failed to resume evtq msi");
+> > +	}
+> > +
+> > +	irq = smmu->gerr_irq;
+> > +	desc = irq ? irq_get_msi_desc(irq) : NULL;
+> > +	if (desc) {
+> > +		get_cached_msi_msg(irq, &msg);
+> > +		arm_smmu_write_msi_msg(desc, &msg);
+> > +	} else {
+> > +		dev_err(smmu->dev, "Failed to resume gerror msi");
+> > +	}
+> > +
+> > +	if (smmu->features & ARM_SMMU_FEAT_PRI) {
+> > +		irq = smmu->priq.q.irq;
+> > +		desc = irq ? irq_get_msi_desc(irq) : NULL;
+> > +		if (desc) {
+> > +			get_cached_msi_msg(smmu->priq.q.irq, &msg);
+> > +			arm_smmu_write_msi_msg(desc, &msg);
+> > +		} else {
+> > +			dev_err(smmu->dev, "Failed to resume priq msi");
+> > +		}
+> > +	}
+> > +}
+> > +
+> 
+> This pattern seems to repeat, maybe it’s better in a macro
+> 
+> Something as:
+> #define smmu_resume_msi(smmu, _irq)  {	\
+> 	unsigned int irq;	\
+> 	struct msi_desc *desc; \
+> 	struct msi_msg msg; \
+> 	irq = smmu->_irq; \
+> 	desc = irq ? irq_get_msi_desc(irq) : NULL; \
+> 	if (desc) { \
+> 		get_cached_msi_msg(irq, &msg); \
+> 		arm_smmu_write_msi_msg(desc, &msg); \
+> 	} else {	\
+> 		dev_err(smmu->dev, "Failed to resume %s\n", #_irq);	\
+> 	} \
+> }
+> 
+
+Yup, that looks good. Thanks!
+
+> static void arm_smmu_resume_msis(struct arm_smmu_device *smmu)
+> {
+> 	if (!(smmu->features & ARM_SMMU_FEAT_MSI))
+> 		return;
+> 
+> 	if (!smmu->dev->msi.domain)
+> 		return;
+> 
+> 	smmu_resume_msi(smmu, evtq.q.irq);
+> 	smmu_resume_msi(smmu, gerr_irq);
+> 	if (smmu->features & ARM_SMMU_FEAT_PRI)
+> 		smmu_resume_msi(smmu, priq.q.irq);
+> }
+> 
 > 
 > Thanks,
-> Ethan
-
+> Mostafa
+> 
+> >  static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+> >  {
+> >  	int ret, nvec = ARM_SMMU_MAX_MSIS;
+> > -- 
+> > 2.50.0.rc2.692.g299adb8693-goog
+> > 
