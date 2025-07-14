@@ -1,200 +1,113 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDCF9288CB5;
-	Mon, 14 Jul 2025 21:22:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 171F6233D9C
+	for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 21:34:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752528143; cv=none; b=YSEVT8r8+JMaVyah6SE3x6hYipRNQFaFm4NvKSWP+5wv74LpQfAjijsH6v0KLEhiJGXfbVWHUOMlh7aJa1gwsNdlyhNbNEOGo/w03/1q5JviZk2PHjCE+2XJmM5+M16CuhYKtY4xsQLl8JIDnE4ClWro1vYYuIh+0sxAyMHRth4=
+	t=1752528870; cv=none; b=RSjxsv4qL5WzIQgU5CzA4h6LJQ4Sb2IJCxbuNBihwbnNpu8TPxBj6aLqdGHuwUca+sT2iM0Ab4EG2iL/m9bMtJH78XAW47wI1kEvBPVky1+LRDRG9fUsBl2ZOds04byq0lnTONNVoq3oTqTcPgDdv4QcD5gZRZYab0cGbUN0dlk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752528143; c=relaxed/simple;
-	bh=mA7SFMfHy8OinIxgtmu9yWbldbYt6k6q8NSeQegNnJA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=OCSYecmlY8HzZxLqc4HQvwsIbgm9JmJgohj6c4s55AIhhEgXzowTahaUE6tYtzx5qdlD7VylCHrdhAk//UU5yjNrQ30UZd1SvONsueHynK6RnGL7xhpIs3TeJ+RAIAaQ0aAhOcZBHr6KknEhW6j/VwZ03QQM+ecRMfcLIK+qORY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q60MisbD; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1752528870; c=relaxed/simple;
+	bh=BDSxVNaH7DxXtXg4d8lyl7WfXKs0R9S9LaI79MzV4Wg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rQS4RCQAFyCdb06Z57uvJjlzvWuA7UrtEvdWkNORKoHweNMETjXsoNwDLxIL0r0dSqlfbhcUIDGj4/8IEVvs5pp3Ex3D+N2pEivvnxyOwbcg7SBEr+4pVxcq4JLdt2NPhqNj97WHn/o9mkwM5zYUlR/cpxuyxB8CZpo6UO+O3/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=K4TjW6ln; arc=none smtp.client-ip=209.85.222.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q60MisbD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EECFC4CEF8;
-	Mon, 14 Jul 2025 21:22:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752528143;
-	bh=mA7SFMfHy8OinIxgtmu9yWbldbYt6k6q8NSeQegNnJA=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Q60MisbD95FOBih0G/23vPpGal83ekgZ28SJ47/I5DIL4UoRV88m/T9aZ8dmOHcei
-	 35usRcp9gpNMuI7D6ihW86QYi+XVSRPRYGdyxIwCtDFiQpKqHpKgltuHzKQ0uRoSmE
-	 z1l4hyF1P2U/5OXyyfn84zPyOOT3cNGZTvkejh/bj1N2eLoiXaqDMPeKw9OJTsoIh+
-	 Q8XuewUUT+SMBoeZZadI6UXPxPFzh1BYd6Ey1YZoRM5BfoD3jzblmHSzhRTwarIhRy
-	 wRecydRGnKsvGt9GLPXwt886zRekRUsGdU9KQ5iq4mjItwreKavGRZA0zx2QGnOdpD
-	 ajlVFOtxieMUQ==
-From: Mario Limonciello <superm1@kernel.org>
-To: David Airlie <airlied@gmail.com>,
-	Bjorn Helgaas <bhelgaas@google.com>
-Cc: Alex Deucher <alexander.deucher@amd.com>,
-	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Lukas Wunner <lukas@wunner.de>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="K4TjW6ln"
+Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-7e1f3b95449so190632585a.1
+        for <iommu@lists.linux.dev>; Mon, 14 Jul 2025 14:34:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1752528868; x=1753133668; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Xjsur9DLBO9lraNK3jQ4gyxveT6GDJ/WoDBpZ+ezdw4=;
+        b=K4TjW6lnDl721P1NfLfXAP3MtxZUus5qFiN/A8wBZbXz85MVo34Q/vrAZnkMkGslPs
+         hGyUDuKStfm6iPFemnXpog8m7TlGpXmW9uf1vMvODvP8GSLGtyy6lEyQu/XUqlmSAQhL
+         rSeoSmqBzp1BJypNKD9PFhhjsCZolPeJtAChoTiurY46NW7tVOqd8Z/q4O8RvAYoUgBr
+         qlcb+Gwjeg8/qb0EqrGl9Sz7nRETFkLmms7BQz40m/pOttvhEWnJBlYL/Da43Ecgolwo
+         Oeav3zAykcZJMZTZ9QWB7gFFn1j3yITsE1nXUqEfzo6HMoHojsatmk5ebDNnVkU4ZdCE
+         eyeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752528868; x=1753133668;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Xjsur9DLBO9lraNK3jQ4gyxveT6GDJ/WoDBpZ+ezdw4=;
+        b=ULbITSPRSuRt+WECUOR9+yNLvW2R2uDuV1hrMGC5fxDG7nJdnimtKByRh6FTobfNiT
+         oFUh7Ef2I9YbaIMirEKB+Xtvu+y9D0d3arfZkqeTDGM+iR1izhgv6RrlHwBO+pE3DTt1
+         f+HabziYegkaIs1wpFW2ajK9q46Zs7gQ9lI+rMWxrOz+I3HxobU5KO2O55Mb3X8N8fAx
+         22Ihl3TsQcsCAPlxBb7p/56zD+vYXgq4LKuwuezo21xp8cGhCv1dzuU4KIe5Z4avoru7
+         Qz99mbWV+yZ7xdnTGffHORznAyqv/6Vk0jx5e/G+KsNyVUhvJ/2QdEPaa+R8t9fRqVds
+         /ryQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXB6zW1azzjp+HG7ZLkKYWyU4MXfx14T5PyRBCDCBtAyfloYlfFbmI+61Jy+bGiVhDS/g5tXw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzX7i7IDEjylSIQJiBWYn3ZVlnLO5JS3f5q820U5dduPOKc3N74
+	eNHG0lUsO4xM1ffYJJ+UWuj8Wh2LYhR0lRQ2STVUM5dCPpDuy8oOdq5xRuxdCRTSwYk=
+X-Gm-Gg: ASbGncs/c+OXeqEFVctfwBYIP06tfQv7fyUohQSg+GApNkzHc3VBkdlOsWPs+FOdr+i
+	UlzmaFAwYrk1WRlCCzooQifJoDSuCjVMnb9GSW3GeHmcKU0uKKq8ogxHK9iN0V2CW6oddhD0+Oa
+	K5AH+WEv1JzRIbH8Tpp/Afay1D+23qjwY/y2tyqXACVO8GK+5TYp3ITBuGJ0zym6mmTaHZqPJ8v
+	G/QFCo3G28yflpYD/PT2wrtxqPKVNaxPodVi6v9JAGsjZjmDq30Cy0PyY0cY52ZgbS3B5Uv2mKt
+	HM409wOaVh8Lu21nWIvgIm85R9c1k7RREVQbZ5OnlqAL8xPy5IvPWi6Gf/vy4Qtezxtm7UArOXq
+	0SB9JuKP3OtaCFzXNua7XZJzdOJwIkc5mNcJH1+Cwmid9UHGnhWYxMvIcquSMdjfRPhSjz6llaQ
+	==
+X-Google-Smtp-Source: AGHT+IFEx3lCJSamFS7GtCIM3DJJbVlIj8bmcaZbUD5CgXC67a7uWIwLe/hJ3o7zuNw/2yCru6JygQ==
+X-Received: by 2002:a05:620a:20cf:b0:7e3:3682:6dee with SMTP id af79cd13be357-7e3378dd518mr183144785a.4.1752528867626;
+        Mon, 14 Jul 2025 14:34:27 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7e3357a2f85sm57242685a.14.2025.07.14.14.34.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Jul 2025 14:34:26 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1ubQoc-00000008jqs-0p6Q;
+	Mon, 14 Jul 2025 18:34:26 -0300
+Date: Mon, 14 Jul 2025 18:34:26 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Arnd Bergmann <arnd@kernel.org>
+Cc: Thierry Reding <thierry.reding@gmail.com>,
+	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Pranjal Shrivastava <praan@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, Arnd Bergmann <arnd@arndb.de>,
+	Krishna Reddy <vdumpa@nvidia.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	dri-devel@lists.freedesktop.org (open list:DRM DRIVERS),
-	linux-kernel@vger.kernel.org (open list),
-	iommu@lists.linux.dev (open list:INTEL IOMMU (VT-d)),
-	linux-pci@vger.kernel.org (open list:PCI SUBSYSTEM),
-	kvm@vger.kernel.org (open list:VFIO DRIVER),
-	linux-sound@vger.kernel.org (open list:SOUND),
-	Daniel Dadap <ddadap@nvidia.com>,
-	Mario Limonciello <mario.limonciello@amd.com>
-Subject: [PATCH v8 9/9] PCI: Add a new 'boot_display' attribute
-Date: Mon, 14 Jul 2025 16:21:46 -0500
-Message-ID: <20250714212147.2248039-10-superm1@kernel.org>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250714212147.2248039-1-superm1@kernel.org>
-References: <20250714212147.2248039-1-superm1@kernel.org>
+	Kevin Tian <kevin.tian@intel.com>,
+	"Luis Claudio R. Goncalves" <lgoncalv@redhat.com>,
+	Nate Watterson <nwatterson@nvidia.com>, linux-tegra@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/tegra241-cmdqv: import IOMMUFD module namespace
+Message-ID: <20250714213426.GJ1870174@ziepe.ca>
+References: <20250714205747.3475772-1-arnd@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250714205747.3475772-1-arnd@kernel.org>
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+On Mon, Jul 14, 2025 at 10:57:38PM +0200, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The tegra variant of smmu-v3 now uses the iommufd mmap interface but
+> is missing the corresponding import:
+> 
+> ERROR: modpost: module arm_smmu_v3 uses symbol _iommufd_object_depend from namespace IOMMUFD, but does not import it.
+> ERROR: modpost: module arm_smmu_v3 uses symbol iommufd_viommu_report_event from namespace IOMMUFD, but does not import it.
+> ERROR: modpost: module arm_smmu_v3 uses symbol _iommufd_destroy_mmap from namespace IOMMUFD, but does not import it.
+> ERROR: modpost: module arm_smmu_v3 uses symbol _iommufd_object_undepend from namespace IOMMUFD, but does not import it.
+> ERROR: modpost: module arm_smmu_v3 uses symbol _iommufd_alloc_mmap from namespace IOMMUFD, but does not import it.
+> 
+> Fixes: b135de24cfc0 ("iommu/tegra241-cmdqv: Add user-space use support")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c | 2 ++
+>  1 file changed, 2 insertions(+)
 
-On systems with multiple GPUs there can be uncertainty which GPU is the
-primary one used to drive the display at bootup. In order to disambiguate
-this add a new sysfs attribute 'boot_display' that uses the output of
-video_is_primary_device() to populate whether a PCI device was used for
-driving the display.
+Applied thanks
 
-Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
----
-v7:
- * fix lkp failure
- * Add tag
-v6:
- * Only show for the device that is boot display
- * Only create after PCI device sysfs files are initialized to ensure
-   that resources are ready.
-v4:
- * new patch
----
- Documentation/ABI/testing/sysfs-bus-pci |  8 +++++
- drivers/pci/pci-sysfs.c                 | 46 +++++++++++++++++++++++++
- 2 files changed, 54 insertions(+)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-index 69f952fffec72..8b455b1a58852 100644
---- a/Documentation/ABI/testing/sysfs-bus-pci
-+++ b/Documentation/ABI/testing/sysfs-bus-pci
-@@ -612,3 +612,11 @@ Description:
- 
- 		  # ls doe_features
- 		  0001:01        0001:02        doe_discovery
-+
-+What:		/sys/bus/pci/devices/.../boot_display
-+Date:		October 2025
-+Contact:	Linux PCI developers <linux-pci@vger.kernel.org>
-+Description:
-+		This file indicates the device was used as a boot
-+		display. If the device was used as the boot display, the file
-+		will be present and contain "1".
-diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-index 268c69daa4d57..6b1a0ae254d3a 100644
---- a/drivers/pci/pci-sysfs.c
-+++ b/drivers/pci/pci-sysfs.c
-@@ -30,6 +30,7 @@
- #include <linux/msi.h>
- #include <linux/of.h>
- #include <linux/aperture.h>
-+#include <asm/video.h>
- #include "pci.h"
- 
- #ifndef ARCH_PCI_DEV_GROUPS
-@@ -679,6 +680,13 @@ const struct attribute_group *pcibus_groups[] = {
- 	NULL,
- };
- 
-+static ssize_t boot_display_show(struct device *dev, struct device_attribute *attr,
-+				 char *buf)
-+{
-+	return sysfs_emit(buf, "1\n");
-+}
-+static DEVICE_ATTR_RO(boot_display);
-+
- static ssize_t boot_vga_show(struct device *dev, struct device_attribute *attr,
- 			     char *buf)
- {
-@@ -1051,6 +1059,37 @@ void pci_remove_legacy_files(struct pci_bus *b)
- }
- #endif /* HAVE_PCI_LEGACY */
- 
-+/**
-+ * pci_create_boot_display_file - create a file in sysfs for @dev
-+ * @pdev: dev in question
-+ *
-+ * Creates a file `boot_display` in sysfs for the PCI device @pdev
-+ * if it is the boot display device.
-+ */
-+static int pci_create_boot_display_file(struct pci_dev *pdev)
-+{
-+#ifdef CONFIG_VIDEO
-+	if (video_is_primary_device(&pdev->dev))
-+		return sysfs_create_file(&pdev->dev.kobj, &dev_attr_boot_display.attr);
-+#endif
-+	return 0;
-+}
-+
-+/**
-+ * pci_remove_boot_display_file - remove the boot display file for @dev
-+ * @pdev: dev in question
-+ *
-+ * Removes the file `boot_display` in sysfs for the PCI device @pdev
-+ * if it is the boot display device.
-+ */
-+static void pci_remove_boot_display_file(struct pci_dev *pdev)
-+{
-+#ifdef CONFIG_VIDEO
-+	if (video_is_primary_device(&pdev->dev))
-+		sysfs_remove_file(&pdev->dev.kobj, &dev_attr_boot_display.attr);
-+#endif
-+}
-+
- #if defined(HAVE_PCI_MMAP) || defined(ARCH_GENERIC_PCI_MMAP_RESOURCE)
- /**
-  * pci_mmap_resource - map a PCI resource into user memory space
-@@ -1654,9 +1693,15 @@ static const struct attribute_group pci_dev_resource_resize_group = {
- 
- int __must_check pci_create_sysfs_dev_files(struct pci_dev *pdev)
- {
-+	int retval;
-+
- 	if (!sysfs_initialized)
- 		return -EACCES;
- 
-+	retval = pci_create_boot_display_file(pdev);
-+	if (retval)
-+		return retval;
-+
- 	return pci_create_resource_files(pdev);
- }
- 
-@@ -1671,6 +1716,7 @@ void pci_remove_sysfs_dev_files(struct pci_dev *pdev)
- 	if (!sysfs_initialized)
- 		return;
- 
-+	pci_remove_boot_display_file(pdev);
- 	pci_remove_resource_files(pdev);
- }
- 
--- 
-2.43.0
-
+Jason
