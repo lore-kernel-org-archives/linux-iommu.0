@@ -1,143 +1,132 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE2D94C81;
-	Tue, 15 Jul 2025 20:45:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11D1E2737E1
+	for <iommu@lists.linux.dev>; Tue, 15 Jul 2025 23:52:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752612342; cv=none; b=sqlvDJdWUVagI6QLpZqFMErMuPWnOushSsEurLX955eXQAqTM1YX7EGCnLTeyHVsXUIhZBRwDVYxRiaGeU/CAIJxsbaRNj6d5ESD38Cf6tQLsgkoz5PhQzg8Xp1C9OJdVtvc3DiYf8gfq/DMa6vXK+bz6/H8KZeeSoHsggbCVFY=
+	t=1752623540; cv=none; b=U3DVr0y/X8o26JTzzo7tOhUhb4ouhN3TSkbihp98S3gE6U5/OQg/9empjSTf5LQuVOXGUmncWpM+dUWAAh/Lj0NZcssxp+rPTLpIZY5rnpV4MD+GxoOCY6PjhsroZNRya5NPpbHLR/nsG5tg7n0I0IlYVRoHl0RuVikl+PorMxA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752612342; c=relaxed/simple;
-	bh=i0jIU5/DS4GdwKEU3LoAR0J+8jJlfbT9Pjilk9/G/wc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AEqB/f1UysQwTYsY1cKzJbU7q92EY4+y1ENXGAFQze/egOJwFy+1QhsVY7DpCNPdUKurZifEZOMIiMj0SQwKZ9cyF+MRrHItmyFLfR+MUkOqputibJTHHNBrQZ637saLuwhqpELwe6L4FcxPBsajTeAyCC9ol/rs+SYD8Uj3fbE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CqfZwrWL; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1752623540; c=relaxed/simple;
+	bh=iOOC22qE24wPMHCbCeHyYpP3vN/5QujkvqzBT/v5kPo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rZU3caaOedY1efwz74GHf+hpCEiZvzCs1Q57Svh5AdDOTBqw3+tbCp4I8l6aH5oCq4KAoL5BKmnf7LI+IPgQio9XaQSbNPdfJ0R67VU9j+JG6h/rPksH2XoNdnDtnj85KSERvyGE6jVQjiAdJIDYfZn390nhjF1TlgZPc4HEJOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=I56EhkuA; arc=none smtp.client-ip=209.85.208.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CqfZwrWL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752612341; x=1784148341;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=i0jIU5/DS4GdwKEU3LoAR0J+8jJlfbT9Pjilk9/G/wc=;
-  b=CqfZwrWLjftG8eeAQ3fw+jX/YBAHK5NRjsa/xXclBG8uAZ7EfAmlj17w
-   5paWBZIW68cETb6P3Tulp5xt62Yy9tQH4wPtUSLH/XGOlfqE+klP/n5DQ
-   7BHDnZTKWXWfw4ejGedbMo88x1iodO68oOwhW/+9+6LcE6X+fpQM0jHHi
-   3+DiLtVgyif7uQFCZ0aklSOBo+CfklGUtOJgdq3fYHxd6Yh2NedeLWBlZ
-   D2OLhYa0Ue41T6PN+YNV2/K4wpnUrxjOQPzU/MuCBCNKwvoO8G8qu1e3Z
-   nyG43qZDd7qJPC5PgI3oP501kQXwLHyy8JudqQjhpzsS0YhJMv5hH//qJ
-   Q==;
-X-CSE-ConnectionGUID: dwiq/TXbR+q5dWBk1QsYEw==
-X-CSE-MsgGUID: mD2FstyDQbyMjBGXDCEd7Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="42476845"
-X-IronPort-AV: E=Sophos;i="6.16,314,1744095600"; 
-   d="scan'208";a="42476845"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 13:45:40 -0700
-X-CSE-ConnectionGUID: LLieUtQbSHu2EBMh8oD7ow==
-X-CSE-MsgGUID: L6tg7xQQR9Ws3Tb2pIwI1Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,314,1744095600"; 
-   d="scan'208";a="188322879"
-Received: from lkp-server01.sh.intel.com (HELO 9ee84586c615) ([10.239.97.150])
-  by fmviesa001.fm.intel.com with ESMTP; 15 Jul 2025 13:45:36 -0700
-Received: from kbuild by 9ee84586c615 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1ubmWs-000BWl-0g;
-	Tue, 15 Jul 2025 20:45:34 +0000
-Date: Wed, 16 Jul 2025 04:44:49 +0800
-From: kernel test robot <lkp@intel.com>
-To: Xu Yilun <yilun.xu@linux.intel.com>, jgg@nvidia.com, jgg@ziepe.ca,
-	kevin.tian@intel.com, will@kernel.org, aneesh.kumar@kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	joro@8bytes.org, robin.murphy@arm.com, shuah@kernel.org,
-	nicolinc@nvidia.com, aik@amd.com, dan.j.williams@intel.com,
-	baolu.lu@linux.intel.com, yilun.xu@intel.com
-Subject: Re: [PATCH v5 5/8] iommufd/vdevice: Remove struct device reference
- from struct vdevice
-Message-ID: <202507160404.4hMp40iv-lkp@intel.com>
-References: <20250715063245.1799534-6-yilun.xu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="I56EhkuA"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-5f438523d6fso2060a12.1
+        for <iommu@lists.linux.dev>; Tue, 15 Jul 2025 16:52:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1752623535; x=1753228335; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=iOOC22qE24wPMHCbCeHyYpP3vN/5QujkvqzBT/v5kPo=;
+        b=I56EhkuAmCRiUXZ2K8exQUQyUZOv2Z4K634AlGwcQZPSTW3IPyZDszeJyTCjyMrtL4
+         SXorQGQy8gx867b3t5mYMniWTeKJASuzOBa80jIv+GL2GFa4roV7GiY4Jxmz7u9/WfNn
+         UV94xwvpYYPO/gMIPn+kSVMPWwpwJ/aBFvvlei6WQfO0h9LmW94n8V+IOr+FMjaEMgri
+         ce99++1qKwjlgPwf9XSCutiPTJyrWlYn9q3BQPNe4gGNKzBgLhGSaF0E1D6Rtq1FX/QI
+         QezBQpl2DswFDNvr/0ao+/aDRCjA52K/RGIVsNvK/8FpSZ0emNtkp/taY/N7wdfUPJ5d
+         Zt0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752623535; x=1753228335;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=iOOC22qE24wPMHCbCeHyYpP3vN/5QujkvqzBT/v5kPo=;
+        b=nH/d3f1UI1uTIqNsKqUnj5b3UxN7mO/2tbyQKTZJaMTxMZcdvOwUzQPPIRZDD0TIxB
+         3mAPEDGVoIaxK2CIevGzJDCHoDQ6QnohLE+h0QMdVd/FxR5Nv7wLlWECsWrczDFPUfRC
+         bMI1aLLTVRB8o9IcqKk+FQFdbx7SqhLl7Oh0UjzgEDsIbeamOWD4zvJI4MG0mb2zsIcf
+         EwIgWuX3m88h0jk9PdpH3mMx5hz1x28l1PZW0JybWrowtu94G9YmzKuc/dgVNpWNyv/T
+         lqsXGhhQohbvEYHbzUJLCZwN22bCJw7l/L0VkVqRdhkvtqTZAVdoemLNXIwN03EK58Ue
+         CsKw==
+X-Forwarded-Encrypted: i=1; AJvYcCWmgLrjP2OwDsNuFGvH5/+eyvkCd0JPHBUfW7vg7Ondsl18sm/fHPHVHcq/3pTu+QF4H6iKGg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwkvlrPelq6DNpn/PBOTaL3+QHJxjI2bJo4U2tZeB946E59Ctur
+	qbfsBSoLiaAaVPHLf2XAmgNZSQzrCA0N/PIx9NLdjWoIUQfxU3hr8MSBHJ+eKjRWqSXGUQoQMZZ
+	RDjCBC5Ffv5EDad2R7CKzFT/qPEH2Shg5CuZEISw7
+X-Gm-Gg: ASbGncuEVNu3KETFiPorLx3erWegmO3fMwn+FpO13HAmQiiTzFwmxgJSm34IVYGDYUJ
+	xkzyvPVESeiqsyzUzKNHgPdswczLlGzuP8wpXSn4e/QkL3g1uEInOME2PAIec0WFNKRb5SkGN8d
+	OnrJ8GUyz6HRRvFFApsu7x8ByxbGnCpWAU+P0a1KCcBpuRd3kqBvZEu6sz91egfdDTakE+YORu4
+	woER2AgTyYROOg=
+X-Google-Smtp-Source: AGHT+IECgAh0TayNXuam8GHntaRgc8x8AxRP+iVxal7exRS2WfAN9/8+9SLnvuOedYYKDKagINx+AwkZJTJ9Ynu5DM0=
+X-Received: by 2002:a05:6402:1295:b0:60e:5391:a9e5 with SMTP id
+ 4fb4d7f45d1cf-61287c0c9eemr7421a12.5.1752623535079; Tue, 15 Jul 2025 16:52:15
+ -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250715063245.1799534-6-yilun.xu@linux.intel.com>
+References: <20250616203149.2649118-1-praan@google.com> <20250616203149.2649118-6-praan@google.com>
+ <CAJZ5v0jq7DL4z+q5XKcVUZQgojcxA8DgrMFncs1Z6skm+PVEmA@mail.gmail.com>
+ <aG6P6F-MEvL4SfNz@google.com> <CAJZ5v0gGjt+pRbq2k7qL6E+TGhm8PYHm_VVrwg2ZEjSWk+5FRg@mail.gmail.com>
+ <aG6hpoMx1QwwP195@google.com> <CAJZ5v0jyYpu=qA-_QKVoNhzRZRNKe5cFt718fo6pxR6iRkD2bw@mail.gmail.com>
+ <aG-BC6B4R1ViEDM1@google.com> <CAJZ5v0id-sRxVxupWPKPGikSm5_QeO_WKgYdK2BUbY4m7dbndw@mail.gmail.com>
+ <aHDlhyPmjCT7rz-i@google.com>
+In-Reply-To: <aHDlhyPmjCT7rz-i@google.com>
+From: Daniel Mentz <danielmentz@google.com>
+Date: Tue, 15 Jul 2025 16:52:04 -0700
+X-Gm-Features: Ac12FXxOZzoZ62U_lxTFVMl8HGkQdgYM-WulkGGnlplZ9Z6UHi0gYh7aU5tsNT0
+Message-ID: <CAE2F3rAPB8rVz38ygAxatdAunS9oMNJ5WvMiB+M8Am71MEHVVQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 5/8] pm: runtime: Introduce pm_runtime_get_if_not_suspended()
+To: Pranjal Shrivastava <praan@google.com>, "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Xu,
+I think the underlying problem is that we need certainty as to whether
+SMMU is enabled or disabled, and if we find it in either
+RPM_SUSPENDING or RPM_RESUMING state, then we don't have this
+certainty. Creating certainty would require waiting for an in-progress
+rpm suspend or resume operation to finish which we can't do, because
+iommu_map and iommu_unmap can be called from atomic context where we
+wouldn't be able to wait.
 
-kernel test robot noticed the following build errors:
+Before discussing suitable approaches, I think we need to agree on the
+requirements. After our discussion with Will, I believe the
+requirements are as follows:
 
-[auto build test ERROR on 601b1d0d9395c711383452bd0d47037afbbb4bcf]
+We can elide i.e. skip TLB invalidations only when SMMU is either
+disabled or powered off.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Xu-Yilun/iommufd-viommu-Roll-back-to-use-iommufd_object_alloc-for-vdevice/20250715-144326
-base:   601b1d0d9395c711383452bd0d47037afbbb4bcf
-patch link:    https://lore.kernel.org/r/20250715063245.1799534-6-yilun.xu%40linux.intel.com
-patch subject: [PATCH v5 5/8] iommufd/vdevice: Remove struct device reference from struct vdevice
-config: arm64-allmodconfig (https://download.01.org/0day-ci/archive/20250716/202507160404.4hMp40iv-lkp@intel.com/config)
-compiler: clang version 19.1.7 (https://github.com/llvm/llvm-project cd708029e0b2869e80abe31ddb175f7c35361f90)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250716/202507160404.4hMp40iv-lkp@intel.com/reproduce)
+At any time and even in the absence of any client transactions, SMMU
+can perform speculative translation table walks and cache the results.
+In particular, Will provided the following example (I hope I'm
+depicting this correctly here):
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202507160404.4hMp40iv-lkp@intel.com/
+In __arm_lpae_unmap() where it says "/* Also flush any partial walks
+*/", we skip over io_pgtable_tlb_flush_walk() and subsequently free
+the page table in __arm_lpae_free_pgtable(). The memory location that
+previously contained the page table is then re-allocated for some
+different and unrelated purpose while the SMMU hardware still stores a
+pointer to this memory location in its walk cache due to the driver
+previously skipping the TLBI command. SMMU might then perform a
+speculative translation table walk and misinterpret the new data as a
+table descriptor which includes a pointer to a next level translation
+table (i.e. use-after-free). SMMU could then follow that garbage
+pointer and read from an unpredictable location. If this unpredictable
+location turns out to be read sensitive like an interrupt acknowledge
+register, we might potentially end up with very subtle types of
+misbehavior.
 
-All errors (new ones prefixed by >>):
+Due to these requirements, I believe the following approach will *not* work:
+Elide TLBI commands when device is in RPM_RESUMING state: While in
+this state, SMMU could already be enabled and perform speculative
+translation table walks.
+Elide TLBI commands when device is in RPM_SUSPENDING state: While in
+this state, SMMU could still be enabled, perform speculative
+translation table walks and run in to the use-after-free situation
+described earlier
 
->> drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c:1221:64: error: incomplete definition of type 'struct iommufd_device'
-    1221 |         struct arm_smmu_master *master = dev_iommu_priv_get(vdev->idev->dev);
-         |                                                             ~~~~~~~~~~^
-   include/linux/iommufd.h:24:8: note: forward declaration of 'struct iommufd_device'
-      24 | struct iommufd_device;
-         |        ^
-   1 error generated.
-
-
-vim +1221 drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-
-  1218	
-  1219	static int tegra241_vintf_init_vsid(struct iommufd_vdevice *vdev)
-  1220	{
-> 1221		struct arm_smmu_master *master = dev_iommu_priv_get(vdev->idev->dev);
-  1222		struct tegra241_vintf *vintf = viommu_to_vintf(vdev->viommu);
-  1223		struct tegra241_vintf_sid *vsid = vdev_to_vsid(vdev);
-  1224		struct arm_smmu_stream *stream = &master->streams[0];
-  1225		u64 virt_sid = vdev->virt_id;
-  1226		int sidx;
-  1227	
-  1228		if (virt_sid > UINT_MAX)
-  1229			return -EINVAL;
-  1230	
-  1231		WARN_ON_ONCE(master->num_streams != 1);
-  1232	
-  1233		/* Find an empty pair of SID_REPLACE and SID_MATCH */
-  1234		sidx = ida_alloc_max(&vintf->sids, vintf->cmdqv->num_sids_per_vintf - 1,
-  1235				     GFP_KERNEL);
-  1236		if (sidx < 0)
-  1237			return sidx;
-  1238	
-  1239		writel(stream->id, REG_VINTF(vintf, SID_REPLACE(sidx)));
-  1240		writel(virt_sid << 1 | 0x1, REG_VINTF(vintf, SID_MATCH(sidx)));
-  1241		dev_dbg(vintf->cmdqv->dev,
-  1242			"VINTF%u: allocated SID_REPLACE%d for pSID=%x, vSID=%x\n",
-  1243			vintf->idx, sidx, stream->id, (u32)virt_sid);
-  1244	
-  1245		vsid->idx = sidx;
-  1246		vsid->vintf = vintf;
-  1247		vsid->sid = stream->id;
-  1248	
-  1249		vdev->destroy = &tegra241_vintf_destroy_vsid;
-  1250		return 0;
-  1251	}
-  1252	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+I propose a custom synchronization mechanism where we use a spinlock
+protected variable that determines whether SMMU is enabled or
+disabled. In the suspend/resume callbacks, we disable or enable SMMU
+and update this variable while holding the spinlock. In the map/unmap
+path we briefly grab the spinlock while examining this new variable.
+Only if we find that SMMU is disabled, we elide TLBI commands.
+My concern with this, though, is that the additional spinlock might
+spoil the performance gains of the lockless command queue insertion
+algorithm.
