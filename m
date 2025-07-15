@@ -1,192 +1,331 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2054.outbound.protection.outlook.com [40.107.94.54])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35F772C08CE
-	for <iommu@lists.linux.dev>; Tue, 15 Jul 2025 05:47:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.54
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752558470; cv=fail; b=XOHnc5TY1UxwA/irHIVQTmkcRCiI/i0Zrm93Gx3Gu7an2qHlus6lyzq11w2fCQT/Ds1+dngFBRyKPfnvsjjzTr2AAG+wGKfOuA+Nn3f7J/xzQnS4pwe1TdCkC00ZrQBcWd8q3PdufZAxof5xn+qZFUt1SxF2ZRtb5WqNxFr5laI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752558470; c=relaxed/simple;
-	bh=feowElyk9E6GJlbKVWUgysxaJ7gYNs3g6qzft6JeKgI=;
-	h=Message-ID:Date:Subject:From:To:Cc:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=hiXSH9vEUCHYUc2p3nFgtZU1jutPTonODWmUBmICZSGohZXMvI98XqvTTvAiCHpOPlJb4H3B40Bp84aIogGwIKMRzaVW29ZfRTXPxwqOKWDL+n/gdB1967Y9K0Wqew9dgnQaPiG/TXMXEel6DkjyJiibgNcFXw0FX4CYzsalaAQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Uw1RQcKE; arc=fail smtp.client-ip=40.107.94.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3499826058D
+	for <iommu@lists.linux.dev>; Tue, 15 Jul 2025 05:56:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752559017; cv=none; b=gvOyDGPX0J4UfTjxxhAqJe1Uao41xOAiPFQyrPtl4XcfFKtVgFLKyu75hFX4FhZ/ryfH+jpOiMGnIoKezGenKweZIYS1H3uAerGTnp4yNjTnDZid/xl+q5SI0P+Pi1dUTJlGG0PtYp7WwPgAgNOdCDHCv4O/OLKYn2Dpee4Kyp8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752559017; c=relaxed/simple;
+	bh=DF3Z4TOQv7VenxVCrrz12/o3nauXZ9mahkVgcCe6yN8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WmvxssakJjgSX5SaI3hd1gcDEzHjhHdr64jz2Gyn4E42zrF17DYL14odE74zTCrm1x/GOxBpVRSXXXCRmh8UxMmKDlK0Pb6tRMIlsvz8oZ9o42bBNnWnM9nfGUwA4tQHpijQ5mCo785Z2/wcjMDW2pFjMV+G1nGFqhA/4eixVsI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JmfxsX3D; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Uw1RQcKE"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=KH3ChaaAKXYBTOHvlg27Pvg0qcMJ/fu13HWuCFOOIRXeZMmiGgVy5+B6ApV5c1IXJTpktRZjkYSzZL5BvLd8A2D1QzmPd0iprcTPha669zmvjHmVFiQQwcdtAGh0vzc6vbfe703adjHiNHRDGnOJ6TpvYWMWoQqw139UlCYFAuCnTIzfnKdElvCK43Vkq1PzRAJckt8RSS7z+/Dha2LzUhFug+uRjm8CCRQHK9M9XQe7XPWd8oJbdh2oM4DQqaZgB04kWmy7y8nFhKFy78W84ieugwxKtQvQ74GsmgAmYthdCulBYTS2KNnHDj01CCTYzEiTlWFgSNsPKz3ES6bH/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=p+zyDP3C12lhp60FPrR7cRwxMRtjEAWNur6OvZMjrXM=;
- b=Gh22t2GlsL+Mbc9G0PBCnF5QXcmXxDR6SA74a+kP4f4yP9PugXkLbg0Vjw9ltYCvxsqo5XyPJHuGOQG0NroFlSYQ/IRm4+7nRIXSr3+F9jDVayTbt+7MJVD4IB8qfx7VfdasPqfw8LIXGmd5htj2Rdh9ZUoaHbFZ3Up0ILk9cX3mkOchMx0hVTpfJTfdsW+TcNs8D6Gq7taTYkN3n4YvnusNYxlvQgXutqGxEZNgbZ7oMeFcRjFgVBE6JBbjbYbVwtD9Q//48uFsPZHjpH4d/cF74qdGeug5c0P15Z0aJ1Xi1LY0vXfvHAr7PWADctGF2bKG+2sgAOkEgY2Ym4CHQw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p+zyDP3C12lhp60FPrR7cRwxMRtjEAWNur6OvZMjrXM=;
- b=Uw1RQcKEmDYg5GLFu3RLK+UCvibSdJttLZz5alOQowPrMJmJYS2XxfSNncsEOg0k8E/Ud9Zi5lysBkx7/oYtrEBmYFEkvliqDFsgmfvJF4K2t/OKkkVzIK6LyN1XG3CN/dXlkuNk2b5sl1YtQjr/z/Lmq7GVcSaVnnVWX67de3o=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- SJ0PR12MB8140.namprd12.prod.outlook.com (2603:10b6:a03:4e3::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8922.32; Tue, 15 Jul 2025 05:47:45 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%5]) with mapi id 15.20.8901.018; Tue, 15 Jul 2025
- 05:47:45 +0000
-Message-ID: <242e5925-a0da-43c5-85d2-8796a8e09cca@amd.com>
-Date: Tue, 15 Jul 2025 11:17:40 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 0/8] Introduce debugfs support in IOMMU
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: Will Deacon <will@kernel.org>,
- Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>,
- suravee.suthikulpanit@amd.com
-Cc: joro@8bytes.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-References: <20250702093804.849-1-dheerajkumar.srivastava@amd.com>
- <aHT1YeC30-ZiyS8p@willie-the-truck>
- <a75aaf31-43e2-4a48-b323-0322f24c3b0c@amd.com>
-Content-Language: en-US
-In-Reply-To: <a75aaf31-43e2-4a48-b323-0322f24c3b0c@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN4P287CA0026.INDP287.PROD.OUTLOOK.COM
- (2603:1096:c01:26f::10) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JmfxsX3D"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1752559015; x=1784095015;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=DF3Z4TOQv7VenxVCrrz12/o3nauXZ9mahkVgcCe6yN8=;
+  b=JmfxsX3DpoEgkkyybGkida8leZuJQlyE0HFxhCj174hlywdU0zSh/h0i
+   xZK4AKeGM+7zDDpYnzW7xJNZKnyRhqH1DF/N/atUy+F6ZSmdFB135iCJj
+   FzG3EcAP+g2mfLQFWMB2cIV8AuWCFzBOfkWAcMIXNzTBG/NiYWC3hXpOV
+   S6zWs9naAcUiTqUSe4tdFHZfWiMJBPaqGmzhtwLU3iA55QQWvLB9uPVz5
+   +NIEjidWEjsp3d2tL8xU8UueFQ7abcVY507BsGhqjLluexvT7MfC1rkV2
+   HvPicJ3s00ahJBZeJaxmUqtzWzZlsrSSmQ/fHyGuNO0oIkXDx0NT8Hxb4
+   w==;
+X-CSE-ConnectionGUID: P4m4MWRNSz61onVFB2OAxw==
+X-CSE-MsgGUID: wfA3HfJiQZutG2ChQ0uHyg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11491"; a="65027413"
+X-IronPort-AV: E=Sophos;i="6.16,312,1744095600"; 
+   d="scan'208";a="65027413"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2025 22:56:55 -0700
+X-CSE-ConnectionGUID: OZ2ylrF3RXCTtBBI+cphmQ==
+X-CSE-MsgGUID: hVrIGg11QVuckiLR6+NMLA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,312,1744095600"; 
+   d="scan'208";a="194287973"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2025 22:56:51 -0700
+Message-ID: <e049c100-2e54-4fd7-aadd-c181f9626f14@linux.intel.com>
+Date: Tue, 15 Jul 2025 13:55:01 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SJ0PR12MB8140:EE_
-X-MS-Office365-Filtering-Correlation-Id: a4b0424e-45a4-44e8-4caf-08ddc3631f93
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?NHV2aXQ0aDh1TXk4Wmp6REhkbW1zajk1T0U3YnRNcDFDRUtNK05VNFFpeEdr?=
- =?utf-8?B?NW9OQ0RsZDNLTFgrTVArNWpXcVk4Y1NJZSs5emg4VTBFOURsK1lGL014THVw?=
- =?utf-8?B?MXRleXAwSGpQRUZjOFNKbnVLa2pXTnkvVGo3MnEraGROSzFtQS9YVWRuNzNK?=
- =?utf-8?B?NWZIVVlySG0wbHBFMjJOWWNUaEhwWmNZaStHcnJONW90ejZqNmNOa1ZqK1p4?=
- =?utf-8?B?SFJYdHhuK0M3dVo3KzBqQkh1cENQVkxxdXZWT0VjT3VRMFlwMmwweEhacFpE?=
- =?utf-8?B?ejZZVmtGT01SRFRxS0o3Z2pBT2IxRHNldDArN1JNZ0dqOXVpWEh3Nk5YeEcw?=
- =?utf-8?B?V284bzNjQk45UUtNYlRhOTh0bS9iTlUxQkVIdWVZL3VaUmNiVUZ3UHFOZE9P?=
- =?utf-8?B?emRWa2QvQ3dlUktCaDIzbTk1enU4R3NwTld4MnNhWFZxTFY1VXBoVWplMDdB?=
- =?utf-8?B?blpNOE5oWmdqWjc4Wjk4VFczZy9zZHdnVktramIwZGt1bHR5WG55MFpvbFF3?=
- =?utf-8?B?YWFvMlV0MXU1c0tEWERIN25BNS92RWRFcXRYZHExRHAwZnVoL2Mza0kxa0Uw?=
- =?utf-8?B?YVlpUXZFZkx4TjB5akFzQ3RFSlphYjRwMEYzNEwrNFVmcWJIbmVzTkVhcHN1?=
- =?utf-8?B?TjNSb09wdnFRbjJqMjA3YjQwUUlRaEFzV2N3VllYUEt1WUViTjVoMk43Z2Zq?=
- =?utf-8?B?Nk9rSWxiNnNJd1NscVZCdHpldHNST1owYnpqU09zdVQvR2RaRWFuNEo1L2V1?=
- =?utf-8?B?WVJkU3BSQ1FMU3pZNFMrTHNoMnd1ZUtCSldmdklPQXlDT3RObElTb2NseUZI?=
- =?utf-8?B?ZmdHRVo5WDVjVDg5L2czMUFIVC9MSFJTc0xYT2pqNllWOThmbmhjNXQwdjVG?=
- =?utf-8?B?RFJWYlRCUWx6V3dXMkR5VzYyakJiVW5hTGRrTnBKN2NGdjB6c0MzRFk0eDdp?=
- =?utf-8?B?WXpqSU92SHFFTHdqU2R4RUNYaWg3K1RLYXYvS3pYQWtIbVdpemdmK09ZTVA4?=
- =?utf-8?B?VElHMXo1K0lvalFvbGc5b0VmRzNnTmRhQWhjVGtPTTRlclpVaHAzZGp5cUQ3?=
- =?utf-8?B?RmhEQ0QxdHlnV2t0TUpYZWZwbnh6c2VGTU12cTVXSnhsYU9DK3c1VWdHMkVK?=
- =?utf-8?B?YkJGZG5vUHV3UVRubFMreFUrU3VsUXJUUUFLSStoaVdzNFZuTVFyR1pnSGQ2?=
- =?utf-8?B?QnVnSVRYU1ZhdG81STQ0MW5LMG5rZzhEb1ByMXc2anU2YUR6NDFYcWg0S05C?=
- =?utf-8?B?Ymd2aW8rTmZITTVwY0FzRjZSOTNTUGp4ZzBLTmRtWVZTT0tNODNrY1VEUjFR?=
- =?utf-8?B?M2VCbmg2Z1RNRUJPMmNKM3Y2a1N3RUpvWkwzUFVRb3ZhYjUrWnJrOFVlazAx?=
- =?utf-8?B?aTZIOFNpOENpeFdyblMvZy92NlZnb2FIa1lURUZ6WTJqb0xOVC9Nc3VOK3pl?=
- =?utf-8?B?U1pKd0ZLSW0wTVFjQmNMOFRsdmJXeURHeEM1QmhKT1V4TVFMb21vY0oyZzZU?=
- =?utf-8?B?dDZueXRxSThuN2JzK1ZTcUxkTGN5dDNjYm41STYrbHpmcmJkZ1NsQ04vSERv?=
- =?utf-8?B?UktROEhnaUhiWG5ZRExFYisvNUp5cEw2VG9uUVk4UmhBS0dISzhnTDAvVXZS?=
- =?utf-8?B?V1FIdjcxbHllRHU4R2hEbFJpMkZjZk9ua0t1ZFJ4enBQQmRVOFVmMFFsaStS?=
- =?utf-8?B?NmwvVm14NWdXdFh4WXRsdjRjWFN2U0ROOERtOUxIL1ZJQm5rNXR6SUpuQVpt?=
- =?utf-8?B?K3g4QUQxS294Z01BcEE4MGRYV3d5SGdCdCtRRE4vVGJpQXduMFhpNDlOZzEv?=
- =?utf-8?B?YlR6djNmcXF6NnRZdkJXUjlUc3ZURzdoaFByUTJIaUxXVHNrS1VJSG16ZEZp?=
- =?utf-8?B?M3JFbS9EQ3pROWJYV0JrTko5b21xTDNWTEZTRGpoU3g1eXlJRlZZeU5wdldl?=
- =?utf-8?Q?Hb67h/djoQs=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?L1JPQ0hDOHFoMkovbmtMUW0vRytEMUI0WmhBTGpSZUF3OVZ4VEFSSGNoVkUv?=
- =?utf-8?B?N1o1V0hOT3FjUHlpZS9QQW95ZGlnbzBGRUw1ckJ6cHVwblBYZlhkYnNzQnhT?=
- =?utf-8?B?WVpab04xQ2ZTbmVOd3JoTTZoUm9QMGl0d2Y0dmNwRmlTOWNndTM5bVBrcWpr?=
- =?utf-8?B?Tmh0YTBRY2tHQ2htalQyaHNyWE9OVlJxWTU1RVhub2lNR2krVE9WVEZpbEZ6?=
- =?utf-8?B?RUZPWlRkVytlUDBMeHN5Vmw3bVF5cDgvTVNmZGNMWXpFV3RaZ3REUzRkVUtI?=
- =?utf-8?B?OC9JS1ZWSUppZWJyZXhZRFhwZDZNeDlrUlYwclNaVENqSTJvd1VVM2RvMHNW?=
- =?utf-8?B?aXNiTVNJSHUyVHZ1NmVtUTRoUUlCYlgzNW1TQXhJdFREWWdCL3R0cGhvQWdl?=
- =?utf-8?B?Y0c0U2ZHVFFwQkJWZFpvcmNuT0N2cFo3Z0xZd3pjOHlvSHYyUzZvNU9YTHAz?=
- =?utf-8?B?c1BEc2ZEYUFZRHAya3JNMmpVWEtMR2hKdjNSWEdUQWphT0dHbGxBajJiVzhL?=
- =?utf-8?B?Zjdmem5iM2RCMldSVERiNjhZRm9pNm1DWUF0SmVkWEhSR3dxLytodUpPWXd1?=
- =?utf-8?B?STBCVmlpRHdacWxKQytsZndqa2I5N3hXdEl4MXVXMjRYVUVIdFNYVFpIOXRP?=
- =?utf-8?B?MTVCY2Frc21CaGVSd3d5S2NNTWVKQ2F0UGxiL3RiczdIOTFWdFhuUzM1Sndz?=
- =?utf-8?B?Z09ZMWMyc1dkTWtzeWZvZkFhYkxxS1VNSENjOWZidlZBbFBTU1FmSXcrWG9Z?=
- =?utf-8?B?WjVBbWI5N2t5T1pTTnM4dEcxbldFRFUwanJ6allWbTl3RXBiZEptUHZ4NzJk?=
- =?utf-8?B?ajdZMUdsRFJjY2xQQWRKSjZJWVJHWmtXNTFYWTV5ZVNmRlJJVFhYMzQ5WjlZ?=
- =?utf-8?B?YkJnRXk0NWlXMUh5QTh1Y3pmbXFFa2ZZUS9EaXBBYzdtcGxkc0hPTkQ2UTJN?=
- =?utf-8?B?dFE5Y2xZQ2w3Mk9CQ1RxQy9QQVVTdm5jT3RBM3dDaCtUaHB0Y09wSVQzVzdH?=
- =?utf-8?B?OER1TTRnSHFiNm9VNHFEM281TTJzV0VYejFvaXUzV0dMWXFRcm5saTJtMHM1?=
- =?utf-8?B?bmdSbkVyOWRXemNKOGpabUdJNGNzbmlLZk01Mms5eCtLOVkyRVBRK2trbk80?=
- =?utf-8?B?RnFaVWhoamd1cHVaSFhOSmVoWk5sQkZEVWJwa2pOdGxyY3VZSmFxMEtrUEpl?=
- =?utf-8?B?RFF1M1dsRWo4K25idzUxdHhDcE8yUnErNVBOQjc0L0ZmNExxenVKa0JSbnhT?=
- =?utf-8?B?MWhwT2J2d3N0cFQ2UXozYlpvTzRucEJ0QUMyekZXSWovaDNLb1BoTzJNYWxt?=
- =?utf-8?B?ZmJNK1ltQmltQjIxeEdZcmRYNksrR1pUSnJUeDFlWTFVc1VYMnBiS0lwUHpa?=
- =?utf-8?B?UnhCVVdNVXRhakZERDViWTBLd1JORzV4eFNKd1puNGk4M2hldnN6MmJxU09a?=
- =?utf-8?B?cFpyY3cvYVFZdC9Jc3I0ZERCVzg2Njd0RWRPSFRoVjRFVDJaYk9tUFo1MnVs?=
- =?utf-8?B?Ylp1bTJrY2JmNi9IUnpJMThLUE96b0c4QWQ4bEVjWTJ0MlRmbkRtSThmT3ZF?=
- =?utf-8?B?SVFka2swQlhQMU0vYlZjUUk5UGw2TG5HWnYyQVlwZkVpeGVUcCsvZzFQY2pT?=
- =?utf-8?B?SGhvOG5tOEhTTDRPb0RoUzRjYUxYSEF5b1hGWXR1bmM2SDN1eXltRHFpbXI0?=
- =?utf-8?B?TUlVWC9WNEt6VjNtQTJxRjE3OUZBVU80akNSOThuZkF2b0FhZEQ1UkpYWHkr?=
- =?utf-8?B?M3kvcGZzekptaVVRSnNPRUJUS0xIMGRheE80RmxMbko4R2RmRU5XNzJ0M3NL?=
- =?utf-8?B?ZmtraTlEeEhxeDhQNldDaHM2eFplelNlZFpqMys5UitzMnYwMHpZa0QwYkpR?=
- =?utf-8?B?b0Y4bWQvRUgwNVR5bG9wcy9wU0NLRXd2eE5OUThCTWk3aVg1VFZ4a3Y0TkV5?=
- =?utf-8?B?djZ5MHYwYkNZR1VFdCtkY3VuOTFLZzU0Tlc4YTh2elg2THpjaFV6dHgvTHYr?=
- =?utf-8?B?YiszWG15WUEyRmRTK0pySzZKSGMvNC95eGZtVVl3TU9xdVlNQ3JVdDBuL21D?=
- =?utf-8?B?RHYvQ1JpbzU1c1VjVHJTOG0wVmRpUGl1NlMrZGg0M052Z2plWkhGM0JsbXBG?=
- =?utf-8?Q?H4QVIH3hi2SGgTH8XwDHlskHg?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a4b0424e-45a4-44e8-4caf-08ddc3631f93
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2025 05:47:45.6864
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cSj7WiBfMjIRPXBl7PQX2CsF5l1zl/WfD0CoJbvnCFPWz1QXoBVeVN23I8/Y3+/85c5ivVIuwIunR3olp0CV8A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB8140
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/1] iommu/sva: Invalidate KVA range on kernel TLB
+ flush
+To: Peter Zijlstra <peterz@infradead.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Jann Horn <jannh@google.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Dave Hansen <dave.hansen@intel.com>,
+ Alistair Popple <apopple@nvidia.com>, Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, "Tested-by : Yi Lai" <yi1.lai@intel.com>,
+ iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+References: <20250709062800.651521-1-baolu.lu@linux.intel.com>
+ <20250710135432.GO1613376@noisy.programming.kicks-ass.net>
+ <094fdad4-297b-44e9-a81c-0fe4da07e63f@linux.intel.com>
+ <20250711083252.GE1099709@noisy.programming.kicks-ass.net>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250711083252.GE1099709@noisy.programming.kicks-ass.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Will,
-
-On 7/14/2025 6:24 PM, Vasant Hegde wrote:
-> Hi Will,
-> 
-> On 7/14/2025 5:47 PM, Will Deacon wrote:
->> On Wed, Jul 02, 2025 at 03:07:56PM +0530, Dheeraj Kumar Srivastava wrote:
->>> Introducing debugfs support in AMD/IOMMU driver that will allow
->>> userspace to dump below IOMMU information
->>> 1) MMIO and Capability register per IOMMU
->>> 2) Command buffer
->>> 3) Device table entry
->>> 4) Interrupt remapping table entry
+On 7/11/25 16:32, Peter Zijlstra wrote:
+> On Fri, Jul 11, 2025 at 11:00:06AM +0800, Baolu Lu wrote:
+>> Hi Peter Z,
 >>
->> Suravee, Vasant -- are you happy with this series now? I'll be closing
->> the IOMMU tree for 6.17 shortly and it would be a shame for this to
->> miss the cut given that it's got to v7 and Dheeraj has been receptive to
->> all the feedback so far.
+>> On 7/10/25 21:54, Peter Zijlstra wrote:
+>>> On Wed, Jul 09, 2025 at 02:28:00PM +0800, Lu Baolu wrote:
+>>>> The vmalloc() and vfree() functions manage virtually contiguous, but not
+>>>> necessarily physically contiguous, kernel memory regions. When vfree()
+>>>> unmaps such a region, it tears down the associated kernel page table
+>>>> entries and frees the physical pages.
+>>>>
+>>>> In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU hardware
+>>>> shares and walks the CPU's page tables. Architectures like x86 share
+>>>> static kernel address mappings across all user page tables, allowing the
+>>>> IOMMU to access the kernel portion of these tables.
+>>>>
+>>>> Modern IOMMUs often cache page table entries to optimize walk performance,
+>>>> even for intermediate page table levels. If kernel page table mappings are
+>>>> changed (e.g., by vfree()), but the IOMMU's internal caches retain stale
+>>>> entries, Use-After-Free (UAF) vulnerability condition arises. If these
+>>>> freed page table pages are reallocated for a different purpose, potentially
+>>>> by an attacker, the IOMMU could misinterpret the new data as valid page
+>>>> table entries. This allows the IOMMU to walk into attacker-controlled
+>>>> memory, leading to arbitrary physical memory DMA access or privilege
+>>>> escalation.
+>>>>
+>>>> To mitigate this, introduce a new iommu interface to flush IOMMU caches
+>>>> and fence pending page table walks when kernel page mappings are updated.
+>>>> This interface should be invoked from architecture-specific code that
+>>>> manages combined user and kernel page tables.
+>>>
+>>> I must say I liked the kPTI based idea better. Having to iterate and
+>>> invalidate an unspecified number of IOMMUs from non-preemptible context
+>>> seems 'unfortunate'.
+>>
+>> The cache invalidation path in IOMMU drivers is already critical and
+>> operates within a non-preemptible context. This approach is, in fact,
+>> already utilized for user-space page table updates since the beginning
+>> of SVA support.
 > 
-> Ack. This is mostly ready. Give me a day. I will review/test this series.
+> OK, fair enough I suppose. What kind of delays are we talking about
+> here? The fact that you basically have a unbounded list of IOMMUs
+> (although in practise I suppose it is limited by the amount of GPUs and
+> other fancy stuff you can stick in your machine) does slightly worry me.
 
-I have reviewed/tested this series. It looks good to me. Can you please pick
-this series?
+Yes, the mm (struct mm of processes that are bound to devices) list is
+an unbounded list and can theoretically grow indefinitely. This results
+in an unpredictable critical region.
 
-For entire series :
+I am considering whether this could be relaxed a bit if we manage the
+IOMMU device list that is used for SVA. The number of IOMMU hardware
+units in a system is limited and bounded, which might make the critical
+region deterministic.
 
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+If that's reasonable, we can do it like this (compiled but not tested):
 
--Vasant
+diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+index 1a51cfd82808..9ed3be2ffaeb 100644
+--- a/drivers/iommu/iommu-sva.c
++++ b/drivers/iommu/iommu-sva.c
+@@ -9,6 +9,14 @@
 
+  #include "iommu-priv.h"
 
++struct sva_iommu_device_item {
++	struct iommu_device *iommu;
++	unsigned int users;
++	struct list_head node;
++};
++
++static LIST_HEAD(sva_iommu_device_list);
++static DEFINE_SPINLOCK(sva_iommu_device_lock);
+  static DEFINE_MUTEX(iommu_sva_lock);
+  static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+  						   struct mm_struct *mm);
+@@ -52,6 +60,71 @@ static struct iommu_mm_data 
+*iommu_alloc_mm_data(struct mm_struct *mm, struct de
+  	return iommu_mm;
+  }
 
++static int iommu_sva_add_iommu_device(struct device *dev)
++{
++	struct iommu_device *iommu = dev->iommu->iommu_dev;
++	struct sva_iommu_device_item *iter;
++
++	struct sva_iommu_device_item *new __free(kfree) =
++		kzalloc(sizeof(*new), GFP_KERNEL);
++	if (!new)
++		return -ENOMEM;
++	new->iommu = iommu;
++	new->users = 1;
++
++	guard(spinlock_irqsave)(&sva_iommu_device_lock);
++	list_for_each_entry(iter, &sva_iommu_device_list, node) {
++		if (iter->iommu == iommu) {
++			iter->users++;
++			return 0;
++		}
++	}
++	list_add(&no_free_ptr(new)->node, &sva_iommu_device_list);
++
++	return 0;
++}
++
++static void iommu_sva_remove_iommu_device(struct device *dev)
++{
++	struct iommu_device *iommu = dev->iommu->iommu_dev;
++	struct sva_iommu_device_item *iter, *tmp;
++
++	guard(spinlock_irqsave)(&sva_iommu_device_lock);
++	list_for_each_entry_safe(iter, tmp, &sva_iommu_device_list, node) {
++		if (iter->iommu != iommu)
++			continue;
++
++		if (--iter->users == 0) {
++			list_del(&iter->node);
++			kfree(iter);
++		}
++		break;
++	}
++}
++
++static int iommu_sva_attach_device(struct iommu_domain *domain, struct 
+device *dev,
++				   ioasid_t pasid, struct iommu_attach_handle *handle)
++{
++	int ret;
++
++	ret = iommu_sva_add_iommu_device(dev);
++	if (ret)
++		return ret;
++
++	ret = iommu_attach_device_pasid(domain, dev, pasid, handle);
++	if (ret)
++		iommu_sva_remove_iommu_device(dev);
++
++	return ret;
++}
++
++static void iommu_sva_detach_device(struct iommu_domain *domain,
++				    struct device *dev, ioasid_t pasid)
++{
++	iommu_detach_device_pasid(domain, dev, pasid);
++	iommu_sva_remove_iommu_device(dev);
++}
++
+  /**
+   * iommu_sva_bind_device() - Bind a process address space to a device
+   * @dev: the device
+@@ -112,8 +185,7 @@ struct iommu_sva *iommu_sva_bind_device(struct 
+device *dev, struct mm_struct *mm
+
+  	/* Search for an existing domain. */
+  	list_for_each_entry(domain, &mm->iommu_mm->sva_domains, next) {
+-		ret = iommu_attach_device_pasid(domain, dev, iommu_mm->pasid,
+-						&handle->handle);
++		ret = iommu_sva_attach_device(domain, dev, iommu_mm->pasid, 
+&handle->handle);
+  		if (!ret) {
+  			domain->users++;
+  			goto out;
+@@ -127,8 +199,7 @@ struct iommu_sva *iommu_sva_bind_device(struct 
+device *dev, struct mm_struct *mm
+  		goto out_free_handle;
+  	}
+
+-	ret = iommu_attach_device_pasid(domain, dev, iommu_mm->pasid,
+-					&handle->handle);
++	ret = iommu_sva_attach_device(domain, dev, iommu_mm->pasid, 
+&handle->handle);
+  	if (ret)
+  		goto out_free_domain;
+  	domain->users = 1;
+@@ -170,7 +241,7 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
+  		return;
+  	}
+
+-	iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
++	iommu_sva_detach_device(domain, dev, iommu_mm->pasid);
+  	if (--domain->users == 0) {
+  		list_del(&domain->next);
+  		iommu_domain_free(domain);
+@@ -312,3 +383,15 @@ static struct iommu_domain 
+*iommu_sva_domain_alloc(struct device *dev,
+
+  	return domain;
+  }
++
++void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end)
++{
++	struct sva_iommu_device_item *item;
++
++	guard(spinlock_irqsave)(&sva_iommu_device_lock);
++	list_for_each_entry(item, &sva_iommu_device_list, node) {
++		if (!item->iommu->ops->paging_cache_invalidate)
++			continue;
++		item->iommu->ops->paging_cache_invalidate(item->iommu, start, end);
++	}
++}
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 156732807994..f3716200cc09 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -595,6 +595,8 @@ iommu_copy_struct_from_full_user_array(void *kdst, 
+size_t kdst_entry_size,
+   *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
+   *		- IOMMU_DOMAIN_DMA: must use a dma domain
+   *		- 0: use the default setting
++ * @paging_cache_invalidate: Invalidate paging structure caches that store
++ * 			     intermediate levels of the page table.
+   * @default_domain_ops: the default ops for domains
+   * @viommu_alloc: Allocate an iommufd_viommu on a physical IOMMU 
+instance behind
+   *                the @dev, as the set of virtualization resources 
+shared/passed
+@@ -654,6 +656,9 @@ struct iommu_ops {
+
+  	int (*def_domain_type)(struct device *dev);
+
++	void (*paging_cache_invalidate)(struct iommu_device *dev,
++					unsigned long start, unsigned long end);
++
+  	struct iommufd_viommu *(*viommu_alloc)(
+  		struct device *dev, struct iommu_domain *parent_domain,
+  		struct iommufd_ctx *ictx, unsigned int viommu_type);
+@@ -1571,6 +1576,7 @@ struct iommu_sva *iommu_sva_bind_device(struct 
+device *dev,
+  					struct mm_struct *mm);
+  void iommu_sva_unbind_device(struct iommu_sva *handle);
+  u32 iommu_sva_get_pasid(struct iommu_sva *handle);
++void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long 
+end);
+  #else
+  static inline struct iommu_sva *
+  iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+@@ -1595,6 +1601,7 @@ static inline u32 mm_get_enqcmd_pasid(struct 
+mm_struct *mm)
+  }
+
+  static inline void mm_pasid_drop(struct mm_struct *mm) {}
++static inline void iommu_sva_invalidate_kva_range(unsigned long start, 
+unsigned long end) {}
+  #endif /* CONFIG_IOMMU_SVA */
+
+  #ifdef CONFIG_IOMMU_IOPF
+-- 
+2.43.0
+
+> At some point the low latency folks are going to come hunting you down.
+> Do you have a plan on how to deal with this; or are we throwing up our
+> hands an say, the hardware sucks, deal with it?
+> 
+
+Thanks,
+baolu
