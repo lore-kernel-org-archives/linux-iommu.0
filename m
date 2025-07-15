@@ -1,48 +1,76 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A8B95103F;
-	Tue, 15 Jul 2025 11:57:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D1045103F;
+	Tue, 15 Jul 2025 11:57:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752580638; cv=none; b=eicnUGcm20d5yLh8czTKt+6Hl+ZqvPkxRK6D85j7pUeZXBEeMFA9A1JAyW59TnKJ3PXr0LCRQxXdVoAWYG+2IQRAbQq2FDfD9slXByib5flXDiPJkp/uZr9s7N/bzKDLYupow3ANcXkGTPfTj2VqZopmXQ5ziA9WivU/l4Qu8L8=
+	t=1752580645; cv=none; b=TNeMlUgkBrY9sp4LJeVDLXc7uk1U1S6+VIjAh2sct9f3sooREJ+7Qo57ibhKuhrDlUgB40FJYXwtZP0v7BGez8s9+6mZ4ENFYemonETCW28PUICfrME+3fbEP1FUIymGjffrJsPqL3nQ3B0BAvA+/94vaz99nvxjjDWV7KU2aFM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752580638; c=relaxed/simple;
-	bh=FSt31H26dIBp7/pCdW1m4F640hFbkhazVD7WB7oKGBM=;
+	s=arc-20240116; t=1752580645; c=relaxed/simple;
+	bh=dQpJV9t4WX6MPhN775PSWNhE4Y8XrFDxHw+0baMar30=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RvYOo9ed1vnwMAseBS7xnyNQ5SbS4Lu8RpmsC4upvaBs0pAYWe6zQkXqPVSeHIzl3lAlQmFgUf8jS1B+tdwSbpeaGrgD9VsdNjVrX/rJs98zUQdhXXQ1lRVqRJeDz2mXEqJ8lFZCp6FrvXAwig+at4uY7ofOqKGS+jy8CYkX/Ms=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lUnGb5nK; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=llQHunZW9zabW66iKOUjp3rj4Hfar2ByknhGCF+fDcyPiP8dJTrvUClZ2jKjhYW3BTkCu7NkIJNijb3jQhOjeVe1kmtlACPmJNgD0L1EtooUjPEP83VUBuptP1ZT6eeI+GNkvMq0PqoTw492F8KfC1klKBONgQw+e9TTk5mW/sg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N0d2IDV/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lUnGb5nK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED0F4C4CEE3;
-	Tue, 15 Jul 2025 11:57:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N0d2IDV/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83826C4CEF6;
+	Tue, 15 Jul 2025 11:57:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752580637;
-	bh=FSt31H26dIBp7/pCdW1m4F640hFbkhazVD7WB7oKGBM=;
+	s=k20201202; t=1752580644;
+	bh=dQpJV9t4WX6MPhN775PSWNhE4Y8XrFDxHw+0baMar30=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=lUnGb5nK68FV3bx2nZK+p8/xf+VTsOk2Vm5v5UVXwt9fDJwbCv2lK1fa9bHiyULgX
-	 i8c1h6xUXD8pyXmkfXvKyaWRLrDqVUvM0sZmoY5lbboKoLfK0hTaZ5oUYdO+lm5P+g
-	 8DIerfNH5XKM89Z0bm0uA3d7n0UufivcfX+lZMCi9vuKCVqxDRIGtzbYuR6UwVp/hw
-	 6LPMyM/vpqUKxeC0bcPOitaWDG/r51pjpz7FzE3oHVghlBg9xFrQWNk1SI0NasDRC7
-	 Ca91iBu6NywDbWUB7tdXxUVmKO9S0eWaxkS7dT3Kx5vJCb/1uOPyHQuxsHLsGPem4z
-	 nsuS4NTy4YGNw==
+	b=N0d2IDV/1csdMXPNSESzqkWBceo9eaVAnc4jBjcAjEpg3Iup7r+euKYSnqkLVFT5i
+	 Xh4LxeXEudgDyNk9RqEaGEZ10ZWe7EpWpNb88PrBc937o9F0XsI6jgiOYl41kWMlnK
+	 imi0GiDM3Z/1SrKFbiwEGuerLx1oWJ5WWPSuSfUy5/JHNEyk8s5lwnO2elnciWGF0K
+	 Ur+k/0WVICwvy4XKzOE5xEN3QKGeDXD1+1fmXBdvNnnFkFGXagcupKzXGFPZZHtBQe
+	 A9Ue8BJc3WnegQNeb8tgkk851QJQ8Y8fHFxK9Fy3/6cfnhwwdoFE1//q/BUlJmlB7e
+	 c2KPB6bCsmNww==
 From: Will Deacon <will@kernel.org>
-To: joro@8bytes.org,
-	suravee.suthikulpanit@amd.com,
-	robin.murphy@arm.com,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	Vasant.Hegde@amd.com,
-	Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>
+To: Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Manivannan Sadhasivam <mani@kernel.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	"David S. Miller" <davem@davemloft.net>,
+	Vinod Koul <vkoul@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Robert Marko <robimarko@gmail.com>,
+	Das Srinagesh <quic_gurus@quicinc.com>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Jassi Brar <jassisinghbrar@gmail.com>,
+	Amit Kucheria <amitk@kernel.org>,
+	Thara Gopinath <thara.gopinath@gmail.com>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Zhang Rui <rui.zhang@intel.com>,
+	Lukasz Luba <lukasz.luba@arm.com>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Luca Weiss <luca.weiss@fairphone.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v7 0/8] Introduce debugfs support in IOMMU
-Date: Tue, 15 Jul 2025 12:57:08 +0100
-Message-Id: <175257611416.2787163.3378169286521949701.b4-ty@kernel.org>
+	Will Deacon <will@kernel.org>,
+	~postmarketos/upstreaming@lists.sr.ht,
+	phone-devel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-crypto@vger.kernel.org,
+	dmaengine@vger.kernel.org,
+	linux-mmc@vger.kernel.org
+Subject: Re: [PATCH v2 00/15] Various dt-bindings for Milos and The Fairphone (Gen. 6) addition
+Date: Tue, 15 Jul 2025 12:57:09 +0100
+Message-Id: <175257604342.2786246.10984360441321957187.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250702093804.849-1-dheerajkumar.srivastava@amd.com>
-References: <20250702093804.849-1-dheerajkumar.srivastava@amd.com>
+In-Reply-To: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
+References: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,34 +80,24 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Wed, 02 Jul 2025 15:07:56 +0530, Dheeraj Kumar Srivastava wrote:
-> Introducing debugfs support in AMD/IOMMU driver that will allow
-> userspace to dump below IOMMU information
-> 1) MMIO and Capability register per IOMMU
-> 2) Command buffer
-> 3) Device table entry
-> 4) Interrupt remapping table entry
+On Sun, 13 Jul 2025 10:05:22 +0200, Luca Weiss wrote:
+> Document various bits of the Milos SoC in the dt-bindings, which don't
+> really need any other changes.
+> 
+> Then we can add the dtsi for the Milos SoC and finally add a dts for
+> the newly announced The Fairphone (Gen. 6) smartphone.
+> 
+> Dependencies:
+> * The dt-bindings should not have any dependencies on any other patches.
+> * The qcom dts bits depend on most other Milos patchsets I have sent in
+>   conjuction with this one. The exact ones are specified in the b4 deps.
 > 
 > [...]
 
-Applied to iommu (amd/amd-vi), thanks!
+Applied SMMU bindings change to iommu (arm/smmu/bindings), thanks!
 
-[1/8] iommu/amd: Refactor AMD IOMMU debugfs initial setup
-      https://git.kernel.org/iommu/c/ad48b1dd14fb
-[2/8] iommu/amd: Add debugfs support to dump IOMMU MMIO registers
-      https://git.kernel.org/iommu/c/7a4ee419e8c1
-[3/8] iommu/amd: Add debugfs support to dump IOMMU Capability registers
-      https://git.kernel.org/iommu/c/4d9c5d5a1dc9
-[4/8] iommu/amd: Add debugfs support to dump IOMMU command buffer
-      https://git.kernel.org/iommu/c/fb3af1f4fefb
-[5/8] iommu/amd: Add support for device id user input
-      https://git.kernel.org/iommu/c/2e98940f123d
-[6/8] iommu/amd: Add debugfs support to dump device table
-      https://git.kernel.org/iommu/c/b48457782445
-[7/8] iommu/amd: Add debugfs support to dump IRT Table
-      https://git.kernel.org/iommu/c/349ad6d5263a
-[8/8] iommu/amd: Add documentation for AMD IOMMU debugfs support
-      https://git.kernel.org/iommu/c/39215bb3b0d9
+[01/15] dt-bindings: arm-smmu: document the support on Milos
+        https://git.kernel.org/iommu/c/2f0187392cba
 
 Cheers,
 -- 
