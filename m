@@ -1,110 +1,150 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 059D6266574
-	for <iommu@lists.linux.dev>; Tue, 15 Jul 2025 06:37:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C850522129E
+	for <iommu@lists.linux.dev>; Tue, 15 Jul 2025 06:41:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752561445; cv=none; b=OSq41peI2MqM1QyT6WwEtaNWrEgSwBnzCHCsclJTKU6GUpHlXFqw722FLa02xCyHEgeo7IFjkA68m3g6uWI0qz3cSHhUL+jn3PqlrxtWg3dRdTBWc/lpq3linndT9KQao7ND/BrTZiyr3OrkjCFXqWwnAxHhUn679NhXvIim0Pg=
+	t=1752561686; cv=none; b=P85XZE5BYHBeV1/Cw1q2myQ1pZUL6p+BDB0ItM47krgcwCP0UVPu47I3CVeQCbIg6gQThwi23Sndf3BMt3HvFYfGYFTFkIsxeiB4IHgOmqAfxSDkQq3Az4UkiRphuP5IM86GLTBWRM+tJv7steZB55NTnldwv6DvvkHmV+Rt7ok=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752561445; c=relaxed/simple;
-	bh=p+dk/vPve33hJypV4SAVkoPVl7FKtzfqNq0uRIRqJbA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=slO0fXyZhxJV1s6hqADdq3ZmAH1b55hN8FdEgRVQLOzqcRSHruxIrNyLXTCM0w0F7oCWb+n7fVrq1BBTAXsw0n+Nf0p7tQ8psX/A/IFWyInHb6+HHtvO93yVBhfZEhBItKey1iC0v68gHPsohHmpfJefsR+1rbKmxg6GM+2w8uc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=dZ4xaHNY; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1752561686; c=relaxed/simple;
+	bh=fTV1vB6c0+m9+jAUJWGdzYVlGQUjPWrCEoX2PhR980E=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=huFIa45TkgeraM4XcsTmZ7WpDSzcBYDFriwIJswZCKW9u6nb9VxlAYC6P9Ct4Jxgunyab6NvinWgpYzLAMTiyXT3obpyYDzM9nGJ0TGLUMYngvXBMkjU7PPcTZDSUXvJNBREkPkFdS6l69+0pTYj0j8EUh1P0xTfEpmk78k3epE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MdS/EBEm; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dZ4xaHNY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1752561443;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=PJNrGnddCS+K+I/ghI3UvfktypplC8pV6M7MGR0tlpY=;
-	b=dZ4xaHNYWHNTYGYvUbIOiZWKKiRqjEFseBX1lAcJbqX/9XmYQeox2Gga2pkezlIPuVn6mJ
-	OhegEzZp4LnYgWklDD1pEsCIT5dh4KDf35NEOzzha/V5TIHWm47KgxoOPPzuYTUZrSIDkg
-	9U15Yeab6oBGc3rT7NC3T4NayOwmFmg=
-Received: from mx-prod-mc-06.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-35-165-154-97.us-west-2.compute.amazonaws.com [35.165.154.97]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-502-Y2ABCGivMxinmS1AsXatdQ-1; Tue,
- 15 Jul 2025 02:37:19 -0400
-X-MC-Unique: Y2ABCGivMxinmS1AsXatdQ-1
-X-Mimecast-MFC-AGG-ID: Y2ABCGivMxinmS1AsXatdQ_1752561437
-Received: from mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.93])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id D71671801233;
-	Tue, 15 Jul 2025 06:37:16 +0000 (UTC)
-Received: from localhost (unknown [10.72.112.210])
-	by mx-prod-int-06.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 62AE2180174E;
-	Tue, 15 Jul 2025 06:37:13 +0000 (UTC)
-Date: Tue, 15 Jul 2025 14:37:09 +0800
-From: Baoquan He <bhe@redhat.com>
-To: Askar Safin <safinaskar@zohomail.com>,
-	Jani Nikula <jani.nikula@linux.intel.com>
-Cc: regressions <regressions@lists.linux.dev>,
-	intel-gfx <intel-gfx@lists.freedesktop.org>,
-	kexec <kexec@lists.infradead.org>,
-	dri-devel <dri-devel@lists.freedesktop.org>,
-	iommu <iommu@lists.linux.dev>, Ben Hutchings <benh@debian.org>,
-	anushasrivatsa <anusha.srivatsa@intel.com>,
-	joonaslahtinen <joonas.lahtinen@linux.intel.com>,
-	tvrtkoursulin <tvrtko.ursulin@linux.intel.com>,
-	josesouza <jose.souza@intel.com>,
-	davehansen <dave.hansen@linux.intel.com>
-Subject: Re: Second kexec_file_load (but not kexec_load) fails on i915 if
- CONFIG_INTEL_IOMMU_DEFAULT_ON=n
-Message-ID: <aHX3FSMif/LDmTtq@MiWiFi-R3L-srv>
-References: <197d1dc3bff.c01ddb9024897.1898328361232711826@zohomail.com>
- <cd3ca680ac5751368941713c1071e04d69544d47@intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MdS/EBEm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1752561685; x=1784097685;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=fTV1vB6c0+m9+jAUJWGdzYVlGQUjPWrCEoX2PhR980E=;
+  b=MdS/EBEm7X/c15JeSVvHJVdVPKUxuZwfSiFK+c1B333wJH2X0aWTgWV2
+   f06LjGamsPXMr5QOz3Mb7jcsrGJUaoMCCDUQ0ZuiZtIQioR39Qb70laKK
+   snOsWTkXgLb4OGg43cvUjSznfFNyDaQipBvOMaq7CjWuwLEjF6MVUSHHr
+   eTI8scKn+5H2ioSkVa9+bv1KosROo7edLJgt5Qy5KgwPOSmcQxzOYZ+5x
+   5JtmDYhNSs4FjsyiF3AKg5oL8On3lT+ZgASxJoI/VhcXtmbfGxWT8RvO2
+   obKNDFZSw4QmymHghU7xinzOIM5g3ibVCJ97DAjQ4tscIY8hMG5TTZic3
+   g==;
+X-CSE-ConnectionGUID: ind1duanRauNuvHDpDE6TQ==
+X-CSE-MsgGUID: Ggs48zKFSVORxP5SWghtlw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11491"; a="53880818"
+X-IronPort-AV: E=Sophos;i="6.16,313,1744095600"; 
+   d="scan'208";a="53880818"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jul 2025 23:41:24 -0700
+X-CSE-ConnectionGUID: eZZn1MyVSCGiQB4AkwOfQQ==
+X-CSE-MsgGUID: 8X2t+FlMQzqFKvyAp8qxgQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,313,1744095600"; 
+   d="scan'208";a="157648911"
+Received: from yilunxu-optiplex-7050.sh.intel.com ([10.239.159.165])
+  by orviesa008.jf.intel.com with ESMTP; 14 Jul 2025 23:41:19 -0700
+From: Xu Yilun <yilun.xu@linux.intel.com>
+To: jgg@nvidia.com,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	will@kernel.org,
+	aneesh.kumar@kernel.org
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	joro@8bytes.org,
+	robin.murphy@arm.com,
+	shuah@kernel.org,
+	nicolinc@nvidia.com,
+	aik@amd.com,
+	dan.j.williams@intel.com,
+	baolu.lu@linux.intel.com,
+	yilun.xu@intel.com
+Subject: [PATCH v5 0/8] iommufd: Destroy vdevice on device unbind
+Date: Tue, 15 Jul 2025 14:32:37 +0800
+Message-Id: <20250715063245.1799534-1-yilun.xu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <cd3ca680ac5751368941713c1071e04d69544d47@intel.com>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.93
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: -jzdgx1TjxvPHborQ9LHkjXKI9DHHu-ZQ3cG2nY7cxk_1752561437
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On 07/04/25 at 11:29am, Jani Nikula wrote:
-> On Thu, 03 Jul 2025, Askar Safin <safinaskar@zohomail.com> wrote:
-> > TL;DR: I found a bug in strange interaction in kexec_file_load (but not kexec_load) and i915
-> > TL;DR#2: Second (sometimes third or forth) kexec (using kexec_file_load) fails on my particular hardware
-> > TL;DR#3: I did 55 expirements, each of them required a lot of boots, in total I did 1908 boots
-> 
-> Thanks for the detailed debug info. I'm afraid all I can say at this
-> point is, please file all of this in a bug report as described in
-> [1]. Please add the drm.debug related options, and attach the dmesgs and
-> configs in the bug instead of pointing at external sites.
+It is to solve the lifecycle issue that vdevice may outlive idevice. It
+is a prerequisite for TIO, to ensure extra secure configurations (e.g.
+TSM Bind/Unbind) against vdevice could be rolled back on idevice unbind,
+so that VFIO could still work on the physical device without surprise.
 
-Yeah, that's very great example people can refer to when reporting
-issues to upstream, thanks for the details.
+Changelog:
+v5:
+ - Further rebase to iommufd for-next 601b1d0d9395
+ - Keep the xa_empty() check in iommufd_fops_release(), update comments
+ - Move the *idev next to *viommu for struct iommufd_vdevice
+ - Update the description about IOMMUFD_CMD_VDEVICE_ALLOC for lifecycle
+ - Remove Baolu's tag for patch 4 because of big changes since v3
+ - Add changelog about idev->destroying
+ - Adjust line wrappings for tools/testing/selftests/iommu/iommufd.c
+ - Clarify that no testing for tombstoned ID repurposing.
+ - Add review tags.
 
-For the bug itself, I would hope Intel GPU people can have a look, see
-what's happened and how to fix. For kexec reboot, we have got problems
-on Nvidia GPU and amdgpu which makes kexec reboot hard to do continuous
-switching to 2nd kernel. In Redhat, we have met this several years ago,
-and we tried to contact GPU dev, while there's no way to fix it. Finaly
-we have to declare not supporting kexec reboot formally. This Intel GPU
-issue could be a different one, I still hope GPU dev can have a look.
+v4: https://lore.kernel.org/linux-iommu/20250709040234.1773573-1-yilun.xu@linux.intel.com/
+ - Rebase to iommufd for-next.
+ - A new patch to roll back iommufd_object_alloc_ucmd() for vdevice.
+ - Fix the mistake trying to xa_destroy ictx->groups on
+   iommufd_fops_release().
+ - Move 'empty' flag inside destroy loop for iommufd_fops_release().
+ - Refactor vdev/idev destroy syncing.
+   - Drop the iommufd_vdevice_abort() reentrant idea.
+   - A new patch that adds pre_destroy() op.
+   - Hold short term reference during the whole vdevice's lifecycle.
+   - Wait on short term reference on idev's pre_destroy().
+   - Add a 'destroying' flag for idev to prevent new reference after
+     pre_destroy().
+ - Rephrase/fix some comments.
+ - Add review tags.
 
-Currently, many people are investing much effort on KHO, K-state, etc
-in upstream to make kexec reboot versatile and flexible. I am very glad
-to see that. And I guess people possiblly have met the same GPU issues on
-Nvidia and AMD gpu as I mentioned, and trying to solve them. Otherwise,
-no matter how wonderful KHO, K-state or K-anything are, they are just sky
-scraper on sand.
+v3: https://lore.kernel.org/linux-iommu/20250627033809.1730752-1-yilun.xu@linux.intel.com/
+ - No bother clean each tombstone in iommufd_fops_release().
+ - Drop vdev->ictx initialization fix patch.
+ - Optimize control flow in iommufd_device_remove_vdev().
+ - Make iommufd_vdevice_abort() reentrant.
+ - Call iommufd_vdevice_abort() directly instead of waiting for it.
+ - Rephrase/fix some comments.
+ - A new patch to remove vdev->dev.
+ - A new patch to explicitly skip existing viommu tests for no_iommu.
+ - Also skip vdevice tombstone test for no_iommu.
+ - Allow me to add SoB from Aneesh.
 
-Personal opinion.
+v2: https://lore.kernel.org/linux-iommu/20250623094946.1714996-1-yilun.xu@linux.intel.com/
 
-Thanks
-Baoquan
+v1/rfc: https://lore.kernel.org/linux-iommu/20250610065146.1321816-1-aneesh.kumar@kernel.org/
+
+The series is based on iommufd for-next
+
+
+Xu Yilun (8):
+  iommufd/viommu: Roll back to use iommufd_object_alloc() for vdevice
+  iommufd: Add iommufd_object_tombstone_user() helper
+  iommufd: Add a pre_destroy() op for objects
+  iommufd: Destroy vdevice on idevice destroy
+  iommufd/vdevice: Remove struct device reference from struct vdevice
+  iommufd/selftest: Explicitly skip tests for inapplicable variant
+  iommufd/selftest: Add coverage for vdevice tombstone
+  iommufd: Rename some shortterm-related identifiers
+
+ .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    |   2 +-
+ drivers/iommu/iommufd/device.c                |  51 +++
+ drivers/iommu/iommufd/driver.c                |   4 +-
+ drivers/iommu/iommufd/iommufd_private.h       |  49 ++-
+ drivers/iommu/iommufd/main.c                  |  69 +++-
+ drivers/iommu/iommufd/viommu.c                |  69 +++-
+ include/linux/iommufd.h                       |  10 +-
+ include/uapi/linux/iommufd.h                  |   5 +
+ tools/testing/selftests/iommu/iommufd.c       | 379 +++++++++---------
+ 9 files changed, 407 insertions(+), 231 deletions(-)
+
+
+base-commit: 601b1d0d9395c711383452bd0d47037afbbb4bcf
+-- 
+2.25.1
 
