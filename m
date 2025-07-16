@@ -1,127 +1,150 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90394288CAF;
-	Wed, 16 Jul 2025 15:24:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D52421C9E3
+	for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 15:27:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752679467; cv=none; b=OVMI6W7KKKqxk/HfuMUbdTEDjYWZK7A5vbMrIU2en1zEWDtCYzVDvliokVjcmLH0JXOR46+YuLdAn+icn/vJ5dLInsPvOZ4KYV5DTponitw5xeOT/l4y+bWP/MpOLSoghQiHWgit+vJBoIJJAOE77AICowCcHlaWn80Np14IB+Y=
+	t=1752679635; cv=none; b=G7s8MbJbK6k/l1l0wfv9erHAr3pVyWvtP1o+Ciz9nYai49dCpxyEvO4Gr8cIw+FH0wgwG14vg3x6GEu7hPcADfwVgh3jb3NAkS5tgAr9+qLSxRhae/Q5g4BCGzeghFSm7QSvSleeNipD31c3ScPEsg9rU4FfsXLS/0vcw8nHc2A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752679467; c=relaxed/simple;
-	bh=LAicS+pihtv9EEihexoFYLo1L3pM9ZqAXYRukX438Nw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uINzc62rXn4EpAkJ3LS4mW2ssoPAUxhvgU5KsdG5LdCwUzFfjv735sldHs26nQFoXaW45TIvYXbbXwNLpU1V6g9FBHPIId3F+n+sTiPEgePy+yRJBIMKEs43iF4qL9CzGjxm5YTxeC0WXfWWS6DYq3122dXL7bj6IuxKwvc5OMI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eXV0vx9q; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1752679635; c=relaxed/simple;
+	bh=c9K3Jeyllh9acXj8/pMhkma1YgpPHnE/1br2gKtyXNY=;
+	h=Date:Subject:In-Reply-To:CC:From:To:Message-ID:Mime-Version:
+	 Content-Type; b=V8Z8oebEzmJYO1fb4g1qW3lCqZayyagj86t5yshLOh/z5Ed3dQiu/G1nCXYB6dWiOyZfVB+1DJcS+9IFD9f9T4NCqG/c6QGSvPEz6LvAsq7GzrFl6JQ5eZXO0xF7n6i6Ka+q7S/NJM1IURYxe7klIAxCZ/KwHcQe6lKinJ1Ui+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=dabbelt.com; spf=pass smtp.mailfrom=dabbelt.com; dkim=pass (2048-bit key) header.d=dabbelt-com.20230601.gappssmtp.com header.i=@dabbelt-com.20230601.gappssmtp.com header.b=llWrEqcd; arc=none smtp.client-ip=209.85.210.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=dabbelt.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dabbelt.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eXV0vx9q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5741BC4CEF0;
-	Wed, 16 Jul 2025 15:24:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752679467;
-	bh=LAicS+pihtv9EEihexoFYLo1L3pM9ZqAXYRukX438Nw=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=eXV0vx9qsPrkBBLAYy4/BJFyqFKY7mfLVIIl/hUHZBRcBi1p1i6xoMoDMgFTiDcsV
-	 MVBJDfF+6g2FvAvMAt0V8p0+SxYErYjU4HcK2UM0oiqt4PSzCpPNxGIZVYqIx0ivDs
-	 c0huQIb6tjN3KkM2uKjEqN7BVSSZoHZIaZonZbGPViwBo9SG6hayKuMuS+LSyuhFvM
-	 bOYzJWOWLGEspFmpulKbFJoyvEkfovtHTDN4qRg3zoNLQuNwJ4hyqMzUvs7GLBL49Z
-	 rR2DpPB6jo2d1Dew+8bEJ6F4aQ8FtryO+uO3Xb+jgh380PaOaULW6g5H0RVSmHdK9P
-	 Szcu9EgUZpT9w==
-Message-ID: <051e5c07-f012-44b1-8e6b-ef9c13ee7177@kernel.org>
-Date: Wed, 16 Jul 2025 10:24:24 -0500
+	dkim=pass (2048-bit key) header.d=dabbelt-com.20230601.gappssmtp.com header.i=@dabbelt-com.20230601.gappssmtp.com header.b="llWrEqcd"
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-74b52bf417cso70014b3a.0
+        for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 08:27:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20230601.gappssmtp.com; s=20230601; t=1752679632; x=1753284432; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=DLHXWx3e4qVyWFktNcTinbMTNqw3Gsd0ZZ2hzOlFYG4=;
+        b=llWrEqcd+mRW8PZUuqjEInuoqvbHz243OxkBYYxixzc5T2LTxQS6k6vHHjG6X7R7rs
+         NSUKoubmSudkvkvLlwFihGVWf2CZcYUax64a91GvGAOVSmsSxLWIMw4w8r1wnFeJxWkY
+         +i0HaQyGoltBiWtAN3g7oP2GguzqPKDbaL/Zz/0+B6feXQ019BDBixEnkmLATok3Ig+A
+         /excMNKmavzcYDqP5tCCxn/q56LY8IDtEyHHitlQXZji3ot+hkwTXBsbDPlqrEdcA8Gi
+         0TvkJn+BU63pATzYs0j1O0tvc0hvZrNPmGU0eMK11PEJW7p6/F0S4XIDbQN0prQOY6B4
+         rTvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752679632; x=1753284432;
+        h=content-transfer-encoding:mime-version:message-id:to:from:cc
+         :in-reply-to:subject:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DLHXWx3e4qVyWFktNcTinbMTNqw3Gsd0ZZ2hzOlFYG4=;
+        b=Gv8lDTsvSFyKcFPsvHh7OPkTshd7foGWYDSvdf689iJvN6veeimyFfE8guvJ0a/tVv
+         +cSteB5OWeEF0Y7kzuysi9uYooHLqwi21QgjM3q+v4p844c3bBySTvebMBT4ngcn/JzN
+         Z0hr7gx+NKyefkNamNM22D0kNHEXR0RYMw0al3ZndQUFa3kCTfD6jl6OfdtTBYOsI/2/
+         MChd7MKL6u9jfhXLXAEpBJQJn1gZFvIYEbyjptcF7ekpFrCFFCBdcPPW2HLrI9QZA/O7
+         Wx1AveAttzAJQeVcWUY4ugWhU4suoMBlOG2JXiKklt2ev/hncnWnz5zA4LudO01Rz59n
+         wU8A==
+X-Forwarded-Encrypted: i=1; AJvYcCW3z484iDd8yiGVt+ZM6fYtNR7nah+Ht1jPewQNNP/JyAGwR1+GdapcjUD68N1dGn4gOLXwLQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyJmBg7EGb4m2iNk26X82stV22bsC3IGCwUl7eRe1tMmlYslh74
+	i85O8zI/JtLkLz8osNubrirdIhhIx546CfxIByjIlC/OBKsSojSd5mQG7fE9JKn2pRA=
+X-Gm-Gg: ASbGnctILzZefDuRbLw32tOUxUvw1ewx/fZq1k+6MqqjC/fczSNDTw1xsLesbqir1W+
+	az7Wwd7hUXKVBDmX1CdCpYTymJ2b8tA0Z9r0baJF75/tS7OeD/Q4jeJ2+gitBv7FmIloHm6a6Bk
+	wCbliu1wv8iPa09EXEUZMOD8VxJLDX6By6geeMH5hqVM3Z/VCE3n0YYyqUoZa9Hooiy/IlnMEC6
+	LloClb3KiqciBsGcTZVqRJUZL6lSxx11dq/SCkxJm0LjkpM6tp6kwWr8rH0VxqAuNy+cGVRivBe
+	zEZtlVoICQGPKfMAjZA05ZlpYu1LQqlnokK3ZdAgvZL4jkx1zfkx/xcbG3OfX9I3OrYKVUf6Lmc
+	1QmfghxyuyWi7Fhfd2lXN
+X-Google-Smtp-Source: AGHT+IH7iBG8I47ZPk3kjc8DlfJqKS+H6u2KneCpl6yYfAutQXIcMVrF/w+WWdKN0EwIATcq6Y7GTg==
+X-Received: by 2002:a05:6a00:22d0:b0:748:e0ee:dcff with SMTP id d2e1a72fcca58-75723d7d2c8mr4843826b3a.11.1752679632185;
+        Wed, 16 Jul 2025 08:27:12 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:500::4:b02a])
+        by smtp.gmail.com with UTF8SMTPSA id d2e1a72fcca58-74eb9f22c01sm14929679b3a.101.2025.07.16.08.27.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Jul 2025 08:27:11 -0700 (PDT)
+Date: Wed, 16 Jul 2025 08:27:11 -0700 (PDT)
+X-Google-Original-Date: Wed, 16 Jul 2025 08:27:09 PDT (-0700)
+Subject:     Re: [PATCH v5 0/3] RISC-V: Add ACPI support for IOMMU
+In-Reply-To: <20250716104059.3539482-1-sunilvl@ventanamicro.com>
+CC: linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+  linux-acpi@vger.kernel.org, iommu@lists.linux.dev, Paul Walmsley <paul.walmsley@sifive.com>,
+  Alexandre Ghiti <alex@ghiti.fr>, rafael@kernel.org, lenb@kernel.org, tjeznach@rivosinc.com, joro@8bytes.org,
+  Will Deacon <will@kernel.org>, robin.murphy@arm.com, Atish Patra <atishp@rivosinc.com>,
+  apatel@ventanamicro.com, ajones@ventanamicro.com, Sunil V L <sunilvl@ventanamicro.com>
+From: Palmer Dabbelt <palmer@dabbelt.com>
+To: Sunil V L <sunilvl@ventanamicro.com>
+Message-ID: <mhng-E714E5B9-0828-46CE-B890-9AE61C2E341D@palmerdabbelt-mac>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 9/9] PCI: Add a new 'boot_display' attribute
-To: Maxime Ripard <mripard@kernel.org>
-Cc: David Airlie <airlied@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Alex Deucher <alexander.deucher@amd.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Simona Vetter <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Thomas Zimmermann <tzimmermann@suse.de>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
- "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
- "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
- "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
- "open list:SOUND" <linux-sound@vger.kernel.org>,
- Daniel Dadap <ddadap@nvidia.com>,
- Mario Limonciello <mario.limonciello@amd.com>
-References: <20250714212147.2248039-1-superm1@kernel.org>
- <20250714212147.2248039-10-superm1@kernel.org>
- <20250716-upbeat-tody-of-psychology-93e2a2@houat>
-Content-Language: en-US
-From: Mario Limonciello <superm1@kernel.org>
-In-Reply-To: <20250716-upbeat-tody-of-psychology-93e2a2@houat>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 7/16/25 3:22 AM, Maxime Ripard wrote:
-> Hi Mario,
-> 
-> On Mon, Jul 14, 2025 at 04:21:46PM -0500, Mario Limonciello wrote:
->> From: Mario Limonciello <mario.limonciello@amd.com>
->>
->> On systems with multiple GPUs there can be uncertainty which GPU is the
->> primary one used to drive the display at bootup. In order to disambiguate
->> this add a new sysfs attribute 'boot_display' that uses the output of
->> video_is_primary_device() to populate whether a PCI device was used for
->> driving the display.
->>
->> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
->> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
->> ---
->> v7:
->>   * fix lkp failure
->>   * Add tag
->> v6:
->>   * Only show for the device that is boot display
->>   * Only create after PCI device sysfs files are initialized to ensure
->>     that resources are ready.
->> v4:
->>   * new patch
->> ---
->>   Documentation/ABI/testing/sysfs-bus-pci |  8 +++++
->>   drivers/pci/pci-sysfs.c                 | 46 +++++++++++++++++++++++++
->>   2 files changed, 54 insertions(+)
->>
->> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
->> index 69f952fffec72..8b455b1a58852 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-pci
->> +++ b/Documentation/ABI/testing/sysfs-bus-pci
->> @@ -612,3 +612,11 @@ Description:
->>   
->>   		  # ls doe_features
->>   		  0001:01        0001:02        doe_discovery
->> +
->> +What:		/sys/bus/pci/devices/.../boot_display
->> +Date:		October 2025
->> +Contact:	Linux PCI developers <linux-pci@vger.kernel.org>
->> +Description:
->> +		This file indicates the device was used as a boot
->> +		display. If the device was used as the boot display, the file
->> +		will be present and contain "1".
-> 
-> It would probably be a good idea to define what a "boot display" here
-> is. I get what you mean, but it's pretty vague and could easily be
-> misunderstood.
-> 
-> Maxime
+On Wed, 16 Jul 2025 03:40:56 PDT (-0700), Sunil V L wrote:
+> This series adds support for RISC-V IOMMU on ACPI based platforms.
+> RISC-V IO Mapping Table (RIMT) is a new static ACPI table [1] introduced
+> to communicate IOMMU information to the OS.
+>
+> [1] - https://github.com/riscv-non-isa/riscv-acpi-rimt/releases/download/v1.0/rimt-spec.pdf
+>
+> Changes since v4:
+> 	1) Rebased to 6.16-rc6
+> 	2) Addressed Anup's feedback on formatting.
+> 	3) Added RB tag from Will and Anup.
+>
+> Changes since v3:
+> 	1) Rebased to 6.16-rc5
+> 	2) Addressed Drew's feedback on v3.
+> 		a) Reordered calling rimt_iommu_configure_id().
+> 		b) Removed unnecessary inline.
+> 		c) Added pr_fmt.
+> 		d) Removed redundant rimt_iommu_configure_id() stub.
+> 	3) Added Drew's RB tag in PATCH 3.
+>
+> Changes since v2:
+> 	1) Rebased to 6.16-rc4
+> 	2) Removed Anup's SOB and link tags added by mistake in v2.
+>
+> Changes since v1:
+> 	1) Rebased to v6.16-rc1.
+> 	2) Dropped ACPICA patch since it is already available in 6.16-rc1.
+> 	3) Added Rafael's ACK.
+> 	4) Fixed few issues found by bots.
+>
+> Sunil V L (3):
+>   ACPI: RISC-V: Add support for RIMT
+>   ACPI: scan: Add support for RISC-V in acpi_iommu_configure_id()
+>   iommu/riscv: Add ACPI support
+>
+>  MAINTAINERS                          |   1 +
+>  arch/riscv/Kconfig                   |   1 +
+>  drivers/acpi/Kconfig                 |   4 +
+>  drivers/acpi/riscv/Kconfig           |   7 +
+>  drivers/acpi/riscv/Makefile          |   1 +
+>  drivers/acpi/riscv/init.c            |   2 +
+>  drivers/acpi/riscv/init.h            |   1 +
+>  drivers/acpi/riscv/rimt.c            | 520 +++++++++++++++++++++++++++
+>  drivers/acpi/scan.c                  |   4 +
+>  drivers/iommu/riscv/iommu-platform.c |  17 +-
+>  drivers/iommu/riscv/iommu.c          |  10 +
+>  include/linux/acpi_rimt.h            |  28 ++
 
-Here's my proposal for updated text, can you please bikeshed or propose 
-an alternative?
+Thanks.  Anup came to the patchwork meeting this morning and asked me to 
+pick it up.  It only barely touches arch/riscv stuff so I'd figured it 
+was going somewhere else, but happy to do so.  I've picked it up into my 
+staging tree as
 
-This file indicates that displays connected to the device were used to 
-display the boot sequence.  If a display connected to the device was
-used to display the boot sequence the file will be present and contain "1".
+    *   e5efe466d9bd - (HEAD -> for-next, palmer/for-next) Merge patch series "RISC-V: Add ACPI support for IOMMU" (2 minutes ago) <Palmer Dabbelt>
+    |\
+    | * 368ed89f7ac9 - iommu/riscv: Add ACPI support (2 minutes ago) <Sunil V L>
+    | * 0d7c16d0df92 - ACPI: scan: Add support for RISC-V in acpi_iommu_configure_id() (2 minutes ago) <Sunil V L>
+    | * ea35561bc965 - ACPI: RISC-V: Add support for RIMT (2 minutes ago) <Sunil V L>
 
+it should show up on for-next assuming it builds and such (it's behind 
+some fixes, so might take a bit).  Happy to do a tag if someone wants, 
+just let me know...
+
+>  12 files changed, 595 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/acpi/riscv/Kconfig
+>  create mode 100644 drivers/acpi/riscv/rimt.c
+>  create mode 100644 include/linux/acpi_rimt.h
 
