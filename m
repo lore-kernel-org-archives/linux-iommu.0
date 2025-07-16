@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DA3B289E36
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB93628A1D1
 	for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 07:12:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752649970; cv=none; b=ZqCan5f2tg9xb4v5np6kgSsLueSHUWWIdFt/Mg2nxt7G2W7exQYFp4do16qJ+gsAnjbqeYtGs2sy3M4ckd4Jbw2XqQyc0maL2tSxcARQFE33Pm7OyUzG7Tewmul3M23kXLaSk998qvMluxUc2z1EpQXxRcinjcVq3sIuWPaFVTQ=
+	t=1752649970; cv=none; b=luc7w9ztOvrjqz0WFgXrS2fhNjlDd2giIFPKLD3q3gZyH39K42Ke6V3rcBng012wPD7YMdFyzhC9XFsO2bWH5tCoFWzDIqKfPmJTVLZ8UcpyfvTQm0NyC7PyQuzt6OgZ6x8uS3+/KzmbODflCOMOLcNpsFlf0TdM2gOEIVIcleQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1752649970; c=relaxed/simple;
-	bh=M0kCbGdguK2I01sYIudQTuezVBCEY6JDjSwYgkYvvVE=;
+	bh=EPmB3ER5RAbb7WUUJI2oQq79I7IlOIoDuKOxpyoZWOY=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=IBATtXkfO5Dl+rWuEQtWqiWnU/RzLP4o5fWfcfk3JMLCGqFpH/k9lcf2qSWKw2apDbmfJ+UNAKaNsr2RNgdcnNUeGDCMUchFWOi909Doovh7eMfGegsKNYdU/FuJ/i+scLl8hiJXA0xCu34MgjxyaBTIvHiOg4+/lN6ELAaOK3Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MS7fB0N4; arc=none smtp.client-ip=198.175.65.15
+	 MIME-Version; b=qmYqLYPC0lkV4NUuon3UECp3U6kNl0a/UjCzkRq2+fEzMs0pmijHFwyKrlON3Rd9I8Ty/ZAt3K6zkQ25smUsjP1Fsd69WdjDGLKSuSHgOBcZVs57w1JUHDw9OBkcfEJ1g9V5FARx2iotYixkn47eka+UM2xhFzVb8euyM3gZ89M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=koNHCQby; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MS7fB0N4"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="koNHCQby"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1752649969; x=1784185969;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=M0kCbGdguK2I01sYIudQTuezVBCEY6JDjSwYgkYvvVE=;
-  b=MS7fB0N4UwaHt+drPdy+iosriAkzhE5Uup8mcKQ7RVPaLT2f38az8znd
-   9AClt5O8z1YUqNyKwz8Q09dBaQB3L1s7ngmmgeEEIER2GnSAlKjVXD1I8
-   zDtZflGDgxPo4Dvrgs1pHXW8Ki+XyrSav5NL8fFmUxACl/aPiBVaCwndP
-   MIhqchC5DOJEYleJrMb418ivQlCm0fbRCwAF9ogV66Iy1EfZ4YD4HZNz5
-   828I8iQknj9lJZ1VNhBp1e5ynhNhb+etOLEY8yFJcjV5DNXkW+T1giJqh
-   XRbRnyCvpz2c6+kOarESEu5+D9JFCMaZ15cJWUisooiH29OqfQw0zEcAo
+  bh=EPmB3ER5RAbb7WUUJI2oQq79I7IlOIoDuKOxpyoZWOY=;
+  b=koNHCQbyhnkuT105BqvghN/o2kP1KXV0getTFbd7Qa5oYXlRPhJehb+T
+   SIPb4AuETn5zHHcF+F4D5tAo5wbA/hbW2dED4Q83OURMpMmyCKTwCYu93
+   4aEYCc2bWUa4aSs/ZYGp8O5xOgJYlpGRZ2CiAHQfSVeJJcL0kYoW0WuP3
+   cS6Sh/mSHdO32RegHdg7VZp8TnaJdN36wh6/Ge/FFwATLs/dPcq/ATeA8
+   TvxrnXtX9q4qZJHll+2FmwOX47+M2DGaWPMa9JuHOPcvdSt7joYHF8WLL
+   vNgsExPRONt7fhhP/McFG/KwprB4s0erx+DTJPrU6vmlySH3wrlZCKocL
    Q==;
-X-CSE-ConnectionGUID: 1vJFXQFbSD2C2YWKKbs+yQ==
-X-CSE-MsgGUID: BqLYWi+TQm6E6YsswRqfNg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="58540799"
+X-CSE-ConnectionGUID: Y3/JtYLHQwe30iM96FHYIQ==
+X-CSE-MsgGUID: SD8O1c7KRWmBKAegEfa2Lw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="58540813"
 X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="58540799"
+   d="scan'208";a="58540813"
 Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 00:12:37 -0700
-X-CSE-ConnectionGUID: j9rzoG2zTP+vUbJ97F1ByA==
-X-CSE-MsgGUID: vo9QC6qAThyXxKIvxVVXKQ==
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 00:12:40 -0700
+X-CSE-ConnectionGUID: 2KHVZEhMRH+FoRgpVKFGsQ==
+X-CSE-MsgGUID: xxsexjI7RNiyxt6M6Vt78w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="161453640"
+   d="scan'208";a="161453643"
 Received: from yilunxu-optiplex-7050.sh.intel.com ([10.239.159.165])
-  by fmviesa003.fm.intel.com with ESMTP; 16 Jul 2025 00:12:33 -0700
+  by fmviesa003.fm.intel.com with ESMTP; 16 Jul 2025 00:12:36 -0700
 From: Xu Yilun <yilun.xu@linux.intel.com>
 To: jgg@nvidia.com,
 	jgg@ziepe.ca,
@@ -59,9 +59,9 @@ Cc: iommu@lists.linux.dev,
 	dan.j.williams@intel.com,
 	baolu.lu@linux.intel.com,
 	yilun.xu@intel.com
-Subject: [PATCH v6 2/8] iommufd: Add iommufd_object_tombstone_user() helper
-Date: Wed, 16 Jul 2025 15:03:43 +0800
-Message-Id: <20250716070349.1807226-3-yilun.xu@linux.intel.com>
+Subject: [PATCH v6 3/8] iommufd: Add a pre_destroy() op for objects
+Date: Wed, 16 Jul 2025 15:03:44 +0800
+Message-Id: <20250716070349.1807226-4-yilun.xu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20250716070349.1807226-1-yilun.xu@linux.intel.com>
 References: <20250716070349.1807226-1-yilun.xu@linux.intel.com>
@@ -73,133 +73,56 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add the iommufd_object_tombstone_user() helper, which allows the caller
-to destroy an iommufd object created by userspace.
+Add a pre_destroy() op which gives objects a chance to clear their
+short term users references before destruction. This op is intended for
+external driver created objects (e.g. idev) which does deterministic
+destruction.
 
-This is useful on some destroy paths when the kernel caller finds the
-object should have been removed by userspace but is still alive. With
-this helper, the caller destroys the object but leave the object ID
-reserved (so called tombstone). The tombstone prevents repurposing the
-object ID without awareness of the original user.
+In order to manage the lifecycle of interrelated objects as well as the
+deterministic destruction (e.g. vdev can't outlive idev, and idev
+destruction can't fail), short term users references are allowed to
+live out of an ioctl execution. An immediate use case is, vdev holds
+idev's short term user reference until vdev destruction completes, idev
+leverages existing wait_shortterm mechanism to ensure it is destroyed
+after vdev.
 
-Since this happens for abnormal userspace behavior, for simplicity, the
-tombstoned object ID would be permanently leaked until
-iommufd_fops_release(). I.e. the original user gets an error when
-calling ioctl(IOMMU_DESTROY) on that ID.
-
-The first use case would be to ensure the iommufd_vdevice can't outlive
-the associated iommufd_device.
+This extended usage makes the referenced object unable to just wait for
+its reference gone. It needs to actively trigger the reference removal,
+as well as prevent new references before wait. Should implement these
+work in pre_destroy().
 
 Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Co-developed-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
-Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 Tested-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Xu Yilun <yilun.xu@linux.intel.com>
 ---
- drivers/iommu/iommufd/iommufd_private.h | 23 ++++++++++++++++++++++-
- drivers/iommu/iommufd/main.c            | 24 +++++++++++++++++++++++-
- 2 files changed, 45 insertions(+), 2 deletions(-)
+ drivers/iommu/iommufd/main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index cd14163abdd1..149545060029 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -202,7 +202,8 @@ void iommufd_object_finalize(struct iommufd_ctx *ictx,
- 			     struct iommufd_object *obj);
- 
- enum {
--	REMOVE_WAIT_SHORTTERM = 1,
-+	REMOVE_WAIT_SHORTTERM	= BIT(0),
-+	REMOVE_OBJ_TOMBSTONE	= BIT(1),
- };
- int iommufd_object_remove(struct iommufd_ctx *ictx,
- 			  struct iommufd_object *to_destroy, u32 id,
-@@ -228,6 +229,26 @@ static inline void iommufd_object_destroy_user(struct iommufd_ctx *ictx,
- 	WARN_ON(ret);
- }
- 
-+/*
-+ * Similar to iommufd_object_destroy_user(), except that the object ID is left
-+ * reserved/tombstoned.
-+ */
-+static inline void iommufd_object_tombstone_user(struct iommufd_ctx *ictx,
-+						 struct iommufd_object *obj)
-+{
-+	int ret;
-+
-+	ret = iommufd_object_remove(ictx, obj, obj->id,
-+				    REMOVE_WAIT_SHORTTERM | REMOVE_OBJ_TOMBSTONE);
-+
-+	/*
-+	 * If there is a bug and we couldn't destroy the object then we did put
-+	 * back the caller's users refcount and will eventually try to free it
-+	 * again during close.
-+	 */
-+	WARN_ON(ret);
-+}
-+
- /*
-  * The HWPT allocated by autodomains is used in possibly many devices and
-  * is automatically destroyed when its refcount reaches zero.
 diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 69c2195e77ca..71135f0ec72d 100644
+index 71135f0ec72d..53085d24ce4a 100644
 --- a/drivers/iommu/iommufd/main.c
 +++ b/drivers/iommu/iommufd/main.c
-@@ -225,7 +225,7 @@ int iommufd_object_remove(struct iommufd_ctx *ictx,
- 		goto err_xa;
- 	}
+@@ -23,6 +23,7 @@
+ #include "iommufd_test.h"
  
--	xas_store(&xas, NULL);
-+	xas_store(&xas, (flags & REMOVE_OBJ_TOMBSTONE) ? XA_ZERO_ENTRY : NULL);
- 	if (ictx->vfio_ioas == container_of(obj, struct iommufd_ioas, obj))
- 		ictx->vfio_ioas = NULL;
- 	xa_unlock(&ictx->objects);
-@@ -311,19 +311,41 @@ static int iommufd_fops_release(struct inode *inode, struct file *filp)
- 	while (!xa_empty(&ictx->objects)) {
- 		unsigned int destroyed = 0;
- 		unsigned long index;
-+		bool empty = true;
+ struct iommufd_object_ops {
++	void (*pre_destroy)(struct iommufd_object *obj);
+ 	void (*destroy)(struct iommufd_object *obj);
+ 	void (*abort)(struct iommufd_object *obj);
+ };
+@@ -160,6 +161,9 @@ static int iommufd_object_dec_wait_shortterm(struct iommufd_ctx *ictx,
+ 	if (refcount_dec_and_test(&to_destroy->shortterm_users))
+ 		return 0;
  
-+		/*
-+		 * We can't use xa_empty() to end the loop as the tombstones
-+		 * are stored as XA_ZERO_ENTRY in the xarray. However
-+		 * xa_for_each() automatically converts them to NULL and skips
-+		 * them causing xa_empty() to be kept false. Thus once
-+		 * xa_for_each() finds no further !NULL entries the loop is
-+		 * done.
-+		 */
- 		xa_for_each(&ictx->objects, index, obj) {
-+			empty = false;
- 			if (!refcount_dec_if_one(&obj->users))
- 				continue;
++	if (iommufd_object_ops[to_destroy->type].pre_destroy)
++		iommufd_object_ops[to_destroy->type].pre_destroy(to_destroy);
 +
- 			destroyed++;
- 			xa_erase(&ictx->objects, index);
- 			iommufd_object_ops[obj->type].destroy(obj);
- 			kfree(obj);
- 		}
-+
-+		if (empty)
-+			break;
-+
- 		/* Bug related to users refcount */
- 		if (WARN_ON(!destroyed))
- 			break;
- 	}
-+
-+	/*
-+	 * There may be some tombstones left over from
-+	 * iommufd_object_tombstone_user()
-+	 */
-+	xa_destroy(&ictx->objects);
-+
- 	WARN_ON(!xa_empty(&ictx->groups));
- 
- 	mutex_destroy(&ictx->sw_msi_lock);
+ 	if (wait_event_timeout(ictx->destroy_wait,
+ 			       refcount_read(&to_destroy->shortterm_users) == 0,
+ 			       msecs_to_jiffies(60000)))
 -- 
 2.25.1
 
