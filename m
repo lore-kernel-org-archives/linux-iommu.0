@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 495F928B3E2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C80928B3EF
 	for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 07:12:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752649972; cv=none; b=g8exiICQ8jZT8F/eI24K/opaI5p/9T0I8gy+9JXxX7CNLzj/IQqjz51c/Gu3yAuXc7ASNoHkQB7SwyzjYZX+Jf1zVDfRxAT7diHyO8OJavvhjCfB1BgyKWiHl4PE7HCySBhHtHBmfc2vrt/WL3ra1pwTVFd8mLIy+y/6qQ635+g=
+	t=1752649972; cv=none; b=oZnFw+gmfaBWIUMsUA0g+Req1kcWylAw4Epuj2c1UY2oqe5fnCpewSW+SWXlcKD3Wtl/8lAwOOdeCUT6xYyYtkM/xYwXg5aEOz5mjlWPRHGqYw7vtn+b+v2vA5BpKWzCzUWIrG18A/xQJdY+Gg97WGOygYqMKCoY73P0JZnjOcE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1752649972; c=relaxed/simple;
-	bh=nJV35tCeC3FV4M9MblNrza0Hf2M8xmHmaqVlITtrpxY=;
+	bh=kcR1ngZvWrLOyihkqx2rkHbIyYAELZHiy6H4piDtezk=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=XVlIoc6blHLOxP7SPspoTMbrJtQDboEpcr3CCVZ34dhGSDWC2hdxawd6PhZ4SOUKiuxWPvzb9Nyi/RP8oCWFVOieq9G2IKMV44g+ok9yasDYY9zoGXGBccaitURDT2A2rKQngwag9zlLKLUD1JhmRsGV0XZ+eEMc2ONsDxS04No=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MVKKdpb5; arc=none smtp.client-ip=198.175.65.15
+	 MIME-Version; b=RdPa7rCDusWUlQfilHVypQ7JTvoFyj0qMV5CAezkrXTaEWE4DBmLcyVt9pMaUbOmId33W+kLoKqt5Ol5jQL3Ag9FEdBlRs8GO+sv5afsra00VYeVjL3XQQyUtgxoVU2gxGJ/OaZPnkyTEQMK+nrYi+d+ljKuDr//XqPTNIJghLY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m2uAcpnE; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MVKKdpb5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m2uAcpnE"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1752649970; x=1784185970;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=nJV35tCeC3FV4M9MblNrza0Hf2M8xmHmaqVlITtrpxY=;
-  b=MVKKdpb5ZIoNtQZ8KShAdKqITJSIZ7V4rLy9/kFBgUTbrJcOPiR5qmeW
-   Fw39beAXoGFZsYoGJWVLxg+By4g+9OrT1sT6AkM73zKTms8tZmpQuCUjl
-   eXcBC5ZNIM8R7ga8SOwNb70Dzxq6a8UeRJHAC+15jMIEld3/EebvykaLe
-   oL6g/jIJUHfNjV2AaNmWd7UFq7W80LnqxGGo19O12ezx2kN2kCX4UwY6T
-   lTaRX++IDsd+ycirAV7tfvRyV2rcCiPOhuATntwAabbkomsGu//D4Siy0
-   omDoA9JaQznUFOH0hnU4/DMboOtAqh2SjLur2HZBviafU+bVy37GhmdY7
+  bh=kcR1ngZvWrLOyihkqx2rkHbIyYAELZHiy6H4piDtezk=;
+  b=m2uAcpnEJhI+SUt+EqvGrRRQHf6asFavWBy6QyvDHPcFWqIjOWXMpyxu
+   OHR/XBF3fz4VK5qcbzlGTP6LrslHlfPkqQV1LJQUr9go2uzM0dy2G0gv4
+   ML0LS4dRnwQIqmf/L3SvjV4p5PAyomo0fvzLRliKA6kCu2zlV/AYfFYzg
+   KSy8j7gYb2nAHUBGpjwWpCyQb6YvzW4JBCEnt8hF06mCFsZEsU3tmbHVc
+   XEY08hEkV0nERxD5ANEdpZoNAIPKv5Y/2Kcyr20+/us4fRt0MDSLsrCDR
+   +X3gjc2bYi7PJYkYzVF4I/pC+yXcUczPz39NfOV3+reOeKxEoW8uKoghU
    Q==;
-X-CSE-ConnectionGUID: hzI3SDnPSWereD0YjjZYLw==
-X-CSE-MsgGUID: d9f+kQo/TVGWg/gMUyupXg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="58540847"
+X-CSE-ConnectionGUID: becWdwjxTaSBOIFWA0Oh1A==
+X-CSE-MsgGUID: e2Pnl8x2QPqhNttxl54sCg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="58540830"
 X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="58540847"
+   d="scan'208";a="58540830"
 Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 00:12:47 -0700
-X-CSE-ConnectionGUID: leKmR03/R0OGVM/cL5VZew==
-X-CSE-MsgGUID: WXL3r+GJT1K7Yv+lB5dVSQ==
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 00:12:44 -0700
+X-CSE-ConnectionGUID: jOa8olktSdmHQV4xQU2UsA==
+X-CSE-MsgGUID: MaY+qq4RRxqaEnW6OlunMA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="161453654"
+   d="scan'208";a="161453649"
 Received: from yilunxu-optiplex-7050.sh.intel.com ([10.239.159.165])
-  by fmviesa003.fm.intel.com with ESMTP; 16 Jul 2025 00:12:43 -0700
+  by fmviesa003.fm.intel.com with ESMTP; 16 Jul 2025 00:12:40 -0700
 From: Xu Yilun <yilun.xu@linux.intel.com>
 To: jgg@nvidia.com,
 	jgg@ziepe.ca,
@@ -59,9 +59,9 @@ Cc: iommu@lists.linux.dev,
 	dan.j.williams@intel.com,
 	baolu.lu@linux.intel.com,
 	yilun.xu@intel.com
-Subject: [PATCH v6 5/8] iommufd/vdevice: Remove struct device reference from struct vdevice
-Date: Wed, 16 Jul 2025 15:03:46 +0800
-Message-Id: <20250716070349.1807226-6-yilun.xu@linux.intel.com>
+Subject: [PATCH v6 4/8] iommufd: Destroy vdevice on idevice destroy
+Date: Wed, 16 Jul 2025 15:03:45 +0800
+Message-Id: <20250716070349.1807226-5-yilun.xu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20250716070349.1807226-1-yilun.xu@linux.intel.com>
 References: <20250716070349.1807226-1-yilun.xu@linux.intel.com>
@@ -73,131 +73,314 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Remove struct device *dev from struct vdevice.
+Destroy iommufd_vdevice (vdev) on iommufd_idevice (idev) destruction so
+that vdev can't outlive idev.
 
-The dev pointer is the Plan B for vdevice to reference the physical
-device. As now vdev->idev is added without refcounting concern, just
-use vdev->idev->dev when needed. To avoid exposing
-struct iommufd_device in the public header, export a
-iommufd_vdevice_to_device() helper.
+idev represents the physical device bound to iommufd, while the vdev
+represents the virtual instance of the physical device in the VM. The
+lifecycle of the vdev should not be longer than idev. This doesn't
+cause real problem on existing use cases cause vdev doesn't impact the
+physical device, only provides virtualization information. But to
+extend vdev for Confidential Computing (CC), there are needs to do
+secure configuration for the vdev, e.g. TSM Bind/Unbind. These
+configurations should be rolled back on idev destroy, or the external
+driver (VFIO) functionality may be impact.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+The idev is created by external driver so its destruction can't fail.
+The idev implements pre_destroy() op to actively remove its associated
+vdev before destroying itself. There are 3 cases on idev pre_destroy():
+
+  1. vdev is already destroyed by userspace. No extra handling needed.
+  2. vdev is still alive. Use iommufd_object_tombstone_user() to
+     destroy vdev and tombstone the vdev ID.
+  3. vdev is being destroyed by userspace. The vdev ID is already
+     freed, but vdev destroy handler is not completed. This requires
+     multi-threads syncing - vdev holds idev's short term users
+     reference until vdev destruction completes, idev leverages
+     existing wait_shortterm mechanism for syncing.
+
+idev should also block any new reference to it after pre_destroy(),
+or the following wait shortterm would timeout. Introduce a 'destroying'
+flag, set it to true on idev pre_destroy(). Any attempt to reference
+idev should honor this flag under the protection of
+idev->igroup->lock.
+
+Originally-by: Nicolin Chen <nicolinc@nvidia.com>
+Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Co-developed-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Co-developed-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
+Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 Tested-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Xu Yilun <yilun.xu@linux.intel.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c |  3 ++-
- drivers/iommu/iommufd/driver.c                 | 10 ++++++++--
- drivers/iommu/iommufd/viommu.c                 |  3 ---
- include/linux/iommufd.h                        |  8 +++++++-
- 4 files changed, 17 insertions(+), 7 deletions(-)
+ drivers/iommu/iommufd/device.c          | 51 ++++++++++++++++++++++++
+ drivers/iommu/iommufd/iommufd_private.h | 12 ++++++
+ drivers/iommu/iommufd/main.c            |  2 +
+ drivers/iommu/iommufd/viommu.c          | 52 +++++++++++++++++++++++--
+ include/linux/iommufd.h                 |  1 +
+ include/uapi/linux/iommufd.h            |  5 +++
+ 6 files changed, 119 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-index eb90af5093d8..4c86eacd36b1 100644
---- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-@@ -1218,7 +1218,8 @@ static void tegra241_vintf_destroy_vsid(struct iommufd_vdevice *vdev)
- 
- static int tegra241_vintf_init_vsid(struct iommufd_vdevice *vdev)
- {
--	struct arm_smmu_master *master = dev_iommu_priv_get(vdev->dev);
-+	struct device *dev = iommufd_vdevice_to_device(vdev);
-+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
- 	struct tegra241_vintf *vintf = viommu_to_vintf(vdev->viommu);
- 	struct tegra241_vintf_sid *vsid = vdev_to_vsid(vdev);
- 	struct arm_smmu_stream *stream = &master->streams[0];
-diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
-index e4eae20bcd4e..6f1010da221c 100644
---- a/drivers/iommu/iommufd/driver.c
-+++ b/drivers/iommu/iommufd/driver.c
-@@ -83,6 +83,12 @@ void _iommufd_destroy_mmap(struct iommufd_ctx *ictx,
+diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
+index e2ba21c43ad2..ee6ff4caf398 100644
+--- a/drivers/iommu/iommufd/device.c
++++ b/drivers/iommu/iommufd/device.c
+@@ -137,6 +137,57 @@ static struct iommufd_group *iommufd_get_group(struct iommufd_ctx *ictx,
+ 	}
  }
- EXPORT_SYMBOL_NS_GPL(_iommufd_destroy_mmap, "IOMMUFD");
  
-+struct device *iommufd_vdevice_to_device(struct iommufd_vdevice *vdev)
++static void iommufd_device_remove_vdev(struct iommufd_device *idev)
 +{
-+	return vdev->idev->dev;
-+}
-+EXPORT_SYMBOL_NS_GPL(iommufd_vdevice_to_device, "IOMMUFD");
++	struct iommufd_vdevice *vdev;
 +
- /* Caller should xa_lock(&viommu->vdevs) to protect the return value */
- struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
- 				       unsigned long vdev_id)
-@@ -92,7 +98,7 @@ struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
- 	lockdep_assert_held(&viommu->vdevs.xa_lock);
++	mutex_lock(&idev->igroup->lock);
++	/* prevent new references from vdev */
++	idev->destroying = true;
++	/* vdev has been completely destroyed by userspace */
++	if (!idev->vdev)
++		goto out_unlock;
++
++	vdev = iommufd_get_vdevice(idev->ictx, idev->vdev->obj.id);
++	/*
++	 * An ongoing vdev destroy ioctl has removed the vdev from the object
++	 * xarray, but has not finished iommufd_vdevice_destroy() yet as it
++	 * needs the same mutex. We exit the locking then wait on short term
++	 * users for the vdev destruction.
++	 */
++	if (IS_ERR(vdev))
++		goto out_unlock;
++
++	/* Should never happen */
++	if (WARN_ON(vdev != idev->vdev)) {
++		iommufd_put_object(idev->ictx, &vdev->obj);
++		goto out_unlock;
++	}
++
++	/*
++	 * vdev is still alive. Hold a users refcount to prevent racing with
++	 * userspace destruction, then use iommufd_object_tombstone_user() to
++	 * destroy it and leave a tombstone.
++	 */
++	refcount_inc(&vdev->obj.users);
++	iommufd_put_object(idev->ictx, &vdev->obj);
++	mutex_unlock(&idev->igroup->lock);
++	iommufd_object_tombstone_user(idev->ictx, &vdev->obj);
++	return;
++
++out_unlock:
++	mutex_unlock(&idev->igroup->lock);
++}
++
++void iommufd_device_pre_destroy(struct iommufd_object *obj)
++{
++	struct iommufd_device *idev =
++		container_of(obj, struct iommufd_device, obj);
++
++	/* Release the short term users on this */
++	iommufd_device_remove_vdev(idev);
++}
++
+ void iommufd_device_destroy(struct iommufd_object *obj)
+ {
+ 	struct iommufd_device *idev =
+diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+index 149545060029..5d6ea5395cfe 100644
+--- a/drivers/iommu/iommufd/iommufd_private.h
++++ b/drivers/iommu/iommufd/iommufd_private.h
+@@ -489,6 +489,8 @@ struct iommufd_device {
+ 	/* always the physical device */
+ 	struct device *dev;
+ 	bool enforce_cache_coherency;
++	struct iommufd_vdevice *vdev;
++	bool destroying;
+ };
  
- 	vdev = xa_load(&viommu->vdevs, vdev_id);
--	return vdev ? vdev->dev : NULL;
-+	return vdev ? iommufd_vdevice_to_device(vdev) : NULL;
+ static inline struct iommufd_device *
+@@ -499,6 +501,7 @@ iommufd_get_device(struct iommufd_ucmd *ucmd, u32 id)
+ 			    struct iommufd_device, obj);
  }
- EXPORT_SYMBOL_NS_GPL(iommufd_viommu_find_dev, "IOMMUFD");
  
-@@ -109,7 +115,7 @@ int iommufd_viommu_get_vdev_id(struct iommufd_viommu *viommu,
++void iommufd_device_pre_destroy(struct iommufd_object *obj);
+ void iommufd_device_destroy(struct iommufd_object *obj);
+ int iommufd_get_hw_info(struct iommufd_ucmd *ucmd);
  
- 	xa_lock(&viommu->vdevs);
- 	xa_for_each(&viommu->vdevs, index, vdev) {
--		if (vdev->dev == dev) {
-+		if (iommufd_vdevice_to_device(vdev) == dev) {
- 			*vdev_id = vdev->virt_id;
- 			rc = 0;
- 			break;
+@@ -687,9 +690,18 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucmd);
+ void iommufd_viommu_destroy(struct iommufd_object *obj);
+ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd);
+ void iommufd_vdevice_destroy(struct iommufd_object *obj);
++void iommufd_vdevice_abort(struct iommufd_object *obj);
+ int iommufd_hw_queue_alloc_ioctl(struct iommufd_ucmd *ucmd);
+ void iommufd_hw_queue_destroy(struct iommufd_object *obj);
+ 
++static inline struct iommufd_vdevice *
++iommufd_get_vdevice(struct iommufd_ctx *ictx, u32 id)
++{
++	return container_of(iommufd_get_object(ictx, id,
++					       IOMMUFD_OBJ_VDEVICE),
++			    struct iommufd_vdevice, obj);
++}
++
+ #ifdef CONFIG_IOMMUFD_TEST
+ int iommufd_test(struct iommufd_ucmd *ucmd);
+ void iommufd_selftest_destroy(struct iommufd_object *obj);
+diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
+index 53085d24ce4a..99c1aab3d396 100644
+--- a/drivers/iommu/iommufd/main.c
++++ b/drivers/iommu/iommufd/main.c
+@@ -655,6 +655,7 @@ static const struct iommufd_object_ops iommufd_object_ops[] = {
+ 		.destroy = iommufd_access_destroy_object,
+ 	},
+ 	[IOMMUFD_OBJ_DEVICE] = {
++		.pre_destroy = iommufd_device_pre_destroy,
+ 		.destroy = iommufd_device_destroy,
+ 	},
+ 	[IOMMUFD_OBJ_FAULT] = {
+@@ -676,6 +677,7 @@ static const struct iommufd_object_ops iommufd_object_ops[] = {
+ 	},
+ 	[IOMMUFD_OBJ_VDEVICE] = {
+ 		.destroy = iommufd_vdevice_destroy,
++		.abort = iommufd_vdevice_abort,
+ 	},
+ 	[IOMMUFD_OBJ_VEVENTQ] = {
+ 		.destroy = iommufd_veventq_destroy,
 diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
-index ecbae5091ffe..6cf0bd5d8f08 100644
+index dcf8a85b9f6e..ecbae5091ffe 100644
 --- a/drivers/iommu/iommufd/viommu.c
 +++ b/drivers/iommu/iommufd/viommu.c
-@@ -125,7 +125,6 @@ void iommufd_vdevice_abort(struct iommufd_object *obj)
- 	xa_cmpxchg(&viommu->vdevs, vdev->virt_id, vdev, NULL, GFP_KERNEL);
- 	refcount_dec(&viommu->obj.users);
- 	idev->vdev = NULL;
--	put_device(vdev->dev);
+@@ -110,20 +110,37 @@ int iommufd_viommu_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 	return rc;
  }
  
- void iommufd_vdevice_destroy(struct iommufd_object *obj)
-@@ -203,8 +202,6 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+-void iommufd_vdevice_destroy(struct iommufd_object *obj)
++void iommufd_vdevice_abort(struct iommufd_object *obj)
+ {
+ 	struct iommufd_vdevice *vdev =
+ 		container_of(obj, struct iommufd_vdevice, obj);
+ 	struct iommufd_viommu *viommu = vdev->viommu;
++	struct iommufd_device *idev = vdev->idev;
++
++	lockdep_assert_held(&idev->igroup->lock);
+ 
+ 	if (vdev->destroy)
+ 		vdev->destroy(vdev);
+ 	/* xa_cmpxchg is okay to fail if alloc failed xa_cmpxchg previously */
+ 	xa_cmpxchg(&viommu->vdevs, vdev->virt_id, vdev, NULL, GFP_KERNEL);
+ 	refcount_dec(&viommu->obj.users);
++	idev->vdev = NULL;
+ 	put_device(vdev->dev);
+ }
+ 
++void iommufd_vdevice_destroy(struct iommufd_object *obj)
++{
++	struct iommufd_vdevice *vdev =
++		container_of(obj, struct iommufd_vdevice, obj);
++	struct iommufd_device *idev = vdev->idev;
++	struct iommufd_ctx *ictx = idev->ictx;
++
++	mutex_lock(&idev->igroup->lock);
++	iommufd_vdevice_abort(obj);
++	mutex_unlock(&idev->igroup->lock);
++	iommufd_put_object(ictx, &idev->obj);
++}
++
+ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ {
+ 	struct iommu_vdevice_alloc *cmd = ucmd->cmd;
+@@ -153,6 +170,17 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 		goto out_put_idev;
+ 	}
+ 
++	mutex_lock(&idev->igroup->lock);
++	if (idev->destroying) {
++		rc = -ENOENT;
++		goto out_unlock_igroup;
++	}
++
++	if (idev->vdev) {
++		rc = -EEXIST;
++		goto out_unlock_igroup;
++	}
++
+ 	if (viommu->ops && viommu->ops->vdevice_size) {
+ 		/*
+ 		 * It is a driver bug for:
+@@ -171,7 +199,7 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 		ucmd->ictx, vdev_size, IOMMUFD_OBJ_VDEVICE);
+ 	if (IS_ERR(vdev)) {
+ 		rc = PTR_ERR(vdev);
+-		goto out_put_idev;
++		goto out_unlock_igroup;
  	}
  
  	vdev->virt_id = virt_id;
--	vdev->dev = idev->dev;
--	get_device(idev->dev);
+@@ -179,6 +207,19 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 	get_device(idev->dev);
  	vdev->viommu = viommu;
  	refcount_inc(&viommu->obj.users);
- 	/*
++	/*
++	 * A short term users reference is held on the idev so long as we have
++	 * the pointer. iommufd_device_pre_destroy() will revoke it before the
++	 * idev real destruction.
++	 */
++	vdev->idev = idev;
++
++	/*
++	 * iommufd_device_destroy() delays until idev->vdev is NULL before
++	 * freeing the idev, which only happens once the vdev is finished
++	 * destruction.
++	 */
++	idev->vdev = vdev;
+ 
+ 	curr = xa_cmpxchg(&viommu->vdevs, virt_id, NULL, vdev, GFP_KERNEL);
+ 	if (curr) {
+@@ -197,12 +238,15 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 	if (rc)
+ 		goto out_abort;
+ 	iommufd_object_finalize(ucmd->ictx, &vdev->obj);
+-	goto out_put_idev;
++	goto out_unlock_igroup;
+ 
+ out_abort:
+ 	iommufd_object_abort_and_destroy(ucmd->ictx, &vdev->obj);
++out_unlock_igroup:
++	mutex_unlock(&idev->igroup->lock);
+ out_put_idev:
+-	iommufd_put_object(ucmd->ictx, &idev->obj);
++	if (rc)
++		iommufd_put_object(ucmd->ictx, &idev->obj);
+ out_put_viommu:
+ 	iommufd_put_object(ucmd->ictx, &viommu->obj);
+ 	return rc;
 diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-index b88911026bc4..810e4d8ac912 100644
+index e3a0cd47384d..b88911026bc4 100644
 --- a/include/linux/iommufd.h
 +++ b/include/linux/iommufd.h
-@@ -109,7 +109,6 @@ struct iommufd_vdevice {
+@@ -108,6 +108,7 @@ struct iommufd_viommu {
+ struct iommufd_vdevice {
  	struct iommufd_object obj;
  	struct iommufd_viommu *viommu;
- 	struct iommufd_device *idev;
--	struct device *dev;
++	struct iommufd_device *idev;
+ 	struct device *dev;
  
  	/*
- 	 * Virtual device ID per vIOMMU, e.g. vSID of ARM SMMUv3, vDeviceID of
-@@ -261,6 +260,7 @@ int _iommufd_alloc_mmap(struct iommufd_ctx *ictx, struct iommufd_object *owner,
- 			unsigned long *offset);
- void _iommufd_destroy_mmap(struct iommufd_ctx *ictx,
- 			   struct iommufd_object *owner, unsigned long offset);
-+struct device *iommufd_vdevice_to_device(struct iommufd_vdevice *vdev);
- struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
- 				       unsigned long vdev_id);
- int iommufd_viommu_get_vdev_id(struct iommufd_viommu *viommu,
-@@ -295,6 +295,12 @@ static inline void _iommufd_destroy_mmap(struct iommufd_ctx *ictx,
- {
- }
- 
-+static inline struct device *
-+iommufd_vdevice_to_device(struct iommufd_vdevice *vdev)
-+{
-+	return NULL;
-+}
-+
- static inline struct device *
- iommufd_viommu_find_dev(struct iommufd_viommu *viommu, unsigned long vdev_id)
- {
+diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+index 554aacf89ea7..c218c89e0e2e 100644
+--- a/include/uapi/linux/iommufd.h
++++ b/include/uapi/linux/iommufd.h
+@@ -1070,6 +1070,11 @@ struct iommu_viommu_alloc {
+  *
+  * Allocate a virtual device instance (for a physical device) against a vIOMMU.
+  * This instance holds the device's information (related to its vIOMMU) in a VM.
++ * User should use IOMMU_DESTROY to destroy the virtual device before
++ * destroying the physical device (by closing vfio_cdev fd). Otherwise the
++ * virtual device would be forcibly destroyed on physical device destruction,
++ * its vdevice_id would be permanently leaked (unremovable & unreusable) until
++ * iommu fd closed.
+  */
+ struct iommu_vdevice_alloc {
+ 	__u32 size;
 -- 
 2.25.1
 
