@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB93628A1D1
-	for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 07:12:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 495F928B3E2
+	for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 07:12:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752649970; cv=none; b=luc7w9ztOvrjqz0WFgXrS2fhNjlDd2giIFPKLD3q3gZyH39K42Ke6V3rcBng012wPD7YMdFyzhC9XFsO2bWH5tCoFWzDIqKfPmJTVLZ8UcpyfvTQm0NyC7PyQuzt6OgZ6x8uS3+/KzmbODflCOMOLcNpsFlf0TdM2gOEIVIcleQ=
+	t=1752649972; cv=none; b=g8exiICQ8jZT8F/eI24K/opaI5p/9T0I8gy+9JXxX7CNLzj/IQqjz51c/Gu3yAuXc7ASNoHkQB7SwyzjYZX+Jf1zVDfRxAT7diHyO8OJavvhjCfB1BgyKWiHl4PE7HCySBhHtHBmfc2vrt/WL3ra1pwTVFd8mLIy+y/6qQ635+g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752649970; c=relaxed/simple;
-	bh=EPmB3ER5RAbb7WUUJI2oQq79I7IlOIoDuKOxpyoZWOY=;
+	s=arc-20240116; t=1752649972; c=relaxed/simple;
+	bh=nJV35tCeC3FV4M9MblNrza0Hf2M8xmHmaqVlITtrpxY=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=qmYqLYPC0lkV4NUuon3UECp3U6kNl0a/UjCzkRq2+fEzMs0pmijHFwyKrlON3Rd9I8Ty/ZAt3K6zkQ25smUsjP1Fsd69WdjDGLKSuSHgOBcZVs57w1JUHDw9OBkcfEJ1g9V5FARx2iotYixkn47eka+UM2xhFzVb8euyM3gZ89M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=koNHCQby; arc=none smtp.client-ip=198.175.65.15
+	 MIME-Version; b=XVlIoc6blHLOxP7SPspoTMbrJtQDboEpcr3CCVZ34dhGSDWC2hdxawd6PhZ4SOUKiuxWPvzb9Nyi/RP8oCWFVOieq9G2IKMV44g+ok9yasDYY9zoGXGBccaitURDT2A2rKQngwag9zlLKLUD1JhmRsGV0XZ+eEMc2ONsDxS04No=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MVKKdpb5; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="koNHCQby"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MVKKdpb5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752649969; x=1784185969;
+  t=1752649970; x=1784185970;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=EPmB3ER5RAbb7WUUJI2oQq79I7IlOIoDuKOxpyoZWOY=;
-  b=koNHCQbyhnkuT105BqvghN/o2kP1KXV0getTFbd7Qa5oYXlRPhJehb+T
-   SIPb4AuETn5zHHcF+F4D5tAo5wbA/hbW2dED4Q83OURMpMmyCKTwCYu93
-   4aEYCc2bWUa4aSs/ZYGp8O5xOgJYlpGRZ2CiAHQfSVeJJcL0kYoW0WuP3
-   cS6Sh/mSHdO32RegHdg7VZp8TnaJdN36wh6/Ge/FFwATLs/dPcq/ATeA8
-   TvxrnXtX9q4qZJHll+2FmwOX47+M2DGaWPMa9JuHOPcvdSt7joYHF8WLL
-   vNgsExPRONt7fhhP/McFG/KwprB4s0erx+DTJPrU6vmlySH3wrlZCKocL
+  bh=nJV35tCeC3FV4M9MblNrza0Hf2M8xmHmaqVlITtrpxY=;
+  b=MVKKdpb5ZIoNtQZ8KShAdKqITJSIZ7V4rLy9/kFBgUTbrJcOPiR5qmeW
+   Fw39beAXoGFZsYoGJWVLxg+By4g+9OrT1sT6AkM73zKTms8tZmpQuCUjl
+   eXcBC5ZNIM8R7ga8SOwNb70Dzxq6a8UeRJHAC+15jMIEld3/EebvykaLe
+   oL6g/jIJUHfNjV2AaNmWd7UFq7W80LnqxGGo19O12ezx2kN2kCX4UwY6T
+   lTaRX++IDsd+ycirAV7tfvRyV2rcCiPOhuATntwAabbkomsGu//D4Siy0
+   omDoA9JaQznUFOH0hnU4/DMboOtAqh2SjLur2HZBviafU+bVy37GhmdY7
    Q==;
-X-CSE-ConnectionGUID: Y3/JtYLHQwe30iM96FHYIQ==
-X-CSE-MsgGUID: SD8O1c7KRWmBKAegEfa2Lw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="58540813"
+X-CSE-ConnectionGUID: hzI3SDnPSWereD0YjjZYLw==
+X-CSE-MsgGUID: d9f+kQo/TVGWg/gMUyupXg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="58540847"
 X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="58540813"
+   d="scan'208";a="58540847"
 Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 00:12:40 -0700
-X-CSE-ConnectionGUID: 2KHVZEhMRH+FoRgpVKFGsQ==
-X-CSE-MsgGUID: xxsexjI7RNiyxt6M6Vt78w==
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 00:12:47 -0700
+X-CSE-ConnectionGUID: leKmR03/R0OGVM/cL5VZew==
+X-CSE-MsgGUID: WXL3r+GJT1K7Yv+lB5dVSQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="161453643"
+   d="scan'208";a="161453654"
 Received: from yilunxu-optiplex-7050.sh.intel.com ([10.239.159.165])
-  by fmviesa003.fm.intel.com with ESMTP; 16 Jul 2025 00:12:36 -0700
+  by fmviesa003.fm.intel.com with ESMTP; 16 Jul 2025 00:12:43 -0700
 From: Xu Yilun <yilun.xu@linux.intel.com>
 To: jgg@nvidia.com,
 	jgg@ziepe.ca,
@@ -59,9 +59,9 @@ Cc: iommu@lists.linux.dev,
 	dan.j.williams@intel.com,
 	baolu.lu@linux.intel.com,
 	yilun.xu@intel.com
-Subject: [PATCH v6 3/8] iommufd: Add a pre_destroy() op for objects
-Date: Wed, 16 Jul 2025 15:03:44 +0800
-Message-Id: <20250716070349.1807226-4-yilun.xu@linux.intel.com>
+Subject: [PATCH v6 5/8] iommufd/vdevice: Remove struct device reference from struct vdevice
+Date: Wed, 16 Jul 2025 15:03:46 +0800
+Message-Id: <20250716070349.1807226-6-yilun.xu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20250716070349.1807226-1-yilun.xu@linux.intel.com>
 References: <20250716070349.1807226-1-yilun.xu@linux.intel.com>
@@ -73,56 +73,131 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a pre_destroy() op which gives objects a chance to clear their
-short term users references before destruction. This op is intended for
-external driver created objects (e.g. idev) which does deterministic
-destruction.
+Remove struct device *dev from struct vdevice.
 
-In order to manage the lifecycle of interrelated objects as well as the
-deterministic destruction (e.g. vdev can't outlive idev, and idev
-destruction can't fail), short term users references are allowed to
-live out of an ioctl execution. An immediate use case is, vdev holds
-idev's short term user reference until vdev destruction completes, idev
-leverages existing wait_shortterm mechanism to ensure it is destroyed
-after vdev.
+The dev pointer is the Plan B for vdevice to reference the physical
+device. As now vdev->idev is added without refcounting concern, just
+use vdev->idev->dev when needed. To avoid exposing
+struct iommufd_device in the public header, export a
+iommufd_vdevice_to_device() helper.
 
-This extended usage makes the referenced object unable to just wait for
-its reference gone. It needs to actively trigger the reference removal,
-as well as prevent new references before wait. Should implement these
-work in pre_destroy().
-
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Co-developed-by: Nicolin Chen <nicolinc@nvidia.com>
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 Tested-by: Nicolin Chen <nicolinc@nvidia.com>
 Signed-off-by: Xu Yilun <yilun.xu@linux.intel.com>
 ---
- drivers/iommu/iommufd/main.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c |  3 ++-
+ drivers/iommu/iommufd/driver.c                 | 10 ++++++++--
+ drivers/iommu/iommufd/viommu.c                 |  3 ---
+ include/linux/iommufd.h                        |  8 +++++++-
+ 4 files changed, 17 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 71135f0ec72d..53085d24ce4a 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -23,6 +23,7 @@
- #include "iommufd_test.h"
+diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+index eb90af5093d8..4c86eacd36b1 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
++++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+@@ -1218,7 +1218,8 @@ static void tegra241_vintf_destroy_vsid(struct iommufd_vdevice *vdev)
  
- struct iommufd_object_ops {
-+	void (*pre_destroy)(struct iommufd_object *obj);
- 	void (*destroy)(struct iommufd_object *obj);
- 	void (*abort)(struct iommufd_object *obj);
- };
-@@ -160,6 +161,9 @@ static int iommufd_object_dec_wait_shortterm(struct iommufd_ctx *ictx,
- 	if (refcount_dec_and_test(&to_destroy->shortterm_users))
- 		return 0;
+ static int tegra241_vintf_init_vsid(struct iommufd_vdevice *vdev)
+ {
+-	struct arm_smmu_master *master = dev_iommu_priv_get(vdev->dev);
++	struct device *dev = iommufd_vdevice_to_device(vdev);
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+ 	struct tegra241_vintf *vintf = viommu_to_vintf(vdev->viommu);
+ 	struct tegra241_vintf_sid *vsid = vdev_to_vsid(vdev);
+ 	struct arm_smmu_stream *stream = &master->streams[0];
+diff --git a/drivers/iommu/iommufd/driver.c b/drivers/iommu/iommufd/driver.c
+index e4eae20bcd4e..6f1010da221c 100644
+--- a/drivers/iommu/iommufd/driver.c
++++ b/drivers/iommu/iommufd/driver.c
+@@ -83,6 +83,12 @@ void _iommufd_destroy_mmap(struct iommufd_ctx *ictx,
+ }
+ EXPORT_SYMBOL_NS_GPL(_iommufd_destroy_mmap, "IOMMUFD");
  
-+	if (iommufd_object_ops[to_destroy->type].pre_destroy)
-+		iommufd_object_ops[to_destroy->type].pre_destroy(to_destroy);
++struct device *iommufd_vdevice_to_device(struct iommufd_vdevice *vdev)
++{
++	return vdev->idev->dev;
++}
++EXPORT_SYMBOL_NS_GPL(iommufd_vdevice_to_device, "IOMMUFD");
 +
- 	if (wait_event_timeout(ictx->destroy_wait,
- 			       refcount_read(&to_destroy->shortterm_users) == 0,
- 			       msecs_to_jiffies(60000)))
+ /* Caller should xa_lock(&viommu->vdevs) to protect the return value */
+ struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
+ 				       unsigned long vdev_id)
+@@ -92,7 +98,7 @@ struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
+ 	lockdep_assert_held(&viommu->vdevs.xa_lock);
+ 
+ 	vdev = xa_load(&viommu->vdevs, vdev_id);
+-	return vdev ? vdev->dev : NULL;
++	return vdev ? iommufd_vdevice_to_device(vdev) : NULL;
+ }
+ EXPORT_SYMBOL_NS_GPL(iommufd_viommu_find_dev, "IOMMUFD");
+ 
+@@ -109,7 +115,7 @@ int iommufd_viommu_get_vdev_id(struct iommufd_viommu *viommu,
+ 
+ 	xa_lock(&viommu->vdevs);
+ 	xa_for_each(&viommu->vdevs, index, vdev) {
+-		if (vdev->dev == dev) {
++		if (iommufd_vdevice_to_device(vdev) == dev) {
+ 			*vdev_id = vdev->virt_id;
+ 			rc = 0;
+ 			break;
+diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
+index ecbae5091ffe..6cf0bd5d8f08 100644
+--- a/drivers/iommu/iommufd/viommu.c
++++ b/drivers/iommu/iommufd/viommu.c
+@@ -125,7 +125,6 @@ void iommufd_vdevice_abort(struct iommufd_object *obj)
+ 	xa_cmpxchg(&viommu->vdevs, vdev->virt_id, vdev, NULL, GFP_KERNEL);
+ 	refcount_dec(&viommu->obj.users);
+ 	idev->vdev = NULL;
+-	put_device(vdev->dev);
+ }
+ 
+ void iommufd_vdevice_destroy(struct iommufd_object *obj)
+@@ -203,8 +202,6 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
+ 	}
+ 
+ 	vdev->virt_id = virt_id;
+-	vdev->dev = idev->dev;
+-	get_device(idev->dev);
+ 	vdev->viommu = viommu;
+ 	refcount_inc(&viommu->obj.users);
+ 	/*
+diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
+index b88911026bc4..810e4d8ac912 100644
+--- a/include/linux/iommufd.h
++++ b/include/linux/iommufd.h
+@@ -109,7 +109,6 @@ struct iommufd_vdevice {
+ 	struct iommufd_object obj;
+ 	struct iommufd_viommu *viommu;
+ 	struct iommufd_device *idev;
+-	struct device *dev;
+ 
+ 	/*
+ 	 * Virtual device ID per vIOMMU, e.g. vSID of ARM SMMUv3, vDeviceID of
+@@ -261,6 +260,7 @@ int _iommufd_alloc_mmap(struct iommufd_ctx *ictx, struct iommufd_object *owner,
+ 			unsigned long *offset);
+ void _iommufd_destroy_mmap(struct iommufd_ctx *ictx,
+ 			   struct iommufd_object *owner, unsigned long offset);
++struct device *iommufd_vdevice_to_device(struct iommufd_vdevice *vdev);
+ struct device *iommufd_viommu_find_dev(struct iommufd_viommu *viommu,
+ 				       unsigned long vdev_id);
+ int iommufd_viommu_get_vdev_id(struct iommufd_viommu *viommu,
+@@ -295,6 +295,12 @@ static inline void _iommufd_destroy_mmap(struct iommufd_ctx *ictx,
+ {
+ }
+ 
++static inline struct device *
++iommufd_vdevice_to_device(struct iommufd_vdevice *vdev)
++{
++	return NULL;
++}
++
+ static inline struct device *
+ iommufd_viommu_find_dev(struct iommufd_viommu *viommu, unsigned long vdev_id)
+ {
 -- 
 2.25.1
 
