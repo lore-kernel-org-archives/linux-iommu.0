@@ -1,124 +1,153 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95D0D28643D
-	for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 06:36:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C30A1CDFAC
+	for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 07:12:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752647762; cv=none; b=SLZc+rMN7Ag6cFfKCPsFNhPca/1NBu9riTBLUNzGzouG5qFU9rrgY1ex4wxHKMNEA5+EwozMeOdI4G1uuQuvKbBE6AQggOkOdnNisXYVvwtc+plvNm76NAyq4JaV9tWM9I9R9BirzbKELizOSMedIwA+/seMY0PPR+dHPBzJvJg=
+	t=1752649952; cv=none; b=WLN+RqIDPrZ54aXN2RhZxoRAJUw/WkSmSk2Ju3Bp2oVJK33GiRWAw9dVCrot/qUxg9pcutqOCcN4HCDwBlelgNxNSuHvb9WOIXqMd3H1N/If4ZVpma26/CFNNY8n2fHwsLGH2SMeEBG9EeBmqpYBsEQ94pZPXAtzfpV67KINgqY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752647762; c=relaxed/simple;
-	bh=reLDrD8pVjEqExLXcIq2Cd/GqiLV03i+3iRA6OWVVpI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qJOyA3e9TEbGM9K03Gq/snRQVCA6IjR9Oht2q+CZ+B5zXY5tgvMBVq/rRmjoS1Aq8ukIlJOa3kAVn0UnopXSYD+EykTIpI+jDYMa0HpUmka/L7+Pok2lQ/srDZYyZDCG2Eauw9BrCzzEffMwibbs11c6cRhEm3zQeLjcrg/NjZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fd4ZFrpY; arc=none smtp.client-ip=192.198.163.12
+	s=arc-20240116; t=1752649952; c=relaxed/simple;
+	bh=vuELy65mSEkFSS4Pp5QKW+t12TCjfp+XHGnzUf51AS0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=iF+EEpmb1TvUGsh0leUZFMsaNm6KeaL77q9fxcgakgsiUXJLuS999YIQB/lFR0JyF/4e3dxHSgm3/3xOwH2RXQMH6a9A8aTe5QMDICP55cG40BvKR7Q9NFrnJ9UT32WIrYcZN/OiYfH8RL32R1OR0UszYEN6ZsqxTszrglhcpzM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VZMG/3UG; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fd4ZFrpY"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VZMG/3UG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752647760; x=1784183760;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=reLDrD8pVjEqExLXcIq2Cd/GqiLV03i+3iRA6OWVVpI=;
-  b=fd4ZFrpY9ZiCTvZoQPZp4QxGkQK2f5TYsMLwpfxSaZtl81Gv75ttd3uX
-   bmGnc2gEKzeJM7mfRKXyY9/kWtFPs1LyUeNlVFjFCiAzhslwCVrZlOFct
-   QfYdEKOqzjjIHD3zFxQc5GKH5fAm+QEyJQ6BQ8Q3tkO20Yx3cnrd55NHq
-   KLsEpSaP4+EOXz7V/RByUVoHDTGZo9IHOGNsfFnjOJkOU+iAFwTEAqa5s
-   adzOyreBkO5o7HIB6krEMciq0f2D1J9IT5RAHYwQIY6S/TeQq9SMfb92/
-   pacFV74SdCiSQQDyJRLLuXfRs6raWFwTxkVplPe1gQt3kIpu4+HksisTX
-   g==;
-X-CSE-ConnectionGUID: zwUDYX0HT8mtnZcveWDcAw==
-X-CSE-MsgGUID: UyXIBJzsTLyKW2rsTPs10g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="58696119"
+  t=1752649951; x=1784185951;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=vuELy65mSEkFSS4Pp5QKW+t12TCjfp+XHGnzUf51AS0=;
+  b=VZMG/3UGqB1jUwylTgp8moEEXXbDMl9BlUfsv7a+K9u6LY2kxrWbDqz9
+   bfH3sNa4re3Hifc6DD9hqnkLc1EbuaN69lChVVPJxJGsnqX9bOQa1SnYZ
+   UY+CoKgwxgohHUyYYX4l4m1Lt4BfIaVPux/kcHYUCbdhEFKVmB9KRyqtY
+   oqBVqwlk7PjgYskgNmdohnXWq1GzbzUJ5gp3sOyrdruDFdpD47FF2yiDr
+   +Twm9JgtsOouk3Q/8AY5VNuqMrLoDNCA0dwUUGtwa/QHBxrsIQGU7akbJ
+   nQaPBiKnirWCotFhP8GFUp9MBLtQ0CSt+aoV0rK0+741SPahFst+dTXZU
+   A==;
+X-CSE-ConnectionGUID: ARXNwqWiQkaoPx7w4k+b4Q==
+X-CSE-MsgGUID: 9Y40NGDuT2O42yCFrFfFzg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="58540773"
 X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="58696119"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 23:35:59 -0700
-X-CSE-ConnectionGUID: BipnkTfCQ8G1IqDclPUDzA==
-X-CSE-MsgGUID: OwQ2SwkCRTSl33pl+v70jg==
+   d="scan'208";a="58540773"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 00:12:30 -0700
+X-CSE-ConnectionGUID: lD+C8upLR9OwSnrALXTfDw==
+X-CSE-MsgGUID: dUtpagpnQcC7iAjyx6ZZ5Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="157770073"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 23:35:56 -0700
-Message-ID: <f58a6825-e53a-4751-97cc-0891052936f1@linux.intel.com>
-Date: Wed, 16 Jul 2025 14:34:04 +0800
+   d="scan'208";a="161453617"
+Received: from yilunxu-optiplex-7050.sh.intel.com ([10.239.159.165])
+  by fmviesa003.fm.intel.com with ESMTP; 16 Jul 2025 00:12:26 -0700
+From: Xu Yilun <yilun.xu@linux.intel.com>
+To: jgg@nvidia.com,
+	jgg@ziepe.ca,
+	kevin.tian@intel.com,
+	will@kernel.org,
+	aneesh.kumar@kernel.org
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	joro@8bytes.org,
+	robin.murphy@arm.com,
+	shuah@kernel.org,
+	nicolinc@nvidia.com,
+	aik@amd.com,
+	dan.j.williams@intel.com,
+	baolu.lu@linux.intel.com,
+	yilun.xu@intel.com
+Subject: [PATCH v6 0/8] iommufd: Destroy vdevice on device unbind
+Date: Wed, 16 Jul 2025 15:03:41 +0800
+Message-Id: <20250716070349.1807226-1-yilun.xu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Dave Hansen <dave.hansen@intel.com>,
- Alistair Popple <apopple@nvidia.com>, Uladzislau Rezki <urezki@gmail.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, "Tested-by : Yi Lai" <yi1.lai@intel.com>,
- iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20250709062800.651521-1-baolu.lu@linux.intel.com>
- <20250710135432.GO1613376@noisy.programming.kicks-ass.net>
- <094fdad4-297b-44e9-a81c-0fe4da07e63f@linux.intel.com>
- <20250711083252.GE1099709@noisy.programming.kicks-ass.net>
- <e049c100-2e54-4fd7-aadd-c181f9626f14@linux.intel.com>
- <20250715122504.GK2067380@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250715122504.GK2067380@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 7/15/25 20:25, Jason Gunthorpe wrote:
-> On Tue, Jul 15, 2025 at 01:55:01PM +0800, Baolu Lu wrote:
->> Yes, the mm (struct mm of processes that are bound to devices) list is
->> an unbounded list and can theoretically grow indefinitely. This results
->> in an unpredictable critical region.
-> 
-> Every MM has a unique PASID so I don't see how you can avoid this.
->   
->> @@ -654,6 +656,9 @@ struct iommu_ops {
->>
->>   	int (*def_domain_type)(struct device *dev);
->>
->> +	void (*paging_cache_invalidate)(struct iommu_device *dev,
->> +					unsigned long start, unsigned long end);
-> 
-> How would you even implement this in a driver?
-> 
-> You either flush the whole iommu, in which case who needs a rage, or
-> the driver has to iterate over the PASID list, in which case it
-> doesn't really improve the situation.
+It is to solve the lifecycle issue that vdevice may outlive idevice. It
+is a prerequisite for TIO, to ensure extra secure configurations (e.g.
+TSM Bind/Unbind) against vdevice could be rolled back on idevice unbind,
+so that VFIO could still work on the physical device without surprise.
 
-The Intel iommu driver supports flushing all SVA PASIDs with a single
-request in the invalidation queue. I am not sure if other IOMMU
-implementations also support this, so you are right, it doesn't
-generally improve the situation.
+Changelog:
+v6:
+ - Fix compile error for ARM platform in Patch 5
+ - Adjust some more line wrappings in Patch 6
+ - Add review tags.
 
-> 
-> If this is a concern I think the better answer is to do a defered free
-> like the mm can sometimes do where we thread the page tables onto a
-> linked list, flush the CPU cache and push it all into a work which
-> will do the iommu flush before actually freeing the memory.
+v5: https://lore.kernel.org/linux-iommu/aHdFWV9k9M7tRpD0@yilunxu-OptiPlex-7050/
+ - Further rebase to iommufd for-next 601b1d0d9395
+ - Keep the xa_empty() check in iommufd_fops_release(), update comments
+ - Move the *idev next to *viommu for struct iommufd_vdevice
+ - Update the description about IOMMUFD_CMD_VDEVICE_ALLOC for lifecycle
+ - Remove Baolu's tag for patch 4 because of big changes since v3
+ - Add changelog about idev->destroying
+ - Adjust line wrappings for tools/testing/selftests/iommu/iommufd.c
+ - Clarify that no testing for tombstoned ID repurposing.
+ - Add review tags.
 
-Is it a workable solution to use schedule_work() to queue the KVA cache
-invalidation as a work item in the system workqueue? By doing so, we
-wouldn't need the spinlock to protect the list anymore.
+v4: https://lore.kernel.org/linux-iommu/20250709040234.1773573-1-yilun.xu@linux.intel.com/
+ - Rebase to iommufd for-next.
+ - A new patch to roll back iommufd_object_alloc_ucmd() for vdevice.
+ - Fix the mistake trying to xa_destroy ictx->groups on
+   iommufd_fops_release().
+ - Move 'empty' flag inside destroy loop for iommufd_fops_release().
+ - Refactor vdev/idev destroy syncing.
+   - Drop the iommufd_vdevice_abort() reentrant idea.
+   - A new patch that adds pre_destroy() op.
+   - Hold short term reference during the whole vdevice's lifecycle.
+   - Wait on short term reference on idev's pre_destroy().
+   - Add a 'destroying' flag for idev to prevent new reference after
+     pre_destroy().
+ - Rephrase/fix some comments.
+ - Add review tags.
 
-Perhaps we would need another interface, perhaps named
-iommu_sva_flush_kva_inv_wq(), to guarantee that all flush work is
-completed before actually freeing the pages.
+v3: https://lore.kernel.org/linux-iommu/20250627033809.1730752-1-yilun.xu@linux.intel.com/
+ - No bother clean each tombstone in iommufd_fops_release().
+ - Drop vdev->ictx initialization fix patch.
+ - Optimize control flow in iommufd_device_remove_vdev().
+ - Make iommufd_vdevice_abort() reentrant.
+ - Call iommufd_vdevice_abort() directly instead of waiting for it.
+ - Rephrase/fix some comments.
+ - A new patch to remove vdev->dev.
+ - A new patch to explicitly skip existing viommu tests for no_iommu.
+ - Also skip vdevice tombstone test for no_iommu.
+ - Allow me to add SoB from Aneesh.
 
-> One of the KPTI options might be easier at that point..
-> 
-> Jason
+v2: https://lore.kernel.org/linux-iommu/20250623094946.1714996-1-yilun.xu@linux.intel.com/
 
-Thanks,
-baolu
+v1/rfc: https://lore.kernel.org/linux-iommu/20250610065146.1321816-1-aneesh.kumar@kernel.org/
+
+The series is based on iommufd for-next
+
+
+Xu Yilun (8):
+  iommufd/viommu: Roll back to use iommufd_object_alloc() for vdevice
+  iommufd: Add iommufd_object_tombstone_user() helper
+  iommufd: Add a pre_destroy() op for objects
+  iommufd: Destroy vdevice on idevice destroy
+  iommufd/vdevice: Remove struct device reference from struct vdevice
+  iommufd/selftest: Explicitly skip tests for inapplicable variant
+  iommufd/selftest: Add coverage for vdevice tombstone
+  iommufd: Rename some shortterm-related identifiers
+
+ .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    |   3 +-
+ drivers/iommu/iommufd/device.c                |  51 +++
+ drivers/iommu/iommufd/driver.c                |  10 +-
+ drivers/iommu/iommufd/iommufd_private.h       |  49 ++-
+ drivers/iommu/iommufd/main.c                  |  69 +++-
+ drivers/iommu/iommufd/viommu.c                |  69 +++-
+ include/linux/iommufd.h                       |  17 +-
+ include/uapi/linux/iommufd.h                  |   5 +
+ tools/testing/selftests/iommu/iommufd.c       | 377 +++++++++---------
+ 9 files changed, 419 insertions(+), 231 deletions(-)
+
+-- 
+2.25.1
+
