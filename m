@@ -1,93 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B4612EA158;
-	Wed, 16 Jul 2025 10:16:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 365022459D2
+	for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 10:34:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752661006; cv=none; b=h/4441C3ZYBMV4PP8qZBxH8LAvASXS0Oi2S7ysU3cHDG6bq/W7TmSqbKlwaRyIecuGsMWXUvyleTJlY2gYVP6WCH8Wy9P3EUgJVKqcjft7Bkt8c7akHXU2E8q/Zn9B2+rV47FjQ5bLChkqc+bzMCsn3M57aBHuwF0G9KIBB/OUw=
+	t=1752662041; cv=none; b=TeWe7o5+8XfULmnLJZVYXXx7P8aVJSe1PC79vquPKwmVpXJvGzdzw/NeRRYoGiRs0b5MyoDh5cQH+G46hj+Q3QGLXCWLTX0x/ksMiNYK+tQ9IsZXq0z5mIv8oKTXtzNo9XP0wTGLP+uJLlFVa2nnPytm1h8wZXRZBbqSkAiIZHY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752661006; c=relaxed/simple;
-	bh=XT9cXOKCmgl+ldwrsrHzx8+e2njm2xgZ6MA6eRd2e/w=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hHuH3zVplTeGXYXrX+YA2/lMvA7B0CVzhxGdu+HnZrc+O8Lnloptxre+CtKgwSJe1RdxIep0n4pl/l1LelIqcIs84cdnWrDgkGpVKu24PHAb+3YvUWqM3fwiYuJ3NeCkCRB0bsd2xMHLIEjjEbJysaSisZzKpF98kHJAr1K9Q70=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LxcZwS4a; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LxcZwS4a"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE950C4CEF1;
-	Wed, 16 Jul 2025 10:16:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752661004;
-	bh=XT9cXOKCmgl+ldwrsrHzx8+e2njm2xgZ6MA6eRd2e/w=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=LxcZwS4aCnkKDwRprVZ6dIySrzUO2MocrydHWue/iOuPpLgSEvTwNrEg0h3f3EF6i
-	 Sb4gUi2vhzfyem5XOWmJMa4rmCJJD1kpdjVaIA9NoQtQaP0AUJ1dMk62mxeHrjq+dE
-	 qEE82XVL6VH2M0jlIrFl/LRKxFNIN6zyZgEut36q26nThcrpv95YtIJXY9f2QjTEYa
-	 D2f9+kKHQk09fWT0Msq0IFEljX9xz9OPn3fiEOe8/5iYipAw95KGOj8ttxUvpqinNp
-	 R6Zntx3xNm/i1UjTvEw+Qc7AiBhySpFTNsV75LquyGPBEWCFEkG6DEDhydjL3uGrkH
-	 5Cr56zlrxRLCg==
-From: Konrad Dybcio <konradybcio@kernel.org>
-Date: Wed, 16 Jul 2025 12:16:10 +0200
-Subject: [PATCH v2 4/4] MAINTAINERS: Remove sdm845-cheza device trees
+	s=arc-20240116; t=1752662041; c=relaxed/simple;
+	bh=iHbQwUEQskSRpiTgjfjfk3baG4wJ79U65ioEyJgGVXE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=DzT9UEJviy2yr4ZIW+QlmyWURFS2Xn0kHvOADMyGQOjyShmd5gSvmj3NzgHlHxRDCL14vVOjyvhdfUWTK12lRUyTVj00Sbnt+sY5zghhQnHpln2k/HnsYIxefLlqnbc6gMnKtuc6/M6FeY+mJuyvtatlVluPoOULZdgCheRJD0M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6285F12FC;
+	Wed, 16 Jul 2025 03:33:51 -0700 (PDT)
+Received: from [10.57.0.109] (unknown [10.57.0.109])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D65E83F694;
+	Wed, 16 Jul 2025 03:33:56 -0700 (PDT)
+Message-ID: <c848cb8d-c040-4d4b-8d7b-558f2e041f0c@arm.com>
+Date: Wed, 16 Jul 2025 11:33:54 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250716-topic-goodnight_cheza-v2-4-6fa8d3261813@oss.qualcomm.com>
-References: <20250716-topic-goodnight_cheza-v2-0-6fa8d3261813@oss.qualcomm.com>
-In-Reply-To: <20250716-topic-goodnight_cheza-v2-0-6fa8d3261813@oss.qualcomm.com>
-To: Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, cros-qcom-dts-watchers@chromium.org, 
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Joerg Roedel <joro@8bytes.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
- linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Rob Clark <robin.clark@oss.qualcomm.com>, 
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/4] dt-bindings: arm-smmu: Remove sdm845-cheza
+ specific entry
+To: Konrad Dybcio <konradybcio@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, cros-qcom-dts-watchers@chromium.org,
+ Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Rob Clark <robin.clark@oss.qualcomm.com>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
  Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1752660979; l=865;
- i=konrad.dybcio@oss.qualcomm.com; s=20230215; h=from:subject:message-id;
- bh=ANVp9wD1JKerNgZkOFesI2FiXPrTvVkvGY5Hg/6LtoA=;
- b=qAkxUuVfq2BgTuvJ55zGB+Qi2KJW+DlZZqVzcXUyp80yzPuP4rZbQ+3K+h4pndYjSXVkqT85t
- nuAx28SbwTqDRfiIdrqHZl5cmxa9zQNkE5WnrvbgDQ6nobfM+Xnp5EO
-X-Developer-Key: i=konrad.dybcio@oss.qualcomm.com; a=ed25519;
- pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+References: <20250716-topic-goodnight_cheza-v2-0-6fa8d3261813@oss.qualcomm.com>
+ <20250716-topic-goodnight_cheza-v2-3-6fa8d3261813@oss.qualcomm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250716-topic-goodnight_cheza-v2-3-6fa8d3261813@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+On 2025-07-16 11:16 am, Konrad Dybcio wrote:
+> From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+> 
+> The firmware on SDM845-based Cheza boards did not provide the same
+> level of feature support for SMMUs (particularly around the Adreno
+> GPU integration).
+> 
+> Now that Cheza is being removed from the kernel (almost none exist at
+> this point in time), retire the entry as well.
+> 
+> Most notably, it's not being marked as deprecated instead, as there is
+> no indication that any more of those ~7 year old devboards will be
+> built.
 
-Cheza was a prototype board, used for developing Snapdragon platform
-support on ChromeOS.
+And even if someone did want to make a new batch, they'd have no excuse 
+not to fix the firmware by now...
 
-Since almost none are left in existence, and none are left in use, the
-device trees for that family of devices are being removed.
+Acked-by: Robin Murphy <robin.murphy@arm.com>
 
-Clean up the maintainers entry with it.
-
-Signed-off-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
----
- MAINTAINERS | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 5efcdb5537f52b84a57505857399af70f0fa7e45..1458ff091a864e539c554ef9e915331c44c87370 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3071,7 +3071,6 @@ ARM/QUALCOMM CHROMEBOOK SUPPORT
- R:	cros-qcom-dts-watchers@chromium.org
- F:	arch/arm64/boot/dts/qcom/sc7180*
- F:	arch/arm64/boot/dts/qcom/sc7280*
--F:	arch/arm64/boot/dts/qcom/sdm845-cheza*
- 
- ARM/QUALCOMM MAILING LIST
- L:	linux-arm-msm@vger.kernel.org
-
--- 
-2.50.1
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+> ---
+>   Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 4 ----
+>   1 file changed, 4 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> index 7b9d5507d6ccd6b845a57eeae59fe80ba75cc652..646814ec7d15f6d8a0136de73b7eaddae232ea64 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> @@ -132,10 +132,6 @@ properties:
+>                 - qcom,sm7150-smmu-v2
+>             - const: qcom,adreno-smmu
+>             - const: qcom,smmu-v2
+> -      - description: Qcom Adreno GPUs on Google Cheza platform
+> -        items:
+> -          - const: qcom,sdm845-smmu-v2
+> -          - const: qcom,smmu-v2
+>         - description: Marvell SoCs implementing "arm,mmu-500"
+>           items:
+>             - const: marvell,ap806-smmu-500
+> 
 
