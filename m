@@ -1,171 +1,127 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF53E19D06B
-	for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 14:58:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90394288CAF;
+	Wed, 16 Jul 2025 15:24:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752677902; cv=none; b=if7fHBuVHHK/2NZso+onF5doYYeRPMZAhKJJvkACPlG5FLNnxy0XOiw5o2reMjHMmU/MyDSjEqRHS7RQtItlwM//u2l59Y9XLeuZDiVEpJfmfK1XYPMIyfyZ/KCTkzfXRGtNQDXLxkCti/0OCLce9T46I63is+ZaHijxOkwVP7Y=
+	t=1752679467; cv=none; b=OVMI6W7KKKqxk/HfuMUbdTEDjYWZK7A5vbMrIU2en1zEWDtCYzVDvliokVjcmLH0JXOR46+YuLdAn+icn/vJ5dLInsPvOZ4KYV5DTponitw5xeOT/l4y+bWP/MpOLSoghQiHWgit+vJBoIJJAOE77AICowCcHlaWn80Np14IB+Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752677902; c=relaxed/simple;
-	bh=fiecLZEgxwBHhvCtE3OC0jqMMMcMzWtkxcrkMLboTz4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XIX1vgsfoJaz5TiWf4INg5cX/DTwN9xUjJnz9VDdypsrXStOdnhUZN4ZEUJUp1DMLwVbXjb+L9QeIA4j/0c6l1RYYsC40ynbOLqFEIvShSre7RtpGzatLiXtns2VHPF4KbrMAjBwFY+66q63Rxmx7jrQEJqkf3Zbkf4URDBG+mw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=S/J9NI6+; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1752679467; c=relaxed/simple;
+	bh=LAicS+pihtv9EEihexoFYLo1L3pM9ZqAXYRukX438Nw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uINzc62rXn4EpAkJ3LS4mW2ssoPAUxhvgU5KsdG5LdCwUzFfjv735sldHs26nQFoXaW45TIvYXbbXwNLpU1V6g9FBHPIId3F+n+sTiPEgePy+yRJBIMKEs43iF4qL9CzGjxm5YTxeC0WXfWWS6DYq3122dXL7bj6IuxKwvc5OMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eXV0vx9q; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="S/J9NI6+"
-Received: from pps.filterd (m0279867.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 56GDVbYu024502
-	for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 14:58:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	RDf8cJibEjhiFo83apzBrmHpgcz1vDYMn9bRtB9wako=; b=S/J9NI6+NVkFsLcs
-	HyzjPCyusqVoUyOQhQWOgN30XCuBEKk5jTJU5Y+B3miL5fodY8U9LZQeELU1aApM
-	VnZzSxcvy9uAKZkpdTWMcU3cky8nB1Eu+LZijxs1Yg+xajsblzBzy7RP5Q9tNFa6
-	3HtV4uepI0W3Q/eQf23HGFl1hrc+YuFbNImCTUJKu6B3aVADDa2RLU9mbRt766kw
-	OGmRzP+CDaEeIu3LSmlgn6XZQUlUySbfbHlVoKyKODb2UJ8rGvAja3qOG420brXl
-	3Lt01qrG+mprDqi5EVACmAsUG6WMtFffNhOMRCjvBhBZKfw6N1PTIdJ8O4s2s501
-	fYJC2w==
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com [209.85.222.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 47w5dpfaxs-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 14:58:18 +0000 (GMT)
-Received: by mail-qk1-f200.google.com with SMTP id af79cd13be357-7e348600cadso64875285a.3
-        for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 07:58:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1752677898; x=1753282698;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RDf8cJibEjhiFo83apzBrmHpgcz1vDYMn9bRtB9wako=;
-        b=U4xhW7ZJXirdQ1i3yyb6YZH1V1WQ8lcDVW9JdLVGxVat4kyVYcPgFpNgHi1IMhta3i
-         BszUInqRPsgg4VjFxJBkx/iC+AS4kxTZgCn1C2Vn0UgCJNhSyF3Lx0ph+8tUs7EklIVh
-         6i34ZlfomA24soe7KHN3OXOiYfLb8H1BvTD9yG3hNc+A70BU5eN3SWHeTo3GF+HR70JL
-         5kpGzZ09p9iqWvd5nKHdx8MU0dS6CI57iFJ2CXdFBxaKcgTZCeqHlz+lfbp915XJEOkK
-         H0GTUv1g0IWwwjnbU3DSmkEXnsgA9X9B8gdAtGAkH2nZmFI7aZe8U4PC1p6AHpPgJYu+
-         fPKA==
-X-Forwarded-Encrypted: i=1; AJvYcCWwKb7E/Eenuj0BxD1Q5d/LxcRI0DkfbiEptRCNYxnKsoqtqXo0BR879K2U2U0NQe3qfhsnUg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyzfZLcEzKnphkXwKPjp7wbNs4HVDUp6rUFsA3dLhAMCX7ryn4w
-	uoGJE+KRcPdeNx2qfR2MXGHjqpe30f+CzkkZBvaz3BlLpCxJ35lTvd60QtNrEdqTsaupg8nkwJN
-	LooBYo/4fX8C8fWANju3KtkwPEwPdgd+7teCu7KDOVPe7o6cBN7zaip/JcQ==
-X-Gm-Gg: ASbGncsKu4XPHqekK3LFWcon40NLIHaoGeC3KyZNymD3ohh5HZREVDeQiBvbe7ofseB
-	n1gL6oGaYWBFZ9gERoAy2o51ZZj8Ch4zDtd6olZx8W3LKSGAZy9wb4lQe6XtkdygwrKeoF0bkxj
-	wfrieYWh4+gyKRdFPw70dl8sfcsehPRupCgPGWn8FC+PFDrUyS+rxjMbBj5BVYDSV7c0YOq4fJc
-	lHtbZMtQH9ubMLTPUS/4n0+OHd0ud42THUjzfgOEmizESXkHeYv2lemGJNuyxNSaQaNzQnM6MrB
-	vxPb4TqdqUxivq8l5eS7zFqizgsGdjp28Nyn1uFv28qh/xO4VwF4yP1QDCki28fJsnTTeSCW1qf
-	OO/C5C9q/5TLWLHfQjdQq60lr23M1/DMcA25hVxCC4Fei06mpKQP7
-X-Received: by 2002:a05:620a:22ab:b0:7e3:4413:e492 with SMTP id af79cd13be357-7e34413e876mr264145885a.62.1752677897602;
-        Wed, 16 Jul 2025 07:58:17 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IH0jOujE3U+BYkwFkxZi068fm97ejo79VB/1BsmjFpf/HPzJEDPZJZLcHh9+NAlr5Fw707ZVQ==
-X-Received: by 2002:a05:620a:22ab:b0:7e3:4413:e492 with SMTP id af79cd13be357-7e34413e876mr264140585a.62.1752677896933;
-        Wed, 16 Jul 2025 07:58:16 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-55a0fe70bccsm1355597e87.30.2025.07.16.07.58.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Jul 2025 07:58:16 -0700 (PDT)
-Date: Wed, 16 Jul 2025 17:58:14 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Doug Anderson <dianders@chromium.org>
-Cc: Konrad Dybcio <konradybcio@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        cros-qcom-dts-watchers@chromium.org, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Rob Clark <robin.clark@oss.qualcomm.com>,
-        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-        Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Subject: Re: [PATCH v2 3/4] dt-bindings: arm-smmu: Remove sdm845-cheza
- specific entry
-Message-ID: <2kpb6lwr36izbbp45dbv7lg2akjdxteiadhtc2bbphmsreycwu@nre7uzuezydq>
-References: <20250716-topic-goodnight_cheza-v2-0-6fa8d3261813@oss.qualcomm.com>
- <20250716-topic-goodnight_cheza-v2-3-6fa8d3261813@oss.qualcomm.com>
- <CAD=FV=XmwiA_gX9pF5Dja1vezson7f21WHC8u8+Rhg_6OUJ+rw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eXV0vx9q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5741BC4CEF0;
+	Wed, 16 Jul 2025 15:24:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1752679467;
+	bh=LAicS+pihtv9EEihexoFYLo1L3pM9ZqAXYRukX438Nw=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=eXV0vx9qsPrkBBLAYy4/BJFyqFKY7mfLVIIl/hUHZBRcBi1p1i6xoMoDMgFTiDcsV
+	 MVBJDfF+6g2FvAvMAt0V8p0+SxYErYjU4HcK2UM0oiqt4PSzCpPNxGIZVYqIx0ivDs
+	 c0huQIb6tjN3KkM2uKjEqN7BVSSZoHZIaZonZbGPViwBo9SG6hayKuMuS+LSyuhFvM
+	 bOYzJWOWLGEspFmpulKbFJoyvEkfovtHTDN4qRg3zoNLQuNwJ4hyqMzUvs7GLBL49Z
+	 rR2DpPB6jo2d1Dew+8bEJ6F4aQ8FtryO+uO3Xb+jgh380PaOaULW6g5H0RVSmHdK9P
+	 Szcu9EgUZpT9w==
+Message-ID: <051e5c07-f012-44b1-8e6b-ef9c13ee7177@kernel.org>
+Date: Wed, 16 Jul 2025 10:24:24 -0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAD=FV=XmwiA_gX9pF5Dja1vezson7f21WHC8u8+Rhg_6OUJ+rw@mail.gmail.com>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzE2MDEzNSBTYWx0ZWRfX6pFqjiOeyNr4
- eZZ0rTsLuNjch9SyJ9I2yM8/ln3K11pOqrF8SvY7Bpo5QSVzos5k/FZSr17b7fgg0kUVgWMctsP
- CcwmVzWKFf3CZIcYQVYvn0dMsQtyhYrutsvkfcJHevzj6oUr7Ea1lBuelp3Ijd4hVegWS9X+D9K
- NLJ3XYedOCIbWC/K3vKehFx4mAKaP7m3L+UHEF9+XpN/ltJ41ygWepsxs0l33loWI4Dv2FAENpv
- h+Cva5QZ27nle66GyAwEelRvqIW07v27HNcTE1d86qCxc2wxHn5sI3IetTO2TxcXLXGQmv7pZ/M
- 9DVhMdnVTin/rFGyoxv1VeT7Wf091BA1BVZHVBH/dpIjFG+Qvt2UesXG7EAnY7GEVi0ws1wtJlb
- QdjxIiXAwIpCwtR4hrSuNK8r+naWYZROlOQCIjvwPXyGyrM6stKEgJaGKvXTb49Nq9+Pez7n
-X-Proofpoint-GUID: jf8xU6oFxB6NMeB8nzX4B5lW1dGBkply
-X-Proofpoint-ORIG-GUID: jf8xU6oFxB6NMeB8nzX4B5lW1dGBkply
-X-Authority-Analysis: v=2.4 cv=Y+r4sgeN c=1 sm=1 tr=0 ts=6877be0b cx=c_pps
- a=hnmNkyzTK/kJ09Xio7VxxA==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
- a=Wb1JkmetP80A:10 a=cm27Pg_UAAAA:8 a=EUspDBNiAAAA:8 a=HCTRSnsxAeQ6huVMZXoA:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=PEH46H7Ffwr30OY-TuGO:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-07-16_02,2025-07-16_02,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 mlxlogscore=999 phishscore=0 malwarescore=0 priorityscore=1501
- adultscore=0 impostorscore=0 mlxscore=0 suspectscore=0 lowpriorityscore=0
- bulkscore=0 spamscore=0 classifier=spam authscore=0 authtc=n/a authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2507160135
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 9/9] PCI: Add a new 'boot_display' attribute
+To: Maxime Ripard <mripard@kernel.org>
+Cc: David Airlie <airlied@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Alex Deucher <alexander.deucher@amd.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ Simona Vetter <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+ "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
+ "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+ "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
+ "open list:SOUND" <linux-sound@vger.kernel.org>,
+ Daniel Dadap <ddadap@nvidia.com>,
+ Mario Limonciello <mario.limonciello@amd.com>
+References: <20250714212147.2248039-1-superm1@kernel.org>
+ <20250714212147.2248039-10-superm1@kernel.org>
+ <20250716-upbeat-tody-of-psychology-93e2a2@houat>
+Content-Language: en-US
+From: Mario Limonciello <superm1@kernel.org>
+In-Reply-To: <20250716-upbeat-tody-of-psychology-93e2a2@houat>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Jul 16, 2025 at 07:21:51AM -0700, Doug Anderson wrote:
-> Hi,
+On 7/16/25 3:22 AM, Maxime Ripard wrote:
+> Hi Mario,
 > 
-> On Wed, Jul 16, 2025 at 3:16 AM 'Konrad Dybcio' via
-> cros-qcom-dts-watchers <cros-qcom-dts-watchers@chromium.org> wrote:
-> >
-> > From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-> >
-> > The firmware on SDM845-based Cheza boards did not provide the same
-> > level of feature support for SMMUs (particularly around the Adreno
-> > GPU integration).
-> >
-> > Now that Cheza is being removed from the kernel (almost none exist at
-> > this point in time), retire the entry as well.
-> >
-> > Most notably, it's not being marked as deprecated instead, as there is
-> > no indication that any more of those ~7 year old devboards will be
-> > built.
-> >
-> > Signed-off-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-> > ---
-> >  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 4 ----
-> >  1 file changed, 4 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> > index 7b9d5507d6ccd6b845a57eeae59fe80ba75cc652..646814ec7d15f6d8a0136de73b7eaddae232ea64 100644
-> > --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> > +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> > @@ -132,10 +132,6 @@ properties:
-> >                - qcom,sm7150-smmu-v2
-> >            - const: qcom,adreno-smmu
-> >            - const: qcom,smmu-v2
-> > -      - description: Qcom Adreno GPUs on Google Cheza platform
-> > -        items:
-> > -          - const: qcom,sdm845-smmu-v2
-> > -          - const: qcom,smmu-v2
+> On Mon, Jul 14, 2025 at 04:21:46PM -0500, Mario Limonciello wrote:
+>> From: Mario Limonciello <mario.limonciello@amd.com>
+>>
+>> On systems with multiple GPUs there can be uncertainty which GPU is the
+>> primary one used to drive the display at bootup. In order to disambiguate
+>> this add a new sysfs attribute 'boot_display' that uses the output of
+>> video_is_primary_device() to populate whether a PCI device was used for
+>> driving the display.
+>>
+>> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+>> ---
+>> v7:
+>>   * fix lkp failure
+>>   * Add tag
+>> v6:
+>>   * Only show for the device that is boot display
+>>   * Only create after PCI device sysfs files are initialized to ensure
+>>     that resources are ready.
+>> v4:
+>>   * new patch
+>> ---
+>>   Documentation/ABI/testing/sysfs-bus-pci |  8 +++++
+>>   drivers/pci/pci-sysfs.c                 | 46 +++++++++++++++++++++++++
+>>   2 files changed, 54 insertions(+)
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+>> index 69f952fffec72..8b455b1a58852 100644
+>> --- a/Documentation/ABI/testing/sysfs-bus-pci
+>> +++ b/Documentation/ABI/testing/sysfs-bus-pci
+>> @@ -612,3 +612,11 @@ Description:
+>>   
+>>   		  # ls doe_features
+>>   		  0001:01        0001:02        doe_discovery
+>> +
+>> +What:		/sys/bus/pci/devices/.../boot_display
+>> +Date:		October 2025
+>> +Contact:	Linux PCI developers <linux-pci@vger.kernel.org>
+>> +Description:
+>> +		This file indicates the device was used as a boot
+>> +		display. If the device was used as the boot display, the file
+>> +		will be present and contain "1".
 > 
-> The code supporting this can also be removed then, right?
+> It would probably be a good idea to define what a "boot display" here
+> is. I get what you mean, but it's pretty vague and could easily be
+> misunderstood.
 > 
-> drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c:     { .compatible =
-> "qcom,sdm845-smmu-v2", .data = &qcom_smmu_v2_data },
+> Maxime
 
-No, we must keep it for the Adreno SMMU on SDM845.
+Here's my proposal for updated text, can you please bikeshed or propose 
+an alternative?
 
-> 
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
+This file indicates that displays connected to the device were used to 
+display the boot sequence.  If a display connected to the device was
+used to display the boot sequence the file will be present and contain "1".
 
--- 
-With best wishes
-Dmitry
+
