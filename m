@@ -1,336 +1,131 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48ABB28A3ED
-	for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 07:12:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7A462EAB82;
+	Wed, 16 Jul 2025 08:22:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752649980; cv=none; b=oy7JrW6IVwMkJ64+JgNfGFqUnZBz3F0Id6V05W87rMr2oTkc5GCd8axKwAiJX6bZqX46N7aauf+YnZWVP+Esq87HjLo4TareEJNYxSIh8yHa59wnbFS2+GjBiA8HiUApidlVd5JbJ0T2bzug3ACcdKssLyviXoWkTsSAQE2WcJI=
+	t=1752654150; cv=none; b=PyPUsYMqow+KZfdNQOsWdxtx3WKjxudlI6j8orbfBw3v9n4Eb72CTN71UP/JcQT4YoAyWV5nUf+OXaOoMcizHMyyb28PlwkDgjIfLPnoCayPZutso7aRPnTcJME21WgxNIUcLyR6xVVQAaoDezFVYqd7xoK3MPRPUpm7x1OXU1g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752649980; c=relaxed/simple;
-	bh=YaPJqZ8tPXcl7vKy59vvbjNeLPK3pnoNZGDI4WEGdKc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=d323MDIh/ygiHsCuFBtHuuNysvsX1thbBISoofbi1K/KkvYWq5epInShq83U7LL+3Xi0nBzgpD9cI66y8iwUG3Oocxg/nbc194jTFYoaWuOIS2IcpXNKI6DZw+rOoc+nV+yiF61x+oyHRxzNtHXnUw6qA+10zOI9Mq4IS+F2jv0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=D1WmrGER; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1752654150; c=relaxed/simple;
+	bh=V4D522z6UUEGIW4Wg6YSnm8NKzfzikRtghcHIDH2hWc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QF994wi8pWN/2UI8sVYPhp326qGNHhCZql9NoN0jeXXYI0F28X0M0SJxvs2CmkQ5uGc/8r/3HmXzRsGhb1kUxcSyBLhVGAZZLAmJRXKnHywrdyRnrnS7UhqbdcKwnsxHLVJhI3aD9m5ZVN3IL4hjxf/0dciZ57udGGTAvPmAmaU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ju9r0yge; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D1WmrGER"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752649978; x=1784185978;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=YaPJqZ8tPXcl7vKy59vvbjNeLPK3pnoNZGDI4WEGdKc=;
-  b=D1WmrGERphOWUqjM0Ge4ekdfsOLsgxssNhZcLSfYh0gTvchtaOSVl/lJ
-   34UVkyEdknYiBchoKoaQBSMqZMvjFoFFuqRZq+Omisv2Hp7qP0gLx1GgZ
-   KW4G+pOQONHnAhHbN0ZzVMv/C61rbpikBSGRWkCrR85vyc97nM03uMobl
-   Sw8nlH22oIu+pYBxi8vt6SaGHK8PM+bclFv9emy0Wm/XrrGmpDes6FdgQ
-   GCYwieziDzWfBNiJaTW6AFMvfVIfj2lLP2k4nwCBdttd9O1BYZECioVX7
-   pPSUd1Jv2hvMjNdC1Xd2rKjHrjUU2yjAtdxOkJb0a4dQKBNeC9pGaJ2al
-   A==;
-X-CSE-ConnectionGUID: 2go40bVBRHKI3owLew0nCw==
-X-CSE-MsgGUID: KSlt9mBSTtmGxC2k/gbXBg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="58540889"
-X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="58540889"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 00:12:58 -0700
-X-CSE-ConnectionGUID: K0PL0QQ0Tli94zpY9+b4LQ==
-X-CSE-MsgGUID: fM7nAJ+jRNu/RHQPhTnrVQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,315,1744095600"; 
-   d="scan'208";a="161453675"
-Received: from yilunxu-optiplex-7050.sh.intel.com ([10.239.159.165])
-  by fmviesa003.fm.intel.com with ESMTP; 16 Jul 2025 00:12:54 -0700
-From: Xu Yilun <yilun.xu@linux.intel.com>
-To: jgg@nvidia.com,
-	jgg@ziepe.ca,
-	kevin.tian@intel.com,
-	will@kernel.org,
-	aneesh.kumar@kernel.org
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	joro@8bytes.org,
-	robin.murphy@arm.com,
-	shuah@kernel.org,
-	nicolinc@nvidia.com,
-	aik@amd.com,
-	dan.j.williams@intel.com,
-	baolu.lu@linux.intel.com,
-	yilun.xu@intel.com
-Subject: [PATCH v6 8/8] iommufd: Rename some shortterm-related identifiers
-Date: Wed, 16 Jul 2025 15:03:49 +0800
-Message-Id: <20250716070349.1807226-9-yilun.xu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20250716070349.1807226-1-yilun.xu@linux.intel.com>
-References: <20250716070349.1807226-1-yilun.xu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ju9r0yge"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3AC8C4CEF9;
+	Wed, 16 Jul 2025 08:22:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1752654150;
+	bh=V4D522z6UUEGIW4Wg6YSnm8NKzfzikRtghcHIDH2hWc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Ju9r0ygeIoehctwwAmdbT/gnfDwO9Wx9CcOiz8KdX+fbbUUW44D3fiXaJL6ORkQll
+	 NStAgkyukkjf0jmlnc+7NmUNmVnsxXJtXtjpIEZfICw+MgHB6EukkgT+gI0GlE0ymn
+	 0sB/lbzBlumLdjrsptDrl/3BbpnNY4NxBxXo79i7geNfD4Ip4W7E7vNPGo6MQ+HL3s
+	 XNk3X9dbyeUezh1dNqRL+ALj9ijiDE+UH1Ko4if/JVXnV6dkA0fqgeaxcUjfplQznk
+	 hmsDIryCvejDyEO1edOecCZ/ea1g5mxVBovVrHfR3gaLjaG7eJTDw3g71cPoAdDVUf
+	 HMZZxthoAuLpg==
+Date: Wed, 16 Jul 2025 10:22:27 +0200
+From: Maxime Ripard <mripard@kernel.org>
+To: Mario Limonciello <superm1@kernel.org>
+Cc: David Airlie <airlied@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>, 
+	Alex Deucher <alexander.deucher@amd.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
+	Simona Vetter <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Alex Williamson <alex.williamson@redhat.com>, 
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, 
+	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>, open list <linux-kernel@vger.kernel.org>, 
+	"open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>, "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>, 
+	"open list:VFIO DRIVER" <kvm@vger.kernel.org>, "open list:SOUND" <linux-sound@vger.kernel.org>, 
+	Daniel Dadap <ddadap@nvidia.com>, Mario Limonciello <mario.limonciello@amd.com>
+Subject: Re: [PATCH v8 9/9] PCI: Add a new 'boot_display' attribute
+Message-ID: <20250716-upbeat-tody-of-psychology-93e2a2@houat>
+References: <20250714212147.2248039-1-superm1@kernel.org>
+ <20250714212147.2248039-10-superm1@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha384;
+	protocol="application/pgp-signature"; boundary="k6j22jwrkd2tjfpl"
+Content-Disposition: inline
+In-Reply-To: <20250714212147.2248039-10-superm1@kernel.org>
 
-Rename the shortterm-related identifiers to wait-related.
 
-The usage of shortterm_users refcount is now beyond its name.  It is
-also used for references which live longer than an ioctl execution.
-E.g. vdev holds idev's shortterm_users refcount on vdev allocation,
-releases it during idev's pre_destroy(). Rename the refcount as
-wait_cnt, since it is always used to sync the referencing & the
-destruction of the object by waiting for it to go to zero.
+--k6j22jwrkd2tjfpl
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v8 9/9] PCI: Add a new 'boot_display' attribute
+MIME-Version: 1.0
 
-List all changed identifiers:
+Hi Mario,
 
-  iommufd_object::shortterm_users -> iommufd_object::wait_cnt
-  REMOVE_WAIT_SHORTTERM -> REMOVE_WAIT
-  iommufd_object_dec_wait_shortterm() -> iommufd_object_dec_wait()
-  zerod_shortterm -> zerod_wait_cnt
+On Mon, Jul 14, 2025 at 04:21:46PM -0500, Mario Limonciello wrote:
+> From: Mario Limonciello <mario.limonciello@amd.com>
+>=20
+> On systems with multiple GPUs there can be uncertainty which GPU is the
+> primary one used to drive the display at bootup. In order to disambiguate
+> this add a new sysfs attribute 'boot_display' that uses the output of
+> video_is_primary_device() to populate whether a PCI device was used for
+> driving the display.
+>=20
+> Reviewed-by: Thomas Zimmermann <tzimmermann@suse.de>
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+> ---
+> v7:
+>  * fix lkp failure
+>  * Add tag
+> v6:
+>  * Only show for the device that is boot display
+>  * Only create after PCI device sysfs files are initialized to ensure
+>    that resources are ready.
+> v4:
+>  * new patch
+> ---
+>  Documentation/ABI/testing/sysfs-bus-pci |  8 +++++
+>  drivers/pci/pci-sysfs.c                 | 46 +++++++++++++++++++++++++
+>  2 files changed, 54 insertions(+)
+>=20
+> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/=
+testing/sysfs-bus-pci
+> index 69f952fffec72..8b455b1a58852 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-pci
+> +++ b/Documentation/ABI/testing/sysfs-bus-pci
+> @@ -612,3 +612,11 @@ Description:
+> =20
+>  		  # ls doe_features
+>  		  0001:01        0001:02        doe_discovery
+> +
+> +What:		/sys/bus/pci/devices/.../boot_display
+> +Date:		October 2025
+> +Contact:	Linux PCI developers <linux-pci@vger.kernel.org>
+> +Description:
+> +		This file indicates the device was used as a boot
+> +		display. If the device was used as the boot display, the file
+> +		will be present and contain "1".
 
-No functional change intended.
+It would probably be a good idea to define what a "boot display" here
+is. I get what you mean, but it's pretty vague and could easily be
+misunderstood.
 
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Xu Yilun <yilun.xu@linux.intel.com>
----
- drivers/iommu/iommufd/device.c          |  6 ++--
- drivers/iommu/iommufd/iommufd_private.h | 18 ++++++------
- drivers/iommu/iommufd/main.c            | 39 +++++++++++++------------
- drivers/iommu/iommufd/viommu.c          |  4 +--
- include/linux/iommufd.h                 |  8 ++++-
- 5 files changed, 41 insertions(+), 34 deletions(-)
+Maxime
 
-diff --git a/drivers/iommu/iommufd/device.c b/drivers/iommu/iommufd/device.c
-index ee6ff4caf398..65fbd098f9e9 100644
---- a/drivers/iommu/iommufd/device.c
-+++ b/drivers/iommu/iommufd/device.c
-@@ -152,8 +152,8 @@ static void iommufd_device_remove_vdev(struct iommufd_device *idev)
- 	/*
- 	 * An ongoing vdev destroy ioctl has removed the vdev from the object
- 	 * xarray, but has not finished iommufd_vdevice_destroy() yet as it
--	 * needs the same mutex. We exit the locking then wait on short term
--	 * users for the vdev destruction.
-+	 * needs the same mutex. We exit the locking then wait on wait_cnt
-+	 * reference for the vdev destruction.
- 	 */
- 	if (IS_ERR(vdev))
- 		goto out_unlock;
-@@ -184,7 +184,7 @@ void iommufd_device_pre_destroy(struct iommufd_object *obj)
- 	struct iommufd_device *idev =
- 		container_of(obj, struct iommufd_device, obj);
- 
--	/* Release the short term users on this */
-+	/* Release the wait_cnt reference on this */
- 	iommufd_device_remove_vdev(idev);
- }
- 
-diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-index 5d6ea5395cfe..0da2a81eedfa 100644
---- a/drivers/iommu/iommufd/iommufd_private.h
-+++ b/drivers/iommu/iommufd/iommufd_private.h
-@@ -169,7 +169,7 @@ static inline bool iommufd_lock_obj(struct iommufd_object *obj)
- {
- 	if (!refcount_inc_not_zero(&obj->users))
- 		return false;
--	if (!refcount_inc_not_zero(&obj->shortterm_users)) {
-+	if (!refcount_inc_not_zero(&obj->wait_cnt)) {
- 		/*
- 		 * If the caller doesn't already have a ref on obj this must be
- 		 * called under the xa_lock. Otherwise the caller is holding a
-@@ -187,11 +187,11 @@ static inline void iommufd_put_object(struct iommufd_ctx *ictx,
- 				      struct iommufd_object *obj)
- {
- 	/*
--	 * Users first, then shortterm so that REMOVE_WAIT_SHORTTERM never sees
--	 * a spurious !0 users with a 0 shortterm_users.
-+	 * Users first, then wait_cnt so that REMOVE_WAIT never sees a spurious
-+	 * !0 users with a 0 wait_cnt.
- 	 */
- 	refcount_dec(&obj->users);
--	if (refcount_dec_and_test(&obj->shortterm_users))
-+	if (refcount_dec_and_test(&obj->wait_cnt))
- 		wake_up_interruptible_all(&ictx->destroy_wait);
- }
- 
-@@ -202,7 +202,7 @@ void iommufd_object_finalize(struct iommufd_ctx *ictx,
- 			     struct iommufd_object *obj);
- 
- enum {
--	REMOVE_WAIT_SHORTTERM	= BIT(0),
-+	REMOVE_WAIT		= BIT(0),
- 	REMOVE_OBJ_TOMBSTONE	= BIT(1),
- };
- int iommufd_object_remove(struct iommufd_ctx *ictx,
-@@ -211,15 +211,15 @@ int iommufd_object_remove(struct iommufd_ctx *ictx,
- 
- /*
-  * The caller holds a users refcount and wants to destroy the object. At this
-- * point the caller has no shortterm_users reference and at least the xarray
-- * will be holding one.
-+ * point the caller has no wait_cnt reference and at least the xarray will be
-+ * holding one.
-  */
- static inline void iommufd_object_destroy_user(struct iommufd_ctx *ictx,
- 					       struct iommufd_object *obj)
- {
- 	int ret;
- 
--	ret = iommufd_object_remove(ictx, obj, obj->id, REMOVE_WAIT_SHORTTERM);
-+	ret = iommufd_object_remove(ictx, obj, obj->id, REMOVE_WAIT);
- 
- 	/*
- 	 * If there is a bug and we couldn't destroy the object then we did put
-@@ -239,7 +239,7 @@ static inline void iommufd_object_tombstone_user(struct iommufd_ctx *ictx,
- 	int ret;
- 
- 	ret = iommufd_object_remove(ictx, obj, obj->id,
--				    REMOVE_WAIT_SHORTTERM | REMOVE_OBJ_TOMBSTONE);
-+				    REMOVE_WAIT | REMOVE_OBJ_TOMBSTONE);
- 
- 	/*
- 	 * If there is a bug and we couldn't destroy the object then we did put
-diff --git a/drivers/iommu/iommufd/main.c b/drivers/iommu/iommufd/main.c
-index 99c1aab3d396..15af7ced0501 100644
---- a/drivers/iommu/iommufd/main.c
-+++ b/drivers/iommu/iommufd/main.c
-@@ -42,7 +42,7 @@ struct iommufd_object *_iommufd_object_alloc(struct iommufd_ctx *ictx,
- 		return ERR_PTR(-ENOMEM);
- 	obj->type = type;
- 	/* Starts out bias'd by 1 until it is removed from the xarray */
--	refcount_set(&obj->shortterm_users, 1);
-+	refcount_set(&obj->wait_cnt, 1);
- 	refcount_set(&obj->users, 1);
- 
- 	/*
-@@ -155,22 +155,22 @@ struct iommufd_object *iommufd_get_object(struct iommufd_ctx *ictx, u32 id,
- 	return obj;
- }
- 
--static int iommufd_object_dec_wait_shortterm(struct iommufd_ctx *ictx,
--					     struct iommufd_object *to_destroy)
-+static int iommufd_object_dec_wait(struct iommufd_ctx *ictx,
-+				   struct iommufd_object *to_destroy)
- {
--	if (refcount_dec_and_test(&to_destroy->shortterm_users))
-+	if (refcount_dec_and_test(&to_destroy->wait_cnt))
- 		return 0;
- 
- 	if (iommufd_object_ops[to_destroy->type].pre_destroy)
- 		iommufd_object_ops[to_destroy->type].pre_destroy(to_destroy);
- 
- 	if (wait_event_timeout(ictx->destroy_wait,
--			       refcount_read(&to_destroy->shortterm_users) == 0,
-+			       refcount_read(&to_destroy->wait_cnt) == 0,
- 			       msecs_to_jiffies(60000)))
- 		return 0;
- 
- 	pr_crit("Time out waiting for iommufd object to become free\n");
--	refcount_inc(&to_destroy->shortterm_users);
-+	refcount_inc(&to_destroy->wait_cnt);
- 	return -EBUSY;
- }
- 
-@@ -184,17 +184,18 @@ int iommufd_object_remove(struct iommufd_ctx *ictx,
- {
- 	struct iommufd_object *obj;
- 	XA_STATE(xas, &ictx->objects, id);
--	bool zerod_shortterm = false;
-+	bool zerod_wait_cnt = false;
- 	int ret;
- 
- 	/*
--	 * The purpose of the shortterm_users is to ensure deterministic
--	 * destruction of objects used by external drivers and destroyed by this
--	 * function. Any temporary increment of the refcount must increment
--	 * shortterm_users, such as during ioctl execution.
-+	 * The purpose of the wait_cnt is to ensure deterministic destruction
-+	 * of objects used by external drivers and destroyed by this function.
-+	 * Incrementing this wait_cnt should either be short lived, such as
-+	 * during ioctl execution, or be revoked and blocked during
-+	 * pre_destroy(), such as vdev holding the idev's refcount.
- 	 */
--	if (flags & REMOVE_WAIT_SHORTTERM) {
--		ret = iommufd_object_dec_wait_shortterm(ictx, to_destroy);
-+	if (flags & REMOVE_WAIT) {
-+		ret = iommufd_object_dec_wait(ictx, to_destroy);
- 		if (ret) {
- 			/*
- 			 * We have a bug. Put back the callers reference and
-@@ -203,7 +204,7 @@ int iommufd_object_remove(struct iommufd_ctx *ictx,
- 			refcount_dec(&to_destroy->users);
- 			return ret;
- 		}
--		zerod_shortterm = true;
-+		zerod_wait_cnt = true;
- 	}
- 
- 	xa_lock(&ictx->objects);
-@@ -235,11 +236,11 @@ int iommufd_object_remove(struct iommufd_ctx *ictx,
- 	xa_unlock(&ictx->objects);
- 
- 	/*
--	 * Since users is zero any positive users_shortterm must be racing
-+	 * Since users is zero any positive wait_cnt must be racing
- 	 * iommufd_put_object(), or we have a bug.
- 	 */
--	if (!zerod_shortterm) {
--		ret = iommufd_object_dec_wait_shortterm(ictx, obj);
-+	if (!zerod_wait_cnt) {
-+		ret = iommufd_object_dec_wait(ictx, obj);
- 		if (WARN_ON(ret))
- 			return ret;
- 	}
-@@ -249,9 +250,9 @@ int iommufd_object_remove(struct iommufd_ctx *ictx,
- 	return 0;
- 
- err_xa:
--	if (zerod_shortterm) {
-+	if (zerod_wait_cnt) {
- 		/* Restore the xarray owned reference */
--		refcount_set(&obj->shortterm_users, 1);
-+		refcount_set(&obj->wait_cnt, 1);
- 	}
- 	xa_unlock(&ictx->objects);
- 
-diff --git a/drivers/iommu/iommufd/viommu.c b/drivers/iommu/iommufd/viommu.c
-index 6cf0bd5d8f08..2ca5809b238b 100644
---- a/drivers/iommu/iommufd/viommu.c
-+++ b/drivers/iommu/iommufd/viommu.c
-@@ -205,8 +205,8 @@ int iommufd_vdevice_alloc_ioctl(struct iommufd_ucmd *ucmd)
- 	vdev->viommu = viommu;
- 	refcount_inc(&viommu->obj.users);
- 	/*
--	 * A short term users reference is held on the idev so long as we have
--	 * the pointer. iommufd_device_pre_destroy() will revoke it before the
-+	 * A wait_cnt reference is held on the idev so long as we have the
-+	 * pointer. iommufd_device_pre_destroy() will revoke it before the
- 	 * idev real destruction.
- 	 */
- 	vdev->idev = idev;
-diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-index 810e4d8ac912..6e7efe83bc5d 100644
---- a/include/linux/iommufd.h
-+++ b/include/linux/iommufd.h
-@@ -46,7 +46,13 @@ enum iommufd_object_type {
- 
- /* Base struct for all objects with a userspace ID handle. */
- struct iommufd_object {
--	refcount_t shortterm_users;
-+	/*
-+	 * Destroy will sleep and wait for wait_cnt to go to zero. This allows
-+	 * concurrent users of the ID to reliably avoid causing a spurious
-+	 * destroy failure. Incrementing this count should either be short
-+	 * lived or be revoked and blocked during pre_destroy().
-+	 */
-+	refcount_t wait_cnt;
- 	refcount_t users;
- 	enum iommufd_object_type type;
- 	unsigned int id;
--- 
-2.25.1
+--k6j22jwrkd2tjfpl
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaHdhQwAKCRAnX84Zoj2+
+dmq9AYDxe/0Z5T43z0PYAkTEFn17IfyWd5PSFPwPt5sbAZu5sPFpkiTIYzsW8zQO
+FdVNAZgBgMbsfM0ASem/uZk2LHVlbNAmBeJms8JHF/ENscuRsyCN5ltCZOVlNZM0
+tOdrKjIKvw==
+=zc9C
+-----END PGP SIGNATURE-----
+
+--k6j22jwrkd2tjfpl--
