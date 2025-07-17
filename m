@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B602E54769
-	for <iommu@lists.linux.dev>; Thu, 17 Jul 2025 01:45:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AFB8FBF0
+	for <iommu@lists.linux.dev>; Thu, 17 Jul 2025 01:49:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752716720; cv=none; b=tXcRzUucYG3SqjDNn46XivAa5jMxJG32FVAjbft8IKYO3pdbVfnuny0VMsRShiGvotgByuFOGku6GnAkhv9ZtQ3X4gY7FFazjRgqT0gOxgdgxmON8SMzdYui+C+60iwjULuTnox3a7mZ6GC6CB0+2L7/g7adRUxRcwNalU7H1vI=
+	t=1752716990; cv=none; b=dV4sO9c6PvtzK8yO+bOc4cvFp7phv2KO11azu0mtLIKTVbVXvpVXDpTMNWZUFqJ9baQ8DCx3GgE3mlC8G3fIvERzlLfyOc7EFOztugEqxYEn+bpK6mlpNpjDsEquW/eIQJ0FVWPvujkG4T0xzMa3uIrBIIub5Dta2FKsNswp+wA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752716720; c=relaxed/simple;
-	bh=/RbAH5gsGsI/vSlzeaWK3wAywHETxlvVMYZZu9wtIAc=;
+	s=arc-20240116; t=1752716990; c=relaxed/simple;
+	bh=eAkyQhOyPhw7BLN3o+9XWHxqhchLNhKu0wZLeZ+xjC4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rLnOEs54ksTQnRn9DUtOLCbsHKSzgj2nM8vRmjps/dtAlVyFHMtyJVHm6NUJJYwKfHhAN50GlHMnm5ZoDhXSqDo/U+ukCJBDVnENcdTc8uOMt7bqty7dGpsAduBuKFO87Tj2KLlOfZyv+MwupjCBHui4HRypsak83rKFH6zIDa0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Gi/yguL5; arc=none smtp.client-ip=192.198.163.8
+	 In-Reply-To:Content-Type; b=t3um0nz73T2MXoqQO82a5RudWRyQv43NSfuuvhw8fqvjpJ2Gk3nHBJjLPnmkMEvjX5GBVVH4IJwhoEwE95eA0Mde4VQ+E2ZzJgVYetenfLaaowFzlBKFqDKMDY8L7cRIRP7PV6jmQ+b9BX/MxX1StInvkQeD4xsYPTQq6m5AfdU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FxlbOOzM; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Gi/yguL5"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FxlbOOzM"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752716719; x=1784252719;
+  t=1752716990; x=1784252990;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=/RbAH5gsGsI/vSlzeaWK3wAywHETxlvVMYZZu9wtIAc=;
-  b=Gi/yguL5CR9a5O8MlmBfDZ0HJMl/Rciv4prGbkYC+7v8JQdNyPWeq1og
-   y2BIHu+QFo9SgR57jDzGhnUZvyJ7NFVWx4oTEGvsJnEgbD+ZwRUAQQm1b
-   HHkRs5x28LwwApBpQGdy6b7x3/Y5Tf3YM9YB9qELSOF8sqqZ1npEeoNh9
-   YOXKzgEx80AaURrKtj2M41/WPqTJnFqr70ARAUvfXok1jI17sl14t2XRj
-   u3K/nDffqzzxaBXp0vPifNEFO6D8Hc3UDqqvuWTKUmhuiJUJVjk+siClp
-   80IqFMzRkX/MJqY3lrgWdeO7toCP53DhvSjfoaUkAl3mWfpJl3O5x86XC
-   w==;
-X-CSE-ConnectionGUID: yiN5edWxS766f/oTZgIGfw==
-X-CSE-MsgGUID: x2gUBqrZR8uzsAhOstsgWw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="72546437"
+  bh=eAkyQhOyPhw7BLN3o+9XWHxqhchLNhKu0wZLeZ+xjC4=;
+  b=FxlbOOzMRbTNjVI5X7ecHm6sqzu0BxK34m5kdf97lBpgLcZGKBwFD96R
+   BsP5bqFRr/DzYIxnfibsmdIrkbWEitkQtTjyuUz5pgf8/lsP/sW4vRn+4
+   soEGN9hsX0Kl7FL3qZTtHSYSfk6+1cvk397sgzKRNW8QztHg14vKINYTz
+   RvmfSBUO8yEsQqXN7lJUGHmuv0VjFg/Q2fH0FvmjP360lnrkL43KzmBMg
+   YiYaGgVKjJB3YDwQvpckn3k2uWB1Cml5hoX/nJN50R8Rsxlhk6Ef3IfIm
+   0hxzJ6KjR2WDDuj7r4NL7rYJLvP6tAvOZeT8inZnlY1mE+RzlD8Z2fI9g
+   A==;
+X-CSE-ConnectionGUID: j1KEgFW9SoSNW08CicGLcw==
+X-CSE-MsgGUID: HlzOxNCdQWyPDvjSgFEeBw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11493"; a="72546674"
 X-IronPort-AV: E=Sophos;i="6.16,317,1744095600"; 
-   d="scan'208";a="72546437"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 18:45:16 -0700
-X-CSE-ConnectionGUID: 6UKYyFDdSqa817g2UuA1EA==
-X-CSE-MsgGUID: kbyc6LnuSFqjH0eZnWHQqA==
+   d="scan'208";a="72546674"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 18:49:49 -0700
+X-CSE-ConnectionGUID: kq5cbfU1QmKl0pu+6mUnXA==
+X-CSE-MsgGUID: tC5/M5KKReCe0iYKi2flUQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,317,1744095600"; 
-   d="scan'208";a="163288796"
+   d="scan'208";a="158367440"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 18:45:12 -0700
-Message-ID: <df5353e2-1d54-476b-90ab-e673686dcc41@linux.intel.com>
-Date: Thu, 17 Jul 2025 09:43:19 +0800
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2025 18:49:45 -0700
+Message-ID: <a5840f8c-26e6-4aab-9f24-02f9b28177b8@linux.intel.com>
+Date: Thu, 17 Jul 2025 09:47:52 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,10 +54,11 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v2 1/1] iommu/sva: Invalidate KVA range on kernel TLB
  flush
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Peter Zijlstra <peterz@infradead.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>,
+To: David Laight <david.laight.linux@gmail.com>,
+ Peter Zijlstra <peterz@infradead.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Jann Horn <jannh@google.com>,
  Vasant Hegde <vasant.hegde@amd.com>, Dave Hansen <dave.hansen@intel.com>,
  Alistair Popple <apopple@nvidia.com>, Uladzislau Rezki <urezki@gmail.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
@@ -66,110 +67,68 @@ Cc: Peter Zijlstra <peterz@infradead.org>, Joerg Roedel <joro@8bytes.org>,
  stable@vger.kernel.org
 References: <20250709062800.651521-1-baolu.lu@linux.intel.com>
  <20250710135432.GO1613376@noisy.programming.kicks-ass.net>
- <094fdad4-297b-44e9-a81c-0fe4da07e63f@linux.intel.com>
- <20250711083252.GE1099709@noisy.programming.kicks-ass.net>
- <e049c100-2e54-4fd7-aadd-c181f9626f14@linux.intel.com>
- <20250715122504.GK2067380@nvidia.com>
- <f58a6825-e53a-4751-97cc-0891052936f1@linux.intel.com>
- <20250716120817.GY2067380@nvidia.com>
+ <20250710155319.GK1613633@noisy.programming.kicks-ass.net>
+ <20250716125725.37aa3f38@pumpkin>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250716120817.GY2067380@nvidia.com>
+In-Reply-To: <20250716125725.37aa3f38@pumpkin>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 7/16/25 20:08, Jason Gunthorpe wrote:
-> On Wed, Jul 16, 2025 at 02:34:04PM +0800, Baolu Lu wrote:
->>>> @@ -654,6 +656,9 @@ struct iommu_ops {
->>>>
->>>>    	int (*def_domain_type)(struct device *dev);
->>>>
->>>> +	void (*paging_cache_invalidate)(struct iommu_device *dev,
->>>> +					unsigned long start, unsigned long end);
->>>
->>> How would you even implement this in a driver?
->>>
->>> You either flush the whole iommu, in which case who needs a rage, or
->>> the driver has to iterate over the PASID list, in which case it
->>> doesn't really improve the situation.
+On 7/16/25 19:57, David Laight wrote:
+> On Thu, 10 Jul 2025 17:53:19 +0200
+> Peter Zijlstra<peterz@infradead.org> wrote:
+> 
+>> On Thu, Jul 10, 2025 at 03:54:32PM +0200, Peter Zijlstra wrote:
 >>
->> The Intel iommu driver supports flushing all SVA PASIDs with a single
->> request in the invalidation queue.
-> 
-> How? All PASID !=0 ? The HW has no notion about a SVA PASID vs no-SVA
-> else. This is just flushing almost everything.
+>>>> @@ -132,8 +136,15 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+>>>>   	if (ret)
+>>>>   		goto out_free_domain;
+>>>>   	domain->users = 1;
+>>>> -	list_add(&domain->next, &mm->iommu_mm->sva_domains);
+>>>>   
+>>>> +	if (list_empty(&iommu_mm->sva_domains)) {
+>>>> +		scoped_guard(spinlock_irqsave, &iommu_mms_lock) {
+>>>> +			if (list_empty(&iommu_sva_mms))
+>>>> +				static_branch_enable(&iommu_sva_present);
+>>>> +			list_add(&iommu_mm->mm_list_elm, &iommu_sva_mms);
+>>>> +		}
+>>>> +	}
+>>>> +	list_add(&domain->next, &iommu_mm->sva_domains);
+>>>>   out:
+>>>>   	refcount_set(&handle->users, 1);
+>>>>   	mutex_unlock(&iommu_sva_lock);
+>>>> @@ -175,6 +186,15 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
+>>>>   		list_del(&domain->next);
+>>>>   		iommu_domain_free(domain);
+>>>>   	}
+>>>> +
+>>>> +	if (list_empty(&iommu_mm->sva_domains)) {
+>>>> +		scoped_guard(spinlock_irqsave, &iommu_mms_lock) {
+>>>> +			list_del(&iommu_mm->mm_list_elm);
+>>>> +			if (list_empty(&iommu_sva_mms))
+>>>> +				static_branch_disable(&iommu_sva_present);
+>>>> +		}
+>>>> +	}
+>>>> +
+>>>>   	mutex_unlock(&iommu_sva_lock);
+>>>>   	kfree(handle);
+>>>>   }
+>>> This seems an odd coding style choice; why the extra unneeded
+>>> indentation? That is, what's wrong with:
+>>>
+>>> 	if (list_empty()) {
+>>> 		guard(spinlock_irqsave)(&iommu_mms_lock);
+>>> 		list_del();
+>>> 		if (list_empty()
+>>> 			static_branch_disable();
+>>> 	}
+>> Well, for one, you can't do static_branch_{en,dis}able() from atomic
+>> context...
+> Aren't they also somewhat expensive - so you really want to use them
+> for configuration options which pretty much don't change.
 
-The intel iommu driver allocates a dedicated domain id for all sva
-domains. It can flush all cache entries with that domain id tagged.
-
-> 
->>> If this is a concern I think the better answer is to do a defered free
->>> like the mm can sometimes do where we thread the page tables onto a
->>> linked list, flush the CPU cache and push it all into a work which
->>> will do the iommu flush before actually freeing the memory.
->>
->> Is it a workable solution to use schedule_work() to queue the KVA cache
->> invalidation as a work item in the system workqueue? By doing so, we
->> wouldn't need the spinlock to protect the list anymore.
-> 
-> Maybe.
-> 
-> MM is also more careful to pull the invalidation out some of the
-> locks, I don't know what the KVA side is like..
-How about something like the following? It's compiled but not tested.
-
-struct kva_invalidation_work_data {
-	struct work_struct work;
-	unsigned long start;
-	unsigned long end;
-	bool free_on_completion;
-};
-
-static void invalidate_kva_func(struct work_struct *work)
-{
-	struct kva_invalidation_work_data *data =
-		container_of(work, struct kva_invalidation_work_data, work);
-	struct iommu_mm_data *iommu_mm;
-
-	guard(mutex)(&iommu_sva_lock);
-	list_for_each_entry(iommu_mm, &iommu_sva_mms, mm_list_elm)
-		mmu_notifier_arch_invalidate_secondary_tlbs(iommu_mm->mm,
-				data->start, data->end);
-
-	if (data->free_on_completion)
-		kfree(data);
-}
-
-void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end)
-{
-	struct kva_invalidation_work_data stack_data;
-
-	if (!static_branch_unlikely(&iommu_sva_present))
-		return;
-
-	/*
-	 * Since iommu_sva_mms is an unbound list, iterating it in an atomic
-	 * context could introduce significant latency issues.
-	 */
-	if (in_atomic()) {
-		struct kva_invalidation_work_data *data =
-			kzalloc(sizeof(*data), GFP_ATOMIC);
-
-		if (!data)
-			return;
-
-		data->start = start;
-		data->end = end;
-		INIT_WORK(&data->work, invalidate_kva_func);
-		data->free_on_completion = true;
-		schedule_work(&data->work);
-		return;
-	}
-
-	stack_data.start = start;
-	stack_data.end = end;
-	invalidate_kva_func(&stack_data.work);
-}
+Yeah! Fair enough.
 
 Thanks,
 baolu
