@@ -1,246 +1,64 @@
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2077.outbound.protection.outlook.com [40.107.101.77])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 274552153FB
-	for <iommu@lists.linux.dev>; Thu, 17 Jul 2025 06:22:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.77
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752733347; cv=fail; b=gHmKYGXMpycIhM3EWyOpBrf54MCV0scPzHf4jCxfs6VyaazTW+2IMgr6beOGQkx7XhPEXPBSdEu5TKZE28o+RAHyGHCSuJSVbcRcbUptlYYBC1raX+psKMGL8jlGoiPZxqWuXBY0B0iDJzBCRZX6kT6CVkAx54ARRrOZSUOxhIc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752733347; c=relaxed/simple;
-	bh=gV8bIhhqAzAUxMIW3DKT2+ocqCAlil8Rq0+0q6BwFXs=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=iGy5jEQf5k4+IS02qMe5y5EpIcicmtxItfkIpaEzUyIxS0OWZh/PP+d0XWjIUzf25EO25cFgGRMmOQi2/8nF+QyHC5WMRlG4xo5n6+d1whMeeTehbr1DvvO5z1pBOR9MUiA67CisRny+UbI6xmvdjmg7oF/aFPYMaBttuU48MbA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=a6ZIqCWe; arc=fail smtp.client-ip=40.107.101.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5397617B425;
+	Thu, 17 Jul 2025 06:47:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752734839; cv=none; b=sOdnO6D3Cn7st3wP2wDPVguBt2sVZON6lfRUnkCRsTE211Vy4PVgQQZO8Ctb6DwPSUF3LhF5tfi0SNJ+TBrinHDcIkppWCaEavmPW9FaQ0R7gekl6R32Vsvw/bHI2A7ebQzhS9SR6WRcdgCjry1RaNB3oytRX92e6g71ubaMFG4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752734839; c=relaxed/simple;
+	bh=rv/yJSxnGvbE7b6aXpl/DVc/+KZ8gY6e2sd6AiL0MM4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BKEgUoyxR35BzEsKDOz0YaWEjElX6RKQpRROs4SqrEfv97F7U7nD6780M8ADC12Z1d6/1JG1WH4UwFsX2nGvZEMXtcIhft48XnkhuMwcojvPqA8yaC6oWbVlDOwoqKozJN3ULFtDMq3axkBbnC4IT4KtOy1hACMeffprgBbwAkM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=A2TYCJDr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="a6ZIqCWe"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rRI3CP3klQwe4iZHhjYrybh6A1Rxh4vQXFTNSzV7jVQtczqDWDh/wQAqU/Mya6Iqm/fAvKT0zlsogjEI9nFbtPDBr1n0wp07f/WrqdSFEyLIuykrRPtL5vXoTE/n93HCfMJVkIenUGlhvwKWqsqZvcTeA3CXAqd1W6DBBQTF/IeWWxxMY+5RnJflZxlZchajUZXBlXYyopN3vxctquugS4qYf9iGTJKRU6t/LyuVtv5WRuHvG1amI/vvGQuOx0AmP60JbQnKdPwRC882y5egl+7xph2HlYVtqKOitVoF4PEIysdmJIQRq3yrA0BLKsu3D3F0fd+COD+bEPqmdUINAA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yjcGWJ3UkuIQifUi0zdAVeEXl6U6X9ewC/g4Shg5KRA=;
- b=n8KbC+dkXKt7Ybt4hIgfSh3NqLZFTxdk6CnJJqJUU9fz/OreTj2liGe+hS+zSGh9cxYFXIgW2QNYL8LEogU2etc/d/ppYCT+HAQ7wdjVkMNn+3zpbt1iy/vkPzDukpMT00JKuUGbHbVOjMfdL79pMWWv1JdR9pFPBtxLQBvWSGLq93/LKT7YyXJeMuKsXYr6Y1EGcsh9q5p2kXeQYJEwByjtXpp+aEPV1nk9ukEOs2Bo/wS4kWT9KjVlT/cl+SknH8L+X72/2fIRcM1AV2G/1wWSZ0zp7tL2lfevc5vN1OX89aYKF+5eYyvOgMQY7u8MAdcFOtzl/qqgIJi/iL7Ndg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yjcGWJ3UkuIQifUi0zdAVeEXl6U6X9ewC/g4Shg5KRA=;
- b=a6ZIqCWe7ILOACeT9t4z34+/F15+ju2i28j6cPYi1wrOBGmL6T3sv6eLfRskArgmec3G0mA8Bp+mcQRxS/W1x1KWko9WXq6FCi+KpIbDj5fFJ1HcTeMRYQsZ5sVD2E02ZhvKLx5u5flzQqNZsxhCeQYOF3zcKFjgoyT53n9U1I8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- CY5PR12MB6297.namprd12.prod.outlook.com (2603:10b6:930:22::19) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8922.39; Thu, 17 Jul 2025 06:22:23 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%5]) with mapi id 15.20.8922.037; Thu, 17 Jul 2025
- 06:22:23 +0000
-Message-ID: <e5665a37-d9b0-428b-bb6c-6d05c60bdd51@amd.com>
-Date: Thu, 17 Jul 2025 11:52:14 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 4/4] iommu/amd: Fix host kdump support for SNP
-To: "Kalra, Ashish" <ashish.kalra@amd.com>, joro@8bytes.org,
- suravee.suthikulpanit@amd.com, thomas.lendacky@amd.com,
- Sairaj.ArunKodilkar@amd.com, herbert@gondor.apana.org.au
-Cc: seanjc@google.com, pbonzini@redhat.com, will@kernel.org,
- robin.murphy@arm.com, john.allen@amd.com, davem@davemloft.net, bp@alien8.de,
- michael.roth@amd.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-crypto@vger.kernel.org, kvm@vger.kernel.org
-References: <cover.1752605725.git.ashish.kalra@amd.com>
- <ce33833e743a6018efe19aa2d0e555eba41dcb96.1752605725.git.ashish.kalra@amd.com>
- <529c8436-1aeb-41bc-94bd-8b0f128e6222@amd.com>
- <49ef7e43-6a5d-452a-936b-87a573225d1e@amd.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <49ef7e43-6a5d-452a-936b-87a573225d1e@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: PN3PR01CA0187.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:be::10) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="A2TYCJDr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33F8AC4CEE3;
+	Thu, 17 Jul 2025 06:47:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1752734837;
+	bh=rv/yJSxnGvbE7b6aXpl/DVc/+KZ8gY6e2sd6AiL0MM4=;
+	h=From:To:Cc:Subject:Date:From;
+	b=A2TYCJDrK3kn277cclTEqgRR+bGftZSHBI3YjFq65FYSDYQ/1pjK6CxIq1g2kLEn/
+	 oPxeInZbwQq/VkbGe7qhKHS9cFysvXf6PmrGmWakOuI49nbYmT36XovNHe48WU3qgd
+	 5agEquODytNtMpO5eMP8uljg2sZ/JcgjnYBmSRFmDbQj7DxxFhe3R2e6KgICci4i9H
+	 PbXO8SdPc1lwnDmHWHBQBhnTPr/iv12SA+0QFs0h/E4EA5ccduqlYIbifc7ViWzYX+
+	 anX35xw0mJr4xzndmhBfE2yklNlFGA5FMXC/LX6AYzvTc+E38lelkUM2ngRW8EtFYw
+	 kPb0zgWrP9OeQ==
+From: Leon Romanovsky <leon@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/2] Preparation to .map_page and .unmap_page removal
+Date: Thu, 17 Jul 2025 09:47:08 +0300
+Message-ID: <cover.1752734252.git.leon@kernel.org>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CY5PR12MB6297:EE_
-X-MS-Office365-Filtering-Correlation-Id: 94f7980b-3763-4a25-2512-08ddc4fa4aad
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|366016|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?TTZIeFNGNnJ3c1NHN1dlVzM2d0JCQUNOWFkrcVU4b1B4MFBVZmJVbWJWUktJ?=
- =?utf-8?B?Zm5EVGtvUlZ0aitJN2UzYTg2aU9xRmIxQmhzVkxESlN0T2dHaUpUNzRPVktX?=
- =?utf-8?B?UGN1VmRhb3BRZEdlN0JDZFJXdE1jNkNyalFrb2k4UHJic2IxeWg0bzArUXMw?=
- =?utf-8?B?bVJTNjA1Q2s5K1drWWorb2dCOTBvNWhlblBiUGptbWdMUVhzdHFiT1Q5SGdX?=
- =?utf-8?B?NHNpM1ZHeVFLTlNPWllZakVGaVdJTGQ0K3M3ckdTNXNxWEp1SWdRbTZCa0g0?=
- =?utf-8?B?NlVoNDdOTjJiNEdRZUwvRXVmTWZNL2Rvemt0TzRwY25BaURoc2paSm9kOXF2?=
- =?utf-8?B?VmRpOGJEb1JEZ24vNTVZUTVKRDcvZE8rb2lGZkZFMEVqQkRGelVBb3Rsd29t?=
- =?utf-8?B?UzhTdU0zb3Z3bzg0WlJuMkdKeDU2SWZQNElZbHYxMGxXRlRiQlFjMGYzbnFK?=
- =?utf-8?B?Uk5xclpuaTNNdTBFTTh0amJ3S0E2ZkQ2VWtGbU9hRU0xZTFFZzZFRzlabUFG?=
- =?utf-8?B?WHRZekYwM0RYS2p3eDNvc2ZhYmpOTXVCdnNyaFpobk9TcVlRcnRBVFlidXQ1?=
- =?utf-8?B?QWNHSVpXYy9uSjIyYkxiSlVtNlIvZmFHZ0xVMlhUSk5HSGJuNWJvRmZzVkMy?=
- =?utf-8?B?Z3lJNmx3M1phL1NkQUNJb1NLcEt6aUxFVTl3UUVLWkJjLzMyS0tLV1ljZjFu?=
- =?utf-8?B?ajdOTDVhUFozS0hxeG0rZEp6SmxHTU50OGlaS1FDSloyQWdDcHJVZWhEVDhX?=
- =?utf-8?B?NXNXTjRWZFQ2U1ZBODROYW5MbXlUOTJpMjZDOGo3a3d1c3paYVJZc3FDd25l?=
- =?utf-8?B?WG5SQlprNGtXaEE1aEFlbUczb0l5Y2RITDd4Y044YVgrKzE3Ym04cThFY05x?=
- =?utf-8?B?aGtXOXhxVE1MdVNTaGVaZE1wdHV6YzVGQkNEL0pQZTB5dFBUUWowRldiaktp?=
- =?utf-8?B?UE1IViswUXl6YTIvcVkvN25lc3c0cko3Nkw2UUNUTVZiNEFvMXdVenp6L1BC?=
- =?utf-8?B?NFYrZzhBWkxTVEI5c3ZXeUFnalRnY2Exb1dtRjRkQlVlZGFndkVDTEF1SGdN?=
- =?utf-8?B?S1JoNHJZdWlka0o0SFIrZzJ1TlZNc1FoNFZYSlJSN0dJSzdrOHFtYktVd3BO?=
- =?utf-8?B?SS9iYlRmZDlzangwVlM2dnhRSzB2aGl5NjY0MlpIdlZRYStsT0NLNXNLQlRN?=
- =?utf-8?B?ZDNoWFFLVlhwc1FTMkN4bG5nQWV3SndTRTQ5VzdzMTZKbjNDNGtLRXkvaHFp?=
- =?utf-8?B?NzE5eHQxcDZ6KzljZFFLaW1BU3NYYWJmT1VhRnk1L1hsN096UGRrTWJTd1VJ?=
- =?utf-8?B?Umg2dDU4d2dkVmJYRGhMSGc1YnJpeUJwcE1NUFhSZHRiR3VIdFB5bUhKdkhM?=
- =?utf-8?B?NzFFdFpmRW9NSlJWL2F0SjVvWVI4cUJxYThlbjN0TlVUY3NXcEFmUDVkNUxC?=
- =?utf-8?B?L01tMHd4dE5HanJrSzUwN2tjOXBsQ2E4YzYrSWhBY2ZISmkyQ2tIZzB2d25X?=
- =?utf-8?B?Z0VSZzNlSDFnWHVCcjRJc0VYVlJISzdrR0I3WnpEaDJ1clZIU0xuQ2t0a1gw?=
- =?utf-8?B?Sk1hU2NLU3MybFVOcFFjUE1TNGxORW1PaWhzYVdKKzZnQlMyTnpGNDUxYjFk?=
- =?utf-8?B?djlEZ1hBODdWQ3NpcVh1YnE2UEFsOWJ5WVdLZWd2RDRnOEZ5QVdleUs0eWNp?=
- =?utf-8?B?WnZHMGNTdG5yVGozUTRLbzdCNEk1dzA2cmdEWWZ0WjNabW1DczRqNE8wcEtu?=
- =?utf-8?B?MURIcjBSQXNpamlEYTBLb2poRlJVZmlnVXk2RXdtYUJ4aVh4T0RCRTdCZTMr?=
- =?utf-8?B?UGl5WnNTZ2VzNksyNjd5cjdrRVJyWG9YcVduS3pzWDBrK2YxWHdqQW8yZDdJ?=
- =?utf-8?B?eTM4RVlVYk12cTF5RG1wdXUxTXpoSEtwMVZqdnBOdzZ6dDR5Vmtza09XODZl?=
- =?utf-8?Q?AnBd/Git5SI=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(366016)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?cm0xZ2xpL09XZDlDK1NxUzFDdnNWSHY5anArQWdDdDNLWVh3STVES1NZdzUz?=
- =?utf-8?B?aVNWNzdjMXBveG9DRUFrSTIxZmNaajBXUURCTmp6TGtJSDdKN281SXNXUGZF?=
- =?utf-8?B?Rko5c0o0eGFVV0NPcGFFTXRuN09HMDJ1VFZUbUFqQjYyUXRJT3BaeHZTYThC?=
- =?utf-8?B?TkJ3Y0x0YlgrTzlUaGw3RWhYNGhtekhuZUx6ZEh2Ykx5Ujd0WlhBMmNtb1RI?=
- =?utf-8?B?ZmFMOXRPTzBKMWV6VjVDU3BtZFlUREhtN0ZJRUdrUVFLYjFPSVVpN1BYeERJ?=
- =?utf-8?B?ajBhSzQyVnNxRTRPSHJtN0xuVUQ3UTF3dXlyeG12bXpUd0ovMkc5MmxPMHBP?=
- =?utf-8?B?QS9MZm10SEhIbWlwRXJrMmJQNmlVdGRQYmYyMENITy93R2thWmxQWU9Ydm9l?=
- =?utf-8?B?dW9BSmQ3ZjlPb2syeGMyR2VwbzY4T1RobGZxRFlCOTd1OEJ4V1pxNFdSaWZi?=
- =?utf-8?B?UW94MVFOUUUwY21GV3NlTmoxc1pnTEl5QXBDZUJuNW5hSnVtb2JkOHl3VXNq?=
- =?utf-8?B?S3dTTGtGbXdjY2pIcDNEOFB1RkpNWnZ5dVJXdWtjODU3eXQrS3RhaEdHSW1Q?=
- =?utf-8?B?Z0NkZnl6OVhJRW5WeENjTitnL1hlWlI2R05keEsxUFBkOTYvOFdORjFja2U3?=
- =?utf-8?B?UkYydjdTTUE5RjlyRFlIRTYvbEFLbHYrZ3pwczAybk9hUmNISFJRT0hhbEJo?=
- =?utf-8?B?WnRqVXZtK1FEWENrSWdTS2tkWTJ4K0RPSm81TndnVkxPeTlSQkZBSTlQZWRD?=
- =?utf-8?B?Z0pETG1xWUJpT1J0dG90Mmd4VFRTdWcxNXpVOG5TeC91MVdYUWlqTXhxY2tP?=
- =?utf-8?B?aFBVdy9jY2Q2RzgzUXNuUkxVZDNiQWZ0ci9ESjN5L1JibmpsWVg3Qno3SWht?=
- =?utf-8?B?VWhITmxTZFF0Q2ptTHp2ZXBSNnZSMXdvMUxBTUg3enQ0UUN3bHlTVzE0YnJv?=
- =?utf-8?B?TTY4cFRVNkZ2UHdPV000aHJudU85SnZhREpKdFdBbmpBY08yblBvN1hydVZ2?=
- =?utf-8?B?SlNVRmZCdi9TYnI2RmhhQXE4cUdXdWRIeENFRWVYNnlDL3VPeDVCUXpLSjgy?=
- =?utf-8?B?SVd3Zzg2NXhyNEVRVjJWVUN6bnZRR1EybUlVd2J2Y1dqV3RyNFU1TjZ1YXlx?=
- =?utf-8?B?LzM4aWlnNC9qSTMyczF0NCtKQXJiTmVBQ3NaZndrWEFsNFNrWStUTWN4b01r?=
- =?utf-8?B?Y2c1YzJhbDRhbkpkSlNxVDMvdmlqdjlHMURTZWo4SUYyZS82ZCtIVmRNMGp1?=
- =?utf-8?B?UTkvSDhpNkJ6amZ5SGxXcS9odkNPUDE1bjJNWTVlaFZlYVd3VkNKZE1DaVVp?=
- =?utf-8?B?ZE9GZVF6cGVZVHVBUTJybm16VS9HWGhRUHVWa0xRdWx2Yk85VWNPR21oYzAx?=
- =?utf-8?B?MUFPK0xOMDRueHg5cE1PbUZ5bmFsU2wwcUtRN2xvNVROYmpZM2dPZGtlSEUz?=
- =?utf-8?B?emlyMDNZcUhyeHlDV1VGeXN0RmRXNjQ3V1lCS3JtZzJCVFFObUlZVWdnQk5x?=
- =?utf-8?B?MWdISGxaUzA0MkRPYUlOZ3B4T0FaQzBWMHR5eFpKV1FzRUxpbklmZWorVENt?=
- =?utf-8?B?RGpsaDlBajZ5Mmd3bTR0aTVJUWFJa0ZQRGF0UjNxSmtESWl0M05VeE1RcXow?=
- =?utf-8?B?VkMveGZ2Z1poVW1GVExuMGJ0VU8zNDJLZU9QaU1CNlZGZ05oSkwrOXJRa3hz?=
- =?utf-8?B?Qi9KNlRoTXpWaEEyYmh4Z1hia1ZoYWZBUWZDRmYwUEtEamJOUUw5SGtzcWJv?=
- =?utf-8?B?T3phUkZ2RnFmdmFkSkRwUlJsRy9VUVdubVhQMHowcFREMkFEM0RBdW9PZGVm?=
- =?utf-8?B?ZllGMEhicWppZkNaRFpWVWc1Q2hVL1NRZWRYSVRCUW0vYkxNTjNPMFBlZ0dG?=
- =?utf-8?B?bHUvMlZ5SVhTNzl3YXhNVUovdTArUEt5bG1haGg2Z0lOT3VsWGJ6YXZtakxN?=
- =?utf-8?B?NER1TDBnUUIyRWhSb20zVndPUzdqVlFJbUxxZXpITWZRRkNUOWdqSzJrc2tu?=
- =?utf-8?B?VXR0VElWUzJlMUl4bmJSbEZOckhOcUV3M3V3NVZ1Mm5HWUNiR0VRNXZ3b3V4?=
- =?utf-8?B?SDBQd0VCbGhSUVlENWJqT1AyUHY5NXVRUW8vRUpiM21JZGllVEhNVE1hMXNU?=
- =?utf-8?Q?RSzUnSPjFBMDh35Wm2+vIjxIu?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 94f7980b-3763-4a25-2512-08ddc4fa4aad
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2025 06:22:23.2071
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: V3+s4yyyjOjnc+OrNb0oqneNgfw6GwZVlwr03tHxJq3G1zzAzMOsryMtOroN6Qon85hAASDghh3PrLMMfYISUg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6297
+Content-Transfer-Encoding: 8bit
 
+This is followup to "dma-mapping: migrate to physical address-based API"
+series https://lore.kernel.org/all/cover.1750854543.git.leon@kernel.org/
 
+These preparation changes are limited to DMA subsystem to avoid possible
+complications with submission to multiple trees.
 
-On 7/17/2025 3:42 AM, Kalra, Ashish wrote:
-> Hello Vasant,
-> 
-> On 7/16/2025 4:46 AM, Vasant Hegde wrote:
->>
->>
->> On 7/16/2025 12:57 AM, Ashish Kalra wrote:
->>> From: Ashish Kalra <ashish.kalra@amd.com>
->>>
->>> When a crash is triggered the kernel attempts to shut down SEV-SNP
->>> using the SNP_SHUTDOWN_EX command. If active SNP VMs are present,
->>> SNP_SHUTDOWN_EX fails as firmware checks all encryption-capable ASIDs
->>> to ensure none are in use and that a DF_FLUSH is not required. If a
->>> DF_FLUSH is required, the firmware returns DFFLUSH_REQUIRED, causing
->>> SNP_SHUTDOWN_EX to fail.
->>>
->>> This casues the kdump kernel to boot with IOMMU SNP enforcement still
->>> enabled and IOMMU completion wait buffers (CWBs), command buffers,
->>> device tables and event buffer registers remain locked and exclusive
->>> to the previous kernel. Attempts to allocate and use new buffers in
->>> the kdump kernel fail, as the hardware ignores writes to the locked
->>> MMIO registers (per AMD IOMMU spec Section 2.12.2.1).
->>>
->>> As a result, the kdump kernel cannot initialize the IOMMU or enable IRQ
->>> remapping which is required for proper operation.
->>>
->>> This results in repeated "Completion-Wait loop timed out" errors and a
->>> second kernel panic: "Kernel panic - not syncing: timer doesn't work
->>> through Interrupt-remapped IO-APIC"
->>>
->>> The following MMIO registers are locked and ignore writes after failed
->>> SNP shutdown:
->>> Device Table Base Address Register
->>> Command Buffer Base Address Register
->>> Event Buffer Base Address Register
->>> Completion Store Base Register/Exclusion Base Register
->>> Completion Store Limit Register/Exclusion Range Limit Register
->>>
->>
->> May be you can rephrase the description as first patch covered some of these
->> details
-> 
-> We do need to include the complete description here as this is the final
-> patch of the series which fixes the kdump boot.
-> 
-> Do note, that the description in the first patch only mentions the 
-> IOMMU buffers - command, CWB and event buffers for reuse and this commit
-> log covers all reusing and remapping required - IOMMU buffers, device table,
-> etc.
->  
->>> Instead of allocating new buffers, re-use the previous kernel’s pages
->>> for completion wait buffers, command buffers, event buffers and device
->>> tables and operate with the already enabled SNP configuration and
->>> existing data structures.
->>>
->>> This approach is now used for kdump boot regardless of whether SNP is
->>> enabled during kdump.
->>>
->>> The fix enables successful crashkernel/kdump operation on SNP hosts
->>> even when SNP_SHUTDOWN_EX fails.
->>>
->>> Fixes: c3b86e61b756 ("x86/cpufeatures: Enable/unmask SEV-SNP CPU feature")
->>
->> I am not sure why you have marked only this patch as Fixes? Also it won't fix
->> the kdump if someone just backports only this patch right?
->>
-> 
-> As mentioned in the cover letter, this is the final patch of the series which 
-> actually fixes the SNP kdump boot, so i kept Fixes: tag as part of this patch.
-> > I am not sure if i can add Fixes: tag to all the four patches in this series ?
+Thanks
 
-But just adding Fixes to this one patch is adding more confusion and
-complicating backport process.
+Leon Romanovsky (2):
+  dma-mapping: prepare dma_map_ops to conversion to physical address
+  dma-mapping: convert dummy ops to physical address mapping
 
-Is this really a fix? Did kdump ever worked on SNP enabled system? If yes then
-add Fixes to all patches. If not call it as an enhancement.
+ include/linux/dma-map-ops.h |  6 ++++++
+ kernel/dma/dummy.c          | 13 ++++++-------
+ kernel/dma/mapping.c        | 24 ++++++++++++++++++++----
+ kernel/dma/ops_helpers.c    | 14 +++++++++++---
+ 4 files changed, 43 insertions(+), 14 deletions(-)
 
-
--Vasant
-
+-- 
+2.50.1
 
