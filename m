@@ -1,162 +1,288 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 937CFBE46;
-	Thu, 17 Jul 2025 00:02:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40FE02AE96
+	for <iommu@lists.linux.dev>; Thu, 17 Jul 2025 01:03:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752710552; cv=none; b=pY1es9bw3lpa9R/CvXw7vhS+E5oFBbPt1W5G+UdlklNY7bEfiCcjdus6LUoJsXkTEDz2IOPhBlaVP30a0jebSyWK/gcFrzv5P1KmKtPRe2HRTlPerjNhQc/IxKPRdd/2MdaGHiDYOZds8dP56jY9GegaCog7iQDIq8Mk5+Xdz9Q=
+	t=1752714231; cv=none; b=N5SwPz7ooXLcot19/OfyVAYj3AozZ6LyebBwNR/6tuaOBBXhAwr2iT7tLYxZuA1OAZuS4J5k/4/KYBeYdPVan99VoLQ0r5AYJKhx0oinr5AloAgzLMIrlCAqH0Dyu53EtUb8GjQHtth4DPoG4oGdrTWD6n2n1JjRxEFIOit8s/c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752710552; c=relaxed/simple;
-	bh=aN8uGrdQ9GV2sZ0Iao19m2r7XXJCyuraNegypk978EA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=O5+QxSf09N13XCOplV56nPAf5NKYPMSc6cZN0Nzh/3el0jlvzusD+hsbjNwTG8I73D0elZASKSEFjCUukC7w8Zm+pGCp0TW/K2lXpT0otWO5kCmrNMRySHdKOXWxHi9jnBIYCkbbD6O3YUE+TCvRy2WLmaAer0BxLRGXts9gDCg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TpKbkaFz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1752714231; c=relaxed/simple;
+	bh=r7KBEe/U1rHOla01d//g2fAxzBm5HnT8XVj9/Cuyqu8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ITU0RmXZ4E8FDj8xoDKm+US4SHf+aI8bXPyBnVSlyaDNHLdZgFJYJgg9iOYMtBdBEw0McCwi6xvYCRiOGl+NjwRmwBJ621uOKbqxbF0u7pG4eSGieRMABy55orLP50ad0jlyQJw4a/gdIFMvMbh7CM9GUxCf92areWPaZP4YW5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KZ9Ebeyf; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TpKbkaFz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C389FC4CEE7;
-	Thu, 17 Jul 2025 00:02:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752710552;
-	bh=aN8uGrdQ9GV2sZ0Iao19m2r7XXJCyuraNegypk978EA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=TpKbkaFzYgX/5qfdQm54MccCJUjNP5Qj0DcD2O38AWFj2+pTRdbWhgEzA9AQo9ot5
-	 rexTigbjuSCoxjiNrb0mEv9hRZNX8Zg3lyFx7he0pF/C0RAUykq6RYUAWcXC5Nzt0B
-	 N4ZrThShdXtJX6ONccFRB+hL6qVZltMIPKdh5g0BwQ5dyLTQP9tRP7qMHkNqYKlW4b
-	 WXZsxQK57wmkozzFZ+eErhaTo2en3ChRSFKBlLcRjDsuvYrXSyhECT5FtMJiQG0vz2
-	 9wTBPjiOXhhHd73EB102b+YGCon4uDFeRX4S0ZxJkqnypYCzo1ssC9oAHdggE2B3ge
-	 plfcEUOWRAj/g==
-Message-ID: <e9b331d1-d175-4e5a-ae08-445a8a8e1f45@kernel.org>
-Date: Wed, 16 Jul 2025 19:02:28 -0500
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KZ9Ebeyf"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-45629703011so2791475e9.0
+        for <iommu@lists.linux.dev>; Wed, 16 Jul 2025 18:03:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1752714227; x=1753319027; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Sscvi53gVDM4UOp6lMcVQ4uaKrceVNglNU+jEsJsRcY=;
+        b=KZ9Ebeyf8ju3ffhL25ahn5eOzPEay7yPrVSDPZthsBYPSU9QGxFtoyc0roY085G3IM
+         GWV3TTIZqN/uDwcAJjP/cRVe/9pU02zXBL2kj0USF4cI7G+w34jGa0BcX9NoIbaHeKJP
+         gz+lzorGqB9ZTtgeCwL+gArwNvSIyJ8sfpiVxukRX58uqdksQIHu0FkrmRypKsKvxywv
+         pWKLAm9sTEmPcHbuwYHs5+9aDRq36hrOcHjcbkkZTfFm+yEQtRU0tJ1O3S87QqmXkIuG
+         4kTvY3ei7y1xvWlaOlW70kpxulLNjm5m8y1OJ8ZRtTz15Ez8ydETKK1G+urXzc325iTW
+         0z+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752714227; x=1753319027;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Sscvi53gVDM4UOp6lMcVQ4uaKrceVNglNU+jEsJsRcY=;
+        b=j1y+1DW9HEU8+5jqpxMRXeZm3b2GMc7aTZRjFLxbXqKMJdCdNdaCp67miHYyBxDsNT
+         ZxRBn16GDjcQ91AURqg7i4KZ54IW8J6IEVC2BSoqOZmDxoHODklPuhtAeuGlVeCZe2Tu
+         6uPZJQ66lkqrihVyONoMnhm5pS9fh9imLIxHXvEg0+s6oTnYDoQUn+QodFGR/OEB1WeG
+         +CdP8pUjPosX/PzTOr3DmX86E+nEPENfb6BS4l6PO0ZM1k/ny0FY4c/GSDTBuLdFxmcD
+         tD/cKSEpJ7c7Dhkf+OTgdyywIqgi/8sZ8saGfUgP2QqzVG3J2yPxNWX7A0zBp7MrEoe3
+         sN9A==
+X-Forwarded-Encrypted: i=1; AJvYcCUPgqSygvgxr12Gwe8iHop+Hqx9+KOmsOAbYAEJVvfopZ0uQBi6gTHU7saOERfUB76v/yRUEg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyz2oD92fFbwujORj4RLh50x0QQQChfXN0gBxIWwEZku8UoVUdo
+	jGJKxXJ86Z7/RRjAAoTPb3WcOaKkOzTZJ4I9d6tKWqxvsG0/FAvjBbf/JSH6jqyC
+X-Gm-Gg: ASbGncth1S4j2kqVZBnO44VZK8K72obSW60pk5AzFJMzHG8A3QAC3VCKqb34Ho4NJQf
+	W+hff/fX0FmVBoJac3X1q94kKtFBtlxrUkLMvuYq8e3cgoMox3ne1KI6BExYaQ2JKm0X5if655G
+	p4ILrWYqYJeWdt13K8l8DxW5WjfCZF2WlQWkV4AUSxJ+Ms+W2BHrELm4UDnCMu+Fqg3q0EXYFHS
+	k2hDphM34A+NQKLEP9EH31dyUNB6zDyckelisGEJnckyNLYutdvSZkNchZCXJ1m0i16JdPrhU5l
+	OHVK3hUOgFpr+8h7yCOO7FWfd68LN+nvxXtPgyoSK9FaGyVSB9jGrH4Pou2fsG5kV/6uJ83e1MT
+	4io1iIrRchYpRL8MiWq6MXQ==
+X-Google-Smtp-Source: AGHT+IFOgLZETh8Ec/9h9BgSa32GB4DdT5xGpUYmcL3HY81MNy2vA3E521MJaU8PzthhUPDX8qDx+A==
+X-Received: by 2002:a05:6000:400e:b0:3a4:f7ae:77e8 with SMTP id ffacd0b85a97d-3b60dd6a91cmr4297940f8f.15.1752714227303;
+        Wed, 16 Jul 2025 18:03:47 -0700 (PDT)
+Received: from archie.me ([103.124.138.155])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b5e8e269a0sm19070592f8f.86.2025.07.16.18.03.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Jul 2025 18:03:46 -0700 (PDT)
+Received: by archie.me (Postfix, from userid 1000)
+	id 85079420A818; Thu, 17 Jul 2025 08:03:41 +0700 (WIB)
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+To: Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Linux Documentation <linux-doc@vger.kernel.org>,
+	Linux IOMMU <iommu@lists.linux.dev>
+Cc: Dheeraj Kumar Srivastava <dheerajkumar.srivastava@amd.com>,
+	Bagas Sanjaya <bagasdotme@gmail.com>,
+	Will Deacon <will@kernel.org>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Ashish Kalra <Ashish.Kalra@amd.com>,
+	=?UTF-8?q?J=C3=B6rg=20R=C3=B6del?= <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: [PATCH] iommu/amd: Wrap debugfs ABI testing symbols snippets in literal code blocks
+Date: Thu, 17 Jul 2025 08:03:31 +0700
+Message-ID: <20250717010331.8941-1-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 0/9] Adjust fbcon console device detection
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: David Airlie <airlied@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>,
- Alex Deucher <alexander.deucher@amd.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- Simona Vetter <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
- "open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
- "open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
- "open list:VFIO DRIVER" <kvm@vger.kernel.org>,
- "open list:SOUND" <linux-sound@vger.kernel.org>,
- Daniel Dadap <ddadap@nvidia.com>,
- Mario Limonciello <mario.limonciello@amd.com>
-References: <20250716232300.GA2565283@bhelgaas>
-Content-Language: en-US
-From: Mario Limonciello <superm1@kernel.org>
-In-Reply-To: <20250716232300.GA2565283@bhelgaas>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6987; i=bagasdotme@gmail.com; h=from:subject; bh=r7KBEe/U1rHOla01d//g2fAxzBm5HnT8XVj9/Cuyqu8=; b=kA0DAAoW9rmJSVVRTqMByyZiAGh4SciiGSIRre2rNT1nmAv1l5NSQWz9aASgtyY9q/mCAYTqt 4h1BAAWCgAdFiEEkmEOgsu6MhTQh61B9rmJSVVRTqMFAmh4ScgACgkQ9rmJSVVRTqMe+wD/c3ep 8NeeT5p0fbdqd1ZGfdaNFgpyFwSvxjGWhSwueuwA/iinJIJLLzIwBLecFt/9F+PdVvVNsjn+7Vm BUFMVxCgL
+X-Developer-Key: i=bagasdotme@gmail.com; a=openpgp; fpr=701B806FDCA5D3A58FFB8F7D7C276C64A5E44A1D
+Content-Transfer-Encoding: 8bit
 
+Commit 39215bb3b0d929 ("iommu/amd: Add documentation for AMD IOMMU
+debugfs support") documents debugfs ABI symbols for AMD IOMMU, but
+forgets to wrap examples snippets and their output in literal code
+blocks, hence Sphinx reports indentation warnings:
 
+Documentation/ABI/testing/debugfs-amd-iommu:31: ERROR: Unexpected indentation. [docutils]
+Documentation/ABI/testing/debugfs-amd-iommu:31: WARNING: Block quote ends without a blank line; unexpected unindent. [docutils]
+Documentation/ABI/testing/debugfs-amd-iommu:31: WARNING: Block quote ends without a blank line; unexpected unindent. [docutils]
 
-On 7/16/25 6:23 PM, Bjorn Helgaas wrote:
-> On Mon, Jul 14, 2025 at 04:21:37PM -0500, Mario Limonciello wrote:
->> From: Mario Limonciello <mario.limonciello@amd.com>
->>
->> This series started out as changes to VGA arbiter to try to handle a case
->> of a system with 2 GPUs that are not VGA devices.  This was discussed
->> but decided not to overload the VGA arbiter for non VGA devices.
->>
->> Instead move the x86 specific detection of framebuffer resources into x86
->> specific code that the fbcon can use to properly identify the primary
->> device. This code is still called from the VGA arbiter, and the logic does
->> not change there. To avoid regression default to VGA arbiter and only fall
->> back to looking up with x86 specific detection method.
->>
->> In order for userspace to also be able to discover which device was the
->> primary video display device create a new sysfs file 'boot_display'.
->>
->> A matching userspace implementation for this file is available here:
->> Link: https://gitlab.freedesktop.org/xorg/lib/libpciaccess/-/merge_requests/39
->> Link: https://gitlab.freedesktop.org/xorg/xserver/-/merge_requests/2038
->>
->> Dave Airlie has been pinged for a comment on this approach.
->> Dave had suggested in the past [1]:
->>
->> "
->>   But yes if that doesn't work, then maybe we need to make the boot_vga
->>   flag mean boot_display_gpu, and fix it in the kernel
->> "
->>
->> This was one of the approached tried in earlier revisions and it was
->> rejected in favor of creating a new sysfs file (which is what this
->> version does).
->>
->> It is suggested that this series merge entirely through the PCI tree.
->>
->> Link: https://gitlab.freedesktop.org/xorg/lib/libpciaccess/-/merge_requests/37#note_2938602 [1]
-> 
-> There's an underlying bug that we're trying to fix with this series
-> and the related libpciaccess and xserver changes, isn't there?  Can we
-> include that somewhere to help motivate this?  (I guess it's really
-> only the last two or three patches that are strictly related, right?)
+Wrap them to fix the warnings.
 
-Do you mean in the cover letter of another spin of the series or just 
-inline here?
+Fixes: 39215bb3b0d9 ("iommu/amd: Add documentation for AMD IOMMU debugfs support")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Closes: https://lore.kernel.org/linux-next/20250716204207.73869849@canb.auug.org.au/
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+---
+ Documentation/ABI/testing/debugfs-amd-iommu | 125 +++++++++++---------
+ 1 file changed, 71 insertions(+), 54 deletions(-)
 
-The issue is that on systems with more than one GPU userspace doesn't 
-know which one to be used to treat as primary.  The concept of primary 
-is important to be able to decide which GPU is used for display and 
-which is used for rendering.  If it's guessed wrong then both GPUs will 
-be kept awake burning a lot of power.
+diff --git a/Documentation/ABI/testing/debugfs-amd-iommu b/Documentation/ABI/testing/debugfs-amd-iommu
+index c14b1620aec171..5621a66aa6936a 100644
+--- a/Documentation/ABI/testing/debugfs-amd-iommu
++++ b/Documentation/ABI/testing/debugfs-amd-iommu
+@@ -6,12 +6,14 @@ Description:
+ 		MMIO register offset for iommu<x>, and the file outputs the corresponding
+ 		MMIO register value of iommu<x>
+ 
+-		Example:
+-		$ echo "0x18" > /sys/kernel/debug/iommu/amd/iommu00/mmio
+-		$ cat /sys/kernel/debug/iommu/amd/iommu00/mmio
++		Example::
+ 
+-		Output:
+-		Offset:0x18 Value:0x000c22000003f48d
++		  $ echo "0x18" > /sys/kernel/debug/iommu/amd/iommu00/mmio
++		  $ cat /sys/kernel/debug/iommu/amd/iommu00/mmio
++
++		Output::
++
++		  Offset:0x18 Value:0x000c22000003f48d
+ 
+ What:		/sys/kernel/debug/iommu/amd/iommu<x>/capability
+ Date:		January 2025
+@@ -21,12 +23,14 @@ Description:
+ 		capability register offset for iommu<x>, and the file outputs the
+ 		corresponding capability register value of iommu<x>.
+ 
+-		Example:
+-		$ echo "0x10" > /sys/kernel/debug/iommu/amd/iommu00/capability
+-		$ cat /sys/kernel/debug/iommu/amd/iommu00/capability
++		Example::
+ 
+-		Output:
+-		Offset:0x10 Value:0x00203040
++		  $ echo "0x10" > /sys/kernel/debug/iommu/amd/iommu00/capability
++		  $ cat /sys/kernel/debug/iommu/amd/iommu00/capability
++
++		Output::
++
++		  Offset:0x10 Value:0x00203040
+ 
+ What:		/sys/kernel/debug/iommu/amd/iommu<x>/cmdbuf
+ Date:		January 2025
+@@ -35,24 +39,26 @@ Description:
+ 		This file is a read-only output file containing iommu<x> command
+ 		buffer entries.
+ 
+-		Examples:
+-		$ cat /sys/kernel/debug/iommu/amd/iommu<x>/cmdbuf
++		Examples::
+ 
+-		Output:
+-		CMD Buffer Head Offset:339 Tail Offset:339
+-		  0: 00835001 10000001 00003c00 00000000
+-		  1: 00000000 30000005 fffff003 7fffffff
+-		  2: 00835001 10000001 00003c01 00000000
+-		  3: 00000000 30000005 fffff003 7fffffff
+-		  4: 00835001 10000001 00003c02 00000000
+-		  5: 00000000 30000005 fffff003 7fffffff
+-		  6: 00835001 10000001 00003c03 00000000
+-		  7: 00000000 30000005 fffff003 7fffffff
+-		  8: 00835001 10000001 00003c04 00000000
+-		  9: 00000000 30000005 fffff003 7fffffff
+-		 10: 00835001 10000001 00003c05 00000000
+-		 11: 00000000 30000005 fffff003 7fffffff
+-		[...]
++		  $ cat /sys/kernel/debug/iommu/amd/iommu<x>/cmdbuf
++
++		Output::
++
++		  CMD Buffer Head Offset:339 Tail Offset:339
++		    0: 00835001 10000001 00003c00 00000000
++		    1: 00000000 30000005 fffff003 7fffffff
++		    2: 00835001 10000001 00003c01 00000000
++		    3: 00000000 30000005 fffff003 7fffffff
++		    4: 00835001 10000001 00003c02 00000000
++		    5: 00000000 30000005 fffff003 7fffffff
++		    6: 00835001 10000001 00003c03 00000000
++		    7: 00000000 30000005 fffff003 7fffffff
++		    8: 00835001 10000001 00003c04 00000000
++		    9: 00000000 30000005 fffff003 7fffffff
++		   10: 00835001 10000001 00003c05 00000000
++		   11: 00000000 30000005 fffff003 7fffffff
++		  [...]
+ 
+ What:		/sys/kernel/debug/iommu/amd/devid
+ Date:		January 2025
+@@ -63,19 +69,26 @@ Description:
+ 		interrupt remapping table and device table.
+ 
+ 		Example:
+-		1.
+-		$ echo 0000:01:00.0 > /sys/kernel/debug/iommu/amd/devid
+-		$ cat /sys/kernel/debug/iommu/amd/devid
+ 
+-		Output:
+-		0000:01:00.0
++		1.
++		  ::
++
++		    $ echo 0000:01:00.0 > /sys/kernel/debug/iommu/amd/devid
++		    $ cat /sys/kernel/debug/iommu/amd/devid
++
++		  Output::
++
++		    0000:01:00.0
+ 
+ 		2.
+-		$ echo 01:00.0 > /sys/kernel/debug/iommu/amd/devid
+-		$ cat /sys/kernel/debug/iommu/amd/devid
++		  ::
+ 
+-		Output:
+-		0000:01:00.0
++		    $ echo 01:00.0 > /sys/kernel/debug/iommu/amd/devid
++		    $ cat /sys/kernel/debug/iommu/amd/devid
++
++		  Output::
++
++		    0000:01:00.0
+ 
+ What:		/sys/kernel/debug/iommu/amd/devtbl
+ Date:		January 2025
+@@ -84,12 +97,14 @@ Description:
+ 		This file is a read-only output file containing the device table entry
+ 		for the device ID provided in /sys/kernel/debug/iommu/amd/devid.
+ 
+-		Example:
+-		$ cat /sys/kernel/debug/iommu/amd/devtbl
++		Example::
+ 
+-		Output:
+-		DeviceId             QWORD[3]         QWORD[2]         QWORD[1]         QWORD[0] iommu
+-		0000:01:00.0 0000000000000000 20000001373b8013 0000000000000038 6000000114d7b603 iommu3
++		  $ cat /sys/kernel/debug/iommu/amd/devtbl
++
++		Output::
++
++		  DeviceId             QWORD[3]         QWORD[2]         QWORD[1]         QWORD[0] iommu
++		  0000:01:00.0 0000000000000000 20000001373b8013 0000000000000038 6000000114d7b603 iommu3
+ 
+ What:		/sys/kernel/debug/iommu/amd/irqtbl
+ Date:		January 2025
+@@ -98,17 +113,19 @@ Description:
+ 		This file is a read-only output file containing valid IRT table entries
+ 		for the device ID provided in /sys/kernel/debug/iommu/amd/devid.
+ 
+-		Example:
+-		$ cat /sys/kernel/debug/iommu/amd/irqtbl
++		Example::
+ 
+-		Output:
+-		DeviceId 0000:01:00.0
+-		IRT[0000] 0000000000000020 0000000000000241
+-		IRT[0001] 0000000000000020 0000000000000841
+-		IRT[0002] 0000000000000020 0000000000002041
+-		IRT[0003] 0000000000000020 0000000000008041
+-		IRT[0004] 0000000000000020 0000000000020041
+-		IRT[0005] 0000000000000020 0000000000080041
+-		IRT[0006] 0000000000000020 0000000000200041
+-		IRT[0007] 0000000000000020 0000000000800041
+-		[...]
++		  $ cat /sys/kernel/debug/iommu/amd/irqtbl
++
++		Output::
++
++		  DeviceId 0000:01:00.0
++		  IRT[0000] 0000000000000020 0000000000000241
++		  IRT[0001] 0000000000000020 0000000000000841
++		  IRT[0002] 0000000000000020 0000000000002041
++		  IRT[0003] 0000000000000020 0000000000008041
++		  IRT[0004] 0000000000000020 0000000000020041
++		  IRT[0005] 0000000000000020 0000000000080041
++		  IRT[0006] 0000000000000020 0000000000200041
++		  IRT[0007] 0000000000000020 0000000000800041
++		  [...]
 
-Historically it would use the "boot_vga" attribute but this isn't 
-present on modern GPUs.  So this series introduces a new attribute to 
-give a hint to userspace which was used for display at bootup.  The 
-matching patches to libpciaccess and xorg-server utilize this new sysfs 
-file to set things up as intended.
-
-And yes, the last few ones are the only ones strictly related to this 
-issue. The other patches were just cleanups to use the same new helper 
-from these patches elsewhere in the kernel too.
-
-> 
->> v8 fixes an LKP robot reported issue
->>
->> Mario Limonciello (9):
->>    PCI: Add helper for checking if a PCI device is a display controller
->>    vfio/pci: Use pci_is_display()
->>    vga_switcheroo: Use pci_is_display()
->>    iommu/vt-d: Use pci_is_display()
->>    ALSA: hda: Use pci_is_display()
->>    Fix access to video_is_primary_device() when compiled without
->>      CONFIG_VIDEO
->>    PCI/VGA: Replace vga_is_firmware_default() with a screen info check
->>    fbcon: Use screen info to find primary device
->>    PCI: Add a new 'boot_display' attribute
->>
->>   Documentation/ABI/testing/sysfs-bus-pci |  8 +++++
->>   arch/parisc/include/asm/video.h         |  2 +-
->>   arch/sparc/include/asm/video.h          |  2 ++
->>   arch/x86/include/asm/video.h            |  2 ++
->>   arch/x86/video/video-common.c           | 17 ++++++++-
->>   drivers/gpu/vga/vga_switcheroo.c        |  2 +-
->>   drivers/iommu/intel/iommu.c             |  2 +-
->>   drivers/pci/pci-sysfs.c                 | 46 +++++++++++++++++++++++++
->>   drivers/pci/vgaarb.c                    | 31 +++--------------
->>   drivers/vfio/pci/vfio_pci_igd.c         |  3 +-
->>   include/linux/pci.h                     | 15 ++++++++
->>   sound/hda/hdac_i915.c                   |  2 +-
->>   sound/pci/hda/hda_intel.c               |  4 +--
->>   13 files changed, 101 insertions(+), 35 deletions(-)
->>
->> -- 
->> 2.43.0
->>
+base-commit: 4ba382d42e2dd8294311fd4ee1ad446c8e5585aa
+-- 
+An old man doll... just what I always wanted! - Clara
 
