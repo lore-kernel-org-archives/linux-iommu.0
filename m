@@ -1,213 +1,129 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2042.outbound.protection.outlook.com [40.107.220.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E3442F8C56;
-	Thu, 17 Jul 2025 15:50:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.42
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752767436; cv=fail; b=daGXojiNbLPOj0tjAfUEnogjKN7ZTrpJyw6DGnQCc9nAYIaFhPaTLe8W9ShOZXEAXRwYtMfezim4OeiLds1pfShMVkVcuPjD3AvSKZmpLEHSRdmPSsdfcDe3Md6y7VV52ixp07PIXN+FpPVJjU4DzZDgdliBz+SrQKa8lxpo5hI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752767436; c=relaxed/simple;
-	bh=yTfo9tA2WYc2x6okdKcgwe51coyrW2KeNY9gQHQFVoI=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=kUB4AglLo5TNqHBCzkSfa4t+3Tbmil/b7kgbqxKPKn7s1p2IlADQoc6J4tsUrZkg66u5yX5ZtAKDEcrydOkM/6/9LOgtGZRI5v1AWPjn64gyFvDPJN/+ln5zOLeb0OYzDMs/YrYmoz2e0NkIovh4DZkkr3cwu/3JOBc/ehmxMfY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=zdXvcTHS; arc=fail smtp.client-ip=40.107.220.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8583F1F872D
+	for <iommu@lists.linux.dev>; Thu, 17 Jul 2025 17:08:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752772083; cv=none; b=h1EkUuslmyXnzmdMhvGQJXYj7wcwWbFR9yQIkM2EJYw9tyys/aa613mE+d7eIpsvqf9+BIvU5W3/B2AxFJpG5Gk4Ludns1YzwC/X2PJZQtAyPUlKngxOYdEOW+we052xkZswbGVMQtqcJPqJTRyLtuOZjYksp2nZf3Ee6O6lBhM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752772083; c=relaxed/simple;
+	bh=vLDXifex6CMPpmMVfGUyQJJg+jNDL8TydpPfnKchmcY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=W4AEmD7+REhyQgiw/8Y6wg9R+/Qiu5RYTEz9fz529n5Eqt6VK/+gtDSlO0+aPr29TzRcxe9wXeyL+4Vb1WejVqmw4hJ7/ICX3BwTZJqlk+fQ4GmdXbTne+pVApQr5Bs3SDvq14bDgIRdSvuBujYcJR8qaWg+qjEbJbovVr6yQZ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=KPbuJCWX; arc=none smtp.client-ip=209.85.219.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="zdXvcTHS"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=q/HmLl3Gz3FJvcg/x+GaBLZYPr14hlbjzRt4cMrJSSS/ULToa8Y+y0iX/c648ViYkkDCHYkzmGQLpVf3KMCVJlxyzIOZKM8FE1ktu6fn+8e14notnNmCYfT0k4jLNGKGNGDHIiTPzrwnuqdFiQqwkowRk8ehmCE0IMuNygWEIboqk/w7yAx3xMcUeVCbZUygCZaEjscV94x7hK/stw07SUXpRC2wXrxYeBwimT/shKLNGUVPIry7H/Z7twAJ+Ikrlt9cDyvnhhunaD8C97q4iY/UDEvYcx9PDhXHOPscui0bnnQeoH4b/NkpY0RJQKYoVbR4ho0DoK3AlVg0SDIfsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kDASb57XLxegEUj57xmF+WK1UUg6vBsC7kHxhLdRWjU=;
- b=Jf+ZAz9YyrefLZ52OnSI+QivHyRmtmWBIAas7htT4djya7cdprOlfgay8+5P0xIWas2Qykm7BcMqQ0ob7jQqWJgDm1TlNOuPaE6f9u01FBDJF94U84pf0yysuJxDo95n+Vi8ewVlK6wuc/SVNWr1Rj4HMMPyztkAQQgX/XB+4gJnmFEndB9lLY3xaAStt++FM6A6UXS21rf0Je7cmUYhagUoYvMK5bbyFg36Txg1RyPi+bWHkY0tAlwb36WHMCrEjgw2C4MpFG4FY74Z3KQy02QYXeQIFB/G5KrvPS97km11/KeyK/aqZg0ls8d1ECfRSnTngw+G+3PBOBwEUOU5+g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kDASb57XLxegEUj57xmF+WK1UUg6vBsC7kHxhLdRWjU=;
- b=zdXvcTHSKA7/GNB3lTxGxkffPrRdEH4Ap42MVr+nja8YWkehy5H1YKEck9RmbuTAqzr4HBv5KWO9ArFu1pZ5kuVHi8K2+6KMiZ60UX0MYiC7JkXGA2noskw0GIjRqPaqFpUdB4UKWm+Emhx8RbUbXPYb0B1H5jU5gt5/9UmCxfg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- BL1PR12MB5730.namprd12.prod.outlook.com (2603:10b6:208:385::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.8922.39; Thu, 17 Jul 2025 15:50:32 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%5]) with mapi id 15.20.8922.037; Thu, 17 Jul 2025
- 15:50:31 +0000
-Message-ID: <f8496358-443c-4a16-aa05-5e3e166b1fc1@amd.com>
-Date: Thu, 17 Jul 2025 21:20:24 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/amd: Fix geometry.aperture_end for V2 tables
-To: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <jroedel@suse.de>,
- Jerry Snitselaar <jsnitsel@redhat.com>, patches@lists.linux.dev,
- Stable@vger.kernel.org, Suravee Suthikulpanit
- <suravee.suthikulpanit@amd.com>, Ankit.Soni@amd.com
-References: <0-v2-0615cc99b88a+1ce-amdv2_geo_jgg@nvidia.com>
- <16da73bf-647d-4373-bc07-343bfc44da57@amd.com>
- <20250716124929.GA2138968@nvidia.com> <aHjKjDunWlpF_aSx@willie-the-truck>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <aHjKjDunWlpF_aSx@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN4PR01CA0045.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:279::11) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="KPbuJCWX"
+Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-6fadb9a0325so11922076d6.2
+        for <iommu@lists.linux.dev>; Thu, 17 Jul 2025 10:08:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1752772080; x=1753376880; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=QVGkYAXzDbe9Y19xEn4w9roL2m9VoIdkgN7aWNqL1/I=;
+        b=KPbuJCWX19i9XqPivaI8LaiNhINqCXWNQuCXLl1JXf9VeufGbZUfUVVkZZETp0cVNH
+         5bNNpBtJLyLjcm6i2BH0QJwsxLeBGOBCitszY2dsqZahBil/AFulG6Zb6rK5QbPtDJsq
+         LJuilae7cwQsndWS4bjPekTvOQhMd3xg3Yv609V/bfkd7Zoh6i4q5A69VQ0FsWhoRefs
+         TE0Ttl4p3dfuhUsHHopo0Ddctc5OtZDKqJpQK36dLDosxN1fSuByX38nlnShtjuE1Dye
+         agkg3GPf3gn4JKcNSN9pu+dRr+Qv8CzPOVTXgnDCOBbB/iunH0yyGpYEXHbs7mky1wTh
+         RaHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752772080; x=1753376880;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QVGkYAXzDbe9Y19xEn4w9roL2m9VoIdkgN7aWNqL1/I=;
+        b=sahj3nqdhard07VSAxvSnmktg4jrpbSFMxFsxI7W7Bn4wHxpAYionGrgJUwcqnBGNA
+         dgiBJZPBuao2L23jWNJwpVbCKBoaqrXQInQBSF8vx+PRDpEk/WgV1NPzwaPqzCtrDsrw
+         KCceEWjqpGpy4zOY9/lSSkIZ4ot0vNICDkrdxZzcJG7ygpWNPfS63YR5fQDD8JFuahg8
+         AjX1G/9TyPyDFBCzwrT72hExOWTfipVF7b1+ooNfrQ/NOSbnXT2qVz4jgggQ35yyDVio
+         2Oxwo11lQIVMKxFsAdzmsgvzvnqkdfLWL0KjV4V8jizgVbal2TELqJvuMLXvK0GYJBCW
+         lWTg==
+X-Forwarded-Encrypted: i=1; AJvYcCU45hgTPS2TXXWCuGVMgRDCp1kBXivUKhjPJubkpyZCKZ9CV/BxlZ9YQXKGL9OciFoQTXULfg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyHVEh02mL2JrK8mVttlk7xoLAa9a5EGzyY2MAOBtg3HT+prIpT
+	1AS9XIzZ00PbPPGMZSU3ZIoG9V2QYl2f4Mpw4KBxkbxZlktNdG2/Wj+5mgNpnUhgEZs=
+X-Gm-Gg: ASbGncsKPr2E7Ei5GYBQofllJ4rgOTqjERyzu+CMKaeS26qjFhUJEqwz1bK84+cpU9z
+	bfru0GAA3qUKj1a73QwRJd+oSQF1tc3c8Q8UxCP7AArjTmxA8LBWHxeiGp/k9rb/lHRe3c0BUXc
+	Xk4+mv0oBN7x4Gpz22BU2uw4toocO5C/v5Kn+Wvss6AB3k3Mc5mAezckZc/kyhnXtJaUlVopFJy
+	ysZWFM1chnRjNgt9QZs1BYINxY1OoGBDvj8SVq8KXvPeRLLtpOneZhML/2KkSlOaqhzT2pjG9gn
+	EKNargeStoPEFsg1RPAJS/8cFnp+Y29F19BRYE4xVpPQdm/Brgx3b43LyOCDBAKUmxbAMRVGx4y
+	DvpZk+kCxe5A4z5Vjc//NLgHKRTEPZ229+X7F0P/RmDfj7dRCtCviWFoqMdm/agoCBP/w0Rk4zA
+	==
+X-Google-Smtp-Source: AGHT+IHmL4Gcl4ie5Ko2WR29od0GTesRJqPqvUnVqpsrlcE58Si7J0fzQOs6WWd9t0tyOQGLXo3/NA==
+X-Received: by 2002:a05:6214:20a2:b0:6fd:c80:98f2 with SMTP id 6a1803df08f44-704f6ac51efmr103219776d6.27.1752772080119;
+        Thu, 17 Jul 2025 10:08:00 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-167-56-70.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.167.56.70])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-70497d39450sm86764726d6.75.2025.07.17.10.07.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 17 Jul 2025 10:07:59 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1ucS5O-00000009TE2-3ond;
+	Thu, 17 Jul 2025 14:07:58 -0300
+Date: Thu, 17 Jul 2025 14:07:58 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
+Subject: Re: [PATCH 1/2] dma-mapping: prepare dma_map_ops to conversion to
+ physical address
+Message-ID: <20250717170758.GB2206214@ziepe.ca>
+References: <cover.1752734252.git.leon@kernel.org>
+ <1798a3351dcabccaf0749221e9e9b66585a7b2c6.1752734252.git.leon@kernel.org>
+ <20250717134435.GA2206214@ziepe.ca>
+ <20250717145213.GB402218@unreal>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|BL1PR12MB5730:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4842e1f6-7da3-4fc6-2444-08ddc549a912
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?NlNzQUc2dXdGZHlmMzFQcVFKbmtEdDhCemFNZzUvaDYxbUQvUWhkNGpnK1Vp?=
- =?utf-8?B?SXkrK1JpNFNicmVydXRLNmcwQndpQmt3K1dTaFdTS2wrSCtFcjlUN2Z0L3Y0?=
- =?utf-8?B?Y3Nlanhib0UxMVVPNE91SFdUQjBicVJFS0pUV1BPV3puRXhrQnhkNDBCK1Vz?=
- =?utf-8?B?RUsvOHF2SXdkb0xDRURqa3NocFE0OThiUjdHNzJnakNHOEJ5WWZqZnV0WG4z?=
- =?utf-8?B?c1FvQTN0MDNVNmpBeUtqTnZpTlRtUDZKbDZQczdubHVSY3lqaWtmMVg0dlhX?=
- =?utf-8?B?QSs1WjErK0FLQXRQMThGY1dIYXJ3NGpxakhPSGFMYjVndjRJNGUzcEJ1S1JN?=
- =?utf-8?B?NkhSNUs5dXRuUktuRkFGYkxXWGh0bzhJTjdZZUVjTDRlTFZoeStlWXpnRWtP?=
- =?utf-8?B?SVhBRUtwU3RPYUVIaXVGQTNxNkdDWEdmb0pIcm51STFNZkgvdFhxUWNaWW9H?=
- =?utf-8?B?Mk9qY2swVGhKM1lRcWtwelEyUG9tZHpZYjcyM29lL1F0Z1ZNT2dhNjh2WEIx?=
- =?utf-8?B?bjR4b1JubkRnZmNnandLZjZtWnh5d3FHNmNDaElGc1RxbkFGS2lJOWJHVUlF?=
- =?utf-8?B?N05zeUR0Yk16UU05UDhWUWJjZXBxNTRGbS90WldCRjBkN2M3TkJIWkJkMWhn?=
- =?utf-8?B?MlR4VGZvR1VMUVBtN3c0dzdsbEIrSGIzOStMazd4M050Wm5PTXBuTVZ5S2ZP?=
- =?utf-8?B?YkM1Vm5NcCtFdldoaW5WME9PeHBGMzArdWNSM1ZBZUl4RzMreUsyZzhtOEl0?=
- =?utf-8?B?eVlCZWVHSFVRUTFrYXVJR2plcFpObnZOWG9jM29EWUpNa2N4cUgxYjZBNDBt?=
- =?utf-8?B?M2ZRa0xlVUQvU0dJaFN1cW9OSS94N0psazJHSjJHR1lDZnFSWk96MXpZaFUy?=
- =?utf-8?B?N3BpNTllWWxaVW50WnNiRDR2eXRidjI5RExicm8zUzE3cUo4Wk56U1hzZThz?=
- =?utf-8?B?dWJxYTRSMlVQOEVGSkRWK1IrNkdUZHpJSXVnMUZpdGU4WTN4L01tK0xxVHM2?=
- =?utf-8?B?NmxNS1BRYUdqUUdUdGhXZloxb1o0WWZwaEVJSHZmSC9hQ0pWQ0pPbExZUy9O?=
- =?utf-8?B?QlgwUFdYeWRCVmdsb3VIREptbGpYWFZEUDd2QU11YUtUZ05NdXFIUm1kdVFo?=
- =?utf-8?B?WGhjMXRKTVJnOEJXZUNKRGlRVkNxYTJsYlp2N2U4SS9IN1lwUGN3c05YNHc0?=
- =?utf-8?B?UTF6c1R1Z25SdzNyazFPMHlUOE1Lb2ZRNmdMc2pGRHBqMDBFNW5ZVUpWYllK?=
- =?utf-8?B?RE9VVUF0ckhMMWFTOUxJSitYdFVRcjlsNXF1RjM0SC9hZEVtME8rMEZXeXdh?=
- =?utf-8?B?M0RRdE94WjFvUUJuTm9sTGVPUEtDN0hwZWNITzZrU3dLcEIySHl3dUFsWjNp?=
- =?utf-8?B?aXFEMlB2VUdDcnhDM0tMTmcvOWU2NWVSNmM2NTlveUs1MjhmNjdjTlZaWlpw?=
- =?utf-8?B?cW9aTk12cGpWRXM0T3V3QnM2Skd2YnRyQXE2WGQ5OXAwdGJBbnRBOVBhamVG?=
- =?utf-8?B?dEE4ZmdDTEZGZUNyWGJ3b0dESlNzbnNOZjJLcHhpSVdONUpFUzhaWE4zSlh3?=
- =?utf-8?B?LzE1cU56Vy8rY0xnclZWOXU3amNZQ3FrQ1VDQldwTFVuRldQTUQ4VmNBYUY3?=
- =?utf-8?B?KzhWbjMrc2VZdHNnVnBkSjNHaUYwU0xod0JRK3JscEkyaXZGMGgwUEhKLytv?=
- =?utf-8?B?bUM3T25QRXkyckRFYkRYMDIxTlpZOVM2b1dnYi9hQit1Y0FJQ1VoZGd0am5Q?=
- =?utf-8?B?dGlyUGxoZlNPR01mTXdzS3BGNzhTVlZqMDRNK1JSQTVwQXVjRWxqZVVET3li?=
- =?utf-8?B?VGtCdlBsT1NvSHBWc1ZTM1dhTG8yVklONDErK2poR0FuWWxWNkcrMkwxZkNQ?=
- =?utf-8?B?MldBZzBUQVIyc09tZ2sycjBtaktIcDhiWFYrWkliZzcxTTBWbUg2RS92TVk2?=
- =?utf-8?Q?89TZmRhK2NA=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RXBWL2JNOTlIWEFmZWFGcUlDK1hpOTk4RGovS2lYTEZ2bmt6ZEZ1K1MrTktr?=
- =?utf-8?B?RzZ4M2VBbGtzTEZwMklWV0wyVVVPbklZNytXTXlhZkkwakJDdVRpb3l4SVhr?=
- =?utf-8?B?SmFvRE82YmUraU9WUmVET3hybDRORzVUQmlyMElwdjU1eVB1SUJvM0kySEJu?=
- =?utf-8?B?bnk0WHNOdGJ6VXhPZG92WDhOMUVBSzZQaGRxQm96R2FSYlZxNjhBL3hzLzhU?=
- =?utf-8?B?bEpWdEhVR0pZeFJzOXptYnFlZnVtTnZGN25lSWFORFhHcUFpSXR3V3BlQXdI?=
- =?utf-8?B?NlhZUXRHWjVieHU1SnI1cVpJWW5EUDdOalFvblU0MkY1UlorbFFPbXV5M3Ev?=
- =?utf-8?B?S09JT3pHSVg0aXRSTElOZmsrYmdwM1VGbExISDRacTRYQm1lUEoxZVdRclh5?=
- =?utf-8?B?VUFjbHFZU3lFY3E5YVpvbGpRRE1YQnhkc1lxOUVMM2NmSXhDK0lkbVNRWXgz?=
- =?utf-8?B?bFJpTUdsOG1VZ0JyTUROV2tDN21WU1R5NUF3REtIbnhiaDFuVzhTNDhMRVJF?=
- =?utf-8?B?Q25FWW54YkRRTDNkS0lsNTExa213WCtuTmVBZXluM0k1M2dZR2swTkVYaUsr?=
- =?utf-8?B?cnBRVzVVNFJGaE5aV2dEdytpWmNER2dCVnhuMVMvenFndy93UU9yWU9ZWDNM?=
- =?utf-8?B?QjVKbmtFd2N1VXZwTmZ5M2gzckE2WGZwendCaGJvTllsUVZWcTlkMzFnQlNz?=
- =?utf-8?B?V2V6VGtGSjV6NmtjbVdLR0FaTnl1Z2oyVUx5a1NrZTF6Qy9qYjNxRHZmTmJC?=
- =?utf-8?B?Rmc3SDR4MytuM3FsZUJRRVZqOUJ3UU1MaElUK0xDTlRYNEpCekFJM3oyTkpm?=
- =?utf-8?B?TmlYN3lOV1RvZUxHQXNSTFJVZ2ljeENvcld3bzJKLzVOQ2cwcG0yRERFZHlY?=
- =?utf-8?B?ZVBvR0VwVWJ5QzF5TFBkamphZnR3aDNSQVVLYUFoVU9DUjVsTVJNeVl2VDMr?=
- =?utf-8?B?Rm9nVzVkeEtROW1EU21pYnhXR3c2L0hvSitrNFA3bTFteGhNazlEUlpnV3lZ?=
- =?utf-8?B?VU9Lck9nbTlXemNiQ0ovM2tiVVVRNXU2Z3ZrVW52N2pzTE5ZdVhtdTgyNHhG?=
- =?utf-8?B?MVRzTko0eVFRTml3bnQyenRWU2IvYW1TWnI0VloxQlRLSDViWnhYc2N3L01m?=
- =?utf-8?B?WXpUUDdLQjlraVoydVdjdjdlN2dmcFQ3dDBPSGFQL2ErL1RyOEhyczNCVUZm?=
- =?utf-8?B?b0FpR3RTcDN3NlUxcnNJWThKcUFCZ0d3Yk5UaGVOeFpBV3crK3RVNmpzVDJW?=
- =?utf-8?B?R2w0ZEJ0c1lzdDJpOGtWWVZtdGZsNlgrSGcwdUNCZXFXcU8wS01JSEt1a3VI?=
- =?utf-8?B?bnZrOHVJRHdYNVErL1pNb0phU2dIbXlrcWV4ZjM2Z2xMSmR3dXNDdHhmS1lv?=
- =?utf-8?B?amgybk0wcXBKR2VOdyttSC9lQUNSTzhMR0RjNk0vRGR3M0NNTVcycTlDSUl0?=
- =?utf-8?B?dmxMYzA0SWRDc2VFenJQMlJVdkxYUDVXYlBNZGRPZHRyelVkM1FzVFc0YXRm?=
- =?utf-8?B?VW9UQzRlclJTNXlQYnVoSmswcDM5K1hVWmlEZzk4WUlKVVY0V29zdFc5ckVO?=
- =?utf-8?B?aXRycE9IS3d6NytuQmtLK29ySDBiNVpoQWRNQXA5cXJjUjdOVDZMOUsxeDkv?=
- =?utf-8?B?QzRpMytzREwwTElQRmVONzd1d0tRM3NKQnlyUHU4SC90NVVuWVREVjZPcWZK?=
- =?utf-8?B?M25VZ3dVZE0zMUQ3NnVWTXJ0NlFFN2lLc1UrRll1M3QzZ2t2Mjh0R2xJdUNH?=
- =?utf-8?B?aGpvcGtJbDIwbTBEOVNSTzdCQmJtMUdpcjU4YzVzNHN3ck8wUFBuSFl0SDlB?=
- =?utf-8?B?SE04aitLQmZiYlJiK0wwMWZUblgyNDF1UkRyYURtQVN3VGw3UjdMdnBkMjZp?=
- =?utf-8?B?NytNMUJxcFA3N2pESDFEc1dQY051R0kvNXVvbGZFRXhPKzg4OTYxYWV5SjFK?=
- =?utf-8?B?UU16WkZHaU1ZWklGZjdlMk9kUStsQi9uTHR3S2Z3RHlNV1F2cVRlcDNlWDNy?=
- =?utf-8?B?VUZ6VU9FUm1va3ZDMXJqVmppMXpnOEFWT2l3S1BneE81SjltcUoraXVadVdT?=
- =?utf-8?B?ZVhYMTNDMHlQVHZqeUlwOGphNnJvbk5HR2JwT2tVV0pnWGJoQU1rMm5ZeHN4?=
- =?utf-8?Q?dFIe7w441ORwZeJJWoYwgBQff?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4842e1f6-7da3-4fc6-2444-08ddc549a912
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2025 15:50:31.8442
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8w4b6qTN2hpehfXFcBGDe9kZATi5bp49nu+dPRYL0OIcEnEQG+vzqSTDIdEItEgrlgJz3YB3aFxYIGEGbB3Wmw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5730
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250717145213.GB402218@unreal>
 
-Hi Will,
+On Thu, Jul 17, 2025 at 05:52:13PM +0300, Leon Romanovsky wrote:
+> > I would expect 'else if'
+> 
+> I don't expect both of them to exist. There is WARN_ON_ONCE() to catch it.
+> If it is important, I can add else.
 
+Compiler generates better code with the else.
 
-On 7/17/2025 3:33 PM, Will Deacon wrote:
-> Hi Jason, Vasant,
+> > > @@ -213,8 +221,16 @@ void dma_unmap_phys(struct device *dev, dma_addr_t addr, size_t size,
+> > >  		dma_direct_unmap_phys(dev, addr, size, dir, attrs);
+> > >  	else if (use_dma_iommu(dev))
+> > >  		iommu_dma_unmap_phys(dev, addr, size, dir, attrs);
+> > > -	else
+> > > -		ops->unmap_page(dev, addr, size, dir, attrs);
+> > > +	else {
+> > > +		if (IS_ENABLED(CONFIG_DMA_API_DEBUG))
+> > > +			/* We shouldn't have both functions */
+> > > +			WARN_ON_ONCE(ops->unmap_page && ops->unmap_phys);
+> > > +
+> > > +		if (ops->unmap_phys)
+> > > +			ops->unmap_phys(dev, addr, size, dir, attrs);
+> > > +		if (ops->unmap_page)
+> > > +			ops->unmap_page(dev, addr, size, dir, attrs);
+> > 
+> > Here too
+> > 
+> > What is the practical difference between unmap_phys and unmap_page?
 > 
-> On Wed, Jul 16, 2025 at 09:49:29AM -0300, Jason Gunthorpe wrote:
->> On Thu, Jun 12, 2025 at 10:54:00AM +0530, Vasant Hegde wrote:
->>>> Adjust dma_max_address() to remove the top VA bit. It now returns:
->>>>
->>>> 5 Level:
->>>>   Before 0x1ffffffffffffff
->>>>   After  0x0ffffffffffffff
->>>> 4 Level:
->>>>   Before 0xffffffffffff
->>>>   After  0x7fffffffffff
->>>>
->>>> Fixes: 11c439a19466 ("iommu/amd/pgtbl_v2: Fix domain max address")
->>>> Link: https://lore.kernel.org/all/8858d4d6-d360-4ef0-935c-bfd13ea54f42@amd.com/
->>>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->>>
->>> Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
->>
->> Will, can you pick this up please? It seems to have been overlooked
-> 
-> Thanks, I had missed this one (I only trawled the list for the two weeks
-> prior to Joerg going on holiday).
-> 
-> I'll pick it up, but please now that the preceding:
-> 
-> 	if (pgtable == PD_MODE_V1)
-> 
-> part now returns:
-> 
-> 	PM_LEVEL_SIZE(amd_iommu_hpt_level);
-> 
-> instead of:
-> 
-> 	~0ULL;
+> There is no difference. It is provided to provide symmetrical interface
+> to .map_phys, simple rename.
 
-Right. Now it checks for supported level instead of assuming 64bit. This is correct.
+We really should not be converting phys to page without knowing there
+is a page available..
 
-> 
-> thanks to 025d1371cc8c ("iommu/amd: Add efr[HATS] max v1 page table
-> level"). I'm assuming that's fine because this change is about v2, but I
-> just wanted to highlight it in case there's a potential issue.
+IMHO if the underlying dma_ops are expecting a struct page it is
+better to leave the ops with the struct page versions and have the
+core code do the conversion to struct page. At least that way there is
+one place we can prevent things that are not allowed.
 
-Thanks. I did verify the tree and it looks good.
+The phys versions of the ops should never touch struct page or KVA. It
+looked like there were a bunch of drivers like that - cache flushing
+was the main issue requiring a struct page and KVA.
 
-
--Vasant
-
+Jason
