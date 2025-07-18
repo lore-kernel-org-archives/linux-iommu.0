@@ -1,133 +1,137 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CC8D2949E5;
-	Fri, 18 Jul 2025 09:13:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E4DE29B22F
+	for <iommu@lists.linux.dev>; Fri, 18 Jul 2025 10:34:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752830027; cv=none; b=iIuAcASKFkt0C8kL6JR6CJVlOSJ69ya+LFILWGR94mN2T+IXuWr051huhE/B/TpvWNmoqiE5wS5ymBHXwwbnFkasIG7fHXzlwBqCGXSqR68/r+AZhfREk5kCPOBoK9iGOuEepKxVWKiwiffytVszijv4HU3/h6qNv7LoUU3E5u4=
+	t=1752834856; cv=none; b=NzwHGu/EaP5i4CS/n2eUpdesrkBeUl8eVartMdCGBWUbRp2tYCba64oQIuJNA5mlIhjHnw9Bc/n7UEr+jYk1P97yvHwr5VraJ7dfb6CB5HcgOhU3lBzFBo6XD6F/n1qtYFyxDT3FWse9ccViKYBMzEbndBHFrDeODsTAvMcpTbc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752830027; c=relaxed/simple;
-	bh=fQjBr8J+HuO7FW9XTKJjG8LoJCVWfRGB+DTD8fc6mJs=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=MehIobpd823bp2BFPBBjaJbf9khxCxIsm7ejHXOG/3/XRFWHfia/LFn+Emd5NAuTVxQmykIPlnuusTB1O4qmxhysZGmL0qfWnFGKPlquhKhdjfL+L7V4UFhZokv8NNuLnqoBv6Ll8Iu/wKg12s15ZOdttxK19qQQ/+reorkY22I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cImDF7PL; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1752834856; c=relaxed/simple;
+	bh=URT4x0Acr8D69x0WfU/q2WOWVbFVaINnDpDK31b1/9k=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=eZj8mB0UrFsY6RoIeCU8H0S0OyepzgCXq3dXvKZtq8RMIsdiCc6Qh9O6r25zoc/hjm0hQK6ifU69tFairSyYoCO+iKWy5VU1FZj3NNORz5XJ6tNh331mwFpa7AHygutdjiKWnAE5U0hZ7uHkhHYYIjakYGXlpFEJFTV2qBuhDOQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DZF/eq3V; arc=none smtp.client-ip=209.85.167.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cImDF7PL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B887C4CEEB;
-	Fri, 18 Jul 2025 09:13:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752830026;
-	bh=fQjBr8J+HuO7FW9XTKJjG8LoJCVWfRGB+DTD8fc6mJs=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=cImDF7PLXvE3iTzm6YhrYsQLSTUie1no75NRd8DI9VcGUTCjrk2DYxjlhvKzOieJb
-	 hHIBva3+XF5bTIie/f76u29AB2P6AoLMfj58TGrlMgkJYA+rhremXi2aDAdId5FIN9
-	 9e77c8Br+OiRfTG0tm2i5CFlHRt8HweNnDVAmybhT1c1g/HobjRAqxtS+7ly/MF2XA
-	 a0GjI4/5qonwAIQf2wukzr+NAF7rOamrVpXoZzcM2GBxxfE/GMrFD+Sgz7uhhjh9um
-	 WYuqZdnUdgixZXBQNevw0SlslxB8hwym6kuYi5P08JoR2nD0D8+st3nQbk5AEdSIKf
-	 kPMrDRMVTnppA==
-X-Mailer: emacs 30.1 (via feedmail 11-beta-1 I)
-From: Aneesh Kumar K.V <aneesh.kumar@kernel.org>
-To: Xu Yilun <yilun.xu@linux.intel.com>, jgg@nvidia.com, jgg@ziepe.ca,
-	kevin.tian@intel.com, will@kernel.org
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, joro@8bytes.org,
-	robin.murphy@arm.com, shuah@kernel.org, nicolinc@nvidia.com,
-	aik@amd.com, dan.j.williams@intel.com, baolu.lu@linux.intel.com,
-	yilun.xu@intel.com
-Subject: Re: [PATCH v6 0/8] iommufd: Destroy vdevice on device unbind
-In-Reply-To: <20250716070349.1807226-1-yilun.xu@linux.intel.com>
-References: <20250716070349.1807226-1-yilun.xu@linux.intel.com>
-Date: Fri, 18 Jul 2025 14:43:35 +0530
-Message-ID: <yq5ajz45275s.fsf@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DZF/eq3V"
+Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-5562838ce68so1897134e87.2
+        for <iommu@lists.linux.dev>; Fri, 18 Jul 2025 03:34:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1752834852; x=1753439652; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=L16c/8jEUuiIlk2H4pEeJaRqtG3hOpwT7bIYsra1fiw=;
+        b=DZF/eq3VD2C/3hAMEbKGvGbgH+SeGYZLH8RAj6JWYCo5WwBik7vS70ounf5cwaeW/8
+         LVkcZLcoize7CrgxygexPf1ky6qye+rd2LoCRZ+0/BwZUmSQsiQpSbQx8enwlf0AOQne
+         GCHguKI+gSg7BSlteftH0rehRRSutd4+Rw+ytp6vZDqsbI0XfoJTMEOv61rHWHw+R+TX
+         Fsmqh9A2IEa6iRQEaJxMs8SAYLiwK7vF8IrSL7EXBTM3Sh65r7jV0hg7s279MrzWiJqR
+         S+5a7S5R+V7a93fuD0p1ydbR8CJaTZG09lUQOKlfEixt+uFMpBeGr4uzYL5YrCZY3BeR
+         VXmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1752834852; x=1753439652;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=L16c/8jEUuiIlk2H4pEeJaRqtG3hOpwT7bIYsra1fiw=;
+        b=Mj71msDIVv6xPeRB7BzjnHOGCf27adCVpqcZVbxLUFZatlsAK9pptYgvspGRYClAwk
+         quEqpP3nZOLxyFO707+e6KR724gUH9IFGmJOTFqUGeARvRGtnWCsLgMCvPq9zmeq/rwa
+         Un45YfA0RMx+dGCNL6JCa09yi7q6g1I8mxJpSOSvhhgYOsb7a6oY/mtLJi7dyzTQ18bd
+         VaLXbQivbTnE3rt53p6+QzkSMWC/Lg0dMILiCmbMtCgZunJLa+Xv+FBDVXGVHqKY760i
+         7nGWkwCF4MWsQgx262N9GGqulvPmB3iNeV1Q5IrvdTn1HHowJ+Xd9LchDTWz0+nPHX9x
+         7xBg==
+X-Forwarded-Encrypted: i=1; AJvYcCX/aEV1GELUS3tVaPafk7s5NXMy3yLzHmajk4x7b7j8zFmakwHDY7/llkxoXFYU/r5idTcX6w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxqf+8NL3fX/zOYt8YA2+povrbOG1fHJgy9TWgYdgfjgoQNZ3hT
+	Adxy7c5LlP9wDXaeFOtf9/ZsoCniLiOHTSZhtGjZwUdrw/lisbDuQj3p
+X-Gm-Gg: ASbGncvug/XBN4KF/6VSk2JGp87gzWKAp4SoLwizq0s9+YTr1fyR0QW5CDDuF2K7B2m
+	LOekUerstJgr0e3PyKgEL5n3RsAs1il5dH5XsedK5UGOorvdEFK+I2T/lzSL30M9wfoK0FspvrE
+	a0SK5aePAdVBaqVAou7jF0xu4JUoV9f+du68P18rFpMYWdsdc07fcfqfWnpRwooeuqdaQwj4eTH
+	2oQsaQVik+tejQ7klSv46uFZ46DOwNr7xWxAdEjgPPPz32Qok+/CWHRgKbqobXn4ybmKqWlIGWE
+	BAwrtwTciHuFLLUEAVXPo3SJ3c6lTT46YG2TtrsB8pmX/YVz7fjCdNYp4fWy4a+WRE26NteVAtl
+	BAswG7nf5/DTO/H4Y+4j4M1qxO1h5kq5gcVOI1DbTmmFyOFAwHKjSZJ6Grks9ei39mOo4+pKVvx
+	g=
+X-Google-Smtp-Source: AGHT+IFFMGQELOhee441f3hfVlskDcHVYSyft1CA1/LFgX6RrnJxMgUqeZOwcEWvRatCceHUxRfGqA==
+X-Received: by 2002:a05:6512:40c2:10b0:553:2311:e1f6 with SMTP id 2adb3069b0e04-55a23f7fad8mr2256705e87.49.1752834852016;
+        Fri, 18 Jul 2025 03:34:12 -0700 (PDT)
+Received: from abj-NUC9VXQNX.. (dsl-hkibng22-54f8dc-251.dhcp.inet.fi. [84.248.220.251])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-55a31d9176bsm203689e87.161.2025.07.18.03.34.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 18 Jul 2025 03:34:11 -0700 (PDT)
+From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+To: acourbot@nvidia.com,
+	dakr@kernel.org,
+	jgg@ziepe.ca,
+	lyude@redhat.com
+Cc: Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>,
+	Gary Guo <gary@garyguo.net>,
+	=?UTF-8?q?Bj=C3=B6rn=20Roy=20Baron?= <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>,
+	Trevor Gross <tmgross@umich.edu>,
+	Tamir Duberstein <tamird@gmail.com>,
+	FUJITA Tomonori <fujita.tomonori@gmail.com>,
+	linux-kernel@vger.kernel.org (open list),
+	Andrew Morton <akpm@linux-foundation.org>,
+	Randy Dunlap <rdunlap@infradead.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Caleb Sander Mateos <csander@purestorage.com>,
+	Petr Tesarik <petr@tesarici.cz>,
+	Sui Jingfeng <sui.jingfeng@linux.dev>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	airlied@redhat.com,
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	rust-for-linux@vger.kernel.org,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Subject: [PATCH v3 0/2] rust: add initial scatterlist abstraction
+Date: Fri, 18 Jul 2025 13:33:33 +0300
+Message-ID: <20250718103359.1026240-1-abdiel.janulgue@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 
-Xu Yilun <yilun.xu@linux.intel.com> writes:
+Hi all,
 
-> It is to solve the lifecycle issue that vdevice may outlive idevice. It
-> is a prerequisite for TIO, to ensure extra secure configurations (e.g.
-> TSM Bind/Unbind) against vdevice could be rolled back on idevice unbind,
-> so that VFIO could still work on the physical device without surprise.
->
-> Changelog:
-> v6:
->  - Fix compile error for ARM platform in Patch 5
->  - Adjust some more line wrappings in Patch 6
->  - Add review tags.
->
-> v5: https://lore.kernel.org/linux-iommu/aHdFWV9k9M7tRpD0@yilunxu-OptiPlex-7050/
->  - Further rebase to iommufd for-next 601b1d0d9395
->  - Keep the xa_empty() check in iommufd_fops_release(), update comments
->  - Move the *idev next to *viommu for struct iommufd_vdevice
->  - Update the description about IOMMUFD_CMD_VDEVICE_ALLOC for lifecycle
->  - Remove Baolu's tag for patch 4 because of big changes since v3
->  - Add changelog about idev->destroying
->  - Adjust line wrappings for tools/testing/selftests/iommu/iommufd.c
->  - Clarify that no testing for tombstoned ID repurposing.
->  - Add review tags.
->
-> v4: https://lore.kernel.org/linux-iommu/20250709040234.1773573-1-yilun.xu@linux.intel.com/
->  - Rebase to iommufd for-next.
->  - A new patch to roll back iommufd_object_alloc_ucmd() for vdevice.
->  - Fix the mistake trying to xa_destroy ictx->groups on
->    iommufd_fops_release().
->  - Move 'empty' flag inside destroy loop for iommufd_fops_release().
->  - Refactor vdev/idev destroy syncing.
->    - Drop the iommufd_vdevice_abort() reentrant idea.
->    - A new patch that adds pre_destroy() op.
->    - Hold short term reference during the whole vdevice's lifecycle.
->    - Wait on short term reference on idev's pre_destroy().
->    - Add a 'destroying' flag for idev to prevent new reference after
->      pre_destroy().
->  - Rephrase/fix some comments.
->  - Add review tags.
->
-> v3: https://lore.kernel.org/linux-iommu/20250627033809.1730752-1-yilun.xu@linux.intel.com/
->  - No bother clean each tombstone in iommufd_fops_release().
->  - Drop vdev->ictx initialization fix patch.
->  - Optimize control flow in iommufd_device_remove_vdev().
->  - Make iommufd_vdevice_abort() reentrant.
->  - Call iommufd_vdevice_abort() directly instead of waiting for it.
->  - Rephrase/fix some comments.
->  - A new patch to remove vdev->dev.
->  - A new patch to explicitly skip existing viommu tests for no_iommu.
->  - Also skip vdevice tombstone test for no_iommu.
->  - Allow me to add SoB from Aneesh.
->
-> v2: https://lore.kernel.org/linux-iommu/20250623094946.1714996-1-yilun.xu@linux.intel.com/
->
-> v1/rfc: https://lore.kernel.org/linux-iommu/20250610065146.1321816-1-aneesh.kumar@kernel.org/
->
-> The series is based on iommufd for-next
->
->
-> Xu Yilun (8):
->   iommufd/viommu: Roll back to use iommufd_object_alloc() for vdevice
->   iommufd: Add iommufd_object_tombstone_user() helper
->   iommufd: Add a pre_destroy() op for objects
->   iommufd: Destroy vdevice on idevice destroy
->   iommufd/vdevice: Remove struct device reference from struct vdevice
->   iommufd/selftest: Explicitly skip tests for inapplicable variant
->   iommufd/selftest: Add coverage for vdevice tombstone
->   iommufd: Rename some shortterm-related identifiers
->
->  .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    |   3 +-
->  drivers/iommu/iommufd/device.c                |  51 +++
->  drivers/iommu/iommufd/driver.c                |  10 +-
->  drivers/iommu/iommufd/iommufd_private.h       |  49 ++-
->  drivers/iommu/iommufd/main.c                  |  69 +++-
->  drivers/iommu/iommufd/viommu.c                |  69 +++-
->  include/linux/iommufd.h                       |  17 +-
->  include/uapi/linux/iommufd.h                  |   5 +
->  tools/testing/selftests/iommu/iommufd.c       | 377 +++++++++---------
->  9 files changed, 419 insertions(+), 231 deletions(-)
->
+This is v3 of the rust scatterlist abstraction incorporating feedback
+and code from Alexandre Courbot.
 
-Can you share the commit id these patches are against.
+Changes since v3:
+- After further discussion it seems we need a variant of typestate after
+  all. A major change for this version is to introduce unsafe methods only
+  when using one of the constructors for a SG table. Otherwise nothing in
+  the interface should need to be unsafe.
 
--aneesh
+Changes since v2:
+- Drop typestate pattern. Introduce SGTablePages trait to enforce ownership
+  of the pages to SGTable.
+
+Link to v2: https://lore.kernel.org/lkml/20250626203247.816273-1-abdiel.janulgue@gmail.com/
+
+Abdiel Janulgue (2):
+  rust: add initial scatterlist abstraction
+  samples: rust: add sample code for scatterlist abstraction
+
+ rust/bindings/bindings_helper.h |   1 +
+ rust/helpers/helpers.c          |   1 +
+ rust/helpers/scatterlist.c      |  30 +++
+ rust/kernel/dma.rs              |  18 ++
+ rust/kernel/lib.rs              |   1 +
+ rust/kernel/scatterlist.rs      | 405 ++++++++++++++++++++++++++++++++
+ samples/rust/rust_dma.rs        |  49 +++-
+ 7 files changed, 504 insertions(+), 1 deletion(-)
+ create mode 100644 rust/helpers/scatterlist.c
+ create mode 100644 rust/kernel/scatterlist.rs
+
+
+base-commit: 23b128bba76776541dc09efaf3acf6242917e1f0
+-- 
+2.43.0
+
