@@ -1,226 +1,180 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2069.outbound.protection.outlook.com [40.107.237.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C5A8157A72
-	for <iommu@lists.linux.dev>; Fri, 18 Jul 2025 02:58:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752807502; cv=none; b=bZxNw9MlSDD7QZ2LI1S88kkxFSmCXZ/LSEWBmpBWfu/35OdNfQxeFW2TXMpJIsDl3aYZFJY8hSTb0nzGngK97YthTYNMu3YIvEv8ihdxG6z/Ogo/bYr8bMsTkUsmrdtzUJZpk064k0RIf2xHF8sbze8IxqEvCXrcKoJ7O8kAtXc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752807502; c=relaxed/simple;
-	bh=rZJmkQwqKZ7T7fqYmnIk08peIPBf4DxqJuRD3FWD7TA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uRmIgQgiASdGew0Ro2/PX4D4W1ST/wqKcNnFT/PJcNGWqGOTpluJWJZF6N2S66zmBRKpnyTd/5mKfloKk1oF7NayTPUMJf76ecl/K6mK4hoFjeSF+vdNzM1CLMrCpoaFCols5st3JnNXK7s+912fHqT/LcH52SQz+77Yqwyl+go=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jZLudt9C; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7D2B292B5C;
+	Fri, 18 Jul 2025 08:14:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.69
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752826444; cv=fail; b=UwacwIoZiQSKpAshRCUuUaSBV9lRwnjSMOCwpgIEW4PQ96LMFGYNIQE6qHzbzq/B970AdQNl2hA7/PdybZYFFDnrhYErSCl0unR7vn+4PSbA7im875q0CHct+lYV2gpW2RApBzTf1UO9huyq5v5bNed7aU5D/aBnOVeB6TVrghE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752826444; c=relaxed/simple;
+	bh=sK8rCVZWVknncI/GRJFuplBG4djM97aDQpUZ5IyzCu8=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=h1dmMIslbPLffY0pL4HIlxL4yJHzpw88Y/pDHqe+2sy6EOHnGtGwCvViywuzeA/gyre0a/qHDu4GYF1drRYwB7B9N+h18P9SODrb7foXT3NRURwslJCoJnoa7HYByoGhwB9x4MGynxQWXGKAT9jDBiq1i3C9dX6NczvuiLCDa4M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=MeZO+D2U; arc=fail smtp.client-ip=40.107.237.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jZLudt9C"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752807500; x=1784343500;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=rZJmkQwqKZ7T7fqYmnIk08peIPBf4DxqJuRD3FWD7TA=;
-  b=jZLudt9CFGm8a5Tzv4Zr6dw69gCJd8pI2Gc5WxdCmntStqPkR6pmewY1
-   vrBvuhuq4yCdkSprxQ5cKhP8Gbnxb90yYSGEEvOCzJzSHbGrk0V9LH0LJ
-   +C4juBs3KlplvtkpdkXmd+LTDV0MjHH8uzReviJUgAjoHV5iLKGpqL3wb
-   S3FJcd2P8bfqA6kpoP7k54RPVQ18g724JZDam3l0cNvMlVoalAoGfACvS
-   +KfRB9ak9P5bRTCY8HxK4W++FY5LjvvBAHkaZMxkZg9Sfl8+K8FNXK4nU
-   0zWxC+J69pgABrunQFXs4D4LvuntcmLSnr0ZovahvKHbJn6A4qOCseoCS
-   A==;
-X-CSE-ConnectionGUID: FpuprBEKS4qUzoY7OjR4vQ==
-X-CSE-MsgGUID: n+v5wSxdRf2i3X5huqA4fg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11495"; a="65669911"
-X-IronPort-AV: E=Sophos;i="6.16,320,1744095600"; 
-   d="scan'208";a="65669911"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2025 19:58:20 -0700
-X-CSE-ConnectionGUID: O9utCyDnQPWndaZMOxjZ7A==
-X-CSE-MsgGUID: Kd056GL/Qrqj617b6FuwxA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,320,1744095600"; 
-   d="scan'208";a="181662494"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jul 2025 19:58:18 -0700
-Message-ID: <3ea54d65-7ccc-479a-8912-bccd79d678d4@linux.intel.com>
-Date: Fri, 18 Jul 2025 10:56:24 +0800
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="MeZO+D2U"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=TH8dSOLQwEWAYu5/7LHe2FRNuQL/U5b0FRQ/5EYonHbHorNHG6tcwvRoZtL1YAa6MIgnc9j3xki8B/5FgBxBIAongwdR9qnNvDzWaYbc/I1Qy5vZoKTio/vkhIzK+MgVQS4zqAuK36EUtK/n2qQlkwzmNz9thl4zk++2vsR2acq+CNnSUzob0fOYKxke5U5KOmwTmFwhh7gESRepcSHTKimE//kH8ZnxvvtX1mEzjIq8cQ0q3SpXlHAUP8SIiug86vpsO1IFDbSoftYPg/uWWfLi26oCKNvSJ0Ohocg3hmggs3nDzN2Glv0A5ZCWC65yggnMJ5P/OFcFoN9yQF9rsw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=04ldxSKN46ab16CBg5TVIQ4IxwlIxYn11kzB87AMbqM=;
+ b=GuPXT0ec/0ylnGPPKwNUW0ZKzkQm+CDfF3RqGK9WF8NbL5xJ2B4nXmpu+meXsvMSN7tRjnwhTeT67AwsTeO45zouRPaXoIsZsKPwl1iRAbYk62HQTIeVNwMyk9wliSL08uVzxUmqzh1O8G2kRgTmLcXTEtKEdsXXlusjtdFzua7z/7mDefd5XPnJ8yW9yfOjZXKY/C/4wgvgP2XS6ZdsdAGbDFp9eIXpGrx9DUFCoMOJXjFYFfZFyiRbLoiBe8wWzNA88xdvA3LoD4cD2bUWfqQN+zkDnmALDmyBiRab4lZMfJ1J502uwdZSY44rlPoBqH4q805y2MM5RudekLruFw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=04ldxSKN46ab16CBg5TVIQ4IxwlIxYn11kzB87AMbqM=;
+ b=MeZO+D2UTzUux8nb52LDhbWJjAKRmonb5A6h6Ga32aMFbgbZxcL5nMseDixcViVFrpiI85HmoYgbGPszsEfLMxxnPYJyumvAeCsFxPY37C+YTuNTwAZuVeYDSdWAFT0MzGDwQ57mE8Rb5bxA4jPkuHVYF0Eg1yapsVCyyhPEeb1p8RE1P/+86IIAjEHuRpUqW7zubh5o2jyyb8p8iSu22UccWz+fvjDvUNwyKNemcqOCEbKUtNT36ko0Io7C2wRh20BVcDg/wddfjnT5RcDgIOGlR86s2NsNRLXDmjcMYD2JssMa9OzWokVOtDvXcbi9gxcxu3WauCgdWLms6q9lLg==
+Received: from BN8PR04CA0064.namprd04.prod.outlook.com (2603:10b6:408:d4::38)
+ by CY8PR12MB7361.namprd12.prod.outlook.com (2603:10b6:930:53::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8857.25; Fri, 18 Jul
+ 2025 08:13:57 +0000
+Received: from BN1PEPF0000468E.namprd05.prod.outlook.com
+ (2603:10b6:408:d4:cafe::9e) by BN8PR04CA0064.outlook.office365.com
+ (2603:10b6:408:d4::38) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8943.23 via Frontend Transport; Fri,
+ 18 Jul 2025 08:13:57 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BN1PEPF0000468E.mail.protection.outlook.com (10.167.243.139) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.8943.21 via Frontend Transport; Fri, 18 Jul 2025 08:13:57 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 18 Jul
+ 2025 01:13:48 -0700
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Fri, 18 Jul 2025 01:13:48 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Fri, 18 Jul 2025 01:13:47 -0700
+Date: Fri, 18 Jul 2025 01:13:46 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, Kevin Tian
+	<kevin.tian@intel.com>, <linux-kselftest@vger.kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, Will Deacon
+	<will@kernel.org>, Lixiao Yang <lixiao.yang@intel.com>, Matthew Rosato
+	<mjrosato@linux.ibm.com>, <patches@lists.linux.dev>,
+	<stable@vger.kernel.org>,
+	<syzbot+c2f65e2801743ca64e08@syzkaller.appspotmail.com>, Yi Liu
+	<yi.l.liu@intel.com>
+Subject: Re: [PATCH 2/2] iommufd/selftest: Test reserved regions near
+ ULONG_MAX
+Message-ID: <aHoCOnOAlwpoiDNe@Asurada-Nvidia>
+References: <0-v1-7b4a16fc390b+10f4-iommufd_alloc_overflow_jgg@nvidia.com>
+ <2-v1-7b4a16fc390b+10f4-iommufd_alloc_overflow_jgg@nvidia.com>
+ <aHm1WRAGgk/6HZMC@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 02/11] iommu/vt-d: Optimize iotlb_sync_map for
- non-caching/non-RWBF modes
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20250714045028.958850-1-baolu.lu@linux.intel.com>
- <20250714045028.958850-3-baolu.lu@linux.intel.com>
- <20250716141218.GA2166806@nvidia.com>
- <8aedbbcc-9f4c-4700-acb7-43ec4f540135@linux.intel.com>
- <20250717115559.GD2177622@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20250717115559.GD2177622@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <aHm1WRAGgk/6HZMC@Asurada-Nvidia>
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN1PEPF0000468E:EE_|CY8PR12MB7361:EE_
+X-MS-Office365-Filtering-Correlation-Id: f003877f-8327-49b1-e5ea-08ddc5d30b77
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|82310400026|36860700013|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?wbSmx0Z+E0FucA73AUkg8QsWyG9/zD9CvldLuJhZ1VI76WRWj+L1XrCKPfc4?=
+ =?us-ascii?Q?ek7KGeg453BxJ8N6h6Uz+gWHhnhVRaGg3IOJKOtp+NeY9acDDkkFelNbRhMU?=
+ =?us-ascii?Q?Jycg7x3eqqlRMGUgzTqgYOjXf+VqWoLT5PLiRkrqOqv8F2WtsUkIg3K5c53V?=
+ =?us-ascii?Q?jKwEPDmwQzmeFuv/U9Swd1Nw1iEefEDZkQ3hOdI8Oi/Zhhpmf0m7bZDH+juX?=
+ =?us-ascii?Q?44u8l2dUmzfl2QwWUuRcaWfyrLZ9Ql4xLrp4vxx7LHlBawLtHrop7tUBUydu?=
+ =?us-ascii?Q?jJLrQT/RPuWkQ5IkqGkoHSacqhmkZr4SZbygupkWTG2FxVSJIhOZi1RbpQxQ?=
+ =?us-ascii?Q?GecWpO7Z5CzEqbCKTlp+EJAY9ThyhSkp9Cfe7zGhpx3AEwFV4czGK+JoveMw?=
+ =?us-ascii?Q?CF+cbn4IQ/FPm5XDysL6rDZ6BOjLoZt4y1386oTx6c7x3L82NaafrdW119EM?=
+ =?us-ascii?Q?kUPmOP+yNhAr8743ALy1NWTK43Tf4BWNLUw31/XUMc0MyMrnIkFDBWxTH+6O?=
+ =?us-ascii?Q?/HMbuODW5pYE9623ebZekDyFnercFT+qkT5B3eZnzH2g6N5Xc0B5aar2m2s7?=
+ =?us-ascii?Q?6DjEt47RCzIcZKom1e+egV/y3kFOnoZ5yTq549Bo1rRMLhJ1SaEEu59KUHGk?=
+ =?us-ascii?Q?tkOX6DkWwc8UGqLLtzmTE3zMYdtoLSee9K4fyqeY5+8LreeJNLmz3M23RhrS?=
+ =?us-ascii?Q?hhbvc/PuvsSN7qOeBWDFV9fhEyGP6qhBdjPkhb3yAV0Zn3060XnK5QOUIOzu?=
+ =?us-ascii?Q?jDMDUYrnD+RiKWV6z2FNmyV09zQhgD485363YhWaYjkudtaBATt0V7ISup1U?=
+ =?us-ascii?Q?WS+Aih2Navj8E3dHWjvB0CKb7eyJB288082elxsgfF4Kll/7/5KTzwLtmB9p?=
+ =?us-ascii?Q?xE8wmm7KLFp7rhLBI1etwHa7YSru4Aq2pwbT6hSjSZQafpPuRYG3NDD5D/Fi?=
+ =?us-ascii?Q?Npjq95FlJ7FccAKPRcJrBvIMRcRaaZzqWMtKAhfeEUTy/wZPKqWL4aX3MAQf?=
+ =?us-ascii?Q?cnijINYn9HveCXFeSPG3lbqfXWPi1qggt3LaRlGpEgBQFwdPQdPgxJTB7x9Q?=
+ =?us-ascii?Q?Namk/j1g7rz6/WpB+AWBrJEhXd+RCJss5QTbCVc7ZyCQUCJmQfmp9PhMaj3v?=
+ =?us-ascii?Q?NIS0KXK/ERFXUG1banOXAUMuTDrbqlwDPEMbwRRj1DD3YD8Kk+trZCIX5mke?=
+ =?us-ascii?Q?Yl6DlsLcf5M/kxWb6VOGqLiVwJ6siqA1jdutWetI9cROfYIiRhN/3zznxQjO?=
+ =?us-ascii?Q?MGH0VfcNlp/IEF5hc0IgmS871lxHwdTHWtJJ1ripCcuA6XZ5X8JBlxyphGQn?=
+ =?us-ascii?Q?dJgPOkQtmB3orl2bE6kyfXFylFGUXNv+AjCt6d4Ztm2C7bBrHi/3Fv491Q33?=
+ =?us-ascii?Q?mPw4eTJJd8D7ADBOwfhd+2JJb6GwOTLDmtLJ2y1GAgQR9TuJC+2IZ01yQORs?=
+ =?us-ascii?Q?3gOjwoZVD7bAl9SlpvL2UGy3NfYbF8oeTsM145iEXoO6mBce4TC09oCVjToD?=
+ =?us-ascii?Q?p0WroAa0mS0z9uoX3gY61jqwrlUcXQse6wXS?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(36860700013)(376014)(7416014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jul 2025 08:13:57.5892
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f003877f-8327-49b1-e5ea-08ddc5d30b77
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN1PEPF0000468E.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7361
 
-On 7/17/25 19:55, Jason Gunthorpe wrote:
-> On Thu, Jul 17, 2025 at 10:40:01AM +0800, Baolu Lu wrote:
->> On 7/16/25 22:12, Jason Gunthorpe wrote:
->>> On Mon, Jul 14, 2025 at 12:50:19PM +0800, Lu Baolu wrote:
->>>> @@ -1833,6 +1845,8 @@ static int dmar_domain_attach_device(struct dmar_domain *domain,
->>>>    	if (ret)
->>>>    		goto out_block_translation;
->>>> +	domain->iotlb_sync_map |= domain_need_iotlb_sync_map(domain, iommu);
->>>
->>> This has no locking and is in the wrong order anyhow :(
->>>
->>> Any change to how invalidation works has to be done before attaching
->>> the HW so that the required invalidations are already happening before
->>> the HW can walk the page table.
->>>
->>> And you need to serialize somehow with concurrent map/unmap as iommufd
->>> doesn't prevent userspace from racing attach with map/unmap.
->>
->> domain->iotlb_sync_map does not change the driver's behavior. It simply
->> indicates that there's no need to waste time calling
->> cache_tag_flush_range_np(), as it's just a no-op.
+On Thu, Jul 17, 2025 at 07:45:51PM -0700, Nicolin Chen wrote:
+> On Thu, Jul 17, 2025 at 04:15:09PM -0300, Jason Gunthorpe wrote:
 > 
-> Of course it changes the behavior, it changes what the invalidation
-> callback does.
+> > +TEST_F(iommufd_ioas, reserved_overflow)
+> > +{
+> > +	struct iommu_test_cmd test_cmd = {
+> > +		.size = sizeof(test_cmd),
+> > +		.op = IOMMU_TEST_OP_ADD_RESERVED,
+> > +		.id = self->ioas_id,
+> > +		.add_reserved = { .start = 6,
+> > +				  .length = 0xffffffffffff8001 },
+> > +	};
+> > +	__u64 iova;
+> > +
+> > +	ASSERT_EQ(0,
+> > +		  ioctl(self->fd, _IOMMU_TEST_CMD(IOMMU_TEST_OP_ADD_RESERVED),
+> > +			&test_cmd));
+> > +	test_err_ioctl_ioas_map(ENOSPC, buffer, 0x5000, &iova);
 > 
-> Without locking you have a race situation where a PGD is visible to HW
-> that requires extra flushing and the SW is not doing the extra
-> flushing.
+> When:
+> PAGE_SIZE=SZ_64K = 0x10000
+> MOCK_PAGE_SIZE = PAGE_SIZE / 2 = 0x8000
 > 
-> Before any PGD is made visible to the HW the software must ensure all
-> the required invalidations are happening.
-
-Oh, I understand now. If there is no synchronization between attach/
-detach and map/unmap operations, the cache invalidation behavior must be
-determined when a domain is allocated.
-
+> This likely fails the alignment test, returning -EINVAL instead:
 > 
->> I previously discussed this with Kevin, and we agreed on a phase-by-
->> phase approach. As I mentioned, domain->iotlb_sync_map is merely a hint
->> for the driver, preventing it from looping through all cache tags to
->> determine if any cache invalidation work needs to be performed. We
->> already know it's predetermined that no work needs to be done.
+> # iommufd.c:988:reserved_overflow:Expected 28 (28) == errno (22)
+> # reserved_overflow: Test failed
+> #          FAIL  iommufd_ioas.mock_domain_limit.reserved_overflow
 > 
-> The iteration though the cache tags is done inside a lock so it
-> doesn't have this race (it has the issue I mentioned setting up the
-> cache tage list though).
-> 
->> RWBF is only required on some early implementations where memory
->> coherence was not yet implemented by the VT-d engine. It should be
->> difficult to find such systems in modern environments.
-> 
-> Then I would set it at domain creation time, check it during attach,
-> and remove this race.
+> So, I think we'd have to pick a number aligned to MOCK_PAGE_SIZE?
+> e.g. changing to 0x18000 for example can pass.
 
-How about the following changes (compiled but not tested)?
+I realized that we can't change the number as it won't reproduce
+on PAGE_SIZE=4K. So, perhaps it should just SKIP other page sizes
+than 4K.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 8db8be9b7e7d..bb00dc14275d 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1780,18 +1780,6 @@ static int domain_setup_first_level(struct 
-intel_iommu *iommu,
-  					  __pa(pgd), flags, old);
-  }
-
--static bool domain_need_iotlb_sync_map(struct dmar_domain *domain,
--				       struct intel_iommu *iommu)
--{
--	if (cap_caching_mode(iommu->cap) && intel_domain_is_ss_paging(domain))
--		return true;
--
--	if (rwbf_quirk || cap_rwbf(iommu->cap))
--		return true;
--
--	return false;
--}
--
-  static int dmar_domain_attach_device(struct dmar_domain *domain,
-  				     struct device *dev)
-  {
-@@ -1831,8 +1819,6 @@ static int dmar_domain_attach_device(struct 
-dmar_domain *domain,
-  	if (ret)
-  		goto out_block_translation;
-
--	domain->iotlb_sync_map |= domain_need_iotlb_sync_map(domain, iommu);
--
-  	return 0;
-
-  out_block_translation:
-@@ -3352,6 +3338,14 @@ intel_iommu_domain_alloc_first_stage(struct 
-device *dev,
-  		return ERR_CAST(dmar_domain);
-
-  	dmar_domain->domain.ops = &intel_fs_paging_domain_ops;
-+	/*
-+	 * iotlb sync for map is only needed for legacy implementations that
-+	 * explicitly require flushing internal write buffers to ensure memory
-+	 * coherence.
-+	 */
-+	if (rwbf_quirk || cap_rwbf(iommu->cap))
-+		dmar_domain->iotlb_sync_map = true;
-+
-  	return &dmar_domain->domain;
-  }
-
-@@ -3386,6 +3380,14 @@ intel_iommu_domain_alloc_second_stage(struct 
-device *dev,
-  	if (flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING)
-  		dmar_domain->domain.dirty_ops = &intel_dirty_ops;
-
-+	/*
-+	 * Besides the internal write buffer flush, the caching mode used for
-+	 * legacy nested translation (which utilizes shadowing page tables)
-+	 * also requires iotlb sync on map.
-+	 */
-+	if (rwbf_quirk || cap_rwbf(iommu->cap) || cap_caching_mode(iommu->cap))
-+		dmar_domain->iotlb_sync_map = true;
-+
-  	return &dmar_domain->domain;
-  }
-
-@@ -3446,6 +3448,11 @@ static int 
-paging_domain_compatible_first_stage(struct dmar_domain *dmar_domain,
-  	if (!cap_fl1gp_support(iommu->cap) &&
-  	    (dmar_domain->domain.pgsize_bitmap & SZ_1G))
-  		return -EINVAL;
-+
-+	/* iotlb sync on map requirement */
-+	if ((rwbf_quirk || cap_rwbf(iommu->cap)) && !dmar_domain->iotlb_sync_map)
-+		return -EINVAL;
-+
-  	return 0;
-  }
-
-@@ -3469,6 +3476,12 @@ paging_domain_compatible_second_stage(struct 
-dmar_domain *dmar_domain,
-  		return -EINVAL;
-  	if (!(sslps & BIT(1)) && (dmar_domain->domain.pgsize_bitmap & SZ_1G))
-  		return -EINVAL;
-+
-+	/* iotlb sync on map requirement */
-+	if ((rwbf_quirk || cap_rwbf(iommu->cap) || 
-cap_caching_mode(iommu->cap)) &&
-+	    !dmar_domain->iotlb_sync_map)
-+		return -EINVAL;
-+
-  	return 0;
-  }
-
--- 
-2.43.0
-
-Thanks,
-baolu
-
+Thanks
+Nicolin
