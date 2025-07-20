@@ -1,54 +1,43 @@
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C78438BF8
-	for <iommu@lists.linux.dev>; Sun, 20 Jul 2025 06:05:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.223.78.240
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC4BC273FD
+	for <iommu@lists.linux.dev>; Sun, 20 Jul 2025 06:52:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752991535; cv=none; b=M0vpUFVN9ZTozj0SpkqQamF4fyh13RLT8b6CxHdiMt7urO21A0k3JG1H1UVcMVzxIjwI3AE60SKbGcXB3xZN7aLQ+LdNKJZ+k0xddezN1eJvFAQ2eOMfoUXM/bX1yY3lIZtcqwgVR1/sqvmsakSarPbK95aXSlqKMfTV6J5++NM=
+	t=1752994379; cv=none; b=sml11fBXmMa9xbZ+eiHTcO3ZZgWs9F7mjuufpLJNBMuiQyaF/PmH+RIQ52YWIEuqHwlDQaSjl/8NYcJld5x9sWsrzIQIcgb80cm9hWgPgTuTJv1BPMaba5GKiO+PEG75TgXBn8TIzHvufPN2RyeVhm09rccGOmB19agjFG4oPfU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752991535; c=relaxed/simple;
-	bh=EF/Qb2UN4gBLnYp6FUujHmxBrvle6XRCikDDgnkVLDo=;
+	s=arc-20240116; t=1752994379; c=relaxed/simple;
+	bh=GKgsRMNlHYzfrLTtFpOoDaLGgBok2YsFVtCN2228bRU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=llGxCx4EubrCpbn+FfQhxay/ULyFHBI6J9dLOCcVoDhhvLWcwWoN26kfrgWEdCXCd6jIse2gQQUAJurm3Tcb7lct3GEdJUcwZgF0LGsSmXiPB3KbxIxRvDZo6/mvvtZviqy5vn1Tjowhnr6oYEBirBdZp7ecVaIH/NpN6ARqYs4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de; spf=none smtp.mailfrom=h08.hostsharing.net; arc=none smtp.client-ip=83.223.78.240
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
-	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
-	by bmailout2.hostsharing.net (Postfix) with ESMTPS id 27A9320091AE;
-	Sun, 20 Jul 2025 08:05:25 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-	id 11943CC674; Sun, 20 Jul 2025 08:05:25 +0200 (CEST)
-Date: Sun, 20 Jul 2025 08:05:25 +0200
-From: Lukas Wunner <lukas@wunner.de>
-To: Mario Limonciello <superm1@kernel.org>
-Cc: Bjorn Helgaas <helgaas@kernel.org>, David Airlie <airlied@gmail.com>,
-	Alex Deucher <alexander.deucher@amd.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Simona Vetter <simona@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	"open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
-	"open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
-	"open list:VFIO DRIVER" <kvm@vger.kernel.org>,
-	"open list:SOUND" <linux-sound@vger.kernel.org>,
-	Daniel Dadap <ddadap@nvidia.com>
-Subject: Re: [PATCH v9 9/9] PCI: Add a new 'boot_display' attribute
-Message-ID: <aHyHJZwIgEya_yfn@wunner.de>
-References: <20250718173648.GA2704349@bhelgaas>
- <c7c8b0bf-8602-4030-acbe-ac56678b633c@kernel.org>
+	 Content-Type:Content-Disposition:In-Reply-To; b=GVjBYPGAgXY+fjM+bmwAE2OjbVdQ/U3yZlDNaDureI1sNE2Iu3SIomgUZZiWwOxSIQQoQ5Gt5o18Rf9lLhcLYjd1/wORD7tC6hMS973CXjzhtFbzt7bgOrk5Su3HQPfT6Wnz+l4oGqxMUHvlNXUzAbK0Q8miXXkKka5fH/wZNT4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PSlZES7G; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PSlZES7G"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9F2FC4CEE7;
+	Sun, 20 Jul 2025 06:52:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1752994379;
+	bh=GKgsRMNlHYzfrLTtFpOoDaLGgBok2YsFVtCN2228bRU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=PSlZES7GPfpkz1TISqpox2pxu/NH7BCxHmE/wmQzVsBySGkKGQGBEIyoGyjlfK13M
+	 vuPFR2aZeqsGfVWnrMgYl+0SaBbniqm341tVEpEfgUkkebe8R1x+WNyCPLYtXpEpDB
+	 kTpXYvt0vNBlHXZnGWovmoyAH9Q7Oz5LLQKelMaz83cEqI04A9gkFktmJ4rE85T1L1
+	 32JrIlJqYXIDFZw7TadFTv9nfYlwObwR0Psq2HKq+ZCWak2YsFG3ZWyNi/4ZB3Vaw3
+	 SWWmt5eZvLFj4xF/2pgrJlyN9Vc/r/Z6DtTs8k6xaHOWprU3bIvHwraWrdA4UI4fUw
+	 4JqDNhBJ5OeUg==
+Date: Sun, 20 Jul 2025 09:52:55 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev
+Subject: Re: [PATCH 1/2] dma-mapping: prepare dma_map_ops to conversion to
+ physical address
+Message-ID: <20250720065255.GC402218@unreal>
+References: <cover.1752734252.git.leon@kernel.org>
+ <1798a3351dcabccaf0749221e9e9b66585a7b2c6.1752734252.git.leon@kernel.org>
+ <20250717134435.GA2206214@ziepe.ca>
+ <20250717145213.GB402218@unreal>
+ <20250717170758.GB2206214@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -57,40 +46,44 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c7c8b0bf-8602-4030-acbe-ac56678b633c@kernel.org>
+In-Reply-To: <20250717170758.GB2206214@ziepe.ca>
 
-On Fri, Jul 18, 2025 at 12:44:11PM -0500, Mario Limonciello wrote:
-> On 7/18/2025 12:36 PM, Bjorn Helgaas wrote:
-> > On Fri, Jul 18, 2025 at 12:29:05PM -0500, Mario Limonciello wrote:
-> > > On 7/18/2025 12:25 PM, Bjorn Helgaas wrote:
-> > > > In addition to Mani's question about whether /sys/bus/pci/ is the
-> > > > right place for this (which is a very good question), it's also been
-> > > > pointed out to me that we've been trying to get rid of
-> > > > pci_create_sysfs_dev_files() for years.
-> > > > 
-> > > > If it's possible to make this a static attribute that would be much,
-> > > > much cleaner.
-> > > 
-> > > Right - I tried to do this, but the problem is at the time the PCI device is
-> > > created the information needed to make the judgement isn't ready.  The
-> > > options end up being:
-> > > * a sysfs file for every display device with 0/1
-> > > * a sysfs file that is not accurate until later in the boot
+On Thu, Jul 17, 2025 at 02:07:58PM -0300, Jason Gunthorpe wrote:
+> On Thu, Jul 17, 2025 at 05:52:13PM +0300, Leon Romanovsky wrote:
+> > > I would expect 'else if'
 > > 
-> > What's missing?  The specifics might be helpful if someone has another
-> > crack at getting rid of pci_create_sysfs_dev_files() in the future.
+> > I don't expect both of them to exist. There is WARN_ON_ONCE() to catch it.
+> > If it is important, I can add else.
 > 
-> The underlying SCREEN_INFO code tries to walk through all the PCI devices in
-> a loop, but at the time all the devices are walked the memory regions
-> associated with the device weren't populated.
+> Compiler generates better code with the else.
 > 
-> So my earlier hack was to re-run the screen info check, and it was awful.
+> > > > @@ -213,8 +221,16 @@ void dma_unmap_phys(struct device *dev, dma_addr_t addr, size_t size,
+> > > >  		dma_direct_unmap_phys(dev, addr, size, dir, attrs);
+> > > >  	else if (use_dma_iommu(dev))
+> > > >  		iommu_dma_unmap_phys(dev, addr, size, dir, attrs);
+> > > > -	else
+> > > > -		ops->unmap_page(dev, addr, size, dir, attrs);
+> > > > +	else {
+> > > > +		if (IS_ENABLED(CONFIG_DMA_API_DEBUG))
+> > > > +			/* We shouldn't have both functions */
+> > > > +			WARN_ON_ONCE(ops->unmap_page && ops->unmap_phys);
+> > > > +
+> > > > +		if (ops->unmap_phys)
+> > > > +			ops->unmap_phys(dev, addr, size, dir, attrs);
+> > > > +		if (ops->unmap_page)
+> > > > +			ops->unmap_page(dev, addr, size, dir, attrs);
+> > > 
+> > > Here too
+> > > 
+> > > What is the practical difference between unmap_phys and unmap_page?
+> > 
+> > There is no difference. It is provided to provide symmetrical interface
+> > to .map_phys, simple rename.
+> 
+> We really should not be converting phys to page without knowing there
+> is a page available..
 
-Well have you explored the sysfs_update_group() approach you mentioned
-earlier?
+I didn't want. See this email and followup discussion.
+https://lore.kernel.org/all/20250627170213.GL17401@unreal/
 
-https://lore.kernel.org/r/5cc01163-1feb-4a18-8060-27f4da39b2e4@kernel.org/
-
-Thanks,
-
-Lukas
+Thanks
