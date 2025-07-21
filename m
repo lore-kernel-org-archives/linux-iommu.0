@@ -1,37 +1,50 @@
-Received: from smtpbgeu1.qq.com (smtpbgeu1.qq.com [52.59.177.22])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5E0B487A5
-	for <iommu@lists.linux.dev>; Mon, 21 Jul 2025 09:59:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.59.177.22
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FF855258;
+	Mon, 21 Jul 2025 10:02:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753091991; cv=none; b=RUoJQ20+VO7d/BUUMnqOnZ60Wl6iI0om7tUK8a+B6pM8l2tSDq6ZjoJH/rz66Vms/pVNnXYVNES6ZDmoM0AKhyyYeCbtgXft1Saa9pGOtPlQgoheN2UfGWZevQwSBbpqJRtJlhA9QE9K/Sw7wXWPMa5rK+4iQ8fSxyf2ArZurug=
+	t=1753092129; cv=none; b=dOK9aUViS4M/49yXhFix7kBlR6BTwhfCL1achZkHkTMGoqh9K2d+8YtAQ4rpTprf9xba0SJZ53Lwp5n6+Lu+Y06LRq5G66rqjDf3ISUoSJSgBH5VHUVLMmZutNEotfnsDqLg4+33EhVWKxWZpZyZZ3JRU1JM1KNBrW21THW0KXo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753091991; c=relaxed/simple;
-	bh=AWdp7nL5gbbsvaAu8dLPLs4FkTffzI9ICtmdEZNa+4g=;
-	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=t83XW2xAgEMMgOkTDQz6tngEmjh2D1088Wz2zphsMuAQvR2CDMnQ/zBi9XNRxQ0Dp4eL97C2g0OKKDxVrChwrSWly/tUUOEzQ6XVB+JkA3+fmOzUHSDSukVJ8JdOXXyveT9eWgq5kCh9RvxOXrxDxvYn0LB3JGnhdc6nMkD53so=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bbaa.fun; spf=none smtp.mailfrom=bbaa.fun; dkim=pass (1024-bit key) header.d=bbaa.fun header.i=@bbaa.fun header.b=RoSenc0B; arc=none smtp.client-ip=52.59.177.22
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bbaa.fun
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bbaa.fun
+	s=arc-20240116; t=1753092129; c=relaxed/simple;
+	bh=ksH7ebEAtjs/iHeHidUL03//oeQLtORgv7ufvNf6S0s=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=qbfjWgzqwuhbTLC4AXq4zG/zgmXvbYbP/9hDh7F0lx5M/geYgg2UW2VSfC/bzlIFQDRDac4b+nDAFizQCitOoeSVo6QLEhV9tmB7q7t3e8FAnFWHV8RVdK3YCEBP5GeEGVZOYyeCm2Mw6kOYuEiELqF7Pl05BfSuEWbZ769A9p4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q2Ld3ZjE; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=bbaa.fun header.i=@bbaa.fun header.b="RoSenc0B"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bbaa.fun;
-	s=goar2402; t=1753091967;
-	bh=AWdp7nL5gbbsvaAu8dLPLs4FkTffzI9ICtmdEZNa+4g=;
-	h=Message-ID:Date:MIME-Version:To:From:Subject;
-	b=RoSenc0By8N5tHQPaJDYHzBYmWG3flVJqK7/hO7KvrOH49qGvjdYtp1vCsbs2IQXD
-	 mMEwX/8otW89MwcxbpFNOjMmlRuE4iH+lLtyjVE9D97gttI11MZs/39iJ6GVfEtzqg
-	 euqYQGCYQYIUkYHcTrrdj8+e0BZbMTQwANaw+dKA=
-X-QQ-mid: zesmtpgz3t1753091965t9f6241e2
-X-QQ-Originating-IP: ME2/Jf+vQlz/5WTcXfw9GWKe0WH74XrBrUihVBZW/HQ=
-Received: from [198.18.0.1] ( [171.38.232.96])
-	by bizesmtp.qq.com (ESMTP) with 
-	id ; Mon, 21 Jul 2025 17:59:24 +0800 (CST)
-X-QQ-SSF: 0000000000000000000000000000000
-X-QQ-GoodBg: 0
-X-BIZMAIL-ID: 9778762447196126760
-Message-ID: <721D44AF820A4FEB+722679cb-2226-4287-8835-9251ad69a1ac@bbaa.fun>
-Date: Mon, 21 Jul 2025 17:59:24 +0800
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q2Ld3ZjE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1753092129; x=1784628129;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ksH7ebEAtjs/iHeHidUL03//oeQLtORgv7ufvNf6S0s=;
+  b=Q2Ld3ZjEfXjGvjJVut+Nde8DOoffBef2hjGU24KnGWOQ4wIbg7+w51rQ
+   lPd8YyY6WYFTCIWOD+SRYxZ5S/jRWIBQmMGUYoLICEYTA1sro1POb3X8g
+   yOZesveI99C8oNa9D/AWzTZov06Ncip9p+6sACMqFcSXKPu2eqEEyOkL5
+   Y//RkWA0hNyMXntLaK/zeygEpXQ31828FcP1nkycFu1opkgKlOLrV4gZm
+   pKutyzfVHaa0y2Ei1rloniLvz7N2mZ5vplip/ov2AfD4aKjlA6dKeTwO6
+   B5dQbL0H4qCHDtZKq/Ee6L6m1wdaLCoGjxrgnveYONpGFsLvpglp1OYD5
+   w==;
+X-CSE-ConnectionGUID: 5w1iWtYtRGCJvFMNDW1ldA==
+X-CSE-MsgGUID: hHLUfCDmQhSlj3h2dxDQtQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11498"; a="66649111"
+X-IronPort-AV: E=Sophos;i="6.16,328,1744095600"; 
+   d="scan'208";a="66649111"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2025 03:02:08 -0700
+X-CSE-ConnectionGUID: Sjiqaau/T/Ocl5/aFKq56Q==
+X-CSE-MsgGUID: h2wxkY/+Sj+tm7wrAPWkNw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,328,1744095600"; 
+   d="scan'208";a="158109314"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.243.252]) ([10.124.243.252])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2025 03:02:03 -0700
+Message-ID: <2fd44619-dde4-44af-b48e-71293fbcfd4c@linux.intel.com>
+Date: Mon, 21 Jul 2025 18:02:02 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,96 +52,27 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ patches@lists.linux.dev, Tina Zhang <tina.zhang@intel.com>,
+ Wei Wang <wei.w.wang@intel.com>
+Subject: Re: [PATCH 6/9] iommupt/x86: Set the dirty bit only for writable PTEs
+To: Jason Gunthorpe <jgg@nvidia.com>, David Woodhouse <dwmw2@infradead.org>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+References: <6-v1-bdb01ffac49c+be-iommu_pt_vtd_jgg@nvidia.com>
 Content-Language: en-US
-To: baolu.lu@linux.intel.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org, bbaa@bbaa.moe
-From: Ban ZuoXiang <bbaa@bbaa.fun>
-Subject: =?UTF-8?Q?=5BREGRESSION=5D=5BBISECTED=5D_PCI_Passthrough_/_SR-IOV_F?=
- =?UTF-8?Q?ailure_on_Stable_Kernel_=E2=89=A5_v6=2E12=2E35?=
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: zesmtpgz:bbaa.fun:qybglogicsvrgz:qybglogicsvrgz8a-1
-X-QQ-XMAILINFO: Nw9C1WBu09hPBXrJP7TauklUbKBrDueW4+84TSrFw/IlOifseBX1DgWa
-	FjzHi4GkwqydxrdfXzyrnfNMkasF94NpHmdLtH3+f/rcAcbWsJBW8vsVQ1xuIKPaqmbnNlv
-	inMliQ0kTJHiA559Lg2S0IJhtpM6uCgrIEqVTro+lcB2Bxc/wl/0m9VecndJqFeFWnv5La0
-	UO19h+xLZl7YbUVSsweU3d9ReRKnPcxjcEGluQe8YbNLqr3TqyHTqcvocHv8OCK7b1h6Jyg
-	SxJZXOID1KRhWbem9lmcpGZLB+67hpe/BIK7p6f2o8GAu0PjuIdyO4kqHxOYNt+06EcfG8u
-	vOIHVFEeQvKorEoU8hfxKfnphczInVf7Csp35CJYcQkUAgOn+EzbKNnN3ctOtZ4Q5bx7peD
-	auEZX1HMwjOxD+QPQyuvXJjQvAd67AwqXDngvgejMkgqKuVJpugGEbxuH2sAH1cuMuQ33qE
-	e1EK09ULdD2QTdegpFrLuVwIicFxhU9mWaKr3q1xTFSi6xWcvnRPfZoGPi0kBKSYeGqTsXT
-	phXvyXLIRcs+JHHm9TvSLpfKuKOSgbpZDH98bqxpduJjXj5F+Cmh5JAwKbDGEJenGe36iN5
-	/m7Po2dQ3Mdw4DiFLSFS1fwXa6uUt9+EoDhCpa3j+FbadNo0Qn/dBvXEgTMSZzwacT+pppu
-	hkaYeqM7/VhCRNItMw7gtbWJYR8+o7EsZEdqfCIA953Y3yLhayZRLE5WVq82tdM+aje92gw
-	Zxy5o+jAySp8LDLWJXVNrZhWdtFZXBA1xXfM8J+7i5xxdXy8MNWF5JjHop9JY5kVeNtlrld
-	bYjgGCvA+AjHhpSJfcniNElDplJyaX+EP9yf7oGKjX+L2a0P8W8O/kh/HNOHCxL0uMIbNQp
-	sX3Aw98VifFvV4tqxgW38bs350RR6F+kdn8UU7QXggP78KMuLFQuInido7smW+hfzTbho0u
-	KdV6WeREHLS7/3Y9eng013cc2xMTmgL1rnKS5DtMawz+Yeg==
-X-QQ-XMRINFO: Nq+8W0+stu50PRdwbJxPCL0=
-X-QQ-RECHKSPAM: 0
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <6-v1-bdb01ffac49c+be-iommu_pt_vtd_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi all,
+On 7/17/2025 3:57 AM, Jason Gunthorpe wrote:
+> AMD and VTD are historically different here, adopt the VTD version of
+> setting the D bit only on writable PTEs as it makes more sense.
+> 
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> ---
+>   drivers/iommu/generic_pt/fmt/x86_64.h | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 
-We've identified a regression affecting PCI passthrough / SR-IOV virtualization starting from Linux v6.12.35.
-
-A user reported that [1], beginning with this version, SR-IOV virtual functions fail to initialize properly inside the guest. The issue appears to some MMIO operations not completing correctly in the guest.
-
-> [    2.152320] i915 0000:07:00.0: [drm] *ERROR* GT0: GUC: mmio request 0x4509: failure 306/0  
-> [    2.152327] i915 0000:07:00.0: [drm] *ERROR* GuC initialization failed (-ENXIO)  
-> [    2.152330] i915 0000:07:00.0: [drm] *ERROR* GT0: Failed to initialize GPU, declaring it wedged!  
-
-Here is the |git bisect| log:
-
-> # bad: [fbad404f04d758c52bae79ca20d0e7fe5fef91d3] Linux 6.12.37
-> # good: [e03ced99c437f4a7992b8fa3d97d598f55453fd0] Linux 6.12.33
-> git bisect start 'HEAD' 'v6.12.33'
-> # bad: [b01a29a80cca28f0c7d0864e2d62fb9616051bfc] ACPI: bus: Bail out if acpi_kobj registration fails
-> git bisect bad b01a29a80cca28f0c7d0864e2d62fb9616051bfc
-> # bad: [b01a29a80cca28f0c7d0864e2d62fb9616051bfc] ACPI: bus: Bail out if acpi_kobj registration fails
-> git bisect bad b01a29a80cca28f0c7d0864e2d62fb9616051bfc
-> # good: [35f116a4658f787bea7e82fdd23e2e9789254f5e] drm/xe: Make xe_gt_freq part of the Documentation
-> git bisect good 35f116a4658f787bea7e82fdd23e2e9789254f5e
-> # good: [261f2a655b709e59a8d759ce9fa478778d9e84f4] crypto: qat - add shutdown handler to qat_c3xxx
-> git bisect good 261f2a655b709e59a8d759ce9fa478778d9e84f4
-> # good: [4d0686b53cc9342be3f8ce06336fd5ab0d206355] ata: ahci: Disallow LPM for Asus B550-F motherboard
-> git bisect good 4d0686b53cc9342be3f8ce06336fd5ab0d206355
-> # bad: [ce4ef0274cb66a4750000f33f2d316c0dbaf4515] KVM: s390: rename PROT_NONE to PROT_TYPE_DUMMY
-> git bisect bad ce4ef0274cb66a4750000f33f2d316c0dbaf4515
-> # bad: [8d0645b59b19d97a3b7c5a3fb8dae0c89e98cde9] parisc/unaligned: Fix hex output to show 8 hex chars
-> git bisect bad 8d0645b59b19d97a3b7c5a3fb8dae0c89e98cde9
-> # good: [fed611bd8c7b76b070aa407d0c7558e20d9e1f68] f2fs: fix to do sanity check on ino and xnid
-> git bisect good fed611bd8c7b76b070aa407d0c7558e20d9e1f68
-> # good: [8a008c89e5e5c5332e4c0a33d707db9ddd529f8a] net/sched: fix use-after-free in taprio_dev_notifier
-> git bisect good 8a008c89e5e5c5332e4c0a33d707db9ddd529f8a
-> # bad: [3f2098f4fba7718eb2501207ca6e99d22427f25a] fbdev: Fix do_register_framebuffer to prevent null-ptr-deref in fb_videomode_to_var
-> git bisect bad 3f2098f4fba7718eb2501207ca6e99d22427f25a
-> # bad: [fb5873b779dd5858123c19bbd6959566771e2e83] iommu/vt-d: Restore context entry setup order for aliased devices
-> git bisect bad fb5873b779dd5858123c19bbd6959566771e2e83
-> # good: [81c64c2f84ab581d1c45dbbbca941c13128faee6] net: ftgmac100: select FIXED_PHY
-> git bisect good 81c64c2f84ab581d1c45dbbbca941c13128faee6
-> # first bad commit: [fb5873b779dd5858123c19bbd6959566771e2e83] iommu/vt-d: Restore context entry setup order for aliased devices
->
-> commit fb5873b779dd5858123c19bbd6959566771e2e83
-> Author: Lu Baolu <baolu.lu@linux.intel.com>
-> Date:   Tue May 20 15:58:49 2025 +0800
->
->     iommu/vt-d: Restore context entry setup order for aliased devices
->     
->     commit 320302baed05c6456164652541f23d2a96522c06 upstream.
-This commit was introduced in [2], and the issue only affects stable kernels prior to v6.15. Besides, the Ubuntu v6.14-series kernel used by Proxmox also appears to be affected [3].
-
-
-Best regards,
-
-Ban ZuoXiang
-
-[1]: https://github.com/strongtz/i915-sriov-dkms/issues/320
-
-[2]: https://lore.kernel.org/r/20250514060523.2862195-1-baolu.lu@linux.intel.com
-
-[3]: https://github.com/strongtz/i915-sriov-dkms/issues/312 
-
- 
-
-
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
