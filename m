@@ -1,169 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AA3B12B93
-	for <iommu@lists.linux.dev>; Sun, 20 Jul 2025 09:36:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 719D21552E0
+	for <iommu@lists.linux.dev>; Mon, 21 Jul 2025 01:59:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753004174; cv=none; b=A5AbAF0l3Co0U3Ma0oke4pxn04qEbGnfEj2kYKU8WrTJeJg386907Dkr4nrPy71edBgVw7igLbpVLnrem/sJA47hKgWi2wKUILSzeBkgSkU499YqsOw0qwSNCEHlgt6nCI5S9hdKMNZn00wWquDLATB2t2jIbLWasc3Rk8D+AQ0=
+	t=1753063198; cv=none; b=eR4BBvlmywg7zTkKuOzZvs2LeKAvSpwar0p+ZSEUVRf00P8EyUhE9f/Aj5SvxkOTUHWD9Ckf7Lh4tBOEJzSpJPwyM9IlQnKVR7YgGLjXQSjuGi+pxfm/W8ylRQr3KAXkBY9z6bEWYBRUyQygwLeKoLUNE45XeK0FacQw0nENBms=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753004174; c=relaxed/simple;
-	bh=tZfpeP5mIyjIl+nsyhP6V6SjDJwF6oaiERXzFHSVTVw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jfOV9ifipxO4IlZJgx43HSNBgqYp5kbwiRRkteMUz4kfT+puLQqiATDmqsWfu1P+zxrHUUcGCVOtu3HKVNFSPq1rp4osMRE1tDkYwOaStDjahZ2fwNPb5N9yFMhXvPl8BBD7iUDMynR1DKt6WB9dBrsK5SwyMvAcnnxQkj7eySk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BkM88vka; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753063198; c=relaxed/simple;
+	bh=Tx8iuGI0EGhXnQPTDG2IckNxNu+e77dp+qofKYwYb/w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BJLoXirSdnafgrPnpmREOblaD9H3vQhdJ+9zD57YWvBkYisgR+5galy9aJ1aRzkdjcqsTJSLX3UJJ2K9z/DBvPHj200ObazHbfygCOjqxZhaMpOUHth/5vDC+xqs2ln+WvgLYi9/3MIw9kj1LblNUE964J5xte1VYJ3rAA+K5NY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BJjRW/2G; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BkM88vka"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28223C4CEE7;
-	Sun, 20 Jul 2025 09:36:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1753004173;
-	bh=tZfpeP5mIyjIl+nsyhP6V6SjDJwF6oaiERXzFHSVTVw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=BkM88vkapPnlwdfaw9u1Ao0ZJ56CWHKgQxlYaehDJFaT59Z88V8SJxjKxIBzoCbSm
-	 Tza12doySRz5TTnsouvS2ks4UQUmeQROMlu7Er7+Lo5GBXSzoZ16clv97gZGi/B8LU
-	 9f9aTdL3xeakktK3Ypf/UzerhPqXYCMmiMR7xzpcThNjbl5dyeToAwGqHL2s4iMKye
-	 enQPZkA9Rm+EzheHrh0SORz/33laFFmp1b5Q5pt/MDy8tJBLY9zYqbPFnyAaWO5i4x
-	 4qWxA45tqi2AgWNxoCa1TX6qkoKvLQt702r3LNbtc2MDY4Vc/lPFBGlSNbwDHhOG/r
-	 UWhIt7i433pDw==
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Leon Romanovsky <leonro@nvidia.com>,
-	iommu@lists.linux.dev
-Subject: [PATCH v1 1/2] dma-mapping: prepare dma_map_ops to conversion to physical address
-Date: Sun, 20 Jul 2025 12:35:26 +0300
-Message-ID: <184fc9bda626efc62c5022ace01a20b80d1dc93b.1753003879.git.leon@kernel.org>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <cover.1753003879.git.leon@kernel.org>
-References: <cover.1753003879.git.leon@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BJjRW/2G"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1753063197; x=1784599197;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Tx8iuGI0EGhXnQPTDG2IckNxNu+e77dp+qofKYwYb/w=;
+  b=BJjRW/2Ggs4246apuMiKutKf0YKeQrGaNf6/6W7VsqYmU8DL/wJz2G0q
+   c35+NzQUkUPOgUou1TD8L0PMl8anTC6hhuwbckxIz+aIarV+GGo1htAtj
+   CDvWMGjYgUvoSKU/f5dxG0T+PHzCpgYfnABZ84f2COgXJx+o8sS2QrHWO
+   qUgP0/jQgPexCF0t7vppXGf8wZKGNqNvtnvk0qvHr4AVMpOg/VMjiw2Xu
+   DX2ZxBYnNx/aPl9EQggTkRrqDH07uMErcNInYlNwNI7Qq2p8F7G9EbF1P
+   ufFYwSrfCWddTL12z0BGbiehFhP6IWh3lLk0EBjAiZfMZsxyIB0BIxIfp
+   Q==;
+X-CSE-ConnectionGUID: Rj0xLmZAQCiqjDyX7dNDyA==
+X-CSE-MsgGUID: mpLMLbNKQLGIKNH21TmN1w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11498"; a="54480016"
+X-IronPort-AV: E=Sophos;i="6.16,328,1744095600"; 
+   d="scan'208";a="54480016"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2025 18:59:56 -0700
+X-CSE-ConnectionGUID: ZXFFNqvNQs+P229+0CECqw==
+X-CSE-MsgGUID: 7qj5tw7JRX+rp0ocs9hkyA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,328,1744095600"; 
+   d="scan'208";a="189657239"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jul 2025 18:59:55 -0700
+Message-ID: <2867cd08-132b-40f9-bd19-707f9a78b2c7@linux.intel.com>
+Date: Mon, 21 Jul 2025 09:57:55 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 02/11] iommu/vt-d: Optimize iotlb_sync_map for
+ non-caching/non-RWBF modes
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20250714045028.958850-1-baolu.lu@linux.intel.com>
+ <20250714045028.958850-3-baolu.lu@linux.intel.com>
+ <20250716141218.GA2166806@nvidia.com>
+ <8aedbbcc-9f4c-4700-acb7-43ec4f540135@linux.intel.com>
+ <20250717115559.GD2177622@nvidia.com>
+ <3ea54d65-7ccc-479a-8912-bccd79d678d4@linux.intel.com>
+ <20250718132912.GC2250220@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250718132912.GC2250220@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On 7/18/25 21:29, Jason Gunthorpe wrote:
+> On Fri, Jul 18, 2025 at 10:56:24AM +0800, Baolu Lu wrote:
+> 
+>> How about the following changes (compiled but not tested)?
+> Yes, exactly what I was thinking!
 
-Add new .map_phys() and .unmap_phys() callbacks to dma_map_ops as a
-preparation to replace .map_page() and .unmap_page() respectively.
+I will submit a formal patch.
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- include/linux/dma-map-ops.h |  6 ++++++
- kernel/dma/mapping.c        | 24 ++++++++++++++++++++----
- kernel/dma/ops_helpers.c    | 14 +++++++++++---
- 3 files changed, 37 insertions(+), 7 deletions(-)
+> 
+> That leaves the cache tag linked list race..
+> 
+> Nicolin is working on a neat solution for SMMU I wonder if we can
+> reuse it here too..
 
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 71f5b30254159..0048ec28ed43b 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -37,6 +37,12 @@ struct dma_map_ops {
- 	void (*unmap_page)(struct device *dev, dma_addr_t dma_handle,
- 			size_t size, enum dma_data_direction dir,
- 			unsigned long attrs);
-+	dma_addr_t (*map_phys)(struct device *dev, phys_addr_t phys,
-+			size_t size, enum dma_data_direction dir,
-+			unsigned long attrs);
-+	void (*unmap_phys)(struct device *dev, dma_addr_t dma_handle,
-+			size_t size, enum dma_data_direction dir,
-+			unsigned long attrs);
- 	/*
- 	 * map_sg should return a negative error code on error. See
- 	 * dma_map_sgtable() for a list of appropriate error codes
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 8d29ff76aa4db..bf700abe0a4fa 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -173,9 +173,13 @@ dma_addr_t dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
- 		size_t offset = offset_in_page(phys);
- 		bool is_pfn_valid = true;
- 
--		if (IS_ENABLED(CONFIG_DMA_API_DEBUG))
-+		if (IS_ENABLED(CONFIG_DMA_API_DEBUG)) {
- 			is_pfn_valid = pfn_valid(PHYS_PFN(phys));
- 
-+			/* We shouldn't have both functions */
-+			WARN_ON_ONCE(ops->map_page && ops->map_phys);
-+		}
-+
- 		if (unlikely(!is_pfn_valid))
- 			return DMA_MAPPING_ERROR;
- 
-@@ -183,7 +187,11 @@ dma_addr_t dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
- 		 * All platforms which implement .map_page() don't support
- 		 * non-struct page backed addresses.
- 		 */
--		addr = ops->map_page(dev, page, offset, size, dir, attrs);
-+		if (ops->map_phys)
-+			addr = ops->map_phys(dev, phys, size, dir, attrs);
-+		else if (ops->map_page)
-+			addr = ops->map_page(dev, page, offset, size, dir,
-+					     attrs);
- 	}
- 
- 	kmsan_handle_dma(phys, size, dir);
-@@ -213,8 +221,16 @@ void dma_unmap_phys(struct device *dev, dma_addr_t addr, size_t size,
- 		dma_direct_unmap_phys(dev, addr, size, dir, attrs);
- 	else if (use_dma_iommu(dev))
- 		iommu_dma_unmap_phys(dev, addr, size, dir, attrs);
--	else
--		ops->unmap_page(dev, addr, size, dir, attrs);
-+	else {
-+		if (IS_ENABLED(CONFIG_DMA_API_DEBUG))
-+			/* We shouldn't have both functions */
-+			WARN_ON_ONCE(ops->unmap_page && ops->unmap_phys);
-+
-+		if (ops->unmap_phys)
-+			ops->unmap_phys(dev, addr, size, dir, attrs);
-+		else if (ops->unmap_page)
-+			ops->unmap_page(dev, addr, size, dir, attrs);
-+	}
- 	trace_dma_unmap_phys(dev, addr, size, dir, attrs);
- 	debug_dma_unmap_phys(dev, addr, size, dir);
- }
-diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
-index 6f9d604d9d406..64daa1428c022 100644
---- a/kernel/dma/ops_helpers.c
-+++ b/kernel/dma/ops_helpers.c
-@@ -64,6 +64,7 @@ struct page *dma_common_alloc_pages(struct device *dev, size_t size,
- {
- 	const struct dma_map_ops *ops = get_dma_ops(dev);
- 	struct page *page;
-+	phys_addr_t phys;
- 
- 	page = dma_alloc_contiguous(dev, size, gfp);
- 	if (!page)
-@@ -71,10 +72,14 @@ struct page *dma_common_alloc_pages(struct device *dev, size_t size,
- 	if (!page)
- 		return NULL;
- 
-+	phys = page_to_phys(page);
- 	if (use_dma_iommu(dev))
--		*dma_handle = iommu_dma_map_phys(dev, page_to_phys(page), size,
--						 dir, DMA_ATTR_SKIP_CPU_SYNC);
--	else
-+		*dma_handle = iommu_dma_map_phys(dev, phys, size, dir,
-+						 DMA_ATTR_SKIP_CPU_SYNC);
-+	else if (ops->map_phys)
-+		*dma_handle = ops->map_phys(dev, phys, size, dir,
-+					    DMA_ATTR_SKIP_CPU_SYNC);
-+	else if (ops->map_page)
- 		*dma_handle = ops->map_page(dev, page, 0, size, dir,
- 					    DMA_ATTR_SKIP_CPU_SYNC);
- 	if (*dma_handle == DMA_MAPPING_ERROR) {
-@@ -94,6 +99,9 @@ void dma_common_free_pages(struct device *dev, size_t size, struct page *page,
- 	if (use_dma_iommu(dev))
- 		iommu_dma_unmap_phys(dev, dma_handle, size, dir,
- 				     DMA_ATTR_SKIP_CPU_SYNC);
-+	else if (ops->unmap_phys)
-+		ops->unmap_phys(dev, dma_handle, size, dir,
-+				DMA_ATTR_SKIP_CPU_SYNC);
- 	else if (ops->unmap_page)
- 		ops->unmap_page(dev, dma_handle, size, dir,
- 				DMA_ATTR_SKIP_CPU_SYNC);
--- 
-2.50.1
+Okay, let's wait and see.
 
+Thanks,
+baolu
