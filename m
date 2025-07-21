@@ -1,96 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E393B1E835B
-	for <iommu@lists.linux.dev>; Mon, 21 Jul 2025 06:20:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D688DF4F1;
+	Mon, 21 Jul 2025 08:41:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753078817; cv=none; b=KhSrsuX0f5Mfw3K0tg7xxnfpOPWv2J78EjdiyOZURkhAUpexDPhmx0vPpA3+LRy69oRiBdy1WW9dPTqZfMeeo89oLd552GlXpK5mWV9Qyrb4EOCmesQto28qtgCyF/AqvSNtQpaDXvYpWYUkQxNdtyxieb52wJElYa+tpDVu2jU=
+	t=1753087270; cv=none; b=M9APmh0zaPCu9KBfkF8z/X7Z5QI0TdzTnsFs+hz++RiswBY9rD4hsvj6OJ/XGfvxBT4cgnaTh6hEBqtdZw9YRHVmpPcjOdq9fVFnOAAdk5BwY2ndTtQ1OCsTLtjR+twkuiVud3RCRc6YOP09kZaX+4xuRQ4lZdHA7Fbo8JlYyoY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753078817; c=relaxed/simple;
-	bh=EsV+/sLaEQESpKLc56tddBb8VQ+rkH35Pls7FQ7kwh4=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=J60/U/juxv9GY3X5lKGyEsyag9mp4CR6VVwJmo/fXy/KwzWClbBvwRBziJyYKELonKqyGD9UJrsg9YPvOh/I1OSNwwyPJxPi9T1Pe3Twoa7Q/C1ZP+efjHxdrOpJzDKe/aBud/hF6/9KNH9CQRlTRM4GstNS6KRNQfVnFSrCHQw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HJW13T5b; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753087270; c=relaxed/simple;
+	bh=yhdbVoA6G31ypH6Hzi6F5nyXwF6JKWxD59x9aU/23yQ=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=H50rXk9kPk0UO2Vw/iiAhbHtdMm+IQ4mwG0AtQzD81K7DqOqXvBZrnDZgzBP1+AP83JP0Tr7sASqrRN6FpXVU4fYgHGAMhlZq0olQOxw387plke3DNyuTaohc5mFOrqYmqS5duwh1ltyJPXFjTkQ0JasO9j0ADs/lXi7bS0qV8w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jZe9bg/Z; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HJW13T5b"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9214C4CEED;
-	Mon, 21 Jul 2025 06:20:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1753078816;
-	bh=EsV+/sLaEQESpKLc56tddBb8VQ+rkH35Pls7FQ7kwh4=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=HJW13T5bfvckM7lb2LPBcVJu1gaMChk0fH5MsBnL4wwaUG8+L+kX7A+KZe/EfYR/K
-	 ZRDKCf+hl3tEg0KRMYZjLr8XiesA6bTJWaNpd/AhMh5DOuhlS2F6Qu8yhrvXHVUosz
-	 U6GwP2CUDzTWsUnH3XOPKbcznJcdhYdilg5nTsMwLuhcR2VVXdNCX89hhbq7bEJmEy
-	 8RZrBDK3zGE3vzfR66F07ttRDxklD/on9TR831q+AwNg4jaPt6Q/kfAwmsA0iWdphO
-	 Odb70iB/6h6vVVVg1lkzE8whXPCcBpGO8KFyMG8H5zsXPxLo1dMa36GTRnG//jfgzX
-	 AELADALTJziug==
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Leon Romanovsky <leonro@nvidia.com>,
-	iommu@lists.linux.dev
-Subject: [PATCH v2 2/2] dma-mapping: convert dummy ops to physical address mapping
-Date: Mon, 21 Jul 2025 09:19:46 +0300
-Message-ID: <196844ca71ac4e9a60ebf78cd05e0b3882fd59bd.1753078569.git.leon@kernel.org>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <cover.1753078569.git.leon@kernel.org>
-References: <cover.1753078569.git.leon@kernel.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jZe9bg/Z"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1753087269; x=1784623269;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=yhdbVoA6G31ypH6Hzi6F5nyXwF6JKWxD59x9aU/23yQ=;
+  b=jZe9bg/ZqlH9OHFrzzgs5U+ph+WgT5nE6tSqoU37L6exyH3pTZbfBtvu
+   gJPZ2S1sIg/d4v/KHBmx24fDCwn1u7AV0YZ0Uyo5HYcfnwGMhd+Rhc7/Z
+   Nzv+Ad9NrnIAUjK/5LuYvQUwoyV8K5SYZ2noADgathHrEFXdL8z5MTSs+
+   ZgQg3KfpDuarVOMnxY8iyWd+wMEa/5bFI28Z4oObuhOV7u1ZxABuswl8B
+   MF2tBgbLe2kkZcQ+NxbostNB6EfKOGnzFaonsRmywW4W6k9oB0kMlYMTz
+   ho1A7IvHcOvbKr3aitr0rDXp90qjC37uTb2NSLvV01YrDNNH50h4v/mwl
+   w==;
+X-CSE-ConnectionGUID: +JjfrUoQTfGQbCy/wgJn9A==
+X-CSE-MsgGUID: UiBaHK44Sf6UCzupSrf7KA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11498"; a="57913004"
+X-IronPort-AV: E=Sophos;i="6.16,328,1744095600"; 
+   d="scan'208";a="57913004"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2025 01:41:08 -0700
+X-CSE-ConnectionGUID: 97xDEV/xRtqM92QXpat5Vw==
+X-CSE-MsgGUID: 9S7HUu/dTS66MGiBOC0w7A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,328,1744095600"; 
+   d="scan'208";a="162819795"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.243.252]) ([10.124.243.252])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2025 01:41:06 -0700
+Message-ID: <00c5972b-a5d9-4604-aea6-cc0d8e2601a0@linux.intel.com>
+Date: Mon, 21 Jul 2025 16:41:03 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ patches@lists.linux.dev, Tina Zhang <tina.zhang@intel.com>,
+ Wei Wang <wei.w.wang@intel.com>
+Subject: Re: [PATCH 1/9] iommu/pages: Add support for a incoherent IOMMU page
+ walker
+To: Jason Gunthorpe <jgg@nvidia.com>, David Woodhouse <dwmw2@infradead.org>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+References: <1-v1-bdb01ffac49c+be-iommu_pt_vtd_jgg@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <1-v1-bdb01ffac49c+be-iommu_pt_vtd_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On 7/17/2025 3:57 AM, Jason Gunthorpe wrote:
+> @@ -98,4 +101,36 @@ static inline void *iommu_alloc_pages_sz(gfp_t gfp, size_t size)
+>   	return iommu_alloc_pages_node_sz(NUMA_NO_NODE, gfp, size);
+>   }
+>   
+> -#endif	/* __IOMMU_PAGES_H */
+> +int iommu_pages_start_incoherent(void *virt, struct device *dma_dev);
+> +int iommu_pages_start_incoherent_list(struct iommu_pages_list *list,
+> +                                      struct device *dma_dev);
+> +
+> +#ifdef CONFIG_X86
+> +#include <asm/cacheflush.h>
+> +
+> +static inline void iommu_pages_flush_incoherent(struct device *dma_dev,
+> +						void *virt, size_t offset,
+> +						size_t len)
+> +{
+> +	clflush_cache_range(virt + offset, len);
+> +}
+> +static inline void
+> +iommu_pages_stop_incoherent_list(struct iommu_pages_list *list,
+> +				 struct device *dma_dev)
+> +{
 
-Change dma_dummy_map_page and dma_dummy_unmap_page routines
-to accept physical address and rename them.
+Do we need to clear iopt->incoherent for X86, given that
+iopt->incoherent is set in the start path? If no need, can you please
+add a comment to explain it?
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- kernel/dma/dummy.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+> +}
+> +#else
+> +#include <linux/dma-mapping.h>
+> +
+> +static inline void iommu_pages_flush_incoherent(struct device *dma_dev,
+> +						void *virt, size_t offset,
+> +						size_t len)
+> +{
+> +	dma_sync_single_for_device(dma_dev, (uintptr_t)virt + offset, len,
+> +				   DMA_TO_DEVICE);
+> +}
+> +void iommu_pages_stop_incoherent_list(struct iommu_pages_list *list,
+> +                                      struct device *dma_dev);
+> +#endif
+> +
+> +#endif /* __IOMMU_PAGES_H */
 
-diff --git a/kernel/dma/dummy.c b/kernel/dma/dummy.c
-index 92de80e5b057e..dcc4c619b1389 100644
---- a/kernel/dma/dummy.c
-+++ b/kernel/dma/dummy.c
-@@ -11,17 +11,16 @@ static int dma_dummy_mmap(struct device *dev, struct vm_area_struct *vma,
- 	return -ENXIO;
- }
- 
--static dma_addr_t dma_dummy_map_page(struct device *dev, struct page *page,
--		unsigned long offset, size_t size, enum dma_data_direction dir,
--		unsigned long attrs)
-+static dma_addr_t dma_dummy_map_phys(struct device *dev, phys_addr_t phys,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
- {
- 	return DMA_MAPPING_ERROR;
- }
--static void dma_dummy_unmap_page(struct device *dev, dma_addr_t dma_handle,
-+static void dma_dummy_unmap_phys(struct device *dev, dma_addr_t dma_handle,
- 		size_t size, enum dma_data_direction dir, unsigned long attrs)
- {
- 	/*
--	 * Dummy ops doesn't support map_page, so unmap_page should never be
-+	 * Dummy ops doesn't support map_phys, so unmap_phys should never be
- 	 * called.
- 	 */
- 	WARN_ON_ONCE(true);
-@@ -51,8 +50,8 @@ static int dma_dummy_supported(struct device *hwdev, u64 mask)
- 
- const struct dma_map_ops dma_dummy_ops = {
- 	.mmap                   = dma_dummy_mmap,
--	.map_page               = dma_dummy_map_page,
--	.unmap_page             = dma_dummy_unmap_page,
-+	.map_phys               = dma_dummy_map_phys,
-+	.unmap_phys             = dma_dummy_unmap_phys,
- 	.map_sg                 = dma_dummy_map_sg,
- 	.unmap_sg               = dma_dummy_unmap_sg,
- 	.dma_supported          = dma_dummy_supported,
--- 
-2.50.1
-
+Thanks,
+baolu
