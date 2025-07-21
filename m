@@ -1,50 +1,37 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from smtpbgeu1.qq.com (smtpbgeu1.qq.com [52.59.177.22])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D688DF4F1;
-	Mon, 21 Jul 2025 08:41:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5E0B487A5
+	for <iommu@lists.linux.dev>; Mon, 21 Jul 2025 09:59:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.59.177.22
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753087270; cv=none; b=M9APmh0zaPCu9KBfkF8z/X7Z5QI0TdzTnsFs+hz++RiswBY9rD4hsvj6OJ/XGfvxBT4cgnaTh6hEBqtdZw9YRHVmpPcjOdq9fVFnOAAdk5BwY2ndTtQ1OCsTLtjR+twkuiVud3RCRc6YOP09kZaX+4xuRQ4lZdHA7Fbo8JlYyoY=
+	t=1753091991; cv=none; b=RUoJQ20+VO7d/BUUMnqOnZ60Wl6iI0om7tUK8a+B6pM8l2tSDq6ZjoJH/rz66Vms/pVNnXYVNES6ZDmoM0AKhyyYeCbtgXft1Saa9pGOtPlQgoheN2UfGWZevQwSBbpqJRtJlhA9QE9K/Sw7wXWPMa5rK+4iQ8fSxyf2ArZurug=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753087270; c=relaxed/simple;
-	bh=yhdbVoA6G31ypH6Hzi6F5nyXwF6JKWxD59x9aU/23yQ=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=H50rXk9kPk0UO2Vw/iiAhbHtdMm+IQ4mwG0AtQzD81K7DqOqXvBZrnDZgzBP1+AP83JP0Tr7sASqrRN6FpXVU4fYgHGAMhlZq0olQOxw387plke3DNyuTaohc5mFOrqYmqS5duwh1ltyJPXFjTkQ0JasO9j0ADs/lXi7bS0qV8w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jZe9bg/Z; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1753091991; c=relaxed/simple;
+	bh=AWdp7nL5gbbsvaAu8dLPLs4FkTffzI9ICtmdEZNa+4g=;
+	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=t83XW2xAgEMMgOkTDQz6tngEmjh2D1088Wz2zphsMuAQvR2CDMnQ/zBi9XNRxQ0Dp4eL97C2g0OKKDxVrChwrSWly/tUUOEzQ6XVB+JkA3+fmOzUHSDSukVJ8JdOXXyveT9eWgq5kCh9RvxOXrxDxvYn0LB3JGnhdc6nMkD53so=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bbaa.fun; spf=none smtp.mailfrom=bbaa.fun; dkim=pass (1024-bit key) header.d=bbaa.fun header.i=@bbaa.fun header.b=RoSenc0B; arc=none smtp.client-ip=52.59.177.22
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bbaa.fun
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bbaa.fun
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jZe9bg/Z"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1753087269; x=1784623269;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yhdbVoA6G31ypH6Hzi6F5nyXwF6JKWxD59x9aU/23yQ=;
-  b=jZe9bg/ZqlH9OHFrzzgs5U+ph+WgT5nE6tSqoU37L6exyH3pTZbfBtvu
-   gJPZ2S1sIg/d4v/KHBmx24fDCwn1u7AV0YZ0Uyo5HYcfnwGMhd+Rhc7/Z
-   Nzv+Ad9NrnIAUjK/5LuYvQUwoyV8K5SYZ2noADgathHrEFXdL8z5MTSs+
-   ZgQg3KfpDuarVOMnxY8iyWd+wMEa/5bFI28Z4oObuhOV7u1ZxABuswl8B
-   MF2tBgbLe2kkZcQ+NxbostNB6EfKOGnzFaonsRmywW4W6k9oB0kMlYMTz
-   ho1A7IvHcOvbKr3aitr0rDXp90qjC37uTb2NSLvV01YrDNNH50h4v/mwl
-   w==;
-X-CSE-ConnectionGUID: +JjfrUoQTfGQbCy/wgJn9A==
-X-CSE-MsgGUID: UiBaHK44Sf6UCzupSrf7KA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11498"; a="57913004"
-X-IronPort-AV: E=Sophos;i="6.16,328,1744095600"; 
-   d="scan'208";a="57913004"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2025 01:41:08 -0700
-X-CSE-ConnectionGUID: 97xDEV/xRtqM92QXpat5Vw==
-X-CSE-MsgGUID: 9S7HUu/dTS66MGiBOC0w7A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,328,1744095600"; 
-   d="scan'208";a="162819795"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.243.252]) ([10.124.243.252])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2025 01:41:06 -0700
-Message-ID: <00c5972b-a5d9-4604-aea6-cc0d8e2601a0@linux.intel.com>
-Date: Mon, 21 Jul 2025 16:41:03 +0800
+	dkim=pass (1024-bit key) header.d=bbaa.fun header.i=@bbaa.fun header.b="RoSenc0B"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bbaa.fun;
+	s=goar2402; t=1753091967;
+	bh=AWdp7nL5gbbsvaAu8dLPLs4FkTffzI9ICtmdEZNa+4g=;
+	h=Message-ID:Date:MIME-Version:To:From:Subject;
+	b=RoSenc0By8N5tHQPaJDYHzBYmWG3flVJqK7/hO7KvrOH49qGvjdYtp1vCsbs2IQXD
+	 mMEwX/8otW89MwcxbpFNOjMmlRuE4iH+lLtyjVE9D97gttI11MZs/39iJ6GVfEtzqg
+	 euqYQGCYQYIUkYHcTrrdj8+e0BZbMTQwANaw+dKA=
+X-QQ-mid: zesmtpgz3t1753091965t9f6241e2
+X-QQ-Originating-IP: ME2/Jf+vQlz/5WTcXfw9GWKe0WH74XrBrUihVBZW/HQ=
+Received: from [198.18.0.1] ( [171.38.232.96])
+	by bizesmtp.qq.com (ESMTP) with 
+	id ; Mon, 21 Jul 2025 17:59:24 +0800 (CST)
+X-QQ-SSF: 0000000000000000000000000000000
+X-QQ-GoodBg: 0
+X-BIZMAIL-ID: 9778762447196126760
+Message-ID: <721D44AF820A4FEB+722679cb-2226-4287-8835-9251ad69a1ac@bbaa.fun>
+Date: Mon, 21 Jul 2025 17:59:24 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,65 +39,96 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
- patches@lists.linux.dev, Tina Zhang <tina.zhang@intel.com>,
- Wei Wang <wei.w.wang@intel.com>
-Subject: Re: [PATCH 1/9] iommu/pages: Add support for a incoherent IOMMU page
- walker
-To: Jason Gunthorpe <jgg@nvidia.com>, David Woodhouse <dwmw2@infradead.org>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-References: <1-v1-bdb01ffac49c+be-iommu_pt_vtd_jgg@nvidia.com>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <1-v1-bdb01ffac49c+be-iommu_pt_vtd_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To: baolu.lu@linux.intel.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, bbaa@bbaa.moe
+From: Ban ZuoXiang <bbaa@bbaa.fun>
+Subject: =?UTF-8?Q?=5BREGRESSION=5D=5BBISECTED=5D_PCI_Passthrough_/_SR-IOV_F?=
+ =?UTF-8?Q?ailure_on_Stable_Kernel_=E2=89=A5_v6=2E12=2E35?=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: zesmtpgz:bbaa.fun:qybglogicsvrgz:qybglogicsvrgz8a-1
+X-QQ-XMAILINFO: Nw9C1WBu09hPBXrJP7TauklUbKBrDueW4+84TSrFw/IlOifseBX1DgWa
+	FjzHi4GkwqydxrdfXzyrnfNMkasF94NpHmdLtH3+f/rcAcbWsJBW8vsVQ1xuIKPaqmbnNlv
+	inMliQ0kTJHiA559Lg2S0IJhtpM6uCgrIEqVTro+lcB2Bxc/wl/0m9VecndJqFeFWnv5La0
+	UO19h+xLZl7YbUVSsweU3d9ReRKnPcxjcEGluQe8YbNLqr3TqyHTqcvocHv8OCK7b1h6Jyg
+	SxJZXOID1KRhWbem9lmcpGZLB+67hpe/BIK7p6f2o8GAu0PjuIdyO4kqHxOYNt+06EcfG8u
+	vOIHVFEeQvKorEoU8hfxKfnphczInVf7Csp35CJYcQkUAgOn+EzbKNnN3ctOtZ4Q5bx7peD
+	auEZX1HMwjOxD+QPQyuvXJjQvAd67AwqXDngvgejMkgqKuVJpugGEbxuH2sAH1cuMuQ33qE
+	e1EK09ULdD2QTdegpFrLuVwIicFxhU9mWaKr3q1xTFSi6xWcvnRPfZoGPi0kBKSYeGqTsXT
+	phXvyXLIRcs+JHHm9TvSLpfKuKOSgbpZDH98bqxpduJjXj5F+Cmh5JAwKbDGEJenGe36iN5
+	/m7Po2dQ3Mdw4DiFLSFS1fwXa6uUt9+EoDhCpa3j+FbadNo0Qn/dBvXEgTMSZzwacT+pppu
+	hkaYeqM7/VhCRNItMw7gtbWJYR8+o7EsZEdqfCIA953Y3yLhayZRLE5WVq82tdM+aje92gw
+	Zxy5o+jAySp8LDLWJXVNrZhWdtFZXBA1xXfM8J+7i5xxdXy8MNWF5JjHop9JY5kVeNtlrld
+	bYjgGCvA+AjHhpSJfcniNElDplJyaX+EP9yf7oGKjX+L2a0P8W8O/kh/HNOHCxL0uMIbNQp
+	sX3Aw98VifFvV4tqxgW38bs350RR6F+kdn8UU7QXggP78KMuLFQuInido7smW+hfzTbho0u
+	KdV6WeREHLS7/3Y9eng013cc2xMTmgL1rnKS5DtMawz+Yeg==
+X-QQ-XMRINFO: Nq+8W0+stu50PRdwbJxPCL0=
+X-QQ-RECHKSPAM: 0
 
-On 7/17/2025 3:57 AM, Jason Gunthorpe wrote:
-> @@ -98,4 +101,36 @@ static inline void *iommu_alloc_pages_sz(gfp_t gfp, size_t size)
->   	return iommu_alloc_pages_node_sz(NUMA_NO_NODE, gfp, size);
->   }
->   
-> -#endif	/* __IOMMU_PAGES_H */
-> +int iommu_pages_start_incoherent(void *virt, struct device *dma_dev);
-> +int iommu_pages_start_incoherent_list(struct iommu_pages_list *list,
-> +                                      struct device *dma_dev);
-> +
-> +#ifdef CONFIG_X86
-> +#include <asm/cacheflush.h>
-> +
-> +static inline void iommu_pages_flush_incoherent(struct device *dma_dev,
-> +						void *virt, size_t offset,
-> +						size_t len)
-> +{
-> +	clflush_cache_range(virt + offset, len);
-> +}
-> +static inline void
-> +iommu_pages_stop_incoherent_list(struct iommu_pages_list *list,
-> +				 struct device *dma_dev)
-> +{
+Hi all,
 
-Do we need to clear iopt->incoherent for X86, given that
-iopt->incoherent is set in the start path? If no need, can you please
-add a comment to explain it?
+We've identified a regression affecting PCI passthrough / SR-IOV virtualization starting from Linux v6.12.35.
 
-> +}
-> +#else
-> +#include <linux/dma-mapping.h>
-> +
-> +static inline void iommu_pages_flush_incoherent(struct device *dma_dev,
-> +						void *virt, size_t offset,
-> +						size_t len)
-> +{
-> +	dma_sync_single_for_device(dma_dev, (uintptr_t)virt + offset, len,
-> +				   DMA_TO_DEVICE);
-> +}
-> +void iommu_pages_stop_incoherent_list(struct iommu_pages_list *list,
-> +                                      struct device *dma_dev);
-> +#endif
-> +
-> +#endif /* __IOMMU_PAGES_H */
+A user reported that [1], beginning with this version, SR-IOV virtual functions fail to initialize properly inside the guest. The issue appears to some MMIO operations not completing correctly in the guest.
 
-Thanks,
-baolu
+> [    2.152320] i915 0000:07:00.0: [drm] *ERROR* GT0: GUC: mmio request 0x4509: failure 306/0  
+> [    2.152327] i915 0000:07:00.0: [drm] *ERROR* GuC initialization failed (-ENXIO)  
+> [    2.152330] i915 0000:07:00.0: [drm] *ERROR* GT0: Failed to initialize GPU, declaring it wedged!  
+
+Here is the |git bisect| log:
+
+> # bad: [fbad404f04d758c52bae79ca20d0e7fe5fef91d3] Linux 6.12.37
+> # good: [e03ced99c437f4a7992b8fa3d97d598f55453fd0] Linux 6.12.33
+> git bisect start 'HEAD' 'v6.12.33'
+> # bad: [b01a29a80cca28f0c7d0864e2d62fb9616051bfc] ACPI: bus: Bail out if acpi_kobj registration fails
+> git bisect bad b01a29a80cca28f0c7d0864e2d62fb9616051bfc
+> # bad: [b01a29a80cca28f0c7d0864e2d62fb9616051bfc] ACPI: bus: Bail out if acpi_kobj registration fails
+> git bisect bad b01a29a80cca28f0c7d0864e2d62fb9616051bfc
+> # good: [35f116a4658f787bea7e82fdd23e2e9789254f5e] drm/xe: Make xe_gt_freq part of the Documentation
+> git bisect good 35f116a4658f787bea7e82fdd23e2e9789254f5e
+> # good: [261f2a655b709e59a8d759ce9fa478778d9e84f4] crypto: qat - add shutdown handler to qat_c3xxx
+> git bisect good 261f2a655b709e59a8d759ce9fa478778d9e84f4
+> # good: [4d0686b53cc9342be3f8ce06336fd5ab0d206355] ata: ahci: Disallow LPM for Asus B550-F motherboard
+> git bisect good 4d0686b53cc9342be3f8ce06336fd5ab0d206355
+> # bad: [ce4ef0274cb66a4750000f33f2d316c0dbaf4515] KVM: s390: rename PROT_NONE to PROT_TYPE_DUMMY
+> git bisect bad ce4ef0274cb66a4750000f33f2d316c0dbaf4515
+> # bad: [8d0645b59b19d97a3b7c5a3fb8dae0c89e98cde9] parisc/unaligned: Fix hex output to show 8 hex chars
+> git bisect bad 8d0645b59b19d97a3b7c5a3fb8dae0c89e98cde9
+> # good: [fed611bd8c7b76b070aa407d0c7558e20d9e1f68] f2fs: fix to do sanity check on ino and xnid
+> git bisect good fed611bd8c7b76b070aa407d0c7558e20d9e1f68
+> # good: [8a008c89e5e5c5332e4c0a33d707db9ddd529f8a] net/sched: fix use-after-free in taprio_dev_notifier
+> git bisect good 8a008c89e5e5c5332e4c0a33d707db9ddd529f8a
+> # bad: [3f2098f4fba7718eb2501207ca6e99d22427f25a] fbdev: Fix do_register_framebuffer to prevent null-ptr-deref in fb_videomode_to_var
+> git bisect bad 3f2098f4fba7718eb2501207ca6e99d22427f25a
+> # bad: [fb5873b779dd5858123c19bbd6959566771e2e83] iommu/vt-d: Restore context entry setup order for aliased devices
+> git bisect bad fb5873b779dd5858123c19bbd6959566771e2e83
+> # good: [81c64c2f84ab581d1c45dbbbca941c13128faee6] net: ftgmac100: select FIXED_PHY
+> git bisect good 81c64c2f84ab581d1c45dbbbca941c13128faee6
+> # first bad commit: [fb5873b779dd5858123c19bbd6959566771e2e83] iommu/vt-d: Restore context entry setup order for aliased devices
+>
+> commit fb5873b779dd5858123c19bbd6959566771e2e83
+> Author: Lu Baolu <baolu.lu@linux.intel.com>
+> Date:   Tue May 20 15:58:49 2025 +0800
+>
+>     iommu/vt-d: Restore context entry setup order for aliased devices
+>     
+>     commit 320302baed05c6456164652541f23d2a96522c06 upstream.
+This commit was introduced in [2], and the issue only affects stable kernels prior to v6.15. Besides, the Ubuntu v6.14-series kernel used by Proxmox also appears to be affected [3].
+
+
+Best regards,
+
+Ban ZuoXiang
+
+[1]: https://github.com/strongtz/i915-sriov-dkms/issues/320
+
+[2]: https://lore.kernel.org/r/20250514060523.2862195-1-baolu.lu@linux.intel.com
+
+[3]: https://github.com/strongtz/i915-sriov-dkms/issues/312 
+
+ 
+
+
