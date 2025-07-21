@@ -1,100 +1,187 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D25821CA0A
-	for <iommu@lists.linux.dev>; Mon, 21 Jul 2025 11:14:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753096477; cv=pass; b=CqtyIGIDVe2UXR3cdFyRuvljGNek3P+rvD56eJeiW8ALsHjtJ3hko7qokkxn28aHPTymc8sMC2e1Q1K7r4dtpYcpwXr5MI9LbOykaXGAy5oJ/Y8W/C4OY10Vo9DgoHxaDZCFrHZEY8KIFXpsPb5ndKdX0ifTy+CHFPdy26zCgLc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753096477; c=relaxed/simple;
-	bh=apcXxEnb0qJg1v9Cl7JQ6npH3CzfQYbUnRtZrZ2JRQo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jmuDXA5FmBeNUl4Y8K4RjGhqZFBdCa8VqkIo0dJy8jDmk+s/ffwHCDKcsrrw+YjgR1FQMLoE+i/BbEgq+P8PtcYGWG+zJH/xsVq+OX/dh4lMjYos5nPX9r6j1f+dPnykVwpnpWRS7jiyEw/0lOarSGHeUSajzay/0ZPNKX6f8T0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=Ng8qHnwK; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C16753A1CD;
+	Mon, 21 Jul 2025 11:17:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1753096659; cv=none; b=QgunpqpeVEPb4+RaD+WQULL55bgANNBh5aBwxrSeall6yIS0aZLpjWxw+89TWSQH7Ve+68QIoNhLX/ALDcW+Z9gJxqaEw1JuQgu6yJH7ioEiSvlHYOAqntYIi5DVvGK2DBZ5+Djjogdv5TjbXyRhmn/BdQur6qHlNTEBfiq3sb0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1753096659; c=relaxed/simple;
+	bh=SCH9cggG9iQtC/ktj5G90Uy+enqBH43N3sh/JdlCJ0k=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=kLsofy2xbvho0PyUHU6jwDSTfzuxK8RACSie72taXQkDUNGchUxzIHFnH1QVXSQC6tX6JMfqFONtnphjrHt7wVxLR/vBh6YPYfuwAPIkN0elp2VMAvxkSMogrpvQfhuwhktl2zJUNFmcSRk5k7aHfs/CajMdhi2SGK94thNcaIw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pQ88AlHS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="Ng8qHnwK"
-ARC-Seal: i=1; a=rsa-sha256; t=1753096461; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=jYDbMhT8vW1zZ55sI4R7g1B58Oih9oqWj6/OHCkN7i3soW0oBjrysLGZCIOIwKpbi/S4R9R6I9DzaB3/a/jfCHc0jge426lJOeXddipzWya2vUv9BJR51q/V5Ym2hd6Xn9XhbIccR0vCC1hhPJZp8pixppyUATKFwpUQMuTxQx4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1753096461; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=apcXxEnb0qJg1v9Cl7JQ6npH3CzfQYbUnRtZrZ2JRQo=; 
-	b=DtIObIS9tuE0ada0VjeUzVrB6+WAlE06f1oeU6I4KkV87vFL40WUPjQkWn0Qvkk+z/tZ+6ikJFy0J8KzcQ5xIFLHApyCEqyFnQQKMzI3t6NyqUtKahukCqEiCOiFghfwduWM2LKZhq6e47wNS9VpVwcFtxfkHF+Am+V/Z49XFrg=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
-	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1753096461;
-	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=apcXxEnb0qJg1v9Cl7JQ6npH3CzfQYbUnRtZrZ2JRQo=;
-	b=Ng8qHnwKp0kseIgsBGNF47L3UKdRF5Gn/rEgrTYuEvTl8P3sWznvC3DDRjddwmj/
-	MrPA+UxXE8ZA3+nMRDuFpZDlOLPlg8RZ57XhLM8Pjv+PN+NFaBihL/2tuYAEDBCTEsB
-	N3aDH1R05bBv2dMGMnp79lTpx9sLG7SNaiWUlAz4=
-Received: by mx.zohomail.com with SMTPS id 1753096458959568.7003735740404;
-	Mon, 21 Jul 2025 04:14:18 -0700 (PDT)
-Message-ID: <e96b1d2f-bff8-4b79-9995-6929648a810b@collabora.com>
-Date: Mon, 21 Jul 2025 13:14:14 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pQ88AlHS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43EEEC4CEF1;
+	Mon, 21 Jul 2025 11:17:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1753096659;
+	bh=SCH9cggG9iQtC/ktj5G90Uy+enqBH43N3sh/JdlCJ0k=;
+	h=From:Subject:Date:To:Cc:From;
+	b=pQ88AlHSlOmrmwW0yooyoT7nNi7pNoFlj8hCWd7NUs9B8gAML2E2JirHentMY1HFt
+	 jwzRbBWeiiXGA8TXuHp7FfCr5vWnqLw5ZBLtbKzb8Xa/LCLfAd1LlJJZoanr/j9EZz
+	 X9V3jjDGLDJrakOOYT1o4ZQMyYjAw8IW77ou7TB0VH0zErdFEIN6iY1TEYUws/KQVa
+	 0lxQ+m+50mG87OOh5Hr9E1nJmZxlKtuApZTZTG3wb1Xau5MLYVLA+cO5SRBXiLwcKR
+	 6mFc0YS5dDHfQBiXwN1v0kQCvQ/D1q7VUdPBCOfYL0ceUfp+hTey82jgo+e8pop7Qt
+	 WWCeNC1nG2eHw==
+From: Maxime Ripard <mripard@kernel.org>
+Subject: [PATCH v7 0/5] dma-buf: heaps: Create a CMA heap for each CMA
+ reserved region
+Date: Mon, 21 Jul 2025 13:17:29 +0200
+Message-Id: <20250721-dma-buf-ecc-heap-v7-0-031836e1a942@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 3/5] iommu: Add verisilicon IOMMU driver
-To: Jason Gunthorpe <jgg@ziepe.ca>, Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
- nicolas.dufresne@collabora.com, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
- kernel@collabora.com
-References: <20250710082450.125585-1-benjamin.gaignard@collabora.com>
- <20250710082450.125585-4-benjamin.gaignard@collabora.com>
- <aHTzPwTob8_5rtBS@willie-the-truck>
- <baa1fcde-f167-4a1b-afca-0a2957a688cc@collabora.com>
- <aHozv0NG1OBlAH6c@willie-the-truck>
- <b4169471-fcd0-4415-8281-c5bd722e5f2b@arm.com>
- <aHpQXy-bnwW56rCn@willie-the-truck> <20250718141401.GD2206214@ziepe.ca>
-Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <20250718141401.GD2206214@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAMkhfmgC/33Sy07DMBAF0F+JvMaRx680EUL9D8TCj3ETSppip
+ xGo6r/jtKCCErG8lnzGo+szSRg7TKQpziTi1KVuOORQPRTEteawQ9r5nAlnXDIFivreUHsKFJ2
+ jLZoj5RsjADx3tUSSrx0jhu7jSj6/5Nx2aRzi53XCBPPpP9gElFElnbWeyVoBbPcYD/hWDnFHZ
+ m3iP4JiksGKwLPApAieMW3AhIUgfgvViiCyUFfOe6GNCrxeCPIuKM5WBEmBWs8RAlgruVsI6i5
+ oWHuDmrcw1ju10cLI5Rb6LlSsXhF0FrxxtQ0bFoTyf4TLraiI76dc+Xhri/SYkrlW3hSP349jI
+ IALKKHiUvMqL/a6z//CpG1E35qxdEP/NPduTUKaQ9+NTTHpEjSNTuVRly9UrvevZQIAAA==
+X-Change-ID: 20240515-dma-buf-ecc-heap-28a311d2c94e
+To: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
+ Sumit Semwal <sumit.semwal@linaro.org>, 
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+ Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+ "T.J. Mercier" <tjmercier@google.com>, 
+ =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Robin Murphy <robin.murphy@arm.com>, Jonathan Corbet <corbet@lwn.net>
+Cc: Andrew Davis <afd@ti.com>, Jared Kangas <jkangas@redhat.com>, 
+ Mattijs Korpershoek <mkorpershoek@kernel.org>, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
+ dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+ iommu@lists.linux.dev, linux-doc@vger.kernel.org, 
+ Maxime Ripard <mripard@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4803; i=mripard@kernel.org;
+ h=from:subject:message-id; bh=SCH9cggG9iQtC/ktj5G90Uy+enqBH43N3sh/JdlCJ0k=;
+ b=owGbwMvMwCmsHn9OcpHtvjLG02pJDBl1iufWH2+VdVN/4vixViPifvnnuBi58MsHfKyuHP3Ae
+ F4z1yuwYyoLgzAng6yYIssTmbDTy9sXVznYr/wBM4eVCWQIAxenAEykiIexPir7G4ta0bqHyybv
+ vNEUNunufjXudcwiz/I039v+3rN7k8i1+7fEdSanOBv752adzGlMZWw4cXLFj1SVhcdjsg4o3zo
+ zJ33h5UD/Q8szf+V9Knqx+/9+5hSTJmvD1QdbTTlqJ+8s6r8AAA==
+X-Developer-Key: i=mripard@kernel.org; a=openpgp;
+ fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
 
+Hi,
 
-Le 18/07/2025 à 16:14, Jason Gunthorpe a écrit :
-> On Fri, Jul 18, 2025 at 02:47:11PM +0100, Will Deacon wrote:
->
->> Just because the existing drivers are a mess doesn't mean we should
->> proliferate it!
-> If you want to insist on something here it should be for this driver
-> to use the new generic page table code I've written.
->
-> Otherwise I don't see the point in trying to improve this in some
-> lesser way.
->
-> If this had come in a years time I would probably insist on that, but
-> right now it isn't merged yet and it will still be a little bit before
-> people have time to review it.
->
-> Perhaps a compromise where Benjamin comes with an iommupt format
-> header that works for this and we can progress this series and be
-> ready to swap it out down the road?
+Here's another attempt at supporting user-space allocations from a
+specific carved-out reserved memory region.
 
-I have take some time to try to understand this new framework and I have
-to admit it isn't super clear in my mind how to use it right now.
-I don't have catch the benefit behind the macro and the nested structures.
+The initial problem we were discussing was that I'm currently working on
+a platform which has a memory layout with ECC enabled. However, enabling
+the ECC has a number of drawbacks on that platform: lower performance,
+increased memory usage, etc. So for things like framebuffers, the
+trade-off isn't great and thus there's a memory region with ECC disabled
+to allocate from for such use cases.
 
-Anyway, if VSI driver need to be updated I could, at least, validate the
-changes on my board or make the fix make self (but I will need to see
-more example of drivers using this new feature.
+After a suggestion from John, I chose to first start using heap
+allocations flags to allow for userspace to ask for a particular ECC
+setup. This is then backed by a new heap type that runs from reserved
+memory chunks flagged as such, and the existing DT properties to specify
+the ECC properties.
 
-Benjamin
+After further discussion, it was considered that flags were not the
+right solution, and relying on the names of the heaps would be enough to
+let userspace know the kind of buffer it deals with.
 
->
-> Jason
+Thus, even though the uAPI part of it had been dropped in this second
+version, we still needed a driver to create heaps out of carved-out memory
+regions. In addition to the original usecase, a similar driver can be
+found in BSPs from most vendors, so I believe it would be a useful
+addition to the kernel.
+
+Some extra discussion with Rob Herring [1] came to the conclusion that
+some specific compatible for this is not great either, and as such an
+new driver probably isn't called for either.
+
+Some other discussions we had with John [2] also dropped some hints that
+multiple CMA heaps might be a good idea, and some vendors seem to do
+that too.
+
+So here's another attempt that doesn't affect the device tree at all and
+will just create a heap for every CMA reserved memory region.
+
+It also falls nicely into the current plan we have to support cgroups in
+DRM/KMS and v4l2, which is an additional benefit.
+
+Let me know what you think,
+Maxime
+
+1: https://lore.kernel.org/all/20250707-cobalt-dingo-of-serenity-dbf92c@houat/
+2: https://lore.kernel.org/all/CANDhNCroe6ZBtN_o=c71kzFFaWK-fF5rCdnr9P5h1sgPOWSGSw@mail.gmail.com/
+
+Let me know what you think,
+Maxime
+
+Signed-off-by: Maxime Ripard <mripard@kernel.org>
+---
+Changes in v7:
+- Invert the logic and register CMA heap from the reserved memory /
+  dma contiguous code, instead of iterating over them from the CMA heap.
+- Link to v6: https://lore.kernel.org/r/20250709-dma-buf-ecc-heap-v6-0-dac9bf80f35d@kernel.org
+
+Changes in v6:
+- Drop the new driver and allocate a CMA heap for each region now
+- Dropped the binding
+- Rebased on 6.16-rc5
+- Link to v5: https://lore.kernel.org/r/20250617-dma-buf-ecc-heap-v5-0-0abdc5863a4f@kernel.org
+
+Changes in v5:
+- Rebased on 6.16-rc2
+- Switch from property to dedicated binding
+- Link to v4: https://lore.kernel.org/r/20250520-dma-buf-ecc-heap-v4-1-bd2e1f1bb42c@kernel.org
+
+Changes in v4:
+- Rebased on 6.15-rc7
+- Map buffers only when map is actually called, not at allocation time
+- Deal with restricted-dma-pool and shared-dma-pool
+- Reword Kconfig options
+- Properly report dma_map_sgtable failures
+- Link to v3: https://lore.kernel.org/r/20250407-dma-buf-ecc-heap-v3-0-97cdd36a5f29@kernel.org
+
+Changes in v3:
+- Reworked global variable patch
+- Link to v2: https://lore.kernel.org/r/20250401-dma-buf-ecc-heap-v2-0-043fd006a1af@kernel.org
+
+Changes in v2:
+- Add vmap/vunmap operations
+- Drop ECC flags uapi
+- Rebase on top of 6.14
+- Link to v1: https://lore.kernel.org/r/20240515-dma-buf-ecc-heap-v1-0-54cbbd049511@kernel.org
+
+---
+Maxime Ripard (5):
+      doc: dma-buf: List the heaps by name
+      dma-buf: heaps: cma: Register list of CMA regions at boot
+      dma: contiguous: Register reusable CMA regions at boot
+      dma: contiguous: Reserve default CMA heap
+      dma-buf: heaps: cma: Create CMA heap for each CMA reserved region
+
+ Documentation/userspace-api/dma-buf-heaps.rst | 24 ++++++++------
+ MAINTAINERS                                   |  1 +
+ drivers/dma-buf/heaps/Kconfig                 | 10 ------
+ drivers/dma-buf/heaps/cma_heap.c              | 47 +++++++++++++++++----------
+ include/linux/dma-buf/heaps/cma.h             | 16 +++++++++
+ kernel/dma/contiguous.c                       | 11 +++++++
+ 6 files changed, 72 insertions(+), 37 deletions(-)
+---
+base-commit: 47633099a672fc7bfe604ef454e4f116e2c954b1
+change-id: 20240515-dma-buf-ecc-heap-28a311d2c94e
+prerequisite-message-id: <20250610131231.1724627-1-jkangas@redhat.com>
+prerequisite-patch-id: bc44be5968feb187f2bc1b8074af7209462b18e7
+prerequisite-patch-id: f02a91b723e5ec01fbfedf3c3905218b43d432da
+prerequisite-patch-id: e944d0a3e22f2cdf4d3b3906e5603af934696deb
+
+Best regards,
+-- 
+Maxime Ripard <mripard@kernel.org>
+
