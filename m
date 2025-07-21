@@ -1,105 +1,64 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 715AB2D3EF3
-	for <iommu@lists.linux.dev>; Mon, 21 Jul 2025 12:44:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A8352D7818;
+	Mon, 21 Jul 2025 13:20:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753101872; cv=none; b=iz+CfLLZSeHB6jNw843U38wX6U7dWpy4N2kcr3kfTDTAtkyiDfpZSGi6cnYuwoZ2LvW72NoGJXE4LSQo705VMqvUrpNE5lrLXiCP/r2UqzCFQgWHl8fghRMh6lq4aiZm2o66eWSWTN8B6WIrEM7sHlwoM3ZSDDLpn3FdapgTaMA=
+	t=1753104040; cv=none; b=XJ4Rx9DSs6Eq0IVPoRhCbuBZXXikZ91CNdkAVhTd+HeDhjGUmGDHh7y3D+gAjs0z+sU3DzOSO2KlrH8nLGMWsFc8Un3glEZUuEKejsZyPBP1BTwlhb9bZDQkPokfij5he8BVG7el9v/Blw4jaar9QagO51kRB7B8/d/NoMsEtJg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753101872; c=relaxed/simple;
-	bh=OpIcgWD0xhc4uZmsSop2odaYZuIXzpyP2cO8jBI/Jjs=;
+	s=arc-20240116; t=1753104040; c=relaxed/simple;
+	bh=EKbMumgPxG3mrRXVfqq22nRZqrgaafXKtjd5p3sdBnI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nbrCdO83YfbymkDGM8uuWBOH8vOCajTYRXKW2jFSjb17JjJzZaQsAYWhVvHZwT8TgCAtEkaFyZHdJ+2HoO4hz+hac+UnMzu/Wjdld/z/ZpD+LxFWjCrJZyLhqNjD3DZ0AVyImyWz6AuCIEoIASrEpE/8aww2oq3yoAEfoGAvsBE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZpvfbPTg; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=P0L110tZ+1WNijzgp2UYRqSiPlwraSvA02mjKn/WCA1SIJTlzeCWErNgzbVfwgr/Ry1h6n+XdAReb0lKlf2/9WvxF2EAr24sq+serE25HhML+Em9BZAP1mMc7dy5lBOPs0KotOMrjLIkmlY93xNQgDijM71NAWJQGYrJWzW5zdQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Bg/8mIA/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZpvfbPTg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61711C4CEED;
-	Mon, 21 Jul 2025 12:44:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Bg/8mIA/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1ADFC4CEF6;
+	Mon, 21 Jul 2025 13:20:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1753101872;
-	bh=OpIcgWD0xhc4uZmsSop2odaYZuIXzpyP2cO8jBI/Jjs=;
+	s=k20201202; t=1753104040;
+	bh=EKbMumgPxG3mrRXVfqq22nRZqrgaafXKtjd5p3sdBnI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZpvfbPTgtcuhMYCbZ7JZYjMqxgkPTYjWIJTUitJaXKc4lSBrybO9UHuVxAzhZECG4
-	 OYQs0bcm24hVyERUBkuBaIMd4xmaNfCkvM8UGQWa9LMzTu/99YWDuXIldGTMYyFymU
-	 2ynlc92YDum80IWFZvk/cehgRrFuDoIJsp5hixAZ/8S7wBa9PAFmCNjw3GNqEplMbd
-	 jSdG8C8Dzur67jr5mWiJfL210x2acJnNhiApbOi+XCzwdZXTZ01UvBkfXDtqn7AT1N
-	 OuLbG+QdXzYEZJ48VKj2WvxBZE0ofBi1+Adg66obMeuGTwOooCN/3WTorh0yGnlXWp
-	 isKdfypXaHl5g==
-Date: Mon, 21 Jul 2025 13:44:27 +0100
+	b=Bg/8mIA/+RhenAyCWnlw2Omth29e2SMqxc1KgdP24WpiBEKYxI2FABFubp29ut4Nh
+	 AICjk3+4LS/z7KdfIpS0Ow8SOMgC5VsGm17zpL65dHcyJ2q/TV6bFPpP7ln4xKehGp
+	 w4XwLoFGnmUP9tcy9CG56K3aYBrmu72CVOYcQECiBw4TzKoyjwbkaJVoQMnJSrSxJ3
+	 eazPeGqRTQEZNjUeB7+q/+gbMYPa0IWXah6MRcNO3O2YVGo4gEsj5ct2rmeFYgujLn
+	 Y07ktCaiiIES3T8tFweeV1KgFxdHKptkXzVkEWHqUqcXgIDQbX48fsZUieZ01n8r5w
+	 xsSDALGAjtP+w==
+Date: Mon, 21 Jul 2025 14:20:35 +0100
 From: Will Deacon <will@kernel.org>
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Daniel Mentz <danielmentz@google.com>,
-	Pranjal Shrivastava <praan@google.com>,
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
-	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev
-Subject: Re: [RFC PATCH v3 5/8] pm: runtime: Introduce
- pm_runtime_get_if_not_suspended()
-Message-ID: <aH42K_UjP-crebs5@willie-the-truck>
-References: <CAJZ5v0jq7DL4z+q5XKcVUZQgojcxA8DgrMFncs1Z6skm+PVEmA@mail.gmail.com>
- <aG6P6F-MEvL4SfNz@google.com>
- <CAJZ5v0gGjt+pRbq2k7qL6E+TGhm8PYHm_VVrwg2ZEjSWk+5FRg@mail.gmail.com>
- <aG6hpoMx1QwwP195@google.com>
- <CAJZ5v0jyYpu=qA-_QKVoNhzRZRNKe5cFt718fo6pxR6iRkD2bw@mail.gmail.com>
- <aG-BC6B4R1ViEDM1@google.com>
- <CAJZ5v0id-sRxVxupWPKPGikSm5_QeO_WKgYdK2BUbY4m7dbndw@mail.gmail.com>
- <aHDlhyPmjCT7rz-i@google.com>
- <CAE2F3rAPB8rVz38ygAxatdAunS9oMNJ5WvMiB+M8Am71MEHVVQ@mail.gmail.com>
- <CAJZ5v0gO8jDeEF84hdqhhd2U9dT78YYikQR_RW3Re1R2DKTS0g@mail.gmail.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, joro@8bytes.org, robin.murphy@arm.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH 2/2] iommu/arm-smmu-v3: Replace vsmmu_size/type with
+ get_viommu_size
+Message-ID: <aH4-o8Y99YTnNzss@willie-the-truck>
+References: <20250718234822.1734190-1-nicolinc@nvidia.com>
+ <20250718234822.1734190-3-nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJZ5v0gO8jDeEF84hdqhhd2U9dT78YYikQR_RW3Re1R2DKTS0g@mail.gmail.com>
+In-Reply-To: <20250718234822.1734190-3-nicolinc@nvidia.com>
 
-On Wed, Jul 16, 2025 at 02:53:13PM +0200, Rafael J. Wysocki wrote:
-> On Wed, Jul 16, 2025 at 1:52 AM Daniel Mentz <danielmentz@google.com> wrote:
-> > I propose a custom synchronization mechanism where we use a spinlock
-> > protected variable that determines whether SMMU is enabled or
-> > disabled. In the suspend/resume callbacks, we disable or enable SMMU
-> > and update this variable while holding the spinlock. In the map/unmap
-> > path we briefly grab the spinlock while examining this new variable.
-> > Only if we find that SMMU is disabled, we elide TLBI commands.
+On Fri, Jul 18, 2025 at 04:48:22PM -0700, Nicolin Chen wrote:
+> It's more flexible to have a get_viommu_size op. Replace static vsmmu_size
+> and vsmmu_type with that.
 > 
-> That sounds reasonable to me in principle.
-> 
-> > My concern with this, though, is that the additional spinlock might
-> > spoil the performance gains of the lockless command queue insertion
-> > algorithm.
-> 
-> It might, but it is hard to say upfront.
+> Suggested-by: Will Deacon <will@kernel.org>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c    |  8 ++------
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |  3 +--
+>  drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c     | 14 ++++++++++++--
+>  3 files changed, 15 insertions(+), 10 deletions(-)
 
-I'm definitely not going to take a solution that unconditionally
-serialises unmap().
-
-Instead, I think that we can probably check whether or not the SMMU
-is suspended in a few places:
-
-  1. After zapping a PTE but before issuing TLBI
-
-  2. When trying to allocate space in the cmdq
-
-  3. Right before moving PROD in the cmdq
-
-Only (1) is necessary for correctness, but (3) narrows the race window
-and (2) is then required to avoid getting stuck trying to queue commands
-while the SMMU is powered down.
-
-There's still a small window for a race if the SMMU is powered down
-immediately after we checked the flag in (3), but in that case we'll end
-up serialising to power it back up. Adding additional states might
-mitigate that somewhat (we could poll on the suspend operation if we
-know it's in progress) but I'm not sure that it's worth it.
-
-So I would start with (1) and the state tracking machinery, as that's
-fiddly enough with the memory ordering and suspend/resume sequences.
-Then (2) and (3) could come as an optimisation, after which we could
-assess whether or not we need to go further.
+Acked-by: Will Deacon <will@kernel.org>
 
 Will
