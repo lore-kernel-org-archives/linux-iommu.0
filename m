@@ -1,220 +1,105 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97AA4298248;
-	Mon, 21 Jul 2025 11:17:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 715AB2D3EF3
+	for <iommu@lists.linux.dev>; Mon, 21 Jul 2025 12:44:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753096674; cv=none; b=muk/1D3dd30V1n72UhzZuZqiOhZ39QaLcDaqtRsa590/vDr6TqlwC7jNzHv+9Imjc4tCiySuezdj+/k2TAqlJkstphVFxv5iDZEB9vn2ZpMH8swKAFVA0vMJsjQHd7V5deI2xkaXBo8NCSQGTxh9sKGWzRgHFc1ijFv9xzqZRBk=
+	t=1753101872; cv=none; b=iz+CfLLZSeHB6jNw843U38wX6U7dWpy4N2kcr3kfTDTAtkyiDfpZSGi6cnYuwoZ2LvW72NoGJXE4LSQo705VMqvUrpNE5lrLXiCP/r2UqzCFQgWHl8fghRMh6lq4aiZm2o66eWSWTN8B6WIrEM7sHlwoM3ZSDDLpn3FdapgTaMA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753096674; c=relaxed/simple;
-	bh=4T4b5ZbeftLTM3SsRon2K5QG8xDtblIGsfG23CADlSM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=etswd9kBO0MkLeA064JIHrhROobNNKwW+gV1rSjdzFWxGZ6GeZKy5l8LW59qq4pllFA9CNFxM2AC7A3VzPxC1vr70AHyByyTQvc5IYicp9viF98fpm2HtEgWTJ9XiuEy8MNlil6IYEpYIB3q62Hg432cOuhj+wX3BY6lZBP/nDY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j8uRdNR6; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753101872; c=relaxed/simple;
+	bh=OpIcgWD0xhc4uZmsSop2odaYZuIXzpyP2cO8jBI/Jjs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nbrCdO83YfbymkDGM8uuWBOH8vOCajTYRXKW2jFSjb17JjJzZaQsAYWhVvHZwT8TgCAtEkaFyZHdJ+2HoO4hz+hac+UnMzu/Wjdld/z/ZpD+LxFWjCrJZyLhqNjD3DZ0AVyImyWz6AuCIEoIASrEpE/8aww2oq3yoAEfoGAvsBE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZpvfbPTg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j8uRdNR6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87B00C4CEED;
-	Mon, 21 Jul 2025 11:17:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZpvfbPTg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61711C4CEED;
+	Mon, 21 Jul 2025 12:44:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1753096673;
-	bh=4T4b5ZbeftLTM3SsRon2K5QG8xDtblIGsfG23CADlSM=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-	b=j8uRdNR6aR8U6g8Ri5MWh9mk4cwJfet6aiu2HdwP4/QKIwasSYan9QORGc2/gZQ50
-	 BumIi9ewUP6yZoZnfxGhtRXIQQcyEJbPwn+A0IrwNA5Laal3c/hk1Y43gBHGNVSLCM
-	 9sFb9lTcVKjfyhkN2uI2qBjWFC2MQIcci+rMbwCUqrC2IAC3/dHSPbMMO5P3Uo3mwo
-	 FyQN2sLdAx+4YpbZig9rlrBn9Mi4pKKVLsZykcClGLrARxfG/RdVNSFLdFtGxdA9uO
-	 9/yiv7nGJJIMtYtkKYOSQBSLenI3aiBAF9CnPz+XKB9H6JF6V/w0GfR3D3UtUHvuuh
-	 r1ffJsA2ZcsQA==
-From: Maxime Ripard <mripard@kernel.org>
-Date: Mon, 21 Jul 2025 13:17:34 +0200
-Subject: [PATCH v7 5/5] dma-buf: heaps: cma: Create CMA heap for each CMA
- reserved region
+	s=k20201202; t=1753101872;
+	bh=OpIcgWD0xhc4uZmsSop2odaYZuIXzpyP2cO8jBI/Jjs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ZpvfbPTgtcuhMYCbZ7JZYjMqxgkPTYjWIJTUitJaXKc4lSBrybO9UHuVxAzhZECG4
+	 OYQs0bcm24hVyERUBkuBaIMd4xmaNfCkvM8UGQWa9LMzTu/99YWDuXIldGTMYyFymU
+	 2ynlc92YDum80IWFZvk/cehgRrFuDoIJsp5hixAZ/8S7wBa9PAFmCNjw3GNqEplMbd
+	 jSdG8C8Dzur67jr5mWiJfL210x2acJnNhiApbOi+XCzwdZXTZ01UvBkfXDtqn7AT1N
+	 OuLbG+QdXzYEZJ48VKj2WvxBZE0ofBi1+Adg66obMeuGTwOooCN/3WTorh0yGnlXWp
+	 isKdfypXaHl5g==
+Date: Mon, 21 Jul 2025 13:44:27 +0100
+From: Will Deacon <will@kernel.org>
+To: "Rafael J. Wysocki" <rafael@kernel.org>
+Cc: Daniel Mentz <danielmentz@google.com>,
+	Pranjal Shrivastava <praan@google.com>,
+	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
+	Mostafa Saleh <smostafa@google.com>, iommu@lists.linux.dev
+Subject: Re: [RFC PATCH v3 5/8] pm: runtime: Introduce
+ pm_runtime_get_if_not_suspended()
+Message-ID: <aH42K_UjP-crebs5@willie-the-truck>
+References: <CAJZ5v0jq7DL4z+q5XKcVUZQgojcxA8DgrMFncs1Z6skm+PVEmA@mail.gmail.com>
+ <aG6P6F-MEvL4SfNz@google.com>
+ <CAJZ5v0gGjt+pRbq2k7qL6E+TGhm8PYHm_VVrwg2ZEjSWk+5FRg@mail.gmail.com>
+ <aG6hpoMx1QwwP195@google.com>
+ <CAJZ5v0jyYpu=qA-_QKVoNhzRZRNKe5cFt718fo6pxR6iRkD2bw@mail.gmail.com>
+ <aG-BC6B4R1ViEDM1@google.com>
+ <CAJZ5v0id-sRxVxupWPKPGikSm5_QeO_WKgYdK2BUbY4m7dbndw@mail.gmail.com>
+ <aHDlhyPmjCT7rz-i@google.com>
+ <CAE2F3rAPB8rVz38ygAxatdAunS9oMNJ5WvMiB+M8Am71MEHVVQ@mail.gmail.com>
+ <CAJZ5v0gO8jDeEF84hdqhhd2U9dT78YYikQR_RW3Re1R2DKTS0g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250721-dma-buf-ecc-heap-v7-5-031836e1a942@kernel.org>
-References: <20250721-dma-buf-ecc-heap-v7-0-031836e1a942@kernel.org>
-In-Reply-To: <20250721-dma-buf-ecc-heap-v7-0-031836e1a942@kernel.org>
-To: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
- Sumit Semwal <sumit.semwal@linaro.org>, 
- Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
- Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
- "T.J. Mercier" <tjmercier@google.com>, 
- =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Marek Szyprowski <m.szyprowski@samsung.com>, 
- Robin Murphy <robin.murphy@arm.com>, Jonathan Corbet <corbet@lwn.net>
-Cc: Andrew Davis <afd@ti.com>, Jared Kangas <jkangas@redhat.com>, 
- Mattijs Korpershoek <mkorpershoek@kernel.org>, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
- dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
- iommu@lists.linux.dev, linux-doc@vger.kernel.org, 
- Maxime Ripard <mripard@kernel.org>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5786; i=mripard@kernel.org;
- h=from:subject:message-id; bh=4T4b5ZbeftLTM3SsRon2K5QG8xDtblIGsfG23CADlSM=;
- b=owGbwMvMwCmsHn9OcpHtvjLG02pJDBl1ihcmWzFvfXJ31g6hiiVfFN/G/ZcPuvjx6RqG1L2Z6
- 6TY/Hbv75jKwiDMySArpsjyRCbs9PL2xVUO9it/wMxhZQIZwsDFKQAT+VDFWJ9gc8I3VT/vxme5
- mKJNOUqzO6eVKL2OuH619yVbhWzFI+/wnLSbYVve2rZHHCxZcOjBGcaGyaufS3xeoZeq5W9XLal
- ecatbdeMLndCXTI7zap1yw5qd5gQVqE9q6etuYVY8Jd0cmw4A
-X-Developer-Key: i=mripard@kernel.org; a=openpgp;
- fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJZ5v0gO8jDeEF84hdqhhd2U9dT78YYikQR_RW3Re1R2DKTS0g@mail.gmail.com>
 
-Aside from the main CMA region, it can be useful to allow userspace to
-allocate from the other CMA reserved regions.
+On Wed, Jul 16, 2025 at 02:53:13PM +0200, Rafael J. Wysocki wrote:
+> On Wed, Jul 16, 2025 at 1:52 AM Daniel Mentz <danielmentz@google.com> wrote:
+> > I propose a custom synchronization mechanism where we use a spinlock
+> > protected variable that determines whether SMMU is enabled or
+> > disabled. In the suspend/resume callbacks, we disable or enable SMMU
+> > and update this variable while holding the spinlock. In the map/unmap
+> > path we briefly grab the spinlock while examining this new variable.
+> > Only if we find that SMMU is disabled, we elide TLBI commands.
+> 
+> That sounds reasonable to me in principle.
+> 
+> > My concern with this, though, is that the additional spinlock might
+> > spoil the performance gains of the lockless command queue insertion
+> > algorithm.
+> 
+> It might, but it is hard to say upfront.
 
-Indeed, those regions can have specific properties that can be useful to
-a specific us-case.
+I'm definitely not going to take a solution that unconditionally
+serialises unmap().
 
-For example, one of them platform I've been with has ECC enabled on the
-entire memory but for a specific region. Using that region to allocate
-framebuffers can be particular beneficial because enabling the ECC has a
-performance and memory footprint cost.
+Instead, I think that we can probably check whether or not the SMMU
+is suspended in a few places:
 
-Thus, exposing these regions as heaps user-space can allocate from and
-import wherever needed allows to cover that use-case.
+  1. After zapping a PTE but before issuing TLBI
 
-For now, only shared-dma-pools regions with the reusable property (ie,
-backed by CMA) are supported, but eventually we'll want to support other
-DMA pools types.
+  2. When trying to allocate space in the cmdq
 
-Since we collected all the CMA regions created during boot, we can
-simply iterate over all of them to create the heaps.
+  3. Right before moving PROD in the cmdq
 
-This has a weird interaction with the recent work on the CMA name, in
-particular the backward compatibility code created by commit
-854acbe75ff4 ("dma-buf: heaps: Give default CMA heap a fixed name").
+Only (1) is necessary for correctness, but (3) narrows the race window
+and (2) is then required to avoid getting stuck trying to queue commands
+while the SMMU is powered down.
 
-Indeed, the old name was either 'reserved', or the name of the
-reserved-memory region device tree node if the linux,cma-default
-property was set.
+There's still a small window for a race if the SMMU is powered down
+immediately after we checked the flag in (3), but in that case we'll end
+up serialising to power it back up. Adding additional states might
+mitigate that somewhat (we could poll on the suspend operation if we
+know it's in progress) but I'm not sure that it's worth it.
 
-In both these cases, we have now collected this region during boot, and
-we're using the same name. So we're now largely redundant with the
-code to handle backward compatibility code, and we can thus remove it
-and the associated Kconfig option.
+So I would start with (1) and the state tracking machinery, as that's
+fiddly enough with the memory ordering and suspend/resume sequences.
+Then (2) and (3) could come as an optimisation, after which we could
+assess whether or not we need to go further.
 
-Signed-off-by: Maxime Ripard <mripard@kernel.org>
----
- Documentation/userspace-api/dma-buf-heaps.rst |  9 +++++---
- drivers/dma-buf/heaps/Kconfig                 | 10 --------
- drivers/dma-buf/heaps/cma_heap.c              | 33 +++++++++++++--------------
- 3 files changed, 22 insertions(+), 30 deletions(-)
-
-diff --git a/Documentation/userspace-api/dma-buf-heaps.rst b/Documentation/userspace-api/dma-buf-heaps.rst
-index 17bf6829efd7963bc849765db54d327644e8c395..b78d2faeba62cda721a1f49d49e02bcb520ad429 100644
---- a/Documentation/userspace-api/dma-buf-heaps.rst
-+++ b/Documentation/userspace-api/dma-buf-heaps.rst
-@@ -22,8 +22,11 @@ following heaps:
-    through the ``cma`` parameter, a memory region Device-Tree node with
-    the ``linux,cma-default`` property set, or through the
-    ``CMA_SIZE_MBYTES`` or ``CMA_SIZE_PERCENTAGE`` Kconfig options. Prior
-    to Linux 6.17, its name wasn't stable and could be called
-    ``reserved``, ``linux,cma``, or ``default-pool``, depending on the
--   platform. From Linux 6.17 onwards, the creation of these heaps is
--   controlled through the ``DMABUF_HEAPS_CMA_LEGACY`` Kconfig option for
--   backwards compatibility.
-+   platform.
-+
-+ - A heap will be created for each reusable region in the device tree
-+   with the ``shared-dma-pool`` compatible, using the full device tree
-+   node name as its name. The buffer semantics are identical to
-+   ``default-cma-region``.
-diff --git a/drivers/dma-buf/heaps/Kconfig b/drivers/dma-buf/heaps/Kconfig
-index bb369b38b001af51721b56e065df92825022f1f1..a5eef06c422644e8aadaf5aff2bd9a33c49c1ba3 100644
---- a/drivers/dma-buf/heaps/Kconfig
-+++ b/drivers/dma-buf/heaps/Kconfig
-@@ -10,15 +10,5 @@ config DMABUF_HEAPS_CMA
- 	depends on DMABUF_HEAPS && DMA_CMA
- 	help
- 	  Choose this option to enable dma-buf CMA heap. This heap is backed
- 	  by the Contiguous Memory Allocator (CMA). If your system has these
- 	  regions, you should say Y here.
--
--config DMABUF_HEAPS_CMA_LEGACY
--	bool "Legacy DMA-BUF CMA Heap"
--	default y
--	depends on DMABUF_HEAPS_CMA
--	help
--	  Add a duplicate CMA-backed dma-buf heap with legacy naming derived
--	  from the CMA area's devicetree node, or "reserved" if the area is not
--	  defined in the devicetree. This uses the same underlying allocator as
--	  CONFIG_DMABUF_HEAPS_CMA.
-diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/cma_heap.c
-index 2a901af635ed76cdb085915c03258c235e302792..42f88193eab9f8f4571064c7b3b8a73bca20fdf4 100644
---- a/drivers/dma-buf/heaps/cma_heap.c
-+++ b/drivers/dma-buf/heaps/cma_heap.c
-@@ -20,10 +20,12 @@
- #include <linux/err.h>
- #include <linux/highmem.h>
- #include <linux/io.h>
- #include <linux/mm.h>
- #include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_reserved_mem.h>
- #include <linux/scatterlist.h>
- #include <linux/slab.h>
- #include <linux/vmalloc.h>
- 
- #define DEFAULT_CMA_NAME "default_cma_region"
-@@ -407,35 +409,32 @@ static int __init __add_cma_heap(struct cma *cma, const char *name)
- 	}
- 
- 	return 0;
- }
- 
--static int __init add_default_cma_heap(void)
-+static int __init add_cma_heaps(void)
- {
- 	struct cma *default_cma = dev_get_cma_area(NULL);
--	const char *legacy_cma_name;
-+	unsigned int i;
- 	int ret;
- 
--	if (!default_cma)
--		return 0;
-+	if (default_cma) {
-+		ret = __add_cma_heap(default_cma, DEFAULT_CMA_NAME);
-+		if (ret)
-+			return ret;
-+	}
- 
--	ret = __add_cma_heap(default_cma, DEFAULT_CMA_NAME);
--	if (ret)
--		return ret;
-+	for (i = 0; i < dma_areas_num; i++) {
-+		struct cma *cma = dma_areas[i];
- 
--	if (IS_ENABLED(CONFIG_DMABUF_HEAPS_CMA_LEGACY)) {
--		legacy_cma_name = cma_get_name(default_cma);
--		if (!strcmp(legacy_cma_name, DEFAULT_CMA_NAME)) {
--			pr_warn("legacy name and default name are the same, skipping legacy heap\n");
--			return 0;
-+		ret = __add_cma_heap(cma, cma_get_name(cma));
-+		if (ret) {
-+			pr_warn("Failed to add CMA heap %s", cma_get_name(cma));
-+			continue;
- 		}
- 
--		ret = __add_cma_heap(default_cma, legacy_cma_name);
--		if (ret)
--			pr_warn("failed to add legacy heap: %pe\n",
--				ERR_PTR(ret));
- 	}
- 
- 	return 0;
- }
--module_init(add_default_cma_heap);
-+module_init(add_cma_heaps);
- MODULE_DESCRIPTION("DMA-BUF CMA Heap");
-
--- 
-2.50.1
-
+Will
