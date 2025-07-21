@@ -1,77 +1,113 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D3F31DF268;
-	Mon, 21 Jul 2025 14:36:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E672915199A;
+	Mon, 21 Jul 2025 17:01:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753108560; cv=none; b=m26H7jVaEGcrs73qLP1fBTERSPKQPEv+ZoCSpjtVVUBtZ+exh06bw7r1GS/T5gWwDGaF3dENk1Rleu/T1pukSHlFhqZtuChGq8m0zF7Y9u5z2umPGEWP563n1dToG+sb5WOoBX9hDZvHas3VdZNTPMCOiPD4xFiDBzc3EpjXrK0=
+	t=1753117262; cv=none; b=IupwJVBGkUqXgf0WVgEd0x8AsYxo6xyq1vqhmZi2jG0s49AGZSwkl44qIo75HIZSxSQrt76QV+DGbossV5L1blsezFTVZH5Vqk/KwubU7xXRuujl040jt/hnx1yHvp8nNM3iDvYP0nKB+MdjnNErgyXS/ickA2+orsOGBumcCMY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753108560; c=relaxed/simple;
-	bh=dR+6XIT6LFnOdsN8pxrdfpEwQ3vQJS/jcc6mHH5oFko=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=thVGNSJPNZvIko73vLXe33ff11pEPlSlYrU0UpAiTMBbdAsYxbNJToyYWcCpVyHLsCyz0kZX7+oRco2tR3LNp0sCgIW8Z3eol0eZ5Z2HwCeJa8a+MC9J6XI2o492RtMQsu7SZkGjQ982VbddRXBZFZYPOtkS6I9cDZYAT8cOeXo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AqNJre2h; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753117262; c=relaxed/simple;
+	bh=h1oejTOcfn/FE2b+ejcQflWVFtGGLIORTNGbuq1sNOY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=T4lHz/sOz3fcWIA4HPtJpVMn86iltU5WhHkgzhW6o17Gy3mglq8vqhc2cQ9lyih8WJIZXakRCSORQcrFAYHxxklrE0RslN2Wqa4GdNolpudKLkCpcUtj5wXJK4TFXjIr531h7LeHEAg/BAqEQ29qa0HPgU9GO88xT+i07cE6xhU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TUEzYCpk; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AqNJre2h"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C019C4CEF6;
-	Mon, 21 Jul 2025 14:35:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TUEzYCpk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D047CC4CEED;
+	Mon, 21 Jul 2025 17:00:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1753108560;
-	bh=dR+6XIT6LFnOdsN8pxrdfpEwQ3vQJS/jcc6mHH5oFko=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=AqNJre2haC3CW+s2Ecyc3X3hhugTWweTM0X51OLx+zSq3NnXvL0Ahm9KjbQ8/e1JL
-	 NRiP/LN62x/0ZQLmkpS1Tng6xt5UViXQVKFCLyvoICDuvY9OL5cJ8RTLbMtuhOx5Ic
-	 6O2ikguiqETjR1LWHcufHt5tph13Js0SFNHrbg9gNhcmoahwT20YHhqGiTpUHH65AI
-	 2s0MncLdD8a0L1bvnNam5a4dVVW3NBjYy6pOuy9pcHN1co4lV1rO8WPgYgu9nMa3HT
-	 0N4s7RV5Kx08ZMQzKxGd3SpQb7rf3rksGaS8Ba8QklC4Kyk7BMjp8ufMhjvDpZTBDO
-	 BmixEqB+0kZgg==
+	s=k20201202; t=1753117261;
+	bh=h1oejTOcfn/FE2b+ejcQflWVFtGGLIORTNGbuq1sNOY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=TUEzYCpk6R0hOoLdylSHY9tzBvWrPk7MG4kTCcEuyTLuXsy5JbkpMw7I64vt8uJAt
+	 QFQZigkgYTI0hFOk/H+Gx18kPZn7qsOtQ6MQdTygt+QDY1v9zGHnyPEBNO9ibWpWki
+	 OOZsYOy1kjXnH5n/Jwo7PQyxmnJn/XmMyUVJtU9LBTgI1iwvPbysL7sztT8Iq+hh4o
+	 0FpRNDxxuEzG6xEYzOIE0LejGHj/u7T/Rr5Tm3CE7zz5hs6yiehrTQj0QcIQ3E3A5w
+	 e4nVjMb8VUM+BvOhw7L3iLfnrb0gYSyA+2WZrKaU2Q6t3CDWmG54JwayRUH1Q5faWg
+	 yGE4xjbIXAVMQ==
+Date: Mon, 21 Jul 2025 18:00:55 +0100
 From: Will Deacon <will@kernel.org>
-To: Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: Make iotlb_sync_map a static property of dmar_domain
-Date: Mon, 21 Jul 2025 15:35:50 +0100
-Message-Id: <175310434713.3742315.9773080738020754231.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20250721051657.1695788-1-baolu.lu@linux.intel.com>
-References: <20250721051657.1695788-1-baolu.lu@linux.intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+	joro@8bytes.org, robh@kernel.org, krzk+dt@kernel.org,
+	conor+dt@kernel.org, heiko@sntech.de,
+	nicolas.dufresne@collabora.com, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, kernel@collabora.com
+Subject: Re: [PATCH v6 3/5] iommu: Add verisilicon IOMMU driver
+Message-ID: <aH5yR9CkYSJ4PaZV@willie-the-truck>
+References: <20250710082450.125585-1-benjamin.gaignard@collabora.com>
+ <20250710082450.125585-4-benjamin.gaignard@collabora.com>
+ <aHTzPwTob8_5rtBS@willie-the-truck>
+ <baa1fcde-f167-4a1b-afca-0a2957a688cc@collabora.com>
+ <aHozv0NG1OBlAH6c@willie-the-truck>
+ <b4169471-fcd0-4415-8281-c5bd722e5f2b@arm.com>
+ <aHpQXy-bnwW56rCn@willie-the-truck>
+ <20250718141401.GD2206214@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250718141401.GD2206214@ziepe.ca>
 
-On Mon, 21 Jul 2025 13:16:57 +0800, Lu Baolu wrote:
-> Commit 12724ce3fe1a ("iommu/vt-d: Optimize iotlb_sync_map for
-> non-caching/non-RWBF modes") dynamically set iotlb_sync_map. This causes
-> synchronization issues due to lack of locking on map and attach paths,
-> racing iommufd userspace operations.
+On Fri, Jul 18, 2025 at 11:14:01AM -0300, Jason Gunthorpe wrote:
+> On Fri, Jul 18, 2025 at 02:47:11PM +0100, Will Deacon wrote:
 > 
-> Invalidation changes must precede device attachment to ensure all flushes
-> complete before hardware walks page tables, preventing coherence issues.
+> > Just because the existing drivers are a mess doesn't mean we should
+> > proliferate it!
 > 
-> [...]
+> If you want to insist on something here it should be for this driver
+> to use the new generic page table code I've written.
+> 
+> Otherwise I don't see the point in trying to improve this in some
+> lesser way.
+> 
+> If this had come in a years time I would probably insist on that, but
+> right now it isn't merged yet and it will still be a little bit before
+> people have time to review it.
+> 
+> Perhaps a compromise where Benjamin comes with an iommupt format
+> header that works for this and we can progress this series and be
+> ready to swap it out down the road?
 
-Applied to iommu (intel/vt-d), thanks!
+I went back and applied the verisilicon patches locally so that I could
+look at them side-by-side with the rockchip driver. Even then, setting
+aside the generic page-table code (which I agree is premature to start
+insisting on for new drivers), the callbacks for .default_domain_ops()
+are very clearly doing the same thing:
 
-[1/1] iommu/vt-d: Make iotlb_sync_map a static property of dmar_domain
-      https://git.kernel.org/iommu/c/cee686775f9c
+.attach_dev:
+	The two big differences are that (1) the VSI driver has two
+	locks instead of one (and it makes me wonder about the RK
+	locking in the IRQ handler and suspend/resume) and (2) the VSI
+	hardware has a TLB flush register whereas the RK driver does
+	a disable/enable cycle.
 
-Cheers,
--- 
+.map_pages:
+	Basically the same but note that the RK driver _already_ has a
+	hook in 'rk_ops' for decoding the DTE
+
+.unmap_pages:
+	The big difference here is that the RK driver has TLB
+	invalidation whereas I don't think the VSI one does. Yes, it
+	implements .flush_iotlb_all, but that's not used any more (and
+	we should probably try to remove it again).
+
+.iova_to_phys:
+	Same comments as .map_pages.
+
+.free:
+	The only difference is that the VSI driver has to free its
+	single-entry top-level (the "PTA").
+
+and so moving these somewhere where they can be shared just seems like
+the obvious, straightforward thing to do.
+
 Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
