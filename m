@@ -1,69 +1,107 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2325E282F5;
-	Tue, 22 Jul 2025 13:20:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81F9428BAAB;
+	Tue, 22 Jul 2025 14:38:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753190402; cv=none; b=h10Nqb38at0VG1MH/IfL5UnEodo97BDN+YWswWoAvxBSUpCERILrme3UYP35lR40QFkWOe+D5B5GWTXHNZhnzd++M+G26nyQcXYYGtA5CmNCJA7c1kTNXN6gJxtdNshUYzc1rrARwZDjsB5leergClBZyJje/4pqNL6Dz5McKzM=
+	t=1753195102; cv=none; b=lo80X79Jx2r+HqCyFkzDTMIXH+TsBiFaPDXLP9Z+etGnNiSOcTvoA1hGbHB0DBtQEs/xPQxbAuvtrYvF/zNH3L/NWnzwWrGnGoMQxi6WrAkonirfvWrZauJFVEPvSwHtTt3+o0YxuDgpOsIDegT5l8miY174U0I/araipq12+Js=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753190402; c=relaxed/simple;
-	bh=yJib0iOZQEofOelVhYch2rjGbC0RQyv5LUtihrEDWS8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EBkjjnYCNam8jXedItFmhReaz4SQjj2bKsS76NuQDPcWJ9Fp5/lQPPhBEuSztSAQsDM/1mpxb5CIBKbkUWatLTMouM7bMhZsG+ptLjmdFF5vvDrC0mksEXipSLY2EkNHqzmAtbKjUQhVmzg2NrOZq/Y6pScIjf4+XakpxJnmhsM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=dfpmbrNo; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753195102; c=relaxed/simple;
+	bh=olKvJssCQ+xMT+WLhpu98KqvBUZv7VvUC2gcGKu9NrU=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=TczecfwlgoB3bUcVEQ7AZxfwITFXToNznxi7vbG1lRkdA5r7WuEaT2tK/diLVOzaxzn3EkJ5e8CYDgYBnRVDnljhHCKwZIvRNZFiYLAuJz8Yv/ycKUPMgY8itik1/3hZhfsvAZhhBZyrcEpEFP9yloAUjjE4/3Qwg8E+js6b4Yw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pnSdUe2v; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="dfpmbrNo"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ED1DC4CEEB;
-	Tue, 22 Jul 2025 13:20:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1753190401;
-	bh=yJib0iOZQEofOelVhYch2rjGbC0RQyv5LUtihrEDWS8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=dfpmbrNoMfXrtHC5vf3Ha4Wrlb4aQIrOeQk1NZN02aMeuLtbG6cnc8l6eQmXDGoGZ
-	 8YcV4p2P1pH01KNp+nOFFnvwEzUcnHxOBL9pPv4/ZgKBFobin0mQrhg2/MMIscXLV4
-	 jZUd9rF2aYnx2z4yJwTr61IGfMQh9qxugwObZxbo=
-Date: Tue, 22 Jul 2025 15:19:58 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Ban ZuoXiang <bbaa@bbaa.fun>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org, bbaa@bbaa.moe
-Subject: Re: [REGRESSION][BISECTED] PCI =?utf-8?Q?P?=
- =?utf-8?Q?assthrough_=2F_SR-IOV_Failure_on_Stable_Kernel_?= =?utf-8?B?4oml?=
- v6.12.35
-Message-ID: <2025072222-dose-lifting-e325@gregkh>
-References: <721D44AF820A4FEB+722679cb-2226-4287-8835-9251ad69a1ac@bbaa.fun>
- <6294f64a-d92d-4619-aef1-a142f5e8e4a5@linux.intel.com>
- <5F974FF84FAB6BD8+4a13da11-7f32-4f58-987a-9b7e1eaeb4aa@bbaa.fun>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pnSdUe2v"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9018DC4CEEB;
+	Tue, 22 Jul 2025 14:38:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1753195102;
+	bh=olKvJssCQ+xMT+WLhpu98KqvBUZv7VvUC2gcGKu9NrU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=pnSdUe2vQ84cN467eqKaYEZORO0ldOInWuIQWSIvlsXp1s2rv3UXpF53hb38nk7GP
+	 d8syRIWGle7KqN2m26+TgpxHfxHzmu8nRWzDr0OjArv5dLmBCXBsjTbw9Sd9NKY9tw
+	 f/m3VCyGuV1dRaMk6SzZRGEJugoBLOK+sh1ZeQIqfequLJn6hplDiflHhKlCeC38sr
+	 Qp8Mbu1+aen7Gwf45yX9lLMSOJkopMJor4Dpb9liiIMbhYaFYLlO6Rro9sjIP25gMI
+	 kxg1WWGdU1cWq0CsDtWdcrS6NMALjqbn06Ezz6E/MmdQhPy+vrYotuypLDYZjtGhWH
+	 1V7RkEeUFkeRA==
+Date: Tue, 22 Jul 2025 09:38:17 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Mario Limonciello <superm1@kernel.org>
+Cc: David Airlie <airlied@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	Simona Vetter <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
+	"open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+	"open list:VFIO DRIVER" <kvm@vger.kernel.org>,
+	"open list:SOUND" <linux-sound@vger.kernel.org>,
+	Daniel Dadap <ddadap@nvidia.com>,
+	Mario Limonciello <mario.limonciello@amd.com>
+Subject: Re: [PATCH v9 8/9] fbcon: Use screen info to find primary device
+Message-ID: <20250722143817.GA2783917@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5F974FF84FAB6BD8+4a13da11-7f32-4f58-987a-9b7e1eaeb4aa@bbaa.fun>
+In-Reply-To: <20250717173812.3633478-9-superm1@kernel.org>
 
-On Tue, Jul 22, 2025 at 09:14:08PM +0800, Ban ZuoXiang wrote:
-> > Thanks for reporting. Can this issue be reproduced with the latest
-> > mainline linux kernel? Can it work if you simply revert this commit?
-> >
-> > Thanks,
-> > baolu 
+On Thu, Jul 17, 2025 at 12:38:11PM -0500, Mario Limonciello wrote:
+> From: Mario Limonciello <mario.limonciello@amd.com>
 > 
-> Hi, baolu
+> On systems with non VGA GPUs fbcon can't find the primary GPU because
+> video_is_primary_device() only checks the VGA arbiter.
 > 
-> The issue cannot be reproduced on the latest mainline kernel (6.16.0-rc7-1-mainline).
-> The Ubuntu v6.14-series kernel which also include the commit is also not affected.
-> I think the issue only affects the v6.12 series in linux-stable tree. Should I wait for the stable maintainers to solve it?
+> Add a screen info check to video_is_primary_device() so that callers
+> can get accurate data on such systems.
 
-Nope!  We need your help as you are the one that can reproduce it :)
+This relies on screen_info, which I think is an x86 BIOS-ism.  Isn't
+there a UEFI console path?  How does that compare with this?  Is that
+relevant or is it something completely different?
 
-Are we missing a backport?  Did we get the backport incorrect?  Should
-we just revert it?
-
-thanks,
-
-greg k-h
+>  bool video_is_primary_device(struct device *dev)
+>  {
+> +#ifdef CONFIG_SCREEN_INFO
+> +	struct screen_info *si = &screen_info;
+> +#endif
+>  	struct pci_dev *pdev;
+>  
+>  	if (!dev_is_pci(dev))
+> @@ -34,7 +38,18 @@ bool video_is_primary_device(struct device *dev)
+>  
+>  	pdev = to_pci_dev(dev);
+>  
+> -	return (pdev == vga_default_device());
+> +	if (!pci_is_display(pdev))
+> +		return false;
+> +
+> +	if (pdev == vga_default_device())
+> +		return true;
+> +
+> +#ifdef CONFIG_SCREEN_INFO
+> +	if (pdev == screen_info_pci_dev(si))
+> +		return true;
+> +#endif
+> +
+> +	return false;
+>  }
+>  EXPORT_SYMBOL(video_is_primary_device);
+>  
+> -- 
+> 2.43.0
+> 
