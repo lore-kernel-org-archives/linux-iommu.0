@@ -1,121 +1,213 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAECE6D17
-	for <iommu@lists.linux.dev>; Tue, 22 Jul 2025 01:32:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9C2A469D;
+	Tue, 22 Jul 2025 01:59:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753147959; cv=none; b=Ig97OlzyiWrcYcMXXiA/lZVQVksCxbleS0ItcGQGr4xLteSeaJ8hfHR02YYASAR4/mLs7PqcjMnriyp7t7Pbe0VtXdLyeg4966LHReVP/umU05uLC0dNRPsjZoaMm7GYygHa8xEe+DN0E0z5NQ2UMZSCKHySwq12AOSMg/zQ0BM=
+	t=1753149580; cv=none; b=MsG2tHqZ4pEHvTCV8VizobZJ8NfLaw9Fu87xQtLik2ez3xt/4cD5Tb227ABUiT4EbNbef5bjsosHwTo98p5Cy6hbBvr0m8Ym9Iig4vktHAPWiJQMfliOO/K5gMUMrUcN4ATx2INj5GUfN3S5kl+d7OCALRn+RPs5GCRRcGKEUHM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753147959; c=relaxed/simple;
-	bh=aChH1HgJ4eYmwJAR2ddTTkWAtifsgMmCJotxgFV2FZs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Pfl8T0Whuq3GPrGBDhBfI2g7r6vBg3OJVmuSQtcp9gDRt4O1YnYfBj8aSKedAUbju7XA1qesMDGhDAULIN9HGU6v8/GSNsDpUbR2vnh7x0vMdQ6r6fEzb8QOrfKTz/ZVi5Djo7vaYlIKXH76s4KRpVWJ1EA0vBmUJmYealIw4Sw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AtnU6VVw; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1753149580; c=relaxed/simple;
+	bh=bm0m4nJCJwr818tAwn/pFGu42E+zoi1w1iM6fehYaY4=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=DYaOQtddDmMUkfOYfdOesNhD9pSxqE4hC0CSZ6M+1f2PkKAWwifEidv7/txoQgeMYyek2QcSIg8O4IuiCaB3Bb/c02gIpkNMd7B/cZdsZLC+l046/liNIDQyUuWFAtAFdXs1Gje70YZqcSiGRbwEz2F5G2yK4vERx2nm63nA0ok=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EWC0dAlh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AtnU6VVw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1753147957; x=1784683957;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=aChH1HgJ4eYmwJAR2ddTTkWAtifsgMmCJotxgFV2FZs=;
-  b=AtnU6VVw0tkWNArh2Jb/USlBVEl/+G5P5bKfgV2eHYTJQJ1yjUwp/XEo
-   Mdba5p6kKlwYm0tDEDGMuPw5Arh8WDFTQGQlgcjO/AUbXZayDYMmBrEr+
-   Z5IxmoZEtdovI5n14a99rX1InFMl+S6eHtcbabMcHNysQmYU7YK/5cG7K
-   37I+1MN3nx1o/+OIM1XaCbOZK0CiIWmKUkzn19Z2ESWNoMBIUeUpxLp6k
-   8M38GZNd0bTfQGHQhDB3mSAEYhZ0ZuPulkSVPsXtnyBvss5gedy/XwHGK
-   ChU4zYvzxdeo9JUuWVE6xXOJ5yu1yUXvPoRC1i1kKN77diFELsnxCrcIj
-   A==;
-X-CSE-ConnectionGUID: HEEH8xoARKGBsuWlwf7vCg==
-X-CSE-MsgGUID: 7OapNcbXQNaeSrdTr8VssA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11499"; a="72951917"
-X-IronPort-AV: E=Sophos;i="6.16,330,1744095600"; 
-   d="scan'208";a="72951917"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2025 18:32:35 -0700
-X-CSE-ConnectionGUID: UyX/m00NTLSJ0ovVv+o2XQ==
-X-CSE-MsgGUID: iirtQ++wTyKGToq86UnOiQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.16,330,1744095600"; 
-   d="scan'208";a="159086479"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2025 18:32:33 -0700
-Message-ID: <6294f64a-d92d-4619-aef1-a142f5e8e4a5@linux.intel.com>
-Date: Tue, 22 Jul 2025 09:30:32 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EWC0dAlh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31C6EC4CEF1;
+	Tue, 22 Jul 2025 01:59:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1753149576;
+	bh=bm0m4nJCJwr818tAwn/pFGu42E+zoi1w1iM6fehYaY4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=EWC0dAlhj3RGOrRbeKwXNZEQj7dwLpmNlpJMJOGQFJE85GZ+moiEa1Lo5iMos3Qjr
+	 P9nKYIeDLQ4eZy0j7EiIWFsHjBTwjNESgh3OSUPqB7N7PW7quWVlVHqlONZtK0g8lF
+	 KJ1oidnQYnfWv7Q8vIVp65CV6DUkdL+QnxJfOZXNcw3OSkjTFxFXT1rr0R8rsDpY2K
+	 ucJCsndqhKZW8W29Y/taeY0dH/RYfm1yodHowS3LRR9UKf92hKqZPyPhytsK3OFjLD
+	 v1k5RcwtfMZ6LCbEpQGU4fldzhk5SDEE8kKB4AqQrAUPuZEs1TypBGhJ9m7qreBZG5
+	 Xs6Eq5MSZ11og==
+Date: Mon, 21 Jul 2025 20:59:34 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Mario Limonciello <superm1@kernel.org>
+Cc: David Airlie <airlied@gmail.com>, Bjorn Helgaas <bhelgaas@google.com>,
+	Alex Deucher <alexander.deucher@amd.com>,
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+	Simona Vetter <simona@ffwll.ch>, Lukas Wunner <lukas@wunner.de>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+	"open list:DRM DRIVERS" <dri-devel@lists.freedesktop.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
+	"open list:PCI SUBSYSTEM" <linux-pci@vger.kernel.org>,
+	"open list:VFIO DRIVER" <kvm@vger.kernel.org>,
+	"open list:SOUND" <linux-sound@vger.kernel.org>,
+	Daniel Dadap <ddadap@nvidia.com>,
+	Mario Limonciello <mario.limonciello@amd.com>
+Subject: Re: [PATCH v9 9/9] PCI: Add a new 'boot_display' attribute
+Message-ID: <20250722015934.GA2763711@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: =?UTF-8?Q?Re=3A_=5BREGRESSION=5D=5BBISECTED=5D_PCI_Passthrough_/_SR?=
- =?UTF-8?Q?-IOV_Failure_on_Stable_Kernel_=E2=89=A5_v6=2E12=2E35?=
-To: Ban ZuoXiang <bbaa@bbaa.fun>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org, bbaa@bbaa.moe
-References: <721D44AF820A4FEB+722679cb-2226-4287-8835-9251ad69a1ac@bbaa.fun>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <721D44AF820A4FEB+722679cb-2226-4287-8835-9251ad69a1ac@bbaa.fun>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <860bcc59-f0d0-4c8d-865c-89127c213cdf@kernel.org>
 
-On 7/21/25 17:59, Ban ZuoXiang wrote:
-> Hi all,
-> 
-> We've identified a regression affecting PCI passthrough / SR-IOV virtualization starting from Linux v6.12.35.
-> 
-> A user reported that [1], beginning with this version, SR-IOV virtual functions fail to initialize properly inside the guest. The issue appears to some MMIO operations not completing correctly in the guest.
-> 
->> [    2.152320] i915 0000:07:00.0: [drm]*ERROR* GT0: GUC: mmio request 0x4509: failure 306/0
->> [    2.152327] i915 0000:07:00.0: [drm]*ERROR* GuC initialization failed (-ENXIO)
->> [    2.152330] i915 0000:07:00.0: [drm]*ERROR* GT0: Failed to initialize GPU, declaring it wedged!
-> Here is the|git bisect| log:
-> 
->> # bad: [fbad404f04d758c52bae79ca20d0e7fe5fef91d3] Linux 6.12.37
->> # good: [e03ced99c437f4a7992b8fa3d97d598f55453fd0] Linux 6.12.33
->> git bisect start 'HEAD' 'v6.12.33'
->> # bad: [b01a29a80cca28f0c7d0864e2d62fb9616051bfc] ACPI: bus: Bail out if acpi_kobj registration fails
->> git bisect bad b01a29a80cca28f0c7d0864e2d62fb9616051bfc
->> # bad: [b01a29a80cca28f0c7d0864e2d62fb9616051bfc] ACPI: bus: Bail out if acpi_kobj registration fails
->> git bisect bad b01a29a80cca28f0c7d0864e2d62fb9616051bfc
->> # good: [35f116a4658f787bea7e82fdd23e2e9789254f5e] drm/xe: Make xe_gt_freq part of the Documentation
->> git bisect good 35f116a4658f787bea7e82fdd23e2e9789254f5e
->> # good: [261f2a655b709e59a8d759ce9fa478778d9e84f4] crypto: qat - add shutdown handler to qat_c3xxx
->> git bisect good 261f2a655b709e59a8d759ce9fa478778d9e84f4
->> # good: [4d0686b53cc9342be3f8ce06336fd5ab0d206355] ata: ahci: Disallow LPM for Asus B550-F motherboard
->> git bisect good 4d0686b53cc9342be3f8ce06336fd5ab0d206355
->> # bad: [ce4ef0274cb66a4750000f33f2d316c0dbaf4515] KVM: s390: rename PROT_NONE to PROT_TYPE_DUMMY
->> git bisect bad ce4ef0274cb66a4750000f33f2d316c0dbaf4515
->> # bad: [8d0645b59b19d97a3b7c5a3fb8dae0c89e98cde9] parisc/unaligned: Fix hex output to show 8 hex chars
->> git bisect bad 8d0645b59b19d97a3b7c5a3fb8dae0c89e98cde9
->> # good: [fed611bd8c7b76b070aa407d0c7558e20d9e1f68] f2fs: fix to do sanity check on ino and xnid
->> git bisect good fed611bd8c7b76b070aa407d0c7558e20d9e1f68
->> # good: [8a008c89e5e5c5332e4c0a33d707db9ddd529f8a] net/sched: fix use-after-free in taprio_dev_notifier
->> git bisect good 8a008c89e5e5c5332e4c0a33d707db9ddd529f8a
->> # bad: [3f2098f4fba7718eb2501207ca6e99d22427f25a] fbdev: Fix do_register_framebuffer to prevent null-ptr-deref in fb_videomode_to_var
->> git bisect bad 3f2098f4fba7718eb2501207ca6e99d22427f25a
->> # bad: [fb5873b779dd5858123c19bbd6959566771e2e83] iommu/vt-d: Restore context entry setup order for aliased devices
->> git bisect bad fb5873b779dd5858123c19bbd6959566771e2e83
->> # good: [81c64c2f84ab581d1c45dbbbca941c13128faee6] net: ftgmac100: select FIXED_PHY
->> git bisect good 81c64c2f84ab581d1c45dbbbca941c13128faee6
->> # first bad commit: [fb5873b779dd5858123c19bbd6959566771e2e83] iommu/vt-d: Restore context entry setup order for aliased devices
->>
->> commit fb5873b779dd5858123c19bbd6959566771e2e83
->> Author: Lu Baolu<baolu.lu@linux.intel.com>
->> Date:   Tue May 20 15:58:49 2025 +0800
->>
->>      iommu/vt-d: Restore context entry setup order for aliased devices
->>      
->>      commit 320302baed05c6456164652541f23d2a96522c06 upstream.
-> This commit was introduced in [2], and the issue only affects stable kernels prior to v6.15. Besides, the Ubuntu v6.14-series kernel used by Proxmox also appears to be affected [3].
+On Mon, Jul 21, 2025 at 07:28:07PM -0500, Mario Limonciello wrote:
+> On 7/21/25 6:00 PM, Bjorn Helgaas wrote:
+> > On Fri, Jul 18, 2025 at 12:44:11PM -0500, Mario Limonciello wrote:
+> > > On 7/18/2025 12:36 PM, Bjorn Helgaas wrote:
+> > > > On Fri, Jul 18, 2025 at 12:29:05PM -0500, Mario Limonciello wrote:
+> > > > > On 7/18/2025 12:25 PM, Bjorn Helgaas wrote:
+> > > > > > On Thu, Jul 17, 2025 at 12:38:12PM -0500, Mario Limonciello wrote:
+> > > > > > > From: Mario Limonciello <mario.limonciello@amd.com>
+> > > > > > > 
+> > > > > > > On systems with multiple GPUs there can be uncertainty which GPU is the
+> > > > > > > primary one used to drive the display at bootup. In some desktop
+> > > > > > > environments this can lead to increased power consumption because
+> > > > > > > secondary GPUs may be used for rendering and never go to a low power
+> > > > > > > state. In order to disambiguate this add a new sysfs attribute
+> > > > > > > 'boot_display' that uses the output of video_is_primary_device() to
+> > > > > > > populate whether a PCI device was used for driving the display.
+> > > > > > 
+> > > > > > > +What:		/sys/bus/pci/devices/.../boot_display
+> > > > > > > +Date:		October 2025
+> > > > > > > +Contact:	Linux PCI developers <linux-pci@vger.kernel.org>
+> > > > > > > +Description:
+> > > > > > > +		This file indicates that displays connected to the device were
+> > > > > > > +		used to display the boot sequence.  If a display connected to
+> > > > > > > +		the device was used to display the boot sequence the file will
+> > > > > > > +		be present and contain "1".
+> > > > > > 
+> > > > > > >     int __must_check pci_create_sysfs_dev_files(struct pci_dev *pdev)
+> > > > > > >     {
+> > > > > > > +	int retval;
+> > > > > > > +
+> > > > > > >     	if (!sysfs_initialized)
+> > > > > > >     		return -EACCES;
+> > > > > > > +	retval = pci_create_boot_display_file(pdev);
+> > > > > > 
+> > > > > > In addition to Mani's question about whether /sys/bus/pci/ is
+> > > > > > the right place for this (which is a very good question), it's
+> > > > > > also been pointed out to me that we've been trying to get rid
+> > > > > > of pci_create_sysfs_dev_files() for years.
+> > > > > > 
+> > > > > > If it's possible to make this a static attribute that would be
+> > > > > > much, much cleaner.
+> > > > > 
+> > > > > Right - I tried to do this, but the problem is at the time the
+> > > > > PCI device is created the information needed to make the
+> > > > > judgement isn't ready.  The options end up being:
+> > > > > * a sysfs file for every display device with 0/1
+> > > > > * a sysfs file that is not accurate until later in the boot
+> > > > 
+> > > > What's missing?  The specifics might be helpful if someone has
+> > > > another crack at getting rid of pci_create_sysfs_dev_files() in
+> > > > the future.
+> > > 
+> > > The underlying SCREEN_INFO code tries to walk through all the PCI
+> > > devices in a loop, but at the time all the devices are walked the
+> > > memory regions associated with the device weren't populated.
+> > 
+> > Which loop are you referring to that walks through all the PCI
+> > devices?  I see this:
+> > 
+> >    efifb_set_system
+> >      for_each_pci_dev(dev)
+> > 
+> > but that only looks at VGA devices and IIUC you also want to look at
+> > non-VGA GPUs.
 
-Thanks for reporting. Can this issue be reproduced with the latest
-mainline linux kernel? Can it work if you simply revert this commit?
+[I assume the loop is the "while (pdev =
+pci_get_base_class(PCI_BASE_CLASS_DISPLAY))" in
+__screen_info_pci_dev(), which indeed walks through all known PCI
+devices]
 
-Thanks,
-baolu
+> > I don't see a loop in *this* series, where the screen_info path looks
+> > like this:
+> > 
+> >    pci_create_boot_display_file
+> >      video_is_primary_device
+> >        screen_info_pci_dev      # added by "fbcon: Use screen info to find primary device"
+> >          screen_info_resources
+> >          __screen_info_pci_dev
+> > 
+> > and we're basically matching the screen_info base/address with BAR
+> > values.
+> > 
+> > The usual problem is that BARs may not have been assigned by the
+> > time pci_device_add() -> device_add() creates the static
+> > attributes.
+> > 
+> > So we call pci_assign_unassigned_root_bus_resources() to assign
+> > all the BARs.  Then we call pci_create_sysfs_dev_files(), where
+> > pci_create_resource_files() creates a "resource%d" file for each
+> > BAR.
+> > 
+> > But since we're trying to find the GPU that was used by BIOS, I
+> > assume its BARs were programmed by BIOS and we shouldn't have to
+> > wait until after pci_assign_unassigned_root_bus_resources().
+> 
+> Yes it was screen_info_pci_dev() and __screen_info_pci_dev().  The
+> resources weren't ready on the first call into
+> __screen_info_pci_dev().
+>
+> That's why the attribute needed to be created later.
+
+I don't understand this.  IIUC, screen_info contains addresses
+programmed by BIOS.  If we want to use that to match with a PCI
+device, we have to compare with the BAR contents *before* Linux does
+any assignments of its own.
+
+So the only thing this should depend on is the BAR value at BIOS ->
+Linux handoff, which we know at the time of device_add(), and we
+should be able to do something like this:
+
+  bool pci_video_is_primary_device(struct pci_dev *pdev)
+  {
+    struct screen_info *si = &screen_info;
+    struct resource res[SCREEN_INFO_MAX_RESOURCES];
+    ssize_t i, numres;
+
+    numres = screen_info_resources(si, res, ARRAY_SIZE(res));
+    ...
+
+    for (i = 0; i < numres; ++i) {
+      if (pci_find_resource(pdev, &res[i]))
+        return true;
+    }
+
+    return false;
+  }
+
+  static umode_t pci_dev_boot_display_is_visible(...)
+  {
+    struct pci_dev *pdev = to_pci_dev(kobj_to_dev(kobj));
+
+    if (pci_video_is_primary_device(pdev))
+      return a->mode;
+
+    return 0;
+  }
+
+We should be able to check each BAR of each device in this path, with
+no loop through the devices at all:
+
+  pci_device_add
+    device_add
+      device_add_attrs
+        device_add_groups
+          ...
+            create_files
+              grp->is_visible()
+                pci_dev_boot_display_is_visible
+
+Bjorn
