@@ -1,73 +1,73 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 552EE283138
-	for <iommu@lists.linux.dev>; Wed, 23 Jul 2025 13:19:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A06E1509AB
+	for <iommu@lists.linux.dev>; Wed, 23 Jul 2025 13:37:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753276781; cv=none; b=Ya3sxlxEKjHoSuFrgR0+jeK0Vnye8fTfGCExIoa1d5HLyHqIoCrdS0U7Jw9v4EqAvD/+pn0cT7RTb7rpADMlALqK7Z9lSekskC7H9TuIPrUgCqWLK/Fp1q32TUZFxYAcrq4YetlB3MwjHaFUW+fmmw4jLag6mPWv58I7qw/1tBo=
+	t=1753277882; cv=none; b=qXHavbux0FKicvac6g7edA2SU47CQVLDPeYnkhXtHnfgum/zmKd0/h+zgvCQEOr3elQ++SqwLD/IIjlmBv312uhXZZoHT08ka2xGeEZbw9j+Hh3rlpuj99uu3RTzFTB5Cbw+UZU/WTnC4r1XADGJU9rG6y4Lun2oPpnXcl7jyK4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753276781; c=relaxed/simple;
-	bh=3wO7ofU7WlEoFNNaUev6B9+Jglx7cQTZpeu6LIwLyC4=;
+	s=arc-20240116; t=1753277882; c=relaxed/simple;
+	bh=loj95alexQ30u6RYGhFIYnYsaA5hCj9ehW16PyQpKvI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bAQKbbgQlnfqhEirHDw8YWvBVYPDjK0/zAHWXDhJH0ZAD/dvpcnaLDYxorRpSSiko9tmRQ4pC81UIXJ+p1mCPUFpmLhAwg3fYjP4/vE6jZdG9y4IdOPEhWSlPo4r6B9NCaEOZ9Amr3zZShG85tERni+czmKgKVsDjLehyRCdDdE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MYR8eXwB; arc=none smtp.client-ip=209.85.214.178
+	 Content-Type:Content-Disposition:In-Reply-To; b=Wtc4LXR0sE9I11ZsyC4uFOML/YDlFJ8Kzil+lt635lh1l5sSBkaVKXiubkknTLHNEA0JRzTqkfZiC/WCg4gNWgj3Ig1bOUhvvpPDtHPYMbCc96nyb+oLfSEgt7ojcOh+UU7BZwZFt0eVhgERNnFBIfr4GnaysHB+ewZoNV1veH8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ReDeWjYW; arc=none smtp.client-ip=209.85.214.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MYR8eXwB"
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-237f18108d2so177085ad.0
-        for <iommu@lists.linux.dev>; Wed, 23 Jul 2025 06:19:40 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ReDeWjYW"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-235e389599fso213725ad.0
+        for <iommu@lists.linux.dev>; Wed, 23 Jul 2025 06:37:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1753276779; x=1753881579; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1753277879; x=1753882679; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Hb0/7yMT9K2SX5uLjkUISpIiyNMkZYnJ5i8nHLSmhqw=;
-        b=MYR8eXwBZGOlRpJsCqeM7pvlho6Mi2BZ7zYK4+yZv9Ny597xVgxD6wdIpI4S/zM7eG
-         MwzPJAOnljJ5TD2TRI/iygmpTTp7yv2VtxldsLEnjiPxEOEnslzUXsV0YCvj8831sPF5
-         hPDity8DpxZVGQ155/aj0wTtmszPnBw6Rag8fuiVi0M0Ekm+j3drRnU0MXnM7J/64FXJ
-         UNboZ3+2VJdY/8tc26v0yRP9T0/mnaZLZoEiwbStWk3sL8jmDsoIR715xBv4d5JLiIlO
-         wrWYcLWfnPe7Vf0OIiLjr6hcaARtygLSTkX6VRx+i71elELkBMyu7F1euZ9YRns8sy/1
-         oGhw==
+        bh=m+JLK8o3lT0td/MYczWJEZnb2L8d00AyuRGacnswf14=;
+        b=ReDeWjYWi4WBmiGe7nINCSSmtLjNxNKMYqjBuLdGlXiW7qJwLK01fr5PyWwBl379B8
+         GBLF3XuGN1Lsaxaaj+qtL66X542C/U8z4mME/C0PKtNNTAsIHV2PR9xUAI+4YR2FpjWZ
+         8BPclLN4KKhhPMc+lrkqihG9+NgC2xvC/52SkHUGkvTBOwwiybtero7v5vTjVUTkYYmC
+         FKiCde2F3pLuSOeydyZ7LHldG/6VcTmJL2hlVOZAzMtVVTwwcUSUgkOLmURydsdYIJYN
+         OfiH8lnGxRYFfjGKqXlqRegR3Ehhu2f8fG35DQSyHrF1dryhaIcpkynmvGkcYWVmExVK
+         9wnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753276779; x=1753881579;
+        d=1e100.net; s=20230601; t=1753277879; x=1753882679;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Hb0/7yMT9K2SX5uLjkUISpIiyNMkZYnJ5i8nHLSmhqw=;
-        b=SkcjLLCLe9CJirswOsKmAuVTxv3w63c07DXe86j3j3Zgm0BGjIOyjIcQTdB8QbFAZO
-         Y6AawykoPXQuu3U66SFAM/8FLDfeo2c8h0plah3HyPMReXt4/y2NR1WL8G//5LbmqrCK
-         gzS2/ugfsmeBwXp27c9TMh5ThsN3EWwz7+NbS6s6Kc0i6mi9ZB3cEd5WQ66HAm/USCyR
-         bxOTLId9eoi0lLsRzAnqxfYnGtPHb0/NjtrI8qHZPoNdrGYTDBcIolhp/su5vlZQBeen
-         IlYALa/JuZvHSqej2lHEgoEJmgpB2gpmO0B3DU+Tsn23AB0t8TFNqI0K/dGKuCAhES2F
-         6l2w==
-X-Forwarded-Encrypted: i=1; AJvYcCXzIAe9S7CE4Tw1uQtf3KYRbdcfdQa/ggBBqTViR/fpjB7+s9+8Cwy5Z/QxMF/TC1sA2BNcSA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw2kIKBrFC7xPGkXk9Doc+nWfmdwou7gWBNp69ceiC6LtLI8FnY
-	EvCROzFgRk48y7cvft2dd1Sd6FXdvegeCIRyvGXeRZMwN8+a1Bp1fCn+1FcDIcc/wA==
-X-Gm-Gg: ASbGncuOT40+p+nGgpOdMhJfbdNNe3s6yO+IuLAoE41VMqzkK7NWVPSqKZuilxCjxSb
-	bi7qdAt2CbGnRWSqqH4hJUGKW6sMWhaKUSJAuVGoSEieV8cOoYBDgwfoj8Zt7RawqBASjGrcdeK
-	0hZ2MKWimde/dEGwmPvUZgW/PS/ioe8/4j2hORwHRuBC6w0L7Y1ccpznWYHIsJoMq545kxvl9K1
-	JfaIqQOQ0BnOMXLazAEznrkoOBh17b2XPpndci+942sh2KFwKa4UOOClfobDuX2qU0Y39mNLDyh
-	klYNrL7YgACLUk3XC5I+1WDQWFf2nBvGNYSYHGNEhHlp35YVAMDa5VqcTd0P8DLaGS0/urajLld
-	L7HRmwHFM3bUCFts073FgUTZ+9Q2ZZMjkmNFrGH0Nsgcfkm27zzC8nww8ZhTpY8bn6L8=
-X-Google-Smtp-Source: AGHT+IHbupigD7UyWy96X++uPcWs3IP3RJjiuOFwsDzZsLXWJ+ydnHjuzs1Cy05YPmOdWDc6ThTsAg==
-X-Received: by 2002:a17:902:d4cf:b0:23d:d290:70c with SMTP id d9443c01a7336-23f9774ca0amr3106875ad.6.1753276779019;
-        Wed, 23 Jul 2025 06:19:39 -0700 (PDT)
+        bh=m+JLK8o3lT0td/MYczWJEZnb2L8d00AyuRGacnswf14=;
+        b=ey9mzKxQv7m/VJTFNM1NpOqb2j+jnRXYvFRrH9+T2LxiOtYAKeh2MJVHrHCar7oEla
+         9XQ6+EasGvnuI7z2jJ85scj13hDZ3XqkZfri0FZgeQYkgWLHt8iQzkIduVleD4vlg/L7
+         /VfEq6xrDULpVhH+Yshrnw+0ziQgEkXLGWNhJaN4r6tl8IUKuzouBEQdV2yuESg1cErz
+         uEM4INM8YsT0FJiQD5l4AcJOMcbokDKQc2squstWnXONKkAp8S/iI4eXL3MDb+H8ebK+
+         8TdU8mJ2OnycW2W0wyzA11xvmrDecEJbZNfq2+9CIu2ZrBF3Lq+opWyGF7J8QPpezD8y
+         vGwg==
+X-Forwarded-Encrypted: i=1; AJvYcCWVVrTbkw3Ur/VzCs1K5Oo6S45yCXN1266D+96uvBg5gf7tVdZPwm54CRBTMktjoRr2x0cSlw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxcayKm8K5NKclL23PUtu+szgk19Whzrt0P49PVL8dMRYEqad5K
+	b5giDg31Oduq7bH+/uiA7QNv/adtegi/Yei53T/VFJFm/RO3pOMzWJ1mD9pS69GuWw==
+X-Gm-Gg: ASbGncswCo9G1byXEoRH8xhq8NCjDv7FSi0PIHKrP9/fNaCr8V2aFV3h+8eAIxDE6qN
+	5Pqkqi5zRoGgHh03odf97KqUnh7GyhnyuuV0H6vuaSaM+HiSl5xwgMQ6JEpdeXCS882WJMkBAXw
+	jtb9/XDwYV7DdrdtRSma9gmet4mdMvEm8YfE1ZTKz8XOsQwp7KY5scUK4Sg87r98Tb6iYKeQvvu
+	fltoBIZrgYXQAfmcrlXQrxZXxtHPgDT9wrkGZ61DG2kR5nrWib4XveIN6xgDAyAULrMS+iCgRfp
+	Sn7sse537tcKv80lu0zyCdm/yeh/V0bVbzLCQF1BsdOjmrLRrc7U+pk5dQZaILZmwbx1G+0Q6Ek
+	1jZ50K0t4S72bBuQnGdfo6bmFfy2E8KDvb5J1rkgrA5atONSAh87eSGH6UGGvGR5E3dw=
+X-Google-Smtp-Source: AGHT+IHNDySI/nH+OMkMv0ChQEdtb4UFgDV0ZT5tuGjSaRubSm3kOT/oocHqF0dfxqVXTEfR3wYujw==
+X-Received: by 2002:a17:903:15c3:b0:234:13ad:7f9f with SMTP id d9443c01a7336-23f978e398cmr3323895ad.22.1753277878789;
+        Wed, 23 Jul 2025 06:37:58 -0700 (PDT)
 Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-23e3b5e3d4esm96942565ad.23.2025.07.23.06.19.35
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-23f75d13bdfsm77086475ad.51.2025.07.23.06.37.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Jul 2025 06:19:37 -0700 (PDT)
-Date: Wed, 23 Jul 2025 13:19:31 +0000
+        Wed, 23 Jul 2025 06:37:58 -0700 (PDT)
+Date: Wed, 23 Jul 2025 13:37:53 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Nicolin Chen <nicolinc@nvidia.com>
 Cc: jgg@nvidia.com, will@kernel.org, joro@8bytes.org, robin.murphy@arm.com,
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] iommu/arm-smmu-v3: Do not bother impl_ops if
- IOMMU_VIOMMU_TYPE_ARM_SMMUV3
-Message-ID: <aIDhY3JTaT3JC9T4@google.com>
+Subject: Re: [PATCH v3 2/2] iommu/arm-smmu-v3: Replace vsmmu_size/type with
+ get_viommu_size
+Message-ID: <aIDlsUvF2Xbdelvx@google.com>
 References: <20250721200444.1740461-1-nicolinc@nvidia.com>
- <20250721200444.1740461-2-nicolinc@nvidia.com>
+ <20250721200444.1740461-3-nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,110 +76,141 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250721200444.1740461-2-nicolinc@nvidia.com>
+In-Reply-To: <20250721200444.1740461-3-nicolinc@nvidia.com>
 
-On Mon, Jul 21, 2025 at 01:04:43PM -0700, Nicolin Chen wrote:
-> When viommu type is IOMMU_VIOMMU_TYPE_ARM_SMMUV3, always return or init the
-> standard struct arm_vsmmu, instead of going through impl_ops that must have
-> its own viommu type than the standard IOMMU_VIOMMU_TYPE_ARM_SMMUV3.
-> 
-> Given that arm_vsmmu_init() is called after arm_smmu_get_viommu_size(), any
-> unsupported viommu->type must be a corruption. And it must be a driver bug
-> that its vsmmu_size and vsmmu_init ops aren't paired. Warn these two cases.
+On Mon, Jul 21, 2025 at 01:04:44PM -0700, Nicolin Chen wrote:
+> It's more flexible to have a get_viommu_size op. Replace static vsmmu_size
+> and vsmmu_type with that.
 > 
 > Suggested-by: Will Deacon <will@kernel.org>
 > Acked-by: Will Deacon <will@kernel.org>
 > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-
 > ---
->  .../arm/arm-smmu-v3/arm-smmu-v3-iommufd.c     | 24 ++++++++++---------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 14 +++++++++++
->  2 files changed, 27 insertions(+), 11 deletions(-)
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c    |  8 ++------
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        |  4 ++--
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |  3 +--
+>  drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c     | 14 ++++++++++++--
+>  4 files changed, 17 insertions(+), 12 deletions(-)
 > 
 > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> index d9bea8f1f636..c034d6c5468f 100644
+> index c034d6c5468f..8cd8929bbfdf 100644
 > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
 > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> @@ -420,14 +420,13 @@ size_t arm_smmu_get_viommu_size(struct device *dev,
->  	    !(smmu->features & ARM_SMMU_FEAT_S2FWB))
->  		return 0;
+> @@ -423,10 +423,9 @@ size_t arm_smmu_get_viommu_size(struct device *dev,
+>  	if (viommu_type == IOMMU_VIOMMU_TYPE_ARM_SMMUV3)
+>  		return VIOMMU_STRUCT_SIZE(struct arm_vsmmu, core);
 >  
-> -	if (smmu->impl_ops && smmu->impl_ops->vsmmu_size &&
-> -	    viommu_type == smmu->impl_ops->vsmmu_type)
-> -		return smmu->impl_ops->vsmmu_size;
-> +	if (viommu_type == IOMMU_VIOMMU_TYPE_ARM_SMMUV3)
-> +		return VIOMMU_STRUCT_SIZE(struct arm_vsmmu, core);
->  
-> -	if (viommu_type != IOMMU_VIOMMU_TYPE_ARM_SMMUV3)
-> +	if (!smmu->impl_ops || !smmu->impl_ops->vsmmu_size ||
-> +	    viommu_type != smmu->impl_ops->vsmmu_type)
+> -	if (!smmu->impl_ops || !smmu->impl_ops->vsmmu_size ||
+> -	    viommu_type != smmu->impl_ops->vsmmu_type)
+> +	if (!smmu->impl_ops || !smmu->impl_ops->get_viommu_size)
 >  		return 0;
-> -
-> -	return VIOMMU_STRUCT_SIZE(struct arm_vsmmu, core);
-> +	return smmu->impl_ops->vsmmu_size;
+> -	return smmu->impl_ops->vsmmu_size;
+> +	return smmu->impl_ops->get_viommu_size(viommu_type);
 >  }
 >  
 >  int arm_vsmmu_init(struct iommufd_viommu *viommu,
-> @@ -447,12 +446,15 @@ int arm_vsmmu_init(struct iommufd_viommu *viommu,
->  	/* FIXME Move VMID allocation from the S2 domain allocation to here */
->  	vsmmu->vmid = s2_parent->s2_cfg.vmid;
+> @@ -451,9 +450,6 @@ int arm_vsmmu_init(struct iommufd_viommu *viommu,
+>  		return 0;
+>  	}
 >  
-> -	if (smmu->impl_ops && smmu->impl_ops->vsmmu_init &&
-> -	    viommu->type == smmu->impl_ops->vsmmu_type)
-> -		return smmu->impl_ops->vsmmu_init(vsmmu, user_data);
-> +	if (viommu->type == IOMMU_VIOMMU_TYPE_ARM_SMMUV3) {
-> +		viommu->ops = &arm_vsmmu_ops;
-> +		return 0;
-> +	}
->  
-> -	viommu->ops = &arm_vsmmu_ops;
-> -	return 0;
-> +	/* Unsupported type was rejected in arm_smmu_get_viommu_size() */
-> +	if (WARN_ON(viommu->type != smmu->impl_ops->vsmmu_type))
-> +		return -EOPNOTSUPP;
-> +	return smmu->impl_ops->vsmmu_init(vsmmu, user_data);
+> -	/* Unsupported type was rejected in arm_smmu_get_viommu_size() */
+> -	if (WARN_ON(viommu->type != smmu->impl_ops->vsmmu_type))
+> -		return -EOPNOTSUPP;
+>  	return smmu->impl_ops->vsmmu_init(vsmmu, user_data);
 >  }
 >  
->  int arm_vmaster_report_event(struct arm_smmu_vmaster *vmaster, u64 *evt)
 > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 181d07bc1a9d..9f4ad3705801 100644
+> index 9f4ad3705801..f56113107c8a 100644
 > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -4703,6 +4703,7 @@ static void arm_smmu_impl_remove(void *data)
->  static struct arm_smmu_device *arm_smmu_impl_probe(struct arm_smmu_device *smmu)
->  {
->  	struct arm_smmu_device *new_smmu = ERR_PTR(-ENODEV);
-> +	const struct arm_smmu_impl_ops *ops;
->  	int ret;
+> @@ -4716,8 +4716,8 @@ static struct arm_smmu_device *arm_smmu_impl_probe(struct arm_smmu_device *smmu)
 >  
->  	if (smmu->impl_dev && (smmu->options & ARM_SMMU_OPT_TEGRA241_CMDQV))
-> @@ -4713,11 +4714,24 @@ static struct arm_smmu_device *arm_smmu_impl_probe(struct arm_smmu_device *smmu)
->  	if (IS_ERR(new_smmu))
->  		return new_smmu;
->  
-> +	ops = new_smmu->impl_ops;
-> +	if (ops) {
-> +		/* vsmmu_size and vsmmu_init ops must be paired */
-> +		if (WARN_ON(!ops->vsmmu_size != !ops->vsmmu_init)) {
-> +			ret = -EINVAL;
-> +			goto err_remove;
-> +		}
-> +	}
-> +
->  	ret = devm_add_action_or_reset(new_smmu->dev, arm_smmu_impl_remove,
->  				       new_smmu);
->  	if (ret)
->  		return ERR_PTR(ret);
->  	return new_smmu;
-> +
-> +err_remove:
-> +	arm_smmu_impl_remove(new_smmu);
-> +	return ERR_PTR(ret);
+>  	ops = new_smmu->impl_ops;
+>  	if (ops) {
+> -		/* vsmmu_size and vsmmu_init ops must be paired */
+> -		if (WARN_ON(!ops->vsmmu_size != !ops->vsmmu_init)) {
+> +		/* get_viommu_size and vsmmu_init ops must be paired */
+> +		if (WARN_ON(!ops->get_viommu_size != !ops->vsmmu_init)) {
+>  			ret = -EINVAL;
+>  			goto err_remove;
+>  		}
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 3fa02c51df9f..e332f5ba2f8a 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -728,8 +728,7 @@ struct arm_smmu_impl_ops {
+>  	 */
+>  	void *(*hw_info)(struct arm_smmu_device *smmu, u32 *length,
+>  			 enum iommu_hw_info_type *type);
+> -	const size_t vsmmu_size;
+> -	const enum iommu_viommu_type vsmmu_type;
+> +	size_t (*get_viommu_size)(enum iommu_viommu_type viommu_type);
+>  	int (*vsmmu_init)(struct arm_vsmmu *vsmmu,
+>  			  const struct iommu_user_data *user_data);
+>  };
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+> index 4c86eacd36b1..46005ed52bc2 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
+> @@ -832,6 +832,13 @@ static void *tegra241_cmdqv_hw_info(struct arm_smmu_device *smmu, u32 *length,
+>  	return info;
 >  }
 >  
->  static int arm_smmu_device_probe(struct platform_device *pdev)
+> +static size_t tegra241_cmdqv_get_vintf_size(enum iommu_viommu_type viommu_type)
+> +{
+> +	if (viommu_type != IOMMU_VIOMMU_TYPE_TEGRA241_CMDQV)
+> +		return 0;
+> +	return VIOMMU_STRUCT_SIZE(struct tegra241_vintf, vsmmu.core);
+> +}
+> +
+>  static struct arm_smmu_impl_ops tegra241_cmdqv_impl_ops = {
+>  	/* For in-kernel use */
+>  	.get_secondary_cmdq = tegra241_cmdqv_get_cmdq,
+> @@ -839,8 +846,7 @@ static struct arm_smmu_impl_ops tegra241_cmdqv_impl_ops = {
+>  	.device_remove = tegra241_cmdqv_remove,
+>  	/* For user-space use */
+>  	.hw_info = tegra241_cmdqv_hw_info,
+> -	.vsmmu_size = VIOMMU_STRUCT_SIZE(struct tegra241_vintf, vsmmu.core),
+> -	.vsmmu_type = IOMMU_VIOMMU_TYPE_TEGRA241_CMDQV,
+> +	.get_viommu_size = tegra241_cmdqv_get_vintf_size,
+>  	.vsmmu_init = tegra241_cmdqv_init_vintf_user,
+>  };
+>  
+> @@ -1273,6 +1279,10 @@ tegra241_cmdqv_init_vintf_user(struct arm_vsmmu *vsmmu,
+>  	phys_addr_t page0_base;
+>  	int ret;
+>  
+> +	/* Unsupported type was rejected in tegra241_cmdqv_get_vintf_size() */
+> +	if (WARN_ON(vsmmu->core.type != IOMMU_VIOMMU_TYPE_TEGRA241_CMDQV))
+> +		return -EOPNOTSUPP;
+> +
+
+Nit: I don't think we'd expect a call to this if the vintf_size returned
+0? I see that in iommufd_viommu_alloc_ioctl, we already have a check:
+
+
+        viommu_size = ops->get_viommu_size(idev->dev, cmd->type);
+	        if (!viommu_size) {
+			rc = -EOPNOTSUPP;
+			goto out_put_idev;
+		}
+
+And call ops->viommu_init only when the above isn't met. Thus,
+if we still end up calling ops->viommu_init, shouldn't we BUG_ON() it?
+I'd rather have the core code handle such things (since the driver is
+simply implementing the ops) and BUG_ON() something that's terribly
+wrong..
+
+I can't see any ops->viommu_init being called elsewhere atm, let me
+know if there's a different path that I missed..
+
+Apart from the above nit,
+
+Reviewed-by: Pranjal Shrivastava <praan@google.com>
+
+>  	if (!user_data)
+>  		return -EINVAL;
+>  
 > -- 
 > 2.43.0
 > 
