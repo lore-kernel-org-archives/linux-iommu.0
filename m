@@ -1,217 +1,156 @@
-Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A06E1509AB
-	for <iommu@lists.linux.dev>; Wed, 23 Jul 2025 13:37:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D579E1FAC42
+	for <iommu@lists.linux.dev>; Wed, 23 Jul 2025 15:36:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753277882; cv=none; b=qXHavbux0FKicvac6g7edA2SU47CQVLDPeYnkhXtHnfgum/zmKd0/h+zgvCQEOr3elQ++SqwLD/IIjlmBv312uhXZZoHT08ka2xGeEZbw9j+Hh3rlpuj99uu3RTzFTB5Cbw+UZU/WTnC4r1XADGJU9rG6y4Lun2oPpnXcl7jyK4=
+	t=1753284980; cv=none; b=qOk2xujJdNuuyrG+FTvvxOuVeQcX9NRaW8Z5ktaYwCDwhUOuUvNUGyxGpMH+cr6fokG3UiLAtXKHRvy5PNIyzayD9lJwU6CAszw5xn0TocdI/xeaCRmolk6O9x7/hiUCqvYGSYZ2BnQK5u3HAo1wulf6JlGzvbQH6KZipZ8QYCU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753277882; c=relaxed/simple;
-	bh=loj95alexQ30u6RYGhFIYnYsaA5hCj9ehW16PyQpKvI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Wtc4LXR0sE9I11ZsyC4uFOML/YDlFJ8Kzil+lt635lh1l5sSBkaVKXiubkknTLHNEA0JRzTqkfZiC/WCg4gNWgj3Ig1bOUhvvpPDtHPYMbCc96nyb+oLfSEgt7ojcOh+UU7BZwZFt0eVhgERNnFBIfr4GnaysHB+ewZoNV1veH8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ReDeWjYW; arc=none smtp.client-ip=209.85.214.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1753284980; c=relaxed/simple;
+	bh=VA9c0QPMO5+Bov+cQomqLQw1whJoVSRf3QyImu7EoAg=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=fpcXO5pSo2X+Sp/Rdrmp7hgDyMJ0W/FiDR0eRNblFZZnzy20lfR8o/Hw6JMmD/oVmoQ5bTpGdzKpWJG0vQRdGclvQKN+pa95VaWjCykDoPm7X/KX2XTgm6ISUif0+EqcNglcqyhoUtPmZAjW7olYnvaTLB8SoSy88yKlVYRjdJw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ywWiGdZu; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ReDeWjYW"
-Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-235e389599fso213725ad.0
-        for <iommu@lists.linux.dev>; Wed, 23 Jul 2025 06:37:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ywWiGdZu"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4563a57f947so5836085e9.1
+        for <iommu@lists.linux.dev>; Wed, 23 Jul 2025 08:36:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1753277879; x=1753882679; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=m+JLK8o3lT0td/MYczWJEZnb2L8d00AyuRGacnswf14=;
-        b=ReDeWjYWi4WBmiGe7nINCSSmtLjNxNKMYqjBuLdGlXiW7qJwLK01fr5PyWwBl379B8
-         GBLF3XuGN1Lsaxaaj+qtL66X542C/U8z4mME/C0PKtNNTAsIHV2PR9xUAI+4YR2FpjWZ
-         8BPclLN4KKhhPMc+lrkqihG9+NgC2xvC/52SkHUGkvTBOwwiybtero7v5vTjVUTkYYmC
-         FKiCde2F3pLuSOeydyZ7LHldG/6VcTmJL2hlVOZAzMtVVTwwcUSUgkOLmURydsdYIJYN
-         OfiH8lnGxRYFfjGKqXlqRegR3Ehhu2f8fG35DQSyHrF1dryhaIcpkynmvGkcYWVmExVK
-         9wnw==
+        d=linaro.org; s=google; t=1753284976; x=1753889776; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:references:cc:to:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yopYTcaLHy/YngxUjGRVUYbmllYbCh12wVB+pNQbzC0=;
+        b=ywWiGdZu9n+iiUnMkzB8BxpaG79cgeV5Em7v4+efuuG1+Flp93jefMAWTFkj0hhJvh
+         f3X+FJYk+2QmlBkSANZOmPdDkeYrqF+08+J4ThMj9sk41cdJS+6IeK7BSr10CCvY9Czs
+         yYhwUlhCU5dpyelnlGMiEdpvvGb61avYOX0HUNs5nb+F0u+qsUF/JTn69R3hfvLY0ETT
+         Dx3nLa1Qk09IaQ8RFpUKYl7OS+bBw14titVIlu28TU9Xina8sURwWCdz4cGjUhB2wWx3
+         Ppaj2dAGUtPZcYR/5Sitz/x6ojH9MBYqwREhR8ScMS5yvyYIDSWb2411joK6rZkJ6+uH
+         SMdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753277879; x=1753882679;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=m+JLK8o3lT0td/MYczWJEZnb2L8d00AyuRGacnswf14=;
-        b=ey9mzKxQv7m/VJTFNM1NpOqb2j+jnRXYvFRrH9+T2LxiOtYAKeh2MJVHrHCar7oEla
-         9XQ6+EasGvnuI7z2jJ85scj13hDZ3XqkZfri0FZgeQYkgWLHt8iQzkIduVleD4vlg/L7
-         /VfEq6xrDULpVhH+Yshrnw+0ziQgEkXLGWNhJaN4r6tl8IUKuzouBEQdV2yuESg1cErz
-         uEM4INM8YsT0FJiQD5l4AcJOMcbokDKQc2squstWnXONKkAp8S/iI4eXL3MDb+H8ebK+
-         8TdU8mJ2OnycW2W0wyzA11xvmrDecEJbZNfq2+9CIu2ZrBF3Lq+opWyGF7J8QPpezD8y
-         vGwg==
-X-Forwarded-Encrypted: i=1; AJvYcCWVVrTbkw3Ur/VzCs1K5Oo6S45yCXN1266D+96uvBg5gf7tVdZPwm54CRBTMktjoRr2x0cSlw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxcayKm8K5NKclL23PUtu+szgk19Whzrt0P49PVL8dMRYEqad5K
-	b5giDg31Oduq7bH+/uiA7QNv/adtegi/Yei53T/VFJFm/RO3pOMzWJ1mD9pS69GuWw==
-X-Gm-Gg: ASbGncswCo9G1byXEoRH8xhq8NCjDv7FSi0PIHKrP9/fNaCr8V2aFV3h+8eAIxDE6qN
-	5Pqkqi5zRoGgHh03odf97KqUnh7GyhnyuuV0H6vuaSaM+HiSl5xwgMQ6JEpdeXCS882WJMkBAXw
-	jtb9/XDwYV7DdrdtRSma9gmet4mdMvEm8YfE1ZTKz8XOsQwp7KY5scUK4Sg87r98Tb6iYKeQvvu
-	fltoBIZrgYXQAfmcrlXQrxZXxtHPgDT9wrkGZ61DG2kR5nrWib4XveIN6xgDAyAULrMS+iCgRfp
-	Sn7sse537tcKv80lu0zyCdm/yeh/V0bVbzLCQF1BsdOjmrLRrc7U+pk5dQZaILZmwbx1G+0Q6Ek
-	1jZ50K0t4S72bBuQnGdfo6bmFfy2E8KDvb5J1rkgrA5atONSAh87eSGH6UGGvGR5E3dw=
-X-Google-Smtp-Source: AGHT+IHNDySI/nH+OMkMv0ChQEdtb4UFgDV0ZT5tuGjSaRubSm3kOT/oocHqF0dfxqVXTEfR3wYujw==
-X-Received: by 2002:a17:903:15c3:b0:234:13ad:7f9f with SMTP id d9443c01a7336-23f978e398cmr3323895ad.22.1753277878789;
-        Wed, 23 Jul 2025 06:37:58 -0700 (PDT)
-Received: from google.com (232.98.126.34.bc.googleusercontent.com. [34.126.98.232])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-23f75d13bdfsm77086475ad.51.2025.07.23.06.37.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 23 Jul 2025 06:37:58 -0700 (PDT)
-Date: Wed, 23 Jul 2025 13:37:53 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: jgg@nvidia.com, will@kernel.org, joro@8bytes.org, robin.murphy@arm.com,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] iommu/arm-smmu-v3: Replace vsmmu_size/type with
- get_viommu_size
-Message-ID: <aIDlsUvF2Xbdelvx@google.com>
-References: <20250721200444.1740461-1-nicolinc@nvidia.com>
- <20250721200444.1740461-3-nicolinc@nvidia.com>
+        d=1e100.net; s=20230601; t=1753284976; x=1753889776;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:references:cc:to:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=yopYTcaLHy/YngxUjGRVUYbmllYbCh12wVB+pNQbzC0=;
+        b=MX/BGkzcq1ewYiQXmTRxcXyNvGo+tyhzAD9tnmd4zOVkbshrCmsGaKoWvG6cyuD+Gv
+         pWdFYE5kY+WIzzGfghLehP7FQ9uZ2uryZrP5K2uyY7bWD0wCH4oMGdZXKjmGDtR0FibP
+         Da7S1GOu4IC7czYkAgFsaXpiVtdSTYd3QxkdSPy8nZQRE/z1fCWzdnrNhj48/YBEFKXv
+         Rg5PcE3GeKHZdx5liDmV5nIB7pY0ecY4DeLHxHnWuqinz5+cVRh+uH9adtQxlDupFfRM
+         lDeolgRct/d/SaPQE9RQHvqbzw/ZHPj1O0jJyugTHcC8ukw9tv7JKXrJrvjzWtXhQKWZ
+         lSbQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVqbgk6M8pwK7l71K++H2jXd+6JqBYqZqkLJyBAxmsbmNZVHTieGliMJz07Ci+SKLbnaJocHg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwBSNVTMmPBgTJEF70REWUSA83GC5A74Gkl5sAz7+S7M6inrEy1
+	gIz80uPF/j2W0mY3mJ/BR4lHFqkwfSm6J8GJIqC5eZduwOuf7hRzehy3h74SIHyeuP8=
+X-Gm-Gg: ASbGncv1VgIrzV7a+FORfPOBMIVZADLN+AtUTBW7Gs/FGC8arD1999WyPld/FT1bRLv
+	ZIJE/HR9qDKToiRJkJ+HjDTZqlsa85fn1sNs4o0b7jbj7TGq2ZZBePY7XYV7LHYG4foHxPB0GwU
+	O+bKp9kld5V2cOMXzs6hNelzEYlE3obXvBJUsaqyOeldH7VllGMYIgh2bMfxYo1SC4JkkVE3A/T
+	isEtVa7snNFLrKC5WHNsZNoDSGG0iSQCfdMlF6HLS2plBKzO3ZCemG9T5MvzKQ8sNJCa6UXtdfO
+	jUt+C2CZVI0tpDtKGVwO14ApIJNx00ISIua/FSvxvh5WuF0MBVWJxLc7UpufzHZNn/dFrMEOAhh
+	TvywhFNnDNGh5o2+cl2x6WEkAKTNhiYNXqI9+Jr3oqR5V/dEdKZxCICjf1N08uaGvnNd75nCJ+Z
+	HQy3oShQN5pn2p
+X-Google-Smtp-Source: AGHT+IE36FCAwkzfiHLT8YUTKB5dl8mhn5lwwrUiNUjYfXCamvnt7XB94dMS1C8m5vdXXhKPLuuwTA==
+X-Received: by 2002:a05:600c:4fc9:b0:456:1157:59ac with SMTP id 5b1f17b1804b1-45868b23d24mr31817135e9.7.1753284975917;
+        Wed, 23 Jul 2025 08:36:15 -0700 (PDT)
+Received: from ?IPV6:2a01:cb14:150f:cf00:b6af:e6a0:6569:3a1? ([2a01:cb14:150f:cf00:b6af:e6a0:6569:3a1])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4586918094csm26728745e9.2.2025.07.23.08.36.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 23 Jul 2025 08:36:15 -0700 (PDT)
+Message-ID: <268811ba-03c5-4957-b073-1dfbad77747b@linaro.org>
+Date: Wed, 23 Jul 2025 17:36:14 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250721200444.1740461-3-nicolinc@nvidia.com>
+User-Agent: Mozilla Thunderbird
+From: neil.armstrong@linaro.org
+Reply-To: Neil Armstrong <neil.armstrong@linaro.org>
+Subject: Re: [PATCH v2 14/15] arm64: dts: qcom: Add initial Milos dtsi
+To: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+ Luca Weiss <luca.weiss@fairphone.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Viresh Kumar <viresh.kumar@linaro.org>,
+ Manivannan Sadhasivam <mani@kernel.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ "David S. Miller" <davem@davemloft.net>, Vinod Koul <vkoul@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>, Robert Marko <robimarko@gmail.com>,
+ Das Srinagesh <quic_gurus@quicinc.com>, Thomas Gleixner
+ <tglx@linutronix.de>, Jassi Brar <jassisinghbrar@gmail.com>,
+ Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>,
+ Lukasz Luba <lukasz.luba@arm.com>, Ulf Hansson <ulf.hansson@linaro.org>
+Cc: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+ linux-mmc@vger.kernel.org
+References: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
+ <20250713-sm7635-fp6-initial-v2-14-e8f9a789505b@fairphone.com>
+ <3e0299ad-766a-4876-912e-438fe2cc856d@oss.qualcomm.com>
+Content-Language: en-US, fr
+Autocrypt: addr=neil.armstrong@linaro.org; keydata=
+ xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
+ GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
+ BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
+ qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
+ 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
+ AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
+ OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
+ Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
+ YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
+ GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
+ UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
+ GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
+ yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
+ QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
+ SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
+ 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
+ Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
+ oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
+ M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
+ 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
+ KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
+ 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
+ QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
+Organization: Linaro
+In-Reply-To: <3e0299ad-766a-4876-912e-438fe2cc856d@oss.qualcomm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jul 21, 2025 at 01:04:44PM -0700, Nicolin Chen wrote:
-> It's more flexible to have a get_viommu_size op. Replace static vsmmu_size
-> and vsmmu_type with that.
+Hi,
+
+<snip>
 > 
-> Suggested-by: Will Deacon <will@kernel.org>
-> Acked-by: Will Deacon <will@kernel.org>
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> ---
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c    |  8 ++------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        |  4 ++--
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |  3 +--
->  drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c     | 14 ++++++++++++--
->  4 files changed, 17 insertions(+), 12 deletions(-)
+>> +	pmu-a520 {
+>> +		compatible = "arm,cortex-a520-pmu";
+>> +		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_LOW>;
+>> +	};
+>> +
+>> +	pmu-a720 {
+>> +		compatible = "arm,cortex-a720-pmu";
+>> +		interrupts = <GIC_PPI 7 IRQ_TYPE_LEVEL_LOW>;
+>> +	};
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> index c034d6c5468f..8cd8929bbfdf 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-iommufd.c
-> @@ -423,10 +423,9 @@ size_t arm_smmu_get_viommu_size(struct device *dev,
->  	if (viommu_type == IOMMU_VIOMMU_TYPE_ARM_SMMUV3)
->  		return VIOMMU_STRUCT_SIZE(struct arm_vsmmu, core);
->  
-> -	if (!smmu->impl_ops || !smmu->impl_ops->vsmmu_size ||
-> -	    viommu_type != smmu->impl_ops->vsmmu_type)
-> +	if (!smmu->impl_ops || !smmu->impl_ops->get_viommu_size)
->  		return 0;
-> -	return smmu->impl_ops->vsmmu_size;
-> +	return smmu->impl_ops->get_viommu_size(viommu_type);
->  }
->  
->  int arm_vsmmu_init(struct iommufd_viommu *viommu,
-> @@ -451,9 +450,6 @@ int arm_vsmmu_init(struct iommufd_viommu *viommu,
->  		return 0;
->  	}
->  
-> -	/* Unsupported type was rejected in arm_smmu_get_viommu_size() */
-> -	if (WARN_ON(viommu->type != smmu->impl_ops->vsmmu_type))
-> -		return -EOPNOTSUPP;
->  	return smmu->impl_ops->vsmmu_init(vsmmu, user_data);
->  }
->  
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 9f4ad3705801..f56113107c8a 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -4716,8 +4716,8 @@ static struct arm_smmu_device *arm_smmu_impl_probe(struct arm_smmu_device *smmu)
->  
->  	ops = new_smmu->impl_ops;
->  	if (ops) {
-> -		/* vsmmu_size and vsmmu_init ops must be paired */
-> -		if (WARN_ON(!ops->vsmmu_size != !ops->vsmmu_init)) {
-> +		/* get_viommu_size and vsmmu_init ops must be paired */
-> +		if (WARN_ON(!ops->get_viommu_size != !ops->vsmmu_init)) {
->  			ret = -EINVAL;
->  			goto err_remove;
->  		}
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 3fa02c51df9f..e332f5ba2f8a 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -728,8 +728,7 @@ struct arm_smmu_impl_ops {
->  	 */
->  	void *(*hw_info)(struct arm_smmu_device *smmu, u32 *length,
->  			 enum iommu_hw_info_type *type);
-> -	const size_t vsmmu_size;
-> -	const enum iommu_viommu_type vsmmu_type;
-> +	size_t (*get_viommu_size)(enum iommu_viommu_type viommu_type);
->  	int (*vsmmu_init)(struct arm_vsmmu *vsmmu,
->  			  const struct iommu_user_data *user_data);
->  };
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-> index 4c86eacd36b1..46005ed52bc2 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-> @@ -832,6 +832,13 @@ static void *tegra241_cmdqv_hw_info(struct arm_smmu_device *smmu, u32 *length,
->  	return info;
->  }
->  
-> +static size_t tegra241_cmdqv_get_vintf_size(enum iommu_viommu_type viommu_type)
-> +{
-> +	if (viommu_type != IOMMU_VIOMMU_TYPE_TEGRA241_CMDQV)
-> +		return 0;
-> +	return VIOMMU_STRUCT_SIZE(struct tegra241_vintf, vsmmu.core);
-> +}
-> +
->  static struct arm_smmu_impl_ops tegra241_cmdqv_impl_ops = {
->  	/* For in-kernel use */
->  	.get_secondary_cmdq = tegra241_cmdqv_get_cmdq,
-> @@ -839,8 +846,7 @@ static struct arm_smmu_impl_ops tegra241_cmdqv_impl_ops = {
->  	.device_remove = tegra241_cmdqv_remove,
->  	/* For user-space use */
->  	.hw_info = tegra241_cmdqv_hw_info,
-> -	.vsmmu_size = VIOMMU_STRUCT_SIZE(struct tegra241_vintf, vsmmu.core),
-> -	.vsmmu_type = IOMMU_VIOMMU_TYPE_TEGRA241_CMDQV,
-> +	.get_viommu_size = tegra241_cmdqv_get_vintf_size,
->  	.vsmmu_init = tegra241_cmdqv_init_vintf_user,
->  };
->  
-> @@ -1273,6 +1279,10 @@ tegra241_cmdqv_init_vintf_user(struct arm_vsmmu *vsmmu,
->  	phys_addr_t page0_base;
->  	int ret;
->  
-> +	/* Unsupported type was rejected in tegra241_cmdqv_get_vintf_size() */
-> +	if (WARN_ON(vsmmu->core.type != IOMMU_VIOMMU_TYPE_TEGRA241_CMDQV))
-> +		return -EOPNOTSUPP;
-> +
-
-Nit: I don't think we'd expect a call to this if the vintf_size returned
-0? I see that in iommufd_viommu_alloc_ioctl, we already have a check:
-
-
-        viommu_size = ops->get_viommu_size(idev->dev, cmd->type);
-	        if (!viommu_size) {
-			rc = -EOPNOTSUPP;
-			goto out_put_idev;
-		}
-
-And call ops->viommu_init only when the above isn't met. Thus,
-if we still end up calling ops->viommu_init, shouldn't we BUG_ON() it?
-I'd rather have the core code handle such things (since the driver is
-simply implementing the ops) and BUG_ON() something that's terribly
-wrong..
-
-I can't see any ops->viommu_init being called elsewhere atm, let me
-know if there's a different path that I missed..
-
-Apart from the above nit,
-
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
-
->  	if (!user_data)
->  		return -EINVAL;
->  
-> -- 
-> 2.43.0
+> See:
 > 
+> 9ce52e908bd5 ("arm64: dts: qcom: sm8650: switch to interrupt-cells 4 to add PPI partitions")
+> 2c06e0797c32 ("arm64: dts: qcom: sm8650: add PPI interrupt partitions for the ARM PMUs")
 > 
+
+Yeah switch to 4 cells now, so you can properly route the PMU PPI interrupt to the right core.
+
+New SoCs DTs should have 4 interrupts-cells from now, I'll migrate sm8550 shortly.
+
+Neil
+
