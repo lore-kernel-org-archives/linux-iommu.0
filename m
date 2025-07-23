@@ -1,60 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE3CF210F4A;
-	Wed, 23 Jul 2025 12:29:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 250942E613B;
+	Wed, 23 Jul 2025 12:53:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753273769; cv=none; b=g3rLZL+g0NX/Q0P1NWjW7D5Y+muSBe/ahbMGBo/oPmgxusliTtlu8v/0gCBM47O+xRvrKaXL2AnOiirf7NKqVNGEWFnQJY4Nzxk8uXUZ7oRz+dUaBH7Nty8kJl+NbTswXytL1shRUV54/mNeOWxOG+M5TB7rZNE8n+khpeilUZk=
+	t=1753275181; cv=none; b=h+6WeKvPDJLLRH8tRfNn07H+jjysXlzuBGyP/j+CRD/Xxae/TDe1XlF+Z1hTZAOsjQxnMVTpM7UJ94MLCOmySuQzfWlEa2Fx38mDQ4rHGoIa3YFPz1i1gz6ftNnSynPsDAWtbH2bTOGtqhT/uQyduYfGrF73N9CzmcsaQYrAtWA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753273769; c=relaxed/simple;
-	bh=Z1m4e0F1hHnK+GgkCb3mXzRDsiQSoSWfTycNxdXFiQA=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=kvaP0YTXD7mJINlqJ/Z/9L1S3c6VxzZXCmY1gO7A+iqUoDuTGkT7KQ+yG+/uZGOiE2pT7zwQ0ywoK/tTAN/m7MbM0IrjRZFuLhDaNjRrkEMwdwkpvtLhQ3cokYe7iCyGc0b7uKXGPTvGv4ZBmflknm6wRFSMv9XY2kKTwSd2B+Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BbxWN2ii; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753275181; c=relaxed/simple;
+	bh=BRav3W1Z7hRZUC1/wwtIAWRC+cy+uVsTJqWQpxOKOcc=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=J03Pwdsvbt5oKk53GzoelMviW7k+pZwXYgSLV0658hu1Yh5++3HUDrVp5zEPqV3IVfmeYRHbwMXwJYBa5dIT2OHMi1npYmbe5aewRIn/GCEK3JBmKwsRobYjyKAntYBUkyVlVRxMqlIU94ADlqTC3ezxp8MKjtYcGgE8bm0Mhzk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oiCihPwP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BbxWN2ii"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88A97C4CEE7;
-	Wed, 23 Jul 2025 12:29:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oiCihPwP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 846F5C4CEE7;
+	Wed, 23 Jul 2025 12:52:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1753273768;
-	bh=Z1m4e0F1hHnK+GgkCb3mXzRDsiQSoSWfTycNxdXFiQA=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=BbxWN2iia6X+T0YTzqCa0lzRsuHPvCJ5QX+LmE48P1hm5OC5R7jeFmX7hewOHccRB
-	 bbeiGVmB04NkvEUFNZXOW6xBMNEvaHdLVmbdr2vHrUWwsIl0j+b42DUCOCsDqfwQpT
-	 yW/iXcFL4g/1QmQASU0L2BzNXoKkURTHx5iW5CHzRnmtNuem9+YNuBrVnwrIOxN35p
-	 wsTTqHhpRx+oBYR+jptDxSBYH6VAP1AydNWsa60XDSCaICvcPJUSX4Xg87bcsEM8R7
-	 A9vO5yLmWDx41p7QuExKuEP6u1uaYC/7z4vBjxSCf+iOehR5vplf1xRUTfL9gbBTcg
-	 sJNCFNnH/CZhw==
-From: Vinod Koul <vkoul@kernel.org>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, 
- Viresh Kumar <viresh.kumar@linaro.org>, 
- Manivannan Sadhasivam <mani@kernel.org>, 
- Herbert Xu <herbert@gondor.apana.org.au>, 
- "David S. Miller" <davem@davemloft.net>, 
- Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konradybcio@kernel.org>, Robert Marko <robimarko@gmail.com>, 
- Das Srinagesh <quic_gurus@quicinc.com>, 
- Thomas Gleixner <tglx@linutronix.de>, Jassi Brar <jassisinghbrar@gmail.com>, 
- Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, 
- Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>, 
- Lukasz Luba <lukasz.luba@arm.com>, Ulf Hansson <ulf.hansson@linaro.org>, 
- Luca Weiss <luca.weiss@fairphone.com>
-Cc: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org, 
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
- linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, 
- linux-mmc@vger.kernel.org
-In-Reply-To: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
-References: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
-Subject: Re: (subset) [PATCH v2 00/15] Various dt-bindings for Milos and
- The Fairphone (Gen. 6) addition
-Message-Id: <175327375916.189941.14207583854602372511.b4-ty@kernel.org>
-Date: Wed, 23 Jul 2025 17:59:19 +0530
+	s=k20201202; t=1753275180;
+	bh=BRav3W1Z7hRZUC1/wwtIAWRC+cy+uVsTJqWQpxOKOcc=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=oiCihPwPYpPd1aSdaO0DugkbhijhVUCMpHOMGL9gqAb+rS8dpTvk8AH2PZy1OiipC
+	 Di7nEoVTYlywS02y2NIjmszFHLJAlSYDauIvUi0l2dDzH+L7Ngf4YPw7JR9eXLqiMT
+	 bAY4hzCbpVqz+YNt3Bjg+LmoRl7tXdbOwfI1mVov+tpGwI4MysAoikUuugb8RMlFx9
+	 Ch+I8VNwbKN84uMaMs6A/qx3vq2V+zMccRE9iluSXCBSlIf7csOcEBA4Z3R5wVPPDA
+	 xUvYvHTu+1c6EEvCDYiqtIxCm2L88fe5U3I4PnpWTm7KHPu9cCXVuau34YGIsVh3wD
+	 kZM0qxAVUIVkA==
+From: Will Deacon <will@kernel.org>
+To: Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Ethan Milon <ethan.milon@eviden.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Cc: catalin.marinas@arm.com,
+	kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix UAF on sva unbind with pending IOPFs
+Date: Wed, 23 Jul 2025 13:52:52 +0100
+Message-Id: <175327211759.77634.8242308703852038544.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20250723072045.1853328-1-baolu.lu@linux.intel.com>
+References: <20250723072045.1853328-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,31 +51,27 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.13.0
+Content-Transfer-Encoding: 8bit
 
-
-On Sun, 13 Jul 2025 10:05:22 +0200, Luca Weiss wrote:
-> Document various bits of the Milos SoC in the dt-bindings, which don't
-> really need any other changes.
-> 
-> Then we can add the dtsi for the Milos SoC and finally add a dts for
-> the newly announced The Fairphone (Gen. 6) smartphone.
-> 
-> Dependencies:
-> * The dt-bindings should not have any dependencies on any other patches.
-> * The qcom dts bits depend on most other Milos patchsets I have sent in
->   conjuction with this one. The exact ones are specified in the b4 deps.
+On Wed, 23 Jul 2025 15:20:45 +0800, Lu Baolu wrote:
+> Commit 17fce9d2336d ("iommu/vt-d: Put iopf enablement in domain attach
+> path") disables IOPF on device by removing the device from its IOMMU's
+> IOPF queue when the last IOPF-capable domain is detached from the device.
+> Unfortunately, it did this in a wrong place where there are still pending
+> IOPFs. As a result, a use-after-free error is potentially triggered and
+> eventually a kernel panic with a kernel trace similar to the following:
 > 
 > [...]
 
-Applied, thanks!
+Applied to iommu (intel/vt-d), thanks!
 
-[09/15] dt-bindings: dma: qcom,gpi: document the Milos GPI DMA Engine
-        commit: b330d77c5da2cfece98a89cbb51b8ef948691e6f
+[1/1] iommu/vt-d: Fix UAF on sva unbind with pending IOPFs
+      https://git.kernel.org/iommu/c/f0b9d31c6edd
 
-Best regards,
+Cheers,
 -- 
-~Vinod
+Will
 
-
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
