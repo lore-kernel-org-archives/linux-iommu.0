@@ -1,123 +1,135 @@
-Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com [209.85.217.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 275C5237194
-	for <iommu@lists.linux.dev>; Thu, 24 Jul 2025 09:42:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D31902BEC23;
+	Thu, 24 Jul 2025 12:00:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753350143; cv=none; b=T/7K4ExvF7wJjMS/vjDAd8WwUMy1jUqq9w4s8YJ3OzBK5OrN77m1UYBRHvrWCwv79vzuReepxsaGa56jmd+17fl9G44TRClx0gjmqtiUbREv4tRU0OwuaO/ALmruPmKVo8mdkDIUjf3dvFode7jFBbh11XT6yT2+glMVTorGBBY=
+	t=1753358426; cv=none; b=Z2N5qTt0+rim6sFIK3G/Mou6XS00ZTeDdI8Y7UuR25p1LBHMdtb/l3L+taF/NfcXL3IIe7dQJyMbiuQBMxrr1Kx6lUO45qHtUd80S7aQxuCTX/C0r7J0Ce6cLKJbeFhA2gYbfu5K6sG4X4ocEycuYoKoVoXi2bFA/AXzoZaO61Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753350143; c=relaxed/simple;
-	bh=0yEzlUXDcKH+2lW23G2uxcBdUEZQQPC4WcJyV+RFPjQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=f/kuAknmGHsOkeP7igsca6oS+aII4mrbMpi3gttpCrHmd2vw3KEVfhHTjdd1nIgr/P08FT93AUPRZPe5s0rj0e1WQcSnPdXYm3ok7tgzWvU4pmRWtF6li5R+8+DHmU3D/BEVmYBi7AN+71s3nxUoysXm89/3ZlUaaW78S+hFRPI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eBFFij5/; arc=none smtp.client-ip=209.85.217.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1753358426; c=relaxed/simple;
+	bh=E959aFyB7Fz7wM1ihx+E3PvvcL2j2BmEZFA2aVmLOhc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dwpYeKvSnH2I3n7o3ARYFbW2UYk4HMLZmFvra7p1QE9ZD4EYeEhbz/9LK5MJ+VgTbZO3YQQ3g+zR4iqw9deLR13pwAhtMQ5/scrgw7PdmLMITvYAWooJ1SgACjjQJ1RN0X73IRHxRPo+ftJkkl7Y5cIxWWmEwlBQuwhy8hP4t+0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=No4s5Z+m; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eBFFij5/"
-Received: by mail-vs1-f54.google.com with SMTP id ada2fe7eead31-4e8110ac0f5so234720137.0
-        for <iommu@lists.linux.dev>; Thu, 24 Jul 2025 02:42:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1753350141; x=1753954941; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0yEzlUXDcKH+2lW23G2uxcBdUEZQQPC4WcJyV+RFPjQ=;
-        b=eBFFij5/75Fp9HUOZXG5F3MdTu0sKzhRpjDGlAZ+OvOeDFC7XgvMxImkSNXbJnPA5/
-         PVnzDAzWix0+1useNrPoxV3qQfwm0bLjlnOnUht+1eciowAbyMCgN3irsQ1t90aoSUM2
-         msLO0W3jLePRnt4IctACH76k/zUTXqxbERhVstE5515LcpZBvvCawxbS7kTamQUC+olN
-         GVIJ5aQDFhuC8i13hMXrsgV6qUiQUhV8CLQO+mEoJaq2RM6ujn5P3463gx7noWTVaAKG
-         ttk6k7iTpnG4Rihvj3sz7xOXpqjnP8AH97yh5Sou5cOntyB0zKZoc5SXPSRiqMFYCUgm
-         80Dw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753350141; x=1753954941;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0yEzlUXDcKH+2lW23G2uxcBdUEZQQPC4WcJyV+RFPjQ=;
-        b=QSkmur0iTObMCKFUsnhZMc1FC4LcfAEbDn0noGkMRhxhXAKva7ycyrTJIIP3m8r9b2
-         6BrHb0h06tDJzfKIjitz3XFTlw0zPDXm/3QD8n6iOdGiB9qsl4mtLJ2FyLmfkg2T+AXv
-         9Bd8hrwAAl3Vvq73vRXWuNhKlKf1+i3Js5U42ahLdcgYidLlilFPhuaIzWhsUjB6uFFG
-         hlFW7xCvDV7KhpY9io5rp2RANTkzggORc7LU+tEYpcVDHIy5x/QUt/xJMHngq7/skdl+
-         y0nX3lsXLO+khwGVLLUbhcwY+FjnWWeGs+0OTp3Zzx5WYevV/m9bMIkIoHWFNS3wV7mK
-         U9Ow==
-X-Forwarded-Encrypted: i=1; AJvYcCUEajXtRfmiVdIkGjLnIXMblgLfPfDWWiXkHDuRW2P5kCxgT2KMjO1gK2T5sUbdRs95Fm1KWA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yye0XPb9O6yqu8zdBhGgztj2nInSY97VzCvatw6cxEWgzywHRB2
-	8swQj5JvM3gLOGVdCsSwikxtS6JBDsU895/q5LpJas6VmnAXpFK0HrNi+TaCi97RmQAXamLlUmT
-	+SSk28QOX2uB4AfY46FvdhESO+69rZDY=
-X-Gm-Gg: ASbGncsXxpkXN9TGDeLDkTywV3P5XbKiaIzRDP5kbYzBMpmIKZ586unFGzELwCpMnOn
-	7y0BA3c6DPRri6+DsEPDh/LWCnLgU0fa4qZ3RtHYQAOQTpD3w5UfWtAVltvKl5dSqmGAL/MMvAl
-	OD3BxyTzbV8qCTJqydIz7TY+qwF7GwQYxR2cfJ3M+9lE8l0DSWdyudxX2VgPFFOMCB3l5kCjzxS
-	gKnf3k=
-X-Google-Smtp-Source: AGHT+IFVdAR+nALw2dfOwe/SBdedrjFoxCZWdT3hu72WG7PbkJMjT24657fyC8JNSjqGNYeNAeujPq9L90HfMwrRt4U=
-X-Received: by 2002:a05:6102:3712:b0:4f9:6a91:133a with SMTP id
- ada2fe7eead31-4fa1523a607mr2737239137.27.1753350140982; Thu, 24 Jul 2025
- 02:42:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="No4s5Z+m"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1753358423; x=1784894423;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=E959aFyB7Fz7wM1ihx+E3PvvcL2j2BmEZFA2aVmLOhc=;
+  b=No4s5Z+muSMzeoJ0O9Dp2FEtkbJDVvTWxK7YSvSmcBnfzna6LO6RiHjE
+   lCMucQTcanfVIF75dXcB7lE6dmwV4Ir017eVlrADMztQtHFRkyOAn7QeE
+   0jO23TprDZW5vVrifOQcPReT66MtbjattOzdj7Am8ifoUp970YjsZ8B9e
+   DtZUwQ0HSmCYIE9hgtAGLCnJcPSvViaaNCQbgxrqG5UZeZDuoK83r6QsS
+   RV9KSrz21de+Jg3z4EOR2v6iYL3Tmi+j7CFBM/x5knfKRRimvygBMusTE
+   xqUqfybuQAozHBJDSuS1pf6h3YDEJxt0iPI2CJAFRsEpjp59HwePSJYc3
+   w==;
+X-CSE-ConnectionGUID: wDgPmQDVQ7WpaDNMBbY8MQ==
+X-CSE-MsgGUID: kHsx7dnxQuOxmqPtLYKYJw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11501"; a="55635949"
+X-IronPort-AV: E=Sophos;i="6.16,337,1744095600"; 
+   d="scan'208";a="55635949"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2025 05:00:22 -0700
+X-CSE-ConnectionGUID: um94yLrvQkeieesPNbWB8Q==
+X-CSE-MsgGUID: 58mHhrkeTRuAwGrnTU6UFw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,337,1744095600"; 
+   d="scan'208";a="165734118"
+Received: from lkp-server01.sh.intel.com (HELO 9ee84586c615) ([10.239.97.150])
+  by orviesa005.jf.intel.com with ESMTP; 24 Jul 2025 05:00:19 -0700
+Received: from kbuild by 9ee84586c615 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1ueucS-000KP7-03;
+	Thu, 24 Jul 2025 12:00:16 +0000
+Date: Thu, 24 Jul 2025 20:00:01 +0800
+From: kernel test robot <lkp@intel.com>
+To: Ashish Kalra <Ashish.Kalra@amd.com>, joro@8bytes.org,
+	suravee.suthikulpanit@amd.com, thomas.lendacky@amd.com,
+	Sairaj.ArunKodilkar@amd.com, Vasant.Hegde@amd.com,
+	herbert@gondor.apana.org.au
+Cc: oe-kbuild-all@lists.linux.dev, seanjc@google.com, pbonzini@redhat.com,
+	will@kernel.org, robin.murphy@arm.com, john.allen@amd.com,
+	davem@davemloft.net, michael.roth@amd.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+	kvm@vger.kernel.org
+Subject: Re: [PATCH v4 1/4] iommu/amd: Add support to remap/unmap IOMMU
+ buffers for kdump
+Message-ID: <202507241929.76UExdsw-lkp@intel.com>
+References: <6a48567cd99a0ef915862b3c6590d1415d287870.1753133022.git.ashish.kalra@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250724085600.4101321-1-xiaqinxin@huawei.com>
- <20250724085600.4101321-3-xiaqinxin@huawei.com> <CAGsJ_4zVR3R7erGP57vxM8vKBARG8BttA=FsCVFjy4QtswcsQw@mail.gmail.com>
- <c7f7d9b3-2ab3-4ebd-99fb-071733573291@huawei.com>
-In-Reply-To: <c7f7d9b3-2ab3-4ebd-99fb-071733573291@huawei.com>
-From: Barry Song <21cnbao@gmail.com>
-Date: Thu, 24 Jul 2025 17:42:03 +0800
-X-Gm-Features: Ac12FXyOhPCNOJmuHWV1Cslha1U4fTMs742fhuCReMB40zYcc2mUNhkN5PvOnwU
-Message-ID: <CAGsJ_4zSw57DMyRZM24BUdDpbi4+BRfgWUqxSKurCsAVC7Kptw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] dma-mapping: benchmark: Add padding to ensure uABI
- remained consistent
-To: Qinxin Xia <xiaqinxin@huawei.com>
-Cc: m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	jonathan.cameron@huawei.com, prime.zeng@huawei.com, fanghao11@huawei.com, 
-	linux-kernel@vger.kernel.org, linuxarm@huawei.com, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6a48567cd99a0ef915862b3c6590d1415d287870.1753133022.git.ashish.kalra@amd.com>
 
-On Thu, Jul 24, 2025 at 5:35=E2=80=AFPM Qinxin Xia <xiaqinxin@huawei.com> w=
-rote:
->
->
->
-> On 2025/7/24 17:07:08, Barry Song <21cnbao@gmail.com> wrote:
-> > On Thu, Jul 24, 2025 at 4:56=E2=80=AFPM Qinxin Xia <xiaqinxin@huawei.co=
-m> wrote:
-> >>
-> >> The padding field in the structure was previously reserved to
-> >> maintain a stable interface for potential new fields, ensuring
-> >> compatibility with user-space shared data structures.
-> >> However,it was accidentally removed by tiantao in a prior commit,
-> >> which may lead to incompatibility between user space and the kernel.
-> >>
-> >> This patch reinstates the padding to restore the original structure
-> >> layout and preserve compatibility.
-> >>
-> >> Fixes: 8ddde07a3d28 ("dma-mapping: benchmark: extract a common header =
-file for map_benchmark definition")
-> >> Cc: stable@vger.kernel.org
-> >> Acked-by: Barry Song <baohua@kernel.org>
-> >> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
-> >
-> > I don=E2=80=99t think these two patches should be part of the same seri=
-es. This
-> > one is a bug fix and should be handled separately=E2=80=94ideally picke=
-d up on
-> > its own and backported to stable.
-> >
-> > Also, the subject should not say "Add"=E2=80=94it should be "Restore". =
-I assume
-> > Marek can handle it?
-...
-> Ok, I will send a new version to fix it.
+Hi Ashish,
 
-If Marek can help fix it while picking it up into the dma-mapping tree, you
-might not need to send a new version.
+kernel test robot noticed the following build warnings:
 
-Honestly, I hope this gets merged soon=E2=80=94it feels like it's been
-overdue for quite a while.
+[auto build test WARNING on herbert-cryptodev-2.6/master]
+[also build test WARNING on herbert-crypto-2.6/master linus/master v6.16-rc7 next-20250724]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-Thanks
-Barry
+url:    https://github.com/intel-lab-lkp/linux/commits/Ashish-Kalra/iommu-amd-Add-support-to-remap-unmap-IOMMU-buffers-for-kdump/20250722-055642
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git master
+patch link:    https://lore.kernel.org/r/6a48567cd99a0ef915862b3c6590d1415d287870.1753133022.git.ashish.kalra%40amd.com
+patch subject: [PATCH v4 1/4] iommu/amd: Add support to remap/unmap IOMMU buffers for kdump
+config: x86_64-randconfig-r133-20250724 (https://download.01.org/0day-ci/archive/20250724/202507241929.76UExdsw-lkp@intel.com/config)
+compiler: gcc-12 (Debian 12.2.0-14+deb12u1) 12.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250724/202507241929.76UExdsw-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202507241929.76UExdsw-lkp@intel.com/
+
+sparse warnings: (new ones prefixed by >>)
+>> drivers/iommu/amd/init.c:723:41: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void * @@     got void [noderef] __iomem * @@
+   drivers/iommu/amd/init.c:723:41: sparse:     expected void *
+   drivers/iommu/amd/init.c:723:41: sparse:     got void [noderef] __iomem *
+>> drivers/iommu/amd/init.c:723:41: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void * @@     got void [noderef] __iomem * @@
+   drivers/iommu/amd/init.c:723:41: sparse:     expected void *
+   drivers/iommu/amd/init.c:723:41: sparse:     got void [noderef] __iomem *
+>> drivers/iommu/amd/init.c:723:41: sparse: sparse: incorrect type in return expression (different address spaces) @@     expected void * @@     got void [noderef] __iomem * @@
+   drivers/iommu/amd/init.c:723:41: sparse:     expected void *
+   drivers/iommu/amd/init.c:723:41: sparse:     got void [noderef] __iomem *
+
+vim +723 drivers/iommu/amd/init.c
+
+   707	
+   708	static inline void *iommu_memremap(unsigned long paddr, size_t size)
+   709	{
+   710		phys_addr_t phys;
+   711	
+   712		if (!paddr)
+   713			return NULL;
+   714	
+   715		/*
+   716		 * Obtain true physical address in kdump kernel when SME is enabled.
+   717		 * Currently, previous kernel with SME enabled and kdump kernel
+   718		 * with SME support disabled is not supported.
+   719		 */
+   720		phys = __sme_clr(paddr);
+   721	
+   722		if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
+ > 723			return ioremap_encrypted(phys, size);
+   724		else
+   725			return memremap(phys, size, MEMREMAP_WB);
+   726	}
+   727	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
