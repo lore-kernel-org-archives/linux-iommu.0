@@ -1,22 +1,22 @@
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 919592222CA
-	for <iommu@lists.linux.dev>; Thu, 24 Jul 2025 07:51:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E90841C6FF5
+	for <iommu@lists.linux.dev>; Thu, 24 Jul 2025 07:52:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753343511; cv=none; b=IelViTQWa1hUYGZrkB9zxy/AnnJEa0D45j0w3g4czh2Ow9n7bSqkdBNuSLRoFbaGA3rhasrKN9PLoTl5+/cl5jDZKSMrfozjxMvztaEPqL2IMAeZSnlP0pFyag/eCtIJ55lgQx5PZcSJZGJKNP2tLaj1VPDsVrvQSoV4KG3Yj9Y=
+	t=1753343563; cv=none; b=TZfvGTuM1MBJsX0HgWkQuxFMIWXPvMYplDQr1CJXAFy/uiHEUkFHraaOrAouY3XWklsC/Yh+hawowVL8iLzhOktYN5iJuOASToLE3bpwWFPW8t+5Hg6z7h2ynqUJCNxqMqLnQHG7ghLKzXGmHi4mcT+TUZPq4MTkfJwggvXh/nE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753343511; c=relaxed/simple;
-	bh=oReA6uvpTJLn+s9satNB6NAjt/O+vScIIkZcY2WVwdw=;
+	s=arc-20240116; t=1753343563; c=relaxed/simple;
+	bh=mWKop4D8i0hQlywL0RLEcKxr6x2x6dy8AoH9oKjF3qM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jGHUYdQvhUx+xLwXwaFlFf62OuamNTprunEexXYbN2P320w5qbD9ZHSxXr9Kl5KkhJI1tklNyd5Q9eBA50avyRiz3YYHl5J3P1k+9Fha6dNCd17xYG/ClKjvRxB9gDkE4+ODDmK5ug8vp9SSGZhWru8orz9qbU0qiIrF0U1iVYQ=
+	 Content-Type:Content-Disposition:In-Reply-To; b=YnJWEWxTEdtEJPfzubJhYMYFAs9oKMX80c75gBVLtkyksBQIXO/U9lHWhXwwM0K8EquEXBxwa8BSht55P5sFENEoNlV91h6hB2WqH2k4OSnpJEgJboCmPK2PJ2BiKAiAMEhmDi/mjNAYqwYghCQrv1JBNW79gDgN5V71ggBA7FE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id 662E568BEB; Thu, 24 Jul 2025 09:51:45 +0200 (CEST)
-Date: Thu, 24 Jul 2025 09:51:45 +0200
+	id 376B168BFE; Thu, 24 Jul 2025 09:52:38 +0200 (CEST)
+Date: Thu, 24 Jul 2025 09:52:38 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Leon Romanovsky <leon@kernel.org>
 Cc: Alex Williamson <alex.williamson@redhat.com>,
@@ -38,10 +38,9 @@ Cc: Alex Williamson <alex.williamson@redhat.com>,
 	Sumit Semwal <sumit.semwal@linaro.org>,
 	Vivek Kasireddy <vivek.kasireddy@intel.com>,
 	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 02/10] PCI/P2PDMA: Introduce p2pdma_provider structure
- for cleaner abstraction
-Message-ID: <20250724075145.GB30590@lst.de>
-References: <cover.1753274085.git.leonro@nvidia.com> <c2307cb4c3f1af46da138f3410738754691fbb3d.1753274085.git.leonro@nvidia.com>
+Subject: Re: [PATCH 03/10] PCI/P2PDMA: Simplify bus address mapping API
+Message-ID: <20250724075238.GC30590@lst.de>
+References: <cover.1753274085.git.leonro@nvidia.com> <30640b5e4ec975f928e685b92aaaf3e2e5e08f72.1753274085.git.leonro@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,27 +49,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c2307cb4c3f1af46da138f3410738754691fbb3d.1753274085.git.leonro@nvidia.com>
+In-Reply-To: <30640b5e4ec975f928e685b92aaaf3e2e5e08f72.1753274085.git.leonro@nvidia.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Wed, Jul 23, 2025 at 04:00:03PM +0300, Leon Romanovsky wrote:
+On Wed, Jul 23, 2025 at 04:00:04PM +0300, Leon Romanovsky wrote:
 > From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> Extract the core P2PDMA provider information (device owner and bus
-> offset) from the dev_pagemap into a dedicated p2pdma_provider structure.
-> This creates a cleaner separation between the memory management layer and
-> the P2PDMA functionality.
+> Update the pci_p2pdma_bus_addr_map() function to take a direct pointer
+> to the p2pdma_provider structure instead of the pci_p2pdma_map_state.
+> This simplifies the API by removing the need for callers to extract
+> the provider from the state structure.
 > 
-> The new p2pdma_provider structure contains:
-> - owner: pointer to the providing device
-> - bus_offset: computed offset for non-host transactions
-> 
-> This refactoring simplifies the P2PDMA state management by removing
-> the need to access pgmap internals directly. The pci_p2pdma_map_state
-> now stores a pointer to the provider instead of the pgmap, making
-> the API more explicit and easier to understand.
+> The change updates all callers across the kernel (block layer, IOMMU,
+> DMA direct, and HMM) to pass the provider pointer directly, making
+> the code more explicit and reducing unnecessary indirection. This
+> also removes the runtime warning check since callers now have direct
+> control over which provider they use.
 
-I really don't see how anything becomes cleaner or simpler here.
-It adds a new structure that only exists embedded in the exist one
-and more code for no apparent benefit.
+Again I don't actually see any simplification here.  But maybe I'm
+missing the ultimate goal here.
 
