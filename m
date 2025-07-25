@@ -1,38 +1,25 @@
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 498DE237164;
-	Fri, 25 Jul 2025 19:12:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=204.191.154.188
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 64A4C2528E1;
+	Fri, 25 Jul 2025 20:04:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753470769; cv=none; b=RFQwQRJr+vC+uf2OfteMg337ragNwFdS5LC+BsPsRnBtuOv+Br8Ol7/FSWLU16KQymXBTT0NM/Mw9TafDsQMInx4aJsvRrD2tYeWOIScTVtkIc2Racz3IVuruZrWdnOKbN7oLO7PQmtwDs5t5pQ+SMBvNIsKXPpK+ddhiS5i8oU=
+	t=1753473901; cv=none; b=fWQHnCsLIiH2x9Q2hi0Mrpq19MsPd6/ng+mj++AajE1xsyYQY0Xnm7/30oyATiqOYennzwfEzPqYy9HeSfAWtb+73/3uqp3UyeLXVzKfbfV2Afj6dIGgbBJgJ+TmNXy9/X6+n/E8ogvatDCo7JcMYFM9m5X8HVWQ4tP9V67w7mE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753470769; c=relaxed/simple;
-	bh=yEGS1ssuNCOYiWmsNeefkXYNsZTqbAuSG41TI3nN59I=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:From:In-Reply-To:
-	 Content-Type:Subject; b=D1OSirQQRkYo+OxUoOZNgdO+5G1PnroQE6lZGtSwHrrclOcgAkrjvQkVqQXbD11WqwURr6nGI8+e1PmwQeXlXb8JuGN639Sw3vYa+HHwk8ZpHhxOoNtD+Yfoen9ttOceDDSoVLveMWh7KT12X9AIsfAmg9gKt23gHCdSN4B/N0o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com; spf=pass smtp.mailfrom=deltatee.com; dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b=DrqrpaR7; arc=none smtp.client-ip=204.191.154.188
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=deltatee.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=deltatee.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=deltatee.com header.i=@deltatee.com header.b="DrqrpaR7"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=deltatee.com; s=20200525; h=Subject:In-Reply-To:From:References:Cc:To:
-	MIME-Version:Date:Message-ID:content-disposition;
-	bh=EeOo9vMPBFT+62n5mqYkCAxWsQk1Wvt4dBFyCgwjFrk=; b=DrqrpaR7S9OrXgfKiTlAraouUx
-	i4ghrIDe0rHZjeUNlfEzZoAUiPbvMyzYgY3NP/FMkua4fsEG4BUEfWmG08NaN3AJaxLLtN7IEqbhj
-	4WALY5AeeenGjVOoB5wbIg0n3jzsD5dSSYuovvsWyo6RrCK5quFSZw02fh++FfvIYO/9zgKYx9SHc
-	ffj80QXJEfFoR9tRFdpABXThOf1TAKdNiRKAY7HTLi6iU5GP9OmSa0ys2SxJ5ifdpvS0AuGd7so8G
-	WtqXMuLWHNwwZap6WIJ6fbeihB/YIucDtjbo21c+DH8bj/20oQ4+GwAjSz3Bt9RGNE02AWYwVosV8
-	6WQn0Kww==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
-	by ale.deltatee.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.96)
-	(envelope-from <logang@deltatee.com>)
-	id 1ufNqT-006E5j-0X;
-	Fri, 25 Jul 2025 13:12:42 -0600
-Message-ID: <a749c502-7794-42f0-8f86-163efd4640b2@deltatee.com>
-Date: Fri, 25 Jul 2025 13:12:35 -0600
+	s=arc-20240116; t=1753473901; c=relaxed/simple;
+	bh=8+OH0jpnYCxLHJivUXbltpTlvIRJChdCd+Jh3a0RZJA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=J90eKvwEUrK8PXPIMqaH3QSelf/2QniG/0flrwLrxqfovdx1sWe+BiXe5J7AfLzLSedyIziwDSCYrZjiHIQLe1NQe/AWRRV0afGK0nieD72SJEtK6r6nr9d6JTnhOCvOV5lzq3LT6PTUQiHLDLekKD1S3CffK+S6OxOpJQxe6VQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8E344176C;
+	Fri, 25 Jul 2025 13:04:51 -0700 (PDT)
+Received: from [10.57.4.83] (unknown [10.57.4.83])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 167FB3F6A8;
+	Fri, 25 Jul 2025 13:04:52 -0700 (PDT)
+Message-ID: <02240cf7-c4d4-4296-9b1e-87b4231874a1@arm.com>
+Date: Fri, 25 Jul 2025 21:04:50 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,64 +27,86 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Andrew Morton <akpm@linux-foundation.org>,
- Bjorn Helgaas <bhelgaas@google.com>,
- =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
- dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
- Jens Axboe <axboe@kernel.dk>, =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?=
- <jglisse@redhat.com>, Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
- linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
- linux-mm@kvack.org, linux-pci@vger.kernel.org,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>, Will Deacon <will@kernel.org>
-References: <cover.1753274085.git.leonro@nvidia.com>
- <82e62eb59afcd39b68ae143573d5ed113a92344e.1753274085.git.leonro@nvidia.com>
- <20250724080313.GA31887@lst.de> <20250724081321.GT402218@unreal>
- <b32ae619-6c4a-46fc-a368-6ad4e245d581@deltatee.com>
- <20250725185402.GU402218@unreal>
-Content-Language: en-CA
-From: Logan Gunthorpe <logang@deltatee.com>
-In-Reply-To: <20250725185402.GU402218@unreal>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH 6/8] dma-mapping: fail early if physical address is mapped
+ through platform callback
+To: Leon Romanovsky <leon@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Leon Romanovsky <leonro@nvidia.com>, Christoph Hellwig <hch@lst.de>,
+ Jonathan Corbet <corbet@lwn.net>, Madhavan Srinivasan <maddy@linux.ibm.com>,
+ Michael Ellerman <mpe@ellerman.id.au>, Nicholas Piggin <npiggin@gmail.com>,
+ Christophe Leroy <christophe.leroy@csgroup.eu>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>, =?UTF-8?Q?Eugenio_P=C3=A9rez?=
+ <eperezma@redhat.com>, Alexander Potapenko <glider@google.com>,
+ Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
+ Masami Hiramatsu <mhiramat@kernel.org>,
+ Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+ =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+ Andrew Morton <akpm@linux-foundation.org>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ iommu@lists.linux.dev, virtualization@lists.linux.dev,
+ kasan-dev@googlegroups.com, linux-trace-kernel@vger.kernel.org,
+ linux-mm@kvack.org
+References: <cover.1750854543.git.leon@kernel.org>
+ <5fc1f0ca52a85834b3e978c5d6a3171d7dd3c194.1750854543.git.leon@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <5fc1f0ca52a85834b3e978c5d6a3171d7dd3c194.1750854543.git.leon@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: leon@kernel.org, hch@lst.de, alex.williamson@redhat.com, jgg@nvidia.com, akpm@linux-foundation.org, bhelgaas@google.com, christian.koenig@amd.com, dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, axboe@kernel.dk, jglisse@redhat.com, joro@8bytes.org, kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, linux-mm@kvack.org, linux-pci@vger.kernel.org, m.szyprowski@samsung.com, robin.murphy@arm.com, sumit.semwal@linaro.org, vivek.kasireddy@intel.com, will@kernel.org
-X-SA-Exim-Mail-From: logang@deltatee.com
-X-Spam-Level: 
-Subject: Re: [PATCH 05/10] PCI/P2PDMA: Export pci_p2pdma_map_type() function
-X-SA-Exim-Version: 4.2.1 (built Wed, 06 Jul 2022 17:57:39 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 
-
-
-On 2025-07-25 12:54, Leon Romanovsky wrote:
->> The solution that would make more sense to me would be for either
->> dma_iova_try_alloc() or another helper in dma-iommu.c to handle the
->> P2PDMA case. dma-iommu.c already uses those same interfaces and thus
->> there would be no need to export the low level helpers from the p2pdma code.
+On 2025-06-25 2:19 pm, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 > 
-> I had same idea in early versions of DMA phys API discussion and it was
-> pointed (absolutely right) that this is layering violation.
+> All platforms which implement map_page interface don't support physical
+> addresses without real struct page. Add condition to check it.
 
-Respectfully, I have to disagree with this. Having the layer (ie.
-dma-iommu) that normally checks how to handle a P2PDMA request now check
- how to handle these DMA requests is the exact opposite of a layering
-violation. Expecting every driver that wants to do P2PDMA to have to
-figure out for themselves how to map the memory before calling into the
-DMA API doesn't seem like a good design choice to me.
+As-is, the condition also needs to cover iommu-dma, because that also 
+still doesn't support non-page-backed addresses. You can't just do a 
+simple s/page/phys/ rename and hope it's OK because you happen to get 
+away with it for coherent, 64-bit, trusted devices.
 
-> So unfortunately, I think that dma*.c|h is not right place for p2p
-> type check.
+Thanks,
+Robin.
 
-dma*.c is already where those checks are done. I'm not sure patches to
-remove the code from that layer and put it into the NVMe driver would
-make a lot of sense (and then, of course, we'd have to put it into every
-other driver that wants to participate in p2p transactions).
-
-Logan
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>   kernel/dma/mapping.c | 15 ++++++++++++++-
+>   1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 709405d46b2b..74efb6909103 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -158,6 +158,7 @@ dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
+>   {
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   	phys_addr_t phys = page_to_phys(page) + offset;
+> +	bool is_pfn_valid = true;
+>   	dma_addr_t addr;
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+> @@ -170,8 +171,20 @@ dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
+>   		addr = dma_direct_map_phys(dev, phys, size, dir, attrs);
+>   	else if (use_dma_iommu(dev))
+>   		addr = iommu_dma_map_phys(dev, phys, size, dir, attrs);
+> -	else
+> +	else {
+> +		if (IS_ENABLED(CONFIG_DMA_API_DEBUG))
+> +			is_pfn_valid = pfn_valid(PHYS_PFN(phys));
+> +
+> +		if (unlikely(!is_pfn_valid))
+> +			return DMA_MAPPING_ERROR;
+> +
+> +		/*
+> +		 * All platforms which implement .map_page() don't support
+> +		 * non-struct page backed addresses.
+> +		 */
+>   		addr = ops->map_page(dev, page, offset, size, dir, attrs);
+> +	}
+> +
+>   	kmsan_handle_dma(phys, size, dir);
+>   	trace_dma_map_phys(dev, phys, addr, size, dir, attrs);
+>   	debug_dma_map_phys(dev, phys, size, dir, addr, attrs);
 
