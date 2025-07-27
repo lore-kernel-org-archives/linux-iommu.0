@@ -1,104 +1,154 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com [209.85.221.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF0F23B7A8;
-	Sun, 27 Jul 2025 06:30:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C511419D09C;
+	Sun, 27 Jul 2025 12:48:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753597833; cv=none; b=WqqIaKGlzOzmyBdQ5WncXXvCuLKWpjTwmUuKgxNV2XKE8tT9ChcJ8MdDrebpzjSUIs+zYDSwXjlyqwdyaYL+fRDs1TCGU+Fpr+ASh9TGFT4BypY42ukqOXgj4FXG+ffnTiy2OWCTh+RENggxoUZKT2t7q5PHgoH3OviAw4zDf7g=
+	t=1753620522; cv=none; b=rmPWmb3OV7fvOfjVM7P+3w+XYl8XdFlbxVxzUrU28fJGkAdhyI89wPwxeDsAWrqzcQj+NcjLjhu/h+TQcS4559vzxqRRl5mndnWS1XzCX7o9rE4FmbMiTdB1weq2guepGBIkrxPa7PYBv0TdNyYtdwByiVPudBAaIxJlQN2vmyY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753597833; c=relaxed/simple;
-	bh=JJ+HLI2Xg1lbocAOdaQhvUAP42x5alyGCI2q27jF8yc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZtD894M6iphk/CirXRnQX5nOnxBxvGMczlTNakgGluWbWqZ3OaUgfx/GDppdILV2yDwF77sNMg/1LcsAQnQsAy4gn5rUYBispVMv9wj9sQXZOrfOPOq67IjLtiXyVFWkgokDwrDS/HIfFERssE9Q4l1Av5KkzLwCRkjzfSFXqkA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O08zmCcV; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753620522; c=relaxed/simple;
+	bh=5q9r9ISVav2dz5XcKEk9jqfSVetd8J2R7nS/TEyhwJc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=T2TCVkiPf/IYCpo2FlKw6JyhneGfX952/apf+fr9RMx9ws6P2bloucOHSBhheBwsC1ItUWrfT7N5MUtJfjrna/5JdTLyaOgU2mTeDSB4MOjmeUySCuQEEUg2AEHMCgdcyUL/uBlnOUCLCYtR+4fzp11u2BDT+/5scglJ1xUHvYQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WtTU51yK; arc=none smtp.client-ip=209.85.221.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O08zmCcV"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D8F2C4CEEB;
-	Sun, 27 Jul 2025 06:30:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1753597832;
-	bh=JJ+HLI2Xg1lbocAOdaQhvUAP42x5alyGCI2q27jF8yc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=O08zmCcVnVLnA+ZHOWb+eSajAvE6pm7DaQ8NMn+fNKRDLa2pRo5BX8aW+a83tPDqU
-	 GgXaGRHEjqMTQaTSEwiTq+LZsr8fgXvxAZupxxQHihlRCEGeKRTYN9ZBvXGeZH5v6l
-	 cNbEkyR0f0fisjYOpU+PgL5jY4ZNEON7FnZKH71NVsw/KoC5dN6YmBpvTPLR3GvZbC
-	 q9K5qaRFyq+a0yKXV5afTeXYdwYrJheYw2Wafv+rq71uOtdWWY/B2IP14x5XV0q/f0
-	 7brS93dUX/SVOI+l3RFg45/NhN//8bCTqZoEMGjszephsi3GB/4IZrVBAlBjvQt1f+
-	 qDDzVvsJtuDAA==
-Date: Sun, 27 Jul 2025 09:30:28 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Christoph Hellwig <hch@lst.de>, Jonathan Corbet <corbet@lwn.net>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-	Alexander Potapenko <glider@google.com>,
-	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, iommu@lists.linux.dev,
-	virtualization@lists.linux.dev, kasan-dev@googlegroups.com,
-	linux-trace-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH 6/8] dma-mapping: fail early if physical address is
- mapped through platform callback
-Message-ID: <20250727063028.GX402218@unreal>
-References: <cover.1750854543.git.leon@kernel.org>
- <5fc1f0ca52a85834b3e978c5d6a3171d7dd3c194.1750854543.git.leon@kernel.org>
- <02240cf7-c4d4-4296-9b1e-87b4231874a1@arm.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WtTU51yK"
+Received: by mail-wr1-f65.google.com with SMTP id ffacd0b85a97d-3b7886bee77so116680f8f.0;
+        Sun, 27 Jul 2025 05:48:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1753620519; x=1754225319; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=DRITpsqAlVQuup8a/seimyyXM3Zd5ZY8LDRlKD/FNoE=;
+        b=WtTU51yKhrsSk0nKT/QGgxtVgTAOaD3DEqmwbwTIcp6pBkr6qZeysRuLEGyaGgxtc3
+         C069fCUVyM5q+srTn3M1iL8TlChzFqYhg43if/Ssd0G72MpYg39+EHUgsmre2l/XzEBt
+         avKJloVwuC7qps55uQL3tq3ZpWQku/n25i3UHO5jyYarAOTENZrZQ1Rls/DIBQOdPRsu
+         YIkls+w+vh+B5T6yWuCNm/W2pm2pKdNzWDCiLRMSgHV5qzIdAx7kCXqa8mJ8Lc3CaOBX
+         9JtPkxgRNrmIron/6sBV4lD+piehhAidDqnBQ2CLJJE1iahNLDbS4WyYOoLbkqSRv0U1
+         C84g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1753620519; x=1754225319;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=DRITpsqAlVQuup8a/seimyyXM3Zd5ZY8LDRlKD/FNoE=;
+        b=EQO9PmccfIcHExf6JTg/ureII3Cs9+KpZhBaJb3cwt9defW/LbL66Km6J0Vt5JygKt
+         2tEjwE8zsQ4uz5h7tirF34nyCQAZb5dJlS9VGghnMxceUW4dCxR8bYGkmr8STDfPpHOE
+         nUQ6XSBdqRFfoMVWDMt7gqSUc8N+Keod3k9+DE8uvezx5o9IBZUo/hscv6wfmneR5ygg
+         cJPUtEN+pqJvbTMG4Y8P42TxmfDlv3XkkarreEu2Jnuk58rzPdL+hqzaFD/CSKJt0GCN
+         0c5034ho6ksVCknqB5jsRrMngdRpd2GJs94slzGP5P3Lh2BWD8UQ9Hxf6ehCJNQ9Z/Mz
+         5fnw==
+X-Forwarded-Encrypted: i=1; AJvYcCUqGKDi3LqlnIXdufH8iqEllTb44fIAgvwz+hAiNwP09UQ2A8OV0m/IrNmqsEqpX3GcClMlOg==@lists.linux.dev, AJvYcCXSjcvJWq1GuQQJAYUkYq9sNTMVHmUTcC7ihioXPOL+0Pt6zIiinEyPMOT/4xcQt7UQsXRaqRbAEA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzJ2CvRbuGuW744yWLPhrCsJVFfrYTLcm+zstwa4qD8vMgT8CsG
+	Msru7YRbuarbVhNbgiyZiE11UcqfXaNB4yotqgJDiY7PC/kcAoLuMs6v
+X-Gm-Gg: ASbGncvY8x9jE2gJvKXfhzEwLGaY0UYQGHVZ/HsHslEvOnYiAtqDQAuL4RaPu2gvzNC
+	sEKkcy4gAZK/8qK40rSeItVtUf3I6isUuA2VZJY4/FM7m2Z7/kjbfeqjLISuCk26rDDSDlaOPTa
+	ZQWXNx7ta/ACnr4aaeYocTFHFZURCRswHK2XzBiiTuS9/CckdoOSyW6/cmPcl4A3s/FwgeXbKYj
+	siNBVvP/0uIOKUJyXRrQsisIW720u1+/SiZ8JV0FR8bWepKkLCzIf83i08OfEvx6d3turT7XYN4
+	U0AeCgFXUcUIHI82sgYCwMlUpMA3NvdWk7FitmFPbNuG/hZbQzuRQLe78h4VKpUXr5PYrZxIXAW
+	1GOt5DCVYyxBWNB5P32wqWBTbTCZtL8BrO/eK46WI27N96U2hlIQuXnzHEGre8wYZ202lOzOVk/
+	fDWJNq0OiGiFcpAw==
+X-Google-Smtp-Source: AGHT+IFmiWlnd15B310vYferxTJyy/4API26r1cry41N+RH+lI6moXaK617td6bWARvvVi+3eLyhTQ==
+X-Received: by 2002:a05:6000:1a88:b0:3b7:664a:8416 with SMTP id ffacd0b85a97d-3b7765f4e98mr5424057f8f.23.1753620518744;
+        Sun, 27 Jul 2025 05:48:38 -0700 (PDT)
+Received: from [26.26.26.1] (45.98.207.35.bc.googleusercontent.com. [35.207.98.45])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b7883228dasm642513f8f.50.2025.07.27.05.48.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 27 Jul 2025 05:48:37 -0700 (PDT)
+Message-ID: <606f65e1-ccfc-4492-a32f-90343be654e7@gmail.com>
+Date: Sun, 27 Jul 2025 20:48:26 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <02240cf7-c4d4-4296-9b1e-87b4231874a1@arm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC v2 0/4] Disable ATS via iommu during PCI resets
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: jgg@nvidia.com, joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+ rafael@kernel.org, lenb@kernel.org, bhelgaas@google.com,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
+ patches@lists.linux.dev, pjaroszynski@nvidia.com, vsethi@nvidia.com,
+ helgaas@kernel.org, baolu.lu@linux.intel.com
+References: <cover.1751096303.git.nicolinc@nvidia.com>
+ <4f7e4bfb-1bc7-4c87-a9f1-8c8b6ee9a336@gmail.com>
+ <aIOz1bzgfK9q0n4b@Asurada-Nvidia>
+Content-Language: en-US
+From: Ethan Zhao <etzhao1900@gmail.com>
+In-Reply-To: <aIOz1bzgfK9q0n4b@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, Jul 25, 2025 at 09:04:50PM +0100, Robin Murphy wrote:
-> On 2025-06-25 2:19 pm, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > All platforms which implement map_page interface don't support physical
-> > addresses without real struct page. Add condition to check it.
+
+
+On 7/26/2025 12:41 AM, Nicolin Chen wrote:
+> On Thu, Jul 24, 2025 at 02:50:53PM +0800, Ethan Zhao wrote:
+>> On 6/28/2025 3:42 PM, Nicolin Chen wrote:
+>>> PCIe permits a device to ignore ATS invalidation TLPs, while processing a
+>>> reset. This creates a problem visible to the OS where an ATS invalidation
+>>> command will time out: e.g. an SVA domain will have no coordination with a
+>>> reset event and can racily issue ATS invalidations to a resetting device.
+>>>
+>>> The OS should do something to mitigate this as we do not want production
+>>> systems to be reporting critical ATS failures, especially in a hypervisor
+>>> environment. Broadly, OS could arrange to ignore the timeouts, block page
+>>> table mutations to prevent invalidations, or disable and block ATS.
+>>>
+>>> The PCIe spec in sec 10.3.1 IMPLEMENTATION NOTE recommends to disable and
+>>> block ATS before initiating a Function Level Reset. It also mentions that
+>>> other reset methods could have the same vulnerability as well.
+>>>
+>>> Provide a callback from the PCI subsystem that will enclose the reset and
+>>> have the iommu core temporarily change all the attached domain to BLOCKED.
+>>> After attaching a BLOCKED domain, IOMMU drivers should fence any incoming
+>>> ATS queries, synchronously stop issuing new ATS invalidations, and wait
+>>> for all ATS invalidations to complete. This can avoid any ATS invaliation
+>>> timeouts.
+>>
+>> This approach seems effective for reset operations initiated through
+>> software interface functions, but how would we handle those triggered by
+>> hardware mechanisms? For example, resets caused by PCIe DPC mechanisms,
+>> device firmware, or manual hot-plug operations?
 > 
-> As-is, the condition also needs to cover iommu-dma, because that also still
-> doesn't support non-page-backed addresses. You can't just do a simple
-> s/page/phys/ rename and hope it's OK because you happen to get away with it
-> for coherent, 64-bit, trusted devices.
+> That's a good point. But I am not sure what SW can do about those.
+> 
+> IIUIC, DPC resets PCI at the HW level, SW only gets a notification
+> after the HW reset finishes. So, during this HW reset, iommu might
+> issue ATC invalidations (resulting in invalidation timeout noises)
+> since at the SW level the device is still actively attached to an
+> IOMMU instance. Right? 
 
-It needs to be follow up patch. Is this what you envision? 
+Yup, the situation is this: When the system receives notification of a 
+DPC event, the reset action triggered by the DPC has already occurred. 
+At the very least, the software has an opportunity to be notified that a 
+reset happened – though this notification inevitably lags behind the 
+actual reset behavior, creating a time window between the reset action 
+and its notification.​​
 
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index e1586eb52ab34..31214fde88124 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -167,6 +167,12 @@ dma_addr_t dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
-            arch_dma_map_phys_direct(dev, phys + size))
-                addr = dma_direct_map_phys(dev, phys, size, dir, attrs);
-        else if (use_dma_iommu(dev))
-+               if (IS_ENABLED(CONFIG_DMA_API_DEBUG) &&
-+                   !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-+                       is_pfn_valid = pfn_valid(PHYS_PFN(phys));
-+
-+               if (unlikely(!is_pfn_valid))
-+                       return DMA_MAPPING_ERROR;
-                addr = iommu_dma_map_phys(dev, phys, size, dir, attrs);
-        else {
-                struct page *page = phys_to_page(phys);
-~
-~
-~
+​For DPC specifically, there is no notification mechanism before the 
+reset behavior takes place. Surprise Hot-plug events likely operate 
+under a similar constraint.​​ (while we do have good opportunity to know
+a hot-plug action is about to happen after attention button was pressed
+for standard hot-plug hardware, adding code there is okay for now).
 
-Thanks
+​This becomes particularly thorny if an Address Translation Cache (ATC) 
+Invalidation request occurs within this time window. Asynchronously 
+cancelling such requests later would likely be problematic. Is this an 
+accurate assessment ?
+
+At least, we can do some attempt in DPC and Hot-plug driver, and then
+push the hardware specification update to provide pre-reset notification 
+for DPC & hotplug. does it make sense ?
+
+Thanks,
+Ethan
+
+> 
+> Nicolin
+
