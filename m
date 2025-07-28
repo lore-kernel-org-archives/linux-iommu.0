@@ -1,55 +1,55 @@
-Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
+Received: from mail-wr1-f74.google.com (mail-wr1-f74.google.com [209.85.221.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5540285048
-	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 17:53:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5216281531
+	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 17:53:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753725235; cv=none; b=BvrvnI3Uh0etBwb3hduXOqh6z9VXGAg4KrC6bpsNKIlwTKGlAVysJjrequB4sZEAU90EdIIX7CdH2gDF20Il1TsLkFiPrUgFy36KwZIMXBcYEpJTfO7v32rkURkOOqsZPu3Jv6EKu24cDq/DnJta1zX3XOfRQv/cbg346mgRSIU=
+	t=1753725235; cv=none; b=nylL4miVh8TymZcRWYLldGjh4cA3WhosijQ9kg1D7h06KWVgWZrHyETbgvpRRyiYo44e5AD0FXW5BaxIVqzy3BoPuMfpE7LNTOyMCdrLLr5esZ4IrSRtf/B3nuJp1vOcgOfghcsjaaSI3QhIKCDpaXZRHqAOs8Hhq6jrODpB0lw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1753725235; c=relaxed/simple;
-	bh=6EFSM3MDGo4OM8NAGgtSWKnL4dD2aOc8PRvzxwpNhxs=;
+	bh=95chHff3zz7czkSoAmCuKp67OLtQgVr9l5n9sMY6pcE=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=MwtIqSRD/gZ++F/KbgHlQvGVpn6J1EKMJvM0dPPfDL32OplyfbiqucVq/XtB/E0KmFav5cBgbcImEstc/xIRsgVI7Ic6rcYYeMsE8fMWiO3FYXTSzODcJ5apePyFseFptCD5HDMHsoC5FuVg9iguO1gIPPDPezOxMHqm1i9yENs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HLh6bmNA; arc=none smtp.client-ip=209.85.128.73
+	 To:Cc:Content-Type; b=HNK5UE4lftGr7Gbkp3TwMIPMuuEgf7B67aZr3u6hQG/txiO2U2WRleUdRI/eVRx6js1uR5g6tirVg8B+XxG5v5i5fZ8SDcZMQXrurwVXO37lydGKY42QPapB1N7lXEoQh7ECvdyZZHDv9odRSU0zo1WSWKfW5yYfJb8hw770MwE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=of6NdjJC; arc=none smtp.client-ip=209.85.221.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HLh6bmNA"
-Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-45600d19a2aso36159955e9.1
-        for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 10:53:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="of6NdjJC"
+Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-3b7865dc367so986713f8f.2
+        for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 10:53:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1753725230; x=1754330030; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1753725228; x=1754330028; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=nmaCz/hZ0Y09KM1Z6dU4zeUMZqIx6D4vddfShUP8jOw=;
-        b=HLh6bmNArJ0P/KzAAa0xLoqYqAoBKobLZr+GmwZ/3gL6x7E6qTR/S3J2Vp5aVKwSEz
-         ZrX16Bji/scf6PnfIhAFvMSkUzuG3J5TyFe08LjMZLYtvHZXtOMWx+3SmIiMye4Jn6y0
-         HBDMoNUz7MOjW8Vxu7Hc72S4L5H1FKRXmSbLsqS+1sA77VxtXP44fRoFr4cAAgFSPqdc
-         HCHinm4I8ON5qUu3kbkMFMsWk+Ra3lvfyeFoVKOZOU7cDwzEC8hC7FcygBJLv+/Gemq2
-         jFHuIfgAGtScLOAd+YhQLMC2Vp3p+c1Oc482n164/eVZlsAQJgWR/Uas2VJEc14yqxM2
-         Wv9w==
+        bh=c9jYddvCz41uASA7Sa8Gd38u2bIDrZAA55dbZYiHYK0=;
+        b=of6NdjJCJ87YccDxLBzoB9VWrd0M2MbvaBpGQtLCzRjRwZATUFflM/b9lKh6RUgx1n
+         hxVwqrJ44QNVg6kaAZxIuKsKgfiRZdhfgWwf6OVRFty1WUXK4cjGfPXVNTRNaOFo9k/d
+         SQlGSNzhns/HKmdEQmMYmnTJRvnzBjf7JoDYOXqEHKjHDFfe+GJ0XNjiRbXIDNmqZOAA
+         oZF9Ii2HPkhGttzEBSgolDoj8G7+vrS8E9FdAKk7aExpmfdXP3WXxjqlV/CLbDHL9OYr
+         EhwDqNCuhFLiZSEdGAarSuhNbla7Sd1/TX72qBXWXiiJDzCHezqZN/bUs0yqL5RUoxMV
+         0naw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753725230; x=1754330030;
+        d=1e100.net; s=20230601; t=1753725228; x=1754330028;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=nmaCz/hZ0Y09KM1Z6dU4zeUMZqIx6D4vddfShUP8jOw=;
-        b=nvr9yUnDlAT2LCdm5PGoWVqbZhPUdnrVw0aw7Q183tQGLd6b5mFHZIVaV+Y3RRObyF
-         d3ydz9PV5Eul1mkj2JY0t+Jz2WdXgUMdZgNp7UCfNsbKob4tOmsSbfKKN8FoZuoUJTMB
-         eg3cONSWAkNmjqDLvYbE6dQn3O/TnRM5Szm/b0NOZ7jIyTNBI/lvij5ANMq5vFWOA9gd
-         lW2pzOey1S1C59tmYZhW+LsNvgFtS4Wg3nJPofvA7Eaxmi4gedFWsBYiCOU90zhlkhUG
-         wXJgODHFFdqKXjJGy5scQ7dkU4imKdN+c5I4WW8Vo2ysgt2f5s5bQmVwj728aVXOt6YR
-         TG9g==
-X-Forwarded-Encrypted: i=1; AJvYcCXtTRICX24UqrvoYLg2Gxt65h1i0Hc1NYBjktfnlDfNHrVw7du/x0fpJhNI9iaoUwiVmLejqw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw0MgkEHIjZor5PNhcTdOANk/UcUrVqyGs8p19fkl8S5THkzFPj
-	WLv48mT5P715d/9otaoEYFZDp6GppFAS0z7aeoRWrgxXWoqo31juFuLbra6m5aIwAzj/6gkZ7up
-	jFEjiJt5BQpgg7g==
-X-Google-Smtp-Source: AGHT+IGR+nDxQJC/TBVqY+VnaXcYcs4NqE/3pTQmZ3LkxhlmaQpfACsdvZZWOYaCQDE09t36WXjxu0J7xih9pA==
-X-Received: from wmbdw9.prod.google.com ([2002:a05:600c:6389:b0:451:4d6b:5b7e])
+        bh=c9jYddvCz41uASA7Sa8Gd38u2bIDrZAA55dbZYiHYK0=;
+        b=C2QhvLT+Fb3uCgthQVsqu6XO8wixgljf1yjVv+0cxTkAAmLMQf5+a9kV1ed9Q4qKyd
+         1EgHaw2oDy2OVaKThcUj1LZUgQiTVyPd2YsXYO+R7kiFPojuL0KVUNCUDJvfP54AY4sa
+         v9Rok5iHy/+uIicORxckf52EF7vAcmjiYxSs69ArNw8ghCUL/j7OjdxmtjJ0ytmxgx6e
+         3HV9a4out7cMl7OnBCe8tQppcbjq1KPbN6UtdpME9ZEPy7jlC4J32Dyi/veb2Eproud9
+         lPUZ657mGMikMxc/BkCKQfwB6s7bshrxxDN/+mnvRbNTsGFPMu2guWj1/IoCC7H2nysR
+         0FCg==
+X-Forwarded-Encrypted: i=1; AJvYcCVC5fDnj3t3ocXXUOF+21ZIBZR7+Opj29qyDCFJ46cLnWzQzCcWJiBF7BhHnmPvjiAHDvTJ2w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyh8rR9gtVtqz4aGVBN5ctQfRXSgwqL6BbVhdM8C5K7+Ab4LUb1
+	NGZ9bgf4VtEdJypIHzJvIIvjGIHqvUnZLjoylsV91Pwu9hxhGTPnSprIYkyN9v6+5qvWJC5eoWI
+	5o4ZI3Yr0MCl6og==
+X-Google-Smtp-Source: AGHT+IEIq4MuTZmAyjvY5ywUEpjJvcVv09tn1ZoK52Hz7k9v+do6OvW02sN+sKfvQsmRTrBRzkW0d1TsmWpcEQ==
+X-Received: from wmbhh14.prod.google.com ([2002:a05:600c:530e:b0:455:76a8:b3a])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:6088:b0:456:e39:ec1a with SMTP id 5b1f17b1804b1-45883089729mr58139855e9.14.1753725229980;
- Mon, 28 Jul 2025 10:53:49 -0700 (PDT)
-Date: Mon, 28 Jul 2025 17:53:07 +0000
+ 2002:adf:a3d0:0:b0:3b7:899c:e867 with SMTP id ffacd0b85a97d-3b7899ceb31mr1880112f8f.59.1753725228115;
+ Mon, 28 Jul 2025 10:53:48 -0700 (PDT)
+Date: Mon, 28 Jul 2025 17:53:05 +0000
 In-Reply-To: <20250728175316.3706196-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250728175316.3706196-1-smostafa@google.com>
 X-Mailer: git-send-email 2.50.1.552.g942d659e1b-goog
-Message-ID: <20250728175316.3706196-21-smostafa@google.com>
-Subject: [PATCH v3 20/29] iommu/arm-smmu-v3-kvm: Setup command queue
+Message-ID: <20250728175316.3706196-19-smostafa@google.com>
+Subject: [PATCH v3 18/29] iommu/arm-smmu-v3-kvm: Add SMMUv3 driver
 From: Mostafa Saleh <smostafa@google.com>
 To: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev, 
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
@@ -71,174 +71,106 @@ Cc: maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
 	praan@google.com, Mostafa Saleh <smostafa@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Map the command queue allocated by the host into the hypervisor address
-space. When the host mappings are finalized, the queue is unmapped from
-the host.
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-Signed-off-by: Mostafa Saleh <smostafa@google.com>
+Add the skeleton for an Arm SMMUv3 driver at EL2.
+
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Mostafa Saleh <smostafa@google.com>
 ---
- .../iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c  | 104 ++++++++++++++++++
- .../iommu/arm/arm-smmu-v3/pkvm/arm_smmu_v3.h  |   4 +
- 2 files changed, 108 insertions(+)
+ arch/arm64/kvm/hyp/nvhe/Makefile              |  5 ++++
+ drivers/iommu/arm/Kconfig                     |  9 +++++++
+ .../iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c  | 24 +++++++++++++++++++
+ .../iommu/arm/arm-smmu-v3/pkvm/arm_smmu_v3.h  | 16 +++++++++++++
+ 4 files changed, 54 insertions(+)
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/pkvm/arm_smmu_v3.h
 
+diff --git a/arch/arm64/kvm/hyp/nvhe/Makefile b/arch/arm64/kvm/hyp/nvhe/Makefile
+index 393ff143f0be..c71c96262378 100644
+--- a/arch/arm64/kvm/hyp/nvhe/Makefile
++++ b/arch/arm64/kvm/hyp/nvhe/Makefile
+@@ -31,6 +31,11 @@ hyp-obj-y += ../vgic-v3-sr.o ../aarch32.o ../vgic-v2-cpuif-proxy.o ../entry.o \
+ hyp-obj-$(CONFIG_LIST_HARDENED) += list_debug.o
+ hyp-obj-y += $(lib-objs)
+ 
++HYP_SMMU_V3_DRV_PATH = ../../../../../drivers/iommu/arm/arm-smmu-v3
++
++hyp-obj-$(CONFIG_ARM_SMMU_V3_PKVM) += $(HYP_SMMU_V3_DRV_PATH)/pkvm/arm-smmu-v3.o \
++	$(HYP_SMMU_V3_DRV_PATH)/arm-smmu-v3-common-hyp.o
++
+ ##
+ ## Build rules for compiling nVHE hyp code
+ ## Output of this folder is `kvm_nvhe.o`, a partially linked object
+diff --git a/drivers/iommu/arm/Kconfig b/drivers/iommu/arm/Kconfig
+index ef42bbe07dbe..bcf4001521ad 100644
+--- a/drivers/iommu/arm/Kconfig
++++ b/drivers/iommu/arm/Kconfig
+@@ -142,3 +142,12 @@ config QCOM_IOMMU
+ 	select ARM_DMA_USE_IOMMU
+ 	help
+ 	  Support for IOMMU on certain Qualcomm SoCs.
++
++config ARM_SMMU_V3_PKVM
++	bool "ARM SMMUv3 support for protected Virtual Machines"
++	depends on KVM && ARM64
++	help
++	  Enable a SMMUv3 driver in the KVM hypervisor, to protect VMs against
++	  memory accesses from devices owned by the host.
++
++	  Say Y here if you intend to enable KVM in protected mode.
 diff --git a/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
-index e9bc35e019b6..c3d67c603619 100644
---- a/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
+new file mode 100644
+index 000000000000..2f43804e08e0
+--- /dev/null
 +++ b/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
-@@ -39,6 +39,15 @@ struct hyp_arm_smmu_v3_device *kvm_hyp_arm_smmu_v3_smmus;
- 	__ret;							\
- })
- 
-+#define smmu_wait_event(_smmu, _cond)				\
-+({								\
-+	if ((_smmu)->features & ARM_SMMU_FEAT_SEV) {		\
-+		while (!(_cond))				\
-+			wfe();					\
-+	}							\
-+	smmu_wait(_cond);					\
-+})
+@@ -0,0 +1,24 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * pKVM hyp driver for the Arm SMMUv3
++ *
++ * Copyright (C) 2022 Linaro Ltd.
++ */
++#include <asm/kvm_hyp.h>
 +
- static int smmu_write_cr0(struct hyp_arm_smmu_v3_device *smmu, u32 val)
- {
- 	writel_relaxed(val, smmu->base + ARM_SMMU_CR0);
-@@ -58,6 +67,70 @@ static void smmu_reclaim_pages(u64 phys, size_t size)
- 	WARN_ON(__pkvm_hyp_donate_host(phys >> PAGE_SHIFT, size >> PAGE_SHIFT));
- }
- 
-+static bool smmu_cmdq_full(struct arm_smmu_queue *cmdq)
++#include <nvhe/iommu.h>
++
++#include "arm_smmu_v3.h"
++
++size_t __ro_after_init kvm_hyp_arm_smmu_v3_count;
++struct hyp_arm_smmu_v3_device *kvm_hyp_arm_smmu_v3_smmus;
++
++static int smmu_init(void)
 +{
-+	struct arm_smmu_ll_queue *llq = &cmdq->llq;
-+
-+	WRITE_ONCE(llq->cons, readl_relaxed(cmdq->cons_reg));
-+	return queue_full(llq);
++	return -ENOSYS;
 +}
 +
-+static bool smmu_cmdq_empty(struct arm_smmu_queue *cmdq)
-+{
-+	struct arm_smmu_ll_queue *llq = &cmdq->llq;
-+
-+	WRITE_ONCE(llq->cons, readl_relaxed(cmdq->cons_reg));
-+	return queue_empty(llq);
-+}
-+
-+static int smmu_add_cmd(struct hyp_arm_smmu_v3_device *smmu,
-+			struct arm_smmu_cmdq_ent *ent)
-+{
-+	int ret;
-+	u64 cmd[CMDQ_ENT_DWORDS];
-+	struct arm_smmu_queue *q = &smmu->cmdq;
-+	struct arm_smmu_ll_queue *llq = &q->llq;
-+
-+	ret = smmu_wait_event(smmu, !smmu_cmdq_full(&smmu->cmdq));
-+	if (ret)
-+		return ret;
-+
-+	ret = arm_smmu_cmdq_build_cmd(cmd, ent);
-+	if (ret)
-+		return ret;
-+
-+	queue_write(Q_ENT(q, llq->prod), cmd,  CMDQ_ENT_DWORDS);
-+	llq->prod = queue_inc_prod_n(llq, 1);
-+	writel_relaxed(llq->prod, q->prod_reg);
-+	return 0;
-+}
-+
-+static int smmu_sync_cmd(struct hyp_arm_smmu_v3_device *smmu)
-+{
-+	int ret;
-+	struct arm_smmu_cmdq_ent cmd = {
-+		.opcode = CMDQ_OP_CMD_SYNC,
-+	};
-+
-+	ret = smmu_add_cmd(smmu, &cmd);
-+	if (ret)
-+		return ret;
-+
-+	return smmu_wait_event(smmu, smmu_cmdq_empty(&smmu->cmdq));
-+}
-+
-+__maybe_unused
-+static int smmu_send_cmd(struct hyp_arm_smmu_v3_device *smmu,
-+			 struct arm_smmu_cmdq_ent *cmd)
-+{
-+	int ret = smmu_add_cmd(smmu, cmd);
-+
-+	if (ret)
-+		return ret;
-+
-+	return smmu_sync_cmd(smmu);
-+}
-+
- static int smmu_init_registers(struct hyp_arm_smmu_v3_device *smmu)
- {
- 	u64 val, old;
-@@ -105,6 +178,33 @@ static void smmu_deinit_device(struct hyp_arm_smmu_v3_device *smmu)
- 	}
- }
- 
-+static int smmu_init_cmdq(struct hyp_arm_smmu_v3_device *smmu)
-+{
-+	size_t cmdq_size;
-+	int ret;
-+	enum kvm_pgtable_prot prot = PAGE_HYP;
-+
-+	cmdq_size = (1 << (smmu->cmdq.llq.max_n_shift)) *
-+		     CMDQ_ENT_DWORDS * 8;
-+
-+	if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY))
-+		prot |= KVM_PGTABLE_PROT_NORMAL_NC;
-+
-+	ret = ___pkvm_host_donate_hyp(smmu->cmdq.base_dma >> PAGE_SHIFT,
-+				      PAGE_ALIGN(cmdq_size) >> PAGE_SHIFT, prot);
-+	if (ret)
-+		return ret;
-+
-+	smmu->cmdq.base = hyp_phys_to_virt(smmu->cmdq.base_dma);
-+	smmu->cmdq.prod_reg = smmu->base + ARM_SMMU_CMDQ_PROD;
-+	smmu->cmdq.cons_reg = smmu->base + ARM_SMMU_CMDQ_CONS;
-+	memset(smmu->cmdq.base, 0, cmdq_size);
-+	writel_relaxed(0, smmu->cmdq.prod_reg);
-+	writel_relaxed(0, smmu->cmdq.cons_reg);
-+
-+	return 0;
-+}
-+
- static int smmu_init_device(struct hyp_arm_smmu_v3_device *smmu)
- {
- 	int i;
-@@ -129,6 +229,10 @@ static int smmu_init_device(struct hyp_arm_smmu_v3_device *smmu)
- 	ret = smmu_init_registers(smmu);
- 	if (ret)
- 		goto out_err;
-+	ret = smmu_init_cmdq(smmu);
-+	if (ret)
-+		goto out_err;
-+
- 	return ret;
- 
- out_err:
++/* Shared with the kernel driver in EL1 */
++struct kvm_iommu_ops smmu_ops = {
++	.init				= smmu_init,
++};
 diff --git a/drivers/iommu/arm/arm-smmu-v3/pkvm/arm_smmu_v3.h b/drivers/iommu/arm/arm-smmu-v3/pkvm/arm_smmu_v3.h
-index 9b1d021ada63..f639312cf295 100644
---- a/drivers/iommu/arm/arm-smmu-v3/pkvm/arm_smmu_v3.h
+new file mode 100644
+index 000000000000..f6ad91d3fb85
+--- /dev/null
 +++ b/drivers/iommu/arm/arm-smmu-v3/pkvm/arm_smmu_v3.h
-@@ -11,12 +11,16 @@
-  * @mmio_addr		base address of the SMMU registers
-  * @mmio_size		size of the registers resource
-  * @base		Virtual address of SMMU registers
-+ * @features		SMMUv3 features as defined in arm-smmu-v3-common.h
-+ * @cmdq		CMDQ queue struct
-  * Other members are filled and used at runtime by the SMMU driver.
-  */
- struct hyp_arm_smmu_v3_device {
- 	phys_addr_t		mmio_addr;
- 	size_t			mmio_size;
- 	void __iomem		*base;
-+	unsigned long		features;
-+	struct arm_smmu_queue	cmdq;
- };
- 
- extern size_t kvm_nvhe_sym(kvm_hyp_arm_smmu_v3_count);
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __KVM_ARM_SMMU_V3_H
++#define __KVM_ARM_SMMU_V3_H
++
++#include <asm/kvm_asm.h>
++
++struct hyp_arm_smmu_v3_device {
++};
++
++extern size_t kvm_nvhe_sym(kvm_hyp_arm_smmu_v3_count);
++#define kvm_hyp_arm_smmu_v3_count kvm_nvhe_sym(kvm_hyp_arm_smmu_v3_count)
++
++extern struct hyp_arm_smmu_v3_device *kvm_nvhe_sym(kvm_hyp_arm_smmu_v3_smmus);
++#define kvm_hyp_arm_smmu_v3_smmus kvm_nvhe_sym(kvm_hyp_arm_smmu_v3_smmus)
++
++#endif /* __KVM_ARM_SMMU_V3_H */
 -- 
 2.50.1.552.g942d659e1b-goog
 
