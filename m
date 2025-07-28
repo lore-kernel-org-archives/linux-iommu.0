@@ -1,259 +1,245 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2066.outbound.protection.outlook.com [40.107.94.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78CDD22F74B;
-	Mon, 28 Jul 2025 10:51:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753699870; cv=none; b=JQpj431VjjBwL1bYon/kEGPu/xWWUMHjZA/iXiMUkbaP8KOpaJz7V7/R2RhsBsnlmpSLpQVI5Fy4u5R7L3X+U4IAz99KmIdhyOxcrLwy7S6AvvWfdMjHWbwF4gCOneNQ8moYsoIpRGQQsIHvLnNDSLp/LwEZtv49aiDW3QAcr7Y=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753699870; c=relaxed/simple;
-	bh=ktteVd1e8A95xuWWFpvbHUtpkzcc4cRBe8jJTClR/1s=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=PQvx8gKxvsQ9ix9XUG48LpuX6NtXPuXi3NcaPge/vGtzwyOZSj1gOwnvBOWyaR1AJ78S4SuC7EyNCG+1Qkh8ncToJeyPItyOPEd6kfevxBgalCvqnTOVyUowUh3cVwzM+Uhen5tGBAWkXQU3gHnQZpuTGvq1UqzIgGd1upXYxj0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MNxRBFR3; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CBB825BEE8;
+	Mon, 28 Jul 2025 11:24:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.66
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1753701843; cv=fail; b=D0m+el77wy1RQs/RnoS1p7zqzcBCP0EnviIyK7m+BRqRC4yn9c561UecgpgZl0aAXtZkPZZwDKSgXYDBooZKrQZ6Gh3MfTtEHNu7S5rMJub3FGeWrb0IOcPOsAPPB4SxNYMabVS+IjRR0b3H2J0xJJYzPVX8Bpxfk3Y/PK7rQmc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1753701843; c=relaxed/simple;
+	bh=2VOlVgWoZ4s78HchVCXBLnU14qBJOvX8ceTAyFNlxnY=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=r+JmmakK06RprGlArVBDcVUxJ96VMmSIi3pWjC5dsXIw9vr2hNzkFtdk/GsJZlTyD4m2+r0QgdbLilFG9ALAzu2+iZPrbCEtdIMnS90UjpJ5yy0xurC5hcbxwratwtZmLRDSQfnFLyJvFJ8o5VF6I5xauRw8PgyF0YyYJdl6Lps=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=tb6GVmJE; arc=fail smtp.client-ip=40.107.94.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MNxRBFR3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AFFBC4CEF6;
-	Mon, 28 Jul 2025 10:51:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1753699870;
-	bh=ktteVd1e8A95xuWWFpvbHUtpkzcc4cRBe8jJTClR/1s=;
-	h=Date:From:To:Cc:Subject:From;
-	b=MNxRBFR3i7IZ12aAfsENg26BQINm2aLafRhp0cTBWueykcNG0OhQSy/D2JsCFo953
-	 XQ30f2cf0kP6YgsTy8ePp8MNgNymNbWoO3iaTljCXyplzvHI7+strnXau5Cl4OVE1l
-	 REyk6Ysqk5lwPgzqvXXjX07T3qm03ytBX1D6LN+zaFoa+vSCDBfhzGPv1GdQeYoqSk
-	 Ysy0hPk1R+eybKRIdTVI0AVxKuGTnSClLlLJXpLFtZQV8YpHrg7o4XfQNseYSwZlkh
-	 zCHEG6XAdhT+MODKgn3vyIYdvF9b3cDJIRztWoTZURUIvkaRZUMG5eYNtv2Gj9kum6
-	 1LPOohcweI0jg==
-Date: Mon, 28 Jul 2025 11:51:05 +0100
-From: Will Deacon <will@kernel.org>
-To: torvalds@linux-foundation.org
-Cc: joro@8bytes.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: [GIT PULL] IOMMU Updates for Linux v6.17
-Message-ID: <aIdWGaahna8cQqjK@willie-the-truck>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="tb6GVmJE"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=JtbbMfQsgGa0rzpjRrGKpjJLylfCVxafiHjW5gXImgJIonJBbbF2+wep2S21pS5KwwTR27ZnbZF5gOd4Qtt0Cvr3tqzU0x3l3T3HZQcpIyBnvlRvgGxcya4zQey3hMssWFR+JGQtd8Pz4yJ/1v8iqpiiATn5N01VItWU5q8smfBHnCxR4Q0i901wemWGHVG+4oll9ftiLWBzfT2oPPiSF7tLel2Gp48anrWc2Elf3yor2a3+gA0Jfdm/UEDfF4vF6zcO94prH86YQ7PG8EkbDeOTKEuYFcmXjNHK4o7QFPFQI6+pTYMaGiHXYjYg95Whcm9rfoAittYntdLVaaYNOw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hTM++gTGTD6sEX4VnokP1y6arFYnyaxxRNidgwXJazI=;
+ b=mtG8L7ZArkKj3M7Odri15AOW8rNFXxfJxhbVqqpoztFpDP4ML7rXvLa4w6MpTD52QQUjZjUgUYxX5Z/dHGhQ0wF8Ikr4UrMOpvXeRmOcpFIPS+0Z2EwrBNkn/5kDXy71QMiGjIQAeMAv5Hzp68wCldohs6qPQ/4zuNLXUZ2NN6+gww6iiza8Q6lew1WBP6xWxEPHH7rTROKzWnsSpf48KhAN0Zqs0kG957s9652qqH8St8NV1zlT05hpvTZ+COq1ZE8dHlfK1VOgNt8R4boWTyN7eBde8ffUoa6Fxq8Kvr6TIGBc31u7rOiAzSPjr1vBTdIJ4qtJMWeSVqodDROUlQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=nvidia.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hTM++gTGTD6sEX4VnokP1y6arFYnyaxxRNidgwXJazI=;
+ b=tb6GVmJEqC0iZdkRyClOSwFntvTaB+4YepHetbkcgw3hXLYTb7wW/ryhiGoFp2/dZyWG9fOVTAHKcQ4RDT6ETS0gPbM58J5P1CEAYcoBx6yNgQlnVaVUJWVccQijZrs9Rej33vF95YXHR+rBWyaAx94gDQjlXurjuPLnXc5D/bM=
+Received: from BY5PR13CA0002.namprd13.prod.outlook.com (2603:10b6:a03:180::15)
+ by MN0PR12MB5905.namprd12.prod.outlook.com (2603:10b6:208:379::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8964.26; Mon, 28 Jul
+ 2025 11:23:56 +0000
+Received: from MWH0EPF000989EB.namprd02.prod.outlook.com
+ (2603:10b6:a03:180:cafe::5b) by BY5PR13CA0002.outlook.office365.com
+ (2603:10b6:a03:180::15) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8989.11 via Frontend Transport; Mon,
+ 28 Jul 2025 11:23:55 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ MWH0EPF000989EB.mail.protection.outlook.com (10.167.241.138) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.8989.10 via Frontend Transport; Mon, 28 Jul 2025 11:23:55 +0000
+Received: from SATLEXMB04.amd.com (10.181.40.145) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Mon, 28 Jul
+ 2025 06:23:52 -0500
+Received: from amd.com (10.180.168.240) by SATLEXMB04.amd.com (10.181.40.145)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39 via Frontend
+ Transport; Mon, 28 Jul 2025 06:23:47 -0500
+Date: Mon, 28 Jul 2025 11:23:42 +0000
+From: Ankit Soni <Ankit.Soni@amd.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Jonathan Corbet <corbet@lwn.net>, <iommu@lists.linux.dev>, Joerg Roedel
+	<joro@8bytes.org>, Justin Stitt <justinstitt@google.com>, Kevin Tian
+	<kevin.tian@intel.com>, <linux-doc@vger.kernel.org>,
+	<linux-kselftest@vger.kernel.org>, <llvm@lists.linux.dev>, Bill Wendling
+	<morbo@google.com>, Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers
+	<nick.desaulniers+lkml@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, "Suravee
+ Suthikulpanit" <suravee.suthikulpanit@amd.com>, Will Deacon
+	<will@kernel.org>, Alexey Kardashevskiy <aik@amd.com>, Alejandro Jimenez
+	<alejandro.j.jimenez@oracle.com>, James Gowans <jgowans@amazon.com>, "Michael
+ Roth" <michael.roth@amd.com>, Pasha Tatashin <pasha.tatashin@soleen.com>,
+	<patches@lists.linux.dev>
+Subject: Re: [PATCH v3 01/15] genpt: Generic Page Table base API
+Message-ID: <vbbvejcofng2jpgozzgbh5ifnmdqrtfjs6ix2jvuw4rfwdek5n@3cldml5ry57t>
+References: <0-v3-a93aab628dbc+521-iommu_pt_jgg@nvidia.com>
+ <1-v3-a93aab628dbc+521-iommu_pt_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
+In-Reply-To: <1-v3-a93aab628dbc+521-iommu_pt_jgg@nvidia.com>
+Received-SPF: None (SATLEXMB04.amd.com: Ankit.Soni@amd.com does not designate
+ permitted sender hosts)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000989EB:EE_|MN0PR12MB5905:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7aea3811-e4c0-4681-ca5d-08ddcdc93d69
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|7416014|376014|82310400026|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?61yrw7nnyYbFNZK8oSq/5rntpDfQD6t+aStY/JCegz9thWuzfgV8DOhH0h02?=
+ =?us-ascii?Q?f4cG27JfgDX+50ysn8//Rrli5hzdCrObTW/mroF8JjrClBzisIJQShNqCfAL?=
+ =?us-ascii?Q?FdCudRM9BU5qb9PEoitvVUBQLEh8Q5wgTxB6OOQpZFrkyI1B6rxrOtUHEUKF?=
+ =?us-ascii?Q?bcb1yqQfD+QJW2rXtcHneu216bBlDFJMHNaKMALw013ioPNTBAk0TJBMrVGR?=
+ =?us-ascii?Q?baCI2kaCW4G8n3nFtj9p2JjCpdG8I4OCWeQdaZeKMIgKr+sGKQU3yz7QHlDb?=
+ =?us-ascii?Q?nevL2xzOahoJcMJRpzgxA35iIRaebP//OZUhoVhTRbDwsuUupUv4TW8yIDsS?=
+ =?us-ascii?Q?iEQ7TFeblYjoxPS28pAGWWJBdPlUim4Br9L/lr4XqjcyOYrWPQPG6wYG2x6x?=
+ =?us-ascii?Q?/cDZ6gnAVQNqx1BzZBd8ZZ/UscFJ56eatmxlXLgfXr25wxqt70w6qoedfBuK?=
+ =?us-ascii?Q?HrnXzTh8P/JUE5UbQu01VdZsR36eEmVY9hsbQDvu9wL6syEOZ2ptqI8bw60Z?=
+ =?us-ascii?Q?8RlUdzDCc9pJoFo4M13hJbv1R6IybalUJkYm09HWjRhGLI3hF1lQcu7NfB3O?=
+ =?us-ascii?Q?EcI8s3fC4JJ2vwOeXz5zpHv9V4z9kOEMzrcrQBvrswyI3tIg2EBK2jEbLn+I?=
+ =?us-ascii?Q?6D03fcTa/4qrHV7KW/TYFvKc2ETOxD4llzD7yZqqsMG/a4Gdqg28Uyx9XLrN?=
+ =?us-ascii?Q?Apht3bxPyb2Ul11SVlDPdnWLlAnUyHCH6FfTW2yLS/Dp9uFcusPWeP06+nWa?=
+ =?us-ascii?Q?g/uE92gkgQ6MLXPczjfKyVi2/XdbjbhAxdSjQ0cHqhF6q59ZCqpHtqAOgma7?=
+ =?us-ascii?Q?GP+kLEQbKjzipLuTaAEY5V+KwKlDSgeinvqxljXD0D14lDq/SKMLm6qvGum/?=
+ =?us-ascii?Q?p2gCKsn5loecMdALG880oX9kQTzD/v1/eVkn2wzwuLvoX0GEcJgtYhx6LCTA?=
+ =?us-ascii?Q?kO7Eubu3pynOEr5IhxEr0YoGzaQIcRVUq7pH7Uq9d1wsNnCuJVz/dA0qv7YV?=
+ =?us-ascii?Q?EqGEsiIFqjbZwohs6nt+WSPmC0UKAqalMXw8PgrBeMK8fRnGRinErqr7hmLN?=
+ =?us-ascii?Q?hfgIy+wOiejhJzeLO6m7Ax7jTgmdVhug1uYHc5ZsY2ugbNUGOAtcjAqDLUZj?=
+ =?us-ascii?Q?5muQz9SfF0pbEk0YD30bBvcWONghlxJwMyr3wzF10TXKC90R/qovc9jXVnKk?=
+ =?us-ascii?Q?iSHVrtzKUg5dSchN4BcN/4f48DDSnrIthY1h2m7c7WbAiDdmZUk72u3JZlhW?=
+ =?us-ascii?Q?XlytuTG/DMPEMysPmKwMEHIJIDbS06cJjSkFJd+Y+euEs+RTcEgw+bWEAycs?=
+ =?us-ascii?Q?h3FJoRImqWiPVPWo2oydCdykppfRcZuMotkynAzTmQCeIYWNJ+HSdkg4t8Zn?=
+ =?us-ascii?Q?vROlnsa3hFEcw+M2ATiijrSgrHrlj5NxrI01aVcUAy1gGLMNtKEt2D2A01sX?=
+ =?us-ascii?Q?EzY4C1xpUOB7SDhbfdODuB4ZjXQcqzKhdknqIUG4vrV2tv7pmKxWFDz3VkVs?=
+ =?us-ascii?Q?Wd5BsT3FXVMheffCp3/2MpsjdLv9h48AaIDi?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(82310400026)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2025 11:23:55.7591
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7aea3811-e4c0-4681-ca5d-08ddcdc93d69
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000989EB.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5905
 
-Hi Linus,
+Hi Jason,
 
-Joerg (CC'd) has been away for a couple of weeks [1] so I've been
-handling the IOMMU tree recently and here is the pull request for IOMMU
-changes targetting v6.17.
+On Mon, Jun 16, 2025 at 03:06:04PM -0300, Jason Gunthorpe wrote:
+> The generic API is intended to be separated from the implementation of
+> page table algorithms. It contains only accessors for walking and
+> manipulating the table and helpers that are useful for building an
+> implementation. Memory management is not in the generic API, but part of
+> the implementation.
+> 
+> Using a multi-compilation approach the implementation module would include
+> headers in this order:
+> 
+>   common.h
+>   defs_FMT.h
+>   pt_defs.h
+>   FMT.h
+>   pt_common.h
+>   IMPLEMENTATION.h
+> 
+> Where each compilation unit would have a combination of FMT and
+> IMPLEMENTATION to produce a per-format per-implementation module.
+> 
+> The API is designed so that the format headers have minimal logic, and
+> default implementations are provided if the format doesn't include one.
+> 
+> Generally formats provide their code via an inline function using the
+> pattern:
+> 
+>   static inline FMTpt_XX(..) {}
+>   #define pt_XX FMTpt_XX
+> 
+> The common code then enforces a function signature so that there is no
+> drift in function arguments, or accidental polymorphic functions (as has
+> been slightly troublesome in mm). Use of function-like #defines are
+> avoided in the format even though many of the functions are small enough.
+> 
+> Provide kdocs for the API surface.
+> 
+> This is enough to implement the 8 initial format variations with all of
+> their features:
+>  * Entries comprised of contiguous blocks of IO PTEs for larger page
+>    sizes (AMDv1, ARMv8)
+>  * Multi-level tables, up to 6 levels. Runtime selected top level
+>  * Runtime variable table level size (ARM's concatenated tables)
+>  * Expandable top level (AMDv1)
+>  * Optional leaf entries at any level
+>  * 32 bit/64 bit virtual and output addresses, using every bit
+>  * Sign extended addressing (x86)
+>  * Dirty tracking
+> 
+> A basic simple format takes about 200 lines to declare the require inline
+> functions.
+> 
+> Tested-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
 
-There is a summary in the tag but it's mainly driver updates for x86 and
-Arm-based systems. The only real core change is removal of the
-'pgsize_bitmap' field from 'struct iommu_ops', along with the necessary
-driver updates to go with it.
+../..
 
-Please pull.
+> +static __always_inline struct pt_range _pt_top_range(struct pt_common *common,
+> +						     uintptr_t top_of_table)
+> +{
+> +	struct pt_range range = {
+> +		.common = common,
+> +		.top_table =
+> +			(struct pt_table_p *)(top_of_table &
+> +					      ~(uintptr_t)PT_TOP_LEVEL_MASK),
+> +#ifdef PT_FIXED_TOP_LEVEL
 
-Cheers,
+I am not able to find definition for above macro.
+Was it intentional to leave the macro 'PT_FIXED_TOP_LEVEL' undefined?
 
-Will
+Thanks,
+Ankit
 
-[1] https://lore.kernel.org/linux-iommu/ojjm5wbqi44t5v2qo752u7q36uvbrda7au5coskjbnxgaom6t5@ebbfcm7zmwfa
-
---->8
-
-The following changes since commit 86731a2a651e58953fc949573895f2fa6d456841:
-
-  Linux 6.16-rc3 (2025-06-22 13:30:08 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git tags/iommu-updates-v6.17
-
-for you to fetch changes up to b9e6e8ae0a5f9edae7cc1b5972a1d3dea9223fe2:
-
-  Merge branch 'arm/smmu/updates' into next (2025-07-24 11:18:28 +0100)
-
-----------------------------------------------------------------
-IOMMU Updates for Linux v6.17:
-
-- Core
-  * Remove the 'pgsize_bitmap' member from 'struct iommu_ops'
-  * Convert the x86 drivers over to msi_create_parent_irq_domain()
-
-- AMD-Vi
-  * Add support for examining driver/device internals via debugfs
-  * Add support for "HATDis" to disable host translation when it is not
-    supported
-  * Add support for limiting the maximum host translation level based on
-    EFR[HATS]
-
-- Apple DART
-  * Don't enable as built-in by default when ARCH_APPLE is selected
-
-- Arm SMMU
-  * Devicetree bindings update for the Qualcomm SMMU in the "Milos" SoC
-  * Support for Qualcomm SM6115 MDSS parts
-  * Disable PRR on Qualcomm SM8250 as using these bits causes the
-    hypervisor to explode
-
-- Intel VT-d
-  * Reorganize Intel VT-d to be ready for iommupt
-  * Optimize iotlb_sync_map for non-caching/non-RWBF modes
-  * Fix missed PASID in dev TLB invalidation in cache_tag_flush_all()
-
-- Mediatek
-  * Fix build warnings when W=1
-
-- Samsung Exynos
-  * Add support for reserved memory regions specified by the bootloader
-
-- TI OMAP
-  * Use syscon_regmap_lookup_by_phandle_args() instead of parsing the
-    node manually
-
-- Misc
-  * Cleanups and minor fixes across the board
-
-----------------------------------------------------------------
-Alexey Klimov (1):
-      iommu/arm-smmu-qcom: Add SM6115 MDSS compatible
-
-Ankit Soni (2):
-      iommu/amd: Add HATDis feature support
-      iommu/amd: Add efr[HATS] max v1 page table level
-
-Bagas Sanjaya (1):
-      iommu/amd: Wrap debugfs ABI testing symbols snippets in literal code blocks
-
-Daniel Mentz (1):
-      iommu/io-pgtable-arm: Remove unused macro iopte_prot
-
-Dheeraj Kumar Srivastava (8):
-      iommu/amd: Refactor AMD IOMMU debugfs initial setup
-      iommu/amd: Add debugfs support to dump IOMMU MMIO registers
-      iommu/amd: Add debugfs support to dump IOMMU Capability registers
-      iommu/amd: Add debugfs support to dump IOMMU command buffer
-      iommu/amd: Add support for device id user input
-      iommu/amd: Add debugfs support to dump device table
-      iommu/amd: Add debugfs support to dump IRT Table
-      iommu/amd: Add documentation for AMD IOMMU debugfs support
-
-Dmitry Baryshkov (1):
-      iommu/arm-smmu: disable PRR on SM8250
-
-Easwar Hariharan (1):
-      iommu/amd: Enable PASID and ATS capabilities in the correct order
-
-Ethan Milon (2):
-      iommu/vt-d: Fix missing PASID in dev TLB flush with cache_tag_flush_all
-      iommu/vt-d: Deduplicate cache_tag_flush_all by reusing flush_range
-
-Jason Gunthorpe (17):
-      qiommu/arm-smmu-v3: Remove iommu_ops pgsize_bitmap
-      iommu/arm-smmu: Remove iommu_ops pgsize_bitmap
-      iommu: Remove ops.pgsize_bitmap from drivers that don't use it
-      iommu: Remove iommu_ops pgsize_bitmap from simple drivers
-      iommu/mtk: Remove iommu_ops pgsize_bitmap
-      iommu/qcom: Remove iommu_ops pgsize_bitmap
-      iommu/msm: Remove ops->pgsize_bitmap
-      iommu: Remove ops->pgsize_bitmap
-      iommu/vt-d: Lift the __pa to domain_setup_first_level/intel_svm_set_dev_pasid()
-      iommu/vt-d: Fold domain_exit() into intel_iommu_domain_free()
-      iommu/vt-d: Do not wipe out the page table NID when devices detach
-      iommu/vt-d: Split intel_iommu_domain_alloc_paging_flags()
-      iommu/vt-d: Create unique domain ops for each stage
-      iommu/vt-d: Split intel_iommu_enforce_cache_coherency()
-      iommu/vt-d: Split paging_domain_compatible()
-      iommu/qcom: Fix pgsize_bitmap
-      iommu/amd: Fix geometry.aperture_end for V2 tables
-
-Kaustabh Chakraborty (1):
-      iommu/exynos: add support for reserved regions
-
-Konrad Dybcio (1):
-      dt-bindings: arm-smmu: Remove sdm845-cheza specific entry
-
-Krzysztof Kozlowski (2):
-      iommu/omap: Drop redundant check if ti,syscon-mmuconfig exists
-      iommu/omap: Use syscon_regmap_lookup_by_phandle_args
-
-Lu Baolu (3):
-      iommu/vt-d: Optimize iotlb_sync_map for non-caching/non-RWBF modes
-      iommu/vt-d: Make iotlb_sync_map a static property of dmar_domain
-      iommu/vt-d: Fix UAF on sva unbind with pending IOPFs
-
-Luca Weiss (1):
-      dt-bindings: arm-smmu: document the support on Milos
-
-Marc Zyngier (2):
-      iommu/amd: Convert to msi_create_parent_irq_domain() helper
-      iommu/intel: Convert to msi_create_parent_irq_domain() helper
-
-Nicolin Chen (1):
-      iommu/arm-smmu-v3: Revert vmaster in the error path
-
-Robin Murphy (1):
-      iommu/mediatek-v1: Tidy up probe_finalize
-
-Sven Peter (1):
-      iommu/apple-dart: Drop default ARCH_APPLE in Kconfig
-
-Vineeth Pillai (Google) (1):
-      iommu/vt-d: Remove the CONFIG_X86 wrapping from iommu init hook
-
-Will Deacon (9):
-      Merge branch 'core' into next
-      Merge branch 'samsung/exynos' into next
-      Merge branch 'intel/vt-d' into next
-      Merge branch 'amd/amd-vi' into next
-      Merge branch 'mediatek' into next
-      Merge branch 'ti/omap' into next
-      Merge branch 'apple/dart' into next
-      Merge branch 'arm/smmu/bindings' into next
-      Merge branch 'arm/smmu/updates' into next
-
- Documentation/ABI/testing/debugfs-amd-iommu        | 131 +++++++
- .../devicetree/bindings/iommu/arm,smmu.yaml        |   7 +-
- drivers/iommu/Kconfig                              |   2 +-
- drivers/iommu/amd/Kconfig                          |   1 +
- drivers/iommu/amd/amd_iommu.h                      |   6 +-
- drivers/iommu/amd/amd_iommu_types.h                |  16 +-
- drivers/iommu/amd/debugfs.c                        | 378 ++++++++++++++++++++-
- drivers/iommu/amd/init.c                           |  52 ++-
- drivers/iommu/amd/io_pgtable.c                     |   4 +-
- drivers/iommu/amd/iommu.c                          |  67 ++--
- drivers/iommu/apple-dart.c                         |   1 -
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        |  17 +-
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   4 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.c              |  12 +-
- drivers/iommu/arm/arm-smmu/qcom_iommu.c            |   6 +-
- drivers/iommu/exynos-iommu.c                       |   5 +-
- drivers/iommu/intel/cache.c                        |  55 +--
- drivers/iommu/intel/dmar.c                         |   3 -
- drivers/iommu/intel/iommu.c                        | 364 +++++++++++++-------
- drivers/iommu/intel/iommu.h                        |  22 +-
- drivers/iommu/intel/irq_remapping.c                |  28 +-
- drivers/iommu/intel/nested.c                       |   4 +-
- drivers/iommu/intel/pasid.c                        |  17 +-
- drivers/iommu/intel/pasid.h                        |  11 +-
- drivers/iommu/intel/svm.c                          |   3 +-
- drivers/iommu/intel/trace.h                        |   5 -
- drivers/iommu/io-pgtable-arm.c                     |   7 -
- drivers/iommu/iommu.c                              |   7 -
- drivers/iommu/iommufd/selftest.c                   |   1 -
- drivers/iommu/ipmmu-vmsa.c                         |   4 +-
- drivers/iommu/msm_iommu.c                          |   7 +-
- drivers/iommu/mtk_iommu.c                          |   9 +-
- drivers/iommu/mtk_iommu_v1.c                       |  11 +-
- drivers/iommu/omap-iommu.c                         |  27 +-
- drivers/iommu/riscv/iommu.c                        |   1 -
- drivers/iommu/rockchip-iommu.c                     |   3 +-
- drivers/iommu/s390-iommu.c                         |   2 +-
- drivers/iommu/sprd-iommu.c                         |   3 +-
- drivers/iommu/sun50i-iommu.c                       |   3 +-
- drivers/iommu/tegra-smmu.c                         |   3 +-
- drivers/iommu/virtio-iommu.c                       |   6 +-
- include/linux/iommu.h                              |   2 -
- 42 files changed, 961 insertions(+), 356 deletions(-)
- create mode 100644 Documentation/ABI/testing/debugfs-amd-iommu
+> +		.top_level = PT_FIXED_TOP_LEVEL,
+> +#else
+> +		.top_level = top_of_table % (1 << PT_TOP_LEVEL_BITS),
+> +#endif
+> +	};
+> +	struct pt_state pts = { .range = &range, .level = range.top_level };
+> +	unsigned int max_vasz_lg2;
+> +
+> +	max_vasz_lg2 = common->max_vasz_lg2;
+> +	if (pt_feature(common, PT_FEAT_DYNAMIC_TOP) &&
+> +	    pts.level != PT_MAX_TOP_LEVEL)
+> +		max_vasz_lg2 = min_t(unsigned int, common->max_vasz_lg2,
+> +				     pt_num_items_lg2(&pts) +
+> +					     pt_table_item_lg2sz(&pts));
+> +
+> +	/*
+> +	 * The top range will default to the lower region only with sign extend.
+> +	 */
+> +	range.max_vasz_lg2 = max_vasz_lg2;
+> +	if (pt_feature(common, PT_FEAT_SIGN_EXTEND))
+> +		max_vasz_lg2--;
+> +
+> +	range.va = fvalog2_set_mod(pt_full_va_prefix(common), 0, max_vasz_lg2);
+> +	range.last_va =
+> +		fvalog2_set_mod_max(pt_full_va_prefix(common), max_vasz_lg2);
+> +	return range;
+> +}
+> -- 
+> 2.43.0
+> 
