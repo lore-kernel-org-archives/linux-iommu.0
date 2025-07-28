@@ -1,55 +1,55 @@
-Received: from mail-ej1-f73.google.com (mail-ej1-f73.google.com [209.85.218.73])
+Received: from mail-wr1-f73.google.com (mail-wr1-f73.google.com [209.85.221.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DCB228750D
-	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 17:53:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73F6C287518
+	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 17:53:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753725241; cv=none; b=flo1ZLKL1uI+uaS6guvsxeYtRdLYYqw/WvALKpDn42LKkdeINGNwZMpS1igXg3hoydNpW7OsmB4fZcqvRpSbUGIX90PimAgvV7soFpl6xA0ctlbmIAz6ulffgjSITTD1z6Nq7GY0mrq7yskITYSCLhyt/zKc0Zn5ZjlAj6TpMOE=
+	t=1753725243; cv=none; b=Jhh+A5l5vfxWKOW0zwbV49w0DTLBoWT65q4svOY8KlJA74l5abzZpiO/Zy9kM2yXzRZbz+7Wjl/WQu1NpPi2a3nzTl1HxNVf5lPPx5EcJwr2mvU8gB9KhWBlb64hkzDJZlMsOM1JCC3Hm9CVMEbaFCWt9RnfKEchCyVNaESe4UY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753725241; c=relaxed/simple;
-	bh=iZLib39lOYnTwgfJltDfFYFegqqNiAE8JukenhKWnJ4=;
+	s=arc-20240116; t=1753725243; c=relaxed/simple;
+	bh=EUy/vZvpysFQHz5jEN+YFsXxAIi1s9ZWwxbNZ5/CgdQ=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=ZZbI65qRjM+YG0kUzP+lojpgsxhA9b9bKEtKFYjvtQBspaznzbnW4GcCK8O6ELzlI0DxgUi/Sb79bZrJ8B6fmUff328X+ga2m1xxt1syyXBOwSFHjNgKcuHUKLS2uKV8NKq61YjtxmSo1hFLxKctDSKb4r2swjsR5NVeoVPjggE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=fn54tfEE; arc=none smtp.client-ip=209.85.218.73
+	 To:Cc:Content-Type; b=qM9cLbdPp2Nz1ywerqUjkJctLIa3apBN0B1VBgewniqavQCkME7TgoUx0F7X1Hb7Bqkyr2REG/GqMayorphAj25tuFWkpUAm244asUF6bnK8HE7JW9TmtRrvjZ0BYtRvMq3eG9kQTVvRY0AQ3KiphM9DbDkXmsLWtu3cHS3a3Uo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=R8XElLR4; arc=none smtp.client-ip=209.85.221.73
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="fn54tfEE"
-Received: by mail-ej1-f73.google.com with SMTP id a640c23a62f3a-af4f3e4514dso556245966b.2
-        for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 10:53:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="R8XElLR4"
+Received: by mail-wr1-f73.google.com with SMTP id ffacd0b85a97d-3a4f3796779so2644340f8f.1
+        for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 10:53:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1753725237; x=1754330037; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1753725238; x=1754330038; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0vj2lZtAFAyuHgLIRKJXZh0xuKI4AtqGdr8zk+v3t+I=;
-        b=fn54tfEEjiW5Hu+RIvBs8KSvOwkBu8dWfY7YV+Z+roZ8OJpnYegm4J96jHzt7ndVqn
-         FDTWdaaZSbXYiWG427glRHSChwKTU3hA3yHknDU8R3YrGLsyxRbH0s4ToyrP9PpcoxK3
-         31zPaW+HkZoKIqvlouunCP4+PPBcDBf2W2XJ3y+Tfxd5tJTKmaL80A2H8XTnthrZXhBy
-         cAiNpC7DcxcEfyrk2AecuACBCNdVep0ajccJMS2Ir7ECP8uOiLwRuGQ8o1DjVf5ti6CW
-         TLZR3Vwuz5jNVLTa6Z2uwo4EFKUTDD3aw67PNHKlOqurZ/BCzptSXDrbg4lUU/d/KE6Y
-         mfWQ==
+        bh=QSr0fqvgX1Drng12G6ETMDdU03kWvJEQjrB6gLd0l4Y=;
+        b=R8XElLR4PfQxj5rX+rwYcwcsAQZx6t/JQxbh13N5NIr3ddec7Tid38ZxdHZ9Std01d
+         6TtiA/DgB8Emdy1Y34iAtGC+Ip6JTO6EbpJIgCeUBAvdYZG3jRPHUzVhWdpVxfryk5fq
+         6aG4f/sTthyLosJhRwZLOKoImi0LqcLfZZGQ0ZVxxdJeYzdeZxO3auIC86nNXGyh0OV9
+         X01rQcrItzK/8n9BY13Xorj3AvHBQYDvv+Ri/nl8NxbFJComryhBBUOPlL9ATOARc8Oe
+         qKIii2WLCFY2l8D8pW5ZhpprpDwPQ8+k2bBdXr4h1vVdMF5uPwj7TmXjetx60I5XRk0e
+         agEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753725237; x=1754330037;
+        d=1e100.net; s=20230601; t=1753725238; x=1754330038;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0vj2lZtAFAyuHgLIRKJXZh0xuKI4AtqGdr8zk+v3t+I=;
-        b=MHxFjxhDXruCMe7N3r4EXACUI5ebW6ooI7hyLuI2YBdMi9ruFKFN0KLyA6YX42knkW
-         niQIChOfT+wHlKfjmW5bWGVbhOt/tSOkGo7RVTEOa1tNRyIMJRsm6ZAi9926fHoPQ61F
-         y7pXnPu80FIbwHR2zGMpcKPiD61UOttqdLAHz5oFbzmwKdk4sfThzMj248TauUnmkI99
-         D5p7r++nf7wkNgHsdXSjDy94ndA5Z7zVTFLnlRCaOZfRFdgUVbGedpzz2gFs/sR4Kmdu
-         D0LmOB2Mzc9yAiLBNl7Zc08E0y1LpPEW7IAOXcZoUXOrcrrPcwcbBMlRr0FRpvhYi/Di
-         dvUQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXhiQ9Gk1XCi8qJoidlVv9GkQzGc65CnXueQ+o9DngYNP2hKiUd1IOwLrAkj/QWDgafNIut1g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywx8f3YQ5wehXByNRMKVgEPqvCxSwzVdXt3JBZv8aEvKP3F926z
-	S9SNvMPJSm6JbWmfzmdBMybAzdloTzCO2x8QGZDeXfJSfXoF7zOkZ1IEw7r3EFGix2MNzI+i5nw
-	h1ludqZgNguYWkg==
-X-Google-Smtp-Source: AGHT+IGVIq17cLn93oc40o5M8UsmhcmyEY+aWX6m0jcNoqtnD1qIUUFbq5lUoqYkBT4qJuVFWbmyB6BKPXnAVg==
-X-Received: from ejcss14.prod.google.com ([2002:a17:907:c00e:b0:ade:897b:b48d])
+        bh=QSr0fqvgX1Drng12G6ETMDdU03kWvJEQjrB6gLd0l4Y=;
+        b=uFpvorNmhUJRePouj9qizu0t7ljZfXvNRWMt6wAZWHvluKYf+90a54C5i8jvO7qwYC
+         hJ/yDbVQi4kkpz7nb25VX00BltuUlJ9pO7VFexQgo9Sxpl7yiLKr3aX7kTLnjie54EIL
+         pLLN1G0/xPdJAk22GWzs8WVz2c3nMmj26pOl7T3LuBrds48ipL8zMIjiuiPJJfv5n6yN
+         iEOFoH4ygZCfVpeojHJBARhyl/ztwKebFpYmA/aVThk+vkYcK4HUmfCNR1Ec7PIXEr24
+         mMwgrEUB3Zv5fx9bv/Sv8atpItzr4OoChNmBQAjsVCdL4Uy4cqnr29vhk/zrvuJe5Ogp
+         H1VA==
+X-Forwarded-Encrypted: i=1; AJvYcCWW0O1KZnuWTxVKYliSPBJqJXGn4BjG3BJjfFsI85SWIazvoa7Cu4GXnbMsIsfRhhgAGivlnQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxb+cOMg8zXuxYcWNcmp+M+m3SPFcgI8ASF8+DXzcuHJ1JQiX0W
+	kQsH5GC36K1U9J3gVa2VRpjve3uacJow0HC1j4viqx6qm2IN4myVGwz7nXa6SQ55Oywnnomf9Bt
+	OzL3kzRLHmo2ARw==
+X-Google-Smtp-Source: AGHT+IHJypg4BMzHTQELfiD77Icp1+iTSwb8rg42c8bIcH6n5fDLR43xwlqFaDtwSnP1AmX/74ubtwgfnroFOw==
+X-Received: from wmbay36.prod.google.com ([2002:a05:600c:1e24:b0:456:1ccb:7fbc])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:907:3e12:b0:ae0:b847:435 with SMTP id a640c23a62f3a-af61eb0d30dmr1480823666b.49.1753725236850;
- Mon, 28 Jul 2025 10:53:56 -0700 (PDT)
-Date: Mon, 28 Jul 2025 17:53:15 +0000
+ 2002:a05:6000:4011:b0:3a5:243c:6042 with SMTP id ffacd0b85a97d-3b7765e58a1mr8332580f8f.2.1753725237768;
+ Mon, 28 Jul 2025 10:53:57 -0700 (PDT)
+Date: Mon, 28 Jul 2025 17:53:16 +0000
 In-Reply-To: <20250728175316.3706196-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250728175316.3706196-1-smostafa@google.com>
 X-Mailer: git-send-email 2.50.1.552.g942d659e1b-goog
-Message-ID: <20250728175316.3706196-29-smostafa@google.com>
-Subject: [PATCH v3 28/29] iommu/arm-smmu-v3-kvm: Allocate structures and reset device
+Message-ID: <20250728175316.3706196-30-smostafa@google.com>
+Subject: [PATCH v3 29/29] iommu/arm-smmu-v3-kvm: Add IOMMU ops
 From: Mostafa Saleh <smostafa@google.com>
 To: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev, 
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
@@ -71,166 +71,132 @@ Cc: maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
 	praan@google.com, Mostafa Saleh <smostafa@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Allocate the structures that will be shared between hypervisor and SMMU:
-command queue, page table and stream table. Install them in the MMIO
-registers, along with some configuration bits. After hyp initialization,
-the host won't have access to those pages anymore.
+Register the SMMUv3 through IOMMU ops, that only support identity
+domains. This allows the driver to know which device are currently used
+to properly enable/disable then.
 
 Signed-off-by: Mostafa Saleh <smostafa@google.com>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- arch/arm64/include/asm/kvm_host.h             |  5 ++
- arch/arm64/kvm/iommu.c                        |  9 ++-
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 65 +++++++++++++++++++
- 3 files changed, 77 insertions(+), 2 deletions(-)
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 92 ++++++++++++++++++-
+ 1 file changed, 91 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
-index b42e32ff2a84..37b34a9f7135 100644
---- a/arch/arm64/include/asm/kvm_host.h
-+++ b/arch/arm64/include/asm/kvm_host.h
-@@ -1684,4 +1684,9 @@ int kvm_iommu_register_driver(struct kvm_iommu_driver *kern_ops, struct kvm_iomm
- int kvm_iommu_init_driver(void);
- void kvm_iommu_remove_driver(void);
- size_t kvm_iommu_pages(void);
-+
-+#ifdef CONFIG_ARM_SMMU_V3_PKVM
-+size_t smmu_hyp_pgt_pages(void);
-+#endif
-+
- #endif /* __ARM64_KVM_HOST_H__ */
-diff --git a/arch/arm64/kvm/iommu.c b/arch/arm64/kvm/iommu.c
-index 0e52cc0e18de..c4605e8001ca 100644
---- a/arch/arm64/kvm/iommu.c
-+++ b/arch/arm64/kvm/iommu.c
-@@ -51,10 +51,15 @@ void kvm_iommu_remove_driver(void)
- 
- size_t kvm_iommu_pages(void)
- {
-+	size_t nr_pages = 0;
- 	/*
- 	 * This is called very early during setup_arch() where no initcalls,
- 	 * so this has to call specific functions per each KVM driver.
- 	 */
--	kvm_nvhe_sym(hyp_kvm_iommu_pages) = 0;
--	return 0;
-+#ifdef CONFIG_ARM_SMMU_V3_PKVM
-+	nr_pages = smmu_hyp_pgt_pages();
-+#endif
-+
-+	kvm_nvhe_sym(hyp_kvm_iommu_pages) = nr_pages;
-+	return nr_pages;
- }
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-index 2fa56ddfbdab..2e51e211250d 100644
+index 2e51e211250d..d7b2a50a4cb2 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
-@@ -5,6 +5,7 @@
-  * Copyright (C) 2022 Linaro Ltd.
-  */
- #include <asm/kvm_mmu.h>
-+#include <asm/kvm_pkvm.h>
- 
- #include <linux/of_platform.h>
- 
-@@ -16,6 +17,7 @@ extern struct kvm_iommu_ops kvm_nvhe_sym(smmu_ops);
- struct host_arm_smmu_device {
- 	struct arm_smmu_device		smmu;
- 	pkvm_handle_t			id;
-+	u32				boot_gbpa;
- };
- 
- #define smmu_to_host(_smmu) \
-@@ -65,6 +67,35 @@ static bool kvm_arm_smmu_validate_features(struct arm_smmu_device *smmu)
- 	return true;
+@@ -96,6 +96,95 @@ static int kvm_arm_smmu_device_reset(struct host_arm_smmu_device *host_smmu)
+ 	return 0;
  }
  
-+static int kvm_arm_smmu_device_reset(struct host_arm_smmu_device *host_smmu)
++static struct platform_driver kvm_arm_smmu_driver;
++static struct arm_smmu_device *
++kvm_arm_smmu_get_by_fwnode(struct fwnode_handle *fwnode)
 +{
-+	int ret;
-+	u32 reg;
-+	struct arm_smmu_device *smmu = &host_smmu->smmu;
++	struct device *dev;
 +
-+	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
-+	if (reg & CR0_SMMUEN)
-+		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
-+
-+	/* Disable bypass */
-+	host_smmu->boot_gbpa = readl_relaxed(smmu->base + ARM_SMMU_GBPA);
-+	ret = arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
-+	if (ret)
-+		return ret;
-+
-+	ret = arm_smmu_device_disable(smmu);
-+	if (ret)
-+		return ret;
-+
-+	/* Stream table */
-+	arm_smmu_write_strtab(smmu);
-+
-+	/* Command queue */
-+	writeq_relaxed(smmu->cmdq.q.q_base, smmu->base + ARM_SMMU_CMDQ_BASE);
-+
-+	return 0;
++	dev = driver_find_device_by_fwnode(&kvm_arm_smmu_driver.driver, fwnode);
++	put_device(dev);
++	return dev ? dev_get_drvdata(dev) : NULL;
 +}
++
++static struct iommu_device *kvm_arm_smmu_probe_device(struct device *dev)
++{
++	struct arm_smmu_device *smmu;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++
++	if (WARN_ON_ONCE(dev_iommu_priv_get(dev)))
++		return ERR_PTR(-EBUSY);
++
++	smmu = kvm_arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
++	if (!smmu)
++		return ERR_PTR(-ENODEV);
++
++	dev_iommu_priv_set(dev, smmu);
++	return &smmu->iommu;
++}
++
++static void kvm_arm_smmu_release_device(struct device *dev)
++{
++	int i;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct arm_smmu_device *smmu = dev_iommu_priv_get(dev);
++	struct host_arm_smmu_device *host_smmu = smmu_to_host(smmu);
++
++	for (i = 0; i < fwspec->num_ids; i++) {
++		int sid = fwspec->ids[i];
++
++		kvm_call_hyp_nvhe(__pkvm_iommu_disable_dev, host_smmu->id, sid);
++	}
++}
++
++static phys_addr_t kvm_arm_smmu_iova_to_phys(struct iommu_domain *domain,
++					     dma_addr_t iova)
++{
++	return iova;
++}
++
++static int kvm_arm_smmu_attach_dev(struct iommu_domain *domain,
++				   struct device *dev)
++{
++	int i, ret = 0;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct arm_smmu_device *smmu = dev_iommu_priv_get(dev);
++	struct host_arm_smmu_device *host_smmu = smmu_to_host(smmu);
++
++	for (i = 0; i < fwspec->num_ids; i++) {
++		int sid = fwspec->ids[i];
++
++		ret = kvm_call_hyp_nvhe(__pkvm_iommu_enable_dev, host_smmu->id, sid);
++		if (ret)
++			goto out_err;
++	}
++	return ret;
++out_err:
++	while (i--)
++		kvm_call_hyp_nvhe(__pkvm_iommu_disable_dev, host_smmu->id, fwspec->ids[i]);
++
++	return ret;
++}
++
++static struct iommu_domain kvm_arm_smmu_def_domain = {
++	.type = IOMMU_DOMAIN_IDENTITY,
++	.ops = &(const struct iommu_domain_ops) {
++		.attach_dev	= kvm_arm_smmu_attach_dev,
++		.iova_to_phys	= kvm_arm_smmu_iova_to_phys,
++	}
++};
++
++static struct iommu_ops kvm_arm_smmu_ops = {
++	.device_group		= arm_smmu_device_group,
++	.of_xlate		= arm_smmu_of_xlate,
++	.get_resv_regions	= arm_smmu_get_resv_regions,
++	.probe_device		= kvm_arm_smmu_probe_device,
++	.release_device		= kvm_arm_smmu_release_device,
++	.pgsize_bitmap		= -1UL,
++	.owner			= THIS_MODULE,
++	.default_domain 	= &kvm_arm_smmu_def_domain,
++};
 +
  static int kvm_arm_smmu_probe(struct platform_device *pdev)
  {
  	int ret;
-@@ -112,6 +143,20 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
- 	if (!kvm_arm_smmu_validate_features(smmu))
- 		return -ENODEV;
+@@ -170,7 +259,7 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
+ 	hyp_smmu->features = smmu->features;
+ 	kvm_arm_smmu_cur++;
  
-+	ret = arm_smmu_init_one_queue(smmu, &smmu->cmdq.q, smmu->base,
-+				      ARM_SMMU_CMDQ_PROD, ARM_SMMU_CMDQ_CONS,
-+				      CMDQ_ENT_DWORDS, "cmdq");
-+	if (ret)
-+		return ret;
-+
-+	ret = arm_smmu_init_strtab(smmu);
-+	if (ret)
-+		return ret;
-+
-+	ret = kvm_arm_smmu_device_reset(host_smmu);
-+	if (ret)
-+		return ret;
-+
- 	platform_set_drvdata(pdev, smmu);
- 
- 	/* Hypervisor parameters */
-@@ -130,6 +175,15 @@ static int kvm_arm_smmu_probe(struct platform_device *pdev)
+-	return 0;
++	return arm_smmu_register_iommu(smmu, &kvm_arm_smmu_ops, ioaddr);
+ }
  
  static void kvm_arm_smmu_remove(struct platform_device *pdev)
- {
-+	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
-+	struct host_arm_smmu_device *host_smmu = smmu_to_host(smmu);
-+
-+	/*
-+	 * There was an error during hypervisor setup. The hyp driver may
-+	 * have already enabled the device, so disable it.
-+	 */
-+	arm_smmu_device_disable(smmu);
-+	arm_smmu_update_gbpa(smmu, host_smmu->boot_gbpa, GBPA_ABORT);
+@@ -184,6 +273,7 @@ static void kvm_arm_smmu_remove(struct platform_device *pdev)
+ 	 */
+ 	arm_smmu_device_disable(smmu);
+ 	arm_smmu_update_gbpa(smmu, host_smmu->boot_gbpa, GBPA_ABORT);
++	arm_smmu_unregister_iommu(smmu);
  }
  
  static const struct of_device_id arm_smmu_of_match[] = {
-@@ -208,6 +262,17 @@ static void kvm_arm_smmu_v3_remove_drv(void)
- 	platform_driver_unregister(&kvm_arm_smmu_driver);
- }
- 
-+size_t smmu_hyp_pgt_pages(void)
-+{
-+	/*
-+	 * SMMUv3 uses the same format as stage-2 and hence have the same memory
-+	 * requirements, we add extra 100 pages for L2 ste.
-+	 */
-+	if (of_find_compatible_node(NULL, NULL, "arm,smmu-v3"))
-+		return host_s2_pgtable_pages() + 100;
-+	return 0;
-+}
-+
- struct kvm_iommu_driver kvm_smmu_v3_ops = {
- 	.init_driver = kvm_arm_smmu_v3_init_drv,
- 	.remove_driver = kvm_arm_smmu_v3_remove_drv,
 -- 
 2.50.1.552.g942d659e1b-goog
 
