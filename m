@@ -1,111 +1,142 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id A5ADC1E5B60
-	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 17:36:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 473902701D2
+	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 17:53:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753724208; cv=none; b=KEXWU4AOwDPbrssz/3Qs6bx3WUFnlw/Hso1fCMLci4COEwr5FRzCqSKaBXar2UyzulxQthYRUpvUt6AiQxjN5aNSNmkKiGmdOVHrmlEPEeJ60ApnJyzntMekJQfeuwslxBSNHZ/QrzYueiTuYH+8xOg1Kg7BM/D71mwn4k9nL7M=
+	t=1753725215; cv=none; b=FtUNQp9eEmb/ejhSUql0vD+jOABJ8vwyNw7jKGghVwlt8YGUCt/aVTU6r16ZqxJdsf4L/mqWhAtO1SloFH8706kHHlwYnrWNDa1mZGHOlHz2gkNqS3NZjFjBvsQax3WQOYjFZTs8K27tVBxVH+KEXOEorseUT4Zy5iFPiDrB6fs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753724208; c=relaxed/simple;
-	bh=g/74FjEy7Z1URYnCTf9RzatsO+c6JxJlD6Dl9sI4e30=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Le3rER/IVeRHeqZJUAotLPP4hf0rA73jg2mUs39pZPWFhYogy9IOGhWO6/RKBSawsyk8sBEkKjnlSfRaDGG8JT36LPG1FZgPdh1d08ts3u16Fx7UOgq6bIbGqhgmEq5ikWYXQOfDXGq7e1hXhjxtfoORiRa2byDmgK+F4LTnpKc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=sdQRNthE; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1753725215; c=relaxed/simple;
+	bh=J1SjK0vWeBplkdbTTJcUjjcnej2Z63ZcY6P/gYDg268=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=uj4AmnBraZPNxjBB1xiB7dc/SSVClrOqrN87ojCoJ/VLDHJ7ZwOpi6brGbbxhDHR8ipsK26qaF7+zbCqJF9UAMBf8t747Oq1xo7f8lV+gwiqggnAJWUOtIVlKP0srkbhMl5Q1HIXV+UUqqCYr5jOqa9w0RVikUkioNlXVMyoQw0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XUdXQ9jd; arc=none smtp.client-ip=209.85.128.74
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="sdQRNthE"
-Received: from localhost (unknown [167.220.232.230])
-	by linux.microsoft.com (Postfix) with ESMTPSA id D44E52021886;
-	Mon, 28 Jul 2025 10:36:45 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D44E52021886
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1753724206;
-	bh=Zh2dRtCWmnZ+nzoDXlzTor6vpxq88+KGK9inssfNS2M=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=sdQRNthEWAVk3bi7v2e0exHSqNSJS9oBwon+lQkG1RP8mXLo0ncyJxSHH0qsRvPS2
-	 I9s/id3SSGwMTq5nzLSBmYucep4kEnaSWuwpCQsPcSrQlTSUYM8klj8L+mTitRrzKY
-	 bPmLPlYnX7CmjvVEERh9taQkLBGRCiewW92BxHeM=
-Date: Tue, 29 Jul 2025 01:36:44 +0800
-From: Yu Zhang <zhangyu1@linux.microsoft.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Dave Hansen <dave.hansen@intel.com>, Jason Gunthorpe <jgg@nvidia.com>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>, 
-	Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>, 
-	Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Andy Lutomirski <luto@kernel.org>, 
-	"Tested-by : Yi Lai" <yi1.lai@intel.com>, iommu@lists.linux.dev, security@kernel.org, 
-	linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-Message-ID: <pk2b4xgxewxotp557osucliagmziv3erepsret4hbnxnvhff2n@p2gark4kdiqw>
-References: <20250709062800.651521-1-baolu.lu@linux.intel.com>
- <ee7585bd-d87c-4f93-9c8e-b8c1d649cdfe@intel.com>
- <228cd2c9-b781-4505-8b54-42dab03f3650@linux.intel.com>
- <326c60aa-37f3-458d-a534-6e0106cc244b@intel.com>
- <20250710132234.GL1599700@nvidia.com>
- <62580eab-3e68-4132-981a-84167d130d9f@intel.com>
- <6dn5n5cge7acmmfgb5zi7ctcbn5hiqyr2xhmgbdxohqydhgmtt@47nnr4tnzlnh>
- <2a1ffe30-b0a6-45b3-8dcb-feaa285e1e5b@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XUdXQ9jd"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-455f79a2a16so34727265e9.2
+        for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 10:53:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1753725211; x=1754330011; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZeRx7vP/138KQFxr0SX14a6MVSvUsa68vsZQFRiGNJw=;
+        b=XUdXQ9jdjgTr3NS7/crZLpUFUUwQig+gaPL+8X/h14yoDB6czlwQMz2ijka53QmDE6
+         e+RnPbk8CIkuTFqMz6EgwsLjymCNxb0pbgqFijQMAYIbv0EJ5L5HBTBrv54pyChRk4GR
+         0XJm5XWo/LLalf9/HjwtBhH1wf+NcplnjA6QO4RJyVtTTGfdFHPQyNce//gdvbvfYYuq
+         JstjVR5Cxj+ux9Q6bf8d8CM/OU38H+KBjxLYNen1Ax6C1LlsYTflUTBeMfaPXyWKiFWB
+         QQ8Y6jcwTdGUBQz1AS6Sl/DWo7DDnkZl6Sa/2dd1yutwSx9Eah/ne0ASoYiCU0q6LfpL
+         JNQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1753725211; x=1754330011;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZeRx7vP/138KQFxr0SX14a6MVSvUsa68vsZQFRiGNJw=;
+        b=etCkI8LC/dPIwte62gz1Ir84mq04gXA37BHI5971hpIWA1MOmpysqso2nRDUIYbAJV
+         oVTjfYnuV2z2we6DXQ7qfsjSYwF7BndWgUU8XFhyv7RSCOcSmG6Ii/BHh4hHhjOBJ1uM
+         Un8bLHcAYnXaJsACjAI+dhiQW6r8Z+6SBXhvbzz9IMfU6+79u/NgBpvmW7rOqHpruJsa
+         30lUpQ6KrIf+d151nG1FSCE9gVaqxa0DeDCDHPUAKPQ0ZVIo2E0lmId5hbFyB/w01diu
+         MsNwyr/3H6UOJCO1/DdcSwEsmApcnNTf3MnTj0e+uzKQAyx3QlwCGVpH50oR4KFFFQ4l
+         AfCg==
+X-Forwarded-Encrypted: i=1; AJvYcCXhjpmEoXGVxmWo7ul8vn0yFHpQ13Vg3OyaWa44zGAapSt0SBU0Qjg9FGMqvTolTrie4r5VcQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YysTgJWkNZRWy12RykCs6+vytrwPRbR3sFTxvWuWYPGaaX2etYO
+	fP4ySk88z5pOAUZP7H/7Cv6ln9XYLLtUPZF6Hc6OGhwleD1W28xUswtn+S5FufaRD8EGhDpDUuN
+	kRLXUvYRZ7+3xtw==
+X-Google-Smtp-Source: AGHT+IE1QKRH8xd41th/Qwnod5XKPsVgVqg7Mv68PdXhnIKZKddzbjKbt+QRa+9zTDVfDxi6tBL2YQdZsrDI2Q==
+X-Received: from wmsp14.prod.google.com ([2002:a05:600c:1d8e:b0:456:c7c:3165])
+ (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a05:600c:138c:b0:456:58e:318e with SMTP id 5b1f17b1804b1-458852534ecmr52353185e9.30.1753725211674;
+ Mon, 28 Jul 2025 10:53:31 -0700 (PDT)
+Date: Mon, 28 Jul 2025 17:52:48 +0000
+In-Reply-To: <20250728175316.3706196-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2a1ffe30-b0a6-45b3-8dcb-feaa285e1e5b@linux.intel.com>
+Mime-Version: 1.0
+References: <20250728175316.3706196-1-smostafa@google.com>
+X-Mailer: git-send-email 2.50.1.552.g942d659e1b-goog
+Message-ID: <20250728175316.3706196-2-smostafa@google.com>
+Subject: [PATCH v3 01/29] KVM: arm64: Add a new function to donate memory with prot
+From: Mostafa Saleh <smostafa@google.com>
+To: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+Cc: maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com, 
+	suzuki.poulose@arm.com, yuzenghui@huawei.com, catalin.marinas@arm.com, 
+	will@kernel.org, robin.murphy@arm.com, jean-philippe@linaro.org, 
+	qperret@google.com, tabba@google.com, jgg@ziepe.ca, mark.rutland@arm.com, 
+	praan@google.com, Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Thu, Jul 24, 2025 at 11:01:12AM +0800, Baolu Lu wrote:
-> On 7/11/25 16:17, Yu Zhang wrote:
-> > On Thu, Jul 10, 2025 at 08:26:06AM -0700, Dave Hansen wrote:
-> > > On 7/10/25 06:22, Jason Gunthorpe wrote:
-> > > > > Why does this matter? We flush the CPU TLB in a bunch of different ways,
-> > > > > _especially_ when it's being done for kernel mappings. For example,
-> > > > > __flush_tlb_all() is a non-ranged kernel flush which has a completely
-> > > > > parallel implementation with flush_tlb_kernel_range(). Call sites that
-> > > > > use_it_ are unaffected by the patch here.
-> > > > > 
-> > > > > Basically, if we're only worried about vmalloc/vfree freeing page
-> > > > > tables, then this patch is OK. If the problem is bigger than that, then
-> > > > > we need a more comprehensive patch.
-> > > > I think we are worried about any place that frees page tables.
-> > > The two places that come to mind are the remove_memory() code and
-> > > __change_page_attr().
-> > > 
-> > > The remove_memory() gunk is in arch/x86/mm/init_64.c. It has a few sites
-> > > that do flush_tlb_all(). Now that I'm looking at it, there look to be
-> > > some races between freeing page tables pages and flushing the TLB. But,
-> > > basically, if you stick to the sites in there that do flush_tlb_all()
-> > > after free_pagetable(), you should be good.
-> > > 
-> > > As for the __change_page_attr() code, I think the only spot you need to
-> > > hit is cpa_collapse_large_pages() and maybe the one in
-> > > __split_large_page() as well.
-> > > 
-> > > This is all disturbingly ad-hoc, though. The remove_memory() code needs
-> > > fixing and I'll probably go try to bring some order to the chaos in the
-> > > process of fixing it up. But that's a separate problem than this IOMMU fun.
-> > > 
-> > Could we consider to split the flush_tlb_kernel_range() into 2 different
-> > versions:
-> > - the one which only flushes the CPU TLB
-> > - the one which flushes the CPU paging structure cache and then notifies
-> >    IOMMU to do the same(e.g., in pud_free_pmd_page()/pmd_free_pte_page())?
-> 
-> From the perspective of an IOMMU, there is no need to split. IOMMU SVA
-> only allows the device to access user-space memory with user
-> permission. Access to kernel address space with privileged permission
-> is not allowed. Therefore, the IOMMU subsystem only needs a callback to
-> invalidate the paging structure cache.
+Soon, IOMMU drivers running in the hypervisor might interact with
+non-coherent devices, so it needs a mechanism to map memory as
+non cacheable.
+Add ___pkvm_host_donate_hyp() which accepts a new argument for prot,
+so the driver can add KVM_PGTABLE_PROT_NORMAL_NC.
 
-Thanks Baolu. 
+Signed-off-by: Mostafa Saleh <smostafa@google.com>
+---
+ arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |  1 +
+ arch/arm64/kvm/hyp/nvhe/mem_protect.c         | 11 +++++++++--
+ 2 files changed, 10 insertions(+), 2 deletions(-)
 
-Indeed. That's why I was wondering if we could split flush_tlb_kernel_range()
-into 2 versions - one used only after a kernal virtual address range is
-unmapped, and another one used after a kernel paging structure is freed.
-Only the 2nd one needs to notify the IOMMU subsystem.
+diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+index 5f9d56754e39..52d7ee91e18c 100644
+--- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
++++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+@@ -36,6 +36,7 @@ int __pkvm_prot_finalize(void);
+ int __pkvm_host_share_hyp(u64 pfn);
+ int __pkvm_host_unshare_hyp(u64 pfn);
+ int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages);
++int ___pkvm_host_donate_hyp(u64 pfn, u64 nr_pages, enum kvm_pgtable_prot prot);
+ int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages);
+ int __pkvm_host_share_ffa(u64 pfn, u64 nr_pages);
+ int __pkvm_host_unshare_ffa(u64 pfn, u64 nr_pages);
+diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+index 8957734d6183..861e448183fd 100644
+--- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
++++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+@@ -769,13 +769,15 @@ int __pkvm_host_unshare_hyp(u64 pfn)
+ 	return ret;
+ }
+ 
+-int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
++int ___pkvm_host_donate_hyp(u64 pfn, u64 nr_pages, enum kvm_pgtable_prot prot)
+ {
+ 	u64 phys = hyp_pfn_to_phys(pfn);
+ 	u64 size = PAGE_SIZE * nr_pages;
+ 	void *virt = __hyp_va(phys);
+ 	int ret;
+ 
++	WARN_ON(prot & KVM_PGTABLE_PROT_X);
++
+ 	host_lock_component();
+ 	hyp_lock_component();
+ 
+@@ -787,7 +789,7 @@ int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
+ 		goto unlock;
+ 
+ 	__hyp_set_page_state_range(phys, size, PKVM_PAGE_OWNED);
+-	WARN_ON(pkvm_create_mappings_locked(virt, virt + size, PAGE_HYP));
++	WARN_ON(pkvm_create_mappings_locked(virt, virt + size, prot));
+ 	WARN_ON(host_stage2_set_owner_locked(phys, size, PKVM_ID_HYP));
+ 
+ unlock:
+@@ -797,6 +799,11 @@ int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
+ 	return ret;
+ }
+ 
++int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
++{
++	return ___pkvm_host_donate_hyp(pfn, nr_pages, PAGE_HYP);
++}
++
+ int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages)
+ {
+ 	u64 phys = hyp_pfn_to_phys(pfn);
+-- 
+2.50.1.552.g942d659e1b-goog
 
-B.R.
-Yu
