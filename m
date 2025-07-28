@@ -1,55 +1,55 @@
 Received: from mail-ed1-f74.google.com (mail-ed1-f74.google.com [209.85.208.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6685D277C96
-	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 17:53:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C81E7DA73
+	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 17:53:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753725221; cv=none; b=U5dbtKYZOWsjEW3cAFbUBko6tj8BPelWbBty8UujPu1WFv0QeXZbEtd2Vj5Sx3q0THmkfbjq1prhCL+K/snKHc03KRhGwyCfx5TiZz1rjU0eRvYaQMBMEwvIs17joVWedcwVj8RKaAvTkU781CXvjHe6FXUKaidSJF9smn/43GQ=
+	t=1753725223; cv=none; b=hFtMabfUxyVK+XJ88LDLYLrl5GjMy5q7iBi1zVC6jEVPChOTEfbMNBmOBJcGfQECD34QKdbzwlEoDxAy11A/1bqRpoIeN9sr77fZBFNG1ThOpirmPMNvL21T0TwPEDgdwaOSoIVdBicfjfP5Zfypl6e32ORChSi9INV2KBZ8Flw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753725221; c=relaxed/simple;
-	bh=cc4qIV7R4IboXoEryrgrWSTN4pA0n7UvacWmOG9Xt0g=;
+	s=arc-20240116; t=1753725223; c=relaxed/simple;
+	bh=jIckjH2dESfTT0mDbDVtX43K0xhbSATV41Z2hhU94/A=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=RzhUstk+ZIPlqxH8MSKwI1+6BIVANnCukqupXdaYb6d0wurEysTOMVm1ajiHl9xsW5Kpd+qCZYXfSrnR4G5LMz1zGQG650kabJHO6tnPpHmdq65Z4JdCYBxwIELtLg0Jj/yTSbGCTn00NejD8yHO9HstsMMpYWPvWBDetn95FAI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=37+/lzga; arc=none smtp.client-ip=209.85.208.74
+	 To:Cc:Content-Type; b=MQs63TxXJhSP+PYs2uYP6YWJJebmFJpEfcaGsQlneUGTAHGKVBTBENbjiSdLtrL4+loR78omgWztNe90dG0hvi9rybuOD3LMpn30ppC2y998Q4Kltbyfk9KF5Y8CqFJ64n5z+bxe0vqSw1RSFvmRxIjMJxDnRdw9fgBEvK0eNtU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=JSKM/AIB; arc=none smtp.client-ip=209.85.208.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="37+/lzga"
-Received: by mail-ed1-f74.google.com with SMTP id 4fb4d7f45d1cf-61525af8a0bso1818644a12.2
-        for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 10:53:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="JSKM/AIB"
+Received: by mail-ed1-f74.google.com with SMTP id 4fb4d7f45d1cf-6090274dd37so5132306a12.0
+        for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 10:53:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1753725217; x=1754330017; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1753725216; x=1754330016; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=R18CRwRipna7yM1UAYryO2eun2b5lSz7TequZZhl+Fo=;
-        b=37+/lzgaIpqLP4ps0qBXaAASHPA7ajqKSRdx2yUu3TLDJYN4wGA/A6Re/Nf93de5UY
-         9GEgEMUsFKUFcGFalmxztPBTczbWxbkSQ0nI0l9TcfqGfuVsfd8w0bQOE49PBYcSlI7z
-         DFicPDFH1dZH8Lhtt5p+9xV4JmZIS/nc+a6bGGyQAvFFQ4wzl/mqwrbKVbsJeHBlqxsn
-         rpfJ+Tb4eWdfx2RT8zWODyi3UCxgA7DxcXfvxgpyXjv36SioQqjOPwDOYwyYFDhc6i1a
-         fH2+BKfGRdzVsaARHIvZ7ZoWUGE+RwmyI+eio8l37aEAPNXovfZWzqNznatLc7N22t1Y
-         GIzA==
+        bh=GaU76kenkK/vJc92SOVAQgDx8DG/jvpiTHbF5/XtjMc=;
+        b=JSKM/AIB+s0lZLm0JC902Zf7y/6NnUiG5szG+Ugto0PmsSWnyucI9iaX4f34eJDCet
+         KNvyTsnFLkfZ2rcUDv/ZKwZ8+6BsTvvbAbUEyilTrvIM3KQbkzPdb3vhTTG+k/eOLcMM
+         +qnCFWKG9v+GCScDpWvC9RokYqgnzKY4qg5ac2N8y9rlnQmGmx+qYuuk/KMM3mpMNGDo
+         c7t5kKxcp3ZL4zKWPec7NrU8f7uNPHY8x1pi6Ev5TBuJ17TAqaxqZbXD5g/nPCg9Q0LU
+         A+1cqgcqoFI/3iiRbImxSBaWYdaydE/UkmJstLzxzhM3dTZxH4+e1saPinbY2JXRBhd1
+         /YtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753725218; x=1754330018;
+        d=1e100.net; s=20230601; t=1753725216; x=1754330016;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=R18CRwRipna7yM1UAYryO2eun2b5lSz7TequZZhl+Fo=;
-        b=F3GwFGyaZ+bYI89zDza+8fMgui2Vyqc/sbHltq8bRCNtWePZdskTgAbrK/aEUsrsGC
-         LHAAZrhpRa69CuU9Im0pdK6BDkpsO8vHYUmoOXMqRF4IB8ioiWDmit3SSaFFEZ8Qm0DR
-         TRk+WLCQOdzLEqck4jbIh34ZnD8jKCzeG58H5krQ6wzJtcw6hbba51ufRTuZO4AB6JPW
-         yrYYJ13W1r5cSpOm5CdJmzfp3ZuNYZo9xalUdHOXJR0K/ybiVFTDSZIFGLrAzJ0fVf/F
-         jZ077bhYYlBcoFJCSN3jyoXhQtd66KX+aH1qzX3DkJ7he7nrOS9T7lUqKF4oXRRrVbXn
-         2Rfw==
-X-Forwarded-Encrypted: i=1; AJvYcCUqQw8JecUed7HEKd8IkwySBrEDHbzGM9O1Cj9wAfEW9UazvmkCeDB2/1BoGoLxour1I40oWg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyu7HG9kyD0/JC+N1T7pnez+FplR/+TiE1EjcoLRFWvhIDyzS64
-	vAlyBiIndxnFVwGi2IOIfNiHVt8QLc5c5TszH7kcLvCfGbX4MKbA97ulirI8+zZleJRhW4+dp5b
-	ODUecTb8chpAddA==
-X-Google-Smtp-Source: AGHT+IGIrNMQeE/kWCI/brr7kS87BOY/bq6CCQ1xjchC98i6bmhfhF9J/7LevHBGbUwRoLbmWwCwzxtv61jC5A==
-X-Received: from eddf14.prod.google.com ([2002:a05:6402:354e:b0:612:c149:d25d])
+        bh=GaU76kenkK/vJc92SOVAQgDx8DG/jvpiTHbF5/XtjMc=;
+        b=VQiWd4gfKW71yN7uXvc3prYE93CMTV8OfbeioUDsqTaWlRRu0IWM9r+GGqKEdDSH28
+         vg9LZDQpnpRKi6tcI4lZ/lEBl6AiUyBU41aXuMTmqkQcmjiknLwi4VLpwSIlkBgPtPHf
+         6wD3A9uktY+eKmf1gz2utCFvOl4V4a2LX7al62uyqzPBuzRQsPir7FbAXR75H9VrMRip
+         DjXkemm+fWDoL2qmstwU7e9GT6J2Uj1P1eIFFuno/QnfmnranUHzn5OuJO/7Io9hCIWZ
+         pNvWQk18dSNigwfbNU6pxyAvK6Lfu/sByPTGr0q8BqEGZbH1nMT85v4xGjxCCIGSOVXK
+         rGUA==
+X-Forwarded-Encrypted: i=1; AJvYcCUZ/Ee8RZjbcogA0BFNMbwuQU7tdQk4QM78BmPitArhkmcKDuo8Cc4EnQAN1prNUs8a9C8CtA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyTFdvEs960oPGIF/nxzO6Qpyumk0w5A1CCLdtUmOXdcmDRDzHr
+	VY8OKpmHrSHlIJ9RZUHWJIGLYV5xlZg+HNBVCeb+2Ysja4w6jZrlX1HWba17Mp/kdGt1kNViDfL
+	zEhL3RQ/8O5XDrQ==
+X-Google-Smtp-Source: AGHT+IFtZ/OfMeW3FWJl6sQQ3GgYOxnzT1NMyKA17Va55GzfdfeDvImQQ0QhTsAazrYzqXAJ+iPeNT0vtFJXxw==
+X-Received: from edt23.prod.google.com ([2002:a05:6402:4557:b0:60c:6814:69b1])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6402:268f:b0:60c:9d90:93c7 with SMTP id 4fb4d7f45d1cf-614f1f12240mr12562721a12.34.1753725217591;
- Mon, 28 Jul 2025 10:53:37 -0700 (PDT)
-Date: Mon, 28 Jul 2025 17:52:54 +0000
+ 2002:a05:6402:1e8f:b0:615:5be5:9ee2 with SMTP id 4fb4d7f45d1cf-6155be5a4a1mr1989422a12.24.1753725216396;
+ Mon, 28 Jul 2025 10:53:36 -0700 (PDT)
+Date: Mon, 28 Jul 2025 17:52:53 +0000
 In-Reply-To: <20250728175316.3706196-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,9 +59,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250728175316.3706196-1-smostafa@google.com>
 X-Mailer: git-send-email 2.50.1.552.g942d659e1b-goog
-Message-ID: <20250728175316.3706196-8-smostafa@google.com>
-Subject: [PATCH v3 07/29] iommu/arm-smmu-v3: Extract driver-specific bits from
- probe function
+Message-ID: <20250728175316.3706196-7-smostafa@google.com>
+Subject: [PATCH v3 06/29] iommu/arm-smmu-v3: Move some definitions to a new
+ common file
 From: Mostafa Saleh <smostafa@google.com>
 To: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev, 
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
@@ -74,68 +74,996 @@ Content-Type: text/plain; charset="UTF-8"
 
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-As we're about to share the arm_smmu_device_hw_probe() function with the
-KVM driver, extract bits that are specific to the normal driver.
+So that the KVM SMMUv3 driver can re-use architectural definitions,
+command structures and feature bits, move them to a new common
+header that can be included by both the kernel and the hypervisor.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Signed-off-by: Mostafa Saleh <smostafa@google.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+ .../arm/arm-smmu-v3/arm-smmu-v3-common.h      | 462 ++++++++++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 456 +----------------
+ 2 files changed, 464 insertions(+), 454 deletions(-)
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.h
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 10cc6dc26b7b..801b792dda36 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4353,7 +4353,7 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.h
+new file mode 100644
+index 000000000000..0f9ae032680d
+--- /dev/null
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.h
+@@ -0,0 +1,462 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef _ARM_SMMU_V3_COMMON_H
++#define _ARM_SMMU_V3_COMMON_H
++
++#include <linux/bitfield.h>
++
++/* MMIO registers */
++#define ARM_SMMU_IDR0			0x0
++#define IDR0_ST_LVL			GENMASK(28, 27)
++#define IDR0_ST_LVL_2LVL		1
++#define IDR0_STALL_MODEL		GENMASK(25, 24)
++#define IDR0_STALL_MODEL_STALL		0
++#define IDR0_STALL_MODEL_FORCE		2
++#define IDR0_TTENDIAN			GENMASK(22, 21)
++#define IDR0_TTENDIAN_MIXED		0
++#define IDR0_TTENDIAN_LE		2
++#define IDR0_TTENDIAN_BE		3
++#define IDR0_CD2L			(1 << 19)
++#define IDR0_VMID16			(1 << 18)
++#define IDR0_PRI			(1 << 16)
++#define IDR0_SEV			(1 << 14)
++#define IDR0_MSI			(1 << 13)
++#define IDR0_ASID16			(1 << 12)
++#define IDR0_ATS			(1 << 10)
++#define IDR0_HYP			(1 << 9)
++#define IDR0_HTTU			GENMASK(7, 6)
++#define IDR0_HTTU_ACCESS		1
++#define IDR0_HTTU_ACCESS_DIRTY		2
++#define IDR0_COHACC			(1 << 4)
++#define IDR0_TTF			GENMASK(3, 2)
++#define IDR0_TTF_AARCH64		2
++#define IDR0_TTF_AARCH32_64		3
++#define IDR0_S1P			(1 << 1)
++#define IDR0_S2P			(1 << 0)
++
++#define ARM_SMMU_IDR1			0x4
++#define IDR1_TABLES_PRESET		(1 << 30)
++#define IDR1_QUEUES_PRESET		(1 << 29)
++#define IDR1_REL			(1 << 28)
++#define IDR1_ATTR_TYPES_OVR		(1 << 27)
++#define IDR1_CMDQS			GENMASK(25, 21)
++#define IDR1_EVTQS			GENMASK(20, 16)
++#define IDR1_PRIQS			GENMASK(15, 11)
++#define IDR1_SSIDSIZE			GENMASK(10, 6)
++#define IDR1_SIDSIZE			GENMASK(5, 0)
++
++#define ARM_SMMU_IDR3			0xc
++#define IDR3_FWB			(1 << 8)
++#define IDR3_RIL			(1 << 10)
++
++#define ARM_SMMU_IDR5			0x14
++#define IDR5_STALL_MAX			GENMASK(31, 16)
++#define IDR5_GRAN64K			(1 << 6)
++#define IDR5_GRAN16K			(1 << 5)
++#define IDR5_GRAN4K			(1 << 4)
++#define IDR5_OAS			GENMASK(2, 0)
++#define IDR5_OAS_32_BIT			0
++#define IDR5_OAS_36_BIT			1
++#define IDR5_OAS_40_BIT			2
++#define IDR5_OAS_42_BIT			3
++#define IDR5_OAS_44_BIT			4
++#define IDR5_OAS_48_BIT			5
++#define IDR5_OAS_52_BIT			6
++#define IDR5_VAX			GENMASK(11, 10)
++#define IDR5_VAX_52_BIT			1
++
++#define ARM_SMMU_IIDR			0x18
++#define IIDR_PRODUCTID			GENMASK(31, 20)
++#define IIDR_VARIANT			GENMASK(19, 16)
++#define IIDR_REVISION			GENMASK(15, 12)
++#define IIDR_IMPLEMENTER		GENMASK(11, 0)
++
++#define ARM_SMMU_AIDR			0x1C
++
++#define ARM_SMMU_CR0			0x20
++#define CR0_ATSCHK			(1 << 4)
++#define CR0_CMDQEN			(1 << 3)
++#define CR0_EVTQEN			(1 << 2)
++#define CR0_PRIQEN			(1 << 1)
++#define CR0_SMMUEN			(1 << 0)
++
++#define ARM_SMMU_CR0ACK			0x24
++
++#define ARM_SMMU_CR1			0x28
++#define CR1_TABLE_SH			GENMASK(11, 10)
++#define CR1_TABLE_OC			GENMASK(9, 8)
++#define CR1_TABLE_IC			GENMASK(7, 6)
++#define CR1_QUEUE_SH			GENMASK(5, 4)
++#define CR1_QUEUE_OC			GENMASK(3, 2)
++#define CR1_QUEUE_IC			GENMASK(1, 0)
++/* CR1 cacheability fields don't quite follow the usual TCR-style encoding */
++#define CR1_CACHE_NC			0
++#define CR1_CACHE_WB			1
++#define CR1_CACHE_WT			2
++
++#define ARM_SMMU_CR2			0x2c
++#define CR2_PTM				(1 << 2)
++#define CR2_RECINVSID			(1 << 1)
++#define CR2_E2H				(1 << 0)
++
++#define ARM_SMMU_GBPA			0x44
++#define GBPA_UPDATE			(1 << 31)
++#define GBPA_ABORT			(1 << 20)
++
++#define ARM_SMMU_IRQ_CTRL		0x50
++#define IRQ_CTRL_EVTQ_IRQEN		(1 << 2)
++#define IRQ_CTRL_PRIQ_IRQEN		(1 << 1)
++#define IRQ_CTRL_GERROR_IRQEN		(1 << 0)
++
++#define ARM_SMMU_IRQ_CTRLACK		0x54
++
++#define ARM_SMMU_GERROR			0x60
++#define GERROR_SFM_ERR			(1 << 8)
++#define GERROR_MSI_GERROR_ABT_ERR	(1 << 7)
++#define GERROR_MSI_PRIQ_ABT_ERR		(1 << 6)
++#define GERROR_MSI_EVTQ_ABT_ERR		(1 << 5)
++#define GERROR_MSI_CMDQ_ABT_ERR		(1 << 4)
++#define GERROR_PRIQ_ABT_ERR		(1 << 3)
++#define GERROR_EVTQ_ABT_ERR		(1 << 2)
++#define GERROR_CMDQ_ERR			(1 << 0)
++#define GERROR_ERR_MASK			0x1fd
++
++#define ARM_SMMU_GERRORN		0x64
++
++#define ARM_SMMU_GERROR_IRQ_CFG0	0x68
++#define ARM_SMMU_GERROR_IRQ_CFG1	0x70
++#define ARM_SMMU_GERROR_IRQ_CFG2	0x74
++
++#define ARM_SMMU_STRTAB_BASE		0x80
++#define STRTAB_BASE_RA			(1UL << 62)
++#define STRTAB_BASE_ADDR_MASK		GENMASK_ULL(51, 6)
++
++#define ARM_SMMU_STRTAB_BASE_CFG	0x88
++#define STRTAB_BASE_CFG_FMT		GENMASK(17, 16)
++#define STRTAB_BASE_CFG_FMT_LINEAR	0
++#define STRTAB_BASE_CFG_FMT_2LVL	1
++#define STRTAB_BASE_CFG_SPLIT		GENMASK(10, 6)
++#define STRTAB_BASE_CFG_LOG2SIZE	GENMASK(5, 0)
++
++#define ARM_SMMU_CMDQ_BASE		0x90
++#define ARM_SMMU_CMDQ_PROD		0x98
++#define ARM_SMMU_CMDQ_CONS		0x9c
++
++#define ARM_SMMU_EVTQ_BASE		0xa0
++#define ARM_SMMU_EVTQ_PROD		0xa8
++#define ARM_SMMU_EVTQ_CONS		0xac
++#define ARM_SMMU_EVTQ_IRQ_CFG0		0xb0
++#define ARM_SMMU_EVTQ_IRQ_CFG1		0xb8
++#define ARM_SMMU_EVTQ_IRQ_CFG2		0xbc
++
++#define ARM_SMMU_PRIQ_BASE		0xc0
++#define ARM_SMMU_PRIQ_PROD		0xc8
++#define ARM_SMMU_PRIQ_CONS		0xcc
++#define ARM_SMMU_PRIQ_IRQ_CFG0		0xd0
++#define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
++#define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
++
++#define ARM_SMMU_REG_SZ			0xe00
++
++/* Common MSI config fields */
++#define MSI_CFG0_ADDR_MASK		GENMASK_ULL(51, 2)
++#define MSI_CFG2_SH			GENMASK(5, 4)
++#define MSI_CFG2_MEMATTR		GENMASK(3, 0)
++
++/* Common memory attribute values */
++#define ARM_SMMU_SH_NSH			0
++#define ARM_SMMU_SH_OSH			2
++#define ARM_SMMU_SH_ISH			3
++#define ARM_SMMU_MEMATTR_DEVICE_nGnRE	0x1
++#define ARM_SMMU_MEMATTR_OIWB		0xf
++
++#define Q_BASE_RWA			(1UL << 62)
++#define Q_BASE_ADDR_MASK		GENMASK_ULL(51, 5)
++#define Q_BASE_LOG2SIZE			GENMASK(4, 0)
++
++/*
++ * Stream table.
++ *
++ * Linear: Enough to cover 1 << IDR1.SIDSIZE entries
++ * 2lvl: 128k L1 entries,
++ *       256 lazy entries per table (each table covers a PCI bus)
++ */
++#define STRTAB_SPLIT			8
++
++#define STRTAB_L1_DESC_SPAN		GENMASK_ULL(4, 0)
++#define STRTAB_L1_DESC_L2PTR_MASK	GENMASK_ULL(51, 6)
++
++#define STRTAB_STE_DWORDS		8
++
++struct arm_smmu_ste {
++	__le64 data[STRTAB_STE_DWORDS];
++};
++
++#define STRTAB_NUM_L2_STES		(1 << STRTAB_SPLIT)
++struct arm_smmu_strtab_l2 {
++	struct arm_smmu_ste stes[STRTAB_NUM_L2_STES];
++};
++
++struct arm_smmu_strtab_l1 {
++	__le64 l2ptr;
++};
++#define STRTAB_MAX_L1_ENTRIES		(1 << 17)
++
++static inline u32 arm_smmu_strtab_l1_idx(u32 sid)
++{
++	return sid / STRTAB_NUM_L2_STES;
++}
++
++static inline u32 arm_smmu_strtab_l2_idx(u32 sid)
++{
++	return sid % STRTAB_NUM_L2_STES;
++}
++
++#define STRTAB_STE_0_V			(1UL << 0)
++#define STRTAB_STE_0_CFG		GENMASK_ULL(3, 1)
++#define STRTAB_STE_0_CFG_ABORT		0
++#define STRTAB_STE_0_CFG_BYPASS		4
++#define STRTAB_STE_0_CFG_S1_TRANS	5
++#define STRTAB_STE_0_CFG_S2_TRANS	6
++#define STRTAB_STE_0_CFG_NESTED		7
++
++#define STRTAB_STE_0_S1FMT		GENMASK_ULL(5, 4)
++#define STRTAB_STE_0_S1FMT_LINEAR	0
++#define STRTAB_STE_0_S1FMT_64K_L2	2
++#define STRTAB_STE_0_S1CTXPTR_MASK	GENMASK_ULL(51, 6)
++#define STRTAB_STE_0_S1CDMAX		GENMASK_ULL(63, 59)
++
++#define STRTAB_STE_1_S1DSS		GENMASK_ULL(1, 0)
++#define STRTAB_STE_1_S1DSS_TERMINATE	0x0
++#define STRTAB_STE_1_S1DSS_BYPASS	0x1
++#define STRTAB_STE_1_S1DSS_SSID0	0x2
++
++#define STRTAB_STE_1_S1C_CACHE_NC	0UL
++#define STRTAB_STE_1_S1C_CACHE_WBRA	1UL
++#define STRTAB_STE_1_S1C_CACHE_WT	2UL
++#define STRTAB_STE_1_S1C_CACHE_WB	3UL
++#define STRTAB_STE_1_S1CIR		GENMASK_ULL(3, 2)
++#define STRTAB_STE_1_S1COR		GENMASK_ULL(5, 4)
++#define STRTAB_STE_1_S1CSH		GENMASK_ULL(7, 6)
++
++#define STRTAB_STE_1_MEV		(1UL << 19)
++#define STRTAB_STE_1_S2FWB		(1UL << 25)
++#define STRTAB_STE_1_S1STALLD		(1UL << 27)
++
++#define STRTAB_STE_1_EATS		GENMASK_ULL(29, 28)
++#define STRTAB_STE_1_EATS_ABT		0UL
++#define STRTAB_STE_1_EATS_TRANS		1UL
++#define STRTAB_STE_1_EATS_S1CHK		2UL
++
++#define STRTAB_STE_1_STRW		GENMASK_ULL(31, 30)
++#define STRTAB_STE_1_STRW_NSEL1		0UL
++#define STRTAB_STE_1_STRW_EL2		2UL
++
++#define STRTAB_STE_1_SHCFG		GENMASK_ULL(45, 44)
++#define STRTAB_STE_1_SHCFG_INCOMING	1UL
++
++#define STRTAB_STE_2_S2VMID		GENMASK_ULL(15, 0)
++#define STRTAB_STE_2_VTCR		GENMASK_ULL(50, 32)
++#define STRTAB_STE_2_VTCR_S2T0SZ	GENMASK_ULL(5, 0)
++#define STRTAB_STE_2_VTCR_S2SL0		GENMASK_ULL(7, 6)
++#define STRTAB_STE_2_VTCR_S2IR0		GENMASK_ULL(9, 8)
++#define STRTAB_STE_2_VTCR_S2OR0		GENMASK_ULL(11, 10)
++#define STRTAB_STE_2_VTCR_S2SH0		GENMASK_ULL(13, 12)
++#define STRTAB_STE_2_VTCR_S2TG		GENMASK_ULL(15, 14)
++#define STRTAB_STE_2_VTCR_S2PS		GENMASK_ULL(18, 16)
++#define STRTAB_STE_2_S2AA64		(1UL << 51)
++#define STRTAB_STE_2_S2ENDI		(1UL << 52)
++#define STRTAB_STE_2_S2PTW		(1UL << 54)
++#define STRTAB_STE_2_S2S		(1UL << 57)
++#define STRTAB_STE_2_S2R		(1UL << 58)
++
++#define STRTAB_STE_3_S2TTB_MASK		GENMASK_ULL(51, 4)
++
++/* These bits can be controlled by userspace for STRTAB_STE_0_CFG_NESTED */
++#define STRTAB_STE_0_NESTING_ALLOWED                                         \
++	cpu_to_le64(STRTAB_STE_0_V | STRTAB_STE_0_CFG | STRTAB_STE_0_S1FMT | \
++		    STRTAB_STE_0_S1CTXPTR_MASK | STRTAB_STE_0_S1CDMAX)
++#define STRTAB_STE_1_NESTING_ALLOWED                            \
++	cpu_to_le64(STRTAB_STE_1_S1DSS | STRTAB_STE_1_S1CIR |   \
++		    STRTAB_STE_1_S1COR | STRTAB_STE_1_S1CSH |   \
++		    STRTAB_STE_1_S1STALLD | STRTAB_STE_1_EATS)
++
++/* Command queue */
++#define CMDQ_ENT_SZ_SHIFT		4
++#define CMDQ_ENT_DWORDS			((1 << CMDQ_ENT_SZ_SHIFT) >> 3)
++#define CMDQ_MAX_SZ_SHIFT		(Q_MAX_SZ_SHIFT - CMDQ_ENT_SZ_SHIFT)
++
++#define CMDQ_CONS_ERR			GENMASK(30, 24)
++#define CMDQ_ERR_CERROR_NONE_IDX	0
++#define CMDQ_ERR_CERROR_ILL_IDX		1
++#define CMDQ_ERR_CERROR_ABT_IDX		2
++#define CMDQ_ERR_CERROR_ATC_INV_IDX	3
++
++#define CMDQ_PROD_OWNED_FLAG		Q_OVERFLOW_FLAG
++
++/*
++ * This is used to size the command queue and therefore must be at least
++ * BITS_PER_LONG so that the valid_map works correctly (it relies on the
++ * total number of queue entries being a multiple of BITS_PER_LONG).
++ */
++#define CMDQ_BATCH_ENTRIES		BITS_PER_LONG
++
++#define CMDQ_0_OP			GENMASK_ULL(7, 0)
++#define CMDQ_0_SSV			(1UL << 11)
++
++#define CMDQ_PREFETCH_0_SID		GENMASK_ULL(63, 32)
++#define CMDQ_PREFETCH_1_SIZE		GENMASK_ULL(4, 0)
++#define CMDQ_PREFETCH_1_ADDR_MASK	GENMASK_ULL(63, 12)
++
++#define CMDQ_CFGI_0_SSID		GENMASK_ULL(31, 12)
++#define CMDQ_CFGI_0_SID			GENMASK_ULL(63, 32)
++#define CMDQ_CFGI_1_LEAF		(1UL << 0)
++#define CMDQ_CFGI_1_RANGE		GENMASK_ULL(4, 0)
++
++#define CMDQ_TLBI_0_NUM			GENMASK_ULL(16, 12)
++#define CMDQ_TLBI_RANGE_NUM_MAX		31
++#define CMDQ_TLBI_0_SCALE		GENMASK_ULL(24, 20)
++#define CMDQ_TLBI_0_VMID		GENMASK_ULL(47, 32)
++#define CMDQ_TLBI_0_ASID		GENMASK_ULL(63, 48)
++#define CMDQ_TLBI_1_LEAF		(1UL << 0)
++#define CMDQ_TLBI_1_TTL			GENMASK_ULL(9, 8)
++#define CMDQ_TLBI_1_TG			GENMASK_ULL(11, 10)
++#define CMDQ_TLBI_1_VA_MASK		GENMASK_ULL(63, 12)
++#define CMDQ_TLBI_1_IPA_MASK		GENMASK_ULL(51, 12)
++
++#define CMDQ_ATC_0_SSID			GENMASK_ULL(31, 12)
++#define CMDQ_ATC_0_SID			GENMASK_ULL(63, 32)
++#define CMDQ_ATC_0_GLOBAL		(1UL << 9)
++#define CMDQ_ATC_1_SIZE			GENMASK_ULL(5, 0)
++#define CMDQ_ATC_1_ADDR_MASK		GENMASK_ULL(63, 12)
++
++#define CMDQ_PRI_0_SSID			GENMASK_ULL(31, 12)
++#define CMDQ_PRI_0_SID			GENMASK_ULL(63, 32)
++#define CMDQ_PRI_1_GRPID		GENMASK_ULL(8, 0)
++#define CMDQ_PRI_1_RESP			GENMASK_ULL(13, 12)
++
++#define CMDQ_RESUME_0_RESP_TERM		0UL
++#define CMDQ_RESUME_0_RESP_RETRY	1UL
++#define CMDQ_RESUME_0_RESP_ABORT	2UL
++#define CMDQ_RESUME_0_RESP		GENMASK_ULL(13, 12)
++#define CMDQ_RESUME_0_SID		GENMASK_ULL(63, 32)
++#define CMDQ_RESUME_1_STAG		GENMASK_ULL(15, 0)
++
++#define CMDQ_SYNC_0_CS			GENMASK_ULL(13, 12)
++#define CMDQ_SYNC_0_CS_NONE		0
++#define CMDQ_SYNC_0_CS_IRQ		1
++#define CMDQ_SYNC_0_CS_SEV		2
++#define CMDQ_SYNC_0_MSH			GENMASK_ULL(23, 22)
++#define CMDQ_SYNC_0_MSIATTR		GENMASK_ULL(27, 24)
++#define CMDQ_SYNC_0_MSIDATA		GENMASK_ULL(63, 32)
++#define CMDQ_SYNC_1_MSIADDR_MASK	GENMASK_ULL(51, 2)
++
++enum pri_resp {
++	PRI_RESP_DENY = 0,
++	PRI_RESP_FAIL = 1,
++	PRI_RESP_SUCC = 2,
++};
++
++struct arm_smmu_cmdq_ent {
++	/* Common fields */
++	u8				opcode;
++	bool				substream_valid;
++
++	/* Command-specific fields */
++	union {
++		#define CMDQ_OP_PREFETCH_CFG	0x1
++		struct {
++			u32			sid;
++		} prefetch;
++
++		#define CMDQ_OP_CFGI_STE	0x3
++		#define CMDQ_OP_CFGI_ALL	0x4
++		#define CMDQ_OP_CFGI_CD		0x5
++		#define CMDQ_OP_CFGI_CD_ALL	0x6
++		struct {
++			u32			sid;
++			u32			ssid;
++			union {
++				bool		leaf;
++				u8		span;
++			};
++		} cfgi;
++
++		#define CMDQ_OP_TLBI_NH_ALL     0x10
++		#define CMDQ_OP_TLBI_NH_ASID	0x11
++		#define CMDQ_OP_TLBI_NH_VA	0x12
++		#define CMDQ_OP_TLBI_NH_VAA	0x13
++		#define CMDQ_OP_TLBI_EL2_ALL	0x20
++		#define CMDQ_OP_TLBI_EL2_ASID	0x21
++		#define CMDQ_OP_TLBI_EL2_VA	0x22
++		#define CMDQ_OP_TLBI_S12_VMALL	0x28
++		#define CMDQ_OP_TLBI_S2_IPA	0x2a
++		#define CMDQ_OP_TLBI_NSNH_ALL	0x30
++		struct {
++			u8			num;
++			u8			scale;
++			u16			asid;
++			u16			vmid;
++			bool			leaf;
++			u8			ttl;
++			u8			tg;
++			u64			addr;
++		} tlbi;
++
++		#define CMDQ_OP_ATC_INV		0x40
++		#define ATC_INV_SIZE_ALL	52
++		struct {
++			u32			sid;
++			u32			ssid;
++			u64			addr;
++			u8			size;
++			bool			global;
++		} atc;
++
++		#define CMDQ_OP_PRI_RESP	0x41
++		struct {
++			u32			sid;
++			u32			ssid;
++			u16			grpid;
++			enum pri_resp		resp;
++		} pri;
++
++		#define CMDQ_OP_RESUME		0x44
++		struct {
++			u32			sid;
++			u16			stag;
++			u8			resp;
++		} resume;
++
++		#define CMDQ_OP_CMD_SYNC	0x46
++		struct {
++			u64			msiaddr;
++		} sync;
++	};
++};
++
++#define ARM_SMMU_FEAT_2_LVL_STRTAB	(1 << 0)
++#define ARM_SMMU_FEAT_2_LVL_CDTAB	(1 << 1)
++#define ARM_SMMU_FEAT_TT_LE		(1 << 2)
++#define ARM_SMMU_FEAT_TT_BE		(1 << 3)
++#define ARM_SMMU_FEAT_PRI		(1 << 4)
++#define ARM_SMMU_FEAT_ATS		(1 << 5)
++#define ARM_SMMU_FEAT_SEV		(1 << 6)
++#define ARM_SMMU_FEAT_MSI		(1 << 7)
++#define ARM_SMMU_FEAT_COHERENCY		(1 << 8)
++#define ARM_SMMU_FEAT_TRANS_S1		(1 << 9)
++#define ARM_SMMU_FEAT_TRANS_S2		(1 << 10)
++#define ARM_SMMU_FEAT_STALLS		(1 << 11)
++#define ARM_SMMU_FEAT_HYP		(1 << 12)
++#define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
++#define ARM_SMMU_FEAT_VAX		(1 << 14)
++#define ARM_SMMU_FEAT_RANGE_INV		(1 << 15)
++#define ARM_SMMU_FEAT_BTM		(1 << 16)
++#define ARM_SMMU_FEAT_SVA		(1 << 17)
++#define ARM_SMMU_FEAT_E2H		(1 << 18)
++#define ARM_SMMU_FEAT_NESTING		(1 << 19)
++#define ARM_SMMU_FEAT_ATTR_TYPES_OVR	(1 << 20)
++#define ARM_SMMU_FEAT_HA		(1 << 21)
++#define ARM_SMMU_FEAT_HD		(1 << 22)
++#define ARM_SMMU_FEAT_S2FWB		(1 << 23)
++
++#endif /* _ARM_SMMU_V3_COMMON_H */
+\ No newline at end of file
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index ea41d790463e..3b88f19fcefc 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -8,7 +8,6 @@
+ #ifndef _ARM_SMMU_V3_H
+ #define _ARM_SMMU_V3_H
  
- 	if (reg & IDR0_MSI) {
- 		smmu->features |= ARM_SMMU_FEAT_MSI;
--		if (coherent && !disable_msipolling)
-+		if (coherent)
- 			smmu->options |= ARM_SMMU_OPT_MSIPOLL;
- 	}
+-#include <linux/bitfield.h>
+ #include <linux/iommu.h>
+ #include <linux/iommufd.h>
+ #include <linux/kernel.h>
+@@ -17,170 +16,7 @@
  
-@@ -4504,11 +4504,6 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 		smmu->oas = 48;
- 	}
+ struct arm_smmu_device;
  
--	if (arm_smmu_ops.pgsize_bitmap == -1UL)
--		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
--	else
--		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
+-/* MMIO registers */
+-#define ARM_SMMU_IDR0			0x0
+-#define IDR0_ST_LVL			GENMASK(28, 27)
+-#define IDR0_ST_LVL_2LVL		1
+-#define IDR0_STALL_MODEL		GENMASK(25, 24)
+-#define IDR0_STALL_MODEL_STALL		0
+-#define IDR0_STALL_MODEL_FORCE		2
+-#define IDR0_TTENDIAN			GENMASK(22, 21)
+-#define IDR0_TTENDIAN_MIXED		0
+-#define IDR0_TTENDIAN_LE		2
+-#define IDR0_TTENDIAN_BE		3
+-#define IDR0_CD2L			(1 << 19)
+-#define IDR0_VMID16			(1 << 18)
+-#define IDR0_PRI			(1 << 16)
+-#define IDR0_SEV			(1 << 14)
+-#define IDR0_MSI			(1 << 13)
+-#define IDR0_ASID16			(1 << 12)
+-#define IDR0_ATS			(1 << 10)
+-#define IDR0_HYP			(1 << 9)
+-#define IDR0_HTTU			GENMASK(7, 6)
+-#define IDR0_HTTU_ACCESS		1
+-#define IDR0_HTTU_ACCESS_DIRTY		2
+-#define IDR0_COHACC			(1 << 4)
+-#define IDR0_TTF			GENMASK(3, 2)
+-#define IDR0_TTF_AARCH64		2
+-#define IDR0_TTF_AARCH32_64		3
+-#define IDR0_S1P			(1 << 1)
+-#define IDR0_S2P			(1 << 0)
 -
- 	/* Set the DMA mask for our table walker */
- 	if (dma_set_mask_and_coherent(smmu->dev, DMA_BIT_MASK(smmu->oas)))
- 		dev_warn(smmu->dev,
-@@ -4522,9 +4517,6 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 
- 	arm_smmu_device_iidr_probe(smmu);
- 
--	if (arm_smmu_sva_supported(smmu))
--		smmu->features |= ARM_SMMU_FEAT_SVA;
+-#define ARM_SMMU_IDR1			0x4
+-#define IDR1_TABLES_PRESET		(1 << 30)
+-#define IDR1_QUEUES_PRESET		(1 << 29)
+-#define IDR1_REL			(1 << 28)
+-#define IDR1_ATTR_TYPES_OVR		(1 << 27)
+-#define IDR1_CMDQS			GENMASK(25, 21)
+-#define IDR1_EVTQS			GENMASK(20, 16)
+-#define IDR1_PRIQS			GENMASK(15, 11)
+-#define IDR1_SSIDSIZE			GENMASK(10, 6)
+-#define IDR1_SIDSIZE			GENMASK(5, 0)
 -
- 	dev_info(smmu->dev, "ias %lu-bit, oas %lu-bit (features 0x%08x)\n",
- 		 smmu->ias, smmu->oas, smmu->features);
- 	return 0;
-@@ -4794,6 +4786,17 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
+-#define ARM_SMMU_IDR3			0xc
+-#define IDR3_FWB			(1 << 8)
+-#define IDR3_RIL			(1 << 10)
+-
+-#define ARM_SMMU_IDR5			0x14
+-#define IDR5_STALL_MAX			GENMASK(31, 16)
+-#define IDR5_GRAN64K			(1 << 6)
+-#define IDR5_GRAN16K			(1 << 5)
+-#define IDR5_GRAN4K			(1 << 4)
+-#define IDR5_OAS			GENMASK(2, 0)
+-#define IDR5_OAS_32_BIT			0
+-#define IDR5_OAS_36_BIT			1
+-#define IDR5_OAS_40_BIT			2
+-#define IDR5_OAS_42_BIT			3
+-#define IDR5_OAS_44_BIT			4
+-#define IDR5_OAS_48_BIT			5
+-#define IDR5_OAS_52_BIT			6
+-#define IDR5_VAX			GENMASK(11, 10)
+-#define IDR5_VAX_52_BIT			1
+-
+-#define ARM_SMMU_IIDR			0x18
+-#define IIDR_PRODUCTID			GENMASK(31, 20)
+-#define IIDR_VARIANT			GENMASK(19, 16)
+-#define IIDR_REVISION			GENMASK(15, 12)
+-#define IIDR_IMPLEMENTER		GENMASK(11, 0)
+-
+-#define ARM_SMMU_AIDR			0x1C
+-
+-#define ARM_SMMU_CR0			0x20
+-#define CR0_ATSCHK			(1 << 4)
+-#define CR0_CMDQEN			(1 << 3)
+-#define CR0_EVTQEN			(1 << 2)
+-#define CR0_PRIQEN			(1 << 1)
+-#define CR0_SMMUEN			(1 << 0)
+-
+-#define ARM_SMMU_CR0ACK			0x24
+-
+-#define ARM_SMMU_CR1			0x28
+-#define CR1_TABLE_SH			GENMASK(11, 10)
+-#define CR1_TABLE_OC			GENMASK(9, 8)
+-#define CR1_TABLE_IC			GENMASK(7, 6)
+-#define CR1_QUEUE_SH			GENMASK(5, 4)
+-#define CR1_QUEUE_OC			GENMASK(3, 2)
+-#define CR1_QUEUE_IC			GENMASK(1, 0)
+-/* CR1 cacheability fields don't quite follow the usual TCR-style encoding */
+-#define CR1_CACHE_NC			0
+-#define CR1_CACHE_WB			1
+-#define CR1_CACHE_WT			2
+-
+-#define ARM_SMMU_CR2			0x2c
+-#define CR2_PTM				(1 << 2)
+-#define CR2_RECINVSID			(1 << 1)
+-#define CR2_E2H				(1 << 0)
+-
+-#define ARM_SMMU_GBPA			0x44
+-#define GBPA_UPDATE			(1 << 31)
+-#define GBPA_ABORT			(1 << 20)
+-
+-#define ARM_SMMU_IRQ_CTRL		0x50
+-#define IRQ_CTRL_EVTQ_IRQEN		(1 << 2)
+-#define IRQ_CTRL_PRIQ_IRQEN		(1 << 1)
+-#define IRQ_CTRL_GERROR_IRQEN		(1 << 0)
+-
+-#define ARM_SMMU_IRQ_CTRLACK		0x54
+-
+-#define ARM_SMMU_GERROR			0x60
+-#define GERROR_SFM_ERR			(1 << 8)
+-#define GERROR_MSI_GERROR_ABT_ERR	(1 << 7)
+-#define GERROR_MSI_PRIQ_ABT_ERR		(1 << 6)
+-#define GERROR_MSI_EVTQ_ABT_ERR		(1 << 5)
+-#define GERROR_MSI_CMDQ_ABT_ERR		(1 << 4)
+-#define GERROR_PRIQ_ABT_ERR		(1 << 3)
+-#define GERROR_EVTQ_ABT_ERR		(1 << 2)
+-#define GERROR_CMDQ_ERR			(1 << 0)
+-#define GERROR_ERR_MASK			0x1fd
+-
+-#define ARM_SMMU_GERRORN		0x64
+-
+-#define ARM_SMMU_GERROR_IRQ_CFG0	0x68
+-#define ARM_SMMU_GERROR_IRQ_CFG1	0x70
+-#define ARM_SMMU_GERROR_IRQ_CFG2	0x74
+-
+-#define ARM_SMMU_STRTAB_BASE		0x80
+-#define STRTAB_BASE_RA			(1UL << 62)
+-#define STRTAB_BASE_ADDR_MASK		GENMASK_ULL(51, 6)
+-
+-#define ARM_SMMU_STRTAB_BASE_CFG	0x88
+-#define STRTAB_BASE_CFG_FMT		GENMASK(17, 16)
+-#define STRTAB_BASE_CFG_FMT_LINEAR	0
+-#define STRTAB_BASE_CFG_FMT_2LVL	1
+-#define STRTAB_BASE_CFG_SPLIT		GENMASK(10, 6)
+-#define STRTAB_BASE_CFG_LOG2SIZE	GENMASK(5, 0)
+-
+-#define ARM_SMMU_CMDQ_BASE		0x90
+-#define ARM_SMMU_CMDQ_PROD		0x98
+-#define ARM_SMMU_CMDQ_CONS		0x9c
+-
+-#define ARM_SMMU_EVTQ_BASE		0xa0
+-#define ARM_SMMU_EVTQ_PROD		0xa8
+-#define ARM_SMMU_EVTQ_CONS		0xac
+-#define ARM_SMMU_EVTQ_IRQ_CFG0		0xb0
+-#define ARM_SMMU_EVTQ_IRQ_CFG1		0xb8
+-#define ARM_SMMU_EVTQ_IRQ_CFG2		0xbc
+-
+-#define ARM_SMMU_PRIQ_BASE		0xc0
+-#define ARM_SMMU_PRIQ_PROD		0xc8
+-#define ARM_SMMU_PRIQ_CONS		0xcc
+-#define ARM_SMMU_PRIQ_IRQ_CFG0		0xd0
+-#define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
+-#define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
+-
+-#define ARM_SMMU_REG_SZ			0xe00
+-
+-/* Common MSI config fields */
+-#define MSI_CFG0_ADDR_MASK		GENMASK_ULL(51, 2)
+-#define MSI_CFG2_SH			GENMASK(5, 4)
+-#define MSI_CFG2_MEMATTR		GENMASK(3, 0)
+-
+-/* Common memory attribute values */
+-#define ARM_SMMU_SH_NSH			0
+-#define ARM_SMMU_SH_OSH			2
+-#define ARM_SMMU_SH_ISH			3
+-#define ARM_SMMU_MEMATTR_DEVICE_nGnRE	0x1
+-#define ARM_SMMU_MEMATTR_OIWB		0xf
++#include "arm-smmu-v3-common.h"
  
-+	if (arm_smmu_sva_supported(smmu))
-+		smmu->features |= ARM_SMMU_FEAT_SVA;
-+
-+	if (disable_msipolling)
-+		smmu->options &= ~ARM_SMMU_OPT_MSIPOLL;
-+
-+	if (arm_smmu_ops.pgsize_bitmap == -1UL)
-+		arm_smmu_ops.pgsize_bitmap = smmu->pgsize_bitmap;
-+	else
-+		arm_smmu_ops.pgsize_bitmap |= smmu->pgsize_bitmap;
-+
- 	/* Initialise in-memory data structures */
- 	ret = arm_smmu_init_structures(smmu);
- 	if (ret)
+ #define Q_IDX(llq, p)			((p) & ((1 << (llq)->max_n_shift) - 1))
+ #define Q_WRP(llq, p)			((p) & (1 << (llq)->max_n_shift))
+@@ -190,10 +26,6 @@ struct arm_smmu_device;
+ 					 Q_IDX(&((q)->llq), p) *	\
+ 					 (q)->ent_dwords)
+ 
+-#define Q_BASE_RWA			(1UL << 62)
+-#define Q_BASE_ADDR_MASK		GENMASK_ULL(51, 5)
+-#define Q_BASE_LOG2SIZE			GENMASK(4, 0)
+-
+ /* Ensure DMA allocations are naturally aligned */
+ #ifdef CONFIG_CMA_ALIGNMENT
+ #define Q_MAX_SZ_SHIFT			(PAGE_SHIFT + CONFIG_CMA_ALIGNMENT)
+@@ -201,113 +33,6 @@ struct arm_smmu_device;
+ #define Q_MAX_SZ_SHIFT			(PAGE_SHIFT + MAX_PAGE_ORDER)
+ #endif
+ 
+-/*
+- * Stream table.
+- *
+- * Linear: Enough to cover 1 << IDR1.SIDSIZE entries
+- * 2lvl: 128k L1 entries,
+- *       256 lazy entries per table (each table covers a PCI bus)
+- */
+-#define STRTAB_SPLIT			8
+-
+-#define STRTAB_L1_DESC_SPAN		GENMASK_ULL(4, 0)
+-#define STRTAB_L1_DESC_L2PTR_MASK	GENMASK_ULL(51, 6)
+-
+-#define STRTAB_STE_DWORDS		8
+-
+-struct arm_smmu_ste {
+-	__le64 data[STRTAB_STE_DWORDS];
+-};
+-
+-#define STRTAB_NUM_L2_STES		(1 << STRTAB_SPLIT)
+-struct arm_smmu_strtab_l2 {
+-	struct arm_smmu_ste stes[STRTAB_NUM_L2_STES];
+-};
+-
+-struct arm_smmu_strtab_l1 {
+-	__le64 l2ptr;
+-};
+-#define STRTAB_MAX_L1_ENTRIES		(1 << 17)
+-
+-static inline u32 arm_smmu_strtab_l1_idx(u32 sid)
+-{
+-	return sid / STRTAB_NUM_L2_STES;
+-}
+-
+-static inline u32 arm_smmu_strtab_l2_idx(u32 sid)
+-{
+-	return sid % STRTAB_NUM_L2_STES;
+-}
+-
+-#define STRTAB_STE_0_V			(1UL << 0)
+-#define STRTAB_STE_0_CFG		GENMASK_ULL(3, 1)
+-#define STRTAB_STE_0_CFG_ABORT		0
+-#define STRTAB_STE_0_CFG_BYPASS		4
+-#define STRTAB_STE_0_CFG_S1_TRANS	5
+-#define STRTAB_STE_0_CFG_S2_TRANS	6
+-#define STRTAB_STE_0_CFG_NESTED		7
+-
+-#define STRTAB_STE_0_S1FMT		GENMASK_ULL(5, 4)
+-#define STRTAB_STE_0_S1FMT_LINEAR	0
+-#define STRTAB_STE_0_S1FMT_64K_L2	2
+-#define STRTAB_STE_0_S1CTXPTR_MASK	GENMASK_ULL(51, 6)
+-#define STRTAB_STE_0_S1CDMAX		GENMASK_ULL(63, 59)
+-
+-#define STRTAB_STE_1_S1DSS		GENMASK_ULL(1, 0)
+-#define STRTAB_STE_1_S1DSS_TERMINATE	0x0
+-#define STRTAB_STE_1_S1DSS_BYPASS	0x1
+-#define STRTAB_STE_1_S1DSS_SSID0	0x2
+-
+-#define STRTAB_STE_1_S1C_CACHE_NC	0UL
+-#define STRTAB_STE_1_S1C_CACHE_WBRA	1UL
+-#define STRTAB_STE_1_S1C_CACHE_WT	2UL
+-#define STRTAB_STE_1_S1C_CACHE_WB	3UL
+-#define STRTAB_STE_1_S1CIR		GENMASK_ULL(3, 2)
+-#define STRTAB_STE_1_S1COR		GENMASK_ULL(5, 4)
+-#define STRTAB_STE_1_S1CSH		GENMASK_ULL(7, 6)
+-
+-#define STRTAB_STE_1_MEV		(1UL << 19)
+-#define STRTAB_STE_1_S2FWB		(1UL << 25)
+-#define STRTAB_STE_1_S1STALLD		(1UL << 27)
+-
+-#define STRTAB_STE_1_EATS		GENMASK_ULL(29, 28)
+-#define STRTAB_STE_1_EATS_ABT		0UL
+-#define STRTAB_STE_1_EATS_TRANS		1UL
+-#define STRTAB_STE_1_EATS_S1CHK		2UL
+-
+-#define STRTAB_STE_1_STRW		GENMASK_ULL(31, 30)
+-#define STRTAB_STE_1_STRW_NSEL1		0UL
+-#define STRTAB_STE_1_STRW_EL2		2UL
+-
+-#define STRTAB_STE_1_SHCFG		GENMASK_ULL(45, 44)
+-#define STRTAB_STE_1_SHCFG_INCOMING	1UL
+-
+-#define STRTAB_STE_2_S2VMID		GENMASK_ULL(15, 0)
+-#define STRTAB_STE_2_VTCR		GENMASK_ULL(50, 32)
+-#define STRTAB_STE_2_VTCR_S2T0SZ	GENMASK_ULL(5, 0)
+-#define STRTAB_STE_2_VTCR_S2SL0		GENMASK_ULL(7, 6)
+-#define STRTAB_STE_2_VTCR_S2IR0		GENMASK_ULL(9, 8)
+-#define STRTAB_STE_2_VTCR_S2OR0		GENMASK_ULL(11, 10)
+-#define STRTAB_STE_2_VTCR_S2SH0		GENMASK_ULL(13, 12)
+-#define STRTAB_STE_2_VTCR_S2TG		GENMASK_ULL(15, 14)
+-#define STRTAB_STE_2_VTCR_S2PS		GENMASK_ULL(18, 16)
+-#define STRTAB_STE_2_S2AA64		(1UL << 51)
+-#define STRTAB_STE_2_S2ENDI		(1UL << 52)
+-#define STRTAB_STE_2_S2PTW		(1UL << 54)
+-#define STRTAB_STE_2_S2S		(1UL << 57)
+-#define STRTAB_STE_2_S2R		(1UL << 58)
+-
+-#define STRTAB_STE_3_S2TTB_MASK		GENMASK_ULL(51, 4)
+-
+-/* These bits can be controlled by userspace for STRTAB_STE_0_CFG_NESTED */
+-#define STRTAB_STE_0_NESTING_ALLOWED                                         \
+-	cpu_to_le64(STRTAB_STE_0_V | STRTAB_STE_0_CFG | STRTAB_STE_0_S1FMT | \
+-		    STRTAB_STE_0_S1CTXPTR_MASK | STRTAB_STE_0_S1CDMAX)
+-#define STRTAB_STE_1_NESTING_ALLOWED                            \
+-	cpu_to_le64(STRTAB_STE_1_S1DSS | STRTAB_STE_1_S1CIR |   \
+-		    STRTAB_STE_1_S1COR | STRTAB_STE_1_S1CSH |   \
+-		    STRTAB_STE_1_S1STALLD | STRTAB_STE_1_EATS)
+-
+ /*
+  * Context descriptors.
+  *
+@@ -376,76 +101,6 @@ static inline unsigned int arm_smmu_cdtab_l2_idx(unsigned int ssid)
+  */
+ #define CTXDESC_LINEAR_CDMAX		ilog2(SZ_64K / sizeof(struct arm_smmu_cd))
+ 
+-/* Command queue */
+-#define CMDQ_ENT_SZ_SHIFT		4
+-#define CMDQ_ENT_DWORDS			((1 << CMDQ_ENT_SZ_SHIFT) >> 3)
+-#define CMDQ_MAX_SZ_SHIFT		(Q_MAX_SZ_SHIFT - CMDQ_ENT_SZ_SHIFT)
+-
+-#define CMDQ_CONS_ERR			GENMASK(30, 24)
+-#define CMDQ_ERR_CERROR_NONE_IDX	0
+-#define CMDQ_ERR_CERROR_ILL_IDX		1
+-#define CMDQ_ERR_CERROR_ABT_IDX		2
+-#define CMDQ_ERR_CERROR_ATC_INV_IDX	3
+-
+-#define CMDQ_PROD_OWNED_FLAG		Q_OVERFLOW_FLAG
+-
+-/*
+- * This is used to size the command queue and therefore must be at least
+- * BITS_PER_LONG so that the valid_map works correctly (it relies on the
+- * total number of queue entries being a multiple of BITS_PER_LONG).
+- */
+-#define CMDQ_BATCH_ENTRIES		BITS_PER_LONG
+-
+-#define CMDQ_0_OP			GENMASK_ULL(7, 0)
+-#define CMDQ_0_SSV			(1UL << 11)
+-
+-#define CMDQ_PREFETCH_0_SID		GENMASK_ULL(63, 32)
+-#define CMDQ_PREFETCH_1_SIZE		GENMASK_ULL(4, 0)
+-#define CMDQ_PREFETCH_1_ADDR_MASK	GENMASK_ULL(63, 12)
+-
+-#define CMDQ_CFGI_0_SSID		GENMASK_ULL(31, 12)
+-#define CMDQ_CFGI_0_SID			GENMASK_ULL(63, 32)
+-#define CMDQ_CFGI_1_LEAF		(1UL << 0)
+-#define CMDQ_CFGI_1_RANGE		GENMASK_ULL(4, 0)
+-
+-#define CMDQ_TLBI_0_NUM			GENMASK_ULL(16, 12)
+-#define CMDQ_TLBI_RANGE_NUM_MAX		31
+-#define CMDQ_TLBI_0_SCALE		GENMASK_ULL(24, 20)
+-#define CMDQ_TLBI_0_VMID		GENMASK_ULL(47, 32)
+-#define CMDQ_TLBI_0_ASID		GENMASK_ULL(63, 48)
+-#define CMDQ_TLBI_1_LEAF		(1UL << 0)
+-#define CMDQ_TLBI_1_TTL			GENMASK_ULL(9, 8)
+-#define CMDQ_TLBI_1_TG			GENMASK_ULL(11, 10)
+-#define CMDQ_TLBI_1_VA_MASK		GENMASK_ULL(63, 12)
+-#define CMDQ_TLBI_1_IPA_MASK		GENMASK_ULL(51, 12)
+-
+-#define CMDQ_ATC_0_SSID			GENMASK_ULL(31, 12)
+-#define CMDQ_ATC_0_SID			GENMASK_ULL(63, 32)
+-#define CMDQ_ATC_0_GLOBAL		(1UL << 9)
+-#define CMDQ_ATC_1_SIZE			GENMASK_ULL(5, 0)
+-#define CMDQ_ATC_1_ADDR_MASK		GENMASK_ULL(63, 12)
+-
+-#define CMDQ_PRI_0_SSID			GENMASK_ULL(31, 12)
+-#define CMDQ_PRI_0_SID			GENMASK_ULL(63, 32)
+-#define CMDQ_PRI_1_GRPID		GENMASK_ULL(8, 0)
+-#define CMDQ_PRI_1_RESP			GENMASK_ULL(13, 12)
+-
+-#define CMDQ_RESUME_0_RESP_TERM		0UL
+-#define CMDQ_RESUME_0_RESP_RETRY	1UL
+-#define CMDQ_RESUME_0_RESP_ABORT	2UL
+-#define CMDQ_RESUME_0_RESP		GENMASK_ULL(13, 12)
+-#define CMDQ_RESUME_0_SID		GENMASK_ULL(63, 32)
+-#define CMDQ_RESUME_1_STAG		GENMASK_ULL(15, 0)
+-
+-#define CMDQ_SYNC_0_CS			GENMASK_ULL(13, 12)
+-#define CMDQ_SYNC_0_CS_NONE		0
+-#define CMDQ_SYNC_0_CS_IRQ		1
+-#define CMDQ_SYNC_0_CS_SEV		2
+-#define CMDQ_SYNC_0_MSH			GENMASK_ULL(23, 22)
+-#define CMDQ_SYNC_0_MSIATTR		GENMASK_ULL(27, 24)
+-#define CMDQ_SYNC_0_MSIDATA		GENMASK_ULL(63, 32)
+-#define CMDQ_SYNC_1_MSIADDR_MASK	GENMASK_ULL(51, 2)
+-
+ /* Event queue */
+ #define EVTQ_ENT_SZ_SHIFT		5
+ #define EVTQ_ENT_DWORDS			((1 << EVTQ_ENT_SZ_SHIFT) >> 3)
+@@ -506,90 +161,6 @@ static inline unsigned int arm_smmu_cdtab_l2_idx(unsigned int ssid)
+ #define MSI_IOVA_BASE			0x8000000
+ #define MSI_IOVA_LENGTH			0x100000
+ 
+-enum pri_resp {
+-	PRI_RESP_DENY = 0,
+-	PRI_RESP_FAIL = 1,
+-	PRI_RESP_SUCC = 2,
+-};
+-
+-struct arm_smmu_cmdq_ent {
+-	/* Common fields */
+-	u8				opcode;
+-	bool				substream_valid;
+-
+-	/* Command-specific fields */
+-	union {
+-		#define CMDQ_OP_PREFETCH_CFG	0x1
+-		struct {
+-			u32			sid;
+-		} prefetch;
+-
+-		#define CMDQ_OP_CFGI_STE	0x3
+-		#define CMDQ_OP_CFGI_ALL	0x4
+-		#define CMDQ_OP_CFGI_CD		0x5
+-		#define CMDQ_OP_CFGI_CD_ALL	0x6
+-		struct {
+-			u32			sid;
+-			u32			ssid;
+-			union {
+-				bool		leaf;
+-				u8		span;
+-			};
+-		} cfgi;
+-
+-		#define CMDQ_OP_TLBI_NH_ALL     0x10
+-		#define CMDQ_OP_TLBI_NH_ASID	0x11
+-		#define CMDQ_OP_TLBI_NH_VA	0x12
+-		#define CMDQ_OP_TLBI_NH_VAA	0x13
+-		#define CMDQ_OP_TLBI_EL2_ALL	0x20
+-		#define CMDQ_OP_TLBI_EL2_ASID	0x21
+-		#define CMDQ_OP_TLBI_EL2_VA	0x22
+-		#define CMDQ_OP_TLBI_S12_VMALL	0x28
+-		#define CMDQ_OP_TLBI_S2_IPA	0x2a
+-		#define CMDQ_OP_TLBI_NSNH_ALL	0x30
+-		struct {
+-			u8			num;
+-			u8			scale;
+-			u16			asid;
+-			u16			vmid;
+-			bool			leaf;
+-			u8			ttl;
+-			u8			tg;
+-			u64			addr;
+-		} tlbi;
+-
+-		#define CMDQ_OP_ATC_INV		0x40
+-		#define ATC_INV_SIZE_ALL	52
+-		struct {
+-			u32			sid;
+-			u32			ssid;
+-			u64			addr;
+-			u8			size;
+-			bool			global;
+-		} atc;
+-
+-		#define CMDQ_OP_PRI_RESP	0x41
+-		struct {
+-			u32			sid;
+-			u32			ssid;
+-			u16			grpid;
+-			enum pri_resp		resp;
+-		} pri;
+-
+-		#define CMDQ_OP_RESUME		0x44
+-		struct {
+-			u32			sid;
+-			u16			stag;
+-			u8			resp;
+-		} resume;
+-
+-		#define CMDQ_OP_CMD_SYNC	0x46
+-		struct {
+-			u64			msiaddr;
+-		} sync;
+-	};
+-};
+-
+ struct arm_smmu_ll_queue {
+ 	union {
+ 		u64			val;
+@@ -731,30 +302,7 @@ struct arm_smmu_device {
+ 	void __iomem			*base;
+ 	void __iomem			*page1;
+ 
+-#define ARM_SMMU_FEAT_2_LVL_STRTAB	(1 << 0)
+-#define ARM_SMMU_FEAT_2_LVL_CDTAB	(1 << 1)
+-#define ARM_SMMU_FEAT_TT_LE		(1 << 2)
+-#define ARM_SMMU_FEAT_TT_BE		(1 << 3)
+-#define ARM_SMMU_FEAT_PRI		(1 << 4)
+-#define ARM_SMMU_FEAT_ATS		(1 << 5)
+-#define ARM_SMMU_FEAT_SEV		(1 << 6)
+-#define ARM_SMMU_FEAT_MSI		(1 << 7)
+-#define ARM_SMMU_FEAT_COHERENCY		(1 << 8)
+-#define ARM_SMMU_FEAT_TRANS_S1		(1 << 9)
+-#define ARM_SMMU_FEAT_TRANS_S2		(1 << 10)
+-#define ARM_SMMU_FEAT_STALLS		(1 << 11)
+-#define ARM_SMMU_FEAT_HYP		(1 << 12)
+-#define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
+-#define ARM_SMMU_FEAT_VAX		(1 << 14)
+-#define ARM_SMMU_FEAT_RANGE_INV		(1 << 15)
+-#define ARM_SMMU_FEAT_BTM		(1 << 16)
+-#define ARM_SMMU_FEAT_SVA		(1 << 17)
+-#define ARM_SMMU_FEAT_E2H		(1 << 18)
+-#define ARM_SMMU_FEAT_NESTING		(1 << 19)
+-#define ARM_SMMU_FEAT_ATTR_TYPES_OVR	(1 << 20)
+-#define ARM_SMMU_FEAT_HA		(1 << 21)
+-#define ARM_SMMU_FEAT_HD		(1 << 22)
+-#define ARM_SMMU_FEAT_S2FWB		(1 << 23)
++	/* See ARM_SMMU_FEAT_* in arm-smmu-v3-common.h*/
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
 -- 
 2.50.1.552.g942d659e1b-goog
 
