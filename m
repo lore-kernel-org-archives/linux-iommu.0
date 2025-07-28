@@ -1,55 +1,55 @@
-Received: from mail-ej1-f73.google.com (mail-ej1-f73.google.com [209.85.218.73])
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07791279918
-	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 17:53:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB0E82701D2
+	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 17:53:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753725225; cv=none; b=hiCRBJetHHzuynuxIQJeUJW5Dr6Ey8DdOntmffJlyLxb64/T7i0sNgEns5JoZTC6u+uACi8TGRQ0M3HnV2sq2JvGsxSupFCVvhWDiAYqBmkrII1kLZansgVXGELBKCAfegmOP0go8LFtppHL7o2QgeBPHggbo12lYsIVYkJ6wGI=
+	t=1753725227; cv=none; b=el5tq5mAhF/++L9P6cBLZykldbp4LKc0uem3MF+NV9MBQ3+fg5lRTZzq4+FvVLKzeWygyifPTfaHyM88O4Qvqde/Ggc1l+QTR0qF9uO7wn2Tuhb4BSfiytHIU4Nt+GEQ4PChiz/VYSEVEFkjyH0c3qRG45px/WMnZGF3bjdKLMc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753725225; c=relaxed/simple;
-	bh=RxPbPhNqEx9akHkIou9iNguWeMIuxS6YzG17MY3jzBE=;
+	s=arc-20240116; t=1753725227; c=relaxed/simple;
+	bh=DrD+ZWwEDs+4UwwUfkGMP6kz9KBpszpo0hluoKvZc2s=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=RojZnUQzed8+S0RDIs7djmy1kSrxXlIhQ6pvojXZV2DEAqOCGnmFAcRheojTYHW8tj1smeGzYbSBJykpaC7BApExEv6ZUA5jkrSZjw/RepYTflsKswn4+bH29opWKPST99G4MdV0GFMuEQciarYrkFWjqi6OrDIzWuScYTlZlXQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=b3il+WlE; arc=none smtp.client-ip=209.85.218.73
+	 To:Cc:Content-Type; b=gO2eqnAsW8Erl6ywXYV+V9Pjb9v7yy9e1zWxD36h8XiE0jKs9WfGzUDOnG48tncfgCb+n/7Lyd1EmyNWQWir3+3Gq/62iDndbOzTmkzUZijKPDjaVDwyqvtjZjD3g6EMkYYJWOi05AUSQixtJXR+MhWk1YRgirAxqucHzR7jgbI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=R35Y8VDA; arc=none smtp.client-ip=209.85.128.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="b3il+WlE"
-Received: by mail-ej1-f73.google.com with SMTP id a640c23a62f3a-ae70ebad856so332780666b.2
-        for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 10:53:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="R35Y8VDA"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-4588cfda8b6so1264615e9.0
+        for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 10:53:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1753725221; x=1754330021; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1753725222; x=1754330022; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=zYSaQxxv0yy3Y7EMVpbwK7SrDhDexuagcipLxM0lKzk=;
-        b=b3il+WlEKNbNL0Qq9XRmBTWgLpYx/5l0Vm7L6zaM8GtobJ4QSS5PNRi2x+ApnbJe1a
-         nmt/yh1xlaxeztd48COinEWrRKy5hyEWZTpxSo82nrunRbF/d9fzhuQrEaQsdqUchc24
-         0iFHvdDui1Q29dE6vMd32rMObLOirm4ql6oUCBYcY/JWJCZsPsmGvOg2BFmzldLVw+rc
-         k/Kgd7yL7DArd/+EaYWBF1toV+6vqXQv4XixhQx6aAuDbi/aNxu+KagiRvFxcqlS1lLu
-         0oVgG6c61J/VchQN9jm8SvuMwpJgM+YV6h44WCu9znf5y42ZQqiCdIJt5FGOg9yAxiP3
-         Ae/A==
+        bh=tt5m8i4QY0N1dfFhF7qHvvWc92n8Yu9ouTNwhUBFIh8=;
+        b=R35Y8VDAnc7bV1V2bOwHDSHUV0jPEePZ8b8RnB0CmSPQfnp0n1JkwfmCqJBW+iZ2z9
+         9lk0B9MYCmR15M3gVZ4Uvmbem7OJP/XMJJu63LE3xsC8dIsmUUfdPn4HIKmftgOHZ2qv
+         FbX7xy5imwclrylypsc8DcAWy9NtM0k5td42j3ySS1PyG7ZGNMWBv/7LRmUYRxQM0q6f
+         AyO21WjsV9rBG51MoeThVfAbr0KaIp0J0VRywq3wK0p5eodPHfQA9c2x4qfaI53mP7Qy
+         SRIYEX9tqCHqRnTQssVuSulyLm52xt4E4jrtDpSD5fkarp1LxqyT+kVgPfCC36kLsH86
+         i2sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753725221; x=1754330021;
+        d=1e100.net; s=20230601; t=1753725222; x=1754330022;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zYSaQxxv0yy3Y7EMVpbwK7SrDhDexuagcipLxM0lKzk=;
-        b=K4abKepLKuB/njLKHxSut6iurB6efQpUNyc+sqWdwTgqMWyO3NQSHgrhhr7lx2KiI3
-         QKfKQzQfVeG7gmdGSepJizmoDXeJ651/xPOcEtwlQsBnSAf5dsjr18n9zCiV3oG5va4X
-         hhuNjSrhzwOI4GrDm+qqrit0pGk5qqJq96EkDJWFmsEK+exdFHDqvGYWtbYvolRyLF1V
-         LPaFI4Q/wgHWzA73QQEUORvplGlNhjXj0lz6+CiWG9UWsRMplD5U1OK8IFCs7+sCj58Z
-         M68KEUTs3DpPj3O79NxelmqL80h7cHM7l6r9XtB7SdZPAVpklJAD4Zl6cCGTlGAGJxOy
-         sAPw==
-X-Forwarded-Encrypted: i=1; AJvYcCXfKZNd1GIAZ5VCpqTBJsW2sMKoLwRKQwbrqrwlupwAqtHkszAz4qC1NBu4ZvmIV38oQtWE9w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzDxzaBLUYKOp/2iwQdBtzBwaSefA4qW6r88eGE/laOv1a6ksD9
-	wxIBPW8fJS9hiaYHgwKr2Byk9+yu8YfvJARZRqSUd4rtP6L8Z5NQ0KYNceZ8yJ37iAhRYEKuhxr
-	HUIPDgu2CpAmi4g==
-X-Google-Smtp-Source: AGHT+IEqJ30qZTbb5uhq7Ulncx7YgH8wYLGAX5KY0xkgcaQRC+MirKkQi/xoWXPkKjKloEcVMUK+yOS2vLoJOA==
-X-Received: from ejcry7.prod.google.com ([2002:a17:906:8d87:b0:ae0:d1fb:d297])
+        bh=tt5m8i4QY0N1dfFhF7qHvvWc92n8Yu9ouTNwhUBFIh8=;
+        b=D6ZsK5a+DWFMG8a7g2ZMXcNMSM/3xoum0xqyZtetgfOCv+IrV2lF2aHf4idaEQ3juY
+         wNRg1WyXFM4qCrbng632gqW8DjZrxpzKiRz3knVfXJFHKj/RR3v33ENxKMYL63bDtPT8
+         qlZUXVU1U3urTg5GTu1Ci21dAkb6KKDrRFyXaFoVMXvFtTWl8LGHwJFNC2yiovTXiM4Q
+         jH13z+WBM5unHCDe0iTtRZIayEhBt5wdavg+S1enImYj015IgCv2BYm0AvypJUTdo6K+
+         e58YzRVQwY5UgyiVPOgTiM0Rt6X8xZCeTE7JPWc5F/FuDxV32rb72m+0591sOW0GsjFi
+         /B4Q==
+X-Forwarded-Encrypted: i=1; AJvYcCWhnPdv7mgEKqvf0OjOItShuCJ9tAXUOKfDpp8T5ytdsxjWfKmBwkAA654apTp1ypXPAZGc5Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwlfW9BKfifVdErho00FDagAp2vb8gzArU0xf9JyVbb+hetuu/v
+	4pvIctRi1vcKaPVGmNovlYdVBe3tFS60WiaOgF3j7lcvkU7jh4Mya6+n1qfEC7Xv/Ymg+UP0C/r
+	aHGQ2WD0eWe5zAg==
+X-Google-Smtp-Source: AGHT+IF8+izyk+caZjCV5IYrASgS5LYsOHMnHxHerMTimZGTVouHs7VB05sQiTCg3vY7AuqkXvZazJs9ITyX6g==
+X-Received: from wmbep11.prod.google.com ([2002:a05:600c:840b:b0:453:5e1:c32e])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a17:907:7b8b:b0:ad8:914b:7d0b with SMTP id a640c23a62f3a-af61c2adce9mr1312173166b.11.1753725221260;
- Mon, 28 Jul 2025 10:53:41 -0700 (PDT)
-Date: Mon, 28 Jul 2025 17:52:58 +0000
+ 2002:a05:600c:1c90:b0:456:1dd9:943 with SMTP id 5b1f17b1804b1-4588b9b1154mr24802245e9.3.1753725222476;
+ Mon, 28 Jul 2025 10:53:42 -0700 (PDT)
+Date: Mon, 28 Jul 2025 17:52:59 +0000
 In-Reply-To: <20250728175316.3706196-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250728175316.3706196-1-smostafa@google.com>
 X-Mailer: git-send-email 2.50.1.552.g942d659e1b-goog
-Message-ID: <20250728175316.3706196-12-smostafa@google.com>
-Subject: [PATCH v3 11/29] iommu/arm-smmu-v3: Move IOMMU registration to arm-smmu-v3-common.c
+Message-ID: <20250728175316.3706196-13-smostafa@google.com>
+Subject: [PATCH v3 12/29] iommu/arm-smmu-v3: Split cmdq code with hyp
 From: Mostafa Saleh <smostafa@google.com>
 To: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev, 
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
@@ -71,105 +71,462 @@ Cc: maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
 	praan@google.com, Mostafa Saleh <smostafa@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+The KVM SMMUv3 driver would re-use some of the cmdq code inside
+the hypervisor, move these functions to a new common c file that
+is shared between the host kernel and the hypervisor.
 
-The KVM driver will need to implement a few IOMMU ops, so move the
-helpers to arm-smmu-v3-common.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Signed-off-by: Mostafa Saleh <smostafa@google.com>
 ---
- .../arm/arm-smmu-v3/arm-smmu-v3-common.c      | 27 +++++++++++++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 18 ++-----------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  3 +++
- 3 files changed, 32 insertions(+), 16 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/Makefile        |   2 +-
+ .../arm/arm-smmu-v3/arm-smmu-v3-common-hyp.c  | 114 ++++++++++++++++
+ .../arm/arm-smmu-v3/arm-smmu-v3-common.h      |  69 ++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 128 ------------------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  38 ------
+ 5 files changed, 184 insertions(+), 167 deletions(-)
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-hyp.c
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.c
-index 835eeae3bf5e..7453d9894ca3 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.c
-@@ -671,3 +671,30 @@ int arm_smmu_fw_probe(struct platform_device *pdev,
- 	else
- 		return arm_smmu_device_acpi_probe(pdev, smmu);
- }
+diff --git a/drivers/iommu/arm/arm-smmu-v3/Makefile b/drivers/iommu/arm/arm-smmu-v3/Makefile
+index 0bc0c116b851..16be1249000a 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/Makefile
++++ b/drivers/iommu/arm/arm-smmu-v3/Makefile
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_ARM_SMMU_V3) += arm_smmu_v3.o
+ arm_smmu_v3-y := arm-smmu-v3.o
+-arm_smmu_v3-y += arm-smmu-v3-common.o
++arm_smmu_v3-y += arm-smmu-v3-common.o arm-smmu-v3-common-hyp.o
+ arm_smmu_v3-$(CONFIG_ARM_SMMU_V3_IOMMUFD) += arm-smmu-v3-iommufd.o
+ arm_smmu_v3-$(CONFIG_ARM_SMMU_V3_SVA) += arm-smmu-v3-sva.o
+ arm_smmu_v3-$(CONFIG_TEGRA241_CMDQV) += tegra241-cmdqv.o
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-hyp.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-hyp.c
+new file mode 100644
+index 000000000000..da41c5024a1c
+--- /dev/null
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-hyp.c
+@@ -0,0 +1,114 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2015 ARM Limited
++ *
++ * Author: Will Deacon <will.deacon@arm.com>
++ * Arm SMMUv3 driver functions shared with hypervisor.
++ */
 +
-+int arm_smmu_register_iommu(struct arm_smmu_device *smmu,
-+			    struct iommu_ops *ops, phys_addr_t ioaddr)
++#include "arm-smmu-v3-common.h"
++#include <asm-generic/errno-base.h>
++
++#include <linux/string.h>
++
++int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
 +{
-+	int ret;
-+	struct device *dev = smmu->dev;
++	memset(cmd, 0, 1 << CMDQ_ENT_SZ_SHIFT);
++	cmd[0] |= FIELD_PREP(CMDQ_0_OP, ent->opcode);
 +
-+	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
-+				     "smmu3.%pa", &ioaddr);
-+	if (ret)
-+		return ret;
-+
-+	ret = iommu_device_register(&smmu->iommu, ops, dev);
-+	if (ret) {
-+		dev_err(dev, "Failed to register iommu\n");
-+		iommu_device_sysfs_remove(&smmu->iommu);
-+		return ret;
++	switch (ent->opcode) {
++	case CMDQ_OP_TLBI_EL2_ALL:
++	case CMDQ_OP_TLBI_NSNH_ALL:
++		break;
++	case CMDQ_OP_PREFETCH_CFG:
++		cmd[0] |= FIELD_PREP(CMDQ_PREFETCH_0_SID, ent->prefetch.sid);
++		break;
++	case CMDQ_OP_CFGI_CD:
++		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SSID, ent->cfgi.ssid);
++		fallthrough;
++	case CMDQ_OP_CFGI_STE:
++		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SID, ent->cfgi.sid);
++		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_LEAF, ent->cfgi.leaf);
++		break;
++	case CMDQ_OP_CFGI_CD_ALL:
++		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SID, ent->cfgi.sid);
++		break;
++	case CMDQ_OP_CFGI_ALL:
++		/* Cover the entire SID range */
++		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
++		break;
++	case CMDQ_OP_TLBI_NH_VA:
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
++		fallthrough;
++	case CMDQ_OP_TLBI_EL2_VA:
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
++		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
++		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
++		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
++		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_VA_MASK;
++		break;
++	case CMDQ_OP_TLBI_S2_IPA:
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
++		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
++		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
++		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
++		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_IPA_MASK;
++		break;
++	case CMDQ_OP_TLBI_NH_ASID:
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
++		fallthrough;
++	case CMDQ_OP_TLBI_NH_ALL:
++	case CMDQ_OP_TLBI_S12_VMALL:
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
++		break;
++	case CMDQ_OP_TLBI_EL2_ASID:
++		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
++		break;
++	case CMDQ_OP_ATC_INV:
++		cmd[0] |= FIELD_PREP(CMDQ_0_SSV, ent->substream_valid);
++		cmd[0] |= FIELD_PREP(CMDQ_ATC_0_GLOBAL, ent->atc.global);
++		cmd[0] |= FIELD_PREP(CMDQ_ATC_0_SSID, ent->atc.ssid);
++		cmd[0] |= FIELD_PREP(CMDQ_ATC_0_SID, ent->atc.sid);
++		cmd[1] |= FIELD_PREP(CMDQ_ATC_1_SIZE, ent->atc.size);
++		cmd[1] |= ent->atc.addr & CMDQ_ATC_1_ADDR_MASK;
++		break;
++	case CMDQ_OP_PRI_RESP:
++		cmd[0] |= FIELD_PREP(CMDQ_0_SSV, ent->substream_valid);
++		cmd[0] |= FIELD_PREP(CMDQ_PRI_0_SSID, ent->pri.ssid);
++		cmd[0] |= FIELD_PREP(CMDQ_PRI_0_SID, ent->pri.sid);
++		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_GRPID, ent->pri.grpid);
++		switch (ent->pri.resp) {
++		case PRI_RESP_DENY:
++		case PRI_RESP_FAIL:
++		case PRI_RESP_SUCC:
++			break;
++		default:
++			return -EINVAL;
++		}
++		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_RESP, ent->pri.resp);
++		break;
++	case CMDQ_OP_RESUME:
++		cmd[0] |= FIELD_PREP(CMDQ_RESUME_0_SID, ent->resume.sid);
++		cmd[0] |= FIELD_PREP(CMDQ_RESUME_0_RESP, ent->resume.resp);
++		cmd[1] |= FIELD_PREP(CMDQ_RESUME_1_STAG, ent->resume.stag);
++		break;
++	case CMDQ_OP_CMD_SYNC:
++		if (ent->sync.msiaddr) {
++			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
++			cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
++		} else {
++			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
++		}
++		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
++		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
++		break;
++	default:
++		return -ENOENT;
 +	}
 +
 +	return 0;
 +}
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.h
+index 3bcb5d94f21a..f115ff9a547f 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common.h
+@@ -4,6 +4,7 @@
+ 
+ #include <linux/bits.h>
+ #include <linux/bitfield.h>
++#include <linux/cache.h>
+ 
+ /* MMIO registers */
+ #define ARM_SMMU_IDR0			0x0
+@@ -460,6 +461,44 @@ struct arm_smmu_cmdq_ent {
+ #define ARM_SMMU_FEAT_HD		(1 << 22)
+ #define ARM_SMMU_FEAT_S2FWB		(1 << 23)
+ 
++struct arm_smmu_ll_queue {
++	union {
++		u64			val;
++		struct {
++			u32		prod;
++			u32		cons;
++		};
++		struct {
++			atomic_t	prod;
++			atomic_t	cons;
++		} atomic;
++		u8			__pad[SMP_CACHE_BYTES];
++	} ____cacheline_aligned_in_smp;
++	u32				max_n_shift;
++};
 +
-+void arm_smmu_unregister_iommu(struct arm_smmu_device *smmu)
++struct arm_smmu_queue {
++	struct arm_smmu_ll_queue	llq;
++	int				irq; /* Wired interrupt */
++
++	__le64				*base;
++	dma_addr_t			base_dma;
++	u64				q_base;
++
++	size_t				ent_dwords;
++
++	u32 __iomem			*prod_reg;
++	u32 __iomem			*cons_reg;
++};
++
++#define Q_IDX(llq, p)			((p) & ((1 << (llq)->max_n_shift) - 1))
++#define Q_WRP(llq, p)			((p) & (1 << (llq)->max_n_shift))
++#define Q_OVERFLOW_FLAG			(1U << 31)
++#define Q_OVF(p)			((p) & Q_OVERFLOW_FLAG)
++#define Q_ENT(q, p)			((q)->base +			\
++					 Q_IDX(&((q)->llq), p) *	\
++					 (q)->ent_dwords)
++
+ static inline void arm_smmu_write_strtab_l1_desc(struct arm_smmu_strtab_l1 *dst,
+ 						 dma_addr_t l2ptr_dma)
+ {
+@@ -471,4 +510,34 @@ static inline void arm_smmu_write_strtab_l1_desc(struct arm_smmu_strtab_l1 *dst,
+ 	/* The HW has 64 bit atomicity with stores to the L2 STE table */
+ 	WRITE_ONCE(dst->l2ptr, cpu_to_le64(val));
+ }
++
++int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent);
++
++
++/* Queue functions shared between kernel and hyp. */
++static inline bool queue_full(struct arm_smmu_ll_queue *q)
 +{
-+	iommu_device_unregister(&smmu->iommu);
-+	iommu_device_sysfs_remove(&smmu->iommu);
++	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
++	       Q_WRP(q, q->prod) != Q_WRP(q, q->cons);
 +}
++
++static inline bool queue_empty(struct arm_smmu_ll_queue *q)
++{
++	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
++	       Q_WRP(q, q->prod) == Q_WRP(q, q->cons);
++}
++
++static inline u32 queue_inc_prod_n(struct arm_smmu_ll_queue *q, int n)
++{
++	u32 prod = (Q_WRP(q, q->prod) | Q_IDX(q, q->prod)) + n;
++	return Q_OVF(q->prod) | Q_WRP(q, prod) | Q_IDX(q, prod);
++}
++
++static inline void queue_write(__le64 *dst, u64 *src, size_t n_dwords)
++{
++	int i;
++
++	for (i = 0; i < n_dwords; ++i)
++		*dst++ = cpu_to_le64(*src++);
++}
+ #endif /* _ARM_SMMU_V3_COMMON_H */
+\ No newline at end of file
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 4cd0a115fc0e..8fbc7dd2a2db 100644
+index 8fbc7dd2a2db..066d9d9e8088 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -4138,21 +4138,8 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 		goto err_disable;
+@@ -105,18 +105,6 @@ static bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
+ 	return space >= n;
+ }
  
- 	/* And we're up. Go go go! */
--	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
--				     "smmu3.%pa", &ioaddr);
--	if (ret)
--		goto err_disable;
+-static bool queue_full(struct arm_smmu_ll_queue *q)
+-{
+-	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
+-	       Q_WRP(q, q->prod) != Q_WRP(q, q->cons);
+-}
 -
--	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
--	if (ret) {
--		dev_err(dev, "Failed to register iommu\n");
--		goto err_free_sysfs;
+-static bool queue_empty(struct arm_smmu_ll_queue *q)
+-{
+-	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
+-	       Q_WRP(q, q->prod) == Q_WRP(q, q->cons);
+-}
+-
+ static bool queue_consumed(struct arm_smmu_ll_queue *q, u32 prod)
+ {
+ 	return ((Q_WRP(q, q->cons) == Q_WRP(q, prod)) &&
+@@ -172,12 +160,6 @@ static int queue_sync_prod_in(struct arm_smmu_queue *q)
+ 	return ret;
+ }
+ 
+-static u32 queue_inc_prod_n(struct arm_smmu_ll_queue *q, int n)
+-{
+-	u32 prod = (Q_WRP(q, q->prod) | Q_IDX(q, q->prod)) + n;
+-	return Q_OVF(q->prod) | Q_WRP(q, prod) | Q_IDX(q, prod);
+-}
+-
+ static void queue_poll_init(struct arm_smmu_device *smmu,
+ 			    struct arm_smmu_queue_poll *qp)
+ {
+@@ -205,14 +187,6 @@ static int queue_poll(struct arm_smmu_queue_poll *qp)
+ 	return 0;
+ }
+ 
+-static void queue_write(__le64 *dst, u64 *src, size_t n_dwords)
+-{
+-	int i;
+-
+-	for (i = 0; i < n_dwords; ++i)
+-		*dst++ = cpu_to_le64(*src++);
+-}
+-
+ static void queue_read(u64 *dst, __le64 *src, size_t n_dwords)
+ {
+ 	int i;
+@@ -233,108 +207,6 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
+ }
+ 
+ /* High-level queue accessors */
+-static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+-{
+-	memset(cmd, 0, 1 << CMDQ_ENT_SZ_SHIFT);
+-	cmd[0] |= FIELD_PREP(CMDQ_0_OP, ent->opcode);
+-
+-	switch (ent->opcode) {
+-	case CMDQ_OP_TLBI_EL2_ALL:
+-	case CMDQ_OP_TLBI_NSNH_ALL:
+-		break;
+-	case CMDQ_OP_PREFETCH_CFG:
+-		cmd[0] |= FIELD_PREP(CMDQ_PREFETCH_0_SID, ent->prefetch.sid);
+-		break;
+-	case CMDQ_OP_CFGI_CD:
+-		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SSID, ent->cfgi.ssid);
+-		fallthrough;
+-	case CMDQ_OP_CFGI_STE:
+-		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SID, ent->cfgi.sid);
+-		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_LEAF, ent->cfgi.leaf);
+-		break;
+-	case CMDQ_OP_CFGI_CD_ALL:
+-		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SID, ent->cfgi.sid);
+-		break;
+-	case CMDQ_OP_CFGI_ALL:
+-		/* Cover the entire SID range */
+-		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
+-		break;
+-	case CMDQ_OP_TLBI_NH_VA:
+-		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
+-		fallthrough;
+-	case CMDQ_OP_TLBI_EL2_VA:
+-		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
+-		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
+-		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
+-		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
+-		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
+-		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
+-		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_VA_MASK;
+-		break;
+-	case CMDQ_OP_TLBI_S2_IPA:
+-		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
+-		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
+-		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
+-		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
+-		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
+-		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
+-		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_IPA_MASK;
+-		break;
+-	case CMDQ_OP_TLBI_NH_ASID:
+-		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
+-		fallthrough;
+-	case CMDQ_OP_TLBI_NH_ALL:
+-	case CMDQ_OP_TLBI_S12_VMALL:
+-		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
+-		break;
+-	case CMDQ_OP_TLBI_EL2_ASID:
+-		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
+-		break;
+-	case CMDQ_OP_ATC_INV:
+-		cmd[0] |= FIELD_PREP(CMDQ_0_SSV, ent->substream_valid);
+-		cmd[0] |= FIELD_PREP(CMDQ_ATC_0_GLOBAL, ent->atc.global);
+-		cmd[0] |= FIELD_PREP(CMDQ_ATC_0_SSID, ent->atc.ssid);
+-		cmd[0] |= FIELD_PREP(CMDQ_ATC_0_SID, ent->atc.sid);
+-		cmd[1] |= FIELD_PREP(CMDQ_ATC_1_SIZE, ent->atc.size);
+-		cmd[1] |= ent->atc.addr & CMDQ_ATC_1_ADDR_MASK;
+-		break;
+-	case CMDQ_OP_PRI_RESP:
+-		cmd[0] |= FIELD_PREP(CMDQ_0_SSV, ent->substream_valid);
+-		cmd[0] |= FIELD_PREP(CMDQ_PRI_0_SSID, ent->pri.ssid);
+-		cmd[0] |= FIELD_PREP(CMDQ_PRI_0_SID, ent->pri.sid);
+-		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_GRPID, ent->pri.grpid);
+-		switch (ent->pri.resp) {
+-		case PRI_RESP_DENY:
+-		case PRI_RESP_FAIL:
+-		case PRI_RESP_SUCC:
+-			break;
+-		default:
+-			return -EINVAL;
+-		}
+-		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_RESP, ent->pri.resp);
+-		break;
+-	case CMDQ_OP_RESUME:
+-		cmd[0] |= FIELD_PREP(CMDQ_RESUME_0_SID, ent->resume.sid);
+-		cmd[0] |= FIELD_PREP(CMDQ_RESUME_0_RESP, ent->resume.resp);
+-		cmd[1] |= FIELD_PREP(CMDQ_RESUME_1_STAG, ent->resume.stag);
+-		break;
+-	case CMDQ_OP_CMD_SYNC:
+-		if (ent->sync.msiaddr) {
+-			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_IRQ);
+-			cmd[1] |= ent->sync.msiaddr & CMDQ_SYNC_1_MSIADDR_MASK;
+-		} else {
+-			cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
+-		}
+-		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSH, ARM_SMMU_SH_ISH);
+-		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
+-		break;
+-	default:
+-		return -ENOENT;
 -	}
 -
 -	return 0;
-+	return arm_smmu_register_iommu(smmu, &arm_smmu_ops, ioaddr);
- 
--err_free_sysfs:
--	iommu_device_sysfs_remove(&smmu->iommu);
- err_disable:
- 	arm_smmu_device_disable(smmu);
- err_free_iopf:
-@@ -4164,8 +4151,7 @@ static void arm_smmu_device_remove(struct platform_device *pdev)
+-}
+-
+ static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu,
+ 					       struct arm_smmu_cmdq_ent *ent)
  {
- 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
- 
--	iommu_device_unregister(&smmu->iommu);
--	iommu_device_sysfs_remove(&smmu->iommu);
-+	arm_smmu_unregister_iommu(smmu);
- 	arm_smmu_device_disable(smmu);
- 	iopf_queue_free(smmu->evtq.iopf);
- 	ida_destroy(&smmu->vmid_map);
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 787296a2f0c2..e3c46b3344db 100644
+index e3c46b3344db..f9a496e0bd94 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -564,6 +564,9 @@ int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
- 			    size_t dwords, const char *name);
- int arm_smmu_fw_probe(struct platform_device *pdev,
- 		      struct arm_smmu_device *smmu);
-+int arm_smmu_register_iommu(struct arm_smmu_device *smmu,
-+			    struct iommu_ops *ops, phys_addr_t ioaddr);
-+void arm_smmu_unregister_iommu(struct arm_smmu_device *smmu);
+@@ -19,14 +19,6 @@ struct arm_smmu_device;
  
- #ifdef CONFIG_ARM_SMMU_V3_SVA
- bool arm_smmu_sva_supported(struct arm_smmu_device *smmu);
+ #include "arm-smmu-v3-common.h"
+ 
+-#define Q_IDX(llq, p)			((p) & ((1 << (llq)->max_n_shift) - 1))
+-#define Q_WRP(llq, p)			((p) & (1 << (llq)->max_n_shift))
+-#define Q_OVERFLOW_FLAG			(1U << 31)
+-#define Q_OVF(p)			((p) & Q_OVERFLOW_FLAG)
+-#define Q_ENT(q, p)			((q)->base +			\
+-					 Q_IDX(&((q)->llq), p) *	\
+-					 (q)->ent_dwords)
+-
+ /* Ensure DMA allocations are naturally aligned */
+ #ifdef CONFIG_CMA_ALIGNMENT
+ #define Q_MAX_SZ_SHIFT			(PAGE_SHIFT + CONFIG_CMA_ALIGNMENT)
+@@ -162,36 +154,6 @@ static inline unsigned int arm_smmu_cdtab_l2_idx(unsigned int ssid)
+ #define MSI_IOVA_BASE			0x8000000
+ #define MSI_IOVA_LENGTH			0x100000
+ 
+-struct arm_smmu_ll_queue {
+-	union {
+-		u64			val;
+-		struct {
+-			u32		prod;
+-			u32		cons;
+-		};
+-		struct {
+-			atomic_t	prod;
+-			atomic_t	cons;
+-		} atomic;
+-		u8			__pad[SMP_CACHE_BYTES];
+-	} ____cacheline_aligned_in_smp;
+-	u32				max_n_shift;
+-};
+-
+-struct arm_smmu_queue {
+-	struct arm_smmu_ll_queue	llq;
+-	int				irq; /* Wired interrupt */
+-
+-	__le64				*base;
+-	dma_addr_t			base_dma;
+-	u64				q_base;
+-
+-	size_t				ent_dwords;
+-
+-	u32 __iomem			*prod_reg;
+-	u32 __iomem			*cons_reg;
+-};
+-
+ struct arm_smmu_queue_poll {
+ 	ktime_t				timeout;
+ 	unsigned int			delay;
 -- 
 2.50.1.552.g942d659e1b-goog
 
