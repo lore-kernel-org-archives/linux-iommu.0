@@ -1,55 +1,55 @@
-Received: from mail-wr1-f74.google.com (mail-wr1-f74.google.com [209.85.221.74])
+Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23737275861
-	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 17:53:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6E7527603C
+	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 17:53:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753725216; cv=none; b=Rzabk5NnlAs23AhVyktCsCkNo9A5FANgqjK9YuctCVzzqjkMjvMZCTj6G7bpSG3rIR/q1vH0WPIIAGFmHZuMceEvrBprlHNHg+CnjphKo0NT7KvrJVT8vXHzkchTzyGC1dD8NlvCs9rDeWgxcurUl8nJjBhrZ9jUgXBH03tEuK4=
+	t=1753725219; cv=none; b=GlnzdLbq5HmfpGEWUc9ZiSgvIEz8n4hrPIDoJZA2ahHhXsXajzbk+96PZorN0TQ1HtPZMRY1nhThjLKDfCsuPEYico204yIEvqvPl3oG6cevJSjJC/DlBDut1JFVry+1SgOU9zdBg45q3MjMP5gvdCGo2du5BwaU53ydiACR/KM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753725216; c=relaxed/simple;
-	bh=nRn9Dsf3QfyBnEBl4Hr7BBBiduTa1EIYJ+DzHW4mP0E=;
+	s=arc-20240116; t=1753725219; c=relaxed/simple;
+	bh=UTJ3EADZvyzcbEjh8jnX70x0DzecsPLOepqgNDV9XSU=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=UY9oA0tJtFrW3Gzupo5gdYJx3LmdKX5/KZJDcMVaw1W05LGq1LYoTzTmha6Du8V5uCzYRSEo3bp5suzadXGzEY0wsajhXitu0XQSJmrQfCIinGqZxhTa7A59iClRNBIOiFG3bChR5f9J0QO+Dwtcm9/1z8qpUHz6dbLks9QPbJE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ZjzUNSUE; arc=none smtp.client-ip=209.85.221.74
+	 To:Cc:Content-Type; b=nm8mEOX3X6GjNU9+xmlnWZz+7Bh+6J9vxp7rPGz4Odm+Iu4sEONxaNhtWhbP11vMRNrOwLnffFi2mNx7JwhC/4nDg1+XMyxzpWV/jk4pGrx6h3T48XhL7hKa7ZpC37WfN0sYxK7Wqz89Z7f7ooh6uCWqSPz7KuE+7/dtQGhuVcw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=F6Bwg2PZ; arc=none smtp.client-ip=209.85.128.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ZjzUNSUE"
-Received: by mail-wr1-f74.google.com with SMTP id ffacd0b85a97d-3b785aee904so902987f8f.2
-        for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 10:53:34 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="F6Bwg2PZ"
+Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-45359bfe631so20882985e9.0
+        for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 10:53:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1753725213; x=1754330013; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1753725215; x=1754330015; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UBRRf2ok05qV4V10RyprFxOV/7isNWPsP0/960vxN5o=;
-        b=ZjzUNSUELLJYwwejcJB9JtEoU0EIaAigohaBACm2hO3FkMRwxBw4G5DQseBlXyzVY5
-         nLCtfupONT4xtcgQ8nDEHILNo/zhkwuaHeKnzXc5i+spbg6rzEKvnbDiVOnApTh6SvnH
-         eyw/qKpxyEW+myIjn/to8pBiMku9Djsvuln3tlc1uBjt5D/z4dxypr+naE4zYk3i7PuX
-         9InLrRmW73yRv38dsoXRsF6VemjL6xMmH+oebe/nq8t4p5vdMJ7a9hQCv+EG8SU4n0/u
-         foVl+FrfFCIqkwVFCQ158XOtTaL6+n09NJ6yRHhebdXF0HMMwwr+6T03U5XcmdjN0aWG
-         Kjyg==
+        bh=BvG1e0fJMjxnkQJLACi6wiXT8StTWgftpce1YC3FRoc=;
+        b=F6Bwg2PZWf/3Pho7IUliBC62sizTaFAUu3ygipVfSxaY01xJLM2xlRewPQ7JwgLHMt
+         YMMKof+ipOYBVGJ874Q3/zhUSC8vit+Ct3xJHs7JDeRiXefzXsh2tA7ZhVr5Fi4yxclb
+         DDGUNHufe0eromlw4+RsgJVotgAOAlFCZ0SdfwvPrhiDIV7wJr7x5p+c29vi5y3+RgqK
+         3NkRooedTyRP8lhpcHaNwKMvWhakWLGpjeSO5pUapXTIbTGFqJh9k341vsMEs5uXl0Dc
+         hATtJYsmeGz40LwC2ZXL7pUzC7Z58s2eYIHaHbL6BUuAh3QAV6reIfOagZCGHizu7+SS
+         aAkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753725213; x=1754330013;
+        d=1e100.net; s=20230601; t=1753725215; x=1754330015;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UBRRf2ok05qV4V10RyprFxOV/7isNWPsP0/960vxN5o=;
-        b=mfRxbQ5c2EOkgRdHGcwY2ill8lLVOicRO69ON9r3oiVmQYhQHR8fkiQucOLI6iS+p2
-         r2JEDOXGU9ljICkPbeNH4OO60FPOldq/vvlKumEfNG7tbS1pBu4F1O9vZQ9VyS9PSESY
-         Wpw9/4oXiEmyYeP/CI8XVfMgjmFUa+yMb0/AgOmXEkRJDnKYXKxKdTiN6etoWLrPauQV
-         WQVvuxXGAM07VFAqXA00WgCmdt1jsB51fDxGztkQXqQLzkcy2V63q8aY4KT3j3hYEsZq
-         wayb/OARvd8KAYP/vv0Te7mxh5wuu5LDfqTO6dYTYW/GaJSEEFr3cfwocHuoUKV45Nf7
-         A7Gw==
-X-Forwarded-Encrypted: i=1; AJvYcCUtk2GSax/SoB2dyePcTpfiiS5JpoJ8NhtfzfwZoa6t/1QFdYxOJsVXgQ8FPsEWhS/PRHixVw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw3+SOy3euQCsk3LOOQ2cnfCJ5Q83SYpf5hnWOT4Z2RFSPtcuYC
-	4iy7OWUmxGqIklba3lH12/r+KJMVWEPctblqoHNUcpd2t5a4H/XOBUzslK7UzPpFAqOY8aOhI3S
-	LhAj2xdzkmcqLtA==
-X-Google-Smtp-Source: AGHT+IEdo5UmQraGXTZJ9gCaHcWtxJIv/tFc5vNP8HwnzGiRANkg0buplE/XnYHC6sojxb0f1IZVCz/ntN1JZg==
-X-Received: from wmbji2.prod.google.com ([2002:a05:600c:a342:b0:456:214c:845d])
+        bh=BvG1e0fJMjxnkQJLACi6wiXT8StTWgftpce1YC3FRoc=;
+        b=RxXABedJrZr3QpyGoSAB1bLn6oS+fGBrRdXo16uCoAZYACnG3xurD0Kf/BZAvaGVB/
+         RoXtmz6m6vdxL4TuTp1qFHEYyNm9vMJYuKD5bVkASvhou3GA2cFPS7fOmTI2m2G0RNjK
+         Dd08K2BPTr6ln1zOtmLOC2dOkHp0bdlrAiRXMB5UJYlTPEQeATFG62SFbC9Ih2GFJzJU
+         hnjmafOK5aqd8zuu1j3L1eakE/b42dEsMj/jNuVCloGC36OV7yl1wW8DIT72TdJNviyF
+         MeLiwEwMoWjhU40T6qMkwuF5R96m4uzqkUnZeso1LivrjY3AHvVLG8CR53M4C62VW/mS
+         U8SQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWvK9wIO0U/0BpefTIh0p1VnmAEtXsM572gJlzhOpW8a1HdJhllw8Uo/0Eet7uHxVkmO/4RZw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzNyV7434Qhj9uRbRvy0QLVMx5p4S3i2/hyM2B6bwyUEChxvbrT
+	zMWQ+Q4nwehbhRlfgyot6kBJRD3s5JNmzEoWBPJ96HwncIYjw8g+bqz8M2LeQVLIO6rVmo4rrh1
+	mVVZuaOHGeGPuFQ==
+X-Google-Smtp-Source: AGHT+IEAErBdYeXW0LItJq+qN9NNCqWM1YWA4pglpketrfa4eKgKL9FwCQdMMGW3DvM5tSjzXGq8+P39WPltuA==
+X-Received: from wmbhg22.prod.google.com ([2002:a05:600c:5396:b0:456:e1f:751a])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:6000:290d:b0:3b5:f93a:bcc with SMTP id ffacd0b85a97d-3b77675be5amr9578336f8f.35.1753725213520;
- Mon, 28 Jul 2025 10:53:33 -0700 (PDT)
-Date: Mon, 28 Jul 2025 17:52:50 +0000
+ 2002:a05:600c:4e08:b0:456:11db:2f0f with SMTP id 5b1f17b1804b1-4587f8a9ac5mr78135615e9.16.1753725215187;
+ Mon, 28 Jul 2025 10:53:35 -0700 (PDT)
+Date: Mon, 28 Jul 2025 17:52:52 +0000
 In-Reply-To: <20250728175316.3706196-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250728175316.3706196-1-smostafa@google.com>
 X-Mailer: git-send-email 2.50.1.552.g942d659e1b-goog
-Message-ID: <20250728175316.3706196-4-smostafa@google.com>
-Subject: [PATCH v3 03/29] KVM: arm64: pkvm: Add pkvm_time_get()
+Message-ID: <20250728175316.3706196-6-smostafa@google.com>
+Subject: [PATCH v3 05/29] iommu/io-pgtable-arm: Split initialization
 From: Mostafa Saleh <smostafa@google.com>
 To: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev, 
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
@@ -71,93 +71,683 @@ Cc: maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
 	praan@google.com, Mostafa Saleh <smostafa@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Add a function to return time in us.
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-This can be used from IOMMU drivers while waiting for conditions as
-for SMMUv3 TLB invalidation waiting for sync.
+Extract the configuration part from io-pgtable-arm.c, move it to
+io-pgtable-arm-common.c.
 
-Signed-off-by: Mostafa Saleh <smostafa@google.com>
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Mostafa Saleh <smostafa@google.com>
 ---
- arch/arm64/kvm/hyp/include/nvhe/pkvm.h |  2 ++
- arch/arm64/kvm/hyp/nvhe/setup.c        |  4 ++++
- arch/arm64/kvm/hyp/nvhe/timer-sr.c     | 33 ++++++++++++++++++++++++++
- 3 files changed, 39 insertions(+)
+ drivers/iommu/io-pgtable-arm-common.c | 295 ++++++++++++++++++++++++++
+ drivers/iommu/io-pgtable-arm.c        | 280 +-----------------------
+ drivers/iommu/io-pgtable-arm.h        |   8 +
+ 3 files changed, 312 insertions(+), 271 deletions(-)
 
-diff --git a/arch/arm64/kvm/hyp/include/nvhe/pkvm.h b/arch/arm64/kvm/hyp/include/nvhe/pkvm.h
-index ce31d3b73603..6c19691720cd 100644
---- a/arch/arm64/kvm/hyp/include/nvhe/pkvm.h
-+++ b/arch/arm64/kvm/hyp/include/nvhe/pkvm.h
-@@ -87,4 +87,6 @@ bool kvm_handle_pvm_restricted(struct kvm_vcpu *vcpu, u64 *exit_code);
- void kvm_init_pvm_id_regs(struct kvm_vcpu *vcpu);
- int kvm_check_pvm_sysreg_table(void);
+diff --git a/drivers/iommu/io-pgtable-arm-common.c b/drivers/iommu/io-pgtable-arm-common.c
+index 6d5ae1b340b2..40bd5a6bad88 100644
+--- a/drivers/iommu/io-pgtable-arm-common.c
++++ b/drivers/iommu/io-pgtable-arm-common.c
+@@ -11,6 +11,301 @@
  
-+int pkvm_timer_init(void);
-+u64 pkvm_time_get(void);
- #endif /* __ARM64_KVM_NVHE_PKVM_H__ */
-diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
-index a48d3f5a5afb..ee6435473204 100644
---- a/arch/arm64/kvm/hyp/nvhe/setup.c
-+++ b/arch/arm64/kvm/hyp/nvhe/setup.c
-@@ -304,6 +304,10 @@ void __noreturn __pkvm_init_finalise(void)
- 	};
- 	pkvm_pgtable.mm_ops = &pkvm_pgtable_mm_ops;
+ #include "io-pgtable-arm.h"
  
-+	ret = pkvm_timer_init();
-+	if (ret)
-+		goto out;
-+
- 	ret = fix_host_ownership();
- 	if (ret)
- 		goto out;
-diff --git a/arch/arm64/kvm/hyp/nvhe/timer-sr.c b/arch/arm64/kvm/hyp/nvhe/timer-sr.c
-index ff176f4ce7de..e166cd5a56b8 100644
---- a/arch/arm64/kvm/hyp/nvhe/timer-sr.c
-+++ b/arch/arm64/kvm/hyp/nvhe/timer-sr.c
-@@ -11,6 +11,10 @@
- #include <asm/kvm_hyp.h>
- #include <asm/kvm_mmu.h>
- 
-+#include <nvhe/pkvm.h>
-+
-+static u32 timer_freq;
-+
- void __kvm_timer_set_cntvoff(u64 cntvoff)
- {
- 	write_sysreg(cntvoff, cntvoff_el2);
-@@ -68,3 +72,32 @@ void __timer_enable_traps(struct kvm_vcpu *vcpu)
- 
- 	sysreg_clear_set(cnthctl_el2, clr, set);
- }
-+
-+static u64 pkvm_ticks_get(void)
++/*
++ * Check if concatenated PGDs are mandatory according to Arm DDI0487 (K.a)
++ * 1) R_DXBSH: For 16KB, and 48-bit input size, use level 1 instead of 0.
++ * 2) R_SRKBC: After de-ciphering the table for PA size and valid initial lookup
++ *   a) 40 bits PA size with 4K: use level 1 instead of level 0 (2 tables for ias = oas)
++ *   b) 40 bits PA size with 16K: use level 2 instead of level 1 (16 tables for ias = oas)
++ *   c) 42 bits PA size with 4K: use level 1 instead of level 0 (8 tables for ias = oas)
++ *   d) 48 bits PA size with 16K: use level 1 instead of level 0 (2 tables for ias = oas)
++ */
++static inline bool arm_lpae_concat_mandatory(struct io_pgtable_cfg *cfg,
++					     struct arm_lpae_io_pgtable *data)
 +{
-+	return __arch_counter_get_cntvct();
++	unsigned int ias = cfg->ias;
++	unsigned int oas = cfg->oas;
++
++	/* Covers 1 and 2.d */
++	if ((ARM_LPAE_GRANULE(data) == SZ_16K) && (data->start_level == 0))
++		return (oas == 48) || (ias == 48);
++
++	/* Covers 2.a and 2.c */
++	if ((ARM_LPAE_GRANULE(data) == SZ_4K) && (data->start_level == 0))
++		return (oas == 40) || (oas == 42);
++
++	/* Case 2.b */
++	return (ARM_LPAE_GRANULE(data) == SZ_16K) &&
++	       (data->start_level == 1) && (oas == 40);
 +}
 +
-+#define SEC_TO_US 1000000
-+
-+int pkvm_timer_init(void)
++static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
 +{
-+	timer_freq = read_sysreg(cntfrq_el0);
++	unsigned long granule, page_sizes;
++	unsigned int max_addr_bits = 48;
++
 +	/*
-+	 * TODO: The highest privileged level is supposed to initialize this
-+	 * register. But on some systems (which?), this information is only
-+	 * contained in the device-tree, so we'll need to find it out some other
-+	 * way.
++	 * We need to restrict the supported page sizes to match the
++	 * translation regime for a particular granule. Aim to match
++	 * the CPU page size if possible, otherwise prefer smaller sizes.
++	 * While we're at it, restrict the block sizes to match the
++	 * chosen granule.
 +	 */
-+	if (!timer_freq || timer_freq < SEC_TO_US)
-+		return -ENODEV;
++	if (cfg->pgsize_bitmap & PAGE_SIZE)
++		granule = PAGE_SIZE;
++	else if (cfg->pgsize_bitmap & ~PAGE_MASK)
++		granule = 1UL << __fls(cfg->pgsize_bitmap & ~PAGE_MASK);
++	else if (cfg->pgsize_bitmap & PAGE_MASK)
++		granule = 1UL << __ffs(cfg->pgsize_bitmap & PAGE_MASK);
++	else
++		granule = 0;
++
++	switch (granule) {
++	case SZ_4K:
++		page_sizes = (SZ_4K | SZ_2M | SZ_1G);
++		break;
++	case SZ_16K:
++		page_sizes = (SZ_16K | SZ_32M);
++		break;
++	case SZ_64K:
++		max_addr_bits = 52;
++		page_sizes = (SZ_64K | SZ_512M);
++		if (cfg->oas > 48)
++			page_sizes |= 1ULL << 42; /* 4TB */
++		break;
++	default:
++		page_sizes = 0;
++	}
++
++	cfg->pgsize_bitmap &= page_sizes;
++	cfg->ias = min(cfg->ias, max_addr_bits);
++	cfg->oas = min(cfg->oas, max_addr_bits);
++}
++
++int arm_lpae_init_pgtable(struct io_pgtable_cfg *cfg,
++			  struct arm_lpae_io_pgtable *data)
++{
++	int levels, va_bits, pg_shift;
++
++	arm_lpae_restrict_pgsizes(cfg);
++
++	if (!(cfg->pgsize_bitmap & (SZ_4K | SZ_16K | SZ_64K)))
++		return -EINVAL;
++
++	if (cfg->ias > ARM_LPAE_MAX_ADDR_BITS)
++		return E2BIG;
++
++	if (cfg->oas > ARM_LPAE_MAX_ADDR_BITS)
++		return -E2BIG;
++
++	pg_shift = __ffs(cfg->pgsize_bitmap);
++	data->bits_per_level = pg_shift - ilog2(sizeof(arm_lpae_iopte));
++
++	va_bits = cfg->ias - pg_shift;
++	levels = DIV_ROUND_UP(va_bits, data->bits_per_level);
++	data->start_level = ARM_LPAE_MAX_LEVELS - levels;
++
++	/* Calculate the actual size of our pgd (without concatenation) */
++	data->pgd_bits = va_bits - (data->bits_per_level * (levels - 1));
 +	return 0;
 +}
 +
-+#define pkvm_time_ticks_to_us(ticks) ((u64)(ticks) * SEC_TO_US / timer_freq)
-+
-+/* Return time in us. */
-+u64 pkvm_time_get(void)
++int arm_lpae_init_pgtable_s1(struct io_pgtable_cfg *cfg,
++			     struct arm_lpae_io_pgtable *data,
++			     void *cookie)
 +{
-+	return pkvm_time_ticks_to_us(pkvm_ticks_get());
++	u64 reg;
++	int ret;
++	typeof(&cfg->arm_lpae_s1_cfg.tcr) tcr = &cfg->arm_lpae_s1_cfg.tcr;
++	bool tg1;
++
++	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
++			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
++			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA |
++			    IO_PGTABLE_QUIRK_ARM_HD |
++			    IO_PGTABLE_QUIRK_NO_WARN))
++		return -EINVAL;
++
++	ret = arm_lpae_init_pgtable(cfg, data);
++	if (ret)
++		return ret;
++
++	/* TCR */
++	if (cfg->coherent_walk) {
++		tcr->sh = ARM_LPAE_TCR_SH_IS;
++		tcr->irgn = ARM_LPAE_TCR_RGN_WBWA;
++		tcr->orgn = ARM_LPAE_TCR_RGN_WBWA;
++		if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_OUTER_WBWA)
++			return -EINVAL;
++	} else {
++		tcr->sh = ARM_LPAE_TCR_SH_OS;
++		tcr->irgn = ARM_LPAE_TCR_RGN_NC;
++		if (!(cfg->quirks & IO_PGTABLE_QUIRK_ARM_OUTER_WBWA))
++			tcr->orgn = ARM_LPAE_TCR_RGN_NC;
++		else
++			tcr->orgn = ARM_LPAE_TCR_RGN_WBWA;
++	}
++
++	tg1 = cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1;
++	switch (ARM_LPAE_GRANULE(data)) {
++	case SZ_4K:
++		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_4K : ARM_LPAE_TCR_TG0_4K;
++		break;
++	case SZ_16K:
++		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_16K : ARM_LPAE_TCR_TG0_16K;
++		break;
++	case SZ_64K:
++		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_64K : ARM_LPAE_TCR_TG0_64K;
++		break;
++	}
++
++	switch (cfg->oas) {
++	case 32:
++		tcr->ips = ARM_LPAE_TCR_PS_32_BIT;
++		break;
++	case 36:
++		tcr->ips = ARM_LPAE_TCR_PS_36_BIT;
++		break;
++	case 40:
++		tcr->ips = ARM_LPAE_TCR_PS_40_BIT;
++		break;
++	case 42:
++		tcr->ips = ARM_LPAE_TCR_PS_42_BIT;
++		break;
++	case 44:
++		tcr->ips = ARM_LPAE_TCR_PS_44_BIT;
++		break;
++	case 48:
++		tcr->ips = ARM_LPAE_TCR_PS_48_BIT;
++		break;
++	case 52:
++		tcr->ips = ARM_LPAE_TCR_PS_52_BIT;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	tcr->tsz = 64ULL - cfg->ias;
++
++	/* MAIRs */
++	reg = (ARM_LPAE_MAIR_ATTR_NC
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_NC)) |
++	      (ARM_LPAE_MAIR_ATTR_WBRWA
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_CACHE)) |
++	      (ARM_LPAE_MAIR_ATTR_DEVICE
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV)) |
++	      (ARM_LPAE_MAIR_ATTR_INC_OWBRWA
++	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE));
++
++	cfg->arm_lpae_s1_cfg.mair = reg;
++
++	/* Looking good; allocate a pgd */
++	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data),
++					   GFP_KERNEL, cfg, cookie);
++	if (!data->pgd)
++		return -ENOMEM;
++
++	/* Ensure the empty pgd is visible before any actual TTBR write */
++	wmb();
++
++	/* TTBR */
++	cfg->arm_lpae_s1_cfg.ttbr = __arm_lpae_virt_to_phys(data->pgd);
++	return 0;
 +}
++
++int arm_lpae_init_pgtable_s2(struct io_pgtable_cfg *cfg,
++			     struct arm_lpae_io_pgtable *data,
++			     void *cookie)
++{
++	u64 sl;
++	int ret;
++	typeof(&cfg->arm_lpae_s2_cfg.vtcr) vtcr = &cfg->arm_lpae_s2_cfg.vtcr;
++
++	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_S2FWB |
++			    IO_PGTABLE_QUIRK_NO_WARN))
++		return -EINVAL;
++
++	ret = arm_lpae_init_pgtable(cfg, data);
++	if (ret)
++		return ret;
++
++	if (arm_lpae_concat_mandatory(cfg, data)) {
++		if (WARN_ON((ARM_LPAE_PGD_SIZE(data) / sizeof(arm_lpae_iopte)) >
++			    ARM_LPAE_S2_MAX_CONCAT_PAGES))
++			return -EINVAL;
++		data->pgd_bits += data->bits_per_level;
++		data->start_level++;
++	}
++
++	/* VTCR */
++	if (cfg->coherent_walk) {
++		vtcr->sh = ARM_LPAE_TCR_SH_IS;
++		vtcr->irgn = ARM_LPAE_TCR_RGN_WBWA;
++		vtcr->orgn = ARM_LPAE_TCR_RGN_WBWA;
++	} else {
++		vtcr->sh = ARM_LPAE_TCR_SH_OS;
++		vtcr->irgn = ARM_LPAE_TCR_RGN_NC;
++		vtcr->orgn = ARM_LPAE_TCR_RGN_NC;
++	}
++
++	sl = data->start_level;
++
++	switch (ARM_LPAE_GRANULE(data)) {
++	case SZ_4K:
++		vtcr->tg = ARM_LPAE_TCR_TG0_4K;
++		sl++; /* SL0 format is different for 4K granule size */
++		break;
++	case SZ_16K:
++		vtcr->tg = ARM_LPAE_TCR_TG0_16K;
++		break;
++	case SZ_64K:
++		vtcr->tg = ARM_LPAE_TCR_TG0_64K;
++		break;
++	}
++
++	switch (cfg->oas) {
++	case 32:
++		vtcr->ps = ARM_LPAE_TCR_PS_32_BIT;
++		break;
++	case 36:
++		vtcr->ps = ARM_LPAE_TCR_PS_36_BIT;
++		break;
++	case 40:
++		vtcr->ps = ARM_LPAE_TCR_PS_40_BIT;
++		break;
++	case 42:
++		vtcr->ps = ARM_LPAE_TCR_PS_42_BIT;
++		break;
++	case 44:
++		vtcr->ps = ARM_LPAE_TCR_PS_44_BIT;
++		break;
++	case 48:
++		vtcr->ps = ARM_LPAE_TCR_PS_48_BIT;
++		break;
++	case 52:
++		vtcr->ps = ARM_LPAE_TCR_PS_52_BIT;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	vtcr->tsz = 64ULL - cfg->ias;
++	vtcr->sl = ~sl & ARM_LPAE_VTCR_SL0_MASK;
++
++	/* Allocate pgd pages */
++	data->pgd = __arm_lpae_alloc_pages(PAGE_ALIGN(ARM_LPAE_PGD_SIZE(data)),
++					   GFP_KERNEL, cfg, cookie);
++	if (!data->pgd)
++		return -ENOMEM;
++
++	/* Ensure the empty pgd is visible before any actual TTBR write */
++	wmb();
++
++	/* VTTBR */
++	cfg->arm_lpae_s2_cfg.vttbr = __arm_lpae_virt_to_phys(data->pgd);
++	return 0;
++}
++
+ /*
+  * Convert an index returned by ARM_LPAE_PGD_IDX(), which can point into
+  * a concatenated PGD, into the maximum number of entries that can be
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index ca4467ad3c40..dad6964f462a 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -36,34 +36,6 @@ void arm_lpae_split_blk(void)
+ 	WARN_ONCE(true, "Unmap of a partial large IOPTE is not allowed");
+ }
+ 
+-/*
+- * Check if concatenated PGDs are mandatory according to Arm DDI0487 (K.a)
+- * 1) R_DXBSH: For 16KB, and 48-bit input size, use level 1 instead of 0.
+- * 2) R_SRKBC: After de-ciphering the table for PA size and valid initial lookup
+- *   a) 40 bits PA size with 4K: use level 1 instead of level 0 (2 tables for ias = oas)
+- *   b) 40 bits PA size with 16K: use level 2 instead of level 1 (16 tables for ias = oas)
+- *   c) 42 bits PA size with 4K: use level 1 instead of level 0 (8 tables for ias = oas)
+- *   d) 48 bits PA size with 16K: use level 1 instead of level 0 (2 tables for ias = oas)
+- */
+-static inline bool arm_lpae_concat_mandatory(struct io_pgtable_cfg *cfg,
+-					     struct arm_lpae_io_pgtable *data)
+-{
+-	unsigned int ias = cfg->ias;
+-	unsigned int oas = cfg->oas;
+-
+-	/* Covers 1 and 2.d */
+-	if ((ARM_LPAE_GRANULE(data) == SZ_16K) && (data->start_level == 0))
+-		return (oas == 48) || (ias == 48);
+-
+-	/* Covers 2.a and 2.c */
+-	if ((ARM_LPAE_GRANULE(data) == SZ_4K) && (data->start_level == 0))
+-		return (oas == 40) || (oas == 42);
+-
+-	/* Case 2.b */
+-	return (ARM_LPAE_GRANULE(data) == SZ_16K) &&
+-	       (data->start_level == 1) && (oas == 40);
+-}
+-
+ static dma_addr_t __arm_lpae_dma_addr(void *pages)
+ {
+ 	return (dma_addr_t)virt_to_phys(pages);
+@@ -317,80 +289,15 @@ static int arm_lpae_read_and_clear_dirty(struct io_pgtable_ops *ops,
+ 	return __arm_lpae_iopte_walk(data, &walk_data, ptep, lvl);
+ }
+ 
+-static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
+-{
+-	unsigned long granule, page_sizes;
+-	unsigned int max_addr_bits = 48;
+-
+-	/*
+-	 * We need to restrict the supported page sizes to match the
+-	 * translation regime for a particular granule. Aim to match
+-	 * the CPU page size if possible, otherwise prefer smaller sizes.
+-	 * While we're at it, restrict the block sizes to match the
+-	 * chosen granule.
+-	 */
+-	if (cfg->pgsize_bitmap & PAGE_SIZE)
+-		granule = PAGE_SIZE;
+-	else if (cfg->pgsize_bitmap & ~PAGE_MASK)
+-		granule = 1UL << __fls(cfg->pgsize_bitmap & ~PAGE_MASK);
+-	else if (cfg->pgsize_bitmap & PAGE_MASK)
+-		granule = 1UL << __ffs(cfg->pgsize_bitmap & PAGE_MASK);
+-	else
+-		granule = 0;
+-
+-	switch (granule) {
+-	case SZ_4K:
+-		page_sizes = (SZ_4K | SZ_2M | SZ_1G);
+-		break;
+-	case SZ_16K:
+-		page_sizes = (SZ_16K | SZ_32M);
+-		break;
+-	case SZ_64K:
+-		max_addr_bits = 52;
+-		page_sizes = (SZ_64K | SZ_512M);
+-		if (cfg->oas > 48)
+-			page_sizes |= 1ULL << 42; /* 4TB */
+-		break;
+-	default:
+-		page_sizes = 0;
+-	}
+-
+-	cfg->pgsize_bitmap &= page_sizes;
+-	cfg->ias = min(cfg->ias, max_addr_bits);
+-	cfg->oas = min(cfg->oas, max_addr_bits);
+-}
+-
+ static struct arm_lpae_io_pgtable *
+ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
+ {
+ 	struct arm_lpae_io_pgtable *data;
+-	int levels, va_bits, pg_shift;
+-
+-	arm_lpae_restrict_pgsizes(cfg);
+-
+-	if (!(cfg->pgsize_bitmap & (SZ_4K | SZ_16K | SZ_64K)))
+-		return NULL;
+-
+-	if (cfg->ias > ARM_LPAE_MAX_ADDR_BITS)
+-		return NULL;
+-
+-	if (cfg->oas > ARM_LPAE_MAX_ADDR_BITS)
+-		return NULL;
+ 
+ 	data = kmalloc(sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+ 		return NULL;
+ 
+-	pg_shift = __ffs(cfg->pgsize_bitmap);
+-	data->bits_per_level = pg_shift - ilog2(sizeof(arm_lpae_iopte));
+-
+-	va_bits = cfg->ias - pg_shift;
+-	levels = DIV_ROUND_UP(va_bits, data->bits_per_level);
+-	data->start_level = ARM_LPAE_MAX_LEVELS - levels;
+-
+-	/* Calculate the actual size of our pgd (without concatenation) */
+-	data->pgd_bits = va_bits - (data->bits_per_level * (levels - 1));
+-
+ 	data->iop.ops = (struct io_pgtable_ops) {
+ 		.map_pages	= arm_lpae_map_pages,
+ 		.unmap_pages	= arm_lpae_unmap_pages,
+@@ -405,203 +312,31 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
+ static struct io_pgtable *
+ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ {
+-	u64 reg;
+ 	struct arm_lpae_io_pgtable *data;
+-	typeof(&cfg->arm_lpae_s1_cfg.tcr) tcr = &cfg->arm_lpae_s1_cfg.tcr;
+-	bool tg1;
+-
+-	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+-			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
+-			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA |
+-			    IO_PGTABLE_QUIRK_ARM_HD |
+-			    IO_PGTABLE_QUIRK_NO_WARN))
+-		return NULL;
+ 
+ 	data = arm_lpae_alloc_pgtable(cfg);
+ 	if (!data)
+ 		return NULL;
+-
+-	/* TCR */
+-	if (cfg->coherent_walk) {
+-		tcr->sh = ARM_LPAE_TCR_SH_IS;
+-		tcr->irgn = ARM_LPAE_TCR_RGN_WBWA;
+-		tcr->orgn = ARM_LPAE_TCR_RGN_WBWA;
+-		if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_OUTER_WBWA)
+-			goto out_free_data;
+-	} else {
+-		tcr->sh = ARM_LPAE_TCR_SH_OS;
+-		tcr->irgn = ARM_LPAE_TCR_RGN_NC;
+-		if (!(cfg->quirks & IO_PGTABLE_QUIRK_ARM_OUTER_WBWA))
+-			tcr->orgn = ARM_LPAE_TCR_RGN_NC;
+-		else
+-			tcr->orgn = ARM_LPAE_TCR_RGN_WBWA;
+-	}
+-
+-	tg1 = cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1;
+-	switch (ARM_LPAE_GRANULE(data)) {
+-	case SZ_4K:
+-		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_4K : ARM_LPAE_TCR_TG0_4K;
+-		break;
+-	case SZ_16K:
+-		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_16K : ARM_LPAE_TCR_TG0_16K;
+-		break;
+-	case SZ_64K:
+-		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_64K : ARM_LPAE_TCR_TG0_64K;
+-		break;
+-	}
+-
+-	switch (cfg->oas) {
+-	case 32:
+-		tcr->ips = ARM_LPAE_TCR_PS_32_BIT;
+-		break;
+-	case 36:
+-		tcr->ips = ARM_LPAE_TCR_PS_36_BIT;
+-		break;
+-	case 40:
+-		tcr->ips = ARM_LPAE_TCR_PS_40_BIT;
+-		break;
+-	case 42:
+-		tcr->ips = ARM_LPAE_TCR_PS_42_BIT;
+-		break;
+-	case 44:
+-		tcr->ips = ARM_LPAE_TCR_PS_44_BIT;
+-		break;
+-	case 48:
+-		tcr->ips = ARM_LPAE_TCR_PS_48_BIT;
+-		break;
+-	case 52:
+-		tcr->ips = ARM_LPAE_TCR_PS_52_BIT;
+-		break;
+-	default:
+-		goto out_free_data;
++	if (arm_lpae_init_pgtable_s1(cfg, data, cookie)) {
++		kfree(data);
++		return NULL;
+ 	}
+-
+-	tcr->tsz = 64ULL - cfg->ias;
+-
+-	/* MAIRs */
+-	reg = (ARM_LPAE_MAIR_ATTR_NC
+-	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_NC)) |
+-	      (ARM_LPAE_MAIR_ATTR_WBRWA
+-	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_CACHE)) |
+-	      (ARM_LPAE_MAIR_ATTR_DEVICE
+-	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_DEV)) |
+-	      (ARM_LPAE_MAIR_ATTR_INC_OWBRWA
+-	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE));
+-
+-	cfg->arm_lpae_s1_cfg.mair = reg;
+-
+-	/* Looking good; allocate a pgd */
+-	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data),
+-					   GFP_KERNEL, cfg, cookie);
+-	if (!data->pgd)
+-		goto out_free_data;
+-
+-	/* Ensure the empty pgd is visible before any actual TTBR write */
+-	wmb();
+-
+-	/* TTBR */
+-	cfg->arm_lpae_s1_cfg.ttbr = virt_to_phys(data->pgd);
+ 	return &data->iop;
+-
+-out_free_data:
+-	kfree(data);
+-	return NULL;
+ }
+ 
+ static struct io_pgtable *
+ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
+ {
+-	u64 sl;
+ 	struct arm_lpae_io_pgtable *data;
+-	typeof(&cfg->arm_lpae_s2_cfg.vtcr) vtcr = &cfg->arm_lpae_s2_cfg.vtcr;
+-
+-	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_S2FWB |
+-			    IO_PGTABLE_QUIRK_NO_WARN))
+-		return NULL;
+ 
+ 	data = arm_lpae_alloc_pgtable(cfg);
+ 	if (!data)
+ 		return NULL;
+-
+-	if (arm_lpae_concat_mandatory(cfg, data)) {
+-		if (WARN_ON((ARM_LPAE_PGD_SIZE(data) / sizeof(arm_lpae_iopte)) >
+-			    ARM_LPAE_S2_MAX_CONCAT_PAGES))
+-			return NULL;
+-		data->pgd_bits += data->bits_per_level;
+-		data->start_level++;
+-	}
+-
+-	/* VTCR */
+-	if (cfg->coherent_walk) {
+-		vtcr->sh = ARM_LPAE_TCR_SH_IS;
+-		vtcr->irgn = ARM_LPAE_TCR_RGN_WBWA;
+-		vtcr->orgn = ARM_LPAE_TCR_RGN_WBWA;
+-	} else {
+-		vtcr->sh = ARM_LPAE_TCR_SH_OS;
+-		vtcr->irgn = ARM_LPAE_TCR_RGN_NC;
+-		vtcr->orgn = ARM_LPAE_TCR_RGN_NC;
+-	}
+-
+-	sl = data->start_level;
+-
+-	switch (ARM_LPAE_GRANULE(data)) {
+-	case SZ_4K:
+-		vtcr->tg = ARM_LPAE_TCR_TG0_4K;
+-		sl++; /* SL0 format is different for 4K granule size */
+-		break;
+-	case SZ_16K:
+-		vtcr->tg = ARM_LPAE_TCR_TG0_16K;
+-		break;
+-	case SZ_64K:
+-		vtcr->tg = ARM_LPAE_TCR_TG0_64K;
+-		break;
+-	}
+-
+-	switch (cfg->oas) {
+-	case 32:
+-		vtcr->ps = ARM_LPAE_TCR_PS_32_BIT;
+-		break;
+-	case 36:
+-		vtcr->ps = ARM_LPAE_TCR_PS_36_BIT;
+-		break;
+-	case 40:
+-		vtcr->ps = ARM_LPAE_TCR_PS_40_BIT;
+-		break;
+-	case 42:
+-		vtcr->ps = ARM_LPAE_TCR_PS_42_BIT;
+-		break;
+-	case 44:
+-		vtcr->ps = ARM_LPAE_TCR_PS_44_BIT;
+-		break;
+-	case 48:
+-		vtcr->ps = ARM_LPAE_TCR_PS_48_BIT;
+-		break;
+-	case 52:
+-		vtcr->ps = ARM_LPAE_TCR_PS_52_BIT;
+-		break;
+-	default:
+-		goto out_free_data;
++	if (arm_lpae_init_pgtable_s2(cfg, data, cookie)) {
++		kfree(data);
++		return NULL;
+ 	}
+-
+-	vtcr->tsz = 64ULL - cfg->ias;
+-	vtcr->sl = ~sl & ARM_LPAE_VTCR_SL0_MASK;
+-
+-	/* Allocate pgd pages */
+-	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data),
+-					   GFP_KERNEL, cfg, cookie);
+-	if (!data->pgd)
+-		goto out_free_data;
+-
+-	/* Ensure the empty pgd is visible before any actual TTBR write */
+-	wmb();
+-
+-	/* VTTBR */
+-	cfg->arm_lpae_s2_cfg.vttbr = virt_to_phys(data->pgd);
+ 	return &data->iop;
+-
+-out_free_data:
+-	kfree(data);
+-	return NULL;
+ }
+ 
+ static struct io_pgtable *
+@@ -642,6 +377,9 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
+ 	if (!data)
+ 		return NULL;
+ 
++	if (arm_lpae_init_pgtable(cfg, data))
++		goto out_free_data;
++
+ 	/* Mali seems to need a full 4-level table regardless of IAS */
+ 	if (data->start_level > 0) {
+ 		data->start_level = 0;
+diff --git a/drivers/iommu/io-pgtable-arm.h b/drivers/iommu/io-pgtable-arm.h
+index c3a3b4fd44c3..2807cf563f11 100644
+--- a/drivers/iommu/io-pgtable-arm.h
++++ b/drivers/iommu/io-pgtable-arm.h
+@@ -230,4 +230,12 @@ void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
+ void __arm_lpae_free_pgtable(struct arm_lpae_io_pgtable *data, int lvl,
+ 			     arm_lpae_iopte *ptep);
+ void arm_lpae_split_blk(void);
++int arm_lpae_init_pgtable(struct io_pgtable_cfg *cfg,
++			  struct arm_lpae_io_pgtable *data);
++int arm_lpae_init_pgtable_s1(struct io_pgtable_cfg *cfg,
++			     struct arm_lpae_io_pgtable *data,
++			     void *cookie);
++int arm_lpae_init_pgtable_s2(struct io_pgtable_cfg *cfg,
++			     struct arm_lpae_io_pgtable *data,
++			     void *cookie);
+ #endif /* IO_PGTABLE_H_ */
+\ No newline at end of file
 -- 
 2.50.1.552.g942d659e1b-goog
 
