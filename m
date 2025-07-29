@@ -1,26 +1,27 @@
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B59126B09A
-	for <iommu@lists.linux.dev>; Tue, 29 Jul 2025 07:52:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D437326B946
+	for <iommu@lists.linux.dev>; Tue, 29 Jul 2025 07:52:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753775537; cv=none; b=ribA/2QE5ieLEnIEd3sxDbq/TdgLE7uzPUYe+o9hxczw4lKKHVJAtwg0QVjtqjiT3KgtDDBjzAyDvNsqkJPjg+KLe3DATQtDt5ok0VODwfrZ+qu/7Y7p1w/8TNsq3jXCZon59NM1+Bngn5gmT1ALZUxBMoO8JX1wdmQTAZ1LG8A=
+	t=1753775556; cv=none; b=p733VxzbuJWUUb2pA1yY4IduWAaC/cuMdwIOX6Sn5oe5ppXQnEo2htVZ52G/7DUUZy+2XMvBfht+kNq/gCoVcip0NZ8fOS6kvYuWPDWnVAFARh8bE3S80wC7+NT6UXEuibDH8HDYdTQhRo9uxNZrqH27trJF1Of/7Mt5h67lfO8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753775537; c=relaxed/simple;
-	bh=qTxjpdw/DHeS/OfkN0sZot0E4aCxepXfaejZYDj9sC4=;
+	s=arc-20240116; t=1753775556; c=relaxed/simple;
+	bh=dwPGGRPZlcgcpxdt3wtbJj8qCueXtKv9Ub/aK1H1gCM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=t3DW3wJEjfEsGPkOXWczLDUIncBAmwFqk7UF3s1VtnqKjJ6sjBftYC8RmN1NuPifFqOXZvnyd/qMITWqQwXSK65ZHEHyn6AXmALGGNFmP3dhxQe2ilfIfuvj/kd9Jh/Fg5Ev93Y6bHzUVbwfCRIPHEuR+qQjXJVkakw3mS/SCFo=
+	 Content-Type:Content-Disposition:In-Reply-To; b=Jyvsd8TfS+JnDgjj6Q9660MH9wrtqfOhYQVXPUiUvy0j/xeL/nYcFhIYYWnV8AerhrDGlH+AHTHpKYUAu+j4g/SbucDOmPr2ZyjJE0avXnxOMb7jQeZuGi0CESc+q0/5IvrCYOT0CXJkxMTXes/4L9gNJ4ytTiAPD7guEjfRgFw=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id 5B85168BFE; Tue, 29 Jul 2025 09:52:09 +0200 (CEST)
-Date: Tue, 29 Jul 2025 09:52:09 +0200
+	id A57DF68BFE; Tue, 29 Jul 2025 09:52:30 +0200 (CEST)
+Date: Tue, 29 Jul 2025 09:52:30 +0200
 From: Christoph Hellwig <hch@lst.de>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leon@kernel.org>,
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>,
 	Alex Williamson <alex.williamson@redhat.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	Bjorn Helgaas <bhelgaas@google.com>,
 	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
@@ -37,10 +38,9 @@ Cc: Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leon@kernel.org>,
 	Sumit Semwal <sumit.semwal@linaro.org>,
 	Vivek Kasireddy <vivek.kasireddy@intel.com>,
 	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 02/10] PCI/P2PDMA: Introduce p2pdma_provider structure
- for cleaner abstraction
-Message-ID: <20250729075209.GA23823@lst.de>
-References: <cover.1753274085.git.leonro@nvidia.com> <c2307cb4c3f1af46da138f3410738754691fbb3d.1753274085.git.leonro@nvidia.com> <20250724075145.GB30590@lst.de> <20250724075533.GR402218@unreal> <20250724075922.GD30590@lst.de> <20250727185158.GE7551@nvidia.com>
+Subject: Re: [PATCH 05/10] PCI/P2PDMA: Export pci_p2pdma_map_type() function
+Message-ID: <20250729075230.GB23823@lst.de>
+References: <cover.1753274085.git.leonro@nvidia.com> <82e62eb59afcd39b68ae143573d5ed113a92344e.1753274085.git.leonro@nvidia.com> <20250724080313.GA31887@lst.de> <20250724081321.GT402218@unreal>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,28 +49,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250727185158.GE7551@nvidia.com>
+In-Reply-To: <20250724081321.GT402218@unreal>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Sun, Jul 27, 2025 at 03:51:58PM -0300, Jason Gunthorpe wrote:
-> On Thu, Jul 24, 2025 at 09:59:22AM +0200, Christoph Hellwig wrote:
-> > On Thu, Jul 24, 2025 at 10:55:33AM +0300, Leon Romanovsky wrote:
-> > > Please, see last patch in the series https://lore.kernel.org/all/aea452cc27ca9e5169f7279d7b524190c39e7260.1753274085.git.leonro@nvidia.com
-> > > It gives me a way to call p2p code with stable pointer for whole BAR.
+On Thu, Jul 24, 2025 at 11:13:21AM +0300, Leon Romanovsky wrote:
+> On Thu, Jul 24, 2025 at 10:03:13AM +0200, Christoph Hellwig wrote:
+> > On Wed, Jul 23, 2025 at 04:00:06PM +0300, Leon Romanovsky wrote:
+> > > From: Leon Romanovsky <leonro@nvidia.com>
 > > > 
+> > > Export the pci_p2pdma_map_type() function to allow external modules
+> > > and subsystems to determine the appropriate mapping type for P2PDMA
+> > > transfers between a provider and target device.
 > > 
-> > That simply can't work.
+> > External modules have no business doing this.
 > 
-> Why not?
-> 
-> That's the whole point of this, to remove struct page and use
-> something else as a handle for the p2p when doing the DMA API stuff.
+> VFIO PCI code is built as module. There is no way to access PCI p2p code
+> without exporting functions in it.
 
-Because the struct page is the only thing that:
-
- a) dma-mapping works on
- b) is the only place we can discover the routing information, but also
-    more importantly ensure that the underlying page is still present
-    and the device is not hot unplugged, or in a very theoretical worst
-    case replaced by something else.
+We never ever export anything for "external" modules, and you really
+should know that.
 
