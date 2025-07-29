@@ -1,77 +1,46 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAE2A2777E4
-	for <iommu@lists.linux.dev>; Tue, 29 Jul 2025 09:55:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC4CD1799F
+	for <iommu@lists.linux.dev>; Tue, 29 Jul 2025 10:41:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753782961; cv=none; b=IoD3ECaEr/FBXNePs0PpWYlEC/4q1olNJGnMnNlZOO7TpFX+36qv4gXT0Lub1WG8jVhiPmhLWqlY/FYp9osr5hrTU4YGI3j8YGn8fvahkjSn9Zo1CoRCcQISCKDjHLfNdPCqyf2T1YUkcPCuDBxEo2HQaSBNKtwL1vpB2p7vSiE=
+	t=1753785668; cv=none; b=r943OlqJwtSgCdX/v7BlntsSavM4lEaNx47D4n7BzZwNJIJrp2WYuVbHOqYYofz/CPr0Tc/STSJQABXi04gF0KcA/o84pnb/iDp3ZDhLBcXMLEuDmGpHG9bTcmXaCpM6NwZut3qxUknAZw/x16zIx+MAxTeUsfSPuIyJXUqfrTA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753782961; c=relaxed/simple;
-	bh=6J6O8lIPO8lPF6L2zLsyMC1bVxdBOnAwKLyRubhILW0=;
+	s=arc-20240116; t=1753785668; c=relaxed/simple;
+	bh=hB810dymkUE8vn2hoLlDxLRpBGl/LHNWTNB6ohp4T7o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nFzlSbUWqXFUtJKA2+qwCTjpeTO3o4fraErm27+rAhe2KHUMe+ZS1YXslf2bY+58+fb0/RLFFCRa3DBszYqeGGT4oCTbFced9dyMecaDvURvVrSwkKsahwMnPE8cbim4SJbAW9tVWuBPtNtAnuZcO1PabQmHRfulu3eZDLf9H1E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=w+nCUqu6; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="w+nCUqu6"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4561b43de62so71335e9.0
-        for <iommu@lists.linux.dev>; Tue, 29 Jul 2025 02:55:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1753782958; x=1754387758; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=y8BeCJxT0E9y6LqcrNbSOsYh4JRswSE7zt76fN7xljQ=;
-        b=w+nCUqu65Xxil6Ie+zqAw63dPVK5bf/4sEjm8SpBrZB6L2KH2weJtSKKwHnS5cYHJQ
-         jUl8ytAWD1ISlirnsRMDKnPeVsTQkz6GsGEAP6VR6gu+gocXsQGbnFHTzxXw5uvGk3n7
-         EjekMhEBL42wHJLiuk1jdSNu4SmdIp8rjmRZOcJy3raxiCwqXdn8kgPUyz63j07i23Hq
-         XJJZjdhLyH7GmvHDqKCUIgu8HHOEOAZDGfn4CUOa7bjNqS6nuIef0dBcYTzd/EQyulh5
-         eeoCCWSk34mSb7CSExZj5X2Ldc1Dz7Z0EBZcBeLWnI1UpjGa5elNLCR8VAYT2LRKco/e
-         +yww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753782958; x=1754387758;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=y8BeCJxT0E9y6LqcrNbSOsYh4JRswSE7zt76fN7xljQ=;
-        b=fNUyWvnzTvqFCn6mBW1SgkWS1oV/hFV1diC/imWsAFrdgc2BKa+cIM59LzwW9aNZUE
-         sG/jEJPOq3dfldA2OC+7jTELFZjaPgJE2CCSPpmP5WgxcX6ghIw4ZDaFM3utKwOXVE/5
-         O9c22SCI7eKtZuunpOC8AQjjaKrPm14QcPPAsT1VFNzhuYMkqo7dy7Yz0rUz9nkkoN6/
-         oXgxjgPvq85R6oyDje3PQf2hh12FZGts/XEdAf8eZK3P9O6iFjKUMJlKltregnkQIzxE
-         +7Ec/fsLZkNVmEEKx/IwQdFaMEW7cVl9BmQ5qYRRSJNNahZOoagIrrUY4xcm4I5VrJad
-         af9A==
-X-Forwarded-Encrypted: i=1; AJvYcCUas4HNz+LRA7NwuDs5a7r+wGUIpoGw3lwC65Prt7o6u6FKrVkmxjHvVpEvOJ5gUVpokbCgXg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz8LSWDwECIVE6Ef2emvkL2qeEyN7UhiQ1PZrK7czDlTpnykFtj
-	fZ1zQtoFrMS1a6MyjH3GDYtwIguLfjfNe+ncm3/sDqvk5M2TLK4WMjyV5Tbc+Dw6zA==
-X-Gm-Gg: ASbGncsRChVR7Tpykv2TnFI0057Ibh3xfzu3RMm4qcVX0DK1gMnLKujIfzKKKdfbZTt
-	JWpWWioHuvIvWxYIjyrzU68F46L1HAvCcHsjip9Rf3NS8zrYf5VOcPaGQVwByrXoc1CFCu0NguZ
-	99CiSI/2slejo9WGRJ5vKStQyiGY3E7cepN35Rxm45fnhRevXxhASKNIgT1ZNuGKTQ9sFRqYARB
-	1S8uVhND5MVvdNLkFbKCwR8PQtYgyKbAVyYHw4mxoa6O6M9pdVF93rlnCg8LhWxCS78EwwPaLm8
-	jBa4pi82r8WKFGznUBLzvHY0vdi8XfG48NKEkVA19EyOBwZFiylAQ3xxH2hJQdRrGgwqSQxnRdC
-	LhGeXIaxZ6wNVQQf6xLBHmWi0t4WxXG9mtKFrdigQYkvAHuRLXLK1aFruJkiV
-X-Google-Smtp-Source: AGHT+IGzES6hqfjR1ngn6YMh6m2QMnuLZqGDQbq8stqciYuYMIFTwvOmpG+4EtUrCFw2V/nQTG/heg==
-X-Received: by 2002:a05:600d:17:b0:453:6133:2e96 with SMTP id 5b1f17b1804b1-4588d58f585mr1058175e9.0.1753782957791;
-        Tue, 29 Jul 2025 02:55:57 -0700 (PDT)
-Received: from google.com (232.38.195.35.bc.googleusercontent.com. [35.195.38.232])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4588e33f8a2sm19702345e9.0.2025.07.29.02.55.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 29 Jul 2025 02:55:57 -0700 (PDT)
-Date: Tue, 29 Jul 2025 09:55:53 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, will@kernel.org, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	jgg@ziepe.ca, mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v3 20/29] iommu/arm-smmu-v3-kvm: Setup command queue
-Message-ID: <aIiaqSVtSpX7hr8i@google.com>
-References: <20250728175316.3706196-1-smostafa@google.com>
- <20250728175316.3706196-21-smostafa@google.com>
- <c8da60f6-4083-4aac-b921-d57b767fa895@kernel.org>
+	 Content-Type:Content-Disposition:In-Reply-To; b=Il3At8ediF8Z5RtjmNUQ5ZWkTU4eOiOQNHEFy2sSTSr0Uv+AY/4snvU31+83FuaM1cgGRZgAuMokBvzuG9+Lw6O4T3rL11oTAFCnRICk2WkOrbymVPATj5Xqw7uv+pP7H3PmTly2M0URx+g6JNK4EoOBqpa3gyGcp7VAMF5cRvc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id DDC6668AFE; Tue, 29 Jul 2025 12:41:00 +0200 (CEST)
+Date: Tue, 29 Jul 2025 12:41:00 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Jason Gunthorpe <jgg@nvidia.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+	Jens Axboe <axboe@kernel.dk>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+	linux-mm@kvack.org, linux-pci@vger.kernel.org,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH 02/10] PCI/P2PDMA: Introduce p2pdma_provider structure
+ for cleaner abstraction
+Message-ID: <20250729104100.GA29053@lst.de>
+References: <cover.1753274085.git.leonro@nvidia.com> <c2307cb4c3f1af46da138f3410738754691fbb3d.1753274085.git.leonro@nvidia.com> <20250724075145.GB30590@lst.de> <20250724075533.GR402218@unreal> <20250724075922.GD30590@lst.de> <20250727185158.GE7551@nvidia.com> <20250729075209.GA23823@lst.de> <20250729085336.GG402218@unreal>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,26 +49,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c8da60f6-4083-4aac-b921-d57b767fa895@kernel.org>
+In-Reply-To: <20250729085336.GG402218@unreal>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Tue, Jul 29, 2025 at 08:44:03AM +0200, Krzysztof Kozlowski wrote:
-> On 28/07/2025 19:53, Mostafa Saleh wrote:
-> > Map the command queue allocated by the host into the hypervisor address
-> > space. When the host mappings are finalized, the queue is unmapped from
-> > the host.
+On Tue, Jul 29, 2025 at 11:53:36AM +0300, Leon Romanovsky wrote:
+> > Because the struct page is the only thing that:
 > > 
-> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> >  a) dma-mapping works on
+> >  b) is the only place we can discover the routing information, but also
+> >     more importantly ensure that the underlying page is still present
+> >     and the device is not hot unplugged, or in a very theoretical worst
+> >     case replaced by something else.
 > 
-> 
-> Your SoB must be the last one.
+> It is correct in general case, but here we are talking about MMIO
+> memory, which is "connected" to device X and routing information is
+> stable.
 
-I see, thanks for pointing it out.
+MMIO is literally the only thing we support to P2P to/from as that is
+how PCIe P2P is defined.  And not, it's not stable - devices can be
+unplugged, and BARs can be reenumerated.
 
-Thanks,
-Mostafa
-
-> 
-> 
-> Best regards,
-> Krzysztof
