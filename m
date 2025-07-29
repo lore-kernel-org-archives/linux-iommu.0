@@ -1,111 +1,166 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E104825DB1A;
-	Tue, 29 Jul 2025 06:44:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2625D25F97E
+	for <iommu@lists.linux.dev>; Tue, 29 Jul 2025 06:49:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753771450; cv=none; b=UgbgK54B/pl3yg03tUB6dtUiq9DLWMtWYBOkm4tNrWH4Gs+Qt+9drgEcujy0OEu1SwXcssDYUIb5xV8uOdR5AHf98hLlWYIAA1iU5JTOGNfSoH5JqicJsODLI+Cyt4TituPxGCM5v/icRe/tdEsuNhWZPYMdcdaWSbI4Eij7YjQ=
+	t=1753771797; cv=none; b=QcVXZx1VU/pzT04ke/vcrD2SoW7+1cYnEMbD6F0Hzzm5vPdIuAvgqUEu2EWBOjcPqu6UBhORha9bYOoACERj1DCON4jUOvldQq21z0uxZXBVeXpSXEMBa+hqfHncyWOGA7v9u2rGllTzZ4g66nmgI2ZcUJg9TfDbrtfhBRZ1nT8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753771450; c=relaxed/simple;
-	bh=i9ZlhH1fBGslVYkM5Xm9/MatOljq163+hNGBccJSA2s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sG5cWyK/LeYp6g3iLWR2+e8fCfyU2KhFMryRrGVT/yBj1+VSypfpef8CvEqAsOfw3naeXwu3ErOm5u1r5P9hVTNTn8QpcGAzjBXzCTjALD6VFGTPF7DhBkgVdsPj4GJ6W4vHhvJsjGpKx94ib3X+LbRfgkvezCwIv8U++dBRB6Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aNnkBUsx; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1753771797; c=relaxed/simple;
+	bh=EOhJI4XE7EmddrlB9TelXwBH+e7RrRI3HJn7pIRR/rk=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=XEy6zIEYTGPDFjTSkhQIG6u2yG/0cpGAEwKKPu6YzQZXCCQJBrimItcJ0DDSlOvUj2njsk6BRAHhOCDfXJ/wv6W0WujyOaPVxXC1Nb6BYBgtxUrmY6LchoGMLCpMEZ/hk0ohdwELcqDtMzgFzxiVWICzXFOmxUnR02cJaZB0u5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com; spf=pass smtp.mailfrom=fairphone.com; dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b=ehibNYNj; arc=none smtp.client-ip=209.85.208.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=fairphone.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fairphone.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aNnkBUsx"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 464B1C4CEEF;
-	Tue, 29 Jul 2025 06:44:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1753771449;
-	bh=i9ZlhH1fBGslVYkM5Xm9/MatOljq163+hNGBccJSA2s=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=aNnkBUsxHrrC4jQ3xtGVMJ0PnkXXUrKnp6KG5e6T4/Jguv+pnMXnKk6joSjeb3iuz
-	 Bpw0QfHuqjQLeJCgDpUC8MJr94FXlNhqo/oE6CWuiVlT79OJVJE5FpuIjilCq0CGPb
-	 PU/tNtW49eTNPHH8HGy/LpZ2wyyWKW6H22K37U1ZeCw5KJCkm46X1xJfDSJ6qbv4IZ
-	 CMoTL87gFpkWbcdpPbajrrNcCU+/z8RRrcAWCILoaxUL72bKixIjv9ar1mHeex1X3v
-	 KaDFTYOiszVTkWKYNsv5VquiyXpHRnLZzcMtnCt5UzvwDbq9iCTHgxd3i82Ex3jDbn
-	 nKjCHu0is9LbQ==
-Message-ID: <c8da60f6-4083-4aac-b921-d57b767fa895@kernel.org>
-Date: Tue, 29 Jul 2025 08:44:03 +0200
+	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b="ehibNYNj"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-61553a028dfso1826135a12.0
+        for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 23:49:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fairphone.com; s=fair; t=1753771792; x=1754376592; darn=lists.linux.dev;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=0tvO0qmfUNC2jqa8M7kzzmnccGVoia4ygdONyDNCxVc=;
+        b=ehibNYNjSPCakBXdWTzIiEaoL5OMbnOPtc2tFXrTvjVqqPy34K+t08wdcb7vY/ufIM
+         kFqZq2puvUSnPP/GXkKnlX5rb5m09WYf2eHShkhuK/ZZ/5K98vYpkKu2CZUH9kjQwjQn
+         NUc+4fA3/tsaTOd7HdSlmMOYVyL6nTSxeTK/diSkFlE8OndjPe5M/ciPQi681R89/TuD
+         okDuS7ATMUHk/yay8tooL6hLuGZWmatm0DKt+hfTeIlLGAqIWgfXZTJq0Q1NXf71gioq
+         AYdXbfkRLTltO5NPr+XHe+FAWqShbn7p2hhFgwlxy7gQmO6B5L+HCOykcka10cLAVkAV
+         i95g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1753771792; x=1754376592;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=0tvO0qmfUNC2jqa8M7kzzmnccGVoia4ygdONyDNCxVc=;
+        b=u3CuSXQtEzpxHQ/OCfOBqXGjEe75KXe1gi/swS+ft+pMyJtSyxZwxH3URD4BR2NMPP
+         yg+cXc6hPPZ5En8+7D0/33Sw8fsvFYL5E3u1yeneevom02HUOiBw9Wb83QRGp/yadjG+
+         1F1W1Vu+z57tpsDMFFKf4Gg/G30maK8tidqigOfUzww49KAS5Xfhe0QJWtjvGPOvURqW
+         x2a3wAfVMnGyDErlkO5bKMxMF+fLDETRjEgloUT64kvLshVkaz8d+NXK7wJQw/rVFNQR
+         3VD1P8Swvf3HITpMRuWtdmifXlyZE+sahcUPbHSqzScKZtpF7JO1rvsQODIzHBzEUwGP
+         VyDQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW9LIo0j79O9no/qTkEbrmQ8Lr0xSDyNCbRi823iNCQMGxmvRKYiDUBmBsDRsaazJwqRYjWEg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyVAGBuYzgD3kQq4AeXLXTyVII0FIpPJ1a2xuObf0Qf22a5sQLQ
+	fB0GRnBISb9cs+JSx+ufVJMWS0YCxw/BEaxrq+JH37bDHHmBOk4QSIc+G/LAoKCGnRw=
+X-Gm-Gg: ASbGncu4KfmYnshL/xC1DhLBTANAI8CaBCY74ikTO1p8zdM0483J0KD23MRpVus6TVr
+	Eu0qIlwiYeAscxc14/ngAYNQhMOSo7nTG+a9bQZ8ePMIWSAp9xsUBPra0LfneTmL1d7jO6p05d7
+	kHRuBHyoDyHdmUtxAZ43OuooS34gg9ygqRm+S0kRRvoA8L9s737wd2rCXUvVoAHuEpZEHVtPSZW
+	4/u7mYmCh7TKVPeLldY1XyRFKiEXf+shGZ//55ZQsRLp2grGyVavM9plxl0LoHzOPLgWTm8Bsj1
+	eNCxZccGW//ha+9DZYDyog+ZHGVuTrE96E71OAoBUi8r55gysKeWYgsc8AaJMk1Xzhd+XsNVGir
+	SK2qZaCg/Q2lJnORmudG5lDdKe8s7GHDWHMtaevRwaYSyfBDRNu+nH92tx2lU2KykLCg=
+X-Google-Smtp-Source: AGHT+IFY1cXRHhDZKmmaOPFoMzRlis7auiB0SY6wze0NFezD/noiXwvsAjKX3xVSDeubNvW/ghlrqg==
+X-Received: by 2002:a17:907:868c:b0:ae0:da16:f550 with SMTP id a640c23a62f3a-af619d062b6mr1776275666b.49.1753771792232;
+        Mon, 28 Jul 2025 23:49:52 -0700 (PDT)
+Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-af6358600b1sm546209366b.7.2025.07.28.23.49.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Jul 2025 23:49:51 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 20/29] iommu/arm-smmu-v3-kvm: Setup command queue
-To: Mostafa Saleh <smostafa@google.com>, linux-kernel@vger.kernel.org,
- kvmarm@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-Cc: maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
- suzuki.poulose@arm.com, yuzenghui@huawei.com, catalin.marinas@arm.com,
- will@kernel.org, robin.murphy@arm.com, jean-philippe@linaro.org,
- qperret@google.com, tabba@google.com, jgg@ziepe.ca, mark.rutland@arm.com,
- praan@google.com
-References: <20250728175316.3706196-1-smostafa@google.com>
- <20250728175316.3706196-21-smostafa@google.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20250728175316.3706196-21-smostafa@google.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Date: Tue, 29 Jul 2025 08:49:50 +0200
+Message-Id: <DBOC7QBND54K.1SI5V9C2Z76BY@fairphone.com>
+Cc: <~postmarketos/upstreaming@lists.sr.ht>, <phone-devel@vger.kernel.org>,
+ <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <linux-pm@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+ <linux-crypto@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+ <linux-mmc@vger.kernel.org>
+Subject: Re: [PATCH v2 14/15] arm64: dts: qcom: Add initial Milos dtsi
+From: "Luca Weiss" <luca.weiss@fairphone.com>
+To: "Luca Weiss" <luca.weiss@fairphone.com>, "Konrad Dybcio"
+ <konrad.dybcio@oss.qualcomm.com>, "Will Deacon" <will@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>, "Joerg Roedel" <joro@8bytes.org>, "Rob
+ Herring" <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>,
+ "Conor Dooley" <conor+dt@kernel.org>, "Rafael J. Wysocki"
+ <rafael@kernel.org>, "Viresh Kumar" <viresh.kumar@linaro.org>, "Manivannan
+ Sadhasivam" <mani@kernel.org>, "Herbert Xu" <herbert@gondor.apana.org.au>,
+ "David S. Miller" <davem@davemloft.net>, "Vinod Koul" <vkoul@kernel.org>,
+ "Bjorn Andersson" <andersson@kernel.org>, "Konrad Dybcio"
+ <konradybcio@kernel.org>, "Robert Marko" <robimarko@gmail.com>, "Das
+ Srinagesh" <quic_gurus@quicinc.com>, "Thomas Gleixner"
+ <tglx@linutronix.de>, "Jassi Brar" <jassisinghbrar@gmail.com>, "Amit
+ Kucheria" <amitk@kernel.org>, "Thara Gopinath" <thara.gopinath@gmail.com>,
+ "Daniel Lezcano" <daniel.lezcano@linaro.org>, "Zhang Rui"
+ <rui.zhang@intel.com>, "Lukasz Luba" <lukasz.luba@arm.com>, "Ulf Hansson"
+ <ulf.hansson@linaro.org>
+X-Mailer: aerc 0.20.1-0-g2ecb8770224a-dirty
+References: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
+ <20250713-sm7635-fp6-initial-v2-14-e8f9a789505b@fairphone.com>
+ <3e0299ad-766a-4876-912e-438fe2cc856d@oss.qualcomm.com>
+ <DBE6TK1KDOTP.IIT72I1LUN5M@fairphone.com>
+ <DBE8G88CIQ53.2N51CABIBJOOO@fairphone.com>
+In-Reply-To: <DBE8G88CIQ53.2N51CABIBJOOO@fairphone.com>
 
-On 28/07/2025 19:53, Mostafa Saleh wrote:
-> Map the command queue allocated by the host into the hypervisor address
-> space. When the host mappings are finalized, the queue is unmapped from
-> the host.
-> 
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Hi Konrad,
 
+On Thu Jul 17, 2025 at 11:46 AM CEST, Luca Weiss wrote:
+> Hi Konrad,
+>
+> On Thu Jul 17, 2025 at 10:29 AM CEST, Luca Weiss wrote:
+>> On Mon Jul 14, 2025 at 1:06 PM CEST, Konrad Dybcio wrote:
+>>> On 7/13/25 10:05 AM, Luca Weiss wrote:
+>>>> Add a devicetree description for the Milos SoC, which is for example
+>>>> Snapdragon 7s Gen 3 (SM7635).
+>>>>=20
+>>>> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+>>>> ---
+>>>
+>>> [...]
+>>>> +
+>>>> +		spmi_bus: spmi@c400000 {
+>>>> +			compatible =3D "qcom,spmi-pmic-arb";
+>>>
+>>> There's two bus instances on this platform, check out the x1e binding
+>>
+>> Will do
+>
+> One problem: If we make the labels spmi_bus0 and spmi_bus1 then we can't
+> reuse the existing PMIC dtsi files since they all reference &spmi_bus.
+>
+> On FP6 everything's connected to PMIC_SPMI0_*, and PMIC_SPMI1_* is not
+> connected to anything so just adding the label spmi_bus on spmi_bus0
+> would be fine.
+>
+> Can I add this to the device dts? Not going to be pretty though...
+>
+> diff --git a/arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts b/arch/arm6=
+4/boot/dts/qcom/milos-fairphone-fp6.dts
+> index d12eaa585b31..69605c9ed344 100644
+> --- a/arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts
+> +++ b/arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts
+> @@ -11,6 +11,9 @@
+>  #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+>  #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+>  #include "milos.dtsi"
+> +
+> +spmi_bus: &spmi_bus0 {};
+> +
+>  #include "pm7550.dtsi"
+>  #include "pm8550vs.dtsi"
+>  #include "pmiv0104.dtsi" /* PMIV0108 */
+>
+> Or I can add a second label for the spmi_bus0 as 'spmi_bus'. Not sure
+> other designs than SM7635 recommend using spmi_bus1 for some stuff.
+>
+> But I guess longer term we'd need to figure out a solution to this, how
+> to place a PMIC on a given SPMI bus, if reference designs start to
+> recommend putting different PMIC on the separate busses.
 
-Your SoB must be the last one.
+Any feedback on this regarding the spmi_bus label?
 
+Regards
+Luca
 
-Best regards,
-Krzysztof
+>
+> Regards
+> Luca
+
