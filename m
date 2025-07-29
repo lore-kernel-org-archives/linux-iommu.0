@@ -1,250 +1,135 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2082.outbound.protection.outlook.com [40.107.223.82])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 582741A76DE
-	for <iommu@lists.linux.dev>; Mon, 28 Jul 2025 23:11:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.82
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753744275; cv=fail; b=GH967UbX/KDkesqLmrCdKHJgY4dCXXEioWnv2lzHy33wKuNUTUcwgxMQ514WjmvOzSBtsIdDb8FJz5o+UH/6zuCocllOvcEetsZtsuUxHborl3neShqh200a8QhBBKUqVvDtjzuCDRvh8ctX4NiLCvSJJl3K7HTRli5lIcdob/w=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753744275; c=relaxed/simple;
-	bh=CVM3nrWvd5xtvpojTcHIuD/mzlaA0KfnLRRdtq5P8Po=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=qfpFAXMrTNIKs4yg5i5OgP7y9EBsBdr/+aAwordijh1xxkH+tZoljQyA625cmu5EgTZU6J/vFql+8Ro9HYyT6bv/CZ5nOBuiaaDxD+K8d+EB1+cnWGQBeLJH9VEW+4WIm+/rgPBXMKgAyfyMcWp03QMf1qAAYgTGtCRaSSDYN0M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=OrfHBCK2; arc=fail smtp.client-ip=40.107.223.82
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3228286A9
+	for <iommu@lists.linux.dev>; Tue, 29 Jul 2025 02:11:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1753755074; cv=none; b=YCmtI5Ep/sMOTEn+daVf8oOszZulqg5GFOKpwFryAuJGTPII+0tHmdW8pruYyajHg8Xn7y8O11WEwR4aFZkCYZBvJWewO0hAcLl9d5/8JN424M70fM1a7COUmdE4UBJR/qJslMgjmdLT/UhkELk5WmLbHYRfl/llvhCIH94Tz1k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1753755074; c=relaxed/simple;
+	bh=zC0nRcR6cty3AjQe02kjM9LHjo84K3+8o1Zpfqdf6SM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=T2KVX5fY69nhXFrQ38SEXY4ajmOvN7hdp2uPONYRvwsEZnmwKwHB42Qeqw4PbYoVx68Mt2sndHMZmVXP3q0h7bM7Dxb9tAt6vcJPNkkwS8g+Ht2CJHuflBER5F7BxSSghjhZXH6d48WCsEVYsRYzk1GkIMqttn0htO5N4qTP+NE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=msgBhzu6; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="OrfHBCK2"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=czOuQgNXe6/6Tr29oO7jOIef1kP/XKwulX6mWK7aMkctkerguJ2m4XJQ5ep042qb5i+hgr+/VvwjzkRAVCZNrRmAQadcv38u0yldC39u2W9fw1jCsq003VA3TXxedSYg8QGBPX2nP8FPvb/0aH/pkbDN/+WkppSSJnO5UzXJkN+RIJbJD0rA/pa59YWMXLbKnllOWruGVlESBaGBBGEOWW7+dTPPBEsmgQcFuw1TbpG3xCSF0A1TkztMheUphMoWV4ZgJL/FXv2Gi4UB4G0JP7mOY203wJRKc6lUH3xRS5EhQdsfNKWB4BTo8Bm6qxd+LTVpC0VjeoGb4Y1T8mMqrg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=m52sxFj78e0QN5ExokcDQPmMw1vKoylYLwKN85lhdko=;
- b=Syv9CIGqKXrVzYml2QErhEVN70odYVRoHDAQ7SdkE7bYf0OjxmCbleimc3oPaRCoK0RJdTMntQgUBzD7Ccr5dtPIfctNSpgZkXMGsMXhS6FWuJFoJRkbRxWfrA7JkyrtBJkL1gqErery16/Nh+Tq7md7npJRvf1ARi/qaGmjS5P+R7/TGhQ0mTKhKRvMSXycTi5g/nT9Dr66tDjiZQAEK0OX4escU9Qq7+cbIUR/lUtnL/YtwR4Ab37FrWkul0K6+h+juI501AWMmcZsZXVNY5vH/SBxZR/oJQFot8dMBJoQ7uHx4dUqxl3IoKWxQ5dojCOdcEsanrMNBKoAHQlA6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m52sxFj78e0QN5ExokcDQPmMw1vKoylYLwKN85lhdko=;
- b=OrfHBCK2M2t4Th6IO0tdxAU0GCpONFfHClOl9jUa9Ig14d3VtztFOTswAhsc7kbA4ZkyJgX2JpW+M7upvuD3TbqxpWpNq8ajoDJKCJ0sDEwqI67PaHDy1ZYZZMoJWOhMXJAfMQPPY9H6aIYu9gUUs5lgjPmbPtJVenZFyO1aWsg57wheW8IqCcP1ITA8sE7qM7vSYduBH5XpimxmYa/BoxpSOUPK/0e6lW8B/Qu8NsLo7KcKO+U56Wf8jyNdZeRMLYvPYYc9S2J4U1KJgR4iNZzHlnrMuicB7hX1/zih9Ovf0YjFYUSiMN3W9ae1EPaUPrg9Ze4c9BaLh0CX4ly/gA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by SA5PPF530AE3851.namprd12.prod.outlook.com (2603:10b6:80f:fc04::8c9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8943.29; Mon, 28 Jul
- 2025 23:11:09 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8964.024; Mon, 28 Jul 2025
- 23:11:08 +0000
-Date: Mon, 28 Jul 2025 20:11:07 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Logan Gunthorpe <logang@deltatee.com>
-Cc: Leon Romanovsky <leon@kernel.org>, Christoph Hellwig <hch@lst.de>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-	Jens Axboe <axboe@kernel.dk>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-	Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-	linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-mm@kvack.org, linux-pci@vger.kernel.org,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 05/10] PCI/P2PDMA: Export pci_p2pdma_map_type() function
-Message-ID: <20250728231107.GE36037@nvidia.com>
-References: <cover.1753274085.git.leonro@nvidia.com>
- <82e62eb59afcd39b68ae143573d5ed113a92344e.1753274085.git.leonro@nvidia.com>
- <20250724080313.GA31887@lst.de>
- <20250724081321.GT402218@unreal>
- <b32ae619-6c4a-46fc-a368-6ad4e245d581@deltatee.com>
- <20250727190514.GG7551@nvidia.com>
- <d69e0d74-285e-4cde-a2e4-a803accfa9e1@deltatee.com>
- <20250728164136.GD402218@unreal>
- <d3c8c573-f201-4450-9400-cc3ccafd2c04@deltatee.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d3c8c573-f201-4450-9400-cc3ccafd2c04@deltatee.com>
-X-ClientProxiedBy: YT4P288CA0014.CANP288.PROD.OUTLOOK.COM
- (2603:10b6:b01:d4::17) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="msgBhzu6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1753755073; x=1785291073;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=zC0nRcR6cty3AjQe02kjM9LHjo84K3+8o1Zpfqdf6SM=;
+  b=msgBhzu6JSo4ru3qONmzQlkkqYsxALBWGt6HPmAhP8yuiOOVURPIQj50
+   9EZ1H22t51rbzMMnU2Z0CsERoj1l7epidKb2dRindNRYX9Io0R6NXUHmE
+   AcerVyhNXOxBQIQcxTGJjkQ3YE6MX7zEh7bc4hfZL2U9fF5TvxOao2j+l
+   9dz6EmBqS+avbnPgUqxcvcdL/X3htfUU05Ds7wflSsbK1cl/cKePZZYGI
+   Wrt1WL5Q6Cad7A080y+L+OcahNUicYKBnLsnncpIHO0G7LGJkb4p8GnzN
+   OgaUX0xXGSoqAY0Moh88W0OQADtSGOlhyOojV7A/C1MFpDHqYtgW4fvxf
+   w==;
+X-CSE-ConnectionGUID: 0yU6JddxQP6XkBEoX4tR7Q==
+X-CSE-MsgGUID: 1Ej0isepQti4JGK8ejpJPQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11505"; a="81453524"
+X-IronPort-AV: E=Sophos;i="6.16,348,1744095600"; 
+   d="scan'208";a="81453524"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2025 19:11:12 -0700
+X-CSE-ConnectionGUID: qp5D/NjOQaW+rJZ9uIvDKQ==
+X-CSE-MsgGUID: PM8nO3jzRBC7wsv6bJjHtw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.16,348,1744095600"; 
+   d="scan'208";a="162615706"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2025 19:11:08 -0700
+Message-ID: <d3cd4427-58a3-417b-a409-81d31110faeb@linux.intel.com>
+Date: Tue, 29 Jul 2025 10:08:53 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|SA5PPF530AE3851:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3fa0d37c-a687-4cd4-e853-08ddce2c092f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?1V95ZcpNwem0nwCQE/ASgxjRPrVYfVpjDhBwb0kv1NWDntQL3QVrueOMQbLv?=
- =?us-ascii?Q?y27AgyaxmxKNYppfrjjQZAmQb09TjfWgRyGCNyJVF9N0RZFrI3Jg3mpVjDbP?=
- =?us-ascii?Q?qoGRD5pCWRFQhJv7PbsUNmKtXeqJqQ8lMGfoy7u7OgaeYdXptXhhJxaDAJZf?=
- =?us-ascii?Q?g9zKMtAKDo2e/0yR7vIdAkMd9cuYdQYx/e75c2MZUmTBbknqpGqrLl/7Swld?=
- =?us-ascii?Q?h0Y7cMRlBhpEVn61YTWb2kC2zvLAz/boMISLNBUqUL8VWKcrTq2aGoRDE0g7?=
- =?us-ascii?Q?Z6WwQxKzXxD1sJsC9Yoo/joDZMZZ342stRqx14gXTUwZoyS5wvdajoL22jqT?=
- =?us-ascii?Q?EizxFVSeeNtx4dgz5DH93Ca50gjOvKgL9TuGXNMohFuFKmIHpCuYbfTLgPgh?=
- =?us-ascii?Q?1dZ99qKbTjp8MLpRq55fLpVkz0ld5xdLYkKhuaSByhC7fwYwDH5kPWTcKa1c?=
- =?us-ascii?Q?zUxgBNB2/GrFCnv2EtbcpeiW0/irU8gccGyQSoStOQ1bg4PwHav4EF8grsHo?=
- =?us-ascii?Q?Ldv6dyrAL5De1T29huL8grcKWoIGTiCK45t4cunIUU1JUJ5g7ZZHrVCS18UM?=
- =?us-ascii?Q?H2dIiiYSKo1YaAkQ4ilA7OwuncxWOSDevqyrSGGnGWVS4teeXDw62pEZDAb+?=
- =?us-ascii?Q?rr+SrBIwCFqqjrN0WJoHO6+GrSN9UKCEGy8T+QcHw10CtHbFk3Qs5hAg0BAk?=
- =?us-ascii?Q?uj+ggfZJCSWRo1LDe0fz+m8tKzHWImz3pTcNOhf01N+KEclv9Fguobs4uY7r?=
- =?us-ascii?Q?NMtbhoqQBqsRw3joZwzK0mH1fC7kdHoMk2KW4KvZW6u9DiGVwxEdnneHbF4h?=
- =?us-ascii?Q?SA6QJpLT/c4jSf7Spus9PVQ/oIBUjWwsZlSGrIp0GEO2H2n/VYY8R34HmE+g?=
- =?us-ascii?Q?BIes/NuLu6lOKRoq+a2zGXdG6T3mv5ny42nXnVoCbyJiV1pKbZ6A7PeWoEHc?=
- =?us-ascii?Q?i1uamdRoThlbEGyA+uUrGHxC/V8BSczNa82i41B3DmHtrIHH9SGouQNZ+IQz?=
- =?us-ascii?Q?ER754XBQiivrLZ/+qfXP9O7b0lfyJQ+4UAeZZ7mgccsZeIBleOpSZ7tpRgxT?=
- =?us-ascii?Q?0tkQMIti+YxtnGqkumm4Y+X5B67AaCNRWhundHvytwwaPnotIEyQGDEL3wWT?=
- =?us-ascii?Q?zKFMLA7PjrC7JvpSEmQV+tpf7hT79ZIWuJiXYaDUeDmLltww/ox/jdE/RrAA?=
- =?us-ascii?Q?q2vXACW4iicmFRPuJKrP9hjFrT0kFM+42j7Ed01cUFvQ8j/JsK4oWMX8SgG/?=
- =?us-ascii?Q?tp5lsG83olYhdY6xbzRoM0d6xwh6T+sJdOwvNTbIT0B4og8kt4zb55hZaVqj?=
- =?us-ascii?Q?LEy2zX5rgrCnuBZmeW9FyYeWzWXJJSNVD64WA9mR6ivah3gR2ZiSFy7NwA8C?=
- =?us-ascii?Q?BtR5/rYm039JlsE55r6m2I54jbAGaHAi2rRwR8V3Yg3L8ct2iYJWdcOdzqXe?=
- =?us-ascii?Q?QrMI4crqUrE=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?x7t4llgeWUhtjbVE/SDbkijvP3QB2JXxh1NohEIZAty5latPfHzvzC8agoWW?=
- =?us-ascii?Q?4/wMweV7g9zB2h7FLPVdW3Z+MXbJ/pr7JXH6jftJlz8sJSj7wI5x1QEYWkEN?=
- =?us-ascii?Q?lY60tbQ7KrhDNhPN9h/0WXrETJMbxSDpglUjwaxoRSQzXdkrBzKsLbFEYBK7?=
- =?us-ascii?Q?vsoZtYWtIJD37qeeQY7WaduKUof9d7v+6iPl1ptFkUjc+B4U17pCYVnIObOY?=
- =?us-ascii?Q?SeXweU2bjM6uBOOpEpZz2b0DdEfA+W86kvCv13or/qQLEAGNLvUqgf0QCA77?=
- =?us-ascii?Q?HXo637tj207V9oul/hOISYMAvvqFevpyQcwC2Pm3xrGobX9Nro5kk5pO2tK5?=
- =?us-ascii?Q?evHvqXDvYMNLJUl9LOtTKdh/5w29pC7dh4Qhg3ZT9OpkxCZQS/FzNMpcPjME?=
- =?us-ascii?Q?jBbb7bEq6VjbKcMlEnjynQnTL3dDEdntsfIDho697JDLLQHkur0bjWdPKpV1?=
- =?us-ascii?Q?CRBVZ7SzXtIDcnvR0XiwJE47a6Lej8oqKKmQ0N/LJCRAleWC1UHZUhONdJrd?=
- =?us-ascii?Q?4KKHWRMYukfLYrOYG/mn4iKWSHCloENtRRNoIA4c0jun/xw4e4O5FlYUY0hM?=
- =?us-ascii?Q?pO55RYJuEiaPK7JMijOsnR8nQ2FiU/QULys6KHlCnoLcPB/kFQuJOihgKXvc?=
- =?us-ascii?Q?qZCl51/Y5vZUlh8+02Gjo1MdjNVl2CFtbaPtK8EcrLu9ybQhYtsCrKZYrTdH?=
- =?us-ascii?Q?WKW7y23+B0fvJSc7ftmihNHwNKWbqAyVT1bDuoTVB3nNxAdOrFxsfKsgVoNm?=
- =?us-ascii?Q?omX5aNvIAX7Tgn9Mgig2HDKFoHRasurtDPffVbHfBOxcgKOKnYQOVxOGpDzV?=
- =?us-ascii?Q?K/pvFU/2zWj6C3MVWNQpA09zoib3wOwSBqUPVH6PgsWchHg1ZwI7AHAazj5q?=
- =?us-ascii?Q?uzsTkWbtjwnl98PI5Vl5s2eYit2XMjK6Euk+ZgK3hYn2PCWqs3mcQoikuxKg?=
- =?us-ascii?Q?MHp+cPinxw9sxDnV2grrnC/rrbh6bOzq4KiKOiTo7ZKkU8rOYIAWJSuv6MAO?=
- =?us-ascii?Q?hTLEqHGZr6gfJ0zmRKP6uOUlLbpfoBDDGgwslZ7dTG34SldzW/1fk0cYPfH1?=
- =?us-ascii?Q?WejFcIGWlXIjBO/pFz+Ys1kAad0MtJXKk0sIeWe8SujM7tDv29FnR/EIWuk1?=
- =?us-ascii?Q?UDiKCK1WXt/R4LcrzgUfvKNsxcD3wk39BFizNsSA0AlAGA8+5ZF0czYRUZFG?=
- =?us-ascii?Q?mYfb6c1jzTKsQk+/TaJLlWXqhf3HcRl1okdfYnI7nmH3HOih4g7Tv3OaDvTq?=
- =?us-ascii?Q?drstECOsYDq2jpQtS27uiM6zm8MR6XDh7hweP9jPmD/EEmSUVAB9vxNTk+h8?=
- =?us-ascii?Q?M29REKXFWwlQCL2GVYWGwSf1uOwxQBv9F/PBZPKh2fzHRSvLRwmsrMy/eQQB?=
- =?us-ascii?Q?JB6609Yp+rDI8xXbbiqZIuqN/A58RaWIuTrdh3sReT+2n8BMnbreu3VFcDUs?=
- =?us-ascii?Q?+C2+fOr1bn5rwmORwH3F4eY7/N52UFYMbgbzQ4Vw5mpW9+fd0bsg/MN/NY2O?=
- =?us-ascii?Q?Jeos1lQ2ydFT1GC2FHEPXMQtL1h2LVEv8scn+P7SFPf6wq2xWorDtCBvOH3K?=
- =?us-ascii?Q?cj/LuNeCteSettkAbhg=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3fa0d37c-a687-4cd4-e853-08ddce2c092f
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2025 23:11:08.6995
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: y8PLJwAJYurpqEqiuBcFzp/gpfXoc79RU1xbPgFRfaiy8p1KYB+Hbf/5DDpCYjX7
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA5PPF530AE3851
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/1] iommu/sva: Invalidate KVA range on kernel TLB
+ flush
+To: Yu Zhang <zhangyu1@linux.microsoft.com>
+Cc: Dave Hansen <dave.hansen@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
+ Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, "Tested-by : Yi Lai" <yi1.lai@intel.com>,
+ iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+References: <20250709062800.651521-1-baolu.lu@linux.intel.com>
+ <ee7585bd-d87c-4f93-9c8e-b8c1d649cdfe@intel.com>
+ <228cd2c9-b781-4505-8b54-42dab03f3650@linux.intel.com>
+ <326c60aa-37f3-458d-a534-6e0106cc244b@intel.com>
+ <20250710132234.GL1599700@nvidia.com>
+ <62580eab-3e68-4132-981a-84167d130d9f@intel.com>
+ <6dn5n5cge7acmmfgb5zi7ctcbn5hiqyr2xhmgbdxohqydhgmtt@47nnr4tnzlnh>
+ <2a1ffe30-b0a6-45b3-8dcb-feaa285e1e5b@linux.intel.com>
+ <pk2b4xgxewxotp557osucliagmziv3erepsret4hbnxnvhff2n@p2gark4kdiqw>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <pk2b4xgxewxotp557osucliagmziv3erepsret4hbnxnvhff2n@p2gark4kdiqw>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jul 28, 2025 at 11:07:34AM -0600, Logan Gunthorpe wrote:
+On 7/29/25 01:36, Yu Zhang wrote:
+> On Thu, Jul 24, 2025 at 11:01:12AM +0800, Baolu Lu wrote:
+>> On 7/11/25 16:17, Yu Zhang wrote:
+>>> On Thu, Jul 10, 2025 at 08:26:06AM -0700, Dave Hansen wrote:
+>>>> On 7/10/25 06:22, Jason Gunthorpe wrote:
+>>>>>> Why does this matter? We flush the CPU TLB in a bunch of different ways,
+>>>>>> _especially_ when it's being done for kernel mappings. For example,
+>>>>>> __flush_tlb_all() is a non-ranged kernel flush which has a completely
+>>>>>> parallel implementation with flush_tlb_kernel_range(). Call sites that
+>>>>>> use_it_ are unaffected by the patch here.
+>>>>>>
+>>>>>> Basically, if we're only worried about vmalloc/vfree freeing page
+>>>>>> tables, then this patch is OK. If the problem is bigger than that, then
+>>>>>> we need a more comprehensive patch.
+>>>>> I think we are worried about any place that frees page tables.
+>>>> The two places that come to mind are the remove_memory() code and
+>>>> __change_page_attr().
+>>>>
+>>>> The remove_memory() gunk is in arch/x86/mm/init_64.c. It has a few sites
+>>>> that do flush_tlb_all(). Now that I'm looking at it, there look to be
+>>>> some races between freeing page tables pages and flushing the TLB. But,
+>>>> basically, if you stick to the sites in there that do flush_tlb_all()
+>>>> after free_pagetable(), you should be good.
+>>>>
+>>>> As for the __change_page_attr() code, I think the only spot you need to
+>>>> hit is cpa_collapse_large_pages() and maybe the one in
+>>>> __split_large_page() as well.
+>>>>
+>>>> This is all disturbingly ad-hoc, though. The remove_memory() code needs
+>>>> fixing and I'll probably go try to bring some order to the chaos in the
+>>>> process of fixing it up. But that's a separate problem than this IOMMU fun.
+>>>>
+>>> Could we consider to split the flush_tlb_kernel_range() into 2 different
+>>> versions:
+>>> - the one which only flushes the CPU TLB
+>>> - the one which flushes the CPU paging structure cache and then notifies
+>>>     IOMMU to do the same(e.g., in pud_free_pmd_page()/pmd_free_pte_page())?
+>>  From the perspective of an IOMMU, there is no need to split. IOMMU SVA
+>> only allows the device to access user-space memory with user
+>> permission. Access to kernel address space with privileged permission
+>> is not allowed. Therefore, the IOMMU subsystem only needs a callback to
+>> invalidate the paging structure cache.
+> Thanks Baolu.
 > 
-> 
-> On 2025-07-28 10:41, Leon Romanovsky wrote:
-> > On Mon, Jul 28, 2025 at 10:12:31AM -0600, Logan Gunthorpe wrote:
-> >>
-> >>
-> >> On 2025-07-27 13:05, Jason Gunthorpe wrote:
-> >>> On Fri, Jul 25, 2025 at 10:30:46AM -0600, Logan Gunthorpe wrote:
-> >>>>
-> >>>>
-> >>>> On 2025-07-24 02:13, Leon Romanovsky wrote:
-> >>>>> On Thu, Jul 24, 2025 at 10:03:13AM +0200, Christoph Hellwig wrote:
-> >>>>>> On Wed, Jul 23, 2025 at 04:00:06PM +0300, Leon Romanovsky wrote:
-> >>>>>>> From: Leon Romanovsky <leonro@nvidia.com>
-> >>>>>>>
-> >>>>>>> Export the pci_p2pdma_map_type() function to allow external modules
-> >>>>>>> and subsystems to determine the appropriate mapping type for P2PDMA
-> >>>>>>> transfers between a provider and target device.
-> >>>>>>
-> >>>>>> External modules have no business doing this.
-> >>>>>
-> >>>>> VFIO PCI code is built as module. There is no way to access PCI p2p code
-> >>>>> without exporting functions in it.
-> >>>>
-> >>>> The solution that would make more sense to me would be for either
-> >>>> dma_iova_try_alloc() or another helper in dma-iommu.c to handle the
-> >>>> P2PDMA case.
-> >>>
-> >>> This has nothing to do with dma-iommu.c, the decisions here still need
-> >>> to be made even if dma-iommu.c is not compiled in.
-> >>
-> >> Doesn't it though? Every single call in patch 10 to the newly exported
-> >> PCI functions calls into the the dma-iommu functions. 
+> Indeed. That's why I was wondering if we could split flush_tlb_kernel_range()
+> into 2 versions - one used only after a kernal virtual address range is
+> unmapped, and another one used after a kernel paging structure is freed.
+> Only the 2nd one needs to notify the IOMMU subsystem.
 
-Patch 10 has lots of flows, only one will end up in dma-iommu.c
+Yeah! That sounds better.
 
-vfio_pci_dma_buf_map() calls pci_p2pdma_bus_addr_map(),
-dma_iova_link(), dma_map_phys().
-
-Only iova_link would call to dma-iommu.c - if dma_map_phys() is called
-we know that dma-iommu.c won't be called by it.
-
-> >> If there were non-iommu paths then I would expect the code would
-> >> use the regular DMA api directly which would then call in to
-> >> dma-iommu.
-> > 
-> > If p2p type is PCI_P2PDMA_MAP_BUS_ADDR, there will no dma-iommu and DMA
-> > at all.
-> 
-> I understand that and it is completely beside my point.
-> 
-> If the dma mapping for P2P memory doesn't need to create an iommu
-> mapping then that's fine. But it should be the dma-iommu layer to decide
-> that.
-
-So above, we can't use dma-iommu.c, it might not be compiled into the
-kernel but the dma_map_phys() path is still valid.
-
-> It's not a decision that should be made by every driver doing this
-> kind of thing.
-
-Sort of, I think we are trying to get to some place where there are
-subsystem, or at least data structure specific helpers that do this
-(ie nvme has BIO helpers), but the helpers should be running this
-logic directly for performance. Leon hasn't done it but I think we
-should see helpers for DMABUF too encapsulating the logic shown in
-patch 10. I think we need to prove it out these basic points first
-before trying to go and convert a bunch of GPU drivers.
-
-The vfio in patch 10 is not the full example since it only has a
-single scatter/gather" effectively, but the generalized version loops
-over pci_p2pdma_bus_addr_map(), dma_iova_link(), dma_map_phys() for
-each page.
-
-Part of the new API design is to only do one kind of mapping operation
-at once, and part of the design is we know that the P2P type is fixed.
-It makes no performance sense to check the type inside the
-pci_p2pdma_bus_addr_map()/ dma_iova_link()/dma_map_phys() within the
-per-page loop.
-
-I do think some level of abstraction has been lost here in pursuit of
-performance. If someone does have a better way to structure this
-without a performance hit then fantastic, but thats going back and
-revising the new DMA API. This just builds on top of that, and yes, it
-is not so abstract.
-
-Jason
+Thanks,
+baolu
