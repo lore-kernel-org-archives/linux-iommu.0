@@ -1,102 +1,81 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBEA32D97A3
-	for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 14:28:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 242022DA76B
+	for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 14:42:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753885704; cv=none; b=rJXqDbPn0l2J7d3Wy3rQ4tCzLTzdIwj9fxu4HkYMA4/z+pYOxpEOwfIYWUL920pgNz6BIMHXQNUmQoDIrsz7jQAAmFNF9+5UuXyjYoJZN308/aydpeB5/6Pqtk/BKcwUV0Ql5Zk4f1G3PG9Suab9d7uCYKE2TXPGVsfV4PH09n8=
+	t=1753886577; cv=none; b=QDmjJ7Kbp763rzdhAwkJ1WLN0kjs07w9G20sk5Q5oifDsIuEsSnkajZsnmqzOvBAEXzfMG+EpzlY50UyEhxPbMIc+TEwBtzbEUK2pfMH13hmfM66lY/TbnGO9odZ8/1PpVy+ml68HUSiHM9z+hSeER7vozZjngIfVAVj+QF8IvM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753885704; c=relaxed/simple;
-	bh=TDW5x6DvBZ7lvIDcVVcAKcADPgkzeitjKa0U8rd1OM0=;
+	s=arc-20240116; t=1753886577; c=relaxed/simple;
+	bh=gGRfP7BSpng2geWuLtovyzO2vvewCAFqLFPtlv86Vs0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T9G8FylD5Bi9JgHKT87/PJbYELDnkxrUSE/mOsI7YzQcXfWqX6N99Klzieop89y4FnpphjdRNcDnl6VdEYYAsWOwBS+tGQ3WwBlzpo94sc7G9YxkpJHsDu+onK391d7OgsGQNU5hOxayjY7E2WZwjCpPbZw06dCKgespwTf1FWE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=IXDfg0Rm; arc=none smtp.client-ip=209.85.160.174
+	 Content-Type:Content-Disposition:In-Reply-To; b=W5HmEHK+cDcge8HnA9U5+LUJVEYdeJav93DGugALnZMnOSHK+2DiTQdazNZT7qxbTRlodpp+fApgJv2esIBOIg2zOAYZb4DzcTbuuffdTg0OGci9WJThHJCsjKQZETPlIvGA5dWb6YQUtlfBEUclgSf7+1h+V7gxMJ2h/TxPXwc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jyrm56wT; arc=none smtp.client-ip=209.85.219.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="IXDfg0Rm"
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-4aeb2e06b82so20568551cf.2
-        for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 07:28:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jyrm56wT"
+Received: by mail-qv1-f48.google.com with SMTP id 6a1803df08f44-707453b0306so34482966d6.2
+        for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 07:42:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1753885701; x=1754490501; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1753886574; x=1754491374; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=yXicpotvi3lyQ9AOXQWfwG3KeaAtrSGGP0WC4PeRJ0I=;
-        b=IXDfg0RmZqA+2gdYs+wPqrq5AwhW3aG2TV2hRnMOO4bktLDMv4l7KksR/lY1Tpo3sA
-         O8vvkuUQWYL3GH4JXhCikeKMv+HJ+/B4TTqLQKVT2ob7NEqO2hIPfJcmBUvbof4s8W+V
-         bVhOft1FW14EHlmRXDAYrpnFxAqxqS3os/FjxV7mtSZQR1FlCIJRYMqt0/T7b/BsxJAG
-         yYkgO82iP5G2DBfBkO7qJmN3z8/ZqSSKpfrc8eQ/sShQ114oA7UbVO4/LGicSp0U9AME
-         xpBuWdfDGCmDwlIp/l3EPzNVYA9N+r3kBhRb39RLqZ5HttH+S1KK28hYO4TWsQA0xCGi
-         mTXQ==
+        bh=yE9XS5x/IPLFg7Q0+oI241GEqid5njht4Vd0VCx+/2E=;
+        b=jyrm56wTckHmfEw+6BsYUu1EEZb+ZKds+e9v8dKtJBcImBCAfTP9xKp1Jmqpk8rszZ
+         f8yRnkhObmsfH+xG+SOYVmfHJGN9tZ8bfOoQeqrNLPwCX2Kr+hIyrSxC6luNbdtE2ltY
+         9r766+s0AOVlmrzprH5JsnsIjb556rgNfVseXhpzuUwxLVgIcM2KV351x5WePpoxNPqi
+         NvoW8TprTw1Q0YUYVUQOt5XVt7GlsJdMqYNQjwagANaCUFujNCJBwsUqbxrgBpbmzsKI
+         GGJOcanfA4qWT4m/DoNyJpZtNUvJzpRge+v0VwHLHTACI/AdeUfyPhY7adY3FYUsBl+j
+         KT7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753885701; x=1754490501;
+        d=1e100.net; s=20230601; t=1753886574; x=1754491374;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=yXicpotvi3lyQ9AOXQWfwG3KeaAtrSGGP0WC4PeRJ0I=;
-        b=q2tLdZFhuZFW5CdlEOOBuiCeg14iYOo4cs9DGDHvUsniOXeVrJs1rOc0ryT3yiiOaH
-         TBPIMdADQSgXcS3NPlv6Ufu2uXOmcWVPxZVVfyn11gDNqFh5Y+qDWqkvFjHYBlBO9978
-         N5qw0ZMTW8hBXe2ziUaiU7ln4N94GyDD/6qWNfgzftCizli4FtElG7Er8XxB6d+0jOkd
-         C5v3lLP0nD2qKw05qn7fHATYk1PIbmxXb7Tl6M+nBNK/wvVYp4/bU9LUMKC/r68zOp8U
-         kT85sZ7df2OMhGAtJgbxTHI8QRYvemLffJhA70N9DG+UqJ4UF8NRSI0HD88rl0VKh2aS
-         XRHQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXDor7irI4m9wUnr1/r36y4Gh16plRAKeSrkyhMuySBX3++OEsP5jsLTBBe/JAmyzRpyR5wsw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwZF3wJPLgrfxUTWeDKyvgAl8AoC9zJRui8u2TUNswWuQSFn18g
-	/FIuV8BbJuwKJwXhdZlTNlB6sMw7GviQUL+V1nShwCRdwV94A1qfZhhY1mBsnGeH4tU=
-X-Gm-Gg: ASbGnct/9Rzj141jFC8nBJFa9h00zM7OxAwqLaU2lvO2zIQc3iVnABlESI03BsN6ql3
-	JbkStHTjW9VCjUO3WYTKuBXPa5G/G30cA4vjO89RZsDBomBO4W04iYzls3Dr0zPcC5EIDhsXsxH
-	yZBS/2NKdpdl4E76QRjjVBRlbdibCVkojZCM1jGBj1ZasMHL9cHV6sqj3jIIjij3D5jotBFhj/v
-	WfqbsyyQdQ9fu5ormoL/ZaVWWjMhS7vWCfDlZ45z5C5LfPA4BIcPibnu/rVpzQY0SscT+L8ikeT
-	TVvNYb91aMfNZ0Y0Iqrnx7h0k6guyy72DP/2U8UHdBP0G5VzQy3RmvjFrAT4XOQycQjQ3F+/PDd
-	9viPaWWcTN467JAaIkvuvU1tmMtahyN+Vxnl/mvPgnPADamLqogOOlajH9FOqLaUKRJu5
-X-Google-Smtp-Source: AGHT+IHCzPfwaMM+aIDs6tu6c39/KdwhCla3PbAO01xs1vOnpsn8EpRRsdfpw4N6uvD5MCuSC49wxQ==
-X-Received: by 2002:a05:622a:48:b0:4a9:cff3:68a2 with SMTP id d75a77b69052e-4aedbc3c0dbmr55369321cf.37.1753885700213;
-        Wed, 30 Jul 2025 07:28:20 -0700 (PDT)
+        bh=yE9XS5x/IPLFg7Q0+oI241GEqid5njht4Vd0VCx+/2E=;
+        b=XHR3nYgCQrQxcMjqf208Vmjkvlo5VkrzXPQxSA6F429aK0EAgnKcZEY2ZkM1rmZ2qT
+         QBjkixlxYDF1Emu0mccsTf2HQI1MDKcgeuOdQlrjd4/bDY/lHHD3EHSgCYCjwmTFsF1y
+         gpD2qDUr+w/c8qI1b8RvQ2zTKYOuj5+3hIAvwFV5Y6Tu29YCGvt+ExlUXhxrBhdrcTF6
+         +RplpCqirjFGOBAEk4WyPPDnJHN3f+iCA4kA4oEZjHKq9YQ0SYA44i8cImJZSr06ne5u
+         r38cwz0hDtKtA3fL5rR4ZtTEKN9hQt0gnq5zhRuFLEbRIpdF/BFnDUAzMmFCnpb1g6sG
+         IHiQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVpZOkMFx6t1LVt/KwzEPbIRuymxQk6uVI0JoZ2uUDbD93ZPK7yEpoXzGeIg7IIrAVZVPJ4PQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwyQKER1Z0wKkKszWg0uh+Jdll7Z2Src/R+7CymKln96CcTStiQ
+	6bbLrMjCvClan9SA6VNmDv0vpnGTA/eEx25hcYGxkpG3NLiO1QgO+EA5Hf4Y0ntx+0U=
+X-Gm-Gg: ASbGncs0+pvf3nQwKnRNn9mPzQO98u9HtINZ/tK0m/39PE73shZD1i0253vQO2fiVi4
+	yni2I62zZZtx2J3R+VwDPg976JGyItD+QeU51Siv3+jFy0MEUZLQFC6VDGSDWI3Ym83OAqlcaYU
+	ycnF6bwvWLILjU6HtV76rXpWxjU46kFVsyy9sGYQWMzdQ5JUh/6PvtGiFItP2HsyflW6t1Z8Bk/
+	YgND/+DdJ3IDqdffxgiV+PV7KD7xojDwnseVEiT5jZqQWCA3Kit48fWdB4VSoTFR3kGJQVoNJJb
+	75p9AeSj2Pmo91DwTa+w4sQqBR57D5fIhTP5Sie2fs5hjXgVpK6TlQHB3TG6cl4PNOO7gdvD3GR
+	BOKIgUFHT6Rf2vJgvQRhGxYQyy3hSRWWSBoow/WeIiQwFtUpmRA3Mfc0GWyQpV2g2FdryYFUKDT
+	QiUZI=
+X-Google-Smtp-Source: AGHT+IFTshf+JMDcrv8+0/UalWTBjWGXz7BdMW99vihoM+QJWNKuspc/O9f/fXBj039JGJi+af7NVQ==
+X-Received: by 2002:a05:6214:ac7:b0:707:4daf:631 with SMTP id 6a1803df08f44-7076719b73dmr50415456d6.42.1753886574527;
+        Wed, 30 Jul 2025 07:42:54 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4ae9963b6f9sm67178931cf.35.2025.07.30.07.28.19
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-7074b52ddc7sm39845896d6.77.2025.07.30.07.42.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Jul 2025 07:28:19 -0700 (PDT)
+        Wed, 30 Jul 2025 07:42:53 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1uh7n0-00000000RbZ-432A;
-	Wed, 30 Jul 2025 11:28:18 -0300
-Date: Wed, 30 Jul 2025 11:28:18 -0300
+	id 1uh817-00000000RlW-0qIU;
+	Wed, 30 Jul 2025 11:42:53 -0300
+Date: Wed, 30 Jul 2025 11:42:53 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Leon Romanovsky <leon@kernel.org>, Matthew Wilcox <willy@infradead.org>,
-	David Hildenbrand <david@redhat.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Christoph Hellwig <hch@lst.de>, Jonathan Corbet <corbet@lwn.net>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
-	Alexander Potapenko <glider@google.com>,
-	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, iommu@lists.linux.dev,
-	virtualization@lists.linux.dev, kasan-dev@googlegroups.com,
-	linux-trace-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH 0/8] dma-mapping: migrate to physical address-based API
-Message-ID: <20250730142818.GL26511@ziepe.ca>
-References: <CGME20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf@eucas1p2.samsung.com>
- <cover.1750854543.git.leon@kernel.org>
- <35df6f2a-0010-41fe-b490-f52693fe4778@samsung.com>
- <20250627170213.GL17401@unreal>
- <20250630133839.GA26981@lst.de>
- <69b177dc-c149-40d3-bbde-3f6bad0efd0e@samsung.com>
- <f912c446-1ae9-4390-9c11-00dce7bf0fd3@arm.com>
- <20250730134026.GQ402218@unreal>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
+	suzuki.poulose@arm.com, yuzenghui@huawei.com,
+	catalin.marinas@arm.com, will@kernel.org, robin.murphy@arm.com,
+	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
+	mark.rutland@arm.com, praan@google.com
+Subject: Re: [PATCH v3 29/29] iommu/arm-smmu-v3-kvm: Add IOMMU ops
+Message-ID: <20250730144253.GM26511@ziepe.ca>
+References: <20250728175316.3706196-1-smostafa@google.com>
+ <20250728175316.3706196-30-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -105,115 +84,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250730134026.GQ402218@unreal>
+In-Reply-To: <20250728175316.3706196-30-smostafa@google.com>
 
-On Wed, Jul 30, 2025 at 04:40:26PM +0300, Leon Romanovsky wrote:
+On Mon, Jul 28, 2025 at 05:53:16PM +0000, Mostafa Saleh wrote:
+> Register the SMMUv3 through IOMMU ops, that only support identity
+> domains. This allows the driver to know which device are currently used
+> to properly enable/disable then.
+> 
+> Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> ---
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 92 ++++++++++++++++++-
+>  1 file changed, 91 insertions(+), 1 deletion(-)
 
-> > The natural working unit for whatever replaces dma_map_page() will be
-> > whatever the replacement for alloc_pages() returns, and the replacement for
-> > kmap_atomic() operates on. Until that exists (and I simply cannot believe it
-> > would be an unadorned physical address) there cannot be any
-> > *meaningful*
+Can you split the new iommu subysstem driver out please? I think I
+asked this before.
 
-alloc_pages becomes legacy.
+This series is big, reviewing a new iommu driver should be done separately.
 
-There will be some new API 'memdesc alloc'. If I understand Matthew's
-plan properly - here is a sketch of changing iommu-pages:
+Please review all the comments for the verisilicon driver, I think
+many of the remarks apply here too:
 
---- a/drivers/iommu/iommu-pages.c
-+++ b/drivers/iommu/iommu-pages.c
-@@ -36,9 +36,10 @@ static_assert(sizeof(struct ioptdesc) <= sizeof(struct page));
-  */
- void *iommu_alloc_pages_node_sz(int nid, gfp_t gfp, size_t size)
- {
-+       struct ioptdesc *desc;
-        unsigned long pgcnt;
--       struct folio *folio;
-        unsigned int order;
-+       void *addr;
- 
-        /* This uses page_address() on the memory. */
-        if (WARN_ON(gfp & __GFP_HIGHMEM))
-@@ -56,8 +57,8 @@ void *iommu_alloc_pages_node_sz(int nid, gfp_t gfp, size_t size)
-        if (nid == NUMA_NO_NODE)
-                nid = numa_mem_id();
- 
--       folio = __folio_alloc_node(gfp | __GFP_ZERO, order, nid);
--       if (unlikely(!folio))
-+       addr = memdesc_alloc_pages(&desc, gfp | __GFP_ZERO, order, nid);
-+       if (unlikely(!addr))
-                return NULL;
- 
-        /*
-@@ -73,7 +74,7 @@ void *iommu_alloc_pages_node_sz(int nid, gfp_t gfp, size_t size)
-        mod_node_page_state(folio_pgdat(folio), NR_IOMMU_PAGES, pgcnt);
-        lruvec_stat_mod_folio(folio, NR_SECONDARY_PAGETABLE, pgcnt);
- 
--       return folio_address(folio);
-+       return addr;
- }
-
-Where the memdesc_alloc_pages() will kmalloc a 'struct ioptdesc' and
-some other change so that virt_to_ioptdesc() indirects through a new
-memdesc. See here:
-
-https://kernelnewbies.org/MatthewWilcox/Memdescs
-
-We don't end up with some kind of catch-all struct to mean 'cachable
-CPU memory' anymore because every user gets their own unique "struct
-XXXdesc". So the thinking has been that the phys_addr_t is the best
-option. I guess the alternative would be the memdesc as a handle, but
-I'm not sure that is such a good idea. 
-
-People still express a desire to be able to do IO to cachable memory
-that has a KVA through phys_to_virt but no memdesc/page allocation. I
-don't know if this will happen but it doesn't seem like a good idea to
-make it impossible by forcing memdesc types into low level APIs that
-don't use them.
-
-Also, the bio/scatterlist code between pin_user_pages() and DMA
-mapping is consolidating physical contiguity. This runs faster if you
-don't have to to page_to_phys() because everything is already
-phys_addr_t.
-
-> > progress made towards removing the struct page dependency from the DMA API.
-> > If there is also a goal to kill off highmem before then, then logically we
-> > should just wait for that to land, then revert back to dma_map_single()
-> > being the first-class interface, and dma_map_page() can turn into a trivial
-> > page_to_virt() wrapper for the long tail of caller conversions.
-
-As I said there are many many projects related here and we can
-meaningfully make progress in parts. It is not functionally harmful to
-do the phys to page conversion before calling the legacy
-dma_ops/SWIOTLB etc. This avoids creating patch dependencies with
-highmem removal and other projects.
-
-So long as the legacy things (highmem, dma_ops, etc) continue to work
-I think it is OK to accept some obfuscation to allow the modern things
-to work better. The majority flow - no highmem, no dma ops, no
-swiotlb, does not require struct page. Having to do
-
-  PTE -> phys -> page -> phys -> DMA
-
-Does have a cost.
-
-> The most reasonable way to prevent DMA_ATTR_SKIP_CPU_SYNC leakage is to
-> introduce new DMA attribute (let's call it DMA_ATTR_MMIO for now) and
-> pass it to both dma_map_phys() and dma_iova_link(). This flag will
-> indicate that p2p type is PCI_P2PDMA_MAP_THRU_HOST_BRIDGE and call to
-> right callbacks which will set IOMMU_MMIO flag and skip CPU sync,
-
-So the idea is if the memory is non-cachable, no-KVA you'd call
-dma_iova_link(phys_addr, DMA_ATTR_MMIO) and dma_map_phys(phys_addr,
-DMA_ATTR_MMIO) ?
-
-And then internally the dma_ops and dma_iommu would use the existing
-map_page/map_resource variations based on the flag, thus ensuring that
-MMIO is never kmap'd or cache flushed?
-
-dma_map_resource is really then just
-dma_map_phys(phys_addr, DMA_ATTR_MMIO)?
-
-I like this, I think it well addresses the concerns.
+ - Domain attachment looks questionable. Please do not have
+   attach/detach language at all in the hypervisor facing API.
+ - Get the ordering and APIs right so replace works. You need this to support RMRs
+ - Use a blocking domain not some unclear detatch idea
+ - Use a blocking domain for release
+ - Use the smmu-v3 approach for the fwspec, don't store things in the drvdata.
 
 Jason
