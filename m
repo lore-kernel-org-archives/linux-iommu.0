@@ -1,180 +1,196 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2050.outbound.protection.outlook.com [40.107.92.50])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 042CA28642F;
-	Tue, 29 Jul 2025 23:41:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753832492; cv=fail; b=cBb6pzfxmC7B6DBFbpLmuTvpGXB0pRkiT7V5aJC6BWXYLPT3JYzO2XbUUHUoQMo7/4dTrqBS/YqHTTzYYRJOypcAc0kTmNKxyei1LRBR78mv5zB1YRkDewamoiCy0EYjkWUT53NxNWMyrLsVZEenuYYUaGD3m5EWxuFH4uhM9eA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753832492; c=relaxed/simple;
-	bh=6SKtu/OZX+knfgJ2jGLdVwA70282u4WHFmmw6UQOJLo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=EgU7AMa+GF+a7adlPsUnuSbGLExju0NFdo2fmOPLchqTEMqxQ+D9ssRq9Ult5VQ6P/ivATagvj7txiwcM4NKQOmWXm+0XgbC6UKXLcsdo94ZRwXrsq3aFpyx2lenOG1u4dJJ/qfdRp0IWRev9quqCm/QQRf+VfodeWOw2w5JiVU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=gSNSHAGO; arc=fail smtp.client-ip=40.107.92.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DEFF18B0F
+	for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 00:30:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1753835453; cv=none; b=XjR5NF+GdleUX6PN3+/1lKi74/u7vi54OljmvZxNb9IoQ9zmf3uR1lWsuPABgTRlPriw40ZVNCLtZIPd0Gzydx9MU/5tKEGj6v4TcBF3WEiKR+afGX2oAuzF3gKSHtACyz9t9UMgFPnPcOTIemhk3uwO9SjKZud189RPpricAms=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1753835453; c=relaxed/simple;
+	bh=G2SWi+2j2+gVMvPBF4ZfD0nEadXhRsZtY7etyXycOHs=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=cgP5Zx3T5UwnuUoT10wuZb1ngb66dvnkNV8VilkVIpcieouYJ9OJNSyaaT0NVQL5pzRP8wJK3OC8HoXt0CMRLG19iuUDqq9UIEVzFQ2w9J2RTP9WSpaIanSSvWL0XuL53yih37JMWzto0KXXR1OPFMTEcZ1ZhJ+BFrQX+/SJv8U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Fk4ALxYj; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="gSNSHAGO"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=eQqomEXK+e5PI5PZrwijWEronIlZqf7/EYWoV3LFOAOjpr+v3pWdAztEM5CeBkiW9tLOrXkczZe9e5Qha4z/o+6QumTTbBnQ7v2k5PaGl9sj0YDpgzPLmZgcvvVM+8f7GasYFFraV1rEoBrHsIWZgI9gjspOzxKX+OfrqFG1YjQidQyVZxPUtUxpoeR554ikXGVKVFIq7IYiAlFSei4Rpshkcs/Kvy0HPApRD039kwKI8zdZ/rVvsvdPiBwBB77bzxXGr9WiufLcYUMTj8dA7lPeKs+URHX3sI/OKyRaE1AcYl3lyloXSaZiiZWyc0iQW/XMUTQAIhn91sXtQkUORQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Fd0mYsa0VG0tqujd7CnntT2xJVKlgweKaEraBBDFu1Q=;
- b=ZCdUKpblc5Ye3G+H85hVnM7pQ3srdM+oqPL4vbqKjE5h4n1aaOKnbUVZ6TtELAmTH8fpiTTD0JhXmxvPzOVX1pe3F5Rm8PX3Ly+JPTQxC11Te6OY3czRfxBWmRB6YcwXtXYhuJDN32BC5pGLVpGpPoUqJzWy8drRbyxooWUts/z19mf2mPgCS4hKnj0xIYP3wELO4zAr+vU2j2XTxG9s8edddkAaeknNS2yyn/nMfpq5yo0M0dIH9aLoDYmOKMVNt+9RG15svMLrwx1/zIQSTzHmKVrvuwzhqs+07wbou+itSkBukpPSZfkO10HaU4yxSqQ5+zyIG/zxu8lPcs9r7w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Fd0mYsa0VG0tqujd7CnntT2xJVKlgweKaEraBBDFu1Q=;
- b=gSNSHAGOqdZUPt/JJEKaikOONqNfLa1skzT/tfvjvSrqEgcZrObKfcFQMjAbbsKSgivQgRJ7R2Ai6rmD5r6DRd8DRvn5cW/hdnmqikXPpL2XXe8CegjIGM02uIdTBsIa3w79WZy+H3cyveVSYg4GK/BJbfE71dRFl0O6tLCwznKwM1slof8B7rUBK22PFj1XoEefXLvFuBf1OmT6KevPFO/NtR9hS/wHU32Y5sk2Y2dwJDMiKe1ZuwJ6vQj+0mkqzNTmXTZxV3zuWWUIBOEcf9pqza+QRI9hq874XZkxOLJhz/W7661spaonb5NT/ZbFeavoL1kYHSxc75ioggP/7g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MW6PR12MB8663.namprd12.prod.outlook.com (2603:10b6:303:240::9)
- by BL1PR12MB5972.namprd12.prod.outlook.com (2603:10b6:208:39b::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8989.11; Tue, 29 Jul
- 2025 23:41:27 +0000
-Received: from MW6PR12MB8663.namprd12.prod.outlook.com
- ([fe80::594:5be3:34d:77f]) by MW6PR12MB8663.namprd12.prod.outlook.com
- ([fe80::594:5be3:34d:77f%7]) with mapi id 15.20.8964.026; Tue, 29 Jul 2025
- 23:41:27 +0000
-Date: Tue, 29 Jul 2025 20:39:47 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
-	patches@lists.linux.dev, Tina Zhang <tina.zhang@intel.com>,
-	Wei Wang <wei.w.wang@intel.com>
-Subject: Re: [PATCH 8/9] iommu/vt-d: Use the generic iommu page table
-Message-ID: <20250729233947.GF82395@nvidia.com>
-References: <8-v1-bdb01ffac49c+be-iommu_pt_vtd_jgg@nvidia.com>
- <e46aeb10-b596-4bb7-8f52-638a07bdbc6f@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e46aeb10-b596-4bb7-8f52-638a07bdbc6f@linux.intel.com>
-X-ClientProxiedBy: YT3PR01CA0049.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:82::30) To MW6PR12MB8663.namprd12.prod.outlook.com
- (2603:10b6:303:240::9)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Fk4ALxYj"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 56THXg3q027093
+	for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 00:30:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=X9lUdenJ2kMNxoXUpZ8Aqx81K+8cmzCiCh8
+	8gCuJ5+A=; b=Fk4ALxYj/nbPljx+y+1qCfdGb+ilruaLVfFs6ZAgOpxYEZ+Wpkn
+	dXgM5LgHlKKriJDJZsAWYZ7AgIUM9pwC6QCaNjWZ4z7RBZ6CEzxMlJG/yqr00Yeu
+	0yQfZWlt4xcxelW4PTJTEBt5h175SCTdgi0y12/VS/bsgBbo/R3pF2VnlhhIR8fK
+	NTNGVfOSSgiesLOitNo9rBgQlD4/k3LENv4VSNchXkqxKM/MNA0FczQxwe/45X6C
+	jiBp7w0edPdmDtlPWclGwuxbzmCA6D78jghPChD+5u6XNE2oYSwLfmgLGZFoa6KS
+	j4+WDxxJY9U6bOC+obqSZVzLIL6IrgFgDAQ==
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com [209.85.215.200])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 484mcra290-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 00:30:50 +0000 (GMT)
+Received: by mail-pg1-f200.google.com with SMTP id 41be03b00d2f7-b421d38d138so5633a12.0
+        for <iommu@lists.linux.dev>; Tue, 29 Jul 2025 17:30:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1753835449; x=1754440249;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=X9lUdenJ2kMNxoXUpZ8Aqx81K+8cmzCiCh88gCuJ5+A=;
+        b=djWLtnlSsNM6G8y/o+P4HdCElCAhroKQAVbXSIu6CoFUgfokSQNAVwZfZep1nq7uCU
+         Q6wpmUEL59ZLcQYNV/7yoWJjsLoqR0VGGPzKJQACCauUhuaTx9dCtoVRJL6506WlfV9o
+         NvtQ21MARPWe8E1+pT6rlDuKuq3NoVLDAfDZ3RNlXNnUtBRYvLSxf8bvG1+O3w5ghj5y
+         UJHcDpDrAnVIXYN/u0QiY23m/87D2hTJe0qCFk+tVi6fcO9J+5X/3QP7FWvkboqh1rn1
+         6JPKzc1/WjBI1psXhMtmjmeup4JTCqqqejXvq339AnlSBYmI+t7edHNr2/OGPfi2WUHR
+         PcDQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWbq4fWZT0TLbtU/nl9onkXIsPiL+U8bFmoNz/1qN85vgUSnXzy2bty11k/qJG4hZjmvUfK8g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwOKf9mHGaS1a9toKqN+O61ODyElziP9cFfqclbV/r0MEwq8CHP
+	RptHysncgUZ7g8k9jkpSCAP9vqJMZO3eSDpTxXxnWaXd4DE2pRQB413++3BlFbsTmanAL0jU8XA
+	ZOEISqTC8Ih4C3QD5o1M9P+hh6rOnbgKHL+qsdWnXNngM7L/ajVdQ2qvyZ/ItjU03bQ==
+X-Gm-Gg: ASbGnct6XxtwmNVljhQYOLRVtrPW1gZv/hOAY3m39e8ieimvI5ZmyM34bSI79lUdimJ
+	uS3HBBsPbMgiiryT09aTRUdKWASViT2cNvs9qaOqOtDgJXJLD0p1L0v77waqUSbdhLpaEpJD1yl
+	nYHtrkce8aRYsGWH1mH0yUdRzWemMIoNaMwkk813g26+ffGM7m/4rw4gJ7WiT1RqHqRZReb8QkV
+	w9mRkaX9wq/U3/VXfWQsctWhRdPvrw9rYvNTm6BAIRgaee5LasJp/SYZlo8OzAXN7dWgzRQyE5q
+	417Z3a1LbVkXzxEyxzSh9y6+pInBplzNtMSfbM+0vg2kc3mTlxowNfcuhtybfe1GMfEpO7i4Tn5
+	7pJRejp/P4bh2HBQD7mo3FdhLrHQ=
+X-Received: by 2002:a05:6a21:3287:b0:232:ac34:70ec with SMTP id adf61e73a8af0-23dc0ea7c93mr1921214637.7.1753835448585;
+        Tue, 29 Jul 2025 17:30:48 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFXj7G/TnKXtBi1fe1wzt9F05KCSBAlvRjrlMz0OGXrpqKtnB9Lz6S/vRD0L0OwLPRbTgxAkw==
+X-Received: by 2002:a05:6a21:3287:b0:232:ac34:70ec with SMTP id adf61e73a8af0-23dc0ea7c93mr1921185637.7.1753835448137;
+        Tue, 29 Jul 2025 17:30:48 -0700 (PDT)
+Received: from hu-obabatun-lv.qualcomm.com (Global_NAT1.qualcomm.com. [129.46.96.20])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7640b4c852fsm8489587b3a.118.2025.07.29.17.30.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 29 Jul 2025 17:30:47 -0700 (PDT)
+From: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+To: robh@kernel.org, m.szyprowski@samsung.com, robin.murphy@arm.com
+Cc: saravanak@google.com, quic_obabatun@quicinc.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev, william.zhang@broadcom.com,
+        kernel@oss.qualcomm.com, will@kernel.org, djakov@kernel.org,
+        Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+Subject: [PATCH v3] of: reserved_mem: Restructure call site for dma_contiguous_early_fixup()
+Date: Tue, 29 Jul 2025 17:29:56 -0700
+Message-Id: <20250730002956.1812694-1-oreoluwa.babatunde@oss.qualcomm.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MW6PR12MB8663:EE_|BL1PR12MB5972:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1ba70a62-1e52-4b94-f4fd-08ddcef96fb0
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?bT/QQRZrtgdWxHaa/wcWrb3IQPP+l08KkH5TjcFX+JeXP7iVK7sefUZSGQsP?=
- =?us-ascii?Q?Yijxhz3Wv6uFVeDPyaJijIAexxAw1mco5FvMdf0tVV7ovHkd1XBA+0xXNy32?=
- =?us-ascii?Q?6OBIF8kimL553aRjies2s2tinWldFfjlqJ/+rSEW94GXZ7/hXLcRctioKEVy?=
- =?us-ascii?Q?oOYtVAyBtFtQAGwjZYBL04J/gIfAe8CoA1WgF83tdq9eKEpngMXVlp335srn?=
- =?us-ascii?Q?xa6GOYKj8ByWNhWt8qGZvoh0QtskowhaHTOyg5oWk0TyzTbj6sLv1RR/zJNp?=
- =?us-ascii?Q?TSBXDUEZlhUO18444o/LKMRzI7anRFGeMdQilcNT2YR6EWWrgj4ld9IGB0YY?=
- =?us-ascii?Q?ZdnOwriAcDjCRj72ruTDiziP6G1irVqcQKhQN19yEDmIhwEtVK37jo72pHx6?=
- =?us-ascii?Q?+pCPJnMD2gE3IcV+Maf16AmnqksAJhLcZAE33Wn6fUBH3gMlP7433hVN1DUA?=
- =?us-ascii?Q?n3D1Ka1SpaBtJDbqmKXughLPsyPlXm4htzIY+rgIKH3QsX4A4AavsSAqb2lc?=
- =?us-ascii?Q?5XbF/Nj2NhWC7DjkHqaET46wko0gwI0RuldY0V6l88E9GRrfCa6IvgHYEhSC?=
- =?us-ascii?Q?Q7InX9GXi4ghhERl7JsiHS1H41BVkWBrnj9HFasqkAq4hnP6uJIBN1lvW/73?=
- =?us-ascii?Q?w6h0CflyOq3LxbitY5UxCbpWWt0HkEJqGp4BoOOuNOx0/2Ux1zOxEwsbCI+T?=
- =?us-ascii?Q?6beLOcs1MKEqM/T+FZjAbII6O+ABEjU50/A5Vz1a8P73tsJLYXBRmN9OTBnj?=
- =?us-ascii?Q?FicWwCJ8iv1UTl9GIpPlnqJU/4pmAb5T0esnE9Pj3Z/9NIevqot7BIrWcgPG?=
- =?us-ascii?Q?M8IgvqXAmKlJKAT0XvvqoVvuqseFfBx980oJD/TrO7J8JActAFiPRmoE5rrt?=
- =?us-ascii?Q?/8+d2xj8SjbooXn7DnkwR6dlL9c+jmLBqAy973AnrR/zxrnck1M2Mh3fDa3X?=
- =?us-ascii?Q?RhZZsq1G+qRqbICe8gkDEc31uBNZk9eU9L1wPbKvutRLSHm5tPIJ4/oG8Xz5?=
- =?us-ascii?Q?EKpQn5sfte6maUxO40oI6+Zg96wMAZOuGMkvWg1a5cvDSKtkB0o0y2k38/U1?=
- =?us-ascii?Q?3q//rPcIh4XcNh2/+UCsnZMTVEPVvF8pKFs9BLtnreXw/uLNDr5Sol8TdLn8?=
- =?us-ascii?Q?rfgIdyWcd44zGO+Y3aiZ4saaDyG3U5pB8FD1WcsnZ7CPHapL2IVmrN/V/BP0?=
- =?us-ascii?Q?FV1QmMysks2Pazuvx2gjPoJ2EudSSzQY2Xie7PQvQbXz0zmqxy956b0mKLzm?=
- =?us-ascii?Q?SeOtTqxxGjdcR/yDdT5Vu7iVjK9GF9Z/QwZdfD/Vb5s7WETjMJl17a6xzCp8?=
- =?us-ascii?Q?101RIc3AOXZcR0wp8zf8je2LEE2VFiQpYE+28AJHoYlKhbZ+ZvzC604lzW12?=
- =?us-ascii?Q?rYqDtVmxMkoNldyfSPg4m2ozm+Fq1xFLRsTJC0OAcutW0QCxFMV1lKr9NKbD?=
- =?us-ascii?Q?cXfS+u2vpws=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW6PR12MB8663.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?zOkr56mA4yknW55CuRkg1kE3bf7eUMOwjq1zpzplb4JpNrF3NDjYhe5GUKyh?=
- =?us-ascii?Q?SIVrTcsd+bsCC1K9bZtVITK4Hg5faBg4K6eAVh1Whk+BgmhP1fNzKzzeNJ6t?=
- =?us-ascii?Q?MAqppwyqbjBLd5oiDcoUyO6JiLOUCJo54JewWINQj8fF3tHGe8ZHKcTigddk?=
- =?us-ascii?Q?1ZGJm0CZZuJT6YJtdVeqygjDuCNff8n3D2uXowwpNAKJwKFvXhRtYHBX9dLQ?=
- =?us-ascii?Q?0FFEn4Di185a8d7S+FXZ1b4qUY1gNThXMSb0EZ4EEe+PakxeAPlN9SvV7wUr?=
- =?us-ascii?Q?swAqZUf8+Hhe6+VpveIpQad7hsb3E6N3LOadXKMFjBTYYT2lppwkbg1NsLc0?=
- =?us-ascii?Q?SIWnIyv7vheWZo2FrKSPJvjLq/1OZYcJlwdzBu5RQ+AuNrQYvOg/sFF6XUVJ?=
- =?us-ascii?Q?vOJMeNurh3dwKo2XSMQD5WDZxQBPbBBeqzcKFyObQF8tFwPoHkBIik1C1Unj?=
- =?us-ascii?Q?NXk5fPLRsbVDgelFj5ctX/OXKH8k+PE0hcHh4CEzOBXHxihCP+kKHauwaJ1W?=
- =?us-ascii?Q?N0HikKkIIsGjIONI0IsYYFO6J2DlFul8RAPgjAYVRg7wg5UlFwgfdlBnfAuH?=
- =?us-ascii?Q?Nl/s53UUDFYPywrd4YMwivj1/9TAdq3w4vgfhusaLz8s4FX0B8v/vxzqahp8?=
- =?us-ascii?Q?P6BMZ8/XCPdwfNWWsiQTrcVwiHJpCaLPgCJ6rsAzLSB0g+NgmixW4KSVpeSb?=
- =?us-ascii?Q?ICudzo5Jyora6IkkA9RJYcaODU0MPpBrRKAkAqcOw8a/V5en1aYEShe/vcGP?=
- =?us-ascii?Q?feVd40dGCLzgb43UIkFp9pdziGoebi4Ak8OvHQoDYK5sK7grJMUYBf2Wpr1D?=
- =?us-ascii?Q?Sj5BQgHKYRD0H53PDFW4r5WKX3XZJNDDgrjVgTnWfstwmMqSebiFWY5CvrCl?=
- =?us-ascii?Q?JXspBPlfEwfsmoGp0jTTtpMMxRmL2yjpjyyvPijuYecY9vUPzXLZR1long7q?=
- =?us-ascii?Q?MzHyTL7G96ducGi/eLH7EPRT0k4erpVcxsVN5LDmAv/I3lXxbkp66Mil4bC5?=
- =?us-ascii?Q?yODYEQZeGLQo7UH8OVH/MwL1NaedtPR0Tylcso4+6JCibcGLiAQ0aQ+kp2oO?=
- =?us-ascii?Q?iVFvPX0UkhXrj0uQmyqkFeowPiFF/d1xT4RCWZ2O8q4iLifjwI8m8VsognhB?=
- =?us-ascii?Q?xwwPOpPQlMF7W94NMcTHaoTKClFwMMAwP5g7Tj1KXDontEOBxGBD3m8/+BSx?=
- =?us-ascii?Q?nZUemQGd8KdOTOzoBD4KrYrbew4HVLnckoErZDtUKGy3LxQZnTswMDuk53tT?=
- =?us-ascii?Q?r/FhU+7gOCTi8DNEWN0w9b4z/6paz/4EvFas319KDjTvb2ln8pA2GWeGAl6d?=
- =?us-ascii?Q?AESahUwIYPO3Yoxiw4gBzwUBzUwnC1U18Cvi/HYQ47gkZPTf3BaeQaAM6ZD3?=
- =?us-ascii?Q?LSeNOMblHa15iFVpOZumeTJJyGkgaSRuqG40HjikuH8sqVWidnMeNLMxdVh9?=
- =?us-ascii?Q?hLYB9faMairkLyoSyTrZpbz70hY5CwD1CNDjFuJOZvGAH/1SUOjmxNPByyJ9?=
- =?us-ascii?Q?euoyc+pdq5jvh8eQm7s0bQU8GkCgNN6biWcMiW1ytklPECJV6ohIsbTML6dR?=
- =?us-ascii?Q?82VWOPbwonZe8CmOQhE=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1ba70a62-1e52-4b94-f4fd-08ddcef96fb0
-X-MS-Exchange-CrossTenant-AuthSource: MW6PR12MB8663.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2025 23:41:27.4079
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dfjoRKumMNflucLKCAHmQkfauIRWVVm+h+7qRRSl7EOPpqaVyD6VpbePlps4KaDA
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5972
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzMwMDAwMSBTYWx0ZWRfXzb40mFd5jAHh
+ on73cL3YrerZRzqP/CtOkPytSTycUfGOxqZ730a1hvbE32Lg0uXH7goJHD+kRD7ATWsPrD8rvR7
+ +sNib64WWkbR2fRf/2Mz9BqwaANcdpf8f1KxXBrCbw47fZ7aCZQhtwhWU0Hj75FDAqGt/rw97a3
+ QAN2L1CT45OLUK29N0bq2faCh2Quei3Gif324ipsVHNGhqazfMlvCS6lm9MRhPg7Y6hl86g+rkc
+ IzyYoj10h+gCw0rfDfw93QJ3ioY+q2puz+90tc1jpvy9INpEJMW5o6M9uyz/p33+OF+64eCf9ML
+ vEpaNECmWrEWh+1Cv60mZkA4NayMBdgZvXQ++yYsb619d4URqeQCm1ABq/EUwzEYnIZNyEYHiNL
+ NhklPlH/nDMIPKVLtjiWKmhuPyemsqqJ2YuulX6nXGzLdm3n1vTpO50X3Hn0G2F0SKs0l7w7
+X-Authority-Analysis: v=2.4 cv=Hth2G1TS c=1 sm=1 tr=0 ts=688967ba cx=c_pps
+ a=oF/VQ+ItUULfLr/lQ2/icg==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
+ a=Wb1JkmetP80A:10 a=EUspDBNiAAAA:8 a=Q-fNiiVtAAAA:8 a=v9W1MpMA7iSxILOuClkA:9
+ a=3WC7DwWrALyhR5TkjVHa:22
+X-Proofpoint-GUID: eavrWbYt0jGb3flz1ANmKnd9CfWMzwYA
+X-Proofpoint-ORIG-GUID: eavrWbYt0jGb3flz1ANmKnd9CfWMzwYA
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-07-29_05,2025-07-28_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 phishscore=0 mlxscore=0 priorityscore=1501 impostorscore=0
+ lowpriorityscore=0 adultscore=0 malwarescore=0 mlxlogscore=591 clxscore=1015
+ spamscore=0 bulkscore=0 classifier=spam authscore=0 authtc=n/a authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
+ definitions=main-2507300001
 
-On Tue, Jul 22, 2025 at 02:44:01PM +0800, Baolu Lu wrote:
-> > +	/* First stage always uses scalable mode */
-> > +	if (WARN_ON(!ecap_smpwc(iommu->ecap)))
-> > +		return ERR_PTR(-EINVAL);
-> 
-> I don't follow here. Why WARN_ON and return failure when hardware
-> doesn't support a feature?
+Restructure the call site for dma_contiguous_early_fixup() to
+where the reserved_mem nodes are being parsed from the DT so that
+dma_mmu_remap[] is populated before dma_contiguous_remap() is called.
 
-Oh, that's a rebasing typo, it was supposed to be been replaced with this:
+Fixes: 8a6e02d0c00e ("of: reserved_mem: Restructure how the reserved memory regions are processed")
+Signed-off-by: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
+Tested-by: William Zhang <william.zhang@broadcom.com>
+---
+v3: Wrap the call to dma_contiguous_early_fixup() with a check for
+    CONFIG_DMA_CMA to fix compile error seen on x86. The __weak function
+    definition introduced in v2 was not sufficient to prevent the issue,
+    so remove that as well.
+    Also add Tested-by tag from William Zhang.
 
-> > +	if (ecap_smpwc(iommu->ecap))
-> > +		cfg.common.features |= BIT(PT_FEAT_DMA_INCOHERENT);
-> 
-> My understanding is that if hardware possibly walks the page table
-> incoherently, we need to set up the PT_FEAT_DMA_INCOHERENT feature;
-> otherwise, there is no need.
+v2: Add a check for the "reusable" property to narrow things down to
+    only cma regions.
+    Also add __weak function definition for dma_contiguous_early_fixup()
+    to avoid compile errors on architectures that do not define the
+    function.
 
-Yes
+ drivers/of/of_reserved_mem.c | 20 ++++++++++++++++----
+ kernel/dma/contiguous.c      |  2 --
+ 2 files changed, 16 insertions(+), 6 deletions(-)
 
-> If that's correct, perhaps what we need here is:
-> 
-> 	if (!ecap_smpwc(iommu->ecap))
-> 		cfg.common.features |= BIT(PT_FEAT_DMA_INCOHERENT);
+diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
+index 77016c0cc296..cfffecb91c3a 100644
+--- a/drivers/of/of_reserved_mem.c
++++ b/drivers/of/of_reserved_mem.c
+@@ -25,6 +25,7 @@
+ #include <linux/memblock.h>
+ #include <linux/kmemleak.h>
+ #include <linux/cma.h>
++#include <linux/dma-map-ops.h>
+ 
+ #include "of_private.h"
+ 
+@@ -175,13 +176,19 @@ static int __init __reserved_mem_reserve_reg(unsigned long node,
+ 		base = dt_mem_next_cell(dt_root_addr_cells, &prop);
+ 		size = dt_mem_next_cell(dt_root_size_cells, &prop);
+ 
+-		if (size &&
+-		    early_init_dt_reserve_memory(base, size, nomap) == 0)
++		if (size && early_init_dt_reserve_memory(base, size, nomap) == 0) {
++			/* Architecture specific contiguous memory fixup. */
++#ifdef CONFIG_DMA_CMA
++			if (of_flat_dt_is_compatible(node, "shared-dma-pool") &&
++			    of_get_flat_dt_prop(node, "reusable", NULL))
++				dma_contiguous_early_fixup(base, size);
++#endif
+ 			pr_debug("Reserved memory: reserved region for node '%s': base %pa, size %lu MiB\n",
+ 				uname, &base, (unsigned long)(size / SZ_1M));
+-		else
++		} else {
+ 			pr_err("Reserved memory: failed to reserve memory for node '%s': base %pa, size %lu MiB\n",
+ 			       uname, &base, (unsigned long)(size / SZ_1M));
++		}
+ 
+ 		len -= t_len;
+ 	}
+@@ -472,7 +479,12 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
+ 		       uname, (unsigned long)(size / SZ_1M));
+ 		return -ENOMEM;
+ 	}
+-
++#ifdef CONFIG_DMA_CMA
++	/* Architecture specific contiguous memory fixup. */
++	if (of_flat_dt_is_compatible(node, "shared-dma-pool") &&
++	    of_get_flat_dt_prop(node, "reusable", NULL))
++		dma_contiguous_early_fixup(base, size);
++#endif
+ 	/* Save region in the reserved_mem array */
+ 	fdt_reserved_mem_save_node(node, uname, base, size);
+ 	return 0;
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index 67af8a55185d..d9b9dcba6ff7 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -483,8 +483,6 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
+ 		pr_err("Reserved memory: unable to setup CMA region\n");
+ 		return err;
+ 	}
+-	/* Architecture specific contiguous memory fixup. */
+-	dma_contiguous_early_fixup(rmem->base, rmem->size);
+ 
+ 	if (default_cma)
+ 		dma_contiguous_default_area = cma;
+-- 
+2.34.1
 
-Yes, the ! is needed
-
-> > +	if (WARN_ON(!iommu_paging_structure_coherency(iommu)))
-> > +		return ERR_PTR(-EINVAL);
-> > +	if (!iommu_paging_structure_coherency(iommu))
-> > +		cfg.common.features |= BIT(PT_FEAT_DMA_INCOHERENT);
-> 
-> Similarly here.
-
-Yes, same rebasing mistake
-
-Thanks,
-Jason
