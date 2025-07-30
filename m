@@ -1,114 +1,174 @@
-Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 242022DA76B
-	for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 14:42:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.48
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7353422539D
+	for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 14:49:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753886577; cv=none; b=QDmjJ7Kbp763rzdhAwkJ1WLN0kjs07w9G20sk5Q5oifDsIuEsSnkajZsnmqzOvBAEXzfMG+EpzlY50UyEhxPbMIc+TEwBtzbEUK2pfMH13hmfM66lY/TbnGO9odZ8/1PpVy+ml68HUSiHM9z+hSeER7vozZjngIfVAVj+QF8IvM=
+	t=1753886994; cv=none; b=Uc2EsqSerAcC1Wvx8Xi57vfkeHy+3O/ZSLNnguviSbATYquK5fYGIziUWz5SxTTCXmWw8VqExhwmwf/T551MpIwGfhUiL9xScyjxZVdkhNPIPMFchFx6Dcrpmu6z/krV2zI46zgN/sWYc0XlxQog4zvHu+4kHBxZO1hbP/geA8w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753886577; c=relaxed/simple;
-	bh=gGRfP7BSpng2geWuLtovyzO2vvewCAFqLFPtlv86Vs0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=W5HmEHK+cDcge8HnA9U5+LUJVEYdeJav93DGugALnZMnOSHK+2DiTQdazNZT7qxbTRlodpp+fApgJv2esIBOIg2zOAYZb4DzcTbuuffdTg0OGci9WJThHJCsjKQZETPlIvGA5dWb6YQUtlfBEUclgSf7+1h+V7gxMJ2h/TxPXwc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jyrm56wT; arc=none smtp.client-ip=209.85.219.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jyrm56wT"
-Received: by mail-qv1-f48.google.com with SMTP id 6a1803df08f44-707453b0306so34482966d6.2
-        for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 07:42:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1753886574; x=1754491374; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=yE9XS5x/IPLFg7Q0+oI241GEqid5njht4Vd0VCx+/2E=;
-        b=jyrm56wTckHmfEw+6BsYUu1EEZb+ZKds+e9v8dKtJBcImBCAfTP9xKp1Jmqpk8rszZ
-         f8yRnkhObmsfH+xG+SOYVmfHJGN9tZ8bfOoQeqrNLPwCX2Kr+hIyrSxC6luNbdtE2ltY
-         9r766+s0AOVlmrzprH5JsnsIjb556rgNfVseXhpzuUwxLVgIcM2KV351x5WePpoxNPqi
-         NvoW8TprTw1Q0YUYVUQOt5XVt7GlsJdMqYNQjwagANaCUFujNCJBwsUqbxrgBpbmzsKI
-         GGJOcanfA4qWT4m/DoNyJpZtNUvJzpRge+v0VwHLHTACI/AdeUfyPhY7adY3FYUsBl+j
-         KT7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753886574; x=1754491374;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yE9XS5x/IPLFg7Q0+oI241GEqid5njht4Vd0VCx+/2E=;
-        b=XHR3nYgCQrQxcMjqf208Vmjkvlo5VkrzXPQxSA6F429aK0EAgnKcZEY2ZkM1rmZ2qT
-         QBjkixlxYDF1Emu0mccsTf2HQI1MDKcgeuOdQlrjd4/bDY/lHHD3EHSgCYCjwmTFsF1y
-         gpD2qDUr+w/c8qI1b8RvQ2zTKYOuj5+3hIAvwFV5Y6Tu29YCGvt+ExlUXhxrBhdrcTF6
-         +RplpCqirjFGOBAEk4WyPPDnJHN3f+iCA4kA4oEZjHKq9YQ0SYA44i8cImJZSr06ne5u
-         r38cwz0hDtKtA3fL5rR4ZtTEKN9hQt0gnq5zhRuFLEbRIpdF/BFnDUAzMmFCnpb1g6sG
-         IHiQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVpZOkMFx6t1LVt/KwzEPbIRuymxQk6uVI0JoZ2uUDbD93ZPK7yEpoXzGeIg7IIrAVZVPJ4PQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwyQKER1Z0wKkKszWg0uh+Jdll7Z2Src/R+7CymKln96CcTStiQ
-	6bbLrMjCvClan9SA6VNmDv0vpnGTA/eEx25hcYGxkpG3NLiO1QgO+EA5Hf4Y0ntx+0U=
-X-Gm-Gg: ASbGncs0+pvf3nQwKnRNn9mPzQO98u9HtINZ/tK0m/39PE73shZD1i0253vQO2fiVi4
-	yni2I62zZZtx2J3R+VwDPg976JGyItD+QeU51Siv3+jFy0MEUZLQFC6VDGSDWI3Ym83OAqlcaYU
-	ycnF6bwvWLILjU6HtV76rXpWxjU46kFVsyy9sGYQWMzdQ5JUh/6PvtGiFItP2HsyflW6t1Z8Bk/
-	YgND/+DdJ3IDqdffxgiV+PV7KD7xojDwnseVEiT5jZqQWCA3Kit48fWdB4VSoTFR3kGJQVoNJJb
-	75p9AeSj2Pmo91DwTa+w4sQqBR57D5fIhTP5Sie2fs5hjXgVpK6TlQHB3TG6cl4PNOO7gdvD3GR
-	BOKIgUFHT6Rf2vJgvQRhGxYQyy3hSRWWSBoow/WeIiQwFtUpmRA3Mfc0GWyQpV2g2FdryYFUKDT
-	QiUZI=
-X-Google-Smtp-Source: AGHT+IFTshf+JMDcrv8+0/UalWTBjWGXz7BdMW99vihoM+QJWNKuspc/O9f/fXBj039JGJi+af7NVQ==
-X-Received: by 2002:a05:6214:ac7:b0:707:4daf:631 with SMTP id 6a1803df08f44-7076719b73dmr50415456d6.42.1753886574527;
-        Wed, 30 Jul 2025 07:42:54 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-7074b52ddc7sm39845896d6.77.2025.07.30.07.42.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Jul 2025 07:42:53 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uh817-00000000RlW-0qIU;
-	Wed, 30 Jul 2025 11:42:53 -0300
-Date: Wed, 30 Jul 2025 11:42:53 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, will@kernel.org, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v3 29/29] iommu/arm-smmu-v3-kvm: Add IOMMU ops
-Message-ID: <20250730144253.GM26511@ziepe.ca>
-References: <20250728175316.3706196-1-smostafa@google.com>
- <20250728175316.3706196-30-smostafa@google.com>
+	s=arc-20240116; t=1753886994; c=relaxed/simple;
+	bh=kiil3a12z0g8EHN6aN3WXtdYZoEr8JUmTMUWd7FUTPs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cdjqx5BJ5LTLFTxu7PW31fMFrvNXIxs3T0I/tqzCaj0DlwmqZJgUDK9kpjM9JEdE0LTJCL4QPw23LScgiDEryC/nciPq7cM8ePBxIzYEjFPHISbimHIDICOSUo57uNUzTjr2Ez8WrIrW8eKr346BYZxWlX6ofe04OaVZWMkt5BQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A671E1BC0;
+	Wed, 30 Jul 2025 07:49:43 -0700 (PDT)
+Received: from [10.57.3.116] (unknown [10.57.3.116])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9B8B53F673;
+	Wed, 30 Jul 2025 07:49:47 -0700 (PDT)
+Message-ID: <6c5fb9f0-c608-4e19-8c60-5d8cef3efbdf@arm.com>
+Date: Wed, 30 Jul 2025 15:49:45 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250728175316.3706196-30-smostafa@google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 10/10] vfio/pci: Add dma-buf export support for MMIO
+ regions
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Leon Romanovsky <leonro@nvidia.com>, Christoph Hellwig <hch@lst.de>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
+ Jens Axboe <axboe@kernel.dk>, =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?=
+ <jglisse@redhat.com>, Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+ linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-mm@kvack.org, linux-pci@vger.kernel.org,
+ Logan Gunthorpe <logang@deltatee.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Sumit Semwal <sumit.semwal@linaro.org>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>, Will Deacon <will@kernel.org>
+References: <cover.1753274085.git.leonro@nvidia.com>
+ <aea452cc27ca9e5169f7279d7b524190c39e7260.1753274085.git.leonro@nvidia.com>
+ <8f912671-f1d9-4f73-9c1d-e39938bfc09f@arm.com>
+ <20250729201351.GA82395@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <20250729201351.GA82395@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jul 28, 2025 at 05:53:16PM +0000, Mostafa Saleh wrote:
-> Register the SMMUv3 through IOMMU ops, that only support identity
-> domains. This allows the driver to know which device are currently used
-> to properly enable/disable then.
+On 2025-07-29 9:13 pm, Jason Gunthorpe wrote:
+> On Tue, Jul 29, 2025 at 08:44:21PM +0100, Robin Murphy wrote:
 > 
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> ---
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 92 ++++++++++++++++++-
->  1 file changed, 91 insertions(+), 1 deletion(-)
+>> In this case with just one single
+>> contiguous mapping, it is clearly objectively worse to have to bounce in and
+>> out of the IOMMU layer 3 separate times and store a dma_map_state,
+> 
+> The non-contiguous mappings are comming back, it was in earlier drafts
+> of this. Regardless, the point is to show how to use the general API
+> that we would want to bring into the DRM drivers that don't have
+> contiguity even though VFIO is a bit special.
+> 
+>> Oh yeah, and mapping MMIO with regular memory attributes (IOMMU_CACHE)
+>> rather than appropriate ones (IOMMU_MMIO), as this will end up doing, isn't
+>> guaranteed not to end badly either (e.g. if the system interconnect ends up
+>> merging consecutive write bursts and exceeding the target root port's MPS.)
+> 
+> Yes, I recently noticed this too, it should be fixed..
+> 
+> But so we are all on the same page, alot of the PCI P2P systems are
+> setup so P2P does not transit through the iommu. It either takes the
+> ACS path through a switch or it uses ATS and takes a different ACS
+> path through a switch. It only transits through the iommu in
+> misconfigured systems or in the rarer case of P2P between root ports.
 
-Can you split the new iommu subysstem driver out please? I think I
-asked this before.
+For non-ATS (and ATS Untranslated traffic), my understanding is that we 
+rely on ACS upstream redirect to send transactions all the way up to the 
+root port for translation (and without that then they are indeed pure 
+bus addresses, take the pci_p2pdma_bus_addr_map() case, and the rest of 
+this is all irrelevant). In Arm system terms, simpler root ports may 
+well have to run that traffic out to an external SMMU TBU, at which 
+point any P2P would loop back externally through the memory space window 
+in the system interconnect PA space, as opposed to DTI-ATS root 
+complexes that effectively implement their own internal translation 
+agent on the PCIe side. Thus on some systems, even P2P behind a single 
+root port may end up looking functionally the same as the cross-RP case, 
+but in general cross-RP *is* something that people seem to care about as 
+well. We're seeing more and more systems where each slot has its own RP 
+as a separate segment, rather than giant root complexes with a host 
+bridge and everyone on one big happy root bus together.
 
-This series is big, reviewing a new iommu driver should be done separately.
+>> And again, if the IOMMU is in bypass (the idea of P2P with vfio-noiommu simply
+>> isn't worth entertaining)
+> 
+> Not quite. DMABUF is sort of upside down.
+> 
+> For example if we are exporting a DMABUF from VFIO and importing it to
+> RDMA then RDMA will call VFIO to make an attachment and the above VFIO
+> code will perform the DMA map to the RDMA struct device. DMABUF
+> returns a dma mapped scatterlist back to the RDMA driver.
+> 
+> The above dma_map_phys(rdma_dev,...) can be in bypass because the rdma
+> device can legitimately be in bypass, or not have a iommu, or
+> whatever.
 
-Please review all the comments for the verisilicon driver, I think
-many of the remarks apply here too:
+I understand how dma-buf works - obviously DMA mapping for the VFIO 
+device itself while it's not even attached to its default domain would 
+be silly. I mean that any system that has 64-bit coherent PCIe behind an 
+IOMMU such that this VFIO exporter could exist, is realistically going 
+to have the same (or equivalent) IOMMU in front of any potential 
+importers as well. *Especially* if you expect the normal case for P2P to 
+be within a single hierarchy. Thus I was simply commenting that 
+IOMMU_DOMAIN_IDENTITY is the *only* realistic reason to actually expect 
+to interact with dma-direct here.
 
- - Domain attachment looks questionable. Please do not have
-   attach/detach language at all in the hypervisor facing API.
- - Get the ordering and APIs right so replace works. You need this to support RMRs
- - Use a blocking domain not some unclear detatch idea
- - Use a blocking domain for release
- - Use the smmu-v3 approach for the fwspec, don't store things in the drvdata.
+But of course, if it's not dma-direct because we're on POWER with TCE, 
+rather than VFIO Type1 implying an iommu-dma/dma-direct arch, then who 
+knows? I imagine the complete absence of any mention means this hasn't 
+been tried, or possibly even considered?
 
-Jason
+>> AFAICS you're *depending* on this call being an effective no-op, and thus
+>> only demonstrating that the dma_map_phys() idea is still entirely
+>> unnecessary.
+> 
+> It should not be a full no-op, and it should be closer to
+> dma map resource to avoid the mmio issues.
+
+I don't get what you mean by "not be a full no-op", can you clarify 
+exactly what you think it should be doing? Even if it's just the 
+dma_capable() mask check equivalent to dma_direct_map_resource(), you 
+don't actually want that here either - in that case you'd want to fail 
+the entire attachment to begin with since it can never work.
+
+> It should be failing for cases where it is not supported (ie
+> swiotlb=force), it should still be calling the legacy dma_ops, and it
+> should be undoing any CC mangling with the address. (also the
+> pci_p2pdma_bus_addr_map() needs to deal with any CC issues too)
+
+Um, my whole point is that the "legacy DMA ops" cannot be called, 
+because they still assume page-backed memory, so at best are guaranteed 
+to fail; any "CC mangling" assumed for memory is most likely wrong for 
+MMIO, and there simply is no "deal with" at this point.
+
+A device BAR is simply not under control of the trusted hypervisor the 
+same way memory is; whatever (I/G)PA it is at must already be the 
+correct address, if the aliasing scheme even applies at all. Sticking to 
+Arm CCA terminology for example, if a device in shared state tries to 
+import a BAR from a device in locked/private state, there is no notion 
+of touching the shared alias and hoping it somehow magically works (at 
+best it might throw the exporting device into TDISP error state 
+terminally); that attachment simply cannot be allowed. If an shared 
+resource exists in the shared IPA space to begin with, dma_to_phys() 
+will do the wrong thing, and even phys_to_dma() would technically not 
+walk dma_range_map correctly, because both assume "phys" represents 
+kernel memory. However it's also all moot since any attempt at any 
+combination will fail anyway due to SWIOTLB being forced by 
+is_realm_world().
+
+(OK, I admit "crash" wasn't strictly the right word to use there - I 
+keep forgetting that some of the P2P scatterlist support in dma-direct 
+ended up affecting the map_page path too, even though that was never 
+really the functional intent - but hey, the overall result of failing to 
+work as expected is the same.)
+
+Thanks,
+Robin.
