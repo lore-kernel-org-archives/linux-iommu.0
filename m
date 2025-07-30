@@ -1,317 +1,161 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CD8918DF89
-	for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 16:02:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753891323; cv=fail; b=bbVnWPeqeecq81Kx1JIFM3K6G0GTtBmHsp/7whwsyWb0lY7BGkWBm7r0BhW4LfJQjYycpecA4agvjyUtcE5FIXfR2L4aK6b3AsPHrNqVfauf80N7Dqe5YKQioAqpjVgW1xhH242s7IhocnxPEO9QABUpGASs3Dn2LjPZ4RxUUoc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753891323; c=relaxed/simple;
-	bh=+yuHEFC08IDvYfqiyZNK3h/+YCxTMoCG0qIqmLvM+ZQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=m3Zn0MFVAbyzQ8v/mNsAV5VSfruN1SOuz2Jy10eIsLCimnp7JzR1+lTSPRLtNIh9e0fNsUvc8EqIuzjxCFjkbf9sRPJPDE1ChLqMBF/rj8swzoluihSTfExwt4p26rrGi61qlS6EMRuZ9qPzxUpwUDzSOEhfK94bjbB2X1c5Yyw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=poJxTL0+; arc=fail smtp.client-ip=40.107.236.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CFB21DACA7
+	for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 16:32:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1753893171; cv=none; b=sfqCo+GrS12GLI/UMNypz7CH5b8YJJMeTMJ61VPfjyOrQp4UVMIPGirAkWA8w0E3ZU1uezpey4cpM7A79gbnbeQdCE1IQE9IziEz95P7xC0iq8aljjXLuB8WCoPd27tlIPSlXuLxRNBonZ9wJq+NieK6sIIzQbMI8WSJaX3OAjk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1753893171; c=relaxed/simple;
+	bh=IBPNoWo/MAtm+CezpvetZ1BR38F+43l2Wl9gWUUr+Qk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=E04HjUXcIYJ0Y21qhIuGjHdfRSTKnYT6MLDIWEP4LxbsR2Q1RTymy+kSnVz0setRPQfigas/bxdyUCmn9mCdrLN2KhSq0kESL0IVwsoUntnHADRyfpY0QeYSjCEcU8MK60uDyP3RHd6S4pRGT49uWETnYXv/P0mu9bVOJkGfm8s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=tQBF5gQj; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="poJxTL0+"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=G9ZGnRdUWVVTbcM6lDAc54b7Iz0qF/zSn5z8AVapL+Dw9+qZPFBV7jin1MES8MH9lmtEBGdGq0+VRN5iVd0lSA+Xyh/QU5PokH4Joslk19GXgpX83APjOg0Mi/9NUJqB/cKrf0cGpAPZ8But7LG+LApnSwEOapV+fZVuMCa8ExAXznNS8dvQjDuElon0vUEAj4KWSZXrbPuDagMpiykv3CVDcEmTlmMCcJYQWC4TUIxDK1VXfoI5EguCw+X5MSvCVK6P8/XpOjgtsafStGDLTk1UpfrR54yAnhr3R//qFqE9AN0M2YLLZruAzntA6IWH/EQ0FWViLOxoe7rB2LxY8w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/HH4uQ7brE0iQgVDUCu9Tq6HsEYeLjK5TCFH4yU2yNQ=;
- b=GkJYLr/8gIdfpfjy953n1q/PvUDB6Kptx59Hc6adta/T72qq3VaJkCYUqanDFn9Jgy2FpHFzlX1Ntc6dE9vO9YCJXgo4ZlSHM7wWDqAK504Yck1x8kWtkg3sM2Oo/IXMtkp5wz65DS6cxRBx1l5F6t+uclYAO/hjA7L8f4LK3D5023OliyfGRkjgohPR4u73xvfOS+aTY9+lfS3d1f9EiWrZb5Ox9v1ArZcj6kxXwcgG6a7mpIrtAjxmbI1eweHY4x5kyk7A3tXIUPfz111lglJv0l1mnaFvo/pLzxQ11ZOydho9YFQ2o9e/9v7NhjOYf/2Jg9KphKue5FkcR23l7Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/HH4uQ7brE0iQgVDUCu9Tq6HsEYeLjK5TCFH4yU2yNQ=;
- b=poJxTL0+LaVNtiOCUkA6ju26KbTnnGr5FDBJ8/rQ5IhRkRmtioBUm/d78nyiklIPzTnHinycl+logPbiNzDAWQo5ljlBP29Vu1V17NDxSCEHiZyZLE51IEDb3s8nEDGDDuBF+SU3qw5jR4DIBXOC+A2FkB8EfXMhPnHB9bxlOXFzWlXz1YqwORBevEyoDnx5+oSiilfG77jGmosbQTQIpDofjv3CPN7NLVhJ4l1iYh93EjAC/AAVbgXZJDHcDjBAOXDStI6VyWMqYbx/v7LgLq5RbX0m3bsdQgYxWkEW8niHBRGFYCUMwSUUwLZCKgTR/ozURDc92ndVD4Ed50cOmA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by BY5PR12MB4116.namprd12.prod.outlook.com (2603:10b6:a03:210::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8989.11; Wed, 30 Jul
- 2025 16:01:55 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8989.011; Wed, 30 Jul 2025
- 16:01:54 +0000
-Date: Wed, 30 Jul 2025 13:01:53 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Leon Romanovsky <leon@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Leon Romanovsky <leonro@nvidia.com>, Christoph Hellwig <hch@lst.de>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
-	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-	Jens Axboe <axboe@kernel.dk>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-	Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-	linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-mm@kvack.org, linux-pci@vger.kernel.org,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 10/10] vfio/pci: Add dma-buf export support for MMIO
- regions
-Message-ID: <20250730160153.GB89283@nvidia.com>
-References: <cover.1753274085.git.leonro@nvidia.com>
- <aea452cc27ca9e5169f7279d7b524190c39e7260.1753274085.git.leonro@nvidia.com>
- <8f912671-f1d9-4f73-9c1d-e39938bfc09f@arm.com>
- <20250729201351.GA82395@nvidia.com>
- <6c5fb9f0-c608-4e19-8c60-5d8cef3efbdf@arm.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6c5fb9f0-c608-4e19-8c60-5d8cef3efbdf@arm.com>
-X-ClientProxiedBy: YT4PR01CA0320.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:10a::13) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="tQBF5gQj"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250730163247euoutp018f67cca061e36a0d4821007bc118b0c6~XFIsjP6cF2308723087euoutp01_
+	for <iommu@lists.linux.dev>; Wed, 30 Jul 2025 16:32:47 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250730163247euoutp018f67cca061e36a0d4821007bc118b0c6~XFIsjP6cF2308723087euoutp01_
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1753893167;
+	bh=BSL5Fd5ey+NSvWwk5RIT5oUBgeHAV3OrGjQZ6pf7CNI=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=tQBF5gQjRFWWD3NkMzd2sWMQdocEpPuublYXo+DODrhkpC+sAkqpV7G/5+SLj9y3k
+	 FAXICFoay1/ibpDiaHyufgBQba2SMsBA7uyao3fLdxKNV0z8FjK9Dw3fJfuRxBPoak
+	 rpKYzTJHpu47CanwUZWJZBKrP3JwtACld7b3bvho=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20250730163246eucas1p2c966d8d5061fc0214cf993906aeab2f5~XFIrva-kQ2815928159eucas1p2i;
+	Wed, 30 Jul 2025 16:32:46 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20250730163244eusmtip2f48699419babf589223e18bf9ee0d79d~XFIp1n5Qn1925219252eusmtip2o;
+	Wed, 30 Jul 2025 16:32:44 +0000 (GMT)
+Message-ID: <ff84b386-4bfa-423b-9364-040598a1ece0@samsung.com>
+Date: Wed, 30 Jul 2025 18:32:44 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|BY5PR12MB4116:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2ac4e616-1dcd-4f5e-2a07-08ddcf826762
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?xEvBAg7/x4C4du1gSjBRGUwm5zub2v4nodI3BAtiEVAXvnzz7Fl4BxMs8ULY?=
- =?us-ascii?Q?uYwqSzU7yZsaqStRgmiDWBTz2I+u5Eu2zfP52x09ZAx08u/zc3zQ/ovh2kAt?=
- =?us-ascii?Q?aX8H7EMc4KciS+ptEvS9dGBRF94VibgjrJDW67/qb98dxSP5Fb8ZdOzFQiej?=
- =?us-ascii?Q?pvREzX1BbyPKJiVKQRQ9w5mvglpSfqIxiV60+arana4Ndu6Dc3/bebwHcba8?=
- =?us-ascii?Q?twSP+VQzA9nSTii4J4XBLTEd/i88omp2fER/22t/YYEA8esamHE6oOFPLWCH?=
- =?us-ascii?Q?LXhgcWU6iWAwyYhGv/BAqXfqiX7PUV7OFNJ1hzCNF4jW0XYZP7k4cmPjw/L+?=
- =?us-ascii?Q?MdkT3k3WZbHX/70k9g1xGYIRVv+QFeNt7L1ap0JnV4Hnn1KT0kiVON/YwlDG?=
- =?us-ascii?Q?+PPqUUP1izVnFs2HDtwIcd2PIFMVqVAa5LHdw8CCqWGNQ4biuQ1A6+OLdAdu?=
- =?us-ascii?Q?e2/fcgBKQrBYiFCczpzcALzSxSJswI9AJxNZfwUBNtHw1P8giCEm5jthS3l+?=
- =?us-ascii?Q?Bvn5laEb4CcPaQpvuURuAiad2Lny71bd0o1tzfZCTGb9eW/QbA3UPAm3/JDW?=
- =?us-ascii?Q?52QZxZUTX1I4LIFb9g9R2V7drZYsh+qCvavfw0MkqvDIv0bvhP5XsRyg2ccP?=
- =?us-ascii?Q?oPwuXyQKssasD+fA0PPV20cGWvp3BXJdq9Hm7wp5z/adIl0Nf16iPAW/Qd1G?=
- =?us-ascii?Q?OPoiRmgN0WCDOwkzoPZiFgV1TH+6Qm77bjyaAiU7eGYNkU2BmTlmm6I1Tz+M?=
- =?us-ascii?Q?bKax+rqSiTxHhS3lopBiCCsNJhkq6UXiuqrBQjUJvD4hcKOrwfISo2RY5k3w?=
- =?us-ascii?Q?sWX50UEBNEK/XqxKPlIMm98xfeupfzkhaPTL6GlyngwpJGGiv3yFbfLwCjz2?=
- =?us-ascii?Q?E3cl+p0vOB9rsADFU65iZN5HHquSX8gskw1MIqJNr8urxQ2kSSQSGo6J29Fm?=
- =?us-ascii?Q?aCzErX+BuiYIVM7Wdjhboxu0KoKqU/PoLfHm6Tor7hDyKYZVUKnvhxJZnNuA?=
- =?us-ascii?Q?0YqUzgpggcCsOML1+/Gqma/DQZYxN0YXk1lBk37cG1Yj7+itrAK2CvpeRwiz?=
- =?us-ascii?Q?8WTyNaGCOEVPbJJoWFb6Qc/2dL5uePMspSwGdU8H66t7OHUUpue/i/XbeU15?=
- =?us-ascii?Q?6pzfLx2timBQen+FSSPoGuCEFqXACmQalSEfKJ52yI8Ep6uEw3hvD0Ivt8hM?=
- =?us-ascii?Q?4a156wsWYi+5ZO3LQ2x8tXbP+j3nOTV2ntIAF966m/UkuoD9Yd7Vvh9xXa/q?=
- =?us-ascii?Q?FjGuauEwdOVKajeSxqUNFMPjsGf+QZpCe0Iag7wgoCG95pEVNTCSbJlfpRan?=
- =?us-ascii?Q?RzHbwl2oYQ72QaeJydUlOHQ50gA5MyuO7nPgKw/UPyr8glYAFOQyhr0KzEH4?=
- =?us-ascii?Q?V7NC9jO5/lVVm0+8m2HFm+975l4k2yk6lvr3THr8iWrwgUTrFsjC4U/+siyW?=
- =?us-ascii?Q?tO47oQ5Bqys=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?86nD5jkWgWdG2YKRaihzHSUvOnQxtUXRTnyq0//ELpWB5ZFuJM0n1qBA4/Lg?=
- =?us-ascii?Q?EHnxDoSW09TdOMxd6lI10WbKTBIZICYNwAoiUNT8R+ZkZEgKxerWHlLNErFL?=
- =?us-ascii?Q?HTb6iU3UUmwLhLGt+LL0WJmMgvaufEbp0o3CAcexmJ5RlVs58zgXtfXGbB6D?=
- =?us-ascii?Q?xi/pv6a5rzv7zlY0rbz6rzd/CygAyx52RhzqowwU5JUuq3yULLknwjhyNSh4?=
- =?us-ascii?Q?BgU1GhUjXtMEXOKRjqE8LQTeIxSyZVAGudMrQGMofKLWkHyryCWQlyqWSoYo?=
- =?us-ascii?Q?/F3KFKYU6TbpQfQwNZxUuTQw2hIY7TD5AAIM2yR9fGofu86qLAptq+CY4LpL?=
- =?us-ascii?Q?qRb2s88pgCUz+E/nbjWZ63qt4LuGtg+iDKN8POaev+xlJB6z+uW+B5l/gPSY?=
- =?us-ascii?Q?QSFnnVDO3tAoiT8Lnoepo3npm5XiVXyKp9uUKpJznp437CHIRt9x/ETjdJoU?=
- =?us-ascii?Q?L9I81x0+GBgT5Qf829bMHsBmQZwgzRdhygJx54M8z90jC9M4vOWImNxKj9ou?=
- =?us-ascii?Q?vvZATK5FhAhPqwDsaLV/G/JL58e1xTo3y+2sgWHH9nZHZ+5shHbGLjrl4Zub?=
- =?us-ascii?Q?NCBMYc4vfk1c9GyGvd8vzCxd3vsv2Ce5ggebcbSexjzDTQVXgzTg8szPXNvS?=
- =?us-ascii?Q?bVfr4JLwCj71kLp3ROnI3l6rDkpyHY6bSon3nRMvRwumqxvrSxpWq8dD7H3n?=
- =?us-ascii?Q?wFvRutS9XhrD7iJpBG+vHPp6lveN9OUlQKCigYuxrAQZHYIF67pqNTvmQx/E?=
- =?us-ascii?Q?vyDfI0cr9vL3O+cEpezr/gEoY7qH5XnuGvJ90LNPILFo4Ikyi5nHMpmpUgGb?=
- =?us-ascii?Q?Jz0o4cTRo5t51A82crepFT3L5sGAceaoVJrkEtNSTunb1vzJvyi2/RqkaUrZ?=
- =?us-ascii?Q?HkAsFTktP9e5xd0Haogrgs7rPy/4DV/UhZPW05GRViKm0vWypB4HR8CYzdli?=
- =?us-ascii?Q?zGBv0y4OMCX4m9mbAVSOWRJhGYwNisDywWBD8dnlXBQsPgfP5aZRq2AQG3j3?=
- =?us-ascii?Q?rQ5pzYUMIaW/VMyVlXVuBx/43dAMBjraN8E77+jpsrYRB+y9Kilt/j/bLE9V?=
- =?us-ascii?Q?0MLlMJ8vVx4vf97NSxAJEiDuO/xKHuBV1pTirEHQrkpTouZQwHN9tEhFuzPE?=
- =?us-ascii?Q?HttpVRPQDWpoImc9KGzaMbsQKqaPiiMYUSAISoZMOtWd6ryV/pxbUmakWyzD?=
- =?us-ascii?Q?3qNU0Y60ICxZ0aDNkgMt2lcOpZ/jnT0RiEc8/wBA2ErkUdA/1MsjicY5HImY?=
- =?us-ascii?Q?10t/n3oZsj2JWdn3r53159CG5Uu10/c/lMbMjjUMvPyDjoYhPbgv8XJ6IXXw?=
- =?us-ascii?Q?O32NuUE6+f2+hZBdFMqhDwBh0q0SyQ+3XbqX8YaPN7CtqfILfCmJbbqwbc6a?=
- =?us-ascii?Q?0eIuHqRqSuVxikDRPJ2toRIaC/dDWPK5zFxo4xVSSusvbL4ktYkDyl82PmtZ?=
- =?us-ascii?Q?i9DIxNLp+0abn16vkRRfGKjvzozv0ZkvvgWpJWYw9zTzXkN5IwXtHtZeh7mN?=
- =?us-ascii?Q?htMECF1UA7ISXDUlBrYjMc5wgHKXwg8/25sjrf8V9uw4DxV9FeI+iGJjHki0?=
- =?us-ascii?Q?elQKo/CZPZ3lmJRbc9A=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2ac4e616-1dcd-4f5e-2a07-08ddcf826762
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Jul 2025 16:01:54.6342
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 63FIZpb6wwQmhNSiP08AmjsNyqAojI4z3eTWlBrD6yVI2vsRbua1H53DvnKjLmTo
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4116
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/8] dma-mapping: migrate to physical address-based API
+To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	Leon Romanovsky <leon@kernel.org>
+Cc: Jonathan Corbet <corbet@lwn.net>, Madhavan Srinivasan
+	<maddy@linux.ibm.com>, Michael Ellerman <mpe@ellerman.id.au>, Nicholas
+	Piggin <npiggin@gmail.com>, Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, "Michael S.
+ Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Xuan Zhuo
+	<xuanzhuo@linux.alibaba.com>, =?UTF-8?Q?Eugenio_P=C3=A9rez?=
+	<eperezma@redhat.com>, Alexander Potapenko <glider@google.com>, Marco Elver
+	<elver@google.com>, Dmitry Vyukov <dvyukov@google.com>, Masami Hiramatsu
+	<mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	=?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>, Andrew Morton
+	<akpm@linux-foundation.org>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	iommu@lists.linux.dev, virtualization@lists.linux.dev,
+	kasan-dev@googlegroups.com, linux-trace-kernel@vger.kernel.org,
+	linux-mm@kvack.org, Jason Gunthorpe <jgg@ziepe.ca>
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <f912c446-1ae9-4390-9c11-00dce7bf0fd3@arm.com>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20250730163246eucas1p2c966d8d5061fc0214cf993906aeab2f5
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf
+X-EPHeader: CA
+X-CMS-RootMailID: 20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf
+References: <CGME20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf@eucas1p2.samsung.com>
+	<cover.1750854543.git.leon@kernel.org>
+	<35df6f2a-0010-41fe-b490-f52693fe4778@samsung.com>
+	<20250627170213.GL17401@unreal> <20250630133839.GA26981@lst.de>
+	<69b177dc-c149-40d3-bbde-3f6bad0efd0e@samsung.com>
+	<f912c446-1ae9-4390-9c11-00dce7bf0fd3@arm.com>
 
-On Wed, Jul 30, 2025 at 03:49:45PM +0100, Robin Murphy wrote:
-> On 2025-07-29 9:13 pm, Jason Gunthorpe wrote:
-> > On Tue, Jul 29, 2025 at 08:44:21PM +0100, Robin Murphy wrote:
-> > 
-> > > In this case with just one single
-> > > contiguous mapping, it is clearly objectively worse to have to bounce in and
-> > > out of the IOMMU layer 3 separate times and store a dma_map_state,
-> > 
-> > The non-contiguous mappings are comming back, it was in earlier drafts
-> > of this. Regardless, the point is to show how to use the general API
-> > that we would want to bring into the DRM drivers that don't have
-> > contiguity even though VFIO is a bit special.
-> > 
-> > > Oh yeah, and mapping MMIO with regular memory attributes (IOMMU_CACHE)
-> > > rather than appropriate ones (IOMMU_MMIO), as this will end up doing, isn't
-> > > guaranteed not to end badly either (e.g. if the system interconnect ends up
-> > > merging consecutive write bursts and exceeding the target root port's MPS.)
-> > 
-> > Yes, I recently noticed this too, it should be fixed..
-> > 
-> > But so we are all on the same page, alot of the PCI P2P systems are
-> > setup so P2P does not transit through the iommu. It either takes the
-> > ACS path through a switch or it uses ATS and takes a different ACS
-> > path through a switch. It only transits through the iommu in
-> > misconfigured systems or in the rarer case of P2P between root ports.
-> 
-> For non-ATS (and ATS Untranslated traffic), my understanding is that we rely
-> on ACS upstream redirect to send transactions all the way up to the root
-> port for translation (and without that then they are indeed pure bus
-> addresses, take the pci_p2pdma_bus_addr_map() case,
+On 30.07.2025 13:11, Robin Murphy wrote:
+> On 2025-07-08 11:27 am, Marek Szyprowski wrote:
+>> On 30.06.2025 15:38, Christoph Hellwig wrote:
+>>> On Fri, Jun 27, 2025 at 08:02:13PM +0300, Leon Romanovsky wrote:
+>>>>> Thanks for this rework! I assume that the next step is to add 
+>>>>> map_phys
+>>>>> callback also to the dma_map_ops and teach various dma-mapping 
+>>>>> providers
+>>>>> to use it to avoid more phys-to-page-to-phys conversions.
+>>>> Probably Christoph will say yes, however I personally don't see any
+>>>> benefit in this. Maybe I wrong here, but all existing .map_page()
+>>>> implementation platforms don't support p2p anyway. They won't benefit
+>>>> from this such conversion.
+>>> I think that conversion should eventually happen, and rather sooner 
+>>> than
+>>> later.
+>>
+>> Agreed.
+>>
+>> Applied patches 1-7 to my dma-mapping-next branch. Let me know if one
+>> needs a stable branch with it.
+>
+> As the maintainer of iommu-dma, please drop the iommu-dma patch 
+> because it is broken. It does not in any way remove the struct page 
+> dependency from iommu-dma, it merely hides it so things can crash more 
+> easily in circumstances that clearly nobody's bothered to test.
+>
+>> Leon, it would be great if You could also prepare an incremental patch
+>> adding map_phys callback to the dma_maps_ops, so the individual
+>> arch-specific dma-mapping providers can be then converted (or simplified
+>> in many cases) too.
+>
+> Marek, I'm surprised that even you aren't seeing why that would at 
+> best be pointless churn. The fundamental design of dma_map_page() 
+> operating on struct page is that it sits in between alloc_pages() at 
+> the caller and kmap_atomic() deep down in the DMA API implementation 
+> (which also subsumes any dependencies on having a kernel virtual 
+> address at the implementation end). The natural working unit for 
+> whatever replaces dma_map_page() will be whatever the replacement for 
+> alloc_pages() returns, and the replacement for kmap_atomic() operates 
+> on. Until that exists (and I simply cannot believe it would be an 
+> unadorned physical address) there cannot be any *meaningful* progress 
+> made towards removing the struct page dependency from the DMA API. If 
+> there is also a goal to kill off highmem before then, then logically 
+> we should just wait for that to land, then revert back to 
+> dma_map_single() being the first-class interface, and dma_map_page() 
+> can turn into a trivial page_to_virt() wrapper for the long tail of 
+> caller conversions.
+>
+> Simply obfuscating the struct page dependency today by dressing it up 
+> as a phys_addr_t with implicit baggage is not not in any way helpful. 
+> It only makes the code harder to understand and more bug-prone. 
+> Despite the disingenuous claims, it is quite blatantly the opposite of 
+> "efficient" for callers to do extra work to throw away useful 
+> information with page_to_phys(), and the implementation then have to 
+> re-derive that information with pfn_valid()/phys_to_page().
+>
+> And by "bug-prone" I also include greater distractions like this 
+> misguided idea that the same API could somehow work for non-memory 
+> addresses too, so then everyone can move on bikeshedding VFIO while 
+> overlooking the fundamental flaws in the whole premise. I mean, 
+> besides all the issues I've already pointed out in that regard, not 
+> least the glaring fact that it's literally just a worse version of *an 
+> API we already have*, as DMA API maintainer do you *really* approve of 
+> a design that depends on callers abusing DMA_ATTR_SKIP_CPU_SYNC, yet 
+> will still readily blow up if they did then call a dma_sync op?
+>
+Robin, Your concerns are right. I missed the fact that making everything 
+depend on phys_addr_t would make DMA-mapping API prone for various 
+abuses. I need to think a bit more on this and try to understand more 
+the PCI P2P case, what means that I will probably miss this merge 
+window. I'm sorry for the lack of being active in the discussion, but I 
+just got back from my holidays and I'm trying to catch up.
 
-My point is it is common for real systems to take the pci_p2pdma_bus_addr_map()
-path. Going through the RP is too slow.
 
-> all irrelevant). In Arm system terms, simpler root ports may well have to
-> run that traffic out to an external SMMU TBU, at which point any P2P would
-> loop back externally through the memory space window in the system
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-Many real systems simply don't support this at all :(
-
-> But of course, if it's not dma-direct because we're on POWER with TCE,
-> rather than VFIO Type1 implying an iommu-dma/dma-direct arch, then who
-> knows? I imagine the complete absence of any mention means this hasn't been
-> tried, or possibly even considered?
-
-POWER uses dma_ops and the point of this design is that dma_may_phys()
-will still call the dma_ops. See below.
-
-> I don't get what you mean by "not be a full no-op", can you clarify exactly
-> what you think it should be doing? Even if it's just the dma_capable() mask
-> check equivalent to dma_direct_map_resource(), you don't actually want that
-> here either - in that case you'd want to fail the entire attachment to begin
-> with since it can never work.
-
-The expectation would be if the dma mapping can't succeed then the
-phys map should fail. So if dma_capable() or whatever is not OK then
-fail inside the loop and unwind back to failing the whole attach.
-
-> > It should be failing for cases where it is not supported (ie
-> > swiotlb=force), it should still be calling the legacy dma_ops, and it
-> > should be undoing any CC mangling with the address. (also the
-> > pci_p2pdma_bus_addr_map() needs to deal with any CC issues too)
-> 
-> Um, my whole point is that the "legacy DMA ops" cannot be called, because
-> they still assume page-backed memory, so at best are guaranteed to fail; any
-> "CC mangling" assumed for memory is most likely wrong for MMIO, and there
-> simply is no "deal with" at this point.
-
-I think we all agreed it should use the resource path. So legacy DMA
-ops, including POWER, should end up calling
-
-struct dma_map_ops {
-	dma_addr_t (*map_resource)(struct device *dev, phys_addr_t phys_addr,
-			size_t size, enum dma_data_direction dir,
-			unsigned long attrs);
-
-And if that is NULL it should fail.
-
-> A device BAR is simply not under control of the trusted hypervisor the same
-> way memory is;
-
-I'm not sure what you mean? I think it is, at least for CC I expect
-ACS to be setup to force translation and this squarly puts access to
-the MMIO BAR under control of the the S2 translation.
-
-In ARM terms I expect that the RMM's S2 will contain the MMIO BAR at
-the shared IPA (ie top bit set), which will match where the CPU should
-access it? Linux's IOMMU S2 should mirror this and put the MMIO BAR at
-the shared IPA. Meaning upon locking the MMIO phys_addr_t effectively
-moves?
-
-At least I would be surprised to hear that shared MMIO was placed in
-the private IPA space??
-
-Outside CC we do have a rare configuration where the ACS is not
-forcing translation and then your remarks are true. Hypervisor must
-enfroce IPA == GPA == bus addr. It's a painful configuration to make
-work.
-
-> Sticking to Arm CCA terminology for example, if a device in shared
-> state tries to import a BAR from a device in locked/private state,
-> there is no notion of touching the shared alias and hoping it
-> somehow magically works (at best it might throw the exporting device
-> into TDISP error state terminally);
-
-Right, we don't support T=1 DMA yet, or locked devices, but when we do
-the p2pdma layer needs to be fixed up to catch this and reject it.
-
-I think it is pretty easy, the p2pdma_provider struct can record if
-the exporting struct device has shared or private MMIO. Then when
-doing the mapping we require that private MMIO be accessed from T=1.
-
-This should be addressed as part of enabling PCI T=1 support, eg in
-ARM terms along with Aneesh's series "ARM CCA Device Assignment
-support"
-
-> simply cannot be allowed. If an shared resource exists in the shared IPA
-> space to begin with, dma_to_phys() will do the wrong thing, and even
-> phys_to_dma() would technically not walk dma_range_map correctly, because
-> both assume "phys" represents kernel memory. 
-
-As above for CC I am expecting that translation will always be
-required. The S2 in both the RMM and hypervisor SMMUs should both have
-shared accessiblity for whatever phys_addr the CPU is using.
-
-So phys_to_dma() just needs to return the normal CPU phys_addr_t to
-work, and this looks believable to me. ARM forces the shared IPA
-through dma_addr_unencrypted(), but it is already wrong for the core
-code to call that function for "encrypted" MMIO.
-
-Not sure about the ranges or dma_to_phys(), I doubt anyone has ever
-tested this so it probably doesn't work - but I don't see anything
-architecturally catastrophic here, just some bugs.
-
-> However it's also all moot since any attempt at any combination will
-> fail anyway due to SWIOTLB being forced by is_realm_world().
-
-Yep.
-
-Basically P2P for ARM CCA today needs some bug fixing and testing -
-not surprising. ARM CCA is already rare, and even we don't use P2P
-under any CC architecture today.
-
-I'm sure it will be fixed as a separate work, at least we will soon
-care about P2P on ARM CCA working.
-
-Regardless, from a driver perspective none of the CC detail should
-leak into VFIO. The P2P APIs and the DMA APIs are the right place to
-abstract it away, and yes they probably fail to do so right now.
-
-I'm guessing that if DMA_ATTR_MMIO is agreed then a
-DMA_ATTR_MMIO_ENCRYPTED would be the logical step. That should provide
-enough detail that the DMA API can compute correct addressing.
-
-Maybe this whole discussion improves the case for DMA_ATTR_MMIO.
-
-Jason
