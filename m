@@ -1,176 +1,218 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2049.outbound.protection.outlook.com [40.107.220.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9908C450FE;
-	Thu, 31 Jul 2025 13:47:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.49
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753969651; cv=fail; b=ZG03QKEw2/cwTsHUvWNjC9T3s9JkRGlQtgZCpaoK8KG7K9onG5/W+BEuljqG9EsURhq9tEHeSp9fFOl6mhUSvg5okJLyh8odR5LVSzOU3CTw+zc0cJzjwxsn8vgZi/QDt/QHtinaOK3CrK+zm/tgPxbokBIvL23NPx6nDd+f45Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753969651; c=relaxed/simple;
-	bh=D8XtFlIOYjW+Na31tdyJLVfCS6PLmagoTDhvrV+KE18=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=kFh/CkPfJK3PANorApbodeXbfujFkQFQ3n2Ruh4PqGMe3di6qvhSr7vPdcWKTB5Dg32ZJijhf0cr877DhDD1dByBn3zQSaY+t6z0lXfbeqVdSs0Vmznm2eSLkDYHpKVUU64NvZxcMfK1yy+EIYtQ1veMhRV4M7FsEEsvziJzeSo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=h9kmH5xD; arc=fail smtp.client-ip=40.107.220.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 736FC49625
+	for <iommu@lists.linux.dev>; Thu, 31 Jul 2025 14:17:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1753971445; cv=none; b=P6IuZJsni0JIxn205LgUWNtUUqrNkHrIqf3KHbtxu/fzE6GMv7F/G0eKkNr2Bq0ACcIH6/PFbzrpb4yvHbvTaRsyNVVvDJYYPeD9s5enoGgcWOMYg8nfBjSwYqx6RQo610ew0PvkR1xiUZdPv7m5sRwIXkR9qnpKTlILGq+i4f4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1753971445; c=relaxed/simple;
+	bh=E1Mr78SFe7OCoQAaZ7NNFqP+kLbmSKTZ7SjbzvGIat0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EHctSTa3q6IbttjJ2rQ+xDaw2rphJ5pAbWbNOkw1LRStdyECeC0EiLY2hL/MQx+IH7MiBTA4HNrjoZt5qn5JLPJPQnm4pkTKli9FEXi4iieF9Z/EoKG43LVxfhc5mSmpyMHe6Zln8/91vflp+ucTHxZL8Rz3BHp4mCmTaauoB6w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=CkPfiION; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="h9kmH5xD"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=P8x4cn7iF5bKDPbB9dRGENg7vplO7zPFtUj8Iexk/rG/nSK70EcylNJ6fXemnxG4ZxnIA50Vs7SSRjr/ZBXiIKm04atyjW/UwtZ+kxGkeKEa5j0WjeW3G1lYumHwMytTlcgwc0SMuCdtqmRHu289aoEcVT+sh5IVglBgnRRCq6LruIbGzlecrW0kg08Q2lyDsMsY8ip24o2cOPDTJnrXbzeEpFK+oYvff529cUESlspw7E3IBNgbA1EXJAT94jL4YQ/t1eOtsjuptOWJXxolrYH34mVU5XeGIZ2Np12vy+LUhXd1KzmRN/6nR0uJ8mML6LxLFYL1HnR10Q3VAaFR/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KrmeDPKrZNKaRRyEdELhNyk8PQuszxPcj7I3IfBusws=;
- b=n/YO8blOuN22T4PQm9vmlo15Sajqev0WprXhaEYuF7TBBRP4YcajebW0u+MusROKWKU1pN27y1qkT28Sl7VSy6iQVxJn5ioo8a5LN3t8EEEmgv2cqs2lgjoneqJkFyfSnPe0saA+i2YG398GO2ofcPY+jfzPttfahVg7KopMFarsRIbcTywyqlDmZVabU2XWz8YS7twv/INAI+Rl2XaHVP2BZg02dAIxML8/jPacO5w8vu/7V6L3O4ErxshV9OH65nB2qHqzMkJPgie56kMxzNRpOAv10QXS9G1ucJwGklS1N40UzL4vdJ5rKn1tPajTmu4HL0wL7V9JcKcChlOeTQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KrmeDPKrZNKaRRyEdELhNyk8PQuszxPcj7I3IfBusws=;
- b=h9kmH5xDpBrA5djbM8bVfetLFz+lCBamdqLOefnrkG8+wcxWiWFy8t2eXFm18/ywpn8RVWkNfHuRA9lRW8Jp4HzNFqylS1fSGaHe4J8KPAO/MYKuS/22vBu3hvG/TX4s2c6iZN3BFgH8gK4PxjMjnZ2rjKZCC8o1A5wsrmH+JGwnoQwHNcC55nh8+84bRWShX7g9/3iztAUQHrgLzsnMD8PlK8tfNPkryeX7ogUcXCFuiTMRtn5KB3xoAqX3hYKfBDwz8nG+BgSLFyhffNbnwkBQyx0xKp/DovVcW4xeriMTwx72XtrsCH+z02Zxf5t8FKHbWyiBjfDtXPKOm+4nmA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by DS5PPFB8FBD73EA.namprd12.prod.outlook.com (2603:10b6:f:fc00::65e) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8943.30; Thu, 31 Jul
- 2025 13:47:24 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%7]) with mapi id 15.20.8989.011; Thu, 31 Jul 2025
- 13:47:23 +0000
-Date: Thu, 31 Jul 2025 10:47:22 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Ethan Zhao <etzhao1900@gmail.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, rafael@kernel.org, lenb@kernel.org,
-	bhelgaas@google.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-	linux-pci@vger.kernel.org, patches@lists.linux.dev,
-	pjaroszynski@nvidia.com, vsethi@nvidia.com, helgaas@kernel.org,
-	baolu.lu@linux.intel.com
-Subject: Re: [PATCH RFC v2 0/4] Disable ATS via iommu during PCI resets
-Message-ID: <20250731134722.GA184255@nvidia.com>
-References: <cover.1751096303.git.nicolinc@nvidia.com>
- <4f7e4bfb-1bc7-4c87-a9f1-8c8b6ee9a336@gmail.com>
- <aIOz1bzgfK9q0n4b@Asurada-Nvidia>
- <606f65e1-ccfc-4492-a32f-90343be654e7@gmail.com>
- <20250727162041.GC7551@nvidia.com>
- <d7543795-b172-4452-8789-e1c810d8075a@gmail.com>
- <20250729125953.GH36037@nvidia.com>
- <f6fedc6c-9f3a-4ffe-adb1-38b4f1632647@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f6fedc6c-9f3a-4ffe-adb1-38b4f1632647@gmail.com>
-X-ClientProxiedBy: MN2PR15CA0024.namprd15.prod.outlook.com
- (2603:10b6:208:1b4::37) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="CkPfiION"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-456007cfcd7so83235e9.1
+        for <iommu@lists.linux.dev>; Thu, 31 Jul 2025 07:17:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1753971442; x=1754576242; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=pcWB14Cn8mezh693QdjehHNThSsfRoWZAjW9od9JFCc=;
+        b=CkPfiIONuqu8eVo25uaN/sEpMOP9D6QC0DuGMA6HbQXvFgZTOk9I5tF1fH3lIGOAdB
+         R23kkCwulbT0uBJqnybj6bfgz46SYQD6gppA4bE/0HRKHFb1I5Jy5tHc3tS3CS+ENEVc
+         eHaDnp7WDWLsOmDjAY49Q2NrOfgh4M2PBz5o1GFaCVFO2kdnAc2ADdv7SaaJyYOZKRvk
+         yrVumXZuyY9ru46iCWYF9Eg0v1ySZ+frUUothh9/D/h6INBxbM2VybIvyWyJPEgs8Vs3
+         YvoI0rF+HjtJl33k1sUeJeI0MGJKbPovXc6YFoNEAilQoKSE3zWB3+Y/rRRVQN3sf2F8
+         RrGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1753971442; x=1754576242;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pcWB14Cn8mezh693QdjehHNThSsfRoWZAjW9od9JFCc=;
+        b=kla+xtguIGoRAjHRRhQOoom0Nf+6GX5o/1yDqazof2e7ZoTmY9RkXx851+upmImQvh
+         dmdHUvXfFopwBJN+1M1R/EHAYbasagFAbB9O2gxZGvq6ndKBY1NPffdac5jWhTLfhirZ
+         xMO0symdeidKZevjtm072bq/zHZwRQKGpmYuUrfSlfTC1Y3vj8IvfAQGpWno4fDCjspB
+         +ovU/JJNiNe11bAnticYyydlL2BbreKkkDvfg93eBYhYfb22JSImI6DYD05U8kqdLRPn
+         uLzNbnjLsITpHr7hNsEXyixBu0zMqXRsZqqyN7sGEa5fZ3BRIbl5s/WXkdkXhdzUf5FD
+         H7Zw==
+X-Forwarded-Encrypted: i=1; AJvYcCWCQ4nOONaq63YV1zdWlztDiRSdJYLz4eWN5W4hMDzNMuyIPthcHSebpxtdLOA9J2HJc2urGQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyu2VmrnWYqY3zJfIEk+HxwsZKOzQGNzU8XkroNH+LiZvFHc5lx
+	N2o9jmXtOTgPmvRKP6ja7ltdF8utgCTrNbuF5q/jn23qMsuwJBe/gYaU04trhTCAkQ==
+X-Gm-Gg: ASbGncvYE6GKAZDRiWvu+m/prAQIJuUly4a/cY78JpBCqoMFXgrbKe8JgTIbLjN4Khi
+	JcvDrVgV6pqOZ5B/W4YrWO4MGWg4VMBY4/+2N9EdBxUYzZLwapl3uIaGq9PHzOfkxKx2otuYcpp
+	8As0JUBNQ6iU8CsEv1MiHtNKIUnXNue8j4kEaLV6N95WjtpVygjY14NH+3+0wDsxs93+BsthvvD
+	O4nA1Afeq46XJpBkqMdFqbXe7pHFL3G8GFS1I6P+umSI3C2wOAayC4DYxAvgUymbJH0vjYYyKxH
+	6RBKIts11IS8GP+wRVX7FQBXtOhstiGCHdIbDSpOv/W7YfSc9Ghr+yKzIUhPGYBTyp0xkfkZWBJ
+	JNhPrqLTiIQownOhnE4RfEwhAXEcWnxjKH6Ic7eacarMrfLlvXVeEOGlsBiCv7aGBfg==
+X-Google-Smtp-Source: AGHT+IHQna8PBH+0rnLeEfLwPLu5VSthuOinGeMrMZmAiA37gK//dxUBEvZYVDk/z0ZzOGHZAGlqMw==
+X-Received: by 2002:a05:600d:108:10b0:455:fd3e:4e12 with SMTP id 5b1f17b1804b1-4589f38f199mr1003195e9.4.1753971441527;
+        Thu, 31 Jul 2025 07:17:21 -0700 (PDT)
+Received: from google.com (110.121.148.146.bc.googleusercontent.com. [146.148.121.110])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4589ee4f0d2sm28100345e9.18.2025.07.31.07.17.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 31 Jul 2025 07:17:20 -0700 (PDT)
+Date: Thu, 31 Jul 2025 14:17:17 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
+	suzuki.poulose@arm.com, yuzenghui@huawei.com,
+	catalin.marinas@arm.com, will@kernel.org, robin.murphy@arm.com,
+	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
+	mark.rutland@arm.com, praan@google.com
+Subject: Re: [PATCH v3 29/29] iommu/arm-smmu-v3-kvm: Add IOMMU ops
+Message-ID: <aIt67bOzp6XS_yO-@google.com>
+References: <20250728175316.3706196-1-smostafa@google.com>
+ <20250728175316.3706196-30-smostafa@google.com>
+ <20250730144253.GM26511@ziepe.ca>
+ <aIo1ImP7R7VhRpVE@google.com>
+ <20250730164752.GO26511@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|DS5PPFB8FBD73EA:EE_
-X-MS-Office365-Filtering-Correlation-Id: db58b373-b81d-42a1-5793-08ddd038c733
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|7416014|376014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?RvnqaGQNtqFEsSs+g8DUXg7ep5fTjwUlrixiAfFZG2rGcouBnZTX0TlIxxxq?=
- =?us-ascii?Q?grmk1/ajGQV+glYn9ZeyXc//ECBQoBX3q5+yJUyotyBwmoovEz6HoFeGob1H?=
- =?us-ascii?Q?fuQV4ChqH1t2odSzNYf6+MiFn2oMK/J++w5AsqEumkN+9AH3KzmrTI6DpjlM?=
- =?us-ascii?Q?pVl205Wl1iDUSgXVymsXTGn2pJXWDGY3LJXlLGWE6g07onyAa3Bv5bI69vSt?=
- =?us-ascii?Q?VRjCxTfIe+xFLXPDQQFRJybavjRg5KyGUr6KiY5Qhe/mhou9TNGpa6pRqcl/?=
- =?us-ascii?Q?T6qRphzP5XVo14ytkYhK1nxhh66Pg6E1HiirVy7epRhUSF4fvivMpAOuJoGJ?=
- =?us-ascii?Q?6qMD6MkoNl0ple5i0CpyOEFQiyNpKhE+2QcxRfIRBi4PU+bIWRyc21+ds/u9?=
- =?us-ascii?Q?lH/HymJttOAvuT0UcoP4T6EbGrXJ4slhiIAnQIw4vnpf5qKp8LOj73fYhwpL?=
- =?us-ascii?Q?6att6ygVYuKNkDa2Q/fliMENwSF504Pm7gq8W0Bu/gLgx0gy9E5bB60oMc9V?=
- =?us-ascii?Q?HxBh3YsRKMnQQMpHHzFuhSpKS3cFYUpJSZ/4fJMWKXyN5vHXjve6ip8JzjG9?=
- =?us-ascii?Q?01CQmJu6m6LdA1aQu0/VWzGv2dWFNpp5QND+FhKGspMbwA8/DrHIB5BCLGlF?=
- =?us-ascii?Q?TbRcsVu+IU1cG0nNCY9UuLBqDRHqB3+62p4SovjkN/IU4/BplQ2kMniQowJB?=
- =?us-ascii?Q?EtohZlDuIWnl1I109j7g+NTRTi89SCUq45tdeOGE7qdf8cOMI6GkKXWryWMj?=
- =?us-ascii?Q?XLV+hdaeK5COX7mFomciEXroLqKAIecOyYEUJtNH9+A/1Wx4NsLcjba3aGwc?=
- =?us-ascii?Q?ymNUIsFz4uHRInP0P4u+SpDnuRzzTYPMZ4hf8TjNkMhSfJXNHpV3sPhVl9vV?=
- =?us-ascii?Q?90UPbJQOBnJH53CSk8Uv7SPtScVHT98Y2R0h/256sJ08Z2SkyKRfWRBsH2Pt?=
- =?us-ascii?Q?BW4AVkVViMvSUi9UhXL+0nhrMCg8RYsILKEGvZwL/T/BJOjMMKgT1+SwsoSm?=
- =?us-ascii?Q?Z9938XIqtApG/wMx4g/3Kpfx30aI+H9Otsn6xpG6yJBTsasfIiUxp+DjYPgG?=
- =?us-ascii?Q?1Y1M5AsJTu5EvPORgNer0zZrMitLgYq9FRZYA73T45p8hWUhAnS/+4IunDtx?=
- =?us-ascii?Q?mOI415AK50l1msgsAf82cEcZIz8lged7zjNgZzbzlhyH7Z8Mkbg+St1qatzd?=
- =?us-ascii?Q?KLe/dax3sv6IhQDx/V/0ghpKSn7BNYsyXcIt8m1YzBwFgxCsEHsWug+ZL8Ak?=
- =?us-ascii?Q?2VBSqP2txM5GZmRh5CQUcGTkLwBkaPiLhVEZvSLTAEDB5j6AbSDYFJKk1Jp1?=
- =?us-ascii?Q?goGca5DmeSsB9L9KptWKY1gr1VPversqBLgBEHtfnAGWcMPAbeRv22dssQCP?=
- =?us-ascii?Q?dO2id6U27txqDq73xh/jV7ZmKIoDaTnDkXWvs8kETErciuw7x+HuWxD2kCSx?=
- =?us-ascii?Q?O5gCTMjyveo=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?CEkNH2zZf8K9edEIgDRNiSNSm8p7ZRRCjM/55Z2ITMYnfISzF/RclIpw2L24?=
- =?us-ascii?Q?0fqQbwWDzsW+s4SO4BkATrnNgSa9mpBKKHSl7BB9ppzXoxlHX3TSuLKXCcWO?=
- =?us-ascii?Q?4PdfknZ/pGwnRCtwQN9iOs5NjwbAK+4DrsT36fVwuU87VJSVkgelv2QZlebH?=
- =?us-ascii?Q?I8br6XC+qCbmI3HaCF7LsmOm30QLlvyenyOH3O9zIMh8ziPzmk9UEHaqhwyM?=
- =?us-ascii?Q?0P8QTz6ntozLbYyfxNhEVA2SjiLUK0QgjdQoExdHGEMuE9Km9vqw+GnkoX1V?=
- =?us-ascii?Q?LPV/mn75mNbpukq6zkdqu/z/I1GZttAq3K0W2OgiXT1w4XlJ0BGk1XVHJaYj?=
- =?us-ascii?Q?SHve86QaBwveOrbRjZ1kxls2+onp5wn0Dh2DS5N7kcFwPR+nU7Iegn/JJTPL?=
- =?us-ascii?Q?yDFBtPERw/iHL5CSdHvs//V2kgsqyPzgLmcO4wLAR282ay7mZ1MKwqo/H+nZ?=
- =?us-ascii?Q?uML7Ci9ifbjQXeNAgcc99nx7JJ3dBTaJX8jfMugkPjhYT0iHvdj/egLzWy5R?=
- =?us-ascii?Q?HSUCZEl7ACWSMs45+caZTgVcIbRAaILRcTrJZZmZjBLAkR6lmxhUsIOpH8Np?=
- =?us-ascii?Q?k1wNifjQzov8aFobq5cXmoMWWM84eNW10GVjMoNPgYhfY195fACbyTspWKHB?=
- =?us-ascii?Q?LMGPSzIZNZI8nCKUxt8AXTljT1ai06n5/NRrKOCyyHWOIp4I2l2wcZfMehNx?=
- =?us-ascii?Q?O/cWIwSmSUbExfMZgw8sb6WzXsnY8HeYjEH0pitEZ1GJc4Xd58Pt2de9EAcJ?=
- =?us-ascii?Q?WPdcPPGDCXfdy2Zzc13NH0gUy4yq4/XTDryzTwm585Pv41FHpTipOprdGr5Z?=
- =?us-ascii?Q?yMs29uXS21KUQw64hnmieqbxpqF1raJilCdurjIET6MmK7YFgUpaFucB0+C1?=
- =?us-ascii?Q?d0nsaHAVskns4taVwFOzxzzMq3+v+ljDbb/iux5xWUCEvPt2SoK2CdmTJ5DV?=
- =?us-ascii?Q?4MGtRUSlFOtlsQ2hJ2+iPLeLhGiVpMVGfbytw74oIY60K1B3AmuS6hY3dIKb?=
- =?us-ascii?Q?LEhBjMGVby4JImfqBfTPotSvNfgXm12ls8y4SJAhHzstOwZrjeL3qnWG+sNS?=
- =?us-ascii?Q?HNswMsGdy/P1VEygp0jm6wzP2Ty0YT9+td8uc94BSxPgV9FANacUBK4VLnW9?=
- =?us-ascii?Q?n9FafxDOGtT6N0XjYUTktP1uhQsC8GofKKY8MmIyJ4sGIVLrH++pRABKwxhl?=
- =?us-ascii?Q?lk2K+S9Jz5qCy5vQClpdoFrzFufxDt+ILEzMmqSETPi916HMZw2Z8i6va25O?=
- =?us-ascii?Q?59pybxW4N75WBbDBZTZZyRE/SLxYC+SavZ40AKXvIVGSA9UjhRBfdGV32xAv?=
- =?us-ascii?Q?4Jp9olgOz9hB9DnYpBufeVlhpqEpsFOzCXED/gVluhnJv7D9s3czRQ/N4EXR?=
- =?us-ascii?Q?jZNoghhR30tyLHXneeWYcsjrCDJsHawHJz/wH4P+QpfXp/xJ2wMOOScP35yE?=
- =?us-ascii?Q?bgzVeYQK6Kt4RgK32+6ZBfByMFNOXwVzTHfwwJOy0CgcnPJ2Q+w2TvWqvd2c?=
- =?us-ascii?Q?PUkVVo/YPzYNNqJUdRKNu+I6SlO5hOJmZpAqMxx1sXG2zME7u8rTLfw+Jh7d?=
- =?us-ascii?Q?zyjLR+Z5hgvafcCCtQs=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db58b373-b81d-42a1-5793-08ddd038c733
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2025 13:47:23.7987
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YjxIxTevGgizfirnsbVx3Kl3Ewg2Pl2VDNHJsPgkjNZXjLGBcjhc7MW/PUupdulp
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS5PPFB8FBD73EA
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250730164752.GO26511@ziepe.ca>
 
-On Thu, Jul 31, 2025 at 09:10:59AM +0800, Ethan Zhao wrote:
-> > invalidations when the FLR is triggered.
+On Wed, Jul 30, 2025 at 01:47:52PM -0300, Jason Gunthorpe wrote:
+> On Wed, Jul 30, 2025 at 03:07:14PM +0000, Mostafa Saleh wrote:
+> > On Wed, Jul 30, 2025 at 11:42:53AM -0300, Jason Gunthorpe wrote:
+> > > On Mon, Jul 28, 2025 at 05:53:16PM +0000, Mostafa Saleh wrote:
+> > > > Register the SMMUv3 through IOMMU ops, that only support identity
+> > > > domains. This allows the driver to know which device are currently used
+> > > > to properly enable/disable then.
+> > > > 
+> > > > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> > > > ---
+> > > >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 92 ++++++++++++++++++-
+> > > >  1 file changed, 91 insertions(+), 1 deletion(-)
+> > > 
+> > > Can you split the new iommu subysstem driver out please? I think I
+> > > asked this before.
 > > 
-> > We have been talking about DPC internally, and I think it will need a
-> > related, but different flow since DPC can unavoidably trigger ATC
-> > invalidation timeouts/failures and we must sensibly handle them in the
-> There is race window for software to handle.
-> And for DPC containing data corruption as priority, seems not rational to
-> issue notification to software and then do resetting. alternative
-> way might be async modal support in iommu ATC invalidation path ?
+> > Sorry, maybe I misunderstood, do you mean split this patch into multiple
+> > patches or split all KVM SMMUv3 driver out of this series?
+> 
+> Yes the latter, the iommu driver introduction is best as its own
+> series
 
-DPC would still act in HW to prevent corruption, SW would learn about
-it either through a DPC async notify or through an ATC timeout, then
-SW can reprogram the IOMMU to disable ATS.
+I thought about that but I was worried the maintainers wouldn't like
+introducing the infrastructure first in the hypervisor without a user.
+I am open to split this, but let’s see what they think.
 
-We can't make the invalidation path async, the invalidation must
-succeed or the iommu itself must fully fence future access to the
-now-invalidate memory - most likely by disabling ATS, blocking
-accepting translated TLPs and flushing out all previously accepted
-translated TLPs.
+> 
+> > >  - Domain attachment looks questionable. Please do not have
+> > >    attach/detach language at all in the hypervisor facing API.
+> > 
+> > I am not sure I understand this one, the hypervisor API has no
+> > attach/detach APIs?
+> > We only notify the hypervisor via “enable/disable” hypercalls when
+> > devices are attached or released (as only IDENTITY DOMAIN is supported)
+> > so it can enable or disable translation.
+> 
+> Same difference, different words.. We've had trouble with this kind of
+> ambiguous language.
+> 
+> attach identity
+> attach blocking
+> 
+> Keep it clean and simple
 
-Once invalidation finishes there must not be any IOMMU access to the
-memory that was invalidation, and this cannot fail.
+Makes sense, from the kernel point of view it will be attached to
+identity/blocking domains, but the hypervisor api is just enable/disable HVC
+as it doesn’t know what is a domain. If terminology is really a problem,
+I can make it one hypercall as “set_state” with on/off or identity/blocking
 
-Jason
+> 
+> > >  - Get the ordering and APIs right so replace works. You need this to support RMRs
+> > 
+> > I see, we can’t support bypass for security reasons, but we can enable
+> > the identity map for such devices.
+> 
+> You will have a small issue if the bootup has the pkvm side put the
+> device into a blocking translation then later switches to an
+> "identity".
+> 
+> As far as I understand it display scan out buffers have to be
+> continuously hitlessly mapped. So you want all the transitions from
+> bootup bypass, pkvm isolation, "identity", etc to continuously
+> hitlessly map the RMRs containing the buffers.
+> 
+> I think :)
+
+I think that would be hard with pKVM, maybe it’s possible to achieve
+that seamingless, we would need to export such devices to pKVM at
+boot before de-privilege.
+
+TBH, I am not sure what hardware does that. So, another option is to fail
+gracefully if RMR exists (which falls back to the current driver) and then
+pKVM would run with DMA isolation, which is the status quo.
+
+And then RMR support for pKVM can be added later if there is interset.
+
+> 
+> > >  - Use a blocking domain not some unclear detatch idea
+> > 
+> > There is not a single detach in this driver, we only support attach and release
+> > operation, which just goes to the hypervisor as enable/disable
+> > identity.
+> 
+> 'disable' then.
+> 
+> > >  - Use a blocking domain for release
+> > 
+> > I see, I can add “blocked_domain” similar to “arm_smmu_blocked_domain”
+> > which just disables the device translation, I will look into, I am just
+> > concerned it's more code as this driver only supports a single domain
+> > type.
+> 
+> Yes, this is the right thing. There should not be operations in the
+> driver that change the underyling translation that are anything other
+> than attaching domains. It becomes too hard to maintain.
+
+Will do as mentioned above.
+
+> 
+>  
+> > >  - Use the smmu-v3 approach for the fwspec, don't store things in the drvdata.
+> > 
+> > This is using “dev_iommu_fwspec_get” similar to the SMMUv3 driver,
+> > am I missing something?
+> 
+> Oh I got it confused, you are just calling 
+> 
+> +       .device_group           = arm_smmu_device_group,
+> +       .of_xlate               = arm_smmu_of_xlate,
+> +       .get_resv_regions       = arm_smmu_get_resv_regions,
+> 
+> Which is also weird, why does an entirely new driver call 4 random functions
+> in arm smmu?
+> 
+> Maybe don't, they are all trivial functions, or you don't need
+> them. For example you don't need MSI_IOVA_BASE if the driver doesn't
+> support paging.
+> 
+
+They are not random, as part of this series the SMMUv3 driver is split
+where some of the code goes to “arm-smmu-v3-common.c” which is used by
+both drivers, this reduces a lot of duplication.
+
+I am not sure if we need get_resv_regions, maybe it's useful for sysfs
+"/sys/kernel/iommu_groups/reserved_regions"? I will double check.
+
+Thanks,
+Mostafa
+
+> Jason
