@@ -1,77 +1,76 @@
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2079.outbound.protection.outlook.com [40.107.236.79])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF7E122B8A4;
-	Thu, 31 Jul 2025 22:51:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754002267; cv=none; b=CswQt58gHrWMZD3WugY+m2VjtNcdze+6fWrPf6csSyu6i4gxYgPMk6w27uha6mveXcN4cZfmkTEGvvGPMLW797wfDfcTD893JRPInnGGrGLNv+yv6sPuDofaQ9dE2A3/Yffg2aPFUujP5XKzrRB2SS9xYpOUDGWL3jPXex5G0Ls=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754002267; c=relaxed/simple;
-	bh=KkcxjOXc7+CTAwF08gBNE8VfSajbR19kNgI7NYDtjX0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rJFwrj3Hck2Im1kod+AdQwQUV9e2NbMv/PUap4YIKiXB983SZoUXCJAZyvJWmiWE2ciEGAvAecEXxB7K6kE3RI+g3hFq43b4RrAk2NeKypHsl3xTu12eb8qhjGQAx/roNC9ubOoIxZhNDV9eD+nyR5pjIFKeqNZWgAcSdbgXGlo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e8zrG/jI; arc=none smtp.client-ip=209.85.160.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C94D34CF9
+	for <iommu@lists.linux.dev>; Fri,  1 Aug 2025 03:02:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.79
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1754017334; cv=fail; b=LtuWlry7UWFndSA/u93NqQOlrG7tsDp+pjda8LwUTbmjSJD3ovQi/RTS+Q/BP8tjZ8bol2PJngVqB9WG6AzkLYeXR6KhzXX3IwRg+PR8QWXOYvTC6MBKpQhqXXEufNQ03UlDABJjRRP/yaYnONC8Abt0AMa+IFxVghl4YFGnVNY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1754017334; c=relaxed/simple;
+	bh=PC8HjY1a5zZdMNdEjldpnXsOTU9EXY2kXus+gwEFR1s=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=R69r9/Fj4hWuFCABYd7VXOJ/PKSvClcBggzOZgRgVUSMmiR8l5LXWzjhmIXf3ZPT5CjEGtSYXQHOJONE8ClGEXjHvIwErjmDtPp1y30C3OG+Mq4zUVBJyMfihKCyIzHfvQktpkeDfp0H6SXI3AmfbKwksH8/DdlXZzQ/ko0ROaA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=EPJNtJ3M; arc=fail smtp.client-ip=40.107.236.79
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e8zrG/jI"
-Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-4ab6e66ea68so18546951cf.1;
-        Thu, 31 Jul 2025 15:51:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754002265; x=1754607065; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=BacIjUI5j5irCjGWnkKtBCyvI9Gfht+wak48AY934y0=;
-        b=e8zrG/jIEwJuQJUnLMLVjkD1aN52TizFDBKtCrea1W5RwBPibVMFHytsfizI4zOtnS
-         CzHr8dDgPtyopJ513hcT8jlBKwymY2Deirc3T4QLBb8zgzpr9b5X9fIWKMjyqEfCtqpJ
-         2/Iv8A0dLMoc7CsNP9m5hB036xD2iaeZ8K/5y7pTA/0Xh/FOVqzPM2qkfS67VJpi7Br0
-         ca5sFiVAlY38Cq1vlWzhG6cVn7DberyzPQKy7KXhZyDEceVNHjr6WeVteNbiKpKH0rJs
-         RoZszZdoh4BGCkwskdiL7/KF5UopmWZFdSJkAiESwAV31Q8eyOTL5Bq4WWNRzgfbnl72
-         Mgew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754002265; x=1754607065;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=BacIjUI5j5irCjGWnkKtBCyvI9Gfht+wak48AY934y0=;
-        b=QQCrJZBA6CyX80YGHO8Oa8HHUYTosEOScGk5RSpkYuuFTpc1mW9YL5WrGuKIbarhbp
-         AeFEvB+Og1qA0Mr1HV+uYGT93UK+O9OvBYAfJgkjsgvtMG9KE9+1iTRGLuq16iW13hRT
-         UHMegQQtvWg9kI6rMRRIRRy+qJZ22Zm6WoNHHD4srkLlt8Q3QpRxyq5cCxlAOG1fnWqG
-         gUblObDcfG4wNRJLuTdFWW0z9SxM0viVi//iAYA9c64o3L7572+oz5zCBQm910r6rUxs
-         nD8JkSyTVDMTL4KTW6C1CVqNaI4XsBzFTy+0zc15bf5JmfKKKZdewd+tOiQDqcZkb0vU
-         FMjQ==
-X-Forwarded-Encrypted: i=1; AJvYcCX/tQJa+4xul6z9bs79vXzoDLNxMdU+t74igbhPfu6b1rJjbQmNvYUJjpD+MF3khgJPv9R/jhScdWyaa36DDhaTlvAF1w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyEQ+4qW/FSy9See8IcluBBvwPfudCTPUFsK6AsiDwqwjgOUryO
-	1j/EyUvbpHxi7RC6Hi89g1ktU8fDKGfCCtgqCTwxKQMK5B/REd9uYbF+
-X-Gm-Gg: ASbGncsG+fmlD5Gv1vcEyzUBOv53MX54GG6etI52DdV9le0rM9xbIbuKOMcN42Od3wV
-	bsxkzxs58Pi7bZJxiVi8gwGH6nP9PiPgyDu+tUXZHY25fATLfEBqqoFV3xheEfcSfRzRoQ11Iz6
-	WG31nEXnJjpFvY8X7I7fjJjC4SlNvtbKjyQbFC6SK0e1ES2/gEQNpqLoP2f0xN7VOibPjczDuEB
-	dXIN17axzaR3sElm6FjUemwqVaSSY8/HAfpx/rfME0C/wntlYSFaalS1ybOMV638hFk1soffAyT
-	slJkMzOxkS2rUZxlxzYHUaKlaX7cwSAGyi/LzAl15fDWTJKx7pPB4yaQbw6Lx1Mfo3490K3o/QO
-	NdPfKRZjZgY5OUW2iH8GhRA==
-X-Google-Smtp-Source: AGHT+IGEvcLf+uHQE2HUx5wsDP+6Qu8CrTw9fgYQNF2HHdCJeuoHSeknHkmSpDe/9TWgZDJ2PqYdzA==
-X-Received: by 2002:a05:622a:118e:b0:4ab:651b:5f17 with SMTP id d75a77b69052e-4aedb99c9a0mr146640581cf.18.1754002264517;
-        Thu, 31 Jul 2025 15:51:04 -0700 (PDT)
-Received: from iman-pc.home ([142.186.9.88])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4aeeee0eca8sm13756151cf.56.2025.07.31.15.51.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 31 Jul 2025 15:51:04 -0700 (PDT)
-From: Seyediman Seyedarab <imandevel@gmail.com>
-X-Google-Original-From: Seyediman Seyedarab <ImanDevel@gmail.com>
-To: dwmw2@infradead.org,
-	baolu.lu@linux.intel.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	skhan@linuxfoundation.org,
-	linux-kernel-mentees@lists.linux.dev,
-	Seyediman Seyedarab <ImanDevel@gmail.com>
-Subject: [PATCH v4] iommu/vt-d: replace snprintf with scnprintf in dmar_latency_snapshot()
-Date: Thu, 31 Jul 2025 18:50:47 -0400
-Message-ID: <20250731225048.131364-1-ImanDevel@gmail.com>
-X-Mailer: git-send-email 2.50.1
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="EPJNtJ3M"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=OwvmZVdlwQLqPka+6WZl7o1Y70O8q1uiioByzLBwxEXt+FZxUO4Gs15JavgwFtUOMKRmS/LdVeg9ytkpyGVmAf/msSsC+WMKSQJosF7hunH9rOCryYJLyf4qjymndLEpZxr9RWyNVK9ZiP9ewNMF3255WiDidWp+y7NjR6Z+CKbpSYzbJYZiIzS6zWuCBpTAE8Ig4W8GziYcFwKgyJO1Hf4orc+uq/MfXyyZtHaVzq41J+CGAL1I1lmtPff1uw4qA26YdPkyamUBNB4O9DT+1ykLgvRFplUhT0o5G2Ah/onC27/iTU2AIRg01bYsVqJUn8qgHwZbMOURqOQL7cPG4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=FapCBIQYzG9axYsvv2Pqe84YePrzfuqOq7VOhdP2yls=;
+ b=YxpCWv36mmL2ckIJO4eSUKEhHyI4KBD4ZyTJxU/CtromgJKqKqnlICTv/xfarrxzT4tga7QOliIBS2L4XlBDoU6BMq7V0zqsfZ5BlvDphpll88HBFpJm8nE5+hmSFs3S/HRswO+XpOLZF2er4sqdnYrmS/LvqdCIJFPj5e15CshABkCs4fBmf7hEi/FC4/jKLS97krD0qZBDEpbvtdmjyzitZutquv2WTR9NXuazHmfSavOoSqJ08KO+RgPihkTXFeqcMjeOgw+KIkQKa4cIja0mD/qj+Q7XJAqLP69j8wzpgBLObQNZDMN0Q1Rk5wceN/dQe7l0gzZJdkTWAPK6fg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FapCBIQYzG9axYsvv2Pqe84YePrzfuqOq7VOhdP2yls=;
+ b=EPJNtJ3MdD6VrNQs9EQJKQxP7gO9wyovniIv74S5BmdAuOizr3Ss8wUCJlrLD5dsAnZFMOugs9kg8/HYHYsMs/3uJWWusRJt8KeOaHwumBnU83JHpXqGyAYFGjwOdXGMJwrQ5uM3AbYG9DsNwhOxYfq4tOdiC9mCgvDYp42u/1rVhEOl8bfrRMFAR3gw987sFxz+WBYtSUlJXEaRv86y7BaXK7YOrXWhCnzfQKOHH9rrUFWAlJgio+vbYJrF1RZUy53fgrbusIhueORTTRv7zwj+xXBLlU03ALjJy/B1KLRnRqjpgTOQv4MP6bGQhyqfEc82ZGCcV+Oxf4eBdx2Zeg==
+Received: from BN0PR04CA0156.namprd04.prod.outlook.com (2603:10b6:408:eb::11)
+ by CH2PR12MB4231.namprd12.prod.outlook.com (2603:10b6:610:7d::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8989.12; Fri, 1 Aug
+ 2025 03:02:09 +0000
+Received: from BN3PEPF0000B074.namprd04.prod.outlook.com
+ (2603:10b6:408:eb:cafe::18) by BN0PR04CA0156.outlook.office365.com
+ (2603:10b6:408:eb::11) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.8989.12 via Frontend Transport; Fri,
+ 1 Aug 2025 03:02:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN3PEPF0000B074.mail.protection.outlook.com (10.167.243.119) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9009.8 via Frontend Transport; Fri, 1 Aug 2025 03:02:09 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Thu, 31 Jul
+ 2025 20:01:46 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Thu, 31 Jul
+ 2025 20:01:45 -0700
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.12) by mail.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server id 15.2.1544.14 via Frontend
+ Transport; Thu, 31 Jul 2025 20:01:45 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <jgg@nvidia.com>, <will@kernel.org>
+CC: <joro@8bytes.org>, <robin.murphy@arm.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>
+Subject: [PATCH rc] iommu/arm-smmu-v3: Fix smmu_domain->nr_ats_masters decrement
+Date: Thu, 31 Jul 2025 20:01:27 -0700
+Message-ID: <20250801030127.2006979-1-nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,135 +78,97 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: AnonymousSubmission
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN3PEPF0000B074:EE_|CH2PR12MB4231:EE_
+X-MS-Office365-Filtering-Correlation-Id: 66158c11-6aae-4f0f-3c58-08ddd0a7ce42
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|36860700013|376014|82310400026|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?BnLPXS9ZmBAgSlBn4pwAgbcnEma9FWXsNEjsWe0W6P9urcaeD2iY2hkK1Dev?=
+ =?us-ascii?Q?PuX7yrjAzt/cfFuLGOYTENw87vMpesxv2uMxgKkNm2EB0hi+22YsshNKU7GM?=
+ =?us-ascii?Q?HZ0F5VKy5QCw6dVns/J3/b6W86xf14yi72O/IJi/l5+FNQd4LH6Fs6YzD/dK?=
+ =?us-ascii?Q?xJQjpM8f6RUg2vpGoZi0YVvJGyHYBB/9GM6U45J6Hb35XDOilNNawKHgw/H8?=
+ =?us-ascii?Q?kokmdhTBeQ0OIkh8r8JGfq/nHTJ2QZhY6xjptJadcAzuU74+CEKbFPfVdhD9?=
+ =?us-ascii?Q?rXY3XPdfqLCPxv2kTD9vPQFYrUpjEdfRMBlJce6qts7GFbsGsGucqN0uzRyq?=
+ =?us-ascii?Q?rHc+0Qtw+IUOwDNboZl9vcaGrVAUdJxw7U/H9TZY5f7rxA4hvWcQmZIoVVDd?=
+ =?us-ascii?Q?hd6FpPGzHEfVSt2sg/ZwPGFsbZ52x2SIcML8gotHDo44DwA+8NwurLDGSyCj?=
+ =?us-ascii?Q?Z1w9aZCph+o0CDhlUY1pBSGjx89JIN8lR15ZJqPHbjeOX8LsS4Et+fIeOxNE?=
+ =?us-ascii?Q?N3bwAqA76X8Jy8g9X48E8oYrDKT6SUopdbDQ6NqRkcfexYNCemvnIUna+aOh?=
+ =?us-ascii?Q?OJUozg1w7ReyrQl2xgKgjzbngsTGdu5iZoQ36q4EgyNh/gDn0wVJ+3MYk6hU?=
+ =?us-ascii?Q?b9i81D/cUOmbGXZqx+6gHJAJgf2IqblOEvk7awNKcYGd2b4v47YhWUTi0qGX?=
+ =?us-ascii?Q?WQtQk9E/9KGC+1pK3kceCcoGjOOLEZqmJ/ATpLHGq+zGQ89z1jh7q+JakOdx?=
+ =?us-ascii?Q?SbKH0dkVo+sAD11bl8M+QST2c/6huynEr5cXEPo90Yew7bVO2S5/L6XYyf6V?=
+ =?us-ascii?Q?MHsLIgqBSUoDlHEIVi0LjO0QBP0f1oron53KL7TtGT32MVPYFVYlZVxFo88f?=
+ =?us-ascii?Q?IwHIW1Ypp1b9x/5r5K6wxznjKXx3oEB4HTf2WXX/KGNF94qmRJUoQOlxXTGX?=
+ =?us-ascii?Q?zXIIIduHTIVjZaqDVG1TBd81/82698P+TbG5In0VS0ASiWgd96tp31Ijh2Dg?=
+ =?us-ascii?Q?6cnA7u+RAmP2U2HPJT63RSOQqxY1G8rdkrksNZuecCjzZS9NnnqenAY7KcsX?=
+ =?us-ascii?Q?LEUpLpdMJFXYe/zsDgARFsSRQa3tMhel30bnJza7SiVkahrK3OeCV9kLMsic?=
+ =?us-ascii?Q?3YcGOc6wNdQhCnOPwmtecLhSJhGgBE4+8TRAJh4Y0vOVHK586zgMXHnGqvEr?=
+ =?us-ascii?Q?JIeDgE7Psg9gYpa1B9aIIKKcUH4MRHi8k+ffyScSNb06fHJ5WpEm7Zqvwlap?=
+ =?us-ascii?Q?yn7W/tm+LaT4V/doECl/mObZCqUg0ovUwctF8RVyGbE3gzxnjhrx8bTHmCTK?=
+ =?us-ascii?Q?3hGeyTjQm+CCiQLF8mOU11ZI96tHf7nqhWkdX50NsPFu+KYqatmvqy69m9s/?=
+ =?us-ascii?Q?AughXnLgCkSm8o3lWDbb0Nj1gXEC4kHjfrhZ+RIVt/fcTu+JPrVq399VW50R?=
+ =?us-ascii?Q?38RYx/4DRJEtu7svFz7JFOWWSZRuXtirRN90eLcRBLnjXMCmgHwtyZH3G78w?=
+ =?us-ascii?Q?tVkQs69mmNoxIxTbiV5LBATHRA14xCgE3FJp?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(376014)(82310400026)(1800799024);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Aug 2025 03:02:09.2856
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66158c11-6aae-4f0f-3c58-08ddd0a7ce42
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN3PEPF0000B074.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4231
 
-snprintf() returns the number of bytes that would have been
-written, not the number actually written. Using this for offset
-tracking can cause buffer overruns if truncation occurs.
+The arm_smmu_attach_commit() updates master->ats_enabled before calling
+arm_smmu_remove_master_domain() that is supposed to clean up everything
+in the old domain, including the old domain's nr_ats_masters. So, it is
+supposed to use the old ats_enabled state of the device, not an updated
+state.
 
-Replace snprintf() with scnprintf() to ensure the offset stays
-within bounds.
+This isn't a problem if switching between two domains where:
+ - old ats_enabled = false; new ats_enabled = false
+ - old ats_enabled = true;  new ats_enabled = true
+but can fail cases where:
+ - old ats_enabled = false; new ats_enabled = true
+   (old domain should keep the counter but incorrectly decreased it)
+ - old ats_enabled = true;  new ats_enabled = false
+   (old domain needed to decrease the counter but incorrectly missed it)
 
-Since scnprintf() never returns a negative value, and zero is not
-possible in this context because 'bytes' starts at 0 and 'size - bytes'
-is DEBUG_BUFFER_SIZE in the first call, which is large enough to hold
-the string literals used, the return value is always positive. An integer
-overflow is also completely out of reach here due to the small and fixed
-buffer size. The error check in latency_show_one() is therefore unnecessary.
-Remove it and make dmar_latency_snapshot() return void.
+Update master->ats_enabled after arm_smmu_remove_master_domain() to fix
+this.
 
-Signed-off-by: Seyediman Seyedarab <ImanDevel@gmail.com>
+Fixes: 7497f4211f4f ("iommu/arm-smmu-v3: Make changing domains be hitless for ATS")
+Cc: stable@vger.kernel.org
+Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
 ---
-Changes in v4:
-- Removed 'ret' in latency_show_one() since it is not being used anymore:
-https://lore.kernel.org/oe-kbuild-all/202508010632.WB0CM5Bz-lkp@intel.com/
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changes in v3:
-- Restored return type of dmar_latency_enable() back to 'int'. It was
-  mistakenly changed to 'void' in the previous version.
-
-Changes in v2:
-- The return type of dmar_latency_snapshot() was changed based on the
-  discussion here:
-https://lore.kernel.org/linux-iommu/aIDN3pvUSG3rN4SW@willie-the-truck/
-
-
- drivers/iommu/intel/debugfs.c | 10 ++--------
- drivers/iommu/intel/perf.c    | 10 ++++------
- drivers/iommu/intel/perf.h    |  5 ++---
- 3 files changed, 8 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
-index affbf4a1558d..65d2f792f0f7 100644
---- a/drivers/iommu/intel/debugfs.c
-+++ b/drivers/iommu/intel/debugfs.c
-@@ -648,17 +648,11 @@ DEFINE_SHOW_ATTRIBUTE(ir_translation_struct);
- static void latency_show_one(struct seq_file *m, struct intel_iommu *iommu,
- 			     struct dmar_drhd_unit *drhd)
- {
--	int ret;
--
- 	seq_printf(m, "IOMMU: %s Register Base Address: %llx\n",
- 		   iommu->name, drhd->reg_base_addr);
- 
--	ret = dmar_latency_snapshot(iommu, debug_buf, DEBUG_BUFFER_SIZE);
--	if (ret < 0)
--		seq_puts(m, "Failed to get latency snapshot");
--	else
--		seq_puts(m, debug_buf);
--	seq_puts(m, "\n");
-+	dmar_latency_snapshot(iommu, debug_buf, DEBUG_BUFFER_SIZE);
-+	seq_printf(m, "%s\n", debug_buf);
- }
- 
- static int latency_show(struct seq_file *m, void *v)
-diff --git a/drivers/iommu/intel/perf.c b/drivers/iommu/intel/perf.c
-index adc4de6bbd88..dceeadc3ee7c 100644
---- a/drivers/iommu/intel/perf.c
-+++ b/drivers/iommu/intel/perf.c
-@@ -113,7 +113,7 @@ static char *latency_type_names[] = {
- 	"     svm_prq"
- };
- 
--int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
-+void dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
- {
- 	struct latency_statistic *lstat = iommu->perf_statistic;
- 	unsigned long flags;
-@@ -122,7 +122,7 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
- 	memset(str, 0, size);
- 
- 	for (i = 0; i < COUNTS_NUM; i++)
--		bytes += snprintf(str + bytes, size - bytes,
-+		bytes += scnprintf(str + bytes, size - bytes,
- 				  "%s", latency_counter_names[i]);
- 
- 	spin_lock_irqsave(&latency_lock, flags);
-@@ -130,7 +130,7 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
- 		if (!dmar_latency_enabled(iommu, i))
- 			continue;
- 
--		bytes += snprintf(str + bytes, size - bytes,
-+		bytes += scnprintf(str + bytes, size - bytes,
- 				  "\n%s", latency_type_names[i]);
- 
- 		for (j = 0; j < COUNTS_NUM; j++) {
-@@ -156,11 +156,9 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
- 				break;
- 			}
- 
--			bytes += snprintf(str + bytes, size - bytes,
-+			bytes += scnprintf(str + bytes, size - bytes,
- 					  "%12lld", val);
- 		}
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 312bc31d7e8eb..3c81139faecae 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2997,9 +2997,9 @@ void arm_smmu_attach_commit(struct arm_smmu_attach_state *state)
+ 		/* ATS is being switched off, invalidate the entire ATC */
+ 		arm_smmu_atc_inv_master(master, IOMMU_NO_PASID);
  	}
- 	spin_unlock_irqrestore(&latency_lock, flags);
--
--	return bytes;
- }
-diff --git a/drivers/iommu/intel/perf.h b/drivers/iommu/intel/perf.h
-index df9a36942d64..1d4baad7e852 100644
---- a/drivers/iommu/intel/perf.h
-+++ b/drivers/iommu/intel/perf.h
-@@ -40,7 +40,7 @@ void dmar_latency_disable(struct intel_iommu *iommu, enum latency_type type);
- bool dmar_latency_enabled(struct intel_iommu *iommu, enum latency_type type);
- void dmar_latency_update(struct intel_iommu *iommu, enum latency_type type,
- 			 u64 latency);
--int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size);
-+void dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size);
- #else
- static inline int
- dmar_latency_enable(struct intel_iommu *iommu, enum latency_type type)
-@@ -64,9 +64,8 @@ dmar_latency_update(struct intel_iommu *iommu, enum latency_type type, u64 laten
- {
+-	master->ats_enabled = state->ats_enabled;
+ 
+ 	arm_smmu_remove_master_domain(master, state->old_domain, state->ssid);
++	master->ats_enabled = state->ats_enabled;
  }
  
--static inline int
-+static inline void
- dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
- {
--	return 0;
- }
- #endif /* CONFIG_DMAR_PERF */
+ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
 -- 
-2.50.1
+2.43.0
 
