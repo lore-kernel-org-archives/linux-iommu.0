@@ -1,66 +1,73 @@
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com [209.85.221.67])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 716B5EEB2;
-	Sat,  2 Aug 2025 01:45:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42EF620298E
+	for <iommu@lists.linux.dev>; Sat,  2 Aug 2025 12:04:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754099121; cv=none; b=c1FP2hs9Q9OVNKc/bJ5lcGKfo4UzslLA8HjAcYml3Y3mcMi9UYWoyTjO/MYOdAZZxi8Lez51HSIysuw0JAlZzSVYkHdRIgD+x/XYarFXLIGkyaD1qZhlJAyHUiZLhfuFaUvaVtipukbISBtZ0UZM/qihWe9hUscRkgbu7BBI+h4=
+	t=1754136273; cv=none; b=kSSvJy8csfMAi0H1JzRIzEGPOmvMTDHO8nf2y5eDzsSFS51XVbN01Ky8GBc8JfWJol1cq3VfgeziHGQxEYSJbvoss9y8rC2LmjPmsdfQ1+Wvfe/XXZFCsvi0BTsUZKrDS7vNYVkXbwv/QXERkt4OLd8VtnSU/YrYQgNsPC/rEoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754099121; c=relaxed/simple;
-	bh=wK6TVc1PZUwsK8d75b8obHYLRBlGYTxS+uhNu9OSt/I=;
+	s=arc-20240116; t=1754136273; c=relaxed/simple;
+	bh=1uzB9r6w4x1mX3RQ6Geex7yxzg322VObRaZu0yQ2zp4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Rurm8PYUnP9sjzSTJfTgR4600WCSruMF1bZv+ZX3J9gn8OVbTIY6mMczddEZmVXUn1Adjq9LoW83gGHigFtFleGFVjQqho7TsjeLgreClNZX40r4zXl/ofIKVdj4R3OUujrIiIOfpLIZsVQ2r53G68XDs8Me15F0Dz59r9Jjd9Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Xf9WhE0P; arc=none smtp.client-ip=209.85.221.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 In-Reply-To:Content-Type; b=ch5iBDk9jHeS8AKINA/xym4FJR6/cDS3iPFRb0XRwbT7bciXLOuPW40Km0duhJNylV/3C67T3quEWwH8vChWbI3nx2iAzCIR7neQp8suBy6t9Bg3qCnCfyP/mJ4Hflj4Iqp/yqZ4i4iOMkz5yB423LJzxVJHdIu2fWKZE1VPgns=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=UWM3ocOQ; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xf9WhE0P"
-Received: by mail-wr1-f67.google.com with SMTP id ffacd0b85a97d-3b788feab29so1295938f8f.2;
-        Fri, 01 Aug 2025 18:45:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754099118; x=1754703918; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=8Oa6VEKGHWu4GOMTzfw3iLmn+dtBbK2I1mPfE7hlNko=;
-        b=Xf9WhE0PoUgw30L+mxyVF/xdUin6uwYsW+Kr65naT+sKpCIH6wzk0FnsKontRSwvqz
-         0xcJMfub/ev7QaH0V+rxYmtkwbKVCbkb+LELpidfy693UEw3ViUIHM40SMZWyUNPCqze
-         eyF+qhzu1NHgKVNdDPrctudgqA5S63G9oLAsWX/QTVfruZFf2xNBU1wv4qzPLbOYp+iR
-         aTSvobRRgrszAZW+Mfil72WCR+IHYk1tLWWfwOlOCBXKgcC7W6x26YNybhLBfSrchCV9
-         P1pSvjgQR1ZcXwhwHCVI3fN8NUaqfWQpo29KHvR2AO1+6nCFmDrmP7eJ8na3QUWSU9bX
-         92Tw==
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="UWM3ocOQ"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5725fpj5010477
+	for <iommu@lists.linux.dev>; Sat, 2 Aug 2025 12:04:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	vCSAiNPoWEksGD85Y1vvHR/fUZ2hueivl1eXMSvDOnU=; b=UWM3ocOQ+HzZFmFm
+	EKT7uAZPdG3p6+e087FTZgXEGhjyrCSdKk7LDW4Pv42XZmfEHQxCZMMlSK3XbcXF
+	YVpuA6dgKz/WpXdNItfqKFZmlKBBQoaIpTUOf9s4Stt+xm2RMfeH35+U0IindvQu
+	CWhMJHMadNrtObCKFOOxWHaJg/2Wi24kiqARnlFXIFUaO7mS6inwdsF7H6wUFCMx
+	qrlgFHC5Sfys/6s4Sb3FHp5A+d7j2mDomWaDCqkJW71gHT0UQFG5ggv73vSWX635
+	OagCwra1zd8P9lWqXZSNqHIcnW6Oy169cI6QRXPwIC8HoM3HQCrk6PIlnCX2bfSU
+	iDCZmQ==
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com [209.85.219.72])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 489a91rt09-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Sat, 02 Aug 2025 12:04:28 +0000 (GMT)
+Received: by mail-qv1-f72.google.com with SMTP id 6a1803df08f44-6fafb22f5daso5090156d6.0
+        for <iommu@lists.linux.dev>; Sat, 02 Aug 2025 05:04:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754099118; x=1754703918;
+        d=1e100.net; s=20230601; t=1754136268; x=1754741068;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8Oa6VEKGHWu4GOMTzfw3iLmn+dtBbK2I1mPfE7hlNko=;
-        b=Hwp/dlU7APNsqsw1EtbTdV8udj7uXyqEOBpgCUjwlQ/7aS2LCIXCOeSMcckc/VDDjf
-         neBnHDWHfr8ImAGcMhW6CPETAZP3oGY3pioDqyVpv63tDsDRxZgnvs+q4/AnnI7ZgLGG
-         Z3+aSeIrtDgY7YZm86KAjvjp+9I93lGbFk5qRKh0SL/5ssvFhWKVQnRjM5//GS2xN9Pa
-         uAMV3JmNf9Srnb1WE8/y50+DOxd7Rl/D383oQA3TTO2GrSspBWZ1BkG/h1e4RlUmaSYg
-         BE6nsFv8F+BDw1FyQjc3AcFrlzkgMBI9Kc3Pvby9DtcwDqInxEhsoXD/exbZG2Js3Ulp
-         7oEA==
-X-Forwarded-Encrypted: i=1; AJvYcCUjFnK7CX+N+UqWg1UY7fjlPgXiB+MalxwctpgLq3Yk3ghzs2t9HnFBTX2XVzSHVHrjjUbh1g==@lists.linux.dev, AJvYcCWFK9HUHkM2vbHE17EWOV/TsR+62XAF3JThM9Q0mZmc+OFWr6ZiUX+HPt7iiaIm27VnNM8J67wEzA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YymOyOCtmk9hZKYc4SD8tt2IHetp8MSuF41GlTobmp5PQLliu7T
-	fIK94UlnLePQJr1jN7vFWemw6Jz4VyHyuJZ6YEGCLX9stmPuvV8BxPje
-X-Gm-Gg: ASbGncth4ATpnwjvEfa3suvX02Xge8ku+pC9+HbwurHjeUJAE2Pd+GJ6OTRFrqCT/H7
-	X3MFNae+njnzC9MMkMZaDg9zHqhhwC5qf8D3UXlL4BRgS/aHDBzYeKfWtU7XrGq7ZVnzY5KrN3y
-	m+KydN5FXlaCRbBqDfl0OnLKeVxaomweOGTMso2P1yCRJDC2y887nZxFO31v7JOriyD9AgtSybn
-	+XtcentxSJyVgwmpcS/0+5eiyNrg3GEDbiDqes8TilWqwplaVXVK/Ssy9A3e3m3IP0yPNTDRkBi
-	GVAL/ZZzSc6FcuVH6DBDY0BcD5OglYd1L54Z/RZxkSr8JUjNmlk34PPlcAAZbH+39qPZ2O5IYRg
-	TXOatvDeuY8sI6djVAGMhDcSnVX5xZBoNglBU1GopSqa5BpfuoFA/zk4y9a1GW8q5lOUFCTm/11
-	51hLPSpF+t0gOiiuub
-X-Google-Smtp-Source: AGHT+IFPCqQNOdCzrCkSA1Wy1eLITRomygGgKSejfZxu72vXSW3BoWxO7nJsEbOuxmcCWT/lCWXc4w==
-X-Received: by 2002:a05:6000:144f:b0:3b6:c88:7b74 with SMTP id ffacd0b85a97d-3b8d94ca8a4mr1269256f8f.59.1754099117477;
-        Fri, 01 Aug 2025 18:45:17 -0700 (PDT)
-Received: from [26.26.26.1] (95.112.207.35.bc.googleusercontent.com. [35.207.112.95])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b79c467994sm7502877f8f.50.2025.08.01.18.45.11
+        bh=vCSAiNPoWEksGD85Y1vvHR/fUZ2hueivl1eXMSvDOnU=;
+        b=dKVlqJLXnanafkz78HweKOoXlef5kn/aY8DfD3HZrXG2gyERzv6WOuCKV3XMH9qtS+
+         AjdqvG+TVp31YeIW9gcUhrKognxo7OrWf21tRPZ5YXL92KLIFJQAWf68HzOFWouw3lAs
+         TwTeGByZbk4FaY0QGg08Bms8OEkP35MSVPbBB4ytObpzRTgR/WJvNp4kiGxyJKaDTdRc
+         iO+/oFwiy3F2YKwLfKjVjCI416LbtRf/4KjxYhb8JRW2leuRK3tmRKOVAhPOXCahTwRs
+         pRaGZbRjh4UK1t/J5VAUBsyc6wiVUxSUKDJ9RUWNxMc830Qas0GU7f8ho7y42kH4tgyE
+         sv4w==
+X-Forwarded-Encrypted: i=1; AJvYcCVN/e+rF3DVlJxH26LOiU11DHymhHNpXrzn01mOADYE7OWTAiN3IaizE4GtGrUIzd4s/YZcOw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwzrVEqWoXTxf+xqkX3kWHGjX37z+8eHTd05V/Hywn0Ig/Tu9J4
+	X6U1wrkv4A2J2nArn4sdC+20dIzuHvbcBvFhGjD2DnKQWz4GXfr68Z447pR61OxuFCXJynQgnT4
+	pjbPBRzx7zxDygbShN+QKPRjYwWZH/PTdfywpHH/gkRHTF6+asV7MpNnTYw==
+X-Gm-Gg: ASbGncsjiGDExNZz76HgrlEI6I3JDRU6O+07FRg1Hci036HnpkLYm4a6i91PRiEKjVF
+	4WXpodLwvdXGBA1mtIQSehvaB5KjV7HNZ991PaUN0HrhzHWhSur3ciRkG199AWKQCIKKb9KMf14
+	Gd/lgTCCbeLtwh4HfP9vlCoQJdkzYGB4tInaSBVK97iPv7N0ijb4T5zlqfQwZOCtziInk3CSsxh
+	7qGJE2g9+/oCWnhTpGXo6xgcCMM9NQC1bY+cSg8SK1Ll+VDtegkvws9EuArtJJUfYBHJDxCozQy
+	cF8TFzW/soig/Hq/EYmeVzrN0/fusmrszFlgqYz4EyNLmfMx0Oi9QG1bhFaoK72PvVPjybCEk3R
+	9R2vqaysnBEkp/i9SGA==
+X-Received: by 2002:a05:622a:1a27:b0:4ae:f8d8:b0fb with SMTP id d75a77b69052e-4af10978640mr22590101cf.5.1754136267961;
+        Sat, 02 Aug 2025 05:04:27 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGHRqglWcLnh7BFuPTAQfd/4FrslPHxTGZAg9UU256erRSiEGc77z4U8yY2TghDqr4GcFIe7A==
+X-Received: by 2002:a05:622a:1a27:b0:4ae:f8d8:b0fb with SMTP id d75a77b69052e-4af10978640mr22589701cf.5.1754136267429;
+        Sat, 02 Aug 2025 05:04:27 -0700 (PDT)
+Received: from [192.168.43.16] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-af91a21c099sm421786166b.108.2025.08.02.05.04.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Aug 2025 18:45:16 -0700 (PDT)
-Message-ID: <a692448d-48b8-4af3-bf88-2cc913a145ca@gmail.com>
-Date: Sat, 2 Aug 2025 09:45:08 +0800
+        Sat, 02 Aug 2025 05:04:26 -0700 (PDT)
+Message-ID: <55420d89-fcd4-4cb5-a918-d8bbe2a03d19@oss.qualcomm.com>
+Date: Sat, 2 Aug 2025 14:04:20 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -68,146 +75,154 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 00/16] Fix incorrect iommu_groups with PCIe ACS
-To: Jason Gunthorpe <jgg@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- linux-pci@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
- Lu Baolu <baolu.lu@linux.intel.com>, galshalom@nvidia.com,
- Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
- kvm@vger.kernel.org, maorg@nvidia.com, patches@lists.linux.dev,
- tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
-References: <0-v2-4a9b9c983431+10e2-pcie_switch_groups_jgg@nvidia.com>
+Subject: Re: [PATCH v2 14/15] arm64: dts: qcom: Add initial Milos dtsi
+To: Luca Weiss <luca.weiss@fairphone.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, Vinod Koul <vkoul@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Robert Marko <robimarko@gmail.com>,
+        Das Srinagesh <quic_gurus@quicinc.com>,
+        Thomas Gleixner
+ <tglx@linutronix.de>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Cc: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-mmc@vger.kernel.org
+References: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
+ <20250713-sm7635-fp6-initial-v2-14-e8f9a789505b@fairphone.com>
+ <3e0299ad-766a-4876-912e-438fe2cc856d@oss.qualcomm.com>
+ <DBE6TK1KDOTP.IIT72I1LUN5M@fairphone.com>
+ <DBE8G88CIQ53.2N51CABIBJOOO@fairphone.com>
+ <DBOC7QBND54K.1SI5V9C2Z76BY@fairphone.com>
 Content-Language: en-US
-From: Ethan Zhao <etzhao1900@gmail.com>
-In-Reply-To: <0-v2-4a9b9c983431+10e2-pcie_switch_groups_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+In-Reply-To: <DBOC7QBND54K.1SI5V9C2Z76BY@fairphone.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: ZvZhpYBWkOLF1yiZyr54OzZ04vLGP_nF
+X-Proofpoint-GUID: ZvZhpYBWkOLF1yiZyr54OzZ04vLGP_nF
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODAyMDEwMiBTYWx0ZWRfX6JW9JdHyBZpK
+ dA7BJyo8GkCPWW7BmV7anZzoyZPD/7TCi0AZHgIGtk79+r3ejLFHKjKRtlnl4JgdS7RNu11NnGy
+ F95rbJvR1ZvN6xD0L37jTiz8aLBh1V4M6MzHpzEd3UHz7MOtlAz+l0QG0WbvoM8lRZrRs0T1Y5X
+ d6FUlQdzFlqlbE0PeApTNfF+n9GlLAD07dwfYBOf4q5Yb1+U2oZBSZeqOGIsQmglA7VQeAlJD8y
+ Nfxydh5p8kHVMmyV2NqjjCbG/wXEetIZOyrWz2lXq78BmWpzfrKSkZFF675XJEipz7ZDPRt3uED
+ 4YeQsr3ssOo6ovvbaC61yLQl7zPk6rLJfhdYvts/CG+Xv9sLxF+PH1yft6wySNdv075mJ1aNn7E
+ rEsv5mYRLfixHJrKVcVYayJg1LEchvTR0wDJ26v5VLDE2lL0DjANIC7lQ3XU1dwDmo29WwcA
+X-Authority-Analysis: v=2.4 cv=UdpRSLSN c=1 sm=1 tr=0 ts=688dfecd cx=c_pps
+ a=7E5Bxpl4vBhpaufnMqZlrw==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
+ a=IkcTkHD0fZMA:10 a=2OwXVqhp2XgA:10 a=6H0WHjuAAAAA:8 a=GauJToF0qxMHlBv3vicA:9
+ a=QEXdDO2ut3YA:10 a=pJ04lnu7RYOZP9TFuWaZ:22 a=Soq9LBFxuPC4vsCAQt-j:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-08-01_08,2025-08-01_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 phishscore=0 adultscore=0 spamscore=0 mlxlogscore=999
+ priorityscore=1501 impostorscore=0 bulkscore=0 clxscore=1015
+ lowpriorityscore=0 malwarescore=0 mlxscore=0 classifier=spam authscore=0
+ authtc=n/a authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2505280000 definitions=main-2508020102
+
+On 7/29/25 8:49 AM, Luca Weiss wrote:
+> Hi Konrad,
+> 
+> On Thu Jul 17, 2025 at 11:46 AM CEST, Luca Weiss wrote:
+>> Hi Konrad,
+>>
+>> On Thu Jul 17, 2025 at 10:29 AM CEST, Luca Weiss wrote:
+>>> On Mon Jul 14, 2025 at 1:06 PM CEST, Konrad Dybcio wrote:
+>>>> On 7/13/25 10:05 AM, Luca Weiss wrote:
+>>>>> Add a devicetree description for the Milos SoC, which is for example
+>>>>> Snapdragon 7s Gen 3 (SM7635).
+>>>>>
+>>>>> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+>>>>> ---
+>>>>
+>>>> [...]
+>>>>> +
+>>>>> +		spmi_bus: spmi@c400000 {
+>>>>> +			compatible = "qcom,spmi-pmic-arb";
+>>>>
+>>>> There's two bus instances on this platform, check out the x1e binding
+>>>
+>>> Will do
+>>
+>> One problem: If we make the labels spmi_bus0 and spmi_bus1 then we can't
+>> reuse the existing PMIC dtsi files since they all reference &spmi_bus.
+>>
+>> On FP6 everything's connected to PMIC_SPMI0_*, and PMIC_SPMI1_* is not
+>> connected to anything so just adding the label spmi_bus on spmi_bus0
+>> would be fine.
+>>
+>> Can I add this to the device dts? Not going to be pretty though...
+>>
+>> diff --git a/arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts b/arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts
+>> index d12eaa585b31..69605c9ed344 100644
+>> --- a/arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts
+>> +++ b/arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts
+>> @@ -11,6 +11,9 @@
+>>  #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+>>  #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+>>  #include "milos.dtsi"
+>> +
+>> +spmi_bus: &spmi_bus0 {};
+>> +
+>>  #include "pm7550.dtsi"
+>>  #include "pm8550vs.dtsi"
+>>  #include "pmiv0104.dtsi" /* PMIV0108 */
+>>
+>> Or I can add a second label for the spmi_bus0 as 'spmi_bus'. Not sure
+>> other designs than SM7635 recommend using spmi_bus1 for some stuff.
+>>
+>> But I guess longer term we'd need to figure out a solution to this, how
+>> to place a PMIC on a given SPMI bus, if reference designs start to
+>> recommend putting different PMIC on the separate busses.
+> 
+> Any feedback on this regarding the spmi_bus label?
+
+I had an offline chat with Bjorn and we only came up with janky
+solutions :)
+
+What you propose works well if the PMICs are all on bus0, which is
+not the case for the newest platforms. If some instances are on bus0
+and others are on bus1, things get ugly really quick and we're going
+to drown in #ifdefs.
 
 
+An alternative that I've seen downstream is to define PMIC nodes in
+the root of a dtsi file (not in the root of DT, i.e. NOT under / { })
+and do the following:
 
-On 7/9/2025 10:52 PM, Jason Gunthorpe wrote:
-> The series patches have extensive descriptions as to the problem and
-> solution, but in short the ACS flags are not analyzed according to the
-> spec to form the iommu_groups that VFIO is expecting for security.
-> 
-> ACS is an egress control only. For a path the ACS flags on each hop only
-> effect what other devices the TLP is allowed to reach. It does not prevent
-> other devices from reaching into this path.
-Perhaps I was a little confused here, the egress control vector on the
-switch port could prevent the downstream EP device from P2P TLP eaching.
-while EP has no knob if is isolated.>
-> For VFIO if device A is permitted to access device B's MMIO then A and B
-> must be grouped together. This says that even if a path has isolating ACS
-> flags on each hop, off-path devices with non-isolating ACS can still reach
-> into that path and must be grouped gother.
-> 
-> For switches, a PCIe topology like:
-> 
->                                 -- DSP 02:00.0 -> End Point A
->   Root 00:00.0 -> USP 01:00.0 --|
->                                 -- DSP 02:03.0 -> End Point B
-> 
-> Will generate unique single device groups for every device even if ACS is
-> not enabled on the two DSP ports. It should at least group A/B together
-> because no ACS means A can reach the MMIO of B. This is a serious failure
-> for the VFIO security model.
-Yup, whether EP A /EP B is isolated, depends on the egress ACS setting 
-on their DSP.>
-> For multi-function-devices, a PCIe topology like:
-> 
->                    -- MFD 00:1f.0 ACS != REQ_ACS_FLAGS
->    Root 00:00.00 --|- MFD 00:1f.2 ACS != REQ_ACS_FLAGS
->                    |- MFD 00:1f.6 ACS = REQ_ACS_FLAGS
-> 
-> Will group [1f.0, 1f.2] and 1f.6 gets a single device group. In many cases
-> we suspect that the MFD actually doesn't need ACS, so this is probably not
-> as important a security failure, but from a spec perspective the correct
-> answer is one group of [1f.0, 1f.2, 1f.6] beacuse 1f.0/2 have no ACS
-> preventing them from reaching the MMIO of 1f.6.
-I wonder if MFD/SRIOV has the egress control like switch port.
+&spmi_busN {
+	#include "pmABCDX.dtsi"
+};
 
-Thanks,
-Ethan>
-> There is also some confusing spec language about how ACS and SRIOV works
-> which this series does not address.
-> 
-> This entire series goes further and makes some additional improvements to
-> the ACS validation found while studying this problem. The groups around a
-> PCIe to PCI bridge are shrunk to not include the PCIe bridge.
-> 
-> The last patches implement "ACS Enhanced" on top of it. Due to how ACS
-> Enhanced was defined as a non-backward compatible feature it is important
-> to get SW support out there.
-> 
-> Due to the potential of iommu_groups becoming winder and thus non-usable
-> for VFIO this should go to a linux-next tree to give it some more
-> exposure.
-> 
-> I have now tested this a few systems I could get:
-> 
->   - Various Intel client systems:
->     * Raptor Lake, with VMD enabled and using the real_dev mechanism
->     * 6/7th generation 100 Series/C320
->     * 5/6th generation 100 Series/C320 with a NIC MFD quirk
->     * Tiger Lake
->     * 5/6th generation Sunrise Point
->    No change in grouping on any of these systems
-> 
->   - NVIDIA Grace system with 5 different PCI switches from two vendors
->     Bug fix widening the iommu_groups works as expected here
-> 
->   - AMD Milan Starship/Matisse
->     * Groups are similar, this series generates narrow groups because the
->       dummy host bridges always get their own groups. Something forcibly
->       disables ACS SV on one bridge which correctly causes one larger
->       group.
-> 
-> This is on github: https://github.com/jgunthorpe/linux/commits/pcie_switch_groups
-> 
-> v2:
->   - Revise comments and commit messages
->   - Rename struct pci_alias_set to pci_reachable_set
->   - Make more sense of the special bus->self = NULL case for SRIOV
->   - Add pci_group_alloc_non_isolated() for readability
->   - Rename BUS_DATA_PCI_UNISOLATED to BUS_DATA_PCI_NON_ISOLATED
->   - Propogate BUS_DATA_PCI_NON_ISOLATED downstream from a MFD in case a MFD
->     function is a bridge
->   - New patches to add pci_mfd_isolation() to retain more cases of narrow
->     groups on MFDs with missing ACS.
->   - Redescribe the MFD related change as a bug fix. For a MFD to be
->     isolated all functions must have egress control on their P2P.
-> v1: https://patch.msgid.link/r/0-v1-74184c5043c6+195-pcie_switch_groups_jgg@nvidia.com
-> 
-> Jason Gunthorpe (16):
->    PCI: Move REQ_ACS_FLAGS into pci_regs.h as PCI_ACS_ISOLATED
->    PCI: Add pci_bus_isolation()
->    iommu: Compute iommu_groups properly for PCIe switches
->    iommu: Organize iommu_group by member size
->    PCI: Add pci_reachable_set()
->    PCI: Remove duplication in calling pci_acs_ctrl_enabled()
->    PCI: Use pci_quirk_mf_endpoint_acs() for pci_quirk_amd_sb_acs()
->    PCI: Use pci_acs_ctrl_isolated() for pci_quirk_al_acs()
->    PCI: Widen the acs_flags to u32 within the quirk callback
->    PCI: Add pci_mfd_isolation()
->    iommu: Compute iommu_groups properly for PCIe MFDs
->    iommu: Validate that pci_for_each_dma_alias() matches the groups
->    PCI: Add the ACS Enhanced Capability definitions
->    PCI: Enable ACS Enhanced bits for enable_acs and config_acs
->    PCI: Check ACS DSP/USP redirect bits in pci_enable_pasid()
->    PCI: Check ACS Extended flags for pci_bus_isolated()
-> 
->   drivers/iommu/iommu.c         | 486 +++++++++++++++++++++++-----------
->   drivers/pci/ats.c             |   4 +-
->   drivers/pci/pci.c             |  73 ++++-
->   drivers/pci/pci.h             |   5 +
->   drivers/pci/quirks.c          | 137 ++++++----
->   drivers/pci/search.c          | 294 ++++++++++++++++++++
->   include/linux/pci.h           |  50 ++++
->   include/uapi/linux/pci_regs.h |  18 ++
->   8 files changed, 846 insertions(+), 221 deletions(-)
-> 
-> 
-> base-commit: e04c78d86a9699d136910cfc0bdcf01087e3267e
+Which is "okay", but has the visible downside of having to define the
+temp alarm thermal zone in each board's DT separately (and doing
+mid-file includes which is.. fine I guess, but also something we avoided
+upstream for the longest time)
 
+
+Both are less than ideal when it comes to altering the SID under
+"interrupts", fixing that would help immensely. We were hoping to
+leverage something like Johan's work on drivers/mfd/qcom-pm8008.c,
+but that seems like a longer term project.
+
+Please voice your opinions
+
+Konrad
