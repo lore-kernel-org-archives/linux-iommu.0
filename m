@@ -1,150 +1,213 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com [209.85.221.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00D3428D8ED
-	for <iommu@lists.linux.dev>; Fri,  1 Aug 2025 18:59:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 716B5EEB2;
+	Sat,  2 Aug 2025 01:45:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.67
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754074774; cv=none; b=k6zwi5EuMvrs786DK2Y8BhXHRxYlB6mI4hdMo0wNPw7oDDKNmeH5mQUbwqIas0q4iHMWT11iBQqOfXvmHsHW4m4rFa+IBv1MUtoVXqpnaYiWNK8PinPvP1MMlgrAKaMAua69BtwuoJJkezzFnI9fCPk5jFM8FogbYNlXE1yEH+Q=
+	t=1754099121; cv=none; b=c1FP2hs9Q9OVNKc/bJ5lcGKfo4UzslLA8HjAcYml3Y3mcMi9UYWoyTjO/MYOdAZZxi8Lez51HSIysuw0JAlZzSVYkHdRIgD+x/XYarFXLIGkyaD1qZhlJAyHUiZLhfuFaUvaVtipukbISBtZ0UZM/qihWe9hUscRkgbu7BBI+h4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754074774; c=relaxed/simple;
-	bh=ZCus/7TYCpdBpSHkNX8J3JFdhNbHBG34XLdpJYdbpIQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RKkpGCp/ZTDHqmDABFOyXIvUcWPU5OoGpRIwTSpDXqZujqMFybltHyr11jpmb+IbSmPDItOg6m000LzEnD3v3MbXnjYq4L6xeO/Xjjf2YwqIPJ0gK+A2Z0V6LjGgcr6fFlfzUlva+E+09OtzVdYTr6b818tCB0DyOFeTtjh9osM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=WBn0PiQg; arc=none smtp.client-ip=209.85.160.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1754099121; c=relaxed/simple;
+	bh=wK6TVc1PZUwsK8d75b8obHYLRBlGYTxS+uhNu9OSt/I=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Rurm8PYUnP9sjzSTJfTgR4600WCSruMF1bZv+ZX3J9gn8OVbTIY6mMczddEZmVXUn1Adjq9LoW83gGHigFtFleGFVjQqho7TsjeLgreClNZX40r4zXl/ofIKVdj4R3OUujrIiIOfpLIZsVQ2r53G68XDs8Me15F0Dz59r9Jjd9Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Xf9WhE0P; arc=none smtp.client-ip=209.85.221.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="WBn0PiQg"
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-4aeb2edce3dso10816481cf.2
-        for <iommu@lists.linux.dev>; Fri, 01 Aug 2025 11:59:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xf9WhE0P"
+Received: by mail-wr1-f67.google.com with SMTP id ffacd0b85a97d-3b788feab29so1295938f8f.2;
+        Fri, 01 Aug 2025 18:45:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1754074772; x=1754679572; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=AyIY9+7qRYH18QG3yHqvpWY8fQNePxyU0Y1cLmmOWtc=;
-        b=WBn0PiQgZniBXhNPZqC8wShHxgEgzYqWEbDyCsO0Z7dT1zIJF6UEeUzzvHByHqxMSd
-         Bh9gi2gbBO07hYEJn0WqPCkZBaiA6yhQL+5XXaYXqPISOhKQynondEM/S8+AnQNwf5GG
-         T6Ou8cjsvlfF4dSRLFFEzqBPxkVCcGWzrEtuhOqt5yDCua+02h0XIAxhcE0A7BqqXgeS
-         Xo5UTXKtJaX9SuyIIKnJ580QASlpQqdAGIj3bugUYb4DZIrCgOxUO66g01MOTP+uGMKh
-         EZ2byuVaEkv5iwofKIA4UFdCsz1C+6FB/54aK+qhDw7DLS75T6nugtAVq8pqBFgxDO2N
-         Knsw==
+        d=gmail.com; s=20230601; t=1754099118; x=1754703918; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=8Oa6VEKGHWu4GOMTzfw3iLmn+dtBbK2I1mPfE7hlNko=;
+        b=Xf9WhE0PoUgw30L+mxyVF/xdUin6uwYsW+Kr65naT+sKpCIH6wzk0FnsKontRSwvqz
+         0xcJMfub/ev7QaH0V+rxYmtkwbKVCbkb+LELpidfy693UEw3ViUIHM40SMZWyUNPCqze
+         eyF+qhzu1NHgKVNdDPrctudgqA5S63G9oLAsWX/QTVfruZFf2xNBU1wv4qzPLbOYp+iR
+         aTSvobRRgrszAZW+Mfil72WCR+IHYk1tLWWfwOlOCBXKgcC7W6x26YNybhLBfSrchCV9
+         P1pSvjgQR1ZcXwhwHCVI3fN8NUaqfWQpo29KHvR2AO1+6nCFmDrmP7eJ8na3QUWSU9bX
+         92Tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754074772; x=1754679572;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        d=1e100.net; s=20230601; t=1754099118; x=1754703918;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AyIY9+7qRYH18QG3yHqvpWY8fQNePxyU0Y1cLmmOWtc=;
-        b=hgLlOXcExhUy3hlIjEk2K6IqGZawPnRz10IRs/q2OyxOxMzImIul3AhWHvcUoTcMzq
-         vxpj/9jqNMEfTco7ChWBJoVX1CKck7XUbGkR95VVvUeCFCE+UUgNMbrZsUxnaXgDifLz
-         sgYYwe56fCD8u5L8y4PMQqh7utFCbAO84/MYujjAmxAXRj1VlocDB1+/JBLBwgdYHxDT
-         GFLAUe4Y9753DTOJD438kd8seYmhxaRoWyUIMr8oa11yl51xKxX1xT+fEyY9WQM4kU4q
-         wyQJNMCadv2QkDYNSgn5wqrTxYugOxfR1iiWCxT4hwDXLUSsZcjdFOg3EB/T35iODsWC
-         u8OA==
-X-Forwarded-Encrypted: i=1; AJvYcCWWgLZsL3r2Pgf9w3V+bL9dJ/lMBUElkitcO6B/TKf22yDpzMiOCnADvCJDUbtEPVmlqrlVWA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywz9o5cNCYzOfpn3XBVD9ax/WWJiU9vof+RSYetWhxDlsumYTYZ
-	JLSGnUg3rCN+FLbHxHgb8VQnS6Ih2yWMuB8ugmL4g6EGKTys8J0UUftwFEwAiP9l2Ho=
-X-Gm-Gg: ASbGnctoxVfPcX8Uftpr2toe+EQ/P/k3A7L7YfBzJsEPdLun8kuf+VSpmC/qOyWwiPX
-	BchPclvGMbgZjfj3pjF44smfXvG7mnTj695ewtEYo9bJUdsMTgdMQTKHwwl9VpSyMbVNojkxHnw
-	aMGvK2xMIL0qGvdWwe+P7ig1k+5zkqPctL00dd8KOn73nx/AZxEYqsB53dKfAFpVpyFcdb36juT
-	yrmY9/t//MV2IYBDn1BY6tfvtQFL/0gMiReNREt+2eRxj9//JgAdvcdQvqndES/kKt1o5+/gQ7i
-	9QD8wV16qJGgf5yNUszTrM8O536XyxL3C6yKmWxtm1o8MV60szVlTT/oB/UkfKzNaSfdvfdu2fW
-	pBQb3CoittKWQi8DNpYG80n5FlB5T4YdMooT1Dx/c3LvPzj6NJAXOUQUupvEyRHZ68awp
-X-Google-Smtp-Source: AGHT+IHvW1P/vYfLuQdieKRLav2sj0iL8HcBFcWOObvqQ/GoW+Jjhx1hxhp1NE0qHlpxeA4ab2Hb6w==
-X-Received: by 2002:a05:622a:15c2:b0:4ab:887c:8b with SMTP id d75a77b69052e-4af10a88ee3mr13217181cf.42.1754074771752;
-        Fri, 01 Aug 2025 11:59:31 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4aeeed670c6sm24010891cf.37.2025.08.01.11.59.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Aug 2025 11:59:31 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uhuyY-000000014Fy-2vCk;
-	Fri, 01 Aug 2025 15:59:30 -0300
-Date: Fri, 1 Aug 2025 15:59:30 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, will@kernel.org, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v3 29/29] iommu/arm-smmu-v3-kvm: Add IOMMU ops
-Message-ID: <20250801185930.GH26511@ziepe.ca>
-References: <20250728175316.3706196-1-smostafa@google.com>
- <20250728175316.3706196-30-smostafa@google.com>
- <20250730144253.GM26511@ziepe.ca>
- <aIo1ImP7R7VhRpVE@google.com>
- <20250730164752.GO26511@ziepe.ca>
- <aIt67bOzp6XS_yO-@google.com>
- <20250731165757.GZ26511@ziepe.ca>
- <aIurlx5QzEtjpFLd@google.com>
+        bh=8Oa6VEKGHWu4GOMTzfw3iLmn+dtBbK2I1mPfE7hlNko=;
+        b=Hwp/dlU7APNsqsw1EtbTdV8udj7uXyqEOBpgCUjwlQ/7aS2LCIXCOeSMcckc/VDDjf
+         neBnHDWHfr8ImAGcMhW6CPETAZP3oGY3pioDqyVpv63tDsDRxZgnvs+q4/AnnI7ZgLGG
+         Z3+aSeIrtDgY7YZm86KAjvjp+9I93lGbFk5qRKh0SL/5ssvFhWKVQnRjM5//GS2xN9Pa
+         uAMV3JmNf9Srnb1WE8/y50+DOxd7Rl/D383oQA3TTO2GrSspBWZ1BkG/h1e4RlUmaSYg
+         BE6nsFv8F+BDw1FyQjc3AcFrlzkgMBI9Kc3Pvby9DtcwDqInxEhsoXD/exbZG2Js3Ulp
+         7oEA==
+X-Forwarded-Encrypted: i=1; AJvYcCUjFnK7CX+N+UqWg1UY7fjlPgXiB+MalxwctpgLq3Yk3ghzs2t9HnFBTX2XVzSHVHrjjUbh1g==@lists.linux.dev, AJvYcCWFK9HUHkM2vbHE17EWOV/TsR+62XAF3JThM9Q0mZmc+OFWr6ZiUX+HPt7iiaIm27VnNM8J67wEzA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YymOyOCtmk9hZKYc4SD8tt2IHetp8MSuF41GlTobmp5PQLliu7T
+	fIK94UlnLePQJr1jN7vFWemw6Jz4VyHyuJZ6YEGCLX9stmPuvV8BxPje
+X-Gm-Gg: ASbGncth4ATpnwjvEfa3suvX02Xge8ku+pC9+HbwurHjeUJAE2Pd+GJ6OTRFrqCT/H7
+	X3MFNae+njnzC9MMkMZaDg9zHqhhwC5qf8D3UXlL4BRgS/aHDBzYeKfWtU7XrGq7ZVnzY5KrN3y
+	m+KydN5FXlaCRbBqDfl0OnLKeVxaomweOGTMso2P1yCRJDC2y887nZxFO31v7JOriyD9AgtSybn
+	+XtcentxSJyVgwmpcS/0+5eiyNrg3GEDbiDqes8TilWqwplaVXVK/Ssy9A3e3m3IP0yPNTDRkBi
+	GVAL/ZZzSc6FcuVH6DBDY0BcD5OglYd1L54Z/RZxkSr8JUjNmlk34PPlcAAZbH+39qPZ2O5IYRg
+	TXOatvDeuY8sI6djVAGMhDcSnVX5xZBoNglBU1GopSqa5BpfuoFA/zk4y9a1GW8q5lOUFCTm/11
+	51hLPSpF+t0gOiiuub
+X-Google-Smtp-Source: AGHT+IFPCqQNOdCzrCkSA1Wy1eLITRomygGgKSejfZxu72vXSW3BoWxO7nJsEbOuxmcCWT/lCWXc4w==
+X-Received: by 2002:a05:6000:144f:b0:3b6:c88:7b74 with SMTP id ffacd0b85a97d-3b8d94ca8a4mr1269256f8f.59.1754099117477;
+        Fri, 01 Aug 2025 18:45:17 -0700 (PDT)
+Received: from [26.26.26.1] (95.112.207.35.bc.googleusercontent.com. [35.207.112.95])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b79c467994sm7502877f8f.50.2025.08.01.18.45.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 01 Aug 2025 18:45:16 -0700 (PDT)
+Message-ID: <a692448d-48b8-4af3-bf88-2cc913a145ca@gmail.com>
+Date: Sat, 2 Aug 2025 09:45:08 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aIurlx5QzEtjpFLd@google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 00/16] Fix incorrect iommu_groups with PCIe ACS
+To: Jason Gunthorpe <jgg@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ linux-pci@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>, galshalom@nvidia.com,
+ Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
+ kvm@vger.kernel.org, maorg@nvidia.com, patches@lists.linux.dev,
+ tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
+References: <0-v2-4a9b9c983431+10e2-pcie_switch_groups_jgg@nvidia.com>
+Content-Language: en-US
+From: Ethan Zhao <etzhao1900@gmail.com>
+In-Reply-To: <0-v2-4a9b9c983431+10e2-pcie_switch_groups_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jul 31, 2025 at 05:44:55PM +0000, Mostafa Saleh wrote:
-> > > They are not random, as part of this series the SMMUv3 driver is split
-> > > where some of the code goes to “arm-smmu-v3-common.c” which is used by
-> > > both drivers, this reduces a lot of duplication.
-> > 
-> > I find it very confusing.
-> > 
-> > It made sense to factor some of the code out so that pKVM can have
-> > it's own smmv3 HW driver, sure.
-> > 
-> > But I don't understand why a paravirtualized iommu driver for pKVM has
-> > any relation to smmuv3. Shouldn't it just be calling some hypercalls
-> > to set IDENTITY/BLOCKING?
+
+
+On 7/9/2025 10:52 PM, Jason Gunthorpe wrote:
+> The series patches have extensive descriptions as to the problem and
+> solution, but in short the ACS flags are not analyzed according to the
+> spec to form the iommu_groups that VFIO is expecting for security.
 > 
-> Well it’s not really “paravirtualized” as virtio-iommu, this is an SMMUv3
-> driver (it uses the same binding a the smmu-v3)
+> ACS is an egress control only. For a path the ACS flags on each hop only
+> effect what other devices the TLP is allowed to reach. It does not prevent
+> other devices from reaching into this path.
+Perhaps I was a little confused here, the egress control vector on the
+switch port could prevent the downstream EP device from P2P TLP eaching.
+while EP has no knob if is isolated.>
+> For VFIO if device A is permitted to access device B's MMIO then A and B
+> must be grouped together. This says that even if a path has isolating ACS
+> flags on each hop, off-path devices with non-isolating ACS can still reach
+> into that path and must be grouped gother.
+> 
+> For switches, a PCIe topology like:
+> 
+>                                 -- DSP 02:00.0 -> End Point A
+>   Root 00:00.0 -> USP 01:00.0 --|
+>                                 -- DSP 02:03.0 -> End Point B
+> 
+> Will generate unique single device groups for every device even if ACS is
+> not enabled on the two DSP ports. It should at least group A/B together
+> because no ACS means A can reach the MMIO of B. This is a serious failure
+> for the VFIO security model.
+Yup, whether EP A /EP B is isolated, depends on the egress ACS setting 
+on their DSP.>
+> For multi-function-devices, a PCIe topology like:
+> 
+>                    -- MFD 00:1f.0 ACS != REQ_ACS_FLAGS
+>    Root 00:00.00 --|- MFD 00:1f.2 ACS != REQ_ACS_FLAGS
+>                    |- MFD 00:1f.6 ACS = REQ_ACS_FLAGS
+> 
+> Will group [1f.0, 1f.2] and 1f.6 gets a single device group. In many cases
+> we suspect that the MFD actually doesn't need ACS, so this is probably not
+> as important a security failure, but from a spec perspective the correct
+> answer is one group of [1f.0, 1f.2, 1f.6] beacuse 1f.0/2 have no ACS
+> preventing them from reaching the MMIO of 1f.6.
+I wonder if MFD/SRIOV has the egress control like switch port.
 
-> It re-use the same probe code, fw/hw parsing and so on (inside the kernel),
-> also re-use the same structs to make that possible. 
+Thanks,
+Ethan>
+> There is also some confusing spec language about how ACS and SRIOV works
+> which this series does not address.
+> 
+> This entire series goes further and makes some additional improvements to
+> the ACS validation found while studying this problem. The groups around a
+> PCIe to PCI bridge are shrunk to not include the PCIe bridge.
+> 
+> The last patches implement "ACS Enhanced" on top of it. Due to how ACS
+> Enhanced was defined as a non-backward compatible feature it is important
+> to get SW support out there.
+> 
+> Due to the potential of iommu_groups becoming winder and thus non-usable
+> for VFIO this should go to a linux-next tree to give it some more
+> exposure.
+> 
+> I have now tested this a few systems I could get:
+> 
+>   - Various Intel client systems:
+>     * Raptor Lake, with VMD enabled and using the real_dev mechanism
+>     * 6/7th generation 100 Series/C320
+>     * 5/6th generation 100 Series/C320 with a NIC MFD quirk
+>     * Tiger Lake
+>     * 5/6th generation Sunrise Point
+>    No change in grouping on any of these systems
+> 
+>   - NVIDIA Grace system with 5 different PCI switches from two vendors
+>     Bug fix widening the iommu_groups works as expected here
+> 
+>   - AMD Milan Starship/Matisse
+>     * Groups are similar, this series generates narrow groups because the
+>       dummy host bridges always get their own groups. Something forcibly
+>       disables ACS SV on one bridge which correctly causes one larger
+>       group.
+> 
+> This is on github: https://github.com/jgunthorpe/linux/commits/pcie_switch_groups
+> 
+> v2:
+>   - Revise comments and commit messages
+>   - Rename struct pci_alias_set to pci_reachable_set
+>   - Make more sense of the special bus->self = NULL case for SRIOV
+>   - Add pci_group_alloc_non_isolated() for readability
+>   - Rename BUS_DATA_PCI_UNISOLATED to BUS_DATA_PCI_NON_ISOLATED
+>   - Propogate BUS_DATA_PCI_NON_ISOLATED downstream from a MFD in case a MFD
+>     function is a bridge
+>   - New patches to add pci_mfd_isolation() to retain more cases of narrow
+>     groups on MFDs with missing ACS.
+>   - Redescribe the MFD related change as a bug fix. For a MFD to be
+>     isolated all functions must have egress control on their P2P.
+> v1: https://patch.msgid.link/r/0-v1-74184c5043c6+195-pcie_switch_groups_jgg@nvidia.com
+> 
+> Jason Gunthorpe (16):
+>    PCI: Move REQ_ACS_FLAGS into pci_regs.h as PCI_ACS_ISOLATED
+>    PCI: Add pci_bus_isolation()
+>    iommu: Compute iommu_groups properly for PCIe switches
+>    iommu: Organize iommu_group by member size
+>    PCI: Add pci_reachable_set()
+>    PCI: Remove duplication in calling pci_acs_ctrl_enabled()
+>    PCI: Use pci_quirk_mf_endpoint_acs() for pci_quirk_amd_sb_acs()
+>    PCI: Use pci_acs_ctrl_isolated() for pci_quirk_al_acs()
+>    PCI: Widen the acs_flags to u32 within the quirk callback
+>    PCI: Add pci_mfd_isolation()
+>    iommu: Compute iommu_groups properly for PCIe MFDs
+>    iommu: Validate that pci_for_each_dma_alias() matches the groups
+>    PCI: Add the ACS Enhanced Capability definitions
+>    PCI: Enable ACS Enhanced bits for enable_acs and config_acs
+>    PCI: Check ACS DSP/USP redirect bits in pci_enable_pasid()
+>    PCI: Check ACS Extended flags for pci_bus_isolated()
+> 
+>   drivers/iommu/iommu.c         | 486 +++++++++++++++++++++++-----------
+>   drivers/pci/ats.c             |   4 +-
+>   drivers/pci/pci.c             |  73 ++++-
+>   drivers/pci/pci.h             |   5 +
+>   drivers/pci/quirks.c          | 137 ++++++----
+>   drivers/pci/search.c          | 294 ++++++++++++++++++++
+>   include/linux/pci.h           |  50 ++++
+>   include/uapi/linux/pci_regs.h |  18 ++
+>   8 files changed, 846 insertions(+), 221 deletions(-)
+> 
+> 
+> base-commit: e04c78d86a9699d136910cfc0bdcf01087e3267e
 
-I think this is not quite true, I think you have some part of the smmu driver
-bootstrap the pkvm protected driver.
-
-But then the pkvm takes over all the registers and the command queue.
-
-Are you saying the event queue is left behind for the kernel? How does
-that work if it doesn't have access to the registers?
-
-So what is left of the actual *iommu subsystem* driver is just some
-pkvm hypercalls?
-
-It seems more sensible to me to have a pkvm HW driver for SMMUv3 that
-is split between pkvm and kernel, that operates the HW - but is NOT an
-iommu subsystem driver
-
-Then an iommu subsystem driver that does the hypercalls, that is NOT
-connected to SMMUv3 at all.
-
-In other words you have two cleanly seperate concerns here, an "pkvm
-iommu subsystem" that lets pkvm control iommu HW - and the current
-"iommu subsystem" that lets the kernel control iommu HW. The same
-driver should not register to both.
-
-> As mentioned in the cover letter, we can also still build nesting on top of
-> this driver, and I plan to post an RFC for that, once this one is sorted.
-
-I would expect nesting to present an actual paravirtualized SMMUv3
-though, with a proper normal SMMUv3 IOMMU subystem driver. This is how
-ARM architecture is built to work, why mess it up?
-
-So my advice above seems cleaner, you have the pkvm iommu HW driver
-that turns around and presents a completely normal SMMUv3 HW API which
-is bound by the ordinately SMMUv3 iommu subsystem driver.
-
-Jason
