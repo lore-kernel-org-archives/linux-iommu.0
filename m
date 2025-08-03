@@ -1,100 +1,103 @@
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 349C71B4F2C
-	for <iommu@lists.linux.dev>; Sun,  3 Aug 2025 10:59:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9352621422B
+	for <iommu@lists.linux.dev>; Sun,  3 Aug 2025 11:02:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754218778; cv=none; b=YOkAaVfyxM8ZrJnF+HsJPfeDgvhl7rfZMijqDjtx1V+2/1BEWRGH4oYe/5dLKPOXuHZY3JOpLcFLBkM5bbx490YeTaD8UAW3O5tMnJXVxjj+Huw5g9py71A89Afh6EhhRjjS9bzF4JsgrW9czy3CpTosRk2lIasQ7sD6I7uiB3s=
+	t=1754218927; cv=none; b=Sapf9betYlsfVwo97aMT2+7uGYBZwaefSJFIFGJknG5K7UNHvEZo7PrN0IuhuJgh067lIptWm8vUBIFcac7FtW+BFK+h238sYEtT5f29TdAPjTG6zTYaMaa3Nm+0BcYfMMiFkUCneVHFwMO3WwMAX9v1891ZToe8Sa6LRCTd1Fc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754218778; c=relaxed/simple;
-	bh=8qGh5+VS2OHUxroiuOZuE0lXrzfIziOPyv+nXa3cCA8=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=F2/wTHDqxIlgGtfmPrMYiryxqlE0uwoNE5fFF7a763q1IFtD+EcA9+yi8NMbf0ynBFS2Z58OX1oeU06WDpAA04XiAdtN2c9oLA0o/rK85TEFwHDe9x4WJW5poggFU9rwQg1HzGsAvdW+2z7lpz5IRmnX+Sf9cDiA1QR0B+n3Sgs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=infinidat.com; spf=pass smtp.mailfrom=infinidat.com; dkim=pass (2048-bit key) header.d=infinidat.com header.i=@infinidat.com header.b=C8+qwyXm; arc=none smtp.client-ip=209.85.219.41
+	s=arc-20240116; t=1754218927; c=relaxed/simple;
+	bh=C7Z58OC7OFNFczmgKyOLcQXgEOfSXmydWhhPa+vt0B4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Content-Type; b=Pt6NLhWNoX+ptpbHEgA2mDeEnajenlzHPZlrFMsLbKhn3p9UdobvgiEgQn+5Yhw6mnSy/2IlYGkEbiHBY+/LEUD7De3x9KsFs63jF2wqBdS+lCPJmMEWbTPO5WU+BCQC/vguxmQUnoURD1wb9R3w9+y2uBwwPPgIcp/va5eRGro=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=infinidat.com; spf=pass smtp.mailfrom=infinidat.com; dkim=pass (2048-bit key) header.d=infinidat.com header.i=@infinidat.com header.b=cm4v49Qd; arc=none smtp.client-ip=209.85.219.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=infinidat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infinidat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infinidat.com header.i=@infinidat.com header.b="C8+qwyXm"
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-707453b0306so25077756d6.2
-        for <iommu@lists.linux.dev>; Sun, 03 Aug 2025 03:59:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=infinidat.com header.i=@infinidat.com header.b="cm4v49Qd"
+Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-7076b55460eso31116306d6.0
+        for <iommu@lists.linux.dev>; Sun, 03 Aug 2025 04:02:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=infinidat.com; s=google; t=1754218775; x=1754823575; darn=lists.linux.dev;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=5d1Ty/OC9652uUgpaiAgn5uJnzmBBRdn461onxQuzqM=;
-        b=C8+qwyXmO1KiqqlioprhNJtqJcDMbTTsevMFpy8eSGQRLvyloAFLqKEsq5YH+RTdP2
-         5VVhgTji2zjiNS5aWOzfXrUi7KYdpxN7+sV4iH8ydUJJLlLl9MvSof0RmqVwk9HQtAfo
-         5rRwjW0uiSP5sB3OUEIUV7Fw1T38TCo2OYVt7+hFxzogxYVF6c9+AYaA3LY5iA0KEB6M
-         FtyT7KJOFkeiPEfTSRf8jPxsYfCFN6QkWZZ7BS6K4nZ59sIxmy/rXS0TRkGH/EzpQwdW
-         WepXqdGeFTEnXnrMSUPHp65On9ONG3YtqAHcfoBwHkqi8RZM1monfAg02SuluCDVhUR/
-         EEWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754218775; x=1754823575;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+        d=infinidat.com; s=google; t=1754218924; x=1754823724; darn=lists.linux.dev;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=5d1Ty/OC9652uUgpaiAgn5uJnzmBBRdn461onxQuzqM=;
-        b=D7+gd//WVXiN7cgVAsTdxhd6ngAMbG/sZZ2b9JHEG/szfTWTpy9x7bi9RWnIVH30ci
-         L0gWMHev2IEmjAKjU+dWBDraN5SiJbhC3YZwlWAMjpUSMJEt97CeiPCApoLaEgFZtaSL
-         7uaJ3Gkgo0i6mPYw2itHT5eg9kOuX74KgMMi7xsKzWJFbQ0fU4H3MXZ/LsorzQ49wifY
-         4xij5xehNTsROFMj5K1jLMGU2VFGTvT8A0MS3dn6gNSc8dsojy3cCJfiVQPxz7kAp3MR
-         B5EErXe6ausROBbDsiei6XLBuAZYvRqeDTbmrPk3yz08SeonT8B+WkSgNFKAs/uFf7yQ
-         Lb7Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWK8055M6kfNwN/ltkoITzaKyWo7kiO/iz2VwLewfz+MKpHdKETpep1Ejp39k5gzxiU/7y6aA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzl3KFEVRvHFj7O/1ZKaloXAtNIkK2cL5soNvxA0ZFdJc+asMw2
-	/avD7CXbpZsEtWXD81/FAcO0A94yF48bMR5+U49Mk3vsmvdvx/Od8JfRqaOFpZxYg1NzM3ZOOws
-	6HGWy42x8KgYfSdi7JFuznOaHDDlXVP2b0kuRRQCpVA==
-X-Gm-Gg: ASbGncvgQWO6pd2vTzzslyvtASAfZdJ1uSI5oGfZ/GYG87JKloD4VHvMUfeKyTbYzjy
-	KMzi8IXJxejbf1IOY8z/6B8LqXHuo7TkcoiyEzQKLDQBov5NHDUDkWNL2nm5CWxNP5A6emjoxPU
-	H/zR6QObsKAP/8rrwvDweUpJNFi1eNmSKxhN0OQVBoYWNWjl6CKMmRIQj8NwWHOuya2PEpN4LnN
-	di5beo+gg==
-X-Google-Smtp-Source: AGHT+IGt6W1C3etzatTk+DvHHR29hoZFX+9vcXrQgy+SxsY4eo3JROncv3wBlR+V1hQ2RnTpJXWmFgE4U3qVLSQKcgs=
-X-Received: by 2002:ad4:5b8d:0:b0:707:75cb:60b4 with SMTP id
- 6a1803df08f44-7093631987dmr77957396d6.41.1754218774911; Sun, 03 Aug 2025
- 03:59:34 -0700 (PDT)
+        bh=sHJHFI8hYd2LP/vvUObzJgvGzX/H7h58j8T4oERKROw=;
+        b=cm4v49Qd8l7bQjCWyqCl8Z2VoW+0pTWiQVXAVN7wvXtF2Qx4KGdp/5w/qh/USJHOxV
+         01Di+XP+AYQ66JVe7Tsq4RzryIJPGej5dG7+e0nrU3NOxsR8T2uC24xnTLzwyxy+/1pK
+         RW+gEsiff5IfzSgZhQlRdIzCgSAm3sbT7KgpXexdLfB8gMbwk8HZBrUDX8y6y9eW+VYZ
+         +blNhARJIb9gX7O7+tNYwvQUzccKWFfT/1bKj9TO4JrCkwoT+8QYXKqDcZJojdPvAtA5
+         CNFEjkGBKU5OMGd/dCd73u+PcQtdj0HBJQ67PM94lCZGTPL5N7ISqgJBeAivuk3m8xDv
+         eq2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1754218924; x=1754823724;
+        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sHJHFI8hYd2LP/vvUObzJgvGzX/H7h58j8T4oERKROw=;
+        b=oe9y//IKYjHyw9rOPjUmeKCvMreaT6ObZR0TnoGlB0ABdxBsKt1dHzLqXr4JVSD8WB
+         zjZOOpR99nIjcp/DffVJmmDMJ6prvgjJ0Dxtoqam1uHwnSJP3pSEuhnDjF8y6XNVQYZZ
+         WZWatcYZIPHN0+gaw0sLv5feXwtMzXQHZ0F985IfY0TkLs+klX3vYm6A4/lRM3rU7ND+
+         6o18LAW/njSfR+hQYOKpA3sYIeQqXlVO4XyZ449KdyXKqNA+Md50HX+w2WU+0pGCNC5J
+         0/9aCIH8v5k+zYXxggxoBdcR2q7hyqrf+dzd5amcAhHtJlTN64uJ1kUtikAMCtgZSqIq
+         oGGQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWmsWGzkTi4ZUnygO3JaN3WCMZB4Njw4Ne5qaDNtfcBQfnJag+DpjGme5jP9vDu+ERpNUYY+g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw0GX9vY3/NktlzL6kt4295veCWm1qHtC4aDjff8hx740Lf35c9
+	dOLMIsMotQDTjHpiYbeQWiWcaciwFGPz+QA8JWZOHZDEiLBHKVg6EA2FDxK8t2lNlNN2eTslZQ0
+	Do52zrGV1UwhfIVSkBoP4HsrzG4DM1cThR1ig6DDnnQ==
+X-Gm-Gg: ASbGncvU6Ez+1v4y79yz1slTuCASALlm8sKug39XkAm3bkFU6Y34d/lCZGfydgIbV87
+	yZm99KSmk23DCe5dQchzJTfACA7scGc1ym2if2y/aMUjDRHXPBAyGLz2CRRYMPTbIQFqU3dJaZU
+	zZM9GUfknbFYp5+Fw8ymL5ss5uObjgZwd21GuiqQE/rQIxsV4raYka01wqIbxTqPTAo0ue70hSs
+	aw8KQD+ww==
+X-Google-Smtp-Source: AGHT+IGRy/xMzqtf4koj2JD4SaY51BoAsV5pFfiAe7ZJi9SAx8UHLoLsdUibItxHFatFC+CPQoG6khb8yDFziTpbfMc=
+X-Received: by 2002:a05:6214:f2e:b0:707:7695:eaa0 with SMTP id
+ 6a1803df08f44-7093629a381mr85992156d6.32.1754218924413; Sun, 03 Aug 2025
+ 04:02:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+References: <CAEHaoC2BWe+0Ps2oU-0xPDLFYYKG-o9+_ynFgh7u3qqyRDtrTg@mail.gmail.com>
+In-Reply-To: <CAEHaoC2BWe+0Ps2oU-0xPDLFYYKG-o9+_ynFgh7u3qqyRDtrTg@mail.gmail.com>
 From: Constantine Gavrilov <cgavrilov@infinidat.com>
-Date: Sun, 3 Aug 2025 13:59:24 +0300
-X-Gm-Features: Ac12FXzclI2ppn0KBABkur-RWnTOIL3Ys4pDILyGyuz5uO41_4IKbSmQPo8juL0
-Message-ID: <CAEHaoC2BWe+0Ps2oU-0xPDLFYYKG-o9+_ynFgh7u3qqyRDtrTg@mail.gmail.com>
-Subject: Large DMA alloc
+Date: Sun, 3 Aug 2025 14:01:53 +0300
+X-Gm-Features: Ac12FXxHIPP0kSwrKnrZ-6DQ9avAY_dlG0jN8mCC9KfQKZ-xZ_IbcCwwk9ACooQ
+Message-ID: <CAEHaoC22NDpHUWovJChCx_XqchkEvUPYrFFe_L1PH9Mw2e386A@mail.gmail.com>
+Subject: [PATCH 0/8] Large DMA alloc/skip 32-bit alloc if size > 32-bit
 To: linux-kernel@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>, 
 	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 
-I have been working on a set of kernel changes to facilitate IOMMU registrations
-of large memory regions. The context of this work is working with PCIe devices
-that have very large PCIe memory BARs (multi-terabyte sizes are possible) from
-user-space. Large memory registrations happen in this context when the PCIe
-memory BARs are registered for access by other devices (like DMA engines), and
-when the application memory buffers are registered for access by the
-PCIe devices.
-Working from user-space typically involves a single registration of large areas
-(application buffers and memory BARs) to avoid run-time performance penalty of
-dynamic small registrations per IO.
+This is the first patch from the set of patches that enable large IOMMU
+DMA registrations. Entire work is available at the master branch of the
+master branch of git@github.com:cgavrilov/linux.git repo.
 
-The full list of patches is provided below:
+Do not consider 32-bit range allocation and skip iterating the rbtree,
+if the allocation size exceeds 32-bit.
 
-[PATCH 0/8] Large DMA alloc/skip 32-bit alloc if size > 32-bit
-[PATCH 1/8] Large DMA alloc/extend alloc APIs to use alignment
-[PATCH 2/8] Large DMA alloc/do not align allocations to size
-[PATCH 3/8] Large DMA alloc/add busy_regions sysfs attribute
-[PATCH 4/8] Large DMA alloc/add APIs to query available range
-[PATCH 5/8] Large DMA alloc/remove max32_alloc_size field
-[PATCH 6/8] Large DMA alloc/alloc DMA addresses from the top
-[PATCH 7/8] Large DMA alloc/low address limit in alloc funcs
-[PATCH 8/8] Large DMA alloc/add min_dma_addr to device struct
+commit 1c21c64befe18d626855a828c721eb786dbb69b8
+Author: Constantine Gavrilov <cgavrilov@infinidat.com>
+Date:   Sun Jun 22 13:05:26 2025 +0300
 
-Entire work is available at the master branch of the git repository
-git@github.com:cgavrilov/linux.git, with the purpose of sharing the code for a
-possible kernel merge.
+    iommu_dma_alloc_iova(): do not try to allocate 32-bit address if
+the size is above 32-bit.
 
-The following messages will provide individual patches.
-
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index ea2ef53bd4fe..8280e8864ef3 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -772,7 +772,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct
+iommu_domain *domain,
+      * some inherent bug in handling >32-bit addresses, or not all the
+      * expected address bits are wired up between the device and the IOMMU.
+      */
+-    if (dma_limit > DMA_BIT_MASK(32) && dev->iommu->pci_32bit_workaround) {
++    if (dma_limit > DMA_BIT_MASK(32) && (size - 1) <=
+DMA_BIT_MASK(32) && dev->iommu->pci_32bit_workaround) {
+         iova = alloc_iova_fast(iovad, iova_len,
+                        DMA_BIT_MASK(32) >> shift, false);
+         if (iova)
 
 -- 
 ----------------------------------------
