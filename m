@@ -1,169 +1,152 @@
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3C0D2E36F0
-	for <iommu@lists.linux.dev>; Sun,  3 Aug 2025 11:19:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74D551A238C
+	for <iommu@lists.linux.dev>; Sun,  3 Aug 2025 15:59:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754219969; cv=none; b=cMCurax/Fhw4cu3CixFzzdKMrdjUxnnN2zyEjekJ50fmEYV8tyAVzNeCa6Kq05Po+gjq4hRBMARKzZFMSxipFR4elPVXX/TVJiZXSOPPZeEwcE3JFxggcAh91f1n1jRxUVWsBjv5pO6+V/o5CEOGdofiPCUs45yPuVS3FKmLGKg=
+	t=1754236751; cv=none; b=E5wobYh2ZjJDtcWc01dHA+uN3yqif01zyMDWDq2YbEAnlEnSAq/lAh1W9p0i797IcYfbuc2Lrd0YxgO2482XwOwSr3mfdbHUSuJafJu5uveL8W93I6KhUk6YVsTJKXIMs/mfwePCPOtymJkIujhr+EPvmNYaXvVuROq3c+TaQE8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754219969; c=relaxed/simple;
-	bh=JEIqAaeSSTe4zb2P158wF7vNe9WridvvCtdLwz+gNKk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Content-Type; b=iHSt5heAYUyt+g2FKAaQdUBiAopGEi6alQaq0jsmjGVPktoT1U05BSHNLzgDrBmiH4Jbre7PMagKuGMHV0N2+JDdWCKJ1gS4NPD96RJq0GWuMGjOIYYRh0dx628YgCJ4Pbzm6RFE7SDPl3qh+s//1zDZo+jYaMSw1tNuRdaD38s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=infinidat.com; spf=pass smtp.mailfrom=infinidat.com; dkim=pass (2048-bit key) header.d=infinidat.com header.i=@infinidat.com header.b=Y2BK0DH5; arc=none smtp.client-ip=209.85.219.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=infinidat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=infinidat.com
+	s=arc-20240116; t=1754236751; c=relaxed/simple;
+	bh=dOREvHopvvWFJAmzvvzH1bmzFboHl3N3LTpx6CxCqIQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tL2/Z631J4iHAd0FVmbnrIf0HfRfaBaD7roM9iTr2i96i1RJ4Pbk6CETSrAVKTbppZ0oVizqpF6ggd3DD4ZeQqZ9wwfPSuWKdieU8/uh0It3eTmxSNQ5ZkFLtq9CvHQ2ARKrgbwDTUn81pVbwvPoLIe7yp6UaSVWcfgTJ9amJ94=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Rski9TxI; arc=none smtp.client-ip=209.85.160.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infinidat.com header.i=@infinidat.com header.b="Y2BK0DH5"
-Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-70736b2ea12so12287276d6.1
-        for <iommu@lists.linux.dev>; Sun, 03 Aug 2025 04:19:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Rski9TxI"
+Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-4b0619a353dso3057431cf.3
+        for <iommu@lists.linux.dev>; Sun, 03 Aug 2025 08:59:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=infinidat.com; s=google; t=1754219967; x=1754824767; darn=lists.linux.dev;
-        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=5Cqe+T/w1aqF8D4toCcW3enb5tvbSckuBh2Yh9OKkf4=;
-        b=Y2BK0DH5aDfMc3Krm8oQS92F0Dbb7pHqIgLQMQgRIN4Uz9BAE5u3bmo3WDTXZf3xSW
-         V2NS/wSPlQPfac1hZ3E7ODPNKFbgLOFkwnlweBpVcUv/zas4lNMwRU2DFzxJ6JIND5wM
-         1Jv8Ah5+m+q/iUBSRtG6AcDiFjnLHBDB25p8kIW65rFHITmAZPi59pyGwZF9Ymczx+Oy
-         Sxs1R43/+0p1dnNUBkyOOjYvmlZ0bm2ooTD4ISmZJdPU6o+wAVa/zMr2gM3BXykhfR4m
-         Im/3wq6CbWmbijw5tncqMeVztCH4GKPIhUcTU+sloxM3daLdKzKq0HrsoOPUZxaDosWt
-         uZ0w==
+        d=ziepe.ca; s=google; t=1754236748; x=1754841548; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=8slyx6E/zt3CNU5aqFjzFMTLA7WC2ifuj8UOdB6q15U=;
+        b=Rski9TxIM9Qwfa/gFB/lDfBZx+hLVy+QfaF/06natTnQNhi5aUeSicL/PzlJwVgMWf
+         lt7HoCpsQNBVpgVjF332iWnQvL13JHr22P1wJ8+jAtASAisyNqCuW4B6B5nQxM/IeZ1v
+         e9e0NW6rdxfUTkNXOJzkP79DRzGilaFVWPjXhgETT27bsjGtj8r3K9djXjSN4900Lllp
+         nyaGtVOT8vvBn4Y/VPq/JDVGWgnMsAxgdwt42irzAGHkljZT9Ki2oETX5txs1A5hSD4R
+         /Wfj3jfeeHq6kEEng7WwQPY2wQ18DBnRmMWet/EDMvhzDMPJI7LT2xAtfhVzB/DimzZr
+         /4VQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754219967; x=1754824767;
-        h=to:subject:message-id:date:from:in-reply-to:references:mime-version
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5Cqe+T/w1aqF8D4toCcW3enb5tvbSckuBh2Yh9OKkf4=;
-        b=s3t9zPjFZqTNwINRY1DlXu3tRsijupy9J8R3dJcbaHDPRzFBTzD7Y3xddOavhOlkUL
-         4ckAW1OhCtLjAxjqgqBqPYJ+pZRTilaXAnsnGiYVy1u2tqzTfhtzmAwhwvZ69AfsZWaQ
-         tHc7675HquHaMzD6HFYQTVbkyfibsBMBwt4AkrPd8eLEbRws6oQ41ipdtB2LjFjrp89T
-         wd8rhbLSvz3cHdzkv7pu5GVviWsMxzh08GqqM3L5t1HB/48y4w7fgKA0ikW8cHsuFat8
-         ayiGhl5fZ0ASBg5cU+7tg67YQtLPIfnv6hzczMYlX4DEgw4faERSdT96ULVVdpEBa1Xw
-         +i7Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXAebtCM6IYVMfUR919qBzLCvMbmvaJ+6kDLnmaLs87heXI7IvdL3D8dF6s4Y/XY6CxuSpHYw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxL4Dj+pR9d15Ga/IEQg30Af0pyUckSR75bVo9tHmxwiZx+gfLq
-	dLsHAV16LGzpThpZZMIjrrApFbiujNvK4IwXvtUJSBD/2A8Usogx1Cl4nXxfz/0tVNlh9GMmG/T
-	didrEGoqMWnz3v5uftN8j9i7Pe0mNN77dbwklRZBBfw==
-X-Gm-Gg: ASbGnctLIZYsOnPyo2gqfqDeS4CUUdOv8LbVFFPoQUaLIVz1A8x0jxSraYBYRIsktR1
-	3tmYv9FMgcDBeQMCMbpFN33JNA+WNfGG7DK8gRYRtDRWsSEkA4V1h5vgYCwG5L3DxT+Dua7LIzv
-	ixIKPVbZWOTYYw1nIlQS8RFayjS5XxV4nnRFxPZBntsob1TR/8VzN67fZDRwcr5kTZWLTSFI9i3
-	GBX2FhuZQ==
-X-Google-Smtp-Source: AGHT+IH79hbBNueSlF5JYIs0NnPGvu1eDl8QSOMF0wuYP7PZ6tZU7zZDhIxvohJOgZdaJoq7voHH1e53bSYfSP3+lt8=
-X-Received: by 2002:a05:6214:d6a:b0:707:c63e:abf5 with SMTP id
- 6a1803df08f44-70936346a27mr91242696d6.49.1754219966617; Sun, 03 Aug 2025
- 04:19:26 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1754236748; x=1754841548;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8slyx6E/zt3CNU5aqFjzFMTLA7WC2ifuj8UOdB6q15U=;
+        b=gWiSGmf6nK3ZG2aGTcPFFsVWFo34Ma7TtFEX9Dfr8q2jD3xorSJ5Tr5zjsFDmSQrhO
+         R89Q53Q5MlmrHv0sBbkUGbfs/kaM44dDLxiloK1zcGvVuLTLFRsDz1vE1MdJV8eiF/TO
+         4mBcpifB08dR2SEZ1VoWgtO/TLcEc6sMZCCcWN+Bgvxov6XaC3uQq0HTiHHpU/J6OriR
+         zsy3DZu5UlNxqssk2a4evyuX+zQJzKjSYQe8rf5UCoi/FPswmmAskRx22zNdazVarJ6R
+         kLmO5/GdCl5Im+h22UNObUFFAUlw4280Sp93esgi3wNNSbF1oZobUPZWeyUu+RXcAs80
+         V6qw==
+X-Forwarded-Encrypted: i=1; AJvYcCXaBaTclxQvcvJ81DScChzOkKsQPI0LdQGWnHaNhhbpiZVdB3V7HeKEoTMkvF+kPEkoBdMy1A==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx5NG7z1OPHd5nZGTFbWQSeNG7GqK6xsdoHqOBY7x0NWp7o/XYN
+	++0yF/N5O6whf000oESJfrAbfKYgfAl5rXi9SrNfjaUWPHQC/zl79S9V9sJIiuXhp9Y=
+X-Gm-Gg: ASbGnctf6ZIH5E26N0KmzPc5QY/OoD8jayfgtpdTeMnTjy5jKOZtqK+noi4WKVRrNq0
+	NnRFkcFHOrpRD/R3peWuzgWQ36GxbIUGHMwJ0v2PYQc8bfYP+swJxcUO/P2Tae28OExnzAbstt3
+	1opBUOmxcZ2DtM7XliITPFIR6WUKGe+zNE3ypnvDEoBFffBdB6uG0/JorsW4nKhrG/dV9zAJbJE
+	HTICsfoB91I4HlMNWvn63Wpx4xochf3i49kh8eoYdwBruPeblHznv1DQpxD0tG87kGIxR5Aw3I2
+	E0cbd1JAp5LviKvaZkBUvwjlLgmyvFhdr9nHUaZZZCxfkNKx1L7mSz4F1dw+EPZT2pVs3J+FWX+
+	a8IRaPGmQuhTQ5pLkVnSEsfuXKRQPLqor2GqO0pfACE6HkbLNS6U1Pp3/z0RerbrlPrXi
+X-Google-Smtp-Source: AGHT+IGXTSS5qgdnpS/eJ13tqSItmWfAUC8meUEvOe7mj0qBpcNtZfptB2QZRGNN4fnSPsBSKZwvXw==
+X-Received: by 2002:a05:622a:1dc5:b0:4b0:6da3:26df with SMTP id d75a77b69052e-4b06da333ccmr13497821cf.29.1754236748067;
+        Sun, 03 Aug 2025 08:59:08 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4af01e4aa4dsm29318401cf.23.2025.08.03.08.59.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 03 Aug 2025 08:59:07 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1uib74-00000001Hym-2XZx;
+	Sun, 03 Aug 2025 12:59:06 -0300
+Date: Sun, 3 Aug 2025 12:59:06 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Matthew Wilcox <willy@infradead.org>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leon@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
+	Alexander Potapenko <glider@google.com>,
+	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, iommu@lists.linux.dev,
+	virtualization@lists.linux.dev, kasan-dev@googlegroups.com,
+	linux-trace-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH 0/8] dma-mapping: migrate to physical address-based API
+Message-ID: <20250803155906.GM26511@ziepe.ca>
+References: <CGME20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf@eucas1p2.samsung.com>
+ <cover.1750854543.git.leon@kernel.org>
+ <35df6f2a-0010-41fe-b490-f52693fe4778@samsung.com>
+ <20250627170213.GL17401@unreal>
+ <20250630133839.GA26981@lst.de>
+ <69b177dc-c149-40d3-bbde-3f6bad0efd0e@samsung.com>
+ <f912c446-1ae9-4390-9c11-00dce7bf0fd3@arm.com>
+ <aIupx_8vOg8wQh6w@casper.infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAEHaoC2BWe+0Ps2oU-0xPDLFYYKG-o9+_ynFgh7u3qqyRDtrTg@mail.gmail.com>
- <CAEHaoC22NDpHUWovJChCx_XqchkEvUPYrFFe_L1PH9Mw2e386A@mail.gmail.com>
- <CAEHaoC2bi3VUEuoWKgHbgUFfdxmACrhkjaQ9Jni-4-ByP5tYJg@mail.gmail.com>
- <CAEHaoC3ZMvHe7D-JX9bfM9hfSPs0QV-og=om5eKFFqSL=tpjcw@mail.gmail.com>
- <CAEHaoC0Au_0yLRKSnDg=_qjnmDMmbJ=Nff+W1feEBTib0Jb_gA@mail.gmail.com>
- <CAEHaoC2ZQAd+h=7mKPOuMfAMex-41soD8=kx2vR_em+i71oBRw@mail.gmail.com>
- <CAEHaoC3t8nFhR4MAYV1AaR5mjN4ndkkWrKUyBY_smbtpDykAEA@mail.gmail.com>
- <CAEHaoC1mHQp62GMBofGJwKBkjgf8rQr_tUxwESKa7Ehd6_3nWA@mail.gmail.com> <CAEHaoC2JjQ0k4B3T1eK=4OhwTE_JxwgZ5A=nBjheR5Ehspwj7Q@mail.gmail.com>
-In-Reply-To: <CAEHaoC2JjQ0k4B3T1eK=4OhwTE_JxwgZ5A=nBjheR5Ehspwj7Q@mail.gmail.com>
-From: Constantine Gavrilov <cgavrilov@infinidat.com>
-Date: Sun, 3 Aug 2025 14:19:15 +0300
-X-Gm-Features: Ac12FXxlBbV7sfM_8D5fHaGgujdshUelpXKeJxFm84ezztxpfxBfdMc4uiMweOM
-Message-ID: <CAEHaoC1uCJ98JsYt4x2cHwOM6EvLotj5MTNi=1iGSfc3DOD3hA@mail.gmail.com>
-Subject: [PATCH 8/8] Large DMA alloc/add min_dma_addr to device struct
-To: linux-kernel@vger.kernel.org, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aIupx_8vOg8wQh6w@casper.infradead.org>
 
-This is the ninth patch from the set of patches that enable large IOMMU
-DMA registrations. Entire work is available at the master branch of the
-master branch of git@github.com:cgavrilov/linux.git repo.
+On Thu, Jul 31, 2025 at 06:37:11PM +0100, Matthew Wilcox wrote:
 
-Some devices (like NTB or GPU) allow mapping of the system memory to PCIe bars,
-allowing to implement PCIe interconnects when devices are connected to more
-than one root complex. After one root complex does the mapping, an application
-on another root complex can access the memory using the PCIe bar of the device.
-Since a typical system memory mapping uses offset translation (between the
-device bar address and the DMA address), the device driver needs to know which
-contiguous DMA address range is available to satisfy the device needs before it
-can set up the mapping offset. After querying the available range, the device
-driver can set up the mapping translation and use the top and low DMA address
-constraints to ensure that future DMA allocation APIs will allocate DMA
-addresses within the selected range.
+> The replacement for kmap_atomic() is already here -- it's
+> kmap_(atomic|local)_pfn().  If a simple wrapper like kmap_local_phys()
+> would make this more palatable, that would be fine by me.  Might save
+> a bit of messing around with calculating offsets in each caller.
 
-This patch adds min_dma_addr to the device structure and uses the added field
-in alloc_iova_fast() API.
+I think that makes the general plan clearer. We should be removing the
+struct pages entirely from the insides of DMA API layer and use the
+phys_addr_t, kmap_XX_phys(), phys_to_virt(), and so on.
 
-commit 0bebd4d0829b941fc38c1311efa7309c033968e4 (HEAD -> master, github/master)
-Author: Constantine Gavrilov <cgavrilov@infinidat.com>
-Date:   Tue Jul 1 15:29:40 2025 +0300
+The request from Christoph and Marek to clean up the dma_ops makes
+sense in that context, we'd have to go into the ops and replace the
+struct page kmaps/etc with the phys based ones.
 
-    Add min_dma_addr to the device structure and use it in
-iommu_dma_alloc_iova().
+This hides the struct page requirement to get to a KVA inside the core
+mm code only and that sort of modularity is exactly the sort of thing
+that could help entirely remove a struct page requirement for some
+kinds of DMA someday.
 
-    Devices that map memory windows to PCI bars (for example NTB devices)
-    may need this change. This is because such devices may use very large
-    memory windows (terabytes in size), and they cannot simply cap the top
-    DMA address to the size of the window, since the range [0-window size]
-    may not be available. Such devices can find an available DMA region by
-    calling iommu_domain_get_lowest_free_address_range(), set up the memory
-    window, and request DMA address allocations in the found range by calling
-    dma_set_min_dma_addr() and dma_set_mask_and_coherent().
+Matthew, do you think it makes sense to introduce types to make this
+clearer? We have two kinds of values that a phys_addr_t can store -
+something compatible with kmap_XX_phys(), and something that isn't.
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 414d31347fc2..077d1cd0939d 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -810,7 +810,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct
-iommu_domain *domain,
-      * expected address bits are wired up between the device and the IOMMU.
-      */
-     if (dma_limit > DMA_BIT_MASK(32) && (size - 1) <=
-DMA_BIT_MASK(32) && dev->iommu->pci_32bit_workaround) {
--        iova = alloc_iova_fast(iovad, iova_len, 0,
-+        iova = alloc_iova_fast(iovad, iova_len, dev->min_dma_addr,
-                        DMA_BIT_MASK(32) >> shift, false, align);
-         if (iova)
-             goto done;
-@@ -819,7 +819,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct
-iommu_domain *domain,
-         dev_notice(dev, "Using %d-bit DMA addresses\n", bits_per(dma_limit));
-     }
+This was recently a long discussion in ARM KVM as well which had a
+similar confusion that a phys_addr_t was actually two very different
+things inside its logic.
 
--    iova = alloc_iova_fast(iovad, iova_len, 0, dma_limit >> shift,
-true, align);
-+    iova = alloc_iova_fast(iovad, iova_len, dev->min_dma_addr,
-dma_limit >> shift, true, align);
- done:
-     return (dma_addr_t)iova << shift;
- }
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 0470d19da7f2..339c9187b033 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -621,6 +621,7 @@ struct device {
-                          64 bit addresses for consistent
-                          allocations such descriptors. */
-     u64        bus_dma_limit;    /* upstream dma constraint */
-+    u64        min_dma_addr;    /* force minimal value for DMA address */
-     const struct bus_dma_region *dma_range_map;
+So what about some dedicated types:
+ kphys_addr_t - A physical address that can be passed to
+     kmap_XX_phys(), phys_to_virt(), etc.
 
-     struct device_dma_parameters *dma_parms;
-@@ -690,6 +691,8 @@ struct device {
- #endif
- };
+ raw_phys_addr_t - A physical address that may not be cachable, may
+     not be DRAM, and does not work with kmap_XX_phys()/etc.
 
-+#define dma_set_min_dma_addr(__dev__, __val__) __dev__->min_dma_addr = __val__
-+
- /**
-  * struct device_link - Device link representation.
-  * @supplier: The device on the supplier end of the link.
+We clearly have these two different ideas floating around in code,
+page tables, etc.
 
+I read some of Robin's concern that the struct page provided a certain
+amount of type safety in the DMA API, this could provide similar.
 
--- 
-----------------------------------------
-Constantine Gavrilov
-System Architect and Platform Engineer
-Infinidat
-----------------------------------------
+Thanks,
+Jason
