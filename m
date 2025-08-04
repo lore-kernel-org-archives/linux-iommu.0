@@ -1,107 +1,97 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 625E721D3D4;
-	Mon,  4 Aug 2025 15:26:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F32D1E5B9A;
+	Mon,  4 Aug 2025 15:40:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754321184; cv=none; b=WhcUTgjgQyRNuAbroy6GmTa4ygYT9WGIWwMROzZGO8jR/eSR0m3zLDmc7b7DAmFGs9poUOdB+t+LRhLca0WMbiWvMMvhY+NvaQs+LhH8pHydOPrmLGb/Bcrh7dGzMOeDKnMcsFaBg5EHYrL6ArygNf3dmO8KwrANE98ICsxIigE=
+	t=1754322034; cv=none; b=rJCaAfVZiyRz5p8xhP8L9kMpEvu84IBTgBOkUWfABmSzebS/Y+C8j29+SNkC8JVQKnuHmKtLpaF+MdUg5EVznq6fJH2uHPE5undI6PYiaWbc1+K7SOpdR9vO9s0/+slXAfhV9Lo/ou3QEaJZp6ksIGHVrTEOq7kEzNol1RGNRlo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754321184; c=relaxed/simple;
-	bh=A7QWfqthNAE1vRjDCcZdbOxk67HAqqSO9Vh3esAKykw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bR2qKV8aTfiHKarR4h/eCJwFQ1JDq9andM7qLGlwga2fQDBpNX711bv3BdQqlyb4lx9eK82LceyHe1wYRRJNac0M1PHQafaV4t8NrZBJtu1B8unwuOkrERJZM0cHT+3v4ZQrfmKBKlDhfuy6Ywgs2imP0IQxnalxkXqVItVdebs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G8aHgZEn; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1754322034; c=relaxed/simple;
+	bh=b+sFbCBtnYUlyWbizednqxtG2tEDRBQXwNXPOmvYCBQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=XjJOxtbqMoofJrcJJJq4xFzOTOX4qLtnS9qI/Q3tu66Jtq0en+9bJHArAFmTuvxFWeNz7Smsi1aJX9sF5IYYJ6geNucUNigQ/eVEve7qxAr0ZFFE0UWLKdpuUfvkx6WkgkkKmJP2Db30K167iAOrZyBUey9X0umv6ptPLaVYA5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LTS7lZzl; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G8aHgZEn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28538C4CEE7;
-	Mon,  4 Aug 2025 15:26:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LTS7lZzl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82C0AC4CEE7;
+	Mon,  4 Aug 2025 15:40:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1754321183;
-	bh=A7QWfqthNAE1vRjDCcZdbOxk67HAqqSO9Vh3esAKykw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=G8aHgZEnu5iXvCP7Bs5tuWefE4ftgA8h8Cjl85Cwm5By9LieCOsjVqy3AdZGS2J2M
-	 gWpzl+6EFBw/RcBqC5KpnG1ipGUhJpU+Zji4nx/hTyt4NrdEsiC2Yz2U1Wkzd/Ib2a
-	 QqAw4VBqd0cclEUaixH0rs/7nLDQeEd4unvRQYUSQURTz7+jVwS/zV9otrzj3jp79N
-	 yUvnvgyE3xRQ4zHvh0Mw/ECgF8Le7V8q2qdcMJT+F/84f2NxFe4MykBa4PKbCdIa1S
-	 PCz7RUMVTUjwcVuJgGK+jMXUeWg1UaBDlwSS3wIOPEFwlaX7GvD5jEG30YanErScjg
-	 iRFzDP1lYO0Lg==
-Date: Mon, 4 Aug 2025 18:26:18 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Christoph Hellwig <hch@lst.de>, dri-devel@lists.freedesktop.org,
-	iommu@lists.linux.dev, Jens Axboe <axboe@kernel.dk>,
-	Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-	linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-mm@kvack.org, linux-pci@vger.kernel.org,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
+	s=k20201202; t=1754322033;
+	bh=b+sFbCBtnYUlyWbizednqxtG2tEDRBQXwNXPOmvYCBQ=;
+	h=From:To:Cc:Subject:Date:From;
+	b=LTS7lZzlMYMr/IRVlHG4wmEmAHztzwQ5Z1jRIgWUn44iKECyPZmKrxLQN5LXhkCqr
+	 Jv4uXhWK3lYWmY0Iw3eWiz1KIPXK2RoG79HdwL1crKgW+ENlGHIPFIPJWLWAw7GiYY
+	 qFimmIBE1nB1ycpQrQwny9yIdirm5JWDGVh9NP2x3hPEmYCd1oO9SxltbAz5q9m61G
+	 KPy7PTxDLnufsB60aXd2TXLJzmXhUaGLPmh1QJQrO4zARI2YnyHGMygu7Cq/ll9f76
+	 Vynnrs3kPaP3idlqJuWrhDdaWRpT/UoVQLW5hpGkDrV1B9LBDCxDo7X3ubGy6PJOrp
+	 S8+a7p7Acvoaw==
+From: Kees Cook <kees@kernel.org>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Kees Cook <kees@kernel.org>,
+	Simcha Kosman <simcha.kosman@cyberark.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v1 10/10] vfio/pci: Add dma-buf export support for MMIO
- regions
-Message-ID: <20250804152618.GU402218@unreal>
-References: <cover.1754311439.git.leon@kernel.org>
- <5e043d8b95627441db6156e7f15e6e1658e9d537.1754311439.git.leon@kernel.org>
+	iommu@lists.linux.dev,
+	Gavrilov Ilia <Ilia.Gavrilov@infotecs.ru>,
+	Kim Phillips <kim.phillips@amd.com>,
+	linux-kernel@vger.kernel.org,
+	linux-hardening@vger.kernel.org
+Subject: [PATCH RESEND] iommu/amd: Avoid stack buffer overflow from kernel cmdline
+Date: Mon,  4 Aug 2025 08:40:27 -0700
+Message-Id: <20250804154023.work.970-kees@kernel.org>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5e043d8b95627441db6156e7f15e6e1658e9d537.1754311439.git.leon@kernel.org>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1630; i=kees@kernel.org; h=from:subject:message-id; bh=b+sFbCBtnYUlyWbizednqxtG2tEDRBQXwNXPOmvYCBQ=; b=owGbwMvMwCVmps19z/KJym7G02pJDBkTrmTvtpGQm6NpYF2c5Tyxt9v/nrS0SsmWT4+OMXrdj 5j5vmJdRykLgxgXg6yYIkuQnXuci8fb9nD3uYowc1iZQIYwcHEKwERaJzAy/Hl6zmJahFuV3kq1 SC6htaEyqfmXSrZ3zpA5cEPE1uHYSkaGnerb/lxulPa+UxKh+03lTk2oZtIL3esPdh8M/H2vJvg +BwA=
+X-Developer-Key: i=kees@kernel.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 
-On Mon, Aug 04, 2025 at 04:00:45PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Add support for exporting PCI device MMIO regions through dma-buf,
-> enabling safe sharing of non-struct page memory with controlled
-> lifetime management. This allows RDMA and other subsystems to import
-> dma-buf FDs and build them into memory regions for PCI P2P operations.
-> 
-> The implementation provides a revocable attachment mechanism using
-> dma-buf move operations. MMIO regions are normally pinned as BARs
-> don't change physical addresses, but access is revoked when the VFIO
-> device is closed or a PCI reset is issued. This ensures kernel
-> self-defense against potentially hostile userspace.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  drivers/vfio/pci/Kconfig           |  20 ++
->  drivers/vfio/pci/Makefile          |   2 +
->  drivers/vfio/pci/vfio_pci_config.c |  22 +-
->  drivers/vfio/pci/vfio_pci_core.c   |  25 +-
->  drivers/vfio/pci/vfio_pci_dmabuf.c | 390 +++++++++++++++++++++++++++++
->  drivers/vfio/pci/vfio_pci_priv.h   |  23 ++
->  include/linux/dma-buf.h            |   1 +
->  include/linux/vfio_pci_core.h      |   3 +
->  include/uapi/linux/vfio.h          |  25 ++
->  9 files changed, 506 insertions(+), 5 deletions(-)
->  create mode 100644 drivers/vfio/pci/vfio_pci_dmabuf.c
+While the kernel command line is considered trusted in most environments,
+avoid writing 1 byte past the end of "acpiid" if the "str" argument is
+maximum length.
 
-<...>
+Reported-by: Simcha Kosman <simcha.kosman@cyberark.com>
+Closes: https://lore.kernel.org/all/AS8P193MB2271C4B24BCEDA31830F37AE84A52@AS8P193MB2271.EURP193.PROD.OUTLOOK.COM
+Fixes: b6b26d86c61c ("iommu/amd: Add a length limitation for the ivrs_acpihid command-line parameter")
+Signed-off-by: Kees Cook <kees@kernel.org>
+---
+This was sent out before but it didn't end up on any public mailing list. My mistake!
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: <iommu@lists.linux.dev>
+---
+ drivers/iommu/amd/init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-> index d58e329ac0e71..f14b413aae48d 100644
-> --- a/include/linux/dma-buf.h
-> +++ b/include/linux/dma-buf.h
-> @@ -483,6 +483,7 @@ struct dma_buf_attach_ops {
->   * @dev: device attached to the buffer.
->   * @node: list of dma_buf_attachment, protected by dma_resv lock of the dmabuf.
->   * @peer2peer: true if the importer can handle peer resources without pages.
-> + * #state: DMA structure to provide support for physical addresses DMA interface
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 7b5af6176de9..e11322d8d775 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -3638,7 +3638,7 @@ static int __init parse_ivrs_acpihid(char *str)
+ {
+ 	u32 seg = 0, bus, dev, fn;
+ 	char *hid, *uid, *p, *addr;
+-	char acpiid[ACPIID_LEN] = {0};
++	char acpiid[ACPIID_LEN + 1] = { }; /* size with NUL terminator */
+ 	int i;
+ 
+ 	addr = strchr(str, '@');
+@@ -3664,7 +3664,7 @@ static int __init parse_ivrs_acpihid(char *str)
+ 	/* We have the '@', make it the terminator to get just the acpiid */
+ 	*addr++ = 0;
+ 
+-	if (strlen(str) > ACPIID_LEN + 1)
++	if (strlen(str) > ACPIID_LEN)
+ 		goto not_found;
+ 
+ 	if (sscanf(str, "=%s", acpiid) != 1)
+-- 
+2.34.1
 
-This is rebase error, there is no need in this hunk.
-
-Thanks
