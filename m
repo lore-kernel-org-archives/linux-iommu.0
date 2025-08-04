@@ -1,122 +1,119 @@
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B479B23C511
-	for <iommu@lists.linux.dev>; Mon,  4 Aug 2025 08:12:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.187
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 396BE2367B1
+	for <iommu@lists.linux.dev>; Mon,  4 Aug 2025 08:56:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754295166; cv=none; b=nNGsKWB9Nd07rqGf158TZgelowKfzCUzmm1ar3/ycWE4zNSWzybNALgG9knM29ItS8hx9BNrs4KafZH/dWl9r/qxizRze9WpyiONb1+v9DdVCwHQIHGaquk31Ha32sBUqqUj7ffhbYBwSjz3LpZ/blu0WOskfdUGQ3WVkQgauU0=
+	t=1754297818; cv=none; b=q90rySmDbJyRSrXdFY+OOhP7nLdAFQ6xE3/FflZwPxJy0LNjr+MCs1iBpwQ5aUtncM5zjqhnLNHIWU12eqM2kjs6TpFN8fjAtfQ7QVBAV2mWRrC+Ty9aZ92gW6vbR6elV8Tk2tth4ZeKIChDQzYeKRCAWbw84LKDHCRVqwnN8rg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754295166; c=relaxed/simple;
-	bh=1FXpLi6vLvB+S2Zn4AuuAuGH5pvGTvR0uSJtW3wz/zY=;
-	h=CC:Subject:To:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=VWGJPPuIiHZ1R6gtx3zkRFpGjIHXTH6wWHuFErq44zssW7DdtuNVyqyBaN+lsh6nl5/0vQv8ZaYV1IVv1WKBs2iaGMflqHXGRgAjxsE3CH9Y8/2U/kas+7EWj0KptramhN71Y5MroTfogJUaN6F1WoDA0sCE1Mn26jnuo68MGYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.187
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.48])
-	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4bwTgj2Fhhz14MGq;
-	Mon,  4 Aug 2025 16:07:45 +0800 (CST)
-Received: from dggemv705-chm.china.huawei.com (unknown [10.3.19.32])
-	by mail.maildlp.com (Postfix) with ESMTPS id 9FB4B18007F;
-	Mon,  4 Aug 2025 16:12:40 +0800 (CST)
-Received: from kwepemq200018.china.huawei.com (7.202.195.108) by
- dggemv705-chm.china.huawei.com (10.3.19.32) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Mon, 4 Aug 2025 16:12:40 +0800
-Received: from [10.67.121.177] (10.67.121.177) by
- kwepemq200018.china.huawei.com (7.202.195.108) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Mon, 4 Aug 2025 16:12:39 +0800
-CC: <robin.murphy@arm.com>, <jonathan.cameron@huawei.com>,
-	<prime.zeng@huawei.com>, <fanghao11@huawei.com>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<yangyicong@hisilicon.com>
-Subject: Re: [PATCH 2/2] dma-mapping: benchmark: Add padding to ensure uABI
- remained consistent
-To: Barry Song <21cnbao@gmail.com>, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Qinxin Xia <xiaqinxin@huawei.com>
-References: <20250724085600.4101321-1-xiaqinxin@huawei.com>
- <20250724085600.4101321-3-xiaqinxin@huawei.com>
- <CAGsJ_4zVR3R7erGP57vxM8vKBARG8BttA=FsCVFjy4QtswcsQw@mail.gmail.com>
- <c7f7d9b3-2ab3-4ebd-99fb-071733573291@huawei.com>
- <CGME20250724094224eucas1p13a911259338ac1890d4baed8b9998fb0@eucas1p1.samsung.com>
- <CAGsJ_4zSw57DMyRZM24BUdDpbi4+BRfgWUqxSKurCsAVC7Kptw@mail.gmail.com>
- <f8c0cbdc-9c68-46bb-8dad-1d7c80f3f741@samsung.com>
- <CAGsJ_4zs8=n+J4Xtd=Un8+p3c=FCOTji9qMfBsOKcc8sFG0v9A@mail.gmail.com>
-From: Yicong Yang <yangyicong@huawei.com>
-Message-ID: <c5170042-ac38-b0db-ba51-c5fce5363d40@huawei.com>
-Date: Mon, 4 Aug 2025 16:12:39 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+	s=arc-20240116; t=1754297818; c=relaxed/simple;
+	bh=3qBZn4w05JGOtMDXOQ7+xMH5EVG6nlTtM3RcZXw7U/g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Wm8PhuP40hfnP1TbI41dw/rGjLRzyFX0n89YWRKV7/TgsMvxpy1/0RMQ2flU4Sh+vtnII1fC6mrzo07gw7/74AZE5EnnCEev5lCyfopekZmqKbQT6nJlpHXkzxiffKcEgm/NNhDMWWtFbyn9LaLP1wl9OzHro2ycsxDlsooO204=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KwivPlK2; arc=none smtp.client-ip=209.85.167.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KwivPlK2"
+Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-55b8bf653dfso3961298e87.0
+        for <iommu@lists.linux.dev>; Mon, 04 Aug 2025 01:56:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1754297815; x=1754902615; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=pl4J9DSJdPoU7MePCxJI1iZTtMOValE01c+lvXVqDdY=;
+        b=KwivPlK2quE/Hv0Lwo4Js7eAs6ImPrM6AJwngoJDqrUQpu9BculQYYnWbWOYfpXZfO
+         vGxp6xiG/c3oMxfcbFfoC3BzCfLsFAuFsHl3q0qORin5kjksshw6yRPsNaXzQKzwpGK7
+         m1jeS/w+przOk7QOowT75cras/phxCDTQNiFwtRyet/DlwHxh+sk7EpioQzHq9XHkFNe
+         hCzKFtRHlXtcmOXHfjlfBpSEg50CmLNy917cr1NmhZD2ZlHGXMHKiIm07F2dm4kjvNOl
+         4YwZEhTC8YV5xAI1qGYl9Yd47DkZ0cErW1IXI1Sg8eqVHoZ50LRbbVtNeaiiTlNED/oJ
+         NGkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1754297815; x=1754902615;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pl4J9DSJdPoU7MePCxJI1iZTtMOValE01c+lvXVqDdY=;
+        b=Vc/d1Od7CQZIJDz405AaDdBNQ8seD/4smh3dDO2rP3zxeHKo0zwd1/VGMJPgOTIi/i
+         rR0/iPpwxrVdzAWHF/H0plt126HgvE7/QcW/lHEaf2oV6eCH2aSYqcg/k1ANxmC9Icpy
+         kOBO4Ba08x8tcZrh2zziEoXP3Wr8D6A8bCycVhMjIc5Z+GaJT6nUvp1gBebnK97ylyzF
+         USI2WQLgNKCfG7R+yJpJodh6aP0tcVig5HL56loRZsFGEDaCbyr/8pU5K1i43dcBZ4m8
+         git5kjWwoL0+esLK0KbUo5rlcPRym5GRTs99U3edxg8096yx1RoKpYa8Ynkc0g0fsSk8
+         iRwg==
+X-Forwarded-Encrypted: i=1; AJvYcCXH27dTUWkMB1TC/rkMp6s+GRFGWjDfGfevqvqhrckkUJzSHQeQpJmXk3J3/dnEBCc8CspMEg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yy6eP4zkyFOX9CD7kqWdYoh2zUYYHqHvkjRnE3FyQ3b40g3TgB4
+	346K4bWaWuI6GvnvB1z/sBfJzuv7uHoGyysXv/xUR3MPLrgFmJxLmXAV
+X-Gm-Gg: ASbGncsj5A7bjkBhGiAWCOlDyE8O6u4gClqgudtg4PdrD8ZsjxSA6LJByOsFAkNzzlP
+	g4QkBurX1t9UE8UNq5+OmjUhiSIvHsJXxCvqE7X3MezoheW3Gcqc3l56gNWjNUKlMw2LkLb4kEB
+	yR4nW6p4ZGyCuLYU9dMWD4sC7LH0e80aHIMEXiBN89jPexOH6oXKWn7+EQDjCSCo3um1dy8jAqk
+	A/Hl/ci62TS8ixH4C5Tad3ijpjJPMHlKA8pLTt8eQ9WcrO6VwYMpnLSnO3YG74WewimYfgP1bhb
+	5QigBauM0YRr15cZln9NAvb10RKoKjq6nPQWMVrii9i7OYLRa6JhjNgfgNOy8rWFLuHukqo9m+V
+	jEFT7iWjciUbjIj+Ni5t1+RASlA0bJgVsfl25C869tjK6n4hplahBJ/yPEYlsVm6RaUfb8XuNeA
+	8=
+X-Google-Smtp-Source: AGHT+IG96iIhaKuZo/8tUym8kIXc9FXtyvOtzG3w6vbrarnj3aUq6j46ErJDofXhIYR9H+m0/as0AA==
+X-Received: by 2002:a05:6512:a8b:b0:55b:945a:64ee with SMTP id 2adb3069b0e04-55b97b43789mr2299477e87.32.1754297815004;
+        Mon, 04 Aug 2025 01:56:55 -0700 (PDT)
+Received: from [192.168.1.146] (dsl-hkibng22-54f8dc-251.dhcp.inet.fi. [84.248.220.251])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-55b88daec97sm1580562e87.189.2025.08.04.01.56.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 04 Aug 2025 01:56:54 -0700 (PDT)
+Message-ID: <676ac763-cd23-4077-815f-8eaa9bc960fb@gmail.com>
+Date: Mon, 4 Aug 2025 11:56:53 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <CAGsJ_4zs8=n+J4Xtd=Un8+p3c=FCOTji9qMfBsOKcc8sFG0v9A@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: kwepems100001.china.huawei.com (7.221.188.238) To
- kwepemq200018.china.huawei.com (7.202.195.108)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/2] rust: add initial scatterlist abstraction
+To: Alexandre Courbot <acourbot@nvidia.com>, dakr@kernel.org, jgg@ziepe.ca,
+ lyude@redhat.com
+Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
+ Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+ =?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>,
+ Benno Lossin <lossin@kernel.org>, Andreas Hindborg <a.hindborg@kernel.org>,
+ Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+ Tamir Duberstein <tamird@gmail.com>,
+ FUJITA Tomonori <fujita.tomonori@gmail.com>,
+ open list <linux-kernel@vger.kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ Caleb Sander Mateos <csander@purestorage.com>,
+ Petr Tesarik <petr@tesarici.cz>, Sui Jingfeng <sui.jingfeng@linux.dev>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+ rust-for-linux@vger.kernel.org
+References: <20250718103359.1026240-1-abdiel.janulgue@gmail.com>
+ <20250718103359.1026240-2-abdiel.janulgue@gmail.com>
+ <DBK1M000P87N.2HJHDJN1LG5CA@nvidia.com>
+Content-Language: en-US
+From: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+In-Reply-To: <DBK1M000P87N.2HJHDJN1LG5CA@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Barry,
+Hi,
 
-On 2025/8/4 12:47, Barry Song wrote:
-> On Tue, Jul 29, 2025 at 8:32 PM Marek Szyprowski
-> <m.szyprowski@samsung.com> wrote:
->>
->> On 24.07.2025 11:42, Barry Song wrote:
->>> On Thu, Jul 24, 2025 at 5:35 PM Qinxin Xia <xiaqinxin@huawei.com> wrote:
->>>> On 2025/7/24 17:07:08, Barry Song <21cnbao@gmail.com> wrote:
->>>>> On Thu, Jul 24, 2025 at 4:56 PM Qinxin Xia <xiaqinxin@huawei.com> wrote:
->>>>>> The padding field in the structure was previously reserved to
->>>>>> maintain a stable interface for potential new fields, ensuring
->>>>>> compatibility with user-space shared data structures.
->>>>>> However,it was accidentally removed by tiantao in a prior commit,
->>>>>> which may lead to incompatibility between user space and the kernel.
->>>>>>
->>>>>> This patch reinstates the padding to restore the original structure
->>>>>> layout and preserve compatibility.
->>>>>>
->>>>>> Fixes: 8ddde07a3d28 ("dma-mapping: benchmark: extract a common header file for map_benchmark definition")
->>>>>> Cc: stable@vger.kernel.org
->>>>>> Acked-by: Barry Song <baohua@kernel.org>
->>>>>> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
->>>>> I don’t think these two patches should be part of the same series. This
->>>>> one is a bug fix and should be handled separately—ideally picked up on
->>>>> its own and backported to stable.
->>>>>
->>>>> Also, the subject should not say "Add"—it should be "Restore". I assume
->>>>> Marek can handle it?
->>> ...
->>>> Ok, I will send a new version to fix it.
->>> If Marek can help fix it while picking it up into the dma-mapping tree, you
->>> might not need to send a new version.
->>>
->>> Honestly, I hope this gets merged soon—it feels like it's been
->>> overdue for quite a while.
->>
->> I'm sorry, I wasn't aware that this need to go via dma-mapping tree. I
->> will take it after this merge window.
+On 24/07/2025 08:40, Alexandre Courbot wrote:
 > 
-> Thank you, Marek! I also noticed that Xiang Chen’s email has been invalid
-> for quite a while, likely he moved to another company some time ago. It looks
-> like Yicong has volunteered to take this on:
+> I see a few issues with the `Item` type here.
 > 
-> https://lkml.indiana.edu/2408.1/08865.html
+> The first one is that `Page` can only be created by allocating a new
+> page from scratch using `Page::alloc_page`. This doesn't cover the cases
+> where we want to map memory that is now allocated through this
+> mechanism, e.g. when mapping a `VVec`. So I think we have no choice but
+> return `*mut bindings::page`s.
 > 
-> I'm not sure if that's still the case. If it is, would Yicong be able to
-> resend the email with my ack?
-> 
+Just commenting on this bit, still going through the others one by one. 
+Anyways, there is already existing code I'm working on that should be 
+able to extend Page that are not allocated by it's constructor (e.g. 
+those coming from vmalloc_to_page). I think's it's safe at least to not 
+expose the raw pointers here if we can? Just a thought.
 
-thanks for reminding. I think currently Qinxin is more suitable to help with this.
-she's working on the smmu stuffs and help look after this benchmark tool internally
-for some time :)
-
-Maybe she can help along with you (ack the fact that you're always helping to review
-the codes) if it's ok with you.
-
-Thanks.
-
+Regars,
+Abdiel
