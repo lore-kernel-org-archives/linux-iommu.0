@@ -1,144 +1,122 @@
-Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com [209.85.222.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1E9510E4
-	for <iommu@lists.linux.dev>; Mon,  4 Aug 2025 04:47:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B479B23C511
+	for <iommu@lists.linux.dev>; Mon,  4 Aug 2025 08:12:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.187
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754282869; cv=none; b=KFuuSKuuIHUXD8n9N9ePHEsLbieRUvIdmeLP1Nc7EPnw3OnQPiIZUu4G34ivdTYOe/B0W1wKQ4SQ7vMvkonjlP7yAnZ2rI90IK1e9i4rCTW3ustyeHHgkP5ZzSyn69q7xyFP0Ouxzbs17NRm4aFoQ8ulcs62iTcyAeUWVTPYiKY=
+	t=1754295166; cv=none; b=nNGsKWB9Nd07rqGf158TZgelowKfzCUzmm1ar3/ycWE4zNSWzybNALgG9knM29ItS8hx9BNrs4KafZH/dWl9r/qxizRze9WpyiONb1+v9DdVCwHQIHGaquk31Ha32sBUqqUj7ffhbYBwSjz3LpZ/blu0WOskfdUGQ3WVkQgauU0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754282869; c=relaxed/simple;
-	bh=BDxJSgSRH4keRk0Fg9Fh3kQGq5lMmCw/wfaUL5w0mqw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=PwqTEX39fS2lyh7ViUKFwfmP0mJNlWcziqdi0m0MZaEeyBrukdhhh+ALAZ/6aCvlANr0fBx47N0l3/Ac7V7tWdcx8oed7ja3VRmTiACUunYGLMlLmalETdm9lfpZhTdf5ZCaAymjwUWoIKmwy8t1KEQ0/lxglOe8/ysyV3oWG8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gva5oRPd; arc=none smtp.client-ip=209.85.222.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gva5oRPd"
-Received: by mail-ua1-f49.google.com with SMTP id a1e0cc1a2514c-88dbde4a2abso855727241.3
-        for <iommu@lists.linux.dev>; Sun, 03 Aug 2025 21:47:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754282867; x=1754887667; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=BDxJSgSRH4keRk0Fg9Fh3kQGq5lMmCw/wfaUL5w0mqw=;
-        b=gva5oRPd7lpfeq3kUYqX/H8X/I1cF6NhwgY8bgD0blBHVAxAzcygggYMh1eiDPzwEu
-         t7a7Wrldf38MGzaoJTD3Dh1+nX4ZKPy8D80cMcEHntEg5P8Y08FgvemLmvt5gWKGNN3W
-         2umNSi66Uot6Q597sEohUu1ITjRopUy7rrt+U1XxZZePKz/MGC2EjJ+yGSAjkIjL1u2N
-         t4HI+PgOeqsgl6AqvUA+LFeO1RpOMvVtb7+zZij6XJMDn6qZgeRbRnHkvMhkkAPMqyIc
-         2YfBdF2dfkmKxUSDAfEoHafVTahMf0RoWAtHARaE5jtoaUiGtAJADnbh0TJaamC11x55
-         shJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754282867; x=1754887667;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=BDxJSgSRH4keRk0Fg9Fh3kQGq5lMmCw/wfaUL5w0mqw=;
-        b=QOLfax4g1HqAflnhZ0rm8W4KlwPwLLr8vp5FfCvWYTYusPBJciRhk+P6BiIZd7FoYP
-         BUHGr9rTStcr+IubCRb52a8X3Jysrj0MW0xpGYBanKtQO11HAE+qBav2BGv8OK5lu9tA
-         Ylg23hyv8kWbn5O6AnQdKiqXVtPv2WqVKDpZW94liwmeeFOsB6R/eltIW+Zq5OvUc15/
-         RdNhL0gUzDhV9wauwRYaR0ebOTCfMeXrLhBXHMS7K0sCNyxZOmd7o2jt2UkmnPJ0Vn9c
-         vokuLhjrkCslOWgWyiN80E9O0XVgAuquBhfnMMq287hyAy2mJSgwQoQmqceV5pcSpKF7
-         TgpA==
-X-Forwarded-Encrypted: i=1; AJvYcCWsJBnwj+eQSS9STcMOWAddguTisZds6BAh/I1SPmv6gGI6YDHUGo0uU00Fz6zEuTHl+THyEg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxWjSplukrU3aL3HjX5MRiRwhw6vajicBK/J9/KtkMHCsZRm7Sf
-	IpGikzjQUZf5A2ddTk3VI67dddcvDt9G+vh72/EhHp1LRhU+suUmkDKvGF50u3XWBnXCAXvInuT
-	q0+fhx7e7WbqhT5j1Z97L6GY/srXYsCg=
-X-Gm-Gg: ASbGnctR+a849Jl97yvtbthJCWwEosrs87izifPJLghfG3dRH5Uva9KXAnRHI5uxDlw
-	NfzjVy3if/00fee6tdrbG7NdSbb5AkItCWti33dfL2o49SqkFYZXDwGlVwhEAhajdTgXUa22isx
-	6ti83/6e/4O3uc27CAYeKYqOsY/2lwOcATQ9609ALq3k5BkB3ILMSuLkDYmbOEz76PGKMqHCQTu
-	07QfFT6A/B6fD2j7A==
-X-Google-Smtp-Source: AGHT+IHqYM/KFdH9TSLDrogRF00/leasxHpcVOGzCepnD1Fdo9qSl8/RXPv2S+CcEk8TDBdbWgBJipfApFgWW+h5OrE=
-X-Received: by 2002:a05:6102:6447:b0:4c3:64bd:93ba with SMTP id
- ada2fe7eead31-4fdc22436a9mr2892411137.11.1754282866732; Sun, 03 Aug 2025
- 21:47:46 -0700 (PDT)
+	s=arc-20240116; t=1754295166; c=relaxed/simple;
+	bh=1FXpLi6vLvB+S2Zn4AuuAuGH5pvGTvR0uSJtW3wz/zY=;
+	h=CC:Subject:To:References:From:Message-ID:Date:MIME-Version:
+	 In-Reply-To:Content-Type; b=VWGJPPuIiHZ1R6gtx3zkRFpGjIHXTH6wWHuFErq44zssW7DdtuNVyqyBaN+lsh6nl5/0vQv8ZaYV1IVv1WKBs2iaGMflqHXGRgAjxsE3CH9Y8/2U/kas+7EWj0KptramhN71Y5MroTfogJUaN6F1WoDA0sCE1Mn26jnuo68MGYE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.187
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.48])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4bwTgj2Fhhz14MGq;
+	Mon,  4 Aug 2025 16:07:45 +0800 (CST)
+Received: from dggemv705-chm.china.huawei.com (unknown [10.3.19.32])
+	by mail.maildlp.com (Postfix) with ESMTPS id 9FB4B18007F;
+	Mon,  4 Aug 2025 16:12:40 +0800 (CST)
+Received: from kwepemq200018.china.huawei.com (7.202.195.108) by
+ dggemv705-chm.china.huawei.com (10.3.19.32) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Mon, 4 Aug 2025 16:12:40 +0800
+Received: from [10.67.121.177] (10.67.121.177) by
+ kwepemq200018.china.huawei.com (7.202.195.108) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Mon, 4 Aug 2025 16:12:39 +0800
+CC: <robin.murphy@arm.com>, <jonathan.cameron@huawei.com>,
+	<prime.zeng@huawei.com>, <fanghao11@huawei.com>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<yangyicong@hisilicon.com>
+Subject: Re: [PATCH 2/2] dma-mapping: benchmark: Add padding to ensure uABI
+ remained consistent
+To: Barry Song <21cnbao@gmail.com>, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Qinxin Xia <xiaqinxin@huawei.com>
+References: <20250724085600.4101321-1-xiaqinxin@huawei.com>
+ <20250724085600.4101321-3-xiaqinxin@huawei.com>
+ <CAGsJ_4zVR3R7erGP57vxM8vKBARG8BttA=FsCVFjy4QtswcsQw@mail.gmail.com>
+ <c7f7d9b3-2ab3-4ebd-99fb-071733573291@huawei.com>
+ <CGME20250724094224eucas1p13a911259338ac1890d4baed8b9998fb0@eucas1p1.samsung.com>
+ <CAGsJ_4zSw57DMyRZM24BUdDpbi4+BRfgWUqxSKurCsAVC7Kptw@mail.gmail.com>
+ <f8c0cbdc-9c68-46bb-8dad-1d7c80f3f741@samsung.com>
+ <CAGsJ_4zs8=n+J4Xtd=Un8+p3c=FCOTji9qMfBsOKcc8sFG0v9A@mail.gmail.com>
+From: Yicong Yang <yangyicong@huawei.com>
+Message-ID: <c5170042-ac38-b0db-ba51-c5fce5363d40@huawei.com>
+Date: Mon, 4 Aug 2025 16:12:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250724085600.4101321-1-xiaqinxin@huawei.com>
- <20250724085600.4101321-3-xiaqinxin@huawei.com> <CAGsJ_4zVR3R7erGP57vxM8vKBARG8BttA=FsCVFjy4QtswcsQw@mail.gmail.com>
- <c7f7d9b3-2ab3-4ebd-99fb-071733573291@huawei.com> <CGME20250724094224eucas1p13a911259338ac1890d4baed8b9998fb0@eucas1p1.samsung.com>
- <CAGsJ_4zSw57DMyRZM24BUdDpbi4+BRfgWUqxSKurCsAVC7Kptw@mail.gmail.com> <f8c0cbdc-9c68-46bb-8dad-1d7c80f3f741@samsung.com>
-In-Reply-To: <f8c0cbdc-9c68-46bb-8dad-1d7c80f3f741@samsung.com>
-From: Barry Song <21cnbao@gmail.com>
-Date: Mon, 4 Aug 2025 12:47:35 +0800
-X-Gm-Features: Ac12FXwC2QgKuJTJX69JLqTW3lt_irVikO6kS_bcR7G_jczX3yoMEbyFmccG3as
-Message-ID: <CAGsJ_4zs8=n+J4Xtd=Un8+p3c=FCOTji9qMfBsOKcc8sFG0v9A@mail.gmail.com>
-Subject: Re: [PATCH 2/2] dma-mapping: benchmark: Add padding to ensure uABI
- remained consistent
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Qinxin Xia <xiaqinxin@huawei.com>, robin.murphy@arm.com, jonathan.cameron@huawei.com, 
-	prime.zeng@huawei.com, fanghao11@huawei.com, linux-kernel@vger.kernel.org, 
-	linuxarm@huawei.com, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAGsJ_4zs8=n+J4Xtd=Un8+p3c=FCOTji9qMfBsOKcc8sFG0v9A@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: kwepems100001.china.huawei.com (7.221.188.238) To
+ kwepemq200018.china.huawei.com (7.202.195.108)
 
-On Tue, Jul 29, 2025 at 8:32=E2=80=AFPM Marek Szyprowski
-<m.szyprowski@samsung.com> wrote:
->
-> On 24.07.2025 11:42, Barry Song wrote:
-> > On Thu, Jul 24, 2025 at 5:35=E2=80=AFPM Qinxin Xia <xiaqinxin@huawei.co=
-m> wrote:
-> >> On 2025/7/24 17:07:08, Barry Song <21cnbao@gmail.com> wrote:
-> >>> On Thu, Jul 24, 2025 at 4:56=E2=80=AFPM Qinxin Xia <xiaqinxin@huawei.=
-com> wrote:
-> >>>> The padding field in the structure was previously reserved to
-> >>>> maintain a stable interface for potential new fields, ensuring
-> >>>> compatibility with user-space shared data structures.
-> >>>> However,it was accidentally removed by tiantao in a prior commit,
-> >>>> which may lead to incompatibility between user space and the kernel.
-> >>>>
-> >>>> This patch reinstates the padding to restore the original structure
-> >>>> layout and preserve compatibility.
-> >>>>
-> >>>> Fixes: 8ddde07a3d28 ("dma-mapping: benchmark: extract a common heade=
-r file for map_benchmark definition")
-> >>>> Cc: stable@vger.kernel.org
-> >>>> Acked-by: Barry Song <baohua@kernel.org>
-> >>>> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
-> >>> I don=E2=80=99t think these two patches should be part of the same se=
-ries. This
-> >>> one is a bug fix and should be handled separately=E2=80=94ideally pic=
-ked up on
-> >>> its own and backported to stable.
-> >>>
-> >>> Also, the subject should not say "Add"=E2=80=94it should be "Restore"=
-. I assume
-> >>> Marek can handle it?
-> > ...
-> >> Ok, I will send a new version to fix it.
-> > If Marek can help fix it while picking it up into the dma-mapping tree,=
- you
-> > might not need to send a new version.
-> >
-> > Honestly, I hope this gets merged soon=E2=80=94it feels like it's been
-> > overdue for quite a while.
->
-> I'm sorry, I wasn't aware that this need to go via dma-mapping tree. I
-> will take it after this merge window.
+Hi Barry,
 
-Thank you, Marek! I also noticed that Xiang Chen=E2=80=99s email has been i=
-nvalid
-for quite a while, likely he moved to another company some time ago. It loo=
-ks
-like Yicong has volunteered to take this on:
+On 2025/8/4 12:47, Barry Song wrote:
+> On Tue, Jul 29, 2025 at 8:32 PM Marek Szyprowski
+> <m.szyprowski@samsung.com> wrote:
+>>
+>> On 24.07.2025 11:42, Barry Song wrote:
+>>> On Thu, Jul 24, 2025 at 5:35 PM Qinxin Xia <xiaqinxin@huawei.com> wrote:
+>>>> On 2025/7/24 17:07:08, Barry Song <21cnbao@gmail.com> wrote:
+>>>>> On Thu, Jul 24, 2025 at 4:56 PM Qinxin Xia <xiaqinxin@huawei.com> wrote:
+>>>>>> The padding field in the structure was previously reserved to
+>>>>>> maintain a stable interface for potential new fields, ensuring
+>>>>>> compatibility with user-space shared data structures.
+>>>>>> However,it was accidentally removed by tiantao in a prior commit,
+>>>>>> which may lead to incompatibility between user space and the kernel.
+>>>>>>
+>>>>>> This patch reinstates the padding to restore the original structure
+>>>>>> layout and preserve compatibility.
+>>>>>>
+>>>>>> Fixes: 8ddde07a3d28 ("dma-mapping: benchmark: extract a common header file for map_benchmark definition")
+>>>>>> Cc: stable@vger.kernel.org
+>>>>>> Acked-by: Barry Song <baohua@kernel.org>
+>>>>>> Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
+>>>>> I don’t think these two patches should be part of the same series. This
+>>>>> one is a bug fix and should be handled separately—ideally picked up on
+>>>>> its own and backported to stable.
+>>>>>
+>>>>> Also, the subject should not say "Add"—it should be "Restore". I assume
+>>>>> Marek can handle it?
+>>> ...
+>>>> Ok, I will send a new version to fix it.
+>>> If Marek can help fix it while picking it up into the dma-mapping tree, you
+>>> might not need to send a new version.
+>>>
+>>> Honestly, I hope this gets merged soon—it feels like it's been
+>>> overdue for quite a while.
+>>
+>> I'm sorry, I wasn't aware that this need to go via dma-mapping tree. I
+>> will take it after this merge window.
+> 
+> Thank you, Marek! I also noticed that Xiang Chen’s email has been invalid
+> for quite a while, likely he moved to another company some time ago. It looks
+> like Yicong has volunteered to take this on:
+> 
+> https://lkml.indiana.edu/2408.1/08865.html
+> 
+> I'm not sure if that's still the case. If it is, would Yicong be able to
+> resend the email with my ack?
+> 
 
-https://lkml.indiana.edu/2408.1/08865.html
+thanks for reminding. I think currently Qinxin is more suitable to help with this.
+she's working on the smmu stuffs and help look after this benchmark tool internally
+for some time :)
 
-I'm not sure if that's still the case. If it is, would Yicong be able to
-resend the email with my ack?
+Maybe she can help along with you (ack the fact that you're always helping to review
+the codes) if it's ok with you.
 
->
-> Best regards
-> --
-> Marek Szyprowski, PhD
-> Samsung R&D Institute Poland
->
+Thanks.
 
-Thanks
-Barry
