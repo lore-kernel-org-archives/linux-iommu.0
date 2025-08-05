@@ -1,73 +1,79 @@
-Received: from sender4-pp-o95.zoho.com (sender4-pp-o95.zoho.com [136.143.188.95])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sg-1-39.ptr.blmpb.com (sg-1-39.ptr.blmpb.com [118.26.132.39])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 504ECA927;
-	Tue,  5 Aug 2025 04:40:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.95
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754368809; cv=pass; b=S96GfBh/WQFV1FIYBa7gl8D2tdoXi2OlyxE4ZXkZOoQ4av97pP3nyGohACGoDOQzWkRl3+AZ08fU8JXIutaol5IJKf+MoxumL6KdbtNWH/6VkqJNgZFxXX0uj7jxpeIzl46fiLNkf23MzG1IVQwsbg8TdnQETrz55hkO5u87ix8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754368809; c=relaxed/simple;
-	bh=vx4DftUwwXSdyzbwHUzTA5ckOdfuuDc8ELVLhPGqGxg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gM5Vrt1Tvtj/RUHrbeGvLDgBEa/IKTU8IeH88mRQcBoc2r7NxYMt+hMJt69xnV4Bi3zvsum7eRqoGmvZBflLmhFlbFL/IOJuALwTXovtX/sLX3krj0DDdMKWo7Nv29dL5n+pym+9iU49VHeg92XnDG9Ou2uNdGQglb5YpUZiVdI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=zohomail.com; spf=pass smtp.mailfrom=zohomail.com; dkim=pass (1024-bit key) header.d=zohomail.com header.i=safinaskar@zohomail.com header.b=aaKWUQIS; arc=pass smtp.client-ip=136.143.188.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=zohomail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=zohomail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE635B652
+	for <iommu@lists.linux.dev>; Tue,  5 Aug 2025 10:18:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=118.26.132.39
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1754389097; cv=none; b=KQeTg2zHG0PLg6tTd+VK1qGb7yKpJw6PTCMYPIHBmbn0sMFTrV+InSunAsnVdOkEBAscUZTqHcyuuPOhbxsp97UlXEi3pYHABLPRKUcmuuISRYXOMlS0AcVd3udMYmDGZUCO78QKhudkZxFwiCd06v36WttvTV6tmnl7vOhgYWU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1754389097; c=relaxed/simple;
+	bh=bA++dzmXc9zStBySJ35CM0F4lIfN36Koam3LxsbW69A=;
+	h=Content-Type:Date:From:Subject:Message-Id:Mime-Version:Cc:To; b=aM5/iHxcUPCQrBQ/A+Uv2aC3vmr3zHBug/KTCnkonBvZhlqHtG7fkXkT+rsxZ3tDzoL7tmEpK7IMY7xwFFo7+BM2BL0ct4WnTjwV3WjUUc99tgI9Fi0ytfW7OP065iFiBmbn5bQYnwuCM56qzqtRrRce4Sl4WA5bNBFirJl07Zg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lanxincomputing.com; spf=pass smtp.mailfrom=lanxincomputing.com; dkim=pass (2048-bit key) header.d=lanxincomputing-com.20200927.dkim.feishu.cn header.i=@lanxincomputing-com.20200927.dkim.feishu.cn header.b=eOlhwhHo; arc=none smtp.client-ip=118.26.132.39
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lanxincomputing.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lanxincomputing.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=zohomail.com header.i=safinaskar@zohomail.com header.b="aaKWUQIS"
-ARC-Seal: i=1; a=rsa-sha256; t=1754368802; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=hLL0XtTgNsR8WSE4fXNd1z2CdzJur7opUEr/SkPBUDDjlSulSvT94VODsNgGwIr2vUkgbfytas4n4P6BWlxZrKIN1TyYe/FZ5I/nfO1wvhXOL7bI4nTFQpOFY2GNwjQW+YMx2aaOqT8GweRrYdb3qVtBN4zJfYvb4SFz1C4IPC8=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1754368802; h=Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=vx4DftUwwXSdyzbwHUzTA5ckOdfuuDc8ELVLhPGqGxg=; 
-	b=UpvdkMFGqv+nhsXyiFujsJoqZCSbBgiheBx8kZTsfhLF6atD18y9Ml+LhjjwFk0VoiQl2y6Qes0sSVRnK1eRKp1GqQ13soGeDnzyQ22HjQ8u+A/Q5hth/ly4LAExzwQAfoLKokpt/x921EnVP24nyK9iRkKTNtxahDoHyemy6DQ=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=zohomail.com;
-	spf=pass  smtp.mailfrom=safinaskar@zohomail.com;
-	dmarc=pass header.from=<safinaskar@zohomail.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1754368802;
-	s=zm2022; d=zohomail.com; i=safinaskar@zohomail.com;
-	h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-ID:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Feedback-ID:Message-Id:Reply-To;
-	bh=vx4DftUwwXSdyzbwHUzTA5ckOdfuuDc8ELVLhPGqGxg=;
-	b=aaKWUQISpExcEcVMiW+kAhc7F6a1dWnwPT9BUxCJLsNRimeGL2AE1BNh2uO+Zgra
-	alSRc7jHjW1rAWNOoiQMSg9J7i0rhAgkY9V1YwCAX26KkNCFRNZhhX70QORFZ8OeSzM
-	j3dDY7xpi/35SQxegkFNWmmQskXGJcMYlr+FoAfc=
-Received: by mx.zohomail.com with SMTPS id 1754368798702522.0385252595497;
-	Mon, 4 Aug 2025 21:39:58 -0700 (PDT)
-From: Askar Safin <safinaskar@zohomail.com>
-To: jgg@nvidia.com
-Cc: alex.williamson@redhat.com,
-	baolu.lu@linux.intel.com,
-	bhelgaas@google.com,
-	galshalom@nvidia.com,
-	iommu@lists.linux.dev,
-	joro@8bytes.org,
-	jroedel@suse.de,
-	kevin.tian@intel.com,
-	kvm@vger.kernel.org,
-	linux-pci@vger.kernel.org,
-	maorg@nvidia.com,
-	patches@lists.linux.dev,
-	robin.murphy@arm.com,
-	tdave@nvidia.com,
-	tony.zhu@intel.com,
-	will@kernel.org
-Subject: Re: [PATCH v2 15/16] PCI: Check ACS DSP/USP redirect bits in pci_enable_pasid()
-Date: Tue,  5 Aug 2025 07:39:48 +0300
-Message-ID: <20250805043948.97938-1-safinaskar@zohomail.com>
-X-Mailer: git-send-email 2.47.2
-In-Reply-To: <15-v2-4a9b9c983431+10e2-pcie_switch_groups_jgg@nvidia.com>
-References: <15-v2-4a9b9c983431+10e2-pcie_switch_groups_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=lanxincomputing-com.20200927.dkim.feishu.cn header.i=@lanxincomputing-com.20200927.dkim.feishu.cn header.b="eOlhwhHo"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=s1; d=lanxincomputing-com.20200927.dkim.feishu.cn; t=1754389072;
+  h=from:subject:mime-version:from:date:message-id:subject:to:cc:
+ reply-to:content-type:mime-version:in-reply-to:message-id;
+ bh=EWKh/6dZIglI4fJ1iIweOgozO4ucjLIZAOOQ2PsOGzc=;
+ b=eOlhwhHoPO5IBQyQIFRLTkXvGQ8+90am7CYZ4hRhF4gb+JMOZiKFAXZd9bg8Yj0jWvm5xm
+ dQh8TT2HIDJaAQhCDDM9O/NDajYGAaGelIOHr3dOEtvh65zx3NUROsivz/KWZZ3srKQIrc
+ X9OitQ4KVBUbLzu+zQMGNQl58kv8mvwVPjToDam1oOxs1JS+Rje1VNuMWh9fVFT5tmq8tg
+ 8I4QPMTEiVe3kDelIb1V/Jyxaa6PaUz0q1aubsQ+ATOkQxaMhBYRskBenoPHJmBVgpdRYW
+ 6niNcqsoUT55E7wx9DBh7pJThYWYbUqMyaICA/PHQ/FOf6AvrBTVOMmtbUQshQ==
+Received: from LeonHXL.localdomain ([116.237.111.137]) by smtp.feishu.cn with ESMTPS; Tue, 05 Aug 2025 18:17:49 +0800
+Content-Type: text/plain; charset=UTF-8
+Date: Tue,  5 Aug 2025 18:17:41 +0800
+X-Mailer: git-send-email 2.34.1
+X-Lms-Return-Path: <lba+26891da4e+9fc49a+lists.linux.dev+huangxianliang@lanxincomputing.com>
+From: "Huang XianLiang" <huangxianliang@lanxincomputing.com>
+Subject: [PATCH] iommu/riscv: check pte null pointer before use
+Message-Id: <20250805101741.30819-1-huangxianliang@lanxincomputing.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Feedback-ID: rr08011227836b5a84cbec9309bce67830000009930723b1a51d76665429b8f21e634aea6d8b917e42cdb7ee:zu080112276350d1e42093adc1218a592a000051016fedef33d9f8d9d25fa5d589293ff61c022154552f52f8:rf0801122cabce9c8de7e03eff3770245c0000d597922cdc6364a109d4e084b3f192b48cf8a9a71bfb944dc2bee1c2cc69:ZohoMail
-X-ZohoMailClient: External
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Original-From: Huang XianLiang <huangxianliang@lanxincomputing.com>
+Cc: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>, 
+	<paul.walmsley@sifive.com>, <palmer@dabbelt.com>, 
+	<aou@eecs.berkeley.edu>, <alex@ghiti.fr>, <iommu@lists.linux.dev>, 
+	<linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>, 
+	<huangxianliang@lanxincomputing.com>
+To: <tjeznach@rivosinc.com>
 
-"interpretation" should be, not "interpritation"
+The riscv_iommu_pte_fetch can return NULL when the provided iova is not
+yet mapped, the caller should check if the returned pointer is NULL or
+not, but riscv_iommu_iova_to_phys missed this, which will then lead to
+a kernel panic.
+
+This commit just check the pointer before using it to avoid the bug.
+Now, when iova_to_phys is called with an unmapped iova, the kernel will
+not crash here.
+
+Signed-off-by: Huang XianLiang <huangxianliang@lanxincomputing.com>
+---
+ drivers/iommu/riscv/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+index 2d0d31ba2886..b0186faa0300 100644
+--- a/drivers/iommu/riscv/iommu.c
++++ b/drivers/iommu/riscv/iommu.c
+@@ -1283,7 +1283,7 @@ static phys_addr_t riscv_iommu_iova_to_phys(struct iommu_domain *iommu_domain,
+ 	unsigned long *ptr;
+ 
+ 	ptr = riscv_iommu_pte_fetch(domain, iova, &pte_size);
+-	if (_io_pte_none(*ptr) || !_io_pte_present(*ptr))
++	if (!ptr || _io_pte_none(*ptr) || !_io_pte_present(*ptr))
+ 		return 0;
+ 
+ 	return pfn_to_phys(__page_val_to_pfn(*ptr)) | (iova & (pte_size - 1));
+-- 
+2.34.1
