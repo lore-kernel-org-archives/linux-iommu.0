@@ -1,176 +1,167 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2052.outbound.protection.outlook.com [40.107.94.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01D6F2E3718;
-	Tue,  5 Aug 2025 14:43:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754404990; cv=fail; b=bSEwgb0EaF/IC+IGlXDoitI4IA2EfVgcFzUS/E4pG4Q9GxmwEgMT2SpyQgKAP0nlvpQwyR6GFgYHZ+M1C12wMFrxd1MB//aPA2jaB2mL2wSgJSVxoAbUliPrp1kol2jaKV7cKXsRKbNqr92M6BlqCq9dkdp45fXt0TVFsTx4VWM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754404990; c=relaxed/simple;
-	bh=nDr+CZmP1uAigeS0dPouof627wwajN+4Bazu9QKKh6A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Zpmn16fwTVi9lePg0CPNlMm+CPmKvSCQewyA7rHARO1je8BptiOADgXESctXyCHCs7aJ5LaYfG0TGkyh2CmGT5U11Kg6K4sEYti3LC3f5WBEyhdbTx9djXf2QeJfK/Vqgp4UVdFBH0HqYGC8gVL/KWZuFa6FWpLL47L/c4WwfhE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=L/VMV/EQ; arc=fail smtp.client-ip=40.107.94.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE5B3279DAF
+	for <iommu@lists.linux.dev>; Tue,  5 Aug 2025 15:36:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1754408171; cv=none; b=F/1/alvEQrCaJ2QJ7LUx2J+Lf128cBxfNdut5l0yBR/xOr6zLYYiwX/5C3Ad2gVenffDhHysFOsckjq5JzEfZ40j7x0q3WYiGGoIFwbntk1zBdpus/Lk0+VmsIkS3SoxHAjJ/CB5h+n4QJASVWQKbmbhwPFcanxEHvy3Pur+0B8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1754408171; c=relaxed/simple;
+	bh=wdxaYDaFuQGcdWab2u1vRWh6ubZ0FBcIJSPOHoprdZM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MQM8lxJGzmhwuUHZfBX/3iyopIdriD3LltNOJiCPugxYnVOHkXxU38CeFVy9JzAMju7FlpxRLdFv+6c9D8EmeEvZrHOqKzZtuK7VCjjRW/pDyA1jTfIBy3N+RSiJSJbp8Wte6LvWk0h4VZZ3Ze/sDVQ5YN9nQgQG0OhYOa6J/JI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jKWtRJ5c; arc=none smtp.client-ip=209.85.222.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="L/VMV/EQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=sLXQHq8KY1FqBs6tzJv/8AIgfx1ttg/WWX5tpovH5OSIbJAfTMGYjavkadr3XDAOflL7yTsMgNN1NoWOMB47HYXWZozizbPETn0tU/P9YK35itq9LQX+w1SZiwYskl6uCcXZ6ok60FHZBauzTIoB6P6zGxX2jUstg8Z7nM/vLDj4x8fB3aCdkOoMMhDuaXRut3kVQI1uw49k5EXXpFEfs/R5tGjNezjrydLpJKjHizdeUZiaApvzx2A+xBHDBQyYqKJaGwrKqEQII3Wpv+SbYsNbrNFCK3qkbAj+arWrD2VTD+XjTyazVmCPIiR4IS/rTsPZO0kd44H9XTsPcD++MQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HvN+85QxWFMuT+rr50ET0blaF9HOia8Lrf21nGMW10U=;
- b=Zzt3xs+5aGtf1pmA/fp6TeMKqu5E1UTJduGeJiF8CIT8yTRfeghw+9afELUEOKHClukeTQe6992jp4hU3pJCJmVZ3T+go3u3GSESuYaIPIAVkj5AVX6L4q6GPyjpq9mgzZB8AJX7sVx47kJvlFBS+PiLDwkEBs0NPcZAcmbPWW6P5E5VkbaslZaYZFdQIUg7AlzEbotf3fzXEkeCsoxvJl8BzUDQw3f6ZlexkzovfpnfLPBHgjuUj/fK4ncWCDMTqo2STLud05oxHVTQ3W54He0tozbTyz0gsrLoncvArPdgj1aOlaR0f0MWeXqqaJY4lLXusO6NNgGlwdpR3o6zNA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HvN+85QxWFMuT+rr50ET0blaF9HOia8Lrf21nGMW10U=;
- b=L/VMV/EQFWypxZnO7kFT03JgREJ4bVrOh/serCb98K1n0va0LMLKsVqw1mVFgDRBEB4GSmRKO1kD+xmZXEgSQksDFL/wu5CAmOcWQ67YwLbiPM7JLoOZyp3VXOvCOAQO8WMVVF5KmJbtB/95GAHem2iPbazy5iv/7UMTkvrrw6QwMtrHt8/LH5nYOIMJU+AMOklCXjuO4c8wnclkVjOHreHDtLlbdBkD4RYjEQUHQ3CXeQSI5q/P1V+zh8cTT0Bif4h9fTZGMY2ePfGWae3X2rBI+TD29IGBH1gU7MLwNKvLI/n6s2Thq3HqeTnAzu7qlC89MphZH59/E4HvUmXoxA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by SA3PR12MB9226.namprd12.prod.outlook.com (2603:10b6:806:396::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9009.14; Tue, 5 Aug
- 2025 14:43:02 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.9009.013; Tue, 5 Aug 2025
- 14:43:02 +0000
-Date: Tue, 5 Aug 2025 11:43:01 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Ethan Zhao <etzhao1900@gmail.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, linux-pci@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, galshalom@nvidia.com,
-	Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
-	kvm@vger.kernel.org, maorg@nvidia.com, patches@lists.linux.dev,
-	tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
-Subject: Re: [PATCH v2 00/16] Fix incorrect iommu_groups with PCIe ACS
-Message-ID: <20250805144301.GO184255@nvidia.com>
-References: <0-v2-4a9b9c983431+10e2-pcie_switch_groups_jgg@nvidia.com>
- <a692448d-48b8-4af3-bf88-2cc913a145ca@gmail.com>
- <20250802151816.GC184255@nvidia.com>
- <1684792a-97d6-4383-a0d2-f342e69c91ff@gmail.com>
- <20250805123555.GI184255@nvidia.com>
- <964c8225-d3fc-4b60-9ee5-999e08837988@gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <964c8225-d3fc-4b60-9ee5-999e08837988@gmail.com>
-X-ClientProxiedBy: YT4PR01CA0121.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:d5::9) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jKWtRJ5c"
+Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7e182e4171bso470719585a.3
+        for <iommu@lists.linux.dev>; Tue, 05 Aug 2025 08:36:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1754408168; x=1755012968; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=N1MKz8dfPt28HzEOpdUPkfZENcnUFV9NfsoMVTYwzbE=;
+        b=jKWtRJ5cNi7qO1iofyQXR4XuKL5GQ45NzFVBOWTsZMwXpcTdNTXmGpNoDhmsrHn3Vi
+         eG2U2Sp5sMYwpwS/v04ouHSF/QiQM4YE/aBu2FI/oNeaZM0XMw9XSqDR/YzsiNeM9zfy
+         wXqfAC1Wo0XE7Q7nbkEKezAUKz81RiYnjxGu9kaQK/tUJymo+80srF6cD3XlCtROyWIb
+         HcJ2hWLoW4bJHWdKC1t1Xm83VeXKejZ0gWSJSLBhqzc6QyYrb30WB79oDdNYhyXunTT9
+         EnxXy/zPC2If4lS8G/0i0Yg8WdbiB1UYw0Vfly7ZSdBzSEfOXHaxEArPXnwABc0PSUwA
+         SOrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1754408168; x=1755012968;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=N1MKz8dfPt28HzEOpdUPkfZENcnUFV9NfsoMVTYwzbE=;
+        b=czkfkz3opjZoxwF7fzbKhx3dmEJxh2BQqvxM1mie08H44WxDBB6vJSLTMnfzLTxx66
+         //5yAB43JSrWqmtWCc/gCiw/MP8Br3E35JTgH8i2w/SQggL1wsM3IwlH6kmLi9hVpbDi
+         YOrnqIQ7Xb/qK8rkjEru2MCkCb8sys5Nv8IVPFVlgL8XOKC+Mc1jAJHcglQEm80xtnvi
+         xLPjm/OZnqoPTI7CXpDqz+BAa8Qpj1yE7FyYuAiOIc8whcbK1z3vNLYom+RjIDfmrIGI
+         Gj0VVs96JkL1hbP8d47/nMV/7Kmey0K/iMFyqc5qUemkiLEtszdbbp2wBn5vOsSYhkE6
+         ZH4w==
+X-Forwarded-Encrypted: i=1; AJvYcCUWZZm7NnXFDULxDNTORp35fnJ9mxHYMtzUvdQ2RZmxs+KMlBCUefqbdfsH8U01pjiOfh7TJQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw1RoLhIU2zYB2r1PNymBIDz48owy+wqIipTrYIp2bU6i7OKpTY
+	fAvKg0nrdrJbW+PfgtEb8Vrj6neK3nRzbwMUX3zqpxLUhPuWAh4fDeLwMKeOuMhqmJM=
+X-Gm-Gg: ASbGncssFtcoQ1A9TZ7oMz0z9gsr3rNRq8olXA6DhoKXmi0Ge/x5z+xV4C+UplYGcFY
+	nhfKh92LOT8rnfacmHERNcJhzWlyPAN1XiigauAj6zjhrsT50lABDTekKjhqLlJLu8X6Clwj+oe
+	rX5mfioKp+K+C5EnY8x9ZrCh3F9JLCRyT8zZ9VGy+QgBhATpGwonRVQzNQ0uC3+DmZeEfgtI/vw
+	xy/uTRUO74qtoYsVakbwX8aKX/T24Dfai3zE01d8jslz+0KlcasV4yPrs9IP8A8G5cQ3CI3on6U
+	/qYcmtiKW7TAhiM6dfBhRHVEYViTb6VghheulnDpiCHyWNgAvWsy6DIAojfCw3Fu0dZKpxOd9R/
+	KMHddwB1JVI7eqpHvaPiJk+jWagbkQ2ZLnNQP3jUT5NjXOjF6Ob/EUz088HhT2b1xquQn+xu1lf
+	oNZuY=
+X-Google-Smtp-Source: AGHT+IF1+3bX6DUQCrRo5YyM2fp0OCvjM/jusyZc5iy/VSCxNo0II2PGkJ9MrYPb1oYSw7F9hqkESg==
+X-Received: by 2002:a05:620a:12c6:b0:7e6:8f41:2055 with SMTP id af79cd13be357-7e6962e0c1bmr1733279285a.21.1754408168128;
+        Tue, 05 Aug 2025 08:36:08 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7e67f5cd63fsm689744985a.39.2025.08.05.08.36.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Aug 2025 08:36:07 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1ujJhu-00000001YWx-3rSt;
+	Tue, 05 Aug 2025 12:36:06 -0300
+Date: Tue, 5 Aug 2025 12:36:06 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Matthew Wilcox <willy@infradead.org>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leon@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	Nicholas Piggin <npiggin@gmail.com>,
+	Christophe Leroy <christophe.leroy@csgroup.eu>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
+	Alexander Potapenko <glider@google.com>,
+	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org, iommu@lists.linux.dev,
+	virtualization@lists.linux.dev, kasan-dev@googlegroups.com,
+	linux-trace-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH 0/8] dma-mapping: migrate to physical address-based API
+Message-ID: <20250805153606.GR26511@ziepe.ca>
+References: <CGME20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf@eucas1p2.samsung.com>
+ <cover.1750854543.git.leon@kernel.org>
+ <35df6f2a-0010-41fe-b490-f52693fe4778@samsung.com>
+ <20250627170213.GL17401@unreal>
+ <20250630133839.GA26981@lst.de>
+ <69b177dc-c149-40d3-bbde-3f6bad0efd0e@samsung.com>
+ <f912c446-1ae9-4390-9c11-00dce7bf0fd3@arm.com>
+ <aIupx_8vOg8wQh6w@casper.infradead.org>
+ <20250803155906.GM26511@ziepe.ca>
+ <aJArFNkuP8DJIdMY@casper.infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|SA3PR12MB9226:EE_
-X-MS-Office365-Filtering-Correlation-Id: f794ea32-f1e9-4da1-e44d-08ddd42e6164
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?H+hVgMpN2q16s/9RXQ4vKMx8tO8yM/POyDe0drI7z+dZ/06dEZ4lD892zVuT?=
- =?us-ascii?Q?7Z1Lscurn9pHckY+0C5qssulBWHrB0+gbrKKH1ve0KFBfYIYq6RZoa4z47hG?=
- =?us-ascii?Q?D5sRjxv5239nf0Pjq4n2oWhFpX3H/BChCZM74kLRqj4CBr5VsVRj3O8xYlQd?=
- =?us-ascii?Q?0vgv4+PsYNHBv1G0KnylGbv1nbiWz5afyD2+Rtz1HLmaZlt7wGSpJXFnDAuG?=
- =?us-ascii?Q?IbIADvQISITPA3R6SdRZ0IYklv4MviX9var6phDk1bG1hFQp6eKpT9eA7hOl?=
- =?us-ascii?Q?Nsyz7bw35LTtRlNK7V9ANmte8DWkEWBy0ubLGfM6L3bVO2l6JHfk/DGVXbmD?=
- =?us-ascii?Q?sFhPPiUfhkrVsCWJBbquv+vIcI+wZk+MWjr+MeAuqlefdh8UA0CJPUAA0quZ?=
- =?us-ascii?Q?IKcjVArcAtQy0djml/ZdKbWDB2m/4KNDKvAhWc9dz9BWWTGbZMNsPWpAll/A?=
- =?us-ascii?Q?INOXo9AapfXt97plgt3GnVk8SA4Lhbruo8zSUu7ts8TP/aJArX2nunmT02qX?=
- =?us-ascii?Q?dFPIZ/XIesbfkn5NK6fhQSiELJC0PzRUv90J6BvYtLhU8TwLijprtysXSm+R?=
- =?us-ascii?Q?V9g0oZ5vcgXKnQmBBjmCctMl5fFUjySs8RCNHpsOsxlxU7SU3+b1jLVLPChr?=
- =?us-ascii?Q?vQ/1SOL/BeNWLUQ4t8XHNJyT/ztfVlp/I7Q9cC8+CArDoMEUMHMNRQNfvWOQ?=
- =?us-ascii?Q?bxlb/YLZvCo5mfXTPp+xR2TPMQaUY6Dqn4aHCG1jLB0xfEI0be2xXNn1QBel?=
- =?us-ascii?Q?mp2guxAsjrnmULcpgczgAp3VZetbyX4MmQ0uvCNNBdM4LMZpdqoIChCVSSj5?=
- =?us-ascii?Q?M+JwihdBJp64vMocCbgSEFOabVOzm9aEDuqAYI3m0T0WzJtQ1atozdlfnV2F?=
- =?us-ascii?Q?4C62wwvi3xo7UUImxkDaiVOcxlFMzZQLxjEqIqS9jUPMtlRWdpEjW+t/AyJA?=
- =?us-ascii?Q?cQHk4aJEDpJ64YBFgR+rR2yAeIOLyd5ajkCj/WOIbfMe9dpL5JCaMjIbowi7?=
- =?us-ascii?Q?phtw0M9h2WjfDahhD9fNA3jsXckAm/NxU+5RyC4x9HhotuIHkpIXXi9h8Z0o?=
- =?us-ascii?Q?L2G6F91GS4MckZbfkYgCKxiQUWU37Cm+nIu/IN5RuwpSH6fDrCRQ6IP7bVJl?=
- =?us-ascii?Q?pKVSVIvZirraMgJvbuMk8KgaPUE9UJ3JJYIdkRbmfRiOPBF9b5/n5aqS8x3U?=
- =?us-ascii?Q?nJ0sBiyPFqa2Ra/2ZIjdtbH7HJp9k7yHA6zFMj/EBicsRR/tbXPxxgctm95H?=
- =?us-ascii?Q?3AaA7oPpS4ZZfjGBzlfmJpWh361ehbK5gP/wEVMGDPXPAaeGAe2EIzhIVAEq?=
- =?us-ascii?Q?YNtyHk1bBlpaDgKC4NpKdZKiSnk9idh3BdCjzy6ODw5RobOEc2xVJUNjDM4Z?=
- =?us-ascii?Q?lwlXTJRli1CmCyElffWTU93D5clgzw+F8ubpaGGAs9aMdXtV6VcqcscoRVeC?=
- =?us-ascii?Q?o0EBPP8LJm0=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?y6Ydz8sI8sxzFa10irYt2cyMvRflgRS2Z1/zIg5rOJkQLpyqHEN6rz/5fztC?=
- =?us-ascii?Q?h493we6dSh7Tt9Py11L/a4Ae+mPna+X7sV1TCmgUZ/4qG5mZ9t+tICGniT65?=
- =?us-ascii?Q?cAxPb3GflSYTqRkLsgMTIcFCBk84T8imNhZC4CJsyVhou7iRfvoqyPAkaSvF?=
- =?us-ascii?Q?JmMpQpqYsIcF7XsGtbRjwmddvjghE7WIqs2oDTzt8ZPMbGjWv4wFYqlVl74C?=
- =?us-ascii?Q?vJ8Z9caMT4LdSo2ouG5Y393PvMbUnGI2J/GSV8iD0OXvxzLzkr8/Yrp4mC7m?=
- =?us-ascii?Q?7B1UPrUS+v0dI7tfzdiAbpDpuepXucPARfo3BEWqP/ziUtPu1glIlwV0yLV/?=
- =?us-ascii?Q?VgBEXO3+eHhIdkMz0lxLx0k88/Yr4BjgGXVRlqNI99bywxNapW/OArAXVOQ2?=
- =?us-ascii?Q?P8jpXH5d5fJN8CmgMSdphR2oogJo9qLg1Qc0PrNI0ZAQJRAhhDG3WFMsgW1z?=
- =?us-ascii?Q?8uQqCH3ixUbyn0Aoebrg6eHtF64PRiD+pKNKrLZVdmu9Y12BJE7dm/pmCMFA?=
- =?us-ascii?Q?FxsY+scI83zBhf9tUCHoKGLqRE+RAFMxBB87yf4vtUqrKtUwLQjnKsoW77zx?=
- =?us-ascii?Q?OMvJZIQpW1flOoGsQjbX11zs221nM6qCt9a1LilsUzYHctcE7kWtVbvU/DNU?=
- =?us-ascii?Q?bW/0JO3LE68oLKpMKXLapgrmlSXLjccTr7WcdO7m6rNTolQMwYKeQFXKN0mF?=
- =?us-ascii?Q?am3u7GdPO3RZAzwQbRs1EXMoxy9JbQe3f/LDnKgv8W6mnIZBiD9uIbV+AvU1?=
- =?us-ascii?Q?KTF5SJ++piDFEWF4psrs95LeGgOeFCB80PDgpDdIF6Ym3RcUanL9AR5EEfRJ?=
- =?us-ascii?Q?QP3uT3L5jcvjvTctzB65hpXr999qxNl7SdcnhljDqdAhVuwH8j6446XoMZk6?=
- =?us-ascii?Q?bHsLZmwYemvLfMZCSjbzAlDrVpV7mVEwP3omWXx/RJtRYH6uoExvf/CxxCQ2?=
- =?us-ascii?Q?P0gSqz08KXW69H5EAaGXGhx6jov6wQ3rnvQezEGtRDyImDcKuMiKR6way+i0?=
- =?us-ascii?Q?+eEZKTIlFRtmRZqAW/DjhcVwe2BM3R89OFbpmmkKqJLmC2pbwlv6+39Fqr+1?=
- =?us-ascii?Q?SgumzKSXMq1UIWCDNblQByOajjR3P+73Vo4ygVx4Sh8HdZoaHW/UZxlMsMNI?=
- =?us-ascii?Q?kVOXwaZNU6Z94Wnr7D/FDLaQEDWxRI8IKAhSVSVUaQvGQ0XSHv4t24XTcbn1?=
- =?us-ascii?Q?7RKOlmZgJ23DhcLnFE5T7vkZsBudxBhuzaUaPmgWPxZSL+r231hFweykrahp?=
- =?us-ascii?Q?wCmSBXlADE7FmXAL00MPk5tSK8keGyIwGUZWDJX2c0VHvs7plLry8NgP+5Xh?=
- =?us-ascii?Q?OV41FNYXFCzdUKtT6IPNfrcvetFlLJLxJlt/+PSKZQHgvu4v3mNEZMGp1kzV?=
- =?us-ascii?Q?LwG1eFJdkxrhb3GjoA/YEk8FUJd2AfFdoyVr5wwuhbp7JriDyxyWtEvusfm8?=
- =?us-ascii?Q?44+bobcxHh93jtH1/jSOIWgxzJWcs+WYOCZBcPf6qGLdqxuULDvI/aEWJbSe?=
- =?us-ascii?Q?P98uMxaij2lEhhqUB2cpK/6fPJqRePN2nD9p6w/eY0stOslCtNreaoKp8tE2?=
- =?us-ascii?Q?Syi38rhHNadJPp1DZ/I=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f794ea32-f1e9-4da1-e44d-08ddd42e6164
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2025 14:43:02.5654
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QGURlaS8ukbx26JJDrXffA2fxFvJ4zd89qiZFYBqZEF9wLhqcdjv6Owh+lr8aEMp
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB9226
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aJArFNkuP8DJIdMY@casper.infradead.org>
 
-On Tue, Aug 05, 2025 at 10:41:03PM +0800, Ethan Zhao wrote:
+On Mon, Aug 04, 2025 at 04:37:56AM +0100, Matthew Wilcox wrote:
+> On Sun, Aug 03, 2025 at 12:59:06PM -0300, Jason Gunthorpe wrote:
+> > Matthew, do you think it makes sense to introduce types to make this
+> > clearer? We have two kinds of values that a phys_addr_t can store -
+> > something compatible with kmap_XX_phys(), and something that isn't.
+> 
+> I was with you up until this point.  And then you said "What if we have
+> a raccoon that isn't a raccoon" and my brain derailed.
 
-> > > My understanding, iommu has no logic yet to handle the egress control
-> > > vector configuration case,
-> > 
-> > We don't support it at all. If some FW leaves it configured then it
-> > will work at the PCI level but Linux has no awarness of what it is
-> > doing.
-> > 
-> > Arguably Linux should disable it on boot, but we don't..
-> linux tool like setpci could access PCIe configuration raw data, so
-> does to the ACS control bits. that is boring.
+I though it was clear..
 
-Any change to ACS after boot is "not supported" - iommu groups are one
-time only using boot config only. If someone wants to customize ACS
-they need to use the new config_acs kernel parameter.
+   kmap_local_pfn(phys >> PAGE_SHIFT)
+   phys_to_virt(phys)
 
-> > > The static groups were created according to
-> > > FW DRDB tables,
-> > 
-> > ?? iommu_groups have nothing to do with FW tables.
-> Sorry, typo, ACPI drhd table.
+Does not work for all values of phys. It definately illegal for
+non-cachable MMIO. Agree?
 
-Same answer, AFAIK FW tables have no effect on iommu_groups
+There is a subset of phys that is cachable and has struct page that is
+usable with kmap_local_pfn()/etc
+
+phys is always this:
+
+> - CPU untranslated.  This is the "physical" address.  Physical address
+>   0 is what the CPU sees when it drives zeroes on the memory bus.
+
+But that is a pure HW perspective. It doesn't say which of our SW APIs
+are allowed to use this address.
+
+We have callchains in DMA API land that want to do a kmap at the
+bottom. It would be nice to mark the whole call chain that the
+phys_addr being passed around is actually required to be kmappable.
+
+Because if you pass a non-kmappable MMIO backed phys it will explode
+in some way on some platforms.
+
+> > We clearly have these two different ideas floating around in code,
+> > page tables, etc.
+
+> No.  No, we don't.  I've never heard of this asininity before.
+
+Welcome to the fun world of cachable and non-cachable memory.
+
+Consider, today we can create struct pages of type
+MEMORY_DEVICE_PCI_P2PDMA for non-cachable MMIO. I think today you
+"can" use kmap to establish a cachable mapping in the vmap.
+
+But it is *illegal* to establish a cachable CPU mapping of MMIO. Archs
+are free to MCE if you do this - speculative cache line load of MMIO
+can just error in HW inside the interconnect.
+
+So, the phys_addr is always a "CPU untranslated physical address" but
+the cachable/non-cachable cases, or DRAM vs MMIO, are sometimes
+semantically very different things for the SW!
 
 Jason
