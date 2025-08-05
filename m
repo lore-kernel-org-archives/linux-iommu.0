@@ -1,105 +1,96 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE5B3279DAF
-	for <iommu@lists.linux.dev>; Tue,  5 Aug 2025 15:36:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31959280CD5
+	for <iommu@lists.linux.dev>; Tue,  5 Aug 2025 15:42:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754408171; cv=none; b=F/1/alvEQrCaJ2QJ7LUx2J+Lf128cBxfNdut5l0yBR/xOr6zLYYiwX/5C3Ad2gVenffDhHysFOsckjq5JzEfZ40j7x0q3WYiGGoIFwbntk1zBdpus/Lk0+VmsIkS3SoxHAjJ/CB5h+n4QJASVWQKbmbhwPFcanxEHvy3Pur+0B8=
+	t=1754408545; cv=none; b=n2sB+SzsNJdFboWnYMauVtx5hDXeVF9CbeyFiirt7TJ961i8JF4gDWEFZ3w6W68U0EdW57fLH1lOoAUXpbo7iH6mM270ou4nQwp3GAM9KMpVWoBdYbLQY91zkQelTSFoUuHnYHoPsSxIhhQ31Dn1zeNIvfvwI6eH4xGMvFb8HKU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754408171; c=relaxed/simple;
-	bh=wdxaYDaFuQGcdWab2u1vRWh6ubZ0FBcIJSPOHoprdZM=;
+	s=arc-20240116; t=1754408545; c=relaxed/simple;
+	bh=a4XlgZlbGJ3sRkVR1drtwriay9L4ComlRut5kWFIm1I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MQM8lxJGzmhwuUHZfBX/3iyopIdriD3LltNOJiCPugxYnVOHkXxU38CeFVy9JzAMju7FlpxRLdFv+6c9D8EmeEvZrHOqKzZtuK7VCjjRW/pDyA1jTfIBy3N+RSiJSJbp8Wte6LvWk0h4VZZ3Ze/sDVQ5YN9nQgQG0OhYOa6J/JI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jKWtRJ5c; arc=none smtp.client-ip=209.85.222.172
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ry8gaxF6gzr1FFO04O/tm6vDX8zqyy1L/rXxCyUDB+TKA0JXa6Hs6PS6oMxOBrXjTd39HF3FFiTAe+uo4rwWC4DWb3oS+UiRy0nOsk3cSVoScqgpKLOak8s1mYlUsTgyzXbxMhlpXc005kD/8UaYbJ/7P7Ed2JQVWqgUW5F5glA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=dEtWm7je; arc=none smtp.client-ip=209.85.160.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jKWtRJ5c"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-7e182e4171bso470719585a.3
-        for <iommu@lists.linux.dev>; Tue, 05 Aug 2025 08:36:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dEtWm7je"
+Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-4b07d779287so13346361cf.2
+        for <iommu@lists.linux.dev>; Tue, 05 Aug 2025 08:42:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1754408168; x=1755012968; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1754408543; x=1755013343; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=N1MKz8dfPt28HzEOpdUPkfZENcnUFV9NfsoMVTYwzbE=;
-        b=jKWtRJ5cNi7qO1iofyQXR4XuKL5GQ45NzFVBOWTsZMwXpcTdNTXmGpNoDhmsrHn3Vi
-         eG2U2Sp5sMYwpwS/v04ouHSF/QiQM4YE/aBu2FI/oNeaZM0XMw9XSqDR/YzsiNeM9zfy
-         wXqfAC1Wo0XE7Q7nbkEKezAUKz81RiYnjxGu9kaQK/tUJymo+80srF6cD3XlCtROyWIb
-         HcJ2hWLoW4bJHWdKC1t1Xm83VeXKejZ0gWSJSLBhqzc6QyYrb30WB79oDdNYhyXunTT9
-         EnxXy/zPC2If4lS8G/0i0Yg8WdbiB1UYw0Vfly7ZSdBzSEfOXHaxEArPXnwABc0PSUwA
-         SOrA==
+        bh=4+S5TU1iU+zykGCf9bu6hpucmYtXHh8bdT1E2A37b38=;
+        b=dEtWm7jelK1sj8wVU6UGEHFs5Fz4A2PUHzbbivoAPrJ7VswB0h3N3v6KssnSl6DjFW
+         NHDdzg8Ds0GaNBbDVeOETsPSMzMTrqewGOeYwZKPaRqik092NJokrezewt/cs3tDLQcm
+         wQTetnGg/2iEcZQf68xp3okH5cuH6NdNU6Y2D0Qr5CcWA1+QmSyDF//fDZ+tJKI/MtD9
+         lqpB9fJ1V5+b6Uawp0KCeBdIuafFLvu77pQiT6kyMYg9aam93kaKTvhnKtVJH0KcEk2n
+         JLTKPh+aWxIuP06Ak36nAqCCPnJ4bSxgz1z5OZl1VFD4V0uSTMoGaU40/bgmlZUJYNF0
+         IVTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754408168; x=1755012968;
+        d=1e100.net; s=20230601; t=1754408543; x=1755013343;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=N1MKz8dfPt28HzEOpdUPkfZENcnUFV9NfsoMVTYwzbE=;
-        b=czkfkz3opjZoxwF7fzbKhx3dmEJxh2BQqvxM1mie08H44WxDBB6vJSLTMnfzLTxx66
-         //5yAB43JSrWqmtWCc/gCiw/MP8Br3E35JTgH8i2w/SQggL1wsM3IwlH6kmLi9hVpbDi
-         YOrnqIQ7Xb/qK8rkjEru2MCkCb8sys5Nv8IVPFVlgL8XOKC+Mc1jAJHcglQEm80xtnvi
-         xLPjm/OZnqoPTI7CXpDqz+BAa8Qpj1yE7FyYuAiOIc8whcbK1z3vNLYom+RjIDfmrIGI
-         Gj0VVs96JkL1hbP8d47/nMV/7Kmey0K/iMFyqc5qUemkiLEtszdbbp2wBn5vOsSYhkE6
-         ZH4w==
-X-Forwarded-Encrypted: i=1; AJvYcCUWZZm7NnXFDULxDNTORp35fnJ9mxHYMtzUvdQ2RZmxs+KMlBCUefqbdfsH8U01pjiOfh7TJQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yw1RoLhIU2zYB2r1PNymBIDz48owy+wqIipTrYIp2bU6i7OKpTY
-	fAvKg0nrdrJbW+PfgtEb8Vrj6neK3nRzbwMUX3zqpxLUhPuWAh4fDeLwMKeOuMhqmJM=
-X-Gm-Gg: ASbGncssFtcoQ1A9TZ7oMz0z9gsr3rNRq8olXA6DhoKXmi0Ge/x5z+xV4C+UplYGcFY
-	nhfKh92LOT8rnfacmHERNcJhzWlyPAN1XiigauAj6zjhrsT50lABDTekKjhqLlJLu8X6Clwj+oe
-	rX5mfioKp+K+C5EnY8x9ZrCh3F9JLCRyT8zZ9VGy+QgBhATpGwonRVQzNQ0uC3+DmZeEfgtI/vw
-	xy/uTRUO74qtoYsVakbwX8aKX/T24Dfai3zE01d8jslz+0KlcasV4yPrs9IP8A8G5cQ3CI3on6U
-	/qYcmtiKW7TAhiM6dfBhRHVEYViTb6VghheulnDpiCHyWNgAvWsy6DIAojfCw3Fu0dZKpxOd9R/
-	KMHddwB1JVI7eqpHvaPiJk+jWagbkQ2ZLnNQP3jUT5NjXOjF6Ob/EUz088HhT2b1xquQn+xu1lf
-	oNZuY=
-X-Google-Smtp-Source: AGHT+IF1+3bX6DUQCrRo5YyM2fp0OCvjM/jusyZc5iy/VSCxNo0II2PGkJ9MrYPb1oYSw7F9hqkESg==
-X-Received: by 2002:a05:620a:12c6:b0:7e6:8f41:2055 with SMTP id af79cd13be357-7e6962e0c1bmr1733279285a.21.1754408168128;
-        Tue, 05 Aug 2025 08:36:08 -0700 (PDT)
+        bh=4+S5TU1iU+zykGCf9bu6hpucmYtXHh8bdT1E2A37b38=;
+        b=mS/NRVMpTv7wooGxbNMUMyRBX4uhd/8HYecupQpMGZq0u5f6rNMhzjF/Q6fCiEq/9k
+         Mf/MUKeI/G+5BtDyUXqc3XZuHSxI9ynKDnTzQNFez/ucWIOa+S2vXadE7BFdA0VCxxqI
+         6WriEpi97Tz7rC+LqHHLES/F3OcEL1pUfwKzhkWXHiLzFSc4o4RG61Lsbq3CY/R2LCN6
+         qdquZY/JXgqc8gb2J020z0We4OdVMHOtToTod1vnS3XTgmi9iN9fVrrGsrD1emroevtx
+         rDnyO0gsehTmjWc2AIc3nHy8+BpiWl8BxdU4WsQm7nD7ShKmHMVEwsDPS/ddmOf+qf5/
+         EC3g==
+X-Forwarded-Encrypted: i=1; AJvYcCW6gOXiKYp0gU4JB/xbDra1J68ePI2JNx1fxw9v1NW5o1uNjHhqjmkr4SP93h77nb9v//Y4Pg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzT22UaYYo6jgTybyW/FA0t0TbMy078HPbSzAqoSUThxFcQFrwM
+	q7hU3EyoYwRBUQf9dy1SfNj1y/MNJ/EFh92d2UQ1eE75mA/mIEMzjz+P53O3WmwQQAY=
+X-Gm-Gg: ASbGncuWtXI4ccNqBAahW4pm+rrv8WtDfzGM6NiO8cn03Skm4FBtrR6P7i6oOcjfTac
+	++3kz5WuzyYl38fPo2rzkeH2WF4q8RmdU/sJ0Bn3SFkvseb/rUpf5nGo+tVV3GgNWHiDtH81+Qg
+	wdGwNroAVaplK/CNLmYeuldcGAZU6vVWqSu6XZ9bbhw1RtDTemug9XL3/7ZsfiGG2pOwwmFYQmN
+	ryt9KGTpXNaGxYtvgCnoiMWIFPENPdEy6PdY9PxgoArRJZHhjZJMZQKpC4bbfV6IAQvzliiYRsT
+	kGk+GrJiCuuS8NBNFPfHSXEObkjGIqeJNdIK7mzE6j5TW3WR6pN0Se42jl6NOBb+88ktL3WvTrh
+	eimYvxabfhn9wSQLbKMiSqwF6Osy+RxdeWQJ7vN1wvQlbSSbgBWIbHldLKyALtgzmGefq
+X-Google-Smtp-Source: AGHT+IELNrIMqnerJkL1A0WsqSjDCP2vRHWDCNTCx480e/QMCD91vV4yAiss3qzKjBGdBblt5Jsn4Q==
+X-Received: by 2002:a05:622a:4107:b0:4ab:6d49:eb59 with SMTP id d75a77b69052e-4af10954c24mr187961691cf.5.1754408543089;
+        Tue, 05 Aug 2025 08:42:23 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7e67f5cd63fsm689744985a.39.2025.08.05.08.36.07
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4aeeedb2b7asm66390101cf.46.2025.08.05.08.42.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Aug 2025 08:36:07 -0700 (PDT)
+        Tue, 05 Aug 2025 08:42:22 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1ujJhu-00000001YWx-3rSt;
-	Tue, 05 Aug 2025 12:36:06 -0300
-Date: Tue, 5 Aug 2025 12:36:06 -0300
+	id 1ujJny-00000001YZf-0BVr;
+	Tue, 05 Aug 2025 12:42:22 -0300
+Date: Tue, 5 Aug 2025 12:42:22 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Matthew Wilcox <willy@infradead.org>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leon@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Nicholas Piggin <npiggin@gmail.com>,
-	Christophe Leroy <christophe.leroy@csgroup.eu>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>,
-	Alexander Potapenko <glider@google.com>,
-	Marco Elver <elver@google.com>, Dmitry Vyukov <dvyukov@google.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Cc: Alexandre Courbot <acourbot@nvidia.com>, dakr@kernel.org,
+	lyude@redhat.com, Miguel Ojeda <ojeda@kernel.org>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+	=?utf-8?B?QmrDtnJu?= Roy Baron <bjorn3_gh@protonmail.com>,
+	Benno Lossin <lossin@kernel.org>,
+	Andreas Hindborg <a.hindborg@kernel.org>,
+	Alice Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>,
+	Tamir Duberstein <tamird@gmail.com>,
+	FUJITA Tomonori <fujita.tomonori@gmail.com>,
+	open list <linux-kernel@vger.kernel.org>,
 	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org, iommu@lists.linux.dev,
-	virtualization@lists.linux.dev, kasan-dev@googlegroups.com,
-	linux-trace-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH 0/8] dma-mapping: migrate to physical address-based API
-Message-ID: <20250805153606.GR26511@ziepe.ca>
-References: <CGME20250625131920eucas1p271b196cde042bd39ac08fb12beff5baf@eucas1p2.samsung.com>
- <cover.1750854543.git.leon@kernel.org>
- <35df6f2a-0010-41fe-b490-f52693fe4778@samsung.com>
- <20250627170213.GL17401@unreal>
- <20250630133839.GA26981@lst.de>
- <69b177dc-c149-40d3-bbde-3f6bad0efd0e@samsung.com>
- <f912c446-1ae9-4390-9c11-00dce7bf0fd3@arm.com>
- <aIupx_8vOg8wQh6w@casper.infradead.org>
- <20250803155906.GM26511@ziepe.ca>
- <aJArFNkuP8DJIdMY@casper.infradead.org>
+	Randy Dunlap <rdunlap@infradead.org>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Caleb Sander Mateos <csander@purestorage.com>,
+	Petr Tesarik <petr@tesarici.cz>,
+	Sui Jingfeng <sui.jingfeng@linux.dev>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, airlied@redhat.com,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	rust-for-linux@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] rust: add initial scatterlist abstraction
+Message-ID: <20250805154222.GS26511@ziepe.ca>
+References: <20250718103359.1026240-1-abdiel.janulgue@gmail.com>
+ <20250718103359.1026240-2-abdiel.janulgue@gmail.com>
+ <DBK1M000P87N.2HJHDJN1LG5CA@nvidia.com>
+ <676ac763-cd23-4077-815f-8eaa9bc960fb@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -108,60 +99,38 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aJArFNkuP8DJIdMY@casper.infradead.org>
+In-Reply-To: <676ac763-cd23-4077-815f-8eaa9bc960fb@gmail.com>
 
-On Mon, Aug 04, 2025 at 04:37:56AM +0100, Matthew Wilcox wrote:
-> On Sun, Aug 03, 2025 at 12:59:06PM -0300, Jason Gunthorpe wrote:
-> > Matthew, do you think it makes sense to introduce types to make this
-> > clearer? We have two kinds of values that a phys_addr_t can store -
-> > something compatible with kmap_XX_phys(), and something that isn't.
+On Mon, Aug 04, 2025 at 11:56:53AM +0300, Abdiel Janulgue wrote:
+> Hi,
 > 
-> I was with you up until this point.  And then you said "What if we have
-> a raccoon that isn't a raccoon" and my brain derailed.
+> On 24/07/2025 08:40, Alexandre Courbot wrote:
+> > 
+> > I see a few issues with the `Item` type here.
+> > 
+> > The first one is that `Page` can only be created by allocating a new
+> > page from scratch using `Page::alloc_page`. This doesn't cover the cases
+> > where we want to map memory that is now allocated through this
+> > mechanism, e.g. when mapping a `VVec`. So I think we have no choice but
+> > return `*mut bindings::page`s.
+> > 
+> Just commenting on this bit, still going through the others one by one.
+> Anyways, there is already existing code I'm working on that should be able
+> to extend Page that are not allocated by it's constructor (e.g. those coming
+> from vmalloc_to_page). I think's it's safe at least to not expose the raw
+> pointers here if we can? Just a thought.
 
-I though it was clear..
+I would try not to expose vmalloc_to_page() to safe rust.
 
-   kmap_local_pfn(phys >> PAGE_SHIFT)
-   phys_to_virt(phys)
+alloc_page() at least gives you a refcounted page with a sensible
+refcount based lifecycle, vmalloc_to_page() gives you something that
+is not refcountable at all and has a lifetime bound to the vmalloc.
 
-Does not work for all values of phys. It definately illegal for
-non-cachable MMIO. Agree?
+They may both be struct page in C but for rust they have very
+different rules and probably types.
 
-There is a subset of phys that is cachable and has struct page that is
-usable with kmap_local_pfn()/etc
-
-phys is always this:
-
-> - CPU untranslated.  This is the "physical" address.  Physical address
->   0 is what the CPU sees when it drives zeroes on the memory bus.
-
-But that is a pure HW perspective. It doesn't say which of our SW APIs
-are allowed to use this address.
-
-We have callchains in DMA API land that want to do a kmap at the
-bottom. It would be nice to mark the whole call chain that the
-phys_addr being passed around is actually required to be kmappable.
-
-Because if you pass a non-kmappable MMIO backed phys it will explode
-in some way on some platforms.
-
-> > We clearly have these two different ideas floating around in code,
-> > page tables, etc.
-
-> No.  No, we don't.  I've never heard of this asininity before.
-
-Welcome to the fun world of cachable and non-cachable memory.
-
-Consider, today we can create struct pages of type
-MEMORY_DEVICE_PCI_P2PDMA for non-cachable MMIO. I think today you
-"can" use kmap to establish a cachable mapping in the vmap.
-
-But it is *illegal* to establish a cachable CPU mapping of MMIO. Archs
-are free to MCE if you do this - speculative cache line load of MMIO
-can just error in HW inside the interconnect.
-
-So, the phys_addr is always a "CPU untranslated physical address" but
-the cachable/non-cachable cases, or DRAM vs MMIO, are sometimes
-semantically very different things for the SW!
+If you want kmalloc/vmalloc to get into a scatterlist you should have
+APIs to go directly from void * and into the scatterlist, and also
+link the scatterlist to the lifetime of the original allocation.
 
 Jason
