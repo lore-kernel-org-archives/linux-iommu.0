@@ -1,181 +1,216 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57FF12797AD;
-	Tue,  5 Aug 2025 16:12:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3D4D2727ED
+	for <iommu@lists.linux.dev>; Tue,  5 Aug 2025 17:57:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754410371; cv=none; b=HBbkY9n9dS/3/qMrLKKrcwMmShoYvJQvAgJO8Z8reOh3418xZBd4ZOp8UznoA67L1DjJpXdgPT2JGlgvz6cgMrhO42bNLjgqpZ/MQB+ggygCXQQsb4wI3LVBUIBqyjtWUgjBkdzU8Vo84DGFwCYHrE9pcZXpUmYbBtKkueWIviA=
+	t=1754416677; cv=none; b=l/Xwt6SRfULnAdNAGAHW8tMHzX510HW7O7bG0WVfJyx+trt+uvg3oqa1Wq32z/+7h/o9un/P7ODYQtNf0Ns56rUWGHj6XC6PHzT3rYTO2s/QZ5+A2gBajj9sEwC9I6QY1gueOpDAusoSSg2EK5Nu4AwZn+LRo2A7ybW/8X3WfaQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754410371; c=relaxed/simple;
-	bh=bbHU6KYYdQLA/uDOxt5RSEmbEi7rhJimwuUtfJHMrac=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:Cc:To:From:
-	 References:In-Reply-To; b=MfVtmsUITIRoJKk/QJhYAEqIZ99XcnVK8MSfd3rINQS4eV1S+6kzuGdKtmFm8pPk6Re30SIKqTvhEcjz5xHDrFJwNfc/GQj7N1438JfevqrCm//m0iVQQGE45oKVT3DiYsh4mJdVSEcekKsYrB0a745eKB73EP9o1ED1ovqOSeM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n6xwprIR; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1754416677; c=relaxed/simple;
+	bh=JZhU2+1vxgdXAz7jE/s8j1dlHcHijdbJfKTzDTT+BhA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rTy1+IfiWbQsoJ64aUk//LBAHC9eAhmyX8muoizZigTxcj7Kw0iy3gTY/WIiA4/Bw9wYAh+ZW6GYTDb9Vny7Ixui163s0LveBrtw5NlbxKE8W20cxZiNgY7cu7qEM4PfLxtjmpEOjnNu0czzQB0rhIiIBLhO74d1PUjaBOjTark=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=DCQjbIxc; arc=none smtp.client-ip=209.85.222.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n6xwprIR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA34CC4CEF0;
-	Tue,  5 Aug 2025 16:12:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1754410371;
-	bh=bbHU6KYYdQLA/uDOxt5RSEmbEi7rhJimwuUtfJHMrac=;
-	h=Date:Subject:Cc:To:From:References:In-Reply-To:From;
-	b=n6xwprIRrJt5Q4IUroUQhnJTxS9RlPXvWjsVQtYaNXgzQtPHH/Ybz5lCO5S/sHq83
-	 R8NgDYczl6HfSqBKzqzJNqNib9n2C/gbdJt3OspEJb6UgVPntEndspmfDyfb8DsJzc
-	 OptR+Et/Z5j6MIgXf57/jvKUr6hDlTyVvO8Er9ZRqwvp0SBTBNmn2XLLkl0G1tXnl+
-	 OZhuR1P/ai4f0RsSGtejqqv5Ik6xFf7Wp0KhaVT2ik3P2g/s4Wf6HtH6mOm4PApuC9
-	 /Lkj4TZBwqw9t2jeyZ/dZu1FffgaeDaqs+cWbkn4bvCZzb+qZWM/T4UOU7m1EwGanA
-	 dqr3DrDI6aJZQ==
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DCQjbIxc"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-7e809baeef7so167238085a.0
+        for <iommu@lists.linux.dev>; Tue, 05 Aug 2025 10:57:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1754416674; x=1755021474; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=F9Lrb8raU1rOL/1BQQhDKfgxN9mYfLFp5sfiFKeG3uI=;
+        b=DCQjbIxcHnOar2zg96l4TW5INi7JZb4KofDe39sCFaJoT3NveXBZKB/zkl7fKJ0mKo
+         dXW6s4KX4JgVlSxMW5+/qzZ8o6EKtgA/7hGtbsSMAz+4Gm+Djh3LoLiHj2Fo8nc2UTWR
+         xtkU2zfnOfp58RNuslPneg7OOq1CZOotV0XbC5n0Bl1/mXFbnEBzcuuCiSzbn6EeGY7u
+         xC+kyt6vztqilb9seTV3ZmpFWP5omPUMFKUx+YsO8w3R1Zylfko+XqDxkeJaJCTOH8Hh
+         nY8JdaLuPPMMdNP1jsFJM4VRWK7OTJP3LieFtr3yfhnjYoiWb7FJTWJ7jemWfyX0XBy5
+         CLtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1754416674; x=1755021474;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=F9Lrb8raU1rOL/1BQQhDKfgxN9mYfLFp5sfiFKeG3uI=;
+        b=pUEnJJqjIIznt+o4pcxIBpVLPXiUpMeBdH9Sdow/TH059ARdcqm/BhBYrZkdS2mOcj
+         li6JXjzKEPGi7vj6s+/jdcXE1x9IgaEZNeDeKjwnHQXmbiNsM6YFzagDuPLBCjSVGEZx
+         PbsovWu3KvO1zS5n48hmHGCEPsuhYX4RWAC4wURdKg8BbsNNSHHSBGQtkD3OwCGzJR2V
+         y0cBG9sFIMtnd6XeEmSt+/WCHpVNEUEjqUKi6yVviJsK64ewU4+Ntg9leg9Mx7CVAGOf
+         XCPi45gyp6LGWLb/lb8MNgrC1B17kpZZeMSB3BDYExbVKCOh8jjo96WEa2Hr/ze/XLE0
+         +8Vw==
+X-Forwarded-Encrypted: i=1; AJvYcCU+vdxir8tmnXXtnbGsnRoqHStSjqn10b7KKKk66Az4A4TUi2zsFHl00mgr3RNI1jQt3sT/9g==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyo6hT1yIEhQ5o8dXWg/Rk3sr3ObGStnFncq0wdPZ4K+Y/WH9AK
+	6hkC2s305QA7IQVjRyoSS1Vkja7jgYL5W2SyQZX34KqpB9JEGfoF31wnk0PBrSPjq5s=
+X-Gm-Gg: ASbGncsxJrAKbwo6KybUGUWotTE5oMsazCaOJ2c68g5i9FC0l20Of2rdwFYVEDqor8g
+	tflcm0Yy4nkzI685MkHZ4er1KCSEd61BkuCRb1dZKizQaGpfjvHGYmBlTEUG6y18n3vppb7kJMl
+	fQrMae1CkCqT4cl1k9Phj74UBT/MY9v01HRB8ay6jlSMhu8fLHyrdA7UhwyuW4cF08YzxkyQJKM
+	flyXT/P5uA2CzRIZj4g4a78cKzjYTRyNMQ+CRFcj1fdehWp9N6cq2hk1he6j37ZtSJuJLSXGBAQ
+	H4gEZ+SLvItRXjIfjhReE+y5lXKJ0mIMYpeBeCSU7BhumgIF2tDgByj5O7w96rEVEpqHS8k4z5i
+	Td7PaKba8v2obWz+iI29J9OXheMiGRyuNaK9+yySyolu8LZOAIAo8em+k40UgiEXrNW6P
+X-Google-Smtp-Source: AGHT+IGE5ERjj9D3VCjcEiKXdj9UhaaZiZPpSWlP7T6HKiKWYrHGgc5JWaH3dvBy9gtMCFsNCYW/Rg==
+X-Received: by 2002:a05:620a:28ce:b0:7e6:9753:db16 with SMTP id af79cd13be357-7e814d03585mr36631185a.14.1754416674276;
+        Tue, 05 Aug 2025 10:57:54 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7e7f7e277besm338203385a.57.2025.08.05.10.57.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Aug 2025 10:57:53 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1ujLv7-00000001Zhc-0EXt;
+	Tue, 05 Aug 2025 14:57:53 -0300
+Date: Tue, 5 Aug 2025 14:57:53 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
+	suzuki.poulose@arm.com, yuzenghui@huawei.com,
+	catalin.marinas@arm.com, will@kernel.org, robin.murphy@arm.com,
+	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
+	mark.rutland@arm.com, praan@google.com
+Subject: Re: [PATCH v3 29/29] iommu/arm-smmu-v3-kvm: Add IOMMU ops
+Message-ID: <20250805175753.GY26511@ziepe.ca>
+References: <20250728175316.3706196-1-smostafa@google.com>
+ <20250728175316.3706196-30-smostafa@google.com>
+ <20250730144253.GM26511@ziepe.ca>
+ <aIo1ImP7R7VhRpVE@google.com>
+ <20250730164752.GO26511@ziepe.ca>
+ <aIt67bOzp6XS_yO-@google.com>
+ <20250731165757.GZ26511@ziepe.ca>
+ <aIurlx5QzEtjpFLd@google.com>
+ <20250801185930.GH26511@ziepe.ca>
+ <aJDGm02ihZyrBalY@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 05 Aug 2025 18:12:44 +0200
-Message-Id: <DBUMKISHUL6D.UVSF04ZRQR9Z@kernel.org>
-Subject: Re: [PATCH v3 1/2] rust: add initial scatterlist abstraction
-Cc: "Abdiel Janulgue" <abdiel.janulgue@gmail.com>, "Alexandre Courbot"
- <acourbot@nvidia.com>, <lyude@redhat.com>, "Miguel Ojeda"
- <ojeda@kernel.org>, "Alex Gaynor" <alex.gaynor@gmail.com>, "Boqun Feng"
- <boqun.feng@gmail.com>, "Gary Guo" <gary@garyguo.net>,
- =?utf-8?q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, "Benno Lossin"
- <lossin@kernel.org>, "Andreas Hindborg" <a.hindborg@kernel.org>, "Alice
- Ryhl" <aliceryhl@google.com>, "Trevor Gross" <tmgross@umich.edu>, "Tamir
- Duberstein" <tamird@gmail.com>, "FUJITA Tomonori"
- <fujita.tomonori@gmail.com>, "open list" <linux-kernel@vger.kernel.org>,
- "Andrew Morton" <akpm@linux-foundation.org>, "Randy Dunlap"
- <rdunlap@infradead.org>, "Herbert Xu" <herbert@gondor.apana.org.au>, "Caleb
- Sander Mateos" <csander@purestorage.com>, "Petr Tesarik"
- <petr@tesarici.cz>, "Sui Jingfeng" <sui.jingfeng@linux.dev>, "Marek
- Szyprowski" <m.szyprowski@samsung.com>, "Robin Murphy"
- <robin.murphy@arm.com>, <airlied@redhat.com>, "open list:DMA MAPPING
- HELPERS" <iommu@lists.linux.dev>, <rust-for-linux@vger.kernel.org>
-To: "Jason Gunthorpe" <jgg@ziepe.ca>
-From: "Danilo Krummrich" <dakr@kernel.org>
-References: <20250718103359.1026240-1-abdiel.janulgue@gmail.com>
- <20250718103359.1026240-2-abdiel.janulgue@gmail.com>
- <DBK1M000P87N.2HJHDJN1LG5CA@nvidia.com>
- <676ac763-cd23-4077-815f-8eaa9bc960fb@gmail.com>
- <20250805154222.GS26511@ziepe.ca>
-In-Reply-To: <20250805154222.GS26511@ziepe.ca>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aJDGm02ihZyrBalY@google.com>
 
-On Tue Aug 5, 2025 at 5:42 PM CEST, Jason Gunthorpe wrote:
-> On Mon, Aug 04, 2025 at 11:56:53AM +0300, Abdiel Janulgue wrote:
->> Hi,
->>=20
->> On 24/07/2025 08:40, Alexandre Courbot wrote:
->> >=20
->> > I see a few issues with the `Item` type here.
->> >=20
->> > The first one is that `Page` can only be created by allocating a new
->> > page from scratch using `Page::alloc_page`. This doesn't cover the cas=
-es
->> > where we want to map memory that is now allocated through this
->> > mechanism, e.g. when mapping a `VVec`. So I think we have no choice bu=
-t
->> > return `*mut bindings::page`s.
->> >=20
->> Just commenting on this bit, still going through the others one by one.
->> Anyways, there is already existing code I'm working on that should be ab=
-le
->> to extend Page that are not allocated by it's constructor (e.g. those co=
-ming
->> from vmalloc_to_page). I think's it's safe at least to not expose the ra=
-w
->> pointers here if we can? Just a thought.
->
-> I would try not to expose vmalloc_to_page() to safe rust.
+On Mon, Aug 04, 2025 at 02:41:31PM +0000, Mostafa Saleh wrote:
+> > Are you saying the event queue is left behind for the kernel? How does
+> > that work if it doesn't have access to the registers?
+> 
+> The evtq itself will be owned by the kernel, However, MMIO access would be
+> trapped and emulated, here the PoC for part-2 of this series (as mentioned in
+> the cover letter) This is very close to how nesting will work.
+> https://android-kvm.googlesource.com/linux/+/refs/heads/for-upstream/pkvm-smmu-v3-part-2/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c#744
 
-Agreed, not directly at least, more below.
+Oh weird, but Ok.
 
-> alloc_page() at least gives you a refcounted page with a sensible
-> refcount based lifecycle, vmalloc_to_page() gives you something that
-> is not refcountable at all and has a lifetime bound to the vmalloc.
->
-> They may both be struct page in C but for rust they have very
-> different rules and probably types.
+> > In other words you have two cleanly seperate concerns here, an "pkvm
+> > iommu subsystem" that lets pkvm control iommu HW - and the current
+> > "iommu subsystem" that lets the kernel control iommu HW. The same
+> > driver should not register to both.
+> > 
+> 
+> I am not sure how that would work exactly, for example how would probe_device
+> work, xlate... in a generic way?
 
-For now they actually have, i.e. BorrowedPage<'a> [1], but this will go awa=
-y
-once we have the Ownable trait and Owned type. Once we have that we can
-represent a borrowed page as &'a Page. Where 'a represents the lifetime of =
-the
-reference in both cases.
+Well, I think it is not so bad actually.
 
-Let me sketch up how the lifetime of a page is modeled if the page is owned=
- by
-some other entity, let's say a vmalloc allocation through VBox.
+You just need to call iommu_device_register
 
-First we have a trait which represents the owner of a Page that we can borr=
-ow
-the page from:
+	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
 
-	pub trait PageOwner {
-	    fn borrow_page_at<'a>(&'a mut self, n: usize) -> Result<BorrowedPage<'=
-a>>;
-	}
+Where 'dev' is always the smmu struct device, even if your current
+probing driver is not the smmu device. That will capture all the iommu
+activity the ACPI/DT says is linked to that dev.
 
-The Vmalloc allocator can provide a helper for vmalloc_to_page(), but this =
-is
-not an API that should be used by drivers directly:
+From there you just make a normal small iommu driver with no
+connection back to the SMMUv3.
 
-	impl Vmalloc {
-	    pub unsafe fn to_page<'a>(ptr: NonNull<u8>) -> page::BorrowedPage<'a> =
-{
-	        // SAFETY: `ptr` is a valid pointer to `Vmalloc` memory.
-	        let page =3D unsafe { bindings::vmalloc_to_page(ptr.as_ptr().cast(=
-)) };
-=09
-	        // SAFETY: `vmalloc_to_page` returns a valid pointer to a `struct =
-page` for a valid pointer
-	        // to `Vmalloc` memory.
-	        let page =3D unsafe { NonNull::new_unchecked(page) };
-=09
-	        // SAFETY:
-	        // - `self.0` is a valid pointer to a `struct page`.
-	        // - `self.0` is valid for the entire lifetime of `'a`.
-	        unsafe { page::BorrowedPage::from_raw(page) }
-	    }
-	}
+Eg you could spawn an aux device from smmuv3 to do this with a far
+cleaner separation.
 
-The implementation of VBox could look like this:
+xlate is just calling iommu_fwspec_add_ids() it is one line.
 
-	impl<T> PageOwner for VBox<T> {
-	    fn borrow_page_at<'a>(&'a mut self, n: usize) -> Result<BorrowedPage<'=
-a>> {
-	        // Calculate offset of the Nth page of the VBox and store it in `p=
-tr`.
-=09
-	        unsafe { Vmalloc::to_page(ptr) }
-	    }
-	}
+> same for other ops. We can make some of these
+> functions (hypercalls wrappers) in a separate file. 
 
-(Actually, we may want to use some iterator instead. I'm not sure yet, but
-either way, the same principle does apply.)
+What other ops are you worried about?
 
-Finally, if you have some VBox you can borrow a Page list this:
+static struct iommu_ops arm_smmu_ops = {
+	.identity_domain	= &arm_smmu_identity_domain,
+	.blocked_domain		= &arm_smmu_blocked_domain,
+	.release_device		= arm_smmu_release_device,
+	.domain_alloc_paging_flags = arm_smmu_domain_alloc_paging_flags,
 
-	let mut vbox =3D VBox::<[u8; PAGE_SIZE]>::new_uninit(GFP_KERNEL)?;
+	^^ Those are all your new domain type that does the hypercalls
 
-	// Get the first page of the `vbox`.
-	let page =3D borrow_page_at(&mut vbox, 0)?;
+	.probe_device		= arm_smmu_probe_device,
+	.get_resv_regions	= arm_smmu_get_resv_regions,
 
-Note that the lifetime of page is now bound to the lifetime of vbox.
+  	^^ These are pretty empty
 
-Analogous, any entity that owns one or multiple pages can implement the
-PageOwner trait in a similar way.
+	.device_group		= arm_smmu_device_group,
+	.of_xlate		= arm_smmu_of_xlate,
 
-For the scatterlist abstractions, we're mostly interested in VVec for now.
+        ^^ Common code
 
-For an owned SGTable we would consume a value of some generic type P that
-implements PageOwner (P: PageOwner), or whatever we call it in the end.
+Don't need these:
 
-> If you want kmalloc/vmalloc to get into a scatterlist you should have
-> APIs to go directly from void * and into the scatterlist, and also
-> link the scatterlist to the lifetime of the original allocation.
+	.capable		= arm_smmu_capable,
+	.hw_info		= arm_smmu_hw_info,
+	.domain_alloc_sva       = arm_smmu_sva_domain_alloc,
+	.page_response		= arm_smmu_page_response,
+	.def_domain_type	= arm_smmu_def_domain_type,
+	.get_viommu_size	= arm_smmu_get_viommu_size,
+	.viommu_init		= arm_vsmmu_init,
+	.user_pasid_table	= 1,
+	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+	.owner			= THIS_MODULE,
 
-[1] https://lore.kernel.org/rust-for-linux/20250804195023.150399-1-dakr@ker=
-nel.org/
+> Also I am not sure how that
+> looks from the kernel perspective (do we have 2 struct devices per SMMU?)
+
+I think you'd want to have pkvm bound to the physical struct device
+and then spawn new faux, aux or something devices for the virtualized
+IOMMUs that probes the new paravirt driver. This driver would be fully
+self contained.
+
+> I think we are on the same page about how that will look at the end.
+> For nesting there will be a pKVM driver (as mentioned in the cover letter)
+> to probe register the SMMUs, then it will unbind itself to let the
+> current
+
+That sounds a little freaky to me. I guess it can be made to work, and
+is maybe the best option, but if this is the longterm plan then
+starting out with a non-iommu subsystem pkvm driver seems like a good
+idea.
+
+Today the pkvm driver would do enough to boot up pkvm in this limited
+mode, and maybe you have some small code duplications with the iommu
+driver. It forks off a aux device to create the para-virt pkvm iommu
+subsystem driver.
+
+Tomorrow you further shrink down the pkvm driver and remove the
+para-virt driver, then just somehow bind/unbind the pkvm one at early
+boot.
+
+Minimal changes to the existing smmu driver in either case.
+
+> Then the hypervisor driver will use trap and emulate to handle SMMU access
+> to the MMIO, providing an architecturally accurate SMMUv3 emualation, and
+> it will not register iommu_ops.
+
+Well, it registers normal smmuv3 ops only, I think you mean.
+
+> So, I will happily drop the hypercalls and the iommu_ops from this series,
+> if there is a better way to enlighten the hypervisor about the SIDs to be
+> in identity.
+
+The iommu ops are a reasonable and appropriate way to do this.
+
+But since pkvm is all so special anyhow maybe you could hook
+pci_enable_device() and do your identity hypercall there? Do you
+already trap the config write to catch Bus Master Enable? Can pkvm
+just set identity when BME=1 and ABORT when BME=0?
+
+Jason
