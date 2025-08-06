@@ -1,265 +1,316 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEA8528C03B
-	for <iommu@lists.linux.dev>; Wed,  6 Aug 2025 14:10:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9684F28C2BB
+	for <iommu@lists.linux.dev>; Wed,  6 Aug 2025 15:03:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754489443; cv=none; b=pyhdc5Bg1vfCyqwvWeVJgbpboyPinhoisLn+KgXka0d9CRTIEDYlk2qcC/O3DbMS17fmyk2tydYVfraavIaTVCV2nBxNmnoUIQ3Dd4TK4ilfbxAlhaN1JGXfzwUsYjsTN26Ut2Dn2TAfUxsiP/NYLzbepkOMVaMGx66n2GF5/xk=
+	t=1754492626; cv=none; b=LcGyYaYgmXx0WuT76zx5UBNqIKPCeuBcI6yq9UC4WBR+h/z3GIvLCEwVQeDrQPF4swCzKo69z6lZnGJMy3HbsQT8IyZvJANTGUxAMb6F+Su2DMSqQtLH2O1Tn+Lbvyy76xi/KwGqcJv/1MDLWKlCxpK0zcU0kl58uexQ4IMfk0g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754489443; c=relaxed/simple;
-	bh=mI4po3rtq8bTqDBPQ2/M/FfMHfYJAJgg+g3qJhjf+sw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nWwtUeJo43e075rL/NwWtdO3l+98Af+m0LWE6smJ9M6xUj1AdsMnvo21BItfb57xk1XAwfYoLUbhj8t4yP2x8Z8Z9Tosqlu8j5Xm+C+YT0gnJ+/bkIQW7h29Og1IX56azThdTDjj++yq56Dm5pjUwzJ3WrD2cD3iXxQ6eMr71Lc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=IQkf1rXx; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1754492626; c=relaxed/simple;
+	bh=wdiYcNegFicgzpgADBcjLzFzlcAMVMRfyPUSZVy6GKU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=o7Qb9B49AJsbf4i6LxBTBd0H7vs5F4iMdJx7gDP8U89VaoHXD4pAG9Vx05z0rol523utya4tUKWshaQJw6+eOc3hfJdW+XOe6+vfuQc1g4iwee+KAuxWk7Mt7d4v8j2vWn+j5sSsWeW49P0F1GWyBd7GrtxenUhqoVB1fzC2pwk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WCKKdgV5; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="IQkf1rXx"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-459e497776cso90485e9.0
-        for <iommu@lists.linux.dev>; Wed, 06 Aug 2025 07:10:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1754489440; x=1755094240; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=S8t5HFUqc+uUOq+DP418Q40OKNx1R/fQImmMod37+pg=;
-        b=IQkf1rXx8wGgDpUMUQLVww2trvQtrYWF4DWqh8mDXhpO7jXat2TBc83PYMnbyIwPZX
-         +grCy6hy53z1kVGVy4lKOPk7r3c7pTHVmk5gy6L9jeRruXNDWopRbt5QfYy9E4wy/zU8
-         Vj4rMLLSRjsSdOw8KId/vkVWNf6d5tzQ9pCZRcDBUnACWh4+NROENoEIACydiPs3F7yv
-         JALMSJ8LtEkz2owYCQ95dyRlYg2LgrzMOVQrXsesyIazqiPbRvy7SC55nENWoT7WSKTI
-         ZYic3zWfKZXYHdpareZSC6a4ofSivSaZtAKSFYxUxROs2kMcxLn4zJ7UiP0Q3ntDaVj4
-         kmpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754489440; x=1755094240;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=S8t5HFUqc+uUOq+DP418Q40OKNx1R/fQImmMod37+pg=;
-        b=MWBmop9FllW9UncePWjZUFTDwgwJsOwBgDswlKHKj4vWrfKbImD7d8ZaKRDf335H8B
-         EBR7b28CUtI4yZXd+uV8mkFtTKPoAC9PrtlwH87i7yfJVdVLq4iOI08GNGl4sCTMtWTh
-         /kbMlTiTWhD3eQxNq9dMYIzVrr8mnv8ejndUEVaOIcANpnSKiMntz/L0CUHgr5uDClmD
-         7qjGd1g4435hmNdM/QPt3wnqKIr1c3131753+BF0h38HoIT0bEY+ku+2893hopkD0Fnu
-         DOVaVtb8lZ6VFH55IQkwMCm7fWAoeY55VMNvp/zAKc2VJ4TpNwhC6drlIpNz6qm67OVP
-         43yQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXDlhOSGlxnJATo8TwQp5PSniJjk6hs5zeYtqlmQUY6/I2hqWjAh2O2gzqNX0PSpaeAe1dOFw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwXnFu8XwymSff/ADtQRT5AbKjkxJIlcpRnTHdhzuXKJ4URg75Q
-	mZrxF6oMgB4nlgHSapGLVgso+QeSRG/a86F+4nwqzt0ARxrZmK8+VuA3voEa/wONzg==
-X-Gm-Gg: ASbGncv2q52x33t0xFi98m/lVvFrJzitzRe/+Dvobry/Bv0XiKEn7nVVXuH05fzkkJt
-	YTQN9z0gXvb8MxCblFTDIc/KMZcyKB/jXV5/xrmY+gR6K7ru0TEZ+xVEufLa8VrncP/4UtB7cRN
-	W0pd+WYf0Vi/sXSap9mWrSQVtq7agEKFGpNCDsK96bcmrl4n1Jm4EJfdCADVdXqZ5KGu6JgzRu9
-	5TZ8/IVYOa1w3yPZ7HuOlgDGo50Owl+YTVBAN6aYZxcim2/a+sY9OslTk4pOp7UJXypYX2Cj7OS
-	k5y08LTrVzYgZl1DPiv3N0AgzXiwYUs+XQNK7LBPyZ/eTEDoyHCbvhy63oXkaF9HTQXr7s5QyVi
-	Q8EREXiFajB+r/bWefzlPJlRWZgBY1Ef06Fx0I7CEyktEZhE6PC8V0mJ7qwyxunRoqw==
-X-Google-Smtp-Source: AGHT+IHFwOHplPeniFX/OYHA6MsJidP9FSVHfWws6kd04FRGtTTr89FlkYU0XPDUkpq8hanIQWmrxQ==
-X-Received: by 2002:a05:600c:1f10:b0:456:e94:466c with SMTP id 5b1f17b1804b1-459e74b4543mr1411575e9.3.1754489439774;
-        Wed, 06 Aug 2025 07:10:39 -0700 (PDT)
-Received: from google.com (110.121.148.146.bc.googleusercontent.com. [146.148.121.110])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-459e5843021sm58288915e9.3.2025.08.06.07.10.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Aug 2025 07:10:38 -0700 (PDT)
-Date: Wed, 6 Aug 2025 14:10:35 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, will@kernel.org, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v3 29/29] iommu/arm-smmu-v3-kvm: Add IOMMU ops
-Message-ID: <aJNiW48DdXIAFz8r@google.com>
-References: <20250728175316.3706196-30-smostafa@google.com>
- <20250730144253.GM26511@ziepe.ca>
- <aIo1ImP7R7VhRpVE@google.com>
- <20250730164752.GO26511@ziepe.ca>
- <aIt67bOzp6XS_yO-@google.com>
- <20250731165757.GZ26511@ziepe.ca>
- <aIurlx5QzEtjpFLd@google.com>
- <20250801185930.GH26511@ziepe.ca>
- <aJDGm02ihZyrBalY@google.com>
- <20250805175753.GY26511@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WCKKdgV5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1754492624; x=1786028624;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=wdiYcNegFicgzpgADBcjLzFzlcAMVMRfyPUSZVy6GKU=;
+  b=WCKKdgV561707ysgbzzXDQJ/rT9W3LpUWCT9b9AgllNoKV07VX/A4CSF
+   Vxf0z4vp86MlRO561+s+c/jsSiwMH24pPJBUKFdz7ACgPx4gF66PCdvRZ
+   nLn4Z+WedqC82MkoJTbuF8i+/Ue4vZ7tTmQ8Yrd+/lROUGbOBkFwKz5Qa
+   TOXGTz5iRiOEXDSr0bv3cQl+gFu8M4uazaJZsvjGkTpANPprz9FWTATgM
+   9T3N2frteWbFS8K4T5+izl7qoG873q9hDL9bGuaUCKg7m4FTO4+kciCvP
+   8gG8jUgO4MFuqvV7UqdTHNPucN9zcjB2xXtvR9z9+eo2Ht0Y87/5a6jTE
+   g==;
+X-CSE-ConnectionGUID: V176jlg6TFuHqvJYKB1QyA==
+X-CSE-MsgGUID: FJCv9m+RTR67J/hfsaMzAg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11514"; a="56679713"
+X-IronPort-AV: E=Sophos;i="6.17,268,1747724400"; 
+   d="scan'208";a="56679713"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2025 08:03:44 -0700
+X-CSE-ConnectionGUID: 5xu9Y3mXSUisgm+r2wso9g==
+X-CSE-MsgGUID: Vs+rQt+yRVSaKhOCP5XJuw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.17,268,1747724400"; 
+   d="scan'208";a="164466068"
+Received: from kcaccard-desk.amr.corp.intel.com (HELO [10.125.110.154]) ([10.125.110.154])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Aug 2025 08:03:43 -0700
+Message-ID: <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
+Date: Wed, 6 Aug 2025 08:03:42 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
+ flush
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
+ Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>
+Cc: iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Content-Language: en-US
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250805175753.GY26511@ziepe.ca>
 
-On Tue, Aug 05, 2025 at 02:57:53PM -0300, Jason Gunthorpe wrote:
-> On Mon, Aug 04, 2025 at 02:41:31PM +0000, Mostafa Saleh wrote:
-> > > Are you saying the event queue is left behind for the kernel? How does
-> > > that work if it doesn't have access to the registers?
-> > 
-> > The evtq itself will be owned by the kernel, However, MMIO access would be
-> > trapped and emulated, here the PoC for part-2 of this series (as mentioned in
-> > the cover letter) This is very close to how nesting will work.
-> > https://android-kvm.googlesource.com/linux/+/refs/heads/for-upstream/pkvm-smmu-v3-part-2/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c#744
-> 
-> Oh weird, but Ok.
-> 
-> > > In other words you have two cleanly seperate concerns here, an "pkvm
-> > > iommu subsystem" that lets pkvm control iommu HW - and the current
-> > > "iommu subsystem" that lets the kernel control iommu HW. The same
-> > > driver should not register to both.
-> > > 
-> > 
-> > I am not sure how that would work exactly, for example how would probe_device
-> > work, xlate... in a generic way?
-> 
-> Well, I think it is not so bad actually.
-> 
-> You just need to call iommu_device_register
-> 
-> 	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
-> 
-> Where 'dev' is always the smmu struct device, even if your current
-> probing driver is not the smmu device. That will capture all the iommu
-> activity the ACPI/DT says is linked to that dev.
-> 
-> From there you just make a normal small iommu driver with no
-> connection back to the SMMUv3.
-> 
-> Eg you could spawn an aux device from smmuv3 to do this with a far
-> cleaner separation.
-> 
-> xlate is just calling iommu_fwspec_add_ids() it is one line.
+On 8/5/25 22:25, Lu Baolu wrote:
+> In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU hardware
+> shares and walks the CPU's page tables. The Linux x86 architecture maps
+> the kernel address space into the upper portion of every process’s page
+> table. Consequently, in an SVA context, the IOMMU hardware can walk and
+> cache kernel space mappings. However, the Linux kernel currently lacks
+> a notification mechanism for kernel space mapping changes. This means
+> the IOMMU driver is not aware of such changes, leading to a break in
+> IOMMU cache coherence.
 
-I am not sure I understand, the SMMU driver will register its IOMMU
-ops to probe the devices, then faux devices would also register
-IOMMU ops for the KVM HVCs?
-But that means that all DMA operations would still go through the
-SMMU one?
+FWIW, I wouldn't use the term "cache coherence" in this context. I'd
+probably just call them "stale IOTLB entries".
 
-> 
-> > same for other ops. We can make some of these
-> > functions (hypercalls wrappers) in a separate file. 
-> 
-> What other ops are you worried about?
-> 
-> static struct iommu_ops arm_smmu_ops = {
-> 	.identity_domain	= &arm_smmu_identity_domain,
-> 	.blocked_domain		= &arm_smmu_blocked_domain,
-> 	.release_device		= arm_smmu_release_device,
-> 	.domain_alloc_paging_flags = arm_smmu_domain_alloc_paging_flags,
-> 
-> 	^^ Those are all your new domain type that does the hypercalls
-> 
-> 	.probe_device		= arm_smmu_probe_device,
-> 	.get_resv_regions	= arm_smmu_get_resv_regions,
-> 
->   	^^ These are pretty empty
-> 
-> 	.device_group		= arm_smmu_device_group,
-> 	.of_xlate		= arm_smmu_of_xlate,
-> 
->         ^^ Common code
-> 
-> Don't need these:
-> 
-> 	.capable		= arm_smmu_capable,
-> 	.hw_info		= arm_smmu_hw_info,
-> 	.domain_alloc_sva       = arm_smmu_sva_domain_alloc,
-> 	.page_response		= arm_smmu_page_response,
-> 	.def_domain_type	= arm_smmu_def_domain_type,
-> 	.get_viommu_size	= arm_smmu_get_viommu_size,
-> 	.viommu_init		= arm_vsmmu_init,
-> 	.user_pasid_table	= 1,
-> 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
-> 	.owner			= THIS_MODULE,
+I also think this over states the problem. There is currently no problem
+with "kernel space mapping changes". The issue is solely when kernel
+page table pages are freed and reused.
 
-Makes sense, thanks for the detailed explanation.
+> Modern IOMMUs often cache page table entries of the intermediate-level
+> page table as long as the entry is valid, no matter the permissions, to
+> optimize walk performance. Currently the iommu driver is notified only
+> for changes of user VA mappings, so the IOMMU's internal caches may
+> retain stale entries for kernel VA. When kernel page table mappings are
+> changed (e.g., by vfree()), but the IOMMU's internal caches retain stale
+> entries, Use-After-Free (UAF) vulnerability condition arises.
+> 
+> If these freed page table pages are reallocated for a different purpose,
+> potentially by an attacker, the IOMMU could misinterpret the new data as
+> valid page table entries. This allows the IOMMU to walk into attacker-
+> controlled memory, leading to arbitrary physical memory DMA access or
+> privilege escalation.
 
-> 
-> > Also I am not sure how that
-> > looks from the kernel perspective (do we have 2 struct devices per SMMU?)
-> 
-> I think you'd want to have pkvm bound to the physical struct device
-> and then spawn new faux, aux or something devices for the virtualized
-> IOMMUs that probes the new paravirt driver. This driver would be fully
-> self contained.
+Note that it's not just use-after-free. It's literally that the IOMMU
+will keep writing Accessed and Dirty bits while it thinks the page is
+still a page table. The IOMMU will sit there happily setting bits. So,
+it's _write_ after free too.
 
-I think it’s hard to reason about this as 2 devices, from my pov it seems
-that the pKVM HVCs are a library that can be part of separate common file,
-then called from drivers. (with common ops)
-Instead of having extra complexity of 2 drivers (KVM and IOMMU PV).
-However, I can see the value of that as it totally abstracts the iommu ops
-outside the device specific code, I will give it more thought.
-But it feels that might be more suitable for a full fledged PV
-implementation (as in RFC v1 and v2).
+> To mitigate this, introduce a new iommu interface to flush IOMMU caches.
+> This interface should be invoked from architecture-specific code that
+> manages combined user and kernel page tables, whenever a kernel page table
+> update is done and the CPU TLB needs to be flushed.
 
-> 
-> > I think we are on the same page about how that will look at the end.
-> > For nesting there will be a pKVM driver (as mentioned in the cover letter)
-> > to probe register the SMMUs, then it will unbind itself to let the
-> > current
-> 
-> That sounds a little freaky to me. I guess it can be made to work, and
-> is maybe the best option, but if this is the longterm plan then
-> starting out with a non-iommu subsystem pkvm driver seems like a good
-> idea.
-> 
-> Today the pkvm driver would do enough to boot up pkvm in this limited
-> mode, and maybe you have some small code duplications with the iommu
-> driver. It forks off a aux device to create the para-virt pkvm iommu
-> subsystem driver.
-> 
-> Tomorrow you further shrink down the pkvm driver and remove the
-> para-virt driver, then just somehow bind/unbind the pkvm one at early
-> boot.
-> 
-> Minimal changes to the existing smmu driver in either case.
-> 
-> > Then the hypervisor driver will use trap and emulate to handle SMMU access
-> > to the MMIO, providing an architecturally accurate SMMUv3 emualation, and
-> > it will not register iommu_ops.
-> 
-> Well, it registers normal smmuv3 ops only, I think you mean.
+There's one tidbit missing from this:
 
-I mean when nesting is added, the arm-smmu-v3-kvm, will not call
-“iommu_device_register”
-
-> 
-> > So, I will happily drop the hypercalls and the iommu_ops from this series,
-> > if there is a better way to enlighten the hypervisor about the SIDs to be
-> > in identity.
-> 
-> The iommu ops are a reasonable and appropriate way to do this.
-> 
-> But since pkvm is all so special anyhow maybe you could hook
-> pci_enable_device() and do your identity hypercall there? Do you
-> already trap the config write to catch Bus Master Enable? Can pkvm
-> just set identity when BME=1 and ABORT when BME=0?
-
-pKVM doesn’t trap actual device access, also we have to support
-platform devices, so it would be better to rely on existing
-abstractions as “probe_device”
+	Currently SVA contexts are all unprivileged. They can only
+	access user mappings and never kernel mappings. However, IOMMU
+	still walk kernel-only page tables all the way down to the leaf
+	where they realize that the entry is a kernel mapping and error
+	out.
 
 
-I had an offline discussion with Will and Robin and they believe it might
-be better if we get rid of the kernel KVM SMMUv3 driver at all, and just
-rely on ARM_SMMU_V3 + extra hooks, so there is a single driver managing
-the SMMUs in the system.
-This way we don’t need to split current SMMUv3 or have different IOMMU ops,
-and reduces some of the duplication, also that avoids the need for a fake device.
+> diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
+> index 39f80111e6f1..3b85e7d3ba44 100644
+> --- a/arch/x86/mm/tlb.c
+> +++ b/arch/x86/mm/tlb.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/task_work.h>
+>  #include <linux/mmu_notifier.h>
+>  #include <linux/mmu_context.h>
+> +#include <linux/iommu.h>
+>  
+>  #include <asm/tlbflush.h>
+>  #include <asm/mmu_context.h>
+> @@ -1478,6 +1479,8 @@ void flush_tlb_all(void)
+>  	else
+>  		/* Fall back to the IPI-based invalidation. */
+>  		on_each_cpu(do_flush_tlb_all, NULL, 1);
+> +
+> +	iommu_sva_invalidate_kva_range(0, TLB_FLUSH_ALL);
+>  }
+>  
+>  /* Flush an arbitrarily large range of memory with INVLPGB. */
+> @@ -1540,6 +1543,7 @@ void flush_tlb_kernel_range(unsigned long start, unsigned long end)
+>  		kernel_tlb_flush_range(info);
+>  
+>  	put_flush_tlb_info();
+> +	iommu_sva_invalidate_kva_range(start, end);
+>  }
 
-Then we have an extra file for KVM with some of the hooks (similar to the
-hooks in arm_smmu_impl_ops we have for tegra)
+These desperately need to be commented. They especially need comments
+that they are solely for flushing the IOMMU mid-level paging structures
+after freeing a page table page.
 
-And that might be more suitable for nesting also, to avoid the bind/unbind flow.
+>  /*
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index 1a51cfd82808..d0da2b3fd64b 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -10,6 +10,8 @@
+>  #include "iommu-priv.h"
+>  
+>  static DEFINE_MUTEX(iommu_sva_lock);
+> +static bool iommu_sva_present;
+> +static LIST_HEAD(iommu_sva_mms);
+>  static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+>  						   struct mm_struct *mm);
+>  
+> @@ -42,6 +44,7 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
+>  		return ERR_PTR(-ENOSPC);
+>  	}
+>  	iommu_mm->pasid = pasid;
+> +	iommu_mm->mm = mm;
+>  	INIT_LIST_HEAD(&iommu_mm->sva_domains);
+>  	/*
+>  	 * Make sure the write to mm->iommu_mm is not reordered in front of
+> @@ -132,8 +135,13 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+>  	if (ret)
+>  		goto out_free_domain;
+>  	domain->users = 1;
+> -	list_add(&domain->next, &mm->iommu_mm->sva_domains);
+>  
+> +	if (list_empty(&iommu_mm->sva_domains)) {
+> +		if (list_empty(&iommu_sva_mms))
+> +			WRITE_ONCE(iommu_sva_present, true);
+> +		list_add(&iommu_mm->mm_list_elm, &iommu_sva_mms);
+> +	}
+> +	list_add(&domain->next, &iommu_mm->sva_domains);
+>  out:
+>  	refcount_set(&handle->users, 1);
+>  	mutex_unlock(&iommu_sva_lock);
+> @@ -175,6 +183,13 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
+>  		list_del(&domain->next);
+>  		iommu_domain_free(domain);
+>  	}
+> +
+> +	if (list_empty(&iommu_mm->sva_domains)) {
+> +		list_del(&iommu_mm->mm_list_elm);
+> +		if (list_empty(&iommu_sva_mms))
+> +			WRITE_ONCE(iommu_sva_present, false);
+> +	}
+> +
+>  	mutex_unlock(&iommu_sva_lock);
+>  	kfree(handle);
+>  }
+> @@ -312,3 +327,46 @@ static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+>  
+>  	return domain;
+>  }
+> +
+> +struct kva_invalidation_work_data {
+> +	struct work_struct work;
+> +	unsigned long start;
+> +	unsigned long end;
+> +};
+> +
+> +static void invalidate_kva_func(struct work_struct *work)
+> +{
+> +	struct kva_invalidation_work_data *data =
+> +		container_of(work, struct kva_invalidation_work_data, work);
+> +	struct iommu_mm_data *iommu_mm;
+> +
+> +	guard(mutex)(&iommu_sva_lock);
+> +	list_for_each_entry(iommu_mm, &iommu_sva_mms, mm_list_elm)
+> +		mmu_notifier_arch_invalidate_secondary_tlbs(iommu_mm->mm,
+> +				data->start, data->end);
+> +
+> +	kfree(data);
+> +}
+> +
+> +void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end)
+> +{
+> +	struct kva_invalidation_work_data *data;
+> +
+> +	if (likely(!READ_ONCE(iommu_sva_present)))
+> +		return;
 
-I will investigate that and if feasible I will send v4 (hopefully
-shortly) based on this idea, otherwise I will see if we can separate
-KVM code and SMMU bootstrap code.
+It would be nice to hear a few more words about why this is safe without
+a lock.
 
+> +	/* will be freed in the task function */
+> +	data = kzalloc(sizeof(*data), GFP_ATOMIC);
+> +	if (!data)
+> +		return;
+> +
+> +	data->start = start;
+> +	data->end = end;
+> +	INIT_WORK(&data->work, invalidate_kva_func);
+> +
+> +	/*
+> +	 * Since iommu_sva_mms is an unbound list, iterating it in an atomic
+> +	 * context could introduce significant latency issues.
+> +	 */
+> +	schedule_work(&data->work);
+> +}
 
-Thanks,
-Mostafa
+Hold on a sec, though. the problematic caller of this looks something
+like this (logically):
 
-> 
-> Jason
+	pmd_free_pte_page()
+	{
+	        pte = pmd_page_vaddr(*pmd);
+	        pmd_clear(pmd);
+		flush_tlb_kernel_range(...); // does schedule_work()
+		pte_free_kernel(pte);
+	}
+
+It _immediately_ frees the PTE page. The schedule_work() work will
+probably happen sometime after the page is freed.
+
+Isn't that still a use-after-free? It's for some arbitrary amount of
+time and better than before but it's still a use-after-free.
