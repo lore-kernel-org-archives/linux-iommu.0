@@ -1,216 +1,132 @@
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com [209.85.208.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3D4D2727ED
-	for <iommu@lists.linux.dev>; Tue,  5 Aug 2025 17:57:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12F922AD32;
+	Wed,  6 Aug 2025 02:23:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.68
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754416677; cv=none; b=l/Xwt6SRfULnAdNAGAHW8tMHzX510HW7O7bG0WVfJyx+trt+uvg3oqa1Wq32z/+7h/o9un/P7ODYQtNf0Ns56rUWGHj6XC6PHzT3rYTO2s/QZ5+A2gBajj9sEwC9I6QY1gueOpDAusoSSg2EK5Nu4AwZn+LRo2A7ybW/8X3WfaQ=
+	t=1754446988; cv=none; b=BD0lATL8jOp+tVkFfQgYx9rEsgLEQMEWUSI3qYT8wCDQZlD5nxXcOx8E0JxM+zzbAeX3zC5hIZFKJEYHOV6yoBc6vtNZfPT1hyvfsrQgLRqVN+MBWvCmOJANEfa31qI5dg2hUwfbNKPGHmwXDp3XYoCZXnKSBZxc+wOlcoLwiPQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754416677; c=relaxed/simple;
-	bh=JZhU2+1vxgdXAz7jE/s8j1dlHcHijdbJfKTzDTT+BhA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rTy1+IfiWbQsoJ64aUk//LBAHC9eAhmyX8muoizZigTxcj7Kw0iy3gTY/WIiA4/Bw9wYAh+ZW6GYTDb9Vny7Ixui163s0LveBrtw5NlbxKE8W20cxZiNgY7cu7qEM4PfLxtjmpEOjnNu0czzQB0rhIiIBLhO74d1PUjaBOjTark=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=DCQjbIxc; arc=none smtp.client-ip=209.85.222.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1754446988; c=relaxed/simple;
+	bh=fj4IR7+zswA7sqkD0tTyy/4FI+cv+hYYunOLbsBKvbw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bjSZN02EirdvvbOsBlvabHib/iEnmUoE6t8Ldg0DoPL8Bp2AVI6mMwVvj4hmwJOXY+E2xhvjwRGxjp8dSsEJ1Fpu6kU4+oxwokuGqX3Yjx62DL3pvZmoEZPNIphicE1AAbb+1hHDtb41FfooeN5hBmn43GckFsEDw75+A42DgTo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Mdm2Z/eL; arc=none smtp.client-ip=209.85.208.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="DCQjbIxc"
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-7e809baeef7so167238085a.0
-        for <iommu@lists.linux.dev>; Tue, 05 Aug 2025 10:57:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Mdm2Z/eL"
+Received: by mail-ed1-f68.google.com with SMTP id 4fb4d7f45d1cf-61571192c3aso6555349a12.2;
+        Tue, 05 Aug 2025 19:23:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1754416674; x=1755021474; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=F9Lrb8raU1rOL/1BQQhDKfgxN9mYfLFp5sfiFKeG3uI=;
-        b=DCQjbIxcHnOar2zg96l4TW5INi7JZb4KofDe39sCFaJoT3NveXBZKB/zkl7fKJ0mKo
-         dXW6s4KX4JgVlSxMW5+/qzZ8o6EKtgA/7hGtbsSMAz+4Gm+Djh3LoLiHj2Fo8nc2UTWR
-         xtkU2zfnOfp58RNuslPneg7OOq1CZOotV0XbC5n0Bl1/mXFbnEBzcuuCiSzbn6EeGY7u
-         xC+kyt6vztqilb9seTV3ZmpFWP5omPUMFKUx+YsO8w3R1Zylfko+XqDxkeJaJCTOH8Hh
-         nY8JdaLuPPMMdNP1jsFJM4VRWK7OTJP3LieFtr3yfhnjYoiWb7FJTWJ7jemWfyX0XBy5
-         CLtw==
+        d=gmail.com; s=20230601; t=1754446984; x=1755051784; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=WV3i2vsHD5Tto+kS9SXpnp5IN5CWgKxnV0XYONltTEI=;
+        b=Mdm2Z/eLHK/yiZcWxgH7B98RErVW7bpYSmV5bIzXPG/3M/yXjnnwBCXg4vzlM7owxX
+         NanDFrVW12lF24KZbL12MGvGoTDpm+yq91k+zikMqUxpn6kQfjzuUjKPYvoAxKL59p9T
+         0g4DYNxLgBEHFpAhFYAXd1RY5Ugt79SK14QQuHAZ3bcee5TAiWF3zJD25gxviXyEAtew
+         w7C2Taw0yAuCYGF5x55b0b5oQYavOZZ4w0ipjARqM5ZMrR7rV71VN+1t2uarsmlOqgWu
+         zXvzxADEy12VPEAGi4qHTRclJW8FN9u43N5aUbI89X4TFVcHnKAsJABLcKLpYwi/bjOJ
+         HgwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754416674; x=1755021474;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=F9Lrb8raU1rOL/1BQQhDKfgxN9mYfLFp5sfiFKeG3uI=;
-        b=pUEnJJqjIIznt+o4pcxIBpVLPXiUpMeBdH9Sdow/TH059ARdcqm/BhBYrZkdS2mOcj
-         li6JXjzKEPGi7vj6s+/jdcXE1x9IgaEZNeDeKjwnHQXmbiNsM6YFzagDuPLBCjSVGEZx
-         PbsovWu3KvO1zS5n48hmHGCEPsuhYX4RWAC4wURdKg8BbsNNSHHSBGQtkD3OwCGzJR2V
-         y0cBG9sFIMtnd6XeEmSt+/WCHpVNEUEjqUKi6yVviJsK64ewU4+Ntg9leg9Mx7CVAGOf
-         XCPi45gyp6LGWLb/lb8MNgrC1B17kpZZeMSB3BDYExbVKCOh8jjo96WEa2Hr/ze/XLE0
-         +8Vw==
-X-Forwarded-Encrypted: i=1; AJvYcCU+vdxir8tmnXXtnbGsnRoqHStSjqn10b7KKKk66Az4A4TUi2zsFHl00mgr3RNI1jQt3sT/9g==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyo6hT1yIEhQ5o8dXWg/Rk3sr3ObGStnFncq0wdPZ4K+Y/WH9AK
-	6hkC2s305QA7IQVjRyoSS1Vkja7jgYL5W2SyQZX34KqpB9JEGfoF31wnk0PBrSPjq5s=
-X-Gm-Gg: ASbGncsxJrAKbwo6KybUGUWotTE5oMsazCaOJ2c68g5i9FC0l20Of2rdwFYVEDqor8g
-	tflcm0Yy4nkzI685MkHZ4er1KCSEd61BkuCRb1dZKizQaGpfjvHGYmBlTEUG6y18n3vppb7kJMl
-	fQrMae1CkCqT4cl1k9Phj74UBT/MY9v01HRB8ay6jlSMhu8fLHyrdA7UhwyuW4cF08YzxkyQJKM
-	flyXT/P5uA2CzRIZj4g4a78cKzjYTRyNMQ+CRFcj1fdehWp9N6cq2hk1he6j37ZtSJuJLSXGBAQ
-	H4gEZ+SLvItRXjIfjhReE+y5lXKJ0mIMYpeBeCSU7BhumgIF2tDgByj5O7w96rEVEpqHS8k4z5i
-	Td7PaKba8v2obWz+iI29J9OXheMiGRyuNaK9+yySyolu8LZOAIAo8em+k40UgiEXrNW6P
-X-Google-Smtp-Source: AGHT+IGE5ERjj9D3VCjcEiKXdj9UhaaZiZPpSWlP7T6HKiKWYrHGgc5JWaH3dvBy9gtMCFsNCYW/Rg==
-X-Received: by 2002:a05:620a:28ce:b0:7e6:9753:db16 with SMTP id af79cd13be357-7e814d03585mr36631185a.14.1754416674276;
-        Tue, 05 Aug 2025 10:57:54 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7e7f7e277besm338203385a.57.2025.08.05.10.57.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Aug 2025 10:57:53 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1ujLv7-00000001Zhc-0EXt;
-	Tue, 05 Aug 2025 14:57:53 -0300
-Date: Tue, 5 Aug 2025 14:57:53 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, will@kernel.org, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v3 29/29] iommu/arm-smmu-v3-kvm: Add IOMMU ops
-Message-ID: <20250805175753.GY26511@ziepe.ca>
-References: <20250728175316.3706196-1-smostafa@google.com>
- <20250728175316.3706196-30-smostafa@google.com>
- <20250730144253.GM26511@ziepe.ca>
- <aIo1ImP7R7VhRpVE@google.com>
- <20250730164752.GO26511@ziepe.ca>
- <aIt67bOzp6XS_yO-@google.com>
- <20250731165757.GZ26511@ziepe.ca>
- <aIurlx5QzEtjpFLd@google.com>
- <20250801185930.GH26511@ziepe.ca>
- <aJDGm02ihZyrBalY@google.com>
+        d=1e100.net; s=20230601; t=1754446984; x=1755051784;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=WV3i2vsHD5Tto+kS9SXpnp5IN5CWgKxnV0XYONltTEI=;
+        b=NTO9y31mgirNq3fZugnRhvSBCUJS6V6GIVw+GX5x+e7ZGM9xTQ2kg1mvc6rK/8acca
+         CDBkx9adH81NRH2GmyLXB54JEHjquBOuHMId1Vc5WBs3pa+Tz4WW1eaO1fNUghlbFm+F
+         DLeSZ0KypIi/YI8nVGysPpcFzf18aobYheMJGCeEiJIvYo98+YC7YoEOab+yw3I6neSe
+         rbj5mZVdpYM87g4JIBo38QGVuOKlDAMpw4tmQPNJJTh2i4qJO0WBXf02cmHQYgV0byRq
+         rE1fh4tHJ+M3Omj185t3/dJj1VCp0vg1yh7OX/Blt6z0kE5F/E5QweYXuB2f8gFC0P+g
+         ycUg==
+X-Forwarded-Encrypted: i=1; AJvYcCVZy4aGM1h30iLjRWcgNPa5D28UN4tfzZt9vVoTHGp2vw96AfGk8fRpVX0MQanTmfkWqRtqLg==@lists.linux.dev, AJvYcCXa5ZyABmsEUzx+92O3AUwwY4HY5+uFb/PwUK5rstl8Mx2esYzLVjIFe/Ix52xdNBqpU4RqNdqj6w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzW9Jw5f+Fcg7Ky2FnE3vUJXwoorbwcSuJ7UcN/0o5bUC0Z/s09
+	Hd5l+A+ZapYLFlPKBh7WRDNKIFmPWhTiQ9a8BdQRMTXYKyvr7hSlukn9
+X-Gm-Gg: ASbGncuaUSqu8MwIr1DvybTgVec7skQdopIU/Q7X1N/l/NSsMJOIkyeqtEosdfeGHeQ
+	QMXwL8WzWHFqOTLbcJxdJeTs9aK3b9+j88QyqvlHonJ+6dYUXRDDRQY4YgZvL/dmlwoWJa6HZCi
+	uvDGo+bOarjwU2yh5ikwq3c/8htIxLvE5KZI7tO9nfTcCCbo5cHI4R3ph8eI48lDeoptz8/RsX4
+	woZz20WAfaPZklmJQZA8np+UmefIW+QLrYZedFlfjpvzjtB5Bbxv+UcMHPURN5D/xqMKRf+b9dC
+	E8Ypc+mdu/pKrFhhTykR6y6Q/7zwb4dIwKZTTkp1tIKWNNPN38L6p9U72SJHGC6kYOAQ0vEQslW
+	FJ43EWptwDXrEz86XyS/ahj4JY9hF6EA2+NF/PFbDRrYxYU5PrUd8cisazWT0ljYsImA9vpHt8s
+	PgPUmMJVWOAFJWtSS/l1wZ6Zy9hys=
+X-Google-Smtp-Source: AGHT+IHZJL3Gcs1UE3cxSDIkmf9wQXNttiL49vH8U6oL/UasUEDh5LoNJkxUN1wHF0UudVM2Mn4IhQ==
+X-Received: by 2002:a17:907:6096:b0:af4:148:e51f with SMTP id a640c23a62f3a-af992a37d1fmr59140566b.2.1754446984286;
+        Tue, 05 Aug 2025 19:23:04 -0700 (PDT)
+Received: from [26.26.26.1] (95.112.207.35.bc.googleusercontent.com. [35.207.112.95])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-af91a2437desm1012205966b.127.2025.08.05.19.22.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 05 Aug 2025 19:23:03 -0700 (PDT)
+Message-ID: <6ca56de5-01df-4636-9c6a-666ccc10b7ff@gmail.com>
+Date: Wed, 6 Aug 2025 10:22:58 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aJDGm02ihZyrBalY@google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 00/16] Fix incorrect iommu_groups with PCIe ACS
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, linux-pci@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>, galshalom@nvidia.com,
+ Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
+ kvm@vger.kernel.org, maorg@nvidia.com, patches@lists.linux.dev,
+ tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
+References: <0-v2-4a9b9c983431+10e2-pcie_switch_groups_jgg@nvidia.com>
+ <a692448d-48b8-4af3-bf88-2cc913a145ca@gmail.com>
+ <20250802151816.GC184255@nvidia.com>
+ <1684792a-97d6-4383-a0d2-f342e69c91ff@gmail.com>
+ <20250805123555.GI184255@nvidia.com>
+ <964c8225-d3fc-4b60-9ee5-999e08837988@gmail.com>
+ <20250805144301.GO184255@nvidia.com>
+Content-Language: en-US
+From: Ethan Zhao <etzhao1900@gmail.com>
+In-Reply-To: <20250805144301.GO184255@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Aug 04, 2025 at 02:41:31PM +0000, Mostafa Saleh wrote:
-> > Are you saying the event queue is left behind for the kernel? How does
-> > that work if it doesn't have access to the registers?
+
+
+On 8/5/2025 10:43 PM, Jason Gunthorpe wrote:
+> On Tue, Aug 05, 2025 at 10:41:03PM +0800, Ethan Zhao wrote:
 > 
-> The evtq itself will be owned by the kernel, However, MMIO access would be
-> trapped and emulated, here the PoC for part-2 of this series (as mentioned in
-> the cover letter) This is very close to how nesting will work.
-> https://android-kvm.googlesource.com/linux/+/refs/heads/for-upstream/pkvm-smmu-v3-part-2/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c#744
-
-Oh weird, but Ok.
-
-> > In other words you have two cleanly seperate concerns here, an "pkvm
-> > iommu subsystem" that lets pkvm control iommu HW - and the current
-> > "iommu subsystem" that lets the kernel control iommu HW. The same
-> > driver should not register to both.
-> > 
+>>>> My understanding, iommu has no logic yet to handle the egress control
+>>>> vector configuration case,
+>>>
+>>> We don't support it at all. If some FW leaves it configured then it
+>>> will work at the PCI level but Linux has no awarness of what it is
+>>> doing.
+>>>
+>>> Arguably Linux should disable it on boot, but we don't..
+>> linux tool like setpci could access PCIe configuration raw data, so
+>> does to the ACS control bits. that is boring.
 > 
-> I am not sure how that would work exactly, for example how would probe_device
-> work, xlate... in a generic way?
+> Any change to ACS after boot is "not supported" - iommu groups are one
+> time only using boot config only. If someone wants to customize ACS
+> they need to use the new config_acs kernel parameter.
+That would leave ACS to boot time configuration only. Linux never
+limits tools to access(write) hardware directly even it could do that.
+Would it be better to have interception/configure-able policy for such
+hardware access behavior in kernel like what hypervisor does to MSR etc ?
+> 
+>>>> The static groups were created according to
+>>>> FW DRDB tables,
+>>>
+>>> ?? iommu_groups have nothing to do with FW tables.
+>> Sorry, typo, ACPI drhd table.
+> 
+> Same answer, AFAIK FW tables have no effect on iommu_groups 
+My understanding, FW tables are part of the description about device 
+topology and iommu-device relationship. did I really misunderstand
+something ?
 
-Well, I think it is not so bad actually.
+Thanks,
+Ethan >
+> Jason
 
-You just need to call iommu_device_register
-
-	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
-
-Where 'dev' is always the smmu struct device, even if your current
-probing driver is not the smmu device. That will capture all the iommu
-activity the ACPI/DT says is linked to that dev.
-
-From there you just make a normal small iommu driver with no
-connection back to the SMMUv3.
-
-Eg you could spawn an aux device from smmuv3 to do this with a far
-cleaner separation.
-
-xlate is just calling iommu_fwspec_add_ids() it is one line.
-
-> same for other ops. We can make some of these
-> functions (hypercalls wrappers) in a separate file. 
-
-What other ops are you worried about?
-
-static struct iommu_ops arm_smmu_ops = {
-	.identity_domain	= &arm_smmu_identity_domain,
-	.blocked_domain		= &arm_smmu_blocked_domain,
-	.release_device		= arm_smmu_release_device,
-	.domain_alloc_paging_flags = arm_smmu_domain_alloc_paging_flags,
-
-	^^ Those are all your new domain type that does the hypercalls
-
-	.probe_device		= arm_smmu_probe_device,
-	.get_resv_regions	= arm_smmu_get_resv_regions,
-
-  	^^ These are pretty empty
-
-	.device_group		= arm_smmu_device_group,
-	.of_xlate		= arm_smmu_of_xlate,
-
-        ^^ Common code
-
-Don't need these:
-
-	.capable		= arm_smmu_capable,
-	.hw_info		= arm_smmu_hw_info,
-	.domain_alloc_sva       = arm_smmu_sva_domain_alloc,
-	.page_response		= arm_smmu_page_response,
-	.def_domain_type	= arm_smmu_def_domain_type,
-	.get_viommu_size	= arm_smmu_get_viommu_size,
-	.viommu_init		= arm_vsmmu_init,
-	.user_pasid_table	= 1,
-	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
-	.owner			= THIS_MODULE,
-
-> Also I am not sure how that
-> looks from the kernel perspective (do we have 2 struct devices per SMMU?)
-
-I think you'd want to have pkvm bound to the physical struct device
-and then spawn new faux, aux or something devices for the virtualized
-IOMMUs that probes the new paravirt driver. This driver would be fully
-self contained.
-
-> I think we are on the same page about how that will look at the end.
-> For nesting there will be a pKVM driver (as mentioned in the cover letter)
-> to probe register the SMMUs, then it will unbind itself to let the
-> current
-
-That sounds a little freaky to me. I guess it can be made to work, and
-is maybe the best option, but if this is the longterm plan then
-starting out with a non-iommu subsystem pkvm driver seems like a good
-idea.
-
-Today the pkvm driver would do enough to boot up pkvm in this limited
-mode, and maybe you have some small code duplications with the iommu
-driver. It forks off a aux device to create the para-virt pkvm iommu
-subsystem driver.
-
-Tomorrow you further shrink down the pkvm driver and remove the
-para-virt driver, then just somehow bind/unbind the pkvm one at early
-boot.
-
-Minimal changes to the existing smmu driver in either case.
-
-> Then the hypervisor driver will use trap and emulate to handle SMMU access
-> to the MMIO, providing an architecturally accurate SMMUv3 emualation, and
-> it will not register iommu_ops.
-
-Well, it registers normal smmuv3 ops only, I think you mean.
-
-> So, I will happily drop the hypercalls and the iommu_ops from this series,
-> if there is a better way to enlighten the hypervisor about the SIDs to be
-> in identity.
-
-The iommu ops are a reasonable and appropriate way to do this.
-
-But since pkvm is all so special anyhow maybe you could hook
-pci_enable_device() and do your identity hypercall there? Do you
-already trap the config write to catch Bus Master Enable? Can pkvm
-just set identity when BME=1 and ABORT when BME=0?
-
-Jason
