@@ -1,353 +1,134 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 041F722FE11
-	for <iommu@lists.linux.dev>; Wed,  6 Aug 2025 22:25:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C54E27470
+	for <iommu@lists.linux.dev>; Wed,  6 Aug 2025 23:58:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754519105; cv=none; b=YbuBeFfS2K6iESrTA0aU8seJtjFRwS8pq56SQ66sDODb0rDGwwygp5749mILcG0UTOodNugIp8WwKV/AwtbKq/YII3mrT67WPhROvEVtPWs5GDfTFwF7Wdk2JFojzTcx2e4V/OeVKQOzzVoPWSJlieXstpHzKeCDr1EqJJe23AU=
+	t=1754524733; cv=none; b=MZEJcH3+ADJKvOtSDv99xUsiDkJaNjf1qmGEqggtqcmSpiFhy+zB1B4HvjnhNeSBcFxA3GA5vKSG0eDq/SDz9ZrKU2YKTefZ62NA/tnF6CxvBs09BCXNNNN9k4aWHeVZK+fzwnJgeRi047NhBvpHd8KxUbT2dijdtOJkmfG8b3g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754519105; c=relaxed/simple;
-	bh=E8mVSJu/tMPT+RCSYBB/JKwAzVd4GM2qVRUojQoI5Yk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AsWbx3Bt/SnjkDMEu9gx/iWgenb4tNlNfylL0ukwOU0Kk8u9L5wiB9irygb/4lE1I6QETSqTbo/dQAoVzqsK95KV37TX9r6Q0vDB2HLtyX9xATNdo8VTFgraVjhiMT80awbclSx8M/HbZWw3pbR0qZJXjtf0JH1RuM3SC4cPrMY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=bh9a1F/Q; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1754524733; c=relaxed/simple;
+	bh=Ch3Lu3JNorrE3DqTb4s0lvqvQJV5+k082o5zzm77yE0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JmlNlbKM4XylxuavXKqK9+Q4+U55qs7HPSQ1LQk//5BJJB8nlVMqraBDEhXAUPzbhl2XoK4wdcfJYFlgsxx5/7i52Is/MCQalVG7O1bUBrF+d03ia0wKeA/erFpJFbOqz9iMalyVXG6f260ilgEelm8b7TSt1C0tINpdr4Cc1IU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MH27oci2; arc=none smtp.client-ip=209.85.222.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="bh9a1F/Q"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1754519102;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=2KWudinkIbXD4F4ulzK9/+oUi2avXDJW6sBf89lUWmU=;
-	b=bh9a1F/QQZqimR8naHWs7xCUacLE+AxSbAHAEijZVyyquS0D9T2eFJ0G0hp0DDa1n9qNXp
-	YJmz395QE9CrfZJ8Mqk+Fh/sa7Coqbv4/P3Mmrk2l3YyYXIOgIEN9dros7cP28LKQGa+eL
-	HAC4VmznYjuYblq7jM72edaJ8bmTtvk=
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
- [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-662-vzmrK_noOrKV7v2EryGQUA-1; Wed, 06 Aug 2025 18:25:01 -0400
-X-MC-Unique: vzmrK_noOrKV7v2EryGQUA-1
-X-Mimecast-MFC-AGG-ID: vzmrK_noOrKV7v2EryGQUA_1754519101
-Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-3e40b2750eeso920695ab.2
-        for <iommu@lists.linux.dev>; Wed, 06 Aug 2025 15:25:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MH27oci2"
+Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-7e809baeef7so54125285a.0
+        for <iommu@lists.linux.dev>; Wed, 06 Aug 2025 16:58:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1754524730; x=1755129530; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=I4DgF6Vw8xGQncqmkZy1+xUkx+suIzKaCcwcVTdjpkA=;
+        b=MH27oci2nJjyrPxMZoBx++UIIjvZjcXN591pFI4mCv0vumJ8zo9CY4GZZvnt8++Bt0
+         brldMJZ8vFFmEpnD35dbhq7FUD1SsRA9CPy0Z/o4x38G+c+swFzuu/H30lsNaw2XqHzb
+         XjqAKhjOulsOytsl+GIH1u1ucneKHUt2oN0M/fJZHwlf5aplJ0J2Wpb1BawBVUrCgCqM
+         0zjeR4mJvxbUDii1p+ec4W7sUOs12HTiySstdxmjAS+ysmLLZXAwkt8td2q281PXtDaW
+         mM0h+kH+newNYQ8i38K1g4oyiOt0KKwuAUDj9HldbQv7K6Za5qNIEcfVfX0uQlV5x5MM
+         ktig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754519101; x=1755123901;
-        h=content-transfer-encoding:mime-version:organization:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2KWudinkIbXD4F4ulzK9/+oUi2avXDJW6sBf89lUWmU=;
-        b=r24mhoOQSlVWSrwlq0CZoY/YF+XyW7vYmOGfvF2bsN1t/sPBNzBmfhR7oumRpxOZbA
-         +fi3EB7uHV6rcizmGmo6M3usOqYtXOdf0iG9Z9t1uRSAwp8CcdqMQ58xgQX+v0+KiBJB
-         wgagBi59ter9kuZW6WjBYG5qahUK5rLL4bvGm0PlYDeKvTLv6Vr2cBis4yD2LDGJNTMr
-         dt9IsiPIm+d/anEOMP8rZisJLzJu/aBQKa6lODihtQvVgPoN2AoqQ4VAU9omDeA6koka
-         sXIT1FrHZ7z8p4h9cBSq3yalNJopMHsQ6vi6D4p+wvM8phx1wXESDJa6mGUYbNskVa8H
-         dGEQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVguKJHV3yTN3/dX1aj9h1DzuiDc4acXxHt1tS7EsDIFWORUiA6uwDHtANsO4VuyJ8zTkRxTA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwgzUEk5JLUcvIeUGa4dQ3b/bDwDVlETHDQqsS9VcQPkGIT1MSn
-	Kl0Xc9HaVcbi/AUcznW/6lzSkfvWNCDy6KLTpoVW7+Z2E5k/WfBO7O+hc29WC0C6WmQHAMyLlDa
-	1AFKGsMgDeZjORYMlF+i7xXYNeSw0C0b2qyEANUX4CYOu+tczBVkC9Ooq
-X-Gm-Gg: ASbGnctd7PHJ/aU0v/aXBP3/gMNRXp5Fe5YPlI16zXf88JBtBZJCUfSj9x10WNpmdc+
-	erlNmUJ+/KEtawLElRdlBBZ+9j6onw1RTH377JJ3bKls0lFOAnDcjvXWD4bAWP7M8Ya8BiPnLy7
-	c2p6Wb8JQuNXnHCLSoaHH+bT0AEWqlMJVvweLG3r/FnCvAvdLuVLBlzLsaXEZkeVFZ19c23vZMo
-	y/pjM1oIMJFxpCgVXPsoO3IQ0IXFukYagxA59W07usTeILytI1zaZyWR/FZK2ZbYdAkaqoZsBz/
-	GUn5mpDgmjmoHO0MyYz8TLnEHH1q9biWPYigVDlo4p8=
-X-Received: by 2002:a05:6602:148a:b0:85d:9793:e0d8 with SMTP id ca18e2360f4ac-8819eddca30mr265752039f.0.1754519100579;
-        Wed, 06 Aug 2025 15:25:00 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGJbvSuwj5vna+ENO4HZHTFh+EQIF6Bqd2408Pfz1T06ISMEQUJO+65aGvhO/KGJJ7KSEu0KQ==
-X-Received: by 2002:a05:6602:148a:b0:85d:9793:e0d8 with SMTP id ca18e2360f4ac-8819eddca30mr265749739f.0.1754519100087;
-        Wed, 06 Aug 2025 15:25:00 -0700 (PDT)
-Received: from redhat.com ([38.15.36.11])
-        by smtp.gmail.com with ESMTPSA id ca18e2360f4ac-88175b2e0c6sm314280239f.31.2025.08.06.15.24.56
+        d=1e100.net; s=20230601; t=1754524730; x=1755129530;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=I4DgF6Vw8xGQncqmkZy1+xUkx+suIzKaCcwcVTdjpkA=;
+        b=AfBzbGu/y8mwSf7LVBKsyiWV1KgGrEoQhFdb24OnwQ4PoCAlc23soiHiDBCTKSu0vo
+         hB9tQZMndq7eoAELnX7Dem9/OMuGmZ3r1N4JZ1AQFmlnkaJL/1ffTpZN8xhyAsxo+be5
+         +2OGtEEUWtlG1A+z4iidWyhou4ELTYOGVwCAJLo+lrbU3m00gGNq2Z6FGGLLlfSMun3+
+         Pd9zjTes84Rpn7xHH5l0a3LELsckUEc9HRgiLpbV1QhSrlF6kKRqcBnfnDsl6fD0jAF6
+         3nQCHN/unEQwML+szjlqdTu39P1IQ1moioZ1babHewVo9UdY20Glqc0+Cu3fzek0xF1k
+         nbUg==
+X-Gm-Message-State: AOJu0YyzcvJk/2RepLwbml0UFjq1t0BUwxquJ/BUsSC8xRZMFehCaaZN
+	W976P8j8gn6QrDK5NYWhXn2gIt127hMcDD0+Fuklqqc8NUFlBf7JlWiQBtBtgjWLWMg=
+X-Gm-Gg: ASbGncv5yL9BT4Texio7Rihlu1MGtaWymy0IpF8Vd7aJqjVJ7YrjnZ4R+E1U6uGBN+2
+	7l9Sqw2LXYwNT4a/OR3kg64u+gQ0EQuDALLQhgXBHtaFKdX2jIUCXZ736io7ek1+S7oSscO1WDX
+	M2y78KYlfbHBhZrxWIbsFC6UmuHYL3ObHkpgBtpHiavp2ay3Ir7VbeMiNTEpXeA7thj8nZoNtTM
+	pQiwiOOwU2jUn+gKyCJdgy3T3xsqaKzh6TdJr16Et+2x9S5T3l0Sn/fKvpmoQg1bDhj3iOWbUYZ
+	zLpn6+HzFPAXbPhgGvzJHtLWKhTUAlxbDrPmLdAhiOVgSb5Cq/er/dWqjtdwIlj0VXoKOR+zpeL
+	q8KAY1nLJBIrgGDDf4tZNER1+0GZ2VwwL4dsDMgugsL4W2560/759uh7Kui0tyY4bGK4+
+X-Google-Smtp-Source: AGHT+IGnS032BQYfbSfwSqYTvKso8Ea62PyX+fE1vpQVHfXPFL26cVNK4i9ZyLJUzr/PgtuVEArJEg==
+X-Received: by 2002:a05:620a:4045:b0:7e6:97a2:ea7d with SMTP id af79cd13be357-7e81677da93mr625181985a.62.1754524729857;
+        Wed, 06 Aug 2025 16:58:49 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-7e80b869d4bsm310283985a.24.2025.08.06.16.58.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Aug 2025 15:24:59 -0700 (PDT)
-Date: Wed, 6 Aug 2025 16:24:55 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Leon Romanovsky <leonro@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Andrew Morton <akpm@linux-foundation.org>, Bjorn Helgaas
- <bhelgaas@google.com>, Christian =?UTF-8?B?S8O2bmln?=
- <christian.koenig@amd.com>, Christoph Hellwig <hch@lst.de>,
- dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, Jens Axboe
- <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
- linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
- linux-mm@kvack.org, linux-pci@vger.kernel.org, Logan Gunthorpe
- <logang@deltatee.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin
- Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
- Vivek Kasireddy <vivek.kasireddy@intel.com>, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v1 10/10] vfio/pci: Add dma-buf export support for MMIO
- regions
-Message-ID: <20250806162455.350f73a4.alex.williamson@redhat.com>
-In-Reply-To: <5e043d8b95627441db6156e7f15e6e1658e9d537.1754311439.git.leon@kernel.org>
-References: <cover.1754311439.git.leon@kernel.org>
-	<5e043d8b95627441db6156e7f15e6e1658e9d537.1754311439.git.leon@kernel.org>
-Organization: Red Hat
+        Wed, 06 Aug 2025 16:58:49 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1ujo1w-00000001sk1-2RDU;
+	Wed, 06 Aug 2025 20:58:48 -0300
+Date: Wed, 6 Aug 2025 20:58:48 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Shyam Saini <shyamsaini@linux.microsoft.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
+	will@kernel.org, jacob.pan@linux.microsoft.com,
+	eric.auger@redhat.com, code@tyhicks.com,
+	eahariha@linux.microsoft.com, vijayb@linux.microsoft.com,
+	bboscaccy@linux.microsoft.com
+Subject: Re: [PATCH v3 3/3] arm-smmu: select suitable MSI IOVA
+Message-ID: <20250806235848.GD377696@ziepe.ca>
+References: <20250806215539.1240561-1-shyamsaini@linux.microsoft.com>
+ <20250806215539.1240561-4-shyamsaini@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: Nv_XIe_H4xgOf3hLxxKeb7Kc8lqSExR1tDufXgxW0qM_1754519101
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250806215539.1240561-4-shyamsaini@linux.microsoft.com>
 
-On Mon,  4 Aug 2025 16:00:45 +0300
-Leon Romanovsky <leon@kernel.org> wrote:
-
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Add support for exporting PCI device MMIO regions through dma-buf,
-> enabling safe sharing of non-struct page memory with controlled
-> lifetime management. This allows RDMA and other subsystems to import
-> dma-buf FDs and build them into memory regions for PCI P2P operations.
-> 
-> The implementation provides a revocable attachment mechanism using
-> dma-buf move operations. MMIO regions are normally pinned as BARs
-> don't change physical addresses, but access is revoked when the VFIO
-> device is closed or a PCI reset is issued. This ensures kernel
-> self-defense against potentially hostile userspace.
-> 
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Vivek Kasireddy <vivek.kasireddy@intel.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> ---
->  drivers/vfio/pci/Kconfig           |  20 ++
->  drivers/vfio/pci/Makefile          |   2 +
->  drivers/vfio/pci/vfio_pci_config.c |  22 +-
->  drivers/vfio/pci/vfio_pci_core.c   |  25 +-
->  drivers/vfio/pci/vfio_pci_dmabuf.c | 390 +++++++++++++++++++++++++++++
->  drivers/vfio/pci/vfio_pci_priv.h   |  23 ++
->  include/linux/dma-buf.h            |   1 +
->  include/linux/vfio_pci_core.h      |   3 +
->  include/uapi/linux/vfio.h          |  25 ++
->  9 files changed, 506 insertions(+), 5 deletions(-)
->  create mode 100644 drivers/vfio/pci/vfio_pci_dmabuf.c
-> 
-> diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
-> index 2b0172f546652..55ae888bf26ae 100644
-> --- a/drivers/vfio/pci/Kconfig
-> +++ b/drivers/vfio/pci/Kconfig
-> @@ -55,6 +55,26 @@ config VFIO_PCI_ZDEV_KVM
->  
->  	  To enable s390x KVM vfio-pci extensions, say Y.
->  
-> +config VFIO_PCI_DMABUF
-> +	bool "VFIO PCI extensions for DMA-BUF"
-> +	depends on VFIO_PCI_CORE
-> +	depends on PCI_P2PDMA && DMA_SHARED_BUFFER
-> +	default y
-> +	help
-> +	  Enable support for VFIO PCI extensions that allow exporting
-> +	  device MMIO regions as DMA-BUFs for peer devices to access via
-> +	  peer-to-peer (P2P) DMA.
-> +
-> +	  This feature enables a VFIO-managed PCI device to export a portion
-> +	  of its MMIO BAR as a DMA-BUF file descriptor, which can be passed
-> +	  to other userspace drivers or kernel subsystems capable of
-> +	  initiating DMA to that region.
-> +
-> +	  Say Y here if you want to enable VFIO DMABUF-based MMIO export
-> +	  support for peer-to-peer DMA use cases.
-> +
-> +	  If unsure, say N.
-> +
->  source "drivers/vfio/pci/mlx5/Kconfig"
->  
->  source "drivers/vfio/pci/hisilicon/Kconfig"
-> diff --git a/drivers/vfio/pci/Makefile b/drivers/vfio/pci/Makefile
-> index cf00c0a7e55c8..f9155e9c5f630 100644
-> --- a/drivers/vfio/pci/Makefile
-> +++ b/drivers/vfio/pci/Makefile
-> @@ -2,7 +2,9 @@
->  
->  vfio-pci-core-y := vfio_pci_core.o vfio_pci_intrs.o vfio_pci_rdwr.o vfio_pci_config.o
->  vfio-pci-core-$(CONFIG_VFIO_PCI_ZDEV_KVM) += vfio_pci_zdev.o
-> +
->  obj-$(CONFIG_VFIO_PCI_CORE) += vfio-pci-core.o
-> +vfio-pci-core-$(CONFIG_VFIO_PCI_DMABUF) += vfio_pci_dmabuf.o
->  
->  vfio-pci-y := vfio_pci.o
->  vfio-pci-$(CONFIG_VFIO_PCI_IGD) += vfio_pci_igd.o
-> diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
-> index 8f02f236b5b4b..7e23387a43b4d 100644
-> --- a/drivers/vfio/pci/vfio_pci_config.c
-> +++ b/drivers/vfio/pci/vfio_pci_config.c
-> @@ -589,10 +589,12 @@ static int vfio_basic_config_write(struct vfio_pci_core_device *vdev, int pos,
->  		virt_mem = !!(le16_to_cpu(*virt_cmd) & PCI_COMMAND_MEMORY);
->  		new_mem = !!(new_cmd & PCI_COMMAND_MEMORY);
->  
-> -		if (!new_mem)
-> +		if (!new_mem) {
->  			vfio_pci_zap_and_down_write_memory_lock(vdev);
-> -		else
-> +			vfio_pci_dma_buf_move(vdev, true);
-> +		} else {
->  			down_write(&vdev->memory_lock);
-> +		}
->  
->  		/*
->  		 * If the user is writing mem/io enable (new_mem/io) and we
-> @@ -627,6 +629,8 @@ static int vfio_basic_config_write(struct vfio_pci_core_device *vdev, int pos,
->  		*virt_cmd &= cpu_to_le16(~mask);
->  		*virt_cmd |= cpu_to_le16(new_cmd & mask);
->  
-> +		if (__vfio_pci_memory_enabled(vdev))
-> +			vfio_pci_dma_buf_move(vdev, false);
->  		up_write(&vdev->memory_lock);
->  	}
->  
-> @@ -707,12 +711,16 @@ static int __init init_pci_cap_basic_perm(struct perm_bits *perm)
->  static void vfio_lock_and_set_power_state(struct vfio_pci_core_device *vdev,
->  					  pci_power_t state)
+On Wed, Aug 06, 2025 at 02:55:39PM -0700, Shyam Saini wrote:
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -3642,17 +3642,30 @@ static int arm_smmu_of_xlate(struct device *dev,
+>  static void arm_smmu_get_resv_regions(struct device *dev,
+>  				      struct list_head *head)
 >  {
-> -	if (state >= PCI_D3hot)
-> +	if (state >= PCI_D3hot) {
->  		vfio_pci_zap_and_down_write_memory_lock(vdev);
-> -	else
-> +		vfio_pci_dma_buf_move(vdev, true);
-> +	} else {
->  		down_write(&vdev->memory_lock);
+> -	struct iommu_resv_region *region;
+>  	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+>  
+> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+> -					 prot, IOMMU_RESV_SW_MSI, GFP_KERNEL);
+> -	if (!region)
+> -		return;
+> -
+> -	list_add_tail(&region->list, head);
+> +	static const u64 msi_bases[] = { MSI_IOVA_BASE, MSI_IOVA_BASE2 };
+>  
+>  	iommu_dma_get_resv_regions(dev, head);
+> +
+> +	/*
+> +	 * Use the first msi_base that does not intersect with a platform
+> +	 * reserved region. The SW MSI base selection is entirely arbitrary.
+> +	 */
+> +	for (int i = 0; i != ARRAY_SIZE(msi_bases); i++) {
+> +		struct iommu_resv_region *region;
+> +
+> +		if (resv_region_intersects(msi_bases[i], MSI_IOVA_LENGTH, head))
+> +			continue;
+> +
+> +		region = iommu_alloc_resv_region(msi_bases[i], MSI_IOVA_LENGTH, prot,
+> +						 IOMMU_RESV_SW_MSI, GFP_KERNEL);
+> +		if (!region)
+> +			return;
+> +
+> +		list_add_tail(&region->list, head);
+> +		return;
 > +	}
->  
->  	vfio_pci_set_power_state(vdev, state);
-> +	if (__vfio_pci_memory_enabled(vdev))
-> +		vfio_pci_dma_buf_move(vdev, false);
->  	up_write(&vdev->memory_lock);
 >  }
->  
-> @@ -900,7 +908,10 @@ static int vfio_exp_config_write(struct vfio_pci_core_device *vdev, int pos,
->  
->  		if (!ret && (cap & PCI_EXP_DEVCAP_FLR)) {
->  			vfio_pci_zap_and_down_write_memory_lock(vdev);
-> +			vfio_pci_dma_buf_move(vdev, true);
->  			pci_try_reset_function(vdev->pdev);
-> +			if (__vfio_pci_memory_enabled(vdev))
-> +				vfio_pci_dma_buf_move(vdev, true);
 
-@revoked true -> true seems wrong.
+I think this whole series looks pretty good, but I would suggest to
+put this in a helper..
 
->  			up_write(&vdev->memory_lock);
->  		}
->  	}
-> @@ -982,7 +993,10 @@ static int vfio_af_config_write(struct vfio_pci_core_device *vdev, int pos,
->  
->  		if (!ret && (cap & PCI_AF_CAP_FLR) && (cap & PCI_AF_CAP_TP)) {
->  			vfio_pci_zap_and_down_write_memory_lock(vdev);
-> +			vfio_pci_dma_buf_move(vdev, true);
->  			pci_try_reset_function(vdev->pdev);
-> +			if (__vfio_pci_memory_enabled(vdev))
-> +				vfio_pci_dma_buf_move(vdev, true);
+'iommu_set_sw_msi()' perhaps, must be called after iommu_dma_get_resv_regions()
 
-Same.
+Then maybe the constants can just be placed in the .c file inside the
+helper function.
 
->  			up_write(&vdev->memory_lock);
->  		}
->  	}
-> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-> index b1863d84b11aa..8e840ac413e9b 100644
-> --- a/drivers/vfio/pci/vfio_pci_core.c
-> +++ b/drivers/vfio/pci/vfio_pci_core.c
-> @@ -28,7 +28,9 @@
->  #include <linux/nospec.h>
->  #include <linux/sched/mm.h>
->  #include <linux/iommufd.h>
-> +#ifdef CONFIG_VFIO_PCI_DMABUF
->  #include <linux/pci-p2pdma.h>
-> +#endif
->  #if IS_ENABLED(CONFIG_EEH)
->  #include <asm/eeh.h>
->  #endif
-> @@ -287,6 +289,8 @@ static int vfio_pci_runtime_pm_entry(struct vfio_pci_core_device *vdev,
->  	 * semaphore.
->  	 */
->  	vfio_pci_zap_and_down_write_memory_lock(vdev);
-> +	vfio_pci_dma_buf_move(vdev, true);
-> +
->  	if (vdev->pm_runtime_engaged) {
->  		up_write(&vdev->memory_lock);
->  		return -EINVAL;
-> @@ -370,6 +374,8 @@ static void vfio_pci_runtime_pm_exit(struct vfio_pci_core_device *vdev)
->  	 */
->  	down_write(&vdev->memory_lock);
->  	__vfio_pci_runtime_pm_exit(vdev);
-> +	if (__vfio_pci_memory_enabled(vdev))
-> +		vfio_pci_dma_buf_move(vdev, false);
->  	up_write(&vdev->memory_lock);
->  }
->  
-> @@ -690,6 +696,8 @@ void vfio_pci_core_close_device(struct vfio_device *core_vdev)
->  #endif
->  	vfio_pci_core_disable(vdev);
->  
-> +	vfio_pci_dma_buf_cleanup(vdev);
-> +
->  	mutex_lock(&vdev->igate);
->  	if (vdev->err_trigger) {
->  		eventfd_ctx_put(vdev->err_trigger);
-> @@ -1222,7 +1230,10 @@ static int vfio_pci_ioctl_reset(struct vfio_pci_core_device *vdev,
->  	 */
->  	vfio_pci_set_power_state(vdev, PCI_D0);
->  
-> +	vfio_pci_dma_buf_move(vdev, true);
->  	ret = pci_try_reset_function(vdev->pdev);
-> +	if (__vfio_pci_memory_enabled(vdev))
-> +		vfio_pci_dma_buf_move(vdev, false);
->  	up_write(&vdev->memory_lock);
->  
->  	return ret;
-> @@ -1511,6 +1522,8 @@ int vfio_pci_core_ioctl_feature(struct vfio_device *device, u32 flags,
->  		return vfio_pci_core_pm_exit(vdev, flags, arg, argsz);
->  	case VFIO_DEVICE_FEATURE_PCI_VF_TOKEN:
->  		return vfio_pci_core_feature_token(vdev, flags, arg, argsz);
-> +	case VFIO_DEVICE_FEATURE_DMA_BUF:
-> +		return vfio_pci_core_feature_dma_buf(vdev, flags, arg, argsz);
->  	default:
->  		return -ENOTTY;
->  	}
-> @@ -2085,9 +2098,13 @@ int vfio_pci_core_init_dev(struct vfio_device *core_vdev)
->  	INIT_LIST_HEAD(&vdev->dummy_resources_list);
->  	INIT_LIST_HEAD(&vdev->ioeventfds_list);
->  	INIT_LIST_HEAD(&vdev->sriov_pfs_item);
-> +#ifdef CONFIG_VFIO_PCI_DMABUF
->  	vdev->provider = pci_p2pdma_enable(vdev->pdev);
->  	if (IS_ERR(vdev->provider))
->  		return PTR_ERR(vdev->provider);
-> +
-> +	INIT_LIST_HEAD(&vdev->dmabufs);
-> +#endif
->  	init_rwsem(&vdev->memory_lock);
->  	xa_init(&vdev->ctx);
->  
-> @@ -2470,11 +2487,17 @@ static int vfio_pci_dev_set_hot_reset(struct vfio_device_set *dev_set,
->  	 * cause the PCI config space reset without restoring the original
->  	 * state (saved locally in 'vdev->pm_save').
->  	 */
-> -	list_for_each_entry(vdev, &dev_set->device_list, vdev.dev_set_list)
-> +	list_for_each_entry(vdev, &dev_set->device_list, vdev.dev_set_list) {
-> +		vfio_pci_dma_buf_move(vdev, true);
->  		vfio_pci_set_power_state(vdev, PCI_D0);
-> +	}
-
-The revoke should have happened at the time the BARs were zapped.
-Thanks,
-
-Alex
-
->  
->  	ret = pci_reset_bus(pdev);
->  
-> +	list_for_each_entry(vdev, &dev_set->device_list, vdev.dev_set_list)
-> +		if (__vfio_pci_memory_enabled(vdev))
-> +			vfio_pci_dma_buf_move(vdev, false);
-> +
->  	vdev = list_last_entry(&dev_set->device_list,
->  			       struct vfio_pci_core_device, vdev.dev_set_list);
->  
-
+Jsaon
