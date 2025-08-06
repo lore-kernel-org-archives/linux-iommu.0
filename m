@@ -1,210 +1,227 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2058.outbound.protection.outlook.com [40.107.95.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CB5129B79A
-	for <iommu@lists.linux.dev>; Wed,  6 Aug 2025 17:24:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754501100; cv=none; b=c9I48JAp7W7CXQhPBvlQFiwSF1oC8gVox/Mzg82EksZH3bonWXP8aXPMUXxxHIbIwGh23KKAt/M3WzMOQE97L8t6+S43ODMBXxQ23CBelXY5mXs/nC64x072wLoLBxepFb+WkM/DjDr2I9jwcek9p86LcjnVIIhUEOrinaVD8Vs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754501100; c=relaxed/simple;
-	bh=V6qM3QSLkAmMPWz06UxQ5gAIIM1nPtIIDCX8bZ9AiyQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=b2RmeTWHRQ6Q+8B9BOkBnygtqUbM3BxUtV7Rzf1oYcg8s4fkGHv79pTEzu8RTBdJOQx+uvk2UtGXn0fBF1Qs5kvmPWwrKLfpQda9FQi6j4sTUoWpyFkCqKEvzsCH1dmxEufB9DFPbaFqOEN6ie1xp7UaAC6XPBkKy3T2P+Vg/UQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=i9x1zqNr; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A68B078F3A;
+	Wed,  6 Aug 2025 17:31:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.58
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1754501498; cv=fail; b=etwuJQGyLvblI3rJKz9JCWD2m1vysGkhbRZCbz5S1CkujEB7hsoGsAXn1UEVcuNXim1MBc6v1bsXz8clw0xdf8rAu4u5KoNsXcPnP8amYAMsLWp28cJgaitrjT/RNjvcjVehSrf24pRfCZaOmlWlXVW+EopHzZee7cCktosRqbA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1754501498; c=relaxed/simple;
+	bh=m/JRjzMTQ2MawyohPqhBTgwW9U5fcyPws7WaISzQYrA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=OBjP6v2wt9DYPOPhXEQo5LFdOZeiUwtgdP+ltrChA6i3KD3/TB7gvV2WKiVEzlGD4QOdJTIZmKiv9/IZGmJgQODEMVemilSbr9lfcwM+pqWRM7ZFgVlIIHbcSWe7BTa1aj9pQZArKHgMYafBgwVb4b/0KuRf+6cj/9vJbGTjWgU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hKJ5KbXB; arc=fail smtp.client-ip=40.107.95.58
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="i9x1zqNr"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 576D6fBg013273
-	for <iommu@lists.linux.dev>; Wed, 6 Aug 2025 17:24:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=qcppdkim1; bh=2yhdVrPdYJ7313w6RY95BktNYD9XmUlNPwz
-	5ARnffxI=; b=i9x1zqNrDaK75xJaiTUL4acdrea+2ki/iSYOkJ1mwQgNIPkHKnx
-	/caNZ4oCcS0i4arjiUbnaHzvOAbDtoo42Rzu9S32GHL6MwiuQAf0Ab/uxDKTBHNO
-	zJhMhAOtyjglRAikS0Z1phXp8REJHLIFhAdNeNUXaxPtlgoZuQmo2gJ/BWvlEnud
-	Bk9VrcRIUT/grn0X2TP/e7+r0bcjZh6OrNJDPHpDOHeIzZ3efc4OBftcYV51JRpp
-	9jLUtxuQeO1zrYLtWwyQ5p+Z0b8PXAF79BBpboGa12qti09OQ5NfBKQyzGV3suvY
-	2kvt8vTyDqJn9909iapx4K3x2UY990Wi6uA==
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48bpvvuj15-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 06 Aug 2025 17:24:58 +0000 (GMT)
-Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-31f74a64da9so174034a91.2
-        for <iommu@lists.linux.dev>; Wed, 06 Aug 2025 10:24:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754501097; x=1755105897;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=2yhdVrPdYJ7313w6RY95BktNYD9XmUlNPwz5ARnffxI=;
-        b=FoVn/OwP0Dl6/IRRKpyhqJRFPqmgoWwi4AmWGSG5CAbUD1tYynrVa//I3glZ5yRFlQ
-         8fv5s5Ai1GXAF7HbtHSwwbQG6ljNZqZSYz+NZLDRX2sv3xyYR9mXH9Agt7fk/WMHQli5
-         dOhoQ/D4Ib4PHQ4tDWbs3ZR0Fr/ggur22TEirbNwMC+sTb0wvVUCxyNoAU1aiW4CKLHy
-         5u71uNbyffdb6UB2HjNxuYaIUYcXx8f6wfTs7iiiab7sQOJPyL7qwAjIfGfEX0HJX3ea
-         tqtC2XdU0X7zM1wQx/Hxql3Z5SBl5D6TCe8HP48/HFYDhixrpqDQMzkAevrA+rJ7G9Th
-         ZfyA==
-X-Forwarded-Encrypted: i=1; AJvYcCXEfzUmm9GfS31aXUvXir5YnwhGRKslSoApR7UDxYXp0x0rHuefMjPXygXgWhiDJQjrXS5gBw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YydcmZTf5mhv8ek1Rjt2/BCcj5UcklNnwasADoQLaQBy6lAXLmh
-	RanVJEu07Zx+F8gzBrwHI9hGd/2IUyYfpJiGgBi7hziOZLsUbxfEhRksqz/YWb8/u0sreMZIwn3
-	Hp1ivPUIUjEREUF3i7mEGuq9vMBJVZpyXIipIEAVlPYxAMICR68VgNMn4Dg==
-X-Gm-Gg: ASbGncuX81sK/0k+gyH2i1ApjvG9sOBJSr96fGx+FQCQiDeJxfyz9VauYvyk6sqG7Kh
-	ylLEoEAN42hoks8Ljrs7FdX407DXbH9yKn8L28nWWdgVxl9MDKcFIHFx3X1WI+AaeNbFjbY2421
-	YQAn+ZZ028ApTnk1yWFtWA8nxavA5xqCZno04DvE3JT/Tl2ceECHTzyj6WisDI2rcvp9AChZhbe
-	F6fvwykjKmy+XVJYbFlUEJARq0UH5MT16SOlfRNkaGbRxjzAk/l5/DgjxvQO6zwe6aE6HiS3a+0
-	SZjPVuqtnXzPR3ovuXtE4hrHFlDcPChLQE5DUzrTvqSLDYBPQDTAvVU1etizXbrFmOqmrjF056m
-	/fbMnZu2VuQ3WrHwEo7gdUvsNG6I=
-X-Received: by 2002:a17:90a:e7c2:b0:31c:15d9:8aa with SMTP id 98e67ed59e1d1-32166cd17a9mr4549973a91.34.1754501097316;
-        Wed, 06 Aug 2025 10:24:57 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHvDEwSlHJQyhjgkPGxkKpmWN6y7svvNC43yuKIxbTYzcP5aOBqMSDCeOEpZxX2CjbPjhvrVw==
-X-Received: by 2002:a17:90a:e7c2:b0:31c:15d9:8aa with SMTP id 98e67ed59e1d1-32166cd17a9mr4549942a91.34.1754501096842;
-        Wed, 06 Aug 2025 10:24:56 -0700 (PDT)
-Received: from hu-obabatun-lv.qualcomm.com (Global_NAT1.qualcomm.com. [129.46.96.20])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-31f63ee49c7sm19963244a91.21.2025.08.06.10.24.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Aug 2025 10:24:56 -0700 (PDT)
-From: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
-To: robh@kernel.org, m.szyprowski@samsung.com, robin.murphy@arm.com
-Cc: saravanak@google.com, quic_obabatun@quicinc.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev, william.zhang@broadcom.com,
-        kernel@oss.qualcomm.com, will@kernel.org, djakov@kernel.org,
-        Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
-Subject: [PATCH v4] of: reserved_mem: Restructure call site for dma_contiguous_early_fixup()
-Date: Wed,  6 Aug 2025 10:24:21 -0700
-Message-Id: <20250806172421.2748302-1-oreoluwa.babatunde@oss.qualcomm.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hKJ5KbXB"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=pEcD/7UswNX8ydTSitOoL5xD5wfTPUt6w5nbCvLZLizVbrDofFEImCT/DPqSWLnH0A7hX0CfKqaUfnfGsRLYgcVT97KHHnjAFhaoSyLh/PHfNq8zs6jUXO+UsJf856K9EWmxC3XTnQTvVsO3IPxnQarf/7xtSMHroFmk9U17LEPcssPtoXh7fTJzuGPDm3Fh6+EkHY9o6IJ5je+ZEBtpxZ2/djzM+sy329snCwH+U5yCoZmMZr3HlUUePcAfPtENaYVHX9yVEpcSNKtJPiQtmnoqzeN5D3L6en6UuRslDOG+R51ARbkKrz5EpCoARP7njow0SQMr1YyIF0wjzi6HUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iyBBtGtiRatUjTAS6JqftkIY0Yr20GlVu4ehze8ZHrE=;
+ b=h2mjP5taYqiZXxIdCNIHs6ise3BGw/D0zku5eHum1BuSzOE25o08l18BIyH99khQnB0tDTid7UtDirscdJkSLNAZrB3xmQWyIFCJB1wIUssXO5iiIi7WQrES7i6s8ybjxs6uel8+ZVBzKZHYkvQgNObe23E5yrf8OO1UpDhwaa5XvnFJJC/ar+rrcqQf/fPM3bvyusSKDDKhmV8XBGu/v37s84w6OhsmIc7rnFsStRAyoXjlYp5CNhTzaIr0GflIzeTIwiz0FXRZsCbN2J4oCnfL0OSRGQ7p7A9dM5eOmna335SWQrHmhKXBpyBLZq9by3uYKiGdpb8w/9hjG0OMiw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iyBBtGtiRatUjTAS6JqftkIY0Yr20GlVu4ehze8ZHrE=;
+ b=hKJ5KbXBT/VxNcbJGVjEuubofK8WW5IcX9+LqVjH9PnS1bYfr2bVYahRRKi5pkNT6fEjFUlfNPGpuUtkO1pYO0hxdfLv7l4iulZDGkWlSeXLWS4fk6BhRgKk7afXw11JQ3rq611oz/FjXJk0omQqgmCKtFa3ukE1RkM6OnRUMtbEmSF11/NbylnTwRJX6Z8Yt2Ylr6fjUhuHmmGEW8DXV7jQ1ymiYwahSjpeYJnDZpMbQ+vnE5hJKdPnbQTn5fFh7zd4OeEBDQ/9IcskqAOhRweqaVVWuvTwVRyxWKw8mtVoXRg65mvdldA1tiHVKUPsV1DhtEYhCz8C9BFc0mHThA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by BL1PR12MB5898.namprd12.prod.outlook.com (2603:10b6:208:396::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8989.20; Wed, 6 Aug
+ 2025 17:31:33 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.9009.013; Wed, 6 Aug 2025
+ 17:31:33 +0000
+Date: Wed, 6 Aug 2025 14:31:32 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Leon Romanovsky <leonro@nvidia.com>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	Alexander Potapenko <glider@google.com>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
+	iommu@lists.linux.dev, Jason Wang <jasowang@redhat.com>,
+	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+	Jonathan Corbet <corbet@lwn.net>, Juergen Gross <jgross@suse.com>,
+	kasan-dev@googlegroups.com, Keith Busch <kbusch@kernel.org>,
+	linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+	linux-nvme@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+	linux-trace-kernel@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
+	Sagi Grimberg <sagi@grimberg.me>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
+	xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v1 01/16] dma-mapping: introduce new DMA attribute to
+ indicate MMIO memory
+Message-ID: <20250806173132.GA184255@nvidia.com>
+References: <cover.1754292567.git.leon@kernel.org>
+ <f749c597980592ecc7aeb5ecca974c8dfb76f834.1754292567.git.leon@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f749c597980592ecc7aeb5ecca974c8dfb76f834.1754292567.git.leon@kernel.org>
+X-ClientProxiedBy: YT4PR01CA0214.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:ad::21) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: PUO7Li4w3ME_0lTGpf8BSwPLn49hSeZq
-X-Authority-Analysis: v=2.4 cv=GttC+l1C c=1 sm=1 tr=0 ts=68938fea cx=c_pps
- a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=ouPCqIW2jiPt+lZRy3xVPw==:17
- a=2OwXVqhp2XgA:10 a=EUspDBNiAAAA:8 a=Q-fNiiVtAAAA:8 a=rKm_hocPtqpBwuZHp4gA:9
- a=uKXjsCUrEbL0IQVhDsJ9:22
-X-Proofpoint-GUID: PUO7Li4w3ME_0lTGpf8BSwPLn49hSeZq
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODA2MDAwOSBTYWx0ZWRfXxDlgqKOd1yRj
- 4OEVcY6phVquGELnqkhCPBk461elKKIiDI3noadcotTzcTiRvE5ZdSB5AyV+vstzsXKXDmzTRgo
- b7ccwxROdw1DYMrCNKlLbGKGHIxfLc8/Atrvknc4a+Sp/oZaNgXrUypXvr7aW3NMONjKVUModOT
- qfYlNiRN7jWmmQfa0SWOAhvYp10MXCzJdTCBiGUDItfsUj7E3Hfs1CWJGCD6Vx0Pj7ObSPhnHGv
- LpOZNadFVmM5fSp8V6p+sopWFG6vUrheB1Nfsy/ml7NK/kaXBC7FsP5DnWczwEpTomha9ZFo3os
- 5OGEN9YPbSriuee4hmQbErO/JXf43jQGnRK3CdxadkYBvTrG7t3EMINREZP4y63BzeWSnN+7dHb
- AKACuI1H
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-08-06_04,2025-08-06_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 priorityscore=1501 phishscore=0 impostorscore=0 clxscore=1015
- spamscore=0 suspectscore=0 malwarescore=0 adultscore=0 classifier=typeunknown
- authscore=0 authtc= authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2507300000 definitions=main-2508060009
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|BL1PR12MB5898:EE_
+X-MS-Office365-Filtering-Correlation-Id: 1a97b1ac-fbf8-4645-964a-08ddd50f1627
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?yaJthfZ6S1NFLAIf+giyUFeFb5HmHR4/JaN7jHXzGsOaznN1NxyhWOd9L7lt?=
+ =?us-ascii?Q?H9Vs8zU4xb5p15mZ+CWJn/+7dnF61xL/sW3AGiLTq3kgMHTWk2G2VX3r3UF+?=
+ =?us-ascii?Q?Q3h3nMz7FqX7X/d3YZ0NxOTPVV0pHfMOTTaflPytq9k1LF0h5RqGkz1OLqVZ?=
+ =?us-ascii?Q?EemC3bPnW4VDo14bQaBjics3HW9FprJ/eLtO0D+t1GB/9qei2YiL1xavzgnb?=
+ =?us-ascii?Q?nnkyW47WyqJlgImvhfaezt2Buu3LrOJRNUgS7egN1TzbWEOMpWC5+gxhoJpz?=
+ =?us-ascii?Q?lW1phaq7PI/6pl/OvOt2WBqz9bbOfSLYlhWWL5YdAruSAtSKuM5AGfiWBKcd?=
+ =?us-ascii?Q?T44SfhFtzD7sdCgejc8APg4OTwQBsd9vJA9XbKzMmfUBvnbstU0DWim+7HJK?=
+ =?us-ascii?Q?efSAIfCAyYJZZF+379y+MRSSImbSvZm6beHfofM155XGzn6Qh4zirCoJylnn?=
+ =?us-ascii?Q?uYEhc5p2BUPzUFkXsYoeufDTIy62n0L4xaqujdP2fm9Rj8EE2jatkFwEMJod?=
+ =?us-ascii?Q?cE4xKPjR0XZzDeOPKtkL+DXX+01qFbma0kp6KvYBaFKShf3tL4wSdj0rxD0R?=
+ =?us-ascii?Q?ARNk8i9K48OKmJy1XsjX4YzI50PrB08PeQjL+2zyJKkYRifoG8THB9a5oe1e?=
+ =?us-ascii?Q?omxP5C8m8zfONa716RcASgZKS0CpVePWSB/ehmT7CvfcxWU9OmN0giAYEkBh?=
+ =?us-ascii?Q?4OQpGrTblaY9gb5RMCNoD7+ueq6nKrH/wop1aio07NwHyrTlz/V52fkD+o6O?=
+ =?us-ascii?Q?mEMNLj30dsATsEX+FZjypCM6hxbZhvjh2k/1oKNW4YR1UdKmOGIepMX+TG5V?=
+ =?us-ascii?Q?U8IpM7DifIBa6JhwA2zTuOcdxxTQ+DnLiqpc9OD7gg+zGrkcHpLsV6Y/ER+d?=
+ =?us-ascii?Q?3mPE3nXz8GMmRhyqPThiOGXAqLZA+RtZjb9WG/XvSgBpkGWeduNrmai0a/t9?=
+ =?us-ascii?Q?dn0q/eYJ7cpltoJOwwAyOtucxfTqu0/Hqc3K/Am1QJSCqecFm2bEcjqUV6+8?=
+ =?us-ascii?Q?q7XEdaom3j4CiikrGlsv2Tzh3X6QNxcyG5UIzsJSRSvnPjkwWiCnc77Ov6sN?=
+ =?us-ascii?Q?q6NBtoagpMLjt3QJF/r1of/Jn2BuoOewljNauQSsO3KoxXdPko3gLU+59YH+?=
+ =?us-ascii?Q?Y1nJYhOUkMZjeCfxDGr9wByWXiV1mXiQxlD/r5t3HvjJpLb366fmd9SLGgbM?=
+ =?us-ascii?Q?DgzdRPXiFg89YcR27s8Nh2/Ftqs11/CLGdq6wlZC4ldBOBPHXOLRQqkk/37M?=
+ =?us-ascii?Q?g0bA52S0l9tS3IwSvn/OAeEIlws8/3XoLqI7Di8gtHcmvCwOto7hS9Nqd6d7?=
+ =?us-ascii?Q?ZiHxarnrtq+R5eGLP8NbLdB1+X7VlP2lGRRamhU+n5nL9zh7cpoWWc22VwO7?=
+ =?us-ascii?Q?SiIUNIS8qJPOizGnA+hsoYD19+EC3TtSfxa6663hM2PgRUBj8fAgZQWs6Yc0?=
+ =?us-ascii?Q?Wk2Dj6XcM/g=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Fr/6CZwZ3kEMrGMBC1lhp0GWYqcvajTxzIaycEtiDW7Fajfod/FOnW7lw8Jy?=
+ =?us-ascii?Q?N3dxzqfJfP4dYyq8QGLZEXZSXAswRCVM0FEAhzUmrhF0GqictvMu8LNC8V8I?=
+ =?us-ascii?Q?9wne+n6y7p9uslMkaj5VB80csBRjMb3NlatXuZfydZrs8hZp5UC1h4PK5NZn?=
+ =?us-ascii?Q?qeNMKBdm1xkZ8tCFwBAwqeE7bbJ9EEGEt2/Y7UBH2ZbKvw1QV3YTUwicKV2Z?=
+ =?us-ascii?Q?3UkoquP1UFDeMxh5zXsa6uxrhAc6TaE9Vkv899rJbXFcADwsAliOIFkUO0pp?=
+ =?us-ascii?Q?rcKHikt6sLx1Ej54cFZ/tBh+HotVw+7IVnUzJ8lGthaa0s8pN6gkTb3LW9Ri?=
+ =?us-ascii?Q?CBcDmY+hhYovu+e51IfKZ/sQHQzaZgOKoELs8cCsaRtw928hUOHFJdzx5NOf?=
+ =?us-ascii?Q?nbAZPCTTk8vdizcOrLQr13i7pN/+5Ra7yuwq2UwqBnYhlz1vL6EJXJoRY862?=
+ =?us-ascii?Q?Ir0xruuDxqsMfHOk/fea9muX3WbNOW0PyFvuKlUmhV8jlxE9CbCMuEJha2W1?=
+ =?us-ascii?Q?aqGY8XO5Nxi8vp5lR88FXlLK6bfGkM5Zj0UIRwlklItBuSKFkc54tQzBQnxb?=
+ =?us-ascii?Q?THl4+O5qoq9Zsi5AGkaCF9+56x7S1OO22/L+YagOtW1AGFkk6NIr8LmpXTLL?=
+ =?us-ascii?Q?wY2N3oC5Imf7hGi/7dIyGrDOI0hFgDwyILSxWFwMQmyH0uxsjDaYh/W10OZd?=
+ =?us-ascii?Q?vAiFRRm/81FGKiiUeKmMfRwrY8WA3ERRBran5a/j5fbqnzIo1sjUp2Xq4yAM?=
+ =?us-ascii?Q?gOakIFaYg9Q6bQMcqhtp7O7NnEKbYXZD9JkEEOCUDqjZ+mFQLHqogXmbwUp1?=
+ =?us-ascii?Q?SecpZy33gDty+jNSCmgOxLxOyYTXZSj71kHhHXfKMH9g2I0VXmCxLa8mAA/4?=
+ =?us-ascii?Q?y8ukTVZH3K4p7wTSRS6kRoOAmKPQOnbffGt9HUUD5Faf9XBloR8aveDEOMAP?=
+ =?us-ascii?Q?yzjBMQlw+BniFN7rLzW1trAB9pykzYTVxPElPukSiEkjRsvfqgT8Xft/q0Z9?=
+ =?us-ascii?Q?DpgptqDhG/24Tb3+MZe7PS4rh9US1CyXI8WiqmSdrZk14wopmqg/b3DqWtkZ?=
+ =?us-ascii?Q?5uKk+1axBMhTCDc/jTXGQyDVB7Roimd8aQH5CSpqUC7fn0STLjNqSNiVdHdg?=
+ =?us-ascii?Q?ASvVSeIi+tbJJZF6QkZH8qH2XpXdFQlbBgu2hhMlctm0k7UMJPjTmpgmO+Lx?=
+ =?us-ascii?Q?VtT3ve9pJFZ5HVjWkHtKlfYZuiEzTFLVJq3MwLxNft67QSGH1bmM6gZFiqoD?=
+ =?us-ascii?Q?cpxQP4R0xP4+GHLksnuEotgp0a2gu4d4LwiD9Cz3WVHKbAM6/d5HvJIAMzN3?=
+ =?us-ascii?Q?DtsFVWu1JMvo7oi6VstNgi3x8owAY+emgvzYirbf3+Y0g55mv6+/RiB+Gp4d?=
+ =?us-ascii?Q?2tEaCZ9nANHvV7JDcB6kiZ2RdQVsxGe0iLUY7susz1QyqaNfGVPlEtrIWTKm?=
+ =?us-ascii?Q?G7xqQ2V/JEO6S6UFkG6bqYNdMvZvyFn1x7vjxerjlGRBaqKB2cl74rFxK4hT?=
+ =?us-ascii?Q?uVVB15nB1uRdSHbejfc7xvy2NYPbQ6ueMyXzTO61gC89CjWEBK7uq9uQzeQ7?=
+ =?us-ascii?Q?ubr9roeGWrQpckaiErI=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1a97b1ac-fbf8-4645-964a-08ddd50f1627
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Aug 2025 17:31:33.1882
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UIDPQM7vQxkJhwVkF52UEyIoAZthU14Jt3NMldnpBtNcPLTqx0R1ij/KXDTxkOBv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5898
 
-Restructure the call site for dma_contiguous_early_fixup() to
-where the reserved_mem nodes are being parsed from the DT so that
-dma_mmu_remap[] is populated before dma_contiguous_remap() is called.
+On Mon, Aug 04, 2025 at 03:42:35PM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> This patch introduces the DMA_ATTR_MMIO attribute to mark DMA buffers
+> that reside in memory-mapped I/O (MMIO) regions, such as device BARs
+> exposed through the host bridge, which are accessible for peer-to-peer
+> (P2P) DMA.
+> 
+> This attribute is especially useful for exporting device memory to other
+> devices for DMA without CPU involvement, and avoids unnecessary or
+> potentially detrimental CPU cache maintenance calls.
 
-Fixes: 8a6e02d0c00e ("of: reserved_mem: Restructure how the reserved memory regions are processed")
-Signed-off-by: Oreoluwa Babatunde <oreoluwa.babatunde@oss.qualcomm.com>
-Tested-by: William Zhang <william.zhang@broadcom.com>
----
-v4: Introduce static inline funtion for dma_contiguous_early_fixup() in
-    dma-map-ops.h to avoid compilation issues when CONFIG_DMA_CMA is not
-    defined. This allows us to drop the #ifdef check introduced in v3.
+It is worth mentioning here that dma_map_resource() and DMA_ATTR_MMIO
+are intended to be the same thing.
 
-v3: Wrap the call to dma_contiguous_early_fixup() with a check for
-    CONFIG_DMA_CMA to fix compile error seen on x86. The __weak function
-    definition introduced in v2 was not sufficient to prevent the issue,
-    so remove that as well.
-    Also add Tested-by tag from William Zhang.
+> --- a/Documentation/core-api/dma-attributes.rst
+> +++ b/Documentation/core-api/dma-attributes.rst
+> @@ -130,3 +130,10 @@ accesses to DMA buffers in both privileged "supervisor" and unprivileged
+>  subsystem that the buffer is fully accessible at the elevated privilege
+>  level (and ideally inaccessible or at least read-only at the
+>  lesser-privileged levels).
+> +
+> +DMA_ATTR_MMIO
+> +-------------
+> +
+> +This attribute is especially useful for exporting device memory to other
+> +devices for DMA without CPU involvement, and avoids unnecessary or
+> +potentially detrimental CPU cache maintenance calls.
 
-v2: Add a check for the "reusable" property to narrow things down to
-    only cma regions.
-    Also add __weak function definition for dma_contiguous_early_fixup()
-    to avoid compile errors on architectures that do not define the
-    function.
+How about
 
- drivers/of/of_reserved_mem.c | 16 ++++++++++++----
- include/linux/dma-map-ops.h  |  3 +++
- kernel/dma/contiguous.c      |  2 --
- 3 files changed, 15 insertions(+), 6 deletions(-)
+This attribute indicates the physical address is not normal system
+memory. It may not be used with kmap*()/phys_to_virt()/phys_to_page()
+functions, it may not be cachable, and access using CPU load/store
+instructions may not be allowed.
 
-diff --git a/drivers/of/of_reserved_mem.c b/drivers/of/of_reserved_mem.c
-index 77016c0cc296..7350b23cb734 100644
---- a/drivers/of/of_reserved_mem.c
-+++ b/drivers/of/of_reserved_mem.c
-@@ -25,6 +25,7 @@
- #include <linux/memblock.h>
- #include <linux/kmemleak.h>
- #include <linux/cma.h>
-+#include <linux/dma-map-ops.h>
- 
- #include "of_private.h"
- 
-@@ -175,13 +176,17 @@ static int __init __reserved_mem_reserve_reg(unsigned long node,
- 		base = dt_mem_next_cell(dt_root_addr_cells, &prop);
- 		size = dt_mem_next_cell(dt_root_size_cells, &prop);
- 
--		if (size &&
--		    early_init_dt_reserve_memory(base, size, nomap) == 0)
-+		if (size && early_init_dt_reserve_memory(base, size, nomap) == 0) {
-+			/* Architecture specific contiguous memory fixup. */
-+			if (of_flat_dt_is_compatible(node, "shared-dma-pool") &&
-+			    of_get_flat_dt_prop(node, "reusable", NULL))
-+				dma_contiguous_early_fixup(base, size);
- 			pr_debug("Reserved memory: reserved region for node '%s': base %pa, size %lu MiB\n",
- 				uname, &base, (unsigned long)(size / SZ_1M));
--		else
-+		} else {
- 			pr_err("Reserved memory: failed to reserve memory for node '%s': base %pa, size %lu MiB\n",
- 			       uname, &base, (unsigned long)(size / SZ_1M));
-+		}
- 
- 		len -= t_len;
- 	}
-@@ -472,7 +477,10 @@ static int __init __reserved_mem_alloc_size(unsigned long node, const char *unam
- 		       uname, (unsigned long)(size / SZ_1M));
- 		return -ENOMEM;
- 	}
--
-+	/* Architecture specific contiguous memory fixup. */
-+	if (of_flat_dt_is_compatible(node, "shared-dma-pool") &&
-+	    of_get_flat_dt_prop(node, "reusable", NULL))
-+		dma_contiguous_early_fixup(base, size);
- 	/* Save region in the reserved_mem array */
- 	fdt_reserved_mem_save_node(node, uname, base, size);
- 	return 0;
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index f48e5fb88bd5..332b80c42b6f 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -153,6 +153,9 @@ static inline void dma_free_contiguous(struct device *dev, struct page *page,
- {
- 	__free_pages(page, get_order(size));
- }
-+static inline void dma_contiguous_early_fixup(phys_addr_t base, unsigned long size)
-+{
-+}
- #endif /* CONFIG_DMA_CMA*/
- 
- #ifdef CONFIG_DMA_DECLARE_COHERENT
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 67af8a55185d..d9b9dcba6ff7 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -483,8 +483,6 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
- 		pr_err("Reserved memory: unable to setup CMA region\n");
- 		return err;
- 	}
--	/* Architecture specific contiguous memory fixup. */
--	dma_contiguous_early_fixup(rmem->base, rmem->size);
- 
- 	if (default_cma)
- 		dma_contiguous_default_area = cma;
--- 
-2.34.1
+Usually this will be used to describe MMIO addresses, or other non
+cachable register addresses. When DMA mapping this sort of address we
+call the operation Peer to Peer as a one device is DMA'ing to another
+device. For PCI devices the p2pdma APIs must be used to determine if
+DMA_ATTR_MMIO is appropriate.
 
+For architectures that require cache flushing for DMA coherence
+DMA_ATTR_MMIO will not perform any cache flushing. The address
+provided must never be mapped cachable into the CPU.
+
+> +/*
+> + * DMA_ATTR_MMIO - Indicates memory-mapped I/O (MMIO) region for DMA mapping
+> + *
+> + * This attribute is used for MMIO memory regions that are exposed through
+> + * the host bridge and are accessible for peer-to-peer (P2P) DMA. Memory
+> + * marked with this attribute is not system RAM and may represent device
+> + * BAR windows or peer-exposed memory.
+> + *
+> + * Typical usage is for mapping hardware memory BARs or exporting device
+> + * memory to other devices for DMA without involving main system RAM.
+> + * The attribute guarantees no CPU cache maintenance calls will be made.
+> + */
+
+I'd copy the Documentation/ text
+
+Jason
