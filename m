@@ -1,206 +1,206 @@
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2042.outbound.protection.outlook.com [40.107.92.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64318266EFC
-	for <iommu@lists.linux.dev>; Thu,  7 Aug 2025 09:59:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754560750; cv=none; b=rCCkofaaDcEh8Rt1IfOAdcMDMtYMnSiNTIX7kMS5900XDS+iwc+at65repFPPHG+uWC8CSQVQaeJ2FslfM2wl9kQGEK3bvHClLUWu+8WYLv++vBAadQi2pV3p2F2xIIX8hu4baXDqXNtjxqbywTlFkjqV7B1iNOYd5WGPAE6U3U=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754560750; c=relaxed/simple;
-	bh=DMxUrYjj8eaVrJcJUU7pioIzruw4YoLOAdkzg1ORnYE=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YXqyHftOEfWH2h27TrNwJ4Ropz5fg+uoin+Hf6WbLl5E1uwhTtMAX60YHQhTmRCCHDf3PY6qONKOdoGjM8i0ilJXIQqslwmJlDS9pUOjYew3gS9SLZYiWyW5PaipsTxw+glpaJqBlYFnH1zyfLz00gblQWcy00xSNzbQkbf0RSM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.mailfrom=mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=ukOWrGq4; arc=none smtp.client-ip=60.244.123.138
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mediatek.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0AE523507F;
+	Thu,  7 Aug 2025 12:07:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1754568442; cv=fail; b=CgMmswecCgikyoOVrQxphV9lF54UmhBaIf0LcsvST7nrNQIPOehLTZ1d47qReHV8fd9nacS2l0g/Qkr/Ii33s/oy6hQvn+7vTYklK/P0+0gjVusRLdyFOaykFeSsjuml6Sh+OOgnePROttXv/1i16RXoPQ6dpe+7PiA0mwI3j7o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1754568442; c=relaxed/simple;
+	bh=F6l2fY50NQQNgmcEzgOnkoLQqQY/nVWmSnWhna8kOmA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=iaqJZJNJP/e9kh6l5ACnHSk5wKRzFTwM6QzCgfT4QSnH+0AoCA30hBbgD4LVfK+QQp8cmV/FBbJ+C+4bKvRAgnaW2pjp2izShTXfGiShXpi/Jo62r5NsTb4g7XrnMBkwbyLF6DjfPRPS+IJwZFpgz6yInWbkwnX4OIhKSYmmG2A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=emzVsmSr; arc=fail smtp.client-ip=40.107.92.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="ukOWrGq4"
-X-UUID: 2617845e737511f08871991801538c65-20250807
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-	h=Content-Type:Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=yb5FSBesMT6JpX1CwM3cVhFTXCcNWnol+0+6CIyy+ho=;
-	b=ukOWrGq4WehIKcTTN+/fWMLFyl6n1/8f8m4U78X89To3eYpbb3PuGaidRQPffO2a9xab0nZ8tmB4vlAPEmZrbVR/Pi3RGzY20qIXPGRd2OVSnFNLjDFTrXQQR0oU3Llc9CYJSgyZm/LzHXzMe5hjdX0Qi3S3eV++HSoPOCf9JSQ=;
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.3.3,REQID:953a7690-a1b8-4427-aaaf-ba935d4f3cd2,IP:0,UR
-	L:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTION:
-	release,TS:-5
-X-CID-META: VersionHash:f1326cf,CLOUDID:032031a1-1800-4e4f-b665-a3d622db32cf,B
-	ulkID:nil,BulkQuantity:0,Recheck:0,SF:81|82|102,TC:-5,Content:0|15|50,EDM:
-	-3,IP:nil,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,
-	AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0,ARC:0
-X-CID-BVR: 2,SSN|SDN
-X-CID-BAS: 2,SSN|SDN,0,_
-X-CID-FACTOR: TF_CID_SPAM_SNR
-X-CID-RHF: D41D8CD98F00B204E9800998ECF8427E
-X-UUID: 2617845e737511f08871991801538c65-20250807
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-	(envelope-from <zhengnan.chen@mediatek.com>)
-	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-	with ESMTP id 907614881; Thu, 07 Aug 2025 17:59:03 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.39; Thu, 7 Aug 2025 17:59:02 +0800
-Received: from mhfsdcap04.gcn.mediatek.inc (10.17.3.154) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.1258.39 via Frontend Transport; Thu, 7 Aug 2025 17:59:01 +0800
-From: zhengnan chen <zhengnan.chen@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Rob Herring
-	<robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
-	<conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-CC: <iommu@lists.linux.dev>, <linux-mediatek@lists.infradead.org>,
-	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>,
-	<Project_Global_Chrome_Upstream_Group@mediatek.com>, zhengnan chen
-	<zhengnan.chen@mediatek.com>
-Subject: [PATCH 3/3] iommu/mediatek: Add support for mt8189
-Date: Thu, 7 Aug 2025 17:57:48 +0800
-Message-ID: <20250807095756.11840-4-zhengnan.chen@mediatek.com>
-X-Mailer: git-send-email 2.46.0
-In-Reply-To: <20250807095756.11840-1-zhengnan.chen@mediatek.com>
-References: <20250807095756.11840-1-zhengnan.chen@mediatek.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="emzVsmSr"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Fmbjdm0YYvQX3NHptTNcgJSEIDsX5MasBpOwKCZ1LfEU+ySBuC3nu24SslkObfDngkjZqMo6dLkASJTqVVQW+vBWYvPkeRUosrx21jkNNZ4FxK9GlXCOnaLbV+aduUb/S696Pw5LrS+AVusUw/CIAlDp+ygzgllK1n983Cyh5pMgqJ//TRLSzyg+xG6k2GwsYeJneI9u5I9vQ7RSg6tkz11qjd4cFbgVDMgxTM9vC4Vi3gdBP6zu7TEhEtISqVcqSGMIu/2kzmXVAVbFwcpjzuMbXXCUa8HbFdb2vqe+GvtpsHoSfrzJQm74sBzXuC52ya0ZDszJlrrNwA4P0cHpfg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=03milDNUHNfZEReC3MBhS982jj7JRdpYUpzYTMR7X0w=;
+ b=adMiGpMMBcE4ybFOcngMUwoeO4U1sYS6egTAHwmeLxgkqN79ZLAD2dGoWpkG2/W96qpRsWHZsgpJ7iWaHaxTx1Rpt81GYR++16AoEuWFjqWFx3RrczLzO6kTXXnlJl7vMRyg0yzanOSfs4r2V3uCmEYs0Ij3xz4agx2j3odCj2Wcy3NlXMVeUlIs8jtSgC4S8RoZwWRDycl99Jk6sE7kz4DPAQoJgUvph7qB9vaNL7HGqGz/dk7x9n8xcCK2RcuSOLS2PQRpO3zAA4VQejOKb9v4kShnBO4S1Jqi0rEaqKMu97OPmS4acprn6vQLSzQO603vFV/ThwlmARzzOyqs0w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=03milDNUHNfZEReC3MBhS982jj7JRdpYUpzYTMR7X0w=;
+ b=emzVsmSrMdk5PONvW+U/XgioET3O2UKbW20frGRjl4IvJkhtM21ZHuZ2S3BUukHYx9kXF9r4mDKaymNcDCDNLZKbh0BG2t0DN/uffli51tjTrFSHlnExzQtWcTE4y3KYdl2hl5YpuwEaK6f7il4q9MJh29uH4mGdYTsu4NuctxKboLrs1yr5WOo9hE9DK9EuS6KzWC36xAB9ny5Ck7s30iT8Ad1AVexLiB1sp4zYRNnPR8eJNUzLjC4kABnohuy/Spt/RWFvVn4MY92mMpM0aSmxPFC8pw+K7VsgCQiz8wZ/dfG5aW3A8lMtqVYmikTW54RxM2rbIq49zhSSX4AJBQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by BN7PPFD3499E3E3.namprd12.prod.outlook.com (2603:10b6:40f:fc02::6e3) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8943.28; Thu, 7 Aug
+ 2025 12:07:17 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.9009.017; Thu, 7 Aug 2025
+ 12:07:16 +0000
+Date: Thu, 7 Aug 2025 09:07:15 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Leon Romanovsky <leonro@nvidia.com>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	Alexander Potapenko <glider@google.com>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
+	iommu@lists.linux.dev, Jason Wang <jasowang@redhat.com>,
+	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+	Jonathan Corbet <corbet@lwn.net>, Juergen Gross <jgross@suse.com>,
+	kasan-dev@googlegroups.com, Keith Busch <kbusch@kernel.org>,
+	linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+	linux-nvme@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+	linux-trace-kernel@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
+	Sagi Grimberg <sagi@grimberg.me>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
+	xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v1 06/16] iommu/dma: extend iommu_dma_*map_phys API to
+ handle MMIO memory
+Message-ID: <20250807120715.GF184255@nvidia.com>
+References: <cover.1754292567.git.leon@kernel.org>
+ <09c04e0428f422c1b13d2b054af16e719de318a3.1754292567.git.leon@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <09c04e0428f422c1b13d2b054af16e719de318a3.1754292567.git.leon@kernel.org>
+X-ClientProxiedBy: YT3PR01CA0060.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:82::18) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|BN7PPFD3499E3E3:EE_
+X-MS-Office365-Filtering-Correlation-Id: f9b6be84-2a34-40ae-527f-08ddd5aaf3b8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?pBh/2s3cwq6fILG20A5H9xSuWRz7opHKY6yWWOEfF8/OX/NC0xcMFsjf2hTC?=
+ =?us-ascii?Q?LWrLGR1cH2WZ/2utXoQcD6+cesHNDfMQtmMienGdzWMjm+gha4LMb/BFIYMv?=
+ =?us-ascii?Q?8CYSObGkQxnBv/Vx681Ib0nmXdebOCg40k+F0KRpNtbmdoCR+p+DVRFWPOYg?=
+ =?us-ascii?Q?yLEcQtzrqghg0n4Rvxt5CRMYvmUrFhKc1uJDmKnSw03dP7ljTjC6C3rlWNpR?=
+ =?us-ascii?Q?QKbiapBjd+WSOGHQnYE6djvNbu+kR4pHZWt8akQbuCysL8WC7jz4DhZWrw9I?=
+ =?us-ascii?Q?mZGCt4lflCXxe6Gp3UV2syIl8/aGJTzeR+GltwF1p4t0ZICqkeMgY4meIYDo?=
+ =?us-ascii?Q?xy/a43toECNxVTGuzREmsPrINijJfseloUmZ0d72XGngTXU7NwYFfREPxM8t?=
+ =?us-ascii?Q?GiHRH9HFHg5W5glk4uEKnhQ3gWmpBBHSkSwVGF6S1JmgsARU3s6799Rt8ccK?=
+ =?us-ascii?Q?uV0tKc/aV7jLqgbORnSWpHp1UCGpA0I8j66vilp8iLGNnc2W0qUuGA75RYD+?=
+ =?us-ascii?Q?nyOfXErs0VKtmHdaZumP83j7sIDzbSwOu5RwqZLAs74YOneFu0/69/N6hB6V?=
+ =?us-ascii?Q?S/onsuI8vjN0h4XQKsBC7IOeXSTLl2ZkU2GpMjqYXavVivQnZU+IRZTAf9Cx?=
+ =?us-ascii?Q?RcWwTnw3luuuf43Uz5UVSnI8ykvekDhEV+3hBCTh+Dy3XgNVcBfgXRWbl0Co?=
+ =?us-ascii?Q?x3+lJ8rYWiaKlPT1T4Xm8U7uw6byzf93NgtfIF4ZO+ci9JKvqFjIK/gIiQIu?=
+ =?us-ascii?Q?Yq+q71ZrJEGqS++mWfEPYG9Gus5PzMVN8XRMZYxglM/9IlKGC364qMr+ZNVl?=
+ =?us-ascii?Q?Y8A1PSjAsuRoJ5hOjxKdxPfZR1Kb9AebERqAADl8ns/W+dLprW75DpgMVyKl?=
+ =?us-ascii?Q?nlBDnJZct8nnEeLbsrg7OpWVatIYGU/h0vc7A9H/AXc/3MPxkD9CiUd0KG0q?=
+ =?us-ascii?Q?kfV2Hb2w+QK+w4o58Xnw4S3GcPgx7idMn+8gS/5PtBHKTPSFyLcMl7ZL7etf?=
+ =?us-ascii?Q?Z0xOD7dlB+YUAjKeXuuQOexO3+fKjyweNRw2rLqpnc3Qt63riL2PqY/C2jgH?=
+ =?us-ascii?Q?uHc0TxsSFRBklM0fmTM6K44n1ElQqDHRCB9wNGqBd6AcmuWtM+SkF+VJ/5ys?=
+ =?us-ascii?Q?xe9qLbD968i3CbuubbQH2+X8NQi9Trd9U3DQKrhh6CKPk9jLt4P5LMXN/JpX?=
+ =?us-ascii?Q?W5gAYRLv0gq2fZ1RLZX5LknmcxEdD4pBBDuz+53dusXfGIYGYRt8NizWrzFt?=
+ =?us-ascii?Q?Kz3Km81YwBEEDA7Wm2noV1T4/byot2igcPnGyjaoY6JOsnmot5mRnoCOagXk?=
+ =?us-ascii?Q?YNHU/tOS44r94V8+iFwwEUbadzp7Y954hgJrC9iLzaFKrHWEbIzTyoNGDAbP?=
+ =?us-ascii?Q?+WRg5/52Sb2zFgXiBKFsOIqJpPU2Estp7POw8OVLqnyQCJJR4S5SKrmTCQDf?=
+ =?us-ascii?Q?sKrb35QARtc=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?YWL3nMVtTPvIQWWfT+NUjYkqDLD9cQkfZORT3ejXzsCYW8FuJtNBAW0kUsCG?=
+ =?us-ascii?Q?PaoqFp/oRnLsqfFbbllAqt1q59DnY3gcKD74KPHtkx+0BRuo8hzhe9b7co83?=
+ =?us-ascii?Q?xSwMTeYj0smV0MF6qobtDBmB0bYWQ5C8Vb29I/PPDp1KpknCIEDGKogcA0K9?=
+ =?us-ascii?Q?TUvaHOwZPIbWoB1R1ulF4ffWCuq1HnNZ7ABIiOltJAnVAnHOjUg/0B4LM920?=
+ =?us-ascii?Q?Xfz3YYntlEg5bj6zrcv58U9t3CDP6/vpzJsz5e7YK4PAmcd0sKb/4MzLgnTT?=
+ =?us-ascii?Q?U7N+FJZfeZ4rfEv2+9W23/nAVWQkKzhhlq/mNIFnNdTY9xZGobO0rsQba7Dw?=
+ =?us-ascii?Q?kclREk63x995M+8dmpoRXskvRu6nMYpwcXyA0JO+zIKI2PkrAuIH7EOBovVp?=
+ =?us-ascii?Q?iuWOu3D7GKalaVyVWIzKhNBjtOy5oVwQSnYjM+tAHxmqDNptGQKP+KwWkXw/?=
+ =?us-ascii?Q?yLOWcRcAbTY8bHorIif8DIaY945+B+NGBezzUk0lrQQM4uAHfbPfbFghhurh?=
+ =?us-ascii?Q?zWqusBVnX8M3cfljGV1lulyYTQ5P4Rc2G0W8hoFBZkOKthdQ30uYUSJF2DQX?=
+ =?us-ascii?Q?vyVvM02Ve1INp3saX39l42GF7RQ6EPkr6BjRQ/fTEP7USLSrNFNCgXZC2rMc?=
+ =?us-ascii?Q?QH5BCK0yTWvsn1VZYVsXRRZluqyfWmk/y1yRj7evE2TUoF0o4+fgLS56v2S+?=
+ =?us-ascii?Q?4YfTq6Y8ltCnouUQdqROt+2OQwYiFwAjJnNgujtrta52QlUugpE1KdaAce70?=
+ =?us-ascii?Q?N2gz7EHb83C0mKza1DaCheopM938xsveOrWnp3wt6ylz4Dfk54ddhrwMbxgN?=
+ =?us-ascii?Q?dwEVR8Nr+ZTiRAtizoIuwFNydrBAl0C02g0rbxTLWGjDH4+PyYvRrG5YrC9n?=
+ =?us-ascii?Q?TnGZOSYeK34mS3P42CHl1Vr7Vx1EcTbgbfvGjexr2yjyTt8HnKUtrKs0dTzs?=
+ =?us-ascii?Q?xjKUXXLqWNcr4N3DakeIZpZKbICSqwEc57oYf8sHYq9IaozV0jpivIdqUaR2?=
+ =?us-ascii?Q?J+c1nXZaAzT12271Ol6xD2mWseZDRfxUHzliThwNljWwT61AfRnPdh69L0gx?=
+ =?us-ascii?Q?zidzNzumLor4V1TBz+z+yiozv6IH8DM+90aTSq8dhJprwlS3Hmy0f8LzT40s?=
+ =?us-ascii?Q?48srtSKtYiLas6OMRCPKR+1cS+DzQGcDfAIm50ThUB+bc5BynjNhh9bwYV6n?=
+ =?us-ascii?Q?WVyYPEeyuJh9lNYFZvm89LmgemIiAOqmdbY6noRXUi4VMUHNaIKZtGIJI7cA?=
+ =?us-ascii?Q?L+1Rd6+PatXgbpDef4yO+N4VGLxe0M+++SCsg53cjVkiWdGns101Pg+PZBxd?=
+ =?us-ascii?Q?PpMP2liM+8G8Q+GorMujpXYSam7XCBdFNkREGnbZKTULtBSTlKMuA2JD4KhE?=
+ =?us-ascii?Q?WsQh4NhxH5KoaWh/XgYTEAMcTT0pq2vidf2rIr9/KZL6aLAOXO8wuQRAMT0r?=
+ =?us-ascii?Q?zQJ5Dg4HliQ2v9/TMc5XDNQA8ztGvVZdpydNDJRa9pO9QV+VXlrxGR2PwHzN?=
+ =?us-ascii?Q?SB4KwMkIj7NaEmDyO7yAgUgB7EohTKp5uSDy9Vbln/d/Myo9fqoMxOGCiSEb?=
+ =?us-ascii?Q?gJAg8/IjOtjrrAA1Stc=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f9b6be84-2a34-40ae-527f-08ddd5aaf3b8
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Aug 2025 12:07:16.8291
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OEqLsam7ft2+HePdRB3GV9fZ3kWW/9+5neZee6v4Y+c0QZMNhmIivmjas2oxsFdA
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PPFD3499E3E3
 
-From: "zhengnan chen" <zhengnan.chen@mediatek.com>
+On Mon, Aug 04, 2025 at 03:42:40PM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> Combine iommu_dma_*map_phys with iommu_dma_*map_resource interfaces in
+> order to allow single phys_addr_t flow.
 
-Add support for mt8189 INFRA & APU & MM IOMMUs.
+Some later patch deletes iommu_dma_map_resource() ? Mention that plan here?
 
-Signed-off-by: zhengnan chen <zhengnan.chen@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 76 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 76 insertions(+)
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1193,12 +1193,17 @@ static inline size_t iova_unaligned(struct iova_domain *iovad, phys_addr_t phys,
+>  dma_addr_t iommu_dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
+>  		enum dma_data_direction dir, unsigned long attrs)
+>  {
+> -	bool coherent = dev_is_dma_coherent(dev);
+> -	int prot = dma_info_to_prot(dir, coherent, attrs);
+>  	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+>  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>  	struct iova_domain *iovad = &cookie->iovad;
+>  	dma_addr_t iova, dma_mask = dma_get_mask(dev);
+> +	bool coherent;
+> +	int prot;
+> +
+> +	if (attrs & DMA_ATTR_MMIO)
+> +		return __iommu_dma_map(dev, phys, size,
+> +				dma_info_to_prot(dir, false, attrs) | IOMMU_MMIO,
+> +				dma_get_mask(dev));
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 7af47c59b10b..8ee1208735bf 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -139,6 +139,7 @@
- /* 2 bits: iommu type */
- #define MTK_IOMMU_TYPE_MM		(0x0 << 13)
- #define MTK_IOMMU_TYPE_INFRA		(0x1 << 13)
-+#define MTK_IOMMU_TYPE_APU		(0x2 << 13)
- #define MTK_IOMMU_TYPE_MASK		(0x3 << 13)
- /* PM and clock always on. e.g. infra iommu */
- #define PM_CLK_AO			BIT(15)
-@@ -173,6 +174,7 @@ enum mtk_iommu_plat {
- 	M4U_MT8183,
- 	M4U_MT8186,
- 	M4U_MT8188,
-+	M4U_MT8189,
- 	M4U_MT8192,
- 	M4U_MT8195,
- 	M4U_MT8365,
-@@ -337,6 +339,8 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data, unsigned int ban
- #define MTK_IOMMU_4GB_MODE_REMAP_BASE	 0x140000000UL
- 
- static LIST_HEAD(m4ulist);	/* List all the M4U HWs */
-+static LIST_HEAD(apulist);	/* List the apu iommu HWs */
-+static LIST_HEAD(infralist);	/* List the iommu_infra HW */
- 
- #define for_each_m4u(data, head)  list_for_each_entry(data, head, list)
- 
-@@ -351,6 +355,15 @@ static const struct mtk_iommu_iova_region single_domain[] = {
- #define MT8192_MULTI_REGION_NR	(IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT) ? \
- 				 MT8192_MULTI_REGION_NR_MAX : 1)
- 
-+static const struct mtk_iommu_iova_region mt8189_multi_dom_apu[] = {
-+	{ .iova_base = 0x200000ULL,	.size = SZ_512M},	/* APU SECURE */
-+#if IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT)
-+	{ .iova_base = SZ_1G,		.size = 0xc0000000},	/* APU CODE */
-+	{ .iova_base = 0x70000000ULL,	.size = 0x12600000},	/* APU VLM */
-+	{ .iova_base = SZ_4G,		.size = SZ_4G * 3},	/* APU VPU */
-+#endif
-+};
-+
- static const struct mtk_iommu_iova_region mt8192_multi_dom[MT8192_MULTI_REGION_NR] = {
- 	{ .iova_base = 0x0,		.size = MTK_IOMMU_IOVA_SZ_4G},	/* 0 ~ 4G,  */
- 	#if IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT)
-@@ -1725,6 +1738,66 @@ static const struct mtk_iommu_plat_data mt8188_data_vpp = {
- 			   27, 28 /* ccu0 */, MTK_INVALID_LARBID}, {4, 6}},
- };
- 
-+static const unsigned int mt8189_apu_region_msk[][MTK_LARB_NR_MAX] = {
-+	[0] = {[0] = BIT(2)},	/* Region0: fake larb 0 APU_SECURE */
-+	[1] = {[0] = BIT(1)},	/* Region1: fake larb 0 APU_CODE */
-+	[2] = {[0] = BIT(3)},	/* Region2: fake larb 0 APU_VLM */
-+	[3] = {[0] = BIT(0)},	/* Region3: fake larb 0 APU_DATA */
-+};
-+
-+static const struct mtk_iommu_plat_data mt8189_data_apu = {
-+	.m4u_plat       = M4U_MT8189,
-+	.flags          = IOVA_34_EN | DCM_DISABLE |
-+			  MTK_IOMMU_TYPE_APU | PGTABLE_PA_35_EN,
-+	.hw_list        = &apulist,
-+	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
-+	.banks_num	= 1,
-+	.banks_enable	= {true},
-+	.iova_region	= mt8189_multi_dom_apu,
-+	.iova_region_nr	= ARRAY_SIZE(mt8189_multi_dom_apu),
-+	.larbid_remap   = {{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}},
-+	.iova_region_larb_msk = mt8189_apu_region_msk,
-+};
-+
-+static const struct mtk_iommu_plat_data mt8189_data_infra = {
-+	.m4u_plat	= M4U_MT8189,
-+	.flags		= WR_THROT_EN | DCM_DISABLE | MTK_IOMMU_TYPE_INFRA |
-+			  CFG_IFA_MASTER_IN_ATF | SHARE_PGTABLE | PGTABLE_PA_35_EN,
-+	.hw_list	= &infralist,
-+	.banks_num	= 1,
-+	.banks_enable	= {true},
-+	.inv_sel_reg	= REG_MMU_INV_SEL_GEN2,
-+	.iova_region	= single_domain,
-+	.iova_region_nr	= ARRAY_SIZE(single_domain),
-+};
-+
-+static const u32 mt8189_larb_region_msk[MT8192_MULTI_REGION_NR_MAX][MTK_LARB_NR_MAX] = {
-+	[0] = {~0, ~0, ~0, [22] = BIT(0)},	/* Region0: all ports for larb0/1/2 */
-+	[1] = {[3] = ~0, [4] = ~0},		/* Region1: all ports for larb4(3)/7(4) */
-+	[2] = {[5] = ~0, [6] = ~0,		/* Region2: all ports for larb9(5)/11(6) */
-+	       [7] = ~0, [8] = ~0,		/* Region2: all ports for larb13(7)/14(8) */
-+	       [9] = ~0, [10] = ~0,		/* Region2: all ports for larb16(9)/17(10) */
-+	       [11] = ~0, [12] = ~0,		/* Region2: all ports for larb19(11)/20(12) */
-+	       [21] = ~0},			/* Region2: larb21 fake GCE larb */
-+};
-+
-+static const struct mtk_iommu_plat_data mt8189_data_mm = {
-+	.m4u_plat	= M4U_MT8189,
-+	.flags		= HAS_BCLK | HAS_SUB_COMM_3BITS | OUT_ORDER_WR_EN |
-+			  WR_THROT_EN | IOVA_34_EN | MTK_IOMMU_TYPE_MM |
-+			  PGTABLE_PA_35_EN | DL_WITH_MULTI_LARB,
-+	.hw_list	= &m4ulist,
-+	.inv_sel_reg	= REG_MMU_INV_SEL_GEN2,
-+	.banks_num	= 5,
-+	.banks_enable	= {true, false, false, false, true},
-+	.iova_region	= mt8192_multi_dom,
-+	.iova_region_nr	= ARRAY_SIZE(mt8192_multi_dom),
-+	.iova_region_larb_msk = mt8189_larb_region_msk,
-+	.larbid_remap	= {{0}, {1}, {21/*GCE_D*/, 21/*GCE_M*/, 2},
-+			   {19, 20, 9, 11}, {7}, {4},
-+			   {13, 17}, {14, 16}},
-+};
-+
- static const struct mtk_iommu_plat_data mt8192_data = {
- 	.m4u_plat       = M4U_MT8192,
- 	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
-@@ -1826,6 +1899,9 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt8188-iommu-infra", .data = &mt8188_data_infra},
- 	{ .compatible = "mediatek,mt8188-iommu-vdo",   .data = &mt8188_data_vdo},
- 	{ .compatible = "mediatek,mt8188-iommu-vpp",   .data = &mt8188_data_vpp},
-+	{ .compatible = "mediatek,mt8189-iommu-apu",   .data = &mt8189_data_apu},
-+	{ .compatible = "mediatek,mt8189-iommu-infra", .data = &mt8189_data_infra},
-+	{ .compatible = "mediatek,mt8189-iommu-mm",    .data = &mt8189_data_mm},
- 	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
- 	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
- 	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
--- 
-2.46.0
+I realize that iommu_dma_map_resource() doesn't today, but shouldn't
+this be checking for swiotlb:
 
+	if (dev_use_swiotlb(dev, size, dir) &&
+	    iova_unaligned(iovad, phys, size)) {
+
+Except we have to fail for ATTR_MMIO?
+
+Now that we have ATTR_MMIO, should dma_info_to_prot() just handle it
+directly instead of open coding the | IOMMU_MMIO and messing with the
+coherent attribute?
+
+Jason
