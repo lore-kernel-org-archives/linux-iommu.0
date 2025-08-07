@@ -1,50 +1,66 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87B54255F2D
-	for <iommu@lists.linux.dev>; Thu,  7 Aug 2025 14:40:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11890263F3C
+	for <iommu@lists.linux.dev>; Thu,  7 Aug 2025 14:40:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754577648; cv=none; b=MmbWF2KMpuuC4f0fZAKGg4QxIkxb054GgKlRneFNZFI1LuLBbdeTCGmdTD/m4k6gafHoLz4XDcg55KDrZos2Fj4g3UkMsL/9pE/ASMCU8hx194GOBYWAjU0GCjrc4webNFoSSx15DQX5QTNEtq/BKbsP4YnAxEuCgUwrvbBBD4s=
+	t=1754577661; cv=none; b=HnP3NdrBpvJ/WlnNhPUuLwTVN/+r+nTlX9TB7oHeFZJOYswljbu9TCUyEfnVERNn4nFulvKGF30WwLCX4ngG/fQKTjGlD1pIA4tyMvTNRSoFnYTdyq0Rsyb2DXWL3mQfR+K9E5b6Tuxh5narffgv5BoNVAiXxjJQDE3u32CqO5k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754577648; c=relaxed/simple;
-	bh=8rfAJxFmF2Pd+SoMjgyhcZjBC7s22/gkPAdrVPBV4AI=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=LDmKhvuxa+kW208DOHXWcmxLoxuLVOcYYpAFaPruqT2MEKx0cMRb+YSGpj/O2HlaK/6rNncQUndVFPLieq7Rfks6ZHvK+GNHTrphXr1UEgUDPyD7vfOFbSz0BCLtYKDMBnj0W3U33lCiC4aE5FU1O/9GAG5RRrc5cDhP+6b9yu8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=N0R0QUrk; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1754577661; c=relaxed/simple;
+	bh=UNvtAxmLROgNUzbc11bBNIMDhX3I5pMyJHrrae5iWIY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=h9it6cAKJmjskwXkPsToMeMpPQTtepSzKHY0JvhJHyqeLcDDqRg5aFuEOPeRjveOJbZtN4M1Pv76+QJ/CL/hc4+ynF9GXDAMyosn9fcuU6wB5rFl4rgck/6bQR+b3jSqSnP5jnpEii4RSFCfDBYTgK3DeJXsO9sYbXJq5Pz6OU8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b=HW5rAlfc; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N0R0QUrk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1754577646; x=1786113646;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=8rfAJxFmF2Pd+SoMjgyhcZjBC7s22/gkPAdrVPBV4AI=;
-  b=N0R0QUrkJe09W4VFINvQcEBBL1PI8s/pH27A84YVYK28Qm86dWH+D61U
-   MtwoeZH+7de8YkOva6HW7ceUVbep5thygJP+U/dx7m3laYq1tzMdpI6fj
-   3w2To8I7AnsqQCcf2S+NLpBrejL9UGlKl3frXdOPDpmpyW4CkMT/7Ho8g
-   2HM3q63QsrmVtb8mU4r0fars94jAdmKLZrBV9bfEsi8eTdkdd3Yh8zosk
-   0RjTfirNhEjmFpsmPlOwCl6W1aBG+FoH+u08YJLrM8XnNDrs8bHdTqoJ0
-   Yq2vqyM9R5eI6YPw0M68SpG4qVliUApt/UMmbNVC9IEYI6BMg3HQ5TXPC
-   g==;
-X-CSE-ConnectionGUID: v34o11VrQqi4supNQFpYDA==
-X-CSE-MsgGUID: TvJzotGPTEu+MpNWLjQEiQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11514"; a="67505968"
-X-IronPort-AV: E=Sophos;i="6.17,271,1747724400"; 
-   d="scan'208";a="67505968"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2025 07:40:45 -0700
-X-CSE-ConnectionGUID: fsp0lPuhQciDk60mZELapQ==
-X-CSE-MsgGUID: e/4uHLauQsuQAqNJE225sA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.17,271,1747724400"; 
-   d="scan'208";a="170340530"
-Received: from xlan-mobl1.ccr.corp.intel.com (HELO [10.124.240.185]) ([10.124.240.185])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2025 07:40:41 -0700
-Message-ID: <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
-Date: Thu, 7 Aug 2025 22:40:39 +0800
+	dkim=pass (2048-bit key) header.d=suse.com header.i=@suse.com header.b="HW5rAlfc"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-451d3f72391so9400415e9.3
+        for <iommu@lists.linux.dev>; Thu, 07 Aug 2025 07:40:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=suse.com; s=google; t=1754577657; x=1755182457; darn=lists.linux.dev;
+        h=in-reply-to:autocrypt:from:content-language:references:cc:to
+         :subject:user-agent:mime-version:date:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=UNvtAxmLROgNUzbc11bBNIMDhX3I5pMyJHrrae5iWIY=;
+        b=HW5rAlfcBlG0AZPYKIfA4FWtWmZ65KOIlBshxfKnsV7WwZXRXiKZkico2Lq4LpJ03w
+         vNJb0ndi83SV0dmsPIuywVsNNBtbUba23pTZ0+gHBaSdV8CKSuj/p7NUuDLUaVBj2voS
+         scxTqxm3vdxMjepTM7SZQbwn7V9HDLh2lGIcyid9gpg3PpJxlwtkiFo7rS/6/8sn4hS2
+         Up9OFBbrpeAH2j4W5rrlhbsQZSIMdo9IrxMiOvDoaQzT4Vk26eMg5koSDFw7qgeLXqCf
+         6jWXHSj32J0gmpxUyDvcfGWfyq9qzuDRtSkxDXsf6CzXhOIHnkTAONHt37Eviub94Nuh
+         uDlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1754577657; x=1755182457;
+        h=in-reply-to:autocrypt:from:content-language:references:cc:to
+         :subject:user-agent:mime-version:date:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=UNvtAxmLROgNUzbc11bBNIMDhX3I5pMyJHrrae5iWIY=;
+        b=dxfm7lvJtIjF72MZ9efqO1hO4g5lbP5ug5w6dVI9YSFnh9uNX/RS0B4A4FHwcOvxlS
+         6NrIdsu548szXenGvQwoWQFpylBf4t/qrpVZncpqeV5qVpsEZT10lRJGEPgmbyfMyrUc
+         8LjEfbAGWvNWBXLGrAu7SwuDb01kX21XZ7iJknaFBgMM5bleazrcJhYefCXU6YGjsvUl
+         dOMilkMhgtF0TCFo4jiZoVCj4P/N+B11njZBjjIUq0ZD326KaQLgrdMoSjxFDqdO0Ug5
+         omsRA0lDXm3IbPebPrkMR60JTY3ooHYo3cYkBDApVLf7tUrt0ixoowRUIKNI09PPX2Z+
+         2xPA==
+X-Forwarded-Encrypted: i=1; AJvYcCX1Dk1khZR3SCzxbxSnSen2FSOIiy/te8l/E9ojPdA56tRU1HvwgsEo24p6FmKJxhbZzEm/5w==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwXptEdMRBLPxZzofgEQeSDSSNa9pRsM02iFNZX7VhbFGK1zS8p
+	v+LMPf6Oyg+W9Yq89zxlwSKynjxN9n1GdszTeRzVpvo3I1nyFHg+7UXMtU60J4wCotU=
+X-Gm-Gg: ASbGncsAdSmA53HgsOAWUk0o7KSHjEpkxgQlRR4X7CqGKEoc49swKvLNE/3fRUw9qvW
+	MuWvIoKN0Ql+EOHmy4bfFkcRr1ZjJ+lzECC8QmnlWonF3rkAZY0vRA0D/7vLAI8N2UOgbSIuFsQ
+	wiMp6aAAjbQHsDilStV+SUlkzwbejEUieZl/SyW7SxqrFxg9xQNn+Rochb7iwbT9hOPETrNDpbv
+	WK4teCQO0EauMRCXhN4Y/KnX+bQ4tZZYxv8Eb2Gk8PkBDmJ025u04cm4tVOSUWI58uExss1E1+i
+	A4yumCvkEizEsVEYlgO/z+YlA/uJpGnqxZs5uzJhdPlcL9lC5ShoMuacWpdeT7AovH3KyRrwUNh
+	M3M//02dTf1a6Rm2tA6qLS0PBlmsoNAARHTaKQxy1iUHqVG0LX8FL6djsLZvsv7tJEJho7knXYF
+	uJrlkv938PvfYFv/jV4MkSux0AF/pabFelDd3a1grkr4ci59sa3It/
+X-Google-Smtp-Source: AGHT+IEdsq/70nzbECt2XZv20aIclJJnJG4WOaVhcMt6Kol5NiFtvhP7+awwyCp70aSiqlFjENFKWA==
+X-Received: by 2002:a05:600c:840f:b0:459:d709:e5d4 with SMTP id 5b1f17b1804b1-459e6fb8315mr72888315e9.0.1754577657329;
+        Thu, 07 Aug 2025 07:40:57 -0700 (PDT)
+Received: from ?IPV6:2003:e5:872d:3c00:27e3:fc0:fb5:67a3? (p200300e5872d3c0027e30fc00fb567a3.dip0.t-ipconnect.de. [2003:e5:872d:3c00:27e3:fc0:fb5:67a3])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b79c3ac158sm27487389f8f.4.2025.08.07.07.40.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 07 Aug 2025 07:40:57 -0700 (PDT)
+Message-ID: <e52e54f9-5f46-4d52-b02b-3ddb497d5ed9@suse.com>
+Date: Thu, 7 Aug 2025 16:40:55 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,192 +68,193 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>,
- Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
- iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-To: Dave Hansen <dave.hansen@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
- <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
- <20250806155223.GV184255@nvidia.com>
- <d02cb97a-7cea-4ad3-82b3-89754c5278ad@intel.com>
- <20250806160904.GX184255@nvidia.com>
- <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
+Subject: Re: [PATCH v1 10/16] xen: swiotlb: Open code map_resource callback
+To: Leon Romanovsky <leon@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Leon Romanovsky <leonro@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+ Alexander Potapenko <glider@google.com>, Alex Gaynor
+ <alex.gaynor@gmail.com>, Andrew Morton <akpm@linux-foundation.org>,
+ Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
+ iommu@lists.linux.dev, Jason Wang <jasowang@redhat.com>,
+ Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+ Jonathan Corbet <corbet@lwn.net>, kasan-dev@googlegroups.com,
+ Keith Busch <kbusch@kernel.org>, linux-block@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ linux-nvme@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+ linux-trace-kernel@vger.kernel.org, Madhavan Srinivasan
+ <maddy@linux.ibm.com>, Masami Hiramatsu <mhiramat@kernel.org>,
+ Michael Ellerman <mpe@ellerman.id.au>, "Michael S. Tsirkin"
+ <mst@redhat.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
+ Sagi Grimberg <sagi@grimberg.me>, Stefano Stabellini
+ <sstabellini@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+ virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
+ xen-devel@lists.xenproject.org
+References: <cover.1754292567.git.leon@kernel.org>
+ <e69e9510d9024d664133dc788f5186aac414318e.1754292567.git.leon@kernel.org>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
+From: =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+Autocrypt: addr=jgross@suse.com; keydata=
+ xsBNBFOMcBYBCACgGjqjoGvbEouQZw/ToiBg9W98AlM2QHV+iNHsEs7kxWhKMjrioyspZKOB
+ ycWxw3ie3j9uvg9EOB3aN4xiTv4qbnGiTr3oJhkB1gsb6ToJQZ8uxGq2kaV2KL9650I1SJve
+ dYm8Of8Zd621lSmoKOwlNClALZNew72NjJLEzTalU1OdT7/i1TXkH09XSSI8mEQ/ouNcMvIJ
+ NwQpd369y9bfIhWUiVXEK7MlRgUG6MvIj6Y3Am/BBLUVbDa4+gmzDC9ezlZkTZG2t14zWPvx
+ XP3FAp2pkW0xqG7/377qptDmrk42GlSKN4z76ELnLxussxc7I2hx18NUcbP8+uty4bMxABEB
+ AAHNH0p1ZXJnZW4gR3Jvc3MgPGpncm9zc0BzdXNlLmNvbT7CwHkEEwECACMFAlOMcK8CGwMH
+ CwkIBwMCAQYVCAIJCgsEFgIDAQIeAQIXgAAKCRCw3p3WKL8TL8eZB/9G0juS/kDY9LhEXseh
+ mE9U+iA1VsLhgDqVbsOtZ/S14LRFHczNd/Lqkn7souCSoyWsBs3/wO+OjPvxf7m+Ef+sMtr0
+ G5lCWEWa9wa0IXx5HRPW/ScL+e4AVUbL7rurYMfwCzco+7TfjhMEOkC+va5gzi1KrErgNRHH
+ kg3PhlnRY0Udyqx++UYkAsN4TQuEhNN32MvN0Np3WlBJOgKcuXpIElmMM5f1BBzJSKBkW0Jc
+ Wy3h2Wy912vHKpPV/Xv7ZwVJ27v7KcuZcErtptDevAljxJtE7aJG6WiBzm+v9EswyWxwMCIO
+ RoVBYuiocc51872tRGywc03xaQydB+9R7BHPzsBNBFOMcBYBCADLMfoA44MwGOB9YT1V4KCy
+ vAfd7E0BTfaAurbG+Olacciz3yd09QOmejFZC6AnoykydyvTFLAWYcSCdISMr88COmmCbJzn
+ sHAogjexXiif6ANUUlHpjxlHCCcELmZUzomNDnEOTxZFeWMTFF9Rf2k2F0Tl4E5kmsNGgtSa
+ aMO0rNZoOEiD/7UfPP3dfh8JCQ1VtUUsQtT1sxos8Eb/HmriJhnaTZ7Hp3jtgTVkV0ybpgFg
+ w6WMaRkrBh17mV0z2ajjmabB7SJxcouSkR0hcpNl4oM74d2/VqoW4BxxxOD1FcNCObCELfIS
+ auZx+XT6s+CE7Qi/c44ibBMR7hyjdzWbABEBAAHCwF8EGAECAAkFAlOMcBYCGwwACgkQsN6d
+ 1ii/Ey9D+Af/WFr3q+bg/8v5tCknCtn92d5lyYTBNt7xgWzDZX8G6/pngzKyWfedArllp0Pn
+ fgIXtMNV+3t8Li1Tg843EXkP7+2+CQ98MB8XvvPLYAfW8nNDV85TyVgWlldNcgdv7nn1Sq8g
+ HwB2BHdIAkYce3hEoDQXt/mKlgEGsLpzJcnLKimtPXQQy9TxUaLBe9PInPd+Ohix0XOlY+Uk
+ QFEx50Ki3rSDl2Zt2tnkNYKUCvTJq7jvOlaPd6d/W0tZqpyy7KVay+K4aMobDsodB3dvEAs6
+ ScCnh03dDAFgIq5nsB11j3KPKdVoPlfucX2c7kGNH+LUMbzqV6beIENfNexkOfxHfw==
+In-Reply-To: <e69e9510d9024d664133dc788f5186aac414318e.1754292567.git.leon@kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------zbc1rtf2MP4v0hwBljje0R4r"
+
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------zbc1rtf2MP4v0hwBljje0R4r
+Content-Type: multipart/mixed; boundary="------------9ZSgHGkw4I0gfARYLaBix7N0";
+ protected-headers="v1"
+From: =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+To: Leon Romanovsky <leon@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Leon Romanovsky <leonro@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+ Alexander Potapenko <glider@google.com>, Alex Gaynor
+ <alex.gaynor@gmail.com>, Andrew Morton <akpm@linux-foundation.org>,
+ Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
+ iommu@lists.linux.dev, Jason Wang <jasowang@redhat.com>,
+ Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+ Jonathan Corbet <corbet@lwn.net>, kasan-dev@googlegroups.com,
+ Keith Busch <kbusch@kernel.org>, linux-block@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ linux-nvme@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+ linux-trace-kernel@vger.kernel.org, Madhavan Srinivasan
+ <maddy@linux.ibm.com>, Masami Hiramatsu <mhiramat@kernel.org>,
+ Michael Ellerman <mpe@ellerman.id.au>, "Michael S. Tsirkin"
+ <mst@redhat.com>, Miguel Ojeda <ojeda@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
+ Sagi Grimberg <sagi@grimberg.me>, Stefano Stabellini
+ <sstabellini@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+ virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
+ xen-devel@lists.xenproject.org
+Message-ID: <e52e54f9-5f46-4d52-b02b-3ddb497d5ed9@suse.com>
+Subject: Re: [PATCH v1 10/16] xen: swiotlb: Open code map_resource callback
+References: <cover.1754292567.git.leon@kernel.org>
+ <e69e9510d9024d664133dc788f5186aac414318e.1754292567.git.leon@kernel.org>
+In-Reply-To: <e69e9510d9024d664133dc788f5186aac414318e.1754292567.git.leon@kernel.org>
+
+--------------9ZSgHGkw4I0gfARYLaBix7N0
+Content-Type: multipart/mixed; boundary="------------MyLdgWVjx6doOE9CX8bqeBuf"
+
+--------------MyLdgWVjx6doOE9CX8bqeBuf
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
 
-On 8/7/2025 12:34 AM, Dave Hansen wrote:
-> On 8/6/25 09:09, Jason Gunthorpe wrote:
->>>>
->>>> You can't do this approach without also pushing the pages to freed on
->>>> a list and defering the free till the work. This is broadly what the
->>>> normal mm user flow is doing..
->>> FWIW, I think the simplest way to do this is to plop an unconditional
->>> schedule_work() in pte_free_kernel(). The work function will invalidate
->>> the IOTLBs and then free the page.
->>>
->>> Keep the schedule_work() unconditional to keep it simple. The
->>> schedule_work() is way cheaper than all the system-wide TLB invalidation
->>> IPIs that have to get sent as well. No need to add complexity to
->>> optimize out something that's in the noise already.
->> That works also, but now you have to allocate memory or you are
->> dead.. Is it OK these days, and safe in this code which seems a little
->> bit linked to memory management?
->>
->> The MM side avoided this by putting the list and the rcu_head in the
->> struct page.
-> 
-> I don't think you need to allocate memory. A little static structure
-> that uses the page->list and has a lock should do. Logically something
-> like this:
-> 
-> struct kernel_pgtable_work
-> {
-> 	struct list_head list;
-> 	spinlock_t lock;
-> 	struct work_struct work;
-> } kernel_pte_work;
-> 
-> pte_free_kernel()
-> {
-> 	struct page *page = ptdesc_magic();
-> 
-> 	guard(spinlock)(&kernel_pte_work.lock);
-> 	
-> 	list_add(&page->list, &kernel_pte_work.list);
-> 	schedule_work(&kernel_pte_work.work);
-> }
-> 
-> work_func()
-> {
-> 	iommu_sva_invalidate_kva();
-> 
-> 	guard(spinlock)(&kernel_pte_work.lock);
-> 
-> 	list_for_each_safe() {
-> 		page = container_of(...);
-> 		free_whatever(page);
-> 	}
-> }
-> 
-> The only wrinkle is that pte_free_kernel() itself still has a pte and
-> 'ptdesc', not a 'struct page'. But there is ptdesc->pt_list, which
-> should be unused at this point, especially for non-pgd pages on x86.
-> 
-> So, either go over to the 'struct page' earlier (maybe by open-coding
-> pagetable_dtor_free()?), or just use the ptdesc.
+T24gMDQuMDguMjUgMTQ6NDIsIExlb24gUm9tYW5vdnNreSB3cm90ZToNCj4gRnJvbTogTGVv
+biBSb21hbm92c2t5IDxsZW9ucm9AbnZpZGlhLmNvbT4NCj4gDQo+IEdlbmVyYWwgZG1hX2Rp
+cmVjdF9tYXBfcmVzb3VyY2UoKSBpcyBnb2luZyB0byBiZSByZW1vdmVkDQo+IGluIG5leHQg
+cGF0Y2gsIHNvIHNpbXBseSBvcGVuLWNvZGUgaXQgaW4geGVuIGRyaXZlci4NCj4gDQo+IFNp
+Z25lZC1vZmYtYnk6IExlb24gUm9tYW5vdnNreSA8bGVvbnJvQG52aWRpYS5jb20+DQoNClJl
+dmlld2VkLWJ5OiBKdWVyZ2VuIEdyb3NzIDxqZ3Jvc3NAc3VzZS5jb20+DQoNCg0KSnVlcmdl
+bg0K
+--------------MyLdgWVjx6doOE9CX8bqeBuf
+Content-Type: application/pgp-keys; name="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Disposition: attachment; filename="OpenPGP_0xB0DE9DD628BF132F.asc"
+Content-Description: OpenPGP public key
+Content-Transfer-Encoding: quoted-printable
 
-I refactored the code above as follows. It compiles but hasn't been
-tested yet. Does it look good to you?
+-----BEGIN PGP PUBLIC KEY BLOCK-----
 
-diff --git a/arch/x86/include/asm/pgalloc.h b/arch/x86/include/asm/pgalloc.h
-index c88691b15f3c..d9307dd09f67 100644
---- a/arch/x86/include/asm/pgalloc.h
-+++ b/arch/x86/include/asm/pgalloc.h
-@@ -10,9 +10,11 @@
+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
+kt+z4drzFUyEjLM1vVvIMjkUoJs=3D
+=3DeeAB
+-----END PGP PUBLIC KEY BLOCK-----
 
-  #define __HAVE_ARCH_PTE_ALLOC_ONE
-  #define __HAVE_ARCH_PGD_FREE
-+#define __HAVE_ARCH_PTE_FREE_KERNEL
-  #include <asm-generic/pgalloc.h>
+--------------MyLdgWVjx6doOE9CX8bqeBuf--
 
-  static inline int  __paravirt_pgd_alloc(struct mm_struct *mm) { return 
-0; }
-+void pte_free_kernel(struct mm_struct *mm, pte_t *pte);
+--------------9ZSgHGkw4I0gfARYLaBix7N0--
 
-  #ifdef CONFIG_PARAVIRT_XXL
-  #include <asm/paravirt.h>
-diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
-index ddf248c3ee7d..f9f6738dd3cc 100644
---- a/arch/x86/mm/pgtable.c
-+++ b/arch/x86/mm/pgtable.c
-@@ -2,6 +2,7 @@
-  #include <linux/mm.h>
-  #include <linux/gfp.h>
-  #include <linux/hugetlb.h>
-+#include <linux/iommu.h>
-  #include <asm/pgalloc.h>
-  #include <asm/tlb.h>
-  #include <asm/fixmap.h>
-@@ -844,3 +845,42 @@ void arch_check_zapped_pud(struct vm_area_struct 
-*vma, pud_t pud)
-  	/* See note in arch_check_zapped_pte() */
-  	VM_WARN_ON_ONCE(!(vma->vm_flags & VM_SHADOW_STACK) && pud_shstk(pud));
-  }
-+
-+static void kernel_pte_work_func(struct work_struct *work);
-+
-+static struct {
-+	struct list_head list;
-+	spinlock_t lock;
-+	struct work_struct work;
-+} kernel_pte_work = {
-+	.list = LIST_HEAD_INIT(kernel_pte_work.list),
-+	.lock = __SPIN_LOCK_UNLOCKED(kernel_pte_work.lock),
-+	.work = __WORK_INITIALIZER(kernel_pte_work.work, kernel_pte_work_func),
-+};
-+
-+static void kernel_pte_work_func(struct work_struct *work)
-+{
-+	struct page *page, *next;
-+
-+	iommu_sva_invalidate_kva_range(0, TLB_FLUSH_ALL);
-+
-+	guard(spinlock)(&kernel_pte_work.lock);
-+	list_for_each_entry_safe(page, next, &kernel_pte_work.list, lru) {
-+		list_del_init(&page->lru);
-+		pagetable_dtor_free(page_ptdesc(page));
-+	}
-+}
-+
-+/**
-+ * pte_free_kernel - free PTE-level kernel page table memory
-+ * @mm: the mm_struct of the current context
-+ * @pte: pointer to the memory containing the page table
-+ */
-+void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
-+{
-+	struct page *page = virt_to_page(pte);
-+
-+	guard(spinlock)(&kernel_pte_work.lock);
-+	list_add(&page->lru, &kernel_pte_work.list);
-+	schedule_work(&kernel_pte_work.work);
-+}
-diff --git a/include/asm-generic/pgalloc.h b/include/asm-generic/pgalloc.h
-index 3c8ec3bfea44..716ebab67636 100644
---- a/include/asm-generic/pgalloc.h
-+++ b/include/asm-generic/pgalloc.h
-@@ -46,6 +46,7 @@ static inline pte_t 
-*pte_alloc_one_kernel_noprof(struct mm_struct *mm)
-  #define pte_alloc_one_kernel(...) 
-alloc_hooks(pte_alloc_one_kernel_noprof(__VA_ARGS__))
-  #endif
+--------------zbc1rtf2MP4v0hwBljje0R4r
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature.asc"
 
-+#ifndef __HAVE_ARCH_PTE_FREE_KERNEL
-  /**
-   * pte_free_kernel - free PTE-level kernel page table memory
-   * @mm: the mm_struct of the current context
-@@ -55,6 +56,7 @@ static inline void pte_free_kernel(struct mm_struct 
-*mm, pte_t *pte)
-  {
-  	pagetable_dtor_free(virt_to_ptdesc(pte));
-  }
-+#endif
+-----BEGIN PGP SIGNATURE-----
 
-  /**
-   * __pte_alloc_one - allocate memory for a PTE-level user page table
--- 
-2.43.0
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmiUuvcFAwAAAAAACgkQsN6d1ii/Ey8T
+2gf9Fig/dfNm6Pc7N5CfTbfrvQeHxFrx0A+Lbz3wE1LBralSuURdjPw+wrBAGuNq/agCOFH7OBqC
+ayEkBjEdcL5kEblmVCgSWfcKQRq0vW5y0zkrzYglQyfuWhihBm/d56LwWxjbGku6QYLMnb5dGvHG
+wtjPE58yPWlaVaZa/NiWJLKtHyLc9Ep3+vhGNksayAXIsaRoqhk6g0dlVfOZUhQB2CTSQmBN8Cjo
+yhy4qsUiY26xJ0qhoNBaBahj9XRBQX5jz0z6IXT0xVJOTx5MoVU/ciBTMU97RmC1WbR0D5dAFfaA
+bgpP4QE+654uwyPjna/thpNWrTTm0kf3W+lFK/6fTQ==
+=Fe2s
+-----END PGP SIGNATURE-----
 
-Thanks,
-baolu
+--------------zbc1rtf2MP4v0hwBljje0R4r--
