@@ -1,66 +1,65 @@
-Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BA001A0703
-	for <iommu@lists.linux.dev>; Thu,  7 Aug 2025 15:24:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D76B3265CA4
+	for <iommu@lists.linux.dev>; Thu,  7 Aug 2025 15:24:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754580251; cv=none; b=i2h2EoXWntQSrVCeeVMxlTEADjeJnlut1zkzrbe5W/v8x4RSYYajA4NAE+8V2QNqSxDStaWx+xMBZRK0NqzY3bUE19zTHwVJTMlr/IM57yFslc2AKTVmQwDg70hcb4ExVRGG22rOn15AmueJQwwwh0vIVv34SfTqyq+Jp3ijbFk=
+	t=1754580283; cv=none; b=ViFj6Pd00yNUHQpD03FKrw4JvKf3Vm1DSPjk4v6Sd506d+F+8nhRgaInkxv9804/QZmtrqbKkilcMv+zyVobROyb1ka6xduI2yX9z/AOdOhMJiiIfnwlaXbykSZ4O1Wc7E0OUUjmdLs2XO5kcQUU8zlpi9g/nlvtLjbiZFQdgmA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754580251; c=relaxed/simple;
-	bh=k+zjVqNK6IpFaIdpP99gdR7KFIejjFIdgN3WjT8KTls=;
+	s=arc-20240116; t=1754580283; c=relaxed/simple;
+	bh=vPCxVR+G5NGRjt+TB1hTUFVksnykWa7W43n+ZaSjWDg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UQsHhgDgnm5yW3iM1vh+kn2934LgBOKjzjOMjMy28QDUmkfnZXZh3yvEy+ASbhbUufnmSybh+4q3ILIz+Xc0WVSm7Bp1OAEPl68VdZGP/C0KGuuNJkmRrXTzbbYcyOQ4a2+1rSUu5fCWGeJYbx7Y6YrDkUzy9h0kxMDnIDOtw5M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TyI2gQkQ; arc=none smtp.client-ip=209.85.214.180
+	 In-Reply-To:Content-Type; b=dECT6bhpewa/rBxyK6Cr9VgSp56znY4tON5IkgpIVYrU/4JTEfgZP2xbWIiYnUfs7WRigcQjItoZFP85GzSZzjVhC64gKYa6G01FjPn8olc76lQ+XGRUZGwPJAds571r+eXdJzVNFgNy2aVmcB4nE5EpaMquFNNVotSkMH+lWrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ivzvFuLx; arc=none smtp.client-ip=209.85.216.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TyI2gQkQ"
-Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2400f746440so8715095ad.2
-        for <iommu@lists.linux.dev>; Thu, 07 Aug 2025 08:24:08 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ivzvFuLx"
+Received: by mail-pj1-f53.google.com with SMTP id 98e67ed59e1d1-31ec651c2a1so1044960a91.0
+        for <iommu@lists.linux.dev>; Thu, 07 Aug 2025 08:24:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754580248; x=1755185048; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1754580281; x=1755185081; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=+QGSUNmqnrccosw4m2fT3iSYiKZuCt6rUjz3z0Gujdg=;
-        b=TyI2gQkQcPMRtDdpnNZNBDC7ZNsd6OpRdRLOAtjqVOFzgRb5OQYhvEi94odPf6GPa+
-         AxeM8MvbBlSlZNKlslG0nuRQv4/9wVLmPn6w4GoEL8BEl1OIqgePmjoRXuK4Q2DA0toz
-         tS7PCMCfQTMaZDIrZiTWrRpDW9+0gg1rQotlheg2VnwSiFJ5Bn81dkZHRpa7L729NHz5
-         2HejM3+aihpi+ZUkOxtOO3NcG09QmPUw6eJzVu93vzdCTFgRQ37nmy6WcIAiM3Wpmjlc
-         sQsUlXuqbhAE887iBR4pZqoN5zySONT1ee2Pu13gzYYtXgs91pAf8DilxMMpU2UkQOU0
-         +kbA==
+        bh=ew/LMoL3hX7QGRoqJTNKTE5nWlFJaJ6Bt5NtIdG/+30=;
+        b=ivzvFuLx96nnauJSYAyI/P5ey98SgzVG6TN6WwUd5jaDfGmb2PdibgQhZLoxOmgUvo
+         8i380d7yvcLVdR51iql1ssPFnQdLHLneWycu6D6wryAL/pmzJfGe2OSU+N7o7pGHhSWS
+         X6uBdtGTYdZLr0Baoun1Had+WtO3ua19+ytKJcvuyaB48zVpGNJS39iRk94R7488Ne/0
+         qHuQiopsnPbJxdPAKW8zcjSKm0zTnIwHe0vZryFAoskU6hkiBKH0fRZmhtq5nEdYJels
+         tH5IJ3xL5g/Rno5dY1a2I8W4cHQtFJWztQicQizvjP/YXPBBF8y/NXs3MLQX7irDofvK
+         Ltrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754580248; x=1755185048;
+        d=1e100.net; s=20230601; t=1754580281; x=1755185081;
         h=content-transfer-encoding:in-reply-to:autocrypt:from
          :content-language:references:cc:to:subject:user-agent:mime-version
          :date:message-id:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+QGSUNmqnrccosw4m2fT3iSYiKZuCt6rUjz3z0Gujdg=;
-        b=mMHOXwvHJayma0kzGvifkbWv9Q3OrADEdXfQzHYbrV0M4gNm76wPXh+Omy2fppR1So
-         G352/H0V21sgI9tnSosNodZofChwGPcHFkc22vqNaIM1i39ZOHKu8J9ZMzWKuEQGLjao
-         XCa+8knRyzkW3zXALOxvS4ZVf2YkTHGruiGYNpCwG6BWfqbv63N3CMUHb+ZvNW2Hwl2u
-         X3vsKMcGunALirdPmN8nhhfgLfB4fbMqRjVE6ksnBI+WNuHEcexkE2Jzbvb5FV/WZNd6
-         hfLEECGnM7G0kZJeohu+nqEdqc5N9YgMahYKUgQ2ueGqOeRSf5dSmSOdC6k53iPViRAC
-         j65A==
-X-Gm-Message-State: AOJu0Yyx3Pacx+h2Bmg+AQoM8rmXi/Tn6Ky4yXV6AnQWc2YPCwSAqsYJ
-	DXcVZcMDppQd0XdKJ6t0q4AZRQQAgJeyzPgQVMgGsxl5uC6irnQHRVYd
-X-Gm-Gg: ASbGncvAcpg7p9o3lM4ArOD5n9LwsrOD9FNjde7RpYZ0OTlKOtkzZ3uh1j6Agbockpf
-	FOlRE9O9dS6uRiW8w12Nhf7xhe6bWXRinmR4HmovHvPaHqSUjNRTD76bxcyrCj7K3grUzp5TnCq
-	nrZp9QUo8qxZ+DGfYYVUhjX5j1RNh/TYV9hPnX5zWp/PbvfjAMBjAnPm+1ZJSGJnuoIqsfxLl7A
-	qyhlKLngfIcXkBdTVIvE784JYVR+SA/z9pXzyUqbzYa5YQz+egqvsWVNh4CVWchF6+SDUe90o0e
-	+r1sJvfZl7GgqFYMYAcP831vJb3XZT5owkx8A77aJSYzm2PZmHNNYgiFuKKDdJNO9wN/W2YL1SJ
-	w7F0zoSL93h5FtaV9jZAVkQI2eDZHA668cOoOVxUU9LdO17WphAsmYsM8ui6XOWP2VstFM12GZD
-	f6wnd4ow==
-X-Google-Smtp-Source: AGHT+IEthTIgDF2dPn+C/6toUmPAco5BDAGi2NToxRPwvbHKKRXsFdxrwMuVF+pq0yI7tV4ccZs0EQ==
-X-Received: by 2002:a17:902:fc48:b0:240:fc:abd7 with SMTP id d9443c01a7336-2429f4ae2aemr126613285ad.31.1754580247407;
-        Thu, 07 Aug 2025 08:24:07 -0700 (PDT)
+        bh=ew/LMoL3hX7QGRoqJTNKTE5nWlFJaJ6Bt5NtIdG/+30=;
+        b=NMs74PgTM6cKs4k/ZTFXcePZ+5IIuDLSPgEO+GkAJqu/NyUrJyabrWm0gBI1UWjAYp
+         BcfbUiCwkGq8RfQUiYfxubRN1eucCwa7WJ+p2nUa/mXEj9cU/tXeegM2dI1DiYmIOuLI
+         Dv8XgjjcGnR5dU6gbCSBd0gUhyIZks4Xy4khAjkp5ubwXfRmd+FcXXFyK1vjVNkATeOG
+         uWpcsa6tgoY24dWnElnr7syM5yxZYeVhc7ZZ8w1CwdrMV8TwGs1P8yUEIOQsIzIqe0qR
+         eYwS4IpnD9bp3dtWnATmJsoNQZD/rKHuoAZDbHbA2PzI0U7HAqiQ1FFxsKxAPI/OiR5I
+         vRiQ==
+X-Gm-Message-State: AOJu0YwWwYnRnIHC6Ax1J1eKMYjS0UEqSgTsVFALAcQv/sbZXxcq/HED
+	WYllruGx/FHFM8xjxbhuCvfYYtzyy/S6P2uwr+1T4XLXmbvp9fFmAQ8VFAyPzJvk
+X-Gm-Gg: ASbGncuAo/3/Ok2SbfaJnM/XIst9I18sgpMb2UlP6kV1hBNVH/gfBOdbRcL9QMq8sYY
+	iCNRCAH/nj1fMAlkHo0IulTeir8fbVi0mJMgTCyMikZD9MZ8F0F8V6h/E2G7VH/qmCLXZwpvKID
+	JzTQtnnBFACU6mqs2mHBQXJIlV/P9kNa/Rgb1KupKWF3XhdM3ekrWnHH2peceQBbRw/hxeqVUtW
+	2z+WwLvFPtX9DzgLG5MTeH6KXglYO/A07JnTL9V5XVP2IObRRV9FG6GiMvHSkFvWh2Lqbc3d5cm
+	ujNPEPbz8CIV553GYlwZIEpDBn6MwKG8Voeh6trM16LXwyu3u9lm8VdbZhJqNySlYzXXl9qkGNn
+	rlbHaw9odJLGSIGaV4HumvN1EJIsFuFkOHPOXWx/e8ZgA04OR+CI+JsNgBirhV0UZAU72QIg=
+X-Google-Smtp-Source: AGHT+IHkQcwhpJOI1M0Mm3omZFlsgigoUyyKVcPwpWwDpZoSYqv1zcJ16uBSjAmw7KuWTV/GF3AM+A==
+X-Received: by 2002:a17:90b:4a04:b0:31e:6f0a:6a1a with SMTP id 98e67ed59e1d1-32166dfac71mr10079562a91.3.1754580280872;
+        Thu, 07 Aug 2025 08:24:40 -0700 (PDT)
 Received: from [192.168.0.29] (static-158-13-61-95.ipcom.comunitel.net. [95.61.13.158])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-241d1ef7562sm187340375ad.24.2025.08.07.08.23.57
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b422b7d9e30sm15818001a12.25.2025.08.07.08.24.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 07 Aug 2025 08:24:06 -0700 (PDT)
-Message-ID: <e0cf50c6-39cc-4b15-8aad-53821b5ae28e@gmail.com>
-Date: Thu, 7 Aug 2025 17:23:53 +0200
+        Thu, 07 Aug 2025 08:24:39 -0700 (PDT)
+Message-ID: <2d179e08-c6f4-4e0d-8d2c-10c643e96d5e@gmail.com>
+Date: Thu, 7 Aug 2025 17:24:28 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -68,8 +67,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/3] dt-bindings: mediatek: mt8189: Add bindings for MM &
- APU & INFRA IOMMU
+Subject: Re: [PATCH 2/3] iommu/mediatek: Add a flag DL_WITH_MULTI_LARB
 To: zhengnan chen <zhengnan.chen@mediatek.com>, Yong Wu
  <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
@@ -82,7 +80,7 @@ Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
  linux-arm-kernel@lists.infradead.org,
  Project_Global_Chrome_Upstream_Group@mediatek.com
 References: <20250807095756.11840-1-zhengnan.chen@mediatek.com>
- <20250807095756.11840-2-zhengnan.chen@mediatek.com>
+ <20250807095756.11840-3-zhengnan.chen@mediatek.com>
 Content-Language: en-US, ca-ES, es-ES
 From: Matthias Brugger <matthias.bgg@gmail.com>
 Autocrypt: addr=matthias.bgg@gmail.com; keydata=
@@ -128,359 +126,128 @@ Autocrypt: addr=matthias.bgg@gmail.com; keydata=
  +zFJv9fVUpo/bjePOL4PMP1y+PYrp4PmPmRwoklBpy1ep8m8XURv46fGUHUEIsTwPWs2Q87k
  7vjYyrcyAOarX2X5pvMQvpAMADGf2Z3wrCsDdG25w2HztweUNd9QEprtJG8GNNzMOD4cQ82T
  a7eGvPWPeXauWJDLVR9jHtWT9Ot3BQgmApLxACvwvD1a69jaFKov28SPHxUCQ9Y1Y/Ct
-In-Reply-To: <20250807095756.11840-2-zhengnan.chen@mediatek.com>
+In-Reply-To: <20250807095756.11840-3-zhengnan.chen@mediatek.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 07/08/2025 11:57, zhengnan chen wrote:
 > From: "zhengnan chen" <zhengnan.chen@mediatek.com>
 > 
-> There are three iommu in total, namely MM_IOMMU, APU_IOMMU, INFRA_IOMMU,
-> Add bindings for them.
+> Add DL_WITH_MULTI_LARB flag to support the HW which connect with
+> multiple larbs. Prepare for mt8189. In mt8189, the display connect
+> with larb1 and larb2 at the same time. Thus, we should add link
+> between disp-dev with these two larbs.
 > 
 > Signed-off-by: zhengnan chen <zhengnan.chen@mediatek.com>
 
 Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
 > ---
->   .../bindings/iommu/mediatek,iommu.yaml        |   7 +
->   .../memory/mediatek,mt8189-memory-port.h      | 283 ++++++++++++++++++
->   2 files changed, 290 insertions(+)
->   create mode 100644 include/dt-bindings/memory/mediatek,mt8189-memory-port.h
+>   drivers/iommu/mtk_iommu.c | 56 ++++++++++++++++++++++++++++++---------
+>   1 file changed, 43 insertions(+), 13 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> index 75750c64157c..32ca618c08dc 100644
-> --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
-> @@ -82,6 +82,9 @@ properties:
->             - mediatek,mt8188-iommu-vdo        # generation two
->             - mediatek,mt8188-iommu-vpp        # generation two
->             - mediatek,mt8188-iommu-infra      # generation two
-> +          - mediatek,mt8189-iommu-apu        # generation two
-> +          - mediatek,mt8189-iommu-infra      # generation two
-> +          - mediatek,mt8189-iommu-mm         # generation two
->             - mediatek,mt8192-m4u  # generation two
->             - mediatek,mt8195-iommu-vdo        # generation two
->             - mediatek,mt8195-iommu-vpp        # generation two
-> @@ -128,6 +131,7 @@ properties:
->         This is the mtk_m4u_id according to the HW. Specifies the mtk_m4u_id as
->         defined in
->         dt-binding/memory/mediatek,mt8188-memory-port.h for mt8188,
-> +      dt-binding/memory/mediatek,mt8189-memory-port.h for mt8189,
->         dt-binding/memory/mt2701-larb-port.h for mt2701 and mt7623,
->         dt-binding/memory/mt2712-larb-port.h for mt2712,
->         dt-binding/memory/mt6779-larb-port.h for mt6779,
-> @@ -164,6 +168,7 @@ allOf:
->                 - mediatek,mt8186-iommu-mm
->                 - mediatek,mt8188-iommu-vdo
->                 - mediatek,mt8188-iommu-vpp
-> +              - mediatek,mt8189-iommu-mm
->                 - mediatek,mt8192-m4u
->                 - mediatek,mt8195-iommu-vdo
->                 - mediatek,mt8195-iommu-vpp
-> @@ -180,6 +185,7 @@ allOf:
->               - mediatek,mt8186-iommu-mm
->               - mediatek,mt8188-iommu-vdo
->               - mediatek,mt8188-iommu-vpp
-> +            - mediatek,mt8189-iommu-mm
->               - mediatek,mt8192-m4u
->               - mediatek,mt8195-iommu-vdo
->               - mediatek,mt8195-iommu-vpp
-> @@ -208,6 +214,7 @@ allOf:
->               contains:
->                 enum:
->                   - mediatek,mt8188-iommu-infra
-> +                - mediatek,mt8189-iommu-infra
->                   - mediatek,mt8195-iommu-infra
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 0e0285348d2b..7af47c59b10b 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -147,6 +147,7 @@
+>   #define TF_PORT_TO_ADDR_MT8173		BIT(18)
+>   #define INT_ID_PORT_WIDTH_6		BIT(19)
+>   #define CFG_IFA_MASTER_IN_ATF		BIT(20)
+> +#define DL_WITH_MULTI_LARB		BIT(21)
 >   
->       then:
-> diff --git a/include/dt-bindings/memory/mediatek,mt8189-memory-port.h b/include/dt-bindings/memory/mediatek,mt8189-memory-port.h
-> new file mode 100644
-> index 000000000000..849fead3d0f7
-> --- /dev/null
-> +++ b/include/dt-bindings/memory/mediatek,mt8189-memory-port.h
-> @@ -0,0 +1,283 @@
-> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-> +/*
-> + * Copyright (c) 2025 MediaTek Inc.
-> + * Author: Zhengnan chen <zhengnan.chen@mediatek.com>
-> + */
-> +#ifndef _DT_BINDINGS_MEMORY_MEDIATEK_MT8189_MEMORY_PORT_H_
-> +#define _DT_BINDINGS_MEMORY_MEDIATEK_MT8189_MEMORY_PORT_H_
+>   #define MTK_IOMMU_HAS_FLAG_MASK(pdata, _x, mask)	\
+>   				((((pdata)->flags) & (mask)) == (_x))
+> @@ -865,6 +866,7 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+>   	struct mtk_iommu_data *data = dev_iommu_priv_get(dev);
+>   	struct device_link *link;
+>   	struct device *larbdev;
+> +	unsigned long larbid_msk = 0;
+>   	unsigned int larbid, larbidx, i;
+>   
+>   	if (!MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM))
+> @@ -872,30 +874,50 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+>   
+>   	/*
+>   	 * Link the consumer device with the smi-larb device(supplier).
+> -	 * The device that connects with each a larb is a independent HW.
+> -	 * All the ports in each a device should be in the same larbs.
+> +	 * w/DL_WITH_MULTI_LARB: the master may connect with multi larbs,
+> +	 * we should create device link with each larb.
+> +	 * w/o DL_WITH_MULTI_LARB: the master must connect with one larb,
+> +	 * otherwise fail.
+>   	 */
+>   	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
+>   	if (larbid >= MTK_LARB_NR_MAX)
+>   		return ERR_PTR(-EINVAL);
+>   
+> +	larbid_msk |= BIT(larbid);
 > +
-> +#include <dt-bindings/memory/mtk-memory-port.h>
+>   	for (i = 1; i < fwspec->num_ids; i++) {
+>   		larbidx = MTK_M4U_TO_LARB(fwspec->ids[i]);
+> -		if (larbid != larbidx) {
+> +		if (MTK_IOMMU_HAS_FLAG(data->plat_data, DL_WITH_MULTI_LARB)) {
+> +			larbid_msk |= BIT(larbidx);
+> +		} else if (larbid != larbidx) {
+>   			dev_err(dev, "Can only use one larb. Fail@larb%d-%d.\n",
+>   				larbid, larbidx);
+>   			return ERR_PTR(-EINVAL);
+>   		}
+>   	}
+> -	larbdev = data->larb_imu[larbid].dev;
+> -	if (!larbdev)
+> -		return ERR_PTR(-EINVAL);
+>   
+> -	link = device_link_add(dev, larbdev,
+> -			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
+> -	if (!link)
+> -		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
+> +	for_each_set_bit(larbid, &larbid_msk, 32) {
+> +		larbdev = data->larb_imu[larbid].dev;
+> +		if (!larbdev)
+> +			return ERR_PTR(-EINVAL);
 > +
-> +#define SMI_L0_ID		(0)
-> +#define SMI_L1_ID		(1)
-> +#define SMI_L2_ID		(2)
-> +#define SMI_L4_ID		(3)
-> +#define SMI_L7_ID		(4)
-> +#define SMI_L9_ID		(5)
-> +#define SMI_L11_ID		(6)
-> +#define SMI_L13_ID		(7)
-> +#define SMI_L14_ID		(8)
-> +#define SMI_L16_ID		(9)
-> +#define SMI_L17_ID		(10)
-> +#define SMI_L19_ID		(11)
-> +#define SMI_L20_ID		(12)
+> +		link = device_link_add(dev, larbdev,
+> +				       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
+> +		if (!link) {
+> +			dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
+> +			goto link_remove;
+> +		}
+> +	}
 > +
-> +/*
-> + * MM IOMMU supports 16GB dma address. We separate it to four ranges:
-> + * 0 ~ 4G; 4G ~ 8G; 8G ~ 12G; 12G ~ 16G, we could adjust these masters
-> + * locate in anyone region. BUT:
-> + * a) Make sure all the ports inside a larb are in one range.
-> + * b) The iova of any master can NOT cross the 4G/8G/12G boundary.
-> + *
-> + * This is the suggested mapping in this SoC:
-> + *
-> + * modules		dma-address-region	larbs-ports
-> + * disp/mdp		0 ~ 4G			larb0/1/2
-> + * vcodec		4G ~ 8G                 larb4/7
-> + * imgsys/cam/ipesys	8G ~ 12G                the other larbs.
-> + * N/A			12G ~ 16G
-> + */
+>   	return &data->iommu;
 > +
-> +/* Larb0 -- disp */
-> +#define M4U_L0_P0_DISP_OVL0_4L_HDR		MTK_M4U_ID(SMI_L0_ID, 0)
-> +#define M4U_L0_P1_DISP_OVL0_4L_RDMA0		MTK_M4U_ID(SMI_L0_ID, 1)
-> +#define M4U_L0_P2_DISP_OVL1_4L_RDMA1		MTK_M4U_ID(SMI_L0_ID, 2)
-> +#define M4U_L0_P3_DISP_OVL0_4L_RDMA2		MTK_M4U_ID(SMI_L0_ID, 3)
-> +#define M4U_L0_P4_DISP_OVL1_4L_RDMA3		MTK_M4U_ID(SMI_L0_ID, 4)
-> +#define M4U_L0_P5_DISP_RDMA0			MTK_M4U_ID(SMI_L0_ID, 5)
-> +#define M4U_L0_P6_DISP_WDMA0			MTK_M4U_ID(SMI_L0_ID, 6)
-> +#define M4U_L0_P7_DISP_FAKE_ENG0		MTK_M4U_ID(SMI_L0_ID, 7)
+> +link_remove:
+> +	for_each_set_bit(i, &larbid_msk, larbid) {
+> +		larbdev = data->larb_imu[i].dev;
+> +		device_link_remove(dev, larbdev);
+> +	}
 > +
-> +/* Larb1 -- disp */
-> +#define M4U_L1_P0_DISP_OVL1_4L_HDR		MTK_M4U_ID(SMI_L1_ID, 0)
-> +#define M4U_L1_P1_DISP_OVL1_4L_RDMA0		MTK_M4U_ID(SMI_L1_ID, 1)
-> +#define M4U_L1_P2_DISP_OVL0_4L_RDMA1		MTK_M4U_ID(SMI_L1_ID, 2)
-> +#define M4U_L1_P3_DISP_OVL1_4L_RDMA2		MTK_M4U_ID(SMI_L1_ID, 3)
-> +#define M4U_L1_P4_DISP_OVL0_4L_RDMA3		MTK_M4U_ID(SMI_L1_ID, 4)
-> +#define M4U_L1_P5_DISP_RDMA1			MTK_M4U_ID(SMI_L1_ID, 5)
-> +#define M4U_L1_P6_DISP_WDMA1			MTK_M4U_ID(SMI_L1_ID, 6)
-> +#define M4U_L1_P7_DISP_FAKE_ENG1		MTK_M4U_ID(SMI_L1_ID, 7)
+> +	return ERR_PTR(-ENODEV);
+>   }
+>   
+>   static void mtk_iommu_release_device(struct device *dev)
+> @@ -903,11 +925,19 @@ static void mtk_iommu_release_device(struct device *dev)
+>   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+>   	struct mtk_iommu_data *data;
+>   	struct device *larbdev;
+> -	unsigned int larbid;
+> +	unsigned int larbid, i;
+> +	unsigned long larbid_msk = 0;
+>   
+>   	data = dev_iommu_priv_get(dev);
+> -	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
+> -		larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
+> +	if (!MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM))
+> +		return;
 > +
-> +/* Larb2 -- mmlsys(mdp) */
-> +#define M4U_L2_P0_MDP_RDMA0			MTK_M4U_ID(SMI_L2_ID, 0)
-> +#define M4U_L2_P1_MDP_RDMA1			MTK_M4U_ID(SMI_L2_ID, 1)
-> +#define M4U_L2_P2_MDP_WROT0			MTK_M4U_ID(SMI_L2_ID, 2)
-> +#define M4U_L2_P3_MDP_WROT1			MTK_M4U_ID(SMI_L2_ID, 3)
-> +#define M4U_L2_P4_MDP_DUMMY0			MTK_M4U_ID(SMI_L2_ID, 4)
-> +#define M4U_L2_P5_MDP_DUMMY1			MTK_M4U_ID(SMI_L2_ID, 5)
-> +#define M4U_L2_P6_MDP_RDMA2			MTK_M4U_ID(SMI_L2_ID, 6)
-> +#define M4U_L2_P7_MDP_RDMA3			MTK_M4U_ID(SMI_L2_ID, 7)
-> +#define M4U_L2_P8_MDP_WROT2			MTK_M4U_ID(SMI_L2_ID, 8)
-> +#define M4U_L2_P9_MDP_WROT3			MTK_M4U_ID(SMI_L2_ID, 9)
-> +#define M4U_L2_P10_DISP_FAKE0			MTK_M4U_ID(SMI_L2_ID, 10)
+> +	for (i = 0; i < fwspec->num_ids; i++) {
+> +		larbid = MTK_M4U_TO_LARB(fwspec->ids[i]);
+> +		larbid_msk |= BIT(larbid);
+> +	}
 > +
-> +/* Larb3: null */
-> +
-> +/* Larb4 -- vdec */
-> +#define M4U_L4_P0_HW_VDEC_MC_EXT		MTK_M4U_ID(SMI_L4_ID, 0)
-> +#define M4U_L4_P1_HW_VDEC_UFO_EXT		MTK_M4U_ID(SMI_L4_ID, 1)
-> +#define M4U_L4_P2_HW_VDEC_PP_EXT		MTK_M4U_ID(SMI_L4_ID, 2)
-> +#define M4U_L4_P3_HW_VDEC_PRED_RD_EXT		MTK_M4U_ID(SMI_L4_ID, 3)
-> +#define M4U_L4_P4_HW_VDEC_PRED_WR_EXT		MTK_M4U_ID(SMI_L4_ID, 4)
-> +#define M4U_L4_P5_HW_VDEC_PPWRAP_EXT		MTK_M4U_ID(SMI_L4_ID, 5)
-> +#define M4U_L4_P6_HW_VDEC_TILE_EXT		MTK_M4U_ID(SMI_L4_ID, 6)
-> +#define M4U_L4_P7_HW_VDEC_VLD_EXT		MTK_M4U_ID(SMI_L4_ID, 7)
-> +#define M4U_L4_P8_HW_VDEC_VLD2_EXT		MTK_M4U_ID(SMI_L4_ID, 8)
-> +#define M4U_L4_P9_HW_VDEC_AVC_MV_EXT		MTK_M4U_ID(SMI_L4_ID, 9)
-> +#define M4U_L4_P10_HW_VDEC_RG_CTRL_DMA_EXT	MTK_M4U_ID(SMI_L4_ID, 10)
-> +#define M4U_L4_P11_HW_VDEC_UFO_ENC_EXT		MTK_M4U_ID(SMI_L4_ID, 11)
-> +
-> +/* Larb5: null */
-> +
-> +/* Larb6: null */
-> +
-> +/* Larb7 -- venc */
-> +#define M4U_L7_P0_VENC_RCPU			MTK_M4U_ID(SMI_L7_ID, 0)
-> +#define M4U_L7_P1_VENC_REC			MTK_M4U_ID(SMI_L7_ID, 1)
-> +#define M4U_L7_P2_VENC_BSDMA			MTK_M4U_ID(SMI_L7_ID, 2)
-> +#define M4U_L7_P3_VENC_SV_COMV			MTK_M4U_ID(SMI_L7_ID, 3)
-> +#define M4U_L7_P4_VENC_RD_COMV			MTK_M4U_ID(SMI_L7_ID, 4)
-> +#define M4U_L7_P5_JPGENC_Y_RDMA			MTK_M4U_ID(SMI_L7_ID, 5)
-> +#define M4U_L7_P6_JPGENC_C_RDMA			MTK_M4U_ID(SMI_L7_ID, 6)
-> +#define M4U_L7_P7_JPGENC_Q_RDMA			MTK_M4U_ID(SMI_L7_ID, 7)
-> +#define M4U_L7_P8_VENC_SUB_W_LUMA		MTK_M4U_ID(SMI_L7_ID, 8)
-> +#define M4U_L7_P9_JPGENC_BSDMA			MTK_M4U_ID(SMI_L7_ID, 9)
-> +#define M4U_L7_P10_VENC_CUR_LUMA		MTK_M4U_ID(SMI_L7_ID, 10)
-> +#define M4U_L7_P11_VENC_CUR_CHROMA		MTK_M4U_ID(SMI_L7_ID, 11)
-> +#define M4U_L7_P12_VENC_REF_LUMA		MTK_M4U_ID(SMI_L7_ID, 12)
-> +#define M4U_L7_P13_VENC_REF_CHROMA		MTK_M4U_ID(SMI_L7_ID, 13)
-> +#define M4U_L7_P14_VENC_SUB_R_LUMA		MTK_M4U_ID(SMI_L7_ID, 14)
-> +#define M4U_L7_P15_JPGDEC_WDMA			MTK_M4U_ID(SMI_L7_ID, 15)
-> +#define M4U_L7_P16_JPGDEC_BSDMA			MTK_M4U_ID(SMI_L7_ID, 16)
-> +#define M4U_L7_P17_JPGDEC_HUFF_OFFSET		MTK_M4U_ID(SMI_L7_ID, 17)
-> +
-> +/* Larb8: null */
-> +
-> +/* Larb9 --imgsys */
-> +#define M4U_L9_P0_IMGI_D1			MTK_M4U_ID(SMI_L9_ID, 0)
-> +#define M4U_L9_P1_IMGBI_D1			MTK_M4U_ID(SMI_L9_ID, 1)
-> +#define M4U_L9_P2_DMGI_D1			MTK_M4U_ID(SMI_L9_ID, 2)
-> +#define M4U_L9_P3_DEPI_D1			MTK_M4U_ID(SMI_L9_ID, 3)
-> +#define M4U_L9_P4_LCE_D1			MTK_M4U_ID(SMI_L9_ID, 4)
-> +#define M4U_L9_P5_SMTI_D1			MTK_M4U_ID(SMI_L9_ID, 5)
-> +#define M4U_L9_P6_SMTO_D2			MTK_M4U_ID(SMI_L9_ID, 6)
-> +#define M4U_L9_P7_SMTO_D1			MTK_M4U_ID(SMI_L9_ID, 7)
-> +#define M4U_L9_P8_CRZO_D1			MTK_M4U_ID(SMI_L9_ID, 8)
-> +#define M4U_L9_P9_IMG3O_D1			MTK_M4U_ID(SMI_L9_ID, 9)
-> +#define M4U_L9_P10_VIPI_D1			MTK_M4U_ID(SMI_L9_ID, 10)
-> +#define M4U_L9_P11_SMTI_D5			MTK_M4U_ID(SMI_L9_ID, 11)
-> +#define M4U_L9_P12_TIMGO_D1			MTK_M4U_ID(SMI_L9_ID, 12)
-> +#define M4U_L9_P13_UFBC_W0			MTK_M4U_ID(SMI_L9_ID, 13)
-> +#define M4U_L9_P14_UFBC_R0			MTK_M4U_ID(SMI_L9_ID, 14)
-> +#define M4U_L9_P15_WPE_RDMA1			MTK_M4U_ID(SMI_L9_ID, 15)
-> +#define M4U_L9_P16_WPE_RDMA0			MTK_M4U_ID(SMI_L9_ID, 16)
-> +#define M4U_L9_P17_WPE_WDMA			MTK_M4U_ID(SMI_L9_ID, 17)
-> +#define M4U_L9_P18_MFB_RDMA0			MTK_M4U_ID(SMI_L9_ID, 18)
-> +#define M4U_L9_P19_MFB_RDMA1			MTK_M4U_ID(SMI_L9_ID, 19)
-> +#define M4U_L9_P20_MFB_RDMA2			MTK_M4U_ID(SMI_L9_ID, 20)
-> +#define M4U_L9_P21_MFB_RDMA3			MTK_M4U_ID(SMI_L9_ID, 21)
-> +#define M4U_L9_P22_MFB_RDMA4			MTK_M4U_ID(SMI_L9_ID, 22)
-> +#define M4U_L9_P23_MFB_RDMA5			MTK_M4U_ID(SMI_L9_ID, 23)
-> +#define M4U_L9_P24_MFB_WDMA0			MTK_M4U_ID(SMI_L9_ID, 24)
-> +#define M4U_L9_P25_MFB_WDMA1			MTK_M4U_ID(SMI_L9_ID, 25)
-> +#define M4U_L9_P26_RESERVE6			MTK_M4U_ID(SMI_L9_ID, 26)
-> +#define M4U_L9_P27_RESERVE7			MTK_M4U_ID(SMI_L9_ID, 27)
-> +#define M4U_L9_P28_RESERVE8			MTK_M4U_ID(SMI_L9_ID, 28)
-> +
-> +/* Larb10: null */
-> +
-> +/* Larb11 -- imgsys */
-> +#define M4U_L11_P0_IMGI_D1			MTK_M4U_ID(SMI_L11_ID, 0)
-> +#define M4U_L11_P1_IMGBI_D1			MTK_M4U_ID(SMI_L11_ID, 1)
-> +#define M4U_L11_P2_DMGI_D1			MTK_M4U_ID(SMI_L11_ID, 2)
-> +#define M4U_L11_P3_DEPI_D1			MTK_M4U_ID(SMI_L11_ID, 3)
-> +#define M4U_L11_P4_LCE_D1			MTK_M4U_ID(SMI_L11_ID, 4)
-> +#define M4U_L11_P5_SMTI_D1			MTK_M4U_ID(SMI_L11_ID, 5)
-> +#define M4U_L11_P6_SMTO_D2			MTK_M4U_ID(SMI_L11_ID, 6)
-> +#define M4U_L11_P7_SMTO_D1			MTK_M4U_ID(SMI_L11_ID, 7)
-> +#define M4U_L11_P8_CRZO_D1			MTK_M4U_ID(SMI_L11_ID, 8)
-> +#define M4U_L11_P9_IMG3O_D1			MTK_M4U_ID(SMI_L11_ID, 9)
-> +#define M4U_L11_P10_VIPI_D1			MTK_M4U_ID(SMI_L11_ID, 10)
-> +#define M4U_L11_P11_SMTI_D5			MTK_M4U_ID(SMI_L11_ID, 11)
-> +#define M4U_L11_P12_TIMGO_D1			MTK_M4U_ID(SMI_L11_ID, 12)
-> +#define M4U_L11_P13_UFBC_W0			MTK_M4U_ID(SMI_L11_ID, 13)
-> +#define M4U_L11_P14_UFBC_R0			MTK_M4U_ID(SMI_L11_ID, 14)
-> +#define M4U_L11_P15_WPE_RDMA1			MTK_M4U_ID(SMI_L11_ID, 15)
-> +#define M4U_L11_P16_WPE_RDMA0			MTK_M4U_ID(SMI_L11_ID, 16)
-> +#define M4U_L11_P17_WPE_WDMA			MTK_M4U_ID(SMI_L11_ID, 17)
-> +#define M4U_L11_P18_MFB_RDMA0			MTK_M4U_ID(SMI_L11_ID, 18)
-> +#define M4U_L11_P19_MFB_RDMA1			MTK_M4U_ID(SMI_L11_ID, 19)
-> +#define M4U_L11_P20_MFB_RDMA2			MTK_M4U_ID(SMI_L11_ID, 20)
-> +#define M4U_L11_P21_MFB_RDMA3			MTK_M4U_ID(SMI_L11_ID, 21)
-> +#define M4U_L11_P22_MFB_RDMA4			MTK_M4U_ID(SMI_L11_ID, 22)
-> +#define M4U_L11_P23_MFB_RDMA5			MTK_M4U_ID(SMI_L11_ID, 23)
-> +#define M4U_L11_P24_MFB_WDMA0			MTK_M4U_ID(SMI_L11_ID, 24)
-> +#define M4U_L11_P25_MFB_WDMA1			MTK_M4U_ID(SMI_L11_ID, 25)
-> +#define M4U_L11_P26_RESERVE6			MTK_M4U_ID(SMI_L11_ID, 26)
-> +#define M4U_L11_P27_RESERVE7			MTK_M4U_ID(SMI_L11_ID, 27)
-> +#define M4U_L11_P28_RESERVE8			MTK_M4U_ID(SMI_L11_ID, 28)
-> +
-> +/* Larb12: null */
-> +
-> +/* Larb13 -- cam */
-> +#define M4U_L13_P0_MRAWI			MTK_M4U_ID(SMI_L13_ID, 0)
-> +#define M4U_L13_P1_MRAWO_0			MTK_M4U_ID(SMI_L13_ID, 1)
-> +#define M4U_L13_P2_MRAWO_1			MTK_M4U_ID(SMI_L13_ID, 2)
-> +#define M4U_L13_P3_CAMSV_1			MTK_M4U_ID(SMI_L13_ID, 3)
-> +#define M4U_L13_P4_CAMSV_2			MTK_M4U_ID(SMI_L13_ID, 4)
-> +#define M4U_L13_P5_CAMSV_3			MTK_M4U_ID(SMI_L13_ID, 5)
-> +#define M4U_L13_P6_CAMSV_4			MTK_M4U_ID(SMI_L13_ID, 6)
-> +#define M4U_L13_P7_CAMSV_5			MTK_M4U_ID(SMI_L13_ID, 7)
-> +#define M4U_L13_P8_CAMSV_6			MTK_M4U_ID(SMI_L13_ID, 8)
-> +#define M4U_L13_P9_CCUI				MTK_M4U_ID(SMI_L13_ID, 9)
-> +#define M4U_L13_P10_CCUO			MTK_M4U_ID(SMI_L13_ID, 10)
-> +#define M4U_L13_P11_FAKE			MTK_M4U_ID(SMI_L13_ID, 11)
-> +#define M4U_L13_P12_PDAI_0			MTK_M4U_ID(SMI_L13_ID, 12)
-> +#define M4U_L13_P13_PDAI_1			MTK_M4U_ID(SMI_L13_ID, 13)
-> +#define M4U_L13_P14_PDAO			MTK_M4U_ID(SMI_L13_ID, 14)
-> +
-> +/* Larb14 -- cam */
-> +#define M4U_L14_P0_RESERVE			MTK_M4U_ID(SMI_L14_ID, 0)
-> +#define M4U_L14_P1_RESERVE			MTK_M4U_ID(SMI_L14_ID, 1)
-> +#define M4U_L14_P2_RESERVE			MTK_M4U_ID(SMI_L14_ID, 2)
-> +#define M4U_L14_P3_CAMSV_0			MTK_M4U_ID(SMI_L14_ID, 3)
-> +#define M4U_L14_P4_CCUI				MTK_M4U_ID(SMI_L14_ID, 4)
-> +#define M4U_L14_P5_CCUO				MTK_M4U_ID(SMI_L14_ID, 5)
-> +#define M4U_L14_P6_CAMSV_7			MTK_M4U_ID(SMI_L14_ID, 6)
-> +#define M4U_L14_P7_CAMSV_8			MTK_M4U_ID(SMI_L14_ID, 7)
-> +#define M4U_L14_P8_CAMSV_9			MTK_M4U_ID(SMI_L14_ID, 8)
-> +#define M4U_L14_P9_CAMSV_10			MTK_M4U_ID(SMI_L14_ID, 9)
-> +
-> +/* Larb15: null */
-> +
-> +/* Larb16 -- cam */
-> +#define M4U_L16_P0_IMGO_R1_A			MTK_M4U_ID(SMI_L16_ID, 0)
-> +#define M4U_L16_P1_RRZO_R1_A			MTK_M4U_ID(SMI_L16_ID, 1)
-> +#define M4U_L16_P2_CQI_R1_A			MTK_M4U_ID(SMI_L16_ID, 2)
-> +#define M4U_L16_P3_BPCI_R1_A			MTK_M4U_ID(SMI_L16_ID, 3)
-> +#define M4U_L16_P4_YUVO_R1_A			MTK_M4U_ID(SMI_L16_ID, 4)
-> +#define M4U_L16_P5_UFDI_R2_A			MTK_M4U_ID(SMI_L16_ID, 5)
-> +#define M4U_L16_P6_RAWI_R2_A			MTK_M4U_ID(SMI_L16_ID, 6)
-> +#define M4U_L16_P7_RAWI_R3_A			MTK_M4U_ID(SMI_L16_ID, 7)
-> +#define M4U_L16_P8_AAO_R1_A			MTK_M4U_ID(SMI_L16_ID, 8)
-> +#define M4U_L16_P9_AFO_R1_A			MTK_M4U_ID(SMI_L16_ID, 9)
-> +#define M4U_L16_P10_FLKO_R1_A			MTK_M4U_ID(SMI_L16_ID, 10)
-> +#define M4U_L16_P11_LCESO_R1_A			MTK_M4U_ID(SMI_L16_ID, 11)
-> +#define M4U_L16_P12_CRZO_R1_A			MTK_M4U_ID(SMI_L16_ID, 12)
-> +#define M4U_L16_P13_LTMSO_R1_A			MTK_M4U_ID(SMI_L16_ID, 13)
-> +#define M4U_L16_P14_RSSO_R1_A			MTK_M4U_ID(SMI_L16_ID, 14)
-> +#define M4U_L16_P15_AAHO_R1_A			MTK_M4U_ID(SMI_L16_ID, 15)
-> +#define M4U_L16_P16_LSCI_R1_A			MTK_M4U_ID(SMI_L16_ID, 16)
-> +
-> +/* Larb17 -- cam */
-> +#define M4U_L17_P0_IMGO_R1_B			MTK_M4U_ID(SMI_L17_ID, 0)
-> +#define M4U_L17_P1_RRZO_R1_B			MTK_M4U_ID(SMI_L17_ID, 1)
-> +#define M4U_L17_P2_CQI_R1_B			MTK_M4U_ID(SMI_L17_ID, 2)
-> +#define M4U_L17_P3_BPCI_R1_B			MTK_M4U_ID(SMI_L17_ID, 3)
-> +#define M4U_L17_P4_YUVO_R1_B			MTK_M4U_ID(SMI_L17_ID, 4)
-> +#define M4U_L17_P5_UFDI_R2_B			MTK_M4U_ID(SMI_L17_ID, 5)
-> +#define M4U_L17_P6_RAWI_R2_B			MTK_M4U_ID(SMI_L17_ID, 6)
-> +#define M4U_L17_P7_RAWI_R3_B			MTK_M4U_ID(SMI_L17_ID, 7)
-> +#define M4U_L17_P8_AAO_R1_B			MTK_M4U_ID(SMI_L17_ID, 8)
-> +#define M4U_L17_P9_AFO_R1_B			MTK_M4U_ID(SMI_L17_ID, 9)
-> +#define M4U_L17_P10_FLKO_R1_B			MTK_M4U_ID(SMI_L17_ID, 10)
-> +#define M4U_L17_P11_LCESO_R1_B			MTK_M4U_ID(SMI_L17_ID, 11)
-> +#define M4U_L17_P12_CRZO_R1_B			MTK_M4U_ID(SMI_L17_ID, 12)
-> +#define M4U_L17_P13_LTMSO_R1_B			MTK_M4U_ID(SMI_L17_ID, 13)
-> +#define M4U_L17_P14_RSSO_R1_B			MTK_M4U_ID(SMI_L17_ID, 14)
-> +#define M4U_L17_P15_AAHO_R1_B			MTK_M4U_ID(SMI_L17_ID, 15)
-> +#define M4U_L17_P16_LSCI_R1_B			MTK_M4U_ID(SMI_L17_ID, 16)
-> +
-> +/* Larb19 -- ipesys */
-> +#define M4U_L19_P0_DVS_RDMA			MTK_M4U_ID(SMI_L19_ID, 0)
-> +#define M4U_L19_P1_DVS_WDMA			MTK_M4U_ID(SMI_L19_ID, 1)
-> +#define M4U_L19_P2_DVP_RDMA			MTK_M4U_ID(SMI_L19_ID, 2)
-> +#define M4U_L19_P3_DVP_WDMA			MTK_M4U_ID(SMI_L19_ID, 3)
-> +
-> +/* Larb20 -- ipesys */
-> +#define M4U_L20_P0_FDVT_RDA_0			MTK_M4U_ID(SMI_L20_ID, 0)
-> +#define M4U_L20_P1_FDVT_RDB_0			MTK_M4U_ID(SMI_L20_ID, 1)
-> +#define M4U_L20_P2_FDVT_WRA_0			MTK_M4U_ID(SMI_L20_ID, 2)
-> +#define M4U_L20_P3_FDVT_WRB_0			MTK_M4U_ID(SMI_L20_ID, 3)
-> +#define M4U_L20_P4_RSC_RDMA			MTK_M4U_ID(SMI_L20_ID, 4)
-> +#define M4U_L20_P5_RSC_WDMA			MTK_M4U_ID(SMI_L20_ID, 5)
-> +
-> +/* fake larb21 for gce */
-> +#define M4U_L21_GCE_DM				MTK_M4U_ID(21, 0)
-> +#define M4U_L21_GCE_MM				MTK_M4U_ID(21, 1)
-> +
-> +/* fake larb & port for svp and dual svp and wfd */
-> +#define M4U_PORT_SVP_HEAP			MTK_M4U_ID(22, 0)
-> +#define M4U_PORT_DUAL_SVP_HEAP			MTK_M4U_ID(22, 1)
-> +#define M4U_PORT_WFD_HEAP			MTK_M4U_ID(22, 2)
-> +
-> +/* fake larb0 for apu */
-> +#define M4U_L0_APU_DATA				MTK_M4U_ID(0, 0)
-> +#define M4U_L0_APU_CODE				MTK_M4U_ID(0, 1)
-> +#define M4U_L0_APU_SECURE			MTK_M4U_ID(0, 2)
-> +#define M4U_L0_APU_VLM				MTK_M4U_ID(0, 3)
-> +
-> +/* infra/peri */
-> +#define IFR_IOMMU_PORT_PCIE_0			MTK_IFAIOMMU_PERI_ID(0, 26)
-> +
-> +#endif
+> +	for_each_set_bit(larbid, &larbid_msk, 32) {
+>   		larbdev = data->larb_imu[larbid].dev;
+>   		device_link_remove(dev, larbdev);
+>   	}
 
