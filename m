@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D30B2686A0;
-	Fri,  8 Aug 2025 12:18:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52127279DA0;
+	Fri,  8 Aug 2025 13:13:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754655530; cv=none; b=M2SIfIx3Wi5BaBXyZbSUSktNhKoEn+3sFBfgusMOd66W3k8b5Ag7POs69F5gRE2SdX7h7vzEebtC/BHOJxkEjtLg1xu17jq5zL9mKksh23CVfxV5GGHBQMOIK4V3cr7tVN9aJ6kfcRalwPdGW+TBH51SB3cB16y9/1dCEH3fXCY=
+	t=1754658806; cv=none; b=mm2Lwp9HnrrPFd6Pf+Ql0pgf+lWYIh/yhTlyo4MLn9DetXtO2IpN7y877qkjhXpoUwKB0y+aWfibG1GT1ka21bA6HS0aDbGZCoOqc5fjZKVlqJMo98S4lqJK/PJxVOt2cndCN77H4byM4RedU/TW2EnsA8Lo4wy0FUrh/vhx2h8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754655530; c=relaxed/simple;
-	bh=F7tb5lTFFPLSB0Eciw8hAvvjQDFPIiUrB4o3KSIztZo=;
+	s=arc-20240116; t=1754658806; c=relaxed/simple;
+	bh=iViutIbknj9g1UyGWHxAngziFuJw4ZLr3kGJUySSjD4=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Jb/ydgPBfK/fbmhoStcR9PbigvhmqKbChUT7V+fXChqgpt8HnTFxL821OR6gjrNH1v/27uWO3oseGjkDs4BmLHiqwe6SBJ4nfRJZFd04nPu6ZOiLhgsgDVh8ZukriH10BudLgIkW4CmG8u/VzM7i42Jm+bm4pCSDM55siduVKP8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MOJMvRiT; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=e5aaOHYOe7rD5SuR8vTvPiunv7OqYrchf2y80jgczZi8ztccj/CthP8JUAM0atuTHp1ZFW8zd73rO0wdaBtAErTeYZhPnA70w7eVttwI0q6MK7yVE9xNSx37v5s2z7/p6TPHaQwd4borULmkNlk6KhBxjk6Ng0JORc3v//Yfh+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qoXql1bB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MOJMvRiT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EF17C4CEED;
-	Fri,  8 Aug 2025 12:18:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qoXql1bB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E5E4C4CEF4;
+	Fri,  8 Aug 2025 13:13:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1754655529;
-	bh=F7tb5lTFFPLSB0Eciw8hAvvjQDFPIiUrB4o3KSIztZo=;
+	s=k20201202; t=1754658805;
+	bh=iViutIbknj9g1UyGWHxAngziFuJw4ZLr3kGJUySSjD4=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=MOJMvRiTkoCjCsZDaDiLgFP/fMhKxU7zGC3lkncZ2fP/t3d9G+9z0vfYRr6ckRHkx
-	 29jKmjJ4DmXVYPIFVZQa9UbAm+3pLE0eSroF23aqMx8IJcT2gUQ7slW+Dkm3QwHkOo
-	 Yk3sG3x/kPtk2X/l+MCCGtYGFexCtLFjgRGph3DYWAUuTApmspkzmxZ+T+gU/NCSpF
-	 9D/Hq7jbVS4PWg8TdifZFNeHoGgkXoVkf0/KsJRmOwpJ3mWMbSfnGlooey7UtjkTMJ
-	 kc8vtFIMw2nLXuvNh2mIyImqpyHNTX5h2QIj/SOLQk3liDh7tRprdKpUWyBbOz8JL7
-	 TyDSPxxEha9xw==
+	b=qoXql1bB5aNRTIfvOoYAwffVGbBSMW/3PCvpBcEcWJSUgdqAvK1h2G+1gq2CuuPfq
+	 9T7KPOCD7UqEWEHXnaE0S/CvU4he49mVSakj4kL20H3KnAf3LwS3l3ZjAexeb8uw/m
+	 gbFf17IpzD3SJo/uYk/FK8O1dCQKMkbK0yJ7xZGjEWxeqwZszbHF+l1x9J3Ic+6V1K
+	 JlXEyirGZ9L3TMl+5Yk0uGfwmYbtys5U2dn9BOICGKG1S9bibAzh4TSEuSXIMZw1Dc
+	 MI5zspmkbQ8pNYy1MgmY82WkxHU4Uvb26C90SyLryc+eVUwgvINC5XVyqDI77v7eKO
+	 Onoyqi8/YDGQw==
 From: Andreas Hindborg <a.hindborg@kernel.org>
 To: Abdiel Janulgue <abdiel.janulgue@gmail.com>, acourbot@nvidia.com,
  dakr@kernel.org, jgg@ziepe.ca, lyude@redhat.com
@@ -43,14 +43,13 @@ Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
  <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>,
  airlied@redhat.com, iommu@lists.linux.dev, rust-for-linux@vger.kernel.org,
  Abdiel Janulgue <abdiel.janulgue@gmail.com>
-Subject: Re: [PATCH v3 2/2] samples: rust: add sample code for scatterlist
- abstraction
-In-Reply-To: <20250718103359.1026240-3-abdiel.janulgue@gmail.com>
+Subject: Re: [PATCH v3 1/2] rust: add initial scatterlist abstraction
+In-Reply-To: <20250718103359.1026240-2-abdiel.janulgue@gmail.com>
 References: <20250718103359.1026240-1-abdiel.janulgue@gmail.com>
- <vdYZDYMXRnQEadlW9C4I5MvuQi9SnRXgNF-ACtJ9C3Xh1pq6Ajc673GIIOtqJ4VZ13FzSeH_iAvA9vVKQii4DA==@protonmail.internalid>
- <20250718103359.1026240-3-abdiel.janulgue@gmail.com>
-Date: Fri, 08 Aug 2025 14:18:36 +0200
-Message-ID: <87a54a57mr.fsf@kernel.org>
+ <svnEDqCdZr-7JmEPS7j6SimFKAzIdtHcYetQSBcQ2vjeupZsBpT_ELybyR3nO_ZXM4nkQJG9UwyKRCNkyO7-HA==@protonmail.internalid>
+ <20250718103359.1026240-2-abdiel.janulgue@gmail.com>
+Date: Fri, 08 Aug 2025 15:13:12 +0200
+Message-ID: <877bze553r.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,72 +60,140 @@ Content-Type: text/plain
 
 "Abdiel Janulgue" <abdiel.janulgue@gmail.com> writes:
 
-> Add simple excercises to test the scatterlist abstraction.
+> Add the rust abstraction for scatterlist. This allows use of the C
+> scatterlist within Rust code which the caller can allocate themselves
+> or to wrap existing kernel sg_table objects.
 >
 > Co-developed-by: Alexandre Courbot <acourbot@nvidia.com>
 > Signed-off-by: Alexandre Courbot <acourbot@nvidia.com>
 > Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
 > ---
->  samples/rust/rust_dma.rs | 49 +++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 48 insertions(+), 1 deletion(-)
->
-> diff --git a/samples/rust/rust_dma.rs b/samples/rust/rust_dma.rs
-> index 9e05d5c0cdae..1fa278e8e29a 100644
-> --- a/samples/rust/rust_dma.rs
-> +++ b/samples/rust/rust_dma.rs
-> @@ -4,11 +4,33 @@
->  //!
->  //! To make this driver probe, QEMU must be run with `-device pci-testdev`.
->
-> -use kernel::{bindings, device::Core, dma::CoherentAllocation, pci, prelude::*, types::ARef};
-> +use kernel::{
-> +    bindings, device::Core, dma::CoherentAllocation, page::*, pci, prelude::*, scatterlist::*,
-> +    sync::Arc, types::ARef,
-> +};
->
->  struct DmaSampleDriver {
->      pdev: ARef<pci::Device>,
->      ca: CoherentAllocation<MyStruct>,
-> +    _sgt: SGTable<OwnedSgt<PagesArray>, ManagedMapping>,
-> +}
-> +
-> +struct PagesArray(KVec<Page>);
-> +impl SGTablePages for PagesArray {
-> +    fn iter<'a>(&'a self) -> impl Iterator<Item = (&'a Page, usize, usize)> {
-> +        self.0.iter().map(|page| (page, kernel::page::PAGE_SIZE, 0))
-> +    }
-> +
-> +    fn entries(&self) -> usize {
-> +        self.0.len()
-> +    }
-> +}
-> +
-> +struct WrappedArc(Arc<kernel::bindings::sg_table>);
-> +impl core::borrow::Borrow<kernel::bindings::sg_table> for WrappedArc {
-> +    fn borrow(&self) -> &kernel::bindings::sg_table {
-> +        &self.0
-> +    }
->  }
->
->  const TEST_VALUES: [(u32, u32); 5] = [
-> @@ -58,10 +80,35 @@ fn probe(pdev: &pci::Device<Core>, _info: &Self::IdInfo) -> Result<Pin<KBox<Self
->              kernel::dma_write!(ca[i] = MyStruct::new(value.0, value.1))?;
->          }
->
-> +        let mut pages = KVec::new();
-> +        for _ in TEST_VALUES.into_iter() {
-> +            let _ = pages.push(Page::alloc_page(GFP_KERNEL)?, GFP_KERNEL);
-> +        }
-> +
-> +        // Let's pretend this is valid...
-> +        // SAFETY: `sg_table` is not a reference.
-> +        let sg_table: bindings::sg_table = unsafe { core::mem::zeroed() };
 
-I think this initialization can be safe with recent pin-init patches
-[0]. Perhaps rebase on that, or add a todo?
+<cut>
+
+> +    /// Obtain the raw `struct scatterlist *`.
+> +    pub(crate) fn as_raw(&self) -> *mut bindings::scatterlist {
+> +        self.0.get()
+> +    }
+> +
+> +    /// Returns the DMA address of this SG entry.
+
+In what address space? Device or CPU?
+
+> +    pub fn dma_address(&self) -> bindings::dma_addr_t {
+> +        // SAFETY: By the type invariant of `SGEntry`, ptr is valid.
+> +        unsafe { bindings::sg_dma_address(self.0.get()) }
+> +    }
+> +
+> +    /// Returns the length of this SG entry.
+> +    pub fn dma_len(&self) -> u32 {
+> +        // SAFETY: By the type invariant of `SGEntry`, ptr is valid.
+> +        unsafe { bindings::sg_dma_len(self.0.get()) }
+> +    }
+> +
+> +    /// Internal constructor helper to set this entry to point at a given page. Not to be used directly.
+> +    fn set_page(&mut self, page: &Page, length: u32, offset: u32) {
+
+Is it safe to call this with invalid length?
+
+> +        let c: *mut bindings::scatterlist = self.0.get();
+> +        // SAFETY: according to the `SGEntry` invariant, the scatterlist pointer is valid.
+> +        // `Page` invariant also ensure the pointer is valid.
+> +        unsafe { bindings::sg_set_page(c, page.as_ptr(), length, offset) };
+> +    }
+> +}
+> +
+> +/// Trait implemented by all mapping states.
+> +pub trait MappingState {}
+> +
+> +/// Trait implemented by all mapping states representing the fact that a `struct sg_table` is
+> +/// mapped (and thus its DMA addresses are valid).
+> +pub trait MappedState: MappingState {}
+> +
+> +/// Represents the fact that a `struct sg_table` is not DMA-mapped.
+
+Could you explain what "DMA-mapped" means? Does it mean that everything
+is set up so that a device can access the memory?
+
+> +pub struct Unmapped;
+> +impl MappingState for Unmapped {}
+> +
+> +/// Represents the fact that a `struct sg_table` is DMA-mapped by an external entity.
+
+What is external entity?
+
+> +pub struct BorrowedMapping;
+> +impl MappingState for BorrowedMapping {}
+> +impl MappedState for BorrowedMapping {}
+> +
+> +/// A managed DMA mapping of a `struct sg_table` to a given device.
+> +///
+> +/// The mapping is cleared when this object is dropped.
+> +///
+> +/// # Invariants
+> +///
+> +/// - The `scatterlist` pointer is valid for the lifetime of a `ManagedMapping` instance.
+> +/// - The `Device` instance is within a [`kernel::device::Bound`] context.
+> +pub struct ManagedMapping {
+> +    dev: ARef<Device>,
+> +    dir: DmaDataDirection,
+> +    // This works because the `sgl` member of `struct sg_table` never moves, and the fact we can
+> +    // build this implies that we have an exclusive reference to the `sg_table`, thus it cannot be
+> +    // modified by anyone else.
+> +    sgl: *mut bindings::scatterlist,
+> +    orig_nents: ffi::c_uint,
+
+Could you use a more descriptive name for this field? We don't _have_ to
+contract all words to the least possible amount of letters.
+
+> +}
+> +
+
+<cut>
+
+> +
+> +/// Provides a list of pages that can be used to build a `SGTable`.
+> +pub trait SGTablePages {
+> +    /// Returns an iterator to the pages providing the backing memory of `self`.
+> +    ///
+> +    /// Implementers should return an iterator which provides information regarding each page entry to
+> +    /// build the `SGTable`. The first element in the tuple is a reference to the Page, the second element
+> +    /// as the offset into the page, and the third as the length of data. The fields correspond to the
+> +    /// first three fields of the C `struct scatterlist`.
+> +    fn iter<'a>(&'a self) -> impl Iterator<Item = (&'a Page, usize, usize)>;
+
+Would it make sense to use a struct with proper names here, rather than
+a tuple?
+
+<cut>
+
+> +    /// let mut pages = KVec::new();
+> +    /// let _ = pages.push(Page::alloc_page(GFP_KERNEL)?, GFP_KERNEL);
+> +    /// let _ = pages.push(Page::alloc_page(GFP_KERNEL)?, GFP_KERNEL);
+> +    /// let sgt = SGTable::new_owned(PagesArray(pages), GFP_KERNEL)?;
+> +    /// # Ok::<(), Error>(())
+> +    /// ```
+> +    pub fn new_owned(pages: P, flags: kernel::alloc::Flags) -> Result<Self> {
+> +        // SAFETY: `sgt` is not a reference.
+> +        let mut sgt: bindings::sg_table = unsafe { core::mem::zeroed() };
+
+I think this unsafe goes away with recent pin-init patches.
+
+https://lore.kernel.org/r/20250523145125.523275-1-lossin@kernel.org
+
+> +
+> +        // SAFETY: The sgt pointer is from the Opaque-wrapped `sg_table` object hence is valid.
+> +        let ret =
+> +            unsafe { bindings::sg_alloc_table(&mut sgt, pages.entries() as u32, flags.as_raw()) };
+> +        if ret != 0 {
+> +            return Err(Error::from_errno(ret));
+> +        }
+> +        // SAFETY: We just successfully allocated `sgt`, hence the pointer is valid and have sole access to
+
+nit: I would prefer "exclusive" over "sole".
+
 
 Best regards,
 Andreas Hindborg
 
-[0] https://lore.kernel.org/r/20250523145125.523275-1-lossin@kernel.org
 
