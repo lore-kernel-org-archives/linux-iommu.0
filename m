@@ -1,50 +1,41 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mout.web.de (mout.web.de [212.227.15.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D77161E32DB;
-	Fri,  8 Aug 2025 05:21:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53318265CDD
+	for <iommu@lists.linux.dev>; Fri,  8 Aug 2025 07:22:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754630468; cv=none; b=jz2ordmZn7BWR4muj/qKDnsnUI8CKc37WCpCRCTQwT/BigS8Ck5P5WXbShc1ViVZ9tnwkvkZP49fMG90PZTgkMnGiTxYh3hJM0CAHyFa6gXAxsETzkwJUCz5xnZEyJB+10l+7ezDN68E4ugYAJ5x4X47QaYNMXwHKlfBEoLolVg=
+	t=1754637743; cv=none; b=ITEeYNXvkfrz+BX/O0srPxv3u8A9CM84uotveF0MUygJd5yxf7nA/YtaDwKT5rRCVpg3qNsRFxeFgPVsQCq48HI7Qyx8v86YMrpS0w9VOS3ElQ+o9B3fAY6K8rotIeryQoHr5odG7oAitG/Drz7FlKvMp8c7pEEzZOjFm61tiQk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754630468; c=relaxed/simple;
-	bh=XqBTmWBIyYrPkYwvSHX2UtS0QV8n7iP1YLBKlvO2zt0=;
+	s=arc-20240116; t=1754637743; c=relaxed/simple;
+	bh=L6qigGD3i3MYLl5oOVYcHhynzYozRlG+YaaQuV2Q5Ng=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=osd1hY1H0WCkDUptpESRshaN/TRMmwPpQMJaEGXxTJygdQj82RuDdpvuBwLW1U/Le7SSuzn7s52Cfc60teGtfSn8gGKJnpHNn6TmTdpihmYlLHMAbR8XLHwiACGxrjGX4aVJnZxHXDAPv2cnySMEloML4xkYo+2LmqNBR/OXdMw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JBLtq523; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 In-Reply-To:Content-Type; b=YfQgQHYlskYTfMBBVDQPms+gX/qOpMRPcotpAqZNuenp51xoCL3wddHPbqYVgBEAylz6txeVEk9LSii9PZHyidbf74e0fX371/dSQfFf9ri/cNuts4OHFpkzIkP48SxP/DjWMjYX3kozqudHOWiCEpyMEDUrtlaHl9wZ31ErsEA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=AicvPNnZ; arc=none smtp.client-ip=212.227.15.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JBLtq523"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1754630466; x=1786166466;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=XqBTmWBIyYrPkYwvSHX2UtS0QV8n7iP1YLBKlvO2zt0=;
-  b=JBLtq523HeSXn6mvzZr19TVzIfQU8Dw372wYEmxh1W/cbG736U/MY/Z7
-   o/pTD+3yuPRMTMDIW9PBox2VbWy9u7CKGCJo6H8VRnuIZ0xRGdgZEsfsh
-   FPPBLIaYdjDOpnojZDuo+MY00z4y+lNTvNviLfkBzePBynqbcyws4Hbzt
-   Mg0cbd5sv2kN8CrhQvI/wwKnXRCOF1atskMP7jGwuipN4aSAqhztBYPcE
-   rxg8h+v2vk0KgR9JH9tqxLWWvHG7+iRyasyGGxyzxNDDi+DKdRjsNiqW2
-   ZzvPgJW9hiSkjmyAElPEnHQ5qF0spKm+zDjSzPQMIs8k4keBRFpQAegiI
-   g==;
-X-CSE-ConnectionGUID: tQ4NivhURUm1LSrANh09UQ==
-X-CSE-MsgGUID: gADYzcn3RYu7GDHH9mRzhQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11514"; a="57054972"
-X-IronPort-AV: E=Sophos;i="6.17,274,1747724400"; 
-   d="scan'208";a="57054972"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2025 22:21:06 -0700
-X-CSE-ConnectionGUID: DGIrCofRQG+fIzfWUwj3jg==
-X-CSE-MsgGUID: ZhH4djwBSReZ1rSSroaHxg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.17,274,1747724400"; 
-   d="scan'208";a="169454052"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2025 22:21:03 -0700
-Message-ID: <57b135c3-228a-48cc-8dbe-ff8aa0249f9f@linux.intel.com>
-Date: Fri, 8 Aug 2025 13:19:09 +0800
+	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="AicvPNnZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1754637729; x=1755242529; i=markus.elfring@web.de;
+	bh=L6qigGD3i3MYLl5oOVYcHhynzYozRlG+YaaQuV2Q5Ng=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=AicvPNnZ+bPukWOatsrz2VaQ4IhjMvPXBRlZ5sQCQvNBBagP/WPzhasZ+LlHWIY5
+	 X37px3R3bvplRdFDsFu4IwE0zq0S8Qa38DFG348VM+UhcTYYOhej48P/g8iKUJmif
+	 hlc/THQu3NRaxVx4TE6e5gFDvIv3z8zG2yZzePHXPOZ2z0LEgQ/6LfwNjYPWZ0IzM
+	 KLQzjqH2c2HkZPWr50HrODbwcosG4PGQ1J+JDZaLhmqPbeSKoY+fjqwDRwhu1zTOc
+	 UjkMs97VbTXHqY4Km/2jztBLGboNP0vAGbAnkrxcrKbHAr9qGPY6pjD5jRcXTfi3p
+	 c510GOM/VASb/7sAqg==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.29] ([94.31.69.242]) by smtp.web.de (mrweb006
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 1MjBRZ-1u5BJs1jan-00poTa; Fri, 08
+ Aug 2025 09:22:09 +0200
+Message-ID: <feb46658-5a3a-4403-b407-500566280eb3@web.de>
+Date: Fri, 8 Aug 2025 09:21:40 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,159 +43,81 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4] iommu/vt-d: replace snprintf with scnprintf in
- dmar_latency_snapshot()
-To: Seyediman Seyedarab <imandevel@gmail.com>, dwmw2@infradead.org,
- joro@8bytes.org, will@kernel.org, robin.murphy@arm.com
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- skhan@linuxfoundation.org, linux-kernel-mentees@lists.linux.dev
-References: <20250731225048.131364-1-ImanDevel@gmail.com>
- <h6impubmygtakszk7t6ffknvtje72c4ovknjgme5xletglkl5g@4lpcs22onyqi>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <h6impubmygtakszk7t6ffknvtje72c4ovknjgme5xletglkl5g@4lpcs22onyqi>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [v?] iommu/riscv: check pte null pointer before use
+To: XianLiang Huang <huangxianliang@lanxincomputing.com>,
+ iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
+ Tomasz Jeznach <tjeznach@rivosinc.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, Albert Ou <aou@eecs.berkeley.edu>,
+ Alexandre Ghiti <alex@ghiti.fr>, =?UTF-8?B?SsO2cmcgUsO2ZGVs?=
+ <joro@8bytes.org>, Palmer Dabbelt <palmer@dabbelt.com>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Robin Murphy
+ <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+References: <effb29be-6d14-47e5-ab71-454119467750@web.de>
+ <20250808024203.16672-1-huangxianliang@lanxincomputing.com>
+Content-Language: en-GB, de-DE
+From: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <20250808024203.16672-1-huangxianliang@lanxincomputing.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:WzOWk0XQCVAGxupyOTR8XejPCO8hY8cS8Zgl1k+bx5WwaHxY0V9
+ OUZ3CSVg/oorEKD9N8iTBo+d85TyR1oZ4rPORcwFASf3VlAyXomFtUo5YlkW8QJAiYNaF+p
+ rMJt4Kd4sQqLYWM/pFLNS5Erp0wyT8TWm9+khcQbzaeZMvOVMyV4oLcdv0N3tiQ7zx2heUj
+ fR8Eb/m4Szkqslue2N1Ag==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:s+ewVB6czIY=;qFCwrnWUaOJPf0LC77IxQyqJ8af
+ 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
+ woLqKuU43H+SbOICAOIg==
 
-On 8/7/25 17:00, Seyediman Seyedarab wrote:
-> On 25/07/31 06:50PM, Seyediman Seyedarab wrote:
->> snprintf() returns the number of bytes that would have been
->> written, not the number actually written. Using this for offset
->> tracking can cause buffer overruns if truncation occurs.
->>
->> Replace snprintf() with scnprintf() to ensure the offset stays
->> within bounds.
->>
->> Since scnprintf() never returns a negative value, and zero is not
->> possible in this context because 'bytes' starts at 0 and 'size - bytes'
->> is DEBUG_BUFFER_SIZE in the first call, which is large enough to hold
->> the string literals used, the return value is always positive. An integer
->> overflow is also completely out of reach here due to the small and fixed
->> buffer size. The error check in latency_show_one() is therefore unnecessary.
->> Remove it and make dmar_latency_snapshot() return void.
->>
->> Signed-off-by: Seyediman Seyedarab<ImanDevel@gmail.com>
->> ---
->> Changes in v4:
->> - Removed 'ret' in latency_show_one() since it is not being used anymore:
->> https://lore.kernel.org/oe-kbuild-all/202508010632.WB0CM5Bz-lkp@intel.com/
->>
->> Changes in v3:
->> - Restored return type of dmar_latency_enable() back to 'int'. It was
->>    mistakenly changed to 'void' in the previous version.
->>
->> Changes in v2:
->> - The return type of dmar_latency_snapshot() was changed based on the
->>    discussion here:
->> https://lore.kernel.org/linux-iommu/aIDN3pvUSG3rN4SW@willie-the-truck/
->>
->>
->>   drivers/iommu/intel/debugfs.c | 10 ++--------
->>   drivers/iommu/intel/perf.c    | 10 ++++------
->>   drivers/iommu/intel/perf.h    |  5 ++---
->>   3 files changed, 8 insertions(+), 17 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
->> index affbf4a1558d..65d2f792f0f7 100644
->> --- a/drivers/iommu/intel/debugfs.c
->> +++ b/drivers/iommu/intel/debugfs.c
->> @@ -648,17 +648,11 @@ DEFINE_SHOW_ATTRIBUTE(ir_translation_struct);
->>   static void latency_show_one(struct seq_file *m, struct intel_iommu *iommu,
->>   			     struct dmar_drhd_unit *drhd)
->>   {
->> -	int ret;
->> -
->>   	seq_printf(m, "IOMMU: %s Register Base Address: %llx\n",
->>   		   iommu->name, drhd->reg_base_addr);
->>   
->> -	ret = dmar_latency_snapshot(iommu, debug_buf, DEBUG_BUFFER_SIZE);
->> -	if (ret < 0)
->> -		seq_puts(m, "Failed to get latency snapshot");
->> -	else
->> -		seq_puts(m, debug_buf);
->> -	seq_puts(m, "\n");
->> +	dmar_latency_snapshot(iommu, debug_buf, DEBUG_BUFFER_SIZE);
->> +	seq_printf(m, "%s\n", debug_buf);
->>   }
->>   
->>   static int latency_show(struct seq_file *m, void *v)
->> diff --git a/drivers/iommu/intel/perf.c b/drivers/iommu/intel/perf.c
->> index adc4de6bbd88..dceeadc3ee7c 100644
->> --- a/drivers/iommu/intel/perf.c
->> +++ b/drivers/iommu/intel/perf.c
->> @@ -113,7 +113,7 @@ static char *latency_type_names[] = {
->>   	"     svm_prq"
->>   };
->>   
->> -int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
->> +void dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
->>   {
->>   	struct latency_statistic *lstat = iommu->perf_statistic;
->>   	unsigned long flags;
->> @@ -122,7 +122,7 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
->>   	memset(str, 0, size);
->>   
->>   	for (i = 0; i < COUNTS_NUM; i++)
->> -		bytes += snprintf(str + bytes, size - bytes,
->> +		bytes += scnprintf(str + bytes, size - bytes,
->>   				  "%s", latency_counter_names[i]);
->>   
->>   	spin_lock_irqsave(&latency_lock, flags);
->> @@ -130,7 +130,7 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
->>   		if (!dmar_latency_enabled(iommu, i))
->>   			continue;
->>   
->> -		bytes += snprintf(str + bytes, size - bytes,
->> +		bytes += scnprintf(str + bytes, size - bytes,
->>   				  "\n%s", latency_type_names[i]);
->>   
->>   		for (j = 0; j < COUNTS_NUM; j++) {
->> @@ -156,11 +156,9 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
->>   				break;
->>   			}
->>   
->> -			bytes += snprintf(str + bytes, size - bytes,
->> +			bytes += scnprintf(str + bytes, size - bytes,
->>   					  "%12lld", val);
->>   		}
->>   	}
->>   	spin_unlock_irqrestore(&latency_lock, flags);
->> -
->> -	return bytes;
->>   }
->> diff --git a/drivers/iommu/intel/perf.h b/drivers/iommu/intel/perf.h
->> index df9a36942d64..1d4baad7e852 100644
->> --- a/drivers/iommu/intel/perf.h
->> +++ b/drivers/iommu/intel/perf.h
->> @@ -40,7 +40,7 @@ void dmar_latency_disable(struct intel_iommu *iommu, enum latency_type type);
->>   bool dmar_latency_enabled(struct intel_iommu *iommu, enum latency_type type);
->>   void dmar_latency_update(struct intel_iommu *iommu, enum latency_type type,
->>   			 u64 latency);
->> -int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size);
->> +void dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size);
->>   #else
->>   static inline int
->>   dmar_latency_enable(struct intel_iommu *iommu, enum latency_type type)
->> @@ -64,9 +64,8 @@ dmar_latency_update(struct intel_iommu *iommu, enum latency_type type, u64 laten
->>   {
->>   }
->>   
->> -static inline int
->> +static inline void
->>   dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
->>   {
->> -	return 0;
->>   }
->>   #endif /* CONFIG_DMAR_PERF */
->> -- 
->> 2.50.1
->>
-> Hi there,
-> 
-> Just following up on this patch. Please let me know if there's
-> anything else needed from my side.
+> Sure, 'prevent' is much appropriate than 'check' here...
 
-It just missed the v6.17 merge window, I'll queue it for v6.18.
+I propose to reconsider also different effects from your wording approaches
+according to the summary phrase and more detailed change description.
 
-Thanks,
-baolu
+Regards,
+Markus
