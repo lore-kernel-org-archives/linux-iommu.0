@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 653B216DC28
-	for <iommu@lists.linux.dev>; Fri,  8 Aug 2025 05:17:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D77161E32DB;
+	Fri,  8 Aug 2025 05:21:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754630232; cv=none; b=BkRilaNWAwZ3pdIls3hFSGauh18wut3Kk+JXkNlAGWcHOgD3Fb7QVnAISfEop/ynYINVuY4WDIMTzisax1MVC5C2y/l6KRYQQpm775NHfM3n1wrNOr2eaKs3KZ9dtsflaBObkkMoqq9NhFeb7Igfcoz91jNGEA/lXfq1uy1BViQ=
+	t=1754630468; cv=none; b=jz2ordmZn7BWR4muj/qKDnsnUI8CKc37WCpCRCTQwT/BigS8Ck5P5WXbShc1ViVZ9tnwkvkZP49fMG90PZTgkMnGiTxYh3hJM0CAHyFa6gXAxsETzkwJUCz5xnZEyJB+10l+7ezDN68E4ugYAJ5x4X47QaYNMXwHKlfBEoLolVg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754630232; c=relaxed/simple;
-	bh=OV45XsrkcfFJCl91T0aANLhMqM1x4PJEUmvBK6Hky+0=;
+	s=arc-20240116; t=1754630468; c=relaxed/simple;
+	bh=XqBTmWBIyYrPkYwvSHX2UtS0QV8n7iP1YLBKlvO2zt0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=R6xFr2g3CKGw55K328rCHaQo283DX1UsTBo4a7y43AgQci2p90BYH6eAj8awPJdZ8K6G/GvQF+oUCkaiQM2tE7oMiruhdApP8tYGhV92PLYKgEMcsnTowdTYd4ZkvolmnYGmjj7dKhNTkYgOQN3Hu6ruPZ2Sxw3507ClFpLjjHM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ep0hNWlb; arc=none smtp.client-ip=198.175.65.18
+	 In-Reply-To:Content-Type; b=osd1hY1H0WCkDUptpESRshaN/TRMmwPpQMJaEGXxTJygdQj82RuDdpvuBwLW1U/Le7SSuzn7s52Cfc60teGtfSn8gGKJnpHNn6TmTdpihmYlLHMAbR8XLHwiACGxrjGX4aVJnZxHXDAPv2cnySMEloML4xkYo+2LmqNBR/OXdMw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JBLtq523; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ep0hNWlb"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JBLtq523"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1754630232; x=1786166232;
+  t=1754630466; x=1786166466;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=OV45XsrkcfFJCl91T0aANLhMqM1x4PJEUmvBK6Hky+0=;
-  b=Ep0hNWlbgthsFsvnHV93CAQvWRHXjzYaB+N5kwZ5m9Kf1Gs2QCEKVQR/
-   j/u/HddLguDhKnNYA3hQdNYxgSp8hMMI88twRyx0tZ7s6Zb0SfQOKH8p8
-   hJzYcGD74ITIYbbttbpJLvFJRowEVlmoJ7ZoJln4siNOo3V6c3IL0cboK
-   jCt9x67jDbNYKwa7rDym8YYBbGhtNW+XpCq2ggAWEfWXYA+5XJihVCjow
-   5FWjJZ23LdbFUtC9HqZ3vPgJa+EUKfG+YOfa9zLjVFA+39cNj/+pkOp3/
-   OVt5z7LCCSEOlCs7FqqZH3G5TA2nP7oH9XZBSz+O7fxq1etcIZyFaw/dJ
-   Q==;
-X-CSE-ConnectionGUID: ZKRAlQclR4OJTEZo5OL2jA==
-X-CSE-MsgGUID: TsRVDlEEQHuGKN9dMkcIdg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11514"; a="57054745"
+  bh=XqBTmWBIyYrPkYwvSHX2UtS0QV8n7iP1YLBKlvO2zt0=;
+  b=JBLtq523HeSXn6mvzZr19TVzIfQU8Dw372wYEmxh1W/cbG736U/MY/Z7
+   o/pTD+3yuPRMTMDIW9PBox2VbWy9u7CKGCJo6H8VRnuIZ0xRGdgZEsfsh
+   FPPBLIaYdjDOpnojZDuo+MY00z4y+lNTvNviLfkBzePBynqbcyws4Hbzt
+   Mg0cbd5sv2kN8CrhQvI/wwKnXRCOF1atskMP7jGwuipN4aSAqhztBYPcE
+   rxg8h+v2vk0KgR9JH9tqxLWWvHG7+iRyasyGGxyzxNDDi+DKdRjsNiqW2
+   ZzvPgJW9hiSkjmyAElPEnHQ5qF0spKm+zDjSzPQMIs8k4keBRFpQAegiI
+   g==;
+X-CSE-ConnectionGUID: tQ4NivhURUm1LSrANh09UQ==
+X-CSE-MsgGUID: gADYzcn3RYu7GDHH9mRzhQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11514"; a="57054972"
 X-IronPort-AV: E=Sophos;i="6.17,274,1747724400"; 
-   d="scan'208";a="57054745"
+   d="scan'208";a="57054972"
 Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2025 22:17:11 -0700
-X-CSE-ConnectionGUID: m9u5htjUSgamqgHN3ylsbg==
-X-CSE-MsgGUID: 84kYWOcgQYSPTUbd0j0Cig==
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2025 22:21:06 -0700
+X-CSE-ConnectionGUID: DGIrCofRQG+fIzfWUwj3jg==
+X-CSE-MsgGUID: ZhH4djwBSReZ1rSSroaHxg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.17,274,1747724400"; 
-   d="scan'208";a="169453259"
+   d="scan'208";a="169454052"
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2025 22:17:06 -0700
-Message-ID: <b6defa2a-164e-4c2f-ac55-fef5b4a9ba0f@linux.intel.com>
-Date: Fri, 8 Aug 2025 13:15:12 +0800
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Aug 2025 22:21:03 -0700
+Message-ID: <57b135c3-228a-48cc-8dbe-ff8aa0249f9f@linux.intel.com>
+Date: Fri, 8 Aug 2025 13:19:09 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,219 +52,159 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-To: Dave Hansen <dave.hansen@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
- Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
- Uladzislau Rezki <urezki@gmail.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
- iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
- <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
- <20250806155223.GV184255@nvidia.com>
- <d02cb97a-7cea-4ad3-82b3-89754c5278ad@intel.com>
- <20250806160904.GX184255@nvidia.com>
- <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
- <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
- <4ce79c80-1fc8-4684-920a-c8d82c4c3dc8@intel.com>
+Subject: Re: [PATCH v4] iommu/vt-d: replace snprintf with scnprintf in
+ dmar_latency_snapshot()
+To: Seyediman Seyedarab <imandevel@gmail.com>, dwmw2@infradead.org,
+ joro@8bytes.org, will@kernel.org, robin.murphy@arm.com
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ skhan@linuxfoundation.org, linux-kernel-mentees@lists.linux.dev
+References: <20250731225048.131364-1-ImanDevel@gmail.com>
+ <h6impubmygtakszk7t6ffknvtje72c4ovknjgme5xletglkl5g@4lpcs22onyqi>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <4ce79c80-1fc8-4684-920a-c8d82c4c3dc8@intel.com>
+In-Reply-To: <h6impubmygtakszk7t6ffknvtje72c4ovknjgme5xletglkl5g@4lpcs22onyqi>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 8/7/25 23:31, Dave Hansen wrote:
->> +void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
->> +{
->> +    struct page *page = virt_to_page(pte);
->> +
->> +    guard(spinlock)(&kernel_pte_work.lock);
->> +    list_add(&page->lru, &kernel_pte_work.list);
->> +    schedule_work(&kernel_pte_work.work);
->> +}
->> diff --git a/include/asm-generic/pgalloc.h b/include/asm-generic/pgalloc.h
->> index 3c8ec3bfea44..716ebab67636 100644
->> --- a/include/asm-generic/pgalloc.h
->> +++ b/include/asm-generic/pgalloc.h
->> @@ -46,6 +46,7 @@ static inline pte_t
->> *pte_alloc_one_kernel_noprof(struct mm_struct *mm)
->>   #define pte_alloc_one_kernel(...)
->> alloc_hooks(pte_alloc_one_kernel_noprof(__VA_ARGS__))
->>   #endif
+On 8/7/25 17:00, Seyediman Seyedarab wrote:
+> On 25/07/31 06:50PM, Seyediman Seyedarab wrote:
+>> snprintf() returns the number of bytes that would have been
+>> written, not the number actually written. Using this for offset
+>> tracking can cause buffer overruns if truncation occurs.
 >>
->> +#ifndef __HAVE_ARCH_PTE_FREE_KERNEL
->>   /**
->>    * pte_free_kernel - free PTE-level kernel page table memory
->>    * @mm: the mm_struct of the current context
->> @@ -55,6 +56,7 @@ static inline void pte_free_kernel(struct mm_struct
->> *mm, pte_t *pte)
->>   {
->>       pagetable_dtor_free(virt_to_ptdesc(pte));
->>   }
->> +#endif
+>> Replace snprintf() with scnprintf() to ensure the offset stays
+>> within bounds.
 >>
->>   /**
->>    * __pte_alloc_one - allocate memory for a PTE-level user page table
-> I'd much rather the arch-generic code looked like this:
+>> Since scnprintf() never returns a negative value, and zero is not
+>> possible in this context because 'bytes' starts at 0 and 'size - bytes'
+>> is DEBUG_BUFFER_SIZE in the first call, which is large enough to hold
+>> the string literals used, the return value is always positive. An integer
+>> overflow is also completely out of reach here due to the small and fixed
+>> buffer size. The error check in latency_show_one() is therefore unnecessary.
+>> Remove it and make dmar_latency_snapshot() return void.
+>>
+>> Signed-off-by: Seyediman Seyedarab<ImanDevel@gmail.com>
+>> ---
+>> Changes in v4:
+>> - Removed 'ret' in latency_show_one() since it is not being used anymore:
+>> https://lore.kernel.org/oe-kbuild-all/202508010632.WB0CM5Bz-lkp@intel.com/
+>>
+>> Changes in v3:
+>> - Restored return type of dmar_latency_enable() back to 'int'. It was
+>>    mistakenly changed to 'void' in the previous version.
+>>
+>> Changes in v2:
+>> - The return type of dmar_latency_snapshot() was changed based on the
+>>    discussion here:
+>> https://lore.kernel.org/linux-iommu/aIDN3pvUSG3rN4SW@willie-the-truck/
+>>
+>>
+>>   drivers/iommu/intel/debugfs.c | 10 ++--------
+>>   drivers/iommu/intel/perf.c    | 10 ++++------
+>>   drivers/iommu/intel/perf.h    |  5 ++---
+>>   3 files changed, 8 insertions(+), 17 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
+>> index affbf4a1558d..65d2f792f0f7 100644
+>> --- a/drivers/iommu/intel/debugfs.c
+>> +++ b/drivers/iommu/intel/debugfs.c
+>> @@ -648,17 +648,11 @@ DEFINE_SHOW_ATTRIBUTE(ir_translation_struct);
+>>   static void latency_show_one(struct seq_file *m, struct intel_iommu *iommu,
+>>   			     struct dmar_drhd_unit *drhd)
+>>   {
+>> -	int ret;
+>> -
+>>   	seq_printf(m, "IOMMU: %s Register Base Address: %llx\n",
+>>   		   iommu->name, drhd->reg_base_addr);
+>>   
+>> -	ret = dmar_latency_snapshot(iommu, debug_buf, DEBUG_BUFFER_SIZE);
+>> -	if (ret < 0)
+>> -		seq_puts(m, "Failed to get latency snapshot");
+>> -	else
+>> -		seq_puts(m, debug_buf);
+>> -	seq_puts(m, "\n");
+>> +	dmar_latency_snapshot(iommu, debug_buf, DEBUG_BUFFER_SIZE);
+>> +	seq_printf(m, "%s\n", debug_buf);
+>>   }
+>>   
+>>   static int latency_show(struct seq_file *m, void *v)
+>> diff --git a/drivers/iommu/intel/perf.c b/drivers/iommu/intel/perf.c
+>> index adc4de6bbd88..dceeadc3ee7c 100644
+>> --- a/drivers/iommu/intel/perf.c
+>> +++ b/drivers/iommu/intel/perf.c
+>> @@ -113,7 +113,7 @@ static char *latency_type_names[] = {
+>>   	"     svm_prq"
+>>   };
+>>   
+>> -int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
+>> +void dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
+>>   {
+>>   	struct latency_statistic *lstat = iommu->perf_statistic;
+>>   	unsigned long flags;
+>> @@ -122,7 +122,7 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
+>>   	memset(str, 0, size);
+>>   
+>>   	for (i = 0; i < COUNTS_NUM; i++)
+>> -		bytes += snprintf(str + bytes, size - bytes,
+>> +		bytes += scnprintf(str + bytes, size - bytes,
+>>   				  "%s", latency_counter_names[i]);
+>>   
+>>   	spin_lock_irqsave(&latency_lock, flags);
+>> @@ -130,7 +130,7 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
+>>   		if (!dmar_latency_enabled(iommu, i))
+>>   			continue;
+>>   
+>> -		bytes += snprintf(str + bytes, size - bytes,
+>> +		bytes += scnprintf(str + bytes, size - bytes,
+>>   				  "\n%s", latency_type_names[i]);
+>>   
+>>   		for (j = 0; j < COUNTS_NUM; j++) {
+>> @@ -156,11 +156,9 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
+>>   				break;
+>>   			}
+>>   
+>> -			bytes += snprintf(str + bytes, size - bytes,
+>> +			bytes += scnprintf(str + bytes, size - bytes,
+>>   					  "%12lld", val);
+>>   		}
+>>   	}
+>>   	spin_unlock_irqrestore(&latency_lock, flags);
+>> -
+>> -	return bytes;
+>>   }
+>> diff --git a/drivers/iommu/intel/perf.h b/drivers/iommu/intel/perf.h
+>> index df9a36942d64..1d4baad7e852 100644
+>> --- a/drivers/iommu/intel/perf.h
+>> +++ b/drivers/iommu/intel/perf.h
+>> @@ -40,7 +40,7 @@ void dmar_latency_disable(struct intel_iommu *iommu, enum latency_type type);
+>>   bool dmar_latency_enabled(struct intel_iommu *iommu, enum latency_type type);
+>>   void dmar_latency_update(struct intel_iommu *iommu, enum latency_type type,
+>>   			 u64 latency);
+>> -int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size);
+>> +void dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size);
+>>   #else
+>>   static inline int
+>>   dmar_latency_enable(struct intel_iommu *iommu, enum latency_type type)
+>> @@ -64,9 +64,8 @@ dmar_latency_update(struct intel_iommu *iommu, enum latency_type type, u64 laten
+>>   {
+>>   }
+>>   
+>> -static inline int
+>> +static inline void
+>>   dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
+>>   {
+>> -	return 0;
+>>   }
+>>   #endif /* CONFIG_DMAR_PERF */
+>> -- 
+>> 2.50.1
+>>
+> Hi there,
 > 
-> #ifdef CONFIG_ASYNC_PGTABLE_FREE
-> // code and struct here, or dump them over in some
-> // other file and do this in a header
-> #else
-> static void pte_free_kernel_async(struct page *page) {}
-> #endif
-> 
-> void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
-> {
->      struct page *page = virt_to_page(pte);
-> 
->      if (IS_DEFINED(CONFIG_ASYNC_PGTABLE_FREE)) {
-> 	pte_free_kernel_async(page);
->      else
-> 	pagetable_dtor_free(page_ptdesc(page));
-> }
-> 
-> Then in Kconfig, you end up with something like:
-> 
-> config ASYNC_PGTABLE_FREE
-> 	def_bool y
-> 	depends on INTEL_IOMMU_WHATEVER
-> 
-> That very much tells much more of the whole story in code. It also gives
-> the x86 folks that compile out the IOMMU the exact same code as the
-> arch-generic folks. It_also_ makes it dirt simple and obvious for the
-> x86 folks to optimize out the async behavior if they don't like it in
-> the future by replacing the compile-time IOMMU check with a runtime one.
-> 
-> Also, if another crazy IOMMU implementation comes along that happens to
-> do what the x86 IOMMUs do, then they have a single Kconfig switch to
-> flip. If they follow what this patch tries to do, they'll start by
-> copying and pasting the x86 implementation.
+> Just following up on this patch. Please let me know if there's
+> anything else needed from my side.
 
-I'll do it like this.  Does that look good to you?
+It just missed the v6.17 merge window, I'll queue it for v6.18.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 70d29b14d851..6f1113e024fa 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -160,6 +160,7 @@ config IOMMU_DMA
-  # Shared Virtual Addressing
-  config IOMMU_SVA
-  	select IOMMU_MM_DATA
-+	select ASYNC_PGTABLE_FREE if X86
-  	bool
-
-  config IOMMU_IOPF
-diff --git a/include/asm-generic/pgalloc.h b/include/asm-generic/pgalloc.h
-index 3c8ec3bfea44..dbddacdca2ce 100644
---- a/include/asm-generic/pgalloc.h
-+++ b/include/asm-generic/pgalloc.h
-@@ -46,6 +46,19 @@ static inline pte_t 
-*pte_alloc_one_kernel_noprof(struct mm_struct *mm)
-  #define pte_alloc_one_kernel(...) 
-alloc_hooks(pte_alloc_one_kernel_noprof(__VA_ARGS__))
-  #endif
-
-+#ifdef CONFIG_ASYNC_PGTABLE_FREE
-+struct pgtable_free_work {
-+	struct list_head list;
-+	spinlock_t lock;
-+	struct work_struct work;
-+};
-+extern struct pgtable_free_work kernel_pte_work;
-+
-+void pte_free_kernel_async(struct ptdesc *ptdesc);
-+#else
-+static inline void pte_free_kernel_async(struct ptdesc *ptdesc) {}
-+#endif
-+
-  /**
-   * pte_free_kernel - free PTE-level kernel page table memory
-   * @mm: the mm_struct of the current context
-@@ -53,7 +66,12 @@ static inline pte_t 
-*pte_alloc_one_kernel_noprof(struct mm_struct *mm)
-   */
-  static inline void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
-  {
--	pagetable_dtor_free(virt_to_ptdesc(pte));
-+	struct ptdesc *ptdesc = virt_to_ptdesc(pte);
-+
-+	if (IS_ENABLED(CONFIG_ASYNC_PGTABLE_FREE))
-+		pte_free_kernel_async(ptdesc);
-+	else
-+		pagetable_dtor_free(ptdesc);
-  }
-
-  /**
-diff --git a/mm/Kconfig b/mm/Kconfig
-index e443fe8cd6cf..528550cfa7fe 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -1346,6 +1346,13 @@ config LOCK_MM_AND_FIND_VMA
-  config IOMMU_MM_DATA
-  	bool
-
-+config ASYNC_PGTABLE_FREE
-+	bool "Asynchronous kernel page table freeing"
-+	help
-+	  Perform kernel page table freeing asynchronously. This is required
-+	  for systems with IOMMU Shared Virtual Address (SVA) to flush IOTLB
-+	  paging structure caches.
-+
-  config EXECMEM
-  	bool
-
-diff --git a/mm/pgtable-generic.c b/mm/pgtable-generic.c
-index 567e2d084071..6639ee6641d4 100644
---- a/mm/pgtable-generic.c
-+++ b/mm/pgtable-generic.c
-@@ -13,6 +13,7 @@
-  #include <linux/swap.h>
-  #include <linux/swapops.h>
-  #include <linux/mm_inline.h>
-+#include <linux/iommu.h>
-  #include <asm/pgalloc.h>
-  #include <asm/tlb.h>
-
-@@ -406,3 +407,32 @@ pte_t *__pte_offset_map_lock(struct mm_struct *mm, 
-pmd_t *pmd,
-  	pte_unmap_unlock(pte, ptl);
-  	goto again;
-  }
-+
-+#ifdef CONFIG_ASYNC_PGTABLE_FREE
-+static void kernel_pte_work_func(struct work_struct *work);
-+struct pgtable_free_work kernel_pte_work = {
-+	.list = LIST_HEAD_INIT(kernel_pte_work.list),
-+	.lock = __SPIN_LOCK_UNLOCKED(kernel_pte_work.lock),
-+	.work = __WORK_INITIALIZER(kernel_pte_work.work, kernel_pte_work_func),
-+};
-+
-+static void kernel_pte_work_func(struct work_struct *work)
-+{
-+	struct ptdesc *ptdesc, *next;
-+
-+	iommu_sva_invalidate_kva_range(0, TLB_FLUSH_ALL);
-+
-+	guard(spinlock)(&kernel_pte_work.lock);
-+	list_for_each_entry_safe(ptdesc, next, &kernel_pte_work.list, pt_list) {
-+		list_del_init(&ptdesc->pt_list);
-+		pagetable_dtor_free(ptdesc);
-+	}
-+}
-+
-+void pte_free_kernel_async(struct ptdesc *ptdesc)
-+{
-+	guard(spinlock)(&kernel_pte_work.lock);
-+	list_add(&ptdesc->pt_list, &kernel_pte_work.list);
-+	schedule_work(&kernel_pte_work.work);
-+}
-+#endif
--- 
-2.43.0
-
+Thanks,
+baolu
