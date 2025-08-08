@@ -1,98 +1,132 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D402277815
-	for <iommu@lists.linux.dev>; Fri,  8 Aug 2025 12:15:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D30B2686A0;
+	Fri,  8 Aug 2025 12:18:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754655320; cv=none; b=UWiMVq00xZwfw2IrktMCSGyUV0SsUnhqu/74RkSpgHYSFnzxeVqMVe3eCe3Z2eC7odz18MfKr7wtEPIRT0HJ2mL45g45OQb79j1CUeVEEJ8RvcHAyUeNnaDoS9WbIETnvVrZeff6Wo2o8+E/A7/EQO/yTOOJVh+c6Yx6u57kCbY=
+	t=1754655530; cv=none; b=M2SIfIx3Wi5BaBXyZbSUSktNhKoEn+3sFBfgusMOd66W3k8b5Ag7POs69F5gRE2SdX7h7vzEebtC/BHOJxkEjtLg1xu17jq5zL9mKksh23CVfxV5GGHBQMOIK4V3cr7tVN9aJ6kfcRalwPdGW+TBH51SB3cB16y9/1dCEH3fXCY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754655320; c=relaxed/simple;
-	bh=KjlLTJox+aEPkr7SyVNi+vSqzknO8UAJgxNui7KfZqI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=s5t86+js/msagSmWd36ipMSPW0te+1BaFEYE+6jKtDQNhEZbZMvv5msiji1tfZCDmR5xeUUaXJ63ZGtpE0FWHc7OHoPjjDD0mBDuxE4JQLzSQvXeNrg6YQBxI+8+uMKRnsnk/GZ9W0iEPZUtApAy+10ZA1jAq3/URPYEB4wByA0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=nn0RlVvw; arc=none smtp.client-ip=209.85.222.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1754655530; c=relaxed/simple;
+	bh=F7tb5lTFFPLSB0Eciw8hAvvjQDFPIiUrB4o3KSIztZo=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=Jb/ydgPBfK/fbmhoStcR9PbigvhmqKbChUT7V+fXChqgpt8HnTFxL821OR6gjrNH1v/27uWO3oseGjkDs4BmLHiqwe6SBJ4nfRJZFd04nPu6ZOiLhgsgDVh8ZukriH10BudLgIkW4CmG8u/VzM7i42Jm+bm4pCSDM55siduVKP8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MOJMvRiT; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="nn0RlVvw"
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-7e1d89fcc31so209832085a.1
-        for <iommu@lists.linux.dev>; Fri, 08 Aug 2025 05:15:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1754655317; x=1755260117; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KjlLTJox+aEPkr7SyVNi+vSqzknO8UAJgxNui7KfZqI=;
-        b=nn0RlVvwevLQ3091xnDjvRZtr3uLG0kw+5+CovUOpM16fGeL4OGBZX4DBLhIs3Qme6
-         0HwamN/3ogcpnFYkLOYrKM/Dvv7RGbvhdSBaEkibEqVOJo0r3fZwyNoS7sib9HvymrAP
-         d3xrYao5GdLYpqT2jEvPZgMoYBXZX/O2qlOwynx6b/wipU8beOYKvT6POFzXLNBFWWN3
-         sDaUC4Zrjrj/RgbRazmOHOyY3WozQajyxFaSw8sF0S8LrtyrdyueE6H8Ad9BER9uD8Fp
-         Pqy6BgOJlAHVWTBb5GtiJ/B/M1aJ615GfDCHHR3zh+B4LcVKQUdarnjuIaDvFInS1qdm
-         5cSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754655317; x=1755260117;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KjlLTJox+aEPkr7SyVNi+vSqzknO8UAJgxNui7KfZqI=;
-        b=gQKGNeRvgvE0G2tlTBiVb8m4rNUJZ4NS6J3fV7GK9TGq2h30nhvg2FbWFX4rb1tvAX
-         ZypnWCU5uQW5CX3+r9EAHjmQMA0L0XnTUi4wtAs2e+WNiYduZ1nnu7nY+we5loYrEz4K
-         kVbw7w8IqbDEno6fw0b4cNt4frS7UXw1T6QcS08WWaKfLwMgelOIbE7I/fEm8c0UfjAL
-         SU/hl0O+VItV0oUYmfjXojXmnNWu3IlUD0WkGpyN5ESLryHgY+tfFl1J/Q9+R0yMW30q
-         BVnoDjAhYwhOZ9zVjBcNkAG8U5h6BKaAa+KLbiG5lG9yoOztmCkzxIO6QEtkCpS84qog
-         y1Eg==
-X-Gm-Message-State: AOJu0YxTdX8p5xE+Q3dsLz5WEFMM1MdQbX5sz0iOeFhBjEMJkDzUBL8P
-	fFSMriTETRv2+R7CjMQx17jXW9LZN64o+3bpZoerJ3NpKYAOtMxfpErPaiiXNOHX++8=
-X-Gm-Gg: ASbGncstEHntIjJF4kFhh2W26lTYEA5x/65/Wn64lOCoCx7WalUKiP3JQargnDlPRnH
-	B2zYRNY952tp1D4e8tKzflsvIDqM3QIt85JQxRORQPRmp3DjQdlViCGR3OZEhoVOjrsAIb8G5U7
-	UI5TkPAHxGr3SKLAufUsmK3/i1GcgO6hm107OwXCs5avHiOX5XgcGOAlmmG7c7uN9Wabxen/gL5
-	oazEeLuGPKJaZ1X7sMBmyKNVgGQX8w+w9fF2tymINL/6iVGSlYiG5bAux1S9FUXCV+bgaXvode2
-	zs0gJAHFrLcwDur1PBGG6JT1HRziegGuVjxoZgSjjal95YNLlCcQ9pTpU0qjerZg9Z5D8KQkFEe
-	L28rg0ZxbXMRWwTqUhptnHhDO0KsZgMeywMxXI4gweZKdzC489p1x3BB8Hwu8dgsdlrvCspK8JP
-	oz6Ew=
-X-Google-Smtp-Source: AGHT+IFydq6l6b5JXXNn6gOqeE0yXEq9dZ/J9DKgW7tPI3RiBa0ZAO/jnR4IhHmIeHf5pIqVx18YPw==
-X-Received: by 2002:a05:6214:29cb:b0:709:3d74:2ed5 with SMTP id 6a1803df08f44-7099a301143mr35261076d6.29.1754655317080;
-        Fri, 08 Aug 2025 05:15:17 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-7077cddc290sm112232056d6.63.2025.08.08.05.15.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Aug 2025 05:15:16 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1ukM0B-0000000256j-2zO9;
-	Fri, 08 Aug 2025 09:15:15 -0300
-Date: Fri, 8 Aug 2025 09:15:15 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Shyam Saini <shyamsaini@linux.microsoft.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
-	will@kernel.org, jacob.pan@linux.microsoft.com,
-	eric.auger@redhat.com, code@tyhicks.com,
-	eahariha@linux.microsoft.com, vijayb@linux.microsoft.com,
-	bboscaccy@linux.microsoft.com
-Subject: Re: [PATCH v3 2/3] iommu/of: fix device tree configuration for PCI
- devices
-Message-ID: <20250808121515.GE377696@ziepe.ca>
-References: <20250806215539.1240561-1-shyamsaini@linux.microsoft.com>
- <20250806215539.1240561-3-shyamsaini@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MOJMvRiT"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EF17C4CEED;
+	Fri,  8 Aug 2025 12:18:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1754655529;
+	bh=F7tb5lTFFPLSB0Eciw8hAvvjQDFPIiUrB4o3KSIztZo=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=MOJMvRiTkoCjCsZDaDiLgFP/fMhKxU7zGC3lkncZ2fP/t3d9G+9z0vfYRr6ckRHkx
+	 29jKmjJ4DmXVYPIFVZQa9UbAm+3pLE0eSroF23aqMx8IJcT2gUQ7slW+Dkm3QwHkOo
+	 Yk3sG3x/kPtk2X/l+MCCGtYGFexCtLFjgRGph3DYWAUuTApmspkzmxZ+T+gU/NCSpF
+	 9D/Hq7jbVS4PWg8TdifZFNeHoGgkXoVkf0/KsJRmOwpJ3mWMbSfnGlooey7UtjkTMJ
+	 kc8vtFIMw2nLXuvNh2mIyImqpyHNTX5h2QIj/SOLQk3liDh7tRprdKpUWyBbOz8JL7
+	 TyDSPxxEha9xw==
+From: Andreas Hindborg <a.hindborg@kernel.org>
+To: Abdiel Janulgue <abdiel.janulgue@gmail.com>, acourbot@nvidia.com,
+ dakr@kernel.org, jgg@ziepe.ca, lyude@redhat.com
+Cc: Miguel Ojeda <ojeda@kernel.org>, Alex Gaynor <alex.gaynor@gmail.com>,
+ Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>,
+ =?utf-8?Q?Bj=C3=B6rn?= Roy
+ Baron <bjorn3_gh@protonmail.com>, Benno Lossin <lossin@kernel.org>, Alice
+ Ryhl <aliceryhl@google.com>, Trevor Gross <tmgross@umich.edu>, Tamir
+ Duberstein <tamird@gmail.com>, FUJITA Tomonori
+ <fujita.tomonori@gmail.com>, linux-kernel@vger.kernel.org, Andrew Morton
+ <akpm@linux-foundation.org>, Randy Dunlap <rdunlap@infradead.org>, Herbert
+ Xu <herbert@gondor.apana.org.au>, Caleb Sander Mateos
+ <csander@purestorage.com>, Petr Tesarik <petr@tesarici.cz>, Sui
+ Jingfeng <sui.jingfeng@linux.dev>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>,
+ airlied@redhat.com, iommu@lists.linux.dev, rust-for-linux@vger.kernel.org,
+ Abdiel Janulgue <abdiel.janulgue@gmail.com>
+Subject: Re: [PATCH v3 2/2] samples: rust: add sample code for scatterlist
+ abstraction
+In-Reply-To: <20250718103359.1026240-3-abdiel.janulgue@gmail.com>
+References: <20250718103359.1026240-1-abdiel.janulgue@gmail.com>
+ <vdYZDYMXRnQEadlW9C4I5MvuQi9SnRXgNF-ACtJ9C3Xh1pq6Ajc673GIIOtqJ4VZ13FzSeH_iAvA9vVKQii4DA==@protonmail.internalid>
+ <20250718103359.1026240-3-abdiel.janulgue@gmail.com>
+Date: Fri, 08 Aug 2025 14:18:36 +0200
+Message-ID: <87a54a57mr.fsf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250806215539.1240561-3-shyamsaini@linux.microsoft.com>
+Content-Type: text/plain
 
-On Wed, Aug 06, 2025 at 02:55:38PM -0700, Shyam Saini wrote:
-> Individual PCI devices lack dedicated device tree nodes, but
+"Abdiel Janulgue" <abdiel.janulgue@gmail.com> writes:
 
-This is not the case, you can put PCI devices in the DT as well, there
-is a syntax for it. Why not do that and have the FW populate it on the
-device node itself?
+> Add simple excercises to test the scatterlist abstraction.
+>
+> Co-developed-by: Alexandre Courbot <acourbot@nvidia.com>
+> Signed-off-by: Alexandre Courbot <acourbot@nvidia.com>
+> Signed-off-by: Abdiel Janulgue <abdiel.janulgue@gmail.com>
+> ---
+>  samples/rust/rust_dma.rs | 49 +++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 48 insertions(+), 1 deletion(-)
+>
+> diff --git a/samples/rust/rust_dma.rs b/samples/rust/rust_dma.rs
+> index 9e05d5c0cdae..1fa278e8e29a 100644
+> --- a/samples/rust/rust_dma.rs
+> +++ b/samples/rust/rust_dma.rs
+> @@ -4,11 +4,33 @@
+>  //!
+>  //! To make this driver probe, QEMU must be run with `-device pci-testdev`.
+>
+> -use kernel::{bindings, device::Core, dma::CoherentAllocation, pci, prelude::*, types::ARef};
+> +use kernel::{
+> +    bindings, device::Core, dma::CoherentAllocation, page::*, pci, prelude::*, scatterlist::*,
+> +    sync::Arc, types::ARef,
+> +};
+>
+>  struct DmaSampleDriver {
+>      pdev: ARef<pci::Device>,
+>      ca: CoherentAllocation<MyStruct>,
+> +    _sgt: SGTable<OwnedSgt<PagesArray>, ManagedMapping>,
+> +}
+> +
+> +struct PagesArray(KVec<Page>);
+> +impl SGTablePages for PagesArray {
+> +    fn iter<'a>(&'a self) -> impl Iterator<Item = (&'a Page, usize, usize)> {
+> +        self.0.iter().map(|page| (page, kernel::page::PAGE_SIZE, 0))
+> +    }
+> +
+> +    fn entries(&self) -> usize {
+> +        self.0.len()
+> +    }
+> +}
+> +
+> +struct WrappedArc(Arc<kernel::bindings::sg_table>);
+> +impl core::borrow::Borrow<kernel::bindings::sg_table> for WrappedArc {
+> +    fn borrow(&self) -> &kernel::bindings::sg_table {
+> +        &self.0
+> +    }
+>  }
+>
+>  const TEST_VALUES: [(u32, u32); 5] = [
+> @@ -58,10 +80,35 @@ fn probe(pdev: &pci::Device<Core>, _info: &Self::IdInfo) -> Result<Pin<KBox<Self
+>              kernel::dma_write!(ca[i] = MyStruct::new(value.0, value.1))?;
+>          }
+>
+> +        let mut pages = KVec::new();
+> +        for _ in TEST_VALUES.into_iter() {
+> +            let _ = pages.push(Page::alloc_page(GFP_KERNEL)?, GFP_KERNEL);
+> +        }
+> +
+> +        // Let's pretend this is valid...
+> +        // SAFETY: `sg_table` is not a reference.
+> +        let sg_table: bindings::sg_table = unsafe { core::mem::zeroed() };
 
-You should CC all the device tree maintainers on something like this
-as well.
+I think this initialization can be safe with recent pin-init patches
+[0]. Perhaps rebase on that, or add a todo?
 
-Jason
+Best regards,
+Andreas Hindborg
+
+[0] https://lore.kernel.org/r/20250523145125.523275-1-lossin@kernel.org
+
