@@ -1,168 +1,98 @@
-Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com [209.85.128.65])
+Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0464A78F39;
-	Fri,  8 Aug 2025 07:56:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D402277815
+	for <iommu@lists.linux.dev>; Fri,  8 Aug 2025 12:15:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754639784; cv=none; b=KjYKbmCeemk66LeOj4aIc4rDTtZq6GLSBlGQ5v6p5W/RuW6jTQ5ryIRMl40kHwaG5nsoRPe+luav5R+E8KLLxlKrywv5YSjO2jOdZd0+Rh/Cd2YK/gq+3k2Yd3qyW1HLZttMP4V4r1Vlo08FQ3mpS2D27ZPrfVF1IvoV7aBlk94=
+	t=1754655320; cv=none; b=UWiMVq00xZwfw2IrktMCSGyUV0SsUnhqu/74RkSpgHYSFnzxeVqMVe3eCe3Z2eC7odz18MfKr7wtEPIRT0HJ2mL45g45OQb79j1CUeVEEJ8RvcHAyUeNnaDoS9WbIETnvVrZeff6Wo2o8+E/A7/EQO/yTOOJVh+c6Yx6u57kCbY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754639784; c=relaxed/simple;
-	bh=eH0NyDPZql4wCTz3i6PHT+N8D4o8WobMpqdwAmhOD8o=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Rw+dSYtK0OEs71GShE757r3v2yZ44kzMC6+Uj+ErpphlA2BXNwOsxGx2wjpkLIpc2L4mBAsWf+XAOECp0c3JS4EQDJTzvp7vQO3oyXaXwS+Y25dRxe42hV5XeCbWYhK4W/3skSmyKJZBmH9dNgt8Abfr8Ohs9cuBLcMSe/MeVyk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XGIHFppd; arc=none smtp.client-ip=209.85.128.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1754655320; c=relaxed/simple;
+	bh=KjlLTJox+aEPkr7SyVNi+vSqzknO8UAJgxNui7KfZqI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=s5t86+js/msagSmWd36ipMSPW0te+1BaFEYE+6jKtDQNhEZbZMvv5msiji1tfZCDmR5xeUUaXJ63ZGtpE0FWHc7OHoPjjDD0mBDuxE4JQLzSQvXeNrg6YQBxI+8+uMKRnsnk/GZ9W0iEPZUtApAy+10ZA1jAq3/URPYEB4wByA0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=nn0RlVvw; arc=none smtp.client-ip=209.85.222.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XGIHFppd"
-Received: by mail-wm1-f65.google.com with SMTP id 5b1f17b1804b1-459e20ec1d9so17561175e9.3;
-        Fri, 08 Aug 2025 00:56:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="nn0RlVvw"
+Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-7e1d89fcc31so209832085a.1
+        for <iommu@lists.linux.dev>; Fri, 08 Aug 2025 05:15:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754639781; x=1755244581; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=g47/JQMYnoJFt8X2Gyr00t3GiLF5ts7OyvZLVgHeWbk=;
-        b=XGIHFppd0qydbsvIzE0Qtf6TD1xCi5liGFpBUw2tlK5/kZWWNkDUb9sIES2edk5ItP
-         ry0uoSrXQCzRIN6A5doKamBRVBJojBbDi8R4gg/Y+SYFkTqkqMGIHUx/lSquDT1W1dIo
-         d6AZ9x0kh2zrLEQ+ATLzRBRxVyLActYm6jf4eDUPJHYyWg+CFT+lxO0gZol7e4mdsYic
-         TLgdrBUCEmONHdSEhyo/24RZDr0FSxfBbJOjCZ5Dil0C8BNxzHynCyQXO+yh1MZV49K1
-         moVO84TLsbuvrIyCDqLFJAP6HYiaqbtDjqMk9fTJrxvnQqG+ioFNv04RXgu+4n+7/WLP
-         cYhw==
+        d=ziepe.ca; s=google; t=1754655317; x=1755260117; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=KjlLTJox+aEPkr7SyVNi+vSqzknO8UAJgxNui7KfZqI=;
+        b=nn0RlVvwevLQ3091xnDjvRZtr3uLG0kw+5+CovUOpM16fGeL4OGBZX4DBLhIs3Qme6
+         0HwamN/3ogcpnFYkLOYrKM/Dvv7RGbvhdSBaEkibEqVOJo0r3fZwyNoS7sib9HvymrAP
+         d3xrYao5GdLYpqT2jEvPZgMoYBXZX/O2qlOwynx6b/wipU8beOYKvT6POFzXLNBFWWN3
+         sDaUC4Zrjrj/RgbRazmOHOyY3WozQajyxFaSw8sF0S8LrtyrdyueE6H8Ad9BER9uD8Fp
+         Pqy6BgOJlAHVWTBb5GtiJ/B/M1aJ615GfDCHHR3zh+B4LcVKQUdarnjuIaDvFInS1qdm
+         5cSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754639781; x=1755244581;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=g47/JQMYnoJFt8X2Gyr00t3GiLF5ts7OyvZLVgHeWbk=;
-        b=BfJDBcyjfbTeDbhdGQQm5bGE1SWyJK7Ah+8c+LVRkC1EVsCEdS/max6X5cRVlY+pHA
-         S0paFVn47MSgcCDBMCtTgQpeI+BLdULhQn1TDL4tdVYKOzgg1841gbE4gz5IptUqv04J
-         Z2FHHjV7dmFLoJ5NdQw9xtJskAyLIoANYIxI4R2bqU78DbBlhV1vL2eCKdubLVwSsrUG
-         pe1cs3HbgHG20DDmVCQfiV+FMrcWoViegRxmao+AhcZq/u0gHdk8iGVrWkY/5PayCdV3
-         mhk1xkHvm556bfQVgJUftDBBa3xF0l+eXhYLSGEnYLpdmjHqBE1P/5KPlmaY0At/HH39
-         58Eg==
-X-Forwarded-Encrypted: i=1; AJvYcCVBD0T9cNx4F+rtmx4F2JE2i3U5ivcIbreYAOpjbBfvibNMJ6NSknLYUoogpZ3Hk+bDBf5yeu2nbA==@lists.linux.dev, AJvYcCX//4JB7CYDfufqU5ZKkVCKm98OshDPA6G5DQMcWJlVQOtMl8w62DrwgjKacYItRGKpPV/L2w==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwKc6b23An/gFxTZCZtfseZ9sJqdhvL4CmogsW5GBYfLZ36/cw5
-	qdPgepsPRIH32sy6+hvZ+Jd04UCJETyPZldId6JRbFLUEIVwX4ahJgWO
-X-Gm-Gg: ASbGnct7xsJL5mqINJaNZ8XPcVjnRVNXkFC6syKNYNdX17vwdAloJr3SooSTHAnKwzm
-	22OjCVjsbJ1AUVe9Wwhns3ou7Bg9+46453HklQ18IzLhl1IcJNiOBaGPGVCQKtCYL1R8WUfT8B/
-	XAeoBBtYIhVrP2Rxh+jl3mZeEBVf5EvOCSYyYj6p6XO1Mdttt6ZiALpYNl9rawPsLVALBvzA6pq
-	JUBtvv5ncdqx9X0RCDTeMxBZewxI0bbhFBLHuIku2Pd4TlVciWaid1KIs407L3c7XQRKQ519ftZ
-	jVJcej7d7/WF6xFuGOxIRoaSFhnfp90aABxqNj8Qy3QBCdICP3PFFDGBezXSOO+7XJSyMyjBl3j
-	/RKNkhn4E8/EaK0JjFHDIFaGvRvNvy0lTwlgOaUlWwhfdp1bnqhI6fCwDr03WFQjZnrvvxmwYsO
-	tQ8ZPqierSfIVSlegV1GObqKpq5ZaWauV0lA==
-X-Google-Smtp-Source: AGHT+IEBs27Uy9PNJpjOLnJbY5yuC13GxO0mFq67O2Xv2B5Lc++fQpKDmSg1kZHFuBQVQnQHeW4qhw==
-X-Received: by 2002:a05:600c:524a:b0:456:1204:e7e6 with SMTP id 5b1f17b1804b1-459f4f517dbmr14242675e9.11.1754639781007;
-        Fri, 08 Aug 2025 00:56:21 -0700 (PDT)
-Received: from [26.26.26.1] (ec2-3-72-134-22.eu-central-1.compute.amazonaws.com. [3.72.134.22])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b79c3bf956sm30081041f8f.24.2025.08.08.00.56.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 08 Aug 2025 00:56:20 -0700 (PDT)
-Message-ID: <c6b5067e-8ae4-44f6-83de-f098761608ba@gmail.com>
-Date: Fri, 8 Aug 2025 15:56:13 +0800
+        d=1e100.net; s=20230601; t=1754655317; x=1755260117;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KjlLTJox+aEPkr7SyVNi+vSqzknO8UAJgxNui7KfZqI=;
+        b=gQKGNeRvgvE0G2tlTBiVb8m4rNUJZ4NS6J3fV7GK9TGq2h30nhvg2FbWFX4rb1tvAX
+         ZypnWCU5uQW5CX3+r9EAHjmQMA0L0XnTUi4wtAs2e+WNiYduZ1nnu7nY+we5loYrEz4K
+         kVbw7w8IqbDEno6fw0b4cNt4frS7UXw1T6QcS08WWaKfLwMgelOIbE7I/fEm8c0UfjAL
+         SU/hl0O+VItV0oUYmfjXojXmnNWu3IlUD0WkGpyN5ESLryHgY+tfFl1J/Q9+R0yMW30q
+         BVnoDjAhYwhOZ9zVjBcNkAG8U5h6BKaAa+KLbiG5lG9yoOztmCkzxIO6QEtkCpS84qog
+         y1Eg==
+X-Gm-Message-State: AOJu0YxTdX8p5xE+Q3dsLz5WEFMM1MdQbX5sz0iOeFhBjEMJkDzUBL8P
+	fFSMriTETRv2+R7CjMQx17jXW9LZN64o+3bpZoerJ3NpKYAOtMxfpErPaiiXNOHX++8=
+X-Gm-Gg: ASbGncstEHntIjJF4kFhh2W26lTYEA5x/65/Wn64lOCoCx7WalUKiP3JQargnDlPRnH
+	B2zYRNY952tp1D4e8tKzflsvIDqM3QIt85JQxRORQPRmp3DjQdlViCGR3OZEhoVOjrsAIb8G5U7
+	UI5TkPAHxGr3SKLAufUsmK3/i1GcgO6hm107OwXCs5avHiOX5XgcGOAlmmG7c7uN9Wabxen/gL5
+	oazEeLuGPKJaZ1X7sMBmyKNVgGQX8w+w9fF2tymINL/6iVGSlYiG5bAux1S9FUXCV+bgaXvode2
+	zs0gJAHFrLcwDur1PBGG6JT1HRziegGuVjxoZgSjjal95YNLlCcQ9pTpU0qjerZg9Z5D8KQkFEe
+	L28rg0ZxbXMRWwTqUhptnHhDO0KsZgMeywMxXI4gweZKdzC489p1x3BB8Hwu8dgsdlrvCspK8JP
+	oz6Ew=
+X-Google-Smtp-Source: AGHT+IFydq6l6b5JXXNn6gOqeE0yXEq9dZ/J9DKgW7tPI3RiBa0ZAO/jnR4IhHmIeHf5pIqVx18YPw==
+X-Received: by 2002:a05:6214:29cb:b0:709:3d74:2ed5 with SMTP id 6a1803df08f44-7099a301143mr35261076d6.29.1754655317080;
+        Fri, 08 Aug 2025 05:15:17 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-7077cddc290sm112232056d6.63.2025.08.08.05.15.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Aug 2025 05:15:16 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1ukM0B-0000000256j-2zO9;
+	Fri, 08 Aug 2025 09:15:15 -0300
+Date: Fri, 8 Aug 2025 09:15:15 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Shyam Saini <shyamsaini@linux.microsoft.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
+	will@kernel.org, jacob.pan@linux.microsoft.com,
+	eric.auger@redhat.com, code@tyhicks.com,
+	eahariha@linux.microsoft.com, vijayb@linux.microsoft.com,
+	bboscaccy@linux.microsoft.com
+Subject: Re: [PATCH v3 2/3] iommu/of: fix device tree configuration for PCI
+ devices
+Message-ID: <20250808121515.GE377696@ziepe.ca>
+References: <20250806215539.1240561-1-shyamsaini@linux.microsoft.com>
+ <20250806215539.1240561-3-shyamsaini@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 00/16] Fix incorrect iommu_groups with PCIe ACS
-To: Baolu Lu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, linux-pci@vger.kernel.org,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>, galshalom@nvidia.com,
- Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
- kvm@vger.kernel.org, maorg@nvidia.com, patches@lists.linux.dev,
- tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
-References: <0-v2-4a9b9c983431+10e2-pcie_switch_groups_jgg@nvidia.com>
- <a692448d-48b8-4af3-bf88-2cc913a145ca@gmail.com>
- <20250802151816.GC184255@nvidia.com>
- <1684792a-97d6-4383-a0d2-f342e69c91ff@gmail.com>
- <20250805123555.GI184255@nvidia.com>
- <964c8225-d3fc-4b60-9ee5-999e08837988@gmail.com>
- <20250805144301.GO184255@nvidia.com>
- <6ca56de5-01df-4636-9c6a-666ccc10b7ff@gmail.com>
- <3abaf43b-0b81-46e9-a313-0120d30541cc@linux.intel.com>
-Content-Language: en-US
-From: Ethan Zhao <etzhao1900@gmail.com>
-In-Reply-To: <3abaf43b-0b81-46e9-a313-0120d30541cc@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250806215539.1240561-3-shyamsaini@linux.microsoft.com>
 
+On Wed, Aug 06, 2025 at 02:55:38PM -0700, Shyam Saini wrote:
+> Individual PCI devices lack dedicated device tree nodes, but
 
+This is not the case, you can put PCI devices in the DT as well, there
+is a syntax for it. Why not do that and have the FW populate it on the
+device node itself?
 
-On 8/6/2025 10:41 AM, Baolu Lu wrote:
-> On 8/6/25 10:22, Ethan Zhao wrote:
->> On 8/5/2025 10:43 PM, Jason Gunthorpe wrote:
->>> On Tue, Aug 05, 2025 at 10:41:03PM +0800, Ethan Zhao wrote:
->>>
->>>>>> My understanding, iommu has no logic yet to handle the egress control
->>>>>> vector configuration case,
->>>>>
->>>>> We don't support it at all. If some FW leaves it configured then it
->>>>> will work at the PCI level but Linux has no awarness of what it is
->>>>> doing.
->>>>>
->>>>> Arguably Linux should disable it on boot, but we don't..
->>>> linux tool like setpci could access PCIe configuration raw data, so
->>>> does to the ACS control bits. that is boring.
->>>
->>> Any change to ACS after boot is "not supported" - iommu groups are one
->>> time only using boot config only. If someone wants to customize ACS
->>> they need to use the new config_acs kernel parameter.
->> That would leave ACS to boot time configuration only. Linux never
->> limits tools to access(write) hardware directly even it could do that.
->> Would it be better to have interception/configure-able policy for such
->> hardware access behavior in kernel like what hypervisor does to MSR etc ?
-> 
-> A root user could even clear the BME or MSE bits of a device's PCIe
-> configuration space, even if the device is already bound to a driver and
-> operating normally. I don't think there's a mechanism to prevent that
-> from happening, besides permission enforcement. I believe that the same
-> applies to the ACS control.
-> 
->>>
->>>>>> The static groups were created according to
->>>>>> FW DRDB tables,
->>>>>
->>>>> ?? iommu_groups have nothing to do with FW tables.
->>>> Sorry, typo, ACPI drhd table.
->>>
->>> Same answer, AFAIK FW tables have no effect on iommu_groups 
->> My understanding, FW tables are part of the description about device 
->> topology and iommu-device relationship. did I really misunderstand
->> something ?
-> 
-> The ACPI/DMAR table describes the platform's IOMMU topology, not the
-> device topology, which is described by the PCI bus. So, the firmware
-> table doesn't impact the iommu_group.
-There is kernel lockdown lsm works via kernel parameter lockdown=
-{integrity | confidentiality},
+You should CC all the device tree maintainers on something like this
+as well.
 
-"If set to integrity, kernel features that allow userland to modify the 
-running kernel are disabled. If set to confidentiality, kernel features 
-that allow userland to extract confidential information from the kernel
-are also disabled. "
-
-It also works for PCIe configuration space directly access from 
-userland, but the levels of configuration granularity is coarse, can't 
-configure kernel to only prevent PCI device from accessing from userland.
-
-The design and implementation is structured and the granularity is fine-
-grained, it is easy to extended and add new kernel parameter to only
-lockdown PCI device configuration space access.
-
-[LOCKDOWN_PCI_ACCESS] = "direct PCI access"
-
-Thanks,
-Ethan
-
-
-
-> 
-> Thanks,
-> baolu
-
+Jason
