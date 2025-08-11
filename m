@@ -1,50 +1,25 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C94A62D3A98
-	for <iommu@lists.linux.dev>; Mon, 11 Aug 2025 13:55:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 334A3202969
+	for <iommu@lists.linux.dev>; Mon, 11 Aug 2025 14:17:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754920556; cv=none; b=HAbbJcmawD27cUb9V+BPGsJBwjzgrjwH7UhFXfpwNmXLdxLQxM4MEJDz+9Jn+xWJ7cNF5bcz55UnaXIKv4QDSy+1X9qJDgZ4q916XZJLTj+vG+oV+xYoBTOwlCIHz7F4EDsiZjDWAQ76AczKaSUJ0YC07c3oVTHL1P0CB6MOJ2k=
+	t=1754921842; cv=none; b=Mb4mexZI9TpYw1k4Mz9vOZh/MtEPvbivJMbxUPGqcAeX/iFuGGGnPs2DjMpYt0A0Aux+KA7nUlp3DLymQPxfOJTczpauhXbF2+5tEW/f8gH2ItURmOVKAu0FjIJqubnJfYhrreRtAK0z6dNnPmhDbKH2TIXmEnHZ0pKNJu7UzTk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754920556; c=relaxed/simple;
-	bh=yej6e9OZG68bgcEUtPzsRHtRSs/NFty8E/AqSyO+rN4=;
+	s=arc-20240116; t=1754921842; c=relaxed/simple;
+	bh=S1c3LYfs/+fpITKc7jTlB1Bw/VBNJEw9lp5ELrWtRSI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=DzqpVScuzjjkab7RGUp9kCpu3PCXvuhCAgTfrhLtZT3hnEICa659kC+MaOAX14KhyZ/a7BNoTeqOhpatJsccu8L92Ee0x//dtpW3UiKuYK83it6bQejjQx0Jof4VggE5miHGEHBOtHXBxhqil3tJfuoxnpjVuu5XhFZGQ8IpYfs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FxM0M+Pi; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FxM0M+Pi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1754920555; x=1786456555;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yej6e9OZG68bgcEUtPzsRHtRSs/NFty8E/AqSyO+rN4=;
-  b=FxM0M+Pi4ghcsZrR0xp3MLFr8yyU3yP/c0/NV+tKSeb3toIE5Ki9q7Tl
-   TL7DJP9+zX3UwkxQZTV6z8Odg0616gFpuN81DMGu+GCTPfNM2WcFQIr4s
-   LjBy+XEljkL3MRLN26dBT8m1li8RC8PbTV4fAgbtXmTu+ZxpsVsf8Fkli
-   oYXioJzh4VbiBut+1R6RdsXCfjwCWLty6mCyXH/u0wJdBEoKKwHAYcWNU
-   TjipHhdwPrwt2b/Cy9wh6zl5CFzbJNXGRyvgpC8mcfiG30RllWNhkEciG
-   Noi0XsfapMIgoeD0xS5muE+K3Mm1MwbIsniOlfrB/VeL120zblySabrp5
-   A==;
-X-CSE-ConnectionGUID: gIzVaiViRKKyWMZGMqC6qA==
-X-CSE-MsgGUID: TNnEwpSBRuiat2zBx9LbBw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11518"; a="61016758"
-X-IronPort-AV: E=Sophos;i="6.17,278,1747724400"; 
-   d="scan'208";a="61016758"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2025 06:55:54 -0700
-X-CSE-ConnectionGUID: C08Q9FYCSM6nVurQEU1rUA==
-X-CSE-MsgGUID: 0UUoKXwIQdqEQIhB8E5XDQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.17,278,1747724400"; 
-   d="scan'208";a="196765115"
-Received: from dwesterg-mobl1.amr.corp.intel.com (HELO [10.125.111.51]) ([10.125.111.51])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2025 06:55:53 -0700
-Message-ID: <83c47939-7366-4b97-9368-02d432ddc24a@intel.com>
-Date: Mon, 11 Aug 2025 06:55:52 -0700
+	 In-Reply-To:Content-Type; b=b79fsRQl0VAt7SO8PtchkDgc/x5zz2T6JZhdjxDXq8OH1nBnBEZyM2uHjAvs038xYnRHxS5cgWiX2fhcRaUEecjBkyqcxQRomdtGIQwdDaS+Gcy1i1DcGMdFAuAwn51PhpHrXLGlGEiujooMjtpVGQPmaCw1Q9ujz5nu0dnD45E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 79D1D1A32;
+	Mon, 11 Aug 2025 07:17:12 -0700 (PDT)
+Received: from [10.1.196.50] (e121345-lin.cambridge.arm.com [10.1.196.50])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BF84F3F738;
+	Mon, 11 Aug 2025 07:17:18 -0700 (PDT)
+Message-ID: <a9c31290-3e21-4fbd-bd72-d445701d15a9@arm.com>
+Date: Mon, 11 Aug 2025 15:17:17 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,100 +27,102 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-To: Uladzislau Rezki <urezki@gmail.com>, Ethan Zhao <etzhao1900@gmail.com>,
- Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>,
- Peter Zijlstra <peterz@infradead.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
- iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
- <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
- <20250806155223.GV184255@nvidia.com>
- <d02cb97a-7cea-4ad3-82b3-89754c5278ad@intel.com>
- <20250806160904.GX184255@nvidia.com>
- <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
- <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
- <4ce79c80-1fc8-4684-920a-c8d82c4c3dc8@intel.com>
- <b6defa2a-164e-4c2f-ac55-fef5b4a9ba0f@linux.intel.com>
- <2611981e-3678-4619-b2ab-d9daace5a68a@gmail.com> <aJm0znaAqBRWqOCT@pc636>
-From: Dave Hansen <dave.hansen@intel.com>
-Content-Language: en-US
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <aJm0znaAqBRWqOCT@pc636>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [RESEND PATCH 2/2] arm64: Add encrypt/decrypt support for vmalloc
+ regions
+To: Shanker Donthineni <sdonthineni@nvidia.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Steven Price <steven.price@arm.com>, linux-arm-kernel@lists.infradead.org
+Cc: Gavin Shan <gshan@redhat.com>, Mike Rapoport <rppt@kernel.org>,
+ Vikram Sethi <vsethi@nvidia.com>, Jason Sequeira <jsequeira@nvidia.com>,
+ Dev Jain <dev.jain@arm.com>, David Rientjes <rientjes@google.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+References: <20250811005036.714274-1-sdonthineni@nvidia.com>
+ <20250811005036.714274-3-sdonthineni@nvidia.com>
+ <d8048adc-b19a-4d10-83e8-44b9a85c4d48@arm.com>
+ <df91ac56-9240-4ee2-b154-a911c4053dc5@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <df91ac56-9240-4ee2-b154-a911c4053dc5@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 8/11/25 02:15, Uladzislau Rezki wrote:
->> kernel_pte_work.list is global shared var, it would make the producer
->> pte_free_kernel() and the consumer kernel_pte_work_func() to operate in
->> serialized timing. In a large system, I don't think you design this
->> deliberately 🙂
->>
-> Sorry for jumping.
+On 11/08/2025 2:05 pm, Shanker Donthineni wrote:
+> Hi Robin,
 > 
-> Agree, unless it is never considered as a hot path or something that can
-> be really contented. It looks like you can use just a per-cpu llist to drain
-> thinks.
+> On 8/11/25 07:31, Robin Murphy wrote:
+>> External email: Use caution opening links or attachments
+>>
+>>
+>> On 2025-08-11 1:50 am, Shanker Donthineni wrote:
+>>> On ARM64 systems with CCA (Confidential Compute Architecture) enabled,
+>>> the kernel may need to change the encryption attributes of memory
+>>> regions. The existing implementation of set_memory_encrypted() and
+>>> set_memory_decrypted() assumes that the input address is part of the
+>>> linear mapping region '__is_lm_address()', and fails with -EINVAL
+>>> otherwise.
+>>>
+>>> This breaks use cases where the memory region resides in the vmalloc
+>>> area, which is mapped in non-linear mapping region.
+>>>
+>>> This patch introduces a new helper, realm_set_memory(), which detects
+>>> whether the given address is from a non-linear mapping. If so, it uses
+>>> vmalloc_to_page() to resolve each page’s physical address and applies
+>>> attribute changes one page at a time. For the linear address regions,
+>>> it maintains the existing fast-path.
+>>>
+>>> This change ensures that encrypted/decrypted memory attribute updates
+>>> correctly for all memory regions, including those allocated via vmap(),
+>>> module allocations, or other vmalloc-backed paths.
+>>>
+>>> Call stack of Realm crash, QEMU hypervisor + NVME device (emulated):
+>>>   ...
+>>>   Freeing unused kernel memory: 6336K
+>>>   Run /sbin/init as init process
+>>>   Internal error: synchronous external abort: 0000000096000250 [#1]  SMP
+>>>   Modules linked in:
+>>>   CPU: 0 UID: 0 PID: 64 Comm: lsblk Not tainted 6.15.5 #2 PREEMPT(undef)
+>>>   Hardware name: linux,dummy-virt (DT)
+>>>   pstate: 43400005 (nZcv daif +PAN -UAO +TCO +DIT -SSBS BTYPE=--)
+>>>   pc : __pi_memset_generic+0x16c/0x188
+>>>   lr : dma_alloc_from_pool+0xd0/0x1b8
+>>>   sp : ffff80008335b350
+>>>   x29: ffff80008335b350 x28: ffff800083162000 x27: ffff80008335b3c0
+>>>   x26: ffff80008144f000 x25: ffff8000801a27e8 x24: ffff800081e14000
+>>>   x23: ffffc1ffc0000000 x22: 0000000000001000 x21: ffff800081458310
+>>>   x20: 0000000042a40000 x19: ffff00000232fcc0 x18: 0000000000200000
+>>>   x17: 00000000000120c0 x16: ffff0000795520c0 x15: 0000000000000000
+>>>   x14: 0000000000000000 x13: 0000000000000000 x12: 0000000000000000
+>>>   x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
+>>>   x8 : ffff800083162000 x7 : 0000000000000000 x6 : 000000000000003f
+>>>   x5 : 0000000000000040 x4 : 0000000000000000 x3 : 0000000000000004
+>>>   x2 : 0000000000000fc0 x1 : 0000000000000000 x0 : ffff800083162000
+>>>   Call trace:
+>>>     __pi_memset_generic+0x16c/0x188 (P)
+>>>     dma_direct_alloc_from_pool+0xc4/0x230
+>>
+>> But isn't that exactly the case that patch #1 is supposed to have fixed?
+>>  From a quick scan of set_memory_decrypted() callers I don't see
+>> anything obvious jumping out - can you clarify who you think needs this
+>> for reasons other than papering over bugs in the DMA layer?
+>>
+> 
+> Patch #1 fixes the passing of the correct mapped address (via 
+> vmalloc/vmap),
+> prevent this specific crash. However, Realm boot still fails because
+> __set_memory_enc_dec() returns -EINVAL when the requested address is not
+> part of the linear mapping. Both patches are required to fully resolve the
+> issue. Patch #2 is to support shared (decrypted) pages in vmalloced 
+> regions.
 
-Remember, the code that has to run just before all this sent an IPI to
-every single CPU on the system to have them do a (on x86 at least)
-pretty expensive TLB flush.
+Right, sorry for perhaps being unclear - the half-formed idea I was 
+heading towards is that if patch #1 doesn't actually make DMA pools work 
+then I'm not necessarily sure it's the right fix as-is.
 
-If this is a hot path, we have bigger problems on our hands: the full
-TLB flush on every CPU.
+In fact, looking at the code again, I think it probably shouldn't be 
+relying on set_memory at all in the remap case, but instead using 
+pgprot_decrypted(), same as the regular non-pool path in dma_direct_alloc().
 
-So, sure, there are a million ways to make this deferred freeing more
-scalable. But the code that's here is dirt simple and self contained. If
-someone has some ideas for something that's simpler and more scalable,
-then I'm totally open to it.
-
-But this is _not_ the place to add complexity to get scalability.
+Thanks,
+Robin.
