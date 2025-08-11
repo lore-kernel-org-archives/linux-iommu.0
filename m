@@ -1,29 +1,28 @@
-Received: from out30-119.freemail.mail.aliyun.com (out30-119.freemail.mail.aliyun.com [115.124.30.119])
+Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB1FB2C326B
-	for <iommu@lists.linux.dev>; Mon, 11 Aug 2025 06:11:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.119
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B51B27AC35
+	for <iommu@lists.linux.dev>; Mon, 11 Aug 2025 06:11:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.118
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754892682; cv=none; b=rp+1kmd+KAcH4lUkl1EQD4NNqw0fSnUSDhJpePotFMx65tinBVHS+dOSn8p7JmwuU6Bm1nJSy/oaP//HMsYoTDAY+hDT0LJZ3EaY7ZchU26HLQ0lJ3tRNq+uKJ3dYjYUmk5mILmSlgHasIBlppDb0Lkxot+hpcuUqmZwpVX84Lo=
+	t=1754892684; cv=none; b=BSBGvbZt8rwUAHZtXzv2bY6cb/CPnrRK4vvTaquXN1gRNLgdD9RIM5KMv7egwQgHLYLU+LKoO8/4UcwcjQvg8OkUDjrOzmdQAv1JEioj+Nqps05d4XMqzAJbkDtaPNtE8ONfv9rbrI/PNZXOS1ARgkA0dJvxk14QX64SkLZkWZI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754892682; c=relaxed/simple;
-	bh=TfxPrKWVIK1V6hQzQuQJmaaZGOTAE6KC8lUXCNnwxR0=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=qxtQC2T0sLE0E8JFCWLDt4kMovuPdyQoyJ0KFNQeWvvvd5JKlydVhRyS5QyJYYPmrfMKc4EkuC/Owv0x1sI+3oddPMKbtsn9qb7hAWnkHkrj4WSdbbCSCRBiBhEYnBoU+WpGghMD1f1b07KVsq8FylI+jII1IcQLvh3f6FGDRgI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=p7F1FiQj; arc=none smtp.client-ip=115.124.30.119
+	s=arc-20240116; t=1754892684; c=relaxed/simple;
+	bh=6hqcPbd7JFKtnFbKjHcwWnMw1ub/LOP3ATYUlk08Pdw=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=dIB81Kf2LkhYT2GtCKuGkf31eEHMC3SgWiaiWKrckB24Td29Rzikqc1UyVqHr8GWjuDZ3tci9aVUTMYfjO7r6pRZneGgCzMQif4aT88FZkOpq8m4ZfV1e81DzGwEj5CBgyA94o/zX6jhRJ1YV/sP1nvWtFXdxWKe7xhSlgwS3EE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=paHog0Uq; arc=none smtp.client-ip=115.124.30.118
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="p7F1FiQj"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="paHog0Uq"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1754892677; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=oqEUcnbYtVuGUfumL17PGMuD/BWybgobKSLXaGVbfnQ=;
-	b=p7F1FiQjFVOhBjmJ6tW7ChyiSOJa5ZbWE4VfKrON2zuONDiW2jM4qGc3Ta3Te0NKl7f5y/M+wx5T9oa35PzTdH9LmxViwrIuB/WH1WF+VN3q3Xkwsn2bYerv3+JdvRyMHUQtw4O/VgOFJa4tSwAKSZ/+wo7rYe7OmawYaKEceWk=
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0WlP-vAP_1754892675 cluster:ay36)
+	t=1754892674; h=From:To:Subject:Date:Message-Id:MIME-Version:Content-Type;
+	bh=pfo4fLXCv/YFjfBLeg1Ugb9O4azX99/n6lssJeAyHo0=;
+	b=paHog0UqwITEKQb3JxX7Qk43YVTFf2GRekALlvI9fnMnkz5wiW8CzUx72gFEebzQYQ4dHroTOUu8uaV4SynVb0orFEhyjn8OBFun4YNXPJGhG38WINpUYJMQhVemVNHkostqSNpdrzOk4fZ578KT7xUQ2r7VQk6t3Kvu1zQWxxc=
+Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0WlP-v7S_1754892668 cluster:ay36)
           by smtp.aliyun-inc.com;
-          Mon, 11 Aug 2025 14:11:16 +0800
+          Mon, 11 Aug 2025 14:11:10 +0800
 From: fangyu.yu@linux.alibaba.com
 To: anup@brainfault.org,
 	paul.walmsley@sifive.com,
@@ -47,53 +46,108 @@ Cc: guoren@linux.alibaba.com,
 	linux-kernel@vger.kernel.org,
 	iommu@lists.linux.dev,
 	Fangyu Yu <fangyu.yu@linux.alibaba.com>
-Subject: [RFC PATCH 4/6] iommu/riscv: Add irq_mask and irq_ack configure for iommu-ir
-Date: Mon, 11 Aug 2025 14:11:02 +0800
-Message-Id: <20250811061104.10326-5-fangyu.yu@linux.alibaba.com>
+Subject: [RFC PATCH 0/6] iommu/riscv: Add MRIF support
+Date: Mon, 11 Aug 2025 14:10:58 +0800
+Message-Id: <20250811061104.10326-1-fangyu.yu@linux.alibaba.com>
 X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <20250811061104.10326-1-fangyu.yu@linux.alibaba.com>
-References: <20250811061104.10326-1-fangyu.yu@linux.alibaba.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
 
-The irq_mask and irq_ack are required for host irq to be triggered
-under the host system.
+According to the RISC-V IOMMU Spec, an IOMMU may optionally support
+memory-resident interrupt files  (MRIFs). When the guest  interrupt 
+files are used up, an MRIF can record an incoming MSI.
 
-Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
----
- drivers/iommu/riscv/iommu-ir.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+At present, the hypervisor has allocated an MRIF for each IMSIC, we
+only need to configure the PPN of the MRIF into the MSI PTE of  the
+IOMMU in MRIF mode.At the same time, we also need to configure NPPN
+and NID for notice MSIs, in these patches,we use the host interrupt
+(allocated  via  VFIO) as the notice MSIs, so that we don't need to 
+allocate a new MSI interrupt,  and we can easily redirect the guest
+interrupt back to the host interrupt when MRIF is not  supported on
+the IOMMU hardware.
 
-diff --git a/drivers/iommu/riscv/iommu-ir.c b/drivers/iommu/riscv/iommu-ir.c
-index 5461dbe18159..73f552ed5b65 100644
---- a/drivers/iommu/riscv/iommu-ir.c
-+++ b/drivers/iommu/riscv/iommu-ir.c
-@@ -208,6 +208,7 @@ static struct irq_chip riscv_iommu_irq_chip = {
- 	.irq_unmask		= irq_chip_unmask_parent,
- 	.irq_set_affinity	= irq_chip_set_affinity_parent,
- 	.irq_set_vcpu_affinity	= riscv_iommu_irq_set_vcpu_affinity,
-+	.irq_ack		= irq_chip_ack_parent,
- };
- 
- static int riscv_iommu_irq_domain_alloc_irqs(struct irq_domain *irqdomain,
-@@ -239,7 +240,9 @@ static const struct msi_parent_ops riscv_iommu_msi_parent_ops = {
- 	.supported_flags	= MSI_GENERIC_FLAGS_MASK |
- 				  MSI_FLAG_PCI_MSIX,
- 	.required_flags		= MSI_FLAG_USE_DEF_DOM_OPS |
--				  MSI_FLAG_USE_DEF_CHIP_OPS,
-+				  MSI_FLAG_USE_DEF_CHIP_OPS |
-+				  MSI_FLAG_PCI_MSI_MASK_PARENT,
-+	.chip_flags		= MSI_CHIP_FLAG_SET_ACK,
- 	.init_dev_msi_info	= msi_parent_init_dev_msi_info,
- };
- 
+This RFC series are based on [1] by Andrew Jones.
+
+Self Test:
+-----------
+1. Key parameters for starting host QEMU:
+./qemu-system-riscv64  \
+-M virt,aia=aplic-imsic,aia-guests=1 -m 8G -smp 2  \
+-nographic -device riscv-iommu-pci,vendor-id=0x1efd,device-id=0x0008 \
+-netdev user,id=net1,hostfwd=tcp::2323-:22 \
+-device e1000e,netdev=net1 \
+-drive file=./nvme_disk.qcow2,if=none,id=nvm \
+-device nvme,serial=deadbeef,drive=nvm \
+...
+
+2. Steps to start a virtual machine：
+# lspci
+00:00.0 Host bridge: Red Hat, Inc. QEMU PCIe Host bridge
+00:01.0 IOMMU: Device 1efd:0008 (rev 01)
+00:02.0 Ethernet controller: Intel Corporation 82574L Gigabit Network Connection
+00:03.0 Non-Volatile memory controller: Red Hat, Inc. QEMU NVM Express Controller (rev 02)
+00:04.0 Unclassified device [0002]: Red Hat, Inc. Virtio filesystem
+# echo 0000:00:02.0 > /sys/bus/pci/drivers/e1000e/unbind
+# echo 0000:00:03.0 > /sys/bus/pci/drivers/nvme/unbind
+# echo 8086 10d3 > /sys/bus/pci/drivers/vfio-pci/new_id
+# echo 1b36 0010 > /sys/bus/pci/drivers/vfio-pci/new_id
+
+qemu-system-riscv64 -M virt,aia=aplic-imsic --enable-kvm -m 2G -smp 4 \
+-device vfio-pci,host=0000:00:02.0 \
+-device vfio-pci,host=0000:00:03.0 \
+...
+
+3. Test within guest os:
+root@qemu:/mnt/nvme# lspci
+00:00.0 Host bridge: Red Hat, Inc. QEMU PCIe Host bridge
+00:01.0 Ethernet controller: Intel Corporation 82574L Gigabit Network Connection
+00:02.0 Non-Volatile memory controller: Red Hat, Inc. QEMU NVM Express Controller (rev 02)
+root@qemu:~# mount /dev/nvme0n1p1 /mnt/nvme/
+root@qemu:~# cd /mnt/nvme/
+root@qemu:/mnt/nvme# ping 11.122.129.243 -i 0.1 | tee c.txt
+64 bytes from 11.122.129.243: icmp_seq=18533 ttl=255 time=1.18 ms
+64 bytes from 11.122.129.243: icmp_seq=18534 ttl=255 time=1.60 ms
+^C
+--- 11.122.129.243 ping statistics ---
+18534 packets transmitted, 18534 received, 0% packet loss, time 1934380ms
+rtt min/avg/max/mdev = 0.437/11.986/3451.393/118.494 ms, pipe 34
+
+root@qemu:/mnt/nvme# cat /proc/interrupts
+	CPU0       CPU1       CPU2       CPU3
+10:      49856     218638     192244      58721 RISC-V INTC   5 Edge      riscv-timer
+12:          0     105519          0          0 PCI-MSIX-0000:00:01.0   0 Edge      eth0-rx-0
+13:          0          0      97134          0 PCI-MSIX-0000:00:01.0   1 Edge      eth0-tx-0
+14:          0          0          0          2 PCI-MSIX-0000:00:01.0   2 Edge      eth0
+16:          0      42752          0          0 PCI-MSIX-0000:00:02.0   0 Edge      nvme0q0
+17:        376          0          0          0 PCI-MSIX-0000:00:02.0   1 Edge      nvme0q1
+18:          0       1308          0          0 PCI-MSIX-0000:00:02.0   2 Edge      nvme0q2
+19:          0          0      49757          0 PCI-MSIX-0000:00:02.0   3 Edge      nvme0q3
+20:          0          0          0       1282 PCI-MSIX-0000:00:02.0   4 Edge      nvme0q4
+
+[1] https://github.com/jones-drew/linux/tree/riscv/iommu-irqbypass-rfc-v2-rc1
+
+Fangyu Yu (6):
+  RISC-V: Add more elements to irqbypass vcpu_info
+  RISC-V: KVM: Transfer the physical address of MRIF to iommu-ir
+  RISC-V: KVM: Add a xarray to record host irq msg
+  iommu/riscv: Add irq_mask and irq_ack configure for iommu-ir
+  iommu/riscv: Add MRIF mode support
+  RISC-V: KVM: Check the MRIF in notice MSI irq handler
+
+ arch/riscv/include/asm/irq.h     |   3 +
+ arch/riscv/kvm/aia_imsic.c       | 119 ++++++++++++++++++++++++++++---
+ drivers/iommu/riscv/iommu-bits.h |   6 ++
+ drivers/iommu/riscv/iommu-ir.c   |  40 +++++++++--
+ 4 files changed, 156 insertions(+), 12 deletions(-)
+
 -- 
 2.49.0
 
