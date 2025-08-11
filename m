@@ -1,67 +1,68 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2077.outbound.protection.outlook.com [40.107.220.77])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2061.outbound.protection.outlook.com [40.107.244.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C4C06A8D2
-	for <iommu@lists.linux.dev>; Mon, 11 Aug 2025 00:24:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B3A0482FF
+	for <iommu@lists.linux.dev>; Mon, 11 Aug 2025 00:24:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.61
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754871858; cv=fail; b=q0fMif5OK4yvlYFny7CMmXMGJ0J96yqphzt1RVW2fKLv6mDkSmKq8hvsi0YsqHGBjCqTln0MQT54PW5Uf+BT2yWxwZK7WUXuCVlXwNTPVZficNNzEojVmnW71j2PbVLVtOiBNl2ZfqoxFk/qKZrpYNsYJ8ZJoR8orQussgxjzh8=
+	t=1754871864; cv=fail; b=ok8GLRZ4gaaQBiEFffgn2g8dwE6XYa4La1qXgYxGc+5JdMEJfq3vR5tthSBjGNNC6oJmD3b/VfdN9u/w1XE3PEgk0571bOn6wLdcijqgQF9lcncPwpLnrytZttFqH+ChtDpyHuEqpc7CS95a30AhPGyIc/SUa/gJmBlv2a6e8A8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754871858; c=relaxed/simple;
-	bh=Kpk1NMBZtia8gsvOJ42Zo0lmu6j58OZ4o+o84h+7aZQ=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=NugT2w80CHdes6mEe+SFL2Gh/Cw9H82GoKPJESb4brWnzcvCmhyEZwLzOwbukbAsfN792dGu3o69qGoGRAT/sLKcbFihl8HSh9q3q+7K5YwKbA8U+VZXLeVlGbfKx4pGbRoocbAMpigl/QWjo3pjjNpbtuVEhjMhpWNl2Wrf2Gk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=SbE2XkbH; arc=fail smtp.client-ip=40.107.220.77
+	s=arc-20240116; t=1754871864; c=relaxed/simple;
+	bh=EdsPOA9EQO3APwprMGTm1Ns3kzUsOOlxuFYwnCBjToU=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=CmtRDGEfjlqTd/q/hWC1Y0ABIzJp/QJr8yqNgQilQCcBYLwMHn0lRDttSJN3jLH9NtFmwcObYf4UBuVkCYoHlDCeGAO8JBUBm6Ywyq72jwjq6+1SX0zDFBEEXdWigC6m4YxPfH6k4V52xUrt5F3yifvMnO+I25W9ZqXV6qs6O/4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=m4DvCOJA; arc=fail smtp.client-ip=40.107.244.61
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="SbE2XkbH"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="m4DvCOJA"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=VcpjlbjPMuk9BxhE+NbMj9/svkdgr/jS8L8HkTTv5YwFlF6LEz1ywDhrNDDwhCYpIS/3u+wxav6u4L61nvd9g95WcRiEjwXVAW0etkomQwN/uk29Q01N9ZeODUovjVYJ8hezYHU4F6W6j87gS9tI86WtBTqOCmAcQmxqNpd13KRLKFWaMYsrIn8kmyBgX/rAUou2FiG0MUVkxX2wQuUdiU4cnuBaNpvGGJaqW4Vqkbu3TZG+Hbu87fEypPobazwSrvjId6slAuCWRRprR7ZyR665TChklZiCPfV3RaTAP+mV+icTItP7EL2E4kNVk3dFPfVM5GGUmVWgX/8oIcwK2Q==
+ b=rtfGkCFtq7Cd5G7rConXTF4/TZ6mdSihmRW6lO4LMWvW7JrxgyzJ0dE6Wf2FSPWeY4IHD6YvNHiXq50IjP6XK9GYtC7hl/7yH8e+68St2jrYV4Ww+OBSzC33ydDy6hM191NEjxlzhWws1kXQsp93TfJq7Vn058nccSe968fhqUQtMc9oklUTMZFBE2nJvotst8EUXnEBkReZnGMJ3DDL4vC9B5Q2/SBDn+D3YkF6GfCjJPPjzdCw5n86IhYJy+RdJ68+sOk5/X8BhG/xFwj8ZHxkwM0CuHwv4la6yPGijXMOt/CZTeFtUHpbN1PmtRTB+1zKzzeGNafqZetACT543w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Do+T9sT5L19gqSgT+cSz1/KPjWv7o95NkA+MoHjSdFY=;
- b=dcJaavcJX9kGBSvESTpn2SJ+CiTdZMP5P4zhti2eQvKpXjWcJ2JIAjAe0eH+eBoMfOW4fdnKQhS88c5nt8S75MEr4mhIoGMqtSRRf1pPKoO6r84gHGWlXnKUZu9suaBq2mwSqG71zCfOxSTmrJ8mrzmvnxUwCn+hrXEq2N5FXwPKEint8KqydbE1kwBAr9pKtXxQjaYm7ANdW3u/ue1t/u1ADCiVvlfxr+amb9Z9MmKEpDX8cNv5aijLzFOVbtxcXOc60kK/Z3La658bcsWyQoPxtwkKh1hAbTxPXQtIvhLnQXTmwEmPNJR1uQOMclNKZAGkC99qmj1Ww0uT8Zs8jg==
+ bh=f8QeFn6PAVZ6dL8kyXWB12JzjTGB+tSQzB7fYiIvs90=;
+ b=zG/0zqra0ECmZMGa4K4dzYDzv3VFajrRftJcdjPqeejwHUrGjk4GuJRzpuqPqHXySsD7qKy287FQhvI+hD05cxlXsAuLO3Kjh4p8zlNW9X1m5KZ3s1yVqGFEfg4vxfQTZzDAPH5vmYpeE9s1/7Dz4PANGVzCiyEhQEk3z6fRBGqCxPQg3sMiaLxnBpGZnlAouDBAzEZRSDS+v3c4jvodY5A3jNBITEA15aG1IpsUdOPsz2FHy6453HTzwEvDVN+0Ia53B7M60Cahbx/YuwSKPelS43nK9HEtkCbIdZfhX07dz08aDHZvmVGAT3wBowgWKYamyTgSfH9GIkIZHNEYbg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
+ 216.228.117.160) smtp.rcpttodomain=arm.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Do+T9sT5L19gqSgT+cSz1/KPjWv7o95NkA+MoHjSdFY=;
- b=SbE2XkbH6I14l6b7U7FRsNkgHupCGA9h2E85FoLcGdSBDuY9SCiCHjDK0DK3WHRJ9V2xZOqVgCAYieOX6PPb3Bk7C+NzBbXsrBiYn/vNp2TMmOiwXS1NNAgUglK598GikV9g30H8PIKoOsVp2ztXNelu7H+cLLmqh3mMQ175jQx71iQkApKIKee+BS0WgpcjSwzr7umdBj/mxTwE+RrHJZYfEU/Z4/XwdRoTcf393i+GEMkl8i42KHSTxwftvD+9MJnvL+fGVOpHys1pAtwD7fdKCh87CrKMARXiPkoZxQnNxRCzGG0wqSBf1HqiEMof6P90RxYS1ornuISOg33ggw==
-Received: from BN8PR16CA0025.namprd16.prod.outlook.com (2603:10b6:408:4c::38)
- by DM4PR12MB5868.namprd12.prod.outlook.com (2603:10b6:8:67::17) with
+ bh=f8QeFn6PAVZ6dL8kyXWB12JzjTGB+tSQzB7fYiIvs90=;
+ b=m4DvCOJAPUJf93y7b0nty6i/P3ob97D+F23I2wXveNtpZfH7kot8CIDnFxVa+QJk8KhFlQM0MozzEL2CMXqZvHBjWdn9KrgzWukd/QOmU2Q/BMjBnqLkO08FQ+MpXjd3NnE+2t5m7lW+X/mteeF7KWTo3p2XeAPZCADSmqeB57MdXYCVhEnPLh9DHukJkun9sa9O1hBjJLfqaF0sflfLAKBbtWAHtBL8W/aolb94WEiIZitxCtV84LYMsfnHRE0X6Mh+AWouDqFElmj7nK1UJubbBzKjHxt/EFDIwan+H48h6BnfBNXwKRsQz4kE39vItedDpDE1eEej1J1uPa2wlA==
+Received: from SJ0PR13CA0065.namprd13.prod.outlook.com (2603:10b6:a03:2c4::10)
+ by CH3PR12MB9169.namprd12.prod.outlook.com (2603:10b6:610:1a0::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9009.21; Mon, 11 Aug
- 2025 00:24:12 +0000
-Received: from BN1PEPF00005FFD.namprd05.prod.outlook.com
- (2603:10b6:408:4c:cafe::ab) by BN8PR16CA0025.outlook.office365.com
- (2603:10b6:408:4c::38) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9009.21 via Frontend Transport; Mon,
- 11 Aug 2025 00:24:12 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ 2025 00:24:14 +0000
+Received: from SJ1PEPF00001CE8.namprd03.prod.outlook.com
+ (2603:10b6:a03:2c4:cafe::94) by SJ0PR13CA0065.outlook.office365.com
+ (2603:10b6:a03:2c4::10) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9031.12 via Frontend Transport; Mon,
+ 11 Aug 2025 00:24:14 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BN1PEPF00005FFD.mail.protection.outlook.com (10.167.243.229) with Microsoft
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ SJ1PEPF00001CE8.mail.protection.outlook.com (10.167.242.24) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9031.11 via Frontend Transport; Mon, 11 Aug 2025 00:24:11 +0000
+ 15.20.9031.11 via Frontend Transport; Mon, 11 Aug 2025 00:24:14 +0000
 Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Sun, 10 Aug
- 2025 17:24:03 -0700
+ 2025 17:24:05 -0700
 Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail205.nvidia.com
  (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Sun, 10 Aug
- 2025 17:24:03 -0700
+ 2025 17:24:04 -0700
 Received: from SDONTHINENI-DESKTOP.nvidia.com (10.127.8.12) by mail.nvidia.com
  (10.129.68.10) with Microsoft SMTP Server id 15.2.1544.14 via Frontend
- Transport; Sun, 10 Aug 2025 17:24:02 -0700
+ Transport; Sun, 10 Aug 2025 17:24:03 -0700
 From: Shanker Donthineni <sdonthineni@nvidia.com>
 To: Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
 	Marek Szyprowski <m.szyprowski@samsung.com>, Suzuki K Poulose
@@ -72,112 +73,124 @@ CC: Robin Murphy <robin.murphy@arm.com>, Gavin Shan <gshan@redhat.com>, "Mike
 	Vikram Sethi <vsethi@nvidia.com>, Jason Sequeira <jsequeira@nvidia.com>, "Dev
  Jain" <dev.jain@arm.com>, David Rientjes <rientjes@google.com>,
 	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-Subject: [PATCH 0/2] Add encrypt/decrypt support for vmalloc regions
-Date: Sun, 10 Aug 2025 19:23:55 -0500
-Message-ID: <20250811002357.714109-1-sdonthineni@nvidia.com>
+Subject: [PATCH 1/2] dma/pool: Use vmap() address for memory encryption helpers on ARM64
+Date: Sun, 10 Aug 2025 19:23:56 -0500
+Message-ID: <20250811002357.714109-2-sdonthineni@nvidia.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20250811002357.714109-1-sdonthineni@nvidia.com>
+References: <20250811002357.714109-1-sdonthineni@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 X-NVConfidentiality: public
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN1PEPF00005FFD:EE_|DM4PR12MB5868:EE_
-X-MS-Office365-Filtering-Correlation-Id: d4f1ef70-c6a1-4d37-5100-08ddd86d6561
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE8:EE_|CH3PR12MB9169:EE_
+X-MS-Office365-Filtering-Correlation-Id: f7376631-4c05-41e3-f1e3-08ddd86d66b7
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|1800799024|82310400026|7416014|376014;
+	BCL:0;ARA:13230040|1800799024|36860700013|82310400026|376014|7416014;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?dlh2MTJUeEF1dkIzalZ3NnJTeFNvM0VlRWdUQWZoWW1DQTNaT1VVZHA1V1Ru?=
- =?utf-8?B?S3JEcVhXUVR3M0MxR2xDNElKOHZ1amk5ak5tWXpNN2F3QUE3eDhJdHBudExw?=
- =?utf-8?B?aVpEa3NWUm42TWpLcms3bUVHT2tXV3RXQzhSVGM4c3pUK01WRzY5RHhaRkhs?=
- =?utf-8?B?UEtubUw3cWxtTnNvSzFhL2NSaUZhQWJTazhwZGhPM0s4UyttQXFya2Fwcm9I?=
- =?utf-8?B?TmFuSWsvZmhJOU1xcHZtVGFDQktWVkN6MWd2aVpmdWcxSGo3QnRndFpVejFy?=
- =?utf-8?B?SkpqTkNxc3hIS1ErQlpaeEZhRm9pMVprNVlPeUR2VmRDOFhYTkJYRXNWNXNC?=
- =?utf-8?B?R3NiYTRvMlh1d3Y5M1VQVGg3VXdhSXhCRkR6Y1BVUGVBblpZbHdTSHhqVkl1?=
- =?utf-8?B?c3ZoYmZoTlpWUkplbDllWUtSQjhvUXYxSlYyVjVLblpveW43Q0ZHS1hreVVz?=
- =?utf-8?B?WTRIdHNBZ3VyRjAzUkxWbHZDTTNaRTNUT3IyL05vQXFNYlNSSUFGL1ZPUHpu?=
- =?utf-8?B?cVp0UWg5SUxQeHhNQTMvd2JZWU9ZM0E1UlZLM09XZDk1Z0R0NFRrUWFTaURs?=
- =?utf-8?B?a2FqWmFmdHJqN1lXeDNCeW1VZ1IxZG5RdjVwN21yR0RTSjhEQTFyQ0xWcGQ3?=
- =?utf-8?B?UkMxV2JoeWRXTkpCdjFGbE5IWmlJRk91NTc1b0ZaVEJtOHFnWmp5LzVjQjVO?=
- =?utf-8?B?SzAzK2RDNEZlRXdac3doVEpkazNnTHVUYmR4MEtJSG4zVXhIY2VyVUFuZkdW?=
- =?utf-8?B?RDlKemNadUVjYnhqZk1sN1pZZjRDUkNnN0g3Y1FrNnVDUnpDVlJlclJzb212?=
- =?utf-8?B?dm9PQ2hhU3FZQWdKUXZvTnB0K2M5Sm1YODJoUUhxVTEvRVFLUzZjYzNlTkhL?=
- =?utf-8?B?S1JXSjlwSGlMejd4ZmNMYlQ0bFplZlZFOEpHRGxIZ2hqQTFRVmJCUGtPVWlv?=
- =?utf-8?B?RDUvYW5zUENoREVkWi9QSFQyK0doSEtDRm9xY0VHcGd5Mm5OOXFQaXVuNStD?=
- =?utf-8?B?SWJhUTRWYlBxc3hndUIyQWV5b3BXZC9yM1dXV21VeENxVXpjVW1RdUlLaU9Q?=
- =?utf-8?B?TkNyRWFTWmhndWZyOXNxMVBuQ1IvVmtkNjhJWTRTYjE1b2p0TWRsZEhJeHJk?=
- =?utf-8?B?OVVXdGdONmIrQ09FUXZxMjhuTmQzQ0ZoSjdaK3FvNGNidk5yVEZJd0FDQWt4?=
- =?utf-8?B?dUF5Sm5VRDNFVmhEUCtzSWJrR0hXanF6MzJaa0NXVHE1TU8wenh5VlBOaFFM?=
- =?utf-8?B?RXlWRmJNSE13MElDSVZkVDJGTlBqb0tHaU51SlFvK1dMZExVV2p0UzEwVWtS?=
- =?utf-8?B?WSsyU2ZPRkZxNVVaK0tkYTNTbzJPcGJzTFEydSt0R3k0WTArM2JTYlI2S0Ft?=
- =?utf-8?B?L0UySFdyQU8yUkFIVWcvbHlFMVpOL0lmczVTYm9hL3FmTnRyZlRCV1pobGNq?=
- =?utf-8?B?c3lmMUE0YXlhNjlrWDRYL1g4L1I2bnpxVEs4R0dFMm5KZEN3MHB5YXJuMDZD?=
- =?utf-8?B?WmszMHhoQjhLRnNmd09kdUZOa0h4alJYSzlyUDdZcjRmNFQ1eEJnSmIvV2g5?=
- =?utf-8?B?dWN6OVJ0MW91QnRWazFFMVBnbGVSb1FlNTMrYTQvaEp6T0VQT2tyWm00T0pW?=
- =?utf-8?B?ZzFtNklzcFFHUjRCOGFUNjUzZ3c1RFoxWXhXa09jSkR4Q0plYlBqbUJUVW5u?=
- =?utf-8?B?WUJmRXZuVkU4TmtUb28zemMraFVZNERsVWhCTHg5akhrbUx3a0NXYmNkNEF1?=
- =?utf-8?B?S29XQS9GOENZTkthSU1ZWi9YUlpKakF1MHZBNG9rUTQ3Yi9JbDlvZlRUdW1o?=
- =?utf-8?B?K08zdG8wcjJIOVR4eVp2cWhZRlZpTHJWeDJqT1ZFY1kyeGF5MmV2a2t2dElL?=
- =?utf-8?B?a0k4L1RVKzlRem5FSU56VHBNRjAwWFpOUHI5bWs3Z3ArV0pCaERCeHdLVGky?=
- =?utf-8?B?Z2VzK0tqSXprVkxxZ3RBRVZpYjB2M2N5RmJhK1FtL3UwelJJWDFEdjByZWdv?=
- =?utf-8?B?ZGEza2RGYlJ5eWQwRWszNVpNNlc2c1dJSE42dmZCRDZsdVg2UENKeDdmS1k2?=
- =?utf-8?Q?fkhTVE?=
+	=?us-ascii?Q?9enZ6f/rriiLlpzcvcRJNI9pxPynjty85fOQxVFmL4RUjCOi7O1Hdx45rKeH?=
+ =?us-ascii?Q?VBobEX9LQvzro9vqLvIdwalmvK9dM4pRy1pbreeID74JWEbJKVhsfA1mQrLK?=
+ =?us-ascii?Q?1rs6p70qdBiT31wavy7ICV2psTDNcacAtjXv1Vf+XPXaWWOyMP1pYFJ3F+/r?=
+ =?us-ascii?Q?jwXvtgR//UJOZlkPioUVkTXva+kC4VeT1rdxvdN3g+Nm9sPc3zj4ZKKJmAAl?=
+ =?us-ascii?Q?TiZZZl1MdZaN8NMU6Rk64qXp3H08jkIDwF53dzxNnBdP02mvyuFPPWD7MNzr?=
+ =?us-ascii?Q?EMP9rZKyXgijBRyR5hF2a1OEYReCxiz0w6qMob3y8rvhAv+kL6EhoVsDPQgf?=
+ =?us-ascii?Q?5D74Q9Sxxso49qLJbZqh3e7NaailFA7EbmhqPFrlP6SxZPbkgkdV2DGTnStf?=
+ =?us-ascii?Q?MPJNg6yaKZ3AhXBR8jf0Y8+QBoWBMRYqud1k0tT2bomeW97oxRA7kxJY/wNB?=
+ =?us-ascii?Q?Fp4Zaz+dXTugvd/CtGgGCV8dKN/I6ZCACic73jx8K+iHR0CaWUoMOn5UPgGe?=
+ =?us-ascii?Q?VyXKlFLKORQRFeDUZDXZYOxBdzfjmXWEzYKKSJQDLA+HsxzV/zZgTugZsAOZ?=
+ =?us-ascii?Q?Yy3zac7u/vschzkHRt1vY7jMDcFRA8ZFu0CaINGooHGSvNYUs4zfNlbj/JG6?=
+ =?us-ascii?Q?zvk0uJL4R/oW5ijq92YgeKnvJHCFggpZu4yx3W1fvhS06ZSGZJkKeNEAY6ZA?=
+ =?us-ascii?Q?Slmd7W/CCxCamt5qtko+Geh8rW66dq0+MH5zHqvIwHKeBRMPH22IZ7OmYnoL?=
+ =?us-ascii?Q?JwuI8vLKVCn/PDEE7nekYctyqoPC0w+lkBF8/MdWJ7zeLtGAtcr/FzEe369z?=
+ =?us-ascii?Q?yE9A2hollf+ISYQxztYLfezZf4gP2L30A5/okVT0kAY13MTE8n+BcuiASJhJ?=
+ =?us-ascii?Q?dIN7hfR14h31f9oOr/FIMO/s7nMBKDRrih1LR7PusK7PVlQ0LRik3ygqZ8Gn?=
+ =?us-ascii?Q?ZXvSCumtzqfjeESdv4LcHZq7K3+zg1qQa6tSI26teD1P0LPqZcsKdr4mwRf4?=
+ =?us-ascii?Q?+39gCgmvnyH64+hw0m0sXnIBG4Gt8OOMX3FE3f2geKXLv+n+xrX+teaBgLkD?=
+ =?us-ascii?Q?CVQRZ+h1vRVeFtJrJfq/5jnYJYDMpaez6ZSzNIaksRO8fHKCyPkP6TX4+TQ8?=
+ =?us-ascii?Q?30QOnholzUKWL0lmvqnd9ak7sCqhUfs1Bz3Tj3kKJESDzgexctBVTptnKZKk?=
+ =?us-ascii?Q?Of+3DHCSkkN0Dz1WBkRId1uulQIAkisCsa3pu+oCkP6FtiVojlMXZUFRiq9t?=
+ =?us-ascii?Q?hsnwUez8ENsgQrJy0nIB1kscRPJl9mZal7OxFYCTkoPBT8Ip/mHblIX79jn5?=
+ =?us-ascii?Q?KQt8vRusNAbr1LHHCPe9oYK1okY7lJaqayya+nzGTJiL59+8dQs6urACmvDg?=
+ =?us-ascii?Q?UdCSKCbE8qMnTRUcEVTy485uMF5u8loMbROPacNTt9Rn3uGDrjb57QEwnxeI?=
+ =?us-ascii?Q?ajZXoPcw6MQ4JmnlHEj6dKMVxO6AEf3kbpS79trpIslI92+33jSdpq3/sUUX?=
+ =?us-ascii?Q?Le5So+hWYV/U+OKqZNQNiTjGKRAzajjepDNz?=
 X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(1800799024)(82310400026)(7416014)(376014);DIR:OUT;SFP:1101;
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(36860700013)(82310400026)(376014)(7416014);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2025 00:24:11.8605
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2025 00:24:14.2431
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4f1ef70-c6a1-4d37-5100-08ddd86d6561
+X-MS-Exchange-CrossTenant-Network-Message-Id: f7376631-4c05-41e3-f1e3-08ddd86d66b7
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	BN1PEPF00005FFD.namprd05.prod.outlook.com
+	SJ1PEPF00001CE8.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5868
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9169
 
-This series fixes two related issues in the handling of memory encryption
-attributes on ARM64 systems with Confidential Compute Architecture (CCA)
-enabled.
+In atomic_pool_expand(), set_memory_encrypted()/set_memory_decrypted()
+are currently called with page_to_virt(page). On ARM64 with
+CONFIG_DMA_DIRECT_REMAP=y, the atomic pool is mapped via vmap(), so
+page_to_virt(page) does not reference the actual mapped region.
 
-Currently, certain code paths assume that the target address for
-set_memory_encrypted()/set_memory_decrypted() is always part of the
-linear mapping. This assumption breaks on ARM64 when 
-CONFIG_DMA_DIRECT_REMAP=y or when operating on vmalloc-backed memory
-regions, leading to incorrect encryption attribute updates and, in
-some cases, system crashes.
+Using this incorrect address can cause encryption attribute updates to
+be applied to the wrong memory region. On ARM64 systems with memory
+encryption enabled (e.g. CCA), this can lead to data corruption or
+crashes.
 
-Patch 1 addresses an ARM64-specific bug in the DMA atomic pool expansion
-path, where the wrong virtual address was passed to the memory encryption
-helpers. On CCA-enabled systems, this resulted in corruption or crashes
-during pool expansion.
+Fix this by using the vmap() address ('addr') on ARM64 when invoking
+the memory encryption helpers, while retaining the existing
+page_to_virt(page) usage for other architectures.
 
-Patch 2 extends the ARM64 memory attribute change functions to handle
-vmalloc and other non-linear mappings correctly. A new helper is introduced
-to detect such mappings, translate them to physical pages, and update
-attributes on a per-page basis. This resolves failures and crashes in
-scenarios such as NVMe device pass-through where vmalloc-backed memory
-is involved CONFIG_DMA_DIRECT_REMAP=y.
+Fixes: 76a19940bd62 ("dma-direct: atomic allocations must come from atomic coherent pools")
+Signed-off-by: Shanker Donthineni <sdonthineni@nvidia.com>
+---
+ kernel/dma/pool.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Both changes have been tested on an ARM64 CCA-enabled environment with
-NVMe pass-through feature.
-
-Shanker Donthineni (2):
-  dma/pool: Use vmap() address for memory encryption helpers on ARM64
-  arm64: Add encrypt/decrypt support for vmalloc regions
-
- arch/arm64/mm/pageattr.c | 55 +++++++++++++++++++++++++++++++++++-----
- kernel/dma/pool.c        |  8 +++---
- 2 files changed, 52 insertions(+), 11 deletions(-)
-
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 7b04f7575796b..ba08a301590fd 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -81,6 +81,7 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
+ {
+ 	unsigned int order;
+ 	struct page *page = NULL;
++	void *vaddr;
+ 	void *addr;
+ 	int ret = -ENOMEM;
+ 
+@@ -113,8 +114,8 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
+ 	 * Memory in the atomic DMA pools must be unencrypted, the pools do not
+ 	 * shrink so no re-encryption occurs in dma_direct_free().
+ 	 */
+-	ret = set_memory_decrypted((unsigned long)page_to_virt(page),
+-				   1 << order);
++	vaddr = IS_ENABLED(CONFIG_ARM64) ? addr : page_to_virt(page);
++	ret = set_memory_decrypted((unsigned long)vaddr, 1 << order);
+ 	if (ret)
+ 		goto remove_mapping;
+ 	ret = gen_pool_add_virt(pool, (unsigned long)addr, page_to_phys(page),
+@@ -126,8 +127,7 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
+ 	return 0;
+ 
+ encrypt_mapping:
+-	ret = set_memory_encrypted((unsigned long)page_to_virt(page),
+-				   1 << order);
++	ret = set_memory_encrypted((unsigned long)vaddr, 1 << order);
+ 	if (WARN_ON_ONCE(ret)) {
+ 		/* Decrypt succeeded but encrypt failed, purposely leak */
+ 		goto out;
 -- 
 2.25.1
 
