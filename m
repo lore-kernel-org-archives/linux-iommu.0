@@ -1,90 +1,134 @@
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 535D627FB35
-	for <iommu@lists.linux.dev>; Mon, 11 Aug 2025 06:26:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.132
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E61523B613;
+	Mon, 11 Aug 2025 08:48:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754893612; cv=none; b=dD8ui1HJx7kNUaSCC+hu66qgM1+5LqvzA14WCIq+cGj0+pjIdqyFvoojt61NU8zChIv3ANuFQ6hu1DsT1mx7S+gPgyGm/4nN0jGsmVKmX6Phtubnb7u6OAPUY5JRtHMmhKNLXt73f3qDbkkXWBWFO11pl70nfLWQ9aDiOjbTRHM=
+	t=1754902118; cv=none; b=gJMP11DrkUQ7XuUBpm7lm2yW7a2t0yXMqBwEmKfvWU1Ohz8dAtTFy3hnyolN7GVbM+ZGqnoF1hj5PXAi0RORrszeVIEOoj63cCUzR5T+0ivarsxSBthhMBN2qbEXloFzYjF3qn3XzYxnFPKJXGwMDhaE+KhYB+w5buYvS+j9Lp0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754893612; c=relaxed/simple;
-	bh=wvqy4UJ6IUTFndqB+XoDiJyOKD1YlqbUlQRCilku3zU=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Hg1XFsX/Txe65aHvyLzLFSHyriZ4klwmBE9Gs425o37CIn4dlGHG97zcXXrwaq/cmE/dcreyBDYJlfjK7n/OuBdiMKZc1GS4CROSwKbUR2BJrM2DWVb3KgdZvFqXZjQQIKQjOwZmVdA0/Vm7Mpjh058D9BfT7S8ghbyO8nEyI6s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=OallRH+J; arc=none smtp.client-ip=115.124.30.132
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1754902118; c=relaxed/simple;
+	bh=J/tvAeenWY6r2kQMuQLExQzNUGVbJ5Td0cTgbLYekrA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MRIlTP6hEy0ymg7m5CFeHDO9SseIIp/aumYWiv7TERg12qWzIj0GzWlMKaF5RY1LoQayibLqbXpGbZw1470CT6toKWKFXL+5OrdTuaP2nKhk2VqVfqjH5SH2oLsUJ9MMlvfDzKeJMfYaFmB5eUP7y3cLO3OYVWWocK1KIBUdMWY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jWN7MfRp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="OallRH+J"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1754893606; h=From:To:Subject:Date:Message-Id:MIME-Version;
-	bh=DZN23X/8T7TOOtz+3clkVBeibPzLGB2AE7hvZ+c8lTI=;
-	b=OallRH+JYD0KSXZIp0/PSCQFcsV4pu6usvGBpH9WFslWQs875+1pMTz+zPuqJ4aQ/50YIfvi9/T8BOj9mXSKbFoDuopbKTCQ0tt878FlRm9vHG9OTgta8nWwtImfTaOiD59BYd3cDBw+zzfFegXUQUdibNVsYPLtCjjTEz7vMUw=
-Received: from localhost.localdomain(mailfrom:fangyu.yu@linux.alibaba.com fp:SMTPD_---0WlP-v89_1754892670 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Mon, 11 Aug 2025 14:11:11 +0800
-From: fangyu.yu@linux.alibaba.com
-To: anup@brainfault.org,
-	paul.walmsley@sifive.com,
-	palmer@dabbelt.com,
-	aou@eecs.berkeley.edu,
-	alex@ghiti.fr,
-	atishp@atishpatra.org,
-	tjeznach@rivosinc.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	sunilvl@ventanamicro.com,
-	rafael.j.wysocki@intel.com,
-	tglx@linutronix.de,
-	ajones@ventanamicro.com
-Cc: guoren@linux.alibaba.com,
-	guoren@kernel.org,
-	kvm@vger.kernel.org,
-	kvm-riscv@lists.infradead.org,
-	linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	Fangyu Yu <fangyu.yu@linux.alibaba.com>
-Subject: [RFC PATCH 1/6] RISC-V: Add more elements to irqbypass vcpu_info
-Date: Mon, 11 Aug 2025 14:10:59 +0800
-Message-Id: <20250811061104.10326-2-fangyu.yu@linux.alibaba.com>
-X-Mailer: git-send-email 2.39.3 (Apple Git-146)
-In-Reply-To: <20250811061104.10326-1-fangyu.yu@linux.alibaba.com>
-References: <20250811061104.10326-1-fangyu.yu@linux.alibaba.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jWN7MfRp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB8DDC4CEF1;
+	Mon, 11 Aug 2025 08:48:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1754902118;
+	bh=J/tvAeenWY6r2kQMuQLExQzNUGVbJ5Td0cTgbLYekrA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=jWN7MfRpqyxbN8Qra7VPZbbaSlsQ5woOMzZZKkCN+c2embl/N2yGINIJ/tjsuHibB
+	 o5AFcHHdGCIID4ndaZXMZtE+1kr9TfRnJZ8iA7pefXJ1RiMZhVMhpvYFpicsbuwNoM
+	 KuM+qQDyN0NbAfqBmZ5KRtD8+rztH7pWTrZ5tFIPMU3JNlNxAVZI57YlKh2F6p6mS1
+	 QctExT95vObBAiYQYHjH2bwZJyWQDZ/WM7yUFGxTaKxeREO9ckyvaGMO/LBHQvuup9
+	 6nNH/U4yMxynYS+SWF9nMjXZ6CquUI/luxp/WVl/OEGBpilK4aZcBTJpXb7qLysrFQ
+	 WX0JG96IP4G9A==
+Date: Mon, 11 Aug 2025 11:48:29 +0300
+From: Mike Rapoport <rppt@kernel.org>
+To: Shanker Donthineni <sdonthineni@nvidia.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Suzuki K Poulose <suzuki.poulose@arm.com>,
+	Steven Price <steven.price@arm.com>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Gavin Shan <gshan@redhat.com>,
+	Vikram Sethi <vsethi@nvidia.com>,
+	Jason Sequeira <jsequeira@nvidia.com>, Dev Jain <dev.jain@arm.com>,
+	David Rientjes <rientjes@google.com>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: Re: [RESEND PATCH 1/2] dma/pool: Use vmap() address for memory
+ encryption helpers on ARM64
+Message-ID: <aJmuXTNUzsq1jKEK@kernel.org>
+References: <20250811005036.714274-1-sdonthineni@nvidia.com>
+ <20250811005036.714274-2-sdonthineni@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250811005036.714274-2-sdonthineni@nvidia.com>
 
-From: Fangyu Yu <fangyu.yu@linux.alibaba.com>
+On Sun, Aug 10, 2025 at 07:50:34PM -0500, Shanker Donthineni wrote:
+> In atomic_pool_expand(), set_memory_encrypted()/set_memory_decrypted()
+> are currently called with page_to_virt(page). On ARM64 with
+> CONFIG_DMA_DIRECT_REMAP=y, the atomic pool is mapped via vmap(), so
+> page_to_virt(page) does not reference the actual mapped region.
+> 
+> Using this incorrect address can cause encryption attribute updates to
+> be applied to the wrong memory region. On ARM64 systems with memory
+> encryption enabled (e.g. CCA), this can lead to data corruption or
+> crashes.
+> 
+> Fix this by using the vmap() address ('addr') on ARM64 when invoking
+> the memory encryption helpers, while retaining the existing
+> page_to_virt(page) usage for other architectures.
+> 
+> Fixes: 76a19940bd62 ("dma-direct: atomic allocations must come from atomic coherent pools")
+> Signed-off-by: Shanker Donthineni <sdonthineni@nvidia.com>
+> ---
+>  kernel/dma/pool.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+> index 7b04f7575796b..ba08a301590fd 100644
+> --- a/kernel/dma/pool.c
+> +++ b/kernel/dma/pool.c
+> @@ -81,6 +81,7 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
+>  {
+>  	unsigned int order;
+>  	struct page *page = NULL;
+> +	void *vaddr;
+>  	void *addr;
+>  	int ret = -ENOMEM;
+>  
+> @@ -113,8 +114,8 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
+>  	 * Memory in the atomic DMA pools must be unencrypted, the pools do not
+>  	 * shrink so no re-encryption occurs in dma_direct_free().
+>  	 */
+> -	ret = set_memory_decrypted((unsigned long)page_to_virt(page),
+> -				   1 << order);
+> +	vaddr = IS_ENABLED(CONFIG_ARM64) ? addr : page_to_virt(page);
 
-To support MRIF mode, we need to add more elements to
-let the iommu driver get the ppn of MRIF.
+There's address calculation just before this code:
 
-Signed-off-by: Fangyu Yu <fangyu.yu@linux.alibaba.com>
----
- arch/riscv/include/asm/irq.h | 3 +++
- 1 file changed, 3 insertions(+)
+#ifdef CONFIG_DMA_DIRECT_REMAP
+	addr = dma_common_contiguous_remap(page, pool_size,
+					   pgprot_dmacoherent(PAGE_KERNEL),
+					   __builtin_return_address(0));
+	if (!addr)
+		goto free_page;
+#else
+	addr = page_to_virt(page);
+#endif
 
-diff --git a/arch/riscv/include/asm/irq.h b/arch/riscv/include/asm/irq.h
-index 8588667cbb5f..6293ac00e051 100644
---- a/arch/riscv/include/asm/irq.h
-+++ b/arch/riscv/include/asm/irq.h
-@@ -30,6 +30,9 @@ struct riscv_iommu_vcpu_info {
- 	u32 group_index_shift;
- 	u64 gpa;
- 	u64 hpa;
-+	u32 host_irq;
-+	bool mrif;
-+	struct msi_msg *host_msg;
- };
- 
- #ifdef CONFIG_ACPI
+It should be enough to s/page_to_virt(page)/addr in the call to
+set_memory_decrypted().
+
+> +	ret = set_memory_decrypted((unsigned long)vaddr, 1 << order);
+>  	if (ret)
+>  		goto remove_mapping;
+>  	ret = gen_pool_add_virt(pool, (unsigned long)addr, page_to_phys(page),
+> @@ -126,8 +127,7 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
+>  	return 0;
+>  
+>  encrypt_mapping:
+> -	ret = set_memory_encrypted((unsigned long)page_to_virt(page),
+> -				   1 << order);
+> +	ret = set_memory_encrypted((unsigned long)vaddr, 1 << order);
+>  	if (WARN_ON_ONCE(ret)) {
+>  		/* Decrypt succeeded but encrypt failed, purposely leak */
+>  		goto out;
+> -- 
+> 2.25.1
+> 
+
 -- 
-2.49.0
-
+Sincerely yours,
+Mike.
