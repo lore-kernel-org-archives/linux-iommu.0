@@ -1,114 +1,130 @@
-Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
+Received: from mail-wr1-f66.google.com (mail-wr1-f66.google.com [209.85.221.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BBF52FE58F
-	for <iommu@lists.linux.dev>; Tue, 12 Aug 2025 18:00:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E1001C3F36
+	for <iommu@lists.linux.dev>; Wed, 13 Aug 2025 03:18:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.66
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755021637; cv=none; b=AIy+MMIuJjVGnx4OmOKS4uTwWKdsUL061aSVpWefnzqaf0HaJAY5IK+ObPY7gLtpYqcFY7rL/DDM+RqWI8xrAF4Dv+G0F870veZyfwFCtBaX/+3uQ3Ruy4xRq0f3qzmT2DA9XIg/LyFXXA5sw2AHXaZkHupffirnBq0IqhEWHJ0=
+	t=1755055090; cv=none; b=dcE7/gpdYB/jylJ5AYF2/PTHvtDOrydJVuyY6pDxdzA/Ne0YRwobczCeLx5j4yJg0dImFNxA47eTrgtb/q1v1qT0VaSvFYMYXTgRyoLtxhDpW/a23dotMojJI37LdGvhV3kQbDd4TjExBcLsyTh7aNRYUo2yNOsHU9Z7OtCvALA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755021637; c=relaxed/simple;
-	bh=s5HtP8zgPfB8LKfRkpw96pL5pDbdt4mOdR/STsv8WgQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Zu0KCDSGoD1sbG0mmFb2RirhVY0Lq0SbLy6xBISVEnkKhrFoppRhJFnwsiN0peD9quJLKe7aKv//Tm6lyKLyMAxp86f4E0YyV4TKE5ofhx01l1+sKrW0/nhuiLRZ7egyPYpyrd6AaQg8VoT1smrg5nSrxlKW9nebLOnY2yz4GcI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.216.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com
+	s=arc-20240116; t=1755055090; c=relaxed/simple;
+	bh=ep7lK0F99GEgxWEt/eIh0MesHhIBI5SzHWocRe7DRX0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MDEXtq0aKSSMDPqVYiL0pQlILACbVzy/RZv/m1BYuKBKnlORL9TJ0GfCeqb9inzFEdZUxCb3/yon2pJgpIrzrhhFKi6giIaXGkpolcB3xn11DYu/jceMeriiD9xm45DXB+mgks1ydC5Vzs0C0K8Y7xyEIpGt+8/M7p5gWMrjTL8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=M5r5x1WC; arc=none smtp.client-ip=209.85.221.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-31efc10bb03so4988395a91.0
-        for <iommu@lists.linux.dev>; Tue, 12 Aug 2025 11:00:35 -0700 (PDT)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M5r5x1WC"
+Received: by mail-wr1-f66.google.com with SMTP id ffacd0b85a97d-3b8de6f7556so3383380f8f.1
+        for <iommu@lists.linux.dev>; Tue, 12 Aug 2025 20:18:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1755055087; x=1755659887; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7XCYFs1Ir8nk3KK4TBgEVy6vlzhXtWwOkAnDASfP0Oo=;
+        b=M5r5x1WChq6SZmsjGsLF5ZEbsuOcZuY1J4Bo1ZkaucGO94uo5bm0SafznwJIItd/gX
+         FIoKhpTMwPS39/xOaxLdPh+Jjhh3yRSbRa3wMFM/x920oDvhrVLCwKCdS864GcJ1sLGp
+         RfYWGLM79emdJ8SWTxg0/YZQEzbN6yk2yhU1e8OItMN2wNEgbWRnYORHB6GllgbqsRzH
+         mfYTlnOWsjMEhAPdm6TyEYbhEypO/jini0fKZK3sH1i4SiUZSZnvSRr3RrCw5vTa/RrK
+         o8rvjx9x0rORnATVBhwQ491fHU1bH9vYze6TcGQ93c+/lUoijB/v6zPCVhBAHSbz/EU7
+         CJrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755021635; x=1755626435;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        d=1e100.net; s=20230601; t=1755055087; x=1755659887;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=w5Ko3ZCMWMZkG6/L2zPaHNNIdKij+I5lWVdC3qk6HiI=;
-        b=S8F558qupIlaXLku/0JMn/xSko1AzB1t9S8i8AVloW4YRl8hZxGRfv3z6D0GnAOAB4
-         f3etlRSnykVoAib500vhwAlySRqqxpCNNVUB1TySx+BYewsWCeK9nZZgnheefBpvEkFF
-         roVFjGfliZ8zyapAvu3wgQ4tU8VUCNVMUNYthYADnhnWByZ6n0s99NwtUKBW8ZDU1mF0
-         5mfXJRkkOyqucrYlFXJfc9VrPUL8y/d7Ka++HsewQKK3ic51Vp1hcCn2KpXpwzwFlQgs
-         H7tFwwHiTCB7dItJVjaTii4izVeonL2i8SQW9E40qKO9FRiwjQK7x9QRS0Idw4mF/2VT
-         gvlw==
-X-Forwarded-Encrypted: i=1; AJvYcCW3HX//QqNuh7g35DDiscUiScFt2RlSzGL+Ms2QsCeKFo2NjobsB3hfRZr2iYqZZPaLR3v3xQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyJ+HpsVft1Y3WQgeYA/bE172Ua90rQVqc0xgz0YIA/QzLie1oO
-	yShEzXa+rrUYst3l91lHL0h6KQEjVI1oZnOFwLdoTudagVio2IIqau6l
-X-Gm-Gg: ASbGncvp8+0H9rx7tpU6WtCceCZ7GTLll3gsUc9dHHQ/g6GPBWGNKJRysMTECxziQA+
-	qJDfayWWAcCpLdlxptRsitErmGKYPc8GNrW9uf9xZf4ptrjJh1wbxFzuBVSALfkytHYmCp/7uLj
-	BuVee3gjOWgVEsrHkM9NAh+m0MIJfU+mcrVOZRIZhui02HycUSeIH1iEmQwbvUNIibMeiHu8m44
-	phsL+ma1w03jmaOGI9KlOudny7Whk4pxG/K/CIBNhz7Tm9y8vYTMkreb9cAL0OwHNpSec2B0lca
-	i7ZIOm1UUtwRhHpsmGoV12lJb4AMsAsGdY7m3heoIoeivwAn6s2IzC+9x0FGQgqI/zRMZwKZOkO
-	dEs0UvT4wFoUrejFC1MrgSwXZ/1UNkZ6DIQ5NLAo1q/yKiAOeoLXtj46CdA==
-X-Google-Smtp-Source: AGHT+IGUwKjcxYIQjXRjsgyfhPfJbPlIzcS8JQODwmaqlP1k+KdKPRhYL2FuhDCZiKF95kOWUmZ07w==
-X-Received: by 2002:a17:90b:5543:b0:312:e9bd:5d37 with SMTP id 98e67ed59e1d1-321d0d6719bmr718a91.6.1755021630632;
-        Tue, 12 Aug 2025 11:00:30 -0700 (PDT)
-Received: from localhost (fpd11144dd.ap.nuro.jp. [209.17.68.221])
-        by smtp.gmail.com with UTF8SMTPSA id 98e67ed59e1d1-32161259329sm17810958a91.17.2025.08.12.11.00.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Aug 2025 11:00:30 -0700 (PDT)
-Date: Wed, 13 Aug 2025 03:00:28 +0900
-From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-To: Linux PCI <linux-pci@vger.kernel.org>,
-	Linux IOMMU <iommu@lists.linux.dev>,
-	Linux KVM <kvm@vger.kernel.org>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	=?utf-8?B?SsO2cmc=?= Roedel <joro@8bytes.org>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>
-Subject: Re: The VFIO/IOMMU/PCI MC at LPC 2025 - Call for Papers
-Message-ID: <20250812180028.GA4020767@rocinante>
-References: <20250812174506.GA3633156@rocinante>
+        bh=7XCYFs1Ir8nk3KK4TBgEVy6vlzhXtWwOkAnDASfP0Oo=;
+        b=NH9QkWNdUb7rgmpi5w1gRV7C4s9yOzjcJQT8ocQDNst0IGu/3G9UHg0EhDhcQIs6LN
+         uvmRtcGq4+EoePj2BQXuM7muYLThoK+xcH/MLAkI+RmLCGdOZulKZjwNFznCWicoWnYa
+         1lkhk+sPd4s7296WVRxTFugyopt58gt3IHwFXBs/ERaH7W1gZkYP5FOdBjfKDH+p1pf+
+         pfS5f4BSKotnZVusSDrprqKQmkgLyZ469eCfPbkWgeWIIdJwMRXLQuW0mEzJPCidezWN
+         3KWqbOtdcxdz9Fqg1qZTDN2kNFvllcGEDQWKM6cRt/Vl7RubDAtRrJir8lEdR+AF1RIW
+         lu2Q==
+X-Forwarded-Encrypted: i=1; AJvYcCWE2LKkJ3Av2/uvMmS7sozz3mXAs/zq2JjTMPJRB+9evBwbv+dBtl0EE4lfWiuYlLeGP+ynGg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyeLF4cVO9yGBixqfdcvfuyKyO8bZMCVjg32V0Dk3MkjwfYMR+b
+	XEZqrFVQ8EUGtTPP/8kw22yP2b4KRJIbeYqbUUexv2m5KmskwGahG18F
+X-Gm-Gg: ASbGncsx/aZONod+U4kbCdzOf/J5WW2Z2KkQfwdQMmTOYuMy76kl4Xh7/8RrpKIab/G
+	4oEX92Cxamu1OG8RSz9rOMTrEq39BIH0rIKM421yZI6O35pyGNv6Dd5NyXTgMquylsbiZ9+oXWk
+	MsXjamH19aPJUSn3SG1MrapX86RSUb+hwJe9tgmpqus3y9wvYcESbfmoegCqAnTchv8A28cK4FI
+	L6Q5TxEwl5a8X5Gj8v0u0eEUuQmR535YNMEDw1xe/BaUCvM6/pQjjl3epkcVxR8jlN7kwSRBpwv
+	E+JCkxhwfPxAZx6Big0sVpSZk5ci7gZNNo8cLtM4aca87dMmUDRVfLubEanD7NlL3K4GE23xitA
+	0kXu++HRpN2XXXyxBF+5C2uP8oly27FFM4onzqIH47oNJLUuxYdzrroLLj65QeOhALIUdRuMITm
+	0g39RX+JixlvyH6AYGeuyn
+X-Google-Smtp-Source: AGHT+IFK1DMyzcLy23ebyF7+rQb4+XbWoa8waTcmvm2yM0sRpo4qdIIwHXD6dXoIgYNTEroCcmTFnw==
+X-Received: by 2002:a05:6000:2311:b0:3b7:8268:8335 with SMTP id ffacd0b85a97d-3b917eb8171mr822011f8f.42.1755055087110;
+        Tue, 12 Aug 2025 20:18:07 -0700 (PDT)
+Received: from [26.26.26.1] (95.112.207.35.bc.googleusercontent.com. [35.207.112.95])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b8e04c7407sm36750215f8f.13.2025.08.12.20.18.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Aug 2025 20:18:05 -0700 (PDT)
+Message-ID: <33b39588-5a39-4474-ac17-bde923803600@gmail.com>
+Date: Wed, 13 Aug 2025 11:17:57 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
+ flush
+To: Jason Gunthorpe <jgg@nvidia.com>, Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Dave Hansen <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>,
+ Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
+ iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
+ <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
+ <20250806155223.GV184255@nvidia.com>
+ <d02cb97a-7cea-4ad3-82b3-89754c5278ad@intel.com>
+ <20250806160904.GX184255@nvidia.com>
+ <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
+ <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
+ <4ce79c80-1fc8-4684-920a-c8d82c4c3dc8@intel.com>
+ <b6defa2a-164e-4c2f-ac55-fef5b4a9ba0f@linux.intel.com>
+ <20250811125753.GT184255@nvidia.com>
+Content-Language: en-US
+From: Ethan Zhao <etzhao1900@gmail.com>
+In-Reply-To: <20250811125753.GT184255@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250812174506.GA3633156@rocinante>
 
-Hello everyone,
 
-Adding Jörg using his new e-mail address...
 
-> On behalf of the PCI subsystem maintainers, I would like to invite everyone
-> to join our VFIO/IOMMU/PCI MC (micro-conference) this year, which will be
-> held at the Linux Plumbers Conference (LPC) 2025!
+On 8/11/2025 8:57 PM, Jason Gunthorpe wrote:
+> On Fri, Aug 08, 2025 at 01:15:12PM +0800, Baolu Lu wrote:
+>> +static void kernel_pte_work_func(struct work_struct *work)
+>> +{
+>> +	struct ptdesc *ptdesc, *next;
+>> +
+>> +	iommu_sva_invalidate_kva_range(0, TLB_FLUSH_ALL);
+>> +
+>> +	guard(spinlock)(&kernel_pte_work.lock);
+>> +	list_for_each_entry_safe(ptdesc, next, &kernel_pte_work.list, pt_list) {
+>> +		list_del_init(&ptdesc->pt_list);
+>> +		pagetable_dtor_free(ptdesc);
+>> +	}
 > 
-> The LPC conference itself will be held this year on 11th, 12th and 13th of
-> December this year in Tokyo, Japan.  Both in-person and remote attendees
-> are welcome.  See the https://lpc.events web page for more details and
-> latest updates.
-> 
-> You can find the complete MC proposal at:
-> 
->   https://lpc.events/event/19/contributions/1993
-> 
-> Plus, as a PDF document attached to this e-mail.
-> 
-> If you are interested in participating in our MC and have topics to propose,
-> please use the official Call for Proposals (CfP) process available at:
-> 
->   https://lpc.events/event/19/abstracts
-> 
-> The deadline for proposal submissions is late September (2025-09-30).
-> 
-> Make sure to select the "VFIO/IOMMU/PCI MC" in the Track drop down menu to
-> submit the proposal against the correct track.
-> 
-> Remember: you can submit the proposal early and refine it later; there will
-> be time.  So, don't hesitate!
-> 
-> As always, please get in touch with me directly, or with any other
-> organisers, if you need any assistance or have any questions.
-> 
-> Looking forward to seeing you all there, either in Tokyo in-person or
-> virtually!
-> 
-> Thank you!
-> 
->           Alex, Bjorn, Jörg, Lorenzo and Krzysztof
+> Do a list_move from kernel_pte_work.list to an on-stack list head and
+> then immediately release the lock. No reason to hold the spinock while
+> doing frees, also no reason to do list_del_init, that memory probably
+> gets zerod in pagetable_dtor_free() 
+Yep，using guard(spinlock)() for scope-bound lock management sacrifices
+fine-grained control over the protected area. If offers convenience at
+the cost of precision.
 
-Sorry about this Jörg!
+Out of my bias, calling it sluggard(spinlock)() might be proper.
 
-	Krzysztof
+Thanks，
+Ethan
+> 
+> Jason
+> 
+
