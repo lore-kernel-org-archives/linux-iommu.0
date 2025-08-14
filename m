@@ -1,62 +1,61 @@
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C835A271468
-	for <iommu@lists.linux.dev>; Thu, 14 Aug 2025 16:30:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 842D0266574
+	for <iommu@lists.linux.dev>; Thu, 14 Aug 2025 16:31:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755189040; cv=none; b=o2G9sah0Ebv4F0wPtLLOp20U91e73kERhrt3H75SfLXc9P0qtj8Z0CYRnF2u7U3IuXu2Kp0y8ePEg+ONHlsbSecaWhycec3BXnYVDdB58lKPufPjWumW4YclEsDYsNc0LjY508+ofxqnoAPYEaVffJDskpjt0hFvTlQW40wtFkg=
+	t=1755189120; cv=none; b=AGz6msLe+o8rTH3KZplL6XPvz29tDeEDypinjTiW/fRkMpiVesErUADK0yjQI3Mvi5FE361DKG929Rl8RB1MM+wgUmDg1heF50xvjn5a+KoodBb3+WDbHrbyPbtPhG7eQuSJa+Xf3G9kuiNb0I48WPFVdPfRt+mNIdKaDL4jHKU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755189040; c=relaxed/simple;
+	s=arc-20240116; t=1755189120; c=relaxed/simple;
 	bh=9Wa5jqPAwkgeEuFRsRyS/7h6RN1g8UcKkO1sNImbBhw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CW517vyYziq+UiTCpeWPrYLzs6vTc/HUo0d5P0UfCSud3lktY3z9Rl7coI8cb/+1a4TZhbXCywvvArxdTdZD3vH1Rh7L6Gf1eeMhdxhap0otNFPcvidZZTG/cJFX5h5fYsbDe+nZABoBqktxG4BatPoSBX2WHJGbz9Fip9f2xkg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bitbyteword.org; spf=pass smtp.mailfrom=bitbyteword.org; dkim=pass (2048-bit key) header.d=bitbyteword.org header.i=@bitbyteword.org header.b=UHQmtOq2; arc=none smtp.client-ip=209.85.222.173
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=NYXjauEjGfN/TGw/g7TTo6aKDAnzdi5sHIkx5QdI73YEOt7fp8O+X7bePhgkLCCRFh9awwVhhxr48WaFCt/+keqJo/nsiTNwwNzE+w9RIGHtpIVbBoKICWssaehSQaoqgB4w2px1q1kf8HT7gfwjtKHAG8EpBo6NZhhhBKMYii8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bitbyteword.org; spf=pass smtp.mailfrom=bitbyteword.org; dkim=pass (2048-bit key) header.d=bitbyteword.org header.i=@bitbyteword.org header.b=cfrdw8qs; arc=none smtp.client-ip=209.85.222.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bitbyteword.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bitbyteword.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bitbyteword.org header.i=@bitbyteword.org header.b="UHQmtOq2"
-Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-7e8706a6863so117176085a.3
-        for <iommu@lists.linux.dev>; Thu, 14 Aug 2025 09:30:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=bitbyteword.org header.i=@bitbyteword.org header.b="cfrdw8qs"
+Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-7e8704cdc76so110048185a.1
+        for <iommu@lists.linux.dev>; Thu, 14 Aug 2025 09:31:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bitbyteword.org; s=google; t=1755189037; x=1755793837; darn=lists.linux.dev;
+        d=bitbyteword.org; s=google; t=1755189117; x=1755793917; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
         bh=lTcvVfxgncNMa1Iq0eQuGoB8h78T3XfCXO2iDvh4lTw=;
-        b=UHQmtOq2ygVhXxAsz5k6+LfOavxDJ3RyWxy10UIebWaCrnAYCsWN5yBjceb18wLJtv
-         Rq55vlCPOU6uvxgRVUe+NzWS1Qj4uEwzIOdAm0TDQ1ioYCBxmuQGVyzRRfflq1Q2ExBJ
-         5MzXizHVfcZ3BbBHh491C76eItdTxz8UgdnZLnkytuT+gus1aGhjDbvvmkF3B2dhyVfL
-         KQn7fxPF8q/cRNflZrHxF8+cLH8yEeX+A5D+nQVrXZHsRY+iMsc6STrXS1taCaOaSFpO
-         TDEhE9WpWo4Wss85GRjSokHQBsEtX9wYXRN/FI4/PAw/iZQMPzk3tKBvLKwEoeVbVl1U
-         tTBQ==
+        b=cfrdw8qstHwSc4nJAYSmrnIikL4mUQGC64m1dGpNs6COrPSvooLdvNExHHCL7ER7pV
+         KZKSbhtunm1QUVTrs9yMfhOrC3jbfFS72bwSccPmSJyV8tFl2clxlR+IlO/Wy+yYOOZW
+         PgIXbUphrPHFNZ4Lliu2fjKo/i3bq1Ej43SDRY2l2OmRPkHKtlqD8hv/CzM1Sk6pp85y
+         BVb6WMvwvTzHxgH1fPeUnak+/niyKUP2OKKe1Hapr/Bm8SIff7uk+7Cz++lcZivU63P8
+         TFH/04HsXICZNKRAVPF0CC3KFI09zd3dSuy8EsRQ/SoumsMwI4En1Y534uqinSZlsSAH
+         9RGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755189037; x=1755793837;
+        d=1e100.net; s=20230601; t=1755189117; x=1755793917;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
         bh=lTcvVfxgncNMa1Iq0eQuGoB8h78T3XfCXO2iDvh4lTw=;
-        b=Iq53hBNoUkaIr9M1ciH4Ekuffdjjg34LZKISLvTiadBT5mcBd5BINfwjFamzr3qg81
-         D1V9R/dEuhTgEiip9YsrHVB1xBcEvC6Ox8NtaCFIgL/++dhlEL9YvP6Sleb/hAZX8cZ9
-         MURo6D/8eZk6ikLNyvaqAg1UwIzFQ+Kr5JlKxxQjlmB7wOCbYW4FnsqPw6Ei9ShIoGiA
-         DR6o3uqgsnJv4HpNTcSRSHILXCgEekFg7iLYT4XrhGlFqexTjudDPCv+bvCEdEkeePei
-         coMBMPsJKtw0vbUsNhmjsenTD2firBoB3Y6yavgQCcLNI6EA1MntVwhdoVDiq2T52LGX
-         YMTg==
-X-Forwarded-Encrypted: i=1; AJvYcCVv/Z+/0udZMfYdbr/ifOYMLnXfCqy1ZPo96Qyp5HMUv0soPespupAp4gQuG/JsXVWroc7vOQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxsV8rD4ryjozJhhxC546RRWvyelY5HoYQbQHl51uuGmZVLVraQ
-	s4glcsDSYoG1nR4MZKoi+MnX2p6V46I7c/A4rHyEoTPuoRDc6o2dkNkn7wGHMh0IlMo=
-X-Gm-Gg: ASbGncuDn0Xuozw5a9fYHIx+i9dOYe0pSmu0rGUXqHzrNHQSMOAyS0AsWnHHGUqid0h
-	twuvVCfgW4PUL1eBdESdtfEQ4+RWLY10JxC+iaVzYvCltYeBJLcY6QnQXCwDlnOxHVS9BkW3K3N
-	CUfSYVGj5CU9iXs5VznY96pzc+jgiYMz20TQRvqIoWBRGfMGuvli2xXf95mvH7UYSibXuPbw7/a
-	AwpIbf48lQ5+1qJtYVKYljde35XqNYaz7PwrFTXGkHQ6nNEvSi8czAA4/JkCqzKFwIgMlHIS6XE
-	rZ9acEKyCvg1O1ugFpcdUXKgHR4JZha29X/7jsccbNo3DWhALTeS0H8yfdk7KgcfO05ZFu1fIUG
-	+2UzpkZOSyYfuFFP0CWP/GaaCl1tYtKCWbRm3eZEdCK6zpDYU/hrXNj00a0THzs95Se2WKQkY78
-	Tu7WYB06A=
-X-Google-Smtp-Source: AGHT+IE875VpR9LBaN9clxrcxJ3h9zgxKT9RUmPEPlW6JReinUjgAiko9WQ+nb3Q/3zGXUMFYHDA6Q==
-X-Received: by 2002:a05:620a:3910:b0:7e8:6d58:b4b6 with SMTP id af79cd13be357-7e8703c8783mr622951485a.11.1755189037156;
-        Thu, 14 Aug 2025 09:30:37 -0700 (PDT)
+        b=A4Y7NR6R2tqeufhTuGHPofgRWhSdoYZYSgU6Dw0eRfC/4XIVrX0L3LUYjv3tq6G2rm
+         o64qiktgJWTZGjvdxNhIYw/hSUZYZJOhlBslnaytOpZUfnJc19hn0vZ1JACqeLp9pyOi
+         B/TNDkIixItAHc/WyEA1OXJt7WalAHfw9IuFxAu8HIvHoY/ZH3zN4zfkDjNM4rrKb0mZ
+         T0BVaxrJmdLZ1EtHptx+g0hCR441kzJbPplSSb8+kG9MNTq1jXgAbixBeSwuzfSkN0uy
+         3G1oHeGUph26uV/eYxIlYrJaNO61qEWEgvaJK1uwN2UuE+mHXT5hDI6EMcKrw/uiulXY
+         8cFg==
+X-Forwarded-Encrypted: i=1; AJvYcCXA+PF/ibRlhG9/oSfUeYRbJB0BrVcJ2pV8+yT48fEo+ZJeJNwSqgfPCLOIVXCXUtWGMZKB9w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxg5XD8hr1OC6icI/+2XdKne39vTM6DSWsh+rTXl4/lE4ROgrez
+	XpyxRtadljCgvlIiOOpYFKt5C/jwSQ5ozifhMzZr1xIBH5nL07Lwh6qGXovBsY6s4AI=
+X-Gm-Gg: ASbGnctkM0WmOjB2tWQ5xTRMfDUmpT/4Arjqg56kZOaolDBDErJnMaFwoBNW14mmter
+	pjSaSs+2yXBa0BiRdR0cAcI5G5nRUL3r5G5z0isq5++JLEiTmbur2DI04+a5p7DPm17q5l+LMj8
+	WJTygyDm94F/Vr2kFjHZiTsJJNNU9goIRSH4L6mOPuApg5zDMEJ1xbTe+rLsHuS6C/Ori/ZH/hy
+	oZQrA+h8r2/uZFbm/Tm9rf3GuF4gQ36ckc7s643bh18wAAIhO13PBUyot+O3ha7J5fdIUai1UjX
+	szZNS0wSkiSAzNP7ZckGsCWZnuOyHYpqwW7fIrWFABQs3o/4snfW/HmaOmkc3+BMck5w7diVm6t
+	g2ZCi9AcJRoBOWnEal9j91+7JkWIYgjyLcQjH5V15sBWPqhIyJL+4RREP0pAGHmlZPbbhrr2Q
+X-Google-Smtp-Source: AGHT+IGbI/dL3O4lK+AB9+uWgN01ynO7vfbJIS46vI8nywFNU3aZvLm4Hh/hg2gSbWXDC4HQ7N2wKA==
+X-Received: by 2002:a05:620a:4727:b0:7e8:6402:aeb4 with SMTP id af79cd13be357-7e870426c07mr560417685a.18.1755189117053;
+        Thu, 14 Aug 2025 09:31:57 -0700 (PDT)
 Received: from vineethrp-dev.lan (c-73-143-21-186.hsd1.vt.comcast.net. [73.143.21.186])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-7e83075ffa6sm1131637085a.4.2025.08.14.09.30.36
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-70af5bff7c3sm14747576d6.78.2025.08.14.09.31.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Aug 2025 09:30:36 -0700 (PDT)
+        Thu, 14 Aug 2025 09:31:56 -0700 (PDT)
 From: "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>
 To: David Woodhouse <dwmw2@infradead.org>,
 	Lu Baolu <baolu.lu@linux.intel.com>
@@ -64,8 +63,8 @@ Cc: "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
 Subject: [PATCH] iommu/vt-d: debugfs: fix legacy mode page table dump logic
-Date: Thu, 14 Aug 2025 12:30:24 -0400
-Message-ID: <20250814163026.634182-1-vineeth@bitbyteword.org>
+Date: Thu, 14 Aug 2025 12:31:47 -0400
+Message-ID: <20250814163153.634680-1-vineeth@bitbyteword.org>
 X-Mailer: git-send-email 2.51.0.rc0.215.g125493bb4a-goog
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
