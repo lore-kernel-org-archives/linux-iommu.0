@@ -1,38 +1,38 @@
-Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAE3A2ED179
-	for <iommu@lists.linux.dev>; Thu, 14 Aug 2025 09:30:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAC4E2FC877
+	for <iommu@lists.linux.dev>; Thu, 14 Aug 2025 09:30:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755163816; cv=none; b=NEfHOJVq63JndiiFQ93L8ofJ9mBcDdzCRIkYGtaDrB3Ks8shQPWedv9d1vrPsxsBJZq/vFOvUxcr2uAC7sb/hgV4ak6xEf5Z58P5b2iKiB74askoFjSBLuA5BGtxqBUuzlrmmvnuffU28+dlebPvYk8UFXfMoBoIMIApt9IsKr8=
+	t=1755163821; cv=none; b=MJxeULfbKlhXJTCrGFZnujMsywAM0/KroAaZIZZ8jE4Mv3pXqG8HEvTKrO4EvZ1Kgr2vVpOHN1PQMjXhI5rwzzW+u69R8pCT44WSMLWl4mYvfIMEXtJGEk/SQN1gShrecEzDQSu/epua3HO509D5b2/gwx8z63UdROcaaqQ5ctw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755163816; c=relaxed/simple;
-	bh=umu6p1Xnjv7Eb71dtdWTGaIJkMemCtt+dX+UMOVtnDo=;
+	s=arc-20240116; t=1755163821; c=relaxed/simple;
+	bh=3DkszcYRwc0tIhu3mjks3cZGjjYrdY3cAAuJxXBnL+4=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=U7vZckzqMz6hoYt+fmgAAJGe+frvEXXGv8OuJ680qIZGCBfMWjvNalTpsvz8Sdmn38cgrxwYn5vW2iUZp8wRJlgAuRk+eLvvvOJkYkeQvYIGjq2hxXDlHt5Ww6ouZmAgacpkVW3zXn7J3+C0JUkPXzwyDxgfNvmQFfY3glpN9pI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
+	 MIME-Version:Content-Type; b=oMD+gAS9zMFCLlBI7hn2eCbhc32JW0IQ9FfN7i9TVlJJ9oSCAcZEozflsIhq2TuIwxEqZ/RDv6/yb8C9oNUhoYDyYMYqFxURgTwESmApHzjjpwSgh1cvM9ATfDXeQJI671kkeDkeMRCkb9DNeHRlbXf2xSK66eOW1B1JL91Ck70=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.162.112])
-	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4c2fyv6dQyz2gKxY;
-	Thu, 14 Aug 2025 17:27:19 +0800 (CST)
+Received: from mail.maildlp.com (unknown [172.19.88.214])
+	by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4c2g3P70KDz2dMH0;
+	Thu, 14 Aug 2025 17:31:13 +0800 (CST)
 Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id 52E1D140296;
-	Thu, 14 Aug 2025 17:30:10 +0800 (CST)
+	by mail.maildlp.com (Postfix) with ESMTPS id B430B1A016C;
+	Thu, 14 Aug 2025 17:30:09 +0800 (CST)
 Received: from localhost.huawei.com (10.90.31.46) by
  kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Thu, 14 Aug 2025 17:30:09 +0800
+ 15.2.1544.11; Thu, 14 Aug 2025 17:30:08 +0800
 From: Qinxin Xia <xiaqinxin@huawei.com>
 To: <will@kernel.org>, <robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>
 CC: <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
 	<xiaqinxin@huawei.com>, <yangyicong@huawei.com>, <wangzhou1@hisilicon.com>,
 	<prime.zeng@hisilicon.com>, <xuwei5@huawei.com>, <fanghao11@huawei.com>,
 	<jonathan.cameron@huawei.com>, <linuxarm@huawei.com>
-Subject: [PATCH 2/2] iommu/io-pgtable: Add ARM SMMUv3 page table dump support
-Date: Thu, 14 Aug 2025 17:30:05 +0800
-Message-ID: <20250814093005.2040511-3-xiaqinxin@huawei.com>
+Subject: [PATCH 1/2] iommu/debug: Add IOMMU page table dump debug facility
+Date: Thu, 14 Aug 2025 17:30:04 +0800
+Message-ID: <20250814093005.2040511-2-xiaqinxin@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20250814093005.2040511-1-xiaqinxin@huawei.com>
 References: <20250814093005.2040511-1-xiaqinxin@huawei.com>
@@ -42,273 +42,435 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-ClientProxiedBy: kwepems500001.china.huawei.com (7.221.188.70) To
  kwepemj200003.china.huawei.com (7.202.194.15)
 
-This patch implements the debug interface for dumping ARM SMMUv3
-page table entries and protection information. The functionality
-enables detailed inspection of IOMMU mappings for debugging and
-validation purposes.
+This patch introduces a comprehensive debugging mechanism for IOMMU
+page tables, providing visibility into IOVA mappings and protection
+information. The feature is particularly valuable for debugging
+complex DMA mapping issues and validating IOMMU configurations.
 
-1. ARM SMMUv3 driver integration:
-   - Implemented arm_smmu_dump_iova_prot() callback
-   - Registered dump_iova_prot in iommu_domain_ops
+Key components:
+1. New debugfs interface: Creates /sys/kernel/debug/io_page_tables
+2. Domain-group hierarchy: Organizes output by domain and group
+3. IOVA mapping dump: Shows allocated IOVA ranges and protections
+4. Device enumeration: Lists all devices in each IOMMU group
 
-2. ARM LPAE io-pgtable implementation:
-   - Added arm_lpae_dump_iova_prot() to io_pgtable_ops
-   - Defined protection bit descriptors (prot_bits)
-   - Created io_pgtable_fmt_names for human-readable format strings
-   - Implemented protection flag formatting in dump_prot()
+Implementation details:
+- Added dump_iova_prot callback to iommu_domain_ops
+- Implemented iommu_group_and_iova_dump() to traverse groups
+- Created iommu_iova_info_dump() to walk IOVA allocations
+- Added CONFIG_IO_PTDUMP_DEBUGFS for compile-time enablement
+- Provided iommu_domain_to_iovad() helper for IOVA access
 
-3. Core io-pgtable interface extension:
-   - Added dump_iova_prot callback to io_pgtable_ops
+The debug output includes:
+-- domain [address] --
+- group [id]
+  - [device1]
+  - [device2]
+---[ RANGE START ]---
+[IOVA mapping details]
+---[ RANGE END   ]---
 
-The implementation provides detailed output for each IOVA mapping:
-<start> - <end>    lvl <level>  stage <format> <protection flags>
-Example: 0xffff2000 - 0xffff3000 lvl 2 stage ARM_64_LPAE_S1 AF SH_NS
+This feature helps diagnose:
+- IOVA allocation patterns
+- Protection flag mismatches
+- Unexpected domain/group mappings
+- Device-to-domain assignment issues
 
 Signed-off-by: Qinxin Xia <xiaqinxin@huawei.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  13 ++
- drivers/iommu/io-pgtable-arm.c              | 169 ++++++++++++++++++++
- include/linux/io-pgtable.h                  |   4 +
- 3 files changed, 186 insertions(+)
+ drivers/iommu/dma-iommu.c |  15 ++++
+ drivers/iommu/dma-iommu.h |   4 +
+ drivers/iommu/iommu.c     | 175 ++++++++++++++++++++++++++++++++++++++
+ include/linux/io_ptdump.h |  16 ++++
+ include/linux/iommu.h     |  10 ++-
+ mm/Kconfig.debug          |  19 +++++
+ mm/Makefile               |   2 +
+ mm/io_ptdump.c            |  24 ++++++
+ mm/io_ptdump_debugfs.c    |  17 ++++
+ 9 files changed, 281 insertions(+), 1 deletion(-)
+ create mode 100644 include/linux/io_ptdump.h
+ create mode 100644 mm/io_ptdump.c
+ create mode 100644 mm/io_ptdump_debugfs.c
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 5968043ac802..4128b3307753 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3411,6 +3411,16 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- 	return ops->iova_to_phys(ops, iova);
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index ea2ef53bd4fe..d44cd613ea69 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -448,6 +448,21 @@ void iommu_put_msi_cookie(struct iommu_domain *domain)
+ 	kfree(cookie);
  }
  
 +#ifdef CONFIG_IO_PTDUMP
-+static size_t
-+arm_smmu_dump_iova_prot(struct seq_file *s, struct iommu_domain *domain, dma_addr_t iova)
++/**
++ * iommu_domain_to_iovad - Retrieve the IOVA domain from an IOMMU domain
++ * @domain: IOMMU domain with an associated IOVA cookie
++ *
++ * This function returns the IOVA domain (iovad) structure associated with
++ * the given IOMMU domain. The domain must have been initialized with an
++ * IOVA cookie (typically through iommu_dma_init_domain()).
++ */
++struct iova_domain *iommu_domain_to_iovad(struct iommu_domain *domain)
 +{
-+	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
-+
-+	return ops->dump_iova_prot(s, ops, iova);
++	return &domain->iova_cookie->iovad;
 +}
 +#endif
 +
- static struct platform_driver arm_smmu_driver;
+ /**
+  * iommu_dma_get_resv_regions - Reserved region driver helper
+  * @dev: Device from iommu_get_resv_regions()
+diff --git a/drivers/iommu/dma-iommu.h b/drivers/iommu/dma-iommu.h
+index eca201c1f963..18b06c62af9d 100644
+--- a/drivers/iommu/dma-iommu.h
++++ b/drivers/iommu/dma-iommu.h
+@@ -24,6 +24,10 @@ int iommu_dma_sw_msi(struct iommu_domain *domain, struct msi_desc *desc,
  
- static
-@@ -3702,6 +3712,9 @@ static const struct iommu_ops arm_smmu_ops = {
- 		.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
- 		.iotlb_sync		= arm_smmu_iotlb_sync,
- 		.iova_to_phys		= arm_smmu_iova_to_phys,
+ extern bool iommu_dma_forcedac;
+ 
 +#ifdef CONFIG_IO_PTDUMP
-+		.dump_iova_prot		= arm_smmu_dump_iova_prot,
++struct iova_domain *iommu_domain_to_iovad(struct iommu_domain *domain);
 +#endif
- 		.free			= arm_smmu_domain_free_paging,
- 	}
- };
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 7e8e2216c294..5deb03a85aa6 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -754,6 +754,172 @@ static phys_addr_t arm_lpae_iova_to_phys(struct io_pgtable_ops *ops,
- 	return iopte_to_paddr(d.pte, data) | iova;
++
+ #else /* CONFIG_IOMMU_DMA */
+ 
+ static inline void iommu_setup_dma_ops(struct device *dev)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 060ebe330ee1..8fc89a5b34b8 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1061,6 +1061,181 @@ struct iommu_group *iommu_group_alloc(void)
  }
+ EXPORT_SYMBOL_GPL(iommu_group_alloc);
  
 +#ifdef CONFIG_IO_PTDUMP
 +#include <linux/seq_file.h>
++#include <linux/iova.h>
 +
-+struct io_ptdump_prot_bits {
-+	uint64_t mask;
-+	uint64_t val;
-+	const char *set;
-+	const char *clear;
++struct dump_domain {
++	struct iommu_domain *domain;
++	struct list_head groups;
++	struct list_head list;
 +};
 +
-+static const struct io_ptdump_prot_bits prot_bits[] = {
-+	{
-+		.mask   = ARM_LPAE_PTE_VALID,
-+		.val    = ARM_LPAE_PTE_VALID,
-+		.set    = "V",
-+		.clear  = " ",
-+	},
-+	{
-+		.mask   = ARM_LPAE_PTE_XN,
-+		.val    = ARM_LPAE_PTE_XN,
-+		.set    = "XN",
-+		.clear  = "  ",
-+	},
-+	{
-+		.mask   = ARM_LPAE_PTE_DBM,
-+		.val    = ARM_LPAE_PTE_DBM,
-+		.set    = "DBM",
-+		.clear  = "   ",
-+	},
-+	{
-+		.mask   = ARM_LPAE_PTE_AF,
-+		.val    = ARM_LPAE_PTE_AF,
-+		.set    = "AF",
-+		.clear  = "  ",
-+	},
-+	{
-+		.mask   = ARM_LPAE_PTE_SH_NS,
-+		.val    = ARM_LPAE_PTE_SH_NS,
-+		.set    = "SH_NS",
-+		.clear  = "     ",
-+	},
-+	{
-+		.mask   = ARM_LPAE_PTE_SH_OS,
-+		.val    = ARM_LPAE_PTE_SH_OS,
-+		.set    = "SH_OS",
-+		.clear  = "     ",
-+	},
-+	{
-+		.mask   = ARM_LPAE_PTE_SH_IS,
-+		.val    = ARM_LPAE_PTE_SH_IS,
-+		.set    = "SH_IS",
-+		.clear  = "     ",
-+	},
-+	{
-+		.mask   = ARM_LPAE_PTE_NS,
-+		.val    = ARM_LPAE_PTE_NS,
-+		.set    = "NS",
-+		.clear  = "  ",
-+	},
-+	{
-+		.mask   = ARM_LPAE_PTE_NSTABLE,
-+		.val    = ARM_LPAE_PTE_NSTABLE,
-+		.set    = "NST",
-+		.clear  = "   ",
-+	},
++struct dump_group {
++	struct iommu_group *group;
++	struct list_head list;
 +};
 +
-+const char *io_pgtable_fmt_names[] = {
-+	"ARM_32_LPAE_S1",
-+	"ARM_32_LPAE_S2",
-+	"ARM_64_LPAE_S1",
-+	"ARM_64_LPAE_S2",
-+	"ARM_V7S",
-+	"ARM_MALI_LPAE",
-+	"AMD_IOMMU_V1",
-+	"AMD_IOMMU_V2",
-+	"APPLE_DART",
-+	"APPLE_DART2",
-+};
-+
-+struct io_ptdump_prot {
-+	int lvl;
-+	int stage;
-+	char *attr;
-+	size_t size;
-+};
-+
-+static void dump_prot(struct seq_file *s, arm_lpae_iopte pte)
++/**
++ * iova_info_dump - dump iova alloced
++ * @s - file structure used to generate serialized output
++ * @iovad: - iova domain in question.
++ */
++static int iommu_iova_info_dump(struct seq_file *s, struct iommu_domain *domain)
 +{
-+	int capacity = 64;
-+	const char *attr;
-+	int length = 0;
++	struct iova_domain *iovad;
++	unsigned long long pfn;
++	unsigned long i_shift;
++	struct rb_node *node;
++	unsigned long flags;
++	size_t prot_size;
 +
-+	char *prot = kzalloc(capacity * sizeof(char), GFP_KERNEL);
++	iovad = iommu_domain_to_iovad(domain);
++	if (!iovad)
++		return -ENOMEM;
 +
-+	if (!prot)
-+		return;
++	i_shift = iova_shift(iovad);
 +
-+	/* Traverse all predefined permission bits */
-+	for (size_t i = 0; i < ARRAY_SIZE(prot_bits); i++) {
-+		if ((pte & prot_bits[i].mask) == prot_bits[i].val)
-+			attr = prot_bits[i].set;
-+		else
-+			attr = prot_bits[i].clear;
++	/* Take the lock so that no other thread is manipulating the rbtree */
++	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
++	assert_spin_locked(&iovad->iova_rbtree_lock);
 +
-+		size_t attr_len = strlen(attr);
++	for (node = rb_first(&iovad->rbroot); node; node = rb_next(node)) {
++		struct iova *iova = rb_entry(node, struct iova, node);
 +
-+		/* Check and extend the buffer */
-+		while (length + attr_len > capacity) {
-+			capacity *= 2;
++		if (iova->pfn_hi <= iova->pfn_lo)
++			continue;
 +
-+			char *temp = krealloc(prot, capacity * sizeof(char), GFP_KERNEL);
-+
-+			if (!temp) {
-+				kfree(prot);
-+				return;
-+			}
-+
-+			prot = temp;
-+		}
-+
-+		length += snprintf(prot + length, capacity - length, "%s ", attr);
-+
-+		/* Security check: prevents abnormal buffer expansion */
-+		if (length > PAGE_SIZE) {
-+			pr_err("len = %zu, attr = %s, i =%d\n", length, attr, i);
-+			kfree(prot);
-+			return;
++		for (pfn = iova->pfn_lo; pfn <= iova->pfn_hi; ) {
++			prot_size = domain->ops->dump_iova_prot(s, domain, pfn << i_shift);
++			pfn = ((pfn << i_shift) + prot_size) >> i_shift;
 +		}
 +	}
 +
-+	seq_printf(s, "%s", prot);
-+	kfree(prot);
++	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
++	return 0;
 +}
 +
-+static size_t arm_lpae_dump_iova_prot(struct seq_file *s, struct io_pgtable_ops *ops,
-+								   unsigned long iova)
++/**
++ * iommu_group_and_iova_dump - Collect and dump IOMMU group and IOVA mapping information
++ * @s: seq_file target for output
++ *
++ * This function traverses all IOMMU groups in the system and dumps hierarchical information
++ * about domains, groups, devices, and IOVA mappings. Only groups with default domains using
++ * DMA_IOVA cookie type are processed.
++ *
++ * Key operations:
++ * 1. Iterates through all registered IOMMU groups
++ * 2. Filters groups with default domains of type IOMMU_COOKIE_DMA_IOVA
++ * 3. Organizes groups by domain to avoid duplicate domain output
++ * 4. Outputs hierarchical information including:
++ *    - Domain address
++ *    - Group IDs and their member devices
++ *    - IOVA mapping ranges via iommu_iova_info_dump()
++ *
++ * Data structure hierarchy:
++ *   domain_list (list_head)
++ *   ├── dump_domain
++ *   │   ├── domain: pointer to iommu_domain
++ *   │   └── groups (list_head)
++ *   │       └── dump_group
++ *   │           └── group: pointer to iommu_group
++ *
++ */
++int iommu_group_and_iova_dump(struct seq_file *s)
 +{
-+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	struct iova_to_phys_data d;
-+	int ret;
++	struct dump_domain *domain_entry, *d_tmp;
++	struct dump_group *group_entry, *g_tmp;
++	struct list_head domain_list;
++	struct iommu_group *group;
++	struct group_device *gdev;
++	struct kobject *kobj;
++	int ret = 0;
++	bool found;
 +
-+	struct io_pgtable_walk_data walk_data = {
-+		.data = &d,
-+		.visit = visit_iova_to_phys,
-+		.addr = iova,
-+		.end = iova + 1,
-+	};
++	INIT_LIST_HEAD(&domain_list);
 +
-+	/* Only the mapped iova will be output */
-+	ret = __arm_lpae_iopte_walk(data, &walk_data, data->pgd, data->start_level);
-+	if (ret)
-+		return ARM_LPAE_GRANULE(data);
++	list_for_each_entry(kobj, &iommu_group_kset->list, entry) {
++		group = container_of(kobj, struct iommu_group, kobj);
 +
-+	seq_printf(s, "%lx - %lx    lvl %d  stage %s ",
-+			   iova, iova + ARM_LPAE_BLOCK_SIZE(d.lvl, data),
-+			   d.lvl, io_pgtable_fmt_names[data->iop.fmt]);
++		/* Skip groups that do not meet the criteria */
++		if (!group->default_domain ||
++		    group->default_domain->cookie_type != IOMMU_COOKIE_DMA_IOVA)
++			continue;
 +
-+	/* TODO: The dump prot is incomplete and will be supplemented later... */
-+	dump_prot(s, d.pte);
-+	seq_puts(s, "\n");
++		/* Check whether the domain already exists. */
++		found = false;
++		list_for_each_entry(domain_entry, &domain_list, list) {
++			if (domain_entry->domain == group->default_domain) {
++				found = true;
++				break;
++			}
++		}
 +
-+	return ARM_LPAE_BLOCK_SIZE(d.lvl, data);
++		/* New domain, create entry */
++		if (!found) {
++			domain_entry = kzalloc(sizeof(*domain_entry), GFP_KERNEL);
++			if (!domain_entry) {
++				ret = -ENOMEM;
++				goto out;
++			}
++
++			domain_entry->domain = group->default_domain;
++			INIT_LIST_HEAD(&domain_entry->groups);
++			list_add_tail(&domain_entry->list, &domain_list);
++		}
++
++		/* Create group entries */
++		group_entry = kzalloc(sizeof(*group_entry), GFP_KERNEL);
++		if (!group_entry) {
++			ret = -ENOMEM;
++			goto out;
++		}
++
++		group_entry->group = group;
++		list_add_tail(&group_entry->list, &domain_entry->groups);
++	}
++
++	/* Output all domain information */
++	list_for_each_entry(domain_entry, &domain_list, list) {
++		seq_printf(s, "-- domain %p --\n", domain_entry->domain);
++
++		/* Output all groups in the current domain */
++		list_for_each_entry(group_entry, &domain_entry->groups, list) {
++			seq_printf(s, "- group %d\n", group_entry->group->id);
++
++			/* Output all devices in the group */
++			for_each_group_device(group_entry->group, gdev) {
++				seq_printf(s, "  - %s\n", dev_name(gdev->dev));
++			}
++		}
++
++		/* Output IOVA range */
++		seq_puts(s, "---[ RANGE START ]---\n");
++		ret = iommu_iova_info_dump(s, domain_entry->domain);
++		if (ret)
++			seq_puts(s, "IOVA INFO DUMP FAIL...\n");
++
++		seq_puts(s, "---[ RANGE END   ]---\n");
++	}
++
++out:
++	/* Release domain_list and group_list */
++	list_for_each_entry_safe(domain_entry, d_tmp, &domain_list, list) {
++		list_for_each_entry_safe(group_entry, g_tmp, &domain_entry->groups, list) {
++			list_del(&group_entry->list);
++			kfree(group_entry);
++		}
++
++		list_del(&domain_entry->list);
++		kfree(domain_entry);
++	}
++
++	return ret;
 +}
++EXPORT_SYMBOL_GPL(iommu_group_and_iova_dump);
 +#endif
 +
- static int visit_pgtable_walk(struct io_pgtable_walk_data *walk_data, int lvl,
- 			      arm_lpae_iopte *ptep, size_t size)
+ /**
+  * iommu_group_get_iommudata - retrieve iommu_data registered for a group
+  * @group: the group
+diff --git a/include/linux/io_ptdump.h b/include/linux/io_ptdump.h
+new file mode 100644
+index 000000000000..e087bb7751c2
+--- /dev/null
++++ b/include/linux/io_ptdump.h
+@@ -0,0 +1,16 @@
++/* SPDX-License-Identifier: GPL-2.0-only
++ * Copyright (C) 2025 HiSilicon Limited
++ * Author: Qinxin Xia <xiaqinxin@huawei.com>
++ *
++ */
++
++#ifndef __ASM_IO_PTDUMP_H
++#define __ASM_IO_PTDUMP_H
++
++#ifdef CONFIG_IO_PTDUMP_DEBUGFS
++void __init io_ptdump_debugfs_register(const char *name);
++#else
++void __init io_ptdump_debugfs_register(const char *name) { }
++#endif /* CONFIG_IO_PTDUMP_DEBUGFS  */
++
++#endif
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index c30d12e16473..494a4960b8c7 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -772,7 +772,10 @@ struct iommu_domain_ops {
+ 
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
+ 				    dma_addr_t iova);
+-
++#ifdef CONFIG_IO_PTDUMP
++	size_t (*dump_iova_prot)(struct seq_file *s, struct iommu_domain *domain,
++					dma_addr_t iova);
++#endif
+ 	bool (*enforce_cache_coherency)(struct iommu_domain *domain);
+ 	int (*set_pgtable_quirks)(struct iommu_domain *domain,
+ 				  unsigned long quirks);
+@@ -1698,4 +1701,9 @@ static inline void iopf_group_response(struct iopf_group *group,
  {
-@@ -950,6 +1116,9 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
- 		.map_pages	= arm_lpae_map_pages,
- 		.unmap_pages	= arm_lpae_unmap_pages,
- 		.iova_to_phys	= arm_lpae_iova_to_phys,
+ }
+ #endif /* CONFIG_IOMMU_IOPF */
++
 +#ifdef CONFIG_IO_PTDUMP
-+		.dump_iova_prot = arm_lpae_dump_iova_prot,
-+#endif
- 		.read_and_clear_dirty = arm_lpae_read_and_clear_dirty,
- 		.pgtable_walk	= arm_lpae_pgtable_walk,
- 	};
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index 138fbd89b1e6..307c68f0038c 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -217,6 +217,10 @@ struct io_pgtable_ops {
- 			      struct iommu_iotlb_gather *gather);
- 	phys_addr_t (*iova_to_phys)(struct io_pgtable_ops *ops,
- 				    unsigned long iova);
-+#ifdef CONFIG_IO_PTDUMP
-+	size_t (*dump_iova_prot)(struct seq_file *s, struct io_pgtable_ops *ops,
-+			      unsigned long iova);
-+#endif
- 	int (*pgtable_walk)(struct io_pgtable_ops *ops, unsigned long iova, void *wd);
- 	int (*read_and_clear_dirty)(struct io_pgtable_ops *ops,
- 				    unsigned long iova, size_t size,
++int iommu_group_and_iova_dump(struct seq_file *s);
++#endif /* CONFIG_IO_PTDUMP */
++
+ #endif /* __LINUX_IOMMU_H */
+diff --git a/mm/Kconfig.debug b/mm/Kconfig.debug
+index 32b65073d0cc..e09c9995c496 100644
+--- a/mm/Kconfig.debug
++++ b/mm/Kconfig.debug
+@@ -219,6 +219,9 @@ config ARCH_HAS_PTDUMP
+ config PTDUMP
+ 	bool
+ 
++config IO_PTDUMP
++	bool
++
+ config PTDUMP_DEBUGFS
+ 	bool "Export kernel pagetable layout to userspace via debugfs"
+ 	depends on DEBUG_KERNEL
+@@ -234,6 +237,22 @@ config PTDUMP_DEBUGFS
+ 
+ 	  If in doubt, say N.
+ 
++config IO_PTDUMP_DEBUGFS
++	bool "Export io pagetable layout to userspace via debugfs"
++	depends on DEBUG_KERNEL
++	depends on DEBUG_FS
++	depends on IOMMU_IOVA
++	select IO_PTDUMP
++	help
++	  Say Y here if you want to show the io pagetable layout in a
++	  debugfs file. This information is only useful for kernel developers
++	  who are working in architecture specific areas of the iommu.
++	  It is probably not a good idea to enable this feature in a production
++	  kernel.
++
++	  If in doubt, say N.
++
++
+ config HAVE_DEBUG_KMEMLEAK
+ 	bool
+ 
+diff --git a/mm/Makefile b/mm/Makefile
+index ef54aa615d9d..95759ccf93c1 100644
+--- a/mm/Makefile
++++ b/mm/Makefile
+@@ -147,3 +147,5 @@ obj-$(CONFIG_SHRINKER_DEBUG) += shrinker_debug.o
+ obj-$(CONFIG_EXECMEM) += execmem.o
+ obj-$(CONFIG_TMPFS_QUOTA) += shmem_quota.o
+ obj-$(CONFIG_PT_RECLAIM) += pt_reclaim.o
++obj-$(CONFIG_IO_PTDUMP) += io_ptdump.o
++obj-$(CONFIG_IO_PTDUMP_DEBUGFS) += io_ptdump_debugfs.o
+diff --git a/mm/io_ptdump.c b/mm/io_ptdump.c
+new file mode 100644
+index 000000000000..9aa133de5119
+--- /dev/null
++++ b/mm/io_ptdump.c
+@@ -0,0 +1,24 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (c) 2025, hisilion limited.
++ * Debug helper to dump the current IO pagetables of the system
++ * so that we can see what the various memory ranges are set to.
++ *
++ * Author: Qinxin Xia <xiaqinxin@huawei.com>
++ */
++#include <linux/debugfs.h>
++#include <linux/fs.h>
++#include <linux/io.h>
++#include <linux/iommu.h>
++#include <linux/init.h>
++#include <linux/io_ptdump.h>
++#include <linux/mm.h>
++#include <linux/seq_file.h>
++
++static int __init io_ptdump_init(void)
++{
++	io_ptdump_debugfs_register("io_page_tables");
++	return 0;
++}
++
++device_initcall(io_ptdump_init);
+diff --git a/mm/io_ptdump_debugfs.c b/mm/io_ptdump_debugfs.c
+new file mode 100644
+index 000000000000..704ca306957e
+--- /dev/null
++++ b/mm/io_ptdump_debugfs.c
+@@ -0,0 +1,17 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/debugfs.h>
++#include <linux/iommu.h>
++#include <linux/memory_hotplug.h>
++#include <linux/seq_file.h>
++
++static int io_ptdump_show(struct seq_file *m, void *v)
++{
++	iommu_group_and_iova_dump(m);
++	return 0;
++}
++DEFINE_SHOW_ATTRIBUTE(io_ptdump);
++
++void __init io_ptdump_debugfs_register(const char *name)
++{
++	debugfs_create_file(name, 0400, NULL, NULL, &io_ptdump_fops);
++}
 -- 
 2.33.0
 
