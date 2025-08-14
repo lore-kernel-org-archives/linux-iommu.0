@@ -1,71 +1,34 @@
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 842D0266574
-	for <iommu@lists.linux.dev>; Thu, 14 Aug 2025 16:31:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 341911991BF;
+	Thu, 14 Aug 2025 16:47:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755189120; cv=none; b=AGz6msLe+o8rTH3KZplL6XPvz29tDeEDypinjTiW/fRkMpiVesErUADK0yjQI3Mvi5FE361DKG929Rl8RB1MM+wgUmDg1heF50xvjn5a+KoodBb3+WDbHrbyPbtPhG7eQuSJa+Xf3G9kuiNb0I48WPFVdPfRt+mNIdKaDL4jHKU=
+	t=1755190051; cv=none; b=Wi0lnMKShNFc3/4PfHoCTr8ZcLUENSCkfYDwE22TJu+3EN+KWq+v03kpwHelXgGzgqmUdBXUc4bBEeBGSm9BHPn0pEkM0sqocAdOHLMSTh6VYAzgUstiC9x8/kOYfGn328cDzwEBJyDEXIbQlcCoP3z2PrUH26IkR5/DZZKhbQk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755189120; c=relaxed/simple;
-	bh=9Wa5jqPAwkgeEuFRsRyS/7h6RN1g8UcKkO1sNImbBhw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=NYXjauEjGfN/TGw/g7TTo6aKDAnzdi5sHIkx5QdI73YEOt7fp8O+X7bePhgkLCCRFh9awwVhhxr48WaFCt/+keqJo/nsiTNwwNzE+w9RIGHtpIVbBoKICWssaehSQaoqgB4w2px1q1kf8HT7gfwjtKHAG8EpBo6NZhhhBKMYii8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bitbyteword.org; spf=pass smtp.mailfrom=bitbyteword.org; dkim=pass (2048-bit key) header.d=bitbyteword.org header.i=@bitbyteword.org header.b=cfrdw8qs; arc=none smtp.client-ip=209.85.222.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bitbyteword.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bitbyteword.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bitbyteword.org header.i=@bitbyteword.org header.b="cfrdw8qs"
-Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-7e8704cdc76so110048185a.1
-        for <iommu@lists.linux.dev>; Thu, 14 Aug 2025 09:31:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bitbyteword.org; s=google; t=1755189117; x=1755793917; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=lTcvVfxgncNMa1Iq0eQuGoB8h78T3XfCXO2iDvh4lTw=;
-        b=cfrdw8qstHwSc4nJAYSmrnIikL4mUQGC64m1dGpNs6COrPSvooLdvNExHHCL7ER7pV
-         KZKSbhtunm1QUVTrs9yMfhOrC3jbfFS72bwSccPmSJyV8tFl2clxlR+IlO/Wy+yYOOZW
-         PgIXbUphrPHFNZ4Lliu2fjKo/i3bq1Ej43SDRY2l2OmRPkHKtlqD8hv/CzM1Sk6pp85y
-         BVb6WMvwvTzHxgH1fPeUnak+/niyKUP2OKKe1Hapr/Bm8SIff7uk+7Cz++lcZivU63P8
-         TFH/04HsXICZNKRAVPF0CC3KFI09zd3dSuy8EsRQ/SoumsMwI4En1Y534uqinSZlsSAH
-         9RGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755189117; x=1755793917;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=lTcvVfxgncNMa1Iq0eQuGoB8h78T3XfCXO2iDvh4lTw=;
-        b=A4Y7NR6R2tqeufhTuGHPofgRWhSdoYZYSgU6Dw0eRfC/4XIVrX0L3LUYjv3tq6G2rm
-         o64qiktgJWTZGjvdxNhIYw/hSUZYZJOhlBslnaytOpZUfnJc19hn0vZ1JACqeLp9pyOi
-         B/TNDkIixItAHc/WyEA1OXJt7WalAHfw9IuFxAu8HIvHoY/ZH3zN4zfkDjNM4rrKb0mZ
-         T0BVaxrJmdLZ1EtHptx+g0hCR441kzJbPplSSb8+kG9MNTq1jXgAbixBeSwuzfSkN0uy
-         3G1oHeGUph26uV/eYxIlYrJaNO61qEWEgvaJK1uwN2UuE+mHXT5hDI6EMcKrw/uiulXY
-         8cFg==
-X-Forwarded-Encrypted: i=1; AJvYcCXA+PF/ibRlhG9/oSfUeYRbJB0BrVcJ2pV8+yT48fEo+ZJeJNwSqgfPCLOIVXCXUtWGMZKB9w==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxg5XD8hr1OC6icI/+2XdKne39vTM6DSWsh+rTXl4/lE4ROgrez
-	XpyxRtadljCgvlIiOOpYFKt5C/jwSQ5ozifhMzZr1xIBH5nL07Lwh6qGXovBsY6s4AI=
-X-Gm-Gg: ASbGnctkM0WmOjB2tWQ5xTRMfDUmpT/4Arjqg56kZOaolDBDErJnMaFwoBNW14mmter
-	pjSaSs+2yXBa0BiRdR0cAcI5G5nRUL3r5G5z0isq5++JLEiTmbur2DI04+a5p7DPm17q5l+LMj8
-	WJTygyDm94F/Vr2kFjHZiTsJJNNU9goIRSH4L6mOPuApg5zDMEJ1xbTe+rLsHuS6C/Ori/ZH/hy
-	oZQrA+h8r2/uZFbm/Tm9rf3GuF4gQ36ckc7s643bh18wAAIhO13PBUyot+O3ha7J5fdIUai1UjX
-	szZNS0wSkiSAzNP7ZckGsCWZnuOyHYpqwW7fIrWFABQs3o/4snfW/HmaOmkc3+BMck5w7diVm6t
-	g2ZCi9AcJRoBOWnEal9j91+7JkWIYgjyLcQjH5V15sBWPqhIyJL+4RREP0pAGHmlZPbbhrr2Q
-X-Google-Smtp-Source: AGHT+IGbI/dL3O4lK+AB9+uWgN01ynO7vfbJIS46vI8nywFNU3aZvLm4Hh/hg2gSbWXDC4HQ7N2wKA==
-X-Received: by 2002:a05:620a:4727:b0:7e8:6402:aeb4 with SMTP id af79cd13be357-7e870426c07mr560417685a.18.1755189117053;
-        Thu, 14 Aug 2025 09:31:57 -0700 (PDT)
-Received: from vineethrp-dev.lan (c-73-143-21-186.hsd1.vt.comcast.net. [73.143.21.186])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-70af5bff7c3sm14747576d6.78.2025.08.14.09.31.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Aug 2025 09:31:56 -0700 (PDT)
-From: "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>
-To: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Cc: "Vineeth Pillai (Google)" <vineeth@bitbyteword.org>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/vt-d: debugfs: fix legacy mode page table dump logic
-Date: Thu, 14 Aug 2025 12:31:47 -0400
-Message-ID: <20250814163153.634680-1-vineeth@bitbyteword.org>
-X-Mailer: git-send-email 2.51.0.rc0.215.g125493bb4a-goog
+	s=arc-20240116; t=1755190051; c=relaxed/simple;
+	bh=RZ39O8LRy1DmXEIYFGqThJTu+hwEpbt7xjcvbQVF8+o=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Jt7Zw79+7TmDNMlyA+em27WwwijhFGuIn0Nph+JZxcYYeGstXJpZNE+719EHdCA1tpYAkPCGc/P0lHvjVi/5FRYu6CuEGcM2lGsRiNxbuwL41jYhhq1B64Rrsf+c2TNEWTfKeRdw5QQikNHZUPW5DIyTf0KYuVqTqikNJBdh/sI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 526841691;
+	Thu, 14 Aug 2025 09:47:19 -0700 (PDT)
+Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.50])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 77AF63F738;
+	Thu, 14 Aug 2025 09:47:26 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: will@kernel.org,
+	joro@8bytes.org,
+	jean-philippe@linaro.org
+Cc: iommu@lists.linux.dev,
+	virtualization@lists.linux.dev,
+	eric.auger@redhat.com,
+	stable@vger.kernel.org
+Subject: [PATCH v2] iommu/virtio: Make instance lookup robust
+Date: Thu, 14 Aug 2025 17:47:16 +0100
+Message-Id: <308911aaa1f5be32a3a709996c7bd6cf71d30f33.1755190036.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,66 +37,77 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In legacy mode, SSPTPTR is ignored if TT is not 00b or 01b. SSPTPTR
-maybe uninitialized or zero in that case and may cause oops like:
+Much like arm-smmu in commit 7d835134d4e1 ("iommu/arm-smmu: Make
+instance lookup robust"), virtio-iommu appears to have the same issue
+where iommu_device_register() makes the IOMMU instance visible to other
+API callers (including itself) straight away, but internally the
+instance isn't ready to recognise itself for viommu_probe_device() to
+work correctly until after viommu_probe() has returned. This matters a
+lot more now that bus_iommu_probe() has the DT/VIOT knowledge to probe
+client devices the way that was always intended. Tweak the lookup and
+initialisation in much the same way as for arm-smmu, to ensure that what
+we register is functional and ready to go.
 
- Oops: general protection fault, probably for non-canonical address 0xf00087d3f000f000: 0000 [#1] SMP NOPTI
- CPU: 2 UID: 0 PID: 786 Comm: cat Not tainted 6.16.0 #191 PREEMPT(voluntary)
- Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.17.0-5.fc42 04/01/2014
- RIP: 0010:pgtable_walk_level+0x98/0x150
- RSP: 0018:ffffc90000f279c0 EFLAGS: 00010206
- RAX: 0000000040000000 RBX: ffffc90000f27ab0 RCX: 000000000000001e
- RDX: 0000000000000003 RSI: f00087d3f000f000 RDI: f00087d3f0010000
- RBP: ffffc90000f27a00 R08: ffffc90000f27a98 R09: 0000000000000002
- R10: 0000000000000000 R11: 0000000000000000 R12: f00087d3f000f000
- R13: 0000000000000000 R14: 0000000040000000 R15: ffffc90000f27a98
- FS:  0000764566dcb740(0000) GS:ffff8881f812c000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 0000764566d44000 CR3: 0000000109d81003 CR4: 0000000000772ef0
- PKRU: 55555554
- Call Trace:
-  <TASK>
-  pgtable_walk_level+0x88/0x150
-  domain_translation_struct_show.isra.0+0x2d9/0x300
-  dev_domain_translation_struct_show+0x20/0x40
-  seq_read_iter+0x12d/0x490
-...
-
-Avoid walking the page table if TT is not 00b or 01b.
-
-Signed-off-by: Vineeth Pillai (Google) <vineeth@bitbyteword.org>
+Cc: stable@vger.kernel.org
+Fixes: bcb81ac6ae3c ("iommu: Get DT/ACPI parsing into the proper probe path")
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/intel/debugfs.c | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel/debugfs.c b/drivers/iommu/intel/debugfs.c
-index affbf4a1558de..5aa7f46a420b5 100644
---- a/drivers/iommu/intel/debugfs.c
-+++ b/drivers/iommu/intel/debugfs.c
-@@ -435,8 +435,21 @@ static int domain_translation_struct_show(struct seq_file *m,
- 			}
- 			pgd &= VTD_PAGE_MASK;
- 		} else { /* legacy mode */
--			pgd = context->lo & VTD_PAGE_MASK;
--			agaw = context->hi & 7;
-+			u8 tt = (u8)(context->lo & GENMASK_ULL(3, 2)) >> 2;
-+
-+			/*
-+			 * According to Translation Type(TT),
-+			 * get the page table pointer(SSPTPTR).
-+			 */
-+			switch (tt) {
-+			case CONTEXT_TT_MULTI_LEVEL:
-+			case CONTEXT_TT_DEV_IOTLB:
-+				pgd = context->lo & VTD_PAGE_MASK;
-+				agaw = context->hi & 7;
-+				break;
-+			default:
-+				goto iommu_unlock;
-+			}
- 		}
+v2: Of course generic bus_find_device_by_fwnode() didn't work, since
+    it's dev->parent we need to check rather than dev itself, sigh...
+---
+ drivers/iommu/virtio-iommu.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 532db1de201b..b39d6f134ab2 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -998,8 +998,7 @@ static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
+ 	iommu_dma_get_resv_regions(dev, head);
+ }
  
- 		seq_printf(m, "Device %04x:%02x:%02x.%x ",
+-static const struct iommu_ops viommu_ops;
+-static struct virtio_driver virtio_iommu_drv;
++static const struct bus_type *virtio_bus_type;
+ 
+ static int viommu_match_node(struct device *dev, const void *data)
+ {
+@@ -1008,8 +1007,9 @@ static int viommu_match_node(struct device *dev, const void *data)
+ 
+ static struct viommu_dev *viommu_get_by_fwnode(struct fwnode_handle *fwnode)
+ {
+-	struct device *dev = driver_find_device(&virtio_iommu_drv.driver, NULL,
+-						fwnode, viommu_match_node);
++	struct device *dev = bus_find_device(virtio_bus_type, NULL, fwnode,
++					     viommu_match_node);
++
+ 	put_device(dev);
+ 
+ 	return dev ? dev_to_virtio(dev)->priv : NULL;
+@@ -1160,6 +1160,9 @@ static int viommu_probe(struct virtio_device *vdev)
+ 	if (!viommu)
+ 		return -ENOMEM;
+ 
++	/* Borrow this for easy lookups later */
++	virtio_bus_type = dev->bus;
++
+ 	spin_lock_init(&viommu->request_lock);
+ 	ida_init(&viommu->domain_ids);
+ 	viommu->dev = dev;
+@@ -1229,10 +1232,10 @@ static int viommu_probe(struct virtio_device *vdev)
+ 	if (ret)
+ 		goto err_free_vqs;
+ 
+-	iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
+-
+ 	vdev->priv = viommu;
+ 
++	iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
++
+ 	dev_info(dev, "input address: %u bits\n",
+ 		 order_base_2(viommu->geometry.aperture_end));
+ 	dev_info(dev, "page mask: %#llx\n", viommu->pgsize_bitmap);
 -- 
-2.50.1
+2.39.2.101.g768bb238c484.dirty
 
