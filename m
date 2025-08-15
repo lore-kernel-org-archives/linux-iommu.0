@@ -1,127 +1,134 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E1E423817A;
-	Fri, 15 Aug 2025 05:11:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6F97246BBD;
+	Fri, 15 Aug 2025 05:12:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755234665; cv=none; b=n1HUpVcAGsenyroKZW8ej7Hj6E+KtH5oJteEN17QIETakqu9weoMXSj/Z7qeW6z3Qj4NOE+moPoz3Q4ZJUQ0PMGG3DlnWiqVCpSq+FGeLRwooAIes2wt2Tko8Su8QECw38ojWisKKau6pJpbQIL/Ap7J3wmi/hyBmuMQBG8KeAM=
+	t=1755234725; cv=none; b=E2yBgV+VCK3xr3mSU8BbYMII9pLqLMPP8zMmQDodQMLWlWn0yUly2VYHjrZDW9iGfVZhdi2qimhXUTTjceAXRamfH6R+qDu4uPl+3F8NXf2LQBrNpdtzDv0K4jTdwVJxo0BBiMYxdSTfIIcqta/zkwaq0WOAEV1pXmnyO2Ica/w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755234665; c=relaxed/simple;
-	bh=rjs/V71n+3a48sbczUimLUbQ99An++PfjAuhQIEa13s=;
-	h=MIME-Version:Date:From:To:Cc:Message-Id:In-Reply-To:References:
-	 Subject:Content-Type; b=NHxjDFuSQEVNg3wE1HtqJicmMoCPtaZyI+pvKrg2Yq/HmwCkomnu5Q5/Yd+QFgtX+dKSsHYxXIV4PPIbT3AqFcHC7z18Gn7GjBdgnUgBEljnMbOeebrwxWmbg0pib4VeQpjq02p7kpUHcjL/OfKCkEYXPHKC37OQx/uNq8V9gQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qaZHeg2/; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1755234725; c=relaxed/simple;
+	bh=piFJDMoWgMoAcz5ZrOxOxHNp2cNxC29xMo9DwzCJmRM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=dsE92wQ1fA7XtsdgP/vcxWzR00/dlf8Nmx/raXF8dlMUiLWgTljL9eVsEYcvTFWLjSUL7ARCHR/np7hqoWPf6E9J3AmB8dsZSVe6CqQqARrm9xuxp9mV3xfxE3Z+BG2NkLY790eqB78dWDHUpd9ENJ7COrTv/pn8+5uOH5bXr/g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=n8h1RDPw; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qaZHeg2/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EACBBC4CEEB;
-	Fri, 15 Aug 2025 05:11:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755234665;
-	bh=rjs/V71n+3a48sbczUimLUbQ99An++PfjAuhQIEa13s=;
-	h=Date:From:To:Cc:In-Reply-To:References:Subject:From;
-	b=qaZHeg2/5a1nlFDrCh+QQq8+2z+k/HIBWZUD4nh0+1i6c37KB42J7MuL6+NCG/t+L
-	 Sb4lS+mkZ14VoVX+YlDNVGPRMcWMXRHAGigO6GBs+JD82O/j0LxY54D+zDNDsJYKAo
-	 sXevI5VIzQWOLFfl/WV5zUlxyV+wLZ1J0REOzQc8KXCWGG5zo4v1sD8WTb37YmZh26
-	 fQvGeRnhGwhiRkaAiLioOMAOHFUuoJ1KDM4vS7BfgMxeW43efHE9YPv+gnweYXLTPM
-	 XrWCUBDKKDrqe8banORHuWlWg0uTJGuY3c9EmS4cdtxIgiUKad4TjoW3OXKR2Ys5uU
-	 wi4dFrypsvChQ==
-Received: from phl-compute-12.internal (phl-compute-12.internal [10.202.2.52])
-	by mailfauth.phl.internal (Postfix) with ESMTP id CD58BF40066;
-	Fri, 15 Aug 2025 01:11:02 -0400 (EDT)
-Received: from phl-imap-08 ([10.202.2.84])
-  by phl-compute-12.internal (MEProxy); Fri, 15 Aug 2025 01:11:02 -0400
-X-ME-Sender: <xms:ZsGeaEjCAtEWX1UaHLA2gfColtQZO7w89chtZ2uFaG4vMYHweTmDIQ>
-    <xme:ZsGeaNCED0uQ78E9d2j9GAg3NYkGAhxwrM8S6giPlAbcy5DsDkd_hrjkIGTNdnggG
-    4eL_xWyjdx6jEOR_bI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgddugeeftdekucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurhepofggfffhvfevkfgjfhfutgfgsehtqhertdertdejnecuhfhrohhmpedfnfgvohhn
-    ucftohhmrghnohhvshhkhidfuceolhgvohhnsehkvghrnhgvlhdrohhrgheqnecuggftrf
-    grthhtvghrnhepffegjefgueegffffjeevheektdekgeevheelvdekieehvdejvdejjefh
-    hfelhfefnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiii
-    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehlvghonhdomhgvshhmthhprghuthhh
-    phgvrhhsohhnrghlihhthidquddvfedtheefleekgedqvdejjeeljeejvdekqdhlvghonh
-    eppehkvghrnhgvlhdrohhrgheslhgvohhnrdhnuhdpnhgspghrtghpthhtohepfeejpdhm
-    ohguvgepshhmthhpohhuthdprhgtphhtthhopehjohhroheskegshihtvghsrdhorhhgpd
-    hrtghpthhtoheprhhosghinhdrmhhurhhphhihsegrrhhmrdgtohhmpdhrtghpthhtohep
-    tghhrhhishhtohhphhgvrdhlvghrohihsegtshhgrhhouhhprdgvuhdprhgtphhtthhope
-    hmphgvsegvlhhlvghrmhgrnhdrihgurdgruhdprhgtphhtthhopegrsgguihgvlhdrjhgr
-    nhhulhhguhgvsehgmhgrihhlrdgtohhmpdhrtghpthhtoheprghlvgigrdhgrgihnhhorh
-    esghhmrghilhdrtghomhdprhgtphhtthhopehrohhsthgvughtsehgohhoughmihhsrdho
-    rhhgpdhrtghpthhtohepghhlihguvghrsehgohhoghhlvgdrtghomhdprhgtphhtthhope
-    hkrghsrghnqdguvghvsehgohhoghhlvghgrhhouhhpshdrtghomh
-X-ME-Proxy: <xmx:ZsGeaPWPNXdI6VvYib3k9QdMC2XlJbr86LA_KN5YspkDL_EEK6BRlA>
-    <xmx:ZsGeaI3d1bh3fFRFl4aiXZUts9ejR-WHFcon7KnhJbC_6nOGWjjn2Q>
-    <xmx:ZsGeaIdgKvfZyaCQpAF_MAary9Xg8Dva0Q5zSBAie2gJ8xC3nka9fw>
-    <xmx:ZsGeaNVlXDFhOQ5jT6MnFggS_FVesjsSUNJLf3EVumbGV5Io7NaXkQ>
-    <xmx:ZsGeaG9LccLFJ2EboOYrfkTWU2yRr6gsoUbWRyvB7Ij-X0QWOgy49Rp5>
-Feedback-ID: i927946fb:Fastmail
-Received: by mailuser.phl.internal (Postfix, from userid 501)
-	id 8094E2CE0071; Fri, 15 Aug 2025 01:11:02 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="n8h1RDPw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1755234724; x=1786770724;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=piFJDMoWgMoAcz5ZrOxOxHNp2cNxC29xMo9DwzCJmRM=;
+  b=n8h1RDPwgubFjM4uC5h8bpQqxyknnlL0YxZBHxqITuri/5B+A0OhXw41
+   uqHyDeExnn5TRa3fDn3zIILalV8IWxOKFc8rcSQ7HhtjVQn7jsYNn4dk5
+   EdUdRfRNiHzXr8ZAj7hWYsY3/1Qk1iPYBSwQHK6Z4xGW1qBqxA3pbu4v/
+   l36EnTHiJX1psKU5wGPkmduARKNBcyZi/gphB2PHbpXTfeLMYDHCO+Fmc
+   Frq+M/j66QIDWJ7DAsNiRJVLK8WQcq3/Q6LpHD9S6EodzbrLjgOGNSkW2
+   Eb9GsiK4436Td1ci950LXAF0Hbxjfwb0K39f7UI/0irc+ygxrqf2mv3hX
+   w==;
+X-CSE-ConnectionGUID: raSL7P7YTaKP9TZL3XvdvA==
+X-CSE-MsgGUID: gqxKpSbDRTyctOgbX/MVqQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11522"; a="68646444"
+X-IronPort-AV: E=Sophos;i="6.17,290,1747724400"; 
+   d="scan'208";a="68646444"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2025 22:12:03 -0700
+X-CSE-ConnectionGUID: z3XLWN8JSkSewaRE53xizA==
+X-CSE-MsgGUID: k+jCi0MrTzK5WA2i0FqSdQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.17,290,1747724400"; 
+   d="scan'208";a="197786291"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2025 22:11:57 -0700
+Message-ID: <eb248b73-7fb6-47cd-9e10-5c54ca2391b2@linux.intel.com>
+Date: Fri, 15 Aug 2025 13:09:51 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-ThreadId: AWyaQ402xWe7
-Date: Fri, 15 Aug 2025 08:10:43 +0300
-From: "Leon Romanovsky" <leon@kernel.org>
-To: "Christophe Leroy" <christophe.leroy@csgroup.eu>,
- "Marek Szyprowski" <m.szyprowski@samsung.com>
-Cc: "Jason Gunthorpe" <jgg@nvidia.com>,
- "Abdiel Janulgue" <abdiel.janulgue@gmail.com>,
- "Alexander Potapenko" <glider@google.com>,
- "Alex Gaynor" <alex.gaynor@gmail.com>,
- "Andrew Morton" <akpm@linux-foundation.org>,
- "Christoph Hellwig" <hch@lst.de>, "Danilo Krummrich" <dakr@kernel.org>,
- iommu@lists.linux.dev, "Jason Wang" <jasowang@redhat.com>,
- "Jens Axboe" <axboe@kernel.dk>, "Joerg Roedel" <joro@8bytes.org>,
- "Jonathan Corbet" <corbet@lwn.net>, "Juergen Gross" <jgross@suse.com>,
- kasan-dev@googlegroups.com, "Keith Busch" <kbusch@kernel.org>,
- linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-mm@kvack.org,
- linux-nvme@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
- linux-trace-kernel@vger.kernel.org,
- "Madhavan Srinivasan" <maddy@linux.ibm.com>,
- "Masami Hiramatsu" <mhiramat@kernel.org>,
- "Michael Ellerman" <mpe@ellerman.id.au>,
- "Michael S. Tsirkin" <mst@redhat.com>, "Miguel Ojeda" <ojeda@kernel.org>,
- "Robin Murphy" <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
- "Sagi Grimberg" <sagi@grimberg.me>,
- "Stefano Stabellini" <sstabellini@kernel.org>,
- "Steven Rostedt" <rostedt@goodmis.org>, virtualization@lists.linux.dev,
- "Will Deacon" <will@kernel.org>, xen-devel@lists.xenproject.org
-Message-Id: <45552b38-5717-4b0c-b0eb-8c463d8cf816@app.fastmail.com>
-In-Reply-To: <ccc8eeba-757a-440d-80d3-9158e80c19fe@csgroup.eu>
-References: <cover.1755193625.git.leon@kernel.org>
- <ccc8eeba-757a-440d-80d3-9158e80c19fe@csgroup.eu>
-Subject: Re: [PATCH v3 00/16] dma-mapping: migrate to physical address-based API
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/5] iommu: Lock group->mutex in iommu_deferred_attach
+To: Nicolin Chen <nicolinc@nvidia.com>, robin.murphy@arm.com,
+ joro@8bytes.org, bhelgaas@google.com, jgg@nvidia.com
+Cc: will@kernel.org, robin.clark@oss.qualcomm.com, yong.wu@mediatek.com,
+ matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com,
+ thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+ rafael@kernel.org, lenb@kernel.org, kevin.tian@intel.com,
+ yi.l.liu@intel.com, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org,
+ linux-tegra@vger.kernel.org, linux-acpi@vger.kernel.org,
+ linux-pci@vger.kernel.org, patches@lists.linux.dev, pjaroszynski@nvidia.com,
+ vsethi@nvidia.com, helgaas@kernel.org, etzhao1900@gmail.com
+References: <cover.1754952762.git.nicolinc@nvidia.com>
+ <44783ca52e17a9ca0ce7acfe8daae3edc3d7b45b.1754952762.git.nicolinc@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <44783ca52e17a9ca0ce7acfe8daae3edc3d7b45b.1754952762.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 8/12/25 06:59, Nicolin Chen wrote:
+> The iommu_deferred_attach() is a runtime asynchronous function called by
+> iommu-dma function, which could race against other attach functions if it
+> accesses something in the dev->iommu_group.
+> 
+> So, grab the mutex to guard __iommu_attach_device() like other callers.
+> 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>   drivers/iommu/iommu.c | 13 ++++++++++---
+>   1 file changed, 10 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 060ebe330ee16..1e0116bce0762 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2144,10 +2144,17 @@ EXPORT_SYMBOL_GPL(iommu_attach_device);
+>   
+>   int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
+>   {
+> -	if (dev->iommu && dev->iommu->attach_deferred)
+> -		return __iommu_attach_device(domain, dev);
+> +	/*
+> +	 * This is called on the dma mapping fast path so avoid locking. This is
+> +	 * racy, but we have an expectation that the driver will setup its DMAs
 
+Why not making it like this,
 
-On Thu, Aug 14, 2025, at 22:05, Christophe Leroy wrote:
-> Le 14/08/2025 =C3=A0 19:53, Leon Romanovsky a =C3=A9crit=C2=A0:
->> Changelog:
->> v3:
->>   * Fixed typo in "cacheable" word
->>   * Simplified kmsan patch a lot to be simple argument refactoring
->
-> v2 sent today at 12:13, v3 sent today at 19:53 .... for only that ?
->
-> Have you read=20
-> https://docs.kernel.org//process/submitting-patches.html#don-t-get-dis=
-couraged-or-impatient=20
-> ?
+int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain)
+{
+         /* Caller must be a probed driver on dev */
+         if (!dev->iommu_group)
+                 return 0;
 
-Yes, I'm aware of that section. It is not even remotely close to the rea=
-lity in different subsystems.
+         guard(mutex)(&dev->iommu_group->mutex);
+         if (!dev->iommu->attach_deferred)
+                 return 0;
 
-There are some places in the kernel where you never get any responses.
+         return __iommu_attach_device(domain, dev);
+}
 
-Thanks
+?
+
+> +	 * inside probe while being single threaded to avoid racing.
+> +	 */
+> +	if (!dev->iommu || !dev->iommu->attach_deferred)
+> +		return 0;
+>   
+> -	return 0;
+> +	guard(mutex)(&dev->iommu_group->mutex);
+> +
+> +	return __iommu_attach_device(domain, dev);
+>   }
+>   
+>   void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
+
+Thanks,
+baolu
