@@ -1,50 +1,25 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1040E1DF994
-	for <iommu@lists.linux.dev>; Fri, 15 Aug 2025 14:35:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 96C401DA21
+	for <iommu@lists.linux.dev>; Fri, 15 Aug 2025 14:43:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755268508; cv=none; b=KsbSRV6x7Ew0TuSk8OoGk8M6fLavBw9idjvItNS3ApDD6QGYjuDT3KNwLO19oFeI5R/+m0G0R49In95hRBUsgkGh9+dCPRNXf+cm8w5svZW5/Xuv4DvkTNlQrQnE+/rlI3RFa5VR0EsQ1LxLp6oj8BAAWWH2DqoOUZAMJI1eA04=
+	t=1755269011; cv=none; b=CShniS7IeaNuVPdZCdMTLjgZDdYN7qSGNLXMEAfUSZR6yhkIo2JRMIbfPInhwPV7aAJKcg45OB14GHcpoyu6FBDeXzXDblxWuGOkJi/r/ussM0vFbGWGKxHdF2QP/nsSOYkPvnY80/6hIxxRnjYBk04iDMsYrTEO8M3TLxgILAk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755268508; c=relaxed/simple;
-	bh=mTj9gDpdVRPAPMKmCA8mbQBOboamZRqbrrOctPqaS0E=;
+	s=arc-20240116; t=1755269011; c=relaxed/simple;
+	bh=H+MKg2uxNKB4lyEh3o4Bh7PG+GoIsHy/48Um6bNfqCM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HYYDYoYpoVrAdYXyJ1deN1W/UyP8Ca7JjbzEGGwMyYNG4ZW24roALjMEd+DnnEzyd17vjWybkCjJwnM0FqW6FvaqcDjllUjcIeM+U3XapE7FmDdFUuN1jw7l2XL3Z31NxoxLuIlRdCkM6L0gnxJttaAXt3gASkkbc45DuQiMjB4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=He6TMnji; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="He6TMnji"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1755268507; x=1786804507;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=mTj9gDpdVRPAPMKmCA8mbQBOboamZRqbrrOctPqaS0E=;
-  b=He6TMnjiMhC3JBmBNhFfdD74pzLOf4j/e8ukCShtERTKgJ57dAlms2oE
-   avhYFYomCHGgea+Y8jcT0u/JesPWOfzVKQxkfJFD0QvVjtYvtT5iCq5kF
-   N9Upc86oQ9/ps46BADtk9P5fO1oW7nEuqLyHCVAZmLraK+IUfjeomyrCp
-   p1Z9Yqb7Um4VQGX8w7oabD6s37AmS/Iq5eKDwh8Dtk9iAu5ZAHMHXWw9L
-   BgLb9/im01CJJeglEhwI5pmRk11Q1UhCIhmUvDbv4jl2J/z/Yexrp0dN0
-   GBi6crZPgprQcZNnaWymQN1ANTsfbZ1/OC8kdSRUKnVxgS05PezigKRU9
-   Q==;
-X-CSE-ConnectionGUID: mpwN3cHuQK6qtj1+29U/eA==
-X-CSE-MsgGUID: CXph8P1gT3i6hKesUswvAg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11523"; a="57696828"
-X-IronPort-AV: E=Sophos;i="6.17,290,1747724400"; 
-   d="scan'208";a="57696828"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2025 07:35:06 -0700
-X-CSE-ConnectionGUID: CBUJci7lSaux91VOop/Z9Q==
-X-CSE-MsgGUID: Z7agxzSjQBqtvVDkDgi7YQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.17,290,1747724400"; 
-   d="scan'208";a="167377034"
-Received: from puneetse-mobl.amr.corp.intel.com (HELO [10.125.111.211]) ([10.125.111.211])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2025 07:35:06 -0700
-Message-ID: <48f683c7-9d59-4269-a828-4dabab60e631@intel.com>
-Date: Fri, 15 Aug 2025 07:35:04 -0700
+	 In-Reply-To:Content-Type; b=Q7eY+i5yyGnNTqak+gscO6JwT/6CfjyMakKVnuzRnzxuc+TolHxqIGrsSk/h7/C6HvvpnklThcFB5FMZP9dCE7hWHEjHdHSsQX9lSFy0R3LSnSO/cHBD2uclr3uSTayePQwY2Rd8Li0KqPCUo6KHbbkzkXK9LLn31uW+o5/h3s8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DEDFF1691;
+	Fri, 15 Aug 2025 07:43:20 -0700 (PDT)
+Received: from [10.1.196.50] (e121345-lin.cambridge.arm.com [10.1.196.50])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8E7B33F738;
+	Fri, 15 Aug 2025 07:43:27 -0700 (PDT)
+Message-ID: <e87aa091-5c02-4cd6-9636-0cb6c0015768@arm.com>
+Date: Fri, 15 Aug 2025 15:43:25 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,86 +27,41 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-To: Ethan Zhao <etzhao1900@gmail.com>, Uladzislau Rezki <urezki@gmail.com>,
- Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>,
- Peter Zijlstra <peterz@infradead.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
- iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
- <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
- <20250806155223.GV184255@nvidia.com>
- <d02cb97a-7cea-4ad3-82b3-89754c5278ad@intel.com>
- <20250806160904.GX184255@nvidia.com>
- <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
- <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
- <4ce79c80-1fc8-4684-920a-c8d82c4c3dc8@intel.com>
- <b6defa2a-164e-4c2f-ac55-fef5b4a9ba0f@linux.intel.com>
- <2611981e-3678-4619-b2ab-d9daace5a68a@gmail.com> <aJm0znaAqBRWqOCT@pc636>
- <83c47939-7366-4b97-9368-02d432ddc24a@intel.com>
- <563bd363-d806-4ee5-bcfe-05725055598d@gmail.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Content-Language: en-US
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <563bd363-d806-4ee5-bcfe-05725055598d@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH v3] iommu/riscv: prevent NULL deref in iova_to_phys
+To: Joerg Roedel <joro@8bytes.org>,
+ XianLiang Huang <huangxianliang@lanxincomputing.com>
+Cc: tjeznach@rivosinc.com, markus.elfring@web.de, will@kernel.org,
+ paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu,
+ alex@ghiti.fr, iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+References: <20250815071244.13982-1-huangxianliang@lanxincomputing.com>
+ <aJ8FbvCJEOj2XjT-@8bytes.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <aJ8FbvCJEOj2XjT-@8bytes.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 8/11/25 18:17, Ethan Zhao wrote:
->> But this is _not_ the place to add complexity to get scalability.
-> At least, please dont add bottleneck, how complex to do that ?
+On 15/08/2025 11:01 am, Joerg Roedel wrote:
+> On Fri, Aug 15, 2025 at 03:12:44PM +0800, XianLiang Huang wrote:
+>> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+>> index 2d0d31ba2886..0eae2f4bdc5e 100644
+>> --- a/drivers/iommu/riscv/iommu.c
+>> +++ b/drivers/iommu/riscv/iommu.c
+>> @@ -1283,7 +1283,7 @@ static phys_addr_t riscv_iommu_iova_to_phys(struct iommu_domain *iommu_domain,
+>>   	unsigned long *ptr;
+>>   
+>>   	ptr = riscv_iommu_pte_fetch(domain, iova, &pte_size);
+>> -	if (_io_pte_none(*ptr) || !_io_pte_present(*ptr))
+>> +	if (!ptr)
+>>   		return 0;
+> 
+> Zero is usually not an invalid physical address, or is it on RISC-V?
 
-Very good question! If you're really interested and concerned about
-this, I'd encourage you to demonstrate where the contention becomes a
-problem in practice, then post a patch to fix it.
+It's a valid PA on many systems of many architectures, but it's also 
+been the "not mapped/error" value for the iova_to_phys operation all the 
+way back to the very very first intel_iommu_iova_to_pfn() nearly 17 
+years ago, so hey :)
 
-If it's simple, I'll happily ack it!
+Thanks,
+Robin.
