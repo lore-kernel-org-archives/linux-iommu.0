@@ -1,189 +1,143 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 306FD272E51;
-	Fri, 15 Aug 2025 09:15:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBD92253B71
+	for <iommu@lists.linux.dev>; Fri, 15 Aug 2025 09:16:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755249342; cv=none; b=JMvGGlNGq8oE1OY/zCVnZx0GVy6CTI7fN9gZjT3OKCSuL6YQPLoYW1ubfaBKCeuxQ1ZtK2SqgKRHdAJpSblTKRNuaxVdx0TeMqODvNnI9mmVRU1CO11eoLMjEUEm1g75K898PDkNPYVvEHta/AKrEXTgXa96YUMvgbEjekQHGas=
+	t=1755249401; cv=none; b=ArsSbXW1OzhjLRu2zY3rh8ICgI7GCBzIPOyzw+B5gfsdjG0XfZsEF/+TNAaiARLHI0VIUwEbHYhJzPby/FWHfqkzSJva7ktOPulDncuEFT2OQMoTduT0RcyOWpFgFTyyrfxjLSLa7shrKrkdS0jQ8F7o0BrhskBfCKR5YfB+PIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755249342; c=relaxed/simple;
-	bh=hfZcgn0nzW9uuIxs2763lW2p3DkRL5Fx4+ceg0IC1a0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ARMWKfsDAH7QvgiAeCY2VvRh0d0XnzumLQUQ0KQ9RnQyTL9ff5Go4NjBkc+Mevc/5wqjNW/b86XumpxflBgJYTnaTyGo1QFeSNFsTpOZP2k1w1HP7WQnDxNUSK+yxNjgMRzLq5acc9j4dBMTbebO2lk6ruCVBnJRTm/aP7USJGc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=e5ZVmyll; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1755249401; c=relaxed/simple;
+	bh=RnALg3zNiXJMXGB95axE2CNi1u5Yu0VmjW8MGBkdvZE=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=EDn6dZDLm8AlGlw18Cgm26U+C1nUQ0jpfO+PIRwrzJIgcWmNdbWj9KSZqPVD3sHwm1cQiCRHDmI2LVgxZs+Ls0tAXdhn6Zotjf5/tBdR+/zspk2xESpPw1m+gOlRyucrXjy7K8FFY+enNfR55EQUqGYiryiW1xe66FXLTy8ZZbU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gylnJGc4; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e5ZVmyll"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gylnJGc4"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1755249341; x=1786785341;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=hfZcgn0nzW9uuIxs2763lW2p3DkRL5Fx4+ceg0IC1a0=;
-  b=e5ZVmyllPvFXKOZhBuQaXHUDkzmZbwkwGnmnSEbL8iIHzpyBOzKJZdqr
-   qfPwJNZgSjMcTbbFBzcDMfFn5V5yx11a0zvU454N/6fM44nMH93DcLiIO
-   xzXIIGst9DAg6XJ4ZPWzM55CQFNMZcmI6p9/5K4aVV1s4xmciniG8NrHl
-   j4kXpKixuyqfHYi/YQjPDqzXCd6MDtvOmqJNW5h3aZ/gQ6plxMhOm7LrW
-   /SVVzf9CZ+WNqHwxP/fwru0l3NhpLsupmHPn1lDn/muzklQQHZqe/7Wx5
-   v2bwR0i+JMGz+mekyA8fGur6a3ESaGpvbH5luPEWHRIG1l5ccfbxv1HJp
-   Q==;
-X-CSE-ConnectionGUID: ZkpoSVscQuaRr9vv8CFS+g==
-X-CSE-MsgGUID: PqOD5Ix+SYuOqiBE3GgIMw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11522"; a="57528787"
+  t=1755249399; x=1786785399;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=RnALg3zNiXJMXGB95axE2CNi1u5Yu0VmjW8MGBkdvZE=;
+  b=gylnJGc46UXG4ejIlyN4MSkIBoQ/e5QXVnuDddb2LryTJGiy1+UtRj/Y
+   8i11j7I+nFWXfCTDCQZnvUDhf1GnGnx71uzpOWoC6v3dsRqdrzSi9/MxL
+   LcKNLfiVBk2E3T/R5Fbws4vP+/lO8evWPFOGWN9phe+c40fwEw3iOo3aG
+   YqDiX7zAgvNv4+nPIzy+Vj65G0d4LrRDD3DNpURZF1h/Hr5vg0kG1uITm
+   ebypeOvmkyNMKBdnFIFjJK3TtPrFe5mfsimxYzMn6POpFTXMW2xjlpeh4
+   LVRb+0Vf5r67MxVZLtF5Y2FRnQl4YLBgGd6N/cuY1/c+btRFQMcRPSMo+
+   A==;
+X-CSE-ConnectionGUID: TiAW1SS/T4SQVfmrYGBlXg==
+X-CSE-MsgGUID: CJSuo95ITPqRVxzDw97Cvg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11522"; a="56780907"
 X-IronPort-AV: E=Sophos;i="6.17,290,1747724400"; 
-   d="scan'208";a="57528787"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2025 02:15:41 -0700
-X-CSE-ConnectionGUID: ZJZH2PX4RoeJ1J/lxbGQOA==
-X-CSE-MsgGUID: I0vJDqLSS+eG3dAfYgKucg==
+   d="scan'208";a="56780907"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2025 02:16:39 -0700
+X-CSE-ConnectionGUID: PTJorfpnQzO0PoBIuqFskA==
+X-CSE-MsgGUID: LRywybBFR4ehjrv9KSMe8w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.17,290,1747724400"; 
-   d="scan'208";a="172199692"
-Received: from lkp-server02.sh.intel.com (HELO 4ea60e6ab079) ([10.239.97.151])
-  by fmviesa004.fm.intel.com with ESMTP; 15 Aug 2025 02:15:37 -0700
-Received: from kbuild by 4ea60e6ab079 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1umqX9-000BnI-0P;
-	Fri, 15 Aug 2025 09:15:35 +0000
-Date: Fri, 15 Aug 2025 17:14:57 +0800
-From: kernel test robot <lkp@intel.com>
-To: Qinxin Xia <xiaqinxin@huawei.com>, will@kernel.org,
-	robin.murphy@arm.com, linux-kernel@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, xiaqinxin@huawei.com, yangyicong@huawei.com,
-	wangzhou1@hisilicon.com, prime.zeng@hisilicon.com,
-	xuwei5@huawei.com, fanghao11@huawei.com,
-	jonathan.cameron@huawei.com, linuxarm@huawei.com
-Subject: Re: [PATCH 2/2] iommu/io-pgtable: Add ARM SMMUv3 page table dump
- support
-Message-ID: <202508151641.JHlhcDRk-lkp@intel.com>
-References: <20250814093005.2040511-3-xiaqinxin@huawei.com>
+   d="scan'208";a="204158562"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.241.96]) ([10.124.241.96])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2025 02:16:35 -0700
+Message-ID: <3f7a0524-75e1-447f-bdf5-db3f088a0ca9@linux.intel.com>
+Date: Fri, 15 Aug 2025 17:16:32 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250814093005.2040511-3-xiaqinxin@huawei.com>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "Hansen, Dave" <dave.hansen@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Jann Horn <jannh@google.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>,
+ Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, "Lai, Yi1" <yi1.lai@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "security@kernel.org" <security@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
+ flush
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
+ <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
+ <20250806155223.GV184255@nvidia.com>
+ <d02cb97a-7cea-4ad3-82b3-89754c5278ad@intel.com>
+ <20250806160904.GX184255@nvidia.com>
+ <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
+ <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
+ <20250807195154.GO184255@nvidia.com>
+ <BN9PR11MB52762A47B347C99F0C0E4C288C2FA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52762A47B347C99F0C0E4C288C2FA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hi Qinxin,
+On 8/8/2025 10:57 AM, Tian, Kevin wrote:
+>> From: Jason Gunthorpe <jgg@nvidia.com>
+>> Sent: Friday, August 8, 2025 3:52 AM
+>>
+>> On Thu, Aug 07, 2025 at 10:40:39PM +0800, Baolu Lu wrote:
+>>> +static void kernel_pte_work_func(struct work_struct *work)
+>>> +{
+>>> +	struct page *page, *next;
+>>> +
+>>> +	iommu_sva_invalidate_kva_range(0, TLB_FLUSH_ALL);
+>>> +
+>>> +	guard(spinlock)(&kernel_pte_work.lock);
+>>> +	list_for_each_entry_safe(page, next, &kernel_pte_work.list, lru) {
+>>> +		list_del_init(&page->lru);
+>>
+>> Please don't add new usages of lru, we are trying to get rid of this. :(
+>>
+>> I think the memory should be struct ptdesc, use that..
+>>
+> 
+> btw with this change we should also defer free of the pmd page:
+> 
+> pud_free_pmd_page()
+> 	...
+> 	for (i = 0; i < PTRS_PER_PMD; i++) {
+> 		if (!pmd_none(pmd_sv[i])) {
+> 			pte = (pte_t *)pmd_page_vaddr(pmd_sv[i]);
+> 			pte_free_kernel(&init_mm, pte);
+> 		}
+> 	}
+> 
+> 	free_page((unsigned long)pmd_sv);
+> 
+> Otherwise the risk still exists if the pmd page is repurposed before the
+> pte work is scheduled.
 
-kernel test robot noticed the following build warnings:
+You're right that freeing high-level page table pages also requires an
+IOTLB flush before the pages are freed. But I question the practical
+risk of the race given the extremely small time window. If this is a
+real concern, a potential mitigation would be to clear the U/S bits in
+all page table entries for kernel address space? But I am not confident
+in making that change at this time as I am unsure of the side effects it
+might cause.
 
-[auto build test WARNING on akpm-mm/mm-everything]
-[also build test WARNING on linus/master v6.17-rc1 next-20250815]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> 
+> another observation - pte_free_kernel is not used in remove_pagetable ()
+> and __change_page_attr(). Is it straightforward to put it in those paths
+> or do we need duplicate some deferring logic there?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Qinxin-Xia/iommu-debug-Add-IOMMU-page-table-dump-debug-facility/20250814-173720
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm.git mm-everything
-patch link:    https://lore.kernel.org/r/20250814093005.2040511-3-xiaqinxin%40huawei.com
-patch subject: [PATCH 2/2] iommu/io-pgtable: Add ARM SMMUv3 page table dump support
-config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20250815/202508151641.JHlhcDRk-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 15.1.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250815/202508151641.JHlhcDRk-lkp@intel.com/reproduce)
+The remove_pagetable() function is called in the path where memory is
+hot-removed from the system, right? If so, there should be no issue, as
+the threat model here is a page table page being freed and repurposed
+while it's still cached in the IOTLB. In the hot-remove case, the memory
+is removed and will not be reused, so that's fine as far as I can see.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202508151641.JHlhcDRk-lkp@intel.com/
+The same to __change_page_attr(), which only changes the attributes of a
+page table entry while the underlying page remains in use.
 
-All warnings (new ones prefixed by >>):
-
-   In file included from include/asm-generic/bug.h:22,
-                    from arch/s390/include/asm/bug.h:69,
-                    from include/linux/bug.h:5,
-                    from include/linux/mmdebug.h:5,
-                    from arch/s390/include/asm/cmpxchg.h:11,
-                    from arch/s390/include/asm/atomic.h:16,
-                    from include/linux/atomic.h:7,
-                    from drivers/iommu/io-pgtable-arm.c:12:
-   drivers/iommu/io-pgtable-arm.c: In function 'dump_prot':
->> include/linux/kern_levels.h:5:25: warning: format '%zu' expects argument of type 'size_t', but argument 2 has type 'int' [-Wformat=]
-       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
-         |                         ^~~~~~
-   include/linux/printk.h:486:25: note: in definition of macro 'printk_index_wrap'
-     486 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   include/linux/printk.h:557:9: note: in expansion of macro 'printk'
-     557 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~
-   include/linux/kern_levels.h:11:25: note: in expansion of macro 'KERN_SOH'
-      11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
-         |                         ^~~~~~~~
-   include/linux/printk.h:557:16: note: in expansion of macro 'KERN_ERR'
-     557 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
-         |                ^~~~~~~~
-   drivers/iommu/io-pgtable-arm.c:882:25: note: in expansion of macro 'pr_err'
-     882 |                         pr_err("len = %zu, attr = %s, i =%d\n", length, attr, i);
-         |                         ^~~~~~
->> include/linux/kern_levels.h:5:25: warning: format '%d' expects argument of type 'int', but argument 4 has type 'size_t' {aka 'long unsigned int'} [-Wformat=]
-       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
-         |                         ^~~~~~
-   include/linux/printk.h:486:25: note: in definition of macro 'printk_index_wrap'
-     486 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   include/linux/printk.h:557:9: note: in expansion of macro 'printk'
-     557 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
-         |         ^~~~~~
-   include/linux/kern_levels.h:11:25: note: in expansion of macro 'KERN_SOH'
-      11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
-         |                         ^~~~~~~~
-   include/linux/printk.h:557:16: note: in expansion of macro 'KERN_ERR'
-     557 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
-         |                ^~~~~~~~
-   drivers/iommu/io-pgtable-arm.c:882:25: note: in expansion of macro 'pr_err'
-     882 |                         pr_err("len = %zu, attr = %s, i =%d\n", length, attr, i);
-         |                         ^~~~~~
-   drivers/iommu/io-pgtable-arm.c: In function 'arm_lpae_dump_iova_prot':
->> drivers/iommu/io-pgtable-arm.c:911:32: warning: format '%lx' expects argument of type 'long unsigned int', but argument 4 has type 'long long unsigned int' [-Wformat=]
-     911 |         seq_printf(s, "%lx - %lx    lvl %d  stage %s ",
-         |                              ~~^
-         |                                |
-         |                                long unsigned int
-         |                              %llx
-
-
-vim +911 drivers/iommu/io-pgtable-arm.c
-
-   891	
-   892	static size_t arm_lpae_dump_iova_prot(struct seq_file *s, struct io_pgtable_ops *ops,
-   893									   unsigned long iova)
-   894	{
-   895		struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-   896		struct iova_to_phys_data d;
-   897		int ret;
-   898	
-   899		struct io_pgtable_walk_data walk_data = {
-   900			.data = &d,
-   901			.visit = visit_iova_to_phys,
-   902			.addr = iova,
-   903			.end = iova + 1,
-   904		};
-   905	
-   906		/* Only the mapped iova will be output */
-   907		ret = __arm_lpae_iopte_walk(data, &walk_data, data->pgd, data->start_level);
-   908		if (ret)
-   909			return ARM_LPAE_GRANULE(data);
-   910	
- > 911		seq_printf(s, "%lx - %lx    lvl %d  stage %s ",
-   912				   iova, iova + ARM_LPAE_BLOCK_SIZE(d.lvl, data),
-   913				   d.lvl, io_pgtable_fmt_names[data->iop.fmt]);
-   914	
-   915		/* TODO: The dump prot is incomplete and will be supplemented later... */
-   916		dump_prot(s, d.pte);
-   917		seq_puts(s, "\n");
-   918	
-   919		return ARM_LPAE_BLOCK_SIZE(d.lvl, data);
-   920	}
-   921	#endif
-   922	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Thanks,
+baolu
