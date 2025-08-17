@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24F4E3176F1;
-	Sun, 17 Aug 2025 10:32:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D671022068D;
+	Sun, 17 Aug 2025 10:47:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755426746; cv=none; b=bDS9FdhdKasaN6yerSmXKgRgVN+9B5097qFduKwP2gZeYOXbJtoMrsh2YHyxWQMtAqCb988PkQLYcdo3MWTcNMYBajXG3UMPsHPuUhD0bq8+JAY45mlIMi9Zm/E18iepDN/rWFUNTCntuGfUI/2FZKsfcS5E4TB4lD6T7/n2lLA=
+	t=1755427644; cv=none; b=tiGMXCDV5EDnWFRrNOtkpyEZm7G3hxzSWtGFjcKhWDYtUyTaRRdiNfQ0Mv9Lp3L0yFqwixiEe2MB0xg5zw99QeYDXhCeEax+Y/no9LCo/rRfe5YJzVdalaS4zJMitk/EpfWDOvko3Hq0TP/i1a+AI6qzWaQ00wEXxZXfxxFLGhM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755426746; c=relaxed/simple;
-	bh=+Vo2OnMyV3S44FBuzXLli41+EUkEtk3PGeDWSIzIeaQ=;
+	s=arc-20240116; t=1755427644; c=relaxed/simple;
+	bh=I2ib/OXqX53rEewSl2SArXNdOrcnURD5+ssUMeP5k4A=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=enwx/zzptUNxiDWAjUPGLquCxVsTHNbIlFKSkG0dOaGqvqhG24aeM6naGuuoKnaUGeobsT9sd6ytuqqClwtj3moNqYL6vK1fqJRKEKBylep1kkBk6YPIvfT9WL/G7cB9yjb/fC6QNKIJYwe/pT3pumOSr83O3hv8MpzgSt67PXo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DfiolxKH; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=s7Vbul0W9iR9hhHZaOKKrPfDKzdSy6cWq5A5I4wtq+F+NAESDOtK0YeDqhrxFJPvpHRfeEtMtc6Pbwd7ga3oNPjtXl6ULXt4loIi8NbmXkrRl7XXSMhWFC1RyNDpzsigG5inSMKFryaGuINitQnbuBpeR4mIOzVLTN07yh/s6Yw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QjGM9q7n; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DfiolxKH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52A25C4CEEB;
-	Sun, 17 Aug 2025 10:32:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QjGM9q7n"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C62A2C4CEEB;
+	Sun, 17 Aug 2025 10:47:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755426745;
-	bh=+Vo2OnMyV3S44FBuzXLli41+EUkEtk3PGeDWSIzIeaQ=;
+	s=k20201202; t=1755427643;
+	bh=I2ib/OXqX53rEewSl2SArXNdOrcnURD5+ssUMeP5k4A=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=DfiolxKHZvFlGP/P4mTZrq12w4mu8/gEnqIQJjyd0QyFbviifGrfC6IM9lkJ+HWvT
-	 WVZULhE3RBrN5QDYhFGOmlLv3KHFWq7nX666fVQw659HB21BjT+bGA+tSzJBalBATx
-	 zxmBuRoXAozSIgyX7MlVMCsFXPrqs+l2ZXhNkNI4YhG3KS7N1DF8Ab2O4RKkKW7L86
-	 UfiCyG0BZ+DzKhwjBATUcspeB/r3hJa9Bg59LIdLsBNqxXBmXgz+O31D3Bd/ym8WtH
-	 hWxgUPmSzIBW7uHLKjuRisKy8HV9vKMUHiZ56Ho4I9+xIIAbGuj2eA9rOaLdsBiTWT
-	 8LVNlpN/0qGMg==
-Message-ID: <b9ef651e-3e37-4a3b-82da-04bd2b085ddd@kernel.org>
-Date: Sun, 17 Aug 2025 12:32:19 +0200
+	b=QjGM9q7nSJXUG+plAyBKPeCiYay+NFV+chGfJaCtilblGRo03kdUHr9qFNgkc8iJ6
+	 anqblR9hInENq7Uuu4qRNQA83z0iPv7ADUCW881ts/mqQ3AWZnPkmRhvD4u210QSfj
+	 MJJixD0mqvqXagcHSxfcKfpAUScJjRMNHEcqLG+Huji6tOSzinqkYWjVeqifGk5z7/
+	 CDMjgWqJrmdXJwz3hYNJC1UbPjva4T9KuVEsAu8obnILYYAAcnSQCfS8ft4Na0NCVr
+	 cUlp3650rCXaI0M/XM33xOxy4VTF6Fv2hjgfha5YP26SMZSQQN0LYy+hTKGNy02fk7
+	 cfpRCk+CRnwtA==
+Message-ID: <56be1cd1-73cc-4733-b364-31b74f588e9b@kernel.org>
+Date: Sun, 17 Aug 2025 12:47:16 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,32 +35,76 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 5/9] soc: apple: sart: Add SARTv0 support
+Subject: Re: [PATCH 7/9] nvme: apple: Add Apple A11 support
 To: Nick Chan <towinchenmi@gmail.com>
 Cc: asahi@lists.linux.dev, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Rob Herring <robh@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>, Janne Grunau <j@jannau.net>,
- Sagi Grimberg <sagi@grimberg.me>, Keith Busch <kbusch@kernel.org>,
+ Neal Gompa <neal@gompa.dev>, Janne Grunau <j@jannau.net>,
+ Christoph Hellwig <hch@lst.de>, Keith Busch <kbusch@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Hector Martin <marcan@marcan.st>,
- Jens Axboe <axboe@kernel.dk>, Conor Dooley <conor+dt@kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, iommu@lists.linux.dev,
- linux-nvme@lists.infradead.org, Neal Gompa <neal@gompa.dev>,
- Christoph Hellwig <hch@lst.de>
+ Joerg Roedel <joro@8bytes.org>, Sagi Grimberg <sagi@grimberg.me>,
+ Hector Martin <marcan@marcan.st>, Jens Axboe <axboe@kernel.dk>,
+ Conor Dooley <conor+dt@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+ iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+ Alyssa Rosenzweig <alyssa@rosenzweig.io>
 References: <20250811-t8015-nvme-v1-0-ef9c200e74a7@gmail.com>
- <20250811-t8015-nvme-v1-5-ef9c200e74a7@gmail.com>
+ <20250811-t8015-nvme-v1-7-ef9c200e74a7@gmail.com>
 Content-Language: en-US
 From: Sven Peter <sven@kernel.org>
-In-Reply-To: <20250811-t8015-nvme-v1-5-ef9c200e74a7@gmail.com>
+In-Reply-To: <20250811-t8015-nvme-v1-7-ef9c200e74a7@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 11.08.25 15:50, Nick Chan wrote:
-> Add support for SARTv0 as found on Apple A11 SoC.
+> Add support for ANS2 NVMe on Apple A11 SoC.
+> 
+> This version of ANS2 is less quirky than the one in M1, and does not have
+> NVMMU or Linear SQ. However, it still requires a non-standard 128-byte
+> SQE.
 > 
 > Signed-off-by: Nick Chan <towinchenmi@gmail.com>
 > ---
+>   drivers/nvme/host/apple.c | 228 +++++++++++++++++++++++++++++++---------------
 
-Reviewed-by: Sven Peter <sven@kernel.org>
+[...]
 
+>   }
+>   
+>   static void apple_nvme_rtkit_crashed(void *cookie, const void *crashlog, size_t crashlog_size)
+> @@ -284,21 +294,8 @@ static void apple_nvme_submit_cmd(struct apple_nvme_queue *q,
+>   				  struct nvme_command *cmd)
+>   {
+
+Please just create a separate submit function here.
+There's just not much code that's shared between the two variants.
+
+[...]
+
+>   }
+>   
+> @@ -587,10 +618,17 @@ static inline void apple_nvme_handle_cqe(struct apple_nvme_queue *q,
+>   {
+>   	struct apple_nvme *anv = queue_to_apple_nvme(q);
+>   	struct nvme_completion *cqe = &q->cqes[idx];
+> -	__u16 command_id = READ_ONCE(cqe->command_id);
+>   	struct request *req;
+>   
+> -	apple_nvmmu_inval(q, command_id);
+> +	if (!anv->hw->has_lsq_nvmmu)
+> +		cqe->command_id--;
+> +
+> +	__u16 command_id = READ_ONCE(cqe->command_id);
+> +
+> +	if (anv->hw->has_lsq_nvmmu)
+> +		apple_nvmmu_inval(q, command_id);
+> +	else
+> +		command_id++;
+
+This entire block here looks weird. First you decrease the command_id
+directly inside the shared memory structure, then you read it with
+READ_ONCE to a local variable only to increase it again. Why?
+
+
+
+Sven
