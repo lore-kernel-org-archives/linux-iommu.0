@@ -1,84 +1,47 @@
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B1FC322A1F
-	for <iommu@lists.linux.dev>; Mon, 18 Aug 2025 15:53:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A7ED27B320
+	for <iommu@lists.linux.dev>; Mon, 18 Aug 2025 16:04:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755532395; cv=none; b=KeA73P9L1PkjaahVPdLRWfzi+x5JE98V3jq8LACgnobhjWk/TYzufyy7mdjhsKNR3PJs9UcWagWc2719yETo8Hg4U1bjAOdmXUiSjTfuE0evNrYgxuyWJJ7zqwI2EtiSgZnez8lU+Z+ykhzeDhAhjs63uGspBLCQT5X86I0CRYY=
+	t=1755533094; cv=none; b=qgmUDux23m5plk9RWjO405SSvWCt8iEmlauvnOSHyusQZ5PpPzTPNKvtu0SRp8HhKR0gG4Gka9gKOvSXdy92wE71a7FP/34uiUs8qIQJmy3IXZ6XLBVq9sX+s4BH7PcvPGQuoalYWemxPCpuaiuAt2iIZ7VcZ4t/hrerv46WDsg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755532395; c=relaxed/simple;
-	bh=EI7ph71E7vzBhJM3BGJQWwVv5bNRggTZ4F6M7dXxS+k=;
+	s=arc-20240116; t=1755533094; c=relaxed/simple;
+	bh=+HE8A4JWz4VOW6rcIWSp8fVZhJmOl4vISHIqSSqtBOw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sXJoPL1jOt7ZDsmKurgm7bzW1uaPwbO6EgvmElfHxpZqTGapNXKSbS4sP/0Y9okHDVGmd9YWVqhrIFjFG+4Y4lHWxPMHUzpJNuNKp2t//njypKhI9H035WPFnng04LMCCEk1FtSZF9Eg+QN5mts19HNLybr1TNnR7oc3J2xbbIE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=do9qhutU; arc=none smtp.client-ip=209.85.219.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=kCH3OPaATH1J1ycWH0mzse6ffMWmNcqdDnf/Zlj5/L+WV/FR3Rfjg1G0NqcBcpDmIE4u/LRGuK33Sza8/8NgU6bhUYAuznM9Q99KYjUqodZxauz15qkj4xMdsv6auUja8TafMS/+dQKS1wv6ebmh0sM+ozypVXVdRCbsdMUIzb0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=ECCLMsux; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="do9qhutU"
-Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-70a927f38deso21923316d6.1
-        for <iommu@lists.linux.dev>; Mon, 18 Aug 2025 08:53:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1755532392; x=1756137192; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Vj+qz5uWtdxe1t/4yn/fG3Kx2sOHLsT2H8fxH0m0kcM=;
-        b=do9qhutU79r3ie4oTb0wCvS//5Eun/BuH+gx8ikO3sPCYIwusCADRi2JVk4uL4J8jw
-         xFPXPQ6ILPEZG1cmTcBTJcKnA4wOUd3SbxAxlF1rJXHXxZjaQK66AesgF5LKu7E/t7fK
-         OYwGcAiensI+se9PvlLlUdeMRPPPvDnrK4S5BRVGDTtb2feZI9MqlKZ9joWLQiWujQYl
-         HReW7eQ7J0tZRRvk7ewHVPHHIE+f1o84nsgc1aubGg8Vyx2LXvGXXv+SULKYYx5RwHx5
-         S18OOMSXxe2tbZ1qzXRq+GzAtiXt0ihc61fIMABNjC1hOJT/xhM5DHlIjlRRb14nd5FW
-         H1Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755532392; x=1756137192;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Vj+qz5uWtdxe1t/4yn/fG3Kx2sOHLsT2H8fxH0m0kcM=;
-        b=r3CWd8bknxb7OZqPNeVWOFoCxMGCJ+EDLOf7Kp7JYRizHqS09HLrRoBPe3ZHw7mcDE
-         VfcqK6rO5YlefxQZdNyBvFjqI5kntzrujz0z5aNHAAyyD0trhvpfaozM8nPRMgBkXcxM
-         CAsY5oab657D0OAgEsh+4DNyEtGPBsJPWwtbD1z/W9NadrlDRgX+RtqzdFCl+9yISCiU
-         4+ePaJVS+sWdU+YQg5OBl7QFHjezBS4q0eWXXUsfXXAle3wwJF4Qp1s+2xEs8myGdvjj
-         U7sRKC46D3euMNpNCx4HZKOL1N/Jv4fYl6OgvEWHUlas4svAiyteNtRtk4rw6CrWlLpM
-         KnCw==
-X-Gm-Message-State: AOJu0YxqkdB9z+tB/Kqo/CXg0x2pVPvBes1A9jdn5AB8C1kVMIiwAXfB
-	4az2J5xT++lKnSKWzV6agkaRW/6xhHfJrKprn+aPECMW/ThG2jSEmQAMCzWKDbakzAw=
-X-Gm-Gg: ASbGncsoHlHnrVoFR7v/0u/TR0JZ0ymowyRv4SkfUvGX7a0sV5CFYRvI5MOt13uAMEl
-	mOYQSl+5uToGQSjOh3caEy9bYz2jlsEaSJEuBxuEk73oSgmkaoR+9/wZvYH9Qozti2LKxekXec/
-	7vtyhO29Ud5PBasEhHYglFNOZ+e7os78aHYcFlKdQfr/URZ3ci2GESq1h679Vpgb6wS4Q9QpTJn
-	EahG7lNGe+8hFHsPcaHCXq3bcrDURwSiNj/f487YQ0TM3xqeQDDSNDl+MCqYk9InHi0ypBH3hsw
-	BCGA0havirNYddqz0UcpjlvMPktzGjTDW/DjkPwPqGCJWPacBkkFJ8RMSn6jhq2v7uqQri2p
-X-Google-Smtp-Source: AGHT+IHy5xjjBQNaLhq2Kl2pjcBSM8TtgEpdzaR3B4TcAc3XiKHcP9uaHgX//cMvSIYk535Uc7uNQQ==
-X-Received: by 2002:a05:6214:20ad:b0:709:e519:fbfb with SMTP id 6a1803df08f44-70ba7b5df3cmr141480306d6.22.1755532392375;
-        Mon, 18 Aug 2025 08:53:12 -0700 (PDT)
-Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-70ba90bcf7esm54232646d6.31.2025.08.18.08.53.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Aug 2025 08:53:11 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uo2AY-00000004OfV-46ks;
-	Mon, 18 Aug 2025 12:53:10 -0300
-Date: Mon, 18 Aug 2025 12:53:10 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Shyam Saini <shyamsaini@linux.microsoft.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
-	will@kernel.org, jacob.pan@linux.microsoft.com,
-	eric.auger@redhat.com, code@tyhicks.com,
-	eahariha@linux.microsoft.com, vijayb@linux.microsoft.com,
-	bboscaccy@linux.microsoft.com, robh@kernel.org,
-	saravanak@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
-	lizhi.hou@amd.com, clement.leger@bootlin.com
-Subject: Re: [PATCH v3 2/3] iommu/of: fix device tree configuration for PCI
- devices
-Message-ID: <20250818155310.GG599331@ziepe.ca>
-References: <20250806215539.1240561-1-shyamsaini@linux.microsoft.com>
- <20250806215539.1240561-3-shyamsaini@linux.microsoft.com>
- <20250808121515.GE377696@ziepe.ca>
- <20250814233018.GA31418@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
- <20250815003958.GE599331@ziepe.ca>
- <20250815023236.GA30997@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="ECCLMsux"
+Received: from 8bytes.org (p54921b16.dip0.t-ipconnect.de [84.146.27.22])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id C51AA4DB60;
+	Mon, 18 Aug 2025 18:04:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1755533084;
+	bh=+HE8A4JWz4VOW6rcIWSp8fVZhJmOl4vISHIqSSqtBOw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ECCLMsuxisOpKzJ5tVcq7oXLflbwj4uXblrhPCtJkejg2SyM6AvXBuTiy/LWIObGA
+	 B9W8O3uPaVaQkUmjGnwAs/Zd1tfQNf63Z27x4gGooOf1YJqXK9l45hjA+hPhp76eQd
+	 +FaNC4LRhYWVXemV397o4NRtKa3jrxcSNCLGeHEHekp7pVSV3/hwPkMPA/h9zfSHaG
+	 YX1luiMLzAnELjv4xZc0cft4SWOsFOxsXpud1lA07vLT0QaSSpy6YPqiXPGDFY5IAH
+	 E1dJs69JJGd4fbOIzfu2vR3dasCos4I4HrjSg/TYuO6NwfnucS34fsMJPyEZxFxSLL
+	 UM9Np4/SjqizQ==
+Date: Mon, 18 Aug 2025 18:04:43 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: XianLiang Huang <huangxianliang@lanxincomputing.com>, 
+	tjeznach@rivosinc.com, markus.elfring@web.de, will@kernel.org, paul.walmsley@sifive.com, 
+	palmer@dabbelt.com, aou@eecs.berkeley.edu, alex@ghiti.fr, iommu@lists.linux.dev, 
+	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] iommu/riscv: prevent NULL deref in iova_to_phys
+Message-ID: <44osnwyfiiqdqppu4q56bbzy6kl7xxe6mnxaujviydvm6tlutg@r5jujxv3pksp>
+References: <20250815071244.13982-1-huangxianliang@lanxincomputing.com>
+ <aJ8FbvCJEOj2XjT-@8bytes.org>
+ <e87aa091-5c02-4cd6-9636-0cb6c0015768@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,35 +50,12 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250815023236.GA30997@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+In-Reply-To: <e87aa091-5c02-4cd6-9636-0cb6c0015768@arm.com>
 
-On Thu, Aug 14, 2025 at 07:32:36PM -0700, Shyam Saini wrote:
-> On Thu, Aug 14, 2025 at 09:39:58PM -0300, Jason Gunthorpe wrote:
-> > On Thu, Aug 14, 2025 at 04:30:18PM -0700, Shyam Saini wrote:
-> > > or were you referring to [2]?
-> > > 
-> > > In that case, the PCI child node data needs to be parsed, which is
-> > > currently handled individually by each host controller driver.
-> > 
-> > Yes, this looks like it may be what I was thinking of, the pci@1,0
-> > specifes the BDF effectively
-> 
-> In that case, we'll need to parse the child DTS nodes properly
-> within of_iommu_get_resv_regions(). I'll include this in v4.
+On Fri, Aug 15, 2025 at 03:43:25PM +0100, Robin Murphy wrote:
+> It's a valid PA on many systems of many architectures, but it's also been
+> the "not mapped/error" value for the iova_to_phys operation all the way back
+> to the very very first intel_iommu_iova_to_pfn() nearly 17 years ago, so hey
+> :)
 
-Kinda surprised this isn't happening already? It would be good to
-refer to the original specs and describe how whatetever you propose is
-aligned there.
-
-> > Presumably this is a fixed issue of the platform. You never did
-> > explain how your system has such werdio behavior, or how something
-> > like iommu=pt can function on it...
-> Yes, this issue is platform-specific. On this platform, the default MSI IOVA
-> range overlaps with an address region that is reserved for another purpose,
-> Other than that we haven't observed any obvious issues for DMA operations
-
-Usually DRAM is at the default MSI IOVA address, so if you run
-iommu=pt then presumably your DRAM map has a nice hole in it.. But
-maybe the memory map told the OS about that.
-
-Jason
+Right, the sins of the past finally haunt me ;)
