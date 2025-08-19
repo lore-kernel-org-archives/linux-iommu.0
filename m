@@ -1,36 +1,36 @@
 Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1FA5274643
-	for <iommu@lists.linux.dev>; Tue, 19 Aug 2025 23:39:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B4B226F2A9
+	for <iommu@lists.linux.dev>; Tue, 19 Aug 2025 23:41:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755646759; cv=none; b=rYvDT2cnWZn1t36ngxW4uwEV5U+zGrEWqa1Ukx8fXGWid/BF1dpv6RBHqsbmrPAm6vTUl/fiskKWC6na3H3wPfWxLD6TWO+m9q9hIurjNTM9cInXLle2HrRG6Yaj+LrdryOjXtyBk7vY7aSMStzsqEoxoRjM27/8rprMgNIYYSg=
+	t=1755646893; cv=none; b=aT8lUB8jyernw/YLPiJws5LYjaH7KQuODm0LH/RWm81gW8JWbjhdZbr76Pm/p6SkAkvgGwZCKf3Ti7tNXN5lVM5hbyiz3ugSqM9e7dihvf1qTsHrIMWklItUzVvqbiLc3xXhiWvjfjkgI3wgUF9M33/BqiIGrpertxZqMA7Nv7w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755646759; c=relaxed/simple;
-	bh=gPKnGnK5W7HEK0sHmqtti9jpZR9ebsmqij0kJEgnkBg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ga5an7C50MTWeW7dlydsw31y1n2T7y8/c/ysmQhX22IHZ2BJ2iljcuQZv3b2nAtnjKl1zbOHyvhDDGPyim4JkY6WDXKKNDCpmyDNxWbTIlBwm3OrVBeLp1TnetlsJBS4J74tKajL2+Bay3kPtxKwd7QEQTBib5Fd84WME8W1k8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=n2guvqGo; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=5qHUoDTg; arc=none smtp.client-ip=5.75.144.95
+	s=arc-20240116; t=1755646893; c=relaxed/simple;
+	bh=JZrmsmOLakGNiArgxLyorPY9EkM8UNZYC42Sd1HoK+4=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=CHoKDZ726OSSm4mVis9tmoOmzwaInUpexeyYPqRXbU7OFOt1w3sSt5P/pkMA00t0SGjEEj0Ee4qUdD5nQE3NdKm1p4qu9nwD11bUSF1hxVXLUthdnsa9T57l7VG65LgBeOF0AlEN37hhScqLQMzDg9iRsAFteIBE4sg2vbXxMG4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=muisPuBr; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=71eJ+Kto; arc=none smtp.client-ip=5.75.144.95
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="n2guvqGo";
-	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="5qHUoDTg"
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="muisPuBr";
+	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="71eJ+Kto"
 DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
-	h=To:Message-Id:Subject:Date:From; t=1755646726; bh=K9ZKUwooLjx52q/ZtM98T33
-	7bMeJAJ4XytjUaP6r4lc=; b=n2guvqGokAxMzzoDEjTisvl8FxYHPMf8kNQdgKEKiPKDR5av88
-	AC6OETKK8xbk1BO74KkioZflxONx/ymILIamZCA2mR/BiQMUsAo7BVODgjKA18QngnjXpMvrFaD
-	QlB0A0pYDaVbpngfsZtkJxKE0ZfJIf5qBtmOA2DwnWGUvxkQ0e+XDzCWJdcJ6bA9vuTb3NJWGox
-	HwKI/GubKGawsbaikZtyQavSNMlpVLhkQJ6aKC0BFm/MS8W/sz1I1c/Ny6vCp5BycKFAQA8ZxSo
-	f3gbqandbj6ET7+XS1LRAKANxU5PKwvaZkR1yblPXsd+ajydr0vCRL62Mj7kPsG5y6g==;
+	h=To:Message-Id:Date:Subject:From; t=1755646709; bh=kpY+Nl5vsHKrBlzLVtfhztv
+	xRfiJB87Mxz4rJktiaKM=; b=muisPuBrVe+vTxyAJxMV9VlJHQIAVylsj9VYA0sMPCE1I9ABwn
+	quKdRWCXg42jkf2W2TND5sqAoHtSNB9/Au40aj1M++fpDY+YJkjc7nhXUhoIvu60P9y33es7d28
+	gnjGY3nNUnzHYK0QegBqvjlwQH3fFiAHNB025tiHK5eHPg7EpS7D5uB4+zlo6eo72oaux98uc73
+	lM3gWSBW9pEwnmbc7KUT85ThBodLcdU9vZxOENT4GuGvde8svER3o2Iyymq3+MF6w35fBG7fDRl
+	mWfMj3HxXRGsSBnUG3Uj9DCmN+gzEZv6t6uJ2/SEhN6ZRd2LliuLSJuE25IuI37421Q==;
 DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
-	h=To:Message-Id:Subject:Date:From; t=1755646726; bh=K9ZKUwooLjx52q/ZtM98T33
-	7bMeJAJ4XytjUaP6r4lc=; b=5qHUoDTg3FLIyRxXe5XrWUojy5TLPPeCMgxetOJZBwbhA3dASj
-	nH83CH8oHBKu+011L722v0po9FEJPyuD74DA==;
+	h=To:Message-Id:Date:Subject:From; t=1755646709; bh=kpY+Nl5vsHKrBlzLVtfhztv
+	xRfiJB87Mxz4rJktiaKM=; b=71eJ+Ktoi0+cuOKQEJAsAY9wJg/vc1Ft+dBXpiZdXKk161lxoG
+	pivA4UqvSEGcJd16HT4nhP4nbZaVGppZlqDQ==;
 From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Date: Wed, 20 Aug 2025 01:37:49 +0200
-Subject: [PATCH v6 5/6] dt-bindings: arm: qcom: Add Xiaomi Redmi 3S
+Subject: [PATCH v6 0/6] Initial support of MSM8937 and Xiaomi Redmi 3S
+Date: Wed, 20 Aug 2025 01:37:44 +0200
+Message-Id: <20250820-msm8937-v6-0-b090b2acb67e@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,9 +39,12 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20250820-msm8937-v6-5-b090b2acb67e@mainlining.org>
-References: <20250820-msm8937-v6-0-b090b2acb67e@mainlining.org>
-In-Reply-To: <20250820-msm8937-v6-0-b090b2acb67e@mainlining.org>
+X-B4-Tracking: v=1; b=H4sIAMgKpWgC/23PwWrEIBAG4FdZPNeio4naU9+j9JDVMTvQmEVL2
+ GXJu9cstAaa4z/M9zPzYAUzYWFvpwfLuFChOdXQv5yYvwxpRE6hZgYCOgFS8KlM1inDASxGEbx
+ C71jdvmaMdHs2fXzWfKHyPef7s3iR2/S3Q/51LJILbgIYDL2JRtj3aaD0RYnS+DrnkW1FC+wwq
+ Iah4rNzpg57hUEdYrXHumFVcRiC8dKC9/58iHXDSnYN64pllArQGjFod4i7hjXsfu62s6OzxmG
+ UOvzH67r+AHIgwaiXAQAA
+X-Change-ID: 20250210-msm8937-228ef0dc3ec9
 To: Bjorn Andersson <andersson@kernel.org>, 
  Michael Turquette <mturquette@baylibre.com>, 
  Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
@@ -72,50 +75,112 @@ Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
  phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
  linux@mainlining.org, 
  =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Daniil Titov <daniilt971@gmail.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+ Dang Huynh <danct12@riseup.net>, 
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1755646705; l=1178;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1755646705; l=3529;
  i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=gPKnGnK5W7HEK0sHmqtti9jpZR9ebsmqij0kJEgnkBg=;
- b=JidHmyw6f8QMdA3+bDYt5vOS/LEpTeFaJ0xaBNQ7ITPeJMPewbCqm4ht/6JAvTaVSdecYVpDi
- sM8iPDvdOVPDRODoPijfCVmqaN9W3kkscX5MltGaMHX6zrslcoTvaG0
+ bh=JZrmsmOLakGNiArgxLyorPY9EkM8UNZYC42Sd1HoK+4=;
+ b=PP8iWeu44PDXA5tIe8ikwR1WhFZxabycKfMF9ZAj0w4Zj4ROxeZNwa9PYnTYUghBJasw2fA64
+ zgLA/zioHNcCQyArr6qrVuLJYTPtp5MLMYcszSy8RUh0w59c0m1+m3j
 X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
  pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-Document Xiaomi Redmi 3S (land).
-Add qcom,msm8937 for msm-id, board-id allow-list.
+This patch series add initial support for MSM8937 SoC
+and Xiaomi Redmi 3S (land).
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+The series is extending the MSM8917 gcc and pinctrl drivers
+because they are sibling SoCs.
+MSM8937 have 4 more A53 cores and have one more dsi port then
+MSM8917.
+It implements little-big architecture and uses Adreno 505.
+
 Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
 ---
- Documentation/devicetree/bindings/arm/qcom.yaml | 6 ++++++
- 1 file changed, 6 insertions(+)
+Changes in v6:
+- msm8937:
+  - Fix nodes ordering.
+  - Format clocks, reg, dmas and -names properties.
+  - Add gpu_speedbin.
+- Describe A505 clocks.
+- Link to v5: https://lore.kernel.org/r/20250421-msm8937-v5-0-bf9879ef14d9@mainlining.org
 
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index 55e5eb75af8905c93e6604d54d516585f70a8e29..16e003ef0e1892cf8b1d2e5c581358e344b46349 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -191,6 +191,11 @@ properties:
-               - xiaomi,riva
-           - const: qcom,msm8917
- 
-+      - items:
-+          - enum:
-+              - xiaomi,land
-+          - const: qcom,msm8937
-+
-       - items:
-           - enum:
-               - motorola,potter
-@@ -1153,6 +1158,7 @@ allOf:
-               - qcom,apq8094
-               - qcom,apq8096
-               - qcom,msm8917
-+              - qcom,msm8937
-               - qcom,msm8939
-               - qcom,msm8953
-               - qcom,msm8956
+Changes in v5:
+- msm8937:
+  - Remove wrongly defined idle-states.
+  - Fix thermal zones.
+  - Use the header with DSI phy clock IDs.
+  - Fix the nodes order.
+  - Fix the pinctrls style.
+  - Follow gcc header changes.
+- msm8937-xiaomi-land:
+  - Remove headphone switch and speaker amplifier bindings.
+  - Unify status property style.
+- gcc bindings:
+  - Expand MSM8953 gcc schema with MSM8937.
+  - Add MSM8937 prefix for MSM8937 specific clocks.
+- gcc:
+  - Follow the bindings changes.
+- Drop alwayson clock documentation it will be handled in another
+  patchset.
+- Link to v4: https://lore.kernel.org/r/20250315-msm8937-v4-0-1f132e870a49@mainlining.org
 
+Changes in v4:
+- Add missing rpmcc include for qcom,gcc-msm8937 dtbinding exmaple.
+- msm8937: add missing space after s9-p1@230
+- msm8937-xiaomi-land: replace LED_FUNCTION_INDICATOR to LED_FUNCTION_STATUS
+- Remove applied patches
+- Link to v3: https://lore.kernel.org/r/20250224-msm8937-v3-0-dad7c182cccb@mainlining.org
+
+Changes in v3:
+- Fix qcom,gcc-msm8937 dtbinding example 
+- Link to v2: https://lore.kernel.org/r/20250223-msm8937-v2-0-b99722363ed3@mainlining.org
+
+Changes in v2:
+- drop applied patches
+- drop gcc schema commits infavor of a new schema for gcc-msm8937
+- document always on clock for adreno 505/506/510
+- msm8937:
+  - set cache size
+  - rename cpu labels
+  - fix style issues addressed by review
+- msm8937-xiaom-land:
+  - remove unused serial0 alias
+  - remove regulator-always-on from pm8937_l6
+  - add blue indicator led for aw2013
+- Link to v1: https://lore.kernel.org/r/20250211-msm8937-v1-0-7d27ed67f708@mainlining.org
+
+---
+Barnabás Czémán (4):
+      dt-bindings: clock: qcom: Add MSM8937 Global Clock Controller
+      dt-bindings: display/msm/gpu: describe A505 clocks
+      dt-bindings: arm: qcom: Add Xiaomi Redmi 3S
+      arm64: dts: qcom: Add Xiaomi Redmi 3S
+
+Dang Huynh (1):
+      arm64: dts: qcom: Add initial support for MSM8937
+
+Daniil Titov (1):
+      clk: qcom: gcc: Add support for Global Clock controller found on MSM8937
+
+ Documentation/devicetree/bindings/arm/qcom.yaml    |    6 +
+ .../bindings/clock/qcom,gcc-msm8953.yaml           |   11 +-
+ .../devicetree/bindings/display/msm/gpu.yaml       |    4 +-
+ arch/arm64/boot/dts/qcom/Makefile                  |    1 +
+ arch/arm64/boot/dts/qcom/msm8937-xiaomi-land.dts   |  381 ++++
+ arch/arm64/boot/dts/qcom/msm8937.dtsi              | 2134 ++++++++++++++++++++
+ drivers/clk/qcom/Kconfig                           |    6 +-
+ drivers/clk/qcom/gcc-msm8917.c                     |  617 +++++-
+ include/dt-bindings/clock/qcom,gcc-msm8917.h       |   19 +
+ 9 files changed, 3168 insertions(+), 11 deletions(-)
+---
+base-commit: 3ac864c2d9bb8608ee236e89bf561811613abfce
+change-id: 20250210-msm8937-228ef0dc3ec9
+
+Best regards,
 -- 
-2.50.1
+Barnabás Czémán <barnabas.czeman@mainlining.org>
 
