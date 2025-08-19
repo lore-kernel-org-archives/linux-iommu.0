@@ -1,207 +1,164 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2046.outbound.protection.outlook.com [40.107.93.46])
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43CA7353352;
-	Tue, 19 Aug 2025 21:59:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755640767; cv=fail; b=ugn55l5NZVXaGauMfPFssqC1+Ps3y2g4JEoLbz78J38H/V485X3uSAI8oRWhevi4M5hsT485eUZFuPTwb6KuijCxegIXiTNj4kpt8grgmTSsgEqB9xJO7x00Z2YtkObxtN7sfZ8b/Ebd1oLpcx1YBzl7uLtIwbMuBED557MIQyM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755640767; c=relaxed/simple;
-	bh=bIOcHE3QWJMhkSQ+9UKJFxlfsoUHSccGXAzRbD1m0uU=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uSHp4lV6z+EUfSpuKMfb2BrDT5eD0fA9ADG7dXl+9z22v5DejafqlJo2Js6MX9tdpXOdyFJ+2Vgc1+ENS8N+G4+NR233PG8Mr1iaAKJDKm9sPL2SK50kj0mI4P0FThwwFQZjTHo2wpPlt61qmrNed0o/Lc7yaj4Kb8K8UUYuNuE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=cvDmB0qp; arc=fail smtp.client-ip=40.107.93.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 511FF21883E
+	for <iommu@lists.linux.dev>; Tue, 19 Aug 2025 23:38:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1755646735; cv=none; b=KjxkoHE4mXayjGl1ZJE1mu8KfPn+7BpGc7HUj6Iw+i7dmFJZMHRS+Vk7KUPFDNNhHTYKTJzKPgTWX5gCcHFRL2UsAV9gNCTzg3r+gqOryWeEhCWIjnOWE47z3IrFpQcdKfjQpysda8ieQ7ot9RqsC7puylINVu/ZMl8rbZFKLDk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1755646735; c=relaxed/simple;
+	bh=StxQE34+WDhRu9yCIylDmjvAl7qsNKGyy5crqlz4rmU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=BHrn/epQEuLiPutYFLSjV0fWzvVJJygZF69WI5InzKDT135JNx7j423e3PPWfopzEv2VN6uVYakroGDRzHFdxcFXy/GKvTfjh18PoJWBv/7s+2MRPtE5N+A3idUcUGeRZ7wc2ATmpcISqB0xhz5z+p0bkg8fjgmVALu8QBx/xDg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=JmK6qXfP; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=E4vHi95P; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cvDmB0qp"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=clkdb4Z24NJqigfZsni6PzahFMRPOrjz1mOf3wMpV16tLGx2P+Z942M1Dva5PWuEMQYqmmFDYtIAEIUpPnMH8dryy4YDW3E2YFfksdiJt++ojLhSMKdHG9ok2FrWvchnaJUP38AsCKIUUWs08duCd8F1WuRg4iKEl8Osu1uXdNEe5Cd/ZTY17a2XuV6Mh2ja/fX0z//EDaOB4CJsKAMX8tsoFyCRMzuyzXxcx7vHwd4ruTBraR7i4a157XipbL4s4AXBdig4BMxzyfWfIAaqMX5t6Xgt21GiTWroKfzbUUh+d86HQlRsAL02vo3sDP5eT1MlEbljYXtaOn834Dl0IQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=x2W8hCnRtt/9ocQ2raLugbtbMebuixGxLTbipGzEyL8=;
- b=lx+NTngUh2g2ijbO4GdMTfNU0fV+sYd5CcEGlWXZPxDZYeoIfmAqwHjmXaKn3QY43kz3vhgRO3KbnTgK6LoVGx/U661c60LLsb8Uz94Ueo2MaNK6EFr3SP1ZH1Dji6rCRxdEk6JaqbNjarGRhcssppRjpG5BeJ8+bR7I7pLBJ+R1t03FBv/fkSRTVB247U6hEK3EWiviHI81P5kQMA8NFdZiS+EK3LbSrl5POVF77piyacxuSRT9MyQJ08KPOdChy7SZmQXXLxMEFC7KVfYQbsh60rpIIEhQQXMaymle/0PtckNB1PB2M9yfCl2BgYIlNqcWjvziz2uGmXZROBKGWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x2W8hCnRtt/9ocQ2raLugbtbMebuixGxLTbipGzEyL8=;
- b=cvDmB0qpxLO9vjI00R8o0m2MhXJ//aqZLcqaHG6FemiDSOZYbqGRZmkKqy+3hPL8gp93jFq4hGF11XGPQNqynvwMk4wdfueKyWq6YSE0D93imhpNIzt7isE4aG2x6Yqgh00VSXxuPrzAQ9tatLMzR76Mskea6Ul/7YecBlKHIHRIfF48+JZ1z+gowcYkNry4G/91WXAGPR8NL4ln0Y8qog7rJKEI9k070p9L93Fe6f4bhxUl3bZBOkBK/6inkFa2zueGrYTHwKp+t7VbKk+4R4EGO73VCJX68ho1HQlpT74rGsJl1R4lNEUP5tVoxGU2LE/lVo2GYEM7a1vBC/Y/UQ==
-Received: from MW2PR16CA0001.namprd16.prod.outlook.com (2603:10b6:907::14) by
- DM6PR12MB4218.namprd12.prod.outlook.com (2603:10b6:5:21b::16) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9031.24; Tue, 19 Aug 2025 21:59:23 +0000
-Received: from SN1PEPF0002BA4B.namprd03.prod.outlook.com
- (2603:10b6:907:0:cafe::66) by MW2PR16CA0001.outlook.office365.com
- (2603:10b6:907::14) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9031.25 via Frontend Transport; Tue,
- 19 Aug 2025 21:59:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SN1PEPF0002BA4B.mail.protection.outlook.com (10.167.242.68) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9052.8 via Frontend Transport; Tue, 19 Aug 2025 21:59:22 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Tue, 19 Aug
- 2025 14:59:11 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Tue, 19 Aug
- 2025 14:59:11 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Tue, 19 Aug 2025 14:59:09 -0700
-Date: Tue, 19 Aug 2025 14:59:07 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Ethan Zhao <etzhao1900@gmail.com>
-CC: <robin.murphy@arm.com>, <joro@8bytes.org>, <bhelgaas@google.com>,
-	<jgg@nvidia.com>, <will@kernel.org>, <robin.clark@oss.qualcomm.com>,
-	<yong.wu@mediatek.com>, <matthias.bgg@gmail.com>,
-	<angelogioacchino.delregno@collabora.com>, <thierry.reding@gmail.com>,
-	<vdumpa@nvidia.com>, <jonathanh@nvidia.com>, <rafael@kernel.org>,
-	<lenb@kernel.org>, <kevin.tian@intel.com>, <yi.l.liu@intel.com>,
-	<baolu.lu@linux.intel.com>, <linux-arm-kernel@lists.infradead.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-msm@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-	<linux-tegra@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-	<linux-pci@vger.kernel.org>, <patches@lists.linux.dev>,
-	<pjaroszynski@nvidia.com>, <vsethi@nvidia.com>, <helgaas@kernel.org>
-Subject: Re: [PATCH v3 5/5] pci: Suspend iommu function prior to resetting a
- device
-Message-ID: <aKTzq6SLGB22Xq5b@Asurada-Nvidia>
-References: <cover.1754952762.git.nicolinc@nvidia.com>
- <3749cd6a1430ac36d1af1fadaa4d90ceffef9c62.1754952762.git.nicolinc@nvidia.com>
- <550635db-00ce-410e-add0-77c1a75adb11@gmail.com>
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="JmK6qXfP";
+	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="E4vHi95P"
+DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
+	h=To:Message-Id:Subject:Date:From; t=1755646712; bh=S5nrgqmNYIb0jBgyF8qD2zs
+	l5hMwO2IFY8OIA7EblT8=; b=JmK6qXfPtbTEZVAoEGmMWj0lGUT+X4v+aplUid4JoLGmeBYmxO
+	37graDvOAQwgqxhK2qNuoEw7DdO0k9izasd1hTxLlFtV9L8ec/IJtMgiUOjn8RRCawUia29qPOh
+	oM1V9kePauJuqTJBM9T9pscuJxv0/+9Fyjsf+qNrPE7EoT+f2slY2XurOWHlPex506FB3jAQ9qn
+	92BVS/imCmd7dCau1r4vTKehTXk7+McymYgd+E4XFVqAqqprwC+8URbHqqdkhGoqqWM7BTLsL47
+	1JQr/R/CD5JBa1S3FHKxiSjOpbskz9Ef1DR6XltDwOvOdQYs4y3MrAwRgRARtIqz2Ww==;
+DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
+	h=To:Message-Id:Subject:Date:From; t=1755646712; bh=S5nrgqmNYIb0jBgyF8qD2zs
+	l5hMwO2IFY8OIA7EblT8=; b=E4vHi95PjtRoVh8agGX5qkOTuDNHJFaRsGuemUbyY0KfVE64Q/
+	y0Y66ZRfH1Y0xa5tCCv6c9o5bFj7++0cfoAg==;
+From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+Date: Wed, 20 Aug 2025 01:37:45 +0200
+Subject: [PATCH v6 1/6] dt-bindings: clock: qcom: Add MSM8937 Global Clock
+ Controller
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <550635db-00ce-410e-add0-77c1a75adb11@gmail.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF0002BA4B:EE_|DM6PR12MB4218:EE_
-X-MS-Office365-Filtering-Correlation-Id: fdab2b70-1d58-4049-38de-08dddf6ba7ca
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|36860700013|7416014|376014|1800799024|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?ZKFknxbSl5ZtDjRWvGixQHlYFQJzTxFvEfAMUL7RYPau7eSkc/IihcZWbeXT?=
- =?us-ascii?Q?wW4qiELvgFJ0gqnJaJ+Uc35WQvZhz8jQsec+PA/9EgTMTT6ceEtL4GtN8R2F?=
- =?us-ascii?Q?d2YHJ35kTSmsk6CMoMX956tWKyA6F3+fCpjWYAbygR4eePv2ruPEicqnBfYx?=
- =?us-ascii?Q?OEg55vkl6kEpXtB1ARHLrva+GlNbkIXaPiq6wVP7YLAzcZigL9471dZy0XZb?=
- =?us-ascii?Q?TksSDgvjCyEvjaHRhlx1mVlHk3ZwR+gW3J5CHGU5D0IN1gITVKzobrx7nseP?=
- =?us-ascii?Q?8Woo9nhDu4itTaJZn6WurAbRQeR4H+CKKujOP10VQiQoTwvquZy02gl50nyN?=
- =?us-ascii?Q?I0ZxSKHKB6xC7omFAvGs0698Vk4JsvVHGxhlLTvC9aWNiiSrn4dmjzoNv1vb?=
- =?us-ascii?Q?8nle5Fd0ixVhSc2RfSeUjE56OXAUJa4YqEGann3TFU0ePiLTJvni1NoEEDP+?=
- =?us-ascii?Q?k/OlCL/iHgp4UoaUQZaaRrE4uvRttTNONsHH5vLur7yMdFUIBT84R4xTgfuy?=
- =?us-ascii?Q?ZhXwXhEjOXJuQAKD+UblQwZzoJ33CBbMUi+j2aJ8kHehf9Llyfg3t2//XkgR?=
- =?us-ascii?Q?zYh2n6yeKDpFW5erfoV9m/EKLarhnM9cj+w+fLZ4TOtTmAwsI8zSYAklL1w1?=
- =?us-ascii?Q?eXt4ghlr6BkDlZMPFtAzJgBrrXjfWWpZpreLLLB9RfkI6oGfPLLA/9/UXntP?=
- =?us-ascii?Q?SG7SyDLXO4Qc6mevEI9KvYOKjJwS3TKWIW8fxADLCuy8XLIrHksR2PzPgzYF?=
- =?us-ascii?Q?COD4caK1OLiP/lyDIv4W33t3ptmAFblZGGGZ+i8dkyflFe1F5JfqysZ1iKrL?=
- =?us-ascii?Q?UAIAg+GtH3CbKtK3p97/W3vj0eNJDPxbwdINXnXd2G8oY+5SVvRc29+lQzDO?=
- =?us-ascii?Q?X3i6/vmq9lolWMqNBgqIIv2xtrph8eYCMT90qajkigdVo8DSjjW8MgQtxLf8?=
- =?us-ascii?Q?KL/QiAxAySSrc2Jhwd1wBS19gU3cTQhQq2Ze7jCsnjIUfP0/kwaWJqS3nlH9?=
- =?us-ascii?Q?Dq7z7kbz5XH6vYr3C8ySWp100drL9G2Kel6XT4Q2tFJgqumBKoBEVS7zDZL8?=
- =?us-ascii?Q?SyZCYpO+zUO73pIWLnUQenE4N5W2zCccvnkYuYac8n3+csFYN6kZ+nqaBCVP?=
- =?us-ascii?Q?hAPEE1PHtqj1WxmzaZeKz68hp8plSLiwV4tdtRS4tqL5eFMdrz9bMcnvnBzL?=
- =?us-ascii?Q?e8KSbs3eIgJBM6ey0GiHcByfVVND7a8JUifOdQL2rsNCoCx3HkaNJYuqirE5?=
- =?us-ascii?Q?QiV7zZf7WzwREiH+IsIyEraLH1m8H2j1RSt3g9K/XR0kW9rMs+EeQ3rWkD1i?=
- =?us-ascii?Q?1SD931hQSi9Ux0jfVAvMJn5g6N0fyqCO+xwhVsaUiS0RTO3fOYkZ2Z2TLLLx?=
- =?us-ascii?Q?zaiF0wThR8EpHE36hxNKj7PE9sRUhLgH6GmJFqdiaHsQJL6LJkhQmclWUO5g?=
- =?us-ascii?Q?//DjsadTvUl06xgbCIHtWwEYn+4jWLg5WPNFHQwfSXriyKviluFtvYulUwNo?=
- =?us-ascii?Q?zOWdsG29Jzm1SteSdZ34kc7794ITvXg1CXc0?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(36860700013)(7416014)(376014)(1800799024)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2025 21:59:22.4902
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fdab2b70-1d58-4049-38de-08dddf6ba7ca
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF0002BA4B.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4218
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20250820-msm8937-v6-1-b090b2acb67e@mainlining.org>
+References: <20250820-msm8937-v6-0-b090b2acb67e@mainlining.org>
+In-Reply-To: <20250820-msm8937-v6-0-b090b2acb67e@mainlining.org>
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>, 
+ =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
+ Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, 
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, 
+ Sean Paul <sean@poorly.run>, Abhinav Kumar <quic_abhinavk@quicinc.com>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Dmitry Baryshkov <lumag@kernel.org>, 
+ Adam Skladowski <a_skl39@protonmail.com>, 
+ Sireesh Kodali <sireeshkodali@protonmail.com>, 
+ Rob Clark <robin.clark@oss.qualcomm.com>, 
+ Abhinav Kumar <abhinav.kumar@linux.dev>, 
+ Jessica Zhang <jessica.zhang@oss.qualcomm.com>, 
+ Srinivas Kandagatla <srini@kernel.org>, 
+ Rob Clark <robin.clark@oss.qualcomm.com>, 
+ Dmitry Baryshkov <lumag@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, iommu@lists.linux.dev, 
+ dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
+ phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
+ linux@mainlining.org, 
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1755646705; l=3026;
+ i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
+ bh=StxQE34+WDhRu9yCIylDmjvAl7qsNKGyy5crqlz4rmU=;
+ b=lDfTev6vN+nCRueWqhyVB73CUzXM2QN72flbghzuoMssVHmJBGAFEO1WKNDCZcvvImRMmEbI9
+ 3FLCEc9PIOfDsGKye8lqDjlvyMVJDtfJjL2nfV9whVF47U03hUvTyk4
+X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
+ pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-On Tue, Aug 19, 2025 at 10:12:41PM +0800, Ethan Zhao wrote:
-> On 8/12/2025 6:59 AM, Nicolin Chen wrote:
-> > @@ -4529,13 +4530,26 @@ EXPORT_SYMBOL(pci_wait_for_pending_transaction);
-> >    */
-> >   int pcie_flr(struct pci_dev *dev)
-> >   {
-> > +	int ret = 0;
-> > +
-> >   	if (!pci_wait_for_pending_transaction(dev))
-> >   		pci_err(dev, "timed out waiting for pending transaction; performing function level reset anyway\n");
-> > +	/*
-> > +	 * Per PCIe r6.3, sec 10.3.1 IMPLEMENTATION NOTE, software disables ATS
-> > +	 * before initiating a reset. Notify the iommu driver that enabled ATS.
-> > +	 * Have to call it after waiting for pending DMA transaction.
-> > +	 */
-> > +	ret = iommu_dev_reset_prepare(&dev->dev);
+Add device tree bindings for the global clock controller on Qualcomm
+MSM8937 platform.
 
-> If we dont' consider the association between IOMMU and devices in FLR(),
-> it can be understood that more complex processing logic resides outside
-> this function. However, if the FLR() function already synchironizes and
-> handles the association with IOMMU like this (disabling ATS by attaching
-> device to blocking domain), then how would the following scenarios
-> behave ?
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
+---
+ .../devicetree/bindings/clock/qcom,gcc-msm8953.yaml   | 11 ++++++++---
+ include/dt-bindings/clock/qcom,gcc-msm8917.h          | 19 +++++++++++++++++++
+ 2 files changed, 27 insertions(+), 3 deletions(-)
 
-That's a good point. The iommu-level reset is per struct device.
-So, basically it'll match with the FLR per pci_dev. Yet, the RID
-isolation between siblings might be a concern:
+diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-msm8953.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-msm8953.yaml
+index fe1f5f3ed992453a347062a556b1ddb2a011db6f..f2e37f439d28b3ec066f407927955b3b82b5c10a 100644
+--- a/Documentation/devicetree/bindings/clock/qcom,gcc-msm8953.yaml
++++ b/Documentation/devicetree/bindings/clock/qcom,gcc-msm8953.yaml
+@@ -9,16 +9,21 @@ title: Qualcomm Global Clock & Reset Controller on MSM8953
+ maintainers:
+   - Adam Skladowski <a_skl39@protonmail.com>
+   - Sireesh Kodali <sireeshkodali@protonmail.com>
++  - Barnabas Czeman <barnabas.czeman@mainlining.org>
+ 
+ description: |
+   Qualcomm global clock control module provides the clocks, resets and power
+-  domains on MSM8953.
++  domains on MSM8937 or MSM8953.
+ 
+-  See also: include/dt-bindings/clock/qcom,gcc-msm8953.h
++  See also::
++    include/dt-bindings/clock/qcom,gcc-msm8917.h
++    include/dt-bindings/clock/qcom,gcc-msm8953.h
+ 
+ properties:
+   compatible:
+-    const: qcom,gcc-msm8953
++    enum:
++      - qcom,gcc-msm8937
++      - qcom,gcc-msm8953
+ 
+   clocks:
+     items:
+diff --git a/include/dt-bindings/clock/qcom,gcc-msm8917.h b/include/dt-bindings/clock/qcom,gcc-msm8917.h
+index 4b421e7414b50bef2e2400f868ae5b7212a427bb..4e3897b3669d9149b61a6feec31ca35e2058dcb9 100644
+--- a/include/dt-bindings/clock/qcom,gcc-msm8917.h
++++ b/include/dt-bindings/clock/qcom,gcc-msm8917.h
+@@ -170,6 +170,23 @@
+ #define VFE1_CLK_SRC				163
+ #define VSYNC_CLK_SRC				164
+ #define GPLL0_SLEEP_CLK_SRC			165
++/* Addtional MSM8937-specific clocks */
++#define MSM8937_BLSP1_QUP1_I2C_APPS_CLK_SRC		166
++#define MSM8937_BLSP1_QUP1_SPI_APPS_CLK_SRC		167
++#define MSM8937_BLSP2_QUP4_I2C_APPS_CLK_SRC		168
++#define MSM8937_BLSP2_QUP4_SPI_APPS_CLK_SRC		169
++#define MSM8937_BYTE1_CLK_SRC				170
++#define MSM8937_ESC1_CLK_SRC				171
++#define MSM8937_PCLK1_CLK_SRC				172
++#define MSM8937_GCC_BLSP1_QUP1_I2C_APPS_CLK		173
++#define MSM8937_GCC_BLSP1_QUP1_SPI_APPS_CLK		174
++#define MSM8937_GCC_BLSP2_QUP4_I2C_APPS_CLK		175
++#define MSM8937_GCC_BLSP2_QUP4_SPI_APPS_CLK		176
++#define MSM8937_GCC_MDSS_BYTE1_CLK			177
++#define MSM8937_GCC_MDSS_ESC1_CLK			178
++#define MSM8937_GCC_MDSS_PCLK1_CLK			179
++#define MSM8937_GCC_OXILI_AON_CLK			180
++#define MSM8937_GCC_OXILI_TIMER_CLK			181
+ 
+ /* GCC block resets */
+ #define GCC_CAMSS_MICRO_BCR			0
+@@ -187,5 +204,7 @@
+ #define VENUS_GDSC				5
+ #define VFE0_GDSC				6
+ #define VFE1_GDSC				7
++/* Additional MSM8937-specific GDSCs */
++#define MSM8937_OXILI_CX_GDSC				8
+ 
+ #endif
 
-> 1. Reset one of PCIe alias devices.
+-- 
+2.50.1
 
-IIRC, an alias device might have:
-
- a) one pci_dev; multiple RIDs
-
-    In this case, neither FLR nor IOMMU isolates between RIDs.
-    So, both FLR and IOMMU blocking will reset all RIDs. There
-    should be no issue resulted from the IOMMU blocking.
-
- b) multiple pci_devs; single RID
-
-    In this case, FLR only resets one device, while the IOMMU-
-    level reset will block the entire RID (i.e. all devices),
-    since they share the single translation tunnel. This could
-    break the siblings, if they aren't also being reset along.
-
-> 2. Reset PF when its VFs are actvie.
-
- c) multiple pci_devs with their own RIDs
-
-    In this case, either FLR or IOMMU only resets the PF. That
-    being said, VFs might be affected since PF is resetting?
-    If there is an issue, I don't see it coming from the IOMMU-
-    level reset..
-
-Thus, case b might be breaking. So, perhaps we should add a few
-conditions when calling iommu_dev_reset_prepare/done():
- + Make sure that the pci_dev has ATS capability
- + Make sure no sibling pci_dev(s) sharing the same RID
- + Any others?
-
-Thanks
-Nicolin
