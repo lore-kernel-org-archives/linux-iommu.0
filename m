@@ -1,167 +1,245 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2044.outbound.protection.outlook.com [40.107.244.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 895131C01;
-	Tue, 19 Aug 2025 16:22:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755620530; cv=none; b=EK8+PehkblNBFdVDFcSbAhuyfoPCZWf4rlIZKslBtnkwRzP6a4lSuAD42aZx3IcmvumzeQv9wp1ajIpEWLFrb+VMxjuzOBoRZz6dUnXz/GpDbyaTx/jHY8mklMuX5mwbyS+GYKRdM7CD0IIFjWCZm/WI4wIb+ep2+TasOoc/1ME=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755620530; c=relaxed/simple;
-	bh=FiIphYldsHeBQ3UwTcbZaKPuigkn3+v3w+WuFBn5DUw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ArJ9KHFFlKBE+W6UqCfbCfj97i3Fz5uTe4mm9PSCWBrh6jMHzisTvESOb4RHlFWTGO7WXapsgldtPP7SqttixtyzL39I85WLYPGn2kZLrpx+CLFNF+A2pO7B6NQEJGXSSsUwA7hZB7m/GIx36Xsyd289iZeXMMye29w1BlovxoY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B4nArvdv; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A38EF3009ED;
+	Tue, 19 Aug 2025 17:22:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1755624160; cv=fail; b=isqeP2m7Cvua9G+crB7asI65QoGPh57jlQ997RayZHfjD1XSxdtrYEkIHXrxMAcGx8wuP7ONPPkD/Jv1jDPwYgbpiXNnhxSsrGfyHv01UyiVY5cgvjvxXjsqttDf505JkG+32I+KbC9Kq2U9JC2kNohOjOgiHjB9GHQOYHIDLvM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1755624160; c=relaxed/simple;
+	bh=gYWaPTS4YdSg0wP8oMIFzHhyVqz0GtylpFIaOeR3h88=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LyrKtL4bKhCCHhD/N/97+lrdQL801A62Jsp/WU0tuKqeFqfKj0WPgRae2GTKDoDlF+kQhc4qFqDQAFkNCuISouO/6mUFFpNLohr/hsMhgEOGQrY+tu8clTNjiTip9X5Q9Yonl9MGxR3fW1+Nm74k5e1pcEy1/Eo2M2onl+TyXFk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=K1xux7em; arc=fail smtp.client-ip=40.107.244.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B4nArvdv"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-244581d9866so45387215ad.2;
-        Tue, 19 Aug 2025 09:22:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1755620529; x=1756225329; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=2PIjZ+DdmvuLwnrpTYlLbFeMpxoFxo/PTXBFZfTSGBg=;
-        b=B4nArvdvWijTKG6FGRLUHAYmY93Eb5yWhDmVW4c1vnnIIcy5UkIE2yR8ecB6UprJzw
-         OY33fr2LRYE1PQ4XadVVcD0+S+E8Y1uQi9PS9DM7zoRbHZohVR4wjzZMmNNZj8Vg/Dw6
-         06887Q1yjHpBSncRZL8nBg/lVa7SP6EUpRWTr5ofyEyDb+W7eZgBcTQVdH/2+bW6Ythh
-         9Cj9b3UBxZoswB+AphQboGuleoKC05wEdt2QwB4yrqc1IzkObbs9kako1Pr/n7HJU25Z
-         ahAYg9GAoNfWe4OxAUBo/f2KMVBykmA6h9OueseYNjM1PIlYvfkThg7wyrd0DP6gIWww
-         RITA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755620529; x=1756225329;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2PIjZ+DdmvuLwnrpTYlLbFeMpxoFxo/PTXBFZfTSGBg=;
-        b=ZYJ006aGsRFsyrWRdgG/SY99e0UfkOYtdGRR/fI0LVl7xtV1RY/TtcJm7z+PhFkFl7
-         xY7xq/Hnqsh2NR/e+IzG4K3fqFp143T2BlgRQ80cJ2iiykeVrVoJNefO6HDvEpkHz0ej
-         VnMadfsKKd2sLiNkMvJ6RH9d/eszGWxBeSSJk+ZAZsSipXRN/F1eX46woo/5PUOVAgV4
-         +zIrMBs0KFmJA6w/48dCEOwxCNX9tQer+3JNuTeYigUZ85R6pKV9yBtOBqH7zj1rz5fK
-         jmkVppGQRAEiKENQLKExpbDfkqPH8PhEvyhPtx2J0e62YfKWkA/7pwwewzC1t1kwel0W
-         yI5A==
-X-Forwarded-Encrypted: i=1; AJvYcCUrKYJ7V8AnXC24XDfF2wdkPcp4nlVWTs48AQmFFQMR/ii5PZUMKycTgX3sj8ashiqzVnCJ+w==@lists.linux.dev, AJvYcCVJ4oxrUb8G2AxhT5xPsbPSJyVL6q2QjDAUQcQQrA9pYYtm8qeLtEXrtbySfoc00gmsJbqruRM=@lists.linux.dev
-X-Gm-Message-State: AOJu0YzcA/RTksE1v4WABQbis1BUWRKYSu+Uv8haVIFueE1lm0EMFv7w
-	13tTBOANC/YMmGEAhMlvO75yv0JkBIPxMvxtb4WAalPc+o/WoRux8C5W
-X-Gm-Gg: ASbGncsXJDDD03v5FCMf7P/c34cKhzFKic+JZ54vqSptTlk9XYABTxVMy/wNKhS0vmQ
-	SbiDbdrratUwAze5rcNwxuKNz0TsqTpaXSOxQuizSFawn04pr+UuNC/J6rvZSw7vy/ObWGNMdkF
-	E+jbivWkL/7BOGEkq5wsjFsSU7oN3WGu/qkQtEeQK49L6yF5WEOpxDGa88f8FuL1qh4uGW8vetu
-	JedGDTJOqSv3x1rcCGMfQvHDeBRDo2VKwWSs+scnlMOxQSujppRF2iLlF6PTy9J8opuHo7lv7/2
-	4e87ykaUbvepaBMysUqj/e5Ic+1FgPG1kGHVCbq52uG4Tmh3oj90Hx9vrgYFmepmVGDi7bB9riJ
-	SGEUZ7R+MJ+YGmMDsZ6pUmEm1hX8RIuVpwicivwUg+7UVIDTpwDDKgyEqhJwqUEE=
-X-Google-Smtp-Source: AGHT+IE1/3he44rcwmPwhGdP/2lEsUGbA2b74tOIcgVsabuA/J7rKhxfaf9z31Cj2VPPRLhP8RZaew==
-X-Received: by 2002:a17:903:3804:b0:244:55b5:7cfc with SMTP id d9443c01a7336-245e047bc13mr43207695ad.37.1755620528713;
-        Tue, 19 Aug 2025 09:22:08 -0700 (PDT)
-Received: from [192.168.0.124] (061092221177.ctinets.com. [61.92.221.177])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-245ed4cc807sm1323105ad.82.2025.08.19.09.22.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Aug 2025 09:22:08 -0700 (PDT)
-Message-ID: <66ec7bd7-6b14-4766-97a1-3928d9129880@gmail.com>
-Date: Wed, 20 Aug 2025 00:22:01 +0800
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="K1xux7em"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Eu6949MSJmIEEDkP9qwY64DEf13t6MFD/mhXDJ2j51Z7KfSqClgy2QokedllU5jNXYyMILxQzqMoL3emN2atj5qE+E/xsBRved52fxJisfVPPW4WH+jnrvhgxQBkWNPsPR6DH1JU7h0tbcC5R9pSdCCXeYOFgJdL46cPfeixRbeP4tt6VhoYS5XAuz6mImMLNgC5EQxIYzno0SfrxCagFXyH+XcTDtwHlz+66UYSgX6BJvHOCD/WcLKK0WdsKHj9fxVDzeegtxjaDvLwVHGxjWEnZs27AHqU+QzyjkvrZjTdzQ3J2Oso5XeOlO7uvnHpSR/sM4Z1fnF2zOOGcThs5A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Ys1gH2e5j8xiZRvGCwTNRL2yYA1Sfu6NnXvCiYNcMQ4=;
+ b=JyUASeB7okbhaJquVZB4+3ngCTrx4U8Fafm9xYhD7twGyt0vfxjQr/ZjthngJztLWDZBkGHVcjU3lVvCVRoJxkqnFGX1yiudhWJVpdTJFgT4M9HgrzcGjqVUj711zuNDcSb/grQ1/HIijgTWc9xGrZVUm1K9bQo9ts3U076OoLm+eVB8OKM59vbHDbr2ID64wkePQlBgiI12kTN1hgS2biBR+ICH3hGl5uSaI28vnMTciR8xPio8F3q59ULFAwN98tjfmygdAR1Yh9BsfqYdWswCVk41iqWzvX0V6iAgN+yI2b/tkfCu1aYW/CyIHT/j6YK8hFoaL6KaQa+0w1cNAA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ys1gH2e5j8xiZRvGCwTNRL2yYA1Sfu6NnXvCiYNcMQ4=;
+ b=K1xux7emZOHeeE+GMUaqhIWbe2GvN2szzxVYGeNJRINCQbW6nAZjM9f1UWlcxl7RsFLhn16FzJigmRNquwp5xB6+BsdAnOx10ZhsZhpM8o0AsAZmjKij9oEgbNLbHxQJyPDaatCorXO8V6ufw2Br/4w1Ix4CQ5YeIXto++L804cfaiaQMuU3iJyoKynq3/RL1VlNy8bfAGxpQMjJ7NPH8cjiQIfDOwbc+c+VeelMyYTgdP1zmTzyoudJmIMKD8ZFp8S//9qzsnYFGTX7LS273L1wdZHVJB+N3EgBnsa7A4kugZlCC2o7NJHQne037ITFXD1CDqaZok2YRGRFNmwZ4Q==
+Received: from BN0PR03CA0033.namprd03.prod.outlook.com (2603:10b6:408:e7::8)
+ by SA5PPF530AE3851.namprd12.prod.outlook.com (2603:10b6:80f:fc04::8c9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9031.24; Tue, 19 Aug
+ 2025 17:22:35 +0000
+Received: from BN1PEPF00004689.namprd05.prod.outlook.com
+ (2603:10b6:408:e7:cafe::75) by BN0PR03CA0033.outlook.office365.com
+ (2603:10b6:408:e7::8) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9031.20 via Frontend Transport; Tue,
+ 19 Aug 2025 17:22:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BN1PEPF00004689.mail.protection.outlook.com (10.167.243.134) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9052.8 via Frontend Transport; Tue, 19 Aug 2025 17:22:34 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Tue, 19 Aug
+ 2025 10:22:23 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.14; Tue, 19 Aug 2025 10:22:23 -0700
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Tue, 19 Aug 2025 10:22:21 -0700
+Date: Tue, 19 Aug 2025 10:22:20 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <robin.murphy@arm.com>, <joro@8bytes.org>, <bhelgaas@google.com>,
+	<will@kernel.org>, <robin.clark@oss.qualcomm.com>, <yong.wu@mediatek.com>,
+	<matthias.bgg@gmail.com>, <angelogioacchino.delregno@collabora.com>,
+	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
+	<rafael@kernel.org>, <lenb@kernel.org>, <kevin.tian@intel.com>,
+	<yi.l.liu@intel.com>, <baolu.lu@linux.intel.com>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+	<linux-mediatek@lists.infradead.org>, <linux-tegra@vger.kernel.org>,
+	<linux-acpi@vger.kernel.org>, <linux-pci@vger.kernel.org>,
+	<patches@lists.linux.dev>, <pjaroszynski@nvidia.com>, <vsethi@nvidia.com>,
+	<helgaas@kernel.org>, <etzhao1900@gmail.com>
+Subject: Re: [PATCH v3 3/5] iommu: Add iommu_get_domain_for_dev_locked()
+ helper
+Message-ID: <aKSyzI9Xz3J0nhfk@Asurada-Nvidia>
+References: <cover.1754952762.git.nicolinc@nvidia.com>
+ <a69557026b7e2353bae67104bbe6a88f0682305e.1754952762.git.nicolinc@nvidia.com>
+ <20250818143949.GO802098@nvidia.com>
+ <aKNhIr08fK+xIYcg@Asurada-Nvidia>
+ <20250818234241.GF802098@nvidia.com>
+ <aKQG9/skig6F8LdQ@Asurada-Nvidia>
+ <20250819125249.GG802098@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 7/9] nvme: apple: Add Apple A11 support
-To: Christoph Hellwig <hch@lst.de>
-Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>,
- Alyssa Rosenzweig <alyssa@rosenzweig.io>, Neal Gompa <neal@gompa.dev>,
- Jassi Brar <jassisinghbrar@gmail.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Keith Busch <kbusch@kernel.org>,
- Jens Axboe <axboe@kernel.dk>, Sagi Grimberg <sagi@grimberg.me>,
- asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
- iommu@lists.linux.dev, linux-nvme@lists.infradead.org
-References: <20250818-t8015-nvme-v2-0-65648cd189e0@gmail.com>
- <20250818-t8015-nvme-v2-7-65648cd189e0@gmail.com>
- <20250819083038.GA1901@lst.de>
-Content-Language: en-MW
-From: Nick Chan <towinchenmi@gmail.com>
-In-Reply-To: <20250819083038.GA1901@lst.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20250819125249.GG802098@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN1PEPF00004689:EE_|SA5PPF530AE3851:EE_
+X-MS-Office365-Filtering-Correlation-Id: 585e9789-a4a4-47ac-9913-08dddf44fcdd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|7416014|376014|36860700013|82310400026;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?JSV2/NcBFWPYEo3I8e3g0fijZi57fj+q4pWrCPKY+6Sc60z3T4oZyX1K+v4t?=
+ =?us-ascii?Q?T10oDq9RsMlVIx1iJlCMK+VGlTQIdaa0Pmn7IVHPspk2Oc3PQ1KpOXOEUbs9?=
+ =?us-ascii?Q?Jutlqp44pHbjnTMAcOaII38J80ax9pzt2E+saO+wmnheimml7comXRN4To67?=
+ =?us-ascii?Q?tBzhwgpfPgV5T9FBMJxMpXVHMzEpnrKpWsP5kJwYXd3gYb+8YBFeXfesK/zV?=
+ =?us-ascii?Q?ENMLgcwGFkXJa9jGhmbRcpc8Wnmefys71rqF3xWN4SjV7EQ+zCVh0oBhakHv?=
+ =?us-ascii?Q?0ogaL/tF52RcUnKhZbZmOGgws3qx9BNA0qkUAjNfw4PdamznVnWZkFOnqsd5?=
+ =?us-ascii?Q?YqCWASFHd4PdX9j1pCJwo2TuXohFWxO+Y91swJPoLNlxrPvD4LiKMubsvHqN?=
+ =?us-ascii?Q?X4JP3xTUbiJy2Uz+ZDn8yp2jJ2o11SCt0GLw20EJVy6bO2zVdTJzRlHduDoA?=
+ =?us-ascii?Q?pPimEX/KLk3gNmGDeB/Ry6Ftz03brssXuunW+AoKr1ArThh6z9Uc1foDTCYx?=
+ =?us-ascii?Q?f7ffwrPLATaE2oi6uXNTy55bfepAzG/L+JwLpRtpAWD5yxMMQUg1TWro981a?=
+ =?us-ascii?Q?m0jGwjYd0IW1jz2YuL5i3YgshoOn6uqp8GS2neGPwnX10+c5Dl/72Lf2yYyP?=
+ =?us-ascii?Q?eSse8pS35fUqLfl1uuXlQ7bNBtKerpip8+5YILhx8cQFWer8emXZnAPhWlgr?=
+ =?us-ascii?Q?G3JfyUoUGQWN0C6mOlBfBOVAlPKkFP9ykgA3YaNt+yt5JPNcajY13EUNIKop?=
+ =?us-ascii?Q?aXrqDhjrAzaMbhV4oAeo+OB9Ym1B60JgLsNNlx+K7loSNafVRzJnh8HVJH3L?=
+ =?us-ascii?Q?Ma4a42FyoeMrN0dMFKoE0FHeymT5D4JgrtBJo4UkZCYcwJylY+uKqDiFzN5P?=
+ =?us-ascii?Q?Th6ets1H/5YfGX6zqbWYPvs6NBvHLAhGHuW34yVlXyKRqkyuLl/pQjLSiedY?=
+ =?us-ascii?Q?lxno4WB6h4aIX7jCYU6WTaqW7CxxrxE8baFETZGrZ6MPkoHoRcW4FLpPUnKR?=
+ =?us-ascii?Q?zzxIJQ0Gh5rIeld+a1ZepZtB7IavC/tAqYVU7OKaI8qjfPBOnCzDM18DZX/q?=
+ =?us-ascii?Q?91elMigZZ3+EIIyfYTZ/o/s8E+xlzo8ONvyEuU+4TEfjWKH4BvC5FHmB0ycs?=
+ =?us-ascii?Q?i2KTZR/3jEBIf0RWZt20WO+ot9QXwAkaXJOgR6ANLDRJmDPRUnGMA2vH+lZ6?=
+ =?us-ascii?Q?LFU6DC1jOSzf2nfJcmZ8X7w+TZKrUg4ZZElbA5rz+9hEL6kEJmDriFFilqO6?=
+ =?us-ascii?Q?XMYDnFfxorwUlOKc0Mu8J9EUb5ozx3FI64mL1quzix85olBvxWrEKngJ7cfu?=
+ =?us-ascii?Q?YHlYAS0nvbeDa8W9DHyMWbJ1MGJmrDiKh0knr/FSvtc0v2h9oc8OjpkUDNXO?=
+ =?us-ascii?Q?boPRn99oOW0jRMgcMvBjUcivYRS5OtY2wR42ytBYoaAy2Y5bN4aIQFVQhWA8?=
+ =?us-ascii?Q?N4up/mJsZDJk/TdTIS0pE5FHNiWT4iCjZAz/CyNo+UzUg0U14KrURpdtgyjg?=
+ =?us-ascii?Q?pkH/wRSSnv9GU9uduuUPJOx0ceRZ2X56yVGB?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(36860700013)(82310400026);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2025 17:22:34.7852
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 585e9789-a4a4-47ac-9913-08dddf44fcdd
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN1PEPF00004689.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA5PPF530AE3851
 
-
-
-On 19/8/2025 16:30, Christoph Hellwig wrote:
-> On Mon, Aug 18, 2025 at 04:43:00PM +0800, Nick Chan wrote:
->>  };
->>  
->> +struct apple_nvme_hw {
->> +	bool has_lsq_nvmmu;
->> +	u32 max_queue_depth;
->> +	void (*submit_cmd)(struct apple_nvme_queue *q, struct nvme_command *cmd);
+On Tue, Aug 19, 2025 at 09:52:49AM -0300, Jason Gunthorpe wrote:
+> On Mon, Aug 18, 2025 at 10:09:11PM -0700, Nicolin Chen wrote:
+> > Yes, I've thought about that. The concern is that some other place
+> > someday may want to use iommu_get_domain_for_dev() in similar cases
+> > but would find that it doesn't work. So it would have to duplicate
+> > the domain pointer in its "master" structure.
+> > 
+> > Overall, having a _locked version feels cleaner to me.
 > 
-> Please stick to 80 character lines for the NVMe code.
+> We probably need the locked version, but it just shouldn't be called very
+> much..
+
+OK. Let's have one patch upgrading the attach_dev to pass in the
+old domain pointer (aligning with the SVA version of attach_dev),
+and another patch adding the _locked version that then will have
+very limited callers.
+
+> > > With sensible internal locking
+> > 
+> > Hmm, I feel this iommu_get_translation_mode() is somewhat the same
+> > as the current iommu_get_domain_for_dev(). It would just return the
+> > group->domain->type v.s. group->domain, right?
+> > 
+> > This doesn't have any UAF concern though.
 > 
-> Also I don't think an indirect call here is a good idea.  This is right
-> in the command submission fast path.  A simple branch will be a lot
-> faster.
+> Yes, no UAF concern is the point
 
-Ack for both of these points will check the other codes that got more
-indented as well.
+I see.
+
+> > > So that is another bunch. Not sure what will be left after.
+> > 
+> > I recall that some of the drivers manages their own domains, e.g.
+> >     drivers/gpu/drm/tegra/drm.c
+> > 
+> > So, they would want more out of the domain pointer than just type.
 > 
->> +
->> +	if (q->is_adminq)
->> +		memcpy(&q->sqes[tag], cmd, sizeof(*cmd));
->> +	else
->> +		memcpy((void *)q->sqes + (tag << APPLE_NVME_IOSQES), cmd, sizeof(*cmd));
-> 
-> This could use a helper and / or comment to make the calculation
-> more obvious.
+> This looks like it wants an 'is currently attached' operation
 
-This part of the code could be further simplified and after that
-it is similar to nvme_sq_copy_cmd() in pci.c:
+That's certainly one of the wide use cases. And I think we could
+have an IOMMU_DOMAIN_NONE to fit that into the type helper.
 
-diff --git a/drivers/nvme/host/apple.c b/drivers/nvme/host/apple.c
-index f3999b8ef7ab..ff4c2f87770c 100644
---- a/drivers/nvme/host/apple.c
-+++ b/drivers/nvme/host/apple.c
-@@ -295,20 +295,17 @@ static void apple_nvme_submit_cmd_t8015(struct apple_nvme_queue *q,
- 				  struct nvme_command *cmd)
- {
- 	struct apple_nvme *anv = queue_to_apple_nvme(q);
--	u32 tag;
- 
- 	spin_lock_irq(&anv->lock);
- 
--	tag = q->sq_tail;
--	q->sq_tail += 1;
--
--	if (q->sq_tail == anv->hw->max_queue_depth)
--		q->sq_tail = 0;
--
- 	if (q->is_adminq)
--		memcpy(&q->sqes[tag], cmd, sizeof(*cmd));
-+		memcpy(&q->sqes[q->sq_tail], cmd, sizeof(*cmd));
- 	else
--		memcpy((void *)q->sqes + (tag << APPLE_NVME_IOSQES), cmd, sizeof(*cmd));
-+		memcpy((void *)q->sqes + (q->sq_tail << APPLE_NVME_IOSQES),
-+			cmd, sizeof(*cmd));
-+
-+	if (++q->sq_tail == anv->hw->max_queue_depth)
-+		q->sq_tail = 0;
- 
- 	writel(q->sq_tail, q->sq_db);
- 	spin_unlock_irq(&anv->lock);
+Yet, I also see some other cases that cannot be helped with the
+type function. Just listing a few:
 
-And this seems obvious enough on its own, and should not need comments.
+1) domain matching (and type)
+drivers/gpu/drm/tegra/drm.c:965:        if (domain && domain->type != IOMMU_DOMAIN_IDENTITY &&
+drivers/gpu/drm/tegra/drm.c:966:            domain != tegra->domain)
+drivers/gpu/drm/tegra/drm.c-967-                return 0;
 
-> 
->> +	anv->hw = (const struct apple_nvme_hw *)of_device_get_match_data(&pdev->dev);
-> 
-> Do we even need this cast?
+2) page size
+drivers/gpu/drm/arm/malidp_planes.c:307:	mmu_dom = iommu_get_domain_for_dev(mp->base.dev->dev);
+drivers/gpu/drm/arm/malidp_planes.c-308-	if (mmu_dom)
+drivers/gpu/drm/arm/malidp_planes.c-309-		return mmu_dom->pgsize_bitmap;
 
-Don't think so, will remove.
+3) iommu_iova_to_phys
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c:2597:	dom = iommu_get_domain_for_dev(adev->dev);
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c-2598-
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c-2599-	while (size) {
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c-2600-		phys_addr_t addr = *pos & PAGE_MASK;
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c-2601-		loff_t off = *pos & ~PAGE_MASK;
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c-2602-		size_t bytes = PAGE_SIZE - off;
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c-2603-		unsigned long pfn;
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c-2604-		struct page *p;
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c-2605-		void *ptr;
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c-2606-
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c-2607-		bytes = min(bytes, size);
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c-2608-
+drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c:2609:		addr = dom ? iommu_iova_to_phys(dom, addr) : addr;
 
-Best regards,
-Nick Chan
+4) map/unmap
+drivers/net/ipa/ipa_mem.c:465:  domain = iommu_get_domain_for_dev(dev);
+drivers/net/ipa/ipa_mem.c-466-  if (!domain) {
+drivers/net/ipa/ipa_mem.c-467-          dev_err(dev, "no IOMMU domain found for IMEM\n");
+drivers/net/ipa/ipa_mem.c-468-          return -EINVAL;
+drivers/net/ipa/ipa_mem.c-469-  }
+drivers/net/ipa/ipa_mem.c-470-
+drivers/net/ipa/ipa_mem.c-471-  /* Align the address down and the size up to page boundaries */
+drivers/net/ipa/ipa_mem.c-472-  phys = addr & PAGE_MASK;
+drivers/net/ipa/ipa_mem.c-473-  size = PAGE_ALIGN(size + addr - phys);
+drivers/net/ipa/ipa_mem.c-474-  iova = phys;    /* We just want a direct mapping */
+drivers/net/ipa/ipa_mem.c-475-
+drivers/net/ipa/ipa_mem.c-476-  ret = iommu_map(domain, iova, phys, size, IOMMU_READ | IOMMU_WRITE,
+...
+drivers/net/ipa/ipa_mem.c:495:  domain = iommu_get_domain_for_dev(dev);
+drivers/net/ipa/ipa_mem.c-496-  if (domain) {
+drivers/net/ipa/ipa_mem.c-497-          size_t size;
+drivers/net/ipa/ipa_mem.c-498-
+drivers/net/ipa/ipa_mem.c-499-          size = iommu_unmap(domain, ipa->imem_iova, ipa->imem_size);
 
+
+We could probably invent something for case 1-3. But for case 4,
+it feels that iommu_get_domain_for_dev() is the only helper..
+
+Thanks
+Nicolin
