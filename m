@@ -1,57 +1,55 @@
-Received: from mail-wm1-f74.google.com (mail-wm1-f74.google.com [209.85.128.74])
+Received: from mail-ej1-f73.google.com (mail-ej1-f73.google.com [209.85.218.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F01631A042
-	for <iommu@lists.linux.dev>; Tue, 19 Aug 2025 21:52:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.74
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FC38342CB5
+	for <iommu@lists.linux.dev>; Tue, 19 Aug 2025 21:52:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755640348; cv=none; b=WDuSS4RVkDJ05Fz64z+NhD43zl1+RpWZHRI0YDJUbbl3R3fSZBX2ouQlXF9NyRCnKaaroQcxeWWdTTr0AB/T1Ezu3mQAO2V3/JzCCyr2jvTvt0/7fE9naCnb/GZP/d3//TZtdbewKsIIAA3LmtF/B76ZUAWqA2mrxfQhSdODVeE=
+	t=1755640349; cv=none; b=gaZoYcqEB1UbUxDC1N00VITSR8NDN+GLKCsxaQ7Vj9NYzF5Qtv6JPnrpVQkNGnPkrv1lL8yiPm4x0lrtAmYK+M2mC42fTJyv4aRq5apr7C3Hn8sbMsZjKSiYjkgjtIlqqXS8knqfJTQFITeqMrP6XYAOx2DcszlsEH8BBMCDASc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755640348; c=relaxed/simple;
-	bh=BD3OB//GZsI6wyE5tIICFFT0lSi+PCLS/mLJZoc5JA0=;
+	s=arc-20240116; t=1755640349; c=relaxed/simple;
+	bh=iu6gKl2CIH0Do5wVBqGs+FISYJXVfUyFEZp0ZLhFP2w=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=mRp7ZMPX9yxV9RnM0yiZugGA/42AEzxBxNGVo9WnIZPsBGNhvnk9yKBDQk1vUfOXn76gzPiNGYiKzdZZDeOitVZ9IWnV7/7opCHAn3UtbbElIAOMJGFOOY60GTZUuxCm5resd0N01LO86kEaMV7kw8a2cRPjuZs/OkhKn0y2eN0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=V8/nTwr4; arc=none smtp.client-ip=209.85.128.74
+	 To:Cc:Content-Type; b=thn/2sp/HL+15RDjrGQPcf7Wp8uRbW4LbOxuPdhPB31aHH2PeUUGSb+QfUn2iS/lYWt+QAwHhLHvQLOXF3i3KAkk0jE3z+U9QhSNSTtkvDnMM4d6oHendw6gOOftLqhn2E3Ig0Ond1asEKqK9Jyiy61VXMiBrSSEeZUFIYFHEIo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=2AUI2A4b; arc=none smtp.client-ip=209.85.218.73
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="V8/nTwr4"
-Received: by mail-wm1-f74.google.com with SMTP id 5b1f17b1804b1-45a1b0071c1so21301645e9.0
-        for <iommu@lists.linux.dev>; Tue, 19 Aug 2025 14:52:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="2AUI2A4b"
+Received: by mail-ej1-f73.google.com with SMTP id a640c23a62f3a-afcb5f59d9fso22737666b.0
+        for <iommu@lists.linux.dev>; Tue, 19 Aug 2025 14:52:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1755640345; x=1756245145; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vVz3Y9VpnYE4PVj2+x4ppZYRh/7u9Tfs4/CSD5zsJnw=;
-        b=V8/nTwr47j/3ruCI8t2KoGHjiKHL6hRdtLnFu2nLa/xeUONKWsU9pDx05FwJG+vOZ+
-         SnPwhB8kvwNrtwavDwsrZ7QC5LoEcxUXCJYn2MgnHPqHgROJHjDWBd1bbGQv6KAiozgj
-         lmW5JDerJoxX9bIQ5OyryZByke8/NS8xrQXDM7aG8+K2YghGIQ/lrBmNakup8RSigzg4
-         JnVZ5N5nDVK8uH/tF+F9NY04PqqbeIY5jqNsvr21CKE+61SFzu1Yg3et4yXlkhjDy6Vc
-         4EUVwMVGfQicm5edq1P5HGzQzIdRr2i0XNVGn8uba2jizzqTMFDeMvJZuPLG29FYp7K4
-         oOBg==
+        d=google.com; s=20230601; t=1755640346; x=1756245146; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=W+DG7jBXGZxGQ4XuCOpRWmsZ2ZfXC/o78dYhqpKpX0Y=;
+        b=2AUI2A4bMECT9HapJLtfqlOlVjNp/A9xtW4yFTtg++eWZDJym2nRi1Rx9yBOvC0RbQ
+         TWiE8pTn3Jn6atTvVBvA5A8h2fmNfgF2aXjKrnjZnxpyoU51CNQy02c1UvV9jkX2kDnw
+         vseuFtGj9rsgOxK5ylE/C9JKdOO6pBrTh98mlGOauNnWxXEIZven61kVQMBreqIspKUq
+         kVsSsFR9yfgt35kaNgL1LzQEzyrfsJf6B5RcCM9R+ORS3S3gZNLJ6zpFilgZNR4xU4VA
+         oapaTLHumiKvtpnCmR4btDsVW2x/HJj+Cgpu6mOl6Y6dPoWDm2GdDDi7m8momZXad0iE
+         HHFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755640345; x=1756245145;
-        h=content-transfer-encoding:cc:to:from:subject:message-id:references
-         :mime-version:in-reply-to:date:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=vVz3Y9VpnYE4PVj2+x4ppZYRh/7u9Tfs4/CSD5zsJnw=;
-        b=Q+CtDxMiCcX/XWU0stvv0WFllH1qIfKL69aktZlqEzuk3eH1fhuO18IzDMiD2YaZuj
-         mJuSLGeX1FBP/b0cZET/1CHmz1mHxs+LI6j5mloODWrk2aM7y6zAQ+xBvSSxfGw8zXbC
-         u6RYbB2XukPz6WR7FaYLCLoabdKwDIGBvIK8Pwqh9bCnrQoFB9YVch0Xxsf2vOrfcBOW
-         T0o+aSvE7sJ2EFEt44L7VxQtLhe0GLjc572uzAmwsWt+xt15NBdU4vr8ZAF9x23uGQIP
-         BFrmWiKZii/9R3PIooNDGUkD8/wwB7MeMF0omDcRGAmpsC5eUIAckmZc83/aXr0fIRVi
-         xGzg==
-X-Forwarded-Encrypted: i=1; AJvYcCVX+gAng3OkH0KoAewt9hTnqkbOJ/M71bypWfhWESWbvI6P4cuYIjeEk8kGd8qYO1KplYvivQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxhhmRxEMhXxFWb/e96OuQ+lLIOaIUK53j/XuhNhimMLkvn87Fz
-	n9D/NXrriUE/klvR8vbfYgvz51Sc4bcbYy0gnU36VBZ9Jyg6UxA50fKyMcNNt74AKK3iIB4sKrG
-	MeOEzRSG7I1Lu0w==
-X-Google-Smtp-Source: AGHT+IE7z3JoHU46VhERaG2rUhWS+WRB2JYInik0I1QmJUrgMcHdJZz9Xytw3QMikJfteQ5I/RRwqWO+5o1F0Q==
-X-Received: from wmbem12.prod.google.com ([2002:a05:600c:820c:b0:458:c0cd:291c])
+        d=1e100.net; s=20230601; t=1755640346; x=1756245146;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=W+DG7jBXGZxGQ4XuCOpRWmsZ2ZfXC/o78dYhqpKpX0Y=;
+        b=DtnjAMxjRUtqzZdOZI9CXBed9IgnYDkZGMpXDD4NdVeQr/UDMh9Q7Sg8o7m6vN5jo2
+         F2qt2dHPqdcvtwDROmECpENu7UbjftNrLiR7SCcgS81Ejh0VEXvHgu5DLGrwdKU3ilCj
+         NydgMXDzYh2j8tF/hINWmpZGDNsUyHmMlTXn3KZAL2zNH2RpGNXKlGps8AnGoszcUfyA
+         827G6jZzcEO1eVDYtYw7kOiPdmtmD+jJSiEshVwly/ag/SnYQ1sFlLN1FRVGCndRn+D1
+         SmgANvoIT061P2lPo4uwvfCeKLMo6VU5MfYnyfDVwsrE/toS5oEOsAl8SSSWlP+zmOk6
+         sivA==
+X-Forwarded-Encrypted: i=1; AJvYcCXINO75fJa+lw8B4NrFLXelNzhFQWmh1SxPudbTxXgkIeAlGQ6C7ihC56hy9bFjuDYc6a8Xuw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz7voju60uS/pjZA0BJ8U/jEP4Qfw5P8n+7dRMHVro741AprZ+D
+	CmhLLNACewMSrhIfyOeGah+q6A/xQKsrZ2BodFgaZYQ1owz2B7WiNeURks1ZEEQlUq7viot7LUB
+	ETUUowlcaEmIpcg==
+X-Google-Smtp-Source: AGHT+IH9p4RnQonIqO2IvBstcQzhGwFgVqersbPBUPhqv5wCNXWBDT/LoPiy2B89sQst64Mbf5itUgGSgohDDQ==
+X-Received: from edc12.prod.google.com ([2002:a05:6402:460c:b0:61a:3e52:115a])
  (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
- 2002:a05:600c:4f0c:b0:43d:4e9:27ff with SMTP id 5b1f17b1804b1-45b4798a7bdmr3379925e9.7.1755640344849;
- Tue, 19 Aug 2025 14:52:24 -0700 (PDT)
-Date: Tue, 19 Aug 2025 21:51:30 +0000
+ 2002:a17:907:7fa3:b0:af9:23b:9f9 with SMTP id a640c23a62f3a-afdded25839mr293959566b.24.1755640345755;
+ Tue, 19 Aug 2025 14:52:25 -0700 (PDT)
+Date: Tue, 19 Aug 2025 21:51:31 +0000
 In-Reply-To: <20250819215156.2494305-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,8 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20250819215156.2494305-1-smostafa@google.com>
 X-Mailer: git-send-email 2.51.0.rc1.167.g924127e9c0-goog
-Message-ID: <20250819215156.2494305-3-smostafa@google.com>
-Subject: [PATCH v4 02/28] KVM: arm64: Donate MMIO to the hypervisor
+Message-ID: <20250819215156.2494305-4-smostafa@google.com>
+Subject: [PATCH v4 03/28] KVM: arm64: pkvm: Add pkvm_time_get()
 From: Mostafa Saleh <smostafa@google.com>
 To: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev, 
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
@@ -72,157 +70,94 @@ Cc: maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
 	qperret@google.com, tabba@google.com, jgg@ziepe.ca, mark.rutland@arm.com, 
 	praan@google.com, Mostafa Saleh <smostafa@google.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-Add a function to donate MMIO to the hypervisor so IOMMU hypervisor
-drivers can use that to protect the MMIO of IOMMU.
-The initial attempt to implement this was to have a new flag to
-"___pkvm_host_donate_hyp" to accept MMIO. However that had many problems,
-it was quite intrusive for host/hyp to check/set page state to make it
-aware of MMIO and to encode the state in the page table in that case.
-Which is called in paths that can be sensitive to performance (FFA, VMs..)
+Add a function to return time in us.
 
-As donating MMIO is very rare, and we don=E2=80=99t need to encode the full=
- state,
-it=E2=80=99s reasonable to have a separate function to do this.
-It will init the host s2 page table with an invalid leaf with the owner ID
-to prevent the host from mapping the page on faults.
-
-Also, prevent kvm_pgtable_stage2_unmap() from removing owner ID from
-stage-2 PTEs, as this can be triggered from recycle logic under memory
-pressure. There is no code relying on this, as all ownership changes is
-done via kvm_pgtable_stage2_set_owner()
-
-For error path in IOMMU drivers, add a function to donate MMIO back
-from hyp to host.
+This can be used from IOMMU drivers while waiting for conditions as
+for SMMUv3 TLB invalidation waiting for sync.
 
 Signed-off-by: Mostafa Saleh <smostafa@google.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |  2 +
- arch/arm64/kvm/hyp/nvhe/mem_protect.c         | 64 +++++++++++++++++++
- arch/arm64/kvm/hyp/pgtable.c                  |  9 +--
- 3 files changed, 68 insertions(+), 7 deletions(-)
+ arch/arm64/kvm/hyp/include/nvhe/pkvm.h |  2 ++
+ arch/arm64/kvm/hyp/nvhe/setup.c        |  4 ++++
+ arch/arm64/kvm/hyp/nvhe/timer-sr.c     | 33 ++++++++++++++++++++++++++
+ 3 files changed, 39 insertions(+)
 
-diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm=
-/hyp/include/nvhe/mem_protect.h
-index 52d7ee91e18c..98e173da0f9b 100644
---- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-+++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-@@ -37,6 +37,8 @@ int __pkvm_host_share_hyp(u64 pfn);
- int __pkvm_host_unshare_hyp(u64 pfn);
- int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages);
- int ___pkvm_host_donate_hyp(u64 pfn, u64 nr_pages, enum kvm_pgtable_prot p=
-rot);
-+int __pkvm_host_donate_hyp_mmio(u64 pfn);
-+int __pkvm_hyp_donate_host_mmio(u64 pfn);
- int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages);
- int __pkvm_host_share_ffa(u64 pfn, u64 nr_pages);
- int __pkvm_host_unshare_ffa(u64 pfn, u64 nr_pages);
-diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvh=
-e/mem_protect.c
-index 861e448183fd..c9a15ef6b18d 100644
---- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-+++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-@@ -799,6 +799,70 @@ int ___pkvm_host_donate_hyp(u64 pfn, u64 nr_pages, enu=
-m kvm_pgtable_prot prot)
- 	return ret;
+diff --git a/arch/arm64/kvm/hyp/include/nvhe/pkvm.h b/arch/arm64/kvm/hyp/include/nvhe/pkvm.h
+index ce31d3b73603..6c19691720cd 100644
+--- a/arch/arm64/kvm/hyp/include/nvhe/pkvm.h
++++ b/arch/arm64/kvm/hyp/include/nvhe/pkvm.h
+@@ -87,4 +87,6 @@ bool kvm_handle_pvm_restricted(struct kvm_vcpu *vcpu, u64 *exit_code);
+ void kvm_init_pvm_id_regs(struct kvm_vcpu *vcpu);
+ int kvm_check_pvm_sysreg_table(void);
+ 
++int pkvm_timer_init(void);
++u64 pkvm_time_get(void);
+ #endif /* __ARM64_KVM_NVHE_PKVM_H__ */
+diff --git a/arch/arm64/kvm/hyp/nvhe/setup.c b/arch/arm64/kvm/hyp/nvhe/setup.c
+index a48d3f5a5afb..ee6435473204 100644
+--- a/arch/arm64/kvm/hyp/nvhe/setup.c
++++ b/arch/arm64/kvm/hyp/nvhe/setup.c
+@@ -304,6 +304,10 @@ void __noreturn __pkvm_init_finalise(void)
+ 	};
+ 	pkvm_pgtable.mm_ops = &pkvm_pgtable_mm_ops;
+ 
++	ret = pkvm_timer_init();
++	if (ret)
++		goto out;
++
+ 	ret = fix_host_ownership();
+ 	if (ret)
+ 		goto out;
+diff --git a/arch/arm64/kvm/hyp/nvhe/timer-sr.c b/arch/arm64/kvm/hyp/nvhe/timer-sr.c
+index ff176f4ce7de..e166cd5a56b8 100644
+--- a/arch/arm64/kvm/hyp/nvhe/timer-sr.c
++++ b/arch/arm64/kvm/hyp/nvhe/timer-sr.c
+@@ -11,6 +11,10 @@
+ #include <asm/kvm_hyp.h>
+ #include <asm/kvm_mmu.h>
+ 
++#include <nvhe/pkvm.h>
++
++static u32 timer_freq;
++
+ void __kvm_timer_set_cntvoff(u64 cntvoff)
+ {
+ 	write_sysreg(cntvoff, cntvoff_el2);
+@@ -68,3 +72,32 @@ void __timer_enable_traps(struct kvm_vcpu *vcpu)
+ 
+ 	sysreg_clear_set(cnthctl_el2, clr, set);
  }
-=20
-+int __pkvm_host_donate_hyp_mmio(u64 pfn)
++
++static u64 pkvm_ticks_get(void)
 +{
-+	u64 phys =3D hyp_pfn_to_phys(pfn);
-+	void *virt =3D __hyp_va(phys);
-+	int ret;
-+	kvm_pte_t pte;
-+
-+	host_lock_component();
-+	hyp_lock_component();
-+
-+	ret =3D kvm_pgtable_get_leaf(&host_mmu.pgt, phys, &pte, NULL);
-+	if (ret)
-+		goto unlock;
-+
-+	if (pte && !kvm_pte_valid(pte)) {
-+		ret =3D -EPERM;
-+		goto unlock;
-+	}
-+
-+	ret =3D kvm_pgtable_get_leaf(&pkvm_pgtable, (u64)virt, &pte, NULL);
-+	if (ret)
-+		goto unlock;
-+	if (pte) {
-+		ret =3D -EBUSY;
-+		goto unlock;
-+	}
-+
-+	ret =3D pkvm_create_mappings_locked(virt, virt + PAGE_SIZE, PAGE_HYP_DEVI=
-CE);
-+	if (ret)
-+		goto unlock;
-+	/*
-+	 * We set HYP as the owner of the MMIO pages in the host stage-2, for:
-+	 * - host aborts: host_stage2_adjust_range() would fail for invalid non z=
-ero PTEs.
-+	 * - recycle under memory pressure: host_stage2_unmap_dev_all() would cal=
-l
-+	 *   kvm_pgtable_stage2_unmap() which will not clear non zero invalid pte=
-s (counted).
-+	 * - other MMIO donation: Would fail as we check that the PTE is valid or=
- empty.
-+	 */
-+	WARN_ON(host_stage2_try(kvm_pgtable_stage2_set_owner, &host_mmu.pgt, phys=
-,
-+				PAGE_SIZE, &host_s2_pool, PKVM_ID_HYP));
-+unlock:
-+	hyp_unlock_component();
-+	host_unlock_component();
-+
-+	return ret;
++	return __arch_counter_get_cntvct();
 +}
 +
-+int __pkvm_hyp_donate_host_mmio(u64 pfn)
++#define SEC_TO_US 1000000
++
++int pkvm_timer_init(void)
 +{
-+	u64 phys =3D hyp_pfn_to_phys(pfn);
-+	u64 virt =3D (u64)__hyp_va(phys);
-+	size_t size =3D PAGE_SIZE;
-+
-+	host_lock_component();
-+	hyp_lock_component();
-+
-+	WARN_ON(kvm_pgtable_hyp_unmap(&pkvm_pgtable, virt, size) !=3D size);
-+	WARN_ON(host_stage2_try(kvm_pgtable_stage2_set_owner, &host_mmu.pgt, phys=
-,
-+				PAGE_SIZE, &host_s2_pool, PKVM_ID_HOST));
-+	hyp_unlock_component();
-+	host_unlock_component();
-+
++	timer_freq = read_sysreg(cntfrq_el0);
++	/*
++	 * TODO: The highest privileged level is supposed to initialize this
++	 * register. But on some systems (which?), this information is only
++	 * contained in the device-tree, so we'll need to find it out some other
++	 * way.
++	 */
++	if (!timer_freq || timer_freq < SEC_TO_US)
++		return -ENODEV;
 +	return 0;
 +}
 +
- int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
- {
- 	return ___pkvm_host_donate_hyp(pfn, nr_pages, PAGE_HYP);
-diff --git a/arch/arm64/kvm/hyp/pgtable.c b/arch/arm64/kvm/hyp/pgtable.c
-index c351b4abd5db..ba06b0c21d5a 100644
---- a/arch/arm64/kvm/hyp/pgtable.c
-+++ b/arch/arm64/kvm/hyp/pgtable.c
-@@ -1095,13 +1095,8 @@ static int stage2_unmap_walker(const struct kvm_pgta=
-ble_visit_ctx *ctx,
- 	kvm_pte_t *childp =3D NULL;
- 	bool need_flush =3D false;
-=20
--	if (!kvm_pte_valid(ctx->old)) {
--		if (stage2_pte_is_counted(ctx->old)) {
--			kvm_clear_pte(ctx->ptep);
--			mm_ops->put_page(ctx->ptep);
--		}
--		return 0;
--	}
-+	if (!kvm_pte_valid(ctx->old))
-+		return stage2_pte_is_counted(ctx->old) ? -EPERM : 0;
-=20
- 	if (kvm_pte_table(ctx->old, ctx->level)) {
- 		childp =3D kvm_pte_follow(ctx->old, mm_ops);
---=20
++#define pkvm_time_ticks_to_us(ticks) ((u64)(ticks) * SEC_TO_US / timer_freq)
++
++/* Return time in us. */
++u64 pkvm_time_get(void)
++{
++	return pkvm_time_ticks_to_us(pkvm_ticks_get());
++}
+-- 
 2.51.0.rc1.167.g924127e9c0-goog
 
