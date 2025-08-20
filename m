@@ -1,186 +1,181 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f67.google.com (mail-ej1-f67.google.com [209.85.218.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B4B226F2A9
-	for <iommu@lists.linux.dev>; Tue, 19 Aug 2025 23:41:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE7C425C804;
+	Wed, 20 Aug 2025 03:19:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.67
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755646893; cv=none; b=aT8lUB8jyernw/YLPiJws5LYjaH7KQuODm0LH/RWm81gW8JWbjhdZbr76Pm/p6SkAkvgGwZCKf3Ti7tNXN5lVM5hbyiz3ugSqM9e7dihvf1qTsHrIMWklItUzVvqbiLc3xXhiWvjfjkgI3wgUF9M33/BqiIGrpertxZqMA7Nv7w=
+	t=1755659945; cv=none; b=LnZmPp8iXRMBRPxqaBSpi31WFafW6m+roRRAnwDF0iZ10pyN60ltqOhQDmsYtShZxzomV29bcJQ28MA7bL3ivr+0r5V7WUwGqMs2T4e3padI+Uj7WUTakHwMMnieoqIm/nieaiJ1I1daM6O9Of4VEaOcRpj+mReKAooHPiKY1dQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755646893; c=relaxed/simple;
-	bh=JZrmsmOLakGNiArgxLyorPY9EkM8UNZYC42Sd1HoK+4=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=CHoKDZ726OSSm4mVis9tmoOmzwaInUpexeyYPqRXbU7OFOt1w3sSt5P/pkMA00t0SGjEEj0Ee4qUdD5nQE3NdKm1p4qu9nwD11bUSF1hxVXLUthdnsa9T57l7VG65LgBeOF0AlEN37hhScqLQMzDg9iRsAFteIBE4sg2vbXxMG4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=muisPuBr; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=71eJ+Kto; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	s=arc-20240116; t=1755659945; c=relaxed/simple;
+	bh=VxNrcNs0+HcvFMuKWSGBXGXSfd8y+whfhfnRdUacxr8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=UB+38Bj8pvPAsUsS6i3UMOkPdz15syJV0Ixn9abCZKGZbdOp+56DYgA0gn7+6eSTGneNV6U16hqSQi0xZifEuUtrwWrvm8ktv+XxD3NfJPpupbN8FdAF5NM1F+TODQL6kkLahzWrYzu6E7M9dyrkLCczlb3DuyUErsDeSfuvo7Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AJNyJDdv; arc=none smtp.client-ip=209.85.218.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="muisPuBr";
-	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="71eJ+Kto"
-DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
-	h=To:Message-Id:Date:Subject:From; t=1755646709; bh=kpY+Nl5vsHKrBlzLVtfhztv
-	xRfiJB87Mxz4rJktiaKM=; b=muisPuBrVe+vTxyAJxMV9VlJHQIAVylsj9VYA0sMPCE1I9ABwn
-	quKdRWCXg42jkf2W2TND5sqAoHtSNB9/Au40aj1M++fpDY+YJkjc7nhXUhoIvu60P9y33es7d28
-	gnjGY3nNUnzHYK0QegBqvjlwQH3fFiAHNB025tiHK5eHPg7EpS7D5uB4+zlo6eo72oaux98uc73
-	lM3gWSBW9pEwnmbc7KUT85ThBodLcdU9vZxOENT4GuGvde8svER3o2Iyymq3+MF6w35fBG7fDRl
-	mWfMj3HxXRGsSBnUG3Uj9DCmN+gzEZv6t6uJ2/SEhN6ZRd2LliuLSJuE25IuI37421Q==;
-DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
-	h=To:Message-Id:Date:Subject:From; t=1755646709; bh=kpY+Nl5vsHKrBlzLVtfhztv
-	xRfiJB87Mxz4rJktiaKM=; b=71eJ+Ktoi0+cuOKQEJAsAY9wJg/vc1Ft+dBXpiZdXKk161lxoG
-	pivA4UqvSEGcJd16HT4nhP4nbZaVGppZlqDQ==;
-From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Subject: [PATCH v6 0/6] Initial support of MSM8937 and Xiaomi Redmi 3S
-Date: Wed, 20 Aug 2025 01:37:44 +0200
-Message-Id: <20250820-msm8937-v6-0-b090b2acb67e@mainlining.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AJNyJDdv"
+Received: by mail-ej1-f67.google.com with SMTP id a640c23a62f3a-afcb7ae31caso1081678166b.3;
+        Tue, 19 Aug 2025 20:19:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1755659942; x=1756264742; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/vdg4dKKl5Y5qxmdvIci/v8EsYo7STve3t3ZtY/n9Z0=;
+        b=AJNyJDdvVH1yqA2IMK+urcZFyy6EdpDsw0IqtitgscWpJINViXMHNZu8gs/usDKj0O
+         FI+FJymZfeBUZrpg1ZYUN9cG9INYTlzD/yh98justpDMnvGyYgaTz3JIbSMf63Ze6vCL
+         1cfZjSze4Fu93FcLpYBRIZqrM/RtYR9XcQb9F3Jf73HtOz+Qo9e/1A15TcVHey9qDbVb
+         5KWv1blRs7yIj5efm0rLPsySUYHceQ7W6hNpgiduXl6z4td396FXvDyl3sjqOy5IU2so
+         2X4WvMtxQlV1GaTDHPELn1d3nKmOJHTw35/E83VsWT8NQIDUi0XOkUi4rl+NlFOYgft1
+         X00g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1755659942; x=1756264742;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=/vdg4dKKl5Y5qxmdvIci/v8EsYo7STve3t3ZtY/n9Z0=;
+        b=D8qpqXuFAgH7qg+6itatOBk6t+IYgQHOf/r3ikmWNp07QBKvz2N5YNE9FMV9YycFfV
+         twsss3wQuvK64LnS5+hqzdi856BekY7dyXafe4AE5h3MdpgYh6sao/ftE4aOWYuEaG0J
+         2xHzh0AYdi9wFhf0Gbhl8L6RiV4QkIYAIm+kgPLQ9iS7BC0EY2tRYvtjqrXCAdBHbZjj
+         urIixp00OvrTzkd21N0QyVLasreLOgaq4hU6Zi0Swhey2WazJgxA5mcKkvgKi6Ea9xvM
+         +/8nTNAPyfEY5AFDeYtkRH4pX3VG/jRY0Poi9Hl7Go6jMRUk0tRKQ8EmcUeogbJEQ+rJ
+         vRZw==
+X-Forwarded-Encrypted: i=1; AJvYcCWICrb6k/vuArzMOTUZgfVgXoCATwLb/HIaVaXUGSEqMrCRt47WKgsnDlmWRK5KRHKnNggBTQ==@lists.linux.dev, AJvYcCWvm+HCLXzxhOCzjSfrRMkqXDl2UImFTEeOi1jtPsO+skHQSDEewccZW3kujwioyYTHBYRTLMz+jg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyHhI/PeUIxSx0l2aPUQV2Em7IUXxPeWOdiDRLSgH4XKxjUM8wT
+	/H0T1efKHHa1tw3K3Q+Kbd9rD1EEdpr4eiuD1G9okvOyMNz1eCLfOX94
+X-Gm-Gg: ASbGncsr4LlQE1di1n5nsQ35UxB71lQczYcAL40gpkegwto9/SG3Zsh1qlvkrGh8pps
+	IAiJTTj2Dh6J269+uDNvGoWiZPT9rQxj5hb2ccipe3nf+SwCz4F0BNsEJM1b4+VwYvdzVqoTajE
+	bdGDmN4PwOfIyrFMBpbcOQqkIzzEHmP7fE5MUa7RULZ3bqtb77S8nr+9UPlTO8dbcSI1S+CNE4X
+	JBR8DEuzUIpyPTiJiC+XmF2qRmlOLHeMDWTUmgHn4Laip18JNDVBetWCb7CcNFyIWRQVXH5e+Oj
+	5rtBkMIA9/dzuKt+vUn++ctZ5KE8oI18vhfWi/ieb1Dh8bc9KZ2LMb0I+vkTDlrFt2N+C4wP+W4
+	jjthXycJwwf1xYUYYPfu/nj2LulbiOpOkRS7O6GUBNUDHQIASGGRqHHAfv2FTvcP2mpHmn2hPEB
+	8s+bGq0OTIIFK9MJn0i/uGT0X2Z1BL8UDnRA==
+X-Google-Smtp-Source: AGHT+IEIwwlIwoTIiNuhUQ07/bBrVkoWwe0s7LnQYSy2POy+c888AvHzKbMqqWN1VrmqgpQIHAF1pA==
+X-Received: by 2002:a17:906:6a1d:b0:af9:237c:bb35 with SMTP id a640c23a62f3a-afdf00e2e81mr95410766b.22.1755659941758;
+        Tue, 19 Aug 2025 20:19:01 -0700 (PDT)
+Received: from [26.26.26.1] (ec2-3-75-144-20.eu-central-1.compute.amazonaws.com. [3.75.144.20])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-afded52ea4asm96482666b.101.2025.08.19.20.18.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Aug 2025 20:19:01 -0700 (PDT)
+Message-ID: <d6b852bc-328a-41af-b125-e250c72c0d22@gmail.com>
+Date: Wed, 20 Aug 2025 11:18:52 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIAMgKpWgC/23PwWrEIBAG4FdZPNeio4naU9+j9JDVMTvQmEVL2
- GXJu9cstAaa4z/M9zPzYAUzYWFvpwfLuFChOdXQv5yYvwxpRE6hZgYCOgFS8KlM1inDASxGEbx
- C71jdvmaMdHs2fXzWfKHyPef7s3iR2/S3Q/51LJILbgIYDL2JRtj3aaD0RYnS+DrnkW1FC+wwq
- Iah4rNzpg57hUEdYrXHumFVcRiC8dKC9/58iHXDSnYN64pllArQGjFod4i7hjXsfu62s6OzxmG
- UOvzH67r+AHIgwaiXAQAA
-X-Change-ID: 20250210-msm8937-228ef0dc3ec9
-To: Bjorn Andersson <andersson@kernel.org>, 
- Michael Turquette <mturquette@baylibre.com>, 
- Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>, 
- =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
- Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, 
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, 
- Sean Paul <sean@poorly.run>, Abhinav Kumar <quic_abhinavk@quicinc.com>, 
- Marijn Suijten <marijn.suijten@somainline.org>, 
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
- Dmitry Baryshkov <lumag@kernel.org>, 
- Adam Skladowski <a_skl39@protonmail.com>, 
- Sireesh Kodali <sireeshkodali@protonmail.com>, 
- Rob Clark <robin.clark@oss.qualcomm.com>, 
- Abhinav Kumar <abhinav.kumar@linux.dev>, 
- Jessica Zhang <jessica.zhang@oss.qualcomm.com>, 
- Srinivas Kandagatla <srini@kernel.org>, 
- Rob Clark <robin.clark@oss.qualcomm.com>, 
- Dmitry Baryshkov <lumag@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-gpio@vger.kernel.org, iommu@lists.linux.dev, 
- dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
- phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
- linux@mainlining.org, 
- =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
- Daniil Titov <daniilt971@gmail.com>, 
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
- Dang Huynh <danct12@riseup.net>, 
- Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1755646705; l=3529;
- i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=JZrmsmOLakGNiArgxLyorPY9EkM8UNZYC42Sd1HoK+4=;
- b=PP8iWeu44PDXA5tIe8ikwR1WhFZxabycKfMF9ZAj0w4Zj4ROxeZNwa9PYnTYUghBJasw2fA64
- zgLA/zioHNcCQyArr6qrVuLJYTPtp5MLMYcszSy8RUh0w59c0m1+m3j
-X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
- pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 5/5] pci: Suspend iommu function prior to resetting a
+ device
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: robin.murphy@arm.com, joro@8bytes.org, bhelgaas@google.com,
+ jgg@nvidia.com, will@kernel.org, robin.clark@oss.qualcomm.com,
+ yong.wu@mediatek.com, matthias.bgg@gmail.com,
+ angelogioacchino.delregno@collabora.com, thierry.reding@gmail.com,
+ vdumpa@nvidia.com, jonathanh@nvidia.com, rafael@kernel.org, lenb@kernel.org,
+ kevin.tian@intel.com, yi.l.liu@intel.com, baolu.lu@linux.intel.com,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
+ linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org,
+ patches@lists.linux.dev, pjaroszynski@nvidia.com, vsethi@nvidia.com,
+ helgaas@kernel.org
+References: <cover.1754952762.git.nicolinc@nvidia.com>
+ <3749cd6a1430ac36d1af1fadaa4d90ceffef9c62.1754952762.git.nicolinc@nvidia.com>
+ <550635db-00ce-410e-add0-77c1a75adb11@gmail.com>
+ <aKTzq6SLGB22Xq5b@Asurada-Nvidia>
+Content-Language: en-US
+From: Ethan Zhao <etzhao1900@gmail.com>
+In-Reply-To: <aKTzq6SLGB22Xq5b@Asurada-Nvidia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This patch series add initial support for MSM8937 SoC
-and Xiaomi Redmi 3S (land).
 
-The series is extending the MSM8917 gcc and pinctrl drivers
-because they are sibling SoCs.
-MSM8937 have 4 more A53 cores and have one more dsi port then
-MSM8917.
-It implements little-big architecture and uses Adreno 505.
 
-Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
----
-Changes in v6:
-- msm8937:
-  - Fix nodes ordering.
-  - Format clocks, reg, dmas and -names properties.
-  - Add gpu_speedbin.
-- Describe A505 clocks.
-- Link to v5: https://lore.kernel.org/r/20250421-msm8937-v5-0-bf9879ef14d9@mainlining.org
+On 8/20/2025 5:59 AM, Nicolin Chen wrote:
+> On Tue, Aug 19, 2025 at 10:12:41PM +0800, Ethan Zhao wrote:
+>> On 8/12/2025 6:59 AM, Nicolin Chen wrote:
+>>> @@ -4529,13 +4530,26 @@ EXPORT_SYMBOL(pci_wait_for_pending_transaction);
+>>>     */
+>>>    int pcie_flr(struct pci_dev *dev)
+>>>    {
+>>> +	int ret = 0;
+>>> +
+>>>    	if (!pci_wait_for_pending_transaction(dev))
+>>>    		pci_err(dev, "timed out waiting for pending transaction; performing function level reset anyway\n");
+>>> +	/*
+>>> +	 * Per PCIe r6.3, sec 10.3.1 IMPLEMENTATION NOTE, software disables ATS
+>>> +	 * before initiating a reset. Notify the iommu driver that enabled ATS.
+>>> +	 * Have to call it after waiting for pending DMA transaction.
+>>> +	 */
+>>> +	ret = iommu_dev_reset_prepare(&dev->dev);
+> 
+>> If we dont' consider the association between IOMMU and devices in FLR(),
+>> it can be understood that more complex processing logic resides outside
+>> this function. However, if the FLR() function already synchironizes and
+>> handles the association with IOMMU like this (disabling ATS by attaching
+>> device to blocking domain), then how would the following scenarios
+>> behave ?
+> 
+> That's a good point. The iommu-level reset is per struct device.
+> So, basically it'll match with the FLR per pci_dev. Yet, the RID
+> isolation between siblings might be a concern:
+> 
+>> 1. Reset one of PCIe alias devices.
+> 
+> IIRC, an alias device might have:
+> 
+>   a) one pci_dev; multiple RIDs
+> 
+>      In this case, neither FLR nor IOMMU isolates between RIDs.
+>      So, both FLR and IOMMU blocking will reset all RIDs. There
+>      should be no issue resulted from the IOMMU blocking.
+> 
+>   b) multiple pci_devs; single RID
+> 
+>      In this case, FLR only resets one device, while the IOMMU-
+>      level reset will block the entire RID (i.e. all devices),
+>      since they share the single translation tunnel. This could
+>      break the siblings, if they aren't also being reset along.
+Yup, such alias devices might not have ATS cap. because of they
+are PCI devices or they share the RID(BDF), so checking ATS cap
+condition might be useful here to skip the prepare()/done() .>
+>> 2. Reset PF when its VFs are actvie.
+> 
+>   c) multiple pci_devs with their own RIDs
+> 
+>      In this case, either FLR or IOMMU only resets the PF. That
+>      being said, VFs might be affected since PF is resetting?
+>      If there is an issue, I don't see it coming from the IOMMU-
+>      level reset..
+Each of the PF and its VFs has it owns RID(BDF), but the VFs' life
+depends on the living of PF, resetting PF, means all its VFs are
+lost.
 
-Changes in v5:
-- msm8937:
-  - Remove wrongly defined idle-states.
-  - Fix thermal zones.
-  - Use the header with DSI phy clock IDs.
-  - Fix the nodes order.
-  - Fix the pinctrls style.
-  - Follow gcc header changes.
-- msm8937-xiaomi-land:
-  - Remove headphone switch and speaker amplifier bindings.
-  - Unify status property style.
-- gcc bindings:
-  - Expand MSM8953 gcc schema with MSM8937.
-  - Add MSM8937 prefix for MSM8937 specific clocks.
-- gcc:
-  - Follow the bindings changes.
-- Drop alwayson clock documentation it will be handled in another
-  patchset.
-- Link to v4: https://lore.kernel.org/r/20250315-msm8937-v4-0-1f132e870a49@mainlining.org
+There is no processing logic about PF and its VFs in FLR() yet.
+my understanding the upper layer callers should consider the
+complexity of such case.
 
-Changes in v4:
-- Add missing rpmcc include for qcom,gcc-msm8937 dtbinding exmaple.
-- msm8937: add missing space after s9-p1@230
-- msm8937-xiaomi-land: replace LED_FUNCTION_INDICATOR to LED_FUNCTION_STATUS
-- Remove applied patches
-- Link to v3: https://lore.kernel.org/r/20250224-msm8937-v3-0-dad7c182cccb@mainlining.org
+While we introducing the connection of IOMMU & device in FLR(),
+seems we brought some of the logic from the outside to the inside
+part.
 
-Changes in v3:
-- Fix qcom,gcc-msm8937 dtbinding example 
-- Link to v2: https://lore.kernel.org/r/20250223-msm8937-v2-0-b99722363ed3@mainlining.org
+One method might we don't handle PF either by explicit checking its
+VF configuration existing to skip prepare()/done() ? till we have
+much clearer handling logic about it.
 
-Changes in v2:
-- drop applied patches
-- drop gcc schema commits infavor of a new schema for gcc-msm8937
-- document always on clock for adreno 505/506/510
-- msm8937:
-  - set cache size
-  - rename cpu labels
-  - fix style issues addressed by review
-- msm8937-xiaom-land:
-  - remove unused serial0 alias
-  - remove regulator-always-on from pm8937_l6
-  - add blue indicator led for aw2013
-- Link to v1: https://lore.kernel.org/r/20250211-msm8937-v1-0-7d27ed67f708@mainlining.org
-
----
-Barnabás Czémán (4):
-      dt-bindings: clock: qcom: Add MSM8937 Global Clock Controller
-      dt-bindings: display/msm/gpu: describe A505 clocks
-      dt-bindings: arm: qcom: Add Xiaomi Redmi 3S
-      arm64: dts: qcom: Add Xiaomi Redmi 3S
-
-Dang Huynh (1):
-      arm64: dts: qcom: Add initial support for MSM8937
-
-Daniil Titov (1):
-      clk: qcom: gcc: Add support for Global Clock controller found on MSM8937
-
- Documentation/devicetree/bindings/arm/qcom.yaml    |    6 +
- .../bindings/clock/qcom,gcc-msm8953.yaml           |   11 +-
- .../devicetree/bindings/display/msm/gpu.yaml       |    4 +-
- arch/arm64/boot/dts/qcom/Makefile                  |    1 +
- arch/arm64/boot/dts/qcom/msm8937-xiaomi-land.dts   |  381 ++++
- arch/arm64/boot/dts/qcom/msm8937.dtsi              | 2134 ++++++++++++++++++++
- drivers/clk/qcom/Kconfig                           |    6 +-
- drivers/clk/qcom/gcc-msm8917.c                     |  617 +++++-
- include/dt-bindings/clock/qcom,gcc-msm8917.h       |   19 +
- 9 files changed, 3168 insertions(+), 11 deletions(-)
----
-base-commit: 3ac864c2d9bb8608ee236e89bf561811613abfce
-change-id: 20250210-msm8937-228ef0dc3ec9
-
-Best regards,
--- 
-Barnabás Czémán <barnabas.czeman@mainlining.org>
+Thanks,
+Ethan
+   > d
+> Thus, case b might be breaking. So, perhaps we should add a few
+> conditions when calling iommu_dev_reset_prepare/done():
+>   + Make sure that the pci_dev has ATS capability
+>   + Make sure no sibling pci_dev(s) sharing the same RID
+>   + Any others?
+> 
+> Thanks
+> Nicolin
 
