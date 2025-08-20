@@ -1,67 +1,41 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from mout.web.de (mout.web.de [217.72.192.78])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A2A4286D55;
-	Wed, 20 Aug 2025 08:09:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 973A426CE12
+	for <iommu@lists.linux.dev>; Wed, 20 Aug 2025 08:25:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.72.192.78
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755677375; cv=none; b=nDU1Fmwj+O8hV73BHJPe4lc2pTvw267m9Cdr6Vg4mrQACKEi4XwSPMB7RibWMpJKprkQudiKbXaHOA2/8r3b/zeD5a3a7MrCN1Qb9DcjrdKEQBcmaZ9nmhmDbiILJxJXRNN9H/Y4WkPNmm0FwiMm+B+mqOhactWB0boGkKcSG2g=
+	t=1755678354; cv=none; b=dwYUwBKNLAReDHhXaA2r35gCj6N47xLzeC6Bk8VYHEUEixodBR1dhpAQ0ZKGooa5aaUoEtjhBHzujz85upAEqiLhmo/VyEz4JDKEYYGzysn5LGLXwFUMHEc37KKzwTzLDqHw/1kQDvfQdStPuE/PqB0WMHHjS2mn+cv6vIVo2wU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755677375; c=relaxed/simple;
-	bh=QtPa4Xm8uTmy+B5vWLRgRCy9n5XjZIkEIBssgZ3jQWw=;
+	s=arc-20240116; t=1755678354; c=relaxed/simple;
+	bh=bgl3HkIMW7jTPZzwpbGVR+t4E1BtBWuzf9DJGL4AiFM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BQuyoS8fpwRui2R/MyXLj/r1GOzjU42tqWBn4zWjyr7HA0vg8Ay0ZkBdxwA2cgntFQY8fFtmMYEJ2lRyIXQt5O6+yj4kGftNQpFzDZnhrmMgOHdXvSIFKFY04S77uViPUeK++W/+1ti9otkxN1nUefUgZwoTth1NYIZT5tyXDwU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Xixm2oi8; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	 In-Reply-To:Content-Type; b=ueZZBazFn2mmDElKgYCM+oqie3geZgNo9QLTp3dW6+K0ROnqCoxc+3DDv8cVTYUElZqnmxl54RrpMSwve/qbScn5HBs5Uv35h11dxhcpWR5yErax+2quma7MNrhpMScBOoALWsIzrY4JS6Ub/0d07YnPczIxHfznZCht1KXnvJY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=fd/wt1GC; arc=none smtp.client-ip=217.72.192.78
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Xixm2oi8"
-Received: from pps.filterd (m0353729.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57JNmmLo017631;
-	Wed, 20 Aug 2025 08:09:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=XyEp7P
-	B6Crc5O/n3hDpRBdclhiXWepi7f2DlP7ISOnE=; b=Xixm2oi8D/e/+wAITPeDp3
-	TALHrRG4EBVti1e3wM1Z6LnCfvINBVfhRGmgOPkipNfgbFhBD0MWSeZRRuGZ/NN+
-	NKDq98HPciL4Zozeql4srzji2nvV3CzcZ3UlmCS5mUo4axD1CO9niYr/utY3r3nU
-	R/k9YIllh44h9uoNOFLeppTj5ZpJGLc7EDb+zLBQQ5R2NO8ZqfzYF65N+NeIflzl
-	gTcYt/B8t87ieiFU691ZjDHQqARPeaX+Fy6nA8Cm30nsgWe9R3Iis8b6CyGL5Xlw
-	ovWuvSCaaobgeWwxqiRAGHpZnDDJ13JX7jkAK7240Uso3SZWpw/1sppbNb+XqHPQ
-	==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 48n38vhrww-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 20 Aug 2025 08:09:13 +0000 (GMT)
-Received: from m0353729.ppops.net (m0353729.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.1.12/8.18.0.8) with ESMTP id 57K89CuX005377;
-	Wed, 20 Aug 2025 08:09:12 GMT
-Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 48n38vhrwp-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 20 Aug 2025 08:09:12 +0000 (GMT)
-Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma12.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 57K4xm2t015619;
-	Wed, 20 Aug 2025 08:09:11 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 48my422cjr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 20 Aug 2025 08:09:11 +0000
-Received: from smtpav07.fra02v.mail.ibm.com (smtpav07.fra02v.mail.ibm.com [10.20.54.106])
-	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 57K899B961342160
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 20 Aug 2025 08:09:09 GMT
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A734720043;
-	Wed, 20 Aug 2025 08:09:09 +0000 (GMT)
-Received: from smtpav07.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 407A620040;
-	Wed, 20 Aug 2025 08:09:08 +0000 (GMT)
-Received: from [9.111.5.117] (unknown [9.111.5.117])
-	by smtpav07.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 20 Aug 2025 08:09:08 +0000 (GMT)
-Message-ID: <295ae4dd-4734-42a0-be63-2d322f00c799@linux.ibm.com>
-Date: Wed, 20 Aug 2025 10:09:07 +0200
+	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="fd/wt1GC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1755678335; x=1756283135; i=markus.elfring@web.de;
+	bh=bgl3HkIMW7jTPZzwpbGVR+t4E1BtBWuzf9DJGL4AiFM=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=fd/wt1GCBMzf+10/UiQ6rNtcq8tnHAVQFOG1WsX9pAJHZl1Q3P1gJkBfkQZM2del
+	 0a2x3h7Xa4/wLOiZyyBhTL4Ndki16jAqUvgKO0/VsPlgUDzW57uAGCCDzW5AbegqI
+	 FkB3EBX8SmT5N+EMSmf73G0uKNzyWH4c3r+dW2iTaDaFHI+LHAjRC57LwtO/hxGu6
+	 Up7L1mcQ62x8VRtsfZEni4REYDDwOwgnucEZWgRBV+dDh8xu/c8onJAzC/Wd819vp
+	 ztOgYP8KEPZy7vzNBHvdMFyRayhPduOtl6ucXoFrd44Z+UqVllkbsXb5TSyK5SDXD
+	 GNH38efdPC11M4UBEg==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.29] ([94.31.92.226]) by smtp.web.de (mrweb106
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1MjBRn-1uILmc1yNR-00feTB; Wed, 20
+ Aug 2025 10:25:35 +0200
+Message-ID: <568d8b25-8cb5-48f8-850e-0298e3fc456a@web.de>
+Date: Wed, 20 Aug 2025 10:25:33 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,208 +43,110 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 18/19] perf: Introduce positive capability for raw events
-To: Robin Murphy <robin.murphy@arm.com>, peterz@infradead.org,
-        mingo@redhat.com, will@kernel.org, mark.rutland@arm.com,
-        acme@kernel.org, namhyung@kernel.org,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        irogers@google.com, adrian.hunter@intel.com, kan.liang@linux.intel.com
-Cc: linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev,
-        linux-csky@vger.kernel.org, loongarch@lists.linux.dev,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, dmaengine@vger.kernel.org,
-        linux-fpga@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        intel-xe@lists.freedesktop.org, coresight@lists.linaro.org,
-        iommu@lists.linux.dev, linux-amlogic@lists.infradead.org,
-        linux-cxl@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-References: <cover.1755096883.git.robin.murphy@arm.com>
- <542787fd188ea15ef41c53d557989c962ed44771.1755096883.git.robin.murphy@arm.com>
- <67a0d778-6e2c-4955-a7ce-56a10043ae8d@arm.com>
-Content-Language: en-US
-From: Thomas Richter <tmricht@linux.ibm.com>
-Organization: IBM
-In-Reply-To: <67a0d778-6e2c-4955-a7ce-56a10043ae8d@arm.com>
+Subject: Re: [PATCH v4] iommu/riscv: prevent NULL deref in iova_to_phys
+To: XianLiang Huang <huangxianliang@lanxincomputing.com>,
+ iommu@lists.linux.dev, linux-riscv@lists.infradead.org
+Cc: LKML <linux-kernel@vger.kernel.org>, Albert Ou <aou@eecs.berkeley.edu>,
+ Alexandre Ghiti <alex@ghiti.fr>, =?UTF-8?B?SsO2cmcgUsO2ZGVs?=
+ <joro@8bytes.org>, Palmer Dabbelt <palmer@dabbelt.com>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Robin Murphy
+ <robin.murphy@arm.com>, Tomasz Jeznach <tjeznach@rivosinc.com>,
+ Will Deacon <will@kernel.org>
+References: <20250820072248.312-1-huangxianliang@lanxincomputing.com>
+Content-Language: en-GB, de-DE
+From: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <20250820072248.312-1-huangxianliang@lanxincomputing.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: rc1CmpHVUr4PjN6HeVNNaTAKVoWbVX32
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODE5MDIyMiBTYWx0ZWRfX4xTzLYCTQsxG
- AGD1we0J4ezItB0ejTfm7DJNuDAARyH4VivdukTDV+G2c134zt0WbxSJSEE76uDxTym3DRzLeZX
- mOf6bUkLRc8HI2z83HLeSrLnCDaUzt6ctsGigqq+Yny6dHl56O82/ysxGcmIZx9UyZO+hyMZvb/
- ecuWa/hbBYOZ6yeacF65qy/00k1eAjO++Mj45cxXjqV85T1khiwKHAStutPkN05LIcWmzIOI2N6
- JcZUW/XH3ZbwPgzY20enHnuM+rxpiC2AXWamVYRgBgnxytZoHYJTbh5BurqPVICmyND/IQHxcAh
- w3J7un0oPnbnMNdQ3B2TA6VUHKYY82ln4UWEvFzI/Jn0XaQRTQr//JuEseTSCgQIqbo5FGoTW85
- ypKOH5UDXA9ip20lItNjpe1wLNO1nQ==
-X-Proofpoint-GUID: GZ2wu60A03msHy_JXXsuf0f5WSTi9QT-
-X-Authority-Analysis: v=2.4 cv=KPwDzFFo c=1 sm=1 tr=0 ts=68a582a9 cx=c_pps
- a=bLidbwmWQ0KltjZqbj+ezA==:117 a=bLidbwmWQ0KltjZqbj+ezA==:17
- a=IkcTkHD0fZMA:10 a=2OwXVqhp2XgA:10 a=7CQSdrXTAAAA:8 a=gUTjnckvcJroK4elFEgA:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=a-qgeE7W1pNrGK8U0ZQC:22
- a=DXsff8QfwkrTrK3sU8N1:22 a=Z5ABNNGmrOfJ6cZ5bIyy:22 a=bWyr8ysk75zN3GCy5bjg:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-08-20_03,2025-08-20_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1011 spamscore=0 adultscore=0 malwarescore=0 lowpriorityscore=0
- bulkscore=0 priorityscore=1501 suspectscore=0 phishscore=0 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2508110000 definitions=main-2508190222
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:fXaK7bGqvBByaoI3ghEUvLpw3Q0ZctNEkLDdwSBlrtDPV/7aUmX
+ MH71RlbOR+iJ+zGIEnrx/4/s6Q2XsJpsHZFY9hvIv0ihpTd4RVz6tmXTtymo0PT6WI+lQcK
+ 9JChPfNAGSXQjv0c11I5ReDabbjL93EJsynPSl+V52XMxOaIpCfNe73TOA1zz/MBxivBHWv
+ lJNbvywlut7+ARFLSM0HQ==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:N+h8Jf5Zvqc=;TgajJXDoI8eSFd7NYlIHFbUzMQl
+ 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
+ 1qvkmFY=
 
-On 8/19/25 15:15, Robin Murphy wrote:
-> On 13/08/2025 6:01 pm, Robin Murphy wrote:
->> Only a handful of CPU PMUs accept PERF_TYPE_{RAW,HARDWARE,HW_CACHE}
->> events without registering themselves as PERF_TYPE_RAW in the first
->> place. Add an explicit opt-in for these special cases, so that we can
->> make life easier for every other driver (and probably also speed up the
->> slow-path search) by having perf_try_init_event() do the basic type
->> checking to cover the majority of cases.
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>
->> A further possibility is to automatically add the cap to PERF_TYPE_RAW
->> PMUs in perf_pmu_register() to have a single point-of-use condition; I'm
->> undecided...
->> ---
->>   arch/s390/kernel/perf_cpum_cf.c    |  1 +
->>   arch/s390/kernel/perf_pai_crypto.c |  2 +-
->>   arch/s390/kernel/perf_pai_ext.c    |  2 +-
->>   arch/x86/events/core.c             |  2 +-
->>   drivers/perf/arm_pmu.c             |  1 +
->>   include/linux/perf_event.h         |  1 +
->>   kernel/events/core.c               | 15 +++++++++++++++
->>   7 files changed, 21 insertions(+), 3 deletions(-)
->>
->> diff --git a/arch/s390/kernel/perf_cpum_cf.c b/arch/s390/kernel/perf_cpum_cf.c
->> index 1a94e0944bc5..782ab755ddd4 100644
->> --- a/arch/s390/kernel/perf_cpum_cf.c
->> +++ b/arch/s390/kernel/perf_cpum_cf.c
->> @@ -1054,6 +1054,7 @@ static void cpumf_pmu_del(struct perf_event *event, int flags)
->>   /* Performance monitoring unit for s390x */
->>   static struct pmu cpumf_pmu = {
->>       .task_ctx_nr  = perf_sw_context,
->> +    .capabilities = PERF_PMU_CAP_RAW_EVENTS,
->>       .pmu_enable   = cpumf_pmu_enable,
->>       .pmu_disable  = cpumf_pmu_disable,
->>       .event_init   = cpumf_pmu_event_init,
->> diff --git a/arch/s390/kernel/perf_pai_crypto.c b/arch/s390/kernel/perf_pai_crypto.c
->> index a64b6b056a21..b5b6d8b5d943 100644
->> --- a/arch/s390/kernel/perf_pai_crypto.c
->> +++ b/arch/s390/kernel/perf_pai_crypto.c
->> @@ -569,7 +569,7 @@ static const struct attribute_group *paicrypt_attr_groups[] = {
->>   /* Performance monitoring unit for mapped counters */
->>   static struct pmu paicrypt = {
->>       .task_ctx_nr  = perf_hw_context,
->> -    .capabilities = PERF_PMU_CAP_SAMPLING,
->> +    .capabilities = PERF_PMU_CAP_SAMPLING | PERF_PMU_CAP_RAW_EVENTS,
->>       .event_init   = paicrypt_event_init,
->>       .add          = paicrypt_add,
->>       .del          = paicrypt_del,
->> diff --git a/arch/s390/kernel/perf_pai_ext.c b/arch/s390/kernel/perf_pai_ext.c
->> index 1261f80c6d52..bcd28c38da70 100644
->> --- a/arch/s390/kernel/perf_pai_ext.c
->> +++ b/arch/s390/kernel/perf_pai_ext.c
->> @@ -595,7 +595,7 @@ static const struct attribute_group *paiext_attr_groups[] = {
->>   /* Performance monitoring unit for mapped counters */
->>   static struct pmu paiext = {
->>       .task_ctx_nr  = perf_hw_context,
->> -    .capabilities = PERF_PMU_CAP_SAMPLING,
->> +    .capabilities = PERF_PMU_CAP_SAMPLING | PERF_PMU_CAP_RAW_EVENTS,
->>       .event_init   = paiext_event_init,
->>       .add          = paiext_add,
->>       .del          = paiext_del,
->> diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
->> index 789dfca2fa67..764728bb80ae 100644
->> --- a/arch/x86/events/core.c
->> +++ b/arch/x86/events/core.c
->> @@ -2697,7 +2697,7 @@ static bool x86_pmu_filter(struct pmu *pmu, int cpu)
->>   }
->>     static struct pmu pmu = {
->> -    .capabilities        = PERF_PMU_CAP_SAMPLING,
->> +    .capabilities        = PERF_PMU_CAP_SAMPLING | PERF_PMU_CAP_RAW_EVENTS,
->>         .pmu_enable        = x86_pmu_enable,
->>       .pmu_disable        = x86_pmu_disable,
->> diff --git a/drivers/perf/arm_pmu.c b/drivers/perf/arm_pmu.c
->> index 72d8f38d0aa5..bc772a3bf411 100644
->> --- a/drivers/perf/arm_pmu.c
->> +++ b/drivers/perf/arm_pmu.c
->> @@ -877,6 +877,7 @@ struct arm_pmu *armpmu_alloc(void)
->>            * specific PMU.
->>            */
->>           .capabilities    = PERF_PMU_CAP_SAMPLING |
->> +                  PERF_PMU_CAP_RAW_EVENTS |
->>                     PERF_PMU_CAP_EXTENDED_REGS |
->>                     PERF_PMU_CAP_EXTENDED_HW_TYPE,
->>       };
->> diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
->> index 183b7c48b329..c6ad036c0037 100644
->> --- a/include/linux/perf_event.h
->> +++ b/include/linux/perf_event.h
->> @@ -305,6 +305,7 @@ struct perf_event_pmu_context;
->>   #define PERF_PMU_CAP_EXTENDED_HW_TYPE    0x0100
->>   #define PERF_PMU_CAP_AUX_PAUSE        0x0200
->>   #define PERF_PMU_CAP_AUX_PREFER_LARGE    0x0400
->> +#define PERF_PMU_CAP_RAW_EVENTS        0x0800
->>     /**
->>    * pmu::scope
->> diff --git a/kernel/events/core.c b/kernel/events/core.c
->> index 71b2a6730705..2ecee76d2ae2 100644
->> --- a/kernel/events/core.c
->> +++ b/kernel/events/core.c
->> @@ -12556,11 +12556,26 @@ static inline bool has_extended_regs(struct perf_event *event)
->>              (event->attr.sample_regs_intr & PERF_REG_EXTENDED_MASK);
->>   }
->>   +static bool is_raw_pmu(const struct pmu *pmu)
->> +{
->> +    return pmu->type == PERF_TYPE_RAW ||
->> +           pmu->capabilities & PERF_PMU_CAP_RAW_EVENTS;
->> +}
->> +
->>   static int perf_try_init_event(struct pmu *pmu, struct perf_event *event)
->>   {
->>       struct perf_event_context *ctx = NULL;
->>       int ret;
->>   +    /*
->> +     * Before touching anything, we can safely skip:
->> +     * - any event for a specific PMU which is not this one
->> +     * - any common event if this PMU doesn't support them
->> +     */
->> +    if (event->attr.type != pmu->type &&
->> +        (event->attr.type >= PERF_TYPE_MAX || is_raw_pmu(pmu)))
-> 
-> Ah, that should be "!is_raw_pmu(pmu)" there (although it's not entirely the cause of the LKP report on the final patch.)
-> 
-> Thanks,
-> Robin.
-> 
->> +        return -ENOENT;
->> +
->>       if (!try_module_get(pmu->module))
->>           return -ENODEV;
->>   
-> 
-> 
+=E2=80=A6> ---
+> Changes
+> v4:
+> - Change the summary as Markus recommends
+>=20
+> v3:
+> - Remove redundant pte validation in riscv_iommu_iova_to_phys
+> - Improve subject line to emphasize prevention
+=E2=80=A6
 
-Hi Robin,
+Does anything hinder you to integrate repeated patch review ideas better
+into your contributions?
 
-what is the intention of that patch?
-Can you explain that a bit more.
+Repetition:
+https://lore.kernel.org/lkml/effb29be-6d14-47e5-ab71-454119467750@web.de/
+https://lkml.org/lkml/2025/8/7/282
 
-Thanks.
-
--- 
-Thomas Richter, Dept 3303, IBM s390 Linux Development, Boeblingen, Germany
---
-IBM Deutschland Research & Development GmbH
-
-Vorsitzender des Aufsichtsrats: Wolfgang Wendt
-
-Geschäftsführung: David Faller
-
-Sitz der Gesellschaft: Böblingen / Registergericht: Amtsgericht Stuttgart, HRB 243294
+Regards,
+Markus
