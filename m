@@ -1,216 +1,188 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2068.outbound.protection.outlook.com [40.107.223.68])
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 968E9326D66;
-	Thu, 21 Aug 2025 13:14:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.68
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755782073; cv=fail; b=Af/6J29k5wm0P/E/aUQCG2rsNYiXGmz42kIp2Aqaayt1CWAdY9iVGHo29qbq1sRyqtSQVtCm5ZKid2EzZeV7UGZlYgNFxnvC0HiFUdYW8A4T2Wt9FSCJqZucmO7XZQccTPHo0i6Ip0RVeQM/IAtL+U3ZZtEsByHO3fwcbc7eDug=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755782073; c=relaxed/simple;
-	bh=O6x4s0MUeScv8ws459IlZxC4vhf49fP6a34HXQyojW4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=e/5Ri00IQGnDWU3PDnPJcpDRdZXtS4h9D95pEBj75wYmqAP9xM+hKBVUClcLmHfa/wRLoLaGFppc4LB9Ob7nPutUHwS2+QZDydSwSx/QMzyvG/oBDeIvTynEZ+zg+gYY8f5ry5Y+wnATroIo5qDp4BQFLqzq5GoQAtdFP2vi5F0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=jnP5BR4A; arc=fail smtp.client-ip=40.107.223.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8A982EDD6B
+	for <iommu@lists.linux.dev>; Thu, 21 Aug 2025 13:39:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1755783597; cv=none; b=W7Mr7cETAoFDkD1Lppd5+jBZl8Blbyc3glVSHcnYy/9LCqHl9RkCvMzi/ijMX40U8e2qKkpdbuK4XR0ICEBoJrFQG8fGT0hsKC4yLCZ+QhMKD1um9ZgyFmcQ4BmHUBdg9qPGEYzbN5cBe1nytaBa1HlonaMHMJzaKVaNFeSoqCk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1755783597; c=relaxed/simple;
+	bh=uzUC6Drx5E9fPQbMQpF5UQNAQ6ITfbcPnHHlGncyJSA=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=qf1PdyxT5t6oeSduC9dZcHkB/mV/GNYDmP8K0cb8d0uuROqN8iCcyYJvnoXaeVpKGcMgadH1p+kXjUiGVL/P0KvZgH2oPJ/A2mxouHsmoDIg/TaS4MgR5H7T0Qm1s0KSRzOyv+0pNWEIF58+rESc9yUYNXrUKtUAIpozt9MII80=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=AcJDthOL; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="jnP5BR4A"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nWWJ8zCgzvR02PPcWAPxJSgQv0A/s5pKemJV1SfouKAUs1KKVqlt/RfyMTtv1MZVlzp5ZkL5hNW0ZRw25aEayq6GiwB2WIXWYDVXm3TKOQKSEjQOvTwGf5gM3s/adeHEKrz8VNPhcVUtdkCYZHlMLDK2MP45jPlGfREDKGQsm7pcGejpUt8qvtP8smbpkWCvkg93mmo9ak7+kG0nJ8fzX/OAX3fXtwyYsXF7Mzn/m6mTgc/9Um0qFrErgFfjEIvhRYvaPeZc5qEJPpx+3pyYgF1oxqewolYS00mAuwlWYIOfVDWxMLurQFUC/Pna12IYBY9OYTUvYPsWYJLF8+w1uA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KWmxKREeqYaPO8e5g6X3Vuo8X/Z2iY7da+RT/6VWdyI=;
- b=QG+FAFadxksJ324wMKQ03ST+MX56npcwyr38gmnddK7OOiADNo3h0s6KzH7JYyNQrzKikItx2noqNyWZYQvOArOtzWUfAy4XGeFJ+MD+fo7MDzFVoRwbQasmomyN6Vm+m0hoE3G4lIXja6HugWf2G8PUypaCt1VebOIPvzTQL8MexUU63lOJUPCx47CBgQbOPaaQIAsxdkvM5Vgf+AQgUlTbJdc+zyijfBW46Fas3sP1FFPTVARifIAQa47ojzm2L7AHTdnrYRVruImEg5jApo4yFkbob3JWkDBjr8mi34SZCUGQQCKCkw3GP4blNIO6kk2TPOqRV6JsgCkqzb1MaQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KWmxKREeqYaPO8e5g6X3Vuo8X/Z2iY7da+RT/6VWdyI=;
- b=jnP5BR4ATYb4Ecbv6RIYH6mI5RViBjxJcfo4Jb+BQhXrb56eiQ9CCKsxJ3nwF7PiBirBRUiJqeNMb/fvPye8Yh3h4aEA1xExz0ooNoVT5RasDEzBLL0rjSIWMUtiNRgo6TZD+7EZeWoh8UZRNwN0sCr7x8x2/aSnzCnydFSwUAfXTETrQ6jgjl+oCtSzKlaVQoBVaXmInegrrbtZlRNYIJU2cf7Pz/eZVl///pWWbRAEqtGCvYvl8jXXWLSaX68NazRW4Wx64TZVPt9fEm+BjP58+rxYne8nmWEulf4Lqx1sTkBQj8upfVE7ps7uoFTGlCUvIbHH/KkdtsDdG+fJqQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
- by DS0PR12MB8072.namprd12.prod.outlook.com (2603:10b6:8:dd::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9052.14; Thu, 21 Aug
- 2025 13:14:29 +0000
-Received: from CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
- ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.9031.024; Thu, 21 Aug 2025
- 13:14:28 +0000
-Date: Thu, 21 Aug 2025 10:14:26 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.clark@oss.qualcomm.com" <robin.clark@oss.qualcomm.com>,
-	"yong.wu@mediatek.com" <yong.wu@mediatek.com>,
-	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-	"angelogioacchino.delregno@collabora.com" <angelogioacchino.delregno@collabora.com>,
-	"thierry.reding@gmail.com" <thierry.reding@gmail.com>,
-	"vdumpa@nvidia.com" <vdumpa@nvidia.com>,
-	"jonathanh@nvidia.com" <jonathanh@nvidia.com>,
-	"rafael@kernel.org" <rafael@kernel.org>,
-	"lenb@kernel.org" <lenb@kernel.org>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-	"linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
-	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-	"linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-	"patches@lists.linux.dev" <patches@lists.linux.dev>,
-	"Jaroszynski, Piotr" <pjaroszynski@nvidia.com>,
-	"Sethi, Vikram" <vsethi@nvidia.com>,
-	"helgaas@kernel.org" <helgaas@kernel.org>,
-	"etzhao1900@gmail.com" <etzhao1900@gmail.com>
-Subject: Re: [PATCH v3 3/5] iommu: Add iommu_get_domain_for_dev_locked()
- helper
-Message-ID: <20250821131426.GN802098@nvidia.com>
-References: <cover.1754952762.git.nicolinc@nvidia.com>
- <a69557026b7e2353bae67104bbe6a88f0682305e.1754952762.git.nicolinc@nvidia.com>
- <20250818143949.GO802098@nvidia.com>
- <aKNhIr08fK+xIYcg@Asurada-Nvidia>
- <BN9PR11MB5276262E1925E2CD8AE037EF8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276262E1925E2CD8AE037EF8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BY5PR13CA0030.namprd13.prod.outlook.com
- (2603:10b6:a03:180::43) To CH3PR12MB8659.namprd12.prod.outlook.com
- (2603:10b6:610:17c::13)
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="AcJDthOL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1755783593;
+	bh=uzUC6Drx5E9fPQbMQpF5UQNAQ6ITfbcPnHHlGncyJSA=;
+	h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
+	b=AcJDthOL5BgNcTOJkDXW5BLWSl5yfrGZknSSn4ajJvthU7Haulm9UtA/+nqyPKrTq
+	 zZjgMmn3JjbBilZsvHMlEO9uhejKeCAeB/6LDXinwHMZ6ukcCWaS/DC6xhIlMHitUm
+	 TgEiWM/wJo9/R9r3udp6LZBqbNFV17owfBYKen0E3k9C7sY7B0QCqMUn9ocaI0MjZ+
+	 vfTaPXBNxbYMvkFx5uhVHaxRGQr5e/4ooPfadW5sZUApK0PqgL2ZJWqr6DtJ2LxwnV
+	 nI+Jx5K3jL8KBoCm5NOvqgKvkd1OX8CsBalzsUHucG3fe4EvgX4CWohSi3tJoqaMY4
+	 e4vrEPKyuh+nw==
+Received: from [192.168.100.175] (unknown [103.151.43.82])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: usama.anjum)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id A5D7F17E01F5;
+	Thu, 21 Aug 2025 15:39:49 +0200 (CEST)
+Message-ID: <bdd1efa8-691c-4e84-8977-cdfd48e7363a@collabora.com>
+Date: Thu, 21 Aug 2025 18:39:45 +0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|DS0PR12MB8072:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7586e769-fa89-4679-d82b-08dde0b4a8b8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?vQK9EuFKO3OIR4SqcDJWJABVv4ZZXtV+EeBqOJoVgfCcnXaxgT5tU1HmCSAA?=
- =?us-ascii?Q?Tdr/GNYtlaeTJF05raSBd2Oyp2ObfKb2QqhJ0EPp65qxhQOp3mREx2G4bRIw?=
- =?us-ascii?Q?zqJClE3bSkaFHvD0jKC2x9LnTAuBirnZdbVTEXG76v20anzC8/GT7/uObt1T?=
- =?us-ascii?Q?8mnKfSxiBFT4c8YRe0kI59k4nWYuGe4en0WLbrOlgSRlnHw4Kt8jhL8GdkBr?=
- =?us-ascii?Q?AHfgIcG+O+CETIWs2QzQno6OL4hYcbRa7aBrrqV98FyGbsv8tiSEq4C9yiNx?=
- =?us-ascii?Q?iSenvTMnQ3G7YMmw+HF2uuBUq1sdS/yG8cGLt3/f4UEdh17V9MhPet3RJ1vl?=
- =?us-ascii?Q?osl6yK4zOaJVCgwDvmykBtltQFhAgyIpbFz7FAFtwUW53z4yiocjYdb8BWsU?=
- =?us-ascii?Q?fys5PrZw1fxmeFMGonb7IbqQ/6PVGLftkUwr8XSi+0EvdXEBcARaMKKtQrhZ?=
- =?us-ascii?Q?huMrcFc4sQTdcMR+GuvBBddk5NgHdcZDS5oLol0tbUdMbxnwX5o/AA86fwe/?=
- =?us-ascii?Q?NixKY4oafBNJUADtRGW68cgm0DSD7io/B7OyC0Nd9d3jnkjp9rB9guLw6iSu?=
- =?us-ascii?Q?7DV3/EBmK1X0K9b4EfNZx+dHBD2AyfiOtRzIbLlu0IXmZ6f5fJ7CmMp8JRvf?=
- =?us-ascii?Q?Ar4WUq0y5gqUpLkIoHmswWZZjDRwD/UPPr8x+LLTlSzX6qPsIxlIrlH7aYRx?=
- =?us-ascii?Q?12lllVRsgRhU5VUic+WIZoKVM9fWkVETQ9oCiVBq+ZRl/mxXdaRJ38zTDpWS?=
- =?us-ascii?Q?2ekUy8NAOWLm+edIzG9gRrFk90QxpVnC5blEj1FhnTvoyR5uExcWtLoNFBBT?=
- =?us-ascii?Q?QtTXOYx+KhzsrZFwPVtcXLxFwElDq92d+C3b/RB44EiBdQvqzm8gmaaAqWcR?=
- =?us-ascii?Q?OKe6y4Ea+gJ2NgEPAwuhclxczeDy690dNpq0jXS83YH8mRPh3ccXcwZEiUNM?=
- =?us-ascii?Q?XUpychy18UtfOdmKISCP/8WvqrfqdzYdHpIvda1YP7QXYQiveG0009nxL3ln?=
- =?us-ascii?Q?y4rhvBO5R7ILOQisv0Rjf5Eiv+DKKyXO6R+pv1pGGEfY18lYIBX++tKbvaOe?=
- =?us-ascii?Q?ggjvJVN0oGERKMx6cshceMQ655WFlADproxW4WIX/zZa60+saOkwaWtZ3xJc?=
- =?us-ascii?Q?IDcRwSusDY+qnuCFuTiSBTJqyng1iWBHgT2TDtXei0jKb3uOo/pr6/hOC9Q3?=
- =?us-ascii?Q?zUQIB3JZgaZPxEcQHEP4JwVrxrLB8BL/JsQ8hTexE1HRDfC+LOxusXaIIy9u?=
- =?us-ascii?Q?JKg3PuTIr0jvvsFFHchrWbj8jGCeY5yFpJwTBbkq1OfRUVNRIgVuprjv74nb?=
- =?us-ascii?Q?nmRPF8WNMxInJaoLPfzvC8FHMkdYM2Ii70uuMiEDyRpK2Yu7fq8WppWHtbfN?=
- =?us-ascii?Q?QU7azf4+49IUBVPxGLdOwJ4fAldxYWSsW/WLuLKn6MFwyy7ZS0GV7o99VYf+?=
- =?us-ascii?Q?sPksM/T3g9g=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?DEk4HxLRbptnwtCUoQWzZuZllbCKR7OeQ/S8v6uhznfkWO5CTuNeHzLpBNUg?=
- =?us-ascii?Q?gYvfKZQty0a4VGc5mb7zvV1P2z7DY9o9pf9CuFLFsnG3tycsOWhgLkQUnx/Y?=
- =?us-ascii?Q?26brOPN2u43DL9urTt3TFsdHD+L0CjYrRiOhkWyBykh3qYjLcID6/aRlCvGt?=
- =?us-ascii?Q?IBIEROLN98hl6stuPbPXwPqsI2G+4ZKH8K6CAvnH4T2moCxyq90dwdZay5yo?=
- =?us-ascii?Q?VKzZasLErxQje/kErqi717upCI670AbiBroZ/0sZND3e0PbDU3LEQX/WaSnL?=
- =?us-ascii?Q?iD96cojCYJD2KYkaHYz8+0kBcCWJJ1D7h2LDzerlf5p0Xz9IPHFTbklJuBg5?=
- =?us-ascii?Q?rqNpHMXg3qwipN6dFAd/gaNu5vZADjtVcxddUFtgBtLV/pzBi0/FGXUMZj6a?=
- =?us-ascii?Q?0JSYzowG8j06heff2YhoG6XJ96aO4iYlV2DluW2xdkQIg1hgMFf75G1ZJsHI?=
- =?us-ascii?Q?nxLWxtL4ONey/eBblsGvUpPlg5hhclhJVceQp+KUC5qVO6T1My5wUF715m81?=
- =?us-ascii?Q?xQ9jTsQZ46CALG/jHAG7zq4ocQJvG07Xd8RxUgx+mdzJ/mb7QEsTigMVc9MM?=
- =?us-ascii?Q?NXDnTyaV7OE5k30SAI3V9ZsVqc6fq0exm3t10fDOjYFp9QE3vIe9KzIZwel2?=
- =?us-ascii?Q?2nJC8rnTEbsITqAAYgnFkAMlzTt9CIYyMdLQQTmP5PbYcKZtWyrLvDyLboS8?=
- =?us-ascii?Q?T3bclXEo4q4XbmzFcMnNOV1xR6GCatoEQLVLU4v0hRuaKkpJNYGOcLA47h2l?=
- =?us-ascii?Q?tYhQ3wXDeNlTUmD0pVCMGQaAWu1jdsnD+0grEBszg9j2xc7mpnhrYToj/Fw9?=
- =?us-ascii?Q?uuAgTa4kI9fO+IHDrQLbyIl6IL1F/x+QehKjPOE0rFkh36mALrsWEvYLcwl7?=
- =?us-ascii?Q?At8Xe1B0gyGu0+2qrqxQ6EhV0hr0bCkUzTzVjjQIBDgPFi0GiPWzqdOPbpe2?=
- =?us-ascii?Q?1344PBYH2v3tmEmNg7m9FKu2Y1i4Pni4C0DbaE7EJvNLa5+kNsn8An4eS5Ac?=
- =?us-ascii?Q?d75i8uK2MtYji0G0tkoT//tmGvWN6PHHjT6JF3RA6hhiVy3Lem8JR3DEvKTr?=
- =?us-ascii?Q?5YmpAqBLc+pC43YbfkGZ6PIj939JioFfUeEx67BhZr3Q3l+MKYyMCTGuWItT?=
- =?us-ascii?Q?d4I9Ymy3qzUJRWo98oo0Dfdy1KXwR46DTYUQo/A9VjVWGTb7S81Tabk1AKR/?=
- =?us-ascii?Q?XKgVXbHefJpCcNNDhP7zf74QqppLF+2T0lF67vBvOCP2tqop29JeiHIcq7ve?=
- =?us-ascii?Q?F2GrTL1wb/l/DW7O6lTbS62pxP8VODLCSlaBz7JyK1/P75YSYB1YbAKQi7o7?=
- =?us-ascii?Q?bx+J/z6yaYGLAwDM4xFsyAAYcuUBZ3hVlAn+r/d7sV4gCzHf//Y9oeC1QXAC?=
- =?us-ascii?Q?75duQ0gVRhEBZoYBG+/Y77TaPxr09ivv1XfPCtla6sCGrN3pJDDHNrkvYVjK?=
- =?us-ascii?Q?d4Brzo0+PIbratx6/ZIl0Bt4Ip8iUgrK0Mcs/nRszddzJvmxRziEzt8C79MR?=
- =?us-ascii?Q?DDP0ZkyyKEkw0CJzqFg7kd2ZAl3LEvDzFvELNgWXRupgJMjsr+V9HY9ml1VB?=
- =?us-ascii?Q?5cDq4hGYs2Xg/tGJRzZ9/2tsvOtZ6BtBtMdM1ktd?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7586e769-fa89-4679-d82b-08dde0b4a8b8
-X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2025 13:14:28.7594
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ry1vLIgrHg8gI1TPHDTe3ek5U0fecfUB8LUfOzre+HJgaZCyFglWE5srh9iYDau6
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8072
+User-Agent: Mozilla Thunderbird
+From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Subject: Re: Excessive page cache occupies DMA32 memory
+To: Robin Murphy <robin.murphy@arm.com>, Greg KH <gregkh@linuxfoundation.org>
+Cc: usama.anjum@collabora.com, Matthew Wilcox <willy@infradead.org>,
+ Baochen Qiang <baochen.qiang@oss.qualcomm.com>,
+ Jeff Hugo <jeff.hugo@oss.qualcomm.com>,
+ Manivannan Sadhasivam <mani@kernel.org>, Jeff Johnson <jjohnson@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, linux-fsdevel@vger.kernel.org,
+ linux-mm@kvack.org, kernel@collabora.com,
+ Andrew Morton <akpm@linux-foundation.org>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, David Hildenbrand <david@redhat.com>
+References: <766ef20e-7569-46f3-aa3c-b576e4bab4c6@collabora.com>
+ <aH51JnZ8ZAqZ6N5w@casper.infradead.org>
+ <2025072238-unplanted-movable-7dfb@gregkh>
+ <91fc0c41-6d25-4f60-9de3-23d440fc8e00@collabora.com>
+ <2025072234-cork-unadvised-24d3@gregkh>
+ <c93b34ca-1abf-4db0-90f9-3802ac02c25a@arm.com>
+Content-Language: en-US
+In-Reply-To: <c93b34ca-1abf-4db0-90f9-3802ac02c25a@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, Aug 21, 2025 at 08:11:05AM +0000, Tian, Kevin wrote:
-> > From: Nicolin Chen <nicolinc@nvidia.com>
-> > Sent: Tuesday, August 19, 2025 1:23 AM
-> > 
-> > ... I found that in SMMUv3 driver, iommu_get_domain_for_dev() is
-> > used to get the RID domain for an SVA domain:
-> >     arm_smmu_set_pasid()
-> >     arm_smmu_blocking_set_dev_pasid()
-> > 
-> > These two are already given an "old" (SVA) domain pointer, FWIW.
-> > 
-> > So, we may change to passing in the old domain as you suggested,
-> > yet we still have to fix the iommu_get_domain_for_dev() in order
-> > to reflect the RID domain correctly for the driver that calls it
-> > (or even potentially) in some group->mutex locked context where
-> > the RID domain might not be naturally passed in.
-> > 
-> 
-> Out of curiosity.
-> 
-> arm_smmu_blocking_set_dev_pasid()
-> 
-> 	/*                              
-> 	 * When the last user of the CD table goes away downgrade the STE back
-> 	 * to a non-cd_table one.
-> 	 */
-> 	if (!arm_smmu_ssids_in_use(&master->cd_table)) {
-> 		struct iommu_domain *sid_domain =
-> 			iommu_get_domain_for_dev(master->dev);
-> 
-> 		if (sid_domain->type == IOMMU_DOMAIN_IDENTITY ||
-> 		   sid_domain->type == IOMMU_DOMAIN_BLOCKED)
-> 			sid_domain->ops->attach_dev(sid_domain, dev); 
-> 	}
-> 
-> why cannot downgrade apply to the case where the RID is attached to
-> a DMA domain?
+Sorry, it took some time to investigate.
 
-If the RID is a PAGING domain then it must be a S1 paging domain and there is
-no downgrade possible.
+On 7/22/25 3:03 PM, Robin Murphy wrote:
+> On 2025-07-22 8:24 am, Greg KH wrote:
+>> On Tue, Jul 22, 2025 at 11:05:11AM +0500, Muhammad Usama Anjum wrote:
+>>> Adding ath/mhi and dma API developers to the discussion.
+>>>
+>>> On 7/22/25 10:32 AM, Greg KH wrote:
+>>>> On Mon, Jul 21, 2025 at 06:13:10PM +0100, Matthew Wilcox wrote:
+>>>>> On Mon, Jul 21, 2025 at 08:03:12PM +0500, Muhammad Usama Anjum wrote:
+>>>>>> Hello,
+>>>>>>
+>>>>>> When 10-12GB our of total 16GB RAM is being used as page cache
+>>>>>> (active_file + inactive_file) at suspend time, the drivers fail to allocate
+>>>>>> dma memory at resume as dma memory is either occupied by the page cache or
+>>>>>> fragmented. Example:
+>>>>>>
+>>>>>> kworker/u33:5: page allocation failure: order:7, mode:0xc04(GFP_NOIO|GFP_DMA32), nodemask=(null),cpuset=/,mems_allowed=0
+>>>>>
+>>>>> Just to be clear, this is not a page cache problem.  The driver is asking
+>>>>> us to do a 512kB allocation without doing I/O!  This is a ridiculous
+>>>>> request that should be expected to fail.
+>>>>>
+>>>>> The solution, whatever it may be, is not related to the page cache.
+>>>>> I reject your diagnosis.  Almost all of the page cache is clean and
+>>>>> could be dropped (as far as I can tell from the output below).
+>>>>>
+>>>>> Now, I'm not too familiar with how the page allocator chooses to fail
+>>>>> this request.  Maybe it should be trying harder to drop bits of the page
+>>>>> cache.  Maybe it should be doing some compaction.
+>>> That's very thoughtful. I'll look at the page allocator why isn't it dropping
+>>> cache or doing compaction.
+>>>
+>>>>> I am not inclined to
+>>>>> go digging on your behalf, because frankly I'm offended by the suggestion
+>>>>> that the page cache is at fault.
+>>> I apologize—that wasn't my intention.
+>>>
+>>>>>
+>>>>> Perhaps somebody else will help you, or you can dig into this yourself.
+>>>>
+>>>> I'm with Matthew, this really looks like a driver bug somehow.  If there
+>>>> is page cache memory that is "clean", the driver should be able to
+>>>> access it just fine if really required.
+>>>>
+>>>> What exact driver(s) is having this problem?  What is the exact error,
+>>>> and on what lines of code?
+>>> The issue occurs on both ath11k and mhi drivers during resume, when
+>>> dma_alloc_coherent(GFP_KERNEL) fails and returns -ENOMEM. This failure has
+>>> been observed at multiple points in these drivers.
+>>>
+>>> For example, in the mhi driver, the failure is triggered when the
+>>> MHI's st_worker gets scheduled-in at resume.
+>>>
+>>> mhi_pm_st_worker()
+>>> -> mhi_fw_load_handler()
+>>>     -> mhi_load_image_bhi()
+>>>        -> mhi_alloc_bhi_buffer()
+>>>           -> dma_alloc_coherent(GFP_KERNEL) returns -ENOMEM
+>>
+>> And what is the exact size you are asking for here?
+512 KB
 
-It is impossible for the RID to be a S2 paging domain while ssids are
-in use.
+>> What is the dma ops set to for your system?  Are you sure that is
+>> working properly for your platform?  What platform is this exactly?
+Its x86_64 device.
 
-Jason
+>>
+>> The driver isn't asking for DMA32 here, so that shouldn't be the issue,
+>> so why do you feel it is?  Have you tried using the tracing stuff for
+>> dma allocations to see exactly what is going on for this failure?
+> 
+> I'm guessing the device has a 32-bit DMA mask, and the allocation ends up in __dma_direct_alloc_pages() such that that adds GFP_DMA32 in order to try to satisfy the mask via regular page allocation. How GFP_KERNEL turns into GFP_NOIO, though, given that the DMA layer certainly isn't (knowingly) messing with __GFP_IO or __GFP_FS, is more of a mystery... I suppose "during resume" is the red flag there - is this worker perhaps trying to run too early in some restricted context before the rest of the system has fully woken up?
+
+So GFP_KERNEL gets converted to only GFP_RECLAIM as GFP_IO and GFP_FS
+are disabled by the pm subsystem at suspend time and they are only enabled
+after the system has woken up.
+
+GFP_FLAGS
+0xcc0		GFP_KERNL = GFP_RECLAIM | GFP_IO | __GFP_FS
+0xcc4		GFP_RECLAIM | GFP_IO | __GFP_FS | ___GFP_DMA32
+0xc04		GFP_RECLAIM | ___GFP_DMA32
+
+Somewhat debugging log:
+
+[ 1914.214543] mhi_fw_load_handler:
+[ 1914.220346] [Debug] dma_alloc_coherent cc0
+[ 1914.220352] [Debug] dma_alloc_attrs cc0
+[ 1914.220359] [Debug] __dma_direct_alloc_pages cc0
+[ 1914.220360] [Debug] __dma_direct_alloc_pages cc4
+[ 1914.220365] [Debug] __alloc_pages_noprof cc4
+[ 1914.220367] [Debug] __alloc_pages_noprof allowed c04
+[ 1914.220371] [Debug] prepare_alloc_pages allowed alloc_gfp = c04 alloc_flags = 1
+[ 1914.220374] [Debug] prepare_alloc_pages allowed alloc_gfp = c04 alloc_flags = 1
+[ 1914.220379] [Debug] __alloc_pages_slowpath [restart] gfp_mask c04
+[ 1914.220381] [Debug] __alloc_pages_slowpath alloc_flags 840
+[ 1914.220384] [Debug] __alloc_pages_slowpath: skipping direct compaction
+[ 1914.220386] [Debug] __alloc_pages_slowpath [retry]
+[ 1914.220387] [Debug] __alloc_pages_slowpath wake_all_kswapds
+[ 1914.220836] [Debug] __alloc_pages_slowpath: [nopage] no page found
+[ 1914.220839] [Debug] __alloc_pages_slowpath: GFP_NOFAIL not set
+
+Just for experimenting even if I keep GFP_IO and GFP_FS enabled, kswapd's
+waitqueue show that its already active.
+
+Another hack which I've tested is by adding __GFP_NOFAIL with GFP_KERNEL, the
+allocation worked this time. But kernel seemed to tried very hard and finally
+found memory from somewhere.
+
+Its hard to identify the actual issue.
+
+Although its hard to reproduce (I've very strange reproducer), I've tested v6.15.11
+and I'm not able to  reproduce the same issue there. So something has changed
+which isn't triggering this issue. I plan to do bisection now. 
+
+Please feel free to share if you think there can be something better to debug/bisect
+it.
+
+-- 
+---
+Thanks,
+Usama
