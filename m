@@ -1,176 +1,305 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2071.outbound.protection.outlook.com [40.107.93.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5204A2F5492;
-	Thu, 21 Aug 2025 10:25:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755771922; cv=none; b=Lwu3NAq0YL2d6SN5cUdtLhQ2Z6UcgHtNwslMSUbCJ5HE62A73X1vJlXozcjo0kBCXPZ+s6+VTFi8GOyMnBZ+MpaSHRszUz/n5SnfF5XbxzruGw3etPsFYDwqI+6HOX2cJemZINRGKh0ZdPGSy+zYbAVJEq1OkDG3Z3kyGJjrQao=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755771922; c=relaxed/simple;
-	bh=ORTjv3YVqf7tKuswYRO+Ecti+tHql9FqphRkmWE57tg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uIS4C3Wt7QK17ztir7oYm6gaLk0vIAx8BvxSzIDc92qaqnqIdaXzPp9ESDcl0l9I6C+0vYEzuuQJnk5lzKwPIiqP420lS10GtNkt0ksM7TZQZUXZgCptFMyawM0aV0LmQo+qK9LWN0723DF4w/F9+Aj+09Z3LoVynyRBv3hqFYs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QPULIdwc; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 035F62153E7
+	for <iommu@lists.linux.dev>; Thu, 21 Aug 2025 11:29:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.71
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1755775758; cv=fail; b=nE/9rcMKIkAaipIcvIbjsDnqGMnBQ6X0Kpk1HZdJBZra9ElsButCinalS0gnvPPwgwpydRRNICnVBC1Hh7D153iz7OTDv/QGzHBEOiIez0tvfY3Vks1KXhPUtGpwbLLDKBHqGK0405X39dbx1UB1BdPw9A7YaGx1yaHd1kloNmU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1755775758; c=relaxed/simple;
+	bh=/5BtKMgCvbTBQleNIeOgj98i4IzjhXz6LtmeOZrVePA=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=FCpRhEgMYiI+aH0ePuUZbnxBDFdDls//8c61/SVRwkjFOiWP00VNiuqyL2p8nfr5XTuanAV/FusdD+CN8DjoW8gPFj9RhEbTzqjHl25KRpb7fSc9d/dQofeeFrUY9VOoswmHrYUkFgjFTWkPgNE5eSEFyfUaF+uz7hHNq7j8GDQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=dugO9JyM; arc=fail smtp.client-ip=40.107.93.71
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QPULIdwc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F9A1C4CEEB;
-	Thu, 21 Aug 2025 10:25:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755771919;
-	bh=ORTjv3YVqf7tKuswYRO+Ecti+tHql9FqphRkmWE57tg=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=QPULIdwcaNqt09nbyOt6cG69mFU7KE+z/YDsBLC+6QCrO733Rv8gicsUdi/n2CLra
-	 3pjjq3rP7mvOXOfd2byRx9QriPg0Tev/gGPaV9mz3O0DvpWyzBCvi6cFyT38BehraB
-	 KKphm+1osP13chkL5WxNxZd7sE+hHAQ3jP+d0o+LW88a1X+j89AJW1F2KB3iaU0x3E
-	 EvHLNVKv8Tff+anLhmUPHpmoCpUzq+XUQ3f94dPR9PFeQVBzq3txIrdAX+0ynUF4Nn
-	 qe27HLnYSx+ZLvON6+k87GoFcr9c/jWh6tRDYVqXro9/k/Yubt3N1Sf40TE8rL3v5F
-	 P3jFLeR5cR66Q==
-Message-ID: <8279536d-c4f4-477a-9823-3e7b452c3c33@kernel.org>
-Date: Thu, 21 Aug 2025 12:25:13 +0200
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="dugO9JyM"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=YApnSGFTp6ilokHnFo4B89GgpEeIA1busEid5tzKx0a8Utb8KKYbOs6gvtoU/j7PYLaDksBLWVxIlPlsH6eUBexnn2lI+7dzcpSrYaGG9ooBRX1AP2OAnvt8ceCvaDWDpEfFsQjCQT1B3qhp0GWMEmVe8KpwL0CWpMsD3kEGEWYCocC+7w1LIvA94zYPshVpM6zDf5NQEbQeK6x7Z+tUBm+zHYx/as6n91bT3igffKD6mNDRzCxtu8JFC+qIj37JGwlCXurPBtethJecv4iYC8COLrJZYIdQOw2GoxhI2lnn5vCCvq/ejK5g1/qpm9yzbsYHP7FGo5akQ9m9BxySjQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6ZzaXxrbyruf1J54w2UBobuMDLswmschzJFabjbjkDY=;
+ b=ADn/LaYG1wZYpkFnfmCCcmUVxUEd9CzACPDgHvJZPQ17IktFzCtHlbyKSt2SNoh7eN7TsZaGHo+dEMGrUL8c0lBv4GVkW4vYxrZmayt+Rs5/UIZ1l8jRadgkp+ogQCiZ8cSW73c2CAn/Q+s4Xc6XzV7sfKjaQ2a/9O7CNmyjqQWheaH91vIrx9yGG6UdGBOdZvcjrZkdIg4jUsSxT2g+BkgKmfd/2ne9tON3JVc3tiX6JcXCAvS6a4wubNSx+cH7RnuWfFBoHOAvnDg9bjdievVZUGAOAPdKBFDF1qHK93yBGekZXJSr6DGxKhyUOcrW4KM/nmJVa4Zu334f4MxKIw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6ZzaXxrbyruf1J54w2UBobuMDLswmschzJFabjbjkDY=;
+ b=dugO9JyMs/k5TfRIBvW+vsQWm55I9knXKwxdOYhd8ce761P6/qoSP4rLSf7ZsacRBLCYUoSz3nu6ZS19NG7HWIxw35fRgrkL2gzykfdo7ZUK/XhmGDcpgY1UxD+LSalibVl+dPIBsJORfaoqKdRLyoSgNVAB5rbhEXB4OrJNEgg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ DS7PR12MB9502.namprd12.prod.outlook.com (2603:10b6:8:250::19) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9052.14; Thu, 21 Aug 2025 11:29:11 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::6318:26e5:357a:74a5%4]) with mapi id 15.20.9052.013; Thu, 21 Aug 2025
+ 11:29:11 +0000
+Message-ID: <8613b5a8-aef5-4457-a1ca-646443da8d5b@amd.com>
+Date: Thu, 21 Aug 2025 16:59:01 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 1/4] iommu/amd: Add support to remap/unmap IOMMU
+ buffers for kdump
+To: Ashish Kalra <Ashish.Kalra@amd.com>, joro@8bytes.org,
+ suravee.suthikulpanit@amd.com, thomas.lendacky@amd.com,
+ Sairaj.ArunKodilkar@amd.com, herbert@gondor.apana.org.au
+Cc: seanjc@google.com, pbonzini@redhat.com, will@kernel.org,
+ robin.murphy@arm.com, john.allen@amd.com, davem@davemloft.net,
+ michael.roth@amd.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-crypto@vger.kernel.org, kvm@vger.kernel.org
+References: <cover.1753911773.git.ashish.kalra@amd.com>
+ <d1285938266d753b9d215e7c649126d261208143.1753911773.git.ashish.kalra@amd.com>
+Content-Language: en-US
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <d1285938266d753b9d215e7c649126d261208143.1753911773.git.ashish.kalra@amd.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PN3PR01CA0002.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:95::22) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 6/9] dt-bindings: nvme: apple,nvme-ans: Add Apple A11
-To: Krzysztof Kozlowski <krzk@kernel.org>, Nick Chan <towinchenmi@gmail.com>
-Cc: Janne Grunau <j@jannau.net>, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
- Neal Gompa <neal@gompa.dev>, Jassi Brar <jassisinghbrar@gmail.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Keith Busch <kbusch@kernel.org>,
- Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
- Sagi Grimberg <sagi@grimberg.me>, asahi@lists.linux.dev,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, iommu@lists.linux.dev,
- linux-nvme@lists.infradead.org
-References: <20250818-t8015-nvme-v2-0-65648cd189e0@gmail.com>
- <20250818-t8015-nvme-v2-6-65648cd189e0@gmail.com>
- <20250819-polite-papaya-catfish-1a9d1a@kuoka>
- <8ac418ae-7ff0-4d5c-9f11-c24e36618ac1@kernel.org>
- <b3cd1b3f-fa0e-4a98-84c7-e4271f262795@kernel.org>
-Content-Language: en-US
-From: Sven Peter <sven@kernel.org>
-In-Reply-To: <b3cd1b3f-fa0e-4a98-84c7-e4271f262795@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|DS7PR12MB9502:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4b538a90-5d68-414a-3be4-08dde0a5f335
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|7416014|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?SXJsYlFrOTEzSWpmc09GWERrOEVPZnJKcWwrUkE5Yjd0WmNJblRCVGRxTTgr?=
+ =?utf-8?B?cmNySmRvZVh2TmxxRWhkeGtOTWhEMFdseFB4N01QZnFTSG1PYWNob2xBdG52?=
+ =?utf-8?B?YU5WdzF3UUM5ak5MRDdYdjhBN1RVcnkwZ1l2RHlxR28yRFpHb3AwdTBBeWZW?=
+ =?utf-8?B?S2FkQm5nQXVyUFREd0NaREtScEJVRHdROUJ1QWdvalZiU3VTMHNEWEcyaGZo?=
+ =?utf-8?B?QkhncXA5NVdLc2xhTHpsMlN2QjJNeHZydElJRFJGODMyY0QvVGRlV00xRkVv?=
+ =?utf-8?B?ek50dkl4dUExOVYwdGcwQzRDWGE4WlZSTzZJd09aa1JXcGtTbmVNYWVFak9O?=
+ =?utf-8?B?b2hpVjdYSU90NUhOZ2tka29ObnBHWDl1eXREQjZLYlY3eXJDaTdoWlE1V005?=
+ =?utf-8?B?U0o2WTN2ZFZDUFFmWFJNL0dwV1g5M1A1N0oyWERMQ0dWVnFvNDk0OFhtSmY1?=
+ =?utf-8?B?R3JaVTlZeFR5MDdIazRkYjBRdWFsOUtXZi9mNXV1R0xHYmtPQ2d3a2Z1VTZ0?=
+ =?utf-8?B?RHk0UGR2Nkt4amtSaUdEeEJEOENxS1Fmd3pYM21yNENjSnhtMGdmVE9pYmJt?=
+ =?utf-8?B?V3hmdDZxcEMyTG9waGhLQWFTcllMZnpGUWpiRXYyeEh0a2tteEhtVXBGL0cy?=
+ =?utf-8?B?Smp4YkhxTkpwM254V0lTa3pWUDVpSk9nY293RmNMM1NlOHVlcnVIZ1FpSFRV?=
+ =?utf-8?B?N3VzQnorbjlWZjRxZldiNTkwSC9pQTBJbEhQOUJMRld6UHVuQ2J0citnR2I4?=
+ =?utf-8?B?TjNjZHM5MVc0SFBtVkFNRnhUM0twaS9UWU9YVmUvblA1aUE4b0E1dEZGWW81?=
+ =?utf-8?B?T3ZkUUQwQjYra2JNMmNNaEFZbFB6UGJZb1F5VlNWOExWcVZqSmpSenNHWnBQ?=
+ =?utf-8?B?MWNEWXVvZU1XRzFEUjArdFdnK2ZzOXVTc055V2ZEall6ZnhXdjI0Rk1FUGln?=
+ =?utf-8?B?bXVFMXdNb0VFRVRkWm5hdUJZcDI5bFV3dkh2VDd6SjIwNEZHSVJMWTU0eVVU?=
+ =?utf-8?B?U0tXd09jSXJ4UDlONW93SXFXYi9ndWVKWlFJd0NFbkErQ1ltNkVsS3RmdUVC?=
+ =?utf-8?B?Uk5mcjVNd3M5c1VFcHJoY0tON3p3dUdjaVJQS0czMUljOEp5N2o0Q3dPMngv?=
+ =?utf-8?B?bmtQQ0VNVHAwUklOTDdTeVRYYkR1eTJnYXp6STFNUjY1bk55OEszajBlWTAx?=
+ =?utf-8?B?Y0ovVHJSOUpFMFU4U2dyRGxJY29YUUYrdFhYWW5PS2ViWlo4N2dQK051VEQy?=
+ =?utf-8?B?WktKNklJaGRFbUc1WnZ0eG5yMUN2T1FBNlo2aU1ONy9STTNZOGVKcmFPbEhn?=
+ =?utf-8?B?L0JhZVdzdnlXQUF4b3V1dStMQTl3cFVpeXJ2cDNIbm42ci9mdWliQmVSd0hw?=
+ =?utf-8?B?MXJGbEdodWtVYmRXL3pEWXlrQlpKWG8yWlFtaFA3aEFaRGhJaGd0NGVwTmI5?=
+ =?utf-8?B?WHE0RTlpcCtqYUJHaVNxUlhKMHFFdEpsejg2S05tcURXa2JpSklyTUdTYVFZ?=
+ =?utf-8?B?Q0pBMVpXa3cwOWU4Y1J2VmIxdERzV1V6VGc1VUFJUmh0YWUvZG8rS3JTSGFi?=
+ =?utf-8?B?T0xsZjlId3IxU1cvN3MyKzVKaThkK3Fnc0diUWNJdFo3WFdia1dXK0kzeUwy?=
+ =?utf-8?B?bE5VSXd5QVRwT3d0RXgvclNTckNWL2wrU1NOTm9xWTdCTHR1a3ArcFMrK25N?=
+ =?utf-8?B?L1dDTW1HNHcyOTdsU2VLS3NLTFRJSzI3OEVsSWRRRjdsemxuVVRPaEliZERj?=
+ =?utf-8?B?SnJHWG5tdzFuSmltMGFCOG9JK0xEZ0dLeis2Sk1zWWo4R3h2M09ibkNEd2tU?=
+ =?utf-8?B?NmVCWGhxQS9kdmlpU3Y5RnM4VGxiSnBKc1FXRHNobFBXdDd1REdvVDhxV1A0?=
+ =?utf-8?B?TjdBeWRCeHY0am8zZktZQk90WVpJUTZVOWdHb2YrcExJNWN0U0NKcjFOOWdZ?=
+ =?utf-8?Q?pbW/yimxsK0=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?MzhYaHdIZGVXenBvbEIvZmZQZFgxaGY4d0ZtcHI3cm9INHBPWkNxREcxMzA5?=
+ =?utf-8?B?VS9SMHo4bm43VVhBVzFwbTExTEtxaFF5a2dXQ2JRQnErWDRXMWZaMFpsL2tq?=
+ =?utf-8?B?dEJ6bDQ5dTZuTGU4ck11NDVOcncrNEZOMVVxUVBLVGVRZ2xTcyswbEkzcVA4?=
+ =?utf-8?B?NFREUmEvVTA2SXNOVkdCNllRaGNoYUg2OTloeFFWZnZMYUlmZVFuT05xVlRV?=
+ =?utf-8?B?cjZaRWxFbnozNVdDNks3QWgzeU50Tk1PR1BUeXRENENvaE5RZnEyaUZmL1Zq?=
+ =?utf-8?B?dmFqcjIwN3ZBN1dLNGxPVmhSbjZ5T3RsWGdJTjZxejhYSkJzZGZqSjljK1Qz?=
+ =?utf-8?B?aEdCQjVFZ1VvazJzV09TNnRGbTJ4S2RsY1R5R3F2UlZsZUJaeTBPN3pXYk9H?=
+ =?utf-8?B?SmhuekcxOUV4UE9uWERtclEyTXVBYjNVYkhRZmU5dkhWQmlQSERUVWVIc1M2?=
+ =?utf-8?B?aVF2ZnJCM0cvZ01qbUVHallDVFpkcWZIQzlLZjc5ODNVdDl0aUl1TW5uOVpZ?=
+ =?utf-8?B?RlorRDArTTVDNnJNczVHVkQyaUtJZWxhaW9GM1VsVW1CeDhpeFlORGNlcXpm?=
+ =?utf-8?B?MUJacEpiclhacStQZGx2SUU4OXU0cWRUQzRKZ3BWcEZiSW1Kc0tnblpTNE1l?=
+ =?utf-8?B?MGJNUWN3ZU03YjEzZzBEcWZGTEQyTDVXOTlGMEltT0xobTRwYUhOaitGbEZt?=
+ =?utf-8?B?QjkxMG1zNFNrclJ5V1RQWTkvSHYwR1kyVDlXNDVPWjAyem5lenBvcUVRV3Jn?=
+ =?utf-8?B?Y0dNVGo5aUwvNVNOb1RUalp2UGJkbmt1WXlGRDNkMVdDVFNFbXdrMW5aWTZi?=
+ =?utf-8?B?ZERWazZMaTNBOWRTZUJMNFhld2RYNFd4cUgrek0xY2lHZFhIZFZ6Q1hyQ1hj?=
+ =?utf-8?B?UU1BblNabjlURjRlQkhpMUdTQmxMc0k2dHlXTW1FS0lJc1h5UlJPUkxPTFlt?=
+ =?utf-8?B?Q1hOUkRJNGVOVDBWaTJmTk52UEEveTdJeG5KbHBMZXhpYWM0Tm4xWU1GamFl?=
+ =?utf-8?B?TDROcERPVkFUNi96OTZJaTVCUExSUW8yc1B4clRGSmF0RHFwTWhtNmVMR3BV?=
+ =?utf-8?B?ZGFscWZCL2dZbEw1ZWhPTXBvWGZLekJjUjd2Uks0QkhsUjVlbzZBT3hWalUy?=
+ =?utf-8?B?VHFPem9aLzRWMGo1S0hBT2hNdEQvNHRubTU2cVRVRGZvUTVxaVBiWVRXTVhv?=
+ =?utf-8?B?YUIvaThmejhrV20va0J0VUxFbVF2MFpvbHJkbTV2YzlNeTNpY3FqZXgyVXhk?=
+ =?utf-8?B?aFlaNDFxK1hUcGZ6dFZtdUNlOTVnVlBtTU5oNHNVSjkvdWtiTTFlY3N6RHhP?=
+ =?utf-8?B?V2JySUFQWDlaVjlSS2hIMVpBdS81S3JzM3MrTHN2UnVZY0hlYWk2eElLcWFO?=
+ =?utf-8?B?VEtyWTdkOXlidDhpYXh5NU9LUG5sclBDdzJJQlk3WWVoS2NZU3o4b3BDejBq?=
+ =?utf-8?B?OVdJLzV5S2pRZkhpYnN1MHAxZEZKWmtBQ0haaHhOaGhhVklaZm9VQlMrR2p6?=
+ =?utf-8?B?dm5BZU42MERZbkNITUJYVnVWYlkwQkhtNUlOVDBVWERKemxpQmNZTzFFYTZz?=
+ =?utf-8?B?QVJ3TUxIWWRtWlRUb1UzVy9GdXowRW03WHVDclZYb2s0cWdJL1kxUHdMVmUy?=
+ =?utf-8?B?cGM3U2NhcTlDQ1prT3gveG5mOEZWMmtoSW5sQ0JvaHdhelhJdGFUblRZMXVx?=
+ =?utf-8?B?OGxqbDR6eEtmcjFjMzlsVC9xQ1paYTEySThiclFBVEtReWVsMUdhdEdHZFV5?=
+ =?utf-8?B?TUtZMjkwMUs2QTZIYmVWMVdJalgrSW1BZDFncG03Z0xDUEEyVUNlUGwxMUky?=
+ =?utf-8?B?UXZVMFRWRHZPYzBuVDIzRlBtWFFLUGw1MytFaTlUYk1WRjg2aHh5ckxuMERp?=
+ =?utf-8?B?K1NJc1J3Q0paU0FhWW5DdTNUdS9Pajd5QUlTTDNVeG9YeTdmSU04enFoZXRy?=
+ =?utf-8?B?YnNtMm5HcUdzUVM3ZjVyd2VWMUJrWkFiTjkvcUgvL2xTa3FDdzZ6aU5jZU8v?=
+ =?utf-8?B?aTdvbVNibk5EOXVGQWFVNGw2ODhnVC9LcTFQWEZ0WGQzWTRDTjFaRC9OMjFM?=
+ =?utf-8?B?NTRZWDRySzZ2cFpjV1FIcHJrRkhObE9kazltdUMvTHAycklGTVQ0c0k1QytF?=
+ =?utf-8?Q?R+vRZ9DuS7VBolE8+On1Q/v2N?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b538a90-5d68-414a-3be4-08dde0a5f335
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2025 11:29:11.4264
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jh7Qh9rslMjAV/81IOXfMRizIkvlX+Qzpa7zxFIP9/ZjMlNJko7tLaHN+M0GD96dPffgJdz15dHYgmbbuYt0wA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB9502
 
-On 19.08.25 13:34, Krzysztof Kozlowski wrote:
-> On 19/08/2025 12:01, Sven Peter wrote:
->> On 19.08.25 11:18, Krzysztof Kozlowski wrote:
->>> On Mon, Aug 18, 2025 at 04:42:59PM +0800, Nick Chan wrote:
->>>> Add ANS2 NVMe bindings for Apple A11 SoC.
->>>>
->>>> Signed-off-by: Nick Chan <towinchenmi@gmail.com>
->>>> ---
->>>>    .../devicetree/bindings/nvme/apple,nvme-ans.yaml          | 15 +++++++++------
->>>>    1 file changed, 9 insertions(+), 6 deletions(-)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml b/Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml
->>>> index fc6555724e1858e8a16f6750302ff0ad9c4e5b88..4127d7b0a0f066fd0e144b32d1b676e3406b9d5a 100644
->>>> --- a/Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml
->>>> +++ b/Documentation/devicetree/bindings/nvme/apple,nvme-ans.yaml
->>>> @@ -11,12 +11,14 @@ maintainers:
->>>>    
->>>>    properties:
->>>>      compatible:
->>>> -    items:
->>>> -      - enum:
->>>> -          - apple,t8103-nvme-ans2
->>>> -          - apple,t8112-nvme-ans2
->>>> -          - apple,t6000-nvme-ans2
->>>> -      - const: apple,nvme-ans2
->>>> +    oneOf:
->>>> +      - const: apple,t8015-nvme-ans2
->>>> +      - items:
->>>> +          - enum:
->>>> +              - apple,t8103-nvme-ans2
->>>> +              - apple,t8112-nvme-ans2
->>>> +              - apple,t6000-nvme-ans2
->>>> +          - const: apple,nvme-ans2
->>>
->>> When some months ago this pattern of generic fallback appeared, I
->>> believe I commented it is bad idea. So now months later we have a proof
->>> - generic fallback is useless and you should have been using SoC
->>> specific compatibles from the start.
->>>
->>> Now it is just confusing and this broken pattern will be spreading more
->>> and more, because you folks put generic compatibles everywhere.
->>
->> I haven't commented on the dt-bindings yet because I suspect this patch
->> is wrong but haven't had time to test this yet.
->>
->> I believe we want "apple,t8015-nvme-ans2", "apple,nvme-ans2" here and
->> then use the code Nick added for "apple,nvme-ans2" by default and only
->> enable additional features (NVMMU, linear submission queue) when we see
->> the SoC-specific compatibles for t8103, t8112, and t6000. IIRC these
->> newer SoCs still support the old way of submitting commands just fine
->> and the new way was added at some point to add support for this weird
->> integrated IOMMU.
->>
->> I've already seen some strings about ANS3 somewhere which I suspect
->> will be the controller in some future SoC (or maybe M3/M4 which we
->> haven't reverse engineered yet) that actually breaks compatibility.
+Hi Ashish,
+
+
+On 7/31/2025 3:25 AM, Ashish Kalra wrote:
+> From: Ashish Kalra <ashish.kalra@amd.com>
 > 
+> After a panic if SNP is enabled in the previous kernel then the kdump
+> kernel boots with IOMMU SNP enforcement still enabled.
 > 
-> This was 99% predictable and expected months/years ago when first Apple
-> M1 generic compatibles appeared. I just do not understand why so much
-> effort from reviewers has to go into explaining this and for arguing
-> over that, and eventually we are right.
+> IOMMU completion wait buffers (CWBs), command buffers and event buffer
+> registers remain locked and exclusive to the previous kernel. Attempts
+> to allocate and use new buffers in the kdump kernel fail, as hardware
+> ignores writes to the locked MMIO registers as per AMD IOMMU spec
+> Section 2.12.2.1.
 > 
+> This results in repeated "Completion-Wait loop timed out" errors and a
+> second kernel panic: "Kernel panic - not syncing: timer doesn't work
+> through Interrupt-remapped IO-APIC"
+> 
+> The list of MMIO registers locked and which ignore writes after failed
+> SNP shutdown are mentioned in the AMD IOMMU specifications below:
+> 
+> Section 2.12.2.1.
+> https://docs.amd.com/v/u/en-US/48882_3.10_PUB
+> 
+> Reuse the pages of the previous kernel for completion wait buffers,
+> command buffers, event buffers and memremap them during kdump boot
+> and essentially work with an already enabled IOMMU configuration and
+> re-using the previous kernel’s data structures.
+> 
+> Reusing of command buffers and event buffers is now done for kdump boot
+> irrespective of SNP being enabled during kdump.
+> 
+> Re-use of completion wait buffers is only done when SNP is enabled as
+> the exclusion base register is used for the completion wait buffer
+> (CWB) address only when SNP is enabled.
+> 
+> Tested-by: Sairaj Kodilkar <sarunkod@amd.com>
+> Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
 
-Right, so we're in a bad situation now because we didn't listen. That 
-sucks and I'm sorry.
+I'd still think introducing ops for various callback makes more sense than
+having explicit is_kdump_kernel check everywhere. I am fine with having follow
+up patch to fix that. With that and few minor nits below :
 
-How do we move on from here now though?
-
-I think for any new bindings it's pretty clear, we just do what we 
-should've done from the very beginning:
-Whenever we upstream a new device that has no bindings yet we only use 
-tXXXX-whatever as compatible and use that as a fallback in case later 
-(or earlier) SoCs work with the same driver.
-
-
-
-Then we still have to deal with the stuff that's already upstream. I see 
-two options here:
-
-
-1) For situations like this one where the generic one just doesn't make 
-any sense we deprecate "apple,nvme-ans2" in the binding and use
-"apple,t8103-nvme-ans2" as the fallback instead, i.e. just
-"apple,t8103-nvme-ans2" for M1, "apple,t6000-nvme-ans2", 
-"apple,t8103-nvme-ans2" for M1 Pro, and just "apple,t8015-nvme-ans2" for 
-A11.
-
-We keep the generic one in the driver for now but also add
-"apple,t8103-nvme-ans2". We then remove the generic one from all 
-upstream DTS files but keep it inside the downstream files we ship to 
-users for now to avoid pain with kernel upgrades/downgrades.
-A year or two from now we can then delete the deprecated generic 
-compatibles everywhere. This all has to be synced with OpenBSD and 
-u-boot as well since both also use these bindings.
-It's gonna be rather painful but this would clean up the entire mess.
+Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
 
 
-2) We keep using the ones that are already upstream and just accept that 
-the situation is a mess and add comment above all the bindings that we 
-messed up and that this should not be used as pattern.
-In this case that means it'll just be "apple,t8015-nvme-ans2" for A11 
-without any fallback and we keep everything else the way it is.
+> ---
+>  drivers/iommu/amd/amd_iommu_types.h |   5 +
+>  drivers/iommu/amd/init.c            | 164 ++++++++++++++++++++++++++--
+>  drivers/iommu/amd/iommu.c           |   2 +-
+>  3 files changed, 158 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+> index 5219d7ddfdaa..8a863cae99db 100644
+> --- a/drivers/iommu/amd/amd_iommu_types.h
+> +++ b/drivers/iommu/amd/amd_iommu_types.h
+> @@ -791,6 +791,11 @@ struct amd_iommu {
+>  	u32 flags;
+>  	volatile u64 *cmd_sem;
+>  	atomic64_t cmd_sem_val;
+> +	/*
+> +	 * Track physical address to directly use it in build_completion_wait()
+> +	 * and avoid adding any special checks and handling for kdump.
+> +	 */
+> +	u64 cmd_sem_paddr;
+>  
+>  #ifdef CONFIG_AMD_IOMMU_DEBUGFS
+>  	/* DebugFS Info */
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index 7b5af6176de9..aae1aa7723a5 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -710,6 +710,26 @@ static void __init free_alias_table(struct amd_iommu_pci_seg *pci_seg)
+>  	pci_seg->alias_table = NULL;
+>  }
+>  
+> +static inline void *iommu_memremap(unsigned long paddr, size_t size)
+> +{
+> +	phys_addr_t phys;
+> +
+> +	if (!paddr)
+> +		return NULL;
+> +
+> +	/*
+> +	 * Obtain true physical address in kdump kernel when SME is enabled.
+> +	 * Currently, previous kernel with SME enabled and kdump kernel
+> +	 * with SME support disabled is not supported.
+> +	 */> +	phys = __sme_clr(paddr);
+> +
+> +	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
+> +		return (__force void *)ioremap_encrypted(phys, size);
+> +	else
+> +		return memremap(phys, size, MEMREMAP_WB);
+> +}
+> +
+>  /*
+>   * Allocates the command buffer. This buffer is per AMD IOMMU. We can
+>   * write commands to that buffer later and the IOMMU will execute them
+> @@ -942,8 +962,103 @@ static int iommu_init_ga_log(struct amd_iommu *iommu)
+>  static int __init alloc_cwwb_sem(struct amd_iommu *iommu)
+>  {
+>  	iommu->cmd_sem = iommu_alloc_4k_pages(iommu, GFP_KERNEL, 1);
+> +	if (!iommu->cmd_sem)
+> +		return -ENOMEM;
+> +	iommu->cmd_sem_paddr = iommu_virt_to_phys((void *)iommu->cmd_sem);
+> +	return 0;
+> +}
+> +
+> +static int __init remap_event_buffer(struct amd_iommu *iommu)
+> +{
+> +	u64 paddr;
+> +
+> +	pr_info_once("Re-using event buffer from the previous kernel\n");
+> +	/*
+> +	 * Read-back the event log base address register and apply
+> +	 * PM_ADDR_MASK to obtain the event log base address.
 
-I prefer option (2) but if you really want to get rid of all this mess 
-I'll also work on (1).
+IMO this comment is redundant. Its implicit that we have to apply the addr_mask
+to get the actual address.
 
-Would either option work for you or do you have a better idea?
+> +	 */
+> +	paddr = readq(iommu->mmio_base + MMIO_EVT_BUF_OFFSET) & PM_ADDR_MASK;
+> +	iommu->evt_buf = iommu_memremap(paddr, EVT_BUFFER_SIZE);
+>  
+> -	return iommu->cmd_sem ? 0 : -ENOMEM;
+> +	return iommu->evt_buf ? 0 : -ENOMEM;
+> +}
+> +
+> +static int __init remap_command_buffer(struct amd_iommu *iommu)
+> +{
+> +	u64 paddr;
+> +
+> +	pr_info_once("Re-using command buffer from the previous kernel\n");
+> +	/*
+> +	 * Read-back the command buffer base address register and apply
+> +	 * PM_ADDR_MASK to obtain the command buffer base address.
+
+ditto.
 
 
+-Vasant
 
-Thanks,
-
-
-Sven
