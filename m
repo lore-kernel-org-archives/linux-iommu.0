@@ -1,235 +1,167 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E41932EA468;
-	Thu, 21 Aug 2025 08:11:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755763871; cv=fail; b=XFNJg/LYaD9iKk59Zpm2zfqghfIjowjXfk5iQDLh3/x1GaoPuPkaSXdrvEnb6btl5UsTx6T2FWRwzZT27M0uB4cjYjQDiM1XWQ8KMVYPiPE+slZi9yAU16Tqk2nYwc791uWBWTS76U+CRVPZ8+h7lxxXWyPj0RFw7c8c1kRhPrE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755763871; c=relaxed/simple;
-	bh=voBvJkxSLryI4laWJI8ANNUN+/uBYaCwDU09/IOyGqA=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=JwmJdp/zgPH2Cc8jhqTLSfX3/srZN9uogbIXkCZLFpCumjiFZXjmg34/PJ1zSVAAsjCFZMyNB7Z1ZPg1s2VKkgbt3yJI2flN4uT3oVFwdF/BHJnW3KbnZriJToJ3DwjtX80rnriXYQNSce+D9RbrpGuvRwlE4vxTaH6Zxx0ydOc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZgItUGwp; arc=fail smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CDA2222564
+	for <iommu@lists.linux.dev>; Thu, 21 Aug 2025 08:34:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1755765247; cv=none; b=lp95aQxvCoUXqTxD1oGNniqQK7AyM0X9ybH6G72p7iBPmBvrb/CcRWZnsCOBZBlQgko3gLqE3aFKcAa6RPwE/J4FL9CQrljjXXEMpj1ITnlm3Q7nAEP5eZEwMudyqvs0CECzxadmj3hIxsvMZVr4oFesfW+gwKla5/8HQBl390I=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1755765247; c=relaxed/simple;
+	bh=wLUC/1W7EfFeUkMtGcj1FzsRd9x+m0ZbSOIe9wVACeQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=YQzfvSm8OqVkhV5jVGy4wU0oA5CpxNfnqHUT+FVsBWpnz1AfjkWyFpGwBBEmmpwpIdJqRtJ5hqQolGOedlMhl87N5Iwf7bOHKvuucSz4poKkwUJIKSzsiRwI7J8ZdTKkzzcYWPs/qfYTKit1BDYjcWBwk3ehZgclI2m7QLPON7U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=emBXuFfJ; arc=none smtp.client-ip=209.85.221.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZgItUGwp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1755763870; x=1787299870;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=voBvJkxSLryI4laWJI8ANNUN+/uBYaCwDU09/IOyGqA=;
-  b=ZgItUGwpvlGL2nAvfBgBUCDuZQy/XWwKxPan91mvSnWxpMFDBN8Z7CQY
-   sU0MUV0c8h5PaVXwSBRtrChBRgzTieAnHtQTOb2KsAbb+qXS8JkJDvcMd
-   IvY2sWbavLufI9lFPe6mjVp4CSn78ywiEPgzD+9o5hUdhrRiZqETg6spe
-   Dwx78UeJqgPkBIAuiSzYL3eKQpfC7KxFjTqw2TryndJmqg0fvIIJW88d+
-   yI2lm3C3S9o16Y9VrcngiyIDNCU9yC1B0UT76RPZdwRdCOTPRE2EbJjfm
-   YOIy4t+9QQXY1sW2GNlJ+HJ22OkEUcHC/ZnuyoOKC78tHvsL/yMs3PYNn
-   g==;
-X-CSE-ConnectionGUID: KoMet5+USwKWDhLzJ/bbgg==
-X-CSE-MsgGUID: Xnts8/9QTkyyTUc+FsiJXg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11527"; a="61684256"
-X-IronPort-AV: E=Sophos;i="6.17,306,1747724400"; 
-   d="scan'208";a="61684256"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2025 01:11:09 -0700
-X-CSE-ConnectionGUID: GwFhfnJPSJWYjwA6VpQnrA==
-X-CSE-MsgGUID: 2pKJVL8uQbaGQQOy/br1OA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.17,306,1747724400"; 
-   d="scan'208";a="168711169"
-Received: from fmsmsx901.amr.corp.intel.com ([10.18.126.90])
-  by fmviesa008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2025 01:11:08 -0700
-Received: from FMSMSX903.amr.corp.intel.com (10.18.126.92) by
- fmsmsx901.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Thu, 21 Aug 2025 01:11:08 -0700
-Received: from fmsedg902.ED.cps.intel.com (10.1.192.144) by
- FMSMSX903.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17 via Frontend Transport; Thu, 21 Aug 2025 01:11:08 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (40.107.220.79)
- by edgegateway.intel.com (192.55.55.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.17; Thu, 21 Aug 2025 01:11:08 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=p4sjSSFTlI8gA103akoN5Wa4TfqP+u/JjSjE8m0W4U2WS0O8Y1ETX/MX8uwB6Zbsx3WLvOaKeAOd1biHNxZv8wtNmLRJ7pNm4F99Rhq8KluBLqBDLK/XRj0WSD37LViCDf1IIUhaRQYBbLXsXA9v3iiSRiYVb6iOyaUC1lCWSBAd3eHPtC7n72MMa1ftDRIbwSLh8Mxy5Orz5ikTL40Fp6Q+D13B76gQspePg+gEMfTwdxaYjzvyMHmU0T2Zuf7fT4EPYQDS3SCKQ59X973k0JEO5Nscfa8JM/FuF9aFG53XbI7R5yHb/o94Yb+h29BhgZRpnwP/0pjr10q3EdRLrw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5fKWptvpOY/YOa6fywgJnpO+Ur3ioNbffCB709MuQKQ=;
- b=pUZiLtwMVe8OQfpziAXBdajqOv+/il6w2qxAlZ9wSv3QOv7xKNT+pehZfE5E/JYUQeZ705WN8XBYDqQfeoMlv8AIZI3WSK+46M2iSXDHZRNPXk+gzeWlI6xbEgrlbzIfvAg3rVZXFgj+4lPAjozXYx+x/1CgwqOztIO+dzLP+dYWk61LexF9/RMBS+Fddri1MrXG88AMCiwJ8Jc/WKczhXnvelKDSZjkQ4U9obGhMfFD6wFRbI0A/vh0bi72JckjBdykHkMHcwHGXzDvrkuxA8XI4NQcDhX9nX+J+89927FWLWnixYTpqyhrJdhHRB3fZswcSnUs5hvCozzIbkS3jQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DS0PR11MB8232.namprd11.prod.outlook.com (2603:10b6:8:15d::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9052.14; Thu, 21 Aug
- 2025 08:11:05 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::b576:d3bd:c8e0:4bc1%4]) with mapi id 15.20.9031.023; Thu, 21 Aug 2025
- 08:11:05 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>
-CC: "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "bhelgaas@google.com" <bhelgaas@google.com>,
-	"will@kernel.org" <will@kernel.org>, "robin.clark@oss.qualcomm.com"
-	<robin.clark@oss.qualcomm.com>, "yong.wu@mediatek.com"
-	<yong.wu@mediatek.com>, "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-	"angelogioacchino.delregno@collabora.com"
-	<angelogioacchino.delregno@collabora.com>, "thierry.reding@gmail.com"
-	<thierry.reding@gmail.com>, "vdumpa@nvidia.com" <vdumpa@nvidia.com>,
-	"jonathanh@nvidia.com" <jonathanh@nvidia.com>, "rafael@kernel.org"
-	<rafael@kernel.org>, "lenb@kernel.org" <lenb@kernel.org>, "Liu, Yi L"
-	<yi.l.liu@intel.com>, "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-arm-msm@vger.kernel.org"
-	<linux-arm-msm@vger.kernel.org>, "linux-mediatek@lists.infradead.org"
-	<linux-mediatek@lists.infradead.org>, "linux-tegra@vger.kernel.org"
-	<linux-tegra@vger.kernel.org>, "linux-acpi@vger.kernel.org"
-	<linux-acpi@vger.kernel.org>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>, "patches@lists.linux.dev"
-	<patches@lists.linux.dev>, "Jaroszynski, Piotr" <pjaroszynski@nvidia.com>,
-	"Sethi, Vikram" <vsethi@nvidia.com>, "helgaas@kernel.org"
-	<helgaas@kernel.org>, "etzhao1900@gmail.com" <etzhao1900@gmail.com>
-Subject: RE: [PATCH v3 3/5] iommu: Add iommu_get_domain_for_dev_locked()
- helper
-Thread-Topic: [PATCH v3 3/5] iommu: Add iommu_get_domain_for_dev_locked()
- helper
-Thread-Index: AQHcCxPRj0zb6W5cHUaGmJqSwKG0krRohb6AgAAtjgCABBvC0A==
-Date: Thu, 21 Aug 2025 08:11:05 +0000
-Message-ID: <BN9PR11MB5276262E1925E2CD8AE037EF8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <cover.1754952762.git.nicolinc@nvidia.com>
- <a69557026b7e2353bae67104bbe6a88f0682305e.1754952762.git.nicolinc@nvidia.com>
- <20250818143949.GO802098@nvidia.com> <aKNhIr08fK+xIYcg@Asurada-Nvidia>
-In-Reply-To: <aKNhIr08fK+xIYcg@Asurada-Nvidia>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DS0PR11MB8232:EE_
-x-ms-office365-filtering-correlation-id: 967c0acd-0d24-42f4-dc2e-08dde08a46fe
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|7416014|376014|1800799024|366016|38070700018;
-x-microsoft-antispam-message-info: =?us-ascii?Q?fiWpRFRynaNde93ZtHcn/CUDKyuigBT43ZVHbkIt7vl3ByDPQJntar5MEcoY?=
- =?us-ascii?Q?+IHEgbLSDdt+g+9rZe9md4nRNpWb/LbziTuQXSpysg7/xEbcIvLodNjSLVL5?=
- =?us-ascii?Q?MFMcYHsvRFKcf1xcE+751CB/BC+NfT/cMKbltUAywjvym6xBDWlsxKWe5M3U?=
- =?us-ascii?Q?DSg6QNXxU1cmXIU1i8OwCOMYxm0NuRePKEVjYA5fsO1u0nE8ksawJ5p98yPj?=
- =?us-ascii?Q?0bqeO+uiq4zi+hRGuXLxm0K4yaYc8d807iNpoCktcbesAhGJolrkoVKrAWjB?=
- =?us-ascii?Q?HiNuRPyXYEV3zh5D2X0AFoWyy37bP1/F0Dzt4jOHmU4u9+2MZtZRJuma/Y4t?=
- =?us-ascii?Q?dR3x5RBVzCUbmiCDgTcAN4ZUY7Gdq2xbHNROzdKhPyXFj/6qHngUtPD+UEnW?=
- =?us-ascii?Q?qQmqP6e43FqYIATjrRV1Uqh8joK+AUOZb9CKq2T3YNcde6wKi0B6kynFQPUS?=
- =?us-ascii?Q?3tLB91vMA/GAfV0fCaXUYfgpy01sE1+ISR3fHW/08CscWPL6Pqy/aJFUAIMv?=
- =?us-ascii?Q?X4RabmrKrqzP6wnAYY+YlBdfyjCgwZAp0nODOZhw1hOY0cZ3FyAjUdYOnuOc?=
- =?us-ascii?Q?GKcejgbg04bgZB3VybqM9VXzO8noaHn2LhzB/opudgZDtPjs/18r+waX847V?=
- =?us-ascii?Q?/Ea8z/xt3is+wrzD62uehRqc9X71hACCchvpBpxXA442WTMuDcGBTfoqVyzn?=
- =?us-ascii?Q?W1IABxm4Dz3aeL8LFo23bKOPblH7qSS4MB8J4RPpaNebm+58vr0VU3JnXINr?=
- =?us-ascii?Q?6DlyEkUXJbtaBmbcOsGZSzRzz3jNnIUf43GKIdKIgP7O+fFCuRxj3yz/kfy0?=
- =?us-ascii?Q?vKxGd+PhQykoYLhKI+2PAYEZ6BM7uPr6ER9xGr+kXaFvHOkrFHjhxSKQaYJv?=
- =?us-ascii?Q?0mZSNeY0gF2JVdwTHxBvk4bwKTjlJJraRXfoImLsxD/rFszrEv4PK602Y+mL?=
- =?us-ascii?Q?mYY+buN3/YETfVI8TlSGzHAI9LRAA1MZFACuqU5GU2HL56R4ktcUa1z/DInB?=
- =?us-ascii?Q?kJmv63WwREkNgi7TXssYd0gXch7rQ8TjWvQxxoBwGrqml0JpdcjynA91AdwZ?=
- =?us-ascii?Q?JPMeRzj5ETNrUxtycJVKU6UYFHfOsr3iXaX+YzTD/1mv+pdZLh0JDaPyy2s9?=
- =?us-ascii?Q?myzm6ym2jmQs5vyBIoO3zxbhBCcjdysFvLOqaottIbT+OMIHP5kiiSqCde6e?=
- =?us-ascii?Q?AkVch2abYuwfgMrRZrupyA2l39uoBMhw2nCO3SiMYkr/Jd3YCm6TKPfVCgNR?=
- =?us-ascii?Q?1YBK33nPP5ZHfFtMF16td3p0Y7Irb3PI8buPuwH+mL+CSnFUOKY5P7lzWaPa?=
- =?us-ascii?Q?YNZN34wgsjuPPzXotPtJ3k90lKRUJFcw9URKwPY2B62OkKLY/abn1UgS2mpu?=
- =?us-ascii?Q?dWQuANWJEOkn3npTUjfZnU9KINaAz8xuzR6BEkB7ANUV4mMlF+IBOtrETD/7?=
- =?us-ascii?Q?jcDol5AqTXXe3RkM0RDmZDDb8mxmZwWZ4zYPiLi4rSMXRoG7ZvsW7Q=3D=3D?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(1800799024)(366016)(38070700018);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ZJwblIWBf1RT2zKv48oPNrEBQ8sc793gBaMqREvlceqfF6mC3UdPMcfWcu0B?=
- =?us-ascii?Q?t+bbpdyiGVdqP4+5KcVKGtI8vPUC72j0BkrqAsru2jIaSvwQsh9idJd+naQB?=
- =?us-ascii?Q?Lal/TmgvicXIPv0tVnuJF9ietuF4Xi5vXfaw34UV7QuTyIfAizktd7ocwYOT?=
- =?us-ascii?Q?fTxPeGHj11BYcPNY2XCM5Ya9WNBzXqYUx5xrN/9WsiJuL7vr2+4lmCV4kDc5?=
- =?us-ascii?Q?E8FdzfRf2VEWIU4tFyro2AoNyzbMY5Tv+pJ5qumOvne+v6ebgwZ8/YGZRS6t?=
- =?us-ascii?Q?3BOKaBpTAiwBeriS2mHmjhdMJtOkNvDM2Gj1oQBtfT3xGavObX7ekfcHovWJ?=
- =?us-ascii?Q?fcEJcyG4ho7il6/+e+zXPTwJsHbEdi2eZQcXbOEaX5X4516Gyt9eSveYZEmv?=
- =?us-ascii?Q?s+rWZWWv2IQETQmYFiOYywdSAyLLgeHXeC973ZW3EK82lL+wP7xcd3dwSvrt?=
- =?us-ascii?Q?48dmdU0+rxfGx9nbws25Ch90TOK76fdqRCNvJDAtT+11E6ZH30UJJxFwdC1Q?=
- =?us-ascii?Q?XfZluxNtPDRnvNIGJjyQ8U16e/Hj3CzE1CXGVl67NwwM7Rdel7WvBEpQpX6v?=
- =?us-ascii?Q?/jFppEKBVgWx/Uy86+TtKekVjttga0RelEdMD0FKvq/XFJMiT4VeuP8T7JVg?=
- =?us-ascii?Q?/7Njjiy3Igqr3jiVv7v3WgDE228Q5D7CZxfKku6ZVWXpmj5xX/cO4RRjzf+L?=
- =?us-ascii?Q?htl1Y5KMYDr1/+vIQ940J0eL5plGL91z2D0TEnqS2fFbu3hYFzSqTPqBIYUf?=
- =?us-ascii?Q?a57ssxCLVW0xr28xskn8WseT3GLDPl8M4ozFII2x6Hq3Y4PM/C/VCXg19AXv?=
- =?us-ascii?Q?e8MYJtNCbKHFGrpzTIgEO6iSBM+IIP+NnGdyt4v1OXLzosGv7ZI3T/LN2cDx?=
- =?us-ascii?Q?vVG9PuXXm3C3BF43DBqylF8e06VCFGGiPF5mx3tLzUB2FqBwF9QX4X/93YlC?=
- =?us-ascii?Q?QjRkknjGFo+97kedjHDQTENNJEKJvxSZ1S6IBqGAWLvEQ5XXulpfsrdQi/iI?=
- =?us-ascii?Q?pCLnELfyvmSeqX6OxYfwWyg3LTz2AJWU+tKzARnlz9BxvSP6US2BNXjEVOsA?=
- =?us-ascii?Q?olHh3YXlsHfxWXQfBdeh+e0gyOZkWuDlRuzWJNx7uLiey0Halcismapp/C6O?=
- =?us-ascii?Q?fEzqN39du9SJjJHHrKhw+p2+lKDVRPheQoSY1r4gCselx30DTQbBVVpu6Zqr?=
- =?us-ascii?Q?fdwosdynOvAouRZYTwCc5mAiW9NoM6zDfH8ZlgoP20UPBxH/nQ3MEOPsCnhR?=
- =?us-ascii?Q?VH2BLoJ82YMxHmfv73gR1hS7pxq85CUrfsy1nVjWoqINdySwBiRcaePqH0tA?=
- =?us-ascii?Q?17Fstd8O/57Q20zTJZUY0QLZSrGPBpihHKkbEjD5VHvK/FX9XnzlsxrPY/B3?=
- =?us-ascii?Q?6CaGfLFQ/be6ZyRCTq61tEbAL8Z5Ptfas16K8k4nq4PBuP0TaLboQGou+Pu0?=
- =?us-ascii?Q?eFOvZk8u7u+9vU4ffLj+Gu9FzhUWjcCces/gCfMXLRTI3uhih+MyyeBNaMym?=
- =?us-ascii?Q?+e5x+qkg9PSH5eiR6f21uZBd+16s5Z220yS9QjriOBw2hXAJhynWP3ewCUur?=
- =?us-ascii?Q?P44aUf8BLSxZyLYGgjc/gj/A1g8ZU4/JgtfFcGee?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="emBXuFfJ"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-3b9d41d2a5cso571944f8f.0
+        for <iommu@lists.linux.dev>; Thu, 21 Aug 2025 01:34:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1755765243; x=1756370043; darn=lists.linux.dev;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=eFk83CXRUT92P3+BiK0rArrXXY+KdlyqnAXLmJEMLjY=;
+        b=emBXuFfJcfpe2AhhxCNKSbthRkwRIXiC5nF1uX4hrPD1d5k8KiajXp8g9mossvmH46
+         KKbBZORn58x+CWlwwfINqxnXD2rB6J5+05oyUp5PDQinZ6iBxSV7eZMzpO0At+5Svvp9
+         GcexPHpTOGugBUpVK8jqBXYQ8RlOaBbYUlhhzC4l/k7+g3cmA87f+u+tHtXpuZbVy+yW
+         WXLGu2THm1zcuViK24gpQjigdNtwcEzSgpgq5MB7HtgQ88LxIDRzrZlTqNzZivOQRIfE
+         MP4KlzLiRyBj8cTwnTC3foZolIL9q4tCqdW1XVT63YK+IOlZzeS8a7RbR8GV92RmqHgh
+         +WQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1755765243; x=1756370043;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eFk83CXRUT92P3+BiK0rArrXXY+KdlyqnAXLmJEMLjY=;
+        b=bMUa2vxQH6c5hXcYODl1+PfZ+FEDGWNG9WAGztuLu0ArWUdaWVmqWpNQJptziuzAeH
+         EWQisgeVZPQ0GIe+X8/fUWKvNpe3kYqFMm+OFio8JXSflds858mwvxUuNGYjjciqmevM
+         vf0QcS/ZpRxEk6/mbo+ewho/jSWVbjTIa2A1kjRRvESty2V/V2WUgKwhZ/qrk3/Zl2cx
+         gP7YOixW2A0tbzR6U9uwpQhSuQ3QwzmlwYIU1dCXX4VTNK8WGFfj4vonUKSn9nfYLN3e
+         rLLTq540LzdbLGNhxn9tlklbHGIBqqgfXd8ZD74uSguKdpzXKlJIx8Mavs36XykOKydG
+         Bnxg==
+X-Forwarded-Encrypted: i=1; AJvYcCVulPfizbwI7VthJpiGurjGbft1io/3Ot3PS7NX89Ig/ZJAGXGpukHIk28TaLUzwK1v4hykMg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxin52hvxwXdJldZCQhFEGn+AzosU9l1wT2n6H/9EoYfvd1Yoj1
+	EOzZupKkIZFr8bAWO5BGdfXRKBx3EeBdMmaItxYErRo6ah05M3lxWlXrG16aOAK5KYc=
+X-Gm-Gg: ASbGnctc6NXOteCtddh59JY+Ty7cNkaJ2LEXWrO7OOTSCiHFyHj0RPqh8QMX9k9fnS9
+	eJ2inekqcpDaPivGyvSJaQsC9SturaaIk22s3jns6+9hlQ/e6G46UNWDJPl83gpwGlhUxzGRu/d
+	WXfCLvSum9ZR4YP2N4b/klZU4jPE1F4yv3dgvtRCj/SXW1Olu8O7w6YdTYUoTwPJfk2O4yy0TTo
+	DAInHtrYBZ4O2mXZcIcberr0/gGPz2BrB37T6jCkvuOlTeUMFFiA2JUF5t2q0ISwGxVN1Vh2Oi9
+	GGucXdiEP3iB6Gr4lUiaD62HizoaliL8wi61jPo5mO51CIxT2+FFd3Z/GqAvKPHLlc3DMXhIuNs
+	zEo0bxD4Qwez7TTpb29KikEPk+m5l+7nVKDCq
+X-Google-Smtp-Source: AGHT+IHW+YsmBVfepjw0RvvbIvLuyUZUzNrK5+vJha1JHDeloaVHEaX39wtYCOugbW2Umy9rn6hFAA==
+X-Received: by 2002:a5d:64e7:0:b0:3b7:899c:e867 with SMTP id ffacd0b85a97d-3c497741f55mr1258810f8f.59.1755765243275;
+        Thu, 21 Aug 2025 01:34:03 -0700 (PDT)
+Received: from [127.0.0.2] ([2a02:2454:ff21:ef41:a59f:f2cf:3ca3:965])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45b4db2a491sm18681295e9.8.2025.08.21.01.34.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Aug 2025 01:34:02 -0700 (PDT)
+From: Stephan Gerhold <stephan.gerhold@linaro.org>
+Date: Thu, 21 Aug 2025 10:33:53 +0200
+Subject: [PATCH] iommu/arm-smmu-qcom: Enable use of all SMR groups when
+ running bare-metal
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 967c0acd-0d24-42f4-dc2e-08dde08a46fe
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2025 08:11:05.7435
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ekJgjuvm8OengaBXq5hgzIag1AGTn+wWmkXwst+2hYIxL9Rh5ub0wiBJrjFHCCVYAZRNFhTCr8gmUnvyIlhPaw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB8232
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250821-arm-smmu-qcom-all-smr-v1-1-7f5cbbceac3e@linaro.org>
+X-B4-Tracking: v=1; b=H4sIAPDZpmgC/x3MSwqAMAwA0atI1gYaUSheRVyUmmrA+klRhOLdL
+ S7fYiZDYhVO0FcZlG9Jsm8FVFfgF7fNjDIVQ2Oazljq0GnEFOOFp98junUtUqTgLXkytjUBSns
+ oB3n+7zC+7wdtNni7ZwAAAA==
+X-Change-ID: 20250815-arm-smmu-qcom-all-smr-1fc81c10840f
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>
+Cc: Rob Clark <robin.clark@oss.qualcomm.com>, 
+ Manivannan Sadhasivam <mani@kernel.org>, Johan Hovold <johan@kernel.org>, 
+ Bjorn Andersson <andersson@kernel.org>, iommu@lists.linux.dev, 
+ linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-kernel@vger.kernel.org
+X-Mailer: b4 0.14.2
 
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> Sent: Tuesday, August 19, 2025 1:23 AM
->=20
-> ... I found that in SMMUv3 driver, iommu_get_domain_for_dev() is
-> used to get the RID domain for an SVA domain:
->     arm_smmu_set_pasid()
->     arm_smmu_blocking_set_dev_pasid()
->=20
-> These two are already given an "old" (SVA) domain pointer, FWIW.
->=20
-> So, we may change to passing in the old domain as you suggested,
-> yet we still have to fix the iommu_get_domain_for_dev() in order
-> to reflect the RID domain correctly for the driver that calls it
-> (or even potentially) in some group->mutex locked context where
-> the RID domain might not be naturally passed in.
->=20
+Some platforms (e.g. SC8280XP and X1E) support more than 128 stream
+matching groups. This is more than what is defined as maximum by the ARM
+SMMU architecture specification. Commit 122611347326 ("iommu/arm-smmu-qcom:
+Limit the SMR groups to 128") disabled use of the additional groups because
+they don't exhibit the same behavior as the architecture supported ones.
 
-Out of curiosity.
+It seems like this is just another quirk of the hypervisor: When running
+bare-metal without the hypervisor, the additional groups appear to behave
+just like all others. The boot firmware uses some of the additional groups,
+so ignoring them in this situation leads to stream match conflicts whenever
+we allocate a new SMR group for the same SID.
 
-arm_smmu_blocking_set_dev_pasid()
+The workaround exists primarily because the bypass quirk detection fails
+when using a S2CR register from the additional matching groups, so let's
+perform the test with the last reliable S2CR (127) and then limit the
+number of SMR groups only if we detect that we are running below the
+hypervisor (because of the bypass quirk).
 
-	/*                             =20
-	 * When the last user of the CD table goes away downgrade the STE back
-	 * to a non-cd_table one.
-	 */
-	if (!arm_smmu_ssids_in_use(&master->cd_table)) {
-		struct iommu_domain *sid_domain =3D
-			iommu_get_domain_for_dev(master->dev);
+Fixes: 122611347326 ("iommu/arm-smmu-qcom: Limit the SMR groups to 128")
+Signed-off-by: Stephan Gerhold <stephan.gerhold@linaro.org>
+---
+I modified arm_smmu_find_sme() to prefer allocating from the SMR groups
+above 128 (until they are all used). I did not see any issues, so I don't
+see any indication that they behave any different from the others.
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 27 +++++++++++++++++----------
+ 1 file changed, 17 insertions(+), 10 deletions(-)
 
-		if (sid_domain->type =3D=3D IOMMU_DOMAIN_IDENTITY ||
-		   sid_domain->type =3D=3D IOMMU_DOMAIN_BLOCKED)
-			sid_domain->ops->attach_dev(sid_domain, dev);=20
-	}
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 57c097e87613084ffdfbe685d4406a236d3b4b74..c939d0856b719cd2a5501c1206c594dfd115b1c5 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -431,17 +431,19 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+ 
+ 	/*
+ 	 * Some platforms support more than the Arm SMMU architected maximum of
+-	 * 128 stream matching groups. For unknown reasons, the additional
+-	 * groups don't exhibit the same behavior as the architected registers,
+-	 * so limit the groups to 128 until the behavior is fixed for the other
+-	 * groups.
++	 * 128 stream matching groups. The additional registers appear to have
++	 * the same behavior as the architected registers in the hardware.
++	 * However, on some firmware versions, the hypervisor does not
++	 * correctly trap and emulate accesses to the additional registers,
++	 * resulting in unexpected behavior.
++	 *
++	 * If there are more than 128 groups, use the last reliable group to
++	 * detect if we need to apply the bypass quirk.
+ 	 */
+-	if (smmu->num_mapping_groups > 128) {
+-		dev_notice(smmu->dev, "\tLimiting the stream matching groups to 128\n");
+-		smmu->num_mapping_groups = 128;
+-	}
+-
+-	last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
++	if (smmu->num_mapping_groups > 128)
++		last_s2cr = ARM_SMMU_GR0_S2CR(127);
++	else
++		last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
+ 
+ 	/*
+ 	 * With some firmware versions writes to S2CR of type FAULT are
+@@ -464,6 +466,11 @@ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+ 
+ 		reg = FIELD_PREP(ARM_SMMU_CBAR_TYPE, CBAR_TYPE_S1_TRANS_S2_BYPASS);
+ 		arm_smmu_gr1_write(smmu, ARM_SMMU_GR1_CBAR(qsmmu->bypass_cbndx), reg);
++
++		if (smmu->num_mapping_groups > 128) {
++			dev_notice(smmu->dev, "\tLimiting the stream matching groups to 128\n");
++			smmu->num_mapping_groups = 128;
++		}
+ 	}
+ 
+ 	for (i = 0; i < smmu->num_mapping_groups; i++) {
 
-why cannot downgrade apply to the case where the RID is attached to
-a DMA domain?
+---
+base-commit: 8f5ae30d69d7543eee0d70083daf4de8fe15d585
+change-id: 20250815-arm-smmu-qcom-all-smr-1fc81c10840f
+
+Best regards,
+-- 
+Stephan Gerhold <stephan.gerhold@linaro.org>
+
