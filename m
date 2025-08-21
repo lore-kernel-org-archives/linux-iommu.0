@@ -1,166 +1,141 @@
-Received: from SEYPR02CU001.outbound.protection.outlook.com (mail-koreacentralazon11013004.outbound.protection.outlook.com [40.107.44.4])
+Received: from fout-a6-smtp.messagingengine.com (fout-a6-smtp.messagingengine.com [103.168.172.149])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D36B285CB5
-	for <iommu@lists.linux.dev>; Thu, 21 Aug 2025 09:47:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.44.4
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755769651; cv=fail; b=MKD77mqMWY8KyNlmj8XLo3CqWNP5WVFQVgGBheF+0UMIEeK4rmI6I5tsS4lqAf6+NOLMlI5J8dk44pPiNadnAjd88v2SUVW6gQHamGRoP/a7QaG6ukpi18m9FWG9H5kS3yV/19TGuryRwFKT0dug4QKLyVdcSCyhf/9WACThQew=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755769651; c=relaxed/simple;
-	bh=LFT7+yeGEanemKdJmZIum7mdFNEhghb8GXHzc3oNraE=;
-	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=UjcZGEajV9LeMjZI50wEDwzExwWTVwTURUCE12Z8PwyoAnXqxUnFl+iy2+t38ZyFUC8aw+HQot7qpCJEp4hPB8j4IwpL54tqqb9I01uPLrIEUXOytENpHcGQBCJeN5jf3aLjnX0CrvleKQur1m+XoqsMKXDjW24NYGhtHD6Cp0A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com; spf=pass smtp.mailfrom=vivo.com; dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b=R+oRKrWo; arc=fail smtp.client-ip=40.107.44.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=vivo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vivo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA3DC2DA75C;
+	Thu, 21 Aug 2025 10:16:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.149
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1755771376; cv=none; b=G4OE6ShMsIUpyl1XEzB25qIxS4Yp5XD8ZIkHgrLLVEaxoJftSoy0TpbvY7PGN//BuDYnWI0zCC/qCsC5NPH0WxBc/+Ip1BMfbcyhRDuf2PyFir7qW9rv3WSR1Ow9vsov/pkKgAh1vtNODS+E8NihP1BDCphSP9ze5JJ1OddC3JM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1755771376; c=relaxed/simple;
+	bh=auWALS/dLuHWQDeiIFyYlRDyLX6NaNs8haeqQs75+vM=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=dGpQqDpFHcHkFqhLUGumYJ+FCvMMRuwbo7CZpI0wJBNAZYXTKPXBFDWr1NCAEV9w1w5UUBnQ3PazHMzYMx4Acc1T0hMAn6b7/1bA7rWtbJawYoiz/LiyX/Hx3smog4bQm7QN4HV4wSCNsm6fqmaIE9SKyiPBzchQwfuWSX6cgR8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=huQDxywL; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=GlaR8Wcr; arc=none smtp.client-ip=103.168.172.149
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vivo.com header.i=@vivo.com header.b="R+oRKrWo"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=J1X3TPuNuRAx7VXiNff6HXOg/RdALo/chLaVxc74eYRJS0lsWsv09LOJrijBvSCehiWv4VuoLlERZ7romJpBLxGWRw1cvTHYr3RCh9+OLpsWYy7mNt1PsQWjNlOEx0y3WYXGD/egJ5q9G7bhzJZCuO4cgLoC/6PaZEhhiQWe//n8lKYts3UQHJwYCtBZuCeEqFqMdsDV1wn0bKXuj6QMeC1Krtw0pOYSlWhQuOc+MWbAUSRjL5wYmNsgr8FMKWHsvrRN7Ply0yjkIkcnprBeFto6w6APvOscUpZGEyx5G56a7dLWU/A23J9rIe6X8OMN6cCbcQ9gF6vNdREbe86xVA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=l3qO4dN1p+/PrakekbMeW0kNjjNTzXx1dGZHwhtJcZE=;
- b=Y8HHm7KKoC1tBVHCsSg1cQVAK5Ec0/NLYI6LPwDES+9zo2jJd2ZnuDzmCxSArgWl8biVf5nAwy2GKLEcTJswR6sIv2dJfQrQiifebK1lAsNBuvkCIlQGCLXb7AN/LApQBqaglzQYHF+Zb1dKgoR7L7CvS5DGI7Eiwpn5l/d9VbI4ZIg4KNcQ71HHUGPZqullcsDsm9hz0JIBwABCav2CehS9iPn6GzO6J1hcpxL7IbUNdAIq8htCGvIVPpo/WJKJ4ctZbX7zhEOWmt60j1P4F6AVPs9SBGjf+8qiC1ujoqMNIzl/whlxi9rgjXgkmashmAxIMnJP5XvR2pIUyXloVA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l3qO4dN1p+/PrakekbMeW0kNjjNTzXx1dGZHwhtJcZE=;
- b=R+oRKrWohDY2nVMdICq1Yu93sNtwhzFqYCtCGznKgDkx7JwZHqREcDLyv3UkOJfzPCXGMKbIURYInuXUhw6afDTujQkEFOQ2Z94oeWB20eUg45Z8vTlpzlqOGFm27sS2u9uUAQj87ggtvu/b0J9pegQMkEc2lOiNxH06KBdhVjQgqWun6MscM5Q/N3JoPLPZzBPmGNeDZEhvI3aQW4rIRh5cpicpBeRAvf5Edi1d8Ncgfg2epuB4vxwXFfOxGVlSesN/FhhnUKrM0fF6byMDEG+ejB6RTX7Tcn3akOiPzdThnC7yCq35dqMN/bCBtTkWGj+5J3eu+eQkx4owoap6rg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from KL1PR06MB6020.apcprd06.prod.outlook.com (2603:1096:820:d8::5)
- by SEYPR06MB5695.apcprd06.prod.outlook.com (2603:1096:101:bc::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9052.14; Thu, 21 Aug
- 2025 09:47:26 +0000
-Received: from KL1PR06MB6020.apcprd06.prod.outlook.com
- ([fe80::4ec9:a94d:c986:2ceb]) by KL1PR06MB6020.apcprd06.prod.outlook.com
- ([fe80::4ec9:a94d:c986:2ceb%5]) with mapi id 15.20.9052.012; Thu, 21 Aug 2025
- 09:47:25 +0000
-From: Xichao Zhao <zhao.xichao@vivo.com>
-To: will@kernel.org,
-	joro@8bytes.org
-Cc: robin.murphy@arm.com,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Xichao Zhao <zhao.xichao@vivo.com>
-Subject: [PATCH] iommu/arm-smmu: Remove dev_err_probe() if error is -ENOMEM
-Date: Thu, 21 Aug 2025 17:47:17 +0800
-Message-Id: <20250821094717.573232-1-zhao.xichao@vivo.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR04CA0194.apcprd04.prod.outlook.com
- (2603:1096:4:14::32) To KL1PR06MB6020.apcprd06.prod.outlook.com
- (2603:1096:820:d8::5)
+	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="huQDxywL";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="GlaR8Wcr"
+Received: from phl-compute-02.internal (phl-compute-02.internal [10.202.2.42])
+	by mailfout.phl.internal (Postfix) with ESMTP id 16CEFEC02C6;
+	Thu, 21 Aug 2025 06:16:14 -0400 (EDT)
+Received: from phl-mailfrontend-02 ([10.202.2.163])
+  by phl-compute-02.internal (MEProxy); Thu, 21 Aug 2025 06:16:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:message-id:mime-version:reply-to
+	:subject:subject:to:to; s=fm2; t=1755771374; x=1755857774; bh=lW
+	lZ1B7dnoL4FI5VN9DHIWsW/7JnMjvkUJjcADTwd90=; b=huQDxywLfHt+W+uIEO
+	5gagn2RXv1C7a4LvBK+0Pdq3pi7SCACOlo4xm2pvIE7vpt2kEwB5Q0M3l3q19kMx
+	AO1gvSdHKkzMCn91bja+4zSjr7foPE6/+I90crEKiCdfaVIJTVZPWxds8z9vxzaG
+	Cre6I76ZEsSbvO0XmiLjKxg6tsZcp3dn+4+VqgNzUBrJutrP84GAXiA5Zf6XEQpD
+	RIheiXlZBHyXIjTK1DQ2qmFi4pmnkx5cJxdLefIEvOIrX/gZWWKmNzhAoe01iI4x
+	Cg6F/gx3RKwdddQQjhFCuwGeYsy6+Dxwwk1ugf+LD8AL/za4Ad9nv/ht/6blm9e8
+	kvrQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:message-id:mime-version:reply-to:subject
+	:subject:to:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm3; t=1755771374; x=1755857774; bh=lWlZ1B7dnoL4FI5VN9DHIWsW/7Jn
+	MjvkUJjcADTwd90=; b=GlaR8Wcr7x31iyLKiURP7vS88qLsQ5M8025shevtxFGY
+	zwZcYIAUdO/pFf+kuxDsPhLpGVOZ8tpDYbH+4jFAwZPg5qBsfptfwfVHgujJRRF0
+	Gu+qS7KMf/MQEB5w6D6S7/u7td+g0sjlK41qr4gk4cwF87WmcGghGyoznKYmkw4E
+	MoIkiylXS+m3xz3/jV+5sD8PeV4yydpJL20AALUsnNglzJMtdbVbFsfq7r4+l2M+
+	caW5k42FIqw1kDKZxbaCxOhz+cVVMNnerjCbRkj2SW3KYHzJAyjuje6RTW9fF+eT
+	aNQifwrikqxNTESLPr7orc9HGfAlmYg1KHtWUYU7pA==
+X-ME-Sender: <xms:7PGmaCFdo0R34itlpGy5C-S4a7NOSqdu33ZMg-3FmNPsjgDX6rohRA>
+    <xme:7PGmaJRulvTTTr7E0_F5_Z1PNrYI5R1-qSBSnsElMHat7NklsAD-30Ny1oci0XfaU
+    Q-_v4XV3uFmS8FfDOI>
+X-ME-Received: <xmr:7PGmaJSsQ_ly5zSo8z4oDaI-jLbfAz11LvpAkqDFq2riFqKJevoPP0WPLYRvPNqTgOWkSG1mwGaro68dj_qlm355sgDrRwGOvWTBhw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdduiedtleejucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
+    gurhephffufffkgggtgffvvefosehtjeertdertdejnecuhfhrohhmpeflrghnnhgvucfi
+    rhhunhgruhcuoehjsehjrghnnhgruhdrnhgvtheqnecuggftrfgrthhtvghrnhepueelgf
+    fhfedvgeelfeduuefhfefhjeeihfffueefjeeihffhheeuteeuvdeuhffhnecuffhomhgr
+    ihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
+    epmhgrihhlfhhrohhmpehjsehjrghnnhgruhdrnhgvthdpnhgspghrtghpthhtohepuddv
+    pdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehsvhgvnheskhgvrhhnvghlrdhorh
+    hgpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdho
+    rhhgpdhrtghpthhtoheplhhinhhugidqrghrmhdqkhgvrhhnvghlsehlihhsthhsrdhinh
+    hfrhgruggvrggurdhorhhgpdhrtghpthhtohepjhesjhgrnhhnrghurdhnvghtpdhrtghp
+    thhtohepfihilhhlsehkvghrnhgvlhdrohhrghdprhgtphhtthhopehrohgsihhnrdhmuh
+    hrphhhhiesrghrmhdrtghomhdprhgtphhtthhopehjohhroheskegshihtvghsrdhorhhg
+    pdhrtghpthhtohepihhomhhmuheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtth
+    hopegrshgrhhhisehlihhsthhsrdhlihhnuhigrdguvghv
+X-ME-Proxy: <xmx:7PGmaM19N_gPBLyS-ZA-APYQAIWaRj9ttkDptLk77aIe8x6chZ11vg>
+    <xmx:7PGmaDwKTVeIWou-EhCwXFRx8OyLY1jTO4bBbTRaQk5HMYXUd1Vifw>
+    <xmx:7PGmaIwmPVR-CKkG4T6L4VfXY1gZxM_5Fd4QcdXBJYX21B0oQ9-GPQ>
+    <xmx:7PGmaP8kgV3aT1K__hUzITgOsMWC5m4IrfoSEKzdGQplPfrTmOVgcA>
+    <xmx:7vGmaFXMF_UyvY6jzdtOtSSW0qYTfkpGjUoqP4oaysw2h3pvEHrIwcgy>
+Feedback-ID: i47b949f6:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 21 Aug 2025 06:16:12 -0400 (EDT)
+From: Janne Grunau <j@jannau.net>
+Subject: [PATCH v2 0/3] iommu/apple-dart: Four level page table support
+Date: Thu, 21 Aug 2025 12:15:57 +0200
+Message-Id: <20250821-apple-dart-4levels-v2-0-e39af79daa37@jannau.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: KL1PR06MB6020:EE_|SEYPR06MB5695:EE_
-X-MS-Office365-Filtering-Correlation-Id: 62f77b2c-9d44-4e6c-ee71-08dde097bc1f
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|52116014|1800799024|366016|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?6BzGFpRKnIIZpWAF5IF05Uwey5Vh/G0W4iSMbYQ7j2BQNF8gFMte0paxwOAd?=
- =?us-ascii?Q?ObiSVldVReWwqyuCcG3MklmlraONDb9qGIFhYh4+BoQwKgpKz/CgYR8m2gUq?=
- =?us-ascii?Q?AHvNrBpb/qcW7crYcyI3yWzesvB4X+adO09/88o9Qn8RYLmElCjVmQIB9Jm2?=
- =?us-ascii?Q?ynHNY3iEvj4mKld8x8tAq0JGnCxoclOoaP6ncbdwVPr18Thf51Y6Zr2wEZ/C?=
- =?us-ascii?Q?FuJVFaZ5dztNNimktCiqXyd5NEP+/ds7pnad+3WqFyh95waIU7XO8XR/FfUm?=
- =?us-ascii?Q?qS57MBPQDuWysyDRDYuPXQxZjyISxTgE6NaGOYd+2pgYokAZT2zexMxz8j3w?=
- =?us-ascii?Q?GbDVd256kxUBvY22411zisRA+Bi54sge7lftQxTVmYsSD51kllhrA2VUvi+y?=
- =?us-ascii?Q?Hl8RlIpo2uS9zOcjaQv2aRWmdJZGPihqE7wFmXWAK9MQeTWAPESh0ZhFRbfv?=
- =?us-ascii?Q?9qzCFA36komu6l0fyeSBK/W82ImCk9OxnD2sD9JLDtikUbfYqXbTSGrCKBXr?=
- =?us-ascii?Q?5pTsd+l3mL0lMPK1fvSNZQjEn8z+364/ySmeC/VXkgPCjtGo4XYCrT2riC8F?=
- =?us-ascii?Q?z5q9bKLs9E8vdmNwkoml+qzxxJdW3OwCCaDf3wqn40/U7wRO1bVUzxg9Q5OZ?=
- =?us-ascii?Q?LVichucgO6FUMSWjLvsDteP9wpMDG7q8o7Aes+gb2hTZlWOFiTD9/4ffBq5/?=
- =?us-ascii?Q?wkl7nyupT9Nxj9AmcncYlaqFoeDLMSXFZ/WIQ1mcy5YEQBQYGpTLgguosMLn?=
- =?us-ascii?Q?tMIr+2lX11Oz3ffu55o7SDcCiHBUlFcLti42PtqH2agVcQHf/POyYW/cxwhH?=
- =?us-ascii?Q?MFB+4Fal5nnTh+aAiWkcjvQsjceNpk7Q09x/V1deXefi66MiBy3IHZqb6wOK?=
- =?us-ascii?Q?rCrRuuPfw2Za0WsosBJz2tAF0PZ4HP0tunJaeU/9zrYas3twODxVCQYahFLm?=
- =?us-ascii?Q?iZoycmHdvuzkAefbYD6Pb/v1THimIgWdoA1rVTEklObUmnw92RJYRlrcLDWa?=
- =?us-ascii?Q?AHTnhxTLt90gMDC6mtfB07cj1AZ1CSLDeBL7fPP8+UyOfuKlyUaSzqNH4Ith?=
- =?us-ascii?Q?rxNw5vuPrOfUHnF0HBKkewGdWoCM82v86vXSOImerSa355D0NBc1Jp+NsEam?=
- =?us-ascii?Q?N8HYmLtSEBovJuirohP4bUhveDx/SU1l7+sDPt0LTPXcLCowNzUy2dt8zDzs?=
- =?us-ascii?Q?nkglYopvzNGtvB1h3Tbywld/r4ftb/ya7HGK1cwMn9P2iYJOcBmqXYz5KR2G?=
- =?us-ascii?Q?LBWWdLPTZFE7Cx5GuwfRXJokF4FD3qSgBeaXexDPsoqKQsBLAVc1kVSYNQ8Q?=
- =?us-ascii?Q?L5JOTYv1IOxWeUIBEd7ugXaalivMRE60OWov6GqcWlxFw+v6P+z9kvy7LSvR?=
- =?us-ascii?Q?PPi86/XfDUmH63PJy9Z06RO4QnMeEhE16r6cuAUb/gZRIKdaOVJeSIOz7KSq?=
- =?us-ascii?Q?bfJZAeRjw6CJgmUgUSxhT48R6JjFCyzddr1EwlIVA4jB5rMcw1hETw=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:KL1PR06MB6020.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(52116014)(1800799024)(366016)(38350700014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Cd/Bryp7s/lE9gprAMjHBDF2niXlkaS4JjA8uzvz1NocbeymPvtCFU8sIFmi?=
- =?us-ascii?Q?+bRsvJOwsTCkcVWSe01JRF3wTp/luaL+iJ4blhqflOmCjz6RYF/iQ/KNNh2v?=
- =?us-ascii?Q?r6bdxL4VvVFQ5gEYTkUP7Gwwb5Dj2T6kZIyGP7XQCZVQYp88RdHokBxvKIKF?=
- =?us-ascii?Q?o/qcGLDVYiMLjJiXdncFlImFCuMvMSZbNS5BLgaGBasv/R1NV1qLVDr3NNk4?=
- =?us-ascii?Q?hrtPWhxArd5crpWHP9MwSm1eSlY19r1uI//+Q5COLDbQPsvjxHJi/lEyODQM?=
- =?us-ascii?Q?p+GJ7fD09bEZhtx/CVZjf3al59xKC3L+pYwPXRakBLWqy3KamB1IQrtGpqbQ?=
- =?us-ascii?Q?NAVKZ4cDZYyecJWRppzY88AybPjfIB3JTBWsGSLS39dfvlTRYUleMu8SUCWL?=
- =?us-ascii?Q?Y019LoGCUnPi3iR+fIBU7M2+FmcZoG4qqmEtGZomA216qWvvBUf27+LhWSwh?=
- =?us-ascii?Q?hZc9h4XBy6XQ71Q/yeHm32BDVEtWDtnbJFzTIW+BNRUHJtjgW6QDGUxTinWg?=
- =?us-ascii?Q?Smvz2oGypDAPcTsM/BHkQ16DjBUJAlVc5wF8yiVPf5kDgsTChswQEuBCKnTL?=
- =?us-ascii?Q?cWo7Qy09RbvLede1JDOff8QMAGKdMT5L4Lw3bWcgxlBUIl6WuTB4pCYlVL+k?=
- =?us-ascii?Q?+5q1l5ywLGgoTH8wKxVI4GWFqgD39tuqONzco71YH2GoAeIgyQDj8KfFESpC?=
- =?us-ascii?Q?Gzo5qm9cXuDBhb6yijKBQQbguht5+KqccA1vSk1SGMABOEGaYB3blFg/DN2f?=
- =?us-ascii?Q?VkLHiXVJn8Rw/4waZDFTv/8GJ9sc0Qewgm/BEpJ0CpobRM5Dk7WGxKUsvdOa?=
- =?us-ascii?Q?ZXSVd1N1htUSh3N+eXzzOb+aykuM9HzkOGE09yfIkOcVTUYbTbLYF4/92lFh?=
- =?us-ascii?Q?vekNG/jcJ4R3ykEAhIRKL102PDkGpGrfytOKFDkkDfjnn3n1Qm69wqvFlyPK?=
- =?us-ascii?Q?Z5IghyXRbwUj7Zk7c/jSStsB6OCHzPp41hxqhyS445XUrz1l/RZu3yix4Fsq?=
- =?us-ascii?Q?0d9h3S7IQNZrqLy91yNoVbWRVh7DSsFy6l1wFjilbR/JmgHMz/GQYss0xSLy?=
- =?us-ascii?Q?Ga5/DKKPOn9+/xovUycLILe7u5vpJhly/pT4oqWJwN35vo1tL7GfP8E9NieG?=
- =?us-ascii?Q?grzMMXyiGIt2nJ3lJHXh8f4WMiXiqPqowaRA1rroFKAS97mSUyzbK9aW4HcP?=
- =?us-ascii?Q?uO4emtA374Zbe40SaY+0h9mMfFpW1KemmFwNP6hktwJOwtIHBwRN8voEEZwt?=
- =?us-ascii?Q?fIZzpt3ulao95n6Rd/yvgbWvb+kKWYZhDWQBcGV4y7uB0lhL6yzPpMAH2rMO?=
- =?us-ascii?Q?hoI18TUg86LotGSzLUIA6SJk3w1O+W298wo/XaY1OKtfUbKsGEzU+IAYp3Sg?=
- =?us-ascii?Q?4XLEaPhISQdTevE7ZNOtv2l/0GrIrSLOGDDw3JlQln9nFi22jbykY8HhzDUj?=
- =?us-ascii?Q?Kck6fqreP81WAia4f4exgWhnMs7EgVnSJQOn/o9tNnEKnVZl7UG+1OqsHOMw?=
- =?us-ascii?Q?QxgoEzIS78+CxlReVGrJsk0w0W79SBvNqB1KpsCYqEerntIJW8T7xMDvg8qx?=
- =?us-ascii?Q?wCd5mVqE/S5CYG5rPSdljkWytUN1gr8LJ+FsRTTO?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62f77b2c-9d44-4e6c-ee71-08dde097bc1f
-X-MS-Exchange-CrossTenant-AuthSource: KL1PR06MB6020.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2025 09:47:25.9067
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: V9mEdlq0SJz34ZFlyDjyoU6qZjsAF6ij0fpyPP7qkPNXBxuqGaMbDYilc+mTzXh/Y0uPYcD9vBk5okqrewkhbA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR06MB5695
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAN7xpmgC/22NQQrCMBBFr1Jm7UgSI42uvId0MTZTGylpSGpQS
+ u5uLLhz+R7891dIHB0nODcrRM4uudlXULsG+pH8ndHZyqCEOgojJVIIE6OluKCeOPOU0AwnYkO
+ 9POgW6jBEHtxri167yqNLyxzf20eWX/vL6X+5LFGgvSklNbWmF+byIO/pufe8QFdK+QAluDO+t
+ QAAAA==
+X-Change-ID: 20250811-apple-dart-4levels-8f9ae8ac1347
+To: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, 
+ Neal Gompa <neal@gompa.dev>, Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ Janne Grunau <j@jannau.net>, Hector Martin <marcan@marcan.st>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1294; i=j@jannau.net;
+ s=yk2024; h=from:subject:message-id;
+ bh=auWALS/dLuHWQDeiIFyYlRDyLX6NaNs8haeqQs75+vM=;
+ b=owGbwMvMwCW2UNrmdq9+ahrjabUkhoxlH1/ODIq+/zfwTPXple+sF8ZPVFPt1L7lVv29Vkm2V
+ demT42no5SFQYyLQVZMkSVJ+2UHw+oaxZjaB2Ewc1iZQIYwcHEKwESOP2JkmHPZzIV1bsH1fNbF
+ 26W6NmwPV5Hm7FOawCrz4Me99OLPGQz/Uy+87ruWJZ0gIPDqh0KvevicXcXtOzhlNU44Tn6x/Hg
+ FKwA=
+X-Developer-Key: i=j@jannau.net; a=openpgp;
+ fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 
-The dev_err_probe() doesn't do anything when error is '-ENOMEM'.
-Therefore, remove the useless call to dev_err_probe(), and just
-return the value instead.
+The DART instances found in T602x based SoCs (Apple's M2 Pro/Max/Ultra)
+indicate an IAS of 42 bit. This results in alloc_io_pgtable_ops()
+failing as io-pgtable-dart supports at most 36-bit IAS.
+The t8110 DART design supports 4-level page tables. Implement support
+for this in io-pgtable-dart and mark DART stream with more than 36-bit
+IAS as 4-level page tables.
 
-Signed-off-by: Xichao Zhao <zhao.xichao@vivo.com>
+Signed-off-by: Janne Grunau <j@jannau.net>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Changes in v2:
+- simplified 4 page table level use in apple_dart_hw_enable_translation()
+- use "iommu/{apple,io-pgtable}-dart:" as commit subject prefix
+- added Sven's Rb:
+- Link to v1: https://lore.kernel.org/r/20250814-apple-dart-4levels-v1-0-db2214a78c08@jannau.net
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 4ced4b5bee4d..9e441f3a75d5 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -2164,8 +2164,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	smmu->irqs = devm_kcalloc(dev, smmu->num_context_irqs,
- 				  sizeof(*smmu->irqs), GFP_KERNEL);
- 	if (!smmu->irqs)
--		return dev_err_probe(dev, -ENOMEM, "failed to allocate %d irqs\n",
--				     smmu->num_context_irqs);
-+		return -ENOMEM;
- 
- 	for (i = 0; i < smmu->num_context_irqs; i++) {
- 		int irq = platform_get_irq(pdev, global_irqs + pmu_irqs + i);
+---
+Hector Martin (3):
+      iommu/apple-dart: Make the hw register fields u32s
+      iommu/io-pgtable-dart: Add 4-level page table support
+      iommu/apple-dart: Add 4-level page table support
+
+ drivers/iommu/apple-dart.c      |  50 +++++++++-----
+ drivers/iommu/io-pgtable-dart.c | 143 ++++++++++++++++++++++++----------------
+ include/linux/io-pgtable.h      |   1 +
+ 3 files changed, 121 insertions(+), 73 deletions(-)
+---
+base-commit: 8f5ae30d69d7543eee0d70083daf4de8fe15d585
+change-id: 20250811-apple-dart-4levels-8f9ae8ac1347
+
+Best regards,
 -- 
-2.34.1
+Janne Grunau <j@jannau.net>
 
