@@ -1,55 +1,55 @@
 Received: from fout-a6-smtp.messagingengine.com (fout-a6-smtp.messagingengine.com [103.168.172.149])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 766DD2F4A04;
-	Thu, 21 Aug 2025 10:16:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 368BA2F5326;
+	Thu, 21 Aug 2025 10:16:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.149
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755771381; cv=none; b=JHLYPxEFmKnexUb2r4TeBwxx613uF5dSfsgmGXd8ZNj3ngd4Z+xmVBEdYQLYHO+YLya3tzt1+7AKD3AAYezEqmA+k1lBbfOsvs0B/WSdlbrRR3Ev+wsNtVNhTA7UibBQqMz7R6m7jdQLqa6eMaxqhsyYF+ZzrOeXRG4iC9JZzhM=
+	t=1755771382; cv=none; b=IaRmF/vy89yHfzmhvQ7lC3tjeU2BeeQsKDLI0sv7xx61h6BtPuspf3mkpKSueJUiu0tzH+h2ex1rqKOSVI7ie6+83zl8W2ke1vkVfj3lcT9I0Wd6OvfPIeWwu8s8WSWN/lCTRs9gFMmI5j+HjCvZbBSvjAGs0x3OVrdkzAmI1Xs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755771381; c=relaxed/simple;
-	bh=QR7xTObWrG8jzW4vzxiOiGa/8ohWF2v8rWNsIuuOCSg=;
+	s=arc-20240116; t=1755771382; c=relaxed/simple;
+	bh=955+AUWu9skz+kriF8KT3uMZVKR0SG4949Rhbtt/u3M=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=XgIiqgnY37JLeWereR+sl1Do0s5Va5LKuS09KCDAFsoTvAFVzdD+qknP5SqTqm/0sNw584TEBWNavrXf4rtrrDVi87AtMRwIj8WseYb8yJYrm0qJu6XWXmGxtz2Dd1O66ADK2VWr0C7GtpYMYZ+ejBT9Sqyer6+/eHelf0ZcJxI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=d2X/qN2H; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=IjTQLdHo; arc=none smtp.client-ip=103.168.172.149
+	 In-Reply-To:To:Cc; b=qlKyadregrAjwqp+Gywizg6IIKV9117w82tb+YtgVR6DgaGctOXw8/z8RKiplVI7KGYpxYxMeuKZa7IDm43nUHETDY8xNJIrKB8dXOvcCnoCqwq8T2hGwjZuh/JE4KGIlIVV6mXQ3F2LnNCThOfAIGweMTAzCc+U0UWYEMER+Hg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=MwylDu/r; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=HiXiqU1w; arc=none smtp.client-ip=103.168.172.149
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="d2X/qN2H";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="IjTQLdHo"
+	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="MwylDu/r";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="HiXiqU1w"
 Received: from phl-compute-03.internal (phl-compute-03.internal [10.202.2.43])
-	by mailfout.phl.internal (Postfix) with ESMTP id AA5A9EC01FE;
-	Thu, 21 Aug 2025 06:16:18 -0400 (EDT)
+	by mailfout.phl.internal (Postfix) with ESMTP id 6AEDCEC01DC;
+	Thu, 21 Aug 2025 06:16:20 -0400 (EDT)
 Received: from phl-mailfrontend-02 ([10.202.2.163])
-  by phl-compute-03.internal (MEProxy); Thu, 21 Aug 2025 06:16:18 -0400
+  by phl-compute-03.internal (MEProxy); Thu, 21 Aug 2025 06:16:20 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
 	:cc:content-transfer-encoding:content-type:content-type:date
 	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1755771378;
-	 x=1755857778; bh=aZ1SIc0xkmBczXLaLJjDEf2jfY3SZlOUWpHblhb+Ar8=; b=
-	d2X/qN2HasgwR3D0anppPOLnMCcx+cB5b/4CzQWHmuSXFxrxicLcir5RL6vLOv1A
-	vL2DXjC8kdOnYBk828e7aioE91eDXL8OGzBOjpwaU+OPxc8RoLE/pLFbUa1qEe7P
-	GjTEiLJA+701SG19Ew36FC0V3MKJZKFcV5RC4IGTH9EJIW04X1EFvpEyWWGWF7FB
-	tmjoEP45MAKR8Cv5kvhPTJlAbVzfVEFFaCgDVLh07YrM0qTsjEGxRIyGUHzcg2YG
-	SJ1PGk6s0JghqStqpgeHsPuhXpxtd4keVm5l+H3BYuSh4eoVhxjyabkYOF1UwmJE
-	GF1UwzroCQ4jEsS38vhCPQ==
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1755771380;
+	 x=1755857780; bh=iMvMUbqwzYMs+NFv5DBsdmg4oCEeEiFeKnSlIqNtn8M=; b=
+	MwylDu/r6/thFNHVvnFnXsv7H0tisLf3i64yPJl73lFhkX0K89OwIp7z5L/0qpAo
+	c4IGg94aw+j/Ah/iNQjbMH3oeOdsRwOt7SssyssdO3GZEcCJNzydLfxzPFtQvtoP
+	cOCkf/0xlW1jVTKavsrP8mZuZblAFHILmd+oM8AFmxjRKy6vcVNzkgvnpXuB5gxG
+	0S5QLIX2NK3nLL/v82ffaGhjUhqOjed7zUjLuqfXbMpz1k6THUTRDihtmq5ff22R
+	vjD/K6naJuoGFN8F6thKc6pZhKeX3ATz8zKEk7ATve2e54XgT9OBeOGliHy/lGcJ
+	gTb6XKwpwZvmyURE147g9Q==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:content-type:date:date:feedback-id:feedback-id
 	:from:from:in-reply-to:in-reply-to:message-id:mime-version
 	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1755771378; x=
-	1755857778; bh=aZ1SIc0xkmBczXLaLJjDEf2jfY3SZlOUWpHblhb+Ar8=; b=I
-	jTQLdHoXRyh0lcBRkJL8AR7cUsEfHVnmbd/8hbbyRSXzJNaO+vyxQR5LonNAsVw8
-	5nEaBwIOUFg8U3PVhSriL5tMGF5sgE5qJ3nPKGMKlcftRod4Gsu8gHtJm/hL+xag
-	e8qA30cSaLVFoEAYFLdt1XZu85lOIJQjI2Nn0yG4cOe/zZk8M/6gp52ZaUCNVXBh
-	9jyJ5THP+gt55HBCFHk1QHDE+ep22d5wIdaUe9VWkLPzHvFd2D7DoQ8fKpFtrP/i
-	bH2IOdV4wvx6wcoVl+6Ze4Hv6qnjQelJhni4ZdSwi3/mUQBWE+GLSPlBGVDvDTsK
-	bnTxtjL0Rl/B3vFc0bYbw==
-X-ME-Sender: <xms:8vGmaOiaVk1o--AUDWeKUJZrk0mu922792zufMMeW6ORHoelA7dzKw>
-    <xme:8vGmaE-G3DcmwYUogK-OQFfFviYdqrV8sgsyi0hfAu_rhQo3lks9Kw7S8c5k97Cxm
-    CtxLU2uRWZ61Hnbx7c>
-X-ME-Received: <xmr:8vGmaDPJ0aH8GqIIo-M1UowAvuaM_JK1wQOPWQJzSHxSX7bIhNEzTndXpaQE09UstX_ZrKqGnL6S8AEQPIm0xJfBUUF11WauJv7vVw>
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1755771380; x=
+	1755857780; bh=iMvMUbqwzYMs+NFv5DBsdmg4oCEeEiFeKnSlIqNtn8M=; b=H
+	iXiqU1wXWz5ivEAQmabDd4c+zBB8necoB+R0whgu8QVOnB+/sBttD7iy+muxVGpl
+	2HC5LoUoiuPheSF/yr54WQgGvi56yrjLoHGD8S7l6YGBYdLlGR1TjysQb0OlnoR0
+	smxHTkVlj7oZstm0VbCSzdEwkezC1874Q/biftOLkRq71B9GeWwXTqGPYcA1qM/V
+	LXwTmSoX6sdMGqqtpsYiKHcddhPs2CgvOdiGM/mXPvAbmu++4mb22LdSR/0UArui
+	sMisLRDCixhlMniYRlpiKeuffrPwUqLDjH2Do2D1AqLK9Ez7d0RoRWtMf/Irn0og
+	zqWn6lzLa+/uLA2s4lOBw==
+X-ME-Sender: <xms:9PGmaHrmw-TWHOL2cLm9lQSlBZgxz6JiiB_SpM8Bk8jeRtg8cRgAnA>
+    <xme:9PGmaHnf4ikb6zHI94n1VvASJ2DKGOu0ZHxnBxY7Q-kr68OIppVpEuAgzAV57j-qD
+    ZZMME_uEz3esrB7lNE>
+X-ME-Received: <xmr:9PGmaBV8WQEMQTBoMRayPDfsk8sQLErP4V5eGX9uVENlj7Aw45Pl9daeC1RJmeikFdKrxvOAV6RAqyJBNJbnpOwmTagnv9MHnC4_LQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdduiedtleejucetufdoteggodetrf
     dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
     rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
@@ -66,18 +66,17 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdduiedtleejucetufdote
     htohepjhhorhhoseeksgihthgvshdrohhrghdprhgtphhtthhopehiohhmmhhusehlihhs
     thhsrdhlihhnuhigrdguvghvpdhrtghpthhtoheprghsrghhiheslhhishhtshdrlhhinh
     hugidruggvvh
-X-ME-Proxy: <xmx:8vGmaICHBK_2IzlRLc8sWBGeBO7B5Ek1HSuxn8OYdiuiRNesReiWRw>
-    <xmx:8vGmaHP9VI7JBDLfTPQVFPOQgMCfTwKBa0_5JuLEbZ8qfucIX-7FKg>
-    <xmx:8vGmaPce189pOnf44c1kMQVKCKiKZWvNn8mjULC6xZ-cWfk8_TTu2A>
-    <xmx:8vGmaI4M5B_JBLv2LfG1826UtbAELbCSc-wZuDF4pOOeYVvHM9uZJw>
-    <xmx:8vGmaPxZpkf79qfZEKJCFbsZkwvI7XHvxZi49hjha8uCkqbNXEQEZ5Vf>
+X-ME-Proxy: <xmx:9PGmaLq92ipQEc0rknsPUOXNqpa2lh_TjutJTRtwL37Jwi-qN5Uhbg>
+    <xmx:9PGmaCUwugZBJ04YATvGtOgO6UQiCG5KwoZNaJ_6YHIT3WRuy2tqbw>
+    <xmx:9PGmaMGgkRahoRXSAcjwO4_woYoMKSI5RPbP1CYKHx_UmNMFaoR6hg>
+    <xmx:9PGmaJDLIKA4CqeTrdi-gqbNmnVMCMT3ed35-Ie2bxYOHOxI3gAafw>
+    <xmx:9PGmaM4J45ooUzlZLLphkNhNwBHBJ9xL_Rfbt4QcuI9ksRmyN8F8b9Ff>
 Feedback-ID: i47b949f6:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 21 Aug 2025 06:16:17 -0400 (EDT)
+ 21 Aug 2025 06:16:19 -0400 (EDT)
 From: Janne Grunau <j@jannau.net>
-Date: Thu, 21 Aug 2025 12:15:59 +0200
-Subject: [PATCH v2 2/3] iommu/io-pgtable-dart: Add 4-level page table
- support
+Date: Thu, 21 Aug 2025 12:16:00 +0200
+Subject: [PATCH v2 3/3] iommu/apple-dart: Add 4-level page table support
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,7 +85,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250821-apple-dart-4levels-v2-2-e39af79daa37@jannau.net>
+Message-Id: <20250821-apple-dart-4levels-v2-3-e39af79daa37@jannau.net>
 References: <20250821-apple-dart-4levels-v2-0-e39af79daa37@jannau.net>
 In-Reply-To: <20250821-apple-dart-4levels-v2-0-e39af79daa37@jannau.net>
 To: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, 
@@ -96,318 +95,138 @@ Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
  Janne Grunau <j@jannau.net>, Hector Martin <marcan@marcan.st>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=9158; i=j@jannau.net;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4651; i=j@jannau.net;
  s=yk2024; h=from:subject:message-id;
- bh=7O24DxlrQs1hU12SJ8GdEYjzt4f5dD8TZi5pceWfWi4=;
- b=owGbwMvMwCW2UNrmdq9+ahrjabUkhoxlH1/5ytXefywsLXdIcIJsqqvfyQuO3LMcpljNlV9Q4
- DblzEOjjlIWBjEuBlkxRZYk7ZcdDKtrFGNqH4TBzGFlAhnCwMUpABPRE2Rk2Prirerd47Me9xzX
- rrFzO/P4+DZrM5t9RVUBb6Xtn11l02JkeBIq06tuym5pcNq+VDTntmnTik36X+bq/Myc6LT9y/r
- /jAA=
+ bh=X3gkHJGczXXUrwmJq+dtwcmyPTUZEqB4c8Tpzbc+JsA=;
+ b=owGbwMvMwCW2UNrmdq9+ahrjabUkhoxlH1/xWwoWGDCeWaNb09pjxp9hpzx3CcsZoS0vtoUz7
+ 1dlfs/QUcrCIMbFICumyJKk/bKDYXWNYkztgzCYOaxMIEMYuDgFYCIxXxj+x/DvNxQ/Ii9w4d/c
+ Nfm3WKe3Jc0Ue3u++33B87yzGtqtRxj+Wc/97DX/2c9nzcl2u6X5oy6sifpesWuyWUmMz+RLcY5
+ 3GQA=
 X-Developer-Key: i=j@jannau.net; a=openpgp;
  fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 
 From: Hector Martin <marcan@marcan.st>
 
-DARTs on t602x SoCs are of the t8110 variant but have an IAS of 42,
-which means optional support for an extra page table level.
+The T8110 variant DART implementation on T602x SoCs indicates an IAS of
+42, which requires an extra page table level. The extra level is
+optional, but let's implement it.
 
-Refactor the PTE management to support an arbitrary level count, and
-then calculate how many levels we need for any given configuration.
+Later it might be useful to restrict this based on the actual attached
+devices, since most won't need that much address space anyway.
 
 Signed-off-by: Hector Martin <marcan@marcan.st>
 Signed-off-by: Janne Grunau <j@jannau.net>
 Reviewed-by: Sven Peter <sven@kernel.org>
 ---
- drivers/iommu/io-pgtable-dart.c | 143 ++++++++++++++++++++++++----------------
- include/linux/io-pgtable.h      |   1 +
- 2 files changed, 89 insertions(+), 55 deletions(-)
+ drivers/iommu/apple-dart.c | 26 ++++++++++++++++++++------
+ 1 file changed, 20 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-dart.c b/drivers/iommu/io-pgtable-dart.c
-index 679bda1047977602f468ef905b48aeeebcd7a234..9a63c80a2786bf70fc2544b1f96d2e4c8591c2f8 100644
---- a/drivers/iommu/io-pgtable-dart.c
-+++ b/drivers/iommu/io-pgtable-dart.c
-@@ -27,8 +27,9 @@
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index e72a93e78e26ca61b233c83d439dbdfadf040fc6..9696c8f143876416b10f812423aa5bd8986bfc88 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -133,6 +133,7 @@
+ #define DART_T8110_TCR                  0x1000
+ #define DART_T8110_TCR_REMAP            GENMASK(11, 8)
+ #define DART_T8110_TCR_REMAP_EN         BIT(7)
++#define DART_T8110_TCR_FOUR_LEVEL       BIT(3)
+ #define DART_T8110_TCR_BYPASS_DAPF      BIT(2)
+ #define DART_T8110_TCR_BYPASS_DART      BIT(1)
+ #define DART_T8110_TCR_TRANSLATE_ENABLE BIT(0)
+@@ -177,6 +178,7 @@ struct apple_dart_hw {
+ 	u32 tcr_enabled;
+ 	u32 tcr_disabled;
+ 	u32 tcr_bypass;
++	u32 tcr_4level;
  
- #define DART1_MAX_ADDR_BITS	36
+ 	u32 ttbr;
+ 	u32 ttbr_valid;
+@@ -217,6 +219,7 @@ struct apple_dart {
+ 	u32 pgsize;
+ 	u32 num_streams;
+ 	u32 supports_bypass : 1;
++	u32 four_level : 1;
  
--#define DART_MAX_TABLES		4
--#define DART_LEVELS		2
-+#define DART_MAX_TABLE_BITS	2
-+#define DART_MAX_TABLES		BIT(DART_MAX_TABLE_BITS)
-+#define DART_MAX_LEVELS		4 /* Includes TTBR level */
- 
- /* Struct accessors */
- #define io_pgtable_to_data(x)						\
-@@ -68,6 +69,7 @@
- struct dart_io_pgtable {
- 	struct io_pgtable	iop;
- 
-+	int			levels;
- 	int			tbl_bits;
- 	int			bits_per_level;
- 
-@@ -156,44 +158,45 @@ static dart_iopte dart_install_table(dart_iopte *table,
- 	return old;
+ 	struct iommu_group *sid2group[DART_MAX_STREAMS];
+ 	struct iommu_device iommu;
+@@ -305,13 +308,19 @@ static struct apple_dart_domain *to_dart_domain(struct iommu_domain *dom)
  }
  
--static int dart_get_table(struct dart_io_pgtable *data, unsigned long iova)
-+static int dart_get_index(struct dart_io_pgtable *data, unsigned long iova, int level)
+ static void
+-apple_dart_hw_enable_translation(struct apple_dart_stream_map *stream_map)
++apple_dart_hw_enable_translation(struct apple_dart_stream_map *stream_map, int levels)
  {
--	return (iova >> (3 * data->bits_per_level + ilog2(sizeof(dart_iopte)))) &
--		((1 << data->tbl_bits) - 1);
-+	return (iova >> (level * data->bits_per_level + ilog2(sizeof(dart_iopte)))) &
-+		((1 << data->bits_per_level) - 1);
+ 	struct apple_dart *dart = stream_map->dart;
++	u32 tcr = dart->hw->tcr_enabled;
+ 	int sid;
+ 
++	if (levels == 4)
++		tcr |= dart->hw->tcr_4level;
++
++	WARN_ON(levels != 3 && levels != 4);
++	WARN_ON(levels == 4 && !dart->four_level);
+ 	for_each_set_bit(sid, stream_map->sidmap, dart->num_streams)
+-		writel(dart->hw->tcr_enabled, dart->regs + DART_TCR(dart, sid));
++		writel(tcr, dart->regs + DART_TCR(dart, sid));
  }
  
--static int dart_get_l1_index(struct dart_io_pgtable *data, unsigned long iova)
--{
--
--	return (iova >> (2 * data->bits_per_level + ilog2(sizeof(dart_iopte)))) &
--		 ((1 << data->bits_per_level) - 1);
--}
--
--static int dart_get_l2_index(struct dart_io_pgtable *data, unsigned long iova)
-+static int dart_get_last_index(struct dart_io_pgtable *data, unsigned long iova)
- {
+ static void apple_dart_hw_disable_dma(struct apple_dart_stream_map *stream_map)
+@@ -569,7 +578,8 @@ apple_dart_setup_translation(struct apple_dart_domain *domain,
+ 	for (; i < stream_map->dart->hw->ttbr_count; ++i)
+ 		apple_dart_hw_clear_ttbr(stream_map, i);
  
- 	return (iova >> (data->bits_per_level + ilog2(sizeof(dart_iopte)))) &
- 		 ((1 << data->bits_per_level) - 1);
+-	apple_dart_hw_enable_translation(stream_map);
++	apple_dart_hw_enable_translation(stream_map,
++					 pgtbl_cfg->apple_dart_cfg.n_levels);
+ 	stream_map->dart->hw->invalidate_tlb(stream_map);
  }
  
--static  dart_iopte *dart_get_l2(struct dart_io_pgtable *data, unsigned long iova)
-+static dart_iopte *dart_get_last(struct dart_io_pgtable *data, unsigned long iova)
- {
- 	dart_iopte pte, *ptep;
--	int tbl = dart_get_table(data, iova);
-+	int level = data->levels;
-+	int tbl = dart_get_index(data, iova, level);
-+
-+	if (tbl > (1 << data->tbl_bits))
-+		return NULL;
+@@ -614,7 +624,7 @@ static int apple_dart_finalize_domain(struct apple_dart_domain *dart_domain,
+ 	dart_domain->domain.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
+ 	dart_domain->domain.geometry.aperture_start = 0;
+ 	dart_domain->domain.geometry.aperture_end =
+-		(dma_addr_t)DMA_BIT_MASK(dart->ias);
++		(dma_addr_t)DMA_BIT_MASK(pgtbl_cfg.ias);
+ 	dart_domain->domain.geometry.force_aperture = true;
  
- 	ptep = data->pgd[tbl];
- 	if (!ptep)
- 		return NULL;
- 
--	ptep += dart_get_l1_index(data, iova);
--	pte = READ_ONCE(*ptep);
-+	while (--level > 1) {
-+		ptep += dart_get_index(data, iova, level);
-+		pte = READ_ONCE(*ptep);
- 
--	/* Valid entry? */
--	if (!pte)
--		return NULL;
-+		/* Valid entry? */
-+		if (!pte)
-+			return NULL;
- 
--	/* Deref to get level 2 table */
--	return iopte_deref(pte, data);
-+		/* Deref to get next level table */
-+		ptep = iopte_deref(pte, data);
-+	}
-+
-+	return ptep;
- }
- 
- static dart_iopte dart_prot_to_pte(struct dart_io_pgtable *data,
-@@ -230,6 +233,7 @@ static int dart_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
- 	int ret = 0, tbl, num_entries, max_entries, map_idx_start;
- 	dart_iopte pte, *cptep, *ptep;
- 	dart_iopte prot;
-+	int level = data->levels;
- 
- 	if (WARN_ON(pgsize != cfg->pgsize_bitmap))
- 		return -EINVAL;
-@@ -240,31 +244,36 @@ static int dart_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
- 	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
- 		return -EINVAL;
- 
--	tbl = dart_get_table(data, iova);
-+	tbl = dart_get_index(data, iova, level);
-+
-+	if (tbl > (1 << data->tbl_bits))
-+		return -ENOMEM;
- 
- 	ptep = data->pgd[tbl];
--	ptep += dart_get_l1_index(data, iova);
--	pte = READ_ONCE(*ptep);
--
--	/* no L2 table present */
--	if (!pte) {
--		cptep = iommu_alloc_pages_sz(gfp, tblsz);
--		if (!cptep)
--			return -ENOMEM;
--
--		pte = dart_install_table(cptep, ptep, 0, data);
--		if (pte)
--			iommu_free_pages(cptep);
--
--		/* L2 table is present (now) */
-+	while (--level > 1) {
-+		ptep += dart_get_index(data, iova, level);
- 		pte = READ_ONCE(*ptep);
--	}
- 
--	ptep = iopte_deref(pte, data);
-+		/* no table present */
-+		if (!pte) {
-+			cptep = iommu_alloc_pages_sz(gfp, tblsz);
-+			if (!cptep)
-+				return -ENOMEM;
-+
-+			pte = dart_install_table(cptep, ptep, 0, data);
-+			if (pte)
-+				iommu_free_pages(cptep);
-+
-+			/* L2 table is present (now) */
-+			pte = READ_ONCE(*ptep);
-+		}
-+
-+		ptep = iopte_deref(pte, data);
-+	}
- 
- 	/* install a leaf entries into L2 table */
- 	prot = dart_prot_to_pte(data, iommu_prot);
--	map_idx_start = dart_get_l2_index(data, iova);
-+	map_idx_start = dart_get_last_index(data, iova);
- 	max_entries = DART_PTES_PER_TABLE(data) - map_idx_start;
- 	num_entries = min_t(int, pgcount, max_entries);
- 	ptep += map_idx_start;
-@@ -293,13 +302,13 @@ static size_t dart_unmap_pages(struct io_pgtable_ops *ops, unsigned long iova,
- 	if (WARN_ON(pgsize != cfg->pgsize_bitmap || !pgcount))
- 		return 0;
- 
--	ptep = dart_get_l2(data, iova);
-+	ptep = dart_get_last(data, iova);
- 
- 	/* Valid L2 IOPTE pointer? */
- 	if (WARN_ON(!ptep))
- 		return 0;
- 
--	unmap_idx_start = dart_get_l2_index(data, iova);
-+	unmap_idx_start = dart_get_last_index(data, iova);
- 	ptep += unmap_idx_start;
- 
- 	max_entries = DART_PTES_PER_TABLE(data) - unmap_idx_start;
-@@ -330,13 +339,13 @@ static phys_addr_t dart_iova_to_phys(struct io_pgtable_ops *ops,
- 	struct dart_io_pgtable *data = io_pgtable_ops_to_data(ops);
- 	dart_iopte pte, *ptep;
- 
--	ptep = dart_get_l2(data, iova);
-+	ptep = dart_get_last(data, iova);
- 
- 	/* Valid L2 IOPTE pointer? */
- 	if (!ptep)
- 		return 0;
- 
--	ptep += dart_get_l2_index(data, iova);
-+	ptep += dart_get_last_index(data, iova);
- 
- 	pte = READ_ONCE(*ptep);
- 	/* Found translation */
-@@ -353,21 +362,37 @@ static struct dart_io_pgtable *
- dart_alloc_pgtable(struct io_pgtable_cfg *cfg)
- {
- 	struct dart_io_pgtable *data;
--	int tbl_bits, bits_per_level, va_bits, pg_shift;
-+	int levels, max_tbl_bits, tbl_bits, bits_per_level, va_bits, pg_shift;
-+
-+	/*
-+	 * Old 4K page DARTs can use up to 4 top-level tables.
-+	 * Newer ones only ever use a maximum of 1.
-+	 */
-+	if (cfg->pgsize_bitmap == SZ_4K)
-+		max_tbl_bits = DART_MAX_TABLE_BITS;
-+	else
-+		max_tbl_bits = 0;
- 
- 	pg_shift = __ffs(cfg->pgsize_bitmap);
- 	bits_per_level = pg_shift - ilog2(sizeof(dart_iopte));
- 
- 	va_bits = cfg->ias - pg_shift;
- 
--	tbl_bits = max_t(int, 0, va_bits - (bits_per_level * DART_LEVELS));
--	if ((1 << tbl_bits) > DART_MAX_TABLES)
-+	levels = max_t(int, 2, (va_bits - max_tbl_bits + bits_per_level - 1) / bits_per_level);
-+
-+	if (levels > (DART_MAX_LEVELS - 1))
-+		return NULL;
-+
-+	tbl_bits = max_t(int, 0, va_bits - (bits_per_level * levels));
-+
-+	if (tbl_bits > max_tbl_bits)
- 		return NULL;
- 
- 	data = kzalloc(sizeof(*data), GFP_KERNEL);
- 	if (!data)
- 		return NULL;
- 
-+	data->levels = levels + 1; /* Table level counts as one level */
- 	data->tbl_bits = tbl_bits;
- 	data->bits_per_level = bits_per_level;
- 
-@@ -403,6 +428,7 @@ apple_dart_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
- 		return NULL;
- 
- 	cfg->apple_dart_cfg.n_ttbrs = 1 << data->tbl_bits;
-+	cfg->apple_dart_cfg.n_levels = data->levels;
- 
- 	for (i = 0; i < cfg->apple_dart_cfg.n_ttbrs; ++i) {
- 		data->pgd[i] =
-@@ -422,24 +448,31 @@ apple_dart_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
- 	return NULL;
- }
- 
--static void apple_dart_free_pgtable(struct io_pgtable *iop)
-+static void apple_dart_free_pgtables(struct dart_io_pgtable *data, dart_iopte *ptep, int level)
- {
--	struct dart_io_pgtable *data = io_pgtable_to_data(iop);
--	dart_iopte *ptep, *end;
--	int i;
-+	dart_iopte *end;
-+	dart_iopte *start = ptep;
- 
--	for (i = 0; i < (1 << data->tbl_bits) && data->pgd[i]; ++i) {
--		ptep = data->pgd[i];
-+	if (level > 1) {
- 		end = (void *)ptep + DART_GRANULE(data);
- 
- 		while (ptep != end) {
- 			dart_iopte pte = *ptep++;
- 
- 			if (pte)
--				iommu_free_pages(iopte_deref(pte, data));
-+				apple_dart_free_pgtables(data, iopte_deref(pte, data), level - 1);
- 		}
--		iommu_free_pages(data->pgd[i]);
+ 	dart_domain->finalized = true;
+@@ -807,6 +817,8 @@ static int apple_dart_of_xlate(struct device *dev,
+ 	if (cfg_dart) {
+ 		if (cfg_dart->pgsize != dart->pgsize)
+ 			return -EINVAL;
++		if (cfg_dart->ias != dart->ias)
++			return -EINVAL;
  	}
-+	iommu_free_pages(start);
-+}
-+
-+static void apple_dart_free_pgtable(struct io_pgtable *iop)
-+{
-+	struct dart_io_pgtable *data = io_pgtable_to_data(iop);
-+	int i;
-+
-+	for (i = 0; i < (1 << data->tbl_bits) && data->pgd[i]; ++i)
-+		apple_dart_free_pgtables(data, data->pgd[i], data->levels - 1);
  
- 	kfree(data);
- }
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index 138fbd89b1e633b8dad7a931d507c4809e40a171..8a823c6f2b4a88cbb96273d3aaf972b6a4c222a3 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -180,6 +180,7 @@ struct io_pgtable_cfg {
- 		struct {
- 			u64 ttbr[4];
- 			u32 n_ttbrs;
-+			u32 n_levels;
- 		} apple_dart_cfg;
+ 	cfg->supports_bypass &= dart->supports_bypass;
+@@ -1137,6 +1149,7 @@ static int apple_dart_probe(struct platform_device *pdev)
+ 		dart->ias = FIELD_GET(DART_T8110_PARAMS3_VA_WIDTH, dart_params[2]);
+ 		dart->oas = FIELD_GET(DART_T8110_PARAMS3_PA_WIDTH, dart_params[2]);
+ 		dart->num_streams = FIELD_GET(DART_T8110_PARAMS4_NUM_SIDS, dart_params[3]);
++		dart->four_level = dart->ias > 36;
+ 		break;
+ 	}
  
- 		struct {
+@@ -1169,9 +1182,9 @@ static int apple_dart_probe(struct platform_device *pdev)
+ 
+ 	dev_info(
+ 		&pdev->dev,
+-		"DART [pagesize %x, %d streams, bypass support: %d, bypass forced: %d] initialized\n",
++		"DART [pagesize %x, %d streams, bypass support: %d, bypass forced: %d, AS %d -> %d] initialized\n",
+ 		dart->pgsize, dart->num_streams, dart->supports_bypass,
+-		dart->pgsize > PAGE_SIZE);
++		dart->pgsize > PAGE_SIZE, dart->ias, dart->oas);
+ 	return 0;
+ 
+ err_sysfs_remove:
+@@ -1292,6 +1305,7 @@ static const struct apple_dart_hw apple_dart_hw_t8110 = {
+ 	.tcr_enabled = DART_T8110_TCR_TRANSLATE_ENABLE,
+ 	.tcr_disabled = 0,
+ 	.tcr_bypass = DART_T8110_TCR_BYPASS_DAPF | DART_T8110_TCR_BYPASS_DART,
++	.tcr_4level = DART_T8110_TCR_FOUR_LEVEL,
+ 
+ 	.ttbr = DART_T8110_TTBR,
+ 	.ttbr_valid = DART_T8110_TTBR_VALID,
 
 -- 
 2.50.1
