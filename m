@@ -1,126 +1,81 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sg-3-13.ptr.tlmpb.com (sg-3-13.ptr.tlmpb.com [101.45.255.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C99ED1B4156;
-	Fri, 22 Aug 2025 01:59:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3142D1DB375
+	for <iommu@lists.linux.dev>; Fri, 22 Aug 2025 02:36:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.45.255.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755827965; cv=none; b=gOloCEIf5slDyB0nq4UiZBmIR+SZtKD80AVFfc1aKwVXZuk7Nc25/rcT0EehgxZUmLFslDIDK/Fv1swc6kXvDDQM+cQCnDSaDv5zLa3eCcV29bhiUT86c8tjzjvB5mwEg2X7/bJ9PYv6hcnDLE6nkkWfbe9ALgBCDME2OdF16ZA=
+	t=1755830201; cv=none; b=o2yINfo/87k0O9x28HElPwdvLN7iW9TQAq/tsVidKCz9VWf2FDKG3EziIcRU74lWAu8MH78QmqItnKmSGbeOr2Rt5+Hps3KToLjuxU5I+ejNINHzIcdpzp8jGZby5vg3zKxW42ZHnFF7kAqFjMQg7QGBKba0PkcWG6z9aeZ4k7g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755827965; c=relaxed/simple;
-	bh=hEGBgFk9rer7lwQXMpzjj4FPsIa17LEhE/UyLSIHv80=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=c7mw/MYtK8gw5msnfyOehRtMPC8qkxC4SG+uYmQUopL000ai/rTcVLEmSODQeFN+lzRAqUQxzGUaBKqxxBtj7dN1aAQzBAV+oFg9ztcBhF07G7wniQa9/o+coSt3qaBTjwTL8UkoAgoOgDbUq9sSObT3yf35UiEDZC76BEsJlS8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fwCb0/jz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1755830201; c=relaxed/simple;
+	bh=OX0qQeafF4TgTCcyrgXJILtED4m/Hr6OfWXNy/L2kuU=;
+	h=Subject:Message-Id:In-Reply-To:Content-Type:From:Date:
+	 Mime-Version:Cc:References:To; b=YrCBL+y2Fol4HFxvsDyJxYqQAjO8d08KgGUzp4L90Okfg7TTvdZgAs0eYuDFAIlRiXOydxWgxk1/fzP8H9fqv/Edvg/rnJuVJihzrvpoMarBoDPursZgkTwy43hde8CY/CY6NAf7UG0tQHJ6ObmznohlqNB2RLp+Ircfxl9Cwf8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lanxincomputing.com; spf=pass smtp.mailfrom=lanxincomputing.com; dkim=pass (2048-bit key) header.d=lanxincomputing-com.20200927.dkim.feishu.cn header.i=@lanxincomputing-com.20200927.dkim.feishu.cn header.b=u07qho9v; arc=none smtp.client-ip=101.45.255.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lanxincomputing.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lanxincomputing.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fwCb0/jz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0940C4CEEB;
-	Fri, 22 Aug 2025 01:59:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755827964;
-	bh=hEGBgFk9rer7lwQXMpzjj4FPsIa17LEhE/UyLSIHv80=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=fwCb0/jzIQkNPwEVBU6dtHyOVey66bf/HcR/iNP6aS0AhxrgrvMe34HD6vjnkGUZf
-	 z1O8tLkMNZpr+UzcBZV9dLBbBCwOaf+NQwl5ntySvGabL1KCpUaRFv+wfDydW+poVi
-	 X5XvF2zmqSX16ZKS+hqRP+DFJCxEdKcM7wYo6L7tOqHJI3XrYsnweALvOp8+KSqJnD
-	 2bWhxr7953gGHvjXyBJUoUfk/Lgb2omKSw1C8cEO/Qv3yAqSEKl2XaKQVhYluUWO/h
-	 UsLkNxPauxpS9RjmwleNolFzOVx4bdRBpqA+ZD7ACyej3l0Oe7T142W2dhwsBnQaC9
-	 DSd2Q1+ARL+Zw==
-Message-ID: <3812ed9e-2a47-4c1c-bd69-f37768e62ad3@kernel.org>
-Date: Fri, 22 Aug 2025 10:59:15 +0900
+	dkim=pass (2048-bit key) header.d=lanxincomputing-com.20200927.dkim.feishu.cn header.i=@lanxincomputing-com.20200927.dkim.feishu.cn header.b="u07qho9v"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ s=s1; d=lanxincomputing-com.20200927.dkim.feishu.cn; t=1755830183;
+  h=from:subject:mime-version:from:date:message-id:subject:to:cc:
+ reply-to:content-type:mime-version:in-reply-to:message-id;
+ bh=wM2Pu7ubOLQjp3YGifNjivB5Nz4a+TlbNw/xHfw3RnM=;
+ b=u07qho9vrBAHyq3bmONyU1L7dFC0wt/CFQatDkY2RZj1y+tTdEbjSmlcqa5VhR4HzZt50c
+ 1XPrvSXvluKmqefRmmu0LioJHxFCN3GZxVNQJbMTUGKvQZyknLxZIvRzX19Fu9jwgujRp7
+ MUHD7eRgDzYX4FP5rkiDPecQNrtjLrMKl0ovX2VUXBx/Q6HMlS0V3kGjFj0a5VmrWgGUKJ
+ MQkxUGJYep/mkeAHbd7knSn0j+sVzr40TH6k8LFqSzL5LWn9zZSuB14oGjbAVUrFgTZ3Fw
+ 55c2Il7IudNfkfa1/oVv49H8+7nEUKAK9AFD1qWzIPq7ZGE1vuvjReaa+0dk+w==
+Subject: Re: Re: [v4] iommu/riscv: prevent NULL deref in iova_to_phys
+Message-Id: <20250822023611.18145-1-huangxianliang@lanxincomputing.com>
+In-Reply-To: <aed0e72a-3c98-4027-8676-b8f469d857f5@web.de>
+Content-Type: text/plain; charset=UTF-8
+From: "XianLiang Huang" <huangxianliang@lanxincomputing.com>
+Date: Fri, 22 Aug 2025 10:36:11 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 24/35] ata: libata-eh: drop nth_page() usage within SG
- entry
-To: David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc: Niklas Cassel <cassel@kernel.org>, Alexander Potapenko
- <glider@google.com>, Andrew Morton <akpm@linux-foundation.org>,
- Brendan Jackman <jackmanb@google.com>, Christoph Lameter <cl@gentwo.org>,
- Dennis Zhou <dennis@kernel.org>, Dmitry Vyukov <dvyukov@google.com>,
- dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
- iommu@lists.linux.dev, io-uring@vger.kernel.org,
- Jason Gunthorpe <jgg@nvidia.com>, Jens Axboe <axboe@kernel.dk>,
- Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>,
- kasan-dev@googlegroups.com, kvm@vger.kernel.org,
- "Liam R. Howlett" <Liam.Howlett@oracle.com>,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
- linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
- linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
- Marco Elver <elver@google.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@kernel.org>,
- Muchun Song <muchun.song@linux.dev>, netdev@vger.kernel.org,
- Oscar Salvador <osalvador@suse.de>, Peter Xu <peterx@redhat.com>,
- Robin Murphy <robin.murphy@arm.com>, Suren Baghdasaryan <surenb@google.com>,
- Tejun Heo <tj@kernel.org>, virtualization@lists.linux.dev,
- Vlastimil Babka <vbabka@suse.cz>, wireguard@lists.zx2c4.com, x86@kernel.org,
- Zi Yan <ziy@nvidia.com>
-References: <20250821200701.1329277-1-david@redhat.com>
- <20250821200701.1329277-25-david@redhat.com>
-Content-Language: en-US
-From: Damien Le Moal <dlemoal@kernel.org>
-Organization: Western Digital Research
-In-Reply-To: <20250821200701.1329277-25-david@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+X-Lms-Return-Path: <lba+268a7d7a5+562c47+lists.linux.dev+huangxianliang@lanxincomputing.com>
+Cc: <alex@ghiti.fr>, <aou@eecs.berkeley.edu>, 
+	<huangxianliang@lanxincomputing.com>, <iommu@lists.linux.dev>, 
+	<joro@8bytes.org>, <linux-kernel@vger.kernel.org>, 
+	<linux-riscv@lists.infradead.org>, <palmer@dabbelt.com>, 
+	<paul.walmsley@sifive.com>, <robin.murphy@arm.com>, 
+	<tjeznach@rivosinc.com>, <will@kernel.org>
+Received: from LeonHXL.localdomain ([116.237.111.137]) by smtp.feishu.cn with ESMTPS; Fri, 22 Aug 2025 10:36:20 +0800
+References: <aed0e72a-3c98-4027-8676-b8f469d857f5@web.de>
+To: <markus.elfring@web.de>
+X-Original-From: XianLiang Huang <huangxianliang@lanxincomputing.com>
+X-Mailer: git-send-email 2.34.1
 
-On 8/22/25 05:06, David Hildenbrand wrote:
-> It's no longer required to use nth_page() when iterating pages within a
-> single SG entry, so let's drop the nth_page() usage.
-> 
-> Cc: Damien Le Moal <dlemoal@kernel.org>
-> Cc: Niklas Cassel <cassel@kernel.org>
-> Signed-off-by: David Hildenbrand <david@redhat.com>
-> ---
->  drivers/ata/libata-sff.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/ata/libata-sff.c b/drivers/ata/libata-sff.c
-> index 7fc407255eb46..9f5d0f9f6d686 100644
-> --- a/drivers/ata/libata-sff.c
-> +++ b/drivers/ata/libata-sff.c
-> @@ -614,7 +614,7 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
->  	offset = qc->cursg->offset + qc->cursg_ofs;
->  
->  	/* get the current page and offset */
-> -	page = nth_page(page, (offset >> PAGE_SHIFT));
-> +	page += offset / PAGE_SHIFT;
+> I suggest to take another look for the better distinction of mentioned ke=
+y words.
+I misunderstood this
+    >> =E2=80=A6> Check the pointer before using it to avoid the bug. =E2=
+=80=A6
+    > Would a summary phrase like =E2=80=9CPrevent null pointer dereference=
+ in riscv_iommu_iova_to_phys()=E2=80=9D
+    > be also helpful?
+https://lore.kernel.org/lkml/effb29be-6d14-47e5-ab71-454119467750@web.de/
 
-Shouldn't this be "offset >> PAGE_SHIFT" ?
+>> > Changes
+>> > v4:
+>> > - Change the summary as Markus recommends
+>> >=20
+>> > v3:
+>> > - Remove redundant pte validation in riscv_iommu_iova_to_phys
+>> > - Improve subject line to emphasize prevention
+> Does anything hinder you to integrate repeated patch review ideas better
+> into your contributions?
+Do you suggest merge the repeated patch changlogs?
+may a RESEND v3:
+- Remove redundant pte validation in riscv_iommu_iova_to_phys
+- Improve summary and description to emphasize prevention as Markus recomme=
+nds
 
->  	offset %= PAGE_SIZE;
->  
->  	/* don't overrun current sg */
-> @@ -631,7 +631,7 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
->  		unsigned int split_len = PAGE_SIZE - offset;
->  
->  		ata_pio_xfer(qc, page, offset, split_len);
-> -		ata_pio_xfer(qc, nth_page(page, 1), 0, count - split_len);
-> +		ata_pio_xfer(qc, page + 1, 0, count - split_len);
->  	} else {
->  		ata_pio_xfer(qc, page, offset, count);
->  	}
-> @@ -751,7 +751,7 @@ static int __atapi_pio_bytes(struct ata_queued_cmd *qc, unsigned int bytes)
->  	offset = sg->offset + qc->cursg_ofs;
->  
->  	/* get the current page and offset */
-> -	page = nth_page(page, (offset >> PAGE_SHIFT));
-> +	page += offset / PAGE_SIZE;
-
-Same here, though this seems correct too.
-
->  	offset %= PAGE_SIZE;
->  
->  	/* don't overrun current sg */
-
-
--- 
-Damien Le Moal
-Western Digital Research
+Regards,
+Xianliang
