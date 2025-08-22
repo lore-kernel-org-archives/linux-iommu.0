@@ -1,81 +1,71 @@
-Received: from sg-3-13.ptr.tlmpb.com (sg-3-13.ptr.tlmpb.com [101.45.255.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-m1973190.qiye.163.com (mail-m1973190.qiye.163.com [220.197.31.90])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3142D1DB375
-	for <iommu@lists.linux.dev>; Fri, 22 Aug 2025 02:36:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=101.45.255.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70BEA22126D
+	for <iommu@lists.linux.dev>; Fri, 22 Aug 2025 02:49:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.90
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755830201; cv=none; b=o2yINfo/87k0O9x28HElPwdvLN7iW9TQAq/tsVidKCz9VWf2FDKG3EziIcRU74lWAu8MH78QmqItnKmSGbeOr2Rt5+Hps3KToLjuxU5I+ejNINHzIcdpzp8jGZby5vg3zKxW42ZHnFF7kAqFjMQg7QGBKba0PkcWG6z9aeZ4k7g=
+	t=1755830975; cv=none; b=lUJUgjb6LkKWDy3GxUMb0yuknr7k9H68pssgxZuNyDtvcUJ2Grczl/H4Zz9nonr1RgWOMmuRY5msUolvldcp7KSpH4hz2ImjFqm28On/jb5WRUDCBCB1gfjKYhGdVq+v7t3HLLHkCWwC+KpZ9TIA3LF39uKHyZlUqiZNRiwQbxg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755830201; c=relaxed/simple;
-	bh=OX0qQeafF4TgTCcyrgXJILtED4m/Hr6OfWXNy/L2kuU=;
-	h=Subject:Message-Id:In-Reply-To:Content-Type:From:Date:
-	 Mime-Version:Cc:References:To; b=YrCBL+y2Fol4HFxvsDyJxYqQAjO8d08KgGUzp4L90Okfg7TTvdZgAs0eYuDFAIlRiXOydxWgxk1/fzP8H9fqv/Edvg/rnJuVJihzrvpoMarBoDPursZgkTwy43hde8CY/CY6NAf7UG0tQHJ6ObmznohlqNB2RLp+Ircfxl9Cwf8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lanxincomputing.com; spf=pass smtp.mailfrom=lanxincomputing.com; dkim=pass (2048-bit key) header.d=lanxincomputing-com.20200927.dkim.feishu.cn header.i=@lanxincomputing-com.20200927.dkim.feishu.cn header.b=u07qho9v; arc=none smtp.client-ip=101.45.255.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lanxincomputing.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lanxincomputing.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=lanxincomputing-com.20200927.dkim.feishu.cn header.i=@lanxincomputing-com.20200927.dkim.feishu.cn header.b="u07qho9v"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- s=s1; d=lanxincomputing-com.20200927.dkim.feishu.cn; t=1755830183;
-  h=from:subject:mime-version:from:date:message-id:subject:to:cc:
- reply-to:content-type:mime-version:in-reply-to:message-id;
- bh=wM2Pu7ubOLQjp3YGifNjivB5Nz4a+TlbNw/xHfw3RnM=;
- b=u07qho9vrBAHyq3bmONyU1L7dFC0wt/CFQatDkY2RZj1y+tTdEbjSmlcqa5VhR4HzZt50c
- 1XPrvSXvluKmqefRmmu0LioJHxFCN3GZxVNQJbMTUGKvQZyknLxZIvRzX19Fu9jwgujRp7
- MUHD7eRgDzYX4FP5rkiDPecQNrtjLrMKl0ovX2VUXBx/Q6HMlS0V3kGjFj0a5VmrWgGUKJ
- MQkxUGJYep/mkeAHbd7knSn0j+sVzr40TH6k8LFqSzL5LWn9zZSuB14oGjbAVUrFgTZ3Fw
- 55c2Il7IudNfkfa1/oVv49H8+7nEUKAK9AFD1qWzIPq7ZGE1vuvjReaa+0dk+w==
-Subject: Re: Re: [v4] iommu/riscv: prevent NULL deref in iova_to_phys
-Message-Id: <20250822023611.18145-1-huangxianliang@lanxincomputing.com>
-In-Reply-To: <aed0e72a-3c98-4027-8676-b8f469d857f5@web.de>
-Content-Type: text/plain; charset=UTF-8
-From: "XianLiang Huang" <huangxianliang@lanxincomputing.com>
-Date: Fri, 22 Aug 2025 10:36:11 +0800
+	s=arc-20240116; t=1755830975; c=relaxed/simple;
+	bh=o3C8eYNeJJZNc4OggbKLfGp2psaVDgU1MkppGi+eyTU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=HeS6UiOtyJ7FjAzsp3sVKcx67TiEG56Q+qhjyz/91CqsPBgHEbbBCOhtRCjkvPhQ0yz7xi/94tXeVix5XzjypXdiFal1OIvi8x6GFm7UoZYSrEcfDHBXu/TncMavTW2PEQ2999Eo8GoSjJTfdVEj8fTTH6YXNetuO2Tgv0djeYw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=easystack.cn; spf=pass smtp.mailfrom=easystack.cn; arc=none smtp.client-ip=220.197.31.90
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=easystack.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=easystack.cn
+Received: from localhost.localdomain (unknown [218.94.118.90])
+	by smtp.qiye.163.com (Hmail) with ESMTP id f014022a;
+	Fri, 22 Aug 2025 10:49:24 +0800 (GMT+08:00)
+From: Zhen Ni <zhen.ni@easystack.cn>
+To: joro@8bytes.org,
+	suravee.suthikulpanit@amd.com,
+	will@kernel.org,
+	robin.murphy@arm.com
+Cc: iommu@lists.linux.dev,
+	Zhen Ni <zhen.ni@easystack.cn>,
+	stable@vger.kernel.org
+Subject: [PATCH] iommu/amd: Fix ivrs_base memleak in early_amd_iommu_init()
+Date: Fri, 22 Aug 2025 10:49:15 +0800
+Message-Id: <20250822024915.673427-1-zhen.ni@easystack.cn>
+X-Mailer: git-send-email 2.20.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Lms-Return-Path: <lba+268a7d7a5+562c47+lists.linux.dev+huangxianliang@lanxincomputing.com>
-Cc: <alex@ghiti.fr>, <aou@eecs.berkeley.edu>, 
-	<huangxianliang@lanxincomputing.com>, <iommu@lists.linux.dev>, 
-	<joro@8bytes.org>, <linux-kernel@vger.kernel.org>, 
-	<linux-riscv@lists.infradead.org>, <palmer@dabbelt.com>, 
-	<paul.walmsley@sifive.com>, <robin.murphy@arm.com>, 
-	<tjeznach@rivosinc.com>, <will@kernel.org>
-Received: from LeonHXL.localdomain ([116.237.111.137]) by smtp.feishu.cn with ESMTPS; Fri, 22 Aug 2025 10:36:20 +0800
-References: <aed0e72a-3c98-4027-8676-b8f469d857f5@web.de>
-To: <markus.elfring@web.de>
-X-Original-From: XianLiang Huang <huangxianliang@lanxincomputing.com>
-X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-HM-Tid: 0a98cfae52530229kunm894ba8a8de43a2
+X-HM-MType: 1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUpXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
+	tZV1koWUFJQjdXWS1ZQUlXWQ8JGhUIEh9ZQVkZTR0fVklDSBpDQ0JMTENMSlYVFAkWGhdVGRETFh
+	oSFyQUDg9ZV1kYEgtZQVlJSkNVQk9VSkpDVUJLWVdZFhoPEhUdFFlBWU9LSFVKS0lPT09IVUpLS1
+	VKQktLWQY+
 
-> I suggest to take another look for the better distinction of mentioned ke=
-y words.
-I misunderstood this
-    >> =E2=80=A6> Check the pointer before using it to avoid the bug. =E2=
-=80=A6
-    > Would a summary phrase like =E2=80=9CPrevent null pointer dereference=
- in riscv_iommu_iova_to_phys()=E2=80=9D
-    > be also helpful?
-https://lore.kernel.org/lkml/effb29be-6d14-47e5-ab71-454119467750@web.de/
+Fix a permanent ACPI table memory leak in early_amd_iommu_init() when
+CMPXCHG16B feature is not supported
 
->> > Changes
->> > v4:
->> > - Change the summary as Markus recommends
->> >=20
->> > v3:
->> > - Remove redundant pte validation in riscv_iommu_iova_to_phys
->> > - Improve subject line to emphasize prevention
-> Does anything hinder you to integrate repeated patch review ideas better
-> into your contributions?
-Do you suggest merge the repeated patch changlogs?
-may a RESEND v3:
-- Remove redundant pte validation in riscv_iommu_iova_to_phys
-- Improve summary and description to emphasize prevention as Markus recomme=
-nds
+Fixes: 82582f85ed22 ("iommu/amd: Disable AMD IOMMU if CMPXCHG16B feature is not supported")
+Cc: stable@vger.kernel.org
+Signed-off-by: Zhen Ni <zhen.ni@easystack.cn>
+---
+ drivers/iommu/amd/init.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Regards,
-Xianliang
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 7b5af6176de9..dddc432de7b0 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -3067,7 +3067,8 @@ static int __init early_amd_iommu_init(void)
+ 
+ 	if (!boot_cpu_has(X86_FEATURE_CX16)) {
+ 		pr_err("Failed to initialize. The CMPXCHG16B feature is required.\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto out;
+ 	}
+ 
+ 	/*
+-- 
+2.20.1
+
