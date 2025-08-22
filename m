@@ -1,72 +1,72 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD2212E3712
-	for <iommu@lists.linux.dev>; Fri, 22 Aug 2025 06:18:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD8DA2E339D
+	for <iommu@lists.linux.dev>; Fri, 22 Aug 2025 06:24:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755843531; cv=none; b=LhY6WewR/mVRjYLP9XYYdhh/sdZQ3PrPh8x3DdEB8pGCGen7BH5Jjrua6LtK7VvwxLZL5zko/BL91q4UEqRgBPU15ni0zIdnfMpR5H7bLN/fhT40D4SRnHT0H3ojnmhQY480S6p26P/l3IcOZCTGJwN5vDlnRu2hS4kqIuiGNMU=
+	t=1755843880; cv=none; b=n9rLa5hyajXvjZ1Ts0iWdZPVFY6wSHyn3eIXHX/CTdNGGE/vOHrPkWWDqvTs2sqs3x+7k6aagb3VDRLZtZkBucWsH98BGpzJeMnTbIowRe7w4QszQrmHg7+kYVNivJw2lr1RR4fEah62zd2FvJB6FbbhF/L8jN13E8o/XORef0A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755843531; c=relaxed/simple;
-	bh=Ipdvs+TlyksrM4l/hJDMakLp93JAanz9a9w+7zx003g=;
+	s=arc-20240116; t=1755843880; c=relaxed/simple;
+	bh=fLX1vM4cjDsk9W/4BgtrD1gx0q/IoKCtlIVEIkFWTeQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NfryZpDjwjhhJmcGn7k/fEfJ1y/jj8Wpb0SMZ1yIfv7Mg1T0uQDjrNFgQBAzLhXKBIJksT/Co2xS/IXncGFMrJiAHsdJiUe03UyyvRZY7FJmaDO9oUJ3Azap/3/YL1/gp+i7pX8m/uyHOOYT4K16n+kS2QZWYWOnTEZ9+W7R9I8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=g3lpNsQt; arc=none smtp.client-ip=170.10.133.124
+	 In-Reply-To:Content-Type; b=QSyc7ramdI/MgPxY9/I9jud2cb/USZOz2yDk0mFZssYliFfBkCCh3eQdwv9Ld7wRK8UfaU0Zi8ZHhSj9L4i7f9IvPlHIgfrQZxxrGeCnvDf0YkPjSdxbHgIaasnZYYtVOl3GZm0Duq3HJ62bfT2RzI6+UCeA6B8cLISM5A2D+pQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=UJwID/Ny; arc=none smtp.client-ip=170.10.133.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="g3lpNsQt"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UJwID/Ny"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1755843528;
+	s=mimecast20190719; t=1755843878;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=niXcAgzmbCLTQjKBYxU2ktBBprjtNy5MGdyac9sGLRc=;
-	b=g3lpNsQtrMwj7COnClx/q7j/8Ab+GmyJ3Ld+qQ/IM9HWQGoFoCGo/I7bG0puiSixJMk1lo
-	VmS7LqKTAvJrRpqYB0aEWuAyxEbAwPwkQP15LEW0qjhkkl2mKPz7mUITV+bIfYKbBsR8bl
-	6QmC3IU1DBaLGtoOAOuw8cNtJfyFv4k=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=WiI+ZnCzEnb/n6DQfRPkU+9oejYIM/R2hKOTH1yevco=;
+	b=UJwID/Ny9BPDInw1YPGRiKYIqsfJIcRM6APajZRPAC861tVWZStwPqaU4lf0ELAT2FMEBW
+	CTYdqKYWjUKVDsIInd+Xaa4/UWaYmRIoS87In1H4aIZOKwCl7M+Gb4sFKOnG69NBgx5pBS
+	+2gKkd6e7fgdBX2gIX4O2cRyfn+3hzQ=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-164-AW1su2MVO9OO7zRfThlReQ-1; Fri, 22 Aug 2025 02:18:45 -0400
-X-MC-Unique: AW1su2MVO9OO7zRfThlReQ-1
-X-Mimecast-MFC-AGG-ID: AW1su2MVO9OO7zRfThlReQ_1755843524
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-45a1b0cfbafso9826665e9.2
-        for <iommu@lists.linux.dev>; Thu, 21 Aug 2025 23:18:45 -0700 (PDT)
+ us-mta-108-iPsF-6XfOny1eJXH6C9QfQ-1; Fri, 22 Aug 2025 02:24:36 -0400
+X-MC-Unique: iPsF-6XfOny1eJXH6C9QfQ-1
+X-Mimecast-MFC-AGG-ID: iPsF-6XfOny1eJXH6C9QfQ_1755843875
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-45a1ba17bbcso8824775e9.0
+        for <iommu@lists.linux.dev>; Thu, 21 Aug 2025 23:24:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755843524; x=1756448324;
+        d=1e100.net; s=20230601; t=1755843875; x=1756448675;
         h=content-transfer-encoding:in-reply-to:autocrypt:content-language
          :from:references:cc:to:subject:user-agent:mime-version:date
          :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=niXcAgzmbCLTQjKBYxU2ktBBprjtNy5MGdyac9sGLRc=;
-        b=rmvLnf94lWnObidSwmFIoS17aGDPSba0y66zjaXjKlJueOo1GW40giVNgtMW9ub6GK
-         nf3eA18DBCgd3aXjQDBm2cGMKFRpCzzzsZfFfNAXu+cpJS51n8+qOZUAkSorj9PFxEss
-         PgVEuAoCj9j9JPuS0O1cywn55hDlYbZHkylHAFhD41s9ggSlZgTsooh1Y7tfWMT/8BSU
-         duNbRsMgKqqJ9vIzQTdoqXVD4lQDLFxJX1TZW2DblE5NmZ2G0bTLkwOfSH5aooL/BoR3
-         E9al8UedINkFnQyiDdeZYd5CYxeGpsGlWh6sGOHGVj9a5jEqU7KpK6RiIFsLJLYmW09f
-         ++Gg==
-X-Forwarded-Encrypted: i=1; AJvYcCUASCi079pZ6BLgfNesB2oFKREHv3G9vmpHjjc5wKGYfM6osoSu5LwXhcjUdp23wT1dN1cERw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YysSIDPTszkEy5NQIDtocFQv899TC3Ea3NTbitm2QkoHpUv+Vp9
-	pcyOmSubbWygKnseufrCsmdcURh1k5hu3RqJ0pDwjfp+6+byf1eRcveo96gRtWyCWkH4By9fJbY
-	Kf6ssz2Ml5QJVikhDVtfkUQ1zfwrVz8t6vmlcsh3NUNlw4vlvgCtLLbON
-X-Gm-Gg: ASbGnctvVqu6LI7iDOkOPjBskPLHQDR+45py3a/S04UgL5WbMBEwY1jo2sH6ZWD6xvD
-	DpXh1KnTxPEV00BG2bQl3RqoETZPr+SrAObmp7SpuhgJLW8CeZrf0soShW56AN1IMQGuOIgMDd3
-	lEh5UkRe2yIIw3P0MNJgaEM//pTQpjlMeuRFDyFpWzse9fK+BcvzgDalwzHjILvLCqyMVxq2A/x
-	WP0naD+BHTrYZrMq/B+DupbC+N8Wy4RN2oh2livIXbHDb65xioQenlaFjqiGAPDHui9o9g5c64n
-	Nik4KP31UAK0y6FKCkVPgQ/T/qFZfpp+4wFUk8/qMH4vKJNgYC6D4cEnMlyNnvOLSLkS/Q==
-X-Received: by 2002:a05:600c:4e8c:b0:456:1ac8:cace with SMTP id 5b1f17b1804b1-45b5179e7e8mr12435435e9.12.1755843523887;
-        Thu, 21 Aug 2025 23:18:43 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHdnIqi4Hq3cqdHCtXLM1BskgbP/iNxi6JCTe3b4/5WxUiRcTB1IoXLbvfQ3J7NKdKWtFg41A==
-X-Received: by 2002:a05:600c:4e8c:b0:456:1ac8:cace with SMTP id 5b1f17b1804b1-45b5179e7e8mr12435175e9.12.1755843523431;
-        Thu, 21 Aug 2025 23:18:43 -0700 (PDT)
+        bh=WiI+ZnCzEnb/n6DQfRPkU+9oejYIM/R2hKOTH1yevco=;
+        b=DTbtL3D05NkeupqynwRN9v0x//UnZHs2wAktfk2qlWYwieDvre9Nk7EMepEtcuMvi+
+         jgrGTp1X4gnx9tMQUHzaAAGLcDrcR68lS6Ift25KKOWmEF+BaZQ77ckxbQx1gWO0Fg07
+         gm9zv7DP6+omJWkeBRhN9zcK06Ka2S2djO5JsSP/2KDEstHgjb8VARnOxrkFKB+uywd5
+         PnPmL6qwHvab9oZtWhxtTFpsFBxbvxE44tISuUzMWuTCDePc6B3q92LjeIq6Z5SFaJo0
+         wXlGLgQyC69n9jgoCGwVUJeVPOxrHIIsGhImnLBFvkoFahNfeCvTCVwIPVPnl+f+7EOb
+         RQBg==
+X-Forwarded-Encrypted: i=1; AJvYcCXE0VvyCHPf5Aig796Hx8IP9+3sUTgnvV+J3Q5TYhcgICJhgMLSgkt19Bjy4LT3c5/yEWltmw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxaBrpsunS/TnwRfKQo0ZHzYfWTOVZVhbdzjeikWl4nJu97iOFt
+	WftfN/rwgBLniIUYSV01ZSPrOYIJorerQkM6Dfk3bfZUt06wp/T3bthe5F0330aaSYYA9HCb0FP
+	sfyh5suXLZQxFDxpp5sF5Asy6KrOJSnnhEuMz47Tf/cUbjRkMTgdfG9kz
+X-Gm-Gg: ASbGncsMgapu+65GM1SIxH+lehHj21UQLtnuGzIn8cg3oO1+7ttyRMy3Zs8Ys8kLqXY
+	8V/RrGcbWkGioiABJjnoWqGqeRhLJV8T1Qdm3alWXl74nFjEJqPo12uoxoKpcN1lJAP+JAczMI0
+	LkSfPfq1l3UqKaEWPmrJiq4w+WnXK/AFvmsBY3RG4yU+hubXL+5kV2gh3F0XJYZKbs0jI0UxN6p
+	aXscbhvjCHD29cqUMwylr8Q4UKkn+SiiNXbw7UYjBjfUDpy3VFRcUaU9OTcRL3ROx17VguTdF8e
+	MQ5RvZXtRVL7/591NWheS/WeOBQTI5o1B0AEeDhlqHV8opt/9sOow2uoWPsmcYm8pnq4IQ==
+X-Received: by 2002:a05:6000:26c1:b0:3a3:7ba5:93a5 with SMTP id ffacd0b85a97d-3c5daefc4a3mr930354f8f.26.1755843874939;
+        Thu, 21 Aug 2025 23:24:34 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGkMOIqwJnbz0zMoKzv9XjVteH9mRf82hflWECX8mqHGwhCkTy10DA8QnyI2PcknGc6Szk7/A==
+X-Received: by 2002:a05:6000:26c1:b0:3a3:7ba5:93a5 with SMTP id ffacd0b85a97d-3c5daefc4a3mr930326f8f.26.1755843874452;
+        Thu, 21 Aug 2025 23:24:34 -0700 (PDT)
 Received: from [192.168.3.141] (p4ff1f25c.dip0.t-ipconnect.de. [79.241.242.92])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45b50d62991sm24078285e9.0.2025.08.21.23.18.41
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3c6070264fbsm1198544f8f.67.2025.08.21.23.24.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Aug 2025 23:18:42 -0700 (PDT)
-Message-ID: <6bff5a45-8e52-4a5d-81cb-63a7331d7d0b@redhat.com>
-Date: Fri, 22 Aug 2025 08:18:40 +0200
+        Thu, 21 Aug 2025 23:24:33 -0700 (PDT)
+Message-ID: <7077e09f-6ce9-43ba-8f87-47a290680141@redhat.com>
+Date: Fri, 22 Aug 2025 08:24:31 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,11 +74,12 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 24/35] ata: libata-eh: drop nth_page() usage within SG
- entry
-To: Damien Le Moal <dlemoal@kernel.org>, linux-kernel@vger.kernel.org
-Cc: Niklas Cassel <cassel@kernel.org>, Alexander Potapenko
- <glider@google.com>, Andrew Morton <akpm@linux-foundation.org>,
+Subject: Re: [PATCH RFC 10/35] mm/hugetlb: cleanup
+ hugetlb_folio_init_tail_vmemmap()
+To: =?UTF-8?Q?Mika_Penttil=C3=A4?= <mpenttil@redhat.com>,
+ linux-kernel@vger.kernel.org
+Cc: Alexander Potapenko <glider@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
  Brendan Jackman <jackmanb@google.com>, Christoph Lameter <cl@gentwo.org>,
  Dennis Zhou <dennis@kernel.org>, Dmitry Vyukov <dvyukov@google.com>,
  dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
@@ -102,8 +103,8 @@ Cc: Niklas Cassel <cassel@kernel.org>, Alexander Potapenko
  Vlastimil Babka <vbabka@suse.cz>, wireguard@lists.zx2c4.com, x86@kernel.org,
  Zi Yan <ziy@nvidia.com>
 References: <20250821200701.1329277-1-david@redhat.com>
- <20250821200701.1329277-25-david@redhat.com>
- <3812ed9e-2a47-4c1c-bd69-f37768e62ad3@kernel.org>
+ <20250821200701.1329277-11-david@redhat.com>
+ <9156d191-9ec4-4422-bae9-2e8ce66f9d5e@redhat.com>
 From: David Hildenbrand <david@redhat.com>
 Autocrypt: addr=david@redhat.com; keydata=
  xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
@@ -149,47 +150,36 @@ Autocrypt: addr=david@redhat.com; keydata=
  3iyY2Nsd7JxfKu1PRhCGwXzRw5TlfEsoRI7V9A8isUCoqE2Dzh3FvYHVeX4Us+bRL/oqareJ
  CIFqgYMyvHj7Q06kTKmauOe4Nf0l0qEkIuIzfoLJ3qr5UyXc2hLtWyT9Ir+lYlX9efqh7mOY
  qIws/H2t
-In-Reply-To: <3812ed9e-2a47-4c1c-bd69-f37768e62ad3@kernel.org>
+In-Reply-To: <9156d191-9ec4-4422-bae9-2e8ce66f9d5e@redhat.com>
 X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: p_T-A8nO7Hpm1jbkI5oXHEfqsdsQK9ZcOR2A-QmF6pU_1755843524
+X-Mimecast-MFC-PROC-ID: sD1atfSTD1L44IOvdfHRXDspWnz-W1W0Q_ZMki1IhlI_1755843875
 X-Mimecast-Originator: redhat.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 22.08.25 03:59, Damien Le Moal wrote:
-> On 8/22/25 05:06, David Hildenbrand wrote:
->> It's no longer required to use nth_page() when iterating pages within a
->> single SG entry, so let's drop the nth_page() usage.
->>
->> Cc: Damien Le Moal <dlemoal@kernel.org>
->> Cc: Niklas Cassel <cassel@kernel.org>
->> Signed-off-by: David Hildenbrand <david@redhat.com>
->> ---
->>   drivers/ata/libata-sff.c | 6 +++---
->>   1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/ata/libata-sff.c b/drivers/ata/libata-sff.c
->> index 7fc407255eb46..9f5d0f9f6d686 100644
->> --- a/drivers/ata/libata-sff.c
->> +++ b/drivers/ata/libata-sff.c
->> @@ -614,7 +614,7 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
->>   	offset = qc->cursg->offset + qc->cursg_ofs;
->>   
->>   	/* get the current page and offset */
->> -	page = nth_page(page, (offset >> PAGE_SHIFT));
->> +	page += offset / PAGE_SHIFT;
+On 22.08.25 06:09, Mika Penttilä wrote:
 > 
-> Shouldn't this be "offset >> PAGE_SHIFT" ?
+> On 8/21/25 23:06, David Hildenbrand wrote:
+> 
+>> All pages were already initialized and set to PageReserved() with a
+>> refcount of 1 by MM init code.
+> 
+> Just to be sure, how is this working with MEMBLOCK_RSRV_NOINIT, where MM is supposed not to
+> initialize struct pages?
 
-Thanks for taking a look!
+Excellent point, I did not know about that one.
 
-Yeah, I already reverted back to "offset >> PAGE_SHIFT" after Linus 
-mentioned in another mail in this thread that ">> PAGE_SHIFT" is 
-generally preferred because the compiler cannot optimize as much if 
-offset would be a signed variable.
+Spotting that we don't do the same for the head page made me assume that 
+it's just a misuse of __init_single_page().
 
-So the next version will have the shift again.
+But the nasty thing is that we use memblock_reserved_mark_noinit() to 
+only mark the tail pages ...
+
+Let me revert back to __init_single_page() and add a big fat comment why 
+this is required.
+
+Thanks!
 
 -- 
 Cheers
