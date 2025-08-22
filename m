@@ -1,142 +1,67 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DC422E5415;
-	Fri, 22 Aug 2025 08:15:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72D5D7261B;
+	Fri, 22 Aug 2025 08:19:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755850523; cv=none; b=bm56P5fFRwBJ40hixeIxTOeFkKl2OF+hzoqRWUiDFvCiTOcYo2KRUSm10yemjZFa7LFIBBvI8l+Czcw5H9PocHgkXV+Ir5VfAL2vJvCAlz+iY2Xt0xllBLOXXHG3a9s2SeqGD5n3UZl8r9I/NQjp/z8+wfYzDNmicAd1TrmJUvo=
+	t=1755850790; cv=none; b=DCKDB2qlt6kgrdKqVR65bkXTi4UVd0jiM8E9Aqs6x3A4IHRZqeQot33JgakrEqGeRwxg6HNTH7uW2Di6+n1XaV0Y7CB/6CBGm4zzKRbOaQYjJIANw7ghV0Sp/PqxQOo4SDrE7zEI79vS30QJQgDVJwI902i0KD01k2d7jk5CC34=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755850523; c=relaxed/simple;
-	bh=kTBgh0y3vRHtAXTeRcbbIloycHJMI8lellSKLz/etxs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
-	 Content-Type:References; b=W7QEiH+uwkzc4Azj2GJoQKGnQGPGI8EuHXgVfGq7hC5UwiRIK1BrBN3C4drS65t6WfD+OnWJHhCqDUqBZH4ALDw7VIn3R70HjMjg2kt9bBKuLU4Mr3NlSqtvi5YL9VMIvXmxErBJ0fb5as3QHqfwjImaxSzJqEOh7+VBK9/Zma0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=e4dvoXQd; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1755850790; c=relaxed/simple;
+	bh=HkE8AZTiPlzHsol+TKib6yPCz1oDuxVyBqFtTZA3Btc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IRU4JMJ9giTNeNY9np5P7fMiwvXQwgQyAh7TofALq6Qa9k4wvI979p4fqxXSAhQkuKs2kfl3nSdKXhmsjm3xnMMA/02ew3bZ8VrSyouZnR3ZTWS+Wod5tRUQpphRpMwHyun73EQeVmbPwXTFGD2F3IxbkRXSKg4qzCFKUK68Kzo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NMpKRcVM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="e4dvoXQd"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20250822081519euoutp01946853c37392c604dd0c3ef7d9f9864d~eCL6pnShX0804708047euoutp01V;
-	Fri, 22 Aug 2025 08:15:19 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20250822081519euoutp01946853c37392c604dd0c3ef7d9f9864d~eCL6pnShX0804708047euoutp01V
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1755850519;
-	bh=gSgM5v5QN4mf4R9UjO3p9g49c5fElcblzx9rfuNpgCM=;
-	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-	b=e4dvoXQdSu6m2XApKflo9WPmqpXymYx8peucZKWnnidxwTqyyGT6vyRmLSZhDupfy
-	 UQS833Dv4xDvMpcINMnXzIPqm8717h4UDC2WHsJO8GSlXAIbIu/HM+EmSf5f03lk+1
-	 DvviTyYYSXyxJn74yEGOVwAsfz9e64KnZWqZgVcw=
-Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-	20250822081519eucas1p173966299ee7e4ed7e44e5668490c5bb1~eCL6VCjyQ0206902069eucas1p1F;
-	Fri, 22 Aug 2025 08:15:19 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-	20250822081515eusmtip1e7bc345219f25d2646a53b4e40310c91~eCL2XTm3N1429714297eusmtip1U;
-	Fri, 22 Aug 2025 08:15:14 +0000 (GMT)
-Message-ID: <8c4b0068-92be-427b-8bfc-9926eea6aa09@samsung.com>
-Date: Fri, 22 Aug 2025 10:15:14 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NMpKRcVM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64FF6C113D0;
+	Fri, 22 Aug 2025 08:19:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1755850790;
+	bh=HkE8AZTiPlzHsol+TKib6yPCz1oDuxVyBqFtTZA3Btc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=NMpKRcVM2avITumqfYtpR1lJyNy1YGhcacH85UaXAzpSXOttsKoYASi0FKUaU3c3Z
+	 LZHMKa+Bm/tK9LhnO2Le6hkD6TRDDCwIacrsKCKDXxIg3cHlGkfTmyiz4J+tX0OeAk
+	 +y6hEJuRDwzIELlvKjoq1Z/cI3PB+gLj+leRv87IKdhqt2q0SAY8ZI6960dHWt5gUK
+	 RySJvhreS+KKJ0IDElOiOI+xhgkPpvCHElNb4FFvdwk7IKHfAHFglep3zi7q1pPCd0
+	 eL6wJM9h5zVy8CgVKdGsLd1BYeRPNfwPbu3NlXrHrHuE8IRVt4WpZOUTBL6jv9UGHx
+	 PdKiNBgxIMILQ==
+Date: Fri, 22 Aug 2025 10:19:47 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Nick Chan <towinchenmi@gmail.com>
+Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>, 
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>, Neal Gompa <neal@gompa.dev>, 
+	Jassi Brar <jassisinghbrar@gmail.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Hector Martin <marcan@marcan.st>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>, 
+	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>, asahi@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org
+Subject: Re: [PATCH v3 6/9] dt-bindings: nvme: apple,nvme-ans: Add Apple A11
+Message-ID: <20250822-singing-boobook-from-heaven-ef5cf8@kuoka>
+References: <20250821-t8015-nvme-v3-0-14a4178adf68@gmail.com>
+ <20250821-t8015-nvme-v3-6-14a4178adf68@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Betterbird (Windows)
-Subject: Re: [PATCH RFC 23/35] scatterlist: disallow non-contigous page
- ranges in a single SG entry
-To: David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc: Alexander Potapenko <glider@google.com>, Andrew Morton
-	<akpm@linux-foundation.org>, Brendan Jackman <jackmanb@google.com>,
-	Christoph Lameter <cl@gentwo.org>, Dennis Zhou <dennis@kernel.org>, Dmitry
-	Vyukov <dvyukov@google.com>, dri-devel@lists.freedesktop.org,
-	intel-gfx@lists.freedesktop.org, iommu@lists.linux.dev,
-	io-uring@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>, Jens Axboe
-	<axboe@kernel.dk>, Johannes Weiner <hannes@cmpxchg.org>, John Hubbard
-	<jhubbard@nvidia.com>, kasan-dev@googlegroups.com, kvm@vger.kernel.org,
-	"Liam R. Howlett" <Liam.Howlett@oracle.com>, Linus Torvalds
-	<torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
-	linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
-	linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-scsi@vger.kernel.org, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	Marco Elver <elver@google.com>, Michal Hocko <mhocko@suse.com>, Mike
-	Rapoport <rppt@kernel.org>, Muchun Song <muchun.song@linux.dev>,
-	netdev@vger.kernel.org, Oscar Salvador <osalvador@suse.de>, Peter Xu
-	<peterx@redhat.com>, Robin Murphy <robin.murphy@arm.com>, Suren Baghdasaryan
-	<surenb@google.com>, Tejun Heo <tj@kernel.org>,
-	virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
-	wireguard@lists.zx2c4.com, x86@kernel.org, Zi Yan <ziy@nvidia.com>
-Content-Language: en-US
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20250821200701.1329277-24-david@redhat.com>
-Content-Transfer-Encoding: 7bit
-X-CMS-MailID: 20250822081519eucas1p173966299ee7e4ed7e44e5668490c5bb1
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20250821200818eucas1p2c3df1e12eeba86a68679743d2f5929a8
-X-EPHeader: CA
-X-CMS-RootMailID: 20250821200818eucas1p2c3df1e12eeba86a68679743d2f5929a8
-References: <20250821200701.1329277-1-david@redhat.com>
-	<CGME20250821200818eucas1p2c3df1e12eeba86a68679743d2f5929a8@eucas1p2.samsung.com>
-	<20250821200701.1329277-24-david@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20250821-t8015-nvme-v3-6-14a4178adf68@gmail.com>
 
-On 21.08.2025 22:06, David Hildenbrand wrote:
-> The expectation is that there is currently no user that would pass in
-> non-contigous page ranges: no allocator, not even VMA, will hand these
-> out.
->
-> The only problematic part would be if someone would provide a range
-> obtained directly from memblock, or manually merge problematic ranges.
-> If we find such cases, we should fix them to create separate
-> SG entries.
->
-> Let's check in sg_set_page() that this is really the case. No need to
-> check in sg_set_folio(), as pages in a folio are guaranteed to be
-> contiguous.
->
-> We can now drop the nth_page() usage in sg_page_iter_page().
->
-> Signed-off-by: David Hildenbrand <david@redhat.com>
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+On Thu, Aug 21, 2025 at 11:56:43PM +0800, Nick Chan wrote:
+> Add ANS2 NVMe bindings for Apple A11 SoC.
+> 
+> Signed-off-by: Nick Chan <towinchenmi@gmail.com>
 > ---
->   include/linux/scatterlist.h | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/include/linux/scatterlist.h b/include/linux/scatterlist.h
-> index 6f8a4965f9b98..8196949dfc82c 100644
-> --- a/include/linux/scatterlist.h
-> +++ b/include/linux/scatterlist.h
-> @@ -6,6 +6,7 @@
->   #include <linux/types.h>
->   #include <linux/bug.h>
->   #include <linux/mm.h>
-> +#include <linux/mm_inline.h>
->   #include <asm/io.h>
->   
->   struct scatterlist {
-> @@ -158,6 +159,7 @@ static inline void sg_assign_page(struct scatterlist *sg, struct page *page)
->   static inline void sg_set_page(struct scatterlist *sg, struct page *page,
->   			       unsigned int len, unsigned int offset)
->   {
-> +	VM_WARN_ON_ONCE(!page_range_contiguous(page, ALIGN(len + offset, PAGE_SIZE) / PAGE_SIZE));
->   	sg_assign_page(sg, page);
->   	sg->offset = offset;
->   	sg->length = len;
-> @@ -600,7 +602,7 @@ void __sg_page_iter_start(struct sg_page_iter *piter,
->    */
->   static inline struct page *sg_page_iter_page(struct sg_page_iter *piter)
->   {
-> -	return nth_page(sg_page(piter->sg), piter->sg_pgoffset);
-> +	return sg_page(piter->sg) + piter->sg_pgoffset;
->   }
->   
->   /**
+>  .../devicetree/bindings/nvme/apple,nvme-ans.yaml          | 15 +++++++++------
+>  1 file changed, 9 insertions(+), 6 deletions(-)
 
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
 
