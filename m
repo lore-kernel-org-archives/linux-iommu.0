@@ -1,170 +1,582 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2064.outbound.protection.outlook.com [40.107.95.64])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE7942BEFF8
-	for <iommu@lists.linux.dev>; Fri, 22 Aug 2025 21:46:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.64
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755899179; cv=fail; b=ZwrW6CHL7FVhzxwZgIAoEQK/Ef5E3f7YW6xO8+hIvaqwlcI6NUm2LpwoLB4XItJWZxbqRVN6sLHBMu/ZIVilFHozgKxYpr2N+21y9+E08dN2hErykXCYqPItts8ZKJZag11Zhmhd68Ydd1ud2Wcfly727go6PNPEWF2clQ+SD7Y=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755899179; c=relaxed/simple;
-	bh=s6elOLiYtEvTIUDAh2xWlV6/zEA9q8aFi+gh2dUhvIc=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Z7syuaUjyvAnU5M4j8xTGUb/cwmX7Bgi0K7NMW+Ljp4mxJPVMRit9PG8MVMWsTBMZ65U5CI1wfZpE8Xog3F6vjFbisNbdHynRh5gcrA1GxJnk63FYxhs91pKwCRHGYniZPs42S47QgaeuFWKKQri8dN5Zl+zB3AdQT+asNV9buw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=VhB5DqGz; arc=fail smtp.client-ip=40.107.95.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C3E31F2382
+	for <iommu@lists.linux.dev>; Sat, 23 Aug 2025 03:26:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1755919618; cv=none; b=VdaYrTUvJa3SASuIiy4iJBt35dXJDFjXK2wnAzTj3PuNcMMweaumDlUOPaa3l3CIKkKNR58r75Mzf74vYo+f2vXD3Aycobpv+DQKOhq5i/ErrkmhJTklJrzruJplGnxy536GpJpOCXU8+DPCPwl3SQWMCeVDFdAB0BLvMA4NUJE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1755919618; c=relaxed/simple;
+	bh=mqnbMg0MWIDcmVD8c9mCyu/gfRSG6bU28qGSZAIcbaQ=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=NEzXErUlZcO4dnvyRPsghcfmZEVk47mZlMQClR+eEbosspu/6Pp+ac1kxZMqXVN/jJvjaiRkweBRlzphyL7cT5IRgB+9B4X+g5JmPONKD4PpZRiaN8xve02mwO/GNfqCrJguSrNa8pDZagrSFpHzEXnKNcpAX+pq3+MHmoSl1sU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CDOv36vf; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="VhB5DqGz"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=VXhTFchrkeiseONX9+aiX45dTiLRic1jFzQ3cCyC5zHxDkQHOkRQu1DXiOLtPIppJzCGl9mixyTDtn7NF1+zi4xCvmp/ziB1K7IKh6Wf9qAlgEe+nMBmIKMCnBNUnSDqGXx2s1vbAOsvK5QxiSDc7hCcIo6xGRuJ6Q34H8jFdwOUTAq9n7+2Gte6KJs6+T19NjlR7YozevRwH/8i3nHeLom79q/TjB3DGecaPRCKl3xjTiWXMe0TznP+DSmP2QMuPphUjTE3dnVqZofKHrRS9X+TpN8GoHMGhG0fkQ2wcVwGtqTox5xnWeH/DIzkpIMaAc6n9LLoP8PtBM903enWyw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=joN0AUFRBywYYtoulXZd8mgmm+Pr9V0gRcAQr6DkgKQ=;
- b=lGlQKAVW2Iz9QwF8qmWGTtdL03bBIPLlhL1VfGKvpcP0+/zdDX6oCtDuf0LJqWbJ2wWVIT0drJ4R/xRtmzAjSRbS1fkzZJlAJJ9Ikyi+SLOULN310bR7OLAy4zoiv5ZV3RhaNLgjtWGCpL7eyjP6xdrtikWqmWb3u0wyWfslgMDJgxVKEj/mId6iwHCSL9lU+bwX76KSuWGKgQsFj/ALUC3yUSjTWC/G60MW9Ci4DsP3Fy0y5s9dyYg6qwV0tUs1aN4WCWxxgM0y2XTiigkJk0eTSTa1oyqh/+60S/fSoe2gMnXS3xHq/ATxEI9Gie7GClxSltJVopOCK4DwW0SiOg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=joN0AUFRBywYYtoulXZd8mgmm+Pr9V0gRcAQr6DkgKQ=;
- b=VhB5DqGz0D4QWxiG4zIgZja/lE2JRbubfcfvFSSr2M5uEwzJjrHZUT2kDnLZtTgaYTTEPRpSNSVS5ZzEEAY1cJB9RZz/RDo7n4jcypgJfh1yzzYSRJ0EkL+tYIDObqgCi3bVFK03YgBG/sJLjzr6hkclyu0ZR2V8CxzasTKrag8a2t8kKqQorTtXmzwBheIWzy9LEw11YejqcLkMUy0Rs59vZjxjEV0NzjGgCLMG9owsArLGWwTX7CY3H/5+h10DCDCVfghkf2TDyzF2KfCfylKGTxImT9mOUh8E6iV5x+4i8F9TflA/R7Otm7tsGRsHSotppPMni/8NkmrskuSs3A==
-Received: from SJ0PR13CA0104.namprd13.prod.outlook.com (2603:10b6:a03:2c5::19)
- by CH3PR12MB7548.namprd12.prod.outlook.com (2603:10b6:610:144::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9052.16; Fri, 22 Aug
- 2025 21:46:13 +0000
-Received: from SJ1PEPF00001CE7.namprd03.prod.outlook.com
- (2603:10b6:a03:2c5:cafe::5) by SJ0PR13CA0104.outlook.office365.com
- (2603:10b6:a03:2c5::19) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9073.9 via Frontend Transport; Fri,
- 22 Aug 2025 21:46:13 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SJ1PEPF00001CE7.mail.protection.outlook.com (10.167.242.23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9052.8 via Frontend Transport; Fri, 22 Aug 2025 21:46:13 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Fri, 22 Aug
- 2025 14:46:01 -0700
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Fri, 22 Aug
- 2025 14:46:01 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.7)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Fri, 22 Aug 2025 14:46:00 -0700
-Date: Fri, 22 Aug 2025 14:45:58 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	<linux-kernel@vger.kernel.org>, <robin.murphy@arm.com>, <will@kernel.org>,
-	<joro@8bytes.org>, <kevin.tian@intel.com>, <jsnitsel@redhat.com>,
-	<vasant.hegde@amd.com>, <iommu@lists.linux.dev>, <santosh.shukla@amd.com>,
-	<sairaj.arunkodilkar@amd.com>, <jon.grimm@amd.com>,
-	<prashanthpra@google.com>, <wvw@google.com>, <wnliu@google.com>,
-	<gptran@google.com>, <kpsingh@google.com>
-Subject: Re: [PATCH 7/8] iommu/amd: Add support for nested domain allocation
-Message-ID: <aKjlFt80ltp3mjcp@Asurada-Nvidia>
-References: <20250820113009.5233-1-suravee.suthikulpanit@amd.com>
- <20250820113009.5233-8-suravee.suthikulpanit@amd.com>
- <aKjKJhblxtnlrrPG@Asurada-Nvidia>
- <20250822211618.GF1405994@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CDOv36vf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1755919616; x=1787455616;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mqnbMg0MWIDcmVD8c9mCyu/gfRSG6bU28qGSZAIcbaQ=;
+  b=CDOv36vfAWeniCx4KLAJjOPQouVGhBV3VrYXhGEpAlxbOo8S9Y+aGTUZ
+   n38usaua2Fz7SAZo3IzJNNxu24w06GK6DZ7gUBZYNSjwzUaqjq+47JokB
+   ZW3Gj6ker81vaDo/VpL6cEfZQGVTA2rzLNlE4KySMh57Tj91iylckkEfp
+   qWxdN8wfOC58AHK4dKODuNtIOY/vhfaJhBWSQiU6MwnNJZKqhHUtg1Xna
+   aVWFu4xqXKpXiT8db+YcJgRkh7mlPQxq/Px3s+sWDp56RO4MGUJYw2Sly
+   nTUvlYz2mff6wMswWAOq9hJuuPIz9IK4rZRmjfzKLjPFKxNePJ9z6BtcT
+   w==;
+X-CSE-ConnectionGUID: Xpo6+73kRV+aGVUEP0dkuA==
+X-CSE-MsgGUID: 6NMfZgN3Qm2d2xvxm2+L4g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11529"; a="61868252"
+X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
+   d="scan'208";a="61868252"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2025 20:26:55 -0700
+X-CSE-ConnectionGUID: 4QTbX6BRQHOADo2sDsVERA==
+X-CSE-MsgGUID: NLOJDnkoR4Scj5FcDuyuOw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
+   d="scan'208";a="168752473"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.239.20]) ([10.124.239.20])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2025 20:26:51 -0700
+Message-ID: <e321d374-38a7-4f60-b991-58458a2761b9@linux.intel.com>
+Date: Sat, 23 Aug 2025 11:26:47 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20250822211618.GF1405994@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE7:EE_|CH3PR12MB7548:EE_
-X-MS-Office365-Filtering-Correlation-Id: fa182fb9-6a7d-469e-3931-08dde1c5507d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|7416014|36860700013|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?MMyc10EVEMkJlubuJS15A6Ng7rGl6uGwQcCu6VjgDkXLjeX48wdWZbmndJH1?=
- =?us-ascii?Q?ulbRnZJRdVQ/PnMyn5DGIT6L8AjSShgV1QRR6XDPdH/aoS+i/zTmGMY+HvYF?=
- =?us-ascii?Q?fcMReaYkMCufxHH1PU++oOM3wpwq/Pfp3g7N99qE/kqDhXbGH1Jvtc7W+ZAb?=
- =?us-ascii?Q?0wZJ5ooCEWaOqlz4Mpk6lxfDMyVlvyEZR0q1K2NKkkTG/U6Pju3P7Be4tx1p?=
- =?us-ascii?Q?7z4T+FcpKPGA1dPG1RLa3SZH6c8LC25hguTFAHj3QPUDFMsUQ77nsQd/kjRQ?=
- =?us-ascii?Q?J2ika6RGxVNxw8lqbty4gy9jXV0V175+obFmye5Rfbnnk+57PVEr2HmRfTZl?=
- =?us-ascii?Q?KKs6VzIxPGsEl5lqjM6Sqhlt89ykGS9nPajAIP405nP9SA+NNGkohHddDOq6?=
- =?us-ascii?Q?OB2f5QTIZSiNBapavVt/uym3snFYezjdzUmaGnJ8F6Mf68f7pirT+qnB74gB?=
- =?us-ascii?Q?CfgHqRgpSg3nyWNeQCzHE8v18zxmQ/3FBJk6B8LuJGtiLv/UfF5LhnTUjk+q?=
- =?us-ascii?Q?kPs/Bd46kAe5OSzk2eROCXWiBq6gHRdBM+fwm5Byd2SvD9/B19M7TCi0wSPF?=
- =?us-ascii?Q?zSGHJBnfOyDIDCDm8eF7JWRiZFkG34BSgthmWhb2jaaGJw7MiyXADjWCEzAD?=
- =?us-ascii?Q?fxYRttEMvquSaIwP5GYQdFnQlM8dXR5d2jnJfP/qkcS3P+QVukCEJj5XxhpV?=
- =?us-ascii?Q?1hJSGwYuCbvvs8YhI1OTqKAyRdpUXf+N9lLglcecUIQ4CNZnMzhvI++Iumu7?=
- =?us-ascii?Q?7OsdFrTwx7I/DBOYTN4mxumSNJI8Wz2waCtb9q/k0O8jgz+KQzEtzZQLpQRd?=
- =?us-ascii?Q?LypkpfeYKIyje+jGf+56WN9KF+gbjKzg/MULH3z3dbtoPISrS7tx9OQAEevR?=
- =?us-ascii?Q?CRHxR1I+7IIjLH9oXCBclcVeyoct/4xWjr50Wf/WCD7E6Y9P77omXet762Jg?=
- =?us-ascii?Q?6/6BsB2hBL5ngau+gmbq0DnHBuI3USVGahsVVl2h/54f5nub9eBcJ+fszEsc?=
- =?us-ascii?Q?C318g00KxS1nc/0HvKQM76bcWxGo7uQj5gSQ5jHmM9MOeSW3SfTUW4F5sqoq?=
- =?us-ascii?Q?WXMdYjBDTelWo1b7ViePF3dQJRneX2r5XtAwtkr70eIfIdEm6FRWVBAYW7wk?=
- =?us-ascii?Q?aySz7sFy6MezikJHWYTfZ9mXM0shECLGIu2A4kHTbPf7+kNkbW8mwFErGAoP?=
- =?us-ascii?Q?81yyr0zlJRY9VAzAcs95nYUmgdCmvSpuM8e/4g/ztD+W9RIfB7qLliIXqvUZ?=
- =?us-ascii?Q?pcrdNAFaYEB0Fe/XzC4Ob1pp3sMP1gEbWU8IZw6b/h9Ox7mZQDDY/i0qaSyD?=
- =?us-ascii?Q?XInWkO5s5rUKIMlPUf6F8MGCK8YOGn2xlFIjr5vXFQ12xU6Lrhax4yjlmsQv?=
- =?us-ascii?Q?XT1eMhOMynZz7XrdIRtyBZ4C91I6u0nWJVy33zxcQ8JR+CkY4lfZJtjEr5eF?=
- =?us-ascii?Q?lFPf0qz2WG3EoRjG+ybygR9Td1HUEnb6kOt2tu8d32AJ3rItLlIbZlhYIqUO?=
- =?us-ascii?Q?4pkUsl9vaCaBSYBNwbqB45gJvZ3ifNgjrjJG?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(7416014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2025 21:46:13.0363
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa182fb9-6a7d-469e-3931-08dde1c5507d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00001CE7.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB7548
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "Hansen, Dave" <dave.hansen@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Jann Horn <jannh@google.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>,
+ Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, "Lai, Yi1" <yi1.lai@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "security@kernel.org" <security@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
+ flush
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
+ <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
+ <20250806155223.GV184255@nvidia.com>
+ <d02cb97a-7cea-4ad3-82b3-89754c5278ad@intel.com>
+ <20250806160904.GX184255@nvidia.com>
+ <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
+ <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
+ <20250807195154.GO184255@nvidia.com>
+ <BN9PR11MB52762A47B347C99F0C0E4C288C2FA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <87bfc80e-258e-4193-a56c-3096608aec30@linux.intel.com>
+ <BN9PR11MB52766165393F7DD8209DA45A8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52766165393F7DD8209DA45A8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, Aug 22, 2025 at 06:16:18PM -0300, Jason Gunthorpe wrote:
-> On Fri, Aug 22, 2025 at 12:51:02PM -0700, Nicolin Chen wrote:
-> > > @@ -3113,6 +3116,7 @@ const struct iommu_ops amd_iommu_ops = {
-> > >  	.release_domain = &release_domain,
-> > >  	.identity_domain = &identity_domain.domain,
-> > >  	.domain_alloc_paging_flags = amd_iommu_domain_alloc_paging_flags,
-> > > +	.domain_alloc_nested = amd_iommu_domain_alloc_nested,
-> > >  	.domain_alloc_sva = amd_iommu_domain_alloc_sva,
-> > >  	.probe_device = amd_iommu_probe_device,
-> > >  	.release_device = amd_iommu_release_device,
-> > 
-> > This will be an HWPT-based nesting support, v.s. vIOMMU-based.
-> > 
-> > If AMD wants to enable its Command/Event Buffers, I think this
-> > should follow the vIOMMU model instead.
+On 8/21/2025 3:05 PM, Tian, Kevin wrote:
+>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>> Sent: Monday, August 18, 2025 2:22 PM
+>>
+>> On 8/8/25 10:57, Tian, Kevin wrote:
+>>>> From: Jason Gunthorpe<jgg@nvidia.com>
+>>>> Sent: Friday, August 8, 2025 3:52 AM
+>>>>
+>>>> On Thu, Aug 07, 2025 at 10:40:39PM +0800, Baolu Lu wrote:
+>>>>> +static void kernel_pte_work_func(struct work_struct *work)
+>>>>> +{
+>>>>> +	struct page *page, *next;
+>>>>> +
+>>>>> +	iommu_sva_invalidate_kva_range(0, TLB_FLUSH_ALL);
+>>>>> +
+>>>>> +	guard(spinlock)(&kernel_pte_work.lock);
+>>>>> +	list_for_each_entry_safe(page, next, &kernel_pte_work.list, lru) {
+>>>>> +		list_del_init(&page->lru);
+>>>> Please don't add new usages of lru, we are trying to get rid of this. 🙁
+>>>>
+>>>> I think the memory should be struct ptdesc, use that..
+>>>>
+>>> btw with this change we should also defer free of the pmd page:
+>>>
+>>> pud_free_pmd_page()
+>>> 	...
+>>> 	for (i = 0; i < PTRS_PER_PMD; i++) {
+>>> 		if (!pmd_none(pmd_sv[i])) {
+>>> 			pte = (pte_t *)pmd_page_vaddr(pmd_sv[i]);
+>>> 			pte_free_kernel(&init_mm, pte);
+>>> 		}
+>>> 	}
+>>>
+>>> 	free_page((unsigned long)pmd_sv);
+>>>
+>>> Otherwise the risk still exists if the pmd page is repurposed before the
+>>> pte work is scheduled.
+>>
+>> My understanding is that you were talking about pmd_free(), correct? It
+> yes
 > 
-> I've been expecting drivers to do both, like ARM.. Nested is the basic
-> infrastructure and then the viommu changes what domain id nested will
-> use similar to how ARM constrains the VMID based on the viommu.
+>> appears that both pmd_free() and pte_free_kernel() call
+>> pagetable_dtor_free(). If so, how about the following change?
+>>
+>> diff --git a/include/asm-generic/pgalloc.h b/include/asm-generic/pgalloc.h
+>> index dbddacdca2ce..04f6b5bc212c 100644
+>> --- a/include/asm-generic/pgalloc.h
+>> +++ b/include/asm-generic/pgalloc.h
+>> @@ -172,10 +172,8 @@ static inline pmd_t *pmd_alloc_one_noprof(struct
+>> mm_struct *mm, unsigned long ad
+>>    #ifndef __HAVE_ARCH_PMD_FREE
+>>    static inline void pmd_free(struct mm_struct *mm, pmd_t *pmd)
+>>    {
+>> -       struct ptdesc *ptdesc = virt_to_ptdesc(pmd);
+>> -
+>>           BUG_ON((unsigned long)pmd & (PAGE_SIZE-1));
+>> -       pagetable_dtor_free(ptdesc);
+>> +       pte_free_kernel(mm, (pte_t *)pmd);
+>>    }
+> better to rename pte_free_kernel_async() to pagetable_free_kernel_async()
+> and call it directly here like you did in pte_free_kernel(). otherwise it's
+> a bit weird to call a pte helper for pmd.
+> 
+> accordingly do we need a new helper pmd_free_kernel()? Now there is
+> no restriction that pmd_free() can only be called on kernel entries. e.g.
+> mop_up_one_pmd() (only in PAE and KPTI), destroy_args() if
+> CONFIG_DEBUG_VM_PGTABLE, etc.
+> 
+>>> another observation - pte_free_kernel is not used in remove_pagetable ()
+>>> and __change_page_attr(). Is it straightforward to put it in those paths
+>>> or do we need duplicate some deferring logic there?
+>>>
+>> In both of these cases, pages in an array or list require deferred
+>> freeing. I don't believe the previous approach, which calls
+>> pagetable_dtor_free(), will still work here. Perhaps a separate list is
+> this is the part which I don't quite understand. Is there guarantee that
+> page tables removed in those path are not allocated with any
+> pagetable_ctor helpers? Otherwise some state might be broken w/o
+> proper pagetable_dtor().
+> 
+> Knowing little here, so likely I missed some basic context.
+> 
+>> needed? What about something like the following?
+>>
+>> diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+>> index 76e33bd7c556..2e887463c165 100644
+>> --- a/arch/x86/mm/init_64.c
+>> +++ b/arch/x86/mm/init_64.c
+>> @@ -1013,7 +1013,10 @@ static void __meminit free_pagetable(struct page
+>> *page, int order)
+>>                   free_reserved_pages(page, nr_pages);
+>>    #endif
+>>           } else {
+>> -               free_pages((unsigned long)page_address(page), order);
+>> +               if (IS_ENABLED(CONFIG_ASYNC_PGTABLE_FREE))
+>> +                       kernel_pgtable_free_pages_async(page, order);
+>> +               else
+>> +                       free_pages((unsigned long)page_address(page),
+>> order);
+>>           }
+>>    }
+>>
+>> diff --git a/arch/x86/mm/pat/set_memory.c
+>> b/arch/x86/mm/pat/set_memory.c
+>> index 8834c76f91c9..7e567bdfddce 100644
+>> --- a/arch/x86/mm/pat/set_memory.c
+>> +++ b/arch/x86/mm/pat/set_memory.c
+>> @@ -436,9 +436,13 @@ static void cpa_collapse_large_pages(struct
+>> cpa_data *cpa)
+>>
+>>           flush_tlb_all();
+>>
+>> -       list_for_each_entry_safe(ptdesc, tmp, &pgtables, pt_list) {
+>> -               list_del(&ptdesc->pt_list);
+>> -               __free_page(ptdesc_page(ptdesc));
+>> +       if (IS_ENABLED(CONFIG_ASYNC_PGTABLE_FREE)) {
+>> +               kernel_pgtable_free_list_async(&pgtables);
+>> +       } else {
+>> +               list_for_each_entry_safe(ptdesc, tmp, &pgtables, pt_list) {
+>> +                       list_del(&ptdesc->pt_list);
+>> +                       __free_page(ptdesc_page(ptdesc));
+>> +               }
+>>           }
+>>    }
+>>
+>> diff --git a/include/asm-generic/pgalloc.h b/include/asm-generic/pgalloc.h
+>> index 4938eff5b482..13bbe1588872 100644
+>> --- a/include/asm-generic/pgalloc.h
+>> +++ b/include/asm-generic/pgalloc.h
+>> @@ -48,8 +48,12 @@ static inline pte_t
+>> *pte_alloc_one_kernel_noprof(struct mm_struct *mm)
+>>
+>>    #ifdef CONFIG_ASYNC_PGTABLE_FREE
+>>    void pte_free_kernel_async(struct ptdesc *ptdesc);
+>> +void kernel_pgtable_free_list_async(struct list_head *list);
+>> +void kernel_pgtable_free_pages_async(struct page *pages, int order);
+>>    #else
+>>    static inline void pte_free_kernel_async(struct ptdesc *ptdesc) {}
+>> +static inline void kernel_pgtable_free_list_async(struct list_head
+>> *list) {}
+>> +void kernel_pgtable_free_pages_async(struct page *pages, int order) {}
+>>    #endif
+>>
+>>    /**
+>> diff --git a/mm/pgtable-generic.c b/mm/pgtable-generic.c
+>> index b9a785dd6b8d..d1d19132bbe8 100644
+>> --- a/mm/pgtable-generic.c
+>> +++ b/mm/pgtable-generic.c
+>> @@ -413,6 +413,7 @@ static void kernel_pte_work_func(struct work_struct
+>> *work);
+>>
+>>    struct {
+>>           struct list_head list;
+>> +       struct list_head pages;
+> the real difference between the two lists is about whether to use
+> pagetable_dtor_free() or __free_page(). Then clearer to call them
+> 'pages_dtor' and 'pages'?
+> 
+>>           spinlock_t lock;
+>>           struct work_struct work;
+>>    } kernel_pte_work = {
+>> @@ -425,17 +426,24 @@ static void kernel_pte_work_func(struct
+>> work_struct *work)
+>>    {
+>>           struct ptdesc *ptdesc, *next;
+>>           LIST_HEAD(free_list);
+>> +       LIST_HEAD(pages_list);
+>>
+>>           iommu_sva_invalidate_kva_range(0, TLB_FLUSH_ALL);
+>>
+>>           spin_lock(&kernel_pte_work.lock);
+>>           list_move(&kernel_pte_work.list, &free_list);
+>> +       list_move(&kernel_pte_work.pages, &pages_list);
+>>           spin_unlock(&kernel_pte_work.lock);
+>>
+>>           list_for_each_entry_safe(ptdesc, next, &free_list, pt_list) {
+>>                   list_del(&ptdesc->pt_list);
+>>                   pagetable_dtor_free(ptdesc);
+>>           }
+>> +
+>> +       list_for_each_entry_safe(ptdesc, next, &pages_list, pt_list) {
+>> +               list_del(&ptdesc->pt_list);
+>> +               __free_page(ptdesc_page(ptdesc));
+>> +       }
+>>    }
+>>
+>>    void pte_free_kernel_async(struct ptdesc *ptdesc)
+>> @@ -444,4 +452,25 @@ void pte_free_kernel_async(struct ptdesc *ptdesc)
+>>           list_add(&ptdesc->pt_list, &kernel_pte_work.list);
+>>           schedule_work(&kernel_pte_work.work);
+>>    }
+>> +
+>> +void kernel_pgtable_free_list_async(struct list_head *list)
+>> +{
+>> +       guard(spinlock)(&kernel_pte_work.lock);
+>> +       list_splice_tail(list, &kernel_pte_work.pages);
+>> +       schedule_work(&kernel_pte_work.work);
+>> +}
+>> +
+>> +void kernel_pgtable_free_pages_async(struct page *pages, int order)
+>> +{
+>> +       unsigned long nr_pages = 1 << order;
+>> +       struct ptdesc *ptdesc;
+>> +       int i;
+>> +
+>> +       guard(spinlock)(&kernel_pte_work.lock);
+>> +       for (i = 0; i < nr_pages; i++) {
+>> +               ptdesc = page_ptdesc(&pages[i]);
+>> +               list_add(&ptdesc->pt_list, &kernel_pte_work.pages);
+>> +       }
+> there is a side-effect here. Now a contiguous range of pages (order=N)
+> are freed one-by-one, so they are first fed back to the order=0 free list
+> with possibility of getting split due to small order allocations before
+> having chance to lift back to the order=N list. then the number of
+> available huge pages is unnecessarily reduced.
+> 
+> but look at the code probably we don't need to handle the order>0 case?
+> 
+> now only free_hugepage_table() may free a huge page, called from
+> remove_pmd_table() when a pmd is a*leaf* entry pointing to a
+> vmemmap huge page. So it's not a real page table. I'm not sure why
+> it's piggybacked in a pagetable helper, but sounds like a case we
+> can ignore in this mitigation...
 
-Hmm, we haven't implemented both in ARM but only the vIOMMU-based
-one..
+I am not sure about this context either. My understanding is that
+"order > 0" is used for the batch deallocation of page table pages that
+were created to map large, contiguous blocks of memory.
 
-Yea, AMD could start with the HWPT-based one, but that would need
-an invalidation op(?), which seems missing in this series. So, to
-support direct invalidation via Command Buffers, vIOMMU should be
-the only option, right?
+Thanks for your comments. I have created a new patch to introduce the
+asynchronous page table page free mechanism, taking the above comments
+into consideration. Let me post it below for further review.
 
-Nicolin
+mm: Conditionally defer freeing of kernel page table pages
+
+On x86 and other architectures that map the kernel's virtual address space
+into the upper portion of every process's page table, the IOMMU's paging
+structure caches can become stale. This occurs when a page used for the
+kernel's page tables is freed and reused without the IOMMU being notified.
+
+While the IOMMU driver is notified of changes to user virtual address
+mappings, there is no similar notification mechanism for kernel page
+table changes. This can lead to data corruption or system instability
+when Shared Virtual Address (SVA) is enabled, as the IOMMU's internal
+caches may retain stale entries for kernel virtual addresses.
+
+This introduces a conditional asynchronous mechanism, enabled by
+CONFIG_ASYNC_PGTABLE_FREE. When enabled, this mechanism defers the freeing
+of pages that are used as page tables for kernel address mappings. These
+pages are now queued to a work struct instead of being freed immediately.
+
+This deferred freeing provides a safe context for a future patch to add
+an IOMMU-specific callback, which might be expensive on large-scale
+systems. This ensures the necessary IOMMU cache invalidation is performed
+before the page is finally returned to the page allocator outside of any
+critical, non-sleepable path.
+
+Suggested-by: Dave Hansen <dave.hansen@linux.intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+  arch/x86/mm/init_64.c         |   5 +-
+  arch/x86/mm/pat/set_memory.c  |  10 +++-
+  arch/x86/mm/pgtable.c         |   5 +-
+  include/asm-generic/pgalloc.h |  17 +++++-
+  mm/Kconfig                    |   3 +
+  mm/pgtable-generic.c          | 106 ++++++++++++++++++++++++++++++++++
+  6 files changed, 140 insertions(+), 6 deletions(-)
+
+diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+index 76e33bd7c556..bf06d815d214 100644
+--- a/arch/x86/mm/init_64.c
++++ b/arch/x86/mm/init_64.c
+@@ -1013,7 +1013,10 @@ static void __meminit free_pagetable(struct page 
+*page, int order)
+  		free_reserved_pages(page, nr_pages);
+  #endif
+  	} else {
+-		free_pages((unsigned long)page_address(page), order);
++		if (IS_ENABLED(CONFIG_ASYNC_PGTABLE_FREE))
++			kernel_pgtable_async_free_pages(page, order);
++		else
++			free_pages((unsigned long)page_address(page), order);
+  	}
+  }
+
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index 8834c76f91c9..97d4f39cae7d 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -436,9 +436,13 @@ static void cpa_collapse_large_pages(struct 
+cpa_data *cpa)
+
+  	flush_tlb_all();
+
+-	list_for_each_entry_safe(ptdesc, tmp, &pgtables, pt_list) {
+-		list_del(&ptdesc->pt_list);
+-		__free_page(ptdesc_page(ptdesc));
++	if (IS_ENABLED(CONFIG_ASYNC_PGTABLE_FREE)) {
++		kernel_pgtable_async_free_page_list(&pgtables);
++	} else {
++		list_for_each_entry_safe(ptdesc, tmp, &pgtables, pt_list) {
++			list_del(&ptdesc->pt_list);
++			__free_page(ptdesc_page(ptdesc));
++		}
+  	}
+  }
+
+diff --git a/arch/x86/mm/pgtable.c b/arch/x86/mm/pgtable.c
+index ddf248c3ee7d..45268f009cb0 100644
+--- a/arch/x86/mm/pgtable.c
++++ b/arch/x86/mm/pgtable.c
+@@ -757,7 +757,10 @@ int pud_free_pmd_page(pud_t *pud, unsigned long addr)
+
+  	free_page((unsigned long)pmd_sv);
+
+-	pmd_free(&init_mm, pmd);
++	if (IS_ENABLED(CONFIG_ASYNC_PGTABLE_FREE))
++		kernel_pgtable_async_free_dtor(virt_to_ptdesc(pmd));
++	else
++		pmd_free(&init_mm, pmd);
+
+  	return 1;
+  }
+diff --git a/include/asm-generic/pgalloc.h b/include/asm-generic/pgalloc.h
+index 3c8ec3bfea44..baa9780cad71 100644
+--- a/include/asm-generic/pgalloc.h
++++ b/include/asm-generic/pgalloc.h
+@@ -46,6 +46,16 @@ static inline pte_t 
+*pte_alloc_one_kernel_noprof(struct mm_struct *mm)
+  #define pte_alloc_one_kernel(...) 
+alloc_hooks(pte_alloc_one_kernel_noprof(__VA_ARGS__))
+  #endif
+
++#ifdef CONFIG_ASYNC_PGTABLE_FREE
++void kernel_pgtable_async_free_dtor(struct ptdesc *ptdesc);
++void kernel_pgtable_async_free_page_list(struct list_head *list);
++void kernel_pgtable_async_free_pages(struct page *pages, int order);
++#else
++static inline void kernel_pgtable_async_free_dtor(struct ptdesc *ptdesc) {}
++static inline void kernel_pgtable_async_free_page_list(struct list_head 
+*list) {}
++static inline void kernel_pgtable_async_free_pages(struct page *pages, 
+int order) {}
++#endif
++
+  /**
+   * pte_free_kernel - free PTE-level kernel page table memory
+   * @mm: the mm_struct of the current context
+@@ -53,7 +63,12 @@ static inline pte_t 
+*pte_alloc_one_kernel_noprof(struct mm_struct *mm)
+   */
+  static inline void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
+  {
+-	pagetable_dtor_free(virt_to_ptdesc(pte));
++	struct ptdesc *ptdesc = virt_to_ptdesc(pte);
++
++	if (IS_ENABLED(CONFIG_ASYNC_PGTABLE_FREE))
++		kernel_pgtable_async_free_dtor(ptdesc);
++	else
++		pagetable_dtor_free(ptdesc);
+  }
+
+  /**
+diff --git a/mm/Kconfig b/mm/Kconfig
+index e443fe8cd6cf..369f3259e6da 100644
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -1346,6 +1346,9 @@ config LOCK_MM_AND_FIND_VMA
+  config IOMMU_MM_DATA
+  	bool
+
++config ASYNC_PGTABLE_FREE
++	bool
++
+  config EXECMEM
+  	bool
+
+diff --git a/mm/pgtable-generic.c b/mm/pgtable-generic.c
+index 567e2d084071..d2751da58c94 100644
+--- a/mm/pgtable-generic.c
++++ b/mm/pgtable-generic.c
+@@ -406,3 +406,109 @@ pte_t *__pte_offset_map_lock(struct mm_struct *mm, 
+pmd_t *pmd,
+  	pte_unmap_unlock(pte, ptl);
+  	goto again;
+  }
++
++#ifdef CONFIG_ASYNC_PGTABLE_FREE
++static void kernel_pgtable_work_func(struct work_struct *work);
++
++static struct {
++	/* list for pagetable_dtor_free() */
++	struct list_head dtor;
++	/* list for __free_page() */
++	struct list_head page;
++	/* list for free_pages() */
++	struct list_head pages;
++	/* protect all the ptdesc lists */
++	spinlock_t lock;
++	struct work_struct work;
++} kernel_pgtable_work = {
++	.dtor = LIST_HEAD_INIT(kernel_pgtable_work.dtor),
++	.page = LIST_HEAD_INIT(kernel_pgtable_work.page),
++	.pages = LIST_HEAD_INIT(kernel_pgtable_work.pages),
++	.lock = __SPIN_LOCK_UNLOCKED(kernel_pgtable_work.lock),
++	.work = __WORK_INITIALIZER(kernel_pgtable_work.work, 
+kernel_pgtable_work_func),
++};
++
++struct async_free_data {
++	struct list_head node;
++	unsigned long addr;
++	int order;
++};
++
++static void kernel_pgtable_work_func(struct work_struct *work)
++{
++	struct async_free_data *data, *temp;
++	struct ptdesc *ptdesc, *next;
++	LIST_HEAD(pages_list);
++	LIST_HEAD(dtor_list);
++	LIST_HEAD(page_list);
++
++	spin_lock(&kernel_pgtable_work.lock);
++	list_splice_tail_init(&kernel_pgtable_work.dtor, &dtor_list);
++	list_splice_tail_init(&kernel_pgtable_work.page, &page_list);
++	list_splice_tail_init(&kernel_pgtable_work.pages, &pages_list);
++	spin_unlock(&kernel_pgtable_work.lock);
++
++	list_for_each_entry_safe(ptdesc, next, &dtor_list, pt_list) {
++		list_del(&ptdesc->pt_list);
++		pagetable_dtor_free(ptdesc);
++	}
++
++	list_for_each_entry_safe(ptdesc, next, &page_list, pt_list) {
++		list_del(&ptdesc->pt_list);
++		__free_page(ptdesc_page(ptdesc));
++	}
++
++	list_for_each_entry_safe(data, temp, &pages_list, node) {
++		list_del(&data->node);
++		free_pages(data->addr, data->order);
++		kfree(data);
++	}
++}
++
++void kernel_pgtable_async_free_dtor(struct ptdesc *ptdesc)
++{
++	spin_lock(&kernel_pgtable_work.lock);
++	list_add(&ptdesc->pt_list, &kernel_pgtable_work.dtor);
++	spin_unlock(&kernel_pgtable_work.lock);
++
++	schedule_work(&kernel_pgtable_work.work);
++}
++
++void kernel_pgtable_async_free_page_list(struct list_head *list)
++{
++	spin_lock(&kernel_pgtable_work.lock);
++	list_splice_tail(list, &kernel_pgtable_work.page);
++	spin_unlock(&kernel_pgtable_work.lock);
++
++	schedule_work(&kernel_pgtable_work.work);
++}
++
++void kernel_pgtable_async_free_pages(struct page *pages, int order)
++{
++	struct async_free_data *data;
++
++	if (order == 0) {
++		spin_lock(&kernel_pgtable_work.lock);
++		list_add(&page_ptdesc(pages)->pt_list, &kernel_pgtable_work.page);
++		spin_unlock(&kernel_pgtable_work.lock);
++
++		goto out;
++	}
++
++	data = kzalloc(sizeof(*data), GFP_ATOMIC);
++	if (!data) {
++		free_pages((unsigned long)page_address(pages), order);
++		goto out;
++	}
++
++	data->addr = (unsigned long)page_address(pages);
++	data->order = order;
++
++	spin_lock(&kernel_pgtable_work.lock);
++	list_add(&data->node, &kernel_pgtable_work.pages);
++	spin_unlock(&kernel_pgtable_work.lock);
++
++out:
++	schedule_work(&kernel_pgtable_work.work);
++}
++#endif
+-- 
+2.43.0
+
+Thanks,
+baolu
