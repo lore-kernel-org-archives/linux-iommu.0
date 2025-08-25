@@ -1,199 +1,143 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2057.outbound.protection.outlook.com [40.107.244.57])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4F7B283FE9
-	for <iommu@lists.linux.dev>; Mon, 25 Aug 2025 21:47:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.57
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756158432; cv=fail; b=ryVgIaPFxvoU8rMDKIuAMx/bQZVU9QbLWVOUsP3tllDjTWxA5WGP7utj9JDyJc6T3CGLAtvesM68KlPQ/iwtqTvXBW1CPhmwEUkUsTo33UJEv2DdscpNvsTDLyOUX44w7dGx//no6bbvHsn7C5Ascz42u0m9RwoShUHRPGe/5TU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756158432; c=relaxed/simple;
-	bh=jU6ilVy6u8K8SUIYY7ppKZLxuoTh1NpfKfa6E5gkpMw=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Rf/Q94QlRgbM1kPxuIja340rTnog5oFg+c3l60CQyDxnqV2YGNZduawiEA9uvtACVKIt0Zi1abrSGPbuKElQqmZV9YW0O+h9a+GmoatC3nzcqp/BN8FdKiS+oVRPUY34bR1S7u/n7B2/Fr1S7SxI5H6rNY4DsV+Pfx4D8xm4k/k=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=DuCKwCRG; arc=fail smtp.client-ip=40.107.244.57
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1A6B28D8D9
+	for <iommu@lists.linux.dev>; Mon, 25 Aug 2025 22:36:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756161420; cv=none; b=pQkRuq5qbWcmumtFJqvpcObd2qManCjNVI/0hi56gsr1uczWG5EFamWubrq76adxWnEwfJP2VMe0M8kbNOpzLwm5xyCAPoI4djNVJZmpLE4pAciaDN28Cln9NbbjRXeGgvW/qYiZyrudvACV4hUQo2kHLIWixSHsIMfFK4D7YU0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756161420; c=relaxed/simple;
+	bh=HHZpwUWnYEqYO7u28z/GMdp5Wm3QF7J3oRF7G0xFWP4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ol2mlZuUSg2/lM1kGL/NzCDHaZ6TM0iwTX9btksyQRvNQ87XB31KweZOphgQYL6lwHUUVWfwNwW0CfLpkQvwIr2ebo/mdL8bokEFYKgjkf5Olcl3NqD2mQYLxRvSJhi6kW4z8FsWfe/5ZEo5iBiGQQMgh82XRtaP7XEaGgwyFJc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=boViPtN2; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="DuCKwCRG"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tApWvmzkYY/+6QYANS4rzR59GuqSGmQiqdIRiEbMtlSUIibk9mRvfHGwpWQeswwJXNaFUs9ZTObPZaCMi3Uy3HKdxDA+iVm12H2Y0V8g9gF0RKgFNP33SUTdVxCYY9DICGVbh/7kaDGoX4ivoy7icIMT/tTW1sRw8zF8LN7r0olC7gwPOdUq6KJNEjwv9kx50Gq02/jDXV5cfKVkQQZwxnwY/eBZ/R88nYDwmJ787uYyDSL0Fw40BiO+RU8cnIu7FElPeXXB3+NXH0J0uBg0PsUe4ncn97sdJ+q+Av5zRzzSPg6YWMdUUhkYsdjx/NFXRVbcsTfgaITRmofd2W8MVA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KKYujyeim6mX/Yjhu9jaa3uLsemTTTcDM1y/3XuCPX8=;
- b=prsI8cNU+taQ05DuoAy9U542YiZBgMGdOiECO+nfpd9QE6PSzVzajkS1nJS4XXk+DZoaeBE1cLFuwRHYxhXPeluEbO6mxRAusO2wYpKsEPloOUzmDykoeLQydMxs+LqqDkEPfteHBEaYS2Q8N4hkKMut2UBT9HbOFjNr74rbcLIl4RC6t+kBitBuPa5lP3/MvspfXW8fItr4MVMM59+zeaxK7c1n6uD6SE5qM+0oYakfK32PZZgH4uMufjoZ2zcqw5ESn52ib+PIEMUS9sH/itJprJuKXFB6alfywB8HOwsp0bUVd8bYFkPWsDAvmQ9BVh46wLZGZYYo0T5CCA2bRg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KKYujyeim6mX/Yjhu9jaa3uLsemTTTcDM1y/3XuCPX8=;
- b=DuCKwCRGZGVtxh6t0HuHsq8Yzhj1cZPdlIg+jhiMMkSefGihuQuCyd6+h/1nIHGIlCmLaWsOGegYvShjniayNdBFe3VnVjnQS7TOKa21Qb4b7DdDfIloSx7o6o9U52PvFMGG/s9zwqX05iHoFAb1X3GI0ooE8xk1Qa48bcGozmU=
-Received: from MN2PR05CA0063.namprd05.prod.outlook.com (2603:10b6:208:236::32)
- by DS7PR12MB5886.namprd12.prod.outlook.com (2603:10b6:8:79::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9052.21; Mon, 25 Aug 2025 21:47:06 +0000
-Received: from BN3PEPF0000B370.namprd21.prod.outlook.com
- (2603:10b6:208:236:cafe::f5) by MN2PR05CA0063.outlook.office365.com
- (2603:10b6:208:236::32) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9073.13 via Frontend Transport; Mon,
- 25 Aug 2025 21:47:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BN3PEPF0000B370.mail.protection.outlook.com (10.167.243.167) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.9094.0 via Frontend Transport; Mon, 25 Aug 2025 21:47:06 +0000
-Received: from ethanolx7e2ehost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Mon, 25 Aug
- 2025 16:47:03 -0500
-From: Ashish Kalra <Ashish.Kalra@amd.com>
-To: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>,
-	<thomas.lendacky@amd.com>, <Sairaj.ArunKodilkar@amd.com>,
-	<Vasant.Hegde@amd.com>, <herbert@gondor.apana.org.au>
-CC: <seanjc@google.com>, <pbonzini@redhat.com>, <will@kernel.org>,
-	<robin.murphy@arm.com>, <john.allen@amd.com>, <davem@davemloft.net>,
-	<michael.roth@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-	<kvm@vger.kernel.org>
-Subject: [PATCH v6 4/4] iommu/amd: Skip enabling command/event buffers for kdump
-Date: Mon, 25 Aug 2025 21:46:53 +0000
-Message-ID: <576445eb4f168b467b0fc789079b650ca7c5b037.1756157913.git.ashish.kalra@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <cover.1756157913.git.ashish.kalra@amd.com>
-References: <cover.1756157913.git.ashish.kalra@amd.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="boViPtN2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1756161419; x=1787697419;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HHZpwUWnYEqYO7u28z/GMdp5Wm3QF7J3oRF7G0xFWP4=;
+  b=boViPtN2ebR9GSIQK3ozI0L9oDfxhDx1DxZn16ALfaSZ53n9G0hB7fo9
+   yYsnsKc4yt+t1ixVVPto1fEGnNn8RBsqSMGQlYjVWfV5hRJhfqkI4M+ue
+   K4zXMLy48CZuUsfZvsmDnE/vFLT+pD425fEm8+Jxs9y4Hy8o19TbRAFxC
+   fcOvsHcs9k4oO2ayIGe+62+/tGdYSw4P/pDAiXQvib3oexoUwvR7zFZGp
+   GW6pRQs+XRTuVq1sCjUczgQlkqPZeEtxX3tsIpfhTs5el0bm2ArCZUxem
+   RyELq3g5KwsmRJqK6qCEVhqDmBQZMI1Csscme4Pwha1E7RMlIrH4zeWdX
+   g==;
+X-CSE-ConnectionGUID: Qxu4dw9sS5u9FRfQdPDW8w==
+X-CSE-MsgGUID: oWwLT+UeSqGiu8dtsB2FDg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11533"; a="68978643"
+X-IronPort-AV: E=Sophos;i="6.18,214,1751266800"; 
+   d="scan'208";a="68978643"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2025 15:36:40 -0700
+X-CSE-ConnectionGUID: VZX7DiUATze0WHqdFrBwaA==
+X-CSE-MsgGUID: auc4kNUiTwWWIiw8VzgpMA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,214,1751266800"; 
+   d="scan'208";a="173809776"
+Received: from cmdeoliv-mobl4.amr.corp.intel.com (HELO [10.125.109.1]) ([10.125.109.1])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2025 15:36:40 -0700
+Message-ID: <9a649ff4-55fe-478a-bfd7-f3287534499a@intel.com>
+Date: Mon, 25 Aug 2025 15:36:39 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
+ flush
+To: Baolu Lu <baolu.lu@linux.intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Jann Horn <jannh@google.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>,
+ Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, "Lai, Yi1" <yi1.lai@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "security@kernel.org" <security@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>
+References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
+ <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
+ <20250806155223.GV184255@nvidia.com>
+ <d02cb97a-7cea-4ad3-82b3-89754c5278ad@intel.com>
+ <20250806160904.GX184255@nvidia.com>
+ <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
+ <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
+ <20250807195154.GO184255@nvidia.com>
+ <BN9PR11MB52762A47B347C99F0C0E4C288C2FA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <87bfc80e-258e-4193-a56c-3096608aec30@linux.intel.com>
+ <BN9PR11MB52766165393F7DD8209DA45A8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <e321d374-38a7-4f60-b991-58458a2761b9@linux.intel.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Content-Language: en-US
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <e321d374-38a7-4f60-b991-58458a2761b9@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN3PEPF0000B370:EE_|DS7PR12MB5886:EE_
-X-MS-Office365-Filtering-Correlation-Id: 86d8131e-90a7-43d0-ec8f-08dde420ef90
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|1800799024|36860700013|82310400026;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?sZKjWWJUncN0GeBQ8tH3ugFzvtzfy4Dm8kDjO+Ie5Omdd8GL4aStLhyBeeXY?=
- =?us-ascii?Q?yTLSsz6afBtUhiePmTTF5j0oMnTWEZGP1rAgdx8lQdOiNYJrIUz/SBsML9pv?=
- =?us-ascii?Q?AsnfJ+MoK51GpNjXDBsuJwFAbyFFm6b73bMKN2bGwgfvg8JpHQvtt5IGSJ5A?=
- =?us-ascii?Q?fzdFy8UMYdA+ed+UvLECl7ZxrMp2+0LRRTLSpXs0IcA0puevcEEZ43Q3IxUl?=
- =?us-ascii?Q?wclO/KWwDReqHaTTJeYcWCJfLRh322Fi6QI5ew5ZQpxgaxbsyg0SrxI9pLJL?=
- =?us-ascii?Q?4y+OgVbir+ubmmxHuDCMmphasNQdM7O2VjnccqymqJkuus9k45aS7FRSllvt?=
- =?us-ascii?Q?bYATobIld6yXqkIbMYUT8I0wBrwhfkIdVePmoiD3FKdd3iedaC89WCY6ze9F?=
- =?us-ascii?Q?+ZHe5F0t8tmoFSZBMSfGCpK1E3Nk+csgtPkh3qScJkUjmW1Vka1vmA6MMweQ?=
- =?us-ascii?Q?rsoQ5OBMyYFBDlzzGici0tqFAZ0DkmRVgDZtu6E+pmRJZZX43nxg7v3wW88Y?=
- =?us-ascii?Q?LdRfQ35R6xOOSLcf5hYZ+On2/aoBO9A8GNWNVHnF83DCA+fPMB5KheD1LxqR?=
- =?us-ascii?Q?yG67T8yRodZraqQr31kbEGNVTkc03PjRy8+skvy0YmkWKovqWrrlbrFOxaAU?=
- =?us-ascii?Q?V9Zw2Nd9+1zzjdnKUtHvsPNGGZWgfKHzTDTHCqLdRCiHGWRWqKvdcqwa11BX?=
- =?us-ascii?Q?tLraEPWV+qqb4sLqLEBWrDAXev3cjt9zLul+D6qyTMeIEZQPISw3MSwp8qrS?=
- =?us-ascii?Q?BnCvcRVZ6suEwO/HQdtevcbXIy7f3Ajc7G/I5Ej5LjKykNzG79j9Nv/mb0V9?=
- =?us-ascii?Q?68GwYWGbOow4V3amO2LnH+2KPfTpYZ08rAHfeWeeYUjkA22CbUt0/ymFugNu?=
- =?us-ascii?Q?nTFw6VeewOUrJ9GucHXxdWO23wr+6yR+R87+WiQZH20xKajqe+ziSPQ4GWsH?=
- =?us-ascii?Q?4TCiiDj6Mo9VL4iu1M96Q9iiNsGZMGj7A/mJMWydFkPUHheqQOws3z69uVOI?=
- =?us-ascii?Q?OsoVUzCKPzrIX1VVFfaypGWE7agqh8bBRmCIq5pQm03oUpFaqAILl+kOucqf?=
- =?us-ascii?Q?SpBSFB+as/xn4oNnQLLWh/Qx2jIjXVoCu14QxEooixf82LzHGq31xC7FSJJ2?=
- =?us-ascii?Q?AvHnvV/xDiuJN2ajjkQoXfcCqybGDce8P3YAvkCteGn5eMtdflqyzycbnuDt?=
- =?us-ascii?Q?tmWHtj4FdV5upQjD/I2R9Ad4qvmd7PWhvLj7ZHvMojPl0THGupv5mv3KdGCR?=
- =?us-ascii?Q?iksTo7x3WQb35WRiWuwMDGoUVVXnctUYyNXguNjh2agS54msuT+30qCLXCZJ?=
- =?us-ascii?Q?pkNkyYdbMRahdLr4f6pLB5u8cj6d19Nzl04xe7D3NYjFjFS6BEftnxsz9Omo?=
- =?us-ascii?Q?/axYjgHNmBm8FM70YJipLsRwUEqbAAw2/CUcFd7aO5hsQItYJjcnbpDMizIt?=
- =?us-ascii?Q?MLafc0RkJwwnf1ZkfuYVBDqtr3UhzjuiE+THeAIPFU/TU9Ipz/Yj9gNl50mS?=
- =?us-ascii?Q?/GfboX+NPUjWRg874WNWU0Y/36Rn7/LrjA1X?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(36860700013)(82310400026);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2025 21:47:06.5387
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86d8131e-90a7-43d0-ec8f-08dde420ef90
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN3PEPF0000B370.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5886
 
-From: Ashish Kalra <ashish.kalra@amd.com>
+On 8/22/25 20:26, Baolu Lu wrote:
+> +static struct {
+> +    /* list for pagetable_dtor_free() */
+> +    struct list_head dtor;
+> +    /* list for __free_page() */
+> +    struct list_head page;
+> +    /* list for free_pages() */
+> +    struct list_head pages;
+> +    /* protect all the ptdesc lists */
+> +    spinlock_t lock;
+> +    struct work_struct work;
 
-After a panic if SNP is enabled in the previous kernel then the kdump
-kernel boots with IOMMU SNP enforcement still enabled.
-
-IOMMU command buffers and event buffer registers remain locked and
-exclusive to the previous kernel. Attempts to enable command and event
-buffers in the kdump kernel will fail, as hardware ignores writes to
-the locked MMIO registers as per AMD IOMMU spec Section 2.12.2.1.
-
-Skip enabling command buffers and event buffers for kdump boot as they
-are already enabled in the previous kernel.
-
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-Tested-by: Sairaj Kodilkar <sarunkod@amd.com>
-Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
----
- drivers/iommu/amd/init.c | 28 +++++++++++++++++++---------
- 1 file changed, 19 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index dac6282675da..d179344ad598 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -821,11 +821,16 @@ static void iommu_enable_command_buffer(struct amd_iommu *iommu)
- 
- 	BUG_ON(iommu->cmd_buf == NULL);
- 
--	entry = iommu_virt_to_phys(iommu->cmd_buf);
--	entry |= MMIO_CMD_SIZE_512;
--
--	memcpy_toio(iommu->mmio_base + MMIO_CMD_BUF_OFFSET,
--		    &entry, sizeof(entry));
-+	if (!is_kdump_kernel()) {
-+		/*
-+		 * Command buffer is re-used for kdump kernel and setting
-+		 * of MMIO register is not required.
-+		 */
-+		entry = iommu_virt_to_phys(iommu->cmd_buf);
-+		entry |= MMIO_CMD_SIZE_512;
-+		memcpy_toio(iommu->mmio_base + MMIO_CMD_BUF_OFFSET,
-+			    &entry, sizeof(entry));
-+	}
- 
- 	amd_iommu_reset_cmd_buffer(iommu);
- }
-@@ -876,10 +881,15 @@ static void iommu_enable_event_buffer(struct amd_iommu *iommu)
- 
- 	BUG_ON(iommu->evt_buf == NULL);
- 
--	entry = iommu_virt_to_phys(iommu->evt_buf) | EVT_LEN_MASK;
--
--	memcpy_toio(iommu->mmio_base + MMIO_EVT_BUF_OFFSET,
--		    &entry, sizeof(entry));
-+	if (!is_kdump_kernel()) {
-+		/*
-+		 * Event buffer is re-used for kdump kernel and setting
-+		 * of MMIO register is not required.
-+		 */
-+		entry = iommu_virt_to_phys(iommu->evt_buf) | EVT_LEN_MASK;
-+		memcpy_toio(iommu->mmio_base + MMIO_EVT_BUF_OFFSET,
-+			    &entry, sizeof(entry));
-+	}
- 
- 	/* set head and tail to zero manually */
- 	writel(0x00, iommu->mmio_base + MMIO_EVT_HEAD_OFFSET);
--- 
-2.34.1
-
+Could you explain a bit why this now needs three separate lists? Seems
+like pure overkill.
