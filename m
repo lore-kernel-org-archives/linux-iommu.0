@@ -1,250 +1,268 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3DC42FFDF2
-	for <iommu@lists.linux.dev>; Mon, 25 Aug 2025 16:23:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DFBB2FF679
+	for <iommu@lists.linux.dev>; Mon, 25 Aug 2025 16:37:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756139037; cv=none; b=Jpu7VFw4xF0Wn/RfdM9PxRWSiAG4L9ZrTqUqqXqUMowXcwQcECKk5nTSKZK2AhSIEt8NvYahTMR/yW1v44+j72hQPyN3kIjGu9LM6IuzAERp6jK6uKI8OP9jVvJmXYOg/L0JqndNV7SakBfXZD/3QSIB6Jsoh7q5BxppuN6n4eI=
+	t=1756139829; cv=none; b=VxenUeURLHnIeJpBvyWN4INbW0qQrQCiymHmpGgpOmt8AJytSBE8hpy/a8IdoG2/89cdRY5XpYcd8EeLLABzz7xsfu40KI/lSYBwGKlMdya4hgPIWolif2mNwng41XVsHVfg1NkRjQn/TGLFHZdNPVpOsUWeu/SNojZo1Oet24Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756139037; c=relaxed/simple;
-	bh=vuP5vePXN8LBSJrLWIvS+y5fUnshvYM/EK4ob3BfHZ0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rtcO5cUSHnmFT2VSZZtslNk0PozCyP/HhkKvoF8XkS1brDnJ/fd78lDVzeBUgOY4NbMouTOhF6WTK8QnoWwnSMr1r7gHU39KxVDB3+TuX8O3qybPb/EAzjGcQ2FQ6pcY2lqr8feOGAPPhcS1SCHaTVl03vK8FPlAIsMHDLjMb/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=LpdWRuxS; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1756139829; c=relaxed/simple;
+	bh=dRjkmQyr4AfxMzpp6Q0dVQT0/GVtdEmvI6FnZNiPJBs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=f7suB4TQu/fpKWwS9+V4dX4fdm4aLe2rMQ8nEIC9xd1ITLuNxGjZCMnTVMyNa0QJUFuIRinvysRebxiKb8BXxka0V08bVBFu3szFHiI8r9OpRjYoOmn19R9pzZ5riUMZ9JJzChw6Fx03zFAI0cTfXKcaQ1kMxOEKlnLB1KnF98I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Tpp/9r6e; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="LpdWRuxS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1756139034;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=ZJ9VR6/AHZevQeWHrHcSWQbnm5iFaXQGfgpXOMo3AYo=;
-	b=LpdWRuxSJqX/FwRxyo3Hn4VIOsQN8mLbwH4XJHO5g9zH+CA8+Az+nyATyH7t5hsGmS3KmP
-	vWDrKjTu1jigWdw+nvdKmOPS9HTZlrdg1OlK+x8IM60cdz/F61MpuluYVpxq4UusydZSzK
-	l5bvmf4RXY9v3NQDNXw8hwX/NeHYjUI=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-345--W5jkE17OE-F9uu6J01j-A-1; Mon, 25 Aug 2025 12:23:53 -0400
-X-MC-Unique: -W5jkE17OE-F9uu6J01j-A-1
-X-Mimecast-MFC-AGG-ID: -W5jkE17OE-F9uu6J01j-A_1756139032
-Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-45a1b0cb0aaso34959425e9.3
-        for <iommu@lists.linux.dev>; Mon, 25 Aug 2025 09:23:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Tpp/9r6e"
+Received: from pps.filterd (m0279871.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57PFeq6X005250
+	for <iommu@lists.linux.dev>; Mon, 25 Aug 2025 16:37:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=qcppdkim1; bh=4Al2oxJOnZAhMVrumUKzRD+a
+	SFJQBCgWk6dRAYaPpVI=; b=Tpp/9r6erYjYxFvSDtVS1EHSMQ7r7P1p+7XgImpu
+	p9E8nV6tEzXhU8ps79T3GkLxQJ5FrQHuGXDuM8XVnN3ajP95nS7JI9gPofyzAZgG
+	fdHWplV1TgKbrp02TPwTGD3ZYASObfY9JsHts8Eb/l8cEtZBitxF3DsSzbEVBy9W
+	gy5XW/XQk5MN2ExO3s9uoj0IOcgaTwti86HjOen0FFrvL0JkMLjf+4Aj1GyrRXYe
+	1jjd7mEwG3nIPTDxu2wAKz1xMC2aNkqYwxQ9eaoJEyaMXqqqAb2DW3ZF4oYuYUes
+	TCMuJF4Fu9hAovIdeoYurt8ruSHbyoy1z2f5992dz6f7rg==
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com [209.85.160.198])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48rtper617-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Mon, 25 Aug 2025 16:37:04 +0000 (GMT)
+Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-4b109affec8so108856691cf.1
+        for <iommu@lists.linux.dev>; Mon, 25 Aug 2025 09:37:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756139032; x=1756743832;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZJ9VR6/AHZevQeWHrHcSWQbnm5iFaXQGfgpXOMo3AYo=;
-        b=HqKLuSeD7HgaZKgllTcgq83zWtQIhDmvQlkJXNBRW5csoK/oTEkdp3rIhesSsjPuSe
-         /LqQMCGtzo8OShvlH3ESTpEnlPMkvNis+iu90k/Kl4HPaJvtXp56Pib0gsZgj94QoWaK
-         B6VpW+82Wy4oChAHfre3k5v1bjLjUe/9+ue9FhuHw0MEGY17OEEX9CVxm2BnYU36vVse
-         g4+MC12wiuZMDE/tA2NxOhpasnsF+bIROCOKiLvfxPlFe5e5iFYJpgaOXjeAE4t3iT+Q
-         lfP2zYFepn9K6TTiJIf3Toy7pwEvmnZPJJfiEav73cCJQB+EpQxzOZXZnzShambNeV+j
-         aFLg==
-X-Forwarded-Encrypted: i=1; AJvYcCVTFp9HO8FoBbjDO5S3bg+qme2/rsy8C0BGpdcrdO+aoeqaVNIy7uH0Kn2Zcnn4hErcGqUSkg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxHKn252ronGlNcfQ26iGh1NXwJX7j/7GpSFEpVc2pQTJdwuFQ9
-	PnHYZPDp3KiRAbbiRux0gzSGl8Ayy9CuVYJ3lxhMHSPx67dKdq4i16FTKNt6Ch0MpSWPXOb62YO
-	h25j/vf5Pm3/PdVyB6EjbeMbMvVcluLsEQOW9j9qsGyBPY7QL3yiagmlsVjsW64WA
-X-Gm-Gg: ASbGncu6KoUmePl8mRHw92VbhBIg9MiLaSHMz5RPCTT8EoymVCPkaKonAw/S5gNNOsN
-	wFUXrFMV9UeVHFrhuAeIgDBOWhSGxeeEh3TbOhnwfgaIRzmmLGjLvb3TOuqbGrBFMgMTeF4H2h6
-	hnjwGjQjCLw6Y3KQy7Nd2y/1NxySgxTrwLd7PlXTF2Cj7zCWbl/EBqt0SCpsPTYUp9E8Zhjbjl9
-	0HhVlHVOvfmxkPD55PFJCHKxRdvu4g04TrMHvmfjx4bJ3pEmuZ45fq5oDY+S1PXCFumCF1QpcZE
-	/tmrRxi/SmtuEOikh8zgdv+VstMTLwja8t3owYr2Rdd/MVp0yVmdTT2w2HtjXjYn2eD4G7YQlv7
-	vLTziEW5IJneEUlevkeM8Lpk1JXGLunFEoE7o95CDODwPk8NtC1viK79q4ESzq0+dRuQ=
-X-Received: by 2002:a05:600c:4685:b0:458:bfe1:4a91 with SMTP id 5b1f17b1804b1-45b517c5551mr109881435e9.20.1756139031854;
-        Mon, 25 Aug 2025 09:23:51 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFwiDwmGl/nPb74qkNKdwOJy23XqbHKXC5/+W47v3i62q/hY+QH66S6ZkeqOx/rk3ktbwdSNA==
-X-Received: by 2002:a05:600c:4685:b0:458:bfe1:4a91 with SMTP id 5b1f17b1804b1-45b517c5551mr109881195e9.20.1756139031315;
-        Mon, 25 Aug 2025 09:23:51 -0700 (PDT)
-Received: from ?IPV6:2003:d8:2f4f:1300:42f1:98e5:ddf8:3a76? (p200300d82f4f130042f198e5ddf83a76.dip0.t-ipconnect.de. [2003:d8:2f4f:1300:42f1:98e5:ddf8:3a76])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45b5fec8e80sm29037215e9.0.2025.08.25.09.23.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Aug 2025 09:23:50 -0700 (PDT)
-Message-ID: <dbd2ec55-0e7f-407a-a8bd-e1ac83ac2a0a@redhat.com>
-Date: Mon, 25 Aug 2025 18:23:48 +0200
+        d=1e100.net; s=20230601; t=1756139823; x=1756744623;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4Al2oxJOnZAhMVrumUKzRD+aSFJQBCgWk6dRAYaPpVI=;
+        b=dPGIelvL42uiX6Z1pTQMoimZLDI7hax5uUMVkw21+Wn4YnpS9fBCSJEbWPrx0KH6Au
+         5yVvBogBvnvxyJxGYZKW3SYJhkptcgrYfVRS9so+mbL6nUv7d5KXtMNAXNtDJxOcBBzz
+         CBNHT1gfIQu0ZGa5CUOtkb7LzaVuDy8Zc/LcbbFqgx8Zm3XaKN5hYWCLbJ8voOgoVZJ+
+         hFxnMYNRvROsljV7xiBw0FaTmOHJ4ahhEMTZ1r0zJ9GAlOVffS5qWUZpiiPTAXCvadx+
+         zV6ti/WPifGf5WNbMSIUehkraDmGiLyFeQhssV9Vp4PQe75eaQvBH37gkprpWYx5i3Fn
+         o9HA==
+X-Forwarded-Encrypted: i=1; AJvYcCU3mbG0/jsig9vgWvH/3ipq5QvLI1pBfIN/lf1xNFYoTQhTehnbtUMigRb3+x+OWCvELq26gw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwIqRbl9wwamaOnGTfqhSjG/yOEX/RND8/UhBlPeuM0VuigbUzx
+	h+Zfy/22Ypue+xuvbNTaMNrDgRg0xg8tBWjfBunlOoJQO1mqUpKMU73waK3ALZk1KAZY3tW9sIW
+	9mKudfsvEJdsriwnvonny/UyTtyKsFukegJptOQIXMNNpswnB+uwIPpU0DA==
+X-Gm-Gg: ASbGncuyI7Xph6Goa9k3S84xf3wM5aS+Scc3CvXPshzkzAsDYiwqqPz7b1uZjFl5Yie
+	h3Q5W+yUuUn8gyxRoKyaoZn7J8Sc45JBFJtyQ5C6F4USwWUmphXBBTUe+s27Y47tBilnxL0DT0Z
+	FcStmzilz4YAdxYhf9VmfAdLrAi9n9/0QM5vIai9lfkVC37FF60vuWihTIaZjnZnN0FzacxMZWv
+	XTLkYNCpk0Obwv9LKOhLQGeBUIfGxiUCuXiT7QX+Z3MbobwOdSF+gEz/QlX5yOs3vJY0/prDLYN
+	TpYjM7RvWpYK34LdMysPQzN3nCLZDr6Wog60ccUfDwmaTY26Wq9Xs3rPSe0zXKhbakUNYvukT2F
+	SZuAMUHsGESBD1kFHtIPqgw7e20R6eRNY+JE44DShH3rlf8efrVVt
+X-Received: by 2002:a05:622a:1e8f:b0:4b2:9d9c:22ce with SMTP id d75a77b69052e-4b2aaa02db4mr139300251cf.5.1756139823280;
+        Mon, 25 Aug 2025 09:37:03 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFNgiczK9+T3+uY/OhSYAxvKM+2ASxtJBa+l/N+Chl24BMoQAUqd3jpLe8WyWI7QUA8L3jfgQ==
+X-Received: by 2002:a05:622a:1e8f:b0:4b2:9d9c:22ce with SMTP id d75a77b69052e-4b2aaa02db4mr139299501cf.5.1756139822521;
+        Mon, 25 Aug 2025 09:37:02 -0700 (PDT)
+Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-55f35c99ff5sm1666507e87.117.2025.08.25.09.37.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Aug 2025 09:37:01 -0700 (PDT)
+Date: Mon, 25 Aug 2025 19:36:59 +0300
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Luca Weiss <luca.weiss@fairphone.com>
+Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>, Vinod Koul <vkoul@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Robert Marko <robimarko@gmail.com>,
+        Das Srinagesh <quic_gurus@quicinc.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jassi Brar <jassisinghbrar@gmail.com>,
+        Amit Kucheria <amitk@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+        linux-mmc@vger.kernel.org
+Subject: Re: [PATCH v2 14/15] arm64: dts: qcom: Add initial Milos dtsi
+Message-ID: <2bk7s43nrkmhhgsqq65mxhbmrapyjejyjugnae7wfbttqjmtbf@dk2fe64qrmwx>
+References: <20250713-sm7635-fp6-initial-v2-0-e8f9a789505b@fairphone.com>
+ <20250713-sm7635-fp6-initial-v2-14-e8f9a789505b@fairphone.com>
+ <3e0299ad-766a-4876-912e-438fe2cc856d@oss.qualcomm.com>
+ <DBE6TK1KDOTP.IIT72I1LUN5M@fairphone.com>
+ <DBE8G88CIQ53.2N51CABIBJOOO@fairphone.com>
+ <DBOC7QBND54K.1SI5V9C2Z76BY@fairphone.com>
+ <55420d89-fcd4-4cb5-a918-d8bbe2a03d19@oss.qualcomm.com>
+ <DC74DPI8WS81.17VCYVY34C2F9@fairphone.com>
+ <2hv4yuc7rgtglihc2um2lr5ix4dfqxd4abb2bqb445zkhpjpsi@rozikfwrdtlk>
+ <DCBMOZQ7BFI9.2B3A3PEZ0DTYD@fairphone.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 10/35] mm/hugetlb: cleanup
- hugetlb_folio_init_tail_vmemmap()
-To: Mike Rapoport <rppt@kernel.org>
-Cc: =?UTF-8?Q?Mika_Penttil=C3=A4?= <mpenttil@redhat.com>,
- linux-kernel@vger.kernel.org, Alexander Potapenko <glider@google.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Brendan Jackman <jackmanb@google.com>, Christoph Lameter <cl@gentwo.org>,
- Dennis Zhou <dennis@kernel.org>, Dmitry Vyukov <dvyukov@google.com>,
- dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
- iommu@lists.linux.dev, io-uring@vger.kernel.org,
- Jason Gunthorpe <jgg@nvidia.com>, Jens Axboe <axboe@kernel.dk>,
- Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>,
- kasan-dev@googlegroups.com, kvm@vger.kernel.org,
- "Liam R. Howlett" <Liam.Howlett@oracle.com>,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
- linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
- linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
- Marco Elver <elver@google.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Michal Hocko <mhocko@suse.com>, Muchun Song <muchun.song@linux.dev>,
- netdev@vger.kernel.org, Oscar Salvador <osalvador@suse.de>,
- Peter Xu <peterx@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
- Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
- virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
- wireguard@lists.zx2c4.com, x86@kernel.org, Zi Yan <ziy@nvidia.com>
-References: <20250821200701.1329277-1-david@redhat.com>
- <20250821200701.1329277-11-david@redhat.com>
- <9156d191-9ec4-4422-bae9-2e8ce66f9d5e@redhat.com>
- <7077e09f-6ce9-43ba-8f87-47a290680141@redhat.com>
- <aKmDBobyvEX7ZUWL@kernel.org>
- <a90cf9a3-d662-4239-ad54-7ea917c802a5@redhat.com>
- <aKxz9HLQTflFNYEu@kernel.org>
- <a72080b4-5156-4add-ac7c-1160b44e0dfe@redhat.com>
- <aKx6SlYrj_hiPXBB@kernel.org>
- <f8140a17-c4ec-489b-b314-d45abe48bf36@redhat.com>
- <aKyMfvWe8JetkbRL@kernel.org>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- qIws/H2t
-In-Reply-To: <aKyMfvWe8JetkbRL@kernel.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: Qv81TPiINj6TtzycNKWyvULRE0F8Xajr16rnZoMSHcM_1756139032
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DCBMOZQ7BFI9.2B3A3PEZ0DTYD@fairphone.com>
+X-Proofpoint-GUID: wmN31TjarC4Pn3Ldfi-R2NASlXXDS2yO
+X-Proofpoint-ORIG-GUID: wmN31TjarC4Pn3Ldfi-R2NASlXXDS2yO
+X-Authority-Analysis: v=2.4 cv=Hd8UTjE8 c=1 sm=1 tr=0 ts=68ac9130 cx=c_pps
+ a=mPf7EqFMSY9/WdsSgAYMbA==:117 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
+ a=2OwXVqhp2XgA:10 a=6H0WHjuAAAAA:8 a=HmU3_siD3n1fRUalNNUA:9 a=CjuIK1q_8ugA:10
+ a=dawVfQjAaf238kedN5IG:22 a=Soq9LBFxuPC4vsCAQt-j:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODI1MDE0MiBTYWx0ZWRfX1EtH02h5gaEE
+ /YNLTCiNe0sOVyJu6A1BBwogmnK2oKYj7Kcg+WmVVP1HJ4Tv+c7LkIQKANKYfGMdV8mEQJnJ6nI
+ FM2LUfS4Yx4Vinc0a8DpWagz7UG/vtk5HTFbhi+KfptCSrl67w1qrQ11/TJAVLEHapDvFjXHd6Y
+ gZ/Sl7H0TcD5bvD/Zx1mu7WXEzVlDUuMLkL+sgag5nn87m2/jvaAUugfw2S+UKqQxVVi4wD6S2v
+ k6aY1WsQK5gIy5Sf4p4YcKglWJOXcMrb9//gZZ+z+kPcN3Rv2XiG7Ht4N3repya5IcUxUr5kYlS
+ ZVpS5br4L7A8skjGH5W8mlkF/kOEb+C6ilGAmuLAE6wgPWDty3BjokT5eFyhwig9N6m2qccDcaX
+ wT9ZdhZ3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-08-25_07,2025-08-20_03,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
+ adultscore=0 clxscore=1015 impostorscore=0 spamscore=0 classifier=typeunknown
+ authscore=0 authtc= authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2507300000 definitions=main-2508250142
 
->   
->> We should do something like:
->>
->> diff --git a/mm/memblock.c b/mm/memblock.c
->> index 154f1d73b61f2..ed4c563d72c32 100644
->> --- a/mm/memblock.c
->> +++ b/mm/memblock.c
->> @@ -1091,13 +1091,16 @@ int __init_memblock memblock_clear_nomap(phys_addr_t base, phys_addr_t size)
->>   /**
->>    * memblock_reserved_mark_noinit - Mark a reserved memory region with flag
->> - * MEMBLOCK_RSRV_NOINIT which results in the struct pages not being initialized
->> - * for this region.
->> + * MEMBLOCK_RSRV_NOINIT which allows for the "struct pages" corresponding
->> + * to this region not getting initialized, because the caller will take
->> + * care of it.
->>    * @base: the base phys addr of the region
->>    * @size: the size of the region
->>    *
->> - * struct pages will not be initialized for reserved memory regions marked with
->> - * %MEMBLOCK_RSRV_NOINIT.
->> + * "struct pages" will not be initialized for reserved memory regions marked
->> + * with %MEMBLOCK_RSRV_NOINIT if this function is called before initialization
->> + * code runs. Without CONFIG_DEFERRED_STRUCT_PAGE_INIT, it is more likely
->> + * that this function is not effective.
->>    *
->>    * Return: 0 on success, -errno on failure.
->>    */
+On Mon, Aug 25, 2025 at 05:53:53PM +0200, Luca Weiss wrote:
+> Hi Dmitry,
 > 
-> I have a different version :)
->   
-> diff --git a/include/linux/memblock.h b/include/linux/memblock.h
-> index b96746376e17..d20d091c6343 100644
-> --- a/include/linux/memblock.h
-> +++ b/include/linux/memblock.h
-> @@ -40,8 +40,9 @@ extern unsigned long long max_possible_pfn;
->    * via a driver, and never indicated in the firmware-provided memory map as
->    * system RAM. This corresponds to IORESOURCE_SYSRAM_DRIVER_MANAGED in the
->    * kernel resource tree.
-> - * @MEMBLOCK_RSRV_NOINIT: memory region for which struct pages are
-> - * not initialized (only for reserved regions).
-> + * @MEMBLOCK_RSRV_NOINIT: memory region for which struct pages don't have
-> + * PG_Reserved set and are completely not initialized when
-> + * %CONFIG_DEFERRED_STRUCT_PAGE_INIT is enabled (only for reserved regions).
->    * @MEMBLOCK_RSRV_KERN: memory region that is reserved for kernel use,
->    * either explictitly with memblock_reserve_kern() or via memblock
->    * allocation APIs. All memblock allocations set this flag.
-> diff --git a/mm/memblock.c b/mm/memblock.c
-> index 154f1d73b61f..02de5ffb085b 100644
-> --- a/mm/memblock.c
-> +++ b/mm/memblock.c
-> @@ -1091,13 +1091,15 @@ int __init_memblock memblock_clear_nomap(phys_addr_t base, phys_addr_t size)
->   
->   /**
->    * memblock_reserved_mark_noinit - Mark a reserved memory region with flag
-> - * MEMBLOCK_RSRV_NOINIT which results in the struct pages not being initialized
-> - * for this region.
-> + * MEMBLOCK_RSRV_NOINIT
-> + *
->    * @base: the base phys addr of the region
->    * @size: the size of the region
->    *
-> - * struct pages will not be initialized for reserved memory regions marked with
-> - * %MEMBLOCK_RSRV_NOINIT.
-> + * The struct pages for the reserved regions marked %MEMBLOCK_RSRV_NOINIT will
-> + * not have %PG_Reserved flag set.
-> + * When %CONFIG_DEFERRED_STRUCT_PAGE_INIT is enabled, setting this flags also
-> + * completly bypasses the initialization of struct pages for this region.
+> On Wed Aug 20, 2025 at 1:52 PM CEST, Dmitry Baryshkov wrote:
+> > On Wed, Aug 20, 2025 at 10:42:09AM +0200, Luca Weiss wrote:
+> >> Hi Konrad,
+> >> 
+> >> On Sat Aug 2, 2025 at 2:04 PM CEST, Konrad Dybcio wrote:
+> >> > On 7/29/25 8:49 AM, Luca Weiss wrote:
+> >> >> Hi Konrad,
+> >> >> 
+> >> >> On Thu Jul 17, 2025 at 11:46 AM CEST, Luca Weiss wrote:
+> >> >>> Hi Konrad,
+> >> >>>
+> >> >>> On Thu Jul 17, 2025 at 10:29 AM CEST, Luca Weiss wrote:
+> >> >>>> On Mon Jul 14, 2025 at 1:06 PM CEST, Konrad Dybcio wrote:
+> >> >>>>> On 7/13/25 10:05 AM, Luca Weiss wrote:
+> >> >>>>>> Add a devicetree description for the Milos SoC, which is for example
+> >> >>>>>> Snapdragon 7s Gen 3 (SM7635).
+> >> >>>>>>
+> >> >>>>>> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+> >> >>>>>> ---
+> >> >>>>>
+> >> >>>>> [...]
+> >> >>>>>> +
+> >> >>>>>> +		spmi_bus: spmi@c400000 {
+> >> >>>>>> +			compatible = "qcom,spmi-pmic-arb";
+> >> >>>>>
+> >> >>>>> There's two bus instances on this platform, check out the x1e binding
+> >> >>>>
+> >> >>>> Will do
+> >> >>>
+> >> >>> One problem: If we make the labels spmi_bus0 and spmi_bus1 then we can't
+> >> >>> reuse the existing PMIC dtsi files since they all reference &spmi_bus.
+> >> >>>
+> >> >>> On FP6 everything's connected to PMIC_SPMI0_*, and PMIC_SPMI1_* is not
+> >> >>> connected to anything so just adding the label spmi_bus on spmi_bus0
+> >> >>> would be fine.
+> >> >>>
+> >> >>> Can I add this to the device dts? Not going to be pretty though...
+> >> >>>
+> >> >>> diff --git a/arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts b/arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts
+> >> >>> index d12eaa585b31..69605c9ed344 100644
+> >> >>> --- a/arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts
+> >> >>> +++ b/arch/arm64/boot/dts/qcom/milos-fairphone-fp6.dts
+> >> >>> @@ -11,6 +11,9 @@
+> >> >>>  #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
+> >> >>>  #include <dt-bindings/regulator/qcom,rpmh-regulator.h>
+> >> >>>  #include "milos.dtsi"
+> >> >>> +
+> >> >>> +spmi_bus: &spmi_bus0 {};
+> >> >>> +
+> >> >>>  #include "pm7550.dtsi"
+> >> >>>  #include "pm8550vs.dtsi"
+> >> >>>  #include "pmiv0104.dtsi" /* PMIV0108 */
+> >> >>>
+> >> >>> Or I can add a second label for the spmi_bus0 as 'spmi_bus'. Not sure
+> >> >>> other designs than SM7635 recommend using spmi_bus1 for some stuff.
+> >> >>>
+> >> >>> But I guess longer term we'd need to figure out a solution to this, how
+> >> >>> to place a PMIC on a given SPMI bus, if reference designs start to
+> >> >>> recommend putting different PMIC on the separate busses.
+> >> >> 
+> >> >> Any feedback on this regarding the spmi_bus label?
+> >> >
+> >> > I had an offline chat with Bjorn and we only came up with janky
+> >> > solutions :)
+> >> >
+> >> > What you propose works well if the PMICs are all on bus0, which is
+> >> > not the case for the newest platforms. If some instances are on bus0
+> >> > and others are on bus1, things get ugly really quick and we're going
+> >> > to drown in #ifdefs.
+> >> >
+> >> >
+> >> > An alternative that I've seen downstream is to define PMIC nodes in
+> >> > the root of a dtsi file (not in the root of DT, i.e. NOT under / { })
+> >> > and do the following:
+> >> >
+> >> > &spmi_busN {
+> >> > 	#include "pmABCDX.dtsi"
+> >> > };
+> >> >
+> >> > Which is "okay", but has the visible downside of having to define the
+> >> > temp alarm thermal zone in each board's DT separately (and doing
+> >> > mid-file includes which is.. fine I guess, but also something we avoided
+> >> > upstream for the longest time)
+> >> >
+> >> >
+> >> > Both are less than ideal when it comes to altering the SID under
+> >> > "interrupts", fixing that would help immensely. We were hoping to
+> >> > leverage something like Johan's work on drivers/mfd/qcom-pm8008.c,
+> >> > but that seems like a longer term project.
+> >> >
+> >> > Please voice your opinions
+> >> 
+> >> Since nobody else jumped in, how can we continue?
+> >> 
+> >> One janky solution in my mind is somewhat similar to the PMxxxx_SID
+> >> defines, doing something like "#define PM7550_SPMI spmi_bus0" and then
+> >> using "&PM7550_SPMI {}" in the dtsi. I didn't try it so not sure that
+> >> actually works but something like this should I imagine.
+> >> 
+> >> But fortunately my Milos device doesn't have the problem that it
+> >> actually uses both SPMI busses for different PMICs, so similar to other
+> >> SoCs that already have two SPMI busses, I could somewhat ignore the
+> >> problem and let someone else figure out how to actually place PMICs on
+> >> spmi_bus0 and spmi_bus1 if they have such a hardware.
+> >
+> > I'd say, ignore it for now.
+> 
+> You mean ignoring that there's a second SPMI bus on this SoC, and just
+> modelling one with the label "spmi_bus"? Or something else?
+> 
+> 
+> I have also actually tried out the C define solution that I was writing
+> about in my previous email and this is actually working, see diff below.
+> In my opinion it just expands on what we have with the SID defines, so
+> shouldn't be tooo unacceptable :)
 
-s/completly/completely.
+I think we tried previously using C preprocessor to rework SID handling
+and it wasn't accepted by DT maintainers.
 
-I don't quite understand the interaction with PG_Reserved and why 
-anybody using this function should care.
-
-So maybe you can rephrase in a way that is easier to digest, and rather 
-focuses on what callers of this function are supposed to do vs. have the 
-liberty of not doing?
+I'd say, ignore the second bus for now, unless it gets actually used for
+major PMICs.
 
 -- 
-Cheers
-
-David / dhildenb
-
+With best wishes
+Dmitry
