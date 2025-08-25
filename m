@@ -1,75 +1,82 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f42.google.com (mail-qv1-f42.google.com [209.85.219.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C68651DBB2E;
-	Mon, 25 Aug 2025 16:58:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24EA52874F7
+	for <iommu@lists.linux.dev>; Mon, 25 Aug 2025 17:05:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756141108; cv=none; b=R8UNt0Gtt5Qur9wDRPBQgiUGucLXVycA+kb6Eiw1bJjkMH50XYLypMN+kWmkZ6WdgCecCYQDloTqP1CZ2zLOrFGsLOU7Z4lwhZfk2YwKPUff5H4xCUorV1v3pDHOO2VZZgFNs5j0dZcBDZBdmD7U07aCCynib2F3FpQ5V7anG2U=
+	t=1756141536; cv=none; b=QyhwrC+9+tcS6D2aG8k4KCyNMKrY8jbj6vUKwiLyW+YNDOR1LXLPdrOiIoHCRA1GWSDYOO766nRd1kkP01FAhZ1YJZte2Vk/QogW+tC2P35DEx+Ec1tTCsTTmCrtW30Gm3skC758vxQt2RO2ZPSFGBPBNKEPHM9+58wOhycB2fY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756141108; c=relaxed/simple;
-	bh=5Xs4ClQrBNPUK24yQ8tvJo62CGzQ+OUCbyk/7pv7K6g=;
+	s=arc-20240116; t=1756141536; c=relaxed/simple;
+	bh=LRBN+7pVsfRX4HBnwza1vs2Vuv7PT4DxF6o0fSGauMk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QgQWpbJWBzKj1a7SGWEa7yiJVbyEsh6QfFcjr6FB5I1pwO1WfiT8/uFaFVx6gWLTFQRkxS+wNhE7g6Fyui1pXkyyXnYAxEYOOZzOjKauT+7dz50o0FGODdFKhMUV1kmI3JjzzXBcFOZPuunyhfYRHFDPIaVNZWvqRyS3rrMc/xw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K8EPeL9r; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=hVs5fYAlsWGJ7VOEXwPIYfvkkR4CuSwE9sHP1Hkk/vw/HUhY2wzbe4KCF6QDHgF/BYSPzzZm68rFVGbjgQTjAXs3EALzF4Ryyw/ZXEmmMBBLAsnI9Mv4QtuVmuQwLxCJp1owshHJa0kAZW9I/9joixry9CHd74mGbIjGheMe60s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=dm30GrQq; arc=none smtp.client-ip=209.85.219.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K8EPeL9r"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF37AC4CEED;
-	Mon, 25 Aug 2025 16:58:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756141107;
-	bh=5Xs4ClQrBNPUK24yQ8tvJo62CGzQ+OUCbyk/7pv7K6g=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=K8EPeL9rFMK2+nBscZ78BHN9AXOnwLlio8wCQA9T4HPI2M7JTseek460vnzI7LqJC
-	 TDu4NzXeMpXS8jhUa/iSAcIvRfHFDSrWxcvq7/PwB+bucaEQsHAodSxeBqU3oHbYQw
-	 JfnmUaXpTgDVr5GNOQRbyvPuO31dhRIGQUncZS3uv95CJi5KIRjBjS37ASsfqMbjJV
-	 FaVoAzebuKQA21fTHdob2rVKAkh6oJNsI5NIl49si6OGRBanVCOrvFPYRUxz3E2h7U
-	 H5t70EO0n4A9bkEljsMG6VtFtoS+dKBxf5ZFl9Bmc3Iax0SvbwLHZzXF+Oj3qlKigt
-	 vsahqKXPodl2Q==
-Date: Mon, 25 Aug 2025 19:58:10 +0300
-From: Mike Rapoport <rppt@kernel.org>
-To: David Hildenbrand <david@redhat.com>
-Cc: Mika =?iso-8859-1?Q?Penttil=E4?= <mpenttil@redhat.com>,
-	linux-kernel@vger.kernel.org,
-	Alexander Potapenko <glider@google.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Brendan Jackman <jackmanb@google.com>,
-	Christoph Lameter <cl@gentwo.org>, Dennis Zhou <dennis@kernel.org>,
-	Dmitry Vyukov <dvyukov@google.com>, dri-devel@lists.freedesktop.org,
-	intel-gfx@lists.freedesktop.org, iommu@lists.linux.dev,
-	io-uring@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>,
-	Jens Axboe <axboe@kernel.dk>, Johannes Weiner <hannes@cmpxchg.org>,
-	John Hubbard <jhubbard@nvidia.com>, kasan-dev@googlegroups.com,
-	kvm@vger.kernel.org, "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	linux-arm-kernel@axis.com, linux-arm-kernel@lists.infradead.org,
-	linux-crypto@vger.kernel.org, linux-ide@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, linux-mips@vger.kernel.org,
-	linux-mmc@vger.kernel.org, linux-mm@kvack.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-scsi@vger.kernel.org,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	Marco Elver <elver@google.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Michal Hocko <mhocko@suse.com>, Muchun Song <muchun.song@linux.dev>,
-	netdev@vger.kernel.org, Oscar Salvador <osalvador@suse.de>,
-	Peter Xu <peterx@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
-	Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
-	virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
-	wireguard@lists.zx2c4.com, x86@kernel.org, Zi Yan <ziy@nvidia.com>
-Subject: update kernel-doc for MEMBLOCK_RSRV_NOINIT (was: Re: [PATCH RFC
- 10/35] mm/hugetlb: cleanup hugetlb_folio_init_tail_vmemmap())
-Message-ID: <aKyWIriZ1bmnIrBW@kernel.org>
-References: <9156d191-9ec4-4422-bae9-2e8ce66f9d5e@redhat.com>
- <7077e09f-6ce9-43ba-8f87-47a290680141@redhat.com>
- <aKmDBobyvEX7ZUWL@kernel.org>
- <a90cf9a3-d662-4239-ad54-7ea917c802a5@redhat.com>
- <aKxz9HLQTflFNYEu@kernel.org>
- <a72080b4-5156-4add-ac7c-1160b44e0dfe@redhat.com>
- <aKx6SlYrj_hiPXBB@kernel.org>
- <f8140a17-c4ec-489b-b314-d45abe48bf36@redhat.com>
- <aKyMfvWe8JetkbRL@kernel.org>
- <dbd2ec55-0e7f-407a-a8bd-e1ac83ac2a0a@redhat.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dm30GrQq"
+Received: by mail-qv1-f42.google.com with SMTP id 6a1803df08f44-70d9a65c353so41899736d6.2
+        for <iommu@lists.linux.dev>; Mon, 25 Aug 2025 10:05:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1756141534; x=1756746334; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=z6KxvMDzVSOwTyVOOifum1zHj+Q1NMnnZSanrfOQhBQ=;
+        b=dm30GrQqgrbU1Me6dQ32xwfbSggKsczOX0Jubuy7VnJcyNy0Yc2mBa4TWA3VeBCrB7
+         deFudgX8Qdz4XbCUD9mxniTFYWaXWVcCmtxGEgfaJhcmecmhfksnnMp1lY2IvH/E46cW
+         Y2tWinv75MbZ7iBFdxkX7dcsndTS/dCmxxV4EGn+K0sj8G/pKrNTY4WdeprFTPnLxtxI
+         fnqyLIS6If9x/po3JLycfrelPx/xA7TeqDj1t29wpq5we2BEkl+5ZwkRTh5D3IDuZ4jC
+         m+aDbiZOO0rBXZhLcdnks1HFf25dAI9XwjZfZ4YBJqCfpOjxhOKERMw3A7F1IqbOR3Hb
+         RuzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1756141534; x=1756746334;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=z6KxvMDzVSOwTyVOOifum1zHj+Q1NMnnZSanrfOQhBQ=;
+        b=i3RePdnJAub3w5+hjl4w+2fPtAAD4PUIMmaufVrVi7hpuvD9XQHMfM6jDHmmpVTq6v
+         JpQl2LxICy1qadZ1J7s5uQsmP+4e3T3WzZ/S+8XITAaNc2oBVQTnrmDCkuQ9T+aaF1D9
+         WArDImxcHTFG+Kr/FRyAKajzOIas9Pt5fb7FAGNZfS+9960Vs5Z0nPbfeOUQ2hMw3NmT
+         bu/K9slGqXyf1iYxn+zp3GEAqmhEGOh1mw6Qc7uRAByTHIXFTKVuJzTOrD9b/SSQyA0K
+         x8LPv63+2NU8ZqPNol3owyE/cNKL6/drU7YrvYE2ox75afAizCi2ALcj67Occ6020ybb
+         pbMw==
+X-Forwarded-Encrypted: i=1; AJvYcCVeJG7J8WHhv60+/lkzs4b17T4a08fY+d+QsPJ7W7j1xCCLdIzL4Y3tasUJo1ew1EEsJkshmw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yw95moLWsj4VmYlozDG0/Xv/mDZudBEbaEfV5EG+d278v+zZygS
+	oDVpbPeG1uR0Mq40JptjNCcj2TYTtnr3VD7VFtpG9tOJTuSTaAd6OfrCFn4DMDZCsA0=
+X-Gm-Gg: ASbGncufRXB1ypeZo/QMOAm63mLFxr/TxKADBylWFcW1OD0FCplRxhzALSZ0KIyF/kc
+	WLUbiz//OBxRC4O7OT7TA1Uk8es64T0kWCAYpzY2kMYmhKL4Lp98gUimCVQy17AcI71e+NOkYQI
+	Jbxr9liQzKKgZete8l2AOC1JN6cXMQFV2BqKbNvu25CSvEUijeOj04ihjSnIOuKNZSVx9aInyII
+	FMbHR+xmo+m6n/lhkcTgo8wmW7yTgl+OghJOIjpQa1aBGIxaIfPElwQRVEeEe4q+9QShiFkbm/y
+	zwIwmgt2shEeYJ7uoyORZc43K6nEPur0VEyy2KySCrHQE6Rd8tKC5glC8O6dmqrZeQ3HgxosB8T
+	u6z9QqbsY1ZjrVfWUWaBivLA1Frh+cFjCOHtcHvKFl0qXUB/qEhxTGxv4ASPUpCXJOih1
+X-Google-Smtp-Source: AGHT+IH8RaHjAylVQJBbbz2fVViy55MQyOlXslCXu2TNEUhwTy4uudrftYMxMziT/A2NjRI6tuUcow==
+X-Received: by 2002:a05:6214:2a83:b0:70d:be38:8ee8 with SMTP id 6a1803df08f44-70dbe3890e3mr56021826d6.63.1756141533729;
+        Mon, 25 Aug 2025 10:05:33 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-70da714727csm48193006d6.13.2025.08.25.10.05.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Aug 2025 10:05:32 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1uqadP-00000008iJN-3bFh;
+	Mon, 25 Aug 2025 14:05:31 -0300
+Date: Mon, 25 Aug 2025 14:05:31 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+	nicolas.dufresne@collabora.com, p.zabel@pengutronix.de,
+	mchehab@kernel.org, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, kernel@collabora.com,
+	linux-media@vger.kernel.org
+Subject: Re: [PATCH v7 4/6] media: verisilicon: AV1: Restore IOMMU context
+ before decoding a frame
+Message-ID: <20250825170531.GA1899851@ziepe.ca>
+References: <20250825153450.150071-1-benjamin.gaignard@collabora.com>
+ <20250825153450.150071-5-benjamin.gaignard@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -78,71 +85,42 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <dbd2ec55-0e7f-407a-a8bd-e1ac83ac2a0a@redhat.com>
+In-Reply-To: <20250825153450.150071-5-benjamin.gaignard@collabora.com>
 
-On Mon, Aug 25, 2025 at 06:23:48PM +0200, David Hildenbrand wrote:
-> 
-> I don't quite understand the interaction with PG_Reserved and why anybody
-> using this function should care.
-> 
-> So maybe you can rephrase in a way that is easier to digest, and rather
-> focuses on what callers of this function are supposed to do vs. have the
-> liberty of not doing?
+On Mon, Aug 25, 2025 at 05:34:43PM +0200, Benjamin Gaignard wrote:
+> diff --git a/drivers/media/platform/verisilicon/hantro.h b/drivers/media/platform/verisilicon/hantro.h
+> index 81328c63b796..a28a181013b9 100644
+> --- a/drivers/media/platform/verisilicon/hantro.h
+> +++ b/drivers/media/platform/verisilicon/hantro.h
+> @@ -12,6 +12,9 @@
+>  #ifndef HANTRO_H_
+>  #define HANTRO_H_
+>  
+> +#include <linux/dma-map-ops.h>
+> +#include <linux/iommu.h>
+> +#include <linux/iommu-dma.h>
 
-How about
- 
-diff --git a/include/linux/memblock.h b/include/linux/memblock.h
-index b96746376e17..fcda8481de9a 100644
---- a/include/linux/memblock.h
-+++ b/include/linux/memblock.h
-@@ -40,8 +40,9 @@ extern unsigned long long max_possible_pfn;
-  * via a driver, and never indicated in the firmware-provided memory map as
-  * system RAM. This corresponds to IORESOURCE_SYSRAM_DRIVER_MANAGED in the
-  * kernel resource tree.
-- * @MEMBLOCK_RSRV_NOINIT: memory region for which struct pages are
-- * not initialized (only for reserved regions).
-+ * @MEMBLOCK_RSRV_NOINIT: reserved memory region for which struct pages are not
-+ * fully initialized. Users of this flag are responsible to properly initialize
-+ * struct pages of this region
-  * @MEMBLOCK_RSRV_KERN: memory region that is reserved for kernel use,
-  * either explictitly with memblock_reserve_kern() or via memblock
-  * allocation APIs. All memblock allocations set this flag.
-diff --git a/mm/memblock.c b/mm/memblock.c
-index 154f1d73b61f..46b411fb3630 100644
---- a/mm/memblock.c
-+++ b/mm/memblock.c
-@@ -1091,13 +1091,20 @@ int __init_memblock memblock_clear_nomap(phys_addr_t base, phys_addr_t size)
- 
- /**
-  * memblock_reserved_mark_noinit - Mark a reserved memory region with flag
-- * MEMBLOCK_RSRV_NOINIT which results in the struct pages not being initialized
-- * for this region.
-+ * MEMBLOCK_RSRV_NOINIT
-+ *
-  * @base: the base phys addr of the region
-  * @size: the size of the region
-  *
-- * struct pages will not be initialized for reserved memory regions marked with
-- * %MEMBLOCK_RSRV_NOINIT.
-+ * The struct pages for the reserved regions marked %MEMBLOCK_RSRV_NOINIT will
-+ * not be fully initialized to allow the caller optimize their initialization.
-+ *
-+ * When %CONFIG_DEFERRED_STRUCT_PAGE_INIT is enabled, setting this flag
-+ * completely bypasses the initialization of struct pages for such region.
-+ *
-+ * When %CONFIG_DEFERRED_STRUCT_PAGE_INIT is disabled, struct pages in this
-+ * region will be initialized with default values but won't be marked as
-+ * reserved.
-  *
-  * Return: 0 on success, -errno on failure.
-  */
+This is an internal header it should not be included in drivers.
 
-> -- 
-> Cheers
-> 
-> David / dhildenb
-> 
+> +static void rockchip_vpu981_av1_restore_iommu(struct hantro_ctx *ctx)
+> +{
+> +	if (ctx->iommu_domain) {
+> +		iommu_attach_device(ctx->iommu_domain, ctx->dev->v4l2_dev.dev);
+> +		iommu_detach_device(ctx->iommu_domain, ctx->dev->v4l2_dev.dev);
+> +	}
+> +}
 
--- 
-Sincerely yours,
-Mike.
+What is this supposed to do? Put it back to the default domain? Who
+changed it away from the default domain?
+
+Did some other driver change the attached domain (if so that's wild
+and wrong)? The commit message hints at that but it should be
+explained alot more.
+
+This just seems wrong and goofy. Driver shouldn't be changing their
+iommu domains if they are using the default domain at all. We now have
+APIs to allow you to allocate wide chunks of IOVA space and manage
+them directly. Maybe these 'multiple stream's should be doing that
+instead of mucking with iommu domains?
+
+Jason
