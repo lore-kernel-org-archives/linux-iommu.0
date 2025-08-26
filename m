@@ -1,128 +1,113 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18DAF3376AC
-	for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 13:14:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756214093; cv=pass; b=tosEY/pQduwrGpaRC6fC7Pox00v/Lx1QbA0V+ky5VgW/Ke0tfRSHJtDxX6ubL/5/RBKXHV90x3MX5eo5TOVSkfbqxcdvAhATjG+JF11xY8Yw1jOSO+ff7C5WyxIGHnjaERTP2dBc4sWsXzvS6UG5BY/S5oIr97/EMHJMZugOoxA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756214093; c=relaxed/simple;
-	bh=4L/5/IzzgVuHCII7Kzbc+julZ9J9jxBCB23SMl/aB8k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lhA6AKUL1RKVvinpV+9Mx22HMZGEeCG+aYFTHNf3kvw8oGa7lMKnmzysJ4uKZulfecSPY4zZiuB27YSwNuJddxIO7W8I9ROkgV+ZAjteuXP8G1trWJW1oygV0CdfkRsxd56qaUWtTyLsL3hEimx1FB7fD/RQDksULBeVXW6YJjY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=Vn5AcRhu; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="Vn5AcRhu"
-ARC-Seal: i=1; a=rsa-sha256; t=1756214076; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=SzFR1y2hQifrr1QcPR5WzrWPvb1o9u/qCP/XFXoSQ0eixqkF4WfPknRj4noSB+VIYxrwBu/+gAQLGHH3d5enRKgIEcYRWmoDBQtMkzwLYsSACjPRzAc3nwvfPio7lXuCRjDefXNdwAxE6lp1oE7yVo0iI7lQx/lnsYIdCgLabPw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1756214076; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=WNuw2smkSUbseMqhQYhMnAKOM3W6MRvMOpj1QgvkS8w=; 
-	b=JnPShJ/oLY3hwO01CreDYBXMbChk11ZYRhdeoShjQAd+WV2IRdfwZsiwVJphqMa068f5Np9AkgkAiE3sfs60mSLNHkG8PXLSJc9JA9ADF48ohhiRciWn2WnALv4x7s1bJmrLEdAc0k/CbDIXOJoqpUlLbTulWz1CLagQAYRtlk0=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
-	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1756214076;
-	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=WNuw2smkSUbseMqhQYhMnAKOM3W6MRvMOpj1QgvkS8w=;
-	b=Vn5AcRhuGSt2DFamCzGpSUHNC/sEkT8T+X90OV2ajvTRiXEQZlJ2uBTzMl1cZLkY
-	8REbeo8r1FHpwGjvvKUw7Ibd/uoePOjBTwfTSB6YfpMVT2m8VKXcETlUALaUlHcuRRD
-	NDdFupVdVqUxPssNPoMBayroq0UMTgLmtRVwFX2o=
-Received: by mx.zohomail.com with SMTPS id 1756214074471159.25951317157126;
-	Tue, 26 Aug 2025 06:14:34 -0700 (PDT)
-Message-ID: <f2f09c95-1d08-43db-aee0-25cdaaf8dbca@collabora.com>
-Date: Tue, 26 Aug 2025 15:14:30 +0200
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A37C7242D7B;
+	Tue, 26 Aug 2025 13:18:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756214311; cv=none; b=f40S7/PlAXseEhVZ+fnvjqINMehJxZkZo6PdT4evswX/q8s9wvK3B7/nyOORNr+B/m1f9z7ssksar0K/YFrzu/15UmK7LOyCtREjS+cAxjdoy+Ycy87UJ2ElgI+8JEpPlcAnVpTgpYQ2er2iTFVlgvk2Mvmky0RerQv+/klFAv8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756214311; c=relaxed/simple;
+	bh=BhQw8k5n2wkINEBiBgIRgXJovOh1V3NCnPs6OwLcw6o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TWcH4ucQRlZwOeBOH+JYpfiIClyf+gbmJDsrBBaiHuhZU51CK4P/aqTlopCXCiGRQysM/RSIRJiGuBfW8p8gSxTZYeedTApNGcM5h4siNxXk5Lf3DHrKy3WJ/cSVAeB30QkfBWNTsq6GGc9rjI61iIq3Q2yurE9H4SK2eDgCTUw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B0DEB1A25;
+	Tue, 26 Aug 2025 06:18:20 -0700 (PDT)
+Received: from J2N7QTR9R3 (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E10B23F63F;
+	Tue, 26 Aug 2025 06:18:22 -0700 (PDT)
+Date: Tue, 26 Aug 2025 14:18:16 +0100
+From: Mark Rutland <mark.rutland@arm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: peterz@infradead.org, mingo@redhat.com, will@kernel.org,
+	acme@kernel.org, namhyung@kernel.org,
+	alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+	irogers@google.com, adrian.hunter@intel.com,
+	kan.liang@linux.intel.com, linux-perf-users@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
+	linux-snps-arc@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev,
+	linux-csky@vger.kernel.org, loongarch@lists.linux.dev,
+	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+	linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+	sparclinux@vger.kernel.org, linux-pm@vger.kernel.org,
+	linux-rockchip@lists.infradead.org, dmaengine@vger.kernel.org,
+	linux-fpga@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+	dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org, coresight@lists.linaro.org,
+	iommu@lists.linux.dev, linux-amlogic@lists.infradead.org,
+	linux-cxl@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	linux-riscv@lists.infradead.org
+Subject: Re: [PATCH 02/19] perf/hisilicon: Fix group validation
+Message-ID: <aK20GP5g1iu9DGrQ@J2N7QTR9R3>
+References: <cover.1755096883.git.robin.murphy@arm.com>
+ <c7b877e66ba0d34d8558c5af8bbb620e8c0e47d9.1755096883.git.robin.murphy@arm.com>
+ <aK2XS_GhLw1EQ2ml@J2N7QTR9R3>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 4/6] media: verisilicon: AV1: Restore IOMMU context
- before decoding a frame
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Nicolas Dufresne <nicolas.dufresne@collabora.com>, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, heiko@sntech.de, p.zabel@pengutronix.de,
- mchehab@kernel.org, iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, kernel@collabora.com,
- linux-media@vger.kernel.org
-References: <20250825153450.150071-1-benjamin.gaignard@collabora.com>
- <20250825153450.150071-5-benjamin.gaignard@collabora.com>
- <20250825170531.GA1899851@ziepe.ca>
- <01c327e8353bb5b986ef6fb1e7311437659aea4a.camel@collabora.com>
- <20250825183122.GB1899851@ziepe.ca>
- <441df5ff-8ed4-45ed-8a52-b542c6e7d38c@collabora.com>
- <20250826124155.GD1899851@ziepe.ca>
-Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <20250826124155.GD1899851@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aK2XS_GhLw1EQ2ml@J2N7QTR9R3>
 
+On Tue, Aug 26, 2025 at 12:15:23PM +0100, Mark Rutland wrote:
+> On Wed, Aug 13, 2025 at 06:00:54PM +0100, Robin Murphy wrote:
+> > The group validation logic shared by the HiSilicon HNS3/PCIe drivers is
+> > a bit off, in that given a software group leader, it will consider that
+> > event *in place of* the actual new event being opened. At worst this
+> > could theoretically allow an unschedulable group if the software event
+> > config happens to look like one of the hardware siblings.
+> > 
+> > The uncore framework avoids that particular issue,
+> 
+> What is "the uncore framework"? I'm not sure exactly what you're
+> referring to, nor how that composes with the problem described above.
+> 
+> > but all 3 also share the common issue of not preventing racy access to
+> > the sibling list,
+> 
+> Can you please elaborate on this racy access to the silbing list? I'm
+> not sure exactly what you're referring to.
 
-Le 26/08/2025 à 14:41, Jason Gunthorpe a écrit :
-> On Tue, Aug 26, 2025 at 11:52:37AM +0200, Benjamin Gaignard wrote:
->> Le 25/08/2025 à 20:31, Jason Gunthorpe a écrit :
->>> On Mon, Aug 25, 2025 at 01:50:16PM -0400, Nicolas Dufresne wrote:
->>>
->>>> Jason, the point is that the iommu and the VPU are not separate devices, which
->>>> comes with side effects. On RKVDec side, the iommu configuration get resets
->>>> whenever a decoding error leads to a VPU "self reset". I can't remember who from
->>>> the iommu subsystem suggested that, but the empty domain method was agreed to be
->>> IDK, that seems really goofy too me an defiantly needs to be
->>> extensively documented this is restoring the default with some lore
->>> link of the original suggestion.
->>>
->>>> the least invasive way to workaround that issue. I believe Detlev tried multiple
->>>> time to add APIs for that before the discussion lead to this path.
->>> You mean this:
->>>
->>> https://lore.kernel.org/linux-iommu/20250318152049.14781-1-detlev.casanova@collabora.com/
->>>
->>> Which came back with the same remark I would give:
->>>
->>>    Please have some kind of proper reset notifier mechanism - in fact
->>>    with runtime PM could you not already invoke a suspend/resume cycle
->>>    via the device links?
->> when doing parallel decode suspend/resume are not invoked.
-> It was a proposal for an error recovery path.
->
->>> Or another reasonable option:
->>>
->>>     Or at worst just export a public interface for the other driver to
->>>     invoke rk_iommu_resume() directly.
->>>
->>> Sigh.
->> An other solution which is working is to call iommu_flush_iotlb_all()
->> before decoding each frame.
-> That was already proposed and shot down, it makes no sense at all use
-> to use flushing to reset the registers because the HW weirdly lost
-> them, and flushing should never happen outside mapping contexts.
->
-> If the HW is really resetting the iommu registers after every frame
-> that is really just painfully broken, and makes me wonder if it really
-> should be an iommu subsystem driver at all if it is so tightly coupled
-> to the computing HW. :\
->
-> Like we wouldn't try to put a GPU MMU into the iommu subsystem though
-> they do fairly similar things.
+Ah, I think you're referring to the issue in:
 
-I will add vsi_iommu_restore_ctx() function where all locks will be
-managed and call vsi_iommu_enable(). Decoder driver will call this function
-before each frame.
-I think it similar to some omap iommu code I have found.
+  https://lore.kernel.org/linux-arm-kernel/Zg0l642PgQ7T3a8Z@FVFF77S0Q05N/
 
-Regards,
-Benjamin
+... where when creatign a new event which is its own group leader,
+lockdep_assert_event_ctx(event) fires in for_each_sibling_event(),
+because the new event's context isn't locked...
 
-> Jason
->
+> > diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+> > index a449651f79c9..3c531b36cf25 100644
+> > --- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
+> > +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+> > @@ -101,26 +101,17 @@ static bool hisi_validate_event_group(struct perf_event *event)
+> >  	/* Include count for the event */
+> >  	int counters = 1;
+> >  
+> > -	if (!is_software_event(leader)) {
+> > -		/*
+> > -		 * We must NOT create groups containing mixed PMUs, although
+> > -		 * software events are acceptable
+> > -		 */
+> > -		if (leader->pmu != event->pmu)
+> > -			return false;
+> > +	if (leader == event)
+> > +		return true;
+
+... and hence bailing out here avoids that?
+
+It's not strictly "racy access to the sibling list", becuase there's
+nothing else accessing the list; it's just that this is the simplest way
+to appease lockdep while avoiding false negatives.
+
+It'd probably be better to say something like "the common issue of
+calling for_each_sibling_event() when initialising a new group leader",
+and maybe to spell that out a bit.
+
+Mark.
