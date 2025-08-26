@@ -1,108 +1,86 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8661C35FC1C;
-	Tue, 26 Aug 2025 16:35:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B9062C2343
+	for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 16:39:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756226126; cv=none; b=WzpnlZGTV8MbtXNa1m3NS8QdCm/56MDcgWoMYggcCn3KExtxnEgZlrfI7C/hKw/GJkCI62Kfmmaz+3969AMx6CAStR10r5Ang1YXoYg5CzbnClXA26HyHkSDg2WxxQFjXE4dSpV5QxYBH/m+MkAFecXlBAsULiwB3Ym7TUHscns=
+	t=1756226380; cv=none; b=Ovvd19ZJsevVdtjzzXk9NayXKg17XT7Jy9MRi1y9/Hj1gYW+Mg6+yJNHbVszARjvBdcwrTECHDfRHES66ephZK58pbMrr+BIZcq+F+006u3Zwu2LvMWSwTVNuyGlzFClk6h49rPxTvomlUWPnKq86nhJPxwqEbr5E+8F7bW9AJ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756226126; c=relaxed/simple;
-	bh=Qr2qTi+512p+e4SYLAIsyC00OV8S61hM2BP79hz1vL4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=RTnm4y7h5ZZ/UTvzOdkB5oxEB9mFnSoMaZOUaAC+YHOneg6tbAG/4vKqRoYuNWYP1XBSdhL98+tRjMJ62MELogaQz2m9KkQzdPQfi3hfj3UovIXRRcdnzzAtUayna3VLzimij34HlQwmgWMT6WH3FxGh5D/QevhHJho1AQiMA2E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8E4571A25;
-	Tue, 26 Aug 2025 09:35:15 -0700 (PDT)
-Received: from [10.57.4.86] (unknown [10.57.4.86])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A5A1B3F694;
-	Tue, 26 Aug 2025 09:35:17 -0700 (PDT)
-Message-ID: <8d6ac059-fc8f-4a5d-b49e-d02777c01cfb@arm.com>
-Date: Tue, 26 Aug 2025 17:35:15 +0100
+	s=arc-20240116; t=1756226380; c=relaxed/simple;
+	bh=n6+7p1fdJVuXTAshZJvAA2wH82a0EPrQuroIWx1J500=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=DEoETzIQeop0PlI8oJAWAbGw1ML6pQByips8Xpvbi8FFXmnpiB/nzeLySvXLyLEfOBdnwXN0FZagDN2ml7MvgW+Is/I7PjaYhWogFpNiVm9davWrvt7VJj1gcvTpi5GJrfuJFGX5uNH3jdi+374W0yU4YQMxAksNTv80y5Fa6hI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=EK76NGvW; arc=none smtp.client-ip=209.85.160.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="EK76NGvW"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-4b29b714f8cso461571cf.1
+        for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 09:39:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1756226378; x=1756831178; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=n6+7p1fdJVuXTAshZJvAA2wH82a0EPrQuroIWx1J500=;
+        b=EK76NGvWB6O7VauWQC9Ids34Q9GHJA7/RXZRHpPNdzFCVqe37yT8UVJu0ArYf9oqz4
+         GxihOYlDAFXvELm1EpvpocE7LgXhCiCd/5mm0YocwzZhSvR+wQllEFW+wr4bz0z497sQ
+         PeCDMdjm+EjpGLwU8yz/y7ICe/ylkDT4ZYwEeSGZFhrI+erf6T+0K1VaVlwoHA6JmkCo
+         ShwQbLG2QR1rJGCIb86nCiXjR+B4FHojPxr2vcbGrdN7uFz5ooyGrnfoGqgh8iWC+HAW
+         bM9TAK9lfjBsNtECZlf9w4mTqNuSSb0OpR6wbTk1jM+b+kJcee3ATDVNN0AVmXPEkjbk
+         OD+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1756226378; x=1756831178;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=n6+7p1fdJVuXTAshZJvAA2wH82a0EPrQuroIWx1J500=;
+        b=ap+AnKHCDsHBsJxkDggKH0RQqjSS49C4sestyLgrXQRgGt2vwGLfI5Yo8z9HuiGdMw
+         vfYgSMuUK0UlU+TK+p5/KMWV/y8XzzFdlt6/BbITedG5HLJ3Io3bxlsa5Wiu9LqeRc16
+         NZYcB04xkTMQHoo+wx5CowkO3cP0E9g9+v0F811HGR/TIxepp9wCMvkQFpATjk4uNrkn
+         JGB6sgA3o07bA1StgpOZ8P6qll1Y/xDoeJ7rH7RgrgJxA81aV7Cvwq3zl4V7/HNaRjYF
+         mJzv/W4Awebhe9KlFdgBpgWBPX5Yekrh5eMhhqHnUM5ilXxKtskkSnUWWik8xuh9Ej3i
+         Rtmw==
+X-Forwarded-Encrypted: i=1; AJvYcCULDPbVYBiCeIHcEkO/GoKXQy5vbKU0qU+vTgIj9OCQtUZIzu2lKs+9ydNVs05jYAjzq9sX3Q==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yx5vmhbHQ9fCQjT/40z4uzWZNsUHZx2FPzQsLKm3qkg+swELUj3
+	KiBZNlQVifGOFcV6kkswXynjEKu8gAnPhzpMsxsJs6+fTPZFdOgGGDaxJ8WKgxlZqTvLHB5nDlq
+	BZwma/da+nPJp+SigHa79EUa7E0E7ioGqqQXXfoHE
+X-Gm-Gg: ASbGncvWi1W1UgE1eXzw6KS1Oqhm843wowFifdzCW0LuKc4nnyRIN+9jpfLRVVzheLv
+	LB6JZ4rFtHNayHXAJ6NrogBskASxNo47thVyqMJ2a3gyFMGG6Wdfl/sxllsCPO9qXSBSqd+qUhr
+	NI0okFWtOgNN0+Ys6fdhp+UwsBcQSYP7k82Zbbtz52ii0ucxHCKoosv5wUbg5mCaNyW27KaFfQV
+	ke54gyZ4ZE=
+X-Google-Smtp-Source: AGHT+IF9sFSkQJt4rZArtsNZy1iqLIVeCHcZ45BnpLXmrF76YrOG7Z45Enc/2KRYnJiWYQPQ41/HruRPhQB+b8/iQLc=
+X-Received: by 2002:ac8:5a49:0:b0:4ae:d2cc:ad51 with SMTP id
+ d75a77b69052e-4b2e2b6d63dmr6262141cf.1.1756226377856; Tue, 26 Aug 2025
+ 09:39:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 16/19] perf: Introduce positive capability for sampling
-To: Mark Rutland <mark.rutland@arm.com>, Peter Zijlstra <peterz@infradead.org>
-Cc: mingo@redhat.com, will@kernel.org, acme@kernel.org, namhyung@kernel.org,
- alexander.shishkin@linux.intel.com, jolsa@kernel.org, irogers@google.com,
- adrian.hunter@intel.com, kan.liang@linux.intel.com,
- linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev,
- linux-csky@vger.kernel.org, loongarch@lists.linux.dev,
- linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
- sparclinux@vger.kernel.org, linux-pm@vger.kernel.org,
- linux-rockchip@lists.infradead.org, dmaengine@vger.kernel.org,
- linux-fpga@vger.kernel.org, amd-gfx@lists.freedesktop.org,
- dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, coresight@lists.linaro.org,
- iommu@lists.linux.dev, linux-amlogic@lists.infradead.org,
- linux-cxl@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-riscv@lists.infradead.org
-References: <cover.1755096883.git.robin.murphy@arm.com>
- <ae81cb65b38555c628e395cce67ac6c7eaafdd23.1755096883.git.robin.murphy@arm.com>
- <20250826130806.GY4067720@noisy.programming.kicks-ass.net>
- <aK22izKE4r6wI_D9@J2N7QTR9R3>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <aK22izKE4r6wI_D9@J2N7QTR9R3>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20250821094717.573232-1-zhao.xichao@vivo.com>
+In-Reply-To: <20250821094717.573232-1-zhao.xichao@vivo.com>
+From: Daniel Mentz <danielmentz@google.com>
+Date: Tue, 26 Aug 2025 09:39:26 -0700
+X-Gm-Features: Ac12FXwtorRfZ_FzjnLB-SquF7kNHgSDOAoCJgOtfd17FUtw_9L-I2qwTVXlIms
+Message-ID: <CAE2F3rBg+m_iVpJN+raoto2YV-0g1WFC-JNtuZV=OjarHgL3RQ@mail.gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Remove dev_err_probe() if error is -ENOMEM
+To: Xichao Zhao <zhao.xichao@vivo.com>
+Cc: will@kernel.org, joro@8bytes.org, robin.murphy@arm.com, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2025-08-26 2:28 pm, Mark Rutland wrote:
-> On Tue, Aug 26, 2025 at 03:08:06PM +0200, Peter Zijlstra wrote:
->> On Wed, Aug 13, 2025 at 06:01:08PM +0100, Robin Murphy wrote:
->>> Sampling is inherently a feature for CPU PMUs, given that the thing
->>> to be sampled is a CPU context. These days, we have many more
->>> uncore/system PMUs than CPU PMUs, so it no longer makes much sense to
->>> assume sampling support by default and force the ever-growing majority
->>> of drivers to opt out of it (or erroneously fail to). Instead, let's
->>> introduce a positive opt-in capability that's more obvious and easier to
->>> maintain.
->>
->>> diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
->>> index 4d439c24c901..bf2cfbeabba2 100644
->>> --- a/include/linux/perf_event.h
->>> +++ b/include/linux/perf_event.h
->>> @@ -294,7 +294,7 @@ struct perf_event_pmu_context;
->>>   /**
->>>    * pmu::capabilities flags
->>>    */
->>> -#define PERF_PMU_CAP_NO_INTERRUPT	0x0001
->>> +#define PERF_PMU_CAP_SAMPLING		0x0001
->>>   #define PERF_PMU_CAP_NO_NMI		0x0002
->>>   #define PERF_PMU_CAP_AUX_NO_SG		0x0004
->>>   #define PERF_PMU_CAP_EXTENDED_REGS	0x0008
->>> @@ -305,6 +305,7 @@ struct perf_event_pmu_context;
->>>   #define PERF_PMU_CAP_EXTENDED_HW_TYPE	0x0100
->>>   #define PERF_PMU_CAP_AUX_PAUSE		0x0200
->>>   #define PERF_PMU_CAP_AUX_PREFER_LARGE	0x0400
->>> +#define PERF_PMU_CAP_NO_INTERRUPT	0x0800
->>
->> So NO_INTERRUPT was supposed to be the negative of your new SAMPLING
->> (and I agree with your reasoning).
->>
->> What I'm confused/curious about is why we retain NO_INTERRUPT?
-> 
-> I see from your other reply that you spotted the next patch does that.
-> 
-> For the sake of other reviewers or anyone digging through the git
-> history it's probably worth adding a line to this commit message to say:
-> 
-> | A subsequent patch will remove PERF_PMU_CAP_NO_INTERRUPT as this
-> | requires some additional cleanup.
+On Thu, Aug 21, 2025 at 2:48=E2=80=AFAM Xichao Zhao <zhao.xichao@vivo.com> =
+wrote:
+>
+> The dev_err_probe() doesn't do anything when error is '-ENOMEM'.
+> Therefore, remove the useless call to dev_err_probe(), and just
+> return the value instead.
 
-Yup, the main reason is the set of drivers getting the new cap is 
-smaller than the set of drivers currently not rejecting sampling events, 
-so I wanted it to be clearly visible in the patch. Indeed I shall 
-clarify the relationship to NO_INTERRUPT in the commit message.
+You could mention the following commit which I believe changed the
+-ENOMEM behavior.
 
-Thanks,
-Robin.
+2f3cfd2f4b7c ("driver core: Make dev_err_probe() silent for -ENOMEM")
