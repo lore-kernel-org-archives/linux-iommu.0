@@ -1,97 +1,139 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3925E2AE8D;
-	Tue, 26 Aug 2025 20:47:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BCEC283FCB;
+	Tue, 26 Aug 2025 21:46:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756241230; cv=none; b=e17Q+lMnQ9KYC8nhkb2C1skSLqDDYvlu2RJ7J61Jfl7WITH4hUuLhppwk3Y4HqLelkPDGXaZCJul4ku011wuRAKeLSMljdntVGIm0uns+h+DrSRhwjgozDz+unMSJmmhrjnXJ+j8uMdA+QavWbWf8n80G8IiyIcCv5dVCOWneKs=
+	t=1756244791; cv=none; b=TJIvkzd9l49SnUvjda73s7uSUWbFGI198hHhrcnPTfxRQ9jOIBlXHzh5LpDkuLZQXD7ztVbpL7L711mrmeVZJy5AfkDlPps4UJddrqK8jUEldhvxDWTwjLiLnDABNhN6INfCqApWNpiTaFWIFxkeRLa35pOCjYhSxyzfkPyNfqo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756241230; c=relaxed/simple;
-	bh=i5YhQfiG/kxVzXvIr3BfqNM1nS7xEEp8AvpkqFuX6sE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=llQKM5H2bxn3n4CWMeAVoBOkybp/jAiRH+dnUfImH3I0t+65IOZOGRxveRcL4MCI+mXx+B5eovkPFuNkH2BrCqFRrjEdMc+xvm7Tmo9JA2HTWf2soExNvW1SsX75Q1PI5CP5iValZVDP0bD+WEFTHv1rVuyjcqgnzMJpX0PtjDs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=drIAP/GK; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="drIAP/GK"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=sT4ev/FdTzZETUvUN8PEvig3jztSVIJQJ9RfnYabzfY=; b=drIAP/GKbJZ0YgUU7Obiak6QbN
-	wTob9zUqx/u0rk/OFNruOWUAXyC75cS9mVAyX5UTAz30Za16gI2OETdtppSmS5Musm1WmxtZ5rG+G
-	GWwLGcePfk27Z668rSh2xON4afqpi1JLndDCx5Ij17X1XbjjiDvJCgri9M1VHyFJgBhc0BDwK5Qet
-	fJrC67Jx75NACE++OCX/FPrNuG5IJR/QO3p/hrBRE63UhngsUrGwPnawNmhwntA9aHR/1faJW16V3
-	OhbW0TuLSy7VavxdJUHAsUmnt1MjzJ+ap1F7ydzYyeYuuvkR+Uf36z57hc2B77ge5Bul4j5r437wp
-	kcslENlw==;
-Received: from [50.53.25.54] (helo=[192.168.254.17])
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1ur0ZQ-0000000D8Jw-1Drk;
-	Tue, 26 Aug 2025 20:47:08 +0000
-Message-ID: <5ffaaba9-9890-4198-9ea8-03edba6e0725@infradead.org>
-Date: Tue, 26 Aug 2025 13:47:07 -0700
+	s=arc-20240116; t=1756244791; c=relaxed/simple;
+	bh=wxjUVhxbok5IPGUPMxHmf/MxyRnEbApTzZPax+WoJ1s=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=CSoZ7TRhxA+fDRYPYUaxJ6dRYU1qXdqd9UTDlQJGO8kNVi+d8r0aBU0CIEhXRc2gVbMz8PXOrRIGoamAoptEqvpG+2URLt5etAj3wtrz1rr1DCmj8gH8jHOiCjciObCC5Mrjz3Tv/Owcjjph0mJN/NaGr55qNjuywuhrndqrDeo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gompa.dev; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gompa.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-afcb78ead12so853908666b.1;
+        Tue, 26 Aug 2025 14:46:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1756244787; x=1756849587;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=qlR2W8sGPsNFxVXAPLkKkhjl01WcoRvDHaUyBoigeGE=;
+        b=oMbdzMgDt11l+B3/OZHh+gD3iPzskyoaAnJG2uc8qT/ul27BNbADtixtPfv77M6OuY
+         nWBDYvVLtupkzJoS8QxVQqjFk2xsxzqkTBIu5VS9XiX8nNht0eyjXlYuQWeg1jtU+58l
+         f1Wqv6I3Bv4X0hzfiBeG1CFd5t6KxzmGSDlBVwHUTjYWi3Xqffnxj5bQsj9sWah3HRym
+         pHUo/b1XsWnGpYhYRIaEEUaPv3DjXal3xy+48WOdCWrHPP6qg+z0uveMLH9Rj0mZs2FW
+         66afoSRxdF9ldHAqyY+tgwIh5maBqLzRZHVpkhP8Tmrmz1dJONyeTGaJE+p4ecOFmUUn
+         +fKg==
+X-Forwarded-Encrypted: i=1; AJvYcCUOzD0R5QVdoBiXdeGtkijJRIvF/cOWVwZqtJ+HWTeN0VhgH4WiUXvAG6ORzBzjpBY6TUDJ82I=@lists.linux.dev, AJvYcCXX+nuw9iZV2o+qqgLqRUabs1aiIAaBkzjzSwrIMX+U4UI44dqEOuqPasKjzfnwvnGiNg0kdw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwoZTrhP+jrYZQtXDL4Yji63TkTBCMmyBOuoK8Qa2P2F8hyTpb6
+	mwqGOeWSoNtbVmCd3gJIsQqHHe1CqCTMCISAHta7uvBgbmfFXm+7t0rT1q5khrhs
+X-Gm-Gg: ASbGnctrYGs6Wq3kcA0E/McYcjSf3/km8FKuLHfkJpP5u7T5ZfE5htuI3zhtOEf8R0w
+	AMdKblPCFwibZG9lrhcDJHAIAdr4dcpbghWqiv3ZX9FbB47+TXxUV/XKujwzoumPsYmsrLX4wF2
+	m/+6vKVVs/2z1eDKrxk9w1Ug7q+2h2Y7Gs+MQxipP7OHOD9OVbpALUOYb46LNRLOvyRZPRfkLUO
+	PKafSvFzjYoJZ039YUolc49bheHCUIrkpFZhtv/Me7EiQbp9dyEp5OFeRdSwKKZo7FJ/RRIcCc/
+	qsLbvR2zV6abtH5jxfDB6HLleDdherExBDn+OmBlHVRBks92RkP5hIlfehpy/scqRT10xofZDwp
+	N3hUTy8P6VkaNJQtvxrGQ56rDgwZNb+fEaxcbvI36uq9Alx6o2CRB4URsYUEteBo6T3uhRb2GJ3
+	TbFApUKd24
+X-Google-Smtp-Source: AGHT+IEookd3THdKas8pVR5mT3NBNJLZRBzj+FUI1HrgrQo5sunDTA+McpMw2bKjYcfHrjkshTJ5eg==
+X-Received: by 2002:a17:906:f5a7:b0:afe:ad45:acf5 with SMTP id a640c23a62f3a-afead45ad78mr297050666b.34.1756244786745;
+        Tue, 26 Aug 2025 14:46:26 -0700 (PDT)
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com. [209.85.208.46])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-afe81890cd7sm497689766b.109.2025.08.26.14.46.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Aug 2025 14:46:26 -0700 (PDT)
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-61c4f73cfa0so5366857a12.0;
+        Tue, 26 Aug 2025 14:46:26 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUrFIZ3XmVUuBKS5Sb1VOY00oNRcjkv+2+1ruwlW/DEd5QLvRSvx60kDoO006GwQEV+5dazf94=@lists.linux.dev, AJvYcCXr8CKYW9H538aoY6ovhqrplEMrRVUh2ECrcCjPjWF4ZQxqgUB2jGVX3D/gBVjOnuidOMjf3A==@lists.linux.dev
+X-Received: by 2002:a05:6402:34d2:b0:61c:979a:e7a1 with SMTP id
+ 4fb4d7f45d1cf-61c979ae911mr2475028a12.16.1756244786336; Tue, 26 Aug 2025
+ 14:46:26 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 08/15] iommupt: Add read_and_clear_dirty op
-To: Jason Gunthorpe <jgg@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Justin Stitt <justinstitt@google.com>, Kevin Tian <kevin.tian@intel.com>,
- linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
- llvm@lists.linux.dev, Bill Wendling <morbo@google.com>,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
- Miguel Ojeda <ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Shuah Khan <shuah@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>
-Cc: Alexey Kardashevskiy <aik@amd.com>,
- Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
- James Gowans <jgowans@amazon.com>, Michael Roth <michael.roth@amd.com>,
- Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev
-References: <8-v4-0d6a6726a372+18959-iommu_pt_jgg@nvidia.com>
-Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <8-v4-0d6a6726a372+18959-iommu_pt_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20250826-dart-t8110-stream-error-v1-1-e33395112014@jannau.net>
+In-Reply-To: <20250826-dart-t8110-stream-error-v1-1-e33395112014@jannau.net>
+From: Neal Gompa <neal@gompa.dev>
+Date: Tue, 26 Aug 2025 17:45:48 -0400
+X-Gmail-Original-Message-ID: <CAEg-Je8F_n9J5aBsTBm6RgAL9DdXKTgyMNxDo_aPOR42GzGUkA@mail.gmail.com>
+X-Gm-Features: Ac12FXwA-HRfgwtoditQ_gzG_vHw6fQHNUVW4nCA0dkeveZIhrlsxxZOpuqsYBc
+Message-ID: <CAEg-Je8F_n9J5aBsTBm6RgAL9DdXKTgyMNxDo_aPOR42GzGUkA@mail.gmail.com>
+Subject: Re: [PATCH] iommu/apple-dart: Clear stream error indicator bits for
+ T8110 DARTs
+To: Janne Grunau <j@jannau.net>
+Cc: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	Hector Martin <marcan@marcan.st>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Aug 26, 2025 at 6:57=E2=80=AFAM Janne Grunau <j@jannau.net> wrote:
+>
+> From: Hector Martin <marcan@marcan.st>
+>
+> These registers exist and at least on the t602x variant the IRQ only
+> clears when theses are cleared.
+>
+> Signed-off-by: Hector Martin <marcan@marcan.st>
+> Signed-off-by: Janne Grunau <j@jannau.net>
+> ---
+> I've overlooked this change for the 4 level page table / t6020 support
+> series [1]. There are no dependencies to series so this can go in on its
+> own.
+>
+> Janne
+>
+> 1: https://lore.kernel.org/asahi/20250821-apple-dart-4levels-v2-0-e39af79=
+daa37@jannau.net/
+> ---
+>  drivers/iommu/apple-dart.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index 190f28d76615159527649cd288df395a50d950ef..8b1272b7bb44a1ebc03ca4ddf=
+3be43a1e42c97ed 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -122,6 +122,8 @@
+>  #define DART_T8110_ERROR_ADDR_LO 0x170
+>  #define DART_T8110_ERROR_ADDR_HI 0x174
+>
+> +#define DART_T8110_ERROR_STREAMS 0x1c0
+> +
+>  #define DART_T8110_PROTECT 0x200
+>  #define DART_T8110_UNPROTECT 0x204
+>  #define DART_T8110_PROTECT_LOCK 0x208
+> @@ -1077,6 +1079,9 @@ static irqreturn_t apple_dart_t8110_irq(int irq, vo=
+id *dev)
+>                 error, stream_idx, error_code, fault_name, addr);
+>
+>         writel(error, dart->regs + DART_T8110_ERROR);
+> +       for (int i =3D 0; i < BITS_TO_U32(dart->num_streams); i++)
+> +               writel(U32_MAX, dart->regs + DART_T8110_ERROR_STREAMS + 4=
+ * i);
+> +
+>         return IRQ_HANDLED;
+>  }
+>
+>
+> ---
+> base-commit: 8f5ae30d69d7543eee0d70083daf4de8fe15d585
+> change-id: 20250826-dart-t8110-stream-error-1c2bbbf4fb63
+>
+
+LGTM.
+
+Reviewed-by: Neal Gompa <neal@gompa.dev>
 
 
-
-On 8/26/25 10:18 AM, Jason Gunthorpe wrote:
-> +/**
-> + * read_and_clear_dirty() - Manipulate the HW set write dirty state
-> + * @iommu_table: Table to manipulate
-> + * @iova: IO virtual address to start
-> + * @size: Length of the IOVA
-> + * @flags: A bitmap of IOMMU_DIRTY_NO_CLEAR
-> + *
-
-Mismatch between @params above and function arguments, both in names
-and one argument (@dirty:) is missing above.
-
-> + * Iterate over all the entries in the mapped range and record their write dirty
-> + * status in iommu_dirty_bitmap. If IOMMU_DIRTY_NO_CLEAR is not specified then
-> + * the entries will be left dirty, otherwise they are returned to being not
-> + * write dirty.
-> + *
-> + * Context: The caller must hold a read range lock that includes @iova.
-> + *
-> + * Returns: -ERRNO on failure, 0 on success.
-> + */
-> +int DOMAIN_NS(read_and_clear_dirty)(struct iommu_domain *domain,
-> +				    unsigned long iova, size_t size,
-> +				    unsigned long flags,
-> +				    struct iommu_dirty_bitmap *dirty)
-> +{
-
-
--- 
-~Randy
-
+--=20
+=E7=9C=9F=E5=AE=9F=E3=81=AF=E3=81=84=E3=81=A4=E3=82=82=E4=B8=80=E3=81=A4=EF=
+=BC=81/ Always, there's only one truth!
