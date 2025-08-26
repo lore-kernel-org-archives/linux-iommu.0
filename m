@@ -1,241 +1,132 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B37CC34A325;
-	Tue, 26 Aug 2025 14:35:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from pdx-out-002.esa.us-west-2.outbound.mail-perimeter.amazon.com (pdx-out-002.esa.us-west-2.outbound.mail-perimeter.amazon.com [44.246.1.125])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AC71356904
+	for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 14:38:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=44.246.1.125
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756218962; cv=none; b=g6OByuay35VUQtTjf4/9hSbWOjk8GuOcdzT8irzQRh2MXtDM6p4hVDnFRJFDzY6FR6QuNaGa45LFHoujfA4zenHMILubm9gbuwiT9bkgLEftoxngL+JPWYOerlEXMUcPjKaIk2sGxTEb7QnBor+fevaz9HblU4eRtQwRg04FiLw=
+	t=1756219104; cv=none; b=bw4SbGh4ZGhloh80JXttDjwEb7F5YtimkCkj6CFL0GUnMhYr988QI3eSdaCUlDgJ4+TTMyNDm+2CAUNLr5fwPtltiGb/UKYWrug2tJ9epJS9TOZQZCp6AVYG9z99RjZw8BxQz4SB+kWNUGFzIl4dqWfLGKLN5Z7tzyb5woLBW6Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756218962; c=relaxed/simple;
-	bh=t6JNfnPxFUx/NjoupvZ1RlQEj1Zq+C4DgHkgiTtqzX4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JW5+cILD49k/9ssvG+R9Zwi106xSXHp4cRgIyvILpasmeh+WQWXHMaPuFOGGkxSt17FT+VZViGqPXLEaTQtsf9YttKLaMHihVeR9XoVW08gBbsBtTW6GOfydqXqJc8yQywmfdfj8L6hEWN/KgH3UyMuwdGZXiQsUVVBvoJaBSx8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8CB231A25;
-	Tue, 26 Aug 2025 07:35:50 -0700 (PDT)
-Received: from [10.57.4.86] (unknown [10.57.4.86])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E899E3F694;
-	Tue, 26 Aug 2025 07:35:51 -0700 (PDT)
-Message-ID: <ab80cb84-42b2-4ce8-aa6c-4ce6be7a12b7@arm.com>
-Date: Tue, 26 Aug 2025 15:35:48 +0100
+	s=arc-20240116; t=1756219104; c=relaxed/simple;
+	bh=DXMxr1RwMg5MgmT6auTJbgNnK3Ha8uV4voztH6nmFhY=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=YGexjHJXXwtBZDZjnyv2ggGCY5rTCTtBANvxh4bKEMeP/Ok2ul8IIpuxy6a85obApe26H76mmB/eRBoQ2y0STxwyAuQWrOwGe2MGjQH/rfXTwVWMyw1IB2wB3Pu6DW4wPohksqKSvwi7frjt5rBNqW07LmINOS7bpvOAjoUmqbY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.nl; dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.b=lQaLP7yz; arc=none smtp.client-ip=44.246.1.125
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.nl
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=amazon.com header.i=@amazon.com header.b="lQaLP7yz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazoncorp2;
+  t=1756219103; x=1787755103;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RnOjmImgu9Zqc8q7j4uUzhidXc03x0+ZINGJ5dF0yBE=;
+  b=lQaLP7yzfSTf1vzBpmJ0zpfSv6AvFtLsWmAKjpAbNbnllsTqdS+q5Hft
+   4W7CneMqEpYnBXabGA+2F10tQg5EceYzI8eu6doYC9HTcO3mkjjmNMrSA
+   oDyIYnfOf95BHblkGZuX88G+7AyNumw6EN34Lm9FzFnCRw044I1M8TCmd
+   Kd9wWtXouDmohvO13XWs4BzW781RjgqwBk8sYF/l5EER5c2ea9v8Ro5iR
+   Pe3FmpIJdYvOTBWlsTPPbdG/HixdStXsf8KeD4iWCpkbYboAjl+1McmFn
+   wQaqsNb6Ue2Hyl2SGOERYYTlyQNiwbZTHJAOsZunr58KljQArR+NcInDq
+   A==;
+X-CSE-ConnectionGUID: rDqMdqHMRBGNZ4CVnSOF0A==
+X-CSE-MsgGUID: MkVkqfW4T4eoXhwL6I+iKA==
+X-IronPort-AV: E=Sophos;i="6.16,202,1744070400"; 
+   d="scan'208";a="1825599"
+Received: from ip-10-5-6-203.us-west-2.compute.internal (HELO smtpout.naws.us-west-2.prod.farcaster.email.amazon.dev) ([10.5.6.203])
+  by internal-pdx-out-002.esa.us-west-2.outbound.mail-perimeter.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2025 14:38:21 +0000
+Received: from EX19MTAUWC001.ant.amazon.com [10.0.21.151:25577]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.12.13:2525] with esmtp (Farcaster)
+ id 0ef9058f-704c-4a37-ad9a-12fa6f5bd087; Tue, 26 Aug 2025 14:38:20 +0000 (UTC)
+X-Farcaster-Flow-ID: 0ef9058f-704c-4a37-ad9a-12fa6f5bd087
+Received: from EX19D001UWA001.ant.amazon.com (10.13.138.214) by
+ EX19MTAUWC001.ant.amazon.com (10.250.64.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.17;
+ Tue, 26 Aug 2025 14:38:20 +0000
+Received: from dev-dsk-eugkoira-1b-58cb2f48.eu-west-1.amazon.com
+ (10.253.75.199) by EX19D001UWA001.ant.amazon.com (10.13.138.214) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.2562.17; Tue, 26 Aug 2025
+ 14:38:18 +0000
+From: Eugene Koira <eugkoira@amazon.com>
+To: <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+CC: <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <joro@8bytes.org>,
+	<will@kernel.org>, <robin.murphy@arm.com>, <longpeng2@huawei.com>,
+	<graf@amazon.de>, <nsaenz@amazon.com>, <nh-open-source@amazon.com>,
+	<stable@vger.kernel.org>
+Subject: [PATCH] iommu/intel: Fix __domain_mapping()'s usage of switch_to_super_page()
+Date: Tue, 26 Aug 2025 14:38:16 +0000
+Message-ID: <20250826143816.38686-1-eugkoira@amazon.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 02/19] perf/hisilicon: Fix group validation
-To: Mark Rutland <mark.rutland@arm.com>
-Cc: peterz@infradead.org, mingo@redhat.com, will@kernel.org, acme@kernel.org,
- namhyung@kernel.org, alexander.shishkin@linux.intel.com, jolsa@kernel.org,
- irogers@google.com, adrian.hunter@intel.com, kan.liang@linux.intel.com,
- linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev,
- linux-csky@vger.kernel.org, loongarch@lists.linux.dev,
- linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
- sparclinux@vger.kernel.org, linux-pm@vger.kernel.org,
- linux-rockchip@lists.infradead.org, dmaengine@vger.kernel.org,
- linux-fpga@vger.kernel.org, amd-gfx@lists.freedesktop.org,
- dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, coresight@lists.linaro.org,
- iommu@lists.linux.dev, linux-amlogic@lists.infradead.org,
- linux-cxl@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-riscv@lists.infradead.org
-References: <cover.1755096883.git.robin.murphy@arm.com>
- <c7b877e66ba0d34d8558c5af8bbb620e8c0e47d9.1755096883.git.robin.murphy@arm.com>
- <aK2XS_GhLw1EQ2ml@J2N7QTR9R3>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <aK2XS_GhLw1EQ2ml@J2N7QTR9R3>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+X-ClientProxiedBy: EX19D045UWC001.ant.amazon.com (10.13.139.223) To
+ EX19D001UWA001.ant.amazon.com (10.13.138.214)
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
-On 2025-08-26 12:15 pm, Mark Rutland wrote:
-> On Wed, Aug 13, 2025 at 06:00:54PM +0100, Robin Murphy wrote:
->> The group validation logic shared by the HiSilicon HNS3/PCIe drivers is
->> a bit off, in that given a software group leader, it will consider that
->> event *in place of* the actual new event being opened. At worst this
->> could theoretically allow an unschedulable group if the software event
->> config happens to look like one of the hardware siblings.
->>
->> The uncore framework avoids that particular issue,
-> 
-> What is "the uncore framework"? I'm not sure exactly what you're
-> referring to, nor how that composes with the problem described above.
+switch_to_super_page() assumes the memory range it's working on is aligned
+to the target large page level. Unfortunately, __domain_mapping() doesn't
+take this into account when using it, and will pass unaligned ranges
+ultimately freeing a PTE range larger than expected.
 
-Literally that hisi_uncore_pmu.c is actually a framework for half a 
-dozen individual sub-drivers rather than a "driver" itself per se, but I 
-suppose that detail doesn't strictly matter at this level.
+Take for example a mapping with the following iov_pfn range [0x3fe400,
+0x4c0600], which should be backed by the following mappings:
 
->> but all 3 also share the common issue of not preventing racy access to
->> the sibling list,
-> 
-> Can you please elaborate on this racy access to the silbing list? I'm
-> not sure exactly what you're referring to.
+   iov_pfn [0x3fe400, 0x3fffff] covered by 2MiB pages
+   iov_pfn [0x400000, 0x4bffff] covered by 1GiB pages
+   iov_pfn [0x4c0000, 0x4c05ff] covered by 2MiB pages
 
-Hmm, yes, I guess an actual race is probably impossible since if we're 
-still in the middle of opening the group leader event then we haven't 
-yet allocated the fd that userspace would need to start adding siblings, 
-even if it tried to guess. I leaned on "racy" as a concise way to infer 
-"when it isn't locked (even though the reasons for that are more 
-subtle)" repeatedly over several patches - after all, the overall theme 
-of this series is that I dislike repetitive boilerplate :)
+Under this circumstance, __domain_mapping() will pass [0x400000, 0x4c05ff]
+to switch_to_super_page() at a 1 GiB granularity, which will in turn
+free PTEs all the way to iov_pfn 0x4fffff.
 
-I'll dedicate some time for polishing commit messages for v2, especially 
-the common context for these "part 1" patches per your feedback on patch #1.
+Mitigate this by rounding down the iov_pfn range passed to
+switch_to_super_page() in __domain_mapping()
+to the target large page level.
 
->> and some redundant checks which can be cleaned up.
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>   drivers/perf/hisilicon/hisi_pcie_pmu.c   | 17 ++++++-----------
->>   drivers/perf/hisilicon/hisi_uncore_pmu.c | 23 +++++++----------------
->>   drivers/perf/hisilicon/hns3_pmu.c        | 17 ++++++-----------
->>   3 files changed, 19 insertions(+), 38 deletions(-)
->>
->> diff --git a/drivers/perf/hisilicon/hisi_pcie_pmu.c b/drivers/perf/hisilicon/hisi_pcie_pmu.c
->> index c5394d007b61..3b0b2f7197d0 100644
->> --- a/drivers/perf/hisilicon/hisi_pcie_pmu.c
->> +++ b/drivers/perf/hisilicon/hisi_pcie_pmu.c
->> @@ -338,21 +338,16 @@ static bool hisi_pcie_pmu_validate_event_group(struct perf_event *event)
->>   	int counters = 1;
->>   	int num;
->>   
->> -	event_group[0] = leader;
->> -	if (!is_software_event(leader)) {
->> -		if (leader->pmu != event->pmu)
->> -			return false;
->> +	if (leader == event)
->> +		return true;
->>   
->> -		if (leader != event && !hisi_pcie_pmu_cmp_event(leader, event))
->> -			event_group[counters++] = event;
->> -	}
->> +	event_group[0] = event;
->> +	if (leader->pmu == event->pmu && !hisi_pcie_pmu_cmp_event(leader, event))
->> +		event_group[counters++] = leader;
-> 
-> Looking at this, the existing logic to share counters (which
-> hisi_pcie_pmu_cmp_event() is trying to permit) looks to be bogus, given
-> that the start/stop callbacks will reprogram the HW counters (and hence
-> can fight with one another).
+Additionally add range alignment checks to switch_to_super_page.
 
-Yeah, this had a dodgy smell when I first came across it, but after 
-doing all the digging I think it does actually work out - the trick 
-seems to be the group_leader check in hisi_pcie_pmu_get_event_idx(), 
-with the implication the PMU is going to be stopped while scheduling 
-in/out the whole group, so assuming hisi_pcie_pmu_del() doesn't clear 
-the counter value in hardware (even though the first call nukes the rest 
-of the event configuration), then the events should stay in sync.
+Fixes: 9906b9352a35 ("iommu/vt-d: Avoid duplicate removing in __domain_mapping()")
+Signed-off-by: Eugene Koira <eugkoira@amazon.com>
+Cc: stable@vger.kernel.org
+---
+ drivers/iommu/intel/iommu.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-It does seem somewhat nonsensical to have multiple copies of the same 
-event in the same group, but I imagine it could happen with some sort of 
-scripted combination of metrics, and supporting it at this level saves 
-needing explicit deduplication further up. So even though my initial 
-instinct was to rip it out too, in the end I concluded that that doesn't 
-seem justified.
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 9c3ab9d9f69a..dff2d895b8ab 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -1575,6 +1575,10 @@ static void switch_to_super_page(struct dmar_domain *domain,
+ 	unsigned long lvl_pages = lvl_to_nr_pages(level);
+ 	struct dma_pte *pte = NULL;
+ 
++	if (WARN_ON(!IS_ALIGNED(start_pfn, lvl_pages) ||
++		    !IS_ALIGNED(end_pfn + 1, lvl_pages)))
++		return;
++
+ 	while (start_pfn <= end_pfn) {
+ 		if (!pte)
+ 			pte = pfn_to_dma_pte(domain, start_pfn, &level,
+@@ -1650,7 +1654,8 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 				unsigned long pages_to_remove;
+ 
+ 				pteval |= DMA_PTE_LARGE_PAGE;
+-				pages_to_remove = min_t(unsigned long, nr_pages,
++				pages_to_remove = min_t(unsigned long,
++							round_down(nr_pages, lvl_pages),
+ 							nr_pte_to_next_page(pte) * lvl_pages);
+ 				end_pfn = iov_pfn + pages_to_remove - 1;
+ 				switch_to_super_page(domain, iov_pfn, end_pfn, largepage_lvl);
+-- 
+2.47.3
 
-Thanks,
-Robin.
 
-> I suspect that can be removed *entirely*, and this can be simplified
-> down to allocating N counters, without a quadratic event comparison.  We
-> don't try to share counters in other PMU drivers, and there was no
-> rationale for trying to do this when this wa introduced in commit:
-> 
->    8404b0fbc7fbd42e ("drivers/perf: hisi: Add driver for HiSilicon PCIe PMU")
-> 
-> The 'link' tag in that comment goes to v13, which doesn't link to prior
-> postings, so I'm not going to dig further.
-> 
-> Mark.
-> 
->>   
->>   	for_each_sibling_event(sibling, event->group_leader) {
->> -		if (is_software_event(sibling))
->> -			continue;
->> -
->>   		if (sibling->pmu != event->pmu)
->> -			return false;
->> +			continue;
->>   
->>   		for (num = 0; num < counters; num++) {
->>   			/*
->> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pmu.c
->> index a449651f79c9..3c531b36cf25 100644
->> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
->> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
->> @@ -101,26 +101,17 @@ static bool hisi_validate_event_group(struct perf_event *event)
->>   	/* Include count for the event */
->>   	int counters = 1;
->>   
->> -	if (!is_software_event(leader)) {
->> -		/*
->> -		 * We must NOT create groups containing mixed PMUs, although
->> -		 * software events are acceptable
->> -		 */
->> -		if (leader->pmu != event->pmu)
->> -			return false;
->> +	if (leader == event)
->> +		return true;
->>   
->> -		/* Increment counter for the leader */
->> -		if (leader != event)
->> -			counters++;
->> -	}
->> +	/* Increment counter for the leader */
->> +	if (leader->pmu == event->pmu)
->> +		counters++;
->>   
->>   	for_each_sibling_event(sibling, event->group_leader) {
->> -		if (is_software_event(sibling))
->> -			continue;
->> -		if (sibling->pmu != event->pmu)
->> -			return false;
->>   		/* Increment counter for each sibling */
->> -		counters++;
->> +		if (sibling->pmu == event->pmu)
->> +			counters++;
->>   	}
->>   
->>   	/* The group can not count events more than the counters in the HW */
->> diff --git a/drivers/perf/hisilicon/hns3_pmu.c b/drivers/perf/hisilicon/hns3_pmu.c
->> index c157f3572cae..382e469257f9 100644
->> --- a/drivers/perf/hisilicon/hns3_pmu.c
->> +++ b/drivers/perf/hisilicon/hns3_pmu.c
->> @@ -1058,21 +1058,16 @@ static bool hns3_pmu_validate_event_group(struct perf_event *event)
->>   	int counters = 1;
->>   	int num;
->>   
->> -	event_group[0] = leader;
->> -	if (!is_software_event(leader)) {
->> -		if (leader->pmu != event->pmu)
->> -			return false;
->> +	if (leader == event)
->> +		return true;
->>   
->> -		if (leader != event && !hns3_pmu_cmp_event(leader, event))
->> -			event_group[counters++] = event;
->> -	}
->> +	event_group[0] = event;
->> +	if (leader->pmu == event->pmu && !hns3_pmu_cmp_event(leader, event))
->> +		event_group[counters++] = leader;
->>   
->>   	for_each_sibling_event(sibling, event->group_leader) {
->> -		if (is_software_event(sibling))
->> -			continue;
->> -
->>   		if (sibling->pmu != event->pmu)
->> -			return false;
->> +			continue;
->>   
->>   		for (num = 0; num < counters; num++) {
->>   			/*
->> -- 
->> 2.39.2.101.g768bb238c484.dirty
->>
+
+
+Amazon Development Center (Netherlands) B.V., Johanna Westerdijkplein 1, NL-2521 EN The Hague, Registration No. Chamber of Commerce 56869649, VAT: NL 852339859B01
+
