@@ -1,44 +1,31 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06FDC2FDC44;
-	Tue, 26 Aug 2025 13:47:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EEF32AE7F
+	for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 13:57:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756216069; cv=none; b=XlSYlPF+Tt1OYwf1yvKvdjoWdCeuaJJ0slTtBy8+onvTZLvaMycPBFncGXDfoLGdk6nQNhmkzaewlauoxjz0FPO6GroR0sZiBYArmaUO07dEXnZArSWp3Xwx4lstsE90msejefoyKPIv6dhlw4zshALG8S1sred58BUdpei/Diw=
+	t=1756216663; cv=none; b=KAbeZRX+ZJMi8NCbAjIsjP81VA60qCzdWB0bpqzl6NfxFBCEWRET1LGnhwaJYGWc8g5LIrWRtvMV3AKObN8//x1ZWWylwqUPulPpX0efaXW5WjQDC9jEsKuuFCZGp1hZ3PcSVnztzl9Qvqvogn/WTJmN6qJDB7xkPkSOJANhD9o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756216069; c=relaxed/simple;
-	bh=SDKDv4TIVZyQwW8dTQHiERQW4dJY502u9RzkRSwZ3Ss=;
+	s=arc-20240116; t=1756216663; c=relaxed/simple;
+	bh=1gAKaymMdJw9QRaQZwEz+4g6I7V87MF2spGYgqYSDNs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lMcAoPhJ7RtN2YYstHj9zbDF9Hmu+kdQM5PBIMcLY151nLviG00wIGOckN7RrRqPyiFmNID8pixfy262OC2w6DF+J/xL3N/D8raZte+TJ2UXrlYtFVMoKNzMkHsukL1/YrTZwxgHkrBj5/2ZGUOF90n+jE476+HyKaJumMBByXI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mo9ZjFu9; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mo9ZjFu9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39448C4CEF1;
-	Tue, 26 Aug 2025 13:47:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756216068;
-	bh=SDKDv4TIVZyQwW8dTQHiERQW4dJY502u9RzkRSwZ3Ss=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=mo9ZjFu9/1/CcP8hVMF3bnP53wARLg7+h/L6a3vI8IJd84pXBNRA02aSWeokQiaDG
-	 QrwfLKd210bym3D57v3yJI3kSpDRWiGBRxtuNa/MM9z0cDpIeRUwO5fwmyD+7fWE7k
-	 GpX9dUJw7Psu9+9CV1/zip4Vf6DX3GcH+WjO0tZWDHNdf6WTjkfXB2gghQWc2jEWBH
-	 7dpoIae6CY7BBRP925vLa57bf4B+uVMTZt9ghbGNaOgUltsik4SbvhXaGnjGBqFcQz
-	 bqp+iNh/KYDgzksf+ch4yLETehjnvhTeBfP1V161FdMLyxJisyijIcFHjstCZCWkWq
-	 FQfY0DjsyrWyg==
-Date: Tue, 26 Aug 2025 07:47:46 -0600
-From: Keith Busch <kbusch@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Christoph Hellwig <hch@infradead.org>, Keith Busch <kbusch@meta.com>,
-	linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
-	axboe@kernel.dk, iommu@lists.linux.dev
+	 Content-Type:Content-Disposition:In-Reply-To; b=NHLiWpO6tMNvXUvY13zGnH/B42Gjp9lauYS7yo++R+D690gX/Xr0dKtFcd5Y/YmY0zequwpinLBptP6+Odvo184iAvBQXFFY5RNTe9d+UkvbQ11+CkLuFvk5gthNqMLH7FW3fvd3vDuAE7wAVVOf/5yCPk7F82AZyTKpOxXGxb8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 4305667373; Tue, 26 Aug 2025 15:57:35 +0200 (CEST)
+Date: Tue, 26 Aug 2025 15:57:34 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Keith Busch <kbusch@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Christoph Hellwig <hch@infradead.org>,
+	Keith Busch <kbusch@meta.com>, linux-block@vger.kernel.org,
+	linux-nvme@lists.infradead.org, axboe@kernel.dk,
+	iommu@lists.linux.dev
 Subject: Re: [PATCHv3 1/2] block: accumulate segment page gaps per bio
-Message-ID: <aK27AhpcQOWADLO8@kbusch-mbp>
-References: <20250821204420.2267923-1-kbusch@meta.com>
- <20250821204420.2267923-2-kbusch@meta.com>
- <aKxpSorluMXgOFEI@infradead.org>
- <aKxu83upEBhf5gT7@kbusch-mbp>
- <20250826130344.GA32739@lst.de>
+Message-ID: <20250826135734.GA4532@lst.de>
+References: <20250821204420.2267923-1-kbusch@meta.com> <20250821204420.2267923-2-kbusch@meta.com> <aKxpSorluMXgOFEI@infradead.org> <aKxu83upEBhf5gT7@kbusch-mbp> <20250826130344.GA32739@lst.de> <aK27AhpcQOWADLO8@kbusch-mbp>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,20 +34,16 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250826130344.GA32739@lst.de>
+In-Reply-To: <aK27AhpcQOWADLO8@kbusch-mbp>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Tue, Aug 26, 2025 at 03:03:44PM +0200, Christoph Hellwig wrote:
-> On Mon, Aug 25, 2025 at 08:10:59AM -0600, Keith Busch wrote:
-> > 
-> > PAGE_SIZEs, iommu granules, and virt boundaries are all power-of-two
-> > values, and PAGE_SIZE is always the largest (or tied for largest) of
-> > these.
-> 
-> I just had an offlist conversation with someone trying to make a nvme
-> device with a virt boundary larger than PAGE_SIZE work.  No idea
-> where that device came from.
+On Tue, Aug 26, 2025 at 07:47:46AM -0600, Keith Busch wrote:
+> Currently, the virtual boundary is always compared to bv_offset, which
+> is a page offset. If the virtual boundary is larger than a page, then we
+> need something like "page_to_phys(bv.bv_page) + bv.bv_offset" every
+> place we need to check against the virt boundary.
 
-Currently, the virtual boundary is always compared to bv_offset, which
-is a page offset. If the virtual boundary is larger than a page, then we
-need something like "page_to_phys(bv.bv_page) + bv.bv_offset" every
-place we need to check against the virt boundary.
+bv_offset is only guaranteed to be a page offset if your use
+bio_for_each_segment(_all) or the low-level helpers implementing
+it and not bio_for_each_bvec(_all) where it can be much larger
+than PAGE_SIZE.
