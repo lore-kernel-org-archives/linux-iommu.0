@@ -1,48 +1,48 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6AEF1D5CD7
-	for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 01:27:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7119127D786
+	for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 02:51:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756171655; cv=none; b=C+unoW/6JmGj3HGwaHh+eGTiKjnaiu17UzYL93De3bJ+qsaGDpQDGqiEBbWwpp7Yuvztf2nonGW2IKaGVFuJuC+Yu9lDqv9j8J0qAOwBcif5OgWRWckENIxUm8+tKn+FRTqeOUfeYiIByAgdWE0lxHgWz0tO5bBgAvmw8fR2/rg=
+	t=1756176721; cv=none; b=EwCRU7e7sYRWVMlmqDp+0FW40egH36xLc/YMYa0gvctWR2nyLGp4Bgc6/4L1NQiUpj90RwWsfZDvIQ0ek2W/5NUEg4guXZ24oHxugoMtWnWxnEba8xO02Sqk+JmtLGIHiwSwjl1XYZuMn8hy5YNkufvmMJT97y6jdUqtUcG66T0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756171655; c=relaxed/simple;
-	bh=AdpUiE/wJBetOMVQkBzJaBKwSBZOYbe+QTmNwnaCSQY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JHh7umgEJP70HMP65shWTGbfGkHUnB6QcUsO9/vqn4B+ckeO9+TGwSEvOdFq/cPmCqzaCdxPpRr1fKZbbiXT2PlkJuLF5+udEUZ7PKh+1wu7DWTnq+EHXTnbbI1i/dV+CuwGl9KU6lawn+Et8BdnFwDvmlEhJEdFOk/p7bPjlsc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MPCO9S49; arc=none smtp.client-ip=198.175.65.10
+	s=arc-20240116; t=1756176721; c=relaxed/simple;
+	bh=DMN39XlEXuf7uIgDoXm2mjQcLKXK4t78gZNEvwqiI/E=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=g60omY5znn64KEHn3Rk7tGgW/rF/5EAgIZFwIIOO5j10mcY0wJaRCXdXhs1GW+BdJYTru8+Mje5YDOHvXwywNTPZkdvh+KWXiucMbGnAmc6BqTrIkVZoOdzYl8iER+fO4Hq/VnKaQ4ZBz1x5tZuasOK8uZwD6gEqFfjuwRsXfc4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gbUg30/n; arc=none smtp.client-ip=192.198.163.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MPCO9S49"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gbUg30/n"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1756171654; x=1787707654;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=AdpUiE/wJBetOMVQkBzJaBKwSBZOYbe+QTmNwnaCSQY=;
-  b=MPCO9S49GZdQsI1kKswkFPkBdualcRdG3yv4qop5eRO7upk3P/PO4rPE
-   Reg+sQbYmMgK7QmN8gzuldAIq4vqIAvwgdVVbGSLBgHQ6rjA8vu2FnOy5
-   oL2qVAXu2v8oyMaWAEnTQ7LzFf4P8nIbUXfY9fUYtcuOZGBhd0q7BWri4
-   yp9U56XV2q83J1ojtkhU5fpsuFnWBRa9JzYRyLY8sXTZ9DARE2IgzUljr
-   LLaTQc9KYh5TOJ/IHHrUcSPSCPGW98uu5JZOFWR8x0lrxY/pYvJRB+p1H
-   e/Viq9z/ceZ3qve4DfYFBYdFT1NQopUk1PBd2xWYLYO2AnBGzxXINn5VA
-   Q==;
-X-CSE-ConnectionGUID: ZD2gtjtMQMmz39zkBXGWrA==
-X-CSE-MsgGUID: ZGJ2bgBmQWWSFQsAf0968g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11533"; a="75847559"
+  t=1756176719; x=1787712719;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=DMN39XlEXuf7uIgDoXm2mjQcLKXK4t78gZNEvwqiI/E=;
+  b=gbUg30/nBzq47eQDa+KXlrOD69Sps1U9cCAQUlpw2RanMzoOiWFuT9Bu
+   uMYnT96fxJg6gV3obAl7TT4rsVTlbhgUsDoJWxS/v51HuMarBUPC6g92p
+   Dm/nSEXrujM223c8aFU4JIk2xcTOr9HJq/KiGKCNpPWvs7UW8He3Es1LC
+   iila96JB2LKgVE1qO0DQiEEboG0u0hPbRDUIwTssYm+0zgzKIUYCrStbT
+   ltI+DkRyjSVpbynkX4CTuXvsRghGcnHFUf9o3xXi3SDhTz8N3bj4oIGth
+   V6jD84O/wY6KFSeAKUl2UbXn1aij1b+///Z8nwdHwoWDskkC5l8dgg9DB
+   g==;
+X-CSE-ConnectionGUID: 6CJocbelRA6nnzrD8/yI+Q==
+X-CSE-MsgGUID: NB9VrzZoS7u4qbgYfqch9g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11533"; a="61037370"
 X-IronPort-AV: E=Sophos;i="6.18,214,1751266800"; 
-   d="scan'208";a="75847559"
+   d="scan'208";a="61037370"
 Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2025 18:27:33 -0700
-X-CSE-ConnectionGUID: tIGsR0QISxaWhVKMXaVS4g==
-X-CSE-MsgGUID: znpgCPBKTXW8CYZBlzEZYw==
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2025 19:51:58 -0700
+X-CSE-ConnectionGUID: 7x62P4XgTkGQzHGQufWCTw==
+X-CSE-MsgGUID: sB+U/l7aQHGJChXPsKBrAA==
 X-ExtLoop1: 1
 Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2025 18:27:29 -0700
-Message-ID: <b0f613ce-7aad-4b1d-b6a1-4acc1d6c489e@linux.intel.com>
-Date: Tue, 26 Aug 2025 09:25:03 +0800
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2025 19:51:54 -0700
+Message-ID: <dde6d861-daa3-49ed-ad4f-ff9dcaf1f2b8@linux.intel.com>
+Date: Tue, 26 Aug 2025 10:49:29 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,6 +52,7 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
  flush
+From: Baolu Lu <baolu.lu@linux.intel.com>
 To: Dave Hansen <dave.hansen@intel.com>, "Tian, Kevin"
  <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -77,47 +78,114 @@ References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
  <BN9PR11MB52766165393F7DD8209DA45A8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
  <e321d374-38a7-4f60-b991-58458a2761b9@linux.intel.com>
  <9a649ff4-55fe-478a-bfd7-f3287534499a@intel.com>
+ <b0f613ce-7aad-4b1d-b6a1-4acc1d6c489e@linux.intel.com>
 Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <9a649ff4-55fe-478a-bfd7-f3287534499a@intel.com>
+In-Reply-To: <b0f613ce-7aad-4b1d-b6a1-4acc1d6c489e@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 8/26/25 06:36, Dave Hansen wrote:
-> On 8/22/25 20:26, Baolu Lu wrote:
->> +static struct {
->> +    /* list for pagetable_dtor_free() */
->> +    struct list_head dtor;
->> +    /* list for __free_page() */
->> +    struct list_head page;
->> +    /* list for free_pages() */
->> +    struct list_head pages;
->> +    /* protect all the ptdesc lists */
->> +    spinlock_t lock;
->> +    struct work_struct work;
+On 8/26/25 09:25, Baolu Lu wrote:
+> On 8/26/25 06:36, Dave Hansen wrote:
+>> On 8/22/25 20:26, Baolu Lu wrote:
+>>> +static struct {
+>>> +    /* list for pagetable_dtor_free() */
+>>> +    struct list_head dtor;
+>>> +    /* list for __free_page() */
+>>> +    struct list_head page;
+>>> +    /* list for free_pages() */
+>>> +    struct list_head pages;
+>>> +    /* protect all the ptdesc lists */
+>>> +    spinlock_t lock;
+>>> +    struct work_struct work;
+>>
+>> Could you explain a bit why this now needs three separate lists? Seems
+>> like pure overkill.
 > 
-> Could you explain a bit why this now needs three separate lists? Seems
-> like pure overkill.
+> Yes, sure.
+> 
+> The three separate lists are needed because we're handling three
+> distinct types of page deallocation. Grouping the pages this way allows
+> the workqueue handler to free each type using the correct function.
 
-Yes, sure.
+Please allow me to add more details.
 
-The three separate lists are needed because we're handling three
-distinct types of page deallocation. Grouping the pages this way allows
-the workqueue handler to free each type using the correct function.
+> 
+> - pagetable_dtor_free(): This is for freeing PTE pages, which require
+>    specific cleanup of a ptdesc structure.
 
-- pagetable_dtor_free(): This is for freeing PTE pages, which require
-   specific cleanup of a ptdesc structure.
+This is used in
 
-  - __free_page(): This is for freeing a single page.
+static inline void pte_free_kernel(struct mm_struct *mm, pte_t *pte)
 
-  - free_pages(): This is for freeing a contiguous block of pages that
-    were allocated together.
+and
 
-Using separate lists for each type ensures that every page is handled
-correctly without having to check the page's type at runtime.
+int pud_free_pmd_page(pud_t *pud, unsigned long addr)
 
-This seems like overkill, it was chosen to ensure functional
-correctness. Any better solution?
+> 
+>   - __free_page(): This is for freeing a single page.
+
+This is used in
+
+static void cpa_collapse_large_pages(struct cpa_data *cpa)
+{
+         ... ...
+
+	list_for_each_entry_safe(ptdesc, tmp, &pgtables, pt_list) {
+                 list_del(&ptdesc->pt_list);
+                 __free_page(ptdesc_page(ptdesc));
+         }
+}
+
+> 
+>   - free_pages(): This is for freeing a contiguous block of pages that
+>     were allocated together.
+
+This is used in
+
+static void __meminit free_pagetable(struct page *page, int order)
+{
+	... ...
+
+	free_pages((unsigned long)page_address(page), order);
+}
+
+What's strange is that order is almost always 0, except in the path of
+remove_pmd_table() -> free_hugepage_table(), where order can be greater
+than 0. However, in this context path, free_hugepage_table() isn't used
+to free a page table page itself. Instead, it's used to free the actual
+pages that a leaf PMD is pointing to.
+
+static void __meminit
+remove_pmd_table(pmd_t *pmd_start, unsigned long addr, unsigned long end,
+                  bool direct, struct vmem_altmap *altmap)
+{
+         ... ...
+
+         if (pmd_leaf(*pmd)) {
+                 if (IS_ALIGNED(addr, PMD_SIZE) &&
+                     IS_ALIGNED(next, PMD_SIZE)) {
+                         if (!direct)
+                                 free_hugepage_table(pmd_page(*pmd),
+                                                     altmap);
+
+                         spin_lock(&init_mm.page_table_lock);
+                         pmd_clear(pmd);
+                         spin_unlock(&init_mm.page_table_lock);
+                         pages++;
+                 } else if (vmemmap_pmd_is_unused(addr, next)) {
+                                 free_hugepage_table(pmd_page(*pmd),
+                                                     altmap);
+                                 spin_lock(&init_mm.page_table_lock);
+                                 pmd_clear(pmd);
+                                 spin_unlock(&init_mm.page_table_lock);
+                 }
+                 continue;
+
+         ... ...
+}
+
+Is this a misuse of free_pagetable() or anything overlooked?
 
 Thanks,
 baolu
+
