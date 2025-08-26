@@ -1,133 +1,241 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FC55350D46;
-	Tue, 26 Aug 2025 14:33:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B37CC34A325;
+	Tue, 26 Aug 2025 14:35:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756218815; cv=none; b=hbepNb3GmnAM7ERQ6ARYw+PxO+M45/ZR4093Ks3ni9gxR3/BQhEbDbNbYznxAxf4ITUCZxjdeFTpeNGPOeLJaBNKICkHSXSBDg32FOHLYJEczALv+QxkCgHTtbXO0A53asnkg5Jh22zgkyjJlB8htaVjrgtRxjwhf9uQvF5Vqrs=
+	t=1756218962; cv=none; b=g6OByuay35VUQtTjf4/9hSbWOjk8GuOcdzT8irzQRh2MXtDM6p4hVDnFRJFDzY6FR6QuNaGa45LFHoujfA4zenHMILubm9gbuwiT9bkgLEftoxngL+JPWYOerlEXMUcPjKaIk2sGxTEb7QnBor+fevaz9HblU4eRtQwRg04FiLw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756218815; c=relaxed/simple;
-	bh=kLOWvFQJVDLrusSxqECJgYVCxWX0G2z5dgAxEcCSDEM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oTshE4PN3dFaKpMj6Ym1JHlxRAxaOydRcBPsUTLxFwLaUvjqBbRDQ798iiOLe+T04rPYLWNucSEW+bG200FjcG5dKcpxMdLgUYeHgb9E7G+2pgQh+HuOoMbcTyYlA7eCBGVxkHIAfqHrItgEG4dnc3qBUOpg4CbPg1dthIV1pOE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=BVH+BD8W; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="BVH+BD8W"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=iOy5JJ5YIUrfAy9c4g7zKkZjWGr9QteMBUOe3zqNu4w=; b=BVH+BD8WO5L54Awa3ucX25EIic
-	bbgBGJgwh0zCMI5CHzyxz7duE1lZ+3ZpzwT64C/Oe4WUpjWlQCG/vKVo6B1ENnN1Ramk/Wp81KT47
-	YTMFp+EONRS0WfGSaT5e0ukGLarLm4mQSKpdweDe+Zz8ctsgp0+/XTBgol+hx3gaNX//FPbKBLnUQ
-	XZiJ7X+qjD06/Te77ZrI23dm8Gu5Y5IcxddXjXb/SejsbvzB4rgzvxyadkivtuqVq/NR5enJEN2WQ
-	nM5HOxJWFJm76kzsZ/YjV99qE/Anrw5ebfPl4N/OyHara1eDBMUUsZ7CY+iRjRhsab1ARUI3yujBt
-	oUjLHPUg==;
-Received: from willy by casper.infradead.org with local (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1uquji-00000003epU-0zWu;
-	Tue, 26 Aug 2025 14:33:22 +0000
-Date: Tue, 26 Aug 2025 15:33:21 +0100
-From: Matthew Wilcox <willy@infradead.org>
-To: Dave Hansen <dave.hansen@intel.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Andy Lutomirski <luto@kernel.org>, "Lai, Yi1" <yi1.lai@intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"security@kernel.org" <security@kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>,
-	vishal.moola@gmail.com
-Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-Message-ID: <aK3FsU1Dds4OG79o@casper.infradead.org>
-References: <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
- <20250807195154.GO184255@nvidia.com>
- <BN9PR11MB52762A47B347C99F0C0E4C288C2FA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <87bfc80e-258e-4193-a56c-3096608aec30@linux.intel.com>
- <BN9PR11MB52766165393F7DD8209DA45A8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <e321d374-38a7-4f60-b991-58458a2761b9@linux.intel.com>
- <9a649ff4-55fe-478a-bfd7-f3287534499a@intel.com>
- <b0f613ce-7aad-4b1d-b6a1-4acc1d6c489e@linux.intel.com>
- <dde6d861-daa3-49ed-ad4f-ff9dcaf1f2b8@linux.intel.com>
- <b57d7b97-8110-47c5-9c7a-516b7b535ce9@intel.com>
+	s=arc-20240116; t=1756218962; c=relaxed/simple;
+	bh=t6JNfnPxFUx/NjoupvZ1RlQEj1Zq+C4DgHkgiTtqzX4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JW5+cILD49k/9ssvG+R9Zwi106xSXHp4cRgIyvILpasmeh+WQWXHMaPuFOGGkxSt17FT+VZViGqPXLEaTQtsf9YttKLaMHihVeR9XoVW08gBbsBtTW6GOfydqXqJc8yQywmfdfj8L6hEWN/KgH3UyMuwdGZXiQsUVVBvoJaBSx8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8CB231A25;
+	Tue, 26 Aug 2025 07:35:50 -0700 (PDT)
+Received: from [10.57.4.86] (unknown [10.57.4.86])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E899E3F694;
+	Tue, 26 Aug 2025 07:35:51 -0700 (PDT)
+Message-ID: <ab80cb84-42b2-4ce8-aa6c-4ce6be7a12b7@arm.com>
+Date: Tue, 26 Aug 2025 15:35:48 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b57d7b97-8110-47c5-9c7a-516b7b535ce9@intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 02/19] perf/hisilicon: Fix group validation
+To: Mark Rutland <mark.rutland@arm.com>
+Cc: peterz@infradead.org, mingo@redhat.com, will@kernel.org, acme@kernel.org,
+ namhyung@kernel.org, alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+ irogers@google.com, adrian.hunter@intel.com, kan.liang@linux.intel.com,
+ linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-alpha@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev,
+ linux-csky@vger.kernel.org, loongarch@lists.linux.dev,
+ linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+ sparclinux@vger.kernel.org, linux-pm@vger.kernel.org,
+ linux-rockchip@lists.infradead.org, dmaengine@vger.kernel.org,
+ linux-fpga@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+ intel-xe@lists.freedesktop.org, coresight@lists.linaro.org,
+ iommu@lists.linux.dev, linux-amlogic@lists.infradead.org,
+ linux-cxl@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-riscv@lists.infradead.org
+References: <cover.1755096883.git.robin.murphy@arm.com>
+ <c7b877e66ba0d34d8558c5af8bbb620e8c0e47d9.1755096883.git.robin.murphy@arm.com>
+ <aK2XS_GhLw1EQ2ml@J2N7QTR9R3>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <aK2XS_GhLw1EQ2ml@J2N7QTR9R3>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Aug 26, 2025 at 07:22:06AM -0700, Dave Hansen wrote:
-> On 8/25/25 19:49, Baolu Lu wrote:
-> >> The three separate lists are needed because we're handling three
-> >> distinct types of page deallocation. Grouping the pages this way allows
-> >> the workqueue handler to free each type using the correct function.
-> > 
-> > Please allow me to add more details.
+On 2025-08-26 12:15 pm, Mark Rutland wrote:
+> On Wed, Aug 13, 2025 at 06:00:54PM +0100, Robin Murphy wrote:
+>> The group validation logic shared by the HiSilicon HNS3/PCIe drivers is
+>> a bit off, in that given a software group leader, it will consider that
+>> event *in place of* the actual new event being opened. At worst this
+>> could theoretically allow an unschedulable group if the software event
+>> config happens to look like one of the hardware siblings.
+>>
+>> The uncore framework avoids that particular issue,
 > 
-> Right, I know why it got added this way: it was the quickest way to hack
-> together a patch that fixes the IOMMU issue without refactoring anything.
+> What is "the uncore framework"? I'm not sure exactly what you're
+> referring to, nor how that composes with the problem described above.
+
+Literally that hisi_uncore_pmu.c is actually a framework for half a 
+dozen individual sub-drivers rather than a "driver" itself per se, but I 
+suppose that detail doesn't strictly matter at this level.
+
+>> but all 3 also share the common issue of not preventing racy access to
+>> the sibling list,
 > 
-> I agree that you have three cases:
-> 1. A full on 'struct ptdesc' that needs its destructor run
-> 2. An order-0 'struct page'
-> 3. A higher-order 'struct page'
+> Can you please elaborate on this racy access to the silbing list? I'm
+> not sure exactly what you're referring to.
+
+Hmm, yes, I guess an actual race is probably impossible since if we're 
+still in the middle of opening the group leader event then we haven't 
+yet allocated the fd that userspace would need to start adding siblings, 
+even if it tried to guess. I leaned on "racy" as a concise way to infer 
+"when it isn't locked (even though the reasons for that are more 
+subtle)" repeatedly over several patches - after all, the overall theme 
+of this series is that I dislike repetitive boilerplate :)
+
+I'll dedicate some time for polishing commit messages for v2, especially 
+the common context for these "part 1" patches per your feedback on patch #1.
+
+>> and some redundant checks which can be cleaned up.
+>>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>>   drivers/perf/hisilicon/hisi_pcie_pmu.c   | 17 ++++++-----------
+>>   drivers/perf/hisilicon/hisi_uncore_pmu.c | 23 +++++++----------------
+>>   drivers/perf/hisilicon/hns3_pmu.c        | 17 ++++++-----------
+>>   3 files changed, 19 insertions(+), 38 deletions(-)
+>>
+>> diff --git a/drivers/perf/hisilicon/hisi_pcie_pmu.c b/drivers/perf/hisilicon/hisi_pcie_pmu.c
+>> index c5394d007b61..3b0b2f7197d0 100644
+>> --- a/drivers/perf/hisilicon/hisi_pcie_pmu.c
+>> +++ b/drivers/perf/hisilicon/hisi_pcie_pmu.c
+>> @@ -338,21 +338,16 @@ static bool hisi_pcie_pmu_validate_event_group(struct perf_event *event)
+>>   	int counters = 1;
+>>   	int num;
+>>   
+>> -	event_group[0] = leader;
+>> -	if (!is_software_event(leader)) {
+>> -		if (leader->pmu != event->pmu)
+>> -			return false;
+>> +	if (leader == event)
+>> +		return true;
+>>   
+>> -		if (leader != event && !hisi_pcie_pmu_cmp_event(leader, event))
+>> -			event_group[counters++] = event;
+>> -	}
+>> +	event_group[0] = event;
+>> +	if (leader->pmu == event->pmu && !hisi_pcie_pmu_cmp_event(leader, event))
+>> +		event_group[counters++] = leader;
 > 
-> Long-term, #2 and #3 probably need to get converted over to 'struct
-> ptdesc'. They don't look _that_ hard to convert to me. Willy, Vishal,
-> any other mm folks: do you agree?
+> Looking at this, the existing logic to share counters (which
+> hisi_pcie_pmu_cmp_event() is trying to permit) looks to be bogus, given
+> that the start/stop callbacks will reprogram the HW counters (and hence
+> can fight with one another).
 
-Uhh.  I'm still quite ignorant about iommu page tables.  Let me make
-some general observations that may be helpful.
+Yeah, this had a dodgy smell when I first came across it, but after 
+doing all the digging I think it does actually work out - the trick 
+seems to be the group_leader check in hisi_pcie_pmu_get_event_idx(), 
+with the implication the PMU is going to be stopped while scheduling 
+in/out the whole group, so assuming hisi_pcie_pmu_del() doesn't clear 
+the counter value in hardware (even though the first call nukes the rest 
+of the event configuration), then the events should stay in sync.
 
-We are attempting to shrink struct page down to 8 bytes.  That's going
-to proceed in stages over the next two to three years.  Depending how
-much information you need to keep around, you may be able to keep using
-struct page for a while, but eventually (unless you only need a few bits
-of information), you're going to need a memdesc for your allocations.
+It does seem somewhat nonsensical to have multiple copies of the same 
+event in the same group, but I imagine it could happen with some sort of 
+scripted combination of metrics, and supporting it at this level saves 
+needing explicit deduplication further up. So even though my initial 
+instinct was to rip it out too, in the end I concluded that that doesn't 
+seem justified.
 
-One memdesc type already assigned is for page tables.  Maybe iommu page
-tables are the same / similar enough to a CPU page table that we keep
-the same data structure.  Maybe they'll need their own data structure.
-I lack the knowledge to make that decision.
+Thanks,
+Robin.
 
-For more on memdescs, please see here:
-https://kernelnewbies.org/MatthewWilcox/Memdescs
-
-> Short-term, I'd just consolidate your issue down to a single list.
+> I suspect that can be removed *entirely*, and this can be simplified
+> down to allocating N counters, without a quadratic event comparison.  We
+> don't try to share counters in other PMU drivers, and there was no
+> rationale for trying to do this when this wa introduced in commit:
 > 
-> #1: For 'struct ptdesc', modify pte_free_kernel() to pass information in
->     to pagetable_dtor_free() to tell it to use the deferred page table
->     free list. Do this with a bit in the ptdesc or a new argument to
->     pagetable_dtor_free().
-
-We should be able to reuse one of the flags in __page_flags or there
-are 24 unused bits in __page_type.
-
-> #2. Just append these to the deferred page table free list. Easy.
-> #3. The biggest hacky way to do this is to just treat the higher-order
->     non-compound page and put the pages on the deferred page table
->     free list one at a time. The other way to do it is to track down how
->     this thing got allocated in the first place and make sure it's got
->     __GFP_COMP metadata. If so, you can just use __free_pages() for
->     everything.
-
-Non-compound allocations are bad news.  Is there a good reason these
-can't be made into compound allocations?
-
-> Yeah, it'll take a couple patches up front to refactor some things. But
-> that refactoring will make things more consistent instead of adding
-> adding complexity to deal with the inconsistency.
+>    8404b0fbc7fbd42e ("drivers/perf: hisi: Add driver for HiSilicon PCIe PMU")
+> 
+> The 'link' tag in that comment goes to v13, which doesn't link to prior
+> postings, so I'm not going to dig further.
+> 
+> Mark.
+> 
+>>   
+>>   	for_each_sibling_event(sibling, event->group_leader) {
+>> -		if (is_software_event(sibling))
+>> -			continue;
+>> -
+>>   		if (sibling->pmu != event->pmu)
+>> -			return false;
+>> +			continue;
+>>   
+>>   		for (num = 0; num < counters; num++) {
+>>   			/*
+>> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+>> index a449651f79c9..3c531b36cf25 100644
+>> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
+>> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
+>> @@ -101,26 +101,17 @@ static bool hisi_validate_event_group(struct perf_event *event)
+>>   	/* Include count for the event */
+>>   	int counters = 1;
+>>   
+>> -	if (!is_software_event(leader)) {
+>> -		/*
+>> -		 * We must NOT create groups containing mixed PMUs, although
+>> -		 * software events are acceptable
+>> -		 */
+>> -		if (leader->pmu != event->pmu)
+>> -			return false;
+>> +	if (leader == event)
+>> +		return true;
+>>   
+>> -		/* Increment counter for the leader */
+>> -		if (leader != event)
+>> -			counters++;
+>> -	}
+>> +	/* Increment counter for the leader */
+>> +	if (leader->pmu == event->pmu)
+>> +		counters++;
+>>   
+>>   	for_each_sibling_event(sibling, event->group_leader) {
+>> -		if (is_software_event(sibling))
+>> -			continue;
+>> -		if (sibling->pmu != event->pmu)
+>> -			return false;
+>>   		/* Increment counter for each sibling */
+>> -		counters++;
+>> +		if (sibling->pmu == event->pmu)
+>> +			counters++;
+>>   	}
+>>   
+>>   	/* The group can not count events more than the counters in the HW */
+>> diff --git a/drivers/perf/hisilicon/hns3_pmu.c b/drivers/perf/hisilicon/hns3_pmu.c
+>> index c157f3572cae..382e469257f9 100644
+>> --- a/drivers/perf/hisilicon/hns3_pmu.c
+>> +++ b/drivers/perf/hisilicon/hns3_pmu.c
+>> @@ -1058,21 +1058,16 @@ static bool hns3_pmu_validate_event_group(struct perf_event *event)
+>>   	int counters = 1;
+>>   	int num;
+>>   
+>> -	event_group[0] = leader;
+>> -	if (!is_software_event(leader)) {
+>> -		if (leader->pmu != event->pmu)
+>> -			return false;
+>> +	if (leader == event)
+>> +		return true;
+>>   
+>> -		if (leader != event && !hns3_pmu_cmp_event(leader, event))
+>> -			event_group[counters++] = event;
+>> -	}
+>> +	event_group[0] = event;
+>> +	if (leader->pmu == event->pmu && !hns3_pmu_cmp_event(leader, event))
+>> +		event_group[counters++] = leader;
+>>   
+>>   	for_each_sibling_event(sibling, event->group_leader) {
+>> -		if (is_software_event(sibling))
+>> -			continue;
+>> -
+>>   		if (sibling->pmu != event->pmu)
+>> -			return false;
+>> +			continue;
+>>   
+>>   		for (num = 0; num < counters; num++) {
+>>   			/*
+>> -- 
+>> 2.39.2.101.g768bb238c484.dirty
+>>
