@@ -1,158 +1,221 @@
-Received: from fhigh-b3-smtp.messagingengine.com (fhigh-b3-smtp.messagingengine.com [202.12.124.154])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE35629D29B;
-	Tue, 26 Aug 2025 10:57:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0502B1A23A6
+	for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 11:04:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756205849; cv=none; b=mHsW5cMYNIPMNmTww867ulyv66lm5s8l7Uei0zlmGpe2KQ8muztXhgXzb3UZ8x+otMZv42C8AU8E30suldNeyms8GRU8gejFovl7mNZl96cT7w28bfJ1YeY7ReEJAEWC9/yumcRpk3ukCft6lzS5w1sBXzybLHSP2orHauNE5ho=
+	t=1756206283; cv=none; b=A6stOmyGHAOV8nUsRyX4B7MH7+HFQj1/kvBpwoxQ+xFVSqv7X8zF7F5rQL0xh0lRPVVxY5IdvMPZlZNIdGx0GkvBO+ni4HBYIaXy15K1P9a+r55p9UprcaOuapEy5ZY9ByMnJ4olDTw3zGOI8lSjK53vtGarQvQ5uIn0pcr0xZo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756205849; c=relaxed/simple;
-	bh=vqIXBBy6l7WeM+eQwbRZ36QCEnQMWRyIbe5aLB4ko/0=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=rRqiK0i/6w6eAjZSNPF0MKAxoGrFHDNNFHLlvJjv3+WeH3sNTggyp90NM9W8u2+N+4aOAKknMiuVLXTzyMGWXIzWDrruJTydarBMQox5i5kiU2CZBUanhJUlvvl3Cb9WBP7mA4PH7xvEn/z6Q4bwgZbpeEjxaBld8cMvrJfSyVI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=va85Wh+y; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=dW6dIDvP; arc=none smtp.client-ip=202.12.124.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
+	s=arc-20240116; t=1756206283; c=relaxed/simple;
+	bh=IQ5LDCs/IEmTXiQ4zdkXIkPVxNBQzfU++k5VF/Ufz7k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FGC0gvbRNKwZBiEoZkpmACeb0eqGk5W73xiQl67fvKe/Xiu6N7LZMFhjCNDmZhgnhvMutiQNfdtYOHmh73B8umsLOmkXXlZvZdUkM4/JIMwtEmpdRXNLdtNf2ItNPwHaLmgUsIFa6qBj83qzr1xJTkJmb8VQuh/WUNiBkCVh2Gc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=canFekNU; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="va85Wh+y";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="dW6dIDvP"
-Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailfhigh.stl.internal (Postfix) with ESMTP id AD2EB7A0114;
-	Tue, 26 Aug 2025 06:57:25 -0400 (EDT)
-Received: from phl-mailfrontend-02 ([10.202.2.163])
-  by phl-compute-01.internal (MEProxy); Tue, 26 Aug 2025 06:57:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
-	:cc:content-transfer-encoding:content-type:content-type:date
-	:date:from:from:in-reply-to:message-id:mime-version:reply-to
-	:subject:subject:to:to; s=fm2; t=1756205845; x=1756292245; bh=fw
-	B+02lU1oU9CXZnCCCtUhP4HDlWfmGUMKuT8KEB068=; b=va85Wh+ysvBQIYulnu
-	CVLCgGJ0bPS2U1vq22hO1UoNViElVV+6TAnbcE8dtREnZoaoLsYoYdvd9zI7Gp6I
-	+h0WbPTGFwoQmtzjvuq78U2+tHBx8B5sHhdN0LS+fh0ubpP23HewLRbjdR9YwX+c
-	B4qd6c9SwVooGtrv578IIsgSukgiHByHQCdCb5l2DKGWYaLVhO54tLQUuk/1S0X7
-	GI/PfcP2m/bfXohHL0LW4+rXbKNzh5qjoNwrRCW/WGI7Y4mmXQ8xpXOaWyXYRpfD
-	6nttWd9Lv6PSO57hL/zfllfgvyFy8n7xNWiFFeBVEjA534GiL6H0DvLncL2mT8ru
-	T9qg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:message-id:mime-version:reply-to:subject
-	:subject:to:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-	fm1; t=1756205845; x=1756292245; bh=fwB+02lU1oU9CXZnCCCtUhP4HDlW
-	fmGUMKuT8KEB068=; b=dW6dIDvPFMoHmNzUSWPUsW0yoNkhM1iuZrPNyJOTGY7t
-	zprvoh0ZPuBAGtzfrlKvX+zIC9yjgqA6kS0ObAS2iiTOgAhj3Btq4RBXfGOqN1ZJ
-	InE+dF9p41LsgisNC7OoV9R/xpXkVFFYtXzxWu+fgJGSwtxOsT61tbnDAHW9O9E8
-	qRzDg0o0EkL08J0kvMEaJJTD9DIF8mhYG6m87zTyIa2a028DvpVY/0uIQt9TculV
-	7bDwiEmWcG6x2Y055tUKjD+tY0L9N4uhbsfuusp82tWFUqnavWYHPVyDPLknAg5+
-	PsYAoF/FSTsPRpQ6AwiM4xhJ4RfMaiCXbYVSsptwHA==
-X-ME-Sender: <xms:E5OtaEjotktW0NPsBmRR-kLRNe0I7Ta6Io-8lw3REZoKGXDwDgSGRQ>
-    <xme:E5OtaC-44aDJbK2vP7MKcwenLzsTSWEoEbjTtUESASot52xkONhg7zVlgs44Y1E5x
-    ADIFZ-AN30GD6KBE8g>
-X-ME-Received: <xmr:E5OtaJNFVz62-EirZkhI7TK2DCv342zDJTqVGjEcaz4UIC71iuvvqUI1zlxEFLsh4BotMCIWqq56JVOI7pr9NcU5iI4Z0g3T6Gni_Q>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgddujeehtdelucetufdoteggodetrf
-    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
-    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
-    gurhephfffufggtgfgkffvvefosehtjeertdertdejnecuhfhrohhmpeflrghnnhgvucfi
-    rhhunhgruhcuoehjsehjrghnnhgruhdrnhgvtheqnecuggftrfgrthhtvghrnhepfeehle
-    dtheefteejfedvheetuedttdetleegudeuteejveetieefuedvfeffvdeinecuffhomhgr
-    ihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpehjsehjrghnnhgruhdrnhgvthdpnhgspghrtghpthhtohepuddv
-    pdhmohguvgepshhmthhpohhuthdprhgtphhtthhopeifihhllheskhgvrhhnvghlrdhorh
-    hgpdhrtghpthhtohepnhgvrghlsehgohhmphgrrdguvghvpdhrtghpthhtohepjhhorhho
-    seeksgihthgvshdrohhrghdprhgtphhtthhopehrohgsihhnrdhmuhhrphhhhiesrghrmh
-    drtghomhdprhgtphhtthhopehjsehjrghnnhgruhdrnhgvthdprhgtphhtthhopegrlhih
-    shhsrgesrhhoshgvnhiifigvihhgrdhiohdprhgtphhtthhopehiohhmmhhusehlihhsth
-    hsrdhlihhnuhigrdguvghvpdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgv
-    rhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepshhvvghnsehkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:E5OtaGC8GCpdgGNv4VW9HQdcuScqETNP_MVUCKoGFYu6WiGoGcDo8A>
-    <xmx:E5OtaNPA8Bud0K2fgKF7bDOWALCVkEdIajVeSPZlS72brXD5OVVFyw>
-    <xmx:E5OtaNeOMWmZE2c3fiHkmAfDZcu54yqVc0AymoU0-Wg6jOgGYZGo4w>
-    <xmx:E5OtaO7uaA6YN4jiMKM_EMkUBFjVojrSeYLD1TFRF7WUbOWwQ1rgsQ>
-    <xmx:FZOtaFyzryjsiaGiY6hvEuX3SQcVsV_HDBkcPGnGD4v9uuWC9BQsrrG3>
-Feedback-ID: i47b949f6:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 26 Aug 2025 06:57:23 -0400 (EDT)
-From: Janne Grunau <j@jannau.net>
-Date: Tue, 26 Aug 2025 12:57:18 +0200
-Subject: [PATCH] iommu/apple-dart: Clear stream error indicator bits for
- T8110 DARTs
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="canFekNU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1756206281;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=jhHf33zPn8FMTc4V2Pm10xsHI1Kc6Z2Rv/ZWcei/RDk=;
+	b=canFekNUPR0xC+PH5766rAfjaS0A7rpG1sWfH1J24eV5gKUCCWPn2aUpkG4g9qA1q3pFUO
+	iIoqLx8q4zCIO3X3IjKKbYuFGh6tMbuPP1kyOrXOH7KsOHmYV19I8wZA535Sa1ICe7jDJk
+	Jc2rsDjPQJVQqkYZSG4eDlCUiNq9oe8=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-267-MJOzsq6RNqSGghw8N6P3gQ-1; Tue, 26 Aug 2025 07:04:39 -0400
+X-MC-Unique: MJOzsq6RNqSGghw8N6P3gQ-1
+X-Mimecast-MFC-AGG-ID: MJOzsq6RNqSGghw8N6P3gQ_1756206278
+Received: by mail-ed1-f71.google.com with SMTP id 4fb4d7f45d1cf-61c927d2bfeso668202a12.3
+        for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 04:04:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1756206278; x=1756811078;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jhHf33zPn8FMTc4V2Pm10xsHI1Kc6Z2Rv/ZWcei/RDk=;
+        b=ZkHC6pQQqfoeh/8WY2OsIBxoib/n+JbPm6JYdNQW/BMKg45sNjHl3mUuEABtPflzNK
+         CguW6HV/OZRrQICisjwy3wbnxLMUzEdbUU9FxgrZX3HDhALKhRgZr+zCVVcDsCrm5PR2
+         PqcyxVu2mTY3awH1yJ2QdVN2pt/+5TXsDlg64SRxWP/AWJhsLU1MoXNGIQs23w3TgsP5
+         mNuH9yKxGaMn7KZlK0c5huql30jlZutSc6RC4VRwJxPjMrtCS3HtTNuw/Dwx4potRm6r
+         xWFaUtZ/vajbpfA6U/T7wA9wkoO567ZU60MLezz0px93wkTPr5hvo8nYgH6BqENggUJ8
+         NJ7w==
+X-Forwarded-Encrypted: i=1; AJvYcCU2AAn8GMkK7xpvQ/Y9v5MnRQhqGSYuZ5nLMJemA7g3Kgdc/+vKlCL3pPQcnD+yyfRqdZqQ5g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyCYJw2jN5yBwYL8Lm1rm0Px1LLkaAcG4sslKKD4H59Y4HmQjKW
+	n+mMfGcz86buKpDEZ1ohai1E7vrtgXGdOWxEoWzI8ZDC0CFv7TvjBqLCwejSnKRlnp2ZJLgFoVR
+	V9OZkkwYJAch556/j4hNskfGJ3BlG7/0z3TOj0DSPjo/CWOQx9Y2G6saX
+X-Gm-Gg: ASbGncvxLOSAyl3RRGM2htg+eCJ0hY+EIS1/zAlMx3WoFMW4ql/CN0lPbI6vCE7DIlf
+	h/wLfW97JB1Dlyh16PT4Nhxixhoq5CkS80Zyf1mgpBHJ85hSgRYtCPKu/JPPGAZTVtnDH/aEUXD
+	d+OTS5W2t6lNmNplBgyUulW2scBRhbBkbQLYocQGMoHAEcZgxK2zkvA7PtIgq5JJgM3mvUz13CS
+	Geex7KTkCSDnwvO9r91v3gvHk5Mzd6EVKhwa1u7ywBPxf66g4uOgnIIW+eFahE9/38VlsKsJVCY
+	EIKXPYjk95m8Kx+wNttKqMF4w9iS17VLHw2BazmelgLAcENbXVa4amsTXhhVPUT9PgMdvm65wA=
+	=
+X-Received: by 2002:a05:6402:510e:b0:61c:a1a6:52a2 with SMTP id 4fb4d7f45d1cf-61ca1a65d0amr110472a12.28.1756206278192;
+        Tue, 26 Aug 2025 04:04:38 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFJfWOpyeYnJbaHVglB9KfY+PTnQ4jI93qRAexOTMKIRVofYBVmmLclF7ZKvry/r0B75eD1FQ==
+X-Received: by 2002:a05:6402:510e:b0:61c:a1a6:52a2 with SMTP id 4fb4d7f45d1cf-61ca1a65d0amr110409a12.28.1756206276561;
+        Tue, 26 Aug 2025 04:04:36 -0700 (PDT)
+Received: from ?IPV6:2a09:80c0:192:0:5dac:bf3d:c41:c3e7? ([2a09:80c0:192:0:5dac:bf3d:c41:c3e7])
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-61c3172bf4csm6850118a12.38.2025.08.26.04.04.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Aug 2025 04:04:36 -0700 (PDT)
+Message-ID: <ad521f4f-47aa-4728-916f-3704bf01f770@redhat.com>
+Date: Tue, 26 Aug 2025 13:04:33 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 21/35] mm/cma: refuse handing out non-contiguous page
+ ranges
+To: Alexandru Elisei <alexandru.elisei@arm.com>
+Cc: linux-kernel@vger.kernel.org, Alexander Potapenko <glider@google.com>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Brendan Jackman <jackmanb@google.com>, Christoph Lameter <cl@gentwo.org>,
+ Dennis Zhou <dennis@kernel.org>, Dmitry Vyukov <dvyukov@google.com>,
+ dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+ iommu@lists.linux.dev, io-uring@vger.kernel.org,
+ Jason Gunthorpe <jgg@nvidia.com>, Jens Axboe <axboe@kernel.dk>,
+ Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>,
+ kasan-dev@googlegroups.com, kvm@vger.kernel.org,
+ "Liam R. Howlett" <Liam.Howlett@oracle.com>,
+ Linus Torvalds <torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
+ linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
+ linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
+ linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+ linux-scsi@vger.kernel.org, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
+ Marco Elver <elver@google.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@kernel.org>,
+ Muchun Song <muchun.song@linux.dev>, netdev@vger.kernel.org,
+ Oscar Salvador <osalvador@suse.de>, Peter Xu <peterx@redhat.com>,
+ Robin Murphy <robin.murphy@arm.com>, Suren Baghdasaryan <surenb@google.com>,
+ Tejun Heo <tj@kernel.org>, virtualization@lists.linux.dev,
+ Vlastimil Babka <vbabka@suse.cz>, wireguard@lists.zx2c4.com, x86@kernel.org,
+ Zi Yan <ziy@nvidia.com>
+References: <20250821200701.1329277-1-david@redhat.com>
+ <20250821200701.1329277-22-david@redhat.com> <aK2QZnzS1ErHK5tP@raptor>
+From: David Hildenbrand <david@redhat.com>
+Autocrypt: addr=david@redhat.com; keydata=
+ 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
+ qIws/H2t
+In-Reply-To: <aK2QZnzS1ErHK5tP@raptor>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: iQUpxno6ISer-HRkgGz5taNDPwEMtcOFOPvSpDG_LPU_1756206278
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250826-dart-t8110-stream-error-v1-1-e33395112014@jannau.net>
-X-B4-Tracking: v=1; b=H4sIAA2TrWgC/x3MywqAIBBA0V+JWTeg9iD6lWihOdYsejBKBOG/J
- y3P4t4XIglThLF6QejmyOdRoOsKls0eKyH7YjDKdGowPXorCdOgtcKYhOyOJHIK6sU450IbXN9
- AqS+hwM9/nuacPzMLNWRpAAAA
-X-Change-ID: 20250826-dart-t8110-stream-error-1c2bbbf4fb63
-To: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, 
- Neal Gompa <neal@gompa.dev>, Joerg Roedel <joro@8bytes.org>, 
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
- Hector Martin <marcan@marcan.st>, Janne Grunau <j@jannau.net>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1556; i=j@jannau.net;
- s=yk2024; h=from:subject:message-id;
- bh=k9X6j7yu0itBb/72muBj/YHUjNWTT3JQlGmlwONFySc=;
- b=owGbwMvMwCW2UNrmdq9+ahrjabUkhoy1kwX/MXGWxs1W/iErZl96MfzdvkqNCSmXq5a1dW28a
- 2P0ZfKpjlIWBjEuBlkxRZYk7ZcdDKtrFGNqH4TBzGFlAhnCwMUpABOxi2H4Z3EspWl2YohmlNsD
- 6yN7jJyS+Eq3zYs7P+Vje/Ta/OOvnBgZNhnm3ZjKz+jk7d/Kns6bcfthpf3Fom/HAmLfZLI/FZd
- kBQA=
-X-Developer-Key: i=j@jannau.net; a=openpgp;
- fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 
-From: Hector Martin <marcan@marcan.st>
+>>   
+>>   		pr_debug("%s(): memory range at pfn 0x%lx %p is busy, retrying\n",
+>> -			 __func__, pfn, pfn_to_page(pfn));
+>> +			 __func__, pfn, page);
+>>   
+>>   		trace_cma_alloc_busy_retry(cma->name, pfn, pfn_to_page(pfn),
+> 
+> Nitpick: I think you already have the page here.
 
-These registers exist and at least on the t602x variant the IRQ only
-clears when theses are cleared.
+Indeed, forgot to clean that up as well.
 
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Janne Grunau <j@jannau.net>
----
-I've overlooked this change for the 4 level page table / t6020 support
-series [1]. There are no dependencies to series so this can go in on its
-own.
+> 
+>>   					   count, align);
+>> -		/* try again with a bit different memory target */
+>> -		start = bitmap_no + mask + 1;
+>>   	}
+>>   out:
+>> -	*pagep = page;
+>> +	if (!ret)
+>> +		*pagep = page;
+>>   	return ret;
+>>   }
+>>   
+>> @@ -882,7 +892,7 @@ static struct page *__cma_alloc(struct cma *cma, unsigned long count,
+>>   	 */
+>>   	if (page) {
+>>   		for (i = 0; i < count; i++)
+>> -			page_kasan_tag_reset(nth_page(page, i));
+>> +			page_kasan_tag_reset(page + i);
+> 
+> Had a look at it, not very familiar with CMA, but the changes look equivalent to
+> what was before. Not sure that's worth a Reviewed-by tag, but here it in case
+> you want to add it:
+> 
+> Reviewed-by: Alexandru Elisei <alexandru.elisei@arm.com>
 
-Janne
+Thanks!
 
-1: https://lore.kernel.org/asahi/20250821-apple-dart-4levels-v2-0-e39af79daa37@jannau.net/
----
- drivers/iommu/apple-dart.c | 5 +++++
- 1 file changed, 5 insertions(+)
+> 
+> Just so I can better understand the problem being fixed, I guess you can have
+> two consecutive pfns with non-consecutive associated struct page if you have two
+> adjacent memory sections spanning the same physical memory region, is that
+> correct?
 
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 190f28d76615159527649cd288df395a50d950ef..8b1272b7bb44a1ebc03ca4ddf3be43a1e42c97ed 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -122,6 +122,8 @@
- #define DART_T8110_ERROR_ADDR_LO 0x170
- #define DART_T8110_ERROR_ADDR_HI 0x174
- 
-+#define DART_T8110_ERROR_STREAMS 0x1c0
-+
- #define DART_T8110_PROTECT 0x200
- #define DART_T8110_UNPROTECT 0x204
- #define DART_T8110_PROTECT_LOCK 0x208
-@@ -1077,6 +1079,9 @@ static irqreturn_t apple_dart_t8110_irq(int irq, void *dev)
- 		error, stream_idx, error_code, fault_name, addr);
- 
- 	writel(error, dart->regs + DART_T8110_ERROR);
-+	for (int i = 0; i < BITS_TO_U32(dart->num_streams); i++)
-+		writel(U32_MAX, dart->regs + DART_T8110_ERROR_STREAMS + 4 * i);
-+
- 	return IRQ_HANDLED;
- }
- 
+Exactly. Essentially on SPARSEMEM without SPARSEMEM_VMEMMAP it is not 
+guaranteed that
 
----
-base-commit: 8f5ae30d69d7543eee0d70083daf4de8fe15d585
-change-id: 20250826-dart-t8110-stream-error-1c2bbbf4fb63
+	pfn_to_page(pfn + 1) == pfn_to_page(pfn) + 1
 
-Best regards,
+when we cross memory section boundaries.
+
+It can be the case for early boot memory if we allocated consecutive 
+areas from memblock when allocating the memmap (struct pages) per memory 
+section, but it's not guaranteed.
+
+So we rule out that case.
+
 -- 
-Janne Grunau <j@jannau.net>
+Cheers
+
+David / dhildenb
 
