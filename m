@@ -1,206 +1,133 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0A50C72627;
-	Tue, 26 Aug 2025 11:15:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com [209.85.210.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CC502D060B
+	for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 12:36:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756206943; cv=none; b=re484LSf4GhK+ZJkBIAlGMlYP90a01rOyfm+U7EGxCG9YL7JDoQ6evHFE+OcfN1BCa0cSn8gUpk93RzI3ASZJO5vSe8VF+bB8sHP2X1h8M7cketHSCQNN6iI38MWj9Epr48mqAyaAYO9+L9VjCL6C+SN3XLPcvMAB6A5wNujBpI=
+	t=1756211817; cv=none; b=BdDi8IeNCpJHxWukMMw4nSZBjdPzXHnIQu6xv50pdkvMb01UX7uBwHUFsMlj+zXdtxtM3oG1YFjsuClYdXe3FQ1Z3a4qMX/m4UMKiL60pRq9tdbMCysh1LSV/ZARQqzTsATkUJZuyhT5impEEQdoGHelS8VOTWvtmrYKtvpiaeo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756206943; c=relaxed/simple;
-	bh=OTax/FZOAVkSfXJa1A9gunuHpIZmaqBR9VNEDweSclY=;
+	s=arc-20240116; t=1756211817; c=relaxed/simple;
+	bh=D8LK1h52u7FTE7jNOV0kzrk9gkDffkqaUwmZGkhUfm8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bKnrIfageEddsND/tQbu35XDLl+UdfFKritSwAh9f1ySjBjoTe5to6DgUah9+k67KTxzgvMEsB3wZP5egM+xDyVVgglPuPY9RtiJypax7d0F5XuaQupk6zZ+16RIe/IPnfSj0r5tqrjp1KK+rEVdMRy6ASpG8eGYCUcgofDF/3Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0E7AF1A00;
-	Tue, 26 Aug 2025 04:15:32 -0700 (PDT)
-Received: from J2N7QTR9R3 (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 663C13F63F;
-	Tue, 26 Aug 2025 04:15:28 -0700 (PDT)
-Date: Tue, 26 Aug 2025 12:15:23 +0100
-From: Mark Rutland <mark.rutland@arm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: peterz@infradead.org, mingo@redhat.com, will@kernel.org,
-	acme@kernel.org, namhyung@kernel.org,
-	alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-	irogers@google.com, adrian.hunter@intel.com,
-	kan.liang@linux.intel.com, linux-perf-users@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
-	linux-snps-arc@lists.infradead.org,
-	linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev,
-	linux-csky@vger.kernel.org, loongarch@lists.linux.dev,
-	linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-	sparclinux@vger.kernel.org, linux-pm@vger.kernel.org,
-	linux-rockchip@lists.infradead.org, dmaengine@vger.kernel.org,
-	linux-fpga@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-	dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-	intel-xe@lists.freedesktop.org, coresight@lists.linaro.org,
-	iommu@lists.linux.dev, linux-amlogic@lists.infradead.org,
-	linux-cxl@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-	linux-riscv@lists.infradead.org
-Subject: Re: [PATCH 02/19] perf/hisilicon: Fix group validation
-Message-ID: <aK2XS_GhLw1EQ2ml@J2N7QTR9R3>
-References: <cover.1755096883.git.robin.murphy@arm.com>
- <c7b877e66ba0d34d8558c5af8bbb620e8c0e47d9.1755096883.git.robin.murphy@arm.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=tvprGnks1DN0U0V6d+OtALW0/pHFWNRBIy9at6iXAs22Anb323TINNCOd43cM9kpHsb0KgAa8ibtlzKCK1xzKZN5qdW41xNGnOTXqhWZjyZySK38ny0oMLQq5AJiUQUlcMSalmdhxLQb1jJFyzZWGJNdY795caCqw3Sj5CdFC9Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Ueg7p4Hy; arc=none smtp.client-ip=209.85.210.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ueg7p4Hy"
+Received: by mail-pf1-f172.google.com with SMTP id d2e1a72fcca58-76e2eb6ce24so4325378b3a.3
+        for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 05:36:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1756211815; x=1756816615; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=mFuBdDpmjTxJPIC+jvTVeeAVDsVAAyhX1fX5Qkry/n4=;
+        b=Ueg7p4Hy/4yymrDRzWltmiMN9f989pgo8ReFP2Aju0rKyTnSTMGPvyNizsVgluIdZ7
+         NhDCgMrjZA4bEJfHsXNzkIWL/UFfF+pSVmR6WDADbcXxxR5Nrr7ub3OupRrxCO+NnRQs
+         egfM7B+/v4a5mULMZMmwvDcD6LITs93AKqRU8ehgrpVVPY/r6CNM3biX1HkcF6Vvg2/r
+         dQfrwODWxu4S1Pja9g/jg25iajrlgiTzb8fLlgTgJAFA40fL34U21FawpgRJ7+qCAaUk
+         j6R4tS8OCZ15Q3wXDhJsIOdMoalfpwlqqJbUD/qVfWq2mvMGyHfBVV7Kqs9gdcjp65d6
+         DWvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1756211815; x=1756816615;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=mFuBdDpmjTxJPIC+jvTVeeAVDsVAAyhX1fX5Qkry/n4=;
+        b=Xz7VEblTmBd3azX3JE+GbBQQL604Caxu4QENs5s5YZsjvH0+avSPFh38VhR5QqDHWb
+         rInghzyHPwDdSOVjCEN9EhRqD8rsaBhTYLCnBsCeNdRgPQzq4RoLSUwIhZNFLvM0euRI
+         WTFM5wzF7//zKDR1Luc2jeZcTBhOnXBD2U3CCFiCzq+MkjANpN9aGwXP5z/Jj2XyePaa
+         MZc7jlTKiz7yGdmhJrsdtHTOWL7pXUfBn5zANNJnwXX/F+bhshVPasXa6w1GQnZyG2uO
+         YpcL+kfmdvUGxOr9/ttJHIUnbtRNVLaCysAMOQtqlhC0adLRlR6lvZPorK96PBM4RCy/
+         DxbQ==
+X-Gm-Message-State: AOJu0Yza99ynJss5uzYeFhvSWrmiqd2BTo+pVUT2k5PQPHt9hNbYJUw3
+	2g5ZBU9RRN35MLE2ItA2c7yKgtfFfyIZn+9aSo19H7vTQize1tjWAvewhiZIH4jtRI4=
+X-Gm-Gg: ASbGncsjAOxBmrKzBJKfRL3b4/7P7Gxr9mYSlMqoT3XZAMto+KT9t4i+Z1n99/bKPrJ
+	2GjdBGpz9wH8KSjLW0okQpAKZl4JvaDYyO6mB6Kd+T4jtMfrgX3Hd0ZDjkU0UqZKJbo0+1D71Px
+	5fg7CXHapQvJwjQA0mAUKNswwQgfKhqQv+McanDG85UEp22LexEq83IbIx2i6K7B2rACW7MyaWg
+	mC9gWO31sCuldqLQSyJVrvc72vqNwHtDtlOPZ3hcQopH4ea66ZnGY5yxlUHw+ffhlI9gIYbEHFp
+	U2Ei43RZHcPaGenIHEJQOUQJor3z+EjmtWO1xsby9f24haadJiurP+kdK+tUARmsYblV3w8ws4Z
+	cg3Q6oJA=
+X-Google-Smtp-Source: AGHT+IHTh1g6nVXxG5B7xS4T7Fnw4NLjAQ3OfTl5DHXo//wtjXBmCj82vaaqojPvv0EPFyup1w2yOw==
+X-Received: by 2002:a05:6a20:1588:b0:204:432e:5fa4 with SMTP id adf61e73a8af0-24340b5b6ddmr22663293637.23.1756211815043;
+        Tue, 26 Aug 2025 05:36:55 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3275933d6a2sm567538a91.23.2025.08.26.05.36.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Aug 2025 05:36:54 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1uqsuz-00000008tQD-0mP5;
+	Tue, 26 Aug 2025 09:36:53 -0300
+Date: Tue, 26 Aug 2025 09:36:53 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Shyam Saini <shyamsaini@linux.microsoft.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
+	will@kernel.org, jacob.pan@linux.microsoft.com,
+	eric.auger@redhat.com, code@tyhicks.com,
+	eahariha@linux.microsoft.com, vijayb@linux.microsoft.com,
+	bboscaccy@linux.microsoft.com, robh@kernel.org,
+	saravanak@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
+	lizhi.hou@amd.com, clement.leger@bootlin.com
+Subject: Re: [PATCH v3 2/3] iommu/of: fix device tree configuration for PCI
+ devices
+Message-ID: <20250826123653.GC1899851@ziepe.ca>
+References: <20250806215539.1240561-1-shyamsaini@linux.microsoft.com>
+ <20250806215539.1240561-3-shyamsaini@linux.microsoft.com>
+ <20250808121515.GE377696@ziepe.ca>
+ <20250814233018.GA31418@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+ <20250815003958.GE599331@ziepe.ca>
+ <20250815023236.GA30997@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+ <20250818155310.GG599331@ziepe.ca>
+ <20250826011557.GA2980@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <c7b877e66ba0d34d8558c5af8bbb620e8c0e47d9.1755096883.git.robin.murphy@arm.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250826011557.GA2980@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
 
-On Wed, Aug 13, 2025 at 06:00:54PM +0100, Robin Murphy wrote:
-> The group validation logic shared by the HiSilicon HNS3/PCIe drivers is
-> a bit off, in that given a software group leader, it will consider that
-> event *in place of* the actual new event being opened. At worst this
-> could theoretically allow an unschedulable group if the software event
-> config happens to look like one of the hardware siblings.
+On Mon, Aug 25, 2025 at 06:15:57PM -0700, Shyam Saini wrote:
+> Hi Jason,
 > 
-> The uncore framework avoids that particular issue,
-
-What is "the uncore framework"? I'm not sure exactly what you're
-referring to, nor how that composes with the problem described above.
-
-> but all 3 also share the common issue of not preventing racy access to
-> the sibling list,
-
-Can you please elaborate on this racy access to the silbing list? I'm
-not sure exactly what you're referring to.
-
-> and some redundant checks which can be cleaned up.
+> On Mon, Aug 18, 2025 at 12:53:10PM -0300, Jason Gunthorpe wrote:
+> > On Thu, Aug 14, 2025 at 07:32:36PM -0700, Shyam Saini wrote:
+> > > On Thu, Aug 14, 2025 at 09:39:58PM -0300, Jason Gunthorpe wrote:
+> > > > On Thu, Aug 14, 2025 at 04:30:18PM -0700, Shyam Saini wrote:
+> > > > > or were you referring to [2]?
+> > > > > 
+> > > > > In that case, the PCI child node data needs to be parsed, which is
+> > > > > currently handled individually by each host controller driver.
+> > > > 
+> > > > Yes, this looks like it may be what I was thinking of, the pci@1,0
+> > > > specifes the BDF effectively
+> > > 
+> > > In that case, we'll need to parse the child DTS nodes properly
+> > > within of_iommu_get_resv_regions(). I'll include this in v4.
+> > 
+> > Kinda surprised this isn't happening already? It would be good to
+> > refer to the original specs and describe how whatetever you propose is
+> > aligned there.
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/perf/hisilicon/hisi_pcie_pmu.c   | 17 ++++++-----------
->  drivers/perf/hisilicon/hisi_uncore_pmu.c | 23 +++++++----------------
->  drivers/perf/hisilicon/hns3_pmu.c        | 17 ++++++-----------
->  3 files changed, 19 insertions(+), 38 deletions(-)
+> Just to confirm, does the v3 version of this series look good to you?
+> If so, I’ll go ahead and respin the series with the iommu_set_sw_msi()
+> change and address the other review comments from Jacob.
 > 
-> diff --git a/drivers/perf/hisilicon/hisi_pcie_pmu.c b/drivers/perf/hisilicon/hisi_pcie_pmu.c
-> index c5394d007b61..3b0b2f7197d0 100644
-> --- a/drivers/perf/hisilicon/hisi_pcie_pmu.c
-> +++ b/drivers/perf/hisilicon/hisi_pcie_pmu.c
-> @@ -338,21 +338,16 @@ static bool hisi_pcie_pmu_validate_event_group(struct perf_event *event)
->  	int counters = 1;
->  	int num;
->  
-> -	event_group[0] = leader;
-> -	if (!is_software_event(leader)) {
-> -		if (leader->pmu != event->pmu)
-> -			return false;
-> +	if (leader == event)
-> +		return true;
->  
-> -		if (leader != event && !hisi_pcie_pmu_cmp_event(leader, event))
-> -			event_group[counters++] = event;
-> -	}
-> +	event_group[0] = event;
-> +	if (leader->pmu == event->pmu && !hisi_pcie_pmu_cmp_event(leader, event))
-> +		event_group[counters++] = leader;
+> Otherwise having pci devices nodes in the fdt or dts needs additional
+> handling, let me know your preference :)
 
-Looking at this, the existing logic to share counters (which
-hisi_pcie_pmu_cmp_event() is trying to permit) looks to be bogus, given
-that the start/stop callbacks will reprogram the HW counters (and hence
-can fight with one another).
+I think you need to consult with the DT/OF owners on these questions..
 
-I suspect that can be removed *entirely*, and this can be simplified
-down to allocating N counters, without a quadratic event comparison.  We
-don't try to share counters in other PMU drivers, and there was no
-rationale for trying to do this when this wa introduced in commit:
+I've forgotton so many of the details here.
 
-  8404b0fbc7fbd42e ("drivers/perf: hisi: Add driver for HiSilicon PCIe PMU")
+But once you settle on whatever the DT representation is it looks like
+the right direction to me.
 
-The 'link' tag in that comment goes to v13, which doesn't link to prior
-postings, so I'm not going to dig further.
-
-Mark.
-
->  
->  	for_each_sibling_event(sibling, event->group_leader) {
-> -		if (is_software_event(sibling))
-> -			continue;
-> -
->  		if (sibling->pmu != event->pmu)
-> -			return false;
-> +			continue;
->  
->  		for (num = 0; num < counters; num++) {
->  			/*
-> diff --git a/drivers/perf/hisilicon/hisi_uncore_pmu.c b/drivers/perf/hisilicon/hisi_uncore_pmu.c
-> index a449651f79c9..3c531b36cf25 100644
-> --- a/drivers/perf/hisilicon/hisi_uncore_pmu.c
-> +++ b/drivers/perf/hisilicon/hisi_uncore_pmu.c
-> @@ -101,26 +101,17 @@ static bool hisi_validate_event_group(struct perf_event *event)
->  	/* Include count for the event */
->  	int counters = 1;
->  
-> -	if (!is_software_event(leader)) {
-> -		/*
-> -		 * We must NOT create groups containing mixed PMUs, although
-> -		 * software events are acceptable
-> -		 */
-> -		if (leader->pmu != event->pmu)
-> -			return false;
-> +	if (leader == event)
-> +		return true;
->  
-> -		/* Increment counter for the leader */
-> -		if (leader != event)
-> -			counters++;
-> -	}
-> +	/* Increment counter for the leader */
-> +	if (leader->pmu == event->pmu)
-> +		counters++;
->  
->  	for_each_sibling_event(sibling, event->group_leader) {
-> -		if (is_software_event(sibling))
-> -			continue;
-> -		if (sibling->pmu != event->pmu)
-> -			return false;
->  		/* Increment counter for each sibling */
-> -		counters++;
-> +		if (sibling->pmu == event->pmu)
-> +			counters++;
->  	}
->  
->  	/* The group can not count events more than the counters in the HW */
-> diff --git a/drivers/perf/hisilicon/hns3_pmu.c b/drivers/perf/hisilicon/hns3_pmu.c
-> index c157f3572cae..382e469257f9 100644
-> --- a/drivers/perf/hisilicon/hns3_pmu.c
-> +++ b/drivers/perf/hisilicon/hns3_pmu.c
-> @@ -1058,21 +1058,16 @@ static bool hns3_pmu_validate_event_group(struct perf_event *event)
->  	int counters = 1;
->  	int num;
->  
-> -	event_group[0] = leader;
-> -	if (!is_software_event(leader)) {
-> -		if (leader->pmu != event->pmu)
-> -			return false;
-> +	if (leader == event)
-> +		return true;
->  
-> -		if (leader != event && !hns3_pmu_cmp_event(leader, event))
-> -			event_group[counters++] = event;
-> -	}
-> +	event_group[0] = event;
-> +	if (leader->pmu == event->pmu && !hns3_pmu_cmp_event(leader, event))
-> +		event_group[counters++] = leader;
->  
->  	for_each_sibling_event(sibling, event->group_leader) {
-> -		if (is_software_event(sibling))
-> -			continue;
-> -
->  		if (sibling->pmu != event->pmu)
-> -			return false;
-> +			continue;
->  
->  		for (num = 0; num < counters; num++) {
->  			/*
-> -- 
-> 2.39.2.101.g768bb238c484.dirty
-> 
+Jason
