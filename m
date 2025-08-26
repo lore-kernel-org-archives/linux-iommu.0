@@ -1,112 +1,69 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D4004230BCB;
-	Tue, 26 Aug 2025 22:19:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77DA2C133;
+	Tue, 26 Aug 2025 22:33:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756246751; cv=none; b=QeL3Jux2yNd1/n+Uchz6MuajeBedk6Raq2dKob6ZvgnV3qHfP51klPMALUjhnv/d/oKLFAvXQ09/vG4cN2Ux4bTyfo7A2LUruvlUAIxKJ/kpCtrP+/XnZRxBZPy8L8Gi9A6Is98IKbvyQltQjzHnzpTctLtE4z0+gjqa8Nv1anQ=
+	t=1756247598; cv=none; b=dz94O0Ozv9mlSLU+N8LlrwwCQQKMiX3LS9N47nhPwKapkJ0PGzCT3qYO49Y8A6DiRoKaDAa6LvxIcQCrl3J2mEGE2Fp6sbGcyghXqtQQ0r5GK1bMg3Qg1OBzYTyr1o/P9GRpOA2wnwQwyL6XoGsDZlTP9+hK9ySTwRTIKVlvbQs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756246751; c=relaxed/simple;
-	bh=dDASlBP0MFIq8lXobKcU0ACkjKAUEd5X5sCs3eQWVxg=;
+	s=arc-20240116; t=1756247598; c=relaxed/simple;
+	bh=enAWv7FM+3cCYyKIq2hsdtFuRu631uhygsKoaTBzjso=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DeNpZI9RwjL6Hbdkyzz4yEEc4b2+2FUPLgto0FFmOCmUffpYZSdQZfUNaDfyd5vxyeC2OsB5IdkaPmtJAcyVOGKgpJkfVli2ipyQnAVoRdTMIrotVZZmsMQG4FuAY0//YPQYBJIqp/Ksh9Cn7jP+Jt3nl8e2g80wN9F92zA4sOU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=EXd25FO/; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Q/5DcD79ITpf4+byX+zw/XGAP5bspxC8anuQSkK9FFY++l+IqqA3Nn3dClFew9vW7RJwZxtxRIS9CO1X8TiIbi8q8V0uKxlENY48f6Y/hsI3fI5SvBwwYnq+UgsESfmLqeftcksUkWcFj23EMX0hYAsUr2SCMn7wDrWegcvD+NQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mvAZzZJ1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="EXd25FO/"
-Received: by linux.microsoft.com (Postfix, from userid 1152)
-	id 6C8812019D4D; Tue, 26 Aug 2025 15:19:09 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6C8812019D4D
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1756246749;
-	bh=8rtcCqNEwRzPi2I5Hkbq7ADSY01CvO5xXBkS7wksSvE=;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mvAZzZJ1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84940C4CEF1;
+	Tue, 26 Aug 2025 22:33:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1756247598;
+	bh=enAWv7FM+3cCYyKIq2hsdtFuRu631uhygsKoaTBzjso=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=EXd25FO/CTVn1QSOUQbXEMJ929gVepWWEUf8BzPGH1O47quoc3mUJI794aVUEr9uu
-	 WdMwUuZ4w6tMKjQ0o4OYxTeRjLqYZSem40ZIsqBPVC7iGR5ZVMolKhSMwD/qaNeGiq
-	 +pioNVkMiMZzPQAY70cl2TtQL6bM+1BVZxhP+Tx4=
-Date: Tue, 26 Aug 2025 15:19:09 -0700
-From: Shyam Saini <shyamsaini@linux.microsoft.com>
-To: thierry.reding@gmail.com, robin.murphy@arm.com, robh@kernel.org,
-	jroedel@suse.de
-Cc: jgg@ziepe.ca, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-	virtualization@lists.linux.dev, will@kernel.org,
-	jacob.pan@linux.microsoft.com, eric.auger@redhat.com,
-	code@tyhicks.com, eahariha@linux.microsoft.com,
-	vijayb@linux.microsoft.com, bboscaccy@linux.microsoft.com,
-	saravanak@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
-	lizhi.hou@amd.com, clement.leger@bootlin.com
-Subject: Re: [PATCH v3 2/3] iommu/of: fix device tree configuration for PCI
- devices
-Message-ID: <20250826221909.GA3227@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
-References: <20250806215539.1240561-1-shyamsaini@linux.microsoft.com>
- <20250806215539.1240561-3-shyamsaini@linux.microsoft.com>
- <20250808121515.GE377696@ziepe.ca>
- <20250814233018.GA31418@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
- <20250815003958.GE599331@ziepe.ca>
- <20250815023236.GA30997@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
- <20250818155310.GG599331@ziepe.ca>
- <20250826011557.GA2980@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
- <20250826123653.GC1899851@ziepe.ca>
+	b=mvAZzZJ16Lko9gWeA6XLyGd0vlNbHlTJ+grcokJ3kz7RBiXyBw7uMkBBbcHDOQcoe
+	 fOUS9A0kfmH8cp/OebZHMMchUkyWWE2AjJqWkRWGvI89IBtHhAdL/JiUUIqjER+yt4
+	 iwZzxCWbdhSY3UkqRtzVWTfFXsebYOu44eezPldyHW0QP5oG5xbzhgjCk8ECy+YV6F
+	 tB7yigAWW93QqgPSUG9bFU+C1kxXPzXK8vcGKUPgNOjIEx6DsGTEr2yWSqw3hBE0J8
+	 DdT0leJ3Pjo9EPGaB/ftg4PJIwRi1AR2N8VqJ7mxJFeujjgW1O82iDx92Hx55O0fk3
+	 iFz7f5gn9CIww==
+Date: Tue, 26 Aug 2025 16:33:15 -0600
+From: Keith Busch <kbusch@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Christoph Hellwig <hch@infradead.org>, Keith Busch <kbusch@meta.com>,
+	linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
+	axboe@kernel.dk, iommu@lists.linux.dev
+Subject: Re: [PATCHv3 1/2] block: accumulate segment page gaps per bio
+Message-ID: <aK42K_-gHrOQsNyv@kbusch-mbp>
+References: <20250821204420.2267923-1-kbusch@meta.com>
+ <20250821204420.2267923-2-kbusch@meta.com>
+ <aKxpSorluMXgOFEI@infradead.org>
+ <aKxu83upEBhf5gT7@kbusch-mbp>
+ <20250826130344.GA32739@lst.de>
+ <aK27AhpcQOWADLO8@kbusch-mbp>
+ <20250826135734.GA4532@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250826123653.GC1899851@ziepe.ca>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <20250826135734.GA4532@lst.de>
 
-Hi Thiery, Rob, Robin, and Joerg,
-
-On 26 Aug 2025 09:36, Jason Gunthorpe wrote:
-> On Mon, Aug 25, 2025 at 06:15:57PM -0700, Shyam Saini wrote:
-> > Hi Jason,
-> > 
-> > On Mon, Aug 18, 2025 at 12:53:10PM -0300, Jason Gunthorpe wrote:
-> > > On Thu, Aug 14, 2025 at 07:32:36PM -0700, Shyam Saini wrote:
-> > > > On Thu, Aug 14, 2025 at 09:39:58PM -0300, Jason Gunthorpe wrote:
-> > > > > On Thu, Aug 14, 2025 at 04:30:18PM -0700, Shyam Saini wrote:
-> > > > > > or were you referring to [2]?
-> > > > > > 
-> > > > > > In that case, the PCI child node data needs to be parsed, which is
-> > > > > > currently handled individually by each host controller driver.
-> > > > > 
-> > > > > Yes, this looks like it may be what I was thinking of, the pci@1,0
-> > > > > specifes the BDF effectively
-> > > > 
-> > > > In that case, we'll need to parse the child DTS nodes properly
-> > > > within of_iommu_get_resv_regions(). I'll include this in v4.
-> > > 
-> > > Kinda surprised this isn't happening already? It would be good to
-> > > refer to the original specs and describe how whatetever you propose is
-> > > aligned there.
-> > 
-> > Just to confirm, does the v3 version of this series look good to you?
-> > If so, I’ll go ahead and respin the series with the iommu_set_sw_msi()
-> > change and address the other review comments from Jacob.
-> > 
-> > Otherwise having pci devices nodes in the fdt or dts needs additional
-> > handling, let me know your preference :)
+On Tue, Aug 26, 2025 at 03:57:34PM +0200, Christoph Hellwig wrote:
+> On Tue, Aug 26, 2025 at 07:47:46AM -0600, Keith Busch wrote:
+> > Currently, the virtual boundary is always compared to bv_offset, which
+> > is a page offset. If the virtual boundary is larger than a page, then we
+> > need something like "page_to_phys(bv.bv_page) + bv.bv_offset" every
+> > place we need to check against the virt boundary.
 > 
-> I think you need to consult with the DT/OF owners on these questions..
-> 
-> I've forgotton so many of the details here.
-> 
-> But once you settle on whatever the DT representation is it looks like
-> the right direction to me.
-> 
+> bv_offset is only guaranteed to be a page offset if your use
+> bio_for_each_segment(_all) or the low-level helpers implementing
+> it and not bio_for_each_bvec(_all) where it can be much larger
+> than PAGE_SIZE.
 
-The of_iommu driver currently does not correctly handle parsing
-of the memory-region property for individual PCI devices. This
-patch addresses the issue by explicitly setting dev->of_node for
-PCI devices, enabling proper parsing of the memory-region property
-within of_iommu_get_resv_regions().
-
-Could you please share your feedback on this fix?
-
-Thanks,
-Shyam
+Yes, good point. So we'd have a folio offset when it's not a single
+page, but I don't think we want to special case large folios for every
+virt boundary check. It's looking like replace bvec's "page + offset"
+with phys addrs, yeah?!
