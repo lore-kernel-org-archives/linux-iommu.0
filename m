@@ -1,139 +1,112 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BCEC283FCB;
-	Tue, 26 Aug 2025 21:46:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D4004230BCB;
+	Tue, 26 Aug 2025 22:19:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756244791; cv=none; b=TJIvkzd9l49SnUvjda73s7uSUWbFGI198hHhrcnPTfxRQ9jOIBlXHzh5LpDkuLZQXD7ztVbpL7L711mrmeVZJy5AfkDlPps4UJddrqK8jUEldhvxDWTwjLiLnDABNhN6INfCqApWNpiTaFWIFxkeRLa35pOCjYhSxyzfkPyNfqo=
+	t=1756246751; cv=none; b=QeL3Jux2yNd1/n+Uchz6MuajeBedk6Raq2dKob6ZvgnV3qHfP51klPMALUjhnv/d/oKLFAvXQ09/vG4cN2Ux4bTyfo7A2LUruvlUAIxKJ/kpCtrP+/XnZRxBZPy8L8Gi9A6Is98IKbvyQltQjzHnzpTctLtE4z0+gjqa8Nv1anQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756244791; c=relaxed/simple;
-	bh=wxjUVhxbok5IPGUPMxHmf/MxyRnEbApTzZPax+WoJ1s=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CSoZ7TRhxA+fDRYPYUaxJ6dRYU1qXdqd9UTDlQJGO8kNVi+d8r0aBU0CIEhXRc2gVbMz8PXOrRIGoamAoptEqvpG+2URLt5etAj3wtrz1rr1DCmj8gH8jHOiCjciObCC5Mrjz3Tv/Owcjjph0mJN/NaGr55qNjuywuhrndqrDeo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gompa.dev; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.218.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=gompa.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-afcb78ead12so853908666b.1;
-        Tue, 26 Aug 2025 14:46:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756244787; x=1756849587;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qlR2W8sGPsNFxVXAPLkKkhjl01WcoRvDHaUyBoigeGE=;
-        b=oMbdzMgDt11l+B3/OZHh+gD3iPzskyoaAnJG2uc8qT/ul27BNbADtixtPfv77M6OuY
-         nWBDYvVLtupkzJoS8QxVQqjFk2xsxzqkTBIu5VS9XiX8nNht0eyjXlYuQWeg1jtU+58l
-         f1Wqv6I3Bv4X0hzfiBeG1CFd5t6KxzmGSDlBVwHUTjYWi3Xqffnxj5bQsj9sWah3HRym
-         pHUo/b1XsWnGpYhYRIaEEUaPv3DjXal3xy+48WOdCWrHPP6qg+z0uveMLH9Rj0mZs2FW
-         66afoSRxdF9ldHAqyY+tgwIh5maBqLzRZHVpkhP8Tmrmz1dJONyeTGaJE+p4ecOFmUUn
-         +fKg==
-X-Forwarded-Encrypted: i=1; AJvYcCUOzD0R5QVdoBiXdeGtkijJRIvF/cOWVwZqtJ+HWTeN0VhgH4WiUXvAG6ORzBzjpBY6TUDJ82I=@lists.linux.dev, AJvYcCXX+nuw9iZV2o+qqgLqRUabs1aiIAaBkzjzSwrIMX+U4UI44dqEOuqPasKjzfnwvnGiNg0kdw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwoZTrhP+jrYZQtXDL4Yji63TkTBCMmyBOuoK8Qa2P2F8hyTpb6
-	mwqGOeWSoNtbVmCd3gJIsQqHHe1CqCTMCISAHta7uvBgbmfFXm+7t0rT1q5khrhs
-X-Gm-Gg: ASbGnctrYGs6Wq3kcA0E/McYcjSf3/km8FKuLHfkJpP5u7T5ZfE5htuI3zhtOEf8R0w
-	AMdKblPCFwibZG9lrhcDJHAIAdr4dcpbghWqiv3ZX9FbB47+TXxUV/XKujwzoumPsYmsrLX4wF2
-	m/+6vKVVs/2z1eDKrxk9w1Ug7q+2h2Y7Gs+MQxipP7OHOD9OVbpALUOYb46LNRLOvyRZPRfkLUO
-	PKafSvFzjYoJZ039YUolc49bheHCUIrkpFZhtv/Me7EiQbp9dyEp5OFeRdSwKKZo7FJ/RRIcCc/
-	qsLbvR2zV6abtH5jxfDB6HLleDdherExBDn+OmBlHVRBks92RkP5hIlfehpy/scqRT10xofZDwp
-	N3hUTy8P6VkaNJQtvxrGQ56rDgwZNb+fEaxcbvI36uq9Alx6o2CRB4URsYUEteBo6T3uhRb2GJ3
-	TbFApUKd24
-X-Google-Smtp-Source: AGHT+IEookd3THdKas8pVR5mT3NBNJLZRBzj+FUI1HrgrQo5sunDTA+McpMw2bKjYcfHrjkshTJ5eg==
-X-Received: by 2002:a17:906:f5a7:b0:afe:ad45:acf5 with SMTP id a640c23a62f3a-afead45ad78mr297050666b.34.1756244786745;
-        Tue, 26 Aug 2025 14:46:26 -0700 (PDT)
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com. [209.85.208.46])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-afe81890cd7sm497689766b.109.2025.08.26.14.46.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Aug 2025 14:46:26 -0700 (PDT)
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-61c4f73cfa0so5366857a12.0;
-        Tue, 26 Aug 2025 14:46:26 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUrFIZ3XmVUuBKS5Sb1VOY00oNRcjkv+2+1ruwlW/DEd5QLvRSvx60kDoO006GwQEV+5dazf94=@lists.linux.dev, AJvYcCXr8CKYW9H538aoY6ovhqrplEMrRVUh2ECrcCjPjWF4ZQxqgUB2jGVX3D/gBVjOnuidOMjf3A==@lists.linux.dev
-X-Received: by 2002:a05:6402:34d2:b0:61c:979a:e7a1 with SMTP id
- 4fb4d7f45d1cf-61c979ae911mr2475028a12.16.1756244786336; Tue, 26 Aug 2025
- 14:46:26 -0700 (PDT)
+	s=arc-20240116; t=1756246751; c=relaxed/simple;
+	bh=dDASlBP0MFIq8lXobKcU0ACkjKAUEd5X5sCs3eQWVxg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DeNpZI9RwjL6Hbdkyzz4yEEc4b2+2FUPLgto0FFmOCmUffpYZSdQZfUNaDfyd5vxyeC2OsB5IdkaPmtJAcyVOGKgpJkfVli2ipyQnAVoRdTMIrotVZZmsMQG4FuAY0//YPQYBJIqp/Ksh9Cn7jP+Jt3nl8e2g80wN9F92zA4sOU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=EXd25FO/; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="EXd25FO/"
+Received: by linux.microsoft.com (Postfix, from userid 1152)
+	id 6C8812019D4D; Tue, 26 Aug 2025 15:19:09 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6C8812019D4D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1756246749;
+	bh=8rtcCqNEwRzPi2I5Hkbq7ADSY01CvO5xXBkS7wksSvE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=EXd25FO/CTVn1QSOUQbXEMJ929gVepWWEUf8BzPGH1O47quoc3mUJI794aVUEr9uu
+	 WdMwUuZ4w6tMKjQ0o4OYxTeRjLqYZSem40ZIsqBPVC7iGR5ZVMolKhSMwD/qaNeGiq
+	 +pioNVkMiMZzPQAY70cl2TtQL6bM+1BVZxhP+Tx4=
+Date: Tue, 26 Aug 2025 15:19:09 -0700
+From: Shyam Saini <shyamsaini@linux.microsoft.com>
+To: thierry.reding@gmail.com, robin.murphy@arm.com, robh@kernel.org,
+	jroedel@suse.de
+Cc: jgg@ziepe.ca, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	virtualization@lists.linux.dev, will@kernel.org,
+	jacob.pan@linux.microsoft.com, eric.auger@redhat.com,
+	code@tyhicks.com, eahariha@linux.microsoft.com,
+	vijayb@linux.microsoft.com, bboscaccy@linux.microsoft.com,
+	saravanak@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
+	lizhi.hou@amd.com, clement.leger@bootlin.com
+Subject: Re: [PATCH v3 2/3] iommu/of: fix device tree configuration for PCI
+ devices
+Message-ID: <20250826221909.GA3227@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+References: <20250806215539.1240561-1-shyamsaini@linux.microsoft.com>
+ <20250806215539.1240561-3-shyamsaini@linux.microsoft.com>
+ <20250808121515.GE377696@ziepe.ca>
+ <20250814233018.GA31418@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+ <20250815003958.GE599331@ziepe.ca>
+ <20250815023236.GA30997@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+ <20250818155310.GG599331@ziepe.ca>
+ <20250826011557.GA2980@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+ <20250826123653.GC1899851@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250826-dart-t8110-stream-error-v1-1-e33395112014@jannau.net>
-In-Reply-To: <20250826-dart-t8110-stream-error-v1-1-e33395112014@jannau.net>
-From: Neal Gompa <neal@gompa.dev>
-Date: Tue, 26 Aug 2025 17:45:48 -0400
-X-Gmail-Original-Message-ID: <CAEg-Je8F_n9J5aBsTBm6RgAL9DdXKTgyMNxDo_aPOR42GzGUkA@mail.gmail.com>
-X-Gm-Features: Ac12FXwA-HRfgwtoditQ_gzG_vHw6fQHNUVW4nCA0dkeveZIhrlsxxZOpuqsYBc
-Message-ID: <CAEg-Je8F_n9J5aBsTBm6RgAL9DdXKTgyMNxDo_aPOR42GzGUkA@mail.gmail.com>
-Subject: Re: [PATCH] iommu/apple-dart: Clear stream error indicator bits for
- T8110 DARTs
-To: Janne Grunau <j@jannau.net>
-Cc: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	Hector Martin <marcan@marcan.st>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250826123653.GC1899851@ziepe.ca>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 
-On Tue, Aug 26, 2025 at 6:57=E2=80=AFAM Janne Grunau <j@jannau.net> wrote:
->
-> From: Hector Martin <marcan@marcan.st>
->
-> These registers exist and at least on the t602x variant the IRQ only
-> clears when theses are cleared.
->
-> Signed-off-by: Hector Martin <marcan@marcan.st>
-> Signed-off-by: Janne Grunau <j@jannau.net>
-> ---
-> I've overlooked this change for the 4 level page table / t6020 support
-> series [1]. There are no dependencies to series so this can go in on its
-> own.
->
-> Janne
->
-> 1: https://lore.kernel.org/asahi/20250821-apple-dart-4levels-v2-0-e39af79=
-daa37@jannau.net/
-> ---
->  drivers/iommu/apple-dart.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-> index 190f28d76615159527649cd288df395a50d950ef..8b1272b7bb44a1ebc03ca4ddf=
-3be43a1e42c97ed 100644
-> --- a/drivers/iommu/apple-dart.c
-> +++ b/drivers/iommu/apple-dart.c
-> @@ -122,6 +122,8 @@
->  #define DART_T8110_ERROR_ADDR_LO 0x170
->  #define DART_T8110_ERROR_ADDR_HI 0x174
->
-> +#define DART_T8110_ERROR_STREAMS 0x1c0
-> +
->  #define DART_T8110_PROTECT 0x200
->  #define DART_T8110_UNPROTECT 0x204
->  #define DART_T8110_PROTECT_LOCK 0x208
-> @@ -1077,6 +1079,9 @@ static irqreturn_t apple_dart_t8110_irq(int irq, vo=
-id *dev)
->                 error, stream_idx, error_code, fault_name, addr);
->
->         writel(error, dart->regs + DART_T8110_ERROR);
-> +       for (int i =3D 0; i < BITS_TO_U32(dart->num_streams); i++)
-> +               writel(U32_MAX, dart->regs + DART_T8110_ERROR_STREAMS + 4=
- * i);
-> +
->         return IRQ_HANDLED;
->  }
->
->
-> ---
-> base-commit: 8f5ae30d69d7543eee0d70083daf4de8fe15d585
-> change-id: 20250826-dart-t8110-stream-error-1c2bbbf4fb63
->
+Hi Thiery, Rob, Robin, and Joerg,
 
-LGTM.
+On 26 Aug 2025 09:36, Jason Gunthorpe wrote:
+> On Mon, Aug 25, 2025 at 06:15:57PM -0700, Shyam Saini wrote:
+> > Hi Jason,
+> > 
+> > On Mon, Aug 18, 2025 at 12:53:10PM -0300, Jason Gunthorpe wrote:
+> > > On Thu, Aug 14, 2025 at 07:32:36PM -0700, Shyam Saini wrote:
+> > > > On Thu, Aug 14, 2025 at 09:39:58PM -0300, Jason Gunthorpe wrote:
+> > > > > On Thu, Aug 14, 2025 at 04:30:18PM -0700, Shyam Saini wrote:
+> > > > > > or were you referring to [2]?
+> > > > > > 
+> > > > > > In that case, the PCI child node data needs to be parsed, which is
+> > > > > > currently handled individually by each host controller driver.
+> > > > > 
+> > > > > Yes, this looks like it may be what I was thinking of, the pci@1,0
+> > > > > specifes the BDF effectively
+> > > > 
+> > > > In that case, we'll need to parse the child DTS nodes properly
+> > > > within of_iommu_get_resv_regions(). I'll include this in v4.
+> > > 
+> > > Kinda surprised this isn't happening already? It would be good to
+> > > refer to the original specs and describe how whatetever you propose is
+> > > aligned there.
+> > 
+> > Just to confirm, does the v3 version of this series look good to you?
+> > If so, I’ll go ahead and respin the series with the iommu_set_sw_msi()
+> > change and address the other review comments from Jacob.
+> > 
+> > Otherwise having pci devices nodes in the fdt or dts needs additional
+> > handling, let me know your preference :)
+> 
+> I think you need to consult with the DT/OF owners on these questions..
+> 
+> I've forgotton so many of the details here.
+> 
+> But once you settle on whatever the DT representation is it looks like
+> the right direction to me.
+> 
 
-Reviewed-by: Neal Gompa <neal@gompa.dev>
+The of_iommu driver currently does not correctly handle parsing
+of the memory-region property for individual PCI devices. This
+patch addresses the issue by explicitly setting dev->of_node for
+PCI devices, enabling proper parsing of the memory-region property
+within of_iommu_get_resv_regions().
 
+Could you please share your feedback on this fix?
 
---=20
-=E7=9C=9F=E5=AE=9F=E3=81=AF=E3=81=84=E3=81=A4=E3=82=82=E4=B8=80=E3=81=A4=EF=
-=BC=81/ Always, there's only one truth!
+Thanks,
+Shyam
