@@ -1,143 +1,105 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1A6B28D8D9
-	for <iommu@lists.linux.dev>; Mon, 25 Aug 2025 22:36:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5E7CA1C6FE8;
+	Tue, 26 Aug 2025 01:15:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756161420; cv=none; b=pQkRuq5qbWcmumtFJqvpcObd2qManCjNVI/0hi56gsr1uczWG5EFamWubrq76adxWnEwfJP2VMe0M8kbNOpzLwm5xyCAPoI4djNVJZmpLE4pAciaDN28Cln9NbbjRXeGgvW/qYiZyrudvACV4hUQo2kHLIWixSHsIMfFK4D7YU0=
+	t=1756170959; cv=none; b=Z+dM1il93+jhHrfGza9fgnHxVR9lx09Wa1Dl1K3ZMFT08PH08mEfA97zPiLRNOYj4+6VSdMhj6v/rDM2kMZS+QMrrV1E8oOFDJ+2FuhhWEnxS/yLp6pViAX5xop+ogefrg+x8X1kEhh0ylnpzS18uGnLgxJ5oVQzYgOGw0dXa5I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756161420; c=relaxed/simple;
-	bh=HHZpwUWnYEqYO7u28z/GMdp5Wm3QF7J3oRF7G0xFWP4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ol2mlZuUSg2/lM1kGL/NzCDHaZ6TM0iwTX9btksyQRvNQ87XB31KweZOphgQYL6lwHUUVWfwNwW0CfLpkQvwIr2ebo/mdL8bokEFYKgjkf5Olcl3NqD2mQYLxRvSJhi6kW4z8FsWfe/5ZEo5iBiGQQMgh82XRtaP7XEaGgwyFJc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=boViPtN2; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1756170959; c=relaxed/simple;
+	bh=kwE9T2napWDQIi8ICaB3dOVpNakmaY8PwBjAto4q6z4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KTx7R+N8qeQQ/hH2GIHvsMqSM95llg5MkGksJZT6J/Aj74Z6fPJJdSbwabEqmp3tquGcic4gZcATn81DWqc/smYfA7vyw7uResrfNjyC9rFez/zPatS8dWdDTQ2nv1zrNmbZ99p5l61soj97wZfZjXCA4mkGXgkU0FLMIQPx7XQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=SCOaDPbr; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="boViPtN2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1756161419; x=1787697419;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=HHZpwUWnYEqYO7u28z/GMdp5Wm3QF7J3oRF7G0xFWP4=;
-  b=boViPtN2ebR9GSIQK3ozI0L9oDfxhDx1DxZn16ALfaSZ53n9G0hB7fo9
-   yYsnsKc4yt+t1ixVVPto1fEGnNn8RBsqSMGQlYjVWfV5hRJhfqkI4M+ue
-   K4zXMLy48CZuUsfZvsmDnE/vFLT+pD425fEm8+Jxs9y4Hy8o19TbRAFxC
-   fcOvsHcs9k4oO2ayIGe+62+/tGdYSw4P/pDAiXQvib3oexoUwvR7zFZGp
-   GW6pRQs+XRTuVq1sCjUczgQlkqPZeEtxX3tsIpfhTs5el0bm2ArCZUxem
-   RyELq3g5KwsmRJqK6qCEVhqDmBQZMI1Csscme4Pwha1E7RMlIrH4zeWdX
-   g==;
-X-CSE-ConnectionGUID: Qxu4dw9sS5u9FRfQdPDW8w==
-X-CSE-MsgGUID: oWwLT+UeSqGiu8dtsB2FDg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11533"; a="68978643"
-X-IronPort-AV: E=Sophos;i="6.18,214,1751266800"; 
-   d="scan'208";a="68978643"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2025 15:36:40 -0700
-X-CSE-ConnectionGUID: VZX7DiUATze0WHqdFrBwaA==
-X-CSE-MsgGUID: auc4kNUiTwWWIiw8VzgpMA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,214,1751266800"; 
-   d="scan'208";a="173809776"
-Received: from cmdeoliv-mobl4.amr.corp.intel.com (HELO [10.125.109.1]) ([10.125.109.1])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2025 15:36:40 -0700
-Message-ID: <9a649ff4-55fe-478a-bfd7-f3287534499a@intel.com>
-Date: Mon, 25 Aug 2025 15:36:39 -0700
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="SCOaDPbr"
+Received: by linux.microsoft.com (Postfix, from userid 1152)
+	id EC06C211829B; Mon, 25 Aug 2025 18:15:57 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com EC06C211829B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1756170957;
+	bh=BDhBrrex6g5QaN9laTXmAgCa/05IrHo33281B3Hc3OE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=SCOaDPbrhTWDx26NAZDc9zk+UaPWJQFOnMx5s6aDmbJWEJtnk+D0lvohw3+XojSPK
+	 Qv3pWi6wrhkhJMYhP0mVuPXz/iBl6yuihWoQs/Zmwfrsd+rddgzfRP3dWr8jAaSeUM
+	 F+DYnYoRI+Wyl5NUEWaHe385v3/AAG5+kS1Nf69M=
+Date: Mon, 25 Aug 2025 18:15:57 -0700
+From: Shyam Saini <shyamsaini@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
+	will@kernel.org, jacob.pan@linux.microsoft.com,
+	eric.auger@redhat.com, code@tyhicks.com,
+	eahariha@linux.microsoft.com, vijayb@linux.microsoft.com,
+	bboscaccy@linux.microsoft.com, robh@kernel.org,
+	saravanak@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
+	lizhi.hou@amd.com, clement.leger@bootlin.com
+Subject: Re: [PATCH v3 2/3] iommu/of: fix device tree configuration for PCI
+ devices
+Message-ID: <20250826011557.GA2980@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+References: <20250806215539.1240561-1-shyamsaini@linux.microsoft.com>
+ <20250806215539.1240561-3-shyamsaini@linux.microsoft.com>
+ <20250808121515.GE377696@ziepe.ca>
+ <20250814233018.GA31418@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+ <20250815003958.GE599331@ziepe.ca>
+ <20250815023236.GA30997@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+ <20250818155310.GG599331@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-To: Baolu Lu <baolu.lu@linux.intel.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Jann Horn <jannh@google.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>,
- Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, "Lai, Yi1" <yi1.lai@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "security@kernel.org" <security@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>
-References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
- <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
- <20250806155223.GV184255@nvidia.com>
- <d02cb97a-7cea-4ad3-82b3-89754c5278ad@intel.com>
- <20250806160904.GX184255@nvidia.com>
- <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
- <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
- <20250807195154.GO184255@nvidia.com>
- <BN9PR11MB52762A47B347C99F0C0E4C288C2FA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <87bfc80e-258e-4193-a56c-3096608aec30@linux.intel.com>
- <BN9PR11MB52766165393F7DD8209DA45A8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <e321d374-38a7-4f60-b991-58458a2761b9@linux.intel.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Content-Language: en-US
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <e321d374-38a7-4f60-b991-58458a2761b9@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250818155310.GG599331@ziepe.ca>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 
-On 8/22/25 20:26, Baolu Lu wrote:
-> +static struct {
-> +    /* list for pagetable_dtor_free() */
-> +    struct list_head dtor;
-> +    /* list for __free_page() */
-> +    struct list_head page;
-> +    /* list for free_pages() */
-> +    struct list_head pages;
-> +    /* protect all the ptdesc lists */
-> +    spinlock_t lock;
-> +    struct work_struct work;
+Hi Jason,
 
-Could you explain a bit why this now needs three separate lists? Seems
-like pure overkill.
+On Mon, Aug 18, 2025 at 12:53:10PM -0300, Jason Gunthorpe wrote:
+> On Thu, Aug 14, 2025 at 07:32:36PM -0700, Shyam Saini wrote:
+> > On Thu, Aug 14, 2025 at 09:39:58PM -0300, Jason Gunthorpe wrote:
+> > > On Thu, Aug 14, 2025 at 04:30:18PM -0700, Shyam Saini wrote:
+> > > > or were you referring to [2]?
+> > > > 
+> > > > In that case, the PCI child node data needs to be parsed, which is
+> > > > currently handled individually by each host controller driver.
+> > > 
+> > > Yes, this looks like it may be what I was thinking of, the pci@1,0
+> > > specifes the BDF effectively
+> > 
+> > In that case, we'll need to parse the child DTS nodes properly
+> > within of_iommu_get_resv_regions(). I'll include this in v4.
+> 
+> Kinda surprised this isn't happening already? It would be good to
+> refer to the original specs and describe how whatetever you propose is
+> aligned there.
+
+Just to confirm, does the v3 version of this series look good to you?
+If so, I’ll go ahead and respin the series with the iommu_set_sw_msi()
+change and address the other review comments from Jacob.
+
+Otherwise having pci devices nodes in the fdt or dts needs additional
+handling, let me know your preference :)
+
+> 
+> > > Presumably this is a fixed issue of the platform. You never did
+> > > explain how your system has such werdio behavior, or how something
+> > > like iommu=pt can function on it...
+> > Yes, this issue is platform-specific. On this platform, the default MSI IOVA
+> > range overlaps with an address region that is reserved for another purpose,
+> > Other than that we haven't observed any obvious issues for DMA operations
+> 
+> Usually DRAM is at the default MSI IOVA address, so if you run
+> iommu=pt then presumably your DRAM map has a nice hole in it.. But
+> maybe the memory map told the OS about that.
+>
+ 
+our DRAM for this platform starts at higher offset, way beyond MSI_IOVA.
+
+
+Thanks,
+Shyam 
