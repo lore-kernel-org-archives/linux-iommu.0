@@ -1,111 +1,128 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 780D326A0B3;
-	Tue, 26 Aug 2025 13:11:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756213906; cv=none; b=Mhv/zsZxE8AsMO1ynlAJrkmb8qsx8KCYQxClq6ZsjUGwOJ6m/koI95xS+bYBOjhq9Wj1VbgfffD5mpfz2NDalxeFUa65aVG3U+zXfO2N6LlPPrmiEhZ1VtU629Bip414dZjgBfL3V/vw4Po83eyo87Wx48Gbx1GXL50+dQ+Pszg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756213906; c=relaxed/simple;
-	bh=r4P1fcbNrMFnG8T5p3u4dMJamruaFASdwNbmXce96jM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HGlOHUhLdzhAdNr5XscS5Pm2iKb6cAL4c7u0Y9KQUVfZ900dxKLt54tImmE6ivZjx3J7Jf54xVBTasEz3DZJ52W+qUNkwYMI8WASqyCRpoL2YM0R1Zr6fGU1w8exo0Xt95tdXZNIUispf8Ys4GKtmFX+8p2ugkPfYj4f233cixc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7C1B82BF2;
-	Tue, 26 Aug 2025 06:11:36 -0700 (PDT)
-Received: from raptor (usa-sjc-mx-foss1.foss.arm.com [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0B7A13F63F;
-	Tue, 26 Aug 2025 06:11:36 -0700 (PDT)
-Date: Tue, 26 Aug 2025 14:11:34 +0100
-From: Alexandru Elisei <alexandru.elisei@arm.com>
-To: David Hildenbrand <david@redhat.com>
-Cc: linux-kernel@vger.kernel.org, Alexander Potapenko <glider@google.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Brendan Jackman <jackmanb@google.com>,
-	Christoph Lameter <cl@gentwo.org>, Dennis Zhou <dennis@kernel.org>,
-	Dmitry Vyukov <dvyukov@google.com>, dri-devel@lists.freedesktop.org,
-	intel-gfx@lists.freedesktop.org, iommu@lists.linux.dev,
-	io-uring@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>,
-	Jens Axboe <axboe@kernel.dk>, Johannes Weiner <hannes@cmpxchg.org>,
-	John Hubbard <jhubbard@nvidia.com>, kasan-dev@googlegroups.com,
-	kvm@vger.kernel.org, "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	linux-arm-kernel@axis.com, linux-arm-kernel@lists.infradead.org,
-	linux-crypto@vger.kernel.org, linux-ide@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, linux-mips@vger.kernel.org,
-	linux-mmc@vger.kernel.org, linux-mm@kvack.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-scsi@vger.kernel.org,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	Marco Elver <elver@google.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@kernel.org>,
-	Muchun Song <muchun.song@linux.dev>, netdev@vger.kernel.org,
-	Oscar Salvador <osalvador@suse.de>, Peter Xu <peterx@redhat.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
-	virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
-	wireguard@lists.zx2c4.com, x86@kernel.org, Zi Yan <ziy@nvidia.com>
-Subject: Re: [PATCH RFC 21/35] mm/cma: refuse handing out non-contiguous page
- ranges
-Message-ID: <aK2yhtQ0M_0hqQHh@raptor>
-References: <20250821200701.1329277-1-david@redhat.com>
- <20250821200701.1329277-22-david@redhat.com>
- <aK2QZnzS1ErHK5tP@raptor>
- <ad521f4f-47aa-4728-916f-3704bf01f770@redhat.com>
- <aK2wlGYvCaFQXzBm@raptor>
- <ecc599ee-4175-4356-ab66-1d76a75f44f7@redhat.com>
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18DAF3376AC
+	for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 13:14:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756214093; cv=pass; b=tosEY/pQduwrGpaRC6fC7Pox00v/Lx1QbA0V+ky5VgW/Ke0tfRSHJtDxX6ubL/5/RBKXHV90x3MX5eo5TOVSkfbqxcdvAhATjG+JF11xY8Yw1jOSO+ff7C5WyxIGHnjaERTP2dBc4sWsXzvS6UG5BY/S5oIr97/EMHJMZugOoxA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756214093; c=relaxed/simple;
+	bh=4L/5/IzzgVuHCII7Kzbc+julZ9J9jxBCB23SMl/aB8k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lhA6AKUL1RKVvinpV+9Mx22HMZGEeCG+aYFTHNf3kvw8oGa7lMKnmzysJ4uKZulfecSPY4zZiuB27YSwNuJddxIO7W8I9ROkgV+ZAjteuXP8G1trWJW1oygV0CdfkRsxd56qaUWtTyLsL3hEimx1FB7fD/RQDksULBeVXW6YJjY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=Vn5AcRhu; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="Vn5AcRhu"
+ARC-Seal: i=1; a=rsa-sha256; t=1756214076; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=SzFR1y2hQifrr1QcPR5WzrWPvb1o9u/qCP/XFXoSQ0eixqkF4WfPknRj4noSB+VIYxrwBu/+gAQLGHH3d5enRKgIEcYRWmoDBQtMkzwLYsSACjPRzAc3nwvfPio7lXuCRjDefXNdwAxE6lp1oE7yVo0iI7lQx/lnsYIdCgLabPw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1756214076; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=WNuw2smkSUbseMqhQYhMnAKOM3W6MRvMOpj1QgvkS8w=; 
+	b=JnPShJ/oLY3hwO01CreDYBXMbChk11ZYRhdeoShjQAd+WV2IRdfwZsiwVJphqMa068f5Np9AkgkAiE3sfs60mSLNHkG8PXLSJc9JA9ADF48ohhiRciWn2WnALv4x7s1bJmrLEdAc0k/CbDIXOJoqpUlLbTulWz1CLagQAYRtlk0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
+	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1756214076;
+	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=WNuw2smkSUbseMqhQYhMnAKOM3W6MRvMOpj1QgvkS8w=;
+	b=Vn5AcRhuGSt2DFamCzGpSUHNC/sEkT8T+X90OV2ajvTRiXEQZlJ2uBTzMl1cZLkY
+	8REbeo8r1FHpwGjvvKUw7Ibd/uoePOjBTwfTSB6YfpMVT2m8VKXcETlUALaUlHcuRRD
+	NDdFupVdVqUxPssNPoMBayroq0UMTgLmtRVwFX2o=
+Received: by mx.zohomail.com with SMTPS id 1756214074471159.25951317157126;
+	Tue, 26 Aug 2025 06:14:34 -0700 (PDT)
+Message-ID: <f2f09c95-1d08-43db-aee0-25cdaaf8dbca@collabora.com>
+Date: Tue, 26 Aug 2025 15:14:30 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ecc599ee-4175-4356-ab66-1d76a75f44f7@redhat.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 4/6] media: verisilicon: AV1: Restore IOMMU context
+ before decoding a frame
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Nicolas Dufresne <nicolas.dufresne@collabora.com>, joro@8bytes.org,
+ will@kernel.org, robin.murphy@arm.com, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, heiko@sntech.de, p.zabel@pengutronix.de,
+ mchehab@kernel.org, iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-rockchip@lists.infradead.org, kernel@collabora.com,
+ linux-media@vger.kernel.org
+References: <20250825153450.150071-1-benjamin.gaignard@collabora.com>
+ <20250825153450.150071-5-benjamin.gaignard@collabora.com>
+ <20250825170531.GA1899851@ziepe.ca>
+ <01c327e8353bb5b986ef6fb1e7311437659aea4a.camel@collabora.com>
+ <20250825183122.GB1899851@ziepe.ca>
+ <441df5ff-8ed4-45ed-8a52-b542c6e7d38c@collabora.com>
+ <20250826124155.GD1899851@ziepe.ca>
+Content-Language: en-US
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <20250826124155.GD1899851@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hi David,
 
-On Tue, Aug 26, 2025 at 03:08:08PM +0200, David Hildenbrand wrote:
-> On 26.08.25 15:03, Alexandru Elisei wrote:
-> > Hi David,
-> > 
-> > On Tue, Aug 26, 2025 at 01:04:33PM +0200, David Hildenbrand wrote:
-> > ..
-> > > > Just so I can better understand the problem being fixed, I guess you can have
-> > > > two consecutive pfns with non-consecutive associated struct page if you have two
-> > > > adjacent memory sections spanning the same physical memory region, is that
-> > > > correct?
-> > > 
-> > > Exactly. Essentially on SPARSEMEM without SPARSEMEM_VMEMMAP it is not
-> > > guaranteed that
-> > > 
-> > > 	pfn_to_page(pfn + 1) == pfn_to_page(pfn) + 1
-> > > 
-> > > when we cross memory section boundaries.
-> > > 
-> > > It can be the case for early boot memory if we allocated consecutive areas
-> > > from memblock when allocating the memmap (struct pages) per memory section,
-> > > but it's not guaranteed.
-> > 
-> > Thank you for the explanation, but I'm a bit confused by the last paragraph. I
-> > think what you're saying is that we can also have the reverse problem, where
-> > consecutive struct page * represent non-consecutive pfns, because memmap
-> > allocations happened to return consecutive virtual addresses, is that right?
-> 
-> Exactly, that's something we have to deal with elsewhere [1]. For this code,
-> it's not a problem because we always allocate a contiguous PFN range.
-> 
-> > 
-> > If that's correct, I don't think that's the case for CMA, which deals out
-> > contiguous physical memory. Or were you just trying to explain the other side of
-> > the problem, and I'm just overthinking it?
-> 
-> The latter :)
+Le 26/08/2025 à 14:41, Jason Gunthorpe a écrit :
+> On Tue, Aug 26, 2025 at 11:52:37AM +0200, Benjamin Gaignard wrote:
+>> Le 25/08/2025 à 20:31, Jason Gunthorpe a écrit :
+>>> On Mon, Aug 25, 2025 at 01:50:16PM -0400, Nicolas Dufresne wrote:
+>>>
+>>>> Jason, the point is that the iommu and the VPU are not separate devices, which
+>>>> comes with side effects. On RKVDec side, the iommu configuration get resets
+>>>> whenever a decoding error leads to a VPU "self reset". I can't remember who from
+>>>> the iommu subsystem suggested that, but the empty domain method was agreed to be
+>>> IDK, that seems really goofy too me an defiantly needs to be
+>>> extensively documented this is restoring the default with some lore
+>>> link of the original suggestion.
+>>>
+>>>> the least invasive way to workaround that issue. I believe Detlev tried multiple
+>>>> time to add APIs for that before the discussion lead to this path.
+>>> You mean this:
+>>>
+>>> https://lore.kernel.org/linux-iommu/20250318152049.14781-1-detlev.casanova@collabora.com/
+>>>
+>>> Which came back with the same remark I would give:
+>>>
+>>>    Please have some kind of proper reset notifier mechanism - in fact
+>>>    with runtime PM could you not already invoke a suspend/resume cycle
+>>>    via the device links?
+>> when doing parallel decode suspend/resume are not invoked.
+> It was a proposal for an error recovery path.
+>
+>>> Or another reasonable option:
+>>>
+>>>     Or at worst just export a public interface for the other driver to
+>>>     invoke rk_iommu_resume() directly.
+>>>
+>>> Sigh.
+>> An other solution which is working is to call iommu_flush_iotlb_all()
+>> before decoding each frame.
+> That was already proposed and shot down, it makes no sense at all use
+> to use flushing to reset the registers because the HW weirdly lost
+> them, and flushing should never happen outside mapping contexts.
+>
+> If the HW is really resetting the iommu registers after every frame
+> that is really just painfully broken, and makes me wonder if it really
+> should be an iommu subsystem driver at all if it is so tightly coupled
+> to the computing HW. :\
+>
+> Like we wouldn't try to put a GPU MMU into the iommu subsystem though
+> they do fairly similar things.
 
-Ok, sorry for the noise then, and thank you for educating me.
+I will add vsi_iommu_restore_ctx() function where all locks will be
+managed and call vsi_iommu_enable(). Decoder driver will call this function
+before each frame.
+I think it similar to some omap iommu code I have found.
 
-Alex
+Regards,
+Benjamin
+
+> Jason
+>
