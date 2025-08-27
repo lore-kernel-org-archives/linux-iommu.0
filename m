@@ -1,46 +1,31 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDEA41B425C;
-	Wed, 27 Aug 2025 07:31:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A54B3205E2F
+	for <iommu@lists.linux.dev>; Wed, 27 Aug 2025 07:37:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756279877; cv=none; b=rUTwi5fv3FhoaGe2Qjh0c94VhzI3yTyfnOIO//9BCRZf5BDFQR3G+y+cew+8cPWy4bjuLIeoaifer6yvCpiPm+mhWd6+FNrIyv7ACWRh7w1IzxgcAW9n9gvtxOKljwM9OQOIhGIrwdV91YT5Xy06F7Qe6wSP+wVGlnYNM6j4kSY=
+	t=1756280236; cv=none; b=mdwJtuZNlQ+teNm+Dwa6cYYmSxcqrlL/46hu+FtCAYZIeSP4VbRTdPl6yvPm3gnJ8m/bJ6GpeH2zoCMmf76kfGiKDtanobFuMD3nSax9jAJ3dAuh6lSkPqeO1a6W9didQFe/nhsM7M9IycSXz7AD19KOsSe/5EfNYajnQI3Z4Z0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756279877; c=relaxed/simple;
-	bh=2IT4LuiyZ46gsn8oCmiOCI4CDl0EjpYJPZYtx/911+o=;
+	s=arc-20240116; t=1756280236; c=relaxed/simple;
+	bh=GW4ytYy9cRjvbMsUTK4HxjuMCsvKeixLpvhkwZ26nyE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=J1tMCLZHL8uFiuE/ySQ0Lb158cmdTJQl6hGtdsy1SGSJLx0ladtHz+YPObCiCO91iCfsD2/lo5cA05gITZptD83oEapi8kdtW8ccWVwZ2M2X1Hg/WNnr2mJfdTqNX00WPUY72bGGz9V2qhOx2bPH4YJqlzpoAbhLQYXlklID734=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=FpxgAH8+; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="FpxgAH8+"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=pkdlRrvzbQZi7w/IQQdZiZJdzjHiN51gRoy88Tqftwk=; b=FpxgAH8+kW1MldQurPl8J6EJQ+
-	ETrzej00HEVGF7wFk+ERXh9LA2/N55XziLx3Unxn1ysWMcIRwuxKYNirTQgo/jZBXVEH0lPHMjZvc
-	5tuxcVxRa/iu3Q4uHTDL1VT9LFVkBLoWb8cJB6XboMAuXovNWBTaqOy/B39DUW93T2s+jeAbpi0CF
-	fyMDv4En0kmzdq8qesSoFRorysPhjeXH7JZ8fhyoWf1qTQ6+9w26dUUeynI3fPsIsSagFLQwjCzfQ
-	Tdvvu1MN8k9ZFMuxaR3gAwIbUMlwXPSzJLCIfj8NYk9QNQyA8k1twGj1XNFtWyRDYwiCycU9ZGsAm
-	k3Z3O6LQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1urAch-0000000EQbB-2OLB;
-	Wed, 27 Aug 2025 07:31:11 +0000
-Date: Wed, 27 Aug 2025 00:31:11 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Baochen Qiang <baochen.qiang@oss.qualcomm.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jeff Johnson <jjohnson@kernel.org>, iommu@lists.linux.dev,
-	"linux-kernel@vger.kernel.org >> linux-kernel" <linux-kernel@vger.kernel.org>,
-	"ath11k@lists.infradead.org" <ath11k@lists.infradead.org>
-Subject: Re: is dma_mapping_error() check necessary for
- dma_alloc_noncoherent()?
-Message-ID: <aK60Py3r25U43k1E@infradead.org>
-References: <ff6c1fe6-820f-4e58-8395-df06aa91706c@oss.qualcomm.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=qi5Y4q3geKcUd8QmnMcqwX6RQF77BL6Zh1cxSjGdWfDCD57gVyNcTMb4yVtLXz2OzKw7NGcAxCQ+7KUgC/teoFOC2cJNJpWRl6V/RCI9kzPqp5NdLkVjvfWLBnrEiGQNPVMF11QJVudBeU9GLd9m4u8tuZhaCYm600P3Wij8+Ds=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 2DEE268AA6; Wed, 27 Aug 2025 09:37:10 +0200 (CEST)
+Date: Wed, 27 Aug 2025 09:37:09 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Keith Busch <kbusch@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Christoph Hellwig <hch@infradead.org>,
+	Keith Busch <kbusch@meta.com>, linux-block@vger.kernel.org,
+	linux-nvme@lists.infradead.org, axboe@kernel.dk,
+	iommu@lists.linux.dev
+Subject: Re: [PATCHv3 1/2] block: accumulate segment page gaps per bio
+Message-ID: <20250827073709.GA25032@lst.de>
+References: <20250821204420.2267923-1-kbusch@meta.com> <20250821204420.2267923-2-kbusch@meta.com> <aKxpSorluMXgOFEI@infradead.org> <aKxu83upEBhf5gT7@kbusch-mbp> <20250826130344.GA32739@lst.de> <aK27AhpcQOWADLO8@kbusch-mbp> <20250826135734.GA4532@lst.de> <aK42K_-gHrOQsNyv@kbusch-mbp>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,28 +34,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ff6c1fe6-820f-4e58-8395-df06aa91706c@oss.qualcomm.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <aK42K_-gHrOQsNyv@kbusch-mbp>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Tue, Aug 26, 2025 at 05:44:42PM +0800, Baochen Qiang wrote:
-> Checking code gives me the impression that I should do dma_mapping_error() check as well.
-> And indeed with below diff the warning is gone:
+On Tue, Aug 26, 2025 at 04:33:15PM -0600, Keith Busch wrote:
+> On Tue, Aug 26, 2025 at 03:57:34PM +0200, Christoph Hellwig wrote:
+> > On Tue, Aug 26, 2025 at 07:47:46AM -0600, Keith Busch wrote:
+> > > Currently, the virtual boundary is always compared to bv_offset, which
+> > > is a page offset. If the virtual boundary is larger than a page, then we
+> > > need something like "page_to_phys(bv.bv_page) + bv.bv_offset" every
+> > > place we need to check against the virt boundary.
+> > 
+> > bv_offset is only guaranteed to be a page offset if your use
+> > bio_for_each_segment(_all) or the low-level helpers implementing
+> > it and not bio_for_each_bvec(_all) where it can be much larger
+> > than PAGE_SIZE.
 > 
-> +       dma_mapping_error(ab->dev, paddr);
-> 
-> However this does not make sense to me since IMO testing the CPU address is good enough, I
-> can not imagine a valid case where DMA alloc/map fails while returning a valid CPU
-> address, no?
+> Yes, good point. So we'd have a folio offset when it's not a single
+> page, but I don't think we want to special case large folios for every
+> virt boundary check. It's looking like replace bvec's "page + offset"
+> with phys addrs, yeah?!
 
-Yes, this doesn't make sense.  dma_mapping_error exists to provide a
-error handling path for dma_map_*, which return the dma address only.
-
-For the dma_alloc_* interfaces that return a pointer and can signal
-with a NULL return it should not be needed and dma-debug needs to
-be fixed.
-
-> If I was right, should we remove invocation to debug_dma_map_page() in dma_alloc_pages()?
-> 
-
-That allocation still needs to be tracked, so it can't just be removed
-but needs to be changed to record the kind of allocation.
+Basically everything should be using physical address.  The page + offset
+is just a weird and inefficient way to represent that and we really
+need to get rid of it.
