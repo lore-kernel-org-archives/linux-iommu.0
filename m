@@ -1,72 +1,37 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48B031E25E3
-	for <iommu@lists.linux.dev>; Wed, 27 Aug 2025 01:55:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 048F52BD5AD;
+	Wed, 27 Aug 2025 05:03:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756259730; cv=none; b=gHXLrCUxxPYqhgkEckHEP/DeK5LVLckprK+Dh+/VyfAkbF4VPhebJ2pIHJjNqnpu8NITJ3xcAtQ/e0CSG6t0LuLLn/qHMnnDvb2N1p8L+2qTX5VAO54H5DId55qILlaKjcqEEmn4XPizUnola1QLeDWGgLp5JxU6zC9w5IBbLqs=
+	t=1756271025; cv=none; b=j0JQ5caRQ44pUuRjvdnWjRMN7LBvnATBxAgfGaGy3zq5PNCUueJDPHPLDfCl5hVopQ045+dCk3iru+4TxCX02xkU/pZZLJDP78pC3M/w2BaKGTpPpcHoWQCSy/qVPu1YosIaqZ06vh8QGhyRM+GH551UODEWRvG7IY2e9EMJ0XU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756259730; c=relaxed/simple;
-	bh=EG/uyqg10U+IFfisvso0bEBlysgxBsgMwVPEVZCea5c=;
+	s=arc-20240116; t=1756271025; c=relaxed/simple;
+	bh=qDXquoYk+8o0rjiAG7tvN2W4p6DdsjPuvtejvqKkkNk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HCwBvwyU1JnClGN5faLP5uxw0QNLiAiYyxvLng4p8GcN0m/0xVZMR51QTIqb+ZiwHVDblgEF611f58aEg9UfKF0jmvedmB3z71pKQhYj6PFouAGyE1d61nm2HXSVZUobkXM+cz3RtFe0YTG3u4VoF/qVMN8hwkyfjb8ODTF0vDM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ETjfHBI8; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	 In-Reply-To:Content-Type; b=GJ1D0VT6l/+1pQBEYXfq1c2f4br9GSGSH1dAXIE+tlKx4/TSzElbcypWuTrFdtm8XNzOVCr0pj91HhxegKBVx17x1swuVD5Grfg2Su2BBVEbFTB/Fja2P00T/8yBQJKPvV9APa1nXfcPtjA995qo0CJKyjrz4C4vZgDvh+tQhZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=cQlwW+r6; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ETjfHBI8"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57QJIw5g004377
-	for <iommu@lists.linux.dev>; Wed, 27 Aug 2025 01:55:28 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	wyZ5iLGjMEfr8zWA8TqBNrggJ/o46idkE8iV1Fg6GHU=; b=ETjfHBI8Qn8OTsO+
-	LquT8vZTyxHCAsBfmtP94C9F/AqUCa05eBfEf3bXw2cuz5pCbYF3u/FfQ/yKzzEM
-	eGRRPlEZLmwx0urzVzGaZGuWwiCPUmzhwT2lvc2fCqy0YJvQEkiALgJBw2bkbE1J
-	wCB14okLSEbLNgEc7frsGu4wgEsKKcjoFJ9w0Irb8/TBZKt68mPkTuA/KghCTw+j
-	OyIINNc2/gFbNiOb5/rsGBc2qQ4RhQlPgHoJP8+n1wZYv6tvlQANCeW4IfMVgEtf
-	aVmPs/eplCykldzk7tjAQYPqqjPQ1jrnebTK+MTPG6gtHed/VI6AtvYYbEvOR4bi
-	rac9+w==
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48q5xpu5aa-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Wed, 27 Aug 2025 01:55:28 +0000 (GMT)
-Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-246cf6af2f4so56258535ad.1
-        for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 18:55:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756259728; x=1756864528;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wyZ5iLGjMEfr8zWA8TqBNrggJ/o46idkE8iV1Fg6GHU=;
-        b=MgcIM+CC0GjSVMu3TgsKoAb1Ac7Gom1BB3zn1E17iPa6B8l8p91dwI0hubm84rYAVi
-         psKim1vrKZ6SHAvdYdOlEGMN3JVfHF72hLQ5b1zTikJ2bMPAMInyIRBlS0qj4J9ESf4X
-         op+610NVCnzxJQNMJUjjCPoAFXenEsvhwFblLaJJ1mJ3vgWroYEPK0qGJ2TFlCJpjqWf
-         zKO8zlT1XN/80BBGVKeKaFhQDHuaNTTcXGDEKORlnuvzZznIkAZPXZiBGZWjwaocArvk
-         frFeLpuXf2bvThcRHiBbKZBL2bSmvmFCFs3Qaxl6AGM/wUEExZup5I/M8LSe9GIMnBwT
-         e5pQ==
-X-Gm-Message-State: AOJu0YyZCtIv54ANzu1u8FOjyRbQC6VNt7Fxuf3XIblAaAnQsWIVfm0J
-	OnJ+uf2Msz5EY2nfIxlIIItZ1gCvIXjffhKaISVL8MXSSLdun6FBTUKdSE9SX9mP3ONeR/9ddlx
-	O2fP8oj+kjg/sMkR4EfJ0OK2fg/VVKq3P9udVJ/RHZF5zHLctafiyBmhUpw==
-X-Gm-Gg: ASbGnctBEL8EtPJ4um82uuomJKACrKUxcFXXHxyhxBnV4grhAW8Tq3PIFpYmMaVJObb
-	Dvn52VZrGMJjiIKhnbz+RWszaC/D+6Tk79302lcPS6nhJRSpwpy+CMU/+bC6A0c/WxMD2RUI+Jv
-	TkvjPpjB33P/T28yp2ODiOICq1+dBc6pJS7RyvYl0ZVwxo3TMVRGzzR3ZfzTQusqH+Eo9hFl1mB
-	rdo6nXywMzRhn1zcNBMe64KXYavciVkZhVRI2xBQ/wTioNYxDXBpI070aMP5xaofKJOX3mW/FaO
-	GJa50b3dXcFrV6kSdyzzMN84d+/vt9Qi+wpdkEPlKKSXtYDxjPzPzrHN+HYjsDLDT8GxS594+Pl
-	64Gf/xUlcJru3PpMe69lEjjZmAvXbQwwY69+1yw==
-X-Received: by 2002:a17:903:2f44:b0:240:a222:2312 with SMTP id d9443c01a7336-2462eeeca94mr229747265ad.44.1756259727681;
-        Tue, 26 Aug 2025 18:55:27 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IH2i5XtdpRUbO/urKMakMgXLRO2eBfmK/dMCP7CKXewUgYFm/OlcVeTpLpdrPdXjPdZowBzJw==
-X-Received: by 2002:a17:903:2f44:b0:240:a222:2312 with SMTP id d9443c01a7336-2462eeeca94mr229747085ad.44.1756259727126;
-        Tue, 26 Aug 2025 18:55:27 -0700 (PDT)
-Received: from [10.133.33.184] (tpe-colo-wan-fw-bordernet.qualcomm.com. [103.229.16.4])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-246687b521bsm108143455ad.60.2025.08.26.18.55.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Aug 2025 18:55:26 -0700 (PDT)
-Message-ID: <b679c1ec-be21-458e-a650-1aa14e2366a1@oss.qualcomm.com>
-Date: Wed, 27 Aug 2025 09:55:20 +0800
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="cQlwW+r6"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=+T7zQzI6PFbG9oj0elGrFsd3wpqplYSQjpEjlSCxTP4=; b=cQlwW+r6MX6JrypRxmiW9hcirs
+	Ggrs0UaEo5SIYDSEBJgZcPtJ8QO81WScKPELSk7DeYL3pvlQ2GagzS8Rj1jb4lOfE5J9lHoPSHZl9
+	R26+QIF0pBMCrYMOBG4FokItxJ2Xkca+e0/OaOxoIebOM4c4y9zYAHslaHEQr2LZohKYqx3PrFM8C
+	odfELtNRZ/zxaArswzPtckpWgTQFPRTtyDqr0qZOpQnJx+mZDYtXmdjis25u2hLoLcVgcsyMcfWjG
+	fFA6SMlAOYHLDEahBQIbx9M+KjxIhlQ8BqOlnUwY9jiWk09Zhqo3XHx0gh3Kz45nMeuXULnpldJJZ
+	I77EFeQg==;
+Received: from [50.53.25.54] (helo=[192.168.254.17])
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1ur8Jx-0000000E4Cb-2J6c;
+	Wed, 27 Aug 2025 05:03:41 +0000
+Message-ID: <cc96baee-2be5-433f-9902-a160765e2fae@infradead.org>
+Date: Tue, 26 Aug 2025 22:03:40 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,107 +39,491 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: is dma_mapping_error() check necessary for
- dma_alloc_noncoherent()?
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
-        Baochen Qiang <baochen.qiang@oss.qualcomm.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jeff Johnson <jjohnson@kernel.org>
-Cc: iommu@lists.linux.dev,
-        "linux-kernel@vger.kernel.org >> linux-kernel"
- <linux-kernel@vger.kernel.org>,
-        "ath11k@lists.infradead.org" <ath11k@lists.infradead.org>
-References: <CGME20250826094453eucas1p178ff4a39db0c655f3505128a5cfb0a6a@eucas1p1.samsung.com>
- <ff6c1fe6-820f-4e58-8395-df06aa91706c@oss.qualcomm.com>
- <89954593-8236-464e-8848-e7cdcf639c0a@samsung.com>
+Subject: Re: [PATCH v4 03/15] iommupt: Add the basic structure of the iommu
+ implementation
+To: Jason Gunthorpe <jgg@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Justin Stitt <justinstitt@google.com>, Kevin Tian <kevin.tian@intel.com>,
+ linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
+ llvm@lists.linux.dev, Bill Wendling <morbo@google.com>,
+ Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
+ Miguel Ojeda <ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Shuah Khan <shuah@kernel.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>
+Cc: Alexey Kardashevskiy <aik@amd.com>,
+ Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+ James Gowans <jgowans@amazon.com>, Michael Roth <michael.roth@amd.com>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev
+References: <3-v4-0d6a6726a372+18959-iommu_pt_jgg@nvidia.com>
 Content-Language: en-US
-From: Baochen Qiang <baochen.qiang@oss.qualcomm.com>
-In-Reply-To: <89954593-8236-464e-8848-e7cdcf639c0a@samsung.com>
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <3-v4-0d6a6726a372+18959-iommu_pt_jgg@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Authority-Analysis: v=2.4 cv=KOlaDEFo c=1 sm=1 tr=0 ts=68ae6590 cx=c_pps
- a=cmESyDAEBpBGqyK7t0alAg==:117 a=nuhDOHQX5FNHPW3J6Bj6AA==:17
- a=IkcTkHD0fZMA:10 a=2OwXVqhp2XgA:10 a=v1NiFcvVahR_jOWWQrIA:9
- a=QEXdDO2ut3YA:10 a=1OuFwYUASf3TG4hYMiVC:22
-X-Proofpoint-GUID: 1ZF65lPWP_h-dpFyKAm4_mOnL-6hmGCX
-X-Proofpoint-ORIG-GUID: 1ZF65lPWP_h-dpFyKAm4_mOnL-6hmGCX
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODIzMDAzMyBTYWx0ZWRfXy/0PnL/iuUlt
- ivrqY8fgu5E4jrAOe+pqx7XLVz0aKqEkC16cdaqjVBJ6dDr0sWmagkdATBtXRvyev9PqsXa8+fk
- RALKQ9/AdIm4bYvcR/U1jjqf3Al3uySwi4XdS4RENiOd0NyLa7L9EfZF2Itj53dBoWOV1TRvUDe
- J1BTpdIY7niQ3DOvM9xNS8zQJEm5W/Co017MoBzKKGfUcCo9eMS/Dz5LN/KVPfXoUyOF+7FzUue
- drWXqfu+b3D1CNheD0Yp+Kid50OYe2gVZK0KqmMiOOgIw1vt/zNz52/ljTHYhSq867Ao/DgQs7L
- T1ehHNw4/uwztA4CbWGRizmh1RpX7JB0DazIo6Y26YQp/GAQvPuAWzi144B3/TneLgVrHu6GRZy
- Tr6sBIdK
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-08-26_02,2025-08-26_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 clxscore=1015 bulkscore=0 adultscore=0 phishscore=0
- impostorscore=0 spamscore=0 suspectscore=0 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2508230033
 
 
 
-On 8/26/2025 10:09 PM, Marek Szyprowski wrote:
-> On 26.08.2025 11:44, Baochen Qiang wrote:
->> Hi guys,
->>
->> I have a driver which allocate noncoherent DMA buffer and get the returned CPU addr tested:
->>
->> 	vaddr_unaligned = dma_alloc_noncoherent(ab->dev, rx_tid->unaligned_size, &paddr,
->> 						DMA_BIDIRECTIONAL, GFP_ATOMIC);
->> 	if (!vaddr_unaligned) {
->> 		spin_unlock_bh(&ab->base_lock);
->> 		return -ENOMEM;
->> 	}
->>
->> while free the buffer
->>
->> 	dma_free_noncoherent(ab->dev, rx_tid->unaligned_size,
->> 			     rx_tid->vaddr_unaligned,
->> 			     rx_tid->paddr_unaligned, DMA_BIDIRECTIONAL);
->>
->> I get below warnings:
->>
->>   DMA-API: ath11k_pci 0000:03:00.0: device driver failed to check map error[device
->> address=0x00000000f3ad7000] [size=639 bytes] [mapped as single]
->>   WARNING: CPU: 15 PID: 64303 at kernel/dma/debug.c:1036 check_unmap+0x7e2/0x950
->>   RIP: 0010:check_unmap+0x7e2/0x950
->>   Call Trace:
->>    <TASK>
->>    ? free_to_partial_list+0x9d/0x350
->>    debug_dma_unmap_page+0xac/0xc0
->>    ? debug_smp_processor_id+0x17/0x20
->>    ? rcu_is_watching+0x13/0x70
->>    dma_free_pages+0x56/0x180
->>    [...]
->>    </TASK>
->>   ---[ end trace 0000000000000000 ]---
->>   DMA-API: Mapped at:
->>    debug_dma_map_page+0x7c/0x140
->>    dma_alloc_pages+0x74/0x220
->>    [...]
->>
->> Checking code gives me the impression that I should do dma_mapping_error() check as well.
->> And indeed with below diff the warning is gone:
->>
->> +       dma_mapping_error(ab->dev, paddr);
->>
->> However this does not make sense to me since IMO testing the CPU address is good enough, I
->> can not imagine a valid case where DMA alloc/map fails while returning a valid CPU
->> address, no?
->>
->> If I was right, should we remove invocation to debug_dma_map_page() in dma_alloc_pages()?
+On 8/26/25 10:18 AM, Jason Gunthorpe wrote:
+> The existing IOMMU page table implementations duplicate all of the working
+> algorithms for each format. By using the generic page table API a single C
+> version of the IOMMU algorithms can be created and re-used for all of the
+> different formats used in the drivers. The implementation will provide a
+> single C version of the iommu domain operations: iova_to_phys, map, unmap,
+> and read_and_clear_dirty.
 > 
-> Simply replace "if (!vaddr_unaligned)" with "if 
-> dma_mapping_error(ab->dev, paddr)" and the debug code will be happy.
-
-Thanks, much better!
-
-But I am wondering if the debug code is worrying too much? isn't the CPU addr test already
-good enough?
-
+> Further, adding new algorithms and techniques becomes easy to do across
+> the entire fleet of drivers and formats.
 > 
-> Best regards
+> The C functions are drop in compatible with the existing iommu_domain_ops
+> using the IOMMU_PT_DOMAIN_OPS() macro. Each per-format implementation
+> compilation unit will produce exported symbols following the pattern
+> pt_iommu_FMT_map_pages() which the macro directly maps to the
+> iommu_domain_ops members. This avoids the additional function pointer
+> indirection like io-pgtable has.
+> 
+> The top level struct used by the drivers is pt_iommu_table_FMT. It
+> contains the other structs to allow container_of() to move between the
+> driver, iommu page table, generic page table, and generic format layers.
+> 
+>    struct pt_iommu_table_amdv1 {
+>        struct pt_iommu {
+> 	      struct iommu_domain domain;
+>        } iommu;
+>        struct pt_amdv1 {
+> 	      struct pt_common {
+> 	      } common;
+>        } amdpt;
+>    };
+> 
+> The driver is expected to union the pt_iommu_table_FMT with it's own
+
+                                                              its
+(not "it is")
+
+> existing domain struct:
+> 
+>    struct driver_domain {
+>        union {
+> 	       struct iommu_domain domain;
+> 	       struct pt_iommu_table_amdv1 amdv1;
+>        };
+>    };
+>    PT_IOMMU_CHECK_DOMAIN(struct driver_domain, amdv1, domain);
+> 
+> To create an alias to avoid renaming 'domain' in a lot of driver code.
+> 
+> This allows all the layers to access all the necessary functions to
+> implement their different roles with no change to any of the existing
+> iommu core code.
+> 
+> Implement the basic starting point: pt_iommu_init(), get_info() and
+> deinit().
+> 
+> Tested-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/generic_pt/Kconfig              |  12 +
+>  drivers/iommu/generic_pt/fmt/iommu_template.h |  39 +++
+>  drivers/iommu/generic_pt/iommu_pt.h           | 264 ++++++++++++++++++
+>  include/linux/generic_pt/iommu.h              | 118 ++++++++
+>  4 files changed, 433 insertions(+)
+>  create mode 100644 drivers/iommu/generic_pt/fmt/iommu_template.h
+>  create mode 100644 drivers/iommu/generic_pt/iommu_pt.h
+>  create mode 100644 include/linux/generic_pt/iommu.h
+> 
+
+
+> diff --git a/drivers/iommu/generic_pt/iommu_pt.h b/drivers/iommu/generic_pt/iommu_pt.h
+> new file mode 100644
+> index 00000000000000..03e1f3daa7a2ef
+> --- /dev/null
+> +++ b/drivers/iommu/generic_pt/iommu_pt.h
+> @@ -0,0 +1,264 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) 2024-2025, NVIDIA CORPORATION & AFFILIATES
+> + *
+> + * "Templated C code" for implementing the iommu operations for page tables.
+> + * This is compiled multiple times, over all the page table formats to pick up
+> + * the per-format definitions.
+> + */
+> +#ifndef __GENERIC_PT_IOMMU_PT_H
+> +#define __GENERIC_PT_IOMMU_PT_H
+> +
+> +#include "pt_iter.h"
+> +
+> +#include <linux/iommu.h>
+> +#include "../iommu-pages.h"
+> +#include <linux/export.h>
+
+Could you put <linux/export.h> before <linux/iommu.h?
+Does something prevent that?
+
+> +> +#define DOMAIN_NS(op) CONCATENATE(CONCATENATE(pt_iommu_, PTPFX), op)
+> +
+> +struct pt_iommu_collect_args {
+> +	struct iommu_pages_list free_list;
+> +	u8 ignore_mapped : 1;
+> +};
+> +
+> +static int __collect_tables(struct pt_range *range, void *arg,
+> +			    unsigned int level, struct pt_table_p *table)
+> +{
+> +	struct pt_state pts = pt_init(range, level, table);
+> +	struct pt_iommu_collect_args *collect = arg;
+> +	int ret;
+> +
+> +	if (collect->ignore_mapped && !pt_can_have_table(&pts))
+> +		return 0;
+> +
+> +	for_each_pt_level_entry(&pts) {
+> +		if (pts.type == PT_ENTRY_TABLE) {
+> +			iommu_pages_list_add(&collect->free_list, pts.table_lower);
+> +			ret = pt_descend(&pts, arg, __collect_tables);
+> +			if (ret)
+> +				return ret;
+> +			continue;
+> +		}
+> +		if (pts.type == PT_ENTRY_OA && !collect->ignore_mapped)
+> +			return -EADDRINUSE;
+> +	}
+> +	return 0;
+> +}
+> +
+> +static inline struct pt_table_p *table_alloc_top(struct pt_common *common,
+> +						 uintptr_t top_of_table,
+> +						 gfp_t gfp)
+> +{
+> +	struct pt_iommu *iommu_table = iommu_from_common(common);
+> +
+> +	/*
+> +	 * Top doesn't need the free list or otherwise, so it technically
+> +	 * doesn't need to use iommu pages. Use the API anyhow as the top is
+> +	 * usually not smaller than PAGE_SIZE to keep things simple.
+> +	 */
+> +	return iommu_alloc_pages_node_sz(
+> +		iommu_table->nid, gfp,
+> +		log2_to_int(pt_top_memsize_lg2(common, top_of_table)));
+> +}
+> +
+> +static void NS(get_info)(struct pt_iommu *iommu_table,
+> +			 struct pt_iommu_info *info)
+> +{
+> +	struct pt_common *common = common_from_iommu(iommu_table);
+> +	struct pt_range range = pt_top_range(common);
+> +	struct pt_state pts = pt_init_top(&range);
+> +	pt_vaddr_t pgsize_bitmap = 0;
+> +
+> +	if (pt_feature(common, PT_FEAT_DYNAMIC_TOP)) {
+> +		for (pts.level = 0; pts.level <= PT_MAX_TOP_LEVEL;
+> +		     pts.level++) {
+> +			if (pt_table_item_lg2sz(&pts) >= common->max_vasz_lg2)
+> +				break;
+> +			pgsize_bitmap |= pt_possible_sizes(&pts);
+> +		}
+> +	} else {
+> +		for (pts.level = 0; pts.level <= range.top_level; pts.level++)
+> +			pgsize_bitmap |= pt_possible_sizes(&pts);
+> +	}
+> +
+> +	/* Hide page sizes larger than the maximum OA */
+> +	info->pgsize_bitmap = oalog2_mod(pgsize_bitmap, common->max_oasz_lg2);
+> +}
+> +
+> +static void NS(deinit)(struct pt_iommu *iommu_table)
+> +{
+> +	struct pt_common *common = common_from_iommu(iommu_table);
+> +	struct pt_range range = pt_all_range(common);
+> +	struct pt_iommu_collect_args collect = {
+> +		.free_list = IOMMU_PAGES_LIST_INIT(collect.free_list),
+> +		.ignore_mapped = true,
+> +	};
+> +
+> +	iommu_pages_list_add(&collect.free_list, range.top_table);
+> +	pt_walk_range(&range, __collect_tables, &collect);
+> +
+> +	/*
+> +	 * The driver has to already have fenced the HW access to the page table
+> +	 * and invalidated any caching referring to this memory.
+> +	 */
+> +	iommu_put_pages_list(&collect.free_list);
+> +}
+> +
+> +static const struct pt_iommu_ops NS(ops) = {
+> +	.get_info = NS(get_info),
+> +	.deinit = NS(deinit),
+> +};
+> +
+> +static int pt_init_common(struct pt_common *common)
+> +{
+> +	struct pt_range top_range = pt_top_range(common);
+> +
+> +	if (PT_WARN_ON(top_range.top_level > PT_MAX_TOP_LEVEL))
+> +		return -EINVAL;
+> +
+> +	if (top_range.top_level == PT_MAX_TOP_LEVEL ||
+> +	    common->max_vasz_lg2 == top_range.max_vasz_lg2)
+> +		common->features &= ~BIT(PT_FEAT_DYNAMIC_TOP);
+> +
+> +	if (top_range.max_vasz_lg2 == PT_VADDR_MAX_LG2)
+> +		common->features |= BIT(PT_FEAT_FULL_VA);
+> +
+> +	/* Requested features must match features compiled into this format */
+> +	if ((common->features & ~(unsigned int)PT_SUPPORTED_FEATURES) ||
+> +	    (!IS_ENABLED(CONFIG_DEBUG_GENERIC_PT) &&
+> +	     (common->features & PT_FORCE_ENABLED_FEATURES) !=
+> +		     PT_FORCE_ENABLED_FEATURES))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (common->max_oasz_lg2 == 0)
+> +		common->max_oasz_lg2 = pt_max_output_address_lg2(common);
+> +	else
+> +		common->max_oasz_lg2 = min(common->max_oasz_lg2,
+> +					   pt_max_output_address_lg2(common));
+> +	return 0;
+> +}
+> +
+> +static int pt_iommu_init_domain(struct pt_iommu *iommu_table,
+> +				struct iommu_domain *domain)
+> +{
+> +	struct pt_common *common = common_from_iommu(iommu_table);
+> +	struct pt_iommu_info info;
+> +	struct pt_range range;
+> +
+> +	NS(get_info)(iommu_table, &info);
+> +
+> +	domain->type = __IOMMU_DOMAIN_PAGING;
+> +	domain->pgsize_bitmap = info.pgsize_bitmap;
+> +
+> +	if (pt_feature(common, PT_FEAT_DYNAMIC_TOP))
+> +		range = _pt_top_range(common,
+> +				      _pt_top_set(NULL, PT_MAX_TOP_LEVEL));
+> +	else
+> +		range = pt_top_range(common);
+> +
+> +	/*
+> +	 * A 64 bit high address space table on a 32 bit system cannot work.
+
+	     64-bit                               32-bit
+
+> +	 */
+> +	domain->geometry.aperture_start = (unsigned long)range.va;
+> +	if ((pt_vaddr_t)domain->geometry.aperture_start != range.va)
+> +		return -EOVERFLOW;
+> +
+> +	/*
+> +	 * The aperture is limited to what the API can do after considering all
+> +	 * the different types dma_addr_t/unsigned long/pt_vaddr_t that are used
+> +	 * to store a VA. Set the aperture to something that is valid for all
+> +	 * cases. Saturate instead of truncate the end if the types are smaller
+> +	 * than the top range. aperture_end is a last.
+
+Does "is a last" have something to do with terminating loop iteration?
+Is it inclusive or exclusive?
+
+> +	 */
+> +	domain->geometry.aperture_end = (unsigned long)range.last_va;
+> +	if ((pt_vaddr_t)domain->geometry.aperture_end != range.last_va) {
+> +		domain->geometry.aperture_end = ULONG_MAX;
+> +		domain->pgsize_bitmap &= ULONG_MAX;
+> +	}
+> +	domain->geometry.force_aperture = true;
+> +
+> +	return 0;
+> +}
+> +
+> +static void pt_iommu_zero(struct pt_iommu_table *fmt_table)
+> +{
+> +	struct pt_iommu *iommu_table = &fmt_table->iommu;
+> +	struct pt_iommu cfg = *iommu_table;
+> +
+> +	static_assert(offsetof(struct pt_iommu_table, iommu.domain) == 0);
+> +	memset_after(fmt_table, 0, iommu.domain);
+> +
+> +	/* The caller can initialize some of these values */
+> +	iommu_table->nid = cfg.nid;
+> +}
+> +
+> +#define pt_iommu_table_cfg CONCATENATE(pt_iommu_table, _cfg)
+> +#define pt_iommu_init CONCATENATE(CONCATENATE(pt_iommu_, PTPFX), init)
+
+My eyes would appreciate a blank line here.
+
+> +int pt_iommu_init(struct pt_iommu_table *fmt_table,
+> +		  const struct pt_iommu_table_cfg *cfg, gfp_t gfp)
+> +{
+> +	struct pt_iommu *iommu_table = &fmt_table->iommu;
+> +	struct pt_common *common = common_from_iommu(iommu_table);
+> +	struct pt_table_p *table_mem;
+> +	int ret;
+
+[snip]
+
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("IOMMU Pagetable implementation for " __stringify(PTPFX_RAW));
+
+                             Page table
+for consistency.
+
+> +MODULE_IMPORT_NS("GENERIC_PT");
+> +
+> +#endif
+> diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
+> new file mode 100644
+> index 00000000000000..9d2152bc64c0d6
+> --- /dev/null
+> +++ b/include/linux/generic_pt/iommu.h
+> @@ -0,0 +1,118 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) 2024-2025, NVIDIA CORPORATION & AFFILIATES
+> + */
+> +#ifndef __GENERIC_PT_IOMMU_H
+> +#define __GENERIC_PT_IOMMU_H
+> +
+> +#include <linux/generic_pt/common.h>
+> +#include <linux/iommu.h>
+> +#include <linux/mm_types.h>
+> +
+> +struct pt_iommu_ops;
+> +
+> +/**
+> + * DOC: IOMMU Radix Page Table
+> + *
+> + * The iommu implementation of the Generic Page Table provides an ops struct
+
+s/iommu/IOMMU/ in text (not functions/structs/etc.) where possible.
+
+> + * that is useful to go with an iommu_domain to serve the DMA API, IOMMUFD and
+> + * the generic map/unmap interface.
+> + *
+> + * This interface uses a caller provided locking approach. The caller must have
+> + * a VA range lock concept that prevents concurrent threads from calling ops on
+> + * the same VA. Generally the range lock must be at least as large as a single
+> + * map call.
+> + */
+> +
+> +/**
+> + * struct pt_iommu - Base structure for iommu page tables
+> + *
+> + * The format specific struct will include this as the first member.
+
+          format-specific
+
+> + */
+> +struct pt_iommu {
+> +	/**
+> +	 * @domain - The core iommu domain. The driver should use a union to
+
+struct members should be like this:
+
+	 * @domain: <description>
+
+> +	 * overlay this memory with its previously existing domain struct to
+> +	 * create an alias.
+> +	 */
+> +	struct iommu_domain domain;
+> +
+> +	/**
+> +	 * @ops - Function pointers to access the API
+> +	 */
+> +	const struct pt_iommu_ops *ops;
+> +
+> +	/**
+> +	 * @nid - Node ID to use for table memory allocations. The iommu driver
+> +	 * may want to set the NID to the device's NID, if there are multiple
+> +	 * table walkers.
+> +	 */
+> +	int nid;
+> +};
+> +
+> +/**
+> + * struct pt_iommu_info - Details about the iommu page table
+> + *
+> + * Returned from pt_iommu_ops->get_info()
+> + */
+> +struct pt_iommu_info {
+> +	/**
+> +	 * @pgsize_bitmap - A bitmask where each set bit indicates
+
+Ditto.
+
+> +	 * a page size that can be natively stored in the page table.
+> +	 */
+> +	u64 pgsize_bitmap;
+> +};
+> +
+> +struct pt_iommu_ops {
+> +	/**
+> +	 * get_info() - Return the pt_iommu_info structure
+
+	 * @get_info: Return the pt_iommu_info structure
+
+> +	 * @iommu_table: Table to query
+> +	 *
+> +	 * Return some basic static information about the page table.
+> +	 */
+> +	void (*get_info)(struct pt_iommu *iommu_table,
+> +			 struct pt_iommu_info *info);
+> +
+> +	/**
+> +	 * deinit() - Undo a format specific init operation
+
+Same reformatting.
+
+> +	 * @iommu_table: Table to destroy
+> +	 *
+> +	 * Release all of the memory. The caller must have already removed the
+> +	 * table from all HW access and all caches.
+> +	 */
+> +	void (*deinit)(struct pt_iommu *iommu_table);
+> +};
+> +
+> +static inline void pt_iommu_deinit(struct pt_iommu *iommu_table)
+> +{
+> +	/*
+> +	 * It is safe to call pt_iommu_deinit() before an init, or if init
+> +	 * fails. The ops pointer will only become non-NUL if deinit needs to be
+
+s/NUL/NULL/
+NUL is the ASCII character with value 0; NULL is a pointer value.
+
+> +	 * run.
+> +	 */
+> +	if (iommu_table->ops)
+> +		iommu_table->ops->deinit(iommu_table);
+> +}
+> +
+> +/**
+> + * struct pt_iommu_cfg - Common configuration values for all formats
+> + */
+> +struct pt_iommu_cfg {
+> +	/**
+> +	 * @features - Features required. Only these features will be turned on.
+
+	 * @features:
+
+Similar for below.
+
+> +	 * The feature list should reflect what the IOMMU HW is capable of.
+> +	 */
+> +	unsigned int features;
+> +	/**
+> +	 * @hw_max_vasz_lg2 - Maximum VA the IOMMU HW can support. This will
+> +	 * imply the top level of the table.
+> +	 */
+> +	u8 hw_max_vasz_lg2;
+> +	/**
+> +	 * @hw_max_oasz_lg2 - Maximum OA the IOMMU HW can support. The format
+> +	 * might select a lower maximum OA.
+> +	 */
+> +	u8 hw_max_oasz_lg2;
+> +};
+> +
+> +#endif
+
+-- 
+~Randy
 
