@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEDC1298CC7;
-	Wed, 27 Aug 2025 13:19:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08139298CC7;
+	Wed, 27 Aug 2025 13:21:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756300757; cv=none; b=Ode5UPgMDKONhujEm9UYFsCjWXa94Mm0WJaZ0i9ypfe1y5LN7YDtLe6kAz5RAS/fqzvSrDaffFupEsc3iwlCiI7uETTAaZW6RL31dapyFBWgFkQvBpQ1j4bKegTLBXzPSZSW795Z9eX2Fsw7EnH+RpMPbmkO4w/R/7TxXsBxeG0=
+	t=1756300864; cv=none; b=MJ9/AwRbW9ve6fxpjG3trIh5dWlssrNRvcqX2yTywKV8eggDpf/SvslI7EmSNQO82BouKfW2vyOrA5qZ8/qi9WpnqBWRMNC0afyc0RotAZLGVlTlttcqrUmOoAWeE2lrREd081mecPye3LY3om6LsN0/vwFjF28YTA+7NuDKfJI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756300757; c=relaxed/simple;
-	bh=ZJBcfQdx2UO+F8GzktrZZ/rKqPLBDJPTs1143n9qhnI=;
+	s=arc-20240116; t=1756300864; c=relaxed/simple;
+	bh=Wzw9A2fGU7gurXwIUpH8Synua2BxNhx7miIcMSPtbFI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jFI2fKVtI78e5sY4PNLs5fc8Rao6D029FdAc1YRoponrA8GVHGmTL6/Ocq1e9NnROrcXn6ICfTX/wzb1a7gwbtsdxjmyWs9vOvBvCZse9vP+w8UHIehq9uP6fWk3MzXkb587QFXrWlD3PTefrDXhBO33UaCHEXQxXtg/YG1DNWI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sEEYsNI4; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=PoHkO6NKXmWK4NtIp29dAhsspjK+eAafHkEKNs/SNFzxFBpjrhjkBNvptf6nu8UdODcb4ciI5W3B1lgN1KltdQM+EIhIkU1hzazeE2A5Hu7i1fBWvnODheIC9u8rZB3nbg2Tu60p385efaKvl5DqM3IX66SOL8kDMMm6IT5Y1eU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OVqM2ydK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sEEYsNI4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E8ADC4CEEB;
-	Wed, 27 Aug 2025 13:19:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OVqM2ydK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60C0AC4CEEB;
+	Wed, 27 Aug 2025 13:20:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756300756;
-	bh=ZJBcfQdx2UO+F8GzktrZZ/rKqPLBDJPTs1143n9qhnI=;
+	s=k20201202; t=1756300863;
+	bh=Wzw9A2fGU7gurXwIUpH8Synua2BxNhx7miIcMSPtbFI=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=sEEYsNI4MA2rrWtni3gO/oD1ASXHhvDO1WFuLivNTAVlh2m+MG37VPac8HjN2mobK
-	 QP6whq2KAONXNy7ZNygbqcRBcPh6N2RbiQ7F0eRn0NUj7DewOXpuzKdYIbGbPNkuYN
-	 B5qXkFWhRbPa6KZfZh/5tc3cNa2nla5/VmPPgnFtM4HLu1kh3bPt2xFCxf2TFPOY/j
-	 cTUFNXVe4EPFQdKn/6bqEwH2YbJ+5IIfZRyWAU/JzSsqJbW0xq2VG891y8O/6nlYG+
-	 9qCdXwGBSAuD6z/1x3f8kEA9GoIYI/X9fMItZ0Z0khwACuL+74KLxaQOAnvG94S8bK
-	 n5FE11dvoOOeQ==
-Message-ID: <6365acb0-6e4c-4561-bc0f-d34637e8308e@kernel.org>
-Date: Wed, 27 Aug 2025 15:19:10 +0200
+	b=OVqM2ydKwGTnVMxTjiWXhqEIXrZbPzpeWmKQcq4EgGBy3WcS8p8Gc20DX+eaQODM6
+	 uTvsOrSjYJ0BYlSkrL7/eDizLL0UMC5TqacWRGbFDhdGWCf83TzaJ1psWyBQHVKJh1
+	 e06+mfR65iM++vRY9s2dk4BJlEF7L4IY+OV11yLZJrno/UEOBpzG7ysmplGPaAgIMb
+	 082/pg4A4MgxQ4BR8QKtDS3hKsDuB8LOOCCfI1YGCxNOv2Iptmd6jNcnEsJMiiVRdX
+	 2Qr2ymwqpxzhF+Kxmn5YklgLxsJFGssaX9G5LVFV0VJlDcJ/fgtKfGZ1DxbThyCNAP
+	 wn9u98AL1NhRQ==
+Message-ID: <3147ebf4-054c-4777-811f-86d0ad14caf6@kernel.org>
+Date: Wed, 27 Aug 2025 15:20:57 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,11 +35,11 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 6/9] dt-bindings: nvme: apple,nvme-ans: Add Apple A11
-To: Janne Grunau <j@jannau.net>
-Cc: Sven Peter <sven@kernel.org>, Nick Chan <towinchenmi@gmail.com>,
+Subject: Re: [PATCH v2 3/9] dt-bindings: iommu: apple,sart: Add Apple A11
+To: Rob Herring <robh@kernel.org>, Nick Chan <towinchenmi@gmail.com>
+Cc: Sven Peter <sven@kernel.org>, Janne Grunau <j@jannau.net>,
  Alyssa Rosenzweig <alyssa@rosenzweig.io>, Neal Gompa <neal@gompa.dev>,
- Jassi Brar <jassisinghbrar@gmail.com>, Rob Herring <robh@kernel.org>,
+ Jassi Brar <jassisinghbrar@gmail.com>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
  <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -50,13 +50,8 @@ Cc: Sven Peter <sven@kernel.org>, Nick Chan <towinchenmi@gmail.com>,
  devicetree@vger.kernel.org, iommu@lists.linux.dev,
  linux-nvme@lists.infradead.org
 References: <20250818-t8015-nvme-v2-0-65648cd189e0@gmail.com>
- <20250818-t8015-nvme-v2-6-65648cd189e0@gmail.com>
- <20250819-polite-papaya-catfish-1a9d1a@kuoka>
- <8ac418ae-7ff0-4d5c-9f11-c24e36618ac1@kernel.org>
- <b3cd1b3f-fa0e-4a98-84c7-e4271f262795@kernel.org>
- <8279536d-c4f4-477a-9823-3e7b452c3c33@kernel.org>
- <12ab93b7-1fc2-4ce0-926e-c8141cfe81bf@kernel.org>
- <20250827122525.GA204299@robin.jannau.net>
+ <20250818-t8015-nvme-v2-3-65648cd189e0@gmail.com>
+ <20250820222044.GA1513864-robh@kernel.org>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -102,83 +97,38 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20250827122525.GA204299@robin.jannau.net>
+In-Reply-To: <20250820222044.GA1513864-robh@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 27/08/2025 14:25, Janne Grunau wrote:
-> On Thu, Aug 21, 2025 at 03:09:42PM +0200, Krzysztof Kozlowski wrote:
->> On 21/08/2025 12:25, Sven Peter wrote:
->>>
->>> 1) For situations like this one where the generic one just doesn't make 
->>> any sense we deprecate "apple,nvme-ans2" in the binding and use
->>> "apple,t8103-nvme-ans2" as the fallback instead, i.e. just
->>> "apple,t8103-nvme-ans2" for M1, "apple,t6000-nvme-ans2", 
->>> "apple,t8103-nvme-ans2" for M1 Pro, and just "apple,t8015-nvme-ans2" for 
->>> A11.
->>>
->>> We keep the generic one in the driver for now but also add
->>> "apple,t8103-nvme-ans2". We then remove the generic one from all 
->>> upstream DTS files but keep it inside the downstream files we ship to 
->>> users for now to avoid pain with kernel upgrades/downgrades.
->>> A year or two from now we can then delete the deprecated generic 
->>> compatibles everywhere. This all has to be synced with OpenBSD and 
->>> u-boot as well since both also use these bindings.
->>> It's gonna be rather painful but this would clean up the entire mess.
->>>
->>>
->>> 2) We keep using the ones that are already upstream and just accept that 
->>> the situation is a mess and add comment above all the bindings that we 
->>> messed up and that this should not be used as pattern.
->>> In this case that means it'll just be "apple,t8015-nvme-ans2" for A11 
->>> without any fallback and we keep everything else the way it is.
->>>
->>> I prefer option (2) but if you really want to get rid of all this mess 
+On 21/08/2025 00:20, Rob Herring wrote:
+> On Mon, Aug 18, 2025 at 04:42:56PM +0800, Nick Chan wrote:
+>> Add bindings for SARTv0 as found on Apple A11 SoC.
 >>
+>> Reviewed-by: Sven Peter <sven@kernel.org>
+>> Signed-off-by: Nick Chan <towinchenmi@gmail.com>
+>> ---
+>>  Documentation/devicetree/bindings/iommu/apple,sart.yaml | 1 +
+>>  1 file changed, 1 insertion(+)
 >>
->> I also prefer option (2). That's the least disruptive option for users
->> and inconsistency in bindings naming is just inconsistency, no big deal.
->> You just need to remember not to grow the old items/pattern with generic
->> compatible.
+>> diff --git a/Documentation/devicetree/bindings/iommu/apple,sart.yaml b/Documentation/devicetree/bindings/iommu/apple,sart.yaml
+>> index e87c1520fea60a2de549aa8a469fcded52e3b6e3..95d55ec688779bd52b8aef316a4c1ba7b7449574 100644
+>> --- a/Documentation/devicetree/bindings/iommu/apple,sart.yaml
+>> +++ b/Documentation/devicetree/bindings/iommu/apple,sart.yaml
+>> @@ -29,6 +29,7 @@ description:
+>>  properties:
+>>    compatible:
+>>      oneOf:
+>> +      - const: apple,t8015-sart
 > 
-> This sounds to me like a mix of option 1) and 2).
-> 
-> All devices / SoCs already upstream will use the fixed current
-> compatibles and thus are following option 2)
-> 
-> New SoCs will have to use
->     compatible = "apple,t6020-nvme-ans2", "apple,t8103-nvme-ans2";
-> using t6020 as example even though they will be using the same driver
-> code as "apple,nvme-ans2". Using t6020 as an example I planned to submit
-> today.
-> This will require adding the new fallback "apple,t8103-nvme-ans2"
-> compatible string to the driver.
-> 
-> Asking for clarification as I could image such driver changes will raise
-> questions from the driver maintainers.
+> Actually I take back my ack, move this to the existing 'enum' down 
+> below. With that change, you can keep the ack.
 
+What commit fails to explain (folks, please fix that) is that device is
+incompatible with existing ones. Right?
 
-I don't think they will question it. :) Just mention briefly in commit
-msg of the binding reasons why style is different.
-
-
-> 
-> Is there a way do document/annotate the generic compatibles as
-> deprecated / "do not use" for new devices?
-
-You can deprecate existing compatibles ("deprecated: true"), but I think
-that's not what is going to happen here and there is no specific syntax
-to annotate that "do not grow this list, that's old style of doing things".
-
-You can always add a comment like this. See also:
-Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-
-(but this uses both comment and deprecated)
-
-> 
-> Thanks
-> Janne
-
-
+Commit should describe the hardware or any unusual things here. Not
+making devices compatible, while usually they were compatible, is the
+unusual thing.
 Best regards,
 Krzysztof
