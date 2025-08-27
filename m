@@ -1,37 +1,72 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D3603595C;
-	Wed, 27 Aug 2025 01:07:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48B031E25E3
+	for <iommu@lists.linux.dev>; Wed, 27 Aug 2025 01:55:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756256840; cv=none; b=Fw/jVQAhaweKmceHgF8qr+PNROa27xIoCM4Jb3ERI2ZBG1V4VRmfq8oeRSLuWRLbx97ndIXEMqRwzL9aMfPepo5Br0HdvjrCw0tAqwvYQAj+wAuEZm1a+nhXBJ/OP125kZrL2dBEEnJRkmA1z34p0FNMeaKmvc0NIMiljRWEJvY=
+	t=1756259730; cv=none; b=gHXLrCUxxPYqhgkEckHEP/DeK5LVLckprK+Dh+/VyfAkbF4VPhebJ2pIHJjNqnpu8NITJ3xcAtQ/e0CSG6t0LuLLn/qHMnnDvb2N1p8L+2qTX5VAO54H5DId55qILlaKjcqEEmn4XPizUnola1QLeDWGgLp5JxU6zC9w5IBbLqs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756256840; c=relaxed/simple;
-	bh=ptg3hadmfo2fwJ+oQGUqKSF+CCbCyayELJdhHf7zfgk=;
+	s=arc-20240116; t=1756259730; c=relaxed/simple;
+	bh=EG/uyqg10U+IFfisvso0bEBlysgxBsgMwVPEVZCea5c=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GP4R6FtuRtD8pYCn3K2COS27JF3+SYqhQ0rTxAF30XuptsRG4rz0yrL81vUY9C+6Zebxoh2lrcMDo02YgQo0uFLrOlNS+8SueXhovh2KfAwGnIm+gN0Hd1BSvqYRPQ51+u1tXQDZVk0v3hEg1ug5MvMBVEy8PNy86JqNIsVxQ0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=AXv+iyu6; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	 In-Reply-To:Content-Type; b=HCwBvwyU1JnClGN5faLP5uxw0QNLiAiYyxvLng4p8GcN0m/0xVZMR51QTIqb+ZiwHVDblgEF611f58aEg9UfKF0jmvedmB3z71pKQhYj6PFouAGyE1d61nm2HXSVZUobkXM+cz3RtFe0YTG3u4VoF/qVMN8hwkyfjb8ODTF0vDM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=ETjfHBI8; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="AXv+iyu6"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=VO1laDguuSxP27SypRdymEziv/15eUANmc0X6Tkn9F4=; b=AXv+iyu6tzbuHM9ea1KZ6XKL5r
-	aJ45hCoGWurLgHLegyj3pNzyBcFYRcD+m+PnzQtng0ky3TYyIJ/S/M+K5COyk/+sBzpMxJRN/vEaD
-	X9kXBSFcM0P1DQrBMVtqKh0YLLTDIFDsuCUGp8Awb32Wu/QPTjpxcsXO2Osrr1+dalzStftvw4Y6n
-	3Z4SMHvBEcQq8BZHI1lThW2Zq9bFXDnxaQB6nRP4RxBaGeh1mqadoKN57oQIuyf+xWk/q2dWH0tBk
-	mivcdcSOPezwUuivthLT5pknKEV8HAViFguj1T59vzXzDewBT6QK9ERx67tE/Ix3HoNwBsjlAvFh2
-	jcSEq9wA==;
-Received: from [50.53.25.54] (helo=[192.168.254.17])
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1ur4dA-0000000DUey-3IVq;
-	Wed, 27 Aug 2025 01:07:16 +0000
-Message-ID: <48f34379-f0aa-40fd-8578-3cf562880731@infradead.org>
-Date: Tue, 26 Aug 2025 18:07:15 -0700
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="ETjfHBI8"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57QJIw5g004377
+	for <iommu@lists.linux.dev>; Wed, 27 Aug 2025 01:55:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	wyZ5iLGjMEfr8zWA8TqBNrggJ/o46idkE8iV1Fg6GHU=; b=ETjfHBI8Qn8OTsO+
+	LquT8vZTyxHCAsBfmtP94C9F/AqUCa05eBfEf3bXw2cuz5pCbYF3u/FfQ/yKzzEM
+	eGRRPlEZLmwx0urzVzGaZGuWwiCPUmzhwT2lvc2fCqy0YJvQEkiALgJBw2bkbE1J
+	wCB14okLSEbLNgEc7frsGu4wgEsKKcjoFJ9w0Irb8/TBZKt68mPkTuA/KghCTw+j
+	OyIINNc2/gFbNiOb5/rsGBc2qQ4RhQlPgHoJP8+n1wZYv6tvlQANCeW4IfMVgEtf
+	aVmPs/eplCykldzk7tjAQYPqqjPQ1jrnebTK+MTPG6gtHed/VI6AtvYYbEvOR4bi
+	rac9+w==
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48q5xpu5aa-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+	for <iommu@lists.linux.dev>; Wed, 27 Aug 2025 01:55:28 +0000 (GMT)
+Received: by mail-pl1-f197.google.com with SMTP id d9443c01a7336-246cf6af2f4so56258535ad.1
+        for <iommu@lists.linux.dev>; Tue, 26 Aug 2025 18:55:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1756259728; x=1756864528;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=wyZ5iLGjMEfr8zWA8TqBNrggJ/o46idkE8iV1Fg6GHU=;
+        b=MgcIM+CC0GjSVMu3TgsKoAb1Ac7Gom1BB3zn1E17iPa6B8l8p91dwI0hubm84rYAVi
+         psKim1vrKZ6SHAvdYdOlEGMN3JVfHF72hLQ5b1zTikJ2bMPAMInyIRBlS0qj4J9ESf4X
+         op+610NVCnzxJQNMJUjjCPoAFXenEsvhwFblLaJJ1mJ3vgWroYEPK0qGJ2TFlCJpjqWf
+         zKO8zlT1XN/80BBGVKeKaFhQDHuaNTTcXGDEKORlnuvzZznIkAZPXZiBGZWjwaocArvk
+         frFeLpuXf2bvThcRHiBbKZBL2bSmvmFCFs3Qaxl6AGM/wUEExZup5I/M8LSe9GIMnBwT
+         e5pQ==
+X-Gm-Message-State: AOJu0YyZCtIv54ANzu1u8FOjyRbQC6VNt7Fxuf3XIblAaAnQsWIVfm0J
+	OnJ+uf2Msz5EY2nfIxlIIItZ1gCvIXjffhKaISVL8MXSSLdun6FBTUKdSE9SX9mP3ONeR/9ddlx
+	O2fP8oj+kjg/sMkR4EfJ0OK2fg/VVKq3P9udVJ/RHZF5zHLctafiyBmhUpw==
+X-Gm-Gg: ASbGnctBEL8EtPJ4um82uuomJKACrKUxcFXXHxyhxBnV4grhAW8Tq3PIFpYmMaVJObb
+	Dvn52VZrGMJjiIKhnbz+RWszaC/D+6Tk79302lcPS6nhJRSpwpy+CMU/+bC6A0c/WxMD2RUI+Jv
+	TkvjPpjB33P/T28yp2ODiOICq1+dBc6pJS7RyvYl0ZVwxo3TMVRGzzR3ZfzTQusqH+Eo9hFl1mB
+	rdo6nXywMzRhn1zcNBMe64KXYavciVkZhVRI2xBQ/wTioNYxDXBpI070aMP5xaofKJOX3mW/FaO
+	GJa50b3dXcFrV6kSdyzzMN84d+/vt9Qi+wpdkEPlKKSXtYDxjPzPzrHN+HYjsDLDT8GxS594+Pl
+	64Gf/xUlcJru3PpMe69lEjjZmAvXbQwwY69+1yw==
+X-Received: by 2002:a17:903:2f44:b0:240:a222:2312 with SMTP id d9443c01a7336-2462eeeca94mr229747265ad.44.1756259727681;
+        Tue, 26 Aug 2025 18:55:27 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IH2i5XtdpRUbO/urKMakMgXLRO2eBfmK/dMCP7CKXewUgYFm/OlcVeTpLpdrPdXjPdZowBzJw==
+X-Received: by 2002:a17:903:2f44:b0:240:a222:2312 with SMTP id d9443c01a7336-2462eeeca94mr229747085ad.44.1756259727126;
+        Tue, 26 Aug 2025 18:55:27 -0700 (PDT)
+Received: from [10.133.33.184] (tpe-colo-wan-fw-bordernet.qualcomm.com. [103.229.16.4])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-246687b521bsm108143455ad.60.2025.08.26.18.55.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Aug 2025 18:55:26 -0700 (PDT)
+Message-ID: <b679c1ec-be21-458e-a650-1aa14e2366a1@oss.qualcomm.com>
+Date: Wed, 27 Aug 2025 09:55:20 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -39,232 +74,107 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 02/15] genpt: Add Documentation/ files
-To: Jason Gunthorpe <jgg@nvidia.com>, Jonathan Corbet <corbet@lwn.net>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- Justin Stitt <justinstitt@google.com>, Kevin Tian <kevin.tian@intel.com>,
- linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org,
- llvm@lists.linux.dev, Bill Wendling <morbo@google.com>,
- Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
- Miguel Ojeda <ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Shuah Khan <shuah@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>
-Cc: Alexey Kardashevskiy <aik@amd.com>,
- Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
- James Gowans <jgowans@amazon.com>, Michael Roth <michael.roth@amd.com>,
- Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev
-References: <2-v4-0d6a6726a372+18959-iommu_pt_jgg@nvidia.com>
+Subject: Re: is dma_mapping_error() check necessary for
+ dma_alloc_noncoherent()?
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+        Baochen Qiang <baochen.qiang@oss.qualcomm.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jeff Johnson <jjohnson@kernel.org>
+Cc: iommu@lists.linux.dev,
+        "linux-kernel@vger.kernel.org >> linux-kernel"
+ <linux-kernel@vger.kernel.org>,
+        "ath11k@lists.infradead.org" <ath11k@lists.infradead.org>
+References: <CGME20250826094453eucas1p178ff4a39db0c655f3505128a5cfb0a6a@eucas1p1.samsung.com>
+ <ff6c1fe6-820f-4e58-8395-df06aa91706c@oss.qualcomm.com>
+ <89954593-8236-464e-8848-e7cdcf639c0a@samsung.com>
 Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <2-v4-0d6a6726a372+18959-iommu_pt_jgg@nvidia.com>
+From: Baochen Qiang <baochen.qiang@oss.qualcomm.com>
+In-Reply-To: <89954593-8236-464e-8848-e7cdcf639c0a@samsung.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Authority-Analysis: v=2.4 cv=KOlaDEFo c=1 sm=1 tr=0 ts=68ae6590 cx=c_pps
+ a=cmESyDAEBpBGqyK7t0alAg==:117 a=nuhDOHQX5FNHPW3J6Bj6AA==:17
+ a=IkcTkHD0fZMA:10 a=2OwXVqhp2XgA:10 a=v1NiFcvVahR_jOWWQrIA:9
+ a=QEXdDO2ut3YA:10 a=1OuFwYUASf3TG4hYMiVC:22
+X-Proofpoint-GUID: 1ZF65lPWP_h-dpFyKAm4_mOnL-6hmGCX
+X-Proofpoint-ORIG-GUID: 1ZF65lPWP_h-dpFyKAm4_mOnL-6hmGCX
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODIzMDAzMyBTYWx0ZWRfXy/0PnL/iuUlt
+ ivrqY8fgu5E4jrAOe+pqx7XLVz0aKqEkC16cdaqjVBJ6dDr0sWmagkdATBtXRvyev9PqsXa8+fk
+ RALKQ9/AdIm4bYvcR/U1jjqf3Al3uySwi4XdS4RENiOd0NyLa7L9EfZF2Itj53dBoWOV1TRvUDe
+ J1BTpdIY7niQ3DOvM9xNS8zQJEm5W/Co017MoBzKKGfUcCo9eMS/Dz5LN/KVPfXoUyOF+7FzUue
+ drWXqfu+b3D1CNheD0Yp+Kid50OYe2gVZK0KqmMiOOgIw1vt/zNz52/ljTHYhSq867Ao/DgQs7L
+ T1ehHNw4/uwztA4CbWGRizmh1RpX7JB0DazIo6Y26YQp/GAQvPuAWzi144B3/TneLgVrHu6GRZy
+ Tr6sBIdK
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-08-26_02,2025-08-26_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 clxscore=1015 bulkscore=0 adultscore=0 phishscore=0
+ impostorscore=0 spamscore=0 suspectscore=0 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2508230033
 
-Hi,
 
-On 8/26/25 10:18 AM, Jason Gunthorpe wrote:
-> Add some general description and pull in the kdoc comments from the source
-> file to index most of the useful functions.
+
+On 8/26/2025 10:09 PM, Marek Szyprowski wrote:
+> On 26.08.2025 11:44, Baochen Qiang wrote:
+>> Hi guys,
+>>
+>> I have a driver which allocate noncoherent DMA buffer and get the returned CPU addr tested:
+>>
+>> 	vaddr_unaligned = dma_alloc_noncoherent(ab->dev, rx_tid->unaligned_size, &paddr,
+>> 						DMA_BIDIRECTIONAL, GFP_ATOMIC);
+>> 	if (!vaddr_unaligned) {
+>> 		spin_unlock_bh(&ab->base_lock);
+>> 		return -ENOMEM;
+>> 	}
+>>
+>> while free the buffer
+>>
+>> 	dma_free_noncoherent(ab->dev, rx_tid->unaligned_size,
+>> 			     rx_tid->vaddr_unaligned,
+>> 			     rx_tid->paddr_unaligned, DMA_BIDIRECTIONAL);
+>>
+>> I get below warnings:
+>>
+>>   DMA-API: ath11k_pci 0000:03:00.0: device driver failed to check map error[device
+>> address=0x00000000f3ad7000] [size=639 bytes] [mapped as single]
+>>   WARNING: CPU: 15 PID: 64303 at kernel/dma/debug.c:1036 check_unmap+0x7e2/0x950
+>>   RIP: 0010:check_unmap+0x7e2/0x950
+>>   Call Trace:
+>>    <TASK>
+>>    ? free_to_partial_list+0x9d/0x350
+>>    debug_dma_unmap_page+0xac/0xc0
+>>    ? debug_smp_processor_id+0x17/0x20
+>>    ? rcu_is_watching+0x13/0x70
+>>    dma_free_pages+0x56/0x180
+>>    [...]
+>>    </TASK>
+>>   ---[ end trace 0000000000000000 ]---
+>>   DMA-API: Mapped at:
+>>    debug_dma_map_page+0x7c/0x140
+>>    dma_alloc_pages+0x74/0x220
+>>    [...]
+>>
+>> Checking code gives me the impression that I should do dma_mapping_error() check as well.
+>> And indeed with below diff the warning is gone:
+>>
+>> +       dma_mapping_error(ab->dev, paddr);
+>>
+>> However this does not make sense to me since IMO testing the CPU address is good enough, I
+>> can not imagine a valid case where DMA alloc/map fails while returning a valid CPU
+>> address, no?
+>>
+>> If I was right, should we remove invocation to debug_dma_map_page() in dma_alloc_pages()?
 > 
-> Tested-by: Alejandro Jimenez <alejandro.j.jimenez@oracle.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  Documentation/driver-api/generic_pt.rst | 140 ++++++++++++++++++++++++
->  Documentation/driver-api/index.rst      |   1 +
->  2 files changed, 141 insertions(+)
->  create mode 100644 Documentation/driver-api/generic_pt.rst
+> Simply replace "if (!vaddr_unaligned)" with "if 
+> dma_mapping_error(ab->dev, paddr)" and the debug code will be happy.
+
+Thanks, much better!
+
+But I am wondering if the debug code is worrying too much? isn't the CPU addr test already
+good enough?
+
 > 
-> diff --git a/Documentation/driver-api/generic_pt.rst b/Documentation/driver-api/generic_pt.rst
-> new file mode 100644
-> index 00000000000000..45b05dafece814
-> --- /dev/null
-> +++ b/Documentation/driver-api/generic_pt.rst
-> @@ -0,0 +1,140 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +========================
-> +Generic Radix Page Table
-> +========================
-> +
-> +.. kernel-doc:: include/linux/generic_pt/common.h
-> +	:doc: Generic Radix Page Table
-> +
-> +.. kernel-doc:: drivers/iommu/generic_pt/pt_defs.h
-> +	:doc: Generic Page Table Language
-> +
-> +-----
-> +Usage
-> +-----
-> +
-> +Generic PT is structured as a multi-compilation system. Since each format
-> +provides an API using a common set of names there can be only one format active
-> +within a compilation unit. This design avoids function pointers around the low
-> +level API.
-> +
-> +Instead the function pointers can end up at the higher level API (ie map/unmap,
-
-                                                                    (i.e.,
-
-> +etc) and the per-format code can be directly inlined into the per-format
-
-   etc.)
-
-> +compilation unit. For something like iommu each format will be compiled into a
-> +per-format iommu operations kernel module.
-> +
-
-I would s/iommu/IOMMU/g when it's used in a sentence as an acronym (i.e., not
-functions names, struct names, struct fields, file names, etc.).
-
-> +For this to work the .c file for each compilation unit will include both the
-> +format headers and the generic code for the implementation. For instance in an
-> +implementation compilation unit the headers would normally be included as
-> +follows::
-> +
-> +	#include <linux/generic_pt/common.h>
-> +	#include "fmt/defs_amdv1.h"
-> +	#include "pt_defs.h"
-> +	#include "fmt/amdv1.h"
-> +	#include "pt_common.h"
-> +	#include "pt_iter.h"
-> +	#include "iommut_pt.h"  /* The iommu implementation */
-> +
-> +iommu_pt.h includes definitions that will generate the operations functions for
-> +map/unmap/etc using the definitions provided by AMDv1. The resulting module
-             etc.
-
-> +will have exported symbols named like pt_iommu_amdv1_init().
-> +
-> +Refer to drivers/iommu/generic-pt/fmt/iommu_template.h for an example of how the
-> +iommu implementation uses multi-compilation to generate per-format ops structs
-> +pointers.
-> +
-> +The format code is written so that the common names arise from #defines to
-> +distinct format specific names. This is intended to aid debuggability by
-> +avoiding symbol clashes across all the different formats.
-> +
-> +Exported symbols and other global names are mangled using a per-format string
-> +via the NS() helper macro.
-> +
-> +The format uses struct pt_common as the top level struct for the table,
-
-                                           top-level
-
-> +and each format will have its own struct pt_xxx which embeds it to store
-> +format-specific information.
-> +
-> +The implementation will further wrapper this in its own top level struct, such
-
-                                           this???         top-level
-oh, maybe                          wrap this               top-level
-
-
-
-> +as struct pt_iommu_amdv1.
-> +
-> +----------------------------------------------
-> +Format functions at the struct pt_common level
-> +----------------------------------------------
-> +
-> +.. kernel-doc:: include/linux/generic_pt/common.h
-> +	:identifiers:
-> +.. kernel-doc:: drivers/iommu/generic_pt/pt_common.h
-> +
-> +-----------------
-> +Iteration Helpers
-> +-----------------
-> +
-> +.. kernel-doc:: drivers/iommu/generic_pt/pt_iter.h
-> +
-> +----------------
-> +Writing a Format
-> +----------------
-> +
-> +It is best to start from a simple format that is similar to the target. x86_64
-> +is usually a good reference for something simple, and AMDv1 is something fairly
-> +complete.
-> +
-> +The required inline functions need to be implemented in the format header.
-> +These should all follow the standard pattern of::
-> +
-> + static inline pt_oaddr_t amdv1pt_entry_oa(const struct pt_state *pts)
-> + {
-> +	[..]
-> + }
-> + #define pt_entry_oa amdv1pt_entry_oa
-> +
-> +Where a uniquely named per-format inline function provides the implementation
-
-   where
-
-> +and a define maps it to the generic name. This is intended to make debug symbols
-> +work better. inline functions should always be used as the prototypes in
-> +pt_common.h will cause the compiler to validate the function signature to
-> +prevent errors.
-> +
-> +Review pt_fmt_defaults.h to understand some of the optional inlines.
-> +
-> +Once the format compiles then it should be run through the generic page table
-> +kunit test in kunit_generic_pt.h using kunit. For example::
-> +
-> +   $ tools/testing/kunit/kunit.py run --build_dir build_kunit_x86_64 --arch x86_64 --kunitconfig ./drivers/iommu/generic_pt/.kunitconfig amdv1_fmt_test.*
-> +   [...]
-> +   [11:15:08] Testing complete. Ran 9 tests: passed: 9
-> +   [11:15:09] Elapsed time: 3.137s total, 0.001s configuring, 2.368s building, 0.311s running
-> +
-> +The generic tests are intended to prove out the format functions and give
-> +clearer failures to speed up finding the problems. Once those pass then the
-> +entire kunit suite should be run.
-> +
-> +---------------------------
-> +IOMMU Invalidation Features
-> +---------------------------
-> +
-> +Invalidation is how the page table algorithms synchronize with a HW cache of the
-> +pagetable memory, typically called the TLB (or IOTLB for IOMMU cases).
-
-   page table
-to match the rest of this document.
-
-> +
-> +The TLB can store present PTEs, non-present PTEs and table pointers, depending
-> +on its design. Every HW has its own approach on how to describe what has changed
-> +to get changed items removed from the TLB.
-
-   to have changed items removed
-
-> +
-> +PT_FEAT_FLUSH_RANGE
-> +-------------------
-> +
-> +PT_FEAT_FLUSH_RANGE is the easiest scheme to understand. It tries to generate a
-> +single range invalidation for each operation, over invalidating if there are
-
-                                                 over-invalidating
-
-> +gaps of VA that don't need invalidation. This trades off impacted VA for number
-> +of invalidation operations. It does not keep track of what is being invalidated,
-
-                                                                       invalidated;
-
-> +however if pages have to be freed then page table pointers have to be cleaned
-
-   however,
-
-> +from the walk cache. The range can start/end at any page boundary.
-> +
-> +PT_FEAT_FLUSH_RANGE_NO_GAPS
-> +---------------------------
-> +
-> +PT_FEAT_FLUSH_RANGE_NO_GAPS is similar to PT_FEAT_FLUSH_RANGE however it tries
-
-                                             PT_FEAT_FLUSH_RANGE; however, it tries
-
-> +to minimize the amount of impacted VA by issuing extra flush operations. This is
-> +useful if the cost of processing VA is very high, for instance because a
-> +hypervisor is processing the page table with a shadowing algorithm.
--- 
-~Randy
+> Best regards
 
