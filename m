@@ -1,65 +1,50 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31F76285C91;
-	Wed, 27 Aug 2025 09:42:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35CBC29B20A
+	for <iommu@lists.linux.dev>; Wed, 27 Aug 2025 10:58:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756287763; cv=none; b=eRqMFzPbw7ODEZ83IsxvK+KT0UxYLOscFr/3p2iA8q5e3mmnPpud4QB4XTNQEsoHRwxY2uTQMWAxOsxsSQgmKja7o6AaRS8bqfLCaCXaVrJUfYBrxYslfRFB7q6JK48Oywwf9dRgBDDkpFhTjzm3fPir4z61hZa2cwnqOlu7ZuE=
+	t=1756292291; cv=none; b=ta1XZSbpfB+8zDVZ/74zedW+Xc2aJoS6IT3u/sUbA6QQhWq+mDc3mg2Eej+QMnRob4vNqLo2X16EerDSZ5Rwd4Y2bFP14QYz5/OnO/rfNCOX0SvLZ1ysfDDEL5wf1TausFQYV9KvRETA+FLDrz03/nnqVmqSwpI30mqsZFa9mVs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756287763; c=relaxed/simple;
-	bh=A0KNxlVGHuvT2hmaoiFbUd67u8sxODxt85QG+mrnbSE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Yp/kCsucQxYIfQ0hY3l7N6oS7xBfBRUDNCVxCVbQIdITBdMkXVmGKPJBVvrKqqLcFt4diQErH2bsUNKFAjN3+8Zr/+58cxXDE6k/c7nz0TkBMj6cvfw6b1EgMLxNx08j/QLBgOZlDqg3yExJuTbqF1+GqonpAzD4WWmnvh3F17o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cgwu/AQu; arc=none smtp.client-ip=209.85.221.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1756292291; c=relaxed/simple;
+	bh=pYvi/sEdWDfStM+WfuWaVdKOo1EwYnq9HgrErqhuzmY=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=O6wf1190t4ow/D09X/IOIdY+QlxYEbPSqM6v/gw40CJXnwqC8Rfaua0A8T49yX5qKC9YetUQ7CD57UPWnb8hjDwb8FN6lGaD21efXwnDWv8zEx83q9o3a4nned+Gn4hz5T3sVybfCz7JoOKgv5eNn+Tm/be2TOGTXOCHmfxufnc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cjp7TGjY; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cgwu/AQu"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-3cd59c5a953so29126f8f.0;
-        Wed, 27 Aug 2025 02:42:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1756287759; x=1756892559; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=s4gNirUawo/2N73RGh/VZFmiZovBEw6Zvsz5pkyBSog=;
-        b=cgwu/AQu+8kJH7NXekshnpHIodjnM51rYtYIs7aQRLfWhshi5JZIuONnDY1wlnc8X5
-         0p+OV5MNRMEZRQ0rjDU0On2KaTx5ZTi3q7c4y6eK4saAL+vsmxD/4uvsymPSomvQQK3h
-         WWby+6yqt3e+RIn2ch3GrECUaTDJfFvp3RDaoc+rEJqeHSWZZGvUZGTHOVUUGnKNBeeG
-         +ZLFPmJmF7q1boqcTSz2JlVtC+4CTVdKxBXHIzTSPF0nMh9yV3fphLSp/8K0uQEMrxsx
-         BA8BYkZRIgsU8CK18n2QEGLo3V1zSuvDajKH/LyBt1sM2/H+SZUEUy1TTjjp/AH5H8xN
-         sEAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756287759; x=1756892559;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=s4gNirUawo/2N73RGh/VZFmiZovBEw6Zvsz5pkyBSog=;
-        b=DRN/JX4Mxu6IZpUCUOI6FbpJGBQFx+M7mx80VRbyjtSPSA/nyFJv2X1pTbEujtqMdY
-         WI96HcaVvrOeNP5P5DWpaGl35V1jUaw/Me8bvRgxuQnxGAP3GshmVeKmxgWuWH4tPdaj
-         eNYgQT78DVhIBfUZXNtmVFXRgFnBu/xej0t1yV3y4RRKCTeArYlK6J24fM5wtIU0Dm1a
-         dZ6U+pKGCY51ifKxEwTmqO2ynwS2ruIIJUaVrRbTmHUiiJRaeWmkpuBnvmWVsinvPYQO
-         LNYuf6TQ3q6sfEMqrKyG6J3I0I+l0xzzxMyecW/mTv781p1Fbguh3GFs/cd8yrC5An2v
-         g7EQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVSqEIfa/ezWmCKAWuSVJ3EhCkHi78AHQuvbkTpOsT8DQTuJVrIG9wCS1EYncHvPrTEnWiiHirSnR336y/vTQE=@lists.linux.dev, AJvYcCWGrbUSxAofllmSlK+uXwIGYTND16Bf+Xf52zmkcvwxpuAcjrWlvV0G3RnzyW2bTTyE+6Vlog==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwcJQQ+pn2FPgJApQfwGIhPQzZ9jWrSE5visknzbnlZATTXvSy2
-	OhV8QEi0QcmQQ8AZHVgsB8R7BDlFaGLfbc9pl56H7JF5UViMEl5me79H
-X-Gm-Gg: ASbGncsNOpc6HtYJGU31WzugRr1cZlWxeK9TPE+WmE2cYq4u+DMoYDx7PuKeLqojF6q
-	y4NYp37MdW5mNqvjqQIZqAXreT5I3xQ6UsMJA8pD0gUoxad6s8GEbc9mppjlrxup3eyqziu60HW
-	OLQ699e514m2QcGWZ35+FLBrTV+W1Q1UFOKQM/JWvAyK5WY7gjQ8Yr3Z33/sFxWbHdmZ7+JtqJq
-	Wyj3upGBmnyMiCdiKEbbG/CXqANUGthniqTKRuHsdWg34XJNdqJiaGKCN8gkFXBqTLn2fb+PToJ
-	G5dXFVlUTsESOZK5c1h1FPL+0KT5p34llGcBKydYCUuOrR4beaBg5z74m+lnW19m77+n4dlARcr
-	DAG31QnoLSjfWwYrOj7hy1DzUGgtamPA0LA/u76KqfCVDwE6hDAx95dArEm+EODPWeQ==
-X-Google-Smtp-Source: AGHT+IFkjO5GHbU1+2MUuKQvNL0fwH2etmLb7S57NgBpdq01aCYpWSgROxwdQQpXxfO8aoPZevSNpQ==
-X-Received: by 2002:a05:6000:3105:b0:3b8:d672:3cf8 with SMTP id ffacd0b85a97d-3c5dcb10b6amr14770182f8f.43.1756287759105;
-        Wed, 27 Aug 2025 02:42:39 -0700 (PDT)
-Received: from ?IPV6:2620:10d:c096:325:77fd:1068:74c8:af87? ([2620:10d:c092:600::1:4a1a])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3cc4b102889sm3363615f8f.51.2025.08.27.02.42.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Aug 2025 02:42:38 -0700 (PDT)
-Message-ID: <46d09557-1873-4d97-b073-ce0c7296b954@gmail.com>
-Date: Wed, 27 Aug 2025 10:43:59 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cjp7TGjY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1756292290; x=1787828290;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=pYvi/sEdWDfStM+WfuWaVdKOo1EwYnq9HgrErqhuzmY=;
+  b=cjp7TGjYwKjGQ4eWqPo2s/zyWpOvt8119Y4tibvkjwdV1lGbtqe2Byy7
+   kj3+3bcZ7kvRVdd1bN1kUxpmaIYwy2hk2SVz2HEdEMUvolhKpFne9/7DI
+   yIK7HwR0e8+Kw2KWIpdkUpIqmUlsPXCuy3ZUXXyA4v8jIg6KSSPnI3t3n
+   IrbiCVI0+mxmVk1u21/QBMsdzY97nyUnFkev0iUyISG62f0JQkBM5Mxlr
+   9NvWyWoX1wsUu8QP18hnQb6SHW+UJoa/f4/ezQYTJTcXVfeoQju1ksSyK
+   W2YBUMIysoNs9u2IqL4LH0HPNzJdG0UOb4xTTc1uOkHzMQTD4pFrBUEma
+   w==;
+X-CSE-ConnectionGUID: S/+G/ongR4OBj9As+eO34A==
+X-CSE-MsgGUID: JdTZQbfnRZaS+Bcl1PhYNg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11534"; a="62186476"
+X-IronPort-AV: E=Sophos;i="6.18,214,1751266800"; 
+   d="scan'208";a="62186476"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2025 03:58:10 -0700
+X-CSE-ConnectionGUID: asZwBnRZTEGvodt2Q26vlg==
+X-CSE-MsgGUID: yxrkhQoCRG6hWGFVl9RDaQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,214,1751266800"; 
+   d="scan'208";a="173977483"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.233.96]) ([10.124.233.96])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2025 03:58:04 -0700
+Message-ID: <c69950ee-660b-4f51-9277-522470d0ce5d@linux.intel.com>
+Date: Wed, 27 Aug 2025 18:58:02 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -67,81 +52,153 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 18/35] io_uring/zcrx: remove "struct io_copy_cache"
- and one nth_page() usage
-To: David Hildenbrand <david@redhat.com>, linux-kernel@vger.kernel.org
-Cc: Jens Axboe <axboe@kernel.dk>, Alexander Potapenko <glider@google.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Brendan Jackman <jackmanb@google.com>, Christoph Lameter <cl@gentwo.org>,
- Dennis Zhou <dennis@kernel.org>, Dmitry Vyukov <dvyukov@google.com>,
- dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
- iommu@lists.linux.dev, io-uring@vger.kernel.org,
- Jason Gunthorpe <jgg@nvidia.com>, Johannes Weiner <hannes@cmpxchg.org>,
- John Hubbard <jhubbard@nvidia.com>, kasan-dev@googlegroups.com,
- kvm@vger.kernel.org, "Liam R. Howlett" <Liam.Howlett@oracle.com>,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
- linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
- linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
- Marco Elver <elver@google.com>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@kernel.org>,
- Muchun Song <muchun.song@linux.dev>, netdev@vger.kernel.org,
- Oscar Salvador <osalvador@suse.de>, Peter Xu <peterx@redhat.com>,
- Robin Murphy <robin.murphy@arm.com>, Suren Baghdasaryan <surenb@google.com>,
- Tejun Heo <tj@kernel.org>, virtualization@lists.linux.dev,
- Vlastimil Babka <vbabka@suse.cz>, wireguard@lists.zx2c4.com, x86@kernel.org,
- Zi Yan <ziy@nvidia.com>
-References: <20250821200701.1329277-1-david@redhat.com>
- <20250821200701.1329277-19-david@redhat.com>
- <b5b08ad3-d8cd-45ff-9767-7cf1b22b5e03@gmail.com>
- <473f3576-ddf3-4388-aeec-d486f639950a@redhat.com>
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
+ Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, "Lai, Yi1" <yi1.lai@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "security@kernel.org" <security@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>, vishal.moola@gmail.com,
+ Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
+ flush
+To: Dave Hansen <dave.hansen@intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
+ <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
+ <20250806155223.GV184255@nvidia.com>
+ <d02cb97a-7cea-4ad3-82b3-89754c5278ad@intel.com>
+ <20250806160904.GX184255@nvidia.com>
+ <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
+ <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
+ <20250807195154.GO184255@nvidia.com>
+ <BN9PR11MB52762A47B347C99F0C0E4C288C2FA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <87bfc80e-258e-4193-a56c-3096608aec30@linux.intel.com>
+ <BN9PR11MB52766165393F7DD8209DA45A8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <e321d374-38a7-4f60-b991-58458a2761b9@linux.intel.com>
+ <9a649ff4-55fe-478a-bfd7-f3287534499a@intel.com>
+ <b0f613ce-7aad-4b1d-b6a1-4acc1d6c489e@linux.intel.com>
+ <dde6d861-daa3-49ed-ad4f-ff9dcaf1f2b8@linux.intel.com>
+ <b57d7b97-8110-47c5-9c7a-516b7b535ce9@intel.com>
 Content-Language: en-US
-From: Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <473f3576-ddf3-4388-aeec-d486f639950a@redhat.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <b57d7b97-8110-47c5-9c7a-516b7b535ce9@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 8/22/25 14:59, David Hildenbrand wrote:
-> On 22.08.25 13:32, Pavel Begunkov wrote:
->> On 8/21/25 21:06, David Hildenbrand wrote:
->>> We always provide a single dst page, it's unclear why the io_copy_cache
->>> complexity is required.
+On 8/26/2025 10:22 PM, Dave Hansen wrote:
+> On 8/25/25 19:49, Baolu Lu wrote:
+>>> The three separate lists are needed because we're handling three
+>>> distinct types of page deallocation. Grouping the pages this way allows
+>>> the workqueue handler to free each type using the correct function.
 >>
->> Because it'll need to be pulled outside the loop to reuse the page for
->> multiple copies, i.e. packing multiple fragments of the same skb into
->> it. Not finished, and currently it's wasting memory.
+>> Please allow me to add more details.
 > 
-> Okay, so what you're saying is that there will be follow-up work that will actually make this structure useful.
-
-Exactly
-
->> Why not do as below? Pages there never cross boundaries of their folios. > Do you want it to be taken into the io_uring tree?
+> Right, I know why it got added this way: it was the quickest way to hack
+> together a patch that fixes the IOMMU issue without refactoring anything.
 > 
-> This should better all go through the MM tree where we actually guarantee contiguous pages within a folio. (see the cover letter)
-
-Makes sense. No objection, hopefully it won't cause too many conflicts.
-
->> diff --git a/io_uring/zcrx.c b/io_uring/zcrx.c
->> index e5ff49f3425e..18c12f4b56b6 100644
->> --- a/io_uring/zcrx.c
->> +++ b/io_uring/zcrx.c
->> @@ -975,9 +975,9 @@ static ssize_t io_copy_page(struct io_copy_cache *cc, struct page *src_page,
->>            if (folio_test_partial_kmap(page_folio(dst_page)) ||
->>                folio_test_partial_kmap(page_folio(src_page))) {
->> -            dst_page = nth_page(dst_page, dst_offset / PAGE_SIZE);
->> +            dst_page += dst_offset / PAGE_SIZE;
->>                dst_offset = offset_in_page(dst_offset);
->> -            src_page = nth_page(src_page, src_offset / PAGE_SIZE);
->> +            src_page += src_offset / PAGE_SIZE;
+> I agree that you have three cases:
+> 1. A full on 'struct ptdesc' that needs its destructor run
+> 2. An order-0 'struct page'
+> 3. A higher-order 'struct page'
 > 
-> Yeah, I can do that in the next version given that you have plans on extending that code soon.
+> Long-term, #2 and #3 probably need to get converted over to 'struct
+> ptdesc'. They don't look _that_ hard to convert to me. Willy, Vishal,
+> any other mm folks: do you agree?
+> 
+> Short-term, I'd just consolidate your issue down to a single list.
+> 
+> #1: For 'struct ptdesc', modify pte_free_kernel() to pass information in
+>      to pagetable_dtor_free() to tell it to use the deferred page table
+>      free list. Do this with a bit in the ptdesc or a new argument to
+>      pagetable_dtor_free().
+> #2. Just append these to the deferred page table free list. Easy.
+> #3. The biggest hacky way to do this is to just treat the higher-order
+>      non-compound page and put the pages on the deferred page table
+>      free list one at a time. The other way to do it is to track down how
+>      this thing got allocated in the first place and make sure it's got
+>      __GFP_COMP metadata. If so, you can just use __free_pages() for
+>      everything.
+> 
+> Yeah, it'll take a couple patches up front to refactor some things. But
+> that refactoring will make things more consistent instead of adding
+> adding complexity to deal with the inconsistency.
 
-If we go with this version:
+Following the insights above, I wrote the code as follows. Does it look
+good?
 
-Reviewed-by: Pavel Begunkov <asml.silence@gmail.com>
+mm/pgtable-generic.c:
 
--- 
-Pavel Begunkov
+#ifdef CONFIG_ASYNC_PGTABLE_FREE
+/* a 'struct ptdesc' that needs its destructor run */
+#define ASYNC_PGTABLE_FREE_DTOR	BIT(NR_PAGEFLAGS)
 
+static void kernel_pgtable_work_func(struct work_struct *work);
+
+static struct {
+	struct list_head list;
+	/* protect above ptdesc lists */
+	spinlock_t lock;
+	struct work_struct work;
+} kernel_pgtable_work = {
+	.list = LIST_HEAD_INIT(kernel_pgtable_work.list),
+	.lock = __SPIN_LOCK_UNLOCKED(kernel_pgtable_work.lock),
+	.work = __WORK_INITIALIZER(kernel_pgtable_work.work, 
+kernel_pgtable_work_func),
+};
+
+static void kernel_pgtable_work_func(struct work_struct *work)
+{
+	struct ptdesc *ptdesc, *next;
+	LIST_HEAD(page_list);
+
+	spin_lock(&kernel_pgtable_work.lock);
+	list_splice_tail_init(&kernel_pgtable_work.list, &page_list);
+	spin_unlock(&kernel_pgtable_work.lock);
+
+	iommu_sva_invalidate_kva_range(0, TLB_FLUSH_ALL);
+
+	list_for_each_entry_safe(ptdesc, next, &page_list, pt_list) {
+		list_del(&ptdesc->pt_list);
+		if (ptdesc->__page_flags & ASYNC_PGTABLE_FREE_DTOR)
+			pagetable_dtor_free(ptdesc);
+		else
+			__free_page(ptdesc_page(ptdesc));
+	}
+}
+
+void kernel_pgtable_async_free_dtor(struct ptdesc *ptdesc)
+{
+	spin_lock(&kernel_pgtable_work.lock);
+	ptdesc->__page_flags |= ASYNC_PGTABLE_FREE_DTOR;
+	list_add(&ptdesc->pt_list, &kernel_pgtable_work.list);
+	spin_unlock(&kernel_pgtable_work.lock);
+
+	schedule_work(&kernel_pgtable_work.work);
+}
+
+void kernel_pgtable_async_free_page_list(struct list_head *list)
+{
+	spin_lock(&kernel_pgtable_work.lock);
+	list_splice_tail(list, &kernel_pgtable_work.list);
+	spin_unlock(&kernel_pgtable_work.lock);
+
+	schedule_work(&kernel_pgtable_work.work);
+}
+
+void kernel_pgtable_async_free_page(struct page *page)
+{
+	spin_lock(&kernel_pgtable_work.lock);
+	list_add(&page_ptdesc(page)->pt_list, &kernel_pgtable_work.list);
+	spin_unlock(&kernel_pgtable_work.lock);
+
+	schedule_work(&kernel_pgtable_work.work);
+}
+#endif
+
+Thanks,
+baolu
