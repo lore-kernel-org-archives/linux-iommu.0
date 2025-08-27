@@ -1,204 +1,163 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from fout-b7-smtp.messagingengine.com (fout-b7-smtp.messagingengine.com [202.12.124.150])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35CBC29B20A
-	for <iommu@lists.linux.dev>; Wed, 27 Aug 2025 10:58:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 940D4304966;
+	Wed, 27 Aug 2025 12:25:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=202.12.124.150
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756292291; cv=none; b=ta1XZSbpfB+8zDVZ/74zedW+Xc2aJoS6IT3u/sUbA6QQhWq+mDc3mg2Eej+QMnRob4vNqLo2X16EerDSZ5Rwd4Y2bFP14QYz5/OnO/rfNCOX0SvLZ1ysfDDEL5wf1TausFQYV9KvRETA+FLDrz03/nnqVmqSwpI30mqsZFa9mVs=
+	t=1756297533; cv=none; b=ofrjo+gbhd+zintCQOR6ZtjRpxedN2WAYwEMjiyvAA3lMzv0kxJNPakij4daF+pJA7j0io90K4RfYgLUJQ+HRdaFk/VZ5PXCLb0SgpeY0cV2ixbqVvbSIEIrpTrPACRm5hUGrvzaPU1z/u8L4F0iLLqk1qNru1AVRzfGMcp24bQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756292291; c=relaxed/simple;
-	bh=pYvi/sEdWDfStM+WfuWaVdKOo1EwYnq9HgrErqhuzmY=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=O6wf1190t4ow/D09X/IOIdY+QlxYEbPSqM6v/gw40CJXnwqC8Rfaua0A8T49yX5qKC9YetUQ7CD57UPWnb8hjDwb8FN6lGaD21efXwnDWv8zEx83q9o3a4nned+Gn4hz5T3sVybfCz7JoOKgv5eNn+Tm/be2TOGTXOCHmfxufnc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cjp7TGjY; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1756297533; c=relaxed/simple;
+	bh=aMQ8Ki9oIp1Hd6pVpoVRnqQJtbxH3JlLvfdyaVkIDSE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nXt05Y5JoWrwUKrsuDE3ocgZE4z679HiHqSOPylZPMSrsG9yo+ULsrzAkZNvyFGPEbmykM1gWWKcaDYn/4aYRdi9Al2HhOKk/jTRZ5CH7wVtdEt0i3nLe01s/GEzkKB/NZhqjaMJ/fChENrAZ22drahUH35JbmcubMw7203Iz9s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=fhO9QFKW; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=I/r1W69D; arc=none smtp.client-ip=202.12.124.150
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cjp7TGjY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1756292290; x=1787828290;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=pYvi/sEdWDfStM+WfuWaVdKOo1EwYnq9HgrErqhuzmY=;
-  b=cjp7TGjYwKjGQ4eWqPo2s/zyWpOvt8119Y4tibvkjwdV1lGbtqe2Byy7
-   kj3+3bcZ7kvRVdd1bN1kUxpmaIYwy2hk2SVz2HEdEMUvolhKpFne9/7DI
-   yIK7HwR0e8+Kw2KWIpdkUpIqmUlsPXCuy3ZUXXyA4v8jIg6KSSPnI3t3n
-   IrbiCVI0+mxmVk1u21/QBMsdzY97nyUnFkev0iUyISG62f0JQkBM5Mxlr
-   9NvWyWoX1wsUu8QP18hnQb6SHW+UJoa/f4/ezQYTJTcXVfeoQju1ksSyK
-   W2YBUMIysoNs9u2IqL4LH0HPNzJdG0UOb4xTTc1uOkHzMQTD4pFrBUEma
-   w==;
-X-CSE-ConnectionGUID: S/+G/ongR4OBj9As+eO34A==
-X-CSE-MsgGUID: JdTZQbfnRZaS+Bcl1PhYNg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11534"; a="62186476"
-X-IronPort-AV: E=Sophos;i="6.18,214,1751266800"; 
-   d="scan'208";a="62186476"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2025 03:58:10 -0700
-X-CSE-ConnectionGUID: asZwBnRZTEGvodt2Q26vlg==
-X-CSE-MsgGUID: yxrkhQoCRG6hWGFVl9RDaQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,214,1751266800"; 
-   d="scan'208";a="173977483"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.233.96]) ([10.124.233.96])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Aug 2025 03:58:04 -0700
-Message-ID: <c69950ee-660b-4f51-9277-522470d0ce5d@linux.intel.com>
-Date: Wed, 27 Aug 2025 18:58:02 +0800
+	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="fhO9QFKW";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="I/r1W69D"
+Received: from phl-compute-03.internal (phl-compute-03.internal [10.202.2.43])
+	by mailfout.stl.internal (Postfix) with ESMTP id 1E8F31D001C1;
+	Wed, 27 Aug 2025 08:25:30 -0400 (EDT)
+Received: from phl-mailfrontend-01 ([10.202.2.162])
+  by phl-compute-03.internal (MEProxy); Wed, 27 Aug 2025 08:25:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:subject
+	:subject:to:to; s=fm2; t=1756297529; x=1756383929; bh=Yonvyw6arw
+	x9K/j0aRnK/gLYsQrk0m8h8Fj24bZWVVo=; b=fhO9QFKWc4uMzrvn11qgmZ9pQ5
+	t+v/nSm9aTWz8JSA2QMoXs6HlOwgfJ/H42DS1nDk+3NosbHqCT4z9Y6V8JTuV1J2
+	OGzmQJi56NtNBMeJ7MWHg2M/Np1Vzza2N+Pfv85oUgrFfnELvGAWp8sz61lN0518
+	XUKVyJcZe6PjcYjF2isYM11kSWqK8u6ygfEXO6ehdnHkxAO9tTMgqmQUP43cQatX
+	Wq9q3MVergWjDFkDaj2TbePjnlK/1WZmK7PENaQFVJ3+wnvVSyfvIm1rDp0wHuM/
+	s9wMKYppkiuHJBXQ92DTO0o6SZ9U6A8LT0V8+20iQ3foEkQFZ+NH0uApoSUQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+	1756297529; x=1756383929; bh=Yonvyw6arwx9K/j0aRnK/gLYsQrk0m8h8Fj
+	24bZWVVo=; b=I/r1W69D/Ua2bm5BXK2wBOajLrzMomNKdk8LBzp8EO49mcvjLCw
+	s182ej2tJ8QcSWmGYUtMEzThRDwe0+tCYLCUvWdAxwaqe55JOg0hYvhsnv6SfBg6
+	OExTKM7VwVL7Df7X1EIwIBamnUu5fATbP2XZHvLTra6IRx6qSU6qd4LtEB3ZR5rF
+	ixMb4Uyzby4voDlGtFBdxDsIJBPHKOSlt+U+oRDZ9y52VYYMhZhTatFXTB0GGfjs
+	UWoP9XaabWAb+nJr0uUsdb3mls7gT7S8bfbiBkV16UWdN+xbnkLAJAkJOTTJN9EQ
+	8hCjx1dq4Dx9i4D/ksR2ZP+YUh3JsyySpoQ==
+X-ME-Sender: <xms:OPmuaCJ6XwkoODGu_w3yn-wMk6IszXtLN1WGKJ8PAk-bWWUCHeGNoA>
+    <xme:OPmuaLflAXWGINpS3XvOwaH7Gexj3422hbdyShh9F0zp8v1VTkNx90LzRG2t-tATt
+    -w3756kC4_Fd5eM-n4>
+X-ME-Received: <xmr:OPmuaFKAD8tGP81yPe2nBq6lMF0ydRlb0Tm1Kp79wc7napXJ3V2GkIEU8NVYyjPnKxpFXMYfPpiEZJP1oT8eCbbTz51h0hLFVAU>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgddujeekudehucetufdoteggodetrf
+    dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
+    rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
+    gurhepfffhvfevuffkfhggtggujgesthdtredttddtjeenucfhrhhomheplfgrnhhnvgcu
+    ifhruhhnrghuuceojhesjhgrnhhnrghurdhnvghtqeenucggtffrrghtthgvrhhnpefgvd
+    ffveelgedujeeffeehheekheelheefgfejffeftedugeethfeuudefheefteenucevlhhu
+    shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehjsehjrghnnhgruh
+    drnhgvthdpnhgspghrtghpthhtohepvdefpdhmohguvgepshhmthhpohhuthdprhgtphht
+    thhopehkrhiikheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepshhvvghnsehkvghrnh
+    gvlhdrohhrghdprhgtphhtthhopehtohifihhntghhvghnmhhisehgmhgrihhlrdgtohhm
+    pdhrtghpthhtoheprghlhihsshgrsehrohhsvghniiifvghighdrihhopdhrtghpthhtoh
+    epnhgvrghlsehgohhmphgrrdguvghvpdhrtghpthhtohepjhgrshhsihhsihhnghhhsghr
+    rghrsehgmhgrihhlrdgtohhmpdhrtghpthhtoheprhhosghhsehkvghrnhgvlhdrohhrgh
+    dprhgtphhtthhopehkrhiikhdoughtsehkvghrnhgvlhdrohhrghdprhgtphhtthhopegt
+    ohhnohhrodgutheskhgvrhhnvghlrdhorhhg
+X-ME-Proxy: <xmx:OPmuaNCOOBPZgV55nrQZK9IFTHxW0mIUN89N-HCnFUtdif5869khFA>
+    <xmx:OPmuaGi__3hZHC3DXxgOf5RShzzmzFqlH-f30MMh9ef1fYIj2NNsiw>
+    <xmx:OPmuaPNBhL3_-PK_M3Q2JR0PkUrBaLaEDGJGgUrgmAOIGMIa1heY6A>
+    <xmx:OPmuaFZ43QmRQmAC2d5W9hQdpVeoDBFhFwoVqpaWkjN4GVSmgTCTJA>
+    <xmx:OfmuaCZfFzYt2huFIkk5sW9q3xEFfN6W3-dEaSfzmdnPr45f3ZX2RxxE>
+Feedback-ID: i47b949f6:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 27 Aug 2025 08:25:27 -0400 (EDT)
+Date: Wed, 27 Aug 2025 14:25:25 +0200
+From: Janne Grunau <j@jannau.net>
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Sven Peter <sven@kernel.org>, Nick Chan <towinchenmi@gmail.com>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Neal Gompa <neal@gompa.dev>, Jassi Brar <jassisinghbrar@gmail.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Hector Martin <marcan@marcan.st>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
+	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org
+Subject: Re: [PATCH v2 6/9] dt-bindings: nvme: apple,nvme-ans: Add Apple A11
+Message-ID: <20250827122525.GA204299@robin.jannau.net>
+References: <20250818-t8015-nvme-v2-0-65648cd189e0@gmail.com>
+ <20250818-t8015-nvme-v2-6-65648cd189e0@gmail.com>
+ <20250819-polite-papaya-catfish-1a9d1a@kuoka>
+ <8ac418ae-7ff0-4d5c-9f11-c24e36618ac1@kernel.org>
+ <b3cd1b3f-fa0e-4a98-84c7-e4271f262795@kernel.org>
+ <8279536d-c4f4-477a-9823-3e7b452c3c33@kernel.org>
+ <12ab93b7-1fc2-4ce0-926e-c8141cfe81bf@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
- Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
- Uladzislau Rezki <urezki@gmail.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, "Lai, Yi1" <yi1.lai@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "security@kernel.org" <security@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>, vishal.moola@gmail.com,
- Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-To: Dave Hansen <dave.hansen@intel.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
- <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
- <20250806155223.GV184255@nvidia.com>
- <d02cb97a-7cea-4ad3-82b3-89754c5278ad@intel.com>
- <20250806160904.GX184255@nvidia.com>
- <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
- <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
- <20250807195154.GO184255@nvidia.com>
- <BN9PR11MB52762A47B347C99F0C0E4C288C2FA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <87bfc80e-258e-4193-a56c-3096608aec30@linux.intel.com>
- <BN9PR11MB52766165393F7DD8209DA45A8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <e321d374-38a7-4f60-b991-58458a2761b9@linux.intel.com>
- <9a649ff4-55fe-478a-bfd7-f3287534499a@intel.com>
- <b0f613ce-7aad-4b1d-b6a1-4acc1d6c489e@linux.intel.com>
- <dde6d861-daa3-49ed-ad4f-ff9dcaf1f2b8@linux.intel.com>
- <b57d7b97-8110-47c5-9c7a-516b7b535ce9@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <b57d7b97-8110-47c5-9c7a-516b7b535ce9@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <12ab93b7-1fc2-4ce0-926e-c8141cfe81bf@kernel.org>
 
-On 8/26/2025 10:22 PM, Dave Hansen wrote:
-> On 8/25/25 19:49, Baolu Lu wrote:
->>> The three separate lists are needed because we're handling three
->>> distinct types of page deallocation. Grouping the pages this way allows
->>> the workqueue handler to free each type using the correct function.
->>
->> Please allow me to add more details.
+On Thu, Aug 21, 2025 at 03:09:42PM +0200, Krzysztof Kozlowski wrote:
+> On 21/08/2025 12:25, Sven Peter wrote:
+> > 
+> > 1) For situations like this one where the generic one just doesn't make 
+> > any sense we deprecate "apple,nvme-ans2" in the binding and use
+> > "apple,t8103-nvme-ans2" as the fallback instead, i.e. just
+> > "apple,t8103-nvme-ans2" for M1, "apple,t6000-nvme-ans2", 
+> > "apple,t8103-nvme-ans2" for M1 Pro, and just "apple,t8015-nvme-ans2" for 
+> > A11.
+> > 
+> > We keep the generic one in the driver for now but also add
+> > "apple,t8103-nvme-ans2". We then remove the generic one from all 
+> > upstream DTS files but keep it inside the downstream files we ship to 
+> > users for now to avoid pain with kernel upgrades/downgrades.
+> > A year or two from now we can then delete the deprecated generic 
+> > compatibles everywhere. This all has to be synced with OpenBSD and 
+> > u-boot as well since both also use these bindings.
+> > It's gonna be rather painful but this would clean up the entire mess.
+> > 
+> > 
+> > 2) We keep using the ones that are already upstream and just accept that 
+> > the situation is a mess and add comment above all the bindings that we 
+> > messed up and that this should not be used as pattern.
+> > In this case that means it'll just be "apple,t8015-nvme-ans2" for A11 
+> > without any fallback and we keep everything else the way it is.
+> > 
+> > I prefer option (2) but if you really want to get rid of all this mess 
 > 
-> Right, I know why it got added this way: it was the quickest way to hack
-> together a patch that fixes the IOMMU issue without refactoring anything.
 > 
-> I agree that you have three cases:
-> 1. A full on 'struct ptdesc' that needs its destructor run
-> 2. An order-0 'struct page'
-> 3. A higher-order 'struct page'
-> 
-> Long-term, #2 and #3 probably need to get converted over to 'struct
-> ptdesc'. They don't look _that_ hard to convert to me. Willy, Vishal,
-> any other mm folks: do you agree?
-> 
-> Short-term, I'd just consolidate your issue down to a single list.
-> 
-> #1: For 'struct ptdesc', modify pte_free_kernel() to pass information in
->      to pagetable_dtor_free() to tell it to use the deferred page table
->      free list. Do this with a bit in the ptdesc or a new argument to
->      pagetable_dtor_free().
-> #2. Just append these to the deferred page table free list. Easy.
-> #3. The biggest hacky way to do this is to just treat the higher-order
->      non-compound page and put the pages on the deferred page table
->      free list one at a time. The other way to do it is to track down how
->      this thing got allocated in the first place and make sure it's got
->      __GFP_COMP metadata. If so, you can just use __free_pages() for
->      everything.
-> 
-> Yeah, it'll take a couple patches up front to refactor some things. But
-> that refactoring will make things more consistent instead of adding
-> adding complexity to deal with the inconsistency.
+> I also prefer option (2). That's the least disruptive option for users
+> and inconsistency in bindings naming is just inconsistency, no big deal.
+> You just need to remember not to grow the old items/pattern with generic
+> compatible.
 
-Following the insights above, I wrote the code as follows. Does it look
-good?
+This sounds to me like a mix of option 1) and 2).
 
-mm/pgtable-generic.c:
+All devices / SoCs already upstream will use the fixed current
+compatibles and thus are following option 2)
 
-#ifdef CONFIG_ASYNC_PGTABLE_FREE
-/* a 'struct ptdesc' that needs its destructor run */
-#define ASYNC_PGTABLE_FREE_DTOR	BIT(NR_PAGEFLAGS)
+New SoCs will have to use
+    compatible = "apple,t6020-nvme-ans2", "apple,t8103-nvme-ans2";
+using t6020 as example even though they will be using the same driver
+code as "apple,nvme-ans2". Using t6020 as an example I planned to submit
+today.
+This will require adding the new fallback "apple,t8103-nvme-ans2"
+compatible string to the driver.
 
-static void kernel_pgtable_work_func(struct work_struct *work);
+Asking for clarification as I could image such driver changes will raise
+questions from the driver maintainers.
 
-static struct {
-	struct list_head list;
-	/* protect above ptdesc lists */
-	spinlock_t lock;
-	struct work_struct work;
-} kernel_pgtable_work = {
-	.list = LIST_HEAD_INIT(kernel_pgtable_work.list),
-	.lock = __SPIN_LOCK_UNLOCKED(kernel_pgtable_work.lock),
-	.work = __WORK_INITIALIZER(kernel_pgtable_work.work, 
-kernel_pgtable_work_func),
-};
+Is there a way do document/annotate the generic compatibles as
+deprecated / "do not use" for new devices?
 
-static void kernel_pgtable_work_func(struct work_struct *work)
-{
-	struct ptdesc *ptdesc, *next;
-	LIST_HEAD(page_list);
-
-	spin_lock(&kernel_pgtable_work.lock);
-	list_splice_tail_init(&kernel_pgtable_work.list, &page_list);
-	spin_unlock(&kernel_pgtable_work.lock);
-
-	iommu_sva_invalidate_kva_range(0, TLB_FLUSH_ALL);
-
-	list_for_each_entry_safe(ptdesc, next, &page_list, pt_list) {
-		list_del(&ptdesc->pt_list);
-		if (ptdesc->__page_flags & ASYNC_PGTABLE_FREE_DTOR)
-			pagetable_dtor_free(ptdesc);
-		else
-			__free_page(ptdesc_page(ptdesc));
-	}
-}
-
-void kernel_pgtable_async_free_dtor(struct ptdesc *ptdesc)
-{
-	spin_lock(&kernel_pgtable_work.lock);
-	ptdesc->__page_flags |= ASYNC_PGTABLE_FREE_DTOR;
-	list_add(&ptdesc->pt_list, &kernel_pgtable_work.list);
-	spin_unlock(&kernel_pgtable_work.lock);
-
-	schedule_work(&kernel_pgtable_work.work);
-}
-
-void kernel_pgtable_async_free_page_list(struct list_head *list)
-{
-	spin_lock(&kernel_pgtable_work.lock);
-	list_splice_tail(list, &kernel_pgtable_work.list);
-	spin_unlock(&kernel_pgtable_work.lock);
-
-	schedule_work(&kernel_pgtable_work.work);
-}
-
-void kernel_pgtable_async_free_page(struct page *page)
-{
-	spin_lock(&kernel_pgtable_work.lock);
-	list_add(&page_ptdesc(page)->pt_list, &kernel_pgtable_work.list);
-	spin_unlock(&kernel_pgtable_work.lock);
-
-	schedule_work(&kernel_pgtable_work.work);
-}
-#endif
-
-Thanks,
-baolu
+Thanks
+Janne
