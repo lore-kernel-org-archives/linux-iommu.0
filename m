@@ -1,52 +1,52 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D32F42F069F
-	for <iommu@lists.linux.dev>; Wed, 27 Aug 2025 22:08:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80F583128C9
+	for <iommu@lists.linux.dev>; Wed, 27 Aug 2025 22:09:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756332516; cv=none; b=VpeoC9t4QwYoxAl8b7qAunTldYJXoskWXWkNvhTjTfwzhTmRujGD7R6zMQX1pn3h3tx5+jg+GKA+qBTokcQSZD7p9e/+4/tuDD1hjvPSTpSToF/HakO/6DUl20JJH5tl4YTvMxyYF+TYQ8ewTkH2h0OWc3AIBhjfwoBwrly8Iv0=
+	t=1756332549; cv=none; b=GtZk/n5kUJBtdFrA05dih4MKJitrv4vCFbbD3MhXxzmMH4nQ9xGlCYiT026k1dvEQSIme2IvI7+qGGg6cS8v0DNnO3mh2dQD79QJSNPiFDrehWYzOn+3pfnaVZSWcyb8NfUktWSsSkfH1Ovfyv5agIAP4ECsZfqqgnY4Yv1CAq0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756332516; c=relaxed/simple;
-	bh=Ko1zU5o5orS0fWwGptYwYNBhJd9RpaxZxtm5O7tcblw=;
+	s=arc-20240116; t=1756332549; c=relaxed/simple;
+	bh=0EqTpHeJd4fPIAuJrAXq8sz5wRlvPXL4UnkaBkaTEBI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=UhZD6XwMZGlm3B/FXakZ7ux5lsuOtoisqVtMokbuPPtDxwghwL5CMmDN3Z7qSHzOVo4ojJKhhVwR6wxnSSvCOCCd1Gn8JuBA7ebjgIfeCx3hIdA8iog25zPvL4lUTKJV+hckrGBb2TZ6U1E+1li2r+uFjsRWaE9OztTC8JELzVQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Q+WfCGch; arc=none smtp.client-ip=170.10.133.124
+	 MIME-Version; b=bGvdp3q3iezHmry8wzqzWW2XyRhGXfduKoGKiJ9utrjTNCJxy0LcAQj3v9Fl+PSYmApllfR0ilIYDXe2tYoD0Rg5XaEIEJaQ4yHRo9lfpIG6+Qxq8CuMttie09hAbJDMLTOWRpTXg4loyIzmF9Ogi+HlWvNuSbliWfEwMyR36yA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=BWyfgCAe; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Q+WfCGch"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BWyfgCAe"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1756332513;
+	s=mimecast20190719; t=1756332546;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=GyTIiGqaihmq+uYsd9xO3vzeYLCbCBgmjSTF8jMJzDI=;
-	b=Q+WfCGchr69h7EZ3Pt178WV9nydfF64bO1Q8gv3+8WhyMmxcGIytmwhKSM491We/68/mFJ
-	uJ4bNQAON4gMCefryCe87ltfKK9ywFPRFxBxku5MErSVfmioBYy407Vyvy19wp2fLS2r16
-	XYsezrjDzeqslICXOjsCxLFfBp6pqz0=
-Received: from mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com
+	bh=fRSpRx9RRStIQ38BNC0jYyDlyXN9Nb6MMvlgPC7q7iI=;
+	b=BWyfgCAeQnvamrEaB5cIU8LyMCGYYY0di4vPS3AQdTICNRVkVIglBE8+8LyjlNMk5eTU3F
+	kNFzSYvNH5abEwuUFn+VkfXGfQTSCgE9MMgT0Wtt8lX9ZVoZnySwXXHvbIw6k4TK4XdUMp
+	SQn154bXF+uCFTonzoe6UzQGstx6Qz4=
+Received: from mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com
  (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
  relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-624-SKfpSwPANCeD7Iv3DGve7Q-1; Wed,
- 27 Aug 2025 18:08:28 -0400
-X-MC-Unique: SKfpSwPANCeD7Iv3DGve7Q-1
-X-Mimecast-MFC-AGG-ID: SKfpSwPANCeD7Iv3DGve7Q_1756332504
+ cipher=TLS_AES_256_GCM_SHA384) id us-mta-125-8rLG3SX1N-GJeE1zdspl2w-1; Wed,
+ 27 Aug 2025 18:09:03 -0400
+X-MC-Unique: 8rLG3SX1N-GJeE1zdspl2w-1
+X-Mimecast-MFC-AGG-ID: 8rLG3SX1N-GJeE1zdspl2w_1756332538
 Received: from mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.4])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mx-prod-mc-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id A45A7195608F;
-	Wed, 27 Aug 2025 22:08:23 +0000 (UTC)
+	by mx-prod-mc-05.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id F35E7195608A;
+	Wed, 27 Aug 2025 22:08:57 +0000 (UTC)
 Received: from t14s.redhat.com (unknown [10.22.80.195])
-	by mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id BE0A330001A1;
-	Wed, 27 Aug 2025 22:08:07 +0000 (UTC)
+	by mx-prod-int-01.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTP id A36C230001A1;
+	Wed, 27 Aug 2025 22:08:41 +0000 (UTC)
 From: David Hildenbrand <david@redhat.com>
 To: linux-kernel@vger.kernel.org
 Cc: David Hildenbrand <david@redhat.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
+	Damien Le Moal <dlemoal@kernel.org>,
+	Niklas Cassel <cassel@kernel.org>,
 	Alexander Potapenko <glider@google.com>,
 	Andrew Morton <akpm@linux-foundation.org>,
 	Brendan Jackman <jackmanb@google.com>,
@@ -78,12 +78,14 @@ Cc: David Hildenbrand <david@redhat.com>,
 	linux-scsi@vger.kernel.org,
 	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
 	Marco Elver <elver@google.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Michal Hocko <mhocko@suse.com>,
 	Mike Rapoport <rppt@kernel.org>,
 	Muchun Song <muchun.song@linux.dev>,
 	netdev@vger.kernel.org,
 	Oscar Salvador <osalvador@suse.de>,
 	Peter Xu <peterx@redhat.com>,
+	Robin Murphy <robin.murphy@arm.com>,
 	Suren Baghdasaryan <surenb@google.com>,
 	Tejun Heo <tj@kernel.org>,
 	virtualization@lists.linux.dev,
@@ -91,9 +93,9 @@ Cc: David Hildenbrand <david@redhat.com>,
 	wireguard@lists.zx2c4.com,
 	x86@kernel.org,
 	Zi Yan <ziy@nvidia.com>
-Subject: [PATCH v1 22/36] dma-remap: drop nth_page() in dma_common_contiguous_remap()
-Date: Thu, 28 Aug 2025 00:01:26 +0200
-Message-ID: <20250827220141.262669-23-david@redhat.com>
+Subject: [PATCH v1 24/36] ata: libata-eh: drop nth_page() usage within SG entry
+Date: Thu, 28 Aug 2025 00:01:28 +0200
+Message-ID: <20250827220141.262669-25-david@redhat.com>
 In-Reply-To: <20250827220141.262669-1-david@redhat.com>
 References: <20250827220141.262669-1-david@redhat.com>
 Precedence: bulk
@@ -105,34 +107,47 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.4
 
-dma_common_contiguous_remap() is used to remap an "allocated contiguous
-region". Within a single allocation, there is no need to use nth_page()
-anymore.
+It's no longer required to use nth_page() when iterating pages within a
+single SG entry, so let's drop the nth_page() usage.
 
-Neither the buddy, nor hugetlb, nor CMA will hand out problematic page
-ranges.
-
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Damien Le Moal <dlemoal@kernel.org>
+Cc: Niklas Cassel <cassel@kernel.org>
 Signed-off-by: David Hildenbrand <david@redhat.com>
 ---
- kernel/dma/remap.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/ata/libata-sff.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
-index 9e2afad1c6152..b7c1c0c92d0c8 100644
---- a/kernel/dma/remap.c
-+++ b/kernel/dma/remap.c
-@@ -49,7 +49,7 @@ void *dma_common_contiguous_remap(struct page *page, size_t size,
- 	if (!pages)
- 		return NULL;
- 	for (i = 0; i < count; i++)
--		pages[i] = nth_page(page, i);
-+		pages[i] = page++;
- 	vaddr = vmap(pages, count, VM_DMA_COHERENT, prot);
- 	kvfree(pages);
+diff --git a/drivers/ata/libata-sff.c b/drivers/ata/libata-sff.c
+index 7fc407255eb46..1e2a2c33cdc80 100644
+--- a/drivers/ata/libata-sff.c
++++ b/drivers/ata/libata-sff.c
+@@ -614,7 +614,7 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
+ 	offset = qc->cursg->offset + qc->cursg_ofs;
  
+ 	/* get the current page and offset */
+-	page = nth_page(page, (offset >> PAGE_SHIFT));
++	page += offset >> PAGE_SHIFT;
+ 	offset %= PAGE_SIZE;
+ 
+ 	/* don't overrun current sg */
+@@ -631,7 +631,7 @@ static void ata_pio_sector(struct ata_queued_cmd *qc)
+ 		unsigned int split_len = PAGE_SIZE - offset;
+ 
+ 		ata_pio_xfer(qc, page, offset, split_len);
+-		ata_pio_xfer(qc, nth_page(page, 1), 0, count - split_len);
++		ata_pio_xfer(qc, page + 1, 0, count - split_len);
+ 	} else {
+ 		ata_pio_xfer(qc, page, offset, count);
+ 	}
+@@ -751,7 +751,7 @@ static int __atapi_pio_bytes(struct ata_queued_cmd *qc, unsigned int bytes)
+ 	offset = sg->offset + qc->cursg_ofs;
+ 
+ 	/* get the current page and offset */
+-	page = nth_page(page, (offset >> PAGE_SHIFT));
++	page += offset >> PAGE_SHIFT;
+ 	offset %= PAGE_SIZE;
+ 
+ 	/* don't overrun current sg */
 -- 
 2.50.1
 
