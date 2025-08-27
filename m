@@ -1,67 +1,50 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2472729CB32;
-	Wed, 27 Aug 2025 05:27:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93EA9253355
+	for <iommu@lists.linux.dev>; Wed, 27 Aug 2025 06:37:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756272451; cv=none; b=bmVirPUaHRUTpMZCTvlxTxprdbHMSByUSQG0Fj/uYh+q8qweTHG8fjP9ay8b5OLbGrYeY24ZMAh0uLeNMSe7yEGmL2uljrIbu6KJvHAsJBrgl2pjPz1WuDRIstZJSQ7mngAH1/tihPpNAc1sgFjGR73s4Py4HYrPeaPvN8nR9U0=
+	t=1756276650; cv=none; b=kTeIpP9j5hS6cN3gV82dw4Vv9dZvE4nSgGekXJm5XwaUNJum8rMMWmBSoFUmFOR4BG2bR/W05VGqDRuiCJWIO8/gAu8SkPawtK/5SgOQmi0qxl8UcLzshhG8TTPO5/9b8aR6ixUcgisfLA5CkHJaCFStRldPeopfxpzT1tWaDt4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756272451; c=relaxed/simple;
-	bh=+pAURm+gSzUePMcSSAf3SHQZLY9qMhpS2XZkBkV2krw=;
+	s=arc-20240116; t=1756276650; c=relaxed/simple;
+	bh=g350CQcVdNLEmQXYiekatM/c2+9Sf2FEEF6OFijTMNQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rdzlS045YhI3y3FIQtHHsqpfBmSp2h7LiQUoPmnPh+wRbI7yUOCEZmvfgoxoKs615COXX58nUdRhXUB+upVkL8vJBmvdBIIzVosM5yESa5xBpyVru87Xm7yAS1cwOjYkLBD6Xkca7BZr8rfHDLoyv6s7eavwMyl400BNtreAj5k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=fFfa87uM; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	 In-Reply-To:Content-Type; b=Uo7M5VjH/h80OZt2AkHYKfszzg2wpc49AFYemMUrxoHvXNsqBqrPrw8NPHPiA9zKp/pR3huGx2h6FiO9EEM0eWZ31roWN3ZcIcVmZFXTZJ3RX69ncErQujOzU05RB1XEOT/21Hkq0BjxgMvv7gkbUkTo7JyXYFcC7CeeqBHtQJs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BgjlS4tm; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="fFfa87uM"
-Received: from pps.filterd (m0353725.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57QJuQZo029875;
-	Wed, 27 Aug 2025 05:27:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=pp1; bh=jxijss
-	tmEiNGZJKG6yltOja4dBZKrqMyUi/HgZLz1Sk=; b=fFfa87uMu8acvDC8OVnLiF
-	3Gw7T94UM/oONEZ9FfO6ESJm9dykU5EYEWzJ6thKl8AEybeSnU7jVczC+OsbSmIg
-	U1DTm1ikvBxQhtMsBkqiirIjOSbWdtCJnpSDht3JKVzPoBOjH3KPPIjRZwjgIoz4
-	PIz+4T0pathmf8bjMQQcBo9Nngpp8r0YuSt99tds0+EviRwkVU+5p0dMPKzJ5SJZ
-	NqSby3CqAv1CiFuqsjN+UtUj0P6MofPcWemNISQn5nz/ZN8twBsE28xbYF1o/y5D
-	T+rxMTdyXFQiS1FQNk9wuoFsc0iqqXm08NakEBDb3JoIMWYZ+sB++DfGZXvYi8bQ
-	==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 48q42j2cs9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 27 Aug 2025 05:27:07 +0000 (GMT)
-Received: from m0353725.ppops.net (m0353725.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.1.12/8.18.0.8) with ESMTP id 57R5K8Rl017639;
-	Wed, 27 Aug 2025 05:27:06 GMT
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 48q42j2cs6-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 27 Aug 2025 05:27:06 +0000 (GMT)
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 57R3lXEH029924;
-	Wed, 27 Aug 2025 05:27:05 GMT
-Received: from smtprelay05.fra02v.mail.ibm.com ([9.218.2.225])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 48qsfmpe9d-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 27 Aug 2025 05:27:05 +0000
-Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
-	by smtprelay05.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 57R5R1oh53739874
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 27 Aug 2025 05:27:01 GMT
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6821520049;
-	Wed, 27 Aug 2025 05:27:01 +0000 (GMT)
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A772520040;
-	Wed, 27 Aug 2025 05:27:00 +0000 (GMT)
-Received: from [9.152.212.92] (unknown [9.152.212.92])
-	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 27 Aug 2025 05:27:00 +0000 (GMT)
-Message-ID: <ac6dfaec-38ea-486d-89a0-ab02768cee42@linux.ibm.com>
-Date: Wed, 27 Aug 2025 07:27:00 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BgjlS4tm"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1756276649; x=1787812649;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=g350CQcVdNLEmQXYiekatM/c2+9Sf2FEEF6OFijTMNQ=;
+  b=BgjlS4tm8AQ5TECgwhivgHIf8lGXZ/KH/6I+hBQydFqB32qGyhN0RFV/
+   v8J1obFa/PXtu0+kNk5nUsi2F8UTSyi7ecwJvRr9sxxCj7lrWWsyclRhL
+   0TVAXchRnw4Y5o+VU+SF2zBp0u7PBm2OKm9glpjU3oIBHe6Mk0sUnFbJN
+   Inp1L5HdYqQlzYfD2GPocnusJt5m2H3sBHUtHPXpcab42HmI0lK5B6ipc
+   cwIuWsMI7DE7rx4wWd7zP8Lo6HP8jsO+FT3+ep2/k9rRgeCaOdNWiAS4T
+   8WVMBhADrNEHVT2tOYCTu8hU2yVERoN9fCXryogcsAvZx8pjb/EsCwCuD
+   g==;
+X-CSE-ConnectionGUID: Yt4D4mVKRtWmnk8Z9qDjJw==
+X-CSE-MsgGUID: +Mr7sV+kT9CbnNAHtyv0qA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11534"; a="75975401"
+X-IronPort-AV: E=Sophos;i="6.18,214,1751266800"; 
+   d="scan'208";a="75975401"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2025 23:37:28 -0700
+X-CSE-ConnectionGUID: h11D7tNgTcGaiuNIxjgsEw==
+X-CSE-MsgGUID: DVrAoGFlRamj9h0TPemA4w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,214,1751266800"; 
+   d="scan'208";a="170595511"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2025 23:37:24 -0700
+Message-ID: <08e7cb79-d175-448e-9b6f-07e9f07ba042@linux.intel.com>
+Date: Wed, 27 Aug 2025 14:34:56 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -69,133 +52,76 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 18/19] perf: Introduce positive capability for raw events
-To: Mark Rutland <mark.rutland@arm.com>, Robin Murphy <robin.murphy@arm.com>,
-        Sumanth Korikkar <sumanthk@linux.ibm.com>,
-        Jan Polensky <japo@linux.ibm.com>
-Cc: peterz@infradead.org, mingo@redhat.com, will@kernel.org, acme@kernel.org,
-        namhyung@kernel.org, alexander.shishkin@linux.intel.com,
-        jolsa@kernel.org, irogers@google.com, adrian.hunter@intel.com,
-        kan.liang@linux.intel.com, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, imx@lists.linux.dev,
-        linux-csky@vger.kernel.org, loongarch@lists.linux.dev,
-        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-rockchip@lists.infradead.org, dmaengine@vger.kernel.org,
-        linux-fpga@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        intel-xe@lists.freedesktop.org, coresight@lists.linaro.org,
-        iommu@lists.linux.dev, linux-amlogic@lists.infradead.org,
-        linux-cxl@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-riscv@lists.infradead.org
-References: <cover.1755096883.git.robin.murphy@arm.com>
- <542787fd188ea15ef41c53d557989c962ed44771.1755096883.git.robin.murphy@arm.com>
- <aK259PrpyxguQzdN@J2N7QTR9R3>
+Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
+ flush
+To: Dave Hansen <dave.hansen@intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Jann Horn <jannh@google.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>,
+ Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, "Lai, Yi1" <yi1.lai@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "security@kernel.org" <security@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
+ <d646d434-f680-47a3-b6b9-26f4538c1209@intel.com>
+ <20250806155223.GV184255@nvidia.com>
+ <d02cb97a-7cea-4ad3-82b3-89754c5278ad@intel.com>
+ <20250806160904.GX184255@nvidia.com>
+ <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
+ <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
+ <20250807195154.GO184255@nvidia.com>
+ <BN9PR11MB52762A47B347C99F0C0E4C288C2FA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <87bfc80e-258e-4193-a56c-3096608aec30@linux.intel.com>
+ <BN9PR11MB52766165393F7DD8209DA45A8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <e321d374-38a7-4f60-b991-58458a2761b9@linux.intel.com>
+ <9a649ff4-55fe-478a-bfd7-f3287534499a@intel.com>
+ <b0f613ce-7aad-4b1d-b6a1-4acc1d6c489e@linux.intel.com>
+ <dde6d861-daa3-49ed-ad4f-ff9dcaf1f2b8@linux.intel.com>
+ <242057e5-10c0-4cf5-86d8-ace0f19e5760@intel.com>
 Content-Language: en-US
-From: Thomas Richter <tmricht@linux.ibm.com>
-Organization: IBM
-In-Reply-To: <aK259PrpyxguQzdN@J2N7QTR9R3>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODIzMDAxMCBTYWx0ZWRfXx7bT3ieVYWZ1
- FvRIJn/6odyl76gPtjq2fdUI3+ddgoyBguazv17xAc0h1PWPsciO7Io1+yf38004HJX48EZKQe4
- jjqa2jsZ613Il7PEWWZLmHVXl0DVElauSgaXsW2jrn5unNTZZAgCkgP5ixkSnbssGkUA98RWoHK
- 6CllyViFj8nmb4/kmZamtgDzlo/xirMdIPTqK1ytIy748E4TyQcONzfTAVM6cDoHbAMLdYuTHtD
- UT6EmBwE8Tz6Ajw1M3OeNTbMk21jMwITf/ouwlMB6Q/Hm12FuudC6E2iwfSIPWm8nU5cvD4JBmw
- ghpRUxLnbbdBrU5mCsCpBm2H2yjaVRWCqCxRNsBxe1xCwhV1Oev6PUoPQ5TLoGumXLZUFEfuXwo
- /BJHYr+T
-X-Proofpoint-ORIG-GUID: Z1OBCqtS81HxjTSNcENNGRKeOQ0QzPO9
-X-Proofpoint-GUID: 4pnWswYamnTcgbcPVqCp3LQWR1ph9h16
-X-Authority-Analysis: v=2.4 cv=evffzppX c=1 sm=1 tr=0 ts=68ae972b cx=c_pps
- a=3Bg1Hr4SwmMryq2xdFQyZA==:117 a=3Bg1Hr4SwmMryq2xdFQyZA==:17
- a=IkcTkHD0fZMA:10 a=2OwXVqhp2XgA:10 a=7CQSdrXTAAAA:8 a=KByoUL483hSIROooWq4A:9
- a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10 a=a-qgeE7W1pNrGK8U0ZQC:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-08-26_02,2025-08-26_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 adultscore=0 malwarescore=0 spamscore=0 bulkscore=0
- impostorscore=0 clxscore=1015 priorityscore=1501 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2508230010
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <242057e5-10c0-4cf5-86d8-ace0f19e5760@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 8/26/25 15:43, Mark Rutland wrote:
-> On Wed, Aug 13, 2025 at 06:01:10PM +0100, Robin Murphy wrote:
->> Only a handful of CPU PMUs accept PERF_TYPE_{RAW,HARDWARE,HW_CACHE}
->> events without registering themselves as PERF_TYPE_RAW in the first
->> place. Add an explicit opt-in for these special cases, so that we can
->> make life easier for every other driver (and probably also speed up the
->> slow-path search) by having perf_try_init_event() do the basic type
->> checking to cover the majority of cases.
->>
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+On 8/27/25 00:21, Dave Hansen wrote:
+> On 8/25/25 19:49, Baolu Lu wrote:
+>> What's strange is that order is almost always 0, except in the path of
+>> remove_pmd_table() -> free_hugepage_table(), where order can be greater
+>> than 0. However, in this context path, free_hugepage_table() isn't used
+>> to free a page table page itself. Instead, it's used to free the actual
+>> pages that a leaf PMD is pointing to.
+> When I first read this, I thought you meant that remove_pmd_table() was
+> trying to free a high-order page composed of multiple pte pages. I don't
+> think it is doing that.
 > 
+> Just to be clear: remove_pmd_table() has two modes:
 > 
-> To bikeshed a little here, I'm not keen on the PERF_PMU_CAP_RAW_EVENTS
-> name, because it's not clear what "RAW" really means, and people will
-> definitely read that to mean something else.
+> 	1. The pmd_leaf() code that calls free_hugepage_table(). It is
+>             removing the memory pointed to by a PMD*entry*. It is*NOT*
+> 	   removing page tables themselves.
+> 	2. The !pmd_leaf() code that does remove the pointers to
+> 	   individual pte pages and frees them via free_pte_table().
 > 
-> Could we go with something like PERF_PMU_CAP_COMMON_CPU_EVENTS, to make
-> it clear that this is about opting into CPU-PMU specific event types (of
-> which PERF_TYPE_RAW is one of)?
+> *Neither* of these is freeing high-order page tables pages. It either
+> frees plain old kernel data pages or it frees an order-0 page table page.
 > 
-> Likewise, s/is_raw_pmu()/pmu_supports_common_cpu_events()/.
-> 
->> ---
->>
->> A further possibility is to automatically add the cap to PERF_TYPE_RAW
->> PMUs in perf_pmu_register() to have a single point-of-use condition; I'm
->> undecided...
-> 
-> I reckon we don't need to automagically do that, but I reckon that
-> is_raw_pmu()/pmu_supports_common_cpu_events() should only check the cap,
-> and we don't read anything special into any of
-> PERF_TYPE_{RAW,HARDWARE,HW_CACHE}.
-> 
->> ---
->>  arch/s390/kernel/perf_cpum_cf.c    |  1 +
->>  arch/s390/kernel/perf_pai_crypto.c |  2 +-
->>  arch/s390/kernel/perf_pai_ext.c    |  2 +-
->>  arch/x86/events/core.c             |  2 +-
->>  drivers/perf/arm_pmu.c             |  1 +
->>  include/linux/perf_event.h         |  1 +
->>  kernel/events/core.c               | 15 +++++++++++++++
->>  7 files changed, 21 insertions(+), 3 deletions(-)
->>
->> diff --git a/arch/s390/kernel/perf_cpum_cf.c b/arch/s390/kernel/perf_cpum_cf.c
->> index 1a94e0944bc5..782ab755ddd4 100644
->> --- a/arch/s390/kernel/perf_cpum_cf.c
->> +++ b/arch/s390/kernel/perf_cpum_cf.c
->> @@ -1054,6 +1054,7 @@ static void cpumf_pmu_del(struct perf_event *event, int flags)
->>  /* Performance monitoring unit for s390x */
->>  static struct pmu cpumf_pmu = {
->>  	.task_ctx_nr  = perf_sw_context,
->> +	.capabilities = PERF_PMU_CAP_RAW_EVENTS,
->>  	.pmu_enable   = cpumf_pmu_enable,
->>  	.pmu_disable  = cpumf_pmu_disable,
->>  	.event_init   = cpumf_pmu_event_init,
-> 
-> Tangential, but use of perf_sw_context here looks bogus.
-> 
+> In other words, the pmd_leaf() (mode #1) code is irrelevant to us. Those
+> entries are all _PAGE_KERNEL so IOMMU accesses with user privilege can't
+> do anything with them.
 
-It might look strange, but it was done on purpose. For details see
-commit 9254e70c4ef1 ("s390/cpum_cf: use perf software context for hardware counters")
+I have the same understanding, so case #3 (higher-order non-compound
+page table pages) doesn't exist. Page table pages always have an order
+equal to 0.
 
-Background was a WARN_ON() statement which fired, because several PMU device drivers
-existed in parallel on s390x platform.
-Not sure if this condition is still true after all these years...
+I will head in the direction you pointed out in your previous reply and
+post the change later for further review. Thank you for the insights.
 
--- 
-Thomas Richter, Dept 3303, IBM s390 Linux Development, Boeblingen, Germany
---
-IBM Deutschland Research & Development GmbH
+> 
+> Or have I just horribly confused myself?
 
-Vorsitzender des Aufsichtsrats: Wolfgang Wendt
-
-Geschäftsführung: David Faller
-
-Sitz der Gesellschaft: Böblingen / Registergericht: Amtsgericht Stuttgart, HRB 243294
+Thanks,
+baolu
