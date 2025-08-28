@@ -1,154 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A713826561E
-	for <iommu@lists.linux.dev>; Thu, 28 Aug 2025 18:56:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBD27265CA8;
+	Thu, 28 Aug 2025 19:10:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756407365; cv=none; b=LFOPNE0vy7DyVGA8oTahUOwB9ajW/AiE+ZsDvM51NTLqoqECdaYQ6UE/N3KP0wOKySAhJgAexgxGEpQD3n2eSDb26M2KOv3YubQmz1sAiZWj5SQKCHhAJgtRKYyQ8ur02iUfIrex5ov3lRbCg+HBQZk44+AkowUk4w+j+WQ016c=
+	t=1756408237; cv=none; b=mmh9V6JlSlJi1aXieXOne1CQ0XvgZMs7Dx5RGiWNMzdRYmamd2DvCi/Rz1PsdVIdAbchFlfmNIZGFpO0dWPgjmRmgg2Dgta9MuEppo+3bGB1e3cv3PRRWSYOzd5eLe9g9xd17GCV47giWPE0/yXuAZWW6ml+cL4QONi8JhPXBGM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756407365; c=relaxed/simple;
-	bh=kEyp95gbwcvqWtryZPyy8cKBkQKzGnTaY25lx8W4z/4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=N4lQOJVqi5i7un4OMdxNZpceltDQndsgSz4bqOvW05Soe7MZlLLyVE1gB78poo4zPAUSqDmRhykk+pB3PHM5NE6cluLB4o7Zf2sm+HJLoZ6W3j37fya3PvAph+0ETHGabvpJeKh2XS8PHCF2ZBagVHKF9apClUl6436J/FqZXt4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cJbrX7Zs; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1756408237; c=relaxed/simple;
+	bh=nTTeahhIb0FZNTHkQNMJBnWQfHnp2aJ+r4oH3UJmf9I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=S3bZyEF1JCSvrvS+iHBmIOfk6p6uSQbtcmwHZDC+Dh2SpNPOKKPYv1pBDhYTDTPh4LpEUBFEwfyMvvs/XaY1qkm1+Yq+Gfh9hL6NwAQdwuZFFlW0i9ecc/5um2RK5ynTk6xiDDmhPWT4Yhj3UDepRUeujJ0T3GD0HpzxmMS7ZVw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kiAyKBDP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cJbrX7Zs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1756407363; x=1787943363;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=kEyp95gbwcvqWtryZPyy8cKBkQKzGnTaY25lx8W4z/4=;
-  b=cJbrX7ZsEnGJBzcmEz/i57CI1ZNe/MCKDqIT1Np1Nfh9OxKdirELUPrp
-   //jHNYjv7i1AfcDUgelWzqdh43Dv9pJAmH7L8YKz/ivi1GDRHBvcgpOZy
-   s77y/3Ociyi3m9DC8xF0inXdL61tBgjmd6PPcw60uQYzIFSsrs42jTdmZ
-   vldH0jH9x1AJ5V3apM2l0wy3o79W7PEB2wzzmfsQZCYrJiTpG8Y4LL/Ix
-   W2ptilZDiI30iNv6LFE8Fb1dcHITurpEyfHXwnQIWaj25VIq1a/U04A9t
-   OvP+VcvNYMoSAtlgiPIe8RpHwbPZ6GwcluW9cI+i5FxhEC9skC14KhFNH
-   w==;
-X-CSE-ConnectionGUID: yWhaTwTmQgKk/WMH7OezAg==
-X-CSE-MsgGUID: xtjGB4fcTN6mTMORcnCXLA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11536"; a="58397687"
-X-IronPort-AV: E=Sophos;i="6.18,220,1751266800"; 
-   d="scan'208";a="58397687"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2025 11:56:03 -0700
-X-CSE-ConnectionGUID: fstnuzV0QxyrWQfaGHGQeg==
-X-CSE-MsgGUID: Ugro7NlbQG2IvUu2ft43Vg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,220,1751266800"; 
-   d="scan'208";a="193852235"
-Received: from kcaccard-desk.amr.corp.intel.com (HELO [10.125.109.98]) ([10.125.109.98])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2025 11:56:01 -0700
-Message-ID: <d88f4f9f-6112-431c-948e-5f48181972aa@intel.com>
-Date: Thu, 28 Aug 2025 11:56:00 -0700
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kiAyKBDP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFBADC4CEEB;
+	Thu, 28 Aug 2025 19:10:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1756408236;
+	bh=nTTeahhIb0FZNTHkQNMJBnWQfHnp2aJ+r4oH3UJmf9I=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=kiAyKBDPTCAig6cfYhRFzVMlXt8gF/BgqIWlzfngucl4yl5Wcl8PEMxeGxZyn4feY
+	 9QNbLauol7wPo69EnbsJUOvYSMo6YfZ3+owIkOs7tkWX5BPwXZEGC9l2iz9VL73nWJ
+	 LMeYGO+x9LIMWkAgoCM0LVxjf0/nrBlT574LedC07bLp9s3BQzVau6M5uUSf07U/m8
+	 vqELaFQz9N5nFU8S5MsiAq/DKmR1fhhzHyINYKZV0xBuVLm5Y0saWfzSXpuLfpmwbf
+	 9eS/h5nEcBCqmS1GS4AcOq4YDto3/XpsP6UcVeqRbKR8yG+flv5A1aPbY1iMmgWmoI
+	 HI/G0rHOVaaNA==
+Date: Thu, 28 Aug 2025 13:10:32 -0600
+From: Keith Busch <kbusch@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	Alexander Potapenko <glider@google.com>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
+	iommu@lists.linux.dev, Jason Wang <jasowang@redhat.com>,
+	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+	Jonathan Corbet <corbet@lwn.net>, Juergen Gross <jgross@suse.com>,
+	kasan-dev@googlegroups.com, linux-block@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-nvme@lists.infradead.org,
+	linuxppc-dev@lists.ozlabs.org, linux-trace-kernel@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
+	Sagi Grimberg <sagi@grimberg.me>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
+	xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v4 15/16] block-dma: properly take MMIO path
+Message-ID: <aLCpqI-VQ7KeB6DL@kbusch-mbp>
+References: <cover.1755624249.git.leon@kernel.org>
+ <642dbeb7aa94257eaea71ec63c06e3f939270023.1755624249.git.leon@kernel.org>
+ <aLBzeMNT3WOrjprC@kbusch-mbp>
+ <20250828165427.GB10073@unreal>
+ <aLCOqIaoaKUEOdeh@kbusch-mbp>
+ <20250828184115.GE7333@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
- flush
-To: "Tian, Kevin" <kevin.tian@intel.com>, Baolu Lu
- <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Jann Horn <jannh@google.com>,
- Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>,
- Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, "Lai, Yi1" <yi1.lai@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "security@kernel.org" <security@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>,
- "vishal.moola@gmail.com" <vishal.moola@gmail.com>,
- Matthew Wilcox <willy@infradead.org>
-References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
- <20250806160904.GX184255@nvidia.com>
- <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
- <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
- <20250807195154.GO184255@nvidia.com>
- <BN9PR11MB52762A47B347C99F0C0E4C288C2FA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <87bfc80e-258e-4193-a56c-3096608aec30@linux.intel.com>
- <BN9PR11MB52766165393F7DD8209DA45A8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
- <e321d374-38a7-4f60-b991-58458a2761b9@linux.intel.com>
- <9a649ff4-55fe-478a-bfd7-f3287534499a@intel.com>
- <b0f613ce-7aad-4b1d-b6a1-4acc1d6c489e@linux.intel.com>
- <dde6d861-daa3-49ed-ad4f-ff9dcaf1f2b8@linux.intel.com>
- <b57d7b97-8110-47c5-9c7a-516b7b535ce9@intel.com>
- <c69950ee-660b-4f51-9277-522470d0ce5d@linux.intel.com>
- <400cf9ab-de3f-4e8a-ab0a-4ac68c534bb8@intel.com>
- <ee44764b-b9fe-431d-8b84-08fce6b5df75@linux.intel.com>
- <BN9PR11MB5276FCF7D5182D711E135BB78C3BA@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Content-Language: en-US
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <BN9PR11MB5276FCF7D5182D711E135BB78C3BA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250828184115.GE7333@nvidia.com>
 
-I got a bit sick of sending constant emails on this one and just decided
-to hack it together myself. Here's roughly what I came up with.
-Completely untested. Changelogs are bare. Barely compiles:
+On Thu, Aug 28, 2025 at 03:41:15PM -0300, Jason Gunthorpe wrote:
+> On Thu, Aug 28, 2025 at 11:15:20AM -0600, Keith Busch wrote:
+> > 
+> > I don't think that was ever the case. Metadata is allocated
+> > independently of the data payload, usually by the kernel in
+> > bio_integrity_prep() just before dispatching the request. The bio may
+> > have a p2p data payload, but the integrity metadata is just a kmalloc
+> > buf in that path.
+> 
+> Then you should do two dma mapping operations today, that is how the
+> API was built. You shouldn't mix P2P and non P2P within a single
+> operation right now..
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/daveh/devel.git/log/?h=kpte
-
-I also didn't actually hook up the IOMMU flush yet.
-
-The biggest single chunk of code is defining ptdesc_*_kernel(). The rest
-of it is painfully simple.
-
-I'm pretty sure this hits the vmalloc() case that we all care about. It
-needs some more time with folks staring at it to make sure it didn't
-miss some of the other cases.
-
-I'll wrangle this into a real series and send it via another thread
-unless someone beats me to it. If anyone sees anything in there they
-can't live with, please scream sooner rather than later.
+Data and metadata are mapped as separate operations. They're just
+different parts of one blk-mq request.
