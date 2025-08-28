@@ -1,217 +1,178 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2061.outbound.protection.outlook.com [40.107.92.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59586208994;
-	Thu, 28 Aug 2025 11:57:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756382254; cv=none; b=ONTOpL3VUSJwVzxa5dFb5UjVQv+x7ueo8id0tNOgahhRfzjy8U7OG1pHlsqIXKXgnbIPaZEQ6sH27ia2DNBSKOLnIe2UIsZupbxPrVaq2/18hX0MuvVeJuP1jl24pYHpSuGno4VlRK6YgWeMqQF15LjCp9AjSiZmrJ84gtXnGfA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756382254; c=relaxed/simple;
-	bh=n8QXY5YRm9nQQBYQQGaxgrl8XdTmVTKFna/oqVl/xhQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AJ9GfL1/bM4FM1Ded2cEKFeo/9V36xjtNbK+8bJwgiuCB56NnHwkS2w706Hv3yIULS8AJoCtHFeYaC+5zKp7fB2eAxl2vU2HmFcCHnFSlKMGDbBzMlU4vjpp1xtaLpZzlyinWEp6mYLSAvN+agGDUqbG4mwrc0bBwPxi4uJREfQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OqLtXq0g; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7403130F550;
+	Thu, 28 Aug 2025 12:37:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756384646; cv=fail; b=Zr1ecoj6A+as9rWB7mJjrafxADKDKNya80A6eka/8YbIt75O9WiRE2jCf4+JkL37izewvFDa727e17EfLmCc6h5AfNZq/ZXMBeEHT0t6Ggd62WPMcZWsPjXwdshq3qS94stjIn9itMI+auxmiIA+Rpldmp5/sbiSAzWI8ksoUow=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756384646; c=relaxed/simple;
+	bh=zExq7cAEHGPOux/Iu6lXGeLtcxQ5w4AD3UAerLOWH5o=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=j24CJ8f7uWAsA8BjuPxwXSwhRAdPmWA19EPTPGdHWVKjIrIxfpXuWlH+sqnkZo2naEFnm4yP+8AKWVv9pazj0CUPd7ak0raP5RSjrwyBWqyCE7xu5SQedcfNl/zqy/N9qjK5fXtZLGYYqYSZbfrvKCKMjze8iVipEIgbmSl+WEY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=V7FtC4xE; arc=fail smtp.client-ip=40.107.92.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OqLtXq0g"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E94ADC4CEEB;
-	Thu, 28 Aug 2025 11:57:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756382253;
-	bh=n8QXY5YRm9nQQBYQQGaxgrl8XdTmVTKFna/oqVl/xhQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OqLtXq0gi9UBzAMP2wcXlT2cBb1dLghW49oEfniFZWmFDZ8XrTzjet3Se+cK+4Enz
-	 bUcas58K9zqJYJO8K1xC/lojuRYXP35XvwWJ9XYIMcJRmRtfzd1ENQlyeWdM0r06Gk
-	 0iGSQIedtJXaN5EXHSKxCaObLHf9f2/iEhzMO/91YHWTXC+kQV5HZRzX+s7pvZgTMs
-	 /wX7b7wyAX9BAZbCT37OSLoaEdenWMo5h/NWko9aq0V1TzuE+BMc75vbwrCyO1DV2e
-	 WdS++dKThCK37gVl5uHk3NBx12J9+O+GbVUmIbjagbvOKAeDIwhduPUosVAdqLdX7n
-	 wfEu8DIXf5M5g==
-Date: Thu, 28 Aug 2025 14:57:29 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	Alexander Potapenko <glider@google.com>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
-	iommu@lists.linux.dev, Jason Wang <jasowang@redhat.com>,
-	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-	Jonathan Corbet <corbet@lwn.net>, Juergen Gross <jgross@suse.com>,
-	kasan-dev@googlegroups.com, Keith Busch <kbusch@kernel.org>,
-	linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	linux-nvme@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-	linux-trace-kernel@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
-	xen-devel@lists.xenproject.org
-Subject: Re: [PATCH v4 00/16] dma-mapping: migrate to physical address-based
- API
-Message-ID: <20250828115729.GA10073@unreal>
-References: <cover.1755624249.git.leon@kernel.org>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="V7FtC4xE"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=oTfdFNCSxAFrzH+LUW13bmN5dC9+sq+qD8rbWrdisCMmK0KrB9YO4gYIwUPmfrHSogyHloks8DqxkDzMdFenzCy3dBrhlShCmA8NRLcIttjcNpC0F3xA0sMkaQPiRcomJ/X2aUK3UHLN41BDPGEqs2t9JHicwz850wyPGNjwv5wecID4u14SMjE8xAsfQp8OZBu3fdXWYzbRWL4IZVXG7fCXukL3TdSiqH0xAmclVhXJ6qAHV4dg9nfx+nuytxJ3s/vHwjBXAaHwB17YZutyQI8Rzg338cWbhGgCFP2jfnxhvMvm2y2PHto5D2GaLm6EpKQYat9mNkaU6xQixpA45w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xRa4UKrjz/zenTOgWq5B3uLiu+fJ2j6ZnpGBv8ez3FQ=;
+ b=dnF6JxsGdzXAjT9NrABOfMMHt6W2FJYtJA8u3ZORSehrg47c9MY0IrffHFgTwBPnuMzV9kFdOih4Ihf1iZI4sEUkzTgO+Q7b8ZRZAe/LH5ojcw3bLKqP7tfiw1rpDb/Zk6Lm6pAcc3muFOjiTnPrYRfdOzc8e92J/ZZs3jEwIi0rt/mK/GvwkgIsNLYMHdFHYsMrtXNFWQlMvLYZC2Rsq958B3g9T7iBekcsB1SwWiK8n99WimV2dZPKLJUKmTZvtRvqofg/ykj4tEYGj9HCj0R4wPRpFP7c5EGkDWOJx1Dyvj/qV5i+5j8mlrLn6KNgYgSQO1yJVrnQ5M5KjJlcbA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xRa4UKrjz/zenTOgWq5B3uLiu+fJ2j6ZnpGBv8ez3FQ=;
+ b=V7FtC4xEmKZRC3XbIemCqmkLZalzOqAzyCh8OyBW7WzzKRc0nd/kInvdEmU709pIB/zJ4JDIP2mSVNRjWIRcEnul7D2eFe0rXppv0LjMxjNTUUNeZwkO0/ANBzPnxnk+eylMx48JdxX6GxeCqNdtKQgyu/dq2EfZTFOMG/fumD5no0MByyDa0HDU5V5n1jUkYiacZ7vv+gzy6VAffcEmd03jyMDep3ia1hZclAL6GWR5y8ueDexhtBOgsh2uN9Bo2P22wNO9FS83dPTN0NjCtpcWNpu/tiHzIIf863m9aEblPJKma6OdvkV39q6uQ3dvOzeIszwgLTcC1UaWGAlsgQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com (2603:10b6:610:17c::13)
+ by DS4PR12MB9587.namprd12.prod.outlook.com (2603:10b6:8:282::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9052.20; Thu, 28 Aug
+ 2025 12:37:15 +0000
+Received: from CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732]) by CH3PR12MB8659.namprd12.prod.outlook.com
+ ([fe80::6eb6:7d37:7b4b:1732%4]) with mapi id 15.20.9073.010; Thu, 28 Aug 2025
+ 12:37:15 +0000
+Date: Thu, 28 Aug 2025 09:37:13 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	jean-philippe@linaro.org, miko.lenczewski@arm.com,
+	balbirs@nvidia.com, peterz@infradead.org, smostafa@google.com,
+	kevin.tian@intel.com, praan@google.com, zhangzekun11@huawei.com,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, patches@lists.linux.dev
+Subject: Re: [PATCH rfcv1 4/8] iommu/arm-smmu-v3: Introduce a per-domain
+ arm_smmu_invs array
+Message-ID: <20250828123713.GA7333@nvidia.com>
+References: <cover.1755131672.git.nicolinc@nvidia.com>
+ <fbec39124b18c231d19a9b2b05551b131ac14237.1755131672.git.nicolinc@nvidia.com>
+ <20250827164804.GA2206304@nvidia.com>
+ <aK8+FvkbpB9G9YA+@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aK8+FvkbpB9G9YA+@Asurada-Nvidia>
+X-ClientProxiedBy: MN2PR20CA0032.namprd20.prod.outlook.com
+ (2603:10b6:208:e8::45) To CH3PR12MB8659.namprd12.prod.outlook.com
+ (2603:10b6:610:17c::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1755624249.git.leon@kernel.org>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH3PR12MB8659:EE_|DS4PR12MB9587:EE_
+X-MS-Office365-Filtering-Correlation-Id: cefb4999-20ac-45b9-9e2b-08dde62f9e35
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|7416014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?30+IIXB719DHAlLon+37A+z96JFl2+1rHP6JOAMeGJ6ptkPXOKnkQJ6A/Byn?=
+ =?us-ascii?Q?Azy1vD+AnwFVKG1M+v1fDPaf61cf/slF30oy+VGsBTbnvn/SSpvnJs1tuaFv?=
+ =?us-ascii?Q?RyObZAS+W3UnycDkAKmWd2RgOS9zoqAOpSaSf/GDNBmy7VP9HDTz3Yx9tq8W?=
+ =?us-ascii?Q?fUfFutJt4gKgazrzrBtneEhAy9D0JBTNumftz6di9QsipjTpY1bnHInWRfwh?=
+ =?us-ascii?Q?PDSWTdn3GBKmPDyfEBRd9mPdryWRat3UXObFj1rykbuif2IN5R48fPuQ+15B?=
+ =?us-ascii?Q?ZGoPQ85AJ+2h/suj6G+Bwm6cmFVx5q9zmQ+TZFB2Cot6oEqiMM4gGQDtPGvs?=
+ =?us-ascii?Q?iEcKrOjBPMqArLac0jtBwv/JMmeETwKIWaSQfqkkRV2eHnFCq1rUVfVaHSyQ?=
+ =?us-ascii?Q?2s392Js9r+ZEWN4kbe+VGVdYFxEsqWeFOBrx0s7EqhEWtckZL4q4DYou29Sm?=
+ =?us-ascii?Q?DZb5Hpek5o+QpanuhWPNF3zfXl6hgQ+1z/gq8PHxP6e4GYAbj5P3uw+DpSsN?=
+ =?us-ascii?Q?s785cQyclQwCZFBuLch+LnTrnuqNlCuaHRSPS3x75cXVEBLPFgbGY4qoviDu?=
+ =?us-ascii?Q?Fa0daWIQRFVUHwEM/aDOQ+0mAJca9+HKZ2YxpfUCWdw7IrazsXTLorvIRdcO?=
+ =?us-ascii?Q?zxwieJXOSudDIIis8phpih0WPsvUOw4bd+mpijE27iy04wMXeN1mlm5Q2JFI?=
+ =?us-ascii?Q?uXwGPSPc7w00DcdHnesEYsMnB4IadslsNusFZwUGmTmM1is3edeisPxnPUIh?=
+ =?us-ascii?Q?FGjmLfsx6jJ9aHhnrslDx5uG4wMnwU+UWbsz//MKdmsAFHX/zi0t45Ek+Hi9?=
+ =?us-ascii?Q?kwnKgbuysAEWq4eDI/UFZks6cgcfPgNTiCm4qNLpQOxOtWW5Ni5XR3zYQxFZ?=
+ =?us-ascii?Q?6Rq3eWrPWlYINwDNEspnuBxF6kOi4Gs6a3yj4rCl71UmG8jRvi341H6A9Dj0?=
+ =?us-ascii?Q?8PSPOXXLQtETI8mWIIg56doOkMos32NfNg89WXGztBd/7N31AXtjT2bJaaC/?=
+ =?us-ascii?Q?M1tdqY6g8bjuvhUiGDKn4SPmRguZm55nWY5DdPOgga/nF08a+lVKALRo+IHa?=
+ =?us-ascii?Q?s1BR88Wjt96nxMcfee/OckY98utL5bF81S82bxn1c3sA7fHJqDHcuRxqrfUu?=
+ =?us-ascii?Q?3Ld97x4DqDmEGfJIpXKRksSKhOEssTHMRwATPw6z7oPFJSPFojGLWGGAiaDV?=
+ =?us-ascii?Q?T59ykVOnXyHt7pxSOKWXw5H6OD6mj0QfBFuA0+RNex8OkeF2pmpm5/61AwZm?=
+ =?us-ascii?Q?I565acc08vrdwLy5a+biFZ+pU4TVXKoeDh757oL4vCmxKFq64lFzuQLLPY5G?=
+ =?us-ascii?Q?DgNV0rXwcy/DIYFt/0Ju+0Fx26glVST4Yb0qTHKMw/hKTcnEYP1Vx/MVhJvX?=
+ =?us-ascii?Q?p54JSAdVwsJCY4AM/fHdIxoRF4An5J+1poHTsGa3APFzVQbxoX7KDb06iUo/?=
+ =?us-ascii?Q?urOu1yBIgLc=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH3PR12MB8659.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(7416014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?sfZnzeGRDcgQaFG88mgi6pcY6iNQk4ZxuCAOjIcT4i51nyKmaMVxsoH1+rXB?=
+ =?us-ascii?Q?gI9Y9p7Y+7OHgLF9PvVEa7fBsXUNgmxv/vtYTwFjniFGDO4IgvteIOWK+cKV?=
+ =?us-ascii?Q?7/sPdfdvTJ5bvUL2uR8mi9vTrEJfRzcehEs/CXFW1OWLNbO+0MTuZTKAAeat?=
+ =?us-ascii?Q?o63tXrymi2rGjHJsIUNt63vB9wQB7gkmZGQ8E5aWBMwNoTcAaWtEGrdRYSov?=
+ =?us-ascii?Q?yQVLGmYrHazr2uZ/VHWOWp/UuOqAhzSr3wQYjztrvcutJCaaVFAQpzJq0Ggn?=
+ =?us-ascii?Q?Ar+NpwVRafoc3DWdlXVgCcaA8HKM/QT1eew00b/v4Ld6QR+8NaVJ7aF+0kCP?=
+ =?us-ascii?Q?I0jS5WBie6d0/QG4wxB8AbiWql7KRjLMPog8SEFxYqltjqw+ztszmGc9eDP0?=
+ =?us-ascii?Q?Qz1e2D0slj3o44J2k1/6yGkTYYZXgITJrGTggn4ofqzJQ/36vg48PTS02jzD?=
+ =?us-ascii?Q?b/4Ic+5u2o5Wab18+tU24jwb8L4hmBY+BYlzyR6sH9ZWYDwSM4FYw89UC7Xk?=
+ =?us-ascii?Q?jFlJSXAQa1rBTEYwppCCvR6hgv7PRKCMje94gOtP/tJH0R7QNGdAFAO4s0Dv?=
+ =?us-ascii?Q?N/6lboSs29qHs9cugwHv1xKbvD85epauznVLD5XKQlz/q76qekdZXlRLHtS4?=
+ =?us-ascii?Q?pCd5m9qm9pByLT9yuCJpxo3W35/MP8eMjNa0JZi6USRfQ90KXdllwq3Os7vk?=
+ =?us-ascii?Q?jWTsEQvTW3or2qfTBRCVn7po0z8RHY5QW6kdLGwytk/TrYsvn2F2hGY/Gd6i?=
+ =?us-ascii?Q?mitf2wTwaZ66pmAtsl+YMNNb1MHh2l3pYTrLdlI60JEubJvr5+A4yJyv0uKZ?=
+ =?us-ascii?Q?l4/rp4pmcWbKUMPI+84OOJq5w0JPA4LxsKMxKPMl2HLJ2q3luoCRIrTz5WCb?=
+ =?us-ascii?Q?n00kBThMJKcrc2jp5I5vX1BBUwO8yKqje7w4OEYYQpcOOJVU8VKBLSyqPT6n?=
+ =?us-ascii?Q?S5dD48qImtbUx4GsElpnIm3lDrtmI1TUkWlC6te/RAEFEfAJHD2Ms1+3iP3y?=
+ =?us-ascii?Q?DDp1VGxyfitcQ38VDn0cCAH9clSSGt+l+q/V/jU3FzQ77mSclYITtPG4fxWC?=
+ =?us-ascii?Q?SuJMr0E7RsfLUeTLeeNUY8ywxQoe1o7YJ643yyx+CsO4miGr8r1Dg9Zbyu7u?=
+ =?us-ascii?Q?PUJfQJOai2Voxma+o/Nc/zSgZoKfS+gMdsjYCRbTIJ6Zl2DTRpEmb6BHTvUg?=
+ =?us-ascii?Q?FDD8oU3M1Er0HTAOVq2INtKvnUmWCLeziOlz4LE4/5i8IJmF1pCcZFDiN7Oc?=
+ =?us-ascii?Q?OAnUYtNjVitt0r2wy2ZuiLkg0hXU2QKqnqppcaJ61fO/v3v0zK3QPHEvbRro?=
+ =?us-ascii?Q?Qu60dVE1m/EDwgekRqtCkG1bgLTeVSCAiQow5depGfFooOLvJeBhJsumX5+Q?=
+ =?us-ascii?Q?Oef2EXI5SHa0dsvPKD3yyZvNqRYSxge50Zzgjq1QrjWRkI0xIRVORoN2sBaU?=
+ =?us-ascii?Q?Vo7UrDZWDV5m+7GLrmG6+7OyqLX8D7832SoEZAQRvLUHqN/TwYWiYK+4kppG?=
+ =?us-ascii?Q?yEOcejSHW3zBTvZqaBoc4vl9OpC65bhipaeK/ef5VUjGNZBKrFsj5uhAhbjb?=
+ =?us-ascii?Q?aGLqIY/nldL/HVyhajQ=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cefb4999-20ac-45b9-9e2b-08dde62f9e35
+X-MS-Exchange-CrossTenant-AuthSource: CH3PR12MB8659.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Aug 2025 12:37:15.0983
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nb9J0LoQfYRL2W4dkCZsTj9Rnq9sCDSA+2CamsP1iyCmSiot9qUL6RJUpw9tLq2p
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS4PR12MB9587
 
-On Tue, Aug 19, 2025 at 08:36:44PM +0300, Leon Romanovsky wrote:
-> Changelog:
-> v4:
->  * Fixed kbuild error with mismatch in kmsan function declaration due to
->    rebase error.
-> v3: https://lore.kernel.org/all/cover.1755193625.git.leon@kernel.org
->  * Fixed typo in "cacheable" word
->  * Simplified kmsan patch a lot to be simple argument refactoring
-> v2: https://lore.kernel.org/all/cover.1755153054.git.leon@kernel.org
->  * Used commit messages and cover letter from Jason
->  * Moved setting IOMMU_MMIO flag to dma_info_to_prot function
->  * Micro-optimized the code
->  * Rebased code on v6.17-rc1
-> v1: https://lore.kernel.org/all/cover.1754292567.git.leon@kernel.org
->  * Added new DMA_ATTR_MMIO attribute to indicate
->    PCI_P2PDMA_MAP_THRU_HOST_BRIDGE path.
->  * Rewrote dma_map_* functions to use thus new attribute
-> v0: https://lore.kernel.org/all/cover.1750854543.git.leon@kernel.org/
-> ------------------------------------------------------------------------
+On Wed, Aug 27, 2025 at 10:19:18AM -0700, Nicolin Chen wrote:
+> > Just always do decr, then have a simple function to compact the list
+> > after the decr:
 > 
-> This series refactors the DMA mapping to use physical addresses
-> as the primary interface instead of page+offset parameters. This
-> change aligns the DMA API with the underlying hardware reality where
-> DMA operations work with physical addresses, not page structures.
-> 
-> The series maintains export symbol backward compatibility by keeping
-> the old page-based API as wrapper functions around the new physical
-> address-based implementations.
-> 
-> This series refactors the DMA mapping API to provide a phys_addr_t
-> based, and struct-page free, external API that can handle all the
-> mapping cases we want in modern systems:
-> 
->  - struct page based cachable DRAM
->  - struct page MEMORY_DEVICE_PCI_P2PDMA PCI peer to peer non-cachable
->    MMIO
->  - struct page-less PCI peer to peer non-cachable MMIO
->  - struct page-less "resource" MMIO
-> 
-> Overall this gets much closer to Matthew's long term wish for
-> struct-pageless IO to cachable DRAM. The remaining primary work would
-> be in the mm side to allow kmap_local_pfn()/phys_to_virt() to work on
-> phys_addr_t without a struct page.
-> 
-> The general design is to remove struct page usage entirely from the
-> DMA API inner layers. For flows that need to have a KVA for the
-> physical address they can use kmap_local_pfn() or phys_to_virt(). This
-> isolates the struct page requirements to MM code only. Long term all
-> removals of struct page usage are supporting Matthew's memdesc
-> project which seeks to substantially transform how struct page works.
-> 
-> Instead make the DMA API internals work on phys_addr_t. Internally
-> there are still dedicated 'page' and 'resource' flows, except they are
-> now distinguished by a new DMA_ATTR_MMIO instead of by callchain. Both
-> flows use the same phys_addr_t.
-> 
-> When DMA_ATTR_MMIO is specified things work similar to the existing
-> 'resource' flow. kmap_local_pfn(), phys_to_virt(), phys_to_page(),
-> pfn_valid(), etc are never called on the phys_addr_t. This requires
-> rejecting any configuration that would need swiotlb. CPU cache
-> flushing is not required, and avoided, as ATTR_MMIO also indicates the
-> address have no cachable mappings. This effectively removes any
-> DMA API side requirement to have struct page when DMA_ATTR_MMIO is
-> used.
-> 
-> In the !DMA_ATTR_MMIO mode things work similarly to the 'page' flow,
-> except on the common path of no cache flush, no swiotlb it never
-> touches a struct page. When cache flushing or swiotlb copying
-> kmap_local_pfn()/phys_to_virt() are used to get a KVA for CPU
-> usage. This was already the case on the unmap side, now the map side
-> is symmetric.
-> 
-> Callers are adjusted to set DMA_ATTR_MMIO. Existing 'resource' users
-> must set it. The existing struct page based MEMORY_DEVICE_PCI_P2PDMA
-> path must also set it. This corrects some existing bugs where iommu
-> mappings for P2P MMIO were improperly marked IOMMU_CACHE.
-> 
-> Since ATTR_MMIO is made to work with all the existing DMA map entry
-> points, particularly dma_iova_link(), this finally allows a way to use
-> the new DMA API to map PCI P2P MMIO without creating struct page. The
-> VFIO DMABUF series demonstrates how this works. This is intended to
-> replace the incorrect driver use of dma_map_resource() on PCI BAR
-> addresses.
-> 
-> This series does the core code and modern flows. A followup series
-> will give the same treatment to the legacy dma_ops implementation.
-> 
-> Thanks
-> 
-> Leon Romanovsky (16):
->   dma-mapping: introduce new DMA attribute to indicate MMIO memory
->   iommu/dma: implement DMA_ATTR_MMIO for dma_iova_link().
->   dma-debug: refactor to use physical addresses for page mapping
->   dma-mapping: rename trace_dma_*map_page to trace_dma_*map_phys
->   iommu/dma: rename iommu_dma_*map_page to iommu_dma_*map_phys
->   iommu/dma: extend iommu_dma_*map_phys API to handle MMIO memory
->   dma-mapping: convert dma_direct_*map_page to be phys_addr_t based
->   kmsan: convert kmsan_handle_dma to use physical addresses
->   dma-mapping: handle MMIO flow in dma_map|unmap_page
->   xen: swiotlb: Open code map_resource callback
->   dma-mapping: export new dma_*map_phys() interface
->   mm/hmm: migrate to physical address-based DMA mapping API
->   mm/hmm: properly take MMIO path
->   block-dma: migrate to dma_map_phys instead of map_page
->   block-dma: properly take MMIO path
->   nvme-pci: unmap MMIO pages with appropriate interface
-> 
->  Documentation/core-api/dma-api.rst        |   4 +-
->  Documentation/core-api/dma-attributes.rst |  18 ++++
->  arch/powerpc/kernel/dma-iommu.c           |   4 +-
->  block/blk-mq-dma.c                        |  15 ++-
->  drivers/iommu/dma-iommu.c                 |  61 +++++------
->  drivers/nvme/host/pci.c                   |  18 +++-
->  drivers/virtio/virtio_ring.c              |   4 +-
->  drivers/xen/swiotlb-xen.c                 |  21 +++-
->  include/linux/blk-mq-dma.h                |   6 +-
->  include/linux/blk_types.h                 |   2 +
->  include/linux/dma-direct.h                |   2 -
->  include/linux/dma-map-ops.h               |   8 +-
->  include/linux/dma-mapping.h               |  33 ++++++
->  include/linux/iommu-dma.h                 |  11 +-
->  include/linux/kmsan.h                     |   9 +-
->  include/trace/events/dma.h                |   9 +-
->  kernel/dma/debug.c                        |  71 ++++---------
->  kernel/dma/debug.h                        |  37 ++-----
->  kernel/dma/direct.c                       |  22 +---
->  kernel/dma/direct.h                       |  52 ++++++----
->  kernel/dma/mapping.c                      | 117 +++++++++++++---------
->  kernel/dma/ops_helpers.c                  |   6 +-
->  mm/hmm.c                                  |  19 ++--
->  mm/kmsan/hooks.c                          |   5 +-
->  rust/kernel/dma.rs                        |   3 +
->  tools/virtio/linux/kmsan.h                |   2 +-
->  26 files changed, 305 insertions(+), 254 deletions(-)
+> But the _dec function will always take the write lock, which seems
+> to lose the benefit of using an RCU array?
 
-Marek,
+The lock isn't needed, all it does is refcount dec which is atomic.
 
-So what are the next steps here? This series is pre-requirement for the
-VFIO MMIO patches.
+And all the lists are locked by the asid lock on the write side
+anyhow.
 
-Thanks
+> > If this returns NULL then just leave the list alone, it is OK to sit
+> > there with the 0 users left behind.
+> 
+> Yea, it's better than waiting for the next _add function to compact
+> the list.
 
-> 
-> -- 
-> 2.50.1
-> 
-> 
+I was thinking you could call the add function with an empty list
+instead of adding another function..
+
+> > No need for the complex _del function and the _decr function..
+> > 
+> > This also means the memory doesn't need to be preallocated and it
+> > significantly simplifies alot of the logic.
+>
+> By "preallocated" you mean "master->scratch_invs"? 
+
+No, I mean the second list of invalidations the old domain new list.
+
+Jason
