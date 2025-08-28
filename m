@@ -1,111 +1,163 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56272340D90;
-	Thu, 28 Aug 2025 17:15:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80EDB22A7F9;
+	Thu, 28 Aug 2025 17:19:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756401325; cv=none; b=HjTueI1GQffMoqMsbKBaacZXY+wB6ruHntr5Jy31qu1wWQN8Z/SN9HY0XipUxo86Y40rqOM3+1C88EyfZ4MeOJvTHbO4R8fbst95nG2jmyrDjPYM8/ayFPdPfIsi1e++IaQdMPiw0cpTVm8Kes5RBcl7/UKNohC/LxTDr5XYRKo=
+	t=1756401546; cv=none; b=Q1JfraElwpsi9x/duU64kU+sYHXO8BSyvMCIhIuOkDBAILRAWAmF8UddA2zCWDjnno/2KAQdPjqofDAid4msBEDy4wNN9q1YyaqIs8na7S5il2LOeh+2hBPMuS/t1/ijjSRX+2P7W6hB7pWVPLYWfkek7dzxMNUL5ONy3T0PGmc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756401325; c=relaxed/simple;
-	bh=ou3iD8shgadPVxQRtF41FaHPfXiCub7fMhAggBLVXMc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CIK1BTXrRUzIbeO8wFyOuRuBiD4ndwXhbtS+o9mCWHAKjuJkjWoM9BLrVjoqHm6iODw67pBqn6VPkXymOXOivAFl8E7dbE5J7W0Qy5C2oJxYWzHyMOAJh87t6trgYWvLxC1BHhID6z3PXChBEh9iTC14EKEiOJP1zYGmTP2Sif0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fnmNyIm6; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1756401546; c=relaxed/simple;
+	bh=SS4pv8uyaXLZEUMjbC2GJgsLUt5PP91S4SC3iNr8JIE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=iiddvf3EIHd5vF6ZfJeFTsCwNiDJOVgTZukqGoieHxzZR8QWk7KMf4WMw41M8f+4Tj03nRAyFhMZhYYrGNd+VmRiHmoUTUuZKYVeqzX865b7ZKoEcRdDmZRwzQ7ICka4bxi/mFkoX/QohAE7G6HtESs+dcXT+IO8IBZCxy7ZIKE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BrfoDINR; arc=none smtp.client-ip=209.85.214.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fnmNyIm6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A72BC4CEF4;
-	Thu, 28 Aug 2025 17:15:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756401324;
-	bh=ou3iD8shgadPVxQRtF41FaHPfXiCub7fMhAggBLVXMc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=fnmNyIm6kveacQ6zFjHwSr/ld+cbNXoqmfCrawHp1gvsXVCDDljqqxTV+b1zApRgH
-	 5lcwKbYEv5XvzJ74pZRRlHz4xMMdbU2hypSAtpXWfDMqRVbb/qc2SqQSSCNqbZ1peQ
-	 BdR01HGV590kQ600i1NoQpXCyGOYKnHeIsk3mGhcH3PGq+tQybbYkfchgS5mr5H49F
-	 IvJGdW2sSi79scStsbkC/ihQucpNHR67O3EvTjBCfBwOnwU2YHvQc3Mh/Yo09lKjUz
-	 oioVDuGo8iH8GapTPxpdVPh2h5wOe61XtWreqwSjOT2z6hU8npwTgtY7JSO24epBr/
-	 2W6Y4P8WQ/UJw==
-Date: Thu, 28 Aug 2025 11:15:20 -0600
-From: Keith Busch <kbusch@kernel.org>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	Alexander Potapenko <glider@google.com>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
-	iommu@lists.linux.dev, Jason Wang <jasowang@redhat.com>,
-	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-	Jonathan Corbet <corbet@lwn.net>, Juergen Gross <jgross@suse.com>,
-	kasan-dev@googlegroups.com, linux-block@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org, linux-nvme@lists.infradead.org,
-	linuxppc-dev@lists.ozlabs.org, linux-trace-kernel@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
-	xen-devel@lists.xenproject.org
-Subject: Re: [PATCH v4 15/16] block-dma: properly take MMIO path
-Message-ID: <aLCOqIaoaKUEOdeh@kbusch-mbp>
-References: <cover.1755624249.git.leon@kernel.org>
- <642dbeb7aa94257eaea71ec63c06e3f939270023.1755624249.git.leon@kernel.org>
- <aLBzeMNT3WOrjprC@kbusch-mbp>
- <20250828165427.GB10073@unreal>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BrfoDINR"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-248ff5cabe0so1866195ad.0;
+        Thu, 28 Aug 2025 10:19:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1756401544; x=1757006344; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SS4pv8uyaXLZEUMjbC2GJgsLUt5PP91S4SC3iNr8JIE=;
+        b=BrfoDINRwpsl18PQ7xXjC5Cc1YmnSmalFXEWkIMk8MQ8BKi2dh1oO3oue29tv+RSwk
+         dGunsmSVD/KV9+W4YTmUzfPDWiX2CXbnIgGW79NGgps+Q/0znBVTdHHsPnidWLG4ejia
+         BJC7LBibNwbRBsrFCQiVCoQgaYVe5ZvtGtdFvLxIRexKpeA3o2jmQHwEDt1HGJbFDvaI
+         2sf19CGx1Fm+dVafKFIIoRoPPibwjqhXcycNtprTzGPqEWs7ZVGJcSVOCwgJRa06huOg
+         fowhdlw9zkm5tYxNcbhDW3raQFsNEIHdj8jph1cf3Ytx+PBLxpmjKlX7h1FP94mVXyTr
+         wYxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1756401544; x=1757006344;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SS4pv8uyaXLZEUMjbC2GJgsLUt5PP91S4SC3iNr8JIE=;
+        b=P8gGRJjw6U0lJ6r45Pw/6aliAE1vARhm4/9My6ntIZnQbRY1igSWdCk8C/y4+yZ9QJ
+         f+bIjys+P6fJwT6NBwKQuyTP9tDnQgYQyiHd6sMtXL1c7Zjkjma7Vou692Fe37hCFWkI
+         pChnJQGBqj4Pa3XC7my9MZTumoAORUVcofaopVvj5qgk0+GFxKtX2F5i+w7MS+kyXXWv
+         lVFTqUW9OJsL0EPsH/2MfIbVaRrAxxXURSriI4fHB5x/RQLRMVMGQKfgR8ydG6DPhYDE
+         ZjtPgz7IBZR8QzCTNXRFbDF6T5Ao5NYuxVCvfDTcenwNjI4sn9Qtb89IeGh4EUJEOSE6
+         txSw==
+X-Forwarded-Encrypted: i=1; AJvYcCVLX7kDT2mBm5MmQXe4oT6Dg/f62+nFHT3TV5AtdKRhFdJtoSmRR1FP/m5f2pQ846T6Rnh85jg=@lists.linux.dev, AJvYcCVYWzwCaMLPzGgZp4pjNArkvjh8wbGD2+eNPIK2h5TvsVE1LINuTWMc2TFmKWOs96I7pOuVqg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yykeg4LrOdMibo4TiuRjVNMILdQbErPmrTiH0CMXkfcTAukOYKt
+	SWcdwnGtB0F6ra5aIUoOQHP6DhOLgrz3/YCB6VKhdRfzNbXVFEYgbP4+
+X-Gm-Gg: ASbGncsc94wkdfZI60OO8TO0KJvmRTP2hTApkHWKsfiXwQicdhKuzPWua1GlLILwMRM
+	xoP7HXUsZfUHVsl0rKAa35Uxyp6gMu2G4UQEUsfnrWQ2duT9m+efOg2PCF/dt0kHeisF22PmZTf
+	fpsqpWiA0VfsWt34IIzidplhfCwlaYaOjQaGktw31hBAnlSFC6+2Bi668FGXNLrwD+Zhqh5fc+L
+	AYxvtEntWfSj/aqWKmlFmFAbqRdBV+yKYNU4AJXO4fn8LPrtK8jkLDjXCd0hWtxIhixBlBrfMYZ
+	OjqGrEZKY3OYwl+1+fY+8rWY5QEWHDtOWyAf6cho2tiszktB3mnoJckT0sawgxKlxkxJDxvXOlC
+	Hds8DCNA/21Tn1QkKhA7kdKPbgRHS6G3dsls9uRkHhBPv5+OeTOBE/Q==
+X-Google-Smtp-Source: AGHT+IFPj3GBG1tXe0w52JDhOrrrStWKIT6zs8hpAEsM8UEVZqo8QCtKE2lg8olsPKFlf0oBzRgObQ==
+X-Received: by 2002:a17:903:2391:b0:249:308:353 with SMTP id d9443c01a7336-2490308048fmr5489935ad.41.1756401543466;
+        Thu, 28 Aug 2025 10:19:03 -0700 (PDT)
+Received: from [192.168.1.111] ([59.188.211.98])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-24905da2f20sm739185ad.82.2025.08.28.10.18.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Aug 2025 10:19:02 -0700 (PDT)
+Message-ID: <86ab9bd4-9a4f-4ae9-930f-5fb9ef69c963@gmail.com>
+Date: Fri, 29 Aug 2025 01:18:47 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250828165427.GB10073@unreal>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/37] arm64: Add initial device trees for Apple M2
+ Pro/Max/Ultra devices
+To: Janne Grunau <j@jannau.net>
+Cc: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+ Neal Gompa <neal@gompa.dev>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Hector Martin <marcan@marcan.st>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Viresh Kumar <viresh.kumar@linaro.org>, Thomas Gleixner
+ <tglx@linutronix.de>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Linus Walleij <linus.walleij@linaro.org>,
+ Mark Kettenis <kettenis@openbsd.org>, Andi Shyti <andi.shyti@kernel.org>,
+ Jassi Brar <jassisinghbrar@gmail.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+ Sasha Finkelstein <fnkl.kernel@gmail.com>,
+ Marcel Holtmann <marcel@holtmann.org>,
+ Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+ Johannes Berg <johannes@sipsolutions.net>, van Spriel <arend@broadcom.com>,
+ Lee Jones <lee@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, Stephen Boyd <sboyd@kernel.org>,
+ Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck
+ <linux@roeck-us.net>, Michael Turquette <mturquette@baylibre.com>,
+ =?UTF-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>,
+ Vinod Koul <vkoul@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Marc Zyngier <maz@kernel.org>,
+ Ulf Hansson <ulf.hansson@linaro.org>, Keith Busch <kbusch@kernel.org>,
+ Jens Axboe <axboe@kernel.dk>, Christoph Hellwig <hch@lst.de>,
+ Sagi Grimberg <sagi@grimberg.me>, Jaroslav Kysela <perex@perex.cz>,
+ Takashi Iwai <tiwai@suse.com>, asahi@lists.linux.dev,
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+ iommu@lists.linux.dev, linux-gpio@vger.kernel.org,
+ linux-i2c@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-bluetooth@vger.kernel.org, linux-wireless@vger.kernel.org,
+ linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org,
+ linux-clk@vger.kernel.org, dmaengine@vger.kernel.org,
+ linux-sound@vger.kernel.org, linux-spi@vger.kernel.org,
+ linux-nvme@lists.infradead.org
+References: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net>
+ <932e0085-c901-40f8-b0d5-67f8f0b934e6@gmail.com>
+ <20250828165012.GC204299@robin.jannau.net>
+Content-Language: en-US
+From: Nick Chan <towinchenmi@gmail.com>
+In-Reply-To: <20250828165012.GC204299@robin.jannau.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, Aug 28, 2025 at 07:54:27PM +0300, Leon Romanovsky wrote:
-> On Thu, Aug 28, 2025 at 09:19:20AM -0600, Keith Busch wrote:
-> > On Tue, Aug 19, 2025 at 08:36:59PM +0300, Leon Romanovsky wrote:
-> > > diff --git a/include/linux/blk_types.h b/include/linux/blk_types.h
-> > > index 09b99d52fd36..283058bcb5b1 100644
-> > > --- a/include/linux/blk_types.h
-> > > +++ b/include/linux/blk_types.h
-> > > @@ -387,6 +387,7 @@ enum req_flag_bits {
-> > >  	__REQ_FS_PRIVATE,	/* for file system (submitter) use */
-> > >  	__REQ_ATOMIC,		/* for atomic write operations */
-> > >  	__REQ_P2PDMA,		/* contains P2P DMA pages */
-> > > +	__REQ_MMIO,		/* contains MMIO memory */
-> > >  	/*
-> > >  	 * Command specific flags, keep last:
-> > >  	 */
-> > > @@ -420,6 +421,7 @@ enum req_flag_bits {
-> > >  #define REQ_FS_PRIVATE	(__force blk_opf_t)(1ULL << __REQ_FS_PRIVATE)
-> > >  #define REQ_ATOMIC	(__force blk_opf_t)(1ULL << __REQ_ATOMIC)
-> > >  #define REQ_P2PDMA	(__force blk_opf_t)(1ULL << __REQ_P2PDMA)
-> > > +#define REQ_MMIO	(__force blk_opf_t)(1ULL << __REQ_MMIO)
-> > 
-> > Now that my integrity metadata DMA series is staged, I don't think we
-> > can use REQ flags like this because data and metadata may have different
-> > mapping types. I think we should add a flags field to the dma_iova_state
-> > instead.
-> 
-> Before integrity metadata code was merged, the assumption was that request is
-> only one type or p2p or host. Is it still holding now?
 
-I don't think that was ever the case. Metadata is allocated
-independently of the data payload, usually by the kernel in
-bio_integrity_prep() just before dispatching the request. The bio may
-have a p2p data payload, but the integrity metadata is just a kmalloc
-buf in that path.
+Janne Grunau 於 2025/8/29 凌晨12:50 寫道:
+> On Fri, Aug 29, 2025 at 12:11:40AM +0800, Nick Chan wrote:
+>> Janne Grunau 於 2025/8/28 晚上10:01 寫道:
+>>> This series adds device trees for Apple's M2 Pro, Max and Ultra based
+>>> devices. The M2 Pro (t6020), M2 Max (t6021) and M2 Ultra (t6022) SoCs
+>>> follow design of the t600x family so copy the structure of SoC *.dtsi
+>>> files.
+>> [...]
+>>> After discussion with the devicetree maintainers we agreed to not extend
+>>> lists with the generic compatibles anymore [1]. Instead either the first
+>>> compatible SoC or t8103 is used as fallback compatible supported by the
+>>> drivers. t8103 is used as default since most drivers and bindings were
+>>> initially written for M1 based devices.
+>>>
+>>> The series adds those fallback compatibles to drivers where necessary,
+>>> annotates the SoC lists for generic compatibles as "do not extend" and
+>>> adds t6020 per-SoC compatibles.
+>> The series is inconsistent about the use of generic fallback compatibles.
+>>
+>> "apple,aic2", "apple,s5l-fpwm", "apple,asc-mailbox-v4" is still used.
+> Those are less generic than say "apple,spi". For "apple,aic2" especially
+> it's clear which SoCs use it and the set is closed (ignoring iphone SoCs
+> which very likely will never run linux). For the interrupt controller
+> the fallout of not using the "apple,aic2" is larger since even m1n1
+> expect that. irq driver is special in so far as it requires more than
+> adding a compatible.
+> I think "apple,s5l-fpwm" and "apple,asc-mailbox-v4" are specific enough
+> and describe simple hardware so the will not cause issues unlike the
+> complex firmware based "apple,nvme-ans2".
 
-> And we can't store in dma_iova_state() as HMM/RDMA code works in page-based
-> granularity and one dma_iova_state() can mix different types.
+All of these compatibles has around the same specificity as "apple,nvme-ans2" which is
+a mistake of using A11's version (ans2) to describe the M1 nvme (ans3). Though I do agree
+"apple,asc-mailbox-v4", "apple,s5l-fpwm" and "apple,aic2" should be fine compatibility-wise.
 
-I see.
+Although AIC2 compatible should be fine that may not hold for later versions since Linux's
+AIC driver is actually AIC + core complex FIQ stuff, so when you do add newer AICs it is
+probably better to use SoC-specific compatible there.
+
+>
+> Janne
+>
+Best regards,
+Nick Chan
