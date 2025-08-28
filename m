@@ -1,228 +1,124 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C3F428B7DE
-	for <iommu@lists.linux.dev>; Thu, 28 Aug 2025 20:51:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07495223DDD;
+	Thu, 28 Aug 2025 20:54:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756414316; cv=none; b=LH4knqe4T/30QgNxoKswPKSUh4pLtQ2ilC479hkG83jzpt6hJaDk33Rkpe+TsDzw6mjco6GZMvKbA7+e8VTdkTvsIDkGYjNxIZHnG34xOefmC5m6hQDPrKKwfbQfL/+uOrrQ7VPNxuRMwWBNv1N0ScBJbc/0dfzp42ORsPCgOtk=
+	t=1756414482; cv=none; b=o27mp3fSJ7+lhArDJEfixvWqnu9kJ5R28lVrlDvH5JnANODNuOHJ/M8XqMstnx3+u7pZ09TapZXqOdJpdkOR5T+LhptjT0sYmKFj2SghSndic4OvAu3iQRpmXCXvWU9Acc9htSde+FBaZ8KHpptfWaSIYLELYRkPj2lqQwZy7ys=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756414316; c=relaxed/simple;
-	bh=2ucm0soIRFTqQyMyRZNn1dLd48MxmtIvrqQi2CirSwg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fNTzIUECs3X517gttHRg5+WvCeKL5/4Kkzf21hTr32ZrRAYDvAgjVSDpRCZjlXU8Aoy3cIni1qBLV8JyeFr9G8OzVQekvxOTORaVNidceoKEwK8aRx04PWADnJdYB2Uxl9HdJG4ysgjjyelxBMOD2cI1Vf3eOgD2cbuc6IiSaYQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=UhYX4RW1; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1756414482; c=relaxed/simple;
+	bh=G+6sPUUIFuKNkRdpDGh7oyzJRLExx6mM3Rr0TsrNav4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UJW2k16/lx3tF73mcM3NJo3nTqKqXeeoz6Un3pBSVZoeHksTZ5pOD27trkunvUBkmh6qw6Q/bF+ky/y2+I71iVzUPmp3NAov6uJ9KwqqYGjzoInKW/Afx/l0OsyPCJ77N1t+HjnMXmCm9JqIwj7KxhqAFsS7UA3p8s55i2f0I70=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sCjN9TPm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UhYX4RW1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1756414313;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=TWFVCA1eidbRWe4Mvk+B7obYKckT+mqN7M8LbBoJEjM=;
-	b=UhYX4RW1cHSThivPDmx+7E/zp/Ld67BOG3uhZx1RXHbL0liP0AH/b13dNOrsmkjoCJe6mj
-	+R7+Nc9u+NgfBfpjSD+0Gbty4mb/leeHYP7oPGfLuhnwSwrpS343bsU0ZGIpjAVrKV6Ge4
-	WKMw6E9/Mbsp7lDM5VBFso1x3bYkySo=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-270-0o1S9MrNMOmLjh9b5yUCVA-1; Thu, 28 Aug 2025 16:51:52 -0400
-X-MC-Unique: 0o1S9MrNMOmLjh9b5yUCVA-1
-X-Mimecast-MFC-AGG-ID: 0o1S9MrNMOmLjh9b5yUCVA_1756414311
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-45b612dbc28so9257885e9.0
-        for <iommu@lists.linux.dev>; Thu, 28 Aug 2025 13:51:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756414311; x=1757019111;
-        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
-         :from:references:cc:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=TWFVCA1eidbRWe4Mvk+B7obYKckT+mqN7M8LbBoJEjM=;
-        b=jUizxKOQ61EKIyqDSk7oz4uvhtFcwkL5yh33TvkZhPNATOudYZgx6psnGyQPPsXqgD
-         kiUiKjiEPE8u1OPmH3ARdtwBAeYY/O0EOAobckEdThGfg6rTWJwGCgPA/hkeuYm4LozH
-         Qd/1jYwQFca3t/60z3AA/bbYqO8VJDNV70bM3O78CpeNX0dQlwH24fRabXbTCbBwt4xl
-         rHVTVCUfhCGu78y3F4T+zi5Mrt14czuCB6V/D0ne/dY+g/Q3qhYwJoGt9AUBsLjdFYrr
-         eBK/F23y54yw6SVZDAEiQeH4CN82fwByuNwsA2dCJorseR92IzKVm9Qx2Cbf28P0+MbR
-         CSTQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV4vYrM4JDRG1dovHcJXXGQyziemqhBOkJ0+MGA//3MXSiFx0ZAEZ3xBm+wm8b/owhRslBCtQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz7MDWWX0QbKYd/vuOLmIFlr21wwrz2PrBBL/+SzHTPa6hwGZIx
-	GCM/fcvDt6+OSSr9U8kOY3zjDPC0lsY2MroYdtdAPm6cSVpbsMlggPuPDwn+hVn5m9mVpVKZ9dG
-	L1RWBdQNILnSyLkN3RgwAjj56omobPurIceE9l/fGA7DvVv3i2++y3HMW
-X-Gm-Gg: ASbGncuqczLrGz98u4fzMUAVE52RsoFvnwk+vpFvYXv5SXvm53ROsRkCTTj3xX0tgJ/
-	Nb/O0N6kogjQHvdcw/zTzGyNzo/M4L9dysc6Ll0H28tsVPjT6bGBGxN13UrEa1AwLns88Pm9Lye
-	4cHEw0ufh6A7HSKw9VPPNUNEYSta7RWU2IozlYlDgm0+0rLlt+6ZZw1sSpZySJYuY8xS3JrlLHv
-	ebsFah/OpNCrry9giO85SGB58AYe7bT+1w1KkxI7RQUXdKtUAcAV/0Qlo1A/Bl3xreC1KYPEw0h
-	MKHIngS+mxZRPeCcPM7eYtjRr+kCwqtCy12ceJz/KQtW7eSZpidsQyTGYGHV2suTdz5G4cybibN
-	Ff5lePr4SSEKeNXfvVaMX0lbZtaYOsE/39jcPOmW2SjBEHnF3LwOGC9nkTQnrws5Cfw0=
-X-Received: by 2002:a05:600c:c491:b0:45b:4d47:5559 with SMTP id 5b1f17b1804b1-45b517dadd6mr212975765e9.36.1756414310766;
-        Thu, 28 Aug 2025 13:51:50 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEBxEpIi+OizhCOrvRivNgDFtglg6ujTEy6gKjCh35xHRfgibjOrf5BEosBm4/LLfFcliwoKA==
-X-Received: by 2002:a05:600c:c491:b0:45b:4d47:5559 with SMTP id 5b1f17b1804b1-45b517dadd6mr212975405e9.36.1756414310334;
-        Thu, 28 Aug 2025 13:51:50 -0700 (PDT)
-Received: from ?IPV6:2003:d8:2f28:c100:2225:10aa:f247:7b85? (p200300d82f28c100222510aaf2477b85.dip0.t-ipconnect.de. [2003:d8:2f28:c100:2225:10aa:f247:7b85])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45b7df3ff72sm8506805e9.1.2025.08.28.13.51.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Aug 2025 13:51:49 -0700 (PDT)
-Message-ID: <2be7db96-2fa2-4348-837e-648124bd604f@redhat.com>
-Date: Thu, 28 Aug 2025 22:51:46 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sCjN9TPm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF632C4CEEB;
+	Thu, 28 Aug 2025 20:54:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1756414481;
+	bh=G+6sPUUIFuKNkRdpDGh7oyzJRLExx6mM3Rr0TsrNav4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=sCjN9TPmsmkv2CErZmw7eY4jhfo/PPQcCij3sdHoAaturic23UjSbV5/eD841QBrO
+	 q5lqa5UXldETsQDMVxoOfW90mr401cd2aNU4qwzO6IO/5MHaurrX5r01OojjZShQEf
+	 15Kqtld44h3aDOleBeJLOpcwjkQTTYAEhyrx8SC3goTrfnxyjVjHpigzIsE/EQK5r7
+	 FqO3qkArHFFA2cKutZwYB5+zz+dbLtckQEfa3MaBKs+Sg/PNA0jXRALMJBXOlqNLWJ
+	 BYklmKx3JSZ1NevsWbUBFS2Jp771ITiW6KubcU3EOHWT7p/JyrZiu2Mj04cW80QHY7
+	 3fGPgcRndIPdQ==
+Date: Thu, 28 Aug 2025 14:54:35 -0600
+From: Keith Busch <kbusch@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	Alexander Potapenko <glider@google.com>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
+	iommu@lists.linux.dev, Jason Wang <jasowang@redhat.com>,
+	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
+	Jonathan Corbet <corbet@lwn.net>, Juergen Gross <jgross@suse.com>,
+	kasan-dev@googlegroups.com, linux-block@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-nvme@lists.infradead.org,
+	linuxppc-dev@lists.ozlabs.org, linux-trace-kernel@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
+	Sagi Grimberg <sagi@grimberg.me>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
+	xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v4 15/16] block-dma: properly take MMIO path
+Message-ID: <aLDCC4rXcIKF8sRg@kbusch-mbp>
+References: <cover.1755624249.git.leon@kernel.org>
+ <642dbeb7aa94257eaea71ec63c06e3f939270023.1755624249.git.leon@kernel.org>
+ <aLBzeMNT3WOrjprC@kbusch-mbp>
+ <20250828165427.GB10073@unreal>
+ <aLCOqIaoaKUEOdeh@kbusch-mbp>
+ <20250828184115.GE7333@nvidia.com>
+ <aLCpqI-VQ7KeB6DL@kbusch-mbp>
+ <20250828191820.GH7333@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 20/36] mips: mm: convert __flush_dcache_pages() to
- __flush_dcache_folio_pages()
-To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
-Cc: linux-kernel@vger.kernel.org,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Alexander Potapenko <glider@google.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- Brendan Jackman <jackmanb@google.com>, Christoph Lameter <cl@gentwo.org>,
- Dennis Zhou <dennis@kernel.org>, Dmitry Vyukov <dvyukov@google.com>,
- dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
- iommu@lists.linux.dev, io-uring@vger.kernel.org,
- Jason Gunthorpe <jgg@nvidia.com>, Jens Axboe <axboe@kernel.dk>,
- Johannes Weiner <hannes@cmpxchg.org>, John Hubbard <jhubbard@nvidia.com>,
- kasan-dev@googlegroups.com, kvm@vger.kernel.org,
- "Liam R. Howlett" <Liam.Howlett@oracle.com>,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
- linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
- linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, Marco Elver <elver@google.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Michal Hocko <mhocko@suse.com>,
- Mike Rapoport <rppt@kernel.org>, Muchun Song <muchun.song@linux.dev>,
- netdev@vger.kernel.org, Oscar Salvador <osalvador@suse.de>,
- Peter Xu <peterx@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
- Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
- virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
- wireguard@lists.zx2c4.com, x86@kernel.org, Zi Yan <ziy@nvidia.com>
-References: <20250827220141.262669-1-david@redhat.com>
- <20250827220141.262669-21-david@redhat.com>
- <ea74f0e3-bacf-449a-b7ad-213c74599df1@lucifer.local>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- qIws/H2t
-In-Reply-To: <ea74f0e3-bacf-449a-b7ad-213c74599df1@lucifer.local>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: utUZZwN7xtSCmRKd_NoLBhLQTacGJz6q5qOSJeL9-5U_1756414311
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250828191820.GH7333@nvidia.com>
 
-On 28.08.25 18:57, Lorenzo Stoakes wrote:
-> On Thu, Aug 28, 2025 at 12:01:24AM +0200, David Hildenbrand wrote:
->> Let's make it clearer that we are operating within a single folio by
->> providing both the folio and the page.
->>
->> This implies that for flush_dcache_folio() we'll now avoid one more
->> page->folio lookup, and that we can safely drop the "nth_page" usage.
->>
->> Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
->> Signed-off-by: David Hildenbrand <david@redhat.com>
->> ---
->>   arch/mips/include/asm/cacheflush.h | 11 +++++++----
->>   arch/mips/mm/cache.c               |  8 ++++----
->>   2 files changed, 11 insertions(+), 8 deletions(-)
->>
->> diff --git a/arch/mips/include/asm/cacheflush.h b/arch/mips/include/asm/cacheflush.h
->> index 5d283ef89d90d..8d79bfc687d21 100644
->> --- a/arch/mips/include/asm/cacheflush.h
->> +++ b/arch/mips/include/asm/cacheflush.h
->> @@ -50,13 +50,14 @@ extern void (*flush_cache_mm)(struct mm_struct *mm);
->>   extern void (*flush_cache_range)(struct vm_area_struct *vma,
->>   	unsigned long start, unsigned long end);
->>   extern void (*flush_cache_page)(struct vm_area_struct *vma, unsigned long page, unsigned long pfn);
->> -extern void __flush_dcache_pages(struct page *page, unsigned int nr);
->> +extern void __flush_dcache_folio_pages(struct folio *folio, struct page *page, unsigned int nr);
+On Thu, Aug 28, 2025 at 04:18:20PM -0300, Jason Gunthorpe wrote:
+> On Thu, Aug 28, 2025 at 01:10:32PM -0600, Keith Busch wrote:
+> > 
+> > Data and metadata are mapped as separate operations. They're just
+> > different parts of one blk-mq request.
 > 
-> NIT: Be good to drop the extern.
+> In that case the new bit leon proposes should only be used for the
+> unmap of the data pages and the metadata unmap should always be
+> unmapped as CPU?
 
-I think I'll leave the one in, though, someone should clean up all of 
-them in one go.
+The common path uses host allocated memory to attach integrity metadata,
+but that isn't the only path. A user can attach their own metadata with
+nvme passthrough or the recent io_uring application metadata, and that
+could have been allocated from anywhere.
 
-Just imagine how the other functions would think about the new guy 
-showing off here. :)
+In truth though, I hadn't tried p2p metadata before today, and it looks
+like bio_integrity_map_user() is missing the P2P extraction flags to
+make that work. Just added this patch below, now I can set p2p or host
+memory independently for data and integrity payloads:
 
-> 
->>
->>   #define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 1
->>   static inline void flush_dcache_folio(struct folio *folio)
->>   {
->>   	if (cpu_has_dc_aliases)
->> -		__flush_dcache_pages(&folio->page, folio_nr_pages(folio));
->> +		__flush_dcache_folio_pages(folio, folio_page(folio, 0),
->> +					   folio_nr_pages(folio));
->>   	else if (!cpu_has_ic_fills_f_dc)
->>   		folio_set_dcache_dirty(folio);
->>   }
->> @@ -64,10 +65,12 @@ static inline void flush_dcache_folio(struct folio *folio)
->>
->>   static inline void flush_dcache_page(struct page *page)
->>   {
->> +	struct folio *folio = page_folio(page);
->> +
->>   	if (cpu_has_dc_aliases)
->> -		__flush_dcache_pages(page, 1);
->> +		__flush_dcache_folio_pages(folio, page, folio_nr_pages(folio));
-> 
-> Hmmm, shouldn't this be 1 not folio_nr_pages()? Seems that the original
-> implementation only flushed a single page even if contained within a larger
-> folio?
-
-Yes, reworked it 3 times and messed it up during the last rework. Thanks!
-
--- 
-Cheers
-
-David / dhildenb
-
+---
+diff --git a/block/bio-integrity.c b/block/bio-integrity.c
+index 6b077ca937f6b..cf45603e378d5 100644
+--- a/block/bio-integrity.c
++++ b/block/bio-integrity.c
+@@ -265,6 +265,7 @@ int bio_integrity_map_user(struct bio *bio, struct iov_iter *iter)
+ 	unsigned int align = blk_lim_dma_alignment_and_pad(&q->limits);
+ 	struct page *stack_pages[UIO_FASTIOV], **pages = stack_pages;
+ 	struct bio_vec stack_vec[UIO_FASTIOV], *bvec = stack_vec;
++	iov_iter_extraction_t extraction_flags = 0;
+ 	size_t offset, bytes = iter->count;
+ 	unsigned int nr_bvecs;
+ 	int ret, nr_vecs;
+@@ -286,7 +287,12 @@ int bio_integrity_map_user(struct bio *bio, struct iov_iter *iter)
+ 	}
+ 
+ 	copy = !iov_iter_is_aligned(iter, align, align);
+-	ret = iov_iter_extract_pages(iter, &pages, bytes, nr_vecs, 0, &offset);
++
++	if (blk_queue_pci_p2pdma(q))
++		extraction_flags |= ITER_ALLOW_P2PDMA;
++
++	ret = iov_iter_extract_pages(iter, &pages, bytes, nr_vecs,
++					extraction_flags, &offset);
+ 	if (unlikely(ret < 0))
+ 		goto free_bvec;
+ 
+--
