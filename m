@@ -1,82 +1,82 @@
 Received: from flow-a7-smtp.messagingengine.com (flow-a7-smtp.messagingengine.com [103.168.172.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C486341AB1;
-	Thu, 28 Aug 2025 14:02:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E9E73148B6;
+	Thu, 28 Aug 2025 14:02:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.142
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756389757; cv=none; b=YBHPhTlHEjveJhMqw0pLYZmz9iTDN55Zg9m1PByLjSYsJKHj/37zegzCdauSZO/WOXRer2kXQv2du/Vn1FWXhPemN31VeI0V0fulFLPlwMXQq9fj5FAQcjXAHJgMTRN7hjlKYw9JX2cD7ncbmqFoXZLqJ3YexeHZ0fI/JeXadYA=
+	t=1756389759; cv=none; b=HCU6g4HvoBrtu4UAtyq+7Xy2WK3uQldHHm+zxvJwFKFShot3oAsxTDETqUEQ1LVypru+PqRG94m5k0bQfpTxrJb00KEYwNfBBIv/5CIl3m7gY9c3gnrbCtvLlTaUWzwUOCd2NXPs+VlzvtjkFF0oWMqRQQS6SnhrtuHqjp8Atqc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756389757; c=relaxed/simple;
-	bh=LYUm5MKTe08602cGu8u8E3B9OdZDIm6atzI54Orhqx4=;
+	s=arc-20240116; t=1756389759; c=relaxed/simple;
+	bh=FwzT9u1tZ9dJSNWWr0YbAMptH+kJ/6A4kCQ/S8irfyE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Q5oy0+hdS/RBnKvLZFQH3ghxvMOBulOfTqV94/ExXmgN4XM0WatudUhiKtx9eJActOBtqbf+bhX8MvbwCCrRi1BgfLZIQE6GOdpRBoQGvJD1OBfIZ69WZUbrA/KPoCllnlXEOzaETmIquiO+TYOGVbOoBxE7VUl0F/6FGbJVDEs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=FbYBLVUW; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=YOffeU27; arc=none smtp.client-ip=103.168.172.142
+	 In-Reply-To:To:Cc; b=ZhNdM5WeDrrR7T415MVIvmqeKxGdTAArKZc3KrqGHmRzIj/70KPIq0Pnt/yepTnVkdKJph2hM7cPSIbLfKKh3QScuLcW1uNnPAMRD2xVYRASavnFTYrNthjTECTOIWuyKV/B26JzReBEQ+exGP+uIIewSvdw/xNPVWNBIO8bmwE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=wKjRpnVU; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=KZPLLhGh; arc=none smtp.client-ip=103.168.172.142
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="FbYBLVUW";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="YOffeU27"
+	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="wKjRpnVU";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="KZPLLhGh"
 Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailflow.phl.internal (Postfix) with ESMTP id F37991380DD1;
-	Thu, 28 Aug 2025 10:02:34 -0400 (EDT)
-Received: from phl-mailfrontend-02 ([10.202.2.163])
-  by phl-compute-01.internal (MEProxy); Thu, 28 Aug 2025 10:02:34 -0400
+	by mailflow.phl.internal (Postfix) with ESMTP id C71C41380DC7;
+	Thu, 28 Aug 2025 10:02:29 -0400 (EDT)
+Received: from phl-mailfrontend-01 ([10.202.2.162])
+  by phl-compute-01.internal (MEProxy); Thu, 28 Aug 2025 10:02:29 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
 	:cc:content-transfer-encoding:content-type:content-type:date
 	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1756389754;
-	 x=1756396954; bh=0c1Yq4NBGY94JfOOYTzzvaGSbCj2I2fSGp+vlrbADJ8=; b=
-	FbYBLVUW1+wdeWT+scP15DCsvQgxFv3tYARBw02gda323j84ZoZnBL75fyP/hud2
-	1fy+3sSAczxZcgUJ/OySh3eB3ER3KDsHH6d7SxoRVkT4smrhihtNipceQ5DA8+pb
-	FdGjajY6Efwe0Hg3i0d8PI1W27oE3gxcr4k2B0+4857fOdRn9Vd53+lerk1LUOBF
-	61yFoWL7wVUz9mlkvjLJ0l0I0CDmPsdbg29ZH0WMqwv/FYvYNL9JzP3lSNMNerj9
-	nonaRm//aGiusJJ7XY5jB8NVq7Bh7j+3GxW2vzKVQxMYmuG9YkxK4R0iWo7/LYyj
-	PZAeh8QxcJaDwOTtFjB3EQ==
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1756389749;
+	 x=1756396949; bh=vmmF/PmGQDeVBHmeHb6dtX7HDk/M3JWzG/SjsW52LfU=; b=
+	wKjRpnVUpbgwRyr6K4jGm21L3xA/+rC0tF4VbWtYqnx6GfGRlKvpZNVm4hifgO07
+	kRn4Z8WpXtP26YUR/UesBBDDih8CiNxWpNubBuKBSTHOIw97HhZdbcy/WNCGStKZ
+	GXvArU9UGT0hV1JP2WdkMFmXQNGCiPph0tuN+K9GdlPWp+G4UeCnmFtSbcJKIuBs
+	ywlRCc1Wdwzu/0e1gel0OJ/42J2t4Aj9zz/aNU2vHUnjXJPzl1gOsHDehocZM+sO
+	ZZ1AMLN7XzOX+NHo9EfrkBQx43MvdlpJAQ4sjbIxVhvRj2i3vVEIai6N31Xr18fX
+	zY7AzcIQbJTR4oCLbzYjWQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:content-type:date:date:feedback-id:feedback-id
 	:from:from:in-reply-to:in-reply-to:message-id:mime-version
 	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1756389754; x=
-	1756396954; bh=0c1Yq4NBGY94JfOOYTzzvaGSbCj2I2fSGp+vlrbADJ8=; b=Y
-	OffeU27Q4ymbWQHMKXttmd6lcyp0eKGehrZn34cpTZrtA28hKALKL12E6aI0T3ne
-	ROun1pQbBO4N0Ue6OxY3Iq0Tdu4bKvLEHEDsxkJnexNI8P8X0cKg0791AkoOTNFm
-	VEkuBGofZyMxOJziueglPiwWn6CbNDS+1sb49OZajjkZEarF6HjW/QS5kYfVqRiD
-	WbZPyQVVNBacqdIn9az/nKSrI3DTvIUZMj66sxU7iUQt3Sb8gPBgTNhCAMcJ6GOu
-	wVS6OmZlfMuLxrO2nSCyvv+55y1/ILz6owaXkJZ7YPCs0zavcNPWUepG90zI2DBo
-	aRYAt1Zg0wMD5MX+9qWsg==
-X-ME-Sender: <xms:emGwaIxkUoNmsvxn1koHcctinTDyhV-PtFOnsfwsifMgWRHFS-3-DA>
-    <xme:emGwaDt7njyTkNsAD2vFDlqRm69hUMSivRjM3sxD6HuxpTLRlAD3v_BkvuuYyjJou
-    Mx8jb0xAiCxkpNvPx4>
-X-ME-Received: <xmr:emGwaDSGXEhHGoJVUN3NG1UeAn2OOh-ifXvQfdM4KitswSH08zX3k9B_6Gjdm0UCbRhC_mimaNO4jmLYg9Lblz_sqtH4Rq5mc0sjhQ>
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1756389749; x=
+	1756396949; bh=vmmF/PmGQDeVBHmeHb6dtX7HDk/M3JWzG/SjsW52LfU=; b=K
+	ZPLLhGhcRGUIhjZ4d5Df0q/yZoEUwmfTjVY6Z3YlDniNdm5uriZzPXhDOulbM4v0
+	5pcD0fDNyW5tfsS6Eo+p5xuPAUUFzoAMqf7F84Lw0d3BhcgCSRCuuHKHhmL2UlYZ
+	WhITMcy5UiUePr6HsT1nN+yRsoY9puf25ul+HwJTKWvynMggFlLTuXvVXzmyKQH1
+	/3kNFSXAHQio/2RV2tRkTQTRfDqNqoJvhWBUDnvjRcBPlyyIxd0n/RTDsrFiKVHa
+	YOz0fGOTUIWwHO4xBmH5TpISONajlwKMh/tzFZzMYQVresjFECb4Kjz+1535yoK8
+	CW9IlQpZAE6ibWeTwfLyg==
+X-ME-Sender: <xms:dWGwaBQzhyHSiVXbYdNK5EDxExk1ucNETB7VPIHwOfas9iodYKNoZg>
+    <xme:dWGwaJnDq36kDCGJzrRqMVFiEgiVjF2GpoJphA2ZJIlPYga27Tx7PjHC_gIIW1daW
+    r6telnlYycmXTxgoW0>
+X-ME-Received: <xmr:dWGwaBg53axpnnzEOS5TtnCxlh-glN0idaRp6wL4NCGeTLTTyuW9JxJVbIP0sgbnTP3hIRp5FcXgj84-DiXlXa3pkiCwZ4F0H0xT4A>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgddukeduvddvucetufdoteggodetrf
     dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
     rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
     gurhephfffufggtgfgkfhfjgfvvefosehtjeertdertdejnecuhfhrohhmpeflrghnnhgv
-    ucfirhhunhgruhcuoehjsehjrghnnhgruhdrnhgvtheqnecuggftrfgrthhtvghrnhepve
-    ekkefgjeettdduueejgeeuteduffefteejudegieevuedvieffteeljeelgfeknecuffho
-    mhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedunecurfgrrh
-    grmhepmhgrihhlfhhrohhmpehjsehjrghnnhgruhdrnhgvthdpnhgspghrtghpthhtohep
-    ieegpdhmohguvgepshhmthhpohhuthdprhgtphhtthhopehlihhnuhigqdhgphhiohesvh
-    hgvghrrdhkvghrnhgvlhdrohhrghdprhgtphhtthhopehjohhhrghnnhgvshesshhiphhs
-    ohhluhhtihhonhhsrdhnvghtpdhrtghpthhtohepphgvrhgvgiesphgvrhgvgidrtgiipd
-    hrtghpthhtohepvhhkohhulheskhgvrhhnvghlrdhorhhgpdhrtghpthhtoheplhhinhhu
-    gidqfigrthgthhguohhgsehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpthhtohepkh
-    gvthhtvghnihhssehophgvnhgsshgurdhorhhgpdhrtghpthhtohepkhgsuhhstghhsehk
-    vghrnhgvlhdrohhrghdprhgtphhtthhopehsrghgihesghhrihhmsggvrhhgrdhmvgdprh
-    gtphhtthhopehlihhnuhigqdhivdgtsehvghgvrhdrkhgvrhhnvghlrdhorhhg
-X-ME-Proxy: <xmx:emGwaBdX2yz5tgE5PwgNTT0tJHt1DdqUAHN9NHEXM3QFnLuyj-YWhg>
-    <xmx:emGwaJQxMWS3y4rBv2W_wCciSQ3DWzNgBFN-rx-Nq7ED7kCdGAnTOw>
-    <xmx:emGwaJkvKUxEpmpcTjaXAcsGp7pwCDQzr4jSSeFneY5XbVbLvq-yKQ>
-    <xmx:emGwaDEtxLJ2XkMUVcvqDz24kHncDaUPA4dM0axCpYdwspD4V5zBdg>
-    <xmx:emGwaJTey83ugS_EdGRIb3F2JEynf3SL7bPwU6s2YEoR8JMFuRA0jYjJ>
+    ucfirhhunhgruhcuoehjsehjrghnnhgruhdrnhgvtheqnecuggftrfgrthhtvghrnhepfe
+    ehheeileduffehteeihfdvtdelffdutdeludduiedutedvfeffheekhefgtedtnecuvehl
+    uhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepjhesjhgrnhhnrg
+    hurdhnvghtpdhnsggprhgtphhtthhopeeigedpmhhouggvpehsmhhtphhouhhtpdhrtghp
+    thhtoheplhhinhhugidqghhpihhosehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpth
+    htohepjhhohhgrnhhnvghssehsihhpshholhhuthhiohhnshdrnhgvthdprhgtphhtthho
+    pehpvghrvgigsehpvghrvgigrdgtiidprhgtphhtthhopehvkhhouhhlsehkvghrnhgvlh
+    drohhrghdprhgtphhtthhopehlihhnuhigqdifrghttghhughoghesvhhgvghrrdhkvghr
+    nhgvlhdrohhrghdprhgtphhtthhopehkvghtthgvnhhishesohhpvghnsghsugdrohhrgh
+    dprhgtphhtthhopehksghushgthheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepshgr
+    ghhisehgrhhimhgsvghrghdrmhgvpdhrtghpthhtoheplhhinhhugidqihdvtgesvhhgvg
+    hrrdhkvghrnhgvlhdrohhrgh
+X-ME-Proxy: <xmx:dWGwaAFS98wo-b-dQya4qFTmsZFPdvVlWsHRsS5Iqd6CiEmzxcV1OA>
+    <xmx:dWGwaALsIlS4Jh0vrp1FOEzsTsNUrwLgw9STx-F2459QIdWtR6VfSg>
+    <xmx:dWGwaOa7KzbFvxgbqOWNFy9BhjNHUBRf0N3fg-qCyJYzUsmqXKzv-Q>
+    <xmx:dWGwaK0oZA6g8CVrPIpJzUmKazjRHQIQVPbo2EiwfBgkVz6RySJPVg>
+    <xmx:dWGwaD6UDfymx4p7-03AS7gKXq_-cjccF99e_pVsfHKYChOIJumrK8Ng>
 Feedback-ID: i47b949f6:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 28 Aug 2025 10:02:33 -0400 (EDT)
+ 28 Aug 2025 10:02:28 -0400 (EDT)
 From: Janne Grunau <j@jannau.net>
-Date: Thu, 28 Aug 2025 16:01:38 +0200
-Subject: [PATCH 19/37] dt-bindings: mfd: apple,smc: Add t6020-smc
+Date: Thu, 28 Aug 2025 16:01:36 +0200
+Subject: [PATCH 17/37] dt-bindings: net: bcm4329-fmac: Add BCM4388 PCI
  compatible
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -86,7 +86,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250828-dt-apple-t6020-v1-19-507ba4c4b98e@jannau.net>
+Message-Id: <20250828-dt-apple-t6020-v1-17-507ba4c4b98e@jannau.net>
 References: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net>
 In-Reply-To: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net>
 To: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
@@ -132,60 +132,36 @@ Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
  linux-sound@vger.kernel.org, linux-spi@vger.kernel.org, 
  linux-nvme@lists.infradead.org, Janne Grunau <j@jannau.net>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1601; i=j@jannau.net;
- s=yk2024; h=from:subject:message-id;
- bh=LYUm5MKTe08602cGu8u8E3B9OdZDIm6atzI54Orhqx4=;
- b=owGbwMvMwCW2UNrmdq9+ahrjabUkhowNiZavnLu/MAbvnXJzVTuvMCun4ZzcqSsjon9nmXuZT
- Cl7vSSvo5SFQYyLQVZMkSVJ+2UHw+oaxZjaB2Ewc1iZQIYwcHEKwESYOBj+cESXrHXxzqvcXTlv
- 8fJzh18yr+xVlzt0teWx1pY8GROZEEaGrSJxorM+H+Ka0b1CfYq9QcBx9q3t7ZGxazxF7945nba
- CCwA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=969; i=j@jannau.net; s=yk2024;
+ h=from:subject:message-id; bh=FwzT9u1tZ9dJSNWWr0YbAMptH+kJ/6A4kCQ/S8irfyE=;
+ b=owGbwMvMwCW2UNrmdq9+ahrjabUkhowNiZbvEl+dL1KPPO3WlDvt6VZ/4fJpW7XYPHbbPDgQd
+ HRW19WNHaUsDGJcDLJiiixJ2i87GFbXKMbUPgiDmcPKBDKEgYtTACYi8Jfhv2utWGr9rZq2n8dq
+ xK7mJ0oWnl5oxPjv8pH7ils8y7y9hBkZFsisXmMWb7nb1OjJIqMpE5wjg7RWBezTqYibrpGncEi
+ QGwA=
 X-Developer-Key: i=j@jannau.net; a=openpgp;
  fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 
-After discussion with the devicetree maintainers we agreed to not extend
-lists with the generic compatible "apple,smc" anymore [1]. Use
-"apple,t8103-smc" as base compatible as it is the SoC the driver and
-bindings were written for.
-
-SMC on Apple's M2 Pro/Max/Ultra SoCs is compatible with the existing
-driver so add its per-SoC compatible with the new base compatible as
-fallback used by the driver.
-
-[1]: https://lore.kernel.org/asahi/12ab93b7-1fc2-4ce0-926e-c8141cfe81bf@kernel.org/
+BCM4388 WiFi/BT modules are found on Apple silicon devices using
+M2 Pro/Max/Ultra and later. Driver support for this module is not
+submitted yet.
 
 Signed-off-by: Janne Grunau <j@jannau.net>
 ---
- Documentation/devicetree/bindings/mfd/apple,smc.yaml | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/mfd/apple,smc.yaml b/Documentation/devicetree/bindings/mfd/apple,smc.yaml
-index 8a10e270d421ecd703848f64af597de351fcfd74..5429538f7e2e914fa4babc273350a5bf194273b0 100644
---- a/Documentation/devicetree/bindings/mfd/apple,smc.yaml
-+++ b/Documentation/devicetree/bindings/mfd/apple,smc.yaml
-@@ -15,12 +15,17 @@ description:
- 
- properties:
-   compatible:
--    items:
--      - enum:
--          - apple,t6000-smc
--          - apple,t8103-smc
--          - apple,t8112-smc
--      - const: apple,smc
-+    oneOf:
-+      - items:
-+          - const: apple,t6020-smc
-+          - const: apple,t8103-smc
-+      - items:
-+          - enum:
-+              # Do not add additional SoC to this list.
-+              - apple,t6000-smc
-+              - apple,t8103-smc
-+              - apple,t8112-smc
-+          - const: apple,smc
+diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+index 7c8100e59a6cd045837a2f602e367f3f79ced5ba..3be7576787644571e42a4145d40af9026cec61ba 100644
+--- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
++++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
+@@ -53,6 +53,7 @@ properties:
+           - pci14e4,4488  # BCM4377
+           - pci14e4,4425  # BCM4378
+           - pci14e4,4433  # BCM4387
++          - pci14e4,4434  # BCM4388
+           - pci14e4,449d  # BCM43752
  
    reg:
-     items:
 
 -- 
 2.51.0
