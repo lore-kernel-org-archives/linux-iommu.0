@@ -1,72 +1,73 @@
-Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2227529A30D
-	for <iommu@lists.linux.dev>; Thu, 28 Aug 2025 20:59:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AE3629ACC2
+	for <iommu@lists.linux.dev>; Thu, 28 Aug 2025 20:59:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756414777; cv=none; b=oobh9rLAu+ezwEgJQQHGnhpzPsZ+Eiw1T5qWGI5mndXttwVegVCBxGoep673EQcEY8QdG5SRJt2LuyEiT9P429aMfMcCSECArrVcjTFiaxSY0r2ohTbrqelQvF5jc5BGDAj0K00y8SyV8HxvIp3S2UCM/bqLpjk7v9EGOH1o4XM=
+	t=1756414797; cv=none; b=QCfXhWXxryZLKFQKwkWBBKLR5OuVQfF5AwqnUHC8I+cnMmrghYSO+6wKOlqgbY5/yHk0tzjDWWRRw2k2DmbOF4G/qnFfHnT+GX2sF9aSpTPU7of9WZrJaH0yWrZICN5IzVpyoNeOVBvg9mA//kUal2eAjg9lbUSjN0dgNdMpFPc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756414777; c=relaxed/simple;
-	bh=nhUyagpznBFRZ9pdGyujL8snMtRV7AxzIDv/2iWCkkM=;
+	s=arc-20240116; t=1756414797; c=relaxed/simple;
+	bh=vcH+lJXlXkzbWh1s+giYmvp9r3m+hUxJ894v+cf3nQo=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rNsZUXYhuihbAsaWTWI7ubEIOXG6hBgH7qtrtaD4Tm5MuBkFb15Cv8VV5uJWGxobzFugNTzq/ZtgUHi3UdN8j5bJoxHnSDpA+YkgtV75DEXCUcPk8o0LP++sUg1qUIJTPoeJq9G7eBsYDOr8KZIcTSMFFi0ZbdK4I4Z20ZbZACI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=eH0TahKp; arc=none smtp.client-ip=209.85.167.43
+	 To:Cc:Content-Type; b=a5JNA7FNWVXu/kfPvebAyCGbKXN1kGNKCwDXZqK8oDFszL1Td/+opPPbEjOdvS6RrbeF1YZGIO5WVSIdQ1s1njxlYeNgo7m47FgRXJfDQP9Winn4zbTndk1Ymxgws/o9Hn7xNG+JOUTpCuoF9br7KR5BZv1Uh25nFoRkgjvPAig=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=quqsZ0c0; arc=none smtp.client-ip=209.85.208.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="eH0TahKp"
-Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-55f6507bd53so846043e87.3
-        for <iommu@lists.linux.dev>; Thu, 28 Aug 2025 13:59:34 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="quqsZ0c0"
+Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-336b63d2e56so1217461fa.2
+        for <iommu@lists.linux.dev>; Thu, 28 Aug 2025 13:59:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1756414773; x=1757019573; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1756414792; x=1757019592; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=nhUyagpznBFRZ9pdGyujL8snMtRV7AxzIDv/2iWCkkM=;
-        b=eH0TahKptjB5T6yv59r5xvtqQhz0ZVXl8x7aqrJA/CrKzbauxO4urpyTs2cFcRvHD8
-         S2w9SjmxQLJo4ArUYKqrL9QX7kpMVsoY7fAowH6gMxFp4t4YyfvBrrfp5iHvLmQe3U/y
-         SyVGvlvjh6wWpxNZvX/qwPYIKwvp0jAjDLqeSXkpsygJuPROBAwLHzfEsUtiTlpTnqS1
-         uAZqGY+s6v5BDV15fU3+xg2WZ5+Oz2BwIOVGXZXBUQoPVB7fXixrAd3Nu254ogkF5kD5
-         qkM8eyTtBBMNNjr27fNVy4ejQLSK1y/kMioU6N5hdmGbRcdbXGzYMqlMoELp5a2LPhqi
-         Jyaw==
+        bh=vcH+lJXlXkzbWh1s+giYmvp9r3m+hUxJ894v+cf3nQo=;
+        b=quqsZ0c0Rsa3/PZHCxjzNCVMA2a3XpPl7xFVelqzreGXJgsrl9nIvKk2q7sVqfkX/n
+         dTgWKoEHCrBPs3/eUx9nctyEWv0hRiblMVdtHUuPqD9wgZzhP0rRmDhEt3IImobur46D
+         muXu/XGII0IuujmN5D05Rz6aQwOCYnfyacPni9oqhY19QuL4I6edB+nEMdOhljNl8Kzz
+         ogAQy2nJZ3MoTf48ih+xCah1K462manf9vhf8wxVtjJo0FHN19raUhwFiroHVD29Qn0y
+         7ybDfYh8uIbBvyzWDxJ3pjnKXyPmnBJo3lTHItfjjocTbnWiCfpUl/rXLv7LVaGHJbMW
+         Kzeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756414773; x=1757019573;
+        d=1e100.net; s=20230601; t=1756414792; x=1757019592;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=nhUyagpznBFRZ9pdGyujL8snMtRV7AxzIDv/2iWCkkM=;
-        b=TZOq3bKK3N/Sy4LFKJ3ERzVx2cijXesIDGE0p2rtSZ+lKz1FFhNOnpzKNW2+YHfQAb
-         kXsToZCvpkhlDo9QSqRe2WHu4Reef3nwnU3uibxaL++QBbrXGKtR06mQf/q6WQPvNhMu
-         jgCo6SPL+l1tMga77mfXYk5YeEzeCSs3PaeVutIVFvUqFlGqAWwsWuK8D9gwry0g0iEC
-         uu+A9i6u8pahg4A3LPF6pVkL0LdXt/+HlAU9LJdpGQnTjFcKe2UFV0iKk24J3USz/PXb
-         Au0PG+F7DxmeIRqXVM0iMNWPRtfLrr5vXM9zt3bqyojpCN2IulAEDtC3GGz4vAfXXmn+
-         JQxQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWn0eLoYjgPKONWmUOf4Va2RpjZZ8iJBhuSBo4WSsLXC3zJxE0cg0l3nIFdz2lzmrYCdXyDHg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzkNR3+KoyhlCrQorA2ykl3p4vcJZYszyQnVjHnBGTK6zm0DmV/
-	hUORv8qUYQiefyzHjnD4r+Pa9QsHsDwvzsA72/cIxCm9VnZwe6SDIXwq6ccSY81XSh033ZJoU0H
-	z0A6y8uVTiCLRDwD9GGbvZVoVD9FqlIgtWfXXoqioAg==
-X-Gm-Gg: ASbGncvvMfRak0rL2udn/kFseRZmQK0/YXMcSgZhY9+wP4vyWdzVboLZCRR0eCXQsnE
-	7ShVRDW91uMpFg1t1R1VyOSIaH4nZnHRnxp3sdhVV5f6Jy83tb2euUHroZS5fSDgjB7pkQYAzNl
-	g8k5iZzcGINkP+b+RMV7jSa5EH3SraNKZVQBfSR2n0JcplOIsGYwuSIeD5LzN1iJrjVJr15d5WZ
-	0eoEAQ=
-X-Google-Smtp-Source: AGHT+IGkAeRfSepttrAWspST3WxeFhzvmsQkOJn8zGWgyydoFU7mfe7dFpmDKHnPoU/jmN1MyfkA6699WvyfKPSV4Ms=
-X-Received: by 2002:a05:6512:6301:b0:55f:503c:d322 with SMTP id
- 2adb3069b0e04-55f503cd585mr2344975e87.40.1756414773211; Thu, 28 Aug 2025
- 13:59:33 -0700 (PDT)
+        bh=vcH+lJXlXkzbWh1s+giYmvp9r3m+hUxJ894v+cf3nQo=;
+        b=fTp2IwLedoZfH8XT3yqf6z0BFvKC9ZGtT2bv+PyLBKwPT2/SZJvusK/w6DdwN4/2y+
+         GS9Jo2jOlOeA4f2pJWtkgzvtSNkpqTa5bgC3AHSKx0vX0hQNV4/spqqGfc1uBrADkkUC
+         elvfSWsrqe9yPWiu5SrKmfgNm7DPTu5pSMaBxd4LOg2B9KV52X3SMG9Q93R9aIki9FU2
+         GqlcmVDbgGL6YrFgkRnDDCCFeZtrmdutfz9BA2TwKdrtqCHRjILw1k6psYdT9c/aRbkJ
+         jaC/4AFe++jfk1NOgNoiQcxmP2GJ7UXWhXwaOGVCAeqfxBGqBJbA90EI2d7uX3i4RnND
+         1TQg==
+X-Forwarded-Encrypted: i=1; AJvYcCX8i4yqb9DwhvE4lHj9j9jKM3IpjpoA1ojeRrhYZuOK+Nwgg1psVbndBZpitSvVd2cMpz9iZw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyCJC6gXkTGmLRxMOQww85r4Xzj8x3D1XDw431yj59rsmgz6sR1
+	8fGmdfO8zkY+9nVs4leq0ShwUVUvdAzaJKdjtw+KBTWVtLqJiWzsjs361N78s/EZKxbLKqkk0dR
+	amD+EjjCrF0wykjYuo+Z7YWkw+m3XG8mH0mEeDpXz2Q==
+X-Gm-Gg: ASbGncu+mz1aVA0Df/eMO1KGJmHoNsDuo+UNa9gU2qqO9KDq0SOgBJTSCeo3T46xdee
+	XECmMj6ty79BNzwiqR4zXRDE9G0YAoUUt6LlEaPgz5s26wCOqME2VBaP+9z9PQIsKOU7fN/LcLW
+	Xypy6zcPsv1EpUffo7iBeUoM6PkiPItUOed6SflAD+bpFsS8IKyc7cvMv0bAp1ga9RfLU1Ic7oG
+	pofOHM=
+X-Google-Smtp-Source: AGHT+IEvCK27Dx3T+NwB4QTV9UIlsAab63smCZ6D7uUks2NtQZowbM82iFbh3N6kvr8t1WPK8CdOU0xtB51L+4ds/dQ=
+X-Received: by 2002:a05:651c:3256:10b0:332:3fd0:15fb with SMTP id
+ 38308e7fff4ca-33650ba8612mr48592831fa.0.1756414792241; Thu, 28 Aug 2025
+ 13:59:52 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net> <20250828-dt-apple-t6020-v1-8-507ba4c4b98e@jannau.net>
-In-Reply-To: <20250828-dt-apple-t6020-v1-8-507ba4c4b98e@jannau.net>
+References: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net> <20250828-dt-apple-t6020-v1-9-507ba4c4b98e@jannau.net>
+In-Reply-To: <20250828-dt-apple-t6020-v1-9-507ba4c4b98e@jannau.net>
 From: Linus Walleij <linus.walleij@linaro.org>
-Date: Thu, 28 Aug 2025 22:59:22 +0200
-X-Gm-Features: Ac12FXwdi56r5WxKQlnuWh0e5CWqxbReZCdYkWbkMywpfjpFF5zgYMlMEAzYzgg
-Message-ID: <CACRpkdbvLhTQ8EujGg9QMbuGVRDnH9ApVxVt1NdmSmPw77QXdA@mail.gmail.com>
-Subject: Re: [PATCH 08/37] pinctrl: apple: Add "apple,t8103-pinctrl" as compatible
+Date: Thu, 28 Aug 2025 22:59:41 +0200
+X-Gm-Features: Ac12FXyoYnYKNXDomZzl4EdS0dXvIhCV2tkZJGb1B6Y1kaQgUA-l_NpqH411N_c
+Message-ID: <CACRpkdbg8KYcDpqDKn9fqs+rL9hLK9mGCj0PTXPBGDW7A_AZbw@mail.gmail.com>
+Subject: Re: [PATCH 09/37] dt-bindings: pinctrl: apple,pinctrl: Add
+ apple,t6020-pinctrl compatible
 To: Janne Grunau <j@jannau.net>
 Cc: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Neal Gompa <neal@gompa.dev>, 
 	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
@@ -105,6 +106,9 @@ On Thu, Aug 28, 2025 at 4:02=E2=80=AFPM Janne Grunau <j@jannau.net> wrote:
 > lists with the generic compatible "apple,pinctrl" anymore [1]. Use
 > "apple,t8103-pinctrl" as fallback compatible as it is the SoC the driver
 > and bindings were written for.
+>
+> The M2 Pro/Max/Ultra SoCs use the same pinctrl hardware, so just add its
+> per-SoC compatible using the new base as fallback.
 >
 > [1]: https://lore.kernel.org/asahi/12ab93b7-1fc2-4ce0-926e-c8141cfe81bf@k=
 ernel.org/
