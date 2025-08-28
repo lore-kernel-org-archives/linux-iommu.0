@@ -1,62 +1,62 @@
 Received: from flow-a7-smtp.messagingengine.com (flow-a7-smtp.messagingengine.com [103.168.172.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E9E73148B6;
-	Thu, 28 Aug 2025 14:02:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD40B3148C1;
+	Thu, 28 Aug 2025 14:02:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.142
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756389759; cv=none; b=HCU6g4HvoBrtu4UAtyq+7Xy2WK3uQldHHm+zxvJwFKFShot3oAsxTDETqUEQ1LVypru+PqRG94m5k0bQfpTxrJb00KEYwNfBBIv/5CIl3m7gY9c3gnrbCtvLlTaUWzwUOCd2NXPs+VlzvtjkFF0oWMqRQQS6SnhrtuHqjp8Atqc=
+	t=1756389760; cv=none; b=LefOODnA947xhGkmns3DxrO1mMtRNOmNhG4Ila6hdpGrtFXlKrAyzyoYFowJiHoqJ53+wX2C/cid5CV5xVNheXeR/lMmO2rD7KIdYB70ETFcvSG/enGU7BlmxahUWYT/4NTLHoHFkZ03Bqbgvlh5z6ThvUurtm5QqzfRA86wjTY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756389759; c=relaxed/simple;
-	bh=FwzT9u1tZ9dJSNWWr0YbAMptH+kJ/6A4kCQ/S8irfyE=;
+	s=arc-20240116; t=1756389760; c=relaxed/simple;
+	bh=z3iL5HvhFofpTTFUNDyus6PZ8qeRDmg9wfOX36vK9a8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ZhNdM5WeDrrR7T415MVIvmqeKxGdTAArKZc3KrqGHmRzIj/70KPIq0Pnt/yepTnVkdKJph2hM7cPSIbLfKKh3QScuLcW1uNnPAMRD2xVYRASavnFTYrNthjTECTOIWuyKV/B26JzReBEQ+exGP+uIIewSvdw/xNPVWNBIO8bmwE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=wKjRpnVU; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=KZPLLhGh; arc=none smtp.client-ip=103.168.172.142
+	 In-Reply-To:To:Cc; b=cjHePETVydhniCIkOx/61G7aVUOGTc32NKr9/5LK0Dd1qJCYoLKBwl88A/XJVxkOTaDgcVciUPt4lwr6gR0cCCUP1++UNcFfl4YmjXQYzzBlsQgdo63Lg/2lzjLcJX4P3jxGkXwKhIogzz33OgDLylQ3UXOJ9pgb+F10vu9Tikk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=o2Bq9byC; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=CAe+mZhi; arc=none smtp.client-ip=103.168.172.142
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="wKjRpnVU";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="KZPLLhGh"
-Received: from phl-compute-01.internal (phl-compute-01.internal [10.202.2.41])
-	by mailflow.phl.internal (Postfix) with ESMTP id C71C41380DC7;
-	Thu, 28 Aug 2025 10:02:29 -0400 (EDT)
+	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="o2Bq9byC";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="CAe+mZhi"
+Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
+	by mailflow.phl.internal (Postfix) with ESMTP id 365331380DD7;
+	Thu, 28 Aug 2025 10:02:37 -0400 (EDT)
 Received: from phl-mailfrontend-01 ([10.202.2.162])
-  by phl-compute-01.internal (MEProxy); Thu, 28 Aug 2025 10:02:29 -0400
+  by phl-compute-05.internal (MEProxy); Thu, 28 Aug 2025 10:02:37 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
 	:cc:content-transfer-encoding:content-type:content-type:date
 	:date:from:from:in-reply-to:in-reply-to:message-id:mime-version
-	:references:reply-to:subject:subject:to:to; s=fm2; t=1756389749;
-	 x=1756396949; bh=vmmF/PmGQDeVBHmeHb6dtX7HDk/M3JWzG/SjsW52LfU=; b=
-	wKjRpnVUpbgwRyr6K4jGm21L3xA/+rC0tF4VbWtYqnx6GfGRlKvpZNVm4hifgO07
-	kRn4Z8WpXtP26YUR/UesBBDDih8CiNxWpNubBuKBSTHOIw97HhZdbcy/WNCGStKZ
-	GXvArU9UGT0hV1JP2WdkMFmXQNGCiPph0tuN+K9GdlPWp+G4UeCnmFtSbcJKIuBs
-	ywlRCc1Wdwzu/0e1gel0OJ/42J2t4Aj9zz/aNU2vHUnjXJPzl1gOsHDehocZM+sO
-	ZZ1AMLN7XzOX+NHo9EfrkBQx43MvdlpJAQ4sjbIxVhvRj2i3vVEIai6N31Xr18fX
-	zY7AzcIQbJTR4oCLbzYjWQ==
+	:references:reply-to:subject:subject:to:to; s=fm2; t=1756389757;
+	 x=1756396957; bh=LFw85klDbF0tct5t5icXIdCbmXxoBwHs3W+D6BI09PY=; b=
+	o2Bq9byC34Jekx1/YpwdAXHhD2egUVnuvZvz+O4+0KvSZDKIcfjg8Q2/sFszmNJo
+	ueqYqoM+UvOyRNianQJOuVlte89QhZ3cKXCeLK4OSm/HHLKuL321Dwfz1VgV0Zwa
+	/OqJz5ITbPcjZU/hbZjYrb5KWVGNsE00A0PsrSAdT/l7q8/ww1dBNSUqMRLt+1Br
+	CE827cH4FHzWIRvlqfSKYOuF5UPvDl8kkdc0o8QD7FesD/oMLkjEdOk5sEu9eAvB
+	V2L7azskT7tIsstKPRSXleEJ827HSjAW9jaM7h+hIukUjQ3SYsh9tPcESFlfMjHm
+	jOBPb+MHKuINNPv8mq6TRA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
 	messagingengine.com; h=cc:cc:content-transfer-encoding
 	:content-type:content-type:date:date:feedback-id:feedback-id
 	:from:from:in-reply-to:in-reply-to:message-id:mime-version
 	:references:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1756389749; x=
-	1756396949; bh=vmmF/PmGQDeVBHmeHb6dtX7HDk/M3JWzG/SjsW52LfU=; b=K
-	ZPLLhGhcRGUIhjZ4d5Df0q/yZoEUwmfTjVY6Z3YlDniNdm5uriZzPXhDOulbM4v0
-	5pcD0fDNyW5tfsS6Eo+p5xuPAUUFzoAMqf7F84Lw0d3BhcgCSRCuuHKHhmL2UlYZ
-	WhITMcy5UiUePr6HsT1nN+yRsoY9puf25ul+HwJTKWvynMggFlLTuXvVXzmyKQH1
-	/3kNFSXAHQio/2RV2tRkTQTRfDqNqoJvhWBUDnvjRcBPlyyIxd0n/RTDsrFiKVHa
-	YOz0fGOTUIWwHO4xBmH5TpISONajlwKMh/tzFZzMYQVresjFECb4Kjz+1535yoK8
-	CW9IlQpZAE6ibWeTwfLyg==
-X-ME-Sender: <xms:dWGwaBQzhyHSiVXbYdNK5EDxExk1ucNETB7VPIHwOfas9iodYKNoZg>
-    <xme:dWGwaJnDq36kDCGJzrRqMVFiEgiVjF2GpoJphA2ZJIlPYga27Tx7PjHC_gIIW1daW
-    r6telnlYycmXTxgoW0>
-X-ME-Received: <xmr:dWGwaBg53axpnnzEOS5TtnCxlh-glN0idaRp6wL4NCGeTLTTyuW9JxJVbIP0sgbnTP3hIRp5FcXgj84-DiXlXa3pkiCwZ4F0H0xT4A>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgddukeduvddvucetufdoteggodetrf
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1756389757; x=
+	1756396957; bh=LFw85klDbF0tct5t5icXIdCbmXxoBwHs3W+D6BI09PY=; b=C
+	Ae+mZhi/Uy7vtE08bKWZ7lnTRA0oHgGtR3fn4lH9af6e0MMyULOhr8cYVPitjTUz
+	lN96+1LzoFFFv2F4zkzSdvRgvELQnG6Jgf8/4R4Cqr0coWm1yBLUFQDm24OYgoSz
+	t7CTePFqTOr++7NmE916ft9aJgz4g/zuQdc/+BoXoJSsrfZqEAxP3UVAAx5ttFHX
+	zxCLaFL2ySGIiMr21Hr1cfgZUYIZEOCnYhxtP0yE5HFVD5Cpzl/W7dKbxcc8zII0
+	r8CKtllG0s6Dpg1B3UYYQ7Kcqz1lW2aJjQOkhcE4e3brPTkgLEsq3Cr5mvS30w25
+	BY0DE7cqeJE1wP2zIy0Rg==
+X-ME-Sender: <xms:fGGwaPa3NbMPKOUHyVFdJsDrr1TuqroyS80fmkzHNUN5RagRLPoIhg>
+    <xme:fGGwaF07Eq9zfjbuuGlYsWqJwhVwP8_kbTdqIWR04ne4QnVsBUrfuDnCdybsTda6a
+    DBgkXONBdecFLA5ppk>
+X-ME-Received: <xmr:fGGwaK7gm52ceTxC7jWCvTN-Gd__UASW230_nWG3Q2R-CjLoBYXg6zaH1Nt81TBO-iR4N98FcKkCZ6Cned1e5lJqPsp0I3SGacBKjQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgddukeduvdduucetufdoteggodetrf
     dotffvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfurfetoffkrfgpnffqhgenuceu
     rghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujf
     gurhephfffufggtgfgkfhfjgfvvefosehtjeertdertdejnecuhfhrohhmpeflrghnnhgv
     ucfirhhunhgruhcuoehjsehjrghnnhgruhdrnhgvtheqnecuggftrfgrthhtvghrnhepfe
     ehheeileduffehteeihfdvtdelffdutdeludduiedutedvfeffheekhefgtedtnecuvehl
-    uhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepjhesjhgrnhhnrg
+    uhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepjhesjhgrnhhnrg
     hurdhnvghtpdhnsggprhgtphhtthhopeeigedpmhhouggvpehsmhhtphhouhhtpdhrtghp
     thhtoheplhhinhhugidqghhpihhosehvghgvrhdrkhgvrhhnvghlrdhorhhgpdhrtghpth
     htohepjhhohhgrnhhnvghssehsihhpshholhhuthhiohhnshdrnhgvthdprhgtphhtthho
@@ -66,17 +66,17 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgddukeduvddvucetufdote
     dprhgtphhtthhopehksghushgthheskhgvrhhnvghlrdhorhhgpdhrtghpthhtohepshgr
     ghhisehgrhhimhgsvghrghdrmhgvpdhrtghpthhtoheplhhinhhugidqihdvtgesvhhgvg
     hrrdhkvghrnhgvlhdrohhrgh
-X-ME-Proxy: <xmx:dWGwaAFS98wo-b-dQya4qFTmsZFPdvVlWsHRsS5Iqd6CiEmzxcV1OA>
-    <xmx:dWGwaALsIlS4Jh0vrp1FOEzsTsNUrwLgw9STx-F2459QIdWtR6VfSg>
-    <xmx:dWGwaOa7KzbFvxgbqOWNFy9BhjNHUBRf0N3fg-qCyJYzUsmqXKzv-Q>
-    <xmx:dWGwaK0oZA6g8CVrPIpJzUmKazjRHQIQVPbo2EiwfBgkVz6RySJPVg>
-    <xmx:dWGwaD6UDfymx4p7-03AS7gKXq_-cjccF99e_pVsfHKYChOIJumrK8Ng>
+X-ME-Proxy: <xmx:fWGwaAl5lphBG5i0JNCK4-fyh4q1Uh7x6haVK020O5eEV_HbU4w2gw>
+    <xmx:fWGwaJ4RdoqV0NHmEotg7kWiZjUL2633OuelGBufUk9zs1pwDtkpRw>
+    <xmx:fWGwaNuP_a2dx0Vq48TdNMeeCELUdhDzANQ5TxiFb2qz4CLBh1lcQw>
+    <xmx:fWGwaEt1hCEpmSCQoTJjBlYbpWMYZusrg4aE-lCUADlfhZXwHQDF_Q>
+    <xmx:fWGwaE1un5jGHLmMtwkl3j2K4yWQFN6Tf6QYSI-85mr9vX42KKlhP7nD>
 Feedback-ID: i47b949f6:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 28 Aug 2025 10:02:28 -0400 (EDT)
+ 28 Aug 2025 10:02:36 -0400 (EDT)
 From: Janne Grunau <j@jannau.net>
-Date: Thu, 28 Aug 2025 16:01:36 +0200
-Subject: [PATCH 17/37] dt-bindings: net: bcm4329-fmac: Add BCM4388 PCI
+Date: Thu, 28 Aug 2025 16:01:39 +0200
+Subject: [PATCH 20/37] dt-bindings: pwm: apple,s5l-fpwm: Add t6020-fpwm
  compatible
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -86,7 +86,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250828-dt-apple-t6020-v1-17-507ba4c4b98e@jannau.net>
+Message-Id: <20250828-dt-apple-t6020-v1-20-507ba4c4b98e@jannau.net>
 References: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net>
 In-Reply-To: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net>
 To: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
@@ -132,34 +132,52 @@ Cc: asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
  linux-sound@vger.kernel.org, linux-spi@vger.kernel.org, 
  linux-nvme@lists.infradead.org, Janne Grunau <j@jannau.net>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=969; i=j@jannau.net; s=yk2024;
- h=from:subject:message-id; bh=FwzT9u1tZ9dJSNWWr0YbAMptH+kJ/6A4kCQ/S8irfyE=;
- b=owGbwMvMwCW2UNrmdq9+ahrjabUkhowNiZbvEl+dL1KPPO3WlDvt6VZ/4fJpW7XYPHbbPDgQd
- HRW19WNHaUsDGJcDLJiiixJ2i87GFbXKMbUPgiDmcPKBDKEgYtTACYi8Jfhv2utWGr9rZq2n8dq
- xK7mJ0oWnl5oxPjv8pH7ils8y7y9hBkZFsisXmMWb7nb1OjJIqMpE5wjg7RWBezTqYibrpGncEi
- QGwA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1585; i=j@jannau.net;
+ s=yk2024; h=from:subject:message-id;
+ bh=z3iL5HvhFofpTTFUNDyus6PZ8qeRDmg9wfOX36vK9a8=;
+ b=owGbwMvMwCW2UNrmdq9+ahrjabUkhowNiVYZkyWiH3s+39w3Qd4uTeZSFxNbxIUDkiIvb/Cf4
+ rWae3JlRykLgxgXg6yYIkuS9ssOhtU1ijG1D8Jg5rAygQxh4OIUgInoKTMyNAW86eo2v/3N3VjM
+ 5K7pg0lVrUkTTP+w7Imdud5LyDeAleF/oFP9yU+m9zp0Oc0cWC29j+zb6PZjbcpb/lVdV/nWNBx
+ nBAA=
 X-Developer-Key: i=j@jannau.net; a=openpgp;
  fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 
-BCM4388 WiFi/BT modules are found on Apple silicon devices using
-M2 Pro/Max/Ultra and later. Driver support for this module is not
-submitted yet.
+The PWM controller on Apple's M2 Pro/Max SoCs behaves in the same way as
+on previous M1 and M2 SoCs. Add its per SoC compatible.
+
+At the same time fix the order of existing entries. The sort order logic
+is having SoC numeric code families in release order, and SoCs within
+each family in release order:
+
+- t8xxx (Apple HxxP/G series, "phone"/"tablet" chips)
+  - t8103 (Apple H13G/M1)
+  - t8112 (Apple H14G/M2)
+- t6xxx (Apple HxxJ series, "desktop" chips)
+  - t6000/t6001/t6002 (Apple H13J(S/C/D) / M1 Pro/Max/Ultra)
+  - t6020/t6021/t6022 (Apple H14J(S/C/D) / M2 Pro/Max/Ultra)
+
+Note that SoCs of the t600[0-2] / t602[0-2] family share the
+t6000 / t6020 compatible where the hardware is 100% compatible, which is
+usually the case in this highly related set of SoCs.
 
 Signed-off-by: Janne Grunau <j@jannau.net>
 ---
- Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/pwm/apple,s5l-fpwm.yaml | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-index 7c8100e59a6cd045837a2f602e367f3f79ced5ba..3be7576787644571e42a4145d40af9026cec61ba 100644
---- a/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-+++ b/Documentation/devicetree/bindings/net/wireless/brcm,bcm4329-fmac.yaml
-@@ -53,6 +53,7 @@ properties:
-           - pci14e4,4488  # BCM4377
-           - pci14e4,4425  # BCM4378
-           - pci14e4,4433  # BCM4387
-+          - pci14e4,4434  # BCM4388
-           - pci14e4,449d  # BCM43752
+diff --git a/Documentation/devicetree/bindings/pwm/apple,s5l-fpwm.yaml b/Documentation/devicetree/bindings/pwm/apple,s5l-fpwm.yaml
+index 142157bff0cd851c85fbf0132d734d470c5a0761..04519b0c581d0e9fb1ae6aa219a4e850027de6a2 100644
+--- a/Documentation/devicetree/bindings/pwm/apple,s5l-fpwm.yaml
++++ b/Documentation/devicetree/bindings/pwm/apple,s5l-fpwm.yaml
+@@ -17,8 +17,9 @@ properties:
+     items:
+       - enum:
+           - apple,t8103-fpwm
+-          - apple,t6000-fpwm
+           - apple,t8112-fpwm
++          - apple,t6000-fpwm
++          - apple,t6020-fpwm
+       - const: apple,s5l-fpwm
  
    reg:
 
