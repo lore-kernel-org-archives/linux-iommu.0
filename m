@@ -1,163 +1,154 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04E9730DD30
-	for <iommu@lists.linux.dev>; Thu, 28 Aug 2025 18:52:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A713826561E
+	for <iommu@lists.linux.dev>; Thu, 28 Aug 2025 18:56:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756407181; cv=none; b=WYWgR7wuGC/ekRKXEVrhMlLP7W3+kOOCxmXtS1VwPAeRsMZk1wIvswzto3sT8E+QnAsNprHT3L/ZTIFShzyscWvbwex36ykAFKoWiqTP3JA02ajGpMbxdgqiOM5hG0ZxUSdcRi/dZhaUzXS8eKLEs6K1JEnnfVR5Q+YAlAZZACk=
+	t=1756407365; cv=none; b=LFOPNE0vy7DyVGA8oTahUOwB9ajW/AiE+ZsDvM51NTLqoqECdaYQ6UE/N3KP0wOKySAhJgAexgxGEpQD3n2eSDb26M2KOv3YubQmz1sAiZWj5SQKCHhAJgtRKYyQ8ur02iUfIrex5ov3lRbCg+HBQZk44+AkowUk4w+j+WQ016c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756407181; c=relaxed/simple;
-	bh=CgULwvBoKBpoCxSt14lLKe61Fel/Z9Jurl+x1vHCKzw=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZEmGdv+9PQKGYNQhxK7fkF7LjY8SonADDMP4NTs0FEZfLFqPpjjUdTMRJao4GVt7HTPOLGGWunhEJdKIOrOsJD+iT24qGBEZF5fz08YIbvRtJmQWvlFvlfFl6VSYNjax/mo02bmXnwVfbmwC5K4ERb3YtLp8vDcC+pLXmHfEPHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=E5WBwKoG; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1756407365; c=relaxed/simple;
+	bh=kEyp95gbwcvqWtryZPyy8cKBkQKzGnTaY25lx8W4z/4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=N4lQOJVqi5i7un4OMdxNZpceltDQndsgSz4bqOvW05Soe7MZlLLyVE1gB78poo4zPAUSqDmRhykk+pB3PHM5NE6cluLB4o7Zf2sm+HJLoZ6W3j37fya3PvAph+0ETHGabvpJeKh2XS8PHCF2ZBagVHKF9apClUl6436J/FqZXt4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cJbrX7Zs; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="E5WBwKoG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1756407178;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Ox+fdqHLvqvHkCQcV7jSITHMPKa6EWT2tpRcTnamaBA=;
-	b=E5WBwKoGQo9zqO/HLEpsrkpXIOyUZpErlYEJrl85UZI+vKSRJUAQwMGOSSx7lqmu1cb2CU
-	5fJc4OMGF0GVr4Wi8tvBRYFzTmMWW2MwRdrH7RZy/1YiuyYZ25Najtv/JZrrWbeSqGya4e
-	4F4ikQb7l52dvkvpxswwKeBKqLFNOfA=
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
- [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-624-PBMP91qJOsuFGgNONtzm5g-1; Thu, 28 Aug 2025 14:52:57 -0400
-X-MC-Unique: PBMP91qJOsuFGgNONtzm5g-1
-X-Mimecast-MFC-AGG-ID: PBMP91qJOsuFGgNONtzm5g_1756407176
-Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-3ebd3ca6902so3309665ab.3
-        for <iommu@lists.linux.dev>; Thu, 28 Aug 2025 11:52:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756407176; x=1757011976;
-        h=content-transfer-encoding:mime-version:organization:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ox+fdqHLvqvHkCQcV7jSITHMPKa6EWT2tpRcTnamaBA=;
-        b=cMhel4138FnAgqaFSrcxXFYfiYj/b8fdqWFuAUXpmvfLDtsdpS4RTdsojJzLORIh5H
-         jMbI+ot+uKM7VGhB0GT/y1XmpQ4RwUV1iOur5MfnwCdtJoWWn9r57snv+yw7IQbd4OnC
-         vRipRwQxAfHrtgfKV3mL7MpTe00zmzHve6Q5n7oyF9Vv945dPbYgoKw7HD82TE7e2Kq3
-         Y27iHaCnLwSdFCM1ZeemA/C6nUOB+DrUZ0BqH3qsMxUaonkeCLKDrrywN+c7fSgibx/X
-         jrVKvi8P0S0hrih/uHzZgX29Mc8a3KoyRWeeug2RVYcirhBhnxz1Ja87tLq0qeiulpB4
-         1ZWQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUELzP0LqbjYOhYz5nxEGIg2c0H9bZBdaVNns7E51hnnFMT1US3l7JR4Ua0Fj1nIHDcBYod+Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxq5PxlH4GE//KLSEiLhtXqcuuCPEKKMY+C87rnjLO5cLSvLlOU
-	5NjDtV1Nny94kobZhQ4u3RoGALj+ict7cl2d4oEeX2UeGWUGMhTxc6m0fn0IiXtznqCdK+IVN9+
-	QEzxqyw5jrHgTrWrb/ZAt94ydX4U+5fK/Z2OK5XOaFEhsMNSvu/iVisHP
-X-Gm-Gg: ASbGncsz8KAY2RQVueBAZVDTUqD7lPKt0hqGCnQB9/Zs9VBVOoG6F50Ui5r0qqCvnMk
-	AG/sHjtsyRhQftFn8O5GdXUCs1Sp5P5yWFw3Z4Q0bizL0y052uDpA6aHMKu/ckdpRRAAS4absp/
-	shpIJw6+7ay//FZM6Yp2/PSMZ3Ma+Vn/U9WfKHc/XsN7Eqk00ArJtbcwQVM8evE76wmC/zVAJzs
-	r5/kh14ZcgERbEjJQGSt4Gen2XS+Mz5JnG86oOF4pCe7jqoU10eu90171mYEuYUE0nVZ+Q+FVnT
-	j5MdzYO5U3tv848jQ6Z3CIvNZolUipS0kYBFiShxEjg=
-X-Received: by 2002:a05:6e02:1a86:b0:3ee:cb14:e90f with SMTP id e9e14a558f8ab-3eecb14ea03mr61888715ab.7.1756407176410;
-        Thu, 28 Aug 2025 11:52:56 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IEP6X5C8fKyFwSWmjzqPdfkbd7PprjZnYQm1xQXLb3Ss2KjE+y/MhfTqxlaUhO3jzRNfBiTrg==
-X-Received: by 2002:a05:6e02:1a86:b0:3ee:cb14:e90f with SMTP id e9e14a558f8ab-3eecb14ea03mr61888495ab.7.1756407175934;
-        Thu, 28 Aug 2025 11:52:55 -0700 (PDT)
-Received: from redhat.com ([38.15.36.11])
-        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-50d78c67b4dsm47783173.7.2025.08.28.11.52.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Aug 2025 11:52:54 -0700 (PDT)
-Date: Thu, 28 Aug 2025 12:52:51 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: David Hildenbrand <david@redhat.com>
-Cc: linux-kernel@vger.kernel.org, Brett Creeley <brett.creeley@amd.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Yishai Hadas <yishaih@nvidia.com>, Shameer
- Kolothum <shameerali.kolothum.thodi@huawei.com>, Kevin Tian
- <kevin.tian@intel.com>, Alexander Potapenko <glider@google.com>, Andrew
- Morton <akpm@linux-foundation.org>, Brendan Jackman <jackmanb@google.com>,
- Christoph Lameter <cl@gentwo.org>, Dennis Zhou <dennis@kernel.org>, Dmitry
- Vyukov <dvyukov@google.com>, dri-devel@lists.freedesktop.org,
- intel-gfx@lists.freedesktop.org, iommu@lists.linux.dev,
- io-uring@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>, Jens Axboe
- <axboe@kernel.dk>, Johannes Weiner <hannes@cmpxchg.org>, John Hubbard
- <jhubbard@nvidia.com>, kasan-dev@googlegroups.com, kvm@vger.kernel.org,
- "Liam R. Howlett" <Liam.Howlett@oracle.com>, Linus Torvalds
- <torvalds@linux-foundation.org>, linux-arm-kernel@axis.com,
- linux-arm-kernel@lists.infradead.org, linux-crypto@vger.kernel.org,
- linux-ide@vger.kernel.org, linux-kselftest@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org, linux-mm@kvack.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- linux-scsi@vger.kernel.org, Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
- Marco Elver <elver@google.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Michal Hocko <mhocko@suse.com>, Mike Rapoport
- <rppt@kernel.org>, Muchun Song <muchun.song@linux.dev>,
- netdev@vger.kernel.org, Oscar Salvador <osalvador@suse.de>, Peter Xu
- <peterx@redhat.com>, Robin Murphy <robin.murphy@arm.com>, Suren
- Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
- virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
- wireguard@lists.zx2c4.com, x86@kernel.org, Zi Yan <ziy@nvidia.com>
-Subject: Re: [PATCH v1 31/36] vfio/pci: drop nth_page() usage within SG
- entry
-Message-ID: <20250828125251.08e4a429.alex.williamson@redhat.com>
-In-Reply-To: <20250827220141.262669-32-david@redhat.com>
-References: <20250827220141.262669-1-david@redhat.com>
-	<20250827220141.262669-32-david@redhat.com>
-Organization: Red Hat
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cJbrX7Zs"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1756407363; x=1787943363;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=kEyp95gbwcvqWtryZPyy8cKBkQKzGnTaY25lx8W4z/4=;
+  b=cJbrX7ZsEnGJBzcmEz/i57CI1ZNe/MCKDqIT1Np1Nfh9OxKdirELUPrp
+   //jHNYjv7i1AfcDUgelWzqdh43Dv9pJAmH7L8YKz/ivi1GDRHBvcgpOZy
+   s77y/3Ociyi3m9DC8xF0inXdL61tBgjmd6PPcw60uQYzIFSsrs42jTdmZ
+   vldH0jH9x1AJ5V3apM2l0wy3o79W7PEB2wzzmfsQZCYrJiTpG8Y4LL/Ix
+   W2ptilZDiI30iNv6LFE8Fb1dcHITurpEyfHXwnQIWaj25VIq1a/U04A9t
+   OvP+VcvNYMoSAtlgiPIe8RpHwbPZ6GwcluW9cI+i5FxhEC9skC14KhFNH
+   w==;
+X-CSE-ConnectionGUID: yWhaTwTmQgKk/WMH7OezAg==
+X-CSE-MsgGUID: xtjGB4fcTN6mTMORcnCXLA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11536"; a="58397687"
+X-IronPort-AV: E=Sophos;i="6.18,220,1751266800"; 
+   d="scan'208";a="58397687"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2025 11:56:03 -0700
+X-CSE-ConnectionGUID: fstnuzV0QxyrWQfaGHGQeg==
+X-CSE-MsgGUID: Ugro7NlbQG2IvUu2ft43Vg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,220,1751266800"; 
+   d="scan'208";a="193852235"
+Received: from kcaccard-desk.amr.corp.intel.com (HELO [10.125.109.98]) ([10.125.109.98])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Aug 2025 11:56:01 -0700
+Message-ID: <d88f4f9f-6112-431c-948e-5f48181972aa@intel.com>
+Date: Thu, 28 Aug 2025 11:56:00 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: 9yPD0PCU8smynqOdF1GJDBKjMF0StWvdUGE8o71y4ZI_1756407176
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/1] iommu/sva: Invalidate KVA range on kernel TLB
+ flush
+To: "Tian, Kevin" <kevin.tian@intel.com>, Baolu Lu
+ <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Jann Horn <jannh@google.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, Alistair Popple <apopple@nvidia.com>,
+ Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, "Lai, Yi1" <yi1.lai@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "security@kernel.org" <security@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>,
+ "vishal.moola@gmail.com" <vishal.moola@gmail.com>,
+ Matthew Wilcox <willy@infradead.org>
+References: <20250806052505.3113108-1-baolu.lu@linux.intel.com>
+ <20250806160904.GX184255@nvidia.com>
+ <62d21545-9e75-41e3-89a3-f21dda15bf16@intel.com>
+ <4a8df0e8-bd5a-44e4-acce-46ba75594846@linux.intel.com>
+ <20250807195154.GO184255@nvidia.com>
+ <BN9PR11MB52762A47B347C99F0C0E4C288C2FA@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <87bfc80e-258e-4193-a56c-3096608aec30@linux.intel.com>
+ <BN9PR11MB52766165393F7DD8209DA45A8C32A@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <e321d374-38a7-4f60-b991-58458a2761b9@linux.intel.com>
+ <9a649ff4-55fe-478a-bfd7-f3287534499a@intel.com>
+ <b0f613ce-7aad-4b1d-b6a1-4acc1d6c489e@linux.intel.com>
+ <dde6d861-daa3-49ed-ad4f-ff9dcaf1f2b8@linux.intel.com>
+ <b57d7b97-8110-47c5-9c7a-516b7b535ce9@intel.com>
+ <c69950ee-660b-4f51-9277-522470d0ce5d@linux.intel.com>
+ <400cf9ab-de3f-4e8a-ab0a-4ac68c534bb8@intel.com>
+ <ee44764b-b9fe-431d-8b84-08fce6b5df75@linux.intel.com>
+ <BN9PR11MB5276FCF7D5182D711E135BB78C3BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Content-Language: en-US
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ xsFNBE6HMP0BEADIMA3XYkQfF3dwHlj58Yjsc4E5y5G67cfbt8dvaUq2fx1lR0K9h1bOI6fC
+ oAiUXvGAOxPDsB/P6UEOISPpLl5IuYsSwAeZGkdQ5g6m1xq7AlDJQZddhr/1DC/nMVa/2BoY
+ 2UnKuZuSBu7lgOE193+7Uks3416N2hTkyKUSNkduyoZ9F5twiBhxPJwPtn/wnch6n5RsoXsb
+ ygOEDxLEsSk/7eyFycjE+btUtAWZtx+HseyaGfqkZK0Z9bT1lsaHecmB203xShwCPT49Blxz
+ VOab8668QpaEOdLGhtvrVYVK7x4skyT3nGWcgDCl5/Vp3TWA4K+IofwvXzX2ON/Mj7aQwf5W
+ iC+3nWC7q0uxKwwsddJ0Nu+dpA/UORQWa1NiAftEoSpk5+nUUi0WE+5DRm0H+TXKBWMGNCFn
+ c6+EKg5zQaa8KqymHcOrSXNPmzJuXvDQ8uj2J8XuzCZfK4uy1+YdIr0yyEMI7mdh4KX50LO1
+ pmowEqDh7dLShTOif/7UtQYrzYq9cPnjU2ZW4qd5Qz2joSGTG9eCXLz5PRe5SqHxv6ljk8mb
+ ApNuY7bOXO/A7T2j5RwXIlcmssqIjBcxsRRoIbpCwWWGjkYjzYCjgsNFL6rt4OL11OUF37wL
+ QcTl7fbCGv53KfKPdYD5hcbguLKi/aCccJK18ZwNjFhqr4MliQARAQABzUVEYXZpZCBDaHJp
+ c3RvcGhlciBIYW5zZW4gKEludGVsIFdvcmsgQWRkcmVzcykgPGRhdmUuaGFuc2VuQGludGVs
+ LmNvbT7CwXgEEwECACIFAlQ+9J0CGwMGCwkIBwMCBhUIAgkKCwQWAgMBAh4BAheAAAoJEGg1
+ lTBwyZKwLZUP/0dnbhDc229u2u6WtK1s1cSd9WsflGXGagkR6liJ4um3XCfYWDHvIdkHYC1t
+ MNcVHFBwmQkawxsYvgO8kXT3SaFZe4ISfB4K4CL2qp4JO+nJdlFUbZI7cz/Td9z8nHjMcWYF
+ IQuTsWOLs/LBMTs+ANumibtw6UkiGVD3dfHJAOPNApjVr+M0P/lVmTeP8w0uVcd2syiaU5jB
+ aht9CYATn+ytFGWZnBEEQFnqcibIaOrmoBLu2b3fKJEd8Jp7NHDSIdrvrMjYynmc6sZKUqH2
+ I1qOevaa8jUg7wlLJAWGfIqnu85kkqrVOkbNbk4TPub7VOqA6qG5GCNEIv6ZY7HLYd/vAkVY
+ E8Plzq/NwLAuOWxvGrOl7OPuwVeR4hBDfcrNb990MFPpjGgACzAZyjdmYoMu8j3/MAEW4P0z
+ F5+EYJAOZ+z212y1pchNNauehORXgjrNKsZwxwKpPY9qb84E3O9KYpwfATsqOoQ6tTgr+1BR
+ CCwP712H+E9U5HJ0iibN/CDZFVPL1bRerHziuwuQuvE0qWg0+0SChFe9oq0KAwEkVs6ZDMB2
+ P16MieEEQ6StQRlvy2YBv80L1TMl3T90Bo1UUn6ARXEpcbFE0/aORH/jEXcRteb+vuik5UGY
+ 5TsyLYdPur3TXm7XDBdmmyQVJjnJKYK9AQxj95KlXLVO38lczsFNBFRjzmoBEACyAxbvUEhd
+ GDGNg0JhDdezyTdN8C9BFsdxyTLnSH31NRiyp1QtuxvcqGZjb2trDVuCbIzRrgMZLVgo3upr
+ MIOx1CXEgmn23Zhh0EpdVHM8IKx9Z7V0r+rrpRWFE8/wQZngKYVi49PGoZj50ZEifEJ5qn/H
+ Nsp2+Y+bTUjDdgWMATg9DiFMyv8fvoqgNsNyrrZTnSgoLzdxr89FGHZCoSoAK8gfgFHuO54B
+ lI8QOfPDG9WDPJ66HCodjTlBEr/Cwq6GruxS5i2Y33YVqxvFvDa1tUtl+iJ2SWKS9kCai2DR
+ 3BwVONJEYSDQaven/EHMlY1q8Vln3lGPsS11vSUK3QcNJjmrgYxH5KsVsf6PNRj9mp8Z1kIG
+ qjRx08+nnyStWC0gZH6NrYyS9rpqH3j+hA2WcI7De51L4Rv9pFwzp161mvtc6eC/GxaiUGuH
+ BNAVP0PY0fqvIC68p3rLIAW3f97uv4ce2RSQ7LbsPsimOeCo/5vgS6YQsj83E+AipPr09Caj
+ 0hloj+hFoqiticNpmsxdWKoOsV0PftcQvBCCYuhKbZV9s5hjt9qn8CE86A5g5KqDf83Fxqm/
+ vXKgHNFHE5zgXGZnrmaf6resQzbvJHO0Fb0CcIohzrpPaL3YepcLDoCCgElGMGQjdCcSQ+Ci
+ FCRl0Bvyj1YZUql+ZkptgGjikQARAQABwsFfBBgBAgAJBQJUY85qAhsMAAoJEGg1lTBwyZKw
+ l4IQAIKHs/9po4spZDFyfDjunimEhVHqlUt7ggR1Hsl/tkvTSze8pI1P6dGp2XW6AnH1iayn
+ yRcoyT0ZJ+Zmm4xAH1zqKjWplzqdb/dO28qk0bPso8+1oPO8oDhLm1+tY+cOvufXkBTm+whm
+ +AyNTjaCRt6aSMnA/QHVGSJ8grrTJCoACVNhnXg/R0g90g8iV8Q+IBZyDkG0tBThaDdw1B2l
+ asInUTeb9EiVfL/Zjdg5VWiF9LL7iS+9hTeVdR09vThQ/DhVbCNxVk+DtyBHsjOKifrVsYep
+ WpRGBIAu3bK8eXtyvrw1igWTNs2wazJ71+0z2jMzbclKAyRHKU9JdN6Hkkgr2nPb561yjcB8
+ sIq1pFXKyO+nKy6SZYxOvHxCcjk2fkw6UmPU6/j/nQlj2lfOAgNVKuDLothIxzi8pndB8Jju
+ KktE5HJqUUMXePkAYIxEQ0mMc8Po7tuXdejgPMwgP7x65xtfEqI0RuzbUioFltsp1jUaRwQZ
+ MTsCeQDdjpgHsj+P2ZDeEKCbma4m6Ez/YWs4+zDm1X8uZDkZcfQlD9NldbKDJEXLIjYWo1PH
+ hYepSffIWPyvBMBTW2W5FRjJ4vLRrJSUoEfJuPQ3vW9Y73foyo/qFoURHO48AinGPZ7PC7TF
+ vUaNOTjKedrqHkaOcqB185ahG2had0xnFsDPlx5y
+In-Reply-To: <BN9PR11MB5276FCF7D5182D711E135BB78C3BA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Thu, 28 Aug 2025 00:01:35 +0200
-David Hildenbrand <david@redhat.com> wrote:
+I got a bit sick of sending constant emails on this one and just decided
+to hack it together myself. Here's roughly what I came up with.
+Completely untested. Changelogs are bare. Barely compiles:
 
-> It's no longer required to use nth_page() when iterating pages within a
-> single SG entry, so let's drop the nth_page() usage.
-> 
-> Cc: Brett Creeley <brett.creeley@amd.com>
-> Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> Cc: Yishai Hadas <yishaih@nvidia.com>
-> Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Cc: Alex Williamson <alex.williamson@redhat.com>
-> Signed-off-by: David Hildenbrand <david@redhat.com>
-> ---
->  drivers/vfio/pci/pds/lm.c         | 3 +--
->  drivers/vfio/pci/virtio/migrate.c | 3 +--
->  2 files changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/vfio/pci/pds/lm.c b/drivers/vfio/pci/pds/lm.c
-> index f2673d395236a..4d70c833fa32e 100644
-> --- a/drivers/vfio/pci/pds/lm.c
-> +++ b/drivers/vfio/pci/pds/lm.c
-> @@ -151,8 +151,7 @@ static struct page *pds_vfio_get_file_page(struct pds_vfio_lm_file *lm_file,
->  			lm_file->last_offset_sg = sg;
->  			lm_file->sg_last_entry += i;
->  			lm_file->last_offset = cur_offset;
-> -			return nth_page(sg_page(sg),
-> -					(offset - cur_offset) / PAGE_SIZE);
-> +			return sg_page(sg) + (offset - cur_offset) / PAGE_SIZE;
->  		}
->  		cur_offset += sg->length;
->  	}
-> diff --git a/drivers/vfio/pci/virtio/migrate.c b/drivers/vfio/pci/virtio/migrate.c
-> index ba92bb4e9af94..7dd0ac866461d 100644
-> --- a/drivers/vfio/pci/virtio/migrate.c
-> +++ b/drivers/vfio/pci/virtio/migrate.c
-> @@ -53,8 +53,7 @@ virtiovf_get_migration_page(struct virtiovf_data_buffer *buf,
->  			buf->last_offset_sg = sg;
->  			buf->sg_last_entry += i;
->  			buf->last_offset = cur_offset;
-> -			return nth_page(sg_page(sg),
-> -					(offset - cur_offset) / PAGE_SIZE);
-> +			return sg_page(sg) + (offset - cur_offset) / PAGE_SIZE;
->  		}
->  		cur_offset += sg->length;
->  	}
+> https://git.kernel.org/pub/scm/linux/kernel/git/daveh/devel.git/log/?h=kpte
 
-Reviewed-by: Alex Williamson <alex.williamson@redhat.com>
+I also didn't actually hook up the IOMMU flush yet.
 
+The biggest single chunk of code is defining ptdesc_*_kernel(). The rest
+of it is painfully simple.
+
+I'm pretty sure this hits the vmalloc() case that we all care about. It
+needs some more time with folks staring at it to make sure it didn't
+miss some of the other cases.
+
+I'll wrangle this into a real series and send it via another thread
+unless someone beats me to it. If anyone sees anything in there they
+can't live with, please scream sooner rather than later.
