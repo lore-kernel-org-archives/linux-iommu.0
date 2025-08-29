@@ -1,73 +1,73 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DA00314A92
-	for <iommu@lists.linux.dev>; Fri, 29 Aug 2025 13:22:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A32331B13A
+	for <iommu@lists.linux.dev>; Fri, 29 Aug 2025 13:41:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756473731; cv=none; b=TKMBlqn2Le8plNN/0akcfk3Z7Az0fFrHzXZbc93+/jrI+OyA4Yce7I0m+92BNKUUBxnObqr0XVVxScv2Z9UADVHyTaBXnxwBchfM/KCFksRFyyvX+voOA1Qoo8QblRxl/hgKNCaWJNq+oGJoGZOfCH924XfHUIkS3Ns+4tKz/ls=
+	t=1756474911; cv=none; b=rWp7FAyhCNx4lFh16rPzYkLPTBbskDJLR0VqiYMxXzo+T/iYP5ZVSdxLmizSxGiAKDf5teGpMa7w7P1UUz6Mh3AStK+Usy9Ca4x44KRwZzFPiozypw/9TSQdSaLHYvOTqSZ2e2FlTXvoAzVgVYUps3Ea4U9QYsdAVW7Ag+WZGpw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756473731; c=relaxed/simple;
-	bh=N+5WFIKkpSCBHcdEkYaqeEr5+8bOiQ8nFMzvcD9Vf3I=;
+	s=arc-20240116; t=1756474911; c=relaxed/simple;
+	bh=TFMPXTSMXOnp4cKbN5frFtGSjPHSL2+uxw+05tDbuDQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=evyNkx6p3rq+jZYo3njGibycwYtXiUZXeEL2sqgymh2/IAILFsWJnBIO8nzbHCgYfm41v7Ic57xymZXCa2TZeazstzCQbKZli9Lr8em6V9ghJmDYAQ/K+6aIwOFftIZP0axYbwlfKzCMrrdDtSicnS50K9PuJZXP5z0+pwRCD40=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=UuLQ56t9; arc=none smtp.client-ip=170.10.129.124
+	 In-Reply-To:Content-Type; b=ajJETy/SI8weTzPKpZRHFDZ//fp0xdfwdH+KZDX+uHJImeS7CCSVJaY5oprIQuoqqStNbX+vDgnwVBteSg6AfxiDMrZr4cVbIU+mlolZ1fdQywt8bdwjqvJBmlsh97mXWzEDvQT6nOBGOzp9DgPLnLm474j0uqb7LIgCRIpHvio=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=CTURm0Yo; arc=none smtp.client-ip=170.10.133.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UuLQ56t9"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="CTURm0Yo"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1756473728;
+	s=mimecast20190719; t=1756474908;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=aggFKTWIoz3JmsTS53UGUQwfpKwPCT7EHzMCjR4W6Kc=;
-	b=UuLQ56t9K9ET2MmcIeYyIW1ZImATJoQ1k+kHzh2cIgfahSMGcQJjlkQ3xqVpnEUZ0FSx2b
-	nMhJA3udtBaLTI2Sl89GB/+7soNOGPCYd0PMY1h1kprbkvVlwP2+SUEjHdz65j9Rr9kMQp
-	xRwI+bEvrE7xl8Jqfcsf9SsX5eHNwKg=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+	bh=7ZezTDYPV9FY1vYbYIlP1Z79qo+TmLw98Vo74TFiYNA=;
+	b=CTURm0YoMGEOnQRvZzhxo+5MRntmRN948+9rxtC7usAjXJjTEy1dM1v3JK/KZ4pzkB9epT
+	82n4/GeVSLRGEsA6iV3Piw4tsIEHF0lvxpiKslyPYcNgV4537qzqNOLG9NjoQ8Yt2P3TRk
+	dpmPRrCAU6hAVphPx7dZ16CeBb+QlcM=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-689-d3Xxr23EOPSLnnn4m1J_2w-1; Fri, 29 Aug 2025 09:22:06 -0400
-X-MC-Unique: d3Xxr23EOPSLnnn4m1J_2w-1
-X-Mimecast-MFC-AGG-ID: d3Xxr23EOPSLnnn4m1J_2w_1756473726
-Received: by mail-wr1-f70.google.com with SMTP id ffacd0b85a97d-3cf12498799so601749f8f.2
-        for <iommu@lists.linux.dev>; Fri, 29 Aug 2025 06:22:06 -0700 (PDT)
+ us-mta-264-WGrilN0YMmCYhKd_raoZEA-1; Fri, 29 Aug 2025 09:41:45 -0400
+X-MC-Unique: WGrilN0YMmCYhKd_raoZEA-1
+X-Mimecast-MFC-AGG-ID: WGrilN0YMmCYhKd_raoZEA_1756474904
+Received: by mail-wm1-f70.google.com with SMTP id 5b1f17b1804b1-45b7bb85e90so12565825e9.0
+        for <iommu@lists.linux.dev>; Fri, 29 Aug 2025 06:41:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756473726; x=1757078526;
+        d=1e100.net; s=20230601; t=1756474904; x=1757079704;
         h=content-transfer-encoding:in-reply-to:autocrypt:content-language
          :from:references:cc:to:subject:user-agent:mime-version:date
          :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=aggFKTWIoz3JmsTS53UGUQwfpKwPCT7EHzMCjR4W6Kc=;
-        b=XBiiONT7UpiQusYvbrCsC8wcYe2JYff/0rwr+e677dgnrz31wWcnQUCTXWQ8A3gWF0
-         DSqv3XPSXu3AT1hwN9imsZ/JRACefBFEKMDr7fMOBZTST7YaClsMgayDOCCeh8d9lGSL
-         PWylcMYigdb5fsjAE7h8IQa/QG8VDzdev4n+VKftN0q8A1LoiCqef5lnRictCwbmKXLd
-         8i+3HNwrrVH3Nr5186PrqbsBNrIiAJMNHm+9SSzl0pTKuy3qv/Y7bQTqsjQYuBAUNiRM
-         r05wkV0Jg3r6e+KXMafC4lZFn0NWk3JM3LfvYRkea3huWUSxDHoDo+tdoJwMuDH0RezD
-         T9ug==
-X-Forwarded-Encrypted: i=1; AJvYcCVgjtu5h2lOejYgU/9M9dSfdyN8QuoZp/Ni4jksUFPEE0sPndq4JXu3NYXTQhJLTSpjj0LWCQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxzEij0Pxxx98itvOrokre8RgTGcQgdTLSDc3/NGeWSGfXIq0n+
-	D4RpGMs8oHM4gRr4IDx45oXmmHnw4uUWSnj8hYic1suqpnwK/6hEPL4Pr+EKw2gNeiRk6/GnaMH
-	1PN6hz6ybUULvTt6W7Rg0wanIMX3xIaQXYRY4hte9U47Lb0Y9QWT3hRPz
-X-Gm-Gg: ASbGncu/ykGdLB/i2pNvirlIDNKMWAcZbSEkvKGXym+msY+YznUNGjqL5VTkpQuvzhJ
-	ub2Gwa9vXMzMOR2VqkiL6v10lxPBQfYoi14cCJ4/0VZnUTaVad3r2uThDK+rOjZ8sm1uF9lyuiz
-	yBkn+2Zux6KnxxEXtYFAfl14Kgrfjhh+YaMf15XUI4siwDzneZBDJv86Y/OYuOFAF2yXzuDtlcy
-	7EUBew4bUuwQrRZkJ0Of5jczDDwojDXZOGJ4VEyvLgyicLcxFXPGZTup/scn8Vzas3l4ifyEYAe
-	y+hsMT6DtEDmTWX1iJfPPEL/WJn2lrwezlpmYxSMa+Qy4w1OpJJu9be2qNR4/UVbTEst+4abGCD
-	4XT8BFavtx4WmT8w8JlO9n3uJRAQJpJa37TcgheAWPq/XZ7C5+fzhtyOthtoALtqK
-X-Received: by 2002:a05:6000:2c0f:b0:3ca:a190:c473 with SMTP id ffacd0b85a97d-3caa190c6ecmr9849850f8f.4.1756473725412;
-        Fri, 29 Aug 2025 06:22:05 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGFfrTd/+15/bT4PGZswHLcvGvODyGQLUC+I3pIFqxdvqjEg2cDf44HeYcneQKTQcaMEr0KOA==
-X-Received: by 2002:a05:6000:2c0f:b0:3ca:a190:c473 with SMTP id ffacd0b85a97d-3caa190c6ecmr9849784f8f.4.1756473724881;
-        Fri, 29 Aug 2025 06:22:04 -0700 (PDT)
+        bh=7ZezTDYPV9FY1vYbYIlP1Z79qo+TmLw98Vo74TFiYNA=;
+        b=WnRyKquO63KmTxgYsw+nK94gQJxDifDn+qZfEMRn8ITRrYlApqm0Y6oGdXIy9L8n0T
+         2MDWIY5Gkmj4dC3q0iTm/EjXHgg1USIUMx/0++j1mm1jfDswWREQtzmjDQ0sWXXV/Mvm
+         ACHo3OSYCMKru9uMphkQNU7muML1X7FFsyl5CkcJKuiaHfGFWZaY7QUBZOQo3GaEZoQj
+         D9ahxszUWuyHysl9zNUaJrZfd8zcRuPm3kdnh4qe7Qvjk7u+AGYioIVjc1jOAOCXlyXx
+         JJvWyYwewGM8eRTmbLiV0gyS2hkiXAk0P6dFveHd4o8DD9K5KYCnsAQr2jI3LRvN8H6h
+         ZT4w==
+X-Forwarded-Encrypted: i=1; AJvYcCVKWCIAXgNnnqoo53HHSDGd5hzzzpPCvK40pIycox+cTNRfl7beJGc4PO/2JTIEDlZmcfiv1w==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yz2BtC0xW43kJy7v9sLC5GBZuGd19ii+WJWlOZt2z8aCLI2iydz
+	Gkqsv3SNtTTUaGF8SEOJG5rMFDaDGpzMDyCP3RJuSC8dhjEq440Qr3GFiFqP2SK5xPicWYRoPEa
+	y+hrP0vWVMs+2M8zDbOVCNlzElX8ToxXienk0mutAxjmwW3w1A2EKEyPW
+X-Gm-Gg: ASbGncvcvnYF7B2JnVnrVx4mKEhEBCkx8bqMl1H3GvvlQyza3TZ5vPB+aCyw1qPFUmW
+	CwRcOln7001p1KEuLCT2zldZ4zSA+cCyBlPGmmgxtFYAtLqKgoUmqkDNA2UB8yfVt8imQWJXTUm
+	gSPiypR6iXuTKv9q4/pZJ6Vn2hOZGUtchcLfeGnj9TSqd5L4qo61VMdw4S4s2UaqC6yMXzIBQnn
+	zrkQdyQKrZSfZaYedCi0HQv5UQeBA3BLB/DayY4RJVPcPfW3y5nGRdvFEqTibbxigdPh1W4J7y+
+	UJKKXWhsDGoknqs/1GepvZ6cmfrNwB2uopJEpcfDAgX2wsGj2WcS4QPgJsJ3EifDfE2ckV6NwDu
+	/2n9++oeoYLyd0dlYIFq9eZXf31hVVvJ3Ir+WW7IG2P0l4NjiN3new/wjQHbhpW/P
+X-Received: by 2002:a05:600c:8b0a:b0:45b:733b:1feb with SMTP id 5b1f17b1804b1-45b733b214dmr83370845e9.10.1756474903645;
+        Fri, 29 Aug 2025 06:41:43 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHWe5EWQVl5iPDqqeubvc9kL/5oN1fdgiPPYoM9Zstyja975cqp15HWRaThC/EH89lpSzwt8Q==
+X-Received: by 2002:a05:600c:8b0a:b0:45b:733b:1feb with SMTP id 5b1f17b1804b1-45b733b214dmr83370155e9.10.1756474903176;
+        Fri, 29 Aug 2025 06:41:43 -0700 (PDT)
 Received: from ?IPV6:2003:d8:2f1d:100:4f8e:bb13:c3c7:f854? (p200300d82f1d01004f8ebb13c3c7f854.dip0.t-ipconnect.de. [2003:d8:2f1d:100:4f8e:bb13:c3c7:f854])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3cf33add483sm3368560f8f.37.2025.08.29.06.22.02
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3cf3458a67esm3469559f8f.62.2025.08.29.06.41.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 29 Aug 2025 06:22:04 -0700 (PDT)
-Message-ID: <f7f9f535-0bbe-413a-84e4-fcb17a502a40@redhat.com>
-Date: Fri, 29 Aug 2025 15:22:01 +0200
+        Fri, 29 Aug 2025 06:41:42 -0700 (PDT)
+Message-ID: <632fea32-28aa-4993-9eff-99fc291c64f2@redhat.com>
+Date: Fri, 29 Aug 2025 15:41:40 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,8 +75,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 16/36] fs: hugetlbfs: cleanup folio in
- adjust_range_hwpoison()
+Subject: Re: [PATCH v1 18/36] mm/gup: drop nth_page() usage within folio when
+ recording subpages
 To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
 Cc: linux-kernel@vger.kernel.org, Alexander Potapenko <glider@google.com>,
  Andrew Morton <akpm@linux-foundation.org>,
@@ -102,8 +102,8 @@ Cc: linux-kernel@vger.kernel.org, Alexander Potapenko <glider@google.com>,
  virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
  wireguard@lists.zx2c4.com, x86@kernel.org, Zi Yan <ziy@nvidia.com>
 References: <20250827220141.262669-1-david@redhat.com>
- <20250827220141.262669-17-david@redhat.com>
- <71cf3600-d9cf-4d16-951c-44582b46c0fa@lucifer.local>
+ <20250827220141.262669-19-david@redhat.com>
+ <c0dadc4f-6415-4818-a319-e3e15ff47a24@lucifer.local>
 From: David Hildenbrand <david@redhat.com>
 Autocrypt: addr=david@redhat.com; keydata=
  xsFNBFXLn5EBEAC+zYvAFJxCBY9Tr1xZgcESmxVNI/0ffzE/ZQOiHJl6mGkmA1R7/uUpiCjJ
@@ -149,110 +149,136 @@ Autocrypt: addr=david@redhat.com; keydata=
  3iyY2Nsd7JxfKu1PRhCGwXzRw5TlfEsoRI7V9A8isUCoqE2Dzh3FvYHVeX4Us+bRL/oqareJ
  CIFqgYMyvHj7Q06kTKmauOe4Nf0l0qEkIuIzfoLJ3qr5UyXc2hLtWyT9Ir+lYlX9efqh7mOY
  qIws/H2t
-In-Reply-To: <71cf3600-d9cf-4d16-951c-44582b46c0fa@lucifer.local>
+In-Reply-To: <c0dadc4f-6415-4818-a319-e3e15ff47a24@lucifer.local>
 X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: pu9UbXhsWtbxQjcZNIIpmIqD0PBlOWQ_BOWfSkGGQDQ_1756473726
+X-Mimecast-MFC-PROC-ID: AYGHNdA4P50-u1Y2Xk01MnNbhM-xIyE5-nGtuqPAinQ_1756474904
 X-Mimecast-Originator: redhat.com
 Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-
+On 28.08.25 18:37, Lorenzo Stoakes wrote:
+> On Thu, Aug 28, 2025 at 12:01:22AM +0200, David Hildenbrand wrote:
+>> nth_page() is no longer required when iterating over pages within a
+>> single folio, so let's just drop it when recording subpages.
+>>
+>> Signed-off-by: David Hildenbrand <david@redhat.com>
 > 
-> Lord above.
-> 
-> Also semantics of 'if bytes == 0, then check first page anyway' which you do
-> capture.
-
-Yeah, I think bytes == 0 would not make any sense, though. Staring 
-briefly at the single caller, that seems to be the case (bytes != 0).
-
-> 
-> OK think I have convinced myself this is right, so hopefully no deeply subtle
-> off-by-one issues here :P
-> 
-> Anyway, LGTM, so:
+> This looks correct to me, so notwithtsanding suggestion below, LGTM and:
 > 
 > Reviewed-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
 > 
 >> ---
->>   fs/hugetlbfs/inode.c | 33 +++++++++++----------------------
->>   1 file changed, 11 insertions(+), 22 deletions(-)
+>>   mm/gup.c | 7 +++----
+>>   1 file changed, 3 insertions(+), 4 deletions(-)
 >>
->> diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
->> index c5a46d10afaa0..6ca1f6b45c1e5 100644
->> --- a/fs/hugetlbfs/inode.c
->> +++ b/fs/hugetlbfs/inode.c
->> @@ -198,31 +198,20 @@ hugetlb_get_unmapped_area(struct file *file, unsigned long addr,
->>   static size_t adjust_range_hwpoison(struct folio *folio, size_t offset,
->>   		size_t bytes)
+>> diff --git a/mm/gup.c b/mm/gup.c
+>> index b2a78f0291273..89ca0813791ab 100644
+>> --- a/mm/gup.c
+>> +++ b/mm/gup.c
+>> @@ -488,12 +488,11 @@ static int record_subpages(struct page *page, unsigned long sz,
+>>   			   unsigned long addr, unsigned long end,
+>>   			   struct page **pages)
 >>   {
->> -	struct page *page;
->> -	size_t n = 0;
->> -	size_t res = 0;
->> -
->> -	/* First page to start the loop. */
->> -	page = folio_page(folio, offset / PAGE_SIZE);
->> -	offset %= PAGE_SIZE;
->> -	while (1) {
->> -		if (is_raw_hwpoison_page_in_hugepage(page))
->> -			break;
->> +	struct page *page = folio_page(folio, offset / PAGE_SIZE);
->> +	size_t safe_bytes;
->> +
->> +	if (is_raw_hwpoison_page_in_hugepage(page))
->> +		return 0;
->> +	/* Safe to read the remaining bytes in this page. */
->> +	safe_bytes = PAGE_SIZE - (offset % PAGE_SIZE);
->> +	page++;
+>> -	struct page *start_page;
+>>   	int nr;
 >>
->> -		/* Safe to read n bytes without touching HWPOISON subpage. */
->> -		n = min(bytes, (size_t)PAGE_SIZE - offset);
->> -		res += n;
->> -		bytes -= n;
->> -		if (!bytes || !n)
->> +	for (; safe_bytes < bytes; safe_bytes += PAGE_SIZE, page++)
+>> -	start_page = nth_page(page, (addr & (sz - 1)) >> PAGE_SHIFT);
+>> +	page += (addr & (sz - 1)) >> PAGE_SHIFT;
+>>   	for (nr = 0; addr != end; nr++, addr += PAGE_SIZE)
+>> -		pages[nr] = nth_page(start_page, nr);
+>> +		pages[nr] = page++;
 > 
-> OK this is quite subtle - so if safe_bytes == bytes, this means we've confirmed
-> that all requested bytes are safe.
 > 
-> So offset=0, bytes = 4096 would fail this (as safe_bytes == 4096).
+> This is really nice, but I wonder if (while we're here) we can't be even
+> more clear as to what's going on here, e.g.:
 > 
-> Maybe worth putting something like:
+> static int record_subpages(struct page *page, unsigned long sz,
+> 			   unsigned long addr, unsigned long end,
+> 			   struct page **pages)
+> {
+> 	size_t offset_in_folio = (addr & (sz - 1)) >> PAGE_SHIFT;
+> 	struct page *subpage = page + offset_in_folio;
 > 
-> 	/*
-> 	 * Now we check page-by-page in the folio to see if any bytes we don't
-> 	 * yet know to be safe are contained within posioned pages or not.
-> 	 */
+> 	for (; addr != end; addr += PAGE_SIZE)
+> 		*pages++ = subpage++;
 > 
-> Above the loop. Or something like this.
+> 	return nr;
+> }
+> 
+> Or some variant of that with the masking stuff self-documented.
 
-"Check each remaining page as long as we are not done yet."
+What about the following cleanup on top:
 
-> 
->> +		if (is_raw_hwpoison_page_in_hugepage(page))
->>   			break;
->> -		offset += n;
->> -		if (offset == PAGE_SIZE) {
->> -			page++;
->> -			offset = 0;
->> -		}
->> -	}
->>
->> -	return res;
->> +	return min(safe_bytes, bytes);
-> 
-> Yeah given above analysis this seems correct.
-> 
-> You must have torn your hair out over this :)
 
-I could resist the urge to clean that up, yes.
+diff --git a/mm/gup.c b/mm/gup.c
+index 89ca0813791ab..5a72a135ec70b 100644
+--- a/mm/gup.c
++++ b/mm/gup.c
+@@ -484,19 +484,6 @@ static inline void mm_set_has_pinned_flag(struct mm_struct *mm)
+  #ifdef CONFIG_MMU
+  
+  #ifdef CONFIG_HAVE_GUP_FAST
+-static int record_subpages(struct page *page, unsigned long sz,
+-                          unsigned long addr, unsigned long end,
+-                          struct page **pages)
+-{
+-       int nr;
+-
+-       page += (addr & (sz - 1)) >> PAGE_SHIFT;
+-       for (nr = 0; addr != end; nr++, addr += PAGE_SIZE)
+-               pages[nr] = page++;
+-
+-       return nr;
+-}
+-
+  /**
+   * try_grab_folio_fast() - Attempt to get or pin a folio in fast path.
+   * @page:  pointer to page to be grabbed
+@@ -2963,8 +2950,8 @@ static int gup_fast_pmd_leaf(pmd_t orig, pmd_t *pmdp, unsigned long addr,
+         if (pmd_special(orig))
+                 return 0;
+  
+-       page = pmd_page(orig);
+-       refs = record_subpages(page, PMD_SIZE, addr, end, pages + *nr);
++       refs = (end - addr) >> PAGE_SHIFT;
++       page = pmd_page(orig) + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
+  
+         folio = try_grab_folio_fast(page, refs, flags);
+         if (!folio)
+@@ -2985,6 +2972,8 @@ static int gup_fast_pmd_leaf(pmd_t orig, pmd_t *pmdp, unsigned long addr,
+         }
+  
+         *nr += refs;
++       for (; refs; refs--)
++               *(pages++) = page++;
+         folio_set_referenced(folio);
+         return 1;
+  }
+@@ -3003,8 +2992,8 @@ static int gup_fast_pud_leaf(pud_t orig, pud_t *pudp, unsigned long addr,
+         if (pud_special(orig))
+                 return 0;
+  
+-       page = pud_page(orig);
+-       refs = record_subpages(page, PUD_SIZE, addr, end, pages + *nr);
++       refs = (end - addr) >> PAGE_SHIFT;
++       page = pud_page(orig) + ((addr & ~PUD_MASK) >> PAGE_SHIFT);
+  
+         folio = try_grab_folio_fast(page, refs, flags);
+         if (!folio)
+@@ -3026,6 +3015,8 @@ static int gup_fast_pud_leaf(pud_t orig, pud_t *pudp, unsigned long addr,
+         }
+  
+         *nr += refs;
++       for (; refs; refs--)
++               *(pages++) = page++;
+         folio_set_referenced(folio);
+         return 1;
+  }
 
-I'll also drop the "The implementation borrows the iteration logic from 
-copy_page_to_iter*." part, because I suspect this comment no longer 
-makes sense.
 
-Thanks!
+The nice thing is that we only record pages in the array if they actually passed our tests.
+
 
 -- 
 Cheers
