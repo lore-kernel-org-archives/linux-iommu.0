@@ -1,157 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7D68224B09;
-	Fri, 29 Aug 2025 19:51:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FD9823507E;
+	Fri, 29 Aug 2025 22:50:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756497084; cv=none; b=I4P70kSM/UbuEPJGCwvWVZTRmf7sNrLXJa/F0QKIaAhPuiG8DubsD/C9agQ3S+ZRu+yJ3Huj+5I2d3HUrLvpOnNfkEl9Z3BhMCURd09D66U5iIbaxtPsXX++qmGBNnpqn3gqIcqfc2bI6zRIxTBrUEsWUcAdKhZ13ZtkbGQ2R54=
+	t=1756507850; cv=none; b=OxBZmZHUUXkGuqdU5jzhZeBjstZ14ExAcehFnz5XM3MnAdORZFpdRYdiNXWEYewjqmqi6Q99oVW09EfGxBaED1cVkxTUBAh9AaBdwv7TbJUjrMEBU9LvPiUxZ3eRwQn6izwDdzmeAMydmZvx3WRzr2U5a3WxsCDax2Rp6gcmbvk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756497084; c=relaxed/simple;
-	bh=iE1fOPe+H/DOT9l+qqw7zhT3aTQ0dSMmo1kdS8d+f20=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FVoFiEY1/cOidwb5l7UbAnM/1QTc+m0Y7YN/xOXHOdRctYzwsNfS7hnUsAKBHvkXvCYayeo7cea5hHIWUJXK3zcXvhmP3Sr9eTLPQ7u1OIVF83kOvmXuo+mBEaRN2g12kJkIXRIGdCzrY1zXvXEkhf15h9XTeQQE+5677mu/DNQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uPYEnPUU; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1756507850; c=relaxed/simple;
+	bh=yQrl3gCtzdyKztNdAWjGjfEx4RFSnzGpjf6FUTnKgcQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=SogMMMGrJ5Io2j8ViZodebUFWKwu5oGMop/hxgxLGEoJGt9bKXVkWqVVzYOhkEoewPHTX+xJvn9H/8AsBXE+vOp0NdRnpP5DyW/0L44mhlsAkX/Jx2hd4f4fsAM7D5gVi/hQzLGzYiJI0o5K0oCgiM3P3zYPJaU2vOjUPi4U8lk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=pITCHuWU; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uPYEnPUU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 346BBC4CEF0;
-	Fri, 29 Aug 2025 19:51:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756497082;
-	bh=iE1fOPe+H/DOT9l+qqw7zhT3aTQ0dSMmo1kdS8d+f20=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=uPYEnPUUg4/LuQVFtqhOOS0tGS/0OVJpM+KchdKwqnpfkH0/J3whjo1E0NBxW4gpi
-	 uJDXfPT2+7W9SvWuvKxITtr+9wgDa0PLPjlOlPveFqy+zGxeJXRW3bmLtv6e6tXZkm
-	 Lt0jKmNEbrsoJG57fd3KAzrHhMHII+VJCvAN8o9yIncXsE2LjVvdVRlbplw8VmHBsq
-	 nEieoqr4Hd58x1XnW+1xWPl9IbBCsaBFlrOtBOQRsS5iKDBvoMcj7GYIAOBvWu/48K
-	 9ZUoI9CDe2TXQXinfy+0J0W3S8zuoPtSs1TE+Ci/Y2CLPC2Ymd1DL36wGlg46kmRHz
-	 JZChNYlMpZoRQ==
-Date: Fri, 29 Aug 2025 14:51:19 -0500
-From: Rob Herring <robh@kernel.org>
-To: Janne Grunau <j@jannau.net>
-Cc: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	Neal Gompa <neal@gompa.dev>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Hector Martin <marcan@marcan.st>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Viresh Kumar <viresh.kumar@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Mark Kettenis <kettenis@openbsd.org>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Jassi Brar <jassisinghbrar@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Sasha Finkelstein <fnkl.kernel@gmail.com>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	van Spriel <arend@broadcom.com>, Lee Jones <lee@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
-	Vinod Koul <vkoul@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-pm@vger.kernel.org, iommu@lists.linux.dev,
-	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linux-bluetooth@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-pwm@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org,
-	dmaengine@vger.kernel.org, linux-sound@vger.kernel.org,
-	linux-spi@vger.kernel.org, linux-nvme@lists.infradead.org
-Subject: Re: [PATCH 00/37] arm64: Add initial device trees for Apple M2
- Pro/Max/Ultra devices
-Message-ID: <20250829195119.GA1206685-robh@kernel.org>
-References: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="pITCHuWU"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=vBqocCSrw/I/eTnjICc/R9VLegWS9kJ8fWJ+dhUrmbM=; b=pITCHuWUJuiDHiaEscGXVXczcK
+	I0/Wd74s+NDD/sEhJ3i0C7fgA9qpUSo8PJP1moXRGQnykNvxDXnxrqB2EIlySGG8dICRLkd4z6RHb
+	8KmkRHhoO+I/My0S3KX39ab8d3rYDeE0cLqWyIEYKNp5So3JeyY3f4amPxDo5zRskH7MdCU2cT4Kg
+	lkyk0k5hFEHpftWgCDxLX8H16kaIyfhbK35YVpzi0iECQVlLfDs/SxqnbrdaJz7dKqPuxbamvVnQ7
+	pLhICedjX9Wm5Ox+ZzOhDlVKF8oktW8T2cu4SuiApJT5Yps43hWywifM8Dr6AoBWERW4ru+BpvfZ0
+	QYZbU3VQ==;
+Received: from [50.53.25.54] (helo=[192.168.254.17])
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1us7vg-00000006zQp-3RYK;
+	Fri, 29 Aug 2025 22:50:44 +0000
+Message-ID: <e11b42b9-8294-4cc3-b27c-2344ae898ce0@infradead.org>
+Date: Fri, 29 Aug 2025 15:50:43 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 01/15] genpt: Generic Page Table base API
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Justin Stitt <justinstitt@google.com>,
+ Kevin Tian <kevin.tian@intel.com>, linux-doc@vger.kernel.org,
+ linux-kselftest@vger.kernel.org, llvm@lists.linux.dev,
+ Bill Wendling <morbo@google.com>, Nathan Chancellor <nathan@kernel.org>,
+ Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
+ Miguel Ojeda <ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Shuah Khan <shuah@kernel.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ Will Deacon <will@kernel.org>, Alexey Kardashevskiy <aik@amd.com>,
+ Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
+ James Gowans <jgowans@amazon.com>, Michael Roth <michael.roth@amd.com>,
+ Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev
+References: <1-v4-0d6a6726a372+18959-iommu_pt_jgg@nvidia.com>
+ <bdbd466f-01d3-40ac-abca-81527dbfb901@infradead.org>
+ <20250829185124.GE79520@nvidia.com>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20250829185124.GE79520@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Aug 28, 2025 at 04:01:19PM +0200, Janne Grunau wrote:
-> This series adds device trees for Apple's M2 Pro, Max and Ultra based
-> devices. The M2 Pro (t6020), M2 Max (t6021) and M2 Ultra (t6022) SoCs
-> follow design of the t600x family so copy the structure of SoC *.dtsi
-> files.
-> 
-> t6020 is a cut-down version of t6021, so the former just includes the
-> latter and disables the missing bits.
-> 
-> t6022 is two connected t6021 dies. The implementation seems to use
-> t6021 and disables blocks based on whether it is useful to carry
-> multiple instances. The disabled blocks are mostly on the second die.
-> MMIO addresses on the second die have a constant offset. The interrupt
-> controller is multi-die aware. This setup can be represented in the
-> device tree with two top level "soc" nodes. The MMIO offset is applied
-> via "ranges" and devices are included with preprocessor macros to make
-> the node labels unique and to specify the die number for the interrupt
-> definition.
-> 
-> The devices itself are very similar to their M1 Pro, M1 Max and M1 Ultra
-> counterparts. The existing device templates are SoC agnostic so the new
-> devices can reuse them and include their t602{0,1,2}.dtsi file. The
-> minor differences in pinctrl and gpio numbers can be easily adjusted.
-> 
-> With the t602x SoC family Apple introduced two new devices:
-> 
-> The M2 Pro Mac mini is similar to the larger M1 and M2 Max Mac Studio. The
-> missing SDHCI card reader and two front USB3.1 type-c ports and their
-> internal USB hub can be easily deleted.
-> 
-> The M2 Ultra Mac Pro (tower and rack-mount cases) differs from all other
-> devices but may share some bits with the M2 Ultra Mac Studio. The PCIe
-> implementation on the M2 Ultra in the Mac Pro differs slightly. Apple
-> calls the PCIe controller "apcie-ge" in their device tree. The
-> implementation seems to be mostly compatible with the base t6020 PCIe
-> controller. The main difference is that there is only a single port with
-> with 8 or 16 PCIe Gen4 lanes. These ports connect to a Microchip
-> Switchtec PCIe switch with 100 lanes to which all internal PCIe devices
-> and PCIe slots connect too.
-> 
-> This series does not include PCIe support for the Mac Pro for two
-> reasons:
-> - the linux switchtec driver fails to probe and the downstream PCIe
->   connections come up as PCIe Gen1
-> - some of the internal devices require PERST# and power control to come
->   up. Since the device are connected via the PCIe switch the PCIe
->   controller can not do this. The PCI slot pwrctrl can be utilized for
->   power control but misses integration with PERST# as proposed in [1].
-> 
-> This series depends on "[PATCH v2 0/5] Apple device tree sync from
-> downstream kernel" [2] due to the reuse of the t600x device templates
-> (patch dependencies and DT compilation) and 4 page table level support
-> in apple-dart and io-pgtable-dart [3] since the dart instances report
-> 42-bit IAS (IOMMU device attach fails without the series).
-> 
-> After discussion with the devicetree maintainers we agreed to not extend
-> lists with the generic compatibles anymore [1]. Instead either the first
-> compatible SoC or t8103 is used as fallback compatible supported by the
-> drivers. t8103 is used as default since most drivers and bindings were
-> initially written for M1 based devices.
 
-An issue here is any OS without the compatibles added to the drivers 
-won't work. Does that matter here? Soon as you need any new drivers or 
-significant driver changes it won't. The compatible additions could be 
-backported to stable. They aren't really any different than new PCI IDs 
-which get backported.
 
-Rob
+On 8/29/25 11:51 AM, Jason Gunthorpe wrote:
+> On Wed, Aug 27, 2025 at 12:11:40AM -0700, Randy Dunlap wrote:
+>>> +/**
+>>> + * pt_entry_num_contig_lg2() - Number of contiguous items for this leaf entry
+>>> + * @pts: Entry to query
+>>> + *
+>>> + * Returns the number of contiguous items this leaf entry spans. If the entry is
+>>
+>>  * Returns:
+> 
+> I think I prefer to leave many of these as is, putting the entire body
+> in a Returns: block seems too weird. I did the ones that seemed to fit
+> that pattern.
+
+Sure, no problem.
+
+> Most of these descriptions are entirely talking about the return value
+> since that is the only thing the function does.
+> 
+>>> + * If true the caller use at level 0 pt_install_leaf_entry(PAGE_SHIFT). This is
+>>
+>>                          uses
+>> ?
+>> although it might just be missing a word or two? I can't tell.
+> 
+>  * If true the caller can use, at level 0, pt_install_leaf_entry(PAGE_SHIFT).
+>  * This is useful to create optimized paths for common cases of PAGE_SIZE
+>  * mappings.
+
+Ack.
+
+>>> + * Otherwise the bit in position pt_table_item_lg2sz() should be set indicating
+>>> + * that a non-contigous singe item leaf entry is supported. The following
+>>
+>>              non-contiguous
+>> Also, is that               single
+>> ?
+>> or is "singe" a real word here? (IDK.)
+> 
+>  * Otherwise the bit in position pt_table_item_lg2sz() should be set indicating
+>  * that a non-contiguous single item leaf entry is supported. The following
+
+Ack.
+
+thanks.
+
+-- 
+~Randy
+
