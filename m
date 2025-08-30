@@ -1,116 +1,68 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FD9823507E;
-	Fri, 29 Aug 2025 22:50:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96BC0C133;
+	Sat, 30 Aug 2025 01:47:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756507850; cv=none; b=OxBZmZHUUXkGuqdU5jzhZeBjstZ14ExAcehFnz5XM3MnAdORZFpdRYdiNXWEYewjqmqi6Q99oVW09EfGxBaED1cVkxTUBAh9AaBdwv7TbJUjrMEBU9LvPiUxZ3eRwQn6izwDdzmeAMydmZvx3WRzr2U5a3WxsCDax2Rp6gcmbvk=
+	t=1756518463; cv=none; b=Kv5Yx4cTjfVtyFarhz1Kwb/LTRnGuKLUtiG9OP1ce8vxgrKwC9xkbvTlAL76b9HLE894Y3NvW0VaaUndy0Zov6OMsJBgU5p6ehAnaP8da6gXsS+nklrHyoMlsh4P3987eVIa3z9z+yRyByMEkqDl0QdbJEZnnGu23tTILvYXUwk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756507850; c=relaxed/simple;
-	bh=yQrl3gCtzdyKztNdAWjGjfEx4RFSnzGpjf6FUTnKgcQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SogMMMGrJ5Io2j8ViZodebUFWKwu5oGMop/hxgxLGEoJGt9bKXVkWqVVzYOhkEoewPHTX+xJvn9H/8AsBXE+vOp0NdRnpP5DyW/0L44mhlsAkX/Jx2hd4f4fsAM7D5gVi/hQzLGzYiJI0o5K0oCgiM3P3zYPJaU2vOjUPi4U8lk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=pITCHuWU; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1756518463; c=relaxed/simple;
+	bh=zDvl+0mYl7B1IhYYLGnaqnKHVG/ZkuRi7oUHiicRwf8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ApkcG9Orroyc1xDugUjZ5Z98+sTmJWoZouZf4gEY2je9EcSWAJwg2CJ7UBvxnFskKmacrXzCd5QlQwO8O7Z2Y7KH3AkSI+XI2kMK7xSnlStkCHS1ciZt+PtB82babAGUcBN24v4f+EbXAU8Olam7ReK45omn+xXvftZQR1vw4/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nqsj8dN+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="pITCHuWU"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=vBqocCSrw/I/eTnjICc/R9VLegWS9kJ8fWJ+dhUrmbM=; b=pITCHuWUJuiDHiaEscGXVXczcK
-	I0/Wd74s+NDD/sEhJ3i0C7fgA9qpUSo8PJP1moXRGQnykNvxDXnxrqB2EIlySGG8dICRLkd4z6RHb
-	8KmkRHhoO+I/My0S3KX39ab8d3rYDeE0cLqWyIEYKNp5So3JeyY3f4amPxDo5zRskH7MdCU2cT4Kg
-	lkyk0k5hFEHpftWgCDxLX8H16kaIyfhbK35YVpzi0iECQVlLfDs/SxqnbrdaJz7dKqPuxbamvVnQ7
-	pLhICedjX9Wm5Ox+ZzOhDlVKF8oktW8T2cu4SuiApJT5Yps43hWywifM8Dr6AoBWERW4ru+BpvfZ0
-	QYZbU3VQ==;
-Received: from [50.53.25.54] (helo=[192.168.254.17])
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1us7vg-00000006zQp-3RYK;
-	Fri, 29 Aug 2025 22:50:44 +0000
-Message-ID: <e11b42b9-8294-4cc3-b27c-2344ae898ce0@infradead.org>
-Date: Fri, 29 Aug 2025 15:50:43 -0700
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nqsj8dN+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6222C4CEF0;
+	Sat, 30 Aug 2025 01:47:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1756518463;
+	bh=zDvl+0mYl7B1IhYYLGnaqnKHVG/ZkuRi7oUHiicRwf8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=nqsj8dN+DUEsg1mJ2QeNwyZCNjjtY5olN8/7yi6jMQs7E7ITe97a/OXNae7SguaO/
+	 19om4q+mKKxoah75XzkrDdOXZFVAZeLHUrjozV+8HTkBvG97J6D20AcXld6ZPz+sCB
+	 zezMEVYQqc1kJJboQlvTTMreLozgtSwiXjv6c0gE35LM3Y0eSHZJa3zllemdD5ocL5
+	 If5ey2NVeII7UYUyDJHelS7yw4uik/YTVmT+CXBCr6P93WVze2HUbyMkgKDVSSYDp0
+	 Lh3BWmbjmIEIrZKrV88flYV7VY++9zwL3yvFjC/JJYWIlsYf0SEgEZDR2m1MUMiCPS
+	 5PVbvITmfZkkg==
+Date: Fri, 29 Aug 2025 19:47:40 -0600
+From: Keith Busch <kbusch@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Christoph Hellwig <hch@infradead.org>, Keith Busch <kbusch@meta.com>,
+	linux-block@vger.kernel.org, linux-nvme@lists.infradead.org,
+	axboe@kernel.dk, iommu@lists.linux.dev
+Subject: Re: [PATCHv3 1/2] block: accumulate segment page gaps per bio
+Message-ID: <aLJYPGKE4Y_6QzY2@kbusch-mbp>
+References: <20250821204420.2267923-1-kbusch@meta.com>
+ <20250821204420.2267923-2-kbusch@meta.com>
+ <aKxpSorluMXgOFEI@infradead.org>
+ <aKxu83upEBhf5gT7@kbusch-mbp>
+ <20250826130344.GA32739@lst.de>
+ <aK27AhpcQOWADLO8@kbusch-mbp>
+ <20250826135734.GA4532@lst.de>
+ <aK42K_-gHrOQsNyv@kbusch-mbp>
+ <20250827073709.GA25032@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 01/15] genpt: Generic Page Table base API
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Justin Stitt <justinstitt@google.com>,
- Kevin Tian <kevin.tian@intel.com>, linux-doc@vger.kernel.org,
- linux-kselftest@vger.kernel.org, llvm@lists.linux.dev,
- Bill Wendling <morbo@google.com>, Nathan Chancellor <nathan@kernel.org>,
- Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
- Miguel Ojeda <ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Shuah Khan <shuah@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Alexey Kardashevskiy <aik@amd.com>,
- Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
- James Gowans <jgowans@amazon.com>, Michael Roth <michael.roth@amd.com>,
- Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev
-References: <1-v4-0d6a6726a372+18959-iommu_pt_jgg@nvidia.com>
- <bdbd466f-01d3-40ac-abca-81527dbfb901@infradead.org>
- <20250829185124.GE79520@nvidia.com>
-Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20250829185124.GE79520@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250827073709.GA25032@lst.de>
 
-
-
-On 8/29/25 11:51 AM, Jason Gunthorpe wrote:
-> On Wed, Aug 27, 2025 at 12:11:40AM -0700, Randy Dunlap wrote:
->>> +/**
->>> + * pt_entry_num_contig_lg2() - Number of contiguous items for this leaf entry
->>> + * @pts: Entry to query
->>> + *
->>> + * Returns the number of contiguous items this leaf entry spans. If the entry is
->>
->>  * Returns:
+On Wed, Aug 27, 2025 at 09:37:09AM +0200, Christoph Hellwig wrote:
+> On Tue, Aug 26, 2025 at 04:33:15PM -0600, Keith Busch wrote:
+> > virt boundary check. It's looking like replace bvec's "page + offset"
+> > with phys addrs, yeah?!
 > 
-> I think I prefer to leave many of these as is, putting the entire body
-> in a Returns: block seems too weird. I did the ones that seemed to fit
-> that pattern.
+> Basically everything should be using physical address.  The page + offset
+> is just a weird and inefficient way to represent that and we really
+> need to get rid of it.
 
-Sure, no problem.
-
-> Most of these descriptions are entirely talking about the return value
-> since that is the only thing the function does.
-> 
->>> + * If true the caller use at level 0 pt_install_leaf_entry(PAGE_SHIFT). This is
->>
->>                          uses
->> ?
->> although it might just be missing a word or two? I can't tell.
-> 
->  * If true the caller can use, at level 0, pt_install_leaf_entry(PAGE_SHIFT).
->  * This is useful to create optimized paths for common cases of PAGE_SIZE
->  * mappings.
-
-Ack.
-
->>> + * Otherwise the bit in position pt_table_item_lg2sz() should be set indicating
->>> + * that a non-contigous singe item leaf entry is supported. The following
->>
->>              non-contiguous
->> Also, is that               single
->> ?
->> or is "singe" a real word here? (IDK.)
-> 
->  * Otherwise the bit in position pt_table_item_lg2sz() should be set indicating
->  * that a non-contiguous single item leaf entry is supported. The following
-
-Ack.
-
-thanks.
-
--- 
-~Randy
-
+I was plowing ahead with converting to phys addrs only to discover
+skb_frag_t overlays a bvec with tightly coupled expectations on its
+layout. I'm not comfortable right now messing with that type. I think it
+may need to be decoupled to proceed on this path. :(
