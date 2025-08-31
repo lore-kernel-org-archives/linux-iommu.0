@@ -1,996 +1,241 @@
-Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18B852517AA
-	for <iommu@lists.linux.dev>; Sat, 30 Aug 2025 22:53:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756594433; cv=none; b=INCpOJQMLfWgMcFAvIKVsPtNGwuoXZqCHvw0Q0+qbKXAiYd/QS8m+TsheDp768RcZMJEkKrD8EUajh8IoqYaNYCINnR/JC5ULhElYSUBUiwGVpurtctH8lCi7OUytrY+7HjxNLv0Wk+7a7FtDchPuIO7hzJakD8DzZfD7Y54+p8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756594433; c=relaxed/simple;
-	bh=+ChvnVhjDrbC8X6g4Idij7M6cRCI6ZD/pyjFHoiiod0=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=sDB7pkx3rQuaCp2dZDP571lAlAXKzYNK27A0AeTHe/I2TVrBEzFAwnbRZ3HR0nlSGJztrodbYOVjjBaFs+OeV9LFKev22RaIKdt3m13E2HOagjzE1Hvwbx82Nu0cAMQbEFQyzv67xCjLcXCrzVVN5gFNyOPIp2nyHrb3L2Tyu7w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=g3cu9yVk; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=3nxQIofJ; arc=none smtp.client-ip=5.75.144.95
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F9AAC2C9;
+	Sun, 31 Aug 2025 01:04:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756602274; cv=fail; b=LjXgVP24s7P4SSqvjGWfOKj1Nk0PXb9GjvjiUpK9rGNEp+5ESv4St9Jt/pRFL+B3ZXQ5/zIamKJSxOJ7qSR9fvn4C4TWTzVlQX49GF6MdARQKZ3Pv00BMO501+DjLbGzYM54u3FLZ68KH1g8IfOzlWZ9FAVw2a6VPOEFSqr8NNM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756602274; c=relaxed/simple;
+	bh=RSBu7ja5FFPK9+l1sV/efxFLOn+HydmJJ/ApFqAi89g=;
+	h=To:Cc:Subject:From:In-Reply-To:Message-ID:References:Date:
+	 Content-Type:MIME-Version; b=s8YV1AeiNS0BoIrJGk+ZR0Wtuk6C1ZFSYXMOQcQPUW3yJ2T90D0BUXk2EbTXOwmKD7/mBxDShaiTLsCeivVqQusTS1YY35t8JEX21iTRFQ0mo5ope19D7fYYZzFECcbSM903gF7OPlbhrBwrTslprlKCdllzF6T7KAmWdf21hFY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=dCMaUt51; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=MMOGPjXP; arc=fail smtp.client-ip=205.220.177.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="g3cu9yVk";
-	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="3nxQIofJ"
-DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
-	h=To:Message-Id:Subject:Date:From; t=1756593504; bh=Xsd7+bBBC8QfJD56Rt5bDFh
-	lGwWmileHCwDuLOnT9k8=; b=g3cu9yVkR8pRBru5IknV75CjHQM/uLJooEGI4juzLH71610pYP
-	eF2pQS4JNRZ3usIWCb4oaz+Uhcs0wjdwhP1c/VoMsET8HEsUIG/xXxECX2FbSuKJsVXt5XddEKg
-	iN2lBnDle0fMvX5+9cJedEttFOrX2HbXp7JlqkNO/EtAxFVYCsAmTGEy+L44NQQy82zYI8wiDVJ
-	RrmA571755oJkxIDkVO+JD4fFnKNrXkGnKjkTwHdF0MqQUejnUQ8KT029+fZBASrmQZ9zKMJjvc
-	4dOMmrj3ObRFgqxcPWSLSzzfHLKEc7j6x/Gu4muACtznx1S1ZC4M30MY4W3W4F/yrsw==;
-DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
-	h=To:Message-Id:Subject:Date:From; t=1756593504; bh=Xsd7+bBBC8QfJD56Rt5bDFh
-	lGwWmileHCwDuLOnT9k8=; b=3nxQIofJrGSpzArgIEpZHwyW8cI24Q2NdUUQ4IeUSlMV/Djopc
-	mGoDGJ3ogrKXK3TZv25Aa1G3whZdApw8nYCQ==;
-From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
-Date: Sun, 31 Aug 2025 00:38:14 +0200
-Subject: [PATCH v7 2/6] clk: qcom: gcc: Add support for Global Clock
- controller found on MSM8937
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="dCMaUt51";
+	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="MMOGPjXP"
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57V0oq1u020715;
+	Sun, 31 Aug 2025 01:03:57 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=corp-2025-04-25; bh=ih+9mrJHIMYhOBGLjR
+	SUtXFUe62l3IoPjGyIQeApiQg=; b=dCMaUt51Vl++5+wA0KMmUqdwRAp0N6XX/l
+	irwkzvJ4ZFm1H/R1DHVRs+qW58jLPF3MwSP82NbgU0HZHenAFePpUtbWg69PuErY
+	03h9aLVoV0Qm+dxk45yHh61nhYNKpHkeIZ4YNevMOu1Yoy2kdBXx4Y44kxF91f2A
+	UpmPXDZwi4ZnaeGb/LA+/1m6yvp091yn0bkExWYQ/O19NQ2HOH2kr8ryT2ETh1gh
+	ikfWTa2iKBNgRGBs8Q1lW15npEzAOhQKhLLqIHNsvIj7627xFwllz/CppwZpWGLV
+	vYleeCtqlHOAV99iHkjen2ouDYLI2Ciceeo1aBmWBQm6TBEXsUgw==
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 48ushvrkjt-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sun, 31 Aug 2025 01:03:57 +0000 (GMT)
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 57UJMDWl032178;
+	Sun, 31 Aug 2025 01:03:56 GMT
+Received: from mw6pr02cu001.outbound.protection.outlook.com (mail-westus2azon11012016.outbound.protection.outlook.com [52.101.48.16])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 48uqrd9jqw-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Sun, 31 Aug 2025 01:03:56 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=k5lKH5oX129fkKRbMCLAPvLYg06VTAKTjoNFKW8u2hcrqWEsnSBPPb/dVNWt4wJwcqpOMzqWmKADRIlL4eqtZHjKOu+ibPDlxO5rykxC6xjoMUakMVlWG1395TnqE6Yk2NXhehPSZHpfxf10hVI7UuhDsS4b9MQGxEI2A45xIzynRcSVIlDf8aGeMyM913GaIThAyf6bGr3IGoQ26mvqVFAJyXYKxoWKWYDCqr3fcVd3a+1SbUkNd4hvc/VyH+5kPOH/HDdRLyPR9W9VmRLrNg+u7l3AIdGxv6+cfWNyhHQ16EHuRuEJH0hGmHuDoO5hkamt2NminG1KbOTYYCHyKw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ih+9mrJHIMYhOBGLjRSUtXFUe62l3IoPjGyIQeApiQg=;
+ b=tFJC9/rW+yDkl3OSlpfdPSXUrUb8iaqxjR0cYmhGGE8DrU0lP/80iWVBlzOT8IN9k27tZSlalNKXGw4c7BqpyfC/v5IJ765NSj4Pnx1gHsx//WxaN6pQnTa26ixHQyOnEwMJfxuFDoabPZHfexpMTzTNDAcCpN0NCsj0agkBYsGWJO3JZS6uiOxyjJ4fEPck0Jh1Pgw/tiX0nHJzaXuDS7A7ts4LpJImDxu1NvD80W6BT5E80sJresxK9YLlY5GohbmUnj+fVgwnxRH6rhDOEBJhvPTKJVxMZWa6B6pXt/vXAw1Ftf1TREH8/zYVawPl2Wk215KkIjLWg0mZSs7G2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ih+9mrJHIMYhOBGLjRSUtXFUe62l3IoPjGyIQeApiQg=;
+ b=MMOGPjXPWohVBWxeeejoqnDDtUg7o56iJSIjG90K60HaRKoqtja4AsirLZZL7JrgDh+8i7qHbqqyBCt3NJ55h81GyhPu7iG73JyPG5AOSK9htZ2n3Y1+5/N1nQWJJ/HWPETIzGhW1FBv8Jw5TPDos+9aYJekhtYL8jVjTwPDsac=
+Received: from CH0PR10MB5338.namprd10.prod.outlook.com (2603:10b6:610:cb::8)
+ by SN7PR10MB6450.namprd10.prod.outlook.com (2603:10b6:806:2a1::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9073.25; Sun, 31 Aug
+ 2025 01:03:52 +0000
+Received: from CH0PR10MB5338.namprd10.prod.outlook.com
+ ([fe80::5cca:2bcc:cedb:d9bf]) by CH0PR10MB5338.namprd10.prod.outlook.com
+ ([fe80::5cca:2bcc:cedb:d9bf%6]) with mapi id 15.20.9073.021; Sun, 31 Aug 2025
+ 01:03:47 +0000
+To: David Hildenbrand <david@redhat.com>
+Cc: linux-kernel@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        "Martin
+ K. Petersen" <martin.petersen@oracle.com>,
+        Alexander Potapenko
+ <glider@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Brendan
+ Jackman <jackmanb@google.com>,
+        Christoph Lameter <cl@gentwo.org>, Dennis
+ Zhou <dennis@kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org, iommu@lists.linux.dev,
+        io-uring@vger.kernel.org, Jason Gunthorpe
+ <jgg@nvidia.com>,
+        Jens Axboe <axboe@kernel.dk>, Johannes Weiner
+ <hannes@cmpxchg.org>,
+        John Hubbard <jhubbard@nvidia.com>, kasan-dev@googlegroups.com,
+        kvm@vger.kernel.org, "Liam R. Howlett"
+ <Liam.Howlett@oracle.com>,
+        Linus Torvalds
+ <torvalds@linux-foundation.org>,
+        linux-arm-kernel@axis.com, linux-arm-kernel@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-ide@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-mm@kvack.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        linux-scsi@vger.kernel.org,
+        Lorenzo Stoakes
+ <lorenzo.stoakes@oracle.com>,
+        Marco Elver <elver@google.com>,
+        Marek
+ Szyprowski <m.szyprowski@samsung.com>,
+        Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@kernel.org>,
+        Muchun Song <muchun.song@linux.dev>, netdev@vger.kernel.org,
+        Oscar Salvador <osalvador@suse.de>, Peter Xu
+ <peterx@redhat.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Suren
+ Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
+        virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
+        wireguard@lists.zx2c4.com, x86@kernel.org, Zi Yan <ziy@nvidia.com>
+Subject: Re: [PATCH v1 29/36] scsi: scsi_lib: drop nth_page() usage within
+ SG entry
+From: "Martin K. Petersen" <martin.petersen@oracle.com>
+In-Reply-To: <20250827220141.262669-30-david@redhat.com> (David Hildenbrand's
+	message of "Thu, 28 Aug 2025 00:01:33 +0200")
+Organization: Oracle Corporation
+Message-ID: <yq1v7m4fgks.fsf@ca-mkp.ca.oracle.com>
+References: <20250827220141.262669-1-david@redhat.com>
+	<20250827220141.262669-30-david@redhat.com>
+Date: Sat, 30 Aug 2025 21:03:45 -0400
+Content-Type: text/plain
+X-ClientProxiedBy: YQBPR0101CA0169.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:c01:f::12) To CH0PR10MB5338.namprd10.prod.outlook.com
+ (2603:10b6:610:cb::8)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20250831-msm8937-v7-2-232a9fb19ab7@mainlining.org>
-References: <20250831-msm8937-v7-0-232a9fb19ab7@mainlining.org>
-In-Reply-To: <20250831-msm8937-v7-0-232a9fb19ab7@mainlining.org>
-To: Bjorn Andersson <andersson@kernel.org>, 
- Michael Turquette <mturquette@baylibre.com>, 
- Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>, 
- =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
- Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, 
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, 
- Sean Paul <sean@poorly.run>, Abhinav Kumar <quic_abhinavk@quicinc.com>, 
- Marijn Suijten <marijn.suijten@somainline.org>, 
- David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
- Dmitry Baryshkov <lumag@kernel.org>, 
- Adam Skladowski <a_skl39@protonmail.com>, 
- Sireesh Kodali <sireeshkodali@protonmail.com>, 
- Rob Clark <robin.clark@oss.qualcomm.com>, 
- Abhinav Kumar <abhinav.kumar@linux.dev>, 
- Jessica Zhang <jessica.zhang@oss.qualcomm.com>, 
- Srinivas Kandagatla <srini@kernel.org>, 
- Rob Clark <robin.clark@oss.qualcomm.com>, 
- Dmitry Baryshkov <lumag@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-gpio@vger.kernel.org, iommu@lists.linux.dev, 
- dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
- phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
- linux@mainlining.org, 
- =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
- Daniil Titov <daniilt971@gmail.com>, 
- Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1756593498; l=30637;
- i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
- bh=6PPGqcunREI/Dc6bwQw/3mJ+6PxNgSLlxJYGDC1bq+c=;
- b=Zfoo6dBN0OZZ5oYne+j7VTy4BM/dc8AKMyev5TAZO1Ki0E3E9rcp/gLIv2dHY6QJl0c6UJxUI
- gAyqmYXEXA+CjZ9Zo3oZyIdQhyn3Pfg5i34EtB11E+m59hMIU5Jd9YQ
-X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
- pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH0PR10MB5338:EE_|SN7PR10MB6450:EE_
+X-MS-Office365-Filtering-Correlation-Id: 81129496-9c7a-4417-60bf-08dde82a3d4b
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?9TTrDd4C44ozzbCuQphKSA0nNvFjmAom0ZPQ8wWkKS7wbHdNiVK9IxMHq9gg?=
+ =?us-ascii?Q?Fpoeqj+WJQ7X1rSpHHK6zOu4oryJZJKr+LVuQ48edScTRhH4eSBmSfwGf+GA?=
+ =?us-ascii?Q?36/WZhnqcJU39RDr635oTemicQSYVHcC1vKTCmV/nVYLd3Jml+xweesMxhRQ?=
+ =?us-ascii?Q?aQcEnNkpHpO1UQPWw+f5jpI8sKLOMsd3Tw9DHY+AB0TSRixJYI81ErurrXtk?=
+ =?us-ascii?Q?BoNFmTZ+fqzTgNAPkDuyhaplT1HYraQaqrsmHm0hd1TIsy2GlsJT0zpv8D0c?=
+ =?us-ascii?Q?JLFP6SA8cE3bERthz4YKcMWz/dPXtTVQfYkm/p5IaHM9vJdBdSMichQukMOa?=
+ =?us-ascii?Q?h+KvE2LoOFODJtWSUsv78uRCyE/Okqh36vgH4T7XzwVU2v7OCz4Rm3TxGfLX?=
+ =?us-ascii?Q?awH/DszopgR4O6ORKmmL3jedg1L1OCn2KY5lOZoGJINRRx7DKPLwUwPv7A/g?=
+ =?us-ascii?Q?6p/+KhlycVpXua3m1vx5DAh/Tz3vfP6vde8aI17AeBLUoL3M48s/Owrg85Pu?=
+ =?us-ascii?Q?fY3L7gsERWcZaYZF0lMkePmtPMYvHZursAeTg/2qq9qdKulE8X52U3a/pdAW?=
+ =?us-ascii?Q?PwBzpAE/QTd5GNn41VM1Ua9e0frHY8cFVgPYYMu98acPyKyRQT5J3MKZmyMC?=
+ =?us-ascii?Q?QA/dRpKz9oG0C0LehPWexPUuYpSQFlluLbGZibIHZ5Nw1gMcvyQPpUSLNtn5?=
+ =?us-ascii?Q?ETYPg8yK6WHQ5UB1oHeubddGwMdYK+0b92lLFekCeB/hfWR3gnOuDr/eaW8/?=
+ =?us-ascii?Q?YCRmuciNVRbbm/D55cN3wfrtGWFLykmNOuw4GLqpNKQue5hrmuVFEo/XjWRb?=
+ =?us-ascii?Q?WCwny/vqbJYCYFOTVp0mOiG4UKnNmnNFk9ykFC77gtMqREa3hSYwtsOoq9G8?=
+ =?us-ascii?Q?AIZ5v0yu94yHsmmiRaj89Law0IJEux/vjgfmSyUXZfF/TvEbqAusi2a0v1an?=
+ =?us-ascii?Q?X75Hue34m5oNMul+FS0GC58AOehq+LFRAfhgQ2ffjUTfJtFwSt/eNJgeQ9+1?=
+ =?us-ascii?Q?1524K4bauVa7vELidjXs9WH8bfoonz042uwfjh1Be9TAlRJ4cGIXU0bXojGN?=
+ =?us-ascii?Q?ySoT1Lwa/YbgWeKYghjt0R5c4CRbX3JpE8aPZLeozDS/vefVNolyWmNUh3p2?=
+ =?us-ascii?Q?45Kg90sJQaR2zboTHMFeqkj8ioHwdSVel8OJ3F0Rkh/+TPPgWEwfQWXu5p8Y?=
+ =?us-ascii?Q?vQstEDNT0keGklC375TNwRAOPd/nJOifTrBNfmJz8OnhVfcVNLVuv0SAGz4S?=
+ =?us-ascii?Q?tG0zA0U+m3GOrDyoWHbJpkIp1dCTZpC36DpfzLXFOP1k2ownnbrI5afgUXro?=
+ =?us-ascii?Q?fwdbPqS0RD+LIvCLcMK6uVOvL4X0nfpZzxR9vDoBkVCJ6GjI6QHdEYXvEf4y?=
+ =?us-ascii?Q?8JPUqOC/vRacUWRmcHUo37cUvUttRemrjCeFgp7WoDNsDkQL10smgfi1ra1c?=
+ =?us-ascii?Q?0blZwYiFJLs=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR10MB5338.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?9cLZAXA9tqSCDRHa/ndHBD4rA86tyJzgTeaHEn11sx0+5wyW0hZqvWsOQDdC?=
+ =?us-ascii?Q?mVfsRoPDH7eLUYV4/wUiDrLIYMTNfL6EEycGfcxUgyd5/Hnyu+r13HjCCdrs?=
+ =?us-ascii?Q?XbjATNTYUo7wusO0tUa5lIVXBmTz+DNiVnWuBvb9HQBci7Ryo6E+mEngw341?=
+ =?us-ascii?Q?7bK6rtqZb2gLSFIGAjIN0gBAcvpdJk0NALGn/+iDIBK7M2TeSN6bLd0Vw/Mz?=
+ =?us-ascii?Q?UIQNxx/z4DspEhgl7fLFV9eRw6X5nFINjvhGbIEnhviScwBMWB/IjS2uYyuM?=
+ =?us-ascii?Q?Zpq6KyNW5FmkS/VpmoqhT6XYRXZMa5iljA98gmtEa/T/oLgxKUnexnrGlM8k?=
+ =?us-ascii?Q?ZnOakTleuGrxkFA7RfAQxg6zwSidnT3q2HWXni/MTX3QyAi7kycgxFq1Dc3e?=
+ =?us-ascii?Q?BueNCJyfvPF8cPN8VQM3nID63SGT4+7DgTh4WIXaex0Q9jpXNDnD0R79jy4M?=
+ =?us-ascii?Q?eiRNIjmYz7vTQraJMTnBroliHVAvsR1wd7ITecPTOEDYrRXpg0ga0pndukBa?=
+ =?us-ascii?Q?Dlvc7O2fcPORPnjhMF5YlYqdf43BcaMxoyo+nfk7M5AyuR3T5o2/26byr2ut?=
+ =?us-ascii?Q?L4k/xfqFdDqw6YOYfH5J1YIGeczsoyAiZgYems6L/UlPKf6aFHYLvn1DO4hG?=
+ =?us-ascii?Q?63gkCtj1GyyPtBqafCZLw0JCOC3TzmqpH5ovTwdLmkCdI2abiB6GtHe6xZdl?=
+ =?us-ascii?Q?TMsU2vBP++bgSmJs2TJaXA7LqVZQ3C8ACLt6qrL9JYwq40ETGmOEI9Od71Di?=
+ =?us-ascii?Q?KA0wuseO9vR8dEBZmQL5fPqM/ofCg37xG38w9Kth4TRQcZSgEmfCsJmWPu2L?=
+ =?us-ascii?Q?wSZNydN9m97Iw93cdBfrU+crlzHUPMwh94tcs6sQzVvLng6jblEMSqVX9xq7?=
+ =?us-ascii?Q?vUdS1QLkVzyx3F+swh5+VqonB5OGEKtkR0VRfl2j569LGEVgX/uRIPl2gGUm?=
+ =?us-ascii?Q?80GffgNa26mIQxigXF4sEFawxBw2B2CC3kQmjxggPuSJBjh/ozgNG8GoMISO?=
+ =?us-ascii?Q?MR7oVfV+deSy+XGLpaiArIog0mlPwflIVdUPkrlsRwP/MX8for+A6VmDqYMu?=
+ =?us-ascii?Q?e6BIhK3EK2h1+gEprFIM7Hxjil7lj+O6oeqADeQ5xD5lvfl6Rsy3SwNYGP6k?=
+ =?us-ascii?Q?mqInnFkKFax70Awo790F1lsK5lFtyvK6PTD/IK1M1IZA/3kF2VSkS16X9lNI?=
+ =?us-ascii?Q?zvT3MWOELuyebZ3O4aWQXkaIl+Z4ovzS/tLhRi69Q9kIMZllrfoKnvM3sL+D?=
+ =?us-ascii?Q?9cbdxwlKSBZ3VXdHxK5hsyewWy4La2TV55I945REfEMfvgWIXDXZfdQPtZW6?=
+ =?us-ascii?Q?hV+3y3zo82HzRaU8v2xia45LxSBu40xPFpRPvMD49M2/+gLwJRs3iqxpiD29?=
+ =?us-ascii?Q?NkNvZG5BOxX2zi8jPYEVFk1id696Ouuet+EohLGOnK6ZWS3JIy3Lh1WSDCTt?=
+ =?us-ascii?Q?pin3/17BRC5tu57/2W+wGutWYloVusnb+t6oE8C1s3DSf2AHHoF4acwi+fCK?=
+ =?us-ascii?Q?h03p3W/2qrTbUbYWJfDslXuEsPOex/Q01aL3n1Ured1si1M+QB1/3of6AnXr?=
+ =?us-ascii?Q?03kJ689zMT7hmZjFYcSG8AwMa/dc41O1FCaQ1ry9va21vITE3C2GTWUcibvz?=
+ =?us-ascii?Q?Gw=3D=3D?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
+	l4dv9I+JsdCJh9aEF7XzwM45RB5EzPo7o/zMAyugdvLjnhkGkwEHciz/7+vPpO8W1ZareqEWsXkUzDqudoKXD9r/+PsNwnXkfjbV+Z+hiRZn+W532NmSBnlQBeSYmivC6uzUrlUsVD1EQrYo2r4NCN3kbyLcmQI79Z3OiI/PKPNhIneJB1RGgRDsr8wagPc8i0AIhLib2LY7EPRpEtmCOLb/hj0R/H7tj+vPVSBb0SC/V5jrzJiqWX04SOSgofaarff1yaaU6Y/eiCyYV1n5vrdagkF8c9DXSJYU/LgqWMIDb1VK+5HsLRNbfK3c236ZtwfjRuR/boBumznQJ+4l7Cv9Mjp4GMKdKHVJw5lyYEWm3efWJ/+n/moKpivNWWv85Cb8+nhXHZuieZ8AfbrOcpgkQ2DMIl/tyTCcnSjf0yiftgCoN16xEKOUoTgT4g1mmSxYPaCQXnJ583ZRas+rkgKbIQxCGQr6//MYLrnt/geaYMUFQ84ltoxz59UzYBRQBzhCrJueFWW8UvUgGzrtPGD4/pYUsDcamgVXnN3JqqY2EPt30evTFl0QVhFr3EDEPBlLlF7jxRmFsu4WActVPVHxhd0AfN1WqWxirTdiFg4=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 81129496-9c7a-4417-60bf-08dde82a3d4b
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR10MB5338.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2025 01:03:47.2677
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: EvLg1VX0u+uEcUFxmHgxslIMXMPXhhbpgzeUWx6rSqp9308e96YRefBmFApOOsMW8JL/h3EPONKEcFGGtRcM1XenklPAILbHKGqhJIcqpeA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR10MB6450
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-08-30_10,2025-08-28_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
+ suspectscore=0 malwarescore=0 spamscore=0 mlxscore=0 bulkscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2508110000 definitions=main-2508310009
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODMwMDAzMiBTYWx0ZWRfX9/byndKv5b/7
+ o5oK++AxxGN1iHL1eYmNnunLyJ5G+J4V45deG/aMv1lUK2CdR5bU6N9/UoaHamQELwbZK/pieJ8
+ KUaF/UOgcIp7+0XDYaNO60pq4HvKpY9p3maN17xrAoEK0+JxFfytg3ecIQ+MwVxTL73iQMTLU3Y
+ jtdrPkkmluvnfl3PUDKQyPhf8Z0mz342xU47wLDLUuePKCs3attrKPo0ka5AzgTkGrRnOddMpUm
+ OqMHn97xh8MT7jdfQEHApHvwbQ8NoyoETJtmH1O9hMImNnh/YQtJgvp61qYjvIxGy+4w902DCe2
+ 8d+1+qyjtNrUT77g92Iw5oI9X2luhLPBQ6goyvh35nnqdIpsX7Dv+C7/jWZdv+FkxSe07tU3cdM
+ sTXZRLnTiGsMLZ2+nTRqfK5M77TZRA==
+X-Authority-Analysis: v=2.4 cv=fZaty1QF c=1 sm=1 tr=0 ts=68b39f7d b=1 cx=c_pps
+ a=qoll8+KPOyaMroiJ2sR5sw==:117 a=qoll8+KPOyaMroiJ2sR5sw==:17
+ a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
+ a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=wKuvFiaSGQ0qltdbU6+NXLB8nM8=:19
+ a=Ol13hO9ccFRV9qXi2t6ftBPywas=:19 a=xqWC_Br6kY4A:10 a=2OwXVqhp2XgA:10
+ a=GoEa3M9JfhUA:10 a=yPCof4ZbAAAA:8 a=5bH7z0BLeiDiQMqUfeQA:9 a=MTAcVbZMd_8A:10
+ cc=ntf awl=host:12069
+X-Proofpoint-ORIG-GUID: 9p9PHRMzohc9Y04qpUjtV87HOIWlw7x9
+X-Proofpoint-GUID: 9p9PHRMzohc9Y04qpUjtV87HOIWlw7x9
 
-From: Daniil Titov <daniilt971@gmail.com>
 
-Modify existing MSM8917 driver to support MSM8937 SoC. Override frequencies
-which are different in this chip. Register all the clocks to the framework
-for the clients to be able to request for them. Add new variant of GDSC for
-new chip.
+David,
 
-Signed-off-by: Daniil Titov <daniilt971@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-Signed-off-by: Barnabás Czémán <barnabas.czeman@mainlining.org>
----
- drivers/clk/qcom/Kconfig       |   6 +-
- drivers/clk/qcom/gcc-msm8917.c | 617 ++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 616 insertions(+), 7 deletions(-)
+> It's no longer required to use nth_page() when iterating pages within a
+> single SG entry, so let's drop the nth_page() usage.
 
-diff --git a/drivers/clk/qcom/Kconfig b/drivers/clk/qcom/Kconfig
-index aeb6197d7c902098459c9b2cba75072bd519b0f3..e5de50354125445edcfdcfa03aa218ee66859b9a 100644
---- a/drivers/clk/qcom/Kconfig
-+++ b/drivers/clk/qcom/Kconfig
-@@ -332,12 +332,12 @@ config MSM_GCC_8916
- 	  SD/eMMC, display, graphics, camera etc.
- 
- config MSM_GCC_8917
--	tristate "MSM8917/QM215 Global Clock Controller"
-+	tristate "MSM89(17/37)/QM215 Global Clock Controller"
- 	depends on ARM64 || COMPILE_TEST
- 	select QCOM_GDSC
- 	help
--	  Support for the global clock controller on msm8917 and qm215
--	  devices.
-+	  Support for the global clock controller on msm8917, msm8937
-+	  and qm215 devices.
- 	  Say Y if you want to use devices such as UART, SPI i2c, USB,
- 	  SD/eMMC, display, graphics, camera etc.
- 
-diff --git a/drivers/clk/qcom/gcc-msm8917.c b/drivers/clk/qcom/gcc-msm8917.c
-index 3e2a2ae2ee6e9e647fb68c493ae7b0e49af79968..0a1aa623cd49af55d9d81148df7809b170fea60b 100644
---- a/drivers/clk/qcom/gcc-msm8917.c
-+++ b/drivers/clk/qcom/gcc-msm8917.c
-@@ -37,6 +37,8 @@ enum {
- 	DT_SLEEP_CLK,
- 	DT_DSI0PLL,
- 	DT_DSI0PLL_BYTE,
-+	DT_DSI1PLL,
-+	DT_DSI1PLL_BYTE,
- };
- 
- enum {
-@@ -48,6 +50,8 @@ enum {
- 	P_GPLL6,
- 	P_DSI0PLL,
- 	P_DSI0PLL_BYTE,
-+	P_DSI1PLL,
-+	P_DSI1PLL_BYTE,
- };
- 
- static struct clk_alpha_pll gpll0_sleep_clk_src = {
-@@ -102,7 +106,11 @@ static const struct pll_vco gpll3_p_vco[] = {
- 	{ 700000000, 1400000000, 0 },
- };
- 
--static const struct alpha_pll_config gpll3_early_config = {
-+static const struct pll_vco gpll3_p_vco_msm8937[] = {
-+	{ 525000000, 1066000000, 0 },
-+};
-+
-+static struct alpha_pll_config gpll3_early_config = {
- 	.l = 63,
- 	.config_ctl_val = 0x4001055b,
- 	.early_output_mask = 0,
-@@ -273,6 +281,19 @@ static const struct freq_tbl ftbl_blsp_i2c_apps_clk_src[] = {
- 	{ }
- };
- 
-+static struct clk_rcg2 blsp1_qup1_i2c_apps_clk_src = {
-+	.cmd_rcgr = 0x0200c,
-+	.hid_width = 5,
-+	.freq_tbl = ftbl_blsp_i2c_apps_clk_src,
-+	.parent_map = gcc_xo_gpll0_map,
-+	.clkr.hw.init = &(struct clk_init_data){
-+		.name = "blsp1_qup1_i2c_apps_clk_src",
-+		.parent_data = gcc_xo_gpll0_data,
-+		.num_parents = ARRAY_SIZE(gcc_xo_gpll0_data),
-+		.ops = &clk_rcg2_ops,
-+	},
-+};
-+
- static struct clk_rcg2 blsp1_qup2_i2c_apps_clk_src = {
- 	.cmd_rcgr = 0x03000,
- 	.hid_width = 5,
-@@ -351,6 +372,19 @@ static struct clk_rcg2 blsp2_qup3_i2c_apps_clk_src = {
- 	}
- };
- 
-+static struct clk_rcg2 blsp2_qup4_i2c_apps_clk_src = {
-+	.cmd_rcgr = 0x18000,
-+	.hid_width = 5,
-+	.freq_tbl = ftbl_blsp_i2c_apps_clk_src,
-+	.parent_map = gcc_xo_gpll0_map,
-+	.clkr.hw.init = &(struct clk_init_data){
-+		.name = "blsp2_qup4_i2c_apps_clk_src",
-+		.parent_data = gcc_xo_gpll0_data,
-+		.num_parents = ARRAY_SIZE(gcc_xo_gpll0_data),
-+		.ops = &clk_rcg2_ops,
-+	},
-+};
-+
- static const struct freq_tbl ftbl_blsp_spi_apps_clk_src[] = {
- 	F(960000, P_XO, 10, 1, 2),
- 	F(4800000, P_XO, 4, 0, 0),
-@@ -362,6 +396,20 @@ static const struct freq_tbl ftbl_blsp_spi_apps_clk_src[] = {
- 	{ }
- };
- 
-+static struct clk_rcg2 blsp1_qup1_spi_apps_clk_src = {
-+	.cmd_rcgr = 0x02024,
-+	.mnd_width = 8,
-+	.hid_width = 5,
-+	.freq_tbl = ftbl_blsp_spi_apps_clk_src,
-+	.parent_map = gcc_xo_gpll0_map,
-+	.clkr.hw.init = &(struct clk_init_data){
-+		.name = "blsp1_qup1_spi_apps_clk_src",
-+		.parent_data = gcc_xo_gpll0_data,
-+		.num_parents = ARRAY_SIZE(gcc_xo_gpll0_data),
-+		.ops = &clk_rcg2_ops,
-+	},
-+};
-+
- static struct clk_rcg2 blsp1_qup2_spi_apps_clk_src = {
- 	.cmd_rcgr = 0x03014,
- 	.hid_width = 5,
-@@ -446,6 +494,20 @@ static struct clk_rcg2 blsp2_qup3_spi_apps_clk_src = {
- 	}
- };
- 
-+static struct clk_rcg2 blsp2_qup4_spi_apps_clk_src = {
-+	.cmd_rcgr = 0x18024,
-+	.mnd_width = 8,
-+	.hid_width = 5,
-+	.freq_tbl = ftbl_blsp_spi_apps_clk_src,
-+	.parent_map = gcc_xo_gpll0_map,
-+	.clkr.hw.init = &(struct clk_init_data){
-+		.name = "blsp2_qup4_spi_apps_clk_src",
-+		.parent_data = gcc_xo_gpll0_data,
-+		.num_parents = ARRAY_SIZE(gcc_xo_gpll0_data),
-+		.ops = &clk_rcg2_ops,
-+	},
-+};
-+
- static const struct freq_tbl ftbl_blsp_uart_apps_clk_src[] = {
- 	F(3686400, P_GPLL0, 1, 72, 15625),
- 	F(7372800, P_GPLL0, 1, 144, 15625),
-@@ -525,11 +587,19 @@ static struct clk_rcg2 blsp2_uart2_apps_clk_src = {
- static const struct parent_map gcc_byte0_map[] = {
- 	{ P_XO, 0 },
- 	{ P_DSI0PLL_BYTE, 1 },
-+	{ P_DSI1PLL_BYTE, 3 },
-+};
-+
-+static const struct parent_map gcc_byte1_map[] = {
-+	{ P_XO, 0 },
-+	{ P_DSI0PLL_BYTE, 3 },
-+	{ P_DSI1PLL_BYTE, 1 },
- };
- 
- static const struct clk_parent_data gcc_byte_data[] = {
- 	{ .index = DT_XO },
- 	{ .index = DT_DSI0PLL_BYTE },
-+	{ .index = DT_DSI1PLL_BYTE },
- };
- 
- static struct clk_rcg2 byte0_clk_src = {
-@@ -545,6 +615,19 @@ static struct clk_rcg2 byte0_clk_src = {
- 	}
- };
- 
-+static struct clk_rcg2 byte1_clk_src = {
-+	.cmd_rcgr = 0x4d0b0,
-+	.hid_width = 5,
-+	.parent_map = gcc_byte1_map,
-+	.clkr.hw.init = &(struct clk_init_data){
-+		.name = "byte1_clk_src",
-+		.parent_data = gcc_byte_data,
-+		.num_parents = ARRAY_SIZE(gcc_byte_data),
-+		.ops = &clk_byte2_ops,
-+		.flags = CLK_SET_RATE_PARENT,
-+	},
-+};
-+
- static const struct freq_tbl ftbl_camss_gp_clk_src[] = {
- 	F(100000000, P_GPLL0, 8, 0, 0),
- 	F(160000000, P_GPLL0, 5, 0, 0),
-@@ -642,6 +725,17 @@ static const struct freq_tbl ftbl_cpp_clk_src[] = {
- 	{ }
- };
- 
-+static const struct freq_tbl ftbl_cpp_clk_src_msm8937[] = {
-+	F(133330000, P_GPLL0, 6, 0, 0),
-+	F(160000000, P_GPLL0, 5, 0, 0),
-+	F(200000000, P_GPLL0, 5, 0, 0),
-+	F(266666667, P_GPLL0, 3, 0, 0),
-+	F(308570000, P_GPLL6, 3.5, 0, 0),
-+	F(320000000, P_GPLL0, 2.5, 0, 0),
-+	F(360000000, P_GPLL6, 3, 0, 0),
-+	{ }
-+};
-+
- static struct clk_rcg2 cpp_clk_src = {
- 	.cmd_rcgr = 0x58018,
- 	.hid_width = 5,
-@@ -655,6 +749,13 @@ static struct clk_rcg2 cpp_clk_src = {
- 	}
- };
- 
-+static struct clk_init_data vcodec0_clk_src_init_msm8937 = {
-+	.name = "vcodec0_clk_src",
-+	.parent_data = gcc_cpp_data,
-+	.num_parents = ARRAY_SIZE(gcc_cpp_data),
-+	.ops = &clk_rcg2_ops,
-+};
-+
- static const struct freq_tbl ftbl_crypto_clk_src[] = {
- 	F(50000000, P_GPLL0, 16, 0, 0),
- 	F(80000000, P_GPLL0, 10, 0, 0),
-@@ -730,6 +831,13 @@ static const struct freq_tbl ftbl_csi_phytimer_clk_src[] = {
- 	{ }
- };
- 
-+static const struct freq_tbl ftbl_csi_phytimer_clk_src_msm8937[] = {
-+	F(100000000, P_GPLL0, 8, 0, 0),
-+	F(160000000, P_GPLL0, 5, 0, 0),
-+	F(200000000, P_GPLL0, 4, 0, 0),
-+	{ }
-+};
-+
- static struct clk_rcg2 csi0phytimer_clk_src = {
- 	.cmd_rcgr = 0x4e000,
- 	.hid_width = 5,
-@@ -774,6 +882,19 @@ static struct clk_rcg2 esc0_clk_src = {
- 	}
- };
- 
-+static struct clk_rcg2 esc1_clk_src = {
-+	.cmd_rcgr = 0x4d0a8,
-+	.hid_width = 5,
-+	.freq_tbl = ftbl_esc0_1_clk_src,
-+	.parent_map = gcc_xo_gpll0_out_aux_map,
-+	.clkr.hw.init = &(struct clk_init_data){
-+		.name = "esc1_clk_src",
-+		.parent_data = gcc_xo_gpll0_data,
-+		.num_parents = ARRAY_SIZE(gcc_xo_gpll0_data),
-+		.ops = &clk_rcg2_ops,
-+	},
-+};
-+
- static const struct parent_map gcc_gfx3d_map[] = {
- 	{ P_XO, 0 },
- 	{ P_GPLL0, 1 },
-@@ -817,6 +938,25 @@ static const struct freq_tbl ftbl_gfx3d_clk_src[] = {
- 	{ }
- };
- 
-+static const struct freq_tbl ftbl_gfx3d_clk_src_msm8937[] = {
-+	F(19200000, P_XO, 1, 0, 0),
-+	F(50000000, P_GPLL0, 16, 0, 0),
-+	F(80000000, P_GPLL0, 10, 0, 0),
-+	F(100000000, P_GPLL0, 8, 0, 0),
-+	F(160000000, P_GPLL0, 5, 0, 0),
-+	F(200000000, P_GPLL0, 4, 0, 0),
-+	F(216000000, P_GPLL6, 5, 0, 0),
-+	F(228570000, P_GPLL0, 3.5, 0, 0),
-+	F(240000000, P_GPLL6, 4.5, 0, 0),
-+	F(266670000, P_GPLL0, 3, 0, 0),
-+	F(300000000, P_GPLL3, 1, 0, 0),
-+	F(320000000, P_GPLL0, 2.5, 0, 0),
-+	F(375000000, P_GPLL3, 1, 0, 0),
-+	F(400000000, P_GPLL0, 2, 0, 0),
-+	F(450000000, P_GPLL3, 1, 0, 0),
-+	{ }
-+};
-+
- static struct clk_rcg2 gfx3d_clk_src = {
- 	.cmd_rcgr = 0x59000,
- 	.hid_width = 5,
-@@ -973,21 +1113,29 @@ static struct clk_rcg2 mdp_clk_src = {
- 	}
- };
- 
--static const struct parent_map gcc_pclk_map[] = {
-+static const struct parent_map gcc_pclk0_map[] = {
- 	{ P_XO, 0 },
- 	{ P_DSI0PLL, 1 },
-+	{ P_DSI1PLL, 3 },
-+};
-+
-+static const struct parent_map gcc_pclk1_map[] = {
-+	{ P_XO, 0 },
-+	{ P_DSI0PLL, 3 },
-+	{ P_DSI1PLL, 1 },
- };
- 
- static const struct clk_parent_data gcc_pclk_data[] = {
- 	{ .index = DT_XO },
- 	{ .index = DT_DSI0PLL },
-+	{ .index = DT_DSI1PLL },
- };
- 
- static struct clk_rcg2 pclk0_clk_src = {
- 	.cmd_rcgr = 0x4d000,
- 	.hid_width = 5,
- 	.mnd_width = 8,
--	.parent_map = gcc_pclk_map,
-+	.parent_map = gcc_pclk0_map,
- 	.clkr.hw.init = &(struct clk_init_data) {
- 		.name = "pclk0_clk_src",
- 		.parent_data = gcc_pclk_data,
-@@ -997,6 +1145,20 @@ static struct clk_rcg2 pclk0_clk_src = {
- 	}
- };
- 
-+static struct clk_rcg2 pclk1_clk_src = {
-+	.cmd_rcgr = 0x4d0b8,
-+	.hid_width = 5,
-+	.mnd_width = 8,
-+	.parent_map = gcc_pclk1_map,
-+	.clkr.hw.init = &(struct clk_init_data){
-+		.name = "pclk1_clk_src",
-+		.parent_data = gcc_pclk_data,
-+		.num_parents = ARRAY_SIZE(gcc_pclk_data),
-+		.ops = &clk_pixel_ops,
-+		.flags = CLK_SET_RATE_PARENT,
-+	},
-+};
-+
- static const struct freq_tbl ftbl_pdm2_clk_src[] = {
- 	F(64000000, P_GPLL0, 12.5, 0, 0),
- 	{ }
-@@ -1108,6 +1270,14 @@ static const struct freq_tbl ftbl_usb_hs_system_clk_src[] = {
- 	{ }
- };
- 
-+static const struct freq_tbl ftbl_usb_hs_system_clk_src_msm8937[] = {
-+	F(57142857, P_GPLL0, 14, 0, 0),
-+	F(100000000, P_GPLL0, 8, 0, 0),
-+	F(133333333, P_GPLL0, 6, 0, 0),
-+	F(177777778, P_GPLL0, 4.5, 0, 0),
-+	{ }
-+};
-+
- static struct clk_rcg2 usb_hs_system_clk_src = {
- 	.cmd_rcgr = 0x41010,
- 	.hid_width = 5,
-@@ -1132,6 +1302,15 @@ static const struct freq_tbl ftbl_vcodec0_clk_src[] = {
- 	{ }
- };
- 
-+static const struct freq_tbl ftbl_vcodec0_clk_src_msm8937[] = {
-+	F(166150000, P_GPLL6, 6.5, 0, 0),
-+	F(240000000, P_GPLL6, 4.5, 0, 0),
-+	F(308571428, P_GPLL6, 3.5, 0, 0),
-+	F(320000000, P_GPLL0, 2.5, 0, 0),
-+	F(360000000, P_GPLL6, 3, 0, 0),
-+	{ }
-+};
-+
- static struct clk_rcg2 vcodec0_clk_src = {
- 	.cmd_rcgr = 0x4c000,
- 	.hid_width = 5,
-@@ -1160,6 +1339,23 @@ static const struct freq_tbl ftbl_vfe_clk_src[] = {
- 	{ }
- };
- 
-+static const struct freq_tbl ftbl_vfe_clk_src_msm8937[] = {
-+	F(50000000, P_GPLL0, 16, 0, 0),
-+	F(80000000, P_GPLL0, 10, 0, 0),
-+	F(100000000, P_GPLL0, 8, 0, 0),
-+	F(133333333, P_GPLL0, 6, 0, 0),
-+	F(160000000, P_GPLL0, 5, 0, 0),
-+	F(177777778, P_GPLL0, 4.5, 0, 0),
-+	F(200000000, P_GPLL0, 4, 0, 0),
-+	F(266666667, P_GPLL0, 3, 0, 0),
-+	F(308571428, P_GPLL6, 3.5, 0, 0),
-+	F(320000000, P_GPLL0, 2.5, 0, 0),
-+	F(360000000, P_GPLL6, 3, 0, 0),
-+	F(400000000, P_GPLL0, 2, 0, 0),
-+	F(432000000, P_GPLL6, 2.5, 0, 0),
-+	{ }
-+};
-+
- static struct clk_rcg2 vfe0_clk_src = {
- 	.cmd_rcgr = 0x58000,
- 	.hid_width = 5,
-@@ -1269,6 +1465,24 @@ static struct clk_branch gcc_blsp2_ahb_clk = {
- 	}
- };
- 
-+static struct clk_branch gcc_blsp1_qup1_i2c_apps_clk = {
-+	.halt_reg = 0x02008,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x02008,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(struct clk_init_data){
-+			.name = "gcc_blsp1_qup1_i2c_apps_clk",
-+			.parent_hws = (const struct clk_hw*[]){
-+				&blsp1_qup1_i2c_apps_clk_src.clkr.hw,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_branch2_ops,
-+			.flags = CLK_SET_RATE_PARENT,
-+		},
-+	},
-+};
-+
- static struct clk_branch gcc_blsp1_qup2_i2c_apps_clk = {
- 	.halt_reg = 0x03010,
- 	.halt_check = BRANCH_HALT,
-@@ -1377,6 +1591,42 @@ static struct clk_branch gcc_blsp2_qup3_i2c_apps_clk = {
- 	}
- };
- 
-+static struct clk_branch gcc_blsp2_qup4_i2c_apps_clk = {
-+	.halt_reg = 0x18020,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x18020,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(struct clk_init_data){
-+			.name = "gcc_blsp2_qup4_i2c_apps_clk",
-+			.parent_hws = (const struct clk_hw*[]){
-+				&blsp2_qup4_i2c_apps_clk_src.clkr.hw,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_branch2_ops,
-+			.flags = CLK_SET_RATE_PARENT,
-+		},
-+	},
-+};
-+
-+static struct clk_branch gcc_blsp1_qup1_spi_apps_clk = {
-+	.halt_reg = 0x02004,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x02004,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(struct clk_init_data){
-+			.name = "gcc_blsp1_qup1_spi_apps_clk",
-+			.parent_hws = (const struct clk_hw*[]){
-+				&blsp1_qup1_spi_apps_clk_src.clkr.hw,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_branch2_ops,
-+			.flags = CLK_SET_RATE_PARENT,
-+		},
-+	},
-+};
-+
- static struct clk_branch gcc_blsp1_qup2_spi_apps_clk = {
- 	.halt_reg = 0x0300c,
- 	.halt_check = BRANCH_HALT,
-@@ -1485,6 +1735,24 @@ static struct clk_branch gcc_blsp2_qup3_spi_apps_clk = {
- 	}
- };
- 
-+static struct clk_branch gcc_blsp2_qup4_spi_apps_clk = {
-+	.halt_reg = 0x1801c,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x1801c,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(struct clk_init_data){
-+			.name = "gcc_blsp2_qup4_spi_apps_clk",
-+			.parent_hws = (const struct clk_hw*[]){
-+				&blsp2_qup4_spi_apps_clk_src.clkr.hw,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_branch2_ops,
-+			.flags = CLK_SET_RATE_PARENT,
-+		},
-+	},
-+};
-+
- static struct clk_branch gcc_blsp1_uart1_apps_clk = {
- 	.halt_reg = 0x0203c,
- 	.halt_check = BRANCH_HALT,
-@@ -2521,6 +2789,24 @@ static struct clk_branch gcc_mdss_byte0_clk = {
- 	}
- };
- 
-+static struct clk_branch gcc_mdss_byte1_clk = {
-+	.halt_reg = 0x4d0a0,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x4d0a0,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(struct clk_init_data){
-+			.name = "gcc_mdss_byte1_clk",
-+			.parent_hws = (const struct clk_hw*[]){
-+				&byte1_clk_src.clkr.hw,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_branch2_ops,
-+			.flags = CLK_SET_RATE_PARENT,
-+		},
-+	},
-+};
-+
- static struct clk_branch gcc_mdss_esc0_clk = {
- 	.halt_reg = 0x4d098,
- 	.halt_check = BRANCH_HALT,
-@@ -2539,6 +2825,24 @@ static struct clk_branch gcc_mdss_esc0_clk = {
- 	}
- };
- 
-+static struct clk_branch gcc_mdss_esc1_clk = {
-+	.halt_reg = 0x4d09c,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x4d09c,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(struct clk_init_data){
-+			.name = "gcc_mdss_esc1_clk",
-+			.parent_hws = (const struct clk_hw*[]){
-+				&esc1_clk_src.clkr.hw,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_branch2_ops,
-+			.flags = CLK_SET_RATE_PARENT,
-+		},
-+	},
-+};
-+
- static struct clk_branch gcc_mdss_mdp_clk = {
- 	.halt_reg = 0x4d088,
- 	.halt_check = BRANCH_HALT,
-@@ -2575,6 +2879,24 @@ static struct clk_branch gcc_mdss_pclk0_clk = {
- 	}
- };
- 
-+static struct clk_branch gcc_mdss_pclk1_clk = {
-+	.halt_reg = 0x4d0a4,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x4d0a4,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(struct clk_init_data){
-+			.name = "gcc_mdss_pclk1_clk",
-+			.parent_hws = (const struct clk_hw*[]){
-+				&pclk1_clk_src.clkr.hw,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_branch2_ops,
-+			.flags = CLK_SET_RATE_PARENT,
-+		},
-+	},
-+};
-+
- static struct clk_branch gcc_mdss_vsync_clk = {
- 	.halt_reg = 0x4d090,
- 	.halt_check = BRANCH_HALT,
-@@ -2632,6 +2954,24 @@ static struct clk_branch gcc_oxili_ahb_clk = {
- 	}
- };
- 
-+static struct clk_branch gcc_oxili_aon_clk = {
-+	.halt_reg = 0x5904c,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x5904c,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(struct clk_init_data){
-+			.name = "gcc_oxili_aon_clk",
-+			.parent_hws = (const struct clk_hw*[]){
-+				&gfx3d_clk_src.clkr.hw,
-+			},
-+			.num_parents = 1,
-+			.ops = &clk_branch2_ops,
-+			.flags = CLK_SET_RATE_PARENT,
-+		},
-+	},
-+};
-+
- static struct clk_branch gcc_oxili_gfx3d_clk = {
- 	.halt_reg = 0x59020,
- 	.halt_check = BRANCH_HALT,
-@@ -2650,6 +2990,19 @@ static struct clk_branch gcc_oxili_gfx3d_clk = {
- 	}
- };
- 
-+static struct clk_branch gcc_oxili_timer_clk = {
-+	.halt_reg = 0x59040,
-+	.halt_check = BRANCH_HALT,
-+	.clkr = {
-+		.enable_reg = 0x59040,
-+		.enable_mask = BIT(0),
-+		.hw.init = &(struct clk_init_data){
-+			.name = "gcc_oxili_timer_clk",
-+			.ops = &clk_branch2_ops,
-+		},
-+	},
-+};
-+
- static struct clk_branch gcc_pdm2_clk = {
- 	.halt_reg = 0x4400c,
- 	.halt_check = BRANCH_HALT,
-@@ -3027,6 +3380,28 @@ static struct gdsc oxili_gx_gdsc = {
- 	.flags = CLAMP_IO,
- };
- 
-+static struct gdsc oxili_gx_gdsc_msm8937 = {
-+	.gdscr = 0x5901c,
-+	.clamp_io_ctrl = 0x5b00c,
-+	.cxcs = (unsigned int []){ 0x59000 },
-+	.cxc_count = 1,
-+	.pd = {
-+		.name = "oxili_gx_gdsc",
-+	},
-+	.pwrsts = PWRSTS_OFF_ON,
-+	.flags = CLAMP_IO,
-+};
-+
-+static struct gdsc oxili_cx_gdsc = {
-+	.gdscr = 0x59044,
-+	.cxcs = (unsigned int []){ 0x59020 },
-+	.cxc_count = 1,
-+	.pd = {
-+		.name = "oxili_cx_gdsc",
-+	},
-+	.pwrsts = PWRSTS_OFF_ON,
-+};
-+
- static struct gdsc cpp_gdsc = {
- 	.gdscr = 0x58078,
- 	.cxcs = (unsigned int []){ 0x5803c, 0x58064 },
-@@ -3207,6 +3582,188 @@ static struct clk_regmap *gcc_msm8917_clocks[] = {
- 	[GCC_VFE_TBU_CLK] = &gcc_vfe_tbu_clk.clkr,
- };
- 
-+static struct clk_regmap *gcc_msm8937_clocks[] = {
-+	[GPLL0] = &gpll0.clkr,
-+	[GPLL0_EARLY] = &gpll0_early.clkr,
-+	[GPLL0_SLEEP_CLK_SRC] = &gpll0_sleep_clk_src.clkr,
-+	[GPLL3] = &gpll3.clkr,
-+	[GPLL3_EARLY] = &gpll3_early.clkr,
-+	[GPLL4] = &gpll4.clkr,
-+	[GPLL4_EARLY] = &gpll4_early.clkr,
-+	[GPLL6] = &gpll6,
-+	[GPLL6_EARLY] = &gpll6_early.clkr,
-+	[APSS_AHB_CLK_SRC] = &apss_ahb_clk_src.clkr,
-+	[MSM8937_BLSP1_QUP1_I2C_APPS_CLK_SRC] = &blsp1_qup1_i2c_apps_clk_src.clkr,
-+	[MSM8937_BLSP1_QUP1_SPI_APPS_CLK_SRC] = &blsp1_qup1_spi_apps_clk_src.clkr,
-+	[BLSP1_QUP2_I2C_APPS_CLK_SRC] = &blsp1_qup2_i2c_apps_clk_src.clkr,
-+	[BLSP1_QUP2_SPI_APPS_CLK_SRC] = &blsp1_qup2_spi_apps_clk_src.clkr,
-+	[BLSP1_QUP3_I2C_APPS_CLK_SRC] = &blsp1_qup3_i2c_apps_clk_src.clkr,
-+	[BLSP1_QUP3_SPI_APPS_CLK_SRC] = &blsp1_qup3_spi_apps_clk_src.clkr,
-+	[BLSP1_QUP4_I2C_APPS_CLK_SRC] = &blsp1_qup4_i2c_apps_clk_src.clkr,
-+	[BLSP1_QUP4_SPI_APPS_CLK_SRC] = &blsp1_qup4_spi_apps_clk_src.clkr,
-+	[BLSP1_UART1_APPS_CLK_SRC] = &blsp1_uart1_apps_clk_src.clkr,
-+	[BLSP1_UART2_APPS_CLK_SRC] = &blsp1_uart2_apps_clk_src.clkr,
-+	[BLSP2_QUP1_I2C_APPS_CLK_SRC] = &blsp2_qup1_i2c_apps_clk_src.clkr,
-+	[BLSP2_QUP1_SPI_APPS_CLK_SRC] = &blsp2_qup1_spi_apps_clk_src.clkr,
-+	[BLSP2_QUP2_I2C_APPS_CLK_SRC] = &blsp2_qup2_i2c_apps_clk_src.clkr,
-+	[BLSP2_QUP2_SPI_APPS_CLK_SRC] = &blsp2_qup2_spi_apps_clk_src.clkr,
-+	[BLSP2_QUP3_I2C_APPS_CLK_SRC] = &blsp2_qup3_i2c_apps_clk_src.clkr,
-+	[BLSP2_QUP3_SPI_APPS_CLK_SRC] = &blsp2_qup3_spi_apps_clk_src.clkr,
-+	[MSM8937_BLSP2_QUP4_I2C_APPS_CLK_SRC] = &blsp2_qup4_i2c_apps_clk_src.clkr,
-+	[MSM8937_BLSP2_QUP4_SPI_APPS_CLK_SRC] = &blsp2_qup4_spi_apps_clk_src.clkr,
-+	[BLSP2_UART1_APPS_CLK_SRC] = &blsp2_uart1_apps_clk_src.clkr,
-+	[BLSP2_UART2_APPS_CLK_SRC] = &blsp2_uart2_apps_clk_src.clkr,
-+	[BYTE0_CLK_SRC] = &byte0_clk_src.clkr,
-+	[MSM8937_BYTE1_CLK_SRC] = &byte1_clk_src.clkr,
-+	[CAMSS_GP0_CLK_SRC] = &camss_gp0_clk_src.clkr,
-+	[CAMSS_GP1_CLK_SRC] = &camss_gp1_clk_src.clkr,
-+	[CAMSS_TOP_AHB_CLK_SRC] = &camss_top_ahb_clk_src.clkr,
-+	[CCI_CLK_SRC] = &cci_clk_src.clkr,
-+	[CPP_CLK_SRC] = &cpp_clk_src.clkr,
-+	[CRYPTO_CLK_SRC] = &crypto_clk_src.clkr,
-+	[CSI0PHYTIMER_CLK_SRC] = &csi0phytimer_clk_src.clkr,
-+	[CSI0_CLK_SRC] = &csi0_clk_src.clkr,
-+	[CSI1PHYTIMER_CLK_SRC] = &csi1phytimer_clk_src.clkr,
-+	[CSI1_CLK_SRC] = &csi1_clk_src.clkr,
-+	[CSI2_CLK_SRC] = &csi2_clk_src.clkr,
-+	[ESC0_CLK_SRC] = &esc0_clk_src.clkr,
-+	[MSM8937_ESC1_CLK_SRC] = &esc1_clk_src.clkr,
-+	[GFX3D_CLK_SRC] = &gfx3d_clk_src.clkr,
-+	[GP1_CLK_SRC] = &gp1_clk_src.clkr,
-+	[GP2_CLK_SRC] = &gp2_clk_src.clkr,
-+	[GP3_CLK_SRC] = &gp3_clk_src.clkr,
-+	[JPEG0_CLK_SRC] = &jpeg0_clk_src.clkr,
-+	[MCLK0_CLK_SRC] = &mclk0_clk_src.clkr,
-+	[MCLK1_CLK_SRC] = &mclk1_clk_src.clkr,
-+	[MCLK2_CLK_SRC] = &mclk2_clk_src.clkr,
-+	[MDP_CLK_SRC] = &mdp_clk_src.clkr,
-+	[PCLK0_CLK_SRC] = &pclk0_clk_src.clkr,
-+	[MSM8937_PCLK1_CLK_SRC] = &pclk1_clk_src.clkr,
-+	[PDM2_CLK_SRC] = &pdm2_clk_src.clkr,
-+	[SDCC1_APPS_CLK_SRC] = &sdcc1_apps_clk_src.clkr,
-+	[SDCC1_ICE_CORE_CLK_SRC] = &sdcc1_ice_core_clk_src.clkr,
-+	[SDCC2_APPS_CLK_SRC] = &sdcc2_apps_clk_src.clkr,
-+	[USB_HS_SYSTEM_CLK_SRC] = &usb_hs_system_clk_src.clkr,
-+	[VCODEC0_CLK_SRC] = &vcodec0_clk_src.clkr,
-+	[VFE0_CLK_SRC] = &vfe0_clk_src.clkr,
-+	[VFE1_CLK_SRC] = &vfe1_clk_src.clkr,
-+	[VSYNC_CLK_SRC] = &vsync_clk_src.clkr,
-+	[GCC_APSS_TCU_CLK] = &gcc_apss_tcu_clk.clkr,
-+	[GCC_BIMC_GFX_CLK] = &gcc_bimc_gfx_clk.clkr,
-+	[GCC_BIMC_GPU_CLK] = &gcc_bimc_gpu_clk.clkr,
-+	[GCC_BLSP1_AHB_CLK] = &gcc_blsp1_ahb_clk.clkr,
-+	[MSM8937_GCC_BLSP1_QUP1_I2C_APPS_CLK] = &gcc_blsp1_qup1_i2c_apps_clk.clkr,
-+	[MSM8937_GCC_BLSP1_QUP1_SPI_APPS_CLK] = &gcc_blsp1_qup1_spi_apps_clk.clkr,
-+	[GCC_BLSP1_QUP2_I2C_APPS_CLK] = &gcc_blsp1_qup2_i2c_apps_clk.clkr,
-+	[GCC_BLSP1_QUP2_SPI_APPS_CLK] = &gcc_blsp1_qup2_spi_apps_clk.clkr,
-+	[GCC_BLSP1_QUP3_I2C_APPS_CLK] = &gcc_blsp1_qup3_i2c_apps_clk.clkr,
-+	[GCC_BLSP1_QUP3_SPI_APPS_CLK] = &gcc_blsp1_qup3_spi_apps_clk.clkr,
-+	[GCC_BLSP1_QUP4_I2C_APPS_CLK] = &gcc_blsp1_qup4_i2c_apps_clk.clkr,
-+	[GCC_BLSP1_QUP4_SPI_APPS_CLK] = &gcc_blsp1_qup4_spi_apps_clk.clkr,
-+	[GCC_BLSP1_UART1_APPS_CLK] = &gcc_blsp1_uart1_apps_clk.clkr,
-+	[GCC_BLSP1_UART2_APPS_CLK] = &gcc_blsp1_uart2_apps_clk.clkr,
-+	[GCC_BLSP2_AHB_CLK] = &gcc_blsp2_ahb_clk.clkr,
-+	[GCC_BLSP2_QUP1_I2C_APPS_CLK] = &gcc_blsp2_qup1_i2c_apps_clk.clkr,
-+	[GCC_BLSP2_QUP1_SPI_APPS_CLK] = &gcc_blsp2_qup1_spi_apps_clk.clkr,
-+	[GCC_BLSP2_QUP2_I2C_APPS_CLK] = &gcc_blsp2_qup2_i2c_apps_clk.clkr,
-+	[GCC_BLSP2_QUP2_SPI_APPS_CLK] = &gcc_blsp2_qup2_spi_apps_clk.clkr,
-+	[GCC_BLSP2_QUP3_I2C_APPS_CLK] = &gcc_blsp2_qup3_i2c_apps_clk.clkr,
-+	[GCC_BLSP2_QUP3_SPI_APPS_CLK] = &gcc_blsp2_qup3_spi_apps_clk.clkr,
-+	[MSM8937_GCC_BLSP2_QUP4_I2C_APPS_CLK] = &gcc_blsp2_qup4_i2c_apps_clk.clkr,
-+	[MSM8937_GCC_BLSP2_QUP4_SPI_APPS_CLK] = &gcc_blsp2_qup4_spi_apps_clk.clkr,
-+	[GCC_BLSP2_UART1_APPS_CLK] = &gcc_blsp2_uart1_apps_clk.clkr,
-+	[GCC_BLSP2_UART2_APPS_CLK] = &gcc_blsp2_uart2_apps_clk.clkr,
-+	[GCC_BOOT_ROM_AHB_CLK] = &gcc_boot_rom_ahb_clk.clkr,
-+	[GCC_CAMSS_AHB_CLK] = &gcc_camss_ahb_clk.clkr,
-+	[GCC_CAMSS_CCI_AHB_CLK] = &gcc_camss_cci_ahb_clk.clkr,
-+	[GCC_CAMSS_CCI_CLK] = &gcc_camss_cci_clk.clkr,
-+	[GCC_CAMSS_CPP_AHB_CLK] = &gcc_camss_cpp_ahb_clk.clkr,
-+	[GCC_CAMSS_CPP_CLK] = &gcc_camss_cpp_clk.clkr,
-+	[GCC_CAMSS_CSI0PHYTIMER_CLK] = &gcc_camss_csi0phytimer_clk.clkr,
-+	[GCC_CAMSS_CSI0PHY_CLK] = &gcc_camss_csi0phy_clk.clkr,
-+	[GCC_CAMSS_CSI0PIX_CLK] = &gcc_camss_csi0pix_clk.clkr,
-+	[GCC_CAMSS_CSI0RDI_CLK] = &gcc_camss_csi0rdi_clk.clkr,
-+	[GCC_CAMSS_CSI0_AHB_CLK] = &gcc_camss_csi0_ahb_clk.clkr,
-+	[GCC_CAMSS_CSI0_CLK] = &gcc_camss_csi0_clk.clkr,
-+	[GCC_CAMSS_CSI1PHYTIMER_CLK] = &gcc_camss_csi1phytimer_clk.clkr,
-+	[GCC_CAMSS_CSI1PHY_CLK] = &gcc_camss_csi1phy_clk.clkr,
-+	[GCC_CAMSS_CSI1PIX_CLK] = &gcc_camss_csi1pix_clk.clkr,
-+	[GCC_CAMSS_CSI1RDI_CLK] = &gcc_camss_csi1rdi_clk.clkr,
-+	[GCC_CAMSS_CSI1_AHB_CLK] = &gcc_camss_csi1_ahb_clk.clkr,
-+	[GCC_CAMSS_CSI1_CLK] = &gcc_camss_csi1_clk.clkr,
-+	[GCC_CAMSS_CSI2PHY_CLK] = &gcc_camss_csi2phy_clk.clkr,
-+	[GCC_CAMSS_CSI2PIX_CLK] = &gcc_camss_csi2pix_clk.clkr,
-+	[GCC_CAMSS_CSI2RDI_CLK] = &gcc_camss_csi2rdi_clk.clkr,
-+	[GCC_CAMSS_CSI2_AHB_CLK] = &gcc_camss_csi2_ahb_clk.clkr,
-+	[GCC_CAMSS_CSI2_CLK] = &gcc_camss_csi2_clk.clkr,
-+	[GCC_CAMSS_CSI_VFE0_CLK] = &gcc_camss_csi_vfe0_clk.clkr,
-+	[GCC_CAMSS_CSI_VFE1_CLK] = &gcc_camss_csi_vfe1_clk.clkr,
-+	[GCC_CAMSS_GP0_CLK] = &gcc_camss_gp0_clk.clkr,
-+	[GCC_CAMSS_GP1_CLK] = &gcc_camss_gp1_clk.clkr,
-+	[GCC_CAMSS_ISPIF_AHB_CLK] = &gcc_camss_ispif_ahb_clk.clkr,
-+	[GCC_CAMSS_JPEG0_CLK] = &gcc_camss_jpeg0_clk.clkr,
-+	[GCC_CAMSS_JPEG_AHB_CLK] = &gcc_camss_jpeg_ahb_clk.clkr,
-+	[GCC_CAMSS_JPEG_AXI_CLK] = &gcc_camss_jpeg_axi_clk.clkr,
-+	[GCC_CAMSS_MCLK0_CLK] = &gcc_camss_mclk0_clk.clkr,
-+	[GCC_CAMSS_MCLK1_CLK] = &gcc_camss_mclk1_clk.clkr,
-+	[GCC_CAMSS_MCLK2_CLK] = &gcc_camss_mclk2_clk.clkr,
-+	[GCC_CAMSS_MICRO_AHB_CLK] = &gcc_camss_micro_ahb_clk.clkr,
-+	[GCC_CAMSS_TOP_AHB_CLK] = &gcc_camss_top_ahb_clk.clkr,
-+	[GCC_CAMSS_VFE0_AHB_CLK] = &gcc_camss_vfe0_ahb_clk.clkr,
-+	[GCC_CAMSS_VFE0_AXI_CLK] = &gcc_camss_vfe0_axi_clk.clkr,
-+	[GCC_CAMSS_VFE0_CLK] = &gcc_camss_vfe0_clk.clkr,
-+	[GCC_CAMSS_VFE1_AHB_CLK] = &gcc_camss_vfe1_ahb_clk.clkr,
-+	[GCC_CAMSS_VFE1_AXI_CLK] = &gcc_camss_vfe1_axi_clk.clkr,
-+	[GCC_CAMSS_VFE1_CLK] = &gcc_camss_vfe1_clk.clkr,
-+	[GCC_CPP_TBU_CLK] = &gcc_cpp_tbu_clk.clkr,
-+	[GCC_CRYPTO_AHB_CLK] = &gcc_crypto_ahb_clk.clkr,
-+	[GCC_CRYPTO_AXI_CLK] = &gcc_crypto_axi_clk.clkr,
-+	[GCC_CRYPTO_CLK] = &gcc_crypto_clk.clkr,
-+	[GCC_DCC_CLK] = &gcc_dcc_clk.clkr,
-+	[GCC_GP1_CLK] = &gcc_gp1_clk.clkr,
-+	[GCC_GP2_CLK] = &gcc_gp2_clk.clkr,
-+	[GCC_GP3_CLK] = &gcc_gp3_clk.clkr,
-+	[GCC_JPEG_TBU_CLK] = &gcc_jpeg_tbu_clk.clkr,
-+	[GCC_MDP_TBU_CLK] = &gcc_mdp_tbu_clk.clkr,
-+	[GCC_MDSS_AHB_CLK] = &gcc_mdss_ahb_clk.clkr,
-+	[GCC_MDSS_AXI_CLK] = &gcc_mdss_axi_clk.clkr,
-+	[GCC_MDSS_BYTE0_CLK] = &gcc_mdss_byte0_clk.clkr,
-+	[MSM8937_GCC_MDSS_BYTE1_CLK] = &gcc_mdss_byte1_clk.clkr,
-+	[GCC_MDSS_ESC0_CLK] = &gcc_mdss_esc0_clk.clkr,
-+	[MSM8937_GCC_MDSS_ESC1_CLK] = &gcc_mdss_esc1_clk.clkr,
-+	[GCC_MDSS_MDP_CLK] = &gcc_mdss_mdp_clk.clkr,
-+	[GCC_MDSS_PCLK0_CLK] = &gcc_mdss_pclk0_clk.clkr,
-+	[MSM8937_GCC_MDSS_PCLK1_CLK] = &gcc_mdss_pclk1_clk.clkr,
-+	[GCC_MDSS_VSYNC_CLK] = &gcc_mdss_vsync_clk.clkr,
-+	[GCC_MSS_CFG_AHB_CLK] = &gcc_mss_cfg_ahb_clk.clkr,
-+	[GCC_MSS_Q6_BIMC_AXI_CLK] = &gcc_mss_q6_bimc_axi_clk.clkr,
-+	[GCC_OXILI_AHB_CLK] = &gcc_oxili_ahb_clk.clkr,
-+	[MSM8937_GCC_OXILI_AON_CLK] = &gcc_oxili_aon_clk.clkr,
-+	[GCC_OXILI_GFX3D_CLK] = &gcc_oxili_gfx3d_clk.clkr,
-+	[MSM8937_GCC_OXILI_TIMER_CLK] = &gcc_oxili_timer_clk.clkr,
-+	[GCC_PDM2_CLK] = &gcc_pdm2_clk.clkr,
-+	[GCC_PDM_AHB_CLK] = &gcc_pdm_ahb_clk.clkr,
-+	[GCC_PRNG_AHB_CLK] = &gcc_prng_ahb_clk.clkr,
-+	[GCC_QDSS_DAP_CLK] = &gcc_qdss_dap_clk.clkr,
-+	[GCC_SDCC1_AHB_CLK] = &gcc_sdcc1_ahb_clk.clkr,
-+	[GCC_SDCC1_APPS_CLK] = &gcc_sdcc1_apps_clk.clkr,
-+	[GCC_SDCC1_ICE_CORE_CLK] = &gcc_sdcc1_ice_core_clk.clkr,
-+	[GCC_SDCC2_AHB_CLK] = &gcc_sdcc2_ahb_clk.clkr,
-+	[GCC_SDCC2_APPS_CLK] = &gcc_sdcc2_apps_clk.clkr,
-+	[GCC_SMMU_CFG_CLK] = &gcc_smmu_cfg_clk.clkr,
-+	[GCC_USB2A_PHY_SLEEP_CLK] = &gcc_usb2a_phy_sleep_clk.clkr,
-+	[GCC_USB_HS_AHB_CLK] = &gcc_usb_hs_ahb_clk.clkr,
-+	[GCC_USB_HS_PHY_CFG_AHB_CLK] = &gcc_usb_hs_phy_cfg_ahb_clk.clkr,
-+	[GCC_USB_HS_SYSTEM_CLK] = &gcc_usb_hs_system_clk.clkr,
-+	[GCC_VENUS0_AHB_CLK] = &gcc_venus0_ahb_clk.clkr,
-+	[GCC_VENUS0_AXI_CLK] = &gcc_venus0_axi_clk.clkr,
-+	[GCC_VENUS0_CORE0_VCODEC0_CLK] = &gcc_venus0_core0_vcodec0_clk.clkr,
-+	[GCC_VENUS0_VCODEC0_CLK] = &gcc_venus0_vcodec0_clk.clkr,
-+	[GCC_VENUS_TBU_CLK] = &gcc_venus_tbu_clk.clkr,
-+	[GCC_VFE1_TBU_CLK] = &gcc_vfe1_tbu_clk.clkr,
-+	[GCC_VFE_TBU_CLK] = &gcc_vfe_tbu_clk.clkr,
-+};
-+
- static const struct qcom_reset_map gcc_msm8917_resets[] = {
- 	[GCC_CAMSS_MICRO_BCR]		= { 0x56008 },
- 	[GCC_MSS_BCR]			= { 0x71000 },
-@@ -3234,6 +3791,18 @@ static struct gdsc *gcc_msm8917_gdscs[] = {
- 	[VFE1_GDSC] = &vfe1_gdsc,
- };
- 
-+static struct gdsc *gcc_msm8937_gdscs[] = {
-+	[CPP_GDSC] = &cpp_gdsc,
-+	[JPEG_GDSC] = &jpeg_gdsc,
-+	[MDSS_GDSC] = &mdss_gdsc,
-+	[OXILI_GX_GDSC] = &oxili_gx_gdsc_msm8937,
-+	[MSM8937_OXILI_CX_GDSC] = &oxili_cx_gdsc,
-+	[VENUS_CORE0_GDSC] = &venus_core0_gdsc,
-+	[VENUS_GDSC] = &venus_gdsc,
-+	[VFE0_GDSC] = &vfe0_gdsc,
-+	[VFE1_GDSC] = &vfe1_gdsc,
-+};
-+
- static const struct qcom_cc_desc gcc_msm8917_desc = {
- 	.config = &gcc_msm8917_regmap_config,
- 	.clks = gcc_msm8917_clocks,
-@@ -3254,6 +3823,41 @@ static const struct qcom_cc_desc gcc_qm215_desc = {
- 	.num_gdscs = ARRAY_SIZE(gcc_msm8917_gdscs),
- };
- 
-+static const struct qcom_cc_desc gcc_msm8937_desc = {
-+	.config = &gcc_msm8917_regmap_config,
-+	.clks = gcc_msm8937_clocks,
-+	.num_clks = ARRAY_SIZE(gcc_msm8937_clocks),
-+	.resets = gcc_msm8917_resets,
-+	.num_resets = ARRAY_SIZE(gcc_msm8917_resets),
-+	.gdscs = gcc_msm8937_gdscs,
-+	.num_gdscs = ARRAY_SIZE(gcc_msm8937_gdscs),
-+};
-+
-+static void msm8937_clock_override(void)
-+{
-+	/* GPLL3 750MHz configuration */
-+	gpll3_early_config.l = 47;
-+	gpll3_early.vco_table = gpll3_p_vco_msm8937;
-+	gpll3_early.num_vco = ARRAY_SIZE(gpll3_p_vco_msm8937);
-+
-+	/*
-+	 * Set below clocks for use specific msm8937 parent map.
-+	 */
-+	vcodec0_clk_src.parent_map = gcc_cpp_map;
-+	vcodec0_clk_src.clkr.hw.init = &vcodec0_clk_src_init_msm8937;
-+
-+	/*
-+	 * Set below clocks for use specific msm8937 freq table.
-+	 */
-+	vfe0_clk_src.freq_tbl = ftbl_vfe_clk_src_msm8937;
-+	vfe1_clk_src.freq_tbl = ftbl_vfe_clk_src_msm8937;
-+	cpp_clk_src.freq_tbl = ftbl_cpp_clk_src_msm8937;
-+	vcodec0_clk_src.freq_tbl = ftbl_vcodec0_clk_src_msm8937;
-+	csi0phytimer_clk_src.freq_tbl = ftbl_csi_phytimer_clk_src_msm8937;
-+	csi1phytimer_clk_src.freq_tbl = ftbl_csi_phytimer_clk_src_msm8937;
-+	usb_hs_system_clk_src.freq_tbl = ftbl_usb_hs_system_clk_src_msm8937;
-+}
-+
- static int gcc_msm8917_probe(struct platform_device *pdev)
- {
- 	struct regmap *regmap;
-@@ -3261,8 +3865,12 @@ static int gcc_msm8917_probe(struct platform_device *pdev)
- 
- 	gcc_desc = of_device_get_match_data(&pdev->dev);
- 
--	if (gcc_desc == &gcc_qm215_desc)
-+	if (gcc_desc == &gcc_qm215_desc) {
- 		gfx3d_clk_src.parent_map = gcc_gfx3d_map_qm215;
-+	} else if (gcc_desc == &gcc_msm8937_desc) {
-+		msm8937_clock_override();
-+		gfx3d_clk_src.freq_tbl = ftbl_gfx3d_clk_src_msm8937;
-+	}
- 
- 	regmap = qcom_cc_map(pdev, gcc_desc);
- 	if (IS_ERR(regmap))
-@@ -3276,6 +3884,7 @@ static int gcc_msm8917_probe(struct platform_device *pdev)
- static const struct of_device_id gcc_msm8917_match_table[] = {
- 	{ .compatible = "qcom,gcc-msm8917", .data = &gcc_msm8917_desc },
- 	{ .compatible = "qcom,gcc-qm215", .data = &gcc_qm215_desc },
-+	{ .compatible = "qcom,gcc-msm8937", .data = &gcc_msm8937_desc },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, gcc_msm8917_match_table);
+Reviewed-by: Martin K. Petersen <martin.petersen@oracle.com>
 
 -- 
-2.51.0
-
+Martin K. Petersen
