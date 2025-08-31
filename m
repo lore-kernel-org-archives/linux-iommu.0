@@ -1,696 +1,197 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF7AF1E3DD7
-	for <iommu@lists.linux.dev>; Sun, 31 Aug 2025 10:00:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8D8523505E
+	for <iommu@lists.linux.dev>; Sun, 31 Aug 2025 12:32:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756634432; cv=none; b=geVS7EdcAMSq3ueVXsqRRh83LHCzFqYSYPHyvD+khv3iBf1A6wcxKpwvPi9O2tQkBo7iqi4qcvuokVvREcorhiNqo3aKyjepLSDfJJOh6mmel56Ypkl2WfuaDNcoaGxLoq2jl8dt29XE7c3beeLgat6wBzff9aJTaX/Rjkz18bU=
+	t=1756643562; cv=none; b=dOClr1P2YOWaPAC3KPkWpyW9AWQqx21cutoOcav0kvtnfARbWqujpCm4OL4VzlElerSiW32XSjCuiYX0PFQleQA0Wwd56bWq/iHtgNkvpQIb8awMky9GYWQHkqwnDoN6ocak7YWCevJ/x1CezxjvCzU/0awEdGiD/c52N57uem8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756634432; c=relaxed/simple;
-	bh=iFmbQb9JSPT9Qnq1c89NuEhFG4tIwLVQr7w8umJhtYg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SVn+qaEHFGaaOhGCNQEP8IfbicTvHsQI/h47I3hnIidWcdQKtc9J09F8JGphxi7NuOzmgRboa9A/zQQyG5xPed/sPjo4lBVRK+cqsmj8mTTFkIZ3gW4oYsfY0RzjfwWT+LaYc39nZ3PlB6dI9xb4NoO5JINo4cSa+5eW2PU4VLc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=kg/QekD6; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1756643562; c=relaxed/simple;
+	bh=4FfX1QEQR5BhgXz6cJLgVX8UFOXb13D1QrVd1i7A3Ew=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=FjpaAdOG7Hk87ITguKJq5OXrHA+/0cZykIQJTEvxHOXyNQ0Xuz+LM0rK3f65YICbNfwVyR5zYW4cURfuOHfk2jePzsYj9UGDtWOf97Yw0ublsMcej4GxXGLT5ILQbW9bIqWcdMUBi1ve6deYqga6CNjOGuXUBpdkqpS5zINjMKY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=Hd+qEDuh; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=qM4n8yt2; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="kg/QekD6"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 57V7VG33021012
-	for <iommu@lists.linux.dev>; Sun, 31 Aug 2025 10:00:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	qD5oRl6PaN2DjJNUuUSysf512mj6mjwHEypDav6WIT4=; b=kg/QekD6M8g46WOp
-	Ex/OpvguNct1GPmddlTPxc0VbSNcgUL1OUGaOQ1UKSspO/dLtVwW27H/oIQFn0oV
-	3iTHam2elpP1qaggWIkGaiYRcp29t3jX47YAHmk3vpb2SRYg1KbfOfapGsjlwb92
-	M26mbUsLRojMQH/Wx1BSKqOzCIAY01SJ0uxlEljF22YI6NR/OLvNYJauNst8LZbZ
-	6AagqSqgaFZlj//rR+CFLVXbgO+rfVMZYyUatbWIZQUfOR0sLrP6gx4bHx+TXn1u
-	5bBD0RDjnMkbJp+8io56Mqf2ca0A/wSizlD0UgeaXuqmDr13lziooGXMS45bv1IO
-	le1Wuw==
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com [209.85.160.198])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 48ush2suvt-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-	for <iommu@lists.linux.dev>; Sun, 31 Aug 2025 10:00:29 +0000 (GMT)
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-4b31ba138f7so21193481cf.2
-        for <iommu@lists.linux.dev>; Sun, 31 Aug 2025 03:00:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756634428; x=1757239228;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=qD5oRl6PaN2DjJNUuUSysf512mj6mjwHEypDav6WIT4=;
-        b=d87fC+H1Kib0497alxIZbIKurmuKEBUCj4U8MjpLbWWUo27TgvPQIi6g8YpWSzrXUF
-         Jv2ixaOYsDLuK5jDRu0FalRr3R5hsSKbhUb8HkOBLAwH1DAECRvzA2W/gUQymdTp6JnM
-         NBNTNr2GV0gjNmj/rMxUXo8Vyg2D9fOlDF7kkgl3o2cEUS56rE0fLck5HVzxfbMGk2KT
-         jfd4jEv9wA3P3wypEq268b7sLcCseyoZd+ANaH9VFx55eZ+tXAZOKJPImzRxK8zcfRnz
-         4Yk1ubd4x0aqx6S0032bklJ8YsxdV4wBrc4SYLqM8Y5PqfFaKYhhZ/fPOd0H1IatW6iM
-         GSDg==
-X-Forwarded-Encrypted: i=1; AJvYcCXwYVEkFYayEXB8uUf8jCTH9iRQrd4GZrTcVqbw79rbJIXjKsaqQKzMAHUR+MCMqFNcwsInTg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxXMGB2u1xNUIQEhMOr7FK49BYcgcNaHERXlS49tub6QF1m609T
-	ay5dqRpF/NWlFvSfskFZ2JfN4eH/nQ8UbSyEndlBvzJ5BkpKbxTRHx/shjPnG3+q3cA8sySRZOs
-	tQcefVQlotIT7AODHVzRlLyBHAmnbGOoYIFfpGHHiI7EPaig/zcZ2JoZntg==
-X-Gm-Gg: ASbGncvROgCRPCaOO5Ktfa5LmEfB4AFLQU5i1IosFjZd3eMV713Pky4A4WH5mQkoXxC
-	g+hZ1xEiF+e1WO4QGpK2kGq0jZ6CWz6Q3LVjQzt0O3ykswbgFbeJMsShzw4Ih9FzAj/Rk5bAsu5
-	ZthzEyUbSa+hXenrEBHrAKKsIUSxeG35IcLpQo0J7OTKnjdUvD8hWpsb+L3Wx0e25p7nGSG7k0u
-	joPyiqOEGRfhpLQ+V3By2nHN7ZIXzy322wKGjC635eqdZexazCORmSco5RPnD97E6cW0D5HX0qI
-	cJIzqVCEf/hl7y+SE08R12rB8Y0lydgDRxL1gKhS3mdvL75QpKzRrTtQUsxR+0RtK/RYU2uyV4z
-	TXLymVHeYITVwYmzdR3hniw4ulUDedjl+M52k+vqDZ/NVGUpgAXtS
-X-Received: by 2002:a05:622a:1812:b0:4b2:94e5:9847 with SMTP id d75a77b69052e-4b31dcac538mr59712541cf.74.1756634428106;
-        Sun, 31 Aug 2025 03:00:28 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHFpiHqGgSFYOFPDu7JwQJBWckE87BwsT8u/A9LiwCj49Zah2l6SdAxeMKGdwGN9bMfC2Cr/A==
-X-Received: by 2002:a05:622a:1812:b0:4b2:94e5:9847 with SMTP id d75a77b69052e-4b31dcac538mr59711811cf.74.1756634427339;
-        Sun, 31 Aug 2025 03:00:27 -0700 (PDT)
-Received: from umbar.lan (2001-14ba-a0c3-3a00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a0c3:3a00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-55f79801b2csm257066e87.117.2025.08.31.03.00.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 31 Aug 2025 03:00:26 -0700 (PDT)
-Date: Sun, 31 Aug 2025 13:00:23 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: =?utf-8?B?QmFybmFiw6FzIEN6w6ltw6Fu?= <barnabas.czeman@mainlining.org>
-Cc: Bjorn Andersson <andersson@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Otto =?utf-8?Q?Pfl=C3=BCger?= <otto.pflueger@abscue.de>,
-        Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Dmitry Baryshkov <lumag@kernel.org>,
-        Adam Skladowski <a_skl39@protonmail.com>,
-        Sireesh Kodali <sireeshkodali@protonmail.com>,
-        Rob Clark <robin.clark@oss.qualcomm.com>,
-        Abhinav Kumar <abhinav.kumar@linux.dev>,
-        Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
-        Srinivas Kandagatla <srini@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        iommu@lists.linux.dev, dri-devel@lists.freedesktop.org,
-        freedreno@lists.freedesktop.org, phone-devel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, linux@mainlining.org,
-        Dang Huynh <danct12@riseup.net>
-Subject: Re: [PATCH v7 4/6] arm64: dts: qcom: Add initial support for MSM8937
-Message-ID: <fv4jz6unxpncqazgptet4ie67vdrqqnq3owpjuh7huqvepoozd@yelivqgci2om>
-References: <20250831-msm8937-v7-0-232a9fb19ab7@mainlining.org>
- <20250831-msm8937-v7-4-232a9fb19ab7@mainlining.org>
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="Hd+qEDuh";
+	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="qM4n8yt2"
+DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
+	h=To:Message-Id:Date:Subject:From; t=1756643368; bh=i2nnWwgWrV153flpsGQ0nvH
+	siD/LEbmYW2t4Po0/UPg=; b=Hd+qEDuhnUJ6CJkydtVGUPpm6I/hJFBD1fzUILmg77uoA13Un3
+	ecx9pDeBOO1KUAzA1tmm2U/BqPROVexIv4/y6bQ48VnOKG1qyJZhj4R+ORl63sdXobWuwUwzIYL
+	hlbS9TwuvzspG6mTKajZT++M+sElsrrJ6Gkh8PZs6NDj4yEImEK+Y6/+d7kLnCdkykqOYI5K61Z
+	ShzR2JWUm5BfXPRZPxqY9mzaTyYHbiSL/ip+8/MdYd7mREEYhmOhuNJpF4RSwH4m3csSZKbtFec
+	BNKRYwiwFfi6qlo6x+SglXIJmipmN6coR/I5Hd5TiaUOt9/XeHkrTas085jKPE92pRw==;
+DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
+	h=To:Message-Id:Date:Subject:From; t=1756643368; bh=i2nnWwgWrV153flpsGQ0nvH
+	siD/LEbmYW2t4Po0/UPg=; b=qM4n8yt2DHgkuEfcvH6rwSZ7vgDRNky28Ky+mQiCAVCcOYpVkx
+	woRsI6safiOoBsE1itwBpzlLku6VJfEZxLCw==;
+From: =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>
+Subject: [PATCH v8 0/7] Initial support of MSM8937 and Xiaomi Redmi 3S
+Date: Sun, 31 Aug 2025 14:29:23 +0200
+Message-Id: <20250831-msm8937-v8-0-b7dcd63caaac@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250831-msm8937-v7-4-232a9fb19ab7@mainlining.org>
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwODMwMDAzMiBTYWx0ZWRfX7UoyWlHL4fVF
- luMGr4KPUsx5qgG5LkdTEV+Ym2Aln9eTuCQIUAJCXFfRhP9BJHJmBsFPL/NgS25sM/JFhSFj0qV
- WRZDjJSbqwnprgM7mpizg5mGLKkAxyZQzIWa9mSNRvUVfqwMZqCIdWYf0eJSH63FifcsHsWFNIB
- REaoujQ/UIZT1owBPT9vfQ9dPbba0KelwrE/4OjAZL4f8D09ULVtCf/iJEd2NG+jnAa//Ma+ZIA
- SYra3DYnb+9T81HClEJZuea7+bibr3cuZfIi3oSaEveQOzmv6ZeFuS1pvLHpRwUiP4TC6AEfIb6
- 5tIx/biBE0GxIdLrL05VavM9Yq3l2TdVJpqiGxCNlmyTNjREa+5YWAlViOq72pizzxsYv6bhqCf
- tPgce1aN
-X-Proofpoint-ORIG-GUID: a_tLHt-XyBr4Zhg2jjERcFjjY1sWB8So
-X-Proofpoint-GUID: a_tLHt-XyBr4Zhg2jjERcFjjY1sWB8So
-X-Authority-Analysis: v=2.4 cv=M9NNKzws c=1 sm=1 tr=0 ts=68b41d3d cx=c_pps
- a=mPf7EqFMSY9/WdsSgAYMbA==:117 a=xqWC_Br6kY4A:10 a=8nJEP1OIZ-IA:10
- a=2OwXVqhp2XgA:10 a=bBqXziUQAAAA:8 a=OuZLqq7tAAAA:8 a=BfrjIcddtau6jJL3F9YA:9
- a=r_sqX3LX-aZnKoI4:21 a=3ZKOabzyN94A:10 a=wPNLvfGTeEIA:10
- a=dawVfQjAaf238kedN5IG:22 a=BjKv_IHbNJvPKzgot4uq:22 a=AKGiAy9iJ-JzxKVHQNES:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-08-31_04,2025-08-28_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 adultscore=0 spamscore=0 priorityscore=1501 malwarescore=0
- clxscore=1015 suspectscore=0 phishscore=0 bulkscore=0 classifier=typeunknown
- authscore=0 authtc= authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2507300000 definitions=main-2508300032
+X-B4-Tracking: v=1; b=H4sIACNAtGgC/23Q3WrEIBAF4FdZvG6KzpiM9qrvUXrhz5gVmmRJS
+ mhZ8u41C62B5vIMfkfHu1h4zryIl8tdzLzmJU9jCebpIsLVjT03OZYsQEIrQclmWAZjkRoAw0n
+ GgBysKKdvM6f89Wh6ey/5mpfPaf5+FK9qn/52qL+OVTWyoQjEsaNE0rwOLo8fecxj/zzNvdiLV
+ jhgwIqhYG8tlWGHHPEU4xHrirHg6CIFZSCE4E+xrhhVW7EuWCWFwIak0/YUtxVrOOzc7s9O1pD
+ lpHQ8x13FBuqnr92OpZUeXPAd8SmmA8bDzVQwIDibvLLO0z+8bdsPstv+YBECAAA=
+X-Change-ID: 20250210-msm8937-228ef0dc3ec9
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>, 
+ =?utf-8?q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, 
+ Linus Walleij <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, 
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, 
+ Sean Paul <sean@poorly.run>, Marijn Suijten <marijn.suijten@somainline.org>, 
+ David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Dmitry Baryshkov <lumag@kernel.org>, 
+ Rob Clark <robin.clark@oss.qualcomm.com>, 
+ Abhinav Kumar <abhinav.kumar@linux.dev>, 
+ Jessica Zhang <jessica.zhang@oss.qualcomm.com>, 
+ Robert Marko <robimarko@gmail.com>, Das Srinagesh <quic_gurus@quicinc.com>, 
+ Srinivas Kandagatla <srini@kernel.org>, 
+ Rob Clark <robin.clark@oss.qualcomm.com>, 
+ Dmitry Baryshkov <lumag@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-gpio@vger.kernel.org, iommu@lists.linux.dev, 
+ dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org, 
+ phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
+ linux@mainlining.org, 
+ =?utf-8?q?Barnab=C3=A1s_Cz=C3=A9m=C3=A1n?= <barnabas.czeman@mainlining.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Daniil Titov <daniilt971@gmail.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>, 
+ Dang Huynh <danct12@riseup.net>, 
+ Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1756643366; l=4016;
+ i=barnabas.czeman@mainlining.org; s=20240730; h=from:subject:message-id;
+ bh=4FfX1QEQR5BhgXz6cJLgVX8UFOXb13D1QrVd1i7A3Ew=;
+ b=B5QHO+A+w0PBU7Z6D2cWI7h+7cQBlvX7Bd5nnGRwNyqCiCjUrY+3pX4v307VM+DEzp2DytdDC
+ nTE7aqNzjtpCgVuuqIQtNdC1+sRANww2PJ0Aj7lDfxOPWTGR1m+ywUX
+X-Developer-Key: i=barnabas.czeman@mainlining.org; a=ed25519;
+ pk=TWUSIGgwW/Sn4xnX25nw+lszj1AT/A3bzkahn7EhOFc=
 
-On Sun, Aug 31, 2025 at 12:38:16AM +0200, Barnab·s CzÈm·n wrote:
-> From: Dang Huynh <danct12@riseup.net>
-> 
-> Add initial support for MSM8937 SoC.
-> 
-> Signed-off-by: Dang Huynh <danct12@riseup.net>
-> Co-developed-by: Barnab·s CzÈm·n <barnabas.czeman@mainlining.org>
-> Signed-off-by: Barnab·s CzÈm·n <barnabas.czeman@mainlining.org>
-> ---
->  arch/arm64/boot/dts/qcom/msm8937.dtsi | 2134 +++++++++++++++++++++++++++++++++
->  1 file changed, 2134 insertions(+)
+This patch series add initial support for MSM8937 SoC
+and Xiaomi Redmi 3S (land).
 
-> +	};
-> +
-> +
-> +	firmware {
-> +		scm: scm {
-> +			compatible = "qcom,scm-msm8916", "qcom,scm";
+The series is extending the MSM8917 gcc and pinctrl drivers
+because they are sibling SoCs.
+MSM8937 have 4 more A53 cores and have one more dsi port then
+MSM8917.
+It implements little-big architecture and uses Adreno 505.
 
-"qcom,scm-msm8937", "qcom,scm"
+Signed-off-by: Barnab√°s Cz√©m√°n <barnabas.czeman@mainlining.org>
+---
+Changes in v8:
+- msm8937:
+  - Fix scm compatible.
+  - Fix position of sram@60000 node.
+- Document qcom,scm-msm8937 compatible
+- Link to v7: https://lore.kernel.org/r/20250831-msm8937-v7-0-232a9fb19ab7@mainlining.org
 
-> +			clocks = <&gcc GCC_CRYPTO_CLK>,
-> +				 <&gcc GCC_CRYPTO_AXI_CLK>,
-> +				 <&gcc GCC_CRYPTO_AHB_CLK>;
-> +			clock-names = "core",
-> +				      "bus",
-> +				      "iface";
-> +			#reset-cells = <1>;
-> +
-> +			qcom,dload-mode = <&tcsr 0x6100>;
-> +		};
-> +	};
-> +
-> +	memory@80000000 {
-> +		/* We expect the bootloader to fill in the reg */
-> +		reg = <0 0x80000000 0 0>;
-> +		device_type = "memory";
-> +	};
-> +
-> +	reserved-memory {
-> +		ranges;
-> +		#address-cells = <2>;
-> +		#size-cells = <2>;
-> +
-> +		qseecom_mem: reserved@85b00000 {
-> +			reg = <0x0 0x85b00000 0x0 0x800000>;
-> +			no-map;
-> +		};
-> +
-> +		smem@86300000 {
-> +			compatible = "qcom,smem";
-> +			reg = <0x0 0x86300000 0x0 0x100000>;
-> +			no-map;
-> +
-> +			hwlocks = <&tcsr_mutex 3>;
-> +			qcom,rpm-msg-ram = <&rpm_msg_ram>;
-> +		};
-> +
-> +		reserved@86400000 {
-> +			reg = <0x0 0x86400000 0x0 0x400000>;
-> +			no-map;
-> +		};
-> +
-> +		rmtfs@92100000 {
-> +			compatible = "qcom,rmtfs-mem";
-> +			reg = <0x0 0x92100000 0x0 0x180000>;
-> +			no-map;
-> +
-> +			qcom,client-id = <1>;
-> +		};
-> +
-> +		adsp_mem: adsp {
-> +			size = <0x0 0x1100000>;
-> +			alignment = <0x0 0x100000>;
-> +			alloc-ranges = <0x0 0x86800000 0x0 0x8000000>;
-> +			no-map;
-> +			status = "disabled";
-> +		};
-> +
-> +		mba_mem: mba {
-> +			size = <0x0 0x100000>;
-> +			alignment = <0x0 0x100000>;
-> +			alloc-ranges = <0x0 0x86800000 0x0 0x8000000>;
-> +			no-map;
-> +			status = "disabled";
-> +		};
-> +
-> +		wcnss_mem: wcnss {
-> +			size = <0x0 0x700000>;
-> +			alignment = <0x0 0x100000>;
-> +			alloc-ranges = <0x0 0x86800000 0x0 0x8000000>;
-> +			no-map;
-> +			status = "disabled";
-> +		};
-> +
-> +		venus_mem: venus {
-> +			size = <0x0 0x400000>;
-> +			alignment = <0x0 0x100000>;
-> +			alloc-ranges = <0x0 0x86800000 0x0 0x8000000>;
-> +			no-map;
-> +			status = "disabled";
-> +		};
-> +	};
-> +
-> +	cpu_opp_table_c0: opp-table-c0 {
-> +		compatible = "operating-points-v2";
-> +		opp-shared;
-> +
-> +		opp-768000000 {
-> +			opp-hz = /bits/ 64 <768000000>;
-> +		};
-> +
-> +		opp-902400000 {
-> +			opp-hz = /bits/ 64 <902400000>;
-> +		};
-> +
-> +		opp-998400000 {
-> +			opp-hz = /bits/ 64 <998400000>;
-> +		};
-> +
-> +		opp-1094400000 {
-> +			opp-hz = /bits/ 64 <1094400000>;
-> +		};
-> +	};
-> +
-> +	cpu_opp_table_c1: opp-table-c1 {
-> +		compatible = "operating-points-v2";
-> +		opp-shared;
-> +
-> +		opp-960000000 {
-> +			opp-hz = /bits/ 64 <960000000>;
-> +		};
-> +
-> +		opp-1094400000 {
-> +			opp-hz = /bits/ 64 <1094400000>;
-> +		};
-> +
-> +		opp-1209600000 {
-> +			opp-hz = /bits/ 64 <1209600000>;
-> +		};
-> +
-> +		opp-1248000000 {
-> +			opp-hz = /bits/ 64 <1248000000>;
-> +		};
-> +
-> +		opp-1344000000 {
-> +			opp-hz = /bits/ 64 <1344000000>;
-> +		};
-> +
-> +		opp-1401600000 {
-> +			opp-hz = /bits/ 64 <1401600000>;
-> +		};
-> +	};
-> +
-> +	pmu {
-> +		compatible = "arm,cortex-a53-pmu";
-> +		interrupts = <GIC_PPI 7 (GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_HIGH)>;
-> +	};
-> +
-> +	psci {
-> +		compatible = "arm,psci-1.0";
-> +		method = "smc";
-> +	};
-> +
-> +	rpm: remoteproc {
-> +		compatible = "qcom,msm8937-rpm-proc", "qcom,rpm-proc";
-> +
-> +		smd-edge {
-> +			interrupts = <GIC_SPI 168 IRQ_TYPE_EDGE_RISING>;
-> +			qcom,ipc = <&apcs1 8 0>;
-> +			qcom,smd-edge = <15>;
-> +
-> +			rpm_requests: rpm-requests {
-> +				compatible = "qcom,rpm-msm8937", "qcom,smd-rpm";
-> +				qcom,smd-channels = "rpm_requests";
-> +
-> +				rpmcc: clock-controller {
-> +					compatible = "qcom,rpmcc-msm8937", "qcom,rpmcc";
-> +					#clock-cells = <1>;
-> +					clocks = <&xo_board>;
-> +					clock-names = "xo";
-> +				};
-> +
-> +				rpmpd: power-controller {
-> +					compatible = "qcom,msm8937-rpmpd", "qcom,msm8917-rpmpd";
-> +					#power-domain-cells = <1>;
-> +					operating-points-v2 = <&rpmpd_opp_table>;
-> +
-> +					rpmpd_opp_table: opp-table {
-> +						compatible = "operating-points-v2";
-> +
-> +						rpmpd_opp_ret: opp1 {
-> +							opp-level = <RPM_SMD_LEVEL_RETENTION>;
-> +						};
-> +
-> +						rpmpd_opp_ret_plus: opp2 {
-> +							opp-level = <RPM_SMD_LEVEL_RETENTION_PLUS>;
-> +						};
-> +
-> +						rpmpd_opp_min_svs: opp3 {
-> +							opp-level = <RPM_SMD_LEVEL_MIN_SVS>;
-> +						};
-> +
-> +						rpmpd_opp_low_svs: opp4 {
-> +							opp-level = <RPM_SMD_LEVEL_LOW_SVS>;
-> +						};
-> +
-> +						rpmpd_opp_svs: opp5 {
-> +							opp-level = <RPM_SMD_LEVEL_SVS>;
-> +						};
-> +
-> +						rpmpd_opp_svs_plus: opp6 {
-> +							opp-level = <RPM_SMD_LEVEL_SVS_PLUS>;
-> +						};
-> +
-> +						rpmpd_opp_nom: opp7 {
-> +							opp-level = <RPM_SMD_LEVEL_NOM>;
-> +						};
-> +
-> +						rpmpd_opp_nom_plus: opp8 {
-> +							opp-level = <RPM_SMD_LEVEL_NOM_PLUS>;
-> +						};
-> +
-> +						rpmpd_opp_turbo: opp9 {
-> +							opp-level = <RPM_SMD_LEVEL_TURBO>;
-> +						};
-> +					};
-> +				};
-> +			};
-> +		};
-> +	};
-> +
-> +	smp2p-adsp {
-> +		compatible = "qcom,smp2p";
-> +		qcom,smem = <443>, <429>;
-> +
-> +		interrupts = <GIC_SPI 291 IRQ_TYPE_EDGE_RISING>;
-> +
-> +		mboxes = <&apcs1 10>;
-> +
-> +		qcom,local-pid = <0>;
-> +		qcom,remote-pid = <2>;
-> +
-> +		adsp_smp2p_out: master-kernel {
-> +			qcom,entry-name = "master-kernel";
-> +
-> +			#qcom,smem-state-cells = <1>;
-> +		};
-> +
-> +		adsp_smp2p_in: slave-kernel {
-> +			qcom,entry-name = "slave-kernel";
-> +
-> +			interrupt-controller;
-> +			#interrupt-cells = <2>;
-> +		};
-> +	};
-> +
-> +	smp2p-modem {
-> +		compatible = "qcom,smp2p";
-> +		qcom,smem = <435>, <428>;
-> +
-> +		interrupts = <GIC_SPI 27 IRQ_TYPE_EDGE_RISING>;
-> +
-> +		mboxes = <&apcs1 14>;
-> +
-> +		qcom,local-pid = <0>;
-> +		qcom,remote-pid = <1>;
-> +
-> +		modem_smp2p_out: master-kernel {
-> +			qcom,entry-name = "master-kernel";
-> +
-> +			#qcom,smem-state-cells = <1>;
-> +		};
-> +
-> +		modem_smp2p_in: slave-kernel {
-> +			qcom,entry-name = "slave-kernel";
-> +
-> +			interrupt-controller;
-> +			#interrupt-cells = <2>;
-> +		};
-> +	};
-> +
-> +	smp2p-wcnss {
-> +		compatible = "qcom,smp2p";
-> +		qcom,smem = <451>, <431>;
-> +
-> +		interrupts = <GIC_SPI 143 IRQ_TYPE_EDGE_RISING>;
-> +
-> +		mboxes = <&apcs1 18>;
-> +
-> +		qcom,local-pid = <0>;
-> +		qcom,remote-pid = <4>;
-> +
-> +		wcnss_smp2p_out: master-kernel {
-> +			qcom,entry-name = "master-kernel";
-> +
-> +			#qcom,smem-state-cells = <1>;
-> +		};
-> +
-> +		wcnss_smp2p_in: slave-kernel {
-> +			qcom,entry-name = "slave-kernel";
-> +
-> +			interrupt-controller;
-> +			#interrupt-cells = <2>;
-> +		};
-> +	};
-> +
-> +	smsm {
-> +		compatible = "qcom,smsm";
-> +
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		mboxes = <0>, <&apcs1 13>, <0>, <&apcs1 19>;
-> +
-> +		apps_smsm: apps@0 {
-> +			reg = <0>;
-> +
-> +			#qcom,smem-state-cells = <1>;
-> +		};
-> +
-> +		hexagon_smsm: hexagon@1 {
-> +			reg = <1>;
-> +			interrupts = <GIC_SPI 26 IRQ_TYPE_EDGE_RISING>;
-> +
-> +			interrupt-controller;
-> +			#interrupt-cells = <2>;
-> +		};
-> +
-> +		wcnss_smsm: wcnss@6 {
-> +			reg = <6>;
-> +			interrupts = <GIC_SPI 144 IRQ_TYPE_EDGE_RISING>;
-> +
-> +			interrupt-controller;
-> +			#interrupt-cells = <2>;
-> +		};
-> +	};
-> +
-> +	soc: soc@0 {
-> +		compatible = "simple-bus";
-> +		ranges = <0 0 0 0xffffffff>;
-> +		#address-cells = <1>;
-> +		#size-cells = <1>;
-> +
-> +		qfprom: qfprom@a4000 {
-> +			compatible = "qcom,msm8937-qfprom", "qcom,qfprom";
-> +			reg = <0x000a4000 0x1000>;
-> +			#address-cells = <1>;
-> +			#size-cells = <1>;
-> +
-> +			tsens_base1: base1@1d8 {
-> +				reg = <0x1d8 0x1>;
-> +				bits = <0 8>;
-> +			};
-> +
-> +			tsens_s5_p1: s5-p1@1d9 {
-> +				reg = <0x1d9 0x1>;
-> +				bits = <0 6>;
-> +			};
-> +
-> +			tsens_s5_p2: s5-p2@1d9 {
-> +				reg = <0x1d9 0x2>;
-> +				bits = <6 6>;
-> +			};
-> +
-> +			tsens_s6_p1: s6-p1@1da {
-> +				reg = <0x1da 0x2>;
-> +				bits = <4 6>;
-> +			};
-> +
-> +			tsens_s6_p2: s6-p2@1db {
-> +				reg = <0x1db 0x1>;
-> +				bits = <2 6>;
-> +			};
-> +
-> +			tsens_s7_p1: s7-p1@1dc {
-> +				reg = <0x1dc 0x1>;
-> +				bits = <0 6>;
-> +			};
-> +
-> +			tsens_s7_p2: s7-p2@1dc {
-> +				reg = <0x1dc 0x2>;
-> +				bits = <6 6>;
-> +			};
-> +
-> +			tsens_s8_p1: s8-p1@1dd {
-> +				reg = <0x1dd 0x2>;
-> +				bits = <4 6>;
-> +			};
-> +
-> +			tsens_s8_p2: s8-p2@1de {
-> +				reg = <0x1de 0x1>;
-> +				bits = <2 6>;
-> +			};
-> +
-> +			tsens_base2: base2@1df {
-> +				reg = <0x1df 0x1>;
-> +				bits = <0 8>;
-> +			};
-> +
-> +			tsens_mode: mode@210 {
-> +				reg = <0x210 0x1>;
-> +				bits = <0 3>;
-> +			};
-> +
-> +			tsens_s0_p1: s0-p1@210 {
-> +				reg = <0x210 0x2>;
-> +				bits = <3 6>;
-> +			};
-> +
-> +			tsens_s0_p2: s0-p2@211 {
-> +				reg = <0x211 0x1>;
-> +				bits = <1 6>;
-> +			};
-> +
-> +			tsens_s1_p1: s1-p1@211 {
-> +				reg = <0x211 0x2>;
-> +				bits = <7 6>;
-> +			};
-> +
-> +			tsens_s1_p2: s1-p2@212 {
-> +				reg = <0x212 0x2>;
-> +				bits = <5 6>;
-> +			};
-> +
-> +			tsens_s2_p1: s2-p1@213 {
-> +				reg = <0x213 0x2>;
-> +				bits = <3 6>;
-> +			};
-> +
-> +			tsens_s2_p2: s2-p2@214 {
-> +				reg = <0x214 0x1>;
-> +				bits = <1 6>;
-> +			};
-> +
-> +			tsens_s3_p1: s3-p1@214 {
-> +				reg = <0x214 0x2>;
-> +				bits = <7 6>;
-> +			};
-> +
-> +			tsens_s3_p2: s3-p2@215 {
-> +				reg = <0x215 0x2>;
-> +				bits = <5 6>;
-> +			};
-> +
-> +			tsens_s4_p1: s4-p1@216 {
-> +				reg = <0x216 0x2>;
-> +				bits = <3 6>;
-> +			};
-> +
-> +			tsens_s4_p2: s4-p2@217 {
-> +				reg = <0x217 0x1>;
-> +				bits = <1 6>;
-> +			};
-> +
-> +			tsens_s9_p1: s9-p1@230 {
-> +				reg = <0x230 0x1>;
-> +				bits = <0 6>;
-> +			};
-> +
-> +			tsens_s9_p2: s9-p2@230 {
-> +				reg = <0x230 0x2>;
-> +				bits = <6 6>;
-> +			};
-> +
-> +			tsens_s10_p1: s10-p1@231 {
-> +				reg = <0x231 0x2>;
-> +				bits = <4 6>;
-> +			};
-> +
-> +			tsens_s10_p2: s10-p2@232 {
-> +				reg = <0x232 0x1>;
-> +				bits = <2 6>;
-> +			};
-> +
-> +			gpu_speed_bin: gpu-speed-bin@601b {
-> +				reg = <0x601b 0x1>;
-> +				bits = <7 1>;
-> +			};
-> +		};
-> +
-> +		usb_hs_phy: phy@6c000 {
-> +			compatible = "qcom,usb-hs-28nm-femtophy";
-> +			reg = <0x0006c000 0x200>;
-> +			#phy-cells = <0>;
-> +			clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
-> +				 <&gcc GCC_USB_HS_PHY_CFG_AHB_CLK>,
-> +				 <&gcc GCC_USB2A_PHY_SLEEP_CLK>;
-> +			clock-names = "ref",
-> +				      "ahb",
-> +				      "sleep";
-> +			resets = <&gcc GCC_QUSB2_PHY_BCR>,
-> +				 <&gcc GCC_USB2_HS_PHY_ONLY_BCR>;
-> +			reset-names = "phy",
-> +				      "por";
-> +			status = "disabled";
-> +		};
-> +
-> +		rng@e3000 {
-> +			compatible = "qcom,prng";
-> +			reg = <0x000e3000 0x1000>;
-> +			clocks = <&gcc GCC_PRNG_AHB_CLK>;
-> +			clock-names = "core";
-> +		};
-> +
-> +		tsens: thermal-sensor@4a9000 {
-> +			compatible = "qcom,msm8937-tsens", "qcom,tsens-v1";
-> +			reg = <0x004a9000 0x1000>,
-> +			      <0x004a8000 0x1000>;
-> +			interrupts = <GIC_SPI 184 IRQ_TYPE_LEVEL_HIGH>;
-> +			interrupt-names = "uplow";
-> +			nvmem-cells = <&tsens_mode>,
-> +				      <&tsens_base1>, <&tsens_base2>,
-> +				      <&tsens_s0_p1>, <&tsens_s0_p2>,
-> +				      <&tsens_s1_p1>, <&tsens_s1_p2>,
-> +				      <&tsens_s2_p1>, <&tsens_s2_p2>,
-> +				      <&tsens_s3_p1>, <&tsens_s3_p2>,
-> +				      <&tsens_s4_p1>, <&tsens_s4_p2>,
-> +				      <&tsens_s5_p1>, <&tsens_s5_p2>,
-> +				      <&tsens_s6_p1>, <&tsens_s6_p2>,
-> +				      <&tsens_s7_p1>, <&tsens_s7_p2>,
-> +				      <&tsens_s8_p1>, <&tsens_s8_p2>,
-> +				      <&tsens_s9_p1>, <&tsens_s9_p2>,
-> +				      <&tsens_s10_p1>, <&tsens_s10_p2>;
-> +			nvmem-cell-names = "mode",
-> +					   "base1", "base2",
-> +					   "s0_p1", "s0_p2",
-> +					   "s1_p1", "s1_p2",
-> +					   "s2_p1", "s2_p2",
-> +					   "s3_p1", "s3_p2",
-> +					   "s4_p1", "s4_p2",
-> +					   "s5_p1", "s5_p2",
-> +					   "s6_p1", "s6_p2",
-> +					   "s7_p1", "s7_p2",
-> +					   "s8_p1", "s8_p2",
-> +					   "s9_p1", "s9_p2",
-> +					   "s10_p1", "s10_p2";
-> +			#qcom,sensors = <11>;
-> +			#thermal-sensor-cells = <1>;
-> +		};
-> +
-> +		rpm_msg_ram: sram@60000 {
+Changes in v7:
+- gpu.yaml: update adreno 505 pattern
+- Link to v6: https://lore.kernel.org/r/20250820-msm8937-v6-0-b090b2acb67e@mainlining.org
 
-This node is wrongly placed.
+Changes in v6:
+- msm8937:
+  - Fix nodes ordering.
+  - Format clocks, reg, dmas and -names properties.
+  - Add gpu_speedbin.
+- Describe A505 clocks.
+- Link to v5: https://lore.kernel.org/r/20250421-msm8937-v5-0-bf9879ef14d9@mainlining.org
 
-> +			compatible = "qcom,rpm-msg-ram";
-> +			reg = <0x00060000 0x8000>;
-> +		};
-> +
-> +		restart@4ab000 {
-> +			compatible = "qcom,pshold";
-> +			reg = <0x004ab000 0x4>;
-> +		};
-> +
+Changes in v5:
+- msm8937:
+  - Remove wrongly defined idle-states.
+  - Fix thermal zones.
+  - Use the header with DSI phy clock IDs.
+  - Fix the nodes order.
+  - Fix the pinctrls style.
+  - Follow gcc header changes.
+- msm8937-xiaomi-land:
+  - Remove headphone switch and speaker amplifier bindings.
+  - Unify status property style.
+- gcc bindings:
+  - Expand MSM8953 gcc schema with MSM8937.
+  - Add MSM8937 prefix for MSM8937 specific clocks.
+- gcc:
+  - Follow the bindings changes.
+- Drop alwayson clock documentation it will be handled in another
+  patchset.
+- Link to v4: https://lore.kernel.org/r/20250315-msm8937-v4-0-1f132e870a49@mainlining.org
 
+Changes in v4:
+- Add missing rpmcc include for qcom,gcc-msm8937 dtbinding exmaple.
+- msm8937: add missing space after s9-p1@230
+- msm8937-xiaomi-land: replace LED_FUNCTION_INDICATOR to LED_FUNCTION_STATUS
+- Remove applied patches
+- Link to v3: https://lore.kernel.org/r/20250224-msm8937-v3-0-dad7c182cccb@mainlining.org
+
+Changes in v3:
+- Fix qcom,gcc-msm8937 dtbinding example 
+- Link to v2: https://lore.kernel.org/r/20250223-msm8937-v2-0-b99722363ed3@mainlining.org
+
+Changes in v2:
+- drop applied patches
+- drop gcc schema commits infavor of a new schema for gcc-msm8937
+- document always on clock for adreno 505/506/510
+- msm8937:
+  - set cache size
+  - rename cpu labels
+  - fix style issues addressed by review
+- msm8937-xiaom-land:
+  - remove unused serial0 alias
+  - remove regulator-always-on from pm8937_l6
+  - add blue indicator led for aw2013
+- Link to v1: https://lore.kernel.org/r/20250211-msm8937-v1-0-7d27ed67f708@mainlining.org
+
+---
+Barnab√°s Cz√©m√°n (5):
+      dt-bindings: clock: qcom: Add MSM8937 Global Clock Controller
+      dt-bindings: firmware: qcom,scm: Add MSM8937
+      dt-bindings: display/msm/gpu: describe A505 clocks
+      dt-bindings: arm: qcom: Add Xiaomi Redmi 3S
+      arm64: dts: qcom: Add Xiaomi Redmi 3S
+
+Dang Huynh (1):
+      arm64: dts: qcom: Add initial support for MSM8937
+
+Daniil Titov (1):
+      clk: qcom: gcc: Add support for Global Clock controller found on MSM8937
+
+ Documentation/devicetree/bindings/arm/qcom.yaml    |    6 +
+ .../bindings/clock/qcom,gcc-msm8953.yaml           |   11 +-
+ .../devicetree/bindings/display/msm/gpu.yaml       |    2 +-
+ .../devicetree/bindings/firmware/qcom,scm.yaml     |    3 +
+ arch/arm64/boot/dts/qcom/Makefile                  |    1 +
+ arch/arm64/boot/dts/qcom/msm8937-xiaomi-land.dts   |  381 ++++
+ arch/arm64/boot/dts/qcom/msm8937.dtsi              | 2134 ++++++++++++++++++++
+ drivers/clk/qcom/Kconfig                           |    6 +-
+ drivers/clk/qcom/gcc-msm8917.c                     |  617 +++++-
+ include/dt-bindings/clock/qcom,gcc-msm8917.h       |   19 +
+ 10 files changed, 3169 insertions(+), 11 deletions(-)
+---
+base-commit: 3cace99d63192a7250461b058279a42d91075d0c
+change-id: 20250210-msm8937-228ef0dc3ec9
+
+Best regards,
 -- 
-With best wishes
-Dmitry
+Barnab√°s Cz√©m√°n <barnabas.czeman@mainlining.org>
+
