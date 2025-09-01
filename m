@@ -1,129 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABB6E223DCE
-	for <iommu@lists.linux.dev>; Mon,  1 Sep 2025 05:41:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C61B91C84A2
+	for <iommu@lists.linux.dev>; Mon,  1 Sep 2025 05:58:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756705313; cv=none; b=RPUe1IHdsyp0EG2FNByrhmH1mwt+JUj92HVdrwQFFGnJ4gbn4PcCgAb3HHXL0JIeLwIWk98ctp5dVxtqR2hUYzpYDwo5p0ZYT/pEj6GyeNLRxoaWAsNQ4LJ0BZqk8Iant8tXIlJWqSQUy4WJ52WVxf4Hr493ivkzK2pFFLWvly4=
+	t=1756706309; cv=none; b=cIxPV/83+KzPHjGF/sQOe7OYj9vcCIpiG3YGM4MaMvawxHSoWug97ghL8ylfNuDGYhFX7pPKcmcXMqcd6oxDgmSqBCpmYTHWBEs0WJS9Htt22qQyxhnVcfSoQTTwA71UBbFwhiytq+YV6wNNL9/mE+2pUc9Nb96V4gZC/6GjR1w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756705313; c=relaxed/simple;
-	bh=NaW/5+ULiwXiwxrRUZsuHyiZHz6ocLyAXETDgsHbvoc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=WXSa1SzKnVamTbej7PGiqzzeCWM9ZN0SohsO/LyqT511NDYSRcGBIHwVVeapfwjHNshV5NdBjnxAK0XtZNdRvnh5wXSmNebs483PmLmDA7TQlQSno9fg/ZmPnuE5+vP/PAipMsTLDFkHVAjhEo9v2rmBp7Gt3SSu9Lu56jxenHo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JPqAGAvJ; arc=none smtp.client-ip=192.198.163.15
+	s=arc-20240116; t=1756706309; c=relaxed/simple;
+	bh=ZZCloPK1tsMqhTQoF7MYB39jpIRVLodyy94vXZE7maM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GpUZLdgJzkdjBRvHM/xKoYku/fOSTk0SamkQ10RrDoNL2RCZKAIuF5B+B1TzRScylb8A2Rask3mPEqIaeRoMUDizmv5FUC4u4EAVqWwH5Nau7K//RlQDQgaKSKymNaQWh0tz7QDXEwnHz0GZdCV0xb6fsPtyvDsdNwMukDv92JU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fu2SiHq8; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JPqAGAvJ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fu2SiHq8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1756705311; x=1788241311;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=NaW/5+ULiwXiwxrRUZsuHyiZHz6ocLyAXETDgsHbvoc=;
-  b=JPqAGAvJUFIN35qnMsG9XlipJ2Q+L1/8futdub2s6BSf4eK7u83LtqNO
-   +5+WuSo9YVu6c/Z8jLRF9p2eB8+8crkXn0JtpRmA12wl5mlaOsEIb6SRO
-   77GAT6zEh1KIqllIQpfu97SBE+VpVlsgGBc5qo2UQ47pbO1kuo7shBULw
-   C6nwz1wW7krhwyVJWH5aiiKhGVWWXk/ZXa5xdLgqDxDdbHeQQI+sBH9F/
-   eeOB23aS75NTRZHxU4iQrrjY6svrjGZz+ZiK4jujJNPIjc7aYjQdlgvon
-   5Mj+1R0aGOg5jE5OAQUjGeKBxfiouqAsVzS9Lm+9OcArsY0xBPaEJzmSy
-   Q==;
-X-CSE-ConnectionGUID: SVqNZTaETIKVbMzx2MnaEQ==
-X-CSE-MsgGUID: tfucacQsSTqSUfClT37e0w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11539"; a="58998198"
+  t=1756706307; x=1788242307;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ZZCloPK1tsMqhTQoF7MYB39jpIRVLodyy94vXZE7maM=;
+  b=fu2SiHq8/TO4k03G1fJrAVKBGjLrH+aKc/J03aDeaL2SCmWQsgHsmBRv
+   TnxvSiypcq26S60whZwZj2OMIJ1UGOnyaZQpZh2oNYkzU4fTAHUE9lLa1
+   MC55SPYWei75jQtm+DuxijZsdkMZCA34TUgZnK8oghip9zJG0VEODMWeU
+   7EC1239FBDTSJZAgR9e+vHeG2T53wYnQH3xSUslziDvLia3EvOl3JCVaf
+   us00oX8gyPAtkMJCjKG+A6lTvTpOu+q0njCfxdiZAw9rxiEzuMCC9qEU5
+   wPVEEIHXPK2WI8WBx0DN+UkbNssDrfN4PZBzCiJlzjGsm3SfRax/82Fit
+   w==;
+X-CSE-ConnectionGUID: nWx2ulO7RZeDLP32kavPtQ==
+X-CSE-MsgGUID: WPVYlHRxTAaA3hNo71H7HA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11539"; a="76347593"
 X-IronPort-AV: E=Sophos;i="6.18,225,1751266800"; 
-   d="scan'208";a="58998198"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2025 22:41:50 -0700
-X-CSE-ConnectionGUID: qdAsDKITStC8oSdaj1yetw==
-X-CSE-MsgGUID: nvmp077rRVuWHTxN9DhsWg==
+   d="scan'208";a="76347593"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2025 22:58:27 -0700
+X-CSE-ConnectionGUID: Lnd7pXliRImuQ/pInjmbLw==
+X-CSE-MsgGUID: ErwQ2eOWRISfvjt6FkkNwA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.18,225,1751266800"; 
-   d="scan'208";a="175036722"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa003.jf.intel.com with ESMTP; 31 Aug 2025 22:41:48 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/1] iommu/vt-d: Remove LPIG from page group response descriptor
-Date: Mon,  1 Sep 2025 13:39:43 +0800
-Message-ID: <20250901053943.1708490-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
+   d="scan'208";a="176149562"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2025 22:58:23 -0700
+Message-ID: <ad661a4a-0078-49f6-b999-19c2ed76389b@linux.intel.com>
+Date: Mon, 1 Sep 2025 13:55:46 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/intel: Fix __domain_mapping()'s usage of
+ switch_to_super_page()
+To: Eugene Koira <eugkoira@amazon.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Cc: dwmw2@infradead.org, joro@8bytes.org, will@kernel.org,
+ robin.murphy@arm.com, longpeng2@huawei.com, graf@amazon.de,
+ nsaenz@amazon.com, nh-open-source@amazon.com, stable@vger.kernel.org
+References: <20250826143816.38686-1-eugkoira@amazon.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250826143816.38686-1-eugkoira@amazon.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Bit 66 in the page group response descriptor used to be the LPIG (Last
-Page in Group), but it was marked as Reserved since Specification 4.0.
-Remove programming on this bit to make it consistent with the latest
-specification.
+On 8/26/25 22:38, Eugene Koira wrote:
+> switch_to_super_page() assumes the memory range it's working on is aligned
+> to the target large page level. Unfortunately, __domain_mapping() doesn't
+> take this into account when using it, and will pass unaligned ranges
+> ultimately freeing a PTE range larger than expected.
+> 
+> Take for example a mapping with the following iov_pfn range [0x3fe400,
+> 0x4c0600], which should be backed by the following mappings:
+> 
+>     iov_pfn [0x3fe400, 0x3fffff] covered by 2MiB pages
+>     iov_pfn [0x400000, 0x4bffff] covered by 1GiB pages
+>     iov_pfn [0x4c0000, 0x4c05ff] covered by 2MiB pages
+> 
+> Under this circumstance, __domain_mapping() will pass [0x400000, 0x4c05ff]
+> to switch_to_super_page() at a 1 GiB granularity, which will in turn
+> free PTEs all the way to iov_pfn 0x4fffff.
+> 
+> Mitigate this by rounding down the iov_pfn range passed to
+> switch_to_super_page() in __domain_mapping()
+> to the target large page level.
+> 
+> Additionally add range alignment checks to switch_to_super_page.
+> 
+> Fixes: 9906b9352a35 ("iommu/vt-d: Avoid duplicate removing in __domain_mapping()")
+> Signed-off-by: Eugene Koira<eugkoira@amazon.com>
+> Cc:stable@vger.kernel.org
+> ---
+>   drivers/iommu/intel/iommu.c | 7 ++++++-
+>   1 file changed, 6 insertions(+), 1 deletion(-)
 
-Existing hardware all treats bit 66 of the page group response descriptor
-as "ignored", therefore this change doesn't break any existing hardware.
+Queued for v6.17-rc. Thank you!
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.h | 1 -
- drivers/iommu/intel/prq.c   | 7 ++-----
- 2 files changed, 2 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index d09b92871659..2a3931c4cff9 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -462,7 +462,6 @@ enum {
- #define QI_PGRP_PASID(pasid)	(((u64)(pasid)) << 32)
- 
- /* Page group response descriptor QW1 */
--#define QI_PGRP_LPIG(x)		(((u64)(x)) << 2)
- #define QI_PGRP_IDX(idx)	(((u64)(idx)) << 3)
- 
- 
-diff --git a/drivers/iommu/intel/prq.c b/drivers/iommu/intel/prq.c
-index 52570e42a14c..ff63c228e6e1 100644
---- a/drivers/iommu/intel/prq.c
-+++ b/drivers/iommu/intel/prq.c
-@@ -151,8 +151,7 @@ static void handle_bad_prq_event(struct intel_iommu *iommu,
- 			QI_PGRP_PASID_P(req->pasid_present) |
- 			QI_PGRP_RESP_CODE(result) |
- 			QI_PGRP_RESP_TYPE;
--	desc.qw1 = QI_PGRP_IDX(req->prg_index) |
--			QI_PGRP_LPIG(req->lpig);
-+	desc.qw1 = QI_PGRP_IDX(req->prg_index);
- 
- 	qi_submit_sync(iommu, &desc, 1, 0);
- }
-@@ -379,19 +378,17 @@ void intel_iommu_page_response(struct device *dev, struct iopf_fault *evt,
- 	struct iommu_fault_page_request *prm;
- 	struct qi_desc desc;
- 	bool pasid_present;
--	bool last_page;
- 	u16 sid;
- 
- 	prm = &evt->fault.prm;
- 	sid = PCI_DEVID(bus, devfn);
- 	pasid_present = prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
--	last_page = prm->flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
- 
- 	desc.qw0 = QI_PGRP_PASID(prm->pasid) | QI_PGRP_DID(sid) |
- 			QI_PGRP_PASID_P(pasid_present) |
- 			QI_PGRP_RESP_CODE(msg->code) |
- 			QI_PGRP_RESP_TYPE;
--	desc.qw1 = QI_PGRP_IDX(prm->grpid) | QI_PGRP_LPIG(last_page);
-+	desc.qw1 = QI_PGRP_IDX(prm->grpid);
- 	desc.qw2 = 0;
- 	desc.qw3 = 0;
- 
--- 
-2.43.0
-
+Thanks,
+baolu
