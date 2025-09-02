@@ -1,77 +1,76 @@
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C94C4334372
-	for <iommu@lists.linux.dev>; Tue,  2 Sep 2025 16:10:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29FF62DEA64
+	for <iommu@lists.linux.dev>; Tue,  2 Sep 2025 16:24:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756829432; cv=none; b=J+yuuwOL+LoJhy70rWscEQox635BWj3sk2fvLs3QkZRMhSuT84BKHAMvbNkKoPPycAr7QG+T8JB0e0QZiYmlMw5R4RQr2Qi5ZdngL/OihdgWmwpA198ikAT6Ax8yZKNWCL8bUn74ZcuvOYQkc1UYBXxRauUQ86lHrXAr6bC7u9Y=
+	t=1756830283; cv=none; b=IX0w9HCrIJc1lG7zkI89Jlfl+QdALyYt7fuVRnseJ6vJOWc/JWauEQ4HcI40eEhiczYezi+J6nEaA9TnRG/T9d9TlaOK2igVNBycTqX1oXktByO/aDRG1dbOJWnYjatTAPqiQafbJgVIMUgQm7JuiNzlqk2qlcsK5iyYLprBPz8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756829432; c=relaxed/simple;
-	bh=KG5LHOGo2mh5vIaKq+QebXYxVd4hhMHqQE7w3KCpNFU=;
+	s=arc-20240116; t=1756830283; c=relaxed/simple;
+	bh=pqF3A1jWAymNqoyZqZ1lyLwx5mWE7UM92rN5uoXyU28=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HGMXo376V4tGWA/xknSGGo/1WA9QZBxlsu+ftWKoVjwSfQPjCoGe2hD+m1TsgOfGBPrB8Wy5z94rgZi1LCJ42QFErpDHco3s5Jmlcgv/cULceieIK5DrayG8hyt2dtUdMoas8UTnNP/IDDFP2iH4pBAfJn2Ck1SPfvi1y/RxzcA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=aCXOYHEe; arc=none smtp.client-ip=209.85.219.50
+	 Content-Type:Content-Disposition:In-Reply-To; b=rz4Ipe/W3YCtP+oAG4C2Hhknveqkgn0R+aXz1VG/GMn2RrbxSYQqwi5Od18i7338zERus+TCBYg65uvL9cvTprGKrd/8wPAmzJNLSp4yZrMvCVehZ37Kslf0pSMLZZPDHgoizDOG6hswzM2HHo0R16Rx8LeJhUWj6k15u4dDoIE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Eso6kFby; arc=none smtp.client-ip=209.85.222.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="aCXOYHEe"
-Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-70ba7aa131fso61755206d6.2
-        for <iommu@lists.linux.dev>; Tue, 02 Sep 2025 09:10:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Eso6kFby"
+Received: by mail-qk1-f169.google.com with SMTP id af79cd13be357-7e8704cdc76so572891485a.1
+        for <iommu@lists.linux.dev>; Tue, 02 Sep 2025 09:24:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1756829429; x=1757434229; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1756830281; x=1757435081; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=DTQRLWXvEI14NWUbWjh+wxk4xMHeIyr9b4st02lORnE=;
-        b=aCXOYHEeAuLBIdFF64w6jYqeBGxrH/xvod6ZICAfwZ2Z/OU96r8/QcLxcVLEpiGZLr
-         RJTy2k0XC1q+DebqRwvXJJbUdtPWEZvNKXl5t5FF47C/2sG1f4fuEUZ6i34DX1z9tNy5
-         0yZ8+cIpmfUvgfS+Ms5w3v09ij7Nq+r4UXhZ1lL72GsJIFmTeVbAwsiBt+yDuE+pr9hD
-         Ygs+gGZdZNj04oP1NWdfHTnN61EY7R3b3feYwWpuoa/jHsfuRpPy/AERCncDWkc7avzC
-         b492V4T1f6DzasbpunhYcMo18r7GymUklxV8HnEYi9THGzfCd/QfIq8a3fNY3XBZsohB
-         gK1Q==
+        bh=Fhd34ic8mzL1CnzuBvjvCTALN3sKLJ7EfG+67QvagDw=;
+        b=Eso6kFbyOSd6c/Smsypor3ZHZHVqTOZh2C09mIKXRsHs0x3oyqb+A4SwbDcl7Oscla
+         srjloZeFVJaK33kbAMVCT8hpeL0oQF6LYe8hNkW43+D28xRwPfHqPQaXoVF5dtF+1iW0
+         cKWg8LsM/cImxZ2IVhnwsOVaKIyXRla1g9tMzuSWH8MKAXa3Zk/X7rtF+XguhEgV4iWg
+         +NYkFeNYqL+i4efkAchb6eKQBoyWevBfr3uv9Fof48WkIdolo9PXVdQBaD9sgwYeeebC
+         xogdx31HzxdPO+woyWNHDt4AV8tbTfuM5PJQkOVPP04/3i5P7Wynjc+BjBYbatO2uEhR
+         vZag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756829429; x=1757434229;
+        d=1e100.net; s=20230601; t=1756830281; x=1757435081;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DTQRLWXvEI14NWUbWjh+wxk4xMHeIyr9b4st02lORnE=;
-        b=Pv21IGHMeRuZz0OevTupNLSTCPpQAscnISm7C3wnDphcJskyxuoOSerj36SKyh6thU
-         nnYY0DlnjAmXebWXFhXixPhSLjAEncw4MbCzEZIvx6Jaby120+dZxkYahMeHYwM5S3e5
-         3l69edZg0SWzH8xTnG99XSulPQUrnrBBUkrpscb/TP4IYxfcPDHmoFt7mnKkpJRejoLq
-         Cakx6QfIqvuBrojEUbujX0J/RYaw3VGDx7a79S1ZfhwTNL5YkGeTMo1jq7mFVA6MYqqG
-         +tIb+JmbfNzlvfb10ZvlOegUhXAamQZ94ECSH0wY08IuxBk3p0iryR1YcKZS1yZ6AZTV
-         Yw1Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVqIl7hpNCmRFzSaPRZc5xYX/HS2jcpfSB3cS30SahOYlTBugYR1rvDtF9KJYliWP6ye0zJhQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxqPkmbErQsRXbjTNQJpdoIYeefDh9RVg08aomvDd5Yf2RRorVF
-	34loKazrKicO3aSfHvvV1VAQgrnQY/AvU6CP6tzHW4EJoALGNaQ3QlhtmU9VFSyhGx8=
-X-Gm-Gg: ASbGncupo6mQqfFVSj7/jsymsYfKQ/jxyfq0abCCx5gW5SqFtyufmOP7X4QkTab3lCY
-	coyjo0t0AhiPbJdg5uWNiDI/rOKGmKfmOwDqcr/jVXOd7c6iyWunRJiJiIk9SKfbrFPwvyALHPd
-	/CvlyVi2UQ85/BIGloXo0OKC6zhRGpBjl2U3vFSP5TAyfjR5rZ5AsoWWM8mOvUrlTJzRvfSMVyP
-	NGRnoLJJn+UN++R83kWcB2eQhupsdGERFSWUU2URWjYSe9+Mk3Xx5TSeLIyhK4IDyWdzxOHCM+D
-	NUDt/SnI29QPD/0+k2VOP91Xpr7gkqfvsFh6fVB5/d2vcaqlhYhJ7NZ5/SjtkIbA/pdrlJ+KkGH
-	z1IzVg9UzpW2S3fS5BsKd6eDcR9cnnutOHrCmAc2F0SWcpT925FI5Qp/EguchHbyNsRPb
-X-Google-Smtp-Source: AGHT+IFhzQTA7hTae/ikIqwqd6lRBifnM++rAw/xHgCOughJssiMfvo0jbnnGhHjDPXZ244dXS3P5w==
-X-Received: by 2002:ad4:5a07:0:b0:70f:b283:77e8 with SMTP id 6a1803df08f44-70fb2837f6dmr81568126d6.3.1756829429395;
-        Tue, 02 Sep 2025 09:10:29 -0700 (PDT)
+        bh=Fhd34ic8mzL1CnzuBvjvCTALN3sKLJ7EfG+67QvagDw=;
+        b=toUE2Il9Mjty109r+s/eqhcHBaHQskp/OY/0cvjypVhoWL0mfQVip+3H+/S8huJjIn
+         Ax7SSPcuETKO2sC0rDsc9u3I5H4YOWLAvsgVr0hdb/x29TCfemybqdf5v+jXW5WaNQBn
+         SCskFo1xgZwsIqlwoRABZ0pwxYAFpQsj6cbZZQyKVo1kHhOeCGc5Su5goOuIZ0nG7teP
+         qandORzX9m1VxQyVnEAALYypeaTDA3/NEy44G2fXsfC3OI+sS+J4OraY+8Iq4KNCTK+X
+         M+LAc2NNnOTLQOvIytZ7Y97fVpncnjAEckvsqTt1gZaN1As/7p8UvRP9sEHaKgbZ66bA
+         em8Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXYvBRz2QRLFAsw/IdaBoApWTAkYe7aZuLNSMRcGP0k0bKCcUII9k6ya3D2OjEvBqyHGXJLcw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxq/uoqVaXubZQlUcutasog/B7K1y5/Kn04L6b8RTn8b6nivHwG
+	VoU7UXNi0wrhoL8RJV+5riHhDAngMaIuDg2Fz8vLTiIrw+sWItJQ8gTuYTgLJ3hC398=
+X-Gm-Gg: ASbGncs9+tyS+H54RjdyfsKlP6uVjTrRU5RjXnlGK1bI99PNHY7kZen5t7p7UsyIRzQ
+	ljYfmgjz8IlbRIPO+QwFOJSaZtml4GHNITDXCrGz7kwaLubhEoLvvYK21vFRBStMf94qdTEQ6KH
+	4YiXlulWYDDTNVrsNeHXyGxuGFK0PjwbP2XBRqp9o1fEYzzp4dmjNFY8QInwgGbb3CEuQZtVCYG
+	wHP1ms+v4lBkhy+vS/Pz7pD1H/+RR0hqmwPKZqI/FQzoKk7ucdO9uBhf/413x9qEMtMFa6f5hlL
+	lCcDsgQKc/7Oel5/AwsUFB+RhK05oTdWfKg2IX8zOAb02ghlgQaxobWEnDdREVJjse4u1c0RczO
+	17pVCQMAqfvinjORM/AY2b6HvWX8dc4p9xmwauUVMHXx781M5+pvsvSsxDWnGXQxuUPVPmsvgwo
+	k2lvc=
+X-Google-Smtp-Source: AGHT+IFCmoKGYPOzoDZD6ShSos2kBzyGiUpy55RzSfApuV0xE2xqkZvPVRQqUDWaI6ZQr/kUBpd2Ww==
+X-Received: by 2002:a05:620a:28d2:b0:7fa:3951:1156 with SMTP id af79cd13be357-7ff2b0d986amr1327141085a.39.1756830280947;
+        Tue, 02 Sep 2025 09:24:40 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-721cf6d6cffsm6692606d6.54.2025.09.02.09.10.28
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-806bb61ab36sm150217585a.5.2025.09.02.09.24.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Sep 2025 09:10:28 -0700 (PDT)
+        Tue, 02 Sep 2025 09:24:40 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1utTaW-00000001ZJf-1Cbn;
-	Tue, 02 Sep 2025 13:10:28 -0300
-Date: Tue, 2 Sep 2025 13:10:28 -0300
+	id 1utToF-00000001ZQD-3cFQ;
+	Tue, 02 Sep 2025 13:24:39 -0300
+Date: Tue, 2 Sep 2025 13:24:39 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Qinxin Xia <xiaqinxin@huawei.com>
-Cc: will@kernel.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	yangyicong@huawei.com, wangzhou1@hisilicon.com,
-	prime.zeng@hisilicon.com, xuwei5@huawei.com, fanghao11@huawei.com,
-	jonathan.cameron@huawei.com, linuxarm@huawei.com
-Subject: Re: [PATCH 0/2] iommu: Add io_ptdump debug interface for iommu
-Message-ID: <20250902161028.GC184112@ziepe.ca>
-References: <20250814093005.2040511-1-xiaqinxin@huawei.com>
+To: Qianfeng Rong <rongqianfeng@vivo.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/omap: Use int type to store negative error codes
+Message-ID: <20250902162439.GD184112@ziepe.ca>
+References: <20250829140219.121783-1-rongqianfeng@vivo.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,20 +79,24 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250814093005.2040511-1-xiaqinxin@huawei.com>
+In-Reply-To: <20250829140219.121783-1-rongqianfeng@vivo.com>
 
-On Thu, Aug 14, 2025 at 05:30:03PM +0800, Qinxin Xia wrote:
-> This patch supports the iopgtable_dump function (similar to kernel_page_dump).
-> The IOMMU page table dump debugging function is added to the framework layer.
-> Different architectures only need to provide the implemented dump ops.
-> It also provides the implementation of ARM SMMUv3 and io-pgtable-arm.
+On Fri, Aug 29, 2025 at 10:02:19PM +0800, Qianfeng Rong wrote:
+> Change the 'ret' variable from u32 to int to store negative error codes
+> or zero;
 > 
-> Qinxin Xia (2):
->   iommu/debug: Add IOMMU page table dump debug facility
->   iommu/io-pgtable: Add ARM SMMUv3 page table dump support
+> Storing the negative error codes in unsigned type, doesn't cause an issue
+> at runtime but it's ugly. Additionally, assigning negative error codes to
+> unsigned type may trigger a GCC warning when the -Wsign-conversion flag
+> is enabled.
+> 
+> No effect on runtime.
+> 
+> Signed-off-by: Qianfeng Rong <rongqianfeng@vivo.com>
+> ---
+>  drivers/iommu/omap-iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-I'd prefer we do this on top of iommu pt please, I don't want to
-further deeping the hole of changing all the page table code in all
-drivers for debugfs.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Jason
