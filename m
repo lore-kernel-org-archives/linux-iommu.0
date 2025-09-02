@@ -1,58 +1,84 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A51232F76A
-	for <iommu@lists.linux.dev>; Tue,  2 Sep 2025 05:36:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF38A2E7F2C;
+	Tue,  2 Sep 2025 07:59:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756791374; cv=none; b=M6I9fxVT5I/xMSQDFB31aT5uXuK1Rqzd6iRk252cV4gDWLv6k8pawg4BS+ACH0Vu7lQkVR9NUgU5RPRZYPFC6O+53Bn0Ua+DfTRmSk490TG74KrrWNdg2roC+IGb24BDWFpb5YOzORej+yKpy9fdFT9/5+VIdzPhL+oFFQDMAJQ=
+	t=1756799975; cv=none; b=dvbNhLG6MKEOUB6WPEVvyl8iFpyXFMT/z44fp9eUw1xkrXhaM7zjF8EwKnfIA+p8ofGu3qkXzyx/ykCJRtq6+brQYGVu+YDUkSVtP8szz/wl5FbzgH1ob1hys9jbQGNd6G8QuEUzJ8Ydt4J3R1mEpnL3QoL4Qhe5g8zEuqMy0Yc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756791374; c=relaxed/simple;
-	bh=tHL3AD9YoFk15zlZ59e5+khJ6OCA/HBCyPSvZjg7Pxg=;
+	s=arc-20240116; t=1756799975; c=relaxed/simple;
+	bh=EF1op+eddct4pM3ZB2o0aAETXERusr9OmQud0x6jKd8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YFqWzWm7DHO0KbXHo2D1SYAU6C5D2YWTgsAHNScqn8/AnDWIFhZGSwK7RZzS6vJuLNpiFTBLk5u+O+oHC+Qim10VIatyaELnsRR11OUtxnjM5EyVvlm8tZm89FsbJM8X5C+KmL1xBH3axWPMrS1N3/Gls2MH2TMkY28LRa21l4U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id C5E5D68AA6; Tue,  2 Sep 2025 07:36:08 +0200 (CEST)
-Date: Tue, 2 Sep 2025 07:36:08 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Keith Busch <kbusch@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Christoph Hellwig <hch@infradead.org>,
-	Keith Busch <kbusch@meta.com>, linux-block@vger.kernel.org,
-	linux-nvme@lists.infradead.org, axboe@kernel.dk,
-	iommu@lists.linux.dev, willy@infradead.org, netdev@vger.kernel.org,
-	linux-mm@kvack.org
-Subject: Re: [PATCHv3 1/2] block: accumulate segment page gaps per bio
-Message-ID: <20250902053608.GA11396@lst.de>
-References: <20250821204420.2267923-1-kbusch@meta.com> <20250821204420.2267923-2-kbusch@meta.com> <aKxpSorluMXgOFEI@infradead.org> <aKxu83upEBhf5gT7@kbusch-mbp> <20250826130344.GA32739@lst.de> <aK27AhpcQOWADLO8@kbusch-mbp> <20250826135734.GA4532@lst.de> <aK42K_-gHrOQsNyv@kbusch-mbp> <20250827073709.GA25032@lst.de> <aLJYPGKE4Y_6QzY2@kbusch-mbp>
+	 Content-Type:Content-Disposition:In-Reply-To; b=V8jLBox9bL4chOKTNuHuU+CinIqWf9lzULjF9kKODd++fra3MRP9euRLNDM+m/PIWA9lPmWosgZISR3szSkwRPhodmCu2QKxUR41Ckf/WU1oG26uyfL4AzlHVl/u04uppJqvtKRIuIF9HToc7+5bMMg/2thvkrz6id+TpTnKDow=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=vJG3GOiE; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vJG3GOiE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B101FC4CEF5;
+	Tue,  2 Sep 2025 07:59:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1756799974;
+	bh=EF1op+eddct4pM3ZB2o0aAETXERusr9OmQud0x6jKd8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=vJG3GOiE51Copquw/et4yKR2MBNqyeTR1IAPc0P1wxza24c8Bq4Zc/8Q7eKkeJOJ8
+	 pYWFTt1JmIPWALpvCaXjNsP99j/f0dLV/DYLcnsQ3vBiopJOhJLZBr6W/QP40TczLY
+	 s4mj9mZjOSnLBdFU1bnx5nhOyDJcF93bwPlgmYGWl3pCuhraZsFOltCb77vP8GOf5t
+	 12ryEquytxYXA5Le3xuYe8epm+vJQDqaCgoRv6HGXdjCf7BWZqERl7WQ97+WKzu8y8
+	 +FrcNp9sY8CK3kbN/yxn0KKBCpQodqKbLOJCPqhdlq76MB+N2NhN1BGCu2b3GIzIWi
+	 ewGqlCi6YaApQ==
+Date: Tue, 2 Sep 2025 09:59:31 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Janne Grunau <j@jannau.net>
+Cc: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, 
+	Neal Gompa <neal@gompa.dev>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Hector Martin <marcan@marcan.st>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Viresh Kumar <viresh.kumar@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Linus Walleij <linus.walleij@linaro.org>, 
+	Mark Kettenis <kettenis@openbsd.org>, Andi Shyti <andi.shyti@kernel.org>, 
+	Jassi Brar <jassisinghbrar@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+	Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Sasha Finkelstein <fnkl.kernel@gmail.com>, Marcel Holtmann <marcel@holtmann.org>, 
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>, Johannes Berg <johannes@sipsolutions.net>, 
+	van Spriel <arend@broadcom.com>, Lee Jones <lee@kernel.org>, 
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, Stephen Boyd <sboyd@kernel.org>, 
+	Wim Van Sebroeck <wim@linux-watchdog.org>, Guenter Roeck <linux@roeck-us.net>, 
+	Michael Turquette <mturquette@baylibre.com>, Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>, 
+	Vinod Koul <vkoul@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, 
+	Mark Brown <broonie@kernel.org>, Marc Zyngier <maz@kernel.org>, 
+	Ulf Hansson <ulf.hansson@linaro.org>, Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>, 
+	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>, 
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, asahi@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-pm@vger.kernel.org, iommu@lists.linux.dev, linux-gpio@vger.kernel.org, 
+	linux-i2c@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-bluetooth@vger.kernel.org, 
+	linux-wireless@vger.kernel.org, linux-pwm@vger.kernel.org, linux-watchdog@vger.kernel.org, 
+	linux-clk@vger.kernel.org, dmaengine@vger.kernel.org, linux-sound@vger.kernel.org, 
+	linux-spi@vger.kernel.org, linux-nvme@lists.infradead.org
+Subject: Re: [PATCH 01/37] dt-bindings: arm: apple: Add t6020x compatibles
+Message-ID: <20250902-optimal-copperhead-of-chemistry-ebd7fa@kuoka>
+References: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net>
+ <20250828-dt-apple-t6020-v1-1-507ba4c4b98e@jannau.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <aLJYPGKE4Y_6QzY2@kbusch-mbp>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20250828-dt-apple-t6020-v1-1-507ba4c4b98e@jannau.net>
 
-On Fri, Aug 29, 2025 at 07:47:40PM -0600, Keith Busch wrote:
-> On Wed, Aug 27, 2025 at 09:37:09AM +0200, Christoph Hellwig wrote:
-> > On Tue, Aug 26, 2025 at 04:33:15PM -0600, Keith Busch wrote:
-> > > virt boundary check. It's looking like replace bvec's "page + offset"
-> > > with phys addrs, yeah?!
-> > 
-> > Basically everything should be using physical address.  The page + offset
-> > is just a weird and inefficient way to represent that and we really
-> > need to get rid of it.
-> 
-> I was plowing ahead with converting to phys addrs only to discover
-> skb_frag_t overlays a bvec with tightly coupled expectations on its
-> layout. I'm not comfortable right now messing with that type. I think it
-> may need to be decoupled to proceed on this path. :(
+On Thu, Aug 28, 2025 at 04:01:20PM +0200, Janne Grunau wrote:
+> This adds the following apple,t6020/t6021/t6022 platforms:
 
-willy got really angry at this for all the right reasons, and we
-still need it fixed.  Can we just revert the unreviewed crap the
-network folks did here to move the kernel forward?
+"Add..."
+
+
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+Best regards,
+Krzysztof
+
