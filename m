@@ -1,41 +1,32 @@
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 936FB54652;
-	Tue,  2 Sep 2025 05:26:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A51232F76A
+	for <iommu@lists.linux.dev>; Tue,  2 Sep 2025 05:36:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756790813; cv=none; b=HD52ZNTn355CftRXQZrTMLSs/Nsy7hElNV6D7/boWf6xgBJzDbE6atoVIbOp/J2/W1V1xUE3G9CUE8jGJEDCygR5djcpKhbVziBxYt+mutGnW1tNUS3Tv+pfdy3nljI4k1QX5y9Q4UB+1y+i+fbZMpOwGN0cl35YOUrY8HhLnT0=
+	t=1756791374; cv=none; b=M6I9fxVT5I/xMSQDFB31aT5uXuK1Rqzd6iRk252cV4gDWLv6k8pawg4BS+ACH0Vu7lQkVR9NUgU5RPRZYPFC6O+53Bn0Ua+DfTRmSk490TG74KrrWNdg2roC+IGb24BDWFpb5YOzORej+yKpy9fdFT9/5+VIdzPhL+oFFQDMAJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756790813; c=relaxed/simple;
-	bh=BfII0mWTjBQDFPNTLW0jl6aLZKx/Rg8X4WNfi2A6t8U=;
+	s=arc-20240116; t=1756791374; c=relaxed/simple;
+	bh=tHL3AD9YoFk15zlZ59e5+khJ6OCA/HBCyPSvZjg7Pxg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IBKjjafo+0P0ux0Bw5N4qxwDdEx14uYsxCUCS/2zDuwSv8rVEgTov3xFBLvsg0sq65SukTeNvociyqKnnnSGE9LoIxeJQeIS5KXpyb9JJWM4C/d6zmfaEUhRe/h5gLRQ3YQAqQEpxoxYY8hGKsRSTynpypez3+C3ukOx01eBy1g=
+	 Content-Type:Content-Disposition:In-Reply-To; b=YFqWzWm7DHO0KbXHo2D1SYAU6C5D2YWTgsAHNScqn8/AnDWIFhZGSwK7RZzS6vJuLNpiFTBLk5u+O+oHC+Qim10VIatyaELnsRR11OUtxnjM5EyVvlm8tZm89FsbJM8X5C+KmL1xBH3axWPMrS1N3/Gls2MH2TMkY28LRa21l4U=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lst.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id 1565E68AA6; Tue,  2 Sep 2025 07:26:47 +0200 (CEST)
-Date: Tue, 2 Sep 2025 07:26:46 +0200
+	id C5E5D68AA6; Tue,  2 Sep 2025 07:36:08 +0200 (CEST)
+Date: Tue, 2 Sep 2025 07:36:08 +0200
 From: Christoph Hellwig <hch@lst.de>
-To: Sven Peter <sven@kernel.org>
-Cc: Christoph Hellwig <hch@lst.de>, Nick Chan <towinchenmi@gmail.com>,
-	Janne Grunau <j@jannau.net>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	Neal Gompa <neal@gompa.dev>, Jassi Brar <jassisinghbrar@gmail.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Hector Martin <marcan@marcan.st>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-	Sagi Grimberg <sagi@grimberg.me>, asahi@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, iommu@lists.linux.dev,
-	linux-nvme@lists.infradead.org
-Subject: Re: [PATCH v3 7/9] nvme: apple: Add Apple A11 support
-Message-ID: <20250902052646.GA11139@lst.de>
-References: <20250821-t8015-nvme-v3-0-14a4178adf68@gmail.com> <20250821-t8015-nvme-v3-7-14a4178adf68@gmail.com> <20250825080710.GA23193@lst.de> <89251134-9685-439e-b220-92717663f038@kernel.org>
+To: Keith Busch <kbusch@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Christoph Hellwig <hch@infradead.org>,
+	Keith Busch <kbusch@meta.com>, linux-block@vger.kernel.org,
+	linux-nvme@lists.infradead.org, axboe@kernel.dk,
+	iommu@lists.linux.dev, willy@infradead.org, netdev@vger.kernel.org,
+	linux-mm@kvack.org
+Subject: Re: [PATCHv3 1/2] block: accumulate segment page gaps per bio
+Message-ID: <20250902053608.GA11396@lst.de>
+References: <20250821204420.2267923-1-kbusch@meta.com> <20250821204420.2267923-2-kbusch@meta.com> <aKxpSorluMXgOFEI@infradead.org> <aKxu83upEBhf5gT7@kbusch-mbp> <20250826130344.GA32739@lst.de> <aK27AhpcQOWADLO8@kbusch-mbp> <20250826135734.GA4532@lst.de> <aK42K_-gHrOQsNyv@kbusch-mbp> <20250827073709.GA25032@lst.de> <aLJYPGKE4Y_6QzY2@kbusch-mbp>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,21 +35,24 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <89251134-9685-439e-b220-92717663f038@kernel.org>
+In-Reply-To: <aLJYPGKE4Y_6QzY2@kbusch-mbp>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Wed, Aug 27, 2025 at 05:56:33PM +0200, Sven Peter wrote:
->> Do you want to merge this through the apple SOC tree?  If so:
->>
->> Acked-by: Christoph Hellwig <hch@lst.de>
->>
->>
->
-> I don't think that's necessary since there are no build time dependencies 
-> but if you want to I can take it through there.
+On Fri, Aug 29, 2025 at 07:47:40PM -0600, Keith Busch wrote:
+> On Wed, Aug 27, 2025 at 09:37:09AM +0200, Christoph Hellwig wrote:
+> > On Tue, Aug 26, 2025 at 04:33:15PM -0600, Keith Busch wrote:
+> > > virt boundary check. It's looking like replace bvec's "page + offset"
+> > > with phys addrs, yeah?!
+> > 
+> > Basically everything should be using physical address.  The page + offset
+> > is just a weird and inefficient way to represent that and we really
+> > need to get rid of it.
+> 
+> I was plowing ahead with converting to phys addrs only to discover
+> skb_frag_t overlays a bvec with tightly coupled expectations on its
+> layout. I'm not comfortable right now messing with that type. I think it
+> may need to be decoupled to proceed on this path. :(
 
-Merging it through nvme sounds fine as well, I just through up
-grabbing everything together would be easier.  I also noticed there's
-another Apple hw enablement series that touches nvme, so I guess both
-should go through the same tree?
-
+willy got really angry at this for all the right reasons, and we
+still need it fixed.  Can we just revert the unreviewed crap the
+network folks did here to move the kernel forward?
