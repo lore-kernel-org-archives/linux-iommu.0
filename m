@@ -1,77 +1,84 @@
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F1BA32A823
-	for <iommu@lists.linux.dev>; Tue,  2 Sep 2025 16:29:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF0E326C3A5;
+	Tue,  2 Sep 2025 19:54:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756830543; cv=none; b=qf1TtiJdE8gBzBoKQcce69vT/eeLTlFwi/VC9lvo1EiBSWRqNF/ae0VQEY2TsJI1RMve0918BBVbE0T2Eeh/B7AspDOabG1I/lIj+0Px5bBwiYpLw/nWixohXCqFvTBbIk7cXNEnBGjTsZREW6ILtWHralPQGRpz98IuU4+PDck=
+	t=1756842876; cv=none; b=sxRAoAAyEtZFev17KptWrqIyb3VrWDDAQbtK8iU9j7bSroojv9MyRUn/3J5RbjZBCkIAYNBDmAE1yYKK5Sbl2dK54YM2FVurwbYDzVjF49M3FHYbzgHi52CaHQ9e5uqCfk5vhV6CKe8t931QZgpauCB97yTeCkSY8Myt3wCoO4Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756830543; c=relaxed/simple;
-	bh=TIGUtVmXfyG5AOMlrQu/Tk0wWcNgx23M3QCPxT9Z208=;
+	s=arc-20240116; t=1756842876; c=relaxed/simple;
+	bh=oJOLNYG2Y3DXMCSgbwODVJA8SAuDYi5Dbvsh+hG6M4Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Pow1jYsABLs0MMTNsc52eTpbc+nxiWyldCESYDl1OJs1x+DSGttKEWm/tmvOVjE9o3SN1Om99Amvho8R+vINdvZ0VjD9/+5FfAYI/x85+HjkHaoqf5XFDKlu0WeIbNGT387b5b5ePu20vz0HkWh16mN2hTpaJ2uob21C8Vhx/A0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=aY7P301g; arc=none smtp.client-ip=209.85.222.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=pTeAwe3H0ZfTbDJRRZWdM2xfd7eeEpnNtL9F+QPxdolsSSKSGVg2KssdqxuJvRFGlI5KGDCu5vrRtsKYB7eKris3kTBG9bP51RP8Q3AaoEHEOpuKMIM8oWx/tcTVmXEbAotzkNR8T4NOFEuVAdNms1mXBJiFmjXY3v5zT96bZJ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZrJeisJC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="aY7P301g"
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-8080a88a32aso47209885a.0
-        for <iommu@lists.linux.dev>; Tue, 02 Sep 2025 09:29:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1756830541; x=1757435341; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AzNFRizoK0DA+pBHHDrMUD4m1SbYvscM/f3av0PJpIQ=;
-        b=aY7P301giDjctvrc15X3WcLhyAx7JCcwDW/wdkNyNwtsIJF2ns3x3q39W34R1dsoLa
-         /bUYv9WB0vXiKivxBZH3uKKqF90h8WNj9x2kN4TA3H/1FdjLCUagXzyKcLWggLszsULd
-         4uB3W8NdtIArjq53+CAO6O8PihSBhlXN5jSzwYUGhECvqyD/w8oXlPxvZ8S26VLsN8Mp
-         tEF2oRZvh7j24irAExWftbrrzXyEzknnSmxztLxf7oBUfNqYzDUiie/cTjXIP89k5mfa
-         XiAUbjtbSZ5fOz7JaZFn0mEwRUyvk6kSGTsUsvKbri26PsaeIU5AMu4MdmHdsImRNKFp
-         FpdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756830541; x=1757435341;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AzNFRizoK0DA+pBHHDrMUD4m1SbYvscM/f3av0PJpIQ=;
-        b=wYEuDbLnB7UrW9+8HR86t7KTeAO/pvVRjXU0EGa/TuT7jJ2GqNV/A/8WTC+g/HcK9y
-         5hnndk/JWmHgpILvzMXaTGo406vUUgeIPX1m39DF5K/a4g1K3NITtjKVST+EAg161jdA
-         VIlCuByxMPDoaqLIRTyngsGebWNiTpYl/5Q5YBFBbuG4cLVyjvclOFB8TZjM1XZL/tec
-         xgD8rKwp/2QcS5K9F7F0ejifVXSdLvDiR07m9Jkrz/Dl5jziaV5uI7/gvOUdaB53cMbK
-         lNr4GhInhFMUp9r6+3/+HkqtUw1VoFWsf9oagp8CFr/b8T+knXR5NryU9dBHSy0vTrQj
-         J3ng==
-X-Forwarded-Encrypted: i=1; AJvYcCWsyuEcOhUGGbIipXwUbldO0q1zu2gM5A1yfO1sMPM0L92oUQVC+sPA+NZkSlS55Ob2VhfUPg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxfCMTdsSDIfcDLSPkBLn6pXVWblS5ltVHptliMPUtlTI+oJzmT
-	ScwpphpzSJWk/+iI3zyBr7C3syMLMnuVtzCPIWepsxs2MRhjBPjC4qnp9pgnPD2UItQ=
-X-Gm-Gg: ASbGncu88Qy+6Y86IOvhXkEXsU04G7P6mGfozAWpH0Lfvi8lXYLo5AJ0vpRu7GsSyWI
-	KKZBqx7E8oSHdtQ8gP9ACMcyUswuErqS56hMzPkpHropVej9m/1s3eqK2Yf733SpUDE1GQJ7Jra
-	d5r+jpAJTLGotJhEpZsneMv8XT6OoZljU6R50i5oWfXfHJSktwH2XpVJ4dNDKr7Gp09Pbz5/Gzm
-	kSH89X3ypfUnJcv8WHR0ZHNqEpKQO4QuKCoi3xXM2JJj8//2NmBXjYG1fE3UFq23x3KP1KeBLKb
-	x3BETbc+0G8zhUqtMDg7GmRI0Hn8QWQcQLOEw55dhLNPd8Dahqe3+mXJA+uaCqjAqBY8qwD3346
-	RlI6oOpD7sfg+XVe+OJElPIsL5wD4ZhFi26rCONRDD9bMgTxOBfLglBf5+bAXv4i/vk00
-X-Google-Smtp-Source: AGHT+IGlkUdvrs/4d/cbiDbFE0x0xyuHO/9lDjr2DrV2pOTG2L8+cMT8JXT2TmmRvRF3DAjlGXP+KA==
-X-Received: by 2002:a05:620a:3193:b0:7e8:324e:ba20 with SMTP id af79cd13be357-7ff2aa20af1mr1183564585a.48.1756830541067;
-        Tue, 02 Sep 2025 09:29:01 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8069d6b1ff7sm162410985a.69.2025.09.02.09.29.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Sep 2025 09:29:00 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1utTsR-00000001ZjP-3QE9;
-	Tue, 02 Sep 2025 13:28:59 -0300
-Date: Tue, 2 Sep 2025 13:28:59 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Guanghui Feng <guanghuifeng@linux.alibaba.com>, dwmw2@infradead.org,
-	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	alikernel-developer@linux.alibaba.com
-Subject: Re: [PATCH] iommu/vt-d: fix iommu pasid memory alloc & max pasid err
-Message-ID: <20250902162859.GE184112@ziepe.ca>
-References: <20250830130737.1930726-1-guanghuifeng@linux.alibaba.com>
- <cdd1c8ff-6bb5-4665-a55a-9d86cd81a8ef@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZrJeisJC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D07CC4CEED;
+	Tue,  2 Sep 2025 19:54:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1756842875;
+	bh=oJOLNYG2Y3DXMCSgbwODVJA8SAuDYi5Dbvsh+hG6M4Q=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ZrJeisJCeZBLdRd9piYISWxH6ectOKfLkCBAI45oB9yskyvBJx+HrHbj0QupA23QY
+	 HMwYW+4SpxkS1Px4DFX1y0PnsLKuIvMupIqIiKRi5+/yisqqzHEEZpEI+OC+GPQMt+
+	 Ih9UPZZxLrikazCJPDm6WovmTyFRm0ulZKF/oPzplGj21mx5CKCfRPvb9oo4xKL1nz
+	 Qojwko0xFxCfGWgdvCBAYT8/hAuaZcNeMu33YO6xDjk/8M8E6xVx4H6De8eZjysot9
+	 apZ9PSugbHYcTWyIOnwbJIoCz8GthLjCfl1K6nrT8bke0E+1MO5eocgkH5TUTef2/d
+	 X7vBDpLUcS7MA==
+Date: Tue, 2 Sep 2025 14:54:34 -0500
+From: Rob Herring <robh@kernel.org>
+To: Janne Grunau <j@jannau.net>
+Cc: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Neal Gompa <neal@gompa.dev>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Hector Martin <marcan@marcan.st>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Mark Kettenis <kettenis@openbsd.org>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Jassi Brar <jassisinghbrar@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Sasha Finkelstein <fnkl.kernel@gmail.com>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	van Spriel <arend@broadcom.com>, Lee Jones <lee@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Wim Van Sebroeck <wim@linux-watchdog.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
+	Vinod Koul <vkoul@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-pm@vger.kernel.org, iommu@lists.linux.dev,
+	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linux-bluetooth@vger.kernel.org,
+	linux-wireless@vger.kernel.org, linux-pwm@vger.kernel.org,
+	linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org,
+	dmaengine@vger.kernel.org, linux-sound@vger.kernel.org,
+	linux-spi@vger.kernel.org, linux-nvme@lists.infradead.org
+Subject: Re: [PATCH 00/37] arm64: Add initial device trees for Apple M2
+ Pro/Max/Ultra devices
+Message-ID: <20250902194528.GA1014943-robh@kernel.org>
+References: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net>
+ <20250829195119.GA1206685-robh@kernel.org>
+ <20250830071620.GD204299@robin.jannau.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,50 +87,99 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cdd1c8ff-6bb5-4665-a55a-9d86cd81a8ef@linux.intel.com>
+In-Reply-To: <20250830071620.GD204299@robin.jannau.net>
 
-On Mon, Sep 01, 2025 at 03:28:29PM +0800, Baolu Lu wrote:
-> On 8/30/25 21:07, Guanghui Feng wrote:
-> > When intel_pasid_alloc_table allocates memory for Scalable Mode PASID
-> > directories, the specified memory page order is incorrect, and an
-> > additional PAGE_SHIFT is added. There is also an error in calculating
-> > the maximum number of supported PASID directories. In the revised
-> > implementation, 1 << (order + PASID_PDE_SHIFT - 3) represents the memory
-> > occupied by the Scalable Mode PASID directory, divided by 8 to represent
-> > the number of PASID directories, and then multiplied by the number of (1
-> > << PASID_PDE_SHIFT) entries in each PASID directory.
-> 
-> Do you see any specific issues if the changes described in this patch
-> are lacking?
-> 
+On Sat, Aug 30, 2025 at 09:16:20AM +0200, Janne Grunau wrote:
+> On Fri, Aug 29, 2025 at 02:51:19PM -0500, Rob Herring wrote:
+> > On Thu, Aug 28, 2025 at 04:01:19PM +0200, Janne Grunau wrote:
+> > > This series adds device trees for Apple's M2 Pro, Max and Ultra based
+> > > devices. The M2 Pro (t6020), M2 Max (t6021) and M2 Ultra (t6022) SoCs
+> > > follow design of the t600x family so copy the structure of SoC *.dtsi
+> > > files.
+> > > 
+> > > t6020 is a cut-down version of t6021, so the former just includes the
+> > > latter and disables the missing bits.
+> > > 
+> > > t6022 is two connected t6021 dies. The implementation seems to use
+> > > t6021 and disables blocks based on whether it is useful to carry
+> > > multiple instances. The disabled blocks are mostly on the second die.
+> > > MMIO addresses on the second die have a constant offset. The interrupt
+> > > controller is multi-die aware. This setup can be represented in the
+> > > device tree with two top level "soc" nodes. The MMIO offset is applied
+> > > via "ranges" and devices are included with preprocessor macros to make
+> > > the node labels unique and to specify the die number for the interrupt
+> > > definition.
+> > > 
+> > > The devices itself are very similar to their M1 Pro, M1 Max and M1 Ultra
+> > > counterparts. The existing device templates are SoC agnostic so the new
+> > > devices can reuse them and include their t602{0,1,2}.dtsi file. The
+> > > minor differences in pinctrl and gpio numbers can be easily adjusted.
+> > > 
+> > > With the t602x SoC family Apple introduced two new devices:
+> > > 
+> > > The M2 Pro Mac mini is similar to the larger M1 and M2 Max Mac Studio. The
+> > > missing SDHCI card reader and two front USB3.1 type-c ports and their
+> > > internal USB hub can be easily deleted.
+> > > 
+> > > The M2 Ultra Mac Pro (tower and rack-mount cases) differs from all other
+> > > devices but may share some bits with the M2 Ultra Mac Studio. The PCIe
+> > > implementation on the M2 Ultra in the Mac Pro differs slightly. Apple
+> > > calls the PCIe controller "apcie-ge" in their device tree. The
+> > > implementation seems to be mostly compatible with the base t6020 PCIe
+> > > controller. The main difference is that there is only a single port with
+> > > with 8 or 16 PCIe Gen4 lanes. These ports connect to a Microchip
+> > > Switchtec PCIe switch with 100 lanes to which all internal PCIe devices
+> > > and PCIe slots connect too.
+> > > 
+> > > This series does not include PCIe support for the Mac Pro for two
+> > > reasons:
+> > > - the linux switchtec driver fails to probe and the downstream PCIe
+> > >   connections come up as PCIe Gen1
+> > > - some of the internal devices require PERST# and power control to come
+> > >   up. Since the device are connected via the PCIe switch the PCIe
+> > >   controller can not do this. The PCI slot pwrctrl can be utilized for
+> > >   power control but misses integration with PERST# as proposed in [1].
+> > > 
+> > > This series depends on "[PATCH v2 0/5] Apple device tree sync from
+> > > downstream kernel" [2] due to the reuse of the t600x device templates
+> > > (patch dependencies and DT compilation) and 4 page table level support
+> > > in apple-dart and io-pgtable-dart [3] since the dart instances report
+> > > 42-bit IAS (IOMMU device attach fails without the series).
+> > > 
+> > > After discussion with the devicetree maintainers we agreed to not extend
+> > > lists with the generic compatibles anymore [1]. Instead either the first
+> > > compatible SoC or t8103 is used as fallback compatible supported by the
+> > > drivers. t8103 is used as default since most drivers and bindings were
+> > > initially written for M1 based devices.
 > > 
-> > Signed-off-by: Guanghui Feng <guanghuifeng@linux.alibaba.com>
-> > ---
-> >   drivers/iommu/intel/pasid.c | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-> > index 52f678975da7..9969913b600b 100644
-> > --- a/drivers/iommu/intel/pasid.c
-> > +++ b/drivers/iommu/intel/pasid.c
-> > @@ -61,14 +61,14 @@ int intel_pasid_alloc_table(struct device *dev)
-> >   	size = max_pasid >> (PASID_PDE_SHIFT - 3);
-> >   	order = size ? get_order(size) : 0;
-> >   	dir = iommu_alloc_pages_node_sz(info->iommu->node, GFP_KERNEL,
-> > -					1 << (order + PAGE_SHIFT));
-> > +					1 << order);
+> > An issue here is any OS without the compatibles added to the drivers 
+> > won't work. Does that matter here? Soon as you need any new drivers or 
+> > significant driver changes it won't. The compatible additions could be 
+> > backported to stable. They aren't really any different than new PCI IDs 
+> > which get backported.
 > 
-> This converts the order to the allocation size.
+> I don't think backporting the driver compatible additions to stable
+> linux is very useful. It is only relevant for t602x devices and the only
+> way to interact with them is the serial console. The T602x PCIe support
+> added in v6.16 requires dart changes (the posted 4th level io page table
+> support) to be useful. After that PCIe ethernet works so there is a
+> practical way to interact with t602x systems. So there are probably zero
+> user of upstream linux on those devices 
+> I'm more concerned about other projects already supporting t602x
+> devices. At least u-boot and OpenBSD will be affected by this. As short
+> term solution m1n1 will add the generic compatibles [1] temporarily.
+> I think keeping this roughly for a year should allow to add the
+> compatibles and wait for "fixed" releases of those projects.
+> I'll send fixes for u-boot once the binding changes are reviewed.
 
-Yeah, I don't understand this patch at all, 
+Honestly, at least in the cases where the generic compatible works for 
+every chip so far, I'd just stick with it. The issue with generic 
+compatibles is more that you don't really know if things are going to be 
+the same or not. And most of the time, the h/w ends up changing.
 
-iommu_alloc_pages_node_sz() takes bytes and get_order(size) returns
-order.
+If you want to keep it like this since you've already done it, then for 
+all the binding patches:
 
-  bytes == 1 << (get_order(size) + PAGE_SHIFT)
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
 
-Is correct
-
-So why is this being changed?
-
-Jason
+Rob
