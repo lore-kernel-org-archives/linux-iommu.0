@@ -1,163 +1,320 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 619C230214A
-	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 16:23:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB79331D72D;
+	Fri,  5 Sep 2025 16:27:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757089383; cv=none; b=ab8oc7WxSgsie1CHdRDLwHMJwf+r8Da6fsRMBLDFQ3EsvwI7kGnRUr0yoM2HmEnzaLq4Y10we/H93G0s4zfCSEprdFPMYkAHS3dpY/RW+/vt68UmrkcRVuavtU4epnCRkNxnYaYr54TQftaQMeN3zRLpwsfaXGZSZYSZaAeYYG8=
+	t=1757089624; cv=none; b=of+rAsW2WGMSCgokaWDXa/0tra2s/UCFKLzWzFxzTX+ObwoVJrLSLYFSlMUgwfG4ksaHLXZH/6Vb7eWXznwd5X+DDb5+e2guIHYX8f2igjQ9XQ9nx4h5+gLfE4A6z2MnyMrsu9RTn8jBxpjC6zijSNRdKYQkPKHug2WaFKEM4FI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757089383; c=relaxed/simple;
-	bh=FQ7VSQDMZ26MKHHuRF6ZOu5yejO3Qto6Ugr32kBm5c8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aJcsDjtOuw4IEHC8kLWQkSVJkMD1swyF4zGahojNcestHtu2wkY0mNkAJNng/+zZonQBBTZRmGVj/B59UYxUJje6VzaMVs2fyxpMhQ8QUd0nJFuc7rrRr2Sg2fby6Pc0pgzUwrg/tBSVs60GwgX9ODBhKSzzGk9EgAx5dxkbQxU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Rj00CBox; arc=none smtp.client-ip=209.85.222.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1757089624; c=relaxed/simple;
+	bh=s23bDGi9zDAcfRynDwckaABDv2nJ6dzjUpVRzy1+VsM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:From:In-Reply-To:
+	 Content-Type:References; b=M/1pohWvCWFm0/3qVfs2hQdVuZQGNoK+GHh4W3iR0Dk8rSk/4Dw3VKjz/n/sAZf3njEvR84MaPG6tnPn6dIud4lZ+i9SH99lZVryeepfezP+qV6Dutxs8NuUnj+5QrfMr+C6ma0AVxqSBdYXH0vHwnQqhCoJ+RucEuOPN++f6F8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=k7Zmm/l4; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Rj00CBox"
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-811b06efefdso87422185a.1
-        for <iommu@lists.linux.dev>; Fri, 05 Sep 2025 09:23:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1757089380; x=1757694180; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ad13/2gQOL6Gr085zJwP5rL6z3rEqez1d11xvvV7kSE=;
-        b=Rj00CBoxI16iXoXGDDgrppgUpgVzQ2gmhfVQQTSQOCwkYVFxoztZaH7HAlpAz1D7OY
-         krzPfrEWttXWxgDhwnm7oBbQ3fKQOVq9tIpUB15yg5/myBIb5SyZlsuQgeMeJWgSAgx9
-         +kNk2eAd0cCI3ML1c6LujfciSnlLPmE+f9zu6nTI1a4PTPBYTEbSxNnXL1/nwYP7OTbr
-         EdBLWZ5A0+cETvIp7bAIjISPOJfoiNHXpXA6iAB32ARRkaVlI+K+Vc2gRomYXfKk/9w4
-         onohpdmtYrLq4D3qpaiv/h0N+J1JKKYP3ujmTiNKrY5zclRwgp4lbXAxYl2/8MQwomeC
-         zoFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757089380; x=1757694180;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ad13/2gQOL6Gr085zJwP5rL6z3rEqez1d11xvvV7kSE=;
-        b=DZZruISfPUcz5JaGj5jyaJdP9kzFa74NNGL+leo5ApqEY7ViV9mBZmltPXkgNcni9Y
-         EesfR0RVyTNmPQNbmms+43pspqcy+6aMRw/FnceZGQm6Aiio7yrHyPhagbKXdhF/bFjX
-         RQwSPiC0mmBsTz/UTX8GfGQRzOewtSs9EUeqG2CZveSufC1WOQuVbn4/Roi0oGMCTDlr
-         hHNBxVnrIPZk2C6Rns95hHvJz6g5EdjhKQXhk+A0ihbFuOuUDWX98EA0uGlajmZThHki
-         MXJBYiDF7fRYN9Lp2mFT64EDOEu27FGm4IklyaYv2jTlK5ICeAtnPyhWS88C2jrF8GdY
-         dKcw==
-X-Forwarded-Encrypted: i=1; AJvYcCW3p2iBminQ3DlWtJ3Af2aH3JJTEnnsL8vyVAqohZsDGxnaB39CCWK/CE5PpvjFG4u0c7049Q==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yxzk1sNEkNbjLZToGY1m4WtbyAX888awHUPKuNpom5CnymUWixG
-	J5GKlnm19Gkmi6cywuII4lN+SDUdKDjExcYMnZRNdCIS/excl2amqdCCJ2BXG+Qy+VM=
-X-Gm-Gg: ASbGncvIbHTPop3RiSRCiW5ocbtR63PWBjsrNKiCxB6ejo6iTbgT4JRG2S4R8rRTrdU
-	Z6qWF7OrS7Dl3GzNNuFGz0t5ta+AHUoZP39li8ST1GI3snKmH1xLEiELSFP+LevM9Wk1BdodI9i
-	tsiy9Vr2VuSZTDIpw3VjN1735DMHnMFeidOIWeNev8mltqltQGAxoFTxJP8Js70vRcqUxHIXdoM
-	UmUD/SKiNfRmOaABpjVbfUiPWnxdWDmPIhc4u1XtYhb0xFFwjU9W5rpg5BvyVHqc7n9RTe8NjDY
-	nSI9h6JcqPNMXEwjdXrVihnyTiaMIrUTCh7D2S+rCDsAzeRIVawmRU9sQUriz5GnWvke20NwRoO
-	pB7uqCA3WiO4d8lA90ddGP9uK6XtRGeBmwOyxH4cme48OVnFvq0MBHu9Ns7lm+3tzhAzO
-X-Google-Smtp-Source: AGHT+IGahpiUClMcLLVXgS5mwb3H7pF6RD7KDX0AnnNYHP758kBLVwSbh/Pr8Ncjrvt8ub1MMqdwLg==
-X-Received: by 2002:a05:6214:b03:b0:727:e45a:562c with SMTP id 6a1803df08f44-727e45a5b36mr82427466d6.45.1757089379823;
-        Fri, 05 Sep 2025 09:22:59 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-720b5b9ceb1sm67962746d6.57.2025.09.05.09.22.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Sep 2025 09:22:59 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uuZDG-00000002sWI-1ORv;
-	Fri, 05 Sep 2025 13:22:58 -0300
-Date: Fri, 5 Sep 2025 13:22:58 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Catalin Marinas <catalin.marinas@arm.com>
-Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev, will@kernel.org, maz@kernel.org,
-	tglx@linutronix.de, robin.murphy@arm.com, suzuki.poulose@arm.com,
-	akpm@linux-foundation.org, steven.price@arm.com
-Subject: Re: [RFC PATCH] arm64: swiotlb: dma: its: Ensure shared buffers are
- properly aligned
-Message-ID: <20250905162258.GA483339@ziepe.ca>
-References: <20250905055441.950943-1-aneesh.kumar@kernel.org>
- <aLrh_rbzWLPw9LnH@arm.com>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="k7Zmm/l4"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250905162659euoutp0209439914e512e98f87c7003f3b7cb2ad~ib7L2Tvq02121121211euoutp02j;
+	Fri,  5 Sep 2025 16:26:59 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250905162659euoutp0209439914e512e98f87c7003f3b7cb2ad~ib7L2Tvq02121121211euoutp02j
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1757089619;
+	bh=JratdkJhfp1iQGSSFRxxu72lgWMqyE2NX54DSFPZHRY=;
+	h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
+	b=k7Zmm/l4ml+LB1qItvZOEqZY+Sox4+FPDDVEoRVLzx1Wvrm8UN4/WmasRnz/XdrC4
+	 Uz3NPTnr8v6KtMSyeOqg/plUlqcNjUQLJ68wa1aVQkIC0f+6gNInm3vAulUU4bbtBs
+	 bFH/HZYMbbkZGGDU62q/7lnZ1i5322h/6rAkdcfU=
+Received: from eusmtip2.samsung.com (unknown [203.254.199.222]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20250905162658eucas1p1a568426150516afc440f0b45dae6597c~ib7LZwBNr2591525915eucas1p15;
+	Fri,  5 Sep 2025 16:26:58 +0000 (GMT)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20250905162656eusmtip2af2311515d499a88f1b631068b965d1d~ib7JPIWTy2564625646eusmtip2E;
+	Fri,  5 Sep 2025 16:26:56 +0000 (GMT)
+Message-ID: <afcd9cd4-d563-41c3-9e50-7440365b9152@samsung.com>
+Date: Fri, 5 Sep 2025 18:26:55 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aLrh_rbzWLPw9LnH@arm.com>
+User-Agent: Betterbird (Windows)
+Subject: Re: [PATCH v4 03/16] dma-debug: refactor to use physical addresses
+ for page mapping
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Leon Romanovsky <leonro@nvidia.com>, Jason Gunthorpe <jgg@nvidia.com>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>, Alexander Potapenko
+	<glider@google.com>, Alex Gaynor <alex.gaynor@gmail.com>, Andrew Morton
+	<akpm@linux-foundation.org>, Christoph Hellwig <hch@lst.de>, Danilo
+	Krummrich <dakr@kernel.org>, iommu@lists.linux.dev, Jason Wang
+	<jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>, Joerg Roedel
+	<joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>, Juergen Gross
+	<jgross@suse.com>, kasan-dev@googlegroups.com, Keith Busch
+	<kbusch@kernel.org>, linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+	linux-nvme@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+	linux-trace-kernel@vger.kernel.org, Madhavan Srinivasan
+	<maddy@linux.ibm.com>, Masami Hiramatsu <mhiramat@kernel.org>, Michael
+	Ellerman <mpe@ellerman.id.au>, "Michael S. Tsirkin" <mst@redhat.com>, Miguel
+	Ojeda <ojeda@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	rust-for-linux@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>, Stefano
+	Stabellini <sstabellini@kernel.org>, Steven Rostedt <rostedt@goodmis.org>,
+	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
+	xen-devel@lists.xenproject.org
+Content-Language: en-US
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+In-Reply-To: <478d5b7135008b3c82f100faa9d3830839fc6562.1755624249.git.leon@kernel.org>
+Content-Transfer-Encoding: 7bit
+X-CMS-MailID: 20250905162658eucas1p1a568426150516afc440f0b45dae6597c
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20250819173739eucas1p104ee9e80546f92ef250115edd799fc6d
+X-EPHeader: CA
+X-CMS-RootMailID: 20250819173739eucas1p104ee9e80546f92ef250115edd799fc6d
+References: <cover.1755624249.git.leon@kernel.org>
+	<CGME20250819173739eucas1p104ee9e80546f92ef250115edd799fc6d@eucas1p1.samsung.com>
+	<478d5b7135008b3c82f100faa9d3830839fc6562.1755624249.git.leon@kernel.org>
 
-On Fri, Sep 05, 2025 at 02:13:34PM +0100, Catalin Marinas wrote:
-> Hi Aneesh,
-> 
-> On Fri, Sep 05, 2025 at 11:24:41AM +0530, Aneesh Kumar K.V (Arm) wrote:
-> > When running with private memory guests, the guest kernel must allocate
-> > memory with specific constraints when sharing it with the hypervisor.
-> > 
-> > These shared memory buffers are also accessed by the host kernel, which
-> > means they must be aligned to the host kernel's page size.
-> 
-> So this is the case where the guest page size is smaller than the host
-> one. Just trying to understand what would go wrong if we don't do
-> anything here. Let's say the guest uses 4K pages and the host a 64K
-> pages. Within a 64K range, only a 4K is shared/decrypted. If the host
-> does not explicitly access the other 60K around the shared 4K, can
-> anything still go wrong? Is the hardware ok with speculative loads from
-> non-shared ranges?
+On 19.08.2025 19:36, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+> Convert the DMA debug infrastructure from page-based to physical address-based
+> mapping as a preparation to rely on physical address for DMA mapping routines.
+>
+> The refactoring renames debug_dma_map_page() to debug_dma_map_phys() and
+> changes its signature to accept a phys_addr_t parameter instead of struct page
+> and offset. Similarly, debug_dma_unmap_page() becomes debug_dma_unmap_phys().
+> A new dma_debug_phy type is introduced to distinguish physical address mappings
+> from other debug entry types. All callers throughout the codebase are updated
+> to pass physical addresses directly, eliminating the need for page-to-physical
+> conversion in the debug layer.
+>
+> This refactoring eliminates the need to convert between page pointers and
+> physical addresses in the debug layer, making the code more efficient and
+> consistent with the DMA mapping API's physical address focus.
+>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-+1 I'm also confused by this description.
+This change needs to be based on top of this patch 
+https://lore.kernel.org/all/20250828-dma-debug-fix-noncoherent-dma-check-v1-1-76e9be0dd7fc@oss.qualcomm.com 
+so the easiest way would be to rebase this patchset onto 
+https://web.git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git/log/?h=dma-mapping-fixes 
+branch (resolving conflicts is trivial) for the next version.
 
-I thought the issue here was in the RMM. The GPT or S2 min granule
-could be > 4k and in this case an unaligned set_memory_decrypted()
-from the guest would have to fail inside the RMM as impossible to
-execute?
+> ---
+>   Documentation/core-api/dma-api.rst |  4 ++--
+>   kernel/dma/debug.c                 | 28 +++++++++++++++++-----------
+>   kernel/dma/debug.h                 | 16 +++++++---------
+>   kernel/dma/mapping.c               | 15 ++++++++-------
+>   4 files changed, 34 insertions(+), 29 deletions(-)
+>
+> diff --git a/Documentation/core-api/dma-api.rst b/Documentation/core-api/dma-api.rst
+> index 3087bea715ed..ca75b3541679 100644
+> --- a/Documentation/core-api/dma-api.rst
+> +++ b/Documentation/core-api/dma-api.rst
+> @@ -761,7 +761,7 @@ example warning message may look like this::
+>   	[<ffffffff80235177>] find_busiest_group+0x207/0x8a0
+>   	[<ffffffff8064784f>] _spin_lock_irqsave+0x1f/0x50
+>   	[<ffffffff803c7ea3>] check_unmap+0x203/0x490
+> -	[<ffffffff803c8259>] debug_dma_unmap_page+0x49/0x50
+> +	[<ffffffff803c8259>] debug_dma_unmap_phys+0x49/0x50
+>   	[<ffffffff80485f26>] nv_tx_done_optimized+0xc6/0x2c0
+>   	[<ffffffff80486c13>] nv_nic_irq_optimized+0x73/0x2b0
+>   	[<ffffffff8026df84>] handle_IRQ_event+0x34/0x70
+> @@ -855,7 +855,7 @@ that a driver may be leaking mappings.
+>   dma-debug interface debug_dma_mapping_error() to debug drivers that fail
+>   to check DMA mapping errors on addresses returned by dma_map_single() and
+>   dma_map_page() interfaces. This interface clears a flag set by
+> -debug_dma_map_page() to indicate that dma_mapping_error() has been called by
+> +debug_dma_map_phys() to indicate that dma_mapping_error() has been called by
+>   the driver. When driver does unmap, debug_dma_unmap() checks the flag and if
+>   this flag is still set, prints warning message that includes call trace that
+>   leads up to the unmap. This interface can be called from dma_mapping_error()
+> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> index e43c6de2bce4..da6734e3a4ce 100644
+> --- a/kernel/dma/debug.c
+> +++ b/kernel/dma/debug.c
+> @@ -39,6 +39,7 @@ enum {
+>   	dma_debug_sg,
+>   	dma_debug_coherent,
+>   	dma_debug_resource,
+> +	dma_debug_phy,
+>   };
+>   
+>   enum map_err_types {
+> @@ -141,6 +142,7 @@ static const char *type2name[] = {
+>   	[dma_debug_sg] = "scatter-gather",
+>   	[dma_debug_coherent] = "coherent",
+>   	[dma_debug_resource] = "resource",
+> +	[dma_debug_phy] = "phy",
+>   };
+>   
+>   static const char *dir2name[] = {
+> @@ -1201,9 +1203,8 @@ void debug_dma_map_single(struct device *dev, const void *addr,
+>   }
+>   EXPORT_SYMBOL(debug_dma_map_single);
+>   
+> -void debug_dma_map_page(struct device *dev, struct page *page, size_t offset,
+> -			size_t size, int direction, dma_addr_t dma_addr,
+> -			unsigned long attrs)
+> +void debug_dma_map_phys(struct device *dev, phys_addr_t phys, size_t size,
+> +		int direction, dma_addr_t dma_addr, unsigned long attrs)
+>   {
+>   	struct dma_debug_entry *entry;
+>   
+> @@ -1218,19 +1219,24 @@ void debug_dma_map_page(struct device *dev, struct page *page, size_t offset,
+>   		return;
+>   
+>   	entry->dev       = dev;
+> -	entry->type      = dma_debug_single;
+> -	entry->paddr	 = page_to_phys(page) + offset;
+> +	entry->type      = dma_debug_phy;
+> +	entry->paddr	 = phys;
+>   	entry->dev_addr  = dma_addr;
+>   	entry->size      = size;
+>   	entry->direction = direction;
+>   	entry->map_err_type = MAP_ERR_NOT_CHECKED;
+>   
+> -	check_for_stack(dev, page, offset);
+> +	if (!(attrs & DMA_ATTR_MMIO)) {
+> +		struct page *page = phys_to_page(phys);
+> +		size_t offset = offset_in_page(page);
+>   
+> -	if (!PageHighMem(page)) {
+> -		void *addr = page_address(page) + offset;
+> +		check_for_stack(dev, page, offset);
+>   
+> -		check_for_illegal_area(dev, addr, size);
+> +		if (!PageHighMem(page)) {
+> +			void *addr = page_address(page) + offset;
+> +
+> +			check_for_illegal_area(dev, addr, size);
+> +		}
+>   	}
+>   
+>   	add_dma_entry(entry, attrs);
+> @@ -1274,11 +1280,11 @@ void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+>   }
+>   EXPORT_SYMBOL(debug_dma_mapping_error);
+>   
+> -void debug_dma_unmap_page(struct device *dev, dma_addr_t dma_addr,
+> +void debug_dma_unmap_phys(struct device *dev, dma_addr_t dma_addr,
+>   			  size_t size, int direction)
+>   {
+>   	struct dma_debug_entry ref = {
+> -		.type           = dma_debug_single,
+> +		.type           = dma_debug_phy,
+>   		.dev            = dev,
+>   		.dev_addr       = dma_addr,
+>   		.size           = size,
+> diff --git a/kernel/dma/debug.h b/kernel/dma/debug.h
+> index f525197d3cae..76adb42bffd5 100644
+> --- a/kernel/dma/debug.h
+> +++ b/kernel/dma/debug.h
+> @@ -9,12 +9,11 @@
+>   #define _KERNEL_DMA_DEBUG_H
+>   
+>   #ifdef CONFIG_DMA_API_DEBUG
+> -extern void debug_dma_map_page(struct device *dev, struct page *page,
+> -			       size_t offset, size_t size,
+> -			       int direction, dma_addr_t dma_addr,
+> +extern void debug_dma_map_phys(struct device *dev, phys_addr_t phys,
+> +			       size_t size, int direction, dma_addr_t dma_addr,
+>   			       unsigned long attrs);
+>   
+> -extern void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+> +extern void debug_dma_unmap_phys(struct device *dev, dma_addr_t addr,
+>   				 size_t size, int direction);
+>   
+>   extern void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+> @@ -55,14 +54,13 @@ extern void debug_dma_sync_sg_for_device(struct device *dev,
+>   					 struct scatterlist *sg,
+>   					 int nelems, int direction);
+>   #else /* CONFIG_DMA_API_DEBUG */
+> -static inline void debug_dma_map_page(struct device *dev, struct page *page,
+> -				      size_t offset, size_t size,
+> -				      int direction, dma_addr_t dma_addr,
+> -				      unsigned long attrs)
+> +static inline void debug_dma_map_phys(struct device *dev, phys_addr_t phys,
+> +				      size_t size, int direction,
+> +				      dma_addr_t dma_addr, unsigned long attrs)
+>   {
+>   }
+>   
+> -static inline void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+> +static inline void debug_dma_unmap_phys(struct device *dev, dma_addr_t addr,
+>   					size_t size, int direction)
+>   {
+>   }
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 107e4a4d251d..4c1dfbabb8ae 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -157,6 +157,7 @@ dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
+>   		unsigned long attrs)
+>   {
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+> +	phys_addr_t phys = page_to_phys(page) + offset;
+>   	dma_addr_t addr;
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+> @@ -165,16 +166,15 @@ dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
+>   		return DMA_MAPPING_ERROR;
+>   
+>   	if (dma_map_direct(dev, ops) ||
+> -	    arch_dma_map_page_direct(dev, page_to_phys(page) + offset + size))
+> +	    arch_dma_map_page_direct(dev, phys + size))
+>   		addr = dma_direct_map_page(dev, page, offset, size, dir, attrs);
+>   	else if (use_dma_iommu(dev))
+>   		addr = iommu_dma_map_page(dev, page, offset, size, dir, attrs);
+>   	else
+>   		addr = ops->map_page(dev, page, offset, size, dir, attrs);
+>   	kmsan_handle_dma(page, offset, size, dir);
+> -	trace_dma_map_page(dev, page_to_phys(page) + offset, addr, size, dir,
+> -			   attrs);
+> -	debug_dma_map_page(dev, page, offset, size, dir, addr, attrs);
+> +	trace_dma_map_page(dev, phys, addr, size, dir, attrs);
+> +	debug_dma_map_phys(dev, phys, size, dir, addr, attrs);
+>   
+>   	return addr;
+>   }
+> @@ -194,7 +194,7 @@ void dma_unmap_page_attrs(struct device *dev, dma_addr_t addr, size_t size,
+>   	else
+>   		ops->unmap_page(dev, addr, size, dir, attrs);
+>   	trace_dma_unmap_page(dev, addr, size, dir, attrs);
+> -	debug_dma_unmap_page(dev, addr, size, dir);
+> +	debug_dma_unmap_phys(dev, addr, size, dir);
+>   }
+>   EXPORT_SYMBOL(dma_unmap_page_attrs);
+>   
+> @@ -712,7 +712,8 @@ struct page *dma_alloc_pages(struct device *dev, size_t size,
+>   	if (page) {
+>   		trace_dma_alloc_pages(dev, page_to_virt(page), *dma_handle,
+>   				      size, dir, gfp, 0);
+> -		debug_dma_map_page(dev, page, 0, size, dir, *dma_handle, 0);
+> +		debug_dma_map_phys(dev, page_to_phys(page), size, dir,
+> +				   *dma_handle, 0);
+>   	} else {
+>   		trace_dma_alloc_pages(dev, NULL, 0, size, dir, gfp, 0);
+>   	}
+> @@ -738,7 +739,7 @@ void dma_free_pages(struct device *dev, size_t size, struct page *page,
+>   		dma_addr_t dma_handle, enum dma_data_direction dir)
+>   {
+>   	trace_dma_free_pages(dev, page_to_virt(page), dma_handle, size, dir, 0);
+> -	debug_dma_unmap_page(dev, dma_handle, size, dir);
+> +	debug_dma_unmap_phys(dev, dma_handle, size, dir);
+>   	__dma_free_pages(dev, size, page, dma_handle, dir);
+>   }
+>   EXPORT_SYMBOL_GPL(dma_free_pages);
 
-Though I'm a little unclear on when and why the S2 needs to be
-manipulated. Can't the S2 fully map both the protected and unprotected
-IPA space and rely on the GPT for protection?
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
-I do remember having a discussion that set_memory_decrypted() has
-nothing to do with the VM's S1 granule size, and it is a mistake to
-have linked these together. The VM needs to understand what
-granularity the RMM will support set_memory_decrypted() for and follow
-that.
-
-I don't recall there is also an issue on the hypervisor? I thought GPT
-faults on ARM were going to work well, ie we could cleanly segfault
-the VMM process if it touches any protected memory that may have been
-mapped into it, and speculation was safe?
-
-> > @@ -213,16 +213,20 @@ static gfp_t gfp_flags_quirk;
-> >  static struct page *its_alloc_pages_node(int node, gfp_t gfp,
-> >  					 unsigned int order)
-> >  {
-> > +	long new_order;
-> >  	struct page *page;
-> >  	int ret = 0;
-> >  
-> > -	page = alloc_pages_node(node, gfp | gfp_flags_quirk, order);
-> > +	/* align things to hypervisor page size */
-> > +	new_order = get_order(ALIGN((PAGE_SIZE << order), arch_shared_mem_alignment()));
-> > +
-> > +	page = alloc_pages_node(node, gfp | gfp_flags_quirk, new_order);
-> >  
-> >  	if (!page)
-> >  		return NULL;
-> >  
-> >  	ret = set_memory_decrypted((unsigned long)page_address(page),
-> > -				   1 << order);
-> > +				   1 << new_order);
-> 
-> At some point this could move to the DMA API.
-
-I don't think we should be open coding these patterns.
-
-Esepcially given the above, it makes no sense to 'alloc page' and then
-'decrypt page' on ARM CCA. decryption is not really a OS page level
-operation. I suggest coming with some series to clean these up into a
-more sensible API.
-
-Everything wanting decrypted memory should be going through some more
-general API that has some opportunity to use pools.
-
-DMA API may be one choice, but I know we will need more options in
-RDMA land :|
-
-Jason
