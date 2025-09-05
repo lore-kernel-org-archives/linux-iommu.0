@@ -1,145 +1,85 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D5802AF00
-	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 20:11:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE10E274FC2;
+	Fri,  5 Sep 2025 20:25:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757103078; cv=none; b=rf8PMhrFk5DZMjcgSPge8sRoH76LlHGgRXm4NC0bPX2q91z3HboM+eEo/Zv4nD3WJCOkyWFdBV3i6ebrS5YdO0JjO6KaKJCvcwN8sNX4YEAKBi0c6QRsRylwflpT5dFbb/76tyx95WAKQCo2jIOuMvD9G90BLsz0/+9JRPv24LA=
+	t=1757103929; cv=none; b=XolSR8BU6neDSndrSiz+u5Jes55HQ6+aQirF//36eQpkTuGYOQ8B12ZkIMR133/LYc/vC3LnDrPivmsnDvoD78C2v4NdqpBCgCwQjJM7rIeu04JVXWOPNrXEEYn0bFIZ+WkqKeqRB8nmuOVBZNDN4befoq/O2He2nPJFVOT/gpM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757103078; c=relaxed/simple;
-	bh=sp7QXjdtFIl/Q2ojsoDQ7QRg0TmEt3ZUiibqhwbst0k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aSK/p3q+XqCfgNk6L2fkFj/7j6ofLPkTSLlRp433vGes2yRndmN8urd1i2GtfZlkAC/h1xwagAmqR+uIEFkY5r938mBSIVDXh5M7YU2M3pBQgH+urBMMIWIgfbQfK4QNjuJ6yR2RJR8lAl2cJRUskacNIb+7e5RZ/EOIjc9NDx8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bim9uQ0Y; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bim9uQ0Y"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1757103077; x=1788639077;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=sp7QXjdtFIl/Q2ojsoDQ7QRg0TmEt3ZUiibqhwbst0k=;
-  b=bim9uQ0YM37HIoWy2JjlOGDSJYZGI/aXaGk4mn7UVkJ9xXvmvy/1NFYM
-   eQeFMwe9rMZ3ByUMgfGnSs8DWs1PGvP0mXZ6h6Tf6AsJosGkm3zzmsFa4
-   bLJFxaaHoOsSfixllWS9f+WE/PUoLyFK5ubOzM9RFbWtYMY8dAhbh5I99
-   fp8WffrCGm+jLf0TXVjAcumgiyx2ByTfyHGC6vl+SbVpc4Bd8RLakqK9a
-   UIgKKJM+T+UCCzZrztf2WFQaePez3UAEuO/B+UTMwqgP9YLI0XCyPDgdd
-   /A4GKIh24WOdDIIIg+cuFc5B11d16MvMvQYBpRoqAruUgxjfyRVREaK1G
-   g==;
-X-CSE-ConnectionGUID: 0S0ge1pFQNKIx3TvyDETUA==
-X-CSE-MsgGUID: nGfqshhdRzyClxFr6jyr5Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11544"; a="58670993"
-X-IronPort-AV: E=Sophos;i="6.18,242,1751266800"; 
-   d="scan'208";a="58670993"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2025 13:11:16 -0700
-X-CSE-ConnectionGUID: rxMXoCsLRnKz7gZkbztrzg==
-X-CSE-MsgGUID: FtNa1zzcTOqxP0dWgRBBbg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,242,1751266800"; 
-   d="scan'208";a="176336310"
-Received: from gabaabhi-mobl2.amr.corp.intel.com (HELO [10.125.110.75]) ([10.125.110.75])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2025 13:11:15 -0700
-Message-ID: <04983c62-3b1d-40d4-93ae-34ca04b827e5@intel.com>
-Date: Fri, 5 Sep 2025 13:11:15 -0700
+	s=arc-20240116; t=1757103929; c=relaxed/simple;
+	bh=ZOTjLz4f/m7qQgugzOpcO4mM2jpd9yFtO+LJ3mSPOIY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RGtRFRTB5MNgXqaR0ygJFuN/nZcSfHdwtsHSr+AVEmXvEqvDjqfdmTLz3p0Rw3zJlxODgmf4thlhtCtzexuMs7jVEHp2WcIQZx+9DSa9K9ad/kTdSlCcb6sJYim4HbQB1oTkYEJ9aWjbXoO3bAauXT7uCDt5bDhZi9jCFkjtyPU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62805C4CEF1;
+	Fri,  5 Sep 2025 20:25:26 +0000 (UTC)
+Date: Fri, 5 Sep 2025 21:25:24 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-coco@lists.linux.dev, will@kernel.org, maz@kernel.org,
+	tglx@linutronix.de, robin.murphy@arm.com, suzuki.poulose@arm.com,
+	akpm@linux-foundation.org, steven.price@arm.com
+Subject: Re: [RFC PATCH] arm64: swiotlb: dma: its: Ensure shared buffers are
+ properly aligned
+Message-ID: <aLtHNCaMJTulDOw8@arm.com>
+References: <20250905055441.950943-1-aneesh.kumar@kernel.org>
+ <aLrh_rbzWLPw9LnH@arm.com>
+ <20250905162258.GA483339@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 5/8] x86/mm: Use pagetable_free()
-To: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
- Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
- Uladzislau Rezki <urezki@gmail.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
- iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org
-References: <20250905055103.3821518-1-baolu.lu@linux.intel.com>
- <20250905055103.3821518-6-baolu.lu@linux.intel.com>
- <20250905184115.GQ616306@nvidia.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Content-Language: en-US
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <20250905184115.GQ616306@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250905162258.GA483339@ziepe.ca>
 
-On 9/5/25 11:41, Jason Gunthorpe wrote:
->> --- a/arch/x86/mm/init_64.c
->> +++ b/arch/x86/mm/init_64.c
->> @@ -1013,7 +1013,7 @@ static void __meminit free_pagetable(struct page *page, int order)
->>  		free_reserved_pages(page, nr_pages);
->>  #endif
->>  	} else {
->> -		free_pages((unsigned long)page_address(page), order);
->> +		pagetable_free(page_ptdesc(page));
->>  	}
->>  }
-> Er.. So if bootmem happens to be under the table and we happen to free
-> it due to memory hotplug we don't go through the SVA fixing path?
+On Fri, Sep 05, 2025 at 01:22:58PM -0300, Jason Gunthorpe wrote:
+> On Fri, Sep 05, 2025 at 02:13:34PM +0100, Catalin Marinas wrote:
+> > > @@ -213,16 +213,20 @@ static gfp_t gfp_flags_quirk;
+> > >  static struct page *its_alloc_pages_node(int node, gfp_t gfp,
+> > >  					 unsigned int order)
+> > >  {
+> > > +	long new_order;
+> > >  	struct page *page;
+> > >  	int ret = 0;
+> > >  
+> > > -	page = alloc_pages_node(node, gfp | gfp_flags_quirk, order);
+> > > +	/* align things to hypervisor page size */
+> > > +	new_order = get_order(ALIGN((PAGE_SIZE << order), arch_shared_mem_alignment()));
+> > > +
+> > > +	page = alloc_pages_node(node, gfp | gfp_flags_quirk, new_order);
+> > >  
+> > >  	if (!page)
+> > >  		return NULL;
+> > >  
+> > >  	ret = set_memory_decrypted((unsigned long)page_address(page),
+> > > -				   1 << order);
+> > > +				   1 << new_order);
+> > 
+> > At some point this could move to the DMA API.
 > 
-> Seems wrong??
+> I don't think we should be open coding these patterns.
+> 
+> Esepcially given the above, it makes no sense to 'alloc page' and then
+> 'decrypt page' on ARM CCA. decryption is not really a OS page level
+> operation. I suggest coming with some series to clean these up into a
+> more sensible API.
+> 
+> Everything wanting decrypted memory should be going through some more
+> general API that has some opportunity to use pools.
 
-On second thought...
+I proposed something like GFP_DECRYPTED last year but never got around
+to post a proper patch (and also add vmalloc() support):
 
-Yes, freeing bootmem with no SVA fixing is wrong. It should be fixed.
-Period. But, it's wrong one time for something super rare: memory unplug
-of memory that was present at boot. It also can't be triggered by
-unprivileged users.
+https://lore.kernel.org/linux-arm-kernel/ZmNJdSxSz-sYpVgI@arm.com/
 
-As-is, this series fixes vfree(). That path is not nearly rare, can
-happen an arbitrary number of times on each boot, and might even be
-triggered by folks that are less than root.
+The GIC ITS code would have been one of the very few users, so we ended
+up with open-coding the call to set_memory_decrypted().
 
-So I kinda think we should just make clear that this series leaves
-_some_ holes, but I do think it should go in mostly as-is.
+-- 
+Catalin
