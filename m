@@ -1,181 +1,201 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2077.outbound.protection.outlook.com [40.107.95.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D534072639;
-	Fri,  5 Sep 2025 23:01:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757113283; cv=none; b=STHTwbkIUVyVc7/Lt3KdXJswKeeXO6ub4oO/A4fn/hio24PmAXQ4j33bZlZeIH4/EKkF1ydvJyWKcoiZL/hsxI2S6XTK5sfeeH6rQSy+d/V0WUS52Dr+w4Ga30z3Ey9QMdboVM8/bPPo7tSb/lionQYM2sHQjvtVNXMwc+y1ZZ8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757113283; c=relaxed/simple;
-	bh=+lhopyxIHPkimkHLqjBagKsowbxPduHdhl1alB5XIHw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=N75cZXP1uVrHhIJ9EPjB03JXuyOgr/DVmBetbhnxkc2jy5WGQHWzf3CfpoeeT+fOsJzUEx47wPpgyN43SxU3d62W5Po1LCgxkA2EyKIY3vTV+zpKEov7n98vGiJUbFohpyvKvli9clGo6PdRHczPUuzF/vel7BmS57mz0Q44AUQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FKhh4N0Y; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AA2A1C8630
+	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 23:04:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.77
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1757113468; cv=fail; b=O02iYgAajg/Jx7ZQWzHAWlUuwg2z6e47orf+C1vK8syLd/DdSA6LgeRzmB4JUWJAy3x3GhlISfURPfhqY9FU11J2yxiPFRx6FaeatXlQzEApkHkKu2LoJquh28tBIVc/STM/nqwKG01M9YBbigZFDE1a/CqVJrJ1E1JrdmbJxXE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1757113468; c=relaxed/simple;
+	bh=5yik+I/VZ1Qk7WGe/i1HTIpKiDo5oZCA80+QvUkOXEs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=GKFv+W14Pgw/7BdqaNUMthz1XYx+Bpk2p/Alzl9d6WaAZG4hGPPJqbh8OG5/oUzVnT1KoPtBXMpMFd793zLeu3TbVJInrEJIWW5ICw4j6Tc1KxgTXuTG9rgYthSFgmpg1GuHb+xCMMRjCZSKUR6L5Da5rdHLMtE9gOcz2zyD3Qw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=LRAGteOp; arc=fail smtp.client-ip=40.107.95.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FKhh4N0Y"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2CEDC4CEF1;
-	Fri,  5 Sep 2025 23:01:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757113280;
-	bh=+lhopyxIHPkimkHLqjBagKsowbxPduHdhl1alB5XIHw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=FKhh4N0YC7rktiPdXEfXclWanEDKYne9TN6cdcuCjqPCtcq4Rn0r96yLuECJbiw+4
-	 LjwCnjQtLBAm0edveUnCZZYiNonj/7aqKLJr2wGtnUHH+scBK/7r7JUigttXLAScDm
-	 pXeFnpIPvL1/rZKX9LdznwwDYBYkDL4/X0Q74Dlpx/NmySnEYO46ImCPWzvWXVlUfn
-	 7nKQ1fERSefzbF0N9pUOtT2Ew99OpHStRZ+01KHKpecJw2kFIukduhp+K3hQulq8o0
-	 47VhyxuU+d72ralUlgkhIgcgxiZyD9aQX9YFUuu3Ep7hq8BTDKfbNp6DFssdME8qWg
-	 uTEId8/MJZDQg==
-Date: Fri, 5 Sep 2025 16:00:06 -0700
-From: Eric Biggers <ebiggers@kernel.org>
-To: David Hildenbrand <david@redhat.com>
-Cc: linux-kernel@vger.kernel.org, Alexander Potapenko <glider@google.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Brendan Jackman <jackmanb@google.com>,
-	Christoph Lameter <cl@gentwo.org>, Dennis Zhou <dennis@kernel.org>,
-	Dmitry Vyukov <dvyukov@google.com>, dri-devel@lists.freedesktop.org,
-	intel-gfx@lists.freedesktop.org, iommu@lists.linux.dev,
-	io-uring@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>,
-	Jens Axboe <axboe@kernel.dk>, Johannes Weiner <hannes@cmpxchg.org>,
-	John Hubbard <jhubbard@nvidia.com>, kasan-dev@googlegroups.com,
-	kvm@vger.kernel.org, "Liam R. Howlett" <Liam.Howlett@oracle.com>,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	linux-arm-kernel@axis.com, linux-arm-kernel@lists.infradead.org,
-	linux-crypto@vger.kernel.org, linux-ide@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, linux-mips@vger.kernel.org,
-	linux-mmc@vger.kernel.org, linux-mm@kvack.org,
-	linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-	linux-scsi@vger.kernel.org,
-	Lorenzo Stoakes <lorenzo.stoakes@oracle.com>,
-	Marco Elver <elver@google.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Michal Hocko <mhocko@suse.com>, Mike Rapoport <rppt@kernel.org>,
-	Muchun Song <muchun.song@linux.dev>, netdev@vger.kernel.org,
-	Oscar Salvador <osalvador@suse.de>, Peter Xu <peterx@redhat.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Suren Baghdasaryan <surenb@google.com>, Tejun Heo <tj@kernel.org>,
-	virtualization@lists.linux.dev, Vlastimil Babka <vbabka@suse.cz>,
-	wireguard@lists.zx2c4.com, x86@kernel.org, Zi Yan <ziy@nvidia.com>
-Subject: Re: [PATCH v2 19/37] mm/gup: remove record_subpages()
-Message-ID: <20250905230006.GA1776@sol>
-References: <20250901150359.867252-1-david@redhat.com>
- <20250901150359.867252-20-david@redhat.com>
- <5090355d-546a-4d06-99e1-064354d156b5@redhat.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="LRAGteOp"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=eb3EGG6s7W/838Rog8dOXQby+Jrie6iagyh8DLrdNxQOhvtb/tlQiWesYT6YUMUDf7W7VsjZA2k2dETBuZ1i3cN9UFqVQXlGno5igC/Hx27pTO+U/Ee8Id7i/zq4U10TfqkIWGaIuLFtWrCTGeXGNHNdeEZd7os1C4sIA2yq0LnQLFLtzZxvQQtqo5RykaYqSPz+CUXZwNs3eu+6LsOgGw9vLVtDko4oEUdadlqD8RaEpUU8nXkj9XIOEP4aFGXdzCn45RuvWAaiyDS83f8wyfmqUzYryfhe8Qsq93QrLB16pTB/rI/77hGCf5L9Eej+qaUwJxVz1BPD/+WaqTcNTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RQF4vZcFHuMz3R6RoESyPUrRn0LlxYTjFJXQMMfWilI=;
+ b=jw8MMfqzez7JuLIe84vDcYuBMVnFqtOsPnhFQEQ/+m5myf7jOyn07Vry+cwyYn7vsYTWDWGnvSsel6huVxsm/dBW62wk09JurUfaLXVIIhbXhnIc9jW/Qy/rmu1dNUAIX56wzNIie72xnYST8SMQ6ZUbFUsD5YWUuEMFj6SpqagzvLF3jULf3O7qwEcb61o+qJlnpmQg5c1Ub5pY8fyBYtG6PY2waxAKN1DS7z7aDFhpO4RTseJWF4ZGQKbF1nh4aZQkn9/gZrOE3xHSr2OJux0ss6ZM+4TvVA/IyqkszfbmGAYIO3F1cEAoQHUcBE/PI5lBa9B0Qcu/vdJMRdq5Cg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RQF4vZcFHuMz3R6RoESyPUrRn0LlxYTjFJXQMMfWilI=;
+ b=LRAGteOpJhsns6Hj/3b4Bv82vtw+0TLRLmXQDuHQW/n4G98DRsEb4QyX0qk3Yc+WrNGCyE6ttrvTpa4iQ6ywVKjTiphztQKl5cVFMh3djmqnE6B2S8T4gSxiy1RaC2A8x7SK/HKQLSlV1lsL0ueOKDuDu5Q+C17c5nVEk/+RVExgw3wHwW9wI7SrhLbqi7Kgs1S+k71T47P5CbN9ecp7t+H0Lmc/EOY2zFxuEyzSqFpcVCyTr4HF6/OjuUW5N576oopRRQ9PxfrJ5k8nIBQhqKiFX3ho3eJi0n8rVmDCiCNxbH+KfKoryZweWoTygXhg280ZFbeOCM+BcDtZwpm5FQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from PH7PR12MB5757.namprd12.prod.outlook.com (2603:10b6:510:1d0::13)
+ by SA3PR12MB9092.namprd12.prod.outlook.com (2603:10b6:806:37f::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.19; Fri, 5 Sep
+ 2025 23:04:23 +0000
+Received: from PH7PR12MB5757.namprd12.prod.outlook.com
+ ([fe80::f012:300c:6bf4:7632]) by PH7PR12MB5757.namprd12.prod.outlook.com
+ ([fe80::f012:300c:6bf4:7632%2]) with mapi id 15.20.9094.017; Fri, 5 Sep 2025
+ 23:04:23 +0000
+Date: Fri, 5 Sep 2025 20:04:21 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Dave Hansen <dave.hansen@intel.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Alistair Popple <apopple@nvidia.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Uladzislau Rezki <urezki@gmail.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
+	iommu@lists.linux.dev, security@kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 5/8] x86/mm: Use pagetable_free()
+Message-ID: <20250905230421.GT616306@nvidia.com>
+References: <20250905055103.3821518-1-baolu.lu@linux.intel.com>
+ <20250905055103.3821518-6-baolu.lu@linux.intel.com>
+ <20250905184115.GQ616306@nvidia.com>
+ <04983c62-3b1d-40d4-93ae-34ca04b827e5@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <04983c62-3b1d-40d4-93ae-34ca04b827e5@intel.com>
+X-ClientProxiedBy: YT3PR01CA0044.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:82::29) To PH7PR12MB5757.namprd12.prod.outlook.com
+ (2603:10b6:510:1d0::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5090355d-546a-4d06-99e1-064354d156b5@redhat.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5757:EE_|SA3PR12MB9092:EE_
+X-MS-Office365-Filtering-Correlation-Id: ba6bd19b-65eb-42ad-fe0c-08ddecd08dd5
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?27LtBDSEiucwHwmsXnd5Wie2ZFB+41RkOMtq3pqipRbw15JzScqYJifSeQw1?=
+ =?us-ascii?Q?xyiefusEwJ7ixmwQX0npbVxldKFUz8ACDsPUcbTeXy+5jR9CyTRvfLw+x8pH?=
+ =?us-ascii?Q?pVxibyb9xryCzY1MNX8RPgupojpdZ98KOS5g8Spoqnz8G3B6G/ZDO5tAEG0o?=
+ =?us-ascii?Q?js08oPwV2EsFNMLNZhFHc/Z050h2rsx9HcilrxR/7tscEYDR4xvw8IRzkSKV?=
+ =?us-ascii?Q?iaskmWByCZP+5RoDUN8zd612QQ7WYBkAmmuGTGje1xGvfpnYymWEwK3etF3Q?=
+ =?us-ascii?Q?QsH2bMLW6PG1v3kPSlTTKgpKjwUK2z1KhykDQsehV9CeutprTDX/Km4wwg7c?=
+ =?us-ascii?Q?/uTyElleZ20cgdv0QM+7gb3SUPrrUe+RIrwgMpufTDVZtjkE87riaTLAb2qd?=
+ =?us-ascii?Q?WuDI44uYYA5qsCjRw4WrSAHIPQeR0MX5skKRmqxockPZjPmzar9z995bZRg9?=
+ =?us-ascii?Q?ZRrlkLau/uyHEy3FUKMk8GxLtsTOKNRUKp0jLG3stCtyvI+yB8ku0N/m+4zb?=
+ =?us-ascii?Q?D5zXj95qXqpYAaSHT0gTC6fmTZyPE5COWKgLM+ufxPBY4lGRyDQnU1jW5faA?=
+ =?us-ascii?Q?Xondef42cx+LIpRYBZ/KyTn55zZif2dP1rz153zDsE5me8J7hAmTMAri3Q6+?=
+ =?us-ascii?Q?aZB8Hd8EWV02tZJxazByjPVbfUXe0FHan6rxmvLkBNoua13/2rAgC6k8UA4q?=
+ =?us-ascii?Q?JSRk5x3vvvUQwt6hwqG0dXXfgFOnAC8vIY+zkoQmnGI1dE1vw+6k+4xPd4yG?=
+ =?us-ascii?Q?RtWGiDqipOjPj6Lk2/+8AuOGTM6vDav3QJPuV4pmO7PflvrTlNYL2of33Eth?=
+ =?us-ascii?Q?xbCQkql8HrPxnKMWsa7F15Ms+mDLUQOLdusHaD9JsjiUZCS5Q1eErW2EKGQJ?=
+ =?us-ascii?Q?mfXNsoMiqKTeh68c5weFP4lAEAoENtiiQNTomTX8PdzpRQpveD14I3aPWX8C?=
+ =?us-ascii?Q?39UdnGiR7qwvMeU2qm4GGdxNXYdp4AOGouuEPM1aMV0NMf6kfwmHttaQuPR9?=
+ =?us-ascii?Q?WIvyxci782Dn+AxUurM1tv07aKPvyoqSgJjpzjRDUSmo28YynMl7JCprLV3b?=
+ =?us-ascii?Q?2jUglJ6DoFzhdMLypPPqW5D2KB8SHvzStbE2gfGpO6CqIFHlZWg1koYBtLcy?=
+ =?us-ascii?Q?nqHst+w0tzVw/96/OXoNHjDx01K7xK003fmqVLE6x30Dw9swWW++TR/w3rgs?=
+ =?us-ascii?Q?sYsQoNb6hRWeLIcDSnCgEMKMW0ymW8M7Ek2fVSXhusz5oAYKfNShKpBZboqN?=
+ =?us-ascii?Q?0rUPM8l/UNiJG8NpC7H0OzO/sLCXuh+z3myfklLtVXClGPqwolomCsZGJIHq?=
+ =?us-ascii?Q?pu8XN7XH8247YLx9wEP3qluxLCGiZ2CocnnhK+SH4T/TqpTjCCtNm6HAVIcH?=
+ =?us-ascii?Q?V1CTBM1nSY3PyBiWsfJEhnqW7+Q/4HW3JklbYJc56JPTtNUchqwBSsizob3f?=
+ =?us-ascii?Q?ihvFAeFNdek=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?PF0NpQMHsKPNnXGIGcGiykL0IiQALPlc9VhCQSHE7Pm+FRQlgzw3jYH4AYvH?=
+ =?us-ascii?Q?cDvKW6URdDpfizE6ikRBQ5PJsPzlXjZIfpfP9Q772z+pD0lhnyRc4tH9cIrq?=
+ =?us-ascii?Q?Eq8JPaoZGQ6a4C/DDso8FIb4EB69t/I5vqXjULvVjmyZx7CkFED+1dRpm+QD?=
+ =?us-ascii?Q?nuwovKpm4SkbLF5EPsLN9zBJKfIEe1/ZYJuqZWCHraWxhdjdrQ8NxDEQltDy?=
+ =?us-ascii?Q?8iklCcrJYpNCcu9MMBZwI7JmB32r+8ednqMHYACnm2QWEMgOplyyYCWlxtMA?=
+ =?us-ascii?Q?WnPwCDjOFAktV6zXYg2BoUiIxssB0FdQ/A4H3IancKf0j8j08X6TaHDKrQvb?=
+ =?us-ascii?Q?gnTSzl81oKOamaFC6kC1TWbz3UnjAEWOgLr602i1UfKB+z2KU9ForrEerREe?=
+ =?us-ascii?Q?OqKo7x0OHRTr9M25zYo6H2W1Hn8WDUc2Dmz1EWVtDkDZIDym6V1QtaG2dH6G?=
+ =?us-ascii?Q?nsBtu70/m/08MkNlBvvWOMoRpsllS5C3bjubWF01z/1dy/veqzb/OyNlmF7r?=
+ =?us-ascii?Q?y9Tde26F1vlGhur8HRtaBPlXK/hUJssm4plT45SPxVeO7IhfWFSOSdePvjMi?=
+ =?us-ascii?Q?Vbh4f1VZzE4wxxM/hTLyunSOYlC0XM8NFRaPmqEgRDMWF90+sy+B6NNBC0JP?=
+ =?us-ascii?Q?FZLSF+Dj43oqjmTbW2+BtzWB9yt7sNDIWWtwok357TCe+wVAMEZ8JgQcnWk2?=
+ =?us-ascii?Q?gpxswZZov02hq0KAU9bB8bM2Byc06RKDZPrOEqnr/hkit9nqlTihLV5yuc4L?=
+ =?us-ascii?Q?M9Nq+PBn0AgiZwZYwpNipIlToTSBjY6E/pBtpORNTU5DnFf80rAx0Iq3IOj6?=
+ =?us-ascii?Q?THQ5dyng66ES2TEurX7NChqVbbbEVq9qQMWvHvntyWoonEg81S2oxYNykSUp?=
+ =?us-ascii?Q?G9RGFlC92xDHLLFweQjO3+QTNh2as/PcKl3HOkdi8NJWzCbKZzs98CplW9Fb?=
+ =?us-ascii?Q?I3ptrXSJ2fC5z1NfEaehHyDPSyQqC/7vZLktAvAvMPmifCPGkEt4AWh/uNQO?=
+ =?us-ascii?Q?Y2N3EuRPt8logh5mfYfSHzfGfVts0LcvjVXoApOsIsOeumKufdKgZQvytpaH?=
+ =?us-ascii?Q?iDFE+y1Ml9G0Z5crwoYOT55Eu0IIHDA/SxqQPf/WnpWDPCANGffUz7+1cpV9?=
+ =?us-ascii?Q?xbSElBjDfCdhOGA4+xuvAk42KCksmADKXzHx0PgFHQgSYqUdizKltFkMks77?=
+ =?us-ascii?Q?cbr844kVmpY9IYhWwFTM0ab2bbXZFvx2pCe7Hwv4E6T+HUqEYM7/uRDm6iuI?=
+ =?us-ascii?Q?4hQqvLtmrorsLpOI7qlBjp17Nrmv0VVNF4Ksts4n/XXWNFYH00o1dxMej0Ar?=
+ =?us-ascii?Q?l8gzUihS+2D1yxc6wAmmUgZyFbQX23BZuAYhJ2IeTbuoSSIk5fy6rL/p18tA?=
+ =?us-ascii?Q?91aaqFTRj0zp34JFgWpIwmDc8aKxKVdsb7YVVaJd6hNSgmAH8AGzKILYOyal?=
+ =?us-ascii?Q?OpmOj6l3Z/tG+BsD93ePS/W5EbjyhEhAXVBOp0fG+DJpghri/XQXWkE1cmg2?=
+ =?us-ascii?Q?ZTZnMgCxor+wMp5gU9/LKSfhHzFn9zg+0uZud0Gm4m48PShD/LOcDzRux2p8?=
+ =?us-ascii?Q?FIffgP0y2J2petITkrk=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ba6bd19b-65eb-42ad-fe0c-08ddecd08dd5
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5757.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2025 23:04:23.5727
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: t9PK3EfxMD2dagw0XYrTeY4LMOQlj8B/Syre40xNgqZ4FBEdb60JHs8pVIvo0vk2
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB9092
 
-On Fri, Sep 05, 2025 at 08:41:23AM +0200, David Hildenbrand wrote:
-> On 01.09.25 17:03, David Hildenbrand wrote:
-> > We can just cleanup the code by calculating the #refs earlier,
-> > so we can just inline what remains of record_subpages().
+On Fri, Sep 05, 2025 at 01:11:15PM -0700, Dave Hansen wrote:
+> On 9/5/25 11:41, Jason Gunthorpe wrote:
+> >> --- a/arch/x86/mm/init_64.c
+> >> +++ b/arch/x86/mm/init_64.c
+> >> @@ -1013,7 +1013,7 @@ static void __meminit free_pagetable(struct page *page, int order)
+> >>  		free_reserved_pages(page, nr_pages);
+> >>  #endif
+> >>  	} else {
+> >> -		free_pages((unsigned long)page_address(page), order);
+> >> +		pagetable_free(page_ptdesc(page));
+> >>  	}
+> >>  }
+> > Er.. So if bootmem happens to be under the table and we happen to free
+> > it due to memory hotplug we don't go through the SVA fixing path?
 > > 
-> > Calculate the number of references/pages ahead of times, and record them
-> > only once all our tests passed.
-> > 
-> > Signed-off-by: David Hildenbrand <david@redhat.com>
-> > ---
-> >   mm/gup.c | 25 ++++++++-----------------
-> >   1 file changed, 8 insertions(+), 17 deletions(-)
-> > 
-> > diff --git a/mm/gup.c b/mm/gup.c
-> > index c10cd969c1a3b..f0f4d1a68e094 100644
-> > --- a/mm/gup.c
-> > +++ b/mm/gup.c
-> > @@ -484,19 +484,6 @@ static inline void mm_set_has_pinned_flag(struct mm_struct *mm)
-> >   #ifdef CONFIG_MMU
-> >   #ifdef CONFIG_HAVE_GUP_FAST
-> > -static int record_subpages(struct page *page, unsigned long sz,
-> > -			   unsigned long addr, unsigned long end,
-> > -			   struct page **pages)
-> > -{
-> > -	int nr;
-> > -
-> > -	page += (addr & (sz - 1)) >> PAGE_SHIFT;
-> > -	for (nr = 0; addr != end; nr++, addr += PAGE_SIZE)
-> > -		pages[nr] = page++;
-> > -
-> > -	return nr;
-> > -}
-> > -
-> >   /**
-> >    * try_grab_folio_fast() - Attempt to get or pin a folio in fast path.
-> >    * @page:  pointer to page to be grabbed
-> > @@ -2967,8 +2954,8 @@ static int gup_fast_pmd_leaf(pmd_t orig, pmd_t *pmdp, unsigned long addr,
-> >   	if (pmd_special(orig))
-> >   		return 0;
-> > -	page = pmd_page(orig);
-> > -	refs = record_subpages(page, PMD_SIZE, addr, end, pages + *nr);
-> > +	refs = (end - addr) >> PAGE_SHIFT;
-> > +	page = pmd_page(orig) + ((addr & ~PMD_MASK) >> PAGE_SHIFT);
-> >   	folio = try_grab_folio_fast(page, refs, flags);
-> >   	if (!folio)
-> > @@ -2989,6 +2976,8 @@ static int gup_fast_pmd_leaf(pmd_t orig, pmd_t *pmdp, unsigned long addr,
-> >   	}
-> >   	*nr += refs;
-> > +	for (; refs; refs--)
-> > +		*(pages++) = page++;
-> >   	folio_set_referenced(folio);
-> >   	return 1;
-> >   }
-> > @@ -3007,8 +2996,8 @@ static int gup_fast_pud_leaf(pud_t orig, pud_t *pudp, unsigned long addr,
-> >   	if (pud_special(orig))
-> >   		return 0;
-> > -	page = pud_page(orig);
-> > -	refs = record_subpages(page, PUD_SIZE, addr, end, pages + *nr);
-> > +	refs = (end - addr) >> PAGE_SHIFT;
-> > +	page = pud_page(orig) + ((addr & ~PUD_MASK) >> PAGE_SHIFT);
-> >   	folio = try_grab_folio_fast(page, refs, flags);
-> >   	if (!folio)
-> > @@ -3030,6 +3019,8 @@ static int gup_fast_pud_leaf(pud_t orig, pud_t *pudp, unsigned long addr,
-> >   	}
-> >   	*nr += refs;
-> > +	for (; refs; refs--)
-> > +		*(pages++) = page++;
-> >   	folio_set_referenced(folio);
-> >   	return 1;
-> >   }
+> > Seems wrong??
 > 
-> Okay, this code is nasty. We should rework this code to just return the nr and receive a the proper
-> pages pointer, getting rid of the "*nr" parameter.
+> On second thought...
 > 
-> For the time being, the following should do the trick:
+> Yes, freeing bootmem with no SVA fixing is wrong. It should be fixed.
+> Period. But, it's wrong one time for something super rare: memory unplug
+> of memory that was present at boot. It also can't be triggered by
+> unprivileged users.
 > 
-> commit bfd07c995814354f6b66c5b6a72e96a7aa9fb73b (HEAD -> nth_page)
-> Author: David Hildenbrand <david@redhat.com>
-> Date:   Fri Sep 5 08:38:43 2025 +0200
+> As-is, this series fixes vfree(). That path is not nearly rare, can
+> happen an arbitrary number of times on each boot, and might even be
+> triggered by folks that are less than root.
 > 
->     fixup: mm/gup: remove record_subpages()
->     pages is not adjusted by the caller, but idnexed by existing *nr.
->     Signed-off-by: David Hildenbrand <david@redhat.com>
-> 
-> diff --git a/mm/gup.c b/mm/gup.c
-> index 010fe56f6e132..22420f2069ee1 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -2981,6 +2981,7 @@ static int gup_fast_pmd_leaf(pmd_t orig, pmd_t *pmdp, unsigned long addr,
->                 return 0;
->         }
-> +       pages += *nr;
->         *nr += refs;
->         for (; refs; refs--)
->                 *(pages++) = page++;
-> @@ -3024,6 +3025,7 @@ static int gup_fast_pud_leaf(pud_t orig, pud_t *pudp, unsigned long addr,
->                 return 0;
->         }
-> +       pages += *nr;
->         *nr += refs;
->         for (; refs; refs--)
->                 *(pages++) = page++;
+> So I kinda think we should just make clear that this series leaves
+> _some_ holes, but I do think it should go in mostly as-is.
 
-Can this get folded in soon?  This bug is causing crashes in AF_ALG too.
+That's reasonable, but also your suggested change is pretty
+simple. I'd put an arch hook:
 
-Thanks,
+static inline void pagetable_free_kernel(struct ptdesc *pt)
+{
+       struct page *page = ptdesc_page(pt);
 
-- Eric
+       ptdesc_clear_kernel(pt);
+       if (!arch_pagetable_free_kernel(pt))
+              return;
+       __pagetable_free((page);
+}
+
+With what you showed
+
+Also, probably need to ensure whatever allocates the bootmem in the
+first place calls ptdesc_set_kernel()..
+
+Jason
