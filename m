@@ -1,43 +1,53 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 79EF3219EB
-	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 13:01:02 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B73AA219EB
+	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 13:04:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757077264; cv=none; b=pl18N2XZ6zlG4Bt8p+dsM1I2jYtz116iZ1ct/7s1KCYquPmt55jvi2tIVd3ZkAA5wC9kWolkxOgOFyVVGLqGYG4i4NmWAqQq8nGL72wDaceM+qy2Cy0bY9yN8PQwQ7SZy2IHfCgEQX64Eo+rPcIFXqBvIWOYTBXXKn03uLpjUOc=
+	t=1757077473; cv=none; b=SGn5LBEaQwbkaRKIkS/8exvXhPCZI6qFjR0QIbWe4Djxv1pAZjHjCRH0OROZ7K0/7WAb8XxwZlQLFZyEuxQwOylo7LAk03PsHJApXJBk/37ZnKDsL0BA8xa4XjKcquxYHUaO3kBhiyQi10oPbpFnwXuJNECWSUORO8hD75NR98I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757077264; c=relaxed/simple;
-	bh=cpfj21JmBcuZVpXwVG09m9Ezr6VNRpFa2CECZ7dB7+k=;
+	s=arc-20240116; t=1757077473; c=relaxed/simple;
+	bh=gf8Wv3CwSREEIQF0pzbMHFP1Ns2rSOX6mMMsVmZtdoc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=K/zSv4yp7rIUG2xUUq046SxFYj3C4VoM4dEnG6hddCKFXDMCN9WfAp2e3Ez2js3k7KEx+9swdwC+Z5Mpg43ViiTjhIuaqQHqPQ01+XTq2Lh+9KAFHy7R/Jl0ddGvwxy/aWLxkVBbPlhm+gvdbJRr92AziLv/1c4ZfQiOsj2Uj2k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=PffN2JcE; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=OUGeDps0Z3Rv1gsZsDviNNcycnHw6DWXjf16N/v/JTm70/2LhVAZi2TmtLw8liBZ/z7QYfnr5pgCVkq3ZNvujb7jHLuPxPSoDZjba5PRpklvvIA0cs7TrJ2wT/0MSKxwk/k/SZHZJZEAP+Y+i4rh8S5BUFL70+E1kUzI6Q3/DDg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=6Q4e3nps; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="PffN2JcE"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="6Q4e3nps"
 Received: from 8bytes.org (p54921b16.dip0.t-ipconnect.de [84.146.27.22])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id E490F54B04;
-	Fri,  5 Sep 2025 15:01:00 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 806CA54B04;
+	Fri,  5 Sep 2025 15:04:30 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1757077261;
-	bh=cpfj21JmBcuZVpXwVG09m9Ezr6VNRpFa2CECZ7dB7+k=;
+	s=default; t=1757077470;
+	bh=gf8Wv3CwSREEIQF0pzbMHFP1Ns2rSOX6mMMsVmZtdoc=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=PffN2JcEEs8371rZ7rvNIsuHHi/dBgG4XC1ihkuUgMd+Am7EWkEtctZWjn5/3g1cm
-	 muoActV3+0B9/j6bnboV6hbKy8sHLHiO1SHiJj5f5kf51rytrMK268pTyGB3bv2D0i
-	 OLF6Jt+LrrWa48+vC7rX2xeFfEZQBU7xx8RqBP7ZC1q2USgrDj/WQG79IOc2P0cCUx
-	 2VFZC5q6Fulsm+hjsAffPf/ZADkxI2VXXvX0R5lyEHoRH5IcyK5cEOGNCvOb8CmNHp
-	 74LXy4RC3wIVrPAPMQ22DqXVeSFNri6J5xS8di6r2gpUxdgWZ/WNk1It0JSX0RcfKR
-	 sQlKtyNW453pg==
-Date: Fri, 5 Sep 2025 15:00:59 +0200
+	b=6Q4e3npsbUWJsGhy5Eagz8qfy9EPNOm2qK6uYFFlv2EmgCkeAFTGwiK+tOIwfKtJQ
+	 Hvs4uSy7dpTDftCRHTJLbMYx5qOVQu/GUf0xOf3SWKWpXOh7n4DGFH8vK5ugJ8FJ6Z
+	 AN4GLI73puW9nN+53lbgztv60jIWBvLwNU0b2PVPSihK/saRmlMUdtnH7syjm1BmXz
+	 BcSFNviYBaZ7vQC+iRaFUXqQ1Rp0hwnAACzA+wxDP1XNstQ5PibGKRZ+TiFtqj39Mf
+	 jIYVyx23ddSZzu8RwzSms5PTLetCZXCONKjaKBCEFk2VkSxQ6i/7BdPPGmYnBndq3W
+	 41Me7NSvvNxqg==
+Date: Fri, 5 Sep 2025 15:04:29 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Eugene Koira <eugkoira@amazon.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/1] [PULL REQUEST] iommu/vt-d: Fixes for v6.17-rc
-Message-ID: <aLrfC9NCbfn5ZCis@8bytes.org>
-References: <20250903055329.2876815-1-baolu.lu@linux.intel.com>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Heiko Carstens <hca@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>,
+	Alexander Gordeev <agordeev@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@linux.ibm.com>,
+	Sven Schnelle <svens@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Gerd Bayer <gbayer@linux.ibm.com>, Farhan Ali <alifm@linux.ibm.com>,
+	Benjamin Block <bblock@linux.ibm.com>, linux-s390@vger.kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH] iommu/s390: Make attach succeed when the device was
+ surprise removed
+Message-ID: <aLrf3QshijTRYYzk@8bytes.org>
+References: <20250904-iommu_succeed_attach_removed-v1-1-e7f333d2f80f@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,24 +56,45 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250903055329.2876815-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20250904-iommu_succeed_attach_removed-v1-1-e7f333d2f80f@linux.ibm.com>
 
-On Wed, Sep 03, 2025 at 01:53:28PM +0800, Lu Baolu wrote:
-> Hi Joerg,
+On Thu, Sep 04, 2025 at 10:59:49AM +0200, Niklas Schnelle wrote:
+> When a PCI device is removed with surprise hotplug, there may still be
+> attempts to attach the device to the default domain as part of tear down
+> via (__iommu_release_dma_ownership()), or because the removal happens
+> during probe (__iommu_probe_device()). In both cases zpci_register_ioat()
+> fails with a cc value indicating that the device handle is invalid. This
+> is because the device is no longer part of the instance as far as the
+> hypervisor is concerned.
 > 
-> The following fix has been queued for v6.17-rc:
+> Currently this leads to an error return and s390_iommu_attach_device()
+> fails. This triggers the WARN_ON() in __iommu_group_set_domain_nofail()
+> because attaching to the default domain must never fail.
 > 
-> - Fix __domain_mapping()'s usage of switch_to_super_page()
+> With the device fenced by the hypervisor no DMAs to or from memory are
+> possible and the IOMMU translations have no effect. Proceed as if the
+> registration was successful and let the hotplug event handling clean up
+> the device.
 > 
-> It fixes a bug in __domain_mapping() where valid PTEs that are beyond
-> the affected huge page range might be zeroed out. The patch has been
-> reviewed and tested and is ready for merge. Please consider it for
-> v6.17-rc.
+> This is similar to how devices in the error state are handled since
+> commit 59bbf596791b ("iommu/s390: Make attach succeed even if the device
+> is in error state") except that for removal the domain will not be
+> registered later. This approach was also previously discussed at the
+> link.
 > 
-> Best regards,
-> baolu
+> Handle both cases, error state and removal, in a helper which checks if
+> the error needs to be propagated or ignored. Avoid magic number
+> condition codes by using the pre-existing, but never used, defines for
+> PCI load/store condition codes and rename them to reflect that they
+> apply to all PCI instructions.
 > 
-> Eugene Koira (1):
->   iommu/vt-d: Fix __domain_mapping()'s usage of switch_to_super_page()
+> Cc: stable@vger.kernel.org # v6.2
+> Link: https://lore.kernel.org/linux-iommu/20240808194155.GD1985367@ziepe.ca/
+> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> ---
+>  arch/s390/include/asm/pci_insn.h | 10 +++++-----
+>  drivers/iommu/s390-iommu.c       | 26 +++++++++++++++++++-------
+>  2 files changed, 24 insertions(+), 12 deletions(-)
 
 Applied for -rc, thanks.
