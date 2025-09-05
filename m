@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDFCA27A114
-	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 19:26:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D5802AF00
+	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 20:11:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757100386; cv=none; b=GIEFdUoz3aVMF6oQhPdxp5cfHKSLTkqRWn5O63zAel47+/rbrWbzUVKx4q2XGsDbcYlrEFgNqtUBd/SuOcq/5lGcW8Ur2SVolRDA3bCmaSSk09L4KqMePun6HZgtgONzdtR+4uOC7n0d1aguaOlvIjshuD/PMVkMeoIA76l/Mg0=
+	t=1757103078; cv=none; b=rf8PMhrFk5DZMjcgSPge8sRoH76LlHGgRXm4NC0bPX2q91z3HboM+eEo/Zv4nD3WJCOkyWFdBV3i6ebrS5YdO0JjO6KaKJCvcwN8sNX4YEAKBi0c6QRsRylwflpT5dFbb/76tyx95WAKQCo2jIOuMvD9G90BLsz0/+9JRPv24LA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757100386; c=relaxed/simple;
-	bh=d0W9myEFzxlFCNsDcZbWHBOLrHisClca2fezS+1WXnw=;
+	s=arc-20240116; t=1757103078; c=relaxed/simple;
+	bh=sp7QXjdtFIl/Q2ojsoDQ7QRg0TmEt3ZUiibqhwbst0k=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=grOV+JWL1RAHNCcvF5KdMpHCkTubRSBPmSk7nVlyQEuv87YwSWkK4oXigMIo/BHtShr+S7wpHECBhxRQQia0jeD+XCMRAXeSocjIOekUgFtDo/PtQ6WuFwwYjwSqlgfeQkW9fViYdDLFrqqZ8fPo0U+zs3AkoaauJwGJzX0+MNM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=box3aR6e; arc=none smtp.client-ip=198.175.65.16
+	 In-Reply-To:Content-Type; b=aSK/p3q+XqCfgNk6L2fkFj/7j6ofLPkTSLlRp433vGes2yRndmN8urd1i2GtfZlkAC/h1xwagAmqR+uIEFkY5r938mBSIVDXh5M7YU2M3pBQgH+urBMMIWIgfbQfK4QNjuJ6yR2RJR8lAl2cJRUskacNIb+7e5RZ/EOIjc9NDx8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bim9uQ0Y; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="box3aR6e"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bim9uQ0Y"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1757100385; x=1788636385;
+  t=1757103077; x=1788639077;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=d0W9myEFzxlFCNsDcZbWHBOLrHisClca2fezS+1WXnw=;
-  b=box3aR6eDhQf+2gFUB3mMDRXGM17eZB6OuFJrufEnlW2Za2hBwEX+VID
-   0HOgwrUQovmnHC+0Amv5DaUFy9bBv6id7uLMwnAxbd7+0B1F6ufxQQEx5
-   bNfnbuAZJkF2d0rzl3X6K19Mi1Ghn5vDacGqcEa/dqSOid9KYok4Uazgo
-   1mhDVrKsdsgd2g08RBkN1Bs+LqPaziZwED6lFf0KVNq2KaQahbZrQf6dG
-   9AjQQQZ+xdkuYRGJzhyKEbkZ6pH5jGFNutwnwWbFoKLlpZcIqckHUH+ca
-   /OcgP2V7Xn3w99TtKvQR/JTdwCMaer38l9Y/r3YvzCT3yWPOjgJdapCgn
+  bh=sp7QXjdtFIl/Q2ojsoDQ7QRg0TmEt3ZUiibqhwbst0k=;
+  b=bim9uQ0YM37HIoWy2JjlOGDSJYZGI/aXaGk4mn7UVkJ9xXvmvy/1NFYM
+   eQeFMwe9rMZ3ByUMgfGnSs8DWs1PGvP0mXZ6h6Tf6AsJosGkm3zzmsFa4
+   bLJFxaaHoOsSfixllWS9f+WE/PUoLyFK5ubOzM9RFbWtYMY8dAhbh5I99
+   fp8WffrCGm+jLf0TXVjAcumgiyx2ByTfyHGC6vl+SbVpc4Bd8RLakqK9a
+   UIgKKJM+T+UCCzZrztf2WFQaePez3UAEuO/B+UTMwqgP9YLI0XCyPDgdd
+   /A4GKIh24WOdDIIIg+cuFc5B11d16MvMvQYBpRoqAruUgxjfyRVREaK1G
    g==;
-X-CSE-ConnectionGUID: YOXXdso3TPOER7dr+4u0tQ==
-X-CSE-MsgGUID: t/yxgpJHTEi+//7+eocmAA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11544"; a="59602792"
+X-CSE-ConnectionGUID: 0S0ge1pFQNKIx3TvyDETUA==
+X-CSE-MsgGUID: nGfqshhdRzyClxFr6jyr5Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11544"; a="58670993"
 X-IronPort-AV: E=Sophos;i="6.18,242,1751266800"; 
-   d="scan'208";a="59602792"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2025 12:26:24 -0700
-X-CSE-ConnectionGUID: YKyKYSBmRqyVbEbeUbEaew==
-X-CSE-MsgGUID: 44WEHLWWTPWf7R2dF5uH1w==
+   d="scan'208";a="58670993"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2025 13:11:16 -0700
+X-CSE-ConnectionGUID: rxMXoCsLRnKz7gZkbztrzg==
+X-CSE-MsgGUID: FtNa1zzcTOqxP0dWgRBBbg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.18,242,1751266800"; 
-   d="scan'208";a="172350183"
-Received: from vverma7-desk1.amr.corp.intel.com (HELO [10.125.110.42]) ([10.125.110.42])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2025 12:26:24 -0700
-Message-ID: <b780f8d9-b306-4061-abc3-b02d24676d63@intel.com>
-Date: Fri, 5 Sep 2025 12:26:23 -0700
+   d="scan'208";a="176336310"
+Received: from gabaabhi-mobl2.amr.corp.intel.com (HELO [10.125.110.75]) ([10.125.110.75])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2025 13:11:15 -0700
+Message-ID: <04983c62-3b1d-40d4-93ae-34ca04b827e5@intel.com>
+Date: Fri, 5 Sep 2025 13:11:15 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,8 +52,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 6/8] mm: Introduce deferred freeing for kernel page
- tables
+Subject: Re: [PATCH v4 5/8] x86/mm: Use pagetable_free()
 To: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
@@ -62,11 +61,10 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Uladzislau Rezki <urezki@gmail.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
- iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org,
- Dave Hansen <dave.hansen@linux.intel.com>
+ iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org
 References: <20250905055103.3821518-1-baolu.lu@linux.intel.com>
- <20250905055103.3821518-7-baolu.lu@linux.intel.com>
- <20250905184355.GR616306@nvidia.com>
+ <20250905055103.3821518-6-baolu.lu@linux.intel.com>
+ <20250905184115.GQ616306@nvidia.com>
 From: Dave Hansen <dave.hansen@intel.com>
 Content-Language: en-US
 Autocrypt: addr=dave.hansen@intel.com; keydata=
@@ -112,32 +110,36 @@ Autocrypt: addr=dave.hansen@intel.com; keydata=
  MTsCeQDdjpgHsj+P2ZDeEKCbma4m6Ez/YWs4+zDm1X8uZDkZcfQlD9NldbKDJEXLIjYWo1PH
  hYepSffIWPyvBMBTW2W5FRjJ4vLRrJSUoEfJuPQ3vW9Y73foyo/qFoURHO48AinGPZ7PC7TF
  vUaNOTjKedrqHkaOcqB185ahG2had0xnFsDPlx5y
-In-Reply-To: <20250905184355.GR616306@nvidia.com>
+In-Reply-To: <20250905184115.GQ616306@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 9/5/25 11:43, Jason Gunthorpe wrote:
-> On Fri, Sep 05, 2025 at 01:51:01PM +0800, Lu Baolu wrote:
->> +#ifdef CONFIG_ASYNC_PGTABLE_FREE
->> +void pagetable_free_async(struct ptdesc *pt);
->> +#else
->> +static inline void pagetable_free_async(struct ptdesc *pt)
->> +{
->> +	__pagetable_free(pt);
->> +}
->> +#endif
+On 9/5/25 11:41, Jason Gunthorpe wrote:
+>> --- a/arch/x86/mm/init_64.c
+>> +++ b/arch/x86/mm/init_64.c
+>> @@ -1013,7 +1013,7 @@ static void __meminit free_pagetable(struct page *page, int order)
+>>  		free_reserved_pages(page, nr_pages);
+>>  #endif
+>>  	} else {
+>> -		free_pages((unsigned long)page_address(page), order);
+>> +		pagetable_free(page_ptdesc(page));
+>>  	}
+>>  }
+> Er.. So if bootmem happens to be under the table and we happen to free
+> it due to memory hotplug we don't go through the SVA fixing path?
 > 
-> I'd probably call this function pagetable_free_kernel() ? Weird to
-> call it async when it isn't async..
-> 
-> ptdesc_clear_kernel()?
+> Seems wrong??
 
-Fine with me.
+On second thought...
 
->> +	list_for_each_entry_safe(pt, next, &page_list, pt_list) {
->> +		list_del(&pt->pt_list);
-> 
-> The list_del isn't necessary, it doesn't zero the list, just _safe
-> iteration is fine.
-Ahh, yes, agreed. The list_head is on the stack and going away. The
-global list is now empty after the list splice.
+Yes, freeing bootmem with no SVA fixing is wrong. It should be fixed.
+Period. But, it's wrong one time for something super rare: memory unplug
+of memory that was present at boot. It also can't be triggered by
+unprivileged users.
+
+As-is, this series fixes vfree(). That path is not nearly rare, can
+happen an arbitrary number of times on each boot, and might even be
+triggered by folks that are less than root.
+
+So I kinda think we should just make clear that this series leaves
+_some_ holes, but I do think it should go in mostly as-is.
