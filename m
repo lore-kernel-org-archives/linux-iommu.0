@@ -1,171 +1,169 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2079.outbound.protection.outlook.com [40.107.223.79])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39D01274B3A
-	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 18:44:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.79
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757097857; cv=fail; b=hHXWzYiSZAzBfGtzRtMJZMp2ILuEPhbspIAupBKSeIZomm1Tm+x3KOgzL+rdaQZrc/rezhodoNJcGLmN3iUeTooeocSsCw2Tm+ljYeWMAjYnNGv26KyFCWnZHtOoN7iaA97BLS0r80jPYkrtlIMLBzw9/bJ2zIVShae8GN8JQfE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757097857; c=relaxed/simple;
-	bh=H9nw5+T3K9W5aC71FjONIC0ubJgpxrDL0s9P1DTuG8o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=HVAhdPZFScro0SyuRkt6blVcQWi5PS7lcziRSetlNXaoVq3sbuBjAri9jNDfuQPBuvUAXMUVxa/fKemSLeHhwiZpToBuGPys+Zwc9XbpqYjeKnCF6tggiunT+0VWB4a2tyR1NJOw1rRT1NKTAklIjgumpRsxeLJS2Vf2uwFDDRI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=R4JecepD; arc=fail smtp.client-ip=40.107.223.79
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C2B31FF1AD
+	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 19:22:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1757100168; cv=none; b=gFrxQD+SUovc0kiZIt22HnXc7HZHyaQHf6KipP2qFsZrY/61v2kpwqIyzACSIrTtRUAlrwxM53oOgJbabWDuMSpTs/7+SozW3Cj/cv5fzlYorLGgAx9rWa2Gfv8Uv5F8q9KmEW9JENghiMRm6amSFtYFgmQ56o9cGyN+qiBhrMs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1757100168; c=relaxed/simple;
+	bh=KFxJ/Y9yrAdZ3UxIIxKOAqWR8PM8q4WtskCJ1lIrfhY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=VtHjpsd0tEqnf177tqkf9OySpAN03mhk/lr7O1iNEL6mYxt+pDnfhMQSKDngJUJEiyK3EqczgD+9P4+xCLSA0BJ5w++mH1tcQ+N2ikVTPCeGLEzSRUwFLMc9zz/mumuPLUitLy+TIMNYmrd98IN8jiu/c5cJOD8RDwrAzNIqXbs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=miWKbmHj; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="R4JecepD"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=PVjMVtuOSzczEnBz3PWw8qoIGGupWc4CsNjLbz6XcPfWRuvs7uaiL7m9/Cj+Smvtbg8kZZKS5IbwugHnk/ZjhJi7DDH8AOZzJSCrlAZ/F6jDSL9oZxeVWsJD2Eq9/0bli3I0KX5/pLdttnzOg38FwNxSVD672vfs/tWPDRNZjnGRzUnQ2D+7OAXLBNaKT2EBpdDMPAiWONyp3Y/BeBwXw78xE5SWLtSeeBl5SKIJ+ENEp0fjnAJAi+9Y8+2K5Le0P2AinWo/0CSCR3OoHE/yxXjl2/nXad0BFTij8cYujiRiaZMZpyOEirZQuEOlItW15MLgcqoYVAipl9sVNBwjag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4llOfeMloJLZvAtdaLCf3floVPmVhmv21Jrv7w503oc=;
- b=vzddCxYtglzpjfsgQrJ+baj3duVWaKEjNP1oAyfi/NUfnoHy02+gyTRlb46bnwAIad3pB0xBncIEEIARszoIYv0txjow/RWBj2VudND29Vkh0JJF7RD05f0pFzRSfBI7p/DEV8zB6uNv2eq4bEvu2v5aOFRkMHx31YWH8ckEy50cgjBUJekNvl7YI74VQToQBxUx/Xkk62OtoHI3AjhQQ2bq3MVEwSH9rGVbRjfqmfRMGWF11SymRWCuHND5S51NyQY0x5wdE/jABf2NJ9g9mRoIL1/1dacEb0Yoyfrm8jH7mpAo9H5+8obDT9hRZTLFA9dSqA/q7CjBL2f7EmlsKw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4llOfeMloJLZvAtdaLCf3floVPmVhmv21Jrv7w503oc=;
- b=R4JecepD8A0IbNJqzX3XihscRfOwG7nP4Q+IGM7VOkvfhbOu/v877Gho+TfpMq9Kd4/DSRWBFRUdI6ZfGD2Jpj16HScTyvtB7jxfsa5P2CPmSLRKtAnNDykFbB+zzEoGwao5MMG15A/92iW2AajVe8u6aApmbJOrvqPI0cqTkGIqlzeyU+4u3ZP/gh69n/4uDT2iKL8guqjDcsh5wf0r+rP95MwToEP7atnt0UlWPW++Yh2PK1K14sSs7hF2I6hYpi88lekS5Olk9Sh8gN1ZeW/XqIYYPuec/vS02y/dGzfcOp4IpKutJEsJDROB8gzjm0pLGajJM0acb8mZKK4VaQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from PH7PR12MB5757.namprd12.prod.outlook.com (2603:10b6:510:1d0::13)
- by BN7PPF8FCE094C0.namprd12.prod.outlook.com (2603:10b6:40f:fc02::6d8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.17; Fri, 5 Sep
- 2025 18:44:11 +0000
-Received: from PH7PR12MB5757.namprd12.prod.outlook.com
- ([fe80::f012:300c:6bf4:7632]) by PH7PR12MB5757.namprd12.prod.outlook.com
- ([fe80::f012:300c:6bf4:7632%2]) with mapi id 15.20.9094.017; Fri, 5 Sep 2025
- 18:44:10 +0000
-Date: Fri, 5 Sep 2025 15:44:09 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>, Jann Horn <jannh@google.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Dave Hansen <dave.hansen@intel.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
-	iommu@lists.linux.dev, security@kernel.org,
-	linux-kernel@vger.kernel.org,
-	Dave Hansen <dave.hansen@linux.intel.com>
-Subject: Re: [PATCH v4 7/8] mm: Hook up Kconfig options for async page table
- freeing
-Message-ID: <20250905184409.GS616306@nvidia.com>
-References: <20250905055103.3821518-1-baolu.lu@linux.intel.com>
- <20250905055103.3821518-8-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250905055103.3821518-8-baolu.lu@linux.intel.com>
-X-ClientProxiedBy: YT4PR01CA0475.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:d6::12) To PH7PR12MB5757.namprd12.prod.outlook.com
- (2603:10b6:510:1d0::13)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="miWKbmHj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1757100165; x=1788636165;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=KFxJ/Y9yrAdZ3UxIIxKOAqWR8PM8q4WtskCJ1lIrfhY=;
+  b=miWKbmHjUDdhzqkALbHJbQArUn1b7sqw93KIAiWrnyecv5NlkxvbNGDf
+   T5YHeam5ximJJQRxJ1rPp/aush+DZBicGpJ1jvnpDKcgrhPqzLx3108NT
+   QXMLLz0oEYHL+aH0Uee8GLC+sdRQFLXjHmW4S5ITsY92pRqMTOmB92ZXc
+   J+3t6/o9JesgH688SzWUnNyto8JufCGzPprjYmdgDSMvhWqDN5+hTi0SZ
+   J80ZyZ/QO5aqCyOfXw2ZptzAjQWK0fxghQ6Z8ViK+fJ+GQQRr6YTTV9G8
+   nOSppeA1yAE6RnFGGceFSMoXpylnrZAP5DYqs4JlHvzqnlj8IUgez9bSj
+   A==;
+X-CSE-ConnectionGUID: zeFAXlBbRKCtqmz3pOVysA==
+X-CSE-MsgGUID: n8dgpmqcTlestGuSI60OgQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11544"; a="70886470"
+X-IronPort-AV: E=Sophos;i="6.18,242,1751266800"; 
+   d="scan'208";a="70886470"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2025 12:22:44 -0700
+X-CSE-ConnectionGUID: 16H5ou9jSV+0JKaCGN7ZtA==
+X-CSE-MsgGUID: c5k4hfHMTkSEHY8E23Jbww==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,242,1751266800"; 
+   d="scan'208";a="195899615"
+Received: from vverma7-desk1.amr.corp.intel.com (HELO [10.125.110.42]) ([10.125.110.42])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2025 12:22:43 -0700
+Message-ID: <10d2f466-4660-4439-a5fb-dfc4384ca432@intel.com>
+Date: Fri, 5 Sep 2025 12:22:42 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5757:EE_|BN7PPF8FCE094C0:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9dc9899a-ea01-40c5-72b2-08ddecac33f6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|366016|376014|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?nrBlORyPbLPzQPsRsxC7B21Kq4/RapMU8pRw7+QasIoB/tvjvx+hPL7YNMyW?=
- =?us-ascii?Q?6H5Z6XoLxLWDN+kvQRa/aNj/M9sVifQhc+ptYdYT402ZhkvKk0+BBP4Ruaa5?=
- =?us-ascii?Q?t/BaHeUWPKNRs3G8WDnFA2lUZKzzH5oTPflGCaj9mfxGfeDWcHY4dhQ2rkev?=
- =?us-ascii?Q?l/XTiUY9fboEaVNyxdRZgZBIjcbJkQ/ibgKr5R5dS/ibUmrxzmWysr6lUYSS?=
- =?us-ascii?Q?RxJ8zkM4wDXqbBJPQJFlE1DzIrX8RcUqqMi1rHdegwIduzirNMk7hWWGqjiW?=
- =?us-ascii?Q?YWPzUyVv1rYVwUubc5zddjCCsYRY3mw9WG4d17XHAoopLcBSp1UU3AnIfdIS?=
- =?us-ascii?Q?mlRHcnibnqM3cz461FnV/AOOu8Kqft/JNY18q6eqhkPV8CmuMXZSsp6ooRkZ?=
- =?us-ascii?Q?xY1wloJDxAKrZ3KF9X7nRRRKTdZaGEoGqGOU0t3VEXNFHRjSLoUKfD76ee0M?=
- =?us-ascii?Q?m6tYlUPYW7UlJSD12molfdATgGqC2nJIoMWEZUJ2Oqce+W8bEH/XJ459cHKJ?=
- =?us-ascii?Q?AurCMQbFGgzIXBcljo97kayON0rj6QLIJR272Bd5eO/0415zSAKqsgLTZpVO?=
- =?us-ascii?Q?kNukG6zudreTuad8gtFXgsyw19eRFkxtAnMhBpk+A4httLAxYxxzRQY05kpm?=
- =?us-ascii?Q?+WeW89+blQ2Z20GtD7b18WZ7uaP5H4HD0ke3pQSi9Ewvw508uBCHoDIMvVHv?=
- =?us-ascii?Q?slTlpvbz2LsYXbQ7w0i0NS/oh0k3pJn65y3z5cPRevs/zKHYiQiBSfPl/hGo?=
- =?us-ascii?Q?6VFH1rEVddP9yISknalpPBY9iELAOfQEzV7zb+JwCgDlmdjWwnJpKm1lYcLq?=
- =?us-ascii?Q?Qy8hxaYm0l2JiONUSAN339DWh9hsT42lif4SO3kUBExWUr4CxrlupaA3z4s0?=
- =?us-ascii?Q?AoMWRofIS8Ph/eaq/TfgAyEe41P+2QCT7x2bmpyU4PIdafkEBW/mBY77Y9aw?=
- =?us-ascii?Q?ZGLEXxc/7vnPn6y2XFnTcBFSiXwlbj248JXg4uGe4oVWaPIncrakvgjFCSvR?=
- =?us-ascii?Q?+RDk+jnxwzWO+5YI2w2vNjippgBwxc6OZv5tqN8JHaFPk2dMivHWBKhkSPSr?=
- =?us-ascii?Q?by7tRVAJDYl5k50bqxl9l+DgvauuDOocD6E+J5GhlC9dugZm/i5jkpyVuKF0?=
- =?us-ascii?Q?F1iNh6+G062YtXZyq+HhfuHCRwoh2ntZ4BAUKuJv7VRrhdim1M1Kht/3Kepy?=
- =?us-ascii?Q?cBCgYcKvZ2l6ckZbBCFh5t3bXsKTyDNaYPESRKJIN8WHfQXXL+4JVXYZj0kC?=
- =?us-ascii?Q?3DXPI8G74H6BZQCn0kpGRLI4gZOqVNTygVDonKkKa65b+E1km8AppY7dJCTe?=
- =?us-ascii?Q?A2vOm8IQ2BGp0I6xzHjtZi5cF/TJVPssfJxb+SMjXVavD4tKhRIRbJxYWKlF?=
- =?us-ascii?Q?TrqiOVEjsMDlWXeZKmzPAoN95bNKoe7yScSy2QJkickD2cZGaA=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(366016)(376014)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?k68bctgVcstYXos5RQTqV7Yc+UL54u0OvZTbCahvdvzE08NbAbIkTqtaSSxK?=
- =?us-ascii?Q?1qL/bt9sPAcZFUNsIygae+/VKcHZyihF4e9uzOEllCSi9U1uQ7/QUhZIs1pf?=
- =?us-ascii?Q?fIW+Cru7mge/0oZT61n8KkPNdWtcFBoPumGV5haThenJdbwjhrMkmNAc+C9Z?=
- =?us-ascii?Q?MMqi7lkjwNQDpt4Ti97eh980VvLF9tN1k+lT7Fos+q38TVqloXRB+FIYO+AW?=
- =?us-ascii?Q?+Q9P0jKKnpyRsdEkXMrm24wue1OFDs31IpeOaT589hsjw+/cBtCZO1bdQNVx?=
- =?us-ascii?Q?dcZdH7+B5aF4Z0FdGKLXnPC9fGRYmTOk8RHydf6EfkvqGdi+/FRxIZSFxyCg?=
- =?us-ascii?Q?Q4JiDoUM51+K6K44Z7TKAb4nS8xmtMw/N0ev5QLKFzdexaTOB7oVwov4e656?=
- =?us-ascii?Q?XdX8XuGzL2FH6gfsh2RNfM96T0hCLMy2JzNmrdOCJPewXM1wy6by5Bdk1UZg?=
- =?us-ascii?Q?XAz6pPDun4gv7IfXOGCLokT+cu1vPOQVz3f57D/y9XkQ966r90EtS4KPjEs4?=
- =?us-ascii?Q?kfj89SxCJDeRM5P9Vacr1YkdHsPVv+3949K5H3AuzVBAu8TVyJcpa50015SQ?=
- =?us-ascii?Q?qiR9h89lNJ9p40oiwFb+0ir6OtDatT3EjWPetXObEC9d+pvVNi4LQblNNxwZ?=
- =?us-ascii?Q?v4Kt/Ip4j9mzFfBEXBSLn/FLKzKitLZ+DuvBA9iFTzt7fORUDBMbKp1MDJ/1?=
- =?us-ascii?Q?odvAu4PAlZcys1o5d7S76SQi0wbyy5CtAQ0fTFjP+6kjyJxFkw/BEbHGRsjP?=
- =?us-ascii?Q?79NDMuzJN/sF85YwSTaJyvQoIpQlGoMowx1Ff7M3XCsKrSaSZFV79dN/2jJ0?=
- =?us-ascii?Q?xuRKXTludSKJRrxb9+PF/8JenZ1jXCk1Lggcwyz5zK5RuDzD2g3bz30sb/vW?=
- =?us-ascii?Q?9n44xGLHbR4JjOqrrBxmxB5fUZLJqxEL7d5iJBi2REgg0pIYa8uguDA4paAl?=
- =?us-ascii?Q?Bx+Vy3LcTZP754/4AdoXuiFez9sGrTOmbuJRdfYufWs0Pl7hHsdDX9//WQzL?=
- =?us-ascii?Q?I6uigvP+3H4K/3pBUhu2eR6k36O/SsWHj/wPqQzLTnogj7QPV0+iT1J3OnJz?=
- =?us-ascii?Q?I9mrDxAQcT5799U47PDxhelsGP9aKOhtKb65rnzKA2XIaVBtCCbIap34hi2R?=
- =?us-ascii?Q?wDlgrzjALodhAK6rl/jquXRLP2zfRzjl5Odx8va/mjtDD6k26ZdvxV5PHIfw?=
- =?us-ascii?Q?Flrcaqf9O9erTz6nXkO/xwoFAJxJz4zmqfLURaaa/xQu3aSRNaG0o+AiXpto?=
- =?us-ascii?Q?kEeHv+DUP19rw2jnztWQ4QtLnNpenAKLxX/7hCbKLYAYjQ5sU/RkMgZQZwl4?=
- =?us-ascii?Q?Ny0U+K5wDliggcWkJXJs07kFxOji9mQkgxz8pZvepNsWDThFNX8eblcTo56v?=
- =?us-ascii?Q?orTmnG639UfEvqNCHhqAzleCk7AjWbsNBDWJ73EJh/0KtCKau5ngNNiEoVbM?=
- =?us-ascii?Q?Zzrf5OVM4qBk/b5kGCTzxsI9XC/Hu+tRA28HIEr+S2igdx34nSA3FYaKahQr?=
- =?us-ascii?Q?iL9sxz9fIfZSgZD/RGi14Qew/bjwwbrgfKST2jECY42TKjLdIVsJRT6zzcyz?=
- =?us-ascii?Q?TPQLFWqUUGlU55shD84=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9dc9899a-ea01-40c5-72b2-08ddecac33f6
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5757.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2025 18:44:10.8353
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NroE8KQlSmGeo9m2lEumfnfUkqHlGlKHaQzQnzD6TXLRwtkw64WqAIi51+jL7SyK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PPF8FCE094C0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 5/8] x86/mm: Use pagetable_free()
+To: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
+ Alistair Popple <apopple@nvidia.com>, Peter Zijlstra <peterz@infradead.org>,
+ Uladzislau Rezki <urezki@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>,
+ iommu@lists.linux.dev, security@kernel.org, linux-kernel@vger.kernel.org
+References: <20250905055103.3821518-1-baolu.lu@linux.intel.com>
+ <20250905055103.3821518-6-baolu.lu@linux.intel.com>
+ <20250905184115.GQ616306@nvidia.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Content-Language: en-US
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <20250905184115.GQ616306@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, Sep 05, 2025 at 01:51:02PM +0800, Lu Baolu wrote:
-> From: Dave Hansen <dave.hansen@linux.intel.com>
+On 9/5/25 11:41, Jason Gunthorpe wrote:
+...
+>> diff --git a/arch/x86/mm/init_64.c b/arch/x86/mm/init_64.c
+>> index 76e33bd7c556..86b4297c1984 100644
+>> --- a/arch/x86/mm/init_64.c
+>> +++ b/arch/x86/mm/init_64.c
+>> @@ -1013,7 +1013,7 @@ static void __meminit free_pagetable(struct page *page, int order)
+>>  		free_reserved_pages(page, nr_pages);
+>>  #endif
+>>  	} else {
+>> -		free_pages((unsigned long)page_address(page), order);
+>> +		pagetable_free(page_ptdesc(page));
+>>  	}
+>>  }
 > 
-> The CONFIG_ASYNC_PGTABLE_FREE option controls whether an architecture
-> requires asynchronous page table freeing. On x86, this is selected if
-> IOMMU_SVA is enabled, because both Intel and AMD IOMMU architectures
-> could potentially cache kernel page table entries in their paging
-> structure cache, regardless of the permission.
+> Er.. So if bootmem happens to be under the table and we happen to free
+> it due to memory hotplug we don't go through the SVA fixing path?
 > 
-> Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  arch/x86/Kconfig | 1 +
->  mm/Kconfig       | 3 +++
->  2 files changed, 4 insertions(+)
+> Seems wrong??
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Yes, it does.
 
-Jason
+> Bootmem still has a ptdesc and a usable linked list, right?
+
+Yep, I think so.
+
+> So maybe this should be redone into an arch hook in/around
+> __pagetable_free() and all the above frees just use the normal ptdesc
+> free path, including the SVA work queue?
+There are reserved pages and the put_page_bootmem() ones too. The
+put_page_bootmem() ones are especially annoying because they can't
+always be freed.
+
+put_page_bootmem() only has three call sites. Maybe we should just make
+it return if the caller *should* free the page instead of actually
+freeing it.
+
+Then we get something like:
+
+free_pagetable()
+{
+	if (PageReserved(page)) {
+		if (is_bootmem(page) && put_page_bootmem(page)) {
+			// refcount didn't drop to 0, can't free
+			return;
+		}
+		unreserve_page(page);
+	}
+
+	pagetable_free(page_ptdesc(page));
+}
+
+Which doesn't seem too bad.
