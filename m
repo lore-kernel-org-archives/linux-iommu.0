@@ -1,53 +1,49 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B73AA219EB
-	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 13:04:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F0D64199935
+	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 13:07:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757077473; cv=none; b=SGn5LBEaQwbkaRKIkS/8exvXhPCZI6qFjR0QIbWe4Djxv1pAZjHjCRH0OROZ7K0/7WAb8XxwZlQLFZyEuxQwOylo7LAk03PsHJApXJBk/37ZnKDsL0BA8xa4XjKcquxYHUaO3kBhiyQi10oPbpFnwXuJNECWSUORO8hD75NR98I=
+	t=1757077680; cv=none; b=NZsHxZx/ta4qwSKDIuk4K5fva4irtJ9kqVYzvu0kyO5DEeQ7GP5BcBxJCCPfWr47dorNLAgLIfIIiEo68DeuEpMO0bKxkNXNb/vcYsf5UvpHGuAKXMDSFHgcOQOxFYIZ4p7nWqcpL4N0p5UZt8o1DSIJYy05VNjwUnhI3eQYFJc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757077473; c=relaxed/simple;
-	bh=gf8Wv3CwSREEIQF0pzbMHFP1Ns2rSOX6mMMsVmZtdoc=;
+	s=arc-20240116; t=1757077680; c=relaxed/simple;
+	bh=l2WYFgNBaZ4MPlTyWgrzjuvT6QefjAm47yBpEriSIzA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OUGeDps0Z3Rv1gsZsDviNNcycnHw6DWXjf16N/v/JTm70/2LhVAZi2TmtLw8liBZ/z7QYfnr5pgCVkq3ZNvujb7jHLuPxPSoDZjba5PRpklvvIA0cs7TrJ2wT/0MSKxwk/k/SZHZJZEAP+Y+i4rh8S5BUFL70+E1kUzI6Q3/DDg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=6Q4e3nps; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=pAEXk7gdQpaEaqynfKcYE+TcGG4Hr/iAMZhdGKCr/qPvbnN0UyUbYc8byviWWkxyZ4bTOhF58BCoh90enGKQ3BnaLDBKodlc0OAwojRj+UZuWqzN4WFH7JIkzw5V9CA2TFkaWn9gxp+NcwDD/xcmmlYHYeo+I1o/0sXFGfTVV1E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=N3ruazn7; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="6Q4e3nps"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="N3ruazn7"
 Received: from 8bytes.org (p54921b16.dip0.t-ipconnect.de [84.146.27.22])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 806CA54B04;
-	Fri,  5 Sep 2025 15:04:30 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id A487C54B04;
+	Fri,  5 Sep 2025 15:07:56 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1757077470;
-	bh=gf8Wv3CwSREEIQF0pzbMHFP1Ns2rSOX6mMMsVmZtdoc=;
+	s=default; t=1757077676;
+	bh=l2WYFgNBaZ4MPlTyWgrzjuvT6QefjAm47yBpEriSIzA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=6Q4e3npsbUWJsGhy5Eagz8qfy9EPNOm2qK6uYFFlv2EmgCkeAFTGwiK+tOIwfKtJQ
-	 Hvs4uSy7dpTDftCRHTJLbMYx5qOVQu/GUf0xOf3SWKWpXOh7n4DGFH8vK5ugJ8FJ6Z
-	 AN4GLI73puW9nN+53lbgztv60jIWBvLwNU0b2PVPSihK/saRmlMUdtnH7syjm1BmXz
-	 BcSFNviYBaZ7vQC+iRaFUXqQ1Rp0hwnAACzA+wxDP1XNstQ5PibGKRZ+TiFtqj39Mf
-	 jIYVyx23ddSZzu8RwzSms5PTLetCZXCONKjaKBCEFk2VkSxQ6i/7BdPPGmYnBndq3W
-	 41Me7NSvvNxqg==
-Date: Fri, 5 Sep 2025 15:04:29 +0200
+	b=N3ruazn7B23/bC9vVhxp+lCN8z7Ji/30T9XvQ2a/vkxR1T8vn/MEx7ESEE8ox8Orv
+	 qfoYJMK9KHecd97sU1eWDtxrzerXg5xyJyXxKQJA7jveApAefw43PWOxzpsN2py9km
+	 RN+2ztf2Qg5JBGtK9h60EkPo6iwO+PRoTSjOZO38GdWsF+uG6NoHjuMG85yD2ZJWoE
+	 aAsezNtF6WzYs9xzWGBdz6csTgf9taXtwp3tkCoA9fYKk76swDbEAtjypBlLoIj3Ta
+	 J1Fx7jaDTMoeVfM/rC91FNmrTYTlt3nkzdjm0hKFNOmjRhUHYOcRL+tGr2wAWUVyhF
+	 e7WkErgLNTI5g==
+Date: Fri, 5 Sep 2025 15:07:55 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-	Heiko Carstens <hca@linux.ibm.com>,
-	Vasily Gorbik <gor@linux.ibm.com>,
-	Alexander Gordeev <agordeev@linux.ibm.com>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Sven Schnelle <svens@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Gerd Bayer <gbayer@linux.ibm.com>, Farhan Ali <alifm@linux.ibm.com>,
-	Benjamin Block <bblock@linux.ibm.com>, linux-s390@vger.kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [PATCH] iommu/s390: Make attach succeed when the device was
- surprise removed
-Message-ID: <aLrf3QshijTRYYzk@8bytes.org>
-References: <20250904-iommu_succeed_attach_removed-v1-1-e7f333d2f80f@linux.ibm.com>
+To: Sunil V L <sunilvl@ventanamicro.com>
+Cc: linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
+	linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>, Alexandre Ghiti <alex@ghiti.fr>,
+	"Rafael J . Wysocki" <rafael@kernel.org>,
+	Len Brown <lenb@kernel.org>, Tomasz Jeznach <tjeznach@rivosinc.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v6 0/3] RISC-V: Add ACPI support for IOMMU
+Message-ID: <aLrgq_n1WiQxOKmJ@8bytes.org>
+References: <20250818045807.763922-1-sunilvl@ventanamicro.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,45 +52,29 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250904-iommu_succeed_attach_removed-v1-1-e7f333d2f80f@linux.ibm.com>
+In-Reply-To: <20250818045807.763922-1-sunilvl@ventanamicro.com>
 
-On Thu, Sep 04, 2025 at 10:59:49AM +0200, Niklas Schnelle wrote:
-> When a PCI device is removed with surprise hotplug, there may still be
-> attempts to attach the device to the default domain as part of tear down
-> via (__iommu_release_dma_ownership()), or because the removal happens
-> during probe (__iommu_probe_device()). In both cases zpci_register_ioat()
-> fails with a cc value indicating that the device handle is invalid. This
-> is because the device is no longer part of the instance as far as the
-> hypervisor is concerned.
+On Mon, Aug 18, 2025 at 10:28:04AM +0530, Sunil V L wrote:
+> Sunil V L (3):
+>   ACPI: RISC-V: Add support for RIMT
+>   ACPI: scan: Add support for RISC-V in acpi_iommu_configure_id()
+>   iommu/riscv: Add ACPI support
 > 
-> Currently this leads to an error return and s390_iommu_attach_device()
-> fails. This triggers the WARN_ON() in __iommu_group_set_domain_nofail()
-> because attaching to the default domain must never fail.
-> 
-> With the device fenced by the hypervisor no DMAs to or from memory are
-> possible and the IOMMU translations have no effect. Proceed as if the
-> registration was successful and let the hotplug event handling clean up
-> the device.
-> 
-> This is similar to how devices in the error state are handled since
-> commit 59bbf596791b ("iommu/s390: Make attach succeed even if the device
-> is in error state") except that for removal the domain will not be
-> registered later. This approach was also previously discussed at the
-> link.
-> 
-> Handle both cases, error state and removal, in a helper which checks if
-> the error needs to be propagated or ignored. Avoid magic number
-> condition codes by using the pre-existing, but never used, defines for
-> PCI load/store condition codes and rename them to reflect that they
-> apply to all PCI instructions.
-> 
-> Cc: stable@vger.kernel.org # v6.2
-> Link: https://lore.kernel.org/linux-iommu/20240808194155.GD1985367@ziepe.ca/
-> Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
-> Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>
-> ---
->  arch/s390/include/asm/pci_insn.h | 10 +++++-----
->  drivers/iommu/s390-iommu.c       | 26 +++++++++++++++++++-------
->  2 files changed, 24 insertions(+), 12 deletions(-)
+>  MAINTAINERS                          |   1 +
+>  arch/riscv/Kconfig                   |   1 +
+>  drivers/acpi/Kconfig                 |   4 +
+>  drivers/acpi/riscv/Kconfig           |   7 +
+>  drivers/acpi/riscv/Makefile          |   1 +
+>  drivers/acpi/riscv/init.c            |   2 +
+>  drivers/acpi/riscv/init.h            |   1 +
+>  drivers/acpi/riscv/rimt.c            | 520 +++++++++++++++++++++++++++
+>  drivers/acpi/scan.c                  |   4 +
+>  drivers/iommu/riscv/iommu-platform.c |  17 +-
+>  drivers/iommu/riscv/iommu.c          |  10 +
+>  include/linux/acpi_rimt.h            |  28 ++
+>  12 files changed, 595 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/acpi/riscv/Kconfig
+>  create mode 100644 drivers/acpi/riscv/rimt.c
+>  create mode 100644 include/linux/acpi_rimt.h
 
-Applied for -rc, thanks.
+Applied, thanks.
