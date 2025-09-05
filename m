@@ -1,74 +1,48 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC513277017
-	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 05:53:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38591276058;
+	Fri,  5 Sep 2025 05:55:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757051631; cv=none; b=NeF1E0c5T4PjRlOS6DqGHexZTvJYYMzStgJaaKB4JPyKwmz06VMofntwv6BqlMWFQq96thCbZyyGgwgKG1aVkwXC83gO3MhuZigw7Uuw7D7sCDEwIpR+piUjr3h1R+yyZYA0bMlDUcHyHFJClZyIaYIaKV4JOBTLcx962Ewv4NE=
+	t=1757051717; cv=none; b=HRU8I+6EOoCOmLcZI31k7sIq88ofOcVUZCdEECB8Lq/rHZbgwYwEMLuH+//CHXhM70GCQx/86U6GmmmD7RkFbtVtNHvLqimv/hX2KtnGDavau/aD1Imwvi329sU+bc0dJi/9qsft/Ov6Jl7qwcDJrB6Dm1Q1A/ejJx7w5TCpraY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757051631; c=relaxed/simple;
-	bh=6GHT4PiZ6qBzFbzaFMfbG7VyjEvCdedpy+KfqQr0cZ8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fX80+qsL+5/MMvTTyyW6dl6VxYf/1XPcM/NPDztLqh9VZdNLl36Up/v3CX7D9qjDxF6WlnrUDxlrWfdKuPpEB2LTMnlJBIborBriVqEeC+An2hZ+XxuJliqqTOZi+IIIbS2LhW7xLb8oww1x3iUcAK97owF0BU5mRFuCQwGcbgA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UIGFzSBG; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1757051717; c=relaxed/simple;
+	bh=quEC19ZxgUeJXx79wcBvlvqngcPi9GwTCMd7RvLB2mA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UksaT1eCZl9SavkAxmMy1J1ycNdzurAS7DWm/VRVju2kmYS3aWXEdFuNS1hC0Jt7GunQbyls/kB9QeGCIEqbyXONB0pvVJzojaXbGRAYK+YM3xeTp0jWWBTrg5OkduHRcgPJjufp+Sk1yeDPJ/8jTjI801+pokLLgUgXN/p16bo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sPXLF8YQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UIGFzSBG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1757051630; x=1788587630;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=6GHT4PiZ6qBzFbzaFMfbG7VyjEvCdedpy+KfqQr0cZ8=;
-  b=UIGFzSBGWST9by0UWOh86MB0OvIPA4xvpil0bvC4/kfgAIfbcmTJK9el
-   39sG4QWPaFUAJuNWaiOFCfbXGE+VsfV5KNw5CxZTfCCVRZIrI2/QFZT+U
-   ZVnmVfOelhG/reScRywaIduzyAl9EBcwmuM6ikVRF+dYr7IMj4xbZg+WP
-   MlMRTGJ3sgvUl438+eMiaImiwhtp/NDv6YX7wTgHONHqddHrIJ55J5fj7
-   mnXCmvimcpyJ3nDVpjo66HdhX4HBJAMJEDsuJZYqe6o6TXI+JZEkHxk0k
-   zXZAzX05Izv2NnJ9t1ZxC4BFZYENh/Fx1rIYijw8niqsCfZ12b9pSy8Ok
-   g==;
-X-CSE-ConnectionGUID: 5wRbrLmXQTqvDP8aifZ73w==
-X-CSE-MsgGUID: 1Wqaj3S1TmiUYh/JqK4xBA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11543"; a="70015173"
-X-IronPort-AV: E=Sophos;i="6.18,240,1751266800"; 
-   d="scan'208";a="70015173"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2025 22:53:49 -0700
-X-CSE-ConnectionGUID: Z7MYerB1TmmAc0gm/frbvg==
-X-CSE-MsgGUID: Xl6B3EtVSOqbHDEK8Zr86Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,240,1751266800"; 
-   d="scan'208";a="209257788"
-Received: from allen-box.sh.intel.com ([10.239.159.52])
-  by orviesa001.jf.intel.com with ESMTP; 04 Sep 2025 22:53:45 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Jann Horn <jannh@google.com>,
-	Vasant Hegde <vasant.hegde@amd.com>,
-	Dave Hansen <dave.hansen@intel.com>,
-	Alistair Popple <apopple@nvidia.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Uladzislau Rezki <urezki@gmail.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Andy Lutomirski <luto@kernel.org>,
-	Yi Lai <yi1.lai@intel.com>
-Cc: iommu@lists.linux.dev,
-	security@kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v4 8/8] iommu/sva: Invalidate stale IOTLB entries for kernel address space
-Date: Fri,  5 Sep 2025 13:51:03 +0800
-Message-ID: <20250905055103.3821518-9-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sPXLF8YQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83D90C4CEF1;
+	Fri,  5 Sep 2025 05:55:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757051715;
+	bh=quEC19ZxgUeJXx79wcBvlvqngcPi9GwTCMd7RvLB2mA=;
+	h=From:To:Cc:Subject:Date:From;
+	b=sPXLF8YQh1QCUw91whzXh4gkLPpE257+B5rX7YB29qH8a9Gjy5aeAcKdhxFJqKJU6
+	 HiiTM+EGyurRfDe8ZdgQ8qelXGmzz8W/dzIsgw1i/hSt8aGJNz06OMaTBpiUg2m4Yg
+	 Vk1CzTTLPu03jWrk3Q8FxRPFxECvkl9e8Q0MQOG+R/m75ifod8RSxHLxyuX7VQD520
+	 /9YH4oDEndOCzPVwA7iupOzHVF2T+TaffnI/xc/l+KeBF8+3C8h9JpaM9dTi1/oyyI
+	 sinSD7LCEKfitE+nzIFnLYmdDOvKxS8o5qRrkrtwA06An2smkUpsyjrdSAkA/U3SFP
+	 SKXjvQif1+Ibw==
+From: "Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-coco@lists.linux.dev
+Cc: Catalin Marinas <catalin.marinas@arm.com>,
+	will@kernel.org,
+	maz@kernel.org,
+	tglx@linutronix.de,
+	robin.murphy@arm.com,
+	suzuki.poulose@arm.com,
+	akpm@linux-foundation.org,
+	jgg@ziepe.ca,
+	steven.price@arm.com,
+	"Aneesh Kumar K.V (Arm)" <aneesh.kumar@kernel.org>
+Subject: [RFC PATCH] arm64: swiotlb: dma: its: Ensure shared buffers are properly aligned
+Date: Fri,  5 Sep 2025 11:24:41 +0530
+Message-ID: <20250905055441.950943-1-aneesh.kumar@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250905055103.3821518-1-baolu.lu@linux.intel.com>
-References: <20250905055103.3821518-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -77,169 +51,285 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In the IOMMU Shared Virtual Addressing (SVA) context, the IOMMU hardware
-shares and walks the CPU's page tables. The x86 architecture maps the
-kernel's virtual address space into the upper portion of every process's
-page table. Consequently, in an SVA context, the IOMMU hardware can walk
-and cache kernel page table entries.
+When running with private memory guests, the guest kernel must allocate
+memory with specific constraints when sharing it with the hypervisor.
 
-The Linux kernel currently lacks a notification mechanism for kernel page
-table changes, specifically when page table pages are freed and reused.
-The IOMMU driver is only notified of changes to user virtual address
-mappings. This can cause the IOMMU's internal caches to retain stale
-entries for kernel VA.
+These shared memory buffers are also accessed by the host kernel, which
+means they must be aligned to the host kernel's page size.
 
-A Use-After-Free (UAF) and Write-After-Free (WAF) condition arises when
-kernel page table pages are freed and later reallocated. The IOMMU could
-misinterpret the new data as valid page table entries. The IOMMU might
-then walk into attacker-controlled memory, leading to arbitrary physical
-memory DMA access or privilege escalation. This is also a Write-After-Free
-issue, as the IOMMU will potentially continue to write Accessed and Dirty
-bits to the freed memory while attempting to walk the stale page tables.
+This patch introduces a new helper, arch_shared_mem_alignment(), which
+can be used to enforce proper alignment of shared buffers.
 
-Currently, SVA contexts are unprivileged and cannot access kernel
-mappings. However, the IOMMU will still walk kernel-only page tables
-all the way down to the leaf entries, where it realizes the mapping
-is for the kernel and errors out. This means the IOMMU still caches
-these intermediate page table entries, making the described vulnerability
-a real concern.
+The actual implementation of arch_shared_mem_alignment() is deferred
+to a follow-up patch.
 
-To mitigate this, a new IOMMU interface is introduced to flush IOTLB
-entries for the kernel address space. This interface is invoked from the
-x86 architecture code that manages combined user and kernel page tables,
-specifically when a kernel page table update requires a CPU TLB flush.
-
-Fixes: 26b25a2b98e4 ("iommu: Bind process address spaces to devices")
-Cc: stable@vger.kernel.org
-Suggested-by: Jann Horn <jannh@google.com>
-Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Aneesh Kumar K.V (Arm) <aneesh.kumar@kernel.org>
 ---
- drivers/iommu/iommu-sva.c | 29 ++++++++++++++++++++++++++++-
- include/linux/iommu.h     |  4 ++++
- mm/pgtable-generic.c      |  2 ++
- 3 files changed, 34 insertions(+), 1 deletion(-)
+ arch/arm64/include/asm/mem_encrypt.h |  6 ++++++
+ arch/arm64/mm/init.c                 |  4 +++-
+ arch/arm64/mm/mem_encrypt.c          |  6 ++++++
+ drivers/irqchip/irq-gic-v3-its.c     |  8 ++++++--
+ include/linux/mem_encrypt.h          |  7 +++++++
+ include/linux/swiotlb.h              |  7 ++++---
+ kernel/dma/direct.c                  |  7 +++++++
+ kernel/dma/pool.c                    |  1 +
+ kernel/dma/swiotlb.c                 | 28 +++++++++++++++++-----------
+ 9 files changed, 57 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 1a51cfd82808..d236aef80a8d 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -10,6 +10,8 @@
- #include "iommu-priv.h"
+diff --git a/arch/arm64/include/asm/mem_encrypt.h b/arch/arm64/include/asm/mem_encrypt.h
+index d77c10cd5b79..aaaa1079ba30 100644
+--- a/arch/arm64/include/asm/mem_encrypt.h
++++ b/arch/arm64/include/asm/mem_encrypt.h
+@@ -17,6 +17,12 @@ int set_memory_encrypted(unsigned long addr, int numpages);
+ int set_memory_decrypted(unsigned long addr, int numpages);
+ bool force_dma_unencrypted(struct device *dev);
  
- static DEFINE_MUTEX(iommu_sva_lock);
-+static bool iommu_sva_present;
-+static LIST_HEAD(iommu_sva_mms);
- static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
- 						   struct mm_struct *mm);
- 
-@@ -42,6 +44,7 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
- 		return ERR_PTR(-ENOSPC);
- 	}
- 	iommu_mm->pasid = pasid;
-+	iommu_mm->mm = mm;
- 	INIT_LIST_HEAD(&iommu_mm->sva_domains);
- 	/*
- 	 * Make sure the write to mm->iommu_mm is not reordered in front of
-@@ -132,8 +135,13 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 	if (ret)
- 		goto out_free_domain;
- 	domain->users = 1;
--	list_add(&domain->next, &mm->iommu_mm->sva_domains);
- 
-+	if (list_empty(&iommu_mm->sva_domains)) {
-+		if (list_empty(&iommu_sva_mms))
-+			iommu_sva_present = true;
-+		list_add(&iommu_mm->mm_list_elm, &iommu_sva_mms);
-+	}
-+	list_add(&domain->next, &iommu_mm->sva_domains);
- out:
- 	refcount_set(&handle->users, 1);
- 	mutex_unlock(&iommu_sva_lock);
-@@ -175,6 +183,13 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
- 		list_del(&domain->next);
- 		iommu_domain_free(domain);
- 	}
-+
-+	if (list_empty(&iommu_mm->sva_domains)) {
-+		list_del(&iommu_mm->mm_list_elm);
-+		if (list_empty(&iommu_sva_mms))
-+			iommu_sva_present = false;
-+	}
-+
- 	mutex_unlock(&iommu_sva_lock);
- 	kfree(handle);
- }
-@@ -312,3 +327,15 @@ static struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
- 
- 	return domain;
- }
-+
-+void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end)
++#define arch_shared_mem_alignment arch_shared_mem_alignment
++static inline long arch_shared_mem_alignment(void)
 +{
-+	struct iommu_mm_data *iommu_mm;
-+
-+	guard(mutex)(&iommu_sva_lock);
-+	if (!iommu_sva_present)
-+		return;
-+
-+	list_for_each_entry(iommu_mm, &iommu_sva_mms, mm_list_elm)
-+		mmu_notifier_arch_invalidate_secondary_tlbs(iommu_mm->mm, start, end);
++	return PAGE_SIZE;
 +}
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index c30d12e16473..66e4abb2df0d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1134,7 +1134,9 @@ struct iommu_sva {
++
+ int realm_register_memory_enc_ops(void);
  
- struct iommu_mm_data {
- 	u32			pasid;
-+	struct mm_struct	*mm;
- 	struct list_head	sva_domains;
-+	struct list_head	mm_list_elm;
- };
+ /*
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index ea84a61ed508..389070e9ee65 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -337,12 +337,14 @@ void __init bootmem_init(void)
  
- int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode);
-@@ -1615,6 +1617,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
- 					struct mm_struct *mm);
- void iommu_sva_unbind_device(struct iommu_sva *handle);
- u32 iommu_sva_get_pasid(struct iommu_sva *handle);
-+void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end);
- #else
- static inline struct iommu_sva *
- iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
-@@ -1639,6 +1642,7 @@ static inline u32 mm_get_enqcmd_pasid(struct mm_struct *mm)
+ void __init arch_mm_preinit(void)
+ {
++	unsigned int swiotlb_align = PAGE_SIZE;
+ 	unsigned int flags = SWIOTLB_VERBOSE;
+ 	bool swiotlb = max_pfn > PFN_DOWN(arm64_dma_phys_limit);
+ 
+ 	if (is_realm_world()) {
+ 		swiotlb = true;
+ 		flags |= SWIOTLB_FORCE;
++		swiotlb_align = arch_shared_mem_alignment();
+ 	}
+ 
+ 	if (IS_ENABLED(CONFIG_DMA_BOUNCE_UNALIGNED_KMALLOC) && !swiotlb) {
+@@ -356,7 +358,7 @@ void __init arch_mm_preinit(void)
+ 		swiotlb = true;
+ 	}
+ 
+-	swiotlb_init(swiotlb, flags);
++	swiotlb_init(swiotlb, swiotlb_align, flags);
+ 	swiotlb_update_mem_attributes();
+ 
+ 	/*
+diff --git a/arch/arm64/mm/mem_encrypt.c b/arch/arm64/mm/mem_encrypt.c
+index 645c099fd551..170ee4b61e50 100644
+--- a/arch/arm64/mm/mem_encrypt.c
++++ b/arch/arm64/mm/mem_encrypt.c
+@@ -46,6 +46,12 @@ int set_memory_decrypted(unsigned long addr, int numpages)
+ 	if (likely(!crypt_ops) || WARN_ON(!PAGE_ALIGNED(addr)))
+ 		return 0;
+ 
++	if (WARN_ON(!IS_ALIGNED(addr, arch_shared_mem_alignment())))
++		return 0;
++
++	if (WARN_ON(!IS_ALIGNED(numpages << PAGE_SHIFT, arch_shared_mem_alignment())))
++		return 0;
++
+ 	return crypt_ops->decrypt(addr, numpages);
+ }
+ EXPORT_SYMBOL_GPL(set_memory_decrypted);
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index 467cb78435a9..e2142bbca13b 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -213,16 +213,20 @@ static gfp_t gfp_flags_quirk;
+ static struct page *its_alloc_pages_node(int node, gfp_t gfp,
+ 					 unsigned int order)
+ {
++	long new_order;
+ 	struct page *page;
+ 	int ret = 0;
+ 
+-	page = alloc_pages_node(node, gfp | gfp_flags_quirk, order);
++	/* align things to hypervisor page size */
++	new_order = get_order(ALIGN((PAGE_SIZE << order), arch_shared_mem_alignment()));
++
++	page = alloc_pages_node(node, gfp | gfp_flags_quirk, new_order);
+ 
+ 	if (!page)
+ 		return NULL;
+ 
+ 	ret = set_memory_decrypted((unsigned long)page_address(page),
+-				   1 << order);
++				   1 << new_order);
+ 	/*
+ 	 * If set_memory_decrypted() fails then we don't know what state the
+ 	 * page is in, so we can't free it. Instead we leak it.
+diff --git a/include/linux/mem_encrypt.h b/include/linux/mem_encrypt.h
+index 07584c5e36fb..c24563e7363a 100644
+--- a/include/linux/mem_encrypt.h
++++ b/include/linux/mem_encrypt.h
+@@ -54,6 +54,13 @@
+ #define dma_addr_canonical(x)		(x)
+ #endif
+ 
++#ifndef arch_shared_mem_alignment
++static inline long arch_shared_mem_alignment(void)
++{
++	return PAGE_SIZE;
++}
++#endif
++
+ #endif	/* __ASSEMBLY__ */
+ 
+ #endif	/* __MEM_ENCRYPT_H__ */
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index b27de03f2466..739edb380e54 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -36,8 +36,9 @@ struct scatterlist;
+ #define IO_TLB_DEFAULT_SIZE (64UL<<20)
+ 
+ unsigned long swiotlb_size_or_default(void);
+-void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+-	int (*remap)(void *tlb, unsigned long nslabs));
++void __init swiotlb_init_remap(bool addressing_limit, unsigned int alignment,
++			       unsigned int flags,
++			       int (*remap)(void *tlb, unsigned long nslabs));
+ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+ 	int (*remap)(void *tlb, unsigned long nslabs));
+ extern void __init swiotlb_update_mem_attributes(void);
+@@ -181,7 +182,7 @@ static inline bool is_swiotlb_force_bounce(struct device *dev)
+ 	return mem && mem->force_bounce;
  }
  
- static inline void mm_pasid_drop(struct mm_struct *mm) {}
-+static inline void iommu_sva_invalidate_kva_range(unsigned long start, unsigned long end) {}
- #endif /* CONFIG_IOMMU_SVA */
+-void swiotlb_init(bool addressing_limited, unsigned int flags);
++void swiotlb_init(bool addressing_limited, unsigned int alignment, unsigned int flags);
+ void __init swiotlb_exit(void);
+ void swiotlb_dev_init(struct device *dev);
+ size_t swiotlb_max_mapping_size(struct device *dev);
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 24c359d9c879..5db5baad5efa 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -255,6 +255,9 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 	    dma_direct_use_pool(dev, gfp))
+ 		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
  
- #ifdef CONFIG_IOMMU_IOPF
-diff --git a/mm/pgtable-generic.c b/mm/pgtable-generic.c
-index cf884e8300ca..4c81ca8b196f 100644
---- a/mm/pgtable-generic.c
-+++ b/mm/pgtable-generic.c
-@@ -13,6 +13,7 @@
- #include <linux/swap.h>
- #include <linux/swapops.h>
- #include <linux/mm_inline.h>
-+#include <linux/iommu.h>
- #include <asm/pgalloc.h>
- #include <asm/tlb.h>
++	if (force_dma_unencrypted(dev))
++		/*  align to hypervisor size */
++		size = ALIGN(size, arch_shared_mem_alignment());
+ 	/* we always manually zero the memory once we are done */
+ 	page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO, true);
+ 	if (!page)
+@@ -364,6 +367,10 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 	if (force_dma_unencrypted(dev) && dma_direct_use_pool(dev, gfp))
+ 		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
  
-@@ -430,6 +431,7 @@ static void kernel_pgtable_work_func(struct work_struct *work)
- 	list_splice_tail_init(&kernel_pgtable_work.list, &page_list);
- 	spin_unlock(&kernel_pgtable_work.lock);
++	if (force_dma_unencrypted(dev))
++		/*  align to hypervisor size */
++		size = ALIGN(size, arch_shared_mem_alignment());
++
+ 	page = __dma_direct_alloc_pages(dev, size, gfp, false);
+ 	if (!page)
+ 		return NULL;
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 7b04f7575796..cf4c659b3db9 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -196,6 +196,7 @@ static int __init dma_atomic_pool_init(void)
+ 		unsigned long pages = totalram_pages() / (SZ_1G / SZ_128K);
+ 		pages = min_t(unsigned long, pages, MAX_ORDER_NR_PAGES);
+ 		atomic_pool_size = max_t(size_t, pages << PAGE_SHIFT, SZ_128K);
++		WARN_ON(!IS_ALIGNED(atomic_pool_size, arch_shared_mem_alignment()));
+ 	}
+ 	INIT_WORK(&atomic_pool_work, atomic_pool_work_fn);
  
-+	iommu_sva_invalidate_kva_range(PAGE_OFFSET, TLB_FLUSH_ALL);
- 	list_for_each_entry_safe(pt, next, &page_list, pt_list) {
- 		list_del(&pt->pt_list);
- 		__pagetable_free(pt);
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index abcf3fa63a56..a8f46d2ce058 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -316,21 +316,22 @@ static void add_mem_pool(struct io_tlb_mem *mem, struct io_tlb_pool *pool)
+ }
+ 
+ static void __init *swiotlb_memblock_alloc(unsigned long nslabs,
+-		unsigned int flags,
+-		int (*remap)(void *tlb, unsigned long nslabs))
++				unsigned int alignment, unsigned int flags,
++				int (*remap)(void *tlb, unsigned long nslabs))
+ {
+-	size_t bytes = PAGE_ALIGN(nslabs << IO_TLB_SHIFT);
++	size_t bytes;
+ 	void *tlb;
+ 
++	bytes = ALIGN((nslabs << IO_TLB_SHIFT), alignment);
+ 	/*
+ 	 * By default allocate the bounce buffer memory from low memory, but
+ 	 * allow to pick a location everywhere for hypervisors with guest
+ 	 * memory encryption.
+ 	 */
+ 	if (flags & SWIOTLB_ANY)
+-		tlb = memblock_alloc(bytes, PAGE_SIZE);
++		tlb = memblock_alloc(bytes, alignment);
+ 	else
+-		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
++		tlb = memblock_alloc_low(bytes, alignment);
+ 
+ 	if (!tlb) {
+ 		pr_warn("%s: Failed to allocate %zu bytes tlb structure\n",
+@@ -339,7 +340,7 @@ static void __init *swiotlb_memblock_alloc(unsigned long nslabs,
+ 	}
+ 
+ 	if (remap && remap(tlb, nslabs) < 0) {
+-		memblock_free(tlb, PAGE_ALIGN(bytes));
++		memblock_free(tlb, bytes);
+ 		pr_warn("%s: Failed to remap %zu bytes\n", __func__, bytes);
+ 		return NULL;
+ 	}
+@@ -351,8 +352,9 @@ static void __init *swiotlb_memblock_alloc(unsigned long nslabs,
+  * Statically reserve bounce buffer space and initialize bounce buffer data
+  * structures for the software IO TLB used to implement the DMA API.
+  */
+-void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+-		int (*remap)(void *tlb, unsigned long nslabs))
++void __init swiotlb_init_remap(bool addressing_limit, unsigned int alignment,
++			       unsigned int flags,
++			       int (*remap)(void *tlb, unsigned long nslabs))
+ {
+ 	struct io_tlb_pool *mem = &io_tlb_default_mem.defpool;
+ 	unsigned long nslabs;
+@@ -382,7 +384,7 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+ 
+ 	nslabs = default_nslabs;
+ 	nareas = limit_nareas(default_nareas, nslabs);
+-	while ((tlb = swiotlb_memblock_alloc(nslabs, flags, remap)) == NULL) {
++	while ((tlb = swiotlb_memblock_alloc(nslabs, alignment, flags, remap)) == NULL) {
+ 		if (nslabs <= IO_TLB_MIN_SLABS)
+ 			return;
+ 		nslabs = ALIGN(nslabs >> 1, IO_TLB_SEGSIZE);
+@@ -417,9 +419,9 @@ void __init swiotlb_init_remap(bool addressing_limit, unsigned int flags,
+ 		swiotlb_print_info();
+ }
+ 
+-void __init swiotlb_init(bool addressing_limit, unsigned int flags)
++void __init swiotlb_init(bool addressing_limit, unsigned int alignment, unsigned int flags)
+ {
+-	swiotlb_init_remap(addressing_limit, flags, NULL);
++	swiotlb_init_remap(addressing_limit, alignment, flags, NULL);
+ }
+ 
+ /*
+@@ -464,6 +466,10 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+ 	order = get_order(nslabs << IO_TLB_SHIFT);
+ 	nslabs = SLABS_PER_PAGE << order;
+ 
++	WARN_ON(!IS_ALIGNED(order << PAGE_SHIFT, arch_shared_mem_alignment()));
++	WARN_ON(!IS_ALIGNED(default_nslabs << IO_TLB_SHIFT, arch_shared_mem_alignment()));
++	WARN_ON(!IS_ALIGNED(IO_TLB_MIN_SLABS << IO_TLB_SHIFT, arch_shared_mem_alignment()));
++
+ 	while ((SLABS_PER_PAGE << order) > IO_TLB_MIN_SLABS) {
+ 		vstart = (void *)__get_free_pages(gfp_mask | __GFP_NOWARN,
+ 						  order);
 -- 
 2.43.0
 
