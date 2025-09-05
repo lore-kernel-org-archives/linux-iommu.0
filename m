@@ -1,203 +1,140 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC76DEEBD
-	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 03:27:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96DBF224234
+	for <iommu@lists.linux.dev>; Fri,  5 Sep 2025 05:53:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757042846; cv=none; b=UpxVCchjv2HxB+4J1oAocJyImBRZQpeR6JYPRgzBUcwSrkNIqfXwC6o3KkwumSVUAFyc4DawGg1XqYt41OLXVR3KsYRQvm6lFd8Dgv9iVCU/GlM/WCs8XLpTZHFLGqpz05Chto86RwAEtmaHpGVRdDS2jSZui82at5jhmJNqTIY=
+	t=1757051596; cv=none; b=lIWJCkxcypI6b9Igg1Ix57CHz7jhN5jPb/ZJ82J/4YIevDVQtzmlIw9MgWkeRL3N59wcwW3H7tS0GStBeq/5XwvoupTsgOvK2NBNOXCLNd2QUykGaDCSRS6NhRWjnvSIlH36Oz7N9dnIOOFBDnzOzDHbG0dRZAlBV+7Z8dYzDuU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757042846; c=relaxed/simple;
-	bh=+VXSgIhRAwZIGPzIQ9jTQLIynfEbotiIyagnLddr+s4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=TZXjdegXKJfxFbWFfDp5Z2ZOGAglBQlkdo3Jswb79cF4RS+6rYsWU6yOQe3oLGoE278HK93OARHlfyc6Sr+CoMl65VPTgHxbIDGvyegG/VofacqS7Kc2wCENOIxOQ8G13ybaLCInDDg4iK+Bx2zinxBoPx0NYi4buqLACEf5LyU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=AewI7XKN; arc=none smtp.client-ip=209.85.208.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+	s=arc-20240116; t=1757051596; c=relaxed/simple;
+	bh=9X/VX16NUlQeewe3ualj/gGyuhaQHxuHokasCga+Tys=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=BvU0pwWAJv38OxxwKgCmKQaI26lnoCVSDHuEcuYMxjkO0xIqnwndPryd8E0Zm4hX+lCA6aG1ok3fOyKMC7nmBlyNVpvIcF5gcnR/ph8UFpg/E1stJZ4VBAWBvRGP5FGc3IoDV8SYsgm7dA6LfukavzPBm5N2I7Pr9UFWSld0QAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CR14ebOC; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="AewI7XKN"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-61cbfa1d820so1084776a12.3
-        for <iommu@lists.linux.dev>; Thu, 04 Sep 2025 20:27:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1757042843; x=1757647643; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=os04syBpjRUYrOuY5Z5ul0OnAt1kwR5e6GPJHPTZohI=;
-        b=AewI7XKNhofXTTvMUxOKJb4yAbAxM6vWsUP2Zo68pWNTSYAJl/MxtmncNd5xa6PmIt
-         UQvRYTMmNBhBOc2dW7czDViK4wbWZYbZXr7i8UuqbUA/ynJ3MR84F5ss6+j80CjjUAEO
-         8l2joMrHwwc8kuS84nOmCXSJBkAILxdxIrvRdeV5TVLzBfVgvLgOKjzS0Nhg2rvSxqVW
-         nWeVQXjwTQmsGT9SYM7T/IuLNiAPkGKpvvA8LkNbMhTTS34vr6SYQphBWgzy49gYCUKK
-         HNOM72cWqEkClagt+TsyJcYnyaPCsxFtnqDwvE0DVeZMcrsJ8oWyyquuHmkVYiEgo0CJ
-         EZqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757042843; x=1757647643;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=os04syBpjRUYrOuY5Z5ul0OnAt1kwR5e6GPJHPTZohI=;
-        b=sqcyJqS4FoCzo4GHNQp86E0PU/NZ2LjXjIIcJVxBOMnwlcSDbrJEEIuCrZr3vuYFxg
-         VeH1Rb8vjFjCdz+insYq6GThzfYzjzFhUIXEU+SOTbUexGFnLaoq450Fras7J5vfbqXu
-         lUuErC2SN0fLpXOhNbrJ0G7ieG7mXkAqL/yYSxTZKWblOoIO7iGXmQzMnxQ5A1xkziDT
-         SfJsiB6NrUufgPx5ml8rNZO6B4ynF4h/C5GXfDX/1KlNW9ukoFUarlB53dj7heTMITVs
-         bSJXSbi9KHabw8HH6lO1QjUUcetEDd+wdR1VFImBJPAEXKR6cbZ0dpd6PLjKJDgexrmY
-         HRGA==
-X-Forwarded-Encrypted: i=1; AJvYcCUC/nJdkQpue+4Z6Y7cyCU6RkOBtwZqkwieZNO2gUsOk10gZAO+ylchC+Es6tGUX3s5ITHOgQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwQ096yDEnYiEevQ17Zm+lPZy0br6ZBGq/EQWRWpC5sZLpIqajz
-	U8cdVSMwL8iGgSTdbmuQIQh8iu26TONzqfPv3UPKta3YT8fajRYlXxpv9iNhjNisRv0mFgxEeF4
-	CJA6bXzG469DSrUNoLS6rhnOICbw/mp+lzYFE+YWdPQ==
-X-Gm-Gg: ASbGncufg0tn+pv7bG9eCv2mMoo2cRrlTiRvfB5JC4xTH3SyVV4eG6lT8NdyPAwvmAW
-	Cd7wrRJv0m5ot+zuG36PnVvg2xPnWx/dow95c+0ze6dayW0AzElCxMLwKkf7dSvloHiV3/JoB0d
-	icKgyhHe/v7ZLeoRgTjWs9WvM0PPIV7lpnFKFy8QDsk5SHLzAVQQnSfwCARS5pUsd14RaEQ8dUy
-	F/pxOCt2qmHKoOS5wEX
-X-Google-Smtp-Source: AGHT+IFTBZLssAj4YEI3yGO9zckI6NIStV+ozblxy5fjUOhfU+lQN15HDXjbRdJYZmz9vJUW1Pms6o2MHeVJKPYWHtY=
-X-Received: by 2002:a05:6402:5cd:b0:61d:1443:8599 with SMTP id
- 4fb4d7f45d1cf-61d26ec6264mr18308728a12.32.1757042843053; Thu, 04 Sep 2025
- 20:27:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CR14ebOC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1757051595; x=1788587595;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9X/VX16NUlQeewe3ualj/gGyuhaQHxuHokasCga+Tys=;
+  b=CR14ebOCPj+BG0aXyTVlN6xRSCgczNYhFlz+62G5zcvBdlqdQJaj5dEF
+   ywSYyNoP43UbE4OEjdO/AhPlj9uIybjK/mt/S+WsaHSsdYtnxvbdjJSz6
+   bU3KVE4ulAfdFZlaFB6IIJhb0rne1alcG6Kar0aZunbY+qk3cRkS4QSse
+   lXwD7zC5zFwjYcxrQOd+QCzbWv6E1p+jvSH+U4XrfoLo4FXcaEd44ZS/9
+   MKd9XPSceh1uasfrem3uHGtwIXu1+sfYYsqubWq0DSqaZtNNza6R5lXPj
+   uR5TK8kJUFMmumlHyyJFpS6DN8miIpDq8ybSI7uE7GK/R3M0lU8lh4+35
+   A==;
+X-CSE-ConnectionGUID: Pxe6r3O5Rve8qK5xZZQaWQ==
+X-CSE-MsgGUID: BX2qQMkFQ968shCMgvQStQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11543"; a="70015060"
+X-IronPort-AV: E=Sophos;i="6.18,240,1751266800"; 
+   d="scan'208";a="70015060"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Sep 2025 22:53:14 -0700
+X-CSE-ConnectionGUID: dIZP8Y3qSj20voM5FXjE9g==
+X-CSE-MsgGUID: DeqDxicIQ7mXrTqE9YIMuw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,240,1751266800"; 
+   d="scan'208";a="209257663"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by orviesa001.jf.intel.com with ESMTP; 04 Sep 2025 22:53:09 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Jann Horn <jannh@google.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Dave Hansen <dave.hansen@intel.com>,
+	Alistair Popple <apopple@nvidia.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Uladzislau Rezki <urezki@gmail.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Andy Lutomirski <luto@kernel.org>,
+	Yi Lai <yi1.lai@intel.com>
+Cc: iommu@lists.linux.dev,
+	security@kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v4 0/8] Fix stale IOTLB entries for kernel address space
+Date: Fri,  5 Sep 2025 13:50:55 +0800
+Message-ID: <20250905055103.3821518-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240614142156.29420-3-zong.li@sifive.com> <20250901133629.87310-1-ni_liqiang@126.com>
- <CANXhq0ra+yv-Wt_vKTN3+c4StsPQB1vR+=Kp3RVSh0g10Oogqw@mail.gmail.com>
-In-Reply-To: <CANXhq0ra+yv-Wt_vKTN3+c4StsPQB1vR+=Kp3RVSh0g10Oogqw@mail.gmail.com>
-From: Zong Li <zong.li@sifive.com>
-Date: Fri, 5 Sep 2025 11:27:10 +0800
-X-Gm-Features: Ac12FXxCOomRzLnISI4mSuIvWFVx9HD9ac2cyQivUPSI8ky_l1yBqci4E2RqAio
-Message-ID: <CANXhq0oeUZb7161eJ2z-9aRXSDSmt8P9RpC7QSH4DZ0YvNp_7Q@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 00/10] RISC-V IOMMU HPM and nested IOMMU support
-To: niliqiang <ni_liqiang@126.com>
-Cc: aou@eecs.berkeley.edu, iommu@lists.linux.dev, jgg@ziepe.ca, 
-	joro@8bytes.org, kevin.tian@intel.com, linux-kernel@vger.kernel.org, 
-	linux-riscv@lists.infradead.org, palmer@dabbelt.com, paul.walmsley@sifive.com, 
-	robin.murphy@arm.com, tjeznach@rivosinc.com, will@kernel.org, 
-	chenruisust@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Tue, Sep 2, 2025 at 12:01=E2=80=AFPM Zong Li <zong.li@sifive.com> wrote:
->
-> On Mon, Sep 1, 2025 at 9:37=E2=80=AFPM niliqiang <ni_liqiang@126.com> wro=
-te:
-> >
-> > Hi Zong
-> >
-> > Fri, 14 Jun 2024 22:21:48 +0800, Zong Li <zong.li@sifive.com> wrote:
-> >
-> > > This patch initialize the pmu stuff and uninitialize it when driver
-> > > removing. The interrupt handling is also provided, this handler need =
-to
-> > > be primary handler instead of thread function, because pt_regs is emp=
-ty
-> > > when threading the IRQ, but pt_regs is necessary by perf_event_overfl=
-ow.
-> > >
-> > > Signed-off-by: Zong Li <zong.li@sifive.com>
-> > > ---
-> > >  drivers/iommu/riscv/iommu.c | 65 +++++++++++++++++++++++++++++++++++=
-++
-> > >  1 file changed, 65 insertions(+)
-> > >
-> > > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.=
-c
-> > > index 8b6a64c1ad8d..1716b2251f38 100644
-> > > --- a/drivers/iommu/riscv/iommu.c
-> > > +++ b/drivers/iommu/riscv/iommu.c
-> > > @@ -540,6 +540,62 @@ static irqreturn_t riscv_iommu_fltq_process(int =
-irq, void *data)
-> > >   return IRQ_HANDLED;
-> > >  }
-> > >
-> > > +/*
-> > > + * IOMMU Hardware performance monitor
-> > > + */
-> > > +
-> > > +/* HPM interrupt primary handler */
-> > > +static irqreturn_t riscv_iommu_hpm_irq_handler(int irq, void *dev_id=
-)
-> > > +{
-> > > + struct riscv_iommu_device *iommu =3D (struct riscv_iommu_device *)d=
-ev_id;
-> > > +
-> > > + /* Process pmu irq */
-> > > + riscv_iommu_pmu_handle_irq(&iommu->pmu);
-> > > +
-> > > + /* Clear performance monitoring interrupt pending */
-> > > + riscv_iommu_writel(iommu, RISCV_IOMMU_REG_IPSR, RISCV_IOMMU_IPSR_PM=
-IP);
-> > > +
-> > > + return IRQ_HANDLED;
-> > > +}
-> > > +
-> > > +/* HPM initialization */
-> > > +static int riscv_iommu_hpm_enable(struct riscv_iommu_device *iommu)
-> > > +{
-> > > + int rc;
-> > > +
-> > > + if (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM))
-> > > +     return 0;
-> > > +
-> > > + /*
-> > > +  * pt_regs is empty when threading the IRQ, but pt_regs is necessar=
-y
-> > > +  * by perf_event_overflow. Use primary handler instead of thread
-> > > +  * function for PM IRQ.
-> > > +  *
-> > > +  * Set the IRQF_ONESHOT flag because this IRQ might be shared with
-> > > +  * other threaded IRQs by other queues.
-> > > +  */
-> > > + rc =3D devm_request_irq(iommu->dev,
-> > > +               iommu->irqs[riscv_iommu_queue_vec(iommu, RISCV_IOMMU_=
-IPSR_PMIP)],
-> > > +               riscv_iommu_hpm_irq_handler, IRQF_ONESHOT | IRQF_SHAR=
-ED, NULL, iommu);
-> > > + if (rc)
-> > > +     return rc;
-> > > +
-> > > + return riscv_iommu_pmu_init(&iommu->pmu, iommu->reg, dev_name(iommu=
-->dev));
-> > > +}
-> > > +
-> >
-> > What are the benefits of initializing the iommu-pmu driver in the iommu=
- driver?
-> >
-> > It might be better for the RISC-V IOMMU PMU driver to be loaded as a se=
-parate module, as this would allow greater flexibility since different vend=
-ors may need to add custom events.
-> >
-> > Also, I'm not quite clear on how custom events should be added if the R=
-ISC-V iommu-pmu is placed within the iommu driver.
->
-> Hi Liqiang,
-> My original idea is that, since the IOMMU HPM is not always present,
-> it depends on the capability.HPM bit, if we separate HPM into an
-> individual module, I assume that the PMU driver may not have access to
-> the IOMMU's complete MMIO region. I=E2=80=99m not sure how we would check=
- the
-> capability register in the PMU driver and avoid the following
-> situation: capability.HPM is zero, but the IOMMU-PMU driver is still
-> loaded because the PMU node is present in the DTS. It will be helpful
-> if you have any suggestions on this.
->
-> Regarding custom events, since we don=E2=80=99t have the driver data, my
-> current rough idea is to add a vendor event map table to list the
-> vendor events and use Kconfig to define them respectively. This is
-> just an initial thought and may not be the good solution, so feel free
-> to share any recommendations. Of course, if we eventually decide to
-> move it to drivers/perf as an individual module, then we could use the
-> driver data for custom events, similar to what ARM does.
+This proposes a fix for a security vulnerability related to IOMMU Shared
+Virtual Addressing (SVA). In an SVA context, an IOMMU can cache kernel
+page table entries. When a kernel page table page is freed and
+reallocated for another purpose, the IOMMU might still hold stale,
+incorrect entries. This can be exploited to cause a use-after-free or
+write-after-free condition, potentially leading to privilege escalation
+or data corruption.
 
-Maybe let's try auxiliary driver framework to resolve this topic in
-the next version.
+This solution introduces a deferred freeing mechanism for kernel page
+table pages, which provides a safe window to notify the IOMMU to
+invalidate its caches before the page is reused.
 
->
-> Thanks
->
-> >
-> >
-> > Best regards,
-> > Liqiang
-> >
+Change log:
+v4:
+ - Introduce a mechanism to defer the freeing of page-table pages for
+   KVA mappings. Call iommu_sva_invalidate_kva_range() in the deferred
+   work thread before freeing the pages.
+
+v3:
+ - https://lore.kernel.org/linux-iommu/20250806052505.3113108-1-baolu.lu@linux.intel.com/
+ - iommu_sva_mms is an unbound list; iterating it in an atomic context
+   could introduce significant latency issues. Schedule it in a kernel
+   thread and replace the spinlock with a mutex.
+ - Replace the static key with a normal bool; it can be brought back if
+   data shows the benefit.
+ - Invalidate KVA range in the flush_tlb_all() paths.
+ - All previous reviewed-bys are preserved. Please let me know if there
+   are any objections.
+
+v2:
+ - https://lore.kernel.org/linux-iommu/20250709062800.651521-1-baolu.lu@linux.intel.com/
+ - Remove EXPORT_SYMBOL_GPL(iommu_sva_invalidate_kva_range);
+ - Replace the mutex with a spinlock to make the interface usable in the
+   critical regions.
+
+v1: https://lore.kernel.org/linux-iommu/20250704133056.4023816-1-baolu.lu@linux.intel.com/
+
+Dave Hansen (6):
+  mm: Add a ptdesc flag to mark kernel page tables
+  mm: Actually mark kernel page table pages
+  x86/mm: Use 'ptdesc' when freeing PMD pages
+  mm: Introduce pure page table freeing function
+  mm: Introduce deferred freeing for kernel page tables
+  mm: Hook up Kconfig options for async page table freeing
+
+Lu Baolu (2):
+  x86/mm: Use pagetable_free()
+  iommu/sva: Invalidate stale IOTLB entries for kernel address space
+
+ arch/x86/Kconfig              |  1 +
+ arch/x86/mm/init_64.c         |  2 +-
+ arch/x86/mm/pat/set_memory.c  |  2 +-
+ arch/x86/mm/pgtable.c         | 12 ++++-----
+ drivers/iommu/iommu-sva.c     | 29 +++++++++++++++++++-
+ include/asm-generic/pgalloc.h | 18 +++++++++++++
+ include/linux/iommu.h         |  4 +++
+ include/linux/mm.h            | 24 ++++++++++++++---
+ include/linux/page-flags.h    | 51 +++++++++++++++++++++++++++++++++++
+ mm/Kconfig                    |  3 +++
+ mm/pgtable-generic.c          | 41 ++++++++++++++++++++++++++++
+ 11 files changed, 175 insertions(+), 12 deletions(-)
+
+-- 
+2.43.0
+
