@@ -1,144 +1,167 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from m16.mail.126.com (m16.mail.126.com [220.197.31.6])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFB5230B518
-	for <iommu@lists.linux.dev>; Mon,  8 Sep 2025 14:58:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E18C1D514B
+	for <iommu@lists.linux.dev>; Mon,  8 Sep 2025 15:04:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.6
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757343530; cv=none; b=udFzHqH0We3lLimnLx6M0xwTpzWUCS3tJ8hM4Yxf6XJih35M73k5ISmlWwhZwGaivcQ0+E02gfTcLTHP3DIDngdRDFsuOkT3CGUFF0/eoykNnKGxvQnHWexJ4+Z+qvJAOiS9ed34OjDjSdCzLsJWKHXxUb3t2lSBd8iLjxEFBbI=
+	t=1757343889; cv=none; b=oRmmR7sdi/L028A12UoanR8vgafJNVlhHyXbFdogKkDilcKbZogqINIBkWxRmjZCCELWBavCxDFaFULczu6BNnKXl3IIOHzYVwstPlrqmikDsoda5SvFqAvK05bBjT9PCg3odp87nhN/d9ITKqJN9fEgM6HDuVj2KYo7rcB3X/8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757343530; c=relaxed/simple;
-	bh=qD6rSVIGRWAFJh5ZP8autyVxm6mFsWrg8RVJ2pRgD2g=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SgoVALb2QdeEbtu4ncxRHlMW+yLb+ZeGGwJwQs6QFZxGXi6QqkrIps8Yf+h/s6puoThjSEo5JjXzKwfmpCTOH0liq0f/SCcVjPNLdtbN6laovwXezYEQDCvAMU4ErOogIEmW2QarCWDiup4T6sRTpgxPNrTAjc/jk6g7DjK8hfE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Ev0anl+F; arc=none smtp.client-ip=209.85.160.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1757343889; c=relaxed/simple;
+	bh=JCXr4sAOs6jyNz4O24ld58oNIx50jfj0TS7I8twM4Zs=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=YOqlsiNd+CLbUsQZmfX4bVwOiC63MzqDpM8OpCUtNX9QMF94sw2v6Ohc1DsGnjCBZ289BtHTmOnRxokSQPzsoISb8p8176NOQXY9xR2qYDVz5yTb5rqebapsfP4wxqeUlWzW3rHjdHob0NhN7OqkpqjHkyoHixSrIvu8eYQPWpA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com; spf=pass smtp.mailfrom=126.com; dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b=ZlNpZF4H; arc=none smtp.client-ip=220.197.31.6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=126.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ev0anl+F"
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-4b38d4de61aso61721921cf.0
-        for <iommu@lists.linux.dev>; Mon, 08 Sep 2025 07:58:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1757343527; x=1757948327; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=At5jIJoawR6VKU81ZFaZespdUJb3hi00zL5H+qR/XdY=;
-        b=Ev0anl+F4lCrOygDleZpk+4k1Bg7nPsgsIEmtHEYmstTtBYGW7bjZEhR+yE9TJ5Eyi
-         TuUqUTn5PC/ITRY/FutO9TpiOvTi14ERPD74p1ePZnL9iELjPiHqlrBr0Mi/rHoFGiYF
-         eR5OBrr9V0hjQSWWum6UMZWBnGbclrvWj+tKJFzPk9Od/OaQR75/DbQUTi0ZgV5wRKlo
-         8ludH+agxsCEoK/5lrGc50GXktTqglcUTfPinfMOcvI5tEtHLim5IvNjGNdheibr45sJ
-         llIQl6BX6q4geGaDRHQ5jze6IOe3+7HHu3T7A8Cu4Drzc8aldp/imobCL1Pno9hsa4R6
-         RwOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757343527; x=1757948327;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=At5jIJoawR6VKU81ZFaZespdUJb3hi00zL5H+qR/XdY=;
-        b=r56wnqX3t8KoimPbZ4SEeFgAIv/HImqoimjkm9g51ypLKqtqiffxSlqQ0xh7hp06vi
-         zcgW5Cl47VMBgJyPMcyJh4pnl3tVILYuMm66imUthIgf+3UCtt7KiEOG3Seqyq10H8Qi
-         V3dYbVieKr3CO3XVqB/KAfup2MNnFnV4nAYhMYgkEFBtGrjQPdhv1ya/+Rdc5U1NFQAE
-         F7pWQqkbNcOUm3CMcsegSk0EQaO37ePHwS88VKS+hZ0csCUJRLLKiDDlTL2G/GILzODP
-         zHYWyOe7j/Z+IubsWSAIbYao//+vmvn7VZzsq4y3ShrjA5upmkwqp2sMcqY1qQQSgJl6
-         ZmMg==
-X-Forwarded-Encrypted: i=1; AJvYcCWBjplMkLZs/CaGM7VQLJhzV5OC32TXKXIC76aijc6WJGS6bCi/oAQcM/peMXIgmdaUp0Puwg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzPXX7A4SNo0hLImG3GAleGIeNgkKpvS7iiI7IROOesoLzEHvsE
-	suDjt8qj/RJEw2J2dOWOU+BTu7tifZIRGhy4RSqHkuJKWhhQdXf2y/rzUsQpPOSAbqk=
-X-Gm-Gg: ASbGncvjDcIA9JZ1TAwEdoL5dRQZra2TETUdCo6EKsyijL13naGYZdQK05Ye5h5gMTw
-	bYyPasHaTQeJYwN7jxSZZVsDOR8bTmLJNOXJX1E5tsSdpTUogK3Zd6KOhT4Gp0m3WUREH84M3vv
-	h2J4YMn4+hTIYPYV5BbJthUzxXR9Xr91nowupZI+HtIYVvQOd/utjmuD46IbRNNUx2t/dN6+1oJ
-	a5uLAGn3kfw+VFU5YS7FMDx+SCBUVAuw2Pe/uoa14BhAaapdgMmJBtcKq5wIgdYcxMeR+IacWCq
-	o1uyj7u+hUV0dWY8aB5n2aNIhqBpB+QUqNHAMabQzjsiUVM3TGP4ey/2cIkUBYorBXSf7N93+Jd
-	Xysfldd5gEZ42E86loztYW/uIFWT8RUDbA6SFjGRwDy/KNltAmp0kKzAxjBbAHGTxLaaMAZSjsh
-	w+6m0=
-X-Google-Smtp-Source: AGHT+IFTREWXmNkCHrDWnxjbQBowejD+m7z5dZM3VJ/Oa0MlcqknU/2nQMhyme6Bl98HvCKinECwig==
-X-Received: by 2002:a05:622a:2486:b0:4b3:940:e41d with SMTP id d75a77b69052e-4b5f847f8acmr78181031cf.69.1757343527463;
-        Mon, 08 Sep 2025 07:58:47 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-720ad2cbc78sm125532986d6.23.2025.09.08.07.58.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Sep 2025 07:58:46 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uvdKP-00000003IyI-35cn;
-	Mon, 08 Sep 2025 11:58:45 -0300
-Date: Mon, 8 Sep 2025 11:58:45 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Suzuki K Poulose <suzuki.poulose@arm.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>,
-	"Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-coco@lists.linux.dev, will@kernel.org, maz@kernel.org,
-	tglx@linutronix.de, robin.murphy@arm.com, akpm@linux-foundation.org,
-	steven.price@arm.com
-Subject: Re: [RFC PATCH] arm64: swiotlb: dma: its: Ensure shared buffers are
- properly aligned
-Message-ID: <20250908145845.GA699673@ziepe.ca>
-References: <20250905055441.950943-1-aneesh.kumar@kernel.org>
- <aLrh_rbzWLPw9LnH@arm.com>
- <yq5aikht1e0z.fsf@kernel.org>
- <aL7AoPKKKAR8285O@arm.com>
- <b5ee1ab3-f91f-4982-95c7-516f4968a6c9@arm.com>
+	dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b="ZlNpZF4H"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version:
+	Content-Type; bh=F2lxZqLHHvrOw0VxmILgbptbym7kVrMCHFyEXnEt8RA=;
+	b=ZlNpZF4HQiUl62bILpZskVu6n6N89ejiRZZIVGu8Zvw9JDFXXCkxmgF1lP7KUR
+	pPN3JyXE2YoVWsXHeoLPubDPnbkIES2MvvnvJwada81xA0mxlVI4v1cAz6P6hIKe
+	20jmGAQXkbPhbndHbt69MLvsucdd4IvkPWa8u/DZGrKY4=
+Received: from nilq-virtual-machine.. (unknown [])
+	by gzga-smtp-mtada-g1-3 (Coremail) with SMTP id _____wDn_0FS8L5oTsR7Ag--.56211S2;
+	Mon, 08 Sep 2025 23:03:47 +0800 (CST)
+From: niliqiang <ni_liqiang@126.com>
+To: zong.li@sifive.com
+Cc: aou@eecs.berkeley.edu,
+	chenruisust@gmail.com,
+	iommu@lists.linux.dev,
+	jgg@ziepe.ca,
+	joro@8bytes.org,
+	kevin.tian@intel.com,
+	linux-kernel@vger.kernel.org,
+	linux-riscv@lists.infradead.org,
+	ni_liqiang@126.com,
+	palmer@dabbelt.com,
+	paul.walmsley@sifive.com,
+	robin.murphy@arm.com,
+	tjeznach@rivosinc.com,
+	will@kernel.org
+Subject: Re: [RFC PATCH v2 00/10] RISC-V IOMMU HPM and nested IOMMU support
+Date: Mon,  8 Sep 2025 23:03:46 +0800
+Message-Id: <20250908150346.4761-1-ni_liqiang@126.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <CANXhq0ra+yv-Wt_vKTN3+c4StsPQB1vR+=Kp3RVSh0g10Oogqw@mail.gmail.com>
+References: <CANXhq0ra+yv-Wt_vKTN3+c4StsPQB1vR+=Kp3RVSh0g10Oogqw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b5ee1ab3-f91f-4982-95c7-516f4968a6c9@arm.com>
+Content-Type: text/plain; charset=y
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_____wDn_0FS8L5oTsR7Ag--.56211S2
+X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+	VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvj4R_miRDUUUU
+X-CM-SenderInfo: xqlbzxxtld0wa6rslhhfrp/1tbiJBPC5Wi+W2uTvQABsZ
 
-On Mon, Sep 08, 2025 at 02:47:21PM +0100, Suzuki K Poulose wrote:
-> On 08/09/2025 12:40, Catalin Marinas wrote:
-> > On Mon, Sep 08, 2025 at 03:07:00PM +0530, Aneesh Kumar K.V wrote:
-> > > Catalin Marinas <catalin.marinas@arm.com> writes:
-> > > > On Fri, Sep 05, 2025 at 11:24:41AM +0530, Aneesh Kumar K.V (Arm) wrote:
-> > > > > When running with private memory guests, the guest kernel must allocate
-> > > > > memory with specific constraints when sharing it with the hypervisor.
-> > > > > 
-> > > > > These shared memory buffers are also accessed by the host kernel, which
-> > > > > means they must be aligned to the host kernel's page size.
-> > > > 
-> > > > So this is the case where the guest page size is smaller than the host
-> > > > one. Just trying to understand what would go wrong if we don't do
-> > > > anything here. Let's say the guest uses 4K pages and the host a 64K
-> > > > pages. Within a 64K range, only a 4K is shared/decrypted. If the host
-> > > > does not explicitly access the other 60K around the shared 4K, can
-> > > > anything still go wrong? Is the hardware ok with speculative loads from
-> > > > non-shared ranges?
-> > > 
-> > > With features like guest_memfd, the goal is to explicitly prevent the
-> > > host from mapping private memory, rather than relying on the host to
-> > > avoid accessing those regions.
-> > 
-> > Yes, if all the memory is private. At some point the guest will start
-> > sharing memory with the host. In theory, the host could map more than it
-> > was given access to as long as it doesn't touch the area around the
-> > shared range. Not ideal and it may not match the current guest_memfd API
+On Tue, 2 Sep 2025 12:01:19 +0800 Zong Li <zong.li@sifive.com>  wrote:
+>
+> On Mon, Sep 1, 2025 at 9:37 PM niliqiang <ni_liqiang@126.com> wrote:
+> >
+> > Hi Zong
+> >
+> > Fri, 14 Jun 2024 22:21:48 +0800, Zong Li <zong.li@sifive.com> wrote:
+> >
+> > > This patch initialize the pmu stuff and uninitialize it when driver
+> > > removing. The interrupt handling is also provided, this handler need to
+> > > be primary handler instead of thread function, because pt_regs is empty
+> > > when threading the IRQ, but pt_regs is necessary by perf_event_overflow.
+> > >
+> > > Signed-off-by: Zong Li <zong.li@sifive.com>
+> > > ---
+> > >  drivers/iommu/riscv/iommu.c | 65 +++++++++++++++++++++++++++++++++++++
+> > >  1 file changed, 65 insertions(+)
+> > >
+> > > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> > > index 8b6a64c1ad8d..1716b2251f38 100644
+> > > --- a/drivers/iommu/riscv/iommu.c
+> > > +++ b/drivers/iommu/riscv/iommu.c
+> > > @@ -540,6 +540,62 @@ static irqreturn_t riscv_iommu_fltq_process(int irq, void *data)
+> > >   return IRQ_HANDLED;
+> > >  }
+> > >
+> > > +/*
+> > > + * IOMMU Hardware performance monitor
+> > > + */
+> > > +
+> > > +/* HPM interrupt primary handler */
+> > > +static irqreturn_t riscv_iommu_hpm_irq_handler(int irq, void *dev_id)
+> > > +{
+> > > + struct riscv_iommu_device *iommu = (struct riscv_iommu_device *)dev_id;
+> > > +
+> > > + /* Process pmu irq */
+> > > + riscv_iommu_pmu_handle_irq(&iommu->pmu);
+> > > +
+> > > + /* Clear performance monitoring interrupt pending */
+> > > + riscv_iommu_writel(iommu, RISCV_IOMMU_REG_IPSR, RISCV_IOMMU_IPSR_PMIP);
+> > > +
+> > > + return IRQ_HANDLED;
+> > > +}
+> > > +
+> > > +/* HPM initialization */
+> > > +static int riscv_iommu_hpm_enable(struct riscv_iommu_device *iommu)
+> > > +{
+> > > + int rc;
+> > > +
+> > > + if (!(iommu->caps & RISCV_IOMMU_CAPABILITIES_HPM))
+> > > +     return 0;
+> > > +
+> > > + /*
+> > > +  * pt_regs is empty when threading the IRQ, but pt_regs is necessary
+> > > +  * by perf_event_overflow. Use primary handler instead of thread
+> > > +  * function for PM IRQ.
+> > > +  *
+> > > +  * Set the IRQF_ONESHOT flag because this IRQ might be shared with
+> > > +  * other threaded IRQs by other queues.
+> > > +  */
+> > > + rc = devm_request_irq(iommu->dev,
+> > > +               iommu->irqs[riscv_iommu_queue_vec(iommu, RISCV_IOMMU_IPSR_PMIP)],
+> > > +               riscv_iommu_hpm_irq_handler, IRQF_ONESHOT | IRQF_SHARED, NULL, iommu);
+> > > + if (rc)
+> > > +     return rc;
+> > > +
+> > > + return riscv_iommu_pmu_init(&iommu->pmu, iommu->reg, dev_name(iommu->dev));
+> > > +}
+> > > +
+> >
+> > What are the benefits of initializing the iommu-pmu driver in the iommu driver?
+> >
+> > It might be better for the RISC-V IOMMU PMU driver to be loaded as a separate module, as this would allow greater flexibility since different vendors may need to add custom events.
+> >
+> > Also, I'm not quite clear on how custom events should be added if the RISC-V iommu-pmu is placed within the iommu driver.
 > 
-> The kernel may be taught not to touch the area, but it is tricky when
-> the shared page gets mapped into the usespace and what it does with it.
+> Hi Liqiang,
+> My original idea is that, since the IOMMU HPM is not always present,
+> it depends on the capability.HPM bit, if we separate HPM into an
+> individual module, I assume that the PMU driver may not have access to
+> the IOMMU's complete MMIO region. I'm not sure how we would check the
+> capability register in the PMU driver and avoid the following
+> situation: capability.HPM is zero, but the IOMMU-PMU driver is still
+> loaded because the PMU node is present in the DTS. It will be helpful
+> if you have any suggestions on this.
+> 
+> Regarding custom events, since we don't have the driver data, my
+> current rough idea is to add a vendor event map table to list the
+> vendor events and use Kconfig to define them respectively. This is
+> just an initial thought and may not be the good solution, so feel free
+> to share any recommendations. Of course, if we eventually decide to
+> move it to drivers/perf as an individual module, then we could use the
+> driver data for custom events, similar to what ARM does.
+> 
+> Thanks
+> 
 
-But what happes?
+Apologies for the late reply. I understand the reasoning behind this approach now, it is indeed necessary to check the capability.HPM bit to further determine whether to load the pmu-driver. 
+Also, the HPM-related registers are stored together with other registers without distinction.
+Regarding custom events, I also previously thought that distinguishing them via Kconfig was the way, though it isn't the most elegant approach.
+Sorry, I don't have a better idea for now. I'll be sure to follow up with you if it come across any better ideas.
 
-The entire reason we have this nasty hyper-restrictive memfd private
-memory is beacuse Intel takes a machine check if anything does it
-wrong, and that is fatal and can't be handled.
+Best regards,
+Liqiang
 
-Is ARM like that? I thought ARM had good faults on GPT violation that
-could be handled in the same way as a normal page fault?
-
-If ARM has proper faulting then you don't have an issue mapping 64K
-into a userspace and just segfaulting the VMM if it does something
-wrong.
-
-If not, then sure you need all this unmapping stuff like Intel does :\
-
-> True. The GPC Page Size is going to be 4K. At present the RMM S2 page
-> size is fixed to 4K.
-
-A 4k S2 is a pointless thing to do if the VMM is only going to approve
-64k shared/private transitions :(
-
-Jason
