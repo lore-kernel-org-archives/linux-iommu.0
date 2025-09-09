@@ -1,43 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2FF3311591;
-	Tue,  9 Sep 2025 13:06:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAF34335BAE;
+	Tue,  9 Sep 2025 13:12:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757423199; cv=none; b=Kdj1w4De/MfyEC6fhSgb5A2rDNGVJV1aJmu+bn345Z7/AMN9nAj4BlvSENPGKdhC8uZHasIJkFmOgWDdROt7/x0eGfMXqBj+yh2GTaJSofte3dRbHwyKFvXl8t1zJDQbeTk3+GM+VeGqfbzCa5qSMnRz8Vro9WlN0/AJ1+FFV68=
+	t=1757423530; cv=none; b=LYNhCLC+tWVWlrBWvYE2xplUZWF4qbqNPXIzVyuzdCB5nEjp95thXgvogaoKPYbTVxKxb09uBSVgpd9lDxCUzxaolnX4PZS1mJ1cAz8XJDP1qGITq4/ZVg8kyzlqXRk5G3soe9y0JhGR6C4y540vIoai809G1nTcOLstmfYuBlQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757423199; c=relaxed/simple;
-	bh=qD3qU9O4hlrWhqMeW5jgxqVBElkWJH2c2E7/Z1BSu6M=;
+	s=arc-20240116; t=1757423530; c=relaxed/simple;
+	bh=gKJA5qVK6epw+rflk+7KDWhPkkSQ8HIBUNn4mxtldCw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=C8qdFHvdc9uxhyXVCji9rtyYu5NoFxQUfZzycl8SyeEtLpIeFzyRWE9Cc6y4fvAdLlbncBTDDwUtElfs3UYhVZKGdbROoEd96AUCTNcUxAgXqCkvqyZI27Fj0p8bghYi4ngW15Ens27ZwTTvEEzlDbTlVp+hrEPb8K+oDWTioIc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rot2GEcQ; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=Iav+lbsI1UA7GG8DaKzrJncfjS1Ti0CiXCtnJXNaQ+cPN72LuNmhkEeZLtmKIuc2AhL6D3bYEs8iKswjIR1ljYpgXXRBsLUOT4Qap3JX3AiKpbXDevGjKSSdcLlJKYE8dYaWZzIu5zTUTJ/WlEC1dV/KLMK2fo1WssAJUVoEHao=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Gp3d7dds; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rot2GEcQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB552C4CEF5;
-	Tue,  9 Sep 2025 13:06:36 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Gp3d7dds"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B97C5C4CEF4;
+	Tue,  9 Sep 2025 13:12:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757423199;
-	bh=qD3qU9O4hlrWhqMeW5jgxqVBElkWJH2c2E7/Z1BSu6M=;
+	s=k20201202; t=1757423530;
+	bh=gKJA5qVK6epw+rflk+7KDWhPkkSQ8HIBUNn4mxtldCw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Rot2GEcQCJuw19L4oJjHHEmn/gp9gGTbjsbZB15G3pfXwHp2rhi+7dwYum6IPmC88
-	 H4+LtAugy5wda6Ay31wKIZFcNznjpD+4lAIlsH7f2MgUBBjmiDvn0DzpydQmoxxqHj
-	 9cgknz8DROKFqNQeUjCok2xacqJRa/ip9fuHHipB/rthodIAgM7JruLmjUrgv7bbzC
-	 oRvZ9yraynZUF/e5ihhvklsZT2gw7sHZ8QV9TKkJVq8xNOZwH3HfuHtp0G4doHG/tZ
-	 akpgbgcMPbQ71HQZUCD0LWST4W747Js1bAV9ZF89mIzPmDsn+OwANl9PQK218ef64j
-	 FBvO0AKp0XcgQ==
-Date: Tue, 9 Sep 2025 14:06:33 +0100
+	b=Gp3d7ddsviq3ErlSBbi033LuArTUBYaS5C0afFD1U0Ug2gkTLVzeFPAq/3+Rfke1I
+	 K3jxfcIT0zTgDuNhNuGNhqIororwgN/HQwNLPXP7xVnOPa/PCaQgM6XEJuifEkB3y3
+	 g+D63JOCvT0mJKpyaC5h7szDkdty0dTk5IwhJ/+BUy+z6VteCzJb8JVncXCim/mCuE
+	 L4gjtRR3QyrbH4D+yDjeKPRreF9PIgBHCiTjRMpkkO4Pd4/frN55hEoktz1JXl17Ue
+	 aChOQ6lwu/X7poekW/TNKNK7mijz6JpMnrSRlZj6U3ZRdViK9XmueE7UjbAmnpIL3H
+	 3hDg1Zy85VDEA==
+Date: Tue, 9 Sep 2025 14:12:03 +0100
 From: Will Deacon <will@kernel.org>
-To: Qinxin Xia <xiaqinxin@huawei.com>
-Cc: robin.murphy@arm.com, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	yangyicong@huawei.com, wangzhou1@hisilicon.com,
-	prime.zeng@hisilicon.com, xuwei5@huawei.com, fanghao11@huawei.com,
-	jonathan.cameron@huawei.com, linuxarm@huawei.com
-Subject: Re: [PATCH 1/2] iommu/debug: Add IOMMU page table dump debug facility
-Message-ID: <aMAmWQJy_G50xoBf@willie-the-truck>
-References: <20250814093005.2040511-1-xiaqinxin@huawei.com>
- <20250814093005.2040511-2-xiaqinxin@huawei.com>
+To: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+Cc: joro@8bytes.org, robin.murphy@arm.com, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+	nicolas.dufresne@collabora.com, jgg@ziepe.ca,
+	p.zabel@pengutronix.de, mchehab@kernel.org, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, kernel@collabora.com,
+	linux-media@vger.kernel.org
+Subject: Re: [PATCH v8 3/7] iommu: Add verisilicon IOMMU driver
+Message-ID: <aMAno-DkDJumcAtj@willie-the-truck>
+References: <20250827090809.34555-1-benjamin.gaignard@collabora.com>
+ <20250827090809.34555-4-benjamin.gaignard@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,50 +49,34 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250814093005.2040511-2-xiaqinxin@huawei.com>
+In-Reply-To: <20250827090809.34555-4-benjamin.gaignard@collabora.com>
 
-On Thu, Aug 14, 2025 at 05:30:04PM +0800, Qinxin Xia wrote:
-> +/**
-> + * iova_info_dump - dump iova alloced
-> + * @s - file structure used to generate serialized output
-> + * @iovad: - iova domain in question.
-> + */
-> +static int iommu_iova_info_dump(struct seq_file *s, struct iommu_domain *domain)
-> +{
-> +	struct iova_domain *iovad;
-> +	unsigned long long pfn;
-> +	unsigned long i_shift;
-> +	struct rb_node *node;
-> +	unsigned long flags;
-> +	size_t prot_size;
-> +
-> +	iovad = iommu_domain_to_iovad(domain);
-> +	if (!iovad)
-> +		return -ENOMEM;
-> +
-> +	i_shift = iova_shift(iovad);
-> +
-> +	/* Take the lock so that no other thread is manipulating the rbtree */
-> +	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-> +	assert_spin_locked(&iovad->iova_rbtree_lock);
-> +
-> +	for (node = rb_first(&iovad->rbroot); node; node = rb_next(node)) {
-> +		struct iova *iova = rb_entry(node, struct iova, node);
-> +
-> +		if (iova->pfn_hi <= iova->pfn_lo)
-> +			continue;
-> +
-> +		for (pfn = iova->pfn_lo; pfn <= iova->pfn_hi; ) {
-> +			prot_size = domain->ops->dump_iova_prot(s, domain, pfn << i_shift);
-> +			pfn = ((pfn << i_shift) + prot_size) >> i_shift;
-> +		}
-> +	}
-> +
-> +	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+On Wed, Aug 27, 2025 at 11:07:59AM +0200, Benjamin Gaignard wrote:
+> The Verisilicon IOMMU hardware block can be found in combination
+> with Verisilicon hardware video codecs (encoders or decoders) on
+> different SoCs.
+> Enable it will allow us to use non contiguous memory allocators
+> for Verisilicon video codecs.
+> 
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> ---
+> changes in version 8:
+> - Add API to restore VSI iommu context from decoder driver
+> - Fix reported checkpatch issues: add comment in pinlock_t declaration
+>   and remove blank line.
+> 
+>  drivers/iommu/Kconfig     |  11 +
+>  drivers/iommu/Makefile    |   1 +
+>  drivers/iommu/vsi-iommu.c | 810 ++++++++++++++++++++++++++++++++++++++
+>  include/linux/vsi-iommu.h |  21 +
+>  4 files changed, 843 insertions(+)
+>  create mode 100644 drivers/iommu/vsi-iommu.c
+>  create mode 100644 include/linux/vsi-iommu.h
 
-Why is the IOVA rbtree lock sufficient for serialising the page-table
-accesses made by ->dump_iova_prot()? I don't see anything here that
-prevents the walker walking into page-table pages that are e.g. being
-freed or manipulated concurrently.
+I still object to the duplication with the rockchip driver:
+
+https://lore.kernel.org/all/aH5yR9CkYSJ4PaZV@willie-the-truck/
+
+at least drop me from cc if you're going to ignore my comments, please.
 
 Will
