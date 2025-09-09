@@ -1,86 +1,68 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6A142FB606;
-	Tue,  9 Sep 2025 12:57:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF9D4322E;
+	Tue,  9 Sep 2025 13:01:55 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757422638; cv=none; b=Rdd/2GN3XxJk2b0QZZwqvWIo2W52VAWt8YvbuCPkZVqgoQek6c7299G8tPPTyV6MvzhNnw8LUtcYGrW94jNxz39rafqqIiKkcl3V5qCqsIDD2mMlnNK9YNYXnfwsj9UjGJUtvkfP6fTMpsZ82jUn6yEDGF13i96hMw+jzESduUU=
+	t=1757422915; cv=none; b=AR6xZsbdUTVqraqzNLOuXNE0fr7LzLvP6RlV66w6VLy4er5MNYT0UTKciqklfMFTe94JnMAr3O9qSOQ62kpgvrmGR5iD4Qi/zqYBs5me2P+4ZDn7X7IWmbCDUSjZlFf7edITeFeKwAfLQQCIIdAxBPCgCISJw7gl+NjJjJyCBLM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757422638; c=relaxed/simple;
-	bh=8QS4xAENwRAuWHx2PONshZzPg+6Wl4OLWnziKlPHJOk=;
+	s=arc-20240116; t=1757422915; c=relaxed/simple;
+	bh=uUpeJCJP2QyLE+ArUbXIAvL4sYHqiTHfiEps2udfhJY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j4d/jj3QYA9DHvGAS17rmut/Lox5ggZuFZzg6PCTIHsnAMH/ncbRHe8UN8C/VVouKe8kWipt82aKGfa94g4uziE8uAvkjaPdxihme66c7Pp/0UBEseFfeL3TMke+ksjzzhkQJ8yOwhGAsrlo3HEZNb86xuFmIief1dm3Nn8aAPM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rqaubvdz; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=ElDLXKmjbybikKO1nlZS+CEaVg09JlZqNtjZUIdkDaGg3DXuhdQhlmfgNVOflP0wR1WgsrU7qGFm5+uxsKjtt+pqiB/yzl55uEpDvd2r7qxfdYC8uBk/54yoZbGiHRu/fZoxlnUpQWgfH3ER3GZoQcYnQnAk4lDM9ioX1MxIXiQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FgqG2Ew1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rqaubvdz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 644BCC4CEF4;
-	Tue,  9 Sep 2025 12:57:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FgqG2Ew1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9107C4CEF4;
+	Tue,  9 Sep 2025 13:01:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757422637;
-	bh=8QS4xAENwRAuWHx2PONshZzPg+6Wl4OLWnziKlPHJOk=;
+	s=k20201202; t=1757422915;
+	bh=uUpeJCJP2QyLE+ArUbXIAvL4sYHqiTHfiEps2udfhJY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Rqaubvdzpt2E6sZzI6ANiROrCU6b9g7XHQlhQCE4MqlOYTpA+ei6nIaFbE4YQrIMA
-	 rWiZ/wvrGy9aGk/ShRg9FlPR0JrG/bODYU1oCMj+z+WiPd8bwizMxKnYTeGbXywy4d
-	 K/eUscOPuhowcdbLXS6N1L/D/AydnLKWd/3/QkENlL0VGL62UeYhF9rbWTw+HCmuOF
-	 TZy4kiM5B1Hw6nK6LBC1az//u057HvVYhBhWfr2/mSuBERBiiqgktiP6fJL2VE+67+
-	 z3hkG7OszNU53Z2BhAD1PTvTvcl1no4q6uqh8fs/p6xcEIYBcbzqtmPaIyHz7D7Iis
-	 /zV6Xz4tSi2sg==
-Date: Tue, 9 Sep 2025 13:57:11 +0100
+	b=FgqG2Ew1xobvoWA0AkoMC06sNum5ooz+wUgacB3toQjyanO6379YBTQyLaJCsDCgo
+	 8v3sIA6zFjUkGzEb1okiCfOqTAw9ocvtemZ9LV1X2HyFtreAKI8Ya2DqAmjYrccBL8
+	 lfopTUGVDmgHXqz+s+AcB6NAgwW6ThJFopYj+gAkqPov/odrZ88ID0KrOzGBblSffS
+	 3i9pNbiOrh0aYCfswKcYm2u9lI87IfXqvIrfoHvAibua4b8ff0DgMrg5TvYdaPzQGK
+	 7pjuh6In1clVogS5gnjZwEuiuypKPrLnoTiCAsw8Ih9bwP97PwJDhn245VEgb/1laM
+	 zGSeA8LaUiVjA==
+Date: Tue, 9 Sep 2025 14:01:50 +0100
 From: Will Deacon <will@kernel.org>
-To: Stephan Gerhold <stephan.gerhold@linaro.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Johan Hovold <johan@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+To: Daniel Mentz <danielmentz@google.com>
+Cc: Xichao Zhao <zhao.xichao@vivo.com>, joro@8bytes.org,
+	robin.murphy@arm.com, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-qcom: Enable use of all SMR groups when
- running bare-metal
-Message-ID: <aMAkJ7CfPQuhvhfm@willie-the-truck>
-References: <20250821-arm-smmu-qcom-all-smr-v1-1-7f5cbbceac3e@linaro.org>
+Subject: Re: [PATCH] iommu/arm-smmu: Remove dev_err_probe() if error is
+ -ENOMEM
+Message-ID: <aMAlPrBUJ-fI0_O-@willie-the-truck>
+References: <20250821094717.573232-1-zhao.xichao@vivo.com>
+ <CAE2F3rBg+m_iVpJN+raoto2YV-0g1WFC-JNtuZV=OjarHgL3RQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250821-arm-smmu-qcom-all-smr-v1-1-7f5cbbceac3e@linaro.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAE2F3rBg+m_iVpJN+raoto2YV-0g1WFC-JNtuZV=OjarHgL3RQ@mail.gmail.com>
 
-On Thu, Aug 21, 2025 at 10:33:53AM +0200, Stephan Gerhold wrote:
-> Some platforms (e.g. SC8280XP and X1E) support more than 128 stream
-> matching groups. This is more than what is defined as maximum by the ARM
-> SMMU architecture specification. Commit 122611347326 ("iommu/arm-smmu-qcom:
-> Limit the SMR groups to 128") disabled use of the additional groups because
-> they don't exhibit the same behavior as the architecture supported ones.
+On Tue, Aug 26, 2025 at 09:39:26AM -0700, Daniel Mentz wrote:
+> On Thu, Aug 21, 2025 at 2:48 AM Xichao Zhao <zhao.xichao@vivo.com> wrote:
+> >
+> > The dev_err_probe() doesn't do anything when error is '-ENOMEM'.
+> > Therefore, remove the useless call to dev_err_probe(), and just
+> > return the value instead.
 > 
-> It seems like this is just another quirk of the hypervisor: When running
-> bare-metal without the hypervisor, the additional groups appear to behave
-> just like all others. The boot firmware uses some of the additional groups,
-> so ignoring them in this situation leads to stream match conflicts whenever
-> we allocate a new SMR group for the same SID.
+> You could mention the following commit which I believe changed the
+> -ENOMEM behavior.
 > 
-> The workaround exists primarily because the bypass quirk detection fails
-> when using a S2CR register from the additional matching groups, so let's
-> perform the test with the last reliable S2CR (127) and then limit the
-> number of SMR groups only if we detect that we are running below the
-> hypervisor (because of the bypass quirk).
-> 
-> Fixes: 122611347326 ("iommu/arm-smmu-qcom: Limit the SMR groups to 128")
-> Signed-off-by: Stephan Gerhold <stephan.gerhold@linaro.org>
-> ---
-> I modified arm_smmu_find_sme() to prefer allocating from the SMR groups
-> above 128 (until they are all used). I did not see any issues, so I don't
-> see any indication that they behave any different from the others.
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 27 +++++++++++++++++----------
->  1 file changed, 17 insertions(+), 10 deletions(-)
+> 2f3cfd2f4b7c ("driver core: Make dev_err_probe() silent for -ENOMEM")
 
-Is the existing workaround causing you problems somehow? Limiting the SMR
-groups to what the architecture allows still seems like the best bet to
-me unless there's a compelling reason to do something else.
+Hmm, right, and now we lost the message about interrupts altogether so,
+if anything, I'd be inclined to go back to the old behaviour prior to
+97dfad194ca8 ("iommu/arm-smmu: Account for PMU interrupts") using
+dev_err() and return -ENOMEM explicitly.
 
 Will
