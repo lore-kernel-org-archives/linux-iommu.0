@@ -1,92 +1,142 @@
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEE8B301000
-	for <iommu@lists.linux.dev>; Tue,  9 Sep 2025 18:31:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CDE02D77EF
+	for <iommu@lists.linux.dev>; Tue,  9 Sep 2025 19:33:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757442662; cv=none; b=VBwLPTQOPrZJRt/ZtemmyNsRDykBThg6yzDV3/90QEMlQnxQeyQIah2zUOpfPgS9NUZljMBW/v5f0CAqioWWKOxPdETQkalguMYFMTaMOGw1UVrJLjotlXzgbs+7PMFUuj83yWt3gVWrq6qtxNyz+A0mqNZ+Er7YjZVUZwGSXWA=
+	t=1757446420; cv=none; b=GGBHmZ3TJEEcdg0lhtMSMRophYO6WUUWzKMYBszCJLc0COyXVwVC5TyUA2HzgrrAOmHKDcSPCeg/ZpdI/sphyDHJgWHTdAV3XYMTjr/Igi1BbugUc1lmilxRZ+Wubuc9mQaTsvir6SuZiCW7wuevZi7/RdCl9t04te4xRE2bsRM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757442662; c=relaxed/simple;
-	bh=yM0Xnr5mgLbhYQekgENeXiwmJdvFW1b1xD3j7t4hWgo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MjVXaFs1nuUKCwLiXUmRbE9NfDE2E7DbR8hV04iYXdgy9LH/lXKKr231aJTuh6xAhv8vZadRQT4W2JN9QRNy8MgQ5FTIrS4Jl/gKg00Y+TZCwTWLtitAzi+R4s7DsUoRelgtVWqGWl6xWiN3fhzGkGa//W9/dBz4UoCLUZDRbQ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=2LHQ6PkH; arc=none smtp.client-ip=209.85.160.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1757446420; c=relaxed/simple;
+	bh=mUgqnSrCeNtyPRzp40kafmu2emrwvDGauUeKsNnrkLk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=SKtOVVwwgdIDX7ZyoNA7Pgnn2uxrIr2ya0ui3p9QOnRRPVm/p/a+ck2RKYUfgSFHveH0iEQl1Qm7qWvpVCHwSG4c7D1kWEQG0NyZPXM4GcLOMQBPzYjXLhS6pfCw3xvooCPAmHT1ysoOnklpYLgssVs1JWFcTStSJu74sXRHpPs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=G0clw1fX; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="2LHQ6PkH"
-Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-4b4bcb9638aso80071cf.0
-        for <iommu@lists.linux.dev>; Tue, 09 Sep 2025 11:31:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1757442659; x=1758047459; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TfxcLFfDrPkIJiNUWhVN3N4fK2AjPT82pZU1A16szcs=;
-        b=2LHQ6PkHHmNAZWQtRjbtwTyiNxL+fK5tUPzjW2uZPxsVY4HEnjBE11mfIulXoZQ+lT
-         H57MJc2mX6eWEK2BDZ8k69Xfpt8Vz+u1eAjPhDys6Uc7amDfFBgyj2OQqKBIp4Lt5Ms2
-         KHhC2LO+pmsqx7v+TMy3N23WuPz0L+nj+Q0bJDrI+8CilygncLEJxD+D1vrM82GZnekc
-         DNuJOwdx3J2LU+RaxEqu8lUqhTI3L0ct3DPepCagWYgWihQ5lcyieQeOO6yY/cjCwcD9
-         UGShd9x9UxHb5/koXqwc11m3PhJu792n8iVcrwrkwUquotfb4xeKA4MFmRP4/3hJwXe4
-         0A5Q==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="G0clw1fX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1757446417;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Xv0UmvOM6iq9BarO5ln98fc4nB6oP2f7t4wXJ04yBgo=;
+	b=G0clw1fX6AvGkMrAm6568HS4gLuy0l0CLv8+1ItuSYXfoarZAVMB8f3Hj7ojKN4e1i/34R
+	4+vD1lsrye4OmmmvyVBVpPySVeHm6NJISTRtTueKZQOH484WnQio9kfa5A4d4vVDK4xVxc
+	lz3xd8OBPoSyLLL/di+QmY35o3nINdo=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-669-XN8xjmwlN8euh9KUCDqJVQ-1; Tue, 09 Sep 2025 15:33:35 -0400
+X-MC-Unique: XN8xjmwlN8euh9KUCDqJVQ-1
+X-Mimecast-MFC-AGG-ID: XN8xjmwlN8euh9KUCDqJVQ_1757446415
+Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-4b5d5cc0f25so125688881cf.2
+        for <iommu@lists.linux.dev>; Tue, 09 Sep 2025 12:33:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757442659; x=1758047459;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=TfxcLFfDrPkIJiNUWhVN3N4fK2AjPT82pZU1A16szcs=;
-        b=V5jM2ISRPCAb3qmTVhh2p6DIdTYc/91DTRdMlniFWn3JB+xjZLwwDGXOKV4vndpzmg
-         g2RAdCP3Z33EMAB+Xa5g7pAo4lRz9kaKb1+A7Gg0Thoc2sKIwIKaIgrdQkwNhJNsTsMa
-         TzjoMIDX9fPPvYp4eGePRXWoSTLwTzWEf+VtrUcSA7TrG5IfcktWeEi4bZMPBNPr/7to
-         1SNAjzLbkOb7k2ZqoK9cgKJvP3X4fOrPwwosJln2xZup9dmEsf4Va4pG5DO0PcHtug/c
-         0lMo0QOXf7c0xG5UuVndpqDasJmaQFaxeq21ycVjHdpViH/OK1aLo8h0FwM8k9mA1u95
-         YBmA==
-X-Forwarded-Encrypted: i=1; AJvYcCXeM2y35h5KoiFq2hMb7LdwoFSbjNZ82jy7r92TVtqP0XumYJ+lttqgTXEAOjkxPhUwlPoGjw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy2cuvnN2Lf9Hc7+cXhRnhzAspSzhU2Msze3f0M5KTXs1na2gY7
-	23a3GRRg3dxjc+rky0w7VMQ0ibwfDVoHKzOxeFzFgmitk1TEtWeITvBx+uLYgHp14zqPKuiVOWN
-	SEEpr3Tip+xGKB2/ia+9cSfkFbGYhp7yXCXXLoJnG
-X-Gm-Gg: ASbGncvc6YKtaQuvxaL4VudHR7DiXhcNsq5scuEshu7g3CPaXydJ3JR6zpH91Z9E5IP
-	cX+Xz2CnvUpizmIcDX6QvZ7WBZzzfm+HDev2UnCQ5yNUe4M1arxLM40hn5DR72oBWWpTpa/Vgxc
-	7A3YALcUzXl1NcY5r8qfZ18jQgmtl9r40Co0+Z4mQyea6pTI1faalObUh92bsln9tAC0Lkrtysi
-	EH7DgMbQJ8m4SrY6GkWmQ==
-X-Google-Smtp-Source: AGHT+IGf+Q8hPzzej9xbfaEr60LoJgETjDgKDHy0ML31wiaO21T7Ktg8vRU8pvPgmGyM85KMJM70NWIugrUwyx3yAfE=
-X-Received: by 2002:a05:622a:14e:b0:4b4:979d:8764 with SMTP id
- d75a77b69052e-4b62569f89bmr232071cf.19.1757442659042; Tue, 09 Sep 2025
- 11:30:59 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1757446415; x=1758051215;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Xv0UmvOM6iq9BarO5ln98fc4nB6oP2f7t4wXJ04yBgo=;
+        b=m8ziCXsvkfiQTN9e4Wzsrafqwq4m46Nq2eXjF3hBFJCP/58HrSSbNFgC9/lC050HIX
+         EjnkxdUG+gqKUcifITRUN21Zbi9PMq581uTqfvDLfeggYCuDal62iXMYde+XkOwYDo+3
+         pgMZOnOL3P6le+cQZnQTqcd9dN9DKqwKJlMmOBiQdEMMZLB7rvFCwFv8vKm2kmnQfeVH
+         IWfPqqDjcFYB5uVrkTiHkvTYNlIq7FsSSuT622Q73AHciq60HkdEtgft5BgkmsFvBHM6
+         lp7YfbJeML9+2ar68XN1iAv5cN1nu4J1IrMppU5hFA6okXrLMfUn2i+8DbBNzOng1LcK
+         6feA==
+X-Forwarded-Encrypted: i=1; AJvYcCUqlZC6AA1E60RLqReQAYLhsXXGCEje59r9vFw9gHtIFIDVJrqOaiieceMFpKzMpkEKuSC2uw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwdzAzb5qn6/eFgkR2bFAE8ucyUo1LraBkIpzh8e11rJVgWiN+U
+	yeYbOwIT4YDOyOzTrvtDdve/Bf0aSXDOXBkayj+Wx9amv0XDAtw33bDejdcZ4ewLysJM9aJFWDK
+	VN+6Q34eW6HEiDVRxyow/0lDi1/iZY0TbBnN/szV4kIkDSlhbCK6w+meH
+X-Gm-Gg: ASbGncvvibCwQ7t2mFH+GOwA6Qr3FAz/nFC6oCbSPcDmJGfazFI5DR5Zrh9QhffJlUE
+	r7qR0GyPAO7TKoTkEJSdoXFUfeY6Jw69gk35mXIyfxIRRkIOfnxIIZNu96Qe1mwkJKXt0rdcxwk
+	f+hA3DSZ3hQhpEl6dLV/VIlEowlpuCqKHU3eTLnLhLvvsUVLUfnxzii06odzyiIMjlnH8Y90CAq
+	PYwsgz3Y/7aG79S/O0zTykt+4lYfjoOJhuQMiP66z6CksfH1ldK1nZRELTz1NYEQ+vt8jWyj6tM
+	Z3uHD2/GQCqGOTNWT5MQHvcmzR+2PwE9NZSiMQFA
+X-Received: by 2002:a05:622a:1343:b0:4b5:ee26:5373 with SMTP id d75a77b69052e-4b5f83c8b18mr157023791cf.21.1757446415054;
+        Tue, 09 Sep 2025 12:33:35 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHt6ZFsxR50RVtcwNCWmeGZgkt2Iz2ZbSC15FzqztkMn3bYZzGFWhNgqOHOvkUWFbY7XPZ5nA==
+X-Received: by 2002:a05:622a:1343:b0:4b5:ee26:5373 with SMTP id d75a77b69052e-4b5f83c8b18mr157023411cf.21.1757446414556;
+        Tue, 09 Sep 2025 12:33:34 -0700 (PDT)
+Received: from [192.168.40.164] ([70.105.235.240])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4b61bbbc3a3sm12895041cf.24.2025.09.09.12.33.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Sep 2025 12:33:33 -0700 (PDT)
+Message-ID: <3d775106-2610-4766-afdb-0820cf92e6c1@redhat.com>
+Date: Tue, 9 Sep 2025 15:33:32 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250819215156.2494305-1-smostafa@google.com> <20250819215156.2494305-17-smostafa@google.com>
-In-Reply-To: <20250819215156.2494305-17-smostafa@google.com>
-From: Daniel Mentz <danielmentz@google.com>
-Date: Tue, 9 Sep 2025 11:30:48 -0700
-X-Gm-Features: Ac12FXyo44kEPGnZiMSM0NG36OMtjkd65ZSJDU9pCejgoL2I9Mvg7O8L88TNYvU
-Message-ID: <CAE2F3rDc-4SirDDrQeZJQDqjdv67-QFfQhHfwyd+O6f5OsBSpw@mail.gmail.com>
-Subject: Re: [PATCH v4 16/28] iommu/arm-smmu-v3-kvm: Create array for hyp SMMUv3
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, maz@kernel.org, 
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com, 
-	yuzenghui@huawei.com, catalin.marinas@arm.com, will@kernel.org, 
-	robin.murphy@arm.com, jean-philippe@linaro.org, qperret@google.com, 
-	tabba@google.com, jgg@ziepe.ca, mark.rutland@arm.com, praan@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 03/11] iommu: Compute iommu_groups properly for PCIe
+ switches
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, linux-pci@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>, galshalom@nvidia.com,
+ Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
+ kvm@vger.kernel.org, maorg@nvidia.com, patches@lists.linux.dev,
+ tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
+References: <3-v3-8827cc7fc4e0+23f-pcie_switch_groups_jgg@nvidia.com>
+ <3634c854-f63f-4dc0-aa53-0b18c5a7ea1c@redhat.com>
+ <20250909121845.GI789684@nvidia.com>
+From: Donald Dutile <ddutile@redhat.com>
+In-Reply-To: <20250909121845.GI789684@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: TlOJxph2LmjZ_Ar0Mrlj5Yh5AF3RKbtraDcVz660g3I_1757446415
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Aug 19, 2025 at 2:55=E2=80=AFPM Mostafa Saleh <smostafa@google.com>=
- wrote:
->
-> +               if (kvm_arm_smmu_array[i].mmio_size < SZ_128K) {
-> +                       pr_err("SMMUv3(%s) has unsupported size(0x%lx)\n"=
-, np->name,
-> +                              kvm_arm_smmu_array[i].mmio_size);
 
-Use format specifier %pOF to print device tree node.
-If mmio_size is a size_t type, use format specifier %zx.
-Align language of error message with kernel driver which prints "MMIO
-region too small (%pr)\n".
-I'm wondering if we should use kvm_err instead of pr_err.
+
+On 9/9/25 8:18 AM, Jason Gunthorpe wrote:
+> On Tue, Sep 09, 2025 at 12:14:00AM -0400, Donald Dutile wrote:
+> 
+>>> -/*
+>>> - * Use standard PCI bus topology, isolation features, and DMA alias quirks
+>>> - * to find or create an IOMMU group for a device.
+>>> - */
+>>> -struct iommu_group *pci_device_group(struct device *dev)
+>>> +static struct iommu_group *pci_group_alloc_non_isolated(void)
+> 
+>> Maybe iommu_group_alloc_non_isolated() would be a better name, since that's all it does.
+> 
+> The way I've organized it makes the bus data a per-bus thing, so
+> having pci in the name when setting BUS_DATA_PCI_NON_ISOLATED is
+> correct.
+> 
+> What I did was turn iommu_group_alloc() into
+> 
+> static struct iommu_group *iommu_group_alloc_data(u32 bus_data)
+> 
+> Then
+> 
+> struct iommu_group *iommu_group_alloc(void)
+> {
+> 	return iommu_group_alloc_data(0);
+> }
+> 
+> And instead of pci_group_alloc_non_isolated() it is just:
+> 
+> 	return iommu_group_alloc_data(BUS_DATA_PCI_NON_ISOLATED);
+> 
+> So everything is setup generically if someday another bus would like
+> to have its own data.
+> 
+/my bad, I scanned pci_group_alloc_non_isolated() as calling iommu_group_alloc() & not iommu_group_alloc_data() as you pointed out.
+Looks good.
+
+Reviewed-by: Donald Dutile <ddutile@redhat.com>
+
+> Jason
+> 
+
