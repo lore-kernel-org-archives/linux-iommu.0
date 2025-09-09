@@ -1,146 +1,171 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F2E17081E;
-	Tue,  9 Sep 2025 14:34:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 427D31A9F97;
+	Tue,  9 Sep 2025 14:42:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757428473; cv=none; b=IXfer9mjNrRXjUrUBGNadJx3Ml6/ZF1KhQ3RIflMpG6Q7uylO8t8zS0PcEZR01bRDj/v7mv5ZIGgGy1v/A1Ba/TcVEWKprTjeBz5A355aanCkZUiRmqQ5njndwdMqbHOIwi2cfUUXY8HDctiQaHaDeQ10ptD82ejaFrkbOjWk2Q=
+	t=1757428934; cv=none; b=TlyZvn/DihlY52Lcw2zq79a6kozvuEPaKoK8dtpGBOhqylNU1suVbH1ylVRNLW1StQkIMTSQVV24rE8cwdXNrxkX2ypAIrQvmon6nFPT1XvLFE/effeiZ1lbYVwWzCrS5s4XgXpD9aDIUBc8yI9PiQqkmDSFj6UsQZOVkQj4kos=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757428473; c=relaxed/simple;
-	bh=WhObkg6w7OCH2C5BSXFjYBHV0zIX2r0flqPrQF44Wiw=;
+	s=arc-20240116; t=1757428934; c=relaxed/simple;
+	bh=sy3MVAHHpVBPpi9qQNA8uh94iv/9KGticKB2B5S88ec=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ijpArAdLub8ZrSaOA1fsRW1mCS9kYtBASHIpOJgkWTClt1BamPkHKarzZkJO+Rnik41FvRnip7MwxjQLj56Q8NVW7ar/mi+BcHGk9cfUBQL4iOfSzFLgo5nZT5bB3NqIZkP08rUDz32U1gH+yxVm5uOB6tjKirq96rx4BV4GpAo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=cPICqP+r; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=MZy9nI38aA8/IF/zLHNVdAMVSy9ZSKuZ8MxucN+xz07/B5A24q2i+i8n8w0DuwEG+mjRJdDSER4Z2Z0wMu4SWNTNkdQOMtYA+pdtzuExUggWtqaoIWVnd/UpJs0qsLDQPZ7pBl7SVStshYH6CVrriIhfxdtLBxKeZB8sRgQxX70=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lCQL2Znh; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="cPICqP+r"
-Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5899mcUW005856;
-	Tue, 9 Sep 2025 14:34:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:sender:subject:to; s=pp1;
-	 bh=JLCOfqm5z+a3xj8AacGOp/niMNZy7BOWnXEfytTKa6M=; b=cPICqP+rqLMD
-	MgME19YYsXP3+XKNTNSMfVXiOV0r/XjMylXW5/0f/4jIBpUs/WRVyG7NrQpRBq4i
-	X5o5nWcx1vY1e28uQVyLL2ELt13m1A1IGwZTLe+WifDmtVfcXfpzoYdhiF1pcdq3
-	+pHnsvGaQIdrAzhn1LPAz9FUZyvkER7AvgSVP6e1mp1vezE/Wfat9ZU7O8u2VmzZ
-	i1bloSJZa7k9xkFrLDvYd3WJiFETzNVH3kYKehKyBQWtVkzuIYI3ajkS3bVkoyTP
-	j5w+Z0sp3C5s6JBxvBwcPRiiXbrEzRosPC56n7TSo59NTVwP4kyebCqpZuA/1wvf
-	6BXAzFstRQ==
-Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 490ukedk0m-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 09 Sep 2025 14:34:25 +0000 (GMT)
-Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma22.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 589D1Iav020499;
-	Tue, 9 Sep 2025 14:34:24 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 490yp0ur9x-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 09 Sep 2025 14:34:24 +0000
-Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 589EYKXg58393048
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 9 Sep 2025 14:34:20 GMT
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 7AC0520040;
-	Tue,  9 Sep 2025 14:34:20 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 697832004B;
-	Tue,  9 Sep 2025 14:34:20 +0000 (GMT)
-Received: from p1gen4-pw042f0m (unknown [9.152.212.197])
-	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Tue,  9 Sep 2025 14:34:20 +0000 (GMT)
-Received: from bblock by p1gen4-pw042f0m with local (Exim 4.98.2)
-	(envelope-from <bblock@linux.ibm.com>)
-	id 1uvzQK-00000000Xw0-0nl7;
-	Tue, 09 Sep 2025 16:34:20 +0200
-Date: Tue, 9 Sep 2025 16:34:20 +0200
-From: Benjamin Block <bblock@linux.ibm.com>
-To: Niklas Schnelle <schnelle@linux.ibm.com>
-Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Gerd Bayer <gbayer@linux.ibm.com>, Farhan Ali <alifm@linux.ibm.com>,
-        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
-        iommu@lists.linux.dev
-Subject: Re: [PATCH] iommu/s390: Make attach succeed when the device was
- surprise removed
-Message-ID: <20250909143420.GB16134@p1gen4-pw042f0m.boeblingen.de.ibm.com>
-References: <20250904-iommu_succeed_attach_removed-v1-1-e7f333d2f80f@linux.ibm.com>
- <20250909135230.GA16134@p1gen4-pw042f0m.boeblingen.de.ibm.com>
- <2265b28a92bace029a276bfefe6fd947c2a7bc7d.camel@linux.ibm.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lCQL2Znh"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40F32C4CEF4;
+	Tue,  9 Sep 2025 14:42:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757428933;
+	bh=sy3MVAHHpVBPpi9qQNA8uh94iv/9KGticKB2B5S88ec=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=lCQL2ZnhtslW9yIQkfsmJg5+75EuysNXo3JTQ4SrgE1/+t3v8/6IPMz2mL7oWf6rN
+	 ub6dSGyAlU1XvFdylPw3uNCRbFnUCI73OxHBkok6B5jJ6boGar/3XTJYoVRwWv1Pf2
+	 W71AFuxaSdbRtE8a087jq8srbxCTVwd8Jzqzs5eJMrmCdx/uCqmC23WI6l+KC9JUjr
+	 8qbSO4M9fOHflSchEpJw3dcK1Hleffm9dRG8KWW4B5bA70t3slOZyKf1qZjOdlU6Wk
+	 KEPt1IJXiK32JX9QP5z/ca8ONKh5i1F/gMzwE4EcHnzZmFAwTGlZIPBgTh//oUckBz
+	 GvL3cKSxlZRFg==
+Date: Tue, 9 Sep 2025 15:42:07 +0100
+From: Will Deacon <will@kernel.org>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
+	suzuki.poulose@arm.com, yuzenghui@huawei.com,
+	catalin.marinas@arm.com, robin.murphy@arm.com,
+	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
+	jgg@ziepe.ca, mark.rutland@arm.com, praan@google.com
+Subject: Re: [PATCH v4 10/28] KVM: arm64: iommu: Shadow host stage-2 page
+ table
+Message-ID: <aMA8vz0v0Vn-02QP@willie-the-truck>
+References: <20250819215156.2494305-1-smostafa@google.com>
+ <20250819215156.2494305-11-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2265b28a92bace029a276bfefe6fd947c2a7bc7d.camel@linux.ibm.com>
-Sender: Benjamin Block <bblock@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTA2MDE5NSBTYWx0ZWRfX3YhWUmo9p8KV
- dv4M+Tcys9iMApOvTxgR7bZslZixXHVokcSy0Lxd1B4+gQ2mrwmfgcx6QySR0L4//vIZfqi4Ds/
- pXElKihn1lXDk+iJJx7xqQDx7wY5c/UiyHNrp3ISNpS46Uz9KxT21DBfiNQktogz6t7tpD9krCt
- ouPZHTO1aCgsKAIqxGOegUNwm3U2EnasVMJ6X40s11a3MfLG97eDNcc7/tGGogOxVyU/yyExah2
- AGI3aBxfbZI1OUaw5Pb7tYA5lSNaiECqzSvKbVpyjnay4ne36yjt+quXTryb7zEWUuRM8ObcQfl
- 0p4G1YkWqpzXAkyGGwSS8/XHH92ys2Q1+cvZ5NvqWHVI0FQOsMTBP/GxO2ep+HenRqUM3qbvq7e
- D/f3h3Do
-X-Proofpoint-ORIG-GUID: 0GsSTKFzpDPeSYzOpSB3qjR16Ayb-to8
-X-Proofpoint-GUID: 0GsSTKFzpDPeSYzOpSB3qjR16Ayb-to8
-X-Authority-Analysis: v=2.4 cv=StCQ6OO0 c=1 sm=1 tr=0 ts=68c03af1 cx=c_pps
- a=5BHTudwdYE3Te8bg5FgnPg==:117 a=5BHTudwdYE3Te8bg5FgnPg==:17
- a=8nJEP1OIZ-IA:10 a=yJojWOMRYYMA:10 a=anyJmfQTAAAA:8 a=VnNF1IyMAAAA:8
- a=VwQbUJbxAAAA:8 a=X9aRJ6VBdFPuLnTH-REA:9 a=3ZKOabzyN94A:10 a=wPNLvfGTeEIA:10
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-09-09_02,2025-09-08_02,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 malwarescore=0 bulkscore=0 clxscore=1015 adultscore=0
- suspectscore=0 priorityscore=1501 impostorscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2509060195
+In-Reply-To: <20250819215156.2494305-11-smostafa@google.com>
 
-On Tue, Sep 09, 2025 at 04:05:48PM +0200, Niklas Schnelle wrote:
-> On Tue, 2025-09-09 at 15:52 +0200, Benjamin Block wrote:
-> > On Thu, Sep 04, 2025 at 10:59:49AM +0200, Niklas Schnelle wrote:
-> > > Cc: stable@vger.kernel.org # v6.2
-> > 
-> > Oh, I just noticed that Niklas. You added `Cc: stable@vger.kernel.org`, but
-> > didn't actually include the address on the actual Cc of the mail? Was that
-> > intentional?
-> > 
+On Tue, Aug 19, 2025 at 09:51:38PM +0000, Mostafa Saleh wrote:
+> Create a shadow page table for the IOMMU that shadows the
+> host CPU stage-2 into the IOMMUs to establish DMA isolation.
 > 
-> Yes it was intentional. It's my understanding that the tag is enough
-> for the stable team to pick the commit up once it lands in Linus' tree.
-> And I do have stable@vger.kernel.org explicitly ignored in b4 to
-> prevent accidentally sending not-yet-ready or internal patches there.
+> An initial snapshot is created after the driver init, then
+> on every permission change a callback would be called for
+> the IOMMU driver to update the page table.
+> 
+> For some cases, an SMMUv3 may be able to share the same page
+> table used with the host CPU stage-2 directly.
+> However, this is too strict and requires changes to the core hypervisor
+> page table code, plus it would require the hypervisor to handle IOMMU
+> page faults. This can be added later as an optimization for SMMUV3.
+> 
+> Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> ---
+>  arch/arm64/kvm/hyp/include/nvhe/iommu.h |  4 ++
+>  arch/arm64/kvm/hyp/nvhe/iommu/iommu.c   | 83 ++++++++++++++++++++++++-
+>  arch/arm64/kvm/hyp/nvhe/mem_protect.c   |  5 ++
+>  3 files changed, 90 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm64/kvm/hyp/include/nvhe/iommu.h b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
+> index 1ac70cc28a9e..219363045b1c 100644
+> --- a/arch/arm64/kvm/hyp/include/nvhe/iommu.h
+> +++ b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
+> @@ -3,11 +3,15 @@
+>  #define __ARM64_KVM_NVHE_IOMMU_H__
+>  
+>  #include <asm/kvm_host.h>
+> +#include <asm/kvm_pgtable.h>
+>  
+>  struct kvm_iommu_ops {
+>  	int (*init)(void);
+> +	void (*host_stage2_idmap)(phys_addr_t start, phys_addr_t end, int prot);
+>  };
+>  
+>  int kvm_iommu_init(void);
+>  
+> +void kvm_iommu_host_stage2_idmap(phys_addr_t start, phys_addr_t end,
+> +				 enum kvm_pgtable_prot prot);
+>  #endif /* __ARM64_KVM_NVHE_IOMMU_H__ */
+> diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+> index a01c036c55be..f7d1c8feb358 100644
+> --- a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+> +++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
+> @@ -4,15 +4,94 @@
+>   *
+>   * Copyright (C) 2022 Linaro Ltd.
+>   */
+> +#include <linux/iommu.h>
+> +
+>  #include <nvhe/iommu.h>
+> +#include <nvhe/mem_protect.h>
+> +#include <nvhe/spinlock.h>
+>  
+>  /* Only one set of ops supported */
+>  struct kvm_iommu_ops *kvm_iommu_ops;
+>  
+> +/* Protected by host_mmu.lock */
+> +static bool kvm_idmap_initialized;
+> +
+> +static inline int pkvm_to_iommu_prot(enum kvm_pgtable_prot prot)
+> +{
+> +	int iommu_prot = 0;
+> +
+> +	if (prot & KVM_PGTABLE_PROT_R)
+> +		iommu_prot |= IOMMU_READ;
+> +	if (prot & KVM_PGTABLE_PROT_W)
+> +		iommu_prot |= IOMMU_WRITE;
+> +	if (prot == PKVM_HOST_MMIO_PROT)
+> +		iommu_prot |= IOMMU_MMIO;
 
-Well, if it worked for you in the past, fair enough! I've always put it on Cc,
-hence why I was wondering :)
+This looks a little odd to me.
 
-> Sadly the docs don't spell out that Ccing the list isn't needed though
-> I feel like it is implied by the "Cc: stable@kernel.org" variant where
-> the docs mention that mails send by git send-email will go nowhere.
+On the CPU side, the only different between PKVM_HOST_MEM_PROT and
+PKVM_HOST_MMIO_PROT is that the former has execute permission. Both are
+mapped as cacheable at stage-2 because it's the job of the host to set
+the more restrictive memory type at stage-1.
 
-I think that part only means that address is basically /dev/null, even if a
-mail is sent there. `git send-email` will try to include any address on such a
-Cc tag by default
-(https://git-scm.com/docs/git-send-email#Documentation/git-send-email.txt---suppress-cccategory)
+Carrying that over to the SMMU would suggest that we don't care about
+IOMMU_MMIO at stage-2 at all, so why do we need to set it here?
 
+> +	/* We don't understand that, might be dangerous. */
+> +	WARN_ON(prot & ~PKVM_HOST_MEM_PROT);
+> +	return iommu_prot;
+> +}
+> +
+> +static int __snapshot_host_stage2(const struct kvm_pgtable_visit_ctx *ctx,
+> +				  enum kvm_pgtable_walk_flags visit)
+> +{
+> +	u64 start = ctx->addr;
+> +	kvm_pte_t pte = *ctx->ptep;
+> +	u32 level = ctx->level;
+> +	u64 end = start + kvm_granule_size(level);
+> +	int prot =  IOMMU_READ | IOMMU_WRITE;
+> +
+> +	/* Keep unmapped. */
+> +	if (pte && !kvm_pte_valid(pte))
+> +		return 0;
+> +
+> +	if (kvm_pte_valid(pte))
+> +		prot = pkvm_to_iommu_prot(kvm_pgtable_stage2_pte_prot(pte));
+> +	else if (!addr_is_memory(start))
+> +		prot |= IOMMU_MMIO;
 
--- 
-Best Regards, Benjamin Block        /        Linux on IBM Z Kernel Development
-IBM Deutschland Research & Development GmbH    /   https://www.ibm.com/privacy
-Vors. Aufs.-R.: Wolfgang Wendt         /        Geschäftsführung: David Faller
-Sitz der Ges.: Böblingen     /    Registergericht: AmtsG Stuttgart, HRB 243294
+Why do we need to map MMIO regions pro-actively here? I'd have thought
+we could just do:
+
+	if (!kvm_pte_valid(pte))
+		return 0;
+
+	prot = pkvm_to_iommu_prot(kvm_pgtable_stage2_pte_prot(pte);
+	kvm_iommu_ops->host_stage2_idmap(start, end, prot);
+	return 0;
+
+but I think that IOMMU_MMIO is throwing me again...
+
+Will
