@@ -1,107 +1,153 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06F6E21FF24;
-	Tue,  9 Sep 2025 13:46:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11BC033CEB3;
+	Tue,  9 Sep 2025 13:52:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757425610; cv=none; b=gjVx4/HCvmR0LKa/Rm+/fmUP+TnwUI2Nw5d+YTcYeseQWraENxnFHogAdAfPsbn69JsFEVm0paX0X2xvnGoi74urlv6lGceAc2LFahREuMR5mU8kSfIVcevHJsdAAvHTch20xp5Quo+tYMLcB4t7ZFEcQ1V6Zd9INmeNh5dAv/o=
+	t=1757425964; cv=none; b=CKv8wGDwOj7t2BBBUVv4hccX2qoP8Vo0JyLMZ0iAsLa5H6CXPDg/jbXaygvd6aix3gEoZHxwV7qPHf+PNM1TqgQt+XV8arunT4gpHwJgjoZEMotnLWMAGJGpRuHNvM7nKEpaxB/VAADMOcQ7/g+IPW3q/VbFTL7NUXhMazM5BJc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757425610; c=relaxed/simple;
-	bh=fzqqDDXTXgc1xKVVIHwn9vLmbH7HU5zTtM5qBx+V1ZU=;
+	s=arc-20240116; t=1757425964; c=relaxed/simple;
+	bh=kkqPnMFSXKC58Mmp+u95ABjAXbkgOnz1Uy3x3OPUuAw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BvCkzOvHw12hjEo90jHirLB+iVACfOPxYMviqHcPCzau4BlTOZlG2CRGtOwMJW43nj8iOMmVnRoTzbfGJLxSI3TTdd8sPpS7jQpt3OQIQce/+m1ZefSBfNv1Ae9/dZoDuzHN83+xUgDcBoQL3WbsQndJHH6eRwKWBDEa4bY7ZjA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=s6O+tDe2; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=RQRvtBpYOM9e9iXfJraUX9eNZMuPcplYhikp8wKh0VNWvJUmfyPN7+sId6dmsgNr+h6z1ojB3TW94+hsyjKHexX//Eu4yZajJtTrRU4+LxY3cX/qRmf3AAUpiS9nmq09BMz5KJZIDV4HpvwDQK4Ui0yVf0LgNWmkyEcoirrQSuo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=sGSBQjPB; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="s6O+tDe2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5C10C4CEF4;
-	Tue,  9 Sep 2025 13:46:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757425609;
-	bh=fzqqDDXTXgc1xKVVIHwn9vLmbH7HU5zTtM5qBx+V1ZU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=s6O+tDe2nrg87Y7/S+Zk9CUrbY2AdJMilB+urbthEyUsD50w1xb2noRQ1hCfq76IO
-	 OC9sU4Hg0uJfdwkJkJOdPfYuPYJ3kLD6dm4xpaPKqMxOpRvB6YOhyKHGaoqDDtJNMk
-	 dwqSNFvk3G51DEKHhMh5plT2MAealjDxEpioHpsZDuSJmRqbkzRxgN5bRqAXaPdL4Z
-	 qecqt2l8gxUclecmElV1DM1/ODvksxyOjKEL6UsI40CQDjtXObCrGsN+vpMdcM4jU+
-	 xFO2svDAchpW7sWBsiJrHobI4p46x7Kj0bJp+Tgv4oE94k83/EhbqFzHRLuvO3gP6j
-	 fXLkQS3/pTCCg==
-Date: Tue, 9 Sep 2025 14:46:42 +0100
-From: Will Deacon <will@kernel.org>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	jgg@ziepe.ca, mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v4 01/28] KVM: arm64: Add a new function to donate memory
- with prot
-Message-ID: <aMAvwlMQ-Jf2MWzd@willie-the-truck>
-References: <20250819215156.2494305-1-smostafa@google.com>
- <20250819215156.2494305-2-smostafa@google.com>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="sGSBQjPB"
+Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5896fLU0018487;
+	Tue, 9 Sep 2025 13:52:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:sender:subject:to; s=pp1;
+	 bh=BuPG1fP2BiwN2dlCCYD4OsW/T1NO8BqbuJE09pQ1CcM=; b=sGSBQjPB27Of
+	/SDJ5ZWMUkupMnht5upok4DeYiP8FbRmOIEX/C3BbesMgXa+z3MT33CaVsBK2uuM
+	GMkp+lEk0Kf7mf8lwunHZ4WRFiBukAZPZEb/rnMkXmDEu4Wt8U7ga/OO1ai8B1nG
+	xq338KUGXFT4dkIdFSi8HaxKu+YxAq1ZUgc8bLJYaDpCtT3iHd7bHdsJ7QvmhaB7
+	Yw15kqzyZ19tIzGZx+lmd/HQ7PSGfuCm5OxOALvn5YD1OF0XZzG9MOmfmB0KB9Ns
+	+pPw5/lt6VxtBt7fuqRAhmBJhk+QDWDjMGMB3lgOTUMKugPeiV2ppFPSIfbptWDp
+	xHXzEegnhw==
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 490ukedbd0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 09 Sep 2025 13:52:34 +0000 (GMT)
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 589B0CSw017188;
+	Tue, 9 Sep 2025 13:52:34 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 4911gmb7j5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 09 Sep 2025 13:52:34 +0000
+Received: from smtpav05.fra02v.mail.ibm.com (smtpav05.fra02v.mail.ibm.com [10.20.54.104])
+	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 589DqU5257606626
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 9 Sep 2025 13:52:30 GMT
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 8DD452004B;
+	Tue,  9 Sep 2025 13:52:30 +0000 (GMT)
+Received: from smtpav05.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 7B4B320043;
+	Tue,  9 Sep 2025 13:52:30 +0000 (GMT)
+Received: from p1gen4-pw042f0m (unknown [9.152.212.197])
+	by smtpav05.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Tue,  9 Sep 2025 13:52:30 +0000 (GMT)
+Received: from bblock by p1gen4-pw042f0m with local (Exim 4.98.2)
+	(envelope-from <bblock@linux.ibm.com>)
+	id 1uvylq-00000000VY0-1Awe;
+	Tue, 09 Sep 2025 15:52:30 +0200
+Date: Tue, 9 Sep 2025 15:52:30 +0200
+From: Benjamin Block <bblock@linux.ibm.com>
+To: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Matthew Rosato <mjrosato@linux.ibm.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Gerd Bayer <gbayer@linux.ibm.com>, Farhan Ali <alifm@linux.ibm.com>,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        iommu@lists.linux.dev
+Subject: Re: [PATCH] iommu/s390: Make attach succeed when the device was
+ surprise removed
+Message-ID: <20250909135230.GA16134@p1gen4-pw042f0m.boeblingen.de.ibm.com>
+References: <20250904-iommu_succeed_attach_removed-v1-1-e7f333d2f80f@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20250819215156.2494305-2-smostafa@google.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250904-iommu_succeed_attach_removed-v1-1-e7f333d2f80f@linux.ibm.com>
+Sender: Benjamin Block <bblock@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTA2MDE5NSBTYWx0ZWRfX/zqCp+k2nO9L
+ n8kluraprzWWkORc13LBGVR2O3mf+4G96R/CfOUG5dE7Z4L0maIDJLwblFu5DS13N56BBIlD6Nm
+ oCIDkkC6EVmL+7DtubY9hWTocH//PDaI/D8SC5ppYLVv61RQm12yurB+tHjNQ/y2sa2yO+XBcWd
+ fb7uvYdZLnQKaezH0JckNOpWpiru6y2M0XTMEDhyEbRalBFHwSaGrQFKDZfkHC2T9yFEgSo0Pk6
+ M/Arjudp7EDqdii37teHT6SH6cUxpLiJePJT70eJoxDJ4zNX9ekn75E40itgI9e8N1FS2/Z0gjZ
+ yEHl1V2ztPC94WhMCJZIxBx16tb8hsp8K6aRz4daG50SojPs7G25GkbYPZmcEbaY9L8bST2ZsH2
+ y2Ro2a+h
+X-Proofpoint-ORIG-GUID: YlekGEZfiKnv8ugEx6CF933gGtFBosBB
+X-Proofpoint-GUID: YlekGEZfiKnv8ugEx6CF933gGtFBosBB
+X-Authority-Analysis: v=2.4 cv=StCQ6OO0 c=1 sm=1 tr=0 ts=68c03123 cx=c_pps
+ a=AfN7/Ok6k8XGzOShvHwTGQ==:117 a=AfN7/Ok6k8XGzOShvHwTGQ==:17
+ a=8nJEP1OIZ-IA:10 a=yJojWOMRYYMA:10 a=VnNF1IyMAAAA:8 a=VwQbUJbxAAAA:8
+ a=f94wAlES5zcTxHjwagAA:9 a=3ZKOabzyN94A:10 a=wPNLvfGTeEIA:10
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-09-09_02,2025-09-08_02,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 malwarescore=0 bulkscore=0 clxscore=1015 adultscore=0
+ suspectscore=0 priorityscore=1501 impostorscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2509060195
 
-On Tue, Aug 19, 2025 at 09:51:29PM +0000, Mostafa Saleh wrote:
-> Soon, IOMMU drivers running in the hypervisor might interact with
-> non-coherent devices, so it needs a mechanism to map memory as
-> non cacheable.
-> Add ___pkvm_host_donate_hyp() which accepts a new argument for prot,
-> so the driver can add KVM_PGTABLE_PROT_NORMAL_NC.
+On Thu, Sep 04, 2025 at 10:59:49AM +0200, Niklas Schnelle wrote:
+> When a PCI device is removed with surprise hotplug, there may still be
+> attempts to attach the device to the default domain as part of tear down
+> via (__iommu_release_dma_ownership()), or because the removal happens
+> during probe (__iommu_probe_device()). In both cases zpci_register_ioat()
+> fails with a cc value indicating that the device handle is invalid. This
+> is because the device is no longer part of the instance as far as the
+> hypervisor is concerned.
 > 
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> ---
->  arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |  1 +
->  arch/arm64/kvm/hyp/nvhe/mem_protect.c         | 11 +++++++++--
->  2 files changed, 10 insertions(+), 2 deletions(-)
+> Currently this leads to an error return and s390_iommu_attach_device()
+> fails. This triggers the WARN_ON() in __iommu_group_set_domain_nofail()
+> because attaching to the default domain must never fail.
 > 
-> diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-> index 5f9d56754e39..52d7ee91e18c 100644
-> --- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-> +++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
-> @@ -36,6 +36,7 @@ int __pkvm_prot_finalize(void);
->  int __pkvm_host_share_hyp(u64 pfn);
->  int __pkvm_host_unshare_hyp(u64 pfn);
->  int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages);
-> +int ___pkvm_host_donate_hyp(u64 pfn, u64 nr_pages, enum kvm_pgtable_prot prot);
->  int __pkvm_hyp_donate_host(u64 pfn, u64 nr_pages);
->  int __pkvm_host_share_ffa(u64 pfn, u64 nr_pages);
->  int __pkvm_host_unshare_ffa(u64 pfn, u64 nr_pages);
-> diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-> index 8957734d6183..861e448183fd 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-> +++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
-> @@ -769,13 +769,15 @@ int __pkvm_host_unshare_hyp(u64 pfn)
->  	return ret;
->  }
->  
-> -int __pkvm_host_donate_hyp(u64 pfn, u64 nr_pages)
-> +int ___pkvm_host_donate_hyp(u64 pfn, u64 nr_pages, enum kvm_pgtable_prot prot)
->  {
->  	u64 phys = hyp_pfn_to_phys(pfn);
->  	u64 size = PAGE_SIZE * nr_pages;
->  	void *virt = __hyp_va(phys);
->  	int ret;
->  
-> +	WARN_ON(prot & KVM_PGTABLE_PROT_X);
+> With the device fenced by the hypervisor no DMAs to or from memory are
+> possible and the IOMMU translations have no effect. Proceed as if the
+> registration was successful and let the hotplug event handling clean up
+> the device.
+> 
+> This is similar to how devices in the error state are handled since
+> commit 59bbf596791b ("iommu/s390: Make attach succeed even if the device
+> is in error state") except that for removal the domain will not be
+> registered later. This approach was also previously discussed at the
+> link.
+> 
+> Handle both cases, error state and removal, in a helper which checks if
+> the error needs to be propagated or ignored. Avoid magic number
+> condition codes by using the pre-existing, but never used, defines for
+> PCI load/store condition codes and rename them to reflect that they
+> apply to all PCI instructions.
+> 
+> Cc: stable@vger.kernel.org # v6.2
 
-Should this actually just enforce that the permissions are
-KVM_PGTABLE_PROT_RW:
+Oh, I just noticed that Niklas. You added `Cc: stable@vger.kernel.org`, but
+didn't actually include the address on the actual Cc of the mail? Was that
+intentional?
 
-	WARN_ON((prot & KVM_PGTABLE_PROT_RWX) != KVM_PGTABLE_PROT_RW);
 
-?
-
-Since the motivation is about the memory type rather than the
-permissions, it would be best to preserve the current behaviour.
-
-Will
+-- 
+Best Regards, Benjamin Block        /        Linux on IBM Z Kernel Development
+IBM Deutschland Research & Development GmbH    /   https://www.ibm.com/privacy
+Vors. Aufs.-R.: Wolfgang Wendt         /        Geschäftsführung: David Faller
+Sitz der Ges.: Böblingen     /    Registergericht: AmtsG Stuttgart, HRB 243294
