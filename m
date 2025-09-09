@@ -1,124 +1,86 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7A16314B80
-	for <iommu@lists.linux.dev>; Tue,  9 Sep 2025 10:31:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 728862264D9
+	for <iommu@lists.linux.dev>; Tue,  9 Sep 2025 11:02:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757413918; cv=none; b=qZ+zuo3lQhktEjCv5mvHzBdPwmlntGopjHmgPShPQI3ZvXqx83qh64cxV3GB00Yzr4rBA5pG+XErja4S+uvlzJ2JJ2BjkoQ1OoveB+gA1X4TF73LxICqeFgABv4o1X60LSh4U4cCj2XdXOPl+7yE1Ss9e/w1Q1dZ8dr3Sm9FaVg=
+	t=1757415731; cv=none; b=VNAaRWN9IIqfQYQ6u1s3oDtFPvu6VMhgLjJYAdSGbDPBkIM/Sy6tBwNB0SMMyB0MooCOauk7cbs/PpnsGEBsC3+ZdFVokXTczRIhRNEk4eaYYkmhF9vGp83WufgteEKVVAkO4kFyUBUpKk3rJA7j8y2gNybI6QlzTwT3RI6EbuE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757413918; c=relaxed/simple;
-	bh=lj3i7DkwgDDQfj+771UKfDbe8JmLcdhupbsoCJs0uWo=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=tVVaVQSJMNfqpqxvJhcfTGfl1nuXiE4tET/zngVYRWqn7wVB6ye7vBy1IcR95k6/gQyFCfwa09uwDV2qCXRaSI1WDU+6f8Nlqv5A7joz1d5fYU+op1VWVV1VvipTB9O9xFXixDDl2kgRHM7RrqmqCYTJ8hrJEAL5gp6RzXOeF1E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=DymGiR7F; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1757415731; c=relaxed/simple;
+	bh=b4Lg78G73f8fEzMQwzeadswOm1NOisEedPMhkqM64/Q=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type:
+	 References; b=Gm9WHYdk6aoa/DH6WHT1tRafsVL9A39dmdBdSQjwzYsZtjwlrLIe2F/8KsqqfREDvs+taMgsrXNFBWM6x64RI+CdzbZBw+jy0/CFDjFuO5/n0ZbJ8e3cmSX3Sno9bV/OAuOnhOufgWt1kRYpKv+PEP4y/mqHVSqeWX76HGxGloc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=jVWQxhZX; arc=none smtp.client-ip=210.118.77.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="DymGiR7F"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-45dde353b47so13436155e9.3
-        for <iommu@lists.linux.dev>; Tue, 09 Sep 2025 03:31:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1757413915; x=1758018715; darn=lists.linux.dev;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=HW3k3a1g3PxSXTokioV5I6j30q9AGehCL+syHRYqQJY=;
-        b=DymGiR7FREfPwH9bTJ6ZuD1eSpoDjVa0EN1PvL4snFAxaIcbaNewI0+tkNv5hKmsrE
-         V+ILD5zqKTY4WMhaxc3H3Poq9frK0qH3b6Cw85zZUMB6nff0OeuTdtHbMq4MP6RuqZtL
-         uM1xCNQodkohM5UZYE7kTVjEOx1yTewVpM7Ci09lEW1N583MWDpNFCimBC/7bdP9idUo
-         Ezwlggb56hmD5VAxvcGEycFaWsacz4hY0B+FhRSAXfO7MHVg5cJyVnCwDDr9hLIme6WU
-         gcd8I30Zgq5THkMy3/feI8vVzMm7xXp3tK3G6AL0FLx+t5zGHYNu4172CYR6FDZHwR0s
-         +qzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757413915; x=1758018715;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HW3k3a1g3PxSXTokioV5I6j30q9AGehCL+syHRYqQJY=;
-        b=iwsGui3GEnmkUAJ3UOhyVRinMpvoKLMOJPoJm2NSS7q2SR925/ArFh0yOYkDD9CHTd
-         XExxpPoIBDWny5rBWzE23yWVEmgDMn6uPjE/nghbhA9dWDrJUtyMpwpw7oPEH4jAtCqi
-         yc5ijqjShVEykiKom/1If3LkvMASwnEEywdilhDYyyvXgx8xn4eowleL5m3Pq21Nu+Ey
-         rPCdCvwfh0SK5RN4KtB3Ya0vFj2FsZ8ZRhOuQQuQ1d3sUAy4aYtxRYXd9eY/Ri7nHqNA
-         VSvlxin0/zn2/Xzz71ilCEzXqIjs6DEEGrsJhn4R/HGD6tJ8H/SUYEDqYeHEqxRMybwn
-         9KqQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVVT7TtrpwoYF2euM9zdaAl4Q5LvW5pkxFlNyNz+Yc+7wu8H160OlbYiZKiStW8VDF7wWFEWg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwpRiSgW8ERCxjDi9ihFX8PSk/Ps8qaGYjqJRFR71TxOu1v9N97
-	Cui1lWF7JONyd18thJ0Xqtd7QcnXBm6LwJpB4Q2tqTszq8V8oZn++vJgL3PXh6vafco=
-X-Gm-Gg: ASbGnct1j/MGbmyBMQnI5JJQcutkqAqM5w4cG3QzrBhZ2I8c989fjhVv5C/DhaAGW2n
-	jqM+aY+TSnHJbu+Zabe8oZKTn0Kp1RJaqsQbp90SVvVGGheaFJhGw3IXSQGliLZPPw+eSvjqtX6
-	iOSRFN2CyzehUeAJDoYIwKrHxnjtlWyDfj7g0XUhDWgXfPKLDYgzt64YSv7v+V2gkcET/D0wHIb
-	eujlMQFg3F0OMedgOlGUnjxYin92NAlcqalVFm6uos78Y40k8FQHM1LyrlLTMsQS6PZWgWM3DgB
-	OdU9IbOVQqcZZkt84fpDZuhDakR0NV5kFxVgiv4gv4qx5sG1Zqrgrcu4n9/xBAxUFbptpXj+tak
-	wr6198l7WHcmIHfk7cb7JVR4prZHvvtOHUuYxMQ==
-X-Google-Smtp-Source: AGHT+IFoH9EnqEx0+Pe7sMyMKqAMtXnTsmvRwSvLBqe7bfnXupVV7qrijqcbw+6s8Vdt6wGe0MhdPw==
-X-Received: by 2002:a5d:5889:0:b0:3e0:152a:87b4 with SMTP id ffacd0b85a97d-3e64392b7a6mr8151669f8f.35.1757413915001;
-        Tue, 09 Sep 2025 03:31:55 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-3e7521ca2ddsm2126411f8f.23.2025.09.09.03.31.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Sep 2025 03:31:54 -0700 (PDT)
-Date: Tue, 9 Sep 2025 13:31:50 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Hector Martin <marcan@marcan.st>
-Cc: asahi@lists.linux.dev, iommu@lists.linux.dev
-Subject: [bug report] iommu/io-pgtable-dart: Add 4-level page table support
-Message-ID: <aMACFlJjrZHs_Yf-@stanley.mountain>
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="jVWQxhZX"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20250909110200euoutp026fa63505678f28c1b413d1eadd7a10bc~jmElIh33q3264532645euoutp02D
+	for <iommu@lists.linux.dev>; Tue,  9 Sep 2025 11:02:00 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20250909110200euoutp026fa63505678f28c1b413d1eadd7a10bc~jmElIh33q3264532645euoutp02D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1757415720;
+	bh=z7ahKJPszpzQt7DpcFdRo3DoCDjG+H84aRFvs69u80U=;
+	h=From:To:Cc:Subject:Date:References:From;
+	b=jVWQxhZXw/x7uUtAUZE+ZXUM5P6r7H53hjaPFajdg/CERLsEXDsjIR+/Hu6+0k+vN
+	 ljwG678+/fXzKOItfpw3o0cINshHgJ1Q5qO9SPiMLYj4Hp0aQjUG72LnRq9fgMphx5
+	 gV411hBvM4GTSFhHzpNVNsZBzfzB84T9DIfu27AY=
+Received: from eusmtip1.samsung.com (unknown [203.254.199.221]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20250909110159eucas1p260bd877535b4bc0d8fe6c3101f3dcbca~jmEkpy49h3183831838eucas1p2L;
+	Tue,  9 Sep 2025 11:01:59 +0000 (GMT)
+Received: from AMDC4653.digital.local (unknown [106.120.51.32]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20250909110159eusmtip1ea8f8d7fded55b24e3a2804e2384ee88~jmEkSbBHn2838828388eusmtip1k;
+	Tue,  9 Sep 2025 11:01:59 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Christoph Hellwig <hch@lst.de>, Robin Murphy
+	<robin.murphy@arm.com>, Baochen Qiang <baochen.qiang@oss.qualcomm.com>
+Subject: [GIT PULL] dma-mapping fix for Linux 6.17
+Date: Tue,  9 Sep 2025 13:01:52 +0200
+Message-Id: <20250909110152.1143681-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-CMS-MailID: 20250909110159eucas1p260bd877535b4bc0d8fe6c3101f3dcbca
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20250909110159eucas1p260bd877535b4bc0d8fe6c3101f3dcbca
+X-EPHeader: CA
+X-CMS-RootMailID: 20250909110159eucas1p260bd877535b4bc0d8fe6c3101f3dcbca
+References: <CGME20250909110159eucas1p260bd877535b4bc0d8fe6c3101f3dcbca@eucas1p2.samsung.com>
 
-Hello Hector Martin,
+The following changes since commit 89a2d212bdb4bc29bed8e7077abe054b801137ea:
 
-Commit 74a0e72f03ff ("iommu/io-pgtable-dart: Add 4-level page table
-support") from Aug 21, 2025 (linux-next), leads to the following
-(UNPUBLISHED) Smatch static checker warning:
+  dma/pool: Ensure DMA_DIRECT_REMAP allocations are decrypted (2025-08-13 11:02:10 +0200)
 
-drivers/iommu/io-pgtable-dart.c:183 dart_get_last() warn: array off by one? 'data->pgd[tbl]'
-drivers/iommu/io-pgtable-dart.c:252 dart_map_pages() warn: array off by one? 'data->pgd[tbl]'
+are available in the Git repository at:
 
-drivers/iommu/io-pgtable-dart.c
-    174 static dart_iopte *dart_get_last(struct dart_io_pgtable *data, unsigned long iova)
-    175 {
-    176         dart_iopte pte, *ptep;
-    177         int level = data->levels;
-    178         int tbl = dart_get_index(data, iova, level);
-    179 
-    180         if (tbl > (1 << data->tbl_bits))
-                        ^
-It does look like this should be >=.
+  https://git.kernel.org/pub/scm/linux/kernel/git/mszyprowski/linux.git tags/dma-mapping-6.17-2025-09-09
 
-    181                 return NULL;
-    182 
---> 183         ptep = data->pgd[tbl];
+for you to fetch changes up to 7e2368a21741e2db542330b32aa6fdd8908e7cff:
 
-data->pgd[] has BIT(2) elements.  The data->tbl_bits value is set
-in dart_alloc_pgtable() and it has a check if (tbl_bits > max_tbl_bits)
-which ensures that it is not more than 2.
+  dma-debug: don't enforce dma mapping check on noncoherent allocations (2025-09-02 10:18:16 +0200)
 
-I don't think dart_get_index() can actually return more than 3 so
-maybe the check can just be removed?
+----------------------------------------------------------------
+dma-mapping fix for Linux 6.17
 
-    184         if (!ptep)
-    185                 return NULL;
-    186 
-    187         while (--level > 1) {
-    188                 ptep += dart_get_index(data, iova, level);
-    189                 pte = READ_ONCE(*ptep);
-    190 
-    191                 /* Valid entry? */
-    192                 if (!pte)
-    193                         return NULL;
-    194 
-    195                 /* Deref to get next level table */
-    196                 ptep = iopte_deref(pte, data);
-    197         }
-    198 
-    199         return ptep;
-    200 }
+- one more fix for DMA API debugging infrastructure (Baochen Qiang)
 
-regards,
-dan carpenter
+----------------------------------------------------------------
+Baochen Qiang (1):
+      dma-debug: don't enforce dma mapping check on noncoherent allocations
+
+ kernel/dma/debug.c   | 48 +++++++++++++++++++++++++++++++++++++++++++++++-
+ kernel/dma/debug.h   | 20 ++++++++++++++++++++
+ kernel/dma/mapping.c |  4 ++--
+ 3 files changed, 69 insertions(+), 3 deletions(-)
