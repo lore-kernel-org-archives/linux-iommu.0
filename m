@@ -1,168 +1,149 @@
-Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E69833568F1
-	for <iommu@lists.linux.dev>; Tue,  9 Sep 2025 15:35:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 10D71322A07;
+	Tue,  9 Sep 2025 15:46:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757432127; cv=none; b=MYptyToxnsmj/799+Jh7XLQxeCGCnw8vIxqkCyHKOCHsWK4E1kOT9OKiAsExivb4a6nfYXTv7FRHjFlTXSDRlpjEEilGw0zhmtEsxK0f7HPypyM5WjqjtJ7P1r/ydLWXZhVw6sfJHAxHpXCht9AtcZwU4Zelv8oGQsb21/8Pjtw=
+	t=1757432770; cv=none; b=iFljxtXhfL9NvY0TQ1wnjCX+1uZNAnwjDsqunKIYsMRn8JhU1Go2kddDrPXvDuDYcEsGasd6pXmfgj2NPQj6eosPy4VfxLsgKHsGFlj00y7fgPYgp15ENdQD/S1HBJQRH+KBTENSQIHGtl0rd/Uqk+JY/NxkNpyw63D4oRK4XVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757432127; c=relaxed/simple;
-	bh=w4vgOObZw3YYbVIKYEvDXnCr95k+9nhWh3AEGiV+pkk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O1rPPPJBlO0P+Z5dytGxStdnm3xMvtG7RL2S5Xo83iKjVxdmuGn8W10kuk5ejbUBIOMG1pU9QVzFzyWhy/e2FyrvzpIRQFSf5DHeuk/6SbpLNpocesyW5m8EGjH/R0OyX9lnJZIMYG2sp69slZg57SeBBSxuX5S2msErMfNwPwo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=F5plpJ6b; arc=none smtp.client-ip=209.85.218.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1757432770; c=relaxed/simple;
+	bh=JK0T8orYe8MA3atJz4cPc7kGrM7i3bACwe870D4AzeE=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=jsOWSeUMsZ482EnZTMFjjRXZtMbcQvSlOZPCMh6kvBD5cwnaOMdh54+JxJug0meyJTP7iRk2zKAaMOz9cy9xS/IIu3ICp0k15ZEcxNlFLtkRCYAbWbPup6JWFKYRgMNZytPRh9RWqcgpk19eLyvPIpSZTPz9wNUv6u88+hXPjro=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=HjjrcaIW; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="F5plpJ6b"
-Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-afcb7ace3baso996537366b.3
-        for <iommu@lists.linux.dev>; Tue, 09 Sep 2025 08:35:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1757432124; x=1758036924; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=A6rLLgpVdsegGOz+EoupeAx36VHy3lWka2XxE7GCX/E=;
-        b=F5plpJ6bNn9jbNGHyh8JcCVjPfJow52OI560uhwlDepA8wuFARa1rV4oAC+gxVstUi
-         7lPm/vXbqHOIToxlB7lgfJL6/jJMu4qx8uYWQU0B7mrayIRGC0UYJb1lAIcNvhjUYuRx
-         jMhHlcnwY/7didtJl0m63YE8G35gUy25ai+SShixhWXWnmmW7tb2/U7aQaDj1SXiwgsJ
-         +ZaiLoqK+O+wATLOEkUL+8Bf0LnaI8b0MrhHCFL2QZ2askazlzJMuqlzizOmZtLtPkP0
-         +n2CdiJK8U5tO3hzqHZ7GU97+bH+VkUTTgsBTPpGK3MWVag6SBD6dPjq/q/6V230SkXE
-         7fKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757432124; x=1758036924;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=A6rLLgpVdsegGOz+EoupeAx36VHy3lWka2XxE7GCX/E=;
-        b=I/uhuBnPGt2Z3Qm2JahHNBMTOh/9WdEO1G0tD8Csfe+DIr3jKpq2jVIgxMYFYDme8R
-         ooVSXJJGYlIDujttbHbIpifg+FWK+YYrewzdqnjhlu3ebpVXbETRPu571p3Z/JVFuJij
-         8aMAUntYHjuNUD2Cf7D5OVL8puKmHTakwS7gVYzLvEsdjPTbtHPifMb3/jsKL4tzNnng
-         sDBtZSxl+UWuNmQ2KpgNvBosq6pxiTJh4YstayIGr1SLeb31S+XQ/2oLbVsddgcpCqWD
-         Vb9cfFNwQXTN6Kh1WUHWlohV+uHVaKp3/uHORhhbxj7U9JBH08Uj0kLwhWuhJoQTqZqS
-         uDlg==
-X-Forwarded-Encrypted: i=1; AJvYcCXHJoOOWD5aPHtkRx4Exp1p2X9iw5ODEV+IcynsAP98HQtSE9JJ/71mEkpjI3o8Ij+DYBY2WQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy++n8nGT7Zyd46Z9UmvYHwGXk2kUaNLfKOoP7gBd+TG7rJZhQS
-	sLY/Xzt+EYSAhkY9LjTQVj6WA6eAlF+/NZ6firHFY7Os3mV8Avn+m2dTF7ucm0FdlNI=
-X-Gm-Gg: ASbGncuKug33iiiKgYdlB4D+NnL3Ye5dh1bqDHEGu23o8JBNHjHNHBLr7enAczUvaoZ
-	jGeHzP6YUQiehSZA/1Uv8rhKJWhjZ9htwZU3x7XEtO/hLF4WsPXOaDSBe6uZu/R9vmnVkiABU9m
-	DsFaJ9QPZ6Ht4H+DRTcALLjRUo1zZwlTxm7COD/KyWyle+uUSB9PFXmF2eOUcaMDAN2DKTCmhUw
-	/Iv3WCe6iWCWWxdxgkwCEMS6qfbGvWA5c0TXMDPuE00J49fhOcampd3i4U6SJ2M6s/+I3/BX0dz
-	BBhMNWH3KBaMDkrUbtAKRaJ4awFIe2XORxgQ937s7uPPBHcXAiZLdIHoTZ836VDiEYsdxxgjJ3m
-	XRqL3tSOQlrfJeCQbMwONmARVhUsIjYP0
-X-Google-Smtp-Source: AGHT+IHff9nCiQdFMDLMJ/hlSIro/R7UZcyBEWyHkdL401b61b17TqRRFBH3ULGPy356DE8iv2CdnA==
-X-Received: by 2002:a17:907:9707:b0:b04:95cf:a39a with SMTP id a640c23a62f3a-b04b1714554mr1300624066b.52.1757432124140;
-        Tue, 09 Sep 2025 08:35:24 -0700 (PDT)
-Received: from linaro.org ([2a02:2454:ff21:30:cfb9:1327:6099:9e75])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b07830e613csm8636466b.46.2025.09.09.08.35.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Sep 2025 08:35:23 -0700 (PDT)
-Date: Tue, 9 Sep 2025 17:35:19 +0200
-From: Stephan Gerhold <stephan.gerhold@linaro.org>
-To: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	Manivannan Sadhasivam <mani@kernel.org>,
-	Johan Hovold <johan@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-qcom: Enable use of all SMR groups when
- running bare-metal
-Message-ID: <aMBJNzXpQTMg4Ncs@linaro.org>
-References: <20250821-arm-smmu-qcom-all-smr-v1-1-7f5cbbceac3e@linaro.org>
- <aMAkJ7CfPQuhvhfm@willie-the-truck>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="HjjrcaIW"
+Received: from thinkpad-p16sg1.corp.microsoft.com (unknown [20.236.11.102])
+	by linux.microsoft.com (Postfix) with ESMTPSA id B885E2119CBC;
+	Tue,  9 Sep 2025 08:46:06 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com B885E2119CBC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1757432767;
+	bh=GQXZNPBz0DhvyMwtEtFgMvcxMmecvXfOavBE9BmZlWw=;
+	h=From:To:Cc:Subject:Date:From;
+	b=HjjrcaIWlpWgjhW/CFD+kkQkerGsFe8lAQDD80BJGmzKxaF01/OQU+MxbCvv2TcdV
+	 UdBQ8sxJ8WS0dc2zy2+KHeNft7I2WQkuSQdcH0qo+aDeiGWetjzL4cJZRHptjEcodd
+	 7kt4SmQ5D45cHazLv5NssPuCXeI+1wIlWDMbZY4U=
+From: Shyam Saini <shyamsaini@linux.microsoft.com>
+To: thierry.reding@gmail.com,
+	robin.murphy@arm.com,
+	robh@kernel.org,
+	joro@8bytes.org,
+	jgg@ziepe.ca
+Cc: iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org,
+	virtualization@lists.linux.dev,
+	will@kernel.org,
+	jacob.pan@linux.microsoft.com,
+	eric.auger@redhat.com,
+	code@tyhicks.com,
+	eahariha@linux.microsoft.com,
+	vijayb@linux.microsoft.com,
+	bboscaccy@linux.microsoft.com,
+	saravanak@google.com,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	lizhi.hou@amd.com,
+	clement.leger@bootlin.com
+Subject: [PATCH v4 0/4] arm-smmu: select suitable MSI IOVA
+Date: Tue,  9 Sep 2025 08:45:56 -0700
+Message-Id: <20250909154600.910110-1-shyamsaini@linux.microsoft.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aMAkJ7CfPQuhvhfm@willie-the-truck>
+Content-Transfer-Encoding: 8bit
 
-On Tue, Sep 09, 2025 at 01:57:11PM +0100, Will Deacon wrote:
-> On Thu, Aug 21, 2025 at 10:33:53AM +0200, Stephan Gerhold wrote:
-> > Some platforms (e.g. SC8280XP and X1E) support more than 128 stream
-> > matching groups. This is more than what is defined as maximum by the ARM
-> > SMMU architecture specification. Commit 122611347326 ("iommu/arm-smmu-qcom:
-> > Limit the SMR groups to 128") disabled use of the additional groups because
-> > they don't exhibit the same behavior as the architecture supported ones.
-> > 
-> > It seems like this is just another quirk of the hypervisor: When running
-> > bare-metal without the hypervisor, the additional groups appear to behave
-> > just like all others. The boot firmware uses some of the additional groups,
-> > so ignoring them in this situation leads to stream match conflicts whenever
-> > we allocate a new SMR group for the same SID.
-> > 
-> > The workaround exists primarily because the bypass quirk detection fails
-> > when using a S2CR register from the additional matching groups, so let's
-> > perform the test with the last reliable S2CR (127) and then limit the
-> > number of SMR groups only if we detect that we are running below the
-> > hypervisor (because of the bypass quirk).
-> > 
-> > Fixes: 122611347326 ("iommu/arm-smmu-qcom: Limit the SMR groups to 128")
-> > Signed-off-by: Stephan Gerhold <stephan.gerhold@linaro.org>
-> > ---
-> > I modified arm_smmu_find_sme() to prefer allocating from the SMR groups
-> > above 128 (until they are all used). I did not see any issues, so I don't
-> > see any indication that they behave any different from the others.
-> > ---
-> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 27 +++++++++++++++++----------
-> >  1 file changed, 17 insertions(+), 10 deletions(-)
-> 
-> Is the existing workaround causing you problems somehow? Limiting the SMR
-> groups to what the architecture allows still seems like the best bet to
-> me unless there's a compelling reason to do something else.
-> 
+Hi,
 
-Yes, the problem is the following (copied from commit message above):
+Currently, the MSI_IOVA_BASE address is hard-coded to 0x80000000,
+assuming that all platforms have this address available for MSI IOVA
+reservation. However, this is not always the case, as some platforms
+reserve this address for other purposes. Consequently, these platforms
+cannot reserve the MSI_IOVA_BASE address for MSI.
 
-> The boot firmware uses some of the additional groups, so ignoring them
-> in this situation leads to stream match conflicts whenever we allocate
-> a new SMR group for the same SID.
+There was an [1] attempt to fix this problem by passing the MSI IOVA
+base as a kernel command line parameter.
 
-This happens e.g. in the following situation on SC8280XP when enabling
-video decoding acceleration bare-metal without the hypervisor:
+The faulty iommu-addresses can be reserved in DTS and suitable MSI_IOVA
+can be selected (Suggested by Jason), However, for individual PCI
+devices of_iommu driver can't reserve iommu-addresses as these devices
+doesn't inherit parent DTS properties.
 
- 1. The SMMU is already set up by the boot firmware before Linux is
-    started, so some SMRs are already in use during boot. I added some
-    code to dump them:
+There are at least 3 ways to reserve iommu-addresses for individual PCI
+devices,
+ - 1) By dynamically adding DTS nodes for individual PCI devices using
+   [2] CONFIG_PCI_DYNAMIC_OF_NODES, this requires hardcoding PCI device
+   IDs in DECLARE_PCI_FIXUP_FINAL
 
-     arm-smmu 15000000.iommu: Found SMR0 <0xe0 0x0>
-      ...
-     arm-smmu 15000000.iommu: Found SMR8 <0x800 0x0>
-     <unused>
-     arm-smmu 15000000.iommu: Found SMR170 <0x2a22 0x400>
-     arm-smmu 15000000.iommu: Found SMR171 <0x2a02 0x400>
-      ...
-     arm-smmu 15000000.iommu: Found SMR211 <0x400 0x3>
+ - 2) By adding PCI devices nodes either in DTS or by modifying FDT at
+   boot time in the firmware, eg [3] However, of_iommu driver doesn't
+   seem to handle individual PCI devices, additionally this approach
+   doesn't seem to much scalable for the complex PCI hierarchy
 
- 2. We limit the SMRs to 128, so all the ones >= 170 just stay as-is.
-    Only the ones < 128 are considered when allocating SMRs.
+ - 3) By configuring PCI host controller DTS node for PCI device so that it
+   can inherit iommu-addresses defined in the parent node.
 
- 3. We need to configure the following IOMMU for video acceleration:
+This patch series aims to address both the problems described above: 
+- select suitable MSI IOVA when the default MSI IOVA conflicts with
+  reserved iommu addresses 
+- Using 3) approach appropriately handle iommu-addresses for individual
+  PCI devices during IOMMU configuration
 
-	video-firmware {
-		iommus = <&apps_smmu 0x2a02 0x400>;
-	};
 
- 4. arm-smmu 15000000.iommu: Picked SMR 14 for SID 0x2a02 mask 0x400
-    ... but SMR170 already uses that SID+mask!
+This patch series accommodates platforms that do not have the default MSI
+base address available for MSI reservation by implementing both solutions
+described above.
 
- 5. arm-smmu 15000000.iommu: Unexpected global fault, this could be serious
-    arm-smmu 15000000.iommu: GFSR 0x80000004, GFSYNR0 0x0000000c, GFSYNR1 0x00002a02, GFSYNR2 0x00000000
-
-    SMCF, bit[2] is set -> Stream match conflict fault
-    caused by SID GFSYNR1 0x00002a02
-
-With my patch this does not happen anymore. As I wrote, so far I have
-seen no indication that the extra groups behave any different from the
-standard ones defined by the architecture. I don't know why it was done
-this way (rather than e.g. implementing the Extended Stream Matching
-Extension), but we definitely need to do something with the extra SMRs
-to avoid stream match conflicts.
+[1]: https://lore.kernel.org/lkml/20200914181307.117792-1-vemegava@linux.microsoft.com/
+[2]: https://lwn.net/Articles/939317/
+[3]: https://elixir.bootlin.com/linux/v6.16/source/arch/arm64/boot/dts/nvidia/tegra186.dtsi#L1388
 
 Thanks,
-Stephan
+Shyam
+
+---
+v4:
+- Add warn message to indicate MSI IOVA reservation issue
+- Fix loop condition in arm_smmu_get_resv_regions()
+- Refactor arm_smmu_get_resv_regions() by introducing iommu_set_sw_msi()
+  helper function
+
+v3:
+- Drop "arm,smmu-faulty-msi-iova" property change
+- Fix iommu driver device tree configuration for PCI devices
+- Use "iommu-addresses" property to identify reserved MSI IOVA regions,
+  and introduce an additional MSI_IOVA_BASE2 macro to select a suitable
+  MSI IOVA base if the default overlaps with a reserved region (suggested by Jason)
+Link: https://lore.kernel.org/linux-iommu/20250806215539.1240561-1-shyamsaini@linux.microsoft.com/
+
+v2:
+- add new dts property to hold faulty MSI IOVA and select appropriate
+  MSI IOVA address
+Link: https://lore.kernel.org/linux-iommu/20250410225030.2528385-1-shyamsaini@linux.microsoft.com/
+
+v1:
+Link: https://lore.kernel.org/linux-iommu/20250116232307.1436693-1-shyamsaini@linux.microsoft.com/
+
+Shyam Saini (4):
+  arm-smmu: move MSI_IOVA macro definitions
+  iommu/of: fix device tree configuration for PCI devices
+  arm-smmu: select suitable MSI IOVA
+  drivers: iommu: refactor arm_smmu_get_resv_regions
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 13 ++-----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 --
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       | 16 ++------
+ drivers/iommu/iommu.c                       | 37 ++++++++++++++++++
+ drivers/iommu/of_iommu.c                    | 11 ++++++
+ drivers/iommu/virtio-iommu.c                |  2 -
+ include/linux/iommu.h                       | 42 +++++++++++++++++++++
+ 7 files changed, 96 insertions(+), 28 deletions(-)
+
+-- 
+2.34.1
+
