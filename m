@@ -1,134 +1,162 @@
-Received: from fhigh-a6-smtp.messagingengine.com (fhigh-a6-smtp.messagingengine.com [103.168.172.157])
+Received: from fhigh-a7-smtp.messagingengine.com (fhigh-a7-smtp.messagingengine.com [103.168.172.158])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A662366;
-	Tue,  9 Sep 2025 11:02:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.157
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE2402472A8;
+	Tue,  9 Sep 2025 11:54:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.158
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757415736; cv=none; b=CtBY4leemy+IPW2mI9cV/DUvYfDjaY0+AJ+6ZunhGIgVINNysrEZEEaXPCuwFD13TxvPJb8eIRQWxN/XfPpssSumJptnkZWd6o/ffutGh5zDoQ93agMu7oYqgOaDiiWR9+zahGAummAi6nM98u90VWo7dS+09D2LsCeOO3kbsOk=
+	t=1757418894; cv=none; b=Qj8YiTjFNK9VW0hZFKc/8A6PWTZMLGOHLyUHvXM55RqriQZt47f0xdWvqmly4XWPQCTSECYvKZDpmlLaouEAjepjhpKKGZsbid9HFFFXujohETfNMw/emruCdwSH5pczj9TbNjh7ApGM4iqg6DvGk+i80nbo3sdUPYBd6MoJiTY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757415736; c=relaxed/simple;
-	bh=aIuqF/ZRe6lFkjJdZM9G73p8wj+XZdKXQkFoizqI+N8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DK2dIRh/Aa24AMFhQu8ZT/x6kUviBoZ01c09T8C7bk1qsOp6z+Y2ygd9CTydcK2Y8rFZUC4Np8imW3UQbZPU/li1UhMHhPTREPxeJjBzfKQY2fSdMBYu17I5y66tNuYWQVJWHIgyUE4UgafjhPSccqHoOXxIfkwnWAW12uS9pL4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=b3WPnegU; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=D2DejXVH; arc=none smtp.client-ip=103.168.172.157
+	s=arc-20240116; t=1757418894; c=relaxed/simple;
+	bh=6iXD5m0xbJJ9yI3fFImUYVSx/Zs/cga4QJHzGSzB/10=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=tKWm690AE/xroEJlKy0pI3b8FyO9YXHlRO/mDR1wAXOeT5qHeHgIiooBQqmsENFzIKUNG6dwtrg2bMApio6RtvtN/ipWVnRhlyLw0rB8A4dy+mIROM0f48/c6cjQPG2VqljWsoPv6bWt6bWmoBij1acMsy7zBsuq2mtTpgTefU8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net; spf=pass smtp.mailfrom=jannau.net; dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b=MKxJp5ki; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=k/KfuZm7; arc=none smtp.client-ip=103.168.172.158
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jannau.net
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jannau.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="b3WPnegU";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="D2DejXVH"
-Received: from phl-compute-04.internal (phl-compute-04.internal [10.202.2.44])
-	by mailfhigh.phl.internal (Postfix) with ESMTP id 79245140018A;
-	Tue,  9 Sep 2025 07:02:12 -0400 (EDT)
+	dkim=pass (2048-bit key) header.d=jannau.net header.i=@jannau.net header.b="MKxJp5ki";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="k/KfuZm7"
+Received: from phl-compute-05.internal (phl-compute-05.internal [10.202.2.45])
+	by mailfhigh.phl.internal (Postfix) with ESMTP id 0E90814000E9;
+	Tue,  9 Sep 2025 07:54:51 -0400 (EDT)
 Received: from phl-mailfrontend-01 ([10.202.2.162])
-  by phl-compute-04.internal (MEProxy); Tue, 09 Sep 2025 07:02:12 -0400
+  by phl-compute-05.internal (MEProxy); Tue, 09 Sep 2025 07:54:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=jannau.net; h=cc
-	:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:subject
-	:subject:to:to; s=fm3; t=1757415732; x=1757502132; bh=Qg9msnq0rA
-	uxNpy3cVSl50zVPz8zshU7qatmHCWOvkA=; b=b3WPnegUHlfDmS1OorMHh11hLn
-	xscw0iz8E2B2UT1Vrtqkb6bBjV1PdmilaQG+gt+BQbaGe/TM+ZuF+AB4ADi1vQww
-	9C3BCxqlOKmojJ74Za8NfOFkwhHtbRM+ArIf9FJ1Dh6DG+WRij83qJLar9+wIs+O
-	Ao14jN4TfeX+0yPebO/cqErjl17WKBRvOkiLjJ6wy8QBy1RDovicWbOfQOM+xbsg
-	SN7CqWRQU+3rqyrnK9tuf5JcyTsZfVHsQgg39blKGqYOCeT0rVml/975pKP3cLR6
-	f61GL+q8GDYwt2THwFUc9Cu619XuLiZmO5cpVKi2SN5/MIs2lcZaUQKqOnhw==
+	:cc:content-transfer-encoding:content-type:content-type:date
+	:date:from:from:in-reply-to:message-id:mime-version:reply-to
+	:subject:subject:to:to; s=fm3; t=1757418891; x=1757505291; bh=Xg
+	llFUx1hMJXZthKN6RSylNEPxNp90PjmGPFYCczU3c=; b=MKxJp5kiaP89vLxg22
+	BOn2h0ywmis0W9knLLvxaGguspj1X7X+/7R94Doj3VQvQC/qyWWfq/uay1MryUK7
+	LLeLQLN6fyE1elg07CMRvpEX7E/+doRX6IskuWB3ZkjzdNHycdGZUj7jMewHuw7w
+	f+8Jl44ECgmO1ktauce3xwuIFMAMujRh8DBYj2BrKMUDQXkVKUTjpATwxSzlUDjz
+	/mYvjJtYPbrv5VDCAVRC9iHjGbDX0HIewM2yG82lql5UxxkzjljwbycDoa3Pan/H
+	gcYnSKRP9c/n0fUWZIRNOy8G+Rff7xhbS0dQFfFL3wTaLInnKfgE6P+NeoXMekZY
+	66eQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-	1757415732; x=1757502132; bh=Qg9msnq0rAuxNpy3cVSl50zVPz8zshU7qat
-	mHCWOvkA=; b=D2DejXVHAPpWktesChxfQ0b9wHeMbiH2mwPjwg0KzN8QSddZa04
-	z6wKrQVs7htNREjoiS6yMr/ukErFZqP6ei46NBel42m6keOTqeg4qUyYpK0YB/NT
-	osHQLSy/Mh5LyporjUbmqJ8gLp4w+AGo2iSMSsk4Y9ElGwNrrYt77qwxu+rAFdaG
-	FC9V+n8V1tSq1b4+yyYLFI3h9/xWTUGafyNxNxlYkr6ZGn0whOfk62SQ2YRf6Q07
-	i5MijAAR58gK8Ds5XM7qxWUrBZ3bHC8Epb+rsp1BowGNRl/sWDERSqbFKoBUCBtv
-	aFFu+XQOFrZo0NaHqBG78sr/jxeZzJcucvA==
-X-ME-Sender: <xms:MwnAaLFDrpki7rBrYfvrxiwKMjhi82qBcvs4C5WRrvdqYESqqgUh_A>
-    <xme:MwnAaBwOcZIOKU_bYZrWO5hULjEHA9u3cxtBOzpzqhJEGwePyup_JmYNj3-aUQYFx
-    0iimyZkYk8_YP1xvBE>
-X-ME-Received: <xmr:MwnAaMt3NoX5TKKN6ln0WxVWng6vfkgJDNmFHiyXvsQq7HS_IyJpXOExkH9lWVMDZVkD9OYgS8fIXga_6aNZdFj-dkmrwGdw4m4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggddvtddvfecutefuodetggdotefrod
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:message-id:mime-version:reply-to:subject
+	:subject:to:to:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm1; t=1757418891; x=1757505291; bh=XgllFUx1hMJXZthKN6RSylNEPxNp
+	90PjmGPFYCczU3c=; b=k/KfuZm7zAtskYp6dq5+d9FFBiL4NmLmgcKo2gl7PjN+
+	xRLrZD8wJ2SPtXdSPMpH5EkgP8pmwUHK/UOXkA/AuI4o9eIjXscvBQyo7UyXIUYf
+	F0xd9aUcbAc4DYR7c+5aC1K+kzHj7k83M9LvrqSVoDS0LjZ1VlsJyuCh9qKgujEZ
+	SczBhQKu4vXqXb9q92DEA+e+A1NZv8d3km+UhiGj+rzaEmd+K33qOLsv0rN0JUd3
+	Ve26ty/i4eh4hoeEZ1rt0JjKOxoVaS5FmWEDtPR/0CGfSCNfwlAwg5cT0YdA0mwI
+	VCWQyK/tDxorjlzDo7Srb8KrxQhRlfl1QJ+ojjva1Q==
+X-ME-Sender: <xms:ihXAaAkqbFOIv3rIpWZwCV5q5O3LbQALK0RmlDCt_fTMtKTs8jFv8w>
+    <xme:ihXAaHFJlQiWPSEgiJLcEluQskKXzVqPbVosgNMaCQEV1I2BTv6TZ27vNPZh63jnB
+    peqFoD5TTBdqy4z848>
+X-ME-Received: <xmr:ihXAaJgSOKqGwFM3T6r1NZqrmAhx1xhvd5oTRFeZe0DXwDTZNzHIAyNMnLkUJo8vGDbdI6o2fJ_434H6P9o9RbFgs_HqEa92LGL6zg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggddvtdefhecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpuffrtefokffrpgfnqfghnecuuegr
     ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpeffhffvvefukfhfgggtuggjsehttdertddttdejnecuhfhrohhmpeflrghnnhgvucfi
-    rhhunhgruhcuoehjsehjrghnnhgruhdrnhgvtheqnecuggftrfgrthhtvghrnhepgfdvff
-    evleegudejfeefheehkeehleehfefgjefffeetudegtefhuedufeehfeetnecuvehluhhs
-    thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepjhesjhgrnhhnrghurd
-    hnvghtpdhnsggprhgtphhtthhopeegpdhmohguvgepshhmthhpohhuthdprhgtphhtthho
-    pegurghnrdgtrghrphgvnhhtvghrsehlihhnrghrohdrohhrghdprhgtphhtthhopehmrg
-    hrtggrnhesmhgrrhgtrghnrdhsthdprhgtphhtthhopegrshgrhhhisehlihhsthhsrdhl
-    ihhnuhigrdguvghvpdhrtghpthhtohepihhomhhmuheslhhishhtshdrlhhinhhugidrug
-    gvvh
-X-ME-Proxy: <xmx:MwnAaO124KiCQxhk0Ul-f3KSm1AYqoMw7AMEhqdhRdIs69LwXecAgw>
-    <xmx:MwnAaH93FNbe5QXDTMnva0IgY4urGc7-fQmShe8v9FTKAxYgtehW1g>
-    <xmx:MwnAaPONOXjX9ikpqEcRGCU86GARAJqQczJ5XglxGr-BqbfHAHZHnQ>
-    <xmx:MwnAaLfsrgGr4Jedg9wYzYMPSk5a7rkgpy94U4UOSva6XpAWu0kayw>
-    <xmx:NAnAaKu52CYD1IaqBPKaZKl8WSUcYGzM9z8mS_63iwB-6UjnyxJTYVJD>
+    hrpefhfffugggtgffkvfevofesthejredtredtjeenucfhrhhomheplfgrnhhnvgcuifhr
+    uhhnrghuuceojhesjhgrnhhnrghurdhnvghtqeenucggtffrrghtthgvrhhnpeefheeltd
+    ehfeetjeefvdehteeutddtteelgeduueetjeevteeifeeuvdefffdvieenucffohhmrghi
+    nhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomhepjhesjhgrnhhnrghurdhnvghtpdhnsggprhgtphhtthhopedufedp
+    mhhouggvpehsmhhtphhouhhtpdhrtghpthhtohepshhvvghnsehkvghrnhgvlhdrohhrgh
+    dprhgtphhtthhopehlihhnuhigqdhkvghrnhgvlhesvhhgvghrrdhkvghrnhgvlhdrohhr
+    ghdprhgtphhtthhopehjsehjrghnnhgruhdrnhgvthdprhgtphhtthhopehjohhroheske
+    gshihtvghsrdhorhhgpdhrtghpthhtohepuggrnhdrtggrrhhpvghnthgvrheslhhinhgr
+    rhhordhorhhgpdhrtghpthhtohepmhgrrhgtrghnsehmrghrtggrnhdrshhtpdhrtghpth
+    htohepjhhovghrghdrrhhovgguvghlsegrmhgurdgtohhmpdhrtghpthhtohepfihilhhl
+    sehkvghrnhgvlhdrohhrghdprhgtphhtthhopehrohgsihhnrdhmuhhrphhhhiesrghrmh
+    drtghomh
+X-ME-Proxy: <xmx:ihXAaMgCH-4IFoKCggPJRdhxxW_c-NLDQP3qwgZ79ru41V7mdDxhig>
+    <xmx:ihXAaEkeMt5QMGal3ky7Tqn-Mqao_QI1w6eu2PeUcljYnqXN1j8JmA>
+    <xmx:ihXAaIYOVL61-M9FdeLfj571KiOEpwuA0qVoWP8Ib6h-KZNLxAU7EQ>
+    <xmx:ihXAaPwSP2fXcwlz-ZgHq9sKh5xvsk87k3wSg6sfg7Hgze-xfsY8pw>
+    <xmx:ixXAaEHyLufroOn5rObo_ro8rYL8z--t8DvyYpvhnUrNEtlSWLzGoYdE>
 Feedback-ID: i47b949f6:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 9 Sep 2025 07:02:11 -0400 (EDT)
-Date: Tue, 9 Sep 2025 13:02:09 +0200
+ 9 Sep 2025 07:54:49 -0400 (EDT)
 From: Janne Grunau <j@jannau.net>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: Hector Martin <marcan@marcan.st>, asahi@lists.linux.dev,
-	iommu@lists.linux.dev
-Subject: Re: [bug report] iommu/io-pgtable-dart: Add 4-level page table
- support
-Message-ID: <20250909110209.GD89417@robin.jannau.net>
-References: <aMACFlJjrZHs_Yf-@stanley.mountain>
+Date: Tue, 09 Sep 2025 13:54:43 +0200
+Subject: [PATCH] iommu/io-pgtable-dart: Fix off by one error in table index
+ check
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <aMACFlJjrZHs_Yf-@stanley.mountain>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250909-iommu-dart-tbl-check-fix-v1-1-c800a0375660@jannau.net>
+X-B4-Tracking: v=1; b=H4sIAIMVwGgC/x2MSQqAMAwAvyI5G6gVhfoV8dA2UYMrrYog/t3ic
+ QZmHogchCM02QOBL4myrQmKPAM/2nVgFEoMWulKGWVQtmU5kWw48HAz+pH9hL3cqEuqLFHtXG8
+ g5XvgpP91273vB7vYJAZqAAAA
+X-Change-ID: 20250909-iommu-dart-tbl-check-fix-23d5add6bbf9
+To: Sven Peter <sven@kernel.org>, Neal Gompa <neal@gompa.dev>, 
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Hector Martin <marcan@marcan.st>
+Cc: Joerg Roedel <joerg.roedel@amd.com>, asahi@lists.linux.dev, 
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ linux-kernel@vger.kernel.org, Dan Carpenter <dan.carpenter@linaro.org>, 
+ Janne Grunau <j@jannau.net>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2070; i=j@jannau.net;
+ s=yk2024; h=from:subject:message-id;
+ bh=6iXD5m0xbJJ9yI3fFImUYVSx/Zs/cga4QJHzGSzB/10=;
+ b=owGbwMvMwCW2UNrmdq9+ahrjabUkhowDoh3bfa+euaByMivv3/Kd+8yeirNcuFa7ZNsUc84+p
+ Q6ZioiojlIWBjEuBlkxRZYk7ZcdDKtrFGNqH4TBzGFlAhnCwMUpABPhN2X4p+03de+iP49CTjDf
+ an/B9UrtnKxKhVRyRGSSw/OcLpaOl4wMt1IePKoXWPlA66bcbsHdupYcn64m6Nm4M/2qPJ/yWHQ
+ lBwA=
+X-Developer-Key: i=j@jannau.net; a=openpgp;
+ fpr=8B336A6BE4E5695E89B8532B81E806F586338419
 
-On Tue, Sep 09, 2025 at 01:31:50PM +0300, Dan Carpenter wrote:
-> Hello Hector Martin,
-> 
-> Commit 74a0e72f03ff ("iommu/io-pgtable-dart: Add 4-level page table
-> support") from Aug 21, 2025 (linux-next), leads to the following
-> (UNPUBLISHED) Smatch static checker warning:
-> 
-> drivers/iommu/io-pgtable-dart.c:183 dart_get_last() warn: array off by one? 'data->pgd[tbl]'
-> drivers/iommu/io-pgtable-dart.c:252 dart_map_pages() warn: array off by one? 'data->pgd[tbl]'
-> 
-> drivers/iommu/io-pgtable-dart.c
->     174 static dart_iopte *dart_get_last(struct dart_io_pgtable *data, unsigned long iova)
->     175 {
->     176         dart_iopte pte, *ptep;
->     177         int level = data->levels;
->     178         int tbl = dart_get_index(data, iova, level);
->     179 
->     180         if (tbl > (1 << data->tbl_bits))
->                         ^
-> It does look like this should be >=.
+The check for the dart table index allowed values of
+(1 << data->tbl_bits) while only as many entries are initialized in
+apple_dart_alloc_pgtable. This results in an array out of bounds access
+when data->tbl_bits is at its maximal value of 2. When data->tbl_bits is
+0 or 1 an unset (initialized to zero) data->pgd[] entry is used. In both
+cases the value is used as pointer to read page table entries and
+results in dereferencing invalid pointers.
+There is no prior check that the passed iova is inside the iommu's IAS
+so invalid values can be passed from driver's calling iommu_map().
 
-yes. There is a second occurance of this buggy check in
-dart_map_pages().
+Fixes: 74a0e72f03ff ("iommu/io-pgtable-dart: Add 4-level page table support")
+Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+Closes: https://lore.kernel.org/asahi/aMACFlJjrZHs_Yf-@stanley.mountain/
+Signed-off-by: Janne Grunau <j@jannau.net>
+---
+Based on today's iommu/master (9bffaa5ceb26) [1]
 
->     181                 return NULL;
->     182 
-> --> 183         ptep = data->pgd[tbl];
-> 
-> data->pgd[] has BIT(2) elements.  The data->tbl_bits value is set
-> in dart_alloc_pgtable() and it has a check if (tbl_bits > max_tbl_bits)
-> which ensures that it is not more than 2.
-> 
-> I don't think dart_get_index() can actually return more than 3 so
-> maybe the check can just be removed?
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/iommu/linux.git
+---
+ drivers/iommu/io-pgtable-dart.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-It can't as long as iova is within the iommu's ias. After brief check I
-haven't seen anything in iommu/iommu.c or iommu/apple-dart.c which
-prevents drivers to call iommu_map() with a random iova resulting in
-tbl == 4. So the checks needs to be fixed.
+diff --git a/drivers/iommu/io-pgtable-dart.c b/drivers/iommu/io-pgtable-dart.c
+index 9a63c80a2786bf70fc2544b1f96d2e4c8591c2f8..54d287cc0dd1b8bb07eb437a23ae0e493645a80d 100644
+--- a/drivers/iommu/io-pgtable-dart.c
++++ b/drivers/iommu/io-pgtable-dart.c
+@@ -177,7 +177,7 @@ static dart_iopte *dart_get_last(struct dart_io_pgtable *data, unsigned long iov
+ 	int level = data->levels;
+ 	int tbl = dart_get_index(data, iova, level);
+ 
+-	if (tbl > (1 << data->tbl_bits))
++	if (tbl >= (1 << data->tbl_bits))
+ 		return NULL;
+ 
+ 	ptep = data->pgd[tbl];
+@@ -246,7 +246,7 @@ static int dart_map_pages(struct io_pgtable_ops *ops, unsigned long iova,
+ 
+ 	tbl = dart_get_index(data, iova, level);
+ 
+-	if (tbl > (1 << data->tbl_bits))
++	if (tbl >= (1 << data->tbl_bits))
+ 		return -ENOMEM;
+ 
+ 	ptep = data->pgd[tbl];
 
-I'll send a patch fixing both occurances.
+---
+base-commit: 9bffaa5ceb26d73344b1a16b745f363fb2a6f6b4
+change-id: 20250909-iommu-dart-tbl-check-fix-23d5add6bbf9
 
-Thanks for the report
+Best regards,
+-- 
+Janne Grunau <j@jannau.net>
 
-Janne
