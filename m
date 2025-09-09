@@ -1,142 +1,97 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CDE02D77EF
-	for <iommu@lists.linux.dev>; Tue,  9 Sep 2025 19:33:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 574E5303A21;
+	Tue,  9 Sep 2025 19:37:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757446420; cv=none; b=GGBHmZ3TJEEcdg0lhtMSMRophYO6WUUWzKMYBszCJLc0COyXVwVC5TyUA2HzgrrAOmHKDcSPCeg/ZpdI/sphyDHJgWHTdAV3XYMTjr/Igi1BbugUc1lmilxRZ+Wubuc9mQaTsvir6SuZiCW7wuevZi7/RdCl9t04te4xRE2bsRM=
+	t=1757446673; cv=none; b=QMIENappSzMzwE3tsCbeYlAzwWpGty8pwrW7hR+W/O1/GWNHyrClRtiB5iOYSqNtR5TWHstscdlKj/2hRaUjoCb7PD7pt3zSayKVSfq/RhfcefSSmqZreLjv7GZQ9i31h9s8eMr5pWUJCZqbdZ6kGHUQOAyWch/oIgb87dNUMDY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757446420; c=relaxed/simple;
-	bh=mUgqnSrCeNtyPRzp40kafmu2emrwvDGauUeKsNnrkLk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SKtOVVwwgdIDX7ZyoNA7Pgnn2uxrIr2ya0ui3p9QOnRRPVm/p/a+ck2RKYUfgSFHveH0iEQl1Qm7qWvpVCHwSG4c7D1kWEQG0NyZPXM4GcLOMQBPzYjXLhS6pfCw3xvooCPAmHT1ysoOnklpYLgssVs1JWFcTStSJu74sXRHpPs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=G0clw1fX; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1757446673; c=relaxed/simple;
+	bh=Vkfs1C2Q/m2ciXngYEnMywKI/5g7jYuOYmYnMi4Z+6A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Rm4LUgXeKAsTGWx/ZlACaduok0nVUObGFx9OsGPz6taAPydSRUvc4WtNHB+WR2CZEAtihAnoMa8W3oiqdVtvLrPDtqXLI8U553y93eLI+rxkVKWhQlpfVw0KEv0J25lpUWW9/gJfGRmd+nb2hmHabdPbGIP3eIlgGskjtnG3s9A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BK33sGpV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="G0clw1fX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1757446417;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Xv0UmvOM6iq9BarO5ln98fc4nB6oP2f7t4wXJ04yBgo=;
-	b=G0clw1fX6AvGkMrAm6568HS4gLuy0l0CLv8+1ItuSYXfoarZAVMB8f3Hj7ojKN4e1i/34R
-	4+vD1lsrye4OmmmvyVBVpPySVeHm6NJISTRtTueKZQOH484WnQio9kfa5A4d4vVDK4xVxc
-	lz3xd8OBPoSyLLL/di+QmY35o3nINdo=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-669-XN8xjmwlN8euh9KUCDqJVQ-1; Tue, 09 Sep 2025 15:33:35 -0400
-X-MC-Unique: XN8xjmwlN8euh9KUCDqJVQ-1
-X-Mimecast-MFC-AGG-ID: XN8xjmwlN8euh9KUCDqJVQ_1757446415
-Received: by mail-qt1-f198.google.com with SMTP id d75a77b69052e-4b5d5cc0f25so125688881cf.2
-        for <iommu@lists.linux.dev>; Tue, 09 Sep 2025 12:33:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757446415; x=1758051215;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Xv0UmvOM6iq9BarO5ln98fc4nB6oP2f7t4wXJ04yBgo=;
-        b=m8ziCXsvkfiQTN9e4Wzsrafqwq4m46Nq2eXjF3hBFJCP/58HrSSbNFgC9/lC050HIX
-         EjnkxdUG+gqKUcifITRUN21Zbi9PMq581uTqfvDLfeggYCuDal62iXMYde+XkOwYDo+3
-         pgMZOnOL3P6le+cQZnQTqcd9dN9DKqwKJlMmOBiQdEMMZLB7rvFCwFv8vKm2kmnQfeVH
-         IWfPqqDjcFYB5uVrkTiHkvTYNlIq7FsSSuT622Q73AHciq60HkdEtgft5BgkmsFvBHM6
-         lp7YfbJeML9+2ar68XN1iAv5cN1nu4J1IrMppU5hFA6okXrLMfUn2i+8DbBNzOng1LcK
-         6feA==
-X-Forwarded-Encrypted: i=1; AJvYcCUqlZC6AA1E60RLqReQAYLhsXXGCEje59r9vFw9gHtIFIDVJrqOaiieceMFpKzMpkEKuSC2uw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwdzAzb5qn6/eFgkR2bFAE8ucyUo1LraBkIpzh8e11rJVgWiN+U
-	yeYbOwIT4YDOyOzTrvtDdve/Bf0aSXDOXBkayj+Wx9amv0XDAtw33bDejdcZ4ewLysJM9aJFWDK
-	VN+6Q34eW6HEiDVRxyow/0lDi1/iZY0TbBnN/szV4kIkDSlhbCK6w+meH
-X-Gm-Gg: ASbGncvvibCwQ7t2mFH+GOwA6Qr3FAz/nFC6oCbSPcDmJGfazFI5DR5Zrh9QhffJlUE
-	r7qR0GyPAO7TKoTkEJSdoXFUfeY6Jw69gk35mXIyfxIRRkIOfnxIIZNu96Qe1mwkJKXt0rdcxwk
-	f+hA3DSZ3hQhpEl6dLV/VIlEowlpuCqKHU3eTLnLhLvvsUVLUfnxzii06odzyiIMjlnH8Y90CAq
-	PYwsgz3Y/7aG79S/O0zTykt+4lYfjoOJhuQMiP66z6CksfH1ldK1nZRELTz1NYEQ+vt8jWyj6tM
-	Z3uHD2/GQCqGOTNWT5MQHvcmzR+2PwE9NZSiMQFA
-X-Received: by 2002:a05:622a:1343:b0:4b5:ee26:5373 with SMTP id d75a77b69052e-4b5f83c8b18mr157023791cf.21.1757446415054;
-        Tue, 09 Sep 2025 12:33:35 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHt6ZFsxR50RVtcwNCWmeGZgkt2Iz2ZbSC15FzqztkMn3bYZzGFWhNgqOHOvkUWFbY7XPZ5nA==
-X-Received: by 2002:a05:622a:1343:b0:4b5:ee26:5373 with SMTP id d75a77b69052e-4b5f83c8b18mr157023411cf.21.1757446414556;
-        Tue, 09 Sep 2025 12:33:34 -0700 (PDT)
-Received: from [192.168.40.164] ([70.105.235.240])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-4b61bbbc3a3sm12895041cf.24.2025.09.09.12.33.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Sep 2025 12:33:33 -0700 (PDT)
-Message-ID: <3d775106-2610-4766-afdb-0820cf92e6c1@redhat.com>
-Date: Tue, 9 Sep 2025 15:33:32 -0400
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BK33sGpV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30BB1C4CEF4;
+	Tue,  9 Sep 2025 19:37:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757446672;
+	bh=Vkfs1C2Q/m2ciXngYEnMywKI/5g7jYuOYmYnMi4Z+6A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=BK33sGpV6gJZdNQka35B5igzFncF6O4QoVJduYx5uymEwm19+Pae/Y8Ji2ztm6vFh
+	 Of79hrgQzN752E6kK9Pd6CitdpQ05JM71b0yY2nJK5WUadz3JmWI4AqHd+rhRkpPML
+	 jPSesTwS7Zw48bKNgh3AxJtfj3r28MMf09jWFv3Lide1Ok8C5lkasp0zoJfr6zuOnF
+	 N5cxlSvTSt07fnYvpbKZtFqt6TP2eL80kCSBPIQL9mOveIT/STSyNFrSlP91N6uUF+
+	 FdL0uwcDH/ATxbhiykxuiJP1XMjnnp4vhtxpR+0sRrU4PCEIaA22KI5S4HXWZpjWlB
+	 smMV1bUYsFvcA==
+Date: Tue, 9 Sep 2025 22:37:48 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	Alexander Potapenko <glider@google.com>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
+	David Hildenbrand <david@redhat.com>, iommu@lists.linux.dev,
+	Jason Wang <jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+	Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>,
+	Juergen Gross <jgross@suse.com>, kasan-dev@googlegroups.com,
+	Keith Busch <kbusch@kernel.org>, linux-block@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-nvme@lists.infradead.org,
+	linuxppc-dev@lists.ozlabs.org, linux-trace-kernel@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
+	Sagi Grimberg <sagi@grimberg.me>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
+	xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v6 03/16] dma-debug: refactor to use physical addresses
+ for page mapping
+Message-ID: <20250909193748.GG341237@unreal>
+References: <cover.1757423202.git.leonro@nvidia.com>
+ <56d1a6769b68dfcbf8b26a75a7329aeb8e3c3b6a.1757423202.git.leonro@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 03/11] iommu: Compute iommu_groups properly for PCIe
- switches
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, linux-pci@vger.kernel.org,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Lu Baolu <baolu.lu@linux.intel.com>, galshalom@nvidia.com,
- Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
- kvm@vger.kernel.org, maorg@nvidia.com, patches@lists.linux.dev,
- tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
-References: <3-v3-8827cc7fc4e0+23f-pcie_switch_groups_jgg@nvidia.com>
- <3634c854-f63f-4dc0-aa53-0b18c5a7ea1c@redhat.com>
- <20250909121845.GI789684@nvidia.com>
-From: Donald Dutile <ddutile@redhat.com>
-In-Reply-To: <20250909121845.GI789684@nvidia.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: TlOJxph2LmjZ_Ar0Mrlj5Yh5AF3RKbtraDcVz660g3I_1757446415
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <56d1a6769b68dfcbf8b26a75a7329aeb8e3c3b6a.1757423202.git.leonro@nvidia.com>
 
+On Tue, Sep 09, 2025 at 04:27:31PM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
 
+<...>
 
-On 9/9/25 8:18 AM, Jason Gunthorpe wrote:
-> On Tue, Sep 09, 2025 at 12:14:00AM -0400, Donald Dutile wrote:
-> 
->>> -/*
->>> - * Use standard PCI bus topology, isolation features, and DMA alias quirks
->>> - * to find or create an IOMMU group for a device.
->>> - */
->>> -struct iommu_group *pci_device_group(struct device *dev)
->>> +static struct iommu_group *pci_group_alloc_non_isolated(void)
-> 
->> Maybe iommu_group_alloc_non_isolated() would be a better name, since that's all it does.
-> 
-> The way I've organized it makes the bus data a per-bus thing, so
-> having pci in the name when setting BUS_DATA_PCI_NON_ISOLATED is
-> correct.
-> 
-> What I did was turn iommu_group_alloc() into
-> 
-> static struct iommu_group *iommu_group_alloc_data(u32 bus_data)
-> 
-> Then
-> 
-> struct iommu_group *iommu_group_alloc(void)
-> {
-> 	return iommu_group_alloc_data(0);
-> }
-> 
-> And instead of pci_group_alloc_non_isolated() it is just:
-> 
-> 	return iommu_group_alloc_data(BUS_DATA_PCI_NON_ISOLATED);
-> 
-> So everything is setup generically if someday another bus would like
-> to have its own data.
-> 
-/my bad, I scanned pci_group_alloc_non_isolated() as calling iommu_group_alloc() & not iommu_group_alloc_data() as you pointed out.
-Looks good.
+>  include/linux/page-flags.h         |  1 +
 
-Reviewed-by: Donald Dutile <ddutile@redhat.com>
+<...>
 
-> Jason
-> 
+> --- a/include/linux/page-flags.h
+> +++ b/include/linux/page-flags.h
+> @@ -614,6 +614,7 @@ FOLIO_FLAG(dropbehind, FOLIO_HEAD_PAGE)
+>   * available at this point.
+>   */
+>  #define PageHighMem(__p) is_highmem_idx(page_zonenum(__p))
+> +#define PhysHighMem(__p) (PageHighMem(phys_to_page(__p)))
 
+This was a not so great idea to add PhysHighMem() because of "else"
+below which unfolds to maze of macros and automatically generated
+functions with "static inline int Page##uname ..." signature.
+
+>  #define folio_test_highmem(__f)	is_highmem_idx(folio_zonenum(__f))
+>  #else
+>  PAGEFLAG_FALSE(HighMem, highmem)
+
+Thanks
