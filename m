@@ -1,80 +1,450 @@
-Received: from out30-118.freemail.mail.aliyun.com (out30-118.freemail.mail.aliyun.com [115.124.30.118])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E204A224AFA
-	for <iommu@lists.linux.dev>; Wed, 10 Sep 2025 01:58:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.118
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35A87224AFA
+	for <iommu@lists.linux.dev>; Wed, 10 Sep 2025 01:59:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757469503; cv=none; b=Ms2/zj8yC1ruxRnTqEUHdoSzHYMN/1tV0EC6/4TR6J+CIcjQ1VW8phn6k3yzoEtJemacZamNHgn2MSvRJW5/MIRNYHYWAdXb4TL4TnCeBubgMnMC/qxf1fAjZ3enPoR8cbb3DABiyHN03dSiutazk82p+9iwCHDSsFP6HV/84vA=
+	t=1757469573; cv=none; b=ReyhbjUCA8MkiuDsXXc9YyBYjfnJvUGn9COPntcw37K8iWwmzJfeY1jTqtpGCSs23RL5/jXIUNXwC3sxdZ4cV/JPtqAsGUVRua8PZnykHIgiaVQX3QpkhdVfuusUDKbZu5KenTbpehsOesKy63dD7NbksIYxcLxE7ykQDlSWwuk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757469503; c=relaxed/simple;
-	bh=LRRR8BuMrgsRYuyMhegYDmAm90CuK5yaMJbhSnZhoU0=;
+	s=arc-20240116; t=1757469573; c=relaxed/simple;
+	bh=1rxsxIhebtcsPF+0izkSvpQhkwTsK2Ui5CXRGEX6uhU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HKzGO27wQQYNqPTgJXRYksASVYCtUKw2/Qp3VSTgCZ1ye7YQh/6t9HUDgoq6cjZuWbYXSHOsoaTnwM1SjRILKFXLvm8eiDHhK+hMDm9F1HKkfeK7g+/bibcyvel+bpMbhe1OWi6zU05Z8bH/++lGI6fMNY++2Q4F/SaSOYNASWE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=ELkikix4; arc=none smtp.client-ip=115.124.30.118
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	 In-Reply-To:Content-Type; b=c95PMLvgTU2FnM8sW6unOCejX+ip2DZgZuH7RLrSnz0rqijIDw40VxxTwfM2v9HDpoet24KJ1Xu4WvGriYOEDMJgOma5l6mRjysGzW5whGh+qzbR11jiC1mAQteuuWMD6kfYQah1XwSouqcGm0EKGId9fJftW4ysc5ZhQobFb2M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=gUhAhDnL; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="ELkikix4"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1757469498; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=MTNoidwT8Z4FYBk2bJLdhRry/2KTrqWkpMD54mBw+Xg=;
-	b=ELkikix4hvCGwNNglWWv67CgWHkZJFMjK5FJaW6pEaZly21rNMqppNf8Tih6+z/OVUnZrOIilxmwuj+xYrfM3onmoUNR4X3aA/jWxNT0RVHiJrz4CiN+nbhs5am7RAWETUNkHQ7T5ZRab8e1DFKnWI02EcwVhYpRyxUGnEUilkc=
-Received: from 30.178.82.131(mailfrom:kanie@linux.alibaba.com fp:SMTPD_---0Wng8r0a_1757469496 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Wed, 10 Sep 2025 09:58:17 +0800
-Message-ID: <ca8ca982-619c-44fa-af55-7a985b6b3cce@linux.alibaba.com>
-Date: Wed, 10 Sep 2025 09:58:16 +0800
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="gUhAhDnL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1757469570;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=fXA/AMFxDBLv+V0m6fG1THNgMLJEKFJoBijLaztGch4=;
+	b=gUhAhDnL1tdfSdFM64jU9ps2kD27byCA/4SISBeNOlo1tXpyCUv4j0sqzPLkQiS+lCGfkI
+	itsfZsrGVUKSRQoqStSWGPmo4C6diGrUqnxgU/LpmhDh2Xn83WpI18Y4z20PwjWZeNUh9r
+	gQLzDr/kRXLVE6h78iI3RDW/sCeg62w=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-401-CuEem0BDNYyKGEalppatWw-1; Tue, 09 Sep 2025 21:59:26 -0400
+X-MC-Unique: CuEem0BDNYyKGEalppatWw-1
+X-Mimecast-MFC-AGG-ID: CuEem0BDNYyKGEalppatWw_1757469566
+Received: by mail-qt1-f197.google.com with SMTP id d75a77b69052e-4b5f112dafeso124970231cf.1
+        for <iommu@lists.linux.dev>; Tue, 09 Sep 2025 18:59:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757469566; x=1758074366;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=fXA/AMFxDBLv+V0m6fG1THNgMLJEKFJoBijLaztGch4=;
+        b=LqCmB1xB0qPKhQo/zug9ca/LfmvJyt/Lnf5e23soelSezb4vqYtZ1uQk/10zDrZRoY
+         Oo5NGGlyWEgkCI8hlGE0HzgbGZnJyyYznI4yKOwTuQXatsvgN0U3axG17qGv2Uvrm9GA
+         D57/vQlqgWPoABDB30MDHtOukcwsE+q7/UHoou01gHEsIYxTmkHZ0ZE7eC3qsBMapybb
+         f2HxpEnX3ZmO/lzAaZBMOahL/+M2KJsX9W8McApTvZdANX07o1wsE7uZglKWkaAOLeA3
+         FijoDfwPeyndnffeQYCqfg61Qjt9WsDfammqpnX9grf/6oQ5NmLSncF3owIQ3TePszsN
+         rVig==
+X-Forwarded-Encrypted: i=1; AJvYcCU8fG7hGS40u4LWjcNFuMnjQe6IoW0tQKOFkXlID8MlhTBTearUjjunfbj+7NAP0Cxo6ya+Pw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YziwLrQjgOOQv1Afu6RPYbsgmJAgEgcUoUrKhkzysR7j3Eg6y32
+	KoWWxWymArWKMRS7xwoMexfuUQwnTYtpN+R3CoxGnu/Xv8tfhu1CsPyoaKOp26xSHdsvgVzeZFE
+	MXDSabS6TRjNGYEuSEIkXrQ2CWs9DoTW8HGSUN4RGzs6CPJG8PClXY/91
+X-Gm-Gg: ASbGncsKQfS5HIEL9rj9vEDLddwG8nQZSusuUvSsYUqhWGWpCtfoyWSoaAG51ro1CWu
+	JF0wL8qzfcRMW4PQ/SBrjUgXmahkQnOOVtlpEROer2iX63YRFHH+nzyVu0CAe4MHozWmxR3n5pF
+	wicP31fqT4fCsdHx6h0rZ+NHDN2/SZePiVN0pbRp+FazRQbWz7bMzxl63TjPIY7IJrfMz/irwov
+	SZq7mxhdkS7H1ci3LKbm6hV9QTH34Omq5CCulZiioOMAl3F0mydpsg6GcyISR7yWZQq5SQ7Ac7m
+	MTBld0X+gFdySLQeDA7IfpawJUY9tySPUEG3UeaD
+X-Received: by 2002:a05:620a:370e:b0:80f:c2d4:3fea with SMTP id af79cd13be357-813c2b21189mr1576024585a.24.1757469566099;
+        Tue, 09 Sep 2025 18:59:26 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IE62UNFw68lA96vqnlJnpP665eGyiTHX07KJk7zOdVaQ0ByGkmpx+++6I2aYWGQUqSOsYq0GQ==
+X-Received: by 2002:a05:620a:370e:b0:80f:c2d4:3fea with SMTP id af79cd13be357-813c2b21189mr1576021385a.24.1757469565572;
+        Tue, 09 Sep 2025 18:59:25 -0700 (PDT)
+Received: from [192.168.40.164] ([70.105.235.240])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-81b59f8786fsm214167685a.29.2025.09.09.18.59.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Sep 2025 18:59:25 -0700 (PDT)
+Message-ID: <15ee1d12-6900-4cf2-9348-6e6cc8aefbe9@redhat.com>
+Date: Tue, 9 Sep 2025 21:59:23 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: =?UTF-8?B?TW96aWxsYSBUaHVuZGVyYmlyZCDmtYvor5XniYg=?=
-Subject: Re: [PATCH] iommu: Fix iommu selftest running test mock domain fail
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- iommu@lists.linux.dev
-References: <20250909125552.125969-1-kanie@linux.alibaba.com>
- <20250909140500.GC699673@ziepe.ca>
-From: Guixin Liu <kanie@linux.alibaba.com>
-In-Reply-To: <20250909140500.GC699673@ziepe.ca>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 06/11] iommu: Compute iommu_groups properly for PCIe
+ MFDs
+To: Bjorn Helgaas <helgaas@kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, linux-pci@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>, galshalom@nvidia.com,
+ Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
+ kvm@vger.kernel.org, maorg@nvidia.com, patches@lists.linux.dev,
+ tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
+References: <20250909212457.GA1508122@bhelgaas>
+From: Donald Dutile <ddutile@redhat.com>
+In-Reply-To: <20250909212457.GA1508122@bhelgaas>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: SpjBezEIdwuPpmSNnqQRc5GJzdz85te4acML1WxpNkY_1757469566
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-Hi Jason,
 
-在 2025/9/9 22:05, Jason Gunthorpe 写道:
->> +	mutex_lock(&iommu_probe_device_lock);
->> +	rc = iommu_fwspec_init(&mdev->dev, mock_iommu.iommu_dev.fwnode);
->> +	if (rc) {
->> +		mutex_unlock(&iommu_probe_device_lock);
->> +		dev_err(&mdev->dev, "init fwspec failed:%d\n", rc);
-> No prints, we use fault injection to test these error paths, do not
-> print.
-Sure, removed in v2.
->> +		goto err_put;
+
+On 9/9/25 5:24 PM, Bjorn Helgaas wrote:
+> On Fri, Sep 05, 2025 at 03:06:21PM -0300, Jason Gunthorpe wrote:
+>> Like with switches the current MFD algorithm does not consider asymmetric
+>> ACS within a MFD. If any MFD function has ACS that permits P2P the spec
+>> says it can reach through the MFD internal loopback any other function in
+>> the device.
+>>
+>> For discussion let's consider a simple MFD topology like the below:
+>>
+>>                        -- MFD 00:1f.0 ACS != REQ_ACS_FLAGS
+>>        Root 00:00.00 --|- MFD 00:1f.2 ACS != REQ_ACS_FLAGS
+>>                        |- MFD 00:1f.6 ACS = REQ_ACS_FLAGS
+> 
+> REQ_ACS_FLAGS was renamed in an earlier patch.
+> 
+> I don't quite understand the "Root 00:00.00" notation.  I guess it
+> must refer to the root bus 00?  It looks sort of like a bridge, and
+> the ".00" makes it look sort of like a bus/device/function address,
+> but I don't think it is.
+> 
+>> This asymmetric ACS could be created using the config_acs kernel command
+>> line parameter, from quirks, or from a poorly thought out device that has
+>> ACS flags only on some functions.
+>>
+>> Since ACS is an egress property the asymmetric flags allow for 00:1f.0 to
+>> do memory acesses into 00:1f.6's BARs, but 00:1f.6 cannot reach any other
+>> function. Thus we expect an iommu_group to contain all three
+>> devices. Instead the current algorithm gives a group of [1f.0, 1f.2] and a
+>> single device group of 1f.6.
+>>
+>> The current algorithm sees the good ACS flags on 00:1f.6 and does not
+>> consider ACS on any other MFD functions.
+>>
+>> For path properties the ACS flags say that 00:1f.6 is safe to use with
+>> PASID and supports SVA as it will not have any portions of its address
+>> space routed away from the IOMMU, this part of the ACS system is working
+>> correctly.
+>>
+>> Further, if one of the MFD functions is a bridge, eg like 1f.2:
+>>
+>>                        -- MFD 00:1f.0
+>>        Root 00:00.00 --|- MFD 00:1f.2 Root Port --- 01:01.0
+>>                        |- MFD 00:1f.6
+> 
+> Same question.
+> 
+>> Then the correct grouping will include 01:01.0, 00:1f.0/2/6 together in a
+>> group if there is any internal loopback within the MFD 00:1f. The current
+>> algorithm does not understand this and gives 01:01.0 it's own group even
+>> if it thinks there is an internal loopback in the MFD.
+> 
+> s/it's/its/
+> 
+>> Unfortunately this detail makes it hard to fix. Currently the code assumes
+>> that any MFD without an ACS cap has an internal loopback which will cause
+>> a large number of modern real systems to group in a pessimistic way.
+>>
+>> However, the PCI spec does not really support this:
+>>
+>>     PCI Section 6.12.1.2 ACS Functions in SR-IOV, SIOV, and Multi-Function
+>>     Devices
+>>
+>>      ACS P2P Request Redirect: must be implemented by Functions that
+>>      support peer-to-peer traffic with other Functions.
+> 
+> I would include the PCIe r7.0 spec revision, even though the PCI SIG
+> seems to try to preserve section numbers across revisions.
+> 
+> It seems pretty clear that Multi-Function Devices that have an ACS
+> Capability and support peer-to-peer traffic with other Functions are
+> required to implement ACS P2P Request Redirect.
+> 
+>> Meaning from a spec perspective the absence of ACS indicates the absence
+>> of internal loopback. Granted I think we are aware of older real devices
+>> that ignore this, but it seems to be the only way forward.
+> 
+> It's not as clear to me that Multi-Function Devices that support
+> peer-to-peer traffic are required to have an ACS Capability at all.
+> 
+> Alex might remember more, but I kind of suspect the current system of
+> quirks is there because of devices that do internal loopback but have
+> no ACS Capability.
+> 
+and they are quirks b/c ... they violated the spec.... they are suppose
+to have an ACS Cap if they can do internal loopback p2p dma.
+
+I'm assuming the quirks that the current system of quirks impacts the
+groups and/or reachability, such that the quirks are accounted for, and that
+history isn't lost (and we have another regression issue).
+
+>> So, rely on 6.12.1.2 and assume functions without ACS do not have internal
+>> loopback. This resolves the common issue with modern systems and MFD root
+>> ports, but it makes the ACS quirks system less used. Instead we'd want
+>> quirks that say self-loopback is actually present, not like today's quirks
+>> that say it is absent. This is surely negative for older hardware, but
+>> positive for new HW that complies with the spec.
+>>
+>> Use pci_reachable_set() in pci_device_group() to make the resulting
+>> algorithm faster and easier to understand.
+>>
+>> Add pci_mfds_are_same_group() which specifically looks pair-wise at all
+>> functions in the MFDs. Any function with ACS capabilities and non-isolated
+>> aCS flags will become reachable to all other functions.
+> 
+> s/aCS/ACS/
+> 
+>> pci_reachable_set() does the calculations for figuring out the set of
+>> devices under the pci_bus_sem, which is better than repeatedly searching
+>> across all PCI devices.
+>>
+>> Once the set of devices is determined and the set has more than one device
+>> use pci_get_slot() to search for any existing groups in the reachable set.
+>>
+>> Fixes: 104a1c13ac66 ("iommu/core: Create central IOMMU group lookup/creation interface")
+>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>> ---
+>>   drivers/iommu/iommu.c | 189 +++++++++++++++++++-----------------------
+>>   1 file changed, 87 insertions(+), 102 deletions(-)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 543d6347c0e5e3..fc3c71b243a850 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -1413,85 +1413,6 @@ int iommu_group_id(struct iommu_group *group)
+>>   }
+>>   EXPORT_SYMBOL_GPL(iommu_group_id);
+>>   
+>> -static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+>> -					       unsigned long *devfns);
+>> -
+>> -/*
+>> - * For multifunction devices which are not isolated from each other, find
+>> - * all the other non-isolated functions and look for existing groups.  For
+>> - * each function, we also need to look for aliases to or from other devices
+>> - * that may already have a group.
+>> - */
+>> -static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
+>> -							unsigned long *devfns)
+>> -{
+>> -	struct pci_dev *tmp = NULL;
+>> -	struct iommu_group *group;
+>> -
+>> -	if (!pdev->multifunction || pci_acs_enabled(pdev, PCI_ACS_ISOLATED))
+>> -		return NULL;
+>> -
+>> -	for_each_pci_dev(tmp) {
+>> -		if (tmp == pdev || tmp->bus != pdev->bus ||
+>> -		    PCI_SLOT(tmp->devfn) != PCI_SLOT(pdev->devfn) ||
+>> -		    pci_acs_enabled(tmp, PCI_ACS_ISOLATED))
+>> -			continue;
+>> -
+>> -		group = get_pci_alias_group(tmp, devfns);
+>> -		if (group) {
+>> -			pci_dev_put(tmp);
+>> -			return group;
+>> -		}
+>> -	}
+>> -
+>> -	return NULL;
+>> -}
+>> -
+>> -/*
+>> - * Look for aliases to or from the given device for existing groups. DMA
+>> - * aliases are only supported on the same bus, therefore the search
+>> - * space is quite small (especially since we're really only looking at pcie
+>> - * device, and therefore only expect multiple slots on the root complex or
+>> - * downstream switch ports).  It's conceivable though that a pair of
+>> - * multifunction devices could have aliases between them that would cause a
+>> - * loop.  To prevent this, we use a bitmap to track where we've been.
+>> - */
+>> -static struct iommu_group *get_pci_alias_group(struct pci_dev *pdev,
+>> -					       unsigned long *devfns)
+>> -{
+>> -	struct pci_dev *tmp = NULL;
+>> -	struct iommu_group *group;
+>> -
+>> -	if (test_and_set_bit(pdev->devfn & 0xff, devfns))
+>> -		return NULL;
+>> -
+>> -	group = iommu_group_get(&pdev->dev);
+>> -	if (group)
+>> -		return group;
+>> -
+>> -	for_each_pci_dev(tmp) {
+>> -		if (tmp == pdev || tmp->bus != pdev->bus)
+>> -			continue;
+>> -
+>> -		/* We alias them or they alias us */
+>> -		if (pci_devs_are_dma_aliases(pdev, tmp)) {
+>> -			group = get_pci_alias_group(tmp, devfns);
+>> -			if (group) {
+>> -				pci_dev_put(tmp);
+>> -				return group;
+>> -			}
+>> -
+>> -			group = get_pci_function_alias_group(tmp, devfns);
+>> -			if (group) {
+>> -				pci_dev_put(tmp);
+>> -				return group;
+>> -			}
+>> -		}
+>> -	}
+>> -
+>> -	return NULL;
+>> -}
+>> -
+>>   /*
+>>    * Generic device_group call-back function. It just allocates one
+>>    * iommu-group per device.
+>> @@ -1534,44 +1455,108 @@ static struct iommu_group *pci_group_alloc_non_isolated(void)
+>>   	return group;
+>>   }
+>>   
+>> +/*
+>> + * All functions in the MFD need to be isolated from each other and get their
+>> + * own groups, otherwise the whole MFD will share a group.
+>> + */
+>> +static bool pci_mfds_are_same_group(struct pci_dev *deva, struct pci_dev *devb)
+>> +{
+>> +	/*
+>> +	 * SRIOV VFs will use the group of the PF if it has
+>> +	 * BUS_DATA_PCI_NON_ISOLATED. We don't support VFs that also have ACS
+>> +	 * that are set to non-isolating.
+> 
+> "SR-IOV" is more typical in drivers/pci/.
+> 
+>> +	 */
+>> +	if (deva->is_virtfn || devb->is_virtfn)
+>> +		return false;
+>> +
+>> +	/* Are deva/devb functions in the same MFD? */
+>> +	if (PCI_SLOT(deva->devfn) != PCI_SLOT(devb->devfn))
+>> +		return false;
+>> +	/* Don't understand what is happening, be conservative */
+>> +	if (deva->multifunction != devb->multifunction)
+>> +		return true;
+>> +	if (!deva->multifunction)
+>> +		return false;
+>> +
+>> +	/*
+>> +	 * PCI Section 6.12.1.2 ACS Functions in SR-IOV, SIOV, and
+> 
+> PCIe r7.0, sec 6.12.1.2
+> 
+>> +	 * Multi-Function Devices
+>> +	 *   ...
+>> +	 *   ACS P2P Request Redirect: must be implemented by Functions that
+>> +	 *   support peer-to-peer traffic with other Functions.
+>> +	 *
+>> +	 * Therefore assume if a MFD has no ACS capability then it does not
+>> +	 * support a loopback. This is the reverse of what Linux <= v6.16
+>> +	 * assumed - that any MFD was capable of P2P and used quirks identify
+>> +	 * devices that complied with the above.
+>> +	 */
+>> +	if (deva->acs_cap && !pci_acs_enabled(deva, PCI_ACS_ISOLATED))
+>> +		return true;
+>> +	if (devb->acs_cap && !pci_acs_enabled(devb, PCI_ACS_ISOLATED))
+>> +		return true;
+>> +	return false;
+>> +}
+>> +
+>> +static bool pci_devs_are_same_group(struct pci_dev *deva, struct pci_dev *devb)
+>> +{
+>> +	/*
+>> +	 * This is allowed to return cycles: a,b -> b,c -> c,a can be aliases.
+>> +	 */
+>> +	if (pci_devs_are_dma_aliases(deva, devb))
+>> +		return true;
+>> +
+>> +	return pci_mfds_are_same_group(deva, devb);
+>> +}
+>> +
+>>   /*
+>>    * Return a group if the function has isolation restrictions related to
+>>    * aliases or MFD ACS.
+>>    */
+>>   static struct iommu_group *pci_get_function_group(struct pci_dev *pdev)
+>>   {
+>> -	struct iommu_group *group;
+>> -	DECLARE_BITMAP(devfns, 256) = {};
+>> +	struct pci_reachable_set devfns;
+>> +	const unsigned int NR_DEVFNS = sizeof(devfns.devfns) * BITS_PER_BYTE;
+>> +	unsigned int devfn;
+>>   
+>>   	/*
+>> -	 * Look for existing groups on device aliases.  If we alias another
+>> -	 * device or another device aliases us, use the same group.
+>> +	 * Look for existing groups on device aliases and multi-function ACS. If
+>> +	 * we alias another device or another device aliases us, use the same
+>> +	 * group.
+>> +	 *
+>> +	 * pci_reachable_set() should return the same bitmap if called for any
+>> +	 * device in the set and we want all devices in the set to have the same
+>> +	 * group.
+>>   	 */
+>> -	group = get_pci_alias_group(pdev, devfns);
+>> -	if (group)
+>> -		return group;
+>> +	pci_reachable_set(pdev, &devfns, pci_devs_are_same_group);
+>> +	/* start is known to have iommu_group_get() == NULL */
+>> +	__clear_bit(pdev->devfn, devfns.devfns);
+>>   
+>>   	/*
+>> -	 * Look for existing groups on non-isolated functions on the same
+>> -	 * slot and aliases of those funcions, if any.  No need to clear
+>> -	 * the search bitmap, the tested devfns are still valid.
+>> -	 */
+>> -	group = get_pci_function_alias_group(pdev, devfns);
+>> -	if (group)
+>> -		return group;
+>> -
+>> -	/*
+>> -	 * When MFD's are included in the set due to ACS we assume that if ACS
+>> -	 * permits an internal loopback between functions it also permits the
+>> -	 * loopback to go downstream if a function is a bridge.
+>> +	 * When MFD functions are included in the set due to ACS we assume that
+>> +	 * if ACS permits an internal loopback between functions it also permits
+>> +	 * the loopback to go downstream if any function is a bridge.
+>>   	 *
+>>   	 * It is less clear what aliases mean when applied to a bridge. For now
+>>   	 * be conservative and also propagate the group downstream.
+>>   	 */
+>> -	__clear_bit(pdev->devfn & 0xFF, devfns);
+>> -	if (!bitmap_empty(devfns, sizeof(devfns) * BITS_PER_BYTE))
+>> -		return pci_group_alloc_non_isolated();
+>> -	return NULL;
+>> +	if (bitmap_empty(devfns.devfns, NR_DEVFNS))
+>> +		return NULL;
+>> +
+>> +	for_each_set_bit(devfn, devfns.devfns, NR_DEVFNS) {
+>> +		struct iommu_group *group;
+>> +		struct pci_dev *pdev_slot;
+>> +
+>> +		pdev_slot = pci_get_slot(pdev->bus, devfn);
+>> +		group = iommu_group_get(&pdev_slot->dev);
+>> +		pci_dev_put(pdev_slot);
+>> +		if (group) {
+>> +			if (WARN_ON(!(group->bus_data &
+>> +				      BUS_DATA_PCI_NON_ISOLATED)))
+>> +				group->bus_data |= BUS_DATA_PCI_NON_ISOLATED;
+>> +			return group;
+>> +		}
 >> +	}
->> +	mutex_unlock(&iommu_probe_device_lock);
-> Is this lock necessary? The device isn't added yet so it should be
-> impossible for the probe side to observe it, right?
-
-In dev_iommu_get(), there is a 
-"lockdep_assert_held(&iommu_probe_device_lock)",
-
-if dont lock here, WARN_ON will be triggered many times in debug kernel 
-during
-
-testing.
-
-> Exporting the lock is my biggest concern with this..
->
-> Jason
-
-Best Regards,
-
-Guixin Liu
+>> +	return pci_group_alloc_non_isolated();
+>>   }
+>>   
+>>   /* Return a group if the upstream hierarchy has isolation restrictions. */
+>> -- 
+>> 2.43.0
+>>
+> 
 
