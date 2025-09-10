@@ -1,133 +1,107 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E34001E5219;
-	Wed, 10 Sep 2025 07:33:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id AD7EB315790;
+	Wed, 10 Sep 2025 10:08:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757489629; cv=none; b=FABDb6HuMJeDZvBOvhzjWHoIBvNmRdJBaRlu7qBSIKYTxtTVtNgO8qfYmBFWEp5AzheyGFtCzOwfnIdu0h8mFEAUjSh2XOKGlTO1tls7SVvmQq7t9cVTH6nf9TeoDhvPOv0eVOCtf4t+FipGuE5opkgmkKXDm6CN6TRhvwVqxlI=
+	t=1757498907; cv=none; b=f/zVJ1c6yFYHKg2hrwDNECAiFaxn5/a6qld5TGSgGHuF260YhJVGYbJyWJHmrrovCUwOBPsd359x1y8N3sFNlS+Qq8UEQuS9MIuNgQuRsV39JCR6gwYf04Vy2ufaKWyyeqZGn79DF44fhcKCFbXrZxQVRpKs+GUiwSyhaDe2YIc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757489629; c=relaxed/simple;
-	bh=/XnpTWNk/kv+NQgAdTS1A1Ab76RuactuTcyAflw/L7w=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ao2FaGswLqsDr1A8ZnOZlTQxQtMQgde0Ba+gkapSTeEksQHoxHvAVG0GwRCb8bZJxBg5NzqwtyXHeCbu3UMG/5ET60hqQFdI8/67i/UQ5VZyNmFaeCUTT2+gDu2nTlW+jh8OhKJkIPR9jiUdaPIg/QVyod+3Pgr48zSMTWo/Akg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qaweH+z8; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qaweH+z8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB517C4CEF0;
-	Wed, 10 Sep 2025 07:33:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757489628;
-	bh=/XnpTWNk/kv+NQgAdTS1A1Ab76RuactuTcyAflw/L7w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=qaweH+z8BxmkKE1ouYJdFNhlYQj7OSwPR6vei84660qDGY3b2ayba8Xa4NjRhRKqQ
-	 epTHEwqDw7OOhz42xo6a3A9e4uehd2Gr9neNldgZ9djYFdeMgDg6V+foFy5QOBv1Uz
-	 i5lSzewoRPlG06mEm7cYk9DdBcniCZXb3KefyLLOO0rU0dNm8ZAzQghWHi8bEbRCZZ
-	 itXMl6OPuDhFdNfzXYphQv+ZxGx9804vA4czk6CZ+ZJKTCTXrw2LrYXR+A50evfJXv
-	 0Dz0F9RPM0QrdZrLUO7hYRN5OtTtEbg/6vJXWYoBn7vmo0i1GvF7n0DyV82UuAVK0n
-	 lJ87BRzJ4JaEg==
-Date: Wed, 10 Sep 2025 09:33:45 +0200
-From: Maxime Ripard <mripard@kernel.org>
-To: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
-	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
-	"T.J. Mercier" <tjmercier@google.com>, Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Jonathan Corbet <corbet@lwn.net>
-Cc: Andrew Davis <afd@ti.com>, Jared Kangas <jkangas@redhat.com>, 
-	Mattijs Korpershoek <mkorpershoek@kernel.org>, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	iommu@lists.linux.dev, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v7 0/5] dma-buf: heaps: Create a CMA heap for each CMA
- reserved region
-Message-ID: <20250910-vigorous-attractive-gorilla-af6fec@houat>
-References: <20250721-dma-buf-ecc-heap-v7-0-031836e1a942@kernel.org>
- <20250826-vagabond-catfish-of-courtesy-cbfa76@houat>
+	s=arc-20240116; t=1757498907; c=relaxed/simple;
+	bh=MnqbWyDA2EOd2xFAHwBhdGG8jY7mWY+9asdBzyGANb4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=j1Ywt9a7jJsdssRyTednzNOIRlWc7BQykJJEu5SkxOumb3LMEV4pDD7mU6DYyAIuYNUs2LK9b6M1TXucMtLz/bK3uoX5Ke2ftSCM+MXTwTaWP7iZlbYNuifyq2Kc4DlfJH3ktpICMmphQhYn47FSRml6PGeT002qUBa4mW8Y73E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AFAC71756;
+	Wed, 10 Sep 2025 03:08:16 -0700 (PDT)
+Received: from [10.1.25.55] (e122027.cambridge.arm.com [10.1.25.55])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0F11C3F66E;
+	Wed, 10 Sep 2025 03:08:21 -0700 (PDT)
+Message-ID: <ea4b657e-13fa-485e-9d3c-5b395ad3d8e2@arm.com>
+Date: Wed, 10 Sep 2025 11:08:19 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha384;
-	protocol="application/pgp-signature"; boundary="nkmy2zjqcls5g6m2"
-Content-Disposition: inline
-In-Reply-To: <20250826-vagabond-catfish-of-courtesy-cbfa76@houat>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH] arm64: swiotlb: dma: its: Ensure shared buffers are
+ properly aligned
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Suzuki K Poulose
+ <suzuki.poulose@arm.com>, "Aneesh Kumar K.V" <aneesh.kumar@kernel.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-coco@lists.linux.dev, will@kernel.org, maz@kernel.org,
+ tglx@linutronix.de, robin.murphy@arm.com, akpm@linux-foundation.org
+References: <20250905055441.950943-1-aneesh.kumar@kernel.org>
+ <aLrh_rbzWLPw9LnH@arm.com> <yq5aikht1e0z.fsf@kernel.org>
+ <aL7AoPKKKAR8285O@arm.com> <b5ee1ab3-f91f-4982-95c7-516f4968a6c9@arm.com>
+ <20250908145845.GA699673@ziepe.ca>
+ <d8687b08-6bb4-4645-8172-72936a51b0d8@arm.com> <aL8RdvuDbtbUDk2D@arm.com>
+Content-Language: en-GB
+From: Steven Price <steven.price@arm.com>
+In-Reply-To: <aL8RdvuDbtbUDk2D@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+On 08/09/2025 18:25, Catalin Marinas wrote:
+> On Mon, Sep 08, 2025 at 04:39:13PM +0100, Steven Price wrote:
+>> On 08/09/2025 15:58, Jason Gunthorpe wrote:
+>>> If ARM has proper faulting then you don't have an issue mapping 64K
+>>> into a userspace and just segfaulting the VMM if it does something
+>>> wrong.
+>>
+>> ...the VMM can cause problems. If the VMM touches the memory itself then
+>> things are simple - we can detect that the fault was from user space and
+>> trigger a SIGBUS to kill of the VMM.
+> 
+> Similarly for uaccess.
+> 
+>> But the VMM can also attempt to pass the address into the kernel and
+>> cause the kernel to do a get_user_pages() call (and this is something we
+>> want to support for shared memory). The problem is if the kernel then
+>> touches the parts of the page which are protected we get a fault with no
+>> (easy) way to relate back to the VMM.
+> 
+> I assume the host has a mechanism to check that the memory has been
+> marked as shared by the guest and the guest cannot claim it back as
+> private while the host is accessing it (I should dig out the CCA spec).
+> 
+>> guest_memfd provided a nice way around this - a dedicated allocator
+>> which doesn't allow mmap(). This meant we don't need to worry about user
+>> space handing protected memory into the kernel. It's now getting
+>> extended to support mmap() but only when shared, and there was a lot of
+>> discussion about how to ensure that there are no mmap regions when
+>> converting memory back to private.
+> 
+> That's indeed problematic and we don't have a simple way to check that
+> a user VMM address won't fault when accessed via the linear map. The
+> vma checks we get with mmap are (host) page size based.
+> 
+> Can we instead only allow mismatched (or smaller) granule sizes in the
+> guest if the VMM doesn't use the mmap() interface? It's not like
+> trapping TCR_EL1 but simply rejecting such unaligned memory slots since
+> the host will need to check that the memory has indeed been shared. KVM
+> can advertise higher granules only, though the guest can ignore them.
+> 
 
---nkmy2zjqcls5g6m2
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v7 0/5] dma-buf: heaps: Create a CMA heap for each CMA
- reserved region
-MIME-Version: 1.0
+Yes, mismatched granules sizes could be supported if we disallowed
+mmap(). This is assuming the RMM supports the required size - which is
+currently true, but the intention is to optimise the S2 in the future by
+matching the host page size.
 
-On Tue, Aug 26, 2025 at 09:36:03AM +0200, Maxime Ripard wrote:
-> Hi,
->=20
-> On Mon, Jul 21, 2025 at 01:17:29PM +0200, Maxime Ripard wrote:
-> > Here's another attempt at supporting user-space allocations from a
-> > specific carved-out reserved memory region.
-> >=20
-> > The initial problem we were discussing was that I'm currently working on
-> > a platform which has a memory layout with ECC enabled. However, enabling
-> > the ECC has a number of drawbacks on that platform: lower performance,
-> > increased memory usage, etc. So for things like framebuffers, the
-> > trade-off isn't great and thus there's a memory region with ECC disabled
-> > to allocate from for such use cases.
-> >=20
-> > After a suggestion from John, I chose to first start using heap
-> > allocations flags to allow for userspace to ask for a particular ECC
-> > setup. This is then backed by a new heap type that runs from reserved
-> > memory chunks flagged as such, and the existing DT properties to specify
-> > the ECC properties.
-> >=20
-> > After further discussion, it was considered that flags were not the
-> > right solution, and relying on the names of the heaps would be enough to
-> > let userspace know the kind of buffer it deals with.
-> >=20
-> > Thus, even though the uAPI part of it had been dropped in this second
-> > version, we still needed a driver to create heaps out of carved-out mem=
-ory
-> > regions. In addition to the original usecase, a similar driver can be
-> > found in BSPs from most vendors, so I believe it would be a useful
-> > addition to the kernel.
-> >=20
-> > Some extra discussion with Rob Herring [1] came to the conclusion that
-> > some specific compatible for this is not great either, and as such an
-> > new driver probably isn't called for either.
-> >=20
-> > Some other discussions we had with John [2] also dropped some hints that
-> > multiple CMA heaps might be a good idea, and some vendors seem to do
-> > that too.
-> >=20
-> > So here's another attempt that doesn't affect the device tree at all and
-> > will just create a heap for every CMA reserved memory region.
-> >=20
-> > It also falls nicely into the current plan we have to support cgroups in
-> > DRM/KMS and v4l2, which is an additional benefit.
-> >=20
-> > Let me know what you think,
-> > Maxime
->=20
-> Any chance we can get this merged?
+But I'm not sure how useful that would be. The VMMs of today don't
+expect to have to perform read()/write() calls to access the guest's
+memory, so any user space emulation would need to also be updated to
+deal with this restriction.
 
-Guys, can we move forward on this?
+But that seems like a lot of effort to support something that doesn't
+seem to have a use case. Whereas there's an obvious use case for the
+guest and VMM sharing one (or often more) pages of (mapped) memory. The
+part that CCA makes this tricky is that we need to pick the VMM's page
+size rather than the guest's.
 
-Maxime
+Steve
 
---nkmy2zjqcls5g6m2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaMEp2QAKCRAnX84Zoj2+
-dsg7AXsGZJPtUsHUnHvNADap4iyMsh/caF3U64tQkHWWAcnVwP1ptV6A6FmBCXx9
-Lw0xiv8BgKYytEtc6THWvRv6a29zx8LVSv9EuNTYDZshPTgSqETUzAx4CVEAAA/O
-//tQ1dcNeA==
-=tTl0
------END PGP SIGNATURE-----
-
---nkmy2zjqcls5g6m2--
