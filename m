@@ -1,224 +1,187 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2087.outbound.protection.outlook.com [40.107.243.87])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE659274666;
-	Wed, 10 Sep 2025 17:34:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.87
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757525655; cv=fail; b=KnDn8mYcrxd1TatslOkJo54P4h31/5hzYf5S6Ps/Rt9JvCGMGO60+lbk/efMXg6nTUVZBeMFe/JUW5o9SWSj/U5K5r7aC/S70GfLUzdJDrpZbe6mQJUBOzisVbmJWUrj8ven3pDUsqq8ox0HRUYuOptiCtT4mOA9tgCpFlT2AJ4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757525655; c=relaxed/simple;
-	bh=OyLwuCaDRVCd5SzN2NcZTr38J0yHWiHQp0KhQ3kc/wo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=n7db602Dzdf84erCAhw6OxHrcpsqbIUgem7Jn6pJ+6Eiva67+Yd7aoi5erhBcrg4t3jqtb2aRceb67ubnFrHANcj7zihS6oWJUjtYEoZ8pIzefLnBspQ6x3Gyn5uWJXylbDgeMfobHZ3LIa6JJSLDghvaDK2AaA0C7MsKC0CiKI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=aFNvJqHq; arc=fail smtp.client-ip=40.107.243.87
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE33425B1C7;
+	Wed, 10 Sep 2025 17:39:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1757525965; cv=none; b=A3BTyVRC0D4lubGpH5HaZAJHfWfu3iVN3bvHtalBwQ0zEUpO2aPylY68S6FrBU2lUNLKXubau05Gh9FMWtQroiigoNaDSu/6vnetTth0jD0wn3dqvZAIGCw/ptFouiI0PnsyFk6gn8ptKyIqQllrxwLdAHczPyP328ZHmTOMhYQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1757525965; c=relaxed/simple;
+	bh=D0MKaZD2Bc9mfUZsr9ayTEVMOhpnqSdYew565pJ4bks=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Q3YCzUMku8QrkGtuANwb3eS3rAS0DU3vNZ6+TKJ9e2BRlnstZgNyAUqn4CupIWRAjFPdtOp5XlcTEOW5mYGZeX6kNgcdqqZXzbgv/vBHIFkCkw80x7iTMvAUDmmDoO/gY5BL4IC1rgX3ewxK73/GbyGn8y3NYJQuuGMDdt4gV7g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TrgE+i+o; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="aFNvJqHq"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=IMWM/lal5DEH/W2Mute1yOSvCbAfuK/dsy7CFQOJ3I5pObwoCeezux8Wo3lIH9JeiEpvgT6jp00M0OdWlh1bbRXdhAiBmHzto3QKXvd1Q8x81k/FCyvveFlNzBCLvxN2FpMVggXLvp9PjPe1QJWfwWAx3BnBzGyjw9vn94B6E5kuet259JyMiLkz9y9ckUfvC9w21O8GK6TFgClpn24voZf61hEq4eP1vqN5uSCob9l1GVZfwIh0Hp5Vem9Gur5hUWCqgVREcpXd7l1paVQslODHi6BHNBGjGaNKGGFK5jyoCePo98Bz3H+un3W0/n7YPtIMII9RUjDDA7NnHBgtGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Zsfklg51Vt4B653Ndr/jQSqkJF7YiVWEDwrJChU5HBQ=;
- b=VBp7eSgiYtlvfdNfHrZyq+bR5SgSov2GRHtGmeBJileXoeTwBrnrlSWvNY3VIW7dl+T/ZokpsFYo6iS+2zarT5puv4Dt6IFp+nvm2i+p4ils4gXzrH7SCGGLU9PRam8nPGZpOJJdB7+O2TqnkukDn5dEPhmODMgpTeCuqMddUFcNl95QTP7rGQSuknKY9OSk1lUrztPIFa3T2atvPlC7JBXoEvoFOphbgFLwlS4hwc8Z7j0rlc9Cx7zQ3B6VMoFlstII8cP1ztplcqgaQzVjnb0VBVOz0Y3Q+LaLH+SOYL658n8x9mYcp+YIxuEYDerlpunGOqe5nyJvVvm031MPVA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zsfklg51Vt4B653Ndr/jQSqkJF7YiVWEDwrJChU5HBQ=;
- b=aFNvJqHqY7jXFWliFyzp6fyhrFKdnc8pI11Bsgm839c78F2BWJ7DlbYnx50+t1HLq4Wt9uygIbMZ+BAPt0/7i5WWArI4BOlif2HkGZoMwsOHJha52FWUP0V2p87d45edGiKE88vzkMiFEdwgP7qcSMCYj69BI1f723Id5TRwu1FwO/tQh4BPCStqe77UAWsCxb+4pH/6KqAi5zps3g8hrnUQbOWmlamUdgNL0ycCw6QWkVp0c66MBILge7tgqodbSL1GX7keRlokzwgFNJri+Exx1TmcCG25np6lnVL0W6Hwv11DelpmewemrTNqtfaAfTvj07vkKqKC0qb71wAjIQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM4PR12MB5769.namprd12.prod.outlook.com (2603:10b6:8:60::6) by
- DM4PR12MB6085.namprd12.prod.outlook.com (2603:10b6:8:b3::16) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9094.22; Wed, 10 Sep 2025 17:34:10 +0000
-Received: from DM4PR12MB5769.namprd12.prod.outlook.com
- ([fe80::f5f:6beb:c64a:e1ff]) by DM4PR12MB5769.namprd12.prod.outlook.com
- ([fe80::f5f:6beb:c64a:e1ff%5]) with mapi id 15.20.9094.021; Wed, 10 Sep 2025
- 17:34:06 +0000
-Date: Wed, 10 Sep 2025 14:34:05 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>, linux-pci@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Donald Dutile <ddutile@redhat.com>, galshalom@nvidia.com,
-	Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
-	kvm@vger.kernel.org, maorg@nvidia.com, patches@lists.linux.dev,
-	tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
-Subject: Re: [PATCH v3 10/11] PCI: Check ACS DSP/USP redirect bits in
- pci_enable_pasid()
-Message-ID: <20250910173405.GC922134@nvidia.com>
-References: <10-v3-8827cc7fc4e0+23f-pcie_switch_groups_jgg@nvidia.com>
- <20250909214350.GA1509037@bhelgaas>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250909214350.GA1509037@bhelgaas>
-X-ClientProxiedBy: YT4PR01CA0154.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:ac::20) To DM4PR12MB5769.namprd12.prod.outlook.com
- (2603:10b6:8:60::6)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TrgE+i+o"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AA881C4CEEB;
+	Wed, 10 Sep 2025 17:39:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757525964;
+	bh=D0MKaZD2Bc9mfUZsr9ayTEVMOhpnqSdYew565pJ4bks=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=TrgE+i+oRRANN+tPZkSNTudZ+pYmp3aNyGdeb9fgaGq9ZkG1PI/XJSCVGxRwC5vQa
+	 06XseEQmXEw/y8tTtD+5xzJhJE5vKDOlZHAyKxNXnPWY7DipNaEhY2eeyZd5278/j0
+	 9D2SuoHJUdwnUc9OZKkU/Ka6HTcqwrtRatXH2bM91dRaCnZyls9R1yJxUshyc3wvFs
+	 kNJwOiMyRrDvy+WzrR2HAahLb10BW1KGHuaLC5i2P1A3iXFccu3ReQ8Tgjy1Bd8jZD
+	 pbD9g6SKKyC4hFDl/53Y2tZz0nG+Wo1KULjtKnDixtOiDEOCSBP6BgN8xxaOUrjQqY
+	 r8Gda0tpV1Zdg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A1E7CAC587;
+	Wed, 10 Sep 2025 17:39:24 +0000 (UTC)
+From: Manivannan Sadhasivam via B4 Relay <devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org>
+Subject: [PATCH 0/2] PCI: Fix ACS enablement for Root Ports in DT platforms
+Date: Wed, 10 Sep 2025 23:09:19 +0530
+Message-Id: <20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5769:EE_|DM4PR12MB6085:EE_
-X-MS-Office365-Filtering-Correlation-Id: c12cbadc-c4cd-4e95-990f-08ddf0903e37
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?iqmG6bF/iK0TEdYe/DA89AQQnNQbkMAkBrT3JdU7vhlOP+OvdpmMb7SDth09?=
- =?us-ascii?Q?puRRdS2ehhYgOiRcSqjWhAAdirVX/prpnJttm/LSB3df+48w0Bam462jL48H?=
- =?us-ascii?Q?Toy/O1D8EmrzQINNvyy4hvHjYZDruNaJcApa36mYslo94Iv//+nAUehNSuAt?=
- =?us-ascii?Q?Zqyu47Aim44DvYXVXNzB8EinbHa1jf4CbEVggOsoapZMO9+MXEB9LLw+wToO?=
- =?us-ascii?Q?o/IuXvF77AAGTo3IISBQI0l7mL3UEDqdg2HOHL+LI173VXNodxN2hI6m/89y?=
- =?us-ascii?Q?/ACqXbhU2W+pc6zc0Zb0mTFyRdTck7NClTIXtdNaUQyNprl7U1Pqaocx00+/?=
- =?us-ascii?Q?WyHMw3fAy2zoiSvCknhJBNV12U5kovNPSCZDRegrH+FY6BC2OPCbBcKbT3J3?=
- =?us-ascii?Q?sVa6K9SntmwPs6DSkPGG7I3mHcneT2ldbzbPEcygjusEAn4hWhf86PIMuFOp?=
- =?us-ascii?Q?TiKl8fxsWMSBMsBPaNLJsiabSfb6kVMB1SulqY33JpCIHHdeAZ97V4A/kFKR?=
- =?us-ascii?Q?k/APaPGl3CcX0EBuWzkADMuotK0uE9e7q/9P8IlB2RvijhF6wT+L4Ewm+7O1?=
- =?us-ascii?Q?KJJ+h8LF0Fy3OOgBB/WbIsOrvbtT9GAN1fsnHe97QjwPzN88sdF0sNVaqXsQ?=
- =?us-ascii?Q?sPwJg40cVK9NKjRWxB99WJl/U7JzmoOeUb481iyVUErH5pF8+OlHjVXrpESl?=
- =?us-ascii?Q?12Zmwq7dbHDFqCLuBZnaaIe1fW+8dyxjmHBvgcIICANKHTyu5U2PdtKoDS6D?=
- =?us-ascii?Q?6JkrcYZj2sOUezrtdZtGqEMBE+Bn2TXhA+Uk/3OZmGDJd4m+u868KdMJGDuv?=
- =?us-ascii?Q?7qLGYAWjjHALAZqQQx9zZGoRhtGujO6YcmH6luJqAbsDT60zKUbAivMFZDgq?=
- =?us-ascii?Q?+cp/SbuDP8a08d9/iLJFCZSdxROln7eNUp2lb4kB0lv5FJaG8Gbt+GzKfdIs?=
- =?us-ascii?Q?WAmO0pjvJPxniIgDXCZQXyCj4ECq0aXx24EiiW7Puas9LYhmxVDHPlVmb54k?=
- =?us-ascii?Q?eHph7J90WvAm58IjqktAJNOMGda7T9yGwZap9/0Nl5plvF+xSCT8wgHI+G2u?=
- =?us-ascii?Q?f9aC0pczhbiVXSq6ctqMa47bbhkN6G0KnRsL1837MrO5Y3qniILE3xyWFoaX?=
- =?us-ascii?Q?cn1L38Qaol2hJItqn6d9sjTJGTBT3r2Cm3Peq/QsolZA2SYUTb9IfeHjePgj?=
- =?us-ascii?Q?LpLr82NXAuPBAnnKrNezwbF0RREhkRKI/NEkS/92P3Ck97NN59WYCT69eR0I?=
- =?us-ascii?Q?KP+tRzNVQCxiT5x0RKbWnQic5jazVL4cWzDBJ1tTTK+9qZ4eg3fpjTCqBnmb?=
- =?us-ascii?Q?n/Ftec495AKAKrJmX6Qlu+0brtW6Rz9Adee/adFL5IQ6gD+lPmUAdsr+BkXU?=
- =?us-ascii?Q?6MPuXS0Y9JBBnM2Ir2WfZqldoMWFW2IkBPtVYG2wxL2GjW4JYrgQ8YnrugV7?=
- =?us-ascii?Q?FwQriegNCHo=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5769.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?H92cnVSt+nfc0leaworlXTRpWhhVkO98e7xp5wuMTzA2USOBJ+x0nJb3sz+L?=
- =?us-ascii?Q?XbsGmlQTaKT+rUcs9j8I0efLTcfAnLiKijSshOLlglvdEmCPrMju3CZzGxpD?=
- =?us-ascii?Q?0xeuj2MsiEDycNBZ89g13y5xP5BKU4tB5rneR8aWnPgF/XuTaG+zbRoPjHod?=
- =?us-ascii?Q?awqm56bzcmxzIgoM/8NufTJ7UHUWSAMEDR1dE8gZmVSagpTq79mJ85FrfyXE?=
- =?us-ascii?Q?0ELC06D8z5vShaaFojA0/mjyG381GQpxkYjC4HF0dPJH/EPOGAXsVOwLgP9X?=
- =?us-ascii?Q?eKvZg57YGdmKgGQbPwa8aqgC7YfNXvRQYsj9caZNSVgaHZvOvHPcV0fwhbyu?=
- =?us-ascii?Q?2fS+Jo2V6MrH1+DcERVOv+dYLZKC6GBrXaC7aCEM8P/BPlcnXoGgE34ugk0G?=
- =?us-ascii?Q?FJbJp62lYOSMJGuNiI3qDoYomHXRI8Jg7UPKU6XI3/yPXhdImdjtlPgjIGYy?=
- =?us-ascii?Q?NOSM8/CKZB1Qry1kYeYTLzkga//I7YLIzcKb/nPYFmy8me2TtfRN5c1Zu1Wa?=
- =?us-ascii?Q?qlUV6uM4YpkFMKDU4dSTVB+PJAJVzBx3spfhctcp7nI6QmUnsrtZXirih86A?=
- =?us-ascii?Q?u7yDi3/4FE42JecjHC/zIZV3NaDfhvmem513dTcDbM+OK8eCqHN44y7jkN26?=
- =?us-ascii?Q?/tAdMiKfGosq144NFehkILKa3s2mbV5h+Ab7vGE4XpnqXP01Go6o/0dMBfdB?=
- =?us-ascii?Q?tOVOU5cWsIwCLxqxQHuiXVC3KfUzrN/UeC8ojsil+0K/ZrXnyROz8D8qgGEa?=
- =?us-ascii?Q?k4tnrIifPRJSGr99Ob+oy5LCJVDyRfcVkLa+l4IKH7Di1NaK82jP+zridHnm?=
- =?us-ascii?Q?o+RYudIouX7cFpEY7Gn7KkUDZyx9D3JnJRlaJHZbNJZwRFD5EptiJsg77N7R?=
- =?us-ascii?Q?/sz826+JmXORvf3q8s6Pa+TXLuurdBaFeTQ8Ge8IqIb0BbL8gZEirbazWdeS?=
- =?us-ascii?Q?japwm7PlxaWDHebbZ7EBdOFc5bZGrmkfAu6RbGbCpXaJKWyg5V5hI6P8OgtW?=
- =?us-ascii?Q?1DCvDA2aUpapHV1c+FiV9jBmWUIIY6IfBak5qx4/bbh5uNX/ZGv3jQP3oG0c?=
- =?us-ascii?Q?5+BG2VDQpLjfGopZUTUTmmwD5UQzdoJr/htkoJ3i7lO/Pxx8PER8LiDIIMCM?=
- =?us-ascii?Q?m48aUaAl2x21CltAfP28QaKtXQPPwVxDU2biYIMa/cdDg3MIFWSWdFpja9Yq?=
- =?us-ascii?Q?EG3+2kesXBKQsn4crw8p1n+xdiH6TgXiRFoaLQWzepqNJCn7zPF9gaY3JchD?=
- =?us-ascii?Q?iXs1GuUoIq3Oyr3oVoeYFgiUzC6IGDFMjuYL/TkwrdJcl13OouFlJbMT60pC?=
- =?us-ascii?Q?Qr/gAfE2DGdu0kDtcuRKj+wfC5YOrohTaXEU8MwubGoAZ/3Vn6HDzQszHjr9?=
- =?us-ascii?Q?a9wsh4Xrqup8XqjFEV37C61Kv0xCAnGf0DjP87+GdGYWGEehN9jYRtB75hR9?=
- =?us-ascii?Q?Uc1uh1C/Q4r8UZvwg4vT6Yhld7nIl+qCPAmQFHuzYVC05K+ZgPY9bmeJ6s9E?=
- =?us-ascii?Q?yqWaURvp8I+a5y81MTPAWSkAXhssFTUwogObnCioGB5lQrNeFSOn6zvQng6f?=
- =?us-ascii?Q?uCkZlhPGimbvjvG4vRk=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c12cbadc-c4cd-4e95-990f-08ddf0903e37
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5769.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2025 17:34:06.8587
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: BwBjfBnUmtmjQthSG5oKyXdRY649+uzX0cvxwmbgeLXRDkL57eF3ko5bAOFzEqBQ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6085
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAMe3wWgC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDI1MDS0MD3YLkTN3E5GLd5CSTtERjSwvjRKNkJaDqgqLUtMwKsEnRsbW1AP9
+ n8A9ZAAAA
+X-Change-ID: 20250910-pci-acs-cb4fa3983a2c
+To: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>, 
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Joerg Roedel <jroedel@suse.de>, iommu@lists.linux.dev, 
+ Anders Roxell <anders.roxell@linaro.org>, 
+ Naresh Kamboju <naresh.kamboju@linaro.org>, 
+ Pavankumar Kondeti <quic_pkondeti@quicinc.com>, 
+ Xingang Wang <wangxingang5@huawei.com>, 
+ Marek Szyprowski <m.szyprowski@samsung.com>, 
+ Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, 
+ stable@vger.kernel.org
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5832;
+ i=manivannan.sadhasivam@oss.qualcomm.com; h=from:subject:message-id;
+ bh=D0MKaZD2Bc9mfUZsr9ayTEVMOhpnqSdYew565pJ4bks=;
+ b=owEBbQGS/pANAwAKAVWfEeb+kc71AcsmYgBowbfKaSSs6qB9cQXVcS7V+k7hyZRMibbBHAsW/
+ ggxoOlb+U+JATMEAAEKAB0WIQRnpUMqgUjL2KRYJ5dVnxHm/pHO9QUCaMG3ygAKCRBVnxHm/pHO
+ 9Zq4CACmAWwLE/yoLMnF2wrmoe/PZCDW8qpAszZ0rM3Gwv6j1WNbP2N/mZoGBxYlt4rswVD2I8F
+ xlDCmGidLBzFUgoRWDr9/IEQnT8MOoYSqO4Jc3dAtDk1WOKbwGw0DmCXe4YWGUGi/YTqlRzaxnt
+ yYR5ZtcAh26QdL09N0sJPnUJG8bdBnpy/5hSHKoTBkEMCLx/Gun2CZslCPKxsAVsrHBQYhoU5Q1
+ nPrCD0lAVj9mPErgbuUDeyaZ/ktxJuiChpNTlW2S6f7AnUVPAzWIE/WHP1pp2dJ2hEA19+xNZw9
+ 059ey1kADsNPqzfuai5tEUwwa7TiB9E4jU2xEm/76g9/buT9
+X-Developer-Key: i=manivannan.sadhasivam@oss.qualcomm.com; a=openpgp;
+ fpr=C668AEC3C3188E4C611465E7488550E901166008
+X-Endpoint-Received: by B4 Relay for
+ manivannan.sadhasivam@oss.qualcomm.com/default with auth_id=461
+X-Original-From: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Reply-To: manivannan.sadhasivam@oss.qualcomm.com
 
-On Tue, Sep 09, 2025 at 04:43:50PM -0500, Bjorn Helgaas wrote:
-> > +/*
-> > + * The spec is not clear what it means if the capability bit is 0. One view is
-> > + * that the device acts as though the ctrl bit is zero, another view is the
-> > + * device behavior is undefined.
-> > + *
-> > + * Historically Linux has taken the position that the capability bit as 0 means
-> > + * the device supports the most favorable interpretation of the spec - ie that
-> > + * things like P2P RR are always on. As this is security sensitive we expect
-> > + * devices that do not follow this rule to be quirked.
-> 
-> Interpreting a 0 Capability bit, i.e., per spec "the component does
-> not implement the feature", as "the component behaves as though the
-> feature is always enabled" sounds like a stretch to me.
+Hi,
 
-I generally agree, but this is how it is implemented today.
+This series fixes the long standing issue with ACS in DT platforms. There are
+two fixes in this series, both fixing independent issues on their own, but both
+are needed to properly enable ACS on DT platforms (well, patch 1 is only needed
+for Juno board, but that was a blocker for patch 2, more below...).
 
-I've revised this text, I think it is actually OK and supported by the
-spec, but it is subtle:
+Issue(s) background
+===================
 
-/*
- * The spec has specific language about what bits must be supported in an ACS
- * capability. In some cases if the capability does not support the bit then it
- * really acts as though the bit is enabled. e.g.:
- *
- *    ACS P2P Request Redirect: must be implemented by Root Ports that support
- *     peer-to-peer traffic with other Root Ports
- *
- * Meaning if RR is not supported then P2P is definately not supported and the
- * device is effectively behaving as if RR is set.
- *
- * Summarizing the spec requirements:
- *      DSP   Root Port   MFD
- * SV    M        M        M
- * RR    M        E        E
- * CR    M        E        E
- * UF    M        E        N/A
- * TB    M        M        N/A
- * DT    M        E        E
- *   - M=Must Be Implemented
- *   - E=If not implemented the behavior is effecitvely as though it is enabled.
- *
- * Therefore take the simple approach and assume the above flags are enabled
- * if the cap is 0.
- *
- * ACS Enhanced eliminated undefined areas of the spec around MMIO in root ports
- * and switch ports. If those ports have no MMIO then it is not relevant.
- * PCI_ACS_UNCLAIMED_RR eliminates the undefined area around an upstream switch
- * window that is not fully decoded by the downstream windows.
- *
- * Though the spec is written on the assumption that existing devices without
- * ACS Enhanced can do whatever they want, Linux has historically assumed what
- * is now codified as PCI_ACS_DSP_MT_RB | PCI_ACS_DSP_MT_RR | PCI_ACS_USP_MT_RB
- * | PCI_ACS_USP_MT_RR | PCI_ACS_UNCLAIMED_RR.
- *
- * Changing how Linux understands existing ACS prior to ACS Enhanced would break
- * alot of systems.
- *
- * Thus continue as historical Linux has always done if ACS Enhanced is not
- * supported, while if ACS Enhanced is supported follow it.
- *
- * Due to ACS Enhanced bits being force set to 0 by older Linux kernels, and
- * those values would break old kernels on the edge cases they cover, the only
- * compatible thing for a new device to implement is ACS Enhanced supported with
- * the control bits (except PCI_ACS_IORB) wired to follow ACS_RR.
- */
+Back in 2024, Xingang Wang first noted a failure in attaching the HiSilicon SEC
+device to QEMU ARM64 pci-root-port device [1]. He then tracked down the issue to
+ACS not being enabled for the QEMU Root Port device and he proposed a patch to
+fix it [2].
 
-> Sounds like a mess and might be worth an ECR to clarify the spec.
+Once the patch got applied, people reported PCIe issues with linux-next on the
+ARM Juno Development boards, where they saw failure in enumerating the endpoint
+devices [3][4]. So soon, the patch got dropped, but the actual issue with the
+ARM Juno boards was left behind.
 
-IMHO alot of this is badly designed for an OS. PCI SIG favours not
-rendering existing HW incompatible with new revs of the spec, which
-generally means the OS has no idea WTF is going on anymore. 
+Fast forward to 2024, Pavan resubmitted the same fix [5] for his own usecase,
+hoping that someone in the community would fix the issue with ARM Juno boards.
+But the patch was rightly rejected, as a patch that was known to cause issues
+should not be merged to the kernel. But again, no one investigated the Juno
+issue and it was left behind again.
 
-For ACS it means the OS cannot accurately predict what the fabric
-routing will be..
+Now it ended up in my plate and I managed to track down the issue with the help
+of Naresh who got access to the Juno boards in LKFT. The Juno issue is with the
+PCIe switch from Microsemi/IDT, which triggers ACS Source Validation error on
+Completions received for the Configuration Read Request from a device connected
+to the downstream port that has not yet captured the PCIe bus number. As per the
+PCIe spec r6.0 sec 2.2.6.2, "Functions must capture the Bus and Device Numbers
+supplied with all Type 0 Configuration Write Requests completed by the Function
+and supply these numbers in the Bus and Device Number fields of the Requester ID
+for all Requests". So during the first Configuration Read Request issued by the
+switch downstream port during enumeration (for reading Vendor ID), Bus and
+Device numbers will be unknown to the device. So it responds to the Read Request
+with Completion having Bus and Device number as 0. The switch interprets the
+Completion as an ACS Source Validation error and drops the completion, leading
+to the failure in detecting the endpoint device. Though the PCIe spec r6.0, sec
+6.12.1.1, states that "Completions are never affected by ACS Source Validation".
+This behavior is in violation of the spec.
 
-Jason
+This issue was already found and addressed with a quirk for a different device
+from Microsemi with 'commit, aa667c6408d2 ("PCI: Workaround IDT switch ACS
+Source Validation erratum")'. Apparently, this issue seems to be documented in
+the erratum #36 of IDT 89H32H8G3-YC, which is not publicly available.
+
+Solution for Juno issue
+=======================
+
+To fix this issue, I've extended the quirk to the Device ID of the switch
+found in Juno R2 boards. I believe the same switch is also present in Juno R1
+board as well.
+
+With Patch 1, the Juno R2 boards can now detect the endpoints even with ACS
+enabled for the Switch downstream ports. Finally, I added patch 2 that properly
+enables ACS for all the PCI devices on DT platforms.
+
+It should be noted that even without patch 2 which enables ACS for the Root
+Port, the Juno boards were failing since 'commit, bcb81ac6ae3c ("iommu: Get
+DT/ACPI parsing into the proper probe path")' as reported in LKFT [6]. I
+believe, this commit made sure pci_request_acs() gets called before the
+enumeration of the switch downstream ports. The LKFT team ended up disabling
+ACS using cmdline param 'pci=config_acs=000000@pci:0:0'. So I added the above
+mentioned commit as a Fixes tag for patch 1.
+
+Also, to mitigate this issue, one could enumerate all the PCIe devices in
+bootloader without enabling ACS (as also noted by Robin in the LKFT thread).
+This will make sure that the endpoint device has a valid bus number when it
+responds to the first Configuration Read Request from the switch downstream
+port. So the ACS Source Validation error doesn't get triggered.
+
+Solution for ACS issue
+======================
+
+To fix this issue, I've kept the patch from Xingang as is (with rewording of the
+patch subject/description). This patch moves the pci_request_acs() call to
+devm_of_pci_bridge_init(), which gets called during the host bridge
+registration. This makes sure that the 'pci_acs_enable' flag set by
+pci_request_acs() is getting set before the enumeration of the Root Port device.
+So now, ACS will be enabled for all ACS capable devices of DT platforms.
+
+[1] https://lore.kernel.org/all/038397a6-57e2-b6fc-6e1c-7c03b7be9d96@huawei.com
+[2] https://lore.kernel.org/all/1621566204-37456-1-git-send-email-wangxingang5@huawei.com
+[3] https://lore.kernel.org/all/01314d70-41e6-70f9-e496-84091948701a@samsung.com
+[4] https://lore.kernel.org/all/CADYN=9JWU3CMLzMEcD5MSQGnaLyDRSKc5SofBFHUax6YuTRaJA@mail.gmail.com
+[5] https://lore.kernel.org/linux-pci/20241107-pci_acs_fix-v1-1-185a2462a571@quicinc.com
+[6] https://lists.linaro.org/archives/list/lkft-triage@lists.linaro.org/message/CBYO7V3C5TGYPKCMWEMNFFMRYALCUDTK
+
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+---
+Manivannan Sadhasivam (1):
+      PCI: Extend pci_idt_bus_quirk() for IDT switch with Device ID 0x8090
+
+Xingang Wang (1):
+      iommu/of: Call pci_request_acs() before enumerating the Root Port device
+
+ drivers/iommu/of_iommu.c | 1 -
+ drivers/pci/of.c         | 8 +++++++-
+ drivers/pci/probe.c      | 2 +-
+ 3 files changed, 8 insertions(+), 3 deletions(-)
+---
+base-commit: 8f5ae30d69d7543eee0d70083daf4de8fe15d585
+change-id: 20250910-pci-acs-cb4fa3983a2c
+
+Best regards,
+-- 
+Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+
+
