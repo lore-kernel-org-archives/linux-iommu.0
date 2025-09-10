@@ -1,201 +1,174 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2071.outbound.protection.outlook.com [40.107.92.71])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02ADE2C11E1;
-	Wed, 10 Sep 2025 17:43:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.71
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757526189; cv=fail; b=pylF+OjvYSPlh/pE4g1IGwYhIjx3JHetfO7+UYvEV2LUdEyAAs4uSrBtPK73WYSk29re/950q+PQ+XumXakXo7wO+dRaVlN5R7du8Ra0kfywGZfimm9++n9gMMwhWC2z3RrDRcWa7dN/jO/H/c4rnSO18XWYjTr7emUtbTeBIQc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757526189; c=relaxed/simple;
-	bh=queIhJ0L30V36YGla6wSwSsnJ+qSRZDuCSRtL1VnwHg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=QLi0QVbqs+/odZ78AaFSfzonH81jpBtYLlvzHWRJyBSaoel5meLBF56OFLbh+Ev5CusymlUTC9pVRXJaw92bVKRnIiCWx/Wt7DGBKgYLLTgu0I5HXBdMd+nJbpYsjvsuuL/vicRtCSjsmUhhtvOtpBNBs9pWElCSrx/3vxYlHeU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=nuKgz0b8; arc=fail smtp.client-ip=40.107.92.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9225340DA3
+	for <iommu@lists.linux.dev>; Wed, 10 Sep 2025 20:44:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1757537101; cv=none; b=pcUbP+wlNI+IWtoLBBREq4w6oiJvMTpBajH60K6enLUQGz1JYO+QvAz+xdEoIB7UNfAApscy2/+sou6pjHXxpufbLWYq4I8y2oQR5GcyS2h42ekjnLR1hChXXZA2R8EBMAX8RSw91bQ6Hc8pq50lHDsT/9z5zJfwTWvERFTZEcs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1757537101; c=relaxed/simple;
+	bh=zdj+uOiXuiIXzM1Vn3fcDOOxGOrxrCVtY7jUVpK65ZI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=MeNME6KZIKtwIm+eoDOcz9QOE37oTOmmnTbOpo8OXjSuFRe6FdS1AoaOH/9WrSEYkX7NScIa4Nkoku8stEKy73FCdIUdM33NkYFEBIuBzbvgq/SKoRYN1qKlDjkq/k5ylza6e9QNmP3MXr2DJHeWrK5JYyVZfOHuv4xyqWIqHTs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=yPs5K8yN; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="nuKgz0b8"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=miFSLyMnz537QnRyK+RjiMe2MZPdmYPCscx/0G8SsZNTpkpyXr3CzJnBEj+0YKR/x0mNlnoBLSIWYEUwgba9eXqSjm0tezGKjoXgli8KDOYPOcs95cMWCmm/PRmZhNmvOV2alBHP83Mjbc4SbvtpWU2HpdeWv5/6DMGH8PTHlK0lPYOuix0P1RlhT9WPw5HWCAefbEuLiYhxM6wNSzVoOe+Y0uZvJWl9dyImXBRbCdxz0CTjd+2XFPnxEkF35Bgd7KPyBcoCoq44NXPPnUb9IXfBtdqAXYm7NFxw6fblgUIzr5WYPs9a4PK2NS7/fbmFtbQcigSpoLaDhwLpEVgsow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5eoSG2CnVrJe6mEcXVgAutFjdmwJ1dJvrvu5znyb3Pg=;
- b=ZOSye1Nq6uI01dXsblf5Te/HC+3lVKVTByVXHZK3tp5e7VMeZHdVBnnvnZ6IXvQqnTKsqEYMB9StPZKN3LeNZo2d+3I9d6gfdA6jeOWis79kspR2kvsWlhDn3TrMas5phJml6Kqi74saBS1d6mnzbNLt4gjtwV+RrScWF7s6+ReZsVu1LY7v/An2XvpMxsA7uIz5e148yeJoexdyoi8jOTrq24p19IIj/ST7FwjhgIbOuR7FFMbuJVfob0DqD2zDTRtqGi798gP4dzXMQnCopPVItqk/37a6Jb0FfDkz9Y6vxDncxf5Hy8nziaQsUNbFqcxrfGpLykJp/wMlaLUkLg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5eoSG2CnVrJe6mEcXVgAutFjdmwJ1dJvrvu5znyb3Pg=;
- b=nuKgz0b8xzxmWLcBT6qAeUj4xRvXMkyE+q6z4A0sthrsiUYdG7PhawB+6hb5H5TQbW76oJ7j5P2Ekd7njgURsQY2n9FV9fPwAIwmesCQicMH4OzZ8T1ZG14JV5Oq9376xqGURNFwzpyea4DoIk14L97Ggz1dSkpkF8QgjBxDT4RB8kelAHTRuH12B8rMR6J20CXbsAO99yMFuagp6SfL5wRykiuQjbTSqtFllg3BUdiblBpOdhdqKFuCeCAMMoM0Fu+xmcQ/QfIIex3EoqeDmviZfWpEKiueXt5/XUFZ+Hir/zgAqq4egfsqhyG7RP6llti4l6OtM2VH4VCNWzmW2Q==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM4PR12MB5769.namprd12.prod.outlook.com (2603:10b6:8:60::6) by
- PH7PR12MB7454.namprd12.prod.outlook.com (2603:10b6:510:20d::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.22; Wed, 10 Sep
- 2025 17:43:04 +0000
-Received: from DM4PR12MB5769.namprd12.prod.outlook.com
- ([fe80::f5f:6beb:c64a:e1ff]) by DM4PR12MB5769.namprd12.prod.outlook.com
- ([fe80::f5f:6beb:c64a:e1ff%5]) with mapi id 15.20.9094.021; Wed, 10 Sep 2025
- 17:43:04 +0000
-Date: Wed, 10 Sep 2025 14:43:02 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Donald Dutile <ddutile@redhat.com>
-Cc: Bjorn Helgaas <helgaas@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-pci@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, galshalom@nvidia.com,
-	Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
-	kvm@vger.kernel.org, maorg@nvidia.com, patches@lists.linux.dev,
-	tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
-Subject: Re: [PATCH v3 06/11] iommu: Compute iommu_groups properly for PCIe
- MFDs
-Message-ID: <20250910174302.GD922134@nvidia.com>
-References: <20250909212457.GA1508122@bhelgaas>
- <15ee1d12-6900-4cf2-9348-6e6cc8aefbe9@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <15ee1d12-6900-4cf2-9348-6e6cc8aefbe9@redhat.com>
-X-ClientProxiedBy: YT4PR01CA0451.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:10d::17) To DM4PR12MB5769.namprd12.prod.outlook.com
- (2603:10b6:8:60::6)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="yPs5K8yN"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-45dd9d72f61so26695e9.0
+        for <iommu@lists.linux.dev>; Wed, 10 Sep 2025 13:44:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1757537098; x=1758141898; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zdj+uOiXuiIXzM1Vn3fcDOOxGOrxrCVtY7jUVpK65ZI=;
+        b=yPs5K8yNvY+baGKGRbVUt4rYCkMCM/Z0D+j9av+6Jm6XLmBC3V6f0Ov8Yq76MIOFRx
+         DA+CfuN4BjseA8n/oDySVHW/qKes1jbVFjVpnJrbhZeo38Z1rIB9fchgjvYeaTDbdOnY
+         dkwQYaZAgir9qwhGRTIFIsU0JRG2+UX2M7Mi0quAJ4slHEaS7MmNPicaRjJFSJLazGFc
+         56McfiTUF8AdF4rljBOKcmdbAOl+k/8deYOLr02LvCZk35ZuMR/dDY2f0gm4MnFXFUpw
+         fxfz/OowLrucZdm4EadqoLNwIexB37eAYUaCUpJfUxSN936HuM1qOdrP8Y9RicntGiWR
+         1pAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757537098; x=1758141898;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zdj+uOiXuiIXzM1Vn3fcDOOxGOrxrCVtY7jUVpK65ZI=;
+        b=NhG0SVnLHiTl6mTErT4jHCromHzU/Vp5TZypQf8p6FnRuHn8F6oXfL0mR781PPGeVD
+         LQlJg4uXAnJVsufRYXwDYXEzP55YZ8URLl/QXvPyAPxuxRS8MLoHUateYr++LvYK6Ci1
+         dSXVVxFfFtzSjvlIwQsJMi7ZZPWXEEzGLsVEOxftq2s8MH8g0K/GAfbBKsxXRisigThI
+         Ng0D4DU7pNToTAv0D60xlg2nGDupoYkEQzbBm6hb0/eCdjX7WbrmdSfJxPHlfkU5psMX
+         qzwsAJrMB/fJzjqQ7WVYh7JrYkwqWLOcU4tmLKtuffwvna6j8Jomx3dvJ6N/MVg0x5j1
+         baWw==
+X-Forwarded-Encrypted: i=1; AJvYcCUFGfaBos6F8jLK90DKL5EA2ntdJb+n82yqBFSJB7nrzzUcxWjSjapHNh0eSKgmT8VLkizqDQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxT41/TN8cPrd7gd3A9EGNCKhXA0IQVxoBIZNWQusBiefIdjyRO
+	Jqzll7fo9LWu0Ec/f/yBLte5o4ZiW6JM9EWH0jAduZKRE7pTXxxI2TyZHdJiGLUXKsH1RHYO+0w
+	+OaqdRFsHlAoOA1WzDMfg3i9BflLfXfdsC/n5H5Ua
+X-Gm-Gg: ASbGncticiSu/xgVD/PJGwrJagphy3laAs0T/Ch5qA5dnA5u/BygDGvwZZwjXX3g8cx
+	2QCUXf4YXQ8jUZL6GVf61eGNseEzTgbaXrJ+3JgU3IPJQKvVISu94ojKuhVFDjRvoRlVtKOOLNL
+	MrCsl8du7UqUosMeWdN7WHzHVqan2D6YQKkx7Z1+dUy2SAKqwVa+fgagVEuVuVPLPCEp1XIKAX7
+	GBXW0h7SsHpF4a8M6ydENLgJusTWja593Y9fnwRqPnZSt3tcIGnLMU=
+X-Google-Smtp-Source: AGHT+IF/Fz2Y5nk02badGqITxY1/tzo4lRqGZ2Zao4nfkcXFZyjJgtYYuI6B/Fj3L639UAHyqOxbIJ21cF9JPLUpaI8=
+X-Received: by 2002:a05:600c:1502:b0:45b:7d8f:4bd4 with SMTP id
+ 5b1f17b1804b1-45df74f81cemr1873365e9.4.1757537098041; Wed, 10 Sep 2025
+ 13:44:58 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5769:EE_|PH7PR12MB7454:EE_
-X-MS-Office365-Filtering-Correlation-Id: c34a16da-7322-4cf1-fe7a-08ddf0917e92
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?Xu/b6m4mNL6NnDORoHMjXFaBEYgDWqi2qfcYI29LE0lh4rHnECfkVUgKCd29?=
- =?us-ascii?Q?kL/LWXGZI7qsI3DS42rDeYwOXHCxUxZqXxX69lODtJhAuo+8hs81Rw8IQbCe?=
- =?us-ascii?Q?GbOP0/UAn+h1YTIvh3SuLV1XPvM+gXIpv30htiogoFL8rpH7fSQSN/Q9fPdS?=
- =?us-ascii?Q?0b49OF/XXPLimzsiiUiHZRaLCUg5aE2I+YzXPDEqVnEDQvg2PU3IvLaDdw9m?=
- =?us-ascii?Q?08zg9WnxQSlADeVi17DJs3VUh+cd2iUzWq2FmdokB3tdjPX0JgPVMf3WuX2O?=
- =?us-ascii?Q?rvRuV6gScQJx8DTj45+ePucJgPXMLV2JSgJyf3PJoq8NnARvmowZCc0xaON6?=
- =?us-ascii?Q?nspwqrYovE6l7i+ypKBoil4JkG5qX8ANra0Kk/OQgKcpCggjR5UAb1xpg7lJ?=
- =?us-ascii?Q?jeymXjVWhV+Xw8oft8m0s5c1iuW+4MDLP1CONFrKq8a1zQPDxmGNOHQ+YK5Q?=
- =?us-ascii?Q?/BzvWuwUR2MwXGOlxqfEfGL1ql3MPmKW2XpNknBUB4iQ+kZNj23RPgQycEcO?=
- =?us-ascii?Q?h2IcGxwUENOr32WDy3Pby2F8pNOu4ZNQzvcu/PaMhg4Z4cWCq9RGGIkG8xFQ?=
- =?us-ascii?Q?KxeSY/ZttfbE1NR6IE2zQpxirzOe7vJAaCffsd8JCJMNSUFqojbRalHcMsll?=
- =?us-ascii?Q?6vGsob7BHB1NUqFgHB5NX5SLXrpebfZ8jVcjgIY/zGcOvInXgJZJNu6iUFgv?=
- =?us-ascii?Q?p7gIGULBsvGHAmMU+JqZiciaM6WW0JwwY0Z0l6NkWonzv1vp4f3m+WmfOItA?=
- =?us-ascii?Q?0SItHeaF4meI9vyL4dxAKjiSCWEnzKWHveh5OhxamP4f6cWHikLEqCMwkWLX?=
- =?us-ascii?Q?zKp8IRgmI0PGgao0Lj9dDHfGHFaMv3uMkF7TzqJ9O9n7fGi7V6XTdQ+tVjtX?=
- =?us-ascii?Q?slOay+y1PQHPjYxBDb0Ltkcypo+idafbPoDiut4RigHCO0QD3rCPH10Ta5VO?=
- =?us-ascii?Q?OwiUM4aIXRk/negmYd70XZFAU2Dg0VkDouZPMu0uAKroHJLoosLyO8gfLChy?=
- =?us-ascii?Q?omCwx3wp1N+Y6Abmk0GCokqQOAWIdShhpU1jiAyXvNmbIYlq+pJidk/vP343?=
- =?us-ascii?Q?rbz6mD21tAWacp/jHNKuzqdYViEza69zchX6MHOP5Mv8MZXggu7I8zwqADJ5?=
- =?us-ascii?Q?IPX2AanE9sqPYJn25jtFK6AkX07meowE97vMKUXasReUV7NVYpC9g09Vn9aL?=
- =?us-ascii?Q?DDOT/5WnY37IxV8l36yrecrNLdog1KCuWE7zx3kb49YbFKsp6+58+qxfP7sf?=
- =?us-ascii?Q?wVF2K+j85RIkbN1zX1YDF9clX+P/hiJg2x5OFFiA8ocys7rxSr9bLu4OGp4w?=
- =?us-ascii?Q?p8MbuX/60QnmvD6EJQNlnqKeRrikayaesWfR03E9YKdsHn3cyyfvOl9iqtSz?=
- =?us-ascii?Q?Z2jk+JAbhzE6w0Y4JxjAI9SjT/n5wWmLH4gouicy6O68k5QTrYou9uPnSk/t?=
- =?us-ascii?Q?/QCdV1W/yoQ=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5769.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?EeZn7Bxa4eYCBd2R5pen5wX3s07f1Yy9PbapB6WgGHut2Zi+OMcTg93gbY7/?=
- =?us-ascii?Q?WlImeidiEAWvHkAwMiFpp/K/tcFCY2wVQKkW8xiThHJWGKyWM9ki7IlLvX5j?=
- =?us-ascii?Q?O8lBQvvKl9QTizbb52IRIfXNi9fWd5FxFmraFfVy3Yk0UZQbGlw7qEly++wC?=
- =?us-ascii?Q?sWTNpzHPpFezoDyJrAfTmpQ8QrgkbrH76p5dbtErHebjZcmTUe0zwpC3YaUP?=
- =?us-ascii?Q?CpwKrkJE+mPLILH92EisdmipEW07vMFASUU6eSvSVSWGqZoU+7R+BR7wXdcs?=
- =?us-ascii?Q?V0sjbjoiqWdiiaFXmPINA/XJzMkadlmQwgRwEpeBPodnoCZwcDhcwUJkjZIj?=
- =?us-ascii?Q?X2brOtvYxHXwf+4EABh4FMc/ULYuKEnbMRaa8/Wl/iIZ5O1MaXB5ByjL+7c2?=
- =?us-ascii?Q?V2icGxEzoLqkzJIW7y5Y6cJhdcabP6S3ILXbIkz0RV+IaFJi4a0JQu0TUYqb?=
- =?us-ascii?Q?BVpgR43tky7e0Ur6c4pD62xTKkokMgE2EEKfDa58Y7wnmwaZPiDT6VD2BULd?=
- =?us-ascii?Q?Y+Jq52t/eDojpChb2RoIu2JYZocYZgTKkt/K5ZAG+mW4bblBwPvwVnYxDYoe?=
- =?us-ascii?Q?KrzqEJ2hoeITNEPN1a1pc+LvQ9r3GfMh+XwMRsqnQB6Lnwur9VgzyJrEnRdW?=
- =?us-ascii?Q?oUrgDTczvhoaC7QckrJbHxuDTTWE6zzsQg3mtggaAxriZvbNr6+eHFi4Tea2?=
- =?us-ascii?Q?XbMOj56fqiK0miGPKLer01A4Hbkw39xQT19BlzbrhIQjxVEYqjVqbgLccwmE?=
- =?us-ascii?Q?a/d7S7eusUbtJNSxM9KDuxDQVWvMPnvDAkGhox9OwcdMEvEoYFHZ19WAONqn?=
- =?us-ascii?Q?wL87iqfCg65hpAH08fHaBdVHnQRnTSmFZM/gEfL6MHHgDchAYHzDVFjEv7lz?=
- =?us-ascii?Q?ns27nygGg46OK4KTnnvJXpxQb22fzBRGHz0RJ3rjjIvzTtKdr0z8YPZ3ZIBQ?=
- =?us-ascii?Q?gQ02r6NfTOFGmrRkmVcC3JwT9Q9l5IAWX3ebm3ZyQ4LiQXw4QnzkEI9AR8W/?=
- =?us-ascii?Q?TIxJWaOmvqDn5BgE7vct0ZXeuasK/breuAYG5ypi7aafvvAvkXXCPjbin8Pf?=
- =?us-ascii?Q?mZwFqA/5hLL8/DUNkbXclqn4rvqQg/7RvqZTOgQPYT57dnKR+bax0V9eOpvL?=
- =?us-ascii?Q?njetdvpdSWjw/UqcjeBAHKYmIJBKMLi57dPUFwW92YHM3A7pT/w0yqb0uJ25?=
- =?us-ascii?Q?r8QyRL8n3B+XuYG6f/HugWqLifUg+rbENpJYQ/e5i1oPfQAfhJpCVOtHwXs8?=
- =?us-ascii?Q?CDdktGb96Bp7qawwP2YI/a8VGREgVh/0v4Uw7wwY3DL8b+1wnaVhrHDKw9Ds?=
- =?us-ascii?Q?NrJGIrySCvHeo+tFf+24yjImCVhyHACMcBmHrJ7GV15roTlMyTGGJmYQE3D2?=
- =?us-ascii?Q?8+F82rEatq9RZqCtS87KPY+nUW8nGY0Vp1+ynHHZno4w1ZoLf2H5TzVPoxeA?=
- =?us-ascii?Q?lW6TQTTbxOqNsA9DaN3oMWXPLkAcHldRmjDgT6GLh2W0/vLzrb4IqN0/q9J7?=
- =?us-ascii?Q?GBc7F/f5o3aFPu9ChBOVHb0J6EhsRmt1iHTPdNoythlTCbqT/ohUknRqfnJm?=
- =?us-ascii?Q?WlQ5CSMZKC/8I7Z/kYw=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c34a16da-7322-4cf1-fe7a-08ddf0917e92
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5769.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Sep 2025 17:43:04.2742
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6WDbIUmiewYlq3ni9nA8tB2aUdDwHtQzPbcUHMmx2j6hyNInW/lYZ7YeXOWdMjXo
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7454
+References: <20250721-dma-buf-ecc-heap-v7-0-031836e1a942@kernel.org>
+ <20250826-vagabond-catfish-of-courtesy-cbfa76@houat> <20250910-vigorous-attractive-gorilla-af6fec@houat>
+In-Reply-To: <20250910-vigorous-attractive-gorilla-af6fec@houat>
+From: "T.J. Mercier" <tjmercier@google.com>
+Date: Wed, 10 Sep 2025 13:44:45 -0700
+X-Gm-Features: AS18NWDgBu3edPeSCZERO8HncQFGrRuZvzuC8yXw-tqKPcuIWCidg2bFxSYLb0U
+Message-ID: <CABdmKX29ftpNro+d=Ce6JGoMaG0UQeBbzL7DXiBkGkC0nwacTQ@mail.gmail.com>
+Subject: Re: [PATCH v7 0/5] dma-buf: heaps: Create a CMA heap for each CMA
+ reserved region
+To: Maxime Ripard <mripard@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, 
+	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
+	John Stultz <jstultz@google.com>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	Jonathan Corbet <corbet@lwn.net>, Andrew Davis <afd@ti.com>, Jared Kangas <jkangas@redhat.com>, 
+	Mattijs Korpershoek <mkorpershoek@kernel.org>, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
+	iommu@lists.linux.dev, linux-doc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Sep 09, 2025 at 09:59:23PM -0400, Donald Dutile wrote:
-> > Alex might remember more, but I kind of suspect the current system of
-> > quirks is there because of devices that do internal loopback but have
-> > no ACS Capability.
-> > 
-> and they are quirks b/c ... they violated the spec.... they are suppose
-> to have an ACS Cap if they can do internal loopback p2p dma.
+On Wed, Sep 10, 2025 at 12:33=E2=80=AFAM Maxime Ripard <mripard@kernel.org>=
+ wrote:
+>
+> On Tue, Aug 26, 2025 at 09:36:03AM +0200, Maxime Ripard wrote:
+> > Hi,
+> >
+> > On Mon, Jul 21, 2025 at 01:17:29PM +0200, Maxime Ripard wrote:
+> > > Here's another attempt at supporting user-space allocations from a
+> > > specific carved-out reserved memory region.
+> > >
+> > > The initial problem we were discussing was that I'm currently working=
+ on
+> > > a platform which has a memory layout with ECC enabled. However, enabl=
+ing
+> > > the ECC has a number of drawbacks on that platform: lower performance=
+,
+> > > increased memory usage, etc. So for things like framebuffers, the
+> > > trade-off isn't great and thus there's a memory region with ECC disab=
+led
+> > > to allocate from for such use cases.
+> > >
+> > > After a suggestion from John, I chose to first start using heap
+> > > allocations flags to allow for userspace to ask for a particular ECC
+> > > setup. This is then backed by a new heap type that runs from reserved
+> > > memory chunks flagged as such, and the existing DT properties to spec=
+ify
+> > > the ECC properties.
+> > >
+> > > After further discussion, it was considered that flags were not the
+> > > right solution, and relying on the names of the heaps would be enough=
+ to
+> > > let userspace know the kind of buffer it deals with.
+> > >
+> > > Thus, even though the uAPI part of it had been dropped in this second
+> > > version, we still needed a driver to create heaps out of carved-out m=
+emory
+> > > regions. In addition to the original usecase, a similar driver can be
+> > > found in BSPs from most vendors, so I believe it would be a useful
+> > > addition to the kernel.
+> > >
+> > > Some extra discussion with Rob Herring [1] came to the conclusion tha=
+t
+> > > some specific compatible for this is not great either, and as such an
+> > > new driver probably isn't called for either.
+> > >
+> > > Some other discussions we had with John [2] also dropped some hints t=
+hat
+> > > multiple CMA heaps might be a good idea, and some vendors seem to do
+> > > that too.
+> > >
+> > > So here's another attempt that doesn't affect the device tree at all =
+and
+> > > will just create a heap for every CMA reserved memory region.
+> > >
+> > > It also falls nicely into the current plan we have to support cgroups=
+ in
+> > > DRM/KMS and v4l2, which is an additional benefit.
+> > >
+> > > Let me know what you think,
+> > > Maxime
+> >
+> > Any chance we can get this merged?
+>
+> Guys, can we move forward on this?
+>
+> Maxime
 
-It is the reverse
+Hi Maxime,
 
-Linux assumed all devices without ACS capability CAN do internal
-loopback.
+Sorry I've been MIA the last couple of months.
 
-This captures a huge number of real devices that it seems don't
-actually do internal loopback.
+The docs for the "reusable" property say, "device driver(s) owning the
+region need to be able to reclaim it back", but how can a driver
+reclaim memory backing a dmabuf, since pages allocated for a dmabuf
+aren't necessarily movable. Couldn't a user allocate all of it, and
+refuse to close those dmabufs?
 
-When people complained, ie for DPDK/etc then quirks saying they don't
-do internal loopback were added. But this was never structured or
-sensible, I have systems here were LOM E1000 is quirked and a few
-generations later it is not quirked. I doubt it suddenly gained
-loopback.
+I backported this to 6.6 and ran it on a Pixel. While there are
+already similar out-of-tree dmabuf heap drivers that expose heaps for
+these reserved regions, they do more than just cma_alloc (multiple
+flavors of buffer securing, use case specific alignment and padding,
+and slightly different allocation strategies) so I don't think this
+series would allow us to completely drop the custom heap code, but
+it's a nice start. Does the cgroup part come in because the plan is to
+add charging in cma_heap.c?
 
-That said in doing so a few cases (AMD sound & GPU MFD comes to mind)
-were found where the MFD actually does internal loopback.
-
-So here we have to pick the least bad option:
-
-1) Be pessimistic and assume internal loopback exists without ACS Cap
-   and expand groups. Quirk devices determined to not have internal
-   loopback. (as today, except due to bugs we don't expand the groups
-   enough)
-
-2) Be optimistic and assume no internal looback exists without ACS Cap
-   and shrink groups. Quirk devices that are determiend to have
-   internal loopback. (proposed here)
-
-v2 of this series did my best attempt at #1, and there were too many
-regressions because if you fix ACS to actually group the way it is
-supposed to the internal MFD loopback pessimism breaks alot of real
-systems.
-
-Don pointed to the spec and says there is reasonable language to
-assume that if the MFD has internal loopback it must have an ACS
-capability.
-
-> I'm assuming the quirks that the current system of quirks impacts the
-> groups and/or reachability, such that the quirks are accounted for, and that
-> history isn't lost (and we have another regression issue).
-
-In this version effectively the quirks become ignored for iommu
-grouping as we don't call the acs functions if there is no acs cap.
-
-Jason
+Thanks,
+T.J.
