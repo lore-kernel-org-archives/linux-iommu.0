@@ -1,161 +1,134 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2076.outbound.protection.outlook.com [40.107.212.76])
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8ED5322C66
-	for <iommu@lists.linux.dev>; Thu, 11 Sep 2025 13:14:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.76
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757596476; cv=fail; b=g7cHEBW8iVACFHUirmMNYys23Zu391QQpg0oR0kY+BW0SHDuj1nxZUqHr4x4OXkXTZflBDpnllep327bAPmrsAmaRpDzRpPsgwJuAbC08rHFHyFse6SHx4hOytFekHjYzOwtsSnVE88uOFykr2EpVq0Jz+gDYYJVZVxr7VYP2V0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757596476; c=relaxed/simple;
-	bh=5M7exGptW0WhTO+CVUfoO03631iz4z2XiZHxFSqzwlU=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=OQOs81xQfz4kjYS8QcGoqeW6UoPkN8HMRvSOsNQ8CbtxbFGDiXDdeDUAqMEtaojXwV6OuAp5WdpgeT/p5iulHW0ls2QcSHJFLClrDgiUfpxwy9SoVfcfyDw3+VsPMaL3TuICgnX10lDSBQIEEXflUMz3gr4ECuSADn46bTqRuuw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=aiwdY0pM; arc=fail smtp.client-ip=40.107.212.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="aiwdY0pM"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=V30NPdrV6kO9aDTGHwqPoSFNgadqlAZir3+HweU5Qw2zs/zrhmQZ1nHGyJpTj5/OAXdjnq60aECIyNW064NJgHSJP/c6QZGwM+ptywyMnJ5sfs6Esvoc99nv9dtmX8TRKk5uqeBeplAizstKbvLye+xh8GiRnvuKnXVAUYY3S+iC9WD/bxJ18H1dkFw8ayLT9cExp20lusKMaLH+VucXaszaaALnIrRaB6kUYjXbrHj0kVw9ijgSr+HL3By1/5+Px/rFvbPU7uEZ9oH9R5lbxCz/qz7pzkofApyIgsOdYV+E75t5+itDNoRK6bL91yHaSIuK4NzTnBYJIZyo1cM10A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=m8vWLDXhJHduHjCz1EUBv5vGOJydIOd4y5FlDSdIZUM=;
- b=CTh6NS1+jdVvRJcaue9yy8wU/OGQ9BV+pSbwEN7w+cCT4TLcShil5I99zxiWcs9Q/aKdE5tuduRYXJoBpvttUR5aej/GxNkHla9B5vz8NIlQvdJ53yd0nctfRVWUYRqNWyGTxCu87Mk/dN2CSJ2CW/d3NCn9mQvlZFWWX6vr5SyPp2GwKmxpGXvwL9Yyq4e5R9Qs93ZUJ3F1aK6KjJGb6pbIz54A9peH6K0wKl3X7antqe6ejcRMNpyzMDr2f/MY/Fn/6ggFaHSkrNaWifvJ8yK4b7hmg068j9s34gHlycwsDDPvHdrY6YB91q4KdV75iyoyPmJSsXz5ZefjB2POrg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m8vWLDXhJHduHjCz1EUBv5vGOJydIOd4y5FlDSdIZUM=;
- b=aiwdY0pMoM/mlc38Yq0PYsA8F3y7MJoSwEZecWlpYbvwDdAMDbEZWozKiftwApYgrTsCvnlT6SmkN3KQ6MCuoa2gJTh6PHZMO3tcri7K4tYFjw6c9lw5fz0CN62dQnC2G0A/KIA8kYo3IZhdyIQGJJ3e7MrxRwfUo2tsCjNNBEw=
-Received: from CY5PR13CA0061.namprd13.prod.outlook.com (2603:10b6:930:a::23)
- by PH8PR12MB7279.namprd12.prod.outlook.com (2603:10b6:510:221::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.22; Thu, 11 Sep
- 2025 13:14:28 +0000
-Received: from CY4PEPF0000EDD4.namprd03.prod.outlook.com
- (2603:10b6:930:a:cafe::1a) by CY5PR13CA0061.outlook.office365.com
- (2603:10b6:930:a::23) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9137.6 via Frontend Transport; Thu,
- 11 Sep 2025 13:14:28 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- CY4PEPF0000EDD4.mail.protection.outlook.com (10.167.241.200) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9115.13 via Frontend Transport; Thu, 11 Sep 2025 13:14:27 +0000
-Received: from kali.amd.com (10.180.168.240) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17; Thu, 11 Sep
- 2025 06:14:24 -0700
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <will@kernel.org>, <robin.murphy@arm.com>,
-	<suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH] iommu/amd: Fix alias device DTE setting
-Date: Thu, 11 Sep 2025 13:14:06 +0000
-Message-ID: <20250911131406.633549-1-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E30CA32ED43
+	for <iommu@lists.linux.dev>; Thu, 11 Sep 2025 14:08:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1757599742; cv=none; b=u30csR0x1c3pTXfboKy0QW4MEm2ITUIIS0CvaoUu1vtLyyvSIk+bqVKy541Zw1ct+G8aP/mt0Zv4KYJbOfih4shhkhGu4EPDJ3YCM3Pk1IuteHXUnuBOupnoSYmEwRxxq0I8KYTDf1JMKFZKGzRMP/nImC+n4APeJtVasgXk3fE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1757599742; c=relaxed/simple;
+	bh=2pqgafZIU6dCGuLxRRcQ4J9D0AL2bMkEFuyleWWTbWA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=eu0hBLpyeRFSRu0qRiOhaKgk4hSBoZkMYLsro6/L52ZiHVTkFbXHC0yAeQnspXBG32G+OBrpJ2Mke2vgeOhaeMDYXOur3GS6yoh1hjGpDpRDgCuieuUw+5JpSEHddoJ3ykuXX2TkB01d6fsW1BocDS2oQZZqfVCbpVxvqkz/JtI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.234])
+	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4cMzq66vynz2VRgH;
+	Thu, 11 Sep 2025 22:05:38 +0800 (CST)
+Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
+	by mail.maildlp.com (Postfix) with ESMTPS id 64F2F140296;
+	Thu, 11 Sep 2025 22:08:56 +0800 (CST)
+Received: from [10.67.120.170] (10.67.120.170) by
+ kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.11; Thu, 11 Sep 2025 22:08:55 +0800
+Message-ID: <bb4c3f0b-06da-46e6-9769-efe3dc00e9fb@huawei.com>
+Date: Thu, 11 Sep 2025 22:08:55 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/2] iommu: Add io_ptdump debug interface for iommu
+To: Jason Gunthorpe <jgg@ziepe.ca>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+	<yangyicong@huawei.com>, <wangzhou1@hisilicon.com>,
+	<prime.zeng@hisilicon.com>, <xuwei5@huawei.com>, <fanghao11@huawei.com>,
+	<jonathan.cameron@huawei.com>, <linuxarm@huawei.com>
+References: <20250814093005.2040511-1-xiaqinxin@huawei.com>
+ <20250902161028.GC184112@ziepe.ca>
+ <f2720f17-5e81-4f69-aaf5-791b47973178@huawei.com>
+ <20250910141547.GD882933@ziepe.ca>
+From: Qinxin Xia <xiaqinxin@huawei.com>
+In-Reply-To: <20250910141547.GD882933@ziepe.ca>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: satlexmb08.amd.com (10.181.42.217) To satlexmb07.amd.com
- (10.181.42.216)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EDD4:EE_|PH8PR12MB7279:EE_
-X-MS-Office365-Filtering-Correlation-Id: a3615efe-f924-4d08-a216-08ddf13522fa
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|376014|1800799024|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?QWllMaRpSmYT0/ax8yFjpiqGKRDIRz9Ndrl5vLlrlKr8+TtK+9KBt5kX07+B?=
- =?us-ascii?Q?RSA2z9RuAC1qkQyAGzgT1MQrjv2vGSJCNx4qHgRecbzGWmlOstTHCdlxUVN1?=
- =?us-ascii?Q?Ti7NvWCn3mLKl5Y8zlVErbakD+kfcoNZmtZ7HzG5WxERwCMRPJ5/QvnCL4fQ?=
- =?us-ascii?Q?Dgaz8Ii6m6uQiEtx89uh5f93VbPdoxWG0r3FNRgUIg4ypqC2Uj0X9lPqDKkI?=
- =?us-ascii?Q?D3NG6gIqt7cwLukeCWdVSE3RTCLDsKFi5MEnV2bXE0KgCKQl7XRtli8asEU2?=
- =?us-ascii?Q?mLiTfZ1zlDHWKwdZrX3GSXBSEtd6Mxlm1DsaffdPNk/OI+YTR3Nx7ucmSobB?=
- =?us-ascii?Q?UV5LfwxU28M2ZX4BPR4hGq9mP6cQjV1+NV1KRTCFQb9B8OzPzILGOHiH1gmY?=
- =?us-ascii?Q?P23uGeT4CwIpjI4buactUhFyISwIPEHM8YsqnluNSJqEJsBK77erNbqeMjnJ?=
- =?us-ascii?Q?qtL6p5cCF/Ds5S/zEwr8iJV0+lbvhT4qp0k+4rC+w54DuLuJ8oosfqbdnN66?=
- =?us-ascii?Q?79RMMdLcvJ2NCFmXo4Gt7BC6I2U9KzxP8yaQba5G22MriCgBQSrIKzpvfLiv?=
- =?us-ascii?Q?Sdqq4VjfRB4VA6Udmb8wjDHx/05Oas3f9dSKtDesbWm5p5QBY5D+mIsQvAZg?=
- =?us-ascii?Q?uiV7rPkK8yFkrDYNrCdsFLtkWTHq84cZz/JDNO7V5druZpR1wRXoHu82QIti?=
- =?us-ascii?Q?kDY9vnrgDjnetr89Jz2KiUuA1/FnWhMqc/NN5qONUtN7q5fRJcY40a8xoHcg?=
- =?us-ascii?Q?wPH60s+PMYu0P5Xak3OQ/xco3+HOQ6eWP7xfDPsmM9uyhMN9RrUvlm572a+y?=
- =?us-ascii?Q?xfvVvlJ9N8RivN3T6+mMSLTO2h77x23Mxjil5fGaSRssTOfrf/AOnTKTihEe?=
- =?us-ascii?Q?s4bIC7lYvhs3ZlZ9uqFfYc+J+4z7jDUI5Kub/ew9ytCWPkQ+mUIOypdclfb2?=
- =?us-ascii?Q?ZvkKjryMAmjmj13ypSzNOSwI1JTDqkQeMqCe8769+xbcK8igC2JKrqbUfUIa?=
- =?us-ascii?Q?B1vWufqk4B7HidZDlwAuD8nPa2NLIt0QNpy5qmDdi9BEMqR527DK9LGR5bpI?=
- =?us-ascii?Q?pUnF6m5JmjYUDWd0HEDMI2t2LDpAOUhlwoJ07aWEukBoGsUavkQCHyuiNNNW?=
- =?us-ascii?Q?3y00MsdiK4mTtFFyztBy3ipdvRNbR3jUST2ecpKuoEbYDkR2KxS7gQFbPSAs?=
- =?us-ascii?Q?f/3/DRyyWhwltkAfKRLobb99J+MVN6LTcMaj6hYoOD1Dc1669rxokyVHx3G5?=
- =?us-ascii?Q?ttrqGiEaDJ+gVBkoWrR7cfQgs/iAa0jbiLE19ekTRBr5PX6+B0GbCkoRCNCb?=
- =?us-ascii?Q?AXqvIVmYtM8Gl27AToHyqn6vkMEyNV4u6T0ni4Iyjo9RVhqurUk37lLooxpZ?=
- =?us-ascii?Q?vaumVHU/VDOLvNJCxNusWPa329MJDjXfO4/d8K0hC8xe/rUzkYz1pxlZPyib?=
- =?us-ascii?Q?zOJ/O+Ful9rpdwml1m4dBczdTKrMFSE2XkX+M83R9IB08bQjsjYuN5CCX3Tk?=
- =?us-ascii?Q?9E2oQSYUgVTCjGqqyzUALE2jf9msv/oPfHMT?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(376014)(1800799024)(36860700013);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2025 13:14:27.8026
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a3615efe-f924-4d08-a216-08ddf13522fa
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EDD4.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7279
+X-ClientProxiedBy: kwepems500001.china.huawei.com (7.221.188.70) To
+ kwepemj200003.china.huawei.com (7.202.194.15)
 
-Commit 7bea695ada0 restructured DTE flag handling but inadvertently changed
-the alias device configuration logic. This may cause incorrect DTE settings
-for certain devices.
 
-Add alias flag check before calling set_dev_entry_from_acpi(). Also move the
-device iteration loop inside the alias check to restrict execution to cases
-where alias devices are present.
 
-Fixes: 7bea695ada0 ("iommu/amd: Introduce struct ivhd_dte_flags to store persistent DTE flags")
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/init.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+On 2025/9/10 22:15:47, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> On Wed, Sep 10, 2025 at 11:20:08AM +0800, Qinxin Xia wrote:
+>> Ok, I see, my colleague Wang Zhou also released a version of io_ptdump
+>> a long time ago, which is implemented in smmu debugfs. Will recommends that
+>> io_ptdump be implemented in a way similar to CPU page table dump. Using
+>> debugfs to expose the data and using format-specific callbacks to implement
+>> specific data dumps, I'll talk to him about this as well.
+> 
+> I feel we should have a iommu subsystem debugfs and per-iommu_domain
+> directories to dump the page tables.
+> 
+> The smmu debugfs can report what iommu_domains each STE/CD is
+> referencing.
+> 
+> This also needs RCU freeing of page table levels as a locking
+> strategy.
+> 
+> Jason
+> 
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 8de689b2c5ed..205dc587b89b 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1455,12 +1455,12 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 				    PCI_FUNC(e->devid));
- 
- 			devid = e->devid;
--			for (dev_i = devid_start; dev_i <= devid; ++dev_i) {
--				if (alias)
-+			if (alias) {
-+				for (dev_i = devid_start; dev_i <= devid; ++dev_i)
- 					pci_seg->alias_table[dev_i] = devid_to;
-+				set_dev_entry_from_acpi(iommu, devid_to, flags, ext_flags);
- 			}
- 			set_dev_entry_from_acpi_range(iommu, devid_start, devid, flags, ext_flags);
--			set_dev_entry_from_acpi(iommu, devid_to, flags, ext_flags);
- 			break;
- 		case IVHD_DEV_SPECIAL: {
- 			u8 handle, type;
--- 
-2.31.1
+Thanks, I'll add RCU in the next version, but there's some confusion, Do 
+you mean to create a directory for each domain? like：
 
+/sys/kernel/debug/io_page_tables/domain_xxxx (xxxx=domain addr)
+
+tree domain_xxxx like:
+domain_xxxx
+└── group x
+│ └── device
+└── io_ptdump
+
+And the current design is such:
+
+User Space Interface
+└── DebugFS file: /sys/kernel/debug/io_page_tables
+└── Operation: Reading this file triggers the entire debug information 
+collection process
+
+Kernel Space Components
+├── Configuration option (CONFIG_IO_PTDUMP_DEBUGFS)
+├── Initialization module (mm/io_ptdump.c)
+│ └── device_initcall(io_ptdump_init)
+│ └── io_ptdump_debugfs_register("io_page_tables")
+├── DebugFS backend (mm/io_ptdump_debugfs.c)
+│ └── DEFINE_SHOW_ATTRIBUTE(io_ptdump)
+│ └── .show = io_ptdump_show
+│ └── iommu_group_and_iova_dump(m)
+└── IOMMU core extension (drivers/iommu/iommu.c)
+└── iommu_group_and_iova_dump()
+├── Traverse all IOMMU groups (via iommu_group_kset)
+├── Filter groups with default domain using DMA_IOVA cookie
+├── Build domain-group hierarchy
+│ ├── domain_list: list head
+│ ├── dump_domain: domain entry
+│ │ ├── domain: pointer to iommu_domain
+│ │ └── groups: list head of groups
+│ └── dump_group: group entry
+│ └── group: pointer to iommu_group
+├── Output domain information
+├── Output group and device information
+└── Call iommu_iova_info_dump() to output IOVA mappings
+└── Traverse IOVA red-black tree
+└── Call domain->ops->dump_iova_prot() to get protection information
+└── ARM SMMUv3 implementation (drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c)
+└── arm_smmu_dump_iova_prot()
+└── Call io_pgtable_ops->dump_iova_prot()
+└── ARM LPAE implementation (drivers/iommu/io-pgtable-arm.c)
+└── arm_lpae_dump_iova_prot()
+├── Use __arm_lpae_iopte_walk() to traverse page tables
+├── Obtain page table entry and level information
+├── Format and output mapping range and information
+└── Call dump_prot() to output protection flags
+└── Use prot_bits array to parse permission bits
+
+Do you mean that the interface in io-pgtable-arm.c is directly invoked 
+during the process of obtaining page table information without passing 
+through arm-smmu-v3.c?
+
+I'll add STE and CD dumps to the next release. Any other suggestions?
