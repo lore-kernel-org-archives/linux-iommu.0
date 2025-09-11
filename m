@@ -1,190 +1,164 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5121A1553A3;
-	Thu, 11 Sep 2025 07:01:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF2DA1D5146;
+	Thu, 11 Sep 2025 11:33:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757574087; cv=none; b=o3XpmL+auTgb//k6WLK3Tx+5XY+cfOmutxvC44/CETza+lhthTg+pMlVamgMTh02szc0f0cqyUPkmWpxrVgMzZ64WJr+MCUR7D+uYErdLELCLlAKrPoPrh4Cn+nEbw3jZ39FXKaU2xTBHAzBxau2lp9oMOcU8nIqi+8iVlg8U7Q=
+	t=1757590426; cv=none; b=kk0PSyC3CBWehFgaNcTwY9jYVldnOwNuz8sijdaedWRmrkro0VgicXdAjvnMLkZomBTxiH82Rce4GR81Av8O4Frmh9vjGu0Is/6CQzD6m8XaDIQi2ziihKa79lXESFkHFUeGtp6R790iJuciS43Z8WRyA52UeGWFwQg3ZISfURg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757574087; c=relaxed/simple;
-	bh=qr122yp8JUYBZU96I18Z8ELkl5DxLXHRqTyQLe7CWAE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Krk4FDfqexsK4L2B5ZrpOZy/H5qiAFvLfe2G6B7UqvQxGPzjiXge/02hcolJI6RUGT+/nURzb4F2qF4kJ9nzurLuah58GuvLM+zmEb9xlcJNBbLxSg8vkOLWCzR6+d5fwhxyt9ej0QO56tPZsZ4xQtkvNavTVfUoG+BK8dwBKAg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kNGHzc5L; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1757590426; c=relaxed/simple;
+	bh=rQckTyKjw0KD4frgMJweuSbbmKII/CXI2ZszG9S0ebs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=U6r+sd997FKa1DqdMj3Sc5DRndOJdMWwbIAjRqFhmmOh7EA2aFz8ODHjjcXGrPYcwSwpUTbhIgGSUyJFos1T3BPaqLOpLkFcfpl9JxwGZtUG5JYk+gxEK2f5hlxpd0XUW/vLREPA18gLm72arJUJM9YWehVubJo4qE6mfr9PEGc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FuT4EEy7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kNGHzc5L"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A72C4CEF1;
-	Thu, 11 Sep 2025 07:01:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FuT4EEy7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AA16C4CEF0;
+	Thu, 11 Sep 2025 11:33:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757574086;
-	bh=qr122yp8JUYBZU96I18Z8ELkl5DxLXHRqTyQLe7CWAE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=kNGHzc5LShxDoby6w+5B0rArOpeaiVE7rVvfrO816zAUBMrrpPJ0dUr2xaf4QLWhy
-	 mY+qNgBlxPEy3zXyUFdDDnJB7hi5Du0P4X6pW0kdRkHGArzrm9yHV3/MYgsA8NDNol
-	 kmc10a26FwkUmvRqIHSernvfMzY0CdmAsh3Czgj8l9W7P7M98o4M3GihQZm0juWDRk
-	 toFJKJ3PZMpypAvEJVOGELJQc633e95pfQW2Kg002tmNI4Q1oSKL6qki07jMnup1Ke
-	 H+qB+p4h7SiSVsY56tuJxfXBJm07+J0rYDESBrULBjJSENWLQsudeVU2Kao2Bgs1zO
-	 ZqAhYn49Hv17Q==
-Date: Thu, 11 Sep 2025 09:01:24 +0200
-From: Maxime Ripard <mripard@kernel.org>
-To: "T.J. Mercier" <tjmercier@google.com>
-Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
-	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
-	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Jonathan Corbet <corbet@lwn.net>, Andrew Davis <afd@ti.com>, 
-	Jared Kangas <jkangas@redhat.com>, Mattijs Korpershoek <mkorpershoek@kernel.org>, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH v7 0/5] dma-buf: heaps: Create a CMA heap for each CMA
- reserved region
-Message-ID: <20250911-didactic-authentic-cockle-e6d5fc@houat>
-References: <20250721-dma-buf-ecc-heap-v7-0-031836e1a942@kernel.org>
- <20250826-vagabond-catfish-of-courtesy-cbfa76@houat>
- <20250910-vigorous-attractive-gorilla-af6fec@houat>
- <CABdmKX29ftpNro+d=Ce6JGoMaG0UQeBbzL7DXiBkGkC0nwacTQ@mail.gmail.com>
+	s=k20201202; t=1757590425;
+	bh=rQckTyKjw0KD4frgMJweuSbbmKII/CXI2ZszG9S0ebs=;
+	h=From:To:Cc:Subject:Date:From;
+	b=FuT4EEy7c2rpuhn+Sige2uAlDkOrkz0Lap5ivExfloCc8AME0HL8VSQ8H3UwFNeaR
+	 9fB4KpiIyvlKO0Mc6EqzzcjStHt9HwZxefXK5c4OSHBV1BfBOdi/Qgn/D4foBcqAkX
+	 GX0QmwP27iI6x4/DoqmrxuGWKvL4HzTkQnzcMldl1K3KWC3r0rxckuzcOcGbH0C68P
+	 Gff1WrmpKE8q6LHavcC0Hj59QeofoCmTmSKbW1fDGc0hVf+IKcTrrJ4EUlc7PRbVSu
+	 K+5OL4HtbfwI0vGfKMqPgZMnbUhDWmIfQqwnHWly4QSaPNELWGd1mGrWq7s1xnjalJ
+	 cQTAN3mxPpl8g==
+From: Leon Romanovsky <leon@kernel.org>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+	dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev,
+	Jens Axboe <axboe@kernel.dk>,
+	Joerg Roedel <joro@8bytes.org>,
+	kvm@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org,
+	linux-block@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-pci@vger.kernel.org,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	Will Deacon <will@kernel.org>
+Subject: [PATCH v2 00/10] vfio/pci: Allow MMIO regions to be exported through dma-buf
+Date: Thu, 11 Sep 2025 14:33:04 +0300
+Message-ID: <cover.1757589589.git.leon@kernel.org>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha384;
-	protocol="application/pgp-signature"; boundary="mvqneghb5gn2pldr"
-Content-Disposition: inline
-In-Reply-To: <CABdmKX29ftpNro+d=Ce6JGoMaG0UQeBbzL7DXiBkGkC0nwacTQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 
+Changelog:
+v2:
+ * Added extra patch which adds new CONFIG, so next patches can reuse it.
+ * Squashed "PCI/P2PDMA: Remove redundant bus_offset from map state"
+   into the other patch.
+ * Fixed revoke calls to be aligned with true->false semantics.
+ * Extended p2pdma_providers to be per-BAR and not global to whole
+   device.
+ * Fixed possible race between dmabuf states and revoke.
+ * Moved revoke to PCI BAR zap block.
+v1: https://lore.kernel.org/all/cover.1754311439.git.leon@kernel.org
+ * Changed commit messages.
+ * Reused DMA_ATTR_MMIO attribute.
+ * Returned support for multiple DMA ranges per-dMABUF.
+v0: https://lore.kernel.org/all/cover.1753274085.git.leonro@nvidia.com
 
---mvqneghb5gn2pldr
-Content-Type: text/plain; protected-headers=v1; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v7 0/5] dma-buf: heaps: Create a CMA heap for each CMA
- reserved region
-MIME-Version: 1.0
+---------------------------------------------------------------------------
+Based on "[PATCH v6 00/16] dma-mapping: migrate to physical address-based API"
+https://lore.kernel.org/all/cover.1757423202.git.leonro@nvidia.com/ series.
+---------------------------------------------------------------------------
 
-Hi TJ,
+This series extends the VFIO PCI subsystem to support exporting MMIO
+regions from PCI device BARs as dma-buf objects, enabling safe sharing of
+non-struct page memory with controlled lifetime management. This allows RDMA
+and other subsystems to import dma-buf FDs and build them into memory regions
+for PCI P2P operations.
 
-On Wed, Sep 10, 2025 at 01:44:45PM -0700, T.J. Mercier wrote:
-> On Wed, Sep 10, 2025 at 12:33=E2=80=AFAM Maxime Ripard <mripard@kernel.or=
-g> wrote:
-> >
-> > On Tue, Aug 26, 2025 at 09:36:03AM +0200, Maxime Ripard wrote:
-> > > Hi,
-> > >
-> > > On Mon, Jul 21, 2025 at 01:17:29PM +0200, Maxime Ripard wrote:
-> > > > Here's another attempt at supporting user-space allocations from a
-> > > > specific carved-out reserved memory region.
-> > > >
-> > > > The initial problem we were discussing was that I'm currently worki=
-ng on
-> > > > a platform which has a memory layout with ECC enabled. However, ena=
-bling
-> > > > the ECC has a number of drawbacks on that platform: lower performan=
-ce,
-> > > > increased memory usage, etc. So for things like framebuffers, the
-> > > > trade-off isn't great and thus there's a memory region with ECC dis=
-abled
-> > > > to allocate from for such use cases.
-> > > >
-> > > > After a suggestion from John, I chose to first start using heap
-> > > > allocations flags to allow for userspace to ask for a particular ECC
-> > > > setup. This is then backed by a new heap type that runs from reserv=
-ed
-> > > > memory chunks flagged as such, and the existing DT properties to sp=
-ecify
-> > > > the ECC properties.
-> > > >
-> > > > After further discussion, it was considered that flags were not the
-> > > > right solution, and relying on the names of the heaps would be enou=
-gh to
-> > > > let userspace know the kind of buffer it deals with.
-> > > >
-> > > > Thus, even though the uAPI part of it had been dropped in this seco=
-nd
-> > > > version, we still needed a driver to create heaps out of carved-out=
- memory
-> > > > regions. In addition to the original usecase, a similar driver can =
-be
-> > > > found in BSPs from most vendors, so I believe it would be a useful
-> > > > addition to the kernel.
-> > > >
-> > > > Some extra discussion with Rob Herring [1] came to the conclusion t=
-hat
-> > > > some specific compatible for this is not great either, and as such =
-an
-> > > > new driver probably isn't called for either.
-> > > >
-> > > > Some other discussions we had with John [2] also dropped some hints=
- that
-> > > > multiple CMA heaps might be a good idea, and some vendors seem to do
-> > > > that too.
-> > > >
-> > > > So here's another attempt that doesn't affect the device tree at al=
-l and
-> > > > will just create a heap for every CMA reserved memory region.
-> > > >
-> > > > It also falls nicely into the current plan we have to support cgrou=
-ps in
-> > > > DRM/KMS and v4l2, which is an additional benefit.
-> > > >
-> > > > Let me know what you think,
-> > > > Maxime
-> > >
-> > > Any chance we can get this merged?
-> >
-> > Guys, can we move forward on this?
-> >
-> > Maxime
->=20
-> Hi Maxime,
->=20
-> Sorry I've been MIA the last couple of months.
->=20
-> The docs for the "reusable" property say, "device driver(s) owning the
-> region need to be able to reclaim it back", but how can a driver
-> reclaim memory backing a dmabuf, since pages allocated for a dmabuf
-> aren't necessarily movable. Couldn't a user allocate all of it, and
-> refuse to close those dmabufs?
+The series supports a use case for SPDK where a NVMe device will be
+owned by SPDK through VFIO but interacting with a RDMA device. The RDMA
+device may directly access the NVMe CMB or directly manipulate the NVMe
+device's doorbell using PCI P2P.
 
-I guess, but how is that any different than what we're doing on the
-default allocator already?
+However, as a general mechanism, it can support many other scenarios with
+VFIO. This dmabuf approach can be usable by iommufd as well for generic
+and safe P2P mappings.
 
-It also has to be reusable, and will not be able to reclaim any memory
-allocated through the heap.
+In addition to the SPDK use-case mentioned above, the capability added
+in this patch series can also be useful when a buffer (located in device
+memory such as VRAM) needs to be shared between any two dGPU devices or
+instances (assuming one of them is bound to VFIO PCI) as long as they
+are P2P DMA compatible.
 
-> I backported this to 6.6 and ran it on a Pixel. While there are
-> already similar out-of-tree dmabuf heap drivers that expose heaps for
-> these reserved regions, they do more than just cma_alloc (multiple
-> flavors of buffer securing, use case specific alignment and padding,
-> and slightly different allocation strategies) so I don't think this
-> series would allow us to completely drop the custom heap code, but
-> it's a nice start.
+The implementation provides a revocable attachment mechanism using dma-buf
+move operations. MMIO regions are normally pinned as BARs don't change
+physical addresses, but access is revoked when the VFIO device is closed
+or a PCI reset is issued. This ensures kernel self-defense against
+potentially hostile userspace.
 
-Thanks for testing, and I totally expect more heaps coming for things
-like protected memory, but it should indeed reduce the number of heap
-drivers needed going forward.
+The series includes significant refactoring of the PCI P2PDMA subsystem
+to separate core P2P functionality from memory allocation features,
+making it more modular and suitable for VFIO use cases that don't need
+struct page support.
 
-> Does the cgroup part come in because the plan is to add charging in
-> cma_heap.c?
+-----------------------------------------------------------------------
+The series is based originally on
+https://lore.kernel.org/all/20250307052248.405803-1-vivek.kasireddy@intel.com/
+but heavily rewritten to be based on DMA physical API.
+-----------------------------------------------------------------------
+The WIP branch can be found here:
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=dmabuf-vfio-v2
 
-Yes, and the system heap as well.
+Thanks
 
-Maxime
+Leon Romanovsky (8):
+  PCI/P2PDMA: Separate the mmap() support from the core logic
+  PCI/P2PDMA: Simplify bus address mapping API
+  PCI/P2PDMA: Refactor to separate core P2P functionality from memory
+    allocation
+  PCI/P2PDMA: Export pci_p2pdma_map_type() function
+  types: move phys_vec definition to common header
+  vfio/pci: Add dma-buf export config for MMIO regions
+  vfio/pci: Enable peer-to-peer DMA transactions by default
+  vfio/pci: Add dma-buf export support for MMIO regions
+:wqa
+Vivek Kasireddy (2):
+  vfio: Export vfio device get and put registration helpers
+  vfio/pci: Share the core device pointer while invoking feature
+    functions
 
---mvqneghb5gn2pldr
-Content-Type: application/pgp-signature; name="signature.asc"
+ block/blk-mq-dma.c                 |   7 +-
+ drivers/iommu/dma-iommu.c          |   4 +-
+ drivers/pci/p2pdma.c               | 165 ++++++++----
+ drivers/vfio/pci/Kconfig           |  20 ++
+ drivers/vfio/pci/Makefile          |   2 +
+ drivers/vfio/pci/vfio_pci_config.c |  22 +-
+ drivers/vfio/pci/vfio_pci_core.c   |  59 +++--
+ drivers/vfio/pci/vfio_pci_dmabuf.c | 398 +++++++++++++++++++++++++++++
+ drivers/vfio/pci/vfio_pci_priv.h   |  23 ++
+ drivers/vfio/vfio_main.c           |   2 +
+ include/linux/pci-p2pdma.h         | 114 +++++----
+ include/linux/types.h              |   5 +
+ include/linux/vfio.h               |   2 +
+ include/linux/vfio_pci_core.h      |   4 +
+ include/uapi/linux/vfio.h          |  25 ++
+ kernel/dma/direct.c                |   4 +-
+ mm/hmm.c                           |   2 +-
+ 17 files changed, 734 insertions(+), 124 deletions(-)
+ create mode 100644 drivers/vfio/pci/vfio_pci_dmabuf.c
 
------BEGIN PGP SIGNATURE-----
+-- 
+2.51.0
 
-iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaMJzxAAKCRAnX84Zoj2+
-dsvHAX9IpZOMjeU0ynWChRbSjBVdeZtylN7gZQL2xiSKdre2cCOs+EzPryzJzsTk
-tRNxMScBfAwmOazIjwKlseNgI+HDT4rryBoWdzpYERPwpsG4vLSlAqtaiPiPmf41
-ekyA/2h0Sg==
-=POxF
------END PGP SIGNATURE-----
-
---mvqneghb5gn2pldr--
