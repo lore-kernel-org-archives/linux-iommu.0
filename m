@@ -1,222 +1,190 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2052.outbound.protection.outlook.com [40.107.93.52])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41D2D24C676;
-	Thu, 11 Sep 2025 05:38:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757569116; cv=fail; b=Gk3Vou73ZEYIdYXW69C7apgKYX5wlQDnPvftJgjqO88cY6QDPt09E/VkdatPFQaqsa96HMbyi4TgpzjrxuETKeRYTm6Y9cdWMT6huAjBInxwh8PgVdjmx+ObUGkqSaio+D7bojG7RB1nX/l/B+ZePVkkI7kuHONswB8NURGxsMg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757569116; c=relaxed/simple;
-	bh=Pmji6PbJSQA2S85di80QczaZwvE0axdDRm46QQoAwtc=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ICUQu6+sCjMhXPE7PYXUAnSlV2cSGgjqap+wxwPFSfHn75CclWwPm4pqguCgDUuX5FfRdi6orrr+eXkxTWef2WIrhICKdupSqtdveLzeOXgoSOQnZ/+yfLTDD1lqQwm3yKSBt+MlHZzYRSSwoBqtjgwImQjbUgF/0UzOSM6dzA8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=JEa3aIgb; arc=fail smtp.client-ip=40.107.93.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5121A1553A3;
+	Thu, 11 Sep 2025 07:01:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1757574087; cv=none; b=o3XpmL+auTgb//k6WLK3Tx+5XY+cfOmutxvC44/CETza+lhthTg+pMlVamgMTh02szc0f0cqyUPkmWpxrVgMzZ64WJr+MCUR7D+uYErdLELCLlAKrPoPrh4Cn+nEbw3jZ39FXKaU2xTBHAzBxau2lp9oMOcU8nIqi+8iVlg8U7Q=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1757574087; c=relaxed/simple;
+	bh=qr122yp8JUYBZU96I18Z8ELkl5DxLXHRqTyQLe7CWAE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Krk4FDfqexsK4L2B5ZrpOZy/H5qiAFvLfe2G6B7UqvQxGPzjiXge/02hcolJI6RUGT+/nURzb4F2qF4kJ9nzurLuah58GuvLM+zmEb9xlcJNBbLxSg8vkOLWCzR6+d5fwhxyt9ej0QO56tPZsZ4xQtkvNavTVfUoG+BK8dwBKAg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kNGHzc5L; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="JEa3aIgb"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=bbySwZcvleOjlnGK2dY0s+7A4jLfq9oSGukpia13sHvRRlfk1bCWtyZXDw0uNgr8oZVkpVKBFnuZ75fOS3HQif6qMxwVYyUBm+mcLBdVMv3jeEIpJQH8kwplTXvHBFbaSixl6PhZvdupXpTkVD+B8qd31laM7k9nYpkZDnsNFU/eGk0rorDxaMYl3QENIAsLDLKbwl/nq/eFeDbRDhOWWVkSHJeSM/FVszyIrL0/hB88ONcaDJsSq4s4B+t+SG/n1zT2T9HpA6xQ3ooqiM5471q5RUAdnC1YiepWn9SJRCAIiL3Bs//nQYQAcUxq3s15Olxa4QnM3CbpKHACwu1TpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EI0+oJqVn5UcnIDmyCfCsAMdForWsY6pjFSTdMLpPIU=;
- b=qqeSU4b4ZyIpQgRkLu1zQ75Ds1BQxtXVC33pPKZwkJDubsMQajf1OFkyYvo6lzg9L1jzTHSN4WvQAtenwP0wS0kAn/n11qGDKMudTU0qjnl0yQZhY4YYgOq38donM5R779Ny4x/Z5Bg/MOp9WwMV/VWYMp0Qq+MRl6AUx7Hik4VnI6u4eWneOtBkFubtLHbfwvBprQR6t11UFwkWUA18wBqmBGL/Q/CWThEdYbHJS4q2siT/1S2wjr3nHytG0zsE+FKqdyqGgAsKRI0gYojAMNviL2X3sOz6Emp99y26yBk8RzUFYYwro2fN414tgPOZH6jc5sY1cnTjFbdmR1NGrQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=amd.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EI0+oJqVn5UcnIDmyCfCsAMdForWsY6pjFSTdMLpPIU=;
- b=JEa3aIgbEe4Qrf0PgVD2WI7kLOejRY0UrrMzg+oUJim7PWyozBFWbrEFLTwmqDmPBb0eYVp+gvfpDZa1Zfc3ynLEQN5fowi7ysFKXSozj806JG2EUs9eVsD9G+1LC2JPXpqnLC1qAgb5az5qjiiw2xT6rKEEfksy/P5bPUuR/FKgvPZrJaeB6Ld4SvwXuLVUP1IFLwW9BQMSlHYOSNnhWFudi/vV5V/MWSFW5t0ZiIi+u/U1ToLUg6rPfxWb9nd23B2EqaOBvvcPKySdo9TxRmRkxHg7ZszzGdM0+Q58YB6P7Pq/7piDBBE63ZPm7jgCxwBidP4ovkq/t00OccCiSw==
-Received: from BLAPR03CA0037.namprd03.prod.outlook.com (2603:10b6:208:32d::12)
- by LV8PR12MB9135.namprd12.prod.outlook.com (2603:10b6:408:18c::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.22; Thu, 11 Sep
- 2025 05:38:30 +0000
-Received: from BN1PEPF00004681.namprd03.prod.outlook.com
- (2603:10b6:208:32d:cafe::7b) by BLAPR03CA0037.outlook.office365.com
- (2603:10b6:208:32d::12) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9115.16 via Frontend Transport; Thu,
- 11 Sep 2025 05:38:30 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BN1PEPF00004681.mail.protection.outlook.com (10.167.243.87) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9115.13 via Frontend Transport; Thu, 11 Sep 2025 05:38:30 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Wed, 10 Sep
- 2025 22:38:20 -0700
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.14; Wed, 10 Sep 2025 22:38:19 -0700
-Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.126.190.180)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
- Transport; Wed, 10 Sep 2025 22:38:14 -0700
-Date: Wed, 10 Sep 2025 22:38:12 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Jonathan Corbet <corbet@lwn.net>, <iommu@lists.linux.dev>, Joerg Roedel
-	<joro@8bytes.org>, Justin Stitt <justinstitt@google.com>, Kevin Tian
-	<kevin.tian@intel.com>, <linux-doc@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <llvm@lists.linux.dev>, Bill Wendling
-	<morbo@google.com>, Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers
-	<nick.desaulniers+lkml@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, "Suravee
- Suthikulpanit" <suravee.suthikulpanit@amd.com>, Will Deacon
-	<will@kernel.org>, Alexey Kardashevskiy <aik@amd.com>, Alejandro Jimenez
-	<alejandro.j.jimenez@oracle.com>, James Gowans <jgowans@amazon.com>, "Michael
- Roth" <michael.roth@amd.com>, Pasha Tatashin <pasha.tatashin@soleen.com>,
-	<patches@lists.linux.dev>
-Subject: Re: [PATCH v5 03/15] iommupt: Add the basic structure of the iommu
- implementation
-Message-ID: <aMJgRGl+znjXJRyJ@nvidia.com>
-References: <0-v5-116c4948af3d+68091-iommu_pt_jgg@nvidia.com>
- <3-v5-116c4948af3d+68091-iommu_pt_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kNGHzc5L"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94A72C4CEF1;
+	Thu, 11 Sep 2025 07:01:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757574086;
+	bh=qr122yp8JUYBZU96I18Z8ELkl5DxLXHRqTyQLe7CWAE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=kNGHzc5LShxDoby6w+5B0rArOpeaiVE7rVvfrO816zAUBMrrpPJ0dUr2xaf4QLWhy
+	 mY+qNgBlxPEy3zXyUFdDDnJB7hi5Du0P4X6pW0kdRkHGArzrm9yHV3/MYgsA8NDNol
+	 kmc10a26FwkUmvRqIHSernvfMzY0CdmAsh3Czgj8l9W7P7M98o4M3GihQZm0juWDRk
+	 toFJKJ3PZMpypAvEJVOGELJQc633e95pfQW2Kg002tmNI4Q1oSKL6qki07jMnup1Ke
+	 H+qB+p4h7SiSVsY56tuJxfXBJm07+J0rYDESBrULBjJSENWLQsudeVU2Kao2Bgs1zO
+	 ZqAhYn49Hv17Q==
+Date: Thu, 11 Sep 2025 09:01:24 +0200
+From: Maxime Ripard <mripard@kernel.org>
+To: "T.J. Mercier" <tjmercier@google.com>
+Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
+	Sumit Semwal <sumit.semwal@linaro.org>, Benjamin Gaignard <benjamin.gaignard@collabora.com>, 
+	Brian Starkey <Brian.Starkey@arm.com>, John Stultz <jstultz@google.com>, 
+	Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Robin Murphy <robin.murphy@arm.com>, Jonathan Corbet <corbet@lwn.net>, Andrew Davis <afd@ti.com>, 
+	Jared Kangas <jkangas@redhat.com>, Mattijs Korpershoek <mkorpershoek@kernel.org>, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, iommu@lists.linux.dev, 
+	linux-doc@vger.kernel.org
+Subject: Re: [PATCH v7 0/5] dma-buf: heaps: Create a CMA heap for each CMA
+ reserved region
+Message-ID: <20250911-didactic-authentic-cockle-e6d5fc@houat>
+References: <20250721-dma-buf-ecc-heap-v7-0-031836e1a942@kernel.org>
+ <20250826-vagabond-catfish-of-courtesy-cbfa76@houat>
+ <20250910-vigorous-attractive-gorilla-af6fec@houat>
+ <CABdmKX29ftpNro+d=Ce6JGoMaG0UQeBbzL7DXiBkGkC0nwacTQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; micalg=pgp-sha384;
+	protocol="application/pgp-signature"; boundary="mvqneghb5gn2pldr"
 Content-Disposition: inline
-In-Reply-To: <3-v5-116c4948af3d+68091-iommu_pt_jgg@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN1PEPF00004681:EE_|LV8PR12MB9135:EE_
-X-MS-Office365-Filtering-Correlation-Id: 35592c8b-dfc3-4ba1-f9bd-08ddf0f570a1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|7416014|1800799024|36860700013|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?XimgNsGRrYi5YagYVf+g2OvmnyfEv5LAk94TqlhFmi32oh5OjtL5k7P6t3LA?=
- =?us-ascii?Q?w39iVJmqpwGTTath5uZnBB9q2YKi7UOvAMFc3YXEPoq95j3jz88GByFSU+z6?=
- =?us-ascii?Q?7CqWLL1osZXq2yC6YUi+SfAeuMJ+7aoIxLoZiajNbuoPQGj4YDgkASjeUjOa?=
- =?us-ascii?Q?3grdgTcHRPpuUvbqFilr39D8lhMbFeBoLBMdD3pEmfNbmyyal3e/ZAVjAJ+c?=
- =?us-ascii?Q?tkDNtNFJgLSANObfzKnmqoCml/77txdZoorC9dy9iVrPvXYk4CVWU5MVagno?=
- =?us-ascii?Q?ihVaoDtIPzj5Cci69fX8mf0g79pRAAB0KAhPDiN0apr+WwPuTRinCDiAKO9P?=
- =?us-ascii?Q?aRYbhjs0F3R5003jtLB16Wcby2thmnNn7cLDDjuujNApGuc24glSkplFQxXa?=
- =?us-ascii?Q?hTjgY5e8lSrhgax6GuoJP8OL4d8555ZHc9ksNfEWhJNaMasWXkuuFBwC3ZhZ?=
- =?us-ascii?Q?jzuuFYwpiR+kJxhrCSjwmXQsesVZ9KvnFZdDWStFE9FTd7JGow87FJgAkmVr?=
- =?us-ascii?Q?NRxcTZA4btydZSG33ATdF5b1bsbuVFtRuOLF30uv0ZdFl3M9Vw5J/JtWYBM1?=
- =?us-ascii?Q?mzMd1252Vp3IDV34toADhIMVo5MGcCQT8KY0ibsNuRPa4a6p33mNvtyU78Qk?=
- =?us-ascii?Q?rW0kwBvR8aCDkB+1TYuc7HHeAAVYXLSOZEYjp7vVg1HqUWcgpIAw7Bvv9pEI?=
- =?us-ascii?Q?ALzPimFUz5jOgkauZyQf7mop4xlKnAaw/iskKgDqd9UmRHn53vDTq/Ziw6a7?=
- =?us-ascii?Q?mx4fYApcep5clTW7S0ILJ6XK9Y7AYCRtfRpeN55JvU9aVqse2NxytEORIQU0?=
- =?us-ascii?Q?3/snpIUrJI8E0azabfqsBDjxx/XenD3XDz172dHFZTIhVtToDpSbu381ztsO?=
- =?us-ascii?Q?zCTxLIkTvFl0JfP5ey0aOLp/wg+mCy/uLcU6ViEz/6WakgcH4PIz4qqYpqix?=
- =?us-ascii?Q?VUyGjUxphITl3CQorQV/HdmUMB3PQFM+FoUtTXGQFwUYf4/5H2U6gfxUIGjb?=
- =?us-ascii?Q?rrVxeUzlVLGITNLA2cDcvOTyApxQNGbCwEOtd187iSBeNpKwPQWzIWdJYtc4?=
- =?us-ascii?Q?bqaX+MMteHiePvAJs0TYwE0JIj54u24GkVkQ1LHOYanXAvDwYiy5JCs/+Q52?=
- =?us-ascii?Q?pl/mYrKdMV2mWTwkhDvcxkMg8wmAW/fnn115G3YPOMgeqi3OCF9q7K3lh2Lr?=
- =?us-ascii?Q?oMCFhMLSgConIs1qID7A5WVg/JItOMaLKjiSnktmpdafFtThVOIjhp2X3n1e?=
- =?us-ascii?Q?ot8WMFdYBhFS2LShlPFcsnZUDYU+C+ZIYhR30jgxXXyXvEPUYUNH+QlK7EZP?=
- =?us-ascii?Q?6J5EQg9LiTFG+NrnCU0K1/aqnSvcpyL0WhnmpQFoceeOXRpFWzxQQbwKhgDy?=
- =?us-ascii?Q?+kDLbKe/nff5YayQACuYP6am7EFIENcY4Ajg4JYIWjn0cfyDgW6IsNXO+dIj?=
- =?us-ascii?Q?nnP6ht2l6Mt3wcFvrMirw5yE7T34Xjb86yvCg4/CoGkyo2/dBqO16JFjlFMv?=
- =?us-ascii?Q?shWKAFRYBE0WuiIb4ULnQlXWocNlcvgjnezK?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(7416014)(1800799024)(36860700013)(376014);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2025 05:38:30.2014
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 35592c8b-dfc3-4ba1-f9bd-08ddf0f570a1
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN1PEPF00004681.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9135
+In-Reply-To: <CABdmKX29ftpNro+d=Ce6JGoMaG0UQeBbzL7DXiBkGkC0nwacTQ@mail.gmail.com>
 
-On Wed, Sep 03, 2025 at 02:46:30PM -0300, Jason Gunthorpe wrote:
-> The top level struct used by the drivers is pt_iommu_table_FMT. It
-> contains the other structs to allow container_of() to move between the
-> driver, iommu page table, generic page table, and generic format layers.
-> 
->    struct pt_iommu_table_amdv1 {
->        struct pt_iommu {
-> 	      struct iommu_domain domain;
->        } iommu;
->        struct pt_amdv1 {
-> 	      struct pt_common {
-> 	      } common;
 
-According to include/linux/generic_pt/common.h, it should be just:
-		struct pt_common common;
-?
+--mvqneghb5gn2pldr
+Content-Type: text/plain; protected-headers=v1; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v7 0/5] dma-buf: heaps: Create a CMA heap for each CMA
+ reserved region
+MIME-Version: 1.0
 
-> +static int pt_iommu_init_domain(struct pt_iommu *iommu_table,
-> +				struct iommu_domain *domain)
-> +{
-...
-> +	/*
-> +	 * A 64-bit high address space table on a 32-bit system cannot work.
-> +	 */
+Hi TJ,
 
-Nit: this fits to a single line.
+On Wed, Sep 10, 2025 at 01:44:45PM -0700, T.J. Mercier wrote:
+> On Wed, Sep 10, 2025 at 12:33=E2=80=AFAM Maxime Ripard <mripard@kernel.or=
+g> wrote:
+> >
+> > On Tue, Aug 26, 2025 at 09:36:03AM +0200, Maxime Ripard wrote:
+> > > Hi,
+> > >
+> > > On Mon, Jul 21, 2025 at 01:17:29PM +0200, Maxime Ripard wrote:
+> > > > Here's another attempt at supporting user-space allocations from a
+> > > > specific carved-out reserved memory region.
+> > > >
+> > > > The initial problem we were discussing was that I'm currently worki=
+ng on
+> > > > a platform which has a memory layout with ECC enabled. However, ena=
+bling
+> > > > the ECC has a number of drawbacks on that platform: lower performan=
+ce,
+> > > > increased memory usage, etc. So for things like framebuffers, the
+> > > > trade-off isn't great and thus there's a memory region with ECC dis=
+abled
+> > > > to allocate from for such use cases.
+> > > >
+> > > > After a suggestion from John, I chose to first start using heap
+> > > > allocations flags to allow for userspace to ask for a particular ECC
+> > > > setup. This is then backed by a new heap type that runs from reserv=
+ed
+> > > > memory chunks flagged as such, and the existing DT properties to sp=
+ecify
+> > > > the ECC properties.
+> > > >
+> > > > After further discussion, it was considered that flags were not the
+> > > > right solution, and relying on the names of the heaps would be enou=
+gh to
+> > > > let userspace know the kind of buffer it deals with.
+> > > >
+> > > > Thus, even though the uAPI part of it had been dropped in this seco=
+nd
+> > > > version, we still needed a driver to create heaps out of carved-out=
+ memory
+> > > > regions. In addition to the original usecase, a similar driver can =
+be
+> > > > found in BSPs from most vendors, so I believe it would be a useful
+> > > > addition to the kernel.
+> > > >
+> > > > Some extra discussion with Rob Herring [1] came to the conclusion t=
+hat
+> > > > some specific compatible for this is not great either, and as such =
+an
+> > > > new driver probably isn't called for either.
+> > > >
+> > > > Some other discussions we had with John [2] also dropped some hints=
+ that
+> > > > multiple CMA heaps might be a good idea, and some vendors seem to do
+> > > > that too.
+> > > >
+> > > > So here's another attempt that doesn't affect the device tree at al=
+l and
+> > > > will just create a heap for every CMA reserved memory region.
+> > > >
+> > > > It also falls nicely into the current plan we have to support cgrou=
+ps in
+> > > > DRM/KMS and v4l2, which is an additional benefit.
+> > > >
+> > > > Let me know what you think,
+> > > > Maxime
+> > >
+> > > Any chance we can get this merged?
+> >
+> > Guys, can we move forward on this?
+> >
+> > Maxime
+>=20
+> Hi Maxime,
+>=20
+> Sorry I've been MIA the last couple of months.
+>=20
+> The docs for the "reusable" property say, "device driver(s) owning the
+> region need to be able to reclaim it back", but how can a driver
+> reclaim memory backing a dmabuf, since pages allocated for a dmabuf
+> aren't necessarily movable. Couldn't a user allocate all of it, and
+> refuse to close those dmabufs?
 
-> +#ifdef pt_iommu_fmt_hw_info
-> +#define pt_iommu_table_hw_info CONCATENATE(pt_iommu_table, _hw_info)
-> +#define pt_iommu_hw_info CONCATENATE(CONCATENATE(pt_iommu_, PTPFX), hw_info)
-> +void pt_iommu_hw_info(struct pt_iommu_table *fmt_table,
-> +		      struct pt_iommu_table_hw_info *info)
-> +{
-> +	struct pt_iommu *iommu_table = &fmt_table->iommu;
-> +	struct pt_common *common = common_from_iommu(iommu_table);
-> +	struct pt_range top_range = pt_top_range(common);
-> +
-> +	pt_iommu_fmt_hw_info(fmt_table, &top_range, info);
-> +}
-> +EXPORT_SYMBOL_NS_GPL(pt_iommu_hw_info, "GENERIC_PT_IOMMU");
-> +#endif
-> +
-> +MODULE_LICENSE("GPL");
-> +MODULE_DESCRIPTION("IOMMU Page table implementation for " __stringify(PTPFX_RAW));
-> +MODULE_IMPORT_NS("GENERIC_PT");
-> +
-> +#endif
+I guess, but how is that any different than what we're doing on the
+default allocator already?
 
-Nit: maybe
-#endif /* __GENERIC_PT_IOMMU_PT_H */
-?
+It also has to be reusable, and will not be able to reclaim any memory
+allocated through the heap.
 
-> +struct pt_iommu_cfg {
-> +	/**
-> +	 * @features: Features required. Only these features will be turned on.
-> +	 * The feature list should reflect what the IOMMU HW is capable of.
-> +	 */
-> +	unsigned int features;
-> +	/**
-> +	 * @hw_max_vasz_lg2: Maximum VA the IOMMU HW can support. This will
-> +	 * imply the top level of the table.
-> +	 */
-> +	u8 hw_max_vasz_lg2;
-> +	/**
-> +	 * @hw_max_oasz_lg2: Maximum OA the IOMMU HW can support. The format
-> +	 * might select a lower maximum OA.
-> +	 */
-> +	u8 hw_max_oasz_lg2;
-> +};
-> +
-> +#endif
+> I backported this to 6.6 and ran it on a Pixel. While there are
+> already similar out-of-tree dmabuf heap drivers that expose heaps for
+> these reserved regions, they do more than just cma_alloc (multiple
+> flavors of buffer securing, use case specific alignment and padding,
+> and slightly different allocation strategies) so I don't think this
+> series would allow us to completely drop the custom heap code, but
+> it's a nice start.
 
-#endif /*  __GENERIC_PT_IOMMU_H */
+Thanks for testing, and I totally expect more heaps coming for things
+like protected memory, but it should indeed reduce the number of heap
+drivers needed going forward.
 
-Otherwise,
+> Does the cgroup part come in because the plan is to add charging in
+> cma_heap.c?
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Yes, and the system heap as well.
+
+Maxime
+
+--mvqneghb5gn2pldr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iJUEABMJAB0WIQTkHFbLp4ejekA/qfgnX84Zoj2+dgUCaMJzxAAKCRAnX84Zoj2+
+dsvHAX9IpZOMjeU0ynWChRbSjBVdeZtylN7gZQL2xiSKdre2cCOs+EzPryzJzsTk
+tRNxMScBfAwmOazIjwKlseNgI+HDT4rryBoWdzpYERPwpsG4vLSlAqtaiPiPmf41
+ekyA/2h0Sg==
+=POxF
+-----END PGP SIGNATURE-----
+
+--mvqneghb5gn2pldr--
