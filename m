@@ -1,134 +1,108 @@
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E30CA32ED43
-	for <iommu@lists.linux.dev>; Thu, 11 Sep 2025 14:08:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.190
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2674345735;
+	Thu, 11 Sep 2025 14:58:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757599742; cv=none; b=u30csR0x1c3pTXfboKy0QW4MEm2ITUIIS0CvaoUu1vtLyyvSIk+bqVKy541Zw1ct+G8aP/mt0Zv4KYJbOfih4shhkhGu4EPDJ3YCM3Pk1IuteHXUnuBOupnoSYmEwRxxq0I8KYTDf1JMKFZKGzRMP/nImC+n4APeJtVasgXk3fE=
+	t=1757602708; cv=none; b=Ac47e8QUtOJGCb5q/AR1plpdgGT8osWRJiDZ8IQ/L8tc9Fhbwnj3sdR3t9+Oen5N43DF4cyxon4beh+++2Eye4tdbBmcYVbJkyCxNdlTqAYaxcNCKnngKraaeVmPc0bnoeY11e5u2XKd9RoKyheKtqlzgZjD17D9iEeWv99/IBs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757599742; c=relaxed/simple;
-	bh=2pqgafZIU6dCGuLxRRcQ4J9D0AL2bMkEFuyleWWTbWA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=eu0hBLpyeRFSRu0qRiOhaKgk4hSBoZkMYLsro6/L52ZiHVTkFbXHC0yAeQnspXBG32G+OBrpJ2Mke2vgeOhaeMDYXOur3GS6yoh1hjGpDpRDgCuieuUw+5JpSEHddoJ3ykuXX2TkB01d6fsW1BocDS2oQZZqfVCbpVxvqkz/JtI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.190
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.234])
-	by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4cMzq66vynz2VRgH;
-	Thu, 11 Sep 2025 22:05:38 +0800 (CST)
-Received: from kwepemj200003.china.huawei.com (unknown [7.202.194.15])
-	by mail.maildlp.com (Postfix) with ESMTPS id 64F2F140296;
-	Thu, 11 Sep 2025 22:08:56 +0800 (CST)
-Received: from [10.67.120.170] (10.67.120.170) by
- kwepemj200003.china.huawei.com (7.202.194.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.11; Thu, 11 Sep 2025 22:08:55 +0800
-Message-ID: <bb4c3f0b-06da-46e6-9769-efe3dc00e9fb@huawei.com>
-Date: Thu, 11 Sep 2025 22:08:55 +0800
+	s=arc-20240116; t=1757602708; c=relaxed/simple;
+	bh=HeodYYa2ARM+3jXZTHDptckWgA9wcPV5Pp4/+zghwa0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rvi+FjdsnuUui9uc27dlPjEpqA22WrZQLYsCWdteam/C+d39tJ0UlvPekaEe3vSpy1J9DBZFkoykWYvVnpdsMF95U89b/mHqc/UYe2J9Lo2A3CW6sMPEhF+b1V0iJ24PL8400QWhb2RPsRvgbf97TZJCMV2UnMdoOS8d1i1xMf4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N4ppPzU/; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N4ppPzU/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0211C4CEF0;
+	Thu, 11 Sep 2025 14:58:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757602707;
+	bh=HeodYYa2ARM+3jXZTHDptckWgA9wcPV5Pp4/+zghwa0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=N4ppPzU/92e5jZEtYxQNnLuvVF4YdjiL4YbwnvjtjiIycgyZYLN5zlWHBq8nJVmqF
+	 SOxopzS4DbaUTOTh0oiaJgH5oQa+1/6RNfyYdFs2eexO3SOTRBBZinG1/pxHmQXNp6
+	 nwcQ8xqMeu2KACfIyIuaI18EDltZX6IOC9wPpnFJj1X88p8d4g9Zipamjb7jIDjQIl
+	 WuyN8unPafOXY3SDoPZDNj0Yb8VEZ0RVar3YwXdirG3i2T2SAm8bA4c45KJMjN5N8M
+	 toG6ci2Kl/h83ydrEq0j7Uifr3Kh+qCygXA8weT7KpgViBiNHB7lkHcuHUC/BIRgrj
+	 3UgtRHcMT2SBQ==
+Date: Thu, 11 Sep 2025 15:58:22 +0100
+From: Will Deacon <will@kernel.org>
+To: Qinxin Xia <xiaqinxin@huawei.com>
+Cc: robin.murphy@arm.com, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	yangyicong@huawei.com, wangzhou1@hisilicon.com,
+	prime.zeng@hisilicon.com, xuwei5@huawei.com, fanghao11@huawei.com,
+	jonathan.cameron@huawei.com, linuxarm@huawei.com
+Subject: Re: [PATCH 1/2] iommu/debug: Add IOMMU page table dump debug facility
+Message-ID: <aMLjjl4nsBuQML3Y@willie-the-truck>
+References: <20250814093005.2040511-1-xiaqinxin@huawei.com>
+ <20250814093005.2040511-2-xiaqinxin@huawei.com>
+ <aMAmWQJy_G50xoBf@willie-the-truck>
+ <534119b8-8221-4991-b308-05e8d5918aca@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/2] iommu: Add io_ptdump debug interface for iommu
-To: Jason Gunthorpe <jgg@ziepe.ca>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>,
-	<linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-	<yangyicong@huawei.com>, <wangzhou1@hisilicon.com>,
-	<prime.zeng@hisilicon.com>, <xuwei5@huawei.com>, <fanghao11@huawei.com>,
-	<jonathan.cameron@huawei.com>, <linuxarm@huawei.com>
-References: <20250814093005.2040511-1-xiaqinxin@huawei.com>
- <20250902161028.GC184112@ziepe.ca>
- <f2720f17-5e81-4f69-aaf5-791b47973178@huawei.com>
- <20250910141547.GD882933@ziepe.ca>
-From: Qinxin Xia <xiaqinxin@huawei.com>
-In-Reply-To: <20250910141547.GD882933@ziepe.ca>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: kwepems500001.china.huawei.com (7.221.188.70) To
- kwepemj200003.china.huawei.com (7.202.194.15)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <534119b8-8221-4991-b308-05e8d5918aca@huawei.com>
 
-
-
-On 2025/9/10 22:15:47, Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> On Wed, Sep 10, 2025 at 11:20:08AM +0800, Qinxin Xia wrote:
->> Ok, I see, my colleague Wang Zhou also released a version of io_ptdump
->> a long time ago, which is implemented in smmu debugfs. Will recommends that
->> io_ptdump be implemented in a way similar to CPU page table dump. Using
->> debugfs to expose the data and using format-specific callbacks to implement
->> specific data dumps, I'll talk to him about this as well.
+On Wed, Sep 10, 2025 at 10:58:09AM +0800, Qinxin Xia wrote:
 > 
-> I feel we should have a iommu subsystem debugfs and per-iommu_domain
-> directories to dump the page tables.
 > 
-> The smmu debugfs can report what iommu_domains each STE/CD is
-> referencing.
-> 
-> This also needs RCU freeing of page table levels as a locking
-> strategy.
-> 
-> Jason
-> 
+> On 2025/9/9 21:06:33, Will Deacon <will@kernel.org> wrote:
+> > On Thu, Aug 14, 2025 at 05:30:04PM +0800, Qinxin Xia wrote:
+> > > +/**
+> > > + * iova_info_dump - dump iova alloced
+> > > + * @s - file structure used to generate serialized output
+> > > + * @iovad: - iova domain in question.
+> > > + */
+> > > +static int iommu_iova_info_dump(struct seq_file *s, struct iommu_domain *domain)
+> > > +{
+> > > +	struct iova_domain *iovad;
+> > > +	unsigned long long pfn;
+> > > +	unsigned long i_shift;
+> > > +	struct rb_node *node;
+> > > +	unsigned long flags;
+> > > +	size_t prot_size;
+> > > +
+> > > +	iovad = iommu_domain_to_iovad(domain);
+> > > +	if (!iovad)
+> > > +		return -ENOMEM;
+> > > +
+> > > +	i_shift = iova_shift(iovad);
+> > > +
+> > > +	/* Take the lock so that no other thread is manipulating the rbtree */
+> > > +	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+> > > +	assert_spin_locked(&iovad->iova_rbtree_lock);
+> > > +
+> > > +	for (node = rb_first(&iovad->rbroot); node; node = rb_next(node)) {
+> > > +		struct iova *iova = rb_entry(node, struct iova, node);
+> > > +
+> > > +		if (iova->pfn_hi <= iova->pfn_lo)
+> > > +			continue;
+> > > +
+> > > +		for (pfn = iova->pfn_lo; pfn <= iova->pfn_hi; ) {
+> > > +			prot_size = domain->ops->dump_iova_prot(s, domain, pfn << i_shift);
+> > > +			pfn = ((pfn << i_shift) + prot_size) >> i_shift;
+> > > +		}
+> > > +	}
+> > > +
+> > > +	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+> > 
+> > Why is the IOVA rbtree lock sufficient for serialising the page-table
+> > accesses made by ->dump_iova_prot()? I don't see anything here that
+> > prevents the walker walking into page-table pages that are e.g. being
+> > freed or manipulated concurrently.
+> > 
+>  Thank you for catching this critical race condition.I will fix this in
+>  next version. And,Jason suggests putting io_ptdump on top of iommu pt.
+>  What do you think?
 
-Thanks, I'll add RCU in the next version, but there's some confusion, Do 
-you mean to create a directory for each domain? like：
+I guess it depends on whether or not you want to tie this debug feature
+to drivers that support the new page-table stuff.
 
-/sys/kernel/debug/io_page_tables/domain_xxxx (xxxx=domain addr)
-
-tree domain_xxxx like:
-domain_xxxx
-└── group x
-│ └── device
-└── io_ptdump
-
-And the current design is such:
-
-User Space Interface
-└── DebugFS file: /sys/kernel/debug/io_page_tables
-└── Operation: Reading this file triggers the entire debug information 
-collection process
-
-Kernel Space Components
-├── Configuration option (CONFIG_IO_PTDUMP_DEBUGFS)
-├── Initialization module (mm/io_ptdump.c)
-│ └── device_initcall(io_ptdump_init)
-│ └── io_ptdump_debugfs_register("io_page_tables")
-├── DebugFS backend (mm/io_ptdump_debugfs.c)
-│ └── DEFINE_SHOW_ATTRIBUTE(io_ptdump)
-│ └── .show = io_ptdump_show
-│ └── iommu_group_and_iova_dump(m)
-└── IOMMU core extension (drivers/iommu/iommu.c)
-└── iommu_group_and_iova_dump()
-├── Traverse all IOMMU groups (via iommu_group_kset)
-├── Filter groups with default domain using DMA_IOVA cookie
-├── Build domain-group hierarchy
-│ ├── domain_list: list head
-│ ├── dump_domain: domain entry
-│ │ ├── domain: pointer to iommu_domain
-│ │ └── groups: list head of groups
-│ └── dump_group: group entry
-│ └── group: pointer to iommu_group
-├── Output domain information
-├── Output group and device information
-└── Call iommu_iova_info_dump() to output IOVA mappings
-└── Traverse IOVA red-black tree
-└── Call domain->ops->dump_iova_prot() to get protection information
-└── ARM SMMUv3 implementation (drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c)
-└── arm_smmu_dump_iova_prot()
-└── Call io_pgtable_ops->dump_iova_prot()
-└── ARM LPAE implementation (drivers/iommu/io-pgtable-arm.c)
-└── arm_lpae_dump_iova_prot()
-├── Use __arm_lpae_iopte_walk() to traverse page tables
-├── Obtain page table entry and level information
-├── Format and output mapping range and information
-└── Call dump_prot() to output protection flags
-└── Use prot_bits array to parse permission bits
-
-Do you mean that the interface in io-pgtable-arm.c is directly invoked 
-during the process of obtaining page table information without passing 
-through arm-smmu-v3.c?
-
-I'll add STE and CD dumps to the next release. Any other suggestions?
+Will
