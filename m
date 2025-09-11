@@ -1,240 +1,203 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2087.outbound.protection.outlook.com [40.107.212.87])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F12241DB15F
-	for <iommu@lists.linux.dev>; Thu, 11 Sep 2025 16:59:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.87
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757609950; cv=fail; b=IF3K0qiE4bCa9HWhZj2voxIrb/3lFGSu4Hf5LrPM3R1HVXawQyNz6YNgBsTe+XNU6G4tVmlS7oJ85s+RzTsEfPeQDTjX4qk/SC0YEvsDsVIwTAgMvqjmHkmulGM/StLBi9MXS/FDLnVX5HYUHuZMLKQwbJnnBx45SBkwxTbEFZ8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757609950; c=relaxed/simple;
-	bh=F9ceNsT5572DAJE8YwULGSJfSPr2fffwwXZwfsUSGeg=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=sHWKT1ER27LWQWUJSMndflaisgZCTWxBGPBxyGf1sdCVyFSrquenAm3/ywkXKnFyVM7SFC4C11nNSe8kGQCxXmx2j6xwqX3dagxoFKZV1QVmQyU8GzUBFKUGbJiyZkqHSPpIMvR22GlqCiIhhGMy1fiHUBix1PgR/Lp2by4TtkA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=1f12s7a2; arc=fail smtp.client-ip=40.107.212.87
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB0FC13EFE3
+	for <iommu@lists.linux.dev>; Thu, 11 Sep 2025 17:44:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1757612686; cv=none; b=R391t68fke1joRKrArBL/lSaFg4JMFMPqmR9tB7h3VOHkQOMFPpKXU0VxVm6zceTkPbde3ufiZ3Y90i6WxCX9sJaRkODBRhBJYqQx4GJz79Y79Lwk0YYnslweSROdS+FiIuS8hyiCZhbJMV1FVmkCbw8TefBc0ezvKxgXGh5WdY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1757612686; c=relaxed/simple;
+	bh=pbhMO13ZY5GqoqdYOtMMsHmtwMybBAHzcr1+lrCzXbA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=f1mCqGqJ9amCIMV9Z1VAub6ewQwSdBMGbe91KP/hMTRV7YmdTVV9PgdzwbvObBBoGYwb4AWWng2xX8UMfw+ljYodRWJI1634JJO0TYOYxhJ++KTN4wRxRHR+oBSo3sskm+Ycw0CdqRyuyIDjqhivdIwoJs4jc0oO0bdQCzMsvXw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=wPp9wNlc; arc=none smtp.client-ip=209.85.214.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="1f12s7a2"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=fYvROgxPFbFKAjWvIQcPPJ+4pVZVuot+5CgwabcURxayQ+2Is8Kq65kbR/Q8OauWMyYQouI4tkBYj9NEp41SpNZVZy36C4nax3DG8/yY61NV68gQ8th1E5Ib0oYWIWBmf6UBWIm7EHBwgSlkq9gmcjQ6Y5cAOHA3X8PHz1cwlkqwhswk4+YkiVx5Q9EX3KsvrHcDqZY3mMSpxVLeZmUlAp3b75bJh1XlWASKWaPkDKGlASBnx9WIsOm+xQ4zBz2jtPh0TQnGzW9WMsVSlEvc5v1i/J4Q2B2ancgmCTrPqE7lsnQE0Eo+N7L7vG7BBzIOGmKmUUHG+Zc2rqTeLH9WjQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+WwoWedi7r1PQtEgfh2WP+CxO8DT4wM5d579Ei74jJM=;
- b=JLn225oRQgK+RbCHq3QuIoSmzlNkMhONlsN983uGpr956aE69bThrtASsPY/LjGXJe8ZNhbhLTyjhv8xo1VMrsUqSutrLiL0ozQpEN7076PhRfsdun0Q/74DQkq7mxKLpFYBS6Tvo8jSBLlNguXMJeK5hKLFC6ivqIZi/T2TihSBCMUM1KzCUxSlNAngC3ggveIwqMrvDKAJiW8/bkMT4uK9Nbhvxn/Q/0Oxdi/7AbS6VduLsJ7+dvgGzaG0Hrhx371i1jacYltBNCuCbPqDj95aUn6iCVSTxX0q7dSQJCIku33/7qS+ZkpG109L36rkTXanK9ZfH2X9nXvmqzOoWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+WwoWedi7r1PQtEgfh2WP+CxO8DT4wM5d579Ei74jJM=;
- b=1f12s7a2RlsU6doVRT9gjbe7V2ighDM3/vQHv6hg9N1HHrZKuRJsE8uL7hJ/2eQg3dLNLVOfOhDrDrdtCvoeIMn5aY7hOVfzXEk7NtOoU7nCL4RiDXjq5n0aIoHgiiM5Ld5rmsLwadOTl86i8JOXwy/AADiIHKI85ReVY+tRPI0=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- DM4PR12MB7501.namprd12.prod.outlook.com (2603:10b6:8:113::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9094.22; Thu, 11 Sep 2025 16:59:05 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%4]) with mapi id 15.20.9094.021; Thu, 11 Sep 2025
- 16:59:05 +0000
-Message-ID: <a9725264-8d8a-4970-a519-4ca415ce21ee@amd.com>
-Date: Thu, 11 Sep 2025 22:28:52 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4] iommu/amd: Add support for hw_info for iommu
- capability query
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, jgg@nvidia.com,
- nicolinc@nvidia.com
-Cc: linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org,
- joro@8bytes.org, kevin.tian@intel.com, jsnitsel@redhat.com,
- iommu@lists.linux.dev, santosh.shukla@amd.com, sairaj.arunkodilkar@amd.com,
- jon.grimm@amd.com, prashanthpra@google.com, wvw@google.com,
- wnliu@google.com, gptran@google.com, kpsingh@google.com
-References: <20250904193112.7418-1-suravee.suthikulpanit@amd.com>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20250904193112.7418-1-suravee.suthikulpanit@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN4P287CA0092.INDP287.PROD.OUTLOOK.COM
- (2603:1096:c01:268::17) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="wPp9wNlc"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-24af8cd99ddso13724355ad.0
+        for <iommu@lists.linux.dev>; Thu, 11 Sep 2025 10:44:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1757612684; x=1758217484; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=Rz1KF1fng6KUijdJHOF61HINUn1DY6RMLW+n7igx57A=;
+        b=wPp9wNlcbvMwXD1n0coVdynhnBVgL+l8JNmt9GKTClU7OA+DXia1KXGPq58poTwtJH
+         7NVNXE2GJAidKwKHKAk3GlS0S8kEvMN/aNN1I295gD5749Zc3D/fsFi8Btb+Q4WmHcQ8
+         uClmggvjXiNxsLNQhUJwdhDagkqShTqyb2jsohRzUOQ59MvOMWeda74cWRmhJlV+Iiey
+         UymwdefdeHCnlAIsELatIWYf3yquDzQkJdWMRTbqokqMezxD4Jz7S34n5LyANALMIZYh
+         Jd3AG84vpwwbFcsVgW/U49xclVWWqQzz80to1VlBrwA2G0j2hEBnyGiFxY3pYReLKnji
+         Ko7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757612684; x=1758217484;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Rz1KF1fng6KUijdJHOF61HINUn1DY6RMLW+n7igx57A=;
+        b=qJvi+6L3sHv2i7D/R2XXoIICY2g00d23mi0oHbgSAVLIotDfODAipas8FCHMd/oK18
+         XQ6XTviGqsb0kX74P7HoSLgJxAdh4Vi4qfQcwrHW1jeKguz+UI7JWWO62Q6w5xKUGAkv
+         VfcoHyUoK0jvZ0CP55db1xxQVJ+gDI9WfNV/DXrio3IOiH5BmEoFRlOb1yoNuQf2mU0u
+         KpMrZeTMfs7EAPscJN/RjhHAjJCCQ1HJH6Ow03nOx3cGxj6T7VICDXuP8lspOIKS7M6U
+         yqfn4o09YZDxvRPtnMdf3RPvrvO6KU7KrHwZUTMi+rsu51yZ/3KfP2ApwwqgV8go3fCR
+         W1Ag==
+X-Forwarded-Encrypted: i=1; AJvYcCXuKOoumqVlHEYBCrsFlhQ6dP7A+LNY6rmGqHMsa+kykrdKPFdNkePVh1+gp5rKJEFpoPjv5A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxOC2+9BhYLb6y8g0aJdeaOk/D1WQZWWk48AkYabqWEndc0Xma8
+	C+OcIrFYkAz7MWlIBoMIg41J9O5iOSjAysYNYsCGG5lArBAKNiAYTxSx+CtH+0lRHHpZXdu1rfD
+	HFZFS/XX0vxa1NJDdSy4qi1qLqjFgMV1+PF7Z1By+vw==
+X-Gm-Gg: ASbGnct8op8r2+1I7iwMetC8z99wUoZEJ2Mc9cGkf7RiYZvTG5+yIseHuePHhSKc0V8
+	YFHVQEydU4aPfabBFsedwF80NVJwHp8RYhaVpdbbWekgg8AI1ZZdAggkdZ7/qWTrrlF3F2ofofJ
+	dE4Y0USUOw3MIOGMX5hCZkCBZ0CnqDT8tG8r/HMm/es8i1ucehFdaw390CuVW84O7Z0R+3nHO1Z
+	UuMmlLSe/TQ85IdyX0+6dbVMu+KTVHqHuxZT4mk+InGAhR0l84eiknl2amMT44blbYA1Z4=
+X-Google-Smtp-Source: AGHT+IHKvaF18ohXsPsL72THHHDkwdYvNLb3qlPEho/vRrC5yGFzk7JsCnpNSS1pajW0C+okn9T5G60r8QGqr7wiZ+k=
+X-Received: by 2002:a17:903:41ca:b0:24c:e6a6:9e59 with SMTP id
+ d9443c01a7336-25d245dd6f8mr3157985ad.6.1757612684132; Thu, 11 Sep 2025
+ 10:44:44 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|DM4PR12MB7501:EE_
-X-MS-Office365-Filtering-Correlation-Id: 785105ee-3b1b-45ab-dbff-08ddf154840d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?WEZYamplcmFpSW9XQkh0b09XN2FRTDVaMks3ZXRhTXhUYktnaVhSOWZGczM0?=
- =?utf-8?B?OWlDVG5qYzR0L1ltUWZUMk53RXRQcUgwL0NmVHNzTTdFVk15TmF3NW9uMFA3?=
- =?utf-8?B?Z3RCeXFnU3ZuczVYekhjbFBvajlDdE1rc0lPK0lreDlxeGpDeG5PVTNCRHhj?=
- =?utf-8?B?ZjJ1Rm9oemhrQzQxMk1CYUJJUXVNZ3had043cE9sSm0vLzIvbVNwNlhsWm5a?=
- =?utf-8?B?YWxrQ0VWMzdPUC9NR1NwSGpHWWZ2eHMyVmd6cjB5dG8yNHJ4Y3hhZHN1RHJL?=
- =?utf-8?B?bVZDWmRGRDVQOU1FY0VEampUOTBJaVlFY0dlRXBPNHNwV254TWF0SytEcW93?=
- =?utf-8?B?bU0wSGN1cjFveWRIVHpnZGtsZjcva0U1eXlYSmlVdlNTQnNaUWY5S0ZCaGVV?=
- =?utf-8?B?blpxUlhxWGxEWFVhQ2taWWFPNXViOEp3ajhEYTRNVG52eng5M2xlNjhTVnZx?=
- =?utf-8?B?RzFucDhTdTduMnh5VUtvejArTG1Kb3VvS1Y2VDEvUUl0NEdtSFJ5OVVndnFK?=
- =?utf-8?B?eml3L1pDNVVPTzlTVDNmNEZodlg0Z3krdTBiK2JrNzhHV3A4a0U5UHM4RkN2?=
- =?utf-8?B?N2Z1QlE0Q2VUUmlWZnpwdmhUNTQyTzl3RFZHaExqbldYNnM5OERjbWxnb1pN?=
- =?utf-8?B?SEQ0UkRtV0h4Y0ExYVJ3RXFIRVRWRUJ2T1dEQXpLMncyZlVDL1JoQ0dtQ3ZG?=
- =?utf-8?B?dHZ6TUhVa0wzd2hZSFVFQkxzUG9DRFBQRHNncVBXRitHWkxPR29IUEJMU0JR?=
- =?utf-8?B?RFBHZmhpZWwzSEtMWDlIREU3NE5rVFRiTVZ3RDdLbE1VdVN6SFlRR3RCUFZk?=
- =?utf-8?B?QUducWxxUkNRendjemJqUVVCVjg1emtNUEVxLzV1UUlJN0VpYi9vckN5eWVl?=
- =?utf-8?B?S0MwU0Y3OEg4clBjd1RkdHVSOHg2VEt6aTlpR0JuNndabGtMMVd3bnl0Nkpq?=
- =?utf-8?B?S0pLeDRFc2dnMnE2NThIZ3NpTzB2OCtCWVNhMTIyeHZrYnIzVlA0ZDBnL2pF?=
- =?utf-8?B?WXhNeUFyaVF5QkNYOUUySUEzRmNYOXRnYVJ1cDljb0lqcTJaZEk0ZUNUSGk5?=
- =?utf-8?B?SnBpbTBvRFJKaS9TWGJIVG92a0ExQU5vY0RYS0l0OHhZYTVRa0pRK1lMSHRZ?=
- =?utf-8?B?Z0dUYy95dHBvVm1JNHBBcFlIOVhOTjhiZ25HZ241WjhYdTZOSStRdzZTckdW?=
- =?utf-8?B?R29Jb3R6N3g4KzY3ZTAwRGwva0xEV2k0d2ZMczQ1SnNMTTBKbnFoallTQUwv?=
- =?utf-8?B?OW1lRWt2THFMZXU4dzlQd2wwSW1zLzViU0Q0VEE4T2JQUkIxTUhLd1JNcTNE?=
- =?utf-8?B?VDdaVnBMUmpmaXg1cmhYTWROMk4ya08wbG1kOHhQRkZYSWdvY0piV3FGUGdj?=
- =?utf-8?B?UFJvT1I4MmhBK09ZYy85UXB0N2JNcVh6Z05McVExaXNnb0FqZzFwY1gvTzBl?=
- =?utf-8?B?R1ExaEx6SWhudGErcGVJUDVpUCtDcWhJQVIvN1FDVFpDRDR4cEwrejdpVDJZ?=
- =?utf-8?B?Nk1Ea1JXZ0RIekRkRTlPQnB0REpMSGdBVWRpWDNsdzArN3JvbGhXL3c5VFZ6?=
- =?utf-8?B?TE5IV3d5TXlxd0xJbXQzdlhvUUM4UUhaYkQrVUlXdFlHdVcwcjY4Rjg2MWJt?=
- =?utf-8?B?RGMvZ0pPZjUzbTRGaHd2WkIvUWtzYU05eFdXNFdGamJSUzJmTGxxU0dHVWVG?=
- =?utf-8?B?dVNVRUJFVGc4bzNEWXVTcXZWTEVVdW9FaldaWnA0RG5tOHdZbDVhRk9ZRFdp?=
- =?utf-8?B?cEdIdTJScmU0NmJUQXpEdXN0cm1oSUdXbXFpY1lEbTNMaVBaeHdnelZEZzg0?=
- =?utf-8?B?UFJ6OGNRczkzUTBwb01WdW9RY09SeDBHbklwZUZqTm1Fa21yRjg5anJjOFE3?=
- =?utf-8?B?YnJTRm5UcVlqS2hheGUrZGZkb0lQVWVnaXBwSlZXa2NkWXBwZE9leFIydVFO?=
- =?utf-8?Q?/BElGAyL5WM=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MC85ODY1dTdpczFrZ1p6V0J3YkZGYk5vQWx1eE4vQ0lrYWNWRUVhZVRodGNu?=
- =?utf-8?B?NjFOdXE3ZUZTMlVhQUMzQm5HaG1SRnJhUW9vZUxTNzM1R3N6dDZRTExlQ2Rm?=
- =?utf-8?B?N3JlUFFEeEpJb2kzMFgzaFpIZEhMMkU2bk0vajgvY0wwQ0FGRTVqc2g0elRX?=
- =?utf-8?B?dGo5OVYycTNqWFJQZEZIV1pkYVNFeTRoVmxKcWhuYk5ZcGFVd0F2dEJENmdT?=
- =?utf-8?B?bE5PQ0RKWnhhZEhlRjdVNUZGTkZRUTZ2SVh6R0F4SmtsUCtMQUdSbENRbjZr?=
- =?utf-8?B?M1V6WHltUjRweE1HVTRCdzk5OE1oN1pPRXRqS3VOdlBkK1d2WGE4NkR0Q3BX?=
- =?utf-8?B?YW1OelU4OExzM2VYU0VWL3ZTMUZ1USs2bjk0WWtLZXR6d2JSK2M4NGZiNUVR?=
- =?utf-8?B?M0RGbmVHSFlXRVM1M3B5M04xOU1SNHhUMWpxUFNNSnk5ZEFUclZ4Z2FUcGNL?=
- =?utf-8?B?MnB5OHZ3MW5QVWh3RlE4KzgybnZOSGJuY2xxVTRHVHZwa24wMzFSbUhLOHVX?=
- =?utf-8?B?YVlXaVB2RlFoVm9ibm1nUStYOUg0RGxXOXk2c09ybDlia3gzZ2l6aS9WeUNz?=
- =?utf-8?B?K2pWWEY1SFhIV1BqYWJFUEJUQnlOWGJ6L1lBUEwxNFVCVjZJME5WQXNBVlM1?=
- =?utf-8?B?RXVsTWxKMlUzeEM1TDJRVGw0TWlPYy9mcDVKNE9objRVVXNUZElDaEQ5bTN2?=
- =?utf-8?B?YXBrYzRsUE93VWZIdE4wYWZPemd5cFJwR1pGLzZOQjlwOXFuN2NLdlQ2OTJJ?=
- =?utf-8?B?MVZYbFRLbnVhRlNPZEhhNVY1aXQ0MFIvUTF6SEt0aUhuNGpTOVNaWEhNbzJz?=
- =?utf-8?B?MHUxQjlRditHaU9WelBxZ2hlM1ZUVlVkdVQzMmFobnBtK1h4TDVOMzBnQW5P?=
- =?utf-8?B?Vm82Y1lZZzZpMHVsVUoxWEhzelE5NVYvVXVIbllncmhLeGNqUm9hWUc0ODlV?=
- =?utf-8?B?OFZ5dnFQeXB3MDNkZDljcWtkanVpNzRYUmN5a0tWeTdxdmlpdkFFODhhYXRG?=
- =?utf-8?B?a2hvU29vamJCRjJCRUJ3MkZ2MGw0b0JJYzYxVmVNSUt1elJKQkRTU1ZnV2Uv?=
- =?utf-8?B?YzFmVmNtbVF1Q3F6ZDNtaWx3a1FCZEhEWFJTSEkzeDJiSStRZkEvcEVycjh6?=
- =?utf-8?B?bWxZYUJjdUZNM3hYVENBRW1seHoyTG1hMWVVbys0K3pWNklLS2JOVVBoVXpX?=
- =?utf-8?B?Z2lIVXNlYW44eURVRS9QamtYOUJ0dHdDWXZnOURKNDZIdFJ5N0VyUTNmZjFE?=
- =?utf-8?B?T2xEbHlHTngrZWJvQld0dkI4UmdTbDY2dE9DNjFHb3NPVVQyS3RyRXltU21o?=
- =?utf-8?B?ZWp5bjVia0VPRkJ1cmx2cWwybXZMRHV4a2p1R3pyMEVhbktjWHYxWDFMUHp3?=
- =?utf-8?B?UVdtRTB6TGhqN1VJN2x5YzlxWHA4RmlKekZhSjg0NVJ6WXBiQlVYUG1yT1Y3?=
- =?utf-8?B?QUczMklwQ1ZkSStabk03VkNUTGJnWlphQ3Y4cEJKRjREK2s3Q0svYVBvLytS?=
- =?utf-8?B?QThPME1tVms1QkFHbTdLVkpGYkIwV25YQWM2NjhNdzlkZEx5aHlZb29LU3E1?=
- =?utf-8?B?d1BTZU1CQ2FGaVpVUmVSR0JnaXdGMFUvNGlrM2w5ZXp0elV6YlhJdGFFcGVz?=
- =?utf-8?B?c2J6a2tTdWlBQW5TOU45U0lHcjVEQjBiUnc4MW03eC9ZQTIrakMyNHhtUmZR?=
- =?utf-8?B?amtueXNaS21ZNTRWbXRLenFIYXd6M0NoWEVVRVB1cWlKcVdoTFVUcXovVjZj?=
- =?utf-8?B?WnRLSjJsRUtqYUpaTU5CMTZkZnNmZDhVekFDd2pUczhaaTFVT2JKeGwxQXZs?=
- =?utf-8?B?ZnJKUVBRL29GRlJ6NVJ3UUM2Qy9YLzhsQ0hUMThhZHlPc0VEa2Q5bWtTQ3l5?=
- =?utf-8?B?YW90TDNPV0NhVjV5bHVYNXZQMmRERllEU0cwbHgyVTRNaHNVWEYvYVM1bUxM?=
- =?utf-8?B?WENYaGFVb0NYUFQyTExIQzBDd0p3MUcvQWJ5Q00yeW05enRMOXBBeVoyR3dY?=
- =?utf-8?B?bE5iR1VFK25MdStqK2dYTkthVGFTay80azRsOURFT0VSQUE5N3FYM3lzbnpX?=
- =?utf-8?B?WFBqQ0JMekhOM2N6SXZHTGJFWmMwRzZtMEtLOWhCcUh1WWwxbU9KaE91dFl2?=
- =?utf-8?Q?AimxZkCcJ4qDGpIF691X7kE5D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 785105ee-3b1b-45ab-dbff-08ddf154840d
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2025 16:59:05.5860
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XAFB5aQqpe3tqnZptroNockdidu1Bmaa5eQqaEA3ErU8nT7UTc1thzS3PZH8N375WMU/fOEe9dgExGQTDbYJdw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7501
+References: <20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com>
+In-Reply-To: <20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com>
+From: Naresh Kamboju <naresh.kamboju@linaro.org>
+Date: Thu, 11 Sep 2025 23:14:32 +0530
+X-Gm-Features: AS18NWC_m5FW6D-agm1h0PvPSN-t5mnK-nNZJhLfFxbja72xJDHUDp2R2a5Rjwc
+Message-ID: <CA+G9fYv_h22MCs380DwW+G5_M=H-GdFvGGo4vq_-gARL8trCOQ@mail.gmail.com>
+Subject: Re: [PATCH 0/2] PCI: Fix ACS enablement for Root Ports in DT platforms
+To: manivannan.sadhasivam@oss.qualcomm.com
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Joerg Roedel <jroedel@suse.de>, iommu@lists.linux.dev, 
+	Anders Roxell <anders.roxell@linaro.org>, Pavankumar Kondeti <quic_pkondeti@quicinc.com>, 
+	Xingang Wang <wangxingang5@huawei.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	stable@vger.kernel.org, lkft-triage@lists.linaro.org, LKFT <lkft@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 
+On Wed, 10 Sept 2025 at 23:09, Manivannan Sadhasivam via B4 Relay
+<devnull+manivannan.sadhasivam.oss.qualcomm.com@kernel.org> wrote:
+>
+> Hi,
+>
+> This series fixes the long standing issue with ACS in DT platforms. There are
+> two fixes in this series, both fixing independent issues on their own, but both
+> are needed to properly enable ACS on DT platforms (well, patch 1 is only needed
+> for Juno board, but that was a blocker for patch 2, more below...).
+>
+> Issue(s) background
+> ===================
+>
+> Back in 2024, Xingang Wang first noted a failure in attaching the HiSilicon SEC
+> device to QEMU ARM64 pci-root-port device [1]. He then tracked down the issue to
+> ACS not being enabled for the QEMU Root Port device and he proposed a patch to
+> fix it [2].
+>
+> Once the patch got applied, people reported PCIe issues with linux-next on the
+> ARM Juno Development boards, where they saw failure in enumerating the endpoint
+> devices [3][4]. So soon, the patch got dropped, but the actual issue with the
+> ARM Juno boards was left behind.
+>
+> Fast forward to 2024, Pavan resubmitted the same fix [5] for his own usecase,
+> hoping that someone in the community would fix the issue with ARM Juno boards.
+> But the patch was rightly rejected, as a patch that was known to cause issues
+> should not be merged to the kernel. But again, no one investigated the Juno
+> issue and it was left behind again.
+>
+> Now it ended up in my plate and I managed to track down the issue with the help
+> of Naresh who got access to the Juno boards in LKFT. The Juno issue is with the
+> PCIe switch from Microsemi/IDT, which triggers ACS Source Validation error on
+> Completions received for the Configuration Read Request from a device connected
+> to the downstream port that has not yet captured the PCIe bus number. As per the
+> PCIe spec r6.0 sec 2.2.6.2, "Functions must capture the Bus and Device Numbers
+> supplied with all Type 0 Configuration Write Requests completed by the Function
+> and supply these numbers in the Bus and Device Number fields of the Requester ID
+> for all Requests". So during the first Configuration Read Request issued by the
+> switch downstream port during enumeration (for reading Vendor ID), Bus and
+> Device numbers will be unknown to the device. So it responds to the Read Request
+> with Completion having Bus and Device number as 0. The switch interprets the
+> Completion as an ACS Source Validation error and drops the completion, leading
+> to the failure in detecting the endpoint device. Though the PCIe spec r6.0, sec
+> 6.12.1.1, states that "Completions are never affected by ACS Source Validation".
+> This behavior is in violation of the spec.
+>
+> This issue was already found and addressed with a quirk for a different device
+> from Microsemi with 'commit, aa667c6408d2 ("PCI: Workaround IDT switch ACS
+> Source Validation erratum")'. Apparently, this issue seems to be documented in
+> the erratum #36 of IDT 89H32H8G3-YC, which is not publicly available.
+>
+> Solution for Juno issue
+> =======================
+>
+> To fix this issue, I've extended the quirk to the Device ID of the switch
+> found in Juno R2 boards. I believe the same switch is also present in Juno R1
+> board as well.
+>
+> With Patch 1, the Juno R2 boards can now detect the endpoints even with ACS
+> enabled for the Switch downstream ports. Finally, I added patch 2 that properly
+> enables ACS for all the PCI devices on DT platforms.
+>
+> It should be noted that even without patch 2 which enables ACS for the Root
+> Port, the Juno boards were failing since 'commit, bcb81ac6ae3c ("iommu: Get
+> DT/ACPI parsing into the proper probe path")' as reported in LKFT [6]. I
+> believe, this commit made sure pci_request_acs() gets called before the
+> enumeration of the switch downstream ports. The LKFT team ended up disabling
+> ACS using cmdline param 'pci=config_acs=000000@pci:0:0'. So I added the above
+> mentioned commit as a Fixes tag for patch 1.
+>
+> Also, to mitigate this issue, one could enumerate all the PCIe devices in
+> bootloader without enabling ACS (as also noted by Robin in the LKFT thread).
+> This will make sure that the endpoint device has a valid bus number when it
+> responds to the first Configuration Read Request from the switch downstream
+> port. So the ACS Source Validation error doesn't get triggered.
+>
+> Solution for ACS issue
+> ======================
+>
+> To fix this issue, I've kept the patch from Xingang as is (with rewording of the
+> patch subject/description). This patch moves the pci_request_acs() call to
+> devm_of_pci_bridge_init(), which gets called during the host bridge
+> registration. This makes sure that the 'pci_acs_enable' flag set by
+> pci_request_acs() is getting set before the enumeration of the Root Port device.
+> So now, ACS will be enabled for all ACS capable devices of DT platforms.
 
+I have applied this patch series on top of Linux next-20250910 and
+next-20250911 tags and tested.
 
-On 9/5/2025 1:01 AM, Suravee Suthikulpanit wrote:
-> AMD IOMMU Extended Feature (EFR) and Extended Feature 2 (EFR2) registers
-> specify features supported by each IOMMU hardware instance.
-> The IOMMU driver checks each feature-specific bits before enabling
-> each feature at run time.
-> 
-> For IOMMUFD, the hypervisor passes the raw value of amd_iommu_efr and
-> amd_iommu_efr2 to VMM via iommufd IOMMU_DEVICE_GET_HW_INFO ioctl.
-> 
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+>
+> [1] https://lore.kernel.org/all/038397a6-57e2-b6fc-6e1c-7c03b7be9d96@huawei.com
+> [2] https://lore.kernel.org/all/1621566204-37456-1-git-send-email-wangxingang5@huawei.com
+> [3] https://lore.kernel.org/all/01314d70-41e6-70f9-e496-84091948701a@samsung.com
+> [4] https://lore.kernel.org/all/CADYN=9JWU3CMLzMEcD5MSQGnaLyDRSKc5SofBFHUax6YuTRaJA@mail.gmail.com
+> [5] https://lore.kernel.org/linux-pci/20241107-pci_acs_fix-v1-1-185a2462a571@quicinc.com
+> [6] https://lists.linaro.org/archives/list/lkft-triage@lists.linaro.org/message/CBYO7V3C5TGYPKCMWEMNFFMRYALCUDTK
+>
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Tested-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+
 > ---
+> Manivannan Sadhasivam (1):
+>       PCI: Extend pci_idt_bus_quirk() for IDT switch with Device ID 0x8090
+>
+> Xingang Wang (1):
+>       iommu/of: Call pci_request_acs() before enumerating the Root Port device
+>
+>  drivers/iommu/of_iommu.c | 1 -
+>  drivers/pci/of.c         | 8 +++++++-
+>  drivers/pci/probe.c      | 2 +-
+>  3 files changed, 8 insertions(+), 3 deletions(-)
+> ---
+> base-commit: 8f5ae30d69d7543eee0d70083daf4de8fe15d585
+> change-id: 20250910-pci-acs-cb4fa3983a2c
+>
+> Best regards,
+> --
+> Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+>
+>
 
-.../...
-
-> diff --git a/drivers/iommu/amd/iommufd.c b/drivers/iommu/amd/iommufd.c
-> new file mode 100644
-> index 000000000000..72eaaa923d04
-> --- /dev/null
-> +++ b/drivers/iommu/amd/iommufd.c
-> @@ -0,0 +1,31 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (C) 2025 Advanced Micro Devices, Inc.
-> + */
-> +
-> +#include <linux/iommu.h>
-> +
-> +#include "iommufd.h"
-> +#include "amd_iommu.h"
-> +#include "amd_iommu_types.h"
-> +
-> +void *amd_iommufd_hw_info(struct device *dev, u32 *length, u32 *type)
-> +{
-> +	struct iommu_hw_info_amd *hwinfo;
-> +
-> +	if (*type != IOMMU_HW_INFO_TYPE_DEFAULT &&
-> +	    *type != IOMMU_HW_INFO_TYPE_AMD)
-> +		return ERR_PTR(-EOPNOTSUPP);
-> +
-> +	hwinfo = kzalloc(sizeof(*hwinfo), GFP_KERNEL);
-> +	if (!hwinfo)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	*length = sizeof(*hwinfo);
-> +	*type = IOMMU_HW_INFO_TYPE_AMD;
-> +
-> +	hwinfo->efr = amd_iommu_efr;
-> +	hwinfo->efr2 = amd_iommu_efr2;
-> +
-> +	return hwinfo;
-> +}
-> diff --git a/drivers/iommu/amd/iommufd.h b/drivers/iommu/amd/iommufd.h
-> new file mode 100644
-> index 000000000000..8b726482778b
-> --- /dev/null
-> +++ b/drivers/iommu/amd/iommufd.h
-> @@ -0,0 +1,15 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only */
-> +/*
-> + * Copyright (C) 2025 Advanced Micro Devices, Inc.
-> + */
-> +
-> +#ifndef AMD_IOMMUFD_H
-> +#define AMD_IOMMUFD_H
-> +
-> +#if IS_ENABLED(CONFIG_IOMMUFD)
-
-It should be `CONFIG_AMD_IOMMU_IOMMUFD`
-
-Otherwise patch looks good to me.
-
-Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
-
--Vasant
-
-
+--
+Linaro LKFT
