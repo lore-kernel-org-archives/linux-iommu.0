@@ -1,174 +1,188 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2049.outbound.protection.outlook.com [40.107.212.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9225340DA3
-	for <iommu@lists.linux.dev>; Wed, 10 Sep 2025 20:44:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757537101; cv=none; b=pcUbP+wlNI+IWtoLBBREq4w6oiJvMTpBajH60K6enLUQGz1JYO+QvAz+xdEoIB7UNfAApscy2/+sou6pjHXxpufbLWYq4I8y2oQR5GcyS2h42ekjnLR1hChXXZA2R8EBMAX8RSw91bQ6Hc8pq50lHDsT/9z5zJfwTWvERFTZEcs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757537101; c=relaxed/simple;
-	bh=zdj+uOiXuiIXzM1Vn3fcDOOxGOrxrCVtY7jUVpK65ZI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MeNME6KZIKtwIm+eoDOcz9QOE37oTOmmnTbOpo8OXjSuFRe6FdS1AoaOH/9WrSEYkX7NScIa4Nkoku8stEKy73FCdIUdM33NkYFEBIuBzbvgq/SKoRYN1qKlDjkq/k5ylza6e9QNmP3MXr2DJHeWrK5JYyVZfOHuv4xyqWIqHTs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=yPs5K8yN; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1C341F63CD;
+	Thu, 11 Sep 2025 04:24:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1757564656; cv=fail; b=H5Oz1Uqiy/PrcerAkpiSmX6HIuoHL08Xjt7NMYcb6Z31+gDyeJHaAO4PgWQfuGYsEJbfhUjGnCzgtTu2oJHbqT2iZTsc2dJDos7pL8C2JmAMLUj69mHhldeNq+4ly7bGnIBiYdbOQpu15iOMnJumCVrUamjCmUutFl1d4ip9JQ0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1757564656; c=relaxed/simple;
+	bh=EtK/UQWfzhTxT1DaI4ydzd2C2iSuIJ1A9KH5yKZWZWM=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=s8UoinJ9UbMbAX94pWAG+cHvIavxf183hw8IMvql4JJJflT0IoSptsYNjiYBnSCKXOHFcLlbquREVDqhUo7x8uUBOLGsNE9RynjsxcA9xt0U6V1sOoCivqx20+4pIg8kWOE2FCMwlFwTuD4UmjVy41MbtCSMX1pF07FVd1cvxWI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=tX1Zth1F; arc=fail smtp.client-ip=40.107.212.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="yPs5K8yN"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-45dd9d72f61so26695e9.0
-        for <iommu@lists.linux.dev>; Wed, 10 Sep 2025 13:44:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1757537098; x=1758141898; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zdj+uOiXuiIXzM1Vn3fcDOOxGOrxrCVtY7jUVpK65ZI=;
-        b=yPs5K8yNvY+baGKGRbVUt4rYCkMCM/Z0D+j9av+6Jm6XLmBC3V6f0Ov8Yq76MIOFRx
-         DA+CfuN4BjseA8n/oDySVHW/qKes1jbVFjVpnJrbhZeo38Z1rIB9fchgjvYeaTDbdOnY
-         dkwQYaZAgir9qwhGRTIFIsU0JRG2+UX2M7Mi0quAJ4slHEaS7MmNPicaRjJFSJLazGFc
-         56McfiTUF8AdF4rljBOKcmdbAOl+k/8deYOLr02LvCZk35ZuMR/dDY2f0gm4MnFXFUpw
-         fxfz/OowLrucZdm4EadqoLNwIexB37eAYUaCUpJfUxSN936HuM1qOdrP8Y9RicntGiWR
-         1pAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757537098; x=1758141898;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zdj+uOiXuiIXzM1Vn3fcDOOxGOrxrCVtY7jUVpK65ZI=;
-        b=NhG0SVnLHiTl6mTErT4jHCromHzU/Vp5TZypQf8p6FnRuHn8F6oXfL0mR781PPGeVD
-         LQlJg4uXAnJVsufRYXwDYXEzP55YZ8URLl/QXvPyAPxuxRS8MLoHUateYr++LvYK6Ci1
-         dSXVVxFfFtzSjvlIwQsJMi7ZZPWXEEzGLsVEOxftq2s8MH8g0K/GAfbBKsxXRisigThI
-         Ng0D4DU7pNToTAv0D60xlg2nGDupoYkEQzbBm6hb0/eCdjX7WbrmdSfJxPHlfkU5psMX
-         qzwsAJrMB/fJzjqQ7WVYh7JrYkwqWLOcU4tmLKtuffwvna6j8Jomx3dvJ6N/MVg0x5j1
-         baWw==
-X-Forwarded-Encrypted: i=1; AJvYcCUFGfaBos6F8jLK90DKL5EA2ntdJb+n82yqBFSJB7nrzzUcxWjSjapHNh0eSKgmT8VLkizqDQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxT41/TN8cPrd7gd3A9EGNCKhXA0IQVxoBIZNWQusBiefIdjyRO
-	Jqzll7fo9LWu0Ec/f/yBLte5o4ZiW6JM9EWH0jAduZKRE7pTXxxI2TyZHdJiGLUXKsH1RHYO+0w
-	+OaqdRFsHlAoOA1WzDMfg3i9BflLfXfdsC/n5H5Ua
-X-Gm-Gg: ASbGncticiSu/xgVD/PJGwrJagphy3laAs0T/Ch5qA5dnA5u/BygDGvwZZwjXX3g8cx
-	2QCUXf4YXQ8jUZL6GVf61eGNseEzTgbaXrJ+3JgU3IPJQKvVISu94ojKuhVFDjRvoRlVtKOOLNL
-	MrCsl8du7UqUosMeWdN7WHzHVqan2D6YQKkx7Z1+dUy2SAKqwVa+fgagVEuVuVPLPCEp1XIKAX7
-	GBXW0h7SsHpF4a8M6ydENLgJusTWja593Y9fnwRqPnZSt3tcIGnLMU=
-X-Google-Smtp-Source: AGHT+IF/Fz2Y5nk02badGqITxY1/tzo4lRqGZ2Zao4nfkcXFZyjJgtYYuI6B/Fj3L639UAHyqOxbIJ21cF9JPLUpaI8=
-X-Received: by 2002:a05:600c:1502:b0:45b:7d8f:4bd4 with SMTP id
- 5b1f17b1804b1-45df74f81cemr1873365e9.4.1757537098041; Wed, 10 Sep 2025
- 13:44:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="tX1Zth1F"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=bULQufMKnv1AohdmYQNAD+E+dqUJK32GQAcocEg76zthYRr08tTPcLxL7oIActj4kdOhgGyp+v/3HqqjO4K3ey93l3nAjFFi1aX5G8IIykT/y8JWRSznbjCYySBhAfmVpnMbHVMb1F+LlGmgecH6K0RoDZK2k0T3HR6iiqUSS7hn/9cU+uZg9zibVmqd7zXYcuWFmXnrx5BzOZHCzOxJ6b+j9cGGrBPUjQrSOZX3HVyWpeOwl7g/tlZ7WIN841gaIEMNY8gPjHGNREE+lkDxVsSNPhEVr1zrTgN1Vd3zYVQJr3d72b4OvNrWXSFFSmU5QImGhLGy1z0oClGcLNmTLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eUal2+K3yxQXBTsIil8WmLVw/0Xkrf5pk77UqqfCQb8=;
+ b=pmFrX0Hli+GkSXEaITjs7TnIEhprXh79uyEBDFGuiCC3YuUJQGVo41dK625XS6kiSnBi0DqDO3wPGQ29XDY+sTLPML3Kb/xaUh7rd/9lavaZCVCJuyyhRBc6rgKrP+W4iWcYINAtuhrMPqNZid/q2ndgPTFnJutnb/gEBjlJ1Cqu7kwfQ0hw221OVAUcqj2gu/1G01911K7pyTUnJnIZIMfgasiM97RgSOWeP9TrgRdVPbLOPSovnsp+Dx+rX6NjZI5rGpqFMh4vU+9Xku49/mfjs51/cad55JSoJjM3FPROOILVHuQx7GXqk8TSlhFryUlx1IPtpwpH/agpcXg7Cg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=amd.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eUal2+K3yxQXBTsIil8WmLVw/0Xkrf5pk77UqqfCQb8=;
+ b=tX1Zth1FDBVdPs0j+oP5O9P8oZxv+rnWfhEsM4XkniFEQoXdUPO630Ve6BirHQjj8Y8fYrqJKLyPZV5MEW6lzMR2Xru71ozBxd5zDncBYVe8O5sVpDACXYUW8YtYIlyF/M7ihqatkHUE9Sk2GbxyoL+0VJ2mblYXvGqhbxUIwCWLoGwgDuhDbqYlVE0AcODLejs1evsz9pKgn4Om8CLLRAHSNr6XnjVG0ez1cyXyEtOByl3MUh4dk8Ha1JwpKdautZoCuYvAxtsYX1VhLbIdZk6ksr2yLBCcKLgPAojZxeFV735ycOeUcXuPjY2CKrCy9CqeZmD9Mxcyv7jBWx6VRQ==
+Received: from BYAPR05CA0041.namprd05.prod.outlook.com (2603:10b6:a03:74::18)
+ by BN5PR12MB9510.namprd12.prod.outlook.com (2603:10b6:408:2ac::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.22; Thu, 11 Sep
+ 2025 04:24:10 +0000
+Received: from CO1PEPF000044F5.namprd05.prod.outlook.com
+ (2603:10b6:a03:74:cafe::da) by BYAPR05CA0041.outlook.office365.com
+ (2603:10b6:a03:74::18) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9137.6 via Frontend Transport; Thu,
+ 11 Sep 2025 04:24:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CO1PEPF000044F5.mail.protection.outlook.com (10.167.241.75) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9115.13 via Frontend Transport; Thu, 11 Sep 2025 04:24:09 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Wed, 10 Sep
+ 2025 21:23:55 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Wed, 10 Sep
+ 2025 21:23:54 -0700
+Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.129.68.9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14 via Frontend
+ Transport; Wed, 10 Sep 2025 21:23:48 -0700
+Date: Wed, 10 Sep 2025 21:23:47 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Jonathan Corbet <corbet@lwn.net>, <iommu@lists.linux.dev>, Joerg Roedel
+	<joro@8bytes.org>, Justin Stitt <justinstitt@google.com>, Kevin Tian
+	<kevin.tian@intel.com>, <linux-doc@vger.kernel.org>,
+	<linux-kselftest@vger.kernel.org>, <llvm@lists.linux.dev>, Bill Wendling
+	<morbo@google.com>, Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers
+	<nick.desaulniers+lkml@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, "Robin
+ Murphy" <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, "Suravee
+ Suthikulpanit" <suravee.suthikulpanit@amd.com>, Will Deacon
+	<will@kernel.org>, Alexey Kardashevskiy <aik@amd.com>, Alejandro Jimenez
+	<alejandro.j.jimenez@oracle.com>, James Gowans <jgowans@amazon.com>, "Michael
+ Roth" <michael.roth@amd.com>, Pasha Tatashin <pasha.tatashin@soleen.com>,
+	<patches@lists.linux.dev>
+Subject: Re: [PATCH v5 02/15] genpt: Add Documentation/ files
+Message-ID: <aMJO09VXljI3eOAA@nvidia.com>
+References: <0-v5-116c4948af3d+68091-iommu_pt_jgg@nvidia.com>
+ <2-v5-116c4948af3d+68091-iommu_pt_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250721-dma-buf-ecc-heap-v7-0-031836e1a942@kernel.org>
- <20250826-vagabond-catfish-of-courtesy-cbfa76@houat> <20250910-vigorous-attractive-gorilla-af6fec@houat>
-In-Reply-To: <20250910-vigorous-attractive-gorilla-af6fec@houat>
-From: "T.J. Mercier" <tjmercier@google.com>
-Date: Wed, 10 Sep 2025 13:44:45 -0700
-X-Gm-Features: AS18NWDgBu3edPeSCZERO8HncQFGrRuZvzuC8yXw-tqKPcuIWCidg2bFxSYLb0U
-Message-ID: <CABdmKX29ftpNro+d=Ce6JGoMaG0UQeBbzL7DXiBkGkC0nwacTQ@mail.gmail.com>
-Subject: Re: [PATCH v7 0/5] dma-buf: heaps: Create a CMA heap for each CMA
- reserved region
-To: Maxime Ripard <mripard@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
-	Sumit Semwal <sumit.semwal@linaro.org>, 
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>, Brian Starkey <Brian.Starkey@arm.com>, 
-	John Stultz <jstultz@google.com>, =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
-	Jonathan Corbet <corbet@lwn.net>, Andrew Davis <afd@ti.com>, Jared Kangas <jkangas@redhat.com>, 
-	Mattijs Korpershoek <mkorpershoek@kernel.org>, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org, 
-	iommu@lists.linux.dev, linux-doc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <2-v5-116c4948af3d+68091-iommu_pt_jgg@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PEPF000044F5:EE_|BN5PR12MB9510:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8855930f-0bca-4343-d344-08ddf0eb0e11
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|82310400026|376014|7416014|1800799024|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?z9B+18eC0kA/1cn715kvXlYzupidP/vJ70aonVQo3nE27pTf6Y2vaWC/e+06?=
+ =?us-ascii?Q?HPDitedZ1JWUq0JxnNphVwodm5zt0x4tAsh5iaHUV3vLNrbyQxCtAQwvZ0Ax?=
+ =?us-ascii?Q?VTLM9a54SJVYHqtaHHDGYR1whtux8DdvUbpFWOv2/mTy/rEP9LgXsz7+Ll99?=
+ =?us-ascii?Q?ri5j9ewcTGVlQwYYIFdkmK0nB8K903nM94SQgymU8Xr5LSBJ3afhv+GP8YRl?=
+ =?us-ascii?Q?odBt71adhDlRVzPFz+5iENRuw6971jLcsQb01qo9vCDnDHrOIXizYiXzeGW/?=
+ =?us-ascii?Q?9PcFou2Z7rvrtV/j2uMEPx2A+9wiZ0iOxywAVpoiVPzxvPdQmlhLC+A6DV24?=
+ =?us-ascii?Q?xIrhQmzSBLfsl37ypFD7dwowuKKlVrB3YqYFQvU2MR5u1hnkVHwU1MncHYfk?=
+ =?us-ascii?Q?pXT+Ng1xRM1eAFpuznftkjhlykrUYvut6vzvVEqaa4qjE3w2eLcU3wVaK5Ct?=
+ =?us-ascii?Q?mfyjNKNcNI6KhJkIVdgGLKjKxQUYIj9jFfgh09VBhahtbA62sdd9ZpYDtjbl?=
+ =?us-ascii?Q?osMQ1o4do7CeMrFa12thj+xGNVY7LrgMQW00fBOvIgzPYzkNDFI5hewUW9EV?=
+ =?us-ascii?Q?k80QyCnVc83PU7XoTFuvosYLqKC6tCzMSkWU3C0s7ootcaXRACRnWW6b1bg4?=
+ =?us-ascii?Q?w4Z91VwkFD8HqmCKfVtgKU3lB6GpF+jI0z8lxW6S5R1fzxnPZjFzJ2leMIYR?=
+ =?us-ascii?Q?WWSZb5QbDhnQBR6/RiPT8rO3yObPRTGXafZWtyYRRT64f+zlQO+UQyw2+Klf?=
+ =?us-ascii?Q?PIdj2X9AAHClmVARhxYkL9eFhahpaQKqOgma+T6vC/ZszeWNYfecbBvOF7dB?=
+ =?us-ascii?Q?HMUqNWaNqx5Fj8nHlp2YHMq2qlXuMGwEARbttHPDfwx/FvC3fHi8Xbd/uoSd?=
+ =?us-ascii?Q?ZwC0Xnncy+8D2SrwQpuR92g990XFf+mHUxCGohzBWIAXBpEuTGECHNhw33Fa?=
+ =?us-ascii?Q?S6QOBjHhBnNQ+5xyNh9Ncp4GmQy8+TltJ88QvOvDwFFzaf/3k8AxTu0tP8px?=
+ =?us-ascii?Q?y1cgWcjdFuSjLda0rVkru1XqsmWir3+RXF1kGZcHw5SjzulgvLjVbfVRE3zN?=
+ =?us-ascii?Q?qly1sZQ9hKJafTtETMWCOZ8pyJgN/FkyVBq4YgRmybWn1VXlUn47/sQ9ZgaN?=
+ =?us-ascii?Q?c8Saw0cVKiugwRjGkzKEY5HB8FYtOiOpMlTorFiH1r4VZSKEyu7lUM7T2Kkb?=
+ =?us-ascii?Q?dOBbapnnAEOy1hH1RbpxWxbqe6Ulq68rB8kztPtu7vyiNs1EZz1ibZaYzd5u?=
+ =?us-ascii?Q?t5V83DfkquKK+frnskknd74vTw1SYJ0LkVI9wQzK5tcljJPYhUsQqF1o2TqE?=
+ =?us-ascii?Q?UktqABjPuFT4r7aufnolFMssV9dmDD1zhuYJcR543+YR6/P80o6oNu/F16KG?=
+ =?us-ascii?Q?WiMU//Utl/DcRi/L9Ev4xdsihXaUpVr8LckDlAOgMAppwqWm+RyaXfBsV6sX?=
+ =?us-ascii?Q?vVVdcU2O6yyDqtX2O1MukgFcBAnpBJ4HhQ5UFtlKmhLLG6Pjk2mbLL8CAt9r?=
+ =?us-ascii?Q?Yio/qVTAhHl8MHA1vYQprF8msvKRdOctR+Gn?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230040)(82310400026)(376014)(7416014)(1800799024)(36860700013);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Sep 2025 04:24:09.8750
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8855930f-0bca-4343-d344-08ddf0eb0e11
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CO1PEPF000044F5.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN5PR12MB9510
 
-On Wed, Sep 10, 2025 at 12:33=E2=80=AFAM Maxime Ripard <mripard@kernel.org>=
- wrote:
->
-> On Tue, Aug 26, 2025 at 09:36:03AM +0200, Maxime Ripard wrote:
-> > Hi,
-> >
-> > On Mon, Jul 21, 2025 at 01:17:29PM +0200, Maxime Ripard wrote:
-> > > Here's another attempt at supporting user-space allocations from a
-> > > specific carved-out reserved memory region.
-> > >
-> > > The initial problem we were discussing was that I'm currently working=
- on
-> > > a platform which has a memory layout with ECC enabled. However, enabl=
-ing
-> > > the ECC has a number of drawbacks on that platform: lower performance=
-,
-> > > increased memory usage, etc. So for things like framebuffers, the
-> > > trade-off isn't great and thus there's a memory region with ECC disab=
-led
-> > > to allocate from for such use cases.
-> > >
-> > > After a suggestion from John, I chose to first start using heap
-> > > allocations flags to allow for userspace to ask for a particular ECC
-> > > setup. This is then backed by a new heap type that runs from reserved
-> > > memory chunks flagged as such, and the existing DT properties to spec=
-ify
-> > > the ECC properties.
-> > >
-> > > After further discussion, it was considered that flags were not the
-> > > right solution, and relying on the names of the heaps would be enough=
- to
-> > > let userspace know the kind of buffer it deals with.
-> > >
-> > > Thus, even though the uAPI part of it had been dropped in this second
-> > > version, we still needed a driver to create heaps out of carved-out m=
-emory
-> > > regions. In addition to the original usecase, a similar driver can be
-> > > found in BSPs from most vendors, so I believe it would be a useful
-> > > addition to the kernel.
-> > >
-> > > Some extra discussion with Rob Herring [1] came to the conclusion tha=
-t
-> > > some specific compatible for this is not great either, and as such an
-> > > new driver probably isn't called for either.
-> > >
-> > > Some other discussions we had with John [2] also dropped some hints t=
-hat
-> > > multiple CMA heaps might be a good idea, and some vendors seem to do
-> > > that too.
-> > >
-> > > So here's another attempt that doesn't affect the device tree at all =
-and
-> > > will just create a heap for every CMA reserved memory region.
-> > >
-> > > It also falls nicely into the current plan we have to support cgroups=
- in
-> > > DRM/KMS and v4l2, which is an additional benefit.
-> > >
-> > > Let me know what you think,
-> > > Maxime
-> >
-> > Any chance we can get this merged?
->
-> Guys, can we move forward on this?
->
-> Maxime
+On Wed, Sep 03, 2025 at 02:46:29PM -0300, Jason Gunthorpe wrote:
+> +For this to work the .c file for each compilation unit will include both the
+> +format headers and the generic code for the implementation. For instance in an
+> +implementation compilation unit the headers would normally be included as
+> +follows::
+> +
+> +	#include <linux/generic_pt/common.h>
+> +	#include "fmt/defs_amdv1.h"
+> +	#include "pt_defs.h"
+> +	#include "fmt/amdv1.h"
+> +	#include "pt_common.h"
+> +	#include "pt_iter.h"
+> +	#include "IOMMUt_pt.h"  /* The IOMMU implementation */
 
-Hi Maxime,
+Should the last one be "iommu_pt.h" that's mentioned below?
 
-Sorry I've been MIA the last couple of months.
+> +iommu_pt.h includes definitions that will generate the operations functions for
+> +map/unmap/etc. using the definitions provided by AMDv1. The resulting module
+> +will have exported symbols named like pt_iommu_amdv1_init().
+-----
 
-The docs for the "reusable" property say, "device driver(s) owning the
-region need to be able to reclaim it back", but how can a driver
-reclaim memory backing a dmabuf, since pages allocated for a dmabuf
-aren't necessarily movable. Couldn't a user allocate all of it, and
-refuse to close those dmabufs?
+> +Refer to drivers/iommu/generic-pt/fmt/iommu_template.h for an example of how the
+> +IOMMU implementation uses multi-compilation to generate per-format ops structs
+> +pointers.
 
-I backported this to 6.6 and ran it on a Pixel. While there are
-already similar out-of-tree dmabuf heap drivers that expose heaps for
-these reserved regions, they do more than just cma_alloc (multiple
-flavors of buffer securing, use case specific alignment and padding,
-and slightly different allocation strategies) so I don't think this
-series would allow us to completely drop the custom heap code, but
-it's a nice start. Does the cgroup part come in because the plan is to
-add charging in cma_heap.c?
+It should be "generic_pt" in the path, instead of "generic-pt".
 
-Thanks,
-T.J.
+> diff --git a/drivers/iommu/generic_pt/pt_iter.h b/drivers/iommu/generic_pt/pt_iter.h
+> index 6bd84f96f5ad6e..0956c8a45646c9 100644
+> --- a/drivers/iommu/generic_pt/pt_iter.h
+> +++ b/drivers/iommu/generic_pt/pt_iter.h
+> @@ -21,7 +21,7 @@
+>   * pt_check_range() - Validate the range can be iterated
+>   * @range: Range to validate
+>   *
+> - * Check that va and last_va fall within the permitted range of VAs. If the
+> + * Check that VA and last_va fall within the permitted range of VAs. If the
+>   * format is using PT_FEAT_SIGN_EXTEND then this also checks the sign extension
+>   * is correct.
+ 
+I suppose it should be squashed into the previous patch :)
+
+Thanks
+Nicolin
