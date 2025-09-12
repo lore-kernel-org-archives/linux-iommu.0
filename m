@@ -1,98 +1,110 @@
-Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B798D302755
-	for <iommu@lists.linux.dev>; Fri, 12 Sep 2025 12:33:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757680410; cv=pass; b=uAYWQKsUEp7QrdcK8qmfpVjZlITsGhDaDhQ6AZLoeK8hDn+ktdL99P68EBgDEzDCxL3f1xJ/okVsoovMgyC3Oq+sq79kyMKC1MSI+5Jg8g9TDjpS2V9PjCU/pONJLBNAipclA84kdR+TEtkSPR3rCLHSHJMtmqac+1RTditZpn0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757680410; c=relaxed/simple;
-	bh=gI2KfzM2aq/K9OsV2HIY4vUHjQHbykZZH3svP1jSZJ4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Zd4mXZoAixABMkA3YopFpWqoJQL7Yv/39qd+FB2QGISYLW1IfX2r2Aq27IwspbyRkULIfzxyBIOI1Dhf2GevL02CzpUf6VsAbSa03Tm+R+h8QukrncJWewht9EF0yTDaP1vaCWMjxjhHeTfGl5Lx4WQWaGttCYTDAf0WIKr4upI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=boIpsGXg; arc=pass smtp.client-ip=136.143.188.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A1D814EC62;
+	Fri, 12 Sep 2025 13:52:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1757685154; cv=none; b=NbSCIq6QOhRzzTyN1P+n5ajFqGMzK8TT8jx4ME3o6LkTfdDkSF2Dmnthe2QPruGzDFo57NKRiBCbXybSctvZlHYJBS2n5EW5eqmWvCmOaiqnkGEiaX5D+E/DtBTdmJttoQmk1dT9yXFxa6jL2N85KJAEdtMUFQxzgcBBmvVxZOc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1757685154; c=relaxed/simple;
+	bh=oSkhs3wi6IQurSUKpmheTAydHRp4IZyXAqiEEjRfPHE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fu+UTMA2amZpPi1uuBt4oCYTKW2rAqF9VEOWZ+teXGzK9khtJ02pr+v8YAQeM+wZdqt/aJyOl9LdXgfooiQQXSKk/E6uiMCln368pVxA+cTSshi8jpwAL82Y71UADfMG6KXiK3IksMXhxz7lyQ0wvkEgJH/E0aKLzMtOzdmLVg8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DFzy+L8j; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="boIpsGXg"
-ARC-Seal: i=1; a=rsa-sha256; t=1757680393; cv=none; 
-	d=zohomail.com; s=zohoarc; 
-	b=d9lx73cJ+3kbqYZ8pdZisBn1TYdH/TuEI9qHtLZVc0HiotwsWQwMUsygScWa/QCSnQDxrDWQdgrowkEpvxEVaPRwtGqoGt90P7eFUTt0rBxR43B8tFk0DCP02yq0s7o3S/xFBsV5yAQF0Cvj0KV6LCtV3pp487ju/iQaIqFu9uw=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-	t=1757680393; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
-	bh=6MSZWnj1jgR4thBvdLu3JU3z1ibbPCoj24oKf6RqCjE=; 
-	b=CZLu6l3WO3PVuVjT/emEIylG9WJMo1+3F5CVysgk2x0zUx4eg4yvgKaZ3Szj1/W1vw2HUB92pdwaWEAQh70huS3eG3J7Gtade47mBZhzAHyZhBZ9neuWrOXSd1E+y7GEy4J+eNf+FJ4nXlF0kizicGGXFdegPR8vkp8z83ePE9o=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-	dkim=pass  header.i=collabora.com;
-	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
-	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1757680392;
-	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
-	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-	bh=6MSZWnj1jgR4thBvdLu3JU3z1ibbPCoj24oKf6RqCjE=;
-	b=boIpsGXg6Oa36fHp704E35jAK+/U3XDz+CH4pbWZVUmBTzTFmmki+CCbcz/VW4Go
-	/n3BtmkKJ5ZK9idA/tLZt43qcGWqzTZNVdpT6bplhRwhDf8RfCLubg5clkZEM7d8ie7
-	eMXFLXVoWMeae2oo/2RUAV7YmGRWqFr1y97mOI+g=
-Received: by mx.zohomail.com with SMTPS id 1757680390786230.58638870729078;
-	Fri, 12 Sep 2025 05:33:10 -0700 (PDT)
-Message-ID: <f009ff62-abbe-4305-91ca-9cc762ca4fb1@collabora.com>
-Date: Fri, 12 Sep 2025 14:33:06 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DFzy+L8j"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE1D1C4CEF1;
+	Fri, 12 Sep 2025 13:52:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757685154;
+	bh=oSkhs3wi6IQurSUKpmheTAydHRp4IZyXAqiEEjRfPHE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=DFzy+L8jBvK/16VKIZcPoi4CdJo4RN8TP/i2/2HDJXLIHeY8K+bHuFCuWKOtukdm/
+	 m786a7PFUzlSybyymmOx5uAcaJVznFM9RsgMLQZW8S1vDsyOW1U89DZYt8pLOXqacp
+	 tMpWsWhVf5E1oFqVXV7RcgTgKVnrilN4rrTxh3vQhot/QxnPpNK8W8aUO77qrs0E9M
+	 FWF285+b8MNNxmLbydljFbgeVmGmX/eh7/morOW/7t9FBnVD1Z4atuaYozCezrBCHT
+	 Mv+SKBNiLWjyY3mVoiu/5Moqe1DBBRQOux9cfbYibjMY4NHnQeXQuSMVRLlYx+JQCY
+	 zs3/cPWvdF/0Q==
+Date: Fri, 12 Sep 2025 14:52:27 +0100
+From: Will Deacon <will@kernel.org>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
+	suzuki.poulose@arm.com, yuzenghui@huawei.com,
+	catalin.marinas@arm.com, robin.murphy@arm.com,
+	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
+	jgg@ziepe.ca, mark.rutland@arm.com, praan@google.com
+Subject: Re: [PATCH v4 14/28] iommu/arm-smmu-v3: Add KVM mode in the driver
+Message-ID: <aMQlm9ucDtd5-15r@willie-the-truck>
+References: <20250819215156.2494305-1-smostafa@google.com>
+ <20250819215156.2494305-15-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v9 3/7] iommu: Add verisilicon IOMMU driver
-To: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
-Cc: robin.murphy@arm.com, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, heiko@sntech.de, nicolas.dufresne@collabora.com,
- jgg@ziepe.ca, p.zabel@pengutronix.de, mchehab@kernel.org,
- iommu@lists.linux.dev, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-rockchip@lists.infradead.org, kernel@collabora.com,
- linux-media@vger.kernel.org
-References: <20250911155720.180465-1-benjamin.gaignard@collabora.com>
- <20250911155720.180465-4-benjamin.gaignard@collabora.com>
- <vrngq76nnms3jyl5hnxqnkimjc6kil66o6fdyqn5vm3fpovmja@cfynipjw7ktp>
-Content-Language: en-US
-From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-In-Reply-To: <vrngq76nnms3jyl5hnxqnkimjc6kil66o6fdyqn5vm3fpovmja@cfynipjw7ktp>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250819215156.2494305-15-smostafa@google.com>
 
+On Tue, Aug 19, 2025 at 09:51:42PM +0000, Mostafa Saleh wrote:
+> Add a file only compiled for KVM mode.
+> 
+> At the moment it registers the driver with KVM, and add the hook
+> needed for memory allocation.
+> 
+> Next, it will create the array with available SMMUs and their
+> description.
+> 
+> Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> ---
+>  arch/arm64/include/asm/kvm_host.h             |  4 +++
+>  arch/arm64/kvm/iommu.c                        | 10 ++++--
+>  drivers/iommu/arm/arm-smmu-v3/Makefile        |  1 +
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 36 +++++++++++++++++++
+>  4 files changed, 49 insertions(+), 2 deletions(-)
+>  create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
+> 
+> diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
+> index fcb4b26072f7..52212c0f2e9c 100644
+> --- a/arch/arm64/include/asm/kvm_host.h
+> +++ b/arch/arm64/include/asm/kvm_host.h
+> @@ -1678,4 +1678,8 @@ struct kvm_iommu_ops;
+>  int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops);
+>  size_t kvm_iommu_pages(void);
+>  
+> +#ifdef CONFIG_ARM_SMMU_V3_PKVM
+> +size_t smmu_hyp_pgt_pages(void);
+> +#endif
+> +
+>  #endif /* __ARM64_KVM_HOST_H__ */
+> diff --git a/arch/arm64/kvm/iommu.c b/arch/arm64/kvm/iommu.c
+> index 5460b1bd44a6..0475f7c95c6c 100644
+> --- a/arch/arm64/kvm/iommu.c
+> +++ b/arch/arm64/kvm/iommu.c
+> @@ -17,10 +17,16 @@ int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops)
+>  
+>  size_t kvm_iommu_pages(void)
+>  {
+> +	size_t nr_pages = 0;
+> +
+>  	/*
+>  	 * This is called very early during setup_arch() where no initcalls,
+>  	 * so this has to call specific functions per each KVM driver.
+>  	 */
+> -	kvm_nvhe_sym(hyp_kvm_iommu_pages) = 0;
+> -	return 0;
+> +#ifdef CONFIG_ARM_SMMU_V3_PKVM
+> +	nr_pages = smmu_hyp_pgt_pages();
+> +#endif
 
-Le 12/09/2025 à 13:47, Jörg Rödel a écrit :
-> On Thu, Sep 11, 2025 at 05:57:13PM +0200, Benjamin Gaignard wrote:
->> The Verisilicon IOMMU hardware block can be found in combination
->> with Verisilicon hardware video codecs (encoders or decoders) on
->> different SoCs.
->> Enable it will allow us to use non contiguous memory allocators
->> for Verisilicon video codecs.
->>
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
->> ---
->>   drivers/iommu/Kconfig     |  11 +
->>   drivers/iommu/Makefile    |   1 +
->>   drivers/iommu/vsi-iommu.c | 808 ++++++++++++++++++++++++++++++++++++++
->>   include/linux/vsi-iommu.h |  21 +
->>   4 files changed, 841 insertions(+)
->>   create mode 100644 drivers/iommu/vsi-iommu.c
->>   create mode 100644 include/linux/vsi-iommu.h
-> This will not go in before Will Deacons comment about code duplication with the
-> Rockchip driver is addressed.
+Rather than hard-code this here, I wonder whether it would be better to
+have a default size for the IOMMU carveout and have the driver tells us
+how much it needs later on when it probes. Then we could either free
+any unused portion back to the host or return an error to the driver if
+it wants more than we have.
 
-It isn't the same hardware block, not from the same IP vendor and the bits set aren't the same.
-pm_runtime, clock, spin_lock aren't managed differently.
-The common point is they both use 2-level page table.
-
-VSI iommu need an additional function to restore iommu context before decoding
-each frame, rockchip doesn't need it.
-
-Regards,
-Benjamin
-
->
-> 	Joerg
+Will
