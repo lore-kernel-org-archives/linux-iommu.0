@@ -1,85 +1,86 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B94391DDC1E
-	for <iommu@lists.linux.dev>; Fri, 12 Sep 2025 18:32:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1E8227A47C
+	for <iommu@lists.linux.dev>; Fri, 12 Sep 2025 22:07:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757701930; cv=none; b=qiO5T6v0peXVWNPmSOX3GzoJkbA+/BnF4uh6opJOUcVpqcYrLAJJZOzHJEJd9PN+zTEYRGEVR2EvoNP0377gnab4hYyZXdWOnOSKWmK46kRtgdswullwUH9/US7oYNaycodwt006BOF0rhkdCVA1pbQ7IuiiSQGw+kG59Nmt2eM=
+	t=1757714873; cv=none; b=ZqH7tRh+KCHBbXrRzJ7vZueCK5s3k+jGPVcatejEyG9QMXFcIFhreFYtJy9fZl2qMhaYs/Wj4dhkh9CZ90nKkc6RfPaQkBwxbcaH40LnB2vOM707J4Nl8JDxR2GS2PPNAGG+m1pc+HCyxuNjp7I6JRDFc5ytqlrTKaKddaWzfdQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757701930; c=relaxed/simple;
-	bh=i6r5BnwccM40MN1CW61UawFe6hxRBJLKBNylPutF2lE=;
+	s=arc-20240116; t=1757714873; c=relaxed/simple;
+	bh=+yph0vA7hH7D2dOH8dcz8OTQ5zI8ZyZYi0J1x57wbuc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F0ZKErilhe4m9DJaA5N6MomsPFMGOXbjp1gfAiTjgxibqLrRqK2qgylIRARuEYmBxW/BcgIIL75i8j77FjyDjqHuG2L/xTKQjr45YZRRMtUeFFdKa1tU0ZzsNCzERi3mHWEu0wvSm/byyJDuI/ZVpMCHK8EbZxobdL0EfW2xCVU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=VTBDuGtp; arc=none smtp.client-ip=209.85.160.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=RSFGa977XX/WAjTvhjtixhVG4gbq2hpZ/1g+S001jZjRGLwR52emz16cuLD8PR+DkIAW1zuW7Ph31yxMhlsdpWavzGsj9CjZ4F03+LGf3eM7v+xyCJFQXXUZ0Or3nzCSiWk1VQYwgGjOd+Ho0SR/i/WS3+ZI8XAMkjVdwTeFRzI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=U/TSqtgk; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="VTBDuGtp"
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-4b5ed9d7e96so22649481cf.0
-        for <iommu@lists.linux.dev>; Fri, 12 Sep 2025 11:32:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1757701928; x=1758306728; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=i6r5BnwccM40MN1CW61UawFe6hxRBJLKBNylPutF2lE=;
-        b=VTBDuGtpjCuF3CJrpLHqC6EUrKkjf5kcBZOZrS9AghOh0JY76c2PwbZKMAsBO4GqfS
-         bRCYTqe0fc+W9sjPQfPQ5lpcUzsXzv5htvtAqDA3vF2EKkoL4Ok2ksdPHAaLWlPuz9Ie
-         D/gxcjpXYNBQvc+mfz5TvuAO93VFxJzxGIw9f7lCPKq5r0DOeXrmgpEtY6hw2tKABuX8
-         MaQMEk8OgV27Q/5COjnGwZwN86w9gMuoMu0By+Boult8wtCBRJtSu4w4ErhEaMGZbh5q
-         CkFnpWsNYXWTCqQ5nzuqpqOYLGe0TO/wzSPzvuOgJQbH4R5VX/8zyPEXMhiT8QWF/a9W
-         wwtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757701928; x=1758306728;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=i6r5BnwccM40MN1CW61UawFe6hxRBJLKBNylPutF2lE=;
-        b=o2tCIuMCnIW7wk7bVnDam58NTQdneqVnfedQHrF+5ytEj/RPVPkLJTD7fchb4xcJmJ
-         /rNEKdr1oQVqLK1ZWXk2kd0ObKwPfDDCPMiMKeWw2DPuSNRC1l3Dwabau7dW0hFFAzJn
-         7Cb75CnOaESE/V2iLGPhpLnlrTuT14xELW9woFIJVeffAD7IkGpiNmY8eoAkGVf1qeAF
-         3GcGMXCQE7xi/NOoOMx5ALjySgLdNG8zVDP6dIWB3XeuJ6grHlFR0I7xVBJOAEDwqF/V
-         HbWnctAkR0NSAKnjmp73SE/IvhtxxlqAwnl/8rPrOz65MQ4BOe7cYvsbCt5t2ExrRDnX
-         mf9Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVVsqY4KNmGol/4wVivPvz+PaqcxnXFjF+8Q+Xn7LyMh1WCyWhD/M6O7+1dWV5C3Yv8pf9OlQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YyZOl5N+KNdOHvPODq63sgLfeFJVu6E7xEdtt2EByQ3TIcv2OTo
-	grsyZ80KJ6Z3Elm9c6Dn7p9ohgZUahoSk71kyGcQR/QjV+Yf+qaERXuo27fxewKRSGw=
-X-Gm-Gg: ASbGnct4egysa9jQ3Z1TEJeCEgT9p82+GZF+kK7XN1Gd7lb9s3qkYD89y1jt+eG93eG
-	zUTmIE9kczXwFs4Ircsv9EuQ62DpYSbpA/OK4BEe+RvcJayaXHKN+ByxpFVNGBTTh1Qs3T8Gfp0
-	HEyoewBegE3JtThK+jrODN8yq3I+2LMWDtY/yIKh8CVVdT6wNRWGkDMiUkx13FgPFF4zKb9xjL8
-	KItmIEmrXr4yc+qCBJNTPl3knZgKmXxlncGKvxA5b5StF28EcviysuNo+iWFzmOpsllRR7Q0/Q+
-	AFZlbSLfldq8yLHvmIppSzBvbHpqmiJw90dzrinrGLvp96EJpwIqFcbKTJHgkp2DV9rR9TCqz60
-	sdjSbrN5Xew7WEt+u8SKCMz8yPGDx/R47l/cJZh6osHePgJBnY7tamE0YK7obb5ILFV03RpfbxZ
-	j02kA=
-X-Google-Smtp-Source: AGHT+IHZhwwJ1GAAakUbDyWBchcEmOdwvmn5VpYqCpYR267goBUbd6qsiAamIt0D50PzjBgabwMTEA==
-X-Received: by 2002:a05:622a:2c7:b0:4b5:d6db:eea1 with SMTP id d75a77b69052e-4b6348bd37dmr127954271cf.39.1757701927559;
-        Fri, 12 Sep 2025 11:32:07 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-820c8ac45a3sm313988985a.5.2025.09.12.11.32.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Sep 2025 11:32:06 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1ux8Z4-000000047N0-0oCq;
-	Fri, 12 Sep 2025 15:32:06 -0300
-Date: Fri, 12 Sep 2025 15:32:06 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Nicolas Dufresne <nicolas.dufresne@collabora.com>
-Cc: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-	robin.murphy@arm.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, heiko@sntech.de, p.zabel@pengutronix.de,
-	mchehab@kernel.org, iommu@lists.linux.dev,
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="U/TSqtgk"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=date:from:to:cc:subject:message-id
+	:references:mime-version:content-type:in-reply-to; s=k1; bh=XtZM
+	38dcKGfPDowHADfBNhN+yZMd/DBKAr/Q56lBQhU=; b=U/TSqtgky9mRHKpLYuTy
+	UfXd7XedJP9Hk+5/2IqTWU+ncNGhELZK0Vc0RXbSYaIz7Hw6VMZAT5JoyMYY6z4g
+	WzMES95KXJxGoQ7e6ctjM2JN/2k4u/gVXKL/EPXHHKnINEvdgPhLK+f+fB3cHt9L
+	BpsliJIKV+ndVoI8YPP2/7JNqgTQ5aLQNm6R5gAL99+5MFMbIChu6laV+I2f8W3m
+	RpmupwmKLyH5mtQ8NSf2xEebzmoGbDEbi8by9Z1l1UyIN+iGY8UbAOXQISM6qt8c
+	5VvYJPYCkQGivyZtg4DnvEdmEwmxNTAeKfuH6DGfDaXfeL6rCKUkNLis+l/AE6hJ
+	Eg==
+Received: (qmail 1499859 invoked from network); 13 Sep 2025 00:07:43 +0200
+Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Sep 2025 00:07:43 +0200
+X-UD-Smtp-Session: l3s3148p1@dRQG4qE+rtYgAQnoAHJ8AC93OVDMgFWg
+Date: Sat, 13 Sep 2025 00:07:42 +0200
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: Janne Grunau <j@jannau.net>
+Cc: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Neal Gompa <neal@gompa.dev>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Hector Martin <marcan@marcan.st>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Viresh Kumar <viresh.kumar@linaro.org>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Mark Kettenis <kettenis@openbsd.org>,
+	Andi Shyti <andi.shyti@kernel.org>,
+	Jassi Brar <jassisinghbrar@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Sasha Finkelstein <fnkl.kernel@gmail.com>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	van Spriel <arend@broadcom.com>, Lee Jones <lee@kernel.org>,
+	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Stephen Boyd <sboyd@kernel.org>,
+	Wim Van Sebroeck <wim@linux-watchdog.org>,
+	Guenter Roeck <linux@roeck-us.net>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
+	Vinod Koul <vkoul@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Marc Zyngier <maz@kernel.org>,
+	Ulf Hansson <ulf.hansson@linaro.org>,
+	Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, kernel@collabora.com,
-	linux-media@vger.kernel.org
-Subject: Re: [PATCH v9 3/7] iommu: Add verisilicon IOMMU driver
-Message-ID: <20250912183206.GH882933@ziepe.ca>
-References: <20250911155720.180465-1-benjamin.gaignard@collabora.com>
- <20250911155720.180465-4-benjamin.gaignard@collabora.com>
- <vrngq76nnms3jyl5hnxqnkimjc6kil66o6fdyqn5vm3fpovmja@cfynipjw7ktp>
- <694b9ba15cd67f41a38f4a65a3811f035cf8e99d.camel@collabora.com>
+	linux-pm@vger.kernel.org, iommu@lists.linux.dev,
+	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
+	dri-devel@lists.freedesktop.org, linux-bluetooth@vger.kernel.org,
+	linux-wireless@vger.kernel.org, linux-pwm@vger.kernel.org,
+	linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org,
+	dmaengine@vger.kernel.org, linux-sound@vger.kernel.org,
+	linux-spi@vger.kernel.org, linux-nvme@lists.infradead.org
+Subject: Re: [PATCH 10/37] dt-bindings: i2c: apple,i2c: Add apple,t6020-i2c
+ compatible
+Message-ID: <aMSZrp3pbS2CeBOE@shikoro>
+References: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net>
+ <20250828-dt-apple-t6020-v1-10-507ba4c4b98e@jannau.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -88,26 +89,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <694b9ba15cd67f41a38f4a65a3811f035cf8e99d.camel@collabora.com>
+In-Reply-To: <20250828-dt-apple-t6020-v1-10-507ba4c4b98e@jannau.net>
 
-On Fri, Sep 12, 2025 at 01:37:11PM -0400, Nicolas Dufresne wrote:
+On Thu, Aug 28, 2025 at 04:01:29PM +0200, Janne Grunau wrote:
+> After discussion with the devicetree maintainers we agreed to not extend
+> lists with the generic compatible "apple,i2c" anymore [1]. Use
+> "apple,t8103-i2c" as fallback compatible as it is the SoC the driver
+> and bindings were written for.
+> 
+> This block is compatible with t8103, so just add the new per-SoC
+> compatible using apple,t8103-i2c as base.
+> 
+> [1]: https://lore.kernel.org/asahi/12ab93b7-1fc2-4ce0-926e-c8141cfe81bf@kernel.org/
+> 
+> Signed-off-by: Janne Grunau <j@jannau.net>
+> Acked-by: Andi Shyti <andi.shyti@kernel.org>
 
-> To me this rejection isn't about Benjamin's driver, all iommu seems to look
-> alike, so anyone else that would have sent new driver would have face the same
-> issue.
+Applied to for-next, thanks!
 
-Yes, many drivers looks approximately alike.. To the extent possible
-we should be making more helpers and tools to lift common patterns out
-of the drivers. I don't know how much of that applies to rockchip vs
-verisilicon though. Obviously I'm tackling the page table stuff.
-
-Much of the other common code is tracking attachments and invalidation
-requirements. I'm hopeful the general method Nicolin is working on can
-be lifted and shared. Certainly it is better than what is in any of
-the three server focused drivers. But I don't know how much this
-brings to these simpler drivers.
-
-It seems strange to be talking about merging drivers that don't share
-a common IP supplier or register programming model.
-
-Jason
