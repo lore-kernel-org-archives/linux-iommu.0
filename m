@@ -1,103 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 458D012B94;
-	Sat, 13 Sep 2025 00:24:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 181072DC790
+	for <iommu@lists.linux.dev>; Sat, 13 Sep 2025 01:50:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757723044; cv=none; b=Hd/Erg+LaDBqJ2uEuYi8gyDOIPrHcMowFXfRsFy8RBenPHUBq2uJFzNaPZML1npM8dWFCxcroalVoYyA1p/BBDP+vvmUgH20pPoFBNQJXT/AJehbHlGizbAuMu216KhBXsvt2ppyNqbMRVJEcX3rB7W6WicD9zBzSvY6FmqGK2g=
+	t=1757728228; cv=none; b=Biv7yCwUIFONTfc62qbE8lrITf3r6DG65tcITzWLzSJzuR80f2PvzmHTz4RSy7AjEfqkHQh9c8YQL6dV6x7emy1mZwEvAE7y1VUDYDbMHBI38Ltp8GTfY4W4tjs/pdvhmhQwb3TGCGocfvzyoL4nOd6zPC4oHyc+QYzWTY1F9Tw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757723044; c=relaxed/simple;
-	bh=LcYX22alJBWBcVaGqP0BLEghs+L/k9ZQqKP706ZqU8Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Z6zpw4A9kqt0mg/3UeRdYQANwcJP/oiGm2cpH4JqxbztI4Bf6RCtoshomdEbrtMxGV41QFbQOuZeLZq2QmiTECX5x6MrKy5cZToQppT9VccjxJlyvNTzHWx8MHoaAoDSM7eCi2gzKCBE7KZgMGiwX0euKB3NW5WpErel8rm00jc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IKq+su/0; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1757728228; c=relaxed/simple;
+	bh=2pke5B/p5bVW7/W1MvtdA/qNec59UAGg1/Stpd9ULMw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=R+qlsDsFbt2eHlZHnOW+ksZ0MRsziXoavB4I356riA6ufg4/MhpE57O+s9bnr9cr2pY8ySSsNRlFYU1/VsVkR83mfV8Sg72NrI9B0/6Ekcy5TTKGoljO+S4nALkouVTiKeE0iJuH+A8RqdQPG5vxIHGGpSBbsrtgx+MyHVruqqg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZJ7citVl; arc=none smtp.client-ip=209.85.128.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IKq+su/0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1757723042; x=1789259042;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LcYX22alJBWBcVaGqP0BLEghs+L/k9ZQqKP706ZqU8Q=;
-  b=IKq+su/0RGtEf7fv0vI/12Gs1pE51YQHU3sgcGB/2DudkcYGAYOoyN1d
-   uop67yXMGsq7Nl8E0QTXBMBjdRxycxhjQWiUJSD9QgdEyapMk96EC2ona
-   KDVpIWlHOMepnYxjt/11MW3E8M0gPtmzAyCNPVNunMgyJHqwPLMy8i3V5
-   ts+jFWHaKcKK7LIOCNIt16jGwlWGv6XI3QdSzbzm7jnJF4MqWw+44UDOg
-   S2eCG73Wk7nToN/dj8DFUDYUzU2D2quOTR3SLgNzFlg13qMC88eY36s6c
-   AHCxs5gr8iHqbgn75qyq73mPXErGEloKzfFCI1oT0gAksC+TM5gQntah7
-   A==;
-X-CSE-ConnectionGUID: cLqYJhK6RyC4ioHVzCcxwg==
-X-CSE-MsgGUID: iLKUDwBkTliR1klUs9gp4g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11551"; a="77683417"
-X-IronPort-AV: E=Sophos;i="6.18,260,1751266800"; 
-   d="scan'208";a="77683417"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2025 17:24:01 -0700
-X-CSE-ConnectionGUID: ROkWgZtmSS2R4fjBU22Qww==
-X-CSE-MsgGUID: MAL35EIDS72UkFilz2BhNg==
-X-ExtLoop1: 1
-Received: from lkp-server02.sh.intel.com (HELO eb5fdfb2a9b7) ([10.239.97.151])
-  by fmviesa003.fm.intel.com with ESMTP; 12 Sep 2025 17:23:57 -0700
-Received: from kbuild by eb5fdfb2a9b7 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1uxE3W-0001H6-2F;
-	Sat, 13 Sep 2025 00:23:54 +0000
-Date: Sat, 13 Sep 2025 08:23:37 +0800
-From: kernel test robot <lkp@intel.com>
-To: Shyam Saini <shyamsaini@linux.microsoft.com>, thierry.reding@gmail.com,
-	robin.murphy@arm.com, robh@kernel.org, joro@8bytes.org,
-	jgg@ziepe.ca
-Cc: oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-	virtualization@lists.linux.dev, will@kernel.org,
-	jacob.pan@linux.microsoft.com, eric.auger@redhat.com,
-	code@tyhicks.com, eahariha@linux.microsoft.com,
-	vijayb@linux.microsoft.com, bboscaccy@linux.microsoft.com,
-	saravanak@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
-	lizhi.hou@amd.com, clement.leger@bootlin.com
-Subject: Re: [PATCH v4 4/4] drivers: iommu: refactor arm_smmu_get_resv_regions
-Message-ID: <202509130836.idXoj3z8-lkp@intel.com>
-References: <20250909154600.910110-5-shyamsaini@linux.microsoft.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZJ7citVl"
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-724b9ba77d5so25493137b3.3
+        for <iommu@lists.linux.dev>; Fri, 12 Sep 2025 18:50:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1757728226; x=1758333026; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=FCdKJTmqPYMwrtPghr4e9bj7Z7fRlbmOYuwXpg8nHMo=;
+        b=ZJ7citVlon6a4pUZDkboR0sSxRyK9LS8LsDEIu6yb04QSHeEIFhtok+ZrDi2oFtHGp
+         f1sYM/zWH2UiJc49ATffEWS9Ryq1GwGTyPybxp9RaVWJgcPTJ9d4KAvrIWz/Hx/LgltQ
+         pqm3fxm4inZPZjMoeUeEICEvR6gvmCPfX1nBg6FXxsmKnaXkM52eV+9S8Ci9vRk1fp04
+         8wyYUwfmeFNbHHP7qPmBTvZOvnIX9pQj7eO+4VJnZWjy2xgyZwoVGb/N8A8w37xPRv+s
+         UXMc8Rbkn0Mx1vEO34HgOty0CfPi2VBRfWUHz79bxnJwDaDnn/FCPJa5fHyos86tyyIp
+         Hw6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757728226; x=1758333026;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FCdKJTmqPYMwrtPghr4e9bj7Z7fRlbmOYuwXpg8nHMo=;
+        b=Ziz2R3En1JgbunULq8YjVW1oGC1XJreLh1h5B/d2KFpBHDMphy/JyiWQFedQss2NoS
+         AhVeqhn5r6p9fb7gUePSceQzZEElPPf3aelPqOryH4p+19vnJjZMb9nc4s8OOJhQXgjt
+         wLRiLGJuZbzecbi3Zo6np9Z5GdOrt2qpDlEEXYvoHApiX2nADA3M/XX3bL7qB05b3eoe
+         2DRoeJ18ZeOIv8XJO/Vk7F/DDeleBU6/Z373PJ/wqhWt5MC8tMZ7ciefpHBuld97eq/3
+         Xu/GmfKCP6ijeHEVp0Wi64v2qNJ3iy5Q0fjyWSe/56L9XFQFVYNZGkcJ08/zWNAq/sCR
+         5TSg==
+X-Forwarded-Encrypted: i=1; AJvYcCVjDGTk9xfTU+B9cukcA6NPHk+6Pw7aKSXurlMzeIkm32X5/dlOhdq+yHMo95EF49JvnYfGug==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxQp1Eo4Dj7Rkl8vctmYZTz6neDbyw/g12ItqUUX8JrqLkFMRdU
+	yh6NINhpGOlJFf2iCEZKMZ7IozXSCw0EMbcEy/geK13kEaEPNGK1AX1q
+X-Gm-Gg: ASbGncsQ1mKKj60KBLJpOHlqOCB+SiGB/iKmibAuG3NQ3NiXeLTCMcFKLdFIFSXpRzu
+	+NLVbSja8KHPJaMCw2a8pRdGQ4thxjqTP4NhXfrgx2XFO5KhLeoHrpdwe7s978ZvLTDL+0G6QmK
+	86fSAxsgStMGyhHAw/IvvJKwXx1HU0eQbcOqy063Luro+corAWa5+9sjgG1qArvCCyC5DgCp8zw
+	H+GuZ12+aecvXOWDloI9QPTQqs2D7U3yI2qDa5ReLWI4e+rq8ZoGnt02nTyPWrgJifjeslfLWyh
+	nl6y67kot0I9PthYU5Edlx/msVWuzD30OA256k402h3vuRwQh+v2Rsq58aH5R4wUzb1xUwo/hDr
+	Yjw6H9gM3HsPwE62fpzqLlFH3HNLyyxESBBKYk7CFX8lUd33YWldxGG1kQQsV+VwnOc2I
+X-Google-Smtp-Source: AGHT+IHehtPMabakdBlT4r4MpAz+SoWip48LOcYZTX3KzIq+FCBVwHZSUk7DZZyPa3li/g16NWNY8g==
+X-Received: by 2002:a05:690c:630c:b0:730:5445:4b48 with SMTP id 00721157ae682-73063191249mr38954027b3.7.1757728225919;
+        Fri, 12 Sep 2025 18:50:25 -0700 (PDT)
+Received: from localhost (c-73-224-175-84.hsd1.fl.comcast.net. [73.224.175.84])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-73088a76fabsm9987867b3.26.2025.09.12.18.50.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Sep 2025 18:50:25 -0700 (PDT)
+From: "Yury Norov (NVIDIA)" <yury.norov@gmail.com>
+To: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: "Yury Norov (NVIDIA)" <yury.norov@gmail.com>
+Subject: [PATCH] iommu/vt-d: drop unused cap_super_offset()
+Date: Fri, 12 Sep 2025 21:50:23 -0400
+Message-ID: <20250913015024.81186-1-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250909154600.910110-5-shyamsaini@linux.microsoft.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Shyam,
+The macro is unused. Drop the dead code.
 
-kernel test robot noticed the following build errors:
+Signed-off-by: Yury Norov (NVIDIA) <yury.norov@gmail.com>
+---
+ drivers/iommu/intel/iommu.h | 2 --
+ 1 file changed, 2 deletions(-)
 
-[auto build test ERROR on robh/for-next]
-[also build test ERROR on linus/master v6.17-rc5 next-20250912]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Shyam-Saini/arm-smmu-move-MSI_IOVA-macro-definitions/20250909-235141
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-patch link:    https://lore.kernel.org/r/20250909154600.910110-5-shyamsaini%40linux.microsoft.com
-patch subject: [PATCH v4 4/4] drivers: iommu: refactor arm_smmu_get_resv_regions
-config: arm64-randconfig-002-20250913 (https://download.01.org/0day-ci/archive/20250913/202509130836.idXoj3z8-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 14.3.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250913/202509130836.idXoj3z8-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202509130836.idXoj3z8-lkp@intel.com/
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: "iommu_set_sw_msi" [drivers/iommu/arm/arm-smmu/arm_smmu.ko] undefined!
-
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index d09b92871659..7da1cf88ce80 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -173,8 +173,6 @@
+ #define cap_pgsel_inv(c)	(((c) >> 39) & 1)
+ 
+ #define cap_super_page_val(c)	(((c) >> 34) & 0xf)
+-#define cap_super_offset(c)	(((find_first_bit(&cap_super_page_val(c), 4)) \
+-					* OFFSET_STRIDE) + 21)
+ 
+ #define cap_fault_reg_offset(c)	((((c) >> 24) & 0x3ff) * 16)
+ #define cap_max_fault_reg_offset(c) \
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.43.0
+
