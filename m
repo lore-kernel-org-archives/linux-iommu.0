@@ -1,86 +1,66 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1E8227A47C
-	for <iommu@lists.linux.dev>; Fri, 12 Sep 2025 22:07:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 458D012B94;
+	Sat, 13 Sep 2025 00:24:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757714873; cv=none; b=ZqH7tRh+KCHBbXrRzJ7vZueCK5s3k+jGPVcatejEyG9QMXFcIFhreFYtJy9fZl2qMhaYs/Wj4dhkh9CZ90nKkc6RfPaQkBwxbcaH40LnB2vOM707J4Nl8JDxR2GS2PPNAGG+m1pc+HCyxuNjp7I6JRDFc5ytqlrTKaKddaWzfdQ=
+	t=1757723044; cv=none; b=Hd/Erg+LaDBqJ2uEuYi8gyDOIPrHcMowFXfRsFy8RBenPHUBq2uJFzNaPZML1npM8dWFCxcroalVoYyA1p/BBDP+vvmUgH20pPoFBNQJXT/AJehbHlGizbAuMu216KhBXsvt2ppyNqbMRVJEcX3rB7W6WicD9zBzSvY6FmqGK2g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757714873; c=relaxed/simple;
-	bh=+yph0vA7hH7D2dOH8dcz8OTQ5zI8ZyZYi0J1x57wbuc=;
+	s=arc-20240116; t=1757723044; c=relaxed/simple;
+	bh=LcYX22alJBWBcVaGqP0BLEghs+L/k9ZQqKP706ZqU8Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RSFGa977XX/WAjTvhjtixhVG4gbq2hpZ/1g+S001jZjRGLwR52emz16cuLD8PR+DkIAW1zuW7Ph31yxMhlsdpWavzGsj9CjZ4F03+LGf3eM7v+xyCJFQXXUZ0Or3nzCSiWk1VQYwgGjOd+Ho0SR/i/WS3+ZI8XAMkjVdwTeFRzI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=U/TSqtgk; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Z6zpw4A9kqt0mg/3UeRdYQANwcJP/oiGm2cpH4JqxbztI4Bf6RCtoshomdEbrtMxGV41QFbQOuZeLZq2QmiTECX5x6MrKy5cZToQppT9VccjxJlyvNTzHWx8MHoaAoDSM7eCi2gzKCBE7KZgMGiwX0euKB3NW5WpErel8rm00jc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IKq+su/0; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="U/TSqtgk"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=XtZM
-	38dcKGfPDowHADfBNhN+yZMd/DBKAr/Q56lBQhU=; b=U/TSqtgky9mRHKpLYuTy
-	UfXd7XedJP9Hk+5/2IqTWU+ncNGhELZK0Vc0RXbSYaIz7Hw6VMZAT5JoyMYY6z4g
-	WzMES95KXJxGoQ7e6ctjM2JN/2k4u/gVXKL/EPXHHKnINEvdgPhLK+f+fB3cHt9L
-	BpsliJIKV+ndVoI8YPP2/7JNqgTQ5aLQNm6R5gAL99+5MFMbIChu6laV+I2f8W3m
-	RpmupwmKLyH5mtQ8NSf2xEebzmoGbDEbi8by9Z1l1UyIN+iGY8UbAOXQISM6qt8c
-	5VvYJPYCkQGivyZtg4DnvEdmEwmxNTAeKfuH6DGfDaXfeL6rCKUkNLis+l/AE6hJ
-	Eg==
-Received: (qmail 1499859 invoked from network); 13 Sep 2025 00:07:43 +0200
-Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 13 Sep 2025 00:07:43 +0200
-X-UD-Smtp-Session: l3s3148p1@dRQG4qE+rtYgAQnoAHJ8AC93OVDMgFWg
-Date: Sat, 13 Sep 2025 00:07:42 +0200
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: Janne Grunau <j@jannau.net>
-Cc: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	Neal Gompa <neal@gompa.dev>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Hector Martin <marcan@marcan.st>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Viresh Kumar <viresh.kumar@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Mark Kettenis <kettenis@openbsd.org>,
-	Andi Shyti <andi.shyti@kernel.org>,
-	Jassi Brar <jassisinghbrar@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Sasha Finkelstein <fnkl.kernel@gmail.com>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	van Spriel <arend@broadcom.com>, Lee Jones <lee@kernel.org>,
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
-	Stephen Boyd <sboyd@kernel.org>,
-	Wim Van Sebroeck <wim@linux-watchdog.org>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@cutebit.org>,
-	Vinod Koul <vkoul@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Marc Zyngier <maz@kernel.org>,
-	Ulf Hansson <ulf.hansson@linaro.org>,
-	Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-pm@vger.kernel.org, iommu@lists.linux.dev,
-	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org,
-	dri-devel@lists.freedesktop.org, linux-bluetooth@vger.kernel.org,
-	linux-wireless@vger.kernel.org, linux-pwm@vger.kernel.org,
-	linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org,
-	dmaengine@vger.kernel.org, linux-sound@vger.kernel.org,
-	linux-spi@vger.kernel.org, linux-nvme@lists.infradead.org
-Subject: Re: [PATCH 10/37] dt-bindings: i2c: apple,i2c: Add apple,t6020-i2c
- compatible
-Message-ID: <aMSZrp3pbS2CeBOE@shikoro>
-References: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net>
- <20250828-dt-apple-t6020-v1-10-507ba4c4b98e@jannau.net>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IKq+su/0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1757723042; x=1789259042;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LcYX22alJBWBcVaGqP0BLEghs+L/k9ZQqKP706ZqU8Q=;
+  b=IKq+su/0RGtEf7fv0vI/12Gs1pE51YQHU3sgcGB/2DudkcYGAYOoyN1d
+   uop67yXMGsq7Nl8E0QTXBMBjdRxycxhjQWiUJSD9QgdEyapMk96EC2ona
+   KDVpIWlHOMepnYxjt/11MW3E8M0gPtmzAyCNPVNunMgyJHqwPLMy8i3V5
+   ts+jFWHaKcKK7LIOCNIt16jGwlWGv6XI3QdSzbzm7jnJF4MqWw+44UDOg
+   S2eCG73Wk7nToN/dj8DFUDYUzU2D2quOTR3SLgNzFlg13qMC88eY36s6c
+   AHCxs5gr8iHqbgn75qyq73mPXErGEloKzfFCI1oT0gAksC+TM5gQntah7
+   A==;
+X-CSE-ConnectionGUID: cLqYJhK6RyC4ioHVzCcxwg==
+X-CSE-MsgGUID: iLKUDwBkTliR1klUs9gp4g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11551"; a="77683417"
+X-IronPort-AV: E=Sophos;i="6.18,260,1751266800"; 
+   d="scan'208";a="77683417"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Sep 2025 17:24:01 -0700
+X-CSE-ConnectionGUID: ROkWgZtmSS2R4fjBU22Qww==
+X-CSE-MsgGUID: MAL35EIDS72UkFilz2BhNg==
+X-ExtLoop1: 1
+Received: from lkp-server02.sh.intel.com (HELO eb5fdfb2a9b7) ([10.239.97.151])
+  by fmviesa003.fm.intel.com with ESMTP; 12 Sep 2025 17:23:57 -0700
+Received: from kbuild by eb5fdfb2a9b7 with local (Exim 4.96)
+	(envelope-from <lkp@intel.com>)
+	id 1uxE3W-0001H6-2F;
+	Sat, 13 Sep 2025 00:23:54 +0000
+Date: Sat, 13 Sep 2025 08:23:37 +0800
+From: kernel test robot <lkp@intel.com>
+To: Shyam Saini <shyamsaini@linux.microsoft.com>, thierry.reding@gmail.com,
+	robin.murphy@arm.com, robh@kernel.org, joro@8bytes.org,
+	jgg@ziepe.ca
+Cc: oe-kbuild-all@lists.linux.dev, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	virtualization@lists.linux.dev, will@kernel.org,
+	jacob.pan@linux.microsoft.com, eric.auger@redhat.com,
+	code@tyhicks.com, eahariha@linux.microsoft.com,
+	vijayb@linux.microsoft.com, bboscaccy@linux.microsoft.com,
+	saravanak@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
+	lizhi.hou@amd.com, clement.leger@bootlin.com
+Subject: Re: [PATCH v4 4/4] drivers: iommu: refactor arm_smmu_get_resv_regions
+Message-ID: <202509130836.idXoj3z8-lkp@intel.com>
+References: <20250909154600.910110-5-shyamsaini@linux.microsoft.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -89,21 +69,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250828-dt-apple-t6020-v1-10-507ba4c4b98e@jannau.net>
+In-Reply-To: <20250909154600.910110-5-shyamsaini@linux.microsoft.com>
 
-On Thu, Aug 28, 2025 at 04:01:29PM +0200, Janne Grunau wrote:
-> After discussion with the devicetree maintainers we agreed to not extend
-> lists with the generic compatible "apple,i2c" anymore [1]. Use
-> "apple,t8103-i2c" as fallback compatible as it is the SoC the driver
-> and bindings were written for.
-> 
-> This block is compatible with t8103, so just add the new per-SoC
-> compatible using apple,t8103-i2c as base.
-> 
-> [1]: https://lore.kernel.org/asahi/12ab93b7-1fc2-4ce0-926e-c8141cfe81bf@kernel.org/
-> 
-> Signed-off-by: Janne Grunau <j@jannau.net>
-> Acked-by: Andi Shyti <andi.shyti@kernel.org>
+Hi Shyam,
 
-Applied to for-next, thanks!
+kernel test robot noticed the following build errors:
 
+[auto build test ERROR on robh/for-next]
+[also build test ERROR on linus/master v6.17-rc5 next-20250912]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Shyam-Saini/arm-smmu-move-MSI_IOVA-macro-definitions/20250909-235141
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+patch link:    https://lore.kernel.org/r/20250909154600.910110-5-shyamsaini%40linux.microsoft.com
+patch subject: [PATCH v4 4/4] drivers: iommu: refactor arm_smmu_get_resv_regions
+config: arm64-randconfig-002-20250913 (https://download.01.org/0day-ci/archive/20250913/202509130836.idXoj3z8-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 14.3.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250913/202509130836.idXoj3z8-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202509130836.idXoj3z8-lkp@intel.com/
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: "iommu_set_sw_msi" [drivers/iommu/arm/arm-smmu/arm_smmu.ko] undefined!
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
