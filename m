@@ -1,22 +1,22 @@
-Received: from out198-10.us.a.mail.aliyun.com (out198-10.us.a.mail.aliyun.com [47.90.198.10])
+Received: from out28-145.mail.aliyun.com (out28-145.mail.aliyun.com [115.124.28.145])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2952E22370A
-	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 02:10:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=47.90.198.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 993B81DC988
+	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 02:15:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.145
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757902213; cv=none; b=sveFUaESCT1pZlWLZ7v6MRSuXghZt0riWwQUu8Fo+hHzO3fNyL2TLptBj9rUW/8+q61wJJSK3Yqg1nwVq8YoABi8kcRWnfijbf12P7LRultGfDlVYDXCSuWW9peBeRabbbKyuk7rxPUQ3DjEUIssWTMXYt4E2sEd778/kKS6Jzo=
+	t=1757902521; cv=none; b=mfduXsr81kAU/y4TQAGnTn/4praNsGTZB7iu+yofAe4AgiMR0aUDYUO2SmXRh7xCSoAeEZ2YJ+oQd7efQILswJhh6E1rg4CITMf0y0iP6Gn/oyzKyVHY2Fu9CQ/sUskFOEA9i33wwkWujXDf9dvIcFALtRXJ4VJPdQ0x0VYWO9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757902213; c=relaxed/simple;
-	bh=QKOv4bfIa7OqcrE+fgTeJU2BQs8K+xVI2PV7D0hIf0k=;
+	s=arc-20240116; t=1757902521; c=relaxed/simple;
+	bh=WI3ZQvTshQDIN8vqpCwewhWpdHhOa4zDYJTx4e0oebA=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Zz2/IzpC7au79ZQr7fT1PBli1ucYmMHrrANEQnbtHIZferrGFMq6wDUE2dV+ncoRtzKDe++Jn1jTvVBGQKJTKTl7FjQLHLDUrS3uq2Qr/ooQiRFu88k3pm5H8LGl8zZVetwlgWPdIeGM5aRvNV4h/6huj++DgYqVC/jtFonndQ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bosc.ac.cn; spf=pass smtp.mailfrom=bosc.ac.cn; arc=none smtp.client-ip=47.90.198.10
+	 MIME-Version; b=Uo0J8JOsGdsshAGCpNp8/Nj3DS4MJcTQU918+8HQ1xdWJIGWMbbdlWy7lxNH2CPXANDcaT4f0hSAZgV2IiUTW8RTsPbkvDyvOo1O5xbBCHT0ZWV/8fTq3BdYBzyizL5JrO8xjnuvzRmLzVGFDHhZwFTXGwYt2qdJhaylbfBC5ss=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bosc.ac.cn; spf=pass smtp.mailfrom=bosc.ac.cn; arc=none smtp.client-ip=115.124.28.145
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=bosc.ac.cn
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bosc.ac.cn
-Received: from LAPTOP-2KT3QRS7.localdomain(mailfrom:guoyaxing@bosc.ac.cn fp:SMTPD_---.ef9vIm0_1757902191 cluster:ay29)
+Received: from LAPTOP-2KT3QRS7.localdomain(mailfrom:guoyaxing@bosc.ac.cn fp:SMTPD_---.ef9vIh9_1757902187 cluster:ay29)
           by smtp.aliyun-inc.com;
-          Mon, 15 Sep 2025 10:09:53 +0800
+          Mon, 15 Sep 2025 10:09:50 +0800
 From: Yaxing Guo <guoyaxing@bosc.ac.cn>
 To: linux-riscv@lists.infradead.org
 Cc: iommu@lists.linux.dev,
@@ -31,9 +31,9 @@ Cc: iommu@lists.linux.dev,
 	anxu@bosc.ac.cn,
 	wangran@bosc.ac.cn,
 	Yaxing Guo <guoyaxing@bosc.ac.cn>
-Subject: [PATCH v1 3/3] iommu/riscv: Register RISC-V IOMMU PMU at init time
-Date: Mon, 15 Sep 2025 10:09:11 +0800
-Message-Id: <20250915020911.1313-3-guoyaxing@bosc.ac.cn>
+Subject: [PATCH v1 2/3] iommu/riscv: Add Makefile support for RISC-V IOMMU perf driver
+Date: Mon, 15 Sep 2025 10:09:10 +0800
+Message-Id: <20250915020911.1313-2-guoyaxing@bosc.ac.cn>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20250915020911.1313-1-guoyaxing@bosc.ac.cn>
 References: <20250915020911.1313-1-guoyaxing@bosc.ac.cn>
@@ -45,49 +45,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Register the RISC-V IOMMU driver during IOMMU driver
-initialization.
+Add compilation rules for iommu-perf.o to support
+the new RISC-V IOMMU perf driver.
 
 Signed-off-by: Yaxing Guo <guoyaxing@bosc.ac.cn>
 ---
- drivers/iommu/riscv/iommu.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iommu/riscv/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 0eae2f4bdc5e..453d04b03c6c 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -23,6 +23,7 @@
- #include "../iommu-pages.h"
- #include "iommu-bits.h"
- #include "iommu.h"
-+#include "iommu-perf.h"
- 
- /* Timeouts in [us] */
- #define RISCV_IOMMU_QCSR_TIMEOUT	150000
-@@ -1604,6 +1605,7 @@ void riscv_iommu_remove(struct riscv_iommu_device *iommu)
- 	riscv_iommu_iodir_set_mode(iommu, RISCV_IOMMU_DDTP_IOMMU_MODE_OFF);
- 	riscv_iommu_queue_disable(&iommu->cmdq);
- 	riscv_iommu_queue_disable(&iommu->fltq);
-+	riscv_iommu_pmu_unregister(iommu);
- }
- 
- int riscv_iommu_init(struct riscv_iommu_device *iommu)
-@@ -1656,6 +1658,14 @@ int riscv_iommu_init(struct riscv_iommu_device *iommu)
- 		goto err_remove_sysfs;
- 	}
- 
-+	rc = riscv_iommu_pmu_alloc(iommu);
-+	if (rc) {
-+		dev_err(iommu->dev, "cannot alloc iommu pmu (%d)\n", rc);
-+		iommu_device_sysfs_remove(&iommu->iommu);
-+		goto err_remove_sysfs;
-+	}
-+	riscv_iommu_pmu_register(iommu);
-+
- 	return 0;
- 
- err_remove_sysfs:
+diff --git a/drivers/iommu/riscv/Makefile b/drivers/iommu/riscv/Makefile
+index b5929f9f23e6..5e9c7c1ed928 100644
+--- a/drivers/iommu/riscv/Makefile
++++ b/drivers/iommu/riscv/Makefile
+@@ -1,3 +1,3 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-obj-y += iommu.o iommu-platform.o
++obj-y += iommu.o iommu-platform.o iommu-perf.o
+ obj-$(CONFIG_RISCV_IOMMU_PCI) += iommu-pci.o
 -- 
 2.34.1
 
