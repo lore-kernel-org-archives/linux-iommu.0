@@ -1,82 +1,46 @@
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BECB27F74B
-	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 16:28:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF760285C8B;
+	Mon, 15 Sep 2025 16:28:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757953695; cv=none; b=jREGAuoSzR59T0QNY6A36e+lq0ixVPbErlsE7koRKVfi7gCuaOrLN9ddlhesFlQedkJuy5hl9uzdaP7zA82wlR8S/bNZtYOYbNG/nWU5pO6BsXezAp22LlOFzqvlopteceWI8sbpE4ARmwM71gcAJcWN90U6VuK3387MuMFxkNc=
+	t=1757953724; cv=none; b=PJo58EVdyxoGSH/aL4jVOfG+5hIiOwsMcjJYRKQyn38bkmlG+J7lDpFOhA0X29Tv+BH8NBHayHFScsq06aVhnXywh/WBYqeUYBXTaHRAmuTz1UyrCf5/kjj9jRQFGy7GeS3JW1CcepQ0NWvdb8UDue7237J1atqT8rVVFGub69g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757953695; c=relaxed/simple;
-	bh=12n9Pb+yXcwNFTqQGEMETuHrAQlt2tUiKpfSOPcrC3I=;
+	s=arc-20240116; t=1757953724; c=relaxed/simple;
+	bh=lEeLmHPQMX0Vg/TW9HvhlvhbmtZc1oUSVjNrDlBd/sE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ro/zSjHKC5VltnPlAQ1EuSMZ7I3fbYi0hq3quZ3KIMxD1jf8SkNYmDZc9eymFv5EEd2LltHdM68K8GvImn2SHth8leW+I4sfaOb1vYB0bbuTHF0ezkGb5Lz0HammH0nNjHxyiaR2N3xe91V8hifiGhU4OcB9bi6WtAAK0vuXBZc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=XNTuNo2B; arc=none smtp.client-ip=209.85.219.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=pJ3ja9h+sXriLwdpyB1K8wWuVca0f0j/IixkwSG3u9yiuDTHH/pq1Xk4b8eFoSSpSL9GFOwPNFJXzAJJX1ZOk50UTEjF0LfG7IO1Iaby5jS/hpYBOpqIThLLOI6TyyNzO47O8VrID55CKVNKwtrVli++OeofPWvYj0kgdnaXxU0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=IVZj4wLJ; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="XNTuNo2B"
-Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-765936cbdfeso41092666d6.0
-        for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 09:28:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1757953692; x=1758558492; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=vDAemr4/lmLhb7KTewKWDzn1cjfqOTzFv/5msg8t3TY=;
-        b=XNTuNo2BgkaT70pH91MOtkQ/U5aOi2arANZ3y2UDUIgi4P8jRKG8ovS6kiVWW41QHH
-         tqJzCc49s6MUkQ0B+xY0CZ0TMI0Mu5i1GrOI9Dwn9QcsHRTdFRxXjdGQm7FY8Lv/r45P
-         nrqlyYSCI4RV/AAKGH5T/pHPYwR7FrKxW0Vs7nGQmIiGlaBK56uJNIIbfy0umLECB4Px
-         Ng0NIOYlDsrMRR/k+C7nzAGG5fKibWofsaunN9udB4EA1jwXLAV+/zH+1aDeEQCgKldt
-         uOfD9R0agE47CgJk9yM2aiBORKSsACVDGQTBFWTkVczgc8qGEIf2MYV533C00vL2RNsv
-         fPnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757953692; x=1758558492;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vDAemr4/lmLhb7KTewKWDzn1cjfqOTzFv/5msg8t3TY=;
-        b=mhsVkuTnZNCVYJVUwNBayeE+vs/OCwVNaAciN7QenKggKMSi1gpGriq4luozcaswQn
-         GIQQVz1x2BFMj0QelDGNJ9Psa815XjHggJpjLFcFHswHz9TZ1Si6G8DBvaKFMbaoCNLP
-         B3DlhZwAPnxItczlhdDTJPGfdMOKWjOsRwogYXqezg9Rl41kk7DsBbzuBGAqQg4WJk5g
-         5XkCPWEESIdfzd945SHasoLxiwVUjLxHOmQ0HGFsN+3ULcrMWemo4cXrM2ARL1iDixO5
-         B0hSZ2WFV33p20idj5FQHNG1a/jTpSXbL14TuKiQyLIjAg2zj7jDue5qV6eCftVTHRgH
-         cjmA==
-X-Forwarded-Encrypted: i=1; AJvYcCUPmBg/QZdEhZ1aPrBjnRkHw3CwwMFvCZKMBaQi4iHNe06DKJsUWYDBnNlC1/dwZMaZI5gObw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzP/2GT9D8qX6CZ9A7tD0EvIQRWkxrz+Iyov9uWtQIlWrpJr5p0
-	zcq3ofzNU6B25Ui9pfU+uB2NlkumhiHUpRUEfiCUnIXcRaLp3xWFay3B1f/DgB2cXyk=
-X-Gm-Gg: ASbGncvWfGpGpGNqekSK5k3Y8pxOVqD9EGViCacGKLCa9HTZWkB5EevQzbjM9TeZba1
-	/CjdlXxZxvw9g6VEiHXEhtzfxMdvRwuVbz5gOKthOQIrDLXicuiSn8Mv00P71kpNIldrEMKJpmT
-	vgKVSqEeS1OwNqoO5FI/mDkYqTdm4XOV7AI1Tm06iU8CTUv4ZcT+DxDBJsNumRRxXRR6b7b7Yvj
-	G0NKNVaZpzQTXyWIDFmu6zYIVAmpOMYwe4oThOb0lJ0j/JddZ8qF18giilPuLAxgvfG2gpe0/oL
-	fCOpieNyOKx5HHqRXun4SeRPxi13Bazrs2imPPkOoeGXgIBJbcPn1XbOHuX9rzLZabzND9P89RF
-	e4SLfv042uzt94y5SAw==
-X-Google-Smtp-Source: AGHT+IHXUa+XyZ1S/pis0/NjQwmdYj7V5DxWg4goJxyPrDTodTnzzzbHD2bc6ZPRF/QWzQoUXXlmuQ==
-X-Received: by 2002:a05:6214:21e7:b0:784:4f84:22e9 with SMTP id 6a1803df08f44-7844f84232emr43875496d6.18.1757953692165;
-        Mon, 15 Sep 2025 09:28:12 -0700 (PDT)
-Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-76e576ee0fcsm55860646d6.69.2025.09.15.09.28.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Sep 2025 09:28:11 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uyC3m-00000004TCU-1UNv;
-	Mon, 15 Sep 2025 13:28:10 -0300
-Date: Mon, 15 Sep 2025 13:28:10 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Qinxin Xia <xiaqinxin@huawei.com>
-Cc: will@kernel.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	yangyicong@huawei.com, wangzhou1@hisilicon.com,
-	prime.zeng@hisilicon.com, xuwei5@huawei.com, fanghao11@huawei.com,
-	jonathan.cameron@huawei.com, linuxarm@huawei.com
-Subject: Re: [PATCH 0/2] iommu: Add io_ptdump debug interface for iommu
-Message-ID: <20250915162810.GI882933@ziepe.ca>
-References: <20250814093005.2040511-1-xiaqinxin@huawei.com>
- <20250902161028.GC184112@ziepe.ca>
- <f2720f17-5e81-4f69-aaf5-791b47973178@huawei.com>
- <20250910141547.GD882933@ziepe.ca>
- <bb4c3f0b-06da-46e6-9769-efe3dc00e9fb@huawei.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="IVZj4wLJ"
+Received: by linux.microsoft.com (Postfix, from userid 1152)
+	id 837A22123290; Mon, 15 Sep 2025 09:28:42 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 837A22123290
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1757953722;
+	bh=5NC7L9a3XYKmlncczMkoD2UOHbL3rwgNH4J70c/gSpk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=IVZj4wLJ49yR23ntILIsxDjPKy+iZpuAnfCUFiPCW2lV/OYtJLZ8jUk5MlAkU2bx7
+	 n8x5YuTZacW/1c8te5UHuDcTZXvO7RRtJO2pqFWFzUwWBJGX4OKPtAyN4R4v1NgmWr
+	 uUKbJZAFI8FgbBeonswNod7ObpMLbv8x7Xof29fg=
+Date: Mon, 15 Sep 2025 09:28:42 -0700
+From: Shyam Saini <shyamsaini@linux.microsoft.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: thierry.reding@gmail.com, robin.murphy@arm.com, robh@kernel.org,
+	joro@8bytes.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	virtualization@lists.linux.dev, will@kernel.org,
+	jacob.pan@linux.microsoft.com, eric.auger@redhat.com,
+	code@tyhicks.com, eahariha@linux.microsoft.com,
+	vijayb@linux.microsoft.com, bboscaccy@linux.microsoft.com,
+	saravanak@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
+	lizhi.hou@amd.com, clement.leger@bootlin.com
+Subject: Re: [PATCH v4 4/4] drivers: iommu: refactor arm_smmu_get_resv_regions
+Message-ID: <20250915162842.GA23954@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+References: <20250909154600.910110-1-shyamsaini@linux.microsoft.com>
+ <20250909154600.910110-5-shyamsaini@linux.microsoft.com>
+ <20250909155847.GB882933@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,61 +50,49 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <bb4c3f0b-06da-46e6-9769-efe3dc00e9fb@huawei.com>
+In-Reply-To: <20250909155847.GB882933@ziepe.ca>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 
-On Thu, Sep 11, 2025 at 10:08:55PM +0800, Qinxin Xia wrote:
-> 
-> 
-> On 2025/9/10 22:15:47, Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> > On Wed, Sep 10, 2025 at 11:20:08AM +0800, Qinxin Xia wrote:
-> > > Ok, I see, my colleague Wang Zhou also released a version of io_ptdump
-> > > a long time ago, which is implemented in smmu debugfs. Will recommends that
-> > > io_ptdump be implemented in a way similar to CPU page table dump. Using
-> > > debugfs to expose the data and using format-specific callbacks to implement
-> > > specific data dumps, I'll talk to him about this as well.
+Hi Jason,
+
+On 09 Sep 2025 12:58, Jason Gunthorpe wrote:
+> On Tue, Sep 09, 2025 at 08:46:00AM -0700, Shyam Saini wrote:
+> > Both ARM SMMU v2/v3 drivers have common set operations for
+> > arm_smmu_get_resv_regions(), except iommu_dma_get_resv_regions()
+> > call all other operations can be clubed into common code block.
+> > So to avoid code duplication put common operations in a new helper
+> > function iommu_set_sw_msi() and call this helper function from
+> > arm_smmu_get_resv_regions() instead.
 > > 
-> > I feel we should have a iommu subsystem debugfs and per-iommu_domain
-> > directories to dump the page tables.
-> > 
-> > The smmu debugfs can report what iommu_domains each STE/CD is
-> > referencing.
-> > 
-> > This also needs RCU freeing of page table levels as a locking
-> > strategy.
+> > Suggested-by: Jason Gunthorpe <jgg@ziepe.ca>
+> > Signed-off-by: Shyam Saini <shyamsaini@linux.microsoft.com>
+> > ---
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 26 ++-------------
+> >  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 24 ++-----------
+> >  drivers/iommu/iommu.c                       | 37 +++++++++++++++++++++
+> >  include/linux/iommu.h                       |  6 ++++
+> >  4 files changed, 47 insertions(+), 46 deletions(-)
 > 
-> Thanks, I'll add RCU in the next version, but there's some
-> confusion,
-
-Please don't, RCU is quite complicated, I don't really want to see
-attempts to retrofit it into the existing page table code. This is why
-I've said debugging like this needs to go along with the new iommu pt
-work to consolidate the page table code.
-
-> Do you
-> mean to create a directory for each domain? like：
+> I would do this first, not after you made all the changes to both
+> drivers.
 > 
-> /sys/kernel/debug/io_page_tables/domain_xxxx (xxxx=domain addr)
+> And then once you do it:
+> 
+> > -	static const u64 msi_bases[] = { MSI_IOVA_BASE, MSI_IOVA_BASE2 };
+> 
+> Can just be constants written here, nothing else in the kernel should
+> refer to them any more because they are dynamic. The only way to learn
+> the value is to read the IOMMU_RESV_SW_MSI. Thus don't write them out
+> in public headers to prevent mis-use.
 
-Something like this could be a reasonable option.
+I wil address these in the next version.
+ 
+> I'm comfortable with this side from the iommu perspective once you get
+> agreement on the DT representation.
 
-> tree domain_xxxx like:
-> domain_xxxx
-> └── group x
-> │ └── device
+We haven’t heard back from the DT folks or Thierry. Do you think we
+should wait a few more days for their feedback, or go ahead and send
+v5 as an RFC instead?
 
-Though I would probably not include this information..
-
-> └── DebugFS file: /sys/kernel/debug/io_page_tables
-> └── Operation: Reading this file triggers the entire debug information
-> collection process
-
-I don't think we want to dump every page table in the system in one
-file.
-
-> Do you mean that the interface in io-pgtable-arm.c is directly invoked
-> during the process of obtaining page table information without passing
-> through arm-smmu-v3.c?
-
-Yes, this is what iommu pt brings.
-
-Jason
+Thanks,
+Shyam
