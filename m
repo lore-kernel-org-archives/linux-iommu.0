@@ -1,106 +1,267 @@
-Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
+Received: from mail-il1-f207.google.com (mail-il1-f207.google.com [209.85.166.207])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3EEA2848A8
-	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 16:45:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32DBC274B48
+	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 18:17:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.207
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757954721; cv=none; b=GjyMG00ka2uhbOvgr8cOoNENtf7tJ+Z8Z7NP/eYNykTHqXxQNPGlAncXymDGHqfVFHjOLu431U1/6BZ2oSGQMSnbD7phdiCiRTRpGA5TmYzq56lovqPpemfoQDdskhAPBCJfVEEohv+hR3hAQjUEdfDHfcGsZmQg+61D2SsfYng=
+	t=1757960256; cv=none; b=kU10aV9pmPv+n8cxQ4YMeL3wdf6Z4m3MP0GYFBMrA4DyA6Ww6Z7ChHyQwC8Loyaez+8Ao4GY8TooUVxsWvTlltaXRnVDS9VnxvUku1ydZl8JlchlQ7j2U+gDGgxMklH7RzI0QZEg9qFAO3gsmgUl6Fg1kPTbh9hIWn7BvwqRilE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757954721; c=relaxed/simple;
-	bh=vkx6SM9gqmpLvlgtVI8pwEBIHZtD0Q9irwN6qy/aYaQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qSyYOIDgOu5wdS7NAjAwl6QjbjkMcPqQpEN5FRpuH3z701I2FacvtmSjnVmfk2THM0RvHzBnsb5WpmlJXRtiGaD7AtxBElR1HZV+8+mh14zjBNn6bc9+nAbrdY6rFHlO9ODzKuGwgs0DPhtMVZvyNAPy1ZeAw52lt2xGuo/iYmY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=VxoQA76n; arc=none smtp.client-ip=209.85.215.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="VxoQA76n"
-Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-b54b301d621so2620614a12.0
-        for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 09:45:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1757954719; x=1758559519; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MQDjqbiT9oGuFNrzjLvyS3Lnpn5E/CxPnw6kf2pPIuk=;
-        b=VxoQA76nsIo/f91Aklk+FZzSoWss2B/LtZzctMqFuC0nvFQk1vQ7wzgdyQQog98Ou9
-         rBaXqECR7D6JrGI8ZBqBg/PGAL9UXaI7l2+lSHgzLQGHJacOdUyBXbBasT6WXbGsPjki
-         /8hIRGq+FduCB98M3Xm8kDmsOkY0X4HaVYnMQWmPyB36/9wiZK4fUtvqyQf4NgT5k+Vd
-         XnFxtwUWYXlhMfWBO0BXeRpWKPc15Si2ek3uGBEJ56J6GCk/jeRxh8nMswgaJ0feSYBE
-         dPJGR+T3LF22xqkgQADDSCsxheGp5VomyU8TqdfKBqY4jQmRqhCFDiIIoAEs7lTcUT2e
-         1m+w==
+	s=arc-20240116; t=1757960256; c=relaxed/simple;
+	bh=arkH0t2+6qOJIEnuqX97Aj+81+ne1YcEJHoaZrLY0vo=;
+	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=YYUgmZfr38VT42LgEqU2RFYjhTg8jRqzoi6dDy2qTPRjCWSz9Av7gZkQ6kDVEl6J9kaE7Hk3lIEIQolz1+26pW+FcXWCU4GUDTIY1y+zkHYJA8bk1fdxL7M5uuwGwoZ744fhsSiP3JqEGbdnHKphe/snr6DmIdPpmMfdua16xsE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.207
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
+Received: by mail-il1-f207.google.com with SMTP id e9e14a558f8ab-4240c613549so13860565ab.3
+        for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 11:17:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757954719; x=1758559519;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MQDjqbiT9oGuFNrzjLvyS3Lnpn5E/CxPnw6kf2pPIuk=;
-        b=wUeza42/XlPXUrwVK9r3VkrYEcXJtsvx60pK86G02t7+lTRJCzXz9izlCGdpn1iudY
-         lXJqDTZrZcA559GpaEWKGL4Jbs7F6AXhSNcGvqYZgN25isv8eXnsWTJ7RnWT6IwdXvO9
-         F7Omd957JX1bgGDwpp9txk/hkUU61cBA1SinPN/IC9/CA3q/NHE6fJFJ1LqXzAEXink4
-         gFf5bryy1gFJ02GtTEf+1TLfeFi843Jvhzg+BLbDR4FSDTRHXBj40VRrvWslSbEjnMgQ
-         U/rOjrUQMH1iML6eJaLOiJyTF1ayUzqD8VJYVrr6MKlir9l4Qm7zjQDtJM7Jp7Od5nZx
-         Mwdg==
-X-Forwarded-Encrypted: i=1; AJvYcCUnFWe+RoNfUZViJPDYAELwdghV/R51Up4maEQ4z1h4NDBVfnXrxEDZchcMfOiAwt+RmxxpgA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwodzKlZ6ImeJHZw6j44sVD2QGmq5z4pResQz41vyJMyM+BDlew
-	b6rWgmY7Wg5DZvIwMpN33+Tbvr1vhSN1pQrhCM0sTEB+8OeGYv3eQH80PPqcy4vQTN2OK3LjhnG
-	2yLwr
-X-Gm-Gg: ASbGnctpLRde8ph3y3DxWKFoTVoxmwzHE2ctN5FbyUN9WaheE+kTBWxaAwcdoljgMfL
-	eIkpObDZBauip0+vnsfT/wbVb92W4v08IxEJxxKgC0Jxxlacmm7r/BHSdX5qsbgYggVoK33uniP
-	MtYatcxg34KORsS/6L/z0HphpSR8j+dljuwMHBaTZg6cwj9kkb4HRHngdhmC1JruJy7g/sFCozY
-	8HJVWZt+OKWiAl8YoLj8pb3wM+69gjMcmIrwY/gceegadevtCQu0DouMVjlBd2/oGsxyquPwaK2
-	547GwIhgupQouwiq74nb7/SD8UHH2H2KTrIAwr8e2gpLUkvEjw9o1ssBJmOZ3/H5AS2i3vLQ
-X-Google-Smtp-Source: AGHT+IEueZRPYz6Ovwnbpjg7oIfp7yjCHZ9L0M0q/iZt1RonHcNLG+PurDsqJLquezOzfjlKgS1iDA==
-X-Received: by 2002:a17:90b:3d0e:b0:32b:ab1f:5113 with SMTP id 98e67ed59e1d1-32de4f7ee8fmr16124999a91.28.1757954719094;
-        Mon, 15 Sep 2025 09:45:19 -0700 (PDT)
-Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b54a3aa1a22sm12075579a12.52.2025.09.15.09.45.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Sep 2025 09:45:18 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uyCKL-00000004TKd-1naj;
-	Mon, 15 Sep 2025 13:45:17 -0300
-Date: Mon, 15 Sep 2025 13:45:17 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, will@kernel.org, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v4 04/28] iommu/io-pgtable-arm: Move selftests to a
- separate file
-Message-ID: <20250915164517.GL882933@ziepe.ca>
-References: <20250819215156.2494305-1-smostafa@google.com>
- <20250819215156.2494305-5-smostafa@google.com>
+        d=1e100.net; s=20230601; t=1757960253; x=1758565053;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=dTHya9CWE052p3YVJjNwwhIiYXOxgjMvw+Iy7Uy1gcA=;
+        b=DJu0GQUElHEvpxPXfhTQ46TflszCgipPCcbUbtQy8cdqBS6tLOLyw/6//VUNDXmefe
+         rNu3Izj9HWINu955dUXefIWIdxvj+v3r+/upqF9dXZOzwIt9yifahNCrPsEJH+p3FH5b
+         8xdvnI5d3Gt66TMp1YsZWBLmUmqtN4GEU/oikCD6ehEa0mFoJjsHwr/lChD7+tWzktqQ
+         BS1JW5pHp/4NAAALCzzqbq+HuAW++PNx6JRC6DT6vM4mvDmH98FZPBikR1GPlfLo94xY
+         Nu6IACNbewga//WHxnt79VpunTi7puZHZAfJefqq2QeKZ0fcg/LVk8MR7k8feNKRUqJ4
+         rFUg==
+X-Gm-Message-State: AOJu0Yx0NGEk2FDoVzEjuOFk2DofydCmOPXCczUZcrsOYqctBDg9piEr
+	kW73HeXZAbUvG81sIik7bkllqKmghVirxmDvwQDNQlYlxYvVUi5rekPV5yvVJcPUFaOlaPd/kR8
+	oh2k3LrHGDfbNCpoBU72ueTcvtliMSI6DM+9qLoCg9vgPS6nZkuhuGcMsXDM9Vg==
+X-Google-Smtp-Source: AGHT+IEDoKyYNKa0469HpOMIpVva7pz0Tm8CUsTETL6GaSBU7taxGz6s6FvOF/lwuPOXZ8SJqV6OG49chdgF4GOqACf5cmQMy6OT
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250819215156.2494305-5-smostafa@google.com>
+X-Received: by 2002:a05:6e02:e11:b0:421:bb6:fc6a with SMTP id
+ e9e14a558f8ab-4210bc6491cmr126789115ab.2.1757960253470; Mon, 15 Sep 2025
+ 11:17:33 -0700 (PDT)
+Date: Mon, 15 Sep 2025 11:17:33 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <68c8583d.050a0220.2ff435.03a2.GAE@google.com>
+Subject: [syzbot] [iommu?] KASAN: slab-use-after-free Write in iommufd_eventq_fops_release
+From: syzbot <syzbot+80620e2d0d0a33b09f93@syzkaller.appspotmail.com>
+To: iommu@lists.linux.dev, jgg@ziepe.ca, joro@8bytes.org, kevin.tian@intel.com, 
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
+	syzkaller-bugs@googlegroups.com, will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Aug 19, 2025 at 09:51:32PM +0000, Mostafa Saleh wrote:
-> Soon, io-pgtable-arm.c will be compiled as part of the KVM/arm64
-> in the hypervisor object, which doesn't have many of the kernel APIs,
-> as faux devices, printk...
-> 
-> We would need to factor this things outside of this file, this patch
-> moves the selftests outside, which remove many of the kernel
-> dependencies, which also is not needed by the hypervisor.
-> Create io-pgtable-arm-kernel.c for that, and in the next patch
-> the rest of the code is factored out.
+Hello,
 
-Please send this as a stand alone patch, it looks like a good idea.
+syzbot found the following issue on:
 
-Also please add the boiler plate to wrap the selftest into a kunit and
-use the usual kunit machinery. We alredy have an kunit for
-smmuv3, it can just add another file to that.
+HEAD commit:    22f20375f5b7 Merge tag 'pci-v6.17-fixes-3' of git://git.ke..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16c29b12580000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9ea369e307c9d48f
+dashboard link: https://syzkaller.appspot.com/bug?extid=80620e2d0d0a33b09f93
+compiler:       gcc (Debian 12.2.0-14) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17795934580000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17403642580000
 
-Jason
+Downloadable assets:
+disk image: https://storage.googleapis.com/syzbot-assets/76d1a12b1763/disk-22f20375.raw.xz
+vmlinux: https://storage.googleapis.com/syzbot-assets/8ebd247c9a40/vmlinux-22f20375.xz
+kernel image: https://storage.googleapis.com/syzbot-assets/405482fe4099/bzImage-22f20375.xz
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+80620e2d0d0a33b09f93@syzkaller.appspotmail.com
+
+R13: 00007fb44b1d5fa0 R14: 00007fb44b1d5fa0 R15: 0000000000000003
+ </TASK>
+==================================================================
+BUG: KASAN: slab-use-after-free in instrument_atomic_read_write include/linux/instrumented.h:96 [inline]
+BUG: KASAN: slab-use-after-free in atomic_fetch_sub_release include/linux/atomic/atomic-instrumented.h:400 [inline]
+BUG: KASAN: slab-use-after-free in __refcount_dec include/linux/refcount.h:455 [inline]
+BUG: KASAN: slab-use-after-free in refcount_dec include/linux/refcount.h:476 [inline]
+BUG: KASAN: slab-use-after-free in iommufd_eventq_fops_release+0x45/0xc0 drivers/iommu/iommufd/eventq.c:376
+Write of size 4 at addr ffff888059c97804 by task syz.0.46/6164
+
+CPU: 0 UID: 0 PID: 6164 Comm: syz.0.46 Not tainted syzkaller #0 PREEMPT(full) 
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 08/18/2025
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:94 [inline]
+ dump_stack_lvl+0x116/0x1f0 lib/dump_stack.c:120
+ print_address_description mm/kasan/report.c:378 [inline]
+ print_report+0xcd/0x630 mm/kasan/report.c:482
+ kasan_report+0xe0/0x110 mm/kasan/report.c:595
+ check_region_inline mm/kasan/generic.c:183 [inline]
+ kasan_check_range+0x100/0x1b0 mm/kasan/generic.c:189
+ instrument_atomic_read_write include/linux/instrumented.h:96 [inline]
+ atomic_fetch_sub_release include/linux/atomic/atomic-instrumented.h:400 [inline]
+ __refcount_dec include/linux/refcount.h:455 [inline]
+ refcount_dec include/linux/refcount.h:476 [inline]
+ iommufd_eventq_fops_release+0x45/0xc0 drivers/iommu/iommufd/eventq.c:376
+ __fput+0x402/0xb70 fs/file_table.c:468
+ task_work_run+0x14d/0x240 kernel/task_work.c:227
+ resume_user_mode_work include/linux/resume_user_mode.h:50 [inline]
+ exit_to_user_mode_loop+0xeb/0x110 kernel/entry/common.c:43
+ exit_to_user_mode_prepare include/linux/irq-entry-common.h:225 [inline]
+ syscall_exit_to_user_mode_work include/linux/entry-common.h:175 [inline]
+ syscall_exit_to_user_mode include/linux/entry-common.h:210 [inline]
+ do_syscall_64+0x41c/0x4c0 arch/x86/entry/syscall_64.c:100
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+RIP: 0033:0x7fb44af8eba9
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc3d692818 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: fffffffffffffff2 RBX: 00007fb44b1d5fa0 RCX: 00007fb44af8eba9
+RDX: 0000000000000004 RSI: 0000000000003b8e RDI: 0000000000000006
+RBP: 00007ffc3d692870 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
+R13: 00007fb44b1d5fa0 R14: 00007fb44b1d5fa0 R15: 0000000000000003
+ </TASK>
+
+Allocated by task 6164:
+ kasan_save_stack+0x33/0x60 mm/kasan/common.c:47
+ kasan_save_track+0x14/0x30 mm/kasan/common.c:68
+ poison_kmalloc_redzone mm/kasan/common.c:388 [inline]
+ __kasan_kmalloc+0xaa/0xb0 mm/kasan/common.c:405
+ kasan_kmalloc include/linux/kasan.h:260 [inline]
+ __do_kmalloc_node mm/slub.c:4376 [inline]
+ __kmalloc_noprof+0x223/0x510 mm/slub.c:4388
+ kmalloc_noprof include/linux/slab.h:909 [inline]
+ kzalloc_noprof include/linux/slab.h:1039 [inline]
+ _iommufd_object_alloc+0x23/0x1a0 drivers/iommu/iommufd/main.c:40
+ _iommufd_object_alloc_ucmd+0xb2/0x160 drivers/iommu/iommufd/main.c:84
+ iommufd_fault_alloc+0x93/0x420 drivers/iommu/iommufd/eventq.c:430
+ iommufd_fops_ioctl+0x34d/0x540 drivers/iommu/iommufd/main.c:508
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:598 [inline]
+ __se_sys_ioctl fs/ioctl.c:584 [inline]
+ __x64_sys_ioctl+0x18b/0x210 fs/ioctl.c:584
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xcd/0x4c0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Freed by task 6164:
+ kasan_save_stack+0x33/0x60 mm/kasan/common.c:47
+ kasan_save_track+0x14/0x30 mm/kasan/common.c:68
+ kasan_save_free_info+0x3b/0x60 mm/kasan/generic.c:576
+ poison_slab_object mm/kasan/common.c:243 [inline]
+ __kasan_slab_free+0x60/0x70 mm/kasan/common.c:275
+ kasan_slab_free include/linux/kasan.h:233 [inline]
+ slab_free_hook mm/slub.c:2422 [inline]
+ slab_free mm/slub.c:4695 [inline]
+ kfree+0x2b4/0x4d0 mm/slub.c:4894
+ iommufd_object_abort+0x10c/0x170 drivers/iommu/iommufd/main.c:124
+ iommufd_fops_ioctl+0x381/0x540 drivers/iommu/iommufd/main.c:512
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:598 [inline]
+ __se_sys_ioctl fs/ioctl.c:584 [inline]
+ __x64_sys_ioctl+0x18b/0x210 fs/ioctl.c:584
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xcd/0x4c0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+The buggy address belongs to the object at ffff888059c97800
+ which belongs to the cache kmalloc-cg-512 of size 512
+The buggy address is located 4 bytes inside of
+ freed 512-byte region [ffff888059c97800, ffff888059c97a00)
+
+The buggy address belongs to the physical page:
+page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x59c94
+head: order:2 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
+memcg:ffff888026413e01
+flags: 0xfff00000000040(head|node=0|zone=1|lastcpupid=0x7ff)
+page_type: f5(slab)
+raw: 00fff00000000040 ffff88801b84b140 dead000000000122 0000000000000000
+raw: 0000000000000000 0000000000100010 00000000f5000000 ffff888026413e01
+head: 00fff00000000040 ffff88801b84b140 dead000000000122 0000000000000000
+head: 0000000000000000 0000000000100010 00000000f5000000 ffff888026413e01
+head: 00fff00000000002 ffffea0001672501 00000000ffffffff 00000000ffffffff
+head: ffffffffffffffff 0000000000000000 00000000ffffffff 0000000000000004
+page dumped because: kasan: bad access detected
+page_owner tracks the page as allocated
+page last allocated via order 2, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOMEMALLOC), pid 5224, tgid 5224 (klogd), ts 132635729272, free_ts 132529818110
+ set_page_owner include/linux/page_owner.h:32 [inline]
+ post_alloc_hook+0x1c0/0x230 mm/page_alloc.c:1851
+ prep_new_page mm/page_alloc.c:1859 [inline]
+ get_page_from_freelist+0x132b/0x38e0 mm/page_alloc.c:3858
+ __alloc_frozen_pages_noprof+0x261/0x23f0 mm/page_alloc.c:5148
+ alloc_pages_mpol+0x1fb/0x550 mm/mempolicy.c:2416
+ alloc_slab_page mm/slub.c:2492 [inline]
+ allocate_slab mm/slub.c:2660 [inline]
+ new_slab+0x247/0x330 mm/slub.c:2714
+ ___slab_alloc+0xcf2/0x1750 mm/slub.c:3901
+ __slab_alloc.constprop.0+0x56/0xb0 mm/slub.c:3992
+ __slab_alloc_node mm/slub.c:4067 [inline]
+ slab_alloc_node mm/slub.c:4228 [inline]
+ __do_kmalloc_node mm/slub.c:4375 [inline]
+ __kmalloc_node_track_caller_noprof+0x2ee/0x510 mm/slub.c:4395
+ kmalloc_reserve+0xef/0x2c0 net/core/skbuff.c:600
+ __alloc_skb+0x166/0x380 net/core/skbuff.c:669
+ alloc_skb include/linux/skbuff.h:1336 [inline]
+ alloc_skb_with_frags+0xe0/0x860 net/core/skbuff.c:6665
+ sock_alloc_send_pskb+0x7fb/0x990 net/core/sock.c:2958
+ unix_dgram_sendmsg+0x3e9/0x17f0 net/unix/af_unix.c:2153
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ __sock_sendmsg net/socket.c:729 [inline]
+ __sys_sendto+0x4a3/0x520 net/socket.c:2228
+ __do_sys_sendto net/socket.c:2235 [inline]
+ __se_sys_sendto net/socket.c:2231 [inline]
+ __x64_sys_sendto+0xe0/0x1c0 net/socket.c:2231
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xcd/0x4c0 arch/x86/entry/syscall_64.c:94
+page last free pid 5980 tgid 5980 stack trace:
+ reset_page_owner include/linux/page_owner.h:25 [inline]
+ free_pages_prepare mm/page_alloc.c:1395 [inline]
+ __free_frozen_pages+0x7d5/0x10f0 mm/page_alloc.c:2895
+ discard_slab mm/slub.c:2758 [inline]
+ __put_partials+0x165/0x1c0 mm/slub.c:3223
+ qlink_free mm/kasan/quarantine.c:163 [inline]
+ qlist_free_all+0x4d/0x120 mm/kasan/quarantine.c:179
+ kasan_quarantine_reduce+0x195/0x1e0 mm/kasan/quarantine.c:286
+ __kasan_slab_alloc+0x69/0x90 mm/kasan/common.c:340
+ kasan_slab_alloc include/linux/kasan.h:250 [inline]
+ slab_post_alloc_hook mm/slub.c:4191 [inline]
+ slab_alloc_node mm/slub.c:4240 [inline]
+ kmem_cache_alloc_noprof+0x1cb/0x3b0 mm/slub.c:4247
+ getname_flags.part.0+0x4c/0x550 fs/namei.c:146
+ getname_flags include/linux/audit.h:322 [inline]
+ getname include/linux/fs.h:2919 [inline]
+ __do_sys_unlink fs/namei.c:4696 [inline]
+ __se_sys_unlink fs/namei.c:4694 [inline]
+ __x64_sys_unlink+0xb0/0x110 fs/namei.c:4694
+ do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
+ do_syscall_64+0xcd/0x4c0 arch/x86/entry/syscall_64.c:94
+ entry_SYSCALL_64_after_hwframe+0x77/0x7f
+
+Memory state around the buggy address:
+ ffff888059c97700: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff888059c97780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff888059c97800: fa fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                   ^
+ ffff888059c97880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888059c97900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+
+If the report is already addressed, let syzbot know by replying with:
+#syz fix: exact-commit-title
+
+If you want syzbot to run the reproducer, reply with:
+#syz test: git://repo/address.git branch-or-commit-hash
+If you attach or paste a git patch, syzbot will apply it before testing.
+
+If you want to overwrite report's subsystems, reply with:
+#syz set subsystems: new-subsystem
+(See the list of subsystem names on the web dashboard)
+
+If the report is a duplicate of another one, reply with:
+#syz dup: exact-subject-of-another-report
+
+If you want to undo deduplication, reply with:
+#syz undup
