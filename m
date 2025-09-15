@@ -1,91 +1,135 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f51.google.com (mail-yx1-f51.google.com [74.125.224.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4176E2D2488
-	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 10:38:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 513D32FF66C
+	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 10:50:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757932693; cv=none; b=ja+u+eb8obm5ZHn2vTgCZn6lwD2SVplUSD4QhZyFaihoJ1+NJoZgGL1hrrwOitGEXJZhK1hOsSVciQp80fsFmhcs/jYbcqzYxhic17kwXKlNMY0RCP7pASj2p/7e+e656mJjXlwj2CU+8OhupB62rUJ+nbMXNmLH0G1lWv3XSBU=
+	t=1757933434; cv=none; b=tOQ6mMGYuEh5ISxdTUmnVuLEtWbQ6rwBleQt6dw7bpBu6lSOV4tEu8oULeGs3Y4wf6WJ6+fzZMbrR6BrJM3aAYZdVSTivD8AqcrWvNayYTqbyFJB4eSzSuIconfgpXr4m9bnERgdTG8gIqdkDkv3f60veSi56CsfIuxjcOOeDGo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757932693; c=relaxed/simple;
-	bh=qJ9kQ8BFAZY2v4fggocnqvi8R1BnMMUDXlwGB+RmYH8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kaQu7kdAdg+wzHtBelYUbFdseENO3h96UnH+mrwAjLFEDeqjDhWQw8nAtKxsv1VAYPvUNahWIrIeUdcfSV4JC1X/4cndNWFgkb98EoEFab1uMNBa6SjdHQMirL+BHpip1QPlqhu+SUt9BnZJHXF4sCFVxea1BRsMKyGYmKzKJcw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TMxLcgCF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1757933434; c=relaxed/simple;
+	bh=kARumPxqfmMMWgp1NvnsY+8lw/OMkVWPKeLFtKSIlME=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=KIilW2HGcbFcEuUhOfaG9zJ1etuUqh7hkPv31S8Boly560ON5dicYUsYbDA7q1WPPUuZSXlYBddW80po8NfDVzZzqye6mPZIuvSRG/bRttA/oyxWxL9MsvDPFYy51CeFzXyxoQ7aFzTPMdepcq5XwnPoV5zYgpFLKTkX65Leu54=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=PdDmhKg5; arc=none smtp.client-ip=74.125.224.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TMxLcgCF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7006C4CEF1;
-	Mon, 15 Sep 2025 10:38:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757932692;
-	bh=qJ9kQ8BFAZY2v4fggocnqvi8R1BnMMUDXlwGB+RmYH8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=TMxLcgCFGdAs6MATYhGGP+jh+ft9np0Fb7ScunMNiJRVJXDUL6wMUqoqbShz6OOvn
-	 lqcvod4uqVzBmhRyKFkZOjKbJthLcMrKW02PinbWvimlMKOHJZrXZ1HjF+278V0mHN
-	 H9bXnlObipolMo69DvS2bVpT4stzi4OHSJtZJStFPS7Abprg003eu0lV0S7A5o4dCn
-	 mfmfx77hf/fH3Kd7Ryyq+7mfBSt89Hh06smcKm4xiI55LiXbf9pYODmFE7uM6gAWKx
-	 peCFyjhVMckRq+qELmpKBOiKSgcqzgM5fiUrXKOb0ICG6y3NM+9dHceY7ofxg9AZnS
-	 5Xq8EyXap8hug==
-Date: Mon, 15 Sep 2025 11:38:07 +0100
-From: Will Deacon <will@kernel.org>
-To: Yaxing Guo <guoyaxing@bosc.ac.cn>
-Cc: linux-riscv@lists.infradead.org, iommu@lists.linux.dev,
-	tjeznach@rivosinc.com, joro@8bytes.org, robin.murphy@arm.com,
-	paul.walmsley@sifive.com, palmer@dabbelt.com, aou@eecs.berkeley.edu,
-	alex@ghiti.fr, anxu@bosc.ac.cn, wangran@bosc.ac.cn
-Subject: Re: [PATCH v1 1/3] iommu/riscv: Add iommu perf driver
-Message-ID: <aMfsj1U7NY2m68T4@willie-the-truck>
-References: <20250915020911.1313-1-guoyaxing@bosc.ac.cn>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PdDmhKg5"
+Received: by mail-yx1-f51.google.com with SMTP id 956f58d0204a3-61381743635so2090401d50.1
+        for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 03:50:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1757933430; x=1758538230; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=a3UAx19vK1YiNrAi97n0gU/rRiRg+M8i65mS2Lnx+jM=;
+        b=PdDmhKg50+zvmw2zhIg1E75SE3AUBEiisfVlanLLHNuUQu0O0TQsajnlTMWdNzrFnc
+         MkKUExgc+t5Z6Rt7BsLSwdHs07vJ9GYjm06W36OxBSpGTK7/QiGstUVIm2ErfRUK/jxL
+         v1hke5+sDG81Tk0dUH373Ae+j4ygtVivxtSY65tRuY+F8MAyCMjusHbXo6JdxwWX8z9E
+         IPTKNcTWJ2iofFpucGc+BWb+HMpMO7Vmsq2ivDmhWw7Fq2au6aVIBjGN0fqGP1hBRVD8
+         fTtfLBvbJe1FG6fsi/PtwB9uKaUauvrii4a6KsABVQV+BgZ27gmmYW/RUNZTCzxfYqED
+         0FPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757933430; x=1758538230;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=a3UAx19vK1YiNrAi97n0gU/rRiRg+M8i65mS2Lnx+jM=;
+        b=SKJaLnWxewqPm/Lv28jwN6prd6PTwrKlnaL64fKeVBxW1O2HjZBm8swoXI1SHecmRx
+         G/Q27MuNTqNZsBxeFIMjtGFra55ZvqaK65V5zExJjTPZVi6E+85dzj8lCmI0G/iaOezk
+         Ge/x4KAMlVr1aqeH41B+OCm6AclYsYJmROYLwz5YbY+uQzAOJiRoE3g9h7+paSEBxf1u
+         OeP+BpD4DNntbULtpig8LyUpSbP8rifoJH2DYM4paUCIVyiTmRaPcPf6Sbq6KFboZzX0
+         oGJrXuHglMNOMKtNYYqj0wjdWNFeNO0xeKjuiMx/Hva4yas7vl2vLR+zw7so5DTRJQpj
+         999w==
+X-Forwarded-Encrypted: i=1; AJvYcCVZaySPa9QbyyVKD1xMUp90XUbxl8C277hZOFLBdYaGReMdoUVaANkywqR5brdBkd65MFmX2g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzPFqfyg0tbVJCPky+RzBtfl5akCI/vF/L/Nm3gN2gFyJSoglg+
+	4i88YwTZTEc0hdDI+twnLa7Fp01ZxJpXC8blL4fixPIV9wkY0CRCqB2NwVvIUH06+UqmFoaNo3o
+	gQD3U/ZrNu1WadtivexQZOEsxdlXy1tLVer/qQVh5Hw==
+X-Gm-Gg: ASbGncspJIgdBcTU3DcGeINGWqXXXEVUYZjMXZ0gn8k4Wvq+LedQAi+DTI6dTXEUGaJ
+	QIlszMAvH6C4j78kJNJrNHMu1oLofb9NiVAkaQwDUxT4+XyrYyIjGl3vTxr0y91bLvDauBq5R0K
+	nwYongZBfP2+W28FSdsOsxUp5LXHxzK0utG1i+LT8wo0gES0H5VXmb4w62igCRjh8NYuuqawZHl
+	6DkapYavoVu7akOXZ8=
+X-Google-Smtp-Source: AGHT+IGDEYgOKM3gJ8Zzlityz/syLNE9FRvDAqAmupyu9aSeveyvR7FHQhtEilEP6qYlMPKL0ImuzwqqE0dGUhFDiNI=
+X-Received: by 2002:a05:690c:3706:b0:722:7d35:e0c2 with SMTP id
+ 00721157ae682-730626d2dd2mr106799857b3.2.1757933429679; Mon, 15 Sep 2025
+ 03:50:29 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250915020911.1313-1-guoyaxing@bosc.ac.cn>
+References: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net> <20250828-dt-apple-t6020-v1-3-507ba4c4b98e@jannau.net>
+In-Reply-To: <20250828-dt-apple-t6020-v1-3-507ba4c4b98e@jannau.net>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Mon, 15 Sep 2025 12:49:53 +0200
+X-Gm-Features: Ac12FXxZCAZGblY8VwFHa1GJ1rGV08p3Fv5KI-OAzvQkX2G4ZDMKiAukPP3wanY
+Message-ID: <CAPDyKFr9dAvP7U3dZ_LFw8YxcvJ6n95OKKLYpntUarqdfUqjWQ@mail.gmail.com>
+Subject: Re: [PATCH 03/37] pmdomain: apple: Add "apple,t8103-pmgr-pwrstate"
+To: Janne Grunau <j@jannau.net>
+Cc: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Neal Gompa <neal@gompa.dev>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Hector Martin <marcan@marcan.st>, "Rafael J. Wysocki" <rafael@kernel.org>, 
+	Viresh Kumar <viresh.kumar@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Linus Walleij <linus.walleij@linaro.org>, Mark Kettenis <kettenis@openbsd.org>, 
+	Andi Shyti <andi.shyti@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>, 
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
+	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
+	Sasha Finkelstein <fnkl.kernel@gmail.com>, Marcel Holtmann <marcel@holtmann.org>, 
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>, Johannes Berg <johannes@sipsolutions.net>, 
+	van Spriel <arend@broadcom.com>, Lee Jones <lee@kernel.org>, 
+	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
+	Stephen Boyd <sboyd@kernel.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, 
+	Guenter Roeck <linux@roeck-us.net>, Michael Turquette <mturquette@baylibre.com>, 
+	=?UTF-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>, 
+	Vinod Koul <vkoul@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
+	Marc Zyngier <maz@kernel.org>, Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>, 
+	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>, Jaroslav Kysela <perex@perex.cz>, 
+	Takashi Iwai <tiwai@suse.com>, asahi@lists.linux.dev, 
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, linux-bluetooth@vger.kernel.org, 
+	linux-wireless@vger.kernel.org, linux-pwm@vger.kernel.org, 
+	linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org, 
+	dmaengine@vger.kernel.org, linux-sound@vger.kernel.org, 
+	linux-spi@vger.kernel.org, linux-nvme@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Sep 15, 2025 at 10:09:09AM +0800, Yaxing Guo wrote:
-> This patch introduces a performance monitor driver for RISC-V IOMMU
-> iohpm implementions that support hardware performance counters.
-> The driver expose RISC-V-IOMMU-specific performance events (eg. cycles,
-> tlb miss ...)through the Linux perf subsystem, enabling developers
-> to profile and optimize I/O translation performance.
-> 
-> Key features:
-> - Implements a perf PMU driver for RISC-V IOMMU.
-> 
-> - Exposes IOMMU perf events, such as 'cycles', 'tlb_miss'... via
->   /sys/devices/riscv-iommu-pmu/events/, allowing use with perf
->   tools:
->     perf stat -C 0 -e riscv-iommu-pmu/cycles/ ...
->     perf stat -C 0 -e riscv-iommu-pmu/tlb_miss/ ...
->     ...
-> - Supports event filtering through configureable attributes exposed
->   in /sys/devices/riscv-iommu-pmu/format/, including:
->   dv_gscv, pv_pscv，did_gscid，pid_pscid，idt (riscv iommu spec 5-23).
-> 
-> - Implements overflow interrupt handling.
-> 
-> - Adds device tree binding support via optional 'pmu-name' property
->   allowing platform-specific IOMMU implementations to specify a custom
->   defined event ID list. If not provided, the driver defaults to only
->   supporting 'cycles'. When set to 'dummy', it enables all 9 standard
->   event IDs as defined in riscv iommu spec(5-23).
-> 
-> Signed-off-by: Yaxing Guo <guoyaxing@bosc.ac.cn>
+On Thu, 28 Aug 2025 at 16:01, Janne Grunau <j@jannau.net> wrote:
+>
+> After discussion with the devicetree maintainers we agreed to not extend
+> lists with the generic compatible "apple,pmgr-pwrstate" anymore [1]. Use
+> "apple,t8103-pmgr-pwrstate" as base compatible as it is the SoC the
+> driver and bindings were written for.
+>
+> [1]: https://lore.kernel.org/asahi/12ab93b7-1fc2-4ce0-926e-c8141cfe81bf@kernel.org/
+>
+> Signed-off-by: Janne Grunau <j@jannau.net>
+
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+
+Kind regards
+Uffe
+
 > ---
->  drivers/iommu/riscv/iommu-perf.c | 535 +++++++++++++++++++++++++++++++
->  drivers/iommu/riscv/iommu-perf.h |  88 +++++
->  drivers/iommu/riscv/iommu.h      |   8 +
->  3 files changed, 631 insertions(+)
->  create mode 100644 drivers/iommu/riscv/iommu-perf.c
->  create mode 100644 drivers/iommu/riscv/iommu-perf.h
-
-PMU drivers are better placed under drivers/perf/
-
-(the Arm SMMUv3 PMU driver lives there, for example).
-
-Will
+>  drivers/pmdomain/apple/pmgr-pwrstate.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/drivers/pmdomain/apple/pmgr-pwrstate.c b/drivers/pmdomain/apple/pmgr-pwrstate.c
+> index 9467235110f4654e00ab96c25e160e125ef0f3e5..82c33cf727a825d2536644d2fe09c0282acd1ef8 100644
+> --- a/drivers/pmdomain/apple/pmgr-pwrstate.c
+> +++ b/drivers/pmdomain/apple/pmgr-pwrstate.c
+> @@ -306,6 +306,7 @@ static int apple_pmgr_ps_probe(struct platform_device *pdev)
+>  }
+>
+>  static const struct of_device_id apple_pmgr_ps_of_match[] = {
+> +       { .compatible = "apple,t8103-pmgr-pwrstate" },
+>         { .compatible = "apple,pmgr-pwrstate" },
+>         {}
+>  };
+>
+> --
+> 2.51.0
+>
