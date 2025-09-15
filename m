@@ -1,102 +1,110 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB2C626F2AB;
-	Mon, 15 Sep 2025 05:48:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DEA426F47D
+	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 06:32:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757915310; cv=none; b=jBC9Sa18I1JnUSQojO5FPucKvWHEvzQlSSuamCNg+FoWMzXIigqxM6NtOKkENADFcSzeFrvEKEn6WidQ2OyNjNlXAfB/JX/Opmalkv6OU0G6OPb8LkM8QWnRe+ByQQWlW39roJLyIc+SBlfIbhPRdL+CDBM9R8tKhkT8omRt0ck=
+	t=1757917927; cv=none; b=dxheSh5Zgphtg5P7aDyMKLOcmIWeljBpkvhraWcurPy06g8Sk0meftcitS8UbzMWkTbGzcHhxdLarMd33Gy4PYWwL4ciLyVZSdgLhhAwEb/d6zPljYAkkh8uR8bVqnd69DHu1rey8EYs7RxisC/0Vap7gM4BwpmQglRBDIttSdE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757915310; c=relaxed/simple;
-	bh=pNhpXvcF7LKn5UVncvyxPjpBkffgzOi8e5YEIYnOU1E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WQO1WxIcjcXexOBbXkXYd/q/9ClYEreE6eR77lKTJArsRAbzdwHjzwAtfiw8Kubd0qRX+CbnN2lfL1al7aw8/yXwNgmS+yi+2q0WA0yDHz9e6MqvzP2hMCuO5JcJosbRk87voRU1vxX4iwCdBfRoHc3C5tAN0hwfxiClHwna1wM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nHe7Ty6+; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1757917927; c=relaxed/simple;
+	bh=BtxIc01N/Av8yQlrBO3Eetrd1//r2n+8p/EQabYge+Y=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ES6RAtKNtwByAHdaKkUab1kadjMR7X6VdT6NteK5iyl2idt/BMjoV7g3nwLCis7PIVrDE1nVmIbauiOE9c2CwGo01IZSy4tP14kkr6zERrgZhl2z/kR849tDSWgGogQ1gBytWKihPBwZfFkIye5/ppi6cCF5BZXMd6seJHcQcHA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KHTqR0Rp; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nHe7Ty6+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9696EC4CEF1;
-	Mon, 15 Sep 2025 05:48:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757915310;
-	bh=pNhpXvcF7LKn5UVncvyxPjpBkffgzOi8e5YEIYnOU1E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nHe7Ty6+c/JGvDY+UydwDMZNts0Mvoe5CmZXEM3wRbXlJQZsiKQbiHX1dqED8BM6L
-	 jhMyqCWP4HV33158JPyukMw9azmtNrGpkymRgEWzH8txAsk0rOblpfGqGH9ecTIJff
-	 SsLxSOkvzP5SEsR+y+RlPv8/wUQ9v3p6CHq91exxQSTUKjsxYQ6lnV1GyfIF3fLnn7
-	 aD6U1ucW6cOBHuGB2utJFKkQvvAjc/DWH2//axsYKrHMDRKhgk/Ut1ZqFbNUGkItPt
-	 mky2sisAv2UghibJpCApHoRxj04wcBuUhqn0dWEmz2sHkq/6x1znCKDKs3Y1Qa1pZc
-	 pNH0C9osgWH6A==
-Date: Sat, 13 Sep 2025 13:19:33 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Alex Mastro <amastro@fb.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	Christoph Hellwig <hch@lst.de>, dri-devel@lists.freedesktop.org,
-	iommu@lists.linux.dev, Jens Axboe <axboe@kernel.dk>,
-	Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-	linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-	linux-mm@kvack.org, linux-pci@vger.kernel.org,
-	Logan Gunthorpe <logang@deltatee.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KHTqR0Rp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1757917926; x=1789453926;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=BtxIc01N/Av8yQlrBO3Eetrd1//r2n+8p/EQabYge+Y=;
+  b=KHTqR0RpHdnBuc9IDfDIi96LaS3eeb390kU1r/s2F8704bzHb1Gxsj6L
+   Uq8tB8zJIPHSWR0g+kcZmDvwVce7qu0YNZkjADZSH0PLRwGZ4KGh3G3SK
+   vBX0ZrtPdZc7Cl0FR/ngITU5DptVRhP921R/Lf9E/8mpU60poZWXSau7r
+   xCDpryKlGMO3fWCyf/cCjqOvTEDVqJcDbkRx3GxdszvqQQf9/cv9KuqDv
+   Ghk1jdXFGBiSfqnlcCXWJZuLb03Si4Xb075NlmEy3XN+zfSPkda1KZ6Sr
+   naKh3hWrTC7cEcJ8lWtkvLY+ruJTRLutG7Zqj7F3I/BHaQ79myNBn44Nz
+   g==;
+X-CSE-ConnectionGUID: NDg/+XwfQQSdIEPEUCTOrw==
+X-CSE-MsgGUID: bZr5g1N3SEexFZaoGlf24g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11553"; a="60099058"
+X-IronPort-AV: E=Sophos;i="6.18,265,1751266800"; 
+   d="scan'208";a="60099058"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Sep 2025 23:32:05 -0700
+X-CSE-ConnectionGUID: LyCIui8rROScJpJUqxqMNQ==
+X-CSE-MsgGUID: 79S5PAXlQPaHzn7WH30cbQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,265,1751266800"; 
+   d="scan'208";a="179698419"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by orviesa005.jf.intel.com with ESMTP; 14 Sep 2025 23:32:02 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v1 10/10] vfio/pci: Add dma-buf export support for MMIO
- regions
-Message-ID: <20250913101933.GW341237@unreal>
-References: <cover.1754311439.git.leon@kernel.org>
- <5e043d8b95627441db6156e7f15e6e1658e9d537.1754311439.git.leon@kernel.org>
- <aMRsoUx/NH/Dspm9@devgpu015.cco6.facebook.com>
+	Kevin Tian <kevin.tian@intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Joel Granados <joel.granados@kernel.org>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	stable@vger.kernel.org
+Subject: [PATCH 1/1] iommu/vt-d: PRS isn't usable if PDS isn't supported
+Date: Mon, 15 Sep 2025 14:29:46 +0800
+Message-ID: <20250915062946.120196-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aMRsoUx/NH/Dspm9@devgpu015.cco6.facebook.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Sep 12, 2025 at 11:55:29AM -0700, Alex Mastro wrote:
-> On Mon, Aug 04, 2025 at 04:00:45PM +0300, Leon Romanovsky wrote:
-> > +static void dma_ranges_to_p2p_phys(struct vfio_pci_dma_buf *priv,
-> > +				   struct vfio_device_feature_dma_buf *dma_buf,
-> > +				   struct vfio_region_dma_range *dma_ranges)
-> > +{
-> > +	struct pci_dev *pdev = priv->vdev->pdev;
-> > +	phys_addr_t pci_start;
-> > +	int i;
-> > +
-> > +	pci_start = pci_resource_start(pdev, dma_buf->region_index);
-> > +	for (i = 0; i < dma_buf->nr_ranges; i++) {
-> > +		priv->phys_vec[i].len = dma_ranges[i].length;
-> > +		priv->phys_vec[i].paddr += pci_start + dma_ranges[i].offset;
-> 
-> Is the intent really to += paddr? I would have expected a plain assignment.
+The specification, Section 7.10, "Software Steps to Drain Page Requests &
+Responses," requires software to submit an Invalidation Wait Descriptor
+(inv_wait_dsc) with the Page-request Drain (PD=1) flag set, along with
+the Invalidation Wait Completion Status Write flag (SW=1). It then waits
+for the Invalidation Wait Descriptor's completion.
 
-In this specific case, there is no difference, because phys_vec is
-initialized to 0, but It needs to be "=" and not "+=".
+However, the PD field in the Invalidation Wait Descriptor is optional, as
+stated in Section 6.5.2.9, "Invalidation Wait Descriptor":
 
-> 
-> > +		priv->size += priv->phys_vec[i].len;
-> > +	}
-> > +	priv->nr_ranges = dma_buf->nr_ranges;
-> > +}
-> 
-> ...
-> 
-> > +	priv->phys_vec = kcalloc(get_dma_buf.nr_ranges, sizeof(*priv->phys_vec),
-> > +				 GFP_KERNEL);
-> > +	if (!priv->phys_vec) {
-> > +		ret = -ENOMEM;
-> > +		goto err_free_priv;
-> > +	}
-> > +
-> > +	priv->vdev = vdev;
-> > +	dma_ranges_to_p2p_phys(priv, &get_dma_buf, dma_ranges);
-> 
+"Page-request Drain (PD): Remapping hardware implementations reporting
+ Page-request draining as not supported (PDS = 0 in ECAP_REG) treat this
+ field as reserved."
+
+This implies that if the IOMMU doesn't support the PDS capability, software
+can't drain page requests and group responses as expected.
+
+Do not enable PCI/PRI if the IOMMU doesn't support PDS.
+
+Reported-by: Joel Granados <joel.granados@kernel.org>
+Closes: https://lore.kernel.org/r/20250909-jag-pds-v1-1-ad8cba0e494e@kernel.org
+Fixes: 66ac4db36f4c ("iommu/vt-d: Add page request draining support")
+Cc: stable@vger.kernel.org
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 9c3ab9d9f69a..92759a8f8330 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -3812,7 +3812,7 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 			}
+ 
+ 			if (info->ats_supported && ecap_prs(iommu->ecap) &&
+-			    pci_pri_supported(pdev))
++			    ecap_pds(iommu->ecap) && pci_pri_supported(pdev))
+ 				info->pri_supported = 1;
+ 		}
+ 	}
+-- 
+2.43.0
+
