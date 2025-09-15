@@ -1,33 +1,73 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 292973FBB3;
-	Mon, 15 Sep 2025 07:13:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9E922F9980
+	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 09:41:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757920430; cv=none; b=S+kp2uJ+nuuOtwMPZvQW5dwJrgf+4ChJiGznVisRlIgw5eGUS2bkJcO/xw0KYMyJQOr3x7H2xBdgRo1e6GoRsSfLlvQo33LE9RdBdtQ8fTaTvoB05YJRwMYjCQjHOGYfP6x9dPWAmT4kGuN7B9RzNOzFGyLRJNLZEytX1uU51Jg=
+	t=1757929313; cv=none; b=NWX8QIk667o8L1gCAG8eAvCvot71MAGHL/Sfrgs93dz/TqYE27Za8/ybz4fXZmC47vqC3uJOcUekDidn8K9WJxao8vzdBj/FraTqSY/k0c//kPkAJjENfV9YIdpM3gatjIaAdUnPZJ1ZrBrPGjwWtbgzIzzQUNLb1bCsyLEaAZs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757920430; c=relaxed/simple;
-	bh=RBstruI8aqugkuKemrcCOfrfs1zaZlQtORPCGRJvYzc=;
+	s=arc-20240116; t=1757929313; c=relaxed/simple;
+	bh=bpFMZabaBpAY2pP5TxRVkzX6A/el9BHedG8sx0ri/pA=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=kjnt4r5qD4VDmNwevo5T+2n117iE+aSzai9OMYQMLMIGv4yc+c7Mpg5Z/6HJncE5TiJhiMJ0K9fw4x2gSXSH7T1v4mdHI5dJirybaFfHcU7eqjl1Rj+JNrzJjALyI4ApR7EK5QIBZKONh4wmtYAEEa0t1413K1Bkha6dnHgPyrM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c/Y1rC2R; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=oESFthJ4SJd+LsVUvu1odk7sn4SqShsh2+Ip6ki//B1Bzt/U9D6rSR0p8e1HNqOxPoccOhW5Da8NZ70oQtlDAa4lZj5nYm4HPhr+S2DJ8j/vXLIGApwGo2HXTAjP/LEcBUbYj48xM/wUmcnru2OS/UBYxP8jfHOITzLk8Q3gQnc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=MHRdwX7i; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c/Y1rC2R"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97EF1C4CEF1;
-	Mon, 15 Sep 2025 07:13:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757920429;
-	bh=RBstruI8aqugkuKemrcCOfrfs1zaZlQtORPCGRJvYzc=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=c/Y1rC2RXw5SHanCMfXuzcRpXdyyZbTe3o+eCac2xnhgaJJhUHQahwsK4bjh6uurl
-	 xFwWBUJE5QxdUV/Y57+UZVXbOmaaaQcEUJvpgI9s8VzbGMhKrUSAPNcxvBCYq28Xrh
-	 wMzYcKrdQZ3HmVEtydAqCFL2v/pQ0q1l/4lSEtS3n+KxJXyEK0zsl9S+4vRpVHudEa
-	 mR+gT+ljkgnoHnoXnm6jq2NzZtAbJq0elpa5HeMOacW2JbJdMQk1y7gV+kB72yeHA7
-	 CQRs0e3Kvw9+NfjW7kfeJ7zcdBRgTKb4oXmN93oGtUnKRcOq5NqO4kOClDq1yaXP09
-	 9FLOT3xeB0Oqg==
-Message-ID: <1c16121a-36a6-4101-9a2c-d45547c6ea0a@kernel.org>
-Date: Mon, 15 Sep 2025 09:13:44 +0200
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="MHRdwX7i"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1757929309;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=uyyAmT26WPY63DOQqTvlGR3GzEVA1MQHKPqxpl3/fSQ=;
+	b=MHRdwX7iH1mNGB0WToY8QFgNel7eOPQhBKVmSI30KScbIs+jHSU5GPajKjmiXUzJ/beuv9
+	fG2peb5R1SKHgkN1xPwVCXnN+LVu7tkf4jN/Em+twg2fdvccnnbXhI5w158UlHXCArhZND
+	GvBvZCv/dF/DFI7+XczkiaYWs7ozra4=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-218-CQvwC2IgMba3jGE0lT4xEw-1; Mon, 15 Sep 2025 05:41:48 -0400
+X-MC-Unique: CQvwC2IgMba3jGE0lT4xEw-1
+X-Mimecast-MFC-AGG-ID: CQvwC2IgMba3jGE0lT4xEw_1757929307
+Received: by mail-wm1-f72.google.com with SMTP id 5b1f17b1804b1-45f28552927so15168535e9.2
+        for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 02:41:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757929307; x=1758534107;
+        h=content-transfer-encoding:in-reply-to:autocrypt:content-language
+         :from:references:cc:to:subject:user-agent:mime-version:date
+         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=uyyAmT26WPY63DOQqTvlGR3GzEVA1MQHKPqxpl3/fSQ=;
+        b=UbjmsDXNGB+ijUIeot1GCVtNyZcDjm/O5ML9BTX+E27K2QtznC6Enex/hM/+e0bJfe
+         AnsDsd07dgaG4ZjPS2CfS+uwn5kyi7c4lVXcnCVnH/m1gUqnBRzdimS4zozq3DY0hApi
+         VkSJWgwnUdvil2uNwDc9KWGJ7OVghroSFBuYjlmv22RpNd6Y0lW+INLsBeENb2oWMOee
+         arH3fCqLTOO72q+Sj17UQ6fGEgvjRmjfQdLG0y9yp9U6x5nBedYtuBNIXtXsrh3JPp2M
+         /E+sjSopZH7H3tfZXffwkH6TW7qRTX6H9Faz119PwYwKBCkWcGyHaAAw0spOFreE76/L
+         8ESg==
+X-Forwarded-Encrypted: i=1; AJvYcCVuD+D3VCvCDxcEncAFFcisGZc/r7y6Yne4Zz3nrS69COhu8uCEWeE5QcSYoOiNoERwwBLp2g==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxfP1RaLCXHojiRAQyIzCPcmYjSkYEuxeOUhsOyarGVPdeKbJjH
+	2YtanRH0Qhp0Nu2HkX/5L5GiDI1keiDCS2yYbnRymo48GnIZQ6BYFIKGQYQyToiHO99FCbxUS/l
+	vNwEdzfEQ8NPqbqanR/hM8Ms3Jx3LbEax8n2h5srDldGz9ahKkmCA2FVc
+X-Gm-Gg: ASbGnctKCiJrPTqHQ2OsfYz7Vqd7tB4tbU6QcC39Fc5OXn3Uh0M3UYzfVRG/Tj4nQ9B
+	RbDE7+ojHAItKJ3PujD99jAErG7JHqMwFWIDeoIZUGTlESgFt0q2Ys/dnu1Puf/cT4lQvCr+GqR
+	JaAXIBx+0EoN84vtvM0WU6We3TApELmPGjZL0uxnLPn7jkwvUmpdMEIa4w9zutXg+Ft8jsy/aqt
+	cmjMBxuDJ9u99wtoBBRrZazvvCXYzDPl89ezqopUuGZSObbhbZPzmYtORWaQKo9qvqM1ORNI0Nx
+	UmjbZ0IVrWp+cCyi4jEIwyiEwX4Kv+R9z3z31EQVE+8ertjNMlGnp1SlcHPjs/5z51qewUPZld4
+	R9Zs=
+X-Received: by 2002:a05:6000:22c1:b0:3da:d8a1:9b86 with SMTP id ffacd0b85a97d-3e765a09221mr8615338f8f.50.1757929307298;
+        Mon, 15 Sep 2025 02:41:47 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IFg3xxaOKspn1hA6O93v4fHlqqQJyEimS5ZxAfU8EHz2MjAiPIfjWh2uApK5fHPxe09sU8QnA==
+X-Received: by 2002:a05:6000:22c1:b0:3da:d8a1:9b86 with SMTP id ffacd0b85a97d-3e765a09221mr8615288f8f.50.1757929306566;
+        Mon, 15 Sep 2025 02:41:46 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:280:24f0:576b:abc6:6396:ed4a? ([2a01:e0a:280:24f0:576b:abc6:6396:ed4a])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3ebc49f7ebbsm660792f8f.51.2025.09.15.02.41.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Sep 2025 02:41:46 -0700 (PDT)
+Message-ID: <835a9022-aca1-49ec-a704-578a4b3c5bbd@redhat.com>
+Date: Mon, 15 Sep 2025 11:41:44 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -35,123 +75,236 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] iommu/exynos: Implement register set and fault
- handling on SysMMU v9
-To: "myunggeun.ji" <myunggeun.ji@samsung.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Alim Akhtar <alim.akhtar@samsung.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev
-Cc: Jongho Park <jongho0910.park@samsung.com>,
- kiisung lee <kiisung.lee@samsung.com>
-References: <20250915051320.3378957-1-myunggeun.ji@samsung.com>
- <CGME20250915051106epcas2p1c1bdb06ec2ec65aad8a96ffe155ed8b6@epcas2p1.samsung.com>
- <20250915051320.3378957-2-myunggeun.ji@samsung.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20250915051320.3378957-2-myunggeun.ji@samsung.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH v3 00/11] Fix incorrect iommu_groups with PCIe ACS
+To: Jason Gunthorpe <jgg@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ linux-pci@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+ Lu Baolu <baolu.lu@linux.intel.com>, Donald Dutile <ddutile@redhat.com>,
+ galshalom@nvidia.com, Joerg Roedel <jroedel@suse.de>,
+ Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org, maorg@nvidia.com,
+ patches@lists.linux.dev, tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
+References: <0-v3-8827cc7fc4e0+23f-pcie_switch_groups_jgg@nvidia.com>
+From: =?UTF-8?Q?C=C3=A9dric_Le_Goater?= <clg@redhat.com>
+Autocrypt: addr=clg@redhat.com; keydata=
+ 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
+ uVKe8BVz4atMOoktmt0GWTOC8P4=
+In-Reply-To: <0-v3-8827cc7fc4e0+23f-pcie_switch_groups_jgg@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: 7AU_uHZAwsDGJs57bg1MxfGvysAIbGY2XxrK5jVQme8_1757929307
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US, fr
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 15/09/2025 07:13, myunggeun.ji wrote:
-> +
->  static struct exynos_iommu_domain *to_exynos_domain(struct iommu_domain *dom)
->  {
->  	return container_of(dom, struct exynos_iommu_domain, domain);
-> @@ -522,19 +571,26 @@ static void __sysmmu_get_version(struct sysmmu_drvdata *data)
->  	ver = readl(data->sfrbase + REG_MMU_VERSION);
->  
->  	/* controllers on some SoCs don't report proper version */
-> +
+On 9/5/25 20:06, Jason Gunthorpe wrote:
+> The series patches have extensive descriptions as to the problem and
+> solution, but in short the ACS flags are not analyzed according to the
+> spec to form the iommu_groups that VFIO is expecting for security.
+> 
+> ACS is an egress control only. For a path the ACS flags on each hop only
+> effect what other devices the TLP is allowed to reach. It does not prevent
+> other devices from reaching into this path.
+> 
+> For VFIO if device A is permitted to access device B's MMIO then A and B
+> must be grouped together. This says that even if a path has isolating ACS
+> flags on each hop, off-path devices with non-isolating ACS can still reach
+> into that path and must be grouped gother.
+> 
+> For switches, a PCIe topology like:
+> 
+>                                 -- DSP 02:00.0 -> End Point A
+>   Root 00:00.0 -> USP 01:00.0 --|
+>                                 -- DSP 02:03.0 -> End Point B
+> 
+> Will generate unique single device groups for every device even if ACS is
+> not enabled on the two DSP ports. It should at least group A/B together
+> because no ACS means A can reach the MMIO of B. This is a serious failure
+> for the VFIO security model.
+> 
+> For multi-function-devices, a PCIe topology like:
+> 
+>                    -- MFD 00:1f.0 ACS not supported
+>    Root 00:00.00 --|- MFD 00:1f.2 ACS not supported
+>                    |- MFD 00:1f.6 ACS = REQ_ACS_FLAGS
+> 
+> Will group [1f.0, 1f.2] and 1f.6 gets a single device group. However from
+> a spec perspective each device should get its own group, because ACS not
+> supported can assume no loopback is possible by spec.
+> 
+> For root-ports a PCIe topology like:
+>                                           -- Dev 01:00.0
+>    Root  00:00.00 --- Root Port 00:01.0 --|
+>                    |                      -- Dev 01:00.1
+> 		  |- Dev 00:17.0
+> 
+> Previously would group [00:01.0, 01:00.0, 01:00.1] together if there is no
+> ACS capability in the root port.
+> 
+> While ACS on root ports is underspecified in the spec, it should still
+> function as an egress control and limit access to either the MMIO of the
+> root port itself, or perhaps some other devices upstream of the root
+> complex - 00:17.0 perhaps in this example.
+> 
+> Historically the grouping in Linux has assumed the root port routes all
+> traffic into the TA/IOMMU and never bypasses the TA to go to other
+> functions in the root complex. Following the new understanding that ACS is
+> required for internal loopback also treat root ports with no ACS
+> capability as lacking internal loopback as well.
+> 
+> There is also some confusing spec language about how ACS and SRIOV works
+> which this series does not address.
+> 
+> 
+> This entire series goes further and makes some additional improvements to
+> the ACS validation found while studying this problem. The groups around a
+> PCIe to PCI bridge are shrunk to not include the PCIe bridge.
+> 
+> The last patches implement "ACS Enhanced" on top of it. Due to how ACS
+> Enhanced was defined as a non-backward compatible feature it is important
+> to get SW support out there.
+> 
+> Due to the potential of iommu_groups becoming wider and thus non-usable
+> for VFIO this should go to a linux-next tree to give it some more
+> exposure.
+> 
+> I have now tested this a few systems I could get:
+> 
+>   - Various Intel client systems:
+>     * Raptor Lake, with VMD enabled and using the real_dev mechanism
+>     * 6/7th generation 100 Series/C320
+>     * 5/6th generation 100 Series/C320 with a NIC MFD quirk
+>     * Tiger Lake
+>     * 5/6th generation Sunrise Point
 
-Please clean up your patch before posting.
 
->  	if (ver == 0x80000001u)
->  		data->version = MAKE_MMU_VER(1, 0);
->  	else
->  		data->version = MMU_RAW_VER(ver);
->  
-> -	dev_dbg(data->sysmmu, "hardware version: %d.%d\n",
-> -		MMU_MAJ_VER(data->version), MMU_MIN_VER(data->version));
-> +	if (data->version != 0x91)
-> +		dev_err(data->sysmmu, "hardware version: %d.%d\n",
-> +			MMU_MAJ_VER(data->version), MMU_MIN_VER(data->version));
-> +	else if (data->version == 0x91)
-> +		dev_err(data->sysmmu, "hardware version: %d.%d\n",
-> +			MMU_MAJ_VER_V9(data->version), MMU_MIN_VER_V9(data->version));
->  
-> -	if (MMU_MAJ_VER(data->version) < 5) {
-> +	if (data->version == 0x91) {
-> +		data->variant = &sysmmu_v9_vm_variant;
-> +	} else if (MMU_MAJ_VER(data->version) < 5) {
->  		data->variant = &sysmmu_v1_variant;
->  	} else if (MMU_MAJ_VER(data->version) < 7) {
->  		data->variant = &sysmmu_v5_variant;
-> -	} else {
-> +	} else if (MMU_MAJ_VER(data->version) < 9) {
->  		if (__sysmmu_has_capa1(data))
->  			__sysmmu_get_vcr(data);
->  		if (data->has_vcr)
-> @@ -763,10 +819,9 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
->  	if (IS_ERR(data->pclk))
->  		return PTR_ERR(data->pclk);
->  
-> -	if (!data->clk && (!data->aclk || !data->pclk)) {
-> -		dev_err(dev, "Failed to get device clock(s)!\n");
-> -		return -ENOSYS;
-> -	}
-> +	/* There is no clock information after v9 */
+FWIW, I have tested this series on some of the systems I use
+for upstream VFIO  :
 
-There is, you just missed to implement it.
+   Intel(R) Xeon(R) Silver 4310 CPU @ 2.10GHz
+   Intel(R) Xeon(R) Silver 4514Y
+   Intel(R) 12th Gen Core(TM) i7-12700K
+   Neoverse-N1
 
-> +	if (!data->clk && (!data->aclk || !data->pclk))
-> +		dev_warn(dev, "Failed to get device clock(s)!\n");
->  
-Best regards,
-Krzysztof
+I didn't see any regressions on IOMMU grouping like on v2.
+Please ping me if you need more info on the PCI topology.
+
+I also booted an IBM/S390 z16 LPAR with VFs to complete the
+experiment. All good.
+
+
+
+>    The 6/7th gen system has a root port without an ACS capability and it
+>    becomes ungrouped as described above.
+> 
+>    All systems have changes, the MFDs in the root complex all become ungrouped.
+> 
+>   - NVIDIA Grace system with 5 different PCI switches from two vendors
+>     Bug fix widening the iommu_groups works as expected here
+> 
+> This is on github: https://github.com/jgunthorpe/linux/commits/pcie_switch_groups
+> 
+> v3:
+>   - Rebase to v6.17-rc4
+>   - Drop the quirks related patches
+>   - Change the MFD logic to process no ACS cap as meaning no internal
+>     loopback. This avoids creating non-isolated groups for MFD root ports in
+>     common AMD and Intel systems
+>   - Fix matching MFDs to ignore SRIOV VFs
+>   - Fix some kbuild splats
+> v2: https://patch.msgid.link/r/0-v2-4a9b9c983431+10e2-pcie_switch_groups_jgg@nvidia.com
+>   - Revise comments and commit messages
+>   - Rename struct pci_alias_set to pci_reachable_set
+>   - Make more sense of the special bus->self = NULL case for SRIOV
+>   - Add pci_group_alloc_non_isolated() for readability
+>   - Rename BUS_DATA_PCI_UNISOLATED to BUS_DATA_PCI_NON_ISOLATED
+>   - Propogate BUS_DATA_PCI_NON_ISOLATED downstream from a MFD in case a MFD
+>     function is a bridge
+>   - New patches to add pci_mfd_isolation() to retain more cases of narrow
+>     groups on MFDs with missing ACS.
+>   - Redescribe the MFD related change as a bug fix. For a MFD to be
+>     isolated all functions must have egress control on their P2P.
+> v1: https://patch.msgid.link/r/0-v1-74184c5043c6+195-pcie_switch_groups_jgg@nvidia.com
+> 
+> Cc: galshalom@nvidia.com
+> Cc: tdave@nvidia.com
+> Cc: maorg@nvidia.com
+> Cc: kvm@vger.kernel.org
+> Cc: Ceric Le Goater" <clg@redhat.com>
+
+Curiously, I didn't get the email. weird.
+
+Cheers,
+
+C.
+
+
+
+> Cc: Donald Dutile <ddutile@redhat.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> 
+> Jason Gunthorpe (11):
+>    PCI: Move REQ_ACS_FLAGS into pci_regs.h as PCI_ACS_ISOLATED
+>    PCI: Add pci_bus_isolated()
+>    iommu: Compute iommu_groups properly for PCIe switches
+>    iommu: Organize iommu_group by member size
+>    PCI: Add pci_reachable_set()
+>    iommu: Compute iommu_groups properly for PCIe MFDs
+>    iommu: Validate that pci_for_each_dma_alias() matches the groups
+>    PCI: Add the ACS Enhanced Capability definitions
+>    PCI: Enable ACS Enhanced bits for enable_acs and config_acs
+>    PCI: Check ACS DSP/USP redirect bits in pci_enable_pasid()
+>    PCI: Check ACS Extended flags for pci_bus_isolated()
+> 
+>   drivers/iommu/iommu.c         | 510 +++++++++++++++++++++++-----------
+>   drivers/pci/ats.c             |   4 +-
+>   drivers/pci/pci.c             |  73 ++++-
+>   drivers/pci/search.c          | 274 ++++++++++++++++++
+>   include/linux/pci.h           |  46 +++
+>   include/uapi/linux/pci_regs.h |  18 ++
+>   6 files changed, 759 insertions(+), 166 deletions(-)
+> 
+> 
+> base-commit: b320789d6883cc00ac78ce83bccbfe7ed58afcf0
+
