@@ -1,135 +1,164 @@
-Received: from mail-yx1-f51.google.com (mail-yx1-f51.google.com [74.125.224.51])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 513D32FF66C
-	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 10:50:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D06A12FC00A
+	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 11:10:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757933434; cv=none; b=tOQ6mMGYuEh5ISxdTUmnVuLEtWbQ6rwBleQt6dw7bpBu6lSOV4tEu8oULeGs3Y4wf6WJ6+fzZMbrR6BrJM3aAYZdVSTivD8AqcrWvNayYTqbyFJB4eSzSuIconfgpXr4m9bnERgdTG8gIqdkDkv3f60veSi56CsfIuxjcOOeDGo=
+	t=1757934653; cv=none; b=E0vdS2dVDy+whXUNIBP8icNHjQbk6kJ+fHgeer41xKtT1sz5KgmxPtTXYRBu5IcZEk3YBv5IPNlPh77elXrBs1AE3GM3aXc6kht7p4PFK1cBcJKfvwQdUAtzDSuri4aiwFnNaP+t9Vu8OJ2qfUYOU19viJz9nkF5DdIXYiFCxOo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757933434; c=relaxed/simple;
-	bh=kARumPxqfmMMWgp1NvnsY+8lw/OMkVWPKeLFtKSIlME=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KIilW2HGcbFcEuUhOfaG9zJ1etuUqh7hkPv31S8Boly560ON5dicYUsYbDA7q1WPPUuZSXlYBddW80po8NfDVzZzqye6mPZIuvSRG/bRttA/oyxWxL9MsvDPFYy51CeFzXyxoQ7aFzTPMdepcq5XwnPoV5zYgpFLKTkX65Leu54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=PdDmhKg5; arc=none smtp.client-ip=74.125.224.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1757934653; c=relaxed/simple;
+	bh=UHoIfOvz+vIBIU0zeRizh5s/hNzNrzFEeDKSaEZGi+8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZWfnlt9eP+MluDx7jlHXbbaREiD+dI7qO5zzId4TXhR/5oBPlcWadY/zyJHECOKoaRFNJbFJ8Rtu7f1uffUsHZuGh3JTK54SPFZtRgSYiZ0VmsQtVInRmCPv9UhDG6bCYWsIsfEg+YCpTwF/kIgw3l1q/W2geSzlDBF/TAoaKV4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kTEqITfg; arc=none smtp.client-ip=209.85.214.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PdDmhKg5"
-Received: by mail-yx1-f51.google.com with SMTP id 956f58d0204a3-61381743635so2090401d50.1
-        for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 03:50:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kTEqITfg"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-24cca557085so344815ad.1
+        for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 04:10:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1757933430; x=1758538230; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=a3UAx19vK1YiNrAi97n0gU/rRiRg+M8i65mS2Lnx+jM=;
-        b=PdDmhKg50+zvmw2zhIg1E75SE3AUBEiisfVlanLLHNuUQu0O0TQsajnlTMWdNzrFnc
-         MkKUExgc+t5Z6Rt7BsLSwdHs07vJ9GYjm06W36OxBSpGTK7/QiGstUVIm2ErfRUK/jxL
-         v1hke5+sDG81Tk0dUH373Ae+j4ygtVivxtSY65tRuY+F8MAyCMjusHbXo6JdxwWX8z9E
-         IPTKNcTWJ2iofFpucGc+BWb+HMpMO7Vmsq2ivDmhWw7Fq2au6aVIBjGN0fqGP1hBRVD8
-         fTtfLBvbJe1FG6fsi/PtwB9uKaUauvrii4a6KsABVQV+BgZ27gmmYW/RUNZTCzxfYqED
-         0FPw==
+        d=google.com; s=20230601; t=1757934651; x=1758539451; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=yGVw+dkj5nfYxmjH5LY4ZgVFCM7KXPpME6hBvdzBkGc=;
+        b=kTEqITfghKf8X41dIukhQDfiJLng/zzCCUeudQH/DjrJIhkNyV3TbOjNJZsbRpg4un
+         BDL/5i2S3uV+r5j588ghOeMUpoY8wHfG7lHSQJmakavonDvpsiT3Lxe0boNhCCme1MR+
+         QCoOiw0l+wFKieYhaOdtTA1Soc4DdvpfNxlJE561rM6U0l7I5A4UTwa7Wqxxx/HXmMMv
+         YxLy1cYvZ0PdoSaxBzALQkw41vp4xLSEhQjq3s1VdlIYxegsAaML8YVsOLpnVfKmmGbX
+         QIPA5dLmDdzxmLSm9n8Ga8nBP99YiXatqo7jA4Pj/IG5V9kh9+i3emj947fpTSxHWHtN
+         BkMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757933430; x=1758538230;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=a3UAx19vK1YiNrAi97n0gU/rRiRg+M8i65mS2Lnx+jM=;
-        b=SKJaLnWxewqPm/Lv28jwN6prd6PTwrKlnaL64fKeVBxW1O2HjZBm8swoXI1SHecmRx
-         G/Q27MuNTqNZsBxeFIMjtGFra55ZvqaK65V5zExJjTPZVi6E+85dzj8lCmI0G/iaOezk
-         Ge/x4KAMlVr1aqeH41B+OCm6AclYsYJmROYLwz5YbY+uQzAOJiRoE3g9h7+paSEBxf1u
-         OeP+BpD4DNntbULtpig8LyUpSbP8rifoJH2DYM4paUCIVyiTmRaPcPf6Sbq6KFboZzX0
-         oGJrXuHglMNOMKtNYYqj0wjdWNFeNO0xeKjuiMx/Hva4yas7vl2vLR+zw7so5DTRJQpj
-         999w==
-X-Forwarded-Encrypted: i=1; AJvYcCVZaySPa9QbyyVKD1xMUp90XUbxl8C277hZOFLBdYaGReMdoUVaANkywqR5brdBkd65MFmX2g==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzPFqfyg0tbVJCPky+RzBtfl5akCI/vF/L/Nm3gN2gFyJSoglg+
-	4i88YwTZTEc0hdDI+twnLa7Fp01ZxJpXC8blL4fixPIV9wkY0CRCqB2NwVvIUH06+UqmFoaNo3o
-	gQD3U/ZrNu1WadtivexQZOEsxdlXy1tLVer/qQVh5Hw==
-X-Gm-Gg: ASbGncspJIgdBcTU3DcGeINGWqXXXEVUYZjMXZ0gn8k4Wvq+LedQAi+DTI6dTXEUGaJ
-	QIlszMAvH6C4j78kJNJrNHMu1oLofb9NiVAkaQwDUxT4+XyrYyIjGl3vTxr0y91bLvDauBq5R0K
-	nwYongZBfP2+W28FSdsOsxUp5LXHxzK0utG1i+LT8wo0gES0H5VXmb4w62igCRjh8NYuuqawZHl
-	6DkapYavoVu7akOXZ8=
-X-Google-Smtp-Source: AGHT+IGDEYgOKM3gJ8Zzlityz/syLNE9FRvDAqAmupyu9aSeveyvR7FHQhtEilEP6qYlMPKL0ImuzwqqE0dGUhFDiNI=
-X-Received: by 2002:a05:690c:3706:b0:722:7d35:e0c2 with SMTP id
- 00721157ae682-730626d2dd2mr106799857b3.2.1757933429679; Mon, 15 Sep 2025
- 03:50:29 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1757934651; x=1758539451;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=yGVw+dkj5nfYxmjH5LY4ZgVFCM7KXPpME6hBvdzBkGc=;
+        b=Y+IL1fj7DB9sDs77s7ldD/ieSXt3IlEnVNJGoEVSwRkTYopIcheGa+dvCVu1GsODNn
+         rKBY9jyeA7RLn2099YQJgLWvLu+M2jgpQFkny6mfBx0kMsZniaJVKAOJH4Lt+CV2C5OR
+         xDurTly+wxSEzP/seIoM6PxfB5vUvUQyRvcWPAykewtGfK95SrZZjv9vmAjHn1ikz5JV
+         9EfvVusqmuR6LEa2TDxQ//OBNzCq5U1+Lx0NvH8oWP300tRo3jUdceQmzgJj19Wx1o50
+         JhUHxlhMvbbGaYkA6KKuybGLRZlNz3cSl/CaBWlxyiOxxIzjW86l9HCdWClVwGbk+Xb7
+         pLfQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUOWtQ+gHU/IoCeXMg5PEJVhOPz1Z8VDG5IpgQxDuXn6iwXYcTVIZok/XgiIic/wev40X8QbA==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxehgAZVTEdpu4gosqQi4g/oGibz5ej+o4KdCn3hVasC3Ondg9f
+	2l71Q44g6ubbhSivPPoN4bfb9ctIhuoe6WFE4FE7121siBYbTN+98PS3eIcrNTL5nQ==
+X-Gm-Gg: ASbGncsyjSK6fzDL85FNTli1O5C1b9nQVdCLJ2TzFp08vZRVwaURU6xB9VAeO3TBbqC
+	TzqINSyfH2M13JC//fSrWrl6gEmM7E0hJdy+XGYwkhXg5TVl3kIfUkatpLf7La70m4obX8JPKUA
+	oIK30a2nwhku6a+BxYWsHS5wRDODU1SV+EKtgTGdLPQMhy4Pe+plfIOD/wDA9njXOMfCYfsHAFZ
+	fuw+2eZ5rsXMNqiX7y4h93S8cJXt+0FfHzVqYH0wo2NntSehZ4Wg8s59LB+HMZUv2hHMgBCebpO
+	il5ZJaLFhe4U2J6+vRvlk5JlOc64t8erCRK6GACKMY6YpLaIlrA6SggHxpaaBJWwnk6PE4umipN
+	MvNJ1NvioBoSfjImoJePO+pJtN69YUWa/4xcdZ84hBruEba36PnBvE09JZq9sb9y9AL+vzpCBtw
+	==
+X-Google-Smtp-Source: AGHT+IGldm5kVklLwWI+W0luGJJTP/Fy8rtLyArOHHmGPz2Td1ttKApb5Hb7I95Cb8Bwiryv5S6sUQ==
+X-Received: by 2002:a17:903:1b08:b0:24b:1b9d:58f1 with SMTP id d9443c01a7336-260a27af356mr6498255ad.17.1757934650882;
+        Mon, 15 Sep 2025 04:10:50 -0700 (PDT)
+Received: from google.com (23.178.142.34.bc.googleusercontent.com. [34.142.178.23])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-26175efc667sm64942635ad.112.2025.09.15.04.10.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Sep 2025 04:10:50 -0700 (PDT)
+Date: Mon, 15 Sep 2025 11:10:43 +0000
+From: Pranjal Shrivastava <praan@google.com>
+To: Marc Zyngier <maz@kernel.org>
+Cc: Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>,
+	linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
+	yuzenghui@huawei.com, catalin.marinas@arm.com, robin.murphy@arm.com,
+	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
+	jgg@ziepe.ca, mark.rutland@arm.com
+Subject: Re: [PATCH v4 03/28] KVM: arm64: pkvm: Add pkvm_time_get()
+Message-ID: <aMf0M72p8AEEoTny@google.com>
+References: <20250819215156.2494305-1-smostafa@google.com>
+ <20250819215156.2494305-4-smostafa@google.com>
+ <aMA2ugNakqrA1Pg0@willie-the-truck>
+ <86frcvd3hb.wl-maz@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20250828-dt-apple-t6020-v1-0-507ba4c4b98e@jannau.net> <20250828-dt-apple-t6020-v1-3-507ba4c4b98e@jannau.net>
-In-Reply-To: <20250828-dt-apple-t6020-v1-3-507ba4c4b98e@jannau.net>
-From: Ulf Hansson <ulf.hansson@linaro.org>
-Date: Mon, 15 Sep 2025 12:49:53 +0200
-X-Gm-Features: Ac12FXxZCAZGblY8VwFHa1GJ1rGV08p3Fv5KI-OAzvQkX2G4ZDMKiAukPP3wanY
-Message-ID: <CAPDyKFr9dAvP7U3dZ_LFw8YxcvJ6n95OKKLYpntUarqdfUqjWQ@mail.gmail.com>
-Subject: Re: [PATCH 03/37] pmdomain: apple: Add "apple,t8103-pmgr-pwrstate"
-To: Janne Grunau <j@jannau.net>
-Cc: Sven Peter <sven@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>, Neal Gompa <neal@gompa.dev>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Hector Martin <marcan@marcan.st>, "Rafael J. Wysocki" <rafael@kernel.org>, 
-	Viresh Kumar <viresh.kumar@linaro.org>, Thomas Gleixner <tglx@linutronix.de>, 
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Linus Walleij <linus.walleij@linaro.org>, Mark Kettenis <kettenis@openbsd.org>, 
-	Andi Shyti <andi.shyti@kernel.org>, Jassi Brar <jassisinghbrar@gmail.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>, 
-	Sasha Finkelstein <fnkl.kernel@gmail.com>, Marcel Holtmann <marcel@holtmann.org>, 
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>, Johannes Berg <johannes@sipsolutions.net>, 
-	van Spriel <arend@broadcom.com>, Lee Jones <lee@kernel.org>, 
-	=?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
-	Stephen Boyd <sboyd@kernel.org>, Wim Van Sebroeck <wim@linux-watchdog.org>, 
-	Guenter Roeck <linux@roeck-us.net>, Michael Turquette <mturquette@baylibre.com>, 
-	=?UTF-8?Q?Martin_Povi=C5=A1er?= <povik+lin@cutebit.org>, 
-	Vinod Koul <vkoul@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
-	Marc Zyngier <maz@kernel.org>, Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>, 
-	Christoph Hellwig <hch@lst.de>, Sagi Grimberg <sagi@grimberg.me>, Jaroslav Kysela <perex@perex.cz>, 
-	Takashi Iwai <tiwai@suse.com>, asahi@lists.linux.dev, 
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-gpio@vger.kernel.org, linux-i2c@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, linux-bluetooth@vger.kernel.org, 
-	linux-wireless@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	linux-watchdog@vger.kernel.org, linux-clk@vger.kernel.org, 
-	dmaengine@vger.kernel.org, linux-sound@vger.kernel.org, 
-	linux-spi@vger.kernel.org, linux-nvme@lists.infradead.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <86frcvd3hb.wl-maz@kernel.org>
 
-On Thu, 28 Aug 2025 at 16:01, Janne Grunau <j@jannau.net> wrote:
->
-> After discussion with the devicetree maintainers we agreed to not extend
-> lists with the generic compatible "apple,pmgr-pwrstate" anymore [1]. Use
-> "apple,t8103-pmgr-pwrstate" as base compatible as it is the SoC the
-> driver and bindings were written for.
->
-> [1]: https://lore.kernel.org/asahi/12ab93b7-1fc2-4ce0-926e-c8141cfe81bf@kernel.org/
->
-> Signed-off-by: Janne Grunau <j@jannau.net>
+On Tue, Sep 09, 2025 at 04:56:16PM +0100, Marc Zyngier wrote:
+> On Tue, 09 Sep 2025 15:16:26 +0100,
+> Will Deacon <will@kernel.org> wrote:
+> > 
+> > On Tue, Aug 19, 2025 at 09:51:31PM +0000, Mostafa Saleh wrote:
+> > > Add a function to return time in us.
+> > > 
+> > > This can be used from IOMMU drivers while waiting for conditions as
+> > > for SMMUv3 TLB invalidation waiting for sync.
+> > > 
+> > > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> > > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > > ---
+> > >  arch/arm64/kvm/hyp/include/nvhe/pkvm.h |  2 ++
+> > >  arch/arm64/kvm/hyp/nvhe/setup.c        |  4 ++++
+> > >  arch/arm64/kvm/hyp/nvhe/timer-sr.c     | 33 ++++++++++++++++++++++++++
+> > >  3 files changed, 39 insertions(+)
+> 
+> [...]
+> 
+> > > +#define SEC_TO_US 1000000
+> > > +
+> > > +int pkvm_timer_init(void)
+> > > +{
+> > > +	timer_freq = read_sysreg(cntfrq_el0);
+> > > +	/*
+> > > +	 * TODO: The highest privileged level is supposed to initialize this
+> > > +	 * register. But on some systems (which?), this information is only
+> > > +	 * contained in the device-tree, so we'll need to find it out some other
+> > > +	 * way.
+> > > +	 */
+> > > +	if (!timer_freq || timer_freq < SEC_TO_US)
+> > > +		return -ENODEV;
+> > > +	return 0;
+> > > +}
+> > 
+> > Right, I think the frequency should be provided by the host once the arch
+> > timer driver has probed successfully. Relying on CNTFRQ isn't viable imo.
+> 
 
-Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+Are platforms are using DT to change this value?
+Because I think TF-A mandates [1] this value to be set, from the docs:
 
-Kind regards
-Uffe
+BL31 programs the CNTFRQ_EL0 register with the clock frequency of the
+system counter, which is provided by the platform. 
 
-> ---
->  drivers/pmdomain/apple/pmgr-pwrstate.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/pmdomain/apple/pmgr-pwrstate.c b/drivers/pmdomain/apple/pmgr-pwrstate.c
-> index 9467235110f4654e00ab96c25e160e125ef0f3e5..82c33cf727a825d2536644d2fe09c0282acd1ef8 100644
-> --- a/drivers/pmdomain/apple/pmgr-pwrstate.c
-> +++ b/drivers/pmdomain/apple/pmgr-pwrstate.c
-> @@ -306,6 +306,7 @@ static int apple_pmgr_ps_probe(struct platform_device *pdev)
->  }
->
->  static const struct of_device_id apple_pmgr_ps_of_match[] = {
-> +       { .compatible = "apple,t8103-pmgr-pwrstate" },
->         { .compatible = "apple,pmgr-pwrstate" },
->         {}
->  };
->
-> --
-> 2.51.0
->
+Even the TF-A porting guide [2] mandates it to be set.
+
+> We can always patch the value in, à la kimage_voffset. But it really
+> begs the question: who is their right mind doesn't set CNTFRQ_EL0 to
+> something sensible? Why should we care about supporting such
+> contraption?
+> 
+> I'd be happy to simply disable KVM when CNTFRQ_EL0 is misprogrammed,
+> or that the device tree provides a clock frequency. Because there is
+> no good way to support a guest in that case.
+> 
+
+And even if someone choses not to use TF-A, IIUC, doesn't the aarch64
+linux boot protocol[3] mandate CNTFRQ must be programmed with the timer
+frequency? As per the doc:
+
+Before jumping into the kernel, the following conditions must be met:
+
+[...]
+
+- Architected timers
+  CNTFRQ must be programmed with the timer frequency and CNTVOFF must
+  be programmed with a consistent value on all CPUs.
+
+Thanks,
+Praan
+
+[1] https://trustedfirmware-a.readthedocs.io/en/latest/design/firmware-design.html
+[2] https://trustedfirmware-a.readthedocs.io/en/latest/porting-guide.html#function-plat-get-syscnt-freq2-mandatory
+[3] https://www.kernel.org/doc/Documentation/arm64/booting.txt
