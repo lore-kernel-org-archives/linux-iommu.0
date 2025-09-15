@@ -1,164 +1,130 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D06A12FC00A
-	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 11:10:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F5E820C463;
+	Mon, 15 Sep 2025 11:31:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757934653; cv=none; b=E0vdS2dVDy+whXUNIBP8icNHjQbk6kJ+fHgeer41xKtT1sz5KgmxPtTXYRBu5IcZEk3YBv5IPNlPh77elXrBs1AE3GM3aXc6kht7p4PFK1cBcJKfvwQdUAtzDSuri4aiwFnNaP+t9Vu8OJ2qfUYOU19viJz9nkF5DdIXYiFCxOo=
+	t=1757935870; cv=none; b=TU/cPRT4zSCHSn93119iqr53hPCca2uEG6kBOtfq+lhdKYfYGX9TtJOTcMtHpySdGkmpgK5ElODOzmg7rxcxSI8pD/gWwecvLEjKBrm67ZXVyrElrqyxcaXMHTzX5g1KoFcVEm9r9kjvpSasCLUVGnCu7noJ9vIQEHNKQme3BIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757934653; c=relaxed/simple;
-	bh=UHoIfOvz+vIBIU0zeRizh5s/hNzNrzFEeDKSaEZGi+8=;
+	s=arc-20240116; t=1757935870; c=relaxed/simple;
+	bh=QzcC5e9vACLhf+imSTtVn3GQfBZaWBylU9DXjf8uhe4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZWfnlt9eP+MluDx7jlHXbbaREiD+dI7qO5zzId4TXhR/5oBPlcWadY/zyJHECOKoaRFNJbFJ8Rtu7f1uffUsHZuGh3JTK54SPFZtRgSYiZ0VmsQtVInRmCPv9UhDG6bCYWsIsfEg+YCpTwF/kIgw3l1q/W2geSzlDBF/TAoaKV4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kTEqITfg; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=FQ1lhz0E1UQrvCmVzZVH9UlKxRcLn/vL6O/qDy3cZGf6ofdCyoSsSO4XOMcV/U6qnw+BCqAmbkXCyFPfjvhwkV6BfSM4Aae+WEkr5tcmPblDD3kuk652b2Yu8NY1TCfWL4A8Fp8F772HtciEDnYJuigeK8Cjam3P6gODQGXvso0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=enjxnp3T; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kTEqITfg"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-24cca557085so344815ad.1
-        for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 04:10:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1757934651; x=1758539451; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=yGVw+dkj5nfYxmjH5LY4ZgVFCM7KXPpME6hBvdzBkGc=;
-        b=kTEqITfghKf8X41dIukhQDfiJLng/zzCCUeudQH/DjrJIhkNyV3TbOjNJZsbRpg4un
-         BDL/5i2S3uV+r5j588ghOeMUpoY8wHfG7lHSQJmakavonDvpsiT3Lxe0boNhCCme1MR+
-         QCoOiw0l+wFKieYhaOdtTA1Soc4DdvpfNxlJE561rM6U0l7I5A4UTwa7Wqxxx/HXmMMv
-         YxLy1cYvZ0PdoSaxBzALQkw41vp4xLSEhQjq3s1VdlIYxegsAaML8YVsOLpnVfKmmGbX
-         QIPA5dLmDdzxmLSm9n8Ga8nBP99YiXatqo7jA4Pj/IG5V9kh9+i3emj947fpTSxHWHtN
-         BkMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757934651; x=1758539451;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=yGVw+dkj5nfYxmjH5LY4ZgVFCM7KXPpME6hBvdzBkGc=;
-        b=Y+IL1fj7DB9sDs77s7ldD/ieSXt3IlEnVNJGoEVSwRkTYopIcheGa+dvCVu1GsODNn
-         rKBY9jyeA7RLn2099YQJgLWvLu+M2jgpQFkny6mfBx0kMsZniaJVKAOJH4Lt+CV2C5OR
-         xDurTly+wxSEzP/seIoM6PxfB5vUvUQyRvcWPAykewtGfK95SrZZjv9vmAjHn1ikz5JV
-         9EfvVusqmuR6LEa2TDxQ//OBNzCq5U1+Lx0NvH8oWP300tRo3jUdceQmzgJj19Wx1o50
-         JhUHxlhMvbbGaYkA6KKuybGLRZlNz3cSl/CaBWlxyiOxxIzjW86l9HCdWClVwGbk+Xb7
-         pLfQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUOWtQ+gHU/IoCeXMg5PEJVhOPz1Z8VDG5IpgQxDuXn6iwXYcTVIZok/XgiIic/wev40X8QbA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxehgAZVTEdpu4gosqQi4g/oGibz5ej+o4KdCn3hVasC3Ondg9f
-	2l71Q44g6ubbhSivPPoN4bfb9ctIhuoe6WFE4FE7121siBYbTN+98PS3eIcrNTL5nQ==
-X-Gm-Gg: ASbGncsyjSK6fzDL85FNTli1O5C1b9nQVdCLJ2TzFp08vZRVwaURU6xB9VAeO3TBbqC
-	TzqINSyfH2M13JC//fSrWrl6gEmM7E0hJdy+XGYwkhXg5TVl3kIfUkatpLf7La70m4obX8JPKUA
-	oIK30a2nwhku6a+BxYWsHS5wRDODU1SV+EKtgTGdLPQMhy4Pe+plfIOD/wDA9njXOMfCYfsHAFZ
-	fuw+2eZ5rsXMNqiX7y4h93S8cJXt+0FfHzVqYH0wo2NntSehZ4Wg8s59LB+HMZUv2hHMgBCebpO
-	il5ZJaLFhe4U2J6+vRvlk5JlOc64t8erCRK6GACKMY6YpLaIlrA6SggHxpaaBJWwnk6PE4umipN
-	MvNJ1NvioBoSfjImoJePO+pJtN69YUWa/4xcdZ84hBruEba36PnBvE09JZq9sb9y9AL+vzpCBtw
-	==
-X-Google-Smtp-Source: AGHT+IGldm5kVklLwWI+W0luGJJTP/Fy8rtLyArOHHmGPz2Td1ttKApb5Hb7I95Cb8Bwiryv5S6sUQ==
-X-Received: by 2002:a17:903:1b08:b0:24b:1b9d:58f1 with SMTP id d9443c01a7336-260a27af356mr6498255ad.17.1757934650882;
-        Mon, 15 Sep 2025 04:10:50 -0700 (PDT)
-Received: from google.com (23.178.142.34.bc.googleusercontent.com. [34.142.178.23])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-26175efc667sm64942635ad.112.2025.09.15.04.10.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Sep 2025 04:10:50 -0700 (PDT)
-Date: Mon, 15 Sep 2025 11:10:43 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Marc Zyngier <maz@kernel.org>
-Cc: Will Deacon <will@kernel.org>, Mostafa Saleh <smostafa@google.com>,
-	linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	oliver.upton@linux.dev, joey.gouly@arm.com, suzuki.poulose@arm.com,
-	yuzenghui@huawei.com, catalin.marinas@arm.com, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	jgg@ziepe.ca, mark.rutland@arm.com
-Subject: Re: [PATCH v4 03/28] KVM: arm64: pkvm: Add pkvm_time_get()
-Message-ID: <aMf0M72p8AEEoTny@google.com>
-References: <20250819215156.2494305-1-smostafa@google.com>
- <20250819215156.2494305-4-smostafa@google.com>
- <aMA2ugNakqrA1Pg0@willie-the-truck>
- <86frcvd3hb.wl-maz@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="enjxnp3T"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27EF8C4CEF1;
+	Mon, 15 Sep 2025 11:31:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757935869;
+	bh=QzcC5e9vACLhf+imSTtVn3GQfBZaWBylU9DXjf8uhe4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=enjxnp3T3aa2QbtFVaP77F8qnVNwGsHTah35oipbcDYffDLh7ydf/fZl9SFH9FoH7
+	 qmtBB+yThdTeYbe23Hkgch3Rqy3AR5Cj8RReccwYfUtowRhbgQ617wNAjiXGmdOkF+
+	 ogGgbQZ5RAMhS0PFoPIuZwjHYQ72RVN83k+2x4F9zlDLbNw2wYmdY34/oy7fD7AzT2
+	 GgFpUX/TS/4YGKXoYq2ALA5XqKvq78fXljCYXCpU1EPuo1Pr5FhIx+ek5D4ZJKb+qo
+	 Jtc3HAWKZWElsqTo8VHNYVeCzNuM9E/y90g6fKVwjUllCtslykGNkvOxcMCRQOE5A3
+	 8nIESYL7wX3rw==
+Date: Mon, 15 Sep 2025 13:30:56 +0200
+From: Joel Granados <joel.granados@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
+	Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	stable@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu/vt-d: PRS isn't usable if PDS isn't supported
+Message-ID: <zkgvbw42g25a47nyydehxismaup6eh4kygqbdw7fk54kxze7j3@lrczardwx2ma>
+References: <20250915062946.120196-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="xkfaowbxmqkhdxqk"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <86frcvd3hb.wl-maz@kernel.org>
+In-Reply-To: <20250915062946.120196-1-baolu.lu@linux.intel.com>
 
-On Tue, Sep 09, 2025 at 04:56:16PM +0100, Marc Zyngier wrote:
-> On Tue, 09 Sep 2025 15:16:26 +0100,
-> Will Deacon <will@kernel.org> wrote:
-> > 
-> > On Tue, Aug 19, 2025 at 09:51:31PM +0000, Mostafa Saleh wrote:
-> > > Add a function to return time in us.
-> > > 
-> > > This can be used from IOMMU drivers while waiting for conditions as
-> > > for SMMUv3 TLB invalidation waiting for sync.
-> > > 
-> > > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > > ---
-> > >  arch/arm64/kvm/hyp/include/nvhe/pkvm.h |  2 ++
-> > >  arch/arm64/kvm/hyp/nvhe/setup.c        |  4 ++++
-> > >  arch/arm64/kvm/hyp/nvhe/timer-sr.c     | 33 ++++++++++++++++++++++++++
-> > >  3 files changed, 39 insertions(+)
-> 
-> [...]
-> 
-> > > +#define SEC_TO_US 1000000
-> > > +
-> > > +int pkvm_timer_init(void)
-> > > +{
-> > > +	timer_freq = read_sysreg(cntfrq_el0);
-> > > +	/*
-> > > +	 * TODO: The highest privileged level is supposed to initialize this
-> > > +	 * register. But on some systems (which?), this information is only
-> > > +	 * contained in the device-tree, so we'll need to find it out some other
-> > > +	 * way.
-> > > +	 */
-> > > +	if (!timer_freq || timer_freq < SEC_TO_US)
-> > > +		return -ENODEV;
-> > > +	return 0;
-> > > +}
-> > 
-> > Right, I think the frequency should be provided by the host once the arch
-> > timer driver has probed successfully. Relying on CNTFRQ isn't viable imo.
-> 
 
-Are platforms are using DT to change this value?
-Because I think TF-A mandates [1] this value to be set, from the docs:
+--xkfaowbxmqkhdxqk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-BL31 programs the CNTFRQ_EL0 register with the clock frequency of the
-system counter, which is provided by the platform. 
+On Mon, Sep 15, 2025 at 02:29:46PM +0800, Lu Baolu wrote:
+> The specification, Section 7.10, "Software Steps to Drain Page Requests &
+> Responses," requires software to submit an Invalidation Wait Descriptor
+> (inv_wait_dsc) with the Page-request Drain (PD=3D1) flag set, along with
+> the Invalidation Wait Completion Status Write flag (SW=3D1). It then waits
+> for the Invalidation Wait Descriptor's completion.
+>=20
+> However, the PD field in the Invalidation Wait Descriptor is optional, as
+> stated in Section 6.5.2.9, "Invalidation Wait Descriptor":
+>=20
+> "Page-request Drain (PD): Remapping hardware implementations reporting
+>  Page-request draining as not supported (PDS =3D 0 in ECAP_REG) treat this
+>  field as reserved."
+>=20
+> This implies that if the IOMMU doesn't support the PDS capability, softwa=
+re
+> can't drain page requests and group responses as expected.
+>=20
+> Do not enable PCI/PRI if the IOMMU doesn't support PDS.
 
-Even the TF-A porting guide [2] mandates it to be set.
+After giving the spec another look, this is probably the way to go.
+However the PDS also mentions that DT must be set. Should we check
+ecap_dev_iotlb_support(iommu->ecap)  as well?
+>=20
+> Reported-by: Joel Granados <joel.granados@kernel.org>
+> Closes: https://lore.kernel.org/r/20250909-jag-pds-v1-1-ad8cba0e494e@kern=
+el.org
+> Fixes: 66ac4db36f4c ("iommu/vt-d: Add page request draining support")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/intel/iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 9c3ab9d9f69a..92759a8f8330 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -3812,7 +3812,7 @@ static struct iommu_device *intel_iommu_probe_devic=
+e(struct device *dev)
+>  			}
+> =20
+>  			if (info->ats_supported && ecap_prs(iommu->ecap) &&
+> -			    pci_pri_supported(pdev))
+> +			    ecap_pds(iommu->ecap) && pci_pri_supported(pdev))
+Should this be
+ +			    ecap_dev_iotlb_support(iommu->ecap) && ecap_pds(iommu->ecap) && pc=
+i_pri_supported(pdev))
 
-> We can always patch the value in, à la kimage_voffset. But it really
-> begs the question: who is their right mind doesn't set CNTFRQ_EL0 to
-> something sensible? Why should we care about supporting such
-> contraption?
-> 
-> I'd be happy to simply disable KVM when CNTFRQ_EL0 is misprogrammed,
-> or that the device tree provides a clock frequency. Because there is
-> no good way to support a guest in that case.
-> 
+???
 
-And even if someone choses not to use TF-A, IIUC, doesn't the aarch64
-linux boot protocol[3] mandate CNTFRQ must be programmed with the timer
-frequency? As per the doc:
+best
+--=20
 
-Before jumping into the kernel, the following conditions must be met:
+Joel Granados
 
-[...]
+--xkfaowbxmqkhdxqk
+Content-Type: application/pgp-signature; name="signature.asc"
 
-- Architected timers
-  CNTFRQ must be programmed with the timer frequency and CNTVOFF must
-  be programmed with a consistent value on all CPUs.
+-----BEGIN PGP SIGNATURE-----
 
-Thanks,
-Praan
+iQGzBAABCgAdFiEErkcJVyXmMSXOyyeQupfNUreWQU8FAmjH+OYACgkQupfNUreW
+QU8tWAv/WKbKPjcF8wb32eYKjaM0GTbR11XC8V8fp8NWN0LqGna0s3PluSa1d5WH
+koUSQteUJLTzYvw6FLcLEzQzWhArehDJnVLfLTyWJimcalAmMoUvJk5lhe4mNKx6
+jhOr5wg0On1IRpn6wyfs1TNOFHRrG0FDKc99g1kr2G6bx68B/FGHgc9uvyTo3RTz
+JTcDqAzScropRwNM0ttHig7k7IvOBVmdH5zlJJns5XUMizxbsZpPLxEtWWRl8rPk
+IgkzWV/fRJgeVT8vdGJDlrlr51RjeyUNEHD1q5QNfNsOUHbIgYfMU9Pe6mSrm4li
+O3sdNGF4Dc3Utvc4oMslsX1YIUuXr6lo8I5J2SQ5XY7Pqak9VA3zoRVL2IEu1poE
+60AOIEkGQxlpbFcHYmbpC7YZXTVlXlrTSIlaeftQFTLi9ZAmPYmLpk+buFpEn13o
+sqC74xU/LpbQ9abKojD1hH46MsAKqy55qhsA+edMuORW1X6zTNYJce2NO1P5GIMt
+oM9UKjvw
+=xqSR
+-----END PGP SIGNATURE-----
 
-[1] https://trustedfirmware-a.readthedocs.io/en/latest/design/firmware-design.html
-[2] https://trustedfirmware-a.readthedocs.io/en/latest/porting-guide.html#function-plat-get-syscnt-freq2-mandatory
-[3] https://www.kernel.org/doc/Documentation/arm64/booting.txt
+--xkfaowbxmqkhdxqk--
