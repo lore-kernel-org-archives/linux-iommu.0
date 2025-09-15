@@ -1,86 +1,85 @@
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AACC2BEFFA
-	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 22:58:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FF872D73A2
+	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 22:59:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757977091; cv=none; b=UYsXcjQs0xFRm1uej3Wen3D8uphvCEHd/qZ5TCnScXslY8YFeF5OQfMzO/aVrye5qWVpUXxYSXkDfxQU7tjoGJ7LsqA5LE9zrWcop8+NcQLPfRdR3d2YBy1aFpPNUOWBJK9O9tXWFIxssbP5wuR4+Mg1xUfAdu3GKX73LHOzdVI=
+	t=1757977182; cv=none; b=L/dqvsK+uO32SQ5pVlHRFI9AvSj6700OOJb3fWQCJ7ek4FbsKze9by27HgDoUHOv9zufsJcT7bOgSURGWcDPYJyjceDefF8zD5N+us1Duw+0QqWzEb2UyB5y1ZD4njAtW+qQfY+txU1RLSXkCf7csKx6YAtLOSJ3uYSljZSfdDM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757977091; c=relaxed/simple;
-	bh=wrK0nRI1OFbp71bXaT4X7O+VxQvKh8LBne/yxp6bWq8=;
+	s=arc-20240116; t=1757977182; c=relaxed/simple;
+	bh=MK5JK3spo/EOu3EOGiWabvNo20/6TWA7kB8HJQJpF0w=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lt6hAEHkwf35zbWZrZdHlxMTF4yDpQT9kKA5ejTM1kH0zFNLllNkuVBCWS0YjdEIkgCMwWMs+3nhh+OeWcjXiYGdrOVi8129F4wi64IIaNYVFGq1YlKfmhxKBHecT0sMye8hsL8wHrIdRWOUr432ipOMSFt0i7lPtWvIegCw08A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=VriJ7Cxj; arc=none smtp.client-ip=209.85.210.46
+	 Content-Type:Content-Disposition:In-Reply-To; b=twa52rmjExOOXTnaUIf9kqAcFYvxB3mZGFhFLJjdDOo2tBWkU2CCrg+wa11WDIlGb40LRR50dmuRWmMPMIs/34PNCDDEqE7i2VeIqds9noZV+L1bAVdJAmecyjgSooVO6QiOVEljCt7/ECEMYSTRGcrt7XwX3SiPahgIH33f7jk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=fWmsDw+0; arc=none smtp.client-ip=209.85.160.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="VriJ7Cxj"
-Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-75763558ae1so606210a34.3
-        for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 15:58:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="fWmsDw+0"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-32be6bc21c7so3568411fac.3
+        for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 15:59:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1757977088; x=1758581888; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1757977180; x=1758581980; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=kB/Wi+cRe7K/Xl4jkmaNXOwfB7KCAKUI6vYOHIxWVl4=;
-        b=VriJ7CxjmB9Vh2EP55WMka1+KJzYlaAM9U+IBG4FrE9YqI/KafIi02MUQz22CTp5jT
-         YvQfRqO0mxvw3daguF8DoT62MLqK6mafX4I/NaTa/pMzYhRVLz5SlKWnzmzS1lDdkgbr
-         dOcutdUZM1QsmyT2lWAPHjwurAXOTLjvuqO0VXg28X5F6HJjYEtpfURizQFACHRrZ4FV
-         xuQuyEYNMTI6pChoK9yC0guyZJuuwSRzz0EdzJElcd+/mcqpKAZkVv8EbjHWdecJe4XN
-         Re2dzpE6eFrK0oK+f13k9xgReSkYxKGhJN3w/soKdNR37Rw9gouavjeQkfauja4DeQyn
-         yReg==
+        bh=aTycPbHlQtDBtjOvMMJ3SZ6uhxSiX0nO4WaEP9DHCc4=;
+        b=fWmsDw+0BnE6NlLN4FV5inuTo9wkAiB5/45Sug+E7vC50uID9CJRlfxsXuX6NyVlcV
+         CgmEnjLvdbHoyO12fBSpqIA75mTse5vh5Jg2BqKBL5tr4oipCg78Rt7mpCGwiOACqo69
+         lBG+Jh/4vjBoS2jc0rU4PG1BUPZVueXkCNJZkFs/0698ObeAdMV9XTnDzjI1SPyVY7ps
+         Ko3WUySEuh/Ymkf3iB0qLsW1tfs2bcw8NRm/2Fv59NZd0OJQeNd/FFiqeILwoe3vLuGr
+         pNVEsxMT9jC1ZeojWBl+6YfV5+XqDxmjVxzTOoEooX+xh7GiPgfL0jDfG/C6cc3wjoR/
+         bncw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757977088; x=1758581888;
+        d=1e100.net; s=20230601; t=1757977180; x=1758581980;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=kB/Wi+cRe7K/Xl4jkmaNXOwfB7KCAKUI6vYOHIxWVl4=;
-        b=roxghxJq0AZ7C8X0DE8EmxBcjLAjPeD+fQDs7E8r06qj1/VDyfs8mUy8mFanAAN2uh
-         4mmv8nCSxpLRPFgZwA006qxc2g6levI6HwMppMzYTAB+tWx3Q5ZOzK7bUaXOfSAa+mlP
-         Q6XgwmYRORMTEn4VTPLx/4Uj8IFQ/PWBu3oT/p3KDpwcCnSSVRzImcv+mSBVaNTbqf0R
-         h6geZAxvbqQcmqbUeQl9tjg6G30sQ1qGnyLIQmYes/sa9XD4L0OW++6ft647V22SS88e
-         q0dsRSHabRsuK6ESdYFBvaWBmpMU3QSZOFrhpYCRknkJ0JjtKC0vXQx1kTsh25geHgB3
-         o09A==
-X-Forwarded-Encrypted: i=1; AJvYcCXAUYqSQSykBmX9cIVgjkkm5DwopkwgPlHWRvKtAbKp77vDklajro613/v05uZFrdGvftpGaw==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxYQq8qwjF6RJbQRXuqHbxCjRVbUXszz5xYqxBNxEJfeAkqLPyI
-	p5IWIsZmbyAWHNEN9YJoQ9gnnSp2lkRC2oCALQEfvIixw8QWSE7ukxjtQRMrb5AAc3M=
-X-Gm-Gg: ASbGncsySZv017Z6WzLPT9qW1w9C8ytvqZUaiAjfAsHLl7ut4JLFP3sAXOAYFwCDouo
-	DGV84lLYafFmrKivOUPNkjwniJrsiuyB0nBmBqJNw7m+Jt8LjqmBrTNqCrubyaU24GUixZVzcQL
-	wXO1HS9Tf8YrHbkp5kMg3SWH1/dQpvp1G9TuNacfcy7J1HrPM5F4+rbNc9u4PDxkJt7t9cPM2B2
-	sDZtwFrIXiRbtz6H3XFizwuwrFPXATQxp+4+k89we/Y5K77MWPB0xnRoYw4alxBkWoLJAc4mV0X
-	kzqQJ05tLNHzdUHg5WCmLwD3ud0lQwAiQpsarD9+wfQ1J8Slvzi/dkgI8Ttaqo1zRiPZjvAZWif
-	E7UQpv2I=
-X-Google-Smtp-Source: AGHT+IGSUOqb+ed31/428rqH5N5OvGqFxlxhfX8elAayaMc3UDw7hqxF226u18IdPmrznlxbRNVzmA==
-X-Received: by 2002:a05:6830:6adf:b0:745:9dc8:8dfd with SMTP id 46e09a7af769-7535638abb1mr9759182a34.35.1757977088588;
-        Mon, 15 Sep 2025 15:58:08 -0700 (PDT)
+        bh=aTycPbHlQtDBtjOvMMJ3SZ6uhxSiX0nO4WaEP9DHCc4=;
+        b=JtHEhSErL2x5ddZX1m4DcG3wA2JWNmmLqOTVgNaULKAsrP/1xl1t/QbGz8qf3rMgjI
+         mX4lhPHVaQ5uLHhWV8rVYvMEUhXIITL1SKdg2vos2e6FBCl/shy6rX4JieEyHwKM8Whd
+         /VVVeEzWkxolqml/syc0KlHAhMTnuC4pXC3+rbjoBIVxkYd6Fz2ydE7/ePFRobC+jioI
+         EXtIPGEQo4Ac3M5XPzsWjTOjCOzs3Fd89Ax3DhF4J4GfFrmeX6pHw6eTP5p9k0nQCzWB
+         BIP1/Jj5CisNtRyBc6OW7p7KWeWA1PNY9WXXctXndAvAxasbrtdnn0CXLjp83if31FoX
+         +D3A==
+X-Forwarded-Encrypted: i=1; AJvYcCUTUlEhbYIw+9gsfc27W+kD0PYF9JXutie/4nr3sgHTgFjwAnysJHJE50HtPw/AmO0ZrUrgkg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyHQEUqIdsLX5u6pm4v7kybQnXWErTx5vIL9JaoiXOvfAp7QgQT
+	o8gl2MXHmOBhIn+IK5h1RPVuzIvOE1InsXoFUxCDdo6A8ytJzSJHKST6U3JDeB/gJ7o=
+X-Gm-Gg: ASbGncvwPhCzPozXAEkSxYG/gpzUb3t7dT3MLm+EGxkRc629W4wq+KlKzjMPrDgnFHy
+	E6WweclisNHoinymcPqfg1myVdXg4i54ycZHtlyJrMNQCJnNjuODEP6oI2nTZhhqnF0/IPShhMV
+	6cagEXbYcKIniIl08SWvpFmBpNjns1SRyFIgGVws8fP1kCGWrCjLu93javwN28WhIHDDl0Ks1n+
+	7TtETwd49XcF5fJqCkSHTvmC4pdyIWS8vcIgBWH8wmHF/R5K95GtwA3L6Ls/RPyEkPthB/BDnz7
+	y1mEclY7SUfv2FIrS6R06iaQLsUx0PtXHdeINC7XtVgeR8cCl+wp0i1I+6FvZepiWYQy0uYmHji
+	MxZn4CzY=
+X-Google-Smtp-Source: AGHT+IHaizr3a2V9CFBUtFDTvOTqaJTANyOfH5v0JTyHH5V9DAauzxISXWz+PQumMIbWbikwaEyCPw==
+X-Received: by 2002:a05:6870:82aa:b0:301:a704:ef1c with SMTP id 586e51a60fabf-32e56bc4018mr7508892fac.25.1757977180618;
+        Mon, 15 Sep 2025 15:59:40 -0700 (PDT)
 Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7524986c872sm3180269a34.15.2025.09.15.15.58.07
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-3317d74fe33sm1565394fac.15.2025.09.15.15.59.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Sep 2025 15:58:07 -0700 (PDT)
+        Mon, 15 Sep 2025 15:59:40 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1uyI98-00000004Yk1-1O1R;
-	Mon, 15 Sep 2025 19:58:06 -0300
-Date: Mon, 15 Sep 2025 19:58:06 -0300
+	id 1uyIAd-00000004YkX-1MrY;
+	Mon, 15 Sep 2025 19:59:39 -0300
+Date: Mon, 15 Sep 2025 19:59:39 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: =?utf-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
-Cc: Nicolas Dufresne <nicolas.dufresne@collabora.com>,
-	Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-	robin.murphy@arm.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, heiko@sntech.de, p.zabel@pengutronix.de,
-	mchehab@kernel.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, kernel@collabora.com,
-	linux-media@vger.kernel.org, Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v9 3/7] iommu: Add verisilicon IOMMU driver
-Message-ID: <20250915225806.GM882933@ziepe.ca>
-References: <20250911155720.180465-1-benjamin.gaignard@collabora.com>
- <20250911155720.180465-4-benjamin.gaignard@collabora.com>
- <vrngq76nnms3jyl5hnxqnkimjc6kil66o6fdyqn5vm3fpovmja@cfynipjw7ktp>
- <694b9ba15cd67f41a38f4a65a3811f035cf8e99d.camel@collabora.com>
- <rt6nvgazcl6mvyy4iuut3n7irf72t7rex2iwabbkuxp7cdvez5@2nanenqgxjdy>
+To: Shyam Saini <shyamsaini@linux.microsoft.com>
+Cc: thierry.reding@gmail.com, robin.murphy@arm.com, robh@kernel.org,
+	joro@8bytes.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	virtualization@lists.linux.dev, will@kernel.org,
+	jacob.pan@linux.microsoft.com, eric.auger@redhat.com,
+	code@tyhicks.com, eahariha@linux.microsoft.com,
+	vijayb@linux.microsoft.com, bboscaccy@linux.microsoft.com,
+	saravanak@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
+	lizhi.hou@amd.com, clement.leger@bootlin.com
+Subject: Re: [PATCH v4 4/4] drivers: iommu: refactor arm_smmu_get_resv_regions
+Message-ID: <20250915225939.GN882933@ziepe.ca>
+References: <20250909154600.910110-1-shyamsaini@linux.microsoft.com>
+ <20250909154600.910110-5-shyamsaini@linux.microsoft.com>
+ <20250909155847.GB882933@ziepe.ca>
+ <20250915162842.GA23954@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -90,28 +89,19 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <rt6nvgazcl6mvyy4iuut3n7irf72t7rex2iwabbkuxp7cdvez5@2nanenqgxjdy>
+In-Reply-To: <20250915162842.GA23954@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
 
-On Sat, Sep 13, 2025 at 07:58:04AM +0200, Jörg Rödel wrote:
-> [Adding Will back to Cc]
+On Mon, Sep 15, 2025 at 09:28:42AM -0700, Shyam Saini wrote:
+> > I'm comfortable with this side from the iommu perspective once you get
+> > agreement on the DT representation.
 > 
-> On Fri, Sep 12, 2025 at 01:37:11PM -0400, Nicolas Dufresne wrote:
-> > To me this rejection isn't about Benjamin's driver, all iommu seems to look
-> > alike, so anyone else that would have sent new driver would have face the same
-> > issue.
-> 
-> This is about ignoring comments from one of the IOMMU maintainers. I am not
-> going to merge a driver with open comments/objections[1] from Will (and a few
-> others), so resolve this with him and get his Ack.
+> We haven’t heard back from the DT folks or Thierry. Do you think we
+> should wait a few more days for their feedback, or go ahead and send
+> v5 as an RFC instead?
 
-I would strongly object to trying to share map_pages, unmap_pages,
-iova_to_phys, free and other iommu pt related functions in some
-limited way instead of helping on the much more complete iommu pt
-work. Which is what I said to Will, but for some reason he suggested
-it anyhow.
+It is about normal to wait about another week and then ping them for
+feedback.
 
-Sorry, but it doesn't make sense to complain about duplication in
-drivers and then not help advance one of the biggest projects to
-actually concretely and comprehensively address that duplication.
+Don't send a RFC, you intend your work to be merged.
 
 Jason
