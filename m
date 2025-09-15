@@ -1,232 +1,146 @@
-Received: from BN1PR04CU002.outbound.protection.outlook.com (mail-eastus2azon11010013.outbound.protection.outlook.com [52.101.56.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCC661632C8;
-	Mon, 15 Sep 2025 15:51:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.56.13
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757951521; cv=fail; b=rtwR7Iw1fpDfQ1h9kH13J/Pnyo+TIySP4wLcx9XQSLMfvf7zqQep+PjzB4f37EV11dIBcgkxcYclZfwil2Myb5xpes5SCRrYVXi7Dipbsn8SwboK4L9/WeLVGylbstj+WP2uF7hAjFMkOYA3fVprDMFYo0BPCNoQTxsi+07xqys=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757951521; c=relaxed/simple;
-	bh=N6EaDKmQ42BeYtto7HVwyo7/KzeMR2WbRtUzJjKA1hU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=N8RzRxYa1+Z6ceLaVPhHzCbnCEc8mH2Y0RYhMprOx8E9lEZyyr4Zk5E9+Bl2bsXDQsZpnVHlE7le3PgUI3Y518l6oLaaK/kjMvtBR4kWq15apILwmQTJhhn1l++9CojrRAJjEdS6idsw2FjMGrwlbUKhY4+73NSybRuUpXQbvhc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Knejod/C; arc=fail smtp.client-ip=52.101.56.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BECB27F74B
+	for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 16:28:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.50
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1757953695; cv=none; b=jREGAuoSzR59T0QNY6A36e+lq0ixVPbErlsE7koRKVfi7gCuaOrLN9ddlhesFlQedkJuy5hl9uzdaP7zA82wlR8S/bNZtYOYbNG/nWU5pO6BsXezAp22LlOFzqvlopteceWI8sbpE4ARmwM71gcAJcWN90U6VuK3387MuMFxkNc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1757953695; c=relaxed/simple;
+	bh=12n9Pb+yXcwNFTqQGEMETuHrAQlt2tUiKpfSOPcrC3I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ro/zSjHKC5VltnPlAQ1EuSMZ7I3fbYi0hq3quZ3KIMxD1jf8SkNYmDZc9eymFv5EEd2LltHdM68K8GvImn2SHth8leW+I4sfaOb1vYB0bbuTHF0ezkGb5Lz0HammH0nNjHxyiaR2N3xe91V8hifiGhU4OcB9bi6WtAAK0vuXBZc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=XNTuNo2B; arc=none smtp.client-ip=209.85.219.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Knejod/C"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gaxOr1Jn2+6ctof+b/KS/SKcHnYx2xr77NVuKSVOEaxYIelwN1bCYEBOjK7tOU99KkiyE8tIS4T40pff59q5lSTasCr/i5Tn8L+gTthh2K91fbZHgiUPdzh7bpJKOXqIf6mVrPmM3LOEkgGhcoOEC2XD19zxR1KGcYLaCONaZQr4PF4jtz9TaA7k8L1ELKswInKRopxRp5b7u1tTNWXru+cxZgPAxnY8FTK+U4Z1pUbevELecB43n52nQxIUGtHem5rkllcaVWRfjlsGlIHuXRXkkAQMhy+lf+Llg+FJLYXyoVIx7+YHc2XtXfUTAt4IpyOx+8zjIf9McJcl3p8UmQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kBN8Sw3Vr80Vtq87gJC1Txzeu6R3sjV8QJrd32yXBdY=;
- b=rpptp7Mgn+ipVBi5iwMpzU2viPUltl1kmxxAIaS2DoZ2EjxG7gMm34Xe0VGFV18lnPdfSkRiAaQCepMEyL0mbt+uG6546pKi4pAz+whY1zXEHz1pICGB8Y7WA6/j2gQBMIgSENYz8yhxIobzz3V1cxrNdrJ+Y0Uh47UrMIrmF5bb0w6nr392wWRrJUj31aPx42n2KM4nSLkGO0ZZ2WoBOekSVvZs98rWHI6ib0CaO3yuKmgVTcznDsPJ3w3kQN5NyAn+z3/4wGs5c0n9voNEBZksdwb47duT90HfMhHc8HzelT+JXftHiEihaFSgLlaK1utp84EZ17bjf0L7PWOIlA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kBN8Sw3Vr80Vtq87gJC1Txzeu6R3sjV8QJrd32yXBdY=;
- b=Knejod/CDxc1bjqkB66rRzskvryxiOu0C93xVngrHwpsMlUS9GpGZxcgitIPwK/lPwj9UqRDfAK5I3h6V5v9Rfyaha2k9FQcE53B2jbKik+FwVzaufoqEGu82OsOCLiAY7G4lVI1d5qo0WtgDRFxwO2iOze92Z2PLauZ6ZZxX+NuaYzzgGCoDeMAvUcfasb73OJM3YDC4uF9KztfNjrizOMg+PV5F9scNYrDGHAWwDeGQL71fx7tkkjWxKGaBzqwyd9h1V0GjyslQ/smEd9gj3+nzr1EbmnxwYMYGmbVRoOYb+lFCahByOfFzTLUekQDBpNhhhPxmwX+Vslh8bR10g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from PH7PR12MB5757.namprd12.prod.outlook.com (2603:10b6:510:1d0::13)
- by SA1PR12MB6946.namprd12.prod.outlook.com (2603:10b6:806:24d::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9073.33; Mon, 15 Sep
- 2025 15:51:55 +0000
-Received: from PH7PR12MB5757.namprd12.prod.outlook.com
- ([fe80::f012:300c:6bf4:7632]) by PH7PR12MB5757.namprd12.prod.outlook.com
- ([fe80::f012:300c:6bf4:7632%2]) with mapi id 15.20.9115.020; Mon, 15 Sep 2025
- 15:51:55 +0000
-Date: Mon, 15 Sep 2025 12:51:52 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Jonathan Corbet <corbet@lwn.net>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	Justin Stitt <justinstitt@google.com>,
-	Kevin Tian <kevin.tian@intel.com>, linux-doc@vger.kernel.org,
-	linux-kselftest@vger.kernel.org, llvm@lists.linux.dev,
-	Bill Wendling <morbo@google.com>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <nick.desaulniers+lkml@gmail.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>, Alexey Kardashevskiy <aik@amd.com>,
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
-	James Gowans <jgowans@amazon.com>,
-	Michael Roth <michael.roth@amd.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>, patches@lists.linux.dev
-Subject: Re: [PATCH v5 01/15] genpt: Generic Page Table base API
-Message-ID: <20250915155152.GC1057776@nvidia.com>
-References: <0-v5-116c4948af3d+68091-iommu_pt_jgg@nvidia.com>
- <1-v5-116c4948af3d+68091-iommu_pt_jgg@nvidia.com>
- <aMDzLC9nV47Xvud9@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aMDzLC9nV47Xvud9@nvidia.com>
-X-ClientProxiedBy: BN9P222CA0020.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:408:10c::25) To PH7PR12MB5757.namprd12.prod.outlook.com
- (2603:10b6:510:1d0::13)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="XNTuNo2B"
+Received: by mail-qv1-f50.google.com with SMTP id 6a1803df08f44-765936cbdfeso41092666d6.0
+        for <iommu@lists.linux.dev>; Mon, 15 Sep 2025 09:28:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1757953692; x=1758558492; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=vDAemr4/lmLhb7KTewKWDzn1cjfqOTzFv/5msg8t3TY=;
+        b=XNTuNo2BgkaT70pH91MOtkQ/U5aOi2arANZ3y2UDUIgi4P8jRKG8ovS6kiVWW41QHH
+         tqJzCc49s6MUkQ0B+xY0CZ0TMI0Mu5i1GrOI9Dwn9QcsHRTdFRxXjdGQm7FY8Lv/r45P
+         nrqlyYSCI4RV/AAKGH5T/pHPYwR7FrKxW0Vs7nGQmIiGlaBK56uJNIIbfy0umLECB4Px
+         Ng0NIOYlDsrMRR/k+C7nzAGG5fKibWofsaunN9udB4EA1jwXLAV+/zH+1aDeEQCgKldt
+         uOfD9R0agE47CgJk9yM2aiBORKSsACVDGQTBFWTkVczgc8qGEIf2MYV533C00vL2RNsv
+         fPnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757953692; x=1758558492;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vDAemr4/lmLhb7KTewKWDzn1cjfqOTzFv/5msg8t3TY=;
+        b=mhsVkuTnZNCVYJVUwNBayeE+vs/OCwVNaAciN7QenKggKMSi1gpGriq4luozcaswQn
+         GIQQVz1x2BFMj0QelDGNJ9Psa815XjHggJpjLFcFHswHz9TZ1Si6G8DBvaKFMbaoCNLP
+         B3DlhZwAPnxItczlhdDTJPGfdMOKWjOsRwogYXqezg9Rl41kk7DsBbzuBGAqQg4WJk5g
+         5XkCPWEESIdfzd945SHasoLxiwVUjLxHOmQ0HGFsN+3ULcrMWemo4cXrM2ARL1iDixO5
+         B0hSZ2WFV33p20idj5FQHNG1a/jTpSXbL14TuKiQyLIjAg2zj7jDue5qV6eCftVTHRgH
+         cjmA==
+X-Forwarded-Encrypted: i=1; AJvYcCUPmBg/QZdEhZ1aPrBjnRkHw3CwwMFvCZKMBaQi4iHNe06DKJsUWYDBnNlC1/dwZMaZI5gObw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzP/2GT9D8qX6CZ9A7tD0EvIQRWkxrz+Iyov9uWtQIlWrpJr5p0
+	zcq3ofzNU6B25Ui9pfU+uB2NlkumhiHUpRUEfiCUnIXcRaLp3xWFay3B1f/DgB2cXyk=
+X-Gm-Gg: ASbGncvWfGpGpGNqekSK5k3Y8pxOVqD9EGViCacGKLCa9HTZWkB5EevQzbjM9TeZba1
+	/CjdlXxZxvw9g6VEiHXEhtzfxMdvRwuVbz5gOKthOQIrDLXicuiSn8Mv00P71kpNIldrEMKJpmT
+	vgKVSqEeS1OwNqoO5FI/mDkYqTdm4XOV7AI1Tm06iU8CTUv4ZcT+DxDBJsNumRRxXRR6b7b7Yvj
+	G0NKNVaZpzQTXyWIDFmu6zYIVAmpOMYwe4oThOb0lJ0j/JddZ8qF18giilPuLAxgvfG2gpe0/oL
+	fCOpieNyOKx5HHqRXun4SeRPxi13Bazrs2imPPkOoeGXgIBJbcPn1XbOHuX9rzLZabzND9P89RF
+	e4SLfv042uzt94y5SAw==
+X-Google-Smtp-Source: AGHT+IHXUa+XyZ1S/pis0/NjQwmdYj7V5DxWg4goJxyPrDTodTnzzzbHD2bc6ZPRF/QWzQoUXXlmuQ==
+X-Received: by 2002:a05:6214:21e7:b0:784:4f84:22e9 with SMTP id 6a1803df08f44-7844f84232emr43875496d6.18.1757953692165;
+        Mon, 15 Sep 2025 09:28:12 -0700 (PDT)
+Received: from ziepe.ca ([130.41.10.202])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-76e576ee0fcsm55860646d6.69.2025.09.15.09.28.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Sep 2025 09:28:11 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.97)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1uyC3m-00000004TCU-1UNv;
+	Mon, 15 Sep 2025 13:28:10 -0300
+Date: Mon, 15 Sep 2025 13:28:10 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Qinxin Xia <xiaqinxin@huawei.com>
+Cc: will@kernel.org, robin.murphy@arm.com, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	yangyicong@huawei.com, wangzhou1@hisilicon.com,
+	prime.zeng@hisilicon.com, xuwei5@huawei.com, fanghao11@huawei.com,
+	jonathan.cameron@huawei.com, linuxarm@huawei.com
+Subject: Re: [PATCH 0/2] iommu: Add io_ptdump debug interface for iommu
+Message-ID: <20250915162810.GI882933@ziepe.ca>
+References: <20250814093005.2040511-1-xiaqinxin@huawei.com>
+ <20250902161028.GC184112@ziepe.ca>
+ <f2720f17-5e81-4f69-aaf5-791b47973178@huawei.com>
+ <20250910141547.GD882933@ziepe.ca>
+ <bb4c3f0b-06da-46e6-9769-efe3dc00e9fb@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5757:EE_|SA1PR12MB6946:EE_
-X-MS-Office365-Filtering-Correlation-Id: ef9c967d-fc9d-4f74-faa2-08ddf46fcb82
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?ughF5GZb/XWwQ/DZryHWY82qKhqzAlL4EpCjX36PoSK6W/uhcnKXfnewCbrG?=
- =?us-ascii?Q?mpADKikumgNqnk2wZquqAqmu6yISpSzEB+On7Iuu/dO/ftcKbqzdc9QCIfAN?=
- =?us-ascii?Q?rwZ/HLSNbp9MlrZp+i9Rne2UCD3Fqt1FH5vkf6PeENyB5l7usCdpumMuNkDM?=
- =?us-ascii?Q?aMQUTcSrZvgf1DSDB5hNilRysg9DYFvLOGiM7gKAXTdVQINnenq+BBLjOGdw?=
- =?us-ascii?Q?j0mUrpLzdFZO5GD46THU8ZsYRpq5m4/dthCyy4bgJoKDKeEH0FFOjSQ1sf5T?=
- =?us-ascii?Q?z7o854FqMwXAGk0bjfIbyNKG+1OChju2BZXa8S911kdfP45D7eVpPr/n3ZRK?=
- =?us-ascii?Q?Rzsjy06zZkW5QYksRCu1J3V1nDvkb+G7LKGpr+v6u7sJsng3vy5tOtxYilBK?=
- =?us-ascii?Q?QQrWuJuoRJ01pKP2MlgqxkLgdIvNdlhXel/gVujjuov+domKMxRZQ9k+cN7j?=
- =?us-ascii?Q?a/+If3lhizPfMaqvHQsIA6333rMvazWTbyBBneURM+HaaRa2qzyH+CfF82cH?=
- =?us-ascii?Q?qXNcinKHr4OZ/KPcBlVaGOTHyVrfFIfEPprygyI1rAF1LLaPuwySni2HLkMl?=
- =?us-ascii?Q?fuC3aSw4yfUgceYEHvxHMKaQbgvXvNEg3Qt1o2SN1cZwSrdQbfuoDTE5iVgr?=
- =?us-ascii?Q?AIBp/+oasXeEgnqykG+pAAOk5W+7PCMhdV6syL+FSMpMqVhCD/lqZna40vA5?=
- =?us-ascii?Q?1yb5ML2tG4ZE/GCAn3OXtIUaq6p9BcuhCQhB8JQB90X/+wq71iMJdahVhL9H?=
- =?us-ascii?Q?3tzY8TsIAf+Z0+F/I7WT73aMmQgmuhD69jGUIhzdgKAGTV9ajOSg6rnSjUdR?=
- =?us-ascii?Q?ppt4BFzF0G6VBaTvX2tdQp2AGo4sZYy8jiKAUeFQNplbFViNkK1BXmw0lK1D?=
- =?us-ascii?Q?iyfx0Z6ZCxbZwHe84FRE4yfxM3kXj2KSUFoNV+/cm4y1dlYJxsBtbYGvBnVs?=
- =?us-ascii?Q?uTI5DcD5ncs0lfy8VQAR1ySUVri/BZLsr2XehWejen+7o2LZI5jHXJ7f82bD?=
- =?us-ascii?Q?Btthg3KByZVcW9xjeRJERY0cZlcBhMzKNsoZwUT8TYH45gpjpGWtYIJZsfDT?=
- =?us-ascii?Q?pp/AFFTeObMGpfwToRptFGs6NnDfWXjeZ5FJ3AD1frb/3NWRZBXpNPXOPz29?=
- =?us-ascii?Q?0LneLDWZrNIMrd7qv89hj5XJl3ZQ8B3dqOv4w3XkO7PrfWzIp60Mm1bch884?=
- =?us-ascii?Q?uiQVqz9yIWAwzdRBwCGCOH8ZeX8a7e0Pt904AyOeUy5KxTfAcDOJZUUjG25N?=
- =?us-ascii?Q?5I0ipdVqvBQ83bzuvkBabP3Rg2he7wI0c0ZHcKauA79XmqILNIqsw5xw8/UP?=
- =?us-ascii?Q?F1VcvqenBa3rxk3rFtHZlgXlRePhvFuPfc4IZUDiVSLHS5I7AgSslEl1TzGm?=
- =?us-ascii?Q?A4mLo0NZ/lonJKIzxwSmZkwOLRbAt6mgEqiKq6XQHomHohqRaWH9hIcm7Qwu?=
- =?us-ascii?Q?EGPKsMJHDW4=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?GIFRk5LRtqaiI2J/Ymo+xBpTreYhbLvBjNvEjjEWiu5vCRl9vwPM7cvRvJ0f?=
- =?us-ascii?Q?LFG5rGwzs/J+0xbM+gfv+RtZcDK9bfue3Q4mX8YtyH2PaRQIe1eVtZiMZuoL?=
- =?us-ascii?Q?Xrlq3A/owDa5imt34c95cncCnM1ThNnYrh7J8jPEbO9ayjYOiO++I9jTk8jT?=
- =?us-ascii?Q?bvnECG+EIB67DmCKSXAwxwfuw3c3N1Te+widPl48grgfBCJTrFtBBv0l6iTM?=
- =?us-ascii?Q?td4LV1txqA40CTIHt6wLFV4X7H9VjxKBLJBE6KvB3iITyuUodZNf6P5haM7o?=
- =?us-ascii?Q?65y7XrH32dTmnKOzFSo1WCfP4u3vqIK2q5se4WyNGTNWUHBdGeJcKepIHnMH?=
- =?us-ascii?Q?Hk1aMf+d8Qy/I/hETpV1PU6P5IOQxBeIk+8T8KIrPkpcZjLyZYem7AJzB7Hv?=
- =?us-ascii?Q?11/ysKBXBFJdV67o4vrhcJ6EpoQf+YtDrTleaDuE0IAi+PvT0kJpK5QW8ChE?=
- =?us-ascii?Q?tozuw/SWVuFnmjFaxBKGiyDlBCwtlZj5NUyKyQuwwtqvAnEcj1qkiQGcYMDm?=
- =?us-ascii?Q?5aFfpnMd/I9oXiurCcrONvg1jq6AgVLFl15A6KorzsBiAO3nsPeTl5U63AbN?=
- =?us-ascii?Q?9OvyCJGa2/mmxe38dBSNkM8X4oQYi6iwJvbiLiu1Eqb0sj9do0Us9wKZ654R?=
- =?us-ascii?Q?D8jJvi7NaT6HL/LhNYt/27CzcZJqO+52tFVATaYgesutoyuE6AWhuMXJMuui?=
- =?us-ascii?Q?GDloIUo7n6+EbwnynQnsoBiyOhQ+v/45/yCxF8Oy1BFJdgfXl1hmkRLW8squ?=
- =?us-ascii?Q?3hTs1eWTt9Q9w8e0gSFpgadg3V0Vn+Qca1CHzQIutdfMuRdHetdpYYXsZWM2?=
- =?us-ascii?Q?WojJayah6+usZybYJmFY3BzgFKQJGqh08301+fA5olgQqiFh039w6DelmEpg?=
- =?us-ascii?Q?ma7kd/X1D1PKhj7Qgdc5BnEVfeOWT9UfhHwU/tN74YAqgTFeQPYznc0n8hWa?=
- =?us-ascii?Q?5oJLJmKZl+vgIcdJ88bnJfnXByLDawB1HdCD3u7vWEJC8kKFzXka+pFftLgr?=
- =?us-ascii?Q?ya3AyQDRdwy61AtHQe+61qfxiC0hGDl8GOR2aMl2Ilb6L0TVaTWz1S0gU2IQ?=
- =?us-ascii?Q?/LKwmL9M8szNCTbc2xaRLEFbvO4NSFG/c7EvorG0hLd48XFkZDb/F6A6Uema?=
- =?us-ascii?Q?a8IPIzmqu3RrWxf36cdEJ/oqHH7oecTXt/BOhDiw8gpQbeTMoV8qXkswo0mO?=
- =?us-ascii?Q?3G5xH6BaSkhSDwD1R9mjHc5IL8Q2AoLmg49Q4jMuvuaicwdhJvu+n4zVLDmP?=
- =?us-ascii?Q?XcmW1hQSRsJ1rYJ52Mj1VILzh4EFI32F/xfn9S8gHbeYQupSByqTOpkyrd8F?=
- =?us-ascii?Q?4EUjFvTpvDy2iMm1AlY9S7Dsfy9O+WKbOp4OmWtLes8035jB56nIMHsXuZG2?=
- =?us-ascii?Q?FtwF7lkg54efZk/rU4uTMK3kYpQZ/bWTJHqgMTh7dVUUP/J73Ol0YkxnKAyM?=
- =?us-ascii?Q?6eO78MVIYHXw0hc1gRcBUiqm7CSGTxaM5GrSKyFDLd3+JblI5NgLzcAnRoOY?=
- =?us-ascii?Q?xu5YokZlJ/5ajedj/dEFReKvs7JK0E3e+/CPuUzZzQjV2J1boLH531NJljRJ?=
- =?us-ascii?Q?64AOQniteMwiBqN/IRiBz6kQ0Ewc3oITbShel18A?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef9c967d-fc9d-4f74-faa2-08ddf46fcb82
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5757.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Sep 2025 15:51:55.1065
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cp+gwOdwQUP2xIf1pBdJy+JlPhio9U6W6zg1aXdzRejylJsdfBVnKgbRtXEvgp2T
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB6946
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <bb4c3f0b-06da-46e6-9769-efe3dc00e9fb@huawei.com>
 
-On Tue, Sep 09, 2025 at 08:40:28PM -0700, Nicolin Chen wrote:
-> > + *  level
-> > + *     The number of table hops from the lowest leaf. Level 0
-> > + *     is always a table of only leaves of the least significant VA bits. The
+On Thu, Sep 11, 2025 at 10:08:55PM +0800, Qinxin Xia wrote:
 > 
-> Hmm, I am a bit confused here. I thought "leaf" was meant to be a
-> "leaf" table? But here "a table of only leaves" makes it feel like
-> a "leaf" table entry?
-
-How aboutL:
-
- *  level
- *     Level 0 is always a table of only leaves with no futher table pointers.
- *     Increasing levels increase the size of the table items. The least
- *     significant VA bits used to index page tables are used to index the Level
- *     0 table. The various labels for table levels used by HW descriptions are
- *     not used.
-
-
-> > + *  table
-> > + *     A linear array of entries representing the translation items for that
-> > + *     level.
-> > + *  index
-> > + *     The position in a table of an element: item = table[index]
-> > + *  item
-> > + *     A single position in a table
-> > + *  entry
-> > + *     A single logical element in a table. If contiguous pages are not
-> > + *     supported then item and entry are the same thing, otherwise entry refers
-> > + *     to the all the items that comprise a single contiguous translation.
 > 
-> So, an "entry" is a group of "items" if contiguous pages (huge
-> page?) are supported. 
-
-Yes
-
-> Then, the "entry" sounds like a physical (v.s. "logical") table
-> entry, e.g. a PTE that we usually say?
-
-I choose entry because it is related to PTE and in most cases you want
-to work on the entries. The replication of entry to item is somewhat
-hidden.
-
-From a HW perspective the TLB should be loading entries.
-
-> > +#if !IS_ENABLED(CONFIG_GENERIC_ATOMIC64)
-> > +static inline bool pt_table_install64(struct pt_state *pts, u64 table_entry)
-> > +{
-> > +	u64 *entryp = pt_cur_table(pts, u64) + pts->index;
-> > +	u64 old_entry = pts->entry;
-> > +	bool ret;
-> > +
-> > +	/*
-> > +	 * Ensure the zero'd table content itself is visible before its PTE can
-> > +	 * be. release is a NOP on !SMP, but the HW is still doing an acquire.
-> > +	 */
-> > +	if (!IS_ENABLED(CONFIG_SMP))
-> > +		dma_wmb();
+> On 2025/9/10 22:15:47, Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> > On Wed, Sep 10, 2025 at 11:20:08AM +0800, Qinxin Xia wrote:
+> > > Ok, I see, my colleague Wang Zhou also released a version of io_ptdump
+> > > a long time ago, which is implemented in smmu debugfs. Will recommends that
+> > > io_ptdump be implemented in a way similar to CPU page table dump. Using
+> > > debugfs to expose the data and using format-specific callbacks to implement
+> > > specific data dumps, I'll talk to him about this as well.
+> > 
+> > I feel we should have a iommu subsystem debugfs and per-iommu_domain
+> > directories to dump the page tables.
+> > 
+> > The smmu debugfs can report what iommu_domains each STE/CD is
+> > referencing.
+> > 
+> > This also needs RCU freeing of page table levels as a locking
+> > strategy.
 > 
-> Mind elaborating why SMP doesn't need this?
+> Thanks, I'll add RCU in the next version, but there's some
+> confusion,
 
-The command says the "relase is a NOP" it means this:
+Please don't, RCU is quite complicated, I don't really want to see
+attempts to retrofit it into the existing page table code. This is why
+I've said debugging like this needs to go along with the new iommu pt
+work to consolidate the page table code.
 
-	ret = try_cmpxchg64_release(entryp, &old_entry, table_entry);
-
-On SMP release does an actual release, on UP it doesn't have a
-barrier.
-
-> Otherwise, these validations wouldn't be effective?
+> Do you
+> mean to create a directory for each domain? like：
 > 
-> drivers/iommu/generic_pt/pt_iter.h:388: if (PT_WARN_ON(!pts->table_lower))
-> drivers/iommu/generic_pt/pt_iter.h-389-         return -EINVAL;
+> /sys/kernel/debug/io_page_tables/domain_xxxx (xxxx=domain addr)
 
-Right, when PT_WARN_ON is disabled it does nothing and never evaluates
-its expression. All the branches like the above are removed.
+Something like this could be a reasonable option.
+
+> tree domain_xxxx like:
+> domain_xxxx
+> └── group x
+> │ └── device
+
+Though I would probably not include this information..
+
+> └── DebugFS file: /sys/kernel/debug/io_page_tables
+> └── Operation: Reading this file triggers the entire debug information
+> collection process
+
+I don't think we want to dump every page table in the system in one
+file.
+
+> Do you mean that the interface in io-pgtable-arm.c is directly invoked
+> during the process of obtaining page table information without passing
+> through arm-smmu-v3.c?
+
+Yes, this is what iommu pt brings.
 
 Jason
