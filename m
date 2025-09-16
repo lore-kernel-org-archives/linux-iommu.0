@@ -1,155 +1,125 @@
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+Received: from sender4-pp-f112.zoho.com (sender4-pp-f112.zoho.com [136.143.188.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15F7029B778
-	for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 09:03:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.130
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758013429; cv=none; b=qZ/bGZj7+JBvIAgC16GJDtciYL9EYWmrmpEIQEhyE0vt8+j2N+5bwfqdOAusRTbWLdeNBcV0jRi3YbHXX6AiUepNXVPJI66Dv1DlKUfHXB/f+bRBVrqF5CVO3vVWiYfDprQ4FQYtXIueFjigBpIvR/d9596R7EsHyXB/NBaM140=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758013429; c=relaxed/simple;
-	bh=zGNVZgit1WXuZkrWpT+bVh3ekRWUJZK0SlGq8wjpUgM=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version; b=ViFnf6fRlvaGaTMMLUY5zrSBdWynfvA+qTTXhFszZHMTbPNDCAKIJJDsn+LQIGBG+3Dd6gAgdwu1Yzr01tBBXtImGr+gYDWEy2HnTB7XkUqgSMYTJKPOK4O5sk37HhnD7AviBoci6PC7DfK8TvoLOwknp6r1I5qxauU3vW3ofGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=bo+FoGNd; arc=none smtp.client-ip=115.124.30.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11CA3221F13
+	for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 09:30:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=136.143.188.112
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758015046; cv=pass; b=QzcC+0+CXWTgRnoHqf2uDa2FnOhTZUN51e5Vb16ufLjos62jeRAhYPEe5kfSFPM9GCx5i07xVi7SVEJEsDsXZsvaQCaWZy/Uv4+bKvULkQbCtMPXKcOQjn0j4gTdLOpJ14F9z7qV39rmFOoyM/RyMVHTPqxhOL048roItb/jj08=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758015046; c=relaxed/simple;
+	bh=UkZWILK+JDAs4j04OIqHn/mytGnhx9VYR5zccLHHIAw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Qop0lOBGwKULNqJkqlEUwqTwi24hbKELkXoMcDYIGq0m6RHZmMhy2zG3V7VCits2BijfLDEKGaPmNCz1vno/tohnwLCpzy5vI5pSfo3rORsjjy62Buenorzj/9kg3P2Xamk9hhp57y54XKIWbeZXEW/SiTGCEIW9tx99PHA0xoE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b=iAkofwVw; arc=pass smtp.client-ip=136.143.188.112
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="bo+FoGNd"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1758013418; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=+AjP92J1gR+qLPueiNwsPnRcvDVHb0sPrSixFTlxzDw=;
-	b=bo+FoGNdOhNXXGJfRvb0Yaw0JP8xtMwOq5gLzaTqgVyMtKj20Sly68ayagOAoPfreDosdZtYT0Wd3IxGowgxQ0r0PA1CFDkwHsk5Fh203Y3stxqD+A7ORb2dYQcCMejI0e1fyo6r63KILZujc9HHXrMtqLGtVEB+ikUELXDIswY=
-Received: from localhost(mailfrom:kanie@linux.alibaba.com fp:SMTPD_---0Wo8.ohp_1758013413 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Tue, 16 Sep 2025 17:03:37 +0800
-From: Guixin Liu <kanie@linux.alibaba.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev
-Subject: [PATCH v2] iommu: Fix iommu selftest running test mock domain fail
-Date: Tue, 16 Sep 2025 17:03:33 +0800
-Message-ID: <20250916090333.68179-1-kanie@linux.alibaba.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=collabora.com header.i=benjamin.gaignard@collabora.com header.b="iAkofwVw"
+ARC-Seal: i=1; a=rsa-sha256; t=1758015027; cv=none; 
+	d=zohomail.com; s=zohoarc; 
+	b=g6fls8GpQFdJJPyn2BerMzHDaaltYp454eYLzT43Cl3hYaunv53ulpBxzd2zf8brKdIqfRJ18z3CNS7/uuslxP4w3OxLub0yh04coNNzQkt+UroO79VnUcDa0tLgS9JEpf+CzmEQX4tukcO5x+4poGC5xwHMdvXscmnCAHWCNns=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+	t=1758015027; h=Content-Type:Content-Transfer-Encoding:Cc:Cc:Date:Date:From:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:Subject:To:To:Message-Id:Reply-To; 
+	bh=UkZWILK+JDAs4j04OIqHn/mytGnhx9VYR5zccLHHIAw=; 
+	b=NPqS+DC2xqz9tx6skzBnfs9/piXDoU5PraVJi9PGCcXDw5I1edab4aepZ2WnfO7Ig660pH1Ln/8n1JkhgcncrYc9cKT4sjSx7NQOQIlJbbP4i19hoOkH5AR8hwP6bk8F4SP9ZcJb0kmUwb4rwRnJ6Xq6W3rH7NLJX+Cq/IiruPY=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+	dkim=pass  header.i=collabora.com;
+	spf=pass  smtp.mailfrom=benjamin.gaignard@collabora.com;
+	dmarc=pass header.from=<benjamin.gaignard@collabora.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1758015027;
+	s=zohomail; d=collabora.com; i=benjamin.gaignard@collabora.com;
+	h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+	bh=UkZWILK+JDAs4j04OIqHn/mytGnhx9VYR5zccLHHIAw=;
+	b=iAkofwVwvYWxN35eWDQYbLtMQHEW3Ayh0AdYskiOVW83Ky184bRoIjqvjkqDgmuB
+	c88TJFdUgtOQB0tIbKsVtwf7B0BE9uzfwxLNQXhBiLlhI6BRLNu0kDRmyk7XXSOZHX7
+	QFjd6wEm4ia9MCMkyq68jx3DYNwhJiTJmy/lj4js=
+Received: by mx.zohomail.com with SMTPS id 1758015025274111.17127971304149;
+	Tue, 16 Sep 2025 02:30:25 -0700 (PDT)
+Message-ID: <0eff8b1a-c45f-47b1-a871-59f4a0101f0f@collabora.com>
+Date: Tue, 16 Sep 2025 11:30:20 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v9 3/7] iommu: Add verisilicon IOMMU driver
+To: Will Deacon <will@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
+ Nicolas Dufresne <nicolas.dufresne@collabora.com>, robin.murphy@arm.com,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, heiko@sntech.de,
+ p.zabel@pengutronix.de, mchehab@kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org,
+ kernel@collabora.com, linux-media@vger.kernel.org
+References: <20250911155720.180465-1-benjamin.gaignard@collabora.com>
+ <20250911155720.180465-4-benjamin.gaignard@collabora.com>
+ <vrngq76nnms3jyl5hnxqnkimjc6kil66o6fdyqn5vm3fpovmja@cfynipjw7ktp>
+ <694b9ba15cd67f41a38f4a65a3811f035cf8e99d.camel@collabora.com>
+ <rt6nvgazcl6mvyy4iuut3n7irf72t7rex2iwabbkuxp7cdvez5@2nanenqgxjdy>
+ <20250915225806.GM882933@ziepe.ca> <aMkkYU-p2ouknnAc@willie-the-truck>
+Content-Language: en-US
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+In-Reply-To: <aMkkYU-p2ouknnAc@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-When intel_iommu=on is enabled and the iommu selftests are executed,
-we observed multiple test case failures. Our investigation revealed
-that both the Intel iommu driver and the mock iommu driver registered
-iommu_device instances with fwnode=NULL, and both were added to the
-iommu_device_list. Later, when the mock iommu driver attempted to
-create a device, iommu_init_device attempted to retrieve the iommu_ops
-by searching the iommu_device_list using the provided fwnode
-(which was NULL).
-Since the iommu_device registered by the Intel iommu driver appeared
-earlier in the list, it was matched first instead of the mock iommu
-driver's iommu_device. This ultimately caused probe_device to fail.
 
-Fix this by alloc a software fwnode for mock iommu driver's iommu_device,
-and set it to the device which mock iommu driver created.
+Le 16/09/2025 à 10:48, Will Deacon a écrit :
+> On Mon, Sep 15, 2025 at 07:58:06PM -0300, Jason Gunthorpe wrote:
+>> On Sat, Sep 13, 2025 at 07:58:04AM +0200, Jörg Rödel wrote:
+>>> [Adding Will back to Cc]
+>>>
+>>> On Fri, Sep 12, 2025 at 01:37:11PM -0400, Nicolas Dufresne wrote:
+>>>> To me this rejection isn't about Benjamin's driver, all iommu seems to look
+>>>> alike, so anyone else that would have sent new driver would have face the same
+>>>> issue.
+>>> This is about ignoring comments from one of the IOMMU maintainers. I am not
+>>> going to merge a driver with open comments/objections[1] from Will (and a few
+>>> others), so resolve this with him and get his Ack.
+>> I would strongly object to trying to share map_pages, unmap_pages,
+>> iova_to_phys, free and other iommu pt related functions in some
+>> limited way instead of helping on the much more complete iommu pt
+>> work. Which is what I said to Will, but for some reason he suggested
+>> it anyhow.
+> If the answer is to convert this to iommu pt, then so be it. My
+> understanding was that was still premature at this stage but you know
+> better than me.
+>
+> When I bothered to look at this driver side-by-side with the rockchip
+> driver which, despite apparently being totally different IP (honest!),
+> is *remarkably* similar, I summarised the similarity in the default
+> domain ops:
+>
+> https://lore.kernel.org/all/aH5yR9CkYSJ4PaZV@willie-the-truck/
+>
+> But rather than respond to that, Benjamin just sent a new version. I
+> was hoping for a bit more discussion...
 
-Test by "make -C toosl/testing/selftests TARGETS=iommu run_tests":
-PASSED: 229 / 229 tests passed.
+Sorry if that had offend, you it wasn't the purpose.
 
-In addition, this issue is also can be found on amd platform, and
-also tested on a amd machine.
+Where you see similarities in the pattern I see lot of differences
+everywhere that will required to duplicate the functions for each
+hardware (locking schema, bit definition, power management, enable/disable).
 
-Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
-Tested-by: Qinyun Tan <qinyuntan@linux.alibaba.com>
----
-Changes from v1 to v2:
-- Remove print when iommu_fwspec_init() fail.
+Since the v6 I have fix lot of locking and pm_runtime issue and add a
+function, needed by the video decoder, to flush the TLB.
 
- drivers/iommu/iommu.c            | 12 ++++++++++++
- drivers/iommu/iommufd/selftest.c |  9 +++++++++
- 2 files changed, 21 insertions(+)
+My first attempt when writing Verisilicon driver was to add a variant
+(like for rk iommu v2 I had already done) to Rockchip driver but mixing or
+sharing structures or functions between Rockchip and Verisilicon is just a
+nightmare because it requires to add "if else" everywhere.
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 060ebe330ee1..cda5e1c039aa 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -304,6 +304,7 @@ void iommu_device_unregister_bus(struct iommu_device *iommu,
- 				 struct notifier_block *nb)
- {
- 	bus_unregister_notifier(bus, nb);
-+	fwnode_remove_software_node(iommu->fwnode);
- 	iommu_device_unregister(iommu);
- }
- EXPORT_SYMBOL_GPL(iommu_device_unregister_bus);
-@@ -326,6 +327,14 @@ int iommu_device_register_bus(struct iommu_device *iommu,
- 	if (err)
- 		return err;
- 
-+	iommu->fwnode = fwnode_create_software_node(NULL, NULL);
-+	if (IS_ERR(iommu->fwnode)) {
-+		iommu->fwnode = NULL;
-+		dev_err(iommu->dev, "add property failed:%d\n", err);
-+		bus_unregister_notifier(bus, nb);
-+		return err;
-+	}
-+
- 	spin_lock(&iommu_device_lock);
- 	list_add_tail(&iommu->list, &iommu_device_list);
- 	spin_unlock(&iommu_device_lock);
-@@ -335,6 +344,7 @@ int iommu_device_register_bus(struct iommu_device *iommu,
- 		iommu_device_unregister_bus(iommu, bus, nb);
- 		return err;
- 	}
-+	WRITE_ONCE(iommu->ready, true);
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(iommu_device_register_bus);
-@@ -555,6 +565,7 @@ static struct iommu_domain *pasid_array_entry_to_domain(void *entry)
- }
- 
- DEFINE_MUTEX(iommu_probe_device_lock);
-+EXPORT_SYMBOL_GPL(iommu_probe_device_lock);
- 
- static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
- {
-@@ -2914,6 +2925,7 @@ void iommu_fwspec_free(struct device *dev)
- 		dev_iommu_fwspec_set(dev, NULL);
- 	}
- }
-+EXPORT_SYMBOL_GPL(iommu_fwspec_free);
- 
- int iommu_fwspec_add_ids(struct device *dev, const u32 *ids, int num_ids)
- {
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index 61686603c769..632efba3b77a 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -1126,12 +1126,21 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
- 		goto err_put;
- 	}
- 
-+	mutex_lock(&iommu_probe_device_lock);
-+	rc = iommu_fwspec_init(&mdev->dev, mock_iommu.iommu_dev.fwnode);
-+	if (rc) {
-+		mutex_unlock(&iommu_probe_device_lock);
-+		goto err_put;
-+	}
-+	mutex_unlock(&iommu_probe_device_lock);
-+
- 	rc = device_add(&mdev->dev);
- 	if (rc)
- 		goto err_put;
- 	return mdev;
- 
- err_put:
-+	iommu_fwspec_free(&mdev->dev);
- 	put_device(&mdev->dev);
- 	return ERR_PTR(rc);
- }
--- 
-2.43.0
+Benjamin
 
+>
+>> Sorry, but it doesn't make sense to complain about duplication in
+>> drivers and then not help advance one of the biggest projects to
+>> actually concretely and comprehensively address that duplication.
+> I don't think it needs to be one or the other. afaict, these drivers
+> should share the default domain ops and if the page-table code is using
+> iommu-pt then that's even better.
+>
+> Will
