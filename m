@@ -1,209 +1,125 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2ECCE311942
-	for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 14:50:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83DBA346A14
+	for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 15:19:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758034226; cv=none; b=Ks7NV9ZxC5Z8yfkYxSk9gqVkckG1lEg4D5n7YDZ8pDQarqJ3UA0gA+ci0sTNKVneCOd6yewpY2P8KiXHIlNJ/OgTjGof1PrLyqsPqwdlxJViquuE82kAS9hJO4Gg/wckVfatTse9kClS6W4+VR89V+VLawffaKpqjgxploKrnBk=
+	t=1758035950; cv=none; b=MF4m4aDGtZ2045n/FoT5renWCUflHQObUfw6YZfpwKFdueF2o6ZNxDfwdo7i1Rn40DpFbGtf3kJSwjW1ITMZCWYzNxx6SrnOTQQHPmrovT7h7mNMWJ20fJjwrpXl/jYKkngCwNUdloLy+N5mtF2t2ngFI0dZ7mKBeLp8qMC2EqE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758034226; c=relaxed/simple;
-	bh=fbvwpPM3R5lMCHUi2ENLE4gQsD0b4XmRKkbrAcTMxxk=;
+	s=arc-20240116; t=1758035950; c=relaxed/simple;
+	bh=wBrIPR96d1vVz2LJ9BGOfDtmnzGJiG6F6ojCH1dA+qc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=XpUJuI5LVkNqRm+qTOIuGWGgaJzIbScRSppHhFK0Q9xg37oIL9wRW+Z0qwhCl9az5nDLiSIpwKZABgcboteVYTam5u9ytdXqDAlyrK1ktJ1KIPMxOiKZMwGiFwiX2jqC1Lak5W4ScnS2w2unScp2zJ4vaDBaNK277GG6smtvudM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NGT0jjqV; arc=none smtp.client-ip=209.85.128.51
+	 Content-Type:Content-Disposition:In-Reply-To; b=JQ2bGwcZrM2Mw6yP4yDtmV5cWiYGQKvhXy+lMgCqLCK0KJk541FW+ZaSiRXYe71+Ju1hQOWWnoYfjUK21DZzpzAigI2w6KCwKkh+Wdt+mjXUgNn5cxPRFSEJMDHBIX5gpFnpE+bWuMS6pLquLl7FyZvTg8S2b52TL0NZrRaK4nU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rSeenyNa; arc=none smtp.client-ip=209.85.128.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NGT0jjqV"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-45f30011eceso60345e9.1
-        for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 07:50:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rSeenyNa"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-45f28aba94cso60705e9.0
+        for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 08:19:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1758034222; x=1758639022; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ZTpmHXQDrDNu2omvxpv38G1z1jQL9k5zYwI+nHzzx2A=;
-        b=NGT0jjqV7m7dAYSotOSJ8ReRS7sD0HjmwYqju9TxUl9lPivoIwmblSQP9C8dGz+ZI2
-         02LbrKA8zl1WDzyqXkvHEaI/AY7atE+zKdf87AGDy92XHYyj/aunPRI5dt9uO4ypLDcL
-         DBUVvtN7BGEoDiVqALFPrSXd3aG6brL8l6b8swIIahGtxBIaaJuK0xpYhCaYKTGMWrTB
-         9/xZi4O0Uc6q0q8dl9W8wa15VaqhMhrEdz2NJ2Q4QH9je4WL5y61RS6ObVbjIYOK2vcx
-         RG2KxMonnFoODKag3LY2tYD6Nqa79kEhPCnvMoq6IUzSR3O5OYZEphkv/Qx3Jg+l5KPY
-         f47Q==
+        d=google.com; s=20230601; t=1758035947; x=1758640747; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rIdF/st4oFvQewvhyAv6hWYWHihkA3x4ZWjHakET1Qg=;
+        b=rSeenyNaRwRzOIq7rB9p1pZg3ugzmB7NNglG5P7xVJvc4bYBvyUHs6REyhGKUkJW/g
+         OQzesJBzcPVMy8j2ykFerTpOpJGKLQp4vHYox2ugTlYGQx1fNcoAOEhbYyf/zPQL5OHJ
+         f77k1ag+4C5nNO2vqFNoVXyV8fpKKzvu1qTaHXDLaj9tGumz/AvJTVZE5sB8mu9kOdaX
+         zzQ4Sr0eQW4FUhO+EQxzcMl7f1F77KOKWsD3DtMEPVr2i6IaNTDPT8S1HFT5aV1ppFwR
+         6Sd8OLVKulwb05CzKTszfLA0o0HlHQJCCl2T/hGTz8yjw0m25c+LrydOvuwk7jhETGOS
+         PCmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758034222; x=1758639022;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZTpmHXQDrDNu2omvxpv38G1z1jQL9k5zYwI+nHzzx2A=;
-        b=gc4fSwabxo3gctxARnJ4QT7XRQte0vSs/cko/EbAasMvJv3XAfyddg8LFHnN2hM1Mh
-         DtKR+U2wjH/vr0GyHBJqhM+42KFaZcx/0nLtvnywJ82bAIOxgINyWZ7xCW6ziRYQiJXB
-         U9qnqE4hVOXAf0hdmFiC20OLbtAeJoeHaXySYh/ba0lWihpPy9SeKjwMutEbfhwqJ1uC
-         vB1JfglFX57ijHOMrtkKg0rsimbzPCDlqUDAiIQQOh5rElaUgjAERpLL4dvfVvkXDTVK
-         YygjLZagj4BBf63Q+nJl8+DUmwf621HgBLAD7yUimHW5w/kPEsj4REuLt5qtVQZtSZm/
-         5dNA==
-X-Forwarded-Encrypted: i=1; AJvYcCUvm7pK0psO4VmsB4e6xdZubKyivYkpKZoknbAIYH8kcyrTd8OVeCVPlSqrT7aj8maqK7N0BA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxeEx70e3uCwv1ubW1HKJ1TxzikcGTLXb48EgiTHQmX/8+04xER
-	IlHuODgpUYJzhKpuD4zeUQesBcHhTS9RLUARkMekEclymsEnrLWbAbF3PU1sRC4tNg==
-X-Gm-Gg: ASbGnctt/93y/46dM7Vf743TIJRPMrgEyIeIov4LJWuGaN0FescRodN27Y006RyKdKr
-	V5Ik0rPzaRpmS0y/CYK5ZLHXcrvrhbw7S6bhJXcdnCr+23Fm5PLlfG456OUx1Pl/MO2b6GQBUJH
-	2eU8jR/EJVcxJY/s0ZCKpunyEr5FjvxUwIycMgrT4wyvUXeF8ju4n7sBDR5Nk71LSefFk0eQ3Lu
-	eKWp0qAFTMFWs1ClPqOy6C7Vfqb4g5W8KghDVXvtQ8K0NVp/hZp6iwufChVa6SqabqVw8fyYgRu
-	QggTPb8K/rzBNjAc2TA21UVrxlbHKiptTFaBt7aMxQ4gHDYWtib2I543vLqErasZYZEHAYaXRpK
-	wvqh0eaUEw5LYxn9JCHBkScAia53na/hxIPLjOhDbkjFtRW9IR56x0d3thGaRsz7eSluQtg==
-X-Google-Smtp-Source: AGHT+IHD9Kzax0Ca9B0Mi5gbzv7latmKARYeb9YTewjapsp5wcmK8hKO8yrvBqqgUSVFMKJVQNhyag==
-X-Received: by 2002:a05:600c:4689:b0:43d:409c:6142 with SMTP id 5b1f17b1804b1-45f320079e2mr1999085e9.0.1758034222192;
-        Tue, 16 Sep 2025 07:50:22 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1758035947; x=1758640747;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rIdF/st4oFvQewvhyAv6hWYWHihkA3x4ZWjHakET1Qg=;
+        b=xJHebAw0vjmxgz14VTnNjoxCyKo2j0qwfrNLkxg+0kjp2eZZT+XKrXnhW3+qwYl8q1
+         Xw4Orbr9/+B2Ko39RcIvhvXZFQPPkLdqbBlu2scTx0cqwfemWqIob6ohrBtu0llMNyXF
+         PgXR2QPpVspXcYwloYFXhPhaTdx/3A6GTYIZvwBxn7PqOfI57ieeLjLEdqEl4Bk3juFt
+         DAJT+sbG4KVtDMT1d3rI3zWGj1Nl2J2PocjmDyH81XZxd3G0BLqMalkNAuwHbt3OUeIF
+         qFd77zfTvxURCJAKkCTrfRBjWaZL2wsaoGZVNY/xvzAjKY77XQND9EkTCPyncSD8YMEN
+         /GRQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWONo21KH7GQ3bJ+fVHNJDHVgjYqBFtNyCT9IaOjzwqvqoZvzjTqSnWsyriSkWXJr0/0feWbQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxz/CurDeb8exT5Cch8q7/Xhq1jpmCFl2aEeMrQJqDk1ir/IpBZ
+	FkZysLU5r8aaeYoJ2tRXhjEJYvqz3xqdQ/WNz6yk1ADt1AeFsFOPqK6Dwh3fjzF/3mjWf7J7VbA
+	vnBy9Yw==
+X-Gm-Gg: ASbGncs5yNBKaN7UYIlSNQtDVkMWPbkokEotdQLGnXFd3PbxcfDQUu9/RBNNJAChjbg
+	v7eJjJzFuMzw+rIhWwawWGZWZViXN59Ks6/gjQE1pgUf2IS8nBywwLYBAt2cItmjnCJ8at/7+On
+	lOPeAWNM5UycDfvk0r2GFOdMVsZCo2gDNG2RqPSCD9izN3r+S5eBIa74ZXAJFjAF1N/PY9ZXAOy
+	ZcXktBfzoCd56CYlNWqeE9oP6qzTcJwN7noZKulSDw3D0d4FaHW2Mq4r7LkRL/oGy5R/37r7+wv
+	CZKInlqD6m5Ggff+8zTht8rAiTFXM3Bo+kZn38uyv0mQqyS5xPOUfgZ2r1jWGgwOxMBhJuQc4vU
+	rinS2VH1C3qki1LxEj7+qYAd+wr212RVU96lXr9y/94abJpUuON7GfSTnXwBaEvXUXWm8mg==
+X-Google-Smtp-Source: AGHT+IFZBaWrZvk9P69IbqntWvXL1sAk3O+k3JpJsQacEjetwuxi2scOhS4JAiiLO+ZhfieA/FFXgA==
+X-Received: by 2002:a05:600c:8b6a:b0:45f:5b02:b0cb with SMTP id 5b1f17b1804b1-45f5b02b390mr1308995e9.0.1758035946681;
+        Tue, 16 Sep 2025 08:19:06 -0700 (PDT)
 Received: from google.com (157.24.148.146.bc.googleusercontent.com. [146.148.24.157])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45f2a65e1b5sm123753115e9.4.2025.09.16.07.50.21
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45e41b6dbdbsm211187025e9.22.2025.09.16.08.19.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Sep 2025 07:50:21 -0700 (PDT)
-Date: Tue, 16 Sep 2025 14:50:18 +0000
+        Tue, 16 Sep 2025 08:19:06 -0700 (PDT)
+Date: Tue, 16 Sep 2025 15:19:02 +0000
 From: Mostafa Saleh <smostafa@google.com>
-To: Will Deacon <will@kernel.org>
-Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
-	suzuki.poulose@arm.com, yuzenghui@huawei.com,
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	kvmarm@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, maz@kernel.org, oliver.upton@linux.dev,
+	joey.gouly@arm.com, suzuki.poulose@arm.com, yuzenghui@huawei.com,
 	catalin.marinas@arm.com, robin.murphy@arm.com,
 	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	jgg@ziepe.ca, mark.rutland@arm.com, praan@google.com
+	mark.rutland@arm.com, praan@google.com
 Subject: Re: [PATCH v4 22/28] iommu/arm-smmu-v3-kvm: Emulate CMDQ for host
-Message-ID: <aMl5Ku6ZbzTOuGh-@google.com>
+Message-ID: <aMl_5j8G3IGulAC6@google.com>
 References: <20250819215156.2494305-1-smostafa@google.com>
  <20250819215156.2494305-23-smostafa@google.com>
  <aMQroI4NDu74PDGT@willie-the-truck>
+ <20250915163858.GK882933@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aMQroI4NDu74PDGT@willie-the-truck>
+In-Reply-To: <20250915163858.GK882933@ziepe.ca>
 
-On Fri, Sep 12, 2025 at 03:18:08PM +0100, Will Deacon wrote:
-> On Tue, Aug 19, 2025 at 09:51:50PM +0000, Mostafa Saleh wrote:
-> > Don’t allow access to the command queue from the host:
-> > - ARM_SMMU_CMDQ_BASE: Only allowed to be written when CMDQ is disabled, we
-> >   use it to keep track of the host command queue base.
-> >   Reads return the saved value.
-> > - ARM_SMMU_CMDQ_PROD: Writes trigger command queue emulation which sanitises
-> >   and filters the whole range. Reads returns the host copy.
-> > - ARM_SMMU_CMDQ_CONS: Writes move the sw copy of the cons, but the host can’t
-> >   skip commands once submitted. Reads return the emulated value and the error
-> >   bits in the actual cons.
-> > 
-> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > ---
-> >  .../iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c  | 108 +++++++++++++++++-
-> >  1 file changed, 105 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
-> > index 554229e466f3..10c6461bbf12 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/pkvm/arm-smmu-v3.c
-> > @@ -325,6 +325,88 @@ static bool is_cmdq_enabled(struct hyp_arm_smmu_v3_device *smmu)
-> >  	return FIELD_GET(CR0_CMDQEN, smmu->cr0);
-> >  }
-> >  
-> > +static bool smmu_filter_command(struct hyp_arm_smmu_v3_device *smmu, u64 *command)
-> > +{
-> > +	u64 type = FIELD_GET(CMDQ_0_OP, command[0]);
-> > +
-> > +	switch (type) {
-> > +	case CMDQ_OP_CFGI_STE:
-> > +		/* TBD: SHADOW_STE*/
-> > +		break;
-> > +	case CMDQ_OP_CFGI_ALL:
-> > +	{
-> > +		/*
-> > +		 * Linux doesn't use range STE invalidation, and only use this
-> > +		 * for CFGI_ALL, which is done on reset and not on an new STE
-> > +		 * being used.
-> > +		 * Although, this is not architectural we rely on the current Linux
-> > +		 * implementation.
-> > +		 */
-> > +		WARN_ON((FIELD_GET(CMDQ_CFGI_1_RANGE, command[1]) != 31));
-> > +		break;
-> > +	}
-> > +	case CMDQ_OP_TLBI_NH_ASID:
-> > +	case CMDQ_OP_TLBI_NH_VA:
-> > +	case 0x13: /* CMD_TLBI_NH_VAA: Not used by Linux */
-> > +	{
-> > +		/* Only allow VMID = 0*/
-> > +		if (FIELD_GET(CMDQ_TLBI_0_VMID, command[0]) == 0)
-> > +			break;
-> > +		break;
-> > +	}
-> > +	case 0x10: /* CMD_TLBI_NH_ALL: Not used by Linux */
-> > +	case CMDQ_OP_TLBI_EL2_ALL:
-> > +	case CMDQ_OP_TLBI_EL2_VA:
-> > +	case CMDQ_OP_TLBI_EL2_ASID:
-> > +	case CMDQ_OP_TLBI_S12_VMALL:
-> > +	case 0x23: /* CMD_TLBI_EL2_VAA: Not used by Linux */
-> > +		/* Malicous host */
-> > +		return WARN_ON(true);
-> > +	case CMDQ_OP_CMD_SYNC:
-> > +		if (FIELD_GET(CMDQ_SYNC_0_CS, command[0]) == CMDQ_SYNC_0_CS_IRQ) {
-> > +			/* Allow it, but let the host timeout, as this should never happen. */
-> > +			command[0] &= ~CMDQ_SYNC_0_CS;
-> > +			command[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
-> > +			command[1] &= ~CMDQ_SYNC_1_MSIADDR_MASK;
-> > +		}
-> > +		break;
-> > +	}
-> > +
-> > +	return false;
-> > +}
-> > +
-> > +static void smmu_emulate_cmdq_insert(struct hyp_arm_smmu_v3_device *smmu)
-> > +{
-> > +	u64 *host_cmdq = hyp_phys_to_virt(smmu->cmdq_host.q_base & Q_BASE_ADDR_MASK);
-> > +	int idx;
-> > +	u64 cmd[CMDQ_ENT_DWORDS];
-> > +	bool skip;
-> > +
-> > +	if (!is_cmdq_enabled(smmu))
-> > +		return;
-> > +
-> > +	while (!queue_empty(&smmu->cmdq_host.llq)) {
-> > +		/* Wait for the command queue to have some space. */
-> > +		WARN_ON(smmu_wait_event(smmu, !smmu_cmdq_full(&smmu->cmdq)));
-> > +
-> > +		idx = Q_IDX(&smmu->cmdq_host.llq, smmu->cmdq_host.llq.cons);
-> > +		/* Avoid TOCTOU */
-> > +		memcpy(cmd, &host_cmdq[idx * CMDQ_ENT_DWORDS], CMDQ_ENT_DWORDS << 3);
-> > +		skip = smmu_filter_command(smmu, cmd);
-> > +		if (!skip)
-> > +			smmu_add_cmd_raw(smmu, cmd);
-> > +		queue_inc_cons(&smmu->cmdq_host.llq);
-> > +	}
+On Mon, Sep 15, 2025 at 01:38:58PM -0300, Jason Gunthorpe wrote:
+> On Fri, Sep 12, 2025 at 03:18:08PM +0100, Will Deacon wrote:
+> > Ideally, the data structures that are shadowed by the hypervisor would
+> > be mapped as normal-WB cacheable in both the host and the hypervisor so
+> > we don't have to worry about coherency and we get the performance
+> > benefits from the caches. Indeed, I think that's how you've mapped
+> > 'host_cmdq' above _however_ I sadly don't think we can do that if the
+> > actual SMMU hardware isn't coherent.
 > 
-> Hmmm. There's something I'd not considered before here.
+> That seems like the right conclusion to me, pkvm should not be mapping
+> as cachable unless it knows the IORT/IDR is marked as coherent.
 > 
-> Ideally, the data structures that are shadowed by the hypervisor would
-> be mapped as normal-WB cacheable in both the host and the hypervisor so
-> we don't have to worry about coherency and we get the performance
-> benefits from the caches. Indeed, I think that's how you've mapped
-> 'host_cmdq' above _however_ I sadly don't think we can do that if the
-> actual SMMU hardware isn't coherent.
+> This is actually something I want to fix in the SMMU driver, it should
+> always be allocating cachable memory and using
+> dma_sync_single_for_device() instead of non-cachable DMA coherent
+> allocations. (Or perhaps better is to use
+> iommu_pages_flush_incoherent())
 > 
-> We don't have a way to say things like "The STEs and CMDQ are coherent
-> but the CDs and Stage-1 page-tables aren't" so that means we have to
-> treat the shadowed structures populated by the host in the same way as
-> the host-owned structures that are consumed directly by the hardware.
-> Consequently, we should either be using non-cacheable mappings at EL2
-> for these structures or doing CMOs around the accesses.
+> I'm hearing about an interesting use case where we'd want to tell the
+> SMMU to walk STEs non-cachable even if the HW is capable to do
+> cachable. Apparently in some SOCs it gives better isochronous
+> properties for realtime DMA.
 
-Thanks for catching that, I missed it, I think we can keep the host shared
-as cacheable, and use CMOs when accessing it, I will have a closer look.
+Interesting, I guess that would be more noticable for the page table
+walks rather than the STE, as Linux doesn't invalidate STEs that much.
+>
+> 
+> IMHO for this series at this point pkvm should just require a coherent
+> SMMU until the above revisions happen.
+
+I think the fix for the problem Will mentioned is to just use CMOs
+before accessing the host structures, so that should be simple.
+If it turns to be more complicated, I am happy to drop the support
+for non-coherent devices from this series and we can add it later.
 
 Thanks,
 Mostafa
-
-
 > 
-> Will
+> Jason
