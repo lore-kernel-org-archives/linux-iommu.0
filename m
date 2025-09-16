@@ -1,41 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 697932E0935;
-	Tue, 16 Sep 2025 07:32:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 566972E3B10;
+	Tue, 16 Sep 2025 07:32:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758007942; cv=none; b=JyuqdEh3QS+Pf8ySlOagQYBi0O7gPP94BPfQAQnrYyzqElsIVrXBpwO88qE2O+A9bT/b6yMTu+FeBIyYqlLfQElVBd5IiL/tR/iQlu7e9zfzztOxwh/lex1e0aWIYHeXr5s+6G8VGW+T9+Hx5n6n7P6TA7WWRekS3dsrMrWrVnU=
+	t=1758007948; cv=none; b=ERiZOHycm8EQ02rD6BujWGaYj71AR+1rAp0ikCZHAvt3deXT3mknkoR4qo7lu3DI26+kny5ZoIVZA/B/o+tQdVx9kYeMB9nU7o81SJ3McQ66fsIO4Hh9teZI33FWMLu6PH6lea8DIFXQGkZK/y6Kn8lQ4p57Imwf9tmttPd27vQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758007942; c=relaxed/simple;
-	bh=o4HjOjUl8KogcGYW9HXIKKgJvXaiisXNIkdpv7PUUcc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=HFXwAQ+JE4IN7xPMC5BBEpWeYFnxv2gvl/oG5k9r+tbnLhzUdXhiDvRA+aFkwPBJ847IEvtPZTeofzxQCyFD2KcsM0spTYolKDr+gkmUoIggjn0TAemVUgIEB7/aWyhWYMwClcCQ7NTidwWTANbx7ZD3zxwWsIUdfZ82nX9py4U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qwsRZjFE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1758007948; c=relaxed/simple;
+	bh=SVYxxrO+Wiw9QRhQmJDc9G1iV7Y+Q+GC+uaaZIVFlE0=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=LWV77UOdpdBq/mkJ8xWqMBDeOeOjllny50m8D3ihr7HQmY06/9T1IwyXyqKQYI8nLti7V5pSAg9B6PFQFMLExvNTti7vZ7oCqVl/PD07CVzi0qFZpiCgB9II1V1TaSS5Vo3yGMhrOKOz7/TqoJfTsQepEMnnPHPP19LnD1HJq3A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q5l/YYnG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qwsRZjFE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74C72C4CEEB;
-	Tue, 16 Sep 2025 07:32:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q5l/YYnG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F654C4CEF9;
+	Tue, 16 Sep 2025 07:32:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758007942;
-	bh=o4HjOjUl8KogcGYW9HXIKKgJvXaiisXNIkdpv7PUUcc=;
-	h=From:To:Cc:Subject:Date:From;
-	b=qwsRZjFEL7oK2mF1/WX2+iqlGcMXKwfk1Rw+BD2fsqiw8WO42F6gGF/crufiipUim
-	 4FZ6GYQZ28lU4DsQUOZFNbDQjPsLyhCC4nrJQdLYYSUdJil1ujEVKqw5taNIB9qUry
-	 KsAghOIXP57dQoLUFHsHkP30rCrpaOzgVn/1Voe0GXSCtDx38WNLRxpWvAkyPfqfUj
-	 2g/YWgrdlnsGTzjDaqYhK+a1NeMyRveZOJfEuvzBW6Bb80H6QEnnY9aPHhhZjchrEq
-	 eECx2NJf4BpIM81CPsbEq7hVSSo3VqVxPGI+fXibPFpa2FrG0RdK9+jH1vNLsFgoI3
-	 GIPGPw1uQ+dEg==
+	s=k20201202; t=1758007946;
+	bh=SVYxxrO+Wiw9QRhQmJDc9G1iV7Y+Q+GC+uaaZIVFlE0=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=Q5l/YYnGeY5KmQe4DG4hjF78LVZ8OXOQ+pB82BBUmJn6edzLHgSuj2CWbR9tHQxuz
+	 V+i2NLz/v8SB/2m9fmgh7Aayf1tH00ZDyW2uEyAVSZYOm01e1H2+8efBN6AHWQoxx+
+	 cFMIiv6Uh4+Xl2Gd0lgkakm1LudKj5e8guvsK2h+fFY3lMpaM+oT5lVnMCPWb0ALfC
+	 1KJroWeewgWN9weAh82UzGzikEEJFZFkZGjEoumsterOmHtgbHTVHFvm9ZGc1NjzEk
+	 pJ3YP3SnB0PUJUy+TNkIYziVcZGcUIh2xoe3przgP0AhnQXr0IRZnYGJbOcMWn3vS4
+	 SZgbnZULDbOuw==
 From: Leon Romanovsky <leon@kernel.org>
 To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
+Cc: Leon Romanovsky <leonro@nvidia.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
 	iommu@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
 	Russell King <linux@armlinux.org.uk>
-Subject: [PATCH v3 0/4] Preparation to .map_page and .unmap_page removal
-Date: Tue, 16 Sep 2025 10:32:03 +0300
-Message-ID: <cover.1758006942.git.leon@kernel.org>
+Subject: [PATCH v3 2/4] dma-mapping: convert dummy ops to physical address mapping
+Date: Tue, 16 Sep 2025 10:32:05 +0300
+Message-ID: <3b54fbe896086adc0f3fb90a2a1a2e3bb3ff9de4.1758006942.git.leon@kernel.org>
 X-Mailer: git-send-email 2.51.0
+In-Reply-To: <cover.1758006942.git.leon@kernel.org>
+References: <cover.1758006942.git.leon@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,36 +48,53 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Changelog:
-v3:
- * Rewrote the series to allow combination of .map_resource and .map_page
-   to one flow.
- * Added two new patches to convert and remove .map_resource.
-v2: https://lore.kernel.org/all/cover.1752734252.git.leon@kernel.org/
- * Added default "else" section without map_phys and map_page
-   callbacks (impossible).
-v1: https://lore.kernel.org/all/cover.1753003879.git.leon@kernel.org
- * Changed "else if" instead of "if".
-v0: https://lore.kernel.org/all/cover.1752734252.git.leon@kernel.org
----------------------------------------------------------------------
+From: Leon Romanovsky <leonro@nvidia.com>
 
-This is followup to "dma-mapping: migrate to physical address-based API"
-series https://lore.kernel.org/all/cover.1757423202.git.leonro@nvidia.com
+Change dma_dummy_map_page and dma_dummy_unmap_page routines
+to accept physical address and rename them.
 
-Thanks
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ kernel/dma/dummy.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-Leon Romanovsky (4):
-  dma-mapping: prepare dma_map_ops to conversion to physical address
-  dma-mapping: convert dummy ops to physical address mapping
-  ARM: dma-mapping: Switch to physical address mapping callbacks
-  dma-mapping: remove unused mapping resource callbacks
-
- arch/arm/mm/dma-mapping.c   | 98 +++++++++----------------------------
- include/linux/dma-map-ops.h | 13 ++---
- kernel/dma/dummy.c          | 13 +++--
- kernel/dma/mapping.c        | 20 +++-----
- 4 files changed, 43 insertions(+), 101 deletions(-)
-
+diff --git a/kernel/dma/dummy.c b/kernel/dma/dummy.c
+index 92de80e5b057e..16a51736a2a39 100644
+--- a/kernel/dma/dummy.c
++++ b/kernel/dma/dummy.c
+@@ -11,17 +11,16 @@ static int dma_dummy_mmap(struct device *dev, struct vm_area_struct *vma,
+ 	return -ENXIO;
+ }
+ 
+-static dma_addr_t dma_dummy_map_page(struct device *dev, struct page *page,
+-		unsigned long offset, size_t size, enum dma_data_direction dir,
+-		unsigned long attrs)
++static dma_addr_t dma_dummy_map_phys(struct device *dev, phys_addr_t phys,
++		size_t size, enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	return DMA_MAPPING_ERROR;
+ }
+-static void dma_dummy_unmap_page(struct device *dev, dma_addr_t dma_handle,
++static void dma_dummy_unmap_phys(struct device *dev, dma_addr_t dma_handle,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs)
+ {
+ 	/*
+-	 * Dummy ops doesn't support map_page, so unmap_page should never be
++	 * Dummy ops doesn't support map_phys, so unmap_page should never be
+ 	 * called.
+ 	 */
+ 	WARN_ON_ONCE(true);
+@@ -51,8 +50,8 @@ static int dma_dummy_supported(struct device *hwdev, u64 mask)
+ 
+ const struct dma_map_ops dma_dummy_ops = {
+ 	.mmap                   = dma_dummy_mmap,
+-	.map_page               = dma_dummy_map_page,
+-	.unmap_page             = dma_dummy_unmap_page,
++	.map_phys               = dma_dummy_map_phys,
++	.unmap_phys             = dma_dummy_unmap_phys,
+ 	.map_sg                 = dma_dummy_map_sg,
+ 	.unmap_sg               = dma_dummy_unmap_sg,
+ 	.dma_supported          = dma_dummy_supported,
 -- 
 2.51.0
 
