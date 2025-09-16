@@ -1,78 +1,78 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AE901D7E41
-	for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 14:09:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AF853081BB
+	for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 14:10:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758031753; cv=none; b=LY7oH5TLuhHsG5nyJceIXIH5+Sweznow3WptkWVfKwjXa5IZkQp/lmhLZa9J6nYCdR3hh0kZYpzVkuFLb1toAEEoXCAti/w201wAwb9k2lOOw3p095ltJbmONdfen3Oe1nO+hc7satE/FiKdyHDWIvNrtZ+nSqjQdImlLH7uOag=
+	t=1758031858; cv=none; b=IwoQDWVTlMUpQHY9DXKA5bE83+2b1VZfw11SZNkYhDFCbULBxHttIJWT15DrZqmTPGaowG2OK7b64xsKtjDPjEEvWrmTS7sROCMNnh68e6cNao4EylkAKBAlwQAqcZN/f60H/dYfQzy8mP7nvAXq+A8jJ3ENbIM2P+3xDQniAbI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758031753; c=relaxed/simple;
-	bh=OivZHE65qXE5B/vTKRFEaDN3nIm3K+Gd2wwZUmavPgM=;
+	s=arc-20240116; t=1758031858; c=relaxed/simple;
+	bh=Uxf8MqdO1X/OQcBfHGqc0vs8bgkDRlBb7pU7mDzTtxo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=C231hGDmuVxQ98l5E2jEbkqZcRdCfnidxsi5KL9YzUJyJrrHnm6IvzWQZ9RDvaTrt6xCdeeD+713QWM5YPDoggOC81JhuS7d50milWfUABq2hJ/SGWt+2OOoc6jONR80PaLWqr/t+JdRZdqClAbo+osWjHAd6UcZ//VduWLLNJ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=EIvPImKV; arc=none smtp.client-ip=209.85.128.41
+	 Content-Type:Content-Disposition:In-Reply-To; b=UN5m/1/VEGAagWR8dr4Aa6vYy69WBzlOhja4A0SqTb46GcTFq42BPmbBxbZQ8KgamDnCh7jUj9HVoSeVJPni10n/Ze7S1pvBvR8bg2bssCwjqY1BsuUVwM9YaCfcfzYh1rm5vMQWS3ikOSNkhNhktDzPSS8MZ7poLU7w2J3G5xY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SigRcDlQ; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="EIvPImKV"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-45f2f894632so55295e9.0
-        for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 07:09:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SigRcDlQ"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-45f28aba94cso53955e9.0
+        for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 07:10:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1758031751; x=1758636551; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1758031854; x=1758636654; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=naxnlF8RW3uPyYwaOywJDf3OceUlrkorGyjKAmqFqDQ=;
-        b=EIvPImKVXVgIK065FF2NouyOC3p44HIhB8iUXoyLjF29BdbarNWMs993QgS8gD6A3T
-         /B2WDivM4iYW+qqSpLWD07TwR6khBuzlpdYQy36fwoD98ZUNdCkgqyDOXrO2yhMHyDkO
-         9CMU33sUiFQT2y6vcAhqHRU70Htuqa6UkoVWqpbg6UC8qi65UpIT32GqUetBqFJXAJ2y
-         ig99Bd7ev9A31K3ASpQjgdchaPJs2P/nWKm51ZtILZSgNIM/qoJeWcg4VjF8sE1mTm4n
-         JUvEoJi8uAUoRjqJ/h/LIniaagz/QHY8XnpAzn8bHBr0uDPpnnovael9MMSjA/ekF/tr
-         6JUA==
+        bh=LAXPi8+KuwRaa3qx04ySFQpznpxpBD4ALEEO3wmFkAo=;
+        b=SigRcDlQ5PPkC0qdP0yhdZiLlOvVQOfWuGbfdKNWNRN8En+czF4FXJIyEG0JjQ4R9Z
+         cce1yV3NBdlz2XrQ4QBpWZ4GVGDBaUUAJN8ZvP/G9LeiW08GLuktebxevh6BYa9H74Fe
+         d+k3grlZ158i7wGPps5w1t+uXy8gj5JBat+H0CWQEC9Fxd24PsuxjaADtCVuKh6ikRKc
+         Uvf227IAiXiYR2eE9dtvpg7UGCFtP8CVLSIRZIq35M8+ibcQtW7BX4H1vi8Usl4FNY7t
+         b2gXDOcX5FKTfTBQYkxgm42ncSkw4BBm90FYitE4l51rNUL98arEChzFu1/zCFXcxuuo
+         kM3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758031751; x=1758636551;
+        d=1e100.net; s=20230601; t=1758031854; x=1758636654;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=naxnlF8RW3uPyYwaOywJDf3OceUlrkorGyjKAmqFqDQ=;
-        b=P4O0APuTP+7jCcxfYDsYD/DOuU9mUacCoJjh7IGCl4KelaPtiLyioTxMgv9Zt03n+5
-         m+HEkFwQQ2wHDdX4IcTfi5yTVrsgxCmHZBppSgZzgHjZXAmJmFuuB0cbmecTRQMtJ3u/
-         ZKSS5eAW+czOaxqfon/TbZsYWDAtvuBDig2X33tmvofJos2TTFO/rim/FIwfifhEvbRI
-         9y1nKEaCEmBQgAg9UjCsaWYiUZcBoffpfpzdddFvzpBUQz2pxe3QS3yVs8YosUbkIuGT
-         fXoIXW1XFIxi5XeZ+ZEtnuU0CVIbzzoWjnMsuilqeFVoNWPMirq+KKerpzqCYqH4PYRR
-         /o8A==
-X-Forwarded-Encrypted: i=1; AJvYcCXY5Efw3i9yIWyl4MbcmiSctD+HRZ0a3tvkGBln+suAoqOuqYSomalCPXcbHsrASk7XtPtooQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YykB3WVHw2oN4N8MuSJXh2vSrj/KLU/Z8XAI7pyO5EBPsSA3Ehc
-	JN0IikRNDCo8xuGMuFNRKnlaDyZyN8hcdgZNQ6k2OaMm0D0bCyF8rcUkvYGFwaWgOg==
-X-Gm-Gg: ASbGncuKhW0+aWvXOCVKdqWy349SX32vQY8o9NhwcPxJHrys/4e2qWFuo8P+q/0Hv3I
-	ekAvXl3Op1vFCDFEGoesUGHFQHZDpXiJTMLQWLh0FqAWMctQDQ6OY+vUOyTutBsOiA14keCvOy+
-	W5KCtByLiGtqR1TRvm1wr9aRsKnULVAzMK2TJTogEZtTb9bzI+8FqmTgFcvVxne3JeMh6hsPU0n
-	76LalpgCRwpGIUuxvmOlJ+1OsRiVwQ2PuJtZHywzhBEUtoETkoQ6s809lElfjhZi/pCXhPPqfdk
-	hzN9p9/tUhaNZMcLMPmiud2jbuIPMa2l6YwIvSuo60FoGV1VvcLEXBgqVrgFeY5CdQEwzFK2CB0
-	oqgBOtTkN5bAOy9FYZaT+h2Ww00ZDm7EAE3kwBBe86jKlI7Cg/6xPwQoIaEVgkLA7Jch/tA==
-X-Google-Smtp-Source: AGHT+IHiAMHPDFkAjiAxoWmA+0eW1WUNEbjO+yxVuqDckIGe39OhDb7FDlwQGK8b0ego1xO8BRYMfQ==
-X-Received: by 2002:a05:600c:4689:b0:43d:409c:6142 with SMTP id 5b1f17b1804b1-45f320079e2mr1928645e9.0.1758031750409;
-        Tue, 16 Sep 2025 07:09:10 -0700 (PDT)
+        bh=LAXPi8+KuwRaa3qx04ySFQpznpxpBD4ALEEO3wmFkAo=;
+        b=S5HeP+lejcWcm5zEUG6iqcnxSJ5cBy4VCIWrfaNDcB8xHNWnG3Tp7tPVDsDMWuplEg
+         oXQduFfXO/sYZYa+kS1EiMX6Ghmb7nbSyBOzy/A49BJkJG4NwJHSDgOKV04lTtGXJOAe
+         K90cQy3FZZ/jVknoGD6n09pX+quAm/rP8rXRlOk85aSH690U1p+d+QxvgJYueMARteOQ
+         Y+nOjm3lxdB2Ajd7L/dkEFt8EJh41lx5D8EssRrHT7KxBRofuz3PNYXMTq2Nt+5U7f8j
+         Lh8DEudzgjVUYRLYup0X1DOi96dVLXQQZRyb9ImyuRISUavirkjR1UZgenXdTSRgwhrc
+         bbgg==
+X-Forwarded-Encrypted: i=1; AJvYcCXb/NO5dsS8S0oRUj9gm30QDE+raYGKxU4ohIpuJIzODe9gxroU03qrPfLsJ0SZTJm3nNA5dQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YyF+6tq8qci3LA2oBOEhA99ITEDTVUQ959TUifV7zW9iR4AkuWE
+	OgeG2lqhfHDnr0jOjYJ99fcXgvVQv+7lMbfGmDOGqLk90e+dKo+qM2XkbUyeWuqqcw==
+X-Gm-Gg: ASbGnctbCMCpZYgifBxyPa3i1KUE7x7kaF09d8tnHXf9SHLoXo8hVUrqa/NiewOXPVP
+	j5uWpkOkCrIZgf7HblNG/A0u29xtbl2KfGLLv7ijnhS1ATeOPEc6Xk0fvUoBUYxDEIYtLvxRs5D
+	ig0k7X1csyfp39fh8+TWTIL8ZCYyUNYM3qRilltWr8ki6m9nAj9AawHfoyBZl34m4iqTXMXZPYn
+	TbfPC3Iv3J2tiIy4RK+RaKDkQ3tZ8JRFKdUkv9ept8hEplKeDV/piw3DoQbUZya9jU3RWgzUP+S
+	2s3XRs5sLFvoDfNVZp8aN+6/lscBYBG/iigeFUTFOhcDwniGUSxqOnUbor0Z8xD4a2hJxwlL6H8
+	acnTvP2s5udNi5lu5ujKIEExc1tu/9cdquOMac35XKzZJiyzo8OYkF+q3A0v2KHvGiBfWxxrWaJ
+	DF4yri
+X-Google-Smtp-Source: AGHT+IGcTe1ECO2GamWj51rf4zuyd3cbzaJnBRpBuslk+LBrCQjMJhqgUMk66hHXtNsu5/Krbmp77Q==
+X-Received: by 2002:a05:600c:3b85:b0:45c:b4fb:f0b3 with SMTP id 5b1f17b1804b1-45f3278c3admr1396305e9.3.1758031854210;
+        Tue, 16 Sep 2025 07:10:54 -0700 (PDT)
 Received: from google.com (157.24.148.146.bc.googleusercontent.com. [146.148.24.157])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45f32083729sm19395835e9.0.2025.09.16.07.09.09
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45e037c9d91sm219090395e9.20.2025.09.16.07.10.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Sep 2025 07:09:09 -0700 (PDT)
-Date: Tue, 16 Sep 2025 14:09:06 +0000
+        Tue, 16 Sep 2025 07:10:53 -0700 (PDT)
+Date: Tue, 16 Sep 2025 14:10:50 +0000
 From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
+To: Will Deacon <will@kernel.org>
 Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
 	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
 	suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, will@kernel.org, robin.murphy@arm.com,
+	catalin.marinas@arm.com, robin.murphy@arm.com,
 	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v4 04/28] iommu/io-pgtable-arm: Move selftests to a
- separate file
-Message-ID: <aMlvglecB0ZA2fmd@google.com>
+	jgg@ziepe.ca, mark.rutland@arm.com, praan@google.com
+Subject: Re: [PATCH v4 06/28] iommu/arm-smmu-v3: Split code with hyp
+Message-ID: <aMlv6rLaZ80j33OV@google.com>
 References: <20250819215156.2494305-1-smostafa@google.com>
- <20250819215156.2494305-5-smostafa@google.com>
- <20250915164517.GL882933@ziepe.ca>
+ <20250819215156.2494305-7-smostafa@google.com>
+ <aMA4UpDgLDuiGYf8@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -81,30 +81,52 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250915164517.GL882933@ziepe.ca>
+In-Reply-To: <aMA4UpDgLDuiGYf8@willie-the-truck>
 
-On Mon, Sep 15, 2025 at 01:45:17PM -0300, Jason Gunthorpe wrote:
-> On Tue, Aug 19, 2025 at 09:51:32PM +0000, Mostafa Saleh wrote:
-> > Soon, io-pgtable-arm.c will be compiled as part of the KVM/arm64
-> > in the hypervisor object, which doesn't have many of the kernel APIs,
-> > as faux devices, printk...
+On Tue, Sep 09, 2025 at 03:23:14PM +0100, Will Deacon wrote:
+> On Tue, Aug 19, 2025 at 09:51:34PM +0000, Mostafa Saleh wrote:
+> > The KVM SMMUv3 driver would re-use some of the cmdq code inside
+> > the hypervisor, move these functions to a new common c file that
+> > is shared between the host kernel and the hypervisor.
 > > 
-> > We would need to factor this things outside of this file, this patch
-> > moves the selftests outside, which remove many of the kernel
-> > dependencies, which also is not needed by the hypervisor.
-> > Create io-pgtable-arm-kernel.c for that, and in the next patch
-> > the rest of the code is factored out.
+> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> > ---
+> >  drivers/iommu/arm/arm-smmu-v3/Makefile        |   2 +-
+> >  .../arm/arm-smmu-v3/arm-smmu-v3-common-hyp.c  | 114 ++++++++++++++
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 146 ------------------
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  44 ++++++
+> >  4 files changed, 159 insertions(+), 147 deletions(-)
+> >  create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-hyp.c
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/Makefile b/drivers/iommu/arm/arm-smmu-v3/Makefile
+> > index 493a659cc66b..1918b4a64cb0 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/Makefile
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/Makefile
+> > @@ -1,6 +1,6 @@
+> >  # SPDX-License-Identifier: GPL-2.0
+> >  obj-$(CONFIG_ARM_SMMU_V3) += arm_smmu_v3.o
+> > -arm_smmu_v3-y := arm-smmu-v3.o
+> > +arm_smmu_v3-y := arm-smmu-v3.o arm-smmu-v3-common-hyp.o
+> >  arm_smmu_v3-$(CONFIG_ARM_SMMU_V3_IOMMUFD) += arm-smmu-v3-iommufd.o
+> >  arm_smmu_v3-$(CONFIG_ARM_SMMU_V3_SVA) += arm-smmu-v3-sva.o
+> >  arm_smmu_v3-$(CONFIG_TEGRA241_CMDQV) += tegra241-cmdqv.o
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-hyp.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-hyp.c
+> > new file mode 100644
+> > index 000000000000..62744c8548a8
+> > --- /dev/null
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-common-hyp.c
+> > @@ -0,0 +1,114 @@
 > 
-> Please send this as a stand alone patch, it looks like a good idea.
+> Given that this thie is linked into both the kernel and the hypervisor
+> objects, I think I'd drop the '-hyp' part from the filename. Maybe
+> something like 'arm-smmu-v3-lib.c' instead?
 > 
-> Also please add the boiler plate to wrap the selftest into a kunit and
-> use the usual kunit machinery. We alredy have an kunit for
-> smmuv3, it can just add another file to that.
 
-Makes sense, I will do that (hopefully before the weekend)
+Yes, that makes more sense, will do that.
 
 Thanks,
 Mostafa
 
+> Let the bike-shedding begin!
 > 
-> Jason
+> Will
