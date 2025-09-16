@@ -1,65 +1,64 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABD7D27707
-	for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 14:24:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D62C341661
+	for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 14:30:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758032693; cv=none; b=FxitG046EyIzp5g4odnFxW+9Cb+RBkSKS0CDfsCIO9kI7JaD++0r+7Uo79+AczbyZWO9rRlh9jC3nnHkn3vSySkj3NFm5U7L0xWLXVT+IsQ32pfFZxLZeQ2SH1M+YOonMpApNf7HeBwr5Nj1D8n+KuWpQfUiHdKnAqzW0Oxrm0w=
+	t=1758033028; cv=none; b=DsVse0NgdnpOC/rQjFkGT2E2c+MPs6c6zMJ89xhNtghnsPAgeP69xbQUsfARwmjWOU3c8Erz+GLXWKTjOqNQmOtLgP7CnhVOa6yKs5zYLiPmkMD9IpRYTkQa8cPFK3Q/9a4P0Du29cCphfMHamIrnvFpumpiQm0we1OliR/rRKc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758032693; c=relaxed/simple;
-	bh=9FKMvjaVooNs8mUaTMZuG1iwH62PNlh/Vx9vRvmfxg8=;
+	s=arc-20240116; t=1758033028; c=relaxed/simple;
+	bh=lXDcSFWQYp91MNC66yHZBJWni2JhoTUG5cLOCWW97Xg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=V1B7vpzQ47JG7T/LeGJ6CeJVcUKr7GtRBrVI+JhRsqHZysHgTeN9ht6buZ33z1X/OxbdT3YCoz2kq7Du65CZvofPodA1kXhem304Tyu00ONnhg4MXMl7N4aG1yScGO9Q5HOkJetnBUvybJPRgq0rSUFP0iHG4K85BlkxWBOdDFc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ql/yeJX1; arc=none smtp.client-ip=209.85.128.50
+	 Content-Type:Content-Disposition:In-Reply-To; b=Bl5l9M/HkJlp6jMIr5GxyRoSNJG999dL4ezjjIw66sqB6PszhBzDfpJxeUTo0uTmDh2ArDokcO5CYHZxzRCcSQekxBV2oA3eJDwToymTToqrQFfwTBGH4yq/Rrerr+Z73xjCQDkC+IOsDUwj60VYxbBliLGGImWdDt9q4jFJyRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=g5IAwGEn; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ql/yeJX1"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-45f2d21cbabso56015e9.1
-        for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 07:24:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="g5IAwGEn"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-45f2f894632so57015e9.0
+        for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 07:30:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1758032690; x=1758637490; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=phDp4VnCXN9xpbEyamDNS1NPHJ+wYuQ3EZcaTqxylTM=;
-        b=ql/yeJX1tFGNZBfr+qyLBCuvaTkg0iPywmMxJx/+DKMJp2X8sdLzGlwyiISFeUuiHB
-         9ASYKnvajKw3jX8txFfYc1FPPPmfQm5lb45C7O/a/q0qms1ErGSE12zuxWqq97cQ0DIN
-         NmgyDqzmBr3ZYXfXQim6/q01P0wyxOcKtFi/5lWadi6aWRxkuB7mkbHAjx0qwE1WOQf/
-         3toO/yw9FdNHrv1uBpI7QznSecQr3rY6XldrXRfyO91lEZjfZpIbYX5xQtR32SAKEHAE
-         P5GydnCukWYvCCEuzAp67T8/ize3MAuWkrKLLdCYQGDJEwb6NrW3C/+buqHvQSKKy5QJ
-         r1UA==
+        d=google.com; s=20230601; t=1758033024; x=1758637824; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fhmMdRL8qlR3Tvk3u8O3tOtlAqkQkVluaZ5zKHg+950=;
+        b=g5IAwGEnUvNRYKCwJX6TPolrheK+nD88x5JxCcbE9cL/+fe0l9dI7R34NC6gLdxVKw
+         U6j9n+k8otRPVXEKEuMCJoWe/nuwkRVf2+NPWKM3/OyZ1atg7wGd0GJfCFd3K8pt2Khv
+         CzncIOpKaEPc+s4y8tJXuADtUuYtB9XTbRq5T3g2cPGAGYBirLfLKewFhcjh4nh77B6I
+         VxtgZNNKvnQi0TKkElIXQQz6yV0f/nlaf855r/VrBlkZFWyniY7EcZyrJ4mWH86trAMU
+         jh41TXdev6nLcRjatSBmUU/4RJCAmhE6tB0m3Ckd/7aTGPiojhh3ZPqDBBkR8iN+xTqc
+         ST8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758032690; x=1758637490;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=phDp4VnCXN9xpbEyamDNS1NPHJ+wYuQ3EZcaTqxylTM=;
-        b=w0VoTRM029Zs//mc85/hkamflhQFNcT5mQCydCzbu+nEPYX12fVxLBlR1jYFOJdrVR
-         QIMfAT8HH777CB4WtqEH9C85HFzpjOFZ/HfvPV0MoW/W2pr9I4JdUw3DWXUskttfkpWm
-         HxgJGY2J5v03tHfUzb4aCNSaH8fnFuzXoTGubwgIlMCRG5ZIWMwbWX93y+FfcV914GWS
-         bjNgf9HKx6j8/u3J/IduHquceQY4D8hphJdi1gpupha5xUHSaWQDOEW8cDC0Zo1YtPYc
-         nQuLHfhQne8hlancloMPPXm1HYD+IoKfDoFw9hnJm5qHN+0C4Hz+tHahwZXJ3Mv4tSsP
-         dqwA==
-X-Forwarded-Encrypted: i=1; AJvYcCVQCCAptv2/mTwRlS07PIZ+nLQyT8ZvQp6xCB91ELa7XoWKi+LvgcyImcpn3lN6xg4bEbxqYA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwYEcTlY2jSAW3xqOEieoFa9ubowgeamtGyrnhVFeqa/JWHoYsu
-	CNwITuL4EYQZFs9VpEc4DY05H3dYr1XvBpKa2YNZO1knC/vxkQYz6rRTYbLlluP04Q==
-X-Gm-Gg: ASbGncuxqh07zUGgvnCPoU+3ohsyTAct5oliUsnjyJQn7yvEGwrxE0HMsxdoy0Sq3hz
-	wQWaoayLrUW/kS+n6q6sDZQDLAbtp3U9I0P8TM01fW1Pc4tyTGweD9oFP7U811BukdNymyGXDFY
-	G/NRWoBqxwH6knH7sNEUUO+reOcBjtJ/tjVpf4MBP0dn5pP+0wp35JdimhaaBkYHC46m9FvTpkz
-	5/WD9t16o20ahn2+i7PQO+XJ/XmWCldDB5mBJI+W2zY9TRSKdbII7BGzgMpiUG+BVUW9UC6xr6X
-	OHdpP/Lg31j1vy8EJyXO9yr49ANQzpqqxJl6C7gchRmw8EbNuaFWrlL/qO3jmHXxnh7tHaKutp0
-	oLF+tYCrxvWWj2zzzXgJ/7wsuR095fvf0IN/apWP8VZ+lMMwnfuJRraI3XM2MvGp/aoCiAnuwMD
-	iA5VvKpjeAwutpsds=
-X-Google-Smtp-Source: AGHT+IGY+tRtVLT/xfCf+KRVVpAwIAtGnuReJMbcXmJZJALHm+2tVODOb2attNahOqJDhG6WrbUOoA==
-X-Received: by 2002:a05:600c:3b85:b0:45c:b4fb:f0b3 with SMTP id 5b1f17b1804b1-45f3278c3admr1416035e9.3.1758032689764;
-        Tue, 16 Sep 2025 07:24:49 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1758033024; x=1758637824;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fhmMdRL8qlR3Tvk3u8O3tOtlAqkQkVluaZ5zKHg+950=;
+        b=kVcxvuciQn3UD4TANaviXZbSjd569ji81Mg/jJvxRFd7Ie4IVpCrljrI1df+GSLhpN
+         SlZDAcPoSfTj+WAFEijTMUeVfPjZQokcOaVyxylLEijS5wPkeLMD27N5subQavz2iuvg
+         5nqYlKAXKgXhOTXuY4VCFNWFhGccc8gI0X8bgnxwXQPgyM/Aef/Rd1zFmSptrU8gj5jJ
+         v9oMB02+yaHTkXQirUfDew2p4L70Houkt89ia3odJ56RuEmoIyr3MlME9kGIShyEKpZ+
+         tCZ9ynK2M+DkYuHGFcAHDgcy3ADMyO26NQCUpUmIafMQlaBQKPDf7bbDksJFQafoDqNa
+         2tNw==
+X-Forwarded-Encrypted: i=1; AJvYcCXtuaADmQr/gQQKzjvfrs6zqaEe8SQ/iELXp9QAjKN6gEXEvz+rh7ClZeFOYsbDmE6jq8GSzQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxYeadH2xtEw3FosXjkeyDPD2pj0rw0A5Qv87kC6hQD+P7C5CHz
+	XzkoL2SorELdIC4D9yVzmPImr59Pzx65IvKG5MJ5t13UAX2/DOKYTc+K/psR67xJZQ==
+X-Gm-Gg: ASbGncveHM/xyBp5Rs8LOK5I4IM0gCTML5CFdbfqlOfYOmhOf7npBqXMcjuHc5neE61
+	Z5+d/nQSUp96tiGadpLZ7bc4EyIQAc5uqT6rdbylErnZp9oLHSE1aUjk+VbSsleojk7ggIQARnd
+	OiowfYt7I9uvaxAm2dS7gmRUTTmNzf/Gb21X+QmxaCWm8kg20xHZtNZn4216HcB+ALv0p5FYGVs
+	yJ6a9H2K21avWtMfNbMWslvcS5bFwoXjxeL2m4Y/ciYrX1VUtNFtKtuagQqAFFGoyLkMj2UGgye
+	BIEB3RMsD5oBDV4+6Fvq8uVtGOG86YhfWVHy3AUeOEnymqfK4ghLW35sirnw2BszVk2osDO3ePW
+	x7Ss+rkZjPcLH+FeXeRVGPZmBX/EoypDa27/RgtyPyPmDOujWBL8AfXMaOCvjthwSU2k58rAZxz
+	lt68GFe0QUoBBI6iM=
+X-Google-Smtp-Source: AGHT+IGo1adSqugDdIZRQSzWcjgsYTglPxgYm/2Pf1a15n6l2x2VoKYdVxQeE+Hpg647GI1uAq/aog==
+X-Received: by 2002:a05:600c:8b35:b0:45a:2861:3625 with SMTP id 5b1f17b1804b1-45f320ea2dfmr1944965e9.4.1758033024087;
+        Tue, 16 Sep 2025 07:30:24 -0700 (PDT)
 Received: from google.com (157.24.148.146.bc.googleusercontent.com. [146.148.24.157])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3ea4b52b7fcsm9859169f8f.33.2025.09.16.07.24.49
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3ecdc967411sm340062f8f.46.2025.09.16.07.30.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Sep 2025 07:24:49 -0700 (PDT)
-Date: Tue, 16 Sep 2025 14:24:46 +0000
+        Tue, 16 Sep 2025 07:30:23 -0700 (PDT)
+Date: Tue, 16 Sep 2025 14:30:20 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Will Deacon <will@kernel.org>
 Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
@@ -69,153 +68,85 @@ Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
 	catalin.marinas@arm.com, robin.murphy@arm.com,
 	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
 	jgg@ziepe.ca, mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v4 10/28] KVM: arm64: iommu: Shadow host stage-2 page
- table
-Message-ID: <aMlzLsj5slPQhWEr@google.com>
+Subject: Re: [PATCH v4 14/28] iommu/arm-smmu-v3: Add KVM mode in the driver
+Message-ID: <aMl0fJJyV5sJKIKS@google.com>
 References: <20250819215156.2494305-1-smostafa@google.com>
- <20250819215156.2494305-11-smostafa@google.com>
- <aMA8vz0v0Vn-02QP@willie-the-truck>
+ <20250819215156.2494305-15-smostafa@google.com>
+ <aMQlm9ucDtd5-15r@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aMA8vz0v0Vn-02QP@willie-the-truck>
+In-Reply-To: <aMQlm9ucDtd5-15r@willie-the-truck>
 
-On Tue, Sep 09, 2025 at 03:42:07PM +0100, Will Deacon wrote:
-> On Tue, Aug 19, 2025 at 09:51:38PM +0000, Mostafa Saleh wrote:
-> > Create a shadow page table for the IOMMU that shadows the
-> > host CPU stage-2 into the IOMMUs to establish DMA isolation.
+On Fri, Sep 12, 2025 at 02:52:27PM +0100, Will Deacon wrote:
+> On Tue, Aug 19, 2025 at 09:51:42PM +0000, Mostafa Saleh wrote:
+> > Add a file only compiled for KVM mode.
 > > 
-> > An initial snapshot is created after the driver init, then
-> > on every permission change a callback would be called for
-> > the IOMMU driver to update the page table.
+> > At the moment it registers the driver with KVM, and add the hook
+> > needed for memory allocation.
 > > 
-> > For some cases, an SMMUv3 may be able to share the same page
-> > table used with the host CPU stage-2 directly.
-> > However, this is too strict and requires changes to the core hypervisor
-> > page table code, plus it would require the hypervisor to handle IOMMU
-> > page faults. This can be added later as an optimization for SMMUV3.
+> > Next, it will create the array with available SMMUs and their
+> > description.
 > > 
 > > Signed-off-by: Mostafa Saleh <smostafa@google.com>
 > > ---
-> >  arch/arm64/kvm/hyp/include/nvhe/iommu.h |  4 ++
-> >  arch/arm64/kvm/hyp/nvhe/iommu/iommu.c   | 83 ++++++++++++++++++++++++-
-> >  arch/arm64/kvm/hyp/nvhe/mem_protect.c   |  5 ++
-> >  3 files changed, 90 insertions(+), 2 deletions(-)
+> >  arch/arm64/include/asm/kvm_host.h             |  4 +++
+> >  arch/arm64/kvm/iommu.c                        | 10 ++++--
+> >  drivers/iommu/arm/arm-smmu-v3/Makefile        |  1 +
+> >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c   | 36 +++++++++++++++++++
+> >  4 files changed, 49 insertions(+), 2 deletions(-)
+> >  create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-kvm.c
 > > 
-> > diff --git a/arch/arm64/kvm/hyp/include/nvhe/iommu.h b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-> > index 1ac70cc28a9e..219363045b1c 100644
-> > --- a/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-> > +++ b/arch/arm64/kvm/hyp/include/nvhe/iommu.h
-> > @@ -3,11 +3,15 @@
-> >  #define __ARM64_KVM_NVHE_IOMMU_H__
+> > diff --git a/arch/arm64/include/asm/kvm_host.h b/arch/arm64/include/asm/kvm_host.h
+> > index fcb4b26072f7..52212c0f2e9c 100644
+> > --- a/arch/arm64/include/asm/kvm_host.h
+> > +++ b/arch/arm64/include/asm/kvm_host.h
+> > @@ -1678,4 +1678,8 @@ struct kvm_iommu_ops;
+> >  int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops);
+> >  size_t kvm_iommu_pages(void);
 > >  
-> >  #include <asm/kvm_host.h>
-> > +#include <asm/kvm_pgtable.h>
-> >  
-> >  struct kvm_iommu_ops {
-> >  	int (*init)(void);
-> > +	void (*host_stage2_idmap)(phys_addr_t start, phys_addr_t end, int prot);
-> >  };
-> >  
-> >  int kvm_iommu_init(void);
-> >  
-> > +void kvm_iommu_host_stage2_idmap(phys_addr_t start, phys_addr_t end,
-> > +				 enum kvm_pgtable_prot prot);
-> >  #endif /* __ARM64_KVM_NVHE_IOMMU_H__ */
-> > diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> > index a01c036c55be..f7d1c8feb358 100644
-> > --- a/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> > +++ b/arch/arm64/kvm/hyp/nvhe/iommu/iommu.c
-> > @@ -4,15 +4,94 @@
-> >   *
-> >   * Copyright (C) 2022 Linaro Ltd.
-> >   */
-> > +#include <linux/iommu.h>
+> > +#ifdef CONFIG_ARM_SMMU_V3_PKVM
+> > +size_t smmu_hyp_pgt_pages(void);
+> > +#endif
 > > +
-> >  #include <nvhe/iommu.h>
-> > +#include <nvhe/mem_protect.h>
-> > +#include <nvhe/spinlock.h>
+> >  #endif /* __ARM64_KVM_HOST_H__ */
+> > diff --git a/arch/arm64/kvm/iommu.c b/arch/arm64/kvm/iommu.c
+> > index 5460b1bd44a6..0475f7c95c6c 100644
+> > --- a/arch/arm64/kvm/iommu.c
+> > +++ b/arch/arm64/kvm/iommu.c
+> > @@ -17,10 +17,16 @@ int kvm_iommu_register_driver(struct kvm_iommu_ops *hyp_ops)
 > >  
-> >  /* Only one set of ops supported */
-> >  struct kvm_iommu_ops *kvm_iommu_ops;
-> >  
-> > +/* Protected by host_mmu.lock */
-> > +static bool kvm_idmap_initialized;
+> >  size_t kvm_iommu_pages(void)
+> >  {
+> > +	size_t nr_pages = 0;
 > > +
-> > +static inline int pkvm_to_iommu_prot(enum kvm_pgtable_prot prot)
-> > +{
-> > +	int iommu_prot = 0;
-> > +
-> > +	if (prot & KVM_PGTABLE_PROT_R)
-> > +		iommu_prot |= IOMMU_READ;
-> > +	if (prot & KVM_PGTABLE_PROT_W)
-> > +		iommu_prot |= IOMMU_WRITE;
-> > +	if (prot == PKVM_HOST_MMIO_PROT)
-> > +		iommu_prot |= IOMMU_MMIO;
+> >  	/*
+> >  	 * This is called very early during setup_arch() where no initcalls,
+> >  	 * so this has to call specific functions per each KVM driver.
+> >  	 */
+> > -	kvm_nvhe_sym(hyp_kvm_iommu_pages) = 0;
+> > -	return 0;
+> > +#ifdef CONFIG_ARM_SMMU_V3_PKVM
+> > +	nr_pages = smmu_hyp_pgt_pages();
+> > +#endif
 > 
-> This looks a little odd to me.
-> 
-> On the CPU side, the only different between PKVM_HOST_MEM_PROT and
-> PKVM_HOST_MMIO_PROT is that the former has execute permission. Both are
-> mapped as cacheable at stage-2 because it's the job of the host to set
-> the more restrictive memory type at stage-1.
-> 
-> Carrying that over to the SMMU would suggest that we don't care about
-> IOMMU_MMIO at stage-2 at all, so why do we need to set it here?
+> Rather than hard-code this here, I wonder whether it would be better to
+> have a default size for the IOMMU carveout and have the driver tells us
+> how much it needs later on when it probes. Then we could either free
+> any unused portion back to the host or return an error to the driver if
+> it wants more than we have.
 
-Unlike the CPU, the host can set the SMMU to bypass, in that case the
-hypervisor will attach its stage-2 with no stage-1 configured. So,
-stage-2 must have the correct attrs for MMIO.
-
-> 
-> > +	/* We don't understand that, might be dangerous. */
-> > +	WARN_ON(prot & ~PKVM_HOST_MEM_PROT);
-> > +	return iommu_prot;
-> > +}
-> > +
-> > +static int __snapshot_host_stage2(const struct kvm_pgtable_visit_ctx *ctx,
-> > +				  enum kvm_pgtable_walk_flags visit)
-> > +{
-> > +	u64 start = ctx->addr;
-> > +	kvm_pte_t pte = *ctx->ptep;
-> > +	u32 level = ctx->level;
-> > +	u64 end = start + kvm_granule_size(level);
-> > +	int prot =  IOMMU_READ | IOMMU_WRITE;
-> > +
-> > +	/* Keep unmapped. */
-> > +	if (pte && !kvm_pte_valid(pte))
-> > +		return 0;
-> > +
-> > +	if (kvm_pte_valid(pte))
-> > +		prot = pkvm_to_iommu_prot(kvm_pgtable_stage2_pte_prot(pte));
-> > +	else if (!addr_is_memory(start))
-> > +		prot |= IOMMU_MMIO;
-> 
-> Why do we need to map MMIO regions pro-actively here? I'd have thought
-> we could just do:
-> 
-> 	if (!kvm_pte_valid(pte))
-> 		return 0;
-> 
-> 	prot = pkvm_to_iommu_prot(kvm_pgtable_stage2_pte_prot(pte);
-> 	kvm_iommu_ops->host_stage2_idmap(start, end, prot);
-> 	return 0;
-> 
-> but I think that IOMMU_MMIO is throwing me again...
-
-We have to map everything pro-actively as we don’t handle page faults
-in the SMMUv3 driver.
-This would be a future work where the CPU stage-2 page table is shared with
-the SMMUv3.
+I can do that, we can set the default from a config or cmdline (or
+both).
 
 Thanks,
 Mostafa
 
 > 
 > Will
+> 
