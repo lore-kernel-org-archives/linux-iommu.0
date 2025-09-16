@@ -1,148 +1,702 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BA2633EB10
-	for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 14:04:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0431E212560
+	for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 14:07:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758031462; cv=none; b=Sk1Junjzc3c9dgTEP/zrLA2fV1mrJLyKoIpGeUtrckLfzI3fQ4yZeYGi/SABuktIxi0JCZyWwCEHN/rHmTUJF4KPJXptOZfg/Sl7JVmmSRirM7kG5xJRZBqMXrJsPmSfvj1i/e9l2egKq0fayJFRRcfE0A3hyTNDDEvssVsYDe8=
+	t=1758031669; cv=none; b=aqO0Rg3oeD9oG/hTK/Z45lm/JWuYWjvivVJuVeSJvDHh5z883E8M9w7kmn+Ad/x8x1nWtqY93c+fVlfEpoKlOKokCjEZLPUoA/sNUoe9ggt6k+Rex41+63ijJlKL5tH4l2JuaM1pOqWaHfeY7zHrruJVFc52+qD1HCw0dRgpWXc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758031462; c=relaxed/simple;
-	bh=Mj2uch2k7gnXMgjun6OnhPHWnFGJa3Fum6oHaYqsUBI=;
+	s=arc-20240116; t=1758031669; c=relaxed/simple;
+	bh=1NFn5KE/kXg8kjuzgfmxfbGhfOgwFsV7gF4h39ukfKk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nHmNQPDj3FieTXFcl2PEnDC4NHFB9Z2o1dQhPz9haSzPT47+LxdnZfqf1tOnL6u8j2w1KRzOfj7AULGsRUixmRr6mb9C+eKmU5KrJEDFoSDWlyxT4wtmOh2ZIyaAu2wm4KhHSb40wCGRv8iI8rKH4lEREQTZPJfcBrPxvPNjlZA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aRkvhlu6; arc=none smtp.client-ip=209.85.128.49
+	 Content-Type:Content-Disposition:In-Reply-To; b=EMThw1L2jbN97AD1TGJ72msKFfODgxl8izIbZPHvxbFPSMZuCUeOlV+k3e3b2ssDhPkwJngu9HbgFQb9KTXllNYQn539eqGie40gVT553dC+mL/A2sgBXsT8THU4X/ozUs49eIggs+lJyItRaGJk6l+Vz3WmPPxBw4BNszyZR08=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=i4nDF3jB; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aRkvhlu6"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-45f30011eceso56245e9.1
-        for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 07:04:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="i4nDF3jB"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-45f2d21cbabso54585e9.1
+        for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 07:07:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1758031458; x=1758636258; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1758031665; x=1758636465; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=2KMOMO3XHmFOxVaDXop6w1+ZPJDKNJK8AZpmO1KEadE=;
-        b=aRkvhlu6VcUW3WDqY2tq4yaJCgGCt+02DaVn6AsrKDN62Jf4XGRSKCH+NZxG3agLH5
-         X45W9q/elgFWCzdSPsMo4AYP1CPwRpVZ88E2i1uEGmsmlbPdY+NgbCAtYF7dvGxP0+Wj
-         UnSHUnFm5KleNV2l8FwK1HMnPu9NIKYfuaWbWHvyjwyByQNXqAcOpKOCYQza8Bs5CUJS
-         PzvYgOrl8wXaDhjbJM/C6FaLZ8aQqQv8DYXVFbvwHUz9aOvc+zl3kpxJ3mIx6T/uiqtR
-         Mz2eK4GZVYNzjJWQKtHUeSNykervsA+Xb50hw3HQybmf+c5Oz10v68UN0iU7KIuHiHg8
-         Vd2g==
+        bh=HShoPQmKhWPfy1OnMwKg01Y3DNas9O6fwq8aUeABtfI=;
+        b=i4nDF3jBVrDEaFZ+aiVJbMSYaQPY9a3YlAvSrxIT2kezBUAB70vidht1AQiN3HL9ua
+         dWixJhjRAKbnRpOkUmn7Je73wOUF8btwAS08IS7kLKoXXLUYfvFiF20/rypufpLqYPCQ
+         TsTC7/2I7d73QREUyDsIcDuj/62/z9zDHjHDl+gAc1t29p3L4suD0Tw/yZmnTrRpArDb
+         AbpWWjInL9aRCg74reIdZFQttyzoBcQb2ANkWCNV89cvlS1YtbXadgHzquZ70SnXYk1r
+         2LaLYs5F3MzIOgzFjDkGnC/q9GZrQzR4goKbR2dnyzlTow5rKbr84EY5d41diKrNT2yY
+         VyNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758031458; x=1758636258;
+        d=1e100.net; s=20230601; t=1758031665; x=1758636465;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2KMOMO3XHmFOxVaDXop6w1+ZPJDKNJK8AZpmO1KEadE=;
-        b=a/hNmeVjNo9vMfWb28AczxvsTrZw2t9u86VN7EOB46MGCFl9+iuZX2YMJ5dDG76Pjb
-         HTQxNW0J5UtgPBRVW0IDyX3dR+PCvLBEDhLaXg2rMdTeGTQrYSJrVHWRc0224lRN/LVc
-         mhkm7cjkXdC5l1Q0EhKECM1wv0EvaDxjRxMzjLj21hI4IWmpLgFr7m69YSg/UmOKRR+d
-         nXit79o4IxvEUbt60ZYD0tYffaM1wJqrLgW54ypgmMtokyqkKbFDMOv9g2WmnFoContC
-         wdpjNZ1z7UcAtaVletoDmOYXPIeBJpLAgNbIdGTl1ANtA0yPtBdX6FrEh6q3RwDxCitt
-         PljA==
-X-Forwarded-Encrypted: i=1; AJvYcCWXRgk8CYDMmTlF3IPWI89/R1zsiR3TiNthFE9HWNuurbdU6MEJiJNOBoW8hWHf6R+1vMNcyg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz3u8XlWUWKLeB0F7yd9EDjIfJESuuL62xtYaoe3S2aaH3D4aHp
-	8fgTk+19TLS9iMCl5dMB/VV52E3nyqGEe9+a09vtX4nV12+kmktuPnnrH7llBnitNw==
-X-Gm-Gg: ASbGncs3GVuYjJqImqbY0NkvnOR3Slt4LDviVJTw8gX8j3yUuzgTU9V27hYJ05tgrGC
-	XOVahC2FgXMgo1i4qW92Uls5VjwvoXcgkUuLVtg45FPeLDPMEF3H+5sxrSQKh41Bx7Eq++0vBar
-	y5kEldBRRefXS5bdYNvQsXnJ0tLAP/mw2VuuHBhJnbf6fnEOxQQswAw0gtU9y6Ca4rdZk84tLyR
-	F7FuqoxpaCe15Xl8j+gD7obpVZTj5uYVSvM1Niu0erT7pBAPpXn1PiA1SyNH3gnQhJprzSnV6XU
-	K5rUloMvFwQplVN+sSxxLYOVBPJWgwyyUihRgkps9QcsuunRSRd/Ksc4fQFyQ80xy8L9rlTwWwW
-	9OAbfF0ildnfws6CWxSv9pd5Dn2g3baD8mqLufBAcuASmqWgW18l05qetIwYUzqT8WMzAqg==
-X-Google-Smtp-Source: AGHT+IHnm9FwdHAPOXF/eEjid/iWJ/+0RKN/ZPnistvH7jALBPjgIBevgkp2XifrX2DSJ35JmAkJcQ==
-X-Received: by 2002:a05:600c:a10d:b0:45f:2940:d194 with SMTP id 5b1f17b1804b1-4601d6b4da8mr561855e9.2.1758031458150;
-        Tue, 16 Sep 2025 07:04:18 -0700 (PDT)
+        bh=HShoPQmKhWPfy1OnMwKg01Y3DNas9O6fwq8aUeABtfI=;
+        b=m1fukxlCNlHRWLMVqqJJ88OtRI8I7ZqxP6rl2K9jY7dlns/fy05oV34iUE2aspGD16
+         sX0SepOh1Gn69XbgxOV/5Dq1fC1ylen/cn2VXpjial/Mq9EPlSR3fgcukXF/Qj/dXtti
+         KaOzfbetwo+hC8rVWopKhQNGDRJhg3PlwrsHxoQ93DmFEgdJFoRBLQbyaEtWHRTfGG+o
+         1WMnSj58YHI4tDloa1ZmmjFUyoypJDjOVR+KBRJQ8fIUoni3MUGhEjt5OHS/w82v+Qi3
+         TcH5uyPhasSfMo1AiZcZxEwA/6pHTq4YIP8iyoGC1+iB8LtvWIgLqF6x0+DocBLbBRoi
+         xdCQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWOahHGfluYAnrvQdQPoO+aS3VKI+kn+VGL65LLjlluzRvWMRgkNm5AkAcRTp/DI9lVAjOG8A==@lists.linux.dev
+X-Gm-Message-State: AOJu0YzXfNNFhx5s/9JTREtIAbxXvLzpHeolHSB9CYW+FxkBw42bMgu8
+	Z56L96gLjPIxNXH09/RMt9a3eJ6pStbb1pqT/q8ccxKdBz9/xxm3I9iuoF/vyx9CblJo1sLjuPz
+	UUiM0zQ==
+X-Gm-Gg: ASbGnctIed/lZ0Zjd9nlhsKSD20JpOjJKg1ji9Xmp6zQ7wMUlidP7CAwZRABOOrzipv
+	RMKJYFrhFADLtuX9qZIb7BcyItP6B/GrOCXJWi5JdCFYja5q8o3BMRIiq7CWpnGRo8psDodCtQr
+	xUV0aS/4NjP7vDn/7vMlR0heFMxmVA6FrAniTON6iLLK2f2u9PBwWNUfLoSLmxEGuhIyLXhobkK
+	2pRyB0snC7LTfFYuH25JvOXcAe9muAYpWsKB9/piFAf7wx7fnME0EDo7MAt4L+JNzLYiAjKHLci
+	0kFAYTZxioazNlRIm5SnIyjrvd9d9XDYOfkBHIlm8BgGwLd6KMBv3pVZWeGi1BH61e85HEGVOVK
+	OZ3tnFNoZYwtXZwpdhin7hgK30k6TZQP3kRKW4wLK5/zgvfv+HDWE5Ow02FCXfSt2o/v6h+vgna
+	ifLAqk
+X-Google-Smtp-Source: AGHT+IEVo4a+qAIT+mxk3e2bBJu0HzPute2usozdzr8r6tBTGChpG2GP9sikTw0U3WHTfaTbYtNMLw==
+X-Received: by 2002:a05:600c:8b6a:b0:45f:5b02:b0cb with SMTP id 5b1f17b1804b1-45f5b02b390mr1185505e9.0.1758031664917;
+        Tue, 16 Sep 2025 07:07:44 -0700 (PDT)
 Received: from google.com (157.24.148.146.bc.googleusercontent.com. [146.148.24.157])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45e0372aea2sm233815705e9.7.2025.09.16.07.04.17
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3ecdbc7fe1bsm804909f8f.52.2025.09.16.07.07.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Sep 2025 07:04:17 -0700 (PDT)
-Date: Tue, 16 Sep 2025 14:04:13 +0000
+        Tue, 16 Sep 2025 07:07:44 -0700 (PDT)
+Date: Tue, 16 Sep 2025 14:07:40 +0000
 From: Mostafa Saleh <smostafa@google.com>
-To: Marc Zyngier <maz@kernel.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, oliver.upton@linux.dev, joey.gouly@arm.com,
+To: Pranjal Shrivastava <praan@google.com>
+Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
 	suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, robin.murphy@arm.com,
+	catalin.marinas@arm.com, will@kernel.org, robin.murphy@arm.com,
 	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	jgg@ziepe.ca, mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v4 03/28] KVM: arm64: pkvm: Add pkvm_time_get()
-Message-ID: <aMluXZfrvg_-fhMN@google.com>
+	jgg@ziepe.ca, mark.rutland@arm.com
+Subject: Re: [PATCH v4 04/28] iommu/io-pgtable-arm: Move selftests to a
+ separate file
+Message-ID: <aMlvLHFgubf0lcfO@google.com>
 References: <20250819215156.2494305-1-smostafa@google.com>
- <20250819215156.2494305-4-smostafa@google.com>
- <aMA2ugNakqrA1Pg0@willie-the-truck>
- <86frcvd3hb.wl-maz@kernel.org>
+ <20250819215156.2494305-5-smostafa@google.com>
+ <aMgkvTLAWLUJ7OD5@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <86frcvd3hb.wl-maz@kernel.org>
+In-Reply-To: <aMgkvTLAWLUJ7OD5@google.com>
 
-On Tue, Sep 09, 2025 at 04:56:16PM +0100, Marc Zyngier wrote:
-> On Tue, 09 Sep 2025 15:16:26 +0100,
-> Will Deacon <will@kernel.org> wrote:
+On Mon, Sep 15, 2025 at 02:37:49PM +0000, Pranjal Shrivastava wrote:
+> On Tue, Aug 19, 2025 at 09:51:32PM +0000, Mostafa Saleh wrote:
+> > Soon, io-pgtable-arm.c will be compiled as part of the KVM/arm64
+> > in the hypervisor object, which doesn't have many of the kernel APIs,
+> > as faux devices, printk...
 > > 
-> > On Tue, Aug 19, 2025 at 09:51:31PM +0000, Mostafa Saleh wrote:
-> > > Add a function to return time in us.
-> > > 
-> > > This can be used from IOMMU drivers while waiting for conditions as
-> > > for SMMUv3 TLB invalidation waiting for sync.
-> > > 
-> > > Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> > > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > > ---
-> > >  arch/arm64/kvm/hyp/include/nvhe/pkvm.h |  2 ++
-> > >  arch/arm64/kvm/hyp/nvhe/setup.c        |  4 ++++
-> > >  arch/arm64/kvm/hyp/nvhe/timer-sr.c     | 33 ++++++++++++++++++++++++++
-> > >  3 files changed, 39 insertions(+)
-> 
-> [...]
-> 
-> > > +#define SEC_TO_US 1000000
-> > > +
-> > > +int pkvm_timer_init(void)
-> > > +{
-> > > +	timer_freq = read_sysreg(cntfrq_el0);
-> > > +	/*
-> > > +	 * TODO: The highest privileged level is supposed to initialize this
-> > > +	 * register. But on some systems (which?), this information is only
-> > > +	 * contained in the device-tree, so we'll need to find it out some other
-> > > +	 * way.
-> > > +	 */
-> > > +	if (!timer_freq || timer_freq < SEC_TO_US)
-> > > +		return -ENODEV;
-> > > +	return 0;
-> > > +}
+> > We would need to factor this things outside of this file, this patch
+> > moves the selftests outside, which remove many of the kernel
+> > dependencies, which also is not needed by the hypervisor.
+> > Create io-pgtable-arm-kernel.c for that, and in the next patch
+> > the rest of the code is factored out.
 > > 
-> > Right, I think the frequency should be provided by the host once the arch
-> > timer driver has probed successfully. Relying on CNTFRQ isn't viable imo.
+> > Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> > ---
+> >  drivers/iommu/Makefile                |   2 +-
+> >  drivers/iommu/io-pgtable-arm-kernel.c | 216 +++++++++++++++++++++++
+> >  drivers/iommu/io-pgtable-arm.c        | 245 --------------------------
+> >  drivers/iommu/io-pgtable-arm.h        |  41 +++++
+> >  4 files changed, 258 insertions(+), 246 deletions(-)
+> >  create mode 100644 drivers/iommu/io-pgtable-arm-kernel.c
+> > 
+> > diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> > index 355294fa9033..d601b0e25ef5 100644
+> > --- a/drivers/iommu/Makefile
+> > +++ b/drivers/iommu/Makefile
+> > @@ -11,7 +11,7 @@ obj-$(CONFIG_IOMMU_DEBUGFS) += iommu-debugfs.o
+> >  obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
+> >  obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+> >  obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
+> > -obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
+> > +obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o io-pgtable-arm-kernel.o
+> >  obj-$(CONFIG_IOMMU_IO_PGTABLE_DART) += io-pgtable-dart.o
+> >  obj-$(CONFIG_IOMMU_IOVA) += iova.o
+> >  obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+> > diff --git a/drivers/iommu/io-pgtable-arm-kernel.c b/drivers/iommu/io-pgtable-arm-kernel.c
+> > new file mode 100644
+> > index 000000000000..f3b869310964
+> > --- /dev/null
+> > +++ b/drivers/iommu/io-pgtable-arm-kernel.c
 > 
-> We can always patch the value in, à la kimage_voffset. But it really
-> begs the question: who is their right mind doesn't set CNTFRQ_EL0 to
-> something sensible? Why should we care about supporting such
-> contraption?
-> 
-> I'd be happy to simply disable KVM when CNTFRQ_EL0 is misprogrammed,
-> or that the device tree provides a clock frequency. Because there is
-> no good way to support a guest in that case.
-> 
+> If this file just contains the selftests, how about naming it
+> "io-pgtable-arm-selftests.c" ? 
 
-I can make "arch_timer_rate" available to the hypervisor, but I'd rather
-just to fail in that case as Marc suggested to avoid complexity (and due
-to the lack HW on my end to test this) even if we check this only for
-protected mode.
+In the next patch I am adding more kernel code to it, so itâ€™s not just
+selftests, but as Jason suggested, we can just completely move the self
+tests out, in that case "io-pgtable-arm-selftests.c" makes sense.
 
 Thanks,
 Mostafa
 
-> 	M.
 > 
-> -- 
-> Without deviation from the norm, progress is not possible.
+> > @@ -0,0 +1,216 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +/*
+> > + * CPU-agnostic ARM page table allocator.
+> > + *
+> > + * Copyright (C) 2014 ARM Limited
+> > + *
+> > + * Author: Will Deacon <will.deacon@arm.com>
+> > + */
+> > +#define pr_fmt(fmt)	"arm-lpae io-pgtable: " fmt
+> > +
+> > +#include <linux/device/faux.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/slab.h>
+> > +
+> > +#include "io-pgtable-arm.h"
+> > +
+> > +#ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST
+> > +
+> > +static struct io_pgtable_cfg *cfg_cookie __initdata;
+> > +
+> > +static void __init dummy_tlb_flush_all(void *cookie)
+> > +{
+> > +	WARN_ON(cookie != cfg_cookie);
+> > +}
+> > +
+> > +static void __init dummy_tlb_flush(unsigned long iova, size_t size,
+> > +				   size_t granule, void *cookie)
+> > +{
+> > +	WARN_ON(cookie != cfg_cookie);
+> > +	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
+> > +}
+> > +
+> > +static void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
+> > +				      unsigned long iova, size_t granule,
+> > +				      void *cookie)
+> > +{
+> > +	dummy_tlb_flush(iova, granule, granule, cookie);
+> > +}
+> > +
+> > +static const struct iommu_flush_ops dummy_tlb_ops __initconst = {
+> > +	.tlb_flush_all	= dummy_tlb_flush_all,
+> > +	.tlb_flush_walk	= dummy_tlb_flush,
+> > +	.tlb_add_page	= dummy_tlb_add_page,
+> > +};
+> > +
+> > +static void __init arm_lpae_dump_ops(struct io_pgtable_ops *ops)
+> > +{
+> > +	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+> > +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+> > +
+> > +	pr_err("cfg: pgsize_bitmap 0x%lx, ias %u-bit\n",
+> > +		cfg->pgsize_bitmap, cfg->ias);
+> > +	pr_err("data: %d levels, 0x%zx pgd_size, %u pg_shift, %u bits_per_level, pgd @ %p\n",
+> > +		ARM_LPAE_MAX_LEVELS - data->start_level, ARM_LPAE_PGD_SIZE(data),
+> > +		ilog2(ARM_LPAE_GRANULE(data)), data->bits_per_level, data->pgd);
+> > +}
+> > +
+> > +#define __FAIL(ops, i)	({						\
+> > +		WARN(1, "selftest: test failed for fmt idx %d\n", (i));	\
+> > +		arm_lpae_dump_ops(ops);					\
+> > +		-EFAULT;						\
+> > +})
+> > +
+> > +static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
+> > +{
+> > +	static const enum io_pgtable_fmt fmts[] __initconst = {
+> > +		ARM_64_LPAE_S1,
+> > +		ARM_64_LPAE_S2,
+> > +	};
+> > +
+> > +	int i, j;
+> > +	unsigned long iova;
+> > +	size_t size, mapped;
+> > +	struct io_pgtable_ops *ops;
+> > +
+> > +	for (i = 0; i < ARRAY_SIZE(fmts); ++i) {
+> > +		cfg_cookie = cfg;
+> > +		ops = alloc_io_pgtable_ops(fmts[i], cfg, cfg);
+> > +		if (!ops) {
+> > +			pr_err("selftest: failed to allocate io pgtable ops\n");
+> > +			return -ENOMEM;
+> > +		}
+> > +
+> > +		/*
+> > +		 * Initial sanity checks.
+> > +		 * Empty page tables shouldn't provide any translations.
+> > +		 */
+> > +		if (ops->iova_to_phys(ops, 42))
+> > +			return __FAIL(ops, i);
+> > +
+> > +		if (ops->iova_to_phys(ops, SZ_1G + 42))
+> > +			return __FAIL(ops, i);
+> > +
+> > +		if (ops->iova_to_phys(ops, SZ_2G + 42))
+> > +			return __FAIL(ops, i);
+> > +
+> > +		/*
+> > +		 * Distinct mappings of different granule sizes.
+> > +		 */
+> > +		iova = 0;
+> > +		for_each_set_bit(j, &cfg->pgsize_bitmap, BITS_PER_LONG) {
+> > +			size = 1UL << j;
+> > +
+> > +			if (ops->map_pages(ops, iova, iova, size, 1,
+> > +					   IOMMU_READ | IOMMU_WRITE |
+> > +					   IOMMU_NOEXEC | IOMMU_CACHE,
+> > +					   GFP_KERNEL, &mapped))
+> > +				return __FAIL(ops, i);
+> > +
+> > +			/* Overlapping mappings */
+> > +			if (!ops->map_pages(ops, iova, iova + size, size, 1,
+> > +					    IOMMU_READ | IOMMU_NOEXEC,
+> > +					    GFP_KERNEL, &mapped))
+> > +				return __FAIL(ops, i);
+> > +
+> > +			if (ops->iova_to_phys(ops, iova + 42) != (iova + 42))
+> > +				return __FAIL(ops, i);
+> > +
+> > +			iova += SZ_1G;
+> > +		}
+> > +
+> > +		/* Full unmap */
+> > +		iova = 0;
+> > +		for_each_set_bit(j, &cfg->pgsize_bitmap, BITS_PER_LONG) {
+> > +			size = 1UL << j;
+> > +
+> > +			if (ops->unmap_pages(ops, iova, size, 1, NULL) != size)
+> > +				return __FAIL(ops, i);
+> > +
+> > +			if (ops->iova_to_phys(ops, iova + 42))
+> > +				return __FAIL(ops, i);
+> > +
+> > +			/* Remap full block */
+> > +			if (ops->map_pages(ops, iova, iova, size, 1,
+> > +					   IOMMU_WRITE, GFP_KERNEL, &mapped))
+> > +				return __FAIL(ops, i);
+> > +
+> > +			if (ops->iova_to_phys(ops, iova + 42) != (iova + 42))
+> > +				return __FAIL(ops, i);
+> > +
+> > +			iova += SZ_1G;
+> > +		}
+> > +
+> > +		/*
+> > +		 * Map/unmap the last largest supported page of the IAS, this can
+> > +		 * trigger corner cases in the concatednated page tables.
+> > +		 */
+> > +		mapped = 0;
+> > +		size = 1UL << __fls(cfg->pgsize_bitmap);
+> > +		iova = (1UL << cfg->ias) - size;
+> > +		if (ops->map_pages(ops, iova, iova, size, 1,
+> > +				   IOMMU_READ | IOMMU_WRITE |
+> > +				   IOMMU_NOEXEC | IOMMU_CACHE,
+> > +				   GFP_KERNEL, &mapped))
+> > +			return __FAIL(ops, i);
+> > +		if (mapped != size)
+> > +			return __FAIL(ops, i);
+> > +		if (ops->unmap_pages(ops, iova, size, 1, NULL) != size)
+> > +			return __FAIL(ops, i);
+> > +
+> > +		free_io_pgtable_ops(ops);
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int __init arm_lpae_do_selftests(void)
+> > +{
+> > +	static const unsigned long pgsize[] __initconst = {
+> > +		SZ_4K | SZ_2M | SZ_1G,
+> > +		SZ_16K | SZ_32M,
+> > +		SZ_64K | SZ_512M,
+> > +	};
+> > +
+> > +	static const unsigned int address_size[] __initconst = {
+> > +		32, 36, 40, 42, 44, 48,
+> > +	};
+> > +
+> > +	int i, j, k, pass = 0, fail = 0;
+> > +	struct faux_device *dev;
+> > +	struct io_pgtable_cfg cfg = {
+> > +		.tlb = &dummy_tlb_ops,
+> > +		.coherent_walk = true,
+> > +		.quirks = IO_PGTABLE_QUIRK_NO_WARN,
+> > +	};
+> > +
+> > +	dev = faux_device_create("io-pgtable-test", NULL, 0);
+> > +	if (!dev)
+> > +		return -ENOMEM;
+> > +
+> > +	cfg.iommu_dev = &dev->dev;
+> > +
+> > +	for (i = 0; i < ARRAY_SIZE(pgsize); ++i) {
+> > +		for (j = 0; j < ARRAY_SIZE(address_size); ++j) {
+> > +			/* Don't use ias > oas as it is not valid for stage-2. */
+> > +			for (k = 0; k <= j; ++k) {
+> > +				cfg.pgsize_bitmap = pgsize[i];
+> > +				cfg.ias = address_size[k];
+> > +				cfg.oas = address_size[j];
+> > +				pr_info("selftest: pgsize_bitmap 0x%08lx, IAS %u OAS %u\n",
+> > +					pgsize[i], cfg.ias, cfg.oas);
+> > +				if (arm_lpae_run_tests(&cfg))
+> > +					fail++;
+> > +				else
+> > +					pass++;
+> > +			}
+> > +		}
+> > +	}
+> > +
+> > +	pr_info("selftest: completed with %d PASS %d FAIL\n", pass, fail);
+> > +	faux_device_destroy(dev);
+> > +
+> > +	return fail ? -EFAULT : 0;
+> > +}
+> > +subsys_initcall(arm_lpae_do_selftests);
+> > +#endif
+> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> > index 96425e92f313..791a2c4ecb83 100644
+> > --- a/drivers/iommu/io-pgtable-arm.c
+> > +++ b/drivers/iommu/io-pgtable-arm.c
+> > @@ -7,15 +7,10 @@
+> >   * Author: Will Deacon <will.deacon@arm.com>
+> >   */
+> >  
+> > -#define pr_fmt(fmt)	"arm-lpae io-pgtable: " fmt
+> > -
+> >  #include <linux/atomic.h>
+> >  #include <linux/bitops.h>
+> >  #include <linux/io-pgtable.h>
+> > -#include <linux/kernel.h>
+> > -#include <linux/device/faux.h>
+> >  #include <linux/sizes.h>
+> > -#include <linux/slab.h>
+> >  #include <linux/types.h>
+> >  #include <linux/dma-mapping.h>
+> >  
+> > @@ -24,33 +19,6 @@
+> >  #include "io-pgtable-arm.h"
+> >  #include "iommu-pages.h"
+> >  
+> > -#define ARM_LPAE_MAX_ADDR_BITS		52
+> > -#define ARM_LPAE_S2_MAX_CONCAT_PAGES	16
+> > -#define ARM_LPAE_MAX_LEVELS		4
+> > -
+> > -/* Struct accessors */
+> > -#define io_pgtable_to_data(x)						\
+> > -	container_of((x), struct arm_lpae_io_pgtable, iop)
+> > -
+> > -#define io_pgtable_ops_to_data(x)					\
+> > -	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
+> > -
+> > -/*
+> > - * Calculate the right shift amount to get to the portion describing level l
+> > - * in a virtual address mapped by the pagetable in d.
+> > - */
+> > -#define ARM_LPAE_LVL_SHIFT(l,d)						\
+> > -	(((ARM_LPAE_MAX_LEVELS - (l)) * (d)->bits_per_level) +		\
+> > -	ilog2(sizeof(arm_lpae_iopte)))
+> > -
+> > -#define ARM_LPAE_GRANULE(d)						\
+> > -	(sizeof(arm_lpae_iopte) << (d)->bits_per_level)
+> > -#define ARM_LPAE_PGD_SIZE(d)						\
+> > -	(sizeof(arm_lpae_iopte) << (d)->pgd_bits)
+> > -
+> > -#define ARM_LPAE_PTES_PER_TABLE(d)					\
+> > -	(ARM_LPAE_GRANULE(d) >> ilog2(sizeof(arm_lpae_iopte)))
+> > -
+> >  /*
+> >   * Calculate the index at level l used to map virtual address a using the
+> >   * pagetable in d.
+> > @@ -163,18 +131,6 @@
+> >  #define iopte_set_writeable_clean(ptep)				\
+> >  	set_bit(ARM_LPAE_PTE_AP_RDONLY_BIT, (unsigned long *)(ptep))
+> >  
+> > -struct arm_lpae_io_pgtable {
+> > -	struct io_pgtable	iop;
+> > -
+> > -	int			pgd_bits;
+> > -	int			start_level;
+> > -	int			bits_per_level;
+> > -
+> > -	void			*pgd;
+> > -};
+> > -
+> > -typedef u64 arm_lpae_iopte;
+> > -
+> >  static inline bool iopte_leaf(arm_lpae_iopte pte, int lvl,
+> >  			      enum io_pgtable_fmt fmt)
+> >  {
+> > @@ -1274,204 +1230,3 @@ struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns = {
+> >  	.alloc	= arm_mali_lpae_alloc_pgtable,
+> >  	.free	= arm_lpae_free_pgtable,
+> >  };
+> > -
+> > -#ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST
+> > -
+> > -static struct io_pgtable_cfg *cfg_cookie __initdata;
+> > -
+> > -static void __init dummy_tlb_flush_all(void *cookie)
+> > -{
+> > -	WARN_ON(cookie != cfg_cookie);
+> > -}
+> > -
+> > -static void __init dummy_tlb_flush(unsigned long iova, size_t size,
+> > -				   size_t granule, void *cookie)
+> > -{
+> > -	WARN_ON(cookie != cfg_cookie);
+> > -	WARN_ON(!(size & cfg_cookie->pgsize_bitmap));
+> > -}
+> > -
+> > -static void __init dummy_tlb_add_page(struct iommu_iotlb_gather *gather,
+> > -				      unsigned long iova, size_t granule,
+> > -				      void *cookie)
+> > -{
+> > -	dummy_tlb_flush(iova, granule, granule, cookie);
+> > -}
+> > -
+> > -static const struct iommu_flush_ops dummy_tlb_ops __initconst = {
+> > -	.tlb_flush_all	= dummy_tlb_flush_all,
+> > -	.tlb_flush_walk	= dummy_tlb_flush,
+> > -	.tlb_add_page	= dummy_tlb_add_page,
+> > -};
+> > -
+> > -static void __init arm_lpae_dump_ops(struct io_pgtable_ops *ops)
+> > -{
+> > -	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+> > -	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+> > -
+> > -	pr_err("cfg: pgsize_bitmap 0x%lx, ias %u-bit\n",
+> > -		cfg->pgsize_bitmap, cfg->ias);
+> > -	pr_err("data: %d levels, 0x%zx pgd_size, %u pg_shift, %u bits_per_level, pgd @ %p\n",
+> > -		ARM_LPAE_MAX_LEVELS - data->start_level, ARM_LPAE_PGD_SIZE(data),
+> > -		ilog2(ARM_LPAE_GRANULE(data)), data->bits_per_level, data->pgd);
+> > -}
+> > -
+> > -#define __FAIL(ops, i)	({						\
+> > -		WARN(1, "selftest: test failed for fmt idx %d\n", (i));	\
+> > -		arm_lpae_dump_ops(ops);					\
+> > -		-EFAULT;						\
+> > -})
+> > -
+> > -static int __init arm_lpae_run_tests(struct io_pgtable_cfg *cfg)
+> > -{
+> > -	static const enum io_pgtable_fmt fmts[] __initconst = {
+> > -		ARM_64_LPAE_S1,
+> > -		ARM_64_LPAE_S2,
+> > -	};
+> > -
+> > -	int i, j;
+> > -	unsigned long iova;
+> > -	size_t size, mapped;
+> > -	struct io_pgtable_ops *ops;
+> > -
+> > -	for (i = 0; i < ARRAY_SIZE(fmts); ++i) {
+> > -		cfg_cookie = cfg;
+> > -		ops = alloc_io_pgtable_ops(fmts[i], cfg, cfg);
+> > -		if (!ops) {
+> > -			pr_err("selftest: failed to allocate io pgtable ops\n");
+> > -			return -ENOMEM;
+> > -		}
+> > -
+> > -		/*
+> > -		 * Initial sanity checks.
+> > -		 * Empty page tables shouldn't provide any translations.
+> > -		 */
+> > -		if (ops->iova_to_phys(ops, 42))
+> > -			return __FAIL(ops, i);
+> > -
+> > -		if (ops->iova_to_phys(ops, SZ_1G + 42))
+> > -			return __FAIL(ops, i);
+> > -
+> > -		if (ops->iova_to_phys(ops, SZ_2G + 42))
+> > -			return __FAIL(ops, i);
+> > -
+> > -		/*
+> > -		 * Distinct mappings of different granule sizes.
+> > -		 */
+> > -		iova = 0;
+> > -		for_each_set_bit(j, &cfg->pgsize_bitmap, BITS_PER_LONG) {
+> > -			size = 1UL << j;
+> > -
+> > -			if (ops->map_pages(ops, iova, iova, size, 1,
+> > -					   IOMMU_READ | IOMMU_WRITE |
+> > -					   IOMMU_NOEXEC | IOMMU_CACHE,
+> > -					   GFP_KERNEL, &mapped))
+> > -				return __FAIL(ops, i);
+> > -
+> > -			/* Overlapping mappings */
+> > -			if (!ops->map_pages(ops, iova, iova + size, size, 1,
+> > -					    IOMMU_READ | IOMMU_NOEXEC,
+> > -					    GFP_KERNEL, &mapped))
+> > -				return __FAIL(ops, i);
+> > -
+> > -			if (ops->iova_to_phys(ops, iova + 42) != (iova + 42))
+> > -				return __FAIL(ops, i);
+> > -
+> > -			iova += SZ_1G;
+> > -		}
+> > -
+> > -		/* Full unmap */
+> > -		iova = 0;
+> > -		for_each_set_bit(j, &cfg->pgsize_bitmap, BITS_PER_LONG) {
+> > -			size = 1UL << j;
+> > -
+> > -			if (ops->unmap_pages(ops, iova, size, 1, NULL) != size)
+> > -				return __FAIL(ops, i);
+> > -
+> > -			if (ops->iova_to_phys(ops, iova + 42))
+> > -				return __FAIL(ops, i);
+> > -
+> > -			/* Remap full block */
+> > -			if (ops->map_pages(ops, iova, iova, size, 1,
+> > -					   IOMMU_WRITE, GFP_KERNEL, &mapped))
+> > -				return __FAIL(ops, i);
+> > -
+> > -			if (ops->iova_to_phys(ops, iova + 42) != (iova + 42))
+> > -				return __FAIL(ops, i);
+> > -
+> > -			iova += SZ_1G;
+> > -		}
+> > -
+> > -		/*
+> > -		 * Map/unmap the last largest supported page of the IAS, this can
+> > -		 * trigger corner cases in the concatednated page tables.
+> > -		 */
+> > -		mapped = 0;
+> > -		size = 1UL << __fls(cfg->pgsize_bitmap);
+> > -		iova = (1UL << cfg->ias) - size;
+> > -		if (ops->map_pages(ops, iova, iova, size, 1,
+> > -				   IOMMU_READ | IOMMU_WRITE |
+> > -				   IOMMU_NOEXEC | IOMMU_CACHE,
+> > -				   GFP_KERNEL, &mapped))
+> > -			return __FAIL(ops, i);
+> > -		if (mapped != size)
+> > -			return __FAIL(ops, i);
+> > -		if (ops->unmap_pages(ops, iova, size, 1, NULL) != size)
+> > -			return __FAIL(ops, i);
+> > -
+> > -		free_io_pgtable_ops(ops);
+> > -	}
+> > -
+> > -	return 0;
+> > -}
+> > -
+> > -static int __init arm_lpae_do_selftests(void)
+> > -{
+> > -	static const unsigned long pgsize[] __initconst = {
+> > -		SZ_4K | SZ_2M | SZ_1G,
+> > -		SZ_16K | SZ_32M,
+> > -		SZ_64K | SZ_512M,
+> > -	};
+> > -
+> > -	static const unsigned int address_size[] __initconst = {
+> > -		32, 36, 40, 42, 44, 48,
+> > -	};
+> > -
+> > -	int i, j, k, pass = 0, fail = 0;
+> > -	struct faux_device *dev;
+> > -	struct io_pgtable_cfg cfg = {
+> > -		.tlb = &dummy_tlb_ops,
+> > -		.coherent_walk = true,
+> > -		.quirks = IO_PGTABLE_QUIRK_NO_WARN,
+> > -	};
+> > -
+> > -	dev = faux_device_create("io-pgtable-test", NULL, 0);
+> > -	if (!dev)
+> > -		return -ENOMEM;
+> > -
+> > -	cfg.iommu_dev = &dev->dev;
+> > -
+> > -	for (i = 0; i < ARRAY_SIZE(pgsize); ++i) {
+> > -		for (j = 0; j < ARRAY_SIZE(address_size); ++j) {
+> > -			/* Don't use ias > oas as it is not valid for stage-2. */
+> > -			for (k = 0; k <= j; ++k) {
+> > -				cfg.pgsize_bitmap = pgsize[i];
+> > -				cfg.ias = address_size[k];
+> > -				cfg.oas = address_size[j];
+> > -				pr_info("selftest: pgsize_bitmap 0x%08lx, IAS %u OAS %u\n",
+> > -					pgsize[i], cfg.ias, cfg.oas);
+> > -				if (arm_lpae_run_tests(&cfg))
+> > -					fail++;
+> > -				else
+> > -					pass++;
+> > -			}
+> > -		}
+> > -	}
+> > -
+> > -	pr_info("selftest: completed with %d PASS %d FAIL\n", pass, fail);
+> > -	faux_device_destroy(dev);
+> > -
+> > -	return fail ? -EFAULT : 0;
+> > -}
+> > -subsys_initcall(arm_lpae_do_selftests);
+> > -#endif
+> > diff --git a/drivers/iommu/io-pgtable-arm.h b/drivers/iommu/io-pgtable-arm.h
+> > index ba7cfdf7afa0..a06a23543cff 100644
+> > --- a/drivers/iommu/io-pgtable-arm.h
+> > +++ b/drivers/iommu/io-pgtable-arm.h
+> > @@ -2,6 +2,8 @@
+> >  #ifndef IO_PGTABLE_ARM_H_
+> >  #define IO_PGTABLE_ARM_H_
+> >  
+> > +#include <linux/io-pgtable.h>
+> > +
+> >  #define ARM_LPAE_TCR_TG0_4K		0
+> >  #define ARM_LPAE_TCR_TG0_64K		1
+> >  #define ARM_LPAE_TCR_TG0_16K		2
+> > @@ -27,4 +29,43 @@
+> >  #define ARM_LPAE_TCR_PS_48_BIT		0x5ULL
+> >  #define ARM_LPAE_TCR_PS_52_BIT		0x6ULL
+> >  
+> > +/* Struct accessors */
+> > +#define io_pgtable_to_data(x)						\
+> > +	container_of((x), struct arm_lpae_io_pgtable, iop)
+> > +
+> > +#define io_pgtable_ops_to_data(x)					\
+> > +	io_pgtable_to_data(io_pgtable_ops_to_pgtable(x))
+> > +
+> > +struct arm_lpae_io_pgtable {
+> > +	struct io_pgtable	iop;
+> > +
+> > +	int			pgd_bits;
+> > +	int			start_level;
+> > +	int			bits_per_level;
+> > +
+> > +	void			*pgd;
+> > +};
+> > +
+> > +#define ARM_LPAE_MAX_ADDR_BITS		52
+> > +#define ARM_LPAE_S2_MAX_CONCAT_PAGES	16
+> > +#define ARM_LPAE_MAX_LEVELS		4
+> > +
+> > +/*
+> > + * Calculate the right shift amount to get to the portion describing level l
+> > + * in a virtual address mapped by the pagetable in d.
+> > + */
+> > +#define ARM_LPAE_LVL_SHIFT(l,d)						\
+> > +	(((ARM_LPAE_MAX_LEVELS - (l)) * (d)->bits_per_level) +		\
+> > +	ilog2(sizeof(arm_lpae_iopte)))
+> > +
+> > +#define ARM_LPAE_GRANULE(d)						\
+> > +	(sizeof(arm_lpae_iopte) << (d)->bits_per_level)
+> > +#define ARM_LPAE_PGD_SIZE(d)						\
+> > +	(sizeof(arm_lpae_iopte) << (d)->pgd_bits)
+> > +
+> > +#define ARM_LPAE_PTES_PER_TABLE(d)					\
+> > +	(ARM_LPAE_GRANULE(d) >> ilog2(sizeof(arm_lpae_iopte)))
+> > +
+> > +typedef u64 arm_lpae_iopte;
+> > +
+> >  #endif /* IO_PGTABLE_ARM_H_ */
+> 
+> Apart from the renaming above, I was able to apply this patch alone, and
+> build succesfully while toggling IOMMU_IO_PGTABLE_LPAE_SELFTEST across 
+> builds.
+> 
+> Reviewed-by: Pranjal Shrivastava <praan@google.com>
+> 
+> > -- 
+> > 2.51.0.rc1.167.g924127e9c0-goog
+> > 
