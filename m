@@ -1,79 +1,78 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE1C630F54C
-	for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 13:27:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EB243164D5
+	for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 13:43:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758029267; cv=none; b=Sv5+Aa9ZPxtOSodNO0M2GTUjcNZ6INBbWAZ69K/am5xTh/Pp4oWwFWg8MDEnljjaCgoqg0+ijDxJWFEtbkRF/hppdnnX8AXb670cG7njBEnrK+94n7ZaoswQTpvmEV7p8YaJxCH/IRi/8pQBU1HjTbqA6byyD983DqkvgS1tSZk=
+	t=1758030218; cv=none; b=LOucDG0yCfXR+3xdvIgzgRZCxC9lM8Krq675km8hJm7hrgfZD+LRuXYibu8QZoFwgfqh+5+usks+z13g6pFDVaoLgZHpYHo0PM9VjgBMZpDfL1TVz72PdOc2LuHJrmuBY9gz4JwAIqgS+PtWxjRSIF9CXR7ZH4cJfhUcCFTmVqA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758029267; c=relaxed/simple;
-	bh=CsQmZXv/AtyfZ974RJzjtLxZSNyHjA0lO/gWcn54LXM=;
+	s=arc-20240116; t=1758030218; c=relaxed/simple;
+	bh=aG0N8krrxMi6bz+piP0pXqzq+j6GXftkDiR9JS3f4po=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=H7VHzR3mFxR07YTdeaFgMBy9OayN/9VXdATy8Sss26rrAebglPpeCgGEYqJIzMtZ4zoqix1HfU6AvI7KMo9HieJF0fe9nY86l9ZgibR0xmmOYz7pfmb6m652JIV6bUg+ha8bdy7BGjep2lAywSinESlffr7SaDxkUd/bXl1f4LQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=FoMxK5ZI; arc=none smtp.client-ip=209.85.128.50
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ylcdsswkg4eiBfg1UHzVtqpc1F/ULl2kstU/XTsHokgE6e1OLnbSdS44d9yuFHgYnLJXMCfH17riHWTRDevf4C7UEd1zrUs/46A/lc7pj0xkxh1NTk7mBz44Je/EGYosWmFpD65nRSIyoDD6BcfOH98mL5uO1aLTDNwKncFZpmA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=QdlhAGFN; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="FoMxK5ZI"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-45f2d21cbabso50895e9.1
-        for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 06:27:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="QdlhAGFN"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-45f30011eceso53815e9.1
+        for <iommu@lists.linux.dev>; Tue, 16 Sep 2025 06:43:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1758029264; x=1758634064; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1758030215; x=1758635015; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=1BHOalff8m1sEtBaAy0omnedb+cWGI69lbfkwDKZ9kc=;
-        b=FoMxK5ZIOmsL2yLFtZbITvIvRWfnahVVZJ6Dy3oIIuvzi8IIIRD7IkJA4dYkYdElW8
-         xk3GDJMsBW7evVQn+08jUwLRFqMGGQD1kqh0BmBikj2DeUYx/KZ8Y3LdP6/Ug2F1cxet
-         7Bu9Yd3JEXVGzyV2b4W0gReaDqDI1ukxn1FkadZ0iA7uh4YcAquHHo7G3ddtMvc2PNGS
-         zolodw/kvhOy52/3B0hwWwgLHn70idcrmXthWqz6X0gLJzX497NZSUUcDQ1xKXqWrygu
-         GC29boiaqnq3qC5apdqVlZ8qd3mnQSXNUmy93d18UEcZdJpJ3W5FnYHdjVswLEbPXd93
-         wJNA==
+        bh=SfWHeFBkMHYJw5QiRGsKUIxVRqYkPAcQ5KBzj6Wt0do=;
+        b=QdlhAGFNxNoPspa+wXOztZkg7oPUzuUwv2vxPqNVwix7HiEEGyE1HJa9vmv3RbPTjd
+         eYKQtlh/zVED67jUnwkVfk6H1z46y0Y6fJp6rVbkVIkDij2Qr7uX74huFs658SQgCy45
+         5tb6pT1wdI0BS9itYynHFqzgACKH5/T9TczS5AzcBi+6ib4OH5NIYa7uYRYGtXq75rEb
+         43OGz3SUQ2nEsJnU26S2qVmB44bMGqq1i3/pPtTzotSthxpOpX1osodMVD5rHR6WlHJa
+         NvdO1U5ZbFa/hwDwRCC63PDY3dSkHql69bKmWv3Sqhjc6LHL+UKV8CNZJkkzzCaF8ue9
+         zohw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758029264; x=1758634064;
+        d=1e100.net; s=20230601; t=1758030215; x=1758635015;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1BHOalff8m1sEtBaAy0omnedb+cWGI69lbfkwDKZ9kc=;
-        b=IR9D5N7ln4Mgi77/mF8zYlb0M4x3eZU/pdPX0TIRaY+SqTCVymHlwBtllRvrnRhYBd
-         1fJcjbyP1FG79mhacxlrzP2ERBcuEdXvk63bq9hwjnzR/+5yC9R9Hrw5wf8atz+KKjx3
-         0rT4xa5x8oNmAuq2dErFYtIhDqwK5NXX56sa44i/JErtNhoxo31mVROgJZuS7aXmbrLB
-         Q1ltEWGQ/Mv42VBikUfxR5HsQsA+QZOXOdsknpmjSSsut/3PSVd5aZpgJjh1EAOTELQY
-         d9DQv/rubLo/icXG4ByR0siyaGON6LA65C+hPjnUBFBfzGmS4GnlqsWbfq2eFPSjP1aH
-         Bl+w==
-X-Forwarded-Encrypted: i=1; AJvYcCWDysk65bMqis5TU+ho+43pq6qQVuhoFM1F3PyMRsvpRYpUBCpMv5PQaW1K7XanYxRzpoeQXA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YzR+Sgq1tHPUXLEHsY2SHu2mT+qHBjLQL1aaXyza05DqV6TVcKn
-	O6pP5h2ZWiVsvnyW0SV8flE2ng2dRWzOZo7VOow0gtEm6YCLqL+P0FM2KGeatgxRNw==
-X-Gm-Gg: ASbGncvAy8Eaq1kJO/zUY23MHrM4GzeCQXZomO1G8sXAultC/8zCKrg+LWO+ikOLtxu
-	VDoKRi2tcwkwHQed37DnRj8VKnUS9JNAGSAcMZEXwbu+LT1mGNm4pl+u4lbd0r9265R4b/ad2Zy
-	+1pBiSQ1Qa5YuNXDSf30287cAb+TvOB+aGkBGxVBsx87qWOEaXvYakUQ8ecWp3g8UyMEwV3kfwQ
-	3xcgWOZX9tuycJ/YwdaBX9W2alWUJ1/e+5DvPurQTBVygM168xQRkVnrwzX402UW/IeMQhOMafz
-	NR7dJpsZs6Ml+UIgWvyrfWRFZfS44IwwBBSsmInjkW4CEXRT+Jp901eee+Bz6bK++1MHji0MwXM
-	EQIQ++cczcBxB1BuuuGkS4vh2IqmFYRSnwsQ76I67BrQ2qBIhJA3qrKIeQVJgtU7kMh64KC3qF+
-	pXAK8w
-X-Google-Smtp-Source: AGHT+IHpO3TM6wn0wdYZvYreXHSvE8knSxzVulFeyjbb2VOK8rBqXdxwKd/PFHa+lbfy7DcIUz373Q==
-X-Received: by 2002:a05:600c:8b6a:b0:45f:5b02:b0cb with SMTP id 5b1f17b1804b1-45f5b02b390mr1128685e9.0.1758029263552;
-        Tue, 16 Sep 2025 06:27:43 -0700 (PDT)
+        bh=SfWHeFBkMHYJw5QiRGsKUIxVRqYkPAcQ5KBzj6Wt0do=;
+        b=tfyigfUnCUSLzrj4AHR2SamytbPs8hGgMfMzF0vDmXPQA+CRpadadewc/te/6uZPuh
+         uuFAfuAqfDXCK2hkum+/a6u9TN3CK/hExMVOmsQ2K1iiwIOStzmexin/tbYxGwmx7nEa
+         LFWB+Pc84WduMcGO9tqWTdzpja2UQo14XYRH9UA2kklYXmetXHUBAva6cWFjZQmbBZw6
+         ksUuXPMwhjFEmMFwkUkMp1PEp0+bQJjTp8U0zk5+zw2UHrvmXuTMpbpN4H+l2w+9Ckub
+         z1iDBfeWwK4Qf1WO/783t5n8VW0WXZCphHxuxG721XdWO3iTg0Kzvyj0y7QmnGed3aYs
+         7CqQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWl6vjKQTuFjDHH8HiFibvgwTAd3e7XiT22WgP9OYdIqn7eX28Jovb4Z7LafAfJw1rWXKRNgg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxw9EpC7oS/oxQ8iJRBuaRiqOS2QnzEO4JAPYP1ZKGrfSWTwRUC
+	qbdduB0SWfghuQodqApIDwT2d+wfC9bhLJJYkxmD79kQ3nn3kMCWNBgGldD54zyvAg==
+X-Gm-Gg: ASbGncukmj4t4TonK9IAgQ7vIT9AfHAkXUdjv6L12CCIlNRTSbEhvGAFyyE/Qxup9tG
+	aRM35ENG1DHia0QJgi/s9Ud1zIvLBbxPsp1UhEpwWk/+NceaLV+0mBVSTf234tTERcrh7pHQov2
+	v1b8ILQmOjSABCGszZ2CV8jjDZfq2Zs7oWx3VHD3iNtGnOEMzLtVUSBqs4V0DECA4iVQvB4BKdt
+	iCL6mMVunizX6XaYC0VYTJjWxwTB6Zjo9KWzaTi2Np8vuh2aNrfMeL2JAzZkkfo62gHoYxV3H3r
+	ge595qz1Kxc3ln+ajhq76Y6TfqXdK302cjAVDV+YDlZmuKvRgU457N/Vc/lW21TaXirSv2o3paK
+	bM3uZVnm+Iz+/1VmxPV3EsUKZkqOQRduhDP2BKqcAb3/+qipj74XZ2IBNZ6hEkv42SCG05w==
+X-Google-Smtp-Source: AGHT+IHpXz7Rl+QKYOCiUh0stE/LvQiGqQu2cCoRgHmA+CQxnORb4ciGuF1F6j581pn63hwwkNtSVg==
+X-Received: by 2002:a05:600c:a10d:b0:45f:2940:d194 with SMTP id 5b1f17b1804b1-4601d6b4da8mr520345e9.2.1758030214403;
+        Tue, 16 Sep 2025 06:43:34 -0700 (PDT)
 Received: from google.com (157.24.148.146.bc.googleusercontent.com. [146.148.24.157])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3e95b111b68sm12008298f8f.32.2025.09.16.06.27.42
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45e016b5a16sm223228305e9.12.2025.09.16.06.43.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Sep 2025 06:27:43 -0700 (PDT)
-Date: Tue, 16 Sep 2025 13:27:39 +0000
+        Tue, 16 Sep 2025 06:43:33 -0700 (PDT)
+Date: Tue, 16 Sep 2025 13:43:30 +0000
 From: Mostafa Saleh <smostafa@google.com>
-To: Will Deacon <will@kernel.org>
+To: Pranjal Shrivastava <praan@google.com>
 Cc: linux-kernel@vger.kernel.org, kvmarm@lists.linux.dev,
 	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
 	maz@kernel.org, oliver.upton@linux.dev, joey.gouly@arm.com,
 	suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, robin.murphy@arm.com,
+	catalin.marinas@arm.com, will@kernel.org, robin.murphy@arm.com,
 	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	jgg@ziepe.ca, mark.rutland@arm.com, praan@google.com
+	jgg@ziepe.ca, mark.rutland@arm.com
 Subject: Re: [PATCH v4 02/28] KVM: arm64: Donate MMIO to the hypervisor
-Message-ID: <aMlly_9kDE04Inn2@google.com>
+Message-ID: <aMlpghG9s3hl9G3Q@google.com>
 References: <20250819215156.2494305-1-smostafa@google.com>
  <20250819215156.2494305-3-smostafa@google.com>
- <aMA13Sowq91XEqP9@willie-the-truck>
+ <aMcoYCcJXjN64cOE@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -83,9 +82,9 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <aMA13Sowq91XEqP9@willie-the-truck>
+In-Reply-To: <aMcoYCcJXjN64cOE@google.com>
 
-On Tue, Sep 09, 2025 at 03:12:45PM +0100, Will Deacon wrote:
+On Sun, Sep 14, 2025 at 08:41:04PM +0000, Pranjal Shrivastava wrote:
 > On Tue, Aug 19, 2025 at 09:51:30PM +0000, Mostafa Saleh wrote:
 > > Add a function to donate MMIO to the hypervisor so IOMMU hypervisor
 > > drivers can use that to protect the MMIO of IOMMU.
@@ -154,14 +153,7 @@ On Tue, Sep 09, 2025 at 03:12:45PM +0100, Will Deacon wrote:
 > > +		ret = -EPERM;
 > > +		goto unlock;
 > > +	}
-> 
-> Shouldn't we first check that the pfn is indeed MMIO? Otherwise, testing
-> the pte for the ownership information isn't right.
-
-I will add it, although the input should be trusted as it comes from the
-hypervisor SMMUv3 driver.
-
-> 
+> > +
 > > +	ret = kvm_pgtable_get_leaf(&pkvm_pgtable, (u64)virt, &pte, NULL);
 > > +	if (ret)
 > > +		goto unlock;
@@ -169,6 +161,28 @@ hypervisor SMMUv3 driver.
 > > +		ret = -EBUSY;
 > > +		goto unlock;
 > > +	}
+> 
+> I'm thinking of a situation where both of these checks might be
+> necessary.. The first check seems to confirm if the page being donated
+> isn't set up to trap in the hyp (i.e. the donor/host doesn't own the
+> page anymore). 
+> 
+> However, the second check seems to check if the pfn is already mapped
+> in the hyp's space. Is this check only to catch errorneous donations of
+> a shared page or is there something else?
+
+The first check confirms that the host kernel owns the page, so it can
+donate it.
+The second check checks that the hypervisor doesn't already have something
+mapped at this point.
+
+I can't find a case where this happens, I believe the second is mainly a
+debug check (similar to __pkvm_host_donate/share_hyp for normal memory.
+
+
+Thanks,
+Mostafa
+> 
 > > +
 > > +	ret = pkvm_create_mappings_locked(virt, virt + PAGE_SIZE, PAGE_HYP_DEVICE);
 > > +	if (ret)
@@ -197,27 +211,7 @@ hypervisor SMMUv3 driver.
 > > +
 > > +	host_lock_component();
 > > +	hyp_lock_component();
-> 
-> Shouldn't we check that:
-> 
->   1. pfn is mmio
->   2. pfn is owned by hyp
->   3. The host doesn't have something mapped at pfn already
-> 
-> ?
-> 
-
-I thought about this initially, but as
-- This code is only called from the hypervisor with trusted
-  inputs (only at boot)
-- Only called on error path
-
-So WARN_ON in case of failure to unmap MMIO pages seemed is good enough,
-to avoid extra code.
-
-But I can add the checks if you think they are necessary, we will need
-to add new helpers for MMIO state though.
-
+> > +
 > > +	WARN_ON(kvm_pgtable_hyp_unmap(&pkvm_pgtable, virt, size) != size);
 > > +	WARN_ON(host_stage2_try(kvm_pgtable_stage2_set_owner, &host_mmu.pgt, phys,
 > > +				PAGE_SIZE, &host_s2_pool, PKVM_ID_HOST));
@@ -247,20 +241,10 @@ to add new helpers for MMIO state though.
 > > -	}
 > > +	if (!kvm_pte_valid(ctx->old))
 > > +		return stage2_pte_is_counted(ctx->old) ? -EPERM : 0;
+> >  
+> >  	if (kvm_pte_table(ctx->old, ctx->level)) {
+> >  		childp = kvm_pte_follow(ctx->old, mm_ops);
+> > -- 
 > 
-> Can this code be reached for the guest? For example, if
-> pkvm_pgtable_stage2_destroy() runs into an MMIO-guarded pte on teardown?
-
-AFAICT, VMs page table is destroyed from reclaim_pgtable_pages() =>
-kvm_pgtable_stage2_destroy() => kvm_pgtable_stage2_destroy_range() ... =>
-stage2_free_walker()
-
-Which doesn't interact with “stage2_unmap_walker”, so that should be
-fine.
-
-Thanks,
-Mostafa
-
-
-> 
-> Will
+> Thanks
+> Praan
