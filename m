@@ -1,43 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24C8A2367C3;
-	Wed, 17 Sep 2025 10:36:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 335782DBF75
+	for <iommu@lists.linux.dev>; Wed, 17 Sep 2025 10:37:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758105409; cv=none; b=ukYFl/s0d7JvR6a6fsHNHdMPW8yRtIum/5JnQh31wj64PiHES2Wa9UhaJU+6Bl+lQ5xLNEwwREeOmirLvB4qNQ4oINRgT1rh2qsEu6ytJCTBwyCSwQgP02pmoqPYnSOaNLiE8AGi7sWIfwu1SXqSpIUat0R3VlYchiCpKKZjpLg=
+	t=1758105445; cv=none; b=mypIUNqgISksrV/rGObedQU5ggRz6xnUg5eqSaU+gc93xJDnIJO/Y6IbqES1XgFgrz9nHbDl7yMdPRNLJofKFXGsvpYt7ecpI4R7nTikeNX9kxed7q3b9yCPvBOXrsJKdayzAomfTEFB0qIVVwPGs5oUx5DIuMgN3bD3ZW2JVp8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758105409; c=relaxed/simple;
-	bh=9+CfYEPcX9RBMZk8bYI4Kxv/QQTIj2Zq3577UGdLueI=;
+	s=arc-20240116; t=1758105445; c=relaxed/simple;
+	bh=d7BrBasROwlOu738a4q4rF1WjwCSMVJlZ6ASYpcTTSA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nZUVcjxOrV1mDGGX6g+3iSemVBIEzvaiPdaFhfgRG2rqa1KlcOnq9gGG+nz0Z1R1wB7iaWVVLQeGPRuAhXPWBLCu6lvzErUANf5XdrEpGgUwi8T0AEF3n2XFDmdnyiKXqYuRcrW35NOXzapwW7qAqcR3MGiwbjdr5HyHZQwI6ac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QCefrIWD; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=dSkOqYE5Rhmu93BZPRQMwj6q/0sFNTOi8dMe8nCSMYnOA4IiuFiK3i9sqBCx3VS1XjL6H/Prxc97ZDkTgjNHNpm1W6Cmts8RqTUtnJkuA8mJCa63dV0rQjCx7yG8w6qmWtVECE0q+ul2AYc+N524YESceWWGyceEW7SfVcBEyww=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=kNJ/uzXV; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=lCKrd/3S; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=kNJ/uzXV; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=lCKrd/3S; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QCefrIWD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2481FC4CEFC;
-	Wed, 17 Sep 2025 10:36:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758105408;
-	bh=9+CfYEPcX9RBMZk8bYI4Kxv/QQTIj2Zq3577UGdLueI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=QCefrIWDpyeDN3tXCB94u2Q5MHcY4yejTjtLsnQVEmKCthEh6xZgfJLbg0LQHPSrA
-	 nSRFKqERWoVpqSJRGh2DasAyTzco1FZJiQ6RV8TxkrkGc6jukqP6yo3IsgptEsd7b9
-	 ZPjqCne7q7h0dMm/687O7OdUOK4Sx3X1cX5N7PnoEz1D4z93ewUSVpM6AJLAoz+qLQ
-	 tB4jan9ZQqw8jp1Mp9F67+yZRi2ivSd+Xs5sHJOxM1s9jbSS2eGenOP4oD7vtFmg2P
-	 7UnjEMEaBp8ZKfTszdcjLZOf2Ezycnw6joQfJW/BWvhcuIOSFMdO0eAw/bx6/+U2Of
-	 FAOvNCNFqe7QQ==
-Date: Wed, 17 Sep 2025 13:36:44 +0300
-From: Leon Romanovsky <leon@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH v3 3/4] ARM: dma-mapping: Switch to physical address
- mapping callbacks
-Message-ID: <20250917103644.GB6464@unreal>
-References: <cover.1758006942.git.leon@kernel.org>
- <5f96e44b1fb5d92a6a5f25fc9148a733a1a53b9d.1758006942.git.leon@kernel.org>
- <20250916184617.GW1086830@nvidia.com>
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="kNJ/uzXV";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="lCKrd/3S";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="kNJ/uzXV";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="lCKrd/3S"
+Received: from imap1.dmz-prg2.suse.org (unknown [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 5CAD71F7BC;
+	Wed, 17 Sep 2025 10:37:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1758105441; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=nZoP7xI9bh5cuZAC2MMMkkaHSM2qArN4UzTRm8GitpU=;
+	b=kNJ/uzXVRbTatfy05IVGNQLIzQ9yPArYK0Vuo18L+EvSl9LkJwvDxVTm6ipLRjopRYl37Q
+	lmkvpfx9V6hiDWJ3AUH0fo1eVRtgsuz3WXVd+0UCwW7ZT7gSDrbreDLFTElddZkurFO0tw
+	GBvYGseZhe+WcZcn66UCFBOvcVxQJvE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1758105441;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=nZoP7xI9bh5cuZAC2MMMkkaHSM2qArN4UzTRm8GitpU=;
+	b=lCKrd/3SMkAsu71vkV/44IEKXQSRO5fArYajtSwRNnnRLyN7UEpS4+bqwddhUAybMv2xHJ
+	mWtV6X5XQFK+a+CA==
+Authentication-Results: smtp-out2.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1758105441; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=nZoP7xI9bh5cuZAC2MMMkkaHSM2qArN4UzTRm8GitpU=;
+	b=kNJ/uzXVRbTatfy05IVGNQLIzQ9yPArYK0Vuo18L+EvSl9LkJwvDxVTm6ipLRjopRYl37Q
+	lmkvpfx9V6hiDWJ3AUH0fo1eVRtgsuz3WXVd+0UCwW7ZT7gSDrbreDLFTElddZkurFO0tw
+	GBvYGseZhe+WcZcn66UCFBOvcVxQJvE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1758105441;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=nZoP7xI9bh5cuZAC2MMMkkaHSM2qArN4UzTRm8GitpU=;
+	b=lCKrd/3SMkAsu71vkV/44IEKXQSRO5fArYajtSwRNnnRLyN7UEpS4+bqwddhUAybMv2xHJ
+	mWtV6X5XQFK+a+CA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id BE4BD1368D;
+	Wed, 17 Sep 2025 10:37:17 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id SZxDK12Pymj2OAAAD6G6ig
+	(envelope-from <pfalcato@suse.de>); Wed, 17 Sep 2025 10:37:17 +0000
+Date: Wed, 17 Sep 2025 11:37:07 +0100
+From: Pedro Falcato <pfalcato@suse.de>
+To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>, 
+	Guo Ren <guoren@kernel.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, 
+	Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, 
+	Alexander Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger <borntraeger@linux.ibm.com>, 
+	Sven Schnelle <svens@linux.ibm.com>, "David S . Miller" <davem@davemloft.net>, 
+	Andreas Larsson <andreas@gaisler.com>, Arnd Bergmann <arnd@arndb.de>, 
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Dan Williams <dan.j.williams@intel.com>, 
+	Vishal Verma <vishal.l.verma@intel.com>, Dave Jiang <dave.jiang@intel.com>, 
+	Nicolas Pitre <nico@fluxnic.net>, Muchun Song <muchun.song@linux.dev>, 
+	Oscar Salvador <osalvador@suse.de>, David Hildenbrand <david@redhat.com>, 
+	Konstantin Komarov <almaz.alexandrovich@paragon-software.com>, Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, 
+	Dave Young <dyoung@redhat.com>, Tony Luck <tony.luck@intel.com>, 
+	Reinette Chatre <reinette.chatre@intel.com>, Dave Martin <Dave.Martin@arm.com>, 
+	James Morse <james.morse@arm.com>, Alexander Viro <viro@zeniv.linux.org.uk>, 
+	Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, 
+	"Liam R . Howlett" <Liam.Howlett@oracle.com>, Vlastimil Babka <vbabka@suse.cz>, 
+	Mike Rapoport <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, 
+	Michal Hocko <mhocko@suse.com>, Hugh Dickins <hughd@google.com>, 
+	Baolin Wang <baolin.wang@linux.alibaba.com>, Uladzislau Rezki <urezki@gmail.com>, 
+	Dmitry Vyukov <dvyukov@google.com>, Andrey Konovalov <andreyknvl@gmail.com>, 
+	Jann Horn <jannh@google.com>, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-csky@vger.kernel.org, linux-mips@vger.kernel.org, 
+	linux-s390@vger.kernel.org, sparclinux@vger.kernel.org, nvdimm@lists.linux.dev, 
+	linux-cxl@vger.kernel.org, linux-mm@kvack.org, ntfs3@lists.linux.dev, 
+	kexec@lists.infradead.org, kasan-dev@googlegroups.com, Jason Gunthorpe <jgg@nvidia.com>, 
+	iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v3 02/13] device/dax: update devdax to use mmap_prepare
+Message-ID: <2jvm2x7krh7bkt43goiufksuxntncu2hxx67jos3i7zwj63jhh@rw47665pa25y>
+References: <cover.1758031792.git.lorenzo.stoakes@oracle.com>
+ <bfd55a49b89ebbdf2266d77c1f8df9339a99b97a.1758031792.git.lorenzo.stoakes@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -46,103 +112,109 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250916184617.GW1086830@nvidia.com>
+In-Reply-To: <bfd55a49b89ebbdf2266d77c1f8df9339a99b97a.1758031792.git.lorenzo.stoakes@oracle.com>
+X-Spam-Level: 
+X-Spamd-Result: default: False [-2.30 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	SUSPICIOUS_RECIPS(1.50)[];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_RHS_NOT_FQDN(0.50)[];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	ARC_NA(0.00)[];
+	TO_DN_SOME(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	FUZZY_RATELIMITED(0.00)[rspamd.com];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	MISSING_XM_UA(0.00)[];
+	FREEMAIL_ENVRCPT(0.00)[gmail.com];
+	DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	FROM_EQ_ENVFROM(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	FREEMAIL_CC(0.00)[linux-foundation.org,lwn.net,infradead.org,kernel.org,alpha.franken.de,linux.ibm.com,davemloft.net,gaisler.com,arndb.de,linuxfoundation.org,intel.com,fluxnic.net,linux.dev,suse.de,redhat.com,paragon-software.com,arm.com,zeniv.linux.org.uk,suse.cz,oracle.com,google.com,suse.com,linux.alibaba.com,gmail.com,vger.kernel.org,lists.linux.dev,kvack.org,lists.infradead.org,googlegroups.com,nvidia.com];
+	R_RATELIMIT(0.00)[to_ip_from(RL4ro17i1dnf4zni6sx1qqmcne)];
+	TO_MATCH_ENVRCPT_SOME(0.00)[];
+	RCVD_COUNT_TWO(0.00)[2];
+	RCVD_TLS_ALL(0.00)[];
+	RCPT_COUNT_GT_50(0.00)[62];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[suse.de:email,imap1.dmz-prg2.suse.org:helo]
+X-Spam-Flag: NO
+X-Spam-Score: -2.30
 
-On Tue, Sep 16, 2025 at 03:46:17PM -0300, Jason Gunthorpe wrote:
-> On Tue, Sep 16, 2025 at 10:32:06AM +0300, Leon Romanovsky wrote:
-> > +	if (!dev->dma_coherent &&
-> > +	    !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO)))
-> > +		__dma_page_cpu_to_dev(phys_to_page(phys), offset, size, dir);
+On Tue, Sep 16, 2025 at 03:11:48PM +0100, Lorenzo Stoakes wrote:
+> The devdax driver does nothing special in its f_op->mmap hook, so
+> straightforwardly update it to use the mmap_prepare hook instead.
 > 
-> I'd keep going and get rid of the page here too, maybe as a second
-> patch in this series:
+> Signed-off-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+> Acked-by: David Hildenbrand <david@redhat.com>
+> Reviewed-by: Jan Kara <jack@suse.cz>
 
-Thanks, it is always unclear how far to go with cleanups.
+Acked-by: Pedro Falcato <pfalcato@suse.de>
 
+> ---
+>  drivers/dax/device.c | 32 +++++++++++++++++++++-----------
+>  1 file changed, 21 insertions(+), 11 deletions(-)
 > 
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index 88c2d68a69c9ee..a84d12cd0ba4a9 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -624,16 +624,14 @@ static void __arm_dma_free(struct device *dev, size_t size, void *cpu_addr,
->  	kfree(buf);
+> diff --git a/drivers/dax/device.c b/drivers/dax/device.c
+> index 2bb40a6060af..c2181439f925 100644
+> --- a/drivers/dax/device.c
+> +++ b/drivers/dax/device.c
+> @@ -13,8 +13,9 @@
+>  #include "dax-private.h"
+>  #include "bus.h"
+>  
+> -static int check_vma(struct dev_dax *dev_dax, struct vm_area_struct *vma,
+> -		const char *func)
+> +static int __check_vma(struct dev_dax *dev_dax, vm_flags_t vm_flags,
+> +		       unsigned long start, unsigned long end, struct file *file,
+> +		       const char *func)
+>  {
+>  	struct device *dev = &dev_dax->dev;
+>  	unsigned long mask;
+> @@ -23,7 +24,7 @@ static int check_vma(struct dev_dax *dev_dax, struct vm_area_struct *vma,
+>  		return -ENXIO;
+>  
+>  	/* prevent private mappings from being established */
+> -	if ((vma->vm_flags & VM_MAYSHARE) != VM_MAYSHARE) {
+> +	if ((vm_flags & VM_MAYSHARE) != VM_MAYSHARE) {
+>  		dev_info_ratelimited(dev,
+>  				"%s: %s: fail, attempted private mapping\n",
+>  				current->comm, func);
+> @@ -31,15 +32,15 @@ static int check_vma(struct dev_dax *dev_dax, struct vm_area_struct *vma,
+>  	}
+>  
+>  	mask = dev_dax->align - 1;
+> -	if (vma->vm_start & mask || vma->vm_end & mask) {
+> +	if (start & mask || end & mask) {
+>  		dev_info_ratelimited(dev,
+>  				"%s: %s: fail, unaligned vma (%#lx - %#lx, %#lx)\n",
+> -				current->comm, func, vma->vm_start, vma->vm_end,
+> +				current->comm, func, start, end,
+>  				mask);
+>  		return -EINVAL;
+>  	}
+>  
+> -	if (!vma_is_dax(vma)) {
+> +	if (!file_is_dax(file)) {
+>  		dev_info_ratelimited(dev,
+>  				"%s: %s: fail, vma is not DAX capable\n",
+>  				current->comm, func);
+> @@ -49,6 +50,13 @@ static int check_vma(struct dev_dax *dev_dax, struct vm_area_struct *vma,
+>  	return 0;
 >  }
 >  
-> -static void dma_cache_maint_page(struct page *page, unsigned long offset,
-> +static void dma_cache_maint_page(phys_addr_t paddr,
->  	size_t size, enum dma_data_direction dir,
->  	void (*op)(const void *, size_t, int))
->  {
-> -	unsigned long pfn;
-> +	unsigned long pfn = paddr / PAGE_SIZE;
-> +	unsigned int offset = paddr % PAGE_SIZE;
->  	size_t left = size;
->  
-> -	pfn = page_to_pfn(page) + offset / PAGE_SIZE;
-> -	offset %= PAGE_SIZE;
-> -
->  	/*
->  	 * A single sg entry may refer to multiple physically contiguous
->  	 * pages.  But we still need to process highmem pages individually.
-> @@ -644,17 +642,17 @@ static void dma_cache_maint_page(struct page *page, unsigned long offset,
->  		size_t len = left;
->  		void *vaddr;
->  
-> -		page = pfn_to_page(pfn);
-> -
-> -		if (PageHighMem(page)) {
-> +		if (PhysHighMem(pfn << PAGE_SHIFT)) {
->  			if (len + offset > PAGE_SIZE)
->  				len = PAGE_SIZE - offset;
->  
->  			if (cache_is_vipt_nonaliasing()) {
-> -				vaddr = kmap_atomic(page);
-> +				vaddr = kmap_atomic_pfn(pfn);
->  				op(vaddr + offset, len, dir);
->  				kunmap_atomic(vaddr);
->  			} else {
-> +				struct page *page = pfn_to_page(pfn);
+> +static int check_vma(struct dev_dax *dev_dax, struct vm_area_struct *vma,
+> +		     const char *func)
+> +{
+> +	return __check_vma(dev_dax, vma->vm_flags, vma->vm_start, vma->vm_end,
+> +			   vma->vm_file, func);
+> +}
 > +
->  				vaddr = kmap_high_get(page);
->  				if (vaddr) {
->  					op(vaddr + offset, len, dir);
-> @@ -662,7 +660,7 @@ static void dma_cache_maint_page(struct page *page, unsigned long offset,
->  				}
->  			}
->  		} else {
-> -			vaddr = page_address(page) + offset;
-> +			vaddr = phys_to_virt(pfn) + offset;
->  			op(vaddr, len, dir);
->  		}
->  		offset = 0;
-> @@ -676,14 +674,11 @@ static void dma_cache_maint_page(struct page *page, unsigned long offset,
->   * Note: Drivers should NOT use this function directly.
->   * Use the driver DMA support - see dma-mapping.h (dma_sync_*)
->   */
-> -static void __dma_page_cpu_to_dev(struct page *page, unsigned long off,
-> +static void __dma_page_cpu_to_dev(phys_addr_t paddr,
->  	size_t size, enum dma_data_direction dir)
->  {
-> -	phys_addr_t paddr;
-> +	dma_cache_maint_page(paddr, size, dir, dmac_map_area);
->  
-> -	dma_cache_maint_page(page, off, size, dir, dmac_map_area);
-> -
-> -	paddr = page_to_phys(page) + off;
->  	if (dir == DMA_FROM_DEVICE) {
->  		outer_inv_range(paddr, paddr + size);
->  	} else {
-> 
-> > +	if (!dev->dma_coherent &&
-> > +	    !(attrs & (DMA_ATTR_SKIP_CPU_SYNC | DMA_ATTR_MMIO))) {
-> >  		page = phys_to_page(iommu_iova_to_phys(mapping->domain, iova));
-> >  		__dma_page_dev_to_cpu(page, offset, size, dir);
-> 
-> Same treatment here..
-> 
-> Looks Ok though, I didn't notice any pitfalls
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> Jason
-> 
+
+Side comment: I'm no DAX expert at all, but this check_vma() thing looks... smelly?
+Besides the !dax_alive() check, I don't see the need to recheck vma limits at
+every ->huge_fault() call. Even taking mremap() into account,
+->get_unmapped_area() should Do The Right Thing, no?
+
+-- 
+Pedro
