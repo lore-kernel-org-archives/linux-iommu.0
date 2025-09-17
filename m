@@ -1,103 +1,135 @@
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC29B77111
-	for <iommu@lists.linux.dev>; Wed, 17 Sep 2025 15:59:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.51
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1383F2F39D0
+	for <iommu@lists.linux.dev>; Wed, 17 Sep 2025 18:03:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758124775; cv=none; b=Ow7TtoY51UhVzzK3kT/DDEBG8zWrxhtLrOS+sDmcO3BXTaxSFJ7OKdoirN6SC0L/GHl6iHioNoyMpktCBD21ZGSErWBHtLmCqg9Aquyo5Jykhy7Brti6495Vx1h1NhOf0pfm/GLGEQ8oUVwIFVGSD0j3+3QQ3M4XgIxXOvha1eo=
+	t=1758132188; cv=none; b=cXPOiuAni4IHqP15Yc15s0+gVHKeE2kZYYlR7HwLaI0DB67cB00pz+30+6oiDmaZQr9pCOKY/Ds+VHT9QYNNtsGVslQISKyl4jROUYzoEVxTFdbrhY7dxrQrppeJFQSfZ/JxqdJfy1f4NW0DnbE9kowJKETb+deLFRMfqG+Nid8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758124775; c=relaxed/simple;
-	bh=bwd2hym8tNSAdXkGE4hZ3iw7DYGozn+untN0aXZ6tZA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=poqIvpWWa4oQgkc38Z8mskz4Gw3KTs9/qE5C/XGlXV6BUEAJfD8KURNK9sRqq5NqZ9yiSYIMsAe3RrWroiXcTeUnuwNiK4o/tuRYRydqn3avPdaAGlib2SfRyAe0ti+r18tpvUVA7ze7Q0tdvA0OsZ0tx4FmW/KNJxsYTnmgv5c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PJ+yP9iG; arc=none smtp.client-ip=209.85.161.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PJ+yP9iG"
-Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-621132816c8so1908eaf.2
-        for <iommu@lists.linux.dev>; Wed, 17 Sep 2025 08:59:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1758124773; x=1758729573; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=bwd2hym8tNSAdXkGE4hZ3iw7DYGozn+untN0aXZ6tZA=;
-        b=PJ+yP9iGdRUQ/bf2mGJDNDpfNO7s9BHMvtF3wzwPudl8K3MFwpXrSF1xHZuru1kjvG
-         Fb4NMDGCLveQFCHp5EQxJkO+n72KNh/Af4LwZlR4V+1qgrAxsB+j6OFTbD7DIFEejUmo
-         MPb3Lr+/TyNI4TRi58mzrYjbzssF7ANWtJugL6B4lnBPeZKwTEFmAfdUMqoOYsoaTI0l
-         gIQvej553sOi82pBfKFG8Cwp004mMUhIUDQ0chSlIxMKdsgXCZovkDNIxoTcYG/z1reD
-         scRthJ+LCcX14CCVtsXTlpoM5suDZHRybSSRKTj1Pj0wfZEu1doui0PCAYykBiZM+lze
-         NanQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758124773; x=1758729573;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bwd2hym8tNSAdXkGE4hZ3iw7DYGozn+untN0aXZ6tZA=;
-        b=LOINZR8M63+zBTLDmcPuYewKLCDSYi8dgEKKZ2btPQUvcfyOMxJo5YkGPmv/SEu7gA
-         PnGtrmJozvB1nPCOMd+JrQokIOZDHu+4Nr2wmW4pGKxFPuwOAUeMkAhyFHtL8wcjwTcJ
-         5YE/aZEcoDq11U2iRu4HhM/XD7tnjtatv9MbrEfmqggLgdSsrc4ZFUH8jbt7+ORS8vhM
-         I3ZNiphSimhGTItSDCfUq/ALlY0eSTfPm43Xo5WRgV5CW16h2AqDGhK8XY8HnRYUQ9c3
-         HtzVDwF0DnOP6Qu7/7S90UTZwyXiPWyL5AeYfV0cKrNmw0ClW2ebsDtz65DYzoB/4MGI
-         5unw==
-X-Forwarded-Encrypted: i=1; AJvYcCX0Rf6m0bm+MOsCqPyvytdcPwoHSZcYJl/E6iyttStCOI+G77Rdbwr5mQTrx3yjZKIl0xbbJQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yy9z3/giwQ07fM79h/O/ATyTs3gJJhfBjq0tmlnIZPkelw6qpCc
-	w+Mm1rZRrgZoeREiinkPsgvOKqc4dL3BV6m3iHlTdIudYV1DPSDRmndCUM0sX/KDz8c=
-X-Gm-Gg: ASbGncvOgp//TSiuzd0OjCvUgyzbJ05pNtVac/fWoEuUtKB8RdBQ+ZQZiVwps39i2Pp
-	EmeXgFZ4DNVYwo99zhWfCvy5zNrYUIMUeMCsWQCbTyrE/sEjE57gQuu7KPn9BYdgZm1EFIT5dEK
-	iKJj+oFzR1ex6ihTNW6ZyT6AnaRVi2mx8V+F1+0/19Ov6Wn6JEjoqSNtm+u/VesEci8BkC3x+GB
-	k0V3z1OqJKRO7OP36UXI0QC/ygdQsQ5R6Z54KrjpKTgJzwT/Bdbo8cKtoTuiaZVbXz/A82l+/cx
-	+UA5P166wpHEsApN7I0wwiXHa4pEcWuljI9fdecZbTchWH2PYPFvyn3dtEmvDo3udE8NR45d
-X-Google-Smtp-Source: AGHT+IFPi2deeD5xpECHK4kizIqpzvjT3NpSt1j+SxaGfjDrfDGe9/bYIqtD0y9cjE6AL0d46S51pw==
-X-Received: by 2002:a05:6808:4f4b:b0:43b:2829:e642 with SMTP id 5614622812f47-43d50c63332mr1037591b6e.24.1758124772981;
-        Wed, 17 Sep 2025 08:59:32 -0700 (PDT)
-Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-43b828d6909sm4320090b6e.7.2025.09.17.08.59.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Sep 2025 08:59:32 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uyuZ9-00000008UmV-28J5;
-	Wed, 17 Sep 2025 12:59:31 -0300
-Date: Wed, 17 Sep 2025 12:59:31 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Will Deacon <will@kernel.org>
-Cc: Mostafa Saleh <smostafa@google.com>, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, maz@kernel.org, oliver.upton@linux.dev,
-	joey.gouly@arm.com, suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v4 22/28] iommu/arm-smmu-v3-kvm: Emulate CMDQ for host
-Message-ID: <20250917155931.GI1326709@ziepe.ca>
-References: <20250819215156.2494305-1-smostafa@google.com>
- <20250819215156.2494305-23-smostafa@google.com>
- <aMQroI4NDu74PDGT@willie-the-truck>
- <20250915163858.GK882933@ziepe.ca>
- <aMl_5j8G3IGulAC6@google.com>
- <20250917123601.GA1326709@ziepe.ca>
- <aMrNTny9jgZJd_Ef@willie-the-truck>
- <20250917151612.GH1326709@ziepe.ca>
- <aMrS71vQ_MaVonzi@willie-the-truck>
+	s=arc-20240116; t=1758132188; c=relaxed/simple;
+	bh=5mTNq1WHtB2fcgWJR2HTorTj3tzZ5HURH3I9tm1WOZo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Si1lpuGimfgEoUzgIcPtvs8f7dFKXnGrRTTX8cuz/r/k/q3raYld9jYgH3BuABD6DgE8DTcfkgaKj8tGP2bBJSf0l8EDdN9Xpg9o6hMEsFoA9qeUorOwsW4zZb/xil0eBtuXUXt817ovM/V9gPOMKO+uM/GqKZvWiQqUz87pqgE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5124B2696;
+	Wed, 17 Sep 2025 11:02:57 -0700 (PDT)
+Received: from [10.57.63.94] (unknown [10.57.63.94])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D6EC53F673;
+	Wed, 17 Sep 2025 11:03:01 -0700 (PDT)
+Message-ID: <d73e5026-ccb0-4a19-9742-099a0443f878@arm.com>
+Date: Wed, 17 Sep 2025 19:02:52 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aMrS71vQ_MaVonzi@willie-the-truck>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Enable use of all SMR groups when
+ running bare-metal
+To: Stephan Gerhold <stephan.gerhold@linaro.org>,
+ Will Deacon <will@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Rob Clark <robin.clark@oss.qualcomm.com>,
+ Manivannan Sadhasivam <mani@kernel.org>, Johan Hovold <johan@kernel.org>,
+ Bjorn Andersson <andersson@kernel.org>, iommu@lists.linux.dev,
+ linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org
+References: <20250821-arm-smmu-qcom-all-smr-v1-1-7f5cbbceac3e@linaro.org>
+ <aMAkJ7CfPQuhvhfm@willie-the-truck> <aMBJNzXpQTMg4Ncs@linaro.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <aMBJNzXpQTMg4Ncs@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 17, 2025 at 04:25:35PM +0100, Will Deacon wrote:
+On 2025-09-09 4:35 pm, Stephan Gerhold wrote:
+> On Tue, Sep 09, 2025 at 01:57:11PM +0100, Will Deacon wrote:
+>> On Thu, Aug 21, 2025 at 10:33:53AM +0200, Stephan Gerhold wrote:
+>>> Some platforms (e.g. SC8280XP and X1E) support more than 128 stream
+>>> matching groups. This is more than what is defined as maximum by the ARM
+>>> SMMU architecture specification. Commit 122611347326 ("iommu/arm-smmu-qcom:
+>>> Limit the SMR groups to 128") disabled use of the additional groups because
+>>> they don't exhibit the same behavior as the architecture supported ones.
+>>>
+>>> It seems like this is just another quirk of the hypervisor: When running
+>>> bare-metal without the hypervisor, the additional groups appear to behave
+>>> just like all others. The boot firmware uses some of the additional groups,
+>>> so ignoring them in this situation leads to stream match conflicts whenever
+>>> we allocate a new SMR group for the same SID.
+>>>
+>>> The workaround exists primarily because the bypass quirk detection fails
+>>> when using a S2CR register from the additional matching groups, so let's
+>>> perform the test with the last reliable S2CR (127) and then limit the
+>>> number of SMR groups only if we detect that we are running below the
+>>> hypervisor (because of the bypass quirk).
+>>>
+>>> Fixes: 122611347326 ("iommu/arm-smmu-qcom: Limit the SMR groups to 128")
+>>> Signed-off-by: Stephan Gerhold <stephan.gerhold@linaro.org>
+>>> ---
+>>> I modified arm_smmu_find_sme() to prefer allocating from the SMR groups
+>>> above 128 (until they are all used). I did not see any issues, so I don't
+>>> see any indication that they behave any different from the others.
+>>> ---
+>>>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 27 +++++++++++++++++----------
+>>>   1 file changed, 17 insertions(+), 10 deletions(-)
+>>
+>> Is the existing workaround causing you problems somehow? Limiting the SMR
+>> groups to what the architecture allows still seems like the best bet to
+>> me unless there's a compelling reason to do something else.
+>>
+> 
+> Yes, the problem is the following (copied from commit message above):
+> 
+>> The boot firmware uses some of the additional groups, so ignoring them
+>> in this situation leads to stream match conflicts whenever we allocate
+>> a new SMR group for the same SID.
+> 
+> This happens e.g. in the following situation on SC8280XP when enabling
+> video decoding acceleration bare-metal without the hypervisor:
+> 
+>   1. The SMMU is already set up by the boot firmware before Linux is
+>      started, so some SMRs are already in use during boot. I added some
+>      code to dump them:
+> 
+>       arm-smmu 15000000.iommu: Found SMR0 <0xe0 0x0>
+>        ...
+>       arm-smmu 15000000.iommu: Found SMR8 <0x800 0x0>
+>       <unused>
+>       arm-smmu 15000000.iommu: Found SMR170 <0x2a22 0x400>
+>       arm-smmu 15000000.iommu: Found SMR171 <0x2a02 0x400>
+>        ...
+>       arm-smmu 15000000.iommu: Found SMR211 <0x400 0x3>
+> 
+>   2. We limit the SMRs to 128, so all the ones >= 170 just stay as-is.
+>      Only the ones < 128 are considered when allocating SMRs.
+> 
+>   3. We need to configure the following IOMMU for video acceleration:
+> 
+> 	video-firmware {
+> 		iommus = <&apps_smmu 0x2a02 0x400>;
+> 	};
+> 
+>   4. arm-smmu 15000000.iommu: Picked SMR 14 for SID 0x2a02 mask 0x400
+>      ... but SMR170 already uses that SID+mask!
+> 
+>   5. arm-smmu 15000000.iommu: Unexpected global fault, this could be serious
+>      arm-smmu 15000000.iommu: GFSR 0x80000004, GFSYNR0 0x0000000c, GFSYNR1 0x00002a02, GFSYNR2 0x00000000
+> 
+>      SMCF, bit[2] is set -> Stream match conflict fault
+>      caused by SID GFSYNR1 0x00002a02
+> 
+> With my patch this does not happen anymore. As I wrote, so far I have
+> seen no indication that the extra groups behave any different from the
+> standard ones defined by the architecture. I don't know why it was done
+> this way (rather than e.g. implementing the Extended Stream Matching
+> Extension), but we definitely need to do something with the extra SMRs
+> to avoid stream match conflicts.
 
-> Ah right, so the driver would unnecessarily issue CMOs for the structures
-> that are just shared with the hypervisor. At least it's _functional_ that
-> way, but I'm sure people will complain!
+I'm also a little wary of exposing more non-architectural stuff to the 
+main driver - could we not keep the existing logic and simply add an 
+extra loop at the end here to ensure any "extra" SMRs are disabled?
 
-Yes, functional, why would anyone complain? STE and CD manipulation is
-not fast path for anything?
-
-Jason
+Thanks,
+Robin.
