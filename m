@@ -1,127 +1,99 @@
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A01E30BF71
-	for <iommu@lists.linux.dev>; Thu, 18 Sep 2025 14:17:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A156324887E
+	for <iommu@lists.linux.dev>; Thu, 18 Sep 2025 14:20:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758205061; cv=none; b=oqfQ35r7ZHv39M5NlN+DggC9xrlc9834LRwFTZvICRhizyu/5xAHy0h43xICdk+G7QsDM23J240ibbG18On1G7L3QRjpkRcNesq8HhcWX620H0jf/ope/P2hbXRsLC0nq9Bv9nwnJRlTuDhDXytc6J0TKA2/GL014+tF4klnjzo=
+	t=1758205220; cv=none; b=TdHxqHXqa2fSAVD/VtJtYBztRps6oi8wzBPS2EjSSZBHCSCKDhj56FK0mIY03iNYWrLHFsiW576hLRXZ3AoM55LvR72YjLGLnk2+QOjxNg7uy1yICU9IioBE/n/rtmGdk0Gvh6FUGqYl92rLr+s92yjSzhlHM3MTfj4J72NFeWQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758205061; c=relaxed/simple;
-	bh=oBrHOy3u1qRTaEr6O66akdLOdzotS9PWV5TdeiiBhnw=;
+	s=arc-20240116; t=1758205220; c=relaxed/simple;
+	bh=PvXi2UaH2X72C7RXZdhkY44KYCqysJsWDYnH0vlxuTE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=W5RETVZWuxvocW0zOeKlvHh47uf35LYkYoFCngiMTmEJB9hIXxxueN8jEWxm6Q3DhjgRyyZcrr6fM7gLYXYL7Hpo3lvkCo47+FOoAg2Fs/Q7lCqxXqUD5Pst053U9DjSk0NQG5jp+ksYtBnrDop4aK70wc3d6XVKDTTcdBl2Ax4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=H+bAUrMf; arc=none smtp.client-ip=209.85.219.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=iH14+oznq/DQAfzrevwPgKitIdHGtbfcuQJOkd1AC6HXUJj0UfVaVQ5sygiKheCg6H3wFmzc2cfr7M6L7wXdGvrLT+YUmnbKXJOvRnbwcBbAq4k46ZLdJBM8oc+y39SBw1BNi8+BInsf6K8UxhSAirvKwwnGbwVL3g7GpPY+mZs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LYgn5fOa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="H+bAUrMf"
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-78f30dac856so11922526d6.2
-        for <iommu@lists.linux.dev>; Thu, 18 Sep 2025 07:17:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1758205058; x=1758809858; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9PlWQvS2VeWY2sKUieX87g6u6W0qtTQRJN790c3dQ9A=;
-        b=H+bAUrMfJ6x7yv3W2nL8fR8b5InADEtaG5GoNcANgtYzEMEaGCyMxo8UEZYEL6J0nx
-         4YlQHdjA5zotzKj701AhrvCYaOiAxb4fk4i0vpH/QrZjVSe8Rpt75XTFue1hC1mQVVLQ
-         aau1hatZPxtnnJ6GaMoWsh/To/Id5yg2sv6x6ZqtDwz/NLDsRzkuuHQbBV/wsiuIVxp4
-         ZxJzcQKXEOWjbhyPHifG7t35zXJC5RSia3xa4CZev/LENuFEqq/PzltohUTrXJd9OGvY
-         gAU4a0yZRHjKr0HpIr41Jcx4qCMWHWpU5qlzF7JcgmkaLLpRj0LzuU+Yf2ON8RrM1+jE
-         fs5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758205058; x=1758809858;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=9PlWQvS2VeWY2sKUieX87g6u6W0qtTQRJN790c3dQ9A=;
-        b=ClskW63yTvBWbUyCH4dnb/2h2O35YLGDUeUKbT7suu8dEwVdoOdb2qAuM3oYPF05Ao
-         CnwqadvYq9E49c9/aB/yABLc9CV2FDdQ+xMl9/5HUencEOToPuJ0FvlSqtzEsWIidWJv
-         pX+0ztk3KtQSIjSKIcRXq+ri92VK3nk7gGCIxcmPwDtS5PpE3KE7aj7IMlCwTS9PbdVY
-         2r6IrpZ6hcWtqtViweN/ZBQ4HdVgnpbGwWdN8B2opMLpAMhwpNzUn3y+IpRRknkjaIWl
-         3eIERCVBpHWeIH9K92U3ZANXR2MMPqYRwGLCO8JQjvsfydUezhWkrGAMYOTkQN4DpGbD
-         DRxw==
-X-Gm-Message-State: AOJu0YzPR2Ja2iL/dJZcLw4MUUr5/79/j/kzofFgEZxZlc95Yz68BHRD
-	19b8jMjhm40SkMuDSiMnh9aKzgUXCiPoqjwwzeLnWfkYzi6eBg3/Koedk6AMKUen9cs=
-X-Gm-Gg: ASbGncufhFyDDl379OtND5udPQZAM4VHxkD3Gu7dspJNzH9krP9eQLgPY0uxBXpEEee
-	oAbxF2kbxPSXP6QPPTkxiAF8rZr7ttgLh8BRXXL2VxNEKX/Qt6JzuLcKU981tSIe/4QE4lTtJwS
-	mPSMWvlVVOUTV1aY35I/e+es15iV4GAq8YgsNYoOs/Ch4kC6Uv5TtgqgIubVrD+ZTe9L1TaNjrM
-	Ju93074HJSGMtKwL8+Iy2Vofv9t4EpxqvFswNJguyL8eghlHiVx18FZDTqySnzTITRBlkpZzP3B
-	dwk3QbuJbzi0I0KcueJUHx+ODeOCWpI1Q8gpZ3C7WtaMrYf/gr1Xk5OpdXCRPP4p2J9yRQWdspZ
-	RWp/ePbfTO/5BZBElMGYrPU5F+lgFQ5hUm+qm4bCFgFxFDbN/T7R0PEEyaGk8nJph/xB06elsxH
-	7rRWNHXeMnVptYNXwxaRgaUQ==
-X-Google-Smtp-Source: AGHT+IGdtgO3co+AzjVg14mLustilnQBnl2mxoBu2Ha/Mk2Otj53RF7QzncRloXmzkssBqEVBSBo2A==
-X-Received: by 2002:ad4:5de4:0:b0:733:74d3:5fda with SMTP id 6a1803df08f44-78eccef286dmr69174246d6.28.1758205058082;
-        Thu, 18 Sep 2025 07:17:38 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-47-55-120-4.dhcp-dynamic.fibreop.ns.bellaliant.net. [47.55.120.4])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-793443cfee2sm13588626d6.13.2025.09.18.07.17.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Sep 2025 07:17:37 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uzFS5-00000008w2b-0Rq1;
-	Thu, 18 Sep 2025 11:17:37 -0300
-Date: Thu, 18 Sep 2025 11:17:37 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
-	stable@vger.kernel.org, Joao Martins <joao.m.martins@oracle.com>
-Subject: Re: [PATCH] iommu/amd/pgtbl: Fix possible race while increase page
- table level
-Message-ID: <20250918141737.GP1326709@ziepe.ca>
-References: <20250911121416.633216-1-vasant.hegde@amd.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LYgn5fOa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15220C4CEE7;
+	Thu, 18 Sep 2025 14:20:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1758205220;
+	bh=PvXi2UaH2X72C7RXZdhkY44KYCqysJsWDYnH0vlxuTE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LYgn5fOaQ8c1W1KYuQf68SSRzQ/1VdlyAO+C0dVrdc7puXNL4ufBYH/J8aZGoaAaC
+	 SKduReWduVX9jkBdMoHafghoLKwjCDukNDMa7IKYlzZMFElG2rhEwVuIGnTHDEiRl9
+	 j0XRTEAZl1pBTYIV7050Xk9YcSrUj6XVjlvbu+EWTiDXXjQPnv3y8wiATaZMf4dFF2
+	 xJUOMeaH6GfN/fLL5/qPJDiIXRs6ZVTyuY43IMwFstUSpuJ9aY7/Erlx3PmdzIb5zh
+	 AT7ocdTWayweor1lWTGLSvxaXAW6HHtxGRSgXBzOqVtt6Am8f0CFPrrQFop1aDh5ea
+	 uwSmLPbqc+ogw==
+Date: Thu, 18 Sep 2025 15:20:15 +0100
+From: Will Deacon <will@kernel.org>
+To: =?utf-8?B?6YOt5Lqa5pif?= <guoyaxing@bosc.ac.cn>
+Cc: linux-riscv <linux-riscv@lists.infradead.org>,
+	iommu <iommu@lists.linux.dev>, tjeznach <tjeznach@rivosinc.com>,
+	joro <joro@8bytes.org>, "robin.murphy" <robin.murphy@arm.com>,
+	"paul.walmsley" <paul.walmsley@sifive.com>,
+	palmer <palmer@dabbelt.com>, aou <aou@eecs.berkeley.edu>,
+	alex <alex@ghiti.fr>, anxu <anxu@bosc.ac.cn>,
+	wangran <wangran@bosc.ac.cn>
+Subject: Re: [PATCH v1 1/3] iommu/riscv: Add iommu perf driver
+Message-ID: <aMwVHrhKBZWstPat@willie-the-truck>
+References: <20250915020911.1313-1-guoyaxing@bosc.ac.cn>
+ <aMfsj1U7NY2m68T4@willie-the-truck>
+ <202509161827232434929@bosc.ac.cn>
+ <aMqlR4vDOgrFuCUj@willie-the-truck>
+ <48b8385a-ad44-4098-a647-109a3cfe3bbb@bosc.ac.cn>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250911121416.633216-1-vasant.hegde@amd.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <48b8385a-ad44-4098-a647-109a3cfe3bbb@bosc.ac.cn>
 
-On Thu, Sep 11, 2025 at 12:14:15PM +0000, Vasant Hegde wrote:
+On Thu, Sep 18, 2025 at 11:20:55AM +0800, 郭亚星 wrote:
+> [Sorry, I tried switching a new email client and made some settings...]
+> 
+> On 9/17/2025 8:10 PM, Will Deacon wrote:
+> > [nit: your email client has made a big mess of the thread here]
+> > 
+> > On Tue, Sep 16, 2025 at 06:27:23PM +0800, guoyaxing@bosc.ac.cn wrote:
+> > > > PMU drivers are better placed under drivers/perf/
+> > > 
+> > > I did a quick reading of SMMU pmu driver in drivers/perf/.  However, If
+> > > the RISC-V IOMMU PMU driver is placed under drivers/perf/ as the SMMU did,
+> > > it would cause an overlap in the iomem resource region between the two
+> > > devices(iommu & iommu pmu), because it needs to share interrupt-related
+> > > registers (such as the IPSR register) with the main IOMMU driver.
+> > 
+> > Is that not something you can resolve with IRQF_SHARED?
+> > 
+> 
+> Actually IOMMU perf is using stand-along interrupt, so might not need
+> IRQF_SHARED with IOMMU driver.
 
-> The IOMMU IOVA allocator initially starts with 32-bit address and onces its
-> exhuasted it switches to 64-bit address (max address is determined based
-> on IOMMU and device DMA capability). To support larger IOVA, AMD IOMMU
-> driver increases page table level.
+Hrm. Two separate interrupts that share the same interrupt-handling
+registers is an "interesting" design for a piece of hardware :/
 
-Is this the case? I thought I saw something that the allocator is
-starting from high addresses?
- 
-> But in unmap path (iommu_v1_unmap_pages()), fetch_pte() reads
-> pgtable->[root/mode] without lock. So its possible that in exteme corner case,
-> when increase_address_space() is updating pgtable->[root/mode], fetch_pte()
-> reads wrong page table level (pgtable->mode). It does compare the value with
-> level encoded in page table and returns NULL. This will result is
-> iommu_unmap ops to fail and upper layer may retry/log WARN_ON.
+> What I mean is the IOMMU and IOMMU perf share the same registers, such as
+> IPSR. This could result in overlap on this iomem regions between them, which
+> is highly undesirable.
+> 
+> For now, two ideas come to my mind:
+> 1. Integrate IOMMU perf functionality into IOMMU driver, just as previous
+> version patch.
+> 
+> 2. Let IOMMU driver export external api for IOMMU perf
+> (to obtain virtual address of IPSR register) for perf related operations.
+> 
+> So what's your suggestion?
 
-Yep, definately a bug, I spotted it already and fixed it in iommupt,
-you can read about it here:
+I wonder if you could create the PMU device as a child of the IOMMU?
 
-https://lore.kernel.org/linux-iommu/13-v5-116c4948af3d+68091-iommu_pt_jgg@nvidia.com/
+I'm sure Robin had fun dealing with shared MMIO regions before, but I
+can't remember the details (was it the CMN PMU driver?)
 
-> CPU 0                                         CPU 1
-> ------                                       ------
-> map pages                                    unmap pages
-> alloc_pte() -> increase_address_space()      iommu_v1_unmap_pages() -> fetch_pte()
->   pgtable->root = pte (new root value)
->                                              READ pgtable->[mode/root]
-> 					       Reads new root, old mode
->   Updates mode (pgtable->mode += 1)
-
-This doesn't solve the whole problem, yes reading the two values
-coherently is important but we must also serialize parallel map such
-that map only returns if the IOMMU is actually programmed with the new
-roots.
-
-I don't see that in this fix.
-
-IMHO unless someone is actually hitting this I'd leave it and focus on
-merging iomupt which fully fixes this without adding any locks to the
-fast path.
-
-Jason
+Will
