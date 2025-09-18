@@ -1,100 +1,135 @@
-Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D914BA42
-	for <iommu@lists.linux.dev>; Thu, 18 Sep 2025 11:37:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 960F63016E7
+	for <iommu@lists.linux.dev>; Thu, 18 Sep 2025 11:41:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758195459; cv=none; b=i8tWJ9uB4+e6I+3TRXNzRJN34lk0n51I2+6C834yM8ZECelRC44ZHZriwSaq2NijBvYplvx5jIk/uEczuImAM+dwUOiSj97SRDZkLaJ97h4bcWxfqdXfy9CJRoaoWL0jFbIlcA1DHepC5Eyz+rMWlcRTNv+r1ogE4UhUNEv6TIY=
+	t=1758195718; cv=none; b=Y0AqO4s3tlEiu2SGc+1x+boHtImB0Yg+BX2fQF49j/T1eKFrlsfsO1bSbPrXHyo/XW76ai/6QO3dDrqmKWEz2mEfF6NGu8pe68YReLGomILfmzHWmvNWfad7j+ZQmkvxKKQW/B4OdWid6lBse2DyQkfUBUYWlWjl6jwW0rrnJts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758195459; c=relaxed/simple;
-	bh=knOqDMmCuYGf36S0XJkfDDNgqTE1JBx5Dzln83jT4MQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OEIy01lLQdJFzsmbhGdqezcgeNIsnFBT/LEtdt79+pfihNYloLCl7Zeelk+5mjidygnOCl79N0DqUVNjCo+Lb8XEHG/htQWfjSB75JVSHCbVYmfue8aMacX34ppN+1mef1JEmruXrrAJJLQRBDk+rDqcpyqFX676RhLuVPGAoAk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=nXkpFoO6; arc=none smtp.client-ip=148.251.105.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1758195718; c=relaxed/simple;
+	bh=7N0UmSdKOHAaSXIPk6et3/EoSHnVMaI/hTlcSmus18k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=I3YKzdvmo7VhdyTS61cc2Et+DN+wrNgX/O4peRB8U6+06AJLYFEaxTSqWlyRDx5eT2q0c7kk/o6XYgRcjA31YL1ZP89AUspoVz90w7H+YJbJ8uVn7wqwwTUFWScunYR80tqpkky1SL/yqGJF1Im68AdYJVWK5Cqrg9wKDEdHDsU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OmbtjQBQ; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="nXkpFoO6"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1758195455;
-	bh=knOqDMmCuYGf36S0XJkfDDNgqTE1JBx5Dzln83jT4MQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=nXkpFoO6Jxar0bWX+EQ4QLJhk81Du0l8SBBjrEAJeXv5ryrQBJZA1hcimz0grfgiv
-	 +AmxfEmFyu6tuCK/TrTRWdBrBfrb2dRQ1qEZpM+Sj7DCfl7h4XkzA1unZDFvb2rCu8
-	 0nJN3Ce92B2MqSPDhU+Zjs+kRYH0gMO/h4lphzKexgfwo0BesSmtnmjEkB2SObR+No
-	 wm83pKSOrLeLad7DUJsv/+rJOdOsmOmHCMqMgJiJxRw4gFo+8L2HWzg+bpnoeTjlyn
-	 f28tlbN8VQqJCHQQKZU6U0g3sCQPb1JwBUvC4tQqPllmQAms/StwHsZ+SzJTtvdRyK
-	 n5uEKA7R527lA==
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
-	(No client certificate requested)
-	(Authenticated sender: kholk11)
-	by bali.collaboradmins.com (Postfix) with ESMTPSA id 512F617E00B0;
-	Thu, 18 Sep 2025 13:37:35 +0200 (CEST)
-Message-ID: <b32f4afd-5683-4eec-8da7-a21a9a4950c1@collabora.com>
-Date: Thu, 18 Sep 2025 13:37:34 +0200
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OmbtjQBQ"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-45f2d21cbabso54285e9.1
+        for <iommu@lists.linux.dev>; Thu, 18 Sep 2025 04:41:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1758195715; x=1758800515; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=B8l84kyRuuCoNVc5N+ElWv18ENe/Xi0Yvo10Z8affNw=;
+        b=OmbtjQBQhvMkCCshAAC2oB/Dz3i/fk1gHyc7tBsZkyQDaiNb7Ktr7SlVI1d97ePAx+
+         ib2nIm/O40FPCJ08GXeZ5lfo6fiThYWyMwRl5JW9rDZGNfbd+oWd08UoYi9hkZy+omBC
+         ST8PfXdEh23UPLOlKChvQqr0cttfCnp8exNaKX2WY09TzWI9Uur+Geejv4wxPlrNRkOW
+         Obxyn3VhBUoxA7sFCB+9sZ+vBhS7xRZBQvXO0cTxep0Zya6PDJ9T0xrYpczvD4IMZg0E
+         QhTF1fvLqCbibJ2wjuBnCbTQliTQmi/i8LvjapjjdfdjRYAlpY2oIB/MWcEEH4/U95xI
+         MGnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758195715; x=1758800515;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=B8l84kyRuuCoNVc5N+ElWv18ENe/Xi0Yvo10Z8affNw=;
+        b=vuLYXXTa5HAqPF+iUMwCtZLeIhIjltDEfPrpudL+oC26woeNgWj8RSdRTYiA6YZNyp
+         ox//pt4p8CBcsyvPb/tAPKpOivWrl6PN7Smqq8/erqm1QM27chJXZiiWAE7NYrpf2Y0y
+         0IKSdntcrgqOkEWCZtGBZ4lvIRDZP9diGkL645y0f/VEZShKjUV4cPmRaiD0jraqY3dC
+         maZgfNdTyBEzoS7U2PmJfdhzRz2imem+63RXPaJLbrIhlchQ2TlhCVEMxDDKH3bEgHQl
+         nC638462ZJ67vWKeo10NsTcpgoZmwJEc5Aapt/OWQf7eOufreOueilTbL0+L5kyc/YR6
+         Ni4g==
+X-Gm-Message-State: AOJu0YzAFQM2trTC+6tUlUZgOcjcX0CphWFIh2/QpYEJksFmgcz9O+R4
+	QIzJ8DdjPmyzuLKCNXZ7qf2XRkYE4teHGLYSygz3VbExzlsxlZKvfom10BvPNqd4og==
+X-Gm-Gg: ASbGncuHU/0vaerVmsLWo5grA4aDKZwvBhjVmVmZzd9ghWDv/nYWRMk0X2dyV5BHT3+
+	KAB7lhW9IPPAcFO0rqFFUcbPc7gWl4hXiLQcqbnUTGubWtI+YGl+/rvOjk7qHUl57tttr2P0cqP
+	/ORTvO48zh3aGh9V8l0QH3dfvY35IdY4IJwFHNu1AIlHx2dVSZQbtquplpZbPhHIYCamRZofPzL
+	4UkXd+senpELVbzjhAdMn++JdS+CCXnUOa2sCDkaTt14LPVJSCCTpXhFnbzQCnu9JEwBTR6I1gO
+	qFNYDXvMBtkCo0D90VgpUNhI3MWph9D+x2Mionehx9tPXTS4ify+NagGrWZws7cG96kjQurdi3z
+	zxamFlJRxdNr0OL3NVZtAkbbyJBtYzL7eSC0W1I7o9dSGIgchqDoeop/ZBrSSBX/50tarHS0dpv
+	CPmQEG2i1GWnLHzyKfjFkXBS8=
+X-Google-Smtp-Source: AGHT+IFo++kIW70zN9Z7jaqR2wmSrLihbXgI8ryzk1jKjLYdejG3WXIUw1J2WnvE7qB1mOgjXOYq2A==
+X-Received: by 2002:a05:600c:c4a5:b0:45f:2949:7aa9 with SMTP id 5b1f17b1804b1-461548788a0mr3774745e9.6.1758195714750;
+        Thu, 18 Sep 2025 04:41:54 -0700 (PDT)
+Received: from google.com (157.24.148.146.bc.googleusercontent.com. [146.148.24.157])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-464f0aac439sm42958055e9.5.2025.09.18.04.41.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Sep 2025 04:41:54 -0700 (PDT)
+Date: Thu, 18 Sep 2025 11:41:50 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org,
+	joro@8bytes.org, praan@google.com
+Subject: Re: [PATCH v2 1/3] iommu/io-pgtable-arm: Move selftests to a
+ separate file
+Message-ID: <aMvv_u8HXAV7tbYz@google.com>
+References: <20250917191143.3847487-1-smostafa@google.com>
+ <20250917191143.3847487-2-smostafa@google.com>
+ <20250917193818.GK1326709@ziepe.ca>
+ <aMsX_HafW3rLs5dQ@google.com>
+ <20250917214824.GN1326709@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH 0/8] Add mt8196 SMMU support
-To: Xueqi Zhang <xueqi.zhang@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Cc: Project_Global_Chrome_Upstream_Group@mediatek.com,
- Ning li <ning.li@mediatek.com>, linux-mediatek@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- devicetree@vger.kernel.org, iommu@lists.linux.dev
-References: <20250616025628.25454-1-xueqi.zhang@mediatek.com>
-From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Content-Language: en-US
-In-Reply-To: <20250616025628.25454-1-xueqi.zhang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250917214824.GN1326709@ziepe.ca>
 
-Il 16/06/25 04:56, Xueqi Zhang ha scritto:
-> This patchset add mt8196 SMMU support.
-> 1. Mediatek SMMU interrupt is low level active rather than the
-> standard edge. Process Mediatek SMMU wrapper interrupt and dump
-> detailed information when a translation fault occurs.
-> 2. In some projects, Mediatek also have EL2 driver, so put the pm
-> operation in TFA(EL3), then all the kernel and EL2 could control
-> the pm. Thus implement rpm get/put function which send smc call to
-> TFA to get/put SMMU power.
+On Wed, Sep 17, 2025 at 06:48:24PM -0300, Jason Gunthorpe wrote:
+> On Wed, Sep 17, 2025 at 08:20:12PM +0000, Mostafa Saleh wrote:
+> > On Wed, Sep 17, 2025 at 04:38:18PM -0300, Jason Gunthorpe wrote:
+> > > On Wed, Sep 17, 2025 at 07:11:38PM +0000, Mostafa Saleh wrote:
+> > > > +static void __init arm_lpae_dump_ops(struct io_pgtable_ops *ops)
+> > > > +{
+> > > > +	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+> > > > +	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+> > > 
+> > > Can be:
+> > > 
+> > >        struct io_pgtable_cfg *cfg =
+> > >                &io_pgtable_ops_to_pgtable(pgtbl_ops)->cfg;
+> > 
+> > There are a bunch of other formatting issues here also, but I wanted to
+> > move the code as is, so with “--color-moved” you can see the exact
+> > difference, otherwise, it’s harder to review.
+> > 
+> > I can add a patch before to fix those + the printing as you suggested
+> > next.
 > 
-> Xueqi Zhang (8):
->    dt-bindings: iommu: mediatek: Add mt8196 support
->    iommu/arm-smmu-v3: Add SMMU implementation
->    iommu/arm-smmu-v3: Add implementation for MT8196 MM SMMU
->    iommu/arm-smmu-v3: Add implementation for MT8196 APU SMMU
->    iommu/arm-smmu-v3: Add IRQ handle for smmu impl
->    iommu/arm-smmu-v3: mediatek: Add wrapper handle for IRQ
->    iommu/arm-smmu-v3: Invoke rpm operation before accessing the hw
->    iommu/arm-smmu-v3: mediatek: Implement rpm get/put function
+> Yeah, I brought it up because with the above you don't need
+> arm_lpae_io_pgtable
 > 
->   .../bindings/iommu/arm,smmu-v3.yaml           |  24 +-
->   drivers/iommu/arm/Kconfig                     |   7 +
->   drivers/iommu/arm/arm-smmu-v3/Makefile        |   3 +-
->   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-impl.c  |  16 +
->   .../arm/arm-smmu-v3/arm-smmu-v3-mediatek.c    | 536 ++++++++++++++++++
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  96 +++-
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  14 +
->   7 files changed, 691 insertions(+), 5 deletions(-)
->   create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-impl.c
->   create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-mediatek.c
+> > I don’t have a strong opinion about this, but I am more inclined to
+> > keep the prints considering it’s a low-level test for the page table,
+> > and such parameters would be useful to understand the failures.
 > 
+> My general view has been that there is alot of debug prints I've added
+> to kunits to debug them but once they are debugged I tend to drop them
+> off as they may not be useful to debug the next issue.
+> 
+> > I know this is not relevant to this series, but the KVM driver will
+> > need to expose arm_lpae_io_pgtable anyway.
+> 
+> Really? That sounds like wrong layering, why does it need to break the
+> iopgtable abstraction? :(
 
-Xueqi, any followup on this series?
+Oh, not any more actually, in my lastest version it's just exported
+for the selftest, sorry for the confusion.
 
-All of the multimedia blocks (including display) become unusable without an IOMMU
-on MT8196, MT6991 and newer.
+I will respin v3 with with this patch leaving the arm_lpae_dump_ops
+behind, it's a bit ugly with the guards + the exports, if Robin and
+Will are OK with removing it we can just drop it.
 
-Regards,
-Angelo
+Thanks,
+Mostafa
+
+> 
+> Jason
