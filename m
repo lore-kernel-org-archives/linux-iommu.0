@@ -1,155 +1,222 @@
-Received: from PH7PR06CU001.outbound.protection.outlook.com (mail-westus3azon11010033.outbound.protection.outlook.com [52.101.201.33])
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBCCC2ECD39;
-	Thu, 18 Sep 2025 20:52:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.201.33
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758228750; cv=fail; b=fptlSnQ7d9MogH42fZL8mHDKmcsLkGMR54F2QZ4OAQMyrRPcAuHDYo0Kd6kUiz6kdWiE+5z8grQp8ZJBOy1u4yz7k5zvKUOLBhClJnxROQEZ4SI9uRWHBFXlqppTbrh8hv9rY0hOtacw7ai4R+fY5CWvnn+inTcDG76ckFCn7dw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758228750; c=relaxed/simple;
-	bh=eczphgyoEMWbO1toBukIEb1/KSxRy1H9tuavtoiZV80=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bWvdgOvlyb975PmE0sstr/OeryDMfc0gCDLls8eV0c0U/fMpQDNlGwbkIJaCzNPstNTsJ4F08f/npcLphY7cObKCfnj6PXuo0tpWbNoe+ypwhxv3OtRJS4PZihoOMg4X4RRRi0p89zJpgi4rMMwEC4inbtLiNCGbeuh6KiFe5OM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=I41R/gTJ; arc=fail smtp.client-ip=52.101.201.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E306D246795
+	for <iommu@lists.linux.dev>; Thu, 18 Sep 2025 21:45:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.153.30
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758231927; cv=none; b=db1CIhA8nYMlwEy3I/0L54a3wr1cM/oqQhgtXUhPI8VT27b6rq245dTaaYmhfmAcIz6FjUPWEz5GsTXeeC8s47NghVIvkzC5T/B9eW3gqXf8DPj3kTpk2qesNTfTIYRPaH2M0QDkyogT6KnGqyLQGKNN+TiRkESZQ8L+wd+fVs8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758231927; c=relaxed/simple;
+	bh=UdenWNTPD8z38LLdeVYNODy2qm2sB45jEaWygA5uVnk=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=FSiC+rsqxgSATt+t/KjLBntQcF7CvA9Z6IUFq11Lpu/KMa2BZ+0mBcZgZfRsejif1hfU0rhyXO/u3ZdwHGDLNqtiAL7IyX9cPvrh+aVl8k1YG9X+UUMhu673sFuoDXQWtOcZhdzuC07yKI5HPsHU64zRkMdxutID4W/LDtPilrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fb.com; spf=pass smtp.mailfrom=meta.com; dkim=pass (2048-bit key) header.d=fb.com header.i=@fb.com header.b=zBQb7SCY; arc=none smtp.client-ip=67.231.153.30
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fb.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=meta.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="I41R/gTJ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=KIrvr5tn2b4UBXaPeAaZJ9/OaWbAQPmhRnySF1hzSW22Xpei9aXVdWMZW+3dqpKxTMlieaiE6PuRVr3axvHtkM4DIDCcg0OPEtcHe+w6s84V81aptFNJsYurrNYE/Wxa6i3nL3X70fvGeNzwJinKoGCtBzPz89NketoUlWh7Q6XbFPkzrr/dxSiAww6j3t8vGvBlnwSRRKIq+8TxlvZ6jxTxL4UzM8HwwpmQGt9cwb3NINk3JarXeCaB1pi/W/eqjk62K/JJ+SBeE6SWWAaonT58iQ3wEqKZRvwKi/N/Ka3ne67SfcTclmS9EvBICniHChrAiWVzI1wRHoEhmMenpw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=B7QGWjDgl3Q9XcNV1x4VbiQk7i6tETOg+W4jgB7fyzo=;
- b=YYRqyFo6ENka1c3qhHK1IqhA1BKc4SfEdYDq+puOUiVUhn/HrhrMQow+AZwxTXUgpjvOgc1dadPdJxbhV+NIHyCUnKMgiMZ/ENwAXDU3n4iom1EhkER46cShO+uPVXRikPX910p5qgS631Y2oEvNP1WDyh9aQWUu5w+VUFsGBCVy3W1tlC/+YGhoHamhb9mQT2nQJNRCmIcD9VO4yoPV/jRtzhyoDqhcEY9GoLSi7+D3spw5i1pinFvvhPBjl2GqMDXmRx4Pdp7I+Jy0DYbh9sZu3P7ErPQcq5hseLRxdu5HzZSF3GBv2Xdf+AaxdetfpYwJuvXAHGmmbWf8jWAPWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B7QGWjDgl3Q9XcNV1x4VbiQk7i6tETOg+W4jgB7fyzo=;
- b=I41R/gTJEVDUrOhFsrmE8QrcJA+sv9yOujgaI6rwQKOXAekOwjDISwVhGQCCvXvEK8ni8H/wovUCCZIJfBH3J4K6PlVmjAinmuSN/qHz50mNKljszOdftX9QxodmUhkJr23tGQRot3BluMVyENsUxq7wi9Ri3qOPKya/99M3QqwywiZC+lHAo9lVMb/Twvtfkenjw2oy1db4kE6ubMu7ApJCj67OT077KW/n44qWYJysL/YsnYXbUaarFcsMgvCIP1Bri0Tq3HW1GqDvzza09I3b3QHz+Xb+Lllm52Y92TnImYoXBeYIPUUidK5v4ljR0PMlmWOFu0R6NSKtg/9C1A==
-Received: from SJ0PR03CA0296.namprd03.prod.outlook.com (2603:10b6:a03:39e::31)
- by DS0PR12MB6534.namprd12.prod.outlook.com (2603:10b6:8:c1::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9137.13; Thu, 18 Sep
- 2025 20:52:22 +0000
-Received: from SJ1PEPF00001CDD.namprd05.prod.outlook.com
- (2603:10b6:a03:39e:cafe::3a) by SJ0PR03CA0296.outlook.office365.com
- (2603:10b6:a03:39e::31) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9137.14 via Frontend Transport; Thu,
- 18 Sep 2025 20:52:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SJ1PEPF00001CDD.mail.protection.outlook.com (10.167.242.5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9137.12 via Frontend Transport; Thu, 18 Sep 2025 20:52:22 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.34; Thu, 18 Sep
- 2025 13:52:05 -0700
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Thu, 18 Sep
- 2025 13:52:05 -0700
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.34 via Frontend
- Transport; Thu, 18 Sep 2025 13:52:04 -0700
-Date: Thu, 18 Sep 2025 13:52:03 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>, Kevin Tian
-	<kevin.tian@intel.com>, <linux-kselftest@vger.kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, Will Deacon
-	<will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
-	<patches@lists.linux.dev>,
-	<syzbot+80620e2d0d0a33b09f93@syzkaller.appspotmail.com>
-Subject: Re: [PATCH 0/3] Fix a race with fput during eventq abort
-Message-ID: <aMxw85zecJepXHdR@Asurada-Nvidia>
-References: <0-v1-02cd136829df+31-iommufd_syz_fput_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=fb.com header.i=@fb.com header.b="zBQb7SCY"
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+	by m0001303.ppops.net (8.18.1.11/8.18.1.11) with ESMTP id 58ILEuwp407805;
+	Thu, 18 Sep 2025 14:45:01 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=s2048-2025-q2; bh=bMo3hezyytSvwDq2dx
+	t0/0pQ5nUHXn3qBtN4ZaZSRXw=; b=zBQb7SCY+4tbpwPT0f5CqxY1yaSKQWfd/p
+	MHbjnQY9szlTiCybfYxRBrJhTwBKhmtvIIDhvkZI+xD+QchOG3RCtflnkVdMGrTf
+	ebwsq7JQzILNYmJby9oEuzGzv8Nu2L+soqdp1l4jinlWOu1U9cxFe0w65Kxs8sXq
+	eduorASnpDBTJsoNkxah5xOAuC8R+Xqvy0iIHWMTX/E/xyYOcGzf//3HEmcKSKg/
+	MdwUrUTI+lPV/cAkSrpSJcNlQmiJGibTUpVC0osIvyy6IzEn06STG91OAK/RHbE2
+	4SAISObSiB6rXKJHNTQIWI7x5hM1GirYLAkW0DN1ulkdOeXCiBZQ==
+Received: from mail.thefacebook.com ([163.114.134.16])
+	by m0001303.ppops.net (PPS) with ESMTPS id 498q90smej-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+	Thu, 18 Sep 2025 14:45:01 -0700 (PDT)
+Received: from devgpu015.cco6.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c08b:78::c78f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.2562.20; Thu, 18 Sep 2025 21:44:59 +0000
+From: Alex Mastro <amastro@fb.com>
+To: Alex Williamson <alex.williamson@redhat.com>,
+        Jason Gunthorpe
+	<jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>
+CC: Bjorn Helgaas <bhelgaas@google.com>, David Reiss <dreiss@meta.com>,
+        "Joerg
+ Roedel" <joro@8bytes.org>, Keith Busch <kbusch@kernel.org>,
+        Leon Romanovsky
+	<leon@kernel.org>, Li Zhe <lizhe.67@bytedance.com>,
+        Mahmoud Adam
+	<mngyadam@amazon.de>,
+        Philipp Stanner <pstanner@redhat.com>,
+        Robin Murphy
+	<robin.murphy@arm.com>,
+        Vivek Kasireddy <vivek.kasireddy@intel.com>,
+        "Will
+ Deacon" <will@kernel.org>, Yunxiang Li <Yunxiang.Li@amd.com>,
+        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+        <kvm@vger.kernel.org>
+Subject: [TECH TOPIC] vfio, iommufd: Enabling user space drivers to vend more granular access to client processes
+Date: Thu, 18 Sep 2025 14:44:07 -0700
+Message-ID: <20250918214425.2677057-1-amastro@fb.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <0-v1-02cd136829df+31-iommufd_syz_fput_jgg@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CDD:EE_|DS0PR12MB6534:EE_
-X-MS-Office365-Filtering-Correlation-Id: 066de89c-4e53-432e-166a-08ddf6f543f2
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|82310400026|376014|7416014|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?VN2k2jkYT+T6AbPL0wnYWdSi+HjJf41PZ57O10yS2EfJGAdN3Zm6LSTt2/og?=
- =?us-ascii?Q?32Z4BrA8HnMo5z4diKGDS1yZ6cVyHvdV36QCyWfG4nKGJP66yzQm5GwHcTLs?=
- =?us-ascii?Q?iGb/aZJAfldxTXQTepOsYJRiDqcGKRBl8klcEnKfWUBxVh6YQqu0zmXptZBN?=
- =?us-ascii?Q?w3XYHAtLx00t+PmkRDBG3E8qGC0zhHPEal9T1PMUwqVyEu6+0ZXrz6X9TSYG?=
- =?us-ascii?Q?cNE5R1lveNCoC3CF2TzCsz/TAo+6KxpKVU9e15q1VIt2ebfyB88JCfcBO+1Y?=
- =?us-ascii?Q?0kJYqev20PswzZT3rB9Jj78GtwbF0xrTG5lT+HIZOW8PJHWu1hxQF/HCkZjd?=
- =?us-ascii?Q?lFvJh2wBOyAD1NQZdsBfRFZsEC6JYXYiLFmjEUN0snFpyT3ksPPQ//XrDsOr?=
- =?us-ascii?Q?TfJtZSmLwlo0dzSQsJmdPFh/g4FP9ZD8pqJYZEReMH6rBtMHMPzh1+bul2SI?=
- =?us-ascii?Q?PwL68CGzzSWhuFImRY0Hyo4D9rH9oNMziWxgQmgDVF2/vPWaL2Y61G7uKqUh?=
- =?us-ascii?Q?fxaYaPeb++KuBJFx2MNJFnrAM2C0MIHt3t8ZgHoxJVnxLq4X7OxQPPgUtSfD?=
- =?us-ascii?Q?MZ12C/5PS77nXA6edm1yIzBhnvFQxThrXllOjSQSB91emfxDAsq3DjtaA+jN?=
- =?us-ascii?Q?8o0Hb7GUM4sXiT0cjBRCxo94yIclYIjTC+5PhKIKzOglLJNHj6e7rXAKY5gw?=
- =?us-ascii?Q?LGyTOBdFIvJvyJJAdFkPLioX7LdQrUlFE3M+/dQZAvQZrH/EcCF2CKcuuLsu?=
- =?us-ascii?Q?F0NaEUWr94Fn3czxTT7q2h0PTKkCepSg5+CjnInBza3VruuL3yUBoy0CK5KW?=
- =?us-ascii?Q?y00/h2NP/xQc2o0pUIY++rlKLlWBIk0jD0NcyQdvOPJxfztqh4SGxTUjaszQ?=
- =?us-ascii?Q?RYPOMCJJDrncWqpys22T00O1LgUqLg9dFWvmpV4lNTwW4LHH39usxN4+kdgZ?=
- =?us-ascii?Q?CXD21KMOe8yHAbFd1bLxb6CKvrKUfc/MUhIgGqu72jQPcQtDqKiULguqDmNh?=
- =?us-ascii?Q?NIS9voY3cTKBwYGVXv0GfBylkA1SkYEh4ElsmF+EJiKv1ZHcgG/sBZQBdD4z?=
- =?us-ascii?Q?hUC5u9wh07Z1jBf7j6AnAz3jCYn2SGnwQ4R4ydVHAv0KKuEFj7e9NzDvuLiO?=
- =?us-ascii?Q?Z5oXGcZi+kAIFvbshSX1yskjSZ5S0rcofhmnx1p/b0mJ2X2U2kunsjtdhbPR?=
- =?us-ascii?Q?8eJI8u+JWDD20lG4OGvILnTkOHFlwJpwNdhEYJsOCJDH8imIZgBXn2Yh49r/?=
- =?us-ascii?Q?3+MW31ccPpIuBm/unRyASGCZJLxYObNADN1H1KPN/g93hbjJCdFDW3SkneoL?=
- =?us-ascii?Q?YUvWJyv0I7xWe0JI5gPQiiZS3SIgI1c2Sijeb58ZDhQgRW2vG2V0b9DMTKpZ?=
- =?us-ascii?Q?TciPYuJHODFqNZ7LHgliw2rZR/Htkp3Da/woWbYgMleNb1Far0C6lDT05LAr?=
- =?us-ascii?Q?ItCGiFkvFXJoOBfnXXVDYdR50qlmGvRjajqv61syQNFDtk3uwbQv17WaBo/y?=
- =?us-ascii?Q?4qMfA68vSDvCvhoEwq+3TZZm0AhCIh4nI8ak?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230040)(1800799024)(82310400026)(376014)(7416014)(36860700013);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Sep 2025 20:52:22.3492
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 066de89c-4e53-432e-166a-08ddf6f543f2
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SJ1PEPF00001CDD.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6534
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTE4MDE5NSBTYWx0ZWRfX6AAYxKQMwZLw
+ aZViUqQxptfvd13AUHO0wDgCyvEEG4g3l09hqrAHyDxcQ+EU4slwZk5HPlBQ3+P9+Wm6uxqo3zs
+ ipT/D/u8UDONUD/4MUiiJgarCqdu5Hbh/0yHvgo1BnrkJ68GK5hLHFzBOpf7PyTkVeYuEF0hMv7
+ Iy5LjglKeQ2mFiHC9j3T7eRJG4ELOqNwGtCxyfVmTF8k+TTOAE+5XO4MgQmywQaI8CxLlXrpJ5p
+ z+CyQUqpc+ensulQmQ3/Y70ur7i/1cpB6CQeZgY7TWeVkaImen/RYMaGaZL044/eZDUfFficXa/
+ 8j5vcthb3AamomjDsMT4ZS2X3iavkRjfFEpLcNyKSbuS1cONIEc1NvZGUcnh08=
+X-Proofpoint-ORIG-GUID: xbXU6eezAkjiegZWUCOl0aCn3m571zgk
+X-Proofpoint-GUID: xbXU6eezAkjiegZWUCOl0aCn3m571zgk
+X-Authority-Analysis: v=2.4 cv=YZC95xRf c=1 sm=1 tr=0 ts=68cc7d5d cx=c_pps
+ a=CB4LiSf2rd0gKozIdrpkBw==:117 a=CB4LiSf2rd0gKozIdrpkBw==:17
+ a=IkcTkHD0fZMA:10 a=yJojWOMRYYMA:10 a=VwQbUJbxAAAA:8 a=968KyxNXAAAA:8
+ a=rDkzsZ3yvGrXTgFfqF4A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-09-18_03,2025-09-18_02,2025-03-28_01
 
-On Wed, Sep 17, 2025 at 05:01:46PM -0300, Jason Gunthorpe wrote:
-> Syzkaller found this, fput runs the release from a work queue so the
-> refcount remains elevated during abort. This is tricky so move more
-> handling of files into the core code.
-> 
-> Add a WARN_ON to catch things like this more reliably without relying on
-> kasn.
-> 
-> Update the fail_nth test to succeed on 6.17 kernels.
-> 
-> Jason Gunthorpe (3):
->   iommufd: Fix race during abort for file descriptors
->   iommufd: WARN if an object is aborted with an elevated refcount
->   iommufd/selftest: Update the fail_nth limit
+Hello,
 
-Sanity runs without a problem.
+We've been running user space drivers (USD) in production built on top of VFIO,
+and have come to value the operational and development benefits of being able to
+deploy updates to device policy by simply shipping user space binaries.
 
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+In our architecture, a long-running USD process bootstraps and manages
+background device operations related to supporting client process workloads.
+Client processes communicate with the USD over Unix domain sockets to acquire
+the device resources necessary to dispatch work to the device.
+
+We anticipate a growing need to provide more granular access to device resources
+beyond what the kernel currently affords to user space drivers similar to our
+model.
+
+The purpose of this email is to:
+- Gauge the extent to which ongoing work in VFIO and IOMMUFD can meet those
+  needs.
+- Seek guidance from VFIO and IOMMUFD maintainers about whether there is a path
+  to supporting the remaining pieces across the VFIO and IOMMUFD UAPIs.
+- Describe our current approach and get feedback on whether there are existing
+  solutions that we've missed.
+- Figure out the most useful places we can help contribute.
+
+Inter-process communication latency (between client processes and USD) is
+prohibitively slow to support hot-path communication between the client and
+device, which targets round-trip times on the order of microseconds. To address
+this, we need to allow client processes and the device to access each other's
+memory directly, bypassing IPC with the USD and kernel syscalls.
+a) For host-initiated access into device memory, this means mmap-ing BAR
+   sub-regions into the client process.
+b) For device-initiated access into host memory, it means establishing IOMMU
+   mappings to memory underlying the client process address space.
+
+Such things are more straightforward for in-kernel device drivers to accomplish:
+they are free to define customized semantics for their associated fds and
+syscall handlers. Today, user space driver processes have fewer tools at their
+disposal for controlling these types of access.
+
+----------
+BAR Access
+----------
+
+To achieve (a), the USD sends the VFIO device fd to the client over Unix domain
+sockets using SCM_RIGHTS, along with descriptions of which device regions are
+for what. While this allows the client to mmap BARs into its address space,
+it comes at the cost of exposing more access to device BAR regions than is
+necessary or appropriate. In our use case, we don't need to contend with
+adversarial client processes, so the current situation is tenable, but not
+ideal.
+
+Ongoing efforts to add dma-buf exporting to VFIO [1] seem relevant here. Though
+its current intent is around enabling peer-to-peer access, the fact that only
+a subset of device regions are bound to this fd could be useful for controlling
+access granularity to device regions.
+
+Instead of vending the VFIO device fd to the client process, the USD could bind
+the necessary BAR regions to a dma-buf fd and share that with the client. If
+VFIO supported dma_buf_ops.mmap, the client could mmap those into its address
+space.
+
+Adding such capability would mean that there would be two paths for mmap-ing
+device regions: VFIO device fd and dma-buf fd. I imagine this could be
+contentious; people may not like that there are two ways to achieve the same
+thing. It also seems complicated by the fact that there are ongoing discussions
+about how to extend the VFIO device fd UAPI to support features like write
+combining [2]. It would feel incomplete for such features to be available
+through one mmap-ing modality but not the other. This would have implications
+for how the “special regions” should be communicated across the UAPI.
+
+The VFIO dma-buf UAPI currently being proposed [3] takes a region_index and an
+array of (offset, length) intervals within the region to assign to the dma-buf.
+From what I can tell, that seems coherent with the latest direction from [2],
+which will enable the creation of new region indices with special properties,
+which are aliases to the default BAR regions. The USD could theoretically create
+a dma-buf backed by "the region index corresponding to write-combined BAR 4" to
+share with the client.
+
+Given some of the considerations above, would there be line of sight for adding
+support for dma_buf_ops.mmap to VFIO?
+
+-------------
+IOMMU Mapping
+-------------
+
+To achieve (b), we have been using the (now legacy) VFIO container interface
+to manage access to the IOMMU. We understand that new feature development has
+moved to IOMMUFD, and intend to migrate to using it when it's ready (we have
+some use cases that require P2P). We are not expecting to add features to VFIO
+containers. I will describe what we are doing today first.
+
+In order to enable a device to access memory in multiple processes, we also
+share the VFIO container fd using SCM_RIGHTS between the USD and client
+processes. In this scheme, we partition the I/O address space (IOAS) for a
+given device's container to be used cooperatively amongst each process. The
+only enforcement of the partitioning convention is that each process only
+VFIO_IOMMU_{MAP,UNMAP}_DMA's to the IOVA ranges which have been assigned to it.
+
+When the USD detects that the client process has exited, it is able to unmap any
+leftover dirty mappings with VFIO_IOMMU_UNMAP_DMA. This became possible after
+[4], which allowed one process to free the mappings created by another process.
+That patch's intent was to enable QEMU live update use cases, but benefited our
+use case as well.
+
+Again, we don't have to contend with adversarial client processes, so this has
+been OK, but not ideal for now.
+
+We are interested in the following incremental capabilities:
+- We want the USD to be able to create and vend fds which provide restricted
+  mapping access to the device's IOAS to the client, while preserving
+  the ability of the USD to revoke device access to client memory via
+  VFIO_IOMMU_UNMAP_DMA (or IOMMUFD_CMD_IOAS_UNMAP for IOMMUFD). Alternatively,
+  to forcefully invalidate the entire restricted IOMMU fd, including mappings.
+- It would be nice if mappings created with the restricted IOMMU fd were
+  automatically freed when the underlying kernel object was freed (if the client
+  process were to exit ungracefully without explicitly performing unmap cleanup
+  after itself).
+
+Some of those things sound very similar to the direction of vIOMMU, but it is
+difficult to tell if that could meet our needs exactly. The kinds of features
+I think we want should be achievable purely in software without any dedicated
+hardware support.
+
+This is an area we are less familiar with, since we haven't been living on the
+IOMMUFD UAPI or following its development as closely yet. Perhaps we have missed
+something more obvious?
+
+Overall, I'm curious to hear feedback on this. Allowing user space drivers
+to vend more granular device access would certainly benefit our use case, and
+perhaps others as well.
+
+[1] https://lore.kernel.org/all/cover.1754311439.git.leon@kernel.org/
+[2] https://lore.kernel.org/all/20250804104012.87915-1-mngyadam@amazon.de/
+[3] https://lore.kernel.org/all/5e043d8b95627441db6156e7f15e6e1658e9d537.1754311439.git.leon@kernel.org/
+[4] https://lore.kernel.org/all/20220627035109.73745-1-lizhe.67@bytedance.com/
+
+Thanks,
+Alex
