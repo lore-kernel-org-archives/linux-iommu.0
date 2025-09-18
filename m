@@ -1,73 +1,100 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from bali.collaboradmins.com (bali.collaboradmins.com [148.251.105.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62ECB2DA757;
-	Thu, 18 Sep 2025 10:26:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D914BA42
+	for <iommu@lists.linux.dev>; Thu, 18 Sep 2025 11:37:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.251.105.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758191217; cv=none; b=eej1eX8L5T5JHJELR+A4wLRWCILWRLKoz9di1+3Za5dB2gbkV7YufEWJBi0luuwhwYtTfdCNoQX/NLhdRKn4vQg2fFvXPo+XAnK/hWQb5G1bDGuORmcaMurlh2SsiEet6/26sOc5/y/i5jPjvOTPvJZNtW0jc1/YtW17wFHGL9o=
+	t=1758195459; cv=none; b=i8tWJ9uB4+e6I+3TRXNzRJN34lk0n51I2+6C834yM8ZECelRC44ZHZriwSaq2NijBvYplvx5jIk/uEczuImAM+dwUOiSj97SRDZkLaJ97h4bcWxfqdXfy9CJRoaoWL0jFbIlcA1DHepC5Eyz+rMWlcRTNv+r1ogE4UhUNEv6TIY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758191217; c=relaxed/simple;
-	bh=sF1A73VvtGB9XaGt3W5JSsV7eemrEK6rpb1l1Er5U4c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sAGZsLU0Gz+kysFMQ6+Mk3U2n9Y4uHjjek9xj6njaR8fnIiUqyz1/S0Ts9s7LYMExrRilSy406/uY7YPJG8cZGXVBRS9Q17TITkTFtaa6lg+ILGjz/+mYPONXpNJSef8jUXC3Zu/DcwXwlL8/tgRb4t4OWzsCm8yn1YGWgMtguo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K1zzuGQ1; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1758195459; c=relaxed/simple;
+	bh=knOqDMmCuYGf36S0XJkfDDNgqTE1JBx5Dzln83jT4MQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OEIy01lLQdJFzsmbhGdqezcgeNIsnFBT/LEtdt79+pfihNYloLCl7Zeelk+5mjidygnOCl79N0DqUVNjCo+Lb8XEHG/htQWfjSB75JVSHCbVYmfue8aMacX34ppN+1mef1JEmruXrrAJJLQRBDk+rDqcpyqFX676RhLuVPGAoAk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=nXkpFoO6; arc=none smtp.client-ip=148.251.105.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K1zzuGQ1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0E21C4CEEB;
-	Thu, 18 Sep 2025 10:26:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758191217;
-	bh=sF1A73VvtGB9XaGt3W5JSsV7eemrEK6rpb1l1Er5U4c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=K1zzuGQ1IyAP7rN8bAjxPCKuWxBOVPFyVgQbmSYdk2+6ldtbIGKD37s5zjPh0ka59
-	 aFbSJKmPtZdoKfRTA0mKqVi1GpzqDCRJOtfiydL6CrKEQIXbFVD70NoxxUXh5QPl+b
-	 4mcyZJtPnH7kqeP2PHfd2cs6QK+BNXP/BPIZnpE/7cUoCcbt9oSF7/xL9MBfdXbs39
-	 7kmLXBYxcUJ3IopLad4+yYTRKQSf+rofLzeNxr0I7KjCbyk9u9uAmB99gdwheRKMGZ
-	 yK5RkO33GDEah89sfUAcURR/s2QkRm48D/+zOMCB5D3J6c4BF0xNkuAafrnSuWY7lc
-	 zZAN3WiY8ghZg==
-Date: Thu, 18 Sep 2025 11:26:50 +0100
-From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Mostafa Saleh <smostafa@google.com>, linux-kernel@vger.kernel.org,
-	kvmarm@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, maz@kernel.org, oliver.upton@linux.dev,
-	joey.gouly@arm.com, suzuki.poulose@arm.com, yuzenghui@huawei.com,
-	catalin.marinas@arm.com, robin.murphy@arm.com,
-	jean-philippe@linaro.org, qperret@google.com, tabba@google.com,
-	mark.rutland@arm.com, praan@google.com
-Subject: Re: [PATCH v4 22/28] iommu/arm-smmu-v3-kvm: Emulate CMDQ for host
-Message-ID: <aMveas3QWXUk6xpm@willie-the-truck>
-References: <20250819215156.2494305-1-smostafa@google.com>
- <20250819215156.2494305-23-smostafa@google.com>
- <aMQroI4NDu74PDGT@willie-the-truck>
- <20250915163858.GK882933@ziepe.ca>
- <aMl_5j8G3IGulAC6@google.com>
- <20250917123601.GA1326709@ziepe.ca>
- <aMrNTny9jgZJd_Ef@willie-the-truck>
- <20250917151612.GH1326709@ziepe.ca>
- <aMrS71vQ_MaVonzi@willie-the-truck>
- <20250917155931.GI1326709@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="nXkpFoO6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1758195455;
+	bh=knOqDMmCuYGf36S0XJkfDDNgqTE1JBx5Dzln83jT4MQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=nXkpFoO6Jxar0bWX+EQ4QLJhk81Du0l8SBBjrEAJeXv5ryrQBJZA1hcimz0grfgiv
+	 +AmxfEmFyu6tuCK/TrTRWdBrBfrb2dRQ1qEZpM+Sj7DCfl7h4XkzA1unZDFvb2rCu8
+	 0nJN3Ce92B2MqSPDhU+Zjs+kRYH0gMO/h4lphzKexgfwo0BesSmtnmjEkB2SObR+No
+	 wm83pKSOrLeLad7DUJsv/+rJOdOsmOmHCMqMgJiJxRw4gFo+8L2HWzg+bpnoeTjlyn
+	 f28tlbN8VQqJCHQQKZU6U0g3sCQPb1JwBUvC4tQqPllmQAms/StwHsZ+SzJTtvdRyK
+	 n5uEKA7R527lA==
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits))
+	(No client certificate requested)
+	(Authenticated sender: kholk11)
+	by bali.collaboradmins.com (Postfix) with ESMTPSA id 512F617E00B0;
+	Thu, 18 Sep 2025 13:37:35 +0200 (CEST)
+Message-ID: <b32f4afd-5683-4eec-8da7-a21a9a4950c1@collabora.com>
+Date: Thu, 18 Sep 2025 13:37:34 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250917155931.GI1326709@ziepe.ca>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH 0/8] Add mt8196 SMMU support
+To: Xueqi Zhang <xueqi.zhang@mediatek.com>, Yong Wu <yong.wu@mediatek.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
+Cc: Project_Global_Chrome_Upstream_Group@mediatek.com,
+ Ning li <ning.li@mediatek.com>, linux-mediatek@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ devicetree@vger.kernel.org, iommu@lists.linux.dev
+References: <20250616025628.25454-1-xueqi.zhang@mediatek.com>
+From: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+Content-Language: en-US
+In-Reply-To: <20250616025628.25454-1-xueqi.zhang@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 17, 2025 at 12:59:31PM -0300, Jason Gunthorpe wrote:
-> On Wed, Sep 17, 2025 at 04:25:35PM +0100, Will Deacon wrote:
+Il 16/06/25 04:56, Xueqi Zhang ha scritto:
+> This patchset add mt8196 SMMU support.
+> 1. Mediatek SMMU interrupt is low level active rather than the
+> standard edge. Process Mediatek SMMU wrapper interrupt and dump
+> detailed information when a translation fault occurs.
+> 2. In some projects, Mediatek also have EL2 driver, so put the pm
+> operation in TFA(EL3), then all the kernel and EL2 could control
+> the pm. Thus implement rpm get/put function which send smc call to
+> TFA to get/put SMMU power.
 > 
-> > Ah right, so the driver would unnecessarily issue CMOs for the structures
-> > that are just shared with the hypervisor. At least it's _functional_ that
-> > way, but I'm sure people will complain!
+> Xueqi Zhang (8):
+>    dt-bindings: iommu: mediatek: Add mt8196 support
+>    iommu/arm-smmu-v3: Add SMMU implementation
+>    iommu/arm-smmu-v3: Add implementation for MT8196 MM SMMU
+>    iommu/arm-smmu-v3: Add implementation for MT8196 APU SMMU
+>    iommu/arm-smmu-v3: Add IRQ handle for smmu impl
+>    iommu/arm-smmu-v3: mediatek: Add wrapper handle for IRQ
+>    iommu/arm-smmu-v3: Invoke rpm operation before accessing the hw
+>    iommu/arm-smmu-v3: mediatek: Implement rpm get/put function
 > 
-> Yes, functional, why would anyone complain? STE and CD manipulation is
-> not fast path for anything?
+>   .../bindings/iommu/arm,smmu-v3.yaml           |  24 +-
+>   drivers/iommu/arm/Kconfig                     |   7 +
+>   drivers/iommu/arm/arm-smmu-v3/Makefile        |   3 +-
+>   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-impl.c  |  16 +
+>   .../arm/arm-smmu-v3/arm-smmu-v3-mediatek.c    | 536 ++++++++++++++++++
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  96 +++-
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  14 +
+>   7 files changed, 691 insertions(+), 5 deletions(-)
+>   create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-impl.c
+>   create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-mediatek.c
+> 
 
-Won't it also apply to cmdq insertion?
+Xueqi, any followup on this series?
 
-Will
+All of the multimedia blocks (including display) become unusable without an IOMMU
+on MT8196, MT6991 and newer.
+
+Regards,
+Angelo
