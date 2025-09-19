@@ -1,119 +1,139 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5411D31E8A5
-	for <iommu@lists.linux.dev>; Fri, 19 Sep 2025 15:57:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87D7A23C4F3;
+	Fri, 19 Sep 2025 16:08:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758297476; cv=none; b=UHh0YvZiIJGdRizCeW+PmElebFOfhrcN0N0vfHLFG4OlK9Q3EEyzX/DcaiElWT46IU0FNOHbJFLU2U9OSCq2ATCVa1t5cP/+tWZW06OW1aFK4Qf/DkSZCwnXWbbln4q8ZZXEspQ4gQs2TjDN9dBdEgvXcy4NRokU6qt6r0nvdAk=
+	t=1758298105; cv=none; b=jq7bWO0EBeqSSdueRBdq/Fbnu6RfoshKz3yaHLQg95gJN9v9BmoDvmGvRKPUAWtz8rjBmMCrvCUX6q7+NzjwbpiEZG8LdN/vGVtQIA47Mb0vwqpad14nmcZU/mcOqG+l1BUxkKs0TRFRV9+7DLpnV+QADkvvRBc/62fgNwr0fdE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758297476; c=relaxed/simple;
-	bh=jcgRaanW9qH9mr+Sv4w77DNE6nNUSLNEVq5bL0EhAq0=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=uyMqGzpvRAeJUt7PXp8UFkTWPXGSNeg6kWi+e/lWbjQ0PsEUGPFABEjMIW85h3XSQI2j6Rho8vyPGoP/jKGnTMnC+A4FAqKG9TR6yuZdj3mJt2WKVGmqvP7U2tTlhi3G6iz43tp3Gf9Ec4j8qOahsMpDVXqeeJenvYGvdqY1BBI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=JgKKOEQz; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1758298105; c=relaxed/simple;
+	bh=KR7+2nE82F6C0RiPmuqmiCYxfBNwhzjUQ6Re6K7PmkQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kP7hh39fxv0P9Ur5m66GUvw/XTGzMByZZsmW/tM7RXY/mOp1i+FjN5HY6nnWjW7kNP2Ee2CmM0JHrb5QLd+rw0A0BYGcw6Pcg+kplV7/ELLUufKYJKsuGclGCmG3adNlDzRblWYXb+95Y/eThf8Zea1AorOa8qe45sYo992glfs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gxcwNWOd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JgKKOEQz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1758297474;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=aM1my6NJjtlki0BZEqbhHHnBmfD25BQlwJZ8Tn+vp3c=;
-	b=JgKKOEQzQl3aJ2ABNBsAjeHRafg57wqIm3Yg0Ja6YLdPre+TrS/n4gOnMIrx6qG+Ff/orj
-	pE7ubsIcvSjdefUNCa1x0myc6Kl1Lz4yELLoqzkxboNijogi+kUNz9iCV9ObI1mdoHyhva
-	l+TJgOuJ7XNJcD03X7JQgVm4h0foHPo=
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
- [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-680-47Swo6e9OJmB6uvU0TaOHw-1; Fri, 19 Sep 2025 11:57:48 -0400
-X-MC-Unique: 47Swo6e9OJmB6uvU0TaOHw-1
-X-Mimecast-MFC-AGG-ID: 47Swo6e9OJmB6uvU0TaOHw_1758297467
-Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-40b911746f0so5288205ab.0
-        for <iommu@lists.linux.dev>; Fri, 19 Sep 2025 08:57:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758297467; x=1758902267;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=aM1my6NJjtlki0BZEqbhHHnBmfD25BQlwJZ8Tn+vp3c=;
-        b=TXNjE67zrmbIDy8KfTBVzLh9Znm6tiho83L0k90rXqAPIiAsDimoS42gvpOuLAswh8
-         xlJ++Yu9I7xcyjWPhsVNr6oI0XtKIhZHmzZL+aDAIUTMP6QyxIppWJWhVghDXejSiOaf
-         zdxCoT2X6uwMGp0wUm7yUw8+mo4IMuj+VK+Pp2fKu+JymhNKgbWULyS7Vdvv3YQi22mm
-         4frAe08eAvW47nI1qxJfOj4FGQwOr1vUUx603tMqcQtlrGJDZVNvMyXWtZHPmvd8g1/L
-         bM2s34WylxCQvwI41rRKcclS5BSCyasRNlfbizbWi5ydzbpo65QZkCiyQ+4QOYodLsFN
-         En1g==
-X-Forwarded-Encrypted: i=1; AJvYcCWYwhN/zxvDNJv239/vACwBlaJijJoBYb6zD+/lMPLQ2kPKeMflGtOdRkbzHHvrKok4zK4GkA==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzucv+cL5gy52x76sU6m1Q3B1HkYqjAuEDiKP5t/AhHM7QH1/yX
-	F3XDjJMCzGPP8dAzKKvd6vowKphLq6lTjvXFIV/V9YTyFnKF9I7m7H00qcV2goga44C2LflOPuq
-	yiCko1n0sV6dtC9VqBS4UuH1KVkfzWjKKdN+81LP0bM1babHUnC/gzAr6
-X-Gm-Gg: ASbGncvf8npZ9zK577UO3hfsV18Cy5bFC5mlk1zuFEtW9Em+NK+Wp8bKnxMgYOKkj7I
-	zeMqwcbKwb/p3/htq/AHKyYM23sIuvGVpzwoO6dqdcOG3FikKToD6w0BYjQXMcVSr6YbYlcTT/S
-	79Otbb3Ao6bR3ErIXegByBUvUyoOw7ZBD/bs/CBelKPWnSv1XmyrdA2Eqy1b7LhbRyVurtH1AmJ
-	cBXPiCYti4vwzOTlpRZZgEYz57BT/Oz+ZDSGVDtPB/neAUYAe8B9QnodPmKclr4+bToy0vzD1Qu
-	8pvuIprQuxVOIjNuUhvQOORwCZJZ3FlRZt8FZNEeZlk=
-X-Received: by 2002:a05:6e02:1845:b0:423:fea2:584a with SMTP id e9e14a558f8ab-42481979b04mr21894725ab.3.1758297467350;
-        Fri, 19 Sep 2025 08:57:47 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IG3kKvBSX9JHZGnWAdCW/3QH1TzYJQzZYSAISEqZ847cNL+IsLLiA4SVKmwkv0UjgNX2yNcRA==
-X-Received: by 2002:a05:6e02:1845:b0:423:fea2:584a with SMTP id e9e14a558f8ab-42481979b04mr21894495ab.3.1758297466785;
-        Fri, 19 Sep 2025 08:57:46 -0700 (PDT)
-Received: from redhat.com ([38.15.36.11])
-        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-4244a36b076sm23232495ab.1.2025.09.19.08.57.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Sep 2025 08:57:45 -0700 (PDT)
-Date: Fri, 19 Sep 2025 09:57:43 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Alex Mastro <amastro@fb.com>, Kevin Tian <kevin.tian@intel.com>, Bjorn
- Helgaas <bhelgaas@google.com>, David Reiss <dreiss@meta.com>, Joerg Roedel
- <joro@8bytes.org>, Keith Busch <kbusch@kernel.org>, Leon Romanovsky
- <leon@kernel.org>, Li Zhe <lizhe.67@bytedance.com>, Mahmoud Adam
- <mngyadam@amazon.de>, Philipp Stanner <pstanner@redhat.com>, Robin Murphy
- <robin.murphy@arm.com>, Vivek Kasireddy <vivek.kasireddy@intel.com>, Will
- Deacon <will@kernel.org>, Yunxiang Li <Yunxiang.Li@amd.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev, kvm@vger.kernel.org
-Subject: Re: [TECH TOPIC] vfio, iommufd: Enabling user space drivers to vend
- more granular access to client processes
-Message-ID: <20250919095743.482a00cd.alex.williamson@redhat.com>
-In-Reply-To: <20250918225739.GS1326709@ziepe.ca>
-References: <20250918214425.2677057-1-amastro@fb.com>
-	<20250918225739.GS1326709@ziepe.ca>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.43; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gxcwNWOd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76C8EC4CEF0;
+	Fri, 19 Sep 2025 16:08:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1758298105;
+	bh=KR7+2nE82F6C0RiPmuqmiCYxfBNwhzjUQ6Re6K7PmkQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=gxcwNWOdwyYYCt/Mr4IoNw/QjfiG4fCy9ykIixLtIZgzxpvEaTh0ZrsRzbEkVlnG2
+	 m8b1wOyRgj64SHlplGanM4IqWdr6Ywznq35IYlrDTPSiuH1HbSJA9OSV6F3cLQ0fmv
+	 gIfqZUpL6QTaZY7lchfgfbbV/HzPQ9GlWuIYB09YAq8LPsugW8lRkDPp3pD3pmqfjH
+	 MMDTa/BarqpIPeeM6zxgfbm5MTp42dkz6/ahu8QcAFUE+eO/S+U7a/1bN3BopMvk86
+	 +JRB492i+MxOTtI0yVlp8MJ781GY30PjuvtN+/6jEMPcnyQy8X2xhocLeJS5gf/FQl
+	 TeUW9JwC+yaOg==
+Date: Fri, 19 Sep 2025 10:08:21 -0600
+From: Keith Busch <kbusch@kernel.org>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
+	Alexander Potapenko <glider@google.com>,
+	Alex Gaynor <alex.gaynor@gmail.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
+	David Hildenbrand <david@redhat.com>, iommu@lists.linux.dev,
+	Jason Wang <jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+	Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>,
+	Juergen Gross <jgross@suse.com>, kasan-dev@googlegroups.com,
+	linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+	linux-nvme@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+	linux-trace-kernel@vger.kernel.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Miguel Ojeda <ojeda@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
+	Sagi Grimberg <sagi@grimberg.me>,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Steven Rostedt <rostedt@goodmis.org>,
+	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
+	xen-devel@lists.xenproject.org
+Subject: Re: [PATCH v6 00/16] dma-mapping: migrate to physical address-based
+ API
+Message-ID: <aM1_9cS_LGl4GFC5@kbusch-mbp>
+References: <CGME20250909132821eucas1p1051ce9e0270ddbf520e105c913fa8db6@eucas1p1.samsung.com>
+ <cover.1757423202.git.leonro@nvidia.com>
+ <0db9bce5-40df-4cf5-85ab-f032c67d5c71@samsung.com>
+ <20250912090327.GU341237@unreal>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: Q3VPvt406ED4_UYVJ-Qs5Xplwl0Fd8rGfBRyMJPwtcE_1758297467
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250912090327.GU341237@unreal>
 
-On Thu, 18 Sep 2025 19:57:39 -0300
-Jason Gunthorpe <jgg@ziepe.ca> wrote:
+On Fri, Sep 12, 2025 at 12:03:27PM +0300, Leon Romanovsky wrote:
+> On Fri, Sep 12, 2025 at 12:25:38AM +0200, Marek Szyprowski wrote:
+> > >
+> > > This series does the core code and modern flows. A followup series
+> > > will give the same treatment to the legacy dma_ops implementation.
+> > 
+> > Applied patches 1-13 into dma-mapping-for-next branch. Let's check if it 
+> > works fine in linux-next.
 > 
-> What I've been thinking is if the vending process could "dup" the FD
-> and permanently attach a BPF program to the new FD that sits right
-> after ioctl. The BPF program would inspect each ioctl when it is
-> issued and enforce whatever policy the vending process wants.
+> Thanks a lot.
 
-Promising idea.
+Just fyi, when dma debug is enabled, we're seeing this new warning
+below. I have not had a chance to look into it yet, so I'm just
+reporting the observation.
 
-> What would give me alot of pause is your proposal where we effectively
-> have the kernel enforce some arbitary policy, and I know from
-> experience there will be endless asks for more and more policy
-> options.
-
-Definitely.  Also, is this at all considering the work that's gone into
-vfio-user?  The long running USD sounds a lot like a vfio-user server,
-where if we're using vfio-user's socket interface we'd have a lot of
-opportunity to implement policy there and dma-bufs might be a means to
-expose direct, restricted access.  Thanks,
-
-Alex
+ DMA-API: nvme 0006:01:00.0: cacheline tracking EEXIST, overlapping mappings aren't supported
+ WARNING: kernel/dma/debug.c:598 at add_dma_entry+0x26c/0x328, CPU#1: (udev-worker)/773
+ Modules linked in: acpi_power_meter(E) loop(E) efivarfs(E) autofs4(E)
+ CPU: 1 UID: 0 PID: 773 Comm: (udev-worker) Tainted: G            E    N  6.17.0-rc6-next-20250918-debug #6 PREEMPT(none)
+ Tainted: [E]=UNSIGNED_MODULE, [N]=TEST
+ pstate: 63400009 (nZCv daif +PAN -UAO +TCO +DIT -SSBS BTYPE=--)
+ pc : add_dma_entry+0x26c/0x328
+ lr : add_dma_entry+0x26c/0x328
+ sp : ffff80009fe0f460
+ x29: ffff80009fe0f470 x28: 0000000000000001 x27: 0000000000000001
+ x26: ffff8000835d7f38 x25: ffff8000835d7000 x24: ffff8000835d7e60
+ x23: 0000000000000000 x22: 0000000006e2cc00 x21: 0000000000000000
+ x20: ffff800082e8f218 x19: ffff0000a908ff80 x18: 00000000ffffffff
+ x17: ffff8000801972a0 x16: ffff800080197054 x15: 0000000000000000
+ x14: 0000000000000000 x13: 0000000000000004 x12: 0000000000020006
+ x11: 0000000030e4ef9f x10: ffff800083443358 x9 : ffff80008019499c
+ x8 : 00000000fffeffff x7 : ffff800083443358 x6 : 0000000000000000
+ x5 : 00000000000bfff4 x4 : 0000000000000000 x3 : ffff0000bb005ac0
+ x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff0000bb005ac0
+ Call trace:
+  add_dma_entry+0x26c/0x328 (P)
+  debug_dma_map_phys+0xc4/0xf0
+  dma_map_phys+0xe0/0x410
+  dma_map_page_attrs+0x94/0xf8
+  blk_dma_map_direct.isra.0+0x64/0xb8
+  blk_rq_dma_map_iter_next+0x6c/0xc8
+  nvme_prep_rq+0x894/0xa98
+  nvme_queue_rqs+0xb0/0x1a0
+  blk_mq_dispatch_queue_requests+0x268/0x3b8
+  blk_mq_flush_plug_list+0x90/0x188
+  __blk_flush_plug+0x104/0x170
+  blk_finish_plug+0x38/0x50
+  read_pages+0x1a4/0x3b8
+  page_cache_ra_unbounded+0x1a0/0x400
+  force_page_cache_ra+0xa8/0xd8
+  page_cache_sync_ra+0xa0/0x3f8
+  filemap_get_pages+0x104/0x950
+  filemap_read+0xf4/0x498
+  blkdev_read_iter+0x88/0x180
+  vfs_read+0x214/0x310
+  ksys_read+0x70/0x110
+  __arm64_sys_read+0x20/0x30
+  invoke_syscall+0x4c/0x118
+  el0_svc_common.constprop.0+0xc4/0xf0
+  do_el0_svc+0x24/0x38
+  el0_svc+0x1a0/0x340
+  el0t_64_sync_handler+0x98/0xe0
+  el0t_64_sync+0x17c/0x180
+ ---[ end trace 0000000000000000 ]---
 
