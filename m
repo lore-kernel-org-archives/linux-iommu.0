@@ -1,139 +1,150 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87D7A23C4F3;
-	Fri, 19 Sep 2025 16:08:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E9D2246BD5
+	for <iommu@lists.linux.dev>; Fri, 19 Sep 2025 16:13:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.153.30
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758298105; cv=none; b=jq7bWO0EBeqSSdueRBdq/Fbnu6RfoshKz3yaHLQg95gJN9v9BmoDvmGvRKPUAWtz8rjBmMCrvCUX6q7+NzjwbpiEZG8LdN/vGVtQIA47Mb0vwqpad14nmcZU/mcOqG+l1BUxkKs0TRFRV9+7DLpnV+QADkvvRBc/62fgNwr0fdE=
+	t=1758298426; cv=none; b=Z/GDXDvFJVzRB5zAdP+av5OjcqJ/vzpaQb7ruWZH3WSTZjJMkym7YeeWWlaVADsORp/qniAzuTT9e3tY9DdpXPhND/LQbZZrmvAzX0u96SMaHoQYYOgc8POlPQTU8U6bnNwna81FKLpGfg7V3FUgveB5gOL5YgrXiD+jt9IwXQk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758298105; c=relaxed/simple;
-	bh=KR7+2nE82F6C0RiPmuqmiCYxfBNwhzjUQ6Re6K7PmkQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kP7hh39fxv0P9Ur5m66GUvw/XTGzMByZZsmW/tM7RXY/mOp1i+FjN5HY6nnWjW7kNP2Ee2CmM0JHrb5QLd+rw0A0BYGcw6Pcg+kplV7/ELLUufKYJKsuGclGCmG3adNlDzRblWYXb+95Y/eThf8Zea1AorOa8qe45sYo992glfs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gxcwNWOd; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1758298426; c=relaxed/simple;
+	bh=a01/WuiqsmUPYQDo90c3KQ8E5JyseCbU2oqdf6tNpA0=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Ioqj5nQZXycqQxkFD45tbHs+y2AjxG3gGXya6HS/SjsLZSor8FvkErMH+nBY8mWgC5/cmzGgi6EM+j59WPqpQ704l2VU4p3RsoawtceWIDcmvP27RWp+0C7Ebsg2XWwxihlz3HSGf1HNJebNzJU4V4+QWIXPeVYvFNDY2FwZ/lY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fb.com; spf=pass smtp.mailfrom=meta.com; dkim=pass (2048-bit key) header.d=fb.com header.i=@fb.com header.b=Y+1gpdoS; arc=none smtp.client-ip=67.231.153.30
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fb.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=meta.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gxcwNWOd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76C8EC4CEF0;
-	Fri, 19 Sep 2025 16:08:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758298105;
-	bh=KR7+2nE82F6C0RiPmuqmiCYxfBNwhzjUQ6Re6K7PmkQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=gxcwNWOdwyYYCt/Mr4IoNw/QjfiG4fCy9ykIixLtIZgzxpvEaTh0ZrsRzbEkVlnG2
-	 m8b1wOyRgj64SHlplGanM4IqWdr6Ywznq35IYlrDTPSiuH1HbSJA9OSV6F3cLQ0fmv
-	 gIfqZUpL6QTaZY7lchfgfbbV/HzPQ9GlWuIYB09YAq8LPsugW8lRkDPp3pD3pmqfjH
-	 MMDTa/BarqpIPeeM6zxgfbm5MTp42dkz6/ahu8QcAFUE+eO/S+U7a/1bN3BopMvk86
-	 +JRB492i+MxOTtI0yVlp8MJ781GY30PjuvtN+/6jEMPcnyQy8X2xhocLeJS5gf/FQl
-	 TeUW9JwC+yaOg==
-Date: Fri, 19 Sep 2025 10:08:21 -0600
-From: Keith Busch <kbusch@kernel.org>
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	Alexander Potapenko <glider@google.com>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
-	David Hildenbrand <david@redhat.com>, iommu@lists.linux.dev,
-	Jason Wang <jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-	Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>,
-	Juergen Gross <jgross@suse.com>, kasan-dev@googlegroups.com,
-	linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	linux-nvme@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-	linux-trace-kernel@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
-	xen-devel@lists.xenproject.org
-Subject: Re: [PATCH v6 00/16] dma-mapping: migrate to physical address-based
- API
-Message-ID: <aM1_9cS_LGl4GFC5@kbusch-mbp>
-References: <CGME20250909132821eucas1p1051ce9e0270ddbf520e105c913fa8db6@eucas1p1.samsung.com>
- <cover.1757423202.git.leonro@nvidia.com>
- <0db9bce5-40df-4cf5-85ab-f032c67d5c71@samsung.com>
- <20250912090327.GU341237@unreal>
+	dkim=pass (2048-bit key) header.d=fb.com header.i=@fb.com header.b="Y+1gpdoS"
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+	by m0089730.ppops.net (8.18.1.11/8.18.1.11) with ESMTP id 58JFp6Gs3066589;
+	Fri, 19 Sep 2025 09:13:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=s2048-2025-q2;
+	 bh=aAllSrnqZisLS07gqezEwcAKect5ROM5XcljCmR6PwM=; b=Y+1gpdoS0kw2
+	bt1+sUeZAxOm7z4J2tGSRluSJUIaq69IHAnismP48eujJhod5NpVp4U5IjpPxyLd
+	/4URnKspPCzEQusjv7vxCtlIRRUnBbCQ+94qbmiLR+jCDELO6KEk+Tt/f8ZOXnSf
+	TjiU6mMX/KAC0PAKqoH6y1GmVcuIcjKTGEi/1CeVfjrCq9SzNa4J0Z7jbXtJlWO8
+	jTOKSfVx8lHnDrPPUkJHvSx0y1lkF3AQuYQ5XtzB5ugq4Voowhe5J62HRWK0mYaw
+	9VIOjvl+fTh4VtvkQRD7lC0NSY2zpva20wvrt+NFfanCbqd+AAp58ji3BTwyNtPD
+	apQeU0RcdA==
+Received: from maileast.thefacebook.com ([163.114.135.16])
+	by m0089730.ppops.net (PPS) with ESMTPS id 499a6905y7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+	Fri, 19 Sep 2025 09:13:19 -0700 (PDT)
+Received: from devgpu015.cco6.facebook.com (2620:10d:c0a8:1b::8e35) by
+ mail.thefacebook.com (2620:10d:c0a9:6f::8fd4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.2562.20; Fri, 19 Sep 2025 16:13:17 +0000
+From: Alex Mastro <amastro@fb.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+CC: Alex Mastro <amastro@fb.com>,
+        Alex Williamson
+	<alex.williamson@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        "Bjorn
+ Helgaas" <bhelgaas@google.com>, David Reiss <dreiss@meta.com>,
+        Joerg Roedel
+	<joro@8bytes.org>, Keith Busch <kbusch@kernel.org>,
+        Leon Romanovsky
+	<leon@kernel.org>, Li Zhe <lizhe.67@bytedance.com>,
+        Mahmoud Adam
+	<mngyadam@amazon.de>,
+        Philipp Stanner <pstanner@redhat.com>,
+        Robin Murphy
+	<robin.murphy@arm.com>,
+        Vivek Kasireddy <vivek.kasireddy@intel.com>,
+        "Will
+ Deacon" <will@kernel.org>, Yunxiang Li <Yunxiang.Li@amd.com>,
+        <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+        <kvm@vger.kernel.org>
+Subject: Re: [TECH TOPIC] vfio, iommufd: Enabling user space drivers to vend more granular access to client processes
+Date: Fri, 19 Sep 2025 09:13:04 -0700
+Message-ID: <20250919161305.417717-1-amastro@fb.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20250918225739.GS1326709@ziepe.ca>
+References:
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250912090327.GU341237@unreal>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Authority-Analysis: v=2.4 cv=eNkTjGp1 c=1 sm=1 tr=0 ts=68cd811f cx=c_pps
+ a=MfjaFnPeirRr97d5FC5oHw==:117 a=MfjaFnPeirRr97d5FC5oHw==:17
+ a=yJojWOMRYYMA:10 a=VwQbUJbxAAAA:8 a=5m1aJF6OL82OVurx2oYA:9 a=WdnvUy4J-PgA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTE5MDE1MiBTYWx0ZWRfX0GSHjZFbKmAN
+ eNF9ptCC/VJ9e3VBN59GV6nmr+AvUkEcZ+nX/D7K1DM6YWHswhnhY5ytzvSANnBsxt0XIEWvABL
+ SPytR91wZ30CZSpI0CmlZP0FMFPz0yEjh198wAuLx1ewJxlCg0M1HBzIHaxcZoUlBdcJqeEHNn2
+ /8g1RanowXjKK/DeAclxwLzye/ffwG42V5xl7c9BsldcqWydvNq1iy3/Qh+hXLixJkIgVj7BGno
+ SW3oucumns4a72SRqmaHvWAsZlhMWjRJ4tm569+7D2A44QglY62nXMZ+Dl2qdf10jNBlBqJiBk9
+ mz3+ZYXWEsnT+AwLbEzM3qljNPZXTLD6GnodOrL6zto3cZB8bavh/pgsLeLhJM=
+X-Proofpoint-GUID: Wp5Bc7YAGUILxFveuucvAxklipT02cPE
+X-Proofpoint-ORIG-GUID: Wp5Bc7YAGUILxFveuucvAxklipT02cPE
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-09-19_01,2025-09-19_01,2025-03-28_01
 
-On Fri, Sep 12, 2025 at 12:03:27PM +0300, Leon Romanovsky wrote:
-> On Fri, Sep 12, 2025 at 12:25:38AM +0200, Marek Szyprowski wrote:
-> > >
-> > > This series does the core code and modern flows. A followup series
-> > > will give the same treatment to the legacy dma_ops implementation.
-> > 
-> > Applied patches 1-13 into dma-mapping-for-next branch. Let's check if it 
-> > works fine in linux-next.
+On Thu, Sep 18, 2025 at 07:57:39PM -0300, Jason Gunthorpe wrote:
+> I'm having a somewhat hard time wrapping my head around the security
+> model that says your trust your related processes not use DMA in a way
+> that is hostile their peers, but you don't trust them not to issue
+> hostile ioctls..
+
+Ah, yea. In my original message, I should have emphasized that vending the
+entire vfio device fd confers access to inappropriate ioctls *in addition to*
+inappropriate BAR regions that the client should be restricted from accessing.
+
+Assuming we make headway on dma_buf_ops.mmap, granting a client process access
+to a dma-buf's worth of BAR space does not feel spiritually different than
+granting it to a peer device. The onus is on the combination of driver + device
+policy to constrain the side-effects of foreign access to the exposed BAR
+sub-regions.
+
+Please let me know if I misunderstood your meaning.
+
+> IIRC VFIO should allow partial BAR mappings, so the client process can
+> robustly have a subset mapped if you trust it to perform the unix
+> SCM_RIGHTS/mapping ioctl/close() sequence.
+
+Yes -- we already do this today actually. The USD just tells the client "these
+are the specific set of (offset, length) within the vfio device fd you should
+mmap". Those intervals are slices within BARs.
+
+> > > Instead of vending the VFIO device fd to the client process, the USD could bind
+> > the necessary BAR regions to a dma-buf fd and share that with the client. If
+> > VFIO supported dma_buf_ops.mmap, the client could mmap those into its address
+> > space.
 > 
-> Thanks a lot.
+> I wouldn't object to this, I think it is not too complicated at all.
 
-Just fyi, when dma debug is enabled, we're seeing this new warning
-below. I have not had a chance to look into it yet, so I'm just
-reporting the observation.
+That's encouraging to hear! Thank you.
 
- DMA-API: nvme 0006:01:00.0: cacheline tracking EEXIST, overlapping mappings aren't supported
- WARNING: kernel/dma/debug.c:598 at add_dma_entry+0x26c/0x328, CPU#1: (udev-worker)/773
- Modules linked in: acpi_power_meter(E) loop(E) efivarfs(E) autofs4(E)
- CPU: 1 UID: 0 PID: 773 Comm: (udev-worker) Tainted: G            E    N  6.17.0-rc6-next-20250918-debug #6 PREEMPT(none)
- Tainted: [E]=UNSIGNED_MODULE, [N]=TEST
- pstate: 63400009 (nZCv daif +PAN -UAO +TCO +DIT -SSBS BTYPE=--)
- pc : add_dma_entry+0x26c/0x328
- lr : add_dma_entry+0x26c/0x328
- sp : ffff80009fe0f460
- x29: ffff80009fe0f470 x28: 0000000000000001 x27: 0000000000000001
- x26: ffff8000835d7f38 x25: ffff8000835d7000 x24: ffff8000835d7e60
- x23: 0000000000000000 x22: 0000000006e2cc00 x21: 0000000000000000
- x20: ffff800082e8f218 x19: ffff0000a908ff80 x18: 00000000ffffffff
- x17: ffff8000801972a0 x16: ffff800080197054 x15: 0000000000000000
- x14: 0000000000000000 x13: 0000000000000004 x12: 0000000000020006
- x11: 0000000030e4ef9f x10: ffff800083443358 x9 : ffff80008019499c
- x8 : 00000000fffeffff x7 : ffff800083443358 x6 : 0000000000000000
- x5 : 00000000000bfff4 x4 : 0000000000000000 x3 : ffff0000bb005ac0
- x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff0000bb005ac0
- Call trace:
-  add_dma_entry+0x26c/0x328 (P)
-  debug_dma_map_phys+0xc4/0xf0
-  dma_map_phys+0xe0/0x410
-  dma_map_page_attrs+0x94/0xf8
-  blk_dma_map_direct.isra.0+0x64/0xb8
-  blk_rq_dma_map_iter_next+0x6c/0xc8
-  nvme_prep_rq+0x894/0xa98
-  nvme_queue_rqs+0xb0/0x1a0
-  blk_mq_dispatch_queue_requests+0x268/0x3b8
-  blk_mq_flush_plug_list+0x90/0x188
-  __blk_flush_plug+0x104/0x170
-  blk_finish_plug+0x38/0x50
-  read_pages+0x1a4/0x3b8
-  page_cache_ra_unbounded+0x1a0/0x400
-  force_page_cache_ra+0xa8/0xd8
-  page_cache_sync_ra+0xa0/0x3f8
-  filemap_get_pages+0x104/0x950
-  filemap_read+0xf4/0x498
-  blkdev_read_iter+0x88/0x180
-  vfs_read+0x214/0x310
-  ksys_read+0x70/0x110
-  __arm64_sys_read+0x20/0x30
-  invoke_syscall+0x4c/0x118
-  el0_svc_common.constprop.0+0xc4/0xf0
-  do_el0_svc+0x24/0x38
-  el0_svc+0x1a0/0x340
-  el0t_64_sync_handler+0x98/0xe0
-  el0t_64_sync+0x17c/0x180
- ---[ end trace 0000000000000000 ]---
+> What I've been thinking is if the vending process could "dup" the FD
+> and permanently attach a BPF program to the new FD that sits right
+> after ioctl. The BPF program would inspect each ioctl when it is
+> issued and enforce whatever policy the vending process wants.
 
+This seems totally reasonable to me.
+
+> What would give me alot of pause is your proposal where we effectively
+> have the kernel enforce some arbitary policy, and I know from
+> experience there will be endless asks for more and more policy
+> options.
+
+Agreed. If we can engineer BPF to be able to interact with those ioctls to hoist
+these kinds of policy decisions up into user space, I can't argue with that.
+
+> I don't think viommu is really related to this, viommu is more about
+> multiple physical devices.
+
+Ack. I wasn't sure how much to read into the "representing a slice of the
+physical IOMMU instance" comment [1].
+
+[1] https://docs.kernel.org/userspace-api/iommufd.html
+
+Thanks,
+Alex
