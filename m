@@ -1,118 +1,159 @@
-Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+Received: from mail-wr1-f73.google.com (mail-wr1-f73.google.com [209.85.221.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6858D2FABFF
-	for <iommu@lists.linux.dev>; Fri, 19 Sep 2025 12:08:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F19C719E967
+	for <iommu@lists.linux.dev>; Fri, 19 Sep 2025 13:33:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758283723; cv=none; b=RG9qDnXN0HMiJVk+UwhPLyqeNDwId/f2gO9Owvb9Xfc7dST/ZmpIP3QT1uCjNIQDjHHz3+fuuPvmBgriKIs2ciOxk0x9JRl4R+5o+qGNqn5L9ttXnVnilELFEkl9fKZeEFghRDn8uNP/st2L0l8Fjt/q2m1w6/BiBrStF1xHrTk=
+	t=1758288802; cv=none; b=TEWSpgA6CelyBWHciJGPL4hcUM36jRao+pMN8Xsa1Xitc2DazkkTnJPkMRhB+HpVEhhMNFlNGYxbU3ikuVGj6zlMLuihSeg+loDLcXVzlJdjfjsWhvrWKSMm5AWIg6XJDBVOj/g2NNhWLxPoK2MVde5VH0GLYokNwL1Ec4mT7cc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758283723; c=relaxed/simple;
-	bh=PU4BzVSUM6uCKa5w2l6OSfoECkEW3DTQ8YYJ6WsGxgA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=i4vktvUnjVc/e1bAl9W4dn0okXlhSNd1DjvE3QDXVVkEHAi1If0BxqnUI90ZbtIOt8/+elUWZT2QtZPWcYSnYYWYFkz9wV03Sw4xBAFBzgB7rv31+PrVoNXqKzgDHxcLqvuYfWIhj0byHVk0fixUpW301BovAlFpMRGl0BBk+ws=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=NM5faOPK; arc=none smtp.client-ip=209.85.161.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1758288802; c=relaxed/simple;
+	bh=yhbCLGwVnGVY3jbaYPY86vLAA2Yd+Leim+F9sdQwRrI=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=UvYMcnIGWsJ+ZHhcxJE+0OCS3nz4ZWyqcU2R+ic3PoVT5w/rLzSiYz+DJi80gxCDYDIAWNbl1LWDgabM2++lnnfUcRb9zJxQWB6ekw6hd5LfyxzvaIR9YJH7h2ofkyrpWFNDKmgMr0DQ0CYOV6bKFl9KnDVu0lJ28Omw2m10clA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tAXsBnBk; arc=none smtp.client-ip=209.85.221.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="NM5faOPK"
-Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-6234b7bdf3dso784798eaf.0
-        for <iommu@lists.linux.dev>; Fri, 19 Sep 2025 05:08:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tAXsBnBk"
+Received: by mail-wr1-f73.google.com with SMTP id ffacd0b85a97d-3ccd58af2bbso1310483f8f.0
+        for <iommu@lists.linux.dev>; Fri, 19 Sep 2025 06:33:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1758283721; x=1758888521; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ddOV/4AeMTKAaTlLO+S2d6s4wCcUbRWR+oBWKnZEc/A=;
-        b=NM5faOPKVeGO7OjDsQsb/kScnAlkMlNFQLKuRGZu3eliqIUtYMGOKu4MSztvFXSA8u
-         3p8+BUvdva99GmiPvIAdaKTsj5WhJKPXSlV7ug9b90uifo8AK2mUxla8i4KGDNaX1HsJ
-         1BlDsXe6Jia88E+SNGgnbl2Og2YZ/OF2Y57U0cupj469mUJfuGePXac3V6mRmCqKcDzY
-         oLUhYj/vHpEZHB5JrOkJRB+mpgK/4s+yCNuh9+EugGaFrVFQmCRZ3o1xhFmd/DnuEdyq
-         Pq3NwkqZE7KjPgulME4PPdA7+RGudPp+b3MpDDH7csicxRztjsDwoxODGnBzOMqgQ11/
-         QbNw==
+        d=google.com; s=20230601; t=1758288799; x=1758893599; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=R4GdfKGjcAjHO1Ow9QOdPWWunxjlWYABEGKDu3CoN9g=;
+        b=tAXsBnBk7JBA/ksZ4ims4k2opo7Todg/ogbF6rMevWceLWWltQMLfBFVH63hH7X336
+         iB4au2/dp2Q6eRiJrM/Mc2wva3MJbSvZWId1wRPquD1cko3hOl05nyr0ocsRGUfvZcNX
+         /XBGZebTT7oQsk8wSMWnDupTBcTDOju4gpAhoTwIpVZe3Es3O05Y34PsebOaTF3bSCXD
+         5F+HRtrNhtZoelDdIMamd623eTs17uJwC8k3P1/sFSTRiYZduLOfjsvETTHOnf3ybu6i
+         UUnikFJSQmf6m3SvtLiyxK6ZTsyvxoLpl+BeNoxmK4wDf3lX7wSMB/uf2OWk2FaYp4iG
+         32wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758283721; x=1758888521;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20230601; t=1758288799; x=1758893599;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ddOV/4AeMTKAaTlLO+S2d6s4wCcUbRWR+oBWKnZEc/A=;
-        b=U9DR+pPm+OhCzmWrp/BVm6G+hVh8YEEMjyuWidhcGGyJYVmnikMjDqL1zGSzvX0ax1
-         1dLN27URVKmf7kt3ve7jGGiI0jiZYQYysTKXc7jeAIoe2PPESmxRUKTls9xH+KLOahDI
-         qNi/CwzbuHg2Y5//qYuxN5pjsuryUf5NuFJIHDWOEYfqMH92EoLjlg/p20wrK/OLQd3O
-         Z5Z9USxfMWmamJrztOh1UmOfiedcHnu/Ze9oGzN91gw00AEOb+EnxUPWopJpc9Y2Sybq
-         9rR0Ym6Afo7xIev38bKk+QRoY7NMQ3kDxSDh3sal3uuFPyeGGMiUrbTuGlPtCp61Tck6
-         55bw==
-X-Forwarded-Encrypted: i=1; AJvYcCX2NC12gtdDUC+9fajlF0b/FjYgAfNs/wgV/QbMQFHk+t5bVz6SaMN7fi3u1XQ8KTmPzvx0zw==@lists.linux.dev
-X-Gm-Message-State: AOJu0Yz6ZIXy4vU7pdzv0cOOsG6BHHXA2wYWpiIaUPks2T1d1nUPRFQQ
-	7yNziS+w31MjLxW3crPIVNPrG3ZgXqVNq9z2rPSi0dsgbI9oWOmXUPeaVPFAzKWHiCw=
-X-Gm-Gg: ASbGncviesDcmO6NGjSONCBthVYlBQmTAmjJPFqu0+HbiKjNee3X8Dx1iAS6DRBWW7L
-	/k6TZrXGcFDAXAe3GCBWBr7x8j8DsxAM/3DIFJuFdFXWqoQDSa21Dt/HAeOOYhM6t+VeeEMCJAq
-	bVx9d6AmuxARo3N8y96s0hhNjukPGgDApzAHDk/IPqERPIsU7C6eTkGkx9dDJnIX7riiF1YjlW7
-	vIx22u1ef6FsrsmiZykVhnrQErb9yU76WbYOzCX2pduh6YDWTY0YbPxUlnJ2NWl8vcV63lxtqib
-	SwjdwDuWiS6oc7b6QOiBl2WjmD2cGGONz18Iwf08X/eoKIcUX3rzhaZFQYo6LBlV3KUuX5/39UA
-	Q5YqmWT8=
-X-Google-Smtp-Source: AGHT+IFaCWGfMylYUS564NQsUR0mWVuwnX1ZTO8LwVtBeK6iF/UthAXLSHYAnBZ/pCpVTkoFVFyzFQ==
-X-Received: by 2002:a05:6820:2285:b0:621:7820:a28 with SMTP id 006d021491bc7-6272abee5f2mr1140086eaf.8.1758283721447;
-        Fri, 19 Sep 2025 05:08:41 -0700 (PDT)
-Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7692a973dc1sm2326849a34.30.2025.09.19.05.08.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Sep 2025 05:08:40 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1uzZup-000000097kO-1FuO;
-	Fri, 19 Sep 2025 09:08:39 -0300
-Date: Fri, 19 Sep 2025 09:08:39 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Will Deacon <will@kernel.org>
-Cc: Shyam Saini <shyamsaini@linux.microsoft.com>, thierry.reding@gmail.com,
-	robin.murphy@arm.com, robh@kernel.org, joro@8bytes.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
-	jacob.pan@linux.microsoft.com, eric.auger@redhat.com,
-	code@tyhicks.com, eahariha@linux.microsoft.com,
-	vijayb@linux.microsoft.com, bboscaccy@linux.microsoft.com,
-	saravanak@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
-	lizhi.hou@amd.com, clement.leger@bootlin.com
-Subject: Re: [PATCH v4 3/4] arm-smmu: select suitable MSI IOVA
-Message-ID: <20250919120839.GV1326709@ziepe.ca>
-References: <20250909154600.910110-1-shyamsaini@linux.microsoft.com>
- <20250909154600.910110-4-shyamsaini@linux.microsoft.com>
- <aMw4I0AjKNPY6SOw@willie-the-truck>
- <20250918224322.GR1326709@ziepe.ca>
- <aM0HQ51DelZW_Rt8@willie-the-truck>
+        bh=R4GdfKGjcAjHO1Ow9QOdPWWunxjlWYABEGKDu3CoN9g=;
+        b=fCZi5gEwxE/DGlhDrpe12WoUC51E4oNMlzWIK7c9dnY8jTtyP06dx2dGSO+ClRwfCL
+         gTtndRtKDw6pTddX6cx8coErLVhLCN5aI8SnkKN5/+/2pJyiMw9SO82vtlK9Wf2Dcx6M
+         Nk7TeZbasukVEdHGer536XbSasnDVhwPRceo/sp44wkeGw94CtN0qR5Xu4iCa+u6S7y/
+         ZM0/vrKPKnVm8Tr3oiZCNxgk7qOOPR4sgHW3gK2fUQBFFfHMWs13mbVJo3pVXzBvt65G
+         BpbGX1h6AMqT2V0rhhMFJynetBDOOgg+pz9x9DkGAUFhKYC4DtLXxBFpRYs15gZq6fhj
+         D8Cw==
+X-Gm-Message-State: AOJu0YzRvjvQEVwFiUsEPSjajZOa9/l4OqZTWNoAuWryMC1HhcVFPPCn
+	EmpPiHe3P3oqPcEY2/TsepqAIE7ehl/OWkyDkM/a3imrj8me7QU42FYBq+63aDKLbMPWu6agWYO
+	ZhrCZm9dU+CYpLK01obDifkTH3NQahTsp2G31PHxlwQaI8NGRTXXxVkEvhDyMB5Tiii/7qrQdZ6
+	91zKkKPikzy6uQuWuu/ORBy4QchS5AMoxAJ22b8hHCCyM6uA==
+X-Google-Smtp-Source: AGHT+IGBtth11hKgSJrPU0wa9yxisbbeO9r+lcZZZKAbsRwiycsMuFxXsib0bL2/MaLbfaWsBZv3sfUavT1taA==
+X-Received: from wrbgx5.prod.google.com ([2002:a05:6000:4705:b0:3ec:b561:7686])
+ (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a5d:5f95:0:b0:3d6:4596:8a3a with SMTP id ffacd0b85a97d-3ee193f90f1mr3383557f8f.17.1758288799288;
+ Fri, 19 Sep 2025 06:33:19 -0700 (PDT)
+Date: Fri, 19 Sep 2025 13:33:09 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aM0HQ51DelZW_Rt8@willie-the-truck>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.51.0.534.gc79095c0ca-goog
+Message-ID: <20250919133316.2741279-1-smostafa@google.com>
+Subject: [PATCH v3 0/4] Move io-pgtable-arm selftest to KUnit
+From: Mostafa Saleh <smostafa@google.com>
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org, jgg@ziepe.ca, 
+	praan@google.com, Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Sep 19, 2025 at 08:33:23AM +0100, Will Deacon wrote:
-> pieces and will need to work on the userspace side. It's not like
-> MSI_IOVA2 is magically going to work (and I bet it won't be tested).
+This is a small series to clean up the io-pgtable-arm library.
 
-It could, if someone checks the default memory map a second constant
-could be selected that works.
+The first patch is a small clean up to reduce the depedencies of the
+test before moving it.
 
-> > Nicolin has some patches on the iommufd side to let userspace select
-> > the MSI address instead, but they are not done yet.
-> 
-> Maybe we should just wait for that? Carrying a temporary hack with ABI
-> implications to support broken hardware isn't particularly compelling
-> to me.
+The second patch was originally part of the SMMUv3 KVM driver support[1],
+which needed to factor out the kernel code from the io-pgtable-arm
+library, and based on Jason=E2=80=99s suggestion this can be taken out as a
+cleanup, and a step further to convert it to kunit.
 
-This patch would still be needed for kernel users.
+The second patch just moves the code to a new file with no other changes,
+so it can be easier to review with =E2=80=9C--color-moved=E2=80=9D
 
-Arguably the kernel users should just be using the iova allocator from
-dma-iommu.c. This whole hard coded constant/sneaky uapi is just a hack
-to make vfio work..
+The third patch converts the sefltest to be modular, that is useful as
+kunit can be a module and it can run anytime after boot.
 
-So maybe if the single constant doesn't work we could set some
-indication that the caller must allocate the MSI iova, the kernel can
-use the dma-iommu allocator and VFIO can just refuse to use the device
-for now.
+The fourth patch registers the test using kunit, and converges some of
+the APIs, some notes about that:
 
-Jason
+Granularity of tests:
+---------------------
+To make the series easier to review, the series changes the test to run in
+kunit without making intrusive changes to the test itself.
+It=E2=80=99s possible to refactor the tests to have smaller granularity (al=
+though
+I think that would make it less efficient as we might create the same io-pg=
+table
+config multiple times) and integrate them in kunit as multiple tests, that
+change would be more intrusive, if you think that is the right approach,
+I can add a couple of more patches re-writing the tests.
+
+Other changes:
+--------------
+- Also, to make the test changes minimal, and the fail messages similar,
+  =E2=80=9CKUNIT_FAIL()=E2=80=9D is used to fail all tests instead of using=
+ KUNIT specific
+  assertions.
+
+- Instead of using faux device, we rely on kunit_device_register()
+
+- The WARN is removed when a test fails, as that doesn=E2=80=99t seem to be=
+ a pattern
+  used with kunit.
+
+
+You can find the instructions on how to run kunit in the last patch commit =
+message.
+
+A failure at the test with the new implementation look as
+[  191.675985]     # arm_lpae_do_selftests: selftest: pgsize_bitmap 0x20010=
+000, IAS 40 OAS 48
+[  191.676057]     # arm_lpae_do_selftests: EXPECTATION FAILED at drivers/i=
+ommu/io-pgtable-arm-selftests.c:91
+[  191.676087]     # arm_lpae_do_selftests: selftest: test failed for fmt i=
+dx 0
+
+
+Main changes in v3:
+-------------------
+- Move back unused code
+- Simplify printing based on Jason comments + some renames
+- Collect Jasons Rb
+v2: https://lore.kernel.org/all/20250917191143.3847487-1-smostafa@google.co=
+m/
+
+Main changes in v2:
+-------------------
+- Make the test modular
+v1: https://lore.kernel.org/linux-iommu/20250917140216.2199055-1-smostafa@g=
+oogle.com/
+
+[1] https://lore.kernel.org/all/20250819215156.2494305-5-smostafa@google.co=
+m/
+
+Mostafa Saleh (4):
+  iommu/io-pgtable-arm: Simplify error prints for selftests
+  iommu/io-pgtable-arm: Move selftests to a separate file
+  iommu/io-pgtable-arm-selftests: Modularize the test
+  iommu/io-pgtable-arm-selftests: Use KUnit
+
+ drivers/iommu/Kconfig                    |  12 +-
+ drivers/iommu/Makefile                   |   1 +
+ drivers/iommu/io-pgtable-arm-selftests.c | 222 +++++++++++++++++++++++
+ drivers/iommu/io-pgtable-arm.c           | 204 ---------------------
+ 4 files changed, 230 insertions(+), 209 deletions(-)
+ create mode 100644 drivers/iommu/io-pgtable-arm-selftests.c
+
+--=20
+2.51.0.534.gc79095c0ca-goog
+
