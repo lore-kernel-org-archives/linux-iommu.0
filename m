@@ -1,117 +1,88 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3091B277C95;
-	Fri, 19 Sep 2025 07:13:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B41342F6189;
+	Fri, 19 Sep 2025 07:33:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758266003; cv=none; b=Q6kaZdkxZE5laYkVfeMHUZ1XX2joOOteBY7+QomUXEOFdj1Dtc84YfhuqDqpVl+g39spIbWYlsZTw71ZPBuvJD+s0HXdN/XgaCTkCYOJBM9uL/Guh25wshRi10/F+Q5x8GrXmyaeklpYYW15PD1Hpbvjv27vxetY4j0l9INUsN8=
+	t=1758267210; cv=none; b=cZSXCOS79ZKkx87WEPk+zdXUmDEe0uGmAM1996o5opdnkTNn+51yEOlKbG241IcW3VgLSfMUeI5PoNrTzngcPUyGphJHEhHWLhdVklKX5mYSk/4kgT5mOCL2jHADGULPXAX1gTjqckQOpJQ3ytM+u/q/y3caUmMhgCHTCoLigwU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758266003; c=relaxed/simple;
-	bh=1t5vWZ8iEbnpsW4relA0572VxAhet0HxabKQsq73kfU=;
+	s=arc-20240116; t=1758267210; c=relaxed/simple;
+	bh=Lx33AaBsxDOHxkZEXjvlDKiPRuXKJF1OzxalkYoJ7Cg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cp1/TAsOOdbMA8hjv++Z5ONAmkkjIhiW57o7+k5233A0Cxvokd/gwHROZ39DXsaissvgdbuOM+Hubl248GbHnepkU74WHioK+I8hHQzBLrTx0cwFXMdpGlwQcT95xoNf2VgQWkJggOYmmMFROpce86fCoaKX+p/evBdOG21kJi4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=by6V6Zm5; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=FZOn7YBWzXWIUVg/IWphl4TJv0vfHMA+yuL81CV+PgdDl6OLQaHVAKPxWXfvPk3QRAEX8mWmMc7eyZ0b72ABEZP29UKT/qPEiOZlH87v3EFTAp6VfmhQzjP9kyTFyLjjC5+1OvLwJkxC27C3TpSWQ/myGV5NxCgDhM/hPC6AqaM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OnIayxU4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="by6V6Zm5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54532C4CEF0;
-	Fri, 19 Sep 2025 07:13:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OnIayxU4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88238C4CEF0;
+	Fri, 19 Sep 2025 07:33:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758266001;
-	bh=1t5vWZ8iEbnpsW4relA0572VxAhet0HxabKQsq73kfU=;
+	s=k20201202; t=1758267210;
+	bh=Lx33AaBsxDOHxkZEXjvlDKiPRuXKJF1OzxalkYoJ7Cg=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=by6V6Zm5lbZKY3r4zH0m9zFGT412JeEerfDGTUnFTWzJ2j8Yow/MmkTCiERx/bAXN
-	 MPnOPSylLLWa+Dw1CwRm5FQZ7Zv9UfOLKxd5rG/30WGwYolJJbilI/cTLig/DR5K0x
-	 bw513GyxaY4BRwpJE8Z6x3CKLB1ChyoXmbjkb/Y0HzYz3SL/hMDJh4qjWd8aRKzqTI
-	 WP6urLss1YVOTSKBRgH8eh9giOgWY4k4vnVNukzCHE99mL1ZEbplegLkDeVmeewObW
-	 MIvMW5oc48l+/WPgyleK16UN3gIdKGS4M6HIDyId6GUG/X3XXG7UPh45ftgrIsx8BT
-	 Is2tetSE3DKFA==
-Date: Fri, 19 Sep 2025 09:13:16 +0200
-From: Joel Granados <joel.granados@kernel.org>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>, 
-	Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	stable@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu/vt-d: PRS isn't usable if PDS isn't supported
-Message-ID: <t5ier7jfq7f6sedqq2vholm4x7myolk7tanhi7cjcd6xkrk72d@luay37lq7ipu>
-References: <20250915062946.120196-1-baolu.lu@linux.intel.com>
- <zkgvbw42g25a47nyydehxismaup6eh4kygqbdw7fk54kxze7j3@lrczardwx2ma>
- <3d633e85-04fd-4077-9bf8-92fb487f89fb@linux.intel.com>
+	b=OnIayxU4R21x2fQ71+36zLb/cyb1S39xVraWvMNWx5ASXXzFBQYBeWskMMSM1LUYs
+	 L3Df5/Tnk9zFsvYVhBRqhVue/HNMc0lX08e0aiJYwDDd/n3NAV0ycbyUApu0a2aQLq
+	 vBxGTZ1w1gg8s1Tetdb7nsPFCtHsIi1dCqUnvAl29N4//QZBRFgPUZyT6mH/6Cb5nF
+	 RuoiPGKL1l1nCwczm4Po6lA83cjt+yFnWioHNE5lBNL2ZpihKUPffSijkvVcxFP0wt
+	 ySoN86uYo4D82No4xfpvCBhxNJZMNRyRi6aZVmzdidrmEoT6JRIb7AurVY0Yg8SdCA
+	 tNGhAR4uNLHlA==
+Date: Fri, 19 Sep 2025 08:33:23 +0100
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Shyam Saini <shyamsaini@linux.microsoft.com>, thierry.reding@gmail.com,
+	robin.murphy@arm.com, robh@kernel.org, joro@8bytes.org,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
+	jacob.pan@linux.microsoft.com, eric.auger@redhat.com,
+	code@tyhicks.com, eahariha@linux.microsoft.com,
+	vijayb@linux.microsoft.com, bboscaccy@linux.microsoft.com,
+	saravanak@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
+	lizhi.hou@amd.com, clement.leger@bootlin.com
+Subject: Re: [PATCH v4 3/4] arm-smmu: select suitable MSI IOVA
+Message-ID: <aM0HQ51DelZW_Rt8@willie-the-truck>
+References: <20250909154600.910110-1-shyamsaini@linux.microsoft.com>
+ <20250909154600.910110-4-shyamsaini@linux.microsoft.com>
+ <aMw4I0AjKNPY6SOw@willie-the-truck>
+ <20250918224322.GR1326709@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="3xq7uv7x2yy5bq7s"
-Content-Disposition: inline
-In-Reply-To: <3d633e85-04fd-4077-9bf8-92fb487f89fb@linux.intel.com>
-
-
---3xq7uv7x2yy5bq7s
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20250918224322.GR1326709@ziepe.ca>
 
-On Tue, Sep 16, 2025 at 09:58:14AM +0800, Baolu Lu wrote:
-> On 9/15/25 19:30, Joel Granados wrote:
-> > On Mon, Sep 15, 2025 at 02:29:46PM +0800, Lu Baolu wrote:
-> > > The specification, Section 7.10, "Software Steps to Drain Page Reques=
-ts &
-> > > Responses," requires software to submit an Invalidation Wait Descript=
-or
-> > > (inv_wait_dsc) with the Page-request Drain (PD=3D1) flag set, along w=
-ith
-> > > the Invalidation Wait Completion Status Write flag (SW=3D1). It then =
-waits
-> > > for the Invalidation Wait Descriptor's completion.
-> > >=20
-> > > However, the PD field in the Invalidation Wait Descriptor is optional=
-, as
-> > > stated in Section 6.5.2.9, "Invalidation Wait Descriptor":
-> > >=20
-> > > "Page-request Drain (PD): Remapping hardware implementations reporting
-> > >   Page-request draining as not supported (PDS =3D 0 in ECAP_REG) trea=
-t this
-> > >   field as reserved."
-> > >=20
-> > > This implies that if the IOMMU doesn't support the PDS capability, so=
-ftware
-> > > can't drain page requests and group responses as expected.
-> > >=20
-> > > Do not enable PCI/PRI if the IOMMU doesn't support PDS.
-> >=20
-> > After giving the spec another look, this is probably the way to go.
-> > However the PDS also mentions that DT must be set. Should we check
-> > ecap_dev_iotlb_support(iommu->ecap)  as well?
->=20
-> It has already been checked.
-Yes. In intel_iommu_probe_device. Thx for the clarification.
+On Thu, Sep 18, 2025 at 07:43:22PM -0300, Jason Gunthorpe wrote:
+> On Thu, Sep 18, 2025 at 05:49:39PM +0100, Will Deacon wrote:
+> > Given that we're walking over the reserved regions to see if we have a
+> > collision with MSI_IOVA_BASE, why not allocate the base address
+> > dynamically if we detect a collision rather than having yet another
+> > hard-coded address which we can't guarantee won't be problematic in future?
+> 
+> I'm nervous about this. Right now the  MSI_IOVA is actually UAPI and
+> things like VFIO/qmeu need to accomodate it's placement in their own
+> memory maps.
 
-Best
+*shrug*
 
---=20
+That's only the case for broken systems where the existing MSI_IOVA
+can't be made to work. As far as I'm concerned, they get to keep the
+pieces and will need to work on the userspace side. It's not like
+MSI_IOVA2 is magically going to work (and I bet it won't be tested).
 
-Joel Granados
+> Nicolin has some patches on the iommufd side to let userspace select
+> the MSI address instead, but they are not done yet.
 
---3xq7uv7x2yy5bq7s
-Content-Type: application/pgp-signature; name="signature.asc"
+Maybe we should just wait for that? Carrying a temporary hack with ABI
+implications to support broken hardware isn't particularly compelling
+to me.
 
------BEGIN PGP SIGNATURE-----
+> So, randomly picking an address sounds like a bad idea to me, it would
+> almost certainly unpredictably break qemu..
 
-iQGzBAABCgAdFiEErkcJVyXmMSXOyyeQupfNUreWQU8FAmjNAoMACgkQupfNUreW
-QU//8Qv9HdMlipScLuChqDoQOMybUKTj0nBOjYcagRoZ3qeZfkLooPPQqt7LSXq2
-TaTzY/ZUMhyeeMhxUpBfvsEzjIE14QtwQt3I1hQq/xMf+BMKYQRdS1WLRxkGN4/U
-q4+wt4NacUMmIDR+Yhz37vw76E/Ljsg1E3RnpICU6BRJtROMiO6IuB83sOyUhhvy
-bf7BobCK3TFGOymBaT0fNzgyssYIuF5VCiNkQTPmJ340CZOt2MYYi/TxNT6GLBSQ
-gmw42mYtAmXJ8C20SsJ5NaUWqep8cexa67CQzkRUstSuiaQ29Nlim0B3wdgbBlcs
-2G+Dr6qEzeSOZuWQgGuv0ICx2sAmGtglQn5vvyEektqbWdfqZVpFZnZd0udpxaqG
-u3HBTt9WkiCZ0SvnaYIUsOIBKcHsnAb0LfFzw+CfgjFVCFEc4r+IK+peK6xffEfc
-zZkWFEd7P0JSBLaz0xiELqhgH2zpnyDQ6h2OT0kaAQpAt0jGwDMT0ERe4YhBRpTb
-SsNZCFdG
-=IWaY
------END PGP SIGNATURE-----
+It's not really "random", in the sense that it would be deterministic
+for a given set of reserved regions.
 
---3xq7uv7x2yy5bq7s--
+Will
