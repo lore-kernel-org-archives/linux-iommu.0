@@ -1,63 +1,63 @@
-Received: from mail-io1-f46.google.com (mail-io1-f46.google.com [209.85.166.46])
+Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3E5B2E0B5C
-	for <iommu@lists.linux.dev>; Sat, 20 Sep 2025 20:39:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF8F22D73A7
+	for <iommu@lists.linux.dev>; Sat, 20 Sep 2025 20:39:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758400757; cv=none; b=GYSV+2tt0EwKzTZdXBws1cJMc6qGx001o3GVbsqTmJo8eYp0B18dvojHqHA5oBiq9U8pgCk6gXnVQMoZuNDZdYvw9M/x4xN3t0uZvQ1870Ic51fEZQNqiF+Gzm9bhYDgpq94d2KowTD8JVZRE3jCydj9Fuz8DxUTcrXYwVAnbMM=
+	t=1758400758; cv=none; b=Ih2Fq0WlmXTySJXY22L6T4l3rkmCj+zuqq3VpFs6ikD8ZPEz6HRngmSJMjF2raYY2g+rUnoF+lrvW01PhmDljixjhNK898pYpOzoUo1Zokli9xselvhD9kCw3a5tEjEGbsC9bByHdekhWp6FpehvIfgLnf427sN+pKuSSGvHRBg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758400757; c=relaxed/simple;
-	bh=E+sSPT+kUSejcvl41Q1TeDzQ8VYDhNgMKLADnh8bTf0=;
+	s=arc-20240116; t=1758400758; c=relaxed/simple;
+	bh=KZiCU1nVn9reB0m8aW3lnYMrYjnZ2w93aVpVoIvDif0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ai+0G2i+aiNQRK0oLe8ovZt883eFa9dTfYMpD4SvqS1lbevxAFcd8qe1BVwjLRZIK6dGDVE1JSj7gHuKW6cWsobk4ixAyJgFB9ZbLjw3Rx9VZ0mZtz9usNDBmtQfsUYapFUw56dTUdynySnxjWaGWR0Jan81s27yifciFiPvJxc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=M9mGhMC9; arc=none smtp.client-ip=209.85.166.46
+	 MIME-Version; b=O1p08QJAWFAQtjlOIhJ0kQ3RbEXBLN8hRMCmRP2pgD5sJuZA5guZF5gNq8ykfhQOx4gR9iazx6P9o12+2zU0oQQB/qRvpNcnTWhp9JEsGpggeRuNemzi2vHI1IZxfKn1X4NknIGuDI9+ZRSRps1PxhXhhGroPjtp0l4J2HByMWc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=RI3iZuKW; arc=none smtp.client-ip=209.85.166.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="M9mGhMC9"
-Received: by mail-io1-f46.google.com with SMTP id ca18e2360f4ac-887745ee814so105355339f.3
-        for <iommu@lists.linux.dev>; Sat, 20 Sep 2025 13:39:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="RI3iZuKW"
+Received: by mail-il1-f179.google.com with SMTP id e9e14a558f8ab-42403719c73so34188225ab.0
+        for <iommu@lists.linux.dev>; Sat, 20 Sep 2025 13:39:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google; t=1758400755; x=1759005555; darn=lists.linux.dev;
+        d=ventanamicro.com; s=google; t=1758400756; x=1759005556; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fhgo805sVSiR0SJlmhLHBR/NhPzSwBuZgQ2sQCeXYLE=;
-        b=M9mGhMC9hbnMuEMZnVsWGoNiXRoCUySDZZE1xhaB+0VMURrNu1e+etdQnb3eclDRoc
-         K6xxGRarZUbPCbdVb0/Bnry0f6WTGUm5ggPDkt9RLUIc+cy9Wvn+AoK2Pi8XRvSWNDDU
-         neykysob94MC3tXXvab17JPAWfiMawgFYqUElP46efyNt3u//57WniATqe08SO/KotBE
-         unvJmqWnt8BC0XYcmOy9/ygae9GwdV7mKZrX5SmzJ1wuL/c7GwZTopWwDwmhrcI7ZG0X
-         SRuGuDC84Pdmmt2uc6veKzpyafNtgeh8+hjxT1pjaxw8/Pc9HhBrr5MZOpkRGOE+7Q0O
-         82Cg==
+        bh=EDiaVjHF4kERpiNA+aqN0eX91N+wRKnw/AH6MzFfvy4=;
+        b=RI3iZuKWSruSDHH4da5t24Os1n6i5uzu+h1r0TubRyGj5WAMk3JGq7ZewRpO43buFB
+         rk1bIXW1eWz4ElvctBiV2D4p3EdFebcEXNYaOTbdvX9iPnxsVeUTOcRFDRdl/aKd7566
+         EHJLdnxMTFfbt1fHoYnN7Rpuc92Rn0znjffAwYghJ8iyT0bb69nndAeRR3bpsjlQkxy6
+         zSMaNTMPt6klcyV4RAKyxhr0TufG3swl7ukQMhORt1hgRawf11cMzQLvl+suShOiy2Rg
+         fWlYJyGyE7Wkw+zslDUTMwSeU9475azrpK8jmmRRgqiitzn+oW1LCSIlXTRhSNfZoT4O
+         I6Qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758400755; x=1759005555;
+        d=1e100.net; s=20230601; t=1758400756; x=1759005556;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=fhgo805sVSiR0SJlmhLHBR/NhPzSwBuZgQ2sQCeXYLE=;
-        b=A9vwP1WOwX/Tj7xqCivGAHjg64IFmCq+xCnOK83F+zWgaXdLoTm9uYSTKjVzR/GOmY
-         AC4UPhlYJbuSJIpDVqMiU/T84qTKweE+O/MP9hyniU5EpboXwngaeUspJHctsP6ROjBA
-         1DesH3vgRoyDuakSnKMC39PbPVdoe2jqZDMk9NwThasrsRZDuljrtNs+f86O/Mrc2/2C
-         nYVeXS+aGhl9TbAndYo0S62zY1E085BGuGCeANvUqDvo50Dud6E2yxu8aYO8ovXqc8DX
-         Iud/qKkCA+L/QB8/vVGQpaaPDhWCDgY8PbNAVXqTCci7nWhtevtZlfW56coz3p3gSDlo
-         HyTA==
-X-Gm-Message-State: AOJu0Yw6fFL2AA8JyjFnwzcXyuv4ngKOX7HlV05167gKPygsojH+7TD/
-	MfNr+00WVf+4F67Y1BCwWpHNqJTaZVOKyQQ7iL3+vxF8Hkfw0p5Fl81GLjETlai1mhqlDj1asPf
-	yxBzr3YI=
-X-Gm-Gg: ASbGncuHeDJbUR4CNVSg3HKBRefIKigiEUksM16L4tPvQpbqv1KQl0nVaWUSdgdr0Mq
-	v7p81oHLW/ykwgx82ZCuyDbm5VGj5ZnosdI005DJV13y+O7czLC/9ACTcqM23O+uMuHERfoxA9P
-	6Dp90R5SeWyZs3UFu7lRyuTtdeC4REZT379Wi+yIWvop3pprgYbmXMFCKFpddSLIEdd8OiivkaH
-	BKJ9UVIFu5b+7NQh5LwzIdvqUcYdK2rZX1uklcvdEwzsGr8shnRRtOAc73ZI9Lijd8LMEQBflLf
-	iqGw2+o0b3GwndFxTqYuw1Pziw30rK19IX4ws/j/jZNaO8h7hrHFyI8/R09zrzTSQ8r2eU8L4bd
-	850QiO0hCYUBTuKQ5EAXsYdx0/VFvIeKPGgo=
-X-Google-Smtp-Source: AGHT+IFpmX9UAkdlqyKeAFy3AzOo21LtEJum96Rzv+8iJlkbfeuTwtEuWDKpDYd555ixOqfVlv44jw==
-X-Received: by 2002:a5d:8791:0:b0:886:c53c:9175 with SMTP id ca18e2360f4ac-8ade08247f9mr1118249839f.16.1758400754919;
-        Sat, 20 Sep 2025 13:39:14 -0700 (PDT)
+        bh=EDiaVjHF4kERpiNA+aqN0eX91N+wRKnw/AH6MzFfvy4=;
+        b=uuYtWMA2PjUT9hjgipj0dM+PjmcIF5BUqallTpkrsYQX+MN6rAzGUWCDlKS+KT+PYg
+         OMEugrwRDoz1WvpbqVlMERQWKyQ+iGWqCYe3d2aWmahfJhVk1WuVULnhlelgITPtSJ9O
+         rUt1AlJ8hT5krtRmc9NAWCgoIFPmfFzbcSIJqZma49t64S00PT1XK6Uqj/QkFfGacWEB
+         aR3VrVhJwWKBdmulR78GE5kreZSS2a7DlL/Ak2NSiK8LbcD79lsq6ep2mCWO66Gn9vM/
+         eRmtsvcM3MjInLDNLB/UcxUzDZgwXOAzynkbDT1yX5GMA0j4oMK+gvgBRIpRCQCVtwgJ
+         B3lw==
+X-Gm-Message-State: AOJu0Yz4zI1GYP/ucEnhRod0fww1i+WrinjuIfwuEUobSETDMMrPivei
+	mlyo/seucV0ROqZd+EoVO5fwKiTE2YGwhzvPh+BHrUHMbtltSWq28WNabxe+hq1dc/9rnZ/BZw/
+	iPMV1+QA=
+X-Gm-Gg: ASbGncvbrZ86Tt8hglU1TAJdLP2cWNhJ12xeVZ8Nz3kFS6JSC5kACpjfU2ZuSOJgbcJ
+	O5HN0Fd3sthRRL/E6M5hCpnfk8YSRiX0BDzeqKKRxHpi+5LUB8pWXxJFA6vC2onV39qepSByNgi
+	nDEFiwBOibLt45u4L2/O/HjDGaAUMrwqmQvXjkZ0fYxrZxzu0ARmi4+pZeKJ61lDMhiclypYVVY
+	+JNb4ahl2knTJaRo8iP0lG0dFKU/34YwuIeMxlWV+ZLpqydShDNBu1MHnvRaaHZu5EQPUDOl+ba
+	Q+sjSBqvJty6udO9A7ddWbkOR9s4YB9EKN1AWeKmUsDIjqsBtpfRrvL/n5S1KGmEvuZVxdRRv0A
+	KAjUHiwej5x0NzDuT6ahYFvcr
+X-Google-Smtp-Source: AGHT+IG8Raz8xeq0QgKszu3pyBicegyYf16hU26G0T5WrFouzicPpKiOvFexp2tE8Gc55HnrfGmbkg==
+X-Received: by 2002:a05:6e02:1947:b0:424:80f2:299 with SMTP id e9e14a558f8ab-424819955bbmr133419975ab.27.1758400756210;
+        Sat, 20 Sep 2025 13:39:16 -0700 (PDT)
 Received: from localhost ([140.82.166.162])
-        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-54cfd9b688esm2100997173.84.2025.09.20.13.39.14
+        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-424804ec921sm30642665ab.43.2025.09.20.13.39.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Sep 2025 13:39:14 -0700 (PDT)
+        Sat, 20 Sep 2025 13:39:15 -0700 (PDT)
 From: Andrew Jones <ajones@ventanamicro.com>
 To: iommu@lists.linux.dev,
 	kvm-riscv@lists.infradead.org,
@@ -77,9 +77,9 @@ Cc: jgg@nvidia.com,
 	paul.walmsley@sifive.com,
 	palmer@dabbelt.com,
 	alex@ghiti.fr
-Subject: [RFC PATCH v2 17/18] RISC-V: defconfig: Add VFIO modules
-Date: Sat, 20 Sep 2025 15:39:07 -0500
-Message-ID: <20250920203851.2205115-37-ajones@ventanamicro.com>
+Subject: [RFC PATCH v2 18/18] DO NOT UPSTREAM: RISC-V: KVM: Workaround kvm_riscv_gstage_ioremap() bug
+Date: Sat, 20 Sep 2025 15:39:08 -0500
+Message-ID: <20250920203851.2205115-38-ajones@ventanamicro.com>
 X-Mailer: git-send-email 2.49.0
 In-Reply-To: <20250920203851.2205115-20-ajones@ventanamicro.com>
 References: <20250920203851.2205115-20-ajones@ventanamicro.com>
@@ -91,27 +91,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add the VFIO modules to the defconfig to complement KVM now
-that there is IOMMU support.
-
-Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
+Workaround a bug that breaks guest booting with device assignment that
+was introduced with commit 9bca8be646e0 ("RISC-V: KVM: Fix pte settings
+within kvm_riscv_gstage_ioremap()")
 ---
- arch/riscv/configs/defconfig | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/riscv/kvm/mmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index 7b5eed17611a..633aed46064f 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -242,6 +242,8 @@ CONFIG_DMADEVICES=y
- CONFIG_DMA_SUN6I=m
- CONFIG_DW_AXI_DMAC=y
- CONFIG_DWMAC_THEAD=m
-+CONFIG_VFIO=m
-+CONFIG_VFIO_PCI=m
- CONFIG_VIRTIO_PCI=y
- CONFIG_VIRTIO_BALLOON=y
- CONFIG_VIRTIO_INPUT=y
+diff --git a/arch/riscv/kvm/mmu.c b/arch/riscv/kvm/mmu.c
+index 525fb5a330c0..994f18b92143 100644
+--- a/arch/riscv/kvm/mmu.c
++++ b/arch/riscv/kvm/mmu.c
+@@ -56,7 +56,7 @@ int kvm_riscv_mmu_ioremap(struct kvm *kvm, gpa_t gpa, phys_addr_t hpa,
+ 
+ 	end = (gpa + size + PAGE_SIZE - 1) & PAGE_MASK;
+ 	pfn = __phys_to_pfn(hpa);
+-	prot = pgprot_noncached(PAGE_WRITE);
++	prot = pgprot_noncached(__pgprot(_PAGE_PRESENT | _PAGE_ACCESSED | _PAGE_READ | _PAGE_WRITE));
+ 
+ 	for (addr = gpa; addr < end; addr += PAGE_SIZE) {
+ 		map.addr = addr;
 -- 
 2.49.0
 
