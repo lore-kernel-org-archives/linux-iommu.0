@@ -1,77 +1,75 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0634B7E105
-	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 13:02:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FD7B30C609
+	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 13:30:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758546145; cv=none; b=R6GYGZnqPLigZuGYGpWWGEfVQfbyKfaTGNrGoVNUyVoURAIJJ65pgcFTu0FY+433Yh5/Q2/XTSKa5xBFHxY4D0RIkGIzloq62qldJ8Q0CdNNS+4q91NdltQVmLyUO0ZqwbiQshygU7FxSIav2poUGk/ljswmCsxqJ/zNN1LQJQM=
+	t=1758547814; cv=none; b=CHxl9zEFUoEujwTd5nOszkWpm2QV9U+BPIqnGp9gKIKYQQScBmlbnYfnDDrByVnlKOudon8TRlR8cCgly7tA2vJyBhFdvTuWJEvEJqnGfo5QI1L3P7vHEPXA7KBwPFRvCp9iFLizVmXl8RRSPpaOTjnCf6DozO0AVwLIXpEt/m0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758546145; c=relaxed/simple;
-	bh=zCJZQaGMV7DeUHFgiP5VUvTeBc76Osl5IXFpblnovgY=;
+	s=arc-20240116; t=1758547814; c=relaxed/simple;
+	bh=y2+sNh8F7BJ4b0OtGqFkua6WrDm4Bnv4O9Hd644lllQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kjEYNq+hTSboy09NtCOyEaeEo5jsGj52TKfB8JvsnWINJosnw9AfbGuKyAZT10clp+KkQUV6zYRFG1OSs4GsVSnfr8xgyDRZfwIPoI4IXISM00VB/p3Xx1/H9sWdWkgxvTLi7+v85AO5VNVyKF4fUwoy1sCtgMuhde6vq45HkZA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=UjTTgCLF; arc=none smtp.client-ip=209.85.214.172
+	 Content-Type:Content-Disposition:In-Reply-To; b=U4AyHGOMwLXFw8IldzyyTMGtGn/ksoJStJSMvEvmq7sf3BmZ+EcLcOhBaTXru6Rcjymv3FavprRSCjrtKSbthohJtIIOOkXuLc714c7oDcYtWhWA7Qkff115GZ7awsPO8xaucnLLai9w0Bj8BpyumpYHAI30umKo5tuJFbB3Y24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=euJQyDz9; arc=none smtp.client-ip=209.85.160.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="UjTTgCLF"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-24457f581aeso43001925ad.0
-        for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 06:02:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="euJQyDz9"
+Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-4b34a3a6f64so35331591cf.3
+        for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 06:30:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1758546143; x=1759150943; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1758547812; x=1759152612; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Hsl2ly4me8UmHDMkRt9NyvebrtmZ4APkli4pzDgp5iY=;
-        b=UjTTgCLFxHMmATQ356Bukv1ZEc3gO2VFfM+DU13vV56NbWMy/BG1uT5cAI1iP4WN+f
-         GX5kFYZml7qFzpJr3tjTzC/XIS7e6KOX9rqZlrH5L3hsnmX+6/XAEjq6VJFgoyVSnuB7
-         74AhH27H/ANmPOPuBGFVqcco6nR1vY2+irh8opqQ0TmDnT8YIHH1qtJtxNNVmHSMdAUo
-         vZcYCrzqsvDuXsNw3ofEpFm3s+qopN6DBj9azvMzlKVCLPeqKyp5MrRwMi6dMgtvULaS
-         gXg8A5D9q/xqA9HXAZFW2ImMHcUfmrMJZPi2kHbXOL8XSlmhRhIWy6y7VCK7e3k0gDQP
-         QAUQ==
+        bh=y03k4DFLRprDfdbyLDspwlWtQehDogFzjJI6AMgeKrM=;
+        b=euJQyDz9lyRXJsm+yx2jy3OLdXrpXZTOL1PYhJQT1ljF1r5eOMrGEhvw6V6JI21/YM
+         vfTpg9WrdLzO6JHV/73SybzfJ27MphUIuEL8tRfBCtfGKy3QzQ9aRgd84Mcmu78wl12s
+         uMjGaTWj06EyP1vUCAEXc0Mz8z0NPFYlC/YtVo4ClM/GfTc7P74c2OpTRGNwJcUbJqw5
+         pCL8bW9wTnmtno6lya6Tg5omB7Qf4N6Fc28uR130kFRba+0ECLv4SwQalAmMkimu1wOV
+         J5r5DoBjvcAMYwaszHxaje6wPF0c37cZN5hbqf7wdY+EG/tEgIYPCRZ0gUPR2ENd+JGE
+         x+iA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758546143; x=1759150943;
+        d=1e100.net; s=20230601; t=1758547812; x=1759152612;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Hsl2ly4me8UmHDMkRt9NyvebrtmZ4APkli4pzDgp5iY=;
-        b=wZPBZrUyvvxzEcsXPRhlTfJENOimogzzQ1l2YxBG7e2A9reO2osRmKroXwGBU8NcUg
-         ev82Icw9Pp//DGGS/oZMhRUYnFLPvgq822jW/smwpL0Ukqsz/9GOwPt1TNZhEkOx1DoV
-         xsXBLKax8bGB1Fa1mqbS3ZeXzedbvSfgWvNgkKzyIt6cpA55sdMojG61F5lBIxxL1We/
-         jC/aFCddhsbk9u9The07AQIZKNn2kRgQmuT4mwmK1ZTJmfkUbAaB/vqNSsHmd0gnoS7H
-         FP8vJ6HBNv3e696/L3II+Cqyzd+hrttQJAco+ZVBsmW7RZhRKLROHuKWzteezNzfV9J+
-         wa1A==
-X-Gm-Message-State: AOJu0YzAxJfiTJKJSxH+gLvBm0ZCoIy75P9njmY4jOsWW2r6jV/MdJ3U
-	8dged74bzBHc6+PPZGoBwHkwLeTTcmXoQCsYSmMmbQUiwSiuZH6LoQ1ibxem7J0FKMY=
-X-Gm-Gg: ASbGnctV5X08jS98hojMniUoxTMu1PUOI255VSbBixOGT6bujs999noGDKf3DoOitpV
-	Q86GoDa0Hj3P/6bNmNedHg1q0tdJEX9PKFbzN0rVShNyKshXEz0ixY2XBhJ/GUm+qnXv6zBxvBz
-	BK0xRORbI/R3qMeBZXzMpEay1vHxphhzSnkbmSKL6t2q2ne5cTuTZsWVBWeDIPPLxwR+MlsM6Jt
-	YS+Mlk4K/3Hi/7nr16IQ3TSZ9wSlPrx/80/BmjPtdcZANppD/kTJ+t/tmf6cxbYHJmk+f4pZ/3j
-	6IIa1F0FFcsRYTz6MLRTJ32Ut/HZVqpUOJdoion6YPadFkZiD5pavg+fLlJMKCJ/K+TDtL0K
-X-Google-Smtp-Source: AGHT+IEwv94cgMdvdUliR3uxXVS/A4nFW/1Uk+w9E+kVZKrcO7lHiL9BEZgyiij4H8dwtTrp7ERipw==
-X-Received: by 2002:a17:902:dac4:b0:275:c1e7:c7e with SMTP id d9443c01a7336-275c1e70ff3mr55507925ad.4.1758546141378;
-        Mon, 22 Sep 2025 06:02:21 -0700 (PDT)
+        bh=y03k4DFLRprDfdbyLDspwlWtQehDogFzjJI6AMgeKrM=;
+        b=sgWGK9rW8bi0I9RPnw0jZboweG5x4o/bMGFxtW0WhHKKaqDl84b9nYcQToSKb+Lkd/
+         vNNnlsgx0NAgs4umKAprgYDjy9rM3tUNbtyeknDRXC/i+A/eXdkOqAf82G8XmwkjxTpH
+         048+aeACYSU7ShRINLIrBPJmGUT7Gd2+XQB7O0BTRb2Ik5atuj3QjXQ7avN1r6eAWQjQ
+         3fqDkG+Ilvz2TAeeWJbGDyeC3mMHBF3VzssmVTnkW42s7nYs3p0NX/l2xM2u7IR4Oj7V
+         TAReRw8DrgHCiLrllC4jdQX/v01UMCmM34/PVnaGPMfE/5umHupsEwOhWkOmeK6usqnK
+         f4Pw==
+X-Gm-Message-State: AOJu0YzzucGAqxB51zspX8HPCfzPl0t1Ggh5tir6ZcjZ/vypYmRqLGN0
+	iF/PwIv1Vxb0wlR6BhoAVTe9baxIVGJeKSw9MQ/6YKb7bPSTVqKS4AEh/GupJaddbsk=
+X-Gm-Gg: ASbGncv7uYd3r+MxgN8k/HJxISuxgX1qlte8QHX78oXGwXP8b2F9jJAF+bkvJX/WcGk
+	qxS0sSKc8XBH3xvAkRGgQ9qE6+0shKmRcKGMqv5tOfAm77gEYJbb97aPLBZUF62gY03ib17xMIg
+	BGEE+YQ4dhKweo9pwje9rXK0hooC4UdGnpu8nhb1Ce2zjJ5pwiSkP7YixqoWfGJ57yzJu98+5Gu
+	IrJKq5P2tgyTNxFDJpyIAyVQ5lWMja1Vh98Rt4ciNyW/ddHQLZ2MygFlJpH9D9ZrPtxUW7ZlEux
+	PovYrPJ1TSiC1Es4G9kZA884lt9R+tBIrwsscxHYjOdde5HnOxabX5xjibOIrp51Tpl82VYw
+X-Google-Smtp-Source: AGHT+IH4XwIxdKdRzW2o+GACM5iQvve0syctd1r00LPQSbC18rDTaAU9S+ss/ne+khceFU/HXjRUbA==
+X-Received: by 2002:a05:622a:488:b0:4cc:6d84:8199 with SMTP id d75a77b69052e-4cc6d8484e1mr38598321cf.13.1758547811879;
+        Mon, 22 Sep 2025 06:30:11 -0700 (PDT)
 Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-269802deb3dsm132892235ad.93.2025.09.22.06.02.20
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-83d1352f390sm566847185a.15.2025.09.22.06.30.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Sep 2025 06:02:20 -0700 (PDT)
+        Mon, 22 Sep 2025 06:30:10 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1v0gBP-0000000ALNw-0bkc;
-	Mon, 22 Sep 2025 10:02:19 -0300
-Date: Mon, 22 Sep 2025 10:02:19 -0300
+	id 1v0gcL-0000000ALyP-3XIB;
+	Mon, 22 Sep 2025 10:30:09 -0300
+Date: Mon, 22 Sep 2025 10:30:09 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
-	Alejandro Jimenez <alejandro.j.jimenez@oracle.com>,
-	stable@vger.kernel.org, Joao Martins <joao.m.martins@oracle.com>
-Subject: Re: [PATCH] iommu/amd/pgtbl: Fix possible race while increase page
- table level
-Message-ID: <20250922130219.GX1326709@ziepe.ca>
-References: <20250911121416.633216-1-vasant.hegde@amd.com>
- <20250918141737.GP1326709@ziepe.ca>
- <c09b3679-00f9-43e8-a620-1a6051cc6db3@amd.com>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org,
+	joro@8bytes.org, praan@google.com
+Subject: Re: [PATCH v4 1/4] iommu/io-pgtable-arm: Simplify error prints for
+ selftests
+Message-ID: <20250922133009.GY1326709@ziepe.ca>
+References: <20250922090003.686704-1-smostafa@google.com>
+ <20250922090003.686704-2-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,45 +78,23 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c09b3679-00f9-43e8-a620-1a6051cc6db3@amd.com>
+In-Reply-To: <20250922090003.686704-2-smostafa@google.com>
 
-On Mon, Sep 22, 2025 at 03:35:07PM +0530, Vasant Hegde wrote:
-> > IMHO unless someone is actually hitting this I'd leave it and focus on
-> > merging iomupt which fully fixes this without adding any locks to the
-> > fast path.
+On Mon, Sep 22, 2025 at 08:59:25AM +0000, Mostafa Saleh wrote:
+> At the moment, if the self test fails it prints a lot of information
+> about the page table (size, levels...) this requires access to many
+> internals, which has to be exposed in the next patch moving the
+> tests out.
 > 
-> Unfortunately yes. We had customer reporting this issue.
+> Instead, we can simplify the print, using ias, oas, pgsize_bitmap
+> and fmt is enough to identify the failed case, and the rest can
+> be deduced from the code.
+> 
+> Signed-off-by: Mostafa Saleh <smostafa@google.com>
+> ---
+>  drivers/iommu/io-pgtable-arm.c | 10 +++-------
+>  1 file changed, 3 insertions(+), 7 deletions(-)
 
-If a customer is actually hitting this then you definately need to
-solve the whole problem including the mmap race.
-
-I guess adding a lock makes it easer to deal with, but this:
-
-+	write_seqcount_begin(&pgtable->seqcount);
- 	pgtable->root  = pte;
- 	pgtable->mode += 1;
-+	write_seqcount_end(&pgtable->seqcount);
-+
- 	amd_iommu_update_and_flush_device_table(domain);
-
-Is out of order.
-
-The DTE has to be updated and caches flushed *before* writing the new
-information to the pgtable for other threads to observe.
-
-You can look at what I did, but broadly you have to feed the new top
-as a function argument through to set_dte:
- 
- static void set_dte_entry(struct amd_iommu *iommu,
--			  struct iommu_dev_data *dev_data)
-+			  struct iommu_dev_data *dev_data,
-+			  phys_addr_t top_paddr, unsigned int top_level)
- {
- 	u16 domid;
-
-So the above can be ordered correctly.
-
-You may also want to think about just disabling this optimization,
-always start with a 6 level table.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
 Jason
