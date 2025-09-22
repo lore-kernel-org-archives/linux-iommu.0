@@ -1,219 +1,135 @@
-Received: from BL2PR02CU003.outbound.protection.outlook.com (mail-eastusazon11011009.outbound.protection.outlook.com [52.101.52.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8ABD213E89
-	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 10:05:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.52.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758535523; cv=fail; b=sxCNI6AAHql/OwPUZ7o5mdxGRq9v3ArPKSZ2XFTyux4I4g0ZTvN4PIRh0KDpD+ZZwLAAAgSKRAtmR6HojVwlMVmNvz5yNTmRblvHvQgEcSB1Cs1/ZHkDRbKFmxGpbqCQdpfeaRjfMR48UGEwKnF66NLze29JlQ+Sk/HCDVCLLik=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758535523; c=relaxed/simple;
-	bh=ln7MRphRQu2aGqT/LKq8eIhclIy/4tcEmQHu/knQDFk=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=Bpn5wZE9cWHEeGu2pqfeTPwgZRSGgvxNGRbw+abpEQdu4LcYm3lAqBKJu5xDpHjIiakmQt2iAFOiXT/I9tQtqgLc4UXpAW9gPVXmXL7oxbM1bDLZxXnMt3cvJKkcvxzEOaZkbnxZAivl+Ip1vEbz7SHDOAI0psH8/jR90aOKbHk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=bWF/IWJ0; arc=fail smtp.client-ip=52.101.52.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30E022FFDD7;
+	Mon, 22 Sep 2025 11:17:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758539829; cv=none; b=lKQwO0Esi/h9+YNEFhp2bwnUKDxDKDx2KPl75NKcHL8uouFtOdB07l+uUiVal51DLuXC46lbEAVipfL/Gj4ORftLQ4Wy7ujP+voMp8cesMCb8gsf7B3TWiZSb/5fNTIemFOpihiZDV+aYV7g6cx2kYue7gX3nHlVFYsBH1JX75Q=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758539829; c=relaxed/simple;
+	bh=lH9VwiNy6Nu7QO4PMzso5D1oOtUAcurDD/Uxg6ZQsi8=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=CBEKVP5GXJ4qY8P5keR3HA4JDw2F2nqxg7Utz4WOK6VSGFTYV+SZGYsTxrE2NdCi6uCOR/UxtbRuUzjqGxkImqTavgRRTjiOIuvqk2brDEPd2T8H5n94Jem0oojs0CHEHyb2hpshmnLE3vftEvZ+VZPVN2xwccCxMlOqOOiwCUI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b3xf/D5c; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="bWF/IWJ0"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JOMQ1upZXJkvLqr/aefGrhUlaRgv4jaC4cWxf2glvkiyJ9CHu5F+19buHZYFh2lrYsh+80gbaePAMFnOBGLVDlP2z6Yq39l29nKUzfUKb5PJtGkvFw+yDU/C65EYHNu+4Wa3juMl1qG6u68G2vFXOE9W/rFog7jHYjifbz4Yh6dNM/UXfkhkO+UW7qIkrJzldd2oJXsZhqJQXoRELFexff0PLoifHDAAn6zR04xP9si5JXOqEI4lAswGWYtMHr8h2WflZW8KoihliJWv0i/qJMMYauj5ifTYhk1mpO2InEDgKPKqROKo85YEjy/hKgwhwm+qSP1M+TNWRU/dTlUjfw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=f17TtRsvSMXkvYrjJ0TChW/ROq884wYulCvmO4F+v9I=;
- b=bYLlUlxI4Qq7Xf628t0IdzFSJ/D2yyGIk/ezkNCh1PyOcjsuKKoef6uAh/POx7DGRfuX7t+9Uc/LG+fIrZo31JsE5KfofZ+bGdw1IJre/vaB+t/YXBJsinIfA4Q5THtEhEiU29oErvnmCo5404pB1cFDzA3bo1iGnCpzvvfd8pQ7ljoTOXVioZ9wfhsWyvn8DPYgBMjtYVh9z+CCHaUXFpO+gvCrFrG4YRiCp6luE7reH0JmLkmW29v8oroIvtMJosVSWTsK6xQWImYXTv17FMdGjizh3nZ5csRZg/uPI3413+4A0odRbz+XEJNZpbdca8GGG8Ccmfmk8H4Lp2o8hg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=f17TtRsvSMXkvYrjJ0TChW/ROq884wYulCvmO4F+v9I=;
- b=bWF/IWJ0AO1hDlFUmNRXR1ERxpY1yv/o97dhmclYhDFQJ19B/oahtiVNPpQygWJLEjbJ0hG1ZXTEfKsHp/+jekF0qxIMP4PHwWXjvqujrOiJGDbIjZibNMdxIlDbSbvSNcYhO5Z+KIl40QJrTdauFt/uekmcw49D9LcogWaZIWU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- DM4PR12MB7574.namprd12.prod.outlook.com (2603:10b6:8:10e::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9137.19; Mon, 22 Sep 2025 10:05:16 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::6318:26e5:357a:74a5%7]) with mapi id 15.20.9137.018; Mon, 22 Sep 2025
- 10:05:16 +0000
-Message-ID: <c09b3679-00f9-43e8-a620-1a6051cc6db3@amd.com>
-Date: Mon, 22 Sep 2025 15:35:07 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/amd/pgtbl: Fix possible race while increase page
- table level
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, suravee.suthikulpanit@amd.com,
- Alejandro Jimenez <alejandro.j.jimenez@oracle.com>, stable@vger.kernel.org,
- Joao Martins <joao.m.martins@oracle.com>
-References: <20250911121416.633216-1-vasant.hegde@amd.com>
- <20250918141737.GP1326709@ziepe.ca>
-Content-Language: en-US
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20250918141737.GP1326709@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0220.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:ea::18) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b3xf/D5c"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1758539827; x=1790075827;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=lH9VwiNy6Nu7QO4PMzso5D1oOtUAcurDD/Uxg6ZQsi8=;
+  b=b3xf/D5c3Lb3kMZ3t9Ib/iK5ZWLTaQV9CKyW9+dxybexaMvqv7xI9Hz0
+   2N9evrC7vdX7IDFFAN3IQR9iOP9kSglSM8pm1jolmh1k68u9ofU2DF9k3
+   3zN30r0qgxa9Qtczf7fXB1ienKCwlBsJQapYqM2j7LEspkHyno11udlYj
+   lDMlrOhBjUeTmYeaD63J4U9/OX72PCXlpZGuZX4HvGwIIp0Y3LtUSyUrc
+   N+6w3o5fiPZMLsFfjJmiU7+f62+xFccPJgCslFKHcE9xWuTNmscByXfJ1
+   M5cCfKIGOOdEbxHK2K4OtuKfzd3PxY3aJEwBq6HSKLljddTFQwP8bklck
+   w==;
+X-CSE-ConnectionGUID: mmZ0OAD1QeKxQrdfIIpHxQ==
+X-CSE-MsgGUID: scQH9J86Qq+v+aI9jJQUkA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11560"; a="48376615"
+X-IronPort-AV: E=Sophos;i="6.18,285,1751266800"; 
+   d="scan'208";a="48376615"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2025 04:17:07 -0700
+X-CSE-ConnectionGUID: yPl64IL+QcKr4LyVmSYJTg==
+X-CSE-MsgGUID: c2gtXOMIS/+mqOy7tMErXA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,285,1751266800"; 
+   d="scan'208";a="176065717"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.235.53]) ([10.124.235.53])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2025 04:17:04 -0700
+Message-ID: <6a42747d-1115-4667-bd01-78f6629332b3@linux.intel.com>
+Date: Mon, 22 Sep 2025 19:17:02 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|DM4PR12MB7574:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6ab6c166-4a80-45db-6826-08ddf9bf86f9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?Y3VZMmZUUGJrdXRSYWIwcEwrbHd1ajJ0UFI2M3RsOG1vaGhFWHVwR0JzQ2NG?=
- =?utf-8?B?WVV5Uzl4aWJERTBLSGl4UnpIaXR4dy9XWHlqMkJlNGpUMW1CdmJEZG8wVDNZ?=
- =?utf-8?B?RnJTVWFDekgwRGlFUTdWMVdjSDF6emxNWk1nbnJ2dUc2QWg4V1VyR2FMN3Jh?=
- =?utf-8?B?aFh1YzkyWkwxNzdLU29LQjVBUURLZFl2TnNtZVdPaXRzSnZwTS93aDkyMlVl?=
- =?utf-8?B?SWtzTlFjb0JHOUtVSlNacGkwUGs1cmpJajNXYi9kV3BZN1hPL2VsTGVzcG93?=
- =?utf-8?B?eVFiTllUNHZLN1Z2eitiTmVRRUpFamo4Sm81dXVzSDlXWWVoZ0RKbG83N0RY?=
- =?utf-8?B?bTNzRkxtOEFVV3QwOUhKaUdUYlgzZVVaY1d4ZGc4bGFGMDI5OWFyWjQyL3JF?=
- =?utf-8?B?dGJuS2RCd3M1bnJQSXZWcjZ6OXVqeGF0U3M1UlNqQjg3ZGkxZkNnN2gzWU90?=
- =?utf-8?B?MDRFZHBKRXFnRFlnaFhZQ1M5aDBsN2VrK1VvV2kyaUpMYTc2bG1TamtKaWtU?=
- =?utf-8?B?bVlPK0poemR0dnJLdkl5NUdtL0NqSkxYRFpZeFBreHo1a1ZZUzhwU3I1QWZV?=
- =?utf-8?B?bWFlVmRBVEppTFNlMTQ1clBmd3pzWEZHM3A5TmpNbXUwWXRvMCtaWGljMWVZ?=
- =?utf-8?B?bXA5RVhKZXFIMHFTTmx2Tmc1aVd3WmlRbGlZRGNVM3F6dFl5Y1hqQml3N1VI?=
- =?utf-8?B?K2d3TlFQQStkOHA1elVHaStDc1ZYK1pXK3FiSWwvT1U1SnZkSlAzSjNjTlhr?=
- =?utf-8?B?SHF6b0NkR1J0bUFmRFc0UkpmVHJkenZuVk52SEZiWGdnSGZPd0FWYXp4OGl6?=
- =?utf-8?B?WTFwaXlHczhJMXVKZUI0ME9vN0lxbzRidmZXUFlVcGo4WDBZOHFXc1lBdEto?=
- =?utf-8?B?OHY3WkNMNVFSWUFVcUxsOTlGZnk4V3E2WUpDNzVWOHpveDlHK1QvR1ZHd0ZJ?=
- =?utf-8?B?YWdNNm9iaVNMeE85Wk9JQlMzeVJMMklnVVQ1YVFhdHJnK3IzZnBqUDVjYU5s?=
- =?utf-8?B?c3g4ZkY4MktuaXdrVkZKVGNTZjk3YXo0SW5yWTh0SlhubmI2bDFPMVZUMG5G?=
- =?utf-8?B?MEpVSXFmODBVZkxTUEJjK3pIb2trTXQ0MHhXb0VnTU56dlBLa2d5S09oRlFU?=
- =?utf-8?B?UDFkK0hMS2c1cEMzZ2tPQTV1WHZ5SWNDek15WjBTelRma3loVTJXOW1jQUhM?=
- =?utf-8?B?ZVhvVk81TVVPejNpOSsrZ1hnZzQvMm1yMjEyY3A5bjFwZGl0MkV1RXBzanMz?=
- =?utf-8?B?TkE3VEdBUXYwcHVBVTUxWGRJZSt5QVJIL3dRUWpkWXc2MkJVTllKMjVCcTJz?=
- =?utf-8?B?VVpKUURjVytHL2pWTW41bDJ5NHFHOG50eXlnWmxDcTNiRmNmVUl5SEQ1bmtk?=
- =?utf-8?B?QitvekxzdFBGWmQ3Rkp4dnZUT1VJa0F2bUt0R1pqZzhPanhDY3I3TVo2RTdC?=
- =?utf-8?B?NGczUG9hd2RlQU91WmI0YTZyc0pLZ3JNb1orVldNbE8xRkFGc3VNWkVhWWhq?=
- =?utf-8?B?NFZMcSticmZNQXF1QTVwdEdteHR0cEZUNU1GR0ZoL2lITTdOTDNRcTlLUThI?=
- =?utf-8?B?dytXRlgyZnJ1MmpLVlBzTTJBcUxwbmVZWHpyRHhCeElrSWp6QlZmRi9oRHJj?=
- =?utf-8?B?dTBtM0JYaTd6SDNZUkxsL0YvbjljVDlrNVcra2Q1Q0QxS3ZiaExuTGJlV0VY?=
- =?utf-8?B?amZKVGNlUURNTTZncVYvR200dG9abDIvalEwQTRWaHZnaTArbHdOMmE2c0Zh?=
- =?utf-8?B?cVRmREdtM05kL2EyaUdzTnZSNGhvejVkYTJZTHJndVhuYU44V25vZHJtd0lH?=
- =?utf-8?B?Zit4cGRoVm5EakZjK2hkaTZZV3RoNENhM0dSMnVwTVU5cGR6UWZUNzd2MFlP?=
- =?utf-8?B?Z280L3ZacWU1MGI0UDF2bGVsY3FEV0VSbFlhSHRSVXZpTUR6RHBkSktZbzhn?=
- =?utf-8?Q?LDJbRFc0JQM=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RjFxZlIvUTJDZ1JHdml3eWRuNXFPNHkvRUR2K0xsenJ3SG9YM2NhbUVZcldU?=
- =?utf-8?B?d3ArSWwrejVWSWxIQUMwVnRraU01V0QrTUhHWUV5RHdKMWVXb0N4Rndqd29Q?=
- =?utf-8?B?cE5CQ3R2eUNmVEpwRkpza3FsbVpCVGlYSzdTL2ZXYzhhekVuWU1UUEh4RUZi?=
- =?utf-8?B?ME9MeC8zTDZDTHZNWEtIWXFwakFyZFRCdGNsbUVqUkZHWHRZSG5SQW4yU3hs?=
- =?utf-8?B?MllzdzBlSFZ4SW05Y1BFQzEzQ2d6dFQ1U2krazFaS0lzT3grMXRsd1NGbGov?=
- =?utf-8?B?cnI2YlN1dWRQeFNoU2ZPMVc3eU92WHZBbWlCaHlxbmp6MFJ0RGJxRHR5N1p3?=
- =?utf-8?B?dVlJYWZMSUVFUnhzNGorOGV2Q25DS0ZtUHhkY2J3dEUxbTdLMWN4cnUwK1NX?=
- =?utf-8?B?Mk9WTnZKMExQWVNZQ2g4cmwyNHZYV05BUmxMWkNmeTI1Zm5Za21jdHdwTEhT?=
- =?utf-8?B?QXYwenkrU0p6UUxKdlRYNERYR2Z6T2dOMHhVa1NRSEZwb2lYdUZCR0RBdGEv?=
- =?utf-8?B?cFFKSDFMU0puQ29tSkFPRWhlQ0tkajhQWnd6OFo0SUh2UEFXbUdaYW41NVUw?=
- =?utf-8?B?Tmw1enA3aS94bncwU0gwMmQ4WHVyM283bFBYNlVwbHpyMzZ4RXRqcUlranFT?=
- =?utf-8?B?WWNBbTZuaUFPS1FOOHpjV0hBcXJNT09qczdKN1dpRVpvcWhYcVFUTzZ0Qlpj?=
- =?utf-8?B?anpwcnVqWmU0SGg3MTZpU3hLcmJXTFVDcFh1QnIvb0U0QmxNaVFtOURtOC9v?=
- =?utf-8?B?ZXdvMHZVSm5PZUlCYWdmTktXSGFDUG80bGEwUTdKWituYm0zWCtqckdUam8z?=
- =?utf-8?B?OTUzd2l0bnlsem9LaU5iaHdXK09kYU1abWJSc2RyM04xRnQ3TUJTVnRtNEtK?=
- =?utf-8?B?RktieEpYSTVzYXhYSSthZ0hmdndHSmNXakpYWWp6djdsTUZXcE1vYThUaDRu?=
- =?utf-8?B?VUFnd044ZkxySnByNmRBVzBVaUdnYk9Xb01NT01FUnZUa2EzZG5Kc0VHQlcr?=
- =?utf-8?B?T1I0V1BFYjNpbFpCUElycldob3I3QVFFZXFEUkpjTERmTkJXNk1BQjE3TFZU?=
- =?utf-8?B?RjhDWHF1NGZsTGt0SGtoSnR2RS9ES1Z5L09CQ2dHSmM0c3RhU2JReEhXajZ2?=
- =?utf-8?B?SFIxZ2liR1dYbUpOUDZZMVdQejdMZ1FmQXdnZ2pNVWZwMTVPdDNWc3l3TFBK?=
- =?utf-8?B?dm1mM3VwakJOakZXcXFOTVZvaEQ0ZzRiRGJ2LzFzeDAray9HTHdiTVJsVWI1?=
- =?utf-8?B?enF4ODN5S0NaK2xYSU5WMzN3aFVFU3ExYkZpMUhZNE5NbkpyTHlYZVEyZmZO?=
- =?utf-8?B?T1psWG9XU1lxOGFveGprL0tFRThTbjA1Y2pXd3JpZERLTE54MnREK20zdDFC?=
- =?utf-8?B?MFZvMVRuSS9LTEl2UEJ0aExabFlsYmNnR2thQXQwYjRlMFNUT3hhL3poNFA4?=
- =?utf-8?B?aUwxNWhJZUs0dmpRRXQrVUdwU0NIL21CWmVhY1lrTWFXTW54KzA3Y3FoRzBQ?=
- =?utf-8?B?RFhSczlSWi9JK0ZIaEd0czk4bUFQVURHdG1yb0ZqYzFRN1pvZUpGa2tXVGQ5?=
- =?utf-8?B?QmdlbU1waEkwSGFlTXdZbkdSVGFJYWdUK2hoSDkrWDhrUGVacnZNNGROUWNO?=
- =?utf-8?B?aTVrL3N2NjRoekxaS2trR2xyUlN2YlJVUXVQT21JamJLdmYyVy9QOHVOVkJG?=
- =?utf-8?B?NFpybVd5NVVnVTRKcEhmdHpzUWVRL01rcnltODFYTm9uU1lQdkUzRTR3SStt?=
- =?utf-8?B?REp5ZjlFWG55Qy9qYzlRaFNVS1ZyRFFuT2VXQ0RyN0QyYS9uYjRNU0NQVGdv?=
- =?utf-8?B?Nk1jbU1ySldPNWZDMmY5SUtWUjA4UWExM093dTloa0YyS3owMU5MbTU0eklY?=
- =?utf-8?B?ZXprR1UzZGk1akEzb0J5UHdzVFlRRVl0am1zVmRSZGdINHNXQU1xWmYzajBY?=
- =?utf-8?B?c0syUTRTOUdpNFFaQjZ6Rk45czNlaVBSVGtzTU5reWZYU0RSZjVCK2l2bXVD?=
- =?utf-8?B?cWRsYm5BdkFvdnYwVVJZSy9yUDVYRlBnbGxLcE93c0pITStVVkw1a0dCRDhL?=
- =?utf-8?B?MmZGR1VXMERBQ1YxSE85aGNjd1VqMVdNV09DRWhhVFk0YTZvWVNJcG9pVGZx?=
- =?utf-8?Q?vBE14tMSYJHLzNXdpnEkUXnCz?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6ab6c166-4a80-45db-6826-08ddf9bf86f9
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2025 10:05:16.0241
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eFltc/Yxk9+D3YOIBAwe9rj/ns6/DxOSOwKGK8MvkDMNGXqWpkku0iVwPBjV+Rao938bvwm8IyqY3khyEdlqkQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7574
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ patches@lists.linux.dev, Tina Zhang <tina.zhang@intel.com>,
+ Wei Wang <wei.w.wang@intel.com>
+Subject: Re: [PATCH v2 08/10] iommu/vt-d: Use the generic iommu page table
+To: Jason Gunthorpe <jgg@nvidia.com>, David Woodhouse <dwmw2@infradead.org>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
+References: <8-v2-44d4d9e727e7+18ad8-iommu_pt_vtd_jgg@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <8-v2-44d4d9e727e7+18ad8-iommu_pt_vtd_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Jason,
-
-
-On 9/18/2025 7:47 PM, Jason Gunthorpe wrote:
-> On Thu, Sep 11, 2025 at 12:14:15PM +0000, Vasant Hegde wrote:
+On 8/27/2025 1:26 AM, Jason Gunthorpe wrote:
+> Replace the VT-D iommu_domain implementation of the VTD second stage and
+> first stage page tables with the iommupt VTDSS and x86_64
+> pagetables. x86_64 is shared with the AMD driver.
 > 
->> The IOMMU IOVA allocator initially starts with 32-bit address and onces its
->> exhuasted it switches to 64-bit address (max address is determined based
->> on IOMMU and device DMA capability). To support larger IOVA, AMD IOMMU
->> driver increases page table level.
+> There are a couple notable things in VT-D:
+> - Like AMD the second stage format is not sign extended, unlike AMD it
+>    cannot decode a full 64 bits. The first stage format is a normal sign
+>    extended x86 page table
+> - The HW caps can indicate how many levels, how many address bits and what
+>    leaf page sizes are supported in HW. As before the highest number of
+>    levels that can translate the entire supported address width is used.
+>    The supported page sizes are adjusted directly from the dedicated
+>    first/second stage cap bits.
+> - VTD requires flushing 'write buffers'. This logic is left unchanged,
+>    the write buffer flushes on any gather flush or through iotlb_sync_map.
+> - Like ARM, VTD has an optional non-coherent page table walker that
+>    requires cache flushing. This is supported through PT_FEAT_DMA_INCOHERENT
+>    the same as ARM, however x86 can't use the DMA API for flush, it must
+>    call the arch function clflush_cache_range()
+> - The PT_FEAT_DYNAMIC_TOP can probably be supported on VTD someday for the
+>    second stage when it uses 128 bit atomic stores for the HW context
+>    structures.
+> - PT_FEAT_VTDSS_FORCE_WRITEABLE is used to work around ERRATA_772415_SPR17
+> - A kernel command line parameter "sp_off" disables all page sizes except
+>    4k
 > 
-> Is this the case? I thought I saw something that the allocator is
-> starting from high addresses?
-
-Right. By default we start with 32bit address (from 0xffff_ffff to 0x0) and once
-its full it goes to 64bit (assuming device supports 64bit). At that point
-increase_address_space() gets called.
-
-
->  
->> But in unmap path (iommu_v1_unmap_pages()), fetch_pte() reads
->> pgtable->[root/mode] without lock. So its possible that in exteme corner case,
->> when increase_address_space() is updating pgtable->[root/mode], fetch_pte()
->> reads wrong page table level (pgtable->mode). It does compare the value with
->> level encoded in page table and returns NULL. This will result is
->> iommu_unmap ops to fail and upper layer may retry/log WARN_ON.
+> Remove all the unused iommu_domain page table code. The debugfs paths have
+> their own independent page table walker that is left alone for now.
 > 
-> Yep, definately a bug, I spotted it already and fixed it in iommupt,
-> you can read about it here:
+> This corrects a race with the non-coherent walker that the ARM
+> implementations have fixed:
 > 
-> https://lore.kernel.org/linux-iommu/13-v5-116c4948af3d+68091-iommu_pt_jgg@nvidia.com/
-
-Nice. Will take a look this week.
-
+>       CPU 0                               CPU 1
+>    pfn_to_dma_pte()                    pfn_to_dma_pte()
+>     pte = &parent[offset];
+>     if (!dma_pte_present(pte)) {
+>       try_cmpxchg64(&pte->val)
+> 					pte = &parent[offset];
+> 					.. dma_pte_present(pte) ..
+> 				        [...]
+> 					// iommu_map() completes
+> 					// Device does DMA
+>       domain_flush_cache(pte)
 > 
->> CPU 0                                         CPU 1
->> ------                                       ------
->> map pages                                    unmap pages
->> alloc_pte() -> increase_address_space()      iommu_v1_unmap_pages() -> fetch_pte()
->>   pgtable->root = pte (new root value)
->>                                              READ pgtable->[mode/root]
->> 					       Reads new root, old mode
->>   Updates mode (pgtable->mode += 1)
+> The CPU 1 mapping operation shares a page table level with the CPU 0
+> mapping operation. CPU 0 installed a new page table level but has not
+> flushed it yet. CPU1 returns from iommu_map() and the device does DMA. The
+> non coherent walker fails to see the new table level installed by CPU 0
+> and fails the DMA with non-present.
 > 
-> This doesn't solve the whole problem, yes reading the two values
-> coherently is important but we must also serialize parallel map such
-> that map only returns if the IOMMU is actually programmed with the new
-> roots.
+> The iommupt PT_FEAT_DMA_INCOHERENT implementation uses the ARM design of
+> storing a flag when CPU 0 completes the flush. If the flag is not set CPU
+> 1 will also flush to ensure the HW can fully walk to the PTE being
+> installed.
 > 
-> I don't see that in this fix.
-> 
-> IMHO unless someone is actually hitting this I'd leave it and focus on
-> merging iomupt which fully fixes this without adding any locks to the
-> fast path.
+> Cc: Tina Zhang<tina.zhang@intel.com>
+> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+> ---
+>   drivers/iommu/intel/Kconfig  |   4 +
+>   drivers/iommu/intel/iommu.c  | 896 ++++++-----------------------------
+>   drivers/iommu/intel/iommu.h  |  99 +---
+>   drivers/iommu/intel/nested.c |   5 -
+>   drivers/iommu/intel/pasid.c  |  29 +-
+>   5 files changed, 175 insertions(+), 858 deletions(-)
 
-Unfortunately yes. We had customer reporting this issue.
-
--Vasant
-
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
