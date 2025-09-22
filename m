@@ -1,130 +1,169 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-ej1-f74.google.com (mail-ej1-f74.google.com [209.85.218.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8C372F657C
-	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 08:22:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36F84284894
+	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 09:00:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.74
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758529350; cv=none; b=bECIRglTYsrT53Ty2rvlPkByapNzlpujtsUYqJhELeNWJwgqGvj3oCvsMPzcLrHZDiQD7B+AgPfSE6YOktAM+Q7M7fKA/GFvxxOfghGfczUhNbJtxpoYFAQtfy8WWIwMOwai2SM92eqwzPlAy2h7MbmUUcJHsN+vA0h0eIYaNE8=
+	t=1758531609; cv=none; b=LohVokL23+oY2QxWWoPmuw2tVmcn2dmDw7U0RQ37a49LDH+ayx5JlXUDjeyGwpM48IHQW7DNrJXUw7EwUV8BPI1SOvLCydHuWfJtIrHrkHa4KRi/Q8IbZSrMWuj7r/EYazKEMe2SVXC0YsqVslTGNUgJfwAhw4zTYHXNzchs3Yc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758529350; c=relaxed/simple;
-	bh=wcgd5vKAWbHO0vRZ+p4xrg5t4PZ/hiZsS2W2PPEHtOM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Rn5di6zwQl0spFnGZL+iVXlcV3unUUCHbJjaKHyHCtXK6ZkVYCVSr+k2hxrFxn3zLe8fUu9pM0oQszxxr3h7gjnWURw9vvFFlLvyvR/lerESZ7cgI9DZlfTBGWRES02HoF7r2K/k808kS1AXkpZt7GyswnlveqYlvMVWmOKXAao=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Oslv1CnH; arc=none smtp.client-ip=209.85.128.53
+	s=arc-20240116; t=1758531609; c=relaxed/simple;
+	bh=w3yp2JrNnsSF3+6X/xTHjw+JwtJyjw6GCrUHlSgXglY=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=fk7dceSCWU5u250Kkeqle9JxS17pBi+Nq85FYwnYA+nqz+YOKmJuUywNI2+mcm9MdU0rwKu2LXZHEPMkwjTrW6qMOD1FuFml9EPppuEgfMQ46EaAhhQ92GtVK+0qzMpxcy/xJuWwqkXE7Ll5cpCFj1oI9qlnUt2HhHqoeBSFvXo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=4bQJ6Jz4; arc=none smtp.client-ip=209.85.218.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Oslv1CnH"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-46d72711971so27985e9.0
-        for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 01:22:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="4bQJ6Jz4"
+Received: by mail-ej1-f74.google.com with SMTP id a640c23a62f3a-b2e9e07a887so11527866b.0
+        for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 02:00:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1758529346; x=1759134146; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=gqTj3W7IZ9HZZBW9wKpYWsYyOAxKSEoa6COxIZsKaeQ=;
-        b=Oslv1CnHKs6SXFLpvAsX76X6ks5SirMVrlduEOTkAWJr0Uza1znYeAonW0vB6xXTxQ
-         zNFrkxjccAX8jdBTVpEmwhU/Awm+blgfKPN/yU9DjW+gP5bNANsmx/ATLjV+6Yrs9kM0
-         xktfL2gcXgsyPH8rr88VFM1S/83WzRcUvLZI9oU021NpnLXKGzRd/gfOQqZsgE7Ajx1S
-         04C/PwdIEbhSl7x0mTwblD45x/6PhGUyWtm7+8+6rK/08e1QffH8dSxB9eiSFbIAruAT
-         uF1i7LgT4U+iFwNzE/RBH1+EahyU/JZRQcBPlDQ6Z9O3UyuqIxjJePWL8rfDgdmVI4ak
-         TvbQ==
+        d=google.com; s=20230601; t=1758531605; x=1759136405; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=SJqhgJyvnD5d6YT81nFGxO9YqrSRYT6f3jsmSzdijO4=;
+        b=4bQJ6Jz4202WW67e7zPAJJMKylFpCImaUgoFq9W5fKF9m9jGEv+qqxxVWFIuIsRSKz
+         OE6lBOEULod3ojPu9dyXEUkey8zQl8hsMuwvRCl+TLz+eHlaSmlkJH5GQ1NjuV1onv6J
+         S29wwrY82s9c7fc7sozDmD5zNRlpOqEdlgKKt6jYydEqOtK3zsMqJxGDIIEGBWwt9NXR
+         jKQiIKoDMorIBcx3hCi1YCYruehTXDI83BmDZICJRjTbjEmtzMzmyXrZOBC5r7qwHWj6
+         6yTgapo/wh1eJvuudZidSTtdY1PL473Jse3L5WLYzrWzjxsiiN8v9TMJ3yaaZoih9ku0
+         CBAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758529346; x=1759134146;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=1e100.net; s=20230601; t=1758531605; x=1759136405;
+        h=content-transfer-encoding:cc:to:from:subject:message-id
+         :mime-version:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gqTj3W7IZ9HZZBW9wKpYWsYyOAxKSEoa6COxIZsKaeQ=;
-        b=cXxtwNzB4PfI+NsywhjdN+uunDq0VqLPG6HZLx6dEVzDVXFC5JNmSCtahoPert/Tnq
-         Inu2H/JQmgFOhzbZwG5puDM3N0f2gmZdr5Arh+P+LsJYDN8aiyGRH/PmJcZMHvMlJeaQ
-         asDofEoRQTzBUgOsqLE8dDM9A5ADjn3J7WWmBNdOfvvtiDGOLjh5m3JhvyqaXbdK68wf
-         MQsPveZdB0gu2czfBH3QJFMuae9tbZ2uS6/RcU78GhsL8T5N4gSlnwPYor68SsJNQdkd
-         YsUIHdVZS3DKWHu7/qAEgrFJAcXomGlGj5r2vlfsi1o3NUTNa7GGoji67F+ovj1Nm1w2
-         DdGA==
-X-Gm-Message-State: AOJu0Ywm+FmHtf3lwFoPNnG0G9OOpxdIGht3uyfNOFwMgcZ9qs0MxLJj
-	cbl/OjALxsEwRYqxGBrd2HaGsPVDXi41d5f+e98Klk2QQD9rXjQdLECRF0kMO5FKrQ==
-X-Gm-Gg: ASbGncsnbCGGasTeuwu+8Ygf+qO5SxbRUFTJ/+ckZk6ChChGiet5dAHGLGFojg2TeFj
-	Nlt/dTRE6wZgA8XH0HZ+C2x0i8XAR9C0xS1UGG++L3rpur31T8mQJ1C3sfW6619xDCwAc55sqe2
-	rVbIfMV9BVZsPPUh7zghCvhbTaHiblJItNzDW5BnCJ/etHgAcvH0vpcGNw/XgW8OwcuSXxiRz+D
-	LzqHGEwPzxf4+jzkla0COJmHsCVYqNtuJgk8tdbkAD6iOrQV6SV1rhPsOwxelZQ49bYW7WRLKc+
-	dnu9sCNg/hXilcbgZKc2Auh6P5ptpYWurPIP4Lk8vzw6FTMOCNseIEfjERe8yG/u6DJqwo2mzFb
-	BdIMNU6HPxzF3bT/UF5hMpoFqDEWe2Z5lgIuIdNCDWIWtJSsoV23uff1UkFCuWvc=
-X-Google-Smtp-Source: AGHT+IHFYkFn8z+GUWkNUAawcZ1YV51AhOshm97PW4qM3AjxsaLYtJ0SsbO2jweyVtrKw2JD5LyFpA==
-X-Received: by 2002:a05:600c:4251:b0:46e:251:b1c2 with SMTP id 5b1f17b1804b1-46e0251b2b1mr355875e9.7.1758529345943;
-        Mon, 22 Sep 2025 01:22:25 -0700 (PDT)
-Received: from google.com (157.24.148.146.bc.googleusercontent.com. [146.148.24.157])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3ee1095489asm18071631f8f.24.2025.09.22.01.22.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Sep 2025 01:22:25 -0700 (PDT)
-Date: Mon, 22 Sep 2025 08:22:22 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: kernel test robot <lkp@intel.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, oe-kbuild-all@lists.linux.dev,
-	robin.murphy@arm.com, will@kernel.org, joro@8bytes.org,
-	jgg@ziepe.ca, praan@google.com, Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v3 4/4] iommu/io-pgtable-arm-selftests: Use KUnit
-Message-ID: <aNEHPo16_HgyYafz@google.com>
-References: <20250919133316.2741279-5-smostafa@google.com>
- <202509201819.f369wBHc-lkp@intel.com>
+        bh=SJqhgJyvnD5d6YT81nFGxO9YqrSRYT6f3jsmSzdijO4=;
+        b=NpfUrhMAPNuGDR88oZBBKTtUFiSW7X9kNMYN46qvpYKIgzs4vxVhMMrwn0Eb53PaeI
+         fnafa5FHDP7bxETxFPw4g3+XwPcrNJBWFQf10qnpoha9uMvfdqOjHyxvUFY1tD47PB/y
+         1X45rZRnCBUeX+QYmjGK64s6UVK58kxEB6p/Uj0z4bsZxkE+OR698gm7hkjkcBezmLwF
+         jThQJlfgmEGnNzdV8VWBCs+5/ISME8ss/nkdcmFzefYdfvXNlhOqV1gu+viZzgtneFIU
+         rCNJ/Yg+1sDjgG4iA2R16uxxRL5ZGrhiMeYP3wm1oYM7YJMxin4K7SqrsGfUv4kcmj1s
+         MQmQ==
+X-Gm-Message-State: AOJu0YzdmGCUQBtwiAEa6HIifOkoux0TDTwiSG+EEP6wFpX6YNnIaypv
+	z+BKLPMJGILWml2dn61Luo94QmW7UPPgjVja64p5E+92lHr+ZFFA9Us0qbIBvVG92MlMowBt9FX
+	YEC9EJVxfr2DMVLv/OYBAz1yd9dk/RYh+EUj52/zGU/bTrn9zIBFBOF2w77dVBxPEq6c9DO6z6c
+	oM2OG+trS+phGo56Uq3p3d7gYSSujT5vFQ7BTfeM5GC6aBCw==
+X-Google-Smtp-Source: AGHT+IF+yNxN8u0Kn/bBdnRnggKLG4SBwNB4ClzRlBvae+pc7iApwAt2kx062VQ8LZ+b/9dnodHumoEI9ZZgHg==
+X-Received: from edf16.prod.google.com ([2002:a05:6402:21d0:b0:633:2fbe:a0c9])
+ (user=smostafa job=prod-delivery.src-stubby-dispatcher) by
+ 2002:a17:907:948c:b0:b14:53a0:5c61 with SMTP id a640c23a62f3a-b24eca014ccmr1430032766b.12.1758531605450;
+ Mon, 22 Sep 2025 02:00:05 -0700 (PDT)
+Date: Mon, 22 Sep 2025 08:59:24 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202509201819.f369wBHc-lkp@intel.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.51.0.534.gc79095c0ca-goog
+Message-ID: <20250922090003.686704-1-smostafa@google.com>
+Subject: [PATCH v4 0/4] Move io-pgtable-arm selftest to KUnit
+From: Mostafa Saleh <smostafa@google.com>
+To: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org
+Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org, jgg@ziepe.ca, 
+	praan@google.com, Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, Sep 20, 2025 at 06:42:59PM +0800, kernel test robot wrote:
-> Hi Mostafa,
-> 
-> kernel test robot noticed the following build errors:
-> 
-> [auto build test ERROR on soc/for-next]
-> [also build test ERROR on linus/master v6.17-rc6 next-20250919]
-> [cannot apply to joro-iommu/next]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch#_base_tree_information]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Mostafa-Saleh/iommu-io-pgtable-arm-Simplify-error-prints-for-selftests/20250919-213912
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/soc/soc.git for-next
-> patch link:    https://lore.kernel.org/r/20250919133316.2741279-5-smostafa%40google.com
-> patch subject: [PATCH v3 4/4] iommu/io-pgtable-arm-selftests: Use KUnit
-> config: i386-randconfig-013-20250920 (https://download.01.org/0day-ci/archive/20250920/202509201819.f369wBHc-lkp@intel.com/config)
-> compiler: gcc-12 (Debian 12.4.0-5) 12.4.0
-> reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20250920/202509201819.f369wBHc-lkp@intel.com/reproduce)
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202509201819.f369wBHc-lkp@intel.com/
-> 
-> All error/warnings (new ones prefixed by >>, old ones prefixed by <<):
-> 
-> >> WARNING: modpost: drivers/iommu/io-pgtable-arm-selftests: section mismatch in reference: arm_lpae_run_tests+0x100 (section: .text) -> arm_lpae_dump_ops (section: .init.text)
-> >> ERROR: modpost: "alloc_io_pgtable_ops" [drivers/iommu/io-pgtable-arm-selftests.ko] undefined!
-> >> ERROR: modpost: "free_io_pgtable_ops" [drivers/iommu/io-pgtable-arm-selftests.ko] undefined!
-> 
-> Kconfig warnings: (for reference only)
->    WARNING: unmet direct dependencies detected for IOMMU_IO_PGTABLE_LPAE
->    Depends on [n]: IOMMU_SUPPORT [=y] && (ARM || ARM64 || COMPILE_TEST [=n]) && !GENERIC_ATOMIC64 [=n]
->    Selected by [m]:
->    - IOMMU_IO_PGTABLE_LPAE_KUNIT_TEST [=m] && IOMMU_SUPPORT [=y] && KUNIT [=m]
-> 
+This is a small series to clean up the io-pgtable-arm library.
 
-There are 2 issues here:
-- I missed one __init for dump_ops
-- Then new kconfig change to select IOMMU_IO_PGTABLE_LPAE broke build for
-  some ARM targets which select GENERIC_ATOMIC64
+The first patch is a small clean up to reduce the depedencies of the
+test before moving it.
 
-I will send a new version shortly
+The second patch was originally part of the SMMUv3 KVM driver support[1],
+which needed to factor out the kernel code from the io-pgtable-arm
+library, and based on Jason=E2=80=99s suggestion this can be taken out as a
+cleanup, and a step further to convert it to kunit.
 
-Thanks,
-Mostafa
+The second patch just moves the code to a new file with no other changes,
+so it can be easier to review with =E2=80=9C--color-moved=E2=80=9D
 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://github.com/intel/lkp-tests/wiki
+The third patch converts the sefltest to be modular, that is useful as
+kunit can be a module and it can run anytime after boot.
+
+The fourth patch registers the test using kunit, and converges some of
+the APIs, some notes about that:
+
+Granularity of tests:
+---------------------
+To make the series easier to review, the series changes the test to run in
+kunit without making intrusive changes to the test itself.
+It=E2=80=99s possible to refactor the tests to have smaller granularity (al=
+though
+I think that would make it less efficient as we might create the same io-pg=
+table
+config multiple times) and integrate them in kunit as multiple tests, that
+change would be more intrusive, if you think that is the right approach,
+I can add a couple of more patches re-writing the tests.
+
+Other changes:
+--------------
+- Also, to make the test changes minimal, and the fail messages similar,
+  =E2=80=9CKUNIT_FAIL()=E2=80=9D is used to fail all tests instead of using=
+ KUNIT specific
+  assertions.
+
+- Instead of using faux device, we rely on kunit_device_register()
+
+- The WARN is removed when a test fails, as that doesn=E2=80=99t seem to be=
+ a pattern
+  used with kunit.
+
+
+You can find the instructions on how to run kunit in the last patch commit =
+message.
+
+A failure at the test with the new implementation look as
+[  191.675985]     # arm_lpae_do_selftests: selftest: pgsize_bitmap 0x20010=
+000, IAS 40 OAS 48
+[  191.676057]     # arm_lpae_do_selftests: EXPECTATION FAILED at drivers/i=
+ommu/io-pgtable-arm-selftests.c:91
+[  191.676087]     # arm_lpae_do_selftests: selftest: test failed for fmt i=
+dx 0
+
+
+Main changes in v4:
+- Remove one missed __init.
+- Change the kconfig dependencies back as it broke ARM
+https://lore.kernel.org/all/202509201819.f369wBHc-lkp@intel.com/
+
+v3: https://lore.kernel.org/all/20250919133316.2741279-1-smostafa@google.co=
+m/
+
+Main changes in v3:
+-------------------
+- Move back unused code
+- Simplify printing based on Jason comments + some renames
+- Collect Jasons Rb
+v2: https://lore.kernel.org/all/20250917191143.3847487-1-smostafa@google.co=
+m/
+
+Main changes in v2:
+-------------------
+- Make the test modular
+v1: https://lore.kernel.org/linux-iommu/20250917140216.2199055-1-smostafa@g=
+oogle.com/
+
+[1] https://lore.kernel.org/all/20250819215156.2494305-5-smostafa@google.co=
+m/
+
+Mostafa Saleh (4):
+  iommu/io-pgtable-arm: Simplify error prints for selftests
+  iommu/io-pgtable-arm: Move selftests to a separate file
+  iommu/io-pgtable-arm-selftests: Modularize the test
+  iommu/io-pgtable-arm-selftests: Use KUnit
+
+ drivers/iommu/Kconfig                    |  11 +-
+ drivers/iommu/Makefile                   |   1 +
+ drivers/iommu/io-pgtable-arm-selftests.c | 222 +++++++++++++++++++++++
+ drivers/iommu/io-pgtable-arm.c           | 204 ---------------------
+ 4 files changed, 229 insertions(+), 209 deletions(-)
+ create mode 100644 drivers/iommu/io-pgtable-arm-selftests.c
+
+
+base-commit: 07e27ad16399afcd693be20211b0dfae63e0615f
+--=20
+2.51.0.534.gc79095c0ca-goog
+
