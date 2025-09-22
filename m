@@ -1,192 +1,114 @@
-Received: from BL0PR03CU003.outbound.protection.outlook.com (mail-eastusazon11012025.outbound.protection.outlook.com [52.101.53.25])
+Received: from mail.mainlining.org (mail.mainlining.org [5.75.144.95])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95A0331A072
-	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 18:43:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.53.25
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758566626; cv=fail; b=oNuDwCFTnbTjZn6O/cnoK0saiutnotZuzlzpxq//3F6P6cIHylEm7qDNRsdMeb4JFaj5I7RvCSaFPA2XnWcEM1xINYVspIWpPFpp8/DrTtkutagxNc4FYbHU5+SWwOd0eAcFXP4rYxlNeg7TwKdJy1NNKQEjdBwa3hD+QpWwl54=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758566626; c=relaxed/simple;
-	bh=eolSg0rzExzNDfc7qDIgDzHooaUIUHgfDZtBJtrQv+I=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Iq4mMx9vsKKpuTSyJnqH4VycVns/OVDClpGlH+FhD5gbhZooNyw/y7Vku7y+9EAWGlKzGV+iBu3jxVyf/8v54KO9z/qPHZf+DCtYvbdmrtsEwy05hMLKMmoK+qP8pWOTsXW40+5rCWq1B24KtYUts4TzdIGN9eydE2CZar7fpuQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=cbFHRS9W; arc=fail smtp.client-ip=52.101.53.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 397764315A
+	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 18:49:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.75.144.95
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758566981; cv=none; b=KDkvWr/O/jHWZadboBQk7XBvgwWqGctEnQrhn33JDvJ1ui52twsW0ePr/xBNf9itSwyLUyioX1dsrYOo0StgfnjLfcxctcRO1YOHhqcKRDE0o2P2XXCzw42xXZXI3sTbP35LCD6NtG4OLALjzdJlS3ki0cAWYmX9hzhdZXs6F3U=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758566981; c=relaxed/simple;
+	bh=5uqT9t7LL1q3vO4IziGFJ6VO0hi/i5q9U42aGdBhQg0=;
+	h=MIME-Version:Date:From:To:Cc:Subject:In-Reply-To:References:
+	 Message-ID:Content-Type; b=FxQlyIff+9HedCbcgIbE/j9W6rb9elFejoXqs4vUf9hEpGJBa9j0SQIkhflB7zwDv2zHXRuMUeGEp6hiiNY0Ofjw3e20ewyyS2Vuzke9flkXNW2haRus+uRhTdQJEc5uHZ5cGMdCuhN7gX2VP60/RA+C2lJms3/DrvnKV+mM8HI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org; spf=pass smtp.mailfrom=mainlining.org; dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=eo1Piz8Z; dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b=BWB+I0rN; arc=none smtp.client-ip=5.75.144.95
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=mainlining.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=mainlining.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cbFHRS9W"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ywaaysgi9UMRJh1LWggraXHMlqW+uW1qiV8s5P3em5kVV0fx1WyM7NhHF0dubPRaB7qHn9tXrlPB7ml18KFRsmmyOWS9zncuILVZv/n3b/N0i49vPotpAagBKGTIuc6Pr3d8is+V+qUFXfsBrWtwzq856/PmomteoaVmLUGnT7WrAe5Irc5OgYE+B11yECCpioaemetxkQtXiZNSg090Q0MbfZ/vtmGoLZOuyqBqKISp2ZpeScEMpDFhMJIE7sk90MtViyX2bcprHGadTO2Sh++VZv7me7WGaxqre7EkHPdX/X+Xi4UxucJZQZS4NtlURFly75oeoJ2OV4xOUdO74A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eolSg0rzExzNDfc7qDIgDzHooaUIUHgfDZtBJtrQv+I=;
- b=PTjfETJI6IHtC6WSmodR1FBodmCdY1arUEcyBi6adK/3mLwjNDzWB5VSDL2oaHMClxqEGFIKVgaJJPRYkF/BIaeqdbHPsjtPF78R24rjpwMy2JTgsMRBcfpnDLvRnLShbmgY/RC5uOo4KOilFfjl4QGCcFzU6W34I1lcz9PdwvexkzJIYzi6xcF/ROH3g63W93afQXhvBKKk1GCecmw6J8thXLg+ZvUBFeU4oSEtiWOy/o6+aVd+NjlkH3bMimrQTGjDjfeqoWgGryHlWKLjK7hRAxThhaghvXxLcLowTTQ4g4pF/rxqcIWYc9S3RYdpdFJoPQC7ylVzEADrirra4g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eolSg0rzExzNDfc7qDIgDzHooaUIUHgfDZtBJtrQv+I=;
- b=cbFHRS9Wl7Sm3AD9mlhR10INpFSM9yi56kvY6W++3vPntZNLYo4A4bV43sJq9F0DHwPDBCPtX9bdfIZ6ji5Dwq/0LGs+X1C2zwYR7gdj35iKxwzsIQWKSdXTZrmp5UGTJnbsC82EuYUUPL9nTQS1BzDCmPCxQD8MDqv+sICeOaYSQ7x0SWR+1sS2kk6f5VVHAt4/K8TOk+1SZUYgnc4xX7bB2ldolxvTlZzb3HyshGvLpIHnasXE632WgEEPdXy0758SC0Y1NpdZpLiOj7M89RYnNW8CRWO/ApNOJSdg4XMsQOK+91MABzREg1oh0HALDAAMswqbQ8OarlvLc4i+0g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from PH7PR12MB5757.namprd12.prod.outlook.com (2603:10b6:510:1d0::13)
- by DS0PR12MB9399.namprd12.prod.outlook.com (2603:10b6:8:1b8::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9137.18; Mon, 22 Sep
- 2025 18:43:38 +0000
-Received: from PH7PR12MB5757.namprd12.prod.outlook.com
- ([fe80::f012:300c:6bf4:7632]) by PH7PR12MB5757.namprd12.prod.outlook.com
- ([fe80::f012:300c:6bf4:7632%2]) with mapi id 15.20.9137.018; Mon, 22 Sep 2025
- 18:43:38 +0000
-Date: Mon, 22 Sep 2025 15:43:36 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Andrew Jones <ajones@ventanamicro.com>
-Cc: iommu@lists.linux.dev, kvm-riscv@lists.infradead.org,
-	kvm@vger.kernel.org, linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org, zong.li@sifive.com,
-	tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, anup@brainfault.org, atish.patra@linux.dev,
-	tglx@linutronix.de, alex.williamson@redhat.com,
-	paul.walmsley@sifive.com, palmer@dabbelt.com, alex@ghiti.fr
-Subject: Re: [RFC PATCH v2 08/18] iommu/riscv: Use MSI table to enable IMSIC
- access
-Message-ID: <20250922184336.GD1391379@nvidia.com>
-References: <20250920203851.2205115-20-ajones@ventanamicro.com>
- <20250920203851.2205115-28-ajones@ventanamicro.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250920203851.2205115-28-ajones@ventanamicro.com>
-X-ClientProxiedBy: SA9P221CA0022.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:806:25::27) To PH7PR12MB5757.namprd12.prod.outlook.com
- (2603:10b6:510:1d0::13)
+	dkim=pass (2048-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="eo1Piz8Z";
+	dkim=permerror (0-bit key) header.d=mainlining.org header.i=@mainlining.org header.b="BWB+I0rN"
+DKIM-Signature: v=1; a=rsa-sha256; s=202507r; d=mainlining.org; c=relaxed/relaxed;
+	h=Message-ID:Subject:To:From:Date; t=1758566001; bh=LZHdHS0/egfSIVwJPqC+6tM
+	bMT7So0l95Joa495MF4s=; b=eo1Piz8ZM5BZDpfSbRx8Zj6a23YzXpQZHuOF89mE17zE0rEwbH
+	jOQcUzPfEin5QboCMH3DX/K8YrQn3mPk2rN8kCLgbMVl79wtMubqiUof66FVYKgzSBPW8jxnlT9
+	4hGC3iy5scoCGQkTmBS2aYx/eh+fruEOPIi7MtY494b95fIhBfDLd9seY5PN7a/40A43e9cBfZ7
+	OlBmu3a/q6iS5GR6+tNnaNPWEo3w++Eh9/dY7dL5e3tJOMn5LvCeh8r6rWJ9vswBHuUDLATkPKc
+	B61VcYCg0g8CnbT97kR9q9rp7Z7Z2HSKBsGF6tpkr3TM/gQyXzD7mg3MdIVnlpXXY3Q==;
+DKIM-Signature: v=1; a=ed25519-sha256; s=202507e; d=mainlining.org; c=relaxed/relaxed;
+	h=Message-ID:Subject:To:From:Date; t=1758566001; bh=LZHdHS0/egfSIVwJPqC+6tM
+	bMT7So0l95Joa495MF4s=; b=BWB+I0rNnuo1GzvOkQ2q25+N5gfmlW3Hz0TJRrHHdTwn4h57cl
+	9qYXf64wW+VGtMXrRgZmbEU494DrI1ymkEBg==;
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5757:EE_|DS0PR12MB9399:EE_
-X-MS-Office365-Filtering-Correlation-Id: a3a5cb85-73e4-43f1-ae0d-08ddfa07f1c3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|7416014|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?kODFTFjzR2oSUMLIHRSAX4khezXayjrI6p5fC2hdTGvBZLUSVUJmczjLL6dx?=
- =?us-ascii?Q?0lbez1AclY/AJP6HYjN9i0OQkiPK8VDDEbEUX1cZEe9kQ7j4/LpcCp0Dszyv?=
- =?us-ascii?Q?kDROfQDNTJ2C/WWJmJN86gQ+IcvE/XwPo2pjjIpi569F/cMnMl4Rh8u9rNtu?=
- =?us-ascii?Q?/Q+n/0DJrIPLtI0xlm1OiuRLr95rH0ouAYwcwmzy5JcQeMOSf+i/GZAPMXTL?=
- =?us-ascii?Q?Ch6ijPJF1IpFUj4dgvUzAHLvtGpaNR+wKy2jx3ofmhdIxM1ypcfglG0WH4rH?=
- =?us-ascii?Q?0IX3TfMZ43cFTE/nmTaBJjDnhU/VONPxzROdwWVX14yEW5k+/83Hp4v4wr1R?=
- =?us-ascii?Q?angNepYcZ34JfMGj2CPK10O0vAuvUX5xLDHByMxiqXrpyzhJlxgU9jrhrrbc?=
- =?us-ascii?Q?FB2UBkz2RzE9ztLHwLskZfy3JHISI6UJTi2Nlxzn393/J0YnCEpmglwRHv5U?=
- =?us-ascii?Q?Iv1TGvnbFQsDvTbJ8hPG2rYHto23AFeA57PSllgtVPiYuocDlem791Odr5VN?=
- =?us-ascii?Q?cGaWHl/nCsfKoDKer5iYwBTfH1x7vufQibXMjVx0A72DNcKQ9x49svW1eAQd?=
- =?us-ascii?Q?pB2OfkwWrBOsnM4S7m/8wvu3ADe5ogwHsZwQ5/5c1WOEz2NekLj6yH3xMLQy?=
- =?us-ascii?Q?SJy3qjfgpEaGeoU6FJEBwhOX1wJ4U8rGcb6lyaa8YbdyBp9suYPYcu46sQ3M?=
- =?us-ascii?Q?BahgksWltm7Tb/aIAtMP9E/z0pmWgS7VYPDe2ShrMzsIP78+XCKw5tKPCn+n?=
- =?us-ascii?Q?G8bG0ClHv0EOPaSiTJstTdmuiRPkwRV8M7THi6/tE4vn0/Cp9sMu5Fkf5B9x?=
- =?us-ascii?Q?aYSnN+UfHpKCf6iVJpdLfJt+F4Rlrz/PIgPiFf/eQqBwXcgOcvN6wiKrBGHA?=
- =?us-ascii?Q?E8BTsBcbMqOHHpYIBuGP9VXMHs38HwIIpuCpH33/I/3FSxLesvrTOHEDe5VE?=
- =?us-ascii?Q?e2qvy/s5odTG32lH/TuHMRoLI9erUeOi6hswEYyZs8MNJ5VM851YOw4veV74?=
- =?us-ascii?Q?fpps57aqZlI43PXWbahrpeXTGk7hva8X5vfmm+0xYJEtvw3Ia7TchEvtSkQ8?=
- =?us-ascii?Q?vsDBbEDLO/eUPMZdbDwveFS9lVpoFNewiRY9VBBba/pcCzkGcpVFQENfGTT2?=
- =?us-ascii?Q?FT4x3IL2Yj5T1LacUb4BjyaLlBAzm2Zii6X18KVde0jo4Yrn2bFpJxVDLWG3?=
- =?us-ascii?Q?7cbPDcNMPJ5kxeaLOOVxZgzC9ZXQFWhxqYUcRASLKCKG7A/3sdBFfmgS1mAs?=
- =?us-ascii?Q?tN7obiLsFb1qB67UExPrD1vncjTdGFCbQqnvOPzD1oUVAJDXFWj21VRzhRxF?=
- =?us-ascii?Q?FvsYBTBIRUWkosyOvRbYZFiFskZN6fHmr63tnQrkB1zJwMxejwjL/gdLKtMl?=
- =?us-ascii?Q?6cNdR7ub5MoFgYhjlVtWwHYVxcxyaDsLH1NVFSy97x0p3HDdTORXMhpQ1fWR?=
- =?us-ascii?Q?5j5P5WDAiSE=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(7416014)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?wc9Xp5SRNiblxnZfOhdYMWfOvpj3Kps32pClAeJqUKg+E5YzF676y9zKKJ4s?=
- =?us-ascii?Q?KnrH/CQipRtdN14f2hx+Iz+7wfXpaKz8/57+hyKHBEOgoC1r+myVetSOR6Yc?=
- =?us-ascii?Q?tiL2dnK0MFkHjEYg1Lq+/wSuOJY+VzQ06dP2lEMjS5yQGlGi85AbL2mLyq/l?=
- =?us-ascii?Q?1Il1N44RXl28w+9biSzmLXnhiBmvhm/t9PiX5bczoQtZdsB40j90efCON/Oq?=
- =?us-ascii?Q?XaFUDsNDDXEpB0o4fyzJAG6CW2nGTKmZSMoKjYL2zEFv0Qz4QK0ELq6P0ZSa?=
- =?us-ascii?Q?EREe5H6qvILS1P08NWQV6RxF//7+hetSYT3EGHKDWxyhrwXfhTsWJ2X6QKs+?=
- =?us-ascii?Q?q1hzn8Yo/B48saxQCgOreLfSGwswK32nrRTM0WKkCu69i77KJpyGQ4mEJbuq?=
- =?us-ascii?Q?NtvGw++t2sW4HbqvxPWG8OUYnbhHyUw1vjnAfZKeFXhaMJFKsGJVBGYCJkia?=
- =?us-ascii?Q?c7Ca+tGvFUrBxR1+8MC+sBm2IQU67YBLSYxTW2YGhJMA2m/Plm7nlD8Ibu/J?=
- =?us-ascii?Q?jh++xJJjMhyU9oxGrwxp0A5l1vb/E5BHBiXbGg14ySjRNkkZm154DP3s9i8G?=
- =?us-ascii?Q?jzZC2NtYd6QQJbYS6qKdqQxOoUA84E1aN7bv/bTakazpsApTQja7meTWm7o7?=
- =?us-ascii?Q?zKL0a/vvtLdrfKB/Ip4xLUDMUCwFNuvw+OaqR8cQjA36/sNY1vC0J7gYVVnx?=
- =?us-ascii?Q?BZr+07UwJa7b8P6qrL6W9CVun+nuqGM8J5Pro+i2XKB+MafdUctaM34DC3Wb?=
- =?us-ascii?Q?f6u8snYYX+yVLqcYV8Z1rBqAG71ZoZpGpI1rgrOgg55k/3u0MxdVsSyYTSj4?=
- =?us-ascii?Q?fNk0+XwAQPLYJL3m+Lv+dEUYI11W4dTpUjHr1qGCIKkeKbbSVq4cJdjKWtzl?=
- =?us-ascii?Q?vPZBtzWSUNPdRbtPqx1Wc9UCkhGT6HS/1DhNlYTntYeSXbm+BfLRfIhNqtrt?=
- =?us-ascii?Q?5FpiWZAKkqymAaTx2ka+nUmqVtL63St6r/z6Zy9m+ASOoFEpqCaqX6fEJ8wG?=
- =?us-ascii?Q?R/IlblRG+tAYHiulrqiorQka0I9CPFVqE7ofh83vFg8qinWLnqtrKYDKX+LD?=
- =?us-ascii?Q?AX3JTK9yfKopysjCSHmZi+TbzXkWU5MAEPH9Uo/K4R81tVaVy73JA9NPV1Pv?=
- =?us-ascii?Q?tGMDt19/sB7whDzlNau8laHYe0vVpyaJIP7eWGrpF8AoUHeJ327/7DYlYAg7?=
- =?us-ascii?Q?QcWvXzneQo1t9sTglXvfJXE39NS5nvl2PN0OleyWC8gIDg+nYNQw1rBW0MDy?=
- =?us-ascii?Q?2cKgZL/STPFdf8rn80JmlwAH+BV6BPH48TUpW8vi67AQl9PtGwOKDYH4eNk+?=
- =?us-ascii?Q?mA+ZuTK0LUpji+1HNbzieQNWURXlUDDnWLLlW0IW5kW8KO5ol7hIqUISK3gd?=
- =?us-ascii?Q?K9+F1HDisz0X1UjBgJ9pF5PRT+6PG4kZwlLCeDRIKfOyNAg2UHvbiODLR18f?=
- =?us-ascii?Q?mupBNawckWCbVmrS1PsJubCEuTGXm1zv88wxc4EAzhrOi6/LAYOOScMPQBP/?=
- =?us-ascii?Q?P9kV5+BjQw8G/FrNw0OjCb04C8J3eiBccB0D+9alyR1gI2SNmoP7FZ8JPkAX?=
- =?us-ascii?Q?h2/sDaJbakvR5/LDjDaPRQaSIzdm2TnZfk3Y1zOk?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a3a5cb85-73e4-43f1-ae0d-08ddfa07f1c3
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5757.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2025 18:43:38.6243
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JvtHAFIHa/UEzwAHfxK/OQ7thPGIlPpM/brMTisvs3Y/ttBrm260HK//HfkuBwDw
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB9399
+Date: Mon, 22 Sep 2025 20:33:21 +0200
+From: barnabas.czeman@mainlining.org
+To: Pavel Machek <pavel@ucw.cz>
+Cc: Bjorn Andersson <andersson@kernel.org>, Michael Turquette
+ <mturquette@baylibre.com>, Stephen Boyd <sboyd@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Stephan Gerhold <stephan@gerhold.net>,
+ =?UTF-8?Q?Otto_Pfl=C3=BCger?= <otto.pflueger@abscue.de>, Linus Walleij
+ <linus.walleij@linaro.org>, Lee Jones <lee@kernel.org>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, Konrad Dybcio <konradybcio@kernel.org>, Sean Paul
+ <sean@poorly.run>, Abhinav Kumar <quic_abhinavk@quicinc.com>, Marijn Suijten
+ <marijn.suijten@somainline.org>, David Airlie <airlied@gmail.com>, Simona
+ Vetter <simona@ffwll.ch>, Maarten Lankhorst
+ <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>,
+ Thomas Zimmermann <tzimmermann@suse.de>, Dmitry Baryshkov
+ <lumag@kernel.org>, Adam Skladowski <a_skl39@protonmail.com>, Sireesh Kodali
+ <sireeshkodali@protonmail.com>, Rob Clark <robin.clark@oss.qualcomm.com>,
+ Abhinav Kumar <abhinav.kumar@linux.dev>, Jessica Zhang
+ <jessica.zhang@oss.qualcomm.com>, Srinivas Kandagatla <srini@kernel.org>,
+ linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, iommu@lists.linux.dev,
+ dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+ phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+ linux@mainlining.org, Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Subject: Re: [PATCH v7 6/6] arm64: dts: qcom: Add Xiaomi Redmi 3S
+In-Reply-To: <aNGLPdmOyh/pfroq@duo.ucw.cz>
+References: <20250831-msm8937-v7-0-232a9fb19ab7@mainlining.org>
+ <20250831-msm8937-v7-6-232a9fb19ab7@mainlining.org>
+ <aNGLPdmOyh/pfroq@duo.ucw.cz>
+Message-ID: <97ee369f6ffbe42c72c57ebd72887b23@mainlining.org>
+X-Sender: barnabas.czeman@mainlining.org
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Sat, Sep 20, 2025 at 03:38:58PM -0500, Andrew Jones wrote:
-> When setting irq affinity extract the IMSIC address the device
-> needs to access and add it to the MSI table. If the device no
-> longer needs access to an IMSIC then remove it from the table
-> to prohibit access. This allows isolating device MSIs to a set
-> of harts so we can now add the IRQ_DOMAIN_FLAG_ISOLATED_MSI IRQ
-> domain flag.
-
-IRQ_DOMAIN_FLAG_ISOLATED_MSI has nothing to do with HARTs.
-
- * Isolated MSI means that HW modeled by an irq_domain on the path from the
- * initiating device to the CPU will validate that the MSI message specifies an
- * interrupt number that the device is authorized to trigger. This must block
- * devices from triggering interrupts they are not authorized to trigger.
- * Currently authorization means the MSI vector is one assigned to the device.
-
-It has to do with each PCI BDF having a unique set of
-validation/mapping tables for MSIs that are granular to the interrupt
-number.
-
-As I understand the spec this is is only possible with msiptp? As
-discussed previously this has to be a static property and the SW stack
-doesn't expect it to change. So if the IR driver sets
-IRQ_DOMAIN_FLAG_ISOLATED_MSI it has to always use misptp?
-
-Further, since the interrupt tables have to be per BDF they cannot be
-linked to an iommu_domain! Storing the msiptp in an iommu_domain is
-totally wrong?? It needs to somehow be stored in the interrupt layer
-per-struct device, check how AMD and Intel have stored their IR tables
-programmed into their versions of DC.
-
-It looks like there is something in here to support HW that doesn't
-have msiptp? That's different, and also looks very confused. The IR
-driver should never be touching the iommu domain or calling iommu_map!
-Instead it probably has to use the SW_MSI mechanism to request mapping
-the interrupt controller aperture. You don't get
-IRQ_DOMAIN_FLAG_ISOLATED_MSI with something like this though. Look at
-how ARM GIC works for this mechanism.
-
-Finally, please split this series up, if ther are two different ways
-to manage the MSI aperture then please split it into two series with a
-clear description how the HW actually works.
-
-Maybe start with the simpler case of no msiptp??
-
-Jason
+On 2025-09-22 19:45, Pavel Machek wrote:
+> Hi!
+> 
+>> +	led-controller@45 {
+>> +		compatible = "awinic,aw2013";
+>> +		reg = <0x45>;
+>> +		#address-cells = <1>;
+>> +		#size-cells = <0>;
+>> +
+>> +		vcc-supply = <&pm8937_l10>;
+>> +		vio-supply = <&pm8937_l5>;
+>> +
+>> +		led@0 {
+>> +			reg = <0>;
+>> +			function = LED_FUNCTION_STATUS;
+>> +			led-max-microamp = <5000>;
+>> +			color = <LED_COLOR_ID_RED>;
+>> +		};
+>> +
+>> +		led@1 {
+>> +			reg = <1>;
+>> +			function = LED_FUNCTION_STATUS;
+>> +			led-max-microamp = <5000>;
+>> +			color = <LED_COLOR_ID_GREEN>;
+>> +		};
+>> +
+>> +		led@2 {
+>> +			reg = <2>;
+>> +			function = LED_FUNCTION_STATUS;
+>> +			led-max-microamp = <5000>;
+>> +			color = <LED_COLOR_ID_BLUE>;
+>> +		};
+>> +	};
+>> +};
+> 
+> That's single, 3-color LED, right? Please see LED multicolor support.
+As far as i know aw2013 driver does not have multicolor support.
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/Documentation/devicetree/bindings/leds/leds-aw2013.yaml
+> 
+> Best regards,
+> 								Pavel
