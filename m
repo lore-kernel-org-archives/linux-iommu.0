@@ -1,154 +1,159 @@
-Received: from mail-il1-f207.google.com (mail-il1-f207.google.com [209.85.166.207])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9AB983101DF
-	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 16:55:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.207
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 711788634F
+	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 17:48:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.153.30
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758560128; cv=none; b=bgX/8ILosf9nLAF9GaAATHUqYxUj3BiXbcBnI/IN2wSAcIibvpv+qG+sRJZootCq1kzmLZRTGmsQXwi4xu0CT9n1U1i8QeqU4hjSyfQ5BJhm2pHiYKcLJZhPPzk4VjiSDDRgCMLcH0i8QquZ0xnqG++vsFfNX7JDygoxCK19aHw=
+	t=1758563282; cv=none; b=SO0VT1yy1RLbSdI9uMXpiD5VDBUwtcMVK51S+YdRw3OB5VkDGDxnsNk87K8QzT3rZeM5A0ykcedrURJ6e9BcD0TSHAs3/PLiNoupnVJlVZgkDBhJd3hrpZEBql5+6nJss+PPR1ViZeMU28KowlRcEtnsQDVpIfWRv12wZABmEO0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758560128; c=relaxed/simple;
-	bh=WGz81dxzLgz6WlDdNAAF0u1pcsmKYkC6Q8jmjfOPbDg=;
-	h=MIME-Version:Date:Message-ID:Subject:From:To:Content-Type; b=EnNiQHTds7RKhsAXiWWoJFMH6f3wqbNI2kcsoMLstDeuK2Pai0cOxrgcswI6LfbGtOnzyk1w4rqNASngcWhLnOVB7dS0X3SrMa+oWJWFijN33TKvNGTIZokdmDYoMpyLQEAIZAADYYNdtT8bMWyQfaD8cgPn2AMN94QKzeDeBPY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com; arc=none smtp.client-ip=209.85.166.207
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=syzkaller.appspotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=M3KW2WVRGUFZ5GODRSRYTGD7.apphosting.bounces.google.com
-Received: by mail-il1-f207.google.com with SMTP id e9e14a558f8ab-42570afa5d2so55763285ab.0
-        for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 09:55:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758560126; x=1759164926;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=k0xb9NIAsGdDYlhda5LzLSBSNAiH4BEU4TqqsL4QFio=;
-        b=eWct2XGMIzaWBYMtjfYQA/hFmyg4j9Oj3RZxA6tqcLUzq9nlw2P4xbrzbZRahYNvM0
-         +C/PWQY7IOrLEuBIBXN7tXtB/Ckc2vQcz5qHYYQ9t6gYPb5Sd0XuzjSHfUjZu3pOjyPx
-         yKNDreTc8Rw82fdHAjW/jgGtiJS6MCORX6UVYjSb1PwNZwdQPCqTyb0PrYWJNks07D+V
-         M12HSUAlYE7S78eYHy+nqKa54e7+srm+B0zxdqTLQDRCQqf/pD6NHsJBP7WaO3VQpzXp
-         Cg9RlHW+ZzQF04+vqkO5+bwBG7Ruk0hZdBaT7JguArSeny16qslNS0Xlfbo/ChLYEmDw
-         +joA==
-X-Forwarded-Encrypted: i=1; AJvYcCWvJs6nqRKi/nk1hav1FacxxmA22ArjZTbQdGv4Kna/Hrzb3U99wPWhiUkDrwyfTCLQ66QjMA==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxNB8ejo/Qb524Qfqg2aRjjvtfU5v6X7IGByWOB2PIjTyd+QWhx
-	Tm1pUynU+WjRPbJuLPAPyxfBJ38vSVnvwXUZb55LRqsjweR1XmLiehC9lI+fS2MBgqS5M86si5t
-	opEaiTUvVC35vGp7XxV4bKGvlTyG/Y+DT/zFAxwKx2HBB43tXdu9e2f+6NKE=
-X-Google-Smtp-Source: AGHT+IHZMXNl6ibNCnaPXXCi0Be+/BLAnYUz9Ds25+23JrLCCKe49CO6IY1ji2dsM/+ZArPBU4cARqK2oztPBdI+9syvDTyXQyle
+	s=arc-20240116; t=1758563282; c=relaxed/simple;
+	bh=R7eGuMphMZdM9G9yDE66sOhkKsZHxPwK1/ibT7GQtoQ=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=eVWuETvYtxt1ws1uoOSw9VpJ8BIRp5ozQDArpC+dUVYub/eBoPkGKYD2FuCwtetqmxuJhw/Uxv1LGqcunlDe5U9bkqxcNdsh61Sk757M63LG6MU05HhoreJ5dKHuUxKKlhUqRZcbk/4hpCKV+Da04RCO2DxPAHL4EWb0kW6xF5Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fb.com; spf=pass smtp.mailfrom=meta.com; dkim=pass (2048-bit key) header.d=fb.com header.i=@fb.com header.b=UdeUtPI3; arc=none smtp.client-ip=67.231.153.30
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=fb.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=meta.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=fb.com header.i=@fb.com header.b="UdeUtPI3"
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+	by m0089730.ppops.net (8.18.1.11/8.18.1.11) with ESMTP id 58MHlScH3536413;
+	Mon, 22 Sep 2025 10:47:39 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=s2048-2025-q2;
+	 bh=ytmqrYllnckBp3jLuSpyiNO6eg2YDuOo7gf0z7lcOCE=; b=UdeUtPI3UYfj
+	mD86N/7xbdKqUWyl7K+e2X07mkThaGx3KFF7XSLfL4WzVr7soMvwyEfWXIjBn9go
+	nfKq4EMCnhngXK9QjBh1Bd+YZ2b7yc3EnnKrN6ljgb1BS54DPQQIZIZXk3V+LILx
+	POlWoObsWYixysUFEL0AGch6bHafdGjYxZL4SnGCN4yB9eMM/H0hbqVYnF+sE9Gq
+	tcQpPtVbDbBPPjH6Vr6T6Gyxv8fSuUy5E4vnjAkqt7FXT7lykBEqUkp88ma/ITdj
+	nVmxVdKWOeOHSrTko5LyB/4rFKzv7ECoPYSfL7fdm/sAqHFBSq7Dteg/2AHqX4uf
+	CgQMg7Pzwg==
+Received: from mail.thefacebook.com ([163.114.134.16])
+	by m0089730.ppops.net (PPS) with ESMTPS id 49bb5tg02m-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+	Mon, 22 Sep 2025 10:47:39 -0700 (PDT)
+Received: from devgpu025.eag6.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c08b:78::c78f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.2562.20; Mon, 22 Sep 2025 17:47:36 +0000
+From: Alex Mastro <amastro@fb.com>
+To: Mostafa Saleh <smostafa@google.com>
+CC: Alex Mastro <amastro@fb.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+        "Keith
+ Busch" <kbusch@kernel.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+        Alex Williamson
+	<alex.williamson@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, "David
+ Reiss" <dreiss@meta.com>,
+        Joerg Roedel <joro@8bytes.org>, Leon Romanovsky
+	<leon@kernel.org>,
+        Li Zhe <lizhe.67@bytedance.com>, Mahmoud Adam
+	<mngyadam@amazon.de>,
+        Philipp Stanner <pstanner@redhat.com>,
+        Robin Murphy
+	<robin.murphy@arm.com>,
+        "Kasireddy, Vivek" <vivek.kasireddy@intel.com>,
+        "Will
+ Deacon" <will@kernel.org>, Yunxiang Li <Yunxiang.Li@amd.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+        "kvm@vger.kernel.org"
+	<kvm@vger.kernel.org>
+Subject: Re: [TECH TOPIC] vfio, iommufd: Enabling user space drivers to vend more granular access to client processes
+Date: Mon, 22 Sep 2025 10:46:23 -0700
+Message-ID: <20250922174630.3123741-1-amastro@fb.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <aNETcPELm72zlkwR@google.com>
+References:
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:152f:b0:425:7291:22f with SMTP id
- e9e14a558f8ab-42572910296mr82160385ab.32.1758560125759; Mon, 22 Sep 2025
- 09:55:25 -0700 (PDT)
-Date: Mon, 22 Sep 2025 09:55:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <68d17f7d.050a0220.13cd81.05b8.GAE@google.com>
-Subject: [syzbot] [iommu?] WARNING in intel_iommu_map_pages
-From: syzbot <syzbot+6e970ad52c1b9e57e6b1@syzkaller.appspotmail.com>
-To: baolu.lu@linux.intel.com, dwmw2@infradead.org, iommu@lists.linux.dev, 
-	joro@8bytes.org, linux-kernel@vger.kernel.org, robin.murphy@arm.com, 
-	syzkaller-bugs@googlegroups.com, will@kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: 8a9aRPhz3f31K-f9lCVtT0JhirN1HjE0
+X-Authority-Analysis: v=2.4 cv=CIgqXQrD c=1 sm=1 tr=0 ts=68d18bbb cx=c_pps
+ a=CB4LiSf2rd0gKozIdrpkBw==:117 a=CB4LiSf2rd0gKozIdrpkBw==:17
+ a=IkcTkHD0fZMA:10 a=yJojWOMRYYMA:10 a=3TvhHRHpCP51MQbkfAYA:9
+ a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: 8a9aRPhz3f31K-f9lCVtT0JhirN1HjE0
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTIyMDE3MyBTYWx0ZWRfX8hew7QE3jpTP
+ h6vHpSu0gaPnSfqse1heR94sbIiXdZ++U25INk8f75gGE7d8jigoobHTzlYgGWvWr4BRhxVlboo
+ hVKMh3Uolxx/zNeJLIyLbDDyz+aAF7Cblp5pMjcPnJSon9qiPFQOSAuvtiAFRwmoWP+mHaPfm22
+ eao3Vtl8MxmZHxNi59773H3QJFoKXjiggR/e5hy2Sl4CG7i76R0qFXPFSTqBdvhPEuUBMYF6bs9
+ mHuKpoi27yqeY3VigZzZfSxYeLaw+N1Eq9wOV1KlMWt+ufSYl5jrKKhql/IgDSMlt5sxOG47NaS
+ ylVwbnkEgSLjj4FGuu9lCOQdV+X/dabCIaxmPQp1r1GGE64hY0ciGJzcoKr700=
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-09-22_01,2025-09-22_01,2025-03-28_01
 
-Hello,
+On Mon, Sep 22, 2025 at 09:14:24AM +0000, Mostafa Saleh wrote:
+> On Fri, Sep 19, 2025 at 07:00:04AM +0000, Tian, Kevin wrote:
+> > the proposal includes two parts: BAR access and IOMMU mapping. For
+> > the latter looks the intention is more around releasing resource. But
+> > the former sounds more like a security enhancement - instead of
+> > granting the client full access to the entire device it aims to expose
+> > only a region of BAR resource necessary into guest. Then as Jason
+> > questioned what is the value of doing so when one client can program
+> > arbitrary DMA address into the exposed BAR region to attack mapped
+> > memory of other clients and the USD... there is no hw isolation 
+> > within a partitioned IOAS unless the device supports PASID then 
+> > each client can be associated to its own IOAS space.
+> 
+> That’s also my opinion, it seems that PASIDs are not supported in
+> that case, that’s why the clients share the same IOVA address space,
+> instead of each one having their own.
 
-syzbot found the following issue on:
+Yes, we do have cases where PASID is not supported by our hardware.
 
-HEAD commit:    3b08f56fbbb9 Merge tag 'x86-urgent-2025-09-20' of git://gi..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=142d3c7c580000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8f01d8629880e620
-dashboard link: https://syzkaller.appspot.com/bug?extid=6e970ad52c1b9e57e6b1
-compiler:       gcc (Debian 12.2.0-14+deb12u1) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1740fe42580000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1037a712580000
+> In that case I think as all of this is cooperative and can’t be enforced,
+> one process can corrupt another process memory that is mapped the IOMMU.
 
-Downloadable assets:
-disk image (non-bootable): https://storage.googleapis.com/syzbot-assets/d900f083ada3/non_bootable_disk-3b08f56f.raw.xz
-vmlinux: https://storage.googleapis.com/syzbot-assets/6f981dad47cf/vmlinux-3b08f56f.xz
-kernel image: https://storage.googleapis.com/syzbot-assets/031397abeebd/bzImage-3b08f56f.xz
+In systems lacking PASID, some degree of enforcement would still be possible via
+USD and device policies. In a ~similar way to how an in-kernel driver wanting
+to accomplish our same goals (enabling a client and device able to access each
+other's memory directly) would presumably need to enforce this.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+6e970ad52c1b9e57e6b1@syzkaller.appspotmail.com
+I have been thinking along the following lines:
 
-DMAR: ERROR: DMA PTE for vPFN 0xbe300 already set (to 55400003 not 51800003)
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 6199 at drivers/iommu/intel/iommu.c:1679 __domain_mapping drivers/iommu/intel/iommu.c:1679 [inline]
-WARNING: CPU: 0 PID: 6199 at drivers/iommu/intel/iommu.c:1679 intel_iommu_map drivers/iommu/intel/iommu.c:3593 [inline]
-WARNING: CPU: 0 PID: 6199 at drivers/iommu/intel/iommu.c:1679 intel_iommu_map_pages+0xaa7/0x1520 drivers/iommu/intel/iommu.c:3612
-Modules linked in:
-CPU: 0 UID: 0 PID: 6199 Comm: syz.2.40 Not tainted syzkaller #0 PREEMPT(full) 
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
-RIP: 0010:__domain_mapping drivers/iommu/intel/iommu.c:1679 [inline]
-RIP: 0010:intel_iommu_map drivers/iommu/intel/iommu.c:3593 [inline]
-RIP: 0010:intel_iommu_map_pages+0xaa7/0x1520 drivers/iommu/intel/iommu.c:3612
-Code: ba 26 fc 8b 2d 1a e5 be 09 31 ff 89 ee e8 b1 06 48 fc 85 ed 74 0e e8 68 0b 48 fc 83 ed 01 89 2d ff e4 be 09 e8 5a 0b 48 fc 90 <0f> 0b 90 e9 da fa ff ff e8 4c 0b 48 fc 4c 8b 7c 24 40 48 8d 43 ff
-RSP: 0018:ffffc900038575e0 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffff88803b24e800 RCX: ffffffff8573920f
-RDX: ffff88802577c880 RSI: ffffffff85739226 RDI: 0000000000000005
-RBP: 0000000000000004 R08: 0000000000000005 R09: 0000000000000000
-R10: 0000000000000005 R11: 0000000000000000 R12: 00000000000ffb00
-R13: 0000000000000001 R14: 0000000051800003 R15: 0000000000000002
-FS:  0000555564edf500(0000) GS:ffff8880d66b2000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00005555884bf808 CR3: 000000005203d000 CR4: 0000000000352ef0
-Call Trace:
- <TASK>
- iommu_map_nosync+0x337/0x700 drivers/iommu/iommu.c:2505
- iommu_map_sg+0x1c1/0x9d0 drivers/iommu/iommu.c:2677
- iommu_dma_map_sg+0x88c/0xde0 drivers/iommu/dma-iommu.c:1483
- __dma_map_sg_attrs+0x293/0x590 kernel/dma/mapping.c:216
- dma_map_sgtable+0x78/0x100 kernel/dma/mapping.c:294
- system_heap_map_dma_buf+0x66/0xf0 drivers/dma-buf/heaps/system_heap.c:124
- dma_buf_map_attachment+0x15e/0x5f0 drivers/dma-buf/dma-buf.c:1126
- dma_buf_map_attachment_unlocked+0x9e/0x150 drivers/dma-buf/dma-buf.c:1196
- drm_gem_prime_import_dev drivers/gpu/drm/drm_prime.c:999 [inline]
- drm_gem_prime_import_dev+0x166/0x440 drivers/gpu/drm/drm_prime.c:971
- virtgpu_gem_prime_import+0x16c/0x800 drivers/gpu/drm/virtio/virtgpu_prime.c:316
- drm_gem_prime_fd_to_handle+0x1a6/0x5f0 drivers/gpu/drm/drm_prime.c:317
- drm_prime_fd_to_handle_ioctl+0xd6/0x110 drivers/gpu/drm/drm_prime.c:375
- drm_ioctl_kernel+0x1f1/0x3e0 drivers/gpu/drm/drm_ioctl.c:796
- drm_ioctl+0x5c9/0xc30 drivers/gpu/drm/drm_ioctl.c:893
- vfs_ioctl fs/ioctl.c:51 [inline]
- __do_sys_ioctl fs/ioctl.c:598 [inline]
- __se_sys_ioctl fs/ioctl.c:584 [inline]
- __x64_sys_ioctl+0x18e/0x210 fs/ioctl.c:584
- do_syscall_x64 arch/x86/entry/syscall_64.c:63 [inline]
- do_syscall_64+0xcd/0x4e0 arch/x86/entry/syscall_64.c:94
- entry_SYSCALL_64_after_hwframe+0x77/0x7f
-RIP: 0033:0x7f377a58ec29
-Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 a8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007ffdfa8b0f78 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-RAX: ffffffffffffffda RBX: 00007f377a7d5fa0 RCX: 00007f377a58ec29
-RDX: 00002000000000c0 RSI: 00000000c00c642e RDI: 0000000000000005
-RBP: 00007ffdfa8b0fd0 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000002
-R13: 00007f377a7d5fa0 R14: 00007f377a7d5fa0 R15: 0000000000000003
- </TASK>
+Imagine that we want the client and device to communicate with each other
+directly via queues in each other's memory, bypassing interaction with the
+driver.
 
+As part of granting access to a client process:
+- The USD allocates some IOAS slice for the client.
+- The USD prepares a restricted IOMMU fd to be shared with the client which
+  only has mapping permissions to the IOAS slice.
+- The USD configures the device: "DMA initiated across this region of
+  client-accessible BAR is only allowed to target the client's IOAS slice."
+- The USD vends the client a dma-buf exposing a view of only that client's queue
+  space, along with the restricted IOMMU fd.
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Given the above setup, barring bugs in the USD, or the device hardware/firmware,
+it should be impossible for one client to corrupt another client's address
+space, since the side-effects it is able to create by accessing its BAR slice
+have been constrained by a combination of USD + device policy.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Next, we need to address revocation. The USD needs to be able revoke:
+1) client access to BAR memory
+2) device access to client memory
 
-If the report is already addressed, let syzbot know by replying with:
-#syz fix: exact-commit-title
+Issue (2) was touched on in the original tech topic email, but we haven't
+covered (1) yet.
 
-If you want syzbot to run the reproducer, reply with:
-#syz test: git://repo/address.git branch-or-commit-hash
-If you attach or paste a git patch, syzbot will apply it before testing.
+For (1) to be possible, I think we need to grant the VFIO user (USD in this
+specific case) the ability to revoke a dma-buf in a way that prevents "peer"
+access to the device -- whether the peer is some other device, or a user space
+client process.
 
-If you want to overwrite report's subsystems, reply with:
-#syz set subsystems: new-subsystem
-(See the list of subsystem names on the web dashboard)
+Following a dma_buf_ops.mmap, I suppose that revocation would mean:
+- Poisoning the dma-buf fd to disallow the creation of additional mmaps.
+- Zapping the PTEs backing existing mmaps. Subsequent access to the unmapped
+  client address space should trigger page faults.
 
-If the report is a duplicate of another one, reply with:
-#syz dup: exact-subject-of-another-report
+Thanks,
+Alex
 
-If you want to undo deduplication, reply with:
-#syz undup
