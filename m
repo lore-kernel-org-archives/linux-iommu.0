@@ -1,137 +1,63 @@
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A70E302162
-	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 17:55:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.255.230.98
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 877262E2DC1;
+	Mon, 22 Sep 2025 18:27:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758563727; cv=none; b=GC0WpkP+O/oMt2h5I1FLCDFpaxutkp6NPs6RcQgx1c09VAEVcrpuhovWthD4xGC9JSfkJAZG14oND1PCB3fb57HX9VexaJctDjAcxHzvX9xs1nVn5l4EKLhp9yiWPf4HJAZom/OgSuMSB6Kp1qmLpD4dDTTiql5+1UId4C1udSE=
+	t=1758565667; cv=none; b=V2SU/cWKcQ3rbsdfsF0Csd6xfiNUlY1hepFK8sEQFGfieA+ZOKkLKWFSFfT3hGajdLmR+J3FZhhUvBcjkgCpay67OI0FuijiioXgZ3alV+yqam6Wh5L3pr8OqiOG/dJ4oKVsZh4lJXV+08adR5r3S/k23SmSFVJwDQa3Nucpvjo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758563727; c=relaxed/simple;
-	bh=K5cl92pvkgD/y2fnBzaamznki/4BJREvN2kPtKGbm54=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TonPcRpCdUmaTbLy7E3xa3HiYyJ+5uYHjUoP7zCFaJZdwCLMQH+IuG4nZEPV8fdN47GEDOXDcrXMU6YDI4ZbFyTOa9bz5UUydVYprQPSV9c0Tf0zjPmkrV4p4ID7c7QAlHnOtfCsrRAUrsFhb77bosMWVdlX+A9RVk9BiOnoH0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ucw.cz; spf=pass smtp.mailfrom=ucw.cz; dkim=pass (1024-bit key) header.d=ucw.cz header.i=@ucw.cz header.b=dEiyeVuT; arc=none smtp.client-ip=46.255.230.98
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ucw.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ucw.cz
+	s=arc-20240116; t=1758565667; c=relaxed/simple;
+	bh=tL2cBrBG1PNTyJ8g1Faef6A7twf3MNrHJVTlnkfJAmw=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=kmdtEJKWZL4Z6xYd93+DNtS1w3frkrdonmdjjeNt+nDICwLJZluZW8OU9s5isrMA2u0MOB7BVhOxivxzNTeRbY+HMxsQkwafnCcmcB/mJ+qFpatItNyQAJBV0AKkn7o8f8yipkJ/XKvlsN0rfwF+tDeN4jjOz4wsSAqbQ3ieuUw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WT5S0VXr; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ucw.cz header.i=@ucw.cz header.b="dEiyeVuT"
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-	id 3A41E1C008F; Mon, 22 Sep 2025 19:45:34 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ucw.cz; s=gen1;
-	t=1758563134;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=2LoNSD1MjksE+Q5STpZ9iMFA6rZNp5scT6RfGqsxh58=;
-	b=dEiyeVuTfcFh0yqrUAInmXJZKRuF3SIxESWQ07Xil4xdIB7tWc75EPVDpyt7i6rcSY+lj1
-	l6Ke6nSPHI4lpnpqhaKN4dkgF4srfd4485SecXZMyl80G1WsF/zRPNqg/vXjsDQF/cE2ms
-	eszlkEZ5YvkuB/teWa0j2ISyQ5Jl+XU=
-Date: Mon, 22 Sep 2025 19:45:33 +0200
-From: Pavel Machek <pavel@ucw.cz>
-To: =?iso-8859-1?B?QmFybmFi4XMgQ3rpbeFu?= <barnabas.czeman@mainlining.org>
-Cc: Bjorn Andersson <andersson@kernel.org>,
-	Michael Turquette <mturquette@baylibre.com>,
-	Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Stephan Gerhold <stephan@gerhold.net>,
-	Otto =?iso-8859-1?Q?Pfl=FCger?= <otto.pflueger@abscue.de>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Lee Jones <lee@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
-	Abhinav Kumar <quic_abhinavk@quicinc.com>,
-	Marijn Suijten <marijn.suijten@somainline.org>,
-	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Dmitry Baryshkov <lumag@kernel.org>,
-	Adam Skladowski <a_skl39@protonmail.com>,
-	Sireesh Kodali <sireeshkodali@protonmail.com>,
-	Rob Clark <robin.clark@oss.qualcomm.com>,
-	Abhinav Kumar <abhinav.kumar@linux.dev>,
-	Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-gpio@vger.kernel.org, iommu@lists.linux.dev,
-	dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-	phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-	linux@mainlining.org,
-	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-Subject: Re: [PATCH v7 6/6] arm64: dts: qcom: Add Xiaomi Redmi 3S
-Message-ID: <aNGLPdmOyh/pfroq@duo.ucw.cz>
-References: <20250831-msm8937-v7-0-232a9fb19ab7@mainlining.org>
- <20250831-msm8937-v7-6-232a9fb19ab7@mainlining.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WT5S0VXr"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D37EC4CEF0;
+	Mon, 22 Sep 2025 18:27:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1758565667;
+	bh=tL2cBrBG1PNTyJ8g1Faef6A7twf3MNrHJVTlnkfJAmw=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=WT5S0VXrtJFxaIhOP8lzAEnTtdgqG95vaz+vqube7VA5//sAVOWLXHkqc6GbkovLT
+	 rHSUe4568Nvz4jnbfsf7h3ymALlhXzdlRIVu2dOs393n5IlEyEYGzlFLMNGbZvO2N8
+	 d8fcwXogxQfl9EJfNA0CuNXvu9IKISKYe+4J+VagFphsSgpvmK6dsBhUF0P4E+ftbw
+	 S//gCIhSapDuu5kIwJUe0MEI/UD1Kci4vr6fn19tdtqMCrDaEnM9bKBJGf30jc9OJm
+	 4haHJRqK/UjvTds1LjI3A4T/+DuVWp3pLbUedFvpZKZLd2oG78UXs8oeQPNcoIuNeG
+	 n5wpxwnUOALcQ==
+Received: from [10.30.226.235] (localhost [IPv6:::1])
+	by aws-us-west-2-korg-oddjob-rhel9-1.codeaurora.org (Postfix) with ESMTP id 33FC339D0C20;
+	Mon, 22 Sep 2025 18:27:46 +0000 (UTC)
+Subject: Re: [GIT PULL] Please pull IOMMUFD subsystem changes
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <20250922143329.GA2529959@nvidia.com>
+References: <20250922143329.GA2529959@nvidia.com>
+X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20250922143329.GA2529959@nvidia.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+X-PR-Tracked-Commit-Id: 43f6bee02196e56720dd68eea847d213c6e69328
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: d4c7fccfa784da0583fed9c8f98ed78236c030fb
+Message-Id: <175856566468.1111894.13694066385590267385.pr-tracker-bot@kernel.org>
+Date: Mon, 22 Sep 2025 18:27:44 +0000
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="8MXtIuaouyubyuXB"
-Content-Disposition: inline
-In-Reply-To: <20250831-msm8937-v7-6-232a9fb19ab7@mainlining.org>
 
+The pull request you sent on Mon, 22 Sep 2025 11:33:29 -0300:
 
---8MXtIuaouyubyuXB
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
 
-Hi!
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/d4c7fccfa784da0583fed9c8f98ed78236c030fb
 
-> +	led-controller@45 {
-> +		compatible =3D "awinic,aw2013";
-> +		reg =3D <0x45>;
-> +		#address-cells =3D <1>;
-> +		#size-cells =3D <0>;
-> +
-> +		vcc-supply =3D <&pm8937_l10>;
-> +		vio-supply =3D <&pm8937_l5>;
-> +
-> +		led@0 {
-> +			reg =3D <0>;
-> +			function =3D LED_FUNCTION_STATUS;
-> +			led-max-microamp =3D <5000>;
-> +			color =3D <LED_COLOR_ID_RED>;
-> +		};
-> +
-> +		led@1 {
-> +			reg =3D <1>;
-> +			function =3D LED_FUNCTION_STATUS;
-> +			led-max-microamp =3D <5000>;
-> +			color =3D <LED_COLOR_ID_GREEN>;
-> +		};
-> +
-> +		led@2 {
-> +			reg =3D <2>;
-> +			function =3D LED_FUNCTION_STATUS;
-> +			led-max-microamp =3D <5000>;
-> +			color =3D <LED_COLOR_ID_BLUE>;
-> +		};
-> +	};
-> +};
+Thank you!
 
-That's single, 3-color LED, right? Please see LED multicolor support.
-
-Best regards,
-								Pavel
---=20
-I don't work for Nazis and criminals, and neither should you.
-Boycott Putin, Trump, Netanyahu and Musk!
-
---8MXtIuaouyubyuXB
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCaNGLPQAKCRAw5/Bqldv6
-8irtAJwI2afEzeUg31W2fmTx+qETFXOowQCdFOieFEzz1la9CKecVgIxILFSLCI=
-=EBxA
------END PGP SIGNATURE-----
-
---8MXtIuaouyubyuXB--
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
