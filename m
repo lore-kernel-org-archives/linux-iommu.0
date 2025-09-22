@@ -1,119 +1,221 @@
-Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
+Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 267A534BA39
-	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 21:04:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 467E223C516
+	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 21:20:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758575061; cv=none; b=hc2b3U/kTobbQdYzUi1oTPTN0kq60xs9xtQD+dW1jdvqXFlY68uEejEFHDMULbelz8c8gWiF2TWLqcN3mx/DXqg9JdSp51DuYAAq73354lwnNPA2XmanDOYwTbzENTABMYsvFLxqL/p5p+qgUAcdRLSxuYsSJQuSFtxTokr+MyA=
+	t=1758576048; cv=none; b=RJJqarScO5y9kWXScw8XwWYFauqpZamk6HEnRZug9sOvGKeG0Ds3IjCzZjjehJly54uGET1jo19mvhfcdbs/lKldBV1mHGBmPrcTcYlPKYm2sUm+Jhwb3TdnyaxKt9mOv9HkPzFD+/gNvtKC8x9uRWZ5rXCtnn+MT8IHOo9X/4I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758575061; c=relaxed/simple;
-	bh=IR27taLTFITOYV4B00ku0qQKC4bEZ+4qpChrvPMvsvk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DE9wa3bXQ84mwE+dERTFfAM/aLcHkP+7r4MyhV1qbPeqsQvLm84l7ZmNFNtCDYJTVpuhZCKvvLVOz3qbid2tFigrSm/15oZmJDQbjVax/erS1hKxtbYhqPAT9kbbKUBHkzHP1sTBenAGci6hv/RyWX/jbdkDuXbz/n1gkJdodrY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=H6A5L/gu; arc=none smtp.client-ip=209.85.218.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1758576048; c=relaxed/simple;
+	bh=xihBR50Hw2D9VbbOxPhiH3tyeef2qtQXdEqxf23CwKU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jy2KDMbB+4pCmNNeYmmvcJMpPk3KEN0c6dwqZfqQl6D+qC/7kJcCj2Ahk9dSncnn+gg7/Z9jIGHJC23a8D3V9rPSF1MczXV3GA9yNXZSwPXm9PDjvsxorZXGz19HE+Ab+I/PzswXzqJrgNdMCbVo3Uo2+P8roo9JgaVqXRDxfe8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=gIZPDwdU; arc=none smtp.client-ip=209.85.128.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H6A5L/gu"
-Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-b07c081660aso881602866b.0
-        for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 14:04:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="gIZPDwdU"
+Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-723ad237d1eso45350177b3.1
+        for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 14:20:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1758575058; x=1759179858; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uh7Hyul+h5lwAcNtxj/DI9qojjFccIciQ/b88SlaL0g=;
-        b=H6A5L/guerjaTzh3j8frLW5EuLlykJfbup0oFDVHTQdXs0HroXAupLsnN/l+pKLeR4
-         csV+0ftR8apyUIsUfAS7YESsSkPpID8smdILTRUEvJVzbjvkOlDlI9Kv50NT6DIqO+r4
-         6aJ5qjBBD4TshzW3hWGHo18uCoMvZsqET5hn/I1aM40MctQMP+Z1c6SpPIR9yri7uoTF
-         pyJo6i3u2q/LZU8A/HAY45M9UXKTGBDNTnC9kzwVpiM2Qmt8SL/taOuPmQxGX0uk8v7n
-         5ZAD9lum9KqnUdcDNC9gTanwsci7ShTxCJLdKVW6PV/ExL/ctm6eMf3BJfhihfnXcHVK
-         90tA==
+        d=ventanamicro.com; s=google; t=1758576045; x=1759180845; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=onj4yFqllMzEveOUk9DfiKAf4L6zZPOcmFKF8e4Prmo=;
+        b=gIZPDwdUwm2kiv6IB1kVw3HDpBtcedJ4pSXqtVBfZ5HmIlErlysD9XE0kUCklQZ0Hq
+         DaHecto8/D12gGCC2kzPeYf9hIToh+QhzxYL5nj3ckgvVQpMm5ZNQIIY669yV/L3vE9z
+         itIiVs0RVzG1FuQnrIri4eKjTYnwj4jQMdduvyoAhoKVUpf08cryxZTekcFpJxZ+SiHY
+         ucB4CZEhfQipUgso3ttIM/zgKNnwbQCLwZD6rzAmuFCAH9AAP5+Fr6xs34ohdBoUt7x6
+         1mRKvKWuChP8I/Uct+qtcKDLwIrt948LpA29vXGNes4wqLmactlbb1L1p8nelgVPeSHZ
+         HS/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758575058; x=1759179858;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uh7Hyul+h5lwAcNtxj/DI9qojjFccIciQ/b88SlaL0g=;
-        b=Z35mCPRRMZXrYrv2inRAo3jtcf/Kj9x+N1IkkvI9onANiUwTDHwdUD9KhSrQBHFLjC
-         uBmOyxG/vdpt6/J583Vt89MJaiTfnpH6p7Nv40iSLyAU96Czgeh8HC/aJTmcPIl0IGUJ
-         aLAkRbrOGtQ5xEBv7gs43kMcFdq77qTeVzUiFtzyUmH7GdC7+9lf8z+rOh/zE9e5t5q4
-         vsDPAm8JcCbhYR5pbAyUPrcqkY7Vu/BrW4s3OGYZehT7+lLbviXY0XsZrdJ18NLxM4g7
-         2mXHo0J8mKkxR9Ndy4bHGQF/ZYKWbF+b5ecD8I+OiH39lgHUz0gthiBiy5YmupweJN6f
-         751A==
-X-Forwarded-Encrypted: i=1; AJvYcCWwlHjAlJpTFWgYXMB5WZPd3uPEeZSJ2ceNO2NsMsG8TKKex3L1AnFiSkGKqeSgATuLv12vUg==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwozpsYVvxEpNa4wlaCu8SmbPs3tcuXBlEJjqXXcq4zO2s9TWUb
-	U0fPPsujvtcIC44Wwl7W6uXW9j3QRAcs/wjZiOEl9GFScxpnfYUPDk3TEMqflxzw211ngd4POnb
-	zVv1lqmifmG2BIw/fqc9qMW8BP4jTCAM=
-X-Gm-Gg: ASbGncupvD8ygC9N29C088Zy/tqnaeQnh8zkpQFBAAMl/JyjvNeJcWMtDqwEkGt9CCw
-	0S7CxM8grMSMqxilvMse9toS4INzRK1SxkSF1T2bhb3n8h/PsF06EJJppfST1fII+XFApT6alAD
-	bfcWp0ionipwLe6IQ/XyybCgZgRUwSSlLtXC55mFs/zB5yGz+/tcgXSlnRD4eYwPIMGpNEbBd11
-	A2o9cTQvPm8nGcbMSU=
-X-Google-Smtp-Source: AGHT+IFr06URzpJ6aUp4DpRFc3gqIF/QKzvPatkXOguRNAK+5vyBht27Wi77YYUi7cw/QJFO8eHWzN6Nc8/pR3lh7aU=
-X-Received: by 2002:a17:907:72cb:b0:afe:d590:b6af with SMTP id
- a640c23a62f3a-b3026c84e0cmr5356866b.20.1758575058272; Mon, 22 Sep 2025
- 14:04:18 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1758576045; x=1759180845;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=onj4yFqllMzEveOUk9DfiKAf4L6zZPOcmFKF8e4Prmo=;
+        b=f6m99i2z8cmef66FbRFsL0/vMIYdTsCh7zWZOiUaO7vB/AH/JVXIVUurBlNZW1P6Kk
+         3ZD70D20rAvTeA7SXBU3VXqSGbFFWkZt5JUPDEd2ZFtVJFFkBtrXwsu8pBVQihLqIeXr
+         ymQy6q6FeTIDnrIIAbT7BHO+lXL38Ul2ZgN8UuGmYWYbrC0RKHGBoCznS3PRyM8xF1g/
+         /KUncGBYmbnOucrFqoi5VB2/1vQMgKVYyaw9c3+xm50AsVGv3nfZMHLE/LWOhbTkYsHt
+         Q+HyPTNETL8b6ENCjmcjG4Ktr/LUywTIkrc+/e5RGw5F1VTHwFGUQawupLHmvIwloW5E
+         BbFg==
+X-Gm-Message-State: AOJu0YxRNOpC//xqVYz5v2a9RRrklhZ4I+LRM+UMFH/ytueRCEPHgV/N
+	+DZyrC/qG/Db9NbvoQTCsEWXO5wFiWqpEGE6bzfDNY/NJz2AYb7pq+4l/4cOOd8P5ik=
+X-Gm-Gg: ASbGnct5qEhAhX8WBnOhN69mDkr82Cmhq7PlBqBHB6JmvaBuQeoevjdisfpeNJgVEUl
+	sOLuAStNwfs1Qv0a2vjoSVJfghFGi9DSeuOjqY1Jtca0YKdgAyEgF5uU4r2aoABVsshcz95ab+H
+	hhYA7IY8bQ0ZNb5duVkUi2ifH2G9ySG204jPyesi/y4sNQ07tGRsvNLwIWrHQi8rKAa98imHU0l
+	gWEL0OCe9eaivqktPhgln3vChlsG5V/5U4gda7iclvcMK/LPL0Zicsy7jY3C+H3uJuetpbzjzyf
+	vVThAvKHLOaQ0l/7EeAUxs4uIjNzl5BUz7OJT0VbeFgyUWxUF+GGaOvPkCxMGPbRujyluKk4GiU
+	8rd23ckUs8qQ63rBSfGiDfjKz
+X-Google-Smtp-Source: AGHT+IEkvQZ5SylVDHV/m2S+NTAyd5wvsiLsp5Pptg5UwT2UN0VbvwmLcskjGP4MQTxbjIrmiAtKRQ==
+X-Received: by 2002:a05:690c:4b03:b0:722:6f24:6293 with SMTP id 00721157ae682-758a2d07fd7mr1394647b3.32.1758576045119;
+        Mon, 22 Sep 2025 14:20:45 -0700 (PDT)
+Received: from localhost ([140.82.166.162])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-633bcce7089sm4581523d50.5.2025.09.22.14.20.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Sep 2025 14:20:44 -0700 (PDT)
+Date: Mon, 22 Sep 2025 16:20:43 -0500
+From: Andrew Jones <ajones@ventanamicro.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, kvm-riscv@lists.infradead.org, 
+	kvm@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	zong.li@sifive.com, tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, anup@brainfault.org, atish.patra@linux.dev, tglx@linutronix.de, 
+	alex.williamson@redhat.com, paul.walmsley@sifive.com, palmer@dabbelt.com, alex@ghiti.fr
+Subject: Re: [RFC PATCH v2 08/18] iommu/riscv: Use MSI table to enable IMSIC
+ access
+Message-ID: <20250922-50372a07397db3155fec49c9@orel>
+References: <20250920203851.2205115-20-ajones@ventanamicro.com>
+ <20250920203851.2205115-28-ajones@ventanamicro.com>
+ <20250922184336.GD1391379@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1758219786.git.leon@kernel.org> <0c64474985af55b1aa934b857808068a0e609c6e.1758219787.git.leon@kernel.org>
-In-Reply-To: <0c64474985af55b1aa934b857808068a0e609c6e.1758219787.git.leon@kernel.org>
-From: Magnus Lindholm <linmag7@gmail.com>
-Date: Mon, 22 Sep 2025 23:04:06 +0200
-X-Gm-Features: AS18NWDVFMZZnWEreuo7vPXyYUB8RQkWA0R_TESbZnVi7LcEMvax5dEHcVzVJVI
-Message-ID: <CA+=Fv5Q8dVUFVBh82mAe=fy3mV6mWtQT_0pBPLQwLNBt3f8E1g@mail.gmail.com>
-Subject: Re: [PATCH 1/9] alpha: Convert mapping routine to rely on physical address
-To: Leon Romanovsky <leon@kernel.org>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Leon Romanovsky <leonro@nvidia.com>, 
-	Jason Gunthorpe <jgg@nvidia.com>, Andreas Larsson <andreas@gaisler.com>, Borislav Petkov <bp@alien8.de>, 
-	Dave Hansen <dave.hansen@linux.intel.com>, "David S. Miller" <davem@davemloft.net>, 
-	Geoff Levand <geoff@infradead.org>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>, 
-	iommu@lists.linux.dev, 
-	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Jason Wang <jasowang@redhat.com>, 
-	Juergen Gross <jgross@suse.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
-	linuxppc-dev@lists.ozlabs.org, Madhavan Srinivasan <maddy@linux.ibm.com>, 
-	Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, 
-	"Michael S. Tsirkin" <mst@redhat.com>, Richard Henderson <richard.henderson@linaro.org>, 
-	sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner <tglx@linutronix.de>, 
-	virtualization@lists.linux.dev, x86@kernel.org, 
-	xen-devel@lists.xenproject.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250922184336.GD1391379@nvidia.com>
 
-On Thu, Sep 18, 2025 at 8:45=E2=80=AFPM Leon Romanovsky <leon@kernel.org> w=
-rote:
->
-> From: Leon Romanovsky <leonro@nvidia.com>
->
-> Alpha doesn't need struct *page and can perform mapping based on
-> physical addresses. So convert it to implement new .map_phys callback.
+On Mon, Sep 22, 2025 at 03:43:36PM -0300, Jason Gunthorpe wrote:
+> On Sat, Sep 20, 2025 at 03:38:58PM -0500, Andrew Jones wrote:
+> > When setting irq affinity extract the IMSIC address the device
+> > needs to access and add it to the MSI table. If the device no
+> > longer needs access to an IMSIC then remove it from the table
+> > to prohibit access. This allows isolating device MSIs to a set
+> > of harts so we can now add the IRQ_DOMAIN_FLAG_ISOLATED_MSI IRQ
+> > domain flag.
+> 
+> IRQ_DOMAIN_FLAG_ISOLATED_MSI has nothing to do with HARTs.
+> 
+>  * Isolated MSI means that HW modeled by an irq_domain on the path from the
+>  * initiating device to the CPU will validate that the MSI message specifies an
+>  * interrupt number that the device is authorized to trigger. This must block
+>  * devices from triggering interrupts they are not authorized to trigger.
+>  * Currently authorization means the MSI vector is one assigned to the device.
 
+Unfortunately the RISC-V IOMMU doesn't have support for this. I've raised
+the lack of MSI data validation to the spec writers and I'll try to raise
+it again, but I was hoping we could still get IRQ_DOMAIN_FLAG_ISOLATED_MSI
+by simply ensuring the MSI addresses only include the affined harts (and
+also with the NOTE comment I've put in this patch to point out the
+deficiency).
 
-Hi,
+> 
+> It has to do with each PCI BDF having a unique set of
+> validation/mapping tables for MSIs that are granular to the interrupt
+> number.
 
-SInce this patch affects the Alpha platform I got curious and decided to
-try it out. The patch series requires some preparatory patches. Leon
-provided me with links to his dmabuf-vfio branch, which had the
-patches (and some prerequisite stuff) applied already.
+Interrupt numbers (MSI data) aren't used by the RISC-V IOMMU in any way.
 
-Based on the dmabuf-vfio branch,  I've built a kernel and tested it on
-my ES40 Alphaserver, the kernel booted fine but after a while of
-moderate filesystem load I started seeing some ext3/4 related error
-messages in the system logs. Rebooting with my old kernel into
-single user mode, I was able to recover the filesystem using fsck.
-Clearly this set of patches breaks things (at least on Alpha).
+> 
+> As I understand the spec this is is only possible with msiptp? As
+> discussed previously this has to be a static property and the SW stack
+> doesn't expect it to change. So if the IR driver sets
+> IRQ_DOMAIN_FLAG_ISOLATED_MSI it has to always use misptp?
 
-I haven't yet dug any deeper into the root causes of the file system
-corruptions and I've only tested this on Alpha, maybe there has been
-more testing done on other platforms targeted by this set
-of patches?
+Yes, the patch only sets IRQ_DOMAIN_FLAG_ISOLATED_MSI when the IOMMU
+has RISCV_IOMMU_CAPABILITIES_MSI_FLAT and it will remain set for the
+lifetime of the irqdomain, no matter how the IOMMU is being applied.
 
-Regards
+> 
+> Further, since the interrupt tables have to be per BDF they cannot be
+> linked to an iommu_domain! Storing the msiptp in an iommu_domain is
+> totally wrong?? It needs to somehow be stored in the interrupt layer
+> per-struct device, check how AMD and Intel have stored their IR tables
+> programmed into their versions of DC.
 
-Magnus Lindholm
+The RISC-V IOMMU MSI table is simply a flat address remapping table,
+which also has support for MRIFs. The table indices come from an
+address matching mechanism used to filter out invalid addresses and
+to convert valid addresses into MSI table indices. IOW, the RISC-V
+MSI table is a simple translation table, and even needs to be tied to
+a particular DMA table in order to work. Here's some examples
+
+1. stage1 not BARE
+------------------
+
+      stage1     MSI table
+ IOVA ------> A  ---------> host-MSI-address
+
+2. stage1 is BARE, for example if only stage2 is in use
+-------------------------------------------------------
+
+           MSI table
+ IOVA == A ---------> host-MSI-address
+
+When used by the host A == host-MSI-address, but at least we can block
+the write when an IRQ has been affined to a set of harts that doesn't
+include what it's targeting. When used for irqbypass A == guest-MSI-
+address and the host-MSI-address will be that of a guest interrupt file.
+This ensures a device assigned to a guest can only reach its own vcpus
+when sending MSIs.
+
+In the first example, where stage1 is not BARE, the stage1 page tables
+must have some IOVA->A mapping, otherwise the MSI table will not get
+a chance to do a translation, as the stage1 DMA will fault. This
+series ensures stage1 gets an identity mapping for all possible MSI
+targets and then leaves it be, using the MSI tables instead for the
+isolation.
+
+I don't think we can apply a lot of AMD's and Intel's model to RISC-V.
+
+> 
+> It looks like there is something in here to support HW that doesn't
+> have msiptp? That's different, and also looks very confused.
+
+The only support is to ensure all the host IMSICs are mapped, otherwise
+we can't turn on IOMMU_DMA since all MSI writes will cause faults. We
+don't set IRQ_DOMAIN_FLAG_ISOLATED_MSI in this case, though, since we
+don't bother unmapping MSI addresses of harts that IRQs have be un-
+affined from.
+
+> The IR
+> driver should never be touching the iommu domain or calling iommu_map!
+
+As pointed out above, the RISC-V IR is quite a different beast than AMD
+and Intel. Whether or not the IOMMU has MSI table support, the IMSICs
+must be mapped in stage1, when stage1 is not BARE. So, in both cases we
+roll that mapping into the IR code since there isn't really any better
+place for it for the host case and it's necessary for the IR code to
+manage it for the virt case. Since IR (or MSI delivery in general) is
+dependent upon the stage1 page tables, then it's necessary to be tied to
+the same IOMMU domain that those page tables are tied to. Patch4's changes
+to riscv_iommu_attach_paging_domain() and riscv_iommu_iodir_update() show
+how they're tied together.
+
+> Instead it probably has to use the SW_MSI mechanism to request mapping
+> the interrupt controller aperture. You don't get
+> IRQ_DOMAIN_FLAG_ISOLATED_MSI with something like this though. Look at
+> how ARM GIC works for this mechanism.
+
+I'm not seeing how SW_MSI will help here, but so far I've just done some
+quick grepping and code skimming.
+
+> 
+> Finally, please split this series up, if ther are two different ways
+> to manage the MSI aperture then please split it into two series with a
+> clear description how the HW actually works.
+> 
+> Maybe start with the simpler case of no msiptp??
+
+The first five patches plus the "enable IOMMU_DMA" will allow paging
+domains to be used by default, while paving the way for patches 6-8 to
+allow host IRQs to be isolated to the best of our ability (only able to
+access IMSICs to which they are affined). So we could have
+
+series1: irqdomain + map all imsics + enable IOMMU_DMA
+series2: actually apply irqdomain in order to implement map/unmap of MSI
+         ptes based on IRQ affinity - set IRQ_DOMAIN_FLAG_ISOLATED_MSI,
+         because that's the best we've got...
+series3: the rest of the patches of this series which introduce irqbypass
+         support for the virt use case
+
+Would that be better? Or do you see some need for some patch splits as
+well?
+
+Thanks,
+drew
