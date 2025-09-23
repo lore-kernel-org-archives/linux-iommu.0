@@ -1,193 +1,328 @@
-Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012056.outbound.protection.outlook.com [40.107.200.56])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31377C2E0;
-	Tue, 23 Sep 2025 22:22:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.56
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758666144; cv=fail; b=P6GSb2UdsER+Pw7PSCR8zZ/a+7dgRJUqORt3U40w5c86xC0bQwnLeIByOY3ttFoHNP8/ivkAsXmJam3hJZFX2Q0WXpbOqlD/8LdPosy/quACSyoIb23sCDny+erpXMWTtZdX2hh0vmcJCFnCkyLV6147fMkjE25ZBCNA+3AcgEw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758666144; c=relaxed/simple;
-	bh=6hQxSPueRjqivytB2WxD4yT9ZIay1EdItgh7HO++yOU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=MZVwsWy9QasZXzbBSVqGY6g4LigfdNMvjmYR98TFp7qLPt4UjYE5X5e5OnHn49ULImnVagP4/joQIVlly2WP2TYpp9ZjNil1BgzkSP2q9XQUWmLoI1HVsqZvMNuWndXHbGCBDPkMr5Dw0OBUkD3TS/7fn9+vKwBLfKYfIvi09eE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=o6lXNIV2; arc=fail smtp.client-ip=40.107.200.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CD582FFDF3
+	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 22:23:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758666227; cv=none; b=TTfOsrq8nr7cz89W6VLycd4j70Fa3RKchOGSKlUOEAnjIINvhZqr2HjhQQ3nbbuggTIT/aXnu7NgvEilSneDSUdHNvmS8Nyx5aOH43yfskatGRi1kSLKkrF0BEhmvEimCUkmH5gFi91haQPjdMXM4ch5jHqcCxsA+BVeSlpQppc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758666227; c=relaxed/simple;
+	bh=uTuOhaiVnMw8+HEd6YtKuov7vIEq+l91UdYka5tjKSs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=QeqPFlqpgYmsI9UoQZJJmFCd21YkinOmqrDwGogg1OOGo+exERg9GrWl9k+TMJ9OmNxCnq46AIubBCsNzxFMBt5GjPsqmhNJaaNAD5LeacqiawwOlqBeUdcKXJOF7Fo8xesEUMuf7gqME/++NX0vc+w7sTgW/YIQIHzXPihJhaI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=EXFBTS+d; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="o6lXNIV2"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=iAi4sSpYU9zuO+eSlj02D1mT2vZrlCE9aXEYDzIMmitSqBQN+2VX1ibr/mnZKWw3OrO8UObY54jLJ8nPhouBUlHrKK0TI/5UrLPi6iTMXVIMSDrwPXT54A/HWJST6s9TH8x4fuVHLPtNeQ/GPsgSm8G6Cxrm0oPjOp/dv4CQ2FIev4ns7z6x7ZSAqa/50wrjuoBY13BrPTMGIIvubM/9cKpAyI2F6Zb8ZiHjmKJKykdT6ZCs6cS1iCCfGtYQXg+uE12N+DopvzfWy7JkzScecOd/cT8esGFZZGJblulMzMY7qLbqcAgFogLzfmhiy8juUJnIyLO5vYIHPKdQx4SEBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6hQxSPueRjqivytB2WxD4yT9ZIay1EdItgh7HO++yOU=;
- b=HvIek/lX0cBUYLNPcCkNtxHIxjUBoUl+vCN0NfSnVju3LMp/5msW9gaUGEMk5/HjQWrwPTvU+XIafpSQR75SjAXzCdycH2xD5Vo7bKXuWS3d6I6o7hXuO6lgfG/UrY1JiYp77HsUFLrqxGVq9z4Vb+SH9Q3OYbx4wSR67er4Fp6XCmObaF2iUzMgSxtdPrYx803AN9Pn1acmlVMd1vGI4t2mkGIw9plvILU4jU8XIgIj5o4cWItiXzHgn5+o/iohSI4ff//MX5KCr6Ds3GVi9FCNG5jJOyJgmIs+DqXz1JQI0S7uqoyfvYwo4O7QqfiLZtU1nU4iYSnmvum6bIq+ag==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6hQxSPueRjqivytB2WxD4yT9ZIay1EdItgh7HO++yOU=;
- b=o6lXNIV2qcDbOVBz3hScRzhykjeJrAvH7uSY94JvgF+nxPIuz0abEbY8ZddkS1WLHE8Xj5MaFxug5Mn8T0Up/ObnQ01ZScIvPOLF/LI8trb/QBejrpCBAsKZXBny0IbHrhbe/p6FJgiesrH8kpLwKipC9Hqiy3t5qi5JIiGG2KOv1tcExgLAzKLXArBLQv2ck5tJtncJzhYxKwESG4lSQpaG1tpUCzf+5p6CloJTmHQBvMBH25Y8qSO84C8Mib4pJUIQeNAhMniB/ntJWYePSk40kipGvmTUOOL6iz3CpmaFQ5IxbBOy+hkdElhG352ld4WLKDZpkALEgbB2VuMWiw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from PH7PR12MB5757.namprd12.prod.outlook.com (2603:10b6:510:1d0::13)
- by PH7PR12MB7353.namprd12.prod.outlook.com (2603:10b6:510:20c::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9115.22; Tue, 23 Sep
- 2025 22:22:19 +0000
-Received: from PH7PR12MB5757.namprd12.prod.outlook.com
- ([fe80::f012:300c:6bf4:7632]) by PH7PR12MB5757.namprd12.prod.outlook.com
- ([fe80::f012:300c:6bf4:7632%2]) with mapi id 15.20.9137.018; Tue, 23 Sep 2025
- 22:22:18 +0000
-Date: Tue, 23 Sep 2025 19:22:16 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Keith Busch <kbusch@kernel.org>
-Cc: Leon Romanovsky <leon@kernel.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Abdiel Janulgue <abdiel.janulgue@gmail.com>,
-	Alexander Potapenko <glider@google.com>,
-	Alex Gaynor <alex.gaynor@gmail.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Christoph Hellwig <hch@lst.de>, Danilo Krummrich <dakr@kernel.org>,
-	David Hildenbrand <david@redhat.com>, iommu@lists.linux.dev,
-	Jason Wang <jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-	Joerg Roedel <joro@8bytes.org>, Jonathan Corbet <corbet@lwn.net>,
-	Juergen Gross <jgross@suse.com>, kasan-dev@googlegroups.com,
-	linux-block@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-	linux-nvme@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-	linux-trace-kernel@vger.kernel.org,
-	Madhavan Srinivasan <maddy@linux.ibm.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Miguel Ojeda <ojeda@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, rust-for-linux@vger.kernel.org,
-	Sagi Grimberg <sagi@grimberg.me>,
-	Stefano Stabellini <sstabellini@kernel.org>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	virtualization@lists.linux.dev, Will Deacon <will@kernel.org>,
-	xen-devel@lists.xenproject.org
-Subject: Re: [PATCH v6 00/16] dma-mapping: migrate to physical address-based
- API
-Message-ID: <20250923222216.GC2617119@nvidia.com>
-References: <CGME20250909132821eucas1p1051ce9e0270ddbf520e105c913fa8db6@eucas1p1.samsung.com>
- <cover.1757423202.git.leonro@nvidia.com>
- <0db9bce5-40df-4cf5-85ab-f032c67d5c71@samsung.com>
- <20250912090327.GU341237@unreal>
- <aM1_9cS_LGl4GFC5@kbusch-mbp>
- <20250920155352.GH10800@unreal>
- <aM9LH6WSeOPGeleY@kbusch-mbp>
- <20250923170936.GA2614310@nvidia.com>
- <aNLnXwAJveHIqfz0@kbusch-mbp>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aNLnXwAJveHIqfz0@kbusch-mbp>
-X-ClientProxiedBy: SA9PR13CA0121.namprd13.prod.outlook.com
- (2603:10b6:806:27::6) To PH7PR12MB5757.namprd12.prod.outlook.com
- (2603:10b6:510:1d0::13)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="EXFBTS+d"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1758666224;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=1CMpiBPmpDazoQg8tDEg8758JA66nYm58i1c8T8sygQ=;
+	b=EXFBTS+dp7QN9pjvpaKyrTHGNqNkw3s1/bLEncu3tswU87JIEua77eJmndGgVXtwf4HeDC
+	h4cX2XY6bjOOU7Hfg3qMtbxH5SAmUqVQZzAdrm6eK9SSBrQNZOjhs7TzHdSMs2zHWrgsmR
+	Pmiw4m7TowAKe7XmZCnodjUrlnD2Ncw=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-440-T-D5fS6lNbSZEIiTsTGMjw-1; Tue, 23 Sep 2025 18:23:42 -0400
+X-MC-Unique: T-D5fS6lNbSZEIiTsTGMjw-1
+X-Mimecast-MFC-AGG-ID: T-D5fS6lNbSZEIiTsTGMjw_1758666222
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-4248b4d6609so8961395ab.3
+        for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 15:23:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758666222; x=1759271022;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=1CMpiBPmpDazoQg8tDEg8758JA66nYm58i1c8T8sygQ=;
+        b=SkR4F+oPqqRdBwzKrqSDx/FeinOVEclDs3uj29O8oclsod9SknVu6S35T2TQ7AcQmY
+         pfx1DGUxPoEhAWPbKPyzb4rXW/c17+SAacnObey8y7eabxJALya8bn7lQqEFuG/8gY/R
+         0Jwx0QYtpykFTztyVv7F/33bfOBdiksyP4G4hSI2mokyVk+0gIbelYeOBwOwKQy/VKsO
+         oMwxNluRe8yc0YYYT4FU8qaqCLWV4rg4ECjSyTXT95nCGY/e1FnowK3Bv2SDMDHdQC1w
+         lv2jYgXCraMDg06KDPIfpxwNsj7MMNKMNBiZbLeu5TfinRfp4MgmtoKBGIEwUwqIbJjK
+         aNAg==
+X-Forwarded-Encrypted: i=1; AJvYcCU+nPV8ekY/YIiRi+7ohKkPENqgWtgDxP7dc+m5A4XzDhNMCUb53CJzsVq7q6+zuHeQ1bl6iw==@lists.linux.dev
+X-Gm-Message-State: AOJu0YwguVX/bCNMr/mKoXSbCzeajpWmw+t2uLraiqtXwiwD3flc/D4b
+	/3U/RtKhUAPKJvmSU4LEoQcBLzPNgMU5za5oYl/8ku5d3nPEh4qW1+oa+MxUNJ+SqQ1+V2Bf9Rh
+	cbe/fHJzMJSuSuxfYVv0IxPIUrtASrr/78v1wNi0iTDuv7NxhA45C0Snb
+X-Gm-Gg: ASbGnctcTg5JJfw5wGARCOivhgLMgvPzhfliQ7rvd16rxobtBSHVLiqk10P0HNR8+Ex
+	D8u1GncWb5xcngQqVamE4kZZ1mwrrB0ai3oT8D6uxSuLDOvoe8SfT6WQYtuJYFdYlR5qmmoX7fp
+	wthDFcMQEaoRxgQHcoN4UqS1/BPw94wH2K1m/kpiMbbO3zJ2rhvVLES0Wp83MdyGcU+DLiO6/Fg
+	D/6ehXZKLx41Kfx5RX4m5XLbte6X9KMVfstQWrLpReAlwM1/WSBL93FieTaj7ONg9EFPe9bb6Nk
+	MgN2rHuBifK5BjFpF970b1TeOyv7SSeUEmRqicbmzrY=
+X-Received: by 2002:a05:6e02:1062:b0:425:84b6:a7de with SMTP id e9e14a558f8ab-42584b6aa30mr16612265ab.0.1758666221857;
+        Tue, 23 Sep 2025 15:23:41 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHEYi+vOF7CkWzpb7ZxI27OTwSRimDBvfOl9asq3cQr41YZxMUP1z+tPEOTecgdneH3kKaeZg==
+X-Received: by 2002:a05:6e02:1062:b0:425:84b6:a7de with SMTP id e9e14a558f8ab-42584b6aa30mr16612005ab.0.1758666221303;
+        Tue, 23 Sep 2025 15:23:41 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-4257c9b22afsm26303895ab.26.2025.09.23.15.23.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Sep 2025 15:23:40 -0700 (PDT)
+Date: Tue, 23 Sep 2025 16:23:37 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Donald Dutile <ddutile@redhat.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+ linux-pci@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Will Deacon
+ <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ galshalom@nvidia.com, Joerg Roedel <jroedel@suse.de>, Kevin Tian
+ <kevin.tian@intel.com>, kvm@vger.kernel.org, maorg@nvidia.com,
+ patches@lists.linux.dev, tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
+Subject: Re: [PATCH v3 00/11] Fix incorrect iommu_groups with PCIe ACS
+Message-ID: <20250923162337.5ab1fe89.alex.williamson@redhat.com>
+In-Reply-To: <0eb2e721-8b9c-40d0-afe7-c81c6b765f49@redhat.com>
+References: <0-v3-8827cc7fc4e0+23f-pcie_switch_groups_jgg@nvidia.com>
+	<20250922163947.5a8304d4.alex.williamson@redhat.com>
+	<e9d4f76a-5355-4068-a322-a6d5c081e406@redhat.com>
+	<20250922200654.1d4ff8b8.alex.williamson@redhat.com>
+	<0eb2e721-8b9c-40d0-afe7-c81c6b765f49@redhat.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.43; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5757:EE_|PH7PR12MB7353:EE_
-X-MS-Office365-Filtering-Correlation-Id: 52108b48-523e-4f64-a2fa-08ddfaefa842
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?HiFBaYaRi7DKEeQsmk6X/SYEgHfzNbu+M4du3xz9VIsxZ0oTPo570go6akJ4?=
- =?us-ascii?Q?2Or3ISNvnQmC1mSqyVZmAV0T2v/xkUXeqZHTEw57a5SxJS8OEIZVRvbzA3M4?=
- =?us-ascii?Q?zUeDxw3aXP1TqOHp/iiZ2FpshQBy2l8J+Nw9WjaXA/oolcCTguOEMyxKwMt1?=
- =?us-ascii?Q?VQvnaXFAXLHFEtkOWiUc9U3JBFrQn626RugY1Kx9u1+zZsLfZwURSftiRyJ2?=
- =?us-ascii?Q?AbRMek5TJ7C/C84eUmGjJf4cI3Fm03XZR7ptnfD76nofpP49hHMx7bOJwLf0?=
- =?us-ascii?Q?AK87VzDSV2liyg0oxstJCPZJ6zjUzy+pFSI1LRXSIL1mEi2bipw1u0pIvevb?=
- =?us-ascii?Q?21wu0KiRuiYmYHdR98L56KVV2qvGXUeT0OWnIrXpR6/tJnK0InA4JAK+q5YB?=
- =?us-ascii?Q?+PNqDo6n/Dz+1BJEAop5huCiDGVdEMB6IUMbGBAAViw6vt+9DYyU+fARydRv?=
- =?us-ascii?Q?VebmValwMPP+ipL63zSb+8coNQCLdhuzjejtPsEFbmo7sFWdRUHZ+SQicAB/?=
- =?us-ascii?Q?by9BGvHbm8YEYES6o68SKe0MRz7M/8DLLJWiGy1FEsX08mAJClRA25ASHqOn?=
- =?us-ascii?Q?9qbt998ToEEpx10C9M08G8UMWKk5IYX9hEmhM6W1XCF3FuIRhHlDniLnnyB/?=
- =?us-ascii?Q?Y0OBUif48DiAy4Qgmx6adV5z4hqXyOAyDd6xu9HSAjwsEbMv7ebhagxAbaJ8?=
- =?us-ascii?Q?tbqGDJJwMHSenWkE8Sp7/kTJx4UYgN1N7X6Pe+3Uw3P+yHCuKVhKmY2E+6Zk?=
- =?us-ascii?Q?r3NpokqBnTBOt6qYL/QF1p/Z/x6u1sKKXW24wlsjStbZNcrk/Ic4iZTA0yp8?=
- =?us-ascii?Q?Ado4kY7x1S6Ce+/bE9t5OGEIHKqSu1XJZaQY2/SC6J9sGb9xY6arvDY/e9yP?=
- =?us-ascii?Q?RWMNN2GEO9PPVY7GQ5mGRFbNn9+jd5o2/Pvz+sPyLUjTtng+O5eji2+cuvtZ?=
- =?us-ascii?Q?t68MCCJgoOVFIxQ4ClfY9/Yu+dqAGIa/AeO+mSDGiCjp4lL5TBWsZdWTubA8?=
- =?us-ascii?Q?5TkQ1oa6XRJcZrXjCwA30d/52w/7HPD57aOxIeQElVE28aV2LTvn2L60eEb1?=
- =?us-ascii?Q?X+ahd1MEFeQy+S/eh00gdgnBmIo5mwR+ubove1EtAoBvfJZQq8fJHRrmPQJu?=
- =?us-ascii?Q?URGBj3q0D1/sVUM+qLwM+taVSl2Q7LWKpCL2sm7O6JkFMotz6AfTRpbA9Xtp?=
- =?us-ascii?Q?R2sdQvjZ0ZX8/+XlV1oRvcz1DrFf2f+xbcy+McKo8J29DmvfmH+cKe1otjcU?=
- =?us-ascii?Q?TmSTeKKjU1L1dBbqDD+Ku+EM5WV4FzyWYRDFGQ1b8mL1qdim6VFY0yN/TAcH?=
- =?us-ascii?Q?DDRNlp83lJc+hT93VKW/mY0ScUrjh61HDhCiPtfRAB43+1vHo7KGLEwIMFwV?=
- =?us-ascii?Q?vvVy7B2jYyZakP+T8+su0vdooier05WIvIUvvLxjdw5XvhJ/DbrG2Rv2rvUk?=
- =?us-ascii?Q?aG+ybpQ9Iz8=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?eVGNJdmby9Ocx1dT6CLNPZSYywtZ5BQQPj0z919YXfiHa+uvZCqKScTu7K+h?=
- =?us-ascii?Q?TEhVf3NybTrETxq9+DUNdWg6sUmVul7WgplkbHU8WxcPyscVyqucyWj39Iq9?=
- =?us-ascii?Q?DIBRmS3r1wvzR+ThMQaAl9M3yWH4pN6WhLRib2oK1rlh4sIZv594wK3XES/i?=
- =?us-ascii?Q?ppzmrzxmupDAqwLzMdIybgoOe4Q3FHGa1+jpzZQmCa1PqrEWAgXz8w1OxdMD?=
- =?us-ascii?Q?RqiJd4P4iHVUuNPwNV61LALwTpaQ8wb43sdHVIGPh+WXBNVbn36vYHACN7Wh?=
- =?us-ascii?Q?lEMAUmtTbu8hqVLBIZ727iR6GXDpGJy90XKuqQmGOTzfpqAKdH5s5nAVm68g?=
- =?us-ascii?Q?gCekI4E+feogQTAbMMlwcIR8I5D/NvIhwo6poYenL0IgTSapHG5nXBtDBgy+?=
- =?us-ascii?Q?hLp0loRIWvIQz2FsUDFcxkfGG158SXFVwEmQ7zyKcnwngO3FKZi3ghsoLqQJ?=
- =?us-ascii?Q?h8Hb/47//9zgVehIZ57TYxVhDgNbwBGmJYxSn5ZPB15AUL2LzYZSqWaOaVVs?=
- =?us-ascii?Q?1pH0qxN8vFtk8M0Z3zUjIs8wRAZ2ZnT460HWvYV1B0VGgeCFtU7BdJVfxR2P?=
- =?us-ascii?Q?x4phMDLxNk8HiFuJTLkUvo4PYEeNnO1HWc2Kp6Vt/uQ6K4yuyRFhTO+x0FBf?=
- =?us-ascii?Q?0IpY4BLkzsCYfaApAZtbvUQzIxbIojvg6D1JOBUoD3azc5mW0NKSrI197gYA?=
- =?us-ascii?Q?GJBqME/8N/RhwtzSW/tU9Djna9U8SbbeOjM1A+z4ADhfzf4Tz5Y++RN58UQ1?=
- =?us-ascii?Q?7BneyeEdGNqb3T9E1i4PsGbfTYOREYyhWED0aS4Af4zMcxxZx2yhGsa0hqqT?=
- =?us-ascii?Q?jDFDoe3YmI5+6T8UAwCbiVMixiVSqn01f603+7MB9V76s3Vfyhw+XR8mVpvl?=
- =?us-ascii?Q?NrFMuOvp4BECPmrykWHZzeyE6WKEGSxcZ/ES2liREp9ffszRLshxPBH+TC9A?=
- =?us-ascii?Q?6m7h5pYOfEpB7IMYNxYWiPCtgJ9Gtee/Um9osjzrExO+me55q3Yag8zswFgZ?=
- =?us-ascii?Q?we1jHVNJPK6WenRlpnFTpkW/mxoLeYL8gNcg6JWDNN6eZr1PEycYp8QIgCBV?=
- =?us-ascii?Q?RjiWXfHybAR2sszZ58LyRJkQlICq5jDSB0d4ghx0FGv6J24o6O/DcxJS64Of?=
- =?us-ascii?Q?C5eSS00vfQ/Ydb0l45BZ9TUED86C+Ikm2JIdhnzuuC3Qr4laf95QDbqzWuqH?=
- =?us-ascii?Q?0kRFLVYcKLGqPsWFAM9ExzmqsaxNXvbAytZ2BvK3RdHvgfciBvrB+4csMTIz?=
- =?us-ascii?Q?sQDOIiMdUjkn1dtEnC5Z7O5d142aAKRB/RlkMxYETjhYybWAS7qAvgql/Y4e?=
- =?us-ascii?Q?FQhGrarH+Y0W9rSIm39edFyxw3IMIVAmJ276+/BQYroKqeQ0Swe1Ie87k032?=
- =?us-ascii?Q?DZvlfF55aIXBy9F5zH57lQbqtVteAYQM1eN9kz2jVVXfTsuGiv2tZY/60JCo?=
- =?us-ascii?Q?EagVYUGYoylHGbdohYaptXBcK92YyzJmWukOI7tEEIL0SHsClNhzvktkLOMy?=
- =?us-ascii?Q?bLcjUSWcf6NJUoO+Nz7g3di1JPENGEj44yIOJtSxez3StVK2pe18DCj7Zcld?=
- =?us-ascii?Q?ncLYB5SOSnXrQKAyoRZJT9Q9bI+rqWwmBAZlW0l2?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 52108b48-523e-4f64-a2fa-08ddfaefa842
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5757.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2025 22:22:18.6133
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NGLYkxWEuDdqsEtURp8syALj/D+W0jy8uzr92XEQX0IUKCZEPeugcvMAO9ufQqtp
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7353
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: RoLq1IlvXZJC6d1e-cxY4dvzh4HFU9oYoHPLhOC99Ks_1758666222
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Sep 23, 2025 at 12:30:55PM -0600, Keith Busch wrote:
-> I don't have a system in this state at the moment, so we checked
-> previous logs on machines running older kernels. It's extermely
-> uncommon, but this error was happening prior to this series, so I don't
-> think this introduced any new problem here. I'll keeping looking, but I
-> don't think we'll make much progress if I can't find a more reliable
-> reproducer.
+On Mon, 22 Sep 2025 22:42:37 -0400
+Donald Dutile <ddutile@redhat.com> wrote:
 
-Okay, that's great. It needs to get resolved but it is not this series
-at fault.
+> On 9/22/25 10:06 PM, Alex Williamson wrote:
+> > On Mon, 22 Sep 2025 21:44:27 -0400
+> > Donald Dutile <ddutile@redhat.com> wrote:
+> >   
+> >> On 9/22/25 6:39 PM, Alex Williamson wrote:  
+> >>> On Fri,  5 Sep 2025 15:06:15 -0300
+> >>> Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >>>      
+> >>>> The series patches have extensive descriptions as to the problem and
+> >>>> solution, but in short the ACS flags are not analyzed according to the
+> >>>> spec to form the iommu_groups that VFIO is expecting for security.
+> >>>>
+> >>>> ACS is an egress control only. For a path the ACS flags on each hop only
+> >>>> effect what other devices the TLP is allowed to reach. It does not prevent
+> >>>> other devices from reaching into this path.
+> >>>>
+> >>>> For VFIO if device A is permitted to access device B's MMIO then A and B
+> >>>> must be grouped together. This says that even if a path has isolating ACS
+> >>>> flags on each hop, off-path devices with non-isolating ACS can still reach
+> >>>> into that path and must be grouped gother.
+> >>>>
+> >>>> For switches, a PCIe topology like:
+> >>>>
+> >>>>                                  -- DSP 02:00.0 -> End Point A
+> >>>>    Root 00:00.0 -> USP 01:00.0 --|
+> >>>>                                  -- DSP 02:03.0 -> End Point B
+> >>>>
+> >>>> Will generate unique single device groups for every device even if ACS is
+> >>>> not enabled on the two DSP ports. It should at least group A/B together
+> >>>> because no ACS means A can reach the MMIO of B. This is a serious failure
+> >>>> for the VFIO security model.
+> >>>>
+> >>>> For multi-function-devices, a PCIe topology like:
+> >>>>
+> >>>>                     -- MFD 00:1f.0 ACS not supported
+> >>>>     Root 00:00.00 --|- MFD 00:1f.2 ACS not supported
+> >>>>                     |- MFD 00:1f.6 ACS = REQ_ACS_FLAGS
+> >>>>
+> >>>> Will group [1f.0, 1f.2] and 1f.6 gets a single device group. However from
+> >>>> a spec perspective each device should get its own group, because ACS not
+> >>>> supported can assume no loopback is possible by spec.  
+> >>>
+> >>> I just dug through the thread with Don that I think tries to justify
+> >>> this, but I have a lot of concerns about this.  I think the "must be
+> >>> implemented by Functions that support peer-to-peer traffic with other
+> >>> Functions" language is specifying that IF the device implements an ACS
+> >>> capability AND does not implement the specific ACS P2P flag being
+> >>> described, then and only then can we assume that form of P2P is not
+> >>> supported.  OTOH, we cannot assume anything regarding internal P2P of an
+> >>> MFD that does not implement an ACS capability at all.
+> >>>      
+> >> The first, non-IF'd, non-AND'd req in PCIe spec 7.0, section 6.12.1.2 is:
+> >> "ACS P2P Request Redirect: must be implemented by Functions that
+> >> support peer-to-peer traffic with other Functions. This includes
+> >> SR-IOV Virtual Functions (VFs)." There is not further statement about
+> >> control of peer-to-peer traffic, just the ability to do so, or not.
+> >>
+> >> Note: ACS P2P Request Redirect.
+> >>
+> >> Later in that section it says:
+> >> ACS P2P Completion Redirect: must be implemented by Functions that
+> >> implement ACS P2P Request Redirect.
+> >>
+> >> That can be read as an 'IF Request-Redirect is implemented, than ACS
+> >> Completion Request must be implemented. IOW, the Completion Direct
+> >> control is required if Request Redirect is implemented, and not
+> >> necessary if Request Redirect is omitted.
+> >>
+> >> If ACS P2P Require Redirect isn't implemented, than per the first
+> >> requirement for MFDs, the PCIe device does not support peer-to-peer
+> >> traffic amongst its function or virtual functions.
+> >>
+> >> It goes on...
+> >> ACS Direct Translated P2P: must be implemented if the Function
+> >> supports Address Translation Services (ATS) and also peer-to-peer
+> >> traffic with other Functions.
+> >>
+> >> If an MFD does not do peer-to-peer, and P2P Request Redirect would be
+> >> implemented if it did, than this ACS control does not have to be
+> >> implemented either.
+> >>
+> >> Egress control structures are either optional or dependent on Request
+> >> Redirect &/or Direct Translated P2P control, which have been
+> >> addressed above as not needed if on peer-to-peer btwn functions in an
+> >> MFD (and their VFs).
+> >>
+> >>
+> >> Now, if previous PCIe spec versions (which I didn't read & re-read &
+> >> re-read like the 6.12 section of PCIe spec 7.0) had more IF and ANDs,
+> >> than that could be cause for less than clear specmanship enabling
+> >> vendors of MFDs to yield a non-PCIe-7.0 conformant MFD wrt ACS
+> >> structures. I searched section 6.12.1.2 for if/IF and AND/and, and
+> >> did not yield any conditions not stated above.  
+> > 
+> > Back up to 6.12.1:
+> > 
+> >    ACS functionality is reported and managed via ACS Extended Capability
+> >    structures. PCI Express components are permitted to implement ACS
+> >    Extended Capability structures in some, none, or all of their
+> >    applicable Functions. The extent of what is implemented is
+> >    communicated through capability bits in each ACS Extended Capability
+> >    structure. A given Function with an ACS Extended Capability structure
+> >    may be required or forbidden to implement certain capabilities,
+> >    depending upon the specific type of the Function and whether it is
+> >    part of a Multi-Function Device.
+> >   
+> Right, depending on type of function or part of MFD.
+> Maybe I mis-understood your point, or vice-versa:
+> section 6.12.1.2 is for MFDs, and I was only discussing MFD ACS structs.
+> I did not mean to imply the sections I was quoting was for anything but an MFD.
 
-Very rare is a different perspective, I mis-thought it was happening
-reproducible all the time..
+I'm really going after the first half of that last sentence rather than
+any specific device type:
 
-It seems to me it is actually a legitimate thing for userspace to be
-able to trigger this cache line debug. If you do concurrent O_DIRECT
-to the very same memory it should trigger if I read it right..
+  A given Function with an ACS Extended Capability structure may be
+  required or forbidden to implement certain capabilities...
 
-So it may not even be an actual bug???
+"...[WITH] an ACS Extended Capbility structure..."
 
-Jason
+"implement certain capabilities" is referring to the capabilities
+exposed within the capability register of the overall ACS extended
+capability structure.
+
+Therefore when section 6.12.1.2 goes on to say:
+
+  ACS P2P Request Redirect: must be implemented by Functions that
+  support peer-to-peer traffic with other Functions.
+
+This is saying this type of function _with_ an ACS extended capability
+(carrying forward from 6.12.1) must implement the p2p RR bit of the ACS
+capability register (a specific bit within the register, not the ACS
+extended capability) if it is capable of p2p traffic with other
+functions.  We can only infer the function is not capable of p2p traffic
+with other functions if it both implements an ACS extended capability
+and the p2p RR bit of the capability register is zero.
+
+> > What you're quoting are the requirements for the individual p2p
+> > capabilities IF the ACS extended capability is implemented.
+> >   
+> No, I'm not.  I'm quoting 6.12.1.2, which is MFD-specific.
+> 
+> > Section 6.12.1.1 describing ACS for downstream ports begins:
+> > 
+> >    This section applies to Root Ports and Switch Downstream Ports
+> >   that implement an ACS Extended Capability structure.
+> > 
+> > Section 6.12.1.2 for SR-IOV, SIOV and MFDs begins:
+> > 
+> >    This section applies to Multi-Function Device ACS Functions,
+> >   with the exception of Downstream Port Functions, which are
+> >   covered in the preceding section.
+> >   
+> Right.  I wasn't discussing Downstream port functions.
+> 
+> > While not as explicit, what is a Multi-Function Device ACS Function
+> >   if not a function of a MFD that implements ACS?
+> >   
+> I think you are inferring too much into that less-than-optimally
+>   worded section.
+> 
+> >>> I believe we even reached agreement with some NIC vendors in the
+> >>> early days of IOMMU groups that they needed to implement an
+> >>>   "empty" ACS capability on their multifunction NICs such that
+> >>>   they could describe in this way that internal P2P is not
+> >>>   supported by the device.  Thanks,  
+> >> In the early days -- gen1->gen3 (2009->2015) I could see that
+> >> happening. I think time (a decade) has closed those defaults to
+> >> less-common quirks. If 'empty ACS' is how they liked to do it back
+> >> than, sure. [A definition of empty ACS may be needed to fully
+> >> appreciate that statement, though.] If this patch series needs to
+> >> support an 'empty ACS' for this older case, let's add it now, or
+> >> follow-up with another fix.  
+> > 
+> > An "empty" ACS capability is an ACS extended capability where the
+> >   ACS capability register reads as zero, precisely to match the
+> >   spec in indicating that the device does not support p2p.  Again,
+> >   I don't see how time passing plays a role here.  A MFD must
+> >   implement ACS to infer anything about internal p2p behavior.
+> >     
+> Again, I don't read the 'must' in the spec.
+> Although I'll agree that your definition of an empty ACS makes it
+>   unambiguous.
+> 
+> >> In summary, I still haven't found the IF and AND you refer to in
+> >> section 6.12.1.2 for MFDs, so if you want to quote those sections I
+> >> mis-read, or mis-interpreted their (subtle?) existence, than I'm
+> >>   not immovable on the spec interpretation.  
+> > 
+> > As above, I think it's covered by 6.12.1 and the introductory
+> >   sentence of 6.12.1.2 defining the requirements for ACS functions.
+> >    Thanks, 
+> 6.12.1 is not specific enough about what MFDs must or must not
+>   support; it's a broad description of ACS in different PCIe
+>   functions. As for 6.12.1.2, I stand by the statement that ACS P2P
+>   Request Redirect must be implemented if peer-to-peer is implemented
+>   in an MFD. It's not inferred, it's not unambiguous.
+> You are intepreting the first sentence in 6.12.1.2 as indirectly
+>   saying that the reqs only apply to an MFD with ACS.  The title of
+>   the section is: "ACS Functions in SR-IOV, SIOV, and Multi-Function
+>   Devices"  not ACS requirements for ACS-controlled SR-IOV, SIOV, and
+>   Multi-Function Devices", in which case, I could agree with the
+>   interpretation you gave of that first sentence.
+> 
+> I think it's time to reach out to the PCI-SIG, and the authors of
+>   this section to dissect these interpretations and get some clarity.
+
+You're welcome to.  I think it's sufficiently clear.
+
+The specification is stating that if a function exposes an ACS extended
+capability and the function supports p2p with other functions, it must
+implement that specific bit in the ACS capability register of the ACS
+extended capability.
+
+Therefore if the function implements an ACS extended capability and
+does not implement this bit in the ACS capability register, we can
+infer that the device does is not capable of p2p with other functions.
+It would violate the spec otherwise.
+
+However, if the function does not implement an ACS extended capability,
+we can infer nothing.
+
+It's logically impossible for the specification to add an optional
+extended capability where the lack of a function implementing the
+extended capability implies some specific behavior.  It's not backwards
+compatible, which is a fundamental requirement of the PCI spec.  Thanks,
+
+Alex
+
