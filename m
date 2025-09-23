@@ -1,332 +1,158 @@
-Received: from CH5PR02CU005.outbound.protection.outlook.com (mail-northcentralusazon11012001.outbound.protection.outlook.com [40.107.200.1])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4754255F28
-	for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 23:57:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.200.1
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758585425; cv=fail; b=c8v3hSanwjrJVyvI8BjqKIYTC4oFEqclGTzfJ/c+dMuOh/8ZWNJd9QM6m/Z9a8BYWW6s++LMpaoEP5Dua95xhlNg9Cx05gt1Nlc7qBD90OH33KcVk8ULCGoY/Cn/eahYILHphRsK9BdC4bt4qRXEXFlAj3jMgwM5fMebfl/TkbE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758585425; c=relaxed/simple;
-	bh=RCkORrQzyncrCqJOMlcHIqB38JIFAbC0zBCsOFgSiG0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Ljun05Aw1H5xB7HMnMKxCl321EklgrOtPkl/GWYG9ndUhvamy+Vlo0vKfqlWmRFMMO/BxN5vMICTlBcEpqhmbXgV24ZEwD+TvoI+V8iXOHpJ+BO4r342pb0wGEEg+iNLtpYHl81Mluao1WnidjPKhvwOCDFkv2Dc6jZ75aSRW9w=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=P5nOfohY; arc=fail smtp.client-ip=40.107.200.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEBA04204E
+	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 00:51:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758588702; cv=none; b=TO8p+ep1kPjH4t2CiH//VP+6GpYg16Asfm8mzqQwGE4wUec5SHBt9yb6aIu4FXufwMvmKnptcEFPHKIpVVJ5/fwOUVyYcCCbcLTSbTQU17fa6XLujr1VGzxksTJnWHv2Ix7359bf+dTug5WCwVGObWKStPYbxdeDwnPCOcYeVDQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758588702; c=relaxed/simple;
+	bh=dLhm4LgNhR5mdQZSmBFvKzdtUHvA2mS6/XQxGDbK3Fk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=TW79agVSaRim0YONVgyAajp11UYQNn0SCIpQ6GUAph5jgWdnt/TRcevH0LQsJN3YdQuVxIMPEJAcFHYKGUSTnM4z3mQ4++wYuQNj0fMlMjgljH7tQaOdKrsUP4UJ6bqmsa8A/iXx6fCQQNs4Q9j/0hHVosvd8SHkyPQ+zO7QENY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=RueQby1c; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="P5nOfohY"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=KzdI8xFiXzMJvj7xlBf6qCfsArAhcsnUEMF1V4UJkG7KKGqts2TQTIL+h/36cSfUpVOoxcueLrHiS2YAMrhi9a+QccYlHGOKrLPa4bi8P0t9up/Y4ysA1h5OrsRPAhTw2oFQhBXmeUljMQDZK6vlvQJ4aI4odxIxVa8sT/xyn1juev/ULgB2BbiD5xCsArc8SQ3BOPL0GeaVUTHXnG/3UteqkoXjXhI+u/N5DLd1dW30FWSvpTOTobrUZ2LFcwnGQOVsanUV+OXlT6kbKv0jGXfGHQ/2EXnZBVejzZatVFbXzmIUDLFbFtFAyfgS5qpGt5YUYAhELJMQg+00FVIlRw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v5i4wn9cbMwAH5oKmh7YND2E6+fs9j0fd1X1WVlhd+Y=;
- b=I/B4KJJ4hcZZlR8VWfc7uCfS+vo6MdF+qhCb6Mp67HtixPTDWvJt131fo1RHFpIgjNHk6NMszMLOG9vqC82uZIlHOUDeeQ0yVwSpie8dQfTDYRs8JJSmmJo/ABdTKW/ClchLgDYgbTSwiah59fqgIuZdynCN2K/ZhcTB9bymoBL5iIc5h9U25ijnTw3QZ6nDhRfyODsJY/eGvtFWqhXl3kjcbOwCAhOrD30p7IsNxytxfgcmL93Iy9SGCVDjkzIisueJLlM303FpZcfqzoEmLerkM5IDBLJQsaDZ/SvkW9zuSA/AnKLeCGWriCRcX90lFJM0R48BRl4PFAiYTYejrw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v5i4wn9cbMwAH5oKmh7YND2E6+fs9j0fd1X1WVlhd+Y=;
- b=P5nOfohYV/yPPg/kkGmLgln9D+bUY6Uu04fFbt9Vr8evgQo9uuud1DyROfeTR4GoTipCzYoELjzM3YVMHHW6hYCI/eJHGqtqAfkMlGez3irRQDgseBYYY1mAEiuSjB/pbqUBfkQroCPW/M/nOuCp2rcFUA3zFcViIJ33GEbbLzRu6fE7rB/sPrqvCJcJuCjksiCUDwRElF8PLHtr+L6YJgbVW/zmgbZBwJjEgTMDXyy4EEf6f2fdUXNNz2CB3qINnd/Qs55fUBHRLxZEQtaYHUPj+xxow9Azb6kyUvgXoR8vA4eiGOI4tW1Ig8sXlwQVvMH5re55TGLHiL3+/RYskg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from PH7PR12MB5757.namprd12.prod.outlook.com (2603:10b6:510:1d0::13)
- by CY3PR12MB9656.namprd12.prod.outlook.com (2603:10b6:930:101::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9137.18; Mon, 22 Sep
- 2025 23:57:00 +0000
-Received: from PH7PR12MB5757.namprd12.prod.outlook.com
- ([fe80::f012:300c:6bf4:7632]) by PH7PR12MB5757.namprd12.prod.outlook.com
- ([fe80::f012:300c:6bf4:7632%2]) with mapi id 15.20.9137.018; Mon, 22 Sep 2025
- 23:57:00 +0000
-Date: Mon, 22 Sep 2025 20:56:51 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Andrew Jones <ajones@ventanamicro.com>
-Cc: iommu@lists.linux.dev, kvm-riscv@lists.infradead.org,
-	kvm@vger.kernel.org, linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org, zong.li@sifive.com,
-	tjeznach@rivosinc.com, joro@8bytes.org, will@kernel.org,
-	robin.murphy@arm.com, anup@brainfault.org, atish.patra@linux.dev,
-	tglx@linutronix.de, alex.williamson@redhat.com,
-	paul.walmsley@sifive.com, palmer@dabbelt.com, alex@ghiti.fr
-Subject: Re: [RFC PATCH v2 08/18] iommu/riscv: Use MSI table to enable IMSIC
- access
-Message-ID: <20250922235651.GG1391379@nvidia.com>
-References: <20250920203851.2205115-20-ajones@ventanamicro.com>
- <20250920203851.2205115-28-ajones@ventanamicro.com>
- <20250922184336.GD1391379@nvidia.com>
- <20250922-50372a07397db3155fec49c9@orel>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250922-50372a07397db3155fec49c9@orel>
-X-ClientProxiedBy: SA0PR12CA0008.namprd12.prod.outlook.com
- (2603:10b6:806:6f::13) To PH7PR12MB5757.namprd12.prod.outlook.com
- (2603:10b6:510:1d0::13)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="RueQby1c"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1758588699;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=H5iTHO8SAQmP6KeYsXAWuHLqRvS2XzjaWtgcdw6rXFw=;
+	b=RueQby1c6YsxBxXZLECK5e2VNB7IAMbiiPZNN1WEJc+VjeTv0oKfTNJQ4tGeG5hlFg6gs6
+	FtQBOXLZt8ZNqtZh/mxCokJciXEBSwLNjFUbglt3K94bih2zMmfdOyjdijJigIFgDaBRNy
+	9A117g2Vm5TEK5IOQ1ErDkPkmnMYkxc=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-528-zUOGjICRPWOyiUuAXumOiA-1; Mon, 22 Sep 2025 20:51:35 -0400
+X-MC-Unique: zUOGjICRPWOyiUuAXumOiA-1
+X-Mimecast-MFC-AGG-ID: zUOGjICRPWOyiUuAXumOiA_1758588695
+Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-767e5b2a74fso53421616d6.1
+        for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 17:51:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758588695; x=1759193495;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=H5iTHO8SAQmP6KeYsXAWuHLqRvS2XzjaWtgcdw6rXFw=;
+        b=XJk3axJJoxP0zSu6Sbej9Thq/EvZmZZbnrzYwboy1lOVL3o0D8d5poYzpdvLF9XdRj
+         Uuw6VE0uYGa2sG9hUY+womGI+KZiUryFd7HN1iqWK/RaKqtSe0FkhRUKC0on26/JkFhf
+         yGN99h28fD4VpItk7LMbGr9zKXJAy0qGnmxB4pHif089SDiUBejWJenNH3j2ZbK9A09N
+         TNXASOa5UvkFR8ZbT5y7GqaZSiCxBGD49KI8rRE5/0QRycpgRAB+1kMvLX9r2QaOlQXj
+         Ol+1YVdupjie+FEin/TUdmLCPXf0wve6MCTi792SNrfJXTjXjEKK9vANpvG0PqDpyIBQ
+         Xomg==
+X-Forwarded-Encrypted: i=1; AJvYcCWrDV+6JYc9lu8PpLQ8LQQaOiCtpuXwhx6fQJUt1L5q8FpR/j5/Xz3BgJoby64+twzuGx+dAA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yxp4HsaBcDX3HudkkBkfr5CfZ71XLyz3lHUCTZE8KO8qz3ntu/t
+	YExen6ghHenwkZLK184Xu7xkUH22PcCJQJsC7sQUudetf7T+WU6zryRPL2kDvjSS/0iOrLeMY4t
+	nXgB8JbseUrtvaKQi7j684IwH4Af/DeA8NRRhVq8uPQHwmSepd+yybJ3i
+X-Gm-Gg: ASbGncvgaFMxK8A28Rw29FvPUTW3xwKGmcIenheetxV/5AYlgY6RQxk76t39Lau2L2X
+	tCkzAlTye7qDGT8LacDI4MUCYKvQ3aj8Q/RI27GAbwmzcDlCn93PnSQ0Yn8uaLm+AIlhbwhvU7A
+	O2WlNfTi8Pjoqhu1Fw8U6YeConN7u4HdmgYuaYFNnu1yl5M/JGq2+7UJGi3KWZ9Pzu7RghznrJK
+	DwbteKXR/UwaSTxSpFzSpFjl7H2HrpvPoIMcFZ4gRWBjx5GF6XdvrcPmEdMuCm9NrpWzITxHC/m
+	6TA57PDKF4xi7fNqWpalBFkMvrpFt0oNTOFEp69o
+X-Received: by 2002:a05:6214:240f:b0:70d:cef4:ea42 with SMTP id 6a1803df08f44-7e7a024aaa5mr8493876d6.1.1758588695295;
+        Mon, 22 Sep 2025 17:51:35 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGtQ843uNCITnUkv1WbfVZrcAx/pYKTrBIqD6TgGbEMGluu0dapZ4MeWMUHT2U8u/TdPFwWnQ==
+X-Received: by 2002:a05:6214:240f:b0:70d:cef4:ea42 with SMTP id 6a1803df08f44-7e7a024aaa5mr8493506d6.1.1758588694720;
+        Mon, 22 Sep 2025 17:51:34 -0700 (PDT)
+Received: from [192.168.40.164] ([70.105.235.240])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-79351b9de18sm82855666d6.48.2025.09.22.17.51.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Sep 2025 17:51:34 -0700 (PDT)
+Message-ID: <1845b412-e96d-438a-8c05-680ef70c04e6@redhat.com>
+Date: Mon, 22 Sep 2025 20:51:31 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH7PR12MB5757:EE_|CY3PR12MB9656:EE_
-X-MS-Office365-Filtering-Correlation-Id: fcaae62f-3834-4914-0498-08ddfa33b794
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|7416014;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?GDpoNuH2+3Hk0vy7uOO0uUC1fgSVFCaZrOe0+XrbkhJlgnv0fcSgL/cDdfzq?=
- =?us-ascii?Q?u6sDHy4FplfWICVbuMIwPUQYpIyuIg8ff1M8ydxcV/Gp3xMPS54/wULqZ2K0?=
- =?us-ascii?Q?E4UZynxJFwbfqH6uPrE8BFRkbA+oHzBnU792CfRX4jHBQsSeUWR2MeG4rDq/?=
- =?us-ascii?Q?pyEgj+x3FRwIwcKxhKcbPAXoCYN9EndChTY9UCQ6viOOn1i/7xOomKXPpvvl?=
- =?us-ascii?Q?NV4DkjIo+Lp4QNnxDLO3DgeSQtqNL+VU2ubu9hiO87ZgJkUeCe54IVIDghlR?=
- =?us-ascii?Q?fW0JsrOiCxN8/6Q4hNakO5ijwhvaMqQN4v+dRh5k29P1XnaJmW8QEScqFpo+?=
- =?us-ascii?Q?wJ9sO6pOyaqUPthSkG0/k3iM2HifRL/LSVOZd4B9itWWTXxfIGxK+5+jfJd2?=
- =?us-ascii?Q?tPRPIon/1FqzqUWHBBxO8tVr6RHFsaTpUrovp4KWKA+9FPPNJmhlilFHVoTI?=
- =?us-ascii?Q?8y+6Al7ZJe7kPkyUKIJfD9zPEeoOrlJfgPbiSg2aCoGbyTxy4YFnQ6aNHG0p?=
- =?us-ascii?Q?u93QRm8wRs6drh8aDufOcveODWpAzJm1vy1jGbiYJv80GnKQWkuz2v1LM8FV?=
- =?us-ascii?Q?PeREsOV31oB/ICS3vKlKV3ZQI9YbGorks9sUk5SwaiF5ALE6fSrT2nXDySHN?=
- =?us-ascii?Q?W0KJyluoVilPUTkC3nYaFmY+H6DYL0MpwujzRNSiboWLpSdGSN4OoIT8ORob?=
- =?us-ascii?Q?AiEemzrk60zQLu9H/WcZpZ8dmYM6amXioC640x22Rk/2p8zQU7E/+ochHaIJ?=
- =?us-ascii?Q?2Xb3koFggcZKTcuAjXD5/ciwo8pH/niX8hjbxUKkxO1RSsm0D7rMoDQGkSlL?=
- =?us-ascii?Q?d9s9TehX6Tqq3kyiGyKBN94bfEyLDgZsnmiyG/GmdbVjjkYilAoBVcHFcnB6?=
- =?us-ascii?Q?PG7FGeSh/iKgqY63Tpkwm0UggH9e7U+KIkbNOk2s9o0rjFGC5Nu8hmdzA17+?=
- =?us-ascii?Q?Z2J5pRN6S79/xsSvWp8PNfvcJNV75+NXCraIO1DGPKPcTOVYMiOGfD+6YqbF?=
- =?us-ascii?Q?pNAiKsmp+J9Kb77x3q+aju/p/xJYCZcFe8B1V6XjL0Fy3T2YpIcUKNSAXa/j?=
- =?us-ascii?Q?x+Vstsj7OaE1kkn3Aw87Ei85jLOiIvPeYF4XOUcp/gTyoZLmgSWvUxNk7hf2?=
- =?us-ascii?Q?jGSnXgCDTh3g23BcAHnS8257xUSYU36lyqewU9KFJDaQMKqol5hblvITVfhv?=
- =?us-ascii?Q?Lu1Vl97GLORX326XVZyZ/07ale0AGhVItEa712txfwYnnwF0DneFY83JqUxy?=
- =?us-ascii?Q?CD7QcCLCaU1w0pP35PY5oqAO4NbaKRawxlwCKPzCSxzHodnaeA3UIdEMh6RE?=
- =?us-ascii?Q?+Z5kIZ/Ffv2HLwOs7FnL0pqYr5FMtA7kaSInHVA5C407B9i/v+nOpW6xhpZa?=
- =?us-ascii?Q?GyL4JnZtGXhIfc7MB2OBqDyEbZlFjAHXu4azkphIVKN3wjKZMMFfwjtGI5Cx?=
- =?us-ascii?Q?ta6+AKAAAxs=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(7416014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?mvey9DpBWKxE3DHGutghsxJDKKSpCae4vyywQtvZL4ea0JXrT3HUU3cdP7V2?=
- =?us-ascii?Q?cmOwh5CvIaWItdKKLq1grnVgQi1qGSL5Qei5N71Bnbx9bKJCYCu7ip6eRrmG?=
- =?us-ascii?Q?oWWUxMycI/jXhDux2rlvikkLykUp0wd72k3qNsL0ESD3IN6v2EytZ6094NC5?=
- =?us-ascii?Q?02hKCoo6p0QbLaKbkVg5slCTC/Gi+Lhr4UVywEPh585BXBphSsimT2A+S2jT?=
- =?us-ascii?Q?reJdvIp02BSKnNTaVEwnbHWAy1y9rYjWxIVqc8q2RPSTflfELQmoGvruFqij?=
- =?us-ascii?Q?+in6KaSXrqYhlcQ37dCcMPYmqf75Eok5h0MotOUeLJDCPSHLY0Q5FdG7KQhA?=
- =?us-ascii?Q?EGFpmrLkVrPNO2kbEbePR1F1ONq+VdU5BSf9hc3k2rEcTiyoSgnxE5s7UjJ6?=
- =?us-ascii?Q?9s44wHI3QWTg77y95OwnKKLi747LT0nKD5TLY3eWSsDowWI2OJXBf6EUuDhy?=
- =?us-ascii?Q?7PMrXhykDWMRfiTVHtlYaTQoUt5Lm2yvUpWh+N2XB1I3Sv770vWjYGrJairu?=
- =?us-ascii?Q?tbpGi1mZtbaDXAiSzuj049lQLE/2tqDxGJdEQ9eTm83sI4eInWj3EU7aldUu?=
- =?us-ascii?Q?5WQSOLJzCNFNUKoDkBmdNHubRjPg9f/v+3E+OcDgQ3J1Jx9oWEuzoV4c1LUN?=
- =?us-ascii?Q?ZO4eaWG4+imZFJtRDdX0RMli51YtRpX9oIcxZO/cL/Nlhw05T3DDCco51htG?=
- =?us-ascii?Q?ReFOwffrGtgJLRuJke+YeO7j5kaLkLKpyCMMpmAHlcsShjYAOs6IDcmUOqIK?=
- =?us-ascii?Q?GnAm9gCYW2g+sTVxdijpW+b/QIAMxgUXdUUBFu4duzxfWPe8uZMgaKGHF8Z9?=
- =?us-ascii?Q?t1iUbgrvbEn4poEHj9weLgmRjsx9+M0nNRewYFIcb1JUmcz8XyWKFdmHgUo1?=
- =?us-ascii?Q?UD7ovKxhztrG1fWh8sPWJ7dQ+SeVO5tPhMPCIbIhObuxyk7+9xUaIb7qJsRP?=
- =?us-ascii?Q?mQLDv8URDtuRLPeJp22NSVGwxVEpioxJtTfSQLbufYNCAPPAN/M+KOPFbamZ?=
- =?us-ascii?Q?qwaKD4ci6iUyUx1jI0fedeJHH3do1R6cxeyfoYioh7nT+1grVBty1tnGioxp?=
- =?us-ascii?Q?cKmqznSQvjz0lSH/rnzZMKRPGKZ3Litb2Esr6fEG1bkXMN0B3whY/kN4l7k6?=
- =?us-ascii?Q?ztLzt2nwnkTsJaXDMkf+uQ+jmoL3cYLaduk3CUT4PqkiGpLzUfYNOMP+Qrzv?=
- =?us-ascii?Q?oFT6H4IDsytyHqpFP0TI3geHTkJDt5LABoLQCDsHoNpM9Ql9iHb8BqowagNj?=
- =?us-ascii?Q?DZWchxdrSVIcl3I/4SmdLlwqrDOnd0OoFuGaHsXZUciujaFwH37xW0znJNLC?=
- =?us-ascii?Q?AZk0iDmtpv5YlbLMHPy7+oMHmnH7cruS30OAKaKx6sS91IF0wyF7l9Jhwpje?=
- =?us-ascii?Q?zRJU7Z5Qxezxd7y/j/kvtJalIXaPqYBfrzaDiLwEMvHUJ6ba9vP9Pz+kG1+t?=
- =?us-ascii?Q?IABaqD49nTNrvi+aLukWH6aM1a+iteng15WONfuX3qxUWCOEbDuH9+soyn3j?=
- =?us-ascii?Q?05XeD0zm2O3fuRJg5cYVFuqCX7eD70pjmothweVh9Pg2nVP9h9yu1W2Xdwyn?=
- =?us-ascii?Q?zHleW4Dl3570/Rt9mnzSUSbgMoS+9/elz/qOeNyW?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fcaae62f-3834-4914-0498-08ddfa33b794
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5757.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2025 23:57:00.3218
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QXB3sV9yh/jB/fUOavYAYWMKv9YpZR0Sk6Gk4Nk1lEgrHodP9/ZesH5C2ooqHTeE
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY3PR12MB9656
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 03/11] iommu: Compute iommu_groups properly for PCIe
+ switches
+To: Jason Gunthorpe <jgg@nvidia.com>,
+ Alex Williamson <alex.williamson@redhat.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, linux-pci@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, galshalom@nvidia.com,
+ Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
+ kvm@vger.kernel.org, maorg@nvidia.com, patches@lists.linux.dev,
+ tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
+References: <0-v1-74184c5043c6+195-pcie_switch_groups_jgg@nvidia.com>
+ <3-v1-74184c5043c6+195-pcie_switch_groups_jgg@nvidia.com>
+ <20250701132905.67d29191.alex.williamson@redhat.com>
+ <20250702010407.GB1051729@nvidia.com>
+ <c05104a1-7c8e-4ce9-bfa3-bcbc8c9e0ef5@redhat.com>
+ <20250717202744.GA2250220@nvidia.com>
+ <2cb00715-bfa8-427a-a785-fa36667f91f9@redhat.com>
+ <20250718133259.GD2250220@nvidia.com>
+ <20250922163200.14025a41.alex.williamson@redhat.com>
+ <20250922231541.GF1391379@nvidia.com>
+From: Donald Dutile <ddutile@redhat.com>
+In-Reply-To: <20250922231541.GF1391379@nvidia.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: XtD5_M58N7W74TXIVbWsRAPcq0I-DJSyqt7WYahOZMo_1758588695
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Sep 22, 2025 at 04:20:43PM -0500, Andrew Jones wrote:
-> On Mon, Sep 22, 2025 at 03:43:36PM -0300, Jason Gunthorpe wrote:
-> > On Sat, Sep 20, 2025 at 03:38:58PM -0500, Andrew Jones wrote:
-> > > When setting irq affinity extract the IMSIC address the device
-> > > needs to access and add it to the MSI table. If the device no
-> > > longer needs access to an IMSIC then remove it from the table
-> > > to prohibit access. This allows isolating device MSIs to a set
-> > > of harts so we can now add the IRQ_DOMAIN_FLAG_ISOLATED_MSI IRQ
-> > > domain flag.
-> > 
-> > IRQ_DOMAIN_FLAG_ISOLATED_MSI has nothing to do with HARTs.
-> > 
-> >  * Isolated MSI means that HW modeled by an irq_domain on the path from the
-> >  * initiating device to the CPU will validate that the MSI message specifies an
-> >  * interrupt number that the device is authorized to trigger. This must block
-> >  * devices from triggering interrupts they are not authorized to trigger.
-> >  * Currently authorization means the MSI vector is one assigned to the device.
+
+
+On 9/22/25 7:15 PM, Jason Gunthorpe wrote:
+> On Mon, Sep 22, 2025 at 04:32:00PM -0600, Alex Williamson wrote:
+>> The ACS capability was only introduced in PCIe 2.0 and vendors have
+>> only become more diligent about implementing it as it's become
+>> important for device isolation and assignment.
+PCIe-2.0 spec-wise, was released in 2007, 18 years ago.
+If hw is on a 3-yr lifecycle, that's 6 generations (7th including this year releases, assuming
+gen-1 was 2007); assuming a 5yr hw cycle, that's 4 generations of hardware.
+
+Maybe a more interesting date is when DC servers implemented device-assignment/SRIOV
+in full-scale, and then, determine number of hw generations from that point on as
+'learning -> devel-changing' years.
+I recall we had in in 'enterprise' customers in 2010, which only shaves one generation
+from above counts.
+
 > 
-> Unfortunately the RISC-V IOMMU doesn't have support for this. I've raised
-> the lack of MSI data validation to the spec writers and I'll try to raise
-> it again, but I was hoping we could still get IRQ_DOMAIN_FLAG_ISOLATED_MSI
-> by simply ensuring the MSI addresses only include the affined harts (and
-> also with the NOTE comment I've put in this patch to point out the
-> deficiency).
-
-Nope, sorry, it has to validate the incoming target Linux interrupt
-vector in some way - that is the whole point and the required
-security.
-
-We cannot allow devices assigned to a VFIO to trigger vectors that
-belong to devices outside that VFIO. HARTS should have nothing to do
-with that security statement.
-
-> > It has to do with each PCI BDF having a unique set of
-> > validation/mapping tables for MSIs that are granular to the interrupt
-> > number.
+> IDK about this, I have very new systems and they still not have ACS
+> flags according to this interpretation.
 > 
-> Interrupt numbers (MSI data) aren't used by the RISC-V IOMMU in any way.
-
-Interrupt number is a Linux concept, HW decodes the addr/data pair and
-delivers it to some Linux interrupt. Linux doesn't care how the HW
-treats the addr/data pair, it can ignore data if it wants.
-
-> 1. stage1 not BARE
-> ------------------
+>> IMO, we can't assume anything at all about a multifunction device
+>> that does not implement ACS.
 > 
->       stage1     MSI table
->  IOVA ------> A  ---------> host-MSI-address
-
-If you run the driver like this then it should use IOMMU_RESV_SW_MSI
-to make an aperture. Follow how ARM GIC works for this. The Linux
-architecture is that the iommu_domain owner is responsible to provide
-a range for SW_MSI and connect it to the interrupt driver.
-
-> 2. stage1 is BARE, for example if only stage2 is in use
-> -------------------------------------------------------
+> Yeah this is all true.
 > 
->            MSI table
->  IOVA == A ---------> host-MSI-address
-
-And here you'd use HW_MSI to set a fixed aperture that matches
-DC.msi_addr_* (?)
-
-> I don't think we can apply a lot of AMD's and Intel's model to RISC-V.
-
-AMD and Intel have the interrupt translation as part of the "DC". That
-corresponds to the DC.msiptp related stuff.
-
-ARM has a SW_MSI that applies the S1/S2 translation first and then
-puts the interrupt translation in the GIC IP block. That corresponds
-to what you just explained above.
-
-Somehow RISCV have the most challenging properties of both
-architectures, and mis-understood what security Linux expects out of
-interrupt remapping :|
-
-Use SW_MSI to open the aperture like ARM, use techniques like
-AMD/Intel to manage the translation table in the shared DC
-
-Don't touch the iommu_domain from the interrupt driver, it simply
-cannot work.
- 
-> > It looks like there is something in here to support HW that doesn't
-> > have msiptp? That's different, and also looks very confused.
+> But we are already assuming. Today we assume MFDs without caps must
+> have internal loopback in some cases, and then in other cases we
+> assume they don't.
 > 
-> The only support is to ensure all the host IMSICs are mapped, otherwise
-> we can't turn on IOMMU_DMA since all MSI writes will cause faults. We
-> don't set IRQ_DOMAIN_FLAG_ISOLATED_MSI in this case, though, since we
-> don't bother unmapping MSI addresses of harts that IRQs have be un-
-> affined from.
-
-OK, that seems like a good first series. Implement just the SW_MSI to
-expose all the IMSIC's.
-
-> > Instead it probably has to use the SW_MSI mechanism to request mapping
-> > the interrupt controller aperture. You don't get
-> > IRQ_DOMAIN_FLAG_ISOLATED_MSI with something like this though. Look at
-> > how ARM GIC works for this mechanism.
+> I've sent and people have tested various different rules - please tell
+> me what you can live with.
 > 
-> I'm not seeing how SW_MSI will help here, but so far I've just done some
-> quick grepping and code skimming.
-
-SW_MSI is intended to deal with exactly what you are describing - the
-IOMMU translates the MSI aperture.
-
-1) The driver declares a IOMMU_RESV_SW_MSI in it's reserved_regions
-2) When a subsystem wishes to use an iommu_domain it must detect the
-   SW_MSI and setup some IOVA for it to use
-   a) dma-iommu.c allocates IOVA dynamically per-page via
-      iommu_dma_get_msi_page()
-   b) Classic VFIO uses iommu_get_msi_cookie() with the SW_MSI range.
-   c) iommufd has its own logic in and around iommufd_sw_msi()
-3) When the IRQ driver wants to establish a MSI it computes the
-   untranslated address it wants and then calls iommu_dma_prepare_msi()
-
-   iommu_dma_prepare_msi() will return the a msi_desc with the address
-   adjusted
-
-   For instance dma-iommu.c has iommu_dma_prepare_msi() call into
-   iommu_dma_get_msi_page() which will establish any required mapping
-   for phys at some IOVA it picks.
-
-The riscv mess has the additional obnoxious complexity that the S1/S2
-are inconsisent.
-
-Right now the only way to deal with this would be to only use one of
-the S1 or S2 and make that decision when the iommu driver starts. You
-can return the right SW_MSI/HW_MSI based on which PAGING domain style
-the driver is going to use.
-
-I recommend if the S2 is available you make the driver always use the
-S2 for everything and ignore the S1 except for explicit two stage
-translation setup by a hypervisor. Thus always return HW_MSI.
-
-If the iommu does not support S2 then always use S1 and always return
-SW_MSI.
-
-Disallow SW from creating a PAGING domain that mismatches the expected
-interrupt setup.
-
-There is still quite some mess to enhance the iommu_dma_prepare_msi()
-path to support all the modes, that will need new code as ARM doesn't
-have the difference between S1/S2 (sigh)
-
-But broadly this is the sketch for where the touchpoints should be to
-setup a MSI aperture that has to go through the page table.
-
-> The first five patches plus the "enable IOMMU_DMA" will allow paging
-> domains to be used by default, while paving the way for patches 6-8 to
-> allow host IRQs to be isolated to the best of our ability (only able to
-> access IMSICs to which they are affined). So we could have
+> Assuming the MFD does not have internal loopback, while not entirely
+> satisfactory, is the one that gives the least practical breakage.
 > 
-> series1: irqdomain + map all imsics + enable IOMMU_DMA
+> I think it most accurately reflects the majority of real hardware out
+> there.
+> 
+> We can quirk to fix the remainder.
+> 
+> This is the best plan I've got..
+> 
+> Jason
+> 
 
-Yes, please lets try to get through this first..
++1 to Jason's conclusions.
+We should design the quirk hook to add ACS hooks for MFDs that do
+not adhere to the spec., which should be the minority, and that's what
+quirks are suppose to handle -- the odd cases.
 
-> series2: actually apply irqdomain in order to implement map/unmap of MSI
->          ptes based on IRQ affinity - set IRQ_DOMAIN_FLAG_ISOLATED_MSI,
->          because that's the best we've got...
+- Don
 
-Make sense, but as above, need to do something to make it actually
-implement IRQ_DOMAIN_FLAG_ISOLATED_MSI. Limited to HARTS is not the
-same thing.
-
-This also needs some kind of new iommufd support, and I don't know how
-it will work, but setting the DC.msi_addr* should come from userspace
-and create a new reserved region.. Maybe we need to create per-domain
-reserved regions..
-
-> series3: the rest of the patches of this series which introduce irqbypass
->          support for the virt use case
-
-Yes
-
-> Would that be better? Or do you see some need for some patch splits as
-> well?
-
-I did not try to look at the patches for this, but I think your three
-themes makes alot of sense.
-
-Please include in the cover letter some of the explanations from these
-two RFC postings about how the HW works.
-
-Jason
