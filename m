@@ -1,166 +1,101 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EC6C23FC41;
-	Tue, 23 Sep 2025 20:27:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B26BF309F12;
+	Tue, 23 Sep 2025 21:17:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758659223; cv=none; b=e44l1AZfo5+CAjYxmUUpkKLGzkkhHulbFobU3aPUmvoLhLIpDq6eKuLva6LmcCntLlBmHIHrKpbTG6Wqt40cWkjAdD9KdFQNaOBVf9/ukiQOWlvVGagQpAaFsvf00AtVXCbvSuwxLH/8xKsaHpXuEXdNbh8p8m8wHJc5mFRm4UI=
+	t=1758662228; cv=none; b=PVHlDbqMvJZj0ItQGaDgQ+uqwAiaN64FgKa0TKo2KsUWa2H51pg71vABtbhN+1kN6tIMgUVHEXfFvrGsaKyMLj6R7wCeKjaPq6PPL2chUT1rkMLDKYfwnDgSjSnx2JxM3xpFTmcreDIP41Edm73mi0YdfiMxMB2A1ZcqHJeTt3U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758659223; c=relaxed/simple;
-	bh=5R1UgSJEvi2l7Eky/zK0SWAZ6XGW6n1hioaDt4+Pst0=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=tmFHUcOggF1xFQIgOyzUUR/UYl6kkrFha2SZcAXIeNDqQFHIjxB9fbZUa0M/2O957J7ERUlhCQcNSL+c64x9OkcMOhz72VmsP/NieiMrZ/weK6mouKkuaMtpS20ZkJv7HzXOeqry6nYs6/2fVtlgzTn3qGateJ5TLTNm0H4LF6o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kB/fUGeY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1758662228; c=relaxed/simple;
+	bh=9maMwx7/tfxHiKFTD825WGlX9Scv4cfcxvOcT74ZDTg=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=Pi0DfaJdRl5ndPhT9JZmFJDPc3iVs+8tFZuMJf37jiy6ALr6yMWpKMuN4fNUflp9U2An4pEBQR4Ya4B6fV5NrhXYbo2O3OujraoYOp4x4/LMAHnDdEvBxr79LruOlqifo+gnrVFcTyU5xX+LkTg8gqJ73cpF+YT4kzPUAms4Hrk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=YQt4yJD4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kB/fUGeY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCF24C4CEF5;
-	Tue, 23 Sep 2025 20:27:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758659223;
-	bh=5R1UgSJEvi2l7Eky/zK0SWAZ6XGW6n1hioaDt4+Pst0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=kB/fUGeY9zXTc4xPBZoZWjD3qp6VSnfAqGsuI8BUOqwXv+4EuypaIp/21qo0AezRk
-	 yxVGTVgxYyfwkUdl2FiFp958j2mhNZAXdFn9bDGTQGRkv2f5WUjCGuu1WvFY0QsAX8
-	 LRzDfs9CAzDu1EUm86IzUyq3T5qbZFi+mod4jpABZNu+LXGCxQCXFDU//T4xBLvY4n
-	 SrxWQ8K2rqus9E/6EQ3aUZL4HHVqxfBA6ro9THUrzfwOmLL65Hxk6OQjXrV7Jt+vHh
-	 NesA3/VJ1fWliqJLHfSdJDnDDzNKWBbNUwadOp7KOVaq14azf5xBl1x1UyWJ0+X9LZ
-	 2Agmeiu2uVyvA==
-Date: Tue, 23 Sep 2025 15:27:01 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: manivannan.sadhasivam@oss.qualcomm.com
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Joerg Roedel <jroedel@suse.de>, iommu@lists.linux.dev,
-	Anders Roxell <anders.roxell@linaro.org>,
-	Naresh Kamboju <naresh.kamboju@linaro.org>,
-	Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-	Xingang Wang <wangxingang5@huawei.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, stable@vger.kernel.org
-Subject: Re: [PATCH 2/2] iommu/of: Call pci_request_acs() before enumerating
- the Root Port device
-Message-ID: <20250923202701.GA2055736@bhelgaas>
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="YQt4yJD4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51CB1C4CEF5;
+	Tue, 23 Sep 2025 21:17:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+	s=korg; t=1758662227;
+	bh=9maMwx7/tfxHiKFTD825WGlX9Scv4cfcxvOcT74ZDTg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=YQt4yJD4LLyMB/AA7fhRdzHKMMyKrYX7tPYO7bcgLcaYZEMTEEDS+V/u87paR8mvk
+	 vaZ6Hf5HJhiz4iN6UcpLvuzXo0K/kulYjPZuGmcFLhgj45aLOuctbBJIR6+SoLAoCq
+	 q1aNHSIO3K1aKeAi1QD+S0yrDrsK77/N3Jf/bOOk=
+Date: Tue, 23 Sep 2025 14:17:04 -0700
+From: Andrew Morton <akpm@linux-foundation.org>
+To: Sumanth Korikkar <sumanthk@linux.ibm.com>
+Cc: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>, Jonathan Corbet
+ <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>, Guo Ren
+ <guoren@kernel.org>, Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Heiko
+ Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>, Alexander
+ Gordeev <agordeev@linux.ibm.com>, Christian Borntraeger
+ <borntraeger@linux.ibm.com>, Sven Schnelle <svens@linux.ibm.com>,
+ "David S . Miller" <davem@davemloft.net>, Andreas Larsson
+ <andreas@gaisler.com>, Arnd Bergmann <arnd@arndb.de>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, Dan Williams <dan.j.williams@intel.com>,
+ Vishal Verma <vishal.l.verma@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Nicolas Pitre <nico@fluxnic.net>, Muchun Song <muchun.song@linux.dev>,
+ Oscar Salvador <osalvador@suse.de>, David Hildenbrand <david@redhat.com>,
+ Konstantin Komarov <almaz.alexandrovich@paragon-software.com>, Baoquan He
+ <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>, Dave Young
+ <dyoung@redhat.com>, Tony Luck <tony.luck@intel.com>, Reinette Chatre
+ <reinette.chatre@intel.com>, Dave Martin <Dave.Martin@arm.com>, James Morse
+ <james.morse@arm.com>, Alexander Viro <viro@zeniv.linux.org.uk>, Christian
+ Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>, "Liam R . Howlett"
+ <Liam.Howlett@oracle.com>, Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport
+ <rppt@kernel.org>, Suren Baghdasaryan <surenb@google.com>, Michal Hocko
+ <mhocko@suse.com>, Hugh Dickins <hughd@google.com>, Baolin Wang
+ <baolin.wang@linux.alibaba.com>, Uladzislau Rezki <urezki@gmail.com>,
+ Dmitry Vyukov <dvyukov@google.com>, Andrey Konovalov
+ <andreyknvl@gmail.com>, Jann Horn <jannh@google.com>, Pedro Falcato
+ <pfalcato@suse.de>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-csky@vger.kernel.org, linux-mips@vger.kernel.org,
+ linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+ nvdimm@lists.linux.dev, linux-cxl@vger.kernel.org, linux-mm@kvack.org,
+ ntfs3@lists.linux.dev, kexec@lists.infradead.org,
+ kasan-dev@googlegroups.com, Jason Gunthorpe <jgg@nvidia.com>,
+ iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>, Will Deacon
+ <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v4 11/14] mm/hugetlbfs: update hugetlbfs to use
+ mmap_prepare
+Message-Id: <20250923141704.90fba5bdf8c790e0496e6ac1@linux-foundation.org>
+In-Reply-To: <aNKJ6b7kmT_u0A4c@li-2b55cdcc-350b-11b2-a85c-a78bff51fc11.ibm.com>
+References: <cover.1758135681.git.lorenzo.stoakes@oracle.com>
+	<e5532a0aff1991a1b5435dcb358b7d35abc80f3b.1758135681.git.lorenzo.stoakes@oracle.com>
+	<aNKJ6b7kmT_u0A4c@li-2b55cdcc-350b-11b2-a85c-a78bff51fc11.ibm.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250910-pci-acs-v1-2-fe9adb65ad7d@oss.qualcomm.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Sep 10, 2025 at 11:09:21PM +0530, Manivannan Sadhasivam via B4 Relay wrote:
-> From: Xingang Wang <wangxingang5@huawei.com>
+On Tue, 23 Sep 2025 13:52:09 +0200 Sumanth Korikkar <sumanthk@linux.ibm.com> wrote:
+
+> > --- a/fs/hugetlbfs/inode.c
+> > +++ b/fs/hugetlbfs/inode.c
+> > @@ -96,8 +96,15 @@ static const struct fs_parameter_spec hugetlb_fs_parameters[] = {
+> >  #define PGOFF_LOFFT_MAX \
+> >  	(((1UL << (PAGE_SHIFT + 1)) - 1) <<  (BITS_PER_LONG - (PAGE_SHIFT + 1)))
+> >  
+> > -static int hugetlbfs_file_mmap(struct file *file, struct vm_area_struct *vma)
+> > +static int hugetlb_file_mmap_prepare_success(const struct vm_area_struct *vma)
+> >  {
+> > +	/* Unfortunate we have to reassign vma->vm_private_data. */
+> > +	return hugetlb_vma_lock_alloc((struct vm_area_struct *)vma);
+> > +}
 > 
-> When booting with devicetree, ACS is enabled for all ACS capable PCI
-> devices except the first Root Port enumerated in the system. This is due to
-> calling pci_request_acs() after the enumeration and initialization of the
-> Root Port device. 
-
-I suppose you're referring to a path like below, where we *check*
-pci_acs_enable during PCI enumeration, but we don't *set* it until we
-add the device and look for a driver for it?
-
-  pci_host_common_init
-    devm_pci_alloc_host_bridge
-      devm_of_pci_bridge_init
-        pci_request_acs
-          pci_acs_enable = 1                    # ++ new set here
-    pci_host_probe
-      pci_scan_root_bus_bridge
-        pci_scan_device
-          pci_init_capabilities
-            pci_enable_acs
-              if (pci_acs_enable)               # test here
-                ...
-      pci_bus_add_devices
-        driver_probe_device
-          pci_dma_configure
-            of_dma_configure
-              of_dma_configure_id
-                of_iommu_configure
-                  pci_request_acs
-                    pci_acs_enable = 1          # -- previously set here
-
-> But afterwards, ACS is getting enabled for the rest of the PCI
-> devices, since pci_request_acs() sets the 'pci_acs_enable' flag and
-> the PCI core uses this flag to enable ACS for the rest of the ACS
-> capable devices.
-
-I don't quite understand why ACS would be enabled for *any* of the
-devices because we generally enumerate all of them, which includes the
-pci_init_capabilities() and pci_enable_acs(), before adding and
-attaching drivers to them.
-
-But it does seem kind of dumb that we set the system-wide "enable ACS"
-property in a per-device place like an individual device probe.
-
-> Ideally, pci_request_acs() should only be called if the 'iommu-map' DT
-> property is set for the host bridge device. Hence, call pci_request_acs()
-> from devm_of_pci_bridge_init() if the 'iommu-map' property is present in
-> the host bridge DT node. This aligns with the implementation of the ARM64
-> ACPI driver (drivers/acpi/arm64/iort.c) as well.
+> Hi Lorenzo,
 > 
-> With this change, ACS will be enabled for all the PCI devices including the
-> first Root Port device of the DT platforms.
-> 
-> Cc: stable@vger.kernel.org # 5.6
-> Fixes: 6bf6c24720d33 ("iommu/of: Request ACS from the PCI core when configuring IOMMU linkage")
-> Signed-off-by: Xingang Wang <wangxingang5@huawei.com>
-> Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-> [mani: reworded subject, description and comment]
-> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-> ---
->  drivers/iommu/of_iommu.c | 1 -
->  drivers/pci/of.c         | 8 +++++++-
->  2 files changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 6b989a62def20ecafd833f00a3a92ce8dca192e0..c31369924944d36a3afd3d4ff08c86fc6daf55de 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -141,7 +141,6 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
->  			.np = master_np,
->  		};
->  
-> -		pci_request_acs();
->  		err = pci_for_each_dma_alias(to_pci_dev(dev),
->  					     of_pci_iommu_init, &info);
->  		of_pci_check_device_ats(dev, master_np);
-> diff --git a/drivers/pci/of.c b/drivers/pci/of.c
-> index 3579265f119845637e163d9051437c89662762f8..98c2523f898667b1618c37451d1759959d523da1 100644
-> --- a/drivers/pci/of.c
-> +++ b/drivers/pci/of.c
-> @@ -638,9 +638,15 @@ static int pci_parse_request_of_pci_ranges(struct device *dev,
->  
->  int devm_of_pci_bridge_init(struct device *dev, struct pci_host_bridge *bridge)
->  {
-> -	if (!dev->of_node)
-> +	struct device_node *node = dev->of_node;
-> +
-> +	if (!node)
->  		return 0;
->  
-> +	/* Enable ACS if IOMMU mapping is detected for the host bridge */
-> +	if (of_property_read_bool(node, "iommu-map"))
-> +		pci_request_acs();
+> The following tests causes the kernel to enter a blocked state,
+> suggesting an issue related to locking order. I was able to reproduce
+> this behavior in certain test runs.
 
-I'm not really convinced that the existence of 'iommu-map' in
-devicetree is a clear signal that ACS should be enabled, so I'm a
-little hesitant about this part.
-
-Is it possible to boot using a devicetree with 'iommu-map', but with
-the IOMMU disabled or the IOMMU driver not present?  Or other
-situations where we don't need ACS?
-
->  	bridge->swizzle_irq = pci_common_swizzle;
->  	bridge->map_irq = of_irq_parse_and_map_pci;
->  
-> 
-> -- 
-> 2.45.2
-> 
-> 
+Thanks.  I pulled this series out of mm.git's mm-stable branch, put it
+back into mm-unstable.
