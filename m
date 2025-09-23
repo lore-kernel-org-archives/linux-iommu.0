@@ -1,246 +1,116 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 391DD26C399
-	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 02:07:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC3192F5B;
+	Tue, 23 Sep 2025 02:20:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758593223; cv=none; b=r5tw/r3BDBHxy7D2s9vSXYbjGqPtFmQWF1mRqD6APJHXnfhrZIYbaEwaggOeclWSom/b4FSNx+DZ5ggwamdIhI3ibnHKLZA4/zEHHUBM6U21TH535qp1Wpo3/ASV1CR2Vc+DXgZ/3sui1YkIqWxfyN3bTaCzKQ2WVag9rHcucZ4=
+	t=1758594054; cv=none; b=oAUf9briyfJqw0Lg68+AJKBUz4Am6fJnDiNK7agJK6TnIOiFgXuL5o7BMpVJDkhnzGtPBXhwOfHPT9Ttb3IjXWpJDTYX/x3gKleocgRuGV7B2UdMqx9/MWmsi91L9Gn7vpWDS6L7u+fdUXLC1kJVyhq+tjTcH+TsmPP5/D1Boak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758593223; c=relaxed/simple;
-	bh=hxlelpbKv6FmkP6tifB9ObAVB289dOhERvKZKK8nkEE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EApyqvyCMyj7PATeL/r9BFPJdBnTZA7McQi8LhNwOVvoFzg9kvm2NcpmVkppboLUeCthWzNS5Y/ucSkksEdF6yoj6MwWhV9MjvM2ZdoZHHErseDwNqBr6E+Pgdi5RL6jf8cG2JFZqyuTARx3Cbzod4pytlGRqG54f2aAr5kDDKQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=GugeaNOA; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1758594054; c=relaxed/simple;
+	bh=kWX9pr0AuXZHYi+0ToIGNK98Z57cWxHLLjQUSfBuq8M=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Zq8nzR/4xaiaH4VApra3QYXkNQEYGtuPgVd4/txZcs9nB+vId03z4+FESXrTA9sv35JjTEm71rmtz/C4S34EKAv3CTvROgde9Vdbla6Tza8pUkM9wQuM2sDpyrJ9uggPQvBNARlUT9+8incDo7UDy2FAJlyHcwPubPoIA/3ViKY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GL+NAffL; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="GugeaNOA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1758593220;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=aQSXu/tBIkGtqnapGa5REn0jb8CDZVdrcUf9mrDSfGs=;
-	b=GugeaNOA+tdS9Y898bgxWMMsw6iHqe4O0Zw3TImkAf37W4d+IgayFbZkFIqP4sO3FSgOe/
-	oc6gqGZlj/KEOG04mwG1UYbCvObDp3wwGlWZt+3G1msd49/+rLzGRg8Q7TgJ0QOI8bcHPI
-	5In5ZrCquYeXAt6Tmd4gpnbDiFPt85U=
-Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
- [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-43-UfxUnkjKMaGpQvOcDHmWRw-1; Mon, 22 Sep 2025 22:06:58 -0400
-X-MC-Unique: UfxUnkjKMaGpQvOcDHmWRw-1
-X-Mimecast-MFC-AGG-ID: UfxUnkjKMaGpQvOcDHmWRw_1758593218
-Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-30ccec7629aso1712929fac.3
-        for <iommu@lists.linux.dev>; Mon, 22 Sep 2025 19:06:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758593218; x=1759198018;
-        h=content-transfer-encoding:mime-version:organization:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=aQSXu/tBIkGtqnapGa5REn0jb8CDZVdrcUf9mrDSfGs=;
-        b=MNxXPREbRQkG/YlPPX2C3FAcOu8LfJ0gf4CP2RbYtg8qSx2cVxG9MI3z+8I3eR0PB9
-         ATZrIroht1eb7tPgp1pnq4RsZXgECdapStJfEvgwKg1e+tWungsi08Jm16F+n4M/IDTX
-         QIkm5zIHlXwTmSXy+cYcpba8yRuofSoWuAr8l5DFlvq2BQ3x6jzO6MG+EbWA1sA/qTLg
-         e8D+DROhmRC7h/4oXprrLvPy7xbvtP9c/j+U1TucVmOMu9Hk+JlriVc7qOhFVT2VKz6h
-         47P5F8kp4kfcYRKiQ7siunR7ZjbWj+IG8LwDmvfWOqeqfRzjKJMdCF+TwH6Xtj87YfAE
-         4UXQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUrnCHt4uZYaIMWKAuLysZjjRlj1TfXRwFnAUOusDWfO8QVEaF/l12DsiWkgsh3/DtrnkelBQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YwpfGWzAkYVh18R60kMznMFx4unijic0gjVC+RBbjIUBlF4FgKb
-	vzkB0sCrekkhZDViGSlAunIW/XxdoeWeu3WgstvabsusAGR7hbf7xWQRuVbVQbZBNyjkbksNmSD
-	w0nW9Raouiek26ckfnlSyT+FLaFNF8yvBePPyv1OV6R8DkTV6rcBkuO0A
-X-Gm-Gg: ASbGnct5dUGOAwbTjybMs0XJ63xdm1jt+KDvFcXfELLaOPZytT5sRALq0TR/gWmp1Kh
-	zrelpdsl9b8vnmKkxAPNbRYtpX4M7WozjPKMKqdYdZhg1zji/I/nX++p8sHISUTEk9cOhT675MV
-	xQsdrBbZC8cxckyfXmMMj/iQAIlXaey7q856OlxZQa/ZhSr+FR4LIqO78DnwqOC4dvY7PFhkw3m
-	oxuJcAIjQDSv1yIr9afEA1OfL+Op8SPJOKSz/8hL1DRZWeDWi5WDR2lPtqTzhjOP5RXjWtm8NnY
-	o2EoaEi4JIv3iye4p9AGa/7GoeKgzelxH2N03kvG1RI=
-X-Received: by 2002:a05:6808:1997:b0:437:b03d:9028 with SMTP id 5614622812f47-43f2d4c80a0mr154637b6e.8.1758593217682;
-        Mon, 22 Sep 2025 19:06:57 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHMR1w06FroJTAROa+WnoXiVE0EXZyT2GRTa3R5RQsoT8/Jep2KvSTC8ACq2vGMVb7Fd8zBWQ==
-X-Received: by 2002:a05:6808:1997:b0:437:b03d:9028 with SMTP id 5614622812f47-43f2d4c80a0mr154631b6e.8.1758593217219;
-        Mon, 22 Sep 2025 19:06:57 -0700 (PDT)
-Received: from redhat.com ([38.15.36.11])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-43d5c85d269sm5474466b6e.23.2025.09.22.19.06.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Sep 2025 19:06:56 -0700 (PDT)
-Date: Mon, 22 Sep 2025 20:06:54 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Donald Dutile <ddutile@redhat.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Bjorn Helgaas <bhelgaas@google.com>,
- iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- linux-pci@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>, Will Deacon
- <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- galshalom@nvidia.com, Joerg Roedel <jroedel@suse.de>, Kevin Tian
- <kevin.tian@intel.com>, kvm@vger.kernel.org, maorg@nvidia.com,
- patches@lists.linux.dev, tdave@nvidia.com, Tony Zhu <tony.zhu@intel.com>
-Subject: Re: [PATCH v3 00/11] Fix incorrect iommu_groups with PCIe ACS
-Message-ID: <20250922200654.1d4ff8b8.alex.williamson@redhat.com>
-In-Reply-To: <e9d4f76a-5355-4068-a322-a6d5c081e406@redhat.com>
-References: <0-v3-8827cc7fc4e0+23f-pcie_switch_groups_jgg@nvidia.com>
-	<20250922163947.5a8304d4.alex.williamson@redhat.com>
-	<e9d4f76a-5355-4068-a322-a6d5c081e406@redhat.com>
-Organization: Red Hat
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GL+NAffL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1758594053; x=1790130053;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=kWX9pr0AuXZHYi+0ToIGNK98Z57cWxHLLjQUSfBuq8M=;
+  b=GL+NAffLSxBL1EF6O+uXRKYUZEhDAWncoin8Y1DhmPjiPMfKl4e9GGKs
+   SR/px8404iBIZJ9jIWABsPlnIskWLVewLk6v8bKuBNTQPK65kubA12gVu
+   rmm0JY8jvvgw1dryyEuc7DqHD5NHjoUT7GYkn3NlXFyXp/z4UW3im6TQX
+   S9tFMzZWQF7d9A/iAuEIL0sj2JBDXHPbY4rhKRgM1nLN+hCCUZpIAEiiR
+   wqP7mGDNamVQbR79p2iANphU+o4ajezCZKqzzV+hr2Fa1h78RQwNxEyu7
+   yhYjtrxS3QlS6j9p40LJZxw/E0ziTFnXHz8JteCkK5rWUoesHe6qQCzSv
+   A==;
+X-CSE-ConnectionGUID: Vu6ss31eR7q9JWbX7xXC6g==
+X-CSE-MsgGUID: uljnwFfWRLOow4Lg3+lZkQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11561"; a="61034281"
+X-IronPort-AV: E=Sophos;i="6.18,286,1751266800"; 
+   d="scan'208";a="61034281"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2025 19:20:53 -0700
+X-CSE-ConnectionGUID: ScNmo8O+SuWmQC9DrG9iKA==
+X-CSE-MsgGUID: +ZLf3YLwS82GhMzoZAoSaA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,286,1751266800"; 
+   d="scan'208";a="175771200"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2025 19:20:50 -0700
+Message-ID: <5f7f2727-f1ba-413e-89de-958256b0002d@linux.intel.com>
+Date: Tue, 23 Sep 2025 10:17:49 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-MFC-PROC-ID: bOu5CPrdzMerDht7ZLMbh1goOIrJW9StW_qEC3lvveE_1758593218
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 04/10] iommupt: Flush the CPU cache after any writes to
+ the page table
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev,
+ Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
+ patches@lists.linux.dev, Tina Zhang <tina.zhang@intel.com>,
+ Wei Wang <wei.w.wang@intel.com>
+References: <4-v2-44d4d9e727e7+18ad8-iommu_pt_vtd_jgg@nvidia.com>
+ <79da2a28-3c05-4afa-90d8-dfc664f101b1@linux.intel.com>
+ <20250922144216.GA1391379@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250922144216.GA1391379@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Mon, 22 Sep 2025 21:44:27 -0400
-Donald Dutile <ddutile@redhat.com> wrote:
-
-> On 9/22/25 6:39 PM, Alex Williamson wrote:
-> > On Fri,  5 Sep 2025 15:06:15 -0300
-> > Jason Gunthorpe <jgg@nvidia.com> wrote:
-> >   
-> >> The series patches have extensive descriptions as to the problem and
-> >> solution, but in short the ACS flags are not analyzed according to the
-> >> spec to form the iommu_groups that VFIO is expecting for security.
-> >>
-> >> ACS is an egress control only. For a path the ACS flags on each hop only
-> >> effect what other devices the TLP is allowed to reach. It does not prevent
-> >> other devices from reaching into this path.
-> >>
-> >> For VFIO if device A is permitted to access device B's MMIO then A and B
-> >> must be grouped together. This says that even if a path has isolating ACS
-> >> flags on each hop, off-path devices with non-isolating ACS can still reach
-> >> into that path and must be grouped gother.
-> >>
-> >> For switches, a PCIe topology like:
-> >>
-> >>                                 -- DSP 02:00.0 -> End Point A
-> >>   Root 00:00.0 -> USP 01:00.0 --|
-> >>                                 -- DSP 02:03.0 -> End Point B
-> >>
-> >> Will generate unique single device groups for every device even if ACS is
-> >> not enabled on the two DSP ports. It should at least group A/B together
-> >> because no ACS means A can reach the MMIO of B. This is a serious failure
-> >> for the VFIO security model.
-> >>
-> >> For multi-function-devices, a PCIe topology like:
-> >>
-> >>                    -- MFD 00:1f.0 ACS not supported
-> >>    Root 00:00.00 --|- MFD 00:1f.2 ACS not supported
-> >>                    |- MFD 00:1f.6 ACS = REQ_ACS_FLAGS
-> >>
-> >> Will group [1f.0, 1f.2] and 1f.6 gets a single device group. However from
-> >> a spec perspective each device should get its own group, because ACS not
-> >> supported can assume no loopback is possible by spec.  
-> > 
-> > I just dug through the thread with Don that I think tries to justify
-> > this, but I have a lot of concerns about this.  I think the "must be
-> > implemented by Functions that support peer-to-peer traffic with other
-> > Functions" language is specifying that IF the device implements an ACS
-> > capability AND does not implement the specific ACS P2P flag being
-> > described, then and only then can we assume that form of P2P is not
-> > supported.  OTOH, we cannot assume anything regarding internal P2P of an
-> > MFD that does not implement an ACS capability at all.
-> >   
-> The first, non-IF'd, non-AND'd req in PCIe spec 7.0, section 6.12.1.2 is:
-> "ACS P2P Request Redirect: must be implemented by Functions that
-> support peer-to-peer traffic with other Functions. This includes
-> SR-IOV Virtual Functions (VFs)." There is not further statement about
-> control of peer-to-peer traffic, just the ability to do so, or not.
+On 9/22/25 22:42, Jason Gunthorpe wrote:
+> On Mon, Sep 22, 2025 at 10:12:15AM +0800, Baolu Lu wrote:
+>> On 8/27/25 01:26, Jason Gunthorpe wrote:
+>>> @@ -195,6 +218,10 @@ static void record_dirty(struct pt_state *pts,
+>>>    				dirty_len);
+>>>    	if (!(dirty->flags & IOMMU_DIRTY_NO_CLEAR)) {
+>>> +		/*
+>>> +		 * No write log required because DMA incoherence and atomic
+>>> +		 * dirty tracking bits can't work together
+>>> +		 */
+>>
+>> Could you elaborate a bit on this comment? Is this a hardware or
+>> software requirement?
 > 
-> Note: ACS P2P Request Redirect.
+> dirty tracking relies on some kind of atomic operation coherent
+> between the IOMMU and CPU. AFAIK this is not possible on any arch
+> unless the IOMMU is working coherently.
+
+Yes, fair enough.
+
 > 
-> Later in that section it says:
-> ACS P2P Completion Redirect: must be implemented by Functions that
-> implement ACS P2P Request Redirect.
+>> Are there any software checks or enforcement in
+>> the subsystem?
 > 
-> That can be read as an 'IF Request-Redirect is implemented, than ACS
-> Completion Request must be implemented. IOW, the Completion Direct
-> control is required if Request Redirect is implemented, and not
-> necessary if Request Redirect is omitted.
-> 
-> If ACS P2P Require Redirect isn't implemented, than per the first
-> requirement for MFDs, the PCIe device does not support peer-to-peer
-> traffic amongst its function or virtual functions.
-> 
-> It goes on...
-> ACS Direct Translated P2P: must be implemented if the Function
-> supports Address Translation Services (ATS) and also peer-to-peer
-> traffic with other Functions.
-> 
-> If an MFD does not do peer-to-peer, and P2P Request Redirect would be
-> implemented if it did, than this ACS control does not have to be
-> implemented either.
-> 
-> Egress control structures are either optional or dependent on Request
-> Redirect &/or Direct Translated P2P control, which have been
-> addressed above as not needed if on peer-to-peer btwn functions in an
-> MFD (and their VFs).
-> 
-> 
-> Now, if previous PCIe spec versions (which I didn't read & re-read &
-> re-read like the 6.12 section of PCIe spec 7.0) had more IF and ANDs,
-> than that could be cause for less than clear specmanship enabling
-> vendors of MFDs to yield a non-PCIe-7.0 conformant MFD wrt ACS
-> structures. I searched section 6.12.1.2 for if/IF and AND/and, and
-> did not yield any conditions not stated above.
+> I expect the iommu drivers to exclude this combination.
 
-Back up to 6.12.1:
+For VT-d driver, perhaps we could add below check:
 
-  ACS functionality is reported and managed via ACS Extended Capability
-  structures. PCI Express components are permitted to implement ACS
-  Extended Capability structures in some, none, or all of their
-  applicable Functions. The extent of what is implemented is
-  communicated through capability bits in each ACS Extended Capability
-  structure. A given Function with an ACS Extended Capability structure
-  may be required or forbidden to implement certain capabilities,
-  depending upon the specific type of the Function and whether it is
-  part of a Multi-Function Device.
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index dff2d895b8ab..563ded2eb3b3 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -3370,7 +3370,7 @@ intel_iommu_domain_alloc_second_stage(struct 
+device *dev,
+         if (((flags & IOMMU_HWPT_ALLOC_NEST_PARENT) &&
+              !nested_supported(iommu)) ||
+             ((flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING) &&
+-            !ssads_supported(iommu)))
++            (!ssads_supported(iommu) || !ecap_smpwc(iommu->ecap))))
+                 return ERR_PTR(-EOPNOTSUPP);
 
-What you're quoting are the requirements for the individual p2p
-capabilities IF the ACS extended capability is implemented.
+         /* Legacy mode always supports second stage */
 
-Section 6.12.1.1 describing ACS for downstream ports begins:
-
-  This section applies to Root Ports and Switch Downstream Ports that
-  implement an ACS Extended Capability structure.
-
-Section 6.12.1.2 for SR-IOV, SIOV and MFDs begins:
-
-  This section applies to Multi-Function Device ACS Functions, with the
-  exception of Downstream Port Functions, which are covered in the
-  preceding section.
-
-While not as explicit, what is a Multi-Function Device ACS Function if
-not a function of a MFD that implements ACS?
-
-> > I believe we even reached agreement with some NIC vendors in the
-> > early days of IOMMU groups that they needed to implement an "empty"
-> > ACS capability on their multifunction NICs such that they could
-> > describe in this way that internal P2P is not supported by the
-> > device.  Thanks, 
-> In the early days -- gen1->gen3 (2009->2015) I could see that
-> happening. I think time (a decade) has closed those defaults to
-> less-common quirks. If 'empty ACS' is how they liked to do it back
-> than, sure. [A definition of empty ACS may be needed to fully
-> appreciate that statement, though.] If this patch series needs to
-> support an 'empty ACS' for this older case, let's add it now, or
-> follow-up with another fix.
-
-An "empty" ACS capability is an ACS extended capability where the ACS
-capability register reads as zero, precisely to match the spec in
-indicating that the device does not support p2p.  Again, I don't see
-how time passing plays a role here.  A MFD must implement ACS to infer
-anything about internal p2p behavior.
- 
-> In summary, I still haven't found the IF and AND you refer to in
-> section 6.12.1.2 for MFDs, so if you want to quote those sections I
-> mis-read, or mis-interpreted their (subtle?) existence, than I'm not
-> immovable on the spec interpretation.
-
-As above, I think it's covered by 6.12.1 and the introductory sentence
-of 6.12.1.2 defining the requirements for ACS functions.  Thanks,
-
-Alex
-
+Thanks,
+baolu
