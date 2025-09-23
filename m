@@ -1,230 +1,196 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010056.outbound.protection.outlook.com [52.101.193.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E035C2E8881;
-	Tue, 23 Sep 2025 11:52:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758628364; cv=none; b=rB9vFK0KFKs+4s2Y2fL52h3O0EX4IAMpJmXgcXqGWDg6Q2ktKBtem0z0ghhOus8Idaq2mMTeLIi23fdFCU/JMylb//gMIkCv3Z0kt6o87/2qCk6uxoRjZlPgJMns1yFKDwWSU8k9KFwff584HRyb/vGhR+5QuP8/Jd25J4TjaGM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758628364; c=relaxed/simple;
-	bh=uC3KukjZxErvZyqVNyTZvCwwhubZja1S6u22ZrF2EwI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TGwa4UcMFm5V44413O0DA7vHGWQBBiF5yfO81RF0Wy76WpAsDO5eTgOR1iVv7POjSabu0HRjWhRc8/UBj3dkx58BuzMYsrYpCuGX4KldTvRgyyDZbVSqMoZj4DGklSrUXY/6OH48hgM4AwYkRm46/wmuZ8ztOBWBWBr9eHO2P7E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=EFGvr8Qy; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E5C9288530;
+	Tue, 23 Sep 2025 12:32:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.56
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758630748; cv=fail; b=nee7cEtux2sKO2Ubrc9T1jCUaFwra+qDmN1zuA5h3sDsgBsdnb0uk3EHb6r0GSaF3yCgay56T4df5/0A/NyUaAweYYRyaasIwWIA87W4DogCyfSmJNsSc7y+x6MqMIscfttIXagjn34aFuaAsTJw1IkDFqeaaPdrX8nzKEL0dRU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758630748; c=relaxed/simple;
+	bh=sCUUdOtzUM/Ut7efoyzUxLiiWE5uMBJ6Emio+1k0GXs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=bhN6bv5bBEhVCDgVRD+4/SnPc5mfNOCAPPLpZA2AQqx3grpE6LpQ+d+SUQL9bINHagZH+Fed1yLDCwaYEEqezswW8r4MBYrS55B4VNa2diKsN75u1TjXMnlsr3MeZbrsG9UKbcd0oJ2btxe2rhC0lqXYViBIqpQAYZnKS6Cf2Nk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ngOG0ovO; arc=fail smtp.client-ip=52.101.193.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="EFGvr8Qy"
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 58N8Y12b008695;
-	Tue, 23 Sep 2025 11:52:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
-	:content-type:date:from:in-reply-to:message-id:mime-version
-	:references:subject:to; s=pp1; bh=FZaoT1QNSR93wIPtHts3CPzp0ctIk0
-	vYDNbzffEOi0c=; b=EFGvr8QyltIf32/aszOR/qJfepgW+UcWXreJDplTglupit
-	m+X7rmX3tdEzuL1hJj2o5XWwJ0r+pCJ4BjGEMOhGvQ5uA7F1CUxQtR7TqdF163bV
-	I3YXhbagNN2r+8NAvqFEHYkOG72rBgt1rm+ek1A/MwpmvyPZqT+huO4x+iKBFWTR
-	eo6ih9hfsFn2nHia9aCP+YLY6UeADcGZp/ivckC/FFUA6i0IL4LnbBeJbqc6eiAl
-	5jWsuCjMMTLD7wV7h8suNXD082oB3YYd9QtgvibDoicaRjRsG3bClbPAwbAw7H1U
-	VId+vHnlTcxFpVyEmlJvEr0+HDviZMbBrXxprVQA==
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 499n0jgm9c-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 23 Sep 2025 11:52:19 +0000 (GMT)
-Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
-	by pps.reinject (8.18.1.12/8.18.0.8) with ESMTP id 58NBn9Dd005820;
-	Tue, 23 Sep 2025 11:52:18 GMT
-Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 499n0jgm96-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 23 Sep 2025 11:52:18 +0000 (GMT)
-Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 58N9Tk1U019675;
-	Tue, 23 Sep 2025 11:52:17 GMT
-Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
-	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 49a83k31qr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 23 Sep 2025 11:52:17 +0000
-Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
-	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 58NBqDIE43516160
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 23 Sep 2025 11:52:13 GMT
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id F401A20043;
-	Tue, 23 Sep 2025 11:52:12 +0000 (GMT)
-Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A61F420040;
-	Tue, 23 Sep 2025 11:52:10 +0000 (GMT)
-Received: from li-2b55cdcc-350b-11b2-a85c-a78bff51fc11.ibm.com (unknown [9.87.150.243])
-	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTPS;
-	Tue, 23 Sep 2025 11:52:10 +0000 (GMT)
-Date: Tue, 23 Sep 2025 13:52:09 +0200
-From: Sumanth Korikkar <sumanthk@linux.ibm.com>
-To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
-        Guo Ren <guoren@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Andreas Larsson <andreas@gaisler.com>, Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>, Nicolas Pitre <nico@fluxnic.net>,
-        Muchun Song <muchun.song@linux.dev>,
-        Oscar Salvador <osalvador@suse.de>,
-        David Hildenbrand <david@redhat.com>,
-        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
-        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
-        Dave Young <dyoung@redhat.com>, Tony Luck <tony.luck@intel.com>,
-        Reinette Chatre <reinette.chatre@intel.com>,
-        Dave Martin <Dave.Martin@arm.com>, James Morse <james.morse@arm.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
-        "Liam R . Howlett" <Liam.Howlett@oracle.com>,
-        Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
-        Hugh Dickins <hughd@google.com>,
-        Baolin Wang <baolin.wang@linux.alibaba.com>,
-        Uladzislau Rezki <urezki@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>, Jann Horn <jannh@google.com>,
-        Pedro Falcato <pfalcato@suse.de>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-csky@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
-        nvdimm@lists.linux.dev, linux-cxl@vger.kernel.org, linux-mm@kvack.org,
-        ntfs3@lists.linux.dev, kexec@lists.infradead.org,
-        kasan-dev@googlegroups.com, Jason Gunthorpe <jgg@nvidia.com>,
-        iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v4 11/14] mm/hugetlbfs: update hugetlbfs to use
- mmap_prepare
-Message-ID: <aNKJ6b7kmT_u0A4c@li-2b55cdcc-350b-11b2-a85c-a78bff51fc11.ibm.com>
-References: <cover.1758135681.git.lorenzo.stoakes@oracle.com>
- <e5532a0aff1991a1b5435dcb358b7d35abc80f3b.1758135681.git.lorenzo.stoakes@oracle.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ngOG0ovO"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=IjDYKW5EL3t8i0Dp+ZcSutlW2vAtt59IZq2fAV8AqAu9wn3OjMLteZ3XfdI7nvIrOT8T1RF9N1Lh1/sEpZYntD9DEOIW8Ze7oIxZNsHXcqztyP2wll3nTUu6wvnW50SIKKslamyF34owloO44aQtesQZG1zcw3FkoKqr/FxMUA/ze4zxf/4cz4roAMHzJb4k5JeuIZuI824GJQ0fFVUHzuZC0pDyXyHTe7SqR+4fGWCIOxBtq0bMHUNha+7vO0B/iBYiCPQ2wzcUpdd0+O7YqehGLHKN8DWWs5jCO7cIDZQFdJmcM+RSNz74nFsTWgfACs+SzMycjkkiHryVmSmzQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IaMefZ2gRqUl+kWDE4hmhF0z1Afpoj0piJejBdPvsC4=;
+ b=MHatVO9++D79T7HW6aapBylSu7KBiL+6NaQkNo9GtVY6+1JgR/TwlK0nrXFJgiwnK4WFqGhhtXaFsh+1uX0JKpjHyNCiTvdJ/f2+hza9WVnjc22r8w6CEgjP3SdA4UJl7Pz5K03vFLX0oNG84P9nOJQjSLT+f/+nFjpnryjvGHBZQaGgsdBdrItEJ9cEosBe+u0wKsr/rNPokloouUmUt/uxSrHRm2Q1tfATeXaTvLquXwy/Ff1cfxa5iKmIQWI9v6RppSy7X6kh7UijknHhavnGBJtyLvHBEnbjyxrkSbdtFHE7DNDTS48zrsQgx+zG+ukXOhzkBwKHh7/lEFMBVQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IaMefZ2gRqUl+kWDE4hmhF0z1Afpoj0piJejBdPvsC4=;
+ b=ngOG0ovOcq2cvEp4SToNL35q4iA+kfhzBbUpTdDfnKcqkHNSvJrxHsQVS5wEFmYgHHAXqoIKue8dxee3CF8dzAgT45zBFUxB34ePB7NxjlpElNEPQeT6ZEyfAnW5/nZ/L7pcj/IQ0JL3/p9BwzVoOjOl0UXFFI26H2UpyR0/6TEtBadOnDipzWMYUHap8hxV/vtfTqhv9JGI+4NZBezMWzrH99FhY/2ClZcrrTYIQiKX3t5sa/I4C/yU8zohZoJk8ntNwPKGltEu3h3DhpyO9kZZrPlQQBuLefsPGa3y6qlapC04mSL7K+qOZPxfBofY7fqkBpgwpEbpyGqBR6KZWg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from PH7PR12MB5757.namprd12.prod.outlook.com (2603:10b6:510:1d0::13)
+ by PH7PR12MB5595.namprd12.prod.outlook.com (2603:10b6:510:135::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9137.19; Tue, 23 Sep
+ 2025 12:32:20 +0000
+Received: from PH7PR12MB5757.namprd12.prod.outlook.com
+ ([fe80::f012:300c:6bf4:7632]) by PH7PR12MB5757.namprd12.prod.outlook.com
+ ([fe80::f012:300c:6bf4:7632%2]) with mapi id 15.20.9137.018; Tue, 23 Sep 2025
+ 12:32:20 +0000
+Date: Tue, 23 Sep 2025 09:32:18 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Donald Dutile <ddutile@redhat.com>, Bjorn Helgaas <bhelgaas@google.com>,
+	iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-pci@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+	galshalom@nvidia.com, Joerg Roedel <jroedel@suse.de>,
+	Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
+	maorg@nvidia.com, patches@lists.linux.dev, tdave@nvidia.com,
+	Tony Zhu <tony.zhu@intel.com>
+Subject: Re: [PATCH 03/11] iommu: Compute iommu_groups properly for PCIe
+ switches
+Message-ID: <20250923123218.GI1391379@nvidia.com>
+References: <20250702010407.GB1051729@nvidia.com>
+ <c05104a1-7c8e-4ce9-bfa3-bcbc8c9e0ef5@redhat.com>
+ <20250717202744.GA2250220@nvidia.com>
+ <2cb00715-bfa8-427a-a785-fa36667f91f9@redhat.com>
+ <20250718133259.GD2250220@nvidia.com>
+ <20250922163200.14025a41.alex.williamson@redhat.com>
+ <20250922231541.GF1391379@nvidia.com>
+ <20250922191029.7a000d64.alex.williamson@redhat.com>
+ <066e288e-8421-4daf-ae62-f24e54f8be68@redhat.com>
+ <20250922205027.229614fa.alex.williamson@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250922205027.229614fa.alex.williamson@redhat.com>
+X-ClientProxiedBy: SJ0PR05CA0117.namprd05.prod.outlook.com
+ (2603:10b6:a03:334::32) To PH7PR12MB5757.namprd12.prod.outlook.com
+ (2603:10b6:510:1d0::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e5532a0aff1991a1b5435dcb358b7d35abc80f3b.1758135681.git.lorenzo.stoakes@oracle.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTIwMDAzMyBTYWx0ZWRfX1/CT4ehdu5F7
- 6VnJC5JZb/TGq0GTxXqzwutGBpnh5zvXhqXxihnE0ZIBeLxavZe5A1rzKbuxO1bDNyuFhUEM+Rk
- 4I1KMXyeBzNEU/g4Tedu1h1rULa5Sn/p0/UqkELdAnxrKDhWjf96WssSMg0ltTS+aMBZqn2U8bf
- Mm6V030K3rfmUmm6+2tKL/Lil9yhk2vaa1ilZs3936p1XOaPfvsu3tSuBabaOBW+S4p6UJCCS7o
- UssKxq/W9pewKawoXgWRMXrenvRD0Q+OeFvs8GRRauXhjlsHet/L1r4+QnnsJQ0kVijCVo4qQhY
- p/3nafFZQN3AWkhiFthvrI3hfInHVuTDSlQN3xLdzE/r0zMDPQuTX7WW9M8m8X+BWNkt+j6HOZU
- bcmWMt/c
-X-Authority-Analysis: v=2.4 cv=TOlFS0la c=1 sm=1 tr=0 ts=68d289f3 cx=c_pps
- a=3Bg1Hr4SwmMryq2xdFQyZA==:117 a=3Bg1Hr4SwmMryq2xdFQyZA==:17
- a=kj9zAlcOel0A:10 a=yJojWOMRYYMA:10 a=NEAV23lmAAAA:8 a=yPCof4ZbAAAA:8
- a=Ikd4Dj_1AAAA:8 a=P7Dlay8f7KcL8MNlhToA:9 a=CjuIK1q_8ugA:10
-X-Proofpoint-ORIG-GUID: F6nP2Q8ol4BSxLNz15joz3bImrmTREZ1
-X-Proofpoint-GUID: 5HR21TLQQZuGh5ctB-qo8M6ErsQDpoDW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-09-23_02,2025-09-22_05,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1011 priorityscore=1501 phishscore=0 impostorscore=0 adultscore=0
- suspectscore=0 spamscore=0 bulkscore=0 malwarescore=0 classifier=typeunknown
- authscore=0 authtc= authcc= route=outbound adjust=0 reason=mlx scancount=1
- engine=8.19.0-2507300000 definitions=main-2509200033
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5757:EE_|PH7PR12MB5595:EE_
+X-MS-Office365-Filtering-Correlation-Id: 95e5e665-d9cc-48b3-a20a-08ddfa9d3d0e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|7416014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?MBpUClbxiIOZLO8eqBssZyKNwBvDDVtQwXuGSER3VkmXVSVV8xLOhql0PUdW?=
+ =?us-ascii?Q?CUqno66OMwsbj8CDMEJ5nL1QJGQvUta/MwYTHzsGNaEcLC9dp+QVGrvZBfFF?=
+ =?us-ascii?Q?cuXycHDkuBXHJCdq94I/J+MZWnduEFcds8s0DEPDmrv4HJ/cRCUpKI5jbK5Y?=
+ =?us-ascii?Q?yX+wZwTQ/mb+t3LLWLszWVhFbfephO9dNSf8s4Roae2wO5GrVcJnAA2Y+6+K?=
+ =?us-ascii?Q?jCCuZ1YuJ5+E58PFKW2VdniTFDX/sf56WDQMoDgPQdZWGrd+3Q1SrG5o1lef?=
+ =?us-ascii?Q?IOoisOL8kx7NqEV6UgCocL3/hJ2zEurP2JX5RKQEE7Za4/2+lLJ6Jo13qDk5?=
+ =?us-ascii?Q?OEdd2JD8HRnMbxLLiGFoiiAyLOBiGni8JSLIR9MDjijm7bOjaU57Djg2F8Q2?=
+ =?us-ascii?Q?A09Qf/+BHrxuhAvFAtU/8f4uqQNlk3KY5twsUpy436Qj7fo8KI+Tmo6WUzTG?=
+ =?us-ascii?Q?rh1YqMk9O1SqmYdyUiFW5dX0I+kquVYSlluKZF85Mmgd5MIU4C7BqqRPIYjo?=
+ =?us-ascii?Q?puH9UFr7XAvbUwnbBY0UO38oNVBkzH3zswAXaMiEzVfwVjkbWgkhVySX89y/?=
+ =?us-ascii?Q?yi+1nTCY0+ueEneaA33YoNSo3Roo6V9pFQ+U6gmiUPE6zqqSCEwJibaA3+XY?=
+ =?us-ascii?Q?YDPJmEecsfuTQAcxKedoNER6vsFfXzXzjz0i8ePopnmxz/daAIayHxR1edTh?=
+ =?us-ascii?Q?ThFqCGLhYach0oBh/n10rq9ergl0vhvhKpCIWRujPX/77FiYH0yccshKmFln?=
+ =?us-ascii?Q?FJiHo7RKex5CyUeZJzah06sJ/lgZO0RTW0nHe07e9scEI4WDmkvHVMBaPmLB?=
+ =?us-ascii?Q?h3cYgwK5PIvkGr9Rp+i2N/CaAGCO1VfUx+SEId6fxeyQoZXhI6WLsWflljHg?=
+ =?us-ascii?Q?ZgXSH1ZEUQ/E4+SaYip+bQE0euvc7xNMKJE2dLoKr4GkOC3PfItPRdAE2zRW?=
+ =?us-ascii?Q?Lp8WiAhxUysECK8p0SZWXNXvwGocQU3KUkjys1fFiqmPtTkOh4nt8TiEuCpt?=
+ =?us-ascii?Q?EKzE9k5x2TPM3E6KlmRa/EtIMxa3aR5VlYJIm2NXHURmmAQzKyJuxRtkeROF?=
+ =?us-ascii?Q?VdGMGr7iY47VLamcKq9kr2ZGnhvM/u6YI98nRfpYmHKTKgAq+EM84ViLuF6S?=
+ =?us-ascii?Q?yhEJ5xRgeikfvtgaAZIcwMtoJ6L2J5GaQr//K+8yg2SUckN1ZhglUdxhaohN?=
+ =?us-ascii?Q?Yxqp/wg9u8D2kb1XtC1Uk2wMGfwG543r0E/O0dfoDF9EumI5Wq8EujT6r0LW?=
+ =?us-ascii?Q?gfRBOleTngrTyO/nrIgBgxM/s0DIc9VvHsTWVXnhHYDbASU1wCULNIFz6CAQ?=
+ =?us-ascii?Q?7nT2CMdJeBDKlvgseKh9GDoJ7II9mtmHYhMcPbvqv2uuit3HRIdhglD7/fbJ?=
+ =?us-ascii?Q?IyfxaIvMlecsp28dvfls5TsTJCWhjkcbfiSFqKbgwiKIUWakQX/EMAUi2DG6?=
+ =?us-ascii?Q?uiGwnD/DVa8=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?233LCqJ+mNsLp7cXtZvD0ww/ZQQek3CQS+bMBPQKawIqzMsw6jVt7s3xhf3K?=
+ =?us-ascii?Q?ROAx9AsO95NNlZ6eCe4H/TcRR1kzC1Qrg/OAcA1FsGbz8A9q81On764nODDW?=
+ =?us-ascii?Q?k0cFrbIkHcq9hbTqDVOioPbji5DjYvLyDH+WM0B4P7pRhTASkr68ilymRu03?=
+ =?us-ascii?Q?T2BUmlFaYAfRZGpShp0dDbhw1orbzx6wsKt5vCcFi7KJzszHt2QbXSiyx5I/?=
+ =?us-ascii?Q?N0ig/pjc+4ExmXSQ/i7U5mOJc6lmZytQaJyS/m/JFybcapGLA2sbtNzhiK6Q?=
+ =?us-ascii?Q?pY3MR0kEuf//rA9zj96GncDk4B7blehnRzE3lvG+ugdgsDs5RFS54ir0An4J?=
+ =?us-ascii?Q?saEoCwWIR+lJKHtkKKAGknOy7zj0ajNLRdNWelKJMgPqSTExulUt4eUl/8zd?=
+ =?us-ascii?Q?fb9z30T7nouC0ehM8ae45RNh0UP+KA9arx9Veo06iM+5EW3m0Xa1Lyf6VKbB?=
+ =?us-ascii?Q?ZCPMt3Re5l6AFMSpwisXyP+fD0dzYuqkgakGnRFwcyMdCbtVJ4ajPfFEWQGX?=
+ =?us-ascii?Q?BzwYT8PotP9NQdzK+OazsvDF4P/fYyt4KmRqMO65J2TzFV+yFnajz9jaCBEU?=
+ =?us-ascii?Q?IpviNaU8BxI5Zx2+8XU2OOKi4/AogWf3DZkeCjfPNeZtK2meiOjV+3U61aK3?=
+ =?us-ascii?Q?eiXQ3/6Ipp1C9fF+I6/QaO9yLw+0iZyifEhPh6KjShwzWZwBt13HioWx6/b8?=
+ =?us-ascii?Q?Km6Mg6eMhVrSz97bjZmoreNpdZ1aib+UBOyOuHuK9aJlZrGTF1qsJeDNtMYv?=
+ =?us-ascii?Q?L/ljw5rJuDg/jC0FvTa45gPO7iRSWNxcyHVRyjHYLyWEaSWyQJQfzynrSQXa?=
+ =?us-ascii?Q?pbIoJFVt7hElpzUauWOBOLg8l1C7hzC41A2VeO+fX2a3kFoThoS76h5udkUY?=
+ =?us-ascii?Q?pf56uU2Ga5MjC3cwjSTmcPjo/wt7bMQ4GUBnuvKgYdO3DPk3xz4QumbhCP9L?=
+ =?us-ascii?Q?XFctkayqp5LmuySdU2oW7Vtwjdq+JUkWEjueytFTKeW+sFB+bkjgIOvS8wF6?=
+ =?us-ascii?Q?OBG79bi2H4CKF2CKEtN4C4sU0+YI9esPFm/52w6OZvRe4rQSRa1r288kQ6u8?=
+ =?us-ascii?Q?RcR/9y6oLbg6QE4lOgTyMs5CnGBUOHXq/k5O6KYA7Teiy3EITQqLuzm7k9YC?=
+ =?us-ascii?Q?weizmO6q0s38rMrDv+psCmefYp84Fre2dMV759CbHpFb0QDEPIorEKEBFmk+?=
+ =?us-ascii?Q?bfane/tlP6T2p1wVFeztveWpQzZe5E5LnxaRZ+av9dReoF8lzPul/CtARJbl?=
+ =?us-ascii?Q?m0jfhecrjHIRzBznRIQcbbWPc3FXDVGAWbO+0txBDuN0jsZRsgOYczCSmGvp?=
+ =?us-ascii?Q?c+JtaCfWtvmtgZbClMidNhfErwxYBOjzKujp1JdUC7/t9knt4R4EcqrDIdQy?=
+ =?us-ascii?Q?rnchFayjf8af0QI4ipUx1LTBsx0pmG8RUY2u75uXhiFDWe9hbN5ookQWE+Wy?=
+ =?us-ascii?Q?UIuSmp4R5nCTxAWF7Ru81kmR6I6RuBcZ1foZafEUPd13SVU8qYWzbJI8t5BU?=
+ =?us-ascii?Q?QODPifU/6RhzpojD6rKWOBO01jtpxfi/TQ1TMtI4jtBuVwc7k/auYg4IyhQf?=
+ =?us-ascii?Q?znt9ErOG/k1zPsFy08xhwxZDfk+UpePjBnJ+RMk/?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 95e5e665-d9cc-48b3-a20a-08ddfa9d3d0e
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5757.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2025 12:32:19.9442
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gHTzUxpWM0y/UTskCb2QjO0efZlOZ7z/OcnsHfnowLriZsxQhcmVu6ff8KdywFT8
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5595
 
-On Wed, Sep 17, 2025 at 08:11:13PM +0100, Lorenzo Stoakes wrote:
-> Since we can now perform actions after the VMA is established via
-> mmap_prepare, use desc->action_success_hook to set up the hugetlb lock
-> once the VMA is setup.
-> 
-> We also make changes throughout hugetlbfs to make this possible.
-> 
-> Signed-off-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  fs/hugetlbfs/inode.c           | 36 ++++++++++------
->  include/linux/hugetlb.h        |  9 +++-
->  include/linux/hugetlb_inline.h | 15 ++++---
->  mm/hugetlb.c                   | 77 ++++++++++++++++++++--------------
->  4 files changed, 85 insertions(+), 52 deletions(-)
-> 
-> diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
-> index f42548ee9083..9e0625167517 100644
-> --- a/fs/hugetlbfs/inode.c
-> +++ b/fs/hugetlbfs/inode.c
-> @@ -96,8 +96,15 @@ static const struct fs_parameter_spec hugetlb_fs_parameters[] = {
->  #define PGOFF_LOFFT_MAX \
->  	(((1UL << (PAGE_SHIFT + 1)) - 1) <<  (BITS_PER_LONG - (PAGE_SHIFT + 1)))
->  
-> -static int hugetlbfs_file_mmap(struct file *file, struct vm_area_struct *vma)
-> +static int hugetlb_file_mmap_prepare_success(const struct vm_area_struct *vma)
->  {
-> +	/* Unfortunate we have to reassign vma->vm_private_data. */
-> +	return hugetlb_vma_lock_alloc((struct vm_area_struct *)vma);
-> +}
+On Mon, Sep 22, 2025 at 08:50:27PM -0600, Alex Williamson wrote:
+> That's not what the spec is doing.  We're misinterpreting it.  The
+> sections of the spec you're quoting are saying that if a MFD function
+> supports ACS it must support this specific p2p set of capability and
+> control bits unless the device does not support internal p2p.
 
-Hi Lorenzo,
+Bjorn raised that too, but it doesn't actually say that. The wording
+is meaningfully different from the preceeding section that does
+explicitly say the language only applies if the ACS cap is present.
 
-The following tests causes the kernel to enter a blocked state,
-suggesting an issue related to locking order. I was able to reproduce
-this behavior in certain test runs.
+IMHO, from a spec perspective, prior to this language, internal MFD
+loopback was *undefined*.
 
-Test case:
-git clone https://github.com/libhugetlbfs/libhugetlbfs.git
-cd libhugetlbfs ; ./configure
-make -j32
-cd tests
-echo 100 > /proc/sys/vm/nr_hugepages
-mkdir -p /test-hugepages && mount -t hugetlbfs nodev /test-hugepages
-./run_tests.py <in a loop>
-...
-shm-fork 10 100 (1024K: 64):    PASS
-set shmmax limit to 104857600
-shm-getraw 100 /dev/full (1024K: 32):
-shm-getraw 100 /dev/full (1024K: 64):   PASS
-fallocate_stress.sh (1024K: 64):  <blocked>
+You are advocating for a very pessimistic position that undefined must
+mean the worst interpretation for everyone. It doesn't, undefined
+means we don't know.
 
-Blocked task state below:
+A big part of the argument here is that in the modern world the HW
+community has aligned that MFDs should not have internal loopback
+because it harms virtualization.
 
-task:fallocate_stres state:D stack:0     pid:5106  tgid:5106  ppid:5103
-task_flags:0x400000 flags:0x00000001
-Call Trace:
- [<00000255adc646f0>] __schedule+0x370/0x7f0
- [<00000255adc64bb0>] schedule+0x40/0xc0
- [<00000255adc64d32>] schedule_preempt_disabled+0x22/0x30
- [<00000255adc68492>] rwsem_down_write_slowpath+0x232/0x610
- [<00000255adc68922>] down_write_killable+0x52/0x80
- [<00000255ad12c980>] vm_mmap_pgoff+0xc0/0x1f0
- [<00000255ad164bbe>] ksys_mmap_pgoff+0x17e/0x220
- [<00000255ad164d3c>] __s390x_sys_old_mmap+0x7c/0xa0
- [<00000255adc60e4e>] __do_syscall+0x12e/0x350
- [<00000255adc6cfee>] system_call+0x6e/0x90
-task:fallocate_stres state:D stack:0     pid:5109  tgid:5106  ppid:5103
-task_flags:0x400040 flags:0x00000001
-Call Trace:
- [<00000255adc646f0>] __schedule+0x370/0x7f0
- [<00000255adc64bb0>] schedule+0x40/0xc0
- [<00000255adc64d32>] schedule_preempt_disabled+0x22/0x30
- [<00000255adc68492>] rwsem_down_write_slowpath+0x232/0x610
- [<00000255adc688be>] down_write+0x4e/0x60
- [<00000255ad1c11ec>] __hugetlb_zap_begin+0x3c/0x70
- [<00000255ad158b9c>] unmap_vmas+0x10c/0x1a0
- [<00000255ad180844>] vms_complete_munmap_vmas+0x134/0x2e0
- [<00000255ad1811be>] do_vmi_align_munmap+0x13e/0x170
- [<00000255ad1812ae>] do_vmi_munmap+0xbe/0x140
- [<00000255ad183f86>] __vm_munmap+0xe6/0x190
- [<00000255ad166832>] __s390x_sys_munmap+0x32/0x40
- [<00000255adc60e4e>] __do_syscall+0x12e/0x350
- [<00000255adc6cfee>] system_call+0x6e/0x90
+We are here a decade later and we can choose to require quirks on
+devices that choose to implement internal loopback, because they are
+certainly now the minority of HW.
 
+> We've had NIC vendors implement an empty ACS capability to convey the
+> fact that the device does not support internal p2p.  There is precedent
+> for the interpretation I'm describing.
 
-Thanks,
-Sumanth
+IMHO it just shows Linux has the power to convince device vendors to
+do things.
+
+> Are we going to expect users to opt-in to securing their system?
+
+Since the grouping isn't working right today we are already
+effectively doing this.
+
+All this is arguing that the burden shifts from people with modern
+systems to people with ancient systems.
+
+Jason
