@@ -1,117 +1,176 @@
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from CO1PR03CU002.outbound.protection.outlook.com (mail-westus2azon11010067.outbound.protection.outlook.com [52.101.46.67])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D4373233E3
-	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 16:21:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758644504; cv=none; b=FNAyogNrMWsD/OEFAHaHulqGXMGXNoLjTNEJIzzHxN1T1SjDQNhRuq1A40TmjirLSBUpgycegVJh58I41EDh3s/Y2ACc0otAeO5iamLz44fyrGZUoutmVfPyRJD0W12MlutBAlBqcw3dvTBTpGS+VtZhaFCCtg/uO/zIT3sLaoY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758644504; c=relaxed/simple;
-	bh=IYKsjA2lVzqlmST6yIaoy5ZiKBNubcdQiY7wDAQazvg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RA8VEGc46ErdYF9T/o4IT+tc3UOzBjAk4SDe/mYSVI4BsFiAZYU1/pKD/g6J1yLq3f3qFe4UGx1aNEaDOjj8t9e1VdYCoo0zpVBWV0z2FrRx5UWCO3DcavPNt/qBQ0pCmvMG3qSitaYRBVU4z5kR9boMLwQ92w6jpF7fh3bALss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Cyt9PeIm; arc=none smtp.client-ip=209.85.222.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FBF131E0E4
+	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 16:23:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.46.67
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758644591; cv=fail; b=Rv08KoE62n80asYMLbtZV7H0wEzyKEGSN1Fwn1bYWdh0SaccBMPpqz44/Vk3AFh+XwDhfBc9CXP5ZEMfx9UozKsqC+5GGnT/Tpotj3exOyOUZSVZioX6q2yqxXb6LAdLHjLqLZdx/ampfdHNMfqsJ4Gm/VrMgloOJJMbhLXLm5Q=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758644591; c=relaxed/simple;
+	bh=RjgR2OzECULxxVT0Kw72jgxSBepbHvZ2N+ekWJXA7W0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=uuFgFM3YERd2ULXwsQY7NVilvTNJHJiFzA31ikQxdKVBbUG8syCRyYRmOYOj8bO2AmZlJkF46VpxFBb3PHXKrr9gKO/pJK2B8/T2MBOhn2Su6pwdpfqNBb2+wMqYejf97HVQXTn5vVQrYm1B9IghP+RiQCZboChGktg96pPg10Y=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=pkuvilvR; arc=fail smtp.client-ip=52.101.46.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Cyt9PeIm"
-Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-84a91cfc7f0so4857385a.1
-        for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 09:21:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1758644501; x=1759249301; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tAF1ZqvUCq+DYRKtNmDJLT3lAtr/qrJIjSppUMh/0OY=;
-        b=Cyt9PeImrpWV9TUJhWnaCiFdca/7EOsbkT71Q4uZhT4g+QdoTpahgUDZdmABxglDmk
-         j3KFuOtBBctbbAtgJBYQxsoA8PuanZgSPf09Hyb8YRz4GyLeR6IUkYTAwEIyIt5ZIvaj
-         r/5jSlIQvx8dknu631qB0MIp+UMuDxmC/szFgh1mcDvkeaWevZKuSyXOoHuGkHxcDDbe
-         qerYra7t8MxI6QpBWfrJM6HQdn43m6R8UFcxy/C7JVD9ilF9CUz/1mOi3GDC44xtJMt8
-         0mwkHFKqBU6GnzzDiZmce+7oGOdkuSY4vVxHE5ry8La2wzJkMZ5tMEgNVu3KEFMGLkmA
-         TpMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758644501; x=1759249301;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tAF1ZqvUCq+DYRKtNmDJLT3lAtr/qrJIjSppUMh/0OY=;
-        b=PdqiTvBsAtqecV78yHxhkXDjLMnednRYkQ8hwHA8XfHK/9uYZniJEFegFm1RCbHZdx
-         oi5f5420HdSdhkr3J4uJE/As5eR7JRMtlLEn7ntqH/Wa95BjbpbBsa1YPaE4r0Q0hRkf
-         pjDrAgAbkB3qr4J0EEuUWk1K2bQBsrMtwDq7BSnjsurF4bFvibYI0j4jRvRH2fkO2FOo
-         JyiVPByxdHIJPrX4+qvkm98AKibzFNtc6F4+0tQ9GR43tPDpDQtj22RrwuJtGZcqom8v
-         UBhxK4Nvb7MOPXk4lVkvJX92OHWfxLKLsvzKoI9nJsctQwLdgqmZrDL7kp6B4gzNR1BH
-         28zw==
-X-Forwarded-Encrypted: i=1; AJvYcCVm2oO2tZIMwEH/+v/3sFPaPnhwh/hn83tmxA2RAD1ym+uGsXTVOamVkT10ZpnQpoOdotS6ZQ==@lists.linux.dev
-X-Gm-Message-State: AOJu0YxTXPnvxXl2V1ki9hRZ7o+uUVoLQdvoufXRv5OB7BnybaYPSIXm
-	DIGmb+m61ihGJTB7HPaSFTcKx4VM19TIpEJHiqHeufpCX6C3BrG1/ro8eA8LHDJqO4E=
-X-Gm-Gg: ASbGncu89VTgvc8+jVKIHysVTo4XBJm7TpDOy3oznK2Yi/rh6EZO41jFAZYdhdC1nZ6
-	PNgn3MXr6ZBy528WiRwkJOSvMqfk3Sl6gq8IRy+fN6+h0QVfap33MFUsZ2Nw7BfGY+1H/V/xJ/3
-	ovtH8/ANe8nEm/LBjHsuNnqhLCdktfa3j+DmvEH7Dj2px4zo1vXtlWixlGopReI6XTf4dQluUwx
-	iJGOSHMP5eUthtZ4veIdpnznFPl1/vavVXs081QAG3yM86ZDh0ycmJDgS3grGiejkAvRpYdbC1/
-	L1orgiRWw3mxVjcPj0ZXn34sAHcb8jvKZqiuWQRwfqt/4c0p2IcdVBQ8maN/vHhGJkJgHXeh
-X-Google-Smtp-Source: AGHT+IFYjLvlYVWkvRmfrd4O74XRQ2yOeConI9WiorD7CA02H/AscVNhWnASnvsfS0ugaprQj9f5qQ==
-X-Received: by 2002:a05:620a:7088:b0:84f:e093:3949 with SMTP id af79cd13be357-851b8ba216bmr341372285a.36.1758644500700;
-        Tue, 23 Sep 2025 09:21:40 -0700 (PDT)
-Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-84cb88e6969sm318223985a.2.2025.09.23.09.21.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Sep 2025 09:21:40 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1v15lr-0000000AxbL-2Bdg;
-	Tue, 23 Sep 2025 13:21:39 -0300
-Date: Tue, 23 Sep 2025 13:21:39 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Joerg Roedel <jroedel@suse.de>, iommu@lists.linux.dev,
-	Anders Roxell <anders.roxell@linaro.org>,
-	Naresh Kamboju <naresh.kamboju@linaro.org>,
-	Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-	Xingang Wang <wangxingang5@huawei.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, stable@vger.kernel.org
-Subject: Re: [PATCH 0/2] PCI: Fix ACS enablement for Root Ports in DT
- platforms
-Message-ID: <20250923162139.GC2547959@ziepe.ca>
-References: <20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com>
- <20250918141102.GO1326709@ziepe.ca>
- <tzlbsnsoymhjlri5rm7dw5btb2m2tpzemtyqhjpa2eu3josf5c@uivuvkpx3wep>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pkuvilvR"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=llCasDgSRgNzxFhKXjYPYElu+sZ6SqodTR1GJTyEfr8raGbQ/ISLtcJ8uSBbI38n39AS9CyneleC288qi6GFlQpQ7Geeddp8I3TgLmf8PirUu/CFUeOvdCrfRgXEL3okg3uVGD6InIce/3ett453pkg6fmtVu4j431NA3SRGt1BuTh2Fi6KgHI9IhFSM7WSE4Txaj97Dgf9QGNEIqma5VnPaOr3Fm9oONTteo9/0EOzyRo6cARin03vTG8ubt0vW81Ff/SrZHgvCLfa6t2+s4hNXfSF5u1T5fWSnpHcMaZBMcU13DuJ+5+76t9S5tedKD4wcrDliXs155Si71nbFrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RjgR2OzECULxxVT0Kw72jgxSBepbHvZ2N+ekWJXA7W0=;
+ b=QtYIwQ7S0rn3HZmwV5W6wQ3zinZ4h8jXbdIFkb2hkOHTwu19Dzglzk7LQoEd78/qlpEOYx9D6tDwkIu90e+igK8DH0wBt674X4ugpfCZe+tO/f4iAE4CJYwUBwH9iavC2FUwvULeM7adK9MCc3K8QIYBNDrcmMDI3HyezlmJB5OFBn9CsjQSAaI2hWuAVa1s7/F+rW0cQ++mOvP6Pnh5ivsiIizrHSnA1P91NnLMm5jN9YkbLLa3TUZm69BfNM5nDuK5Dnt3DJ0af9Bd/rbJ4AfKqUfXUs6phnQfF7diwXG7PaCsZtyZuF32/oTvfXufg2CdMhnJLi9FpBAsAVLo6w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RjgR2OzECULxxVT0Kw72jgxSBepbHvZ2N+ekWJXA7W0=;
+ b=pkuvilvRLA4XF0oyYwavKCcy2o2RSzBj+jPm1PRxT+wPtvzTLNsJKIevv8tHs6G38yg/vOLQSzqAzkGW+VNC1kdjqO+epwVx69IhzH0wHPiQ4yDc1X02ZI0hjxBZ2rKyjh+eFDbo5YkLTBZB0x5lgYk14F3BI9DRus4HAT/u9U4pz6Xm9riQ9sOX5sEFYJPQ8iMESCfxLy3uQkiNYs2QGf7R4Fdt+stguJ1Tv1geYP65hWvpsMFIiWx0u02+xpr7VuG7t9To6UlC9anyQyeROxn7HYM4nVZUeQam4m8RxFnEEbYE3k9l6IUMjBENYJK5AkKPKpW/0VVd61GqCXO+SA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from PH7PR12MB5757.namprd12.prod.outlook.com (2603:10b6:510:1d0::13)
+ by SJ2PR12MB8977.namprd12.prod.outlook.com (2603:10b6:a03:539::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9137.19; Tue, 23 Sep
+ 2025 16:23:05 +0000
+Received: from PH7PR12MB5757.namprd12.prod.outlook.com
+ ([fe80::f012:300c:6bf4:7632]) by PH7PR12MB5757.namprd12.prod.outlook.com
+ ([fe80::f012:300c:6bf4:7632%2]) with mapi id 15.20.9137.018; Tue, 23 Sep 2025
+ 16:23:05 +0000
+Date: Tue, 23 Sep 2025 13:23:02 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Andrew Jones <ajones@ventanamicro.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>, iommu@lists.linux.dev,
+	kvm-riscv@lists.infradead.org, kvm@vger.kernel.org,
+	linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+	zong.li@sifive.com, tjeznach@rivosinc.com, joro@8bytes.org,
+	will@kernel.org, robin.murphy@arm.com, anup@brainfault.org,
+	atish.patra@linux.dev, alex.williamson@redhat.com,
+	paul.walmsley@sifive.com, palmer@dabbelt.com, alex@ghiti.fr
+Subject: Re: [RFC PATCH v2 08/18] iommu/riscv: Use MSI table to enable IMSIC
+ access
+Message-ID: <20250923162302.GC2608121@nvidia.com>
+References: <20250920203851.2205115-20-ajones@ventanamicro.com>
+ <20250920203851.2205115-28-ajones@ventanamicro.com>
+ <20250922184336.GD1391379@nvidia.com>
+ <20250922-50372a07397db3155fec49c9@orel>
+ <20250922235651.GG1391379@nvidia.com>
+ <87ecrx4guz.ffs@tglx>
+ <20250923140646.GM1391379@nvidia.com>
+ <20250923-b85e3309c54eaff1cdfddcf9@orel>
+ <20250923152702.GB2608121@nvidia.com>
+ <20250923-e459316700c55d661c060b08@orel>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250923-e459316700c55d661c060b08@orel>
+X-ClientProxiedBy: SJ0PR03CA0052.namprd03.prod.outlook.com
+ (2603:10b6:a03:33e::27) To PH7PR12MB5757.namprd12.prod.outlook.com
+ (2603:10b6:510:1d0::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <tzlbsnsoymhjlri5rm7dw5btb2m2tpzemtyqhjpa2eu3josf5c@uivuvkpx3wep>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5757:EE_|SJ2PR12MB8977:EE_
+X-MS-Office365-Filtering-Correlation-Id: d59f2327-9ae4-4cfa-f6ea-08ddfabd79ab
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014|7416014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?P8ZCB5ls9AsDUJ7CrtTXy5Zn4SnhSeJAAF56jecwk6/ll0KiahBDFEr/U4kL?=
+ =?us-ascii?Q?rnxooDBAvLUHSEV7/yBkWd8T8alzIZh43Z0OelGONwZfkyzKnkovozd43jbb?=
+ =?us-ascii?Q?f5V55G/3ZELHe9+otzx1jtEi29BszDiKjpKlznXOGfsZaVP/ZVPNWY1WYZcL?=
+ =?us-ascii?Q?Ij1H2iY+zB4FGylCR4sPToYuoJvs8fwji5kNw623wFq4dSQ6hSpGOagIkFy3?=
+ =?us-ascii?Q?MUIWX71YfwTfxBAKD+oCohoX0+2ynPC9enLG/iKBJ2DK62/z6ZLZWvpHmqJW?=
+ =?us-ascii?Q?ViRdOtubsAVEQYiNP+/IEispnwqwbq6k1ucMovK5TQpVHeEkzu62UqmcVS/b?=
+ =?us-ascii?Q?l3lhBVQlve5acsprizF1aEzifuIXNYc2TAEzfiMC7H4Vw/8A6Jy0iEfh8I4f?=
+ =?us-ascii?Q?M7Tv4wjVhnTruW6VDN04zGjBOMwcMFOid+LKn+8lFN4SJ9q/22zaMh68IkbU?=
+ =?us-ascii?Q?6y71oTJktb8O4G2NGqmBJx9rdvn6um0kMuaz3mkKwd5xES4Z3dLOklSfq1Zd?=
+ =?us-ascii?Q?DGQGBtfIEB1DDNvFwrLxRUjbXN9eBS2ExVpqllycR3QcUKNZNx5r0njjjm1Z?=
+ =?us-ascii?Q?/09JZO5Ya5ArnbMgjd6pUgSpcIXxbTZ/TYkUn96tWwvmBWqayl1fVAjEfDFJ?=
+ =?us-ascii?Q?h+nAj3wMucQZqszgUAet4rbeYy3dg3OLb9ZCYxdY8lhMFYOOVW/pRfVMyqcI?=
+ =?us-ascii?Q?bgor3HCkiGho+GaawhqzdBuuOKJhu8skUiSHKv9+i7sgFQrADF1fO9X/0jLO?=
+ =?us-ascii?Q?skoxqZK3n1NA4RO54djafTKkPnl2vTeEz3hR3eWlxvq7jsJ1+iGJXe2pbQ5X?=
+ =?us-ascii?Q?/wnaxkPvnMpqQ04FfZDORB8i8Kks/Ofp9RvpdaiJPsGpqQsmeiYjhSGgu+GJ?=
+ =?us-ascii?Q?D9wGOTSUCciW88LCWdewjbWDVsINuK5GHUe7uXM4iKciRqMDQxlaf+S44Wqj?=
+ =?us-ascii?Q?+cweiGNTjkZdyxkkVQ1HgmDUI7Lw7BaNCwMF6rzU0vNqpGJsZzVgP+6C3kmP?=
+ =?us-ascii?Q?erQHonP5FBdadOe0NOo7KMyHa1VtA7h6cG6DcDlVlgUxl4A82pC3O5iqQnHr?=
+ =?us-ascii?Q?90WXhV8uNGTY/KPeYlD+2N9ME4FBDzqsOShE9IQTJcbf42Q+EZnqhAxZELJ4?=
+ =?us-ascii?Q?kS542Xh0+w3D10m/kbja8wSAgkZrX1cBGfUV1Fch1YWh8B1jfh/81g0Ih4E+?=
+ =?us-ascii?Q?9eUs8TjR3nMRUbEKi1Ppk35GXbXhOBM6vKjY+JA8E0eqHCvrg7beFF2MKYjA?=
+ =?us-ascii?Q?ViGBwyahfmuCbDbcV9P2UZj5TuNOKuFfzTrZxWYvpusyiRM8PCsRFzirDy4F?=
+ =?us-ascii?Q?H6kgzt8SD2/IeXmRi3kE90ivhqDFFtQgGDTmRQS4oNMHIjcerIU85xwpnx9Q?=
+ =?us-ascii?Q?F184MiKvDy5kDxsFbWZe2zX1gBgE2gJ4OHOZ1AfDUHVXJOQdBW65bM5ScUl9?=
+ =?us-ascii?Q?1MnlRkwlvrE=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB5757.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(7416014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?uMRNhT+a08cn27i4kIjGKSstq8TRNq96wdJ/ZF2UxD+Ya/4OTZsA38RVYC9f?=
+ =?us-ascii?Q?l/2uFxYObV//eo7sm9QCJmQ1Q4IDPE8o0BdLUTGtLvXvpNcaJApUOJw8RDpQ?=
+ =?us-ascii?Q?uROj+1soWblSjhZt88CUL3JXiLaNP6XV+1ItIB1WQwQgDCy0Ucw9pcl0i7lb?=
+ =?us-ascii?Q?u8oqH/btwFBMYidtldv840LAp4tIIkOtTW4yi0caA3kslqaXtwIFHdoBVX/z?=
+ =?us-ascii?Q?SNRE4l4MQ+pazCQje8TinaQZC8g8YeWM4NZOnXUpNmBnHvOpCHnj8N6UfRty?=
+ =?us-ascii?Q?A8Ofzx3zjHzdY49qs/SdzpplGUWFpXP+r4X6DbVAFepGIbXyAyxTdy98jYre?=
+ =?us-ascii?Q?5UMNtjNaQ+BxqdxeuluzH8bvI+LIKX40Fb0hSZN+Y8t8f7cPLC51HuBX2VIK?=
+ =?us-ascii?Q?nrQsJ7YLsF7SDL+Ti7kCDuat4pOCwPf5z3tp8o3oYCnPKVRQ9UjFcir9jcfc?=
+ =?us-ascii?Q?teUnTuMPWPsz2vNmtpMWtE2ycpjoKY0PJQE+hSmusyh1DY4UClqOhAtke9C8?=
+ =?us-ascii?Q?+AZipHbz3m0kDtd2mx1Vj/zbLQCxfdc+xrAVMzcUCJ8U0xCakSfQf3ZDZMHV?=
+ =?us-ascii?Q?HCTIFqDeYcaoSff+58P8h6PVsY0cEwGHpZlucMpZHDdvcxa4/iLkhFzRP7Ej?=
+ =?us-ascii?Q?s0Mc/Z+BJKGDKOIEumBnmOjlARt75+SxLDFJQSOzrs48QsaBBf2xVxsjpmnp?=
+ =?us-ascii?Q?capKAdA+TatCkLVMMAiZz6a1xW+XE/F6nJybkJg1djDqBKrOf62Z3A8dK7Xp?=
+ =?us-ascii?Q?rFap9jkmsM0M89PCG3/fHh9ZfXExl/jDNeXjpAfzhB75J3w1htnXuLENu8SE?=
+ =?us-ascii?Q?vIsbIwxkMCgjQBfgQQV/FymPX1w8B2A+9/Yc4qaLWtd/TCOcROgr6hkWYAoc?=
+ =?us-ascii?Q?Yq5OozSwpT/F2+mP6/ADzNNLbZHCLvXQ3FLKeiDi1SQvIl1mZips6uA0QAMZ?=
+ =?us-ascii?Q?WoLIrHXK7E1ko0H+txuXQLA2OpEkQaTrHKwOtFjciTdZavmbLdXeIvC1oMwQ?=
+ =?us-ascii?Q?33N9dPULhoWXiRZZlo9Gl5hOIgh/LaR74fyDtIEEGyojoJUwDXMSrzzJW+Ls?=
+ =?us-ascii?Q?k26jMh6rL+Za+GZYpyxQcT0IkY6FD3RP0MMTN95ZZ9AtVLIyUrdKErMjTkDC?=
+ =?us-ascii?Q?S/kX9lvJFDhaKTTx67rxvbdE6C31M/7ZDCenCVeS+xuEHnGYOWEj1fzU18Nj?=
+ =?us-ascii?Q?GQlwvulY784na36CPP0LWpCWa3C/q5E5W+K6mfnUx3/GSBKDHfBJy/tkHST/?=
+ =?us-ascii?Q?nzHoGBKhK1MQXzz7zwaubT/wO9uAHzNKK+r8c9n/Nkmtrmd1u9h2GGzQ2GjB?=
+ =?us-ascii?Q?q30AkLVLkQJSIM8e+2xXOXGxDDeEMNKu1FBNq0ToBASTXb8S4zpigaoXUojR?=
+ =?us-ascii?Q?bqPR1qwfQAPwZkYQ8HOdjahtuuYAv61iRdX5IQ049qmW9kZL1snf/NhRk9uT?=
+ =?us-ascii?Q?XH2iG/zX0ISOjuCAHgWQSTcwb1ih+/ATl/6ooF4k2e9p1Cp02v3bNdlLwedF?=
+ =?us-ascii?Q?JlXBJOci6EM3Emwu2JY9ETAqoZ7Op4mVVcxJKxnLun0sTaNg6eSK06y7x65o?=
+ =?us-ascii?Q?OfSW0Jv83wMJ7RXH5XMP66w0t/rh/i3BfcoIc7vR?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d59f2327-9ae4-4cfa-f6ea-08ddfabd79ab
+X-MS-Exchange-CrossTenant-AuthSource: PH7PR12MB5757.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2025 16:23:05.5737
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TPPyGUz5g1dhhhgNXYINeStOmakIOGLb9zxetx4GfChKS+2To2NQYSg6wQw4XNEU
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8977
 
-On Tue, Sep 23, 2025 at 09:07:49PM +0530, Manivannan Sadhasivam wrote:
-> On Thu, Sep 18, 2025 at 11:11:02AM -0300, Jason Gunthorpe wrote:
-> > On Wed, Sep 10, 2025 at 11:09:19PM +0530, Manivannan Sadhasivam via B4 Relay wrote:
-> > > This issue was already found and addressed with a quirk for a different device
-> > > from Microsemi with 'commit, aa667c6408d2 ("PCI: Workaround IDT switch ACS
-> > > Source Validation erratum")'. Apparently, this issue seems to be documented in
-> > > the erratum #36 of IDT 89H32H8G3-YC, which is not publicly available.
-> > 
-> > This is a pretty broken device! I'm not sure this fix is good enough
-> > though.
-> > 
-> > For instance if you reset a downstream device it should loose its RID
-> > and then the config cycles waiting for reset to complete will trigger SV
-> > and reset will fail?
-> > 
-> 
-> No. Resetting the Ethernet controller connected to the switch downstream port
-> doesn't fail and we could see that the reset succeeds.
+On Tue, Sep 23, 2025 at 10:50:56AM -0500, Andrew Jones wrote:
+> Yes, this is the part that I'd like to lean on you for, since I understand
+> we want to avoid too much KVM/virt special casing for VFIO/IOMMUFD. I was
+> thinking that if I bit the bullet and implemented nested support than when
+> nesting was selected it would be apparent we're in virt context. However,
+> I was hoping to pull together a solution that works with current QEMU and
+> VFIO too.
 
-Reset it by up/down the PCI link?
+You probably do have to make nested part of this, but I don't have a
+clear picture how you'd tie all the parts together through the nested
+API..
 
-> Maybe the bus number was still captured by the device.
+Somehow you have to load a msiptp that is effectively linked to the
+KVM reliably into the DC for the iommufd controlled devices that are
+linked to that KVM. Then synchronize with VFIO that this is done and
+it can setup KVM only interrupts somehow. This kvm entanglement is the
+"virt" you have mentioned many times.
 
-Maybe, but I don't think that is spec conformat behavior.
+The direct injection interrupt path is already quite a confusing
+thing..
 
 Jason
