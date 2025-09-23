@@ -1,169 +1,230 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 230BC30FC1F
-	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 10:12:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E035C2E8881;
+	Tue, 23 Sep 2025 11:52:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758622376; cv=none; b=ZVI2JodmniURAuk4Gc6cFViKsabt6RbU2qlys0LdjYoIxBnsuNctIKglaezeFnVv4Xo8/PSzbWxP83w0QXDBdYv8FpZVpM+pnyWxAPfFCF0g4nIvYv6qQJ2SuMgYS2b/fyhI9Q3LqvPHpEMpTG2uaTB6MTYcyotC/4UJ0gU+4Xc=
+	t=1758628364; cv=none; b=rB9vFK0KFKs+4s2Y2fL52h3O0EX4IAMpJmXgcXqGWDg6Q2ktKBtem0z0ghhOus8Idaq2mMTeLIi23fdFCU/JMylb//gMIkCv3Z0kt6o87/2qCk6uxoRjZlPgJMns1yFKDwWSU8k9KFwff584HRyb/vGhR+5QuP8/Jd25J4TjaGM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758622376; c=relaxed/simple;
-	bh=vSTTYJFexJOXOPGbl9flNs1f8jdpO+hYI2JMuPrhH2M=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=qAPXoPv+TOGt0qoi25kRzQWocn/LuQU1teWseix6z0KZBCFrVuDwY/OAEQS0CObup7pijspnFJNMC9GtGEYOKuy0e3ZKJR49sWBm4887gAONNgNuMofPyBwwzdYOjwBNtSb/OUOWOVfFcNaxEmVsa7Pl6FMA/Vl6QA2jqL7HhW4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=bThBhpI0; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=bv0St62r; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1758628364; c=relaxed/simple;
+	bh=uC3KukjZxErvZyqVNyTZvCwwhubZja1S6u22ZrF2EwI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TGwa4UcMFm5V44413O0DA7vHGWQBBiF5yfO81RF0Wy76WpAsDO5eTgOR1iVv7POjSabu0HRjWhRc8/UBj3dkx58BuzMYsrYpCuGX4KldTvRgyyDZbVSqMoZj4DGklSrUXY/6OH48hgM4AwYkRm46/wmuZ8ztOBWBWBr9eHO2P7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=EFGvr8Qy; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="bThBhpI0";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="bv0St62r"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1758622373;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=jbygUmzfw8XS2VUG0sJP6HEJcO918I6DxufbOrM/Lys=;
-	b=bThBhpI0ltJ1hqx0PKVweVeLpdM3xppi1mqlVS9P988dnElWJFcno5EqlUW2/LORt+1zHz
-	Wfycx0wfOOEs+0yZfXstUOoTY3leeQd5TumBF3E+fPfmgUpBgr3z2gUegc384kvbK/Fw2U
-	zMu21rf4c2ypNNk6Q4WKuorRAmddD+LkdASO7a+EzkZR353yMhnagecaosBIt3xUhYRNDU
-	sO0qyqawwncogrv4F2rhWO3Rg0Zvfj/jZJB14UU1T0RU54TGMg9OOPdIipGEy6os0k5wJf
-	HqsjAOG4y7wjMTQ921422R3Oyvo/iBZvs68IHSoJxmN/QMofzRMMkt5Gab7g/Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1758622373;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=jbygUmzfw8XS2VUG0sJP6HEJcO918I6DxufbOrM/Lys=;
-	b=bv0St62rsMuDh+7nigvQeW8MWJocEsM7XcTr5+GGEUrX8DshmHpEvAwaL6y/hDZduT7sB4
-	IDchlUJGMNv0/6Dw==
-To: Jason Gunthorpe <jgg@nvidia.com>, Andrew Jones <ajones@ventanamicro.com>
-Cc: iommu@lists.linux.dev, kvm-riscv@lists.infradead.org,
- kvm@vger.kernel.org, linux-riscv@lists.infradead.org,
- linux-kernel@vger.kernel.org, zong.li@sifive.com, tjeznach@rivosinc.com,
- joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
- anup@brainfault.org, atish.patra@linux.dev, alex.williamson@redhat.com,
- paul.walmsley@sifive.com, palmer@dabbelt.com, alex@ghiti.fr
-Subject: Re: [RFC PATCH v2 08/18] iommu/riscv: Use MSI table to enable IMSIC
- access
-In-Reply-To: <20250922235651.GG1391379@nvidia.com>
-References: <20250920203851.2205115-20-ajones@ventanamicro.com>
- <20250920203851.2205115-28-ajones@ventanamicro.com>
- <20250922184336.GD1391379@nvidia.com>
- <20250922-50372a07397db3155fec49c9@orel>
- <20250922235651.GG1391379@nvidia.com>
-Date: Tue, 23 Sep 2025 12:12:52 +0200
-Message-ID: <87ecrx4guz.ffs@tglx>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="EFGvr8Qy"
+Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 58N8Y12b008695;
+	Tue, 23 Sep 2025 11:52:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=cc
+	:content-type:date:from:in-reply-to:message-id:mime-version
+	:references:subject:to; s=pp1; bh=FZaoT1QNSR93wIPtHts3CPzp0ctIk0
+	vYDNbzffEOi0c=; b=EFGvr8QyltIf32/aszOR/qJfepgW+UcWXreJDplTglupit
+	m+X7rmX3tdEzuL1hJj2o5XWwJ0r+pCJ4BjGEMOhGvQ5uA7F1CUxQtR7TqdF163bV
+	I3YXhbagNN2r+8NAvqFEHYkOG72rBgt1rm+ek1A/MwpmvyPZqT+huO4x+iKBFWTR
+	eo6ih9hfsFn2nHia9aCP+YLY6UeADcGZp/ivckC/FFUA6i0IL4LnbBeJbqc6eiAl
+	5jWsuCjMMTLD7wV7h8suNXD082oB3YYd9QtgvibDoicaRjRsG3bClbPAwbAw7H1U
+	VId+vHnlTcxFpVyEmlJvEr0+HDviZMbBrXxprVQA==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 499n0jgm9c-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 23 Sep 2025 11:52:19 +0000 (GMT)
+Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
+	by pps.reinject (8.18.1.12/8.18.0.8) with ESMTP id 58NBn9Dd005820;
+	Tue, 23 Sep 2025 11:52:18 GMT
+Received: from ppma23.wdc07v.mail.ibm.com (5d.69.3da9.ip4.static.sl-reverse.com [169.61.105.93])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 499n0jgm96-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 23 Sep 2025 11:52:18 +0000 (GMT)
+Received: from pps.filterd (ppma23.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma23.wdc07v.mail.ibm.com (8.18.1.2/8.18.1.2) with ESMTP id 58N9Tk1U019675;
+	Tue, 23 Sep 2025 11:52:17 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+	by ppma23.wdc07v.mail.ibm.com (PPS) with ESMTPS id 49a83k31qr-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 23 Sep 2025 11:52:17 +0000
+Received: from smtpav03.fra02v.mail.ibm.com (smtpav03.fra02v.mail.ibm.com [10.20.54.102])
+	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 58NBqDIE43516160
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Tue, 23 Sep 2025 11:52:13 GMT
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id F401A20043;
+	Tue, 23 Sep 2025 11:52:12 +0000 (GMT)
+Received: from smtpav03.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id A61F420040;
+	Tue, 23 Sep 2025 11:52:10 +0000 (GMT)
+Received: from li-2b55cdcc-350b-11b2-a85c-a78bff51fc11.ibm.com (unknown [9.87.150.243])
+	by smtpav03.fra02v.mail.ibm.com (Postfix) with ESMTPS;
+	Tue, 23 Sep 2025 11:52:10 +0000 (GMT)
+Date: Tue, 23 Sep 2025 13:52:09 +0200
+From: Sumanth Korikkar <sumanthk@linux.ibm.com>
+To: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>,
+        Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+        Guo Ren <guoren@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Heiko Carstens <hca@linux.ibm.com>, Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andreas Larsson <andreas@gaisler.com>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>, Nicolas Pitre <nico@fluxnic.net>,
+        Muchun Song <muchun.song@linux.dev>,
+        Oscar Salvador <osalvador@suse.de>,
+        David Hildenbrand <david@redhat.com>,
+        Konstantin Komarov <almaz.alexandrovich@paragon-software.com>,
+        Baoquan He <bhe@redhat.com>, Vivek Goyal <vgoyal@redhat.com>,
+        Dave Young <dyoung@redhat.com>, Tony Luck <tony.luck@intel.com>,
+        Reinette Chatre <reinette.chatre@intel.com>,
+        Dave Martin <Dave.Martin@arm.com>, James Morse <james.morse@arm.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Christian Brauner <brauner@kernel.org>, Jan Kara <jack@suse.cz>,
+        "Liam R . Howlett" <Liam.Howlett@oracle.com>,
+        Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>,
+        Hugh Dickins <hughd@google.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Konovalov <andreyknvl@gmail.com>, Jann Horn <jannh@google.com>,
+        Pedro Falcato <pfalcato@suse.de>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-csky@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+        nvdimm@lists.linux.dev, linux-cxl@vger.kernel.org, linux-mm@kvack.org,
+        ntfs3@lists.linux.dev, kexec@lists.infradead.org,
+        kasan-dev@googlegroups.com, Jason Gunthorpe <jgg@nvidia.com>,
+        iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v4 11/14] mm/hugetlbfs: update hugetlbfs to use
+ mmap_prepare
+Message-ID: <aNKJ6b7kmT_u0A4c@li-2b55cdcc-350b-11b2-a85c-a78bff51fc11.ibm.com>
+References: <cover.1758135681.git.lorenzo.stoakes@oracle.com>
+ <e5532a0aff1991a1b5435dcb358b7d35abc80f3b.1758135681.git.lorenzo.stoakes@oracle.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e5532a0aff1991a1b5435dcb358b7d35abc80f3b.1758135681.git.lorenzo.stoakes@oracle.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTIwMDAzMyBTYWx0ZWRfX1/CT4ehdu5F7
+ 6VnJC5JZb/TGq0GTxXqzwutGBpnh5zvXhqXxihnE0ZIBeLxavZe5A1rzKbuxO1bDNyuFhUEM+Rk
+ 4I1KMXyeBzNEU/g4Tedu1h1rULa5Sn/p0/UqkELdAnxrKDhWjf96WssSMg0ltTS+aMBZqn2U8bf
+ Mm6V030K3rfmUmm6+2tKL/Lil9yhk2vaa1ilZs3936p1XOaPfvsu3tSuBabaOBW+S4p6UJCCS7o
+ UssKxq/W9pewKawoXgWRMXrenvRD0Q+OeFvs8GRRauXhjlsHet/L1r4+QnnsJQ0kVijCVo4qQhY
+ p/3nafFZQN3AWkhiFthvrI3hfInHVuTDSlQN3xLdzE/r0zMDPQuTX7WW9M8m8X+BWNkt+j6HOZU
+ bcmWMt/c
+X-Authority-Analysis: v=2.4 cv=TOlFS0la c=1 sm=1 tr=0 ts=68d289f3 cx=c_pps
+ a=3Bg1Hr4SwmMryq2xdFQyZA==:117 a=3Bg1Hr4SwmMryq2xdFQyZA==:17
+ a=kj9zAlcOel0A:10 a=yJojWOMRYYMA:10 a=NEAV23lmAAAA:8 a=yPCof4ZbAAAA:8
+ a=Ikd4Dj_1AAAA:8 a=P7Dlay8f7KcL8MNlhToA:9 a=CjuIK1q_8ugA:10
+X-Proofpoint-ORIG-GUID: F6nP2Q8ol4BSxLNz15joz3bImrmTREZ1
+X-Proofpoint-GUID: 5HR21TLQQZuGh5ctB-qo8M6ErsQDpoDW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-09-23_02,2025-09-22_05,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1011 priorityscore=1501 phishscore=0 impostorscore=0 adultscore=0
+ suspectscore=0 spamscore=0 bulkscore=0 malwarescore=0 classifier=typeunknown
+ authscore=0 authtc= authcc= route=outbound adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2507300000 definitions=main-2509200033
 
-On Mon, Sep 22 2025 at 20:56, Jason Gunthorpe wrote:
-> On Mon, Sep 22, 2025 at 04:20:43PM -0500, Andrew Jones wrote:
->> > It has to do with each PCI BDF having a unique set of
->> > validation/mapping tables for MSIs that are granular to the interrupt
->> > number.
->> 
->> Interrupt numbers (MSI data) aren't used by the RISC-V IOMMU in any way.
->
-> Interrupt number is a Linux concept, HW decodes the addr/data pair and
-> delivers it to some Linux interrupt. Linux doesn't care how the HW
-> treats the addr/data pair, it can ignore data if it wants.
+On Wed, Sep 17, 2025 at 08:11:13PM +0100, Lorenzo Stoakes wrote:
+> Since we can now perform actions after the VMA is established via
+> mmap_prepare, use desc->action_success_hook to set up the hugetlb lock
+> once the VMA is setup.
+> 
+> We also make changes throughout hugetlbfs to make this possible.
+> 
+> Signed-off-by: Lorenzo Stoakes <lorenzo.stoakes@oracle.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  fs/hugetlbfs/inode.c           | 36 ++++++++++------
+>  include/linux/hugetlb.h        |  9 +++-
+>  include/linux/hugetlb_inline.h | 15 ++++---
+>  mm/hugetlb.c                   | 77 ++++++++++++++++++++--------------
+>  4 files changed, 85 insertions(+), 52 deletions(-)
+> 
+> diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
+> index f42548ee9083..9e0625167517 100644
+> --- a/fs/hugetlbfs/inode.c
+> +++ b/fs/hugetlbfs/inode.c
+> @@ -96,8 +96,15 @@ static const struct fs_parameter_spec hugetlb_fs_parameters[] = {
+>  #define PGOFF_LOFFT_MAX \
+>  	(((1UL << (PAGE_SHIFT + 1)) - 1) <<  (BITS_PER_LONG - (PAGE_SHIFT + 1)))
+>  
+> -static int hugetlbfs_file_mmap(struct file *file, struct vm_area_struct *vma)
+> +static int hugetlb_file_mmap_prepare_success(const struct vm_area_struct *vma)
+>  {
+> +	/* Unfortunate we have to reassign vma->vm_private_data. */
+> +	return hugetlb_vma_lock_alloc((struct vm_area_struct *)vma);
+> +}
 
-Let me explain this a bit deeper.
+Hi Lorenzo,
 
-As you said, the interrupt number is a pure kernel software construct,
-which is mapped to a hardware interrupt source.
+The following tests causes the kernel to enter a blocked state,
+suggesting an issue related to locking order. I was able to reproduce
+this behavior in certain test runs.
 
-The interrupt domain, which is associated to a hardware interrupt
-source, creates the mapping and supplies the resulting configuration to
-the hardware, so that the hardware is able to raise an interrupt in the
-CPU.
+Test case:
+git clone https://github.com/libhugetlbfs/libhugetlbfs.git
+cd libhugetlbfs ; ./configure
+make -j32
+cd tests
+echo 100 > /proc/sys/vm/nr_hugepages
+mkdir -p /test-hugepages && mount -t hugetlbfs nodev /test-hugepages
+./run_tests.py <in a loop>
+...
+shm-fork 10 100 (1024K: 64):    PASS
+set shmmax limit to 104857600
+shm-getraw 100 /dev/full (1024K: 32):
+shm-getraw 100 /dev/full (1024K: 64):   PASS
+fallocate_stress.sh (1024K: 64):  <blocked>
 
-In case of MSI, this configuration is the MSI message (address,
-data). That's composed by the domain according to the requirements of
-the underlying CPU hardware resource. This underlying hardware resource
-can be the CPUs interrupt controller itself or some intermediary
-hardware entity.
+Blocked task state below:
 
-The kernel reflects this in the interrupt domain hierarchy. The simplest
-case for MSI is:
+task:fallocate_stres state:D stack:0     pid:5106  tgid:5106  ppid:5103
+task_flags:0x400000 flags:0x00000001
+Call Trace:
+ [<00000255adc646f0>] __schedule+0x370/0x7f0
+ [<00000255adc64bb0>] schedule+0x40/0xc0
+ [<00000255adc64d32>] schedule_preempt_disabled+0x22/0x30
+ [<00000255adc68492>] rwsem_down_write_slowpath+0x232/0x610
+ [<00000255adc68922>] down_write_killable+0x52/0x80
+ [<00000255ad12c980>] vm_mmap_pgoff+0xc0/0x1f0
+ [<00000255ad164bbe>] ksys_mmap_pgoff+0x17e/0x220
+ [<00000255ad164d3c>] __s390x_sys_old_mmap+0x7c/0xa0
+ [<00000255adc60e4e>] __do_syscall+0x12e/0x350
+ [<00000255adc6cfee>] system_call+0x6e/0x90
+task:fallocate_stres state:D stack:0     pid:5109  tgid:5106  ppid:5103
+task_flags:0x400040 flags:0x00000001
+Call Trace:
+ [<00000255adc646f0>] __schedule+0x370/0x7f0
+ [<00000255adc64bb0>] schedule+0x40/0xc0
+ [<00000255adc64d32>] schedule_preempt_disabled+0x22/0x30
+ [<00000255adc68492>] rwsem_down_write_slowpath+0x232/0x610
+ [<00000255adc688be>] down_write+0x4e/0x60
+ [<00000255ad1c11ec>] __hugetlb_zap_begin+0x3c/0x70
+ [<00000255ad158b9c>] unmap_vmas+0x10c/0x1a0
+ [<00000255ad180844>] vms_complete_munmap_vmas+0x134/0x2e0
+ [<00000255ad1811be>] do_vmi_align_munmap+0x13e/0x170
+ [<00000255ad1812ae>] do_vmi_munmap+0xbe/0x140
+ [<00000255ad183f86>] __vm_munmap+0xe6/0x190
+ [<00000255ad166832>] __s390x_sys_munmap+0x32/0x40
+ [<00000255adc60e4e>] __do_syscall+0x12e/0x350
+ [<00000255adc6cfee>] system_call+0x6e/0x90
 
-     [ CPU domain ] --- [ MSI domain ] -- device
 
-The flow is as follows:
-
-   device driver allocates an MSI interrupt in the MSI domain
-
-   MSI domain allocates an interrupt in the CPU domain
-
-   CPU domain allocates an interrupt vector and composes the
-   address/data pair. If @data is written to @address, the interrupt is
-   raised in the CPU
-
-   MSI domain converts the address/data pair into device format and
-   writes it into the device.
-
-   When the device fires an interrupt it writes @data to @address, which
-   raises the interrupt in the CPU at the allocated CPU vector.  That
-   vector is then translated to the Linux interrupt number in the
-   interrupt handling entry code by looking it up in the CPU domain.
-
-With a remapping domain intermediary this looks like this:
-
-     [ CPU domain ] --- [ Remap domain] --- [ MSI domain ] -- device
- 
-   device driver allocates an MSI interrupt in the MSI domain
-
-   MSI domain allocates an interrupt in the Remap domain
-
-   Remap domain allocates a resource in the remap space, e.g. an entry
-   in the remap translation table and then allocates an interrupt in the
-   CPU domain.
-
-   CPU domain allocates an interrupt vector and composes the
-   address/data pair. If @data is written to @address, the interrupt is
-   raised in the CPU
-
-   Remap domain converts the CPU address/data pair to remap table format
-   and writes it to the alloacted entry in that table. It then composes
-   a new address/data pair, which points at the remap table entry.
-
-   MSI domain converts the remap address/data pair into device format
-   and writes it into the device.
-
-   So when the device fires an interrupt it writes @data to @address,
-   which triggers the remap unit. The remap unit validates that the
-   address/data pair is valid for the device and if so it writes the CPU
-   address/data pair, which raises the interrupt in the CPU at the
-   allocated vector. That vector is then translated to the Linux
-   interrupt number in the interrupt handling entry code by looking it
-   up in the CPU domain.
-
-So from a kernel POV, the address/data pairs are just opaque
-configuration values, which are written into the remap table and the
-device. Whether the content of @data is relevant or not, is a hardware
-implementation detail. That implementation detail is only relevant for
-the interrupt domain code, which handle a specific part of the
-hierarchy.
-
-The MSI domain does not need to know anything about the content and the
-meaning of @address and @data. It just cares about converting that into
-the device specific storage format.
-
-The Remap domain does not need to know anything about the content and
-the meaning of the CPU domain provided @address and @data. It just cares
-about converting that into the remap table specific format.
-
-The hardware entities do not know about the Linux interrupt number at
-all. That relationship is purely software managed as a mapping from the
-allocated CPU vector to the Linux interrupt number.
-
-Hope that helps.
-
-     tglx
-
+Thanks,
+Sumanth
