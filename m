@@ -1,98 +1,148 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4AF2273D92
-	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 05:39:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F44D311588
+	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 07:22:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.255.230.98
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758605991; cv=none; b=P43e84vem+0eI8P3SW5BQHzwCOcEnlNaK1sQfp5BHYynsIr/6fZ+6prKJtdTF7zNMDfNaLehiwpcT1Z/coDxR8BSzYn5FuvK7f9L25/M5gQ+WiV+Npp1cLhceJ7bw1T79BqM1YCMg0OMmo8ebc5yPQbkHUOrNgj36ZMmc5ovW3M=
+	t=1758612132; cv=none; b=lB390CyemqGlWbAdCIDgBhVI71g2TgTT7VavSqioLMPYwXKv1GC2sxd+vNwxdJ6y2FeUQZxbXacYAzDK67uQrVmUuRQ2K2rQ+Tx2uoNKHpBsGTeo/gOS1SvIvZ/sG3SFzb4Uvpzfx9KOQQugoot9ZkrTcHVOikrFEZUxZo5Jbc8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758605991; c=relaxed/simple;
-	bh=vYZ8bzD0dvB7SeZuGO07X/0YsC6pUYWdaL3B9nbMzjo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=A1JH3VYPpsLb8aFzSKp8LA7BHVJIRnhaC4uqtqw3op4S72hMNpse7QWoXEt4B58FilN3hlKJ6gBmo/R6txUVKqe2t656p/LawgXMDMyJApl6PFrRf2ZspoTqRAwM0H3IJbUnXAFOoJhuRE0F3fOWKESRvJ0S/xntGi0yIlMf42c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IBo6qGB3; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1758612132; c=relaxed/simple;
+	bh=UXWIhJQT0UWxMfY/+J9fpbJB9h4hs4LLSoJ3ohNFBv0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XXZa9WgqWRD2iYf49AAeU353u3L2po+w9uQkMHcrfQUcPK76yrIfI+GdJM+UoVa4YDzCeGlOktWMhhdhdW/w7XLhjDfs9jgl3BHS52DF/8acbFy6AwXwCuup5ogDVE8IVmm9srjM7UE1lUc286JEwiIzvO91ZfK7bexUPcZsQRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ucw.cz; spf=pass smtp.mailfrom=ucw.cz; dkim=pass (1024-bit key) header.d=ucw.cz header.i=@ucw.cz header.b=sTTBQf/a; arc=none smtp.client-ip=46.255.230.98
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ucw.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ucw.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IBo6qGB3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1758605990; x=1790141990;
-  h=message-id:date:mime-version:subject:to:references:from:
-   in-reply-to:content-transfer-encoding;
-  bh=vYZ8bzD0dvB7SeZuGO07X/0YsC6pUYWdaL3B9nbMzjo=;
-  b=IBo6qGB3N0L9CC3jxQ8efm0VITitdo2i8DqLakqVTbOYHtHtcJ8TS54Y
-   PQVScqRvpCNsA8dY2fD18oyrKDjVZdmtxwdDB/DANB5mstoXatg+COMUY
-   VvkrBDNOC9UOmuRLQhgfNWc8c+IuC1Sdpwj0wN507HofkANqGfIg+36Am
-   SBvB0DB9b5/O6OzFZwoKmLaCBRLfPY9D0uqj5tSfbPhIQoGEaVq73tZsp
-   5SynQDZhw4ihUOOFUmWK+bBi08sJEz3Uepqg7ktqaoK9EqfvDPizM/f+Y
-   DgXHXvV7TaaIZaVGhqdODBF0o/kvWO8IBgaMaLyPSioWA2VHgTliArdls
-   Q==;
-X-CSE-ConnectionGUID: fzAUW+TOQ7mGptk9ECNDVg==
-X-CSE-MsgGUID: qoLs9dJhTL2vh68PiV2S+A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11561"; a="60765170"
-X-IronPort-AV: E=Sophos;i="6.18,287,1751266800"; 
-   d="scan'208";a="60765170"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2025 22:39:50 -0700
-X-CSE-ConnectionGUID: MYRuTO00TayWdz5JnjJ1ww==
-X-CSE-MsgGUID: BxD3dGraTI+tbg3ANz5fjQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,287,1751266800"; 
-   d="scan'208";a="177118756"
-Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Sep 2025 22:39:47 -0700
-Message-ID: <02510e4e-0edc-4932-b198-2d44f83180e3@linux.intel.com>
-Date: Tue, 23 Sep 2025 13:36:46 +0800
+	dkim=pass (1024-bit key) header.d=ucw.cz header.i=@ucw.cz header.b="sTTBQf/a"
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+	id 0CBDD1C01D7; Tue, 23 Sep 2025 09:22:07 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ucw.cz; s=gen1;
+	t=1758612127;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=hwzWkQrBN4TucShSte7+gBBGke3z5o+Bkhkg05nMEo4=;
+	b=sTTBQf/a2nzDFGyFnuAvY+ZoWD8Hosb9TzAxDaZiDAvOEHBXFt2Ry+MnJvCHTHajjKDe30
+	+6esiaJNy6v6yDUz49gjYVaUeMw3Eoiy4/0gLL1s/YKgW31/ZpI0TrH8W7O7EFLug/Kc3m
+	TK/E85C8luh+gvffde677ZQ3AhTp++0=
+Date: Tue, 23 Sep 2025 09:22:06 +0200
+From: Pavel Machek <pavel@ucw.cz>
+To: barnabas.czeman@mainlining.org
+Cc: Bjorn Andersson <andersson@kernel.org>,
+	Michael Turquette <mturquette@baylibre.com>,
+	Stephen Boyd <sboyd@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Stephan Gerhold <stephan@gerhold.net>,
+	Otto =?iso-8859-1?Q?Pfl=FCger?= <otto.pflueger@abscue.de>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Lee Jones <lee@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Konrad Dybcio <konradybcio@kernel.org>, Sean Paul <sean@poorly.run>,
+	Abhinav Kumar <quic_abhinavk@quicinc.com>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	David Airlie <airlied@gmail.com>, Simona Vetter <simona@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Dmitry Baryshkov <lumag@kernel.org>,
+	Adam Skladowski <a_skl39@protonmail.com>,
+	Sireesh Kodali <sireeshkodali@protonmail.com>,
+	Rob Clark <robin.clark@oss.qualcomm.com>,
+	Abhinav Kumar <abhinav.kumar@linux.dev>,
+	Jessica Zhang <jessica.zhang@oss.qualcomm.com>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-gpio@vger.kernel.org, iommu@lists.linux.dev,
+	dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
+	phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+	linux@mainlining.org,
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Subject: Re: [PATCH v7 6/6] arm64: dts: qcom: Add Xiaomi Redmi 3S
+Message-ID: <aNJKniJ46YuUsbQ+@duo.ucw.cz>
+References: <20250831-msm8937-v7-0-232a9fb19ab7@mainlining.org>
+ <20250831-msm8937-v7-6-232a9fb19ab7@mainlining.org>
+ <aNGLPdmOyh/pfroq@duo.ucw.cz>
+ <97ee369f6ffbe42c72c57ebd72887b23@mainlining.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [syzbot] [iommu?] WARNING in intel_iommu_map_pages
-To: syzbot <syzbot+6e970ad52c1b9e57e6b1@syzkaller.appspotmail.com>,
- dwmw2@infradead.org, iommu@lists.linux.dev, joro@8bytes.org,
- linux-kernel@vger.kernel.org, robin.murphy@arm.com,
- syzkaller-bugs@googlegroups.com, will@kernel.org
-References: <68d17f7d.050a0220.13cd81.05b8.GAE@google.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <68d17f7d.050a0220.13cd81.05b8.GAE@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="iO6C/R28FEPs1Luw"
+Content-Disposition: inline
+In-Reply-To: <97ee369f6ffbe42c72c57ebd72887b23@mainlining.org>
 
-On 9/23/25 00:55, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    3b08f56fbbb9 Merge tag 'x86-urgent-2025-09-20' ofgit://gi..
-> git tree:       upstream
-> console output:https://syzkaller.appspot.com/x/log.txt?x=142d3c7c580000
-> kernel config:https://syzkaller.appspot.com/x/.config?x=8f01d8629880e620
-> dashboard link:https://syzkaller.appspot.com/bug?extid=6e970ad52c1b9e57e6b1
-> compiler:       gcc (Debian 12.2.0-14+deb12u1) 12.2.0, GNU ld (GNU Binutils for Debian) 2.40
-> syz repro:https://syzkaller.appspot.com/x/repro.syz?x=1740fe42580000
-> C reproducer:https://syzkaller.appspot.com/x/repro.c?x=1037a712580000
-> 
-> Downloadable assets:
-> disk image (non-bootable):https://storage.googleapis.com/syzbot-assets/d900f083ada3/ 
-> non_bootable_disk-3b08f56f.raw.xz
-> vmlinux:https://storage.googleapis.com/syzbot-assets/6f981dad47cf/ 
-> vmlinux-3b08f56f.xz
-> kernel image:https://storage.googleapis.com/syzbot-assets/031397abeebd/ 
-> bzImage-3b08f56f.xz
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by:syzbot+6e970ad52c1b9e57e6b1@syzkaller.appspotmail.com
-> 
-> DMAR: ERROR: DMA PTE for vPFN 0xbe300 already set (to 55400003 not 51800003)
 
-The driver is complaining that the PTE entry for IOVA 0xbe300 was mapped
-to 0x55400000, but not unmapped before remapping it to 0x51800003.
+--iO6C/R28FEPs1Luw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
-baolu
+Hi!
+> > Hi!
+> >=20
+> > > +	led-controller@45 {
+> > > +		compatible =3D "awinic,aw2013";
+> > > +		reg =3D <0x45>;
+> > > +		#address-cells =3D <1>;
+> > > +		#size-cells =3D <0>;
+> > > +
+> > > +		vcc-supply =3D <&pm8937_l10>;
+> > > +		vio-supply =3D <&pm8937_l5>;
+> > > +
+> > > +		led@0 {
+> > > +			reg =3D <0>;
+> > > +			function =3D LED_FUNCTION_STATUS;
+> > > +			led-max-microamp =3D <5000>;
+> > > +			color =3D <LED_COLOR_ID_RED>;
+> > > +		};
+> > > +
+> > > +		led@1 {
+> > > +			reg =3D <1>;
+> > > +			function =3D LED_FUNCTION_STATUS;
+> > > +			led-max-microamp =3D <5000>;
+> > > +			color =3D <LED_COLOR_ID_GREEN>;
+> > > +		};
+> > > +
+> > > +		led@2 {
+> > > +			reg =3D <2>;
+> > > +			function =3D LED_FUNCTION_STATUS;
+> > > +			led-max-microamp =3D <5000>;
+> > > +			color =3D <LED_COLOR_ID_BLUE>;
+> > > +		};
+> > > +	};
+> > > +};
+> >=20
+> > That's single, 3-color LED, right? Please see LED multicolor support.
+> As far as i know aw2013 driver does not have multicolor support.
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/=
+Documentation/devicetree/bindings/leds/leds-aw2013.yaml
+
+I believe that needs to be fixed before more bugs are added on top to
+work around that problem...
+
+=2E..and before that bug is cemented in the ABI.
+
+Best regards,
+								Pavel
+--=20
+I don't work for Nazis and criminals, and neither should you.
+Boycott Putin, Trump, Netanyahu and Musk!
+
+--iO6C/R28FEPs1Luw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCaNJKngAKCRAw5/Bqldv6
+8rwwAKCAEqvmxyif1M2EfR+OkPL1Yc+kKACfXIQxtdTTJxoVlwLVcRR2GW3coKg=
+=tPlv
+-----END PGP SIGNATURE-----
+
+--iO6C/R28FEPs1Luw--
