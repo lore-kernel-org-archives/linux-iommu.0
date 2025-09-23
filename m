@@ -1,135 +1,100 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81A9E1E8332;
-	Tue, 23 Sep 2025 17:12:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 961E6BE5E;
+	Tue, 23 Sep 2025 17:18:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758647554; cv=none; b=jg703fRmWkIwCL/JzybOhSzJ11OI+r224M+eHcEVLE9BqZidHCSk1NEevujcg9os+uZIHPS80dtjZDz/wJfTcbsKgCTuB+PGiCRnqct5DxGyVug6Pa5NiOzebOc+kvoEgOuaILpMin9Q2trOyjibJ5DD+h9Kl9uQcyonkAzFO+s=
+	t=1758647903; cv=none; b=GepWLqRIOiy4pfD252FPIfhUZpylCtHadQYQHb0PEEb70Hd+UzpX15O640rC076KURcMxnXIH7bivrPbRxUyX+QrbP5l7bWHkBJPnrtgQivA2Qtd2R0bDBbLNAM4WehG+1YRhstMzcAj6lW14wqJ0lI7oy39nB6sOFMyGXVpdcw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758647554; c=relaxed/simple;
-	bh=gmK1CGGOGWIE5mxCSSz01jl9806+Hkknw/PF7Rft5eg=;
+	s=arc-20240116; t=1758647903; c=relaxed/simple;
+	bh=1ANX/1Q+c1YQm6ycMdbCkLhJt5M0dGUVsHIE7DPPmR4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fdnOhhDea0rILejYKVh6xD+enTdpmCIrqiWQlLH7L/dTPeXcK0m/x039phcl97D8Hbmf0Ooytn9kGT0bUVMitQfqRmQCYoaS7XRZPONGj6nH08rh8YgAnS2277z5kvPXx0nIPfxVqMJJuihabZ9voe8T1CNgJcR0JHQtwC3InGM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=flQS1hBB; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=qLP4+x3ozS2iaSJimCFmxQilZMCS5nzB3JAO/wePOS5MdtQQeAbjsNPiJ1piQJ32YeUeGIsgPA7STfTYVqbIMXLfD1lS0LzEewjgkfKaUjQuTONs2tSBTmKMmIvGU1ioMR8/jclhBG7e8tzpFY9bR9egzaSqesWPyP+cW60sqVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g5Jqi9yu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="flQS1hBB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7895C4CEF5;
-	Tue, 23 Sep 2025 17:12:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g5Jqi9yu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76194C4CEF5;
+	Tue, 23 Sep 2025 17:18:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758647554;
-	bh=gmK1CGGOGWIE5mxCSSz01jl9806+Hkknw/PF7Rft5eg=;
+	s=k20201202; t=1758647903;
+	bh=1ANX/1Q+c1YQm6ycMdbCkLhJt5M0dGUVsHIE7DPPmR4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=flQS1hBBI4YVkOhHIOLPDHNMtlCkyfUNIFD9Y3j56A129eJQ7ulgbOQABWCzap9Hj
-	 rl/VZtmwxWaxs1PMRUvTjPUNwlEZn88V/RLG5Kuc+XdNGA5TeIjqOIi+B4X9/FCt4c
-	 Qx+OujTVF/ZwyQKONCRLVjz52uX0o7GV547cRdBjsiAgj+ycng1QAEkqJ6m+YLzWAq
-	 DCNZoSbiGk6YER29JJC0HRMAOqBwNSUqMZUTv1sjBpzIQQgtNOUDKZTBiXF4eLwe8A
-	 xvmArCpm9L4VMxDuuM+3Hd13ks3PqY62OM41EKtcVNBQBVyEfRahPW/H/CtiWATpbl
-	 ddW7gMC2jEh9A==
-Date: Tue, 23 Sep 2025 20:12:28 +0300
+	b=g5Jqi9yueMAnnH73toGC0xOJKxvg0qa4gga/SeRhYNDlfhLJMDwAYoyYF5OeZMllT
+	 4wGYFwIT9tNhvxI7Fwmxeam4DFzzKoOpEvYF6KzT3sugNB9IZN5QFtnFbWNJKdyahQ
+	 njhRkpS4V2fDEMCIbaKPb5Fvro/sH2PrgzN3QArdRquI6/hD8MqkvT+BpL3TaOekdf
+	 ivzyZBCGcNieZxwvItwvCdr8sC9432gSLRdJ+Qt9NVztv9FJs9EoyOLvflbrcT7TLo
+	 fCDKOXnJOo3pz8pFrFpZX02l/lSsNuJ1YSx2nfsXC1cIkAfhePf3pibh9dO8eHGKV8
+	 GZaMzjVv7a/9Q==
+Date: Tue, 23 Sep 2025 20:18:19 +0300
 From: Leon Romanovsky <leon@kernel.org>
-To: Alex Williamson <alex.williamson@redhat.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev,
-	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-	kvm@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-	linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-mm@kvack.org,
-	linux-pci@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sumit Semwal <sumit.semwal@linaro.org>,
-	Vivek Kasireddy <vivek.kasireddy@intel.com>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v2 03/10] PCI/P2PDMA: Refactor to separate core P2P
- functionality from memory allocation
-Message-ID: <20250923171228.GL10800@unreal>
-References: <cover.1757589589.git.leon@kernel.org>
- <1e2cb89ea76a92949d06a804e3ab97478e7cacbb.1757589589.git.leon@kernel.org>
- <20250922150032.3e3da410.alex.williamson@redhat.com>
+To: Magnus Lindholm <linmag7@gmail.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Andreas Larsson <andreas@gaisler.com>,
+	Borislav Petkov <bp@alien8.de>,
+	Dave Hansen <dave.hansen@linux.intel.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Geoff Levand <geoff@infradead.org>, Helge Deller <deller@gmx.de>,
+	Ingo Molnar <mingo@redhat.com>, iommu@lists.linux.dev,
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+	Jason Wang <jasowang@redhat.com>, Juergen Gross <jgross@suse.com>,
+	linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+	linuxppc-dev@lists.ozlabs.org,
+	Madhavan Srinivasan <maddy@linux.ibm.com>,
+	Matt Turner <mattst88@gmail.com>,
+	Michael Ellerman <mpe@ellerman.id.au>,
+	"Michael S. Tsirkin" <mst@redhat.com>,
+	Richard Henderson <richard.henderson@linaro.org>,
+	sparclinux@vger.kernel.org,
+	Stefano Stabellini <sstabellini@kernel.org>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Thomas Gleixner <tglx@linutronix.de>,
+	virtualization@lists.linux.dev, x86@kernel.org,
+	xen-devel@lists.xenproject.org
+Subject: Re: [PATCH 1/9] alpha: Convert mapping routine to rely on physical
+ address
+Message-ID: <20250923171819.GM10800@unreal>
+References: <cover.1758219786.git.leon@kernel.org>
+ <0c64474985af55b1aa934b857808068a0e609c6e.1758219787.git.leon@kernel.org>
+ <CA+=Fv5Q8dVUFVBh82mAe=fy3mV6mWtQT_0pBPLQwLNBt3f8E1g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20250922150032.3e3da410.alex.williamson@redhat.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+=Fv5Q8dVUFVBh82mAe=fy3mV6mWtQT_0pBPLQwLNBt3f8E1g@mail.gmail.com>
 
-On Mon, Sep 22, 2025 at 03:00:32PM -0600, Alex Williamson wrote:
-> On Thu, 11 Sep 2025 14:33:07 +0300
-> Leon Romanovsky <leon@kernel.org> wrote:
-> 
+On Mon, Sep 22, 2025 at 11:04:06PM +0200, Magnus Lindholm wrote:
+> On Thu, Sep 18, 2025 at 8:45 PM Leon Romanovsky <leon@kernel.org> wrote:
+> >
 > > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > Refactor the PCI P2PDMA subsystem to separate the core peer-to-peer DMA
-> > functionality from the optional memory allocation layer. This creates a
-> > two-tier architecture:
-> > 
-> > The core layer provides P2P mapping functionality for physical addresses
-> > based on PCI device MMIO BARs and integrates with the DMA API for
-> > mapping operations. This layer is required for all P2PDMA users.
-> > 
-> > The optional upper layer provides memory allocation capabilities
-> > including gen_pool allocator, struct page support, and sysfs interface
-> > for user space access.
-> > 
-> > This separation allows subsystems like VFIO to use only the core P2P
-> > mapping functionality without the overhead of memory allocation features
-> > they don't need. The core functionality is now available through the
-> > new pci_p2pdma_enable() function that returns a p2pdma_provider
-> > structure.
-> > 
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  drivers/pci/p2pdma.c       | 129 +++++++++++++++++++++++++++----------
-> >  include/linux/pci-p2pdma.h |   5 ++
-> >  2 files changed, 100 insertions(+), 34 deletions(-)
-
-<...>
-
-> > -static int pci_p2pdma_setup(struct pci_dev *pdev)
-> > +/**
-> > + * pcim_p2pdma_enable - Enable peer-to-peer DMA support for a PCI device
-> > + * @pdev: The PCI device to enable P2PDMA for
-> > + * @bar: BAR index to get provider
-> > + *
-> > + * This function initializes the peer-to-peer DMA infrastructure for a PCI
-> > + * device. It allocates and sets up the necessary data structures to support
-> > + * P2PDMA operations, including mapping type tracking.
-> > + */
-> > +struct p2pdma_provider *pcim_p2pdma_enable(struct pci_dev *pdev, int bar)
-> >  {
-> > -	int error = -ENOMEM;
-> >  	struct pci_p2pdma *p2p;
-> > +	int i, ret;
-> > +
-> > +	p2p = rcu_dereference_protected(pdev->p2pdma, 1);
-> > +	if (p2p)
-> > +		/* PCI device was "rebound" to the driver */
-> > +		return &p2p->mem[bar];
-> >  
+> >
+> > Alpha doesn't need struct *page and can perform mapping based on
+> > physical addresses. So convert it to implement new .map_phys callback.
 > 
-> This seems like two separate functions rolled into one, an 'initialize
-> providers' and a 'get provider for BAR'.  The comment above even makes
-> it sound like only a driver re-probing a device would encounter this
-> branch, but the use case later in vfio-pci shows it to be the common
-> case to iterate BARs for a device.
 > 
-> But then later in patch 8/ and again in 10/ why exactly do we cache
-> the provider on the vfio_pci_core_device rather than ask for it on
-> demand from the p2pdma?
+> Hi,
+> 
+> SInce this patch affects the Alpha platform I got curious and decided to
+> try it out. The patch series requires some preparatory patches. Leon
+> provided me with links to his dmabuf-vfio branch, which had the
+> patches (and some prerequisite stuff) applied already.
+> 
+> Based on the dmabuf-vfio branch,  I've built a kernel and tested it on
+> my ES40 Alphaserver, the kernel booted fine but after a while of
+> moderate filesystem load I started seeing some ext3/4 related error
+> messages in the system logs. Rebooting with my old kernel into
+> single user mode, I was able to recover the filesystem using fsck.
+> Clearly this set of patches breaks things (at least on Alpha).
 
-In addition to what Jason said about locking. The whole p2pdma.c is
-written with assumption that "pdev->p2pdma" pointer is assigned only
-once during PCI device lifetime. For example, see how sysfs files
-are exposed and accessed in p2pdma.c.
-
-Once you initialize p2pdma, it is much easier to initialize all BARs at
-the same time.
+I will try to setup Alpha architecture in QEMU in following days, but
+would like to ask first. Did you test alpha on clean v6.17-rc5 (without
+my patches) as a reference?
 
 Thanks
