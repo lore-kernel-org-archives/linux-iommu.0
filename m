@@ -1,94 +1,100 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B13492FB0BF
-	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 19:05:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6482D273D6D
+	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 19:34:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758654322; cv=none; b=flH/zldnaIymlnIXPJd+8waFLDxd1NgSsqiyCIeS8JI9fhWLfnF7gzsMqysf7IZBNa6aw0HIk73OPiMpTb3qG6FOz6E/bUQa96+7NjkPnhTgrPjMhhTo/xqodEey7B+y65g0/2aOVcThy3vHA/HtSj+5iDRSq8J13Nc97QsZ8i4=
+	t=1758656087; cv=none; b=jwfpOsxv80bgEWgqlKKUovEqIEtNFpqXkdi++JAxK3LK3Edpd+Y8iPvbFQY/w0A1hy8PQpyEHkSHgOvxGe3KDcGZnsOUvys98raVKvRej5pC3khbisusUhDVRcC0UXPMjpd75cCQqEkZL0/Owmj9rsj+i78kc1sDxq2Xp3gQ3jA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758654322; c=relaxed/simple;
-	bh=6iqS6pI/nww2nERtNHBGKjrRyseW6VXKyAN/ovur7J8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uqB79l2Zr+UzewV4A5QibCaqtjcd/gETqEsrn1h9zkFEtWvD7xYcWtyQ28mz6QVEMdOgYUxHxTSgpSwy2Me6DHcvdrkO2qV4NSgYCLEBvizAYGesBY+pKjUfMjLkxGMB/VHDIWhyOZebEQB3JCR8rlCevBAb2Fd27JKPnD0bW3o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kuJ2gyiC; arc=none smtp.client-ip=209.85.214.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1758656087; c=relaxed/simple;
+	bh=etBe5tS4/ktbP7b91h5lJ7bLsJwtJz9vOdnnm/WxrFQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=t4biNB5v3U7k657KXxKvrUOO0EirltqFAB+jT2KOifsoE/qNxDHqN1bOIWiOWvCLl9pd/aniqEXQW2fbypndnW/iZj+iCUqBF5b3pm77grsBZc0tkc4Yfy8bob6IVCGe85YuNc1SxVgsSEODa/g8JLHlRNj74AJzPZ5SKtULbIM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XHOLJOLY; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kuJ2gyiC"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2731ff54949so34705ad.1
-        for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 12:05:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XHOLJOLY"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-62fb48315ddso8590806a12.2
+        for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 12:34:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1758654320; x=1759259120; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=shQ9F/S9E+ezjDmWjFc88/0zLU6nZIORFrqFjPoe6W4=;
-        b=kuJ2gyiCDxjjR29whIjn3vW+kz0wyzUBIAlAzHd4DIP/hWNsjnoa9jP7cxGIGtec6V
-         9PrSps/o4obCh+/rlpWCVHpjqyTGXE73wz6VD+stDmzZ1pTrIMcx8l4vUs//idPtCZhR
-         ViNlC3FrELlvQ5Y0Fx/w9F3dNHLVi8QWMmJwFN8GTyZgdbEfcLiCAeNWOamQDRMClp9C
-         Z6Usghzmf8F/qthCVFimYuFVBC8RHRvZFJVHKjCghncaywwqIh/9+Zq0MQmIhW/28SIr
-         rj04EoGMxRt/mMbSiY61BVsu2TL8kpTH/qO0/NECZmJeHHNmL2B+8I0mMqXci0EJjL1w
-         Vh+w==
+        d=gmail.com; s=20230601; t=1758656084; x=1759260884; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=++d3dqdiBWxrOtz0QgpiS/0g7+oJyTqlQjLbyxgEnJo=;
+        b=XHOLJOLYZI2J7pfM4FKjoFPxF8aLSCqkwyJFhWAGu43f9aA3UxxiSOHQ43X7fF+ZbQ
+         /chfL7PCN1wtn2H4YMpYMQJxHK0qtv/vIRc+6JHUuw0gHBkxrq8bWf5/j4B8Jgzw06Qw
+         Jljt+V0VoKISzkYJjpgKMO9FOHx2GhsVzjCreulwSYMPOxnmAJbWoMfDW2Kts985B8RB
+         4WbbEOyew/WBA9HPBGe3xP6aBQtZq+IhZp20w7CeviFF1heE6WfqPG/XdS5IkJ+4LVGo
+         MGxGdhyj5VybJoaMTwsVji+KV40mdzCmp/yNjzYGgGi7iwQXZgiEvgLQ+o+wf1VFEAu0
+         H1xA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758654320; x=1759259120;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=shQ9F/S9E+ezjDmWjFc88/0zLU6nZIORFrqFjPoe6W4=;
-        b=tv4T6H8B+K2BE1MBwhmyJ0mrQ0CkpaZDfwyAVld0E+DDS4ex3FLyq6Aaj/1xPAfgR3
-         BSNbWsq/r01m4mc48itgiCKIFBIru/Cu1iEY6W7gA1S6N8ccHBTZWy7nJJTtQWsByaDh
-         +b2vjMIzi83vQ3f36rUTgLE8WwbyL65Js7G/h7th7SMuX0WiBCQICDPhOrl4f3RqpdpU
-         xO7V6yGmXYa5G8V7Ijbt4QcsftV6ua618hBw5oKmDA+x1Jl/DhBEaWQmK5I5FklcrVId
-         jQ4DPzDxZ19xnIJediK2IIaj8e/WvG10dSaBDJ5SFzzZXdplWWREli+CpllwcRoWLPPg
-         pwuQ==
-X-Gm-Message-State: AOJu0YxdzeuFRdkDN7ME9pKa3yEkX5UPzwx7uvDXxH6bkV2va6ARuchl
-	d3bZHJBBN4CUrSdRJ1Nx6kDUJvD2mcPVG01DGVuhHMw6Ce/kPqWwgraVB5W6qozJng==
-X-Gm-Gg: ASbGncsDImlm5cW1zkP0Th/ePopMsNw1+gh2eC6vFSK7Dalu2wvpR0r2wEyyTMbgx4V
-	LZDSXQp5MTvCYmk0iYaPM1jgIyYCzE9hdCsQnjwpU15uIe7fP2o7AzNGU1mTkwKxGF5ywvcPDe+
-	mMeh1QGP7WHW4oNMBLgkbPjYJD3s+qVoM4HXsNO7WoEshb+N3u3aUciLqPi5BNoRLCdB5aoIWLK
-	KjXOCXVruJCD0C9cba+FkZJAtyHKVgHFXqfWZXAmqM80jS7nXNvzC2MU88CB+13+cYfyVrM83/O
-	ZybK0ldy+eCxlhR5hxv7RIB0T+Nn6TG9bLZY/EC/7K0TtizNZiML2+tPP5872CHLrMTaveB9Huw
-	TGKscUNaWb2jRo3MTJkdzGsuMaHiBPOnLKnl3HNqMi8JR3Fcwn62XYydUoTpyBpY=
-X-Google-Smtp-Source: AGHT+IHVaOaeuEz2XAlC49A/lUlZuiYJ4YEiwzji5f5sfrXloiYMH7AkD2MYjlrCozMP/2Heq38dGw==
-X-Received: by 2002:a17:903:11c7:b0:267:912b:2b4d with SMTP id d9443c01a7336-27ebf1b61a4mr578145ad.7.1758654319543;
-        Tue, 23 Sep 2025 12:05:19 -0700 (PDT)
-Received: from google.com (23.178.142.34.bc.googleusercontent.com. [34.142.178.23])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b553d5b35b4sm8345090a12.2.2025.09.23.12.05.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Sep 2025 12:05:18 -0700 (PDT)
-Date: Tue, 23 Sep 2025 19:05:13 +0000
-From: Pranjal Shrivastava <praan@google.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org,
-	joro@8bytes.org, jgg@ziepe.ca, Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v4 3/4] iommu/io-pgtable-arm-selftests: Modularize the
- test
-Message-ID: <aNLvaVHgOh-uS2JS@google.com>
-References: <20250922090003.686704-1-smostafa@google.com>
- <20250922090003.686704-4-smostafa@google.com>
+        d=1e100.net; s=20230601; t=1758656084; x=1759260884;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=++d3dqdiBWxrOtz0QgpiS/0g7+oJyTqlQjLbyxgEnJo=;
+        b=X8/ruOynDFuLgW4rQhpVXdy7Hqt+pUr2KVnTc6vjYIYmLnSsMnVotqik9bpBEPzplC
+         ST+jz1kibRSUQZKLpvJg0qWXXP9F42QI64Y1Nnm/PcpB3pAWAi5sRiarOQ8dWzdODDK9
+         DuFhl8kszeH3Xv7F2Xf8Fei3/spVMJtbl/kz8infTq2NdeodgqMG6MkM/2q4smhTw8bw
+         10WaR80ItMB3hfDYE8gkOUtwiMCewarpAzeOO4VHyBcddZPIzd+DuW7B0FXwhFC0E+Bv
+         MTNns+AP56wpPkDqVHJvwPBpQf87YhAAh/f/EVlNmeh//R/OPqzN2QDBk1mgi190HD2K
+         DbmA==
+X-Forwarded-Encrypted: i=1; AJvYcCX0vSjIWeJQAE+yoFBZBSJ/WD3cvsthAC4piwq2XELOtYJYy8oApfcaACOLJ1Et0bxDP0F6gg==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyne/ZdUVUqXMH52cOm6bgEJ2EsDqYR2XsPIBVFz4aK9PkADXb1
+	DWUxxbF1hJMvlYyhwt3dDwrCCMwlRGWJ+QyAvAcAue9Wo8G1zizFBRCFw76zvxvTjnEGxQAgGq/
+	aQ/m9ivUFekSaxlPuGnrPGBXsaSyDuPI=
+X-Gm-Gg: ASbGncsBx00fwCboXhOz3yhVGg8MPsavWMNhSl1pwijKehlsGcS6DoxsPHfff94N04l
+	czscsS7C5vY6B2l3soNyNmncooyqIuKe8qhcv8Wfh/yxvfrHqh10EELazvAj0yM2GgamjWWZGXD
+	pXWrdwfEUHWfW5X30MzwSkQSBhfgtZGzEbiDAdMRv6kJqNB2yvEX6+flgscrbiEPYREXepkDK5r
+	ZNiS/Le
+X-Google-Smtp-Source: AGHT+IG+y6U2HPtJWiJ06zINgKFsCV3h5cNmzOdYimKubd6x0uYI1nvJ7cf5K8syyZNEK08ri4tKiPSTOpp4XlvA7nY=
+X-Received: by 2002:a05:6402:520a:b0:633:8c43:eff8 with SMTP id
+ 4fb4d7f45d1cf-63467a15e4cmr3129540a12.36.1758656083579; Tue, 23 Sep 2025
+ 12:34:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250922090003.686704-4-smostafa@google.com>
+References: <cover.1758219786.git.leon@kernel.org> <0c64474985af55b1aa934b857808068a0e609c6e.1758219787.git.leon@kernel.org>
+ <CA+=Fv5Q8dVUFVBh82mAe=fy3mV6mWtQT_0pBPLQwLNBt3f8E1g@mail.gmail.com> <20250923171819.GM10800@unreal>
+In-Reply-To: <20250923171819.GM10800@unreal>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Tue, 23 Sep 2025 21:34:31 +0200
+X-Gm-Features: AS18NWB41C3D5JsYFHuNFW-M81tws8xiK0mHlB-cBnQqvONalyjABahoz4jqIPg
+Message-ID: <CA+=Fv5SJcQ5C4UeX2+deV9mPAe5QxrocMG8EJ2eVcYjbLE5U+A@mail.gmail.com>
+Subject: Re: [PATCH 1/9] alpha: Convert mapping routine to rely on physical address
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Jason Gunthorpe <jgg@nvidia.com>, 
+	Andreas Larsson <andreas@gaisler.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, "David S. Miller" <davem@davemloft.net>, 
+	Geoff Levand <geoff@infradead.org>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>, 
+	iommu@lists.linux.dev, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Jason Wang <jasowang@redhat.com>, 
+	Juergen Gross <jgross@suse.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+	"Michael S. Tsirkin" <mst@redhat.com>, Richard Henderson <richard.henderson@linaro.org>, 
+	sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner <tglx@linutronix.de>, 
+	virtualization@lists.linux.dev, x86@kernel.org, 
+	xen-devel@lists.xenproject.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon, Sep 22, 2025 at 08:59:27AM +0000, Mostafa Saleh wrote:
-> Remove the __init constraint, as the test will be converted to KUnit,
-> it can run on-demand after later.
-> 
-> Also, as KUnit can be a module, make this test modular.
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Mostafa Saleh <smostafa@google.com>
-> ---
->  drivers/iommu/Kconfig                    |  2 +-
->  drivers/iommu/io-pgtable-arm-selftests.c | 36 +++++++++++++++---------
->  2 files changed, 23 insertions(+), 15 deletions(-)
-> 
+>
+> I will try to setup Alpha architecture in QEMU in following days, but
+> would like to ask first. Did you test alpha on clean v6.17-rc5 (without
+> my patches) as a reference?
+>
+I'm running now on a fresh git pull from today so it's more like a
+6.17-rc7. So no problems running the latest git at least.  I can
+dig deeper into this to see if we can figure this one out. First
+of all, is this alpha specific?
 
-Reviewed-by: Pranjal Shrivastava <praan@google.com>
+Regards
+
+Magnus
