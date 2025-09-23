@@ -1,206 +1,208 @@
-Received: from CH1PR05CU001.outbound.protection.outlook.com (mail-northcentralusazon11010052.outbound.protection.outlook.com [52.101.193.52])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CC713054D1;
-	Tue, 23 Sep 2025 19:46:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.193.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758656821; cv=fail; b=XfPUTFKFsBdDN4D1BIK211Q0eQUy6GE6TU63YuIfZOWBZvYehElR8osto9aKBFfAyUdcoypgFRHSRJgxvgo0nENtV9Hp86oUg2Xa9NNo08KB1tN+1eNQ9Pm0rAJWu1+9+CwCC2YFagKVdIjapSt/xjZWuu10CnP65yUYlz6Ey00=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758656821; c=relaxed/simple;
-	bh=BCtdpLxjeJVVrII52JA02m3Pum8c6f0V258AhvSkXXQ=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mmMKE6v5bxnaQ3usUF7I0vKYuDfJ7JOt5gUNMuwvQhPJ2o0ptR6KFstnhtaZTEe79D6Wnye8cUvqtGVIt0pCkYcPu5uve0VJTQNAXgntLjHcJk8WRKfwE8fTnPI7ygYWeWn8MG3nQ4PYKczsBSCpnruEtYedc3N/ao8oO0Pcqik=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=H5eg180s; arc=fail smtp.client-ip=52.101.193.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB80E30AAB3
+	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 20:07:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758658055; cv=none; b=O/hsI7J4j/YcBrVGAVfKq1SPsWtgZNkkNG25LRg4UAKhIUjOYMqdtqczDvZAD8vvMp8Rld8BYa8sF9h8RlH/IxSYx2BDI8/MArtfqZtQukRAUMn4pLhN+HFWxCq9s5Sq+IBq0UZu43lNldSRsCecyzyF8ydZ684PGxJKSfNj864=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758658055; c=relaxed/simple;
+	bh=/cNMCmhs2+2GgzKjW2K7MV1lRjCXVMAS8z1dlxsrJ7Y=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WNoviBBu9liHU9PSETZLmz1jxy3q3wHVR7v6aILRAg2yEYoAzcI18ZJyv4a3JN780GI6zhah027XAxFO2cZbwuPVNlrS4GZWTZwrl33SYx/29ZivXA5AasuKmQKDLTQHDvZx8cQwzzj+sJZLfEqJuPfVw7r1AitfF47bohCxMp4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=eSkkdlWk; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="H5eg180s"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=NtuxDuPubg7gO3Kl5ocPx6mQsz98rIEJQjiiMjPiHJs+Q1XUC2N0Snu8LEXYv+kL6nJeIqTv9HL5aCuALPFvjZ3lLgZZyHLSTKh34VXGaIXTBi8m3fpLVL2KBo6OAoF6DoMcTlPkAn6TEbEOPeKYCdgFPn+vhc8kqReqIQERe60zxlc0cbC/mMKknfN8xKesALOP+20u17OCvpQHmjviIgz0JHysbBZH54LJbje6r84j5aPTnjMkBtwhiWX7cM0MygKuCpDKhY3VLDxp9EysB6UtYtC0H+oD8NoVN7bgsF6cGz5hwd2RGNzklaYdWbk0wfj7hYDG4nRAfvPNhy+hBw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=S7h+DRYrN5vlUCUlN2ZJ3jJKXucy42GT5edfhZVtl18=;
- b=DdHITg292wqW/JFxg4VlGJlCQAq8aKqreZNLxu8dDtHF224Me2BIuR44xulQPOalZR8UQ21tmuCaTCsAChsmDK65I9yWt9vR9zr30ckZzo9qW9P/XFpC01QftCRA+o+NCYLSoNOKIXRc6TJNHP6TorDu73uw+TNQRN4xfNtUdmlBVBTiF3TOg4iKfFWUTMrJtofabOAJiiKub8zAxfLLqe0f/OWWf3Cvx/zHPHXV0Y40zhknuGNPy2sXz/58OhtGGpN94LYKPmFNA628BaDHd1wm0A3kF+jBSdAA5jSP6Nzp9EofgPrjWYS1FAgLjfmOtBNAC4xKcgzsgiPDnclH2Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=csie.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S7h+DRYrN5vlUCUlN2ZJ3jJKXucy42GT5edfhZVtl18=;
- b=H5eg180sxWwwJstcj30lO1LCeO7/scCZJ2YjosXIg+/yKYK4F6v/VwxIJxeCd8NFLafXoxONxXFRB4LP8v7ydGkTpkx+VMtnb6ZMdgAIjRdxnP2keMKfzuwXtH5oz1DKFrdoxoVoK3WzzGUHTOn1V0fjkaDYfxaS2YTmQBNYkYDFD4JRNrE2nZxhZiemA70ZD9EGt6qZrZrchszy5Gfe78VdgqQ+KrXCZ0n0yQX4Z2KQnniH3yDAk+MMZQuftzfXGWK7jQ6Lpr4/yaOVFfz/RKHcwFcWf074Tc8LHmiSjvmpfAdOdUQuBxe2WEyKr76anij17Nv/WN0Fg+izFqitlQ==
-Received: from SA9PR13CA0142.namprd13.prod.outlook.com (2603:10b6:806:27::27)
- by DM4PR12MB6542.namprd12.prod.outlook.com (2603:10b6:8:89::8) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9160.9; Tue, 23 Sep 2025 19:46:49 +0000
-Received: from SA2PEPF000015C8.namprd03.prod.outlook.com
- (2603:10b6:806:27:cafe::7e) by SA9PR13CA0142.outlook.office365.com
- (2603:10b6:806:27::27) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9137.19 via Frontend Transport; Tue,
- 23 Sep 2025 19:46:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- SA2PEPF000015C8.mail.protection.outlook.com (10.167.241.198) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9137.12 via Frontend Transport; Tue, 23 Sep 2025 19:46:48 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.14; Tue, 23 Sep
- 2025 12:46:38 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.2562.20; Tue, 23 Sep 2025 12:46:38 -0700
-Received: from Asurada-Nvidia (10.127.8.11) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Tue, 23 Sep 2025 12:46:35 -0700
-Date: Tue, 23 Sep 2025 12:46:34 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"bhelgaas@google.com" <bhelgaas@google.com>, "suravee.suthikulpanit@amd.com"
-	<suravee.suthikulpanit@amd.com>, "will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "sven@kernel.org"
-	<sven@kernel.org>, "j@jannau.net" <j@jannau.net>, "alyssa@rosenzweig.io"
-	<alyssa@rosenzweig.io>, "neal@gompa.dev" <neal@gompa.dev>,
-	"robin.clark@oss.qualcomm.com" <robin.clark@oss.qualcomm.com>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "krzk@kernel.org"
-	<krzk@kernel.org>, "alim.akhtar@samsung.com" <alim.akhtar@samsung.com>,
-	"dwmw2@infradead.org" <dwmw2@infradead.org>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>, "yong.wu@mediatek.com" <yong.wu@mediatek.com>,
-	"matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
-	"angelogioacchino.delregno@collabora.com"
-	<angelogioacchino.delregno@collabora.com>, "tjeznach@rivosinc.com"
-	<tjeznach@rivosinc.com>, "paul.walmsley@sifive.com"
-	<paul.walmsley@sifive.com>, "palmer@dabbelt.com" <palmer@dabbelt.com>,
-	"aou@eecs.berkeley.edu" <aou@eecs.berkeley.edu>, "alex@ghiti.fr"
-	<alex@ghiti.fr>, "heiko@sntech.de" <heiko@sntech.de>,
-	"schnelle@linux.ibm.com" <schnelle@linux.ibm.com>, "mjrosato@linux.ibm.com"
-	<mjrosato@linux.ibm.com>, "gerald.schaefer@linux.ibm.com"
-	<gerald.schaefer@linux.ibm.com>, "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
-	"baolin.wang@linux.alibaba.com" <baolin.wang@linux.alibaba.com>,
-	"zhang.lyra@gmail.com" <zhang.lyra@gmail.com>, "wens@csie.org"
-	<wens@csie.org>, "jernej.skrabec@gmail.com" <jernej.skrabec@gmail.com>,
-	"samuel@sholland.org" <samuel@sholland.org>, "jean-philippe@linaro.org"
-	<jean-philippe@linaro.org>, "rafael@kernel.org" <rafael@kernel.org>,
-	"lenb@kernel.org" <lenb@kernel.org>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"cwabbott0@gmail.com" <cwabbott0@gmail.com>, "quic_pbrahma@quicinc.com"
-	<quic_pbrahma@quicinc.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"asahi@lists.linux.dev" <asahi@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-arm-msm@vger.kernel.org"
-	<linux-arm-msm@vger.kernel.org>, "linux-samsung-soc@vger.kernel.org"
-	<linux-samsung-soc@vger.kernel.org>, "linux-mediatek@lists.infradead.org"
-	<linux-mediatek@lists.infradead.org>, "linux-riscv@lists.infradead.org"
-	<linux-riscv@lists.infradead.org>, "linux-rockchip@lists.infradead.org"
-	<linux-rockchip@lists.infradead.org>, "linux-s390@vger.kernel.org"
-	<linux-s390@vger.kernel.org>, "linux-sunxi@lists.linux.dev"
-	<linux-sunxi@lists.linux.dev>, "linux-tegra@vger.kernel.org"
-	<linux-tegra@vger.kernel.org>, "virtualization@lists.linux.dev"
-	<virtualization@lists.linux.dev>, "linux-acpi@vger.kernel.org"
-	<linux-acpi@vger.kernel.org>, "linux-pci@vger.kernel.org"
-	<linux-pci@vger.kernel.org>, "patches@lists.linux.dev"
-	<patches@lists.linux.dev>, "Sethi, Vikram" <vsethi@nvidia.com>,
-	"helgaas@kernel.org" <helgaas@kernel.org>, "etzhao1900@gmail.com"
-	<etzhao1900@gmail.com>
-Subject: Re: [PATCH v4 1/7] iommu/arm-smmu-v3: Add release_domain to attach
- prior to release_dev()
-Message-ID: <aNL5Gizi5krZN1KG@Asurada-Nvidia>
-References: <cover.1756682135.git.nicolinc@nvidia.com>
- <c6bc114e438779129a891408af7d997bf6c28b5b.1756682135.git.nicolinc@nvidia.com>
- <BL1PR11MB5271767F92289C1D1207D8188C08A@BL1PR11MB5271.namprd11.prod.outlook.com>
- <20250915123515.GE1024672@nvidia.com>
- <aM3dlQH0rk74w2CH@Asurada-Nvidia>
- <20250923172229.GD2608121@nvidia.com>
- <aNLa21vMlP6kgatx@Asurada-Nvidia>
- <20250923174453.GF2608121@nvidia.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="eSkkdlWk"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1758658052;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=TkF/1TIVCdQ8I35UWInq/5XGtjT7LO6t3DfocUuGzJk=;
+	b=eSkkdlWkyYXjDiTckd6G4oUFlq2WNOk6av46d1FF9cVhPzOJPqcVY4o5KJlhIqwJ0yC5b4
+	ckyyIjy8o48qchQT9hiVfAvqLVOFDBTortU4+Df6/PnsCbFx5K8cDAnpbDGUuDqKzshx3S
+	uaX/z9Pvsh3jk0NV7MQ2afT5Ae3OjEw=
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com
+ [209.85.166.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-673-eqVqQ0C7Ora75yVWnofgog-1; Tue, 23 Sep 2025 16:07:29 -0400
+X-MC-Unique: eqVqQ0C7Ora75yVWnofgog-1
+X-Mimecast-MFC-AGG-ID: eqVqQ0C7Ora75yVWnofgog_1758658048
+Received: by mail-il1-f198.google.com with SMTP id e9e14a558f8ab-4258981d664so852245ab.3
+        for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 13:07:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758658048; x=1759262848;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=TkF/1TIVCdQ8I35UWInq/5XGtjT7LO6t3DfocUuGzJk=;
+        b=P7SvWqbZCLpAWFmN1aU4+WFRtQkoMn4YcqW/uOvkvhcXA9wasLZFk1e9mLM53WtZId
+         QCggy+Mjtq5ZPIk1wr44i0IJ2mtAonVhaRKhsSx8vV+i37TMZIU8rzH9lLiXhkXI/Xa3
+         UjYRBmqI/4g8djk8PzmtzxWYQ8xnSvfq1pjGIS3fHpZzSGjAgEz81uXvV82qO72CEHSU
+         55zrO607iellXH6bDoQvmRu70VQWwLj72cYrBVWSqo0kw6qj8wIiKm+Ev4L4A9h4X45w
+         +IYBgMlaoHzzruJ9Jwilx/Z/zFqCa+fUKRxuuGVEppZanqZoMjPmTmSw94TwV4D0wcbn
+         tQaA==
+X-Forwarded-Encrypted: i=1; AJvYcCU6uPVv5odY117cBT/R1OruqFUskuHqEm3prV0wEZ3YljrBBkvOGQp0ebqj2q3XgZBW0K+AWg==@lists.linux.dev
+X-Gm-Message-State: AOJu0YziIRGxxcr3O8DDGKyPX/txDkh6+DYhMmjQd/1e3Axo6JjRfOJx
+	/Qo3QS0oCfJyGeeVEwmw7OCE/lClEHKnMgEzoZB1dum/NiBIhMZMe+2qyxFPXNL1WgFP6DCJe5R
+	yfePIA/Ee6W8eNozsQGSRQpkXtgDNqj6imS95FS+WWU4L4I7aWQ8YSBwf
+X-Gm-Gg: ASbGncshwkweLbPO4Xub8SAnAUFa9FmrGD1CYZEFtU3Bdl3cwHslLjVQikBv+TQ91BV
+	F8mqnVnfuKg773zuMLr3CMLR/wjgANYyEbJkMAHSNxdxYGbYu5lp9zn0sY4r+xbpdfQzxOperpf
+	Mtrf+HSv8ZR2n++q+Xh9i4HBUPLfMqAIbHsQ/WXnItvp9GuHI7+l6lxtRFta7kMR1aNM1cGFt3S
+	6kBcu+yzFibwqOmY6Zgja9cnc3GHP/z+IE7OMgiaqdyKAHsu4Vea3tu78UBVx160FO9Uslq81UT
+	n/UdhySSBuD46jyms4cOPGgw185Vo6mlHWS/R7zKJXM=
+X-Received: by 2002:a05:6e02:b27:b0:423:fd07:d3fe with SMTP id e9e14a558f8ab-42581e0924amr21638755ab.2.1758658048134;
+        Tue, 23 Sep 2025 13:07:28 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEmMxIqHNMDHwq6jPuldjwSxK84807XGPUliuEF5qCvF8SuPWmF0LqQLkrDELCWNHqAt6pi1g==
+X-Received: by 2002:a05:6e02:b27:b0:423:fd07:d3fe with SMTP id e9e14a558f8ab-42581e0924amr21638385ab.2.1758658047638;
+        Tue, 23 Sep 2025 13:07:27 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id e9e14a558f8ab-425813f3053sm15141865ab.21.2025.09.23.13.07.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Sep 2025 13:07:26 -0700 (PDT)
+Date: Tue, 23 Sep 2025 14:07:23 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, Andrew Morton
+ <akpm@linux-foundation.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian
+ =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, Jens Axboe
+ <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+ linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-mm@kvack.org, linux-pci@vger.kernel.org, Logan Gunthorpe
+ <logang@deltatee.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin
+ Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v2 03/10] PCI/P2PDMA: Refactor to separate core P2P
+ functionality from memory allocation
+Message-ID: <20250923140723.14c63741.alex.williamson@redhat.com>
+In-Reply-To: <20250923171228.GL10800@unreal>
+References: <cover.1757589589.git.leon@kernel.org>
+	<1e2cb89ea76a92949d06a804e3ab97478e7cacbb.1757589589.git.leon@kernel.org>
+	<20250922150032.3e3da410.alex.williamson@redhat.com>
+	<20250923171228.GL10800@unreal>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.43; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20250923174453.GF2608121@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF000015C8:EE_|DM4PR12MB6542:EE_
-X-MS-Office365-Filtering-Correlation-Id: d720f4e3-88f3-4300-9458-08ddfad9ef76
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|82310400026|36860700013|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?edl+yiTwNSBMr7hTEbrTFuV6y17GA9J9hdAI04O96+FGTQSZ0040pRj2w+FF?=
- =?us-ascii?Q?ybnHXU/WSi4DUhm7bUv0PP/qxzdeDBDMsFSBgIfAV7jYZsuhoje8I5KhRWl5?=
- =?us-ascii?Q?CjlxT9yyjStltgbHRZ3WaOBoVsFY5SmKGH12OBmDXMsszhfIqNy5GTWxXwT8?=
- =?us-ascii?Q?ZoYY0jNqa6JlDZvN+yPPdVQz40A9eeG/EFS6YDbLx33Pet58iK/BF2llPcMl?=
- =?us-ascii?Q?nQJeU6Vee72c3W+nq7EMQRcUBTGuksX5q+N9UoHQz43Cbr6JZYfwhRMyDbQw?=
- =?us-ascii?Q?pe1Cer/K6Ky4/wd8QONRYJleJUbDEbXFrMNcuutUYjiOOpBHmVCEmv1HvPvT?=
- =?us-ascii?Q?YKaiGvcz1BJk1G/gc1gKxfGhctpxABPUiZeT0ftkq83VlNCam2Ax0Y6QOcFH?=
- =?us-ascii?Q?xFmigxen4X6hwxesV3b4QYNaauoWf/bvlAvX7fMpxmRDJHi790qmpXNx6RqZ?=
- =?us-ascii?Q?WgIpHrg7u+Cv/MrQ1al4ByjOQke2cHNaG9JAaFS7ToOAYmMK0M7TEBRkKALB?=
- =?us-ascii?Q?Y+P+fCHFkfUdLQaCk+FXOSNG5qWyR9sogbaiTX+ilk7KsFbsDvTiZ1sUfOTn?=
- =?us-ascii?Q?NoVsd5Nxrk9Wsiv8V1xir1oy+m6SAx3fswKUupmpUIoHNxgD5chvURk0Z9ko?=
- =?us-ascii?Q?4tQ/OdEPfGs6Avk1tYSC3L6SsmS0fMUfYvB9uv8uhDFhDOcZh7UU24pLfQi6?=
- =?us-ascii?Q?PZxEyPib4LE6d+LdaaF8RB6UleaKiFzQZbuztdCFno9bPV0WEEgdmCeJsWnx?=
- =?us-ascii?Q?WbGCNrPBi42JvlhNzVOOjVy8VW+lXpg7iCUGfSWbhil+OiUPHjLewFRbR/sE?=
- =?us-ascii?Q?J1NZ0CKFzLFgDIf3Ik2G/NJcB/HM8TbCmblq14lSEbhjsEuCaHn+mt0WuIR/?=
- =?us-ascii?Q?iToGwQ5bwH15g0oy4K8FSfp6IsMhD72BLMCIKVO9LRgvTB/JNnI3KvktREkr?=
- =?us-ascii?Q?3eGo860ERfL00ni5Fake0B0BqrLxFPgF6pxJtttzLFg3cQyFPfAkzPZNHfNx?=
- =?us-ascii?Q?cgQAgDnFa2szD4RdxytIU/SU+lB2RqIbiQZEz9+7PyyEd0OuwmW3k0Hdjyev?=
- =?us-ascii?Q?TKbQQa/NDs83INNDMPbqYGQKx+fQHLrx2L57rjoo4kjzQSEBuIKFwujZ+rgv?=
- =?us-ascii?Q?NsbmshaRKWC2dtQUpghyQtHHfi/pmXXswcoTqtbDgf4KWvcGy9MYSU3mE6Il?=
- =?us-ascii?Q?eR3eQkvxhlg2gMpmsX7e5kCNvhyZ1zmfXLrtOgNaS3AmX2BQ52HqkJEir09o?=
- =?us-ascii?Q?i7nrJPmIYU5wR3FtNzjq00snHwJbbE5YY5DELIfDcM9NmdfkKcfhmtl/QUva?=
- =?us-ascii?Q?9xUrp/lMCutu/R6csGWHqvu6B36gPtA9hNcWKGBV4kAFZ5HOY+ryhkgEmUHO?=
- =?us-ascii?Q?1eHyF3NxqupusvD6q2pyBapZZHgldTolhF1Ys0H2dVzpCLA3xmo2mZnwkRb4?=
- =?us-ascii?Q?a1NJCSW8EFaTHWHvR0fp7BIWXJTp8mLcJIaxEkLeOYq2P8pOOxqzOOqEnLng?=
- =?us-ascii?Q?EE2HHrIGh81w5uNymKruT3+dw7+e37RqC/sv?=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230040)(376014)(7416014)(82310400026)(36860700013)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2025 19:46:48.7849
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d720f4e3-88f3-4300-9458-08ddfad9ef76
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF000015C8.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6542
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: mBlwQB2HOP8ts9gI4RVigYyFiG9bJ0rktRpgZx-2G1o_1758658048
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Sep 23, 2025 at 02:44:53PM -0300, Jason Gunthorpe wrote:
-> On Tue, Sep 23, 2025 at 10:37:31AM -0700, Nicolin Chen wrote:
-> > On Tue, Sep 23, 2025 at 02:22:29PM -0300, Jason Gunthorpe wrote:
-> > > On Fri, Sep 19, 2025 at 03:47:49PM -0700, Nicolin Chen wrote:
-> > > > +/* Same as arm_smmu_blocked_ops but less set_dev_pasid */
-> > > > +static const struct iommu_domain_ops arm_smmu_release_ops = {
-> > > > +	.attach_dev = arm_smmu_attach_dev_blocked,
-> > > > +};
+On Tue, 23 Sep 2025 20:12:28 +0300
+Leon Romanovsky <leon@kernel.org> wrote:
+
+> On Mon, Sep 22, 2025 at 03:00:32PM -0600, Alex Williamson wrote:
+> > On Thu, 11 Sep 2025 14:33:07 +0300
+> > Leon Romanovsky <leon@kernel.org> wrote:
+> >   
+> > > From: Leon Romanovsky <leonro@nvidia.com>
 > > > 
-> > > don't worry about set_dev_pasid for the release domain, it is never
-> > > called anyhow.
+> > > Refactor the PCI P2PDMA subsystem to separate the core peer-to-peer DMA
+> > > functionality from the optional memory allocation layer. This creates a
+> > > two-tier architecture:
 > > > 
-> > > The intention is to just use identity or blocked domains as is.
-> > 
-> > Ah, I see AMD separate release_domain from blocked_domain..
+> > > The core layer provides P2P mapping functionality for physical addresses
+> > > based on PCI device MMIO BARs and integrates with the DMA API for
+> > > mapping operations. This layer is required for all P2PDMA users.
+> > > 
+> > > The optional upper layer provides memory allocation capabilities
+> > > including gen_pool allocator, struct page support, and sysfs interface
+> > > for user space access.
+> > > 
+> > > This separation allows subsystems like VFIO to use only the core P2P
+> > > mapping functionality without the overhead of memory allocation features
+> > > they don't need. The core functionality is now available through the
+> > > new pci_p2pdma_enable() function that returns a p2pdma_provider
+> > > structure.
+> > > 
+> > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > > ---
+> > >  drivers/pci/p2pdma.c       | 129 +++++++++++++++++++++++++++----------
+> > >  include/linux/pci-p2pdma.h |   5 ++
+> > >  2 files changed, 100 insertions(+), 34 deletions(-)  
 > 
-> Send a patch for AMD since you found it?
+> <...>
+> 
+> > > -static int pci_p2pdma_setup(struct pci_dev *pdev)
+> > > +/**
+> > > + * pcim_p2pdma_enable - Enable peer-to-peer DMA support for a PCI device
+> > > + * @pdev: The PCI device to enable P2PDMA for
+> > > + * @bar: BAR index to get provider
+> > > + *
+> > > + * This function initializes the peer-to-peer DMA infrastructure for a PCI
+> > > + * device. It allocates and sets up the necessary data structures to support
+> > > + * P2PDMA operations, including mapping type tracking.
+> > > + */
+> > > +struct p2pdma_provider *pcim_p2pdma_enable(struct pci_dev *pdev, int bar)
+> > >  {
+> > > -	int error = -ENOMEM;
+> > >  	struct pci_p2pdma *p2p;
+> > > +	int i, ret;
+> > > +
+> > > +	p2p = rcu_dereference_protected(pdev->p2pdma, 1);
+> > > +	if (p2p)
+> > > +		/* PCI device was "rebound" to the driver */
+> > > +		return &p2p->mem[bar];
+> > >    
+> > 
+> > This seems like two separate functions rolled into one, an 'initialize
+> > providers' and a 'get provider for BAR'.  The comment above even makes
+> > it sound like only a driver re-probing a device would encounter this
+> > branch, but the use case later in vfio-pci shows it to be the common
+> > case to iterate BARs for a device.
+> > 
+> > But then later in patch 8/ and again in 10/ why exactly do we cache
+> > the provider on the vfio_pci_core_device rather than ask for it on
+> > demand from the p2pdma?  
+> 
+> In addition to what Jason said about locking. The whole p2pdma.c is
+> written with assumption that "pdev->p2pdma" pointer is assigned only
+> once during PCI device lifetime. For example, see how sysfs files
+> are exposed and accessed in p2pdma.c.
 
-Yea, sure.
+Except as Jason identifies in the other thread, the p2pdma is a devm
+object, so it's assigned once during the lifetime of the driver, not
+the device.  It seems that to get the sysfs attributes exposed, a
+driver would need to call pci_p2pdma_add_resource() to setup a pool,
+but that pool setup is only done if pci_p2pdma_add_resource() itself
+calls pcim_p2pdma_enable():
 
-Nicolin
+        p2pdma = rcu_dereference_protected(pdev->p2pdma, 1);
+        if (!p2pdma) {
+                mem = pcim_p2pdma_enable(pdev, bar);
+                if (IS_ERR(mem))
+                        return PTR_ERR(mem);
+
+                error = pci_p2pdma_setup_pool(pdev);
+		...
+        } else
+                mem = &p2pdma->mem[bar];
+
+Therefore as proposed here a device bound to vfio-pci would never have
+these sysfs attributes.
+
+> Once you initialize p2pdma, it is much easier to initialize all BARs at
+> the same time.
+
+I didn't phrase my question above well.  We can setup all the providers
+on the p2pdma at once, that's fine.  My comment is related to the
+awkward API we're creating and what seems to be gratuitously caching
+the providers on the vfio_pci_core_device when it seems much more
+logical to get the provider for a specific dmabuf and cache it on the
+vfio_pci_dma_buf object in the device feature ioctl.  We could also
+validate the provider at that point rather than the ad-hoc, parallel
+checks for MMIO BARs.  Thanks,
+
+Alex
+
