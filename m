@@ -1,72 +1,72 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A0332D7812
-	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 19:04:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B13492FB0BF
+	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 19:05:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758654259; cv=none; b=XHWiKdUxPpwEgws8el4fukWFthfz8gORr6q3vV9PQKGcFK9Igi/cpfZ00REO158GfoNxblE5X+haniPsbOMW1yMrhC84dVyVprTVMhlEbzn1g+MGYinbe8/fkFy53QDeiSGk1wsMtk8Ct23Gcx+W5plRd+toV8Wy4BLx3WSj+Qo=
+	t=1758654322; cv=none; b=flH/zldnaIymlnIXPJd+8waFLDxd1NgSsqiyCIeS8JI9fhWLfnF7gzsMqysf7IZBNa6aw0HIk73OPiMpTb3qG6FOz6E/bUQa96+7NjkPnhTgrPjMhhTo/xqodEey7B+y65g0/2aOVcThy3vHA/HtSj+5iDRSq8J13Nc97QsZ8i4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758654259; c=relaxed/simple;
-	bh=y5XKP/EZOwx3lugnWlSKex8y0sj0d381WUjpO2U3VuE=;
+	s=arc-20240116; t=1758654322; c=relaxed/simple;
+	bh=6iqS6pI/nww2nERtNHBGKjrRyseW6VXKyAN/ovur7J8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ceW7/hDOYR0ph+BRFl+PW46pgYsrtHw42B5DzdpAb7i/gt6USF+WOA/wyCWU2iu6+VcxB0Hl1m2AyICMqz8gkJ355fO/mspRullPVvv92Dr1fiOdQsyqaHd74/mNYM1OfasS/p7sQDdrv57pk4mkT3Pt5zVYvN821LdM/9kyTWg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aXPw5eRl; arc=none smtp.client-ip=209.85.214.173
+	 Content-Type:Content-Disposition:In-Reply-To; b=uqB79l2Zr+UzewV4A5QibCaqtjcd/gETqEsrn1h9zkFEtWvD7xYcWtyQ28mz6QVEMdOgYUxHxTSgpSwy2Me6DHcvdrkO2qV4NSgYCLEBvizAYGesBY+pKjUfMjLkxGMB/VHDIWhyOZebEQB3JCR8rlCevBAb2Fd27JKPnD0bW3o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=kuJ2gyiC; arc=none smtp.client-ip=209.85.214.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aXPw5eRl"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2731ff54949so34455ad.1
-        for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 12:04:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="kuJ2gyiC"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2731ff54949so34705ad.1
+        for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 12:05:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1758654258; x=1759259058; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1758654320; x=1759259120; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=BVuSRD80cb05xRP8eCjDZvMC/JNrybFBLhN6uiPb/HE=;
-        b=aXPw5eRlOjEVMxUl4XcXRS4/QZGZHjYZUl9jaPwctvjungBxIWAwhtyXEMMnjSzOqQ
-         0a4m0beRXYD0r1BworRXqGPMxxtPguT1NRsrZ4LC/EWDmCuZUFWi0WC/3/9dautnHp7+
-         Cx5NSOi6jkkgCZjIfb5MO4dWaeu46W50SwIbMTenSTrKxCm+1nx5gnv8VQp4Q1uKj79X
-         BjGSR+5aRY2SUSWXnWQiHJPM1vwvvL7w72peQH/VcBPCKcuPw0hSwyRAbaWtIll168xp
-         rWhmUFP0zyrhmR0sjCWEGtPff/8a9QR2j5l4yBVYXu+MOzVyiyuDQd4/Ipz+c/YiO2T/
-         S7yw==
+        bh=shQ9F/S9E+ezjDmWjFc88/0zLU6nZIORFrqFjPoe6W4=;
+        b=kuJ2gyiCDxjjR29whIjn3vW+kz0wyzUBIAlAzHd4DIP/hWNsjnoa9jP7cxGIGtec6V
+         9PrSps/o4obCh+/rlpWCVHpjqyTGXE73wz6VD+stDmzZ1pTrIMcx8l4vUs//idPtCZhR
+         ViNlC3FrELlvQ5Y0Fx/w9F3dNHLVi8QWMmJwFN8GTyZgdbEfcLiCAeNWOamQDRMClp9C
+         Z6Usghzmf8F/qthCVFimYuFVBC8RHRvZFJVHKjCghncaywwqIh/9+Zq0MQmIhW/28SIr
+         rj04EoGMxRt/mMbSiY61BVsu2TL8kpTH/qO0/NECZmJeHHNmL2B+8I0mMqXci0EJjL1w
+         Vh+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758654258; x=1759259058;
+        d=1e100.net; s=20230601; t=1758654320; x=1759259120;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BVuSRD80cb05xRP8eCjDZvMC/JNrybFBLhN6uiPb/HE=;
-        b=fWKmZmvecPcqaSn7o8hafjZitWSEyIaYlvC5GTj1BaXJg4lPNp9fhUkV7WOfTp53nh
-         lZUVwRlmtfX/uLhT5pzsyxGw6gHMfe8hmhpAHMkfOaiYnb2Nu5EQ1tbg+eA4dWF5mTUI
-         A1ZZZcTjUWL3OnIQiP66fRJPLe00JWP9mE3ZUK0zsek3Wneqg8OQpUwjkQEx9TuIimia
-         PZAKL1LnN5WDC3p40+Yf8FJ7caQnexgXfrRcCK469PYX8no0Rl1YjuhsPkp47aiZKlNM
-         xupQKBV7EN4tvEuVpXuFVXKPDAJcRZ6AU5GyXoDWY8XB3QtGPAQGAe27oVR00K1pbj/K
-         isoA==
-X-Gm-Message-State: AOJu0Yw0iHpz5zMzjM2I8PW0AaMxVXkpERYgRZlAeYm72an3Ry65EDg2
-	ZE+R1iPRxDiDr4yOS5bkwDdT7Bqc9yIXl/bLpe8VlIBzMvC9SH8HsDwbMcu7w97eUg==
-X-Gm-Gg: ASbGnctzL5lGCHRE67FcANCEtkbd+w2eEHpFqvObJqr5VPNIOoyyfvOIOweKGuucgAR
-	VT55TYB5J+cBnfBmZ63LC91ECqExllVtJkUu7Lax5ZRUXw9omdHAuOdU4r7FK7NFXntYCP2O/in
-	hCFyOD4Lh8Yg32k1Ztq4iB3IJz6x3dxwhKs6BIgXCEMNcBp8UKyDAWiTb3DwkqR7uoSgzgAjpnM
-	U2Nii5x+5jtlaYUrudjs2H/UTYK6IN4lMm4D3MohozcyjsiAKVn6eWEpobYZv2QT3zXcVRTmJf1
-	mgYovQDURWWL2YByS7uyX3XFQK+DUu1Pkz3d8PwOkFC/NNq1NQIVPMNwpJMHv8n728N+d6omfrR
-	n+VARxde8oAFXC8JJVzMCE/bfx0/tz9LURU+74OTrM9zV3ubHMFiZoPe2nqZlE8Y=
-X-Google-Smtp-Source: AGHT+IGlm3sxbw3MtGkL7PIjJGczzrrl/P0p5+02K7dTiPLCrVjzmQQzziPhIyR/5DAW3Upq3GMMIg==
-X-Received: by 2002:a17:902:e809:b0:26e:ac44:3b44 with SMTP id d9443c01a7336-27ebe858bf7mr777395ad.10.1758654257284;
-        Tue, 23 Sep 2025 12:04:17 -0700 (PDT)
+        bh=shQ9F/S9E+ezjDmWjFc88/0zLU6nZIORFrqFjPoe6W4=;
+        b=tv4T6H8B+K2BE1MBwhmyJ0mrQ0CkpaZDfwyAVld0E+DDS4ex3FLyq6Aaj/1xPAfgR3
+         BSNbWsq/r01m4mc48itgiCKIFBIru/Cu1iEY6W7gA1S6N8ccHBTZWy7nJJTtQWsByaDh
+         +b2vjMIzi83vQ3f36rUTgLE8WwbyL65Js7G/h7th7SMuX0WiBCQICDPhOrl4f3RqpdpU
+         xO7V6yGmXYa5G8V7Ijbt4QcsftV6ua618hBw5oKmDA+x1Jl/DhBEaWQmK5I5FklcrVId
+         jQ4DPzDxZ19xnIJediK2IIaj8e/WvG10dSaBDJ5SFzzZXdplWWREli+CpllwcRoWLPPg
+         pwuQ==
+X-Gm-Message-State: AOJu0YxdzeuFRdkDN7ME9pKa3yEkX5UPzwx7uvDXxH6bkV2va6ARuchl
+	d3bZHJBBN4CUrSdRJ1Nx6kDUJvD2mcPVG01DGVuhHMw6Ce/kPqWwgraVB5W6qozJng==
+X-Gm-Gg: ASbGncsDImlm5cW1zkP0Th/ePopMsNw1+gh2eC6vFSK7Dalu2wvpR0r2wEyyTMbgx4V
+	LZDSXQp5MTvCYmk0iYaPM1jgIyYCzE9hdCsQnjwpU15uIe7fP2o7AzNGU1mTkwKxGF5ywvcPDe+
+	mMeh1QGP7WHW4oNMBLgkbPjYJD3s+qVoM4HXsNO7WoEshb+N3u3aUciLqPi5BNoRLCdB5aoIWLK
+	KjXOCXVruJCD0C9cba+FkZJAtyHKVgHFXqfWZXAmqM80jS7nXNvzC2MU88CB+13+cYfyVrM83/O
+	ZybK0ldy+eCxlhR5hxv7RIB0T+Nn6TG9bLZY/EC/7K0TtizNZiML2+tPP5872CHLrMTaveB9Huw
+	TGKscUNaWb2jRo3MTJkdzGsuMaHiBPOnLKnl3HNqMi8JR3Fcwn62XYydUoTpyBpY=
+X-Google-Smtp-Source: AGHT+IHVaOaeuEz2XAlC49A/lUlZuiYJ4YEiwzji5f5sfrXloiYMH7AkD2MYjlrCozMP/2Heq38dGw==
+X-Received: by 2002:a17:903:11c7:b0:267:912b:2b4d with SMTP id d9443c01a7336-27ebf1b61a4mr578145ad.7.1758654319543;
+        Tue, 23 Sep 2025 12:05:19 -0700 (PDT)
 Received: from google.com (23.178.142.34.bc.googleusercontent.com. [34.142.178.23])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3306085e6e7sm16766873a91.28.2025.09.23.12.04.15
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-b553d5b35b4sm8345090a12.2.2025.09.23.12.05.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Sep 2025 12:04:16 -0700 (PDT)
-Date: Tue, 23 Sep 2025 19:04:11 +0000
+        Tue, 23 Sep 2025 12:05:18 -0700 (PDT)
+Date: Tue, 23 Sep 2025 19:05:13 +0000
 From: Pranjal Shrivastava <praan@google.com>
 To: Mostafa Saleh <smostafa@google.com>
 Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
 	linux-kernel@vger.kernel.org, robin.murphy@arm.com, will@kernel.org,
-	joro@8bytes.org, jgg@ziepe.ca
-Subject: Re: [PATCH v4 2/4] iommu/io-pgtable-arm: Move selftests to a
- separate file
-Message-ID: <aNLvK2xW7f5ZNYt0@google.com>
+	joro@8bytes.org, jgg@ziepe.ca, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v4 3/4] iommu/io-pgtable-arm-selftests: Modularize the
+ test
+Message-ID: <aNLvaVHgOh-uS2JS@google.com>
 References: <20250922090003.686704-1-smostafa@google.com>
- <20250922090003.686704-3-smostafa@google.com>
+ <20250922090003.686704-4-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,20 +75,20 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250922090003.686704-3-smostafa@google.com>
+In-Reply-To: <20250922090003.686704-4-smostafa@google.com>
 
-On Mon, Sep 22, 2025 at 08:59:26AM +0000, Mostafa Saleh wrote:
-> Clean up the io-pgtable-arm library by moving the selftests out.
-> Next the tests will be registered with kunit.
+On Mon, Sep 22, 2025 at 08:59:27AM +0000, Mostafa Saleh wrote:
+> Remove the __init constraint, as the test will be converted to KUnit,
+> it can run on-demand after later.
 > 
-> This is useful also to factor out kernel specific code out, so
-> it can compiled as part of the hypervisor object.
+> Also, as KUnit can be a module, make this test modular.
 > 
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 > Signed-off-by: Mostafa Saleh <smostafa@google.com>
 > ---
->  drivers/iommu/Makefile                   |   1 +
->  drivers/iommu/io-pgtable-arm-selftests.c | 208 +++++++++++++++++++++++
->  drivers/iommu/io-pgtable-arm.c           | 200 ----------------------
->  3 files changed, 209 insertions(+), 200 deletions(-)
+>  drivers/iommu/Kconfig                    |  2 +-
+>  drivers/iommu/io-pgtable-arm-selftests.c | 36 +++++++++++++++---------
+>  2 files changed, 23 insertions(+), 15 deletions(-)
+> 
 
 Reviewed-by: Pranjal Shrivastava <praan@google.com>
