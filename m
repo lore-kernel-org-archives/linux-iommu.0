@@ -1,86 +1,84 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66C8D78F2F
-	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 16:19:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D4373233E3
+	for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 16:21:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758644357; cv=none; b=WKRhPXhVYpjInM+38GUGh2zUJYNVzylF6PEZaniG2aL/fRkeYzVqxHwzOWamjIU5H+/TRd5IaTA1/VUKao38XGfrK6VgYd2+sEtYjZmWOHMLIog+agrLIDIT7pFe/foWM1d+0I9MvN2tWkJFvX8GQn0RlIvPMf04yF+wFqHRqFk=
+	t=1758644504; cv=none; b=FNAyogNrMWsD/OEFAHaHulqGXMGXNoLjTNEJIzzHxN1T1SjDQNhRuq1A40TmjirLSBUpgycegVJh58I41EDh3s/Y2ACc0otAeO5iamLz44fyrGZUoutmVfPyRJD0W12MlutBAlBqcw3dvTBTpGS+VtZhaFCCtg/uO/zIT3sLaoY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758644357; c=relaxed/simple;
-	bh=QkKOS+cKXEg7Fh/n2Mposi0sIPirZ5RMkl5yEj5Yt9M=;
+	s=arc-20240116; t=1758644504; c=relaxed/simple;
+	bh=IYKsjA2lVzqlmST6yIaoy5ZiKBNubcdQiY7wDAQazvg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WsYsKnikf5Wn/kOqLoU4ydmrilnNIBN1U+Y4Vka2287/jZsNtu7I0r1hjlmjuU2kVkX/KkdO2wUO7S18pm0jq0dyTNy+XRsR8K8xFCCI1iu6iC64t3uIojOAOiBfrsjL4detBqc5nmhxCCHeXYjhwF2hv24CRnnvUVKW379Uovo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Mq9XWfPk; arc=none smtp.client-ip=209.85.222.171
+	 Content-Type:Content-Disposition:In-Reply-To; b=RA8VEGc46ErdYF9T/o4IT+tc3UOzBjAk4SDe/mYSVI4BsFiAZYU1/pKD/g6J1yLq3f3qFe4UGx1aNEaDOjj8t9e1VdYCoo0zpVBWV0z2FrRx5UWCO3DcavPNt/qBQ0pCmvMG3qSitaYRBVU4z5kR9boMLwQ92w6jpF7fh3bALss=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Cyt9PeIm; arc=none smtp.client-ip=209.85.222.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Mq9XWfPk"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-8276e579242so501389985a.0
-        for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 09:19:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Cyt9PeIm"
+Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-84a91cfc7f0so4857385a.1
+        for <iommu@lists.linux.dev>; Tue, 23 Sep 2025 09:21:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1758644354; x=1759249154; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1758644501; x=1759249301; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=xKb7tsSmZ0H6Wdl04tAiaIQVZQbhBUd7k5adJ7pyr5g=;
-        b=Mq9XWfPkeq9eTtf0yN3TH2rDiCmXH93VT4zDrvkgle+F4wRaSQz6mgIrJwzyWwyRBM
-         UZInqMlocAZxWuvgG32MKDiKC0Mc81sBWldbohdLCi/aFDiBjtuDyPJ3wHAfE6MPSCAz
-         MWs/KODRkIbHIooyD5enxQV3q8Ry1Gu7xZ1iX98wjKQZVB6Q99tKPqVaGIQVddy/Rdd1
-         z/2HF/l+a3dP2w36ugqrb2m0bZ/Iy6zxhTCidaiUJI1e8UgDZUlX4kQ/1/fyrNmcIJI4
-         9u5FkrBRDMsQ7tBYBi2fGSmIfOXhQDFV5zLeCwkokYGgSGev4OlT8LlYRoADsoTwKGqt
-         8i8g==
+        bh=tAF1ZqvUCq+DYRKtNmDJLT3lAtr/qrJIjSppUMh/0OY=;
+        b=Cyt9PeImrpWV9TUJhWnaCiFdca/7EOsbkT71Q4uZhT4g+QdoTpahgUDZdmABxglDmk
+         j3KFuOtBBctbbAtgJBYQxsoA8PuanZgSPf09Hyb8YRz4GyLeR6IUkYTAwEIyIt5ZIvaj
+         r/5jSlIQvx8dknu631qB0MIp+UMuDxmC/szFgh1mcDvkeaWevZKuSyXOoHuGkHxcDDbe
+         qerYra7t8MxI6QpBWfrJM6HQdn43m6R8UFcxy/C7JVD9ilF9CUz/1mOi3GDC44xtJMt8
+         0mwkHFKqBU6GnzzDiZmce+7oGOdkuSY4vVxHE5ry8La2wzJkMZ5tMEgNVu3KEFMGLkmA
+         TpMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758644354; x=1759249154;
+        d=1e100.net; s=20230601; t=1758644501; x=1759249301;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=xKb7tsSmZ0H6Wdl04tAiaIQVZQbhBUd7k5adJ7pyr5g=;
-        b=wTOByctO+DxQVNr7yXv3wT+FFhYeguT26m2YAb82xVtmN8HoFb6keBooq0HyBnVxXu
-         xnCc2ELM9zH4YsUhOqiNoUNkkHi16RDuutzCfPMmbvVnqt4lTZPoxGT+8dVl+JztDqDC
-         axO0cCVuoZn+0oUBsnbE0ToUJ3YLlDEyQOAhnpat+ye2QBcunkTcUjvwoHZRaK2v8/v6
-         JEd+VX/gz24hv2YhmaZMQ6fTP62yIfx/4lDBZ30mxlY1zn+DgEEeJVfenHMzwmg893HN
-         u6RTj5jQesKDsZ6prrm1SsEZbUF2QcibXOhcm9on5cUH3+UpBCXUg6tNb3Z4ERPgNdG9
-         fBqQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUNO1aQB2tF463daIRGxy2IJ4Qe7/oW30CzEqiRw+Vw1M1HlkmhI2s56GJxBwT/OUGmByHKig==@lists.linux.dev
-X-Gm-Message-State: AOJu0YynWyZKRwvO1WrbTObbmM1evN79lFnI4Z/nOwqSfIwCZa4AGhBf
-	Vs6XwU1c6xGk0KqiiRN/rKyG5/sZI4rT5ksEsDXKIlobWG1Kas6C5K0e9/x8qSaIZgU=
-X-Gm-Gg: ASbGncvkaP7L9jBHe2FtCzlOVm9qpgBUWGWjKi667PxZkhWsx8H27YZ/n+Q4rUOjQad
-	HBpeUGnHBiM/0Wc4CX6PcUBq2l4+ZBfMGT18Yp9HVMs0WAz8FlcK3FUnj3XormEDc0hjam8adva
-	zX8deSu26wS97so2Cn5cPtDW3sRAadkTOEi+3r6jXE6Kc9D+OaiUDrUQZwhSZXpQDAgbO8A78JE
-	4mxa0JBcSBEuN5N3DncvGnrm/hWcBSGpODi/wMG1rEK+0ZNqfPUnjmoEVfpLPCU55GKC/72aWox
-	6XsNcR4ucEbR0UoStNLmEcQgiXV0UvvOAHor3wAeuIryMOnVduRruVVHPjEztH2jdD5EspMN
-X-Google-Smtp-Source: AGHT+IFknn95PHhsPs7zw84kBzlaAQkMLHRCQnMY3jCMzKXPkKXu2wtZSYWkgGZ0B6Tp/B1GZcGGDg==
-X-Received: by 2002:a05:620a:1a20:b0:827:e9b0:2752 with SMTP id af79cd13be357-851777634a2mr367039185a.80.1758644353963;
-        Tue, 23 Sep 2025 09:19:13 -0700 (PDT)
+        bh=tAF1ZqvUCq+DYRKtNmDJLT3lAtr/qrJIjSppUMh/0OY=;
+        b=PdqiTvBsAtqecV78yHxhkXDjLMnednRYkQ8hwHA8XfHK/9uYZniJEFegFm1RCbHZdx
+         oi5f5420HdSdhkr3J4uJE/As5eR7JRMtlLEn7ntqH/Wa95BjbpbBsa1YPaE4r0Q0hRkf
+         pjDrAgAbkB3qr4J0EEuUWk1K2bQBsrMtwDq7BSnjsurF4bFvibYI0j4jRvRH2fkO2FOo
+         JyiVPByxdHIJPrX4+qvkm98AKibzFNtc6F4+0tQ9GR43tPDpDQtj22RrwuJtGZcqom8v
+         UBhxK4Nvb7MOPXk4lVkvJX92OHWfxLKLsvzKoI9nJsctQwLdgqmZrDL7kp6B4gzNR1BH
+         28zw==
+X-Forwarded-Encrypted: i=1; AJvYcCVm2oO2tZIMwEH/+v/3sFPaPnhwh/hn83tmxA2RAD1ym+uGsXTVOamVkT10ZpnQpoOdotS6ZQ==@lists.linux.dev
+X-Gm-Message-State: AOJu0YxTXPnvxXl2V1ki9hRZ7o+uUVoLQdvoufXRv5OB7BnybaYPSIXm
+	DIGmb+m61ihGJTB7HPaSFTcKx4VM19TIpEJHiqHeufpCX6C3BrG1/ro8eA8LHDJqO4E=
+X-Gm-Gg: ASbGncu89VTgvc8+jVKIHysVTo4XBJm7TpDOy3oznK2Yi/rh6EZO41jFAZYdhdC1nZ6
+	PNgn3MXr6ZBy528WiRwkJOSvMqfk3Sl6gq8IRy+fN6+h0QVfap33MFUsZ2Nw7BfGY+1H/V/xJ/3
+	ovtH8/ANe8nEm/LBjHsuNnqhLCdktfa3j+DmvEH7Dj2px4zo1vXtlWixlGopReI6XTf4dQluUwx
+	iJGOSHMP5eUthtZ4veIdpnznFPl1/vavVXs081QAG3yM86ZDh0ycmJDgS3grGiejkAvRpYdbC1/
+	L1orgiRWw3mxVjcPj0ZXn34sAHcb8jvKZqiuWQRwfqt/4c0p2IcdVBQ8maN/vHhGJkJgHXeh
+X-Google-Smtp-Source: AGHT+IFYjLvlYVWkvRmfrd4O74XRQ2yOeConI9WiorD7CA02H/AscVNhWnASnvsfS0ugaprQj9f5qQ==
+X-Received: by 2002:a05:620a:7088:b0:84f:e093:3949 with SMTP id af79cd13be357-851b8ba216bmr341372285a.36.1758644500700;
+        Tue, 23 Sep 2025 09:21:40 -0700 (PDT)
 Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-852847b70f4sm117567585a.15.2025.09.23.09.19.12
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-84cb88e6969sm318223985a.2.2025.09.23.09.21.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Sep 2025 09:19:13 -0700 (PDT)
+        Tue, 23 Sep 2025 09:21:40 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.97)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1v15jU-0000000Axa9-0WlS;
-	Tue, 23 Sep 2025 13:19:12 -0300
-Date: Tue, 23 Sep 2025 13:19:12 -0300
+	id 1v15lr-0000000AxbL-2Bdg;
+	Tue, 23 Sep 2025 13:21:39 -0300
+Date: Tue, 23 Sep 2025 13:21:39 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Shyam Saini <shyamsaini@linux.microsoft.com>
-Cc: Will Deacon <will@kernel.org>, thierry.reding@gmail.com,
-	robin.murphy@arm.com, robh@kernel.org, joro@8bytes.org,
-	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	devicetree@vger.kernel.org, virtualization@lists.linux.dev,
-	jacob.pan@linux.microsoft.com, eric.auger@redhat.com,
-	code@tyhicks.com, eahariha@linux.microsoft.com,
-	vijayb@linux.microsoft.com, bboscaccy@linux.microsoft.com,
-	saravanak@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
-	lizhi.hou@amd.com, clement.leger@bootlin.com
-Subject: Re: [PATCH v4 3/4] arm-smmu: select suitable MSI IOVA
-Message-ID: <20250923161912.GB2547959@ziepe.ca>
-References: <20250909154600.910110-1-shyamsaini@linux.microsoft.com>
- <20250909154600.910110-4-shyamsaini@linux.microsoft.com>
- <aMw4I0AjKNPY6SOw@willie-the-truck>
- <20250918224322.GR1326709@ziepe.ca>
- <aM0HQ51DelZW_Rt8@willie-the-truck>
- <20250919120839.GV1326709@ziepe.ca>
- <20250923155647.GA22010@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+To: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Joerg Roedel <jroedel@suse.de>, iommu@lists.linux.dev,
+	Anders Roxell <anders.roxell@linaro.org>,
+	Naresh Kamboju <naresh.kamboju@linaro.org>,
+	Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+	Xingang Wang <wangxingang5@huawei.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, stable@vger.kernel.org
+Subject: Re: [PATCH 0/2] PCI: Fix ACS enablement for Root Ports in DT
+ platforms
+Message-ID: <20250923162139.GC2547959@ziepe.ca>
+References: <20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com>
+ <20250918141102.GO1326709@ziepe.ca>
+ <tzlbsnsoymhjlri5rm7dw5btb2m2tpzemtyqhjpa2eu3josf5c@uivuvkpx3wep>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -89,59 +87,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250923155647.GA22010@linuxonhyperv3.guj3yctzbm1etfxqx2vob5hsef.xx.internal.cloudapp.net>
+In-Reply-To: <tzlbsnsoymhjlri5rm7dw5btb2m2tpzemtyqhjpa2eu3josf5c@uivuvkpx3wep>
 
-On Tue, Sep 23, 2025 at 08:56:47AM -0700, Shyam Saini wrote:
-> Hi Jason, Will,
+On Tue, Sep 23, 2025 at 09:07:49PM +0530, Manivannan Sadhasivam wrote:
+> On Thu, Sep 18, 2025 at 11:11:02AM -0300, Jason Gunthorpe wrote:
+> > On Wed, Sep 10, 2025 at 11:09:19PM +0530, Manivannan Sadhasivam via B4 Relay wrote:
+> > > This issue was already found and addressed with a quirk for a different device
+> > > from Microsemi with 'commit, aa667c6408d2 ("PCI: Workaround IDT switch ACS
+> > > Source Validation erratum")'. Apparently, this issue seems to be documented in
+> > > the erratum #36 of IDT 89H32H8G3-YC, which is not publicly available.
+> > 
+> > This is a pretty broken device! I'm not sure this fix is good enough
+> > though.
+> > 
+> > For instance if you reset a downstream device it should loose its RID
+> > and then the config cycles waiting for reset to complete will trigger SV
+> > and reset will fail?
+> > 
 > 
-> On 19 Sep 2025 09:08, Jason Gunthorpe wrote:
-> > On Fri, Sep 19, 2025 at 08:33:23AM +0100, Will Deacon wrote:
-> > > pieces and will need to work on the userspace side. It's not like
-> > > MSI_IOVA2 is magically going to work (and I bet it won't be tested).
-> > 
-> > It could, if someone checks the default memory map a second constant
-> > could be selected that works.
-> > 
-> > > > Nicolin has some patches on the iommufd side to let userspace select
-> > > > the MSI address instead, but they are not done yet.
-> > > 
-> > > Maybe we should just wait for that? Carrying a temporary hack with ABI
-> > > implications to support broken hardware isn't particularly compelling
-> > > to me.
-> > 
-> > This patch would still be needed for kernel users.
-> > 
-> > Arguably the kernel users should just be using the iova allocator from
-> > dma-iommu.c. This whole hard coded constant/sneaky uapi is just a hack
-> > to make vfio work..
-> > 
-> > So maybe if the single constant doesn't work we could set some
-> > indication that the caller must allocate the MSI iova, the kernel can
-> > use the dma-iommu allocator and VFIO can just refuse to use the device
-> > for now.
-> 
-> So, are we settling on having two predefined MSI IOVA base constants,
-> and if both of those conflict with reserved regions on a given platform,
-> falling back to dynamic allocation via the IOVA allocator? Just checking
-> if that's the consensus we're reaching.
+> No. Resetting the Ethernet controller connected to the switch downstream port
+> doesn't fail and we could see that the reset succeeds.
 
-I think Will is arguing against introducing a new constant..
+Reset it by up/down the PCI link?
 
-Yesterday I was looking at the SW_MSI code again.. What specific
-problem is it you have?
+> Maybe the bus number was still captured by the device.
 
-It looks to me like dma-iommu.c is already allocating MSI addresses
-using its built in IOVA allocator. So if your DT is marking that space
-reserved then it should Just Work right now as dma-iommu.c already
-processes the reserved ranges and will allocate MSI addresses around
-them?
-
-The base value of the SW_MSI is only used by VFIO - are you trying to
-use VFIO with this device, or have I misunderstood the dma-iommu.c
-logic?
-
-If it is only VFIO at issue then perhaps we should solve this by
-completing the work Nicolin started to allow VFIO userspace to specify
-the MSI Aperture?
+Maybe, but I don't think that is spec conformat behavior.
 
 Jason
