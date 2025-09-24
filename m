@@ -1,87 +1,76 @@
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+Received: from mail-io1-f44.google.com (mail-io1-f44.google.com [209.85.166.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE7202FD1BB
-	for <iommu@lists.linux.dev>; Wed, 24 Sep 2025 12:55:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2A0F2E4241
+	for <iommu@lists.linux.dev>; Wed, 24 Sep 2025 13:31:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758718560; cv=none; b=YqcEfymtFOFhRUQmYIcq9CRcDPKy9Q6xLNGRTfxAz/iPacDC50Q23PfT8FWLldZBB6yAg2dtipG0pk6lNNMA3sQFNWNqc7nH8l6M2g4tnJXdnrr947Lr9LDq9sVg5RORj4yiVFELHSelG+sI3KobsZIIe4peRnGlEmne9ruB/Zo=
+	t=1758720716; cv=none; b=bCMi+uMhsy0Za3faidEDsAbGsMXmnDJNngg6eTd7ofuuZ6bV/85NXFVGIW6ScTzZPy4tcFOBs9ZsbukiI/e5ygkHvbEpMWh2Q0JQB5Nuo5o66Rr7LAWAu9cl/Nx6GZfYgF0HT3WskZ/qFGmgOuivHM0X5ecJKV68GPgNwEuAybc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758718560; c=relaxed/simple;
-	bh=8qhfbs5/dOfdODZ9W2ISGsgvtvUAf69XpGYPjAvdJ34=;
+	s=arc-20240116; t=1758720716; c=relaxed/simple;
+	bh=yuXU6owTONwJ37j4TOUPBOuXQVVPet2Uv64xo0574yQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Gfufm3Rbsq/kcf+snd4yFKBn9bmTPrRYmowaS3lxMf7hENxRvebTeB/4dFTiwudZxfMkwhOXfCNU71JwX8gkCV3KWgNB0XySON6bu/bVECPgMecP39aMnFLr1RA5R32Pw97EojnmZdRvTU8nUwOxgKypvM/QYJM7gqekiB9tKEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MgBt+2LN; arc=none smtp.client-ip=209.85.210.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=VWM1yfwTMckEDqucokrTZhfRhtfsE+u+c7VUsw4LzP+JnkYY2gvZ8FCUbtqC3YJvxuR4AS5Y+HiUtP9C+Meuhg2LHqv27cnFL18a2Xq+EVDnGb9xVOmldUJ0xMd9kKNXZy6IZICeWAvjVD1OLBIrhLTESE/GGDtF+nlfOAp5FTk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com; spf=pass smtp.mailfrom=ventanamicro.com; dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b=QhRYOlMH; arc=none smtp.client-ip=209.85.166.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ventanamicro.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ventanamicro.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MgBt+2LN"
-Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7859d18aa33so2073959a34.0
-        for <iommu@lists.linux.dev>; Wed, 24 Sep 2025 05:55:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ventanamicro.com header.i=@ventanamicro.com header.b="QhRYOlMH"
+Received: by mail-io1-f44.google.com with SMTP id ca18e2360f4ac-88703c873d5so249588839f.3
+        for <iommu@lists.linux.dev>; Wed, 24 Sep 2025 06:31:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1758718558; x=1759323358; darn=lists.linux.dev;
+        d=ventanamicro.com; s=google; t=1758720713; x=1759325513; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8qhfbs5/dOfdODZ9W2ISGsgvtvUAf69XpGYPjAvdJ34=;
-        b=MgBt+2LND05eiLo/upxLpwJSH+nUaCPrj99qeLb2r80Idx0TphaDb0uiVdVTIgLJNQ
-         oaovNOwEcsuu0Wbi6wOtQo9d4hN7FtWmgQEB78VD3LCH+vWGnJn28Qj2UFJBa5KfNnSW
-         TYJQVpBMdFYqfdQZm2C8Hug1Ms+wR8eS4OH538GmBkj8DNIxZWqTT6OMSoHQwLD3EbAs
-         y2orczRPD41J1QfBLi4xLYZtWsUB4rjVD+Q8wnK6uEC2ZnAWC7wsZmgRLbVdIGfjK/zw
-         DtIvZhnhUqlrzMNl+ooTFSuaHmSCJBbKfpoErLRASBXmkO6ZTZjpAXJm+y/Ryso2fq8I
-         LtwA==
+        bh=Sjr8/7QWc40wBIvcq7xbnNiZ+KKEhi3m1vUvdK7Sd/0=;
+        b=QhRYOlMHko0irVxpqcmSk6u+va3nFvoef72Ot/3fnsKTed+w5JOIMYESzFbKLDdHkq
+         K4fiRUq5JwRvNTD+FXm7yCPlx4qSs+CwkU8z19DlYu1TBVqJfJQDk4UIPCRk0ts5UNhZ
+         iKVVEa3i2N5oAIOafwpMiBqSB0qsptItvRUcFTWrEGjAIRP0wL/fN/u2BcXxLAk2blZc
+         olakbvOHS2hhKanxp9h6SBHwaN9Hu6tPDrkm9GOCL5Fsd0fObUKWJ+V/VMI1DszLxKU3
+         gsdW/VUc8D8TYVQl1CG3M+V3poofAghyjbkcgDvyvu5Qs81efbwdT2XJfojEFNAiJbG9
+         l7CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758718558; x=1759323358;
+        d=1e100.net; s=20230601; t=1758720713; x=1759325513;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8qhfbs5/dOfdODZ9W2ISGsgvtvUAf69XpGYPjAvdJ34=;
-        b=Q0EWNcVZUP3yywHs3j/CTxqFzddfkyd4m98S3kmiE37hU/oX1VcXHK2cOXSQ7uDGKy
-         X7c+P8Qf5+0w/q+OjlMcIt6fud0Ar5QwSPnRC3gF9RPDI6tM+IQI6ubwlZgft5F4jKIp
-         jsuhF8YAQR40rHM2V008BATlEItq8mjCPN7BJoWEAhwiriLsn4suTWg/OzxpeM95fcTE
-         rAGq68xd9UhbiB0u0Y+OUAZ0cRd4VMNJe0ibOXuZ6UC5Ui9eTaZz3OtFLlpV9+ryXtL2
-         ruY2VA7lmMQDrFrx3RSjQYsMuzEmM3JJleTKhYHzDs8gX8B8LZ2Pi5d8OF3b1d04GEzS
-         dOWg==
-X-Forwarded-Encrypted: i=1; AJvYcCWE54kjs8HGYmKLj8KmlSl6OKcU3AyADbg3tTBZcV7T0GIwL0XTHP7snw1gmMUB7jCRH+HVDg==@lists.linux.dev
-X-Gm-Message-State: AOJu0Ywa1DRHFlLWaOkqxFuhdemECgWhzZGrJaPbE0WW+3kHn/BnSJyc
-	ZPAgex9rNRTDm8I7a02ZRCG3JXS7jW8ODzoGKrloFtr4mW//3jdKwcyQpE8NWHGLJLM=
-X-Gm-Gg: ASbGncu/WAnr3DBE5XkJMZQpchdguL/9ErnokyN0oMUIZwp9zYWB8+xH2wuAll4/v7G
-	5+V3lfCKs0N8E0aUHZ/gnOK2MaEXt0NEKQ/fWOJnJGurs5p10U9DWKdL+mfPKtT/qRGIaA7LUbI
-	9F8sHwLxSDXG2oq07GTqUGNWDg1C9D0BQZWvS4b1KItltMZgjtD9CCMShLGWQTgCIpflQWCz5Vn
-	haRmGk4GuGENNxFVPiPrgJ487DkE7Dl8/sWIKhqrBTRKWU33ewUs/xyQ5txyDFFnEX86lz4qmdh
-	wJ1DoXfkNosJ0SIzv3s3RB648yNA2xRw8apT6gg+mXEEhAAdilr+Mx8CUhRxD/1n9qu6s7ep
-X-Google-Smtp-Source: AGHT+IHQ1WFwERflWPT6pleBXcoHSBQbFQS1yTbSrGY2yC7WZRjb2FbqLBgkt00nf34cnENXHwUiCg==
-X-Received: by 2002:a05:6830:65c3:10b0:746:dc05:8604 with SMTP id 46e09a7af769-79153cba081mr2694566a34.20.1758718557920;
-        Wed, 24 Sep 2025 05:55:57 -0700 (PDT)
-Received: from ziepe.ca ([130.41.10.202])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7692af2f9desm7576308a34.31.2025.09.24.05.55.57
+        bh=Sjr8/7QWc40wBIvcq7xbnNiZ+KKEhi3m1vUvdK7Sd/0=;
+        b=PF1ADj8QhHcv3HevhSapnz6ylRQ0GjQRDS/L0BaMsabuvb35gjFmZbOGbgddieypbt
+         iesSw3kfmmP4GDPeeEGwTrBv37hhMJLtQgMNsdUiLsh3+z9NVjP/iUOgzWa0LG/IZc4C
+         H8JknrOasWPRlLyInfUUnZmck1+CDr/YwoDcJcU4E0cBi6VwhqE9uJAbvhrWM5tuLfF6
+         4/xpgCdtCfttCFQRp72BNDvulTkTTSgRPBJjqPy0TWm4KJBbZo77sYQp3V8medIywfIB
+         xHexl9/cWjrDaXfMc2fO9qIkK9yntV7QqdzdTwWzvXOG2unASd61dZd86XBvE0438X1t
+         4Vkg==
+X-Gm-Message-State: AOJu0YzLGI6jJY+PGjA4soiVvKTVccLGEL43EfEd5i2lRypI4ASZS4tr
+	EVnNhdSJ++oIBWJ0l5Ekg4dPFt08ev9zIk1VwAqeoyRxE+Qqi+idg0WDFfCa8d5dMKs=
+X-Gm-Gg: ASbGncvE9A7bRscjLZKsPE1JQTlJ9pOtrltSSU+r2wnlgshvE31iuCgbjjAR3ifKvhP
+	yVv45uMsjd2NY/MyZLccWyPfEaWzerhjxti2VcY63F6kJRCM52Lgf7X0dlVfQQI+MSLZeLWxkr5
+	OT6gdHDF+/Q1q6IBk3A3gK97EK59DtP5aI/cfXjii1BYKm740okwrHYijxm1u1N3xrm7fjUs1Au
+	U48867MR7lguJt8qtt+y1/P1hz8MMwGONYLfNwLfScJNI4IS2JsN43j5kF9ESXyra6WUQ7xuuc0
+	seCPpN4Bvpq472M1fpR+T9nrwKCn2Jrl9YdTQ2U9aXxGBnxoKrvnffBnIlarlPE0ey+3gk8E+F8
+	ng/sRadNPhqpbla6jHtnHKh5UDQq/lYYzY7I=
+X-Google-Smtp-Source: AGHT+IGomox+b2UDBxIjrLVdwH3ZQg0MBial2WDQuoPjUzT0cQ/7OM+jfwuVUQxS7ZLef0sIJoY2Og==
+X-Received: by 2002:a6b:6a04:0:b0:893:2ff0:162c with SMTP id ca18e2360f4ac-8e1fd6f67b8mr883021539f.9.1758720712618;
+        Wed, 24 Sep 2025 06:31:52 -0700 (PDT)
+Received: from localhost ([140.82.166.162])
+        by smtp.gmail.com with ESMTPSA id ca18e2360f4ac-8a46b2f3405sm646365839f.1.2025.09.24.06.31.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Sep 2025 05:55:57 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.97)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1v1P2J-0000000B800-3i6s;
-	Wed, 24 Sep 2025 09:55:55 -0300
-Date: Wed, 24 Sep 2025 09:55:55 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Manivannan Sadhasivam <mani@kernel.org>
-Cc: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>,
-	Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Joerg Roedel <jroedel@suse.de>, iommu@lists.linux.dev,
-	Anders Roxell <anders.roxell@linaro.org>,
-	Naresh Kamboju <naresh.kamboju@linaro.org>,
-	Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-	Xingang Wang <wangxingang5@huawei.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, stable@vger.kernel.org
-Subject: Re: [PATCH 0/2] PCI: Fix ACS enablement for Root Ports in DT
- platforms
-Message-ID: <20250924125555.GJ2547959@ziepe.ca>
-References: <20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com>
- <20250918141102.GO1326709@ziepe.ca>
- <tzlbsnsoymhjlri5rm7dw5btb2m2tpzemtyqhjpa2eu3josf5c@uivuvkpx3wep>
- <20250923162139.GC2547959@ziepe.ca>
- <oig5w7dnrdpgvzuqu4johs526qe57x7dkurd2abllqyvpavvti@s3pwtoduusfr>
+        Wed, 24 Sep 2025 06:31:51 -0700 (PDT)
+Date: Wed, 24 Sep 2025 08:31:50 -0500
+From: Andrew Jones <ajones@ventanamicro.com>
+To: "Nutty.Liu" <nutty.liu@hotmail.com>
+Cc: iommu@lists.linux.dev, kvm-riscv@lists.infradead.org, 
+	kvm@vger.kernel.org, linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	jgg@nvidia.com, zong.li@sifive.com, tjeznach@rivosinc.com, joro@8bytes.org, 
+	will@kernel.org, robin.murphy@arm.com, anup@brainfault.org, atish.patra@linux.dev, 
+	tglx@linutronix.de, alex.williamson@redhat.com, paul.walmsley@sifive.com, 
+	palmer@dabbelt.com, alex@ghiti.fr
+Subject: Re: [RFC PATCH v2 03/18] iommu/riscv: Use data structure instead of
+ individual values
+Message-ID: <20250924-01f9a5207f8865555c839abd@orel>
+References: <20250920203851.2205115-20-ajones@ventanamicro.com>
+ <20250920203851.2205115-23-ajones@ventanamicro.com>
+ <TY1PPFCDFFFA68A794163FFB7BFAAAC22BEF31CA@TY1PPFCDFFFA68A.apcprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -90,15 +79,116 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <oig5w7dnrdpgvzuqu4johs526qe57x7dkurd2abllqyvpavvti@s3pwtoduusfr>
+In-Reply-To: <TY1PPFCDFFFA68A794163FFB7BFAAAC22BEF31CA@TY1PPFCDFFFA68A.apcprd02.prod.outlook.com>
 
-On Wed, Sep 24, 2025 at 01:51:23PM +0530, Manivannan Sadhasivam wrote:
+On Wed, Sep 24, 2025 at 11:25:59AM +0800, Nutty.Liu wrote:
+> On 9/21/2025 4:38 AM, Andrew Jones wrote:
+> > From: Zong Li <zong.li@sifive.com>
+> > 
+> > The parameter will be increased when we need to set up more fields
+> > in the device context. Use a data structure to wrap them up.
+> > 
+> > Signed-off-by: Zong Li <zong.li@sifive.com>
+> > Signed-off-by: Andrew Jones <ajones@ventanamicro.com>
+> > ---
+> >   drivers/iommu/riscv/iommu.c | 31 +++++++++++++++++++------------
+> >   1 file changed, 19 insertions(+), 12 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
+> > index 901d02529a26..a44c67a848fa 100644
+> > --- a/drivers/iommu/riscv/iommu.c
+> > +++ b/drivers/iommu/riscv/iommu.c
+> > @@ -988,7 +988,7 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
+> >    * interim translation faults.
+> >    */
+> >   static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
+> > -				     struct device *dev, u64 fsc, u64 ta)
+> > +				     struct device *dev, struct riscv_iommu_dc *new_dc)
+> >   {
+> >   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> >   	struct riscv_iommu_dc *dc;
+> > @@ -1022,10 +1022,10 @@ static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
+> >   	for (i = 0; i < fwspec->num_ids; i++) {
+> >   		dc = riscv_iommu_get_dc(iommu, fwspec->ids[i]);
+> >   		tc = READ_ONCE(dc->tc);
+> > -		tc |= ta & RISCV_IOMMU_DC_TC_V;
+> > +		tc |= new_dc->ta & RISCV_IOMMU_DC_TC_V;
+> > -		WRITE_ONCE(dc->fsc, fsc);
+> > -		WRITE_ONCE(dc->ta, ta & RISCV_IOMMU_PC_TA_PSCID);
+> > +		WRITE_ONCE(dc->fsc, new_dc->fsc);
+> > +		WRITE_ONCE(dc->ta, new_dc->ta & RISCV_IOMMU_PC_TA_PSCID);
+> Seems it will override all other fields in 'TA' except for the field of
+> 'PSCID'.
+> Should the other fields remain unchanged ?
 
-> This device is not spec conformant in many areas tbh. But my
-> suggestion would be to follow the vendor suggested erratum until any
-> reported issues.
+The short answer is that the current implementation is doing the right
+thing. The long answer is that riscv_iommu_iodir_update() and how it's
+called from riscv_iommu_attach_paging_domain() could use some cleanup.
 
-I mean the ethernet chip retaining it's SBR after a FLR or link up/down
-is probably not a spec requirement..
+A more logical interface would be that new_dc would be completely written,
+which means any fields left zero when creating new_dc will result in zeros
+being written -- it doesn't do that right now. Also, rather than passing
+DC_TC_V through new_dc->ta (as PC_TA_V, even though DC_TC_PDTV = 0), we
+should probably just set it directly in new_dc->tc.
 
-Jason
+We can clean this up separately though, probably as work for adding SVA
+support.
+
+> Otherwise,
+> Reviewed-by: Nutty Liu <nutty.liu@hotmail.com>
+
+Thanks,
+drew
+
+> 
+> Thanks,
+> Nutty
+> >   		/* Update device context, write TC.V as the last step. */
+> >   		dma_wmb();
+> >   		WRITE_ONCE(dc->tc, tc);
+> > @@ -1304,20 +1304,20 @@ static int riscv_iommu_attach_paging_domain(struct iommu_domain *iommu_domain,
+> >   	struct riscv_iommu_domain *domain = iommu_domain_to_riscv(iommu_domain);
+> >   	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
+> >   	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
+> > -	u64 fsc, ta;
+> > +	struct riscv_iommu_dc dc = {0};
+> >   	if (!riscv_iommu_pt_supported(iommu, domain->pgd_mode))
+> >   		return -ENODEV;
+> > -	fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, domain->pgd_mode) |
+> > -	      FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, virt_to_pfn(domain->pgd_root));
+> > -	ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid) |
+> > -	     RISCV_IOMMU_PC_TA_V;
+> > +	dc.fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, domain->pgd_mode) |
+> > +		 FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, virt_to_pfn(domain->pgd_root));
+> > +	dc.ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid) |
+> > +			   RISCV_IOMMU_PC_TA_V;
+> >   	if (riscv_iommu_bond_link(domain, dev))
+> >   		return -ENOMEM;
+> > -	riscv_iommu_iodir_update(iommu, dev, fsc, ta);
+> > +	riscv_iommu_iodir_update(iommu, dev, &dc);
+> >   	riscv_iommu_bond_unlink(info->domain, dev);
+> >   	info->domain = domain;
+> > @@ -1408,9 +1408,12 @@ static int riscv_iommu_attach_blocking_domain(struct iommu_domain *iommu_domain,
+> >   {
+> >   	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
+> >   	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
+> > +	struct riscv_iommu_dc dc = {0};
+> > +
+> > +	dc.fsc = RISCV_IOMMU_FSC_BARE;
+> >   	/* Make device context invalid, translation requests will fault w/ #258 */
+> > -	riscv_iommu_iodir_update(iommu, dev, RISCV_IOMMU_FSC_BARE, 0);
+> > +	riscv_iommu_iodir_update(iommu, dev, &dc);
+> >   	riscv_iommu_bond_unlink(info->domain, dev);
+> >   	info->domain = NULL;
+> > @@ -1429,8 +1432,12 @@ static int riscv_iommu_attach_identity_domain(struct iommu_domain *iommu_domain,
+> >   {
+> >   	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
+> >   	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
+> > +	struct riscv_iommu_dc dc = {0};
+> > +
+> > +	dc.fsc = RISCV_IOMMU_FSC_BARE;
+> > +	dc.ta = RISCV_IOMMU_PC_TA_V;
+> > -	riscv_iommu_iodir_update(iommu, dev, RISCV_IOMMU_FSC_BARE, RISCV_IOMMU_PC_TA_V);
+> > +	riscv_iommu_iodir_update(iommu, dev, &dc);
+> >   	riscv_iommu_bond_unlink(info->domain, dev);
+> >   	info->domain = NULL;
