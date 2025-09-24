@@ -1,175 +1,94 @@
-Received: from out30-113.freemail.mail.aliyun.com (out30-113.freemail.mail.aliyun.com [115.124.30.113])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2638927FB03
-	for <iommu@lists.linux.dev>; Wed, 24 Sep 2025 07:44:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.113
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67EFA2248A5;
+	Wed, 24 Sep 2025 08:21:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758699857; cv=none; b=mItn9arCbG0e/wqE3r4fpoPIZEWSScHMcuqUj/iYJJIRrIeFwcbbe6bQoNx2/OLwzbtzTRyrFsrXZzHthUnyFUzFcX47WiR1wN9KOFh169eNsVvC1f46gswXLnCrw1Vj5NkDldri0BvDgySTfwEiOurc4dNP0K7rUO4GN18Nuqs=
+	t=1758702093; cv=none; b=fpXZVagucqCeRyRPRbEVJLDxqCsO3GxMORTl13cSTXQOgLgxBSJ6wtW4h39Gm66zdbQDsKuo4hnF13B9lgVCTkQNBGSn/sx0TEOlWxEMK+T92/Pu8b9wRwk18qvYPBf6d2CmaluHylSDqddVsJLf7YUalRz38jrpbZYj6YvZMtY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758699857; c=relaxed/simple;
-	bh=6t5HLPn3Ol4H4k9imSxaXgzLpk0/0w5qEZFli8eIUhE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=VgkV/zrUHKFk3bYyWBnRDbaTjaGzrxb4E3cLSeMJJr5tjW2m2xtg9SFyAg5vB+9AiFgrGLn7y7H6AyfTOPj8/xaHPjs65XOna1d/UO88AAowPA6DK6UxYP4WGKDWSYeDxOBCA7fTDR4+QakThKPNnX0T8unAcQewT08DwxW4+3A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=OtBS9i4S; arc=none smtp.client-ip=115.124.30.113
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1758702093; c=relaxed/simple;
+	bh=UI+LGXvxoHRFGbjRfV+A4wqbLa/YUdmYzLCl0Mrv0Zk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=M1h94fNjY6S1yVx8p/38lLIoszWq7yH1RKKPyggzZhuOLOAxPRuZnQLu1/qZDeW7qx0YCTU7Qj0G2qISanpgjCJJSRXNobo5KICKah97YUBIn3z1c+1J1kXnzoZlJP5gJXjkHDfvifzWuMCb99ITqq4MmWx98XSPt1lSvvVvMEc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bdNDeoVE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="OtBS9i4S"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1758699846; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=vJ6OwI1egsr+qRN+aL3XWL0fhPfqdA2wF2Y9KB4Ntl4=;
-	b=OtBS9i4SZRxLTkt4Mg7f1LzZ29HSSrlys/zx1EL2egbKYAnjtQ0d2kqJJZQvPiPqdgpeWhGsxDQyqTlYIvIYFwC9R7T/KWcp7K9BmkRh5bz9P5nDTDDe90TVgRHP8aZDDIwx+XhMWc2hhHFI9krqFYHKx3/ICEnFwYfomfPq78s=
-Received: from localhost(mailfrom:kanie@linux.alibaba.com fp:SMTPD_---0Woipfpi_1758699839 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Wed, 24 Sep 2025 15:44:05 +0800
-From: Guixin Liu <kanie@linux.alibaba.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev
-Subject: [PATCH v3] iommu: Fix iommu selftest running test mock domain fail
-Date: Wed, 24 Sep 2025 15:43:59 +0800
-Message-ID: <20250924074359.41510-1-kanie@linux.alibaba.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bdNDeoVE"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8002C4CEE7;
+	Wed, 24 Sep 2025 08:21:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1758702092;
+	bh=UI+LGXvxoHRFGbjRfV+A4wqbLa/YUdmYzLCl0Mrv0Zk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=bdNDeoVE/eb0pX3zlIW+r0D/iJ1u1izTyWJVH1EXYvZPgiHzWc+6AZU8CEmm9zQzV
+	 3l64jhAX6o1C99QhPNd7M8s0Uix4UOzlEjY5aduo7SeqpjrOYdv5M+6+cplfWCST+w
+	 cqvaus5s6BYwL8QxymBDRpBCOtcPUw60MYQjhbT93BV5/bJA6HEBX8tCODGwkGb5ht
+	 KTd9VpdvQY/4D840ogT/fvlgjOwDRg8aLdfiIVYcJ5HBbLrpyrIlQWvbjBnhcMpL0u
+	 uAiyytgPNT3B3LlZ4A2J2HijqAFLR5/zPGFmbVjLxVhQvVNUufkkM5lLzBvWQ+R529
+	 hEto4nJZYSqGg==
+Date: Wed, 24 Sep 2025 13:51:23 +0530
+From: Manivannan Sadhasivam <mani@kernel.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, 
+	Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, 
+	iommu@lists.linux.dev, Anders Roxell <anders.roxell@linaro.org>, 
+	Naresh Kamboju <naresh.kamboju@linaro.org>, Pavankumar Kondeti <quic_pkondeti@quicinc.com>, 
+	Xingang Wang <wangxingang5@huawei.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	stable@vger.kernel.org
+Subject: Re: [PATCH 0/2] PCI: Fix ACS enablement for Root Ports in DT
+ platforms
+Message-ID: <oig5w7dnrdpgvzuqu4johs526qe57x7dkurd2abllqyvpavvti@s3pwtoduusfr>
+References: <20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com>
+ <20250918141102.GO1326709@ziepe.ca>
+ <tzlbsnsoymhjlri5rm7dw5btb2m2tpzemtyqhjpa2eu3josf5c@uivuvkpx3wep>
+ <20250923162139.GC2547959@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20250923162139.GC2547959@ziepe.ca>
 
-When intel_iommu=on is enabled and the iommu selftests are executed,
-we observed multiple test case failures. Our investigation revealed
-that both the Intel iommu driver and the mock iommu driver registered
-iommu_device instances with fwnode=NULL, and both were added to the
-iommu_device_list. Later, when the mock iommu driver attempted to
-create a device, iommu_init_device attempted to retrieve the iommu_ops
-by searching the iommu_device_list using the provided fwnode
-(which was NULL).
-Since the iommu_device registered by the Intel iommu driver appeared
-earlier in the list, it was matched first instead of the mock iommu
-driver's iommu_device. This ultimately caused probe_device to fail.
+On Tue, Sep 23, 2025 at 01:21:39PM -0300, Jason Gunthorpe wrote:
+> On Tue, Sep 23, 2025 at 09:07:49PM +0530, Manivannan Sadhasivam wrote:
+> > On Thu, Sep 18, 2025 at 11:11:02AM -0300, Jason Gunthorpe wrote:
+> > > On Wed, Sep 10, 2025 at 11:09:19PM +0530, Manivannan Sadhasivam via B4 Relay wrote:
+> > > > This issue was already found and addressed with a quirk for a different device
+> > > > from Microsemi with 'commit, aa667c6408d2 ("PCI: Workaround IDT switch ACS
+> > > > Source Validation erratum")'. Apparently, this issue seems to be documented in
+> > > > the erratum #36 of IDT 89H32H8G3-YC, which is not publicly available.
+> > > 
+> > > This is a pretty broken device! I'm not sure this fix is good enough
+> > > though.
+> > > 
+> > > For instance if you reset a downstream device it should loose its RID
+> > > and then the config cycles waiting for reset to complete will trigger SV
+> > > and reset will fail?
+> > > 
+> > 
+> > No. Resetting the Ethernet controller connected to the switch downstream port
+> > doesn't fail and we could see that the reset succeeds.
+> 
+> Reset it by up/down the PCI link?
+> 
 
-Fix this by alloc a software fwnode for mock iommu driver's iommu_device,
-and set it to the device which mock iommu driver created.
+We did both FLR (dev/reset) and SBR (bus/reset_subordinate), both succeeds.
 
-Test by "make -C toosl/testing/selftests TARGETS=iommu run_tests":
-PASSED: 229 / 229 tests passed.
+> > Maybe the bus number was still captured by the device.
+> 
+> Maybe, but I don't think that is spec conformat behavior.
+> 
 
-In addition, this issue is also can be found on amd platform, and
-also tested on a amd machine.
+This device is not spec conformant in many areas tbh. But my suggestion would be
+to follow the vendor suggested erratum until any reported issues.
 
-Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
-Tested-by: Qinyun Tan <qinyuntan@linux.alibaba.com>
----
-Changes from v2 to v3:
-- Add export symbol iommu_mock_device_init() and iommu_mock_device_abort()
-in iommu.c instead of export iommu_probe_device_lock and iommu_fwspec_free().
+- Mani
 
-Changes from v1 to v2:
-- Remove print when iommu_fwspec_init() fail.
- drivers/iommu/iommu-priv.h       |  3 +++
- drivers/iommu/iommu.c            | 28 ++++++++++++++++++++++++++++
- drivers/iommu/iommufd/selftest.c |  5 +++++
- 3 files changed, 36 insertions(+)
-
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index e236b932e766..40c477db3cd9 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -37,6 +37,9 @@ void iommu_device_unregister_bus(struct iommu_device *iommu,
- 				 const struct bus_type *bus,
- 				 struct notifier_block *nb);
- 
-+int iommu_mock_device_init(struct device *dev, struct iommu_device *iommu);
-+void iommu_mock_device_abort(struct device *dev);
-+
- struct iommu_attach_handle *iommu_attach_handle_get(struct iommu_group *group,
- 						    ioasid_t pasid,
- 						    unsigned int type);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 060ebe330ee1..6e51cfbebd64 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -304,6 +304,7 @@ void iommu_device_unregister_bus(struct iommu_device *iommu,
- 				 struct notifier_block *nb)
- {
- 	bus_unregister_notifier(bus, nb);
-+	fwnode_remove_software_node(iommu->fwnode);
- 	iommu_device_unregister(iommu);
- }
- EXPORT_SYMBOL_GPL(iommu_device_unregister_bus);
-@@ -326,6 +327,14 @@ int iommu_device_register_bus(struct iommu_device *iommu,
- 	if (err)
- 		return err;
- 
-+	iommu->fwnode = fwnode_create_software_node(NULL, NULL);
-+	if (IS_ERR(iommu->fwnode)) {
-+		iommu->fwnode = NULL;
-+		dev_err(iommu->dev, "add property failed:%d\n", err);
-+		bus_unregister_notifier(bus, nb);
-+		return err;
-+	}
-+
- 	spin_lock(&iommu_device_lock);
- 	list_add_tail(&iommu->list, &iommu_device_list);
- 	spin_unlock(&iommu_device_lock);
-@@ -335,9 +344,28 @@ int iommu_device_register_bus(struct iommu_device *iommu,
- 		iommu_device_unregister_bus(iommu, bus, nb);
- 		return err;
- 	}
-+	WRITE_ONCE(iommu->ready, true);
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(iommu_device_register_bus);
-+
-+int iommu_mock_device_init(struct device *dev, struct iommu_device *iommu)
-+{
-+	int rc;
-+
-+	mutex_lock(&iommu_probe_device_lock);
-+	rc = iommu_fwspec_init(dev, iommu->fwnode);
-+	mutex_unlock(&iommu_probe_device_lock);
-+
-+	return rc;
-+}
-+EXPORT_SYMBOL_GPL(iommu_mock_device_init);
-+
-+void iommu_mock_device_abort(struct device *dev)
-+{
-+	iommu_fwspec_free(dev);
-+}
-+EXPORT_SYMBOL_GPL(iommu_mock_device_abort);
- #endif
- 
- static struct dev_iommu *dev_iommu_get(struct device *dev)
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index 61686603c769..38aaa2b02af4 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -1077,6 +1077,7 @@ static void mock_dev_release(struct device *dev)
- {
- 	struct mock_dev *mdev = to_mock_dev(dev);
- 
-+	iommu_mock_device_abort(&mdev->dev);
- 	ida_free(&mock_dev_ida, mdev->id);
- 	kfree(mdev);
- }
-@@ -1126,6 +1127,10 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
- 		goto err_put;
- 	}
- 
-+	rc = iommu_mock_device_init(&mdev->dev, &mock_iommu.iommu_dev);
-+	if (rc)
-+		goto err_put;
-+
- 	rc = device_add(&mdev->dev);
- 	if (rc)
- 		goto err_put;
 -- 
-2.43.0
-
+மணிவண்ணன் சதாசிவம்
