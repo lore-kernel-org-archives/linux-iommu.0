@@ -1,94 +1,103 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67EFA2248A5;
-	Wed, 24 Sep 2025 08:21:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BD2A27E056
+	for <iommu@lists.linux.dev>; Wed, 24 Sep 2025 08:37:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758702093; cv=none; b=fpXZVagucqCeRyRPRbEVJLDxqCsO3GxMORTl13cSTXQOgLgxBSJ6wtW4h39Gm66zdbQDsKuo4hnF13B9lgVCTkQNBGSn/sx0TEOlWxEMK+T92/Pu8b9wRwk18qvYPBf6d2CmaluHylSDqddVsJLf7YUalRz38jrpbZYj6YvZMtY=
+	t=1758703046; cv=none; b=uvQ2E9l12onLTCLRrY3oJmKmhck0WA+agWVc+xCRL02IaRt5nab9F+mAbkObw51q9INpJlHuwN3muNWOl44XOFsOEHbOJAwU1ml30f1db6sqZCRdUxy92nQtWYVNrQaenoHmX5l57lVb1a9tIZ9CMUGtuOApLWnb87wQbVyIOCE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758702093; c=relaxed/simple;
-	bh=UI+LGXvxoHRFGbjRfV+A4wqbLa/YUdmYzLCl0Mrv0Zk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=M1h94fNjY6S1yVx8p/38lLIoszWq7yH1RKKPyggzZhuOLOAxPRuZnQLu1/qZDeW7qx0YCTU7Qj0G2qISanpgjCJJSRXNobo5KICKah97YUBIn3z1c+1J1kXnzoZlJP5gJXjkHDfvifzWuMCb99ITqq4MmWx98XSPt1lSvvVvMEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bdNDeoVE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1758703046; c=relaxed/simple;
+	bh=aiYWON9keCHVLc9yflSZEXEK9goh/Y/UPRDevhSJw2I=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=imQtolCwkMwzx7CIihcLYdSfxNcnimmRSKT642vOis23cBojvxCgLHNJQ1a4UGA7ipDkYWkzRKyShiv2zPkyB2uTDPR2hpE2ns4KvWNn67nBejlp5I1X5K5Qcym2usc2JNHW4NsaD50jl3EEC3zhLfAToh9A9ptUyjAm/AR3G8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f9/INM+v; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bdNDeoVE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8002C4CEE7;
-	Wed, 24 Sep 2025 08:21:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758702092;
-	bh=UI+LGXvxoHRFGbjRfV+A4wqbLa/YUdmYzLCl0Mrv0Zk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=bdNDeoVE/eb0pX3zlIW+r0D/iJ1u1izTyWJVH1EXYvZPgiHzWc+6AZU8CEmm9zQzV
-	 3l64jhAX6o1C99QhPNd7M8s0Uix4UOzlEjY5aduo7SeqpjrOYdv5M+6+cplfWCST+w
-	 cqvaus5s6BYwL8QxymBDRpBCOtcPUw60MYQjhbT93BV5/bJA6HEBX8tCODGwkGb5ht
-	 KTd9VpdvQY/4D840ogT/fvlgjOwDRg8aLdfiIVYcJ5HBbLrpyrIlQWvbjBnhcMpL0u
-	 uAiyytgPNT3B3LlZ4A2J2HijqAFLR5/zPGFmbVjLxVhQvVNUufkkM5lLzBvWQ+R529
-	 hEto4nJZYSqGg==
-Date: Wed, 24 Sep 2025 13:51:23 +0530
-From: Manivannan Sadhasivam <mani@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Manivannan Sadhasivam <manivannan.sadhasivam@oss.qualcomm.com>, 
-	Bjorn Helgaas <bhelgaas@google.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org, Joerg Roedel <jroedel@suse.de>, 
-	iommu@lists.linux.dev, Anders Roxell <anders.roxell@linaro.org>, 
-	Naresh Kamboju <naresh.kamboju@linaro.org>, Pavankumar Kondeti <quic_pkondeti@quicinc.com>, 
-	Xingang Wang <wangxingang5@huawei.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	stable@vger.kernel.org
-Subject: Re: [PATCH 0/2] PCI: Fix ACS enablement for Root Ports in DT
- platforms
-Message-ID: <oig5w7dnrdpgvzuqu4johs526qe57x7dkurd2abllqyvpavvti@s3pwtoduusfr>
-References: <20250910-pci-acs-v1-0-fe9adb65ad7d@oss.qualcomm.com>
- <20250918141102.GO1326709@ziepe.ca>
- <tzlbsnsoymhjlri5rm7dw5btb2m2tpzemtyqhjpa2eu3josf5c@uivuvkpx3wep>
- <20250923162139.GC2547959@ziepe.ca>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f9/INM+v"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1758703045; x=1790239045;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=aiYWON9keCHVLc9yflSZEXEK9goh/Y/UPRDevhSJw2I=;
+  b=f9/INM+vosACSTj+ewyfEMOJJarLvOcbWi6v3eDLki/4+NCx9iDqgGps
+   DiqArW47kSCs/mIjBQ8pOl8gP84OPKVVGYTUUIAcSohMOPwCpAz1ETcW4
+   pHQES+cCT5ypqpJDWA1pkwYZAoQOUO14eMHPaC8uf6dZz25q2Ao76UvPn
+   2jAoCNnAY2AJF0aTi3dZKxQsfFv6yspP65UgrpPVogKiMpEf7LhgIN1Mg
+   6veGnfUWi4ZgxaN3Zfx+KKk7BNgI4rxmWtc1UXGpUkoHAsrROgnzx0W/+
+   04X4lIAM5vxI2oTOEeL096K31l25xCx54uEWejGhFSaPkPTgjnCKy6a4z
+   A==;
+X-CSE-ConnectionGUID: j/34jkatQzmylkgCsMoNjw==
+X-CSE-MsgGUID: NbiCjaUpRlGfDWV25zm8dA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="61046164"
+X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
+   d="scan'208";a="61046164"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2025 01:37:24 -0700
+X-CSE-ConnectionGUID: ru6bNs7BT2yNJ8TgyvhTCQ==
+X-CSE-MsgGUID: c2clMeV4QQan3ug7lEcuxw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,290,1751266800"; 
+   d="scan'208";a="207915048"
+Received: from allen-box.sh.intel.com ([10.239.159.52])
+  by fmviesa001.fm.intel.com with ESMTP; 24 Sep 2025 01:37:22 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu/vt-d: Disallow dirty tracking if incoherent page walk
+Date: Wed, 24 Sep 2025 16:34:46 +0800
+Message-ID: <20250924083447.123224-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250923162139.GC2547959@ziepe.ca>
 
-On Tue, Sep 23, 2025 at 01:21:39PM -0300, Jason Gunthorpe wrote:
-> On Tue, Sep 23, 2025 at 09:07:49PM +0530, Manivannan Sadhasivam wrote:
-> > On Thu, Sep 18, 2025 at 11:11:02AM -0300, Jason Gunthorpe wrote:
-> > > On Wed, Sep 10, 2025 at 11:09:19PM +0530, Manivannan Sadhasivam via B4 Relay wrote:
-> > > > This issue was already found and addressed with a quirk for a different device
-> > > > from Microsemi with 'commit, aa667c6408d2 ("PCI: Workaround IDT switch ACS
-> > > > Source Validation erratum")'. Apparently, this issue seems to be documented in
-> > > > the erratum #36 of IDT 89H32H8G3-YC, which is not publicly available.
-> > > 
-> > > This is a pretty broken device! I'm not sure this fix is good enough
-> > > though.
-> > > 
-> > > For instance if you reset a downstream device it should loose its RID
-> > > and then the config cycles waiting for reset to complete will trigger SV
-> > > and reset will fail?
-> > > 
-> > 
-> > No. Resetting the Ethernet controller connected to the switch downstream port
-> > doesn't fail and we could see that the reset succeeds.
-> 
-> Reset it by up/down the PCI link?
-> 
+Dirty page tracking relies on the IOMMU atomically updating the dirty bit
+in the paging-structure entry. For this operation to succeed, the paging-
+structure memory must be coherent between the IOMMU and the CPU. In
+another word, if the iommu page walk is incoherent, dirty page tracking
+doesn't work.
 
-We did both FLR (dev/reset) and SBR (bus/reset_subordinate), both succeeds.
+The Intel VT-d specification, Section 3.10 "Snoop Behavior" states:
 
-> > Maybe the bus number was still captured by the device.
-> 
-> Maybe, but I don't think that is spec conformat behavior.
-> 
+"Remapping hardware encountering the need to atomically update A/EA/D bits
+ in a paging-structure entry that is not snooped will result in a non-
+ recoverable fault."
 
-This device is not spec conformant in many areas tbh. But my suggestion would be
-to follow the vendor suggested erratum until any reported issues.
+To prevent an IOMMU from being incorrectly configured for dirty page
+tracking when it is operating in an incoherent mode, mark SSADS as
+supported only when both ecap_slads and ecap_smpwc are supported.
 
-- Mani
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index d09b92871659..2c261c069001 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -541,7 +541,8 @@ enum {
+ #define pasid_supported(iommu)	(sm_supported(iommu) &&			\
+ 				 ecap_pasid((iommu)->ecap))
+ #define ssads_supported(iommu) (sm_supported(iommu) &&                 \
+-				ecap_slads((iommu)->ecap))
++				ecap_slads((iommu)->ecap) &&           \
++				ecap_smpwc(iommu->ecap))
+ #define nested_supported(iommu)	(sm_supported(iommu) &&			\
+ 				 ecap_nest((iommu)->ecap))
+ 
 -- 
-மணிவண்ணன் சதாசிவம்
+2.43.0
+
