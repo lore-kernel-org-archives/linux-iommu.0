@@ -1,169 +1,99 @@
-Received: from out30-111.freemail.mail.aliyun.com (out30-111.freemail.mail.aliyun.com [115.124.30.111])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6301B22ACEB
-	for <iommu@lists.linux.dev>; Wed, 24 Sep 2025 06:41:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.111
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E481D21CA03
+	for <iommu@lists.linux.dev>; Wed, 24 Sep 2025 07:32:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758696105; cv=none; b=phFhJmfqqVj7MxJjcCjcP7r1dhtqmYwXVflfDak0rw10+ant+ICztyNLYkBQHzVKjLe9K969yC2FXf45Ft7gFF8mjDGLlSyT4AV2XfpRXm7essLuTq9k1luvHzOPwiwh0xBEzqwjtdui2gGxcpcwOV9MFqN9F3N3f2nrw4as7AQ=
+	t=1758699142; cv=none; b=QQwc2KwEJKIpP4g0m646YjTftZN0UanUsaEfxTJKD2sYKninF+qGVC5WZZUrbXgQuzNJg8585iwzmzU2nELerUMB7mBo6rHP6rr2huEzITLdiOp+icdCJAGoq0XM5OLLTwjS7nHru73me8Vg7jka0jU9XlmZQ9ztlltAOvQ2H8M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758696105; c=relaxed/simple;
-	bh=ADPEIYUoTRtabK9AIFdYyLub1tp3eT0/9jSS1VO1FYw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Fl6WOHHerpOuGLx+Mritf97T+MY0uY9u1AdnJi4ZRsktCw8srTnS6uhHqTts7qIpIhYFfwfrN4rYD8Zn0gO6HkzqLFzR2vzDskOjmwtbFjZ51DgdbapNyAw/FjIhv5DrBJnvqjSj3mxotjGxG3rJZTCmnhxQsvHMvYplBXLtEUA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=hcsSV83O; arc=none smtp.client-ip=115.124.30.111
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1758699142; c=relaxed/simple;
+	bh=TX6kI82yO/RlICOevJbAdNu2g5LXBtW4mVT11ZayfNE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=fhqzn2O8wOmyWY8QuNCyfzfLUnVEMJcTGX4osG74FbWPAYnvYaK3jHBIWX60RDvux8pnyPHyGcPM86KBQTPXjxHhpbaFzb7lyhzc6UgnIjs5XvU/etq31FYNyk4ReC2LJRlWjOCNxZm4QbY+YGQEJkU/aowDA11a3QSPTeGBU6k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jf05263O; arc=none smtp.client-ip=209.85.208.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="hcsSV83O"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1758696093; h=Message-ID:Date:MIME-Version:Subject:To:From:Content-Type;
-	bh=4Fcy7H7yNylAxF+WhWGt9J+75W31LY0C4wvIp9sNR0I=;
-	b=hcsSV83O0Hc2iiKd9faeqtcMQLd04aSOt6kk+baI0ea7twZz7JsM1PUFCRBIfsUoutpjRgEcZN3OBFu8rJKPfCCDeekWAejX0OYS5OxJl9SknakkIzC7oq60lMFH0fGjXSz999ceID9oNlUqmvUmV+SRfA5ncuZr3i89J0QapoI=
-Received: from 30.178.82.6(mailfrom:kanie@linux.alibaba.com fp:SMTPD_---0WoianiE_1758696092 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Wed, 24 Sep 2025 14:41:33 +0800
-Message-ID: <89c7e1cf-890c-4ced-a646-88a2d2de4824@linux.alibaba.com>
-Date: Wed, 24 Sep 2025 14:41:31 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jf05263O"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-63163a6556bso9381610a12.1
+        for <iommu@lists.linux.dev>; Wed, 24 Sep 2025 00:32:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1758699138; x=1759303938; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=v9ogATJZj1jG8raAY2zUuQe4EmJHk/4W4xvGLcmqNCI=;
+        b=jf05263OmGAEBBo9wyQxxvjp1lpI8rBXAJNOw4JkgQSU6cTIlme1PKtB7iS2LA9Var
+         /fS8Aa9DqHQPFkSMQ4Lgo81W1Cevh2dGRU9jFcy93Zw1VhKDLw93O1Er5i3OfoNzz5kU
+         cgkcV7GgXTCxkpG3/1IWvVoOsvyI4tXIzDzWijPXnPC5u8z/mVREIHrite34vnztYedA
+         OPgFQaBHu9zLAu7cGwWG32/0BaeNclgGsGSJXRi/XMbPrBUrkK5tJqT/FvdKtRl4eD5D
+         aZMMq1nnvPGY87chtYTuH7KYO2WzU6HC/Uu1Oy6f9aMXL296Xh1HZ5OeVv4fIE6f1VTK
+         AlbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758699138; x=1759303938;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=v9ogATJZj1jG8raAY2zUuQe4EmJHk/4W4xvGLcmqNCI=;
+        b=M7uK2XPoa2ay2qLX+lTni44lQvadB9uVEPou56Myj6ZNiW1bxmwjRLxpT/EWxWapRl
+         +Bi7074dPVS0Qx0QVrh1ugkDcQxkG1MUpx985GvG4MGCibPIGhETgW8YiDPNogcPKBRA
+         +D3jZP8UKCIsbs9TfosRZ+/ben8RU/mZmuLWeP9xVGqMUrwzwyq/D66mnMvMHBhrdNHW
+         8fc6ON7IN/YD8TnxU0krTdKsV2z+KvXs3n7sthmEYC5OpulEtAqd+thOPMmr12FwXPyV
+         TcneGZvH1PgcPLRBfXF+2ynW2w2oGML+q40BppwvSJMrZGGLauMKiBw2zCi53xkRgIs8
+         EtWQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUDHqeVCWwHQfNqhXV14++pCPWtdUm7aeLp0e1LOFfGu+mYSs2DYjye+EZMWcPFnjL60z1OTA==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyve/WpRBpBNCjSLhjCllExg9OpffrW6HDI0vOQDN6YTXRnz98Z
+	ozXLge9JlOpSLp89C0zXn2KrxrHa0G4pTI3znuwjkar0Dd5Nd+3y2cfFQOU5DC/gNl7bEIU8L32
+	asuVBjR/K0/Kz0UDPiIXt7uO9g/KEgs4=
+X-Gm-Gg: ASbGnctqYGmC71rvZ9tyEHEw3S89odcPbO/Db3ZD/P0JHvxEtDKGAirFYItRqdVlTGY
+	1nrCfcNOimmAsdM39Q0WgW72cP5/PzBpf0s40mJl8jDUJZlVjeAqoOKQ/nzw7ZEpu+ZfZVr0GAw
+	q0XhXhNSMvsCylFtnHqdCqN1v9xnG1y0VK4BUKRMd7N3JQHtFxzgK2QbXXBhBuonM5OoFo9eSSl
+	uP9zHpJ
+X-Google-Smtp-Source: AGHT+IEsD22J4a5V9bbdMWtQv1Ep8AmuRuA2KpP+ndq9VMyD7XFtjS94kSm5rlJirOSxMvazqqoNAsq4GX/ON5RyqyA=
+X-Received: by 2002:a05:6402:44dc:b0:633:4726:a077 with SMTP id
+ 4fb4d7f45d1cf-63467796df4mr4258422a12.15.1758699137992; Wed, 24 Sep 2025
+ 00:32:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: =?UTF-8?B?TW96aWxsYSBUaHVuZGVyYmlyZCDmtYvor5XniYg=?=
-Subject: Re: [PATCH v2] iommu: Fix iommu selftest running test mock domain
- fail
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux.dev
-References: <20250916090333.68179-1-kanie@linux.alibaba.com>
- <20250923173252.GE2547959@ziepe.ca>
-From: Guixin Liu <kanie@linux.alibaba.com>
-In-Reply-To: <20250923173252.GE2547959@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <cover.1758219786.git.leon@kernel.org> <0c64474985af55b1aa934b857808068a0e609c6e.1758219787.git.leon@kernel.org>
+ <CA+=Fv5Q8dVUFVBh82mAe=fy3mV6mWtQT_0pBPLQwLNBt3f8E1g@mail.gmail.com>
+ <20250923171819.GM10800@unreal> <CA+=Fv5SJcQ5C4UeX2+deV9mPAe5QxrocMG8EJ2eVcYjbLE5U+A@mail.gmail.com>
+ <20250923235318.GD2617119@nvidia.com>
+In-Reply-To: <20250923235318.GD2617119@nvidia.com>
+From: Magnus Lindholm <linmag7@gmail.com>
+Date: Wed, 24 Sep 2025 09:32:06 +0200
+X-Gm-Features: AS18NWBrVH-9-wBlZ7ZFV3RxYYp-7iSL9DfIPq4jDzU8rxFLx7xmKKzveUA49as
+Message-ID: <CA+=Fv5Tg7sQACpeG8aMZF6_E6dbRnN5ifg0aiHityXadxiHoPA@mail.gmail.com>
+Subject: Re: [PATCH 1/9] alpha: Convert mapping routine to rely on physical address
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Andreas Larsson <andreas@gaisler.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, "David S. Miller" <davem@davemloft.net>, 
+	Geoff Levand <geoff@infradead.org>, Helge Deller <deller@gmx.de>, Ingo Molnar <mingo@redhat.com>, 
+	iommu@lists.linux.dev, 
+	"James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>, Jason Wang <jasowang@redhat.com>, 
+	Juergen Gross <jgross@suse.com>, linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org, 
+	linuxppc-dev@lists.ozlabs.org, Madhavan Srinivasan <maddy@linux.ibm.com>, 
+	Matt Turner <mattst88@gmail.com>, Michael Ellerman <mpe@ellerman.id.au>, 
+	"Michael S. Tsirkin" <mst@redhat.com>, Richard Henderson <richard.henderson@linaro.org>, 
+	sparclinux@vger.kernel.org, Stefano Stabellini <sstabellini@kernel.org>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Thomas Gleixner <tglx@linutronix.de>, 
+	virtualization@lists.linux.dev, x86@kernel.org, 
+	xen-devel@lists.xenproject.org
+Content-Type: text/plain; charset="UTF-8"
 
+> Suggest testing the same branch with the alpha patch reverted just to
+> rule out any issue in the core code. If it reproduces suggest to
+> bisect Leon's branch.
+>
+I can try to revert just the patch containing the alpha-specific stuff and
+see what happens and then, as  you say, maybe do a bisect from there.
+First I'll just try the same kernel again a few times more just to make sure
+that this is really reproducible.
 
-
-在 2025/9/24 01:32, Jason Gunthorpe 写道:
-> On Tue, Sep 16, 2025 at 05:03:33PM +0800, Guixin Liu wrote:
->> When intel_iommu=on is enabled and the iommu selftests are executed,
->> we observed multiple test case failures. Our investigation revealed
->> that both the Intel iommu driver and the mock iommu driver registered
->> iommu_device instances with fwnode=NULL, and both were added to the
->> iommu_device_list. Later, when the mock iommu driver attempted to
->> create a device, iommu_init_device attempted to retrieve the iommu_ops
->> by searching the iommu_device_list using the provided fwnode
->> (which was NULL).
->> Since the iommu_device registered by the Intel iommu driver appeared
->> earlier in the list, it was matched first instead of the mock iommu
->> driver's iommu_device. This ultimately caused probe_device to fail.
->>
->> Fix this by alloc a software fwnode for mock iommu driver's iommu_device,
->> and set it to the device which mock iommu driver created.
->>
->> Test by "make -C toosl/testing/selftests TARGETS=iommu run_tests":
->> PASSED: 229 / 229 tests passed.
->>
->> In addition, this issue is also can be found on amd platform, and
->> also tested on a amd machine.
->>
->> Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
->> Tested-by: Qinyun Tan <qinyuntan@linux.alibaba.com>
->> ---
->> Changes from v1 to v2:
->> - Remove print when iommu_fwspec_init() fail.
->>
->>   drivers/iommu/iommu.c            | 12 ++++++++++++
->>   drivers/iommu/iommufd/selftest.c |  9 +++++++++
->>   2 files changed, 21 insertions(+)
->>
->> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->> index 060ebe330ee1..cda5e1c039aa 100644
->> --- a/drivers/iommu/iommu.c
->> +++ b/drivers/iommu/iommu.c
->> @@ -304,6 +304,7 @@ void iommu_device_unregister_bus(struct iommu_device *iommu,
->>   				 struct notifier_block *nb)
->>   {
->>   	bus_unregister_notifier(bus, nb);
->> +	fwnode_remove_software_node(iommu->fwnode);
->>   	iommu_device_unregister(iommu);
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_device_unregister_bus);
->> @@ -326,6 +327,14 @@ int iommu_device_register_bus(struct iommu_device *iommu,
->>   	if (err)
->>   		return err;
->>   
->> +	iommu->fwnode = fwnode_create_software_node(NULL, NULL);
->> +	if (IS_ERR(iommu->fwnode)) {
->> +		iommu->fwnode = NULL;
->> +		dev_err(iommu->dev, "add property failed:%d\n", err);
->> +		bus_unregister_notifier(bus, nb);
->> +		return err;
->> +	}
->> +
->>   	spin_lock(&iommu_device_lock);
->>   	list_add_tail(&iommu->list, &iommu_device_list);
->>   	spin_unlock(&iommu_device_lock);
->> @@ -335,6 +344,7 @@ int iommu_device_register_bus(struct iommu_device *iommu,
->>   		iommu_device_unregister_bus(iommu, bus, nb);
->>   		return err;
->>   	}
->> +	WRITE_ONCE(iommu->ready, true);
->>   	return 0;
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_device_register_bus);
->> @@ -555,6 +565,7 @@ static struct iommu_domain *pasid_array_entry_to_domain(void *entry)
->>   }
->>   
->>   DEFINE_MUTEX(iommu_probe_device_lock);
->> +EXPORT_SYMBOL_GPL(iommu_probe_device_lock);
-> I'm still unhappy to see this exported.
->
-> I'd rather you export some new selftest only functions for this
-> special fwspec usage.
->
-> We already have the block
->
-> #if IS_ENABLED(CONFIG_IOMMUFD_TEST)
->
-> in iommu.c
->
-> So lest add a
->
-> iommu_mock_device_init(struct device *dev, struct iommu_device *iommu);
-> iommu_mock_device_abort(struct device *dev);
-OK, Changed in v3, thanks.
-
-Best Regards,
-Guixin Liu
->> --- a/drivers/iommu/iommufd/selftest.c
->> +++ b/drivers/iommu/iommufd/selftest.c
->> @@ -1126,12 +1126,21 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
->>   		goto err_put;
->>   	}
->>   
->> +	mutex_lock(&iommu_probe_device_lock);
->> +	rc = iommu_fwspec_init(&mdev->dev, mock_iommu.iommu_dev.fwnode);
->> +	if (rc) {
->> +		mutex_unlock(&iommu_probe_device_lock);
->> +		goto err_put;
->> +	}
->> +	mutex_unlock(&iommu_probe_device_lock);
->> +
->>   	rc = device_add(&mdev->dev);
->>   	if (rc)
->>   		goto err_put;
->>   	return mdev;
->>   
->>   err_put:
->> +	iommu_fwspec_free(&mdev->dev);
->>   	put_device(&mdev->dev);
->>   	return ERR_PTR(rc);
-> That handles these two cases.
->
-> Jason
-
+/Magnus
