@@ -1,162 +1,168 @@
-Received: from CY7PR03CU001.outbound.protection.outlook.com (mail-westcentralusazon11010000.outbound.protection.outlook.com [40.93.198.0])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05751D531;
-	Thu, 25 Sep 2025 12:39:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.93.198.0
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758803977; cv=fail; b=coLLEx1vcv4Azt3UoWyPxcG41+ICO4pMcrr+6ZdySbH4Ruog5DEKotgOzPmD2pbk4wHZmupHDWVApGHal+6nvhaBc4L4eNwe9NhqcGgO9hbFSZnWzqCit23mpDxF6sOenWaY07KQo0X6EERV9Xol9aE0FrR0jnRJ7yxioagAR08=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758803977; c=relaxed/simple;
-	bh=E3J9oqZfs5/0A6atndvtkyaaFD8ssUI45xoXeXTtqWo=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=a8NXqbC6S7rhIVLm+sURx88wF/6Yc3uZGK36N4IskNv7JS/Ww+1AWhuck7SmkNC3EvjPAjJO/iM9a0ANSMw7vBTyex/X1VGdG4/TgN54R5milHAcXznoAw2QW9RzgXudvcVm3Vx53De4PyeZoP5A3Ut8tCvTari5HI/I6IPoe0w=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=HXrTxb4B; arc=fail smtp.client-ip=40.93.198.0
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C43BE2264CA;
+	Thu, 25 Sep 2025 13:18:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1758806308; cv=none; b=l6t4te/0PkY8/AFOcHNqKJ6+fftsClg3BENXuXYFtuus0iZXQlkLilg2q4fPfS2wTewWEqDqKBVl/7Y0BTo8ZdfvQuIluRT7HVVgkPB4LdapE/QZ4VTbTlwJT/FynyptoMs7DML89N+wZeIU8gB+kb2RvhBTwLurboMZhturZmc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1758806308; c=relaxed/simple;
+	bh=jQzVVFrSJ7ucYZq15uO8/5+M3IU4mjEtHjNrG1vAE+o=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=gEaLlc4RHebSEa+eGCnKgGuRH5AspAzbu1n+qNzFzFDIXWreriKLlaSDCrvltiQF6hqf5/mgdnJPIUGHO8i9U7aN9DRWuIP/PBauCWGvMA0kcskNCW1b2b6uM+6WEkpLtxG5e2viCxMk/U5/oC8oq2VPX/uhVGy3C1uAwjuhHRE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tyMtduVm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="HXrTxb4B"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nnah3tX2lmkqGS2zVx5sMGRE+b0uPDQcICTrjMuiMQyX8UyroJ6N44XLizT6BG/MFU2PYyqLwzRJ4+LFnYXQN4YCWbvCioSLn3h7iZI2yzIiDvFsKMa/BsTzkC98EiNpoh8JMkRJXqxT0WepEpDreskmduZKIxjhB94YtPgkrPIpbngTlB6HcmA93P6Ws0z7qu5w0kQcFzqbYY9SYxbFTPwkI2AWw9puFBfNaF9KXjdIVQzMQqGsTooWzcOjHWaYq+FMimZmvLHK41jOsgQfB7/SNXZJYZTha/0jQzyRwi7F/nx1CdXQA7BAfDcm+B4lsJ1rpXhcNIO0vUoeCmiiag==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qTpzPwm5c3bHh+setJx8pU1z5s6OaV6Da/LLeL0UjC8=;
- b=LRQrMbEoOJUdJ37HG8Jo/vPcYsXmLEVkyRy6f6aWvw9Jb0/mzGeco+Qh4avHiZbwy8F5t4R/DTcwE4sBHFy0LfVnivogu2uafHY/4TZNX2BzNmyLvuG0b2SeubfD48wESDZUwlulA/7jRBCtNh0DUEbV6IaArHRH/wy9GiV6Vrlr0b3BXTG59zM0R9gLqEWyE79XmjZzZjD5lCYNYLMcvAY0p5GCfwNrLqlRuiwX/31XR9b8wBsNqX6aIJOAl367xRqQJRilXJWf5oUj5SSdXAJOtVtzdwV0b3O2Qjn4Vt7Q9BEIS9Pb+Ei+L75gMrmQPXbwF2tGECHGM8e0mh98qg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=nvidia.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qTpzPwm5c3bHh+setJx8pU1z5s6OaV6Da/LLeL0UjC8=;
- b=HXrTxb4Bla9169gKSi3H3qJXnXZ5Pxa/hUTiR/jckgPdzs+VHgkv9y99bHb69wZGV2N5TN76bfi8zJZUmfY319ObI24L5QEzxCBCoJD/pccfLCJ3evqnR8ga/oEMSiV/jB634gYTYys7q85m2IgF+d51EwXErj21sICTMzV0ldM=
-Received: from DM5PR07CA0070.namprd07.prod.outlook.com (2603:10b6:4:ad::35) by
- IA1PR12MB6410.namprd12.prod.outlook.com (2603:10b6:208:38a::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9137.20; Thu, 25 Sep
- 2025 12:39:31 +0000
-Received: from CY4PEPF0000E9D4.namprd03.prod.outlook.com
- (2603:10b6:4:ad:cafe::46) by DM5PR07CA0070.outlook.office365.com
- (2603:10b6:4:ad::35) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9137.22 via Frontend Transport; Thu,
- 25 Sep 2025 12:39:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=satlexmb07.amd.com; pr=C
-Received: from satlexmb07.amd.com (165.204.84.17) by
- CY4PEPF0000E9D4.mail.protection.outlook.com (10.167.241.139) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9160.9 via Frontend Transport; Thu, 25 Sep 2025 12:39:30 +0000
-Received: from SATLEXMB03.amd.com (10.181.40.144) by satlexmb07.amd.com
- (10.181.42.216) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.2562.17; Thu, 25 Sep
- 2025 05:39:20 -0700
-Received: from satlexmb07.amd.com (10.181.42.216) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.39; Thu, 25 Sep
- 2025 07:39:20 -0500
-Received: from amd.com (10.180.168.240) by satlexmb07.amd.com (10.181.42.216)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.17 via Frontend
- Transport; Thu, 25 Sep 2025 05:39:12 -0700
-Date: Thu, 25 Sep 2025 12:39:07 +0000
-From: Ankit Soni <Ankit.Soni@amd.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: Jonathan Corbet <corbet@lwn.net>, <iommu@lists.linux.dev>, Joerg Roedel
-	<joro@8bytes.org>, Justin Stitt <justinstitt@google.com>, Kevin Tian
-	<kevin.tian@intel.com>, <linux-doc@vger.kernel.org>,
-	<linux-kselftest@vger.kernel.org>, <llvm@lists.linux.dev>, Bill Wendling
-	<morbo@google.com>, Nathan Chancellor <nathan@kernel.org>, Nick Desaulniers
-	<nick.desaulniers+lkml@gmail.com>, Miguel Ojeda <ojeda@kernel.org>, "Robin
- Murphy" <robin.murphy@arm.com>, Shuah Khan <shuah@kernel.org>, "Suravee
- Suthikulpanit" <suravee.suthikulpanit@amd.com>, Will Deacon
-	<will@kernel.org>, Alexey Kardashevskiy <aik@amd.com>, Alejandro Jimenez
-	<alejandro.j.jimenez@oracle.com>, James Gowans <jgowans@amazon.com>, "Michael
- Roth" <michael.roth@amd.com>, Pasha Tatashin <pasha.tatashin@soleen.com>,
-	<patches@lists.linux.dev>
-Subject: Re: [PATCH v5 13/15] iommu/amd: Use the generic iommu page table
-Message-ID: <myrht6aea2jzaapbojl2gg64p43dufpgzqbmrpyydgfonw6ejg@i4kqafgtmmux>
-References: <0-v5-116c4948af3d+68091-iommu_pt_jgg@nvidia.com>
- <13-v5-116c4948af3d+68091-iommu_pt_jgg@nvidia.com>
- <3e7mfy2s535w47z2cafeugv6qcy55wtijnzxeqozjbzhbeto4m@g4hamtjzg7bm>
- <20250925123227.GX2617119@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tyMtduVm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E522DC4CEF0;
+	Thu, 25 Sep 2025 13:18:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1758806308;
+	bh=jQzVVFrSJ7ucYZq15uO8/5+M3IU4mjEtHjNrG1vAE+o=;
+	h=From:To:Cc:Subject:Date:From;
+	b=tyMtduVmcBWMzBWiJspZLwmeJ2ceNqfCyWctxCHtsWpa33DUFzUSwR+lAYuXSkSbq
+	 7hyAzyHDnJmIUikYk3CItyM7Uh35bR2JxITeQkJhmDYCJYXHsKr+LGIuRm4+yXoCaD
+	 JZiNMdX+Zw0TOCsazhHYjXM8C1WC31w10xakUJdR/Vn7x+k3dTdJUf9G5Maob/fD4A
+	 26gabXuJymbyanTC7dVHAFcKpHr6e/oODVxTFeiHGn/xxwdP5aGAzn0HBac9BEnYEm
+	 arr3AcxqjEzjhe0bR+w8YwaGFfWHj/09uhM6APuXkZfWoicvjxRbdiHLgAavHVhOcQ
+	 +hGPrG6oy4xJQ==
+From: Leon Romanovsky <leon@kernel.org>
+To: Alex Williamson <alex.williamson@redhat.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>,
+	=?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+	dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev,
+	Jens Axboe <axboe@kernel.dk>,
+	Joerg Roedel <joro@8bytes.org>,
+	kvm@vger.kernel.org,
+	linaro-mm-sig@lists.linaro.org,
+	linux-block@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-pci@vger.kernel.org,
+	Logan Gunthorpe <logang@deltatee.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Sumit Semwal <sumit.semwal@linaro.org>,
+	Vivek Kasireddy <vivek.kasireddy@intel.com>,
+	Will Deacon <will@kernel.org>
+Subject: [PATCH v3 00/10] vfio/pci: Allow MMIO regions to be exported through dma-buf
+Date: Thu, 25 Sep 2025 16:14:28 +0300
+Message-ID: <cover.1758804980.git.leon@kernel.org>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20250925123227.GX2617119@nvidia.com>
-Received-SPF: None (SATLEXMB03.amd.com: Ankit.Soni@amd.com does not designate
- permitted sender hosts)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9D4:EE_|IA1PR12MB6410:EE_
-X-MS-Office365-Filtering-Correlation-Id: 99a15968-ac9c-4a13-1d5d-08ddfc3092a4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|7416014|376014|36860700013|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?i86K6PDHwIddN405f0ni/gVwIx3KHEYWwMWCveCF7Ikm/dc/CKFa1UbKv9fk?=
- =?us-ascii?Q?bosOAsiZWFDwggE3xOrK6NlTnsdJ/N8TTf66T8/3ekD7jn2v1no76eeuBUoY?=
- =?us-ascii?Q?6LdCj4kit0wMVe7AOvdETGRUxR5tSz2jd/9UNU67yElDQpY+ohQQ0xjpz+HR?=
- =?us-ascii?Q?PclgYilTyXyviiyhmmjtWAKE7OnL5+Cg9Qs8RxXGbS+/nzZXJT398FytlArI?=
- =?us-ascii?Q?DcPNMJ+unAGl7mEFVPivwWzSKwiHblcQgaFg3Vw9XCA82eNE5XFvyY7GBG35?=
- =?us-ascii?Q?Fvf0EmiuG1ikIUK2kLGlULP9oWSdHni7zqxj2jUvgyK9ntuAjyQHUMw82kjG?=
- =?us-ascii?Q?jYgxyC21RATylgm0Bujxmtt0GmkWFUkCOBFzrcP7/CwdB5i/sFY4bN1iPeVM?=
- =?us-ascii?Q?nGsHAKVAjJPlaU6WHhwQgo6rhJwMwbQ7XXPfuLziA66TmzvshDdPJD/UZBwV?=
- =?us-ascii?Q?i8sHce0P4YJXOSh4C/D0EGPzYOkHxUg5NSiw+LhtXwbz8rqXCdUgrHU6qFPW?=
- =?us-ascii?Q?uGNA8e/b0R/meYPLG8VQbnGUljEZqBKbJ59LR1h1PQEd6E4vK5NLgbViIekb?=
- =?us-ascii?Q?DNn5eXKzLLM8eIVy9mkmP7lv3zOYeJEySPF1cAAPlKopDV3ZXjxFEPSApBoH?=
- =?us-ascii?Q?Ov5SM9iXJWt+qRTlxwgRXRWX+CwykZKcY332qrrMiNATy1h/u3aRdku780GR?=
- =?us-ascii?Q?1Ji0CBrdiGc7uN475bYz3VnCPAHcEvBfIWrpMXTkT35j9IqloaHycCpfauEu?=
- =?us-ascii?Q?eIOxWsXaoE71Cx/0SbIRHjvlsSymZPN+e2vMd58ReIBl0sxpqGLrerYs0cUT?=
- =?us-ascii?Q?4V0i9g3KnWldVeywWr/Ufh+sATXLPl3DlaR4At7g/q/RWpKeDpNWcvat3UFX?=
- =?us-ascii?Q?hcmLeEHnYjGAZg4O9zl92L7xPlQb6lg2eUgRSFjQBPAgWJySIlorR+zOfmwL?=
- =?us-ascii?Q?ncsrCCKQ/iXmYN27Tj4YTWL5WX2KHHz0oOZJMWzuOARLrM+zJ+/FF92Xz4Ll?=
- =?us-ascii?Q?fy88xdLgjTpCbNFqFfq1GLawO83YGogCQvyLm5zn/TaeWjCNebD7OJhjJgTJ?=
- =?us-ascii?Q?ocLRV8sakF5bRhxo2iVkKBBYNl9xOZ0tkcGYTl6u4QTUcx3C+96JEnMqXYCm?=
- =?us-ascii?Q?7HX+qYZaKtfndkUY48HlVIxLrQJo5Vvc/KYBMK4NvP3eJcJtMmQQTbSNZ0bO?=
- =?us-ascii?Q?sDLLKX3obgG6vZ7qB/I1oaeqBqAhIgo4KB2iySPJER1f/GM/M2FwAj+mjUpX?=
- =?us-ascii?Q?vH1IHgIRoLmBQYWnvKI1GTU96Fonv/t97CUJH1/c9cmAgCeMr0UK9Kouq0UB?=
- =?us-ascii?Q?dcR1duRkLMgf6dP2iLneNpiO/NTfkxuiXo2uek+nClzdA3mXqA/PNhIvFhZu?=
- =?us-ascii?Q?eniVreDjDaxqvPEqV8A40Xq96WxWEKaMgLBpEEcxUPZaODE4nSA1hG6KQTVQ?=
- =?us-ascii?Q?+lkBN2kKwaJyLMCkV2YmkvTbsgXVl/Mh4fqWwVTQyPy+vz/APbsl1Kh+unnr?=
- =?us-ascii?Q?ePMCD0/JQVeroqC+hUF+QpXGyt9I8EO/zDZi?=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:satlexmb07.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(82310400026)(7416014)(376014)(36860700013)(1800799024);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Sep 2025 12:39:30.4464
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99a15968-ac9c-4a13-1d5d-08ddfc3092a4
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[satlexmb07.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9D4.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6410
+Content-Transfer-Encoding: 8bit
 
-On Thu, Sep 25, 2025 at 09:32:27AM -0300, Jason Gunthorpe wrote:
-> On Thu, Sep 25, 2025 at 12:07:04PM +0000, Ankit Soni wrote:
-> > > +
-> > > +	cfg.common.hw_max_vasz_lg2 =
-> > > +		max(64, (amd_iommu_hpt_level - 1) * 9 + 21);
-> 
-> > s/max/min
-> > with 6 level page table max will be 66 and i am seeing boot failure with
-> > this. Please refer below fail log.
-> 
-> Oops, I added this when rebasing, thanks. Just to be clear the max/min
-> fixes the oops?
+Changelog:
+v3:
+ * Changed pcim_p2pdma_enable() to be pcim_p2pdma_provider().
+ * Cache provider in vfio_pci_dma_buf struct instead of BAR index.
+ * Removed misleading comment from pcim_p2pdma_provider().
+ * Moved MMIO check to be in pcim_p2pdma_provider().
+v2: https://lore.kernel.org/all/cover.1757589589.git.leon@kernel.org/
+ * Added extra patch which adds new CONFIG, so next patches can reuse it.
+ * Squashed "PCI/P2PDMA: Remove redundant bus_offset from map state"
+   into the other patch.
+ * Fixed revoke calls to be aligned with true->false semantics.
+ * Extended p2pdma_providers to be per-BAR and not global to whole device.
+ * Fixed possible race between dmabuf states and revoke.
+ * Moved revoke to PCI BAR zap block.
+v1: https://lore.kernel.org/all/cover.1754311439.git.leon@kernel.org
+ * Changed commit messages.
+ * Reused DMA_ATTR_MMIO attribute.
+ * Returned support for multiple DMA ranges per-dMABUF.
+v0: https://lore.kernel.org/all/cover.1753274085.git.leonro@nvidia.com
 
-Yes, System is booting fine with this change.
+---------------------------------------------------------------------------
+Based on "[PATCH v6 00/16] dma-mapping: migrate to physical address-based API"
+https://lore.kernel.org/all/cover.1757423202.git.leonro@nvidia.com/ series.
+---------------------------------------------------------------------------
 
--Ankit
+This series extends the VFIO PCI subsystem to support exporting MMIO
+regions from PCI device BARs as dma-buf objects, enabling safe sharing of
+non-struct page memory with controlled lifetime management. This allows RDMA
+and other subsystems to import dma-buf FDs and build them into memory regions
+for PCI P2P operations.
+
+The series supports a use case for SPDK where a NVMe device will be
+owned by SPDK through VFIO but interacting with a RDMA device. The RDMA
+device may directly access the NVMe CMB or directly manipulate the NVMe
+device's doorbell using PCI P2P.
+
+However, as a general mechanism, it can support many other scenarios with
+VFIO. This dmabuf approach can be usable by iommufd as well for generic
+and safe P2P mappings.
+
+In addition to the SPDK use-case mentioned above, the capability added
+in this patch series can also be useful when a buffer (located in device
+memory such as VRAM) needs to be shared between any two dGPU devices or
+instances (assuming one of them is bound to VFIO PCI) as long as they
+are P2P DMA compatible.
+
+The implementation provides a revocable attachment mechanism using dma-buf
+move operations. MMIO regions are normally pinned as BARs don't change
+physical addresses, but access is revoked when the VFIO device is closed
+or a PCI reset is issued. This ensures kernel self-defense against
+potentially hostile userspace.
+
+The series includes significant refactoring of the PCI P2PDMA subsystem
+to separate core P2P functionality from memory allocation features,
+making it more modular and suitable for VFIO use cases that don't need
+struct page support.
+
+-----------------------------------------------------------------------
+The series is based originally on
+https://lore.kernel.org/all/20250307052248.405803-1-vivek.kasireddy@intel.com/
+but heavily rewritten to be based on DMA physical API.
+-----------------------------------------------------------------------
+The WIP branch can be found here:
+https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=dmabuf-vfio-v3
+
+Thanks
+
+Leon Romanovsky (8):
+  PCI/P2PDMA: Separate the mmap() support from the core logic
+  PCI/P2PDMA: Simplify bus address mapping API
+  PCI/P2PDMA: Refactor to separate core P2P functionality from memory
+    allocation
+  PCI/P2PDMA: Export pci_p2pdma_map_type() function
+  types: move phys_vec definition to common header
+  vfio/pci: Add dma-buf export config for MMIO regions
+  vfio/pci: Enable peer-to-peer DMA transactions by default
+  vfio/pci: Add dma-buf export support for MMIO regions
+
+Vivek Kasireddy (2):
+  vfio: Export vfio device get and put registration helpers
+  vfio/pci: Share the core device pointer while invoking feature
+    functions
+
+ block/blk-mq-dma.c                 |   7 +-
+ drivers/iommu/dma-iommu.c          |   4 +-
+ drivers/pci/p2pdma.c               | 176 +++++++++----
+ drivers/vfio/pci/Kconfig           |  20 ++
+ drivers/vfio/pci/Makefile          |   2 +
+ drivers/vfio/pci/vfio_pci_config.c |  22 +-
+ drivers/vfio/pci/vfio_pci_core.c   |  58 +++--
+ drivers/vfio/pci/vfio_pci_dmabuf.c | 394 +++++++++++++++++++++++++++++
+ drivers/vfio/pci/vfio_pci_priv.h   |  23 ++
+ drivers/vfio/vfio_main.c           |   2 +
+ include/linux/pci-p2pdma.h         | 115 +++++----
+ include/linux/types.h              |   5 +
+ include/linux/vfio.h               |   2 +
+ include/linux/vfio_pci_core.h      |   4 +
+ include/uapi/linux/vfio.h          |  25 ++
+ kernel/dma/direct.c                |   4 +-
+ mm/hmm.c                           |   2 +-
+ 17 files changed, 741 insertions(+), 124 deletions(-)
+ create mode 100644 drivers/vfio/pci/vfio_pci_dmabuf.c
+
+-- 
+2.51.0
+
