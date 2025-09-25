@@ -1,34 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4508B2FE574;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62BDE2FE595;
 	Thu, 25 Sep 2025 12:29:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758803350; cv=none; b=JYFzixrZNSIZmkhMZ/IcwAKC3sXPggqv5HixYhwC9Ajq/za8pMofx1I/50QR0x8WsrR5mB4/05Sp03jcQ3KOIQH6f6SYfM2XmajmSd2+EGD6ZHcBsTLxbcVcrezY57/WLN2XtxNPrkTUI2V5kShmBgpyaAgHEMapt6kZ3M15qzk=
+	t=1758803350; cv=none; b=duAeJLK4+q79Kt0cOGB7MABR1/Vf7Uo3RqwOg3LYW/f03n5rAZXnra66xwffA73vfDgiNz56VmJ3bq5TT6yzg076GonXUzVUj49r0Szb0WvzSFeBp6bEuob1kLk2jdBb8ZywzXdSbief02eggTdIm4M7IcGDmIvrn6/l0cwms6U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1758803350; c=relaxed/simple;
-	bh=fjAZkdmrtvGiYTWNqVeTxIY0d9WM6G8evCMPW+CVzGw=;
+	bh=eXCIctV3kzDVCzF1mL6VjkRTk6kPB7+BQFJ+zQFThxw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=lRWntzoP1FEZ0qOVIVPy0M6e8HFo2MvpJXbneecdVPw7bbBoypEDcLeTwjtZ3YSCuzNuHkzaAifbwdAX39mGJpvbMBPYhLhUxhkg3hTLaeTN7bIzIxM84szun6qrsjHvRewZtzIyjGXBiqjf3rK3F+Ghz0wZswEvyK1I862YA8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sVSNavgk; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=fPZiH/IWQiJKyjsfyJOnPlErrv+uBpZtmeiJv8SRG1Y4iXZ1AN5V11a9O7ZU9lOYPeA1OhrvMQ9zYOe4ihn2+dgsot6I3Js537KqyytCjUrfdPdMNSzMEV0oC5mrxIyzxyrp/Qtf8VlfOM3I5sofl7+5TenlaHwF1PAdkclrBDE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p+CSR0+c; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sVSNavgk"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8960C4CEF7;
-	Thu, 25 Sep 2025 12:29:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p+CSR0+c"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 176B2C2BC9E;
+	Thu, 25 Sep 2025 12:29:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1758803350;
-	bh=fjAZkdmrtvGiYTWNqVeTxIY0d9WM6G8evCMPW+CVzGw=;
+	bh=eXCIctV3kzDVCzF1mL6VjkRTk6kPB7+BQFJ+zQFThxw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=sVSNavgkL7MHXwW+FVVq0YX2ksgJXZumplYeTyPCFhpc0O/ZOXbMiDpi59jATYvMH
-	 YFdwnjZrpF9wQZMlzmv7AudfVYvi5fbwd8id098jsrIKT/B0bEFIMlsT0x4L+5sUcm
-	 XpQ8DKk3hJ5OJbRDoRkwkUvXdERaPlQxX7kOEOVjiZigIdp627y1aQmBTM88Z0sWV7
-	 m/hGHvhwHUESPeGaRiek6ZdTAKcbbzS5RLWIqInnUcpX5zg70GKaIlCb4iXsbadW1L
-	 P57LdAl346tAes0SjbpaCTOdNy62uvb0vCv3eIjOgQmV6l+MhfYU1oH0bfusRE46gb
-	 LKwBYRzTDJTnQ==
+	b=p+CSR0+cpGxskyZZnboW4u3s6r1U6dFLivzicNr+/4NxOYvcYuFMwEHGN+6dOe2xr
+	 cBq9S0BnzECMwWL2OjffXfDLhqndNuSWwNFKMU4CqtCFmm9bnQ4ywKA8YSkrOaGI8A
+	 BXrnheivqMJ0LCWhMnYc1Bmxc1vwEY3rlxh9fpFDRn1rZqhJgR3fPnqvoJ0vo1dAe3
+	 cPeQjagGOr6bVrQ98K9/EjLcqV1YIcJUF9UuFI4oXLabsCRHVSmpa7hKKb68iFJH/B
+	 hDeI/gxz1akXBHAVrP/8f/WEzMZxVnpwKl2SJfvEcRw3ZYmHXM5Tn9Pa2Kflan4rVy
+	 7fm6m3QiPmuAQ==
 Received: from johan by xi.lan with local (Exim 4.98.2)
 	(envelope-from <johan@kernel.org>)
-	id 1v1l5q-000000002rU-1VHL;
+	id 1v1l5q-000000002re-30Sz;
 	Thu, 25 Sep 2025 14:29:02 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>,
@@ -47,11 +47,10 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Johan Hovold <johan@kernel.org>,
-	stable@vger.kernel.org,
-	Yu Kuai <yukuai3@huawei.com>
-Subject: [PATCH 02/14] iommu/qcom: fix device leak on of_xlate()
-Date: Thu, 25 Sep 2025 14:27:44 +0200
-Message-ID: <20250925122756.10910-3-johan@kernel.org>
+	stable@vger.kernel.org
+Subject: [PATCH 06/14] iommu/mediatek: fix device leaks on probe()
+Date: Thu, 25 Sep 2025 14:27:48 +0200
+Message-ID: <20250925122756.10910-7-johan@kernel.org>
 X-Mailer: git-send-email 2.49.1
 In-Reply-To: <20250925122756.10910-1-johan@kernel.org>
 References: <20250925122756.10910-1-johan@kernel.org>
@@ -63,56 +62,81 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Make sure to drop the reference taken to the iommu platform device when
-looking up its driver data during of_xlate().
+Make sure to drop the references taken to the larb devices during
+probe on probe failure (e.g. probe deferral) and on driver unbind.
 
-Note that commit e2eae09939a8 ("iommu/qcom: add missing put_device()
-call in qcom_iommu_of_xlate()") fixed the leak in a couple of error
-paths, but the reference is still leaking on success and late failures.
+Note that commit 26593928564c ("iommu/mediatek: Add error path for loop
+of mm_dts_parse") fixed the leaks in a couple of error paths, but the
+references are still leaking on success and late failures.
 
-Fixes: 0ae349a0f33f ("iommu/qcom: Add qcom_iommu")
-Cc: stable@vger.kernel.org	# 4.14: e2eae09939a8
-Cc: Rob Clark <robin.clark@oss.qualcomm.com>
-Cc: Yu Kuai <yukuai3@huawei.com>
+Fixes: 0df4fabe208d ("iommu/mediatek: Add mt8173 IOMMU driver")
+Cc: stable@vger.kernel.org	# 4.6
+Cc: Yong Wu <yong.wu@mediatek.com>
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/iommu/mtk_iommu.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index c5be95e56031..9c1166a3af6c 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -565,14 +565,14 @@ static int qcom_iommu_of_xlate(struct device *dev,
- 
- 	qcom_iommu = platform_get_drvdata(iommu_pdev);
- 
-+	put_device(&iommu_pdev->dev);
-+
- 	/* make sure the asid specified in dt is valid, so we don't have
- 	 * to sanity check this elsewhere:
- 	 */
- 	if (WARN_ON(asid > qcom_iommu->max_asid) ||
--	    WARN_ON(qcom_iommu->ctxs[asid] == NULL)) {
--		put_device(&iommu_pdev->dev);
-+	    WARN_ON(qcom_iommu->ctxs[asid] == NULL))
- 		return -EINVAL;
--	}
- 
- 	if (!dev_iommu_priv_get(dev)) {
- 		dev_iommu_priv_set(dev, qcom_iommu);
-@@ -581,10 +581,8 @@ static int qcom_iommu_of_xlate(struct device *dev,
- 		 * multiple different iommu devices.  Multiple context
- 		 * banks are ok, but multiple devices are not:
- 		 */
--		if (WARN_ON(qcom_iommu != dev_iommu_priv_get(dev))) {
--			put_device(&iommu_pdev->dev);
-+		if (WARN_ON(qcom_iommu != dev_iommu_priv_get(dev)))
- 			return -EINVAL;
--		}
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 8d8e85186188..20a5ba80f983 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -1216,13 +1216,17 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+ 		platform_device_put(plarbdev);
  	}
  
- 	return iommu_fwspec_add_ids(dev, &asid, 1);
+-	if (!frst_avail_smicomm_node)
+-		return -EINVAL;
++	if (!frst_avail_smicomm_node) {
++		ret = -EINVAL;
++		goto err_larbdev_put;
++	}
+ 
+ 	pcommdev = of_find_device_by_node(frst_avail_smicomm_node);
+ 	of_node_put(frst_avail_smicomm_node);
+-	if (!pcommdev)
+-		return -ENODEV;
++	if (!pcommdev) {
++		ret = -ENODEV;
++		goto err_larbdev_put;
++	}
+ 	data->smicomm_dev = &pcommdev->dev;
+ 
+ 	link = device_link_add(data->smicomm_dev, dev,
+@@ -1230,7 +1234,8 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
+ 	platform_device_put(pcommdev);
+ 	if (!link) {
+ 		dev_err(dev, "Unable to link %s.\n", dev_name(data->smicomm_dev));
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto err_larbdev_put;
+ 	}
+ 	return 0;
+ 
+@@ -1402,8 +1407,12 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ 	iommu_device_sysfs_remove(&data->iommu);
+ out_list_del:
+ 	list_del(&data->list);
+-	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM))
++	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
+ 		device_link_remove(data->smicomm_dev, dev);
++
++		for (i = 0; i < MTK_LARB_NR_MAX; i++)
++			put_device(data->larb_imu[i].dev);
++	}
+ out_runtime_disable:
+ 	pm_runtime_disable(dev);
+ 	return ret;
+@@ -1423,6 +1432,9 @@ static void mtk_iommu_remove(struct platform_device *pdev)
+ 	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
+ 		device_link_remove(data->smicomm_dev, &pdev->dev);
+ 		component_master_del(&pdev->dev, &mtk_iommu_com_ops);
++
++		for (i = 0; i < MTK_LARB_NR_MAX; i++)
++			put_device(data->larb_imu[i].dev);
+ 	}
+ 	pm_runtime_disable(&pdev->dev);
+ 	for (i = 0; i < data->plat_data->banks_num; i++) {
 -- 
 2.49.1
 
