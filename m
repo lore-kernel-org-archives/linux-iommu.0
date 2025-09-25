@@ -1,33 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 451052FE587;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4518A2FE58E;
 	Thu, 25 Sep 2025 12:29:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758803350; cv=none; b=VTcH4bUvkoWwu6IdiJYInWnz07bEwxc5N1qEueEY5iFMkjU6ej8jpqWE6diGDQTpsxWnkTn0mLcEIfMO6ap1doN/3BtbkbJVq+cXu6qnFvg4c6wbQ4tnvwaEb+S/aUXPJOg5BCjdBiF9Z6s/yzBNazZhJ1NuansFk0F1Z10J+GU=
+	t=1758803350; cv=none; b=DTMx8/FP0156vl5GXzUL3LuE7tZY48/YvpyWCfu7HjEfdtXOb0gJYwkJvEQaCSeZ2+J7RhYvMVWJAXb9Va9oRsZ6p12bh7PA9TWHGMkwV5pzKkBhxewCgqI99Wmyhr6v6uK+vhbhwwoLEbvPptOBzo5txMP3wy+oeGTMCHYDqFU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1758803350; c=relaxed/simple;
-	bh=+qVIO7AwdM51KcSgUJ5C+8PxZLq5jlAFoQ6FLS+O9nI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=j2tIzMfS5pwNn4NSD5WSTOk4gZ094dBfKIfXff5VZQTr5UuawdiHb81jSkuewjvXx+/0yP+hMgX0aTHk2KBQ4lpUFyrf0N9Ur65tMvngwFeYInMt1iyT9IWiSIyuVEppdXyvgQKdY8DWk3a7nz0hmS969ffG0nVMupd+GCneJKg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=riASQpJG; arc=none smtp.client-ip=10.30.226.201
+	bh=EFeF8IqHiFjm4cF4lhsLwmIKXHBiuMuBzA6dxp8TiXY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=EZc/u87bn4LEknKAjOWbjwJzuSrfEk0vYyM3x18W7GfR3LSiR/VXqoiMwrC4whBoC6m/r4rPBXL1np2BNIANs8gSjMZgTiuTw7+2zkZ3hGTDiU32o3xJHdP9CbyqCGagTUH9NO/TV/kWYsSQ3SzGUWhuDDGzknvxETj9NDX+CxA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tnq1/YJe; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="riASQpJG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEE3AC4CEF0;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tnq1/YJe"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E61BDC4AF09;
 	Thu, 25 Sep 2025 12:29:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1758803349;
-	bh=+qVIO7AwdM51KcSgUJ5C+8PxZLq5jlAFoQ6FLS+O9nI=;
-	h=From:To:Cc:Subject:Date:From;
-	b=riASQpJGiXd0jaMLViE6ocM+hNS5tTizapR7rCdZAF487Chz/Lo/5h1sPsfylcDr9
-	 bNA4wZ2MIPhcghREQeyC2XUlDxmN0d0ve7PxAtqbjW1IIrafUX3l+uNjGyUSGwaXed
-	 UdmnHV3jGxkc5VnSOfUZwB96WobRE6fGbeJoQCuJ4/WcXj5hLUkyKu/odr33UXiPQt
-	 h62gymMGvHcejQ9kJEYN2IaiKfu2CP29B0o3DZWZHN8IvBVvSTd5dxY/6sGhT2KdCd
-	 EfMHEPboNV4d6wBX+zr1StkGAcXVQ6dl37NnmYqLGn3LefLacMVznurQ+6rZLxgTAT
-	 bi+N4Ck4wBNTA==
+	s=k20201202; t=1758803350;
+	bh=EFeF8IqHiFjm4cF4lhsLwmIKXHBiuMuBzA6dxp8TiXY=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=tnq1/YJemsW9+a1oh4uzPAzDBcZmPdhBfpOuCx/XFqEP4KvixOqvob6MXMWiZlfQp
+	 GujdfVkD1PYQTyBDL5zImkAprmajVppTDbNz8HCYPIrDHEPQLsIyzn0H7sMjwQ55IH
+	 /yxlU0EWg10SlxjK046qUXZ+FWJLWFxZFPJTUwKq0p7qFpQOgWkZ89KR0Aa7Mk3XO/
+	 /saQP2Q6QZzi0zCK7l050iCiomxon5vQ3jf6y5LsVN93kZ65nZGSHimlwMBbIm/l+F
+	 Uz81pA5NiOqmgiONhTZMrBOefaMGrhSlfQNjMVE9+92eNFRBzmVkXDLqXwRGFrBrxj
+	 ms4mIJm9F4IIA==
 Received: from johan by xi.lan with local (Exim 4.98.2)
 	(envelope-from <johan@kernel.org>)
-	id 1v1l5p-000000002rQ-21jE;
+	id 1v1l5q-000000002rW-1plp;
 	Thu, 25 Sep 2025 14:29:02 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>,
@@ -45,11 +46,14 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	Krishna Reddy <vdumpa@nvidia.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Johan Hovold <johan@kernel.org>
-Subject: [PATCH 00/14] iommu: fix device leaks
-Date: Thu, 25 Sep 2025 14:27:42 +0200
-Message-ID: <20250925122756.10910-1-johan@kernel.org>
+	Johan Hovold <johan@kernel.org>,
+	stable@vger.kernel.org
+Subject: [PATCH 03/14] iommu/exynos: fix device leak on of_xlate()
+Date: Thu, 25 Sep 2025 14:27:45 +0200
+Message-ID: <20250925122756.10910-4-johan@kernel.org>
 X-Mailer: git-send-email 2.49.1
+In-Reply-To: <20250925122756.10910-1-johan@kernel.org>
+References: <20250925122756.10910-1-johan@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,42 +62,42 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series fixes device leaks in the iommu drivers, which pretty
-consistently failed to drop the reference taken by
-of_find_device_by_node() when looking up iommu platform devices.
+Make sure to drop the reference taken to the iommu platform device when
+looking up its driver data during of_xlate().
 
-Included are also a couple of related cleanups.
+Fixes: aa759fd376fb ("iommu/exynos: Add callback for initializing devices from device tree")
+Cc: stable@vger.kernel.org	# 4.2
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/iommu/exynos-iommu.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-Johan
-
-
-Johan Hovold (14):
-  iommu/apple-dart: fix device leak on of_xlate()
-  iommu/qcom: fix device leak on of_xlate()
-  iommu/exynos: fix device leak on of_xlate()
-  iommu/ipmmu-vmsa: fix device leak on of_xlate()
-  iommu/mediatek: fix device leak on of_xlate()
-  iommu/mediatek: fix device leaks on probe()
-  iommu/mediatek: simplify dt parsing error handling
-  iommu/mediatek-v1: fix device leak on probe_device()
-  iommu/mediatek-v1: fix device leaks on probe()
-  iommu/mediatek-v1: add missing larb count sanity check
-  iommu/omap: fix device leaks on probe_device()
-  iommu/omap: simplify probe_device() error handling
-  iommu/sun50i: fix device leak on of_xlate()
-  iommu/tegra: fix device leak on probe_device()
-
- drivers/iommu/apple-dart.c              |  2 ++
- drivers/iommu/arm/arm-smmu/qcom_iommu.c | 10 +++-----
- drivers/iommu/exynos-iommu.c            |  9 +++----
- drivers/iommu/ipmmu-vmsa.c              |  2 ++
- drivers/iommu/mtk_iommu.c               | 33 +++++++++++++++++--------
- drivers/iommu/mtk_iommu_v1.c            | 28 +++++++++++++++++----
- drivers/iommu/omap-iommu.c              | 32 +++++++++++++++---------
- drivers/iommu/sun50i-iommu.c            |  2 ++
- drivers/iommu/tegra-smmu.c              |  5 ++--
- 9 files changed, 81 insertions(+), 42 deletions(-)
-
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index b6edd178fe25..ce9e935cb84c 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1446,17 +1446,14 @@ static int exynos_iommu_of_xlate(struct device *dev,
+ 		return -ENODEV;
+ 
+ 	data = platform_get_drvdata(sysmmu);
+-	if (!data) {
+-		put_device(&sysmmu->dev);
++	put_device(&sysmmu->dev);
++	if (!data)
+ 		return -ENODEV;
+-	}
+ 
+ 	if (!owner) {
+ 		owner = kzalloc(sizeof(*owner), GFP_KERNEL);
+-		if (!owner) {
+-			put_device(&sysmmu->dev);
++		if (!owner)
+ 			return -ENOMEM;
+-		}
+ 
+ 		INIT_LIST_HEAD(&owner->controllers);
+ 		mutex_init(&owner->rpm_lock);
 -- 
 2.49.1
 
