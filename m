@@ -1,168 +1,107 @@
-Received: from out30-99.freemail.mail.aliyun.com (out30-99.freemail.mail.aliyun.com [115.124.30.99])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEFA71C695
-	for <iommu@lists.linux.dev>; Thu, 25 Sep 2025 02:52:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.99
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C546E128816
+	for <iommu@lists.linux.dev>; Thu, 25 Sep 2025 03:04:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758768781; cv=none; b=givSXmwcIUUkBf528uawrQRYIZWp4t18PoYzhiQ4If7CI/kFXtqffoIl5k1qtEWq0XeSa0d4UoQ+Eq7+Jz4uBZakC7k4np7559SM6Zl3RvsQih6mqYOXjr3jJ7hb4qzv7F8nBRr1SQVfITna6gIjDzPvsmDgA1dkA0F6piOfCXQ=
+	t=1758769500; cv=none; b=NvbQlmeP2vB/vv4TEKPAPsIVPraMFInXQYmsmua4Lwcaf2GWVVJ6SogKN3JfZGcVT6I2oFH7iWGFevwnaWA+5HY5lF8gSE7JCbkvVJKDkCkufs6QVTeBibDUWYyaD0k91LjD28Fcgs5uiERJu3pM7cAGb2ZNE5GRbvmkR0oTVZ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758768781; c=relaxed/simple;
-	bh=CFOgs+u2BQFLeD6VutW2UOJJMBhy2dnaujolqRah3j4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ux16Zr8vrVbt6GBW8ngNJpGKQvTZqKJWklnJZqkFoVrx8ELXMW1J/jCYpYeqZBEjUqMc8C/I+r5P0Je2ZuAUo7NRyiLb5Wg+fbKdQ1gGFVu7h6d6gLgDrKysy8zswMS2yjPlN6upCBsbbHwYQVNhLj7n/HXS6I0foUaeinPvsyY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=bdvfaQgA; arc=none smtp.client-ip=115.124.30.99
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	s=arc-20240116; t=1758769500; c=relaxed/simple;
+	bh=jZFA8+dCY7j6Q7kQW4PqYzyZI6GA5lVMHhLr6N2xnUQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=rZXGfGh/n1Rjg3DqfBy9kzoWOoQA/JWEKL93bzAi7YHSrO5YqtW4KwNwlIO4Og7iXkGIpsc3fRm89XvsxkDAYQsLHf/y+NlgEfNOUi2UAZNIZeeUwSy0UEOBDQ18C5DaXQhuFrZYyxbJ0VZ+Q6E8j+fPJhuw3eHkJ+YUgAFWrfQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mJnEUl3G; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="bdvfaQgA"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1758768776; h=From:To:Subject:Date:Message-ID:MIME-Version;
-	bh=BoENDTPVqaamUQanA/vQkUcWHtDmCO1KFvhRDdamhi0=;
-	b=bdvfaQgALoQmvfhNc0WTvHP+P5PpXANnr7nT5b22xEtEPBw/m57A3o57I63aA+mBordCX7EjgY9kurHNh/H6g8jgXoT/VMarnqJZxPMTlB6o56XjVKa79IwZnxLR8ZxWcaOYWdg00vG1MR9p9X2D+koa3euaKCQfqD2OlF1Cx/k=
-Received: from localhost(mailfrom:kanie@linux.alibaba.com fp:SMTPD_---0WolnrmR_1758768771 cluster:ay36)
-          by smtp.aliyun-inc.com;
-          Thu, 25 Sep 2025 10:52:55 +0800
-From: Guixin Liu <kanie@linux.alibaba.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: iommu@lists.linux.dev
-Subject: [PATCH v4] iommu: Fix iommu selftest running test mock domain fail
-Date: Thu, 25 Sep 2025 10:52:51 +0800
-Message-ID: <20250925025251.64578-1-kanie@linux.alibaba.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mJnEUl3G"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1758769498; x=1790305498;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=jZFA8+dCY7j6Q7kQW4PqYzyZI6GA5lVMHhLr6N2xnUQ=;
+  b=mJnEUl3GlKtdmhsR8M3Vrb+F1XM4i95e8UU0s9NsOpgERXFJFS9fmeJH
+   76bHGuw4Im1ckdoynjxg2xYF0+O4iAtV4moRB2zzMGI+qEW3v+8teE/Wr
+   uU8u4X9Ktk1OAipiimklvMdvUg1ifRZJGwde3GBe0iaxXVJwjfiD0D/DD
+   EuwGG3lMIN3SNmkFWK9yOVfEjIiz2z5zROH5gzPI1ONYr+e76IZsxFFvd
+   JtrNtLyGpHkttFO2P5396y792cgmS11g04PCTM3ZehOk87/3l6DdKsICZ
+   E2bqx98waMY+qUwqOwfn1fH/xxE0EChw2qRU8to0E5Y04sEU8pELkh1hG
+   A==;
+X-CSE-ConnectionGUID: Jp0hGpqHSUWouTOSv0Gclw==
+X-CSE-MsgGUID: hkxylOUzS3OP3sw+jXUg5A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11563"; a="63705644"
+X-IronPort-AV: E=Sophos;i="6.18,291,1751266800"; 
+   d="scan'208";a="63705644"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2025 20:04:56 -0700
+X-CSE-ConnectionGUID: 5Vl9Zqd0RDq1jb9Bc6kSTg==
+X-CSE-MsgGUID: iu7vv71QQJOxHbsIGnfy7g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,291,1751266800"; 
+   d="scan'208";a="176805445"
+Received: from allen-sbox.sh.intel.com (HELO [10.239.159.30]) ([10.239.159.30])
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Sep 2025 20:04:54 -0700
+Message-ID: <515e2b1a-cef8-47be-a89c-de7b73367ff9@linux.intel.com>
+Date: Thu, 25 Sep 2025 11:01:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] iommu/vt-d: Disallow dirty tracking if incoherent
+ page walk
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20250924083447.123224-1-baolu.lu@linux.intel.com>
+ <20250924120431.GF2617119@nvidia.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20250924120431.GF2617119@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-When intel_iommu=on is enabled and the iommu selftests are executed,
-we observed multiple test case failures. Our investigation revealed
-that both the Intel iommu driver and the mock iommu driver registered
-iommu_device instances with fwnode=NULL, and both were added to the
-iommu_device_list. Later, when the mock iommu driver attempted to
-create a device, iommu_init_device attempted to retrieve the iommu_ops
-by searching the iommu_device_list using the provided fwnode
-(which was NULL).
-Since the iommu_device registered by the Intel iommu driver appeared
-earlier in the list, it was matched first instead of the mock iommu
-driver's iommu_device. This ultimately caused probe_device to fail.
+On 9/24/25 20:04, Jason Gunthorpe wrote:
+> On Wed, Sep 24, 2025 at 04:34:46PM +0800, Lu Baolu wrote:
+>> Dirty page tracking relies on the IOMMU atomically updating the dirty bit
+>> in the paging-structure entry. For this operation to succeed, the paging-
+>> structure memory must be coherent between the IOMMU and the CPU. In
+>> another word, if the iommu page walk is incoherent, dirty page tracking
+>> doesn't work.
+>>
+>> The Intel VT-d specification, Section 3.10 "Snoop Behavior" states:
+>>
+>> "Remapping hardware encountering the need to atomically update A/EA/D bits
+>>   in a paging-structure entry that is not snooped will result in a non-
+>>   recoverable fault."
+>>
+>> To prevent an IOMMU from being incorrectly configured for dirty page
+>> tracking when it is operating in an incoherent mode, mark SSADS as
+>> supported only when both ecap_slads and ecap_smpwc are supported.
+>>
+>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/iommu.h | 3 ++-
+>>   1 file changed, 2 insertions(+), 1 deletion(-)
+> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
 
-Fix this by alloc a software fwnode for mock iommu driver's iommu_device,
-and set it to the device which mock iommu driver created.
+Thank you!
 
-Test by "make -C toosl/testing/selftests TARGETS=iommu run_tests":
-PASSED: 229 / 229 tests passed.
+> Basically due to the above spec the IOMMU implementation would be
+> invalid to set slads and !smpwc ?
 
-In addition, this issue is also can be found on amd platform, and
-also tested on a amd machine.
+I suppose so.
 
-Signed-off-by: Guixin Liu <kanie@linux.alibaba.com>
-Tested-by: Qinyun Tan <qinyuntan@linux.alibaba.com>
----
-Changes from v3 to v4:
-- Remove iommu_mock_device_abort(), rename iommu_mock_device_init() to
-iommu_mock_device_add(), and fold device_add() into iommu_mock_device_add().
+But even if smpwc is set to 1, software could still configure an
+incoherent page walk by clearing the Page Walk Snoop bit in the PASID
+entry. (The current Intel IOMMU driver always sets that bit as long as
+the capability exists). In that case, the hardware might encounter the
+situation mentioned above.
 
-Changes from v2 to v3:
-- Add export symbol iommu_mock_device_init() and iommu_mock_device_abort()
-in iommu.c instead of export iommu_probe_device_lock and iommu_fwspec_free().
-
-Changes from v1 to v2:
-- Remove print when iommu_fwspec_init() fail.
- drivers/iommu/iommu-priv.h       |  2 ++
- drivers/iommu/iommu.c            | 28 ++++++++++++++++++++++++++++
- drivers/iommu/iommufd/selftest.c |  2 +-
- 3 files changed, 31 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index e236b932e766..c95394cd03a7 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -37,6 +37,8 @@ void iommu_device_unregister_bus(struct iommu_device *iommu,
- 				 const struct bus_type *bus,
- 				 struct notifier_block *nb);
- 
-+int iommu_mock_device_add(struct device *dev, struct iommu_device *iommu);
-+
- struct iommu_attach_handle *iommu_attach_handle_get(struct iommu_group *group,
- 						    ioasid_t pasid,
- 						    unsigned int type);
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 060ebe330ee1..5d4670aa50e6 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -304,6 +304,7 @@ void iommu_device_unregister_bus(struct iommu_device *iommu,
- 				 struct notifier_block *nb)
- {
- 	bus_unregister_notifier(bus, nb);
-+	fwnode_remove_software_node(iommu->fwnode);
- 	iommu_device_unregister(iommu);
- }
- EXPORT_SYMBOL_GPL(iommu_device_unregister_bus);
-@@ -326,6 +327,14 @@ int iommu_device_register_bus(struct iommu_device *iommu,
- 	if (err)
- 		return err;
- 
-+	iommu->fwnode = fwnode_create_software_node(NULL, NULL);
-+	if (IS_ERR(iommu->fwnode)) {
-+		iommu->fwnode = NULL;
-+		dev_err(iommu->dev, "add property failed:%d\n", err);
-+		bus_unregister_notifier(bus, nb);
-+		return err;
-+	}
-+
- 	spin_lock(&iommu_device_lock);
- 	list_add_tail(&iommu->list, &iommu_device_list);
- 	spin_unlock(&iommu_device_lock);
-@@ -335,9 +344,28 @@ int iommu_device_register_bus(struct iommu_device *iommu,
- 		iommu_device_unregister_bus(iommu, bus, nb);
- 		return err;
- 	}
-+	WRITE_ONCE(iommu->ready, true);
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(iommu_device_register_bus);
-+
-+int iommu_mock_device_add(struct device *dev, struct iommu_device *iommu)
-+{
-+	int rc;
-+
-+	mutex_lock(&iommu_probe_device_lock);
-+	rc = iommu_fwspec_init(dev, iommu->fwnode);
-+	mutex_unlock(&iommu_probe_device_lock);
-+
-+	if (rc)
-+		return rc;
-+
-+	rc = device_add(dev);
-+	if (rc)
-+		iommu_fwspec_free(dev);
-+	return rc;
-+}
-+EXPORT_SYMBOL_GPL(iommu_mock_device_add);
- #endif
- 
- static struct dev_iommu *dev_iommu_get(struct device *dev)
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index 61686603c769..de178827a078 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -1126,7 +1126,7 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
- 		goto err_put;
- 	}
- 
--	rc = device_add(&mdev->dev);
-+	rc = iommu_mock_device_add(&mdev->dev, &mock_iommu.iommu_dev);
- 	if (rc)
- 		goto err_put;
- 	return mdev;
--- 
-2.43.0
-
+Thanks,
+baolu
