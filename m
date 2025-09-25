@@ -1,34 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B96BF3019AC;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B848430170D;
 	Thu, 25 Sep 2025 12:29:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758803350; cv=none; b=PpzWs6Ofc76GYpB0m37Ny8N+fDH0pbOh0ImCJmDdQznpULMk7ynOMQXkai6gx13RMbhd+F9YiTUqd7kN3/SjYV2hVbnGqzwyQjSeSzWmH7MAJKq1vjV1Rs2s8wpNy32Jijy1WzU1v4BEGK+XD/DOgdv3VPM/bjPxodzxxd/Kypo=
+	t=1758803350; cv=none; b=TEyQqJ3KmfzKvl61zGaRnyXMUOL5EinDv31VoM8u7AmG67LYvbQIsBCloAihP8A5PAe2bX7SWMS+LU1hvTZ2HkI8KJihngmf18Fi7heuI9QaUj36ytcQO6TyDx3zf3L9yccuw3bRY/E/YYJdV9OFgvjTNOYXIjIpfPI51hHxtsk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1758803350; c=relaxed/simple;
-	bh=pauPkgHyC5sOmXEJMX4kk9zHj/nOugY/JrqP/IyD4H8=;
+	bh=f/1Rw/znaTZwRuQsTBACfXiJL0QSB5DXvUS+XMaPG78=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Pl7KG5jThICYqSkN9E/GLN2XIuFIjgn7YXWdAFwrpVDJsI58HX43AJ0vlhtRTP1QhUN+3ELYlcDpPhS3tNvRuj/4k7Ks6VSl8+Z0wFn3r9HjzsNwQCvvGI+6NbNDzcPo+oNDMshyFD7DqtdE8LJA0pjp7jZlnNcWGOKFWkD5Rdw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LI1echjO; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=QVlviBRJQIxjezV9VoJyPjQVyyHRc4qpNzwz5erDWTdWeNkLyCxwKUGF0sWtPDLCG5/e/b8643oGtSBAFxxBbUmWa6OUfwaTFjjdHq1HBbck6ggXnHVBkljWUfjBwEpghBGsABAd8C8l0rNwTs3ov5Kg47fzaZP0FUchw2d9XFc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nUnu9aK1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LI1echjO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67E49C2BC87;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nUnu9aK1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BFB0C116D0;
 	Thu, 25 Sep 2025 12:29:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1758803350;
-	bh=pauPkgHyC5sOmXEJMX4kk9zHj/nOugY/JrqP/IyD4H8=;
+	bh=f/1Rw/znaTZwRuQsTBACfXiJL0QSB5DXvUS+XMaPG78=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=LI1echjO6hgNUDeUgFpHMCBc0z0G4ivKhf0HDMXdbC4P3tzVdrwMYaGp3CQpLEXYR
-	 yZ2kxeQzBzRj4RVr2OGIRg2Ibl8JLM9fpNFHCBlY6UBiSEYboAZpncQkfovy4RWFiy
-	 i3vDGOxR0VlpV/V8q9yxC2cmsx+zrsUnUbbm4+ktYXCUnQtLH0W2ctklVSwMET9M/l
-	 DBB89FTAhIilxaEILFHDewXnLGLdyQhlqepqRn73672vUMRqMBEH3tW2Efi69el2LB
-	 Hu4RGPg6qJYeIf9tUPN9fsl2E+c7Hc+kWhvxASn5qkEqcv2FXkbVPi36+vnWOWZ14T
-	 5MjkXF8czRGbg==
+	b=nUnu9aK1qUTu4sn4yylT/yBMTvNuUqpACxSFQRb5sEruuEQLKg4iF4DyawTTO9YwU
+	 Q9CTjWhMrxfpl5BeUDiQg13wFlDhofM4LvazAWweEe56Al8O+OnhoywECg86NZ9/9K
+	 IWT6+hnVAvoY86ZjGUSiJXw6GrwRmvjcZ2arsxDf1JLX5PQ67TU70VD4apoEv9Zs6v
+	 Sc5FZ2dOX1QgazbwU51yxhuOE5hiEdC6U4+860AOcYcwNLAa6XGmADf/qdacEpxMLm
+	 EYr9YvJ6DCbzVq8JRZZJXCVTFr+ZOrWW5jAS9vYJtRthvEMZJKmHTqf4RUH5pRayW4
+	 cqKeCgIsqFO+w==
 Received: from johan by xi.lan with local (Exim 4.98.2)
 	(envelope-from <johan@kernel.org>)
-	id 1v1l5r-000000002rr-0D7f;
+	id 1v1l5r-000000002ru-0ahz;
 	Thu, 25 Sep 2025 14:29:03 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>,
@@ -46,10 +46,12 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	Krishna Reddy <vdumpa@nvidia.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Johan Hovold <johan@kernel.org>
-Subject: [PATCH 10/14] iommu/mediatek-v1: add missing larb count sanity check
-Date: Thu, 25 Sep 2025 14:27:52 +0200
-Message-ID: <20250925122756.10910-11-johan@kernel.org>
+	Johan Hovold <johan@kernel.org>,
+	stable@vger.kernel.org,
+	Suman Anna <s-anna@ti.com>
+Subject: [PATCH 11/14] iommu/omap: fix device leaks on probe_device()
+Date: Thu, 25 Sep 2025 14:27:53 +0200
+Message-ID: <20250925122756.10910-12-johan@kernel.org>
 X-Mailer: git-send-email 2.49.1
 In-Reply-To: <20250925122756.10910-1-johan@kernel.org>
 References: <20250925122756.10910-1-johan@kernel.org>
@@ -61,28 +63,90 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add the missing larb count sanity check to avoid writing beyond a fixed
-sized array in case of a malformed devicetree.
+Make sure to drop the reference taken to the iommu platform devices
+during probe_device() on errors and when the device is later released.
 
+Fixes: 9d5018deec86 ("iommu/omap: Add support to program multiple iommus")
+Fixes: 7d6827748d54 ("iommu/omap: Fix iommu archdata name for DT-based devices")
+Cc: stable@vger.kernel.org	# 3.18
+Cc: Suman Anna <s-anna@ti.com>
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/iommu/mtk_iommu_v1.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/omap-iommu.c | 27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 44b965a2db92..55d6615a41a9 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -643,6 +643,9 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
- 	if (larb_nr < 0)
- 		return larb_nr;
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index 6fb93927bdb9..77023d49bd24 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1636,7 +1636,7 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+ 	struct platform_device *pdev;
+ 	struct omap_iommu *oiommu;
+ 	struct device_node *np;
+-	int num_iommus, i;
++	int num_iommus, i, ret;
  
-+	if (larb_nr > MTK_LARB_NR_MAX)
-+		return -EINVAL;
+ 	/*
+ 	 * Allocate the per-device iommu structure for DT-based devices.
+@@ -1663,22 +1663,22 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+ 	for (i = 0, tmp = arch_data; i < num_iommus; i++, tmp++) {
+ 		np = of_parse_phandle(dev->of_node, "iommus", i);
+ 		if (!np) {
+-			kfree(arch_data);
+-			return ERR_PTR(-EINVAL);
++			ret = -EINVAL;
++			goto err_put_iommus;
+ 		}
+ 
+ 		pdev = of_find_device_by_node(np);
+ 		if (!pdev) {
+ 			of_node_put(np);
+-			kfree(arch_data);
+-			return ERR_PTR(-ENODEV);
++			ret = -ENODEV;
++			goto err_put_iommus;
+ 		}
+ 
+ 		oiommu = platform_get_drvdata(pdev);
+ 		if (!oiommu) {
+ 			of_node_put(np);
+-			kfree(arch_data);
+-			return ERR_PTR(-EINVAL);
++			ret = -EINVAL;
++			goto err_put_iommus;
+ 		}
+ 
+ 		tmp->iommu_dev = oiommu;
+@@ -1697,17 +1697,28 @@ static struct iommu_device *omap_iommu_probe_device(struct device *dev)
+ 	oiommu = arch_data->iommu_dev;
+ 
+ 	return &oiommu->iommu;
 +
- 	for (i = 0; i < larb_nr; i++) {
- 		struct device_node *larbnode;
- 		struct platform_device *plarbdev;
++err_put_iommus:
++	for (tmp = arch_data; tmp->dev; tmp++)
++		put_device(tmp->dev);
++
++	kfree(arch_data);
++
++	return ERR_PTR(ret);
+ }
+ 
+ static void omap_iommu_release_device(struct device *dev)
+ {
+ 	struct omap_iommu_arch_data *arch_data = dev_iommu_priv_get(dev);
++	struct omap_iommu_arch_data *tmp;
+ 
+ 	if (!dev->of_node || !arch_data)
+ 		return;
+ 
+-	kfree(arch_data);
++	for (tmp = arch_data; tmp->dev; tmp++)
++		put_device(tmp->dev);
+ 
++	kfree(arch_data);
+ }
+ 
+ static int omap_iommu_of_xlate(struct device *dev, const struct of_phandle_args *args)
 -- 
 2.49.1
 
