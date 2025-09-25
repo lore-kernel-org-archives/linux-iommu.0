@@ -1,34 +1,34 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8769E3002B5;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8750A2FFFAD;
 	Thu, 25 Sep 2025 12:29:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758803350; cv=none; b=XZHDZTxnoXKfsyOmmYRhUDuFNf+73RBbfnWBKNj6tf6fnRklMuMl0eibQSScqk+9NcpmHfSFXJA+t1+JCrH5F5wnehE7YMq/UhAGG/Hheoa9So16ZpU4QSbdCye8IOTSZcc3QlzK/vPmByGPs7QKwkuozRME/hj34cTILcJgVVk=
+	t=1758803350; cv=none; b=QuA+LopqWrDwwfCViaeUR6zB4Jy6dhAtFbVRLYk4/f2XwXh3FunTjwuzliYugtP88FVBUi2R7WNs2g9Tf8FfATybfxlOpnKINqewYnveGFojw7lu6QclJ2Sy9Zv0nFZc/lWV024j7NT+wzlghZXmmByiGxBVat6u9Kou7wcUXoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1758803350; c=relaxed/simple;
-	bh=TOL9f9t7TrdwbKha9pz6SX1lSEEfhPXvp//CHh8g1jc=;
+	bh=IQqKWSwpV19mfvxErDNJTjiXykWZqudwjNBUkZ5Ps0w=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=bSjcVYw7Tg8NEyZJuNWl89EBEyoSNHkGiOZo+GR2c07FHqUhZZe+wOh9c8G05vgW9BnK5F9QJiE4ZQ0cvrUiJkvH+E4FqL9Fmpr69m6S5JkamKduI62kcOqDyNZrnGNOM5Z5iR9r5bwiFFlFcfRtCx+oPdu0mY8e+CSB8qlfpf0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tZZtIUhL; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=P6bfXbh5bClpk2Wa5uBdT8a9aegBT+WUfiXBGR7tTK8hGSVxdIOUj4PoGr19Zg2XtBoc69KGVSpvDPB91tjhEZioBBr/IJoPh8edbSXWJ2n9LvhetuhQKEwIILPSxTENuFJQDnlLvLsNom6gTpkGVfiuJGdxDDON5jQ+3ksVF44=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NTHItUNy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tZZtIUhL"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2939AC113D0;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NTHItUNy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43864C19424;
 	Thu, 25 Sep 2025 12:29:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1758803350;
-	bh=TOL9f9t7TrdwbKha9pz6SX1lSEEfhPXvp//CHh8g1jc=;
+	bh=IQqKWSwpV19mfvxErDNJTjiXykWZqudwjNBUkZ5Ps0w=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=tZZtIUhLnYspE/6f154Up/BtAVP3b3RMx4ASntjG6zgEMhE68ehUnWswpUxi6GLYx
-	 CcEggvKKkHt/iBSOjt+kE6nCCgPyV49PBDhrEBeg5ums5xPUGjmVgGi2rNYoyRccE5
-	 9uNoOHSBw/thYT5+pQKqiVUj3Isg4clrMqJCcS/f9REaNIb87m8RF10V/hQgK1aymN
-	 fuwD2Ttp2+xGtbpK/t4mgo+fUKEP806tz0llsK+/DcxQPtRsHICNSj/2vMGlC+R5Xa
-	 Lu/7MgKWokLob8e/W8v6JA+l8m9kRmEUdkZ1mus/m9/on4AUbxdmEYP/gkvk9RftRs
-	 TpPbU7CTVoPbQ==
+	b=NTHItUNyrlmnlxGedYx1ADAJEdH+dRXb+Edphf5s/r7B/WC1qkyMdg+3RAIiej61l
+	 Q4wtgxD4p1K2Nhu6qzb9QBvmJxM9mLs5tVOU2D4UXwCXeJ1QSXQN3t/lcjVHvK4qSx
+	 UQMqCpa/yQvwWX0U12UrrH3mVe6ZrX9QraflpcpY1DxLR6cqGsjcIxdjdA64iOcjcl
+	 W9iu16gykCRCFX9aFbxuyMun5xA/FV5u8ToKz2mPpvAIPP/8K6bV6Uz7bXwJpvSVZ9
+	 Kh1UlkjFPlzUSg0sY+bDRhPgZQK7GMzHerLx2l0LJNB5Qv/kd55vD2McQeN0vULd0Y
+	 SmM3A9w972Zrg==
 Received: from johan by xi.lan with local (Exim 4.98.2)
 	(envelope-from <johan@kernel.org>)
-	id 1v1l5q-000000002rh-3KSM;
+	id 1v1l5q-000000002rk-3f4d;
 	Thu, 25 Sep 2025 14:29:02 +0200
 From: Johan Hovold <johan@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>,
@@ -46,10 +46,12 @@ Cc: Robin Murphy <robin.murphy@arm.com>,
 	Krishna Reddy <vdumpa@nvidia.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
-	Johan Hovold <johan@kernel.org>
-Subject: [PATCH 07/14] iommu/mediatek: simplify dt parsing error handling
-Date: Thu, 25 Sep 2025 14:27:49 +0200
-Message-ID: <20250925122756.10910-8-johan@kernel.org>
+	Johan Hovold <johan@kernel.org>,
+	stable@vger.kernel.org,
+	Honghui Zhang <honghui.zhang@mediatek.com>
+Subject: [PATCH 08/14] iommu/mediatek-v1: fix device leak on probe_device()
+Date: Thu, 25 Sep 2025 14:27:50 +0200
+Message-ID: <20250925122756.10910-9-johan@kernel.org>
 X-Mailer: git-send-email 2.49.1
 In-Reply-To: <20250925122756.10910-1-johan@kernel.org>
 References: <20250925122756.10910-1-johan@kernel.org>
@@ -61,43 +63,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-As previously documented by commit 26593928564c ("iommu/mediatek: Add
-error path for loop of mm_dts_parse"), the id mapping may not be linear
-so the whole larb array needs to be iterated on devicetree parsing
-errors.
+Make sure to drop the reference taken to the iommu platform device when
+looking up its driver data during probe_device().
 
-Simplify the loop by iterating from index zero while dropping the
-redundant NULL check for consistency with later cleanups.
-
-Also add back the comment which was removed by commit 462e768b55a2
-("iommu/mediatek: Fix forever loop in error handling") to prevent anyone
-from trying to optimise the loop by iterating backwards from 'i'.
-
-Cc: Yong Wu <yong.wu@mediatek.com>
+Fixes: b17336c55d89 ("iommu/mediatek: add support for mtk iommu generation one HW")
+Cc: stable@vger.kernel.org	# 4.8
+Cc: Honghui Zhang <honghui.zhang@mediatek.com>
 Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- drivers/iommu/mtk_iommu.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/iommu/mtk_iommu_v1.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 20a5ba80f983..24bb8b646edc 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1240,11 +1240,10 @@ static int mtk_iommu_mm_dts_parse(struct device *dev, struct component_match **m
- 	return 0;
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 10cc0b1197e8..de9153c0a82f 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -435,6 +435,8 @@ static int mtk_iommu_v1_create_mapping(struct device *dev,
+ 			return -EINVAL;
  
- err_larbdev_put:
--	for (i = MTK_LARB_NR_MAX - 1; i >= 0; i--) {
--		if (!data->larb_imu[i].dev)
--			continue;
-+	/* id mapping may not be linear, loop the whole array */
-+	for (i = 0; i < MTK_LARB_NR_MAX; i++)
- 		put_device(data->larb_imu[i].dev);
--	}
+ 		dev_iommu_priv_set(dev, platform_get_drvdata(m4updev));
 +
- 	return ret;
- }
++		put_device(&m4updev->dev);
+ 	}
  
+ 	ret = iommu_fwspec_add_ids(dev, args->args, 1);
 -- 
 2.49.1
 
