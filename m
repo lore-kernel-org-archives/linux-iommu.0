@@ -1,126 +1,133 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B042C21B192
-	for <iommu@lists.linux.dev>; Thu, 25 Sep 2025 20:24:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A4DF277011
+	for <iommu@lists.linux.dev>; Thu, 25 Sep 2025 22:31:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758831855; cv=none; b=PGPZh8W0clIPderI00KSQDDNxnYryvZt7srLuvd21lSAbzryWcl/vX7K/XgqT/IHpcH76da9uDO7GhnDg2LqHao84fAk0L6ssOApInuaKOsFa3rO9BSUWz2aphy+hYON++zV6bQuDrk9Fagf/qAue5hQmfUHPj7XBEBHin2QvJA=
+	t=1758839500; cv=none; b=CL8LTI4YWEb3VqJbEY5PhwyaoAnYcsCBUwEZmkuRPY5KFdz1CMR8EKGsk/q2Z/Ggzcx10jRfjfeApxQQuTyyiFpUSxSb7R8t1Yc0mflBxqsUbEVBRPXbmPaTogdyl+gwVE9iE8nU6d76Uc99r1XfA06XW/rvaYgRkfgeEwLtcTY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758831855; c=relaxed/simple;
-	bh=slC/4P0RsWxy7aIL8063QZr9t5aaGLRX+ts628BnJrU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QkEauIN63HmOmSQXEQf6V8JfWI36rIqSeD5UmGkGDMf7G0t1GIeWyuGd1sKK6uA48YrtuNJZoGLz1wgj8ov5pIaLYdxbj8eBTFBFUchLg2OZcdHMgSmCAGdT+wfjHNwqX22plGZUUyMlTcaiV4TsYUUtwt24r1MYntX3I1WvBKs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Da12jCvK; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1758839500; c=relaxed/simple;
+	bh=0Alswmfe1zq7N80PnOB6XtFxyNuFoZwrMxHbgdTZfVk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rE2MQIIoy8/+VYjRVhK1BMrJTBX+/PyQXL2WQZfpx9XMJ4h4rBGoIxqRsKRi2pRhCe5QaPqo5Q/mjFyW2ydn3xzv/ksS8D/XpQ4mZXlW2Z4mN7478gEBY7EuGw2uDVyDlB8447BYDCh1ZBVdU9cOamXA/Cbp7FHyFj+cSoRiqPU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=C+yZubRg; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Da12jCvK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1758831854; x=1790367854;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=slC/4P0RsWxy7aIL8063QZr9t5aaGLRX+ts628BnJrU=;
-  b=Da12jCvKxLXDQDu5nBnyRl7g3a/TqGaGDzPIBKXBVtt3WFH3FE4KKixF
-   v1vHMHehsusalX+lbJ95JB+Zk89EQVRG0MKCnjPQW2yEKBR72Iyjt4euE
-   Wg2+jS2x14SJUy2xcb7H6KWN0xJdLrr9YNb8qDgff4XzAQCBTpbglHBpI
-   ZSRaEZx9rRzVKXQiEkxUZ9YaKuFcsLdHbUmOI09TI2vXXOm/TpFB2qmFf
-   zW9ChVyMzXk+rTpJWBXfayo3ztHsOohHnbY06VHNCreP44lzuFDuBO6ie
-   CTkg6WliKimieQ9rLIgVPtfkoMJJ/HcmrxQnhPgnjGbUYKM44HV/tPd0F
-   g==;
-X-CSE-ConnectionGUID: Q3uFZr5QQXSmDHa0NOCxdA==
-X-CSE-MsgGUID: NdcZ4S11QuyoL92m/LXREw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11564"; a="61085306"
-X-IronPort-AV: E=Sophos;i="6.18,293,1751266800"; 
-   d="scan'208";a="61085306"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2025 13:24:13 -0700
-X-CSE-ConnectionGUID: 6gr1JL/yQKiAf+2CVcC66A==
-X-CSE-MsgGUID: 4LgWa1IfS9mUPDKobq41Jg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.18,293,1751266800"; 
-   d="scan'208";a="176557599"
-Received: from ray2.jf.intel.com (HELO [10.24.81.144]) ([10.24.81.144])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Sep 2025 13:24:12 -0700
-Message-ID: <c04d4c9d-e868-4883-af92-26f142bc84be@intel.com>
-Date: Thu, 25 Sep 2025 13:24:12 -0700
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="C+yZubRg"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1758839497;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pPGBYTkBK6lmMsctQg86rFzc+ubUYRnHqSeaFKAdA0w=;
+	b=C+yZubRgK7Xuwq8ZYbAwrcRYC9QJmxmKZYhbFEgZZzGy0wcSpRtZdmQIn5cJi+4/kE7I0b
+	H7LRxQ7lvfwPszHznmJsqnXlq31xtlX1UeKVoTth1DoVwhxeCom1E1069qr7z2twjZ/ElL
+	OZg7vgVrWNEhfNV/vmzboGSLcCUVDtI=
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com
+ [209.85.166.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-497-Wm3S2FNrNOuORmHf6VNLKQ-1; Thu, 25 Sep 2025 18:31:36 -0400
+X-MC-Unique: Wm3S2FNrNOuORmHf6VNLKQ-1
+X-Mimecast-MFC-AGG-ID: Wm3S2FNrNOuORmHf6VNLKQ_1758839495
+Received: by mail-il1-f200.google.com with SMTP id e9e14a558f8ab-42571642af9so5015115ab.0
+        for <iommu@lists.linux.dev>; Thu, 25 Sep 2025 15:31:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758839495; x=1759444295;
+        h=content-transfer-encoding:mime-version:organization:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=pPGBYTkBK6lmMsctQg86rFzc+ubUYRnHqSeaFKAdA0w=;
+        b=oaoYjWCeLtm9N0q23VHJNKY8qKlzIHtykuD3knm5Hxz6yn4b1ZbiU7Drg9bIFmUHzf
+         fs8UKlTrdRQxS7IvBEqwV2pzPy+xMoYAMqd7NJhD/fSLTBvbtwkAYTqEDGdZ6kgR/g6Z
+         vNz+rocV3bTC0f3TArlWg8G8xPrlFuYRwcWAQzllx8cEqoFh8/X2GRxpB+SOtR9sIxkk
+         tIYccYI5cm5ZunraRZFAbEIKlN5ztBzsH7i3J2zp18/CzHYMvSgQzveOI3LzxqyP7JE5
+         eQlQBGERf1CmH5BmeF3Q44zczYXWWcaUuT5z7RBge4q1pB6yN1rfvLA3pQQ4U1L1TOvp
+         5RIA==
+X-Forwarded-Encrypted: i=1; AJvYcCXT/FDyrJOHexqX2TgGW6ebOccrtlE6Dyp54ixjNn4WfpBkRgelKQN+3Sbtxwwhwt1isv7sHw==@lists.linux.dev
+X-Gm-Message-State: AOJu0Yyc5YbU4Cc3i5cxr86AxIzVa1pOBZl42g1VFblAwZEH9tRHh+IT
+	KGDw5WBjLFPn6OD1NEUvqljgmOw9OFZFuWByTYSPanVseJLmo4BG6ABbN9+7BAO6cnPffMJEQws
+	S5o9/jvG9yzjuvtYvigtWnU8XpLzdFtRreyX9Bv3IbRfrDoAqaNoLzBkj
+X-Gm-Gg: ASbGncsyHBLn2rDJgEPhZdhOx5d9aPxnHHtOJZT2OedL4ZVs0Rj2dBHvDf+0cvFFmK3
+	CvPh2z2LG9v+niAo6sUJVPZme5DCCh/EDfx0oQ9pEjaVPirQmXIIkDOw3ZAMFCyjfpiGSbkhs2R
+	WrJ9Xa0xFEtYx+TpkG5gWda0Ki3Hh6GdPBsUM164N8cRfBLWuZEEHwihxQ46mi994pJcW6K9G5w
+	TsfWvKsLB7AwbrVK+hDPK2eZP9RelD82gPbTqJTKuvJc13rJe+IE+oGBdZo2dHBIh02rCm4oSp1
+	Uua/jSs74K+fgc82Hf0c/vJbaGBnIc3IOaId4IqYgLk=
+X-Received: by 2002:a92:d987:0:b0:424:80e6:9e8b with SMTP id e9e14a558f8ab-42595661562mr24720225ab.7.1758839495373;
+        Thu, 25 Sep 2025 15:31:35 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGBjWzVlsd5kVvaGcIPZVt9Dy5vtGZ7X7lNybnyhnS6f36pgd3Q/xbJFuK0zszjvTKZaW8Iag==
+X-Received: by 2002:a92:d987:0:b0:424:80e6:9e8b with SMTP id e9e14a558f8ab-42595661562mr24719995ab.7.1758839494991;
+        Thu, 25 Sep 2025 15:31:34 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id 8926c6da1cb9f-56a69a1c574sm1211405173.40.2025.09.25.15.31.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Sep 2025 15:31:34 -0700 (PDT)
+Date: Thu, 25 Sep 2025 16:31:31 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Leon Romanovsky <leon@kernel.org>, Andrew Morton
+ <akpm@linux-foundation.org>, Bjorn Helgaas <bhelgaas@google.com>, Christian
+ =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, Jens Axboe
+ <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+ linaro-mm-sig@lists.linaro.org, linux-block@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-mm@kvack.org, linux-pci@vger.kernel.org, Logan Gunthorpe
+ <logang@deltatee.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin
+ Murphy <robin.murphy@arm.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+ Vivek Kasireddy <vivek.kasireddy@intel.com>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v2 03/10] PCI/P2PDMA: Refactor to separate core P2P
+ functionality from memory allocation
+Message-ID: <20250925163131.22a2c09b.alex.williamson@redhat.com>
+In-Reply-To: <20250925115308.GT2617119@nvidia.com>
+References: <cover.1757589589.git.leon@kernel.org>
+	<1e2cb89ea76a92949d06a804e3ab97478e7cacbb.1757589589.git.leon@kernel.org>
+	<20250922150032.3e3da410.alex.williamson@redhat.com>
+	<20250923150414.GA2608121@nvidia.com>
+	<20250923113041.38bee711.alex.williamson@redhat.com>
+	<20250923174333.GE2608121@nvidia.com>
+	<20250923120932.47df57b2.alex.williamson@redhat.com>
+	<20250925070314.GA12165@unreal>
+	<20250925115308.GT2617119@nvidia.com>
+Organization: Red Hat
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 0/8] Fix stale IOTLB entries for kernel address space
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
- Jann Horn <jannh@google.com>, Vasant Hegde <vasant.hegde@amd.com>,
- Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Alistair Popple <apopple@nvidia.com>,
- Peter Zijlstra <peterz@infradead.org>, Uladzislau Rezki <urezki@gmail.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Andy Lutomirski <luto@kernel.org>, Yi Lai <yi1.lai@intel.com>
-Cc: iommu@lists.linux.dev, security@kernel.org, x86@kernel.org,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org
-References: <20250919054007.472493-1-baolu.lu@linux.intel.com>
-Content-Language: en-US
-From: Dave Hansen <dave.hansen@intel.com>
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
-In-Reply-To: <20250919054007.472493-1-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
+X-Mimecast-Spam-Score: 0
+X-Mimecast-MFC-PROC-ID: YwHp6RD0Zf9V_tnWd-3kzAP-tPirENMHOIHoECv4Lu8_1758839495
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 9/18/25 22:39, Lu Baolu wrote:
-> This solution introduces a deferred freeing mechanism for kernel page
-> table pages, which provides a safe window to notify the IOMMU to
-> invalidate its caches before the page is reused.
+On Thu, 25 Sep 2025 08:53:08 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-I think all the activity has died down and I everyone seems happy enough
-with how this looks. Right?
+> On Thu, Sep 25, 2025 at 10:03:14AM +0300, Leon Romanovsky wrote:
+> 
+> > > It would at least make sense to me then to store the provider on the
+> > > vfio_pci_dma_buf object at the time of the get feature call rather than
+> > > vfio_pci_core_init_dev() though.  That would eliminate patch 08/ and
+> > > the inline #ifdefs.  
+> > 
+> > I'll change it now. If "enable" function goes to be "get" function, we
+> > won't need to store anything in vfio_pci_dma_buf too. At the end, we
+> > have exactly two lines "provider = priv->vdev->provider[priv->bar];",
+> > which can easily be changed to be "provider = pcim_p2pdma_provider(priv->vdev->pdev, priv->bar)"  
+> 
+> Not without some kind of locking change. I'd keep the
+> priv->vdev->provider[priv->bar] because setup during probe doesn't
+> need special locking.
 
-So is this something we should prod Andrew to take through the mm tree,
-or is it x86-specific enough it should go through tip?
+Why do we need to store the provider on the vfio_pci_core_device at
+probe though, we can get it later via pcim_p2pdma_provider().  Ideally
+we'd take the opportunity to pull out the setup part of the _provider
+function to give us an initialization interface to use at probe time
+without an unnecessary BAR# arg.  Thanks,
+
+Alex
+
